@@ -61,6 +61,10 @@ function QuestieTBCObjectFixes:Load()
         [184998] = {
             [objectKeys.name] = "Ethereum Prison",
         },
+        [185015] = {
+            [objectKeys.spawns] = {[zoneIDs.THE_MECHANAR]={{-1,-1}}},
+            [objectKeys.zoneID] = zoneIDs.THE_MECHANAR,
+        },
         [185322] = {
             [objectKeys.spawns] = {[zoneIDs.SILITHUS]={{28.7,98.7}}},
         },
@@ -80,6 +84,12 @@ function QuestieTBCObjectFixes:Load()
                 [zoneIDs.DUN_MOROGH]={{46.4,52.2}},
                 [zoneIDs.TIRISFAL_GLADES]={{60.9,52.7}},
             },
+        },
+        [187039] = {
+            [objectKeys.spawns] = {[zoneIDs.BLADES_EDGE_MOUNTAINS]={{50.0,12.4},{50.7,13.3},{50.7,13.9},{50.47,19.23},{49.27,19.97},{49.08,19.02},{49.31,17.77},{49.48,17.03},{50.91,17.26},{50.18,16.55},{51.15,16.75},{51.98,15.68},{50.7,13.34},{51.94,13.16},{51.02,11.97},{51.6,13.9},{54.13,18.84},},},
+        },
+        [187078] = {
+            [objectKeys.spawns] = {[zoneIDs.ISLE_OF_QUEL_DANAS]={{46.5,35.5},{48.63,35.37},{48.89,39.15},{49.14,29.53},{50.32,38.27},{50.34,42.36},{53.77,36.21},}},
         },
         [187260] = {
             [objectKeys.spawns] = {[zoneIDs.FELWOOD]={{34.82,52.95}}}, -- TBC only Mailbox
@@ -600,9 +610,14 @@ function QuestieTBCObjectFixes:Load()
             [objectKeys.zoneID] = zoneIDs.STORMWIND_CITY,
         },
         [400013] = {
-            [objectKeys.name] = "Wooden Figurine",
-            [objectKeys.spawns] = {[zoneIDs.ASHENVALE]={{26.6,22}}},
-            [objectKeys.zoneID] = zoneIDs.ASHENVALE,
+            [objectKeys.name] = "Gather Nether Residue from any Herb or Ore Deposit in Outland",
+            [objectKeys.spawns] = {[zoneIDs.SHATTRATH_CITY]={{53.9,44.8}}},
+            [objectKeys.zoneID] = zoneIDs.SHATTRATH_CITY,
+        },
+        [400014] = {
+            [objectKeys.name] = "Gather Bloodberries all around the Isle of Quel'Danas",
+            [objectKeys.spawns] = {[zoneIDs.ISLE_OF_QUEL_DANAS]={{40,30}}},
+            [objectKeys.zoneID] = zoneIDs.ISLE_OF_QUEL_DANAS,
         },
     }
 end

@@ -1,7 +1,9 @@
 ------------------------------------------------------------------------
-r26 | funkehdude | 2021-03-09 20:22:03 +0000 (Tue, 09 Mar 2021) | 1 line
+r32 | funkehdude | 2022-04-22 00:25:45 +0000 (Fri, 22 Apr 2022) | 1 line
 Changed paths:
    M /trunk/LibLatency.toc
+   M /trunk/LibLatency_TBC.toc
+   M /trunk/LibLatency_Vanilla.toc
 
 bump toc
 ------------------------------------------------------------------------

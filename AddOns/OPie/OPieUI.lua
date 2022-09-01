@@ -1,6 +1,6 @@
 local configCache, _, T = {}, ...
 local PC, api, iapi, MODERN = T.OPieCore, {}, {}, select(4, GetBuildInfo()) > 9e4
-local max, min, abs, floor, sin, cos, atan2 = math.max, math.min, math.abs, math.floor, sin, cos, atan2
+local max, min, abs, floor, sin, cos = math.max, math.min, math.abs, math.floor, sin, cos
 local function cc(m, f, ...)
 	f[m](f, ...)
 	return f
@@ -9,7 +9,6 @@ local function assert(condition, text, level)
 	return (not condition) and error(text, level or 2) or condition
 end
 
-local triggerFrame = nil
 local gfxBase = ([[Interface\AddOns\%s\gfx\]]):format((...))
 local anchorFrame = cc("Hide", cc("SetPoint", cc("SetSize", CreateFrame("Frame"), 1, 1), "CENTER"))
 local mainFrame = cc("Hide", cc("SetFrameStrata", cc("SetPoint", cc("SetSize", CreateFrame("Frame", nil, UIParent), 128, 128), "CENTER", anchorFrame), "FULLSCREEN"))
@@ -198,7 +197,7 @@ local SwitchIndicatorFactory, ValidateIndicator do
 	end
 end
 
-local tokenR, tokenG, tokenB, tokenCaption, tokenIcon, tokenQuest = {}, {}, {}, {}, {}, {}
+local tokenR, tokenG, tokenB, tokenIcon, tokenQuest = {}, {}, {}, {}, {}
 local getSliceColor do
 	local col, pal = T.Niji._tex, T.Niji._palette
 	function getSliceColor(token, icon, token2)
@@ -229,8 +228,7 @@ local function SetDefaultAnchor(tt, owner)
 	end
 end
 local function updateCentralElements(self, si)
-	local osi, tok, usable, state, icon, caption, _, _, _, tipFunc, tipArg = self.oldSlice, OneRingLib:GetOpenRingSliceAction(si)
-	caption = tokenCaption[tok] or caption
+	local osi, tok, usable, state, icon, caption, _, _, _, tipFunc, tipArg, _, stext = self.oldSlice, OneRingLib:GetOpenRingSliceAction(si)
 		
 	if tok then
 		local r,g,b = getSliceColor(tok, tokenIcon[tok] or icon or "INV_Misc_QuestionMark")
@@ -248,12 +246,13 @@ local function updateCentralElements(self, si)
 			SetDefaultAnchor(GameTooltip, mainFrame)
 			tipFunc(GameTooltip, tipArg)
 			GameTooltip:Show()
-		elseif caption and caption ~= "" then
-			SetDefaultAnchor(GameTooltip, mainFrame)
-			GameTooltip:AddLine(caption)
-			GameTooltip:Show()
 		else
-			if GameTooltip:IsOwned(mainFrame) then
+			local text = caption and caption ~= "" and caption or stext
+			if text then
+				SetDefaultAnchor(GameTooltip, mainFrame)
+				GameTooltip:AddLine(text)
+				GameTooltip:Show()
+			elseif GameTooltip:IsOwned(mainFrame) then
 				GameTooltip:Hide()
 			end
 		end
@@ -326,26 +325,17 @@ end
 
 local lastConAngle = nil
 local function OnUpdate_Main(self, elapsed)
-	local aframe = triggerFrame or self
 	local count, offset = self.count, self.offset
-	local scale, l, b, w, h = aframe:GetEffectiveScale(), aframe:GetRect()
-	local x, y = GetCursorPosition()
-	local dx, dy = (x / scale) - (l + w / 2), (y / scale) - (b + h / 2)
-	local radius2 = dx*dx+dy*dy
+	local imode, qaid, angle, isActiveRadius, stl = PC:GetCurrentInputs()
 
-	local angle, isInFastClick = atan2(dy, dx) % 360, configCache.CenterAction and self.fastClickSlice > 0 and self.fastClickSlice <= self.count
-	local stick, stx, sty, stl = PC:GetActivePointerStick()
-	if stick then
-		angle = stl < 0.25 and lastConAngle or atan2(sty, stx) % 360
-		lastConAngle, radius2 = angle, stl < 0.01 and 200 or stl < 0.25 and 1000 or 1600
+	if qaid then
+		angle = (90 - offset - (qaid-1)*360/count) % 360
+	elseif imode == "stick" then
+		angle = stl < 0.25 and lastConAngle or angle
+		lastConAngle = angle
 	end
 
-	isInFastClick = isInFastClick and radius2 <= 400
-	if isInFastClick then
-		angle = (90 - offset - (self.fastClickSlice-1)*360/count) % 360
-	end
-
-	local oangle = (not isInFastClick) and self.angle or angle
+	local oangle = qaid and angle or self.angle or angle
 	local adiff, arate = min((angle-oangle) % 360, (oangle-angle) % 360)
 	if adiff > 60 then
 		arate = 420 + 120*sin(min(90, adiff-60))
@@ -354,13 +344,13 @@ local function OnUpdate_Main(self, elapsed)
 	else
 		arate = 20 + 160*sin(min(90, adiff*6))
 	end
-	local abound, arotDirection = arate/GetFramerate(), ((oangle - angle) % 360 < (angle - oangle) % 360) and -1 or 1
-	abound = abound * 2^configCache.XTPointerSpeed
+	local abound = configCache.XTPointerSnap and 360 or (1.25*arate/GetFramerate())
+	local arotDirection = ((oangle - angle) % 360 < (angle - oangle) % 360) and -1 or 1
 	self.angle = (adiff < abound) and angle or (oangle + arotDirection * abound) % 360
 	centerPointer:SetRotation(self.angle/180*3.1415926535898 - 90/180*3.1415926535898)
 
-	local si = isInFastClick and self.fastClickSlice or (count <= 0 and 0) or (radius2 < 1600 and 0) or
-		(floor(((90-angle - offset) * count/360 + 0.5) % count) + 1)
+	local si = qaid or (count <= 0 and 0) or isActiveRadius and
+		(floor(((90-angle - offset) * count/360 + 0.5) % count) + 1) or 0
 	updateCentralElements(self, si)
 
 	if count == 0 then
@@ -435,8 +425,8 @@ mainFrame:SetScript("OnHide", function(self)
 	end
 end)
 
-function iapi:Show(_, fcSlice, fastOpen, reFrame)
-	triggerFrame, lastConAngle, _, mainFrame.count, mainFrame.offset = reFrame, nil, OneRingLib:GetOpenRing(configCache)
+function iapi:Show(_, fcSlice, fastOpen)
+	lastConAngle, _, mainFrame.count, mainFrame.offset = nil, OneRingLib:GetOpenRing(configCache)
 	SwitchIndicatorFactory(configCache.IndicatorFactory)
 
 	local baseSize = 48 + 48*configCache.MIButtonMargin
@@ -482,9 +472,9 @@ function iapi:Hide()
 	end
 end
 
-function api:SetDisplayOptions(token, icon, caption, r,g,b)
+function api:SetDisplayOptions(token, icon, _, r,g,b)
 	if type(r) ~= "number" or type(g) ~= "number" or type(b) ~= "number" then r,g,b = nil end
-	tokenR[token], tokenG[token], tokenB[token], tokenCaption[token], tokenIcon[token] = r,g,b, caption, icon
+	tokenR[token], tokenG[token], tokenB[token], tokenIcon[token] = r,g,b, icon
 end
 function api:SetQuestHint(sliceToken, hint)
 	tokenQuest[sliceToken] = hint or nil
@@ -520,7 +510,7 @@ end
 for k,v in pairs({ShowCooldowns=false, ShowRecharge=false, UseGameTooltip=true, ShowKeys=true, ShowOneCount=false, ShowShortLabels=true,
 	MIScale=true, MISpinOnHide=true, MIButtonMargin=0.1, GhostMIRings=true,
 	IndicatorFactory="_",
-	XTPointerSpeed=0, XTScaleSpeed=0, XTZoomTime=0.3, XTRotationPeriod=4, GhostShowDelay=0.25}) do
+	XTPointerSnap=false, XTScaleSpeed=0, XTZoomTime=0.3, XTRotationPeriod=4, GhostShowDelay=0.25}) do
 	PC:RegisterOption(k,v)
 end
 api:RegisterIndicatorConstructor("mirage", T.Mirage)

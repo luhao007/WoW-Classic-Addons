@@ -1,6 +1,6 @@
 ﻿-- Pawn by Vger-Azjol-Nerub
 -- www.vgermods.com
--- © 2006-2021 Travis Spomer.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
+-- © 2006-2022 Travis Spomer.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
 -- See Readme.htm for more information.
 
 -- 
@@ -153,6 +153,7 @@ Per maggiori informazioni su come personalizzare Pawn, per favore leggere il fil
 		["SpellHitInfo"] = "Spell Hit.  Increases the chance that your damaging spells hit the target, especially bosses.",
 		--[[Translation missing --]]
 		["SpellPenetrationInfo"] = "Spell Penetration. Negates an enemy's resistances to your spells.",
+		["SpellPowerInfo"] = "",
 		["SpiritInfo"] = "Spirit.  Affects your out-of-combat mana regeneration.",
 		["StaminaInfo"] = "Tempra. Aumenta la tua vita.",
 		["StrengthInfo"] = "Forza. Aumenta la potenza d'attacco per alcune classi.",
@@ -413,6 +414,7 @@ Per maggiori informazioni su come personalizzare Pawn, per favore leggere il fil
 		["SpellDamage3"] = "^UNUSED$",
 		["SpellDamage4"] = "^UNUSED$",
 		["SpellDamage5"] = "^UNUSED$",
+		["SpellDamage6"] = "^UNUSED$",
 		["SpellDamageAndHealing"] = "^UNUSED$",
 		["SpellDamageAndHealing2"] = "^UNUSED$",
 		["SpellDamageAndHealingEnchant"] = "^UNUSED$",
@@ -428,6 +430,7 @@ Per maggiori informazioni su come personalizzare Pawn, per favore leggere il fil
 		["SpellPenetrationClassic"] = "^UNUSED$",
 		["SpellPenetrationShort"] = "^UNUSED$",
 		["SpellPower"] = "^%+?# Potenza [Mm]agica$",
+		["SpellPower2"] = "^UNUSED$",
 		["Spirit"] = "^%+?# Spirito$",
 		["Staff"] = "^Bastone$",
 		["Stamina"] = "^%+?# Tempra$",

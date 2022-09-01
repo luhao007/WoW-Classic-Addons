@@ -436,88 +436,93 @@ local DFSliderMetaFunctions = _G[DF.GlobalWidgetControlNames ["slider"]]
 	end
 	
 
-	local f = CreateFrame ("frame", "DetailsFrameworkSliderButtons1", UIParent, "BackdropTemplate")
+	local f = DetailsFrameworkSliderButtons1 or CreateFrame("frame", "DetailsFrameworkSliderButtons1", UIParent, "BackdropTemplate")
 	f:Hide()
-	f:SetHeight (18)
-	
+	f:SetHeight(18)
+
 	local t = 0
-	f.is_going_hide = false
-	local going_hide = function (self, elapsed)
+	f.isGoingToHide = false
+	local goingHide = function(self, elapsed)
 		t = t + elapsed
 		if (t > 0.3) then
 			f:Hide()
 			f:SetScript ("OnUpdate", nil)
-			f.is_going_hide = false
+			f.isGoingToHide = false
 		end
 	end
-	
-	function f:ShowMe (host)
+
+	function f:ShowMe(host)
 		f:SetParent(host)
-		f:SetPoint ("bottomleft", host, "topleft", -3, -5)
-		f:SetPoint ("bottomright", host, "topright", 3, -5)
-		--f:SetFrameStrata (host:GetFrameStrata())
+		f:ClearAllPoints()
+		f:SetPoint ("bottomleft", host, "topleft", -5, -5)
+		f:SetPoint ("bottomright", host, "topright", 5, -5)
+
 		f:SetFrameStrata ("FULLSCREEN")
 		f:SetFrameLevel (host:GetFrameLevel() + 1000)
 		f:Show()
-		if (f.is_going_hide) then
+		if (f.isGoingToHide) then
 			f:SetScript ("OnUpdate", nil)
-			f.is_going_hide = false
+			f.isGoingToHide = false
 		end
-		
+
 		f.host = host.MyObject
 	end
 	
 	function f:PrepareToHide()
-		f.is_going_hide = true
+		f.isGoingToHide = true
 		t = 0
-		f:SetScript ("OnUpdate", going_hide)
+		f:SetScript ("OnUpdate", goingHide)
 	end
 	
-	local button_plus = CreateFrame ("button", "DetailsFrameworkSliderButtonsPlusButton", f, "BackdropTemplate")
-	local button_minor = CreateFrame ("button", "DetailsFrameworkSliderButtonsMinorButton", f, "BackdropTemplate")
-	button_plus:SetFrameStrata (f:GetFrameStrata())
-	button_minor:SetFrameStrata (f:GetFrameStrata())
+	local buttonPlus = CreateFrame ("button", "DetailsFrameworkSliderButtonsPlusButton", f, "BackdropTemplate")
+	local buttonMinor = CreateFrame ("button", "DetailsFrameworkSliderButtonsMinorButton", f, "BackdropTemplate")
+	buttonPlus:SetFrameStrata (f:GetFrameStrata())
+	buttonMinor:SetFrameStrata (f:GetFrameStrata())
 	
-	button_plus:SetScript ("OnEnter", function (self)
-		if (f.is_going_hide) then
+	buttonPlus:SetScript ("OnEnter", function (self)
+		if (f.isGoingToHide) then
 			f:SetScript ("OnUpdate", nil)
-			f.is_going_hide = false
+			f.isGoingToHide = false
 		end
 	end)
-	button_minor:SetScript ("OnEnter", function (self)
-		if (f.is_going_hide) then
+	buttonMinor:SetScript ("OnEnter", function (self)
+		if (f.isGoingToHide) then
 			f:SetScript ("OnUpdate", nil)
-			f.is_going_hide = false
+			f.isGoingToHide = false
 		end
 	end)
 	
-	button_plus:SetScript ("OnLeave", function (self)
+	buttonPlus:SetScript ("OnLeave", function (self)
 		f:PrepareToHide()
 	end)
-	button_minor:SetScript ("OnLeave", function (self)
+	buttonMinor:SetScript ("OnLeave", function (self)
 		f:PrepareToHide()
 	end)
 	
-	button_plus:SetNormalTexture ([[Interface\Buttons\UI-PlusButton-Up]])
-	button_minor:SetNormalTexture ([[Interface\Buttons\UI-MinusButton-Up]])
+	buttonPlus:SetNormalTexture ([[Interface\Buttons\UI-PlusButton-Up]])
+	buttonMinor:SetNormalTexture ([[Interface\Buttons\UI-MinusButton-Up]])
 	
-	button_plus:SetPushedTexture ([[Interface\Buttons\UI-PlusButton-Down]])
-	button_minor:SetPushedTexture ([[Interface\Buttons\UI-MinusButton-Down]])
+	buttonPlus:SetPushedTexture ([[Interface\Buttons\UI-PlusButton-Down]])
+	buttonMinor:SetPushedTexture ([[Interface\Buttons\UI-MinusButton-Down]])
 	
-	button_plus:SetDisabledTexture ([[Interface\Buttons\UI-PlusButton-Disabled]])
-	button_minor:SetDisabledTexture ([[Interface\Buttons\UI-MinusButton-Disabled]])
+	buttonPlus:SetDisabledTexture ([[Interface\Buttons\UI-PlusButton-Disabled]])
+	buttonMinor:SetDisabledTexture ([[Interface\Buttons\UI-MinusButton-Disabled]])
 	
-	button_plus:SetHighlightTexture ([[Interface\Buttons\UI-PlusButton-Hilight]])
-	button_minor:SetHighlightTexture ([[Interface\Buttons\UI-PlusButton-Hilight]])
+	buttonPlus:SetHighlightTexture ([[Interface\Buttons\UI-PlusButton-Hilight]])
+	buttonMinor:SetHighlightTexture ([[Interface\Buttons\UI-PlusButton-Hilight]])
+
+	local plusNormalTexture = buttonPlus:GetNormalTexture()
+	plusNormalTexture:SetDesaturated(true)
+	local minorNormalTexture = buttonMinor:GetNormalTexture()
+	minorNormalTexture:SetDesaturated(true)
+
+	buttonMinor:ClearAllPoints()
+	buttonPlus:ClearAllPoints()
+	buttonMinor:SetPoint ("bottomright", f, "bottomright", 13, -13)
+	buttonPlus:SetPoint ("left", buttonMinor, "right", -2, 0)
 	
-	--button_minor:SetPoint ("bottomleft", f, "bottomleft", -6, -13)
-	--button_plus:SetPoint ("bottomright", f, "bottomright", 6, -13)
-	
-	button_minor:SetPoint ("bottomright", f, "bottomright", 13, -13)
-	button_plus:SetPoint ("left", button_minor, "right", -2, 0)
-	
-	button_plus:SetSize (16, 16)
-	button_minor:SetSize (16, 16)
+	buttonPlus:SetSize (16, 16)
+	buttonMinor:SetSize (16, 16)
 	
 	local timer = 0
 	local change_timer = 0
@@ -550,11 +555,11 @@ local DFSliderMetaFunctions = _G[DF.GlobalWidgetControlNames ["slider"]]
 
 	end
 	
-	button_plus:SetScript ("OnMouseUp", function (self)
-		if (not button_plus.got_click) then
+	buttonPlus:SetScript ("OnMouseUp", function (self)
+		if (not buttonPlus.got_click) then
 			plus_button_script()
 		end
-		button_plus.got_click = false
+		buttonPlus.got_click = false
 		self:SetScript ("OnUpdate", nil)
 	end)
 	
@@ -565,11 +570,11 @@ local DFSliderMetaFunctions = _G[DF.GlobalWidgetControlNames ["slider"]]
 			if (change_timer > 0.1) then
 				change_timer = 0
 				plus_button_script()
-				button_plus.got_click = true
+				buttonPlus.got_click = true
 			end
 		end
 	end
-	button_plus:SetScript ("OnMouseDown", function (self)
+	buttonPlus:SetScript ("OnMouseDown", function (self)
 		timer = 0
 		change_timer = 0
 		self:SetScript ("OnUpdate", on_update)
@@ -601,11 +606,11 @@ local DFSliderMetaFunctions = _G[DF.GlobalWidgetControlNames ["slider"]]
 		end
 	end
 	
-	button_minor:SetScript ("OnMouseUp", function (self)
-		if (not button_minor.got_click) then
+	buttonMinor:SetScript ("OnMouseUp", function (self)
+		if (not buttonMinor.got_click) then
 			minor_button_script()
 		end
-		button_minor.got_click = false
+		buttonMinor.got_click = false
 		self:SetScript ("OnUpdate", nil)
 	end)
 	
@@ -616,11 +621,11 @@ local DFSliderMetaFunctions = _G[DF.GlobalWidgetControlNames ["slider"]]
 			if (change_timer > 0.1) then
 				change_timer = 0
 				minor_button_script()
-				button_minor.got_click = true
+				buttonMinor.got_click = true
 			end
 		end
 	end
-	button_minor:SetScript ("OnMouseDown", function (self)
+	buttonMinor:SetScript ("OnMouseDown", function (self)
 		timer = 0
 		change_timer = 0
 		self:SetScript ("OnUpdate", on_update)
@@ -644,6 +649,7 @@ local DFSliderMetaFunctions = _G[DF.GlobalWidgetControlNames ["slider"]]
 		
 		return tonumber (text)
 	end
+	DF.TextToFloor = do_precision
 	
 	function DFSliderMetaFunctions:TypeValue()
 		if (not self.isSwitch) then
@@ -761,14 +767,14 @@ local DFSliderMetaFunctions = _G[DF.GlobalWidgetControlNames ["slider"]]
 		if (slider.MyObject.useDecimals) then
 			amt = slider:GetValue()
 		else
-			amt = do_precision (slider:GetValue())
+			amt = do_precision(slider:GetValue())
 		end
-		
+
 		if (slider.MyObject.typing_value and not slider.MyObject.typing_can_change) then
 			slider.MyObject:SetValue (slider.MyObject.typing_value_started)
 			return
 		end
-	
+
 		table_insert (slider.MyObject.previous_value, 1, amt)
 		table_remove (slider.MyObject.previous_value, 4)
 		
@@ -1278,4 +1284,196 @@ function DF:NewSlider (parent, container, name, member, w, h, min, max, step, de
 	
 	return SliderObject, with_label
 	
+end
+
+DF.AdjustmentSliderOptions = {
+	width = 120,
+	height = 20,
+	speed = 20, --speed is how many pixels the mouse has moved
+}
+
+DF.AdjustmentSliderFunctions = {
+	SetCallback = function(self, func)
+		self.callback = func
+	end,
+
+	SetPayload = function(self, ...)
+		self.payload = {...}
+	end,
+
+	RunCallback = function(adjustmentSlider, valueX, valueY, isLiteral)
+		local result, errorText = pcall(adjustmentSlider.callback, adjustmentSlider, valueX, valueY, isLiteral, adjustmentSlider:DumpPayload())
+		if (not result) then
+			DF:Msg("AdjustmentSlider callback Error:", errorText)
+			return false
+		end
+	end,
+
+	--calculate if the mouse has moved and call a callback
+	PressingOnUpdate = function(adjustmentSlider, deltaTime)
+		if (GetTime() > adjustmentSlider.NextTick) then
+			--get currentr mouse position
+			local mouseX, mouseY = GetCursorPosition()
+			local verticalValue
+			local horizontalValue
+
+			--find distance
+			local xDelta = adjustmentSlider.MouseX - mouseX --moving the mouse to right or up result in a negative delta
+			local yDelta = adjustmentSlider.MouseY - mouseY
+
+			if (adjustmentSlider.buttonPressed ~= "center") then
+				if (adjustmentSlider.buttonPressedTime+0.5 < GetTime()) then
+					if (adjustmentSlider.buttonPressed == "left") then
+						DF.AdjustmentSliderFunctions.RunCallback(adjustmentSlider, -1, 0, true)
+					elseif (adjustmentSlider.buttonPressed == "right") then
+						DF.AdjustmentSliderFunctions.RunCallback(adjustmentSlider, 1, 0, true)
+					end
+				end
+
+			elseif (xDelta ~= 0 or yDelta ~= 0) then
+				if (adjustmentSlider.buttonPressed == "center") then
+					--invert axis as left is positive and right is negative in the deltas
+					xDelta = xDelta * -1
+					yDelta = yDelta * -1
+
+					horizontalValue = DF:MapRangeClamped(-20, 20, -1, 1, xDelta)
+					verticalValue = DF:MapRangeClamped(-20, 20, -1, 1, yDelta)
+				end
+
+				DF.AdjustmentSliderFunctions.RunCallback(adjustmentSlider, horizontalValue, verticalValue, false)
+
+				adjustmentSlider.MouseX = mouseX
+				adjustmentSlider.MouseY = mouseY
+			end
+
+			adjustmentSlider.NextTick = GetTime() + 0.05
+		end
+	end,
+
+	--button can be the left or right button
+	OnButtonDownkHook = function(button)
+		button = button.MyObject
+
+		--change the icon
+		if (button.direction == "left") then
+			button:SetIcon([[Interface\BUTTONS\UI-SpellbookIcon-PrevPage-Down]])
+		elseif (button.direction == "right") then
+			button:SetIcon([[Interface\BUTTONS\UI-SpellbookIcon-NextPage-Down]])
+		end
+
+		local adjustmentSlider = button:GetParent()
+		adjustmentSlider.NextTick = GetTime() + 0.05
+
+		--save where the mouse is on the moment of the click
+		local mouseX, mouseY = GetCursorPosition()
+		adjustmentSlider.MouseX = mouseX
+		adjustmentSlider.MouseY = mouseY
+
+		adjustmentSlider.buttonPressed = button.direction
+
+		--start monitoring the mouse moviment
+		adjustmentSlider.buttonPressedTime = GetTime()
+		adjustmentSlider:SetScript("OnUpdate", DF.AdjustmentSliderFunctions.PressingOnUpdate)
+	end,
+
+	--button can be the left or right button
+	OnButtonUpHook = function(button)
+		button = button.MyObject
+
+		--change the icon
+		if (button.direction == "left") then
+			button:SetIcon([[Interface\BUTTONS\UI-SpellbookIcon-PrevPage-Up]])
+		elseif (button.direction == "right") then
+			button:SetIcon([[Interface\BUTTONS\UI-SpellbookIcon-NextPage-Up]])
+		end
+
+		local adjustmentSlider = button:GetParent()
+
+		--check if the mouse did not moved at all, if not send a callback with a value of 1
+		local mouseX, mouseY = GetCursorPosition()
+		if (mouseX == adjustmentSlider.MouseX and mouseY == adjustmentSlider.MouseY and adjustmentSlider.buttonPressedTime+0.5 > GetTime()) then
+			if (button.direction == "left") then
+				DF.AdjustmentSliderFunctions.RunCallback(adjustmentSlider, -1, 0, true)
+			elseif (button.direction == "right") then
+				DF.AdjustmentSliderFunctions.RunCallback(adjustmentSlider, 1, 0, true)
+			end
+		end
+
+		adjustmentSlider:SetScript("OnUpdate", nil)
+	end,
+
+	Disable = function(adjustmentSlider)
+		adjustmentSlider.leftButton:Disable()
+		adjustmentSlider.rightButton:Disable()
+		adjustmentSlider.centerButton:Disable()
+	end,
+
+	Enable = function(adjustmentSlider)
+		adjustmentSlider.leftButton:Enable()
+		adjustmentSlider.rightButton:Enable()
+		adjustmentSlider.centerButton:Enable()
+	end,
+}
+
+local createAdjustmentSliderFrames = function(parent, options, name)
+	--frame it self
+	local adjustmentSlider = CreateFrame("frame", name, parent, "BackdropTemplate")
+
+	DF:Mixin(adjustmentSlider, DF.OptionsFunctions)
+	DF:Mixin(adjustmentSlider, DF.AdjustmentSliderFunctions)
+	DF:Mixin(adjustmentSlider, DF.PayloadMixin)
+
+	adjustmentSlider:BuildOptionsTable(DF.AdjustmentSliderOptions, options)
+
+	adjustmentSlider:SetSize(adjustmentSlider.options.width, adjustmentSlider.options.height)
+
+	--two buttons
+	local leftButton = DF:CreateButton(adjustmentSlider, function()end, 20, 20, "", "left", -1, nil, nil, name .. "LeftButton")
+	local rightButton = DF:CreateButton(adjustmentSlider, function()end, 20, 20, "", "right", 1, nil, nil, name .. "RightButton")
+
+	leftButton:SetHook("OnMouseDown", DF.AdjustmentSliderFunctions.OnButtonDownkHook)
+	rightButton:SetHook("OnMouseDown", DF.AdjustmentSliderFunctions.OnButtonDownkHook)
+	leftButton:SetHook("OnMouseUp", DF.AdjustmentSliderFunctions.OnButtonUpHook)
+	rightButton:SetHook("OnMouseUp", DF.AdjustmentSliderFunctions.OnButtonUpHook)
+
+	leftButton:SetPoint("left", adjustmentSlider, "left", 0, 0)
+	rightButton:SetPoint("right", adjustmentSlider, "right", 0, 0)
+	leftButton:SetIcon([[Interface\BUTTONS\UI-SpellbookIcon-PrevPage-Up]])
+	rightButton:SetIcon([[Interface\BUTTONS\UI-SpellbookIcon-NextPage-Up]])
+	leftButton.direction = "left"
+	rightButton.direction = "right"
+
+	--center button
+	local centerButton = DF:CreateButton(adjustmentSlider, function()end, 20, 20, "", "center", 0, nil, nil, name .. "CenterButton")
+	centerButton:SetPoint("center", adjustmentSlider, "center", 0, 0)
+	centerButton:SetIcon([[Interface\BUTTONS\YellowOrange64_Radial]])
+	centerButton.direction = "center"
+	centerButton:SetHook("OnMouseDown", DF.AdjustmentSliderFunctions.OnButtonDownkHook)
+	centerButton:SetHook("OnMouseUp", DF.AdjustmentSliderFunctions.OnButtonUpHook)
+
+	adjustmentSlider.leftButton = leftButton
+	adjustmentSlider.rightButton = rightButton
+	adjustmentSlider.centerButton = centerButton
+
+	return adjustmentSlider
+end
+
+--creates a slider with left and right buttons and a center button, on click the hold, mouse moviments adjust the value and trigger a callback with a normallized x and y values of the mouse movement
+--@parent: who is the parent of this frame
+--@callback: run when there's a change in any of the two axis
+--@options: a table containing options for the frame, see /dump DetailsFramework.AdjustmentSliderOptions
+--@name: the name of the frame, if none a generic name is created
+function DF:CreateAdjustmentSlider(parent, callback, options, name, ...)
+	if (not name) then
+		name = "DetailsFrameworkAdjustmentSlider" .. DF.SliderCounter
+		DF.SliderCounter = DF.SliderCounter + 1
+
+	elseif (not parent) then
+		return error("Details! FrameWork: parent not found.", 2)
+	end
+
+	local ASFrame = createAdjustmentSliderFrames(parent, options, name)
+	ASFrame:SetPayload(...)
+	ASFrame.callback = callback
+	return ASFrame
 end

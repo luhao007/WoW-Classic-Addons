@@ -330,11 +330,11 @@ local function GSUB_Time(preText,t,msg,newlinesym)
 				end
 			end
 		elseif optNow:sub(1,1) == "p" then
-			local phase = optNow:sub( optNow:sub(2,2) == ":" and 3 or 2 )
-			if phase then
+			local isGlobalPhase,phase = optNow:match("^p(g?):?(.-)$")
+			if phase and phase ~= "" then
 				local prefixText = "P"..phase.." "
 
-				local phaseStart = encounter_time_p[phase]
+				local phaseStart = encounter_time_p[(isGlobalPhase == "g" and "g" or "")..phase]
 
 				if phaseStart then
 					time = phaseStart + time - now
@@ -2416,12 +2416,15 @@ do
 
 			BossPhasesBossmodAdded = true
 		elseif type(DBM)=='table' and DBM.RegisterCallback then
-			DBM:RegisterCallback("DBM_SetStage", function(event, addon, modId, stage, encounterId)
+			DBM:RegisterCallback("DBM_SetStage", function(event, addon, modId, stage, encounterId, globalStage)
 				if stage then
 					wipe(encounter_time_p)
 					local t = GetTime()
 					encounter_time_p[stage] = t
 					encounter_time_p[tostring(stage)] = t
+					if globalStage then
+						encounter_time_p["g"..tostring(globalStage)] = t
+					end
 					if module.frame:IsShown() then
 						module.frame:UpdateText()
 					end

@@ -1,10 +1,10 @@
--- $Id: IngameLocales.lua 368 2021-05-20 15:03:14Z arithmandar $
+-- $Id: IngameLocales.lua 400 2022-07-23 10:38:27Z arithmandar $
 --[[
 
 	Atlas, a World of Warcraft instance map browser
 	Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert at gmail dot com>
 	Copyright 2010 - Lothaer <lothayer at gmail dot com>, Atlas Team
-	Copyright 2011 ~ 2021 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
+	Copyright 2011 ~ 2022 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
 
 	This file is part of Atlas.
 
@@ -25,6 +25,9 @@
 --]]
 
 local setmetatable, rawget = setmetatable, rawget
+local _G = getfenv(0)
+local GetItemInfo = _G.GetItemInfo
+
 
 Atlas_IngameLocales = {
 	-- ######################################################################

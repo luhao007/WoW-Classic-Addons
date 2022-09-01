@@ -27,10 +27,10 @@
 Prat:AddModuleToLoad(function()
   local function dbg(...) end
 
-  --[===[@debug@
+  --[==[@debug@
   function dbg(...) Prat:PrintLiteral(...) end
 
-  --@end-debug@]===]
+  --@end-debug@]==]
 
   local PRAT_MODULE = Prat:RequestModuleName("Achievements")
 
@@ -43,7 +43,7 @@ Prat:AddModuleToLoad(function()
   -- define localized strings
   local PL = module.PL
 
-  --[===[@debug@
+  --[==[@debug@
   PL:AddLocale(PRAT_MODULE, "enUS", {
     ["module_name"] = "Achievements",
     ["module_desc"] = "Achievment related customizations",
@@ -81,7 +81,7 @@ Prat:AddModuleToLoad(function()
     ["grats_donthave_9"] = "Looking forward to that one myself %s, good job!",
     ["grats_donthave_10"] = "I can't wait to get that one %s",
   })
-  --@end-debug@]===]
+  --@end-debug@]==]
 
   -- These Localizations are auto-generated. To help with localization
   -- please go to http://www.wowace.com/projects/prat-3-0/localization/
@@ -416,7 +416,7 @@ L = {
 		["grats_have_9"] = "%s님 잘하셨어요.",
 		["grats_link"] = "축하한다고 말함",
 		["module_desc"] = "업적 관련 사용자 설정",
-		["module_name"] = "업적",
+		["module_name"] = "업적 [Achievements]",
 		["showCompletedDate_desc"] = "링크 옆에 업적을 완료 한 날짜 표시",
 		["showCompletedDate_name"] = "완료 날짜 표시",
 		["showGratsLink_desc"] = "축하 메시지를 보내는 클릭 가능한 링크 표시",

@@ -1,4 +1,4 @@
-if not WeakAuras.IsCorrectVersion() then return end
+if not WeakAuras.IsLibsOK() then return end
 local AddonName, Private = ...
 
 local SharedMedia = LibStub("LibSharedMedia-3.0");
@@ -161,7 +161,7 @@ local function getRotateOffset(object, degrees, point)
 end
 
 local function create()
-  local region = CreateFrame("FRAME", nil, UIParent);
+  local region = CreateFrame("Frame", nil, UIParent);
 
   local text = region:CreateFontString(nil, "OVERLAY");
   region.text = text;
@@ -253,7 +253,7 @@ local function modify(parent, region, parentData, data, first)
     end
 
     if containsCustomText and parentData.customText and parentData.customText ~= "" then
-      parent.customTextFunc = WeakAuras.LoadFunction("return "..parentData.customText, parentData.id, "custom text")
+      parent.customTextFunc = WeakAuras.LoadFunction("return "..parentData.customText)
     else
       parent.customTextFunc = nil
     end

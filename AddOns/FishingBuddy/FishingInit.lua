@@ -565,22 +565,6 @@ FishingInit.UpdateFishingDB = function()
         FishingBuddy_Player["Settings"]["UseAnglersRaft"] = nil;
     end
 
-	-- Check for TownsfolkTracker
-	if TownsfolkTracker and FishingInit.GlobalGSB("TownsfolkTracker") then
-		TownsfolkTracker.OldCreateIcons = TownsfolkTracker.CreateIcons;
-		function TownsfolkTracker:CreateIcons()
-			if self.icons_created then
-				return
-			end
-			TownsfolkTracker:OldCreateIcons()
-			self.icons_created = True
-		end
-		TownsfolkTracker.OldDrawDungeonMinimapIcons = TownsfolkTracker.DrawDungeonMinimapIcons;
-		function TownsfolkTracker:DrawDungeonMinimapIcons(mapId)
-			self:CreateIcons()
-			self:OldDrawDungeonMinimapIcons(mapId)
-		end
-	end
 
 	-- save this for other pieces that might need to update
 	lastVersion = version;

@@ -1,0 +1,36 @@
+## Interface: 11403
+## Title: OPie
+## Version: Xe 8
+## Author: foxlit
+## Notes: Group abilities into rings that appear when you hold down a binding.
+## X-Website: https://www.townlong-yak.com/addons/opie
+## License: All rights reserved. Do not redistribute, in whole or in part, without explicit prior permission from the author.
+## Notes-deDE: Fähigkeiten in Ringen gruppieren, die erscheinen, wenn eine Tastenbelegung ausgelöst wird.
+## Notes-esES: Agrupar habilitades en anillos que se aparecen al presionar teclados.
+## Notes-esMX: Agrupar habilitades en anillos que se aparecen al presionar teclados.
+## Notes-koKR: 단축키를 눌렀을 때 표시되는 고리로 능력을 분류합니다.
+## Notes-ruRU: Объединяет умения в кольца, которые появляются при нажатии назначенных клавиш.
+## Notes-zhCN: 当你按下快捷键时显示一个环形的技能分组.
+## Notes-zhTW: 按下快捷鍵時將技能群組顯示在環中。
+## Notes-ptBR: Agrupar habilidades em anéis que aparecem quando você ativa uma ligação.
+## SavedVariables: OneRing_Config, OPie_SavedData
+## X-M6-AB: OneRingLib.ext.ActionBook
+Libs\Evie.lua
+Libs\Niji.lua
+Libs\Mirage.lua
+Libs\TaintLess.xml
+Libs\ActionBook\ActionBook.xml
+Libs\ActionBook\ActionBookUI.xml
+Locale.lua
+OneRingLib.lua
+OPieUI.lua
+OPieConfig.lua
+OPieBindings.lua
+Meta\StanceBar.lua
+Meta\RingKeeper.lua
+Meta\RingKeeperConfig.lua
+Meta\SpecSet.lua
+Meta\DataBroker.lua
+Meta\PSConfig.lua
+Rings\Common.lua
+Rings\RKRings.lua

@@ -2,4 +2,9 @@
 ..\FrameXML\UI.xsd">
 	<Include file="Items.lua" />
 	<Include file="Lures.lua" />
+	<Include file="Bobbers.xml" />
+	<Include file="Coins.lua" />
+	<Include file="Baits.lua" />
+	<Include file="Pets.xml" />
+	<Include file="Rafts.lua" />
 </Ui>

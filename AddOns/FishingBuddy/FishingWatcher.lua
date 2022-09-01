@@ -88,6 +88,20 @@ local WatcherOptions = {
         ["default"] = false,
         ["parents"] = { ["WatchFishies"] = "d" }
     },
+    ["WatchPagleFish"] = {
+        ["text"] = FBConstants.CONFIG_FISHWATCHPAGLE_ONOFF,
+        ["tooltip"] = FBConstants.CONFIG_FISHWATCHPAGLE_INFO,
+        ["v"] = 1,
+        ["default"] = true,
+        ["parents"] = { ["WatchFishies"] = "d" }
+    },
+    ["WatchWorldQuests"] = {
+        ["text"] = FBConstants.CONFIG_FISHWATCHWORLD_ONOFF,
+        ["tooltip"] = FBConstants.CONFIG_FISHWATCHWORLD_INFO,
+        ["v"] = 1,
+        ["default"] = true,
+        ["parents"] = { ["WatchFishies"] = "d" }
+    },
 --    ["WatchWarnFishing"] = {
 --        ["text"] = FBConstants.CONFIG_FISHWARNFISHING_ONOFF,
 --        ["tooltip"] = FBConstants.CONFIG_FISHWARNFISHING_INFO,

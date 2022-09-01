@@ -3,15 +3,15 @@
 --     W o w h e a d   L o o t e r     --
 --                                     --
 --                                     --
---    Patch: 2.5.3                     --
---    Updated: January 18, 2022        --
+--    Patch: 2.5.4                     --
+--    Updated: March 23, 2022          --
 --    E-mail: feedback@wowhead.com     --
 --                                     --
 -----------------------------------------
 
 
 local WL_NAME = "|cffffff7fWowhead Looter|r";
-local WL_VERSION = 20503;
+local WL_VERSION = 20504;
 local WL_VERSION_PATCH = 0;
 local WL_ADDONNAME, WL_ADDONTABLE = ...
 
@@ -4470,7 +4470,7 @@ end
 --**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--
 
 function wlGetDate()
-    if (C_Calendar) then
+    if (C_Calendar and C_Calendar.GetDate) then
         local date = C_Calendar.GetDate();
         return date.month, date.monthDay, date.year;
     elseif (C_DateAndTime and C_DateAndTime.GetTodaysDate) then

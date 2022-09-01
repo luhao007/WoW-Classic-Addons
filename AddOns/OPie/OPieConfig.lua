@@ -424,9 +424,7 @@ do -- ext.config.bind
 		self:UnlockHighlight()
 		self:EnableKeyboard(false)
 		self:SetScript("OnKeyDown", nil)
-		if MODERN then
-			self:SetScript("OnGamePadButtonDown", nil)
-		end
+		self:SetScript("OnGamePadButtonDown", nil)
 		self:SetScript("OnHide", nil)
 		captureFrame:Hide()
 		activeCaptureButton = activeCaptureButton ~= self and activeCaptureButton or nil
@@ -471,9 +469,7 @@ do -- ext.config.bind
 		self:LockHighlight()
 		self:EnableKeyboard(true)
 		self:SetScript("OnKeyDown", SetBind)
-		if MODERN then
-			self:SetScript("OnGamePadButtonDown", SetBind)
-		end
+		self:SetScript("OnGamePadButtonDown", SetBind)
 		self:SetScript("OnHide", Deactivate)
 		if parent then
 			captureFrame:SetParent(parent.bindingContainerFrame or parent)
@@ -759,12 +755,14 @@ end
 local OPC_OptionSets = {
 	{ L"Behavior",
 		{"bool", "RingAtMouse", caption=L"Center rings at mouse"},
-		{"bool", "CenterAction", caption=L"Quick action at ring center"},
 		{"bool", "ClickPriority", caption=L"Make rings top-most"},
+		{"bool", "CenterAction", caption=L"Quick action at ring center"},
+		{"bool", "MotionAction", caption=L"Quick action if mouse remains still"},
 		{"bool", "SliceBinding", caption=L"Per-slice bindings"},
 		{"bool", "ClickActivation", caption=L"Activate on left click"},
 		{"bool", "NoClose", caption=L"Leave open after use", depOn="ClickActivation", depValue=true, otherwise=false},
 		{"bool", "UseDefaultBindings", caption=L"Use default ring bindings"},
+		{"drop", "PadSupportMode", {"freelook", "cursor", "none", freelook=L"Camera analog stick", cursor=L"Virtual mouse cursor", none="None"}, caption=L"Controller interaction mode", hideFeature="GamePad"},
 		{"range", "IndicationOffsetX", -500, 500, 50, caption=L"Move rings right", suffix="(%d)"},
 		{"range", "IndicationOffsetY", -300, 300, 50, caption=L"Move rings down", suffix="(%d)"},
 		{"range", "MouseBucket", 5, 1, 1, caption=L"Scroll wheel sensitivity", stdLabels=true},
@@ -780,6 +778,7 @@ local OPC_OptionSets = {
 	}, { L"Animation",
 		{"bool", "MIScale", caption=L"Enlarge selected slice"},
 		{"bool", "MISpinOnHide", caption=L"Outward spiral on hide"},
+		{"bool", "XTPointerSnap", caption=L"Snap pointer to mouse cursor"},
 		{"range", "XTZoomTime", 0, 1, 0.1, caption=L"Zoom-in/out time", suffix=L"(%.1f sec)"},
 	}
 }
@@ -793,13 +792,13 @@ local frame = config.createPanel("OPie")
 		self:GetFontString():SetTextColor(c.r, c.g, c.b)
 	end)
 local OPC_Profile = CreateFrame("Frame", "OPC_Profile", frame, "UIDropDownMenuTemplate")
-	OPC_Profile:SetPoint("TOPLEFT", frame, 0, MODERN and -85 or -65)
+	OPC_Profile:SetPoint("TOPLEFT", frame, 0, -75)
 	UIDropDownMenu_SetWidth(OPC_Profile, 200)
 local OPC_OptionDomain = CreateFrame("Frame", "OPC_OptionDomain", frame, "UIDropDownMenuTemplate")
 	OPC_OptionDomain:SetPoint("LEFT", OPC_Profile, "RIGHT")
 	UIDropDownMenu_SetWidth(OPC_OptionDomain, 250)
 
-local OPC_Widgets, OPC_AlterOption, OPC_BlockInput = {}
+local OPC_WidgetControl, OPC_AlterOption, OPC_BlockInput = {}
 do -- Widget construction
 	local build = {}
 	local function notifyChange(self, ...)
@@ -811,17 +810,41 @@ do -- Widget construction
 		local a = self:IsEnabled() and 1 or 0.6
 		self.text:SetVertexColor(a,a,a)
 	end
-	function build.bool(v, ofsY, halfpoint, rowHeight)
+	local function dropSelect(_, nv, drop)
+		local dd = OPC_WidgetControl[drop]
+		OPC_AlterOption(drop, dd[2], nv)
+	end
+	local function dropInitialize(self)
+		local dda = OPC_WidgetControl[self][3]
+		local info = {func=dropSelect, arg2=self}
+		for i=1,#dda do
+			local k = dda[i]
+			info.text, info.arg1, info.checked = dda[k], k, OPC_WidgetControl[self].cv == k
+			UIDropDownMenu_AddButton(info)
+		end
+	end
+	local function dropSetValue(self, v)
+		local dd = OPC_WidgetControl[self]
+		dd.cv = v
+		UIDropDownMenu_SetText(self, dd[3][v])
+	end
+	local function anchor_OnVisibilityChange(self)
+		local v = OPC_WidgetControl[self]
+		local r, y = v.anchorOffsetRelFrame, v[self:IsVisible() and "anchorOffsetVisible" or "anchorOffsetHidden"]
+		self:SetPoint("TOPLEFT", r, "TOPLEFT", 0, y)
+		self:SetPoint("TOPRIGHT", r, "TOPRIGHT", 0, y)
+	end
+	function build.bool(v, ofsY, halfpoint, rowHeight, rframe)
 		local b = CreateFrame("CheckButton", nil, frame, "InterfaceOptionsCheckButtonTemplate")
 		b:RegisterForClicks("LeftButtonUp", "RightButtonUp")
 		b:SetMotionScriptsWhileDisabled(true)
 		b.id, b.text, b.desc = v[2], b.Text, v
-		b:SetPoint("TOPLEFT", frame, "TOPLEFT", halfpoint and 315 or 15, ofsY)
+		b:SetPoint("TOPLEFT", rframe, "TOPLEFT", halfpoint and 315 or 15, ofsY)
 		b:SetScript("OnClick", notifyChange)
 		hooksecurefunc(b, "SetEnabled", OnStateChange)
 		return b, ofsY - (halfpoint and rowHeight or 0), not halfpoint, halfpoint and 0 or 20
 	end
-	function build.range(v, ofsY, halfpoint, rowHeight)
+	function build.range(v, ofsY, halfpoint, rowHeight, rframe)
 		if halfpoint then
 			ofsY = ofsY - rowHeight
 		end
@@ -836,27 +859,53 @@ do -- Widget construction
 		b.lo:ClearAllPoints()
 		b.lo:SetPoint("RIGHT", b, "LEFT", -2, 1)
 		b.text:ClearAllPoints()
-		b.text:SetPoint("TOPLEFT", frame, "TOPLEFT", 44, ofsY-7)
+		b.text:SetPoint("TOPLEFT", rframe, "TOPLEFT", 44, ofsY-7)
 		if not v.stdLabels then
 			b.lo:SetText(v[3])
 			b.hi:SetText(v[4])
 		end
-		b:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -105, ofsY-5)
+		b:SetPoint("TOPRIGHT", rframe, "TOPRIGHT", -105, ofsY-5)
 		b:SetScript("OnValueChanged", notifyChange)
 		b:SetObeyStepOnDrag(true)
 		return b, ofsY - 20, false, 0
 	end
+	function build.drop(v, ofsY, halfpoint, rowHeight, rframe)
+		local f = CreateFrame("Frame", "OPC_Drop" .. v[2], frame, "UIDropDownMenuTemplate")
+		if halfpoint then ofsY = ofsY - rowHeight end
+		f:SetPoint("TOPLEFT", rframe, "TOPLEFT", 300, ofsY-4)
+		UIDropDownMenu_SetWidth(f, 210)
+		UIDropDownMenu_SetText(f, "Chicken-boom")
+		f.initialize, f.refresh = dropInitialize, dropSetValue
+		f.text = f:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+		f.text:SetPoint("TOPLEFT", rframe, "TOPLEFT", 44, ofsY-12.5)
+		f.text:SetText(v.caption)
+		return f, ofsY - 32, false, 0
+	end
+	function build.anchor(v, oY, cY, rframe)
+		local f = CreateFrame("Frame", nil, v.widget)
+		f:SetHeight(1)
+		OPC_WidgetControl[f], v.anchorOffsetVisible, v.anchorOffsetHidden, v.anchorOffsetRelFrame = v, cY, oY, rframe
+		f:SetScript("OnHide", anchor_OnVisibilityChange)
+		f:SetScript("OnShow", anchor_OnVisibilityChange)
+		anchor_OnVisibilityChange(f)
+		return f
+	end
 
-	local cY, halfpoint, rowHeight = MODERN and -110 or -90, false
+	local cY, halfpoint, rframe, rowHeight = MODERN and -100 or -90, false, frame
 	for _, v in ipairs(OPC_OptionSets) do
 		v.label = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-		v.label:SetPoint("TOP", frame, "TOP", -50, cY-15)
+		v.label:SetPoint("TOP", rframe, "TOP", -50, cY-15)
 		v.label:SetJustifyH("LEFT")
-		v.label:SetPoint("LEFT", frame, "LEFT", 16, 0)
+		v.label:SetPoint("LEFT", rframe, "LEFT", 16, 0)
+		v.label:SetText(v[1])
 		cY, halfpoint, rowHeight = cY - 36, false, 0
 		for j=2,#v do
-			v[j].widget, cY, halfpoint, rowHeight = build[v[j][1]](v[j], cY, halfpoint, rowHeight)
-			OPC_Widgets[v[j][2]], v[j].widget.control = v[j].widget, v[j]
+			local vj, oY = v[j], cY - (halfpoint and rowHeight or 0)
+			vj.widget, cY, halfpoint, rowHeight = build[vj[1]](vj, cY, halfpoint, rowHeight, rframe)
+			OPC_WidgetControl[vj.widget] = vj
+			if vj.hideFeature then
+				cY, rframe = 0, build.anchor(vj, oY, cY, rframe)
+			end
 		end
 		if halfpoint then
 			cY = cY - rowHeight
@@ -894,10 +943,11 @@ local function OPC_UpdateControlReqs(v)
 	end
 end
 function OPC_AlterOption(widget, option, newval, ...)
+	local control = OPC_WidgetControl[widget]
 	if (...) == "RightButton" then
 		newval = nil
 	end
-	if widget.control[1] == "range" and widget.control[3] > widget.control[4] and type(newval) == "number" then
+	if control[1] == "range" and control[3] > control[4] and type(newval) == "number" then
 		newval = -newval
 	end
 	config.undo.saveProfile()
@@ -910,8 +960,10 @@ function OPC_AlterOption(widget, option, newval, ...)
 		end
 		widget.text:SetText(text)
 		OPC_BlockInput = true
-		widget:SetValue(setval * (widget.control[3] > widget.control[4] and -1 or 1))
+		widget:SetValue(setval * (control[3] > control[4] and -1 or 1))
 		OPC_BlockInput = false
+	elseif control[1] == "drop" then
+		widget:refresh(newval)
 	elseif setval ~= newval then
 		widget:SetChecked(setval and 1 or nil)
 	end
@@ -1038,9 +1090,6 @@ function frame.refresh()
 		.. (MODERN and "\n" .. L"Profiles activate automatically when you switch character specializations." or ""))
 	for _, v in pairs(OPC_OptionSets) do
 		v.label:SetText(v[1])
-		for j=2,#v do
-			v[j].widget.text:SetText(v.caption)
-		end
 	end
 	local label = L"Defaults for all rings"
 	if OR_CurrentOptionsDomain then
@@ -1063,11 +1112,17 @@ function frame.refresh()
 		elseif opttype == "bool" then
 			v.widget:SetChecked(OneRingLib:GetOption(option, OR_CurrentOptionsDomain) or nil)
 			v.widget.text:SetText(v.caption)
+		elseif opttype == "drop" then
+			v.widget:refresh(OneRingLib:GetOption(option, OR_CurrentOptionsDomain) or nil)
 		end
 		if v.depOn or v.depIndicatorFeature then
 			OPC_UpdateControlReqs(v)
 		end
-		v.widget:SetShown(not v.global or OR_CurrentOptionsDomain == nil)
+		if v.hideFeature == "GamePad" and not C_GamePad.IsEnabled() then
+			v.widget:Hide()
+		else
+			v.widget:SetShown(not v.global or OR_CurrentOptionsDomain == nil)
+		end
 	end end
 	OPC_BlockInput = false
 	config.checkSVState(frame)

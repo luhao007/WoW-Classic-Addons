@@ -1,6 +1,6 @@
-## Interface: 20503
+## Interface: 30400
 ## Author: The WeakAuras Team
-## Version: 3.7.8
+## Version: 4.1.2
 ## Dependencies: WeakAuras, WeakAurasOptions
 ## LoadOnDemand: 1
 ## DefaultState: Enabled
@@ -15,6 +15,6 @@
 locales.xml
 
 TriggerTemplates.lua
-TriggerTemplatesDataBCC.lua
+TriggerTemplatesData.lua
 
 AceGUI-Widgets\AceGUIContainer-WeakAurasTemplateGroup.lua

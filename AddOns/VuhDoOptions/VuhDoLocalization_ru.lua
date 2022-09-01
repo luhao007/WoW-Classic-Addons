@@ -460,10 +460,10 @@ VUHDO_I18N_TT.K295 = "Отметьте для подсветки одной по
 VUHDO_I18N_TT.K296 = "Отметьте для подсветки полос группы при наведении курсора мыши.";
 VUHDO_I18N_TT.K297 = "Выберите насколько интенсивна подсветка при наведении курсора мыши";
 VUHDO_I18N_TT.K298 = "Если вы отметите эту кнопку, выбранная композиция будет автоматически включена, если вы один.";
-VUHDO_I18N_TT.K299 = "Если вы отметите эту кнопку, выбранная композиция будет автоматически включена, если вы в группе на 5 игроков.";
-VUHDO_I18N_TT.K300 = "Если вы отметите эту кнопку, выбранная композиция будет автоматически включена, если вы в рейде на 10 игроков.";
-VUHDO_I18N_TT.K301 = "Если вы отметите эту кнопку, выбранная композиция будет автоматически включена, если вы в рейде на 25 игроков.";
-VUHDO_I18N_TT.K302 = "Если вы отметите эту кнопку, выбранная композиция будет автоматически включена, если вы в рейде больше чем 25 игроков.";
+VUHDO_I18N_TT.K299 = "Если вы отметите эту кнопку, выбранная композиция будет автоматически включена, если вы в группе до 5 игроков.";
+VUHDO_I18N_TT.K300 = "Если вы отметите эту кнопку, выбранная композиция будет автоматически включена, если вы в рейде до 10 игроков.";
+VUHDO_I18N_TT.K301 = "Если вы отметите эту кнопку, выбранная композиция будет автоматически включена, если вы в рейде до 25 игроков.";
+VUHDO_I18N_TT.K302 = "Если вы отметите эту кнопку, выбранная композиция будет автоматически включена, если вы в рейде до 40 игроков.";
 VUHDO_I18N_TT.K303 = "Выберите для изменения цвета полосы здоровья в соответствии с уровнем здоровья с зеленого на красный.";
 VUHDO_I18N_TT.K304 = "Выберите, чтобы отображать полосы здоровья фиксированным цветом, выбранным справа.";
 VUHDO_I18N_TT.K305 = "Отметьте для отображения фона полосы здоровья в цвете класса.";
@@ -605,7 +605,7 @@ VUHDO_I18N_TT.K440 = "Установите цвет для кластера с �
 VUHDO_I18N_TT.K441 = "Установите цвет для кластера с хорошим количеством игроков.";
 VUHDO_I18N_TT.K442 = "Установите цвет для рамки кластера при наведении.";
 VUHDO_I18N_TT.K443 = "Установите цвет для полосы глобального отката."
-VUHDO_I18N_TT.K444 = "Отметьте, чтобы автоматически применять композицию, если вы в рейде на 15 игроков.";
+VUHDO_I18N_TT.K444 = "Если вы отметите эту кнопку, выбранная композиция будет автоматически включена, если вы в группе на 15 игроков.";
 VUHDO_I18N_TT.K445 = "Отметьте, чтобы загружать настройки HoT'ов вместе с композицией. Не делайте этого, если композиция сохранена на персонаже другого класса.";
 VUHDO_I18N_TT.K446 = "Выберите дебаффы из списка игнорируемых.";
 VUHDO_I18N_TT.K447 = "Отметьте, чтобы определять танков, назначенных системой поиска подземелий, в качестве главных танков и отображать их на панели главных танков.";
@@ -709,43 +709,49 @@ VUHDO_I18N_TT.K545 = "Задать масштаб для этой иконки. 
 VUHDO_I18N_TT.K546 = "Отметьте, чтобы скрыть стандартный интерфейс управления рейдом.";
 VUHDO_I18N_TT.K547 = "Вычитать входящее исцеление только, если заклинание не мгновенного действия.";
 VUHDO_I18N_TT.K548 = "Отметьте, чтобы скрывать кнопки несуществующих юнитов (цель, фокус и члены рейда, покидающие группу во время боя).";
-VUHDO_I18N_TT.K549 = "If you check this button the currently selected arrangement will automatically enabled if you are in a raid of up to 20 players.";
-VUHDO_I18N_TT.K550 = "Select this to show a 20 players raid for testing.";
-VUHDO_I18N_TT.K551 = "If you check this button the currently selected arrangement will automatically enabled if you are in a raid of up to 30 players.";
-VUHDO_I18N_TT.K552 = "Select this to show a 30 players raid for testing.";
-VUHDO_I18N_TT.K553 = "Make the selected profile the default for all new characters on this account.";
-VUHDO_I18N_TT.K554 = "Make the selected key layout the default for all new characters on this account.";
-VUHDO_I18N_TT.K555 = "Check to allow the VuhDo menu command to be bound even when using Clique compatibility mode.";
-VUHDO_I18N_TT.K556 = "Check this to have an extra panel for boss encounter NPCs (eg. shards on Tectus, mushrooms on Brackenspore).";
-VUHDO_I18N_TT.K557 = "Body of the custom flag function. Must return true or false. Example: return (\"YOURNAME\" == VUHDO_unitInfo[\"name\"])";
-VUHDO_I18N_TT.K558 = "Hide buff watch while out of combat.";
-VUHDO_I18N_TT.K559 = "Click to select focus bar color.";
-VUHDO_I18N_TT.K560 = "Click to select astral power bar color.";
-VUHDO_I18N_TT.K561 = "Click to select maelstrom bar color.";
-VUHDO_I18N_TT.K562 = "Click to select insanity bar color.";
-VUHDO_I18N_TT.K563 = "Click to select fury bar color.";
-VUHDO_I18N_TT.K564 = "Select a color for Monks";
-VUHDO_I18N_TT.K565 = "Select a color for Demon Hunters";
-VUHDO_I18N_TT.K566 = "Click to select pain bar color.";
-VUHDO_I18N_TT.K567 = "Enter a text to be shown in chat when you start casting 'mass' resurrection.";
-VUHDO_I18N_TT.K568 = "Setup spell traces. A spell trace tracks which units are hit when a particular spell is cast. You can build bouquets with spell traces or use the default 'Spell Trace' bouquet e.g. as a HoT icon or indicator.";
-VUHDO_I18N_TT.K569 = "Enable Holy Priest 'Trail of Light' talent tracking.  There is a corresponding default bouquet 'Trail of Light' that can be used to display an indicator.";
-VUHDO_I18N_TT.K570 = "The duration that the spell trace icon should be shown.";
-VUHDO_I18N_TT.K571 = "Trigger the spell trace when the spell is cast by yourself.";
-VUHDO_I18N_TT.K572 = "Trigger the spell trace when the spell is cast by others.";
-VUHDO_I18N_TT.K573 = "If you check this button the currently selected arrangement will automatically enabled if you are in a group of up to 3 players.";
-VUHDO_I18N_TT.K574 = "Select this to show a 3 man party raid for testing.";
-VUHDO_I18N_TT.K575 = "Select this to show a 15 man party raid for testing.";
-VUHDO_I18N_TT.K576 = "Click to display a glow on the icon while active.";
-VUHDO_I18N_TT.K577 = "Click to display a glow on the bar while active."; 
-VUHDO_I18N_TT.K578 = "Select a color for the icon glow.";
-VUHDO_I18N_TT.K579 = "Select a color for the bar glow.";
-VUHDO_I18N_TT.K580 = "Select a modifier key to use with the right mouse button to blacklist debuff icons."
-VUHDO_I18N_TT.K581 = "Check to show player nickname on bars.";
-VUHDO_I18N_TT.K582 = "Check to show incoming heal using LibHealComm-4.0.";
+VUHDO_I18N_TT.K549 = "Если вы отметите эту кнопку, выбранная композиция будет автоматически включена, если вы в рейде до 20 игроков.";
+VUHDO_I18N_TT.K550 = "Выберите, чтобы отобразить рейд из 20 игроков для тестирования.";
+VUHDO_I18N_TT.K551 = "Если вы отметите эту кнопку, выбранная композиция будет автоматически включена, если вы в рейде до 30 игроков.";
+VUHDO_I18N_TT.K552 = "Выберите, чтобы отобразить рейд из 30 игроков для тестирования.";
+VUHDO_I18N_TT.K553 = "Сделать профиль стандартным для всех новых персонажей на этом аккаунте.";
+VUHDO_I18N_TT.K554 = "Сделать текущую раскладку стандартной для всех новых персонажей на этом аккаунте.";
+VUHDO_I18N_TT.K555 = "Отметьте, чтобы позволить VuhDo привязкам работать во время работы Clique с режимом поддержки.";
+VUHDO_I18N_TT.K556 = "Отметьте, чтобы иметь дополнительную панель для NPC боссов (осколки на Тектонике, грибы на Бурогрибе).";
+VUHDO_I18N_TT.K557 = "Содержание функции пользовательского бафа. Должно возвращать true или false. Пример: return (\"YOURNAME\" == VUHDO_unitInfo[\"name\"])";
+VUHDO_I18N_TT.K558 = "Спрятать трекер бафов вне боя.";
+VUHDO_I18N_TT.K559 = "Выбрать цвет индикатора концентрации.";
+VUHDO_I18N_TT.K560 = "Выбрать цвет индикатора астральной мощи.";
+VUHDO_I18N_TT.K561 = "Выбрать цвет индикатора энергии водоворота.";
+VUHDO_I18N_TT.K562 = "Выбрать цвет индикатора безумия.";
+VUHDO_I18N_TT.K563 = "Выбрать цвет индикатора ярости.";
+VUHDO_I18N_TT.K564 = "Выберите цвет для Монахов";
+VUHDO_I18N_TT.K565 = "Выберите цвет для Паладинов Охотников на демонов";
+VUHDO_I18N_TT.K566 = "Выбрать цвет индикатора боли.";
+VUHDO_I18N_TT.K567 = "Введите текст, который будет показан в чате при использовании 'массового' воскрешения.";
+VUHDO_I18N_TT.K568 = "Настроить отслеживание заклинаний. Отслеживает, какие игроки будут задеты при использовании конкретного заклинания. Вы можете создать букет с отслеживанием, или использовать стандартный букет'Отслеживание заклинания' в виде индикатора или иконки HoT.";
+VUHDO_I18N_TT.K569 = "Включить отслеживание 'Дорога Света' жреца света.  Соответствующий стандартный букет 'Дорога Света' может быть использован для отслеживания на панели.";
+VUHDO_I18N_TT.K570 = "Длительность сущестования иконки отслеживания света.";
+VUHDO_I18N_TT.K571 = "Активировать отслеживание, если заклинание использовано вами.";
+VUHDO_I18N_TT.K572 = "Активировать отслеживание, если заклинание использовано другими";
+VUHDO_I18N_TT.K573 = "Если вы отметите эту кнопку, выбранная композиция будет автоматически включена, если вы в групе до 3 игроков.";
+VUHDO_I18N_TT.K574 = "Выберите, чтобы отобразить групу из 3 игроков для тестирования.";
+VUHDO_I18N_TT.K575 = "Выберите, чтобы отобразить рейд из 15 игроков для тестирования.";
+VUHDO_I18N_TT.K576 = "Отметьте, что бы включить подсветку иконки при активном дебаффе.";
+VUHDO_I18N_TT.K577 = "Отметьте, что бы включить подсветку фрейма при активном дебаффе."; 
+VUHDO_I18N_TT.K578 = "Выбрать цвет подсветки иконки.";
+VUHDO_I18N_TT.K579 = "Выбрать цвет подсветки фрейма.";
+VUHDO_I18N_TT.K580 = "Выберите модификатор для использования с ПКМ для добавления дебафов в чёрный список."
+VUHDO_I18N_TT.K581 = "Отметьте, чтобы показывать ники на фреймах.";
+VUHDO_I18N_TT.K582 = "Select the unit to target.";
+VUHDO_I18N_TT.K583 = "Check to make all HoT icons fade out when the HoT is expiring.";
+VUHDO_I18N_TT.K584 = "Check to make all HoT icons flash when the HoT is expiring.";
 
-VUHDO_I18N_DEFAULT_PROFILE = "Default Profile";
-VUHDO_I18N_DEFAULT_LAYOUT = "Default Layout";
+-- TBCC game version specific strings (tooltip IDs begin at K900)
+
+VUHDO_I18N_TT.K900 = "Check to show incoming heal using LibHealComm-4.0.";
+
+VUHDO_I18N_DEFAULT_PROFILE = "Стандартный профиль";
+VUHDO_I18N_DEFAULT_LAYOUT = "Стандартная раскладка клавиш ";
 VUHDO_I18N_APPLY_TO_ALL = "Применить\nко всем";
 VUHDO_I18N_TEST = "Тест";
 VUHDO_I18N_ADD = "Добавить";
@@ -1278,7 +1284,7 @@ VUHDO_I18N_NEUTRAL = "Нейтрал";
 VUHDO_I18N_ENEMY = "Враг";
 VUHDO_I18N_TAPPED = "Чужой";
 VUHDO_I18N_SQUARE_7 = "Квадрат 7";
-VUHDO_I18N_HP = "HP";
+VUHDO_I18N_HP = "ХП";
 VUHDO_I18N_KNOWN_ONLY = "Только\nизвестные";
 VUHDO_I18N_MINUS_INCOMING = "- Входящее";
 VUHDO_I18N_AOE_ADVICE = "AOE\nСоветник";
@@ -1289,44 +1295,62 @@ VUHDO_I18N_CAST_TIME_ONLY = "Только\nДолгие";
 VUHDO_I18N_EMPTY_BUTTONS = "Пустые\nКнопки";
 VUHDO_I18N_HEALTH_COLOR = "Health\nColor";
 
-VUHDO_I18N_HIDE = "Hide";
-VUHDO_I18N_LEAVE_ALONE = "Leave alone";
+VUHDO_I18N_HIDE = "Спрятать";
+VUHDO_I18N_LEAVE_ALONE = "Оставить";
 
-VUHDO_I18N_HIDE_OUT_OF_COMBAT = "Show Only\nIn Combat";
-VUHDO_I18N_IMPORT = "Import";
-VUHDO_I18N_IMPORT_STRING_INVALID = "Import string was invalid.";
-VUHDO_I18N_REALLY_IMPORT = "Do you really want to import?\n\nYou should only import strings from known and\nreputable sources. Never import a string whose\nsource is not trusted.";
+VUHDO_I18N_HIDE_OUT_OF_COMBAT = "Показывать только\nВ бою";
+VUHDO_I18N_IMPORT = "Импорт";
+VUHDO_I18N_IMPORT_STRING_INVALID = "Строка загрузки содержит ошибку.";
+VUHDO_I18N_REALLY_IMPORT = "Вы точно хотите импортировать ?\n\nНе импортируйте строки из сомнительных источников.";
 
-VUHDO_I18N_LUNAR_POWER = "Astral Power";
-VUHDO_I18N_MAELSTROM = "Maelstrom";
-VUHDO_I18N_INSANITY = "Insanity";
-VUHDO_I18N_FURY = "Fury";
-VUHDO_I18N_PAIN = "Pain";
-VUHDO_I18N_SPEC_3 = "Spec 3";
-VUHDO_I18N_SPEC_4 = "Spec 4";
+VUHDO_I18N_LUNAR_POWER = "Астральная мощь";
+VUHDO_I18N_MAELSTROM = "Энергия водоворота";
+VUHDO_I18N_INSANITY = "Безумие";
+VUHDO_I18N_FURY = "Ярость";
+VUHDO_I18N_PAIN = "Боль";
+VUHDO_I18N_SPEC_3 = "Спек 3";
+VUHDO_I18N_SPEC_4 = "Спек 4";
 
-VUHDO_I18N_ANNOUNCE_MASS_RES = "'Mass' Resurrection\nAnnouncement";
+VUHDO_I18N_ANNOUNCE_MASS_RES = "'Массовое' Воскрешение\nСообщение";
 
-VUHDO_I18N_SPELL_TRACE = "Spell Trace";
-VUHDO_I18N_SPELL_TRACE_EDIT_BOX = "Enter spell name or ID to trace";
-VUHDO_I18N_SPELL_TRACE_LIST = "Spell Trace List";
-VUHDO_I18N_DURATION = "Duration";
-VUHDO_I18N_SEC = "sec";
-VUHDO_I18N_TRAIL_OF_LIGHT = "Trail of\nLight";
+VUHDO_I18N_SPELL_TRACE = "Отслеживание заклинания";
+VUHDO_I18N_SPELL_TRACE_EDIT_BOX = "Введите название заклинания или его ID для отслеживания";
+VUHDO_I18N_SPELL_TRACE_LIST = "Отслеживание заклинания: список";
+VUHDO_I18N_DURATION = "Длительность";
+VUHDO_I18N_SEC = "сек";
+VUHDO_I18N_TRAIL_OF_LIGHT = "Дорога \nСвета";
 
-VUHDO_I18N_BAR_GLOW_COLOR = "Bar Glow";
-VUHDO_I18N_ICON_GLOW_COLOR = "Icon Glow";
-VUHDO_I18N_BLACKLIST_KEY_MODIFIES = "Ignore List Modifier Key";
+VUHDO_I18N_BAR_GLOW_COLOR = "Подсветка фрейма";
+VUHDO_I18N_ICON_GLOW_COLOR = "Подсветка иконки";
+VUHDO_I18N_BLACKLIST_KEY_MODIFIES = "Модификатор чёрного списка";
 
-VUHDO_I18N_NICKNAME = "Details!\nNickname"
+VUHDO_I18N_NICKNAME = "Details!\nНик"
 
 VUHDO_I18N_DEBUFF_SHOW_ONLY_FOR_FRIENDLY_TEXT = "Показывать только\nдля дружественных";
 VUHDO_I18N_DEBUFF_SHOW_ONLY_FOR_FRIENDLY_TOOLTIP = "Показывать дэбафы только для дружественных юнитов";
 
-VUHDO_I18N_SHOW_OVERSHIELD = "Show\nOvershield";
-VUHDO_I18N_OVERSHIELD_BAR = "Overshield Bar";
+VUHDO_I18N_SHOW_OVERSHIELD = "Показывать\nИзбыточный щит";
+VUHDO_I18N_OVERSHIELD_BAR = "Избыточный щит";
+
+VUHDO_I18N_SHOW_HEAL_ABSORB = "Показывать\nАбсорб хила";
+VUHDO_I18N_HEAL_ABSORB_BAR = "Абсорб хила";
+
+VUHDO_I18N_PLAYER = "Player unit";
+VUHDO_I18N_TARGET = "Target unit"
+VUHDO_I18N_TARGET_TARGET = "Target's target unit"
+VUHDO_I18N_FOCUS = "Focus unit";
+VUHDO_I18N_MOUSEOVER = "Mouseover unit";
+VUHDO_I18N_MOUSEOVER_TARGET = "Mouseover's target unit";
+VUHDO_I18N_MOUSEOVER_TARGET_TARGET = "Mouseover's target's target unit";
+VUHDO_I18N_TARGET_HARM = "Target unit (hostile only)";
+VUHDO_I18N_TARGET_TARGET_HARM = "Target's target unit (hostile only)";
+VUHDO_I18N_FOCUS_HARM = "Focus unit (hostile only)";
+VUHDO_I18N_MOUSEOVER_HARM = "Mouseover unit (hostile only)";
+VUHDO_I18N_MOUSEOVER_TARGET_HARM = "Mouseover's target unit (hostile only)";
+VUHDO_I18N_MOUSEOVER_TARGET_TARGET_HARM = "Mouseover's target's target unit (hostile only)";
+
+VUHDO_I18N_CLOCK = "Clock";
+
+-- TBCC game version specific strings
 
 VUHDO_I18N_LIBHEALCOMM = "Use Lib\nHealComm";
-
-VUHDO_I18N_SHOW_HEAL_ABSORB = "Show\nHeal Absorb";
-VUHDO_I18N_HEAL_ABSORB_BAR = "Heal Absorb Bar";

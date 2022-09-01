@@ -1,4 +1,4 @@
-## Interface: 20503
+## Interface: 30400
 ## Author: Cali
 ## Version: 1.07
 ## RequiredDeps: HandyNotes

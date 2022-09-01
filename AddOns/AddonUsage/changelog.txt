@@ -1,0 +1,106 @@
+09/01/2022 version 3.0.16
+- toc update for WotLK Classic
+
+08/16/2022 version 3.0.15
+- toc update for 9.2.7 patch
+
+05/31/2022 version 3.0.14
+- toc update for 9.2.5 patch
+
+05/22/2022 version 3.0.13
+- Added wago and curse project IDs to toc
+
+05/12/2022 version 3.0.12
+- Fix to make wowup recognize the wowinterface provider. (May require a rescan of folders in wowup)
+
+02/22/2022 version 3.0.11
+- toc update for 9.2 patch
+
+11/02/2021 version 3.0.10
+- toc update for 9.1.5 patch
+
+06/29/2021 version 3.0.9
+- Fix for backdrop of control button tooltips
+- toc update for 9.1.0 patch
+
+05/18/2021 version 3.0.8
+- Update for The Burning Crusade Classic
+
+03/13/2021 version 3.0.7
+- toc update for 9.0.5
+
+10/13/2020 version 3.0.6
+- toc update for 9.0
+
+08/13/2018 version 3.0.5
+- removed debug key binding
+
+07/17/2018 version 3.0.4
+- toc update for 8.0
+
+08/29/2017 version 3.0.3
+- toc update for 7.3
+
+04/20/2017 version 3.0.2
+- Fix for potential divide by zero errors (integer overflow)
+
+03/27/2017 version 3.0.1
+- Fixed key binding entry
+- toc update for 7.2
+
+01/12/2017 version 3.0.0
+- New resizable UI.
+- Sort choices persists across sessions.
+- CPU time is now displayed (as milliseconds per second).
+- The "Realtime updates" checkbox is now a Play/Pause toggle button at the bottom of the window.
+- Support for addons that are named a number.
+- The login usage is no longer recorded; tracking begins very soon after the game starts to render.
+- The sorted list has its name as a secondary sort to produce more "stable" lists.
+
+10/24/2016 version 2.0.10
+- toc update for 7.1
+
+07/16/2016 version 2.0.9
+- toc update for 7.0
+
+06/22/2015 version 2.0.8
+- toc update for 6.2
+
+02/24/2015 version 2.0.7
+- toc update for 6.1
+
+11/05/2014 version 2.0.6
+- Fix for load-on-demand addons not showing up.
+- Fix for lua error when turning off real-time updates.
+
+10/11/2014 version 2.0.5
+- Total memory/CPU usage summary added.
+
+10/02/2014 version 2.0.4
+- Mouseover of long addon names will show the whole addon name.
+
+09/14/2014 version 2.0.3
+- Update for Warlords of Draenor.
+- Fix for WoD-specific bug where CPU profiling wouldn't enable.
+
+10/25/2014 version 2.0.1
+- Rewrite/facelift.
+- Added realtime CPU monitoring option.
+
+09/11/2013 version 1.14
+- toc update for 5.4
+
+05/21/2013 version 1.13
+- toc update for 5.3
+
+08/28/2012 version 1.12
+- Fixed underscore (_) tainting.
+
+08/28/2012 version 1.11
+- Update for Mists of Pandaria.
+
+04/10/2009 version 1.1
+- Fix for scrollbar change.
+
+07/14/2008 version 1.0
+- Initial release.

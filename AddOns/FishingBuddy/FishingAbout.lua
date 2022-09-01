@@ -135,6 +135,7 @@ credits[FBConstants.ROLE_HELP_BUGS] = {
 	["RatiaSnowFur"] = { "Fix for Fishing skill lookup" },
 	["CptTibas"] = { "Gossip options fix" },
 	["hanzo79"] = { "Auto-interact value fix" },
+	["Zilom"] = { "Fast loot addon compat fix" },
 };
 
 -- Ideas and suggestions

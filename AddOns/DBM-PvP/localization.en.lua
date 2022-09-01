@@ -13,7 +13,6 @@ L:SetTimerLocalization({
 	TimerCap		= "%s",
 	TimerFlag		= "Flag respawn",
 	TimerInvite		= "%s",
-	TimerRemaining	= "Remaining",
 	TimerWin		= "Victory in",
 	TimerStart		= "Starting in",
 	TimerShadow		= "Shadow Sight"
@@ -26,7 +25,6 @@ L:SetOptionLocalization({
 	TimerCap			= "Show capture timer",
 	TimerFlag			= "Show flag respawn timer",
 	TimerStart			= "Show timer till match start",
-	TimerRemaining		= "Show timer till match end",
 	TimerShadow			= "Show timer for Shadow Sight",
 	TimerWin			= "Show win timer",
 	ShowRelativeGameTime= "Fill win timer relative to BG start time (If disabled, bar just always looks full)"
@@ -36,6 +34,9 @@ L:SetMiscLocalization({
 	BgStart120          = "The battle begins in 2 minutes.",
 	BgStart60           = "The battle begins in 1 minute.",
 	BgStart30           = "The battle begins in 30 seconds.",
+	ArenaStart60		= "One minute until the Arena battle begins!",
+	ArenaStart30		= "Thirty seconds until the Arena battle begins!",
+	ArenaStart15		= "Fifteen seconds until the Arena battle begins!",
 	ArenaInvite			= "Arena invite",
 	BasesToWin			= "Bases to win: %d",
 	WinBarText			= "%s wins",
@@ -45,9 +46,9 @@ L:SetMiscLocalization({
 	FlagCaptured		= "The .+ ha%w+ captured the flag!",
 	FlagDropped			= "The flag has been dropped!", -- Unused
 	--
-	ExprFlagPickUp		= "The (%w+) .lag was picked up by (.+)!", -- Unused
-	ExprFlagCaptured	= "(.+) captured the (%w+) flag!",
-	ExprFlagReturn		= "The (%w+) .lag was returned to its base by (.+)!", -- Unused
+	ExprFlagPickUp		= "The (%w+) Flag was picked up by (.+)!", -- Unused
+	ExprFlagCaptured	= "(.+) captured the (%w+) Flag!",
+	ExprFlagReturn		= "The (%w+) Flag was returned to its base by (.+)!", -- Unused
 	Vulnerable1			= "The flag carriers have become vulnerable to attack!",
 	Vulnerable2			= "The flag carriers have become increasingly vulnerable to attack!",
 	-- Alterac/IsleOfConquest bosses

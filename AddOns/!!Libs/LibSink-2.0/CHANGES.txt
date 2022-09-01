@@ -1,14 +1,10 @@
 ------------------------------------------------------------------------
-r135 | funkehdude | 2021-03-09 20:23:13 +0000 (Tue, 09 Mar 2021) | 1 line
+r141 | funkehdude | 2022-04-22 00:14:27 +0000 (Fri, 22 Apr 2022) | 1 line
 Changed paths:
    M /trunk/LibSink-2.0.toc
+   M /trunk/LibSink-2.0_TBC.toc
+   M /trunk/LibSink-2.0_Vanilla.toc
 
 bump toc
-------------------------------------------------------------------------
-r134 | funkehdude | 2021-01-23 22:59:03 +0000 (Sat, 23 Jan 2021) | 1 line
-Changed paths:
-   M /trunk/LibSink-2.0/LibSink-2.0.lua
-
-Minor tweak
 ------------------------------------------------------------------------
 

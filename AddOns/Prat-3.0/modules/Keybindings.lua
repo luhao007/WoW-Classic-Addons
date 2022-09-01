@@ -37,7 +37,7 @@ Prat:AddModuleToLoad(function()
 
   local PL = module.PL
 
-  --[===[@debug@
+  --[==[@debug@
   PL:AddLocale(PRAT_MODULE, "enUS", {
     module_desc = "Adds chat related keybindings",
     ["Prat Keybindings"] = true,
@@ -58,7 +58,7 @@ Prat:AddModuleToLoad(function()
     ["Smart Group Channel"] = true,
     ["Next Chat Tab"] = true
   })
-  --@end-debug@]===]
+  --@end-debug@]==]
 
   -- These Localizations are auto-generated. To help with localization
   -- please go to http://www.wowace.com/projects/prat-3-0/localization/

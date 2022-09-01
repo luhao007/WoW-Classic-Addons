@@ -244,10 +244,36 @@ app.L = {
 
 	-- These need to be localized manually.
 	["ACHIEVEMENT_DATA"] = {
+		[6] = { 92, "Level 10", app.asset("Achievement_Level_10") },
+		[7] = { 92, "Level 20", app.asset("Achievement_Level_20") },
+		[8] = { 92, "Level 30", app.asset("Achievement_Level_30") },
+		[9] = { 92, "Level 40", app.asset("Achievement_Level_40") },
+		[10] = { 92, "Level 50", app.asset("Achievement_Level_50") },
+		[11] = { 92, "Level 60", app.asset("Achievement_Level_60") },
+		[12] = { 92, "Level 70", app.asset("Achievement_Level_70") },
+		[13] = { 92, "Level 80", app.asset("Achievement_Level_80") },
+		[546] = { 92, "Safe Deposit", "Interface\\Icons\\inv_box_01" },
+		[621] = { 92, "Represent", "Interface\\Icons\\inv_shirt_guildtabard_01" },
+		[1020] = { 92, "Ten Tabards", "Interface\\Icons\\inv_shirt_guildtabard_01" },
 		[891] = { 92, "Giddy Up!", "Interface\\Icons\\ability_mount_ridinghorse" },
 		[889] = { 92, "Fast and Furious", "Interface\\Icons\\ability_mount_blackpanther" },
 		[890] = { 92, "Into the Wild Blue Yonder", "Interface\\Icons\\ability_mount_gryphon_01" },
+		[892] = { 92, "The Right Stuff", "Interface\\Icons\\ability_mount_wyvern_01" },
 		[5180] = { 92, "Breaking the Sound Barrier", "Interface\\Icons\\ability_mount_rocketmount" },
+		[1017] = { 92, "Can I Keep Him?", "Interface\\Icons\\inv_box_petcarrier_01" },
+		[15] = { 92, "Plenty of Pets", "Interface\\Icons\\inv_box_petcarrier_01" },
+		[1248] = { 92, "Plethora of Pets", "Interface\\Icons\\inv_box_petcarrier_01" },
+		[1250] = { 92, "Shop Smart, Shop Pet...Smart", "Interface\\Icons\\inv_box_petcarrier_01" },
+		[2516] = { 92, "Lil' Game Hunter", "Interface\\Icons\\inv_box_petcarrier_01" },
+		
+		[2141] = { 92, "Stable Keeper", "Interface\\Icons\\ability_mount_ridingelekk" },
+		[2142] = { 92, "Filling Up The Barn", "Interface\\Icons\\ability_mount_ridingelekkelite_green" },
+		[2143] = { 92, "Leading the Cavalry", "Interface\\Icons\\ability_mount_ridingelekkelite_green" },
+		[2536] = { 92, "Mountain o' Mounts", "Interface\\Icons\\ability_hunter_pet_dragonhawk" },
+		[2537] = { 92, "Mountain o' Mounts", "Interface\\Icons\\ability_hunter_pet_dragonhawk" },
+		
+		[1165] = { 92, "My Sack is \"Gigantique\"" },
+		
 		[628] = { 14808, "Deadmines", app.asset("achievement_boss_edwinvancleef") },
 		[629] = { 14808, "Ragefire Chasm", app.asset("spell_shadow_summonfelguard") },
 		[630] = { 14808, "Wailing Caverns", app.asset("achievement_boss_mutanus_the_devourer") },
@@ -261,6 +287,7 @@ app.L = {
 		[641] = { 14808, "Sunken Temple", app.asset("achievement_boss_shadeoferanikus") },
 		[642] = { 14808, "Blackrock Depths", app.asset("achievement_boss_emperordagranthaurissan") },
 		[643] = { 14808, "Lower Blackrock Spire", app.asset("achievement_boss_overlord_wyrmthalak") },
+		[646] = { 14808, "Stratholme", app.asset("spell_deathknight_armyofthedead") },
 		[647] = { 14805, "Hellfire Ramparts", app.asset("achievement_boss_omartheunscarred_01") },
 		[650] = { 14805, "Underbog", app.asset("achievement_boss_theblackstalker") },
 		[651] = { 14805, "Mana-Tombs", app.asset("achievement_boss_nexus_prince_shaffar") },
@@ -319,8 +346,118 @@ app.L = {
 		[134] = { 172, "Master in First Aid", "Interface\\Icons\\spell_holy_sealofsacrifice" },
 		[135] = { 172, "Grand Master in First Aid", "Interface\\Icons\\spell_holy_sealofsacrifice" },
 		
+		[238] = { 95, "An Honorable Kill", app.asset("achievement_pvp_p_01") },
+		[513] = { 95, "100 Honorable Kills", app.asset("achievement_pvp_p_02") },
+		[515] = { 95, "500 Honorable Kills", app.asset("achievement_pvp_p_03") },
+		[516] = { 95, "1000 Honorable Kills", app.asset("achievement_pvp_p_04") },
+		[512] = { 95, "5000 Honorable Kills", app.asset("achievement_pvp_p_06") },
+		[509] = { 95, "10000 Honorable Kills", app.asset("achievement_pvp_p_09") },
+		[239] = { 95, "25000 Honorable Kills", app.asset("achievement_pvp_p_11") },
+		[869] = { 95, "50000 Honorable Kills", app.asset("achievement_pvp_p_14") },
+		[870] = { 95, "100000 Honorable Kills", app.asset("achievement_pvp_p_15") },
+		
 		[389] = { 95, "Gurubashi Arena Master" },	-- Arena Master, icon from providers
 		[396] = { 95, "Gurubashi Arena Grand Master" },	-- Arena Grand Master, icon from providers
+		[727] = { 95, "Call in the Cavalry" },	-- Call in the Cavalry, icon from providers
+		[714] = { 95, "The Conqueror", "Interface\\Icons\\inv_misc_tabardpvp_04" },
+		[907] = { 95, "The Justicar", "Interface\\Icons\\inv_misc_tabardpvp_03" },
+		
+		-- Quests
+		[940] = { 14861, "The Green Hills of Stranglethorn", "Interface\\Icons\\ability_mount_whitetiger" },
+		[939] = { 14862, "Hills Like White Elekk", "Interface\\Icons\\ability_mount_ridingelekk" },
+		[1189] = { 14862, "To Hellfire and Back", app.asset("achievement_zone_hellfirepeninsula_01") },
+		[1190] = { 14862, "Mysteries of the Marsh", app.asset("achievement_zone_zangarmarsh") },
+		[1191] = { 14862, "Terror of Terokkar", app.asset("achievement_zone_terrokar") },
+		[1192] = { 14862, "Nagrand Slam", app.asset("achievement_zone_nagrand_01") },
+		[1193] = { 14862, "On the Blade's Edge", app.asset("achievement_zone_bladesedgemtns_01") },
+		[1194] = { 14862, "Into the Nether", app.asset("achievement_zone_netherstorm_01") },
+		[1195] = { 14862, "Shadow of the Betrayer", app.asset("achievement_zone_shadowmoon") },
+		[1262] = { 14862, "Loremaster of Outland", app.asset("achievement_zone_outland_01") },
+		[1271] = { 14862, "To Hellfire and Back", app.asset("achievement_zone_hellfirepeninsula_01") },
+		[1272] = { 14862, "Terror of Terokkar", app.asset("achievement_zone_terrokar") },
+		[1273] = { 14862, "Nagrand Slam", app.asset("achievement_zone_nagrand_01") },
+		[1274] = { 14862, "Loremaster of Outland", app.asset("achievement_zone_outland_01") },
+		[1676] = { 14861, "Loremaster of Eastern Kindoms", app.asset("achievement_zone_easternkingdoms_01") },
+		[1677] = { 14861, "Loremaster of Eastern Kindoms", app.asset("achievement_zone_easternkingdoms_01") },
+		[1678] = { 14861, "Loremaster of Kalimdor", app.asset("achievement_zone_kalimdor_01") },
+		[1680] = { 14861, "Loremaster of Kalimdor", app.asset("achievement_zone_kalimdor_01") },
+		
+		-- Exploration
+		[42] = { 97, "Explore Eastern Kingdoms", app.asset("achievement_zone_easternkingdoms_01") },
+		[43] = { 97, "Explore Kalimdor", app.asset("achievement_zone_kalimdor_01") },
+		[44] = { 97, "Explore Outland", app.asset("achievement_zone_outland_01") },
+		
+		-- Eastern Kingdoms
+		[627] = { 14777, "Explore Dun Morogh", app.asset("achievement_zone_dunmorogh") },
+		[760] = { 14777, "Explore Alterac Mountains", app.asset("achievement_zone_alteracmountains_01") },
+		[761] = { 14777, "Explore Arathi Highlands", app.asset("achievement_zone_arathihighlands_01") },
+		[765] = { 14777, "Explore Badlands", app.asset("achievement_zone_badlands_01") },
+		[766] = { 14777, "Explore Blasted Lands", app.asset("achievement_zone_blastedlands_01") },
+		[768] = { 14777, "Explore Tirisfal Glades", app.asset("achievement_zone_tirisfalglades_01") },
+		[769] = { 14777, "Explore Silverpine Forest", app.asset("achievement_zone_silverpine_01") },
+		[770] = { 14777, "Explore Western Plaguelands", app.asset("achievement_zone_westernplaguelands_01") },
+		[771] = { 14777, "Explore Eastern Plaguelands", app.asset("achievement_zone_easternplaguelands") },
+		[772] = { 14777, "Explore Hillsbrad Foothills", app.asset("achievement_zone_hillsbradfoothills") },
+		[773] = { 14777, "Explore The Hinterlands", app.asset("achievement_zone_hinterlands_01") },
+		[774] = { 14777, "Explore Searing Gorge", app.asset("achievement_zone_searinggorge_01") },
+		[775] = { 14777, "Explore Burning Steppes", app.asset("achievement_zone_burningsteppes_01") },
+		[776] = { 14777, "Explore Elwynn Forest", app.asset("achievement_zone_elwynnforest") },
+		[777] = { 14777, "Explore Deadwind Pass", app.asset("achievement_zone_deadwindpass") },
+		[778] = { 14777, "Explore Duskwood", app.asset("achievement_zone_duskwood") },
+		[779] = { 14777, "Explore Loch Modan", app.asset("achievement_zone_lochmodan") },
+		[780] = { 14777, "Explore Redridge Mountains", app.asset("achievement_zone_redridgemountains") },
+		[781] = { 14777, "Explore Stranglethorn Vale", app.asset("achievement_zone_stranglethorn_01") },
+		[782] = { 14777, "Explore Swamp of Sorrows", app.asset("achievement_zone_swampsorrows_01") },
+		[802] = { 14777, "Explore Westfall", app.asset("achievement_zone_westfall_01") },
+		[841] = { 14777, "Explore Wetlands", app.asset("achievement_zone_wetlands_01") },
+		[868] = { 14777, "Explore Isle of Quel'Danas", app.asset("achievement_zone_isleofqueldanas") },
+		[858] = { 14777, "Explore Ghostlands", app.asset("achievement_zone_ghostlands") },
+		[859] = { 14777, "Explore Eversong Woods", app.asset("achievement_zone_eversongwoods") },
+		
+		-- Kalimdor
+		[728] = { 14778, "Explore Durotar", app.asset("achievement_zone_durotar") },
+		[736] = { 14778, "Explore Mulgore", app.asset("achievement_zone_mulgore_01") },
+		[750] = { 14778, "Explore The Barrens", app.asset("achievement_zone_barrens_01") },
+		[842] = { 14778, "Explore Teldrassil", app.asset("achievement_zone_darnassus") },
+		[844] = { 14778, "Explore Darkshore", app.asset("achievement_zone_darkshore_01") },
+		[845] = { 14778, "Explore Ashenvale", app.asset("achievement_zone_ashenvale_01") },
+		[846] = { 14778, "Explore Thousand Needles", app.asset("achievement_zone_thousandneedles_01") },
+		[847] = { 14778, "Explore Stonetalon Mountains", app.asset("achievement_zone_stonetalon_01") },
+		[848] = { 14778, "Explore Desolace", app.asset("achievement_zone_desolace") },
+		[849] = { 14778, "Explore Feralas", app.asset("achievement_zone_feralas") },
+		[850] = { 14778, "Explore Dustwallow Marsh", app.asset("achievement_zone_dustwallowmarsh") },
+		[851] = { 14778, "Explore Tanaris", app.asset("achievement_zone_tanaris_01") },
+		[852] = { 14778, "Explore Azshara", app.asset("achievement_zone_azshara_01") },
+		[853] = { 14778, "Explore Felwood", app.asset("achievement_zone_felwood") },
+		[854] = { 14778, "Explore Un'Goro Crater", app.asset("achievement_zone_ungorocrater_01") },
+		[855] = { 14778, "Explore Moonglade", "Interface\\Icons\\spell_arcane_teleportmoonglade" },
+		[856] = { 14778, "Explore Silithus", app.asset("achievement_zone_silithus_01") },
+		[857] = { 14778, "Explore Winterspring", app.asset("achievement_zone_winterspring") },
+		[860] = { 14778, "Explore Azuremyst Isle", app.asset("achievement_zone_azuremystisle_01") },
+		[861] = { 14778, "Explore Bloodmyst Isle", app.asset("achievement_zone_bloodmystisle_01") },
+		
+		-- Outland
+		[843] = { 14779, "Explore Netherstorm", app.asset("achievement_zone_netherstorm_01") },
+		[862] = { 14779, "Explore Hellfire Peninsula", app.asset("achievement_zone_hellfirepeninsula_01") },
+		[863] = { 14779, "Explore Zangarmarsh", app.asset("achievement_zone_zangarmarsh") },
+		[864] = { 14779, "Explore Shadowmoon Valley", app.asset("achievement_zone_shadowmoon") },
+		[865] = { 14779, "Explore Blade's Edge Mountains", app.asset("achievement_zone_bladesedgemtns_01") },
+		[866] = { 14779, "Explore Nagrand", app.asset("achievement_zone_nagrand_01") },
+		[867] = { 14779, "Explore Terokkar Forest", app.asset("achievement_zone_terrokar") },
+		
+		-- Alterac Valley Achievements
+		[706] = { 14801 },	-- Frostwolf Howler, name and icon from providers
+		[707] = { 14801 },	-- Stormpike Battle Charger, name and icon from providers
+		[708] = { 14801, "Hero of the Frostwolf Clan", "Interface\\Icons\\inv_jewelry_frostwolftrinket_05" },
+		[709] = { 14801, "Hero of the Stormpike Guard", "Interface\\Icons\\inv_jewelry_stormpiketrinket_05" },
+		
+		-- Arathi Basin Achievements
+		[711] = { 14802, "Knight of Arathor", "Interface\\Icons\\ability_warrior_rallyingcry" },
+		[710] = { 14802, "The Defiler", "Interface\\Icons\\Ability_Sap" },
+		
+		-- Warsong Gulch Achievements
+		[712] = { 14804, "Warsong Outrider", "Interface\\Icons\\ability_warrior_warcry" },
+		[713] = { 14804, "Silverwing Sentinel", "Interface\\Icons\\ability_racial_shadowmeld" },
 		
 		[522] = { 201, "Somebody Likes Me", app.asset("achievement_reputation_01") },
 		[523] = { 201, "5 Exalted Reputations", app.asset("achievement_reputation_01") },
@@ -331,57 +468,125 @@ app.L = {
 		[518] = { 201, "30 Exalted Reputations", app.asset("achievement_reputation_06") },
 		[1014] = { 201, "35 Exalted Reputations", app.asset("achievement_reputation_07") },
 		[1015] = { 201, "40 Exalted Reputations", app.asset("achievement_reputation_08") },
+		[893] = { 14865 },	-- Cenarion War Hippogryph, name and icon from providers
+		[894] = { 14865, "Flying High Over Skettis", "Interface\\Icons\\ability_hunter_pet_netherray" },
+		[896] = { 14865, "A Quest a Day Keeps the Ogres at Bay", "Interface\\Icons\\inv_misc_apexis_crystal" },
+		[897] = { 14865, "You're So Offensive", "Interface\\Icons\\inv_shield_48" },
+		[898] = { 14865, "On Wings of Nether", "Interface\\Icons\\ability_mount_netherdrakepurple" },
+		[899] = { 14865, "Oh My, Kurenai", "Interface\\Icons\\inv_misc_foot_centaur" },
+		[900] = { 14865, "The Czar of Sporeggar", "Interface\\Icons\\inv_mushroom_11" },
+		[901] = { 14865, "Mag'har of Draenor", "Interface\\Icons\\inv_misc_foot_centaur" },
+		[902] = { 14865, "Chief Exalted Officer", "Interface\\Icons\\inv_enchant_shardprismaticlarge" },
+		[903] = { 14865, "Shattrath Divided", "Interface\\Icons\\spell_arcane_portalshattrath" },
+		[948] = { 201, "Ambassador of the Alliance", app.asset("achievement_pvp_a_16") },
+		[762] = { 201, "Ambassador of the Horde", app.asset("achievement_pvp_h_16") },
+		[763] = { 14865, "The Burning Crusader", "Interface\\Icons\\spell_fire_felfireward" },
+		[764] = { 14865, "The Burning Crusader", "Interface\\Icons\\spell_fire_felfireward" },
+		[942] = { 201, "The Diplomat", "Interface\\Icons\\inv_helmet_44" },
+		[943] = { 201, "The Diplomat", "Interface\\Icons\\inv_helmet_44" },
+		[944] = { 14864, "They Love Me In That Tunnel", app.asset("achievement_reputation_timbermaw") },
+		[946] = { 14864, "The Argent Dawn", "Interface\\Icons\\inv_jewelry_talisman_07" },
+		[953] = { 201, "Guardian of Cenarius", "Interface\\Icons\\ability_racial_ultravision" },
+		[955] = { 14864, "Hydraxian Waterlords", "Interface\\Icons\\spell_frost_summonwaterelemental_2" },
+		[956] = { 14864, "Brood of Nozdormu", "Interface\\Icons\\inv_misc_head_dragon_bronze" },
+		[957] = { 14864, "Hero of the Zandalar Tribe", "Interface\\Icons\\inv_bijou_green" },
+		[958] = { 14865, "Sworn to the Deathsworn", app.asset("achievement_reputation_ashtonguedeathsworn") },
+		[959] = { 14865, "The Scale of the Sands", "Interface\\Icons\\inv_enchant_dustillusion" },
+		[960] = { 14865, "The Violet Eye", "Interface\\Icons\\spell_holy_mindsooth" },
+		[1638] = { 14865, "Skyshattered", "Interface\\Icons\\ability_mount_netherdrakepurple" },
 		
 		[292] = { 158, "Sinister Calling" },	-- Sinister Squashling, icon from providers
 		[303] = { 162, "Have Keg, Will Travel", "Interface\\Icons\\inv_cask_01" },
 		[1936] = { 162, "Does Your Wolpertinger Linger?" },	-- Wolpertinger Tankard, icon from providers
 		
-		[871] = { 15273, "Avast Ye, Admiral!", "Interface\\Icons\\inv_helmet_66" },
-		[980] = { 15273 },	-- The Horseman's Reins, name and icon from providers
-		[1292] = { 15273 },	-- Yellow Brewfest Stein, name and icon from providers
-		[1293] = { 15273 },	-- Blue Brewfest Stein, name and icon from providers
-		[2336] = { 15273, "Insane in the Membrane", "Interface\\Icons\\Spell_shadow_brainwash" },
-		[2357] = { 15273, "Dreadsteed of Xoroth", "Interface\\Icons\\ability_mount_dreadsteed" },
-		[3496] = { 15273, "A Brew-FAST Mount", "Interface\\Icons\\inv_cask_01" },
-		[4782] = { 15273 },	-- Green Brewfest Stein, name and icon from providers
+		[416] = { 81, "Scarab Lord", app.asset("achievement_zone_silithus_01") },
+		[424] = { 81, "Why? Because It's Red" },	-- Why? Because It's Red, icon from providers
+		[425] = { 81 },	-- Atiesh, Greatstaff of the Guardian, name and icon from providers
+		[426] = { 81, "Warglaives of Azzinoth" },	-- Warglaives of Azzinoth, icon from providers
+		[428] = { 81 },	-- Thunderfury, Blessed Blade of the Windseeker, name and icon from providers
+		[429] = { 81 },	-- Sulfuras, Hand of Ragnaros, name and icon from providers
+		[430] = { 81 },	-- Amani War Bear, name and icon from providers
+		[431] = { 81, "Hand of A'dal", "Interface\\Icons\\inv_mace_25" },
+		[432] = { 81, "Champion of the Naaru", "Interface\\Icons\\inv_mace_51" },
+		[725] = { 81 },	-- Thori'dal, the Stars' Fury, name and icon from providers
+		[729] = { 81 },	-- Deathcharger's Reins, name and icon from providers
+		[871] = { 81, "Avast Ye, Admiral!", "Interface\\Icons\\inv_helmet_66" },
+		[879] = { 81, "Old School Ride" },	-- Old School Ride, icon from providers
+		[880] = { 81 },	-- Swift Zulian Tiger, name and icon from providers
+		[881] = { 81 },	-- Swift Razzashi Raptor, name and icon from providers
+		[882] = { 81 },	-- Fiery Warhorse's Reins, name and icon from providers
+		[883] = { 81 },	-- Reins of the Raven Lord, name and icon from providers
+		[884] = { 81 },	-- Swift White Hawkstrider, name and icon from providers
+		[885] = { 81 },	-- Ashes of Al'ar, name and icon from providers
+		[980] = { 81 },	-- The Horseman's Reins, name and icon from providers
+		[1205] = { 81, "Hero of Shattrath", "Interface\\Icons\\spell_arcane_teleportshattrath" },
+		[1292] = { 81 },	-- Yellow Brewfest Stein, name and icon from providers
+		[1293] = { 81 },	-- Blue Brewfest Stein, name and icon from providers
+		[1636] = { 81 },	-- Competitor's Tabard, name and icon from providers
+		[1637] = { 81, "Spirit of Competition" },	-- Spirit of Competition, icon from providers
+		[1705] = { 81 },	-- Clockwork Rocket Bot, name and icon from providers
+		[1706] = { 81 },	-- Crashin' Thrashin' Racer Controller, name and icon from providers
+		[2079] = { 81 },	-- Tabard of the Protector, name and icon from providers
+		[2116] = { 81 },	-- Tabard of the Argent Dawn, name and icon from providers
+		[2358] = { 81, "Charger", "Interface\\Icons\\ability_mount_charger" },
+		[2336] = { 81, "Insane in the Membrane", "Interface\\Icons\\Spell_shadow_brainwash" },
+		[2357] = { 81, "Dreadsteed of Xoroth", "Interface\\Icons\\ability_mount_dreadsteed" },
+		[2359] = { 81, "Swift Flight Form", "Interface\\Icons\\ability_druid_flightform" },
+		[2456] = { 81, "Vampire Hunter" },	-- Vampire Hunter, icon from providers
+		[2496] = { 81, "The Fifth Element", "Interface\\Icons\\spell_frost_summonwaterelemental_2" },
+		[3356] = { 81, "Winterspring Frostsaber" },	-- Winterspring Frostsaber, icon from providers
+		[3357] = { 81, "Venomhide Ravasaur", "Interface\\Icons\\ability_hunter_pet_raptor" },
+		[3496] = { 81, "A Brew-FAST Mount", "Interface\\Icons\\inv_cask_01" },
+		[4782] = { 81 },	-- Green Brewfest Stein, name and icon from providers
 		
 		-- Does not get added until 4.1.0, btw. So just keep that in mind for wrath.
-		[5788] = { 15273, "Agent of the Shen'dralar", "Interface\\Icons\\inv_misc_book_04" },
+		[5788] = { 81, "Agent of the Shen'dralar", "Interface\\Icons\\inv_misc_book_04" },
 	},
 	["ACHIEVEMENT_CRITERIA_DATA"] = {
 		[92] = { -1, "Character" },
 		[95] = { -1, BUG_CATEGORY14 },	-- Player vs. Player
+		[14801] = { 95, "Alterac Valley" },
+		[14802] = { 95, "Arathi Basin" },
+		[14804] = { 95, "Warsong Gulch" },
 		[96] = { -1, "Quests" },
+		[14861] = { 96, "Classic" },
+		[14862] = { 96, "The Burning Crusade" },
 		[97] = { -1, "Exploration" },
+		[14777] = { 97, "Eastern Kingdoms" },
+		[14778] = { 97, "Kalimdor" },
+		[14779] = { 97, "Outland" },
 		[155] = { -1, "World Events" },
 		[158] = { 155, "Hallow's End" },
 		[162] = { 155, "Brewfest" },
 		[168] = { -1, "Dungeons & Raids" },
+		[14805] = { 168, "The Burning Crusade" },
+		[14808] = { 168, "Classic" },
 		[169] = { -1, "Professions" },
 		[170] = { 169, "Cooking" },
 		[171] = { 169, "Fishing" },
 		[172] = { 169, "First Aid" },
 		[201] = { -1, "Reputation" },
-		[14805] = { 168, "The Burning Crusade" },
-		[14808] = { 168, "Classic" },
+		[14864] = { 201, "Classic" },
+		[14865] = { 201, "The Burning Crusade" },
 		[15088] = { -1, "General" },
 		[15117] = { -1, "Pet Battles" },
 		[15246] = { -1, "Collections" },
 		[15234] = { -1, "Legacy" },
-		[15273] = { -1, "Feats of Strength" },
+		[81] = { -1, "Feats of Strength" },
 		[15301] = { -1, "Expansion Features" },
 	},
 	["HEADER_ICONS"] = {
-		[0] = "Interface\\Addons\\ATT-Classic\\assets\\INV_TreasureChest_FelfireCitadel", 	-- Zone Drop
-		[-1] = "Interface\\Addons\\ATT-Classic\\assets\\Achievement_Garrison_Horde_PVE", 	-- Common Boss Drop
+		[0] = app.asset("INV_TreasureChest_FelfireCitadel"), 								-- Zone Drop
+		[-1] = app.asset("Achievement_Garrison_Horde_PVE"), 								-- Common Boss Drop
 		[-2] = "Interface\\Icons\\INV_Misc_Coin_02", 										-- Vendors
 		[-3] = "Interface\\Icons\\INV_Misc_Coin_01",										-- Common Vendor Items
 		[-4] = app.asset("Category_Achievements"),											-- Achievements
 		[-5] = app.asset("Category_Holidays"), 												-- Holiday
 		[-6] = app.asset("Category_FlightPaths"),											-- Flight Paths
-		[-7] = "Interface\\Addons\\ATT-Classic\\assets\\Inv_offhand_1h_artifactskulloferedar_d_05",	-- World Bosses
+		[-7] = app.asset("Inv_offhand_1h_artifactskulloferedar_d_05"),						-- World Bosses
 		[-8] = app.asset("Category_Factions"),												-- Factions
 		[-9] = app.asset("Category_PvP"),													-- Player vs. Player
+		[-10] = app.asset("Inv_offhand_1h_artifactskulloferedar_d_05"),						-- Bosses
 		[-12] = "Interface\\Icons\\Spell_Shadow_SummonImp", 								-- East entrance demons
 		[-13] = "Interface\\Icons\\inv_axe_10", 											-- North entrance ogres
 		[-14] = "Interface\\Icons\\INV_Misc_Head_Elf_02", 									-- West entrace elves
@@ -396,6 +601,7 @@ app.L = {
 		[-30] = "Interface\\FriendsFrame\\PlusManz-Alliance",								-- Alliance
 		[-31] = "Interface\\FriendsFrame\\PlusManz-Horde", 									-- Horde
 		[-32] = "Interface\\Icons\\inv_sword_48",											-- Honor Titles
+		[-38] = app.asset("Category_Professions"),											-- Professions
 		[-47] = app.asset("Holiday_Lunar"),													-- Lunar Festival
 		[-50] = app.asset("Holiday_love"),													-- Love is in the Air
 		[-51] = app.asset("Holiday_noblegarden"),											-- Noblegarden
@@ -424,7 +630,9 @@ app.L = {
 		[-86] = "Interface\\Icons\\INV_Misc_Book_13",										-- Library (SM)
 		[-87] = "Interface\\Icons\\inv_helmet_25",											-- Armory (SM)
 		[-88] = "Interface\\Icons\\inv_helmet_12",											-- Cathedral (SM)
-
+		
+		[-165] = "Interface\\Icons\\inv_box_01",											-- Junkboxes
+		
 		[-297] = "Interface\\Icons\\inv_letter_17", 								-- Mailbox
 		[-304] = "Interface\\Icons\\INV_BannerPVP_02",								-- Battlegrounds
 		[-318] = "Interface\\Icons\\INV_Chest_Plate03",								-- Armor
@@ -466,6 +674,24 @@ app.L = {
 		[-577] = "Interface\\Icons\\INV_MISC_FILM_01",								-- Warcraft Movie
 		[-578] = app.asset("Expansion_CLASSIC"),									-- World of Warcraft 15th Anniversary
 		[-579] = "Interface\\Icons\\achievement_dungeon_outland_dungeonmaster",		-- Dark Portal Pass
+		
+	-- PvP Set Names
+		[-659] = "Interface\\Worldmap\\GlowSkull_64Green",									-- Aspirant PvP Gear
+		[-660] = "Interface\\Worldmap\\GlowSkull_64Blue",									-- Combatant PvP Gear
+		[-661] = "Interface\\Worldmap\\GlowSkull_64Purple",									-- Gladator PvP Gear
+		[-662] = "Interface\\Worldmap\\GlowSkull_64Red",									-- Elite PvP Gear
+	-- The Burning Crusade PvP Seasons
+		[-664] = app.asset("achievement_featsofstrength_gladiator_01"),				-- Gladiator: Season 1
+		[-665] = app.asset("achievement_featsofstrength_gladiator_02"),				-- Merciless Gladiator: Season 2
+		[-666] = app.asset("achievement_featsofstrength_gladiator_03"),				-- Vengeful Gladiator: Season 3
+		[-667] = app.asset("achievement_featsofstrength_gladiator_04"),				-- Brutal Gladiator: Season 4
+	-- Wrath of the Lich-King PvP Seasons
+		[-668] = "Interface\\Icons\\ability_mount_redfrostwyrm_01",							-- Deadly Gladiator: Season 5
+		[-669] = "Interface\\Icons\\ability_mount_redfrostwyrm_01",							-- Furious Gladiator: Season 6
+		[-670] = "Interface\\Icons\\ability_mount_redfrostwyrm_01",							-- Relentless Gladiator: Season 7
+		[-671] = "Interface\\Icons\\ability_mount_redfrostwyrm_01",							-- Wrathful Gladiator: Season 8
+		
+		[-9983] = "Interface\\Icons\\inv_jewelry_amulet_03",				-- Honor
 	};
 	["HEADER_NAMES"] = {
 		[0] = ZONE.." "..BATTLE_PET_SOURCE_1, 									-- Zone Drop
@@ -478,6 +704,7 @@ app.L = {
 		[-7] = WORLD.." "..RAID_BOSSES, 										-- World Bosses
 		[-8] = "Factions",														-- Factions
 		[-9] = BUG_CATEGORY14,													-- Player vs. Player
+		[-10] = RAID_BOSSES,													-- Bosses
 		[-12] = DUNGEON_FLOOR_DIREMAUL5.." (East)",								-- Warpwood Quarter
 		[-13] = DUNGEON_FLOOR_DIREMAUL1.." (North)",							-- Gordok Commons
 		[-14] = DUNGEON_FLOOR_DIREMAUL2.." (West)",								-- Capital Gardens
@@ -495,6 +722,7 @@ app.L = {
 		[-31] = FACTION_HORDE, 													-- Horde
 		[-32] = "Honor Titles",													-- Honor Titles
 		[-37] = BATTLE_PET_SOURCE_11,											-- Discovery
+		[-38] = TRADE_SKILLS,													-- Professions
 -- World Events
 		[-47] = "Lunar Festival",												-- Lunar Festival
 		[-50] = "Love is in the Air",											-- Love is in the Air
@@ -526,6 +754,8 @@ app.L = {
 		[-86] = "Library",
 		[-87] = "Armory",
 		[-88] = "Cathedral",
+		
+		[-165] = GetItemSubClassInfo(13,1),										-- Junkboxes
 -- Other
 		[-297] = MINIMAP_TRACKING_MAILBOX,										-- Mailbox
 		[-304] = BATTLEGROUNDS,													-- Battlegrounds
@@ -585,6 +815,25 @@ app.L = {
 		[-577] = "Warcraft Movie",
 		[-578] = "World of Warcraft 15th Anniversary",
 		[-579] = "Dark Portal Pass",
+		
+	-- PvP Set Names
+		[-659] = "Aspirant Gear",												-- Aspirant PvP Gear (WoD, BfA)
+		[-660] = "Combatant Gear",												-- Combatant PvP Gear (WoD, Legion)
+		[-661] = "Gladiator Gear",												-- Gladiator PvP Gear
+		[-662] = "Elite Gear",													-- Elite PvP Gear
+	-- The Burning Crusade PvP Seasons
+		[-664] = "Gladiator",						-- Gladiator: Season 1
+		[-665] = "Merciless Gladiator",				-- Merciless Gladiator: Season 2
+		[-666] = "Vengeful Gladiator",				-- Vengeful Gladiator: Season 3
+		[-667] = "Brutal Gladiator",				-- Brutal Gladiator: Season 4
+	-- Wrath of the Lich-King PvP Seasons
+		[-668] = "Deadly Gladiator",				-- Deadly Gladiator: Season 5
+		[-657] = "Hateful Gladiator",				-- Hateful Gladiator: Season 5
+		[-669] = "Furious Gladiator",				-- Furious Gladiator: Season 6
+		[-670] = "Relentless Gladiator",			-- Relentless Gladiator: Season 7
+		[-671] = "Wrathful Gladiator",				-- Wrathful Gladiator: Season 8
+		
+		[-9983] = HONOR,							-- Honor
 -- Factions / Cities
 		[-10066] = "Legendary",
 	},
@@ -598,7 +847,7 @@ app.L = {
 	["WOTLK_TIER_DESC"] = "Wrath of the Lich King is the second expansion. The majority of the expansion content takes place in Northrend & centers around the plans of the Lich King. Content highlights include the increase of the level cap from 70 to 80, the introduction of the death knight Hero class, & new PvP/World PvP content.";
 	["CATA_TIER_DESC"] = "Cataclysm is the third expansion. Set primarily in a dramatically reforged Kalimdor & Eastern Kingdoms on the world of Azeroth, the expansion follows the return of Deathwing, who causes a new Sundering as he makes his cataclysmic re-entrance into the world from Deepholm. Cataclysm returns players to the two continents of Azeroth for most of their campaigning, opening new zones such as Mount Hyjal, the sunken world of Vashj'ir, Deepholm, Uldum and the Twilight Highlands. It includes two new playable races, the worgen & the goblins. The expansion increases level cap to 85, adds the ability to fly in Kalimdor & Eastern Kingdoms, introduces Archaeology & reforging, & restructures the world itself.";
 	["MOP_TIER_DESC"] = "Mists of Pandaria is the fourth expansion pack. The expansion refocuses primarily on the war between the Alliance & Horde, in the wake of the accidental rediscovery of Pandaria. Adventurers rediscover the ancient pandaren people, whose wisdom will help guide them to new destinies; the Pandaren Empire's ancient enemy, the mantid; and their legendary oppressors, the enigmatic mogu. The land changes over time & the conflict between Varian Wrynn & Garrosh Hellscream escalates. As civil war wracks the Horde, the Alliance & forces in the Horde opposed to Hellscream's violent uprising join forces to take the battle directly to Hellscream & his Sha-touched allies in Orgrimmar.";
-	["WOD_TIER_DESC"] = "Warlords of Draenor is the fifth expansion. Across Draenor's savage jungles & battle-scarred plains, Azeroth's heroes will engage in a mythic conflict involving mystical draenei champions & mighty orc clans, & cross axes with the likes of Grommash Hellscream, Blackhand, & Ner’zhul at the height of their primal power. Players will need to scour this unwelcoming land in search of allies to help build a desperate defense against the old Horde’s formidable engine of conquest, or else watch their own world’s bloody, war-torn history repeat itself.";
+	["WOD_TIER_DESC"] = "Warlords of Draenor is the fifth expansion. Across Draenor's savage jungles & battle-scarred plains, Azeroth's heroes will engage in a mythic conflict involving mystical draenei champions & mighty orc clans, & cross axes with the likes of Grommash Hellscream, Blackhand, & Ner'zhul at the height of their primal power. Players will need to scour this unwelcoming land in search of allies to help build a desperate defense against the old Horde's formidable engine of conquest, or else watch their own world's bloody, war-torn history repeat itself.";
 	["LEGION_TIER_DESC"] = "Legion is the sixth expansion. Gul'dan is expelled into Azeroth to reopen the Tomb of Sargeras & the gateway to Argus, commencing the third invasion of the Burning Legion. After the defeat at the Broken Shore, the defenders of Azeroth search for the Pillars of Creation, which were Azeroth's only hope for closing the massive demonic portal at the heart of the Tomb. However, the Broken Isles came with their own perils to overcome, from Xavius, to God-King Skovald, to the nightborne, & to Tidemistress Athissa. Khadgar moved Dalaran to the shores of this land, the city serves as a central hub for the heroes. The death knights of Acherus also took their floating necropolis to the Isles. The heroes of Azeroth sought out legendary artifact weapons to wield in battle, but also found unexpected allies in the form of the Illidari. Ongoing conflict between the Alliance & the Horde led to the formation of the class orders, with exceptional commanders putting aside faction to lead their classes in the fight against the Legion.";
 	["BFA_TIER_DESC"] = "Battle for Azeroth is the seventh expansion. Azeroth paid a terrible price to end the apocalyptic march of the Legion's crusade—but even as the world's wounds are tended, it is the shattered trust between the Alliance and Horde that may prove the hardest to mend. In Battle for Azeroth, the fall of the Burning Legion sets off a series of disastrous incidents that reignites the conflict at the heart of the Warcraft saga. As a new age of warfare begins, Azeroth's heroes must set out on a journey to recruit new allies, race to claim the world's mightiest resources, and fight on several fronts to determine whether the Horde or Alliance will lead Azeroth into its uncertain future.";
 	["SL_TIER_DESC"] = "Shadowlands is the eighth expansion. What lies beyond the world you know? The Shadowlands, resting place for every mortal soul—virtuous or vile—that has ever lived.";
@@ -609,8 +858,8 @@ app.L = {
 	["SAVED_TO_DJ_INSTANCES"] = {
 		-- Classic
 		["Stormwind Stockade"] = "The Stockade";
-		["Ahn'Qiraj"] = "Temple of Ahn'Qiraj";
-		["Ahn'Qiraj Temple"] = "Temple of Ahn'Qiraj";
+		["Temple of Ahn'Qiraj"] = "Ahn'Qiraj";
+		["Ahn'Qiraj Temple"] = "Ahn'Qiraj";
 		["Sunken Temple"] = "The Temple of Atal'hakkar";
 		["Auchindoun: Auchenai Crypts"] = "Auchenai Crypts";
 		["Auchindoun: Crypts"] = "Auchenai Crypts";
@@ -634,6 +883,9 @@ app.L = {
 		["Tempest Keep: The Arcatraz"] = "The Arcatraz";
 		["Tempest Keep: The Botanica"] = "The Botanica";
 		["Tempest Keep: The Mechanar"] = "The Mechanar";
+		["The Battle for Mount Hyjal"] = "Hyjal Summit";
+		["Black Temple"] = "The Black Temple";
+		["The Sunwell"] = "Sunwell Plateau";
 	};
 
 	-- This is necessary to have because Blizzard does not always have the correct map ID at the time of zone change.
@@ -645,13 +897,16 @@ app.L = {
 		["Blackrock Mountain"] = 33,
 		["Blackrock Spire"] = 250,
 		[DUNGEON_FLOOR_TANARIS18] = 75,	-- Caverns of Time
+		[C_Map.GetAreaInfo(132)] = 427,	-- Coldridge Valley
 		["Deadmines"] = 291,
+		[C_Map.GetAreaInfo(154)] = 465,	-- Deathknell
 		["Dire Maul"] = 234,
 		["Deeprun Tram"] = 499,
 		["Gnomeregan"] = 226,
 		["Maraudon"] = 280,
 		["Molten Core"] = 232,
 		["Naxxramas"] = 162,
+		[C_Map.GetAreaInfo(9)] = 425,	-- Northshire Valley
 		["Onyxia's Lair"] = 248,
 		["Ragefire Chasm"] = 213,
 		["Razorfen Downs"] = 300,
@@ -695,7 +950,7 @@ app.L = {
 		["The Slave Pens"] = 265,
 		["The Steamvault"] = 263,
 		["The Underbog"] = 262,
-		["Sunwell Plataeu"] = 335,
+		["Sunwell Plateau"] = 335,
 		["Zul'Aman"] = 333,
 	};
 	
@@ -704,17 +959,88 @@ app.L = {
 	["ALT_ZONE_TEXT_TO_MAP_ID"] = {
 		["Ahn'Qiraj"] = 320,
 		["The Deadmines"] = 291,
+		["The Wailing Caverns"] = 279,
 		["Gates of Ahn'Qiraj"] = 1451,
 		["The Temple of Atal'Hakkar"] = 220,
 		["The Battle for Mount Hyjal"] = 329,
 		["The Eye"] = 334,
+		[C_Map.GetAreaInfo(800)] = 427,	-- Coldridge Pass
 		[C_Map.GetAreaInfo(3527)] = 468,	-- Ammen Vale (Crash Site)
 		[C_Map.GetAreaInfo(3560)] = 468,	-- Ammen Vale (Ammen Fields)
 		[C_Map.GetAreaInfo(3528)] = 468,	-- Ammen Vale (Silverline Lake)
 		[C_Map.GetAreaInfo(3559)] = 468,	-- Ammen Vale (Nestlewood Hills)
 		[C_Map.GetAreaInfo(3529)] = 468,	-- Ammen Vale (Nestlewood Thicket)
+		[C_Map.GetAreaInfo(3530)] = 468,	-- Ammen Vale (Shadow Ridge)
 		[C_Map.GetAreaInfo(3561)] = 468,	-- Ammen Vale (The Sacred Grove)
+		[C_Map.GetAreaInfo(4095)] = 348,	-- Magisters' Terrace
 	};
+	
+	-- This is a conversion table for acronyms to instanceIDs for LFG Bulletin Board integration.
+	["INSTANCE_ACRONYM_TO_INSTANCE_ID"] = {
+		-- Classic
+		["MC"] = 741,	-- Molten Core
+		["ONY"] = 760,	-- Onyxia's Lair
+		["BWL"] = 742,	-- Blackwing Lair
+		["AQ20"] = 743,	-- Ruins of Ahn'Qiraj
+		["AQ40"] = 744,	-- Temple of Ahn'Qiraj
+		["ZG"] = "337",	-- Zul'Gurub [NOTE: String denotes mapID]
+		["NAX"] = 754,	-- Naxxramas
+		
+		["BFD"] = 227,	-- Blackfathom Deeps
+		["BRD"] = 228,	-- Blackrock Depths
+		["DEADMINES"] = 63,	-- Deadmines
+		["DM"] = 63,	-- Deadmines
+		["DME"] = 230,	-- Dire Maul
+		["DMN"] = 230,	-- Dire Maul
+		["DMW"] = 230,	-- Dire Maul
+		["GNO"] = 231,	-- Gnomeregan
+		["LBRS"] = 229,	-- Blackrock Spire
+		["UBRS"] = 229,	-- Blackrock Spire
+		["MAR"] = 232,	-- Maraudon
+		["RFC"] = 226,	-- Ragefire Chasm
+		["RFD"] = 233,	-- Razorfen Downs
+		["RFK"] = 234,	-- Razorfen Kraul
+		["SMA"] = 316,	-- Scarlet Monastery
+		["SMC"] = 316,	-- Scarlet Monastery
+		["SMG"] = 316,	-- Scarlet Monastery
+		["SML"] = 316,	-- Scarlet Monastery
+		["SCH"] = 246,	-- Scholomance
+		["SFK"] = 64,	-- Shadowfang Keep
+		["STR"] = 236,	-- Stratholme
+		["STK"] = 238,	-- The Stockade
+		["ST"] = 237,	-- The Temple of Atal'hakkar
+		["ULD"] = 239,	-- Uldaman
+		["WC"] = 240,	-- Wailing Caverns
+		["ZF"] = 241,	-- Zul'Farrak
+		
+		-- TBC
+		["KARA"] = 745,	-- Karazhan
+		["GL"] = 746,	-- Gruul's Lair
+		["MAG"] = 747,	-- Magtheridon's Lair
+		["SSC"] = 748,	-- Serpentshrine Cavern
+		["EYE"] = 749,	-- The Eye
+		["HYJAL"] = 750,	-- The Battle for Mount Hyjal
+		["BT"] = 751,	-- The Black Temple
+		["ZA"] = 77,	-- Zul'Aman
+		["SWP"] = 752,	-- Sunwell Plateau
+		
+		["CRYPTS"] = 247,	-- Auchenai Crypts
+		["RAMPS"] = 248,	-- Hellfire Ramparts
+		["MT"] = 250,	-- Mana Tombs
+		["MGT"] = 249,	-- Magisters' Terrace
+		["OHB"] = 251,	-- Old Hillsbrad Foothills
+		["SETH"] = 252,	-- Sethekk Halls
+		["SL"] = 253,	-- Shadow Labyrinth
+		["ARC"] = 254,	-- The Arcatraz
+		["BM"] = 255,	-- The Black Morass
+		["BF"] = 256,	-- The Blood Furnace
+		["BOT"] = 257,	-- The Botanica
+		["MECH"] = 258,	-- The Mechanar
+		["SH"] = 259,	-- The Shattered Halls
+		["SP"] = 260,	-- The Slave Pens
+		["SV"] = 261,	-- The Steamvault
+		["UB"] = 262,	-- The Underbog
+	},
 	
 	-- This is necessary because sometimes the names of spells do not match for different languages.
 	["ALT_PROFESSION_TEXT_TO_ID"] = {};
@@ -730,7 +1056,8 @@ app.L = {
 		[1] = {1, "|CFFFF0000This was never available to players.|r", "Never Implemented"},
 		[2] = {1, "|CFFFF0000This has been removed from the game.|r", "Removed From Game"},
 		[3] = {2, "|CFFFF0000This is locked behind a paywall such as the in-game shop, another Blizzard product, or the Recruit-A-Friend service.|r", "Blizzard Balance", nil, nil, "\n \n|CFFFFAAAAThe act of encouraging the use of real money in the Classic version of the game is widely frowned upon. Participate in this content at your own risk.|r" },
-
+		[4] = {3, "|CFFFF0000This can no longer be purchased or unlocked as Transmog unless you have the required PvP Title, required PvP Rating or were in the Top % of that season.|r", "PvP Elite/Gladiator"},
+		
 		-- Future Content Releases
 		[11] = {2, "|CFFAAFFAAThis was not available until Phase 1 of WoW Classic.|r", "Phase 1", 1130100, 11301, "\n \n|CFFFFAAAAIncluded Molten Core and Onyxia's Lair.|r" },
 		[1101] = {2, "|CFFAAFFAAThis became available with the Dire Maul Phase Release of WoW Classic.|r", "Dire Maul", 11301, 11301 },
@@ -743,7 +1070,7 @@ app.L = {
 		[1503] = {2, "|CFFAAFFAAThis was only available during the 10 Hour War after the Scarab Lord(s) bang the gong.|r", "10-Hour War", 11301, nil, "\n \n|CFFFFAAAAIf the Gates of Anh'Qiraj have been opened on your server, simply turn this off.|r" },
 		[1504] = {2, "|CFFAAFFAAThis became available near the end of Phase 5 in order to provide Catch-Up Nature Resist gear for those still working on AQ40.|r", "Catch-Up", 11301, 11306, "\n \n|CFFFFAAAAIf the Catch-Up Gear is available, simply turn this on.|r" },
 		[16] = {2, "|CFFAAFFAAThis was not available until Phase 6 of WoW Classic.|r", "Phase 6", 11301, 11306, "\n \n|CFFFFAAAAIncluded Naxxramas, which was heralded by the Scourge Invasion.|r" },
-		[1601] = {2, "|CFFAAFFAAThis was only available during the Scourge Invasion.|r", "Scourge Invasion", 11301, nil, "\n \n|CFFFFAAAAIf the Scourge Invasion has been completed on your server, simply turn this off.|r" },
+		[1601] = {2, "|CFFAAFFAAThis was only available during the Scourge Invasions.|r", "Scourge Invasion", 11301, nil, "\n \n|CFFFFAAAAIf both Scourge Invasions have been completed on your server, simply turn this off.|r" },
 		[1602] = {2, "|CFFAAFFAAThis was only available during the Silithyst Must Flow World PVP Event.|r", "Silithyst", 11301, 11306, "\n \n|CFFFFAAAAIf the World PVP Event is available, simply turn this on.|r" },
 		[1603] = {2, "|CFFAAFFAAThis was only available after the start of Classic Era.|r", "Classic Era", 11301, 11307, "\n \n|CFFFFAAAAIf the Classic Era has begun, simply turn this on.|r" },
 
@@ -753,9 +1080,26 @@ app.L = {
 		[1801] = {2, "|CFFAAFFAAThis became available with the Ogri'la Faction during TBC Classic.|r", "Ogri'la", 20501, 20502, "\n \n|CFFFFAAAAIf the Ogri'la Faction is available on your server, simply turn this on.|r" },
 		[1802] = {2, "|CFFAAFFAAThis became available with the Skyguard Faction during TBC Classic.|r", "Skyguard", 20501, 20502, "\n \n|CFFFFAAAAIf the Skyguard Faction is available on your server, simply turn this on.|r" },
 		[19] = {2, "|CFFAAFFAAThis was not available until Phase 3 of TBC Classic.|r", "Phase 3", 20501, 20503, "\n \n|CFFFFAAAAIncluded Hyjal Summit and the Black Temple in addition to the vast majority of end game daily / faction content.|r" },
-		[1901] = {2, "|CFFAAFFAAThis became available with the Netherwing Faction during TBC Classic.|r", "Netherwing", 20501, nil, "\n \n|CFFFFAAAAIf the Netherwing Faction is available on your server, simply turn this on.|r" },
+		[1901] = {2, "|CFFAAFFAAThis became available with the Netherwing Faction during TBC Classic.|r", "Netherwing", 20501, 20503, "\n \n|CFFFFAAAAIf the Netherwing Faction is available on your server, simply turn this on.|r" },
+		[1902] = {2, "|CFFAAFFAAThe wielder of this Glaive was prepared!|r", "Glaive Prio", 20501, 30400, "\n \n|CFFFFAAAADue to the exclusivity of the Warglaives and how prio isn't always given to collectors over sweaties, Crieve decided it was appropriate for now to provide a filter to reduce guild drama.\n\nThis filter will be defaulted on after wrath prepatch.\n\nIf you do actually have Glaive prio, simply turn this on.|r" },
 		[20] = {2, "|CFFAAFFAAThis was not available until Phase 4 of TBC Classic.|r", "Phase 4", 20501, 20504, "\n \n|CFFFFAAAAIncluded Zul'Aman.|r" },
-		[21] = {2, "|CFFAAFFAAThis was not available until Phase 5 of TBC Classic.|r", "Phase 5", 20501, 20505, "\n \n|CFFFFAAAAIncluded Sunwell Plataeu and the Isle of Quel'Danas daily content.|r" },
+		[21] = {2, "|CFFAAFFAAThis was not available until Phase 5 of TBC Classic.|r", "Phase 5", 20501, 20504, "\n \n|CFFFFAAAAIncluded Sunwell Plateau and the Isle of Quel'Danas daily content.|r" },
+		[2101] = {2, "|CFFAAFFAAThis was not available until the Sanctum on the Isle of Quel'Danas was completed.|r", "Sanctum", 20501, 30400, "\n \n|CFFFFAAAAIf the Shattered Sun Offensive has already unlocked the Sanctum and has begun working on the Amory and Portal on your server, simply turn this on.|r" },
+		[2102] = {2, "|CFFAAFFAAThis was not available until the Portal on the Isle of Quel'Danas was completed.|r", "Portal", 20501, 30400, "\n \n|CFFFFAAAAIf the Shattered Sun Offensive has already unlocked the Portal on your server, simply turn this on.|r" },
+		[2103] = {2, "|CFFAAFFAAThis was not available until the Armory on the Isle of Quel'Danas was completed.|r", "Armory", 20501, 30400, "\n \n|CFFFFAAAAIf the Shattered Sun Offensive has already unlocked the Armory and has begun working on the Harbor and Anvil on your server, simply turn this on.|r" },
+		[2104] = {2, "|CFFAAFFAAThis was not available until the Anvil on the Isle of Quel'Danas was completed.|r", "Anvil", 20501, 30400, "\n \n|CFFFFAAAAIf the Shattered Sun Offensive has already unlocked the Anvil on your server, simply turn this on.|r" },
+		[2105] = {2, "|CFFAAFFAAThis was not available until the Harbor on the Isle of Quel'Danas was completed.|r", "Harbor", 20501, 30400, "\n \n|CFFFFAAAAIf the Shattered Sun Offensive has already unlocked the Harbor and has begun working on the Alch Lab and Monument on your server, simply turn this on.|r" },
+		[2106] = {2, "|CFFAAFFAAThis was not available until the Monument on the Isle of Quel'Danas was completed.|r", "Monument", 20501, 30400, "\n \n|CFFFFAAAAIf the Shattered Sun Offensive has already unlocked the Monument on your server, simply turn this on.|r" },
+		[2107] = {2, "|CFFAAFFAAThis was not available until the Alch Lab on the Isle of Quel'Danas was completed.|r", "Alch Lab", 20501, 30400, "\n \n|CFFFFAAAAIf the Shattered Sun Offensive has already unlocked the Alch Lab on your server, simply turn this on.|r" },
+		
+		[30] = {2, "|CFFAAFFAAThis was not available until Phase 1 of Wrath Classic.|r", "Phase 1", 30400, 30400, "\n \n|CFFFFAAAAIncluded Naxxramas, Obsidian Sanctum, and Eye of Eternity.|r" },
+		[3001] = {2, "|CFFAAFFAAThis was only available for the first player to do the thing on your realm!|r", "Realm First", 30400, nil, "\n \n|CFFFFAAAABut if you were realm first, good for you.|r" },
+		[31] = {2, "|CFFAAFFAAThis was not available until Phase 2 of Wrath Classic.|r", "Phase 2", 30400, 30401, "\n \n|CFFFFAAAAIncluded Ulduar.|r" },
+		[3101] = {2, "|CFFAAFFAAThe wielder of this Hammer was on time!|r", "Hammer Prio", 20501, nil, "\n \n|CFFFFAAAADue to the exclusivity of the Hammer and how prio isn't always given to collectors over sweaties, Crieve decided it was appropriate for now to provide a filter to reduce guild drama.\n\nThis filter will be defaulted on after cata prepatch.\n\nIf you do actually have Hammer prio, simply turn this on.|r" },
+		[32] = {2, "|CFFAAFFAAThis was not available until Phase 3 of Wrath Classic.|r", "Phase 3", 30400, 30402, "\n \n|CFFFFAAAAIncluded Trial of the Crusader.|r" },
+		[33] = {2, "|CFFAAFFAAThis was not available until Phase 4 of Wrath Classic.|r", "Phase 4", 30400, 30403, "\n \n|CFFFFAAAAIncluded Icecrown Citadel.|r" },
+		[3301] = {2, "|CFFAAFFAAThe wielder of this Axe silently mourns for all the people that don't have it.|r", "Shadowmourne Prio", 30400, 30403, "\n \n|CFFFFAAAADue to the exclusivity of Shadowmourne and how prio isn't always given to collectors over sweaties, Crieve decided it was appropriate for now to provide a filter to reduce guild drama.\n\nThis filter will be defaulted on after cata prepatch.\n\nIf you do actually have Shadowmourne prio, simply turn this on.|r" },
+		[34] = {2, "|CFFAAFFAAThis was not available until Phase 5 of Wrath Classic.|r", "Phase 5", 30400, 30404, "\n \n|CFFFFAAAAIncluded The Ruby Sanctum...?|r" },
 
 		-- Seasonal Filters
 		[1000] = {4, "|CFF00FFDEThis requires the Brewfest Holiday to be Active.|r", "Brewfest" },

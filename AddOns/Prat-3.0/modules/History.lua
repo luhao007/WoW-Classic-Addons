@@ -39,7 +39,7 @@ Prat:AddModuleToLoad(function()
 
   local PL = module.PL
 
-  --[===[@debug@
+  --[==[@debug@
   PL:AddLocale(PRAT_MODULE, "enUS", {
     ["History"] = true,
     ["Chat history options."] = true,
@@ -64,7 +64,7 @@ Prat:AddModuleToLoad(function()
     removespam_name = "Remove Spam",
     removespam_desc = "Remove addon spam messages when restoring the chat history"
   })
-  --@end-debug@]===]
+  --@end-debug@]==]
 
   -- These Localizations are auto-generated. To help with localization
   -- please go to http://www.wowace.com/projects/prat-3-0/localization/
@@ -205,12 +205,11 @@ L = {
 		["Chat history options."] = "대화 내역 옵션입니다.",
 		["Color GMOTD"] = "오늘의 길드 메시지에 색상입히기",
 		["Colors the GMOTD label"] = "오늘의 길드 메시지 제목에 색상입히기",
-		--[[Translation missing --]]
-		["Command History Options"] = "Command History Options",
+		["Command History Options"] = "명령어 내역 옵션",
 		["delaygmotd_desc"] = "모든 시작 스팸이 표시 될때까지 오늘의 길드 메시지 지연시키기",
 		["delaygmotd_name"] = "오늘의 길드 메시지 지연",
 		["divider"] = "========== 이전 대화 목록의 끝 ==========",
-		["History"] = "대화 내역",
+		["History"] = "내역 [History]",
 		["Maximum number of lines of command history to save."] = "저장할 명령어 내역의 최대 갯수입니다.",
 		["removespam_desc"] = "채팅 기록을 복원 할 때 애드온 스팸 메시지 제거",
 		["removespam_name"] = "스팸 제거",

@@ -1,0 +1,33 @@
+## Interface: 30400
+## Author: arith, Dynaletik, dubcat
+## Version: v1.51.06
+## RequiredDeps: Atlas
+## SavedVariables: Atlas_TransportationDB
+
+## Title: Atlas |r|cFF0099FF[Transportation]|r
+## Notes: Transportation Maps
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本地图|r |cFF69CCF0交通|r
+## Notes-zhCN: 交通地图
+
+## X-Date: 2022-08-30T14:50:49Z
+## X-Credits: Dan Gilbert, Lothaer
+## X-Email: atlas.addon at gmail dot com
+## X-Website: http://www.atlasmod.com
+## X-Category: Map
+## X-Part-Of: Atlas
+
+#@non-debug@
+#@end-non-debug@
+
+#@debug@
+# ## Title: Atlas |r|cFF0099FF[Transportation]|r
+# ## Title-zhTW: |r|cFF0099FF[地圖]|rAtlas 交通網路圖
+# ## Notes: Transportation Maps
+# ## Notes-zhTW: Atlas 交通網路圖插件，顯示各大陸的海陸空交通節點
+#@end-debug@
+
+Locale\Locales.xml
+Core\Constants.lua
+Core\Core.lua
+Core\Config.lua
+Core\Data-Classic.lua

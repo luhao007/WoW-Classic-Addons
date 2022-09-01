@@ -1,3 +1,5 @@
+local WatchFrame_Update = QuestWatch_Update or WatchFrame_Update
+
 ---@class Hooks
 local Hooks = QuestieLoader:CreateModule("Hooks")
 
@@ -28,7 +30,7 @@ function Hooks:HookQuestLogTitle()
             -- only call if we actually want to fix this quest (normal quests already call AQW_insert)
             if GetNumQuestLeaderBoards(questLogLineIndex) == 0 and (not IsQuestWatched(questLogLineIndex)) then
                 QuestieTracker:AQW_Insert(questLogLineIndex, QUEST_WATCH_NO_EXPIRE)
-                QuestWatch_Update()
+                WatchFrame_Update()
                 QuestLog_SetSelection(questLogLineIndex)
                 QuestLog_Update()
             else

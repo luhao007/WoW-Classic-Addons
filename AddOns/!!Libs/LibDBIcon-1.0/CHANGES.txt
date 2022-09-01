@@ -1,7 +1,9 @@
 ------------------------------------------------------------------------
-r88 | funkehdude | 2021-03-09 20:21:12 +0000 (Tue, 09 Mar 2021) | 1 line
+r94 | funkehdude | 2022-04-22 00:49:57 +0000 (Fri, 22 Apr 2022) | 1 line
 Changed paths:
    M /trunk/LibDBIcon-1.0.toc
+   M /trunk/LibDBIcon-1.0_TBC.toc
+   M /trunk/LibDBIcon-1.0_Vanilla.toc
 
 bump toc
 ------------------------------------------------------------------------

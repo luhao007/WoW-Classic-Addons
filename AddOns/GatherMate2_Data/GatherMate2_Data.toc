@@ -1,6 +1,6 @@
-## Interface: 20503
+## Interface: 30400
 ## Author: kagaro, Xinhuan, Spinx, Marrtin
-## Version: v2022-01-20
+## Version: v2022-08-31
 ## Dependencies: GatherMate2
 ## LoadOnDemand: 1
 

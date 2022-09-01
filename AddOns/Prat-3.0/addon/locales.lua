@@ -46,9 +46,9 @@ AnyNamePattern = "%f[%a\128-\255]([%a\128-\255]+)%f[^%a\128-\255]"
 
 function AddLocale(L, module, name, loc)
   if GetLocale() == name or name == "enUS" then
-    --[===[@debug@
+    --[==[@debug@
     for k, v in pairs(loc) do
-      --@end-debug@]===]
+      --@end-debug@]==]
       --@non-debug@
             for k,v in pairs(loc[module] or loc) do
       --@end-non-debug@

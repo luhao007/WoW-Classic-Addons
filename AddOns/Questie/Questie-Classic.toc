@@ -1,12 +1,12 @@
-## Interface: 20503
+## Interface: 30400
 ## Author: Aero/Logon/Muehe/TheCrux(BreakBB)/Drejjmit/Dyaxler/Schaka/Zoey/Everyone else
-## Version: 6.8.3
+## Version: 7.0.1
 ## RequiredDeps: 
-## OptionalDeps: Ace3, CallbackHandler-1.0, HereBeDragons, LibCompress, LibDataBroker-1.1, LibDBIcon-1.0, LibQuestXP, LibSharedMedia-3.0, LibStub, LibUIDropDownMenu
+## OptionalDeps: Ace3, CallbackHandler-1.0, HereBeDragons, LibDataBroker-1.1, LibDBIcon-1.0, LibSharedMedia-3.0, LibStub, LibUIDropDownMenu
 ## SavedVariables: QuestieConfig
 ## SavedVariablesPerCharacter: QuestieConfigCharacter
 
-## Title: |cFFFFFFFFQuestie|r|cFF00FF00 v6.8.3|r
+## Title: Questie|cFF00FF00 7.0.1|r
 ## Notes: A standalone Classic QuestHelper
 ## Title-zhCN: |cFFFFE00A<|r|cFF00FF96任务|r|cFFFFE00A>|r |cFFFFFFFF任务助手|r |cFFFFE00AQuestie|r
 ## Notes-zhCN: 在地图和小地图上提供任务指引，在怪物身上提示任务进度
@@ -24,10 +24,12 @@ Libs\HereBeDragons\HereBeDragons-2.0.lua
 Libs\HereBeDragons\HereBeDragons-Pins-2.0.lua
 Libs\HereBeDragons\HereBeDragons-Migrate.lua
 
-LibsOnlyClassic\LibQuestXP\LibQuestXP.xml
-
 # Loader module
 Modules\Libs\QuestieLoader.lua
+
+#Quest XP
+Database\QuestXP\QuestieXP.lua
+Database\QuestXP\DB\xpDB-classic.lua
 
 # stream module (used by DB)
 Modules\QuestieStream.lua
@@ -80,12 +82,12 @@ Localization\lookups\Classic\lookupQuests\lookupQuests.xml
 
 # Libs
 Modules\Libs\QuestieLib.lua
-#Modules\Libs\QuestieCompress.lua
 Modules\Libs\QuestieSerializer.lua
 Modules\Libs\QuestieCombatQueue.lua
-Modules\Libs\QuestieHash.lua
+Modules\Libs\RamerDouglasPeucker.lua
 
 # Modules
+Modules\QuestieValidateGameCache.lua
 Modules\QuestieInit.lua
 Modules\MinimapIcon.lua
 Modules\QuestieProfessions.lua
@@ -94,6 +96,7 @@ Modules\QuestieEventHandler.lua
 Modules\Migration.lua
 Modules\QuestieMenu.lua
 Modules\QuestieAnnounce.lua
+Modules\QuestieShutUp.lua
 Modules\TaskQueue.lua
 Modules\QuestiePlayer.lua
 
@@ -122,7 +125,10 @@ Modules\Map\QuestieMapUtils.lua
 Modules\Map\HBDHooks.lua
 
 # Quest
+Modules\Quest\QuestLogCache.lua
 Modules\Quest\DailyQuests.lua
+Modules\Quest\IsleOfQuelDanas.lua
+Modules\Quest\QuestEventHandler.lua
 Modules\Quest\QuestieQuest.lua
 Modules\Quest\QuestieQuestPrivates.lua
 
@@ -151,10 +157,13 @@ Modules\Journey\QuestieSearchResults.lua
 
 # Tracker
 Modules\Tracker\QuestieTracker.lua
-Modules\Tracker\QuestieTrackerUtils.lua
-Modules\Tracker\QuestieTrackerMenu.lua
+Modules\Tracker\TrackerUtils.lua
+Modules\Tracker\TrackerMenu.lua
+Modules\Tracker\FadeTicker.lua
 Modules\Tracker\QuestieTrackerPrivates.lua
 Modules\Tracker\QuestieQuestTimers.lua
+Modules\Tracker\ActiveQuestsHeader.lua
+Modules\Tracker\LinePool.lua
 
 Modules\QuestieDBMIntegration.lua
 Modules\QuestieSlash.lua
@@ -169,6 +178,7 @@ Modules\Options\GeneralTab\QuestieOptionsGeneral.lua
 Modules\Options\MapTab\QuestieOptionsMap.lua
 Modules\Options\MinimapTab\QuestieOptionsMinimap.lua
 Modules\Options\NameplateTab\QuestieOptionsNameplate.lua
+Modules\Options\SocialTab\QuestieOptionsSocial.lua
 Modules\Options\TrackerTab\QuestieOptionsTracker.lua
 Modules\Options\TooltipTab\QuestieOptionsTooltip.lua
 

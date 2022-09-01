@@ -261,6 +261,8 @@ VUHDO_DEFAULT_SPELL_CONFIG = {
 	["IS_LOAD_HOTS"] = false,
 	["smartCastModi"] = "all",
 	["autoBattleRez"] = true,
+	["custom1Unit"] = "@player",
+	["custom2Unit"] = "@player",
 }
 
 
@@ -389,7 +391,9 @@ end
 --
 local function VUHDO_makeFullColorWoOpacity(...)
 	local tColor = VUHDO_makeFullColor(...);
+	
 	tColor["useOpacity"] = false;
+	
 	return tColor;
 end
 
@@ -398,10 +402,14 @@ end
 --
 local function VUHDO_makeHotColor(...)
 	local tColor = VUHDO_makeFullColor(...);
+	
 	tColor["isFullDuration"] = false;
 	tColor["isClock"] = false;
 	tColor["countdownMode"] = 1;
 	tColor["useOpacity"] = false;
+	tColor["isFadeOut"] = false;
+	tColor["isFlashWhenLow"] = false;
+	
 	return tColor;
 end
 
@@ -1201,6 +1209,111 @@ function VUHDO_loadDefaultConfig()
 		31970   -- Fear
 	);
 
+	--  TBCC phase 4
+	VUHDO_addCustomSpellIds(52, 
+		-- [[ Zul'Aman ]]
+		-- Trash
+		43362,  -- Electrified Net
+		43359,  -- Call of the Beast
+		43530,  -- Piercing Howl
+		42497,  -- Furious Roar
+		43361,  -- Domesticate
+		20989,  -- Sleep
+		43529,  -- Mortal Strike
+		43364,  -- Tranquilizing Poison
+		35011,  -- Knockdown
+		43358,  -- Gut Rip
+		43356,  -- Pounce
+		-- Akil'zon
+		44008,  -- Static Disruption
+		43621,  -- Gust of Wind
+		--43648,  -- Electrical Storm
+		-- Nalorakk
+		44955,  -- Mangle
+		42395,  -- Lacerating Slash
+		42397,  -- Rend Flesh
+		-- 42398,  -- Deafening Roar
+		-- Jan'alai
+		43140,  -- Flame Breath
+		-- Halazzi
+		43303,  -- Flame Shock
+		43243,  -- Shred Armor
+		-- Hex Lord Malacrass
+		43501,  -- Siphon Soul
+		43522,  -- Unstable Affliction
+		43439,  -- Curse of Doom
+		43446,  -- Explosive Trap Effect
+		43590,  -- Psychic Wail
+		43448,  -- Freezing Trap
+		-- Zul'jin
+		43150,  -- Claw Rage
+		43095,  -- Creeping Paralysis
+		43437,  -- Paralyzed
+		43093   -- Grievous Throw
+	);
+
+	--  TBCC phase 5
+	VUHDO_addCustomSpellIds(53, 
+		-- [[ Sunwell Plateau ]]
+		-- Trash
+		46557, -- Slaying Shot
+		--39171, -- Mortal Strike
+		46543,  -- Ignite Mana
+		46560,  -- Shadow Word: Pain
+		46562,  -- Mind Flay
+		46561,  -- Fear
+		46469,  -- Melt Armor
+		46279,  -- Flame Buffet
+		46297,  -- Piercing Shadow
+		46298,  -- Shrink
+		46294,  -- Fevered Fatigue
+		46299,  -- Wavering Will
+		46293,  -- Corrosive Poison
+		46295,  -- Hex
+		46296,  -- Necrotic Poison
+		--45770,  -- Shadow Bolt Volley
+		46466,  -- Drain Life
+		45029,  -- Corrupting Strike
+		46283,  -- Death Coil
+		46427,  -- Domination
+		46483,  -- Volatile Disease
+		-- Kalecgos
+		45034,  -- Curse of Boundless Agony
+		45032,  -- Curse of Boundless Agony
+		45004,  -- Wild Magic
+		44978,  -- Wild Magic
+		45001,  -- Wild Magic
+		--45002,  -- Wild Magic
+		45006,  -- Wild Magic
+		45010,  -- Wild Magic
+		45029,  -- Corrupting Strike
+		-- Brutallus
+		45150,  -- Meteor Slash
+		46394,  -- Burn
+		45185,  -- Stomp
+		-- Felmyst
+		45717,  -- Fog of Corruption
+		45866,  -- Corrosion
+		45855,  -- Gas Nova
+		45662,  -- Encapsulate
+		45402,  -- Demonic Vapor
+		-- Eredar Twins
+		46771,  -- Flame Sear
+		45348,  -- Flame Touched
+		45347,  -- Dark Touched
+		--45271,  -- Dark Strike
+		45256,  -- Confounding Blow
+		45342,  -- Conflagration
+		45270,  -- Shadowfury
+		-- M'uru
+		45996,  -- Darkness
+		-- Kil'jaeden
+		45641,  -- Fire Bloom
+		45442,  -- Soul Flay
+		45885,  -- Shadow Spike
+		46190  -- Curse of Agony
+	);
+
 	local debuffRemovalList = {};
 
 	for tIndex, tName in pairs(VUHDO_CONFIG["CUSTOM_DEBUFF"]["STORED"]) do
@@ -1348,26 +1461,31 @@ local VUHDO_DEFAULT_PANEL_SETUP = {
 			["R"] = 0, ["G"] = 0, ["B"] = 0.4, ["O"] = 0.2,
 			["TR"] = 1, ["TG"] = 0.82, ["TB"] = 0, ["TO"] = 1,
 			["useText"] = false, ["useBackground"] = false, ["useOpacity"] = true,
+			["useClassColor"] = false,
 		},
 		["INCOMING"] = {
 			["R"] = 0, ["G"] = 0, ["B"] = 0, ["O"] = 0.33,
 			["TR"] = 1, ["TG"] = 0.82, ["TB"] = 0, ["TO"] = 1,
 			["useText"] = false, ["useBackground"] = false,	["useOpacity"] = true,
+			["useClassColor"] = false,
 		},
 		["SHIELD"] = {
 			["R"] = 0.35, ["G"] = 0.52, ["B"] = 1, ["O"] = 1,
 			["TR"] = 0.35, ["TG"] = 0.52, ["TB"] = 1, ["TO"] = 1,
 			["useText"] = false, ["useBackground"] = true,	["useOpacity"] = true,
+			["useClassColor"] = false,
 		},
 		["OVERSHIELD"] = {
 			["R"] = 0.35, ["G"] = 0.52, ["B"] = 1, ["O"] = 1,
 			["TR"] = 0.35, ["TG"] = 0.52, ["TB"] = 1, ["TO"] = 1,
 			["useText"] = false, ["useBackground"] = true,	["useOpacity"] = true,
+			["useClassColor"] = false,
 		},
 		["HEAL_ABSORB"] = {
 			["R"] = 1, ["G"] = 0.4, ["B"] = 0.4, ["O"] = 1,
 			["TR"] = 0.35, ["TG"] = 0.52, ["TB"] = 1, ["TO"] = 1,
 			["useText"] = false, ["useBackground"] = true,	["useOpacity"] = true,
+			["useClassColor"] = false,
 		},
 		["DIRECTION"] = {
 			["R"] = 1, ["G"] = 0.4, ["B"] = 0.4, ["O"] = 1,
@@ -1744,7 +1862,7 @@ function VUHDO_loadDefaultPanelSetup()
 
 		VUHDO_PANEL_SETUP[tPanelNum] = VUHDO_ensureSanity("VUHDO_PANEL_SETUP[" .. tPanelNum .. "]", VUHDO_PANEL_SETUP[tPanelNum], VUHDO_DEFAULT_PER_PANEL_SETUP);
 	end
-
+	
 	VUHDO_PANEL_SETUP = VUHDO_ensureSanity("VUHDO_PANEL_SETUP", VUHDO_PANEL_SETUP, VUHDO_DEFAULT_PANEL_SETUP);
 	VUHDO_DEFAULT_PANEL_SETUP = VUHDO_compressAndPackTable(VUHDO_DEFAULT_PANEL_SETUP);
 	VUHDO_DEFAULT_PER_PANEL_SETUP = VUHDO_compressAndPackTable(VUHDO_DEFAULT_PER_PANEL_SETUP);

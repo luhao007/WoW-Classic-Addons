@@ -10,11 +10,11 @@ Prat:AddModuleToLoad(function()
   local PL = module.PL
 
   local dbg = function() end
-  --[===[@debug@
+  --[==[@debug@
   dbg = function(...) Prat:PrintLiteral(...) end
-  --@end-debug@]===]
+  --@end-debug@]==]
 
-  --[===[@debug@
+  --[==[@debug@
   PL:AddLocale(PRAT_MODULE, "enUS", {
     module_name = "Search",
     module_desc = "Adds the ability to search the chatframes.",
@@ -24,7 +24,7 @@ Prat:AddModuleToLoad(function()
     find_results = "Find Results:",
     bnet_removed = "<BNET REMOVED>",
   })
-  --@end-debug@]===]
+  --@end-debug@]==]
 
   -- These Localizations are auto-generated. To help with localization
   -- please go to http://www.wowace.com/projects/prat-3-0/localization/
@@ -119,7 +119,7 @@ L = {
 /find <문자열>
 
 /findall <문자열>]=],
-		["module_name"] = "검색",
+		["module_name"] = "검색 [Search]",
 	}
 }
 

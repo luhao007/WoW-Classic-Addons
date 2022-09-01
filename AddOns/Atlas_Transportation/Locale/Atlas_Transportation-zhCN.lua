@@ -1,10 +1,10 @@
--- $Id: Atlas_Transportation-zhCN.lua 125 2021-05-22 14:07:10Z arithmandar $
+-- $Id: Atlas_Transportation-zhCN.lua 131 2022-02-02 17:23:30Z arithmandar $
 --[[
 
 	Atlas, a World of Warcraft instance map browser
 	Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert@gmail.com>
 	Copyright 2010 - Lothaer <lothayer@gmail.com>, Atlas Team
-	Copyright 2011 ~ 2021 - Arith Hsu, Atlas Team <atlas.addon at gmail.com>
+	Copyright 2011 ~ 2022 - Arith Hsu, Atlas Team <atlas.addon at gmail.com>
 
 	This file is part of Atlas.
 
@@ -36,10 +36,12 @@ L["Airship"] = "飞船"
 L["Aludane Whitecloud <Flight Master>"] = "奥鲁丹·白云 <飞行管理员>"
 L["Blue"] = "蓝"
 --[[Translation missing --]]
---[[ L["Boat to Echo Isles, Durotar"] = ""--]]
+--[[ L["Boat to Echo Isles, Durotar"] = ""--]] 
 --[[Translation missing --]]
---[[ L["Boat to Stormwind City"] = ""--]]
+--[[ L["Boat to Stormwind City"] = ""--]] 
 L["Camp Taurajo"] = "陶拉祖营地"
+--[[Translation missing --]]
+--[[ L["Change will take effect after next login; or type '/reload' command to reload addon"] = ""--]] 
 L["Class Order Halls"] = "职业大厅"
 L["Class Specific Only"] = "职业特定专用"
 L["Climbing Rope"] = "登山绳索"
@@ -55,7 +57,7 @@ L["Green"] = "绿"
 L["Gryphon"] = "狮鹫"
 L["Gryphon Master"] = "狮鹫管理员"
 --[[Translation missing --]]
---[[ L["Honored with Sha'tari Skyguard"] = ""--]]
+--[[ L["Honored with Sha'tari Skyguard"] = ""--]] 
 L["Hunter Only"] = "猎人专用"
 L["Illidari Gateway"] = "伊利达雷传送门"
 L["Jump to Skyhold"] = "跃向苍穹要塞"
@@ -78,15 +80,19 @@ L["Require to complete \"Meet the Scout\" quest line first."] = "需要先完成
 L["Requires Eagle Ally Advancement"] = "需要升级巨鹰盟友"
 L["Requires honored faction with Sha'tari Skyguard"] = "需要沙塔尔天空卫队声望尊敬"
 L["Requires Teleportation Nexus Advancement"] = "需要升级传送中枢"
+--[[Translation missing --]]
+--[[ L["Return to Zuldazar"] = ""--]] 
 L["Seahorse"] = "海马"
 L["Shado-Pan Rope"] = "影踪派绳索"
 L["Ship / Zeppelin sailing path to destination"] = "船只 / 飞船航向目的地的路径"
+--[[Translation missing --]]
+--[[ L["Show %s's transportation maps"] = ""--]] 
 L["South of the path along Lake Elune'ara"] = "月神湖旁小径的南方"
 L["Special transportation"] = "特殊交通"
 L["Talua <Eagle Keeper>"] = "塔鲁瓦 <雄鹰管理员>"
 L["Taxi Nodes"] = "飞行点"
 --[[Translation missing --]]
---[[ L["Teleport Beacon"] = ""--]]
+--[[ L["Teleport Beacon"] = ""--]] 
 L["Teleportation Nexus"] = "传送中枢"
 L["The Barrens"] = "贫瘠之地"
 L["The Bogpaddle Bullet"] = "沼桨弹头"
@@ -95,7 +101,7 @@ L["Transporter"] = "传送者"
 L["Transporters by the sea and on the cliff"] = "在海上或悬崖上的传送者"
 L["Two ways portal"] = "双向传送门"
 --[[Translation missing --]]
---[[ L["Vindicaar"] = ""--]]
+--[[ L["Vindicaar"] = ""--]] 
 L["Warning: Drop"] = "警告：跌落"
 L["Warrior's landing / jumping point (from or back to Skyhold)"] = "战士着陆/飞跃点（往返苍穹要塞）"
 L["West of the path to Timbermaw Hold"] = "通往木喉要塞道路的西方"

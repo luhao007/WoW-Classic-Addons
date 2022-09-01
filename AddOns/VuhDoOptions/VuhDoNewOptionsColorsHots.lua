@@ -29,6 +29,26 @@ end
 
 
 --
+function VUHDO_initHotFadeCheckButton(aButton)
+	VUHDO_lnfSetModel(aButton, "VUHDO_PANEL_SETUP.BAR_COLORS.HOT"
+		.. VUHDO_getNumbersFromString(aButton:GetName(), 1)[1]
+		.. ".isFadeOut");
+	VUHDO_lnfSetTooltip(aButton, VUHDO_I18N_TT.K260);
+end
+
+
+
+--
+function VUHDO_initHotFlashCheckButton(aButton)
+	VUHDO_lnfSetModel(aButton, "VUHDO_PANEL_SETUP.BAR_COLORS.HOT"
+		.. VUHDO_getNumbersFromString(aButton:GetName(), 1)[1]
+		.. ".isFlashWhenLow");
+	VUHDO_lnfSetTooltip(aButton, VUHDO_I18N_TT.K513);
+end
+
+
+
+--
 function	VUHDO_colorsHotsSetSwatchHotName(aTexture, aHotNum)
 	tHotName = VUHDO_PANEL_SETUP["HOTS"]["SLOTS"][aHotNum] or "";
 

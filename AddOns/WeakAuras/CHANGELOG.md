@@ -1,21 +1,20 @@
-# [3.7.8](https://github.com/WeakAuras/WeakAuras2/tree/3.7.8) (2022-01-27)
+# [4.1.2](https://github.com/WeakAuras/WeakAuras2/tree/4.1.2) (2022-08-29)
 
-[Full Changelog](https://github.com/WeakAuras/WeakAuras2/compare/3.7.7...3.7.8)
+[Full Changelog](https://github.com/WeakAuras/WeakAuras2/compare/4.1.1...4.1.2)
 
 ## Highlights
 
- - Bug fixes 
+ - More Wrath fixes 
 
 ## Commits
 
-Translit (1):
+asakawa (1):
 
-- additional WA logo textures (#3451)
+- Add the LoC type NONE
 
-mrbuds (4):
+mrbuds (3):
 
-- fix cast trigger for tbc 2.5.3 #3448
-- Fixing transmission and add a 5mn expiration timer on linked auras
-- fix glow in templates
-- fix bad order of aurabar foreground when importing old version, #3449
+- Fix error in talent lazy migration, when use_talent is true but talent.single is nil
+- Talent load condition skip testing talents not existing for player class
+- Aura trigger: fix options not available for current version of the game handled as if they were
 

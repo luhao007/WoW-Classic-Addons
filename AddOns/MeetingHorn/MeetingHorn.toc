@@ -1,4 +1,4 @@
-## Interface: 20503
+## Interface: 30400
 ## Version: 1.6.0
 ## SavedVariables: MEETINGHORN_DB
 ## SavedVariablesPerCharacter: MEETINGHORN_DB_CHARACTER_MEMBERS

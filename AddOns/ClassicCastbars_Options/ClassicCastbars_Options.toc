@@ -1,5 +1,5 @@
-## Interface: 20503
-## Version: v1.4.4
+## Interface: 30400
+## Version: v1.5.1
 ## Dependencies: ClassicCastbars
 ## LoadOnDemand: 1
 

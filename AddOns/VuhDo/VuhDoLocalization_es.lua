@@ -506,3 +506,6 @@ VUHDO_I18N_DEF_BOUQUET_BAR_MANA_TANK_ONLY = "Manabars: Power (Tank Only)";
 VUHDO_I18N_DEF_COUNTER_HEAL_ABSORB = "Counter: All Heal Absorb #k";
 VUHDO_I18N_DEF_STATUS_HEAL_ABSORB = "Statusbar: Heal Absorb";
 
+-- 3.135
+VUHDO_I18N_TRINKET_1 = "Trinket 1";
+VUHDO_I18N_TRINKET_2 = "Trinket 2";

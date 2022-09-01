@@ -19,8 +19,14 @@ function QuestieTBCItemFixes:Load()
         [6083] = {
             [itemKeys.npcDrops] = {},
         },
+        [8073] = {
+            [itemKeys.npcDrops] = {},
+        },
         [12366] = {
             [itemKeys.npcDrops] = {7457,7458,7459,7460},
+        },
+        [20023] = {
+            [itemKeys.npcDrops] = {6375,6377,6378,6379,6380,8759,8761,8762,8763,8764,8766,},
         },
         [21771] = {
             [itemKeys.npcDrops] = {15668,15669},
@@ -146,7 +152,7 @@ function QuestieTBCItemFixes:Load()
             [itemKeys.npcDrops] = {21727},
         },
         [30659] = {
-            [itemKeys.npcDrops] = {21725}
+            [itemKeys.npcDrops] = {21725},
         },
         [30823] = {
             [itemKeys.npcDrops] = {19678},
@@ -163,8 +169,20 @@ function QuestieTBCItemFixes:Load()
         [31530] = {
             [itemKeys.objectDrops] = {177281},
         },
+        [31716] = {
+            [itemKeys.npcDrops] = {17301},
+        },
+        [31721] = {
+            [itemKeys.npcDrops] = {17798},
+        },
+        [31722] = {
+            [itemKeys.npcDrops] = {18708},
+        },
         [31941] = {
             [itemKeys.objectDrops] = {185460},
+        },
+        [31951] = {
+            [itemKeys.vendors] = {21643},
         },
         [31957] = {
             [itemKeys.npcDrops] = {20520},
@@ -185,8 +203,11 @@ function QuestieTBCItemFixes:Load()
         [31813] = {
             [itemKeys.npcDrops] = {18884},
         },
+        [34246] = {
+            [itemKeys.npcDrops] = {},
+        },
         [32742] = {
-            [itemKeys.npcDrops] = {23363}
+            [itemKeys.npcDrops] = {23363},
         },
         [33041] = {
             [itemKeys.objectDrops] = {186283},
@@ -203,8 +224,14 @@ function QuestieTBCItemFixes:Load()
         [33175] = {
             [itemKeys.npcDrops] = {},
         },
+        [34502] = {
+            [itemKeys.objectDrops] = {400014},
+        },
         [34864] = {
             [itemKeys.objectDrops] = {500004,500005,500006},
+        },
+        [35229] = {
+            [itemKeys.objectDrops] = {400013},
         },
         [35277] = {
             [itemKeys.npcDrops] = {25866,25863,25924},
@@ -229,39 +256,6 @@ function QuestieTBCItemFixes:Load()
             [itemKeys.subClass] = 0,
             [itemKeys.vendors] = {24495,27489},
         },
-        [190179] = {
-            [itemKeys.name] = "Avelina's Heart",
-            [itemKeys.npcDrops] = {185333},
-            [itemKeys.relatedQuests] = {65593},
-        },
-        [190180] = {
-            [itemKeys.name] = "Isaac's Heart",
-            [itemKeys.npcDrops] = {185334},
-            [itemKeys.relatedQuests] = {65593},
-        },
-        [190181] = {
-            [itemKeys.name] = "Lovers' Hearts",
-            [itemKeys.relatedQuests] = {65597},
-        },
-        [190186] = {
-            [itemKeys.name] = "Wooden Figurine",
-            [itemKeys.relatedQuests] = {65603},
-        },
-        [190187] = {
-            [itemKeys.name] = "Withered Scarf",
-            [itemKeys.npcDrops] = {3782,3784},
-            [itemKeys.relatedQuests] = {65610},
-        },
-        [190232] = {
-            [itemKeys.name] = "Withered Scarf",
-            [itemKeys.relatedQuests] = {65604},
-        },
-        [190309] = {
-            [itemKeys.name] = "Wooden Figurine",
-            [itemKeys.objectDrops] = {400013},
-            [itemKeys.relatedQuests] = {65602},
-        },
-
 
         -- Below are fake items which can be used to show special quest "objectives" as requiredSourceItem.
         -- For example this is used for quest 10129 to show the NPC you have to talk with to start the flight

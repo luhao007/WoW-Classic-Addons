@@ -1,12 +1,61 @@
-$Id: ChangeLog.txt 1571 2021-05-22 14:25:06Z arithmandar $
+$Id: ChangeLog.txt 1592 2022-08-30 14:35:51Z arithmandar $
 Atlas, a World of Warcraft instance map browser
 Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert@gmail.com>
 Copyright 2010 - Lothaer <lothayer@gmail.com>, Atlas Team
-Copyright 2011 ~ 2020 - Arith Hsu, Atlas Team <atlas.addon@gmail.com>
+Copyright 2011 ~ 2022 - Arith Hsu, Atlas Team <atlas.addon@gmail.com>
 
 ==============
 = Change Log =
 ==============
+
+v1.51.04 (Aug. 30, 2022)
+------------------------
+- Folder re-structure
+
+v1.51.03 (Aug. 17, 2022)
+------------------------
+- Toc update to support WoW 9.2.7
+
+v1.51.02 (Jul. 23, 2022)
+------------------------
+- Fixed syntax error
+
+v1.51.01 (Jul. 23, 2022)
+------------------------
+- Classic ToC update to support WoW 1.14.3
+
+v1.51.00 (Jul. 23, 2022)
+------------------------
+- Retail ToC update to support WoW 9.2.5
+- Classic ToC update to support WoW 1.14.3
+- Added support for Wrath of the Lich King Classic (WoW 3.4.0)
+- Added battleground / PvP maps to BCC:
+  - Halaa PvP
+  - Hellfire Fortifications
+  - Terokkar Forest - Spirit Towers
+  - Zangarmarsh - Twin Spire Ruins
+
+v1.50.01 (Mar. 23, 2022)
+------------------------
+- BCC ToC update to support WoW 2.5.4
+
+v1.50.00 (Feb. 23, 2022)
+------------------------
+- Toc update to support WoW 9.2.0
+
+v1.49.03 (Feb. 10, 2022)
+------------------------
+- Support multiple ToC
+- BCC ToC update to support WoW 2.5.3
+- Classic ToC update to support WoW 1.14.2
+
+v1.49.02 (Feb. 3, 2022)
+------------------------
+- ToC update to support WoW 9.1.5
+
+v1.49.01 (Jun. 30, 2021)
+------------------------
+- ToC update to support WoW 9.1.0
 
 v1.49.00 (May 22, 2021)
 ------------------------

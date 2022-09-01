@@ -12,8 +12,10 @@ from toc import TOC
 logger = logging.getLogger('manager')
 
 CLASSIC_ERA_VER = '11401'
-CLASSIC_VER = '20503'
-RETAIL_VER = '90100'
+CLASSIC_VER = '30400'
+RETAIL_VER = '90105'
+
+IGNORED = ['FishingBuddy', 'GTFO', 'Details', 'ATT-Classic', 'TrinketMenu', 'TalentEmu']
 
 
 def available_on(platforms):
@@ -80,18 +82,17 @@ class Manager:
     def get_addon_parent_config(self, addon):
         return self.config.find(f'.//*[@name="{addon}"]../..')
 
-    def get_title(self, addon: str):
+    def get_title(self, addon):
         parts = []
-        namespace = {'x': 'https://www.github.com/luhao007'}
 
         config = self.get_addon_config(addon)
         if config.tag.endswith('SubAddon'):
             parent_config = self.get_addon_parent_config(addon)
-            cat = parent_config.find('x:Category', namespace).text
-            title = parent_config.find('x:Title', namespace).text
+            cat = parent_config.find('Category').text
+            title = parent_config.find('Title').text
         else:
-            cat = config.find('x:Category', namespace).text
-            title = config.find('x:Title', namespace).text
+            cat = config.find('Category').text
+            title = config.find('Title').text
 
         colors = {
             '基础库': 'C41F3B',     # Red - DK
@@ -113,7 +114,7 @@ class Manager:
         parts.append(f'|cFFFFFFFF{title}|r')
 
         if config.tag.endswith('SubAddon'):
-            sub = config.find('x:Title', namespace).text
+            sub = config.find('Title').text
             if sub == '设置':
                 color = 'FF0055FF'
             else:
@@ -122,13 +123,13 @@ class Manager:
         elif not (('DBM' in addon and addon != 'DBM-Core') or
                   'Grail-' in addon or
                   addon == '!!Libs'):
-            if config.find('x:Title-en', namespace) is not None:
-                title_en = config.find('x:Title-en', namespace).text
+            if config.find('Title-en') is not None:
+                title_en = config.find('Title-en').text
             else:
                 title_en = addon
             parts.append(f'|cFFFFE00A{title_en}|r')
 
-        ext = config.find('x:TitleExtra', namespace)
+        ext = config.find('TitleExtra')
         if ext is not None:
             parts.append(f'|cFF22B14C{ext.text}|r')
 
@@ -144,11 +145,13 @@ class Manager:
             def process(config, addon, lines):
                 toc = TOC(lines)
 
-                toc.tags['Interface'] = self.interface
+                if addon in IGNORED and utils.get_platform() == 'classic':
+                    toc.tags['Interface'] = 10000
+                else:
+                    toc.tags['Interface'] = self.interface
                 toc.tags['Title-zhCN'] = self.get_title(addon)
 
-                namespace = {'x': 'https://www.github.com/luhao007'}
-                note = config.find('x:Notes', namespace)
+                note = config.find('Notes')
                 if note is not None:
                     toc.tags['Notes-zhCN'] = note.text
 
@@ -162,7 +165,7 @@ class Manager:
 
                 return toc.to_lines()
 
-            for postfix in ['', '-Classic', '-BCC', '-Mainline', '_TBC', '_Vanilla']:
+            for postfix in ['', '-Classic', '-BCC', '-WOTLKC', '-Mainline', '_TBC', '_Vanilla', '_Wrath', '_Mainline']:
                 path = os.path.join('AddOns', addon, f'{addon}{postfix}.toc')
                 if os.path.exists(path):
                     utils.process_file(path, functools.partial(process, config, addon))
@@ -388,13 +391,13 @@ class Manager:
         utils.process_file('Addons/ACP/ACP.xml', handle)
 
     @staticmethod
-    @available_on(['classic', 'classic_era'])
+    @available_on(['classic_era'])
     def handle_ate():
         utils.remove_libraries(
                 ['CallbackHandler-1.0', 'LibDataBroker-1.1',
                  'LibDbIcon-1.0', 'LibStub'],
-                'AddOns/TalentEmu/Libs',
-                'AddOns/TalentEmu/Libs/libs.xml'
+                'AddOns/alaTalentEmu/Libs',
+                'AddOns/alaTalentEmu/Libs/libs.xml'
             )
 
     @staticmethod

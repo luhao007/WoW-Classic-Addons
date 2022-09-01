@@ -26,10 +26,10 @@
 Prat:AddModuleToLoad(function()
   local function dbg(...) end
 
-  --[===[@debug@
+  --[==[@debug@
   function dbg(...) Prat:PrintLiteral(...) end
 
-  --@end-debug@]===]
+  --@end-debug@]==]
 
   local PRAT_MODULE = Prat:RequestModuleName("Timestamps")
 
@@ -42,7 +42,7 @@ Prat:AddModuleToLoad(function()
   -- define localized strings
   local PL = module.PL
 
-  --[===[@debug@
+  --[==[@debug@
   PL:AddLocale(PRAT_MODULE, "enUS", {
     ["Timestamps"] = true,
     ["Chat window timestamp options."] = true,
@@ -74,7 +74,7 @@ Prat:AddModuleToLoad(function()
     ["Timestamp Text Format"] = true,
     ["Other Formatting Options"] = true,
   })
-  --@end-debug@]===]
+  --@end-debug@]==]
 
   -- These Localizations are auto-generated. To help with localization
   -- please go to http://www.wowace.com/projects/prat-3-0/localization/
@@ -205,36 +205,34 @@ L = {
   
 L = {
 	["Timestamps"] = {
-		["Chat window timestamp options."] = "대화창 시간 표시 옵션입니다.",
-		["colortimestamp_desc"] = "시간 표시에 색상을 입히거나 입히지 않습니다.",
-		["colortimestamp_name"] = "시간 표시 색상",
-		["Format All Timestamps"] = "모든 시간 표시 형식",
-		["HH:MM (12-hour)"] = "HH:MM (12시간제)",
-		["HH:MM (24-hour)"] = "HH:MM (24시간제)",
-		["HH:MM AM (12-hour)"] = "시간:분 오전 (12시간제)",
-		["HH:MM:SS (12-hour)"] = "HH:MM:SS (12시간제)",
-		["HH:MM:SS (24-hour)"] = "HH:MM:SS (24시간제)",
-		["HH:MM:SS AM (12-hour)"] = "HH:MM:SS AM (12시간제)",
-		["localtime_desc"] = "컴퓨터 시간 사용합니다.",
-		["localtime_name"] = "컴퓨터 시간 사용",
-		["MM:SS"] = true,
-		--[[Translation missing --]]
-		["Other Formatting Options"] = "Other Formatting Options",
-		["Post-Timestamp"] = "뒤-시간 표시",
-		["Pre-Timestamp"] = "앞-시간 표시",
-		["Set the timestamp format"] = "시간 표시 형식 설정",
-		["Set Timestamp Color"] = "시간 표시 색상 설정",
-		["Sets the color of the timestamp."] = "시간 표시 색상을 설정합니다.",
-		["Show Timestamp"] = "시간 표시",
-		["show_desc"] = "각 창 별로 시간 표시 여부를 선택합니다.",
-		["show_name"] = "시간 표시",
+		["Chat window timestamp options."] = "대화창 대화 시각 옵션입니다.",
+		["colortimestamp_desc"] = "대화 시각에 색상을 입히거나 입히지 않습니다.",
+		["colortimestamp_name"] = "대화 시각 색상 지정",
+		["Format All Timestamps"] = "모든 대화 시각 형식",
+		["HH:MM (12-hour)"] = "시:분 (12시간)",
+		["HH:MM (24-hour)"] = "시:분 (24시간)",
+		["HH:MM AM (12-hour)"] = "시:분 오전 (12시간)",
+		["HH:MM:SS (12-hour)"] = "시:분:초 (12시간)",
+		["HH:MM:SS (24-hour)"] = "시:분:초 (24시간)",
+		["HH:MM:SS AM (12-hour)"] = "시:분:초 오전 (12시간)",
+		["localtime_desc"] = "시스템 시간 사용을 켜고 끕니다.",
+		["localtime_name"] = "시스템 시간 사용",
+		["MM:SS"] = "분:초",
+		["Other Formatting Options"] = "다른 형식 옵션",
+		["Post-Timestamp"] = "뒤-대화 시각",
+		["Pre-Timestamp"] = "앞-대화 시각",
+		["Set the timestamp format"] = "대화 시각 형식을 설정합니다.",
+		["Set Timestamp Color"] = "대화 시각 색상 설정",
+		["Sets the color of the timestamp."] = "대화 시각의 색상을 설정합니다.",
+		["Show Timestamp"] = "대화 시각 표시",
+		["show_desc"] = "각 창에 대해 대화 시각 표시를 켜고 끕니다.",
+		["show_name"] = "대화 시각 표시",
 		["space_desc"] = "시간 표시 뒤에 공간을 넣을 지 선택합니다.",
 		["space_name"] = "공간 삽입",
-		--[[Translation missing --]]
-		["Timestamp Text Format"] = "Timestamp Text Format",
-		["Timestamps"] = "시간 표시",
-		["Toggle showing timestamp for each window."] = "각 창 별로 시간 표시 기능을 끄거나 켭니다.",
-		["twocolumn_desc"] = "시간 표시를 분리된 열에 위치시켜 글자가 그 아래쪽을 둘러싸지 않게 합니다",
+		["Timestamp Text Format"] = "대화 시각 문자 형식",
+		["Timestamps"] = "대화 시각 [Timestamps]",
+		["Toggle showing timestamp for each window."] = "각 창 별로 대화 시각 표시 기능을 켜거나 끕니다.",
+		["twocolumn_desc"] = "대화 시각을 분리된 열에 배치시켜 글자가 줄바꿈되지 않도록 합니다.",
 		["twocolumn_name"] = "열 분리",
 	}
 }
@@ -645,7 +643,7 @@ L = {
   function module:AddMessage(frame, text, ...)
     if self.db.profile.on and self.db.profile.show and self.db.profile.show[frame:GetName()] and not Prat.loading then
       local entry = frame.historyBuffer:GetEntryAtIndex(1)
-      if text == entry.message then
+      if entry and text == entry.message then
         entry.message = self:InsertTimeStamp(entry.message, frame)
       end
     end

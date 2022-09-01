@@ -22,7 +22,7 @@ NWB.options = {
 		},
 		authorText = {
 			type = "description",
-			name = "|TInterface\\AddOns\\NovaWorldBuffs\\Media\\logo32:32:32:0:20|t |cFF9CD6DEby Novaspark-Arugal",
+			name = "|TInterface\\AddOns\\NovaWorldBuffs\\Media\\logo32:32:32:0:20|t |cFF9CD6DEby Novaspark-Arugal|r  |cFF00C800-|r  |cFFFFFF00For help or suggestions discord.gg/RTKMfTmkdj|r",
 			fontSize = "medium",
 			order = 2,
 		},
@@ -1311,7 +1311,7 @@ NWB.options = {
 };
 
 function NWB:loadSpecificOptions()
-	if (NWB.isTBC) then
+	if (not NWB.isClassic) then
 		NWB.options.args["tbcHeader"] = {
 			type = "description",
 			name = "|cFF50D050" .. L["tbcHeaderText"],
@@ -1408,22 +1408,59 @@ function NWB:loadSpecificOptions()
 			set = "setDisableLogonAllLevels",
 			width = 1.5,
 		};
-		NWB.options.args["tbcNote"] = {
-			type = "description",
-			name = "|cFF50D050" .. L["tbcNoteText"],
-			fontSize = "medium",
+		NWB.options.args["disableBuffTimersMaxBuffLevel"] = {
+			type = "toggle",
+			name = L["disableBuffTimersMaxBuffLevelTitle"],
+			desc = L["disableBuffTimersMaxBuffLevelDesc"],
 			order = 25,
+			width = 1.5,
+			get = "getDisableBuffTimersMaxBuffLevel",
+			set = "setDisableBuffTimersMaxBuffLevel",
+		};
+		NWB.options.args["disableBuffTimersAllLevels"] = {
+			type = "toggle",
+			name = L["hideMinimapBuffTimersTitle"],
+			desc = L["hideMinimapBuffTimersDesc"],
+			order = 26,
+			width = 1.5,
+			get = "getHideMinimapBuffTimers",
+			set = "setHideMinimapBuffTimers",
 		};
 		NWB.options.args["showShatWorldmapMarkers"] = {
 			type = "toggle",
 			name = L["showShatWorldmapMarkersTitle"],
 			desc = L["showShatWorldmapMarkersDesc"],
-			order = 133,
+			order = 27,
+			width = 1.5,
 			get = "getShowShatWorldmapMarkers",
 			set = "setShowShatWorldmapMarkers",
 		};
+		NWB.options.args["showShatWorldmapMarkersTerok"] = {
+			type = "toggle",
+			name = L["showShatWorldmapMarkersTerokTitle"],
+			desc = L["showShatWorldmapMarkersTerokDesc"],
+			order = 28,
+			width = 1.5,
+			get = "getShowShatWorldmapMarkersTerok",
+			set = "setShowShatWorldmapMarkersTerok",
+		};
+		NWB.options.args["guildTerok10"] = {
+			type = "toggle",
+			name = L["guildTerok10Title"],
+			desc = L["guildTerok10Desc"],
+			order = 29,
+			width = 1.5,
+			get = "getGuildTerok10",
+			set = "setGuildTerok10",
+		};
+		--[[NWB.options.args["tbcNote"] = {
+			type = "description",
+			name = "|cFF50D050" .. L["tbcNoteText"],
+			fontSize = "medium",
+			order = 30,
+		};]]
 	end
-	if (NWB.isTBC or NWB.realmsTBC) then
+	if (NWB.isWrath or NWB.isTBC or NWB.realmsTBC) then
 		NWB.optionDefaults.global.minimapIcon = {["minimapPos"] = 139, ["hide"] = false};
 	end
 	if (NWB.faction == "Alliance") then
@@ -1638,7 +1675,7 @@ NWB.optionDefaults = {
 		dmfAutoRes = false,
 		dmfAutoResTime = 3,
 		dmfChatCountdown = true,
-		resetLayers5 = true, --Reset layers one time (sometimes needed when upgrading from old version.
+		resetLayers9 = true, --Reset layers one time (sometimes needed when upgrading from old version.
 		resetDailyData = true;
 		resetSongflowers = true, --Reset songflowers one time.
 		beta = false, --Enable features being tested on occasion.
@@ -1649,8 +1686,11 @@ NWB.optionDefaults = {
 		guildL = true,
 		terokkarChat10 = true,
 		terokkarMiddle10 = false,
-		wipeTerokkarData = true,
+		wipeTerokkarData4 = true,
 		showShatWorldmapMarkers = true,
+		showShatWorldmapMarkersTerok = true,
+		hideMinimapBuffTimers = false,
+		disableBuffTimersMaxBuffLevel = true,
 		
 		--TBC options
 		disableSoundsAboveMaxBuffLevel = true,
@@ -1663,6 +1703,8 @@ NWB.optionDefaults = {
 		disableFlashAllLevels = false,
 		disableLogonAboveMaxBuffLevel = true,
 		disableLogonAllLevels = false,
+		guildTerok10 = 1,
+		showExpiredTimersTerok = true,
 	},
 };
 
@@ -1706,6 +1748,9 @@ function NWB:buildRealmFactionData()
 		dragon3 = 0,
 		dragon4 = 0,
 	};
+	--if (NWB.isTBC) then
+	--	defaults.terokTowersTime = 0;
+	--end
 	--Create realm and faction tables if they don't exist.
 	if (not self.db.global[NWB.realm]) then
 		self.db.global[NWB.realm] = {};
@@ -2338,6 +2383,24 @@ function NWB:getDisableAllGuildMsgs(info)
 	end
 end
 
+--Guild 10 minute Terokarr Towers warning.
+function NWB:setGuildTerok10(info, value)
+	if (value) then
+		self.db.global.guildTerok10 = 1;
+	else
+		self.db.global.guildTerok10 = 0;
+	end
+	NWB:sendSettings("GUILD");
+end
+
+function NWB:getGuildTerok10(info)
+	if (self.db.global.guildTerok10 == 1) then
+		return true;
+	else
+		return false;
+	end
+end
+
 --Guild songflower picked announce.
 function NWB:setGuildSongflower(info, value)
 	if (value) then
@@ -2446,6 +2509,7 @@ end
 --Show expired timers.
 function NWB:setShowExpiredTimers(info, value)
 	self.db.global.showExpiredTimers = value;
+	self.db.global.showExpiredTimersTerok = value;
 end
 
 function NWB:getShowExpiredTimers(info)
@@ -3375,13 +3439,31 @@ end
 --Show world map Shat dailies marker.
 function NWB:setShowShatWorldmapMarkers(info, value)
 	self.db.global.showShatWorldmapMarkers = value;
-	NWB:updateShatDailyMarkers();
+	NWB:updateDailyMarkers();
 end
 
 function NWB:getShowShatWorldmapMarkers(info)
 	return self.db.global.showShatWorldmapMarkers;
 end
 
+--Show world map Shat Terok dailies marker.
+function NWB:setShowShatWorldmapMarkersTerok(info, value)
+	self.db.global.showShatWorldmapMarkersTerok = value;
+	NWB:refreshTerokkarMarkers();
+end
+
+function NWB:getShowShatWorldmapMarkersTerok(info)
+	return self.db.global.showShatWorldmapMarkersTerok;
+end
+
+--Hide minimap buff timers.
+function NWB:setHideMinimapBuffTimers(info, value)
+	self.db.global.hideMinimapBuffTimers = value;
+end
+
+function NWB:getHideMinimapBuffTimers(info)
+	return self.db.global.hideMinimapBuffTimers;
+end
 --Bigwigs support.
 function NWB:setBigWigsSupport(info, value)
 	self.db.global.bigWigsSupport = value;
@@ -3572,4 +3654,13 @@ end
 
 function NWB:getTerokkarMiddle10(info)
 	return self.db.global.terokkarMiddle10;
+end
+
+--Hide buff timers above lvel 64.
+function NWB:setDisableBuffTimersMaxBuffLevel(info, value)
+	self.db.global.disableBuffTimersMaxBuffLevel = value;
+end
+
+function NWB:getDisableBuffTimersMaxBuffLevel(info)
+	return self.db.global.disableBuffTimersMaxBuffLevel;
 end

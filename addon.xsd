@@ -6,22 +6,22 @@
 
     <xs:element name="AddonConfig">
         <xs:complexType>
-            <xs:sequence>
-                <xs:element name="Addon" type="Addon" maxOccurs="unbounded"></xs:element>
+            <xs:sequence maxOccurs="unbounded">
+                <xs:element name="Addon" type="Addon"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
 
     <xs:complexType name="Addon">
         <xs:sequence>
-            <xs:element name="Title" type="xs:string"  nillable="false" maxOccurs="1"/>
-            <xs:element name="Title-en" type="xs:string" minOccurs="0" maxOccurs="1"/>
-            <xs:element name="Notes" type="xs:string" minOccurs="0" maxOccurs="1"/>
-            <xs:element name="Category" type="xs:string" nillable="false" maxOccurs="1"/>
+            <xs:element name="Title" type="xs:string"  nillable="false"/>
+            <xs:element name="Title-en" type="xs:string" minOccurs="0"/>
+            <xs:element name="Notes" type="xs:string" minOccurs="0"/>
+            <xs:element name="Category" type="xs:string" nillable="false"/>
             <xs:element name="SubAddons" minOccurs="0">
                 <xs:complexType>
-                    <xs:sequence>
-                        <xs:element name="SubAddon" type="SubAddon" maxOccurs="unbounded"/>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="SubAddon" type="SubAddon"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -31,13 +31,11 @@
 
     <xs:complexType name="SubAddon">
         <xs:sequence>
-            <xs:element name="Title" type="xs:string" nillable="false" maxOccurs="1"/>
-            <xs:element name="TitleExtra" type="xs:string" minOccurs="0" maxOccurs="1"/>
-            <xs:element name="Notes" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="Title" type="xs:string" nillable="false"/>
+            <xs:element name="TitleExtra" type="xs:string" minOccurs="0"/>
+            <xs:element name="Notes" type="xs:string" minOccurs="0"/>
         </xs:sequence>
         <xs:attribute name="name" type="xs:string"/>
     </xs:complexType>
 
 </xs:schema>
-
-

@@ -1,8 +1,11 @@
-0.8.0 Release Notes
+1.0.2 Release Notes
 Contributions made by Crieve:
-* Added information about the Halaa Battle Token.
-* Added the bit about Res Sickness.
-* Fixed the npc ID for Isalien for the Warrior/Rogue Right Piece for the Tier 0.5 quest chain.
-* Fixed a bug with parser where an objective of the same id can't cooexist in the same hierarchy level.
-* Updated supported interface to 20503.
+* King of Dire Maul achievement updated for Wrath Classic.
+* Added missing timeline data to items in dalaran, which was causing lag when picking up quests in Wrath Classic.
+* Fixed a bit of quest lag.
+* Added Wrath of the Lich King era crafted items. Added Inscription.
+* Added High-powered Flashlight to Engineering.
+* Battle Pets fixed! Rejoice!
+* Ulduar, ICC, and Halls of Lightning data files no longer crash Wrath Classic.
+* Fixed a bug with the refresh data function.
 

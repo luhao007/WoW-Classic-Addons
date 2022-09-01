@@ -35,6 +35,7 @@ settings.name = app:GetName();
 settings.MostRecentTab = nil;
 settings:Hide();
 settings.Tabs = {};
+settings.TabsByName = {};
 settings:SetBackdrop({
 	bgFile = "Interface/RAIDFRAME/UI-RaidFrame-GroupBg",
 	edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
@@ -94,6 +95,7 @@ local GeneralSettingsBase = {
 		["AccountWide:Quests"] = false,
 		["AccountWide:Recipes"] = true,
 		["AccountWide:Reputations"] = true,
+		["AccountWide:RWP"] = true,
 		["AccountWide:Titles"] = true,
 		["AccountWide:Toys"] = true,
 		["Thing:Achievements"] = true,
@@ -107,6 +109,7 @@ local GeneralSettingsBase = {
 		["Thing:Quests"] = true,
 		["Thing:Recipes"] = true,
 		["Thing:Reputations"] = true,
+		--["Thing:RWP"] = false,
 		["Thing:Titles"] = true,
 		["Thing:Toys"] = true,
 		["Show:CompletedGroups"] = false,
@@ -118,10 +121,17 @@ local FilterSettingsBase = {
 
 	},
 };
+local RWPFilterSettingsBase = {
+	__index = {
+
+	},
+};
 local TooltipSettingsBase = {
 	__index = {
 		["Auto:MiniList"] = false,
 		["Auto:ProfessionList"] = true,
+		["Auto:Sync"] = true,
+		["Integrate:LFGBulletinBoard"] = true,
 		["Celebrate"] = true,
 		["Channel"] = "master",
 		["ClassRequirements"] = true,
@@ -215,8 +225,11 @@ settings.Initialize = function(self)
 	-- Assign the preset filters for your character class as the default states
 	if not ATTClassicSettingsPerCharacter then ATTClassicSettingsPerCharacter = {}; end
 	if not ATTClassicSettingsPerCharacter.Filters then ATTClassicSettingsPerCharacter.Filters = {}; end
+	if not ATTClassicSettingsPerCharacter.RWPFilters then ATTClassicSettingsPerCharacter.RWPFilters = {}; end
 	setmetatable(ATTClassicSettingsPerCharacter.Filters, FilterSettingsBase);
+	setmetatable(ATTClassicSettingsPerCharacter.RWPFilters, RWPFilterSettingsBase);
 	FilterSettingsBase.__index = app.Presets[app.Class] or app.Presets.ALL;
+	RWPFilterSettingsBase.__index = app.PresetRWPs[app.Class] or app.PresetRWPs.ALL;
 
 	self.LocationsSlider:SetValue(self:GetTooltipSetting("Locations"));
 	self.MainListScaleSlider:SetValue(self:GetTooltipSetting("MainListScale"));
@@ -241,12 +254,45 @@ settings.Initialize = function(self)
 	if self:GetTooltipSetting("Auto:WorldQuestsList") then
 		app:GetWindow("WorldQuests"):Show();
 	end
+
+	-- Account Synchronization
+	self.TabsByName["Features"]:InitializeSyncWindow();
+	if self:GetTooltipSetting("Auto:Sync") then
+		C_Timer.After(1, function()
+			app:Synchronize(true);
+		end);
+	end
+end
+settings.CheckSeasonalDate = function(self, u, startMonth, startDay, endMonth, endDay)
+	local today = date("*t");
+	local now, start, ends = time({day=today.day,month=today.month,year=today.year,hour=0,min=0,sec=0});
+	if startMonth <= endMonth then
+		start = time({day=startDay,month=startMonth,year=today.year,hour=0,min=0,sec=0});
+		ends = time({day=endDay,month=endMonth,year=today.year,hour=0,min=0,sec=0});
+	else
+		local year = today.year;
+		if today.month < startMonth then year = year - 1; end
+		start = time({day=startDay,month=startMonth,year=year,hour=0,min=0,sec=0});
+		ends = time({day=endDay,month=endMonth,year=year + 1,hour=0,min=0,sec=0});
+	end
+
+	local active = (now >= start and now <= ends);
+	UnobtainableSettingsBase.__index[u] = active;
+end
+settings.CheckWeekDay = function(self, u, weekDay)
+	UnobtainableSettingsBase.__index[u] = date("*t").wday == weekDay;
 end
 settings.Get = function(self, setting)
 	return ATTClassicSettings.General[setting];
 end
 settings.GetFilter = function(self, filterID)
 	return ATTClassicSettingsPerCharacter.Filters[filterID];
+end
+settings.GetFilterForRWPBase = function(self, filterID)
+	return app.PresetRWPs.ALL[filterID];
+end
+settings.GetFilterForRWP = function(self, filterID)
+	return ATTClassicSettingsPerCharacter.RWPFilters[filterID];
 end
 settings.GetModeString = function(self)
 	local mode = "Mode";
@@ -287,6 +333,9 @@ settings.GetModeString = function(self)
 
 		if self:Get("Thing:Mounts") then
 			mode = mode .. " + Mounts";
+		end
+		if self:Get("Thing:RWP") then
+			mode = mode .. " + RWP";
 		end
 	end
 	if self:Get("Filter:ByLevel") then
@@ -360,12 +409,13 @@ settings.CreateTab = function(self, text)
 	tab.objects = {};
 	tab:SetID(id);
 	tab:SetText(text);
+	self.TabsByName[text] = tab;
 	PanelTemplates_TabResize(tab, 0);
 	tab:SetScript('OnClick', OnClickForTab);
 	return tab;
 end
 settings.ShowCopyPasteDialog = function(self)
-	app:ShowPopupDialogWithEditBox("Ctrl+A, Ctrl+C to Copy to your Clipboard.", self:GetText(), nil, 10);
+	app:ShowPopupDialogWithEditBox("Ctrl+A, Ctrl+C to Copy to your Clipboard.", self.copypasta or self:GetText(), nil, 10);
 end
 
 settings.SetAccountMode = function(self, accountMode)
@@ -447,6 +497,7 @@ settings.UpdateMode = function(self)
 		app.AccountWideQuests = true;
 		app.AccountWideRecipes = true;
 		app.AccountWideReputations = true;
+		app.AccountWideRWP = true;
 		app.AccountWideTitles = true;
 		app.AccountWideToys = true;
 
@@ -460,6 +511,7 @@ settings.UpdateMode = function(self)
 		app.CollectibleQuests = true;
 		app.CollectibleRecipes = true;
 		app.CollectibleReputations = true;
+		app.CollectibleRWP = true;
 		app.CollectibleTitles = true;
 		app.CollectibleToys = true;
 	else
@@ -481,6 +533,7 @@ settings.UpdateMode = function(self)
 		app.AccountWideQuests = self:Get("AccountWide:Quests");
 		app.AccountWideRecipes = self:Get("AccountWide:Recipes");
 		app.AccountWideReputations = self:Get("AccountWide:Reputations");
+		app.AccountWideRWP = self:Get("AccountWide:RWP");
 		app.AccountWideTitles = self:Get("AccountWide:Titles");
 		app.AccountWideToys = self:Get("AccountWide:Toys");
 
@@ -494,6 +547,7 @@ settings.UpdateMode = function(self)
 		app.CollectibleQuests = self:Get("Thing:Quests");
 		app.CollectibleRecipes = self:Get("Thing:Recipes");
 		app.CollectibleReputations = self:Get("Thing:Reputations");
+		app.CollectibleRWP = self:Get("Thing:RWP");
 		app.CollectibleTitles = self:Get("Thing:Titles");
 		app.CollectibleToys = self:Get("Thing:Toys");
 
@@ -515,6 +569,11 @@ settings.UpdateMode = function(self)
 			app.RequireFactionFilter = app.FilterItemClass_RequireFaction;
 		end
 	end
+
+	self:SetFilter(100, app.CollectibleMounts);
+	self:SetFilter(101, app.CollectibleBattlePets);
+	self:SetFilter(102, app.CollectibleToys);
+	self:SetFilter(200, app.CollectibleRecipes);
 	if self:Get("Show:CompletedGroups") or self:Get("DebugMode") then
 		app.GroupVisibilityFilter = app.NoFilter;
 	else
@@ -580,23 +639,36 @@ settings.version = f;
 
 f = CreateFrame("Button", nil, settings, "OptionsButtonTemplate");
 f:SetPoint("TOPLEFT", settings, "BOTTOMLEFT", 0, -6);
-f:SetText("discord.gg/allthethings");
-f:SetWidth(230);
+f:SetText("CurseForge");
+f:SetWidth(140);
+f:SetHeight(30);
+f:RegisterForClicks("AnyUp");
+f:SetScript("OnClick", settings.ShowCopyPasteDialog);
+f:SetATTTooltip("Click this button to copy the url to get the ALL THE THINGS addon from Curse.\n\nYou can give this link to your friends to ruin their lives too! They'll eventually forgive you... maybe.");
+f.copypasta = "https://www.curseforge.com/wow/addons/all-the-things";
+settings.curse = f;
+
+f = CreateFrame("Button", nil, settings, "OptionsButtonTemplate");
+f:SetPoint("TOPLEFT", settings.curse, "TOPRIGHT", 4, 0);
+f:SetText("Discord");
+f:SetWidth(140);
 f:SetHeight(30);
 f:RegisterForClicks("AnyUp");
 f:SetScript("OnClick", settings.ShowCopyPasteDialog);
 f:SetATTTooltip("Click this button to copy the url to get to the ALL THE THINGS Discord.\n\nYou can share your progress/frustrations with other collectors!");
-settings.twitch = f;
+f.copypasta = "discord.gg/allthethings";
+settings.discord = f;
 
 f = CreateFrame("Button", nil, settings, "OptionsButtonTemplate");
-f:SetPoint("TOPLEFT", settings.twitch, "TOPRIGHT", 4, 0);
-f:SetText("twitch.tv/crieve");
-f:SetWidth(200);
+f:SetPoint("TOPLEFT", settings.discord, "TOPRIGHT", 4, 0);
+f:SetText("Twitch");
+f:SetWidth(140);
 f:SetHeight(30);
 f:RegisterForClicks("AnyUp");
 f:SetScript("OnClick", settings.ShowCopyPasteDialog);
 f:SetATTTooltip("Click this button to copy the url to get to my Twitch Channel.\n\nYou can ask questions while I'm streaming and I will try my best to answer them!");
-settings.community = f;
+f.copypasta = "twitch.tv/crieve";
+settings.twitch = f;
 
 ------------------------------------------
 -- The "General" Tab.					--
@@ -946,6 +1018,43 @@ end);
 LootCheckBox:SetATTTooltip("Enable this option to track loot.\n\nLoot being any item you can get from a mob, quest, or container. Loot that qualifies for one of the other filters will still appear in ATT if this filter is turned off.\n\nYou can change which sort of loot displays for you based on the Filters tab.\n\nDefault: Class Defaults, Disabled.");
 LootCheckBox:SetPoint("TOPLEFT", FlightPathsCheckBox, "BOTTOMLEFT", 0, 4);
 
+local RWPCheckBox = settings:CreateCheckBox("Removed With Patch Loot",
+function(self)
+	self:SetChecked(settings:Get("Thing:RWP"));
+	if settings:Get("DebugMode") then
+		self:Disable();
+		self:SetAlpha(0.2);
+	else
+		self:Enable();
+		self:SetAlpha(1);
+	end
+end,
+function(self)
+	settings:Set("Thing:RWP", self:GetChecked());
+	settings:UpdateMode();
+	app:RefreshData();
+end);
+RWPCheckBox:SetATTTooltip("Enable this option to track future removed from game loot. Only Items tagged with 'removed with patch' data count toward this. If you find an item not tagged that should be tagged, please let me know!\n\nYou can change which sort of loot displays for you based on the Filters tab.\n\nDefault: Class Defaults, Disabled.");
+RWPCheckBox:SetPoint("TOPLEFT", LootCheckBox, "BOTTOMLEFT", 0, 4);
+
+local RWPAccountWideCheckBox = settings:CreateCheckBox("Account Wide",
+function(self)
+	self:SetChecked(settings:Get("AccountWide:RWP"));
+	if settings:Get("DebugMode") or not settings:Get("Thing:RWP") then
+		self:Disable();
+		self:SetAlpha(0.2);
+	else
+		self:Enable();
+		self:SetAlpha(1);
+	end
+end,
+function(self)
+	settings:Set("AccountWide:RWP", self:GetChecked());
+	settings:UpdateMode();
+	app:RefreshData();
+end);
+RWPAccountWideCheckBox:SetATTTooltip("Removed from Game Items should be collected account wide. Certain items cannot be learned by every class, so ATT will do its best to only show you things that you can collect on your current character.");
+RWPAccountWideCheckBox:SetPoint("TOPLEFT", RWPCheckBox, "TOPLEFT", 220, 0);
 
 local MountsCheckBox = settings:CreateCheckBox("Mounts",
 function(self)
@@ -964,7 +1073,7 @@ function(self)
 	app:RefreshData();
 end);
 MountsCheckBox:SetATTTooltip("Enable this option to track mounts.\n\nFair warning! Do this at your own risk, it will take up a lot of inventory space across your account and they can not be sent between characters!\n\nAdditionally, the cost of all Vendor mounts is reduced to 1/10 of their current prices with Wrath.");
-MountsCheckBox:SetPoint("TOPLEFT", LootCheckBox, "BOTTOMLEFT", 0, 4);
+MountsCheckBox:SetPoint("TOPLEFT", RWPCheckBox, "BOTTOMLEFT", 0, 4);
 
 local MountsAccountWideCheckBox = settings:CreateCheckBox("Account Wide",
 function(self)
@@ -1348,6 +1457,7 @@ end)();
 ------------------------------------------
 (function()
 local tab = settings:CreateTab("Filters");
+local reasons = L["UNOBTAINABLE_ITEM_REASONS"];
 tab.OnRefresh = function(self)
 	if settings:Get("DebugMode") then
 		PanelTemplates_DisableTab(settings, self:GetID());
@@ -1424,7 +1534,7 @@ for i,filterID in ipairs({ 21, 22, 23, 24, 25, 26 }) do
 end
 
 -- Secondary Armor Classes
-last, xoffset, yoffset = ItemFiltersLabel, 120, -4;
+last, xoffset, yoffset = ItemFiltersLabel, 180, -4;
 for i,filterID in ipairs({ 10, 9, 51, 52, 53 }) do
 	local filter = settings:CreateCheckBox(itemFilterNames[filterID] or tostring(filterID), ItemFilterOnRefresh, ItemFilterOnClick);
 	filter:SetPoint("TOPLEFT", last, "BOTTOMLEFT", xoffset, yoffset);
@@ -1436,7 +1546,7 @@ end
 
 -- Secondary Weapon Classes
 yoffset = -4;
-for i,filterID in ipairs({ 50, 57, 100, 54, 1 }) do
+for i,filterID in ipairs({ 50, 57, 54, 1 }) do
 	local filter = settings:CreateCheckBox(itemFilterNames[filterID] or tostring(filterID), ItemFilterOnRefresh, ItemFilterOnClick);
 	filter:SetPoint("TOPLEFT", last, "BOTTOMLEFT", 0, yoffset);
 	filter.filterID = filterID;
@@ -1446,7 +1556,7 @@ end
 
 -- Miscellaneous
 yoffset = -4;
-for i,filterID in ipairs({ 113, 55, 104, 200 }) do
+for i,filterID in ipairs({ 113, 55, 104, 36 }) do
 	local filter = settings:CreateCheckBox(itemFilterNames[filterID] or tostring(filterID), ItemFilterOnRefresh, ItemFilterOnClick);
 	filter:SetPoint("TOPLEFT", last, "BOTTOMLEFT", 0, yoffset);
 	filter.filterID = filterID;
@@ -1517,101 +1627,6 @@ f.OnRefresh = function(self)
 	end
 end;
 table.insert(settings.MostRecentTab.objects, f);
-end)();
-
-------------------------------------------
--- The "Phases" Tab.					--
-------------------------------------------
-(function()
-local tab = settings:CreateTab("Phases");
-local currentBuild = select(4, GetBuildInfo());
-local reasons = L["UNOBTAINABLE_ITEM_REASONS"];
-tab.OnRefresh = function(self)
-	if settings:Get("DebugMode") then
-		PanelTemplates_DisableTab(settings, self:GetID());
-	else
-		PanelTemplates_EnableTab(settings, self:GetID());
-	end
-end;
-local UnobtainableFilterOnClick = function(self)
-	settings:SetUnobtainableFilter(self.u, self:GetChecked());
-end;
-local UnobtainableOnRefresh = function(self)
-	if settings:Get("DebugMode") then
-		self:Disable();
-		self:SetAlpha(0.2);
-	else
-		self:SetChecked(settings:GetUnobtainableFilter(self.u));
-
-		local minimumBuild = reasons[self.u][4];
-		if minimumBuild and minimumBuild > currentBuild then
-			self:Disable();
-			self:SetAlpha(0.2);
-		else
-			self:Enable();
-			self:SetAlpha(1);
-		end
-	end
-end;
-
--- Update the default unobtainable states based on build version.
-for u,reason in pairs(reasons) do
-	if reason[4] then
-		if currentBuild >= reason[4] then
-			if reason[5] and currentBuild >= reason[5] then
-				UnobtainableSettingsBase.__index[u] = true;
-			else
-				UnobtainableSettingsBase.__index[u] = false;
-			end
-		else
-			UnobtainableSettingsBase.__index[u] = false;
-		end
-	end
-end
-UnobtainableSettingsBase.__index[11] = true;
-
-local ClassicPhasesLabel = settings:CreateFontString(nil, "ARTWORK", "GameFontNormal");
-ClassicPhasesLabel:SetPoint("TOPLEFT", line, "BOTTOMLEFT", 8, -8);
-ClassicPhasesLabel:SetJustifyH("LEFT");
-ClassicPhasesLabel:SetText("|CFFAAFFAAClassic Phases|r");
-ClassicPhasesLabel:Show();
-table.insert(settings.MostRecentTab.objects, ClassicPhasesLabel);
-
--- Classic Phases
-local last, xoffset, yoffset, spacing, vspacing = ClassicPhasesLabel, 0, -4, 8, 1;
-for i,o in ipairs({ { 11, 0, 0 }, {1101, spacing, -vspacing }, { 12, 0, -vspacing }, { 13, 0 }, { 14, 0 }, { 15, 0 }, { 1501, spacing, -vspacing }, { 1502, spacing }, { 1503, spacing }, { 1504, spacing }, { 16, 0, -vspacing }, { 1601, spacing, -vspacing }, { 1602, spacing }, { 1603, spacing }, }) do
-	local u = o[1];
-	yoffset = o[3] or 6;
-	local reason = reasons[u];
-	local filter = settings:CreateCheckBox(reason[3] or tostring(u), UnobtainableOnRefresh, UnobtainableFilterOnClick);
-	filter:SetATTTooltip(reason[2] .. (reason[6] or ""));
-	filter:SetPoint("LEFT", ClassicPhasesLabel, "LEFT", o[2], 0);
-	filter:SetPoint("TOP", last, "BOTTOMLEFT", 0, yoffset);
-	filter:SetScale(o[2] > 0 and 0.8 or 1);
-	filter.u = u;
-	last = filter;
-end
-
-local TBCPhasesLabel = settings:CreateFontString(nil, "ARTWORK", "GameFontNormal");
-TBCPhasesLabel:SetPoint("TOPLEFT", line, "BOTTOMLEFT", 148, -8);
-TBCPhasesLabel:SetJustifyH("LEFT");
-TBCPhasesLabel:SetText("|CFFAAFFAATBC Phases|r");
-TBCPhasesLabel:Show();
-table.insert(settings.MostRecentTab.objects, TBCPhasesLabel);
-
-last, xoffset, yoffset = TBCPhasesLabel, 0, -4;
-for i,o in ipairs({ { 17, 0, 0 }, {1701, spacing, -vspacing }, { 18, 0, -vspacing }, {1801, spacing, -vspacing },  { 1802, spacing },  { 19, 0, -vspacing }, { 1901, spacing, -vspacing }, { 20, 0, -vspacing }, { 21, 0 }, }) do
-	local u = o[1];
-	yoffset = o[3] or 6;
-	local reason = reasons[u];
-	local filter = settings:CreateCheckBox(reason[3] or tostring(u), UnobtainableOnRefresh, UnobtainableFilterOnClick);
-	filter:SetATTTooltip(reason[2] .. (reason[6] or ""));
-	filter:SetPoint("LEFT", TBCPhasesLabel, "LEFT", o[2], 0);
-	filter:SetPoint("TOP", last, "BOTTOMLEFT", 0, yoffset);
-	filter:SetScale(o[2] > 0 and 0.8 or 1);
-	filter.u = u;
-	last = filter;
-end
 
 local SeasonalHolidayFiltersLabel = settings:CreateFontString(nil, "ARTWORK", "GameFontNormal");
 SeasonalHolidayFiltersLabel:SetPoint("TOPLEFT", line, "BOTTOMRIGHT", -200, -8);
@@ -1641,7 +1656,7 @@ table.insert(settings.MostRecentTab.objects, GeneralUnobtainableFiltersLabel);
 -- General Unobtainable Filters
 yoffset = -4;
 last = GeneralUnobtainableFiltersLabel;
-for i,u in ipairs({ 1, 2, 3 }) do
+for i,u in ipairs({ 1, 2, 3, 4 }) do
 	local filter = settings:CreateCheckBox(reasons[u][3] or tostring(u), UnobtainableOnRefresh, UnobtainableFilterOnClick);
 	filter:SetATTTooltip(reasons[u][2]);
 	filter:SetPoint("TOPLEFT", last, "BOTTOMLEFT", 0, yoffset);
@@ -1649,6 +1664,140 @@ for i,u in ipairs({ 1, 2, 3 }) do
 	last = filter;
 	yoffset = 6;
 end
+end)();
+
+------------------------------------------
+-- The "Phases" Tab.					--
+------------------------------------------
+(function()
+local tab = settings:CreateTab("Phases");
+local currentBuild = select(4, GetBuildInfo());
+local reasons = L["UNOBTAINABLE_ITEM_REASONS"];
+tab.OnRefresh = function(self)
+	if settings:Get("DebugMode") then
+		PanelTemplates_DisableTab(settings, self:GetID());
+	else
+		PanelTemplates_EnableTab(settings, self:GetID());
+	end
+end;
+local UnobtainableFilterOnClick = function(self)
+	local checked = self:GetChecked();
+	if checked then
+		-- If the phase is active, fall through to the base setting.
+		if UnobtainableSettingsBase.__index[self.u] then
+			settings:SetUnobtainableFilter(self.u, nil);
+		else
+			settings:SetUnobtainableFilter(self.u, true);
+		end
+	else
+		settings:SetUnobtainableFilter(self.u, false);
+	end
+end;
+local UnobtainableOnRefresh = function(self)
+	if settings:Get("DebugMode") then
+		self:Disable();
+		self:SetAlpha(0.2);
+	else
+		self:SetChecked(settings:GetUnobtainableFilter(self.u));
+
+		local minimumBuild = reasons[self.u][4];
+		if minimumBuild and minimumBuild > currentBuild then
+			self:Disable();
+			self:SetAlpha(0.2);
+		else
+			self:Enable();
+			self:SetAlpha(1);
+			if UnobtainableSettingsBase.__index[self.u] then
+				self.Text:SetTextColor(0.6, 0.7, 1);
+			else
+				self.Text:SetTextColor(1, 1, 1);
+			end
+		end
+	end
+end;
+
+-- Update the default unobtainable states based on build version.
+for u,reason in pairs(reasons) do
+	if reason[4] then
+		if currentBuild >= reason[4] then
+			if reason[5] and currentBuild >= reason[5] then
+				UnobtainableSettingsBase.__index[u] = true;
+			else
+				UnobtainableSettingsBase.__index[u] = false;
+			end
+		else
+			UnobtainableSettingsBase.__index[u] = false;
+		end
+	end
+end
+UnobtainableSettingsBase.__index[11] = true;
+
+local ClassicPhasesLabel = settings:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge");
+ClassicPhasesLabel:SetPoint("TOPLEFT", line, "BOTTOMLEFT", 8, -8);
+ClassicPhasesLabel:SetJustifyH("LEFT");
+ClassicPhasesLabel:SetText("|CFFAAFFAAClassic Phases|r");
+ClassicPhasesLabel:Show();
+table.insert(settings.MostRecentTab.objects, ClassicPhasesLabel);
+
+-- Classic Phases
+local last, xoffset, yoffset, spacing, vspacing = ClassicPhasesLabel, 0, -4, 8, 1;
+for i,o in ipairs({ { 11, 0, 0 }, {1101, spacing, -vspacing }, { 12, 0, -vspacing }, { 13, 0 }, { 14, 0 }, { 15, 0 }, { 1501, spacing, -vspacing }, { 1502, spacing }, { 1503, spacing }, { 1504, spacing }, { 16, 0, -vspacing }, { 1601, spacing, -vspacing }, { 1602, spacing }, { 1603, spacing }, {1701, spacing, -vspacing }, }) do
+	local u = o[1];
+	yoffset = o[3] or 6;
+	local reason = reasons[u];
+	local filter = settings:CreateCheckBox(reason[3] or tostring(u), UnobtainableOnRefresh, UnobtainableFilterOnClick);
+	filter:SetATTTooltip(reason[2] .. (reason[6] or ""));
+	filter:SetPoint("LEFT", ClassicPhasesLabel, "LEFT", o[2], 0);
+	filter:SetPoint("TOP", last, "BOTTOMLEFT", 0, yoffset);
+	filter:SetScale(o[2] > 0 and 0.8 or 1);
+	filter.u = u;
+	last = filter;
+end
+
+local TBCPhasesLabel = settings:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge");
+TBCPhasesLabel:SetPoint("TOP", ClassicPhasesLabel, "TOP", 0, 0);
+TBCPhasesLabel:SetPoint("LEFT", line, "LEFT", 208, 0);
+TBCPhasesLabel:SetJustifyH("LEFT");
+TBCPhasesLabel:SetText("|CFFAAFFAATBC Phases|r");
+TBCPhasesLabel:Show();
+table.insert(settings.MostRecentTab.objects, TBCPhasesLabel);
+
+last, xoffset, yoffset = TBCPhasesLabel, 0, -4;
+for i,o in ipairs({ { 17, 0, 0 }, { 18, 0 }, {1801, spacing, -vspacing }, { 1802, spacing }, { 19, 0, -vspacing }, { 1901, spacing, -vspacing }, { 1902, spacing }, { 20, 0, -vspacing }, { 21, 0 }, {2101, spacing, -vspacing }, { 2102, spacing }, { 2103, spacing }, { 2104, spacing }, { 2105, spacing }, { 2106, spacing }, { 2107, spacing }, { 1601, spacing, -vspacing }, }) do
+	local u = o[1];
+	yoffset = o[3] or 6;
+	local reason = reasons[u];
+	local filter = settings:CreateCheckBox(reason[3] or tostring(u), UnobtainableOnRefresh, UnobtainableFilterOnClick);
+	filter:SetATTTooltip(reason[2] .. (reason[6] or ""));
+	filter:SetPoint("LEFT", TBCPhasesLabel, "LEFT", o[2], 0);
+	filter:SetPoint("TOP", last, "BOTTOMLEFT", 0, yoffset);
+	filter:SetScale(o[2] > 0 and 0.8 or 1);
+	filter.u = u;
+	last = filter;
+end
+
+local WrathPhasesLabel = settings:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge");
+WrathPhasesLabel:SetPoint("TOP", ClassicPhasesLabel, "TOP", 0, 0);
+WrathPhasesLabel:SetPoint("LEFT", line, "LEFT", 408, 0);
+WrathPhasesLabel:SetJustifyH("LEFT");
+WrathPhasesLabel:SetText("|CFFAAFFAAWrath Phases|r");
+WrathPhasesLabel:Show();
+table.insert(settings.MostRecentTab.objects, WrathPhasesLabel);
+
+last, xoffset, yoffset = WrathPhasesLabel, 0, -4;
+for i,o in ipairs({ { 30, 0, 0 }, {3001, spacing, -vspacing }, { 31, 0, -vspacing }, {3101, spacing, -vspacing }, { 32, 0, -vspacing }, { 33, 0 }, {3301, spacing, -vspacing }, { 34, 0, -vspacing }, }) do
+	local u = o[1];
+	yoffset = o[3] or 6;
+	local reason = reasons[u];
+	local filter = settings:CreateCheckBox(reason[3] or tostring(u), UnobtainableOnRefresh, UnobtainableFilterOnClick);
+	filter:SetATTTooltip(reason[2] .. (reason[6] or ""));
+	filter:SetPoint("LEFT", WrathPhasesLabel, "LEFT", o[2], 0);
+	filter:SetPoint("TOP", last, "BOTTOMLEFT", 0, yoffset);
+	filter:SetScale(o[2] > 0 and 0.8 or 1);
+	filter.u = u;
+	last = filter;
+end
+
 end)();
 
 ------------------------------------------
@@ -2253,6 +2402,16 @@ end);
 OpenRaidAssistantAutomatically:SetATTTooltip("Enable this option if you want to see an alternative group/party/raid settings manager called the 'Raid Assistant'. The list will automatically update whenever group settings change.\n\nYou can also bind this setting to a Key.\n\nKey Bindings -> Addons -> ALL THE THINGS -> Toggle Raid Assistant\n\nShortcut Command: /attra");
 OpenRaidAssistantAutomatically:SetPoint("TOPLEFT", OpenProfessionListAutomatically, "BOTTOMLEFT", 0, 4);
 
+local IntegrateWithLFGBulletinBoard = settings:CreateCheckBox("Integrate With LFG Bulletin Board",
+function(self)
+	self:SetChecked(settings:GetTooltipSetting("Integrate:LFGBulletinBoard"));
+end,
+function(self)
+	settings:SetTooltipSetting("Integrate:LFGBulletinBoard", self:GetChecked());
+end);
+IntegrateWithLFGBulletinBoard:SetATTTooltip("Enable this option if you want ATT to inject completion data on to the headers of LFG Bulletin Board if it is installed. In addition, holding Shift while Right Clicking the instance header will open the instance in an ATT mini list.\n\nDefault: On");
+IntegrateWithLFGBulletinBoard:SetPoint("TOPLEFT", OpenRaidAssistantAutomatically, "BOTTOMLEFT", 0, -4);
+
 local CelebrationsLabel = settings:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge");
 CelebrationsLabel:SetPoint("TOPRIGHT", line, "BOTTOMRIGHT", -50, -8);
 CelebrationsLabel:SetJustifyH("LEFT");
@@ -2302,6 +2461,55 @@ function(self)
 end);
 WarnRemovedThingsCheckBox:SetATTTooltip("Enable this option if you want to hear a warning sound effect when you accidentally sell back or trade an item that granted you an appearance that would cause you to lose that appearance from your collection.\n\nThis can be extremely helpful if you vendor an item with a purchase timer. The addon will tell you that you've made a mistake.");
 WarnRemovedThingsCheckBox:SetPoint("TOPLEFT", DeathSoundCheckBox, "BOTTOMLEFT", 0, 4);
+
+local SyncLabel = settings:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge");
+SyncLabel:SetPoint("LEFT", ModulesLabel, "LEFT", 0, 0);
+SyncLabel:SetPoint("TOP", IntegrateWithLFGBulletinBoard, "BOTTOM", 0, -4);
+SyncLabel:SetJustifyH("LEFT");
+SyncLabel:SetText("Account Synchronization");
+SyncLabel:Show();
+table.insert(settings.MostRecentTab.objects, SyncLabel);
+
+local AutomaticallySyncAccountDataCheckBox = settings:CreateCheckBox("Automatically Sync Account Data",
+function(self)
+	self:SetChecked(settings:GetTooltipSetting("Auto:Sync"));
+end,
+function(self)
+	local checked = self:GetChecked();
+	settings:SetTooltipSetting("Auto:Sync", checked);
+	if checked then app:Synchronize(true); end
+end);
+AutomaticallySyncAccountDataCheckBox:SetATTTooltip("Enable this option if you want ATT to attempt to automatically synchronize account data between accounts when logging in or reloading the UI.");
+AutomaticallySyncAccountDataCheckBox:SetPoint("TOPLEFT", SyncLabel, "BOTTOMLEFT", 4, 0);
+
+function tab:InitializeSyncWindow()
+	local syncWindow = app:GetWindow("Sync");
+	local syncWindow_Show,naughty = syncWindow.Show;
+	syncWindow.OnRefresh = syncWindow.Update;
+	syncWindow.Show = function(self)
+		if not naughty then
+			naughty = true;
+			syncWindow_Show(self);
+			self:Update();
+		end
+		naughty = nil;
+	end
+	syncWindow.CloseButton:Disable();
+	syncWindow:SetClampedToScreen(false);
+	syncWindow:SetUserPlaced(false);
+	syncWindow:SetToplevel(false);
+	syncWindow:SetMovable(false);
+	syncWindow:SetResizable(false);
+	syncWindow:SetParent(settings);
+	syncWindow.Refresh = function(self)
+		self:ClearAllPoints();
+		self:SetPoint("LEFT", SyncLabel, "LEFT", 0, 0);
+		self:SetPoint("RIGHT", SyncLabel, "LEFT", 300, 0);
+		self:SetPoint("TOP", AutomaticallySyncAccountDataCheckBox, "BOTTOM", 0, 4);
+		self:SetPoint("BOTTOM", settings, "BOTTOM", 0, 4);
+	end
+	table.insert(tab.objects, syncWindow);
+end
 end)();
 
 ------------------------------------------

@@ -8,7 +8,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
-							<AbsDimension x="352" y="-13" />
+							<AbsDimension x="352" y="-302" />
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -155,7 +155,7 @@
 
 			<Frame name="$parentNormalModePanel" inherits="VuhDoPanelTemplate">
 				<Size>
-					<AbsDimension x="321" y="283" />
+					<AbsDimension x="358" y="283" />
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">
@@ -165,6 +165,26 @@
 					</Anchor>
 				</Anchors>
 				<Frames>
+
+					<Frame name="$parentClassColorLabel" inherits="VuhDoLabelFrameTemplate">
+						<Size>
+							<AbsDimension x="75" y="18" />
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="294" y="-24" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer>
+								<FontString name="$parentLabel" text="VUHDO_I18N_CLASS_COL" justifyH="LEFT" inherits="VuDoDefaultFontTemplate">
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+
 
 					<Frame name="$parentOpacityLabel" inherits="VuhDoLabelFrameTemplate">
 						<Size>
@@ -223,6 +243,21 @@
 						</Layers>
 					</Frame>
 
+					<!-- <CheckButton name="$parentRangeClassColorCheckBox" inherits="VuhDoCheckBoxTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="302" y="-238" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								VUHDO_lnfSetModel(self, "VUHDO_PANEL_SETUP.BAR_COLORS.OUTRANGED.useClassColor");
+							</OnLoad>
+						</Scripts>
+					</CheckButton> -->
+
 					<CheckButton name="$parentRangeOpacCheckBox" inherits="VuhDoCheckBoxTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT">
@@ -264,6 +299,21 @@
 						<Scripts>
 							<OnLoad>
 								VUHDO_lnfSetModel(self, "VUHDO_PANEL_SETUP.BAR_COLORS.OUTRANGED.useBackground");
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+
+					<CheckButton name="$parentOvershieldClassColorCheckBox" inherits="VuhDoCheckBoxTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="302" y="-162" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								VUHDO_lnfSetModel(self, "VUHDO_PANEL_SETUP.BAR_COLORS.OVERSHIELD.useClassColor");
 							</OnLoad>
 						</Scripts>
 					</CheckButton>
@@ -313,6 +363,22 @@
 						</Scripts>
 					</CheckButton>
 
+					<CheckButton name="$parentHealAbsorbClassColorCheckBox" inherits="VuhDoCheckBoxTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="302" y="-200" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								VUHDO_lnfSetModel(self, "VUHDO_PANEL_SETUP.BAR_COLORS.HEAL_ABSORB.useClassColor");
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+
+
 					<CheckButton name="$parentHealAbsorbOpacCheckBox" inherits="VuhDoCheckBoxTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT">
@@ -354,6 +420,21 @@
 						<Scripts>
 							<OnLoad>
 								VUHDO_lnfSetModel(self, "VUHDO_PANEL_SETUP.BAR_COLORS.HEAL_ABSORB.useBackground");
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+
+					<CheckButton name="$parentShieldClassColorCheckBox" inherits="VuhDoCheckBoxTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="302" y="-124" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								VUHDO_lnfSetModel(self, "VUHDO_PANEL_SETUP.BAR_COLORS.SHIELD.useClassColor");
 							</OnLoad>
 						</Scripts>
 					</CheckButton>
@@ -403,6 +484,22 @@
 						</Scripts>
 					</CheckButton>
 
+					<CheckButton name="$parentIncomingClassColorCheckBox" inherits="VuhDoCheckBoxTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="302" y="-86" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								VUHDO_lnfSetModel(self, "VUHDO_PANEL_SETUP.BAR_COLORS.INCOMING.useClassColor");
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+
+
 					<CheckButton name="$parentIcomingOpacCheckBox" inherits="VuhDoCheckBoxTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT">
@@ -448,7 +545,23 @@
 						</Scripts>
 					</CheckButton>
 
-					<CheckButton name="$parentIrreleventOpacCheckBox" inherits="VuhDoCheckBoxTemplate">
+					<!-- <CheckButton name="$parentIrrelevantClassColorCheckBox" inherits="VuhDoCheckBoxTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="302" y="-48" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								VUHDO_lnfSetModel(self, "VUHDO_PANEL_SETUP.BAR_COLORS.IRRELEVANT.useClassColor");
+							</OnLoad>
+						</Scripts>
+					</CheckButton> -->
+
+
+					<CheckButton name="$parentIrrelevantOpacCheckBox" inherits="VuhDoCheckBoxTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>

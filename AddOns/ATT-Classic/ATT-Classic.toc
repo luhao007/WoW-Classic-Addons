@@ -1,6 +1,6 @@
-## Interface: 20503
+## Interface: 10000
 ## Author: Crieve-Sargeras
-## Version: 0.8.0
+## Version: 1.0.2
 ## SavedVariables: ATTCharacterData, ATTAccountWideData, ATTClassicSettings, ATTClassicAD, ATTClassicAuctionData, ATTClassicDebugData
 ## SavedVariablesPerCharacter: ATTClassicSettingsPerCharacter
 
@@ -11,12 +11,13 @@
 
 ## X-Curse-Project-ID: 267285
 
+src\base.lua
 db\Presets.lua
 db\CategoryDB.lua
 db\FlightPathDB.lua
+db\ExplorationDB.lua
 db\ObjectDB.lua
 db\RaceDB.lua
-src\base.lua
 locales\enUS.lua
 locales\esES.lua
 locales\deDE.lua

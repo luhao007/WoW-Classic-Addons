@@ -1,9 +1,10 @@
-## Interface: 90005
+## Interface: 90200
+## Version: v9.2.0
 ## Title: Lib: Latency
 ## Notes: A library for transmitting and receiving latency information of players.
 ## Author: Funkydude
 ## X-Category: Library
 ## OptionalDeps: LibStub
-## X-License: CC BY-NC-SA 3.0
+## X-License: All Rights Reserved
 
 LibLatency\LibLatency.xml

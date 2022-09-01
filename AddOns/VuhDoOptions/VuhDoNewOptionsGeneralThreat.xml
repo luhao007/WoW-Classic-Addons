@@ -318,7 +318,7 @@
 						<Scripts>
 							<OnLoad>
 								VUHDO_lnfSetModel(self, "VUHDO_CONFIG.SHOW_LIBHEALCOMM_INCOMING");
-								VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K582);
+								VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K900);
 							</OnLoad>
 						</Scripts>
 					</CheckButton>

@@ -241,7 +241,6 @@ FontSizeSlider:HookScript("OnValueChanged", createDBTOnValueChangedHandler("Font
 
 local DisableBarFade = BarSetup:CreateCheckButton(L.NoBarFade, false, nil, nil, "NoBarFade")
 DisableBarFade:SetPoint("TOPLEFT", FontSizeSlider, "BOTTOMLEFT", 0, -85)
-DisableBarFade.myheight = 50 -- Magical value for offsets
 
 local skins = {}
 for id, skin in pairs(DBT:GetSkins()) do
@@ -260,15 +259,15 @@ end
 
 local Sorts = {
 	{
-		text	= "None",
+		text	= L.None,
 		value	= "None"
 	},
 	{
-		text	= "Highest at top",
+		text	= L.Highest,
 		value	= "Sort"
 	},
 	{
-		text	= "Lowest at top",
+		text	= L.Lowest,
 		value	= "Invert"
 	}
 }

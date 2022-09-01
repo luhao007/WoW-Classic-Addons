@@ -10,7 +10,7 @@ local L = app.L;
 -- TODO
 L.SAVED_TO_DJ_INSTANCES["Temple noir"] = "Le Temple noir";
 L.SAVED_TO_DJ_INSTANCES["Le Puits de soleil"] = "Plateau du Puits de soleil";
-L.SAVED_TO_DJ_INSTANCES["Donjon de la Tempête"] = "L’Œil";
+L.SAVED_TO_DJ_INSTANCES["Donjon de la Tempête"] = "L'Œil";
 L.SAVED_TO_DJ_INSTANCES["Glissecroc : caverne du sanctuaire du Serpent"] = "Caverne du sanctuaire du Serpent";
 
 local a = L.ZONE_TEXT_TO_MAP_ID;
@@ -56,7 +56,7 @@ for key,value in pairs({
 	["Terrasse des Magistères"] = 348,	-- Magister's Terrace
 	["Le repaire de Magtheridon"] = 331,	-- Magtheridon's Lair
 	["Tombes-mana"] = 272,	-- Mana Tombs
-	["Contreforts de Hautebrande d’antan"] = 274,	-- Old Hillsbrad Foothills
+	["Contreforts de Hautebrande d'antan"] = 274,	-- Old Hillsbrad Foothills
 	["Caverne du sanctuaire du Serpent"] = 332,	-- Serpentshrine Cavern
 	["Les salles des Sethekk"] = 258,	-- Sethekk Halls
 	["Labyrinthe des ombres"] = 260,	-- Shadow Labyrinth
@@ -247,7 +247,7 @@ for key,value in pairs({
 	[187959] = "Feu de joie de la Horde",
 	[188085] = "Céréales pestiférées",
 	[188128] = "Flamme de l'Exodar",
-	[188129] = "Flamme de Lune-d’Argent",
+	[188129] = "Flamme de Lune-d'Argent",
 	[188261] = "Journal endommagé",
 	[188364] = "Piège à crabes détruit",
 	[188365] = "Cœur des anciens",

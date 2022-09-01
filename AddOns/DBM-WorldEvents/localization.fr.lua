@@ -3,6 +3,37 @@
 if GetLocale() ~= "frFR" then return end
 local L
 
+------------
+--  Omen  --
+------------
+L = DBM:GetModLocalization("Omen")
+
+L:SetGeneralLocalization({
+	name = "Omen"
+})
+
+-----------------------
+--  Apothecary Trio  --
+-----------------------
+L = DBM:GetModLocalization("d288")
+
+L:SetWarningLocalization({
+})
+
+L:SetTimerLocalization{
+	HummelActive	= "Hummel devient actif",
+	BaxterActive	= "Baxter devient actif",
+	FryeActive		= "Frye devient actif"
+}
+
+L:SetOptionLocalization({
+	TrioActiveTimer		= "Afficher le timer lorsque le Trio d'apothicaire devient actif"
+})
+
+L:SetMiscLocalization({
+	SayCombatStart		= "Ont-ils pris la peine de vous dire qui je suis et pourquoi je fais cela?"
+})
+
 -------------
 --  Ahune  --
 -------------
@@ -76,4 +107,73 @@ L:SetOptionLocalization({
 L:SetMiscLocalization({
 	HorsemanSummon			= "Le cavalier sans tête se lève...",
 	HorsemanSoldiers			= "Levez-vous, mes recrues ! Au combat sans surseoir ! Au chevalier déchu, donnez enfin victoire !"
+})
+
+------------------------------
+--  The Abominable Greench  --
+------------------------------
+L = DBM:GetModLocalization("Greench")
+
+L:SetGeneralLocalization({
+	name = "L'abominable Grinche"
+})
+
+--------------------------
+--  Plants Vs. Zombies  --
+--------------------------
+L = DBM:GetModLocalization("PlantsVsZombies")
+
+L:SetGeneralLocalization({
+	name = "Plants Vs. Zombies"
+})
+
+L:SetWarningLocalization({
+	warnTotalAdds	= "Total des zombies engendrées depuis la dernière vague massive : %d",
+	specWarnWave	= "Vague Massive !"
+})
+
+L:SetTimerLocalization{
+	timerWave		= "Prochaine Vague Massive"
+}
+
+L:SetOptionLocalization({
+	warnTotalAdds	= "Afficher le nombre total d'add engendrées entre chaque vague massive",
+	specWarnWave	= "Alerte spécial quand une Vague Massive arrive",
+	timerWave		= "Délai avant la prochaine Vague Massive"
+})
+
+L:SetMiscLocalization({
+	MassiveWave		= "Une Vague Massive de Zombies est en approche !"
+})
+
+--------------------------
+--  Memories of Azeroth: Burning Crusade  --
+--------------------------
+L = DBM:GetModLocalization("BCEvent")
+
+L:SetGeneralLocalization({
+	name = "MoA: Burning Crusade"
+})
+
+--------------------------
+--  Memories of Azeroth: Wrath of the Lich King  --
+--------------------------
+L = DBM:GetModLocalization("WrathEvent")
+
+L:SetGeneralLocalization({
+	name = "MoA: WotLK"
+})
+
+L:SetMiscLocalization{
+	Emerge					= "surgit de la terre",
+	Burrow					= "enfonce dans le sol"
+}
+
+--------------------------
+--  Memories of Azeroth: Cataclysm  --
+--------------------------
+L = DBM:GetModLocalization("CataEvent")
+
+L:SetGeneralLocalization({
+	name = "MoA: Cataclysm"
 })

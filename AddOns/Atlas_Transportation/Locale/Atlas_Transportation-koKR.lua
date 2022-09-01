@@ -1,10 +1,10 @@
--- $Id: Atlas_Transportation-koKR.lua 125 2021-05-22 14:07:10Z arithmandar $
+-- $Id: Atlas_Transportation-koKR.lua 131 2022-02-02 17:23:30Z arithmandar $
 --[[
 
 	Atlas, a World of Warcraft instance map browser
 	Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert@gmail.com>
 	Copyright 2010 - Lothaer <lothayer@gmail.com>, Atlas Team
-	Copyright 2011 ~ 2021 - Arith Hsu, Atlas Team <atlas.addon at gmail.com>
+	Copyright 2011 ~ 2022 - Arith Hsu, Atlas Team <atlas.addon at gmail.com>
 
 	This file is part of Atlas.
 
@@ -37,6 +37,8 @@ L["Blue"] = "청색"
 --[[Translation missing --]]
 --[[ L["Boat to Stormwind City"] = ""--]] 
 L["Camp Taurajo"] = "타우라조 야영지"
+--[[Translation missing --]]
+--[[ L["Change will take effect after next login; or type '/reload' command to reload addon"] = ""--]] 
 L["Class Order Halls"] = "직업 연맹 전당"
 L["Class Specific Only"] = "특정 직업만"
 L["Climbing Rope"] = "등반용 밧줄"
@@ -75,9 +77,13 @@ L["Require to complete \"Meet the Scout\" quest line first."] = "먼저 \"정찰
 L["Requires Eagle Ally Advancement"] = "독수리 지원군 성장 필요"
 L["Requires honored faction with Sha'tari Skyguard"] = "샤타리 하늘경비대에 우호적 평판 필요"
 L["Requires Teleportation Nexus Advancement"] = "순간이동 거점 성장 필요"
+--[[Translation missing --]]
+--[[ L["Return to Zuldazar"] = ""--]] 
 L["Seahorse"] = "해마"
 L["Shado-Pan Rope"] = "음영파 밧줄"
 L["Ship / Zeppelin sailing path to destination"] = "목적지까지 가는 배 / 비행선 항해 경로"
+--[[Translation missing --]]
+--[[ L["Show %s's transportation maps"] = ""--]] 
 L["South of the path along Lake Elune'ara"] = "엘룬아라 호수를 따라 난 길의 남쪽"
 L["Special transportation"] = "특별한 탈것"
 L["Talua <Eagle Keeper>"] = "탈루아 <독수리 조련사>"

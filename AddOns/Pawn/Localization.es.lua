@@ -1,9 +1,9 @@
 ﻿-- Pawn by Vger-Azjol-Nerub
 -- www.vgermods.com
--- © 2006-2021 Travis Spomer.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
+-- © 2006-2022 Travis Spomer.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
 -- See Readme.htm for more information.
 
--- 
+--
 -- Spanish (European and Latin American) resources
 -- See special cases at the end of the file!
 ------------------------------------------------------------
@@ -184,6 +184,7 @@ Para más información sobre como personalizar Pawn, por favor lee el archivo (R
 		["SpellHitInfo"] = "Spell Hit.  Increases the chance that your damaging spells hit the target, especially bosses.",
 		--[[Translation missing --]]
 		["SpellPenetrationInfo"] = "Spell Penetration. Negates an enemy's resistances to your spells.",
+		["SpellPowerInfo"] = "",
 		--[[Translation missing --]]
 		["SpiritInfo"] = "Spirit.  Affects your out-of-combat mana regeneration.",
 		["StaminaInfo"] = "Aguante.  Aumenta tu vida.",
@@ -445,6 +446,7 @@ Para más información sobre como personalizar Pawn, por favor lee el archivo (R
 		["SpellDamage3"] = "^UNUSED$",
 		["SpellDamage4"] = "^UNUSED$",
 		["SpellDamage5"] = "^%+# daño y sanación con hechizos$",
+		["SpellDamage6"] = "^Equipar: Aumenta el daño y la sanación de los hechizos mágicos y los efectos hasta en # p%.$",
 		["SpellDamageAndHealing"] = "^Equipar: Aumenta hasta # p%. la sanación realizada y hasta # p%. todo el daño infligido con todos los hechizos y efectos mágicos%.$",
 		["SpellDamageAndHealing2"] = "^UNUSED$",
 		["SpellDamageAndHealingEnchant"] = "^BUG IN GAME$",
@@ -460,6 +462,7 @@ Para más información sobre como personalizar Pawn, por favor lee el archivo (R
 		["SpellPenetrationClassic"] = "^Equipar: Las resistencias mágicas de los objetivos de tus hechizos se reducen # p%.$",
 		["SpellPenetrationShort"] = "^%+?# penetración de hechizos$",
 		["SpellPower"] = "^%+?# poder con hechizos$",
+		["SpellPower2"] = "^Equipar: Aumenta el poder con hechizos # p%.$",
 		["Spirit"] = "^%+?# d?e? ?[Ee]spíritu$",
 		["Staff"] = "^Bastón$",
 		["Stamina"] = "^%+?# d?e? ?[Aa]guante$",
@@ -808,6 +811,11 @@ if GetLocale() == "esES" then
 	PawnLocal.ThousandsSeparator = ""
 	PawnLocal.DecimalSeparator = ","
 
+	if VgerCore.IsWrath then
+		-- Wrath Classic on esES has an incorrect LARGE_NUMBER_SEPERATOR.
+		PawnLocal.ThousandsSeparator = ","
+	end
+
 	local TooltipParsing_All =
 	{
 		["Avoidance"] = "^%+# Evasión$",
@@ -853,7 +861,7 @@ if GetLocale() == "esES" then
 		end
 	end
 
-	if VgerCore.IsClassic or VgerCore.IsBurningCrusade then
+	if VgerCore.IsClassic or VgerCore.IsBurningCrusade or VgerCore.IsWrath then
 
 		local TooltipParsing_Classic =
 		{
@@ -903,8 +911,8 @@ if GetLocale() == "esES" then
 		end
 	end
 
-	if VgerCore.IsBurningCrusade then
-		
+	if VgerCore.IsBurningCrusade or VgerCore.IsWrath then
+
 		local TooltipParsing_BurningCrusade =
 		{
 			["Ap2"] = "^Equipar: Aumenta el poder de ataque en # p%.$",
@@ -913,7 +921,6 @@ if GetLocale() == "esES" then
 			["FireSpellDamage"] = "^%+?# daño con hechizos de Fuego$",
 			["FrostSpellDamage"] = "^%+?# daño con hechizos de Escarcha$",
 			["NatureSpellDamage"] = "^%+?# daño con hechizos de Naturaleza$",
-			["ShadowSpellDamage"] = "^%+?# daño con hechizos de Sombras$",
 			["ShadowSpellDamage"] = "^%+?# daño con hechizos de las Sombras$",
 			["ShadowSpellDamage2"] = "^Equipar: Aumenta el daño causado por los hechizos de las Sombras y los efectos hasta en # p%.$",
 		}
@@ -924,19 +931,19 @@ if GetLocale() == "esES" then
 		end
 	end
 
-	if VgerCore.IsShadowlands or VgerCore.IsBurningCrusade then
+	if VgerCore.IsMainline or VgerCore.IsBurningCrusade or VgerCore.IsWrath then
 		PawnLocal.TooltipParsing.Block = "^%+?# bloqueo$"
 	end
 
-elseif GetLocale() == "esMX" then 
-	PawnUseThisLocalization() 
+elseif GetLocale() == "esMX" then
+	PawnUseThisLocalization()
 	PawnLocal.ThousandsSeparator = ","
 	PawnLocal.DecimalSeparator = "."
 
-	if VgerCore.IsBurningCrusade then
+	if VgerCore.IsBurningCrusade or VgerCore.IsWrath then
 		PawnLocal.TooltipParsing.Block = "^%+?# bloqueo$"
 	end
-end 
+end
 
 -- After using this localization or deciding that we don't need it, remove it from memory.
 PawnUseThisLocalization = nil

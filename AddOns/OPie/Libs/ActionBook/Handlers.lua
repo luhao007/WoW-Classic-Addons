@@ -62,8 +62,8 @@ if MODERN then -- mount: mount ID
 			curID, oldID = not hide and (not factionLocked or factionId == myFactionId) and sid ~= 0
 			               and have and RW:IsSpellCastable(sid) and mid or nil, mountMap[sid]
 			if oldID ~= curID then
-				local sname, srank, rname = GetSpellInfo(sid)
-				rname = (sname .. "(" .. (srank or "") .. ")") -- Paladin/Warlock/Death Knight horses have spell ranks
+				local sname, srank, rname = GetSpellInfo(sid), GetSpellSubtext(sid)
+				rname = sname .. "(" .. (srank or "") .. ")" -- Paladin/Warlock/Death Knight horses have spell ranks
 				changed, mountMap[sid], mountMap[sname], mountMap[sname:lower()], mountMap[rname], mountMap[rname:lower()] =
 					true, curID, curID, curID, curID, curID
 			end
@@ -183,13 +183,14 @@ do -- spell: spell ID + mount spell ID
 		end
 		return actionMap[action]
 	end
-	local function describeSpell(id)
+	local function describeSpell(id, optToken)
 		local name2, _, icon2, rank, name, _, icon = nil, nil, nil, GetSpellSubtext(id), GetSpellInfo(id)
 		local _, castType = RW:IsSpellCastable(id)
+		local laxRank = not MODERN and optToken ~= "lock-rank" and "lax-rank"
 		if name and castType ~= "forced-id-cast" then
-			name2, rank, icon2 = GetSpellInfo(name, rank)
+			rank, name2, icon2 = GetSpellSubtext(name, rank), GetSpellInfo(name, rank)
 		end
-		return mountMap[id] and L"Mount" or L"Spell", (name2 or name or "?") .. (rank and rank ~= "" and rank ~= GetSpellSubtext(name) and " (" .. rank .. ")" or ""), icon2 or icon, nil, GameTooltip.SetSpellByID, id
+		return mountMap[id] and L"Mount" or L"Spell", (name2 or name or "?") .. (rank and rank ~= "" and not laxRank and rank ~= GetSpellSubtext(name) and " (" .. rank .. ")" or ""), icon2 or icon, nil, GameTooltip.SetSpellByID, id
 	end
 	AB:RegisterActionType("spell", createSpell, describeSpell)
 	if MODERN then -- specials
@@ -586,8 +587,8 @@ if MODERN then -- equipmentset: equipment sets by name
 	end)
 end
 do -- raidmark
-	local map = {}
-	local function CanChangeRaidMarkers(unit)
+	local map, waitingToClearSelf = {}
+	local function CanChangeRaidTargets(unit)
 		return not not ((not IsInRaid() or UnitIsGroupLeader("player") or UnitIsGroupAssistant("player")) and not (unit and UnitIsPlayer(unit) and UnitIsEnemy("player", unit)))
 	end
 	local function click(id)
@@ -596,17 +597,29 @@ do -- raidmark
 	end
 	local function raidmarkHint(i, _, target)
 		local target = target or "target"
-		return CanChangeRaidMarkers(target), GetRaidTargetIndex(target) == i and 1 or 0, "Interface/TargetingFrame/UI-RaidTargetingIcon_" .. i, _G["RAID_TARGET_" .. i], 0, 0, 0
+		return CanChangeRaidTargets(target), GetRaidTargetIndex(target) == i and 1 or 0, "Interface/TargetingFrame/UI-RaidTargetingIcon_" .. i, _G["RAID_TARGET_" .. i], 0, 0, 0
 	end
 	local function removeHint()
-		return CanChangeRaidMarkers(), 0, "Interface/Icons/INV_Gauntlets_02", REMOVE_WORLD_MARKERS, 0, 0, 0
+		return CanChangeRaidTargets(), 0, "Interface/Icons/INV_Gauntlets_02", REMOVE_WORLD_MARKERS, 0, 0, 0
+	end
+	local function FinishClearRaidTargets()
+		if waitingToClearSelf and GetRaidTargetIndex("player") == 1 then
+			waitingToClearSelf = nil
+			if CanChangeRaidTargets() then
+				SetRaidTarget("player", 0)
+			end
+			return "remove"
+		end
 	end
 	map[0] = AB:CreateActionSlot(removeHint, nil, "func", function()
-		if not CanChangeRaidMarkers() then return end
-		for i=1,8 do
-			SetRaidTarget("player", i)
+		if not CanChangeRaidTargets() then return end
+		local pt = GetRaidTargetIndex("player")
+		for i=8, 0, -1 do
+			SetRaidTarget("player", i == pt and 1 or i == 1 and pt or i)
 		end
-		SetRaidTarget("player", IsInGroup() and 9 or 0)
+		if not (pt or waitingToClearSelf) and IsInGroup() then
+			waitingToClearSelf, EV.RAID_TARGET_UPDATE = 1, FinishClearRaidTargets
+		end
 	end)
 	for i=1,8 do
 		map[i] = AB:CreateActionSlot(raidmarkHint, i, "func", click, i)
@@ -816,6 +829,7 @@ if MODERN then -- toy: item ID, forceShow
 		[103685]=1, [115468]="[horde]", [115472]="[alliance]", [119160]="[horde]", [119182]="[alliance]",
 		[122283]=1, [142531]=1, [142532]=1,
 		[85500]="[fish5]",
+		[182773]="[coven:necro][acoven80:necro]", [184353]="[coven:kyrian][acoven80:kyrian]", [180290]="[coven:fae][acoven80:fae]", [183716]="[coven:venthyr][acoven80:venthyr]", [190237] = 1,
 	}
 	function toyHint(iid)
 		local _, name, icon = C_ToyBox.GetToyInfo(iid)

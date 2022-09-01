@@ -38,7 +38,7 @@ Prat:AddModuleToLoad(function()
 
   local PL = module.PL
 
-  --[===[@debug@
+  --[==[@debug@
   PL:AddLocale(PRAT_MODULE, "enUS", {
     ["Start"] = true,
     ["AltNames"] = true,
@@ -135,7 +135,7 @@ Prat:AddModuleToLoad(function()
     ["autoguildalts_name"] = "Auto Import Guild Alts",
     ["autoguildalts_desc"] = "Automatically run the import from guild roster command silently",
   })
-  --@end-debug@]===]
+  --@end-debug@]==]
 
   -- These Localizations are auto-generated. To help with localization
   -- please go to http://www.wowace.com/projects/prat-3-0/localization
@@ -537,7 +537,7 @@ L = {
 		["Alt"] = "부 캐릭터",
 		["alt"] = "부 캐릭터",
 		["alt name exists: %s -> %s; not overwriting as set in preferences"] = "부 캐릭터 이름 존재: %s -> %s; 우선권 설정으로 덮어쓰지 않았습니다",
-		["AltNames"] = "부 캐릭터 이름",
+		["AltNames"] = "부 캐릭터 이름 [AltNames]",
 		["Alts:"] = "부 캐릭터:",
 		["autoguildalts_desc"] = "자동으로 길드 명단에서 가져오기 명령을 실행합니다",
 		["autoguildalts_name"] = "자동 길드 부 캐릭터 가져오기",

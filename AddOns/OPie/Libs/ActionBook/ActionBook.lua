@@ -1,4 +1,4 @@
-local apiV, AB, MAJ, REV, ext, T = {}, {}, 2, 26, ...
+local apiV, AB, MAJ, REV, ext, T = {}, {}, 2, 28, ...
 if T.ActionBook then return end
 apiV[MAJ], ext, T.Kindred, T.Rewire = AB, {Kindred=T.Kindred, Rewire=T.Rewire, ActionBook={}}
 
@@ -180,7 +180,11 @@ core:SetAttribute("GetCollectionContent", [[-- AB:GetCollectionContent(slot)
 				onStack[col] = nil
 				local openAction = (i == 1 or (outCount[col] or 0) > 0) and metadata["openAction-" .. col]
 				if openAction then
-					ret = ret .. "\n" .. col .. " 0 " .. openAction .. " AOOA::" .. col
+					local openToken = metadata["openToken-" .. col] or ("AOOA::" .. col)
+					ret = ret .. "\n" .. col .. " 0 " .. openAction .. " " .. openToken
+					if collections[openAction] and not outCount[openAction] then
+						i, colStack[i], idxStack[i], ecStack[i] = i + 1, openAction, 1, false
+					end
 				end
 			end
 			i = i - 1
@@ -277,7 +281,7 @@ function updateHandlers.collection(id, _count, idList)
 	elseif idList.__openAction and not allocatedActions[idList.__openAction] then
 		return false, "Collection __openAction key does not specify a valid action"
 	end
-	local spec, tokens, visibility = "", "", ""
+	local spec, tokens, tail = "", "", ""
 	for i=1,#idList do
 		local tok = idList[i]
 		local aid, vis, emb = idList[tok], idList['__visibility-' .. tok], idList['__embed-' .. tok]
@@ -294,12 +298,20 @@ function updateHandlers.collection(id, _count, idList)
 		end
 		vis = vis and safequote(vis) or "nil"
 		emb = emb == nil and "nil" or tostring(emb)
-		spec, tokens, visibility = spec .. idList[tok] .. ", ", tokens .. safequote(tok) .. ", ", ('%s\ntk = %s; tokConditionals[tk], metadata["tokEmbed-" .. tk] = %s, %s'):format(visibility, safequote(tok), vis, emb)
+		local qtok = safequote(tok)
+		tail = ('%s\ntk = %s; tokConditionals[tk], metadata["tokEmbed-" .. tk] = %s, %s'):format(tail, qtok, vis, emb)
+		if i <= 240 then
+			spec, tokens = spec .. aid .. ", ", tokens .. qtok .. ", "
+		else
+			tail = ('%s\nnc[%d], nt[%2$d] = %d, tk'):format(tail, i, aid)
+		end
 	end
 	local openAction = type(idList.__openAction) == "number" and idList.__openAction or "nil"
+	local openToken = idList.__openToken
+	openToken = type(openToken) == "string" and openToken:match("^[A-Za-z][A-Za-z0-9_=/]*$") and safequote(openToken) or "nil"
 	local embed = type(idList.__embed) == "boolean" and tostring(idList.__embed) or "nil"
-	DeferExecute(("local id, tk = %d; collections[id], tokens[id], metadata['openAction-' .. id], metadata['embed-' .. id] = newtable(%s nil), newtable(%s nil), %s, %s; %s")
-		:format(id, spec, tokens, openAction, embed, visibility))
+	DeferExecute(("local id, nc, nt, tk = %d, newtable(%s nil), newtable(%s nil); collections[id], tokens[id], metadata['openAction-' .. id], metadata['embed-' .. id], metadata['openToken-' .. id] = nc, nt, %s, %s, %s; %s")
+	             :format(id, spec, tokens, openAction, embed, openToken, tail))
 	return true
 end
 function createHandlers.clone(id, _count, id2)

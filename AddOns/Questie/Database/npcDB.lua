@@ -29,16 +29,16 @@ end
 
 QuestieDB.npcCompilerTypes = {
     ['name'] = "u8string",
-    ['minLevelHealth'] = "u24",
-    ['maxLevelHealth'] = "u24",
+    ['minLevelHealth'] = "u32",
+    ['maxLevelHealth'] = "u32",
     ['minLevel'] = "u8",
     ['maxLevel'] = "u8",
     ['rank'] = "u8",
     ['spawns'] = "spawnlist",
     ['waypoints'] = "waypointlist",
     ['zoneID'] = "u16",
-    ['questStarts'] = "u8u16array",
-    ['questEnds'] = "u8u16array",
+    ['questStarts'] = "u8u24array",
+    ['questEnds'] = "u8u24array",
     ['factionID'] = "u16",
     ['friendlyToFaction'] = "faction",
     ['subName'] = "u8string",
@@ -53,7 +53,7 @@ QuestieDB.npcCompilerOrder = { -- order easily skipable data first for efficienc
     'name', 'spawns', 'waypoints', 'questStarts', 'questEnds', 'subName'
 }
 
-QuestieDB.npcFlags = Questie.IsTBC and {
+QuestieDB.npcFlags = (Questie.IsTBC or Questie.IsWotlk) and {
     NONE = 0,
     GOSSIP = 1,
     QUEST_GIVER = 2,

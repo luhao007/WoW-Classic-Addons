@@ -82,9 +82,9 @@ end
 --
 local PatternRegistry = { patterns = {}, sortedList = {}, sorted = true}
 
---[===[@debug@
+--[==[@debug@
 _G.Prat.PatternRegistry = PatternRegistry
---@end-debug@]===]
+--@end-debug@]==]
 
 do
   function RegisterPattern(pattern, who)

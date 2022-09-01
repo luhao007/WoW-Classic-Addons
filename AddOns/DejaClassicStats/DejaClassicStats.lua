@@ -1021,10 +1021,10 @@ end
 -- Bonus Melee Hit Chance Modifier
 local function HitModifier()
 	local hitRating = GetCombatRatingBonus(CR_HIT_MELEE)
-	local hit = GetCombatRating(CR_HIT_MELEE)
+	local hit = GetCombatRating(CR_ARMOR_PENETRATION)
 
 	local TooltipLine1 = L["Hit Chance: "]..(format( "%.2f%%", hitRating)).."\n ("..hit.." Rating adds "..(format( "%.2f%%", hitRating) ).." Hit)"
-	local TooltipLine2 = "\n"..( format(CR_HIT_MELEE_TOOLTIP, UnitLevel("player"), hitRating, GetArmorPenetration()) );
+	local TooltipLine2 = "\n"..( format(CR_HIT_MELEE_TOOLTIP, UnitLevel("player"), hitRating, hit, GetArmorPenetration()) );
 	-- local TooltipLine3 = L["Total Hit: "]..(format( "%.2f%%", hitRating) )
 	local total = ""
 
@@ -1054,7 +1054,7 @@ local function RangedHitModifier()
 	end
 
 	local TooltipLine1 = L["Hit Chance: "]..(format( "%.2f%%", hitRating)).."\n ("..hit.." Rating adds "..(format( "%.2f%%", hitRating) ).." Hit)"
-	local TooltipLine2 = "\n"..( format(CR_HIT_RANGED_TOOLTIP, UnitLevel("player"), hitRating, GetArmorPenetration()) );
+	local TooltipLine2 = "\n"..( format(CR_HIT_RANGED_TOOLTIP, UnitLevel("player"), hitRating, hit, GetArmorPenetration()) );
 	-- local TooltipLine3 = L["Total Hit: "]..(format( "%.2f%%", hitRating) )
 	local total = ""
 
@@ -1996,6 +1996,13 @@ local function DCS_SET_STATS_TEXT()
 end
 
 DCS_CLASSIC_SPECS = { -- These are not default UI/API positions organized to attatch specs to appropriate headings (Primary, Offense, Defense)
+	DEATHKNIGHT = {
+		spec = {
+			tree1 = "DeathKnightBlood",
+			tree2 = "DeathKnightFrost",
+			tree3 = "DeathKnightUnholy",
+		},
+	},
 	DRUID = {
 		spec = {
 			tree1 = "DruidBalance",

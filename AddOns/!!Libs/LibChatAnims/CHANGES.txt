@@ -1,7 +1,9 @@
 ------------------------------------------------------------------------
-r40 | funkehdude | 2021-03-09 20:20:51 +0000 (Tue, 09 Mar 2021) | 1 line
+r46 | funkehdude | 2022-04-22 00:54:27 +0000 (Fri, 22 Apr 2022) | 1 line
 Changed paths:
    M /trunk/LibChatAnims.toc
+   M /trunk/LibChatAnims_TBC.toc
+   M /trunk/LibChatAnims_Vanilla.toc
 
 bump toc
 ------------------------------------------------------------------------

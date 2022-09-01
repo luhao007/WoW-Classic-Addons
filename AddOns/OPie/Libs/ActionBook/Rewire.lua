@@ -1,4 +1,4 @@
-local RW, MAJ, REV, _, T = {}, 1, 18, ...
+local RW, MAJ, REV, _, T = {}, 1, 21, ...
 if T.ActionBook then return end
 local AB, KR = nil, assert(T.Kindred:compatible(1,8), "A compatible version of Kindred is required.")
 local MODERN = select(4,GetBuildInfo()) >= 8e4
@@ -82,7 +82,7 @@ local core, coreEnv = CreateFrame("Frame", nil, nil, "SecureHandlerBaseTemplate"
 		idle, cache, numIdle, numActive, ns = newtable(), newtable(), 0, 0, 0
 		macros, commandInfo, commandHandler, commandAlias = newtable(), newtable(), newtable(), newtable()
 		MACRO_TOKEN, metaCommands, transferTokens = newtable(nil, nil, nil, "MACRO_TOKEN"), newtable(), newtable()
-		metaCommands.mute, metaCommands.unmute, metaCommands.mutenext, metaCommands.parse = 1, 1, 1, 1
+		metaCommands.mute, metaCommands.unmute, metaCommands.mutenext, metaCommands.parse, metaCommands.nounshift = 1, 1, 1, 1, 1
 		castEscapes, castAliases = newtable(), newtable()
 		for _, k in pairs(self:GetChildList(newtable())) do
 			idle[k], numIdle = 1, numIdle + 1
@@ -113,8 +113,16 @@ core:SetAttribute("RunSlashCmd", [=[-- Rewire:Internal_RunSlashCmd
 			return (target and (slash .. " [@" .. target .. "] ") or (slash .. " ")) .. v
 		end
 	elseif slash == "/stopmacro" then
+		local i, r, m = #execQueue
 		repeat
-			local r = table.remove(execQueue)
+			r, i, execQueue[i] = execQueue[i], i - 1
+			m = r and r[4]
+			if m == "TRANSFER_TOKEN" then
+				transferTokens[#transferTokens+1] = r
+				KR:RunAttribute("SetButtonState", r[3])
+			elseif m == "UNSHIFT_RESTORE" then
+				self:CallMethod("manageUnshift", true)
+			end
 		until r == MACRO_TOKEN or r == nil
 	elseif slash == "#mutenext" or slash == "#mute" then
 		local breakOnCommand = slash == "#mutenext"
@@ -135,6 +143,16 @@ core:SetAttribute("RunSlashCmd", [=[-- Rewire:Internal_RunSlashCmd
 			end
 		end
 		mutedAbove = -1, self:CallMethod("setMute", false)
+	elseif slash == "#nounshift" then
+		local breakOnCommand = v:lower() == "next"
+		for i=#execQueue,1,-1 do
+			local m = execQueue[i]
+			if m == MACRO_TOKEN or (breakOnCommand and m[4] == nil) or i == 1 then
+				table.insert(execQueue, i, newtable(nil, nil, nil, "UNSHIFT_RESTORE"))
+				break
+			end
+		end
+		self:CallMethod("manageUnshift", false)
 	elseif slash == "#parse" then
 		local m = execQueue[#execQueue]
 		if m and m[2] and m[3] then
@@ -207,6 +225,7 @@ core:SetAttribute("RunMacro", [=[-- Rewire:RunMacro
 		end
 		k, v = commandAlias[m[2]] or m[2], m[3]
 		ct = commandInfo[k] or 0
+		local meta = m[4]
 		if ct % 2 > 0 and m[3] ~= "" then
 			local skipChunks = nil
 			v, t = KR:RunAttribute("EvaluateCmdOptions", m[3], nil, skipChunks)
@@ -218,9 +237,11 @@ core:SetAttribute("RunMacro", [=[-- Rewire:RunMacro
 			else
 				nextLine = m[2] .. " [form:42]"
 			end
-		elseif m[4] == "TRANSFER_TOKEN" then
+		elseif meta == "TRANSFER_TOKEN" then
 			KR:RunAttribute("SetButtonState", m[3])
 			transferTokens[#transferTokens+1], nextLine = m
+		elseif meta == "UNSHIFT_RESTORE" then
+			self:CallMethod("manageUnshift", true)
 		else
 			nextLine = m[1]
 		end
@@ -263,6 +284,39 @@ do -- core:setMute
 		error("Muted state persisted after macro execution")
 	end)
 	f:Hide()
+end
+do -- core:manageUnshift
+	local isModified, origValue, modDepth = false, nil, 0
+	local cleanupArmed = false
+	local function cleanup()
+		cleanupArmed = false
+		if isModified then
+			SetCVar("autoUnshift", origValue)
+			isModified, modDepth = false, 0
+			securecall(error, "RW unshift cleanup panic")
+		end
+	end
+	function core:manageUnshift(isRestore)
+		if isRestore then
+			if modDepth > 0 then
+				modDepth = modDepth - 1
+				if modDepth == 0 then
+					SetCVar("autoUnshift", origValue)
+					isModified = false
+				end
+			end
+		else
+			if not isModified then
+				origValue = GetCVar("autoUnshift")
+				SetCVar("autoUnshift", 0)
+			end
+			isModified, modDepth = true, modDepth + 1
+			if not cleanupArmed then
+				C_Timer.After(0, cleanup)
+				cleanupArmed = true
+			end
+		end
+	end
 end
 
 local function setCommandType(slash, ctype, handler)
@@ -340,7 +394,7 @@ local setCommandHinter, getMacroHint, getCommandHint, getCommandHintRaw, metaFil
 		end
 		function metaFilterTypes:replaceHint(...)
 			if store(self(...)) then
-				ht = ht2
+				ht, ht2 = ht2, ht
 				return true
 			end
 		end
@@ -360,7 +414,7 @@ local setCommandHinter, getMacroHint, getCommandHint, getCommandHintRaw, metaFil
 		if hf and pri > (priLimit or nInf) - (priBias or 0) then
 			if cDepth == 0 then
 				cDepth = 1
-				return clearDepth(securecall(getCommandHint, priLimit, slash, args, modState, otarget, priBias))
+				return clearDepth(securecall(getCommandHint, priLimit, slash, args, modState, otarget, msg, priBias))
 			elseif cDepth > DEPTH_LIMIT then
 				return false
 			elseif otarget ~= nil then
@@ -433,7 +487,7 @@ local setCommandHinter, getMacroHint, getCommandHint, getCommandHintRaw, metaFil
 		local mk, mv = m.metaKeys
 		if (bestPri <= lowPri) and (haveUnknown or mk) then
 			store(true, nil, 0, nil, "", 0, 0, 0)
-			ht = ht2
+			ht, ht2 = ht2, ht
 		end
 		for i=1,mk and #mk or 0 do
 			local k = mk[i]
@@ -480,7 +534,7 @@ local function init()
 			setCommandType(cmd, 1+2+16)
 		end
 	end
-	for m in ("#mute #unmute #mutenext #parse"):gmatch("%S+") do
+	for m in ("#mute #unmute #mutenext #parse #nounshift"):gmatch("%S+") do
 		RW:RegisterCommand(m, true, false, core)
 	end
 	RW:RegisterCommand("/stopmacro", true, false, core)

@@ -35,7 +35,7 @@ Prat:AddModuleToLoad(function()
   -- define localized strings
   local PL = module.PL
 
-  --[===[@debug@
+  --[==[@debug@
   PL:AddLocale(PRAT_MODULE, "enUS", {
     ["Substitutions"] = true,
     ["A module to provide basic chat substitutions."] = true,
@@ -114,7 +114,7 @@ Prat:AddModuleToLoad(function()
     ["RandNum"] = true,
     ["PlayerAverageItemLevel"] = true,
   })
-  --@end-debug@]===]
+  --@end-debug@]==]
 
   -- These Localizations are auto-generated. To help with localization
   -- please go to http://www.wowace.com/projects/prat-3-0/localization/

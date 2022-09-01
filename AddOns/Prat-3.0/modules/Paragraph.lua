@@ -41,7 +41,7 @@ Prat:AddModuleToLoad(function()
 
   local PL = module.PL
 
-  --[===[@debug@
+  --[==[@debug@
   PL:AddLocale(PRAT_MODULE, "enUS", {
     ["Paragraph"] = true,
     ["Chat window paragraph options."] = true,
@@ -55,7 +55,7 @@ Prat:AddModuleToLoad(function()
     ["Right"] = true,
     ["Left"] = true,
   })
-  --@end-debug@]===]
+  --@end-debug@]==]
 
   -- These Localizations are auto-generated. To help with localization
   -- please go to http://www.wowace.com/projects/prat-3-0/localization/
@@ -191,13 +191,13 @@ L = {
 	["Paragraph"] = {
 		["adjustlinks_desc"] = "중앙이나 우측 정렬일 때 클릭 기능을 위해 링크 위치를 조절합니다.",
 		["adjustlinks_name"] = "플레이어/아이템 링크 위치 수정",
-		["Center"] = "중앙",
-		["Chat window paragraph options."] = "대화창을 정렬하는 옵션입니다.",
+		["Center"] = "가운데",
+		["Chat window paragraph options."] = "대화창 단락 옵션입니다.",
 		["justification_desc"] = "각 대화창 별로 가로 정렬을 설정합니다.",
 		["justification_name"] = "정렬 설정",
 		["Left"] = "왼쪽",
 		["Line Spacing"] = "줄 간격",
-		["Paragraph"] = "정렬",
+		["Paragraph"] = "단락 [Paragraph]",
 		["Right"] = "오른쪽",
 		["Set the line spacing for all chat windows."] = "모든 대화창의 줄 간격을 설정합니다.",
 	}

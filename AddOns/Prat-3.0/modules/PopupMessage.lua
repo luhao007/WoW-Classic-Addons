@@ -38,7 +38,7 @@ Prat:AddModuleToLoad(function()
 
   local PL = module.PL
 
-  --[===[@debug@
+  --[==[@debug@
   PL:AddLocale(PRAT_MODULE, "enUS", {
     ["PopupMessage"] = true,
     ["Shows messages with your name in a popup."] = true,
@@ -67,7 +67,7 @@ Prat:AddModuleToLoad(function()
     -- 	["Use SCT Message"] = true,
     --	["Show the text as an SCT message instead of in its own frame"] = true,
   })
-  --@end-debug@]===]
+  --@end-debug@]==]
 
   -- These Localizations are auto-generated. To help with localization
   -- please go to http://www.wowace.com/projects/prat-3-0/localization/
@@ -694,9 +694,9 @@ end
   end
 
   local DEBUG
-  --[===[@debug@
+  --[==[@debug@
   DEBUG = true
-  --@end-debug@]===]
+  --@end-debug@]==]
 
   function module:Prat_PostAddMessage(info, message, frame, event, text, r, g, b, id)
     if self.pouring then return end

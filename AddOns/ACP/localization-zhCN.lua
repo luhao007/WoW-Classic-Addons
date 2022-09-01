@@ -2,7 +2,7 @@ if not ACP then return end
 
 --@non-debug@
 
-local L = {
+L = {
 	["*** Enabling <%s> %s your UI ***"] = "*** 启用 <%s>，%s 你的插件 ***",
 	["*** Unknown Addon <%s> Required ***"] = "*** 需要未知插件 <%s> ***",
 	["ACP: Some protected addons aren't loaded. Reload now?"] = "ACP：部分受保护插件没有被加载。现在重载插件么？",

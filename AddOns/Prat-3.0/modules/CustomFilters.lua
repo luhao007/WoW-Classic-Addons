@@ -38,7 +38,7 @@ Prat:AddModuleToLoad(function()
 
   local PL = module.PL
 
-  --[===[@debug@
+  --[==[@debug@
   PL:AddLocale(PRAT_MODULE, "enUS", {
     ["module_name"] = "CustomFilters",
     ["module_desc"] = "Module to support custom filters.",
@@ -85,7 +85,7 @@ Prat:AddModuleToLoad(function()
     chatframesink_name = "Chatframe",
     chatframesink_desc = "Output to a chat window"
   })
-  --@end-debug@]===]
+  --@end-debug@]==]
 
   -- These Localizations are auto-generated. To help with localization
   -- please go to http://www.wowace.com/projects/prat-3-0/localization/
@@ -322,7 +322,7 @@ L = {
 		["Is this pattern enabled for use?"] = "이 패턴을 사용하기 위해 활성화 할까요?",
 		["Match Options"] = "일치 옵션",
 		["module_desc"] = "사용자 설정 필터를 지원하는 모듈입니다.",
-		["module_name"] = "사용자 설정 필터",
+		["module_name"] = "사용자 설정 필터 [CustomFilters]",
 		["Only output the message portion of the chat text, leave out the channel, and playername etc."] = "대화 문자열, 채널 나감, 플레이어 이름 등의 메시지 부분만 출력합니다.",
 		["Outbound"] = "보낸 메시지",
 		["Output Channel"] = "출력 채널",

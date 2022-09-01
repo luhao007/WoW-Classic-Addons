@@ -114,7 +114,7 @@ L["OPTIONS_TABNAME_ANIMATIONS"] = "Spell Feedback"
 --[[Translation missing --]]
 L["OPTIONS_TABNAME_AUTO"] = "Auto"
 --[[Translation missing --]]
-L["OPTIONS_TABNAME_BUFF_LIST"] = "Buff List"
+L["OPTIONS_TABNAME_BUFF_LIST"] = "Spell List"
 --[[Translation missing --]]
 L["OPTIONS_TABNAME_BUFF_SETTINGS"] = "Buff Settings"
 --[[Translation missing --]]
@@ -122,11 +122,17 @@ L["OPTIONS_TABNAME_BUFF_SPECIAL"] = "Buff Special"
 --[[Translation missing --]]
 L["OPTIONS_TABNAME_BUFF_TRACKING"] = "Buff Tracking"
 --[[Translation missing --]]
-L["OPTIONS_TABNAME_COLORSNPC"] = "Npc Colors"
+L["OPTIONS_TABNAME_CASTBAR"] = "Cast Bar"
+--[[Translation missing --]]
+L["OPTIONS_TABNAME_CASTCOLORS"] = "\"Cast Colors and Names\""
+--[[Translation missing --]]
+L["OPTIONS_TABNAME_COMBOPOINTS"] = "Combo Points"
 --[[Translation missing --]]
 L["OPTIONS_TABNAME_GENERALSETTINGS"] = "General Settings"
 --[[Translation missing --]]
 L["OPTIONS_TABNAME_MODDING"] = "Modding"
+--[[Translation missing --]]
+L["OPTIONS_TABNAME_NPC_COLORNAME"] = "Npc Colors and Names"
 --[[Translation missing --]]
 L["OPTIONS_TABNAME_NPCENEMY"] = "Enemy Npc"
 --[[Translation missing --]]
@@ -141,6 +147,8 @@ L["OPTIONS_TABNAME_PLAYERFRIENDLY"] = "Friendly Player"
 L["OPTIONS_TABNAME_PROFILES"] = "Profiles"
 --[[Translation missing --]]
 L["OPTIONS_TABNAME_SCRIPTING"] = "Scripting"
+--[[Translation missing --]]
+L["OPTIONS_TABNAME_SEARCH"] = "Search"
 --[[Translation missing --]]
 L["OPTIONS_TABNAME_STRATA"] = "Level & Strata"
 --[[Translation missing --]]

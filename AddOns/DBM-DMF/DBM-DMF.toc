@@ -1,0 +1,36 @@
+## Interface: 30400
+## Author: MysticalOS
+## RequiredDeps: DBM-Core
+## LoadOnDemand: 1
+## SavedVariables: DBMDMF_AllSavedVars
+## SavedVariablesPerCharacter: DBMDMF_SavedStats
+
+## Title: |cffffe00a<|r|cffff7d0aDBM|r|cffffe00a>|r |cff69ccf0Darkmoon Faire|r
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFF69CCF0暗月马戏团|r
+
+## X-DBM-Mod: 1
+## X-DBM-Mod-Type: OTHER
+## X-DBM-Mod-Category: OTHER
+## X-DBM-StatTypes: normal
+## X-DBM-Mod-MapID: 974
+## X-DBM-Mod-Sort: 1501
+## X-DBM-Mod-MinCoreRevision: 12473
+## X-Part-Of: DBM-Core
+
+localization.en.lua
+localization.ru.lua
+localization.fr.lua
+localization.tw.lua
+localization.kr.lua
+localization.de.lua
+localization.es.lua
+localization.cn.lua
+localization.br.lua
+localization.it.lua
+Cannon.lua
+Gnoll.lua
+Shot.lua
+Tonks.lua
+Rings.lua
+Rabbit.lua
+Moonfang.lua

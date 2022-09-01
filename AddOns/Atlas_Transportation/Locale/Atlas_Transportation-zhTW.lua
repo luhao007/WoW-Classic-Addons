@@ -1,10 +1,10 @@
--- $Id: Atlas_Transportation-zhTW.lua 125 2021-05-22 14:07:10Z arithmandar $
+-- $Id: Atlas_Transportation-zhTW.lua 170 2022-04-10 08:57:02Z arithmandar $
 --[[
 
 	Atlas, a World of Warcraft instance map browser
 	Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert@gmail.com>
 	Copyright 2010 - Lothaer <lothayer@gmail.com>, Atlas Team
-	Copyright 2011 ~ 2021 - Arith Hsu, Atlas Team <atlas.addon at gmail.com>
+	Copyright 2011 ~ 2022 - Arith Hsu, Atlas Team <atlas.addon at gmail.com>
 
 	This file is part of Atlas.
 
@@ -32,12 +32,10 @@ L["Abandoned Kite"] = "被遺棄的鳶"
 L["Airship"] = "飛行器"
 L["Aludane Whitecloud <Flight Master>"] = "艾魯丹·白雲 <飛行管理員>"
 L["Blue"] = "藍"
---[[Translation missing --]]
---[[ L["Boat to Echo Isles, Durotar"] = ""--]] 
---[[Translation missing --]]
---[[ L["Boat to Stormwind City"] = ""--]] 
---[[Translation missing --]]
---[[ L["Camp Taurajo"] = ""--]] 
+L["Boat to Echo Isles, Durotar"] = "行駛到回音群島/杜洛塔的航線"
+L["Boat to Stormwind City"] = "行駛到暴風城的航線"
+L["Camp Taurajo"] = "陶拉祖營地"
+L["Change will take effect after next login; or type '/reload' command to reload addon"] = "變更會在下次登入後生效；或輸入 /reload 指令重新載入插件"
 L["Class Order Halls"] = "職業大廳"
 L["Class Specific Only"] = "僅限特定職業"
 L["Climbing Rope"] = "登山繩"
@@ -52,8 +50,7 @@ L["Great Eagle"] = "巨鷹"
 L["Green"] = "綠"
 L["Gryphon"] = "獅鷲獸"
 L["Gryphon Master"] = "獅鷲獸管理員"
---[[Translation missing --]]
---[[ L["Honored with Sha'tari Skyguard"] = ""--]] 
+L["Honored with Sha'tari Skyguard"] = "需薩塔空防陣營榮譽"
 L["Hunter Only"] = "僅限獵人"
 L["Illidari Gateway"] = "伊利達瑞傳送門"
 L["Jump to Skyhold"] = "跳到擎天堡"
@@ -76,25 +73,24 @@ L["Require to complete \"Meet the Scout\" quest line first."] = "需要先完成
 L["Requires Eagle Ally Advancement"] = "需要升級飛鷹盟友"
 L["Requires honored faction with Sha'tari Skyguard"] = "需薩塔空防陣營榮譽"
 L["Requires Teleportation Nexus Advancement"] = "需要升級傳送網路"
+L["Return to Zuldazar"] = "返回贊達拉"
 L["Seahorse"] = "海馬"
 L["Shado-Pan Rope"] = "影潘索 "
 L["Ship / Zeppelin sailing path to destination"] = "船隻 / 飛船航向目的地的路徑"
+L["Show %s's transportation maps"] = "顯示%s陣營的交通網路圖"
 L["South of the path along Lake Elune'ara"] = "月神湖南方小徑"
 L["Special transportation"] = "特殊運輸工具"
 L["Talua <Eagle Keeper>"] = "塔陸亞 <飼鷹者>"
 L["Taxi Nodes"] = "航行點"
---[[Translation missing --]]
---[[ L["Teleport Beacon"] = ""--]] 
+L["Teleport Beacon"] = "光鑄信標傳送點"
 L["Teleportation Nexus"] = "傳送網路"
---[[Translation missing --]]
---[[ L["The Barrens"] = ""--]] 
+L["The Barrens"] = "貧瘠之地"
 L["The Bogpaddle Bullet"] = "沼槳火箭"
 L["Transportation Maps"] = "交通網路地圖"
 L["Transporter"] = "輸送者"
 L["Transporters by the sea and on the cliff"] = "傳送器位於懸崖上與懸崖下"
 L["Two ways portal"] = "雙向傳送門"
---[[Translation missing --]]
---[[ L["Vindicaar"] = ""--]] 
+L["Vindicaar"] = "梵迪卡爾"
 L["Warning: Drop"] = "小心輕放"
 L["Warrior's landing / jumping point (from or back to Skyhold)"] = "戰士的降落 / 跳躍點（往返擎天堡）"
 L["West of the path to Timbermaw Hold"] = "往木喉要塞小徑西方"

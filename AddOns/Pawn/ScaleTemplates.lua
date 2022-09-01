@@ -1,6 +1,6 @@
 ﻿-- Pawn by Vger-Azjol-Nerub
 -- www.vgermods.com
--- © 2006-2021 Travis Spomer.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
+-- © 2006-2022 Travis Spomer.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
 -- See Readme.htm for more information.
 --
 -- Scale templates
@@ -13,8 +13,8 @@
 -- Returns the template from PawnScaleTemplates for a given class ID and spec ID.
 function PawnFindScaleTemplate(ClassID, SpecID)
 	local _, Template
-	
-	if VgerCore.IsClassic or VgerCore.IsBurningCrusade then
+
+	if VgerCore.IsClassic or VgerCore.IsBurningCrusade or VgerCore.IsWrath then
 		for _, Template in pairs(PawnScaleTemplatesClassic) do
 			if Template.ClassID == ClassID then return Template end
 		end
@@ -34,8 +34,8 @@ function PawnGetStatValuesForTemplate(Template, NoStats)
 	if NoStats then
 		ScaleValues = {}
 	else
-		if VgerCore.IsClassic or VgerCore.IsBurningCrusade then
-			ScaleValues = 
+		if VgerCore.IsClassic or VgerCore.IsBurningCrusade or VgerCore.IsWrath then
+			ScaleValues =
 			{
 				["Stamina"] = 0.01,
 				["Armor"] = 0.1,
@@ -144,21 +144,19 @@ function PawnGetStatValuesForTemplate(Template, NoStats)
 				ScaleValues.FeralAp = nil
 			end
 		else
-			ScaleValues = 
+			ScaleValues =
 			{
 				["Stamina"] = 0.01,
-	
+
 				["CritRating"] = 0.5,
 				["HasteRating"] = 0.5,
 				["MasteryRating"] = 0.5,
 				["Versatility"] = 0.5,
-	
+
 				["MovementSpeed"] = 0.01,
 				["Avoidance"] = 0.01,
 				["Leech"] = 0.01,
 				["Indestructible"] = 0.01,
-
-				["DominationSocket"] = 0.37,
 			}
 
 			ScaleValues[Template.PrimaryStat] = 1
@@ -177,7 +175,7 @@ function PawnGetStatValuesForTemplate(Template, NoStats)
 		for _, StatName in pairs(Template.UnusableStats) do
 			ScaleValues[StatName] = PawnIgnoreStatValue
 
-			if (VgerCore.IsClassic or VgerCore.IsBurningCrusade) and StatName == "IsShield" then
+			if (VgerCore.IsClassic or VgerCore.IsBurningCrusade or VgerCore.IsWrath) and StatName == "IsShield" then
 				ScaleValues.BlockRating = nil
 				ScaleValues.BlockValue = nil
 			end
@@ -502,6 +500,11 @@ PawnScaleTemplates =
 
 PawnScaleTemplatesClassic =
 {
+
+{
+	["ClassID"] = 6, -- Death Knight
+	["PrimaryStats"] = { "Strength", "Agility", "Stamina" }
+},
 
 {
 	["ClassID"] = 11, -- Druid

@@ -1,5 +1,5 @@
 local MAJOR_VERSION = "LibGetFrame-1.0"
-local MINOR_VERSION = 31
+local MINOR_VERSION = 38
 if not LibStub then error(MAJOR_VERSION .. " requires LibStub.") end
 local lib = LibStub:NewLibrary(MAJOR_VERSION, MINOR_VERSION)
 if not lib then return end
@@ -28,9 +28,11 @@ local defaultFramePriorities = {
     "^oUF_bdGrid", -- bdgrid
     "^oUF_.-Raid", -- generic oUF
     "^LimeGroup", -- lime
+    "^InvenRaidFrames3Group%dUnitButton", -- InvenRaidFrames3
     "^SUFHeaderraid", -- suf
     "^LUFHeaderraid", -- luf
     "^AshToAshUnit%d+Unit%d+", -- AshToAsh
+    "^Cell", -- Cell
     -- party frames
     "^AleaUI_GroupHeader", -- Alea
     "^SUFHeaderparty", --suf
@@ -41,6 +43,7 @@ local defaultFramePriorities = {
     "^CompactRaid", -- blizz
     "^CompactParty", -- blizz
     -- player frame
+    "^InvenUnitFrames_Player",
     "^SUFUnitplayer",
     "^LUFUnitplayer",
     "^PitBull4_Frames_Player",
@@ -50,6 +53,7 @@ local defaultFramePriorities = {
 }
 
 local defaultPlayerFrames = {
+    "^InvenUnitFrames_Player",
     "SUFUnitplayer",
     "LUFUnitplayer",
     "PitBull4_Frames_Player",
@@ -59,6 +63,7 @@ local defaultPlayerFrames = {
     "PlayerFrame",
 }
 local defaultTargetFrames = {
+    "^InvenUnitFrames_Target",
     "SUFUnittarget",
     "LUFUnittarget",
     "PitBull4_Frames_Target",
@@ -67,6 +72,7 @@ local defaultTargetFrames = {
     "TargetFrame",
 }
 local defaultTargettargetFrames = {
+    "^InvenUnitFrames_TargetTarget",
     "SUFUnittargetarget",
     "LUFUnittargetarget",
     "PitBull4_Frames_Target's target",
@@ -76,6 +82,7 @@ local defaultTargettargetFrames = {
     "TargetTargetFrame",
 }
 local defaultPartyFrames = {
+    "^InvenUnitFrames_Party%d",
     "^AleaUI_GroupHeader",
     "^SUFHeaderparty",
     "^LUFHeaderparty",
@@ -88,6 +95,7 @@ local defaultPartyTargetFrames = {
     "SUFChildpartytarget%d",
 }
 local defaultFocusFrames = {
+    "^InvenUnitFrames_Focus",
     "ElvUF_FocusTarget",
     "LUFUnitfocus",
     "FocusFrame"
@@ -98,9 +106,11 @@ local defaultRaidFrames = {
     "^GridLayout",
     "^Grid2Layout",
     "^PlexusLayout",
+    "^InvenRaidFrames3Group%dUnitButton",
     "^ElvUF_Raid%d*Group",
     "^oUF_.-Raid",
     "^AshToAsh",
+    "^Cell",
     "^LimeGroup",
     "^SUFHeaderraid",
     "^LUFHeaderraid",
@@ -157,11 +167,11 @@ local function doScanForUnitFrames()
         end
     end
 end
-local function ScanForUnitFrames()
-    doScanForUnitFrames()
-    if not wait then
+local function ScanForUnitFrames(noDelay)
+    if noDelay then
+        doScanForUnitFrames()
+    elseif not wait then
         wait = true
-        -- do another delayed scan due to Plexus and Vuhdo sometime delayed layout
         C_Timer.After(1, function()
             doScanForUnitFrames()
         end)
@@ -230,8 +240,9 @@ local defaultOptions = {
     ignoreFrames = {
         "PitBull4_Frames_Target's target's target",
         "ElvUF_PartyGroup%dUnitButton%dTarget",
-        "RavenButton",
-        "AshToAshUnit%d+ShadowGroupHeaderUnitButton%d+"
+        "RavenOverlay",
+        "AshToAshUnit%d+ShadowGroupHeaderUnitButton%d+",
+        "InvenUnitFrames_TargetTargetTarget",
     },
     returnAll = false,
 }
@@ -244,8 +255,8 @@ local function Init(noDelay)
     GetFramesCacheListener:RegisterEvent("PLAYER_ENTERING_WORLD")
     GetFramesCacheListener:RegisterEvent("GROUP_ROSTER_UPDATE")
     GetFramesCacheListener:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT")
-    GetFramesCacheListener:SetScript("OnEvent", function() ScanForUnitFrames() end)
-    ScanForUnitFrames()
+    GetFramesCacheListener:SetScript("OnEvent", function() ScanForUnitFrames(false) end)
+    ScanForUnitFrames(noDelay)
 end
 
 function lib.GetUnitFrame(target, opt)
@@ -320,26 +331,46 @@ function lib.GetUnitNameplate(unit)
     local nameplate = C_NamePlate.GetNamePlateForUnit(unit)
     if nameplate then
         -- credit to Exality for https://wago.io/explosiveorbs
-        if nameplate.unitFrame and nameplate.unitFrame.Health then
+        if  nameplate.unitFrame
+        and nameplate.unitFrame.Health
+        then
           -- elvui
           return nameplate.unitFrame.Health
-        elseif nameplate.unitFramePlater then
+        elseif nameplate.unitFramePlater
+           and nameplate.unitFramePlater.healthBar
+        then
           -- plater
           return nameplate.unitFramePlater.healthBar
-        elseif nameplate.kui then
+        elseif nameplate.kui
+           and nameplate.kui.HealthBar
+        then
           -- kui
           return nameplate.kui.HealthBar
-        elseif nameplate.extended then
+        elseif nameplate.extended
+           and nameplate.extended.visual
+           and nameplate.extended.visual.healthbar
+        then
           -- tidyplates
-          --nameplate.extended.visual.healthbar:SetHeight(tidyplatesHeight)
           return nameplate.extended.visual.healthbar
-        elseif nameplate.TPFrame then
+        elseif nameplate.TPFrame
+           and nameplate.TPFrame.visual
+           and nameplate.TPFrame.visual.healthbar
+        then
           -- tidyplates: threat plates
           return nameplate.TPFrame.visual.healthbar
-        elseif nameplate.ouf then
+        elseif nameplate.unitFrame
+           and nameplate.unitFrame.Health
+        then
+          -- bdui nameplates
+          return nameplate.unitFrame.Health
+        elseif nameplate.ouf
+           and nameplate.ouf.Health
+        then
           -- bdNameplates
           return nameplate.ouf.Health
-        elseif nameplate.UnitFrame then
+        elseif nameplate.UnitFrame
+           and nameplate.UnitFrame.healthBar
+        then
           -- default
           return nameplate.UnitFrame.healthBar
         else

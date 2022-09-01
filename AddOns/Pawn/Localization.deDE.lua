@@ -1,9 +1,9 @@
 ﻿-- Pawn by Vger-Azjol-Nerub
 -- www.vgermods.com
--- © 2006-2021 Travis Spomer.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
+-- © 2006-2022 Travis Spomer.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
 -- See Readme.htm for more information.
 
--- 
+--
 -- German resources
 ------------------------------------------------------------
 
@@ -149,6 +149,7 @@ Weitere Informationen zur Anpassung von Pawn findet ihr in der Hilfedatei (Readm
 		["SpellDamageInfo"] = "Zauberschaden. Erhöht den durch deine Angriffszauber verursachten Schaden.",
 		["SpellHitInfo"] = "Zaubertreffer. Erhöht die Wahrscheinlichkeit, dass deine Schadenszauber das Ziel treffen, insbesondere Bosse.",
 		["SpellPenetrationInfo"] = "Zauberdurchdringung. Macht die Widerstände eines Feindes gegen deine Zauber zunichte.",
+		["SpellPowerInfo"] = "Zauberschaden. Erhöht den durch deine Angriffszauber verursachten Schaden.",
 		["SpiritInfo"] = "Willenskraft. Beeinflusst die Manaregeneration außerhalb des Kampfes.",
 		["StaminaInfo"] = "Ausdauer. Erhöht die Gesundheit.",
 		["StrengthInfo"] = "Stärke. Verstärkt Eure Angriffe und Fähigkeiten.",
@@ -409,6 +410,7 @@ Weitere Informationen zur Anpassung von Pawn findet ihr in der Hilfedatei (Readm
 		["SpellDamage3"] = "^Anlegen: Erhöht durch Zauber und magische Effekte verursachten Schaden und Heilung um bis zu #%.$",
 		["SpellDamage4"] = "^UNUSED$",
 		["SpellDamage5"] = "^%+?# Zauberschaden und Heilung$",
+		["SpellDamage6"] = "^UNUSED$",
 		["SpellDamageAndHealing"] = "^Anlegen: Erhöht durch sämtliche Zauber und magische Effekte verursachte Heilung um bis zu # und den verursachten Schaden um bis zu #%.$",
 		["SpellDamageAndHealing2"] = "^UNUSED$",
 		["SpellDamageAndHealingEnchant"] = "^%+# Heilung %+# Zauberschaden$",
@@ -424,6 +426,7 @@ Weitere Informationen zur Anpassung von Pawn findet ihr in der Hilfedatei (Readm
 		["SpellPenetrationClassic"] = "^Anlegen: Reduziert die Magiewiderstände der Ziele Eurer Zauber um #%.$",
 		["SpellPenetrationShort"] = "^%+?# Zauberdurchschlagskraft$",
 		["SpellPower"] = "^%+?# Zaubermacht$",
+		["SpellPower2"] = "^Anlegen: Erhöht die Zaubermacht um #%.$",
 		["Spirit"] = "^%+?# Willenskraft$",
 		["Staff"] = "^Stab$",
 		["Stamina"] = "^%+?# Ausdauer$",
@@ -680,7 +683,7 @@ Weitere Informationen zu dieser Einstellung findest du in der Readme-Datei.]=],
 
 -- Special case: weapon speed and Mail use different words on Classic.
 -- So, patch things up here.
-if VgerCore.IsClassic or VgerCore.IsBurningCrusade then
+if VgerCore.IsClassic or VgerCore.IsBurningCrusade or VgerCore.IsWrath then
 	PawnLocal.Mail = "Schwere Rüstung"
 	PawnLocal.MailInfo = "Punkte, die zugewiesen werden sollen, wenn der Gegenstand Schwere Rüstung ist."
 	PawnLocal.TooltipParsing.Mail = "^Schwere Rüstung$"

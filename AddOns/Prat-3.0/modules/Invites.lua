@@ -37,7 +37,7 @@ Prat:AddModuleToLoad(function()
   -- define localized strings
   local PL = module.PL
 
-  --[===[@debug@
+  --[==[@debug@
   PL:AddLocale(PRAT_MODULE, "enUS", {
     module_name = "Invites",
     module_desc = "Options for easy inviting of players to groups",
@@ -46,7 +46,7 @@ Prat:AddModuleToLoad(function()
     ["Enable Invite Links"] = true,
     ["Toggle group invites by alt-clicking hyperlinked keywords like 'invite'."] = true,
   })
-  --@end-debug@]===]
+  --@end-debug@]==]
 
   -- These Localizations are auto-generated. To help with localization
   -- please go to http://www.wowace.com/projects/prat-3-0/localization/
@@ -113,7 +113,7 @@ L = {
 		["Enable Alt-Invite"] = "Alt-초대 켜기",
 		["Enable Invite Links"] = "초대 링크 켜기",
 		["module_desc"] = "사용자 그룹 쉽게 추가하기 옵션",
-		["module_name"] = "초대",
+		["module_name"] = "초대 [Invites]",
 		["Toggle group invites by alt-clicking hyperlinked keywords like 'invite'."] = "'초대'와 같은 하이퍼링크된 키워드를 클릭하여 그룹 초대를 전환합니다.",
 		["Toggle group invites by alt-clicking on player name."] = "플레이어 이름을 Alt-클릭하여 그룹 초대를 전환합니다.",
 	}

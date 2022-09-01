@@ -1,9 +1,9 @@
 ﻿-- Pawn by Vger-Azjol-Nerub
 -- www.vgermods.com
--- © 2006-2021 Travis Spomer.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
+-- © 2006-2022 Travis Spomer.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
 -- See Readme.htm for more information.
 
--- 
+--
 -- Russian resources
 ------------------------------------------------------------
 
@@ -154,6 +154,7 @@ For more information on customizing Pawn, please see the help file (Readme.htm) 
 		["SpellHitInfo"] = "Spell Hit.  Increases the chance that your damaging spells hit the target, especially bosses.",
 		--[[Translation missing --]]
 		["SpellPenetrationInfo"] = "Spell Penetration. Negates an enemy's resistances to your spells.",
+		["SpellPowerInfo"] = "",
 		["SpiritInfo"] = "Spirit.  Affects your out-of-combat mana regeneration.",
 		["StaminaInfo"] = "Выносливость. Увеличивает количество жизни. ",
 		["StrengthInfo"] = "Сила. Увеличивает силу атаки для некоторых классов.",
@@ -414,10 +415,11 @@ For more information on customizing Pawn, please see the help file (Readme.htm) 
 		["SpellDamage3"] = "^Если на персонаже: Увеличивает урон и объем исцеления от магических заклинаний и эффектов максимум на # ед%.$",
 		["SpellDamage4"] = "^%+# к урону от заклинаний$",
 		["SpellDamage5"] = "^UNUSED$",
+		["SpellDamage6"] = "^UNUSED$",
 		["SpellDamageAndHealing"] = "^Если на персонаже: Усиливает исходящее исцеление максимум на # ед%., а урон от магических эффектов и заклинаний – максимум на # ед%.$",
 		["SpellDamageAndHealing2"] = "^Если на персонаже: Усиливает исцеление от магических заклинаний и эффектов максимум на # ед%. и увеличивает урон от них максимум на # ед%.$",
 		["SpellDamageAndHealingEnchant"] = "^BUG IN GAME$",
-		["SpellDamageAndHealingShort"] = "^UNUSED$",
+		["SpellDamageAndHealingShort"] = "^%+# к лечению и %+# к урону от заклинаний$",
 		["SpellDamageAndHealingShort2"] = "^UNUSED$",
 		["SpellHasteRating"] = "^Если на персонаже: Повышает рейтинг скорости заклинаний на #%.$",
 		["SpellHasteRatingShort"] = "^%+?# к рейтингу скорости заклинаний$",
@@ -430,6 +432,7 @@ For more information on customizing Pawn, please see the help file (Readme.htm) 
 		["SpellPenetrationClassic"] = "^Если на персонаже: Снижает сопротивление магии целей ваших заклинаний на #%.$",
 		["SpellPenetrationShort"] = "^%+?# к проникающей способности заклинаний$",
 		["SpellPower"] = "^%+?# к силе заклинаний$",
+		["SpellPower2"] = "^Если на персонаже: Увеличивает силу заклинаний на #%.$",
 		["Spirit"] = "^%+?# к духу$",
 		["Staff"] = "^Посох$",
 		["Stamina"] = "^%+?# к выносливости$",
@@ -764,7 +767,7 @@ PawnLocal.Specs =
 	},
 }
 
-if VgerCore.IsBurningCrusade then
+if VgerCore.IsBurningCrusade or VgerCore.IsWrath then
 	PawnLocal.DecimalSeparator = ","
 	PawnLocal.ThousandsSeparator = ","
 end
@@ -772,7 +775,7 @@ end
 end
 
 if GetLocale() == "ruRU" then
-	PawnUseThisLocalization()	
+	PawnUseThisLocalization()
 end
 
 -- After using this localization or deciding that we don't need it, remove it from memory.

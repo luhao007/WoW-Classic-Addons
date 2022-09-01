@@ -1,10 +1,10 @@
--- $Id: Atlas_Transportation-itIT.lua 125 2021-05-22 14:07:10Z arithmandar $
+-- $Id: Atlas_Transportation-itIT.lua 131 2022-02-02 17:23:30Z arithmandar $
 --[[
 
 	Atlas, a World of Warcraft instance map browser
 	Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert@gmail.com>
 	Copyright 2010 - Lothaer <lothayer@gmail.com>, Atlas Team
-	Copyright 2011 ~ 2021 - Arith Hsu, Atlas Team <atlas.addon at gmail.com>
+	Copyright 2011 ~ 2022 - Arith Hsu, Atlas Team <atlas.addon at gmail.com>
 
 	This file is part of Atlas.
 
@@ -42,6 +42,8 @@ if L then
 --[[ L["Boat to Stormwind City"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["Camp Taurajo"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["Change will take effect after next login; or type '/reload' command to reload addon"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["Class Order Halls"] = ""--]] 
 --[[Translation missing --]]
@@ -117,11 +119,15 @@ if L then
 --[[Translation missing --]]
 --[[ L["Requires Teleportation Nexus Advancement"] = ""--]] 
 --[[Translation missing --]]
+--[[ L["Return to Zuldazar"] = ""--]] 
+--[[Translation missing --]]
 --[[ L["Seahorse"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["Shado-Pan Rope"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["Ship / Zeppelin sailing path to destination"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["Show %s's transportation maps"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["South of the path along Lake Elune'ara"] = ""--]] 
 --[[Translation missing --]]

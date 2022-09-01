@@ -43,7 +43,7 @@ do -- zone:Zone/Sub Zone
 		for i=1,4 do
 			local z = (i == 1 and GetRealZoneText or i == 2 and GetSubZoneText or i == 3 and GetZoneText or GetMinimapZoneText)()
 			if z and z ~= "" then
-				cz = (cz and (cz .. "/") or "") .. z
+				cz = (cz and (cz .. "/") or "") .. z:gsub("%s*[,/%[%]][[,/%[%]]%s]*", " ")
 			end
 		end
 		KR:SetStateConditionalValue("zone", cz or false)
@@ -143,6 +143,9 @@ do -- instance:arena/bg/ratedbg/lfr/raid/scenario + outland/northrend/...
 		[530]="world/outland", [571]="world/northrend",
 		[1220]="world/broken isles", [1669]="world/argus",
 		[1642]="world/bfa/zandalar", [1643]="world/bfa/kul tiras",
+		[2222]="world/shadowlands",
+		[2453]="world/torghast", -- lobby
+		[2162]="torghast", -- towers
 		
 		garrison="world/draenor/garrison",
 		[1158]="garrison",
@@ -363,7 +366,7 @@ do -- combo:count
 	local function syncComboPower()
 		power = powerMap[MODERN and GetSpecializationInfo(GetSpecialization() or 0)] or defaultPower
 	end
-	EV.PLAYER_SPECIALIZATION_CHANGED, EV.PLAYER_LOGIN = syncComboPower, syncComboPower
+	EV.PLAYER_SPECIALIZATION_CHANGED, EV.PLAYER_ENTERING_WORLD = syncComboPower, syncComboPower
 end
 do -- race:token
 	local map, _, raceToken = {
@@ -380,7 +383,8 @@ do -- professions
 	local map = MODERN and {
 		[197]="tail", [165]="lw", [164]="bs",
 		[171]="alch", [202]="engi", [333]="ench", [755]="jc", [773]="scri",
-		[182]="herb", [794]="arch", [185]="cook", [356]="fish",
+		[182]="herb", [186]="mine", [393]="skin",
+		[794]="arch", [185]="cook", [356]="fish",
 		[20219]="nomeng", [20222]="gobeng",
 	}
 	map = map or {
@@ -388,10 +392,10 @@ do -- professions
 		[GetSpellInfo(2108) or ""]="lw",
 		[GetSpellInfo(2018) or ""]="bs",
 		[GetSpellInfo(2259) or ""]="alch",
-		[GetSpellInfo(2366) or ""]="herb",
-		[GetSpellInfo(2575) or ""]="miner",
 		[GetSpellInfo(4036) or ""]="engi",
 		[GetSpellInfo(7411) or ""]="ench",
+		[GetSpellInfo(2366) or ""]="herb",
+		[GetSpellInfo(2575) or ""]="mine",
 		[GetSpellInfo(8613) or ""]="skin",
 		[GetSpellInfo(2550) or ""]="cook",
 		[GetSpellInfo(3273) or ""]="faid",
@@ -406,7 +410,8 @@ do -- professions
 		[264620]="tail3", [264626]="tail6",
 		[271662]="fish5",
 		[264588]="lw6", [264590]="lw7",
-		[264479]="eng2", [264481]="eng3", [264483]="eng4", [264485]="eng5", [264488]="eng6", [264490]="eng7",
+		[264479]="eng2", [264481]="eng3", [264483]="eng4", [264485]="eng5", [264488]="eng6", [264490]="eng7", [310542]="eng9",
+		-- eng8 is in sync code, because factions
 	}
 	map[""]=nil
 	syncProfInner = MODERN and function(id, ...)
@@ -454,6 +459,7 @@ do -- professions
 		for sid, cnd in pairs(spellIDProfs) do
 			ct[cnd] = GetSpellInfo(GetSpellInfo(sid) or "\1") and 1 or nil
 		end
+		ct["eng8"] = GetSpellInfo(GetSpellInfo(UnitFactionGroup("player") == "Horde" and 265807 or 264492) or "\1") and 1 or nil
 		for k,v in pairs(ct) do
 			if ot[k] ~= v then
 				KR:SetThresholdConditionalValue(k, v)
@@ -473,7 +479,7 @@ do -- professions
 	for _, v in pairs(spellIDProfs) do
 		KR:SetThresholdConditionalValue(v, false)
 	end
-	for alias, real in ("tailoring:tail leatherworking:lw alchemy:alch engineering:engi enchanting:ench jewelcrafting:jc blacksmithing:bs inscription:scri herbalism:herb archaeology:arch cooking:cook fishing:fish firstaid:faid"):gmatch("(%a+):(%a+)") do
+	for alias, real in ("tailoring:tail leatherworking:lw alchemy:alch engineering:engi enchanting:ench jewelcrafting:jc blacksmithing:bs inscription:scri herbalism:herb archaeology:arch cooking:cook fishing:fish firstaid:faid mining:mine skinning:skin"):gmatch("(%a+):(%a+)") do
 		KR:SetAliasConditional(alias, real)
 	end
 	EV.PLAYER_LOGIN, EV.CHAT_MSG_SKILL = syncProf, syncProf
@@ -610,4 +616,48 @@ do -- Managed role units
 	SpawnHeader("mtank", "roleFilter","MAINTANK"):Show()
 	SpawnHeader("assist", "roleFilter","MAINASSIST"):Show()
 	SpawnHeader("healer", "roleFilter","HEALER"):Show()
+end
+do -- [visual]
+	local f = CreateFrame("Frame", nil, nil, "SecureFrameTemplate")
+	f:SetAttribute("EvaluateMacroConditional", 'return false')
+	KR:SetSecureExternalConditional("visual", f, function() return true end)
+end
+if MODERN then -- [coven]
+	local noPendingSync, cv, covMap = true, false, {
+		[1]="kyrian",
+		[2]="venthyr",
+		[3]="fae/nightfae",
+		[4]="necro/necrolord",
+	}
+	local p8, c8 = {1, 4, 3, 2}, false
+	local function syncCoven(e)
+		if InCombatLockdown() then
+			if noPendingSync then
+				EV.PLAYER_REGEN_ENABLED = syncCoven
+			end
+			return
+		end
+		noPendingSync = true
+		local nv = covMap[C_Covenants.GetActiveCovenantID()] or false
+		if nv ~= cv then
+			cv = nv
+			KR:SetStateConditionalValue("coven", nv)
+		end
+		local n8 = false
+		for i=1,4 do
+			if select(3, GetAchievementCriteriaInfo(15646, i)) then
+				n8 = n8 and (n8 .. "/" .. covMap[p8[i]]) or covMap[p8[i]]
+			end
+		end
+		if n8 ~= c8 then
+			c8 = n8
+			KR:SetStateConditionalValue("acoven80", n8)
+		end
+		return e == "PLAYER_REGEN_ENABLED" and "remove"
+	end
+	KR:SetStateConditionalValue("coven", false)
+	KR:SetStateConditionalValue("acoven80", false)
+	KR:SetAliasConditional("covenant", "coven")
+	KR:SetAliasConditional("acovenant80", "acoven80")
+	EV.COVENANT_CHOSEN, EV.COVENANT_SANCTUM_RENOWN_LEVEL_CHANGED, EV.PLAYER_ENTERING_WORLD = syncCoven, syncCoven, syncCoven
 end

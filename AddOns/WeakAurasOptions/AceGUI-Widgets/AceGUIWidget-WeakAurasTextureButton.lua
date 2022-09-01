@@ -1,6 +1,6 @@
-if not WeakAuras.IsCorrectVersion() then return end
+if not WeakAuras.IsLibsOK() then return end
 
-local Type, Version = "WeakAurasTextureButton", 23
+local Type, Version = "WeakAurasTextureButton", 24
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then return end
 local GetAtlasInfo = WeakAuras.IsClassic() and GetAtlasInfo or C_Texture.GetAtlasInfo
@@ -92,7 +92,7 @@ Constructor
 
 local function Constructor()
   local name = "WeakAurasTextureButton"..AceGUI:GetNextWidgetNum(Type);
-  local button = CreateFrame("BUTTON", name, UIParent, "OptionsListButtonTemplate");
+  local button = CreateFrame("Button", name, UIParent, "OptionsListButtonTemplate");
   if BackdropTemplateMixin then
     Mixin(button, BackdropTemplateMixin)
   end

@@ -1,18 +1,18 @@
-## Interface: 20503
+## Interface: 10000
 ## Author: Sutorix=AT=hotmail.com
-## Version: 0.7.5.5
-## OptionalDeps: FB_Debugging, myAddOns, Titan, TownsfolkTracker
+## Version: 1.16.11
+## OptionalDeps: FB_Debugging, Outfitter, myAddOns, Titan
 ## SavedVariables: FishingBuddy_Info
-## SavedVariablesPerCharacter: FishingBuddy_Player, FBODF_PlayerInfo
+## SavedVariablesPerCharacter: FishingBuddy_Player
 
-## Title: Fishing Buddy (Classic)
+## Title: Fishing Buddy
 ## Notes: Help with fishing related tasks -- clothing, fish information, etc.
 ## Title-zhCN: |cFFFFE00A<|r|cFF0070DE专业|r|cFFFFE00A>|r |cFFFFFFFF钓鱼助手|r |cFFFFE00AFishingBuddy|r
 
-## X-Date: July 21, 2005
-## X-Help: FBConstants.HELPMSG
 ## X-Curse-Project-ID: 15093
 ## X-WoWI-ID: 4239
+## X-Date: July 21, 2005
+## X-Help: FBConstants.HELPMSG
 
 Libs\Libs.xml
 localization.enUS.lua
@@ -37,10 +37,13 @@ FishingOutfitManager.lua
 FishingOutfitter.xml
 FishingBuddyMinimap.lua
 FishingWatcher.xml
+FishingQuests.lua
+FishingGearManager.lua
+FishingExtravaganza.xml
+FishingRaid.xml
+FishingMacro.lua
 FishingSchools.lua
 FishingAbout.lua
 FishingPlans.lua
 FishingPlans\Plans.xml
 FishingFluff.xml
-FB_Broker.lua
-FishingOutfitFrame.xml

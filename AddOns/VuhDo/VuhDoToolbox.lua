@@ -814,6 +814,10 @@ function VUHDO_isActionValid(anActionName, anIsCustom, anIsHostile)
 		return VUHDO_I18N_ITEM, 1, 1, 0.8, "ITM";
 	elseif anIsCustom then
 		return "Custom", 0.9, 0.9, 0.2, "CUS";
+	elseif tActionLowerName == "13" then
+		return VUHDO_I18N_TRINKET_1, 1, 1, 0.8, "TKT1";
+	elseif tActionLowerName == "14" then
+		return VUHDO_I18N_TRINKET_2, 1, 1, 0.8, "TKT2";
 	else
 		return nil;
 	end

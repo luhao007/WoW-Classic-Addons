@@ -1,5 +1,5 @@
-## Interface: 20503
-## Version: 2.5.31
+## Interface: 30400
+## Version: 2.6.0
 ## SavedVariables: PawnCommon
 ## SavedVariablesPerCharacter: PawnOptions, PawnMrRobotScaleProviderOptions, PawnClassicScaleProviderOptions
 
@@ -12,7 +12,6 @@
 VgerCore\VgerCore.lua
 
 Core.lua
-ItemIDs.lua
 Localization.lua
 Localization.deDE.lua
 Localization.es.lua
@@ -27,7 +26,6 @@ UIStrings.lua
 TooltipParsing.lua
 Gems.lua
 GemsClassic.lua
-GemsBurningCrusade.lua
 ScaleTemplates.lua
 Pawn.lua
 PawnUI.lua

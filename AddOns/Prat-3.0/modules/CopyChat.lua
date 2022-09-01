@@ -40,7 +40,7 @@ Prat:AddModuleToLoad(function()
 
   local PL = module.PL
 
-  --[===[@debug@
+  --[==[@debug@
   PL:AddLocale(PRAT_MODULE, "enUS", {
     ["CopyChat"] = true,
     ["Copy text from the active chat window."] = true,
@@ -67,7 +67,7 @@ Prat:AddModuleToLoad(function()
     BOTTOMRIGHT = "Bottom, Right",
     BOTTOMLEFT = "Bottom, Left",
   })
-  --@end-debug@]===]
+  --@end-debug@]==]
 
   -- These Localizations are auto-generated. To help with localization
   -- please go to http://www.wowace.com/projects/prat-3-0/localization/
@@ -305,17 +305,15 @@ L = {
 		["BOTTOMRIGHT"] = "하단, 우측",
 		["buttonpos_desc"] = "복사 버튼을 표시할 대화창의 위치",
 		["buttonpos_name"] = "버튼 위치",
-		["ChatFrame"] = "대화창",
+		["ChatFrame"] = "대화창 [Frames]",
 		["Copy all of the text in the selected chat frame into an edit box"] = "선택된 대화창의 모든 내용을 대화 입력창으로 복사합니다",
 		["Copy Text"] = "텍스트 복사",
 		["Copy Text Format"] = "복사 내용 서식",
 		["Copy text from the active chat window."] = "활성 대화창에서 내용을 복사합니다.",
 		["Copy To Editbox"] = "대화 입력창에 복사",
 		["CopyChat"] = "대화 복사 [CopyChat]",
-		--[[Translation missing --]]
-		["copytimestamps_desc"] = "Copy the chat line when you click on the timestamp",
-		--[[Translation missing --]]
-		["copytimestamps_name"] = "Timestamps Copy",
+		["copytimestamps_desc"] = "대화 시각을 클릭하면 그 대화줄을 복사합니다.",
+		["copytimestamps_name"] = "대화 시각 복사",
 		["HTML"] = true,
 		["Message From : %s"] = "%s|1으로;로;부터 메시지",
 		["Plain"] = "보통",

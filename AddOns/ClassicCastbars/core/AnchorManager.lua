@@ -41,7 +41,7 @@ local anchors = {
         "CompactRaidGroup1Member%d",
     },
 
-    --@version-bcc@
+    --@non-version-classic@
     focus = {
         "SUFUnitfocus",
         "XPerl_Focushighlight",
@@ -73,7 +73,7 @@ local anchors = {
         "oUF_LumenArena%d",
         "ArenaEnemyFrame%d",
     },
-    --@end-version-bcc@
+    --@end-non-version-classic@
 }
 
 local _G = _G
@@ -96,10 +96,6 @@ local function GetUnitFrameForUnit(unitType, unitID, hasNumberIndex)
 
         local unitFrame = _G[name]
         if unitFrame then
-            if unitType == "party" or unitType == "arena" then
-                return unitFrame, name
-            end
-
             if unitFrame:IsVisible() then -- unit frame exists and also is in use (for party/arena we need to ignore this check)
                 return unitFrame, name
             end
@@ -125,6 +121,7 @@ local function GetPartyFrameForUnit(unitID)
     -- frames for custom addons
     for i = 1, 40 do
         local frame, frameName = GetUnitFrameForUnit("party", "party"..i, true)
+
         if frame and ((frame.unit and UnitGUID(frame.unit) == guid) or frame.lastGUID == guid) and frame:IsShown() then
             if useCompact then
                 if strfind(frameName, "PartyMemberFrame") == nil then

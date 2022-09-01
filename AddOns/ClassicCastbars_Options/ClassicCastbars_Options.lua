@@ -507,6 +507,9 @@ local function CreateUnitTabGroup(unitID, localizedUnit, order)
                         end,
                         set = function(info, value)
                             ClassicCastbars.db[info[1]][info[3]] = GetLSMTable("border")[value]
+                            if ClassicCastbars.db[info[1]].showBorderShield then
+                                print("ClassicCastbars: " .. L.CAST_BORDER_SHIELD_NOTICE) --luacheck: ignore
+                            end
                             ClassicCastbars_TestMode:OnOptionChanged(unitID)
                         end,
                     },

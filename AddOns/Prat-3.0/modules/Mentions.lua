@@ -27,10 +27,10 @@
 Prat:AddModuleToLoad(function()
   local function dbg(...) end
 
-  --[===[@debug@
+  --[==[@debug@
   function dbg(...) Prat:PrintLiteral(...) end
 
-  --@end-debug@]===]
+  --@end-debug@]==]
 
   local PRAT_MODULE = Prat:RequestModuleName("Mentions")
 
@@ -50,13 +50,13 @@ Prat:AddModuleToLoad(function()
     }
   })
 
-  --[===[@debug@
+  --[==[@debug@
   PL:AddLocale(PRAT_MODULE, "enUS", {
     ["module_name"] = "Mentions",
     ["module_desc"] = "Support mentioning other players in chat",
     module_info = "THIS MODULE IS EXPERIMENTAL= It adds the ability to @mention people in chat to alert them>",
   })
-  --@end-debug@]===]
+  --@end-debug@]==]
 
   -- These Localizations are auto-generated. To help with localization
   -- please go to http://www.wowace.com/projects/prat-3-0/localization/
@@ -140,7 +140,7 @@ L = {
 	["Mentions"] = {
 		["module_desc"] = "채팅에서 다른 플레이어를 언급하는 것을 지원",
 		["module_info"] = "이 모듈은 실험적입니다=채팅에서 사람들을 @언급하여 경보하는 기능을 추가합니다.",
-		["module_name"] = "언급",
+		["module_name"] = "언급 [Mentions]",
 	}
 }
 

@@ -1,8 +1,8 @@
 ﻿-- Pawn by Vger-Azjol-Nerub
 -- www.vgermods.com
--- © 2006-2021 Travis Spomer.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
+-- © 2006-2022 Travis Spomer.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
 -- See Readme.htm for more information.
--- 
+--
 -- Tooltip parsing strings
 ------------------------------------------------------------
 
@@ -54,7 +54,7 @@ PawnSeparatorIgnorePrefixes =
 -- them through the normal gauntlet of expressions.
 PawnNormalizationRegexes =
 {
-	{"^\|c........(.+)$", "%1"}, -- "|cFF 0FF 0Heroic" --> "Heroic"
+	{"^|c........(.+)$", "%1"}, -- "|cFF 0FF 0Heroic" --> "Heroic"
 	{"^([%w%s%.]+) %+(%d+)%%?$", "+%2 %1"}, -- "Stamina +5" --> "+5 Stamina"
 	{L.NormalizationEnchant, "%1"}, -- "Enchanted: +50 Strength" --> "+50 Strength" (ENCHANTED_TOOLTIP_LINE)
 }
@@ -298,6 +298,7 @@ PawnRegexes =
 	{L.SpellDamage3, "SpellDamage", 1, PawnMultipleStatsExtract, "Healing", 1, PawnMultipleStatsExtract}, -- French on Classic uses two different wordings:  /pawn compare 20641 vs. /pawn compare 10041
 	{L.SpellDamage4, "SpellDamage", 1, PawnMultipleStatsExtract, "Healing", 1, PawnMultipleStatsExtract}, -- Simplified Chinese on Classic uses many different wordings:  /pawn compare 16923 vs. /pawn compare 18608
 	{L.SpellDamage5, "SpellDamage", 1, PawnMultipleStatsExtract, "Healing", 1, PawnMultipleStatsExtract}, -- Burning Crusade, /pawn compare item:789::::::-36
+	{L.SpellDamage6, "SpellDamage", 1, PawnMultipleStatsExtract, "Healing", 1, PawnMultipleStatsExtract}, -- Burning Crusade, /pawn compare 33467
 	{L.SpellDamageAndHealing, "Healing", 1, PawnMultipleStatsExtract, "SpellDamage", 2, PawnMultipleStatsExtract}, -- Burning Crusade, /pawn compare 34360
 	{L.SpellDamageAndHealing2, "Healing", 1, PawnMultipleStatsExtract, "SpellDamage", 2, PawnMultipleStatsExtract}, -- Burning Crusade, /pawn compare 28304
 	{L.SpellDamageAndHealingEnchant, "Healing", 1, PawnMultipleStatsExtract, "SpellDamage", 2, PawnMultipleStatsExtract}, -- Burning Crusade, /script PawnUIGetAllTextForItem("item:16943:2566") (matches Short in some locales; don't double-dip)
@@ -325,14 +326,15 @@ PawnRegexes =
 	{L.Healing, "Healing"}, -- /pawn compare item:789::::::2028
 	{L.Healing2, "Healing"}, -- /pawn compare 16947
 	{L.Healing3, "Healing"}, -- Burning Crusade, /pawn compare item:789::::::-38
-	{L.SpellPower, "SpellDamage", 1, PawnMultipleStatsExtract, "Healing", 1, PawnMultipleStatsExtract}, -- enchantments
+	{L.SpellPower, "SpellPower"}, -- /pawn tooltip 39998
+	{L.SpellPower2, "SpellPower"}, -- /pawn compare 40585
 	{PawnGameConstant(EMPTY_SOCKET_RED), "RedSocket", 1, PawnMultipleStatsFixed},
 	{PawnGameConstant(EMPTY_SOCKET_YELLOW), "YellowSocket", 1, PawnMultipleStatsFixed},
 	{PawnGameConstant(EMPTY_SOCKET_BLUE), "BlueSocket", 1, PawnMultipleStatsFixed},
 	{PawnGameConstant(EMPTY_SOCKET_META), "MetaSocket", 1, PawnMultipleStatsFixed},
 	{PawnGameConstant(EMPTY_SOCKET_COGWHEEL), "CogwheelSocket", 1, PawnMultipleStatsFixed},
 	{PawnGameConstant(EMPTY_SOCKET_PRISMATIC), "PrismaticSocket", 1, PawnMultipleStatsFixed},
-	{PawnGameConstant(EMPTY_SOCKET_DOMINATION or "^UNUSED$"), "DominationSocket", 1, PawnMultipleStatsFixed},
+	{PawnGameConstant(EMPTY_SOCKET_DOMINATION or "UNUSED")}, -- domination sockets are now ignored
 
 	-- In WoW Classic, crossbows, guns, and wands don't show "Ranged" and instead show the weapon type on the left.
 	{L.Bow, "IsBow", 1, PawnMultipleStatsFixed, "IsRanged", 1, PawnMultipleStatsFixed},

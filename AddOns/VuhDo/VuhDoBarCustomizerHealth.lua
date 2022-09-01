@@ -180,6 +180,40 @@ end
 
 
 --
+local tBarColor, tBarClassColor;
+local tInfo;
+local function VUHDO_getStatusBarColor(aBarType, aUnit)
+
+	tBarColor = VUHDO_PANEL_SETUP["BAR_COLORS"][aBarType];
+
+	if not tBarColor then
+		return;
+	end
+
+	if not tBarColor["useClassColor"] then
+		return tBarColor;
+	else
+		tInfo = VUHDO_RAID[aUnit];
+
+		if not tInfo then
+			return tBarColor;
+		end
+
+		tBarClassColor = VUHDO_getClassColor(tInfo);
+
+		if tBarColor["useOpacity"] then
+			tBarClassColor["useOpacity"] = true;
+			tBarClassColor["O"], tBarClassColor["TO"] = tBarColor["O"], tBarColor["TO"];
+		end
+
+		return tBarClassColor;
+	end
+
+end
+
+
+
+--
 local tInfo;
 local tAllButtons;
 local tAbsorbAmount, tOverallShieldRemain;
@@ -224,7 +258,7 @@ function VUHDO_updateShieldBar(aUnit, aHealthPlusIncQuota, aAmountInc)
 			tShieldBar:SetValueRange(aHealthPlusIncQuota, aHealthPlusIncQuota + tAbsorbAmount);
 			
  			tShieldColor["R"], tShieldColor["G"], tShieldColor["B"], tShieldOpacity = tHealthBar:GetStatusBarColor();
- 			tShieldColor = VUHDO_getDiffColor(tShieldColor, VUHDO_PANEL_SETUP["BAR_COLORS"]["SHIELD"]);
+ 			tShieldColor = VUHDO_getDiffColor(tShieldColor, VUHDO_getStatusBarColor("SHIELD", aUnit));
  			
 			if tShieldColor["O"] and tShieldOpacity then
  				tShieldColor["O"] = tShieldColor["O"] * tShieldOpacity * (tHealthBar:GetAlpha() or 1);
@@ -243,7 +277,7 @@ function VUHDO_updateShieldBar(aUnit, aHealthPlusIncQuota, aAmountInc)
 			tOvershieldBar:ClearAllPoints();
 			
 			tOvershieldColor["R"], tOvershieldColor["G"], tOvershieldColor["B"], tOvershieldOpacity = tHealthBar:GetStatusBarColor();
- 			tOvershieldColor = VUHDO_getDiffColor(tOvershieldColor, VUHDO_PANEL_SETUP["BAR_COLORS"]["OVERSHIELD"]);
+ 			tOvershieldColor = VUHDO_getDiffColor(tOvershieldColor, VUHDO_getStatusBarColor("OVERSHIELD", aUnit));
  			
 			if tOvershieldColor["O"] and tOvershieldOpacity then
  				tOvershieldColor["O"] = tOvershieldColor["O"] * tOvershieldOpacity * (tHealthBar:GetAlpha() or 1);
@@ -343,7 +377,7 @@ function VUHDO_updateHealAbsorbBar(aUnit)
 			tHealAbsorbBar:ClearAllPoints();
 			
 			tHealAbsorbColor["R"], tHealAbsorbColor["G"], tHealAbsorbColor["B"], tHealAbsorbOpacity = tHealthBar:GetStatusBarColor();
- 			tHealAbsorbColor = VUHDO_getDiffColor(tHealAbsorbColor, VUHDO_PANEL_SETUP["BAR_COLORS"]["HEAL_ABSORB"]);
+ 			tHealAbsorbColor = VUHDO_getDiffColor(tHealAbsorbColor, VUHDO_getStatusBarColor("HEAL_ABSORB", aUnit));
  			
 			if tHealAbsorbColor["O"] and tHealAbsorbOpacity then
  				tHealAbsorbColor["O"] = tHealAbsorbColor["O"] * tHealAbsorbOpacity * (tHealthBar:GetAlpha() or 1);
@@ -428,7 +462,7 @@ local function VUHDO_updateIncHeal(aUnit)
 			
 			tHealthBar = VUHDO_getHealthBar(tButton, 1);
  			tIncColor["R"], tIncColor["G"], tIncColor["B"], tOpacity = tHealthBar:GetStatusBarColor();
- 			tIncColor = VUHDO_getDiffColor(tIncColor, VUHDO_PANEL_SETUP["BAR_COLORS"]["INCOMING"]);
+ 			tIncColor = VUHDO_getDiffColor(tIncColor, VUHDO_getStatusBarColor("INCOMING", aUnit));
  			
 			if tIncColor["O"] and tOpacity then
  				tIncColor["O"] = tIncColor["O"] * tOpacity * (tHealthBar:GetAlpha() or 1);

@@ -114,7 +114,7 @@ ModelSoundDropDown:SetPoint("TOPLEFT", modelarea.frame, "TOPLEFT", 0, -50)
 
 local resizeOptions = coreoptions:CreateArea(L.ResizeOptions)
 
-resizeOptions:CreateText(L.ResizeInfo, nil, true)
+resizeOptions:CreateText(L.ResizeInfo, nil, true, nil, nil, 0)
 
 local optionsFrame = _G["DBM_GUI_OptionsFrame"]
 
@@ -128,7 +128,13 @@ resetbutton2:SetScript("OnClick", function()
 	optionsFrame:SetSize(DBM.Options.GUIWidth, DBM.Options.GUIHeight)
 end)
 
-local minWidth, minHeight = optionsFrame:GetMinResize()
+local minWidth, minHeight, maxWidth, maxHeight
+if DBM:GetTOC() < 100000 then -- Is live
+	minWidth, minHeight = optionsFrame:GetMinResize()
+	maxWidth, maxHeight = optionsFrame:GetMaxResize()
+else -- Is DragonFlight
+	minWidth, minHeight, maxWidth, maxHeight = optionsFrame:GetResizeBounds()
+end
 
 local resizeWidth = resizeOptions:CreateEditBox(L.Editbox_WindowWidth, math.floor(DBM.Options.GUIWidth * 10 ^ 2 + 0.5) / 10 ^ 2)
 resizeWidth:SetPoint("TOPLEFT", 20, -40)
@@ -141,8 +147,8 @@ resizeWidth:SetScript("OnEnterPressed", function(self)
 		self:SetText(minWidth)
 		return
 	end
-	if value > UIParent:GetWidth() then
-		self:SetText(UIParent:GetWidth())
+	if value > maxWidth then
+		self:SetText(maxWidth)
 	end
 	DBM.Options.GUIWidth = value
 	optionsFrame:SetSize(DBM.Options.GUIWidth, DBM.Options.GUIHeight)
@@ -160,8 +166,8 @@ resizeHeight:SetScript("OnEnterPressed", function(self)
 		self:SetText(minHeight)
 		return
 	end
-	if value > UIParent:GetHeight() then
-		self:SetText(UIParent:GetHeight())
+	if value > maxHeight then
+		self:SetText(maxHeight)
 	end
 	DBM.Options.GUIHeight = value
 	optionsFrame:SetSize(DBM.Options.GUIWidth, DBM.Options.GUIHeight)
@@ -171,3 +177,9 @@ optionsFrame:HookScript("OnSizeChanged", function(self)
 	resizeWidth:SetText(math.floor(self:GetWidth() * 10 ^ 2 + 0.5) / 10 ^ 2)
 	resizeHeight:SetText(math.floor(self:GetHeight() * 10 ^ 2 + 0.5) / 10 ^ 2)
 end)
+
+local UIGroupingOptions = coreoptions:CreateArea(L.UIGroupingOptions)
+UIGroupingOptions:CreateCheckButton(L.GroupOptionsBySpell, true, nil, "GroupOptionsBySpell")
+UIGroupingOptions:CreateCheckButton(L.GroupOptionsExcludeIcon, true, nil, "GroupOptionsExcludeIcon")
+UIGroupingOptions:CreateCheckButton(L.AutoExpandSpellGroups, true, nil, "AutoExpandSpellGroups")
+--UIGroupingOptions:CreateCheckButton(L.ShowSpellDescWhenExpanded, true, nil, "ShowSpellDescWhenExpanded")

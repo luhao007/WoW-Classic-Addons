@@ -452,7 +452,7 @@ end
 -- Create preview thumbnail
 local function createThumbnail(parent)
   -- Preview frame
-  local borderframe = CreateFrame("FRAME", nil, parent);
+  local borderframe = CreateFrame("Frame", nil, parent);
   borderframe:SetWidth(32);
   borderframe:SetHeight(32);
 
@@ -463,7 +463,7 @@ local function createThumbnail(parent)
   border:SetTexCoord(0.2, 0.8, 0.2, 0.8);
 
   -- Main region
-  local region = CreateFrame("FRAME", nil, borderframe);
+  local region = CreateFrame("Frame", nil, borderframe);
   borderframe.region = region;
 
   -- Preview children
@@ -1343,7 +1343,7 @@ function WeakAuras.CreateTemplateView(Private, frame)
     local button = AceGUI:Create("WeakAurasNewButton");
     button:SetTitle(regionData.displayName);
     if(type(regionData.icon) == "string" or type(regionData.icon) == "table") then
-      button:SetIcon(regionData.icon);
+      button:SetIcon(regionData.templateIcon);
     end
     button:SetDescription(regionData.description);
     button:SetFullWidth(true);
@@ -1596,7 +1596,6 @@ function WeakAuras.CreateTemplateView(Private, frame)
       WeakAuras.FillOptions()
       WeakAuras.NewDisplayButton(data);
       WeakAuras.UpdateThumbnail(data);
-      WeakAuras.UpdateDisplayButton(data);
     end
     for child in TemplatePrivate.Private.TraverseLeafsOrAura(data) do
       handle(child, item, subType);
@@ -1615,7 +1614,6 @@ function WeakAuras.CreateTemplateView(Private, frame)
       WeakAuras.FillOptions()
       WeakAuras.NewDisplayButton(data);
       WeakAuras.UpdateThumbnail(data);
-      WeakAuras.UpdateDisplayButton(data);
     end
     for child in TemplatePrivate.Private.TraverseLeafsOrAura(data) do
       handle(child, item, subType);
@@ -1757,7 +1755,7 @@ function WeakAuras.CreateTemplateView(Private, frame)
     end
   end
 
-  local batchModeLabel = CreateFrame("FRAME", "batchModeLabel", newView.frame);
+  local batchModeLabel = CreateFrame("Frame", "batchModeLabel", newView.frame);
   batchModeLabel:SetSize(300, 20);
   local batchModeLabelString = batchModeLabel:CreateFontString(nil, "ARTWORK");
   batchModeLabelString:SetFont(STANDARD_TEXT_FONT, 10); -- "OUTLINE"

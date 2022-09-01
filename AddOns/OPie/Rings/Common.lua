@@ -1,6 +1,5 @@
 local AB, _, T = assert(OneRingLib.ext.ActionBook:compatible(2,14), "Requires a compatible version of ActionBook"), ...
 local MODERN = select(4,GetBuildInfo()) >= 8e4
-local NINE = select(4,GetBuildInfo()) >= 9e4
 local ORI, EV, L, PC = OPie.UI, T.Evie, T.L, T.OPieCore
 
 if MODERN then -- OPieTracker
@@ -56,7 +55,10 @@ do -- OPieAutoQuest
 	local exclude, questItems, IsQuestItem = PC:RegisterPVar("AutoQuestExclude", {}), {}
 	if MODERN then
 		questItems[30148] = "72986 72985"
-		local include = {[33634]=true, [35797]=true, [37888]=true, [37860]=true, [37859]=true, [37815]=true, [46847]=true, [47030]=true, [39213]=true, [42986]=true, [49278]=true, [86425]={31332, 31333, 31334, 31335, 31336, 31337}, [87214]={31752, 34774}, [90006]=true, [86536]=true, [86534]=true, [97268]=true, [111821]={34774, 31752}}
+		local include = {[33634]=true, [35797]=true, [37888]=true, [37860]=true, [37859]=true, [37815]=true, [46847]=true, [47030]=true, [39213]=true, [42986]=true, [49278]=true, [86425]={31332, 31333, 31334, 31335, 31336, 31337}, [87214]={31752, 34774}, [90006]=true, [86536]=true, [86534]=true, [97268]=true, [111821]={34774, 31752},
+			[180008]={60609}, [180009]={60609}, [180170]={60649},
+			[174464]=true, [168035]=true,
+		}
 		function IsQuestItem(iid, bag, slot)
 			if exclude[iid] then return false end
 			local isQuest, startQuestId, isQuestActive = GetContainerItemQuestInfo(bag, slot)
@@ -73,7 +75,7 @@ do -- OPieAutoQuest
 		end
 	else
 		local hexclude, include = {}, PC:RegisterPVar("AutoQuestWhitelist", {})
-		local QUEST_ITEM = LE_ITEM_CLASS_QUESTITEM
+		local QUEST_ITEM = Enum.ItemClass.Questitem
 		for i in ("12460 12451 12450 12455 12457 12458 12459"):gmatch("%d+") do
 			hexclude[i+0] = true
 		end
@@ -102,7 +104,7 @@ do -- OPieAutoQuest
 			end
 		end
 	end
-	local GetQuestLogTitle_NINE = NINE and function(i)
+	local GetQuestLogTitle = GetQuestLogTitle or function(i)
 		local q = C_QuestLog.GetInfo(i)
 		if q then
 			local qid = q.questID
@@ -113,8 +115,7 @@ do -- OPieAutoQuest
 	local colId, current, changed
 	local collection, inring, ctok = MODERN and {"EB", EB=AB:GetActionSlot("extrabutton", 1)} or {}, {}, 0
 	local function scanQuests(i)
-		local GetQuestLogTitle = GetQuestLogTitle_NINE or GetQuestLogTitle
-		for i=i or 1, NINE and C_QuestLog.GetNumQuestLogEntries() or GetNumQuestLogEntries() do
+		for i=i or 1, (MODERN and C_QuestLog.GetNumQuestLogEntries or GetNumQuestLogEntries)() do
 			local _, _, _, isHeader, isCollapsed, isComplete, _, qid = GetQuestLogTitle(i)
 			if isHeader and isCollapsed then
 				ExpandQuestHeader(i)

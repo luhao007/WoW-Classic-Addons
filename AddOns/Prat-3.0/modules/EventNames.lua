@@ -38,7 +38,7 @@ Prat:AddModuleToLoad(function()
   local PL = mod.PL
 
 
-  --[===[@debug@
+  --[==[@debug@
   PL:AddLocale(PRAT_MODULE, "enUS", {
     ["EventNames"] = true,
     ["Chat window event name options."] = true,
@@ -49,7 +49,7 @@ Prat:AddModuleToLoad(function()
     ["allevents_name"] = "Process all events",
     ["allevents_desc"] = "Enable Prat processing for all chat events.",
   })
-  --@end-debug@]===]
+  --@end-debug@]==]
 
   -- These Localizations are auto-generated. To help with localization
   -- please go to http://www.wowace.com/projects/prat-3-0/localization/
@@ -117,7 +117,7 @@ L = {
 		["allevents_desc"] = "모든 대화 이벤트에 Prat 처리 과정을 적용시킵니다.",
 		["allevents_name"] = "모든 이벤트 처리",
 		["Chat window event name options."] = "대화창에 이벤트 이름을 표시합니다.",
-		["EventNames"] = "이벤트 이름",
+		["EventNames"] = "이벤트 이름 [EventNames]",
 		["Show"] = "표시",
 		["Show events on chatframes"] = "대화창에 이벤트를 표시합니다.",
 		["show_desc"] = "각 대화창에 이벤트 이름 표시를 끄고 켭니다.",

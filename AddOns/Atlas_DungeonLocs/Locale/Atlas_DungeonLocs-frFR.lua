@@ -1,10 +1,10 @@
--- $Id: Atlas_DungeonLocs-frFR.lua 67 2021-05-22 13:40:02Z arithmandar $
+-- $Id: Atlas_DungeonLocs-frFR.lua 71 2022-02-02 17:19:07Z arithmandar $
 --[[
 
 	Atlas, a World of Warcraft instance map browser
 	Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbertat gmail dot com>
 	Copyright 2010 - Lothaer <lothayerat gmail dot com>, Atlas Team
-	Copyright 2011 ~ 2021 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
+	Copyright 2011 ~ 2022 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
 
 	This file is part of Atlas.
 
@@ -29,9 +29,17 @@ local L = AceLocale:NewLocale("Atlas_DungeonLocs", "frFR", false);
 
 if L then
 L["Blue"] = "Bleu"
+--[[Translation missing --]]
+--[[ L["Change will take effect after next login; or type '/reload' command to reload addon"] = ""--]] 
 L["Dungeon Locations"] = "Emplacements des instances"
 L["Green"] = "Vert"
 L["Instances"] = "Instances"
+--[[Translation missing --]]
+--[[ L["Meeting stone is inside the Sanctum of Order"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["Raid entrance is inside the Sanctum Depths of Sanctum of Order"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["Show %s's dungeon location maps"] = ""--]] 
 L["White"] = "Blanc"
 
 end

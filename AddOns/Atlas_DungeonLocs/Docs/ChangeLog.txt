@@ -1,12 +1,88 @@
-ˇ$Id: ChangeLog.txt 67 2021-05-22 13:40:02Z arithmandar $
+ˇ$Id: ChangeLog.txt 104 2022-08-28 08:37:29Z arithmandar $
 Atlas, a World of Warcraft instance map browser
 Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbertat gmail dot com>
 Copyright 2010 - Lothaer <lothayerat gmail dot com>, Atlas Team
-Copyright 2011 ~ 2020 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
+Copyright 2011 ~ 2022 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
 
 ==============
 = Change Log =
 ==============
+
+v1.51.07 (Aug. 28, 2022)
+------------------------
+- Maps revamped
+
+v1.51.06 (Aug. 22, 2022)
+------------------------
+- BCC / WOLTKC Caverns of Time number fixed
+
+v1.51.05 (Aug. 22, 2022)
+------------------------
+- BCC / WOLTKC Caverns of Time number fixed
+
+v1.51.04 (Aug. 22, 2022)
+------------------------
+- BCC / WOLTKC Blackrock Mountain number fixed
+- WOLTKC dungeon location update
+  - removed Naxxramas from Eastern Kingdoms
+  - added The Culling of Stratholme to Carvens of Time
+
+v1.51.03 (Aug. 20, 2022)
+------------------------
+- Fixed syntax error while in WOLTKC
+
+v1.51.02 (Aug. 17, 2022)
+------------------------
+- Toc update to support WoW 9.2.7
+
+v1.51.01 (Jul. 24, 2022)
+------------------------
+- Support WOLTKC
+
+v1.51.00 (Jul. 23, 2022)
+------------------------
+- Retail ToC update to support WoW 9.2.5
+- Classic ToC update to support WoW 1.14.3
+
+v1.50.04 (Mar. 26, 2022)
+------------------------
+- Fixed errors in Classic / BCC release
+
+v1.50.03 (Mar. 24, 2022)
+------------------------
+- Added Horde's dungeon location maps in Zandalar and Kul Tiras
+- Added Shadowlands' dungeon location maps
+- Added option toggling for Transportation maps, allowing you to show only your faction's taxi maps, or show all factions' maps.
+
+v1.50.02 (Mar. 23, 2022)
+------------------------
+- Revamp BCC's dungeon maps and add the following dungeons' locations
+  - Magisters' Terrace
+  - Sunwell Plateau
+  - Karazhan
+  - Caverns of Time: Old Hillsbrad Foothills, The Black Morass, Hyjal Summit
+
+v1.50.01 (Mar. 23, 2022)
+------------------------
+- BCC ToC update to support WoW 2.5.4
+
+v1.50.00 (Feb. 23, 2022)
+------------------------
+- Toc update to support WoW 9.2.0
+
+v1.49.03 (Feb. 10, 2022)
+------------------------
+- Support multiple ToC
+- BCC ToC update to support WoW 2.5.3
+- Classic ToC update to support WoW 1.14.2
+
+v1.49.02 (Feb. 3, 2022)
+------------------------
+- ToC update to support WoW 9.1.5
+
+v1.49.01 (Jun. 30, 2021)
+------------------------
+- ToC update to support WoW 9.1.0
 
 v1.49.00 (May 22, 2021)
 ------------------------

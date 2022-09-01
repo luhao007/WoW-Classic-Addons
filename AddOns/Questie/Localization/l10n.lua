@@ -80,10 +80,12 @@ function l10n:PostBoot()
     for id in pairs(QuestieDB.ObjectPointers) do
         local name = QuestieDB.QueryObjectSingle(id, "name")
         if name then -- We (meaning me, BreakBB) introduced Fake IDs for objects to show additional locations, so we need to check this
-            if not l10n.objectNameLookup[name] then
-                l10n.objectNameLookup[name] = {}
+            local entry = l10n.objectNameLookup[name]
+            if not entry then
+                l10n.objectNameLookup[name] = { id }
+            else
+                entry[#entry+1] = id
             end
-            table.insert(l10n.objectNameLookup[name], id)
         end
     end
 end
@@ -96,14 +98,14 @@ function _l10n:translate(key, ...)
     end
 
     local translationEntry = l10n.translations[key]
-    if translationEntry == nil then
-        Questie:Debug("ERROR: Translations for '" .. tostring(key) .. "' is missing completely!")
+    if not translationEntry then
+        Questie:Debug(Questie.DEBUG_ELEVATED, "ERROR: Translations for '" .. tostring(key) .. "' is missing completely!")
         return string.format(key, unpack(args))
     end
 
     local translationValue = translationEntry[locale]
     if (not translationValue) then
-        Questie:Debug("ERROR: Translations for '" .. tostring(key) .. "' is missing the entry for language " .. locale .. "!")
+        Questie:Debug(Questie.DEBUG_ELEVATED, "ERROR: Translations for '" .. tostring(key) .. "' is missing the entry for language" , locale, "!")
         return string.format(key, unpack(args))
     end
 

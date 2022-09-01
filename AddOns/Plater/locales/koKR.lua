@@ -59,9 +59,16 @@ L["OPTIONS_TABNAME_BUFF_LIST"] = "효과 목록"
 L["OPTIONS_TABNAME_BUFF_SETTINGS"] = "효과 설정"
 L["OPTIONS_TABNAME_BUFF_SPECIAL"] = "효과 특수"
 L["OPTIONS_TABNAME_BUFF_TRACKING"] = "효과 추적"
-L["OPTIONS_TABNAME_COLORSNPC"] = "NPC 색상"
+--[[Translation missing --]]
+L["OPTIONS_TABNAME_CASTBAR"] = "Cast Bar"
+--[[Translation missing --]]
+L["OPTIONS_TABNAME_CASTCOLORS"] = "\"Cast Colors and Names\""
+--[[Translation missing --]]
+L["OPTIONS_TABNAME_COMBOPOINTS"] = "Combo Points"
 L["OPTIONS_TABNAME_GENERALSETTINGS"] = "일반"
 L["OPTIONS_TABNAME_MODDING"] = "모드"
+--[[Translation missing --]]
+L["OPTIONS_TABNAME_NPC_COLORNAME"] = "Npc Colors and Names"
 L["OPTIONS_TABNAME_NPCENEMY"] = "적 NPC"
 L["OPTIONS_TABNAME_NPCFRIENDLY"] = "아군 NPC"
 L["OPTIONS_TABNAME_PERSONAL"] = "개인 자원 바"
@@ -69,6 +76,8 @@ L["OPTIONS_TABNAME_PLAYERENEMY"] = "적 플레이어"
 L["OPTIONS_TABNAME_PLAYERFRIENDLY"] = "아군 플레이어 "
 L["OPTIONS_TABNAME_PROFILES"] = "프로필"
 L["OPTIONS_TABNAME_SCRIPTING"] = "스크립트"
+--[[Translation missing --]]
+L["OPTIONS_TABNAME_SEARCH"] = "Search"
 L["OPTIONS_TABNAME_STRATA"] = "프레임 우선순위"
 L["OPTIONS_TABNAME_TARGET"] = "대상"
 L["OPTIONS_TABNAME_THREAT"] = "위협 수준 / 어그로"

@@ -39,7 +39,7 @@ function QuestieProfessions:Update()
         if i > 14 then break; end -- We don't have to go through all the weapon skills
 
         local skillName, isHeader, _, skillRank, _, _, _, _, _, _, _, _, _ = GetSkillLineInfo(i)
-        if isHeader == nil and professionTable[skillName] then
+        if (not isHeader) and professionTable[skillName] then
             isProfessionUpdate = true -- A profession leveled up, not something like "Defense"
             playerProfessions[professionTable[skillName]] = {skillName, skillRank}
         end
@@ -63,15 +63,15 @@ function QuestieProfessions:GetPlayerProfessionNames()
 end
 
 local function _HasProfession(profession)
-    return profession == nil or playerProfessions[profession] ~= nil
+    return (not profession) or playerProfessions[profession] ~= nil
 end
 
 local function _HasSkillLevel(profession, skillLevel)
-    return skillLevel == nil or playerProfessions[profession][2] >= skillLevel
+    return (not skillLevel) or playerProfessions[profession][2] >= skillLevel
 end
 
 function QuestieProfessions:HasProfessionAndSkillLevel(requiredSkill)
-    if requiredSkill == nil then
+    if not requiredSkill then
         return true
     end
 
@@ -94,6 +94,7 @@ QuestieProfessions.professionKeys = {
     FISHING = 356,
     SKINNING = 393,
     JEWELCRAFTING = 755,
+    INSCRIPTION = 773,
     RIDING = 762,
 }
 
@@ -127,7 +128,8 @@ local sortIds = {
     [QuestieProfessions.professionKeys.ENCHANTING] = -668, -- Dummy Id
     [QuestieProfessions.professionKeys.FISHING] = -101,
     [QuestieProfessions.professionKeys.SKINNING] = -666, -- Dummy Id
-    --[QuestieProfessions.professionKeys.JEWELCRAFTING] = ,
+    [QuestieProfessions.professionKeys.INSCRIPTION] = -373,
+    [QuestieProfessions.professionKeys.JEWELCRAFTING] = -373,
     --[QuestieProfessions.professionKeys.RIDING] = ,
 }
 

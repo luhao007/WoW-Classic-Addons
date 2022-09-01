@@ -1,13 +1,13 @@
-## Interface: 20503
-## Author: mystadio
-## Version: 20503
+## Interface: 30400
+## Author: Wowhead
+## Version: 20504
 ## LoadOnDemand: 0
 ## SavedVariables: wlTime, wlVersion, wlUploaded, wlStats, wlExportData, wlRealmList, wlAuction, wlEvent, wlItemSuffix, wlObject, wlProfile, wlProfileData, wlUnit, wlItemDurability, wlItemBonuses, wlTradeSkillDifficulty
 ## SavedVariablesPerCharacter: wlScans, wlSetting, wlPetBlacklist, wlUIReloaded
 ## DefaultState: enabled
 
 ## Title: Wowhead Looter
-## Notes: Gathers data for Wowhead while you play. Version 11304.
+## Notes: Gathers data for Wowhead while you play. Version 20504.
 ## Title-zhCN: |cFFFFE00A<|r|cFFFFFFFF辅助|r|cFFFFE00A>|r |cFFFFFFFFWowhead数据采集|r |cFFFFE00A+Wowhead_Looter|r
 ## Notes-zhCN: 收集各种游戏内数据并上传Wowhead
 

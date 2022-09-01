@@ -1,4 +1,4 @@
-## Interface: 20503
+## Interface: 90207
 ## X-Curse-Project-ID: 17280
 ## Title: Lib: Dropdown-1.0
 ## Notes: Dropdown library for Ace3 options, extensible to other options formats. Works ok.

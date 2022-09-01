@@ -36,12 +36,12 @@ Prat:AddModuleToLoad(function()
   -- define localized strings
   local PL = module.PL
 
-  --[===[@debug@
+  --[==[@debug@
   PL:AddLocale(PRAT_MODULE, "enUS", {
     ["module_name"] = "Hover Tips",
     ["module_desc"] = "Shows tooltip when hovering over link in chat",
   })
-  --@end-debug@]===]
+  --@end-debug@]==]
 
   -- These Localizations are auto-generated. To help with localization
   -- please go to http://www.wowace.com/projects/prat-3-0/localization/
@@ -116,7 +116,7 @@ PL:AddLocale(PRAT_MODULE, "deDE", L)
 L = {
 	["HoverTips"] = {
 		["module_desc"] = "채팅창에 마우스 오버시 링크 툴팁 보이기",
-		["module_name"] = "툴팁",
+		["module_name"] = "툴팁 [HoverTips]",
 	}
 }
 

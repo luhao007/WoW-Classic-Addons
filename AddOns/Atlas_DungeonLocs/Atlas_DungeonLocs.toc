@@ -1,14 +1,15 @@
-## Interface: 20503
+## Interface: 30400
 ## Author: arith, Dynaletik, dubcat
-## Version: v1.49.00
+## Version: v1.51.07
 ## RequiredDeps: Atlas
+## SavedVariables: Atlas_DungeonLocsDB
 
 ## Title: Atlas |r|cFF0099FF[Dungeon Locs]|r
 ## Notes: Maps for instances' location
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本地图|r |cFF69CCF0副本位置|r
 ## Notes-zhCN: 副本位置地图
 
-## X-Date: 2021-05-22T13:40:02Z
+## X-Date: 2022-08-28T8:37:29Z
 ## X-Credits: Dan Gilbert, Lothaer
 ## X-Email: atlas.addon at gmail.com
 ## X-Website: http://www.atlasmod.com
@@ -26,4 +27,7 @@
 #@end-debug@
 
 Locale\Locales.xml
-Atlas_DungeonLocs.lua
+Core\Constants.lua
+Core\Core.lua
+Core\Config.lua
+Core\Data.lua

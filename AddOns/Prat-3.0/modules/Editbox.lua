@@ -15,7 +15,7 @@ Prat:AddModuleToLoad(function()
   local PL = mod.PL
 
 
-  --[===[@debug@
+  --[==[@debug@
   PL:AddLocale(PRAT_MODULE, "enUS", {
     ["Editbox"] = true,
     ["Editbox options."] = true,
@@ -40,7 +40,7 @@ Prat:AddModuleToLoad(function()
     currently_broken_alt_behavior = "Arrow key behaviour broken in current WoW client,\n\nUse ALT-UP and ALT-DOWN instead of just UP DOWN to access history",
     ["Select the font to use for the edit box"] = true,
   })
-  --@end-debug@]===]
+  --@end-debug@]==]
 
   -- These Localizations are auto-generated. To help with localization
   -- please go to http://www.wowace.com/projects/prat-3-0/localization/
@@ -166,7 +166,7 @@ L = {
 
 기록 접근에 위쪽 아래쪽 키 대신 ALT-위와 ALT-아래 키를 사용하세요]=],
 		["Edge Size"] = "모서리 크기",
-		["Editbox"] = "대화 입력창",
+		["Editbox"] = "대화 입력창 [Editbox]",
 		["Editbox options."] = "대화 입력창을 설정합니다.",
 		["Font"] = "글꼴",
 		["Free-floating"] = "자유로운 이동",
@@ -387,7 +387,7 @@ end
 
 
 
-  local mustUseAlt = select(4, _G.GetBuildInfo()) >= 50400
+  local mustUseAlt = true -- select(4, _G.GetBuildInfo()) >= 50400
 
   local Media = Prat.Media
   local backgrounds, borders, fonts = {}, {}, {}

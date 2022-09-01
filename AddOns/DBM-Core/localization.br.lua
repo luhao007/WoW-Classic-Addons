@@ -248,7 +248,7 @@ L.AUTO_TIMER_OPTIONS.achievement	= "Exibir cronógrafo para %s"
 L.AUTO_ANNOUNCE_TEXTS.target		= "%s em >%%s<"
 L.AUTO_ANNOUNCE_TEXTS.targetcount	= "%s (%%s) em >%%s<"
 L.AUTO_ANNOUNCE_TEXTS.spell			= "%s"
-L.AUTO_ANNOUNCE_TEXTS.adds			= "%s restantes: %%d"
+L.AUTO_ANNOUNCE_TEXTS.addsleft		= "%s restantes: %%d"
 L.AUTO_ANNOUNCE_TEXTS.cast			= "Lançando %s: %.1f seg"
 L.AUTO_ANNOUNCE_TEXTS.soon			= "%s em breve"
 L.AUTO_ANNOUNCE_TEXTS.prewarn		= "%s em %s"
@@ -261,7 +261,7 @@ local prewarnOption					= "Exibir aviso antecipado para $spell:%s"
 L.AUTO_ANNOUNCE_OPTIONS.target		= "Anunciar alvos de $spell:%s"
 L.AUTO_ANNOUNCE_OPTIONS.targetcount	= "Anunciar alvos de $spell:%s"
 L.AUTO_ANNOUNCE_OPTIONS.spell		= "Exibir aviso para $spell:%s"
-L.AUTO_ANNOUNCE_OPTIONS.adds		= "Announce how many $spell:%s remain"
+L.AUTO_ANNOUNCE_OPTIONS.addsleft	= "Announce how many $spell:%s remain"
 L.AUTO_ANNOUNCE_OPTIONS.cast		= "Exibir aviso quando $spell:%s está sendo lançado"
 L.AUTO_ANNOUNCE_OPTIONS.soon		= prewarnOption
 L.AUTO_ANNOUNCE_OPTIONS.prewarn		= prewarnOption
@@ -305,8 +305,8 @@ L.AUTO_SPEC_WARN_TEXTS.switch		= "%s - mude de alvo"
 L.AUTO_SPEC_WARN_TEXTS.switchcount	= "%s - mude de alvo (%%s)"
 
 
-L.AUTO_ICONS_OPTION_TEXT			= "Colocar ícones nos alvos de $spell:%s"
-L.AUTO_ICONS_OPTION_TEXT2			= "Set icons on $spell:%s"
+L.AUTO_ICONS_OPTION_TARGETS			= "Colocar ícones nos alvos de $spell:%s"
+L.AUTO_ICONS_OPTION_NPCS			= "Set icons on $spell:%s"
 L.AUTO_YELL_OPTION_TEXT.yell		= "Gritar quando você é afetado por $spell:%s"
 L.AUTO_YELL_ANNOUNCE_TEXT.yell		= "%s em " .. UnitName("player") .. "!"
 

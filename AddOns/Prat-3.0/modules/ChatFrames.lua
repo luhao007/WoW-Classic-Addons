@@ -42,7 +42,7 @@ Prat:AddModuleToLoad(function()
 
   local PL = mod.PL
 
-  --[===[@debug@
+  --[==[@debug@
   PL:AddLocale(PRAT_MODULE, "enUS", {
     ["Frames"] = true,
     ["Chat window frame parameter options"] = true,
@@ -63,7 +63,7 @@ Prat:AddModuleToLoad(function()
     ["rememberframepositions_name"] = "Remember Positions",
     ["rememberframepositions_desc"] = "Remember the chatframe positions, and restore them on load"
   })
-  --@end-debug@]===]
+  --@end-debug@]==]
 
   -- These Localizations are auto-generated. To help with localization
   -- please go to http://www.wowace.com/projects/prat-3-0/localization/
@@ -244,7 +244,7 @@ L = {
 		["Chat window frame parameter options"] = "대화창 프레임 한도 옵션",
 		["framealpha_desc"] = "마우스를 올렸을 때 대화창의 투명도를 조절합니다.",
 		["framealpha_name"] = "대화창 투명도 설정",
-		["Frames"] = "대화창",
+		["Frames"] = "대화창 [Frames]",
 		["mainchatonload_desc"] = "첫번째 대화창을 자동으로 선택하고 로드 시에 활성화 시킵니다.",
 		["mainchatonload_name"] = "로드 시 주 대화창 강제 설정",
 		["maxchatheight_desc"] = "모든 대화창의 최대 높이를 설정합니다.",

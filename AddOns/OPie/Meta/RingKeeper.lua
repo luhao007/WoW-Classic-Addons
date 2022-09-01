@@ -1,5 +1,5 @@
 local RingKeeper, _, T = {}, ...
-local RK_RingDesc, RK_CollectionIDs, RK_Version, RK_Rev, EV, PC, SV = {}, {}, 2, 50, T.Evie, T.OPieCore
+local RK_RingDesc, RK_CollectionIDs, RK_Version, RK_Rev, EV, PC, SV = {}, {}, 2, 51, T.Evie, T.OPieCore
 local unlocked, queue, RK_DeletedRings, RK_FlagStore, sharedCollection = false, {}, {}, {}, {}
 local MODERN = select(4,GetBuildInfo()) >= 8e4
 
@@ -268,8 +268,9 @@ local function RK_IsRelevantRingDescription(desc)
 	end
 end
 local serialize, unserialize do
-	local sigT, sigN = {}
-	for i, c in ("01234qwertyuiopasdfghjklzxcvbnm5678QWERTYUIOPASDFGHJKLZXCVBNM9"):gmatch("()(.)") do sigT[i-1], sigT[c], sigN = c, i-1, i end
+	local sb, sc = string.byte, string.char
+	local sigT, sigB, sigN = {}, {}
+	for i, c in ("01234qwertyuiopasdfghjklzxcvbnm5678QWERTYUIOPASDFGHJKLZXCVBNM9"):gmatch("()(.)") do sigT[i-1], sigT[c], sigB[sb(c)], sigN = c, i-1, i-1, i end
 	local function checksum(s)
 		local h = (134217689 * #s) % 17592186044399
 		for i=1,#s,4 do
@@ -291,94 +292,191 @@ local serialize, unserialize do
 	end
 	local function venc(v, t, reg)
 		if reg[v] then
-			table.insert(t, sigT[1] .. sigT[reg[v]])
+			t[#t+1] = sigT[1] .. sigT[reg[v]]
 		elseif type(v) == "table" then
 			local n = math.min(sigN-1, #v)
 			for i=n,1,-1 do venc(v[i], t, reg) end
-			table.insert(t, sigT[3] .. sigT[n])
+			t[#t+1] = sigT[3] .. sigT[n]
 			for k,v2 in pairs(v) do
 				if not (type(k) == "number" and k >= 1 and k <= n and k % 1 == 0) then
 					venc(v2, t, reg)
 					venc(k, t, reg)
-					table.insert(t, sigT[4])
+					t[#t+1] = sigT[4]
 				end
 			end
 		elseif type(v) == "number" then
-			if v % 1 ~= 0 then error("non-integer value") end
-			if v < -1000000 then error("integer underflow") end
-			table.insert(t, sigT[5] .. nenc(v + 1000000, 4))
+			if v >= -1000000 and v < 13776336 and v % 1 == 0 then
+				t[#t+1] = sigT[5] .. nenc(v + 1000000, 4)
+			elseif (v+v == v) or (v < 0) == (v >= 0) then
+				error("not a (real) number")
+			else
+				local f, e = math.frexp(v)
+				if e < -1070 then
+					f, e = f / 2, e + 1
+				end
+				t[#t+1] = sigT[f < 0 and 14 or 13] .. nenc(e+1500-1, 2) .. nenc(f*2^53*(f < 0 and -1 or 1), 9)
+			end
 		elseif type(v) == "string" then
-			table.insert(t, sigT[6] .. v:gsub("[^a-zA-Z5-8]", cenc) .. "9")
+			t[#t+1] = sigT[6] .. v:gsub("[^a-zA-Z5-8]", cenc) .. "9"
 		else
-			table.insert(t, sigT[1] .. ((v == true and sigT[1]) or (v == nil and sigT[0]) or sigT[2]))
+			t[#t+1] = sigT[1] .. ((v == true and sigT[1]) or (v == nil and sigT[0]) or sigT[2])
 		end
 		return t
 	end
-	local function tenc(t, rt)
-		local u, ua = {}, {}
+	local function tenc(t)
+		local u, ua, fm, fc = {}, {}, {}, sigN-3
+		for i=3,sigN-1 do
+			fm[sigT[1] .. sigT[i]] = sigT[2] .. sigT[i]
+		end
 		for i=1,#t do
 			local k = t[i]
-			if #k < 4 then
+			if fm[k] then
+				fc, fm[k] = fc - 1, nil
 			elseif u[k] then
 				u[k] = u[k] + 1
-			else
+			elseif #k >= 4 then
 				ua[#ua+1], u[k] = k, 1
 			end
-		end
-		local freeSlot = 5
-		while rt[freeSlot] ~= nil do
-			freeSlot = freeSlot + 1
 		end
 		table.sort(ua, function(a, b)
 			return (#a-2)*(u[a]-1) > (#b-2)*(u[b]-1)
 		end)
-		for i=math.max(1, sigN-freeSlot+1), #ua do
+		for i=fc+1, #ua do
 			u[ua[i]], ua[i] = nil
 		end
+		local r, s = next(fm)
 		for i=1,#t do
 			local uk = u[t[i]]
 			if uk == nil then
 			elseif type(uk) == "string" then
 				t[i] = uk
-			elseif freeSlot < sigN and uk > 1 then
-				u[t[i]], t[i] = sigT[1] .. sigT[freeSlot], t[i] .. sigT[2] .. sigT[freeSlot]
-				freeSlot = freeSlot + 1
+			elseif r and uk > 1 then
+				u[t[i]], t[i], r, s = r, t[i] .. s, next(fm, r)
 			end
 		end
 		return t
 	end
-
-	local ops = {"local ops, sigT, sigN, s, r, pri = {}, ...\nlocal cdec, ndec = function(c, l) return string.char(sigT[c]*(sigN-1) + sigT[l]) end, function(s) local r = 0 for i=1,#s do r = r * sigN + sigT[s:sub(i,i)] end return r end",
-		"s[d+1], d, pos = r[sigT[pri:sub(pos,pos)]], d + 1, pos + 1",
-		"r[sigT[pri:sub(pos,pos)]], pos = s[d], pos + 1",
-		"local t, n = {}, sigT[pri:sub(pos,pos)]\nfor i=1,n do t[i] = s[d-i+1] end\ns[d - n + 1], d, pos = t, d - n + 1, pos + 1",
-		"s[d-2][s[d]], d = s[d-1], d - 2",
-		"s[d+1], d, pos = ndec(pri:sub(pos, pos + 3)) - 1000000, d + 1, pos + 4",
-		"d, s[d+1], pos = d + 1, pri:match('^(.-)9()', pos)\ns[d] = s[d]:gsub('([0-4])(.)', cdec)",
-		"s[d-1], d = s[d-1]+s[d], d - 1",
-		"s[d-1], d = s[d-1]*s[d], d - 1",
-		"s[d-1], d = s[d-1]/s[d], d - 1",
-		"function ops.bind(...) s, r, pri = ... end\nreturn ops"
-	}
-	for i=2,#ops-1 do
-		ops[i] = ("ops[%q] = function(d, pos)\n %s\n return d, pos\nend"):format(sigT[i-1], ops[i])
+	
+	local ops do
+		local s, r, pri
+		local function cdec(c, l)
+			return sc(sigT[c]*(sigN-1) + sigT[l])
+		end
+		local function ndec(p, l)
+			local r = 0
+			for i=p,p+l-1 do
+				r = r * sigN + sigB[sb(pri,i)]
+			end
+			return r
+		end
+		ops = {
+			function(d, pos)
+				s[d+1] = r[sigB[sb(pri, pos)]]
+				return d+1, pos+1
+			end,
+			function(d, pos)
+				r[sigB[sb(pri,pos)]] = s[d]
+				return d, pos+1
+			end,
+			function(d, pos)
+				local t, n = {}, sigB[sb(pri,pos)]
+				for i=1,n do
+					t[i] = s[d-i+1]
+				end
+				s[d - n + 1] = t
+				return d+1-n, pos+1
+			end,
+			function(d, pos)
+				s[d-2][s[d]] = s[d-1]
+				return d-2, pos
+			end,
+			function(d, pos)
+				s[d+1] = ndec(pos, 4) - 1000000
+				return d+1, pos+4
+			end,
+			function(d, pos)
+				d, s[d+1], pos = d+1, pri:match('^(.-)9()', pos)
+				s[d] = s[d]:gsub('([0-4])(.)', cdec)
+				return d, pos
+			end,
+			function(d, pos)
+				s[d-1] = s[d-1]+s[d]
+				return d-1, pos
+			end,
+			function(d, pos)
+				s[d-1] = s[d-1]*s[d]
+				return d-1, pos
+			end,
+			function(d, pos)
+				s[d-1] = s[d-1]/s[d]
+				return d-1, pos
+			end,
+			function(d, pos)
+				s[d-1] = s[d-1]-s[d]
+				return d-1, pos
+			end,
+			function(d, pos)
+				s[d-1] = s[d-1]^s[d]
+				return d-1, pos
+			end,
+			function(d, pos)
+				s[d-1] = s[d-1]*2^s[d]
+				return d-1, pos
+			end,
+			function(d, pos)
+				s[d+1] =  2^(ndec(pos,2)-1500) * (ndec(pos+2,9)*2^-52)
+				return d+1, pos+11
+			end,
+			function(d, pos)
+				s[d+1] = -2^(ndec(pos,2)-1500) * (ndec(pos+2,9)*2^-52)
+				return d+1, pos+11
+			end,
+			function(d, pos)
+				s[d-1] = r[s[d]]
+				return d-1, pos
+			end,
+			function(d, pos)
+				r[s[d]] = s[d-1]
+				return d-1, pos
+			end,
+		}
+		local opsB = {}
+		for i=1,#ops do
+			opsB[sb(sigT[i])] = ops[i]
+		end
+		ops = opsB
+		function ops.bind(...)
+			s, r, pri = ...
+		end
 	end
-	ops = loadstring(table.concat(ops, "\n"))(sigT, sigN)
-
-	function serialize(t, sign, regGhost)
-		local rt = setmetatable({}, regGhost)
-		local payload = table.concat(tenc(venc(t, {}, rt), rt), "")
+	
+	local defaultSign = sc(111,101,116,111,104,72,55)
+	local st = {
+		[defaultSign] = {"name", "hotkey", "offset", "noOpportunisticCA", "noPersistentCA", "internal", "limit", "id", "skipSpecs", "caption", "icon", "show"},
+	}
+	
+	function serialize(t, sign)
+		sign = sign == nil and defaultSign or sign
+		local rt, sd = {}, st[sign]
+		for i=1, sd and #sd or 0 do
+			rt[sd[i]] = 2+i
+		end
+		local payload = table.concat(tenc(venc(t, {}, setmetatable({}, {__index=rt}))), "")
 		return ((sign .. nenc(checksum(sign .. payload), 7) .. payload):gsub("(.......)", "%1 "):gsub(" ?$", ".", 1))
 	end
-	function unserialize(s, sign, regGhost)
-		local h, pri = s:gsub("[^a-zA-Z0-9.]", ""):match("^" .. sign .. "(.......)([^.]+)")
-		if nenc(checksum(sign .. pri), 7) ~= h then return end
-	
-		local stack, depth, pos, len = {}, 0, 1, #pri
-		ops.bind(stack, setmetatable({true, false}, regGhost), pri)
-		while pos <= len do
-			depth, pos = ops[pri:sub(pos, pos)](depth, pos + 1)
+	function unserialize(s)
+		local ssign, h, pri = s:gsub("[^a-zA-Z0-9.]", ""):match("^(" .. ("."):rep(#defaultSign) .. ")(.......)([^.]+)")
+		if st[ssign] == nil or nenc(checksum(ssign .. pri), 7) ~= h then return end
+		local rt, sd = {true, false}, st[ssign]
+		for i=1, sd and #sd or 0 do
+			rt[2+i] = sd[i]
 		end
+		local stack, depth, pos, len = {}, 0, 1, #pri
+		ops.bind(stack, setmetatable({}, {__index=rt}), pri)
+		while pos <= len do
+			depth, pos = ops[sb(pri, pos)](depth, pos + 1)
+		end
+		ops.bind()
 		return depth == 1 and stack[1]
 	end
 end
@@ -418,21 +516,17 @@ local encodeMacro, decodeMacro do
 		return ("\n" .. m):gsub("\n!(.-)!(%S*)", slash_l10n):sub(2)
 	end
 end
-local copy do
-	local copies = {}
-	function copy(t, isInnerCall)
-		if not isInnerCall then wipe(copies) end
-		local into = {} copies[t] = into
-		for k,v in pairs(t) do
-			into[type(k) == "table" and (copies[k] or copy(k, true)) or k] = type(v) == "table" and (copies[v] or copy(v, true)) or v
-		end
-		if not isInnerCall then wipe(copies) end
-		return into
+local function copy(t, copies)
+	local into = {}
+	copies = copies or {}
+	copies[t] = into
+	for k,v in pairs(t) do
+		k = type(k) == "table" and (copies[k] or copy(k, copies)) or k
+		v = type(v) == "table" and (copies[v] or copy(v, copies)) or v
+		into[k] = v
 	end
+	return into
 end
-
-local sReg, sRegRev, sSign = {__index={nil, nil, "name", "hotkey", "offset", "noOpportunisticCA", "noPersistentCA", "internal", "limit", "id", "skipSpecs", "caption", "icon", "show"}}, {__index={}}, string.char(111,101,116,111,104,72,55)
-for k,v in pairs(sReg.__index) do sRegRev.__index[v] = k end
 
 local function pullOptions(e, a, ...)
 	if a then return e[a], pullOptions(e, ...) end
@@ -457,7 +551,7 @@ local function RK_SyncRing(name, force, tok)
 		OneRingLib:SetRing(name, cid, desc)
 	end
 
-	local onOpenSlice, onOpenAction = desc.onOpen
+	local onOpenSlice, onOpenAction, onOpenToken = desc.onOpen
 	for i=1, #desc do
 		local e = desc[i]
 		local ident, action = e[1]
@@ -470,10 +564,10 @@ local function RK_SyncRing(name, force, tok)
 		changed = changed or (action ~= e._action) or (e.fastClick ~= e._fastClick) or (e.rotationMode ~= e._rotationMode) or (action and (e.show ~= e._show) or (e.embed ~= e._embed))
 		e._action, e._fastClick, e._rotationMode = action, e.fastClick, e.rotationMode
 		if i == onOpenSlice then
-			onOpenAction = e._action
+			onOpenAction, onOpenToken = e._action, e.sliceToken
 		end
 	end
-	changed = changed or (desc._embed ~= desc.embed) or (desc._onOpen ~= onOpenAction)
+	changed = changed or (desc._embed ~= desc.embed) or (desc._onOpen ~= onOpenAction) or (desc._onOpenToken ~= onOpenToken)
 
 	if not changed and not force then return end
 	local collection, cn = sharedCollection, 1
@@ -484,11 +578,12 @@ local function RK_SyncRing(name, force, tok)
 			collection[e.sliceToken], collection[cn], cn = e._action, e.sliceToken, cn + 1
 			collection['__visibility-' .. e.sliceToken], e._show = e.show or nil, e.show
 			collection['__embed-' .. e.sliceToken], e._embed = e.embed, e.embed
-			ORI:SetDisplayOptions(e.sliceToken, e.icon, e.caption, e._r, e._g, e._b)
+			ORI:SetDisplayOptions(e.sliceToken, e.icon, nil, e._r, e._g, e._b)
 		end
 	end
 	collection['__embed'], desc._embed = desc.embed, desc.embed
 	collection['__openAction'], desc._onOpen = onOpenAction, onOpenAction
+	collection['__openToken'], desc._onOpenToken = onOpenToken, onOpenToken
 	AB:UpdateActionSlot(cid, collection)
 	OneRingLib:SetRing(name, cid, desc)
 end
@@ -689,41 +784,67 @@ function RingKeeper:SoftSync(name)
 	assert(type(name) == "string", 'Syntax: RingKeeper:SoftSync("name")', 2)
 	securecall(RK_SyncRing, name)
 end
-function RingKeeper:GetRingSnapshot(name)
-	assert(type(name) == "string", 'Syntax: snapshot = RingKeeper:GetRingSnapshot("name")', 2)
-	local ring, first = RK_RingDesc[name] and RK_SerializeDescription(copy(RK_RingDesc[name])) or false, true
-	if ring then
-		ring.limit, ring.save = type(ring.limit) == "string" and ring.limit:match("[^A-Z]") and "PLAYER" or ring.limit
-		for i=1,#ring do
-			local v = ring[i]
-			if v[1] == nil and type(v.id) == "string" then
-				v.id, first = encodeMacro(RK_QuantizeMacro(v.id, not first)), false
-			end
-			v.sliceToken = nil
-		end
-	end
-	return ring and serialize(ring, sSign, sRegRev)
-end
-function RingKeeper:GetSnapshotRing(snap)
-	assert(type(snap) == "string", 'Syntax: desc = RingKeeper:GetSnapshotRing("snapshot")', 2)
-	local ok, ret = pcall(unserialize, snap, sSign, sReg)
-	if ok and type(ret) == "table" and type(ret.name) == "string" and #ret > 0 then
-		for i=1,#ret do
-			local v = ret[i]
-			if not v then
-				return
-			else
-				v.caption = type(v.caption) == "string" and v.caption:gsub("|?|", "||") or nil
-				if v[1] == nil and type(v.id) == "string" then
-					v.id = decodeMacro(v.id)
+function RingKeeper:GetRingSnapshot(name, bundleNested)
+	assert(type(name) == "string", 'Syntax: snapshot = RingKeeper:GetRingSnapshot("name"[, bundleNested])', 2)
+	if not RK_RingDesc[name] then return end
+	local props = copy(RK_RingDesc[name])
+	local q, m, haveMacroCache = {}, {}, false
+	repeat
+		local props = m[table.remove(q)] or props
+		RK_SerializeDescription(props)
+		props.limit, props.save = type(props.limit) == "string" and props.limit:match("[^A-Z]") and "PLAYER" or props.limit
+		for i=1,#props do
+			local v = props[i]
+			local st = v[1]
+			if st == nil and type(v.id) == "string" then
+				v.id, haveMacroCache = encodeMacro(RK_QuantizeMacro(v.id, haveMacroCache)), true
+			elseif st == "ring" then
+				local sn = v[2]
+				if sn == name then
+					m[name] = 0
+				elseif bundleNested and RK_RingDesc[sn] and RK_RingDesc[sn].save and not m[sn] then
+					q[#q+1], m[sn] = sn, copy(RK_RingDesc[sn])
 				end
 			end
+			v.caption = nil -- DEPRECATED [2101/3.105/X4]
+			v.sliceToken = nil
 		end
-		ret.name = ret.name:gsub("|?|", "||")
-		ret.quarantineBind, ret.hotkey = type(ret.hotkey) == "string" and ret.hotkey or nil
-		ret.quarantineOnOpen, ret.onOpen = ret.onOpen, nil
-		return ret
-	end
+	until not q[1]
+	props._bundle = next(m) ~= nil and m or nil
+	return serialize(props)
+end
+function RingKeeper:GetSnapshotRing(snap)
+	assert(type(snap) == "string", 'Syntax: desc, bundle = RingKeeper:GetSnapshotRing("snapshot")', 2)
+	if snap == "" then return end
+	local ok, root = pcall(unserialize, snap)
+	if not ok or type(root) ~= "table" then return end
+	local q, bun, bs = {}, {}, type(root._bundle) == "table" and root._bundle or nil
+	repeat
+		local ri = bun[table.remove(q)] or root
+		if type(ri.name) ~= "string" then return end
+		for i=1,#ri do
+			local v, st, sa = ri[i]
+			if not v then return end
+			st, sa = v[1], v[2]
+			v.caption = nil -- DEPRECATED [2101/3.105/X4]
+			if st == nil and type(v.id) == "string" then
+				v.id = decodeMacro(v.id)
+			elseif st == "ring" and bs and sa then
+				local bd = bs[sa]
+				if bd == 0 and not bun[sa] then
+					bun[sa] = 0
+				elseif type(bd) == "table" and not bun[sa] then
+					bun[sa], q[#q+1] = bd, sa
+				end
+			end
+			dropUnderscoreKeys(v)
+		end
+		ri.name = ri.name:gsub("|?|", "||")
+		ri.quarantineBind, ri.hotkey = type(ri.hotkey) == "string" and ri.hotkey or nil
+		ri.quarantineOnOpen, ri.onOpen = ri.onOpen, nil
+		dropUnderscoreKeys(ri)
+	until q[1] == nil
+	return root, bun
 end
 function RingKeeper:QuantizeMacro(macrotext)
 	return RK_QuantizeMacro(macrotext)

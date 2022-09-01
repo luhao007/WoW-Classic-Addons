@@ -18,7 +18,7 @@ function VUHDO_newOptionsSpellSetModifier(aModifier)
 			tBox = _G[tPanel:GetName() .. "EditBox"];
 			tIndex = aModifier .. tNum;
 			if (VUHDO_SPELL_ASSIGNMENTS[tIndex] == nil) then
-				VUHDO_SPELL_ASSIGNMENTS[tIndex] = { VUHDO_MODIFIER_KEYS[tIndex], tostring(tNum), "" };
+				VUHDO_SPELL_ASSIGNMENTS[tIndex] = { VUHDO_MODIFIER_KEYS[aModifier], tostring(tNum), "" };
 			end
 			tModel = "VUHDO_SPELL_ASSIGNMENTS." .. tIndex .. ".##3";
 			tBox:SetAttribute("model", tModel);

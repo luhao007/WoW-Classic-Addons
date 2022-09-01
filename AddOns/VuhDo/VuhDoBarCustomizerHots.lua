@@ -3,6 +3,7 @@ local huge = math.huge;
 local format = format;
 
 local sIsFade;
+local sIsFlashWhenLow;
 local sIsWarnColor;
 local sIsSwiftmend;
 local sHotSetup;
@@ -78,8 +79,6 @@ local VUHDO_getBarIconCharge;
 local VUHDO_getBarIconClockOrStub;
 local VUHDO_backColor;
 local VUHDO_textColor;
-local VUHDO_UIFrameFlash;
-local VUHDO_UIFrameFlashStop;
 
 local VUHDO_PANEL_SETUP;
 local VUHDO_CAST_ICON_DIFF;
@@ -117,10 +116,7 @@ function VUHDO_customHotsInitLocalOverrides()
 	sBarColors = VUHDO_PANEL_SETUP["BAR_COLORS"];
 	sHotCols = sBarColors["HOTS"];
 	sIsFade = sHotCols["isFadeOut"];
-
-	VUHDO_UIFrameFlash = sHotCols["isFlashWhenLow"] and _G["VUHDO_UIFrameFlash"] or function() end;
-	VUHDO_UIFrameFlashStop = sHotCols["isFlashWhenLow"] and _G["VUHDO_UIFrameFlashStop"] or function() end;
-
+	sIsFlashWhenLow = sHotCols["isFlashWhenLow"];
 	sIsWarnColor = sHotCols["WARNING"]["enabled"];
 	sHotSetup = VUHDO_PANEL_SETUP["HOTS"];
 	sHotSlots = VUHDO_PANEL_SETUP["HOTS"]["SLOTS"];
@@ -205,6 +201,9 @@ local function VUHDO_customizeHotIcons(aButton, aHotName, aRest, aTimes, anIcon,
 	tIcon = VUHDO_getBarIcon(aButton, anIndex);
 	if not tIcon then return end; -- Noch nicht erstellt von redraw
 
+	local VUHDO_UIFrameFlash = (sIsFlashWhenLow or tHotCfg["isFlashWhenLow"]) and _G["VUHDO_UIFrameFlash"] or function() end;
+	local VUHDO_UIFrameFlashStop = (sIsFlashWhenLow or tHotCfg["isFlashWhenLow"]) and _G["VUHDO_UIFrameFlashStop"] or function() end;
+
 	if not aRest then
 		VUHDO_UIFrameFlashStop(tIcon);
 		VUHDO_getBarIconFrame(aButton, anIndex):Hide();
@@ -249,7 +248,7 @@ local function VUHDO_customizeHotIcons(aButton, aHotName, aRest, aTimes, anIcon,
 		return;
 
 	elseif aRest > 0 then
-		tIcon:SetAlpha((aRest < 10 and sIsFade) and tHotCfg["O"] * aRest * 0.1 or tHotCfg["O"]);
+		tIcon:SetAlpha((aRest < 10 and (sIsFade or tHotCfg["isFadeOut"])) and tHotCfg["O"] * aRest * 0.1 or tHotCfg["O"]);
 
 		if aRest < 10 or tHotCfg["isFullDuration"] then
 			tDuration = (tHotCfg["countdownMode"] == 2 and aRest < sHotCols["WARNING"]["lowSecs"])
@@ -265,7 +264,7 @@ local function VUHDO_customizeHotIcons(aButton, aHotName, aRest, aTimes, anIcon,
 			tClock:SetCooldown(tStarted, aDuration);
 			tClock:SetAttribute("started", tStarted);
 		end
-		tIcon:SetAlpha((sIsFade and aRest < 10) and tHotCfg["O"] * aRest * 0.1 or tHotCfg["O"]);
+		tIcon:SetAlpha(((sIsFade or tHotCfg["isFadeOut"]) and aRest < 10) and tHotCfg["O"] * aRest * 0.1 or tHotCfg["O"]);
 
 		if aRest > 5 then
 			VUHDO_UIFrameFlashStop(tIcon);

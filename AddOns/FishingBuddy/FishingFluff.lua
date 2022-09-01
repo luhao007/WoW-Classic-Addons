@@ -51,6 +51,20 @@ local function FishTrackingEnable(enabled)
 end
 FishingBuddy.FishTrackingEnable = FishTrackingEnable
 
+FluffEvents[FBConstants.FISHING_ENABLED_EVT] = function()
+    if ( FishingBuddy.GetSettingBool("FishingFluff")) then
+        if ( GetSettingBool("FindFish") ) then
+            FishTrackingEnable(true);
+        end
+
+        if ( GetSettingBool("TurnOffPVP") ) then
+            if (1 == GetPVPDesired() ) then
+                resetPVP = true;
+                SetPVP(0);
+            end
+        end
+    end
+end
 
 local function Untrack(yes)
     if ( yes ) then

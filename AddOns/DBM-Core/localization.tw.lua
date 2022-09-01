@@ -36,7 +36,7 @@ L.LOOT_SPEC_REMINDER			= "你目前的專精為:%s。而你目前的拾取選擇
 
 L.BIGWIGS_ICON_CONFLICT			= L.DBM.."偵測到你同時開啟BigWigs和DBM的團隊圖示。請關閉其中之一的團隊圖示功能以免產生衝突。"
 
-L.MOD_AVAILABLE					= "%s在此區域有模組可用。你可以在Curse或WoWI下載。"
+L.MOD_AVAILABLE					= "%s在此區域有模組可用。你可以在Curse、Wago、WoWI或從GitHub正式版頁面下載。"
 
 L.COMBAT_STARTED				= "%s開戰。祝好運與盡興! :)"
 L.COMBAT_STARTED_IN_PROGRESS	= "與%s開戰已進行的戰鬥。祝好運與盡興! :)"
@@ -168,7 +168,7 @@ L.VERSIONCHECK_ENTRY_TWO		= "%s: %s (%s) & %s (%s)"--Two Boss mods
 L.VERSIONCHECK_ENTRY_NO_DBM		= "%s：尚未安裝任何團隊首領模組"
 L.VERSIONCHECK_FOOTER			= "找到有%d玩家正在使用DBM且有%d玩家正在使用Bigwigs"
 L.VERSIONCHECK_OUTDATED			= "下列有%d玩家正在使用過期的首領模組:%s"
-L.YOUR_VERSION_OUTDATED			= "你的 Deadly Boss Mod 已經過期。請到Curse網站或是WOWI網站以及GitHub專案網頁下載最新版本。"
+L.YOUR_VERSION_OUTDATED			= "你的 Deadly Boss Mod 已經過期。請到Curse、Wago或是WOWI網站以及GitHub專案網頁下載最新版本。"
 L.VOICE_PACK_OUTDATED			= "你的DBM語音包可能缺少在這個版本的DBM需要的語音。部分警告音效已經被停用。請下載新版本的語音包或是聯絡語音包作者更新並加入缺少的語音。"
 L.VOICE_MISSING					= "DBM找不到你所選取的語音包。請確定你的語音包已正確的安裝與啟用。"
 L.VOICE_DISABLED				= "你的語音包已安裝但是尚未啟用。如果你想使用語音包，請確定語言包已在語音警告中被選取，或是刪除不使用的語音包去隱藏此訊息。"
@@ -181,7 +181,7 @@ L.UPDATEREMINDER_FOOTER_GENERIC		= "按下" .. (IsMacClient() and "Cmd-C" or "Ct
 L.UPDATEREMINDER_DISABLE			= "警告:  你的DBM版本已大幅度的過期，DBM已被強制關閉並且無法使用直到更新為止。這是為了確保舊而不相容的程式碼不會對你而團隊夥伴造成低落的遊戲體驗。"
 L.UPDATEREMINDER_HOTFIX				= "你的DBM版本會在這首領戰鬥有不準確的計時器或警告。這問題已被修正在新版正式版(或是更新到最新的測試版。)"
 L.UPDATEREMINDER_HOTFIX_ALPHA		= "您的DBM版本在此首領戰有些已知問題，將會在未來的正式版修正 (或是最新的測試版)"
-L.UPDATEREMINDER_MAJORPATCH			= "警告: 你的DBM已經過期，DBM已被禁用直到你更新至最新版，因為遊戲大改版。為了不讓舊的程式碼拖累遊戲體驗。請至curse、WoWI或是GitHub發佈頁下載最新版本的DBM。"
+L.UPDATEREMINDER_MAJORPATCH			= "警告: 你的DBM已經過期，DBM已被禁用直到你更新至最新版，因為遊戲大改版。為了不讓舊的程式碼拖累遊戲體驗。請至curse、Wago、WoWI或是GitHub發佈頁下載最新版本的DBM。"
 L.VEM								= "警告: 你同時使用DBM和VEM。DBM將停用而無法執行。"
 L.OUTDATEDPROFILES					= "警告: DBM-Profiles不相容此版本DBM。請移除避免衝突。"
 L.OUTDATEDSPELLTIMERS				= "警告：DBM-SpellTimers破壞了" .. L.DBM .. ".必須要移除" .. L.DBM .. "才能正常運作。"
@@ -297,7 +297,7 @@ L.AUTO_ANNOUNCE_TEXTS.spell					= "%s"
 L.AUTO_ANNOUNCE_TEXTS.ends 					= "%s結束"
 L.AUTO_ANNOUNCE_TEXTS.endtarget				= "%s結束:>%%s<"
 L.AUTO_ANNOUNCE_TEXTS.fades					= "%s消退"
-L.AUTO_ANNOUNCE_TEXTS.adds					= "%s還剩下:%%d"
+L.AUTO_ANNOUNCE_TEXTS.addsleft				= "%s還剩下:%%d"
 L.AUTO_ANNOUNCE_TEXTS.cast					= "施放%s:%.1f秒"
 L.AUTO_ANNOUNCE_TEXTS.soon					= "%s即將到來"
 L.AUTO_ANNOUNCE_TEXTS.sooncount				= "%s (%%s)即將到來"
@@ -320,7 +320,7 @@ L.AUTO_ANNOUNCE_OPTIONS.spell				= "提示：當$spell:%s施放時"
 L.AUTO_ANNOUNCE_OPTIONS.ends				= "提示：當$spell:%s結束"
 L.AUTO_ANNOUNCE_OPTIONS.endtarget			= "提示：當$spell:%s結束(包含目標)"
 L.AUTO_ANNOUNCE_OPTIONS.fades				= "提示：當$spell:%s消退"
-L.AUTO_ANNOUNCE_OPTIONS.adds				= "提示：$spell:%s剩餘數量"
+L.AUTO_ANNOUNCE_OPTIONS.addsleft			= "提示：$spell:%s剩餘數量"
 L.AUTO_ANNOUNCE_OPTIONS.cast				= "提示：當$spell:%s開始施放"
 L.AUTO_ANNOUNCE_OPTIONS.soon				= prewarnOption
 L.AUTO_ANNOUNCE_OPTIONS.sooncount			= prewarnOption
@@ -347,6 +347,7 @@ L.AUTO_SPEC_WARN_TEXTS.interruptcount		= "%s - 快中斷>%%s< !(%%d)"
 L.AUTO_SPEC_WARN_TEXTS.you					= "你中了%s"
 L.AUTO_SPEC_WARN_TEXTS.youcount				= "你中了%s (%%s)"
 L.AUTO_SPEC_WARN_TEXTS.youpos				= "你中了%s (位置：%%s)"
+L.AUTO_SPEC_WARN_TEXTS.youposcount		    = "你中了%s (%%s) (位置: %%s)"
 L.AUTO_SPEC_WARN_TEXTS.soakpos				= "%s - 快到%%s分傷"
 L.AUTO_SPEC_WARN_TEXTS.target				= ">%%s<中了%s"
 L.AUTO_SPEC_WARN_TEXTS.targetcount			= ">%%2$s<中了%s (%%1$s) "
@@ -391,6 +392,7 @@ L.AUTO_SPEC_WARN_OPTIONS.interruptcount		= "特別提示：需要中斷$spell:%s
 L.AUTO_SPEC_WARN_OPTIONS.you				= "特別提示：當你中了$spell:%s時"
 L.AUTO_SPEC_WARN_OPTIONS.youcount			= "特別提示：當你中了$spell:%s時 (包含計數)"
 L.AUTO_SPEC_WARN_OPTIONS.youpos				= "特別提示：當你中了$spell:%s時 (包含站位)"
+L.AUTO_SPEC_WARN_OPTIONS.youposcount	    = "特別提示：當你中了$spell:%s時 (包含站位和計數)"
 L.AUTO_SPEC_WARN_OPTIONS.soakpos			= "特別提示：當需要為$spell:%s分傷時(包含站位)"
 L.AUTO_SPEC_WARN_OPTIONS.target				= "特別提示：當他人中了$spell:%s時"
 L.AUTO_SPEC_WARN_OPTIONS.targetcount 		= "特別提示：當他人中了$spell:%s時 (包含計數)"
@@ -466,8 +468,15 @@ L.AUTO_TIMER_OPTIONS.adds					= "計時條：下一次小怪"
 L.AUTO_TIMER_OPTIONS.addscustom				= "計時條：小怪出現"
 L.AUTO_TIMER_OPTIONS.roleplay				= "計時條：劇情持續時間"
 
-L.AUTO_ICONS_OPTION_TEXT					= "為$spell:%s的目標設置標記"
-L.AUTO_ICONS_OPTION_TEXT2					= "為$spell:%s設置標記"
+L.AUTO_ICONS_OPTION_TARGETS					= "為$spell:%s的目標設置標記"
+L.AUTO_ICONS_OPTION_TARGETS_MELEE_A			= "為$spell:%s的目標設置標記，以近戰和字母順序優先"
+L.AUTO_ICONS_OPTION_TARGETS_MELEE_R			= "為$spell:%s的目標設置標記，以近戰和團隊陣容優先"
+L.AUTO_ICONS_OPTION_TARGETS_RANGED_A		= "為$spell:%s的目標設置標記，以遠程和字母順序優先"
+L.AUTO_ICONS_OPTION_TARGETS_RANGED_R		= "為$spell:%s的目標設置標記，以遠程和團隊陣容優先"
+L.AUTO_ICONS_OPTION_TARGETS_ALPHA			= "為$spell:%s的目標設置標記，以字母順序優先"
+L.AUTO_ICONS_OPTION_TARGETS_ROSTER			= "為$spell:%s的目標設置標記，以團隊陣容優先"
+L.AUTO_ICONS_OPTION_NPCS					= "為$spell:%s設置標記"
+L.AUTO_ICONS_OPTION_CONFLICT				= " (可能與其他選項衝突)"
 L.AUTO_ARROW_OPTION_TEXT					= "為跑向中了$spell:%s的目標顯示"..L.DBM.."箭頭"
 L.AUTO_ARROW_OPTION_TEXT2					= "為離開中了$spell:%s的目標顯示"..L.DBM.."箭頭"
 L.AUTO_ARROW_OPTION_TEXT3					= "為中了$spell:%s後移動到特定區域顯示"..L.DBM.."箭頭"
@@ -521,6 +530,7 @@ L.HUD_INVALID_ICON			= "不能設定對無團隊標記的目標"
 L.HUD_SUCCESS				= "HUD成功使用你的參數運作。這會在%s後取消，或是使用'/dbm hud hide'指令取消。"
 L.HUD_USAGE	= {
 	"DBM-HudMap 用法:",
+	"-----------------",
 	"/dbm hud <類型> <目標> <持續時間>: 建立一個指向玩家的HUD",
 	"有效類型: arrow, dot, red, blue, green, yellow, icon(需要團隊標記)",
 	"有效目標: target, focus, <玩家名字>",
@@ -533,6 +543,7 @@ L.ARROW_WAY_USAGE				= "/dway <x> <y>: 建立一個箭頭指向一個指定地�
 L.ARROW_WAY_SUCCESS				= "要隱藏箭頭，鍵入 '/dbm arrow hide' 或到達箭頭"
 L.ARROW_ERROR_USAGE	= {
 	"DBM-Arrow 用法:",
+	"-----------------",
 	"/dbm arrow <x> <y>: 建立一個箭頭在特定的位置(使用世界地圖座標)",
 	"/dbm arrow map <x> <y>: 建立一個箭頭在特定的位置 (使用小地圖座標)",
 	"/dbm arrow <玩家>: 建立並箭頭指向你的隊伍或團隊中特定的玩家",
@@ -540,10 +551,10 @@ L.ARROW_ERROR_USAGE	= {
 	"/dbm arrow move: 可移動箭頭"
 }
 
-L.SPEED_KILL_TIMER_TEXT		= "勝利紀錄"
-L.SPEED_CLEAR_TIMER_TEXT	= "最佳紀錄"
-L.COMBAT_RES_TIMER_TEXT		= "下一個戰復充能"
-L.TIMER_RESPAWN				= "%s 重生"
+L.SPEED_KILL_TIMER_TEXT			= "勝利紀錄"
+L.SPEED_CLEAR_TIMER_TEXT		= "最佳紀錄"
+L.COMBAT_RES_TIMER_TEXT			= "下一個戰復充能"
+L.TIMER_RESPAWN					= "%s 重生"
 
 L.LAG_CHECKING					= "檢測團隊成員的網路延遲中..."
 L.LAG_HEADER					= ""..L.DEADLY_BOSS_MODS.." - 網路延遲結果"
@@ -557,6 +568,7 @@ L.LAG_FOOTER					= "無回應:%s"
 
 --LDB
 L.LDB_TOOLTIP_HELP1				= "點擊開啟" .. L.DBM
+L.LDB_TOOLTIP_HELP2				= "Alt+右鍵點擊切換到無聲模式"
 L.SILENTMODE_IS                 = "無聲模式是 "
 
 --Localizers, do not copy entire table, follow same guidelines as other tables, overwrite each entry with L.WORLD_BUFFS.hordeOny = "stuff" for example.

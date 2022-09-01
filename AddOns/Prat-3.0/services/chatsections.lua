@@ -319,7 +319,7 @@ function SplitChatMessage(frame, event, ...)
 
     s.GUID = arg12
 
-    --[===[@debug@
+    --[==[@debug@
     s.ARGS = {
       ...
     }
@@ -333,7 +333,7 @@ function SplitChatMessage(frame, event, ...)
     end
 
     s.FRAME = frame and frame:GetName()
-    --@end-debug@]===]
+    --@end-debug@]==]
 
     --        if NEW_CHATFILTERS then
     local kill, newarg1, newarg2, newarg3, newarg4, newarg5, newarg6, newarg7, newarg8, newarg9, newarg10, newarg11, newarg12, newarg13, newarg14 =

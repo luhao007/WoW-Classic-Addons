@@ -353,7 +353,7 @@ VUHDO_I18N_TT.K255 = "Select at what time warning color will be applied and exte
 VUHDO_I18N_TT.K256 = "Check to have an outline around HoT counter and timer texts.";
 VUHDO_I18N_TT.K257 = "Check to have a shadow behind HoT counter and timer texts.";
 VUHDO_I18N_TT.K258 = "Check to to show warning color if HoT remaining duration is less than configured to the left.";
-VUHDO_I18N_TT.K260 = "Check to fade out HoT icons/squares when HoT is running out.";
+VUHDO_I18N_TT.K260 = "Check to fade out the HoT icon/square when the HoT is running out.";
 VUHDO_I18N_TT.K261 = "Select a color for your self-defined debuffs";
 VUHDO_I18N_TT.K262 = "Check to have also debuff icon flying in.";
 VUHDO_I18N_TT.K263 = "This option selects what debuffs you want to see.";
@@ -568,7 +568,7 @@ VUHDO_I18N_TT.K509 = "Shows direction arrow even if unit is not out of range.";
 VUHDO_I18N_TT.K510 = "Select a color for HoT Square 7";
 VUHDO_I18N_TT.K511 = "Hides Blizz UI standard raid frames.";
 VUHDO_I18N_TT.K512 = "Create VuhDo internal key assignments. No empty macro slot will be needed, keys can be assigned differently outside VuhDo panels.";
-VUHDO_I18N_TT.K513 = "Makes the HoT icons flash shortly before HoT expires";
+VUHDO_I18N_TT.K513 = "Makes this HoT icon flash shortly before the HoT expires";
 VUHDO_I18N_TT.K514 = "Show tooltips for custom debuffs";
 VUHDO_I18N_TT.K515 = "Show total HP of player.";
 VUHDO_I18N_TT.K516 = "Disable to avoid runtime errors from blizz standard ui incoming. Enable if you don't experience any problem.";
@@ -636,7 +636,13 @@ VUHDO_I18N_TT.K578 = "Select a color for the icon glow.";
 VUHDO_I18N_TT.K579 = "Select a color for the bar glow.";
 VUHDO_I18N_TT.K580 = "Select a modifier key to use with the right mouse button to blacklist debuff icons."
 VUHDO_I18N_TT.K581 = "Check to show player nickname on bars.";
-VUHDO_I18N_TT.K582 = "Check to show incoming heal using LibHealComm-4.0.";
+VUHDO_I18N_TT.K582 = "Select the unit to target.";
+VUHDO_I18N_TT.K583 = "Check to make all HoT icons fade out when the HoT is expiring.";
+VUHDO_I18N_TT.K584 = "Check to make all HoT icons flash when the HoT is expiring.";
+
+-- TBCC game version specific strings (tooltip IDs begin at K900)
+
+VUHDO_I18N_TT.K900 = "Check to show incoming heal using LibHealComm-4.0.";
 
 VUHDO_I18N_DEFAULT_PROFILE = "Default Profile";
 VUHDO_I18N_DEFAULT_LAYOUT = "Default Layout";
@@ -1148,7 +1154,25 @@ VUHDO_I18N_DEBUFF_SHOW_ONLY_FOR_FRIENDLY_TOOLTIP = "Shows debuffs only for frien
 VUHDO_I18N_SHOW_OVERSHIELD = "Show\nOvershield";
 VUHDO_I18N_OVERSHIELD_BAR = "Overshield Bar";
 
-VUHDO_I18N_LIBHEALCOMM = "Use Lib\nHealComm";
-
 VUHDO_I18N_SHOW_HEAL_ABSORB = "Show\nHeal Absorb";
 VUHDO_I18N_HEAL_ABSORB_BAR = "Heal Absorb Bar";
+
+VUHDO_I18N_PLAYER = "Player unit";
+VUHDO_I18N_TARGET = "Target unit"
+VUHDO_I18N_TARGET_TARGET = "Target's target unit"
+VUHDO_I18N_FOCUS = "Focus unit";
+VUHDO_I18N_MOUSEOVER = "Mouseover unit";
+VUHDO_I18N_MOUSEOVER_TARGET = "Mouseover's target unit";
+VUHDO_I18N_MOUSEOVER_TARGET_TARGET = "Mouseover's target's target unit";
+VUHDO_I18N_TARGET_HARM = "Target unit (hostile only)";
+VUHDO_I18N_TARGET_TARGET_HARM = "Target's target unit (hostile only)";
+VUHDO_I18N_FOCUS_HARM = "Focus unit (hostile only)";
+VUHDO_I18N_MOUSEOVER_HARM = "Mouseover unit (hostile only)";
+VUHDO_I18N_MOUSEOVER_TARGET_HARM = "Mouseover's target unit (hostile only)";
+VUHDO_I18N_MOUSEOVER_TARGET_TARGET_HARM = "Mouseover's target's target unit (hostile only)";
+
+VUHDO_I18N_CLOCK = "Clock";
+
+-- TBCC game version specific strings
+
+VUHDO_I18N_LIBHEALCOMM = "Use Lib\nHealComm";

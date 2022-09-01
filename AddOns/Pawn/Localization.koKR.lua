@@ -1,9 +1,9 @@
 ﻿-- Pawn by Vger-Azjol-Nerub
 -- www.vgermods.com
--- © 2006-2021 Travis Spomer.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
+-- © 2006-2022 Travis Spomer.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
 -- See Readme.htm for more information.
 
--- 
+--
 -- Korean resources
 ------------------------------------------------------------
 
@@ -154,6 +154,7 @@ Pawn 사용자 설정의 더 자세한 정보는, 애드온에 포함된 help �
 		["SpellHitInfo"] = "Spell Hit.  Increases the chance that your damaging spells hit the target, especially bosses.",
 		--[[Translation missing --]]
 		["SpellPenetrationInfo"] = "Spell Penetration. Negates an enemy's resistances to your spells.",
+		["SpellPowerInfo"] = "",
 		["SpiritInfo"] = "Spirit.  Affects your out-of-combat mana regeneration.",
 		["StaminaInfo"] = "체력. 생명력을 증가시킵니다.",
 		["StrengthInfo"] = "힘. 몇몇 직업의 전투력을 증가시킵니다.",
@@ -415,6 +416,7 @@ Pawn 사용자 설정의 더 자세한 정보는, 애드온에 포함된 help �
 		["SpellDamage3"] = "^착용 효과: 모든 주문 및 효과의 공격력과 치유량이 최대 #만큼 증가합니다%.$",
 		["SpellDamage4"] = "^UNUSED$",
 		["SpellDamage5"] = "^주문 공격력 및 치유량 %+#$",
+		["SpellDamage6"] = "^UNUSED$",
 		["SpellDamageAndHealing"] = "^착용 효과: 모든 주문 및 효과에 의한 치유량이 최대 #만큼, 공격력이 최대 #만큼 증가합니다%.$",
 		["SpellDamageAndHealing2"] = "^UNUSED$",
 		["SpellDamageAndHealingEnchant"] = "^UNUSED$",
@@ -430,6 +432,7 @@ Pawn 사용자 설정의 더 자세한 정보는, 애드온에 포함된 help �
 		["SpellPenetrationClassic"] = "^착용 효과: 자신의 주문에 대한 대상의 마법 저항력을 #만큼 감소시킵니다%.$",
 		["SpellPenetrationShort"] = "^주문 관통력 %+#$",
 		["SpellPower"] = "^주문력 %+?#$",
+		["SpellPower2"] = "^착용 효과: 주문력이 #만큼 증가합니다%.$",
 		["Spirit"] = "^정신력 %+?#$",
 		["Staff"] = "^지팡이$",
 		["Stamina"] = "^체력 %+?#$",
@@ -697,7 +700,7 @@ Pawn이 상점에 판매했거나, 파괴했거나, 다른 방법으로 더이�
 
 -- Special case: wands actually use different text on live versus classic.
 -- So, patch things up here.
-if VgerCore.IsClassic or VgerCore.IsBurningCrusade then
+if VgerCore.IsClassic or VgerCore.IsBurningCrusade or VgerCore.IsWrath then
 
 	local TooltipParsing_Classic =
 	{

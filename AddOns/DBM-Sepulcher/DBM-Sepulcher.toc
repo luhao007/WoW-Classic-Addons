@@ -1,0 +1,44 @@
+## Interface: 30400
+## Author: MysticalOS
+## RequiredDeps: DBM-Core
+## LoadOnDemand: 1
+## SavedVariables: DBMSepulcher_AllSavedVars
+## SavedVariablesPerCharacter: DBMSepulcher_SavedStats
+
+## Title: |cffffe00a<|r|cffff7d0aDBM|r|cffffe00a>|r |cff69ccf0Sepulcher of the First Ones|r
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFF69CCF0初诞者圣墓|r
+
+## X-Min-Interface: 90200
+## X-DBM-Mod: 1
+## X-DBM-Mod-Type: RAID
+## X-DBM-Mod-Category: SHADOWLANDS
+## X-DBM-StatTypes: lfr,normal,heroic,mythic
+## X-DBM-Mod-Name: Sepulcher of the First Ones
+## X-DBM-Mod-Name-koKR: 태초의 존재의 매장터
+## X-DBM-Mod-Name-zhCN: 初诞者圣墓
+## X-DBM-Mod-Name-zhTW: 首創者聖塚
+## X-DBM-Mod-Name-ruRU: Гробница Предвечных
+## X-DBM-Mod-Sort: 306
+## X-DBM-Mod-MapID: 2481
+## X-DBM-Mod-MinCoreRevision: 17286
+## X-DBM-Mod-MinExpansion: 8
+## X-Part-Of: DBM-Core
+
+localization.en.lua
+localization.ru.lua
+localization.kr.lua
+localization.cn.lua
+localization.tw.lua
+
+VigilantGuardian.lua
+Skolex.lua
+ArtificerXymox.lua
+Dausegne.lua
+PrototypePantheon.lua
+Lihuvim.lua
+Halondrus.lua
+AnduinWrynn.lua
+LordsofDread.lua
+Rygelon.lua
+TheJailer.lua
+# SepulcherTrash.lua

@@ -1,9 +1,9 @@
 ﻿-- Pawn by Vger-Azjol-Nerub
 -- www.vgermods.com
--- © 2006-2021 Travis Spomer.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
+-- © 2006-2022 Travis Spomer.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
 -- See Readme.htm for more information.
 
--- 
+--
 -- Chinese (Traditional) resources
 ------------------------------------------------------------
 
@@ -155,6 +155,7 @@ PawnLocal =
 		["SpellHitInfo"] = "Spell Hit.  Increases the chance that your damaging spells hit the target, especially bosses.",
 		--[[Translation missing --]]
 		["SpellPenetrationInfo"] = "Spell Penetration. Negates an enemy's resistances to your spells.",
+		["SpellPowerInfo"] = "",
 		["SpiritInfo"] = "Spirit.  Affects your out-of-combat mana regeneration.",
 		["StaminaInfo"] = "主要屬性, 耐力.",
 		["StrengthInfo"] = "主要屬性, 力量.",
@@ -369,7 +370,6 @@ PawnLocal =
 		["Mp5"] = "^裝備： 每5秒恢復#點法力。$",
 		["Mp52"] = "^每5秒恢復#點法力。$",
 		["Mp53"] = "^UNUSED$",
-		["Mp54"] = "^UNUSED$",
 		["Mp54"] = "^裝備: 每5秒恢復#點法力。$",
 		["Mp55"] = "^UNUSED$",
 		["MultiStatHeading"] = "^多項統計$",
@@ -417,6 +417,7 @@ PawnLocal =
 		["SpellDamage3"] = "^裝備: 使所有法術和魔法效果所造成的傷害和治療效果提高最多#點。$",
 		["SpellDamage4"] = "^UNUSED$",
 		["SpellDamage5"] = "^%+#法術傷害和治療$",
+		["SpellDamage6"] = "^UNUSED$",
 		["SpellDamageAndHealing"] = "^果提高最多#點，法術傷害提高最多#點。$",
 		["SpellDamageAndHealing2"] = "^裝備: 使法術和魔法效果所造成的治療效果提高最多#點，法術傷害提高最多#點。$",
 		["SpellDamageAndHealingEnchant"] = "^%+#治療和%+#法術傷害",
@@ -432,6 +433,7 @@ PawnLocal =
 		["SpellPenetrationClassic"] = "^裝備： 使你法術目標的魔法抗性降低#點。$",
 		["SpellPenetrationShort"] = "^%+?#法術穿透力$",
 		["SpellPower"] = "^%+?#法術能量$",
+		["SpellPower2"] = "^裝備： 提高#點法術能量。$",
 		["Spirit"] = "^%+?#精神$",
 		["Staff"] = "^法杖$",
 		["Stamina"] = "^%+?#耐力$",
@@ -745,7 +747,7 @@ if VgerCore.IsClassic then
 	end
 end
 
-if VgerCore.IsBurningCrusade then
+if VgerCore.IsBurningCrusade or VgerCore.IsWrath then
 
 	local TooltipParsing_BurningCrusade =
 	{

@@ -1,4 +1,4 @@
-if not WeakAuras.IsCorrectVersion() then return end
+if not WeakAuras.IsLibsOK() then return end
 local AddonName, Private = ...
 local L = WeakAuras.L
 
@@ -1378,6 +1378,99 @@ function Private.Modernize(data)
     end
     if broken then
       WeakAuras.prettyPrint(L["Trying to repair broken conditions in %s likely caused by a WeakAuras bug."]:format(data.id))
+    end
+  end
+
+  if (data.internalVersion < 51) then
+    for triggerId, triggerData in ipairs(data.triggers) do
+      if triggerData.trigger.event == "Threat Situation" then
+        triggerData.trigger.unit = triggerData.trigger.threatUnit
+        triggerData.trigger.use_unit = triggerData.trigger.use_threatUnit
+        triggerData.trigger.threatUnit = nil
+        triggerData.trigger.use_threatUnit = nil
+      end
+    end
+  end
+
+  if (data.internalVersion < 52) then
+    local function matchTarget(input)
+      return input == "target" or input == "'target'" or input == "\"target\"" or input == "%t" or input == "'%t'" or input == "\"%t\""
+    end
+
+    if data.conditions then
+      for _, condition in ipairs(data.conditions) do
+        for changeIndex, change in ipairs(condition.changes) do
+          if change.property == "chat" and change.value then
+            if matchTarget(change.value.message_dest) then
+              change.value.message_dest = "target"
+              change.value.message_dest_isunit = true
+            end
+          end
+        end
+      end
+    end
+
+    if data.actions.start.do_message
+    and data.actions.start.message_type == "WHISPER"
+    and matchTarget(data.actions.start.message_dest)
+    then
+      data.actions.start.message_dest = "target"
+      data.actions.start.message_dest_isunit = true
+    end
+
+    if data.actions.finish.do_message
+    and data.actions.finish.message_type == "WHISPER"
+    and matchTarget(data.actions.finish.message_dest)
+    then
+      data.actions.finish.message_dest = "target"
+      data.actions.finish.message_dest_isunit = true
+    end
+  end
+
+  if data.internalVersion < 53 then
+    local function ReplaceIn(text, table, prefix)
+      local seenSymbols = {}
+      Private.ParseTextStr(text, function(symbol)
+        if not seenSymbols[symbol] then
+          if table[prefix .. symbol .. "_format"] == "timed"
+              and table[prefix .. symbol .. "_time_format"] == 0
+          then
+            table[prefix .. symbol .. "_time_legacy_floor"] = true
+          end
+        end
+        seenSymbols[symbol] = symbol
+      end)
+    end
+
+    if data.regionType == "text" then
+      ReplaceIn(data.displayText, data, "displayText_format_")
+    end
+
+    if data.subRegions then
+      for index, subRegionData in ipairs(data.subRegions) do
+        if subRegionData.type == "subtext" then
+          ReplaceIn(subRegionData.text_text, subRegionData, "text_text_format_")
+        end
+      end
+    end
+
+    if data.actions then
+      if data.actions.start then
+        ReplaceIn(data.actions.start.message, data.actions.start, "message_format_")
+      end
+      if data.actions.finish then
+        ReplaceIn(data.actions.finish.message, data.actions.finish, "message_format_")
+      end
+    end
+
+    if data.conditions then
+      for conditionIndex, condition in ipairs(data.conditions) do
+        for changeIndex, change in ipairs(condition.changes) do
+          if change.property == "chat" and change.value then
+            ReplaceIn(change.value.message, change.value, "message_format_")
+          end
+        end
+      end
     end
   end
 

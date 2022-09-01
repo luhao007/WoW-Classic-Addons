@@ -1,4 +1,4 @@
-## Interface: 20503
+## Interface: 30400
 ## Author: Boshi Lian(farmer1992@gmail.com)
 ## Version: v1.9.5-v2.5.2
 ## SavedVariablesPerCharacter: RaidLedgerDatabase

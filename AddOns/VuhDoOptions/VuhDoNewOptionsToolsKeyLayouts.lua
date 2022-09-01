@@ -171,6 +171,8 @@ function VUHDO_saveKeyLayoutCallback(aDecision)
 				["I1N"] = VUHDO_SPELL_CONFIG["FIRE_CUSTOM_1_SPELL"],
 				["I2N"] = VUHDO_SPELL_CONFIG["FIRE_CUSTOM_2_SPELL"],
 				["T3"] = VUHDO_SPELL_CONFIG["IS_FIRE_GLOVES"],
+				["I1U"] = VUHDO_SPELL_CONFIG["custom1Unit"],
+				["I2U"] = VUHDO_SPELL_CONFIG["custom2Unit"],
 			},
 			["HOTS"] = VUHDO_compressTable(VUHDO_PANEL_SETUP["HOTS"]),
 		};

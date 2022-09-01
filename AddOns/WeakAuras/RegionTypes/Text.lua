@@ -1,4 +1,4 @@
-if not WeakAuras.IsCorrectVersion() then return end
+if not WeakAuras.IsLibsOK() then return end
 local AddonName, Private = ...
 
 local SharedMedia = LibStub("LibSharedMedia-3.0");
@@ -54,7 +54,7 @@ local function GetProperties(data)
 end
 
 local function create(parent)
-  local region = CreateFrame("FRAME", nil, parent);
+  local region = CreateFrame("Frame", nil, parent);
   region.regionType = "text"
   region:SetMovable(true);
 
@@ -93,7 +93,7 @@ local function modify(parent, region, data)
   local tooltipType = Private.CanHaveTooltip(data);
   if(tooltipType and data.useTooltip) then
     if not region.tooltipFrame then
-      region.tooltipFrame = CreateFrame("frame", nil, region);
+      region.tooltipFrame = CreateFrame("Frame", nil, region);
       region.tooltipFrame:SetAllPoints(region);
       region.tooltipFrame:SetScript("OnEnter", function()
         Private.ShowMouseoverTooltip(region, region);
@@ -188,7 +188,7 @@ local function modify(parent, region, data)
 
   local customTextFunc = nil
   if(Private.ContainsCustomPlaceHolder(data.displayText) and data.customText) then
-    customTextFunc = WeakAuras.LoadFunction("return "..data.customText, region.id, "custom text")
+    customTextFunc = WeakAuras.LoadFunction("return "..data.customText)
   end
 
   local Update

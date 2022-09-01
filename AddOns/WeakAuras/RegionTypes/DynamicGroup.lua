@@ -1,7 +1,8 @@
-if not WeakAuras.IsCorrectVersion() then return end
+if not WeakAuras.IsLibsOK() then return end
 local AddonName, Private = ...
 
 local WeakAuras = WeakAuras
+local L = WeakAuras.L
 local SharedMedia = LibStub("LibSharedMedia-3.0")
 
 local default = {
@@ -79,7 +80,7 @@ local controlPointFunctions = {
 }
 
 local function createControlPoint(self)
-  local controlPoint = CreateFrame("FRAME", nil, self.parent)
+  local controlPoint = CreateFrame("Frame", nil, self.parent)
   Mixin(controlPoint, controlPointFunctions)
 
   controlPoint:SetWidth(16)
@@ -91,7 +92,7 @@ end
 
 local function releaseControlPoint(self, controlPoint)
   controlPoint:Hide()
-  controlPoint:ClearAnchorPoint()
+  controlPoint:SetAnchorPoint(self.parent.selfPoint)
   local regionData = controlPoint.regionData
   if regionData then
     if self.parent.anchorPerUnit == "UNITFRAME" then
@@ -103,14 +104,14 @@ local function releaseControlPoint(self, controlPoint)
 end
 
 local function create(parent)
-  local region = CreateFrame("FRAME", nil, parent)
+  local region = CreateFrame("Frame", nil, parent)
   region.regionType = "dynamicgroup"
   region:SetSize(16, 16)
   region:SetMovable(true)
   region.sortedChildren = {}
   region.controlledChildren = {}
   region.updatedChildren = {}
-  local background = CreateFrame("frame", nil, region, BackdropTemplateMixin and "BackdropTemplate")
+  local background = CreateFrame("Frame", nil, region, "BackdropTemplate")
   region.background = background
   region.selfPoint = "TOPLEFT"
   region.controlPoints = CreateObjectPool(createControlPoint, releaseControlPoint)
@@ -317,10 +318,10 @@ local sorters = {
   end,
   custom = function(data)
     local sortStr = data.customSort or ""
-    local sortFunc = WeakAuras.LoadFunction("return " .. sortStr, data.id, "custom sort") or noop
+    local sortFunc = WeakAuras.LoadFunction("return " .. sortStr) or noop
     return function(a, b)
       Private.ActivateAuraEnvironment(data.id)
-      local ok, result = xpcall(sortFunc, geterrorhandler(), a, b)
+      local ok, result = xpcall(sortFunc, Private.GetErrorHandlerId(data.id, L["Custom Sort"]), a, b)
       Private.ActivateAuraEnvironment()
       if ok then
         return result
@@ -396,10 +397,10 @@ local anchorers = {
   end,
   ["CUSTOM"] = function(data)
     local anchorStr = data.customAnchorPerUnit or ""
-    local anchorFunc = WeakAuras.LoadFunction("return " .. anchorStr, data.id, "custom frame anchor") or noop
+    local anchorFunc = WeakAuras.LoadFunction("return " .. anchorStr) or noop
     return function(frames, activeRegions)
       Private.ActivateAuraEnvironment(data.id)
-      xpcall(anchorFunc, geterrorhandler(), frames, activeRegions)
+      xpcall(anchorFunc, Private.GetErrorHandlerUid(data.uid, L["Custom Anchor"]), frames, activeRegions)
       Private.ActivateAuraEnvironment()
     end
   end
@@ -758,10 +759,10 @@ local growers = {
   end,
   CUSTOM = function(data)
     local growStr = data.customGrow or ""
-    local growFunc = WeakAuras.LoadFunction("return " .. growStr, data.id, "custom grow") or noop
+    local growFunc = WeakAuras.LoadFunction("return " .. growStr) or noop
     return function(newPositions, activeRegions)
       Private.ActivateAuraEnvironment(data.id)
-      local ok = xpcall(growFunc, geterrorhandler(), newPositions, activeRegions)
+      local ok = xpcall(growFunc, Private.GetErrorHandlerId(data.id, L["Custom Sort"]), newPositions, activeRegions)
       Private.ActivateAuraEnvironment()
       if not ok then
         wipe(newPositions)
@@ -881,6 +882,7 @@ local function modify(parent, region, data)
     else
       childRegion:SetFrameStrata(Private.frame_strata_types[childData.frameStrata]);
     end
+    Private.ApplyFrameLevel(childRegion)
     return regionData
   end
 
@@ -1083,6 +1085,11 @@ local function modify(parent, region, data)
       controlPoint:SetShown(show and frame ~= WeakAuras.HiddenFrames)
       controlPoint:SetWidth(regionData.dimensions.width)
       controlPoint:SetHeight(regionData.dimensions.height)
+      if data.anchorFrameParent then
+        controlPoint:SetParent(frame == "" and self.relativeTo or frame)
+      else
+        controlPoint:SetParent(self)
+      end
       if self.anchorPerUnit == "UNITFRAME" then
         Private.dyngroup_unitframe_monitor[regionData] = frame
       end

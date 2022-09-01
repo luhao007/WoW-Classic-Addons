@@ -1,9 +1,9 @@
 ﻿-- Pawn by Vger-Azjol-Nerub
 -- www.vgermods.com
--- © 2006-2021 Travis Spomer.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
+-- © 2006-2022 Travis Spomer.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
 -- See Readme.htm for more information.
 
--- 
+--
 -- Brazilian Portuguese resources
 ------------------------------------------------------------
 
@@ -154,6 +154,7 @@ Para mais informações sobre personalizar o Pawn, favor veja o arquivo de ajuda
 		["SpellHitInfo"] = "Spell Hit.  Increases the chance that your damaging spells hit the target, especially bosses.",
 		--[[Translation missing --]]
 		["SpellPenetrationInfo"] = "Spell Penetration. Negates an enemy's resistances to your spells.",
+		["SpellPowerInfo"] = "",
 		["SpiritInfo"] = "Spirit.  Affects your out-of-combat mana regeneration.",
 		["StaminaInfo"] = "Vigor. Aumenta sua vida.",
 		["StrengthInfo"] = "Força. Aumenta o poder das habilidades de algumas classes.",
@@ -414,6 +415,7 @@ Para mais informações sobre personalizar o Pawn, favor veja o arquivo de ajuda
 		["SpellDamage3"] = "^UNUSED$",
 		["SpellDamage4"] = "^UNUSED$",
 		["SpellDamage5"] = "^%+# Dano Mágico e Cura$",
+		["SpellDamage6"] = "^UNUSED$",
 		["SpellDamageAndHealing"] = "^Equipado: Aumenta em # a cura realizada e em até # o dano causado por todos os feitiços e efeitos mágicos%.$",
 		["SpellDamageAndHealing2"] = "^UNUSED$",
 		["SpellDamageAndHealingEnchant"] = "^%+# Cura e %+# Dano Mágico$",
@@ -429,6 +431,7 @@ Para mais informações sobre personalizar o Pawn, favor veja o arquivo de ajuda
 		["SpellPenetrationClassic"] = "^Equipado: Reduz em # as resistências mágicas dos alvos dos seus feitiços%.$",
 		["SpellPenetrationShort"] = "^%+?# Penetração de Feitiço$",
 		["SpellPower"] = "^%+?# d?e? ?Poder [mM]ágico$",
+		["SpellPower2"] = "^Equipado: Aumenta em # o poder mágico.$",
 		["Spirit"] = "^%+?# d?e? ?Espírito$",
 		["Staff"] = "^Cajado$",
 		["Stamina"] = "^%+?# d?e? ?Vigor$",
@@ -763,7 +766,7 @@ PawnLocal.Specs =
 
 -- Special case: wands actually use different text on live versus classic.
 -- So, patch things up here.
-if VgerCore.IsClassic or VgerCore.IsBurningCrusade then
+if VgerCore.IsClassic or VgerCore.IsBurningCrusade or VgerCore.IsWrath then
 
 	local TooltipParsing_Classic =
 	{

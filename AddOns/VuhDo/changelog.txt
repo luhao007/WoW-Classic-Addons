@@ -1,3 +1,277 @@
+Version 3.137-wotlkc  
+  
+  
+Known issues:  
+-- Spells by rank can be specified using a rank suffix:  
+--  Example: Lesser Heal(Rank 1)  
+-- Debuff tooltips are currently bugged when using ElvUI  
+--   Deselect 'VuhDo Options > Panels > Tooltips > Tooltips > Debuffs'  
+-- Shield bar is not working due to unavailable Blizzard APIs  
+-- Spell trace only works for known spells in the player's spellbook  
+-- Group roster changes will not be reflected during combat  
+--   Swapping a player between groups during combat will cause  
+--   unpredictable, negative results.  Be warned!  
+-- Built-in Blizzard APIs for incoming healing only partially working  
+--   If other healers are using LibHealComm enable it under:  
+--   'VuhDo Options > General > Threat / Incoming > Incoming Heal > Use LibHealComm'  
+  
+  
+Bugfixes:  
+  
+  
+Improvements:  
+-- Added shield workaround for Priest 'Power Word: Shield' glyph  
+-- Bump TOC interface for 3.4.0  
+  
+  
+--------------------------------------------------------------  
+Version 3.137  
+  
+  
+Known issues:  
+-- Shadowlands stat squish cleanup still a work in progress  
+--   AOE Advice spell equations need complete overhaul  
+--   Some text providers need changes to better display small numbers  
+-- Debuff tooltips are currently bugged when using ElvUI  
+--   Deselect 'VuhDo Options > Panels > Tooltips > Tooltips > Debuffs'  
+  
+  
+Bugfixes:  
+  
+  
+Improvements:  
+-- Bump TOC interface for 9.2.7  
+  
+  
+--------------------------------------------------------------  
+Version 3.136-tbcc  
+  
+  
+Known issues:  
+-- Spells by rank can be specified using a rank suffix:  
+--  Example: Lesser Heal(Rank 1)  
+-- Debuff tooltips are currently bugged when using ElvUI  
+--   Deselect 'VuhDo Options > Panels > Tooltips > Tooltips > Debuffs'  
+-- Shield bar is not working due to unavailable Blizzard APIs  
+-- Spell trace only works for known spells in the player's spellbook  
+-- Group roster changes will not be reflected during combat  
+--   Swapping a player between groups during combat will cause  
+--   unpredictable, negative results.  Be warned!  
+-- Built-in Blizzard APIs for incoming healing only partially working  
+--   If other healers are using LibHealComm enable it under:  
+--   'VuhDo Options > General > Threat / Incoming > Incoming Heal > Use LibHealComm'  
+  
+  
+Bugfixes:  
+  
+  
+Improvements:  
+  
+  
+-------------------------------------------------------------  
+Version 3.136  
+  
+  
+Known issues:  
+-- Shadowlands stat squish cleanup still a work in progress  
+--   AOE Advice spell equations need complete overhaul  
+--   Some text providers need changes to better display small numbers  
+-- Debuff tooltips are currently bugged when using ElvUI  
+--   Deselect 'VuhDo Options > Panels > Tooltips > Tooltips > Debuffs'  
+  
+  
+Bugfixes:  
+  
+  
+Improvements:  
+-- Bump TOC interface for 9.2.5  
+  
+  
+--------------------------------------------------------------  
+Version 3.135-tbcc  
+  
+  
+Known issues:  
+-- Spells by rank can be specified using a rank suffix:  
+--  Example: Lesser Heal(Rank 1)  
+-- Debuff tooltips are currently bugged when using ElvUI  
+--   Deselect 'VuhDo Options > Panels > Tooltips > Tooltips > Debuffs'  
+-- Shield bar is not working due to unavailable Blizzard APIs  
+-- Spell trace only works for known spells in the player's spellbook  
+-- Group roster changes will not be reflected during combat  
+--   Swapping a player between groups during combat will cause  
+--   unpredictable, negative results.  Be warned!  
+-- Built-in Blizzard APIs for incoming healing only partially working  
+--   If other healers are using LibHealComm enable it under:  
+--   'VuhDo Options > General > Threat / Incoming > Incoming Heal > Use LibHealComm'  
+  
+  
+Bugfixes:  
+  
+  
+Improvements:  
+-- Added default custom debuffs for phase 4 encounters  
+-- Added default custom debuffs for phase 5 encounters  
+  
+  
+-------------------------------------------------------------  
+Version 3.135  
+  
+  
+Known issues:  
+-- Shadowlands stat squish cleanup still a work in progress  
+--   AOE Advice spell equations need complete overhaul  
+--   Some text providers need changes to better display small numbers  
+-- Debuff tooltips are currently bugged when using ElvUI  
+--   Deselect 'VuhDo Options > Panels > Tooltips > Tooltips > Debuffs'  
+  
+  
+Bugfixes:  
+  
+  
+Improvements:  
+-- Added background flash or fade out per HoT icon  
+-- Added unit macro conditional options for auto-trigger custom spells  
+-- Added trinket slots ('13' and '14') as valid actions  
+-- Updated string localizations for Russian (ruRU)  
+  
+  
+-------------------------------------------------------------  
+Version 3.134-tbcc  
+  
+  
+Known issues:  
+-- Spells by rank can be specified using a rank suffix:  
+--  Example: Lesser Heal(Rank 1)  
+-- Debuff tooltips are currently bugged when using ElvUI  
+--   Deselect 'VuhDo Options > Panels > Tooltips > Tooltips > Debuffs'  
+-- Shield bar is not working due to unavailable Blizzard APIs  
+-- Spell trace only works for known spells in the player's spellbook  
+-- Group roster changes will not be reflected during combat  
+--   Swapping a player between groups during combat will cause  
+--   unpredictable, negative results.  Be warned!  
+-- Built-in Blizzard APIs for incoming healing only partially working  
+--   If other healers are using LibHealComm enable it under:  
+--   'VuhDo Options > General > Threat / Incoming > Incoming Heal > Use LibHealComm'  
+  
+  
+Bugfixes:  
+  
+  
+Improvements:  
+-- Bump TOC interface for 2.5.4  
+  
+  
+-------------------------------------------------------------  
+Version 3.134  
+  
+  
+Known issues:  
+-- Shadowlands stat squish cleanup still a work in progress  
+--   AOE Advice spell equations need complete overhaul  
+--   Some text providers need changes to better display small numbers  
+-- Debuff tooltips are currently bugged when using ElvUI  
+--   Deselect 'VuhDo Options > Panels > Tooltips > Tooltips > Debuffs'  
+  
+  
+Bugfixes:  
+  
+  
+Improvements:  
+  
+  
+-------------------------------------------------------------  
+Version 3.133-tbcc  
+  
+  
+Known issues:  
+-- Spells by rank can be specified using a rank suffix:  
+--  Example: Lesser Heal(Rank 1)  
+-- Debuff tooltips are currently bugged when using ElvUI  
+--   Deselect 'VuhDo Options > Panels > Tooltips > Tooltips > Debuffs'  
+-- Shield bar is not working due to unavailable Blizzard APIs  
+-- Spell trace only works for known spells in the player's spellbook  
+-- Group roster changes will not be reflected during combat  
+--   Swapping a player between groups during combat will cause  
+--   unpredictable, negative results.  Be warned!  
+-- Built-in Blizzard APIs for incoming healing only partially working  
+--   If other healers are using LibHealComm enable it under:  
+--   'VuhDo Options > General > Threat / Incoming > Incoming Heal > Use LibHealComm'  
+  
+  
+Bugfixes:  
+  
+  
+Improvements:  
+  
+  
+-------------------------------------------------------------  
+Version 3.133  
+  
+  
+Known issues:  
+-- Shadowlands stat squish cleanup still a work in progress  
+--   AOE Advice spell equations need complete overhaul  
+--   Some text providers need changes to better display small numbers  
+-- Debuff tooltips are currently bugged when using ElvUI  
+--   Deselect 'VuhDo Options > Panels > Tooltips > Tooltips > Debuffs'  
+  
+  
+Bugfixes:  
+-- Fixed hiding of standard Blizzard UI frames (e.g. party, raid)  
+  
+  
+Improvements:  
+-- Increased maximum number of NPC units from 5 to 8  
+-- Added default custom debuffs for Sepulcher raid encounters  
+  
+  
+--------------------------------------------------------------  
+Version 3.132-tbcc  
+  
+  
+Known issues:  
+-- Spells by rank can be specified using a rank suffix:  
+--  Example: Lesser Heal(Rank 1)  
+-- Debuff tooltips are currently bugged when using ElvUI  
+--   Deselect 'VuhDo Options > Panels > Tooltips > Tooltips > Debuffs'  
+-- Shield bar is not working due to unavailable Blizzard APIs  
+-- Spell trace only works for known spells in the player's spellbook  
+-- Group roster changes will not be reflected during combat  
+--   Swapping a player between groups during combat will cause  
+--   unpredictable, negative results.  Be warned!  
+-- Built-in Blizzard APIs for incoming healing only partially working  
+--   If other healers are using LibHealComm enable it under:  
+--   'VuhDo Options > General > Threat / Incoming > Incoming Heal > Use LibHealComm'  
+  
+  
+Bugfixes:  
+  
+  
+Improvements:  
+  
+  
+-------------------------------------------------------------  
+Version 3.132  
+  
+  
+Known issues:  
+-- Shadowlands stat squish cleanup still a work in progress  
+--   AOE Advice spell equations need complete overhaul  
+--   Some text providers need changes to better display small numbers  
+-- Debuff tooltips are currently bugged when using ElvUI  
+--   Deselect 'VuhDo Options > Panels > Tooltips > Tooltips > Debuffs'  
+  
+  
+Bugfixes:  
+  
+  
+Improvements:  
+-- Bump TOC interface for 9.2.0  
+-- Added class color option for incoming heal/shield/etc. bars  
+  
+  
+--------------------------------------------------------------  
 Version 3.131-tbcc  
   
   

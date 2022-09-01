@@ -37,15 +37,15 @@ Prat:AddModuleToLoad(function()
   end
 
   local dbg = function() end
-  --[===[@debug@
+  --[==[@debug@
 --  dbg = function(...) Prat:PrintLiteral(...) end
-  --@end-debug@]===]
+  --@end-debug@]==]
 
   local module = Prat:NewModule(PRAT_MODULE, "AceEvent-3.0")
 
   local PL = module.PL
 
-  --[===[@debug@
+  --[==[@debug@
   PL:AddLocale(PRAT_MODULE, "enUS", {
     ["Filtering"] = true,
     ["A module to provide basic chat filtering."] = true,
@@ -64,7 +64,7 @@ Prat:AddModuleToLoad(function()
     ["training_desc"] = "Show the AI training UI",
     ["training_name"] = "AI Training",
   })
-  --@end-debug@]===]
+  --@end-debug@]==]
 
   -- These Localizations are auto-generated. To help with localization
   -- please go to http://www.wowace.com/projects/prat-3-0/localization/

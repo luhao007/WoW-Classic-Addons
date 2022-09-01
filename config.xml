@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<AddonConfig xmlns="https://www.github.com/luhao007"
-			 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-			 xsi:schemaLocation="https://www.github.com/luhao007 addon.xsd">
+<my:AddonConfig xmlns:my="https://www.github.com/luhao007"
+			    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			    xsi:schemaLocation="https://www.github.com/luhao007 addon.xsd">
 	<Addon name="!!Libs">
 		<Title>|cFF7FFF7FAce核心库|r |cFFFF0000必须加载|r</Title>
 		<Category>基础库</Category>
@@ -129,6 +129,10 @@
 			<SubAddon name="AtlasLoot_Classic">
 				<Title>经典旧世</Title>
 				<Notes>AtlasLoot 经典旧世副本掉落列表</Notes>
+			</SubAddon>
+			<SubAddon name="AtlasLoot_Classes">
+				<Title>职业</Title>
+				<Notes>AtlasLoot 职业技能插件</Notes>
 			</SubAddon>
 			<SubAddon name="AtlasLoot_Collections">
 				<Title>套装</Title>
@@ -620,6 +624,9 @@
 				<Title>声音特效</Title>
 				<Notes>为DBM添加声音特效（如战斗胜利等）</Notes>
 			</SubAddon>
+			<SubAddon name="DBM-Sepulcher">
+				<Title>初诞者圣墓</Title>
+			</SubAddon>
 			<SubAddon name="DBM-StatusBarTimers">
 				<Title>状态条计时器</Title>
 			</SubAddon>
@@ -659,6 +666,9 @@
 			</SubAddon>
 			<SubAddon name="DBM-VPYike">
 				<Title>夏一可语音包</Title>
+			</SubAddon>
+			<SubAddon name="DBM-VPVEM">
+				<Title>VEM语音包</Title>
 			</SubAddon>
 			<SubAddon name="DBM-WorldEvents">
 				<Title>世界事件</Title>
@@ -953,6 +963,9 @@
 			<SubAddon name="HandyNotes_TravelGuide (BCC)">
 				<Title>旅行指南</Title>
 			</SubAddon>
+			<SubAddon name="HandyNotes_TravelGuide">
+				<Title>旅行指南</Title>
+			</SubAddon>
 			<SubAddon name="HandyNotes_WarfrontRares">
 				<Title>稀有</Title>
 				<TitleExtra>战争前线</TitleExtra>
@@ -1102,8 +1115,8 @@
 	</Addon>
 	<Addon name="NovaWorldBuffs">
 		<Title>世界增益</Title>
-		<Category>辅助</Category>
 		<Notes>与其他玩家共享世界BUFF刷新时间</Notes>
+		<Category>辅助</Category>
 	</Addon>
 	<Addon name="NPCScan">
 		<Title>NPC扫描</Title>
@@ -1565,6 +1578,10 @@
 			</SubAddon>
 		</SubAddons>
 	</Addon>
+	<Addon name="VenturePlan">
+		<Title>冒险助手</Title>
+		<Category>任务</Category>
+	</Addon>
 	<Addon name="VuhDo">
 		<Title>团队面板</Title>
 		<Notes>强大的团队面板，可实现鼠标点击治疗、上BUFF等一系列操作</Notes>
@@ -1574,6 +1591,10 @@
 				<Title>设置</Title>
 			</SubAddon>
 		</SubAddons>
+	</Addon>
+	<Addon name="WarPlan">
+		<Title>阵营战役助手</Title>
+		<Category>任务</Category>
 	</Addon>
 	<Addon name="WeakAuras">
 		<Title>辅助增强</Title>
@@ -1618,4 +1639,4 @@
 		<Title>世界任务追踪</Title>
 		<Category>任务</Category>
 	</Addon>
-</AddonConfig>
+</my:AddonConfig>

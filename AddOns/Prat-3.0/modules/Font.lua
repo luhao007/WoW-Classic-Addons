@@ -40,7 +40,7 @@ Prat:AddModuleToLoad(function()
 
   local PL = module.PL
 
-  --[===[@debug@
+  --[==[@debug@
   PL:AddLocale(PRAT_MODULE, "enUS", {
     ["Font"] = true,
     ["Chat window font options."] = true,
@@ -66,7 +66,7 @@ Prat:AddModuleToLoad(function()
     ["shadowcolor_name"] = "Set Shadow Color",
     ["shadowcolor_desc"] = "Set the color of the shadow effect.",
   })
-  --@end-debug@]===]
+  --@end-debug@]==]
 
   -- These Localizations are auto-generated. To help with localization
   -- please go to http://www.wowace.com/projects/prat-3-0/localization/

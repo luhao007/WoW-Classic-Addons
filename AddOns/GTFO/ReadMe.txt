@@ -1692,3 +1692,10 @@ Change Log:
 
 4.65.2
 * Fixed BC spells for Serpentshrine Cavern
+
+4.65.3
+* Updated ToCs to latest for Vanilla & BC
+* Fixed BC spells for Serpentshrine Cavern
+* Added Shadowlands spells (world)
+* Added SL spells for Sepulcher of the First Ones
+* Added BC spells for Black Temple

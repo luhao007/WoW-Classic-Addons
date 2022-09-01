@@ -1,10 +1,10 @@
--- $Id: Atlas_Transportation-ptBR.lua 125 2021-05-22 14:07:10Z arithmandar $
+-- $Id: Atlas_Transportation-ptBR.lua 131 2022-02-02 17:23:30Z arithmandar $
 --[[
 
 	Atlas, a World of Warcraft instance map browser
 	Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert@gmail.com>
 	Copyright 2010 - Lothaer <lothayer@gmail.com>, Atlas Team
-	Copyright 2011 ~ 2021 - Arith Hsu, Atlas Team <atlas.addon at gmail.com>
+	Copyright 2011 ~ 2022 - Arith Hsu, Atlas Team <atlas.addon at gmail.com>
 
 	This file is part of Atlas.
 
@@ -38,6 +38,8 @@ L["Blue"] = "Azul"
 --[[ L["Boat to Stormwind City"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["Camp Taurajo"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["Change will take effect after next login; or type '/reload' command to reload addon"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["Class Order Halls"] = ""--]] 
 --[[Translation missing --]]
@@ -94,9 +96,13 @@ L["Require to complete \"Meet the Scout\" quest line first."] = "Exigido para co
 L["Requires honored faction with Sha'tari Skyguard"] = "Requer honrado com a facção Guarda Aérea Sha'tari"
 --[[Translation missing --]]
 --[[ L["Requires Teleportation Nexus Advancement"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["Return to Zuldazar"] = ""--]] 
 L["Seahorse"] = "Cavalo-Marinho"
 L["Shado-Pan Rope"] = "Corda Shado-Pan"
 L["Ship / Zeppelin sailing path to destination"] = "Caminho do Navio / Zeppelin para o destino"
+--[[Translation missing --]]
+--[[ L["Show %s's transportation maps"] = ""--]] 
 L["South of the path along Lake Elune'ara"] = "Caminho sul ao longo do lago Elune'ara"
 L["Special transportation"] = "Transporte especial"
 L["Talua <Eagle Keeper>"] = "Talua <Tratadora de Águias>"

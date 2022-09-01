@@ -1,4 +1,4 @@
-## Interface: 20503
+## Interface: 30400
 ## Author: Thandrenn
 ## Version: 4.12.83
 ## RequiredDeps: Atlas, Atlas_ClassicWoW, Atlas_BurningCrusade

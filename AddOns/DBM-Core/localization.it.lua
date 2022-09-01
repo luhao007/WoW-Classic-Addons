@@ -286,7 +286,7 @@ L.AUTO_ANNOUNCE_TEXTS.spell			= "%s"
 L.AUTO_ANNOUNCE_TEXTS.ends 			= "%s terminato"
 L.AUTO_ANNOUNCE_TEXTS.endtarget		= "%s terminato: >%%s<"
 L.AUTO_ANNOUNCE_TEXTS.fades			= "%s svanito"
-L.AUTO_ANNOUNCE_TEXTS.adds			= "%s rimanenti: %%d"
+L.AUTO_ANNOUNCE_TEXTS.addsleft		= "%s rimanenti: %%d"
 L.AUTO_ANNOUNCE_TEXTS.cast			= "Castando %s: %.1f s"
 L.AUTO_ANNOUNCE_TEXTS.soon			= "%s a breve"
 L.AUTO_ANNOUNCE_TEXTS.sooncount		= "%s (%%s) a breve"
@@ -309,7 +309,7 @@ L.AUTO_ANNOUNCE_OPTIONS.spell		= "Mostra avvisi per $spell:%s"
 L.AUTO_ANNOUNCE_OPTIONS.ends			= "Mostra avviso al termine di $spell:%s"
 L.AUTO_ANNOUNCE_OPTIONS.endtarget	= "Mostra avviso al termine di $spell:%s"
 L.AUTO_ANNOUNCE_OPTIONS.fades		= "Mostra avviso allo svanire di $spell:%s"
-L.AUTO_ANNOUNCE_OPTIONS.adds			= "Annuncia la quantità di $spell:%s rimanenti"
+L.AUTO_ANNOUNCE_OPTIONS.addsleft		= "Annuncia la quantità di $spell:%s rimanenti"
 L.AUTO_ANNOUNCE_OPTIONS.cast			= "Mostra avviso al cast di $spell:%s"
 L.AUTO_ANNOUNCE_OPTIONS.soon			= prewarnOption
 L.AUTO_ANNOUNCE_OPTIONS.sooncount	= prewarnOption
@@ -462,8 +462,8 @@ L.AUTO_TIMER_OPTIONS.roleplay	= "Mostra temporizzatore durata gioco di ruolo"
 -- L.AUTO_TIMER_OPTIONS - FINE
 
 
-L.AUTO_ICONS_OPTION_TEXT			= "Imposta icone sui bersagli di $spell:%s"
-L.AUTO_ICONS_OPTION_TEXT2		= "Imposta icone su $spell:%s"
+L.AUTO_ICONS_OPTION_TARGETS			= "Imposta icone sui bersagli di $spell:%s"
+L.AUTO_ICONS_OPTION_NPCS		= "Imposta icone su $spell:%s"
 L.AUTO_ARROW_OPTION_TEXT			= "Mostra la Freccia DBM per muoversi verso i bersagli affetti da $spell:%s"
 L.AUTO_ARROW_OPTION_TEXT2		= "Mostra la Freccia DBM per scansarsi dai bersagli affetti da $spell:%s"
 L.AUTO_ARROW_OPTION_TEXT3		= "Mostra la Freccia DBM per muoversi verso località specifiche per $spell:%s"

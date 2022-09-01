@@ -79,7 +79,7 @@ end
 
 function QuestieMap:UnloadQuestFrames(questId, iconType)
     if QuestieMap.questIdFrames[questId] then
-        if iconType == nil then
+        if not iconType then
             for _, frame in pairs(QuestieMap:GetFramesForQuest(questId)) do
                 frame:Unload();
             end
@@ -93,7 +93,7 @@ function QuestieMap:UnloadQuestFrames(questId, iconType)
                 end
             end
         end
-        Questie:Debug(Questie.DEBUG_DEVELOP, "[QuestieMap]: Unloading quest frames: %s", questId)
+        Questie:Debug(Questie.DEBUG_DEVELOP, "[QuestieMap] Unloading quest frames for questid:", questId)
     end
 end
 
@@ -163,7 +163,11 @@ function QuestieMap:InitializeQueue() -- now called on every loading screen
             -- ! Remember to update the distance variable in ProcessShownMinimapIcons if you change the timer
             QuestieMap.fadeLogicTimerShown = C_Timer.NewTicker(0.1, function ()
                 if fadeLogicCoroutine and coroutine.status(fadeLogicCoroutine) == "suspended" then
-                    coroutine.resume(fadeLogicCoroutine)
+                    local success, errorMsg = coroutine.resume(fadeLogicCoroutine)
+                    if (not success) then
+                        Questie:Error("Please report on Github or Discord. Minimap pins fade logic coroutine stopped:", errorMsg)
+                        fadeLogicCoroutine = nil
+                    end
                 end
             end)
         end
@@ -252,6 +256,13 @@ function QuestieMap:ProcessShownMinimapIcons()
             --Never run more than maxCount in a single run
             if count > maxCount then
                 cYield()
+                if (not HBDPins.activeMinimapPins[minimapFrame]) then
+                    -- table has been edited during traversal at critical key. we can't continue iterating over it. stop iteration and start again.
+                    Questie:Debug(Questie.DEBUG_DEVELOP, "[QuestieMap:ProcessShownMinimapIcons] FadeLogic loop coroutine: HBDPins.activeMinimapPins doesn't have the key anymore.")
+                    -- force reupdate imeadiately
+                    totalDistance = 9000
+                    break
+                end
                 count = 0
             else
                 count = count + 1
@@ -308,12 +319,12 @@ end
 ---@param npcID number @The ID of the NPC
 function QuestieMap:ShowNPC(npcID, icon, scale, title, body, disableShiftToRemove, typ, excludeDungeon)
     if type(npcID) ~= "number" then
-        Questie:Debug(Questie.DEBUG_DEVELOP, "[QuestieMap:ShowNPC]", "Got <" .. type(npcID) .. "> instead of <number>")
+        Questie:Debug(Questie.DEBUG_CRITICAL, "[QuestieMap:ShowNPC] Got <" .. type(npcID) .. "> instead of <number>")
         return
     end
     -- get the NPC data
     local npc = QuestieDB:GetNPC(npcID)
-    if npc == nil or npc.spawns == nil then return end
+    if (not npc) or (not npc.spawns) then return end
 
     -- create the icon data
     local data = {}
@@ -369,7 +380,7 @@ function QuestieMap:ShowObject(objectID, icon, scale, title, body, disableShiftT
     if type(objectID) ~= "number" then return end
     -- get the gameobject data
     local object = QuestieDB:GetObject(objectID)
-    if object == nil then return end
+    if not object then return end
 
     -- create the icon data
     local data = {}
@@ -446,7 +457,7 @@ function QuestieMap:DrawManualIcon(data, areaID, x, y, typ)
 
     local uiMapId = ZoneDB:GetUiMapIdByAreaId(areaID)
     if (not uiMapId) then
-        Questie:Debug(Questie.DEBUG_CRITICAL, "No UiMapID for areaId :".. areaID .. " " .. tostring(data.Name))
+        Questie:Debug(Questie.DEBUG_CRITICAL, "[QuestieMap:DrawManualIcon] No UiMapID for areaId:", areaID, tostring(data.Name))
         return nil, nil
     end
     -- set the icon
@@ -454,10 +465,10 @@ function QuestieMap:DrawManualIcon(data, areaID, x, y, typ)
     -- Save new zone ID format, used in QuestieFramePool
     -- create a list for all frames belonging to a NPC (id > 0) or an object (id < 0)
     typ = typ or "any"
-    if(QuestieMap.manualFrames[typ] == nil) then
+    if not QuestieMap.manualFrames[typ] then
         QuestieMap.manualFrames[typ] = {}
     end
-    if(QuestieMap.manualFrames[typ][data.id] == nil) then
+    if not QuestieMap.manualFrames[typ][data.id] then
         QuestieMap.manualFrames[typ][data.id] = {}
     end
 
@@ -556,7 +567,7 @@ function QuestieMap:DrawWorldIcon(data, areaID, x, y, showFlag)
     end
 
     --print("UIMAPID: " .. tostring(uiMapId))
-    if uiMapId == nil then
+    if not uiMapId then
         --ZoneDB:GetUiMapIdByAreaId
         error("No UiMapID or fitting uiMapId for areaId : ".. areaID .. " - ".. tostring(data.Name))
         return nil, nil
@@ -652,7 +663,7 @@ function QuestieMap:DrawWorldIcon(data, areaID, x, y, showFlag)
     local r, g, b = iconMinimap.texture:GetVertexColor()
     QuestieDBMIntegration:RegisterHudQuestIcon(tostring(iconMap), data.Icon, uiMapId, x, y, r, g, b)
 
-    if(QuestieMap.questIdFrames[data.Id] == nil) then
+    if not QuestieMap.questIdFrames[data.Id] then
         QuestieMap.questIdFrames[data.Id] = {}
     end
 
@@ -801,7 +812,7 @@ function QuestieMap:FindClosestStarter()
 end
 
 function QuestieMap:GetNearestSpawn(objective)
-    if objective == nil then
+    if not objective then
         return nil
     end
     local playerX, playerY, playerI = HBD:GetPlayerWorldPosition()
@@ -834,8 +845,9 @@ function QuestieMap:GetNearestSpawn(objective)
     return bestSpawn, bestSpawnZone, bestSpawnName, bestSpawnId, bestSpawnType, bestDistance
 end
 
+---@param quest Quest
 function QuestieMap:GetNearestQuestSpawn(quest)
-    if quest == nil then
+    if not quest then
         return nil
     end
     if quest:IsComplete() == 1 then
@@ -844,10 +856,10 @@ function QuestieMap:GetNearestQuestSpawn(quest)
         if quest.Finisher ~= nil then
             if quest.Finisher.Type == "monster" then
                 --finisher = QuestieDB:GetNPC(quest.Finisher.Id)
-                finisherSpawns, finisherName = unpack(QuestieDB.QueryNPC(quest.Finisher.Id, "spawns", "name"))
+                finisherSpawns, finisherName = QuestieDB.QueryNPCSingle(quest.Finisher.Id, "spawns"), QuestieDB.QueryNPCSingle(quest.Finisher.Id, "name")
             elseif quest.Finisher.Type == "object" then
                 --finisher = QuestieDB:GetObject(quest.Finisher.Id)
-                finisherSpawns, finisherName = unpack(QuestieDB.QueryObject(quest.Finisher.Id, "spawns", "name"))
+                finisherSpawns, finisherName = QuestieDB.QueryObjectSingle(quest.Finisher.Id, "spawns"), QuestieDB.QueryObjectSingle(quest.Finisher.Id, "name")
             end
         end
         if finisherSpawns then -- redundant code
@@ -877,32 +889,31 @@ function QuestieMap:GetNearestQuestSpawn(quest)
         end
         return nil
     end
+
     local bestDistance = 999999999
     local bestSpawn, bestSpawnZone, bestSpawnId, bestSpawnType, bestSpawnName
-    if quest.Objectives then -- to prevent error if nil
-        for _, objective in pairs(quest.Objectives) do
-            local spawn, zone, Name, id, Type, dist = QuestieMap:GetNearestSpawn(objective)
-            if spawn and dist < bestDistance and ((not objective.Needed) or objective.Needed ~= objective.Collected) then
-                bestDistance = dist
-                bestSpawn = spawn
-                bestSpawnZone = zone
-                bestSpawnId = id
-                bestSpawnType = Type
-                bestSpawnName = Name
-            end
+
+    for _, objective in pairs(quest.Objectives) do
+        local spawn, zone, Name, id, Type, dist = QuestieMap:GetNearestSpawn(objective)
+        if spawn and dist < bestDistance and ((not objective.Needed) or objective.Needed ~= objective.Collected) then
+            bestDistance = dist
+            bestSpawn = spawn
+            bestSpawnZone = zone
+            bestSpawnId = id
+            bestSpawnType = Type
+            bestSpawnName = Name
         end
-    end -- end of nil error prevention
-    if next(quest.SpecialObjectives) then
-        for _, objective in pairs(quest.SpecialObjectives) do
-            local spawn, zone, Name, id, Type, dist = QuestieMap:GetNearestSpawn(objective)
-            if spawn and dist < bestDistance and ((not objective.Needed) or objective.Needed ~= objective.Collected) then
-                bestDistance = dist
-                bestSpawn = spawn
-                bestSpawnZone = zone
-                bestSpawnId = id
-                bestSpawnType = Type
-                bestSpawnName = Name
-            end
+    end
+
+    for _, objective in pairs(quest.SpecialObjectives) do
+        local spawn, zone, Name, id, Type, dist = QuestieMap:GetNearestSpawn(objective)
+        if spawn and dist < bestDistance and ((not objective.Needed) or objective.Needed ~= objective.Collected) then
+            bestDistance = dist
+            bestSpawn = spawn
+            bestSpawnZone = zone
+            bestSpawnId = id
+            bestSpawnType = Type
+            bestSpawnName = Name
         end
     end
     return bestSpawn, bestSpawnZone, bestSpawnName, bestSpawnId, bestSpawnType, bestDistance

@@ -98,12 +98,23 @@ local GeneralOptions = {
         ["default"] = false,
         ["parents"] = { ["EnhanceFishingSounds"] = "d" },
     },
-    ["TownsfolkTracker"] = {
-        ["text"] = FBConstants.CONFIG_TOWNSFOLK_ONOFF,
-        ["tooltip"] = FBConstants.CONFIG_TOWNSFOLK_INFO,
+    ["DingQuestFish"] = {
+        ["text"] = FBConstants.CONFIG_DINGQUESTFISH_ONOFF,
+        ["tooltip"] = FBConstants.CONFIG_DINGQUESTFISH_INFO,
         ["v"] = 1,
-        ["global"] = true,
-        ["default"] = false
+        ["default"] = true,
+    },
+    ["SetupSkills"] = {
+        ["text"] = FBConstants.CONFIG_TRADESKILL_ONOFF,
+        ["tooltip"] = FBConstants.CONFIG_TRADESKILL_INFO,
+        ["v"] = 1,
+        ["default"] = true,
+    },
+    ["ConservatoryPools"] = {
+        ["text"] = FBConstants.CONFIG_CONSERVATORY_ONOFF,
+        ["tooltip"] = FBConstants.CONFIG_CONSERVATORY_INFO,
+        ["v"] = 1,
+        ["default"] = true
     },
 };
 
@@ -234,6 +245,87 @@ local CastingOptions = {
         ["v"] = 1,
         ["parents"] = { ["EasyLures"] = "d" },
         ["default"] = false
+    },
+    ["ContestSupport"] = {
+        ["text"] = FBConstants.CONFIG_CONTESTS_ONOFF,
+        ["tooltip"] = FBConstants.CONFIG_CONTESTS_INFO,
+        ["v"] = 1,
+        ["default"] = false
+    },
+    ["STVTimer"] = {
+        ["text"] = FBConstants.CONFIG_STVTIMER_ONOFF,
+        ["tooltip"] = FBConstants.CONFIG_STVTIMER_INFO,
+        ["v"] = 1,
+        ["default"] = false,
+        ["parents"] = { ["ContestSupport"] = "d" }
+    },
+    ["STVPoolsOnly"] = {
+        ["text"] = FBConstants.CONFIG_STVPOOLSONLY_ONOFF,
+        ["tooltip"] = FBConstants.CONFIG_STVPOOLSONLY_INFO,
+        ["v"] = 1,
+        ["default"] = false,
+        ["primary"] = "ContestSupport",
+        ["parents"] = { ["ContestSupport"] = "d", ["EasyCast"] = "d" }
+    },
+    ["FlyingCast"] = {
+        ["text"] = FBConstants.CONFIG_FLYINGCAST_ONOFF,
+        ["tooltip"] = FBConstants.CONFIG_FLYINGCAST_INFO,
+        ["v"] = 1,
+        ["parents"] = { ["EasyCast"] = "d", },
+        ["active"] = function(i, s, b) return (not IsFlying()) or b end,
+        ["default"] = false
+    },
+    ["EasyCastKeys"] = {
+        ["default"] = FBConstants.KEYS_NONE,
+        ["button"] = "FBEasyKeys",
+        ["tooltipd"] = FBConstants.CONFIG_EASYCASTKEYS_INFO,
+        ["parents"] = { ["EasyCast"] = "h" },
+        ["init"] = function(o, b) b.InitMappedMenu(o,b); end,
+        ["setup"] =
+            function(button)
+                local gs = FishingBuddy.GetSetting;
+                FBEasyKeys.menu:SetMappedValue("EasyCastKeys", gs("EasyCastKeys"));
+            end,
+    },
+    ["KeepOnTruckin"] = {
+        ["text"] = FBConstants.CONFIG_KEEPONTRUCKIN_ONOFF,
+        ["tooltip"] = FBConstants.CONFIG_KEEPONTRUCKIN_INFO,
+        ["v"] = 1,
+        ["active"] = function(i, s, b) return b and AreWeFishing() end,
+        ["parents"] = { ["EasyCast"] = "d" },
+        ["default"] = true
+    },
+    ["DraenorBait"] = {
+        ["text"] = FBConstants.CONFIG_DRAENORBAIT_ONOFF,
+        ["tooltip"] = FBConstants.CONFIG_DRAENORBAIT_INFO,
+        ["v"] = 1,
+        ["m"] = 1,
+        ["primary"] = "EasyLures",
+        ["parents"] = { ["EasyLures"] = "d", },
+        ["default"] = true
+    },
+    ["DraenorBaitMaintainOnly"] = {
+        ["text"] = FBConstants.CONFIG_DRAENORBAITMAINTAIN_ONOFF,
+        ["tooltip"] = FBConstants.CONFIG_DRAENORBAITMAINTAIN_INFO,
+        ["v"] = 1,
+        ["primary"] = "EasyLures",
+        ["parents"] = {  ["DraenorBait"] = "d", ["EasyLures"] = "d", },
+        ["default"] = true
+    },
+    ["BigDraenor"] = {
+        ["text"] = FBConstants.CONFIG_BIGDRAENOR_ONOFF,
+        ["tooltip"] = FBConstants.CONFIG_BIGDRAENOR_INFO,
+        ["v"] = 1,
+        ["m"] = 1,
+        ["parents"] = { ["EasyLures"] = "d" },
+        ["default"] = true
+    },
+    ["DalaranLures"] = {
+        ["text"] = FBConstants.CONFIG_DALARANLURES_ONOFF,
+        ["tooltip"] = FBConstants.CONFIG_DALARANLURES_INFO,
+        ["v"] = 1,
+        ["parents"] = { ["EasyLures"] = "d", },
+        ["default"] = true
     },
 };
 
@@ -376,6 +468,7 @@ FishingBuddy.StartedFishing = nil;
 
 local OpenThisFishId = {};
 local DoAutoOpenLoot = nil;
+local NewLootCheck = true;
 
 FishingBuddy.OpenThisFishId = OpenThisFishId;
 
@@ -411,6 +504,8 @@ local InventoryEvents = {
     ["PLAYER_EQUIPMENT_CHANGED"] = true,
 }
 
+InventoryEvents["EQUIPMENT_SWAP_FINISHED"] = true
+InventoryEvents["WEAR_EQUIPMENT_SET"] = true
 
 function bagupdateframe:StartInventory()
     for event,_ in pairs(InventoryEvents) do
@@ -566,7 +661,7 @@ end
 FishingBuddy.ReadyForFishing = ReadyForFishing;
 
 local function CheckCastingKeys()
-    return ReadyForFishing();
+    return CastingKeys() or FishingBuddy.ActiveSetting("KeepOnTruckin") or ReadyForFishing();
 end
 
 local QuestLures = {};
@@ -740,6 +835,14 @@ local CaptureEvents = {};
 local trackedtime = 0;
 local TRACKING_DELAY = 0.75;
 
+CaptureEvents["TRACKED_ACHIEVEMENT_UPDATE"] = function(id, criterion, actualtime, timelimit)
+    if ( id == 5036 ) then
+        -- Last catch was in a pool
+        -- We should add it
+        -- Do we know it was our catch?
+        trackedtime = GetTime();
+    end
+end
 
 local function ClearLastLure()
     local LSM = FishingBuddy.LureStateManager;
@@ -1295,47 +1398,51 @@ FishingBuddy.OnEvent = function(self, event, ...)
         end
         FishingMode();
         RunHandlers(FBConstants.INVENTORY_EVT)
-    elseif ( event == "LOOT_OPENED" ) then
+    elseif ( event == "LOOT_READY" ) then
         local autoLoot = ...;
         local doautoloot = false;
-        if autoLoot or (autoLoot == nil and BlizzardOptionsPanel_GetCVarSafeBool("autoLootDefault") ~= IsModifiedClick("AUTOLOOTTOGGLE"))  then
-            doautoloot = true
-        else
-            doautoloot = FishingBuddy.GetSettingBool("AutoLoot")
-        end
-
-        if ( IsFishingLoot() or LegionBarrel() ) then
-            local poolhint = nil;
-
-            -- How long ago did the achievement fire?
-            local elapsedtime = GetTime() - trackedtime;
-            if ( elapsedtime < TRACKING_DELAY ) then
-                poolhint = true;
+        if NewLootCheck then
+            NewLootCheck = false;
+            if autoLoot or (autoLoot == nil and BlizzardOptionsPanel_GetCVarSafeBool("autoLootDefault") ~= IsModifiedClick("AUTOLOOTTOGGLE"))  then
+                doautoloot = true
+            else
+                doautoloot = FishingBuddy.GetSettingBool("AutoLoot")
             end
 
-            -- if we want to autoloot, and Blizz isn't, let's grab stuff
-            local info = GetLootInfo()
-            for index, item in ipairs(info) do
-                local link = GetLootSlotLink(index);
-                -- should we track "locked" items we couldn't loot?'
-                FishingBuddy.AddLootCache(item.texture, item.name, item.quantity, item.quality, link, poolhint)
-                if (doautoloot) then
-                    LootSlot(index);
+            if ( IsFishingLoot() or LegionBarrel() ) then
+                local poolhint = nil;
+
+                -- How long ago did the achievement fire?
+                local elapsedtime = GetTime() - trackedtime;
+                if ( elapsedtime < TRACKING_DELAY ) then
+                    poolhint = true;
                 end
-            end
-            ClearTooltipText();
-            FL:ExtendDoubleClick();
-        elseif (DoAutoOpenLoot) then
-            DoAutoOpenLoot = nil;
-            for index = 1, GetNumLootItems(), 1 do
-                if (doautoloot) then
-                    LootSlot(index);
+
+                -- if we want to autoloot, and Blizz isn't, let's grab stuff
+                local info = GetLootInfo()
+                for index, item in ipairs(info) do
+                    local link = GetLootSlotLink(index);
+                    -- should we track "locked" items we couldn't loot?'
+                    FishingBuddy.AddLootCache(item.texture, item.name, item.quantity, item.quality, link, poolhint)
+                    if (doautoloot) then
+                        LootSlot(index);
+                    end
+                end
+                ClearTooltipText();
+                FL:ExtendDoubleClick();
+            elseif (DoAutoOpenLoot) then
+                DoAutoOpenLoot = nil;
+                for index = 1, GetNumLootItems(), 1 do
+                    if (doautoloot) then
+                        LootSlot(index);
+                    end
                 end
             end
         end
     elseif ( event == "LOOT_CLOSED" ) then
         -- nothing to do here at the moment
         DoAutoOpenLoot = nil;
+        NewLootCheck = true;
     elseif ( event == "PLAYER_LOGIN" ) then
         FL:CreateSAButton();
         FL:SetSAMouseEvent(FishingBuddy.GetSetting("MouseEvent"));
@@ -1427,7 +1534,7 @@ FishingBuddy.OnLoad = function(self)
     self:RegisterEvent("VARIABLES_LOADED");
 
     -- we want to deal with fishing loot windows all the time
-    self:RegisterEvent("LOOT_OPENED");
+    self:RegisterEvent("LOOT_READY");
     self:RegisterEvent("LOOT_CLOSED");
 
     self:RegisterEvent("CURSOR_UPDATE");

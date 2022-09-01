@@ -40,7 +40,7 @@ Prat:AddModuleToLoad(function()
 
   local function dbg(...) end
 
-  --[===[@debug@
+  --[==[@debug@
   local function dbg(...)
     -- Prat:PrintLiteral(...)
   end
@@ -87,7 +87,7 @@ Prat:AddModuleToLoad(function()
     ["warnUser() called with nil argument!"] = true,
     ["warnUser() called with zero length string!"] = true,
   })
-  --@end-debug@]===]
+  --@end-debug@]==]
 
   -- These Localizations are auto-generated. To help with localization
   -- please go to http://www.wowace.com/projects/prat-3-0/localization/
@@ -428,7 +428,7 @@ L = {
 		["<alias> - remove the alias <alias> (cmd aliases: /delalias, /remalias)"] = "<alias> - <alias> 대체 명령어 삭제 (명령어: /delalias, /remalias)",
 		["<command>[ <value>] - alias <command> to be executed as <value>, or return the value of the currently defined alias for <command> if <command> has not been assigned a value. eg: \"/alias /examplehello /say hello there\" - typing \"/examplehello\" will now cause your character to say \"hello there\"; \"/alias examplehello\" - s \"/examplehello is aliased to /say hello there\" (cmd aliases: /addalias)"] = "<명령어>[ <인자>] - <명령어>로 <인자>를 수행하게 대체하거나, <명령어>에 할당된 인자가 없으면 <명령어>에 설정된 대체 명령어를 출력합니다. 예제: \"/alias /꾸벅 /say 안녕하세요\" - \"/꾸벅\" 명령어로 일반 대화 \"안녕하세요\"가 수행됩니다;\"/alias 꾸벅\" - \"/꾸벅 명령어가 /say 안녕하세요 로 대체되었습니다\"가 표시됩니다 (명령어: /addalias)",
 		["<keyword> - finds all aliases matching <keyword> (cmd aliases: /findalias)"] = "<키워드> - <키워드>가 포함된 모든 대체 명령어를 찾습니다. (명령어: /findalias)",
-		["add"] = true,
+		["add"] = "추가",
 		["add an alias"] = "대체 명령어 추가",
 		["alias \"/%s\" does not exist"] = "대체 명령어 \"/%s\"|1이;가; 없습니다",
 		["dealiasing command /%s to /%s"] = "/%s|1이;가; /%s|1으로;로; 대체 명령어가 해제됩니다",
@@ -444,7 +444,7 @@ L = {
 		["listaliases"] = true,
 		["matching aliases found: %d"] = "일치하는 대체 명령어 찾음: %d개",
 		["module_desc"] = "UNIX의 alias 명령과 비슷한 방법으로 슬래쉬 명령어를 대체하는데 사용하는 /alias 명령을 추가합니다.",
-		["module_name"] = "대체 명령어",
+		["module_name"] = "대체 명령어 [Alias]",
 		["No aliases have been defined"] = "설정된 대체 명령어가 없습니다.",
 		["noclobber"] = "덮어쓰기 금지",
 		["noclobber set - skipping new alias: /%s already expands to /%s"] = "덮어쓰기 금지 - 새로운 대체 명령어를 무시합니다 : /%s |1은;는; 이미 /%s |1으로;로; 설정되어 있습니다",

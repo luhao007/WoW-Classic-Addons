@@ -1,20 +1,10 @@
 ------------------------------------------------------------------------
-r145 | funkehdude | 2021-03-09 20:20:40 +0000 (Tue, 09 Mar 2021) | 1 line
+r161 | funkehdude | 2022-04-22 01:01:13 +0000 (Fri, 22 Apr 2022) | 1 line
 Changed paths:
    M /trunk/LibCandyBar-3.0.toc
+   M /trunk/LibCandyBar-3.0_TBC.toc
+   M /trunk/LibCandyBar-3.0_Vanilla.toc
 
 bump toc
-------------------------------------------------------------------------
-r144 | funkehdude | 2021-02-28 08:20:03 +0000 (Sun, 28 Feb 2021) | 1 line
-Changed paths:
-   M /trunk/LibCandyBar-3.0/LibCandyBar-3.0.lua
-
-Fix bar pausing when using fill mode
-------------------------------------------------------------------------
-r143 | funkehdude | 2021-01-23 21:33:43 +0000 (Sat, 23 Jan 2021) | 1 line
-Changed paths:
-   M /trunk/LibCandyBar-3.0/LibCandyBar-3.0.lua
-
-Set default frame levels
 ------------------------------------------------------------------------
 

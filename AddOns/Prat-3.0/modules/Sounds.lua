@@ -36,7 +36,7 @@ Prat:AddModuleToLoad(function()
 
   local PL = module.PL
 
-  --[===[@debug@
+  --[==[@debug@
   PL:AddLocale(PRAT_MODULE, "enUS", {
     ["Sounds"] = true,
     ["A module to play sounds on certain chat messages."] = true,
@@ -67,7 +67,7 @@ Prat:AddModuleToLoad(function()
     ["Sound selection for outgoing (from you) chat messages"] = true,
     ["Custom Channels"] = true,
   })
-  --@end-debug@]===]
+  --@end-debug@]==]
 
   -- These Localizations are auto-generated. To help with localization
   -- please go to http://www.wowace.com/projects/prat-3-0/localization/
@@ -217,7 +217,7 @@ L = {
 		["Restore default settings and resets custom channel list"] = "사설 채널 목록을 초기화하고 기본 설정으로 복원",
 		["Sound selection for incoming chat messages"] = "대화 메시지를 받을 때 소리 선택",
 		["Sound selection for outgoing (from you) chat messages"] = "대화 메시지를 보낼 때(자신이) 소리 선택",
-		["Sounds"] = "소리",
+		["Sounds"] = "소리 [Sounds]",
 		["whisper_desc"] = "%s 귓속말 메시지 소리",
 		["whisper_name"] = "귓속말",
 	}

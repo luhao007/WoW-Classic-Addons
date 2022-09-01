@@ -1,4 +1,4 @@
-if not WeakAuras.IsCorrectVersion() then return end
+if not WeakAuras.IsLibsOK() then return end
 local AddonName, Private = ...
 
 local WeakAuras = WeakAuras
@@ -163,12 +163,14 @@ local blockedFunctions = {
   EditMacro = true,
   DevTools_DumpCommand = true,
   hash_SlashCmdList = true,
+  RegisterNewSlashCommand = true,
   CreateMacro = true,
   SetBindingMacro = true,
   GuildDisband = true,
   GuildUninvite = true,
   securecall = true,
   DeleteCursorItem = true,
+  ChatEdit_SendText = true
 }
 
 local blockedTables = {
@@ -176,6 +178,9 @@ local blockedTables = {
   SendMailMailButton = true,
   SendMailMoneyGold = true,
   MailFrameTab2 = true,
+  ChatFrame1 = true,
+  WeakAurasOptions = true,
+  WeakAurasOptionsSaved = true
 }
 
 local aura_environments = {}
@@ -289,11 +294,15 @@ function Private.ActivateAuraEnvironment(id, cloneId, state, states, onlyConfig)
       if(actions and actions.do_custom and actions.custom) then
         local func = Private.customActionsFunctions[id]["init"]
         if func then
-          xpcall(func, geterrorhandler())
+          xpcall(func, Private.GetErrorHandlerId(id, "init"))
         end
       end
     end
   end
+end
+
+local function DebugPrint(...)
+  Private.DebugLog.Print(current_uid, ...)
 end
 
 local function blocked(key)
@@ -344,7 +353,6 @@ local FakeWeakAurasMixin = {
     -- Note these shouldn't exist in the WeakAuras namespace, but moving them takes a bit of effort,
     -- so for now just block them and clean them up later
     ClearAndUpdateOptions = true,
-    CloseCodeReview = true,
     CloseImportExport = true,
     CreateTemplateView = true,
     FillOptions = true,
@@ -353,12 +361,9 @@ local FakeWeakAurasMixin = {
     GetDisplayButton = true,
     Import = true,
     NewDisplayButton = true,
-    OpenCodeReview = true,
     PickDisplay = true,
     SetMoverSizer = true,
-    SetImporting = true,
     ToggleOptions = true,
-    UpdateDisplayButton = true,
     UpdateGroupOrders = true,
     UpdateThumbnail = true,
     validate = true,
@@ -416,6 +421,8 @@ local exec_env = setmetatable({},
       return env_getglobal
     elseif k == "aura_env" then
       return current_aura_env
+    elseif k == "DebugPrint" then
+      return DebugPrint
     elseif blockedFunctions[k] then
       blocked(k)
       return function() end
@@ -443,11 +450,11 @@ function env_getglobal(k)
 end
 
 local function_cache = {}
-function WeakAuras.LoadFunction(string, id, inTrigger)
+function WeakAuras.LoadFunction(string)
   if function_cache[string] then
     return function_cache[string]
   else
-    local loadedFunction, errorString = loadstring(string, "Error in: " .. (id or "Unknown") .. (inTrigger and ("':'".. inTrigger) or ""))
+    local loadedFunction, errorString = loadstring(string)
     if errorString then
       print(errorString)
     else

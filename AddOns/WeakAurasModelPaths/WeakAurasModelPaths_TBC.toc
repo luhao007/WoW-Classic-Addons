@@ -1,0 +1,15 @@
+## Interface: 30400
+## Author: The WeakAuras Team
+## Version: 4.1.2
+## Dependencies: WeakAuras, WeakAurasOptions
+## LoadOnDemand: 1
+## DefaultState: Enabled
+
+## Title: WeakAuras Model Paths
+## Notes: Model paths for WeakAuras
+## Title-zhCN: |cFFFFE00A<|r|cFFFFF468功能|r|cFFFFE00A>|r |cFFFFFFFF辅助增强|r |cFF69CCF0模型路径|r
+
+## X-Category: Interface Enhancements
+## X-Part-Of: WeakAuras
+
+ModelPathsBCC.lua

@@ -212,11 +212,7 @@ end
 
 ---@return string
 function QuestieEvent:GetEventNameFor(questId)
-    local eventName = ""
-    if _QuestieEvent.eventNamesForQuests[questId] then
-        eventName = _QuestieEvent.eventNamesForQuests[questId]
-    end
-    return eventName
+    return _QuestieEvent.eventNamesForQuests[questId] or ""
 end
 
 function QuestieEvent:IsEventQuest(questId)
@@ -241,6 +237,10 @@ QuestieEvent.eventDates = {
         startDate = "17/9",
         endDate = "24/9"
     },
+    ["Pilgrim's Bounty"] = {
+        startDate = "17/9",
+        endDate = "24/9"
+    },
     ["Peon Day"] = {startDate = "30/9", endDate = "30/9"},
     ["Hallow's End"] = {startDate = "18/10", endDate = "1/11"},
     ["Winter Veil"] = {startDate = "15/12", endDate = "2/1"}
@@ -251,6 +251,7 @@ QuestieEvent.eventDates = {
 QuestieEvent.eventDateCorrections = {
     ["CLASSIC"] = {
         ["Brewfest"] = false,
+        ["Pilgrim's Bounty"] = false,
     },
     ["TBC"] = {
     },
@@ -259,9 +260,9 @@ QuestieEvent.eventDateCorrections = {
 QuestieEvent.lunarFestival = {
     ["19"] = {startDate = "5/2", endDate = "19/2"},
     ["20"] = {startDate = "23/1", endDate = "10/2"},
+    ["21"] = {startDate = "5/2", endDate = "19/2"}, --when this was for real?
+    ["22"] = {startDate = "30/1", endDate = "18/2"},
     -- Below are estimates
-    ["21"] = {startDate = "5/2", endDate = "19/2"},
-    ["22"] = {startDate = "1/2", endDate = "15/2"},
     ["23"] = {startDate = "22/1", endDate = "5/2"},
     ["24"] = {startDate = "10/2", endDate = "24/2"},
     ["25"] = {startDate = "29/1", endDate = "12/2"},
@@ -367,19 +368,19 @@ tinsert(QuestieEvent.eventQuests, {"Love is in the Air", 9028}) -- The Source Re
 tinsert(QuestieEvent.eventQuests, {"Love is in the Air", 9029}) -- A Bubbling Cauldron
 
 tinsert(QuestieEvent.eventQuests, {"Children's Week", 171}) -- A Warden of the Alliance
-tinsert(QuestieEvent.eventQuests, {"Children's Week", 5502}) -- A Warden of the Horde
 tinsert(QuestieEvent.eventQuests, {"Children's Week", 172}) -- Children's Week
-tinsert(QuestieEvent.eventQuests, {"Children's Week", 1468}) -- Children's Week
-tinsert(QuestieEvent.eventQuests, {"Children's Week", 915}) -- You Scream, I Scream...
-tinsert(QuestieEvent.eventQuests, {"Children's Week", 4822}) -- You Scream, I Scream...
-tinsert(QuestieEvent.eventQuests, {"Children's Week", 1687}) -- Spooky Lighthouse
 tinsert(QuestieEvent.eventQuests, {"Children's Week", 558}) -- Jaina's Autograph
-tinsert(QuestieEvent.eventQuests, {"Children's Week", 925}) -- Cairne's Hoofprint
-tinsert(QuestieEvent.eventQuests, {"Children's Week", 1800}) -- Lordaeron Throne Room
-tinsert(QuestieEvent.eventQuests, {"Children's Week", 1479}) -- The Bough of the Eternals
-tinsert(QuestieEvent.eventQuests, {"Children's Week", 1558}) -- The Stonewrought Dam
 tinsert(QuestieEvent.eventQuests, {"Children's Week", 910}) -- Down at the Docks
 tinsert(QuestieEvent.eventQuests, {"Children's Week", 911}) -- Gateway to the Frontier
+tinsert(QuestieEvent.eventQuests, {"Children's Week", 915}) -- You Scream, I Scream...
+tinsert(QuestieEvent.eventQuests, {"Children's Week", 925}) -- Cairne's Hoofprint
+tinsert(QuestieEvent.eventQuests, {"Children's Week", 1468}) -- Children's Week
+tinsert(QuestieEvent.eventQuests, {"Children's Week", 1479}) -- The Bough of the Eternals
+tinsert(QuestieEvent.eventQuests, {"Children's Week", 1558}) -- The Stonewrought Dam
+tinsert(QuestieEvent.eventQuests, {"Children's Week", 1687}) -- Spooky Lighthouse
+tinsert(QuestieEvent.eventQuests, {"Children's Week", 1800}) -- Lordaeron Throne Room
+tinsert(QuestieEvent.eventQuests, {"Children's Week", 4822}) -- You Scream, I Scream...
+tinsert(QuestieEvent.eventQuests, {"Children's Week", 5502}) -- A Warden of the Horde
 
 tinsert(QuestieEvent.eventQuests, {"Harvest Festival", 8149}) -- Honoring a Hero
 tinsert(QuestieEvent.eventQuests, {"Harvest Festival", 8150}) -- Honoring a Hero
@@ -482,6 +483,20 @@ tinsert(QuestieEvent.eventQuests, {"Darkmoon Faire", 7936}) -- 50 Tickets - Last
 
 tinsert(QuestieEvent.eventQuests, {"Children's Week", 10942}) -- Children's Week
 tinsert(QuestieEvent.eventQuests, {"Children's Week", 10943}) -- Children's Week
+tinsert(QuestieEvent.eventQuests, {"Children's Week", 10945})
+tinsert(QuestieEvent.eventQuests, {"Children's Week", 10950})
+tinsert(QuestieEvent.eventQuests, {"Children's Week", 10951})
+tinsert(QuestieEvent.eventQuests, {"Children's Week", 10952})
+tinsert(QuestieEvent.eventQuests, {"Children's Week", 10953})
+tinsert(QuestieEvent.eventQuests, {"Children's Week", 10954})
+tinsert(QuestieEvent.eventQuests, {"Children's Week", 10956})
+tinsert(QuestieEvent.eventQuests, {"Children's Week", 10960})
+tinsert(QuestieEvent.eventQuests, {"Children's Week", 10962})
+tinsert(QuestieEvent.eventQuests, {"Children's Week", 10963})
+tinsert(QuestieEvent.eventQuests, {"Children's Week", 10966})
+tinsert(QuestieEvent.eventQuests, {"Children's Week", 10967})
+tinsert(QuestieEvent.eventQuests, {"Children's Week", 10968})
+tinsert(QuestieEvent.eventQuests, {"Children's Week", 11975})
 
 tinsert(QuestieEvent.eventQuests, {"Darkmoon Faire", 9249}) -- 40 Tickets - Schematic: Steam Tonk Controller
 tinsert(QuestieEvent.eventQuests, {"Darkmoon Faire", 10938}) -- Darkmoon Blessings Deck
@@ -644,6 +659,7 @@ tinsert(QuestieEvent.eventQuests, {"Midsummer", 11580}) -- Desecrate this Fire!
 tinsert(QuestieEvent.eventQuests, {"Midsummer", 11581}) -- Desecrate this Fire!
 tinsert(QuestieEvent.eventQuests, {"Midsummer", 11583}) -- Honor the Flame
 tinsert(QuestieEvent.eventQuests, {"Midsummer", 11584}) -- Honor the Flame
+tinsert(QuestieEvent.eventQuests, {"Midsummer", 11657}) -- Torch Catching
 tinsert(QuestieEvent.eventQuests, {"Midsummer", 11691}) -- Summon Ahune
 tinsert(QuestieEvent.eventQuests, {"Midsummer", 11696}) -- Ahune is Here!
 tinsert(QuestieEvent.eventQuests, {"Midsummer", 11731}) -- Torch Tossing
@@ -772,9 +788,9 @@ tinsert(QuestieEvent.eventQuests, {"Midsummer", 11886}) -- Unusual Activity
 tinsert(QuestieEvent.eventQuests, {"Midsummer", 11915}) -- Playing with Fire
 tinsert(QuestieEvent.eventQuests, {"Midsummer", 11921}) -- Midsummer
 tinsert(QuestieEvent.eventQuests, {"Midsummer", 11922}) -- Midsummer
-tinsert(QuestieEvent.eventQuests, {"Midsummer", 11923}) -- Midsummer
-tinsert(QuestieEvent.eventQuests, {"Midsummer", 11924}) -- Midsummer
-tinsert(QuestieEvent.eventQuests, {"Midsummer", 11925}) -- Midsummer
+tinsert(QuestieEvent.eventQuests, {"Midsummer", 11923}) -- Torch Catching
+tinsert(QuestieEvent.eventQuests, {"Midsummer", 11924}) -- More Torch Catching
+tinsert(QuestieEvent.eventQuests, {"Midsummer", 11925}) -- More Torch Catching
 tinsert(QuestieEvent.eventQuests, {"Midsummer", 11926}) -- Midsummer
 tinsert(QuestieEvent.eventQuests, {"Midsummer", 11933}) -- Stealing the Exodar's Flame
 tinsert(QuestieEvent.eventQuests, {"Midsummer", 11935}) -- Stealing Silvermoon's Flame
@@ -787,3 +803,42 @@ tinsert(QuestieEvent.eventQuests, {"Midsummer", 11970}) -- The Master of Summer 
 tinsert(QuestieEvent.eventQuests, {"Midsummer", 11971}) -- The Spinner of Summer Tales
 
 tinsert(QuestieEvent.eventQuests, {"Winter Veil", 11528, "25/12", "2/1"}) -- A Winter Veil Gift
+
+--- Wotlk event quests
+
+tinsert(QuestieEvent.eventQuests, {"Noblegarden", 13479}) -- The Great Egg Hunt
+tinsert(QuestieEvent.eventQuests, {"Noblegarden", 13480}) -- The Great Egg Hunt
+tinsert(QuestieEvent.eventQuests, {"Noblegarden", 13502}) -- A Tisket, a Tasket, a Noblegarden Basket
+tinsert(QuestieEvent.eventQuests, {"Noblegarden", 13503}) -- A Tisket, a Tasket, a Noblegarden Basket
+
+tinsert(QuestieEvent.eventQuests, {"Love is in the Air", 14488}) -- You've Been Served
+tinsert(QuestieEvent.eventQuests, {"Love is in the Air", 24597}) -- A Gift for the King of Stormwind
+tinsert(QuestieEvent.eventQuests, {"Love is in the Air", 24609}) -- A Gift for the Lord of Ironforge
+tinsert(QuestieEvent.eventQuests, {"Love is in the Air", 24610}) -- A Gift for the High Priestess of Elune
+tinsert(QuestieEvent.eventQuests, {"Love is in the Air", 24611}) -- A Gift for the Prophet
+tinsert(QuestieEvent.eventQuests, {"Love is in the Air", 24612}) -- A Gift for the Warchief
+tinsert(QuestieEvent.eventQuests, {"Love is in the Air", 24613}) -- A Gift for the Banshee Queen
+tinsert(QuestieEvent.eventQuests, {"Love is in the Air", 24614}) -- A Gift for the High Chieftain
+tinsert(QuestieEvent.eventQuests, {"Love is in the Air", 24615}) -- A Gift for the Regent Lord of Quel'Thalas
+tinsert(QuestieEvent.eventQuests, {"Love is in the Air", 24629}) -- A Perfect Puff of Perfume
+tinsert(QuestieEvent.eventQuests, {"Love is in the Air", 24635}) -- A Cloudlet of Classy Cologne
+tinsert(QuestieEvent.eventQuests, {"Love is in the Air", 24636}) -- Bonbon Blitz
+tinsert(QuestieEvent.eventQuests, {"Love is in the Air", 24655}) -- Something Stinks
+tinsert(QuestieEvent.eventQuests, {"Love is in the Air", 24804}) -- Uncommon Scents
+
+tinsert(QuestieEvent.eventQuests, {"Children's Week", 13926}) -- Little Orphan Roo Of The Oracles
+tinsert(QuestieEvent.eventQuests, {"Children's Week", 13927}) -- Little Orphan Kekek Of The Wolvar
+
+tinsert(QuestieEvent.eventQuests, {"Hallow's End", 13463}) -- Candy Bucket
+tinsert(QuestieEvent.eventQuests, {"Hallow's End", 13472}) -- Candy Bucket
+tinsert(QuestieEvent.eventQuests, {"Hallow's End", 13473}) -- Candy Bucket
+
+tinsert(QuestieEvent.eventQuests, {"Pilgrim's Bounty", 12784}) -- Desperate Research
+tinsert(QuestieEvent.eventQuests, {"Pilgrim's Bounty", 12808}) -- A Desperate Alliance
+tinsert(QuestieEvent.eventQuests, {"Pilgrim's Bounty", 13483}) -- Spring Gatherers
+tinsert(QuestieEvent.eventQuests, {"Pilgrim's Bounty", 13484}) -- Spring Collectors
+tinsert(QuestieEvent.eventQuests, {"Pilgrim's Bounty", 14036}) -- Pilgrim's Bounty
+tinsert(QuestieEvent.eventQuests, {"Pilgrim's Bounty", 14022}) -- Pilgrim's Bounty
+
+tinsert(QuestieEvent.eventQuests, {"Brewfest", 13931}) -- Another Year, Another Souvenir.
+tinsert(QuestieEvent.eventQuests, {"Brewfest", 13932}) -- Another Year, Another Souvenir.

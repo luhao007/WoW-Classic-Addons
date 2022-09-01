@@ -38,7 +38,7 @@ Prat:AddModuleToLoad(function()
   -- define localized strings
   local PL = mod.PL
 
-  --[===[@debug@
+  --[==[@debug@
   PL:AddLocale(PRAT_MODULE, "enUS", {
     ["AddonMsgs"] = true,
     ["Addon message options."] = true,
@@ -47,7 +47,7 @@ Prat:AddModuleToLoad(function()
     ["show_perframename"] = "ChatFrame%d AddonMsgsShow",
     ["show_perframedesc"] = "Toggle showing hidden addon messages on and off.",
   })
-  --@end-debug@]===]
+  --@end-debug@]==]
 
   -- These Localizations are auto-generated. To help with localization
   -- please go to http://www.wowace.com/projects/prat-3-0/localization/

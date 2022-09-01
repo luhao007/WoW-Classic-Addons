@@ -64,22 +64,24 @@ end
 
 
 --
-local tInstant, tModi2;
+local tInstant, tModi2, tCustomUnit;
 local function VUHDO_getInstantFireText(aSlotNum)
 	tInstant = VUHDO_SPELL_CONFIG["FIRE_CUSTOM_" .. aSlotNum .. "_SPELL"];
 	if VUHDO_SPELL_CONFIG["IS_FIRE_CUSTOM_" .. aSlotNum] and not VUHDO_strempty(tInstant) then
+
+		tCustomUnit = VUHDO_SPELL_CONFIG["custom" .. aSlotNum .. "Unit"] or ""
 
 		if VUHDO_SPELL_CONFIG["IS_FIRE_OUT_FIGHT"] then
 			if (VUHDO_SPELLS[tInstant] or sEmpty)["noselftarget"] then
 				tModi2 = " ";
 			else
-				tModi2 = " [@player] ";
+				tModi2 = " " .. "[" .. tCustomUnit .. ",exists]" .. " ";
 			end
 		else
 			if (VUHDO_SPELLS[tInstant] or sEmpty)["noselftarget"] then
 				tModi2 = " [combat] ";
 			else
-				tModi2 = " [combat,@player] ";
+				tModi2 = " " .. "[combat," .. tCustomUnit .. ",exists]" .. " ";
 			end
 		end
 
@@ -386,11 +388,10 @@ local function VUHDO_generateRaidMacroTemplate(anAction, anIsKeyboard, aTarget, 
 		else
 			tVehicleCond = "";
 		end
-		-- Blizzard has broken the way vehicles work for the Antoran High Command encounter
-		-- For now just disable vehicle support (note: this breaks encounters like Malygos)
-		--tText = tText .. tCastText .. "[" .. tModiSpell .. "nounithasvehicleui,@vuhdo]" .. tVehicleCond .. " " .. anAction .. "\n";
-		tText = tText .. tCastText .. "[" .. tModiSpell .. "@vuhdo]" .. tVehicleCond .. " " .. anAction .. "\n";
+
+		tText = tText .. tCastText .. "[" .. tModiSpell .. "nounithasvehicleui,@vuhdo]" .. tVehicleCond .. " " .. anAction .. "\n";
 		tText = tText .. tSpellPost;
+
 		if aPet then
 			tText = tText .. "/tar [unithasvehicleui,@vdpet]\n";
 		end

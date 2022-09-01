@@ -59,9 +59,16 @@ L["OPTIONS_TABNAME_BUFF_LIST"] = "Lista de beneficios"
 L["OPTIONS_TABNAME_BUFF_SETTINGS"] = "Configuración de beneficios"
 L["OPTIONS_TABNAME_BUFF_SPECIAL"] = "Beneficios Especiales"
 L["OPTIONS_TABNAME_BUFF_TRACKING"] = "Seguimiento de beneficios"
-L["OPTIONS_TABNAME_COLORSNPC"] = "Colores de PNJ"
+--[[Translation missing --]]
+L["OPTIONS_TABNAME_CASTBAR"] = "Cast Bar"
+--[[Translation missing --]]
+L["OPTIONS_TABNAME_CASTCOLORS"] = "\"Cast Colors and Names\""
+--[[Translation missing --]]
+L["OPTIONS_TABNAME_COMBOPOINTS"] = "Combo Points"
 L["OPTIONS_TABNAME_GENERALSETTINGS"] = "Configuración general"
 L["OPTIONS_TABNAME_MODDING"] = "Modding"
+--[[Translation missing --]]
+L["OPTIONS_TABNAME_NPC_COLORNAME"] = "Npc Colors and Names"
 L["OPTIONS_TABNAME_NPCENEMY"] = "PNJ Enemigo"
 L["OPTIONS_TABNAME_NPCFRIENDLY"] = "PNJ Amistoso"
 L["OPTIONS_TABNAME_PERSONAL"] = "Barra Personal"
@@ -69,6 +76,8 @@ L["OPTIONS_TABNAME_PLAYERENEMY"] = "Jugador Enemigo"
 L["OPTIONS_TABNAME_PLAYERFRIENDLY"] = "Jugador Amistoso"
 L["OPTIONS_TABNAME_PROFILES"] = "Perfiles"
 L["OPTIONS_TABNAME_SCRIPTING"] = "Scripting"
+--[[Translation missing --]]
+L["OPTIONS_TABNAME_SEARCH"] = "Search"
 L["OPTIONS_TABNAME_STRATA"] = "Nivel y Capas"
 L["OPTIONS_TABNAME_TARGET"] = "Objetivo"
 L["OPTIONS_TABNAME_THREAT"] = "Amenaza / Aggro"

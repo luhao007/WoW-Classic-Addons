@@ -40,7 +40,7 @@ Prat:AddModuleToLoad(function()
 
   local PL = module.PL
 
-  --[===[@debug@
+  --[==[@debug@
   PL:AddLocale(PRAT_MODULE, "enUS", {
     ["ChannelSticky"] = true,
     ["Chat channel sticky options."] = true,
@@ -54,7 +54,7 @@ Prat:AddModuleToLoad(function()
     ["Sticky Per Chat Frame"] = true,
     ["Toggle remembering the chat type last used per chat frame."] = true,
   })
-  --@end-debug@]===]
+  --@end-debug@]==]
 
   -- These Localizations are auto-generated. To help with localization
   -- please go to http://www.wowace.com/projects/prat-3-0/localization/
@@ -139,7 +139,7 @@ PL:AddLocale(PRAT_MODULE, "deDE",L)
 L = {
 	["ChannelSticky"] = {
 		["Channel"] = "채널",
-		["ChannelSticky"] = "채널 고정",
+		["ChannelSticky"] = "채널 고정 [ChannelSticky]",
 		["Chat channel sticky options."] = "대화 채널 고정 옵션입니다.",
 		["ChatType"] = "대화 형식",
 		["Per chat type options."] = "대화 형식 별 옵션",

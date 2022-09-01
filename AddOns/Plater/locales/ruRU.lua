@@ -63,9 +63,16 @@ L["OPTIONS_TABNAME_BUFF_LIST"] = "Список баффов"
 L["OPTIONS_TABNAME_BUFF_SETTINGS"] = "Настройки баффов"
 L["OPTIONS_TABNAME_BUFF_SPECIAL"] = "Особые баффы"
 L["OPTIONS_TABNAME_BUFF_TRACKING"] = "Отслеж. баффов"
-L["OPTIONS_TABNAME_COLORSNPC"] = "Окрашивание Npc"
+--[[Translation missing --]]
+L["OPTIONS_TABNAME_CASTBAR"] = "Cast Bar"
+--[[Translation missing --]]
+L["OPTIONS_TABNAME_CASTCOLORS"] = "\"Cast Colors and Names\""
+--[[Translation missing --]]
+L["OPTIONS_TABNAME_COMBOPOINTS"] = "Combo Points"
 L["OPTIONS_TABNAME_GENERALSETTINGS"] = "Общие настройки"
 L["OPTIONS_TABNAME_MODDING"] = "Моды"
+--[[Translation missing --]]
+L["OPTIONS_TABNAME_NPC_COLORNAME"] = "Npc Colors and Names"
 L["OPTIONS_TABNAME_NPCENEMY"] = "Вражеские Npc"
 L["OPTIONS_TABNAME_NPCFRIENDLY"] = "Союзные Npc"
 L["OPTIONS_TABNAME_PERSONAL"] = "Личная полоса"
@@ -73,6 +80,8 @@ L["OPTIONS_TABNAME_PLAYERENEMY"] = "Вражеские игроки"
 L["OPTIONS_TABNAME_PLAYERFRIENDLY"] = "Союзные игроки"
 L["OPTIONS_TABNAME_PROFILES"] = "Профили"
 L["OPTIONS_TABNAME_SCRIPTING"] = "Свой код"
+--[[Translation missing --]]
+L["OPTIONS_TABNAME_SEARCH"] = "Search"
 L["OPTIONS_TABNAME_STRATA"] = "Уровень и слой"
 L["OPTIONS_TABNAME_TARGET"] = "Цель"
 L["OPTIONS_TABNAME_THREAT"] = "Свой цвет угрозы"

@@ -1,17 +1,16 @@
 local config, _, T = OneRingLib.ext.config, ...
-local KR = OneRingLib.ext.ActionBook:compatible("Kindred", 1, 0)
-local L = T.L
+local L, KR = T.L, OneRingLib.ext.ActionBook:compatible("Kindred", 1, 0)
 
 local frame = config.createPanel("Bindings", "OPie")
 local OBC_Profile = CreateFrame("Frame", "OBC_Profile", frame, "UIDropDownMenuTemplate")
-	OBC_Profile:SetPoint("TOPLEFT", 0, -85) UIDropDownMenu_SetWidth(OBC_Profile, 200)
+	OBC_Profile:SetPoint("TOPLEFT", 0, -75) UIDropDownMenu_SetWidth(OBC_Profile, 200)
 	OBC_Profile.initialize = OPC_Profile.initialize
 local bindSet = CreateFrame("Frame", "OPC_BindingSet", frame, "UIDropDownMenuTemplate")
 	bindSet:SetPoint("LEFT", OBC_Profile, "RIGHT")	UIDropDownMenu_SetWidth(bindSet, 250)
 
 local lRing = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 local lBinding = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-	lBinding:SetPoint("TOPLEFT", 16, -125)
+	lBinding:SetPoint("TOPLEFT", 16, -115)
 	lRing:SetPoint("LEFT", lBinding, "LEFT", 215, 0)
 	lBinding:SetWidth(180)
 local bindLines, bindZone = {}, CreateFrame("Frame", nil, frame) do

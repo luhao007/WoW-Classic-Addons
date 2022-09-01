@@ -47,7 +47,7 @@ setfenv(1, select(2, ...))
 local PL = Prat.Localizations
 
 
---[===[@debug@
+--[==[@debug@
 PL:AddLocale(nil, "enUS", {
   prat = "Prat",
   ["display_name"] = "Display Settings",
@@ -67,7 +67,7 @@ PL:AddLocale(nil, "enUS", {
   load_disabledonrestart = "Disabled (reload)",
   load_enabledonrestart = "Enabled (reload)",
 })
---@end-debug@]===]
+--@end-debug@]==]
 
 -- These Localizations are auto-generated. To help with localization
 -- please go to http://www.wowace.com/projects/prat-3-0/localization/
@@ -170,7 +170,7 @@ L = {
 	["modulecontrol_desc"] = "Prat 모듈의 로드와 활성화를 제어합니다.",
 	["modulecontrol_name"] = "모듈 제어",
 	["prat"] = "Prat",
-	["reload_required"] = "이 설정은 애드온을 %s 해야 변경된 사항이 적용됩니다.",
+	["reload_required"] = "이 옵션 변경은 UI를 %s 해야 적용됩니다.",
 	["unloaded_desc"] = "모듈을 불러오지 못함, 설명을 보려면 불러오세요."
 }
 

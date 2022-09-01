@@ -9,8 +9,8 @@ local QuestieDB = QuestieLoader:ImportModule("QuestieDB")
 local QuestieLib = QuestieLoader:ImportModule("QuestieLib")
 ---@type QuestiePlayer
 local QuestiePlayer = QuestieLoader:ImportModule("QuestiePlayer")
----@type QuestieTracker
-local QuestieTracker = QuestieLoader:ImportModule("QuestieTracker")
+---@type TrackerUtils
+local TrackerUtils = QuestieLoader:ImportModule("TrackerUtils")
 ---@type l10n
 local l10n = QuestieLoader:ImportModule("l10n")
 
@@ -35,7 +35,7 @@ function ItemRefTooltip:SetHyperlink(link, ...)
     end
 
     if isQuestieLink and questId then
-        Questie:Debug(Questie.DEBUG_DEVELOP, "[QuestieTooltips:ItemRefTooltip] SetHyperlink: " .. link)
+        Questie:Debug(Questie.DEBUG_DEVELOP, "[QuestieTooltips:ItemRefTooltip] SetHyperlink:", link)
         ShowUIPanel(ItemRefTooltip)
         ItemRefTooltip:SetOwner(UIParent, "ANCHOR_PRESERVE");
         QuestieLink:CreateQuestTooltip(link)
@@ -54,6 +54,13 @@ function ItemRefTooltip:SetHyperlink(link, ...)
         -- Make sure to call the default function so everything that is not Questie can be handled (item links e.g.)
         oldItemSetHyperlink(self, link, ...)
     end
+end
+
+---@return string
+function QuestieLink:GetQuestLinkStringById(questId)
+    local questName = QuestieDB.QueryQuestSingle(questId, "name");
+    local questLevel, _ = QuestieLib:GetTbcLevel(questId);
+    return QuestieLink:GetQuestLinkString(questLevel, questName, questId)
 end
 
 ---@return string
@@ -209,9 +216,9 @@ _GetQuestStarter = function (quest)
             starterName = npc.name
 
             if npc.zoneID ~= 0 then
-                starterZoneName = QuestieTracker.utils:GetZoneNameByID(npc.zoneID)
+                starterZoneName = TrackerUtils:GetZoneNameByID(npc.zoneID)
             else
-                starterZoneName = QuestieTracker.utils:GetZoneNameByID(quest.zoneOrSort)
+                starterZoneName = TrackerUtils:GetZoneNameByID(quest.zoneOrSort)
             end
         elseif quest.Starts.Item ~= nil then
             local item = QuestieDB:GetItem(quest.Starts.Item[1])
@@ -228,20 +235,20 @@ _GetQuestStarter = function (quest)
                 end
 
                 if item.zoneID ~= 0 then
-                    starterZoneName = QuestieTracker.utils:GetZoneNameByID(dropStart.zoneID)
+                    starterZoneName = TrackerUtils:GetZoneNameByID(dropStart.zoneID)
                 else
-                    starterZoneName = QuestieTracker.utils:GetZoneNameByID(quest.zoneOrSort)
+                    starterZoneName = TrackerUtils:GetZoneNameByID(quest.zoneOrSort)
                 end
             else
-                starterZoneName = QuestieTracker.utils:GetZoneNameByID(quest.zoneOrSort)
+                starterZoneName = TrackerUtils:GetZoneNameByID(quest.zoneOrSort)
             end
         elseif quest and quest.Starts and quest.Starts.GameObject and quest.Starts.GameObject[1] then
             local object = QuestieDB:GetObject(quest.Starts.GameObject[1])
             starterName = object.name
             if object.zoneID ~= 0 then
-                starterZoneName = QuestieTracker.utils:GetZoneNameByID(object.zoneID)
+                starterZoneName = TrackerUtils:GetZoneNameByID(object.zoneID)
             else
-                starterZoneName = QuestieTracker.utils:GetZoneNameByID(quest.zoneOrSort)
+                starterZoneName = TrackerUtils:GetZoneNameByID(quest.zoneOrSort)
             end
         end
 
@@ -259,21 +266,21 @@ _GetQuestFinisher = function (quest)
             finisherName = npc.name
 
             if npc.zoneID ~= 0 then
-                finisherZoneName = QuestieTracker.utils:GetZoneNameByID(npc.zoneID)
+                finisherZoneName = TrackerUtils:GetZoneNameByID(npc.zoneID)
             else
-                finisherZoneName = QuestieTracker.utils:GetZoneNameByID(quest.zoneOrSort)
+                finisherZoneName = TrackerUtils:GetZoneNameByID(quest.zoneOrSort)
             end
         elseif quest.Finisher.Type == "object" then
             local object = QuestieDB:GetObject(quest.Finisher.Id)
             finisherName = object.name
 
             if object.zoneID ~= 0 then
-                finisherZoneName = QuestieTracker.utils:GetZoneNameByID(object.zoneID)
+                finisherZoneName = TrackerUtils:GetZoneNameByID(object.zoneID)
             else
-                finisherZoneName = QuestieTracker.utils:GetZoneNameByID(quest.zoneOrSort)
+                finisherZoneName = TrackerUtils:GetZoneNameByID(quest.zoneOrSort)
             end
         else
-            finisherZoneName = QuestieTracker.utils:GetZoneNameByID(quest.zoneOrSort)
+            finisherZoneName = TrackerUtils:GetZoneNameByID(quest.zoneOrSort)
         end
 
         return finisherName, finisherZoneName
@@ -344,7 +351,7 @@ hooksecurefunc("ChatFrame_OnHyperlinkShow", function(...)
     if (IsShiftKeyDown() and ChatEdit_GetActiveWindow() and button == "LeftButton") then
         local linkType, questId, _ = string.split(":", link)
         if linkType and linkType == "questie" and questId then
-            Questie:Debug(Questie.DEBUG_DEVELOP, "[QuestieTooltips:OnHyperlinkShow] Relinking Quest Link to chat: "..link)
+            Questie:Debug(Questie.DEBUG_DEVELOP, "[QuestieTooltips:OnHyperlinkShow] Relinking Quest Link to chat:", link)
             questId = tonumber(questId)
 
             local quest = QuestieDB:GetQuest(questId)

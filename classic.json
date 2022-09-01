@@ -6,10 +6,10 @@
     "name": "ALL THE THINGS",
     "description": "Addon for Tracking Collections & Account Completion",
     "url": "https://www.curseforge.com/wow/addons/all-the-things",
-    "download_url": "https://edge.forgecdn.net/files/3525/574/ATT-Classic-v0.7.6-bcc.zip",
-    "date_published": "2021-11-14T11:17:45.390000+00:00",
-    "version": "TBC Classic 0.7.6",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/267285/file/3525574/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3961/280/ATT-Classic-v1.0.2-wrath.zip",
+    "date_published": "2022-08-31T22:53:46.897000+00:00",
+    "version": "Wrath Classic 1.0.2",
+    "changelog_url": "https://api.curseforge.com/v1/mods/267285/files/3961280/changelog",
     "options": {
       "strategy": "default"
     },
@@ -20,6 +20,22 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "Wrath Classic 1.0.2",
+        "install_time": "2022-09-01T13:42:45+00:00"
+      },
+      {
+        "version": "TBC Classic 0.8.3",
+        "install_time": "2022-02-17T16:25:55+00:00"
+      },
+      {
+        "version": "TBC Classic 0.8.0",
+        "install_time": "2022-01-30T07:29:36+00:00"
+      },
+      {
+        "version": "TBC Classic 0.7.7",
+        "install_time": "2021-12-09T07:29:23+00:00"
+      },
       {
         "version": "TBC Classic 0.7.6",
         "install_time": "2021-11-17T11:12:46+00:00"
@@ -43,49 +59,6 @@
       {
         "version": "TBC Classic 0.5.5",
         "install_time": "2021-05-23T07:51:34+00:00"
-      },
-      {
-        "version": "TBC Classic 0.5.4",
-        "install_time": "2021-05-21T08:24:22+00:00"
-      },
-      {
-        "version": "Classic 0.5.2",
-        "install_time": "2021-05-21T01:44:32+00:00"
-      },
-      {
-        "version": "Classic 0.5.0",
-        "install_time": "2021-04-22T07:54:35+00:00"
-      },
-      {
-        "version": "Classic 0.4.9",
-        "install_time": "2021-04-19T10:09:21+00:00"
-      }
-    ]
-  },
-  {
-    "source": "curse",
-    "id": "7529",
-    "slug": "acp",
-    "name": "Addon Control Panel",
-    "description": "Adds an addon manager in game via the 'Addons' menu. Special support for multi-part addons. Based on rMCP by Rophy.",
-    "url": "https://www.curseforge.com/wow/addons/acp",
-    "download_url": "https://edge.forgecdn.net/files/2863/897/ACP-3.5.7-classic.zip",
-    "date_published": "2020-01-19T16:08:48.270000+00:00",
-    "version": "3.5.7-classic",
-    "changelog_url": "data:,",
-    "options": {
-      "strategy": "default"
-    },
-    "folders": [
-      {
-        "name": "ACP"
-      }
-    ],
-    "deps": [],
-    "logged_versions": [
-      {
-        "version": "3.5.7-classic",
-        "install_time": "2020-11-03T05:33:04+00:00"
       }
     ]
   },
@@ -96,10 +69,10 @@
     "name": "Addon Usage",
     "description": "Compares the relative memory and cpu usage of running addons",
     "url": "https://www.curseforge.com/wow/addons/addon-usage",
-    "download_url": "https://edge.forgecdn.net/files/3512/744/AddonUsage_3_0_10.zip",
-    "date_published": "2021-11-02T15:56:36.697000+00:00",
-    "version": "AddonUsage_3_0_10.zip",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/67954/file/3512744/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3961/744/AddonUsage_3_0_16.zip",
+    "date_published": "2022-09-01T07:56:28.150000+00:00",
+    "version": "AddonUsage_3_0_16.zip",
+    "changelog_url": "https://api.curseforge.com/v1/mods/67954/files/3961744/changelog",
     "options": {
       "strategy": "default"
     },
@@ -110,6 +83,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "AddonUsage_3_0_16.zip",
+        "install_time": "2022-09-01T13:42:45+00:00"
+      },
       {
         "version": "AddonUsage_3_0_10.zip",
         "install_time": "2021-11-17T11:12:46+00:00"
@@ -126,66 +103,15 @@
   },
   {
     "source": "curse",
-    "id": "99982",
-    "slug": "advancedinterfaceoptions",
-    "name": "AdvancedInterfaceOptions",
-    "description": "Restores access to removed interface options in Legion",
-    "url": "https://www.curseforge.com/wow/addons/advancedinterfaceoptions",
-    "download_url": "https://edge.forgecdn.net/files/3369/330/AdvancedInterfaceOptions-1.6.0-bcc.zip",
-    "date_published": "2021-06-29T17:09:05.210000+00:00",
-    "version": "1.6.0-bcc",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/99982/file/3369330/changelog",
-    "options": {
-      "strategy": "default"
-    },
-    "folders": [
-      {
-        "name": "AdvancedInterfaceOptions"
-      }
-    ],
-    "deps": [],
-    "logged_versions": [
-      {
-        "version": "1.6.0-bcc",
-        "install_time": "2021-07-17T04:03:32+00:00"
-      },
-      {
-        "version": "1.5.0-classic",
-        "install_time": "2021-05-21T01:44:32+00:00"
-      },
-      {
-        "version": "1.4.4-classic",
-        "install_time": "2021-04-06T09:37:39+00:00"
-      },
-      {
-        "version": "1.4.3-classic",
-        "install_time": "2020-12-03T12:07:50+00:00"
-      },
-      {
-        "version": "1.4.2-classic",
-        "install_time": "2020-11-29T11:51:31+00:00"
-      },
-      {
-        "version": "1.4.1-classic",
-        "install_time": "2020-11-03T05:35:32+00:00"
-      },
-      {
-        "version": "1.4.0-classic",
-        "install_time": "2020-11-03T05:33:04+00:00"
-      }
-    ]
-  },
-  {
-    "source": "curse",
     "id": "301",
     "slug": "atlas",
     "name": "Atlas",
     "description": "Instance map browser",
     "url": "https://www.curseforge.com/wow/addons/atlas",
-    "download_url": "https://edge.forgecdn.net/files/3351/431/Atlas_v1.49.01-tbc.zip",
-    "date_published": "2021-06-14T09:01:42.133000+00:00",
-    "version": "v1.49.01-tbc",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/301/file/3351431/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3959/104/Atlas-v1.51.06.zip",
+    "date_published": "2022-08-30T18:21:08.923000+00:00",
+    "version": "v1.51.06",
+    "changelog_url": "https://api.curseforge.com/v1/mods/301/files/3959104/changelog",
     "options": {
       "strategy": "default"
     },
@@ -196,6 +122,14 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v1.51.06",
+        "install_time": "2022-09-01T13:42:45+00:00"
+      },
+      {
+        "version": "v1.49.07",
+        "install_time": "2022-02-17T16:25:55+00:00"
+      },
       {
         "version": "v1.49.01-tbc",
         "install_time": "2021-07-17T04:03:32+00:00"
@@ -221,10 +155,10 @@
     "name": "Atlas Battlegrounds",
     "description": "Battleground Maps",
     "url": "https://www.curseforge.com/wow/addons/atlas-battlegrounds",
-    "download_url": "https://edge.forgecdn.net/files/3319/330/Atlas_Battlegrounds_v1.49.00-tbc.zip",
-    "date_published": "2021-05-22T14:32:31.290000+00:00",
-    "version": "v1.49.00-tbc",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/32829/file/3319330/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3958/717/Atlas_Battlegrounds-v1.51.04.zip",
+    "date_published": "2022-08-30T14:36:50.533000+00:00",
+    "version": "v1.51.04",
+    "changelog_url": "https://api.curseforge.com/v1/mods/32829/files/3958717/changelog",
     "options": {
       "strategy": "default"
     },
@@ -239,6 +173,14 @@
       }
     ],
     "logged_versions": [
+      {
+        "version": "v1.51.04",
+        "install_time": "2022-09-01T13:42:45+00:00"
+      },
+      {
+        "version": "v1.49.03",
+        "install_time": "2022-02-17T16:25:55+00:00"
+      },
       {
         "version": "v1.49.00-tbc",
         "install_time": "2021-05-23T07:51:35+00:00"
@@ -255,46 +197,15 @@
   },
   {
     "source": "curse",
-    "id": "33666",
-    "slug": "atlas-burningcrusade",
-    "name": "Atlas Burning Crusade",
-    "description": "Burning Crusade Instances' Maps",
-    "url": "https://www.curseforge.com/wow/addons/atlas-burningcrusade",
-    "download_url": "https://edge.forgecdn.net/files/3320/349/Atlas_BurningCrusade_v1.49.00-tbc.zip",
-    "date_published": "2021-05-23T07:43:51.397000+00:00",
-    "version": "v1.49.00-tbc",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/33666/file/3320349/changelog",
-    "options": {
-      "strategy": "default"
-    },
-    "folders": [
-      {
-        "name": "Atlas_BurningCrusade"
-      }
-    ],
-    "deps": [
-      {
-        "id": "301"
-      }
-    ],
-    "logged_versions": [
-      {
-        "version": "v1.49.00-tbc",
-        "install_time": "2021-06-08T12:21:58+00:00"
-      }
-    ]
-  },
-  {
-    "source": "curse",
     "id": "33667",
     "slug": "atlas-classicwow",
     "name": "Atlas Classic WoW",
     "description": "Classic WoW Instances' Maps",
     "url": "https://www.curseforge.com/wow/addons/atlas-classicwow",
-    "download_url": "https://edge.forgecdn.net/files/3316/736/Atlas_ClassicWoW_v1.49.00-tbc.zip",
-    "date_published": "2021-05-20T15:44:54.533000+00:00",
-    "version": "v1.49.00-tbc",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/33667/file/3316736/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3947/67/Atlas_ClassicWoW-v1.51.02.zip",
+    "date_published": "2022-08-22T16:07:10.950000+00:00",
+    "version": "v1.51.02",
+    "changelog_url": "https://api.curseforge.com/v1/mods/33667/files/3947067/changelog",
     "options": {
       "strategy": "default"
     },
@@ -309,6 +220,14 @@
       }
     ],
     "logged_versions": [
+      {
+        "version": "v1.51.02",
+        "install_time": "2022-09-01T13:42:46+00:00"
+      },
+      {
+        "version": "v1.49.03",
+        "install_time": "2022-02-17T16:25:56+00:00"
+      },
       {
         "version": "v1.49.00-tbc",
         "install_time": "2021-05-21T08:24:22+00:00"
@@ -330,10 +249,10 @@
     "name": "Atlas Dungeon Locations",
     "description": "Maps for instances' location",
     "url": "https://www.curseforge.com/wow/addons/atlas-dungeon-locations",
-    "download_url": "https://edge.forgecdn.net/files/3319/304/Atlas_DungeonLocs_v1.49.00-tbc.zip",
-    "date_published": "2021-05-22T14:11:29.350000+00:00",
-    "version": "v1.49.00-tbc",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/32830/file/3319304/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3955/215/Atlas_DungeonLocs-v1.51.07.zip",
+    "date_published": "2022-08-28T08:38:01.187000+00:00",
+    "version": "v1.51.07",
+    "changelog_url": "https://api.curseforge.com/v1/mods/32830/files/3955215/changelog",
     "options": {
       "strategy": "default"
     },
@@ -348,6 +267,14 @@
       }
     ],
     "logged_versions": [
+      {
+        "version": "v1.51.07",
+        "install_time": "2022-09-01T13:42:46+00:00"
+      },
+      {
+        "version": "v1.49.03",
+        "install_time": "2022-02-17T16:25:56+00:00"
+      },
       {
         "version": "v1.49.00-tbc",
         "install_time": "2021-05-23T07:51:35+00:00"
@@ -369,10 +296,10 @@
     "name": "Atlas Transportation",
     "description": "Transportation Maps",
     "url": "https://www.curseforge.com/wow/addons/atlas-transportation",
-    "download_url": "https://edge.forgecdn.net/files/3319/309/Atlas_Transportation_v1.49.00-tbc.zip",
-    "date_published": "2021-05-22T14:17:06.210000+00:00",
-    "version": "v1.49.00-tbc",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/32832/file/3319309/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3958/839/Atlas_Transportation-v1.51.06.zip",
+    "date_published": "2022-08-30T15:51:43.777000+00:00",
+    "version": "v1.51.06",
+    "changelog_url": "https://api.curseforge.com/v1/mods/32832/files/3958839/changelog",
     "options": {
       "strategy": "default"
     },
@@ -387,6 +314,14 @@
       }
     ],
     "logged_versions": [
+      {
+        "version": "v1.51.06",
+        "install_time": "2022-09-01T13:42:46+00:00"
+      },
+      {
+        "version": "v1.49.05",
+        "install_time": "2022-02-17T16:25:56+00:00"
+      },
       {
         "version": "v1.49.00-tbc",
         "install_time": "2021-05-23T07:51:35+00:00"
@@ -408,10 +343,10 @@
     "name": "AtlasLootClassic",
     "description": "Shows the possible loot from the bosses",
     "url": "https://www.curseforge.com/wow/addons/atlaslootclassic",
-    "download_url": "https://edge.forgecdn.net/files/3521/469/AtlasLootClassic-v2.4.0-bcc.zip",
-    "date_published": "2021-11-10T15:40:06.980000+00:00",
-    "version": "v2.4.0-bcc",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/326516/file/3521469/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3613/43/AtlasLootClassic-v2.4.1-bcc.zip",
+    "date_published": "2022-01-19T05:35:07.877000+00:00",
+    "version": "AtlasLootClassic-v2.4.1-bcc",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/326516/file/3613043/changelog",
     "options": {
       "strategy": "default"
     },
@@ -443,6 +378,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "AtlasLootClassic-v2.4.1-bcc",
+        "install_time": "2022-01-30T07:29:36+00:00"
+      },
       {
         "version": "v2.4.0-bcc",
         "install_time": "2021-11-17T11:16:24+00:00"
@@ -545,10 +484,10 @@
     "name": "Bagnon",
     "description": "All in one displays for your inventory, bank, and keyring",
     "url": "https://www.curseforge.com/wow/addons/bagnon",
-    "download_url": "https://edge.forgecdn.net/files/3481/583/Bagnon-9.1.3-2.5.1.zip",
-    "date_published": "2021-10-04T21:03:18.383000+00:00",
-    "version": "9.1.3",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/1592/file/3481583/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3545/588/Bagnon-9.1.4-2.5.2.zip",
+    "date_published": "2021-12-02T19:23:43.427000+00:00",
+    "version": "9.1.4",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/1592/file/3545588/changelog",
     "options": {
       "strategy": "default"
     },
@@ -571,6 +510,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "9.1.4",
+        "install_time": "2021-12-09T07:29:23+00:00"
+      },
       {
         "version": "9.1.3",
         "install_time": "2021-11-17T11:12:46+00:00"
@@ -608,10 +551,10 @@
     "name": "BlizzMove",
     "description": "Makes the default frames moveable via simple drag and drop",
     "url": "https://www.curseforge.com/wow/addons/blizzmove",
-    "download_url": "https://edge.forgecdn.net/files/3528/482/BlizzMove-v3.2.3-bcc.zip",
-    "date_published": "2021-11-17T10:53:01.023000+00:00",
-    "version": "v3.2.3-bcc",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/17809/file/3528482/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3938/750/BlizzMove-v3.4.4.zip",
+    "date_published": "2022-08-17T09:53:57.170000+00:00",
+    "version": "v3.4.4",
+    "changelog_url": "https://api.curseforge.com/v1/mods/17809/files/3938750/changelog",
     "options": {
       "strategy": "default"
     },
@@ -625,6 +568,22 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v3.4.4",
+        "install_time": "2022-09-01T13:41:21+00:00"
+      },
+      {
+        "version": "v3.2.10-bcc",
+        "install_time": "2022-02-17T16:25:56+00:00"
+      },
+      {
+        "version": "v3.2.9-bcc",
+        "install_time": "2022-01-30T07:29:36+00:00"
+      },
+      {
+        "version": "v3.2.7-bcc",
+        "install_time": "2021-12-09T07:29:23+00:00"
+      },
       {
         "version": "v3.2.3-bcc",
         "install_time": "2021-11-17T11:12:46+00:00"
@@ -648,22 +607,6 @@
       {
         "version": "v3.0.12b-classic",
         "install_time": "2021-04-22T07:54:35+00:00"
-      },
-      {
-        "version": "v3.0.12-classic",
-        "install_time": "2021-04-06T09:37:40+00:00"
-      },
-      {
-        "version": "v3.0.10a-classic",
-        "install_time": "2021-03-24T11:22:41+00:00"
-      },
-      {
-        "version": "v3.0.9-classic",
-        "install_time": "2021-01-01T15:22:15+00:00"
-      },
-      {
-        "version": "v3.0.8-classic",
-        "install_time": "2020-12-26T15:34:00+00:00"
       }
     ]
   },
@@ -709,13 +652,13 @@
     "source": "curse",
     "id": "322865",
     "slug": "classiccastbars",
-    "name": "Classic Castbars (TBC & Classic)",
+    "name": "Classic Castbars",
     "description": "Adds customizable castbars to various unitframes.",
     "url": "https://www.curseforge.com/wow/addons/classiccastbars",
-    "download_url": "https://edge.forgecdn.net/files/3476/378/ClassicCastbars-v1.4.2-bcc.zip",
-    "date_published": "2021-09-29T14:19:49.950000+00:00",
-    "version": "v1.4.2-bcc",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/322865/file/3476378/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3937/526/ClassicCastbars-v1.5.1-wrath.zip",
+    "date_published": "2022-08-16T18:29:57.523000+00:00",
+    "version": "v1.5.1-wrath",
+    "changelog_url": "https://api.curseforge.com/v1/mods/322865/files/3937526/changelog",
     "options": {
       "strategy": "default"
     },
@@ -729,6 +672,18 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v1.5.1-wrath",
+        "install_time": "2022-09-01T13:41:18+00:00"
+      },
+      {
+        "version": "v1.4.4-bcc",
+        "install_time": "2022-01-30T07:29:36+00:00"
+      },
+      {
+        "version": "v1.4.3-bcc",
+        "install_time": "2021-12-09T07:29:23+00:00"
+      },
       {
         "version": "v1.4.2-bcc",
         "install_time": "2021-11-17T11:12:47+00:00"
@@ -756,18 +711,6 @@
       {
         "version": "v1.3.19-classic",
         "install_time": "2021-02-06T08:57:12+00:00"
-      },
-      {
-        "version": "v1.3.17-classic",
-        "install_time": "2021-01-26T09:31:01+00:00"
-      },
-      {
-        "version": "v1.3.16-classic",
-        "install_time": "2021-01-01T15:22:16+00:00"
-      },
-      {
-        "version": "v1.3.15-classic",
-        "install_time": "2020-12-04T07:44:51+00:00"
       }
     ]
   },
@@ -800,141 +743,15 @@
   },
   {
     "source": "curse",
-    "id": "3358",
-    "slug": "deadly-boss-mods",
-    "name": "Deadly Boss Mods (DBM)",
-    "description": "The ultimate encounter helper to give you fight info that's easy to process at a glance. DBM aims to focus on what's happening to you, and what YOU need to do about it.",
-    "url": "https://www.curseforge.com/wow/addons/deadly-boss-mods",
-    "download_url": "https://edge.forgecdn.net/files/3512/653/DBM-2.5.19-bcc.zip",
-    "date_published": "2021-11-02T14:22:41.333000+00:00",
-    "version": "DBM-2.5.19-bcc",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/3358/file/3512653/changelog",
-    "options": {
-      "strategy": "default"
-    },
-    "folders": [
-      {
-        "name": "DBM-AQ20"
-      },
-      {
-        "name": "DBM-AQ40"
-      },
-      {
-        "name": "DBM-Azeroth"
-      },
-      {
-        "name": "DBM-BWL"
-      },
-      {
-        "name": "DBM-BlackTemple"
-      },
-      {
-        "name": "DBM-Core"
-      },
-      {
-        "name": "DBM-GUI"
-      },
-      {
-        "name": "DBM-Hyjal"
-      },
-      {
-        "name": "DBM-Karazhan"
-      },
-      {
-        "name": "DBM-MC"
-      },
-      {
-        "name": "DBM-Naxx"
-      },
-      {
-        "name": "DBM-Onyxia"
-      },
-      {
-        "name": "DBM-Outlands"
-      },
-      {
-        "name": "DBM-Party-BC"
-      },
-      {
-        "name": "DBM-Party-Classic"
-      },
-      {
-        "name": "DBM-Serpentshrine"
-      },
-      {
-        "name": "DBM-StatusBarTimers"
-      },
-      {
-        "name": "DBM-Sunwell"
-      },
-      {
-        "name": "DBM-TheEye"
-      },
-      {
-        "name": "DBM-WorldEvents"
-      },
-      {
-        "name": "DBM-ZG"
-      },
-      {
-        "name": "DBM-ZulAman"
-      }
-    ],
-    "deps": [],
-    "logged_versions": [
-      {
-        "version": "DBM-2.5.19-bcc",
-        "install_time": "2021-11-17T11:16:25+00:00"
-      },
-      {
-        "version": "2.5.8-bcc",
-        "install_time": "2021-07-17T04:03:34+00:00"
-      },
-      {
-        "version": "2.5.4-bcc",
-        "install_time": "2021-05-30T05:16:03+00:00"
-      },
-      {
-        "version": "2.5.3-bc",
-        "install_time": "2021-05-21T08:27:00+00:00"
-      },
-      {
-        "version": "1.13.72-classic",
-        "install_time": "2021-04-22T07:54:36+00:00"
-      },
-      {
-        "version": "1.13.71-classic",
-        "install_time": "2021-04-06T09:37:41+00:00"
-      },
-      {
-        "version": "1.13.70-classic",
-        "install_time": "2021-03-24T11:22:42+00:00"
-      },
-      {
-        "version": "1.13.69-classic",
-        "install_time": "2021-02-18T12:14:40+00:00"
-      },
-      {
-        "version": "1.13.68-classic",
-        "install_time": "2021-01-29T06:40:53+00:00"
-      },
-      {
-        "version": "1.13.67-classic",
-        "install_time": "2021-01-09T08:44:09+00:00"
-      }
-    ]
-  },
-  {
-    "source": "curse",
     "id": "61882",
     "slug": "dbm-pvp",
     "name": "Deadly Boss Mods (DBM) - PvP Mods",
     "description": "Deadly Boss Mods for Battlegrounds and Arenas",
     "url": "https://www.curseforge.com/wow/addons/dbm-pvp",
-    "download_url": "https://edge.forgecdn.net/files/3512/875/DBM-PvP-r128-bcc.zip",
-    "date_published": "2021-11-02T17:39:12.293000+00:00",
-    "version": "r128-bcc",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/61882/file/3512875/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3937/354/DBM-PvP-r135.zip",
+    "date_published": "2022-08-16T16:23:35.800000+00:00",
+    "version": "r135",
+    "changelog_url": "https://api.curseforge.com/v1/mods/61882/files/3937354/changelog",
     "options": {
       "strategy": "default"
     },
@@ -949,6 +766,22 @@
       }
     ],
     "logged_versions": [
+      {
+        "version": "r135",
+        "install_time": "2022-09-01T13:41:21+00:00"
+      },
+      {
+        "version": "r131-bcc",
+        "install_time": "2022-02-17T16:25:58+00:00"
+      },
+      {
+        "version": "r130-bcc",
+        "install_time": "2022-01-30T07:29:38+00:00"
+      },
+      {
+        "version": "r129-bcc",
+        "install_time": "2021-12-09T07:29:24+00:00"
+      },
       {
         "version": "r128-bcc",
         "install_time": "2021-11-17T11:12:47+00:00"
@@ -972,22 +805,6 @@
       {
         "version": "r123-classic",
         "install_time": "2021-05-21T01:44:33+00:00"
-      },
-      {
-        "version": "r122-classic",
-        "install_time": "2021-04-22T07:54:36+00:00"
-      },
-      {
-        "version": "r120-classic",
-        "install_time": "2021-04-06T09:37:41+00:00"
-      },
-      {
-        "version": "r118-classic",
-        "install_time": "2021-03-24T11:22:42+00:00"
-      },
-      {
-        "version": "r117-classic",
-        "install_time": "2021-03-10T02:50:09+00:00"
       }
     ]
   },
@@ -1044,74 +861,15 @@
   },
   {
     "source": "curse",
-    "id": "334987",
-    "slug": "dejaclassicstats",
-    "name": "DejaClassicStats",
-    "description": "Dejablue's improved Classic character stats panel view.",
-    "url": "https://www.curseforge.com/wow/addons/dejaclassicstats",
-    "download_url": "https://edge.forgecdn.net/files/3487/671/DejaClassicStats205r019.zip",
-    "date_published": "2021-10-11T08:24:18.667000+00:00",
-    "version": "205r019",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/334987/file/3487671/changelog",
-    "options": {
-      "strategy": "default"
-    },
-    "folders": [
-      {
-        "name": "DejaClassicStats"
-      }
-    ],
-    "deps": [],
-    "logged_versions": [
-      {
-        "version": "205r019",
-        "install_time": "2021-11-17T11:12:47+00:00"
-      },
-      {
-        "version": "205r016",
-        "install_time": "2021-07-17T04:03:34+00:00"
-      },
-      {
-        "version": "205r011",
-        "install_time": "2021-06-08T12:12:22+00:00"
-      },
-      {
-        "version": "205r008",
-        "install_time": "2021-05-31T08:28:38+00:00"
-      },
-      {
-        "version": "205r005",
-        "install_time": "2021-05-22T08:02:06+00:00"
-      },
-      {
-        "version": "205r004",
-        "install_time": "2021-05-22T04:51:33+00:00"
-      },
-      {
-        "version": "205r003",
-        "install_time": "2021-05-21T08:24:23+00:00"
-      },
-      {
-        "version": "1307r003",
-        "install_time": "2021-04-22T07:54:36+00:00"
-      },
-      {
-        "version": "1305r004",
-        "install_time": "2020-11-03T05:33:04+00:00"
-      }
-    ]
-  },
-  {
-    "source": "curse",
     "id": "61284",
     "slug": "details",
     "name": "Details! Damage Meter",
     "description": "Complete combat analysis, gathering damage, healing, and other importante stuff.",
     "url": "https://www.curseforge.com/wow/addons/details",
-    "download_url": "https://edge.forgecdn.net/files/3524/676/DetailsTBC.2.5.2.0030.145.zip",
-    "date_published": "2021-11-13T16:26:41.473000+00:00",
-    "version": "DetailsTBC.2.5.2.0030.145",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/61284/file/3524676/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3558/772/DetailsTBC.2.5.2.0031.145.zip",
+    "date_published": "2021-12-10T21:25:35.700000+00:00",
+    "version": "DetailsTBC.2.5.2.0031.145",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/61284/file/3558772/changelog",
     "options": {
       "strategy": "default"
     },
@@ -1129,6 +887,10 @@
     "deps": [],
     "logged_versions": [
       {
+        "version": "DetailsTBC.2.5.2.0031.145",
+        "install_time": "2022-01-30T07:29:38+00:00"
+      },
+      {
         "version": "DetailsTBC.2.5.2.0030.145",
         "install_time": "2021-11-17T11:12:47+00:00"
       },
@@ -1144,93 +906,15 @@
   },
   {
     "source": "curse",
-    "id": "340577",
-    "slug": "fishing-buddy-classic",
-    "name": "Fishing Buddy (Classic)",
-    "description": "Fishing support for WoW Classic",
-    "url": "https://www.curseforge.com/wow/addons/fishing-buddy-classic",
-    "download_url": "https://edge.forgecdn.net/files/3353/612/FishingBuddy-0.7.4b5.zip",
-    "date_published": "2021-06-16T03:15:09.753000+00:00",
-    "version": "0.7.4 Beta 5",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/340577/file/3353612/changelog",
-    "options": {
-      "strategy": "curse_latest_beta"
-    },
-    "folders": [
-      {
-        "name": "FishingBuddy"
-      }
-    ],
-    "deps": [],
-    "logged_versions": [
-      {
-        "version": "0.7.4 Beta 5",
-        "install_time": "2021-07-17T04:03:35+00:00"
-      },
-      {
-        "version": "0.7.4 Beta 2",
-        "install_time": "2021-05-22T04:51:34+00:00"
-      },
-      {
-        "version": "0.7.4 Beta 1",
-        "install_time": "2021-05-21T15:07:51+00:00"
-      },
-      {
-        "version": "0.7.3 Beta 10",
-        "install_time": "2021-03-10T02:50:09+00:00"
-      },
-      {
-        "version": "0.7.3 Beta 7",
-        "install_time": "2020-11-03T05:33:04+00:00"
-      }
-    ]
-  },
-  {
-    "source": "curse",
-    "id": "6079",
-    "slug": "fizzle",
-    "name": "Fizzle",
-    "description": "Show item durability and quality in the character frame.",
-    "url": "https://www.curseforge.com/wow/addons/fizzle",
-    "download_url": "https://edge.forgecdn.net/files/3338/895/Fizzle-90005-1-bcc.zip",
-    "date_published": "2021-06-05T12:15:21.963000+00:00",
-    "version": "90005-1-bcc",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/6079/file/3338895/changelog",
-    "options": {
-      "strategy": "default"
-    },
-    "folders": [
-      {
-        "name": "Fizzle"
-      }
-    ],
-    "deps": [],
-    "logged_versions": [
-      {
-        "version": "90005-1-bcc",
-        "install_time": "2021-06-08T12:12:22+00:00"
-      },
-      {
-        "version": "90002-2-classic",
-        "install_time": "2020-11-29T11:51:31+00:00"
-      },
-      {
-        "version": "80300-1-classic",
-        "install_time": "2020-11-03T05:33:04+00:00"
-      }
-    ]
-  },
-  {
-    "source": "curse",
     "id": "20697",
     "slug": "gtfo",
     "name": "GTFO",
     "description": "GTFO warns you when you're standing in fire or other bad stuff.",
     "url": "https://www.curseforge.com/wow/addons/gtfo",
-    "download_url": "https://edge.forgecdn.net/files/3520/504/GTFO-4.65.2-BC.zip",
-    "date_published": "2021-11-09T15:52:06.760000+00:00",
-    "version": "4.65.2-BC",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/20697/file/3520504/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3642/731/GTFO-4.65.3-BC.zip",
+    "date_published": "2022-02-10T03:18:19.227000+00:00",
+    "version": "4.65.3-BC",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/20697/file/3642731/changelog",
     "options": {
       "strategy": "default"
     },
@@ -1241,6 +925,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "4.65.3-BC",
+        "install_time": "2022-02-17T16:25:58+00:00"
+      },
       {
         "version": "4.65.2-BC",
         "install_time": "2021-11-17T11:12:47+00:00"
@@ -1317,10 +1005,10 @@
     "name": "GatherMate2 Data Wowhead classic",
     "description": "GatherMate2 data from Wowhead",
     "url": "https://www.curseforge.com/wow/addons/gathermate2-data-wowhead-classic",
-    "download_url": "https://edge.forgecdn.net/files/3519/611/gathermate2_data_wowhead_classic_v2021-11-08.zip",
-    "date_published": "2021-11-08T16:11:01.097000+00:00",
-    "version": "gathermate2_data_wowhead_classic_v2021-11-08.zip",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/350035/file/3519611/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3959/902/gathermate2_data_wowhead_classic_v2022-08-31.zip",
+    "date_published": "2022-08-31T05:19:58.237000+00:00",
+    "version": "gathermate2_data_wowhead_classic_v2022-08-31.zip",
+    "changelog_url": "https://api.curseforge.com/v1/mods/350035/files/3959902/changelog",
     "options": {
       "strategy": "default"
     },
@@ -1331,6 +1019,14 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "gathermate2_data_wowhead_classic_v2022-08-31.zip",
+        "install_time": "2022-09-01T13:42:46+00:00"
+      },
+      {
+        "version": "gathermate2_data_wowhead_classic_v2022-01-20.zip",
+        "install_time": "2022-01-30T07:29:39+00:00"
+      },
       {
         "version": "gathermate2_data_wowhead_classic_v2021-11-08.zip",
         "install_time": "2021-11-17T11:12:47+00:00"
@@ -1362,14 +1058,6 @@
       {
         "version": "gathermate2_data_wowhead_classic_v2021-05-19.zip",
         "install_time": "2021-05-21T08:24:23+00:00"
-      },
-      {
-        "version": "gathermate2_data_wowhead_classic_v2021-02-21.zip",
-        "install_time": "2021-02-25T12:01:17+00:00"
-      },
-      {
-        "version": "gathermate2_data_wowhead_classic_v2020-12-29.zip",
-        "install_time": "2021-01-01T15:22:16+00:00"
       }
     ]
   },
@@ -1529,68 +1217,21 @@
   },
   {
     "source": "curse",
-    "id": "14154",
-    "slug": "handynotes",
-    "name": "HandyNotes",
-    "description": "Handy notes for your maps",
-    "url": "https://www.curseforge.com/wow/addons/handynotes",
-    "download_url": "https://edge.forgecdn.net/files/3369/777/HandyNotes-v1.6.4-bcc.zip",
-    "date_published": "2021-06-29T21:30:07.613000+00:00",
-    "version": "v1.6.4-bcc",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/14154/file/3369777/changelog",
-    "options": {
-      "strategy": "default"
-    },
-    "folders": [
-      {
-        "name": "HandyNotes"
-      }
-    ],
-    "deps": [],
-    "logged_versions": [
-      {
-        "version": "v1.6.4-bcc",
-        "install_time": "2021-07-17T04:03:35+00:00"
-      },
-      {
-        "version": "v1.6.3-bcc",
-        "install_time": "2021-05-21T08:24:24+00:00"
-      },
-      {
-        "version": "v1.6.3-classic",
-        "install_time": "2021-05-21T01:44:34+00:00"
-      },
-      {
-        "version": "v1.6.2-classic",
-        "install_time": "2021-03-24T11:22:42+00:00"
-      },
-      {
-        "version": "v1.6.1-classic",
-        "install_time": "2020-11-24T11:19:24+00:00"
-      },
-      {
-        "version": "v1.6.0-classic",
-        "install_time": "2020-11-03T05:33:04+00:00"
-      }
-    ]
-  },
-  {
-    "source": "curse",
     "id": "339397",
     "slug": "handynotes-travelguide-classic",
-    "name": "HandyNotes: TravelGuide (Classic & BCC)",
+    "name": "HandyNotes: TravelGuide (Classic versions)",
     "description": "Shows the boat and zepplin locations on the World Map and the MiniMap.",
     "url": "https://www.curseforge.com/wow/addons/handynotes-travelguide-classic",
-    "download_url": "https://edge.forgecdn.net/files/3459/773/HandyNotes_TravelGuide (BCC)-v3.2.zip",
-    "date_published": "2021-09-14T21:24:00.343000+00:00",
-    "version": "BCC - v3.2",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/339397/file/3459773/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3960/767/HandyNotes_TravelGuide-v1.zip",
+    "date_published": "2022-08-31T17:02:02.147000+00:00",
+    "version": "WotLKC - v1",
+    "changelog_url": "https://api.curseforge.com/v1/mods/339397/files/3960767/changelog",
     "options": {
       "strategy": "default"
     },
     "folders": [
       {
-        "name": "HandyNotes_TravelGuide (BCC)"
+        "name": "HandyNotes_TravelGuide"
       }
     ],
     "deps": [
@@ -1599,6 +1240,10 @@
       }
     ],
     "logged_versions": [
+      {
+        "version": "WotLKC - v1",
+        "install_time": "2022-09-01T13:42:46+00:00"
+      },
       {
         "version": "BCC - v3.2",
         "install_time": "2021-11-17T11:12:47+00:00"
@@ -1841,62 +1486,15 @@
   },
   {
     "source": "curse",
-    "id": "14376",
-    "slug": "mapster",
-    "name": "Mapster",
-    "description": "Simple Map Mod",
-    "url": "https://www.curseforge.com/wow/addons/mapster",
-    "download_url": "https://edge.forgecdn.net/files/3369/758/Mapster-1.9.5-bcc.zip",
-    "date_published": "2021-06-29T21:25:18.413000+00:00",
-    "version": "1.9.5-bcc",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/14376/file/3369758/changelog",
-    "options": {
-      "strategy": "default"
-    },
-    "folders": [
-      {
-        "name": "Mapster"
-      }
-    ],
-    "deps": [],
-    "logged_versions": [
-      {
-        "version": "1.9.5-bcc",
-        "install_time": "2021-07-17T04:03:35+00:00"
-      },
-      {
-        "version": "1.9.3-classic",
-        "install_time": "2021-05-23T07:48:35+00:00"
-      },
-      {
-        "version": "1.9.3-bcc",
-        "install_time": "2021-05-21T09:15:54+00:00"
-      },
-      {
-        "version": "1.9.2-classic",
-        "install_time": "2021-03-24T11:22:42+00:00"
-      },
-      {
-        "version": "1.9.1-classic",
-        "install_time": "2020-11-24T11:19:24+00:00"
-      },
-      {
-        "version": "1.9.0-classic",
-        "install_time": "2020-11-03T05:33:04+00:00"
-      }
-    ]
-  },
-  {
-    "source": "curse",
     "id": "79879",
     "slug": "method-raid-tools",
     "name": "Method Raid Tools",
     "description": "Helpful addon for raiding",
     "url": "https://www.curseforge.com/wow/addons/method-raid-tools",
-    "download_url": "https://edge.forgecdn.net/files/3512/711/MRT4600-tbc.zip",
-    "date_published": "2021-11-02T15:35:48.203000+00:00",
-    "version": "Method Raid Tools v.4600 TBC",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/79879/file/3512711/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3647/929/MRT4610-tbc.zip",
+    "date_published": "2022-02-14T08:59:44.473000+00:00",
+    "version": "Method Raid Tools v.4610 TBC",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/79879/file/3647929/changelog",
     "options": {
       "strategy": "default"
     },
@@ -1910,6 +1508,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "Method Raid Tools v.4610 TBC",
+        "install_time": "2022-02-17T16:25:58+00:00"
+      },
       {
         "version": "Method Raid Tools v.4600 TBC",
         "install_time": "2021-11-17T11:12:48+00:00"
@@ -2047,10 +1649,10 @@
     "name": "Nova World Buffs",
     "description": "Classic WoW world buff timers and pre buff drop warnings so you never miss a buff.",
     "url": "https://www.curseforge.com/wow/addons/nova-world-buffs",
-    "download_url": "https://edge.forgecdn.net/files/3468/324/NovaWorldBuffs-v2.16-TBC.zip",
-    "date_published": "2021-09-22T10:19:20.520000+00:00",
-    "version": "NovaWorldBuffs-v2.16-TBC.zip",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/366310/file/3468324/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3943/457/NovaWorldBuffs-v2.30-Wrath.zip",
+    "date_published": "2022-08-20T14:37:09.183000+00:00",
+    "version": "NovaWorldBuffs-v2.30-Wrath.zip",
+    "changelog_url": "https://api.curseforge.com/v1/mods/366310/files/3943457/changelog",
     "options": {
       "strategy": "default"
     },
@@ -2061,6 +1663,22 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "NovaWorldBuffs-v2.30-Wrath.zip",
+        "install_time": "2022-09-01T13:42:47+00:00"
+      },
+      {
+        "version": "NovaWorldBuffs-v2.20-TBC.zip",
+        "install_time": "2022-02-17T16:25:59+00:00"
+      },
+      {
+        "version": "NovaWorldBuffs-v2.19-TBC.zip",
+        "install_time": "2022-01-30T07:29:39+00:00"
+      },
+      {
+        "version": "NovaWorldBuffs-v2.17-TBC.zip",
+        "install_time": "2021-12-09T07:29:24+00:00"
+      },
       {
         "version": "NovaWorldBuffs-v2.16-TBC.zip",
         "install_time": "2021-11-17T11:12:48+00:00"
@@ -2084,22 +1702,6 @@
       {
         "version": "NovaWorldBuffs-v2.03.zip",
         "install_time": "2021-05-23T07:48:35+00:00"
-      },
-      {
-        "version": "NovaWorldBuffs-v2.03-TBC.zip",
-        "install_time": "2021-05-21T08:24:24+00:00"
-      },
-      {
-        "version": "NovaWorldBuffs-v2.02.zip",
-        "install_time": "2021-05-21T01:44:34+00:00"
-      },
-      {
-        "version": "NovaWorldBuffs-v1.92.zip",
-        "install_time": "2021-04-22T07:54:37+00:00"
-      },
-      {
-        "version": "NovaWorldBuffs-v1.91.zip",
-        "install_time": "2021-04-06T09:37:42+00:00"
       }
     ]
   },
@@ -2110,10 +1712,10 @@
     "name": "OPie\u200b",
     "description": "Bind actions to a pop-up radial menu.",
     "url": "https://www.curseforge.com/wow/addons/opie",
-    "download_url": "https://edge.forgecdn.net/files/3118/120/OPie-ancientxe2a.zip",
-    "date_published": "2020-11-20T22:00:06.123000+00:00",
-    "version": "Ancient Xe 2a",
-    "changelog_url": "data:,",
+    "download_url": "https://edge.forgecdn.net/files/3939/687/OPie-xe8.zip",
+    "date_published": "2022-08-17T20:24:41.783000+00:00",
+    "version": "Xe 8",
+    "changelog_url": "https://api.curseforge.com/v1/mods/19406/files/3939687/changelog",
     "options": {
       "strategy": "default"
     },
@@ -2124,6 +1726,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "Xe 8",
+        "install_time": "2022-09-01T13:42:47+00:00"
+      },
       {
         "version": "Ancient Xe 2a",
         "install_time": "2020-11-24T11:19:25+00:00"
@@ -2141,10 +1747,10 @@
     "name": "OmniCC",
     "description": "Cooldown count for everything",
     "url": "https://www.curseforge.com/wow/addons/omni-cc",
-    "download_url": "https://edge.forgecdn.net/files/3374/210/OmniCC-9.1.0-bcc.zip",
-    "date_published": "2021-07-02T19:22:38.083000+00:00",
-    "version": "9.1.0-bcc",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/2057/file/3374210/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3934/436/OmniCC-9.2.1.zip",
+    "date_published": "2022-08-14T18:16:27.670000+00:00",
+    "version": "9.2.1",
+    "changelog_url": "https://api.curseforge.com/v1/mods/2057/files/3934436/changelog",
     "options": {
       "strategy": "default"
     },
@@ -2158,6 +1764,14 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "9.2.1",
+        "install_time": "2022-09-01T13:42:47+00:00"
+      },
+      {
+        "version": "9.1.6-bcc",
+        "install_time": "2022-01-30T07:29:39+00:00"
+      },
       {
         "version": "9.1.0-bcc",
         "install_time": "2021-07-17T04:03:36+00:00"
@@ -2189,14 +1803,6 @@
       {
         "version": "9.0.3-classic",
         "install_time": "2020-11-10T10:27:08+00:00"
-      },
-      {
-        "version": "9.0.2-classic",
-        "install_time": "2020-11-03T05:35:35+00:00"
-      },
-      {
-        "version": "9.0.1-classic",
-        "install_time": "2020-11-03T05:33:04+00:00"
       }
     ]
   },
@@ -2207,10 +1813,10 @@
     "name": "PallyPower",
     "description": "Personal and Raid/Party Paladin buffs",
     "url": "https://www.curseforge.com/wow/addons/pally-power",
-    "download_url": "https://edge.forgecdn.net/files/3528/198/PallyPower-v1.4.1-classic.zip",
-    "date_published": "2021-11-17T01:50:07.070000+00:00",
-    "version": "v1.4.1-classic",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/2703/file/3528198/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3956/388/PallyPower-v1.4.8-classic.zip",
+    "date_published": "2022-08-29T00:17:27.780000+00:00",
+    "version": "v1.4.8-classic",
+    "changelog_url": "https://api.curseforge.com/v1/mods/2703/files/3956388/changelog",
     "options": {
       "strategy": "default"
     },
@@ -2221,6 +1827,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v1.4.8-classic",
+        "install_time": "2022-09-01T13:41:18+00:00"
+      },
       {
         "version": "v1.4.1-classic",
         "install_time": "2021-11-17T11:12:48+00:00"
@@ -2242,10 +1852,10 @@
     "name": "Pawn",
     "description": "Pawn helps you compare items and find upgrades.",
     "url": "https://www.curseforge.com/wow/addons/pawn",
-    "download_url": "https://edge.forgecdn.net/files/3520/81/Pawn-2.5.30-BurningCrusade.zip",
-    "date_published": "2021-11-09T01:16:15.207000+00:00",
-    "version": "2.5.30 (Burning Crusade)",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/4646/file/3520081/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3957/716/Pawn-2.6-Wrath.zip",
+    "date_published": "2022-08-29T21:19:33.450000+00:00",
+    "version": "2.6 (Wrath Classic)",
+    "changelog_url": "https://api.curseforge.com/v1/mods/4646/files/3957716/changelog",
     "options": {
       "strategy": "default"
     },
@@ -2256,6 +1866,14 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "2.6 (Wrath Classic)",
+        "install_time": "2022-09-01T13:42:47+00:00"
+      },
+      {
+        "version": "2.5.31 (Burning Crusade)",
+        "install_time": "2022-01-30T07:29:39+00:00"
+      },
       {
         "version": "2.5.30 (Burning Crusade)",
         "install_time": "2021-11-17T11:12:48+00:00"
@@ -2287,14 +1905,6 @@
       {
         "version": "2.5.3 (Classic)",
         "install_time": "2021-05-23T07:48:35+00:00"
-      },
-      {
-        "version": "2.5.3 (Burning Crusade)",
-        "install_time": "2021-05-22T04:51:34+00:00"
-      },
-      {
-        "version": "2.5.2 (Burning Crusade)",
-        "install_time": "2021-05-21T08:24:25+00:00"
       }
     ]
   },
@@ -2305,10 +1915,10 @@
     "name": "Plater Nameplates",
     "description": "Highly customizable nameplate with support to scripts and animations.",
     "url": "https://www.curseforge.com/wow/addons/plater-nameplates",
-    "download_url": "https://edge.forgecdn.net/files/3512/122/Plater-v342-bcc.zip",
-    "date_published": "2021-11-01T23:04:14.783000+00:00",
-    "version": "Plater-v342-bcc",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/100547/file/3512122/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3949/570/Plater-v353.1-wrath.zip",
+    "date_published": "2022-08-24T07:51:11.480000+00:00",
+    "version": "Plater-v353.1-wrath",
+    "changelog_url": "https://api.curseforge.com/v1/mods/100547/files/3949570/changelog",
     "options": {
       "strategy": "default"
     },
@@ -2319,6 +1929,14 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "Plater-v353.1-wrath",
+        "install_time": "2022-09-01T13:41:19+00:00"
+      },
+      {
+        "version": "Plater-v343-bcc",
+        "install_time": "2022-01-30T07:29:39+00:00"
+      },
       {
         "version": "Plater-v342-bcc",
         "install_time": "2021-11-17T11:12:49+00:00"
@@ -2350,83 +1968,6 @@
       {
         "version": "Plater-1.13.6.96-Classic",
         "install_time": "2021-03-02T11:02:45+00:00"
-      },
-      {
-        "version": "Plater-1.13.5.95-Classic",
-        "install_time": "2020-11-24T11:19:27+00:00"
-      },
-      {
-        "version": "Plater-1.13.5.93-Classic",
-        "install_time": "2020-11-03T05:33:04+00:00"
-      }
-    ]
-  },
-  {
-    "source": "curse",
-    "id": "7473",
-    "slug": "prat-3-0",
-    "name": "Prat 3.0",
-    "description": "A framework for chat ehancement modules.",
-    "url": "https://www.curseforge.com/wow/addons/prat-3-0",
-    "download_url": "https://edge.forgecdn.net/files/3092/215/Prat-3.0-3.9.1-classic.zip",
-    "date_published": "2020-10-25T08:39:39.603000+00:00",
-    "version": "3.9.1-classic",
-    "changelog_url": "data:,",
-    "options": {
-      "strategy": "default"
-    },
-    "folders": [
-      {
-        "name": "Prat-3.0"
-      },
-      {
-        "name": "Prat-3.0_Libraries"
-      }
-    ],
-    "deps": [],
-    "logged_versions": [
-      {
-        "version": "3.9.1-classic",
-        "install_time": "2020-11-03T05:33:04+00:00"
-      }
-    ]
-  },
-  {
-    "source": "curse",
-    "id": "4558",
-    "slug": "quartz",
-    "name": "Quartz",
-    "description": "Modular casting bar.",
-    "url": "https://www.curseforge.com/wow/addons/quartz",
-    "download_url": "https://edge.forgecdn.net/files/3467/484/Quartz-3.6.7-bcc.zip",
-    "date_published": "2021-09-21T07:22:54.360000+00:00",
-    "version": "3.6.7-bcc",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/4558/file/3467484/changelog",
-    "options": {
-      "strategy": "default"
-    },
-    "folders": [
-      {
-        "name": "Quartz"
-      }
-    ],
-    "deps": [],
-    "logged_versions": [
-      {
-        "version": "3.6.7-bcc",
-        "install_time": "2021-11-17T11:12:49+00:00"
-      },
-      {
-        "version": "3.6.6-bcc",
-        "install_time": "2021-07-17T04:03:36+00:00"
-      },
-      {
-        "version": "3.6.5-bcc",
-        "install_time": "2021-05-21T09:15:54+00:00"
-      },
-      {
-        "version": "3.5-classic-5",
-        "install_time": "2020-11-03T05:33:04+00:00"
       }
     ]
   },
@@ -2437,10 +1978,10 @@
     "name": "Questie",
     "description": "The Classic Quest Helper",
     "url": "https://www.curseforge.com/wow/addons/questie",
-    "download_url": "https://edge.forgecdn.net/files/3528/74/Questie-v6.8.0-tbc.zip",
-    "date_published": "2021-11-16T22:32:28.040000+00:00",
-    "version": "v6.8.0 - TBC",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/334372/file/3528074/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3961/136/Questie-v7.0.1.zip",
+    "date_published": "2022-08-31T20:56:45.710000+00:00",
+    "version": "v7.01",
+    "changelog_url": "https://api.curseforge.com/v1/mods/334372/files/3961136/changelog",
     "options": {
       "strategy": "default"
     },
@@ -2451,6 +1992,22 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v7.01",
+        "install_time": "2022-09-01T13:41:22+00:00"
+      },
+      {
+        "version": "v6.8.4",
+        "install_time": "2022-02-17T16:26:00+00:00"
+      },
+      {
+        "version": "v6.8.3",
+        "install_time": "2022-01-30T07:29:40+00:00"
+      },
+      {
+        "version": "v6.8.1",
+        "install_time": "2021-12-09T07:29:25+00:00"
+      },
       {
         "version": "v6.8.0 - TBC",
         "install_time": "2021-11-17T11:12:50+00:00"
@@ -2474,22 +2031,6 @@
       {
         "version": "v6.3.12 - Universal (Era)",
         "install_time": "2021-05-23T07:48:36+00:00"
-      },
-      {
-        "version": "v6.3.11 - Universal (TBC)",
-        "install_time": "2021-05-21T08:24:26+00:00"
-      },
-      {
-        "version": "v6.3.11 - Universal (Era)",
-        "install_time": "2021-05-21T01:44:35+00:00"
-      },
-      {
-        "version": "v6.2.5",
-        "install_time": "2021-02-07T12:24:32+00:00"
-      },
-      {
-        "version": "v6.2.4",
-        "install_time": "2021-01-09T08:44:12+00:00"
       }
     ]
   },
@@ -2500,10 +2041,10 @@
     "name": "RaidLedger",
     "description": "GDKP gold run ledger",
     "url": "https://www.curseforge.com/wow/addons/raidledger",
-    "download_url": "https://edge.forgecdn.net/files/3319/544/RaidLedger-v1.8.4-tbc.zip",
-    "date_published": "2021-05-22T17:36:55.483000+00:00",
-    "version": "v1.8.4-tbc",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/349048/file/3319544/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3594/51/RaidLedger-v1.9.5-v2.5.2.zip",
+    "date_published": "2022-01-04T20:23:06.877000+00:00",
+    "version": "v1.9.5-v2.5.2",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/349048/file/3594051/changelog",
     "options": {
       "strategy": "default"
     },
@@ -2514,6 +2055,14 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v1.9.5-v2.5.2",
+        "install_time": "2022-01-30T07:29:40+00:00"
+      },
+      {
+        "version": "v1.9.3-v2.5.2",
+        "install_time": "2021-12-09T07:29:25+00:00"
+      },
       {
         "version": "v1.8.4-tbc",
         "install_time": "2021-05-23T07:51:39+00:00"
@@ -2565,10 +2114,10 @@
     "name": "Scrap (Junk Seller)",
     "description": "Sells all your junk when you visit a merchant. Intuitive & Easy to use.",
     "url": "https://www.curseforge.com/wow/addons/scrap",
-    "download_url": "https://edge.forgecdn.net/files/3371/582/Scrap-9.1.0-2.5.1.zip",
-    "date_published": "2021-06-30T20:03:00.787000+00:00",
-    "version": "9.1.0",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/5422/file/3371582/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3545/860/Scrap-9.1.2-2.5.2.zip",
+    "date_published": "2021-12-02T22:47:00.703000+00:00",
+    "version": "9.1.2",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/5422/file/3545860/changelog",
     "options": {
       "strategy": "default"
     },
@@ -2585,6 +2134,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "9.1.2",
+        "install_time": "2021-12-09T07:29:25+00:00"
+      },
       {
         "version": "9.1.0",
         "install_time": "2021-07-17T04:03:37+00:00"
@@ -2664,10 +2217,10 @@
     "name": "Titan Panel Classic",
     "description": "Titan Panel Classic",
     "url": "https://www.curseforge.com/wow/addons/titan-panel-classic",
-    "download_url": "https://edge.forgecdn.net/files/3501/656/TitanPanelClassic-1.4.1.20502.zip",
-    "date_published": "2021-10-23T23:21:39.673000+00:00",
-    "version": "1.4.1.20502",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/334602/file/3501656/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3615/689/TitanPanelClassic-1.5.0.20503.zip",
+    "date_published": "2022-01-21T09:01:50.183000+00:00",
+    "version": "1.5.0.20503",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/334602/file/3615689/changelog",
     "options": {
       "strategy": "default"
     },
@@ -2711,6 +2264,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "1.5.0.20503",
+        "install_time": "2022-01-30T07:29:41+00:00"
+      },
       {
         "version": "1.4.1.20502",
         "install_time": "2021-11-17T11:12:51+00:00"
@@ -2791,10 +2348,10 @@
     "name": "TomTom",
     "description": "Acts as your portable navigation assistant",
     "url": "https://www.curseforge.com/wow/addons/tomtom",
-    "download_url": "https://edge.forgecdn.net/files/3515/530/TomTom-v3.0.3-bcc.zip",
-    "date_published": "2021-11-04T19:13:03.447000+00:00",
-    "version": "v3.0.3-bcc",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/18808/file/3515530/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3960/808/TomTom-v3.1.4.zip",
+    "date_published": "2022-08-31T17:16:09.443000+00:00",
+    "version": "v3.1.4",
+    "changelog_url": "https://api.curseforge.com/v1/mods/18808/files/3960808/changelog",
     "options": {
       "strategy": "default"
     },
@@ -2805,6 +2362,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v3.1.4",
+        "install_time": "2022-09-01T13:41:18+00:00"
+      },
       {
         "version": "v3.0.3-bcc",
         "install_time": "2021-11-17T11:12:51+00:00"
@@ -2838,10 +2399,10 @@
     "name": "TradeSkillMaster",
     "description": "Powerful addon to help you make gold from crafting to selling on the auction house to buying vendor items and much more!",
     "url": "https://www.curseforge.com/wow/addons/tradeskill-master",
-    "download_url": "https://edge.forgecdn.net/files/3526/805/TradeSkillMaster_v4.11.16-BCC.zip",
-    "date_published": "2021-11-15T17:24:14.833000+00:00",
-    "version": "v4.11.16-BCC",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/26886/file/3526805/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3540/863/TradeSkillMaster_v4.11.17-BCC.zip",
+    "date_published": "2021-11-29T17:23:57.117000+00:00",
+    "version": "v4.11.17-BCC",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/26886/file/3540863/changelog",
     "options": {
       "strategy": "default"
     },
@@ -2852,6 +2413,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v4.11.17-BCC",
+        "install_time": "2021-12-09T07:29:26+00:00"
+      },
       {
         "version": "v4.11.16-BCC",
         "install_time": "2021-11-17T11:12:51+00:00"
@@ -2887,10 +2452,6 @@
       {
         "version": "v4.10.32-Classic",
         "install_time": "2021-03-24T11:22:43+00:00"
-      },
-      {
-        "version": "v4.10.30-Classic",
-        "install_time": "2021-02-14T14:20:45+00:00"
       }
     ]
   },
@@ -2937,10 +2498,10 @@
     "name": "VuhDo",
     "description": "Raid Frames providing click-heal functionality, buff and debuff control, main tank management and much more.",
     "url": "https://www.curseforge.com/wow/addons/vuhdo",
-    "download_url": "https://edge.forgecdn.net/files/3522/2/VuhDo-v3.129-tbcc-bcc.zip",
-    "date_published": "2021-11-11T02:34:53.010000+00:00",
-    "version": "v3.129-tbcc-bcc",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/7950/file/3522002/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3945/732/VuhDo-v3.137-wotlkc-wrath.zip",
+    "date_published": "2022-08-21T18:54:42.713000+00:00",
+    "version": "v3.137-wotlkc-wrath",
+    "changelog_url": "https://api.curseforge.com/v1/mods/7950/files/3945732/changelog",
     "options": {
       "strategy": "default"
     },
@@ -2954,6 +2515,14 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v3.137-wotlkc-wrath",
+        "install_time": "2022-09-01T13:41:19+00:00"
+      },
+      {
+        "version": "v3.131-tbcc-bcc",
+        "install_time": "2022-01-30T07:29:41+00:00"
+      },
       {
         "version": "v3.129-tbcc-bcc",
         "install_time": "2021-11-17T11:12:52+00:00"
@@ -2985,57 +2554,6 @@
       {
         "version": "v3.114-classic",
         "install_time": "2020-11-10T10:27:10+00:00"
-      },
-      {
-        "version": "v3.113-classic",
-        "install_time": "2020-11-03T05:33:04+00:00"
-      }
-    ]
-  },
-  {
-    "source": "curse",
-    "id": "7474",
-    "slug": "wim-3",
-    "name": "WIM (WoW Instant Messenger) v3",
-    "description": "Give whispers an instant messenger feel.",
-    "url": "https://www.curseforge.com/wow/addons/wim-3",
-    "download_url": "https://edge.forgecdn.net/files/3520/832/WIM-3.9.3-bcc.zip",
-    "date_published": "2021-11-09T22:00:31.370000+00:00",
-    "version": "3.9.3-bcc",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/7474/file/3520832/changelog",
-    "options": {
-      "strategy": "default"
-    },
-    "folders": [
-      {
-        "name": "WIM"
-      }
-    ],
-    "deps": [],
-    "logged_versions": [
-      {
-        "version": "3.9.3-bcc",
-        "install_time": "2021-11-17T11:12:52+00:00"
-      },
-      {
-        "version": "3.9.1-bcc",
-        "install_time": "2021-05-21T08:24:28+00:00"
-      },
-      {
-        "version": "3.9.1-classic",
-        "install_time": "2021-05-21T01:44:37+00:00"
-      },
-      {
-        "version": "3.9.0-classic",
-        "install_time": "2021-04-06T09:37:44+00:00"
-      },
-      {
-        "version": "3.8.16-classic",
-        "install_time": "2021-01-26T09:31:02+00:00"
-      },
-      {
-        "version": "3.8.15-classic",
-        "install_time": "2020-11-03T05:33:04+00:00"
       }
     ]
   },
@@ -3109,10 +2627,10 @@
     "name": "WeakAuras",
     "description": "A powerful, comprehensive utilty for displaying graphics and information based on buffs, debuffs, and other triggers.",
     "url": "https://www.curseforge.com/wow/addons/weakauras-2",
-    "download_url": "https://edge.forgecdn.net/files/3512/996/WeakAuras-3.7.3-bcc.zip",
-    "date_published": "2021-11-02T19:07:58.170000+00:00",
-    "version": "3.7.3-bcc",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/65387/file/3512996/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3958/94/WeakAuras-4.1.2.zip",
+    "date_published": "2022-08-30T03:02:22.447000+00:00",
+    "version": "4.1.2",
+    "changelog_url": "https://api.curseforge.com/v1/mods/65387/files/3958094/changelog",
     "options": {
       "strategy": "default"
     },
@@ -3135,6 +2653,14 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "4.1.2",
+        "install_time": "2022-09-01T13:41:21+00:00"
+      },
+      {
+        "version": "3.7.8-bcc",
+        "install_time": "2022-01-30T07:29:42+00:00"
+      },
       {
         "version": "3.7.3-bcc",
         "install_time": "2021-11-17T11:12:52+00:00"
@@ -3166,14 +2692,6 @@
       {
         "version": "3.2.0-classic",
         "install_time": "2021-03-10T02:50:10+00:00"
-      },
-      {
-        "version": "3.1.9-classic",
-        "install_time": "2021-01-29T06:40:57+00:00"
-      },
-      {
-        "version": "3.1.8-classic",
-        "install_time": "2021-01-09T08:44:16+00:00"
       }
     ]
   },
@@ -3223,20 +2741,28 @@
     "name": "alaTalentEmu",
     "description": "An enhanced talent emulator supporting different classed, import, export, apply,inspect",
     "url": "https://www.curseforge.com/wow/addons/alatalentemu",
-    "download_url": "https://edge.forgecdn.net/files/3507/538/alaTalentEmu-205r.211025.zip",
-    "date_published": "2021-10-28T16:01:51.190000+00:00",
-    "version": "205r.211025",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/338706/file/3507538/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3621/860/TalentEmu-205r.220123.zip",
+    "date_published": "2022-01-24T12:50:46.870000+00:00",
+    "version": "205r.220123",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/338706/file/3621860/changelog",
     "options": {
       "strategy": "default"
     },
     "folders": [
       {
-        "name": "alaTalentEmu"
+        "name": "TalentEmu"
       }
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "205r.220123",
+        "install_time": "2022-01-30T07:29:42+00:00"
+      },
+      {
+        "version": "205r.211201",
+        "install_time": "2021-12-09T07:29:26+00:00"
+      },
       {
         "version": "205r.211025",
         "install_time": "2021-11-17T11:12:53+00:00"
@@ -3278,10 +2804,10 @@
     "name": "tullaRange",
     "description": "Colors out of range action buttons",
     "url": "https://www.curseforge.com/wow/addons/tullarange",
-    "download_url": "https://edge.forgecdn.net/files/3374/271/tullaRange-9.1.0-bcc.zip",
-    "date_published": "2021-07-02T20:09:46.510000+00:00",
-    "version": "9.1.0-bcc",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/26753/file/3374271/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3921/440/tullaRange-9.2.1.zip",
+    "date_published": "2022-08-06T16:18:18.133000+00:00",
+    "version": "9.2.1",
+    "changelog_url": "https://api.curseforge.com/v1/mods/26753/files/3921440/changelog",
     "options": {
       "strategy": "default"
     },
@@ -3295,6 +2821,14 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "9.2.1",
+        "install_time": "2022-09-01T13:42:47+00:00"
+      },
+      {
+        "version": "9.1.5-bcc",
+        "install_time": "2022-01-30T07:29:42+00:00"
+      },
       {
         "version": "9.1.0-bcc",
         "install_time": "2021-07-17T04:07:30+00:00"
@@ -3318,6 +2852,87 @@
       {
         "version": "9.0.1-classic",
         "install_time": "2020-11-03T05:33:04+00:00"
+      }
+    ]
+  },
+  {
+    "source": "github",
+    "id": "Nevcairiel/Quartz",
+    "slug": "nevcairiel/quartz",
+    "name": "Quartz",
+    "description": "Quartz is a modular approach to a casting bar addon for World of Warcraft",
+    "url": "https://github.com/Nevcairiel/Quartz",
+    "download_url": "https://github.com/Nevcairiel/Quartz/releases/download/3.6.12/Quartz-3.6.12.zip",
+    "date_published": "2022-08-30T08:40:08+00:00",
+    "version": "3.6.12",
+    "changelog_url": "data:,%23%20Quartz%0D%0A%0D%0A%23%23%20%5B3.6.12%5D%28https%3A//github.com/Nevcairiel/Quartz/tree/3.6.12%29%20%282022-08-30%29%0D%0A%5BFull%20Changelog%5D%28https%3A//github.com/Nevcairiel/Quartz/compare/3.6.11...3.6.12%29%20%5BPrevious%20Releases%5D%28https%3A//github.com/Nevcairiel/Quartz/releases%29%0D%0A%0D%0A-%20Add%20channeling%20spells%20from%20BCC%20to%20Wrath%20%20%0D%0A-%20Add%20Wrath%20TOC%20entry%20%20%0D%0A-%20Re-design%20WoW%20version%20checks%20for%20upcoming%20Wrath%20Classic%20support%20%20%0D%0A-%20Protect%20more%20occurances%20of%20spell%20interrupt%20events%20on%20Classic%20%20%0D%0A%20%20%20%20Fixes%20%2349%20%20%0D%0A",
+    "options": {
+      "strategy": "default"
+    },
+    "folders": [
+      {
+        "name": "Quartz"
+      }
+    ],
+    "deps": [],
+    "logged_versions": [
+      {
+        "version": "3.6.12",
+        "install_time": "2022-09-01T13:46:18+00:00"
+      }
+    ]
+  },
+  {
+    "source": "wowi",
+    "id": "17869",
+    "slug": "17869-addon-control-panel",
+    "name": "Addon Control Panel",
+    "description": "[COLOR=\"DarkOrange\"][COLOR=\"Sienna\"][B]Stop logging out of the game just to change your addons![/B][/COLOR][/COLOR]\r\n\r\nACP adds the \"Addons\" button to the game's main menu (The one you get when you hit ESC). It allows you to manage your addons in game, with an interface which looks similar to the blizzard addon manager. ACP will help you deal with the \"Clutter\" that multi-part addons and libraries introduce by displaying your addons in logical arrangements. ACP has many features to make your addon list easy to manage, help you with missing libraries, and provide you with detailed information about each addon.\r\n[COLOR=\"DarkOrange\"]\r\n[COLOR=\"Sienna\"][B]Icon meaning:[/B][/COLOR][/COLOR]\r\n\r\nStar: Protected addon - this addon will not be disabled when you choose disable all, also if it is not enabled when you log into the game, it will be re-enabled and you will be prompted to reload the ui.\r\n\r\nDk Grey Open Lock: Addon does not supply compatibility information\r\n\r\nLt Grey Closed Lock: Addon has provided compatibility information\r\n\r\nAddon compatibility helps you determine if the addon supports the current version of the game that you are running. You will see further information in the tooltip for the addon, and incompatible/out of date addons will be labeled in the main addon list.\r\n[COLOR=\"DarkOrange\"]\r\n[COLOR=\"Sienna\"][B]Credits:[/B][/COLOR][/COLOR]\r\n\r\nACP is based on the work of 2 other projects rMCP, which is a version of MCP modified by Rophy, and MCP originally by Saien.",
+    "url": "https://www.wowinterface.com/downloads/info17869-AddonControlPanel.html",
+    "download_url": "https://cdn.wowinterface.com/downloads/getfile.php?id=17869&d=1579450117&minion",
+    "date_published": "2020-01-19T16:08:37+00:00",
+    "version": "3.5.7",
+    "changelog_url": "data:,%5Bsize%3D5%5DAddon%20Control%20Panel%5B/size%5D%0D%0A%5Bsize%3D4%5D%5Burl%3Dhttps%3A//github.com/sylvanaar/addon-control-panel/tree/3.5.7%5D3.5.7%5B/url%5D%20%282020-01-19%29%5B/size%5D%0D%0A%5Burl%3Dhttps%3A//github.com/sylvanaar/addon-control-panel/compare/3.5.6...3.5.7%5DFull%20Changelog%5B/url%5D%20%5Burl%3Dhttps%3A//github.com/sylvanaar/addon-control-panel/releases%5DPrevious%20releases%5B/url%5D%0D%0A%5Blist%5D%0D%0A%5B%2A%5DUpdate%20TOC%20for%20retail%20and%20classic%0D%0A%5B%2A%5DUpdate%20README.md%0D%0A%5B%2A%5DUpdate%20README.md%5B/list%5D",
+    "options": {
+      "strategy": "default"
+    },
+    "folders": [
+      {
+        "name": "ACP"
+      }
+    ],
+    "deps": [],
+    "logged_versions": [
+      {
+        "version": "3.5.7",
+        "install_time": "2022-09-01T13:41:18+00:00"
+      }
+    ]
+  },
+  {
+    "source": "wowi",
+    "id": "25002",
+    "slug": "25002-advancedinterfaceoptions",
+    "name": "AdvancedInterfaceOptions",
+    "description": "Restores access to removed interface options in Legion and ads a CVar browser for settings galore.\r\n\r\nWe are currently covering simple options for the following:\r\n\r\nGeneral:\r\n\r\n* Player Titles\r\n* Guild Names\r\n* Guild Titles\r\n* Stop Auto Attack\r\n* Attack on Assist\r\n* Cast action keybinds on key down\r\n* Fade Map when Moving\r\n* Secure Ability Toggle\r\n* Display Lua Errors\r\n* No Debuff Filter on Target\r\n* Reverse Cleanup Bags\r\n* Quest sorting mode (top vs proximity)\r\n* Select Action Cam mode\r\n\r\nChat:\r\n\r\n* Remove Chat Hover Delay\r\n* Enable Mouse Wheel Scrolling\r\n\r\nFloating Combat Text:\r\n\r\n* Float mode (up/down/arc)\r\n* Energy Gains\r\n* Auras\r\n* Honor Gains\r\n* Reputation\r\n* Combo Points\r\n* Combat State (Entering/Leaving Combat)\r\n* Spell Mechanics\r\n* Healing\r\n* Absorb (Self and Target)\r\n* Directional Scale (brings back the classic, only upwards moving text)\r\n* Low HP/Mana\r\n\r\nAnd many more via the built in CVar browser, including stuff that has never ever been exposed as an UI option by Blizzard like the violence level or the new setting that changes the distance nameplates are visible at!\r\n\r\nType /aio in chat or go to the Interface Options and look for AdvancedInterfaceOptions",
+    "url": "https://www.wowinterface.com/downloads/info25002-AdvancedInterfaceOptions.html",
+    "download_url": "https://cdn.wowinterface.com/downloads/getfile.php?id=25002&d=1660687148&minion",
+    "date_published": "2022-08-16T21:59:08+00:00",
+    "version": "1.7.2",
+    "changelog_url": "data:,%5Bsize%3D5%5DAdvanced%20Interface%20Options%5B/size%5D%0D%0A%5Bsize%3D4%5D%5Burl%3Dhttps%3A//github.com/Stanzilla/AdvancedInterfaceOptions/tree/1.7.2%5D1.7.2%5B/url%5D%20%282022-08-16%29%5B/size%5D%0D%0A%5Burl%3Dhttps%3A//github.com/Stanzilla/AdvancedInterfaceOptions/compare/1.7.1...1.7.2%5DFull%20Changelog%5B/url%5D%20%5Burl%3Dhttps%3A//github.com/Stanzilla/AdvancedInterfaceOptions/releases%5DPrevious%20Releases%5B/url%5D%0D%0A%5Blist%5D%0D%0A%5B%2A%5DBump%20retail%20toc%20for%209.2.7%0D%0A%5B/list%5D",
+    "options": {
+      "strategy": "default"
+    },
+    "folders": [
+      {
+        "name": "AdvancedInterfaceOptions"
+      }
+    ],
+    "deps": [],
+    "logged_versions": [
+      {
+        "version": "1.7.2",
+        "install_time": "2022-09-01T13:40:36+00:00"
       }
     ]
   },
@@ -3353,6 +2968,237 @@
   },
   {
     "source": "wowi",
+    "id": "8814",
+    "slug": "8814-deadly-boss-mods",
+    "name": "Deadly Boss Mods",
+    "description": "The ultimate encounter helper to give you fight info that's easy to process at a glance. DBM aims to focus on what's happening to you, and what YOU need to do about it.\r\n\r\nMake sure you download correct version for game you are playing\r\n\r\nR - Retail (Shadowlands)\r\nWL - Wrath of the Lich King Classic\r\nBC - Burning Crusade Classic\r\nC - Classic Era",
+    "url": "https://www.wowinterface.com/downloads/info8814-DeadlyBossMods.html",
+    "download_url": "https://cdn.wowinterface.com/downloads/getfile.php?id=8814&d=1661891999&minion",
+    "date_published": "2022-08-30T20:39:59+00:00",
+    "version": "9.2.32",
+    "changelog_url": "data:,%5Bsize%3D5%5D%3CDBM%3E%20World%20Bosses%20%28Shadowlands%29%5B/size%5D%0D%0A%5Bsize%3D4%5D%5Burl%3Dhttps%3A//github.com/DeadlyBossMods/DBM-Retail/tree/9.2.32%5D9.2.32%5B/url%5D%20%282022-08-30%29%5B/size%5D%0D%0A%5Burl%3Dhttps%3A//github.com/DeadlyBossMods/DBM-Retail/compare/9.2.31...9.2.32%5DFull%20Changelog%5B/url%5D%20%5Burl%3Dhttps%3A//github.com/DeadlyBossMods/DBM-Retail/releases%5DPrevious%20Releases%5B/url%5D%0D%0A%5Blist%5D%0D%0A%5B%2A%5Dprep%20new%20retail%20tag%0D%0A%5B%2A%5DUpdate%20fated%20affixes%20with%20weak%205%20data%0D%0A%5B%2A%5Dbump%20alpha%0D%0A%5B%2A%5Dprep%20new%20wrath%20tag%0D%0A%5B%2A%5DUpdate%20ci.yml%20Don%27t%20forward%20to%20BCC%0D%0A%5B%2A%5DAdd%20a%20check%20only%20for%20M%2B%20for%20both%20DF%20and%20S4%0D%0A%5B%2A%5Dtweak/fix%0D%0A%5B%2A%5DRedo%20scanning%20again%20to%20always%20scan%20multiple%20times%20instead%20of%20aborting%20on%20first%20scan%2C%20this%20will%20make%20it%20more%20robust%20in%20detecting%20affixes%20that%20don%27t%20appear%20right%20away.%20Did%20reduce%20scan%20times%20from%2010%20over%2010%20seconds%20to%205%20over%2010%20seconds.%0D%0A%5B%2A%5DFix%20a%20bug%20causing%20out%20of%20control%20scheduling%20loop.%20Closes%23802%0D%0A%5B%2A%5DFix%20stupid%0D%0A%5B%2A%5Dattempt%20to%20fix%20situation%20where%20intial%20timers%20may%20fail%2C%20and%20as%20a%20result%2C%20timers%20could%20also%20fail%20to%20cancel%20on%20wipe/kill%20as%20well%20within%20the%20affixes%20mod.%20This%20was%20done%20through%20a%20more%20aggressive%20repeat%20scan%20that%20will%20persist%20for%2010%20seconds%20into%20fight%0D%0A%5B%2A%5Ddon%27t%20pass%20%5C%22force%5C%22%20arg%20on%20CALLENGE_MODE_RESET%20for%20autologging%0D%0A%5B%2A%5Dbump%20alpha%0D%0A%5B/list%5D",
+    "options": {
+      "strategy": "default"
+    },
+    "folders": [
+      {
+        "name": "DBM-Affixes"
+      },
+      {
+        "name": "DBM-Brawlers"
+      },
+      {
+        "name": "DBM-CastleNathria"
+      },
+      {
+        "name": "DBM-Core"
+      },
+      {
+        "name": "DBM-DMF"
+      },
+      {
+        "name": "DBM-DragonIsles"
+      },
+      {
+        "name": "DBM-GUI"
+      },
+      {
+        "name": "DBM-SanctumOfDomination"
+      },
+      {
+        "name": "DBM-Sepulcher"
+      },
+      {
+        "name": "DBM-Shadowlands"
+      },
+      {
+        "name": "DBM-StatusBarTimers"
+      },
+      {
+        "name": "DBM-VPVEM"
+      },
+      {
+        "name": "DBM-VaultoftheIncarnates"
+      },
+      {
+        "name": "DBM-WorldEvents"
+      }
+    ],
+    "deps": [],
+    "logged_versions": [
+      {
+        "version": "9.2.32",
+        "install_time": "2022-09-01T13:40:41+00:00"
+      }
+    ]
+  },
+  {
+    "source": "wowi",
+    "id": "25977",
+    "slug": "25977-dejaclassicstats-wotlk",
+    "name": "DejaClassicStats (WOTLK)",
+    "description": "[CENTER][SIZE=5][B][COLOR=#00ccff][FONT=verdana][B]DejaClassicStats[/B][/FONT][/COLOR][/B][/SIZE]\r\n\r\n[I][SIZE=5][FONT=verdana][B]Ready for [/B][/FONT][/SIZE][/I][I][SIZE=5][FONT=verdana][B][I][SIZE=5][FONT=verdana][B][COLOR=#6666ff]Wrath of the Lich King[/COLOR][/B][/FONT][/SIZE][/I]![/B][/FONT][/SIZE][/I]\r\n[/CENTER]\r\n\r\n[CENTER][B][FONT=verdana][SIZE=4][URL=\"https://www.youtube.com/watch?v=a-bHbqYRHTQ\"][COLOR=#faebd7][B]Watch the Video Overview[/B][/COLOR][/URL][/SIZE][/FONT][/B][/CENTER]\r\n\r\n  [CENTER][FONT=verdana][B][URL=\"https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=CL4UN8NCQLZQL&source=url\"]DejaDonate[/URL][/B] - Support DejaClassicStats' continued development by [URL=\"https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=CL4UN8NCQLZQL&source=url\"]donating[/URL] to DCS![/FONT]\r\n[/CENTER]\r\n\r\n[CENTER][CENTER] [CENTER] [CENTER][SIZE=4][I][B]DejaDonate:[/B][/I][/SIZE][/CENTER]\r\n[CENTER][SIZE=4] [URL=\"https://www.curseforge.com/linkout?remoteUrl=https%253a%252f%252fwww.paypal.com%252fdonate%253fhosted_button_id%253dCL4UN8NCQLZQL\"] [IMG]https://i.imgur.com/OuqaxDD.png[/IMG][/URL] [URL=\"https://www.curseforge.com/linkout?remoteUrl=https%253a%252f%252fwww.paypal.com%252fdonate%253fhosted_button_id%253dCL4UN8NCQLZQL\"][IMG]https://i.imgur.com/LhDP2Lo.png[/IMG][/URL][/SIZE] [/CENTER]\r\n [/CENTER]\r\n [/CENTER]\r\n [/CENTER]\r\n\r\n   [CENTER]\r\n[/CENTER]\r\n [SIZE=4] [FONT=verdana]DejaClassicStats provides an updated and logical display of the character stats.\r\n\r\n[/FONT][/SIZE] [CENTER][SIZE=3][FONT=verdana][B]Features[/B][/FONT][/SIZE]\r\n[/CENTER]\r\n [COLOR=#ffffff] [FONT=verdana][B]Options Overview:[/B][/FONT][/COLOR]\r\n[LIST]\r\n[*][FONT=verdana]Display each equipped item's level, durability, and repair cost.[/FONT]\r\n[*][FONT=verdana]Display a quick graphical \"Durability Bar\" next to each equipped item.[/FONT]\r\n[*][FONT=verdana]Display total average durability of equipped gear on your character's shirt slot.[/FONT]\r\n[*][FONT=verdana]Display \"General\", \"Primary\", \"Offense\", \"Defense\", \"Melee Enhancements\", and \"Spell Enhancements\" stats.[/FONT][/LIST][B][FONT=verdana][B]\r\n[COLOR=#ffffff]Default Display[/COLOR][/B][/FONT][/B][COLOR=#ffffff]\r\n\r\n  [FONT=verdana][B]Primary:[/B][/FONT][/COLOR]\r\n[LIST]\r\n[*][FONT=verdana]Strength[/FONT]\r\n[*][FONT=verdana]Agility[/FONT]\r\n[*][FONT=verdana]Stamina[/FONT]\r\n[*][FONT=verdana]Intellect[/FONT]\r\n[*][FONT=verdana]Spirit[/FONT][/LIST][COLOR=#ffffff] [FONT=verdana][B]General:[/B][/FONT][/COLOR]\r\n[LIST]\r\n[*][COLOR=#ff0000][I][FONT=verdana]Health*[/FONT][/I][/COLOR]\r\n[*][COLOR=#ff0000][I][FONT=verdana]Power(Mana, Energy, Rage)*[/FONT][/I][/COLOR]\r\n[*][COLOR=#ffffff][FONT=verdana]Movement Speed[/FONT]\r\n[/COLOR]\r\n[*][COLOR=#ffffff][FONT=verdana]Durability[/FONT]\r\n[/COLOR]\r\n[*][COLOR=#ffffff][FONT=verdana]Item Slot Durability Display[/FONT]\r\n[/COLOR]\r\n[*][COLOR=#ffffff][FONT=verdana]Repair Cost[/FONT]\r\n[/COLOR]\r\n[*][COLOR=#ffffff][FONT=verdana]Item Slot Repair Cost Display[/FONT][/COLOR][/LIST][COLOR=#ffffff] [FONT=verdana][B]Offense:[/B][/FONT][/COLOR]\r\n[LIST]\r\n[*][FONT=verdana]Damage[/FONT]\r\n[*][FONT=verdana]Attack Power[/FONT]\r\n[*][FONT=verdana]Attack Speed[/FONT]\r\n[*][FONT=verdana]Weapon DPS[/FONT][/LIST][COLOR=#ffffff] [FONT=verdana][B]Defense:[/B][/FONT][/COLOR]\r\n[LIST]\r\n[*][COLOR=#ffffff][FONT=verdana]Resistances(Arcane, Fire, Nature, Frost,Shadow)\r\n[/FONT][/COLOR]\r\n[*][COLOR=#ffffff][FONT=verdana]Armor[/FONT]\r\n[/COLOR]\r\n[*][COLOR=#ffffff][FONT=verdana]Dodge[/FONT][/COLOR]\r\n[*][COLOR=#ffffff][FONT=verdana]Parry[/FONT][/COLOR]\r\n[*][COLOR=#ffffff][FONT=verdana]Block[/FONT]\r\n[/COLOR]\r\n[*][COLOR=#ffffff][FONT=verdana]Defense[/FONT][/COLOR]\r\n[*][COLOR=#ff0000][I][FONT=verdana]Crushing*[/FONT][/I][/COLOR][/LIST][COLOR=#ffffff] [B][FONT=verdana]Melee Enhancements:[/FONT][/B][/COLOR]\r\n[LIST]\r\n[*]Melee Hit\r\n[*]Melee +Damage\r\n[*]Melee Critical Strike\r\n[*]Ranged Critical Strike[/LIST][COLOR=#ffffff] [B][FONT=verdana]Spell Enhancements:[/FONT][/B][/COLOR]\r\n[LIST]\r\n[*]Spell Hit\r\n[*]Spell+Damage\r\n[*]Spell Critical Strike\r\n[*]+Healing\r\n[*]MP5 (Soon\u2122)\r\n[*]Mana Regen Not Casting\r\n[*]Mana Regen Casting[/LIST]  [COLOR=#ff0000][I][FONT=verdana][B]Skills(Including XP bar):*[/B][/FONT][/I][/COLOR]\r\n[LIST]\r\n[*][COLOR=#ff0000][I][FONT=verdana]Weapon Skills(Only skills you've learned)*[/FONT][/I][/COLOR][/LIST]  [COLOR=#ff0000][I][FONT=verdana][B]Professions(Including XP bar):*[/B][/FONT][/I][/COLOR]\r\n[LIST]\r\n[*][COLOR=#ff0000][I][FONT=verdana]Both primaries*[/FONT][/I][/COLOR]\r\n[*][COLOR=#ff0000][I][FONT=verdana]Secondaries(Cooking, First Aid)*[/FONT][/I][/COLOR][/LIST]  [COLOR=#ff0000][I][FONT=verdana][B]Reputations(Including XP bar):*[/B][/FONT][/I][/COLOR]\r\n[LIST]\r\n[*][COLOR=#ff0000][I][FONT=verdana]Only Reputations you've established(Tracked always at top)*[/FONT][/I][/COLOR][/LIST][COLOR=#ffffff] [B][FONT=verdana][B]Item Level:[/B][/FONT][/B][/COLOR]\r\n[LIST]\r\n[*][COLOR=#ffffff][FONT=verdana]Item Slot Item Level Display[/FONT][/COLOR][/LIST] \r\n[COLOR=#ffffff][FONT=verdana][B]Installation and Use of DejaClassicStats[/B][/FONT][/COLOR]\r\n\r\n[COLOR=#ffffff] [FONT=verdana][B]Installation:[/B][/FONT][/COLOR]\r\n[LIST]\r\n[*][FONT=verdana]Install to your \"AddOns\" folder (World of Warcraft\\Interface\\AddOns) and login to WoW.[/FONT][/LIST][COLOR=#ffffff][FONT=verdana] [B]Interface Options Settings[/B][/FONT][/COLOR]\r\n[COLOR=#ffffff]  [FONT=verdana][B]Item Slots:[/B][/FONT][/COLOR]\r\n[LIST]\r\n[*][FONT=verdana][COLOR=#ffffff][B]Item Level:[/B][/COLOR] Displays the item level of each equipped item.[/FONT]\r\n[*][FONT=verdana][COLOR=#ffffff][B]Durability Bars:[/B][/COLOR] Displays a durability bar next to each item with less than 100% durability for a quick visual reference.[/FONT]\r\n[*][FONT=verdana][COLOR=#ffffff][B]Average Durability:[/B][/COLOR] Displays on the character shirt slot the total average durability of all equipped gear.[/FONT]\r\n[*][FONT=verdana][COLOR=#ffffff][B]Item Durability:[/B][/COLOR] Displays a durability overlay on each equipped item's slot.[/FONT]\r\n[*][FONT=verdana][COLOR=#ffffff][B]Item Repair Cost:[/B][/COLOR] Displays an overlay of the Repair Total on each equipped item's slot.[/FONT][/LIST]\r\n  [IMG]https://cdn-wow.mmoui.com/preview/pvw71788.png[/IMG]\r\n[COLOR=#ffffff]  [FONT=verdana][B]Slash Commands:[/B][/FONT][/COLOR]\r\n[LIST]\r\n[*][FONT=verdana]/dcstats: Displays the DejaClassicStats version and slash commands.[/FONT]\r\n[*][FONT=verdana]/dcstats config: Opens the DejaClassicStats addon config menu.[/FONT]\r\n[*][FONT=verdana]/dcstats reset: Resets DejaClassicStats options to default. \r\n[/FONT][/LIST][COLOR=#ffffff][FONT=verdana][B]Known Issues:[/B][/FONT][/COLOR]\r\n[LIST]\r\n[*][FONT=verdana]Repair costs doesn't show on login but shows otherwise on UI reload.[/FONT][/LIST][COLOR=#ffffff] [FONT=verdana][B]TODO:[/B][/FONT][/COLOR]\r\n[LIST]\r\n[*][FONT=verdana]Too much to list. This is a WIP. This will be updated as we remember and come across more stats we want to track.[/FONT][/LIST][COLOR=#ffffff] [FONT=verdana][B]Future Possibilities:[/B][/FONT][/COLOR]\r\n[LIST]\r\n[*][FONT=verdana]Tons! Send us suggestions [URL=\"https://www.curseforge.com/wow/addons/dejacharacterstats/issues\"]here[/URL].[/FONT][/LIST] \r\n[FONT=verdana]Found an error or bug? Reporting them by making a ticket [URL=\"https://www.curseforge.com/wow/addons/dejaclassicstats/issues\"]here[/URL] after following [URL=\"https://phanx.net/addons/help\"]these[/URL] steps makes fixing errors faster. Thanks!\r\n[/FONT]\r\n [COLOR=#ffffff][FONT=verdana][B]We would like to thank everyone that helped make DCS possible.[/B][/FONT][/COLOR]\r\n\r\n [FONT=verdana][B][COLOR=#00ccff]Contributors:[/COLOR] [COLOR=#ffffff]Dejoblue, Kakjens, loudsoul[/COLOR][/B][/FONT]\r\n [FONT=verdana][B][COLOR=#00ccff]Localization Translators:[/COLOR][/B][/FONT]\r\n[LIST]\r\n[*][FONT=verdana][B][COLOR=#00ccff]French:[/COLOR][COLOR=#ffffff] Medaleux, sv002, Darkcraft92, Ymvej, Druidzor, napnapnapnapnap[/COLOR][/B][/FONT]\r\n[*][FONT=verdana][B][COLOR=#00ccff]German:[/COLOR][COLOR=#ffffff]pas06, flow0284, Markurion, Branduril, NekoNyaaaa[/COLOR][/B][/FONT]\r\n[*][FONT=verdana][B][COLOR=#00ccff]Portuguese:[/COLOR][COLOR=#ffffff]Othra, Rhyrol[/COLOR][/B][/FONT]\r\n[*][FONT=verdana][B][COLOR=#00ccff]Spanish:[/COLOR][COLOR=#ffffff]Tholagar, Mikel391, MrUrkaz, Krounted, Valhallanem[/COLOR][/B][/FONT]\r\n[*][FONT=verdana][B][COLOR=#00ccff]Italian:[/COLOR][COLOR=#ffffff]infinitybofh, INoobInside[/COLOR][COLOR=#00ccff][COLOR=#000000]\r\n[/COLOR][/COLOR][/B][/FONT]\r\n[*][FONT=verdana][B][COLOR=#00ccff]Korean:[/COLOR] [COLOR=#ffffff]PositiveMind, yuk6196, netaras, meloppy, next96[/COLOR][/B][/FONT]\r\n[*][FONT=verdana][B][COLOR=#00ccff]Russian:[/COLOR] [COLOR=#ffffff]Nappsel, Wishko, berufegoru, Hubbotu, n1mrorox[/COLOR][/B][/FONT]\r\n[*][FONT=verdana][B][COLOR=#00ccff]Simplified Chinese:[/COLOR] [COLOR=#ffffff]C_Reus, alvisjiang, y123ao6[/COLOR][/B][/FONT]\r\n[*][FONT=verdana][B][COLOR=#00ccff]Traditional Chinese:[/COLOR] [COLOR=#ffffff]BNSSNB, killsophia, konraddo, y123ao6[/COLOR][/B][/FONT][/LIST] [FONT=verdana][B][COLOR=#00ccff]Communities:[/COLOR][COLOR=#ffffff] Blizzard, Curse, ElvUI, WoWInterface, and Reddit's /r/wow[/COLOR][/B][/FONT]\r\n [FONT=verdana][B][COLOR=#00ccff]Individuals: [/COLOR][/B][COLOR=#ffffff][B]Baudzila, 10leej, wizardanim, Phanx, Ro, Choonster, Zork, Lombra, myrroddin, Darth_Predator, sirann, and YOU[/B][/COLOR]\r\n[/FONT]\r\n[CENTER][SIZE=5][B][FONT=verdana][B][COLOR=#00ccff]Thank You![/COLOR][/B][/FONT][/B][/SIZE][/CENTER]",
+    "url": "https://www.wowinterface.com/downloads/info25977-DejaClassicStatsWOTLK.html",
+    "download_url": "https://cdn.wowinterface.com/downloads/getfile.php?id=25977&d=1658002766&minion",
+    "date_published": "2022-07-16T20:19:26+00:00",
+    "version": "30400r2",
+    "changelog_url": "data:,07/16/22%20%0D%0AFixed%20DK%20talent%20background%20art%20error.%20%0D%0AAdded%20DK%20talent%20background%20art%20to%20tables%20%0D%0AUpdated%20TOC%0D%0A%0D%0A03/23/2022%0D%0AUpdated%20TOC%0D%0A%0D%0A10/11/2021%0D%0AUpdated%20TOC%0D%0A%0D%0A06/04/2021%0D%0AFixed%20an%20issue%20with%20Ranged%20stat%20header%20causing%20other%20stats%20to%20not%20anchor%20properly.%20Thanks%20to%20sahdjay%20for%20the%20report%20and%20testing%20help%20%3A%29%0D%0AUpdated%20TOC%0D%0A%0D%0A05/30/2021%0D%0AAdded%20max%20weapon%20skill%20available%20for%20MH%2C%20OH%20and%20ranged.%0D%0AUpdated%20TOC%0D%0A%0D%0A05/30/2021%0D%0AFixed%20the%20Melee%20panel%27s%20issue%20causing%20the%20Ranged%20panel%20to%20not%20anchor%20correctly%20from%20the%20Melee%20panel.%0D%0AUpdated%20TOC%0D%0A%0D%0A05/30/2021%0D%0AAdded%20BC%20and%20Wrath%20enchant%20database%20tables.%0D%0AAdded%20Haste%2C%20Speed%2C%20and%20DPS%20stats%20for%20Melee%2C%20ranged%20and%20spells.%0D%0AAdded%20Ranged%20header%0D%0AAdded%20ratings%20in%20parenthesis%20%28%29%20for%20all%20rated%20stats%0D%0AFixed%20the%20default%20resistances%20saved%20variable%20and%20Defense%20header%20anchoring%20when%20resistances%20are%20default.%0D%0APrepped%20tables%20for%20stats%20selection%0D%0AOther%20stuff%20I%20forgot.%0D%0AUpdated%20TOC%0D%0A%0D%0A%0D%0A04/21/2021%0D%0A%0D%0A%20%20%20%20Updated%20TOC%20with%20localizations%2C%20art%2C%20and%20meta%20information",
+    "options": {
+      "strategy": "default"
+    },
+    "folders": [
+      {
+        "name": "DejaClassicStats"
+      }
+    ],
+    "deps": [],
+    "logged_versions": [
+      {
+        "version": "30400r2",
+        "install_time": "2022-09-01T13:40:37+00:00"
+      }
+    ]
+  },
+  {
+    "source": "wowi",
+    "id": "4239",
+    "slug": "4239-fishing-buddy",
+    "name": "Fishing Buddy",
+    "description": "Fishing Buddy\r\n-------------\r\n\r\n Yet another fishing support add-on.\r\n\r\nSupport thread: [URL=http://www.wowinterface.com/forums/showthread.php?t=1951]Fishing Buddy[/URL] \r\n\r\n Features:\r\n - 'Fish Watcher' lets you see the fish you've caught here before (or\r\n   the fish that you've caught in the current session)\r\n - Display your current skill level and the time since you started fishing\r\n - Choose your fishing outfit and change into it easily\r\n - Support for automatically adding a lure to your fishing pole\r\n - Full Titan Panel support\r\n - myAddOns support\r\n - Preliminary support for tracking 'cycle fish' such as the Nightfin\r\n   Snapper so you know when to go looking for them\r\n\r\n Example commands:\r\n /fishingbuddy or /fb\r\n toggle the display of the Fishing Buddy window\r\n /fb help\r\n print the list of Fishing Buddy commands \r\n /fb switch\r\n wear your chosen fishing outfit, or change back\r\n\r\n There are two actual add-ons -- the second one, OutfitDisplayFrame,\r\n handles the pretty pane to set up your fishing outfit (it's next on\r\n the list to be made into something more general that anyone can use).\r\n The OutfitDisplayFrame addon can be safely left out if you have a\r\n preferred equipment manager.\r\n\r\n alt-clicking on an item in your outfit display will clear it\r\n\r\n Silly stuff:\r\n In addition to displaying the fishing bonus for your fishing outfit,\r\n it also displays your 'style points' as inferred from [URL=http://wow.toshimo.com/viewtopic.php?t=272]Draznar's Fishing FAQ[/URL] \r\nUpdated from duplicate postin: [url=http://www.curse-gaming.com/en/wow/addons-2111-1-fishing-buddy.html]HERE[/url]. \r\nCheck there for updates if this falls behind.\r\n\r\n Thanks to the authors of:\r\n\r\n TackleBox -- still adding cool features to keep up with!\r\n Impp's Fishing DB\r\n QuickWeaponSwap\r\n\r\n and many, many others!\r\n\r\n Feel free to send comments to Sutorix on the Windrunner server.\r\n\r\nInstallation\r\n------------\r\n\r\n1. Unzip the 'FishingBuddyVERSION.zip' file\r\n2. If your unzip program allows you to specify a location, then\r\n   unzip it into the \"Interface/AddOns\" folder contained in your\r\n   WoW folder (the location that WoW was installed)\r\n3. If your unzip program doesn't let you specify the destination,\r\n   then find your WoW folder (where it was installed) and drag\r\n   the 'FishingBuddy' and 'OutfitDisplayFrame' folder into the\r\n   'Interface/AddOns' folder.",
+    "url": "https://www.wowinterface.com/downloads/info4239-FishingBuddy.html",
+    "download_url": "https://cdn.wowinterface.com/downloads/getfile.php?id=4239&d=1658034746&minion",
+    "date_published": "2022-07-17T05:12:26+00:00",
+    "version": "1.16.11",
+    "changelog_url": "data:,Version%201.16.10%0A-%20Update%20libraries%0A-%20Update%20TOC%20to%209.1.5%0A%0AVersion%201.16.9%0A-%20Update%20libraries%0A%0AVersion%201.16.8%0A-%20A%20compatibility%20fix%20for%20Fast%20Loot%20addons%20%28thanks%20Zilom%21%29%0A%0AVersion%201.16.7%0A-%20Update%20TOC%20version%0A%0AVersion%201.16.6%0A-%20Latest%20version%20of%20LibTourist%0A%0AVersion%201.16.5%0A-%20Latest%20version%20of%20LibBabble-SubZone%0A%0AVersion%201.16.4%0A-%20Again%20with%20the%20max%20lure%20issue%20%28thanks%20again%20bolerro619%21%29%0A%0AVersion%201.16.3%0A-%20Fix%20max%20lure%20issue%20%28thanks%20again%20bolerro619%21%29%0A-%20See%20if%20we%20can%20avoid%20hat%20buff%20stomping%0A-%20Add%20an%20option%20for%20the%20Fish%20Finder%20in%20the%20Queen%27s%20Conservatory%0A%0AVersion%201.16.2%0A-%20Update%20to%20latest%20HereBeDragons%0A%0AVersion%201.16.1%0A-%20Fix%20gossip%20APIs%20for%20auto-turn-in%20options%0A%0AVersion%201.16%0A-%20Turn%20on%20Find%20Fish%20when%20in%20the%20Queen%27s%20Conservatory%0A%0AVersion%201.15%0A-%20Get%20bait%20rotation%20to%20actually%20work%20with%20Eleysian%20Thade%0A%0AVersion%201.14%0A-%20Per-region%20baits%20work%20in%20Shadowlands%2C%20Lost%20Sole%20as%20a%20last%20resort%0A-%20Elusian%20Thade%20bait%20will%20be%20maintained%20if%20applied%20manually%0A%0AVersion%201.13%0A-%20Fix%20skill%20management%20%28watcher%20works%21%29%0A-%20Add%20Bat%20Visage%20bobber%0A-%20Add%20special%20baits%20for%20Shadowlands%0A-%20Fix%20TOC%20version%0A%0AVersion%201.12%0A-%20Fix%20for%20WorldFrame%20anchoring%20issues%0A-%20Fix%20auto%20interact%20bug%20%28thanks%20hanzo79%21%29%0A-%20Shadowlands%20Fishing%20levels%20are%20partially%20fixed%0A%0AVersion%201.11%0A-%20Update%20TOC%0A-%20Code%20fixes%20for%20Shadowlands%0A-%20Fix%20downstream%20break%20of%20other%20mouse%20watching%20addons%20when%20we%27re%20not%20fishing%21%20%0A-%20Add%20peeps%20to%20the%20AboutBox%20for%20their%20incredible%20help%20getting%20things%20fixed.%20%28MisterFox9%2C%20iWolf1976%2C%20javier_himura%2C%20Dakhran%2C%20RatiaSnowFur%2C%20CptTibas%29%0A%0AVersion%201.10.10%0A-%20Fix%20a%20bug%20in%20fishing%20mode%20management%0A%0AVersion%201.10.9%0A-%20Update%20LibTourist%0A-%20Bug%20fixes%0A%0AVersion%201.10.8.9%0A-%20Update%20libraries%0A-%20Improved%20fishing%20zone%20handling%0A%0AVersion%201.10.8.8%0A-%20Better%20handling%20of%20per-subzone%20fishing%20skills%20%28Thanks%20TheSpanishinq%21%29%0A-%20Clean%20up%20off-click%20handling%20and%20add%20an%20option%20to%20use%20the%20middle%20button%20%28ditto%21%29%0A%0AVersion%201.10.8.7%0A-%20More%20changes%20for%20fishing%20in%20Azshara%20%28Thanks%20TheSpanishinq%21%29%0A-%20Update%20HereBeDragons%0A%0AVersion%201.10.8.6%0A-%20Update%20TOC%20for%20%22Visions%20of%20N%27Zoth%22%0A%0AVersion%201.10.8.5%0A-%20Update%20LibBabble-SubZone%0A%0AVersion%201.10.8.4%0A-%20Fix%20globals%20leaks%20and%20other%20code%20foos%0A%0AVersion%201.10.8.3%0A-%20Fix%20a%20typo%20in%20the%20fix%0A%0AVersion%201.10.8.2%0A-%20Fix%20a%20fishing%20state%20and%20casting%20key%20bug%0A%0AVersion%201.10.8.1%0A-%20Fix%20a%20typo%20in%20the%20fishing%20library%20that%20escaped%20after%20testing%0A%0AVersion%201.10.8%0A-%20Update%20support%20libraries%0A%0AVersion%201.10.7%0A-%20Classic%20support%20changes%0A-%20Fix%20more%20Lua%20issues%20%28unsed%20code%20and%20globals%2C%20etc.%29%20--%20thanks%20Globe%21%0A%0AVersion%201.10.6%0A-%20Fix%20Ancient%20Pandaren%20Charm%20support%20now%20that%20it%27s%20a%20toy%0A-%20Fix%20a%20bunch%20of%20Lua%20errors%20%28misspelled%20variables%2C%20bad%20globals%2C%20etc.%29%0A%0AVersion%201.10.5%0A-%20Fix%20missing%20reference%20for%20raft%20support%0A%0AVersion%201.10.4%0A--%20Update%20localization%20information%20using%20CurseForge%0A--%20Support%20the%20Gnarlwood%20Waveboard%0A--%20Rewrite%20to%20make%20item%20and%20lure%20handling%20cleaner%0A%0AVersion%201.10.3%0A-%20Update%20support%20libraries%20%28HereBeDragons%29%0A-%20Add%20option%20to%20allowing%20casting%20while%20flying%20%28Monks%21%29%0A%0AVersion%201.10.2%0A-%20Fix%20some%20bugs%20in%20the%20new%20item%20handling%20code%0A%0AVersion%201.10.1%0A-%20Check%20cooldown%20when%20using%20lures%2C%20the%20Scarelet%20Lure%20in%20particular%0A-%20Don%27t%20cast%20while%20flying%0A-%20Don%27t%20clear%20%22fishing%20without%20a%20pole%22%20if%20on%20a%20raft%20and%20moving%0A-%20Use%20the%20%22Secret%20Fish%20Goggles%22%20as%20the%20first%20action%20in%20%22Fish%20without%20a%20pole%22%0A%0AVersion%201.10%0A-%20Update%20TOC%0A%0AVersion%201.9.30.2%0A-%20Remove%20the%20skill%20check%20completely%20until%20I%20can%20figure%20out%20why%20IWOMM%20and%20nowhere%20else%0A%0AVersion%201.9.30.1%0A-%20Make%20sure%20that%20the%20option%20turns%20off%20the%20%22Check%20your%20skill%22%20message%0A%0AVersion%201.9.30%0A-%20Support%20for%20the%20%22Scarlet%20Herring%20Lure%22%0A-%20Warn%20the%20player%20if%20they%20haven%27t%20learned%20the%20skill%20for%20the%20local%20area%20%28Curseforge%20%23383%29%0A%0AVersion%201.9.29%0A-%20Fix%20for%20CurseForge%20%23380%20%28error%20with%20fountain%20coins%29%0A-%20Fixes%20for%20a%20bunch%20of%20issues%20caused%20by%20map%20changes%20in%208.1.5%0A%0AVersion%201.9.28%0A-%20Fix%20CurseForge%20%23379%20%28zone%20lookup%20error%29%0A-%20Update%20libraries%0A%0AVersion%201.9.27%0A-%20Improve%20the%20detection%20of%20whether%20or%20not%20you%20can%20use%20the%20raft%20toy.%0A%0AVersion%201.9.26a1%0A-%20Add%20%22/fb%20raft%22%20command%20for%20help%20in%20debugging%20raft%20issues%0A%0AVersion%201.9.26%0A-%20Fix%20for%20error%20when%20no%20pets%20selected%2C%20CurseForge%20%23376%20%28thanks%2C%20robgha01%21%29%0A-%20Update%20libraries%0A%0AVersion%201.9.25p1%0A-%20Fix%20for%20the%20watcher%20failing%20to%20be%20draggable%0A%0AVersion%201.9.25%0A-%20Updated%20fishing%20macro%20support%2C%20with%20key%20binding.%0A-%20Add%20%22watcher%20location%20by%20group%20size%22%20feature%2C%20Curse%20%23289%0A%0AVersion%201.9.24%0A-%20Hot%20fix%20for%20TOC%20change%20in%20the%20hotfix%0A-%20Improve%20looting%20code%0A-%20More%20internal%20code%20cleanup%0A%0AVersion%201.9.23%0A-%20Really%2C%20really%20get%20rafts%20working%20even%20if%20you%20can%27t%20use%20the%20toy%20you%20have%20%28Curse%20%23337%29%0A-%20Internal%20code%20improvements%0A%0AVersion%201.9.22%0A-%20Rewrite%20raft%20handling%20to%20be%20smarter%20when%20you%20don%27t%20have%20the%20berg%0A-%20Actually%20get%20the%20watcher%20to%20stick%20when%20using%20the%20start%20macro%20%28CurseForge%20%23364%29%0A-%20Fix%20location%20frame%20error%20%28CurseForge%20%23365%29%0A%0AVersion%201.9.21%0A-%20Add%20option%20to%20hide%20trash%20fish%20in%20watcher%0A-%20More%20code%20improvements%0A-%20Update%20HereBeDragons%20library%0A%0AVersion%201.9.20%0A-%20Attempt%20to%20fix%20the%20%22crash%20while%20resizing%22%20issue%0A-%20Make%20the%20watcher%20window%20stay%20around%20when%20using%20the%20macro%0A%0AVersion%201.9.19%0A-%20Don%27t%20let%20side%20effects%20hide%20the%20action%20button%20if%20we%27re%20in%20combat%20%28Curse%20%23363%29%0A-%20Add%20an%20option%20to%20only%20show%20the%20Legion%20bosses%20in%20Broken%20Isles%0A-%20Actually%20show%20the%20Fisherfriend%20loot%20correctly%20when%20in%20Broken%20Isles%0A%0AVersion%201.9.18%0A-%20Fix%20bug%20when%20custom%20pets%20selected%0A-%20Don%27t%20summon%20pets%20in%20combat%20%28Curse%20%23336%2C%20%23279%29%0A%0AVersion%201.9.17%0A-%20Fix%20error%20on%20catching%20quest%20fish%20%28Curse%20%23361%29%0A-%20Fix%20can%27t%20equip%20fishing%20outfit%20%28Curse%20%23360%29%0A-%20Fix%20fishing%20hat%20no%20longer%20working%20%28Curse%20%23350%29%0A%0AVersion%201.9.16%0A-%20Work%20on%20drinking%20heavily%20while%20fishing%0A-%20Don%27t%20use%20a%20hat%20if%20we%20have%20a%20better%20lure%0A-%20After%20fishing%20without%20a%20pole%2C%20cast%20without%20requiring%20the%20key%20%28option%3A%20Keep%20Fishing%29%0A-%20Keep%20track%20of%20%22caught%20so%20far%22%20numbers%20for%20skill%20up%20again%0A-%20General%20code%20improvements%0A%0AVersion%201.9.15%0A-%20Draenor%20special%20baits%20are%20working%20again%0A-%20Handle%20who%20does%20what%20when%20better%20for%20auto-looting%20setting%20interactions%0A-%20Some%20code%20cleanup%20that%20might%20fix%20the%20%22disappearing%20tradeskill%20window%22%20bug%0A%0AVersion%201.9.14%0A-%20Add%20knowledge%20of%20fishing%20skills%20for%20Zandalar.%20For%20the%20Horde%21%0A%0AVersion%201.9.13%0A-%20Use%20Friend%20instead%20of%20Raid%20when%20displaying%20the%20%27Fisherfriend%22%20line%20in%20the%20watcher%0A-%20Try%20not%20to%20loot%20anything%20%22non-fishing%22%20except%20Legion%20Fish%20barrels%20%28which%20aren%27t%20fishing%20loot%2C%20sigh%29%0A%0AVersion%201.9.12%0A-%20Default%20%22Partial%20Gear%22%20casting%20to%20%22off%22%20%28fixes%20surprise%20in%20Drustvar%29%0A-%20Count%20the%20fish%20we%20catch%20when%20we%20fish%20without%20an%20actual%20pole%0A-%20Fix%20raft%20timer%20issue%20%28CurseForge%20%23348%29%0A%0AVersion%201.9.11%0A-%20The%20watcher%20window%20behaves%20better%20when%20fishing%20without%20a%20pole%0A-%20Update%20to%20latest%20LibBabble-SubZone%0A-%20The%20quest%20API%20changed%20%28CurseForge%20%23342%29%0A-%20Eliminate%20call%20to%20out%20of%20date%20API%20%28CurseForge%20%23344%29%0A-%20Fixed%20uninitalized%20variable%20%28CurseForge%20%23345%29%0A%0AVersion%201.9.10%0A-%20Try%20harder%20not%20to%20throw%20away%20Legion%20bonus%20fish%20if%20you%20don%27t%20need%20the%20bonus%0A-%20%22Setup%20Skills%22%20option%20so%20we%20don%27t%20get%20your%20skills%20at%20startup%20%28TSM%20users%29%0A%0AVersion%201.9.9%0A-%20Don%27t%20throw%20special%20fish%20if%20at%20max%20skill%20or%20full%20power%20Artifact%20pole%20%28%23335%29%0A-%20Count%20fish%20in%20a%20barrel%20%28%23322%29%0A-%20Fix%20Curse%20bugs%20%23338%2C%20%23339%2C%20%23340%0A%0AVersion%201.9.8%0A-%20Fix%20%22Show%20Zones%22%20checkbox%20in%20display%20%28finally%21%29%0A-%20Make%20the%20login%20banner%20optional.%0A-%20Attempt%20to%20fix%20CurseForge%20%23336%0A%0AVersion%201.9.7%0A-%20Frame%20handling%20cleanup%20%28needed%20for%20tracking%20plugin%20support%29%0A-%20Random%20code%20improvements%0A%20%0A%20Version%201.9.6%0A-%20Fix%20broken%20data%20collection%2C%20reclaim%20misplaced%20catches%0A-%20Random%20code%20cleanups%20and%20some%20prettification%20of%20data%20display%0A%0AVersion%201.9.5%0A-%20Fix%20bugs%20in%20frame%20handling%20so%20that%20plugins%20work%20more%20reliably%0A-%20Much%20hackery%20to%20get%20at%20per-expansion%20fishing%20skills%0A%0AVersion%201.9.4%0A-%20Simplify%20skill%20to%20be%20per%20%22expansion%22%20until%20subzones%20get%20sorted%0A-%20Keep%20track%20of%20where%20Margoss%20really%20lives%0A-%20Bug%20fixes%20in%20map%20handling%0A%0AVersion%201.9.3%0A-%20Handle%20map%20based%20quest%20items%0A-%20Handle%20continents%20better%0A%0AVersion%201.9.1-2%0A-%20Internal%20map%20id%20cleanup%0A-%20More%20BfA%20bug%20fixes%0A%0AVersion%201.9%0A-%20Minimally%20updated%20for%20BfA%0A%0AVersion%201.8.4.9%0A-%20Update%20fishing%20library%20%28so%20outfit%20display%20does%20transmog%29%0A%0AVersion%201.8.4.8%0A-%20Fix%20Curse%20bug%20%23323%20%28watcher%20drag%20issue%29%0A%0AVersion%201.8.4.7%0A-%20Fix%20edge%20case%20when%20using%20Tuskaar%20Spear%0A%0AVersion%201.8.4.6%0A-%20Start%20code%20changes%20for%20BfA%20%28general%20code%20cleanup%29%0A-%20Attempt%20to%20fix%20Curse%20bug%20%23319%20%28stack%20overflow%29%0A%0AVersion%201.8.4.5%0A-%20Fix%20Curse%20bug%20%23321%20%28console%20spam%29%0A%0AVersion%201.8.4.4%0A-%20Fix%20Curse%20bug%20%23275%20%28protected%20function%29%0A-%20Fix%20Curse%20bug%20%23291%20%28cast%20button%20setting%29%0A-%20Raid%20boss%20names%20were%20lost%20in%20translation%2C%20now%20they%27re%20back.%0A%0AVersion%201.8.4.3%0A-%20Track%20the%20server%20reset%20times%20for%20Raid%20Boss%20changes%20%28thanks%20Zeglar%21%29%0A-%20Use%20the%20Trawler%20Totem%2C%20if%20you%20have%20it.%0A-%20Resolve%20CurseForge%20issues%20%23315%20and%20%23316%0A%0AVersion%201.8.4.2%0A-%20More%20raid%20boss%20display%20cleanup%2C%20translations%20for%20boss%20names.%0A-%20Make%20rafts%20more%20reliable%2C%20add%20option%20to%20use%20even%20if%20using%20Legendary%20%28still%20has%20some%20issues%20with%20buff%20lag%29%0A-%20Fix%20issue%20with%20the%20raid%20code%20stealing%20the%20extra%20action%20bind.%0A%0AVersion%201.8.4.1%0A-%20Fix%20raid%20filtering%20function%20%28Curse%20bug%20%23314%29%0A-%20Oversized%20bobbers%20should%20work%20now%20%28Curse%20bug%20%23311%29%0A-%20Remove%20abandoned%20LibCrayon%20%28Curse%20bug%20%23310%29%0A%0AVersion%201.8.4%0A-%20Make%20the%20extra%20action%20button%20prettier%0A-%20Fix%20the%20%22Fishing%20Raid%22%20of%20the%20day%20code%20so%20that%20it%20actually%20does%20that%0A-%20Wear%20the%20damned%20hat%21%20%28Curse%20issue%20%23312%29%0A-%20Clean%20up%20event%20handling%20code%20so%20that%20it%27s%20internally%20consistent%20%28part%20of%20the%20%22Better%20Code%20for%20Tomorrow%20%28tm%29%22%20effort%29%0A%0AVersion%201.8.3%0A-%20Raid%20Support%3A%20Filter%20loot%20when%20in%20a%20raid%0A-%20Raid%20Support%3A%20Display%20today%27s%20FisherFriend%20boss%0A-%20Raid%20Support%3A%20Extra%20action%20button%20when%20you%20get%20the%20special%20item%0A-%20Raid%20Support%3A%20Show%20how%20many%20of%20the%20currency%20item%20you%20have%0A-%20Bug%20%23311%3A%20Oversized%20bobber%20applied%20inappropriately%0A-%20Lots%20of%20little%20code%20fixes%20and%20improvements%0A%0AVersion%201.8.2%0A-%20Fix%20issue%20with%20LibStub%20and%20initialization%20that%20would%20cause%20the%20broker%20to%20fail%0A%0AVersion%201.8.1%0A-%20If%20%22Open%20Quest%20Items%22%20is%20checked%2C%20throw%20Legion%20bonus%20fish%20with%20every%20cast%0A-%20Display%20%22The%20Wish%20Remover%22%20status%20when%20we%27re%20near%20the%20fountain.%0A-%20%22Oh%2C%20and%20it%27s%20also%20a%20great%20excuse%20to%20drink.%20Heavily.%22%0A-%20Fix%20the%20bug%28s%29%20that%20stopped%20bobber%20and%20pet%20choices%20from%20sticking.%0A-%20Fix%20the%20annoying%20bug%20that%20stopped%20many%20people%20from%20casting%20%28thanks%20HarlequinBonse%20and%20Grizzly_UK%21%29%0A-%20Many%20small%20bug%20fixes%2C%20work%20towards%20better%20buff%20handling%0A%0AVersion%201.8a%0A-%20Fix%20random%20issues%20with%20the%20newly%20update%20code%0A-%20Show%20the%20count%20of%20Lunarfall%20Carp%20%28since%20we%20only%20get%205%20at%20a%20time%29%0A-%20Don%27t%20use%20the%20Tuskarr%20Spear%20if%20we%27re%20mounted%20%28trying%20to%20%20make%20it%20smarter%29%0A%0AVersion%201.8%0A-%20Consistent%20bobber%20handling%20%28currently%20it%20will%20only%20check%20when%20you%20start%20fishing%29%0A-%20Substantial%20rewrite%20to%20use%20libraries%20for%20cleaner%20code%0A-%20Fix%20leaking%20variables%20and%20potential%20taint%20hazards%20%28thanks%20Resike%21%29%0A-%20Fix%20raft%20support%20so%20that%20it%20works%20again.%0A-%20Make%20the%20Tuskarr%20spear%20behave%20better.%0A-%20CurseForge%20bugs%20300%2C%20301%2C%20302%2C%20303%2C%20304%0A%C3%82%C2%A0%0AVersion%201.7.13i%0A-%20Keep%20track%20of%20the%20new%20fishing%20friends%27%20items%0A-%20Handle%20new%20bobbers%20%28thanks%20bsmorgan%21%29%0A%0AVersion%201.7.13h%0A-%20Bump%20version%20in%20an%20attempt%20to%20work%20around%20the%20%22Curse%20of%20Curse%22%20bug%0A%0AVersion%201.7.13g%0A-%20Fix%20calls%20to%20PlaySound%20to%20use%20new%20SoundKit%20index%0A%0AVersion%201.7.13f%0A-%20Update%20LibBabble-SubZone%0A%0AVersion%201.7.13e%0A-%20Fix%20LibTourist%0A%0AVersion%201.7.13d%0A-%20Update%20TOC%0A%0AVersion%201.7.13c%0A-%20Always%20try%20and%20use%20the%20Oversize%20Bobber%20if%20the%20user%20wants%20it%0A-%20Updated%20Traditional%20Chinese%20translation%20%28thanks%20gaspy10%21%29%0A%0AVersion%201.7.13b%0A-%20Don%27t%20globally%20define%20my%20custom%20CalendarGetDayEvent%20so%20as%20not%20to%20break%20other%20addons%0A-%20Update%20LibTourist%20and%20LibPetJournal%0A%0AVersion%201.7.13a%0A-%20Fix%20Equipment%20Manger%20support%0A-%20Fix%20Curse%20Bug%20%23296%20%28calendar%20event%20change%29%0A-%20Fix%20%22Find%20Fish%22%20issue%0A-%20Update%20libraries%0A%0AVersion%201.7.13%0A-%20Update%20TOC%20for%207.2%0A%0AVersion%201.7.12g%0A-%20Handle%20Truthseeker%20and%20Oathbreaker%20%28hopefully%29%0A-%20Go%20back%20to%20the%20%22real%22%20LibBabble-SubZone%20and%20use%20a%20routine%20suggested%20by%20the%20author%20to%20merge%20in%20the%20missing%20entries.%0A-%20Begin%20the%20great%20rewrite%20with%20a%20lot%20of%20code%20cleanup%0A-%20Prepare%20to%20group%20options%20with%20their%20related%20tabs%0A%0AVersion%201.7.12f%0A-%20Don%27t%20use%20the%20Tuskaar%20spear%20while%20we%20have%C3%82%C2%A0Surface%20Tension%20on%20%28i.e.%20using%20the%20Legendary%29%0A%0AVersion%201.7.12e%0A-%20Turn%20the%20special%20bobbers%20and%20such%20back%20on%20%28typo%20during%20code%20cleanup%29%0A%0AVersion%201.7.12d%0A-%20More%20library%20updates%0A-%20Force%20LibBabble-SubZone%20to%20a%20different%20%28larger%29%20version%20so%20that%20our%20default%20updates%20win%0A%0AVersion%201.7.12c%0A-%20Turn%20on%20the%20default%20values%20for%20missing%20translations%20in%20LibBabble-Subzone%0A%0AVersion%201.7.12b%0A-%20Fix%20a%20data%20corruption%20bug%0A-%20Don%27t%20overwrite%20special%20bobbers%0A-%20Oversize%20bobber%20wins%20if%20they%27re%20in%20your%20inventory%0A%0AVersion%201.7.12a%0A-%20%20Default%20drowned%20mana%20quests%20to%20false%0A%0AVersion%201.7.12%0A-%20Add%20support%20for%20new%20fishing%20bobbers%0A-%20Temporarily%20remove%20macro%20support%20while%20it%20gets%20rewritten%0A-%20Update%20support%20libraries%0A%0AVersion%201.7.11%0A-%20Update%20TOC%0A%0AVersion%201.7.10%0A-%20Force%20null%20%27name%27%20reference%20to%20not%20happen%20%28no%20idea%20why%20yet%2C%20other%20than%20caching%20issues%29%0A-%20Add%20Arcane%20lure%20to%20%22special%22%20lure%20handling%0A-%20Display%20available%20Legion%20world%20fishing%20quests%0A-%20Support%20the%20new%20raft%20toy%0A%0AVersion%201.7.9%0A-%20Another%20set%20if%20nil%20handling%20changes%20%28found%20a%20major%20one%29%0A%0AVersion%201.7.8%0A-%20Faster%20looting%0A-%20Hopefully%20fix%20null%20reference%20bugs%20that%20occur%20for%20some%20people%0A-%20Better%20loot%20logic%20when%20using%20Artifact%20fishing%20pole%0A%0AVersion%201.7.7%0A-%20Force%20all%20missing%20subzone%20translations%20to%20be%20the%20English%20text%20for%20now%0A-%20Handle%20rep%20turn-ins%20for%20Magross%2C%20only%20ding%20on%20Mark%20of%20Aquaos%0A-%20Update%20French%20translations%20%28thanks%20gurki35%21%29%0A%0AVersion%201.7.6%0A-%20Add%20Conjurer%20Margoss%20items%20to%20watcher%20display%0A-%20Some%20preliminary%20work%20to%20get%20lures%20working%20more%20reliably%0A%0AVersion%201.7.5%0A-%20Update%20LibBabble-SubZone%20to%20release2%0A-%20Fix%20item%20pattern%20reversion%0A%0AVersion%201.7.4%0A-%20Option%20to%20use%20%22special%22%20coin%20lures%20in%20Dalaran%20if%20you%20have%20them%20in%20your%20bags%0A-%20Change%20%22Max%20Draenor%22%20option%20to%20%22Max%20Fishing%22%2C%20try%20to%20max%20out%20fishing%20in%20Broken%20Isles%20too%0A%0AVersion%201.7.3%0A-%20Mess%20with%20Equipment%20Manager%20some%20more%20%28not%20done%20yet%29%0A-%20Create%20a%20Macintosh%20compatible%20ZIP%20file%20regardless%20of%20which%20dev%20machine%20builds%20it%0A%0AVersion%201.7.2%0A-%20CurseForge%20bug%20%23257%20-%20Watch%20Bobber%20functionality%20broken%20%28thanks%20Bodar%21%29%0A-%20CurgeForge%20bug%20%23210%20-%20Disconnect%20switching%20outfits%20on%20Monk%20%28hopefully%20because%20of%20slowdown%29%0A%0AVersion%201.7.1%0A-%20Curseforge%20bug%20%23272%20-%20Stuck%20on%20loading%20screen%0A-%20Curseforge%20bug%20%23274%20-%20Error%20when%20using%20Equipment%20Manager%0A-%20Curseforge%20bug%20%23276%20-%20Draenor%20Fishing%20Pole%20works%20again.%0A-%20CurgeForge%20bug%20%23252%20-%20lure/bait%20stopped%20being%20applied%20consistently%0A-%20Add%20%22Max%20Draenor%22%20fishing%20option%2C%20if%20enabled%20ignore%20minimum%20fishing%20level%0A%0AVersion%201.7%0A-%20Updates%20for%20Legion%0A-%20Support%20for%20%22Oversize%20Bobber%22%0A-%20Pet%20handling%20fixes%20%28thanks%20miss_kallistra%21%29%0A%0AVersion%201.6c%0A%20-%20Deal%20with%20moving%20to%20a%20new%20machine%20and%20and%20git%0A%0AVersion%201.6b%0A-%20Update%20Russian%20translations%20%28thanks%20PocoMaxa%21%29%0A-%20Attempt%20to%20fix%20sound%20issues%20when%20logging%20out%20while%20fishing%0A%0AVersion%201.6a%0A-%20More%20checking%20to%20make%20sure%20Nat%20Pagle%20is%20the%20only%20quest%20giver%20we%20talk%20to%0A%0AVersion%201.6%0A-%20Auto%20turn-in%20lunker%20quests%0A-%20Add%20%22Corpse%20Worm%22%20support%20for%20Undead%20fishing%20dailies%20%28Curse%20bug%20%23260%29%0A-%20Stop%20dragging%20watcher%20if%20Escape%20is%20pressed%20%28Curse%20bug%20%23261%29%0A%0AVersion%201.5.6%0A-%20Remove%20max%20lunker%20alert%20sound%0A-%20Update%20to%20latest%20LibTourist%0A%0AVersion%201.5.5%0A-%20Add%20Felmouth%20Frenzy%20support%0A-%20Update%20to%20latest%20LibBabble-SubZone%0A%0AVersion%201.5.4%0A-%20Update%20TOC%20for%206.2%0A%0AVersion%201.5.3%0A-%20Fix%20for%20bug%20%23259%20%28error%20during%20%22A%20True%20Draenor%20Angler%22%20quest%29%0A%0AVersion%201.5.2%0A-%20Better%20handling%20of%20when%20and%20where%20we%27re%20doing%20Nat%27s%20quest%20%28thanks%20Bodar%21%29%0A-%20Fix%20for%20broken%20UIFrameIsFading%20making%20the%20watch%20bobber%20fail%20%28again%2C%20Bodar%21%21%29%0A-%20With%20ding%20fish%20on%2C%20%22Work%20Complete%22%20sound%20plays%20when%20you%20get%20five%20lunkers%0A-%20Always%20show%20the%20%22Bladebone%20Hook%22%20as%20an%20option%2C%20even%20if%20we%20don%27t%20have%20any%0A%0AVersion%201.5.1%0A-%20Remove%20the%20%22Fragrant%22%20Pheromone%20Fish%20support%0A%0AVersion%201.5%0A-%20Add%20%22maintain%20only%22%20option%20for%20Draenor%20bait%20--%20keeps%20applying%20whatever%20you%20last%20had%20applied%0A-%20Update%20Simplified%20Chinese%20translation%20%28thanks%20yuningning520%21%29%0A-%20Call%20the%20right%20function%20in%20LibTourist%20%28Curse%20bug%20%23254%29%0A-%20Apply%20the%20appropriate%20bait%20if%20we%27re%20not%20just%20maintaining%20Draenor%20baits%20%28Curse%20bug%20%23256%29%0A-%20Handle%20fished%20up%20things%20that%20aren%27t%20items%2C%20like%20Garrison%20Resources%20%28Curse%20bug%20%23253%29%0A-%20Ding%20on%20Sea%20Scorpion%20Lunker%20catches%0A-%20Auto-apply%20%22Fragrant%22%20Pheromone%20Fish%20%28might%20make%20this%20optional%20after%20I%20use%20it%20for%20a%20bit%29%0A%0AVersion%201.4y%0A-%20Fix%20a%20random%20spurious%20character%20in%20the%20Draenor%20bait%20table%0A%0AVersion%201.4x%0A-%20Don%27t%20overwrite%20Draenor%20fishing%20quest%20baits%20%28Curse%20bug%20%23250%29%0A-%20Add%20support%20for%20Bladebone%20Hook%0A%0AVersion%201.4w%0A-%20Use%20Draenor%20bait%20option%20is%20in%20broker%20menu%0A-%20Update%20TOC%20for%206.1%0A%0AVersion%201.4v%0A-%20Fix%20for%20watcher%20fish%20counting%20%28thanks%20ProphetV%21%29%0A%0AVersion%201.4u%0A-%20Add%20an%20option%20to%20display%20just%20the%20current%20fish%20in%20the%20watcher%20%28Curse%20%23237%29%0A-%20Do%20some%20fixing%20around%20Curse%20bug%20%23246%20%28it%20looks%20like%20some%20addons%20turn%20off%20minimap%20icons%29%0A-%20Updated%20Traditional%20Chinese%20%28thanks%20alec65%21%29%0A%0AVersion%201.4t%0A-%20Remove%20UI%20freeze%20when%20using%20the%20Blizz%20bag%20sorter%0A-%20Add%20garrison%20cavedweller%20fish%20to%20%22Pagle%22%20fish%20list%20%28ding%20on%20catch%2C%20list%20in%20watcher%29%0A%0AVersion%201.4s%0A-%20Add%20missing%20file%20that%20maanged%20to%20not%20get%20into%20source%20control%0A%0AVersion%201.4r%0A-%20Don%27t%20use%20Draenor%20special%20baits%20while%20doing%20the%20Hookshot%20or%20introductory%20fishing%20quests%0A-%20Display%20lunkers%20with%20other%20quest%20fish%20in%20the%20watcher%0A%0AVersion%201.4q%0A-%20Now%20that%20the%20library%20is%20right%2C%20make%20sure%20we%20check%20it%20correctly%20for%20non-English%20clients%0A%0AVersion%201.4p%0A-%20Fix%20bug%20in%20fishing%20library%20that%20was%20messing%20up%20non-English%20zone%20lookups%0A%0AVersion%201.4o%0A-%20Add%20an%20option%20to%20control%20the%20application%20of%20%22Draenor%20bait%22%0A-%20More%20work%20on%20cleaning%20up%20all%20of%20the%20old%20lure%20code%20to%20handle%20all%20of%20the%20new%20situations%0A%0AVersion%201.4n%0A-%20The%20zone%20based%20lures%20should%20be%20applied%20appropriately%2C%20including%20sea%20scorpion%0A-%20Updated%20French%20translation%20%28thanks%20Matisk%2C%20Mips%2C%20and%20ckeurk%21%29%0A-%20Updated%20to%20latest%20LibTourist%2C%20now%20knows%20about%20garrisons%0A-%20Fix%20Curse%20bug%20%23243%20%28switch%20error%20while%20in%20combat%29%0A%0AVersion%201.4m%0A-%20Don%27t%20try%20and%20remember%20fish%20schools%20if%20we%27re%20not%20sure%20where%20we%20are%20%28Curse%20Bug%20%23240%29%0A%0AVersion%201.4k%0A-%20Fix%20math%20error%20in%20watcher%20when%20you%20are%20fishing%20for%20the%20first%20time%0A%0AVersion%201.4j%0A-%20Make%20sure%20Nat%27s%20Hookshot%20is%20applied%20whenever%20we%27re%20doing%20the%20Lunker%20quest%0A-%20Use%20the%20Worm%20Supreme%2C%20if%20we%20need%20it%20to%20get%20over%20950%0A-%20Use%20the%20latest%20LibTourist%2C%20and%20notice%20if%20we%27re%20in%20the%20Draenor%20zones%20for%20skill%20check%0A%0AVersion%201.4i%0A-%20One%20last%20%22boolean%20instead%20of%201%22%20error%20in%20the%20locations%20frame%0A-%20Latest%20version%20of%20LibTourist%20%28hacked%20for%20950%20skill%20everywhere%29%0A%0AVersion%201.4h%0A-%20Actually%20fix%20the%20issue%20with%20checkboxes%20%28Curse%20bug%20%23234%29%0A%0AVersion%201.4g%0A-%20Subtle%20fix%20for%20checkbox%20handling%20in%20options%2C%20use%20booleans%20everywhere%20%28Curse%20bug%20%23234%29%0A-%20Use%20the%20latest%20version%20of%20LibTourist%0A-%20French%20translation%20updated%20%28thanks%20Dabeuliou%21%29%0A%0AVersion%201.4f%0A-%20Use%20the%20latest%20version%20of%20LibTourist%0A-%20Remove%20Outfitter%20failure%20%28I%20may%20add%20the%20tooltips%20back%20in%20later%29%0A%0AVersion%201.4e%0A-%20Use%20the%20latest%20version%20of%20LibBabble-SubZone%0A-%20Italian%20translation%20reviewed%20%28thanks%20_YuSaKu_%21%29%0A-%20French%20translation%20updated%20%28thanks%20Dabeuliou%21%29%0A%0AVersion%201.4d%0A-%20Use%20the%20latest%20version%20of%20LibTourist%20and%20LibBabble-SubZone%20for%20WoD%0A%0AVersion%201.4c%0A-%20Don%27t%20try%20to%20summon%20fishing%20pets%20if%20we%27re%20in%20combat%0A-%20Make%20sure%20we%20autoloot%20things%20that%20we%27re%20opening%20automatically%0A-%20Better%20handling%20when%20both%20Angler%27s%20Raft%20and%20Bipsi%27s%20Berg%20are%20available%0A-%20Fix%20for%20Curse%20bug%20%23231%20%22Watcher%20not%20toggling%20off%20automatically%22%0A%0AVersion%201.4b%0A-%20Get%20my%20act%20together%20with%20respect%20to%20watch%20window%20location%20%28thanks%20Grizzly_UK%21%29%0A%0AVersion%201.4a%0A-%20More%20work%20on%20keeping%20the%20watcher%20visible%20and%20onscreen%20%28using%20LibWindow%29%0A-%20Handle%20version%20changes%20and%20per-player%20settings%20correctly%0A-%20Fix%20an%20issue%20with%20LibTourist%20where%20it%20doesn%27t%20check%20for%20esMX%0A%0AVersion%201.4%0A-%20Updated%20German%20translation%20%28thanks%20DirtyHarryGermany%21%29%0A-%20Attempted%20fix%20for%2064-bit%20crash%20bug%20%28%23227%29%20by%20using%20PLAYER_ALIVE%0A-%20Remove%20invalid%20frame%20reference%20in%20watcher%20window%20%28Curse%20%23229%29%0A-%20Add%20%22/fb%20fishdata%20reset%22%20to%20clear%20out%20all%20fish%20location%20data%20%28%23127%29%0A-%20More%20work%20on%20the%20watcher%20frame%20to%20try%20and%20make%20it%20stay%20on%20screen%20all%20the%20time%0A%0AVersion%201.3b%0A-%20Have%20%22all%20english%22%20command%20syntax%20to%20reduce%20confusion%0A-%20Minor%20internal%20library%20changes%20to%20reduce%20event%20spam%20during%20world%20transitions%0A-%20Fix%20Curse%20bug%20%23215%20-%20Stutters%20when%20phasing%20on%20your%20farm%0A%0AVersion%201.3a%0A-%20Fix%20moved%20line%20that%20escaped%20testing%0A%0AVersion%201.3%0A-%20Allow%20for%20choosing%20Mouse4%20and%20Mouse5%20for%20casting%0A-%20Add%20%22/fb%20fishing%20start%22%20for%20use%20in%20macros%20to%20turn%20on%20%22fishing%20mode%22%0A-%20Add%20%22FishingBuddy%22%20macro%20%28self%20modifying%20macro%20that%20emulates%20the%20double%20click%20sequence%29%0A-%20Add%20support%20for%20Bipsi%27s%20Bobbing%20Berg%0A-%20Attempt%20to%20fix%20Curse%20bug%20%23224%20%28Minimap%20Icon%20moves%29%0A-%20Rewrote%20Fish%20Watcher%20display%20code%20%28some%20of%20the%20oldest%20code%20in%20FB%21%29%0A%0AVersion%201.2p3%0A-%20Fix%20for%20Curse%20bug%20%23221%20%28error%20on%20mouse%20over%20with%20Gear%20manager%29%0A-%20Updated%20fix%20for%20Curse%20bug%20%23218%20%28ammo%20slot%20still%20has%20a%20value%20in%20it%2C%20but%20it%27s%20zero%20now%29%0A%0AVersion%201.2p2%0A-%20Fix%20for%20UpdateMicroButtons%20taint%0A%0AVersion%201.2p1%0A-%20Update%20to%20latest%20LibTourist%20%28added%20Timeless%20Isle%29%0A%0AVersion%201.2p%0A-%20Updated%20TOC%20to%205.4%0A-%20Fixed%20About%20box%2C%20because%20credit%20where%20credit%20is%20due%20is%20what%20you%20do%0A-%20Better%20Extravaganza%20time%20handling%20based%20on%20code%20from%20Salty%20Badmunkay%20the%20Limnologist%20%28%40Shadow%20Council%29%0A-%20Additional%20clean%20up%20in%20Extravaganza%20code%0A-%20Rewrite%20drop%20down%20handling%20%28for%20FB_Broker%2C%20etc.%29%20to%20not%20trigger%20Blizz%20raid%20frame%20bug%0A-%20Summon%20pets%20again%20when%20we%20start%20to%20fish%0A-%20Fix%20%22Open%20Quest%20Item%22%20handling%0A-%20Updated%20to%20latest%20versions%20of%20LibTourist%20and%20LibBabble-SubZone%0A%0AVersion%201.2o%0A-%20Rewrite%20pet%20menu%20handling%20to%20use%20LibPetJournal%0A-%20Fix%20for%20CurseForge%20bug%20%23217%20and%20%23218%0A%0AVersion%201.2n%0A-%20Fix%20for%20CurseForge%20bug%20%23216%2C%20error%20in%20option%20screen%20with%20Outfitter%20selected%0A-%20Latest%20version%20of%20LibTourist%0A%0AVersion%201.2m%0A-%20Update%20TOC%20for%205.3%0A-%20Better%20check%20for%20%22in%20combat%22%20and%20some%20event%20management%20updates%0A-%20Latest%20version%20of%20LibBabble-SubZone%0A%0AVersion%201.2l%0A-%20Update%20TOC%20for%205.2%0A-%20Updated%20LibBabble-SubZone%20and%20LibTourist%20for%205.2%0A%0AVersion%201.2k%0A-%20Updated%20LibBabble-SubZone%2C%20prep%20for%205.2%0A-%20Remove%20Kalu%27ak%20Fishing%20Derby%20timer%2C%20now%20that%20it%27s%20gone%20for%20good%20%28sniff%21%29%0A%0AVersion%201.2j%0A-%20Updated%20Spanish%20translation%20%28thanks%20Magire%21%29%0A-%20Updated%20Brazilian%20Portuguese%20translation%20%20%28thanks%20tiagopl%21%29%0A%0AVersion%201.2i%0A-%20Fix%20for%20Equipment%20Manager%20event%20misunderstanding%0A-%20Updated%20Russian%20translation%20%28thanks%20Turbid121%21%29%0A%0AVersion%201.2h%0A-%20Attempt%20to%20fix%20memory%20leak%20and%20framerate%20losses%20with%20partial%20outfit%20option%0A-%20Updated%20German%20translation%20%28thanks%20DirtyHarryGermany%21%29%0A-%20Updated%20Russian%20translation%20%28thanks%20Turbid121%20and%20BloodyFess%21%29%0A-%20Rewrite%20window%20handling%20to%20use%20new%20Blizz%20code%20and%20graphics%0A-%20Fixes%20for%20Curse%20bugs%20%23139%20and%20%23141%20from%20sometime%20in%20the%20past%0A%0AVersion%201.2g%0A-%20FIx%20a%20subtle%20bug%20in%20the%20Pandaren%20item%20code%20that%20hopefully%20will%20make%20it%20work%20for%20everyone%20else%0A-%20Updated%20Spanish%20%28esES%29%20translation%20%28thanks%20karrash76%21%29%0A-%20Updated%20LibTourist%20to%20the%20latest%20version%0A%0AVersion%201.2f%0A-%20Updated%20Spanish%20%28esES%29%20translation%20%28thanks%20karrash76%21%29%0A-%20Updated%20German%20translation%20%28thanks%20DirtyHarryGermany%21%29%0A-%20Updated%20LibTourist%20to%20the%20latest%20version%0A-%20Make%20options%20display%20better%20with%20long%20names%20%28CurseForge%20%23110%29%0A%0AVersion%201.2e%0A-%20Fishing%20pets%20work%20again%0A-%20Add%20option%20to%20display%20the%20Nat%20Pagle%20quest%20fish%20you%27ve%20caught%20%22today%22%0A-%20Updated%20Russian%20translation%20%28thanks%20BloodyFess%21%29%0A-%20Updated%20LibTourist%20library%0A%0AVersion%201.2d%0A-%20Add%20option%20to%20just%20%22maintain%22%20the%20raft%20if%20it%27s%20already%20on%2C%20i.e.%20manual%20engagement%0A-%20Support%20the%20Sharpened%20Tuskaar%20Spear%20%28ugly%2C%20but%20it%20works%20for%20now%29%0A-%20Fix%20the%20minimap%20icon%20setting%2C%20again%0A-%20Updated%20LibTourist%20to%20the%20latest%20version%0A-%20Updated%20German%20translation%20%28thanks%20DirtyHarryGermany%21%29%0A-%20Fix%20summon%20pet%20errors%20--%20BUT%20PETS%20DON%22T%20WORK%20YET%0A-%20Fix%20Curse%20bugs%20%23206%2C%20%23207%2C%20%23208%0A%0AVersion%201.2c%0A-%20Updated%20German%20translation%20%28thanks%20DirtyHarryGermany%21%29%0A-%20Updated%20Traditional%20Chinese%20translation%20%28thanks%20titanium0107%21%29%0A-%20Update%20the%20raft%20buff%20before%20it%20expires%2C%20if%20we%20can%20%28reworking%20this%20for%20the%20next%20version%29%0A-%20Handle%20Nat%27s%20Hat%20correctly%0A-%20Lots%20of%20small%20code%20improvements%0A%0AVersion%201.2b%0A-%20Add%20option%20to%20play%20the%20quest%20completed%20sound%20when%20you%20catch%20Nat%20Pagle%20rep%20fish%20%28%23203%29%0A-%20More%20work%20on%20the%20pet%20menu%20to%20try%20and%20address%20the%20%22script%20too%20long%22%20bug%20some%20people%0A%20%20are%20seeing%0A%0AVersion%201.2a%0A-%20New%20French%20translation%20%28thanks%20Matisk%21%29%0A-%20Updated%20Traditional%20Chinese%20translation%20%28thanks%20titanium0107%21%29%0A-%20New%20German%20translation%20%28thanks%20DirtyHarryGermany%21%29%0A-%20Add%20Nat%27s%20Hat%20%28duh%29%0A-%20Updated%20the%20About%20box%20to%20thank%20all%20the%20translators%21%20%28I%20always%20do%2C%20calling%20it%20out%20%3A-%29%0A%0AVersion%201.2%0A-%20Add%20%22Partial%20Gear%22%20option%20for%20casting.%20If%20enabled%2C%20wearing%20any%20item%20that%20has%20a%20fishing%0A%20%20bonus%20will%20let%20you%20double%20click%20cast.%0A-%20Add%20support%20for%20the%20Angler%27s%20Raft%20%28still%20figuring%20out%20what%20to%20do%20about%20the%20spear%29%0A-%20Fishing%20volume%20slider%20works%20now%0A-%20Updated%20Traditional%20Chinese%20%28zhTW%29%20translation%20%28thanks%20titanium0107%21%29%0A-%20Don%27t%20include%20pool%20catches%20in%20counts%20%28works%20for%20first%20time%20fishing%20in%20a%20subzone%29%0A-%20Try%20harder%20to%20notice%20that%20we%27re%20fishing%20from%20a%20pool%0A-%20Fix%20for%20pet%20menu%20timeout%20%28CurseForge%20%23190%2C%20%23198%29%0A-%20Miscellaneous%20bug%20fixes%20%28CurseForge%20%23201%2C%20forum%29%0A%0AVersion%201.1f%0A-%20Fix%20a%20startup%20bug%20for%20brand-new%20toons%20%28or%20never%20fished%20from%20a%20pool%29%0A-%20Updated%20Russian%20translation%20%28thanks%20DVK%21%29%0A%0AVersion%201.1e%0A-%20Fix%20startup%20bug%20%28CurseForge%20%23195%29%0A-%20Add%20a%20delay%20after%20we%20cast%20a%20lure%20so%20that%20it%20has%20time%20to%20show%20up%20%28prevent%20double%20lures%29%0A-%20Add%20Tiny%20Goldfish%20to%20the%20Fishing%20pet%20list%0A-%20Include%20CallHandler%20library%0A-%20Updated%20traditional%20Chinese%20translations%20%28thanks%20titanium0107%21%29%0A-%20Update%20German%20translation%20%28thanks%20DirtyHarryGermany%21%29%0A%0AVersion%201.1d%0A-%20Add%20support%20for%20Ancient%20Pandaren%20Fishing%20Charm%20%28Woot%21%20Only%20took%20two%20days%20of%20camping%21%29%0A-%20More%20work%20on%20the%20pets%2C%20all%20should%20be%20good%20now%0A%0AVersion%201.1c%0A-%20Fishing%20Watcher%20works%20with%20%22auto%20pole%22%20casting%0A-%20Updated%20Russian%20translation%20%28thanks%20D_Angel%21%29%0A-%20Fix%20fish%20caught%20bug%20%28CurseForge%20%23192%2C%20%23193%29%0A-%20Fix%20assorted%20issues%20with%20causing%20math%20errors%20in%20LibTourist%20%28CurseForge%20%23189%29%0A-%20Clean%20up%20internal%20event%20handling%2C%20should%20help%20memory%20usage%0A%0AVersion%201.1b%0A-%20Fix%20option%20stickiness%20bugs%20%28CurseForge%20%23184%2C%20%24187%2C%20%23188%29%0A-%20Include%20LibDataBroker%20explicitly%20%28CurseForge%20%23186%29%0A-%20FIx%20minimap%20button%20display%20issues%20%28CurseForge%20%23185%2C%20%23183%2C%20%23180%2C%20%23178%29%0A-%20Fix%20meta%20pet%20menu%20issues%0A%0AVersion%201.1a%0A-%20Yet%20another%20%27_%27%20global%20issue%20%28the%20last%20one%2C%20I%20think%2C%20after%20going%20through%20all%20the%20code%29%0A%0AVersion%201.1%0A-%20Italian%20translation%2C%20thanks%20Impaler%20%28and%20bER92%29%21%0A-%20Add%20support%20for%20%22Fish%20without%20a%20pole%22%20feature.%20Cast%20when%20any%20fishing%20gear%20is%20worn%20or%0A%20%20a%20modifier%20key%20is%20held%20down%20while%20right-clicking%0A-%20Remove%20Astrolabe%20since%20it%20causes%20problems%20with%20MoP%20%28and%20it%20doesn%27t%20work%20well%29%0A%0AVersion%201.0.9f%0A-%20Remove%20ancient%20custom%20minimap%20button%20code%20and%20use%20LibDBIcon%20instead%0A-%20Fix%20pet%20menu%20%28again%29%2C%20bug%20%23177%0A-%20Add%20Nat%27s%20Hat%0A%0AVersion%201.0.9e%0A-%20Remove%20references%20to%20LibBabble-Zone%20now%20that%20it%20is%20deprecated%0A-%20Quest%20Items%20auto-loot%20again%20%28CurseForge%20bug%20%23172%29%0A-%20Fix%20pet%20menu%20%28CurseForge%20bugs%20%23167%2C%20%23174%2C%20%23176%29%0A-%20Updated%20German%20translation%20%28Thanks%20DirtyHarryGermany%21%29%2C%20closes%20%23171%2C%20%23173%0A%0AVersion%201.0.9d%0A-%20Don%27t%20fail%20if%20there%20isn%27t%20a%20fishing%20pet%20list%0A%0AVersion%201.0.9c%0A-%20Fix%20Fishing%20Pet%20menu%20%28I%20have%20duplicates%20of%20a%20lot%20more%20pets%20than%20I%20thought%20I%20did...%29%0A-%20Latest%20version%20of%20LibBabble-Zone%20%28soon%20to%20be%20removed%29%0A%0AVersion%201.0.9b%0A-%20Blizz%20apparently%20uses%20%22_%22%20as%20a%20global%2C%20so%20let%27s%20make%20sure%20we%20have%20our%20own%20%28%23168%29%0A-%20Latest%20version%20of%20LibTourist%0A%0AVersion%201.0.9a%0A-%20Latest%20version%20of%20LibTourist%0A%0AVersion%201.0.9%0A-%20Update%20TOC%20for%205.0.4%0A-%20Update%20to%20work%20with%20WoW%205.0%20%28fix%20for%20Curse%20%23165%2C%20%23166%29%0A-%20Hack%20to%20LibTourist%20so%20that%20it%20doesn%27t%20break%20%28temp%20fix%20for%20Curse%20%23164%29%0A%0AVersion%201.0.8b%0A-%20Fixed%20Video%20Options%20bug%20%28CurseForge%20%23159%2C%20%23162%2C%20%23149%29%0A-%20Fixed%20some%20small%20issues%20with%20the%20Equipment%20Manager%0A-%20Fixed%20pet%20summoning%20and%20dismissing%20bug%0A-%20Update%20LibTourist%20and%20LibBabble-Zone%20to%20latest%20versions%0A%0AVersion%201.0.8a%0A-%20Really%20fix%20fish%20watcher%20updating%20bug%2C%20CurseForge%20%23146%20%28Thanks%20WildCard_25%21%29%0A%0AVersion%201.0.8%0A-%20Complete%20rewrite%20of%20cast%20handling%0A-%20Handle%20auto%20loot%20internally%20instead%20of%20messing%20with%20the%20UI%20setting%0A-%20Make%20%22Easy%20Cast%22%20default%20to%20%22on%22%2C%20since%20that%27s%20the%20whole%20point%20after%20all%0A-%20Fixes%20for%20Curse%20bugs%3A%20100%2C%20146%2C%20155%2C%20156%2C%20157%2C%20158%2C%20160%0A%0AVersion%201.0.7j%0A-%20Random%20flailing%20trying%20to%20figure%20out%20why%20it%20works%20for%20some%20people%20and%20not%20others%0A%0AVersion%201.0.7i%0A-%20Fix%20casting%20failure%20after%20skill-up%0A%0AVersion%201.0.7h%0A-%20Tighten%20up%20the%20click-to-cast%20code%20a%20little%20bit%20more%0A-%20Updated%20German%20translation%20%28thanks%20DirtyHarryGermany%21%29%0A-%20Updated%20Simplified%20Chinese%20translation%20%28thanks%20again%20dh0000%21%29%0A-%20Update%20LibTourist%20and%20LibBabble-Zone%20%28no%20more%20hacks%20for%20Darkmoon%20Faire%21%29%0A%0AVersion%201.0.7g%0A-%20Another%20attempt%20at%20fixing%20random%20%22no%20more%20casting%22%20issues%0A-%20Update%20LibTourist%20library%0A%0AVersion%201.0.7f%0A-%20Clean%20up%20pet%20handling%0A-%20Fixes%20for%20Curse%20Bugs%3A%20147%0A-%20Don%27t%20look%20for%20missing%20fish%20errors%20anymore%2C%20since%20there%20aren%27t%20any%0A-%20Fix%20%22stop%20fishing%22%20after%20lure%20expires%20bug%20%28hopefully%29%0A%0AVersion%201.0.7e%0A-%20Fix%20fishing%20library%20for%20when%20LOOT_CLOSED%20happens%20before%20LOOT_OPENED%0A-%20Per%20WindShak%2C%20remove%20extraneous%20esMX%20translations%0A-%20Updated%20Chinese%20translations%20%28zhTW%20by%20Andyca%2C%20zhCN%20by%20dh0000%29%0A-%20Updated%20support%20libraries%0A-%20Update%20to%20nerfed%20fish%20per%20skill%20point%20table%0A%0AVersion%201.0.7d%0A-%20Clean%20up%20options%20pane%0A-%20Get%20all%20minimap%20button%20options%20in%20one%20place%0A-%20Nicer%20fishing%20pet%20menu%0A-%20Display%20tooltips%20on%20%22auto-disabled%20options%22%20with%20explanations%0A-%20Fix%20bad%20interaction%20when%20casting%20with%20Fishing%20Ace%21%20loaded%20%28CurseForge%20bug%20FA%20%239%2C%2011%29%0A%0AVersion%201.0.7c%0A-%20Updated%20Simplified%20Chinese%20translation%20%28zhCN%29%0A-%20Fix%20for%20CurseForge%20ticket%20140%2C%2091%0A-%20Clean%20up%20minimap%20button%20movement%20for%20non-standard%20minimap%20shapes%0A%0AVersion%201.0.7b%0A-%20Fix%20Blizzard%20Equipment%20Manager%20support%0A-%20Add%20Sea%20Pony%20to%20fishing%20pet%20list%0A%0AVersion%201.0.7a%0A-%20Update%20libraries%20%28hopefully%20this%20will%20fix%20some%20issues%20with%20Darkmoon%29%0A-%20Added%20some%20temporary%20information%20about%20fishing%20levels%20in%20Darkmoon%0A-%20Update%20Simplified%20Chinese%20translation%20--%20thanks%20dh0000%20on%20Curse%21%0A-%20Update%20Spanish%20translation%20--%20thanks%20Winderfind%21%0A-%20Added%20Brazilian%20Portuguese%20translation%20--%20thanks%20nomadbr%20on%20Curse%21%0A-%20Update%20the%20About%20box%20to%20include%20all%20the%20new%20people%20to%20thank%21%0A%0AVersion%201.0.7%0A-%20Update%20TOC%0A-%20Updated%20support%20libraries%0A%0AVersion%201.0.6a%0A-%20Fix%20typo%20in%20skill%20up%20handling%0A%0AVersion%201.0.6%0A-%20Handle%20zones%20with%20non-uniform%20skill%20levels%20%28Thanks%20El%21%29%0A-%20Fix%20graphic%20for%20pool%20display%0A-%20Update%20supporting%20Lib-Babble%2A%2C%20LibCrayon%20libraries%0A%0AVersion%201.0.5%0A-%20Updated%20libraries%0A-%20Updated%20German%20translation%0A-%20Option%20to%20force%20the%20sound%20on%20if%20it%20is%20off%20when%20we%20start%20to%20fish%20%28Curse%20%23112%29%0A-%20Make%20fishing%20volume%20a%20slider%20instead%20of%20always%20100%25%0A%0AVersion%201.0.4a%0A-%20Fix%20Curse%20bug%20%23130%20%28and%20many%20duplicates%29%0A%0AVersion%201.0.4%0A-%20Update%20TOC%0A-%20Add%20option%20for%20%22maximum%20volume%22%20while%20fishing%0A-%20Add%20option%20for%20%22always%20turn%20on%20sound%22%20while%20fishing%0A-%20Update%20translations%0A-%20Update%20libraries%0A-%20FIx%20CurgeForge%20bug%20%23128%2C%20%23129%0A%0AVersion%201.0.3a%0A-%20Fix%20a%20typo%20in%20the%20underlying%20fishing%20library%20%28thanks%20callumw%21%29%0A-%20Fix%20a%20possible%20crash%20on%20startup%20when%20initializing%20the%20%22caught%20so%20far%22%20counter%0A%0AVersion%201.0.3%0A-%20Fix%20for%20Curse%20bugs%20%23122%2C%20%23123%20%28deDE%2C%20ruRU%2C%20zhTW%29%0A-%20Another%20try%20at%20making%20sure%20we%20handle%20the%20lure%20of%20last%20resort%20correctly%0A-%20Updated%20support%20libraries%0A%0AVersion%201.0.2%0A-%20Update%20TOC%20for%204.1%0A-%20Updated%20translations%20%28thank%20you%20Curseforge%20translators%21%29%0A-%20Don%27t%20cast%20while%20flying%20or%20mounted%0A-%20Improved%20Extravaganza%20code%0A-%20Fix%20for%20Curse%20bugs%3A%20116%2C%20117%2C%20113%0A-%20Update%20fishing%20lure%20table%20%28Glass%20Fishing%20Bobber%29%0A%0AVersion%201.0.1%0A-%20New%20option%20to%20apply%20a%20lure%2C%20even%20if%20it%20doesn%27t%20help%20%28Lure%20of%20last%20resort%29%0A-%20Fix%20for%20auto-open%20fish%20stuff%20%28thanks%20Bodar%21%29%0A-%20Fix%20for%20time%20display%20in%20the%20watcher%20%28once%20you%20fish%20for%20over%20a%20day%20--%20thanks%20Wildcard_25%21%29%0A-%20Update%20translations%20from%20Curse%20%28thanks%20Valdesca%2C%20Ant1dotE%2C%20KVVVV%2C%20AlenaM%20and%20frodo10%21%29%0A-%20Crashes%20on%20exit%20should%20be%20fixed%20now%20%28Curse%20%23105%20--%20thanks%20for%20the%20hints%20x87bliss%21%29%0A-%20Fix%20for%20Curse%20bugs%3A%20%23103%20%28%23107%29%2C%20%23105%2C%20%23101%2C%20%23109%2C%20%23105%2C%20%23104%0A%0AVersion%201.0%0A-%20An%20About%20box%2C%20finally%21%0A-%20Miscellaneous%20small%20bug%20fixes%0A-%20Latest%20libraries%0A-%20Updated%20translations%20from%20Curse%0A%0AVersion%200.9.9e5%0A-%20Remove%20debugging%20code%20from%20the%20fishing%20library%20%28doesn%27t%20effect%20FB%2C%20but%20it%20does%20have%20an%20affect%20on%20FB_Broker%20and%20Fishing%20Ace%21%29%0A%0AVersion%200.9.9e4%0A-%20Rewrite%20the%20fish%20watcher%20so%20that%20it%20doesn%27t%20do%20%2Aanything%2A%20unless%20you%3A%0A%09%2A%20Catch%20a%20fish%0A%09%2A%20Change%20zone/subzones%0A%09%2A%20Update%20the%20elapsed%20time%20counter%2C%20if%20on%20%28and%20it%20only%20updates%20%2Athat%2A%20line%29%0A%09%2A%20Smarter%20%22number%20of%20catches%22%20counting%0A-%20Add%20Korean%20translations%20from%20CurseForge%0A-%20Add%20French%20translations%20from%20CurseForge%20%28Thanks%20PierrotIV%21%29%0A-%20Updated%20German%20translations%20from%20CurseForge%2C%20with%20fixes%20from%20Hulupaz%20%28Thank%20you%21%29%0A-%20Update%20the%20name%20for%20the%20current%20fish%20in%20the%20language%20of%20choice%20before%20we%20display%20it%20%28if%20it%27s%20linkable%29%0A-%20Found%20the%20French%20translation%20for%20%22Fishing%20Bobber%22%20by%20fishing%20in%20French%20%3A-%29%0A-%20Updated%20parts%20of%20the%20two%20Chinese%20translations%20--%20they%27re%20different%20from%20CurseForge%2C%20not%20sure%20what%20to%20do%20about%20that%0A-%20Updated%20to%20latest%20version%20of%20LibBabble-SubZone%0A-%20Use%20the%20latest%20Outfitter%20interfaces%0A-%20CurseForge%20tickets%20%2395%2C%20%2393%2C%20%2392%2C%20%2390%2C%20%2389%2C%20%2388%2C%20%2387%2C%20%2386%2C%20%2385%2C%20%2384%2C%20%2382%0A-%20Much%20better%20time%20display%20code%20%28thanks%20Wildcard_25%21%29%0A-%20Additional%20checks%20for%20FindBestLure%20%28thanks%20bsmorgan%21%29%0A-%20Display%20the%20number%20of%20fish%20we%20need%20in%20the%20contest%20window%2C%20be%20better%20about%20tracking%20when%20it%20starts%0A-%20More%20cleanup%20to%20pet%20code%2C%20it%20should%20be%20more%20stable%20and%20now%20it%20works%20the%20way%20I%20want%20it%20to%20%3A-%29%0A%0AVersion%200.9.9e3%0A-%20Fix%20WoW%20client%20crashes%20when%20exiting%20with%20a%20Fishing%20Pole%20equipped%20and%20enhance%20sounds%20turned%20on%0A-%20Update%20Equipment%20Manager%20to%20new%20API%20changes%20%28works%20again%29%0A-%20Latest%20version%20of%20LibTourist%0A-%20CurseForge%20bug%20%2381%2C%20%2337%0A%0AVersion%200.9.9e2%0A-%20Clean%20up%20Outfitter%20interaction.%20It%20now%20uses%20Outfitter%27s%20%22smart%20outfits%22%20%28NB%20This%20doesn%27t%20include%20the%20fishing%20hats%0A%20%20or%20boots%20at%20this%20time%2C%20so%20you%27ll%20have%20to%20add%20those%20manually%29%0A-%20Yet%20another%20attempt%20to%20make%20logging%20in%20wearing%20fishing%20gear%20work%20correctly%20again%0A%0AVersion%200.9.9e%0A-%20Integration%20with%20FishWarden%20%28from%20x87bliss%29.%20If%20FishWarden%20is%20enabled%2C%20FB%20won%27t%20attempt%20to%20auto%20loot.%0A-%20New%20option%20to%20%22automatically%22%20open%20quest%20fish%0A-%20Auto-apply%20%22Overgrown%20Earthworm%22%20if%20easy%20lure%20is%20turned%20on%0A-%20Address%20frame%20rate%20lossage%20when%20watcher%20window%20is%20up%0A-%20Fish%20needed%20to%20level%20is%20displayed%0A-%20Double%20click%20to%20loot%20and%20recast%20working%0A-%20Updated%20fishing%20pet%20menu%20that%20makes%20more%20sense%20%28picks%20a%20random%20pet%20from%20%22None%22%2C%20%22All%22%2C%20or%20%22Fishing%20Pets%22%29%0A-%20Use%20LibBabble-SubZone%20library%20so%20that%20per-locale%20data%20isn%27t%20needed%20anymore%20%28shared%20FB%20files%20again%21%29%0A-%20Latest%20LibTourist%20and%20LibBabble%20libraries%0A-%20More%20fixes%20to%20work%20around%20other%20addons%20that%20modify%20tooltips%20and%20Blizz%20issues%0A-%20Fixes%20for%20Curse%20bugs%20%2371%20%28no%20rum%20bonus%29%2C%20%2357%20%28catches%20to%20level%29%2C%20%2351%2C%20%2353%2C%20%2359%2C%20%2338%2C%20%2352%20and%20%2333%20%28pets%29%2C%20%2368%20%28German%20bonus%20check%29%0A%0AVersion%200.9.9d%0A-%20New%20version%20of%20Astrolabe%20%28thanks%20Esamynn%21%29%0A-%20Fix%20bugs%20in%20getting%20fishing%20bonuses%20%28better%20tooltip%20management%29%0A-%20Latest%20LibTourist%20and%20LibBabble%20libraries%20%28fixes%20errors%29%0A%0AVersion%200.9.9c%0A-%20FIxes%20for%20CurseForge%20bugs%0A%20%20-%20C%2358%2C%20%23C61%20--%20Astrolabe%20errors%20in%20instances%20and%20during%20%27porting%0A%20%20-%20C%2359%20--%20Extravaganza%20announcement%20error%0A%20%20-%20C%2355%20--%20Unable%20to%20move%20fish%20watcher%20frame%0A%0AVersion%200.9.9b%0A-%20Clean%20up%20tooltip%20handling%20--%20pole%20recognition%20code%20should%20be%20more%20consistent%0A-%20Add%20code%20to%20calculate%20fishing%20bonuses%20since%20we%20can%27t%20get%20it%20from%20Blizz%0A-%20Update%20to%20latest%20LibBabbleZone%0A%0AVersion%200.9.9a%0A-%20Fixed%20one%20more%20UI%20change%20%28GetSpellBookItemName%29%0A%0AVersion%200.9.9%0A-%20Update%20TOC%20to%204.0.1%0A-%20Many%20changes%20to%20work%20with%204.0.1%20API%20changes%0A-%20Added%20option%20to%20increase%20the%20%22sparklies%22%20on%20pools%20while%20fishing%20%28thanks%20Lufunpsy%21%29%0A-%20Fixed%20typo%20in%20pool%20location%20calculations%0A-%20Fix%20for%20Oufitter%20bug%20not%20finding%20Fishing%20outfit%20%28CF%20Issue%20%2351%29%0A-%20Fix%20some%20typos%20in%20various%20messages%20%28CF%20Issue%20%2331%29%0A-%20Update%20to%20latest%20LibBabble-Zone%20and%20LibTourist%0A%0AVersion%200.9.8p1%0A-%20Bug%20fix%20for%20locale%20discovery%20code%0A%0AVersion%200.9.8p%0A-%20Clean%20up%20duplicated%20zones%20%28should%20fix%20non-enUS%20clients%29%0A-%20Hopefully%20don%27t%20create%20new%20zones%20without%20reason%20%28tested%20with%20esMX%20client%29%0A-%20Update%20to%20latest%20version%20of%20LibBabble-Zone%0A%0AVersion%200.9.8o%0A-%20Count%20contest%20fish%20correctly%20%28fixed%20a%20typo%29%0A%0AVersion%200.9.8nP1%0A-%20Fix%20hang%20in%20tracking%20options%20when%20there%20only%20a%20few%20fish%20in%20the%20database%0A%0AVersion%200.9.8n%0A-%20Make%20sure%20LibGraph%20is%20included%20in%20FB_TrackingFrame%20%28svn%20error%29%0A-%20Fix%20bad%20call%20to%20UpdateMinimap%20for%20option%20menu%0A-%20Handle%20default%20outfit%20manager%20better%20%28and%20prefer%20ODF%20is%20we%20don%27t%20have%20a%20setting%29%0A-%20Use%20the%20same%20icon%20as%20Blizz%20for%20%22General%22%20options%0A-%20Check%20for%20valid%20outfit%20right%20before%20we%20show%20it%2C%20so%20that%20it%20isn%27t%20red%20when%20we%20log%20in%0A%0AVersion%200.9.8m%0A-%20Fix%20missing%20options%20pane%20%28event%20firing%20order%20weirdness%20between%20reload%20and%20login%29%0A%0AVersion%200.9.8l%0A-%20Preliminary%20Russion%20translation%20from%20StingerSoft%20%28thanks%21%29%0A%0AVersion%200.9.8k%0A-%20Fix%20startup%20error%20in%20contest%20timer%20display%0A-%20Clean%20up%20outfit%20manager%20handling%0A-%20Begin%20major%20rewrite%20of%20outfit%20display%20plugin%0A-%20Make%20the%20marked%20fishing%20more%20transparent%0A-%20Hide%20and%20show%20pools%20work%20immediately%20now%0A%0AVersion%200.9.8j%0A-%20Use%20GetPlayerFacing%28%29%20to%20determine%20where%20to%20mark%20a%20school%2C%20since%20it%20appears%0A%20%20to%20work%20just%20fine%20regardless%20of%20your%20interface%20settings%0A%0AVersion%200.9.8i%0A-%20Watch%20ITEM_LOCK_CHANGED%20again%0A-%20Generalize%20fish%20pool%20handling%0A-%20Add%20%22Derby%22%20support%20to%20the%20Extravaganza%20timer%0A-%20Use%20Astrolabe%20to%20display%20fishing%20pools%20during%20contests%0A-%20Update%20to%20latest%20version%20of%20LibTourist%20%283.0-r96%29%0A-%20Allow%20option%20tabs%20to%20be%20hidden%20%28for%20outfit%20display%29%0A-%20If%20FishingAce%20is%20loaded%2C%20turn%20off%20easy%20cast%20%28since%20it%27s%20basically%20the%20same%20code%29%0A%0AVersion%200.9.8h%0A-%20Fixed%20multiple%20bugs%20from%20the%20Curse%20tracker%20%28%22UNKNOWN%22%20zone%20handling%2C%20world%20mouse%20hook%2C%0A%20%20minimap%20toggling%29%0A-%20Add%20the%20%22None%22%20outfit%20manager%20as%20the%20default%0A%0AVersion%200.9.8g%0A-%20Use%20PLAYER_EQUIPMENT_CHANGED%20instead%20of%20ITEM_LOCK_CHANGED%0A-%20Use%20latest%20Babble%20libraries%0A%0AVersion%200.9.8f%0A-%20Fix%20a%20bug%20in%20the%20locations%20frame%20checkbox%20handling%0A%0AVersion%200.9.8e%0A-%20Remove%20%22Be%20Salty%22%20option%20since%20we%20can%27t%20change%20our%20own%20titles%20now%0A-%20Add%20%22Any%20pole%22%20option%20to%20outfit%20display%0A-%20Update%20fishing%20enchantment%20finder%20code%20for%20bonus%20display%0A-%20Preliminary%20%22switch%20to%20weapons%22%20when%20attacked%20option%0A%0AVersion%200.9.8d%0A-%20More%20minor%20fixes%20to%20pet%20summoning%0A-%20Update%20TOC%0A-%20Fix%20changed%20method%20names%20in%20option%20frame%20support%0A%0AVersion%200.9.8c%0A-%20Add%20%22Include%20all%20pets%22%20option%0A-%20Fix%20broken%20pet%20summoning%0A-%20Add%20in%20all%20extra%20trash%20fish%20from%20new%20areas%0A-%20Upgrade%20to%20latest%20Babble%20and%20Tourist%20libraries%0A%0AVersion%200.9.8b%0A-%20Add%20%22Random%22%20as%20an%20option%20for%20the%20pet%20to%20bring%20out%20when%20you%27re%20fishing%0A-%20FIx%20bug%20where%20it%20sets%20your%20title%20to%20%22None%22%20if%20you%20don%27t%20have%20%22Salty%22%0A%0AVersion%200.9.8a%0A-%20Add%20%22None%22%20as%20an%20option%20for%20the%20pet%20to%20bring%20out%20when%20you%27re%20fishing%0A%0AVersion%200.9.8%0A-%20Completely%20rewritten%20options%20pane%20to%20handle%20even%20more%20settings%0A-%20Added%20option%20to%20control%20whether%20or%20not%20you%20use%20Captain%20Rumsey%27s%20Lager%0A-%20FB_Broker%20will%20now%20%22work%22%20standalone%20--%20no%20outfit%20switching%2C%20just%20display%0A-%20Update%20to%20work%20with%20the%20%22always%20catch%22%20count%20of%20how%20many%20more%20fish%20you%20need%20to%20skill%20up%0A-%20Add%20%22None%22%20and%20%22Unknown%22%20to%20the%20fishing%20level%20display%0A-%20Double-click%20loot-and-recast%20working%20again%0A-%20You%20can%20now%20pick%20a%20title%20and%20a%20fishing%20reward%20pet%20to%20use%20while%20you%27re%20fishing%0A%0AVersion%200.9.7l%0A-%20Add%20%22Watch%20Bobber%22%20option.%20When%20disabled%2C%20FB%20will%20%2Anot%2A%20attempt%20to%20prevent%20you%0A%20%20from%20double%20clicking%20on%20the%20bobber%20%28which%20should%20match%20the%200.9.7c%20behavior%29%0A%0AVersion%200.9.7k%0A-%20Fix%20a%20typo%20in%20the%20Equipment%20Manager%20support%0A%0AVersion%200.9.7j%0A-%20The%20Equipment%20Manager%20now%20handles%20the%20switch%20correctly%0A-%20Fix%20up%20a%20lot%20of%20places%20where%20I%20was%20using%20%27this%27%20instead%20of%20%27self%27%0A-%20Use%20the%20wowace%20version%20of%20LibTourist%2C%20now%20that%20my%20changes%20are%20in%0A%0AVersion%200.9.7i%0A-%20Fix%20resetting%20elapsed%20fishing%20time%20counter%0A-%20Fix%20%22FishingOutfitTooltip%22%20not%20found%20error%20when%20FB_OutfitDisplayFrame%20isn%27t%20used%0A-%20Fix%20missing%20bonus%20and%20style%20display%20in%20FB_OutfitDisplayFrame%0A-%20Latest%20LibTourist%20changes%20%28I%27m%20working%20on%20getting%20integrated%20with%20the%20official%20version%29%0A-%20Latest%20LibBabble-Zone%0A%0AVersion%200.9.7h%0A-%20Rearrange%20startup%20order%20so%20that%20we%20can%20find%20fishing%20skill%20before%20we%20look%20for%20an%20outfit%0A-%20Fix%20some%20outfit%20manager%20bugs%20now%20that%20we%20have%20three%20different%20managers%20supported%0A-%20Rework%20event-handling%20for%20plugins%20so%20that%20it%27s%20completely%20separate%0A-%20When%20using%20the%20Equipment%20Manager%2C%20build%20the%20best%20fishing%20outfit%20we%20can%20from%20the%20bags%0A%0AVersion%200.9.7g%0A-%20Support%20for%20Blizzard%27s%20Equipment%20Manager%0A-%20LDB%20support%20%28FB_Broker%29%0A-%20%22Trash%20Compaction%22%20by%20rolling%20up%20trash%20into%20a%20single%20line%20in%20the%20watcher%0A-%20Don%27t%20auto-lure%20for%20random%20trash%2C%20only%20for%20missed%20fish%20crap%0A%0AVersion%200.9.7f%0A-%20Hide%20the%20tooltip%20if%20we%20click%20near%20the%20bobber%2C%20don%27t%20cast%20if%20the%20second%20click%20is%20on%20it%20as%20well%0A-%20If%20fishing%20skill%20is%20too%20low%2C%20pick%20the%20smallest%20lure%20that%20will%20get%20us%20fishing%0A%0AVersion%200.9.7e%0A-%20Rewrote%20how%20the%20watcher%20is%20displayed%20%28dynamic%20creation%20of%20lines%20now%29%2C%20prep%20for%20text%20output%0A-%20Attempt%20to%20fix%20the%20casting%20issue%20some%20people%20are%20running%20into%0A%0AVersion%200.9.7d%0A-%20New%20Spanish%20translation%20from%20Fili%0A-%20New%20Chinese%20%28zhTW%29%20translation%20from%20Indra%0A-%20Update%20for%20German%20from%20Leidbringer%0A-%20Fishing%20watcher%20can%20be%20dragged%20around%20again%21%0A-%20Turn%20off%20%22single%20cast%20after%20missing%20the%20water%22%20--%20it%27s%20not%20worth%20the%20breakage%0A%0AVersion%200.9.7c%0A-%20Belt%20and%20suspenders%2C%20try%20multiple%20methods%20to%20figure%20out%20if%20you%27re%20wielding%20a%20fishing%20pole%0A%0AVersion%200.9.7b%0A-%20Fix%20index%20out%20of%20range%20error%20on%20ITEM_QUALITY_COLORS%20lookup%0A%0AVersion%200.9.7a%0A-%20Make%20sure%20we%20only%20look%20for%20UI%20error%20messages%20when%20we%27re%20fishing%0A%0AVersion%200.9.7%0A-%20Display%20your%20chances%20of%20catching%20a%20fish%20in%20the%20current%20zone%20%28on%20the%20%22display%20current%20zone%22%20line%29%0A-%20If%20you%20fish%20up%20junk%20%28besides%20Felblood%20Snapper%29%2C%20do%20the%20auto-lure%20dance%0A-%20Rework%20auto%20lure%20so%20that%20it%20tries%20to%20pick%20the%20lowest%20possible%20lure%20for%20the%20zone%0A-%20Reduce%20casting%20to%20one%20click%20if%20the%20water%20is%20too%20shallow%20or%20the%20cast%20is%20out%20of%20sight%0A-%20Custom%20version%20of%20LibTourist%20with%20updated%20fishing%20levels%20and%20zone%20information%0A-%20New%20fishing%20pole%20detection%20%28foolproof%2C%20as%20long%20as%20Blizz%20doesn%27t%20mess%20with%20item%20types%29%0A-%20Fix%20a%20long-standing%20bug%20in%20lures%20about%20%22comparing%20table%20to%20number%22%0A-%20The%20fish%20database%20should%20once%20again%20display%20in%20non-English%20languages%20%28data%20conversion%20is%20likely%20to%20still%20be%20spotty%29%0A-%20Don%27t%20count%20%22quest%20fish%22%20in%20the%20percentage%20calculations%20of%20catches%0A-%20Found%20the%20issue%20with%20tooltips%20disappearing%20randomly%0A%0AVersion%200.9.6p%0A-%20Add%20%22Glow%20Worm%22%20to%20recognized%20fishing%20lures%0A-%20Blizz%20removed%20%22math.randomseed%22%2C%20so%20assume%20we%27re%20already%20random%20enough%0A-%20Make%20the%20times%20in%20the%20elapsed%20time%20indicator%20synchronized%0A-%20Minor%20cleanup%20to%20the%20totals%20display%20from%200.9.6o%0A-%20Minor%20changes%20to%20the%20locations%20display%0A%0AVersion%200.9.6o%0A-%20Update%20TOC%20to%20patch%203.1%0A-%20Fix%20annnoying%20issue%20with%20swapping%20outfits%20with%20full%20bags%0A-%20Miscellaneous%20bug%20fixes%0A%0AVersion%200.9.6n%0A-%20Update%20so%20that%20the%20various%20add-on%20sites%20think%20this%20is%20being%20maintained%0A-%20Add%20%27/fb%20timer%20reset%27%20command%20to%20re-center%20the%20extravaganza%20time%20window%20if%20it%20gets%20lost%0A-%20Update%20to%20latest%20BabbleZone%0A%0AVersion%200.9.6m%0A-%20Fishing%20watcher%20notices%20when%20you%20change%20zones%20again%20%28MINIMAP_ZONE_CHANGE%20doesn%27t%20fire%20anymore%21%29%0A%0AVersion%200.9.6l%0A-%20Fix%20the%20math%20behind%20the%20percentages%20when%20fishing%20up%20coins%20in%20Dalaran%0A-%20Update%20to%20the%20latest%20LibBabble-Zone%0A%0AVersion%200.9.6k%0A-%20Only%20show%20the%20total%20number%20of%20each%20kind%20of%20%22fountain%22%20coin%20in%20the%20Fish%20Watcher%0A%0AVersion%200.9.6j%0A-%20Fix%20a%20bug%20that%20only%20happens%20if%20you%20can%27t%20catch%20a%20fish%20because%20of%20low%20skill%20in%20a%20new%20zone%0A%0AVersion%200.9.6i%0A-%20Fix%20a%20null%20reference%20error%20checking%20for%20max%20fishing%20skill%20in%20the%20watcher%0A-%20Put%20the%20extravaganza%20timer%20in%20the%20background%20again%0A%0AVersion%200.9.6h%0A-%20If%20we%20don%27t%20have%20a%20translation%20for%20a%20zone%2C%20use%20%22UNKNOWN%22%0A-%20Upgrade%20to%20version%20r161%20of%20LibBabble-Zone%0A-%20Smarter%20item%20matching%20in%20OutfitDisplayFrame%0A%0AVersion%200.9.6g%0A-%20Support%20for%20automatically%20using%20the%20%22Find%20Fish%22%20ability%20when%20you%27re%20appropriately%20dressed%0A-%20By%20popular%20requeset%2C%20drink%20heavily%20while%20fishing%0A-%20Clean%20up%20zone%20and%20fish%20database%20display%20so%20it%20looks%20better%0A-%20Fix%20zone%20display%20scrolling%20with%20collapsed/uncollapsed%20entries%0A-%20Clean%20up%20of%20enabling/disabling%20code%20in%20the%20options%20dialog%0A-%20Update%20to%20latest%20version%20of%20LibBabble-Zone%0A%0AVersion%200.9.6f%0A-%20If%20there%27s%20a%20cooldown%20on%20a%20lure%2C%20skip%20it%20this%20time%0A%0AVersion%200.9.6e%0A-%20Don%27t%20process%20UIError%20message%20calls%20with%20no%20message%0A-%20Add%20a%20slider%20to%20determine%20how%20far%20%22out%22%20to%20put%20the%20minimap%20button%0A%0AVersion%200.9.6d%0A-%20Tighten%20up%20free%20space%20check%20in%20OutfitDisplayFrame%0A-%20Use%20the%20in-game%20calendar%20to%20find%20out%20if%20it%27s%20Extravaganza%20day%0A-%20Clean%20up%20help%20system%20so%20that%20plugin%20commands%20show%20up%20too%0A-%20Catch%20the%20%22fishing%20skill%20too%20low%22%20message%20for%20auto%20lure%0A%0AVersion%200.9.6c%0A-%20Catch%20new%20fishing%20skill%20too%20low%20message%20for%20auto%20lure%0A-%20Fishing%20timers%20work%20once%20more%0A%0AVersion%200.9.6b%0A-%20Extravaganza%20timer%20works%20again%0A-%20Use%20new%20%22count%20empty%20space%22%20functions%20instead%20of%20GetContainerID%0A-%20Support%20for%20playing%20sounds%20in%20the%20background%20while%20fishing%20%28by%20request%21%29%0A%0AVersion%200.9.6a%0A-%20Fix%20problem%20with%20clock%20offset%20code%20in%20Extravaganze%20support%0A%0AVersion%200.9.6%0A-%20Rewrite%20for%20patch%203.0.2%20and%20update%20TOC%0A-%20Move%20common%20fishing%20routines%20into%20a%20library%0A-%20Use%20LibCrayon%20for%20colors%20instead%20of%20custom%20code%0A-%20Start%20using%20LibTourist%20etc.%20to%20support%20future%20work%0A%0AVersion%200.9.5%0A-%20Not%20released%0A%0AVersion%200.9.4m%0A-%20Fix%20Easy%20Cast%20for%20Patch%202.4.3%0A%0AVersion%200.9.4l%0A-%20Fix%20for%20broken%20fishing%20after%20getting%20attacked%20while%20putting%20on%20a%20lure%0A-%20When%20showing%20elapsed%20time%3A%0A%20%20%20%2A%20Show%20total%20amount%20of%20time%20you%27ve%20spent%20fishing%20%28well%2C%20holding%20a%20pole%29%0A%20%20%20%2A%20Show%20total%20time%20fishing%20in%20the%20current%20zone%2C%20rather%20than%20current%20equipped%20time%0A-%20Minimum%20check%20for%20double-click%20that%20seems%20to%20help%20some%20situations%20with%20other%20addons%20that%0A%20%20override%20right%20clicks%20with%20a%20secure%20frame%0A-%20Show%20the%20total%20skill%20as%20well%20as%20%27skill%20%2B%20mods%27%20in%20the%20watcher%0A%0AVersion%200.9.4k%0A-%20%22Show%20current%20skill%22%20works%20again%20when%20you%20have%20375%20skill%0A%0AVersion%200.9.4j%0A-%20Fixed%20the%20%22use%20an%20item%22%20code%2C%20the%20new%20fishing%20hat%20should%20work%20just%20fine%20now%0A%0AVersion%200.9.4i%0A-%20Add%20%22Weather-Beaten%20Fishing%20Hat%22%20to%20lures%20table%20%28I%20hope%21%29%0A-%20Add%20%22Always%20Lure%22%20option%20to%20easy%20lures%0A-%20Don%27t%20display%20fish%20needed%20to%20skill%20up%20when%20you%27re%20at%20375%0A%0AVersion%200.9.4h%0A-%20Add%20%22Sharpened%20Fish%20Hook%22%20to%20lures%20table%0A%0AVersion%200.9.4g%0A-%20Update%20TOC%20across%20the%20board%20and%20normalize%20versions%0A%0AVersion%200.9.4e%0A-%20Fix%20a%20typo%20in%20the%20outfit%20manager%20code%0A%0AVersion%200.9.4d%0A-%20Remove%20all%20tooltip%20code%20since%20it%20wasn%27t%20working%20%28turned%20on%21%29%20and%20was%20causing%20problems%0A-%20I%20think%20that%20I%20have%20fixed%20the%20%22can%27t%20fish%20after%20fighting%22%20issue%0A%0AVersion%200.9.4c%0A-%20Fix%20a%20bug%20in%20the%20Merge%20Database%20translations%20that%20caused%20an%20error%20in%20FishingSetup%0A%0AVersion%200.9.4b%0A-%20Updated%20zhTW%20translations%20from%20Indra%20%28%C3%A6%CB%9C%C2%AF%C3%A8%C2%AA%C2%B0%20%C3%A6%E2%80%9E%E2%80%BA%C3%A8%C2%AA%C2%B0%29%2C%20for%20Merge%20and%20Tracking%20as%20well%21%0A%0AVersion%200.9.4a%0A-%20Turn%20of%20PvP%20while%20fishing%20%28Good%20luck%20mysticalos%21%20%3A-%29%0A%0AVersion%200.9.4%0A-%20New%2C%20smarter%20auto%20lure%20code.%20Only%20apply%20a%20lure%20if%20we%20need%20one%20%28i.e.%20we%20lost%0A%20%20a%20fish%20or%20we%20can%27t%20fish%20here%29%0A-%20znTW%20translations%20by%20Indra%20%28%C3%A6%CB%9C%C2%AF%C3%A8%C2%AA%C2%B0%20%C3%A6%E2%80%9E%E2%80%BA%C3%A8%C2%AA%C2%B0%29%0A-%20Make%20%27elapsed%20fishing%20time%27%20a%20separate%20option%20and%20make%20it%20work%20like%20a%20timer%0A-%20Add%20the%20approximate%20number%20of%20fish%20you%20need%20to%20catch%20to%20skill%20up.%20--%20Thanks%0A%20%20Goose%20and%20Moleculor%21%0A%0AVersion%200.9.3i%0A-%20Update%20TOC%0A%0AVersion%200.9.3h%0A-%20Don%27t%20remove%20Outfitter%20sets%20unless%20there%27s%20more%20than%20one%20called%20%22Fishing%20Buddy%22%0A-%20Try%20and%20keep%20the%20watcher%20from%20popping%20over%20everything%0A%0AVersion%200.9.3g%0A-%20Make%20the%20action%20bar%20code%20more%20efficient%0A-%20Really%2C%20really%20remove%20the%20broadcasting%20of%20fish%20catches%0A%0AVersion%200.9.3f%0A-%20Add%20an%20option%20to%20use%20an%20action%20bar%20button%20to%20cast%2C%20instead%20of%20using%20the%20spell%20name%0A%0AVersion%200.9.3e%0A-%20Add%20some%20code%20to%20make%20sure%20we%20dump%20the%20auto%20lure%20information%20when%20it%27s%20done%0A%0AVersion%200.9.3d%0A-%20Add%20simplified%20Chinese%20translation%20%28thanks%20biaji%21%29%0A%0AVersion%200.9.3c%0A-%20Fix%20a%20possible%20error%20when%20a%20plugin%20doesn%27t%20have%20a%20full%20set%20of%20translations%0A%0AVersion%200.9.3b%0A-%20Handle%20new%20sound%20variable%20names%0A%0AVersion%200.9.3a%0A-%20Update%20TOC%20version%0A%0AVersion%200.9.3%0A-%20Removed%20the%20fish%20broadcast%2C%20it%20doesn%27t%20work%20the%20way%20I%20want%20it%20%28going%20to%20move%20it%0A%20%20to%20FishNet%29%0A-%20Added%20Taiwanese%20translation%20%28thanks%20Indra%21%29%0A-%20Fixed%20Eternium%20Fishing%20Line%20detection%20%28thanks%20Shadrin%21%29%0A-%20Suggestions%20and%20text%20cleanup%20%28Thanks%20Shadrin%21%29%0A-%20Rework%20casts%20and%20lures%20to%20match%20the%20Fishing%20Ace%21%20version%0A-%20Cleanup%20upgrade%20code%2C%20should%20fix%20broken%20upgrades%20%2Aand%2A%20handle%20upgrades%20from%200.8.6%21%0A-%20Don%27t%20show%20the%20minimap%20button%20if%20we%20failed%20to%20initialize%0A%0AVersion%200.9.2b%0A-%20Fix%20key%20binding%20for%20switching%0A%0AVersion%200.9.2a%0A-%20Fix%20issues%20with%20noticing%20when%20you%20equip%20and%20unequip%20a%20fishing%20pole%0A%0AVersion%200.9.2%0A-%20Fix%20issues%20with%20fishing%20suddenly%20not%20working%20in%20the%20middle%20of%20the%20game%0A%0AVersion%200.9.1%0A-%20Better%20handling%20of%20automatic%20lures%20%28thanks%20ZeroKnowledge%21%29%0A-%20Update%20toc%0A%0AVersion%200.9g%0A-%20Be%20smarter%20when%20looking%20for%20lures%20to%20apply%0A-%20Fix%20help%20message%20output%20bug%0A%0AVersion%200.9f%0A-%20Go%20back%20to%20the%20old%20way%20of%20finding%20out%20if%20you%27re%20using%20a%20fishing%20pole%0A-%20Fix%20tasty%20fish%20counting%20during%20the%20Extravaganza%0A%0AVersion%200.9e%0A-%20Okay%2C%20this%20time%20it%20really%20won%27t%20duplicate%20subzones%20while%20you%20fish...%0A%0AVersion%200.9d%0A-%20Fix%20bug%20in%20reorganization%20of%20location%20frame%20display%20code%0A%0AVersion%200.9c%0A-%20Fix%20for%20the%20long%20standing%20bug%20where%20new%20fish%20don%27t%20show%20up%20in%20the%20fish%20pane%0A-%20Hopefully%20also%20fix%20data%20collection%20errors%20in%20BC%20%28hopefully%20getting%20it%20today%20myself%20%3A-%29%0A%0AVersion%200.9b%0A-%20Fix%20for%20initialization%20error%20with%20Outfitter%202.0%0A%0AVersion%200.9a%0A-%20Fix%20TOC%20%2820003%29%0A%0AVersion%200.9%0A-%20Easy%20Cast%20is%20back%21%0A-%20Easy%20Lures%20is%20back%0A-%20Remove%20Gatherer%20support%20%28their%20API%20no%20longer%20handles%20FISH%20cleanly%29%0A-%20Remove%20original%20ButtonHole%20support%20%28it%27s%20no%20longer%20maintained%29%0A-%20Remove%20old%20ButtonHole%20support%0A-%20Small%20bug%20fixes%0A-%20Add%20%27Auto%20Loot%27%20option%20to%20turn%20on%20autoloot%20while%20fishing%20%28if%20it%27s%20not%20already%20on%29%0A-%20Don%27t%20break%20mouselook%0A-%20Fixed%20some%20errors%20upgrading%20from%20an%20older%20versions%0A%0AVersion%200.8.9b%0A-%20Update%20TOC%20for%20patch%202.0.3%0A-%20Support%20negative%20numbers%20in%20link%20parsing%0A%0AVersion%200.8.9a%0A-%20Fix%20a%20missing%20%27ipairs%27%20for%202.0%20compatibility%20in%20the%20Extravaganza%20code%0A%0AVersion%200.8.9%0A-%20Send%20a%20fish%20caught%20message%20using%20the%20new%20SendAddonMessage%20API%0A-%20Fix%20a%20bug%20where%20saving%20the%20outfit%20manager%20wasn%27t%20working%20%28Thanks%20dwex%21%29%0A-%20Style%20points%20are%20back%20%28and%20in%20OutfitDisplayFrame%20tooltips%20--%20thanks%20Shadrin%21%29%0A-%20Update%20%27for%27%20loops%20to%20be%20compatible%20with%20Lua%205.1%0A-%20Updated%20German%20translation%20%28thanks%20Chinkuwaila%21%29%0A%0AVersion%200.8.8e%0A-%20Split%20out%20FBEnEspagnol%20to%20a%20separate%20download%0A%0AVersion%200.8.8d%0A-%20Update%20toc%20for%20patch%201.12%0A-%20Small%20cleanup%20changes%0A%0AVersion%200.8.8c%0A-%20Handle%20%22Oil%20Spills%22%20as%20fishing%20pools%0A-%20Fix%20an%20intermittent%20text%20alignment%20bug%20in%20the%20locations%20window%0A-%20Make%20FishingBuddyFu%20for%20Fubar%202.0%20work%20nicely%20%28mostly%20expose%20some%20functions%29%0A%0AVersion%200.8.8b%0A-%20Add%20tracking%20selection%20menu%20to%20locations%20window%0A%0AVersion%200.8.8a%0A-%20Fix%20a%20nil%20error%20in%20the%20tracking%20popup%20if%20you%20haven%27t%20caught%20one%20of%20the%0A%20%20default%20fish%0A-%20%27/fb%20updatedb%27%20print%20out%20a%20message%0A-%20Grab%20the%20names%20of%20fish%20we%20catch%20if%20we%20don%27t%20know%20it%20already%20%28old%20data%20updating%29%0A%0AVersion%200.8.8%0A-%20Improved%20cycle%20fish%20tracking%20--%20right-click%20to%20choose%20fish%20to%20graph%0A-%20Update%20the%20TastyFish%20count%20every%20time%20the%20window%20is%20shown%20during%20the%0A%20%20Exravaganza%20so%20that%20our%20count%20is%20always%20%27right%27%0A-%20Fix%20window%20always%20showing%20bug%0A%0AVersion%200.8.7g%0A-%20Fix%20a%20typo%20introduced%20in%20version%20f%0A-%20Really%2C%20really%20check%20for%20Pat%20Nagle%27s%20Fish%20Terminator%20correctly%20%28thanks%20Saur%21%29%0A%0AVersion%200.8.7f%0A-%20Put%20changes%20from%20d%20and%20e%20into%20the%20same%20release%0A%0AVersion%200.8.7g%0A-%20Fix%20a%20typo%20introduced%20in%20version%20f%0A-%20Really%2C%20really%20check%20for%20Pat%20Nagle%27s%20Fish%20Terminator%20correctly%0A%0AVersion%200.8.7f%0A-%20Put%20changes%20from%20d%20and%20e%20into%20the%20same%20release%0A%0AVersion%200.8.7e%0A-%20Fix%20missing%20color%20%27YELLOW%27%0A-%20Fix%20translation%20errors%20that%20were%20causing%20string.format%20errors%20in%20German%20and%20Spanish%0A-%20Fix%20problems%20with%20the%20Terminator%0A%0AVersion%200.8.7d%0A-%20Fix%20broken%20minimap%20enable%20logic%20for%20menus%0A-%20Fix%20nil%20error%20in%20startup%20conversion%20of%20old%20versions%0A%0AVersion%200.8.7c%0A-%20Fix%20incompatibility%20with%20version%201.11%20and%20highlight%20text%0A%0AVersion%200.8.7b%0A-%20Clean%20up%20event%20handling%20some%20more%20%28only%20listen%20when%20we%27re%20fishing%29%0A-%20Fix%20%27doubled%27%20fishing%20location%20display%20for%20new%20fishing%20areas%0A%0AVersion%200.8.7a%0A-%20Hopefully%20fix%20an%20intermittent%20bug%20that%20crashes%20the%20client%20during%0A%20%20the%20Extravaganza%20when%20leaving%20Booty%20Bay%0A-%20Stop%20losing%20the%20OutfitDisplayFrame%20outfit%20when%20logging%20out%0A-%20Should%20correctly%20reset%20the%20Watcher%20Window%20for%20all%20toons%0A-%20Add%20in%20%27FBEnEspagnol%27%20for%20Spanish-speaking%20fisherbuddies%0A-%20Use%20the%20now-builtin%20Outfitter%20%27find%20by%20stat%27%20function%0A%0AVersion%200.8.7%0A-%20Integration%20with%20Gatherer%20%28depends%20on%20the%20tooltip%20when%20you%20cast%29%0A-%20Add%20a%20%27hide%20these%20icky%20fish%27%20menu%20to%20the%20watcher%20window%0A-%20Put%20the%20keybinding%20for%20%27Suit%20Up%20and%20Go%20Fishing%21%27%20back%20in%0A-%20Add%20an%20option%20to%20only%20fish%20from%20pools%20during%20the%20Extravaganza%0A-%20Better%20%28and%20more%29%20French%20translation%20support%20from%20krogh%0A-%20Rework%20debugging%20output%20so%20that%20people%20don%27t%20get%20surprised%20by%20it%20anymore%0A-%20Rework%20zone%20and%20subzone%20storage%20to%20reduce%20space%0A-%20Don%27t%20save%20default%20values%20%28smaller%20saved%20vars%2C%20faster%20loading%29%0A-%20Tune%20event%20handling%20for%20faster%20world%20transitions%0A-%20Move%20a%20lot%20of%20information%20into%20tooltips%20in%20the%20display%20window%0A-%20Removed%20%27Fast%20Cast%27%20again%20since%20patch%201.10.1%20breaks%20it%0A-%20Fix%20translation%20loader%20to%20actually%20work%20%28even%20in%20English%21%29%0A-%20Rewrite%20Extravaganza%20code%20and%20hopefully%20fix%20the%20crashes%0A-%20Add%20an%20offset%20menu%20to%20handle%20differences%20between%20game%20and%20machine%20time%0A-%20Fix%20the%20display%20bug%20when%20switching%20between%20locations%20and%20fishes%0A-%20If%20more%20than%20one%20outfit%20switcher%20is%20available%2C%20allow%20a%20choice%0A-%20Don%27t%20allow%20a%20recast%20if%20the%20fishing%20loot%20window%20is%20up%0A-%20Add%20%27updatedb%27%20command%20to%20link%20info%20for%20fish%20with%20missing%20data%20%28can%20disconnect%21%29%0A%0AVersion%200.8.6h%0A-%20Fast%20Cast%20is%20back%21%0A%0AVersion%200.8.6g%0A-%20Fixed%20a%20nil%20reference%20bug%20in%20binding%20the%20keys%20that%20happens%20to%20some%20people%20%28but%0A%20%20this%20makes%20easy%20cast%20not%20work%2C%20I%20still%20need%20to%20figure%20out%20what%27s%20happening%29%0A-%20Made%20the%20Fish%20Watcher%20window%20relative%20to%20UIParent%20and%20implement%20%27hover%27%20dragging%0A-%20Fixed%20the%20right-click%20menu%20in%20InfoBar%20support%0A-%20Made%20click-to-move%20support%20a%20little%20more%20predictable.%20If%20you%20don%27t%20have%20a%20casting%0A%20%20modifer%20set%2C%20then%20click-to-move%20is%20turned%20off%20while%20you%27re%20fishing.%0A%0AVersion%200.8.6f%0A-%20Remove%20some%20debugging%20that%20broke%20when%20DevTools%20wasn%27t%20installed%0A%0AVersion%200.8.6e%0A-%20Easy%20Cast%20is%20back%20%28Fast%20Cast%20is%20no%20more%29.%20Thanks%20to%20the%20Cosmos%20team%20who%0A%20%20figured%20out%20the%20appropriate%20place%20for%20hooking%20in%20the%20handling%20code%20--%20it%0A%20%20was%20a%20snap%20to%20add%20in%21%0A-%20Removed%20the%20%22Suit%20up%20and%20go%20fishing%22%20stuff%20since%20we%20don%27t%20need%20it%20any%20more%0A%0AVersion%200.8.6d%0A-%20Fix%20a%20bunch%20of%20small%20errors%20that%20never%20showed%20up%20before%0A-%20Add%20%27mouse%20fishing%27%20option%20that%20binds%20the%20middle%20button%20%28BUTTON3%29%20to%0A%20%20%27cast%20now%27%20%28may%20not%20be%20necessary%20since%20%27Suit%20up%20and%20go%20fishing%27%20works...%29%0A%0AVersion%200.8.6c%0A-%20Mark%20OutfitDisplayFrame%20as%20version%201.10%20compatible%0A%0AVersion%200.8.6b%0A-%20Update%20for%20patch%201.10%20%2811000%29%0A-%20Partial%20Spanish%20translation%2C%20thanks%20to%20fili%0A-%20Some%20fixes%20that%20now%20don%27t%20make%20much%20difference%20because%20of%201.10%0A%0AVersion%200.8.6a%0A-%20Fixes%20for%20handling%20Eternium%20enchant%20correctly%0A-%20Fix%20bug%20in%20%27Suit%20up%20and%20go%20fishing%27%20handler%0A%0AVersion%200.8.6%0A-%20Rework%20easy%20cast%20to%20work%20with%201.10%20--%20no%20dice%20yet%20though%20%3A-%28%0A-%20Add%20%22Suit%20up%20and%20go%20fishing%22%20binding%20for%20an%20alternate%201.10%20when%20%22Easy%20Cast%22%20no%20longer%20works%0A-%20Outfitter%20support%0A-%20Translation%20handling%20completely%20rewritten%20to%20eliminate%20missing%20strings%0A%20%20in%20translations%0A-%20Fix%20for%20Eternium%20Line%20enchant%20%28the%20tooltip%20string%20changed%29%0A%0AVersion%200.8.5g%0A-%20Include%20OutfitDisplayFrame%20fix%20for%20nil%20error%20when%20fewer%20than%20five%20bags%0A%0AVersion%200.8.5f%0A-%20Auto-set%20sound%20volumes%20to%20make%20the%20bobber%20noise%20stand%20out%20%28Good%20suggestion%20SBaL%21%29%0A%0AVersion%200.8.5e%0A-%20Don%27t%20count%20%22Nat%20Pagle%27s%20Fish%20Terminator%22%20as%20a%20fishing%20pole%2C%20even%20if%20it%20looks%20like%20one%0A%0AVersion%200.8.5d%0A-%20Fix%20a%20nil%20error%20in%20comparison%20after%20we%27ve%20shrunk%20a%20table%0A%20%0AVersion%200.8.5c%0A-%20Fix%20nil%20error%20in%20cleanup%20command%0A-%20Missing%20string%20in%20French%20translation%20for%20checking%20not%20to%20lure%20while%20clicking%20on%20the%0A%20%20bobber%20%28it%27s%20still%20not%20the%20right%20translation%20though%2C%20hint%20hint%21%29%0A%0AVersion%200.8.5b%0A-%20Handle%20defaulting%20to%20%27English%27%20correctly%20if%20we%20don%27t%20have%20a%20valid%20translation%0A%0AVersion%200.8.5a%0A-%20Fix%20French%20localization%20file%0A%0AVersion%200.8.5%0A-%20Add%20partial%20French%20translation%2C%20thanks%20to%20Corwin%20Whitehorn%0A-%20Support%20for%20Titan%20v2.08%0A-%20Support%20for%20InfoBar%0A-%20Rewritten%20to%20drastically%20reduce%20global%20namespace%20pollution%0A-%20Rewrote%20database%20displays%20to%20reduce%20memory%20usage%0A-%20Use%20item%20ids%20instead%20of%20names%20in%20fish%20database%20to%20make%20things%20smaller%0A-%20Rewritten%20graphing%20subsystem%20for%20future%20improvements%0A-%20Use%20per-character%20variable%20saving%20to%20simplify%20data%20access%20and%20structures%0A-%20Added%20%27cleanup%27%20command%20to%20remove%20stale%20settings%0A-%20Add%20modifier%20key%20support%20for%20easy%20cast%0A-%20Show%20number%20of%20Tastyfish%20caught%20so%20far%0A-%20Try%20supporting%20ModWatcher%0A-%20Fix%20for%20menu%20popup%20outside%20of%20minimap%20button%0A-%20Don%27t%20do%20%27easy%20lures%27%20if%20we%27re%20about%20to%20click%20on%20the%20bobber%0A%0AVersion%200.8.4f%0A-%20Change%20line%20endings%20to%20DOS%20again%2C%20seems%20to%20fix%20some%20LUA%20loading%20errors%0A-%20Fix%20location%20scrollbar%20position%20for%201.9%0A-%20Update%20to%20new%20numbering%20scheme%20for%20version%0A-%20Fix%20a%20bug%20catching%20tracking%20fish%20in%20the%20last%20week%20of%20the%20year%0A-%20Fix%20some%20small%20bugs%20that%20affect%20brand-new%20toons%0A-%20Notice%20if%20we%20can%27t%20display%20fish%20tooltips%20instead%20of%20disconnecting%0A-%20Fix%20bug%20where%20bringing%20up%20the%20outfit%20window%20would%20lose%0A%20%20what%20you%20were%20wearing%20before%0A-%20Fishing%20Extravaganza%20countdown%20timer%0A-%20Keep%20track%20of%20Tastyfish%20%22schooling%22%20locations%0A%0AVersion%200.8.3%0A-%20Update%20style%20and%20skill%20messages%20in%20outfit%20display%20to%20handle%20new%20%27dressing%20room%27%20feature%0A-%20Make%20sure%20that%20errors%20in%20switching%20outfits%20don%27t%20erase%20what%20we%20changed%20out%20of%0A-%20Handle%20elapsed%20time%20even%20if%20OutfitDisplayFrame%20is%20disabled%0A-%20Make%20sure%20we%27re%20not%20already%20switching%20outfits%20before%20we%20try%20again%0A-%20Improved%20ButtonHole%20support%0A%0AVersion%200.8.2%0A-%20%27Cycle%20fish%27%20graphs%20for%20the%20main%20cycle%20fish%20%28additional%20fish%20coming%20soon%29%0A-%20New%20minimap%20button%20support%0A-%20Display%20current%20zone%20in%20the%20fish%20watcher%0A-%20Show%20elapsed%20time%20in%20the%20fish%20watcher%20%28not%20perfect%20yet%29%0A-%20Fish%20watcher%20frame%20is%20moveable%0A-%20Support%20for%20%27auto%20fishing%20lures%27%0A-%20Style%20points%20added%20for%20some%20of%20the%20Extravaganza%20rewards%0A-%20Improved%20support%20for%20languages%20%28removed%20static%20strings%29%0A-%20Support%20for%20%27ButtonHole%27%20--%20if%20that%20addon%20gets%20finished%20it%27ll%20be%20way%20cool%0A-%20OutfitDisplayFrame%20support%20improved%0A%0AVersion%200.8.1d%0A-%20Better%20German%20help.%20Thanks%20blackrat%21%0A-%20%27/fb%20import%27%20import%20information%20from%20Impp%27s%20fishinfo%2C%20DataFish%2C%20or%20Fishinfo2%20databases%0A-%20%27/fb%20current%20reset%27%20to%20restart%20the%20current%20session%20fish%20counts%0A-%20Some%20small%20internal%20code%20cleanup%0A%0AVersion%200.8.1%0A-%20Fixed%20an%20error%20in%20the%20German%20help%20system%20%28I%20hope%21%29%0A-%20%27/fb%20watcher%20unlock/lock/reset%27%20to%20move%20the%20fish%20watcher%0A-%20Display%20percentage%20per%20zone%20when%20viewing%20%27by%20fish%27%20so%20you%20can%20find%20those%20hot%20spots%0A%0AVersion%200.8%0A-%20Display%20your%20current%20skill%20in%20the%20watch%20frame%0A-%20Track%20fish%20by%20zone%20and%20subzone%20%28converts%20old%20data%20as%20you%20visit%20your%20old%20fishing%20haunts%29%0A-%20Track%20minimum%20skill%20for%20locations%20and%20for%20fish%20types%0A-%20Full%20Titan%20panel%20support%0A-%20Basic%20myAddOns%20support%0A-%20Keeping%20up%20with%20the%20Jones%27%20and%20added%20%27Easy%20Lure%27%20just%20like%20Mugendai%20has%20%3A-%29%0A-%20A%20much%20better%20German%20translation%20%28outfit%20switching%20should%20work%20now%20too%29%20--%20thanks%20blackrat%21%0A-%20Sort%20by%20number%20of%20fish%20caught%0A-%20Should%20work%20with%20%27click%20to%20move%27%20turned%20on%0A-%20Track%20%27cycle%20fish%27%20information%20%28very%20preliminary%29%0A-%20OutfitDisplayFrame%20is%20now%20optional%20if%20you%20have%20an%20equipment%20manager%20you%20prefer%0A%0AVersion%200.7.9c%0A-%20Fix%20the%20I%20can%27t%20believe%20it%20worked%21%20bug%20when%20looking%20for%20the%20Fishing%20skill%0A%0AVersion%200.7.9b%0A-%20It%20works%20even%20if%20you%27ve%20never%20used%20Fishing%20Buddy%20before%21%0A%0AVersion%200.7.9%0A-%20Really%20fix%20the%20per-server%20settings%0A%0AI%20aplogize%20for%20those%20people%20whose%20options%20got%20lost%20--%20this%20time%20I%20got%20it%20right%21%20I%20have%0Ano%20idea%20why%20the%20zip%20file%20didn%27t%20get%20uploaded%20last%20night%2C%20but%20the%20new%20one%20is%20good.%20Thank%0Ayou%20for%20your%20patience%21%0A%0AVersion%200.7.8%0A-%20a%20very%20preliminary%20German%20translation%0A-%20myAddOns%20support%0A-%20prefs%20are%20now%20stored%20by%20server%20for%20each%20toon%0A%0AThe%20Titan%20panel%20support%20is%20still%20preliminary%20--%20I%20want%20to%20make%20it%20default%20to%20%27on%27%20and%20have%20a%20better%20icon.%20There%20are%20still%20things%20I%27d%20like%20to%20have%20options%20for%20%28like%20sorting%20the%20watch%20panel%20various%20ways%20and%20making%20it%20movable%29%2C%20but%20I%27m%20going%20to%20concentrate%20on%20the%20outfit%20pieces%20so%20that%20they%20work%20for%20more%20situations.%0A%0AVersion%200.7.7%0A-%20Fix%20ugly%20display%20when%20switching%20between%20fish%20and%20locations%0A-%20Added%20Titan%20panel%20support%20%28ugly%20icon%2C%20need%20to%20polish%20up%20my%20image%20skills%20and%20make%20a%20nice%20gold%20one%29%0A-%20Sort%20the%20%27Fish%20Watcher%27%20by%20name%20%28for%20now%29%0A-%20Added%20key%20bindings%20for%20window%20toggle%20and%20outfit%20switching%0A-%20Internal%20cleanups%2C%20prep%20for%20storing%20toon%20prefs%20by%20server%0A%0AAuto-loot%20%28shift%20right%20click%29%20works%20for%20me%20%27as%20is%27%20--%20I%27ll%20have%20to%20play%20with%20key%20mappings%20to%20see%20if%20there%27s%20one%20that%20stops%20this%20from%20working...%0A%0AVersion%200.7.6%0A-%20Add%20an%20option%20to%20leave%20off%20those%20pesky%20percentages%0A-%20Add%20an%20option%20to%20only%20watch%20the%20fish%20while%20you%27re%20actually%20fishing%0A-%20Update%20the%20version%20of%20OutfitDisplayFrame%0A%0AVersion%200.7.5%0A-%20fix%20a%20bad%20memory%20leak%20on%20the%20outfit%20display%20page",
+    "options": {
+      "strategy": "default"
+    },
+    "folders": [
+      {
+        "name": "FishingBuddy"
+      }
+    ],
+    "deps": [],
+    "logged_versions": [
+      {
+        "version": "1.16.11",
+        "install_time": "2022-09-01T13:40:37+00:00"
+      }
+    ]
+  },
+  {
+    "source": "wowi",
+    "id": "5018",
+    "slug": "5018-fizzle",
+    "name": "Fizzle",
+    "description": "[U][B]Fizzle[/B][/U]\r\n\r\n[I]Description[/I]\r\nFizzle is an addon that will show you an items durability values above the item in your character frame.\r\nIt can show you either the raw values, or a percentage value.\r\nWhy Fizzle?  Well, I suck at coming up with names is why. :)\r\n\r\n[I]Slash Commands[/I]\r\n[I]/fizzle[/I] or [I]/fizz[/I]\r\n[list][*]percent - Toggle between raw and percentage display.\r\n[*]border - Toggles the quality colours on the border of items.\r\n[*]invert - Changes how the durability is shown.  Eg. 0% = Max durability, 100% = No durability.\r\n[*]hidetext - Hides the durability text, incase you just want the item quality colouring.\r\n[*]showfull - Toggles showing durability when full.  If enabled, durability text is always shown, if disabled, durability text is only shown if durability is less than 100%\r\n[*]inspect - Toggles the inspection module.[/list]",
+    "url": "https://www.wowinterface.com/downloads/info5018-Fizzle.html",
+    "download_url": "https://cdn.wowinterface.com/downloads/getfile.php?id=5018&d=1622895339&minion",
+    "date_published": "2021-06-05T12:15:39+00:00",
+    "version": "90005-1",
+    "changelog_url": "data:,%5Bsize%3D%226%22%5D80205-1%5B/size%5D%0A%0A%5Blist%5D%0A%5B%2A%5DUpdate%20%5Bfont%3D%22monospace%22%5DzhCN%5B/font%5D%20and%20%5Bfont%3D%22monospace%22%5DzhTW%5B/font%5D%20translations.%20Thanks%2C%20wolfcon.%0A%5B/list%5D%0A%0A%5Bsize%3D%226%22%5D80200-4%5B/size%5D%0A%0A%5Blist%5D%0A%5B%2A%5DFixes%20to%20packaging%0A%5B/list%5D%0A%0A%5Bsize%3D%226%22%5D80200-2%5B/size%5D%0A%0A%5Blist%5D%0A%5B%2A%5DAdd%20Luacheck%20and%20fix%20some%20issies%0A%5B%2A%5DAdd%20%5Bfont%3D%22monospace%22%5DCHANGELOG.md%5B/font%5D%0A%5B%2A%5DAdd%20Github%20Actions%20pipeline%20for%20classic%20addon%20release%0A%5B/list%5D",
+    "options": {
+      "strategy": "default"
+    },
+    "folders": [
+      {
+        "name": "Fizzle"
+      }
+    ],
+    "deps": [],
+    "logged_versions": [
+      {
+        "version": "90005-1",
+        "install_time": "2022-09-01T13:40:36+00:00"
+      }
+    ]
+  },
+  {
+    "source": "wowi",
+    "id": "15716",
+    "slug": "15716-handynotes",
+    "name": "HandyNotes",
+    "description": "Handy Notes for your maps. This addon is intended to be a small and simple replacement for Cartographer_Notes and functions in a similar manner.\r\n\r\nUse /handynotes to access options.\r\n\r\nYou can add notes to the maps in 3 ways:\r\n\r\n[LIST]\r\n[*]Alt-RightClick on the world map to add a note.\r\n[*]Use \"/hnnew\" without the quotes to add a note at your current location.\r\n[*]Use \"/hnnew x,y\" without the quotes to add a note at location x,y on your current zone's map. \r\n[/LIST]\r\n\r\nSee change log tab for changes from v1.1.6 to v1.2.0\r\n\r\nHandyNotes supports plugins that other authors can write to display their own set of notes on the map. See this link for a list of such addons\r\n\r\n[URL=\"http://www.wowace.com/search/?search=handynotes\"]http://www.wowace.com/search/?search=handynotes[/URL]",
+    "url": "https://www.wowinterface.com/downloads/info15716-HandyNotes.html",
+    "download_url": "https://cdn.wowinterface.com/downloads/getfile.php?id=15716&d=1654070194&minion",
+    "date_published": "2022-06-01T07:56:34+00:00",
+    "version": "v1.6.6",
+    "changelog_url": "data:,%5Bsize%3D5%5DHandyNotes%5B/size%5D%0D%0A%5Bsize%3D4%5D%5Burl%3Dhttps%3A//github.com/Nevcairiel/HandyNotes/tree/v1.6.6%5Dv1.6.6%5B/url%5D%20%282022-06-01%29%5B/size%5D%0D%0A%5Burl%3Dhttps%3A//github.com/Nevcairiel/HandyNotes/compare/v1.6.5...v1.6.6%5DFull%20Changelog%5B/url%5D%20%5Burl%3Dhttps%3A//github.com/Nevcairiel/HandyNotes/releases%5DPrevious%20Releases%5B/url%5D%0D%0A%5Blist%5D%0D%0A%5B%2A%5DUpdate%20luacheck%0D%0A%5B%2A%5DUpdate%20TOC%0D%0A%5B%2A%5DFix%20raid%20icon%20definition%0D%0A%5B%2A%5DCreate%20only%20one%20package%20for%20all%20game%20flavors%0D%0A%5B%2A%5DUse%20checkout%20v2%20for%20PRs%0D%0A%5B%2A%5DUpdate%20editorconfig%20to%20properly%20cover%20all%20yaml%20files%0D%0A%5B/list%5D",
+    "options": {
+      "strategy": "default"
+    },
+    "folders": [
+      {
+        "name": "HandyNotes"
+      }
+    ],
+    "deps": [],
+    "logged_versions": [
+      {
+        "version": "v1.6.6",
+        "install_time": "2022-09-01T13:40:36+00:00"
+      }
+    ]
+  },
+  {
+    "source": "wowi",
+    "id": "8306",
+    "slug": "8306-mapster",
+    "name": "Mapster",
+    "description": "Mapster is a very simple world map enhacement addon, which was designed to work in conjunction with all other map addons out there. The idea to create Mapster originated from pure lack of a simplistic addon that only modifies the world map, without adding a full scale feature set.\r\n\r\n[B]Features[/B]\r\n[LIST]\r\n[*]Map Style (Scale & Alpha)\r\n[*]Coordinates\r\n[*]Fog of War removal\r\n[*]Enhancement of the raid/party group icons\r\n[/LIST]\r\n\r\nYou can access the Mapster configuration menu through the new button on the world map, as shown in the screenshot. \r\nAll features (except the style) can be turned off individually if you do not need/want them.\r\n\r\n[I]If you're looking for a replacement to Cartographer, i also recommend the following addons:[/I][LIST][*][B]Gathering[/B] -> GatherMate (Hosted on WoWAce -> [URL=\"http://www.wowace.com/projects/gather-mate/\"]Download[/URL]) \r\n[*][B]Waypoints[/B] -> [URL=\"http://www.wowinterface.com/downloads/info7032-TomTom.html\"]TomTom[/URL]\r\n[*][B]ZoneInfo[/B] -> [URL=\"http://mods.curse.com/addons/wow/cromulent\"]Cromulent[/URL]\r\n[*][B]Notes[/B] -> [URL=\"http://mods.curse.com/addons/wow/handynotes\"]HandyNotes[/URL] | [URL=\"http://mods.curse.com/search?search=handynotes\"]HandyNotes Modules[/URL]\r\n[/LIST]",
+    "url": "https://www.wowinterface.com/downloads/info8306-Mapster.html",
+    "download_url": "https://cdn.wowinterface.com/downloads/getfile.php?id=8306&d=1656327505&minion",
+    "date_published": "2022-06-27T10:58:25+00:00",
+    "version": "1.9.7",
+    "changelog_url": "data:,%5Bsize%3D5%5DMapster%5B/size%5D%0D%0A%5Bsize%3D4%5D%5Burl%3Dhttps%3A//github.com/Nevcairiel/Mapster/tree/1.9.7%5D1.9.7%5B/url%5D%20%282022-06-27%29%5B/size%5D%0D%0A%5Burl%3Dhttps%3A//github.com/Nevcairiel/Mapster/compare/1.9.6...1.9.7%5DFull%20Changelog%5B/url%5D%20%5Burl%3Dhttps%3A//github.com/Nevcairiel/Mapster/releases%5DPrevious%20Releases%5B/url%5D%0D%0A%5Blist%5D%0D%0A%5B%2A%5DUpdate%20TOC%0D%0A%5B%2A%5DUpdate%20CI/packaging%20to%20create%20one%20package%20for%20all%20game%20versions%0D%0A%5B%2A%5DUpdate%20editorconfig%20to%20handle%20all%20yaml%20files%0D%0A%5B/list%5D",
+    "options": {
+      "strategy": "default"
+    },
+    "folders": [
+      {
+        "name": "Mapster"
+      }
+    ],
+    "deps": [],
+    "logged_versions": [
+      {
+        "version": "1.9.7",
+        "install_time": "2022-09-01T13:40:36+00:00"
+      }
+    ]
+  },
+  {
+    "source": "wowi",
+    "id": "10783",
+    "slug": "10783-prat-3-0",
+    "name": "Prat 3.0",
+    "description": "Prat is a chat addon framework, and collection. It consists of 30+ modules which each add some functionality to the WoW chat interface. There is literally a module for just about everything chat related. While large in size, i have been working to keep the runtime memory usage down, and eliminate the costs of the unused modules without littering the addon directory with a slew of folders.\r\n\r\nFor the options menu, type \"/prat\", or if you have a broker host mod installed you will get a launcher icon.\r\n\r\nYou control the load behavior of modules via the module control screen. You have 3 choices \"Don't load\", \"Disabled\", and \"Enabled\"\r\n\r\nYou can report any bugs you find here:\r\n\r\nhttp://www.wowace.com/projects/prat-3-0/tickets/\r\n\r\n\r\nPrat has just about every feature you can think of, and then some. Really. When I get some more time, I'll try and put together a full list (Even I have lost count)\r\n\r\n(Thanks to Dreamsight for this partial list)\r\n\r\n    * Change arrows, buttons, mouse scroll for chat scroll, scroll speed\r\n    * you can add color per channel, color per lvl, color per class\r\n    * timestamps\r\n    * timestamp color\r\n    * whether to show timestamp (what format the timestamp should be in)\r\n    * whether to show players lvl\r\n    * you can select the option for channel \"stickys\" (last channel you used you auto use when hitting enter, that sort of thing \u2013 or last thing someone said)\r\n    * change the looks of the chat's editbox - as well as where it appears (you can even undock it and move it to where you'd like it to be)\r\n    * chat fading, fading delay\r\n    * You can change the font to a list of fonts, add an outline to it, monochrome it (if you don\u2019t mind messing with files a bit you could prolly even add other fonts to that list)\r\n    * change the chat frame/chat box appearance\r\n    * set Chat history\r\n    * set channel abbreviations\r\n    * set brackets and color(or something instead of brackets)round player/lvl\r\n    * alt invite option (press keyboard \u201calt\u201d button and click on the player\u2019s name to auto inv them)\r\n    * raid icon\r\n    * invite links\r\n    * info keeping\r\n    * url copying\r\n    * full chat copying + options (html,bbcode, plain, forum) + copy button\r\n    * allows pop-up msgs\r\n    * enables tell target /tt\r\n    * Alias options\r\n    * altnames options\r\n    * you can enable/disable all prat modules - dont have to have the ones you dont use running\r\n    * change chat sounds (incoming and outgoing as well as per channel\r\n    * acheivement info, and clickable links to say \"grats\"\r\n\r\n\r\nFor those interested:\r\n\r\nThere is an additional folder Prat-3.0_HighCPUUsageModules.\r\n\r\nNote: These features use CPU, so they have been placed in a special folder so that is 100% clear.",
+    "url": "https://www.wowinterface.com/downloads/info10783-Prat3.0.html",
+    "download_url": "https://cdn.wowinterface.com/downloads/getfile.php?id=10783&d=1641819721&minion",
+    "date_published": "2022-01-10T13:02:01+00:00",
+    "version": "3.9.2c",
+    "changelog_url": "data:,%5Bsize%3D5%5DPrat%203.0%5B/size%5D%0D%0A%5Bsize%3D4%5D%5Burl%3Dhttps%3A//github.com/sylvanaar/prat-3-0/tree/3.9.1%5D3.9.1%5B/url%5D%20%282020-10-25%29%5B/size%5D%0D%0A%5Burl%3Dhttps%3A//github.com/sylvanaar/prat-3-0/compare/3.9.0...3.9.1%5DFull%20Changelog%5B/url%5D%20%5Burl%3Dhttps%3A//github.com/sylvanaar/prat-3-0/releases%5DPrevious%20Releases%5B/url%5D%0D%0A%5Blist%5D%0D%0A%5B%2A%5DMerge%20pull%20request%20%23175%20from%20WanderingFox/master%0D%0A%20%20%20%20Adds%209.0%20Newcomer/Guide%20icons%0D%0A%5B%2A%5Dneed%20_G%20on%20constants%20too%0D%0A%5B%2A%5Duse%20_G%0D%0A%5B%2A%5Duser%20proper%20check%20for%20newcomer%20status%0D%0A%5B%2A%5Dformatting%0D%0A%5B%2A%5Daccount%20for%209.0%20guide/newcomer%20icons%0D%0A%5B%2A%5DMerge%20pull%20request%20%23167%20from%20KyrosKrane/GuildRoster-Fix%0D%0A%20%20%20%20Fix%20for%20GuildRoster%20issues%0D%0A%5B%2A%5DMerge%20pull%20request%20%23162%20from%20KyrosKrane/master%0D%0A%20%20%20%20Fixes%20to%20invite.lua%20module%20%28works%20with%20both%20classic%20and%20retail%29%0D%0A%5B%2A%5DFix%20for%20GuildRoster%20issues%0D%0A%5B%2A%5DFix%20to%20allow%20for%20Classic%20to%20continue%20working%0D%0A%5B%2A%5DChange%20InviteUnit%28%29%20to%20C_PartyInfo.InviteUnit%28%29%0D%0A%5B/list%5D",
+    "options": {
+      "strategy": "default"
+    },
+    "folders": [
+      {
+        "name": "Prat-3.0"
+      },
+      {
+        "name": "Prat-3.0_Libraries"
+      }
+    ],
+    "deps": [],
+    "logged_versions": [
+      {
+        "version": "3.9.2c",
+        "install_time": "2022-09-01T13:40:36+00:00"
+      }
+    ]
+  },
+  {
+    "source": "wowi",
     "id": "24977",
     "slug": "24977-trinket-menu-classic",
     "name": "Trinket Menu Classic",
@@ -3375,6 +3221,33 @@
       {
         "version": "1.0",
         "install_time": "2020-11-03T05:33:04+00:00"
+      }
+    ]
+  },
+  {
+    "source": "wowi",
+    "id": "5342",
+    "slug": "5342-wim-wow-instant-messenger",
+    "name": "WIM (WoW Instant Messenger)",
+    "description": "WIM (WoW Instant Messenger) is a World of Warcraft addon which helps you to manage your whispers by making them into a classic instant messenger interface such as AIM, Yahoo and MSN. \r\n\r\nWith game play in mind, WIM has a large array of options where you can customize how WIM interacts during different situations, such as while you are in combat or in town talking to friends or selling your crafts.\r\n\r\n[B]Some of WIM's major features are:[/B]\r\n-Tabbed or windowed messages\r\n-History\r\n-Filtering\r\n-Fully customizable\r\n-and more...\r\n\r\nTo keep up to date with WIM and its developement, be sure to visit [URL]http://www.wimaddon.com[/URL]. WIMAddon.com is a great place to converse with the developers and users of WIM.\r\n\r\n\r\n*I welcome all comments and suggestions. It is the wow community which helps in creating a success.\r\n\r\n**Special thanks to everyone who has helped me test this addon.",
+    "url": "https://www.wowinterface.com/downloads/info5342-WIMWoWInstantMessenger.html",
+    "download_url": "https://cdn.wowinterface.com/downloads/getfile.php?id=5342&d=1653885719&minion",
+    "date_published": "2022-05-30T04:41:59+00:00",
+    "version": "3.9.6",
+    "changelog_url": "data:,%5Bsize%3D5%5DWIM%5B/size%5D%0D%0A%5Bsize%3D4%5D%5Burl%3Dhttps%3A//github.com/Legacy-of-Sylvanaar/wow-instant-messenger/tree/3.9.6%5D3.9.6%5B/url%5D%20%282022-05-30%29%5B/size%5D%0D%0A%5Burl%3Dhttps%3A//github.com/Legacy-of-Sylvanaar/wow-instant-messenger/compare/3.9.5...3.9.6%5DFull%20Changelog%5B/url%5D%20%5Burl%3Dhttps%3A//github.com/Legacy-of-Sylvanaar/wow-instant-messenger/releases%5DPrevious%20Releases%5B/url%5D%0D%0A%5Blist%5D%0D%0A%5B%2A%5DFix%20emoticon%20parsing%2C%20now%20compatable%20with%20TwitchEmotes%0D%0A%5B%2A%5Dclean%20up%20luacheck%20errors%0D%0A%5B%2A%5Dfix%28Emoticons%29%3A%20preserver%20preexisting%20textures.%0D%0A%5B%2A%5Dbump%20BCC%20toc%0D%0A%5B/list%5D",
+    "options": {
+      "strategy": "default"
+    },
+    "folders": [
+      {
+        "name": "WIM"
+      }
+    ],
+    "deps": [],
+    "logged_versions": [
+      {
+        "version": "3.9.6",
+        "install_time": "2022-09-01T13:40:42+00:00"
       }
     ]
   }

@@ -1,4 +1,4 @@
-## Interface: 20503
+## Interface: 30400
 ## Author: Mikord
 ## Version: 5.7.153
 ## OptionalDeps: LibSharedMedia-3.0

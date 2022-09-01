@@ -1,12 +1,56 @@
-$Id: ChangeLog.txt 73 2021-05-20 15:17:09Z arithmandar $
+$Id: ChangeLog.txt 93 2022-08-22 16:06:40Z arithmandar $
 Atlas, a World of Warcraft instance map browser
 Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert@gmail.com>
 Copyright 2010 - Lothaer <lothayer@gmail.com>, Atlas Team
-Copyright 2011 ~ 2021 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
+Copyright 2011 ~ 2022 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
 
 ==============
 = Change Log =
 ==============
+
+v1.51.02 (Aug. 22, 2022)
+------------------------
+- Fine-tune for WOLTKC
+
+v1.51.01 (Aug. 17, 2022)
+------------------------
+- Toc update to support WoW 9.2.7
+
+v1.51.00 (Jul. 23, 2022)
+------------------------
+- Retail ToC update to support WoW 9.2.5
+- Classic ToC update to support WoW 1.14.3
+- Added support for Wrath of the Lich King Classic (WoW 3.4.0)
+
+v1.50.02 (Mar. 23, 2022)
+------------------------
+- Update level range while select to show instance maps per level range
+
+v1.50.01 (Mar. 23, 2022)
+------------------------
+- BCC ToC update to support WoW 2.5.4
+
+v1.50.00 (Feb. 23, 2022)
+------------------------
+- Toc update to support WoW 9.2.0
+
+v1.49.04 (Feb. 19, 2022)
+------------------------
+- Update categorize by level's group criteria
+
+v1.49.03 (Feb. 10, 2022)
+------------------------
+- Support multiple ToC
+- BCC ToC update to support WoW 2.5.3
+- Classic ToC update to support WoW 1.14.2
+
+v1.49.02 (Feb. 3, 2022)
+------------------------
+- ToC update to support WoW 9.1.5
+
+v1.49.01 (Jun. 30, 2021)
+------------------------
+- ToC update to support WoW 9.1.0
 
 v1.49.00 (May 20, 2021)
 ------------------------

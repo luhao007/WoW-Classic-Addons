@@ -4,8 +4,6 @@ local _QuestieQuest = QuestieQuest.private
 
 ---@type QuestieDB
 local QuestieDB = QuestieLoader:ImportModule("QuestieDB")
----@type QuestiePlayer
-local QuestiePlayer = QuestieLoader:ImportModule("QuestiePlayer")
 ---@type QuestieCorrections
 local QuestieCorrections = QuestieLoader:ImportModule("QuestieCorrections")
 
@@ -44,14 +42,12 @@ _QuestieQuest.objectiveSpawnListCallTable = {
         end
 
         local name = QuestieDB.QueryNPCSingle(npcId, "name")
-
         if (not name) then
             Questie:Debug(Questie.DEBUG_CRITICAL, "Name missing for NPC:", npcId)
             return nil
         end
 
         local spawns = QuestieDB.QueryNPCSingle(npcId, "spawns")
-
         if (not spawns) then
             Questie:Debug(Questie.DEBUG_CRITICAL, "Spawn data missing for NPC:", npcId)
             spawns = {}
@@ -87,14 +83,12 @@ _QuestieQuest.objectiveSpawnListCallTable = {
         end
 
         local name = QuestieDB.QueryObjectSingle(objectId, "name")
-
         if (not name) then
             Questie:Debug(Questie.DEBUG_CRITICAL, "Name missing for object:", objectId)
             return nil
         end
 
         local spawns = QuestieDB.QueryObjectSingle(objectId, "spawns")
-
         if (not spawns) then
             Questie:Debug(Questie.DEBUG_CRITICAL, "Spawn data missing for object:", objectId)
             spawns = {}
@@ -113,10 +107,8 @@ _QuestieQuest.objectiveSpawnListCallTable = {
         }
     end,
     ["event"] = function(id, objective)
-        local spawns = {}
-        if objective.Coordinates then
-            spawns = objective.Coordinates
-        else
+        local spawns = objective.Coordinates
+        if (not spawns) then
             Questie:Error("Missing event data for Objective:", objective.Description, "id:", id)
             spawns = {}
         end
@@ -142,23 +134,26 @@ _QuestieQuest.objectiveSpawnListCallTable = {
             return nil
         end
 
-        local ret = {};
-        local item = QuestieDB:GetItem(itemId);
-        if item ~= nil and item.Sources ~= nil and (not item.Hidden) then
+        local ret = {}
+        local item = QuestieDB:GetItem(itemId)
+        if item and item.Sources and (not item.Hidden) then
             for _, source in pairs(item.Sources) do
                 if _QuestieQuest.objectiveSpawnListCallTable[source.Type] and source.Type ~= "item" then -- anti-recursive-loop check, should never be possible but would be bad if it was
-                    local sourceList = _QuestieQuest.objectiveSpawnListCallTable[source.Type](source.Id, objective);
-                    if sourceList == nil then
+                    local sourceList = _QuestieQuest.objectiveSpawnListCallTable[source.Type](source.Id, objective)
+                    if not sourceList then
                         Questie:Error("Missing objective data for", source.Type, "'", objective, "'", source.Id)
                     else
                         for id, sourceData in pairs(sourceList) do
-                            if not ret[id] then
-                                ret[id] = {}
-                                ret[id].Name = sourceData.Name
+                            if (not ret[id]) then
+                                ret[id] = {
+                                    Id = id,
+                                    Name = sourceData.Name,
+                                    Hostile = true,
+                                    ItemId = item.Id,
+                                    TooltipKey = sourceData.TooltipKey,
+                                }
                                 ret[id].Spawns = {}
                                 ret[id].Waypoints = {}
-                                ret[id].Hostile = true
-                                ret[id].ItemId = item.Id
                                 if source.Type == "object" then
                                     ret[id].Icon = ICON_TYPE_OBJECT
                                     ret[id].GetIconScale = _GetIconScaleForObject
@@ -168,26 +163,24 @@ _QuestieQuest.objectiveSpawnListCallTable = {
                                     ret[id].GetIconScale = _GetIconScaleForLoot
                                     ret[id].IconScale = _GetIconScaleForLoot()
                                 end
-                                ret[id].TooltipKey = sourceData.TooltipKey
-                                ret[id].Id = id
                             end
-                            if sourceData.Spawns and not item.Hidden then
+                            if sourceData.Spawns then
                                 for zone, spawns in pairs(sourceData.Spawns) do
-                                    if not ret[id].Spawns[zone] then
-                                        ret[id].Spawns[zone] = {};
+                                    if (not ret[id].Spawns[zone]) then
+                                        ret[id].Spawns[zone] = {}
                                     end
                                     for _, spawn in pairs(spawns) do
-                                        tinsert(ret[id].Spawns[zone], spawn);
+                                        tinsert(ret[id].Spawns[zone], spawn)
                                     end
                                 end
                             end
-                            if sourceData.Waypoints and not Item.Hidden then
+                            if sourceData.Waypoints then
                                 for zone, spawns in pairs(sourceData.Waypoints) do
-                                    if not ret[id].Waypoints[zone] then
-                                        ret[id].Waypoints[zone] = {};
+                                    if (not ret[id].Waypoints[zone]) then
+                                        ret[id].Waypoints[zone] = {}
                                     end
                                     for _, spawn in pairs(spawns) do
-                                        tinsert(ret[id].Waypoints[zone], spawn);
+                                        tinsert(ret[id].Waypoints[zone], spawn)
                                     end
                                 end
                             end
@@ -199,18 +192,3 @@ _QuestieQuest.objectiveSpawnListCallTable = {
         return ret
     end
 }
-
-function _QuestieQuest:LevelRequirementsFulfilled(quest, playerLevel, minLevel, maxLevel)
-    return (quest.level == 60 and quest.requiredLevel == 1) or (quest.level >= minLevel or Questie.db.char.lowlevel) and quest.level <= maxLevel and (quest.requiredLevel <= playerLevel or Questie.db.char.manualMinLevelOffset or Questie.db.char.manualMinLevelOffsetAbsolute)
-end
-
--- We always want to show a quest if it is a childQuest and its parent is in the quest log
-function _QuestieQuest:IsParentQuestActive(parentID)
-    if parentID == nil or parentID == 0 then
-        return false
-    end
-    if QuestiePlayer.currentQuestlog[parentID] then
-        return true
-    end
-    return false
-end

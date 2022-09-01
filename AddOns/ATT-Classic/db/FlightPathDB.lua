@@ -190,18 +190,77 @@ select(2, ...).FlightPathDB = {
 	},
 	[84] = {
 		name="Plaguewood Tower, Eastern Plaguelands",
-		u=1,
 	},
 	[85] = {
 		name="Northpass Tower, Eastern Plaguelands",
-		u=1,
 	},
 	[86] = {
 		name="Eastwall Tower, Eastern Plaguelands",
-		u=1,
 	},
 	[87] = {
 		name="Crown Guard Tower, Eastern Plaguelands",
-		u=1,
+	},
+	[285] = {
+		name="Quest - Wintergarde -> Stars' Rest (Start)",
+	},
+	[394] = {
+		name="CC Prologue - GT - Battle Flight - Start",
+	},
+	[287] = {
+		name="Quest - Valgarde -> Westguard Keep Start",
+	},
+	[36] = {
+		name="Generic, World Target 001",
+	},
+	[404] = {
+		name="Durotar - ET - CC Prologue Spy Frog Start",
+	},
+	[210] = {
+		name="Quest - Sunwell Daily - Dead Scar Bombing - End",
+	},
+	[405] = {
+		name="Durotar - ET - CC Prologue Spy Frog End",
+	},
+	[168] = {
+		name="Filming",
+	},
+	[172] = {
+		name="Ogri'La",
+	},
+	[180] = {
+		name="Quest - Dustwallow - Alcaz Survey Start",
+	},
+	[383] = {
+		name="Thondoril River, Western Plaguelands",
+	},
+	[170] = {
+		name="Quest - Netherwing Ledge - Mine Cart Ride - South - End",
+	},
+	[438] = {
+		name="Durotar - ET - CC Prologue Troll Taxi Bat Start",
+	},
+	[292] = {
+		name="Flavor - Stormwind Harbor  - Start",
+	},
+	[392] = {
+		name="CC Prologue - GT - Quest - Vent Horizon - Start",
+	},
+	[173] = {
+		name="Quest - Yarzill Flight Start",
+	},
+	[439] = {
+		name="Durotar - ET - CC Prologue Troll Recruit End",
+	},
+	[181] = {
+		name="Quest - Dustwallow - Alcaz Survey End",
+	},
+	[393] = {
+		name="CC Prologue - GT - Quest - Vent Horizon - End",
+	},
+	[318] = {
+		name="Ebon Hold - Death's Breach -> Acherus Start",
+	},
+	[316] = {
+		name="Ebon Hold - Acherus -> Death's Breach Start",
 	},
 };

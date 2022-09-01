@@ -257,6 +257,10 @@ function VUHDO_getDiffColor(aBaseColor, aModColor)
 		aBaseColor["O"], aBaseColor["TO"] = aModColor["O"], aModColor["TO"];
 	end
 
+	if aModColor["useClassColor"] then
+		aBaseColor["useClassColor"] = true;
+	end
+
 	return aBaseColor;
 end
 
@@ -391,11 +395,47 @@ local VUHDO_FIX_EVENTS = {
 
 
 
-
+--
 local sEventsPerFrame = {};
+local sFrameHideParents = {};
+local sFrameOrigParents = {};
 
 
 
+--
+local function VUHDO_hideFrame(aFrame)
+
+	if not sFrameHideParents[aFrame:GetName()] then
+		local tFrameParent = CreateFrame("Frame");
+		tFrameParent:Hide();
+
+		sFrameHideParents[aFrame:GetName()] = tFrameParent;
+	end
+
+	if not sFrameOrigParents[aFrame:GetName()] then
+		sFrameOrigParents[aFrame:GetName()] = aFrame:GetParent();
+		aFrame:SetParent(sFrameHideParents[aFrame:GetName()]);
+	end
+
+end
+
+
+
+--
+local function VUHDO_showFrame(aFrame)
+
+	if sFrameOrigParents[aFrame:GetName()] then
+		aFrame:SetParent(sFrameOrigParents[aFrame:GetName()]);
+		aFrame:Show();
+
+		sFrameOrigParents[aFrame:GetName()] = nil;
+	end
+
+end
+
+
+
+--
 local function VUHDO_unregisterAndSaveEvents(anIsHide, ...)
 	local tFrame;
 	for tCnt = 1, select('#', ...) do
@@ -414,12 +454,13 @@ local function VUHDO_unregisterAndSaveEvents(anIsHide, ...)
 			end
 
 			tFrame:UnregisterAllEvents();
-			if anIsHide then tFrame:Hide(); end
+
+			if anIsHide then
+				VUHDO_hideFrame(tFrame);
+			end
 		end
 	end
 end
-
-
 
 
 
@@ -442,7 +483,9 @@ local function VUHDO_registerOriginalEvents(anIsShow, ...)
 				tFrame:RegisterAllEvents();
 			end
 
-			if anIsShow then tFrame:Show(); end
+			if anIsShow then 
+				VUHDO_showFrame(tFrame);
+			end
 		end
 	end
 end
@@ -493,7 +536,7 @@ local function VUHDO_hideBlizzParty()
 		function()
 			if not InCombatLockdown() then
 				for tCnt = 1, 4 do
-					_G["PartyMemberFrame" .. tCnt]:Hide();
+					VUHDO_hideFrame(_G["PartyMemberFrame" .. tCnt]);
 				end
 			end
 		end
@@ -505,7 +548,7 @@ local function VUHDO_hideBlizzParty()
 		VUHDO_unregisterAndSaveEvents(false,
 			tPartyFrame, _G["PartyMemberFrame" .. tCnt .. "HealthBar"], _G["PartyMemberFrame" .. tCnt .. "ManaBar"]
 		);
-		tPartyFrame:Hide();
+		VUHDO_hideFrame(tPartyFrame);
 	end
 
 	if (CompactPartyFrame ~= nil and CompactPartyFrame:IsVisible()) then
@@ -526,7 +569,7 @@ local function VUHDO_showBlizzParty()
 			function()
 				if not InCombatLockdown() then
 					for tCnt = 1, 4 do
-						_G["PartyMemberFrame" .. tCnt]:Show();
+						VUHDO_showFrame(_G["PartyMemberFrame" .. tCnt]);
 					end
 				end
 			end
@@ -539,7 +582,7 @@ local function VUHDO_showBlizzParty()
 				tPartyFrame, _G["PartyMemberFrame" .. tCnt .. "HealthBar"], _G["PartyMemberFrame" .. tCnt .. "ManaBar"]);
 
 			if (UnitExists("party" .. tCnt)) then
-				tPartyFrame:Show();
+				VUHDO_showFrame(tPartyFrame);
 			end
 		end
 	else
@@ -560,10 +603,9 @@ end
 --
 local function VUHDO_showBlizzPlayer()
 	VUHDO_registerOriginalEvents(false, PlayerFrame, PlayerFrameHealthBar, PlayerFrameManaBar);
-	PlayerFrame:Show();
+	VUHDO_showFrame(PlayerFrame);
 	if "DEATHKNIGHT" == VUHDO_PLAYER_CLASS then
-		VUHDO_registerOriginalEvents(RuneFrame);
-		RuneFrame:Show();
+		VUHDO_registerOriginalEvents(true, RuneFrame);
 	end
 end
 
@@ -580,7 +622,8 @@ end
 
 --
 local function VUHDO_showBlizzTarget()
-	VUHDO_registerOriginalEvents(false, TargetFrame, TargetFrameHealthBar, TargetFrameManaBar, TargetFrameToT, FocusFrameToT);
+	VUHDO_registerOriginalEvents(true, TargetFrame, TargetFrameToT, FocusFrameToT);
+	VUHDO_registerOriginalEvents(false, TargetFrameHealthBar, TargetFrameManaBar);
 	ComboFrame:SetPoint("TOPRIGHT", "TargetFrame", "TOPRIGHT", -44, -9);
 end
 
@@ -608,7 +651,7 @@ end
 
 --
 local function VUHDO_showBlizzFocus()
-	VUHDO_registerOriginalEvents(false, FocusFrame);
+	VUHDO_registerOriginalEvents(true, FocusFrame);
 end
 
 

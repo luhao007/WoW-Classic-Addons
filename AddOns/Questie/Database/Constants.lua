@@ -4,6 +4,7 @@ local QuestieDB = QuestieLoader:ImportModule("QuestieDB")
 QuestieDB.sortKeys = {
     SEASONAL = -22,
     HERBALISM = -24,
+    BATTLEGROUND = -25,
     WARLOCK = -61,
     WARRIOR = -81,
     SHAMAN = -82,
@@ -27,6 +28,12 @@ QuestieDB.sortKeys = {
     REPUTATION = -367,
     MIDSUMMER = -369,
     BREWFEST = -370,
+    INSCRIPTION = -371,
+    DEATHKNIGHT = -372,
+    JEWELCRAFTING = -373,
+    NOBLEGARDEN = -374,
+    PILGRIMS_BOUNTY = -375,
+    LOVE_IS_IN_THE_AIR = -376,
 }
 
 local isTBC = string.byte(GetBuildInfo(), 1) == 50

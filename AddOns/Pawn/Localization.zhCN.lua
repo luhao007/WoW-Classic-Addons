@@ -1,9 +1,9 @@
 ﻿-- Pawn by Vger-Azjol-Nerub
 -- www.vgermods.com
--- © 2006-2021 Travis Spomer.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
+-- © 2006-2022 Travis Spomer.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
 -- See Readme.htm for more information.
 
--- 
+--
 -- Chinese (Simplified) resources
 ------------------------------------------------------------
 
@@ -152,6 +152,7 @@ PawnLocal =
 		["SpellHitInfo"] = "法术命中: 增加法术攻击命中目标的几率 (对于首领而言尤为重要)。",
 		--[[Translation missing --]]
 		["SpellPenetrationInfo"] = "Spell Penetration. Negates an enemy's resistances to your spells.",
+		["SpellPowerInfo"] = "",
 		["SpiritInfo"] = "精神 - 影响非战斗状态下生命和法力的恢复速度 (在战斗状态下, 仅影响法力的恢复速度).",
 		["StaminaInfo"] = "耐力，增加你的生命值上限。",
 		["StrengthInfo"] = "力量，为力量型职业增加攻击强度。",
@@ -412,6 +413,7 @@ PawnLocal =
 		["SpellDamage3"] = "^装备： ?提高法术所造成的治疗效果，最多#点。$",
 		["SpellDamage4"] = "^装备： ?使治疗法术和效果所回复的生命值提高#点。$",
 		["SpellDamage5"] = "^%+# 法术伤害和治疗$",
+		["SpellDamage6"] = "^装备： ?使法术和魔法效果的治疗和伤害提高最多#点。$",
 		["SpellDamageAndHealing"] = "^装备： 使法术治疗提高最多#点，法术伤害提高最多#点。$",
 		["SpellDamageAndHealing2"] = "^UNUSED$",
 		["SpellDamageAndHealingEnchant"] = "^UNUSED$",
@@ -427,6 +429,7 @@ PawnLocal =
 		["SpellPenetrationClassic"] = "^装备： 使你的法术目标的魔法抗性降低#点。$",
 		["SpellPenetrationShort"] = "^%+?# 法术穿透$",
 		["SpellPower"] = "^%+?# 法术强度$",
+		["SpellPower2"] = "^装备： 法术强度提高#点。$",
 		["Spirit"] = "^%+?# 精神$",
 		["Staff"] = "^法杖$",
 		["Stamina"] = "^%+?# 耐力$",
@@ -693,7 +696,7 @@ Pawn插件默认已经参考AskMrRobot给所有职业的专精建立了标准评
 
 -- Special case: wands use different text on Classic.
 -- So, patch things up here.
-if VgerCore.IsClassic or VgerCore.IsBurningCrusade then
+if VgerCore.IsClassic or VgerCore.IsBurningCrusade or VgerCore.IsWrath then
 
 	local TooltipParsing_Classic =
 	{
@@ -719,7 +722,7 @@ if VgerCore.IsClassic or VgerCore.IsBurningCrusade then
 	end
 end
 
-if VgerCore.IsBurningCrusade then
+if VgerCore.IsBurningCrusade or VgerCore.IsWrath then
 
 	local TooltipParsing_BurningCrusade =
 	{

@@ -1,4 +1,4 @@
-## Interface: 20503
+## Interface: 30400
 ## Author: zwj@oldgun
 ## Version: 1.8.247
 ## DefaultState: enabled

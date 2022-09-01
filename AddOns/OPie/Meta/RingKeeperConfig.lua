@@ -47,6 +47,9 @@ local function createIconButton(name, parent, id)
 	f:SetID(id or 0)
 	return f
 end
+local function PlayCheckboxSound(self)
+	PlaySound(SOUNDKIT[self:GetChecked() and "IG_MAINMENU_OPTION_CHECKBOX_ON" or "IG_MAINMENU_OPTION_CHECKBOX_OFF"])
+end
 local function SetCursor(tex)
 	_G.SetCursor((type(tex) == "number" or tex == (gfxBase .. "opie_ring_icon")) and (MODERN and "Interface/Icons/Temp" or "Interface/Icons/INV_Crate_01") or tex)
 end
@@ -72,8 +75,8 @@ local function CreateToggleButton(parent)
 	for i=1,2 do
 		local tex = i == 1 and button:GetHighlightTexture() or button:GetCheckedTexture()
 		tex:ClearAllPoints()
-		tex:SetPoint("TOPLEFT", button, "LEFT", -1.5, 12.3)
-		tex:SetPoint("BOTTOMRIGHT", button, "RIGHT", 1.5, -12.3)
+		tex:SetPoint("TOPLEFT", button, "LEFT", 1.5, 12.3)
+		tex:SetPoint("BOTTOMRIGHT", button, "RIGHT", -1.5, -12.3)
 		tex:SetBlendMode("ADD")
 	end
 	return button
@@ -130,11 +133,14 @@ local btnNewRing = CreateButton(panel)
 
 newRing = CreateFrame("Frame") do
 	newRing:SetSize(400, 115)
+	newRing:Hide()
 	local title = newRing:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
 	local toggle1, toggle2 = CreateToggleButton(newRing), CreateToggleButton(newRing)
 	local name, snap = conf.ui.lineInput(newRing, true, 240), conf.ui.lineInput(newRing, true, 240)
 	local nameLabel, snapLabel = newRing:CreateFontString(nil, "OVERLAY", "GameFontHighlight"), snap:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
 	local accept, cancel = CreateButton(newRing, 125), CreateButton(newRing, 125)
+	local importNested = CreateFrame("CheckButton", nil, newRing, "InterfaceOptionsCheckButtonTemplate")
+	local state = {selected=toggle1, buncount=0}
 	title:SetPoint("TOP", 0, -3)
 	toggle1:SetPoint("TOPLEFT", 20, -25)
 	toggle2:SetPoint("TOPRIGHT", -20, -25)
@@ -145,51 +151,75 @@ newRing = CreateFrame("Frame") do
 	accept:SetPoint("BOTTOMRIGHT", newRing, "BOTTOM", -2, 4)
 	cancel:SetPoint("BOTTOMLEFT", newRing, "BOTTOM", 2, 4)
 	toggle1:SetChecked(1)
+	importNested:SetScript("OnClick", PlayCheckboxSound)
+	importNested:SetPoint("TOPLEFT", snap, "BOTTOMLEFT", -9, -2)
+	importNested:SetHitRectInsets(0, -222, 0, 0)
+	importNested:SetScript("OnHide", function(self) self:SetChecked(nil) end)
+	
 	snap:Hide()
-	toggle1.other, toggle2.other = toggle2, toggle1
-	local function validate()
-		local nameText, snapText, snapOK = name:GetText() or "", snap:GetText() or "", true
-		if toggle2:GetChecked() then
-			if snapText ~= snap.cachedText then
-				snap.cachedText, snap.cachedValue = snapText, snapText ~= "" and RK:GetSnapshotRing(snapText) or nil
-				if type(snap.cachedValue) == "table" and nameText == "" then
-					snap:SetCursorPosition(0)
-					name:SetText(snap.cachedValue.name or "")
-					name:SetFocus()
-					name:HighlightText()
+	local function updateSnap(snapText, speculativeNameCheck)
+		if state.snap == snapText and not speculativeNameCheck then
+			return
+		end
+		local bc, ring, bun = 0, RK:GetSnapshotRing(snapText)
+		if speculativeNameCheck == true and not ring then
+			return
+		end
+		if type(bun) == "table" then
+			for _,v in pairs(bun) do
+				if type(v) == "table" then
+					bc = bc + 1
 				end
 			end
-			snapOK = type(snap.cachedValue) == "table"
-			if snapOK then
-				snap:SetTextColor(GameFontGreen:GetTextColor())
-			else
-				snap:SetTextColor(ChatFontNormal:GetTextColor())
-			end
-		elseif #nameText > 32 and nameText:match("^%s*oetohH7") then
-			local val = RK:GetSnapshotRing(nameText)
-			if type(val) == "table" then
-				snap.cachedText, snap.cachedValue = nameText, val
-				name:SetText("")
-				toggle2:Click()
-				snap:SetText(nameText)
-			end
 		end
+		state.snap, state.ring, state.bundle, state.buncount = snapText, ring, bun, bc
+		if speculativeNameCheck == true then
+			name:SetText("")
+			snap:SetText(snapText)
+			toggle2:Click()
+		end
+		if state.ring and name:GetText() == "" then
+			snap:SetCursorPosition(0)
+			name:SetText(state.ring.name or "")
+			name:SetFocus()
+			name:HighlightText()
+		end
+		snap:SetTextColor((ring and GameFontGreen or ChatFontNormal):GetTextColor())
+		importNested.Text:SetText((L"Import %s |4nested ring:nested rings;"):format(NORMAL_FONT_COLOR_CODE .. "|t" .. bc .. "|r"))
+		return not not ring
+	end
+	local function validate()
+		local nameText = name:GetText() or ""
+		if toggle2:GetChecked() then
+			updateSnap(snap:GetText() or "")
+		elseif #nameText > 32 and nameText:match("^%s*oetohH7") then
+			updateSnap(nameText, true)
+		end
+		local isSnapImport = toggle2:GetChecked()
+		local snapOK = state.ring and true or not isSnapImport
+		local hasBundledRings = isSnapImport and state.ring and state.buncount ~= 0
+		newRing:SetSize(400, hasBundledRings and 162 or isSnapImport and 140 or 115)
+		snap:SetShown(isSnapImport)
+		importNested:SetShown(hasBundledRings)
 		accept:SetEnabled(type(nameText) == "string" and nameText:match("%S") and snapOK)
+		if newRing:IsVisible() then
+			conf.overlay(panel, newRing)
+		end
 	end
 	local function toggle(self)
-		if not self:GetChecked() ~= not self.other:GetChecked() then
-		elseif not self:GetChecked() then
-			self:SetChecked(1)
-		else
-			PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON)
-			self.other:SetChecked(nil)
-			newRing:SetSize(400, self == toggle1 and 115 or 140)
-			snap:SetShown(self ~= toggle1)
+		if self:GetChecked() then
+			state.selected:SetChecked(nil)
+			state.selected = self
+			if self == toggle1 then
+				snap:SetText("")
+			end
 			if newRing:IsVisible() then
-				conf.overlay(panel, newRing)
-				validate(name);
+				PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON)
+				validate();
 				(self == toggle1 and name or snap):SetFocus()
 			end
+		else
+			self:SetChecked(1)
 		end
 	end
 	local function navigate(self)
@@ -210,8 +240,10 @@ newRing = CreateFrame("Frame") do
 	end
 	cancel:SetScript("OnClick", function() newRing:Hide() end)
 	accept:SetScript("OnClick", function()
-		local ringData = toggle2:GetChecked() and type(snap.cachedValue) == "table" and snap.cachedValue or {limit="PLAYER"}
-		if api.createRing(name:GetText(), ringData) then
+		if state.selected == toggle1 then
+			api.createRing(name:GetText(), {limit="PLAYER"})
+			newRing:Hide()
+		elseif api.createRing(name:GetText(), state.ring, state.bundle, importNested:GetChecked()) then
 			newRing:Hide()
 		end
 	end)
@@ -240,6 +272,7 @@ newRing = CreateFrame("Frame") do
 		name:SetText("")
 		toggle1:Click()
 		accept:Disable()
+		importNested:SetChecked(false)
 		conf.overlay(panel, newRing)
 		name:SetFocus()
 	end)
@@ -393,7 +426,7 @@ ringDetail = CreateFrame("Frame", nil, ringContainer) do
 	ringDetail.bindingQuarantine = CreateFrame("CheckButton", nil, ringDetail, "InterfaceOptionsCheckButtonTemplate")
 	ringDetail.bindingQuarantine:SetHitRectInsets(0,0,0,0)
 	ringDetail.bindingQuarantine:SetPoint("RIGHT", ringDetail.binding, "LEFT", 0, 0)
-	ringDetail.bindingQuarantine:SetScript("OnClick", function() api.setRingProperty("hotkey", api.getRingProperty("quarantineBind")) end)
+	ringDetail.bindingQuarantine:SetScript("OnClick", function(self) PlayCheckboxSound(self) api.setRingProperty("hotkey", api.getRingProperty("quarantineBind")) end)
 	ringDetail.bindingQuarantine:SetScript("OnEnter", conf.ui.ShowControlTooltip)
 	ringDetail.bindingQuarantine:SetScript("OnLeave", conf.ui.HideTooltip)
 	ringDetail.bindingQuarantine.tooltipText = L"To enable the default binding for this ring, check this box or change the binding."
@@ -410,21 +443,22 @@ ringDetail = CreateFrame("Frame", nil, ringContainer) do
 	ringDetail.opportunistCA.Text:SetText(L"Pre-select a quick action slice")
 	ringDetail.opportunistCA:SetScript("OnEnter", conf.ui.ShowControlTooltip)
 	ringDetail.opportunistCA:SetScript("OnLeave", conf.ui.HideTooltip)
-	ringDetail.opportunistCA:SetScript("OnClick", function(self) api.setRingProperty("noOpportunisticCA", (not self:GetChecked()) or nil) api.setRingProperty("noPersistentCA", (not self:GetChecked()) or nil) end)
+	ringDetail.opportunistCA:SetScript("OnClick", function(self) PlayCheckboxSound(self) api.setRingProperty("noOpportunisticCA", (not self:GetChecked()) or nil) api.setRingProperty("noPersistentCA", (not self:GetChecked()) or nil) end)
 	ringDetail.hiddenRing = CreateFrame("CheckButton", nil, ringDetail, "InterfaceOptionsCheckButtonTemplate")
 	ringDetail.hiddenRing:SetPoint("TOPLEFT", ringDetail.opportunistCA, "BOTTOMLEFT", 0, 2)
 	ringDetail.hiddenRing.Text:SetText(L"Hide this ring")
-	ringDetail.hiddenRing:SetScript("OnClick", function(self) api.setRingProperty("internal", self:GetChecked() and true or nil) end)
+	ringDetail.hiddenRing:SetScript("OnClick", function(self) PlayCheckboxSound(self) api.setRingProperty("internal", self:GetChecked() and true or nil) end)
 	ringDetail.embedRing = CreateFrame("CheckButton", nil, ringDetail, "InterfaceOptionsCheckButtonTemplate")
 	ringDetail.embedRing:SetPoint("TOPLEFT", ringDetail.hiddenRing, "BOTTOMLEFT", 0, 2)
 	ringDetail.embedRing.Text:SetText(L"Embed into other rings by default")
-	ringDetail.embedRing:SetScript("OnClick", function(self) api.setRingProperty("embed", self:GetChecked() and true or nil) end)
+	ringDetail.embedRing:SetScript("OnClick", function(self) PlayCheckboxSound(self) api.setRingProperty("embed", self:GetChecked() and true or nil) end)
 	ringDetail.firstOnOpen = CreateFrame("CheckButton", nil, ringDetail, "InterfaceOptionsCheckButtonTemplate") do
 		local f = ringDetail.firstOnOpen
 		f:SetPoint("TOPLEFT", ringDetail.embedRing, "BOTTOMLEFT", 0, 2)
 		f:SetMotionScriptsWhileDisabled(1)
 		f.Text:SetText(L"Use first slice when opened")
 		f:SetScript("OnClick", function(self)
+			PlayCheckboxSound(self)
 			self.quarantineMark:Hide()
 			api.setRingProperty("onOpen", self:GetChecked() and 1 or nil)
 		end)
@@ -456,9 +490,20 @@ ringDetail = CreateFrame("Frame", nil, ringContainer) do
 	ringDetail.shareLabel2:SetPoint("TOPLEFT", ringDetail, "TOPLEFT", 270, -265)
 	ringDetail.shareLabel2:SetWidth(275)
 	ringDetail.export = CreateButton(ringDetail)
-	ringDetail.export:SetPoint("TOP", ringDetail.shareLabel2, "BOTTOM", 0, -3)
+	ringDetail.export:SetPoint("TOP", ringDetail.shareLabel2, "BOTTOM", 0, -4)
 	ringDetail.export:SetText(L"Share ring")
-	ringDetail.export:SetScript("OnClick", function() PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON) api.exportRing() end)
+	ringDetail.export:SetScript("OnClick", function(self) PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON) api.exportRing(self.nested:IsShown() and self.nested:GetChecked() and true) end)
+	ringDetail.export.nested = CreateFrame("CheckButton", nil, ringDetail.export, "InterfaceOptionsCheckButtonTemplate") do
+		local f = ringDetail.export.nested
+		f:SetPoint("TOPLEFT", ringDetail.shareLabel2, "BOTTOMLEFT", -4, -1)
+		f.Text:SetText(L"Include nested rings")
+		local function moveExportButton(self)
+			ringDetail.export:SetPoint("TOP", ringDetail.shareLabel2, "BOTTOM", 0, self:IsVisible() and -22 or -4)
+		end
+		f:SetScript("OnClick", PlayCheckboxSound)
+		f:SetScript("OnShow", moveExportButton)
+		f:SetScript("OnHide", moveExportButton)
+	end
 	
 	local exportBg, scroll = CreateFrame("Frame", nil, ringDetail)
 	CreateEdge(exportBg, {edgeFile="Interface/Tooltips/UI-Tooltip-Border", bgFile="Interface/DialogFrame/UI-DialogBox-Background-Dark", tile=true, edgeSize=16, tileSize=16, insets={left=4,right=4,bottom=4,top=4}}, 0xb2000000, 0xb2b2b2)
@@ -718,11 +763,9 @@ sliceDetail = CreateFrame("Frame", nil, ringContainer) do
 	end
 	sliceDetail.fastClick = CreateFrame("CheckButton", nil, sliceDetail, "InterfaceOptionsCheckButtonTemplate") do
 		local e = sliceDetail.fastClick
-		local function update(self)
-			return api.setSliceProperty("fastClick", self:GetChecked() and true or nil)
-		end
-		e:SetHitRectInsets(0, -200, 4, 4) e:SetMotionScriptsWhileDisabled(1) e:SetScript("OnClick", update)
+		e:SetHitRectInsets(0, -200, 4, 4) e:SetMotionScriptsWhileDisabled(1)
 		e:SetPoint("TOPLEFT", 266, -oy)
+		e:SetScript("OnClick", function(self) PlayCheckboxSound(self) return api.setSliceProperty("fastClick", self:GetChecked() and true or nil) end)
 		e:SetScript("OnEnter", conf.ui.ShowControlTooltip)
 		e:SetScript("OnLeave", conf.ui.HideTooltip)
 		e.Text:SetText(L"Allow as quick action")
@@ -741,10 +784,10 @@ sliceDetail = CreateFrame("Frame", nil, ringContainer) do
 		local modes = {
 			false, "cycle", "shuffle", "random", "reset", "jump",
 			[false]=L"Remember last rotation",
-			cycle=L"Advance after use",
-			shuffle=L"Shuffle after use",
-			random=L"Randomize on display",
-			reset=L"Reset on display",
+			cycle=L"Advance rotation after use",
+			shuffle=L"Randomize rotation after use",
+			random=L"Randomize rotation on display",
+			reset=L"Reset rotation on display",
 			jump=L"Display a jump slice",
 		}
 		function w:set(opt)
@@ -1189,6 +1232,32 @@ local decodeConstantList do
 		error("Invalid encoding at position " .. tostring(start))
 	end
 end
+local function genBundledRingName(mainNew, mainOld, nestName, usedNames, seq)
+	if type(mainOld) == "string" and type(nestName) == "string" and nestName:sub(1,#mainOld) == mainOld then
+		nestName = nestName:sub(#mainOld + 1 + #nestName:match("^%s*:?%s*", 1+#mainOld))
+	end
+	local cand = mainNew .. ": " .. (nestName or seq)
+	if usedNames[cand] then
+		cand = cand .. "/" .. seq
+		while usedNames[cand] do
+			cand = ("%s: %s [%04x%04x]"):format(mainNew, nestName or seq, math.random(2^16)-1, math.random(2^16)-1)
+		end
+	end
+	usedNames[cand] = seq
+	return cand
+end
+local function setImportedRingProps(name, data)
+	data.name, data.limit = name, data.limit == "PLAYER" and FULLNAME or (type(data.limit) == "string" and data.limit:match("^[A-Z]+$") or nil)
+end
+local function updateImportedRingContents(data, ringNameMap)
+	for i=1,#data do
+		local e = data[i]
+		local s = ringNameMap[e and e[1] == "ring" and e[2] or nil]
+		if s then
+			e[2] = s
+		end
+	end
+end
 
 local ringNameMap, ringOrderMap, ringTypeMap, ringNames, currentRing, currentRingName, sliceBaseIndex, currentSliceIndex, repickSlice = {}, {}, {}, {}
 local typePrefix = {
@@ -1256,12 +1325,34 @@ function ringDropDown:initialize(level, nameList)
 		UIDropDownMenu_AddButton(info, level)
 	end
 end
-function api.createRing(name, data)
+function api.createRing(name, data, bundle, importNested)
 	local name = name:match("^%s*(.-)%s*$")
 	if name == "" then return false end
 	local iname = RK:GenFreeRingName(name)
+	local mapRings, reservedINames, usedNames, nr = {}, importNested and {[iname]=1}, {[name]=true}, 2
+	if bundle then
+		for k,v in pairs(bundle) do
+			if v == 0 then
+				mapRings[k] = iname
+			elseif type(v) == "table" and importNested then
+				setImportedRingProps(genBundledRingName(name, data.name, v.name, usedNames, nr), v)
+				local n = RK:GenFreeRingName(v.name, reservedINames)
+				mapRings[k], reservedINames[n], nr = n, nr, nr + 1
+			end
+		end
+		if importNested then
+			for k,v in pairs(bundle) do
+				if type(v) == "table" then
+					updateImportedRingContents(v, mapRings)
+					SaveRingVersion(mapRings[k], false)
+					api.saveRing(mapRings[k], v)
+				end
+			end
+		end
+	end
+	setImportedRingProps(name, data)
+	updateImportedRingContents(data, mapRings)
 	SaveRingVersion(iname, false)
-	data.name, data.limit = name, data.limit == "PLAYER" and FULLNAME or (type(data.limit) == "string" and not data.limit:match("[^A-Z]") and data.limit or nil)
 	api.saveRing(iname, data)
 	api:selectRing(iname)
 	return true
@@ -1285,10 +1376,11 @@ function api.selectRing(_, name)
 	api.refreshDisplay()
 	ringDetail:Show()
 	ringDetail.scope:text()
-	api.updateRingLine()
+	ringDetail.export.nested:SetChecked(true)
+	api.updateRingLine(true)
 	ringContainer:Show()
 end
-function api.updateRingLine()
+function api.updateRingLine(scanForNestedRings)
 	ringContainer.prev:SetEnabled(sliceBaseIndex > 1)
 	ringContainer.next:Disable()
 	local onOpen, lastWidget = currentRing.onOpen
@@ -1306,6 +1398,17 @@ function api.updateRingLine()
 	ringContainer.newSlice:SetPoint("TOP", lastWidget or ringContainer.slices[1], lastWidget and "BOTTOM" or "TOP", 0, -2)
 	for i=#currentRing-sliceBaseIndex+2,#ringContainer.slices do
 		ringContainer.slices[i]:Hide()
+	end
+	if scanForNestedRings then
+		local hasNestedCustomRings = false
+		for i=1,#currentRing do
+			local e = currentRing[i]
+			if e[1] == "ring" and e[2] ~= currentRingName and select(4,RK:GetRingInfo(e[2])) then
+				hasNestedCustomRings = true
+				break
+			end
+		end
+		ringDetail.export.nested:SetShown(hasNestedCustomRings)
 	end
 end
 function api.scrollSliceList(dir)
@@ -1470,12 +1573,13 @@ function api.updateSliceOptions(slice)
 	local extraY, isCollection = 0, securecall(isCollectionSlice, RK:UnpackABAction(slice))
 	local fc, cd = sliceDetail.fastClick, sliceDetail.collectionDrop
 	fc:SetChecked(not not slice.fastClick)
-	if OneRingLib:GetOption("CenterAction", currentRingName) then
+	if OneRingLib:GetOption("CenterAction", currentRingName) or OneRingLib:GetOption("MotionAction", currentRingName) then
 		fc:SetEnabled(true)
 		fc.tooltipText = nil
 		fc.Text:SetVertexColor(1, 1, 1)
 	else
-		fc.tooltipText = (L"You must enable the %s option for this ring in OPie options to use quick actions."):format("|cffffffff" .. L"Quick action at ring center" .. "|r")
+		fc.tooltipText = (L"You must enable the %s option for this ring in OPie options to use quick actions."):format(
+			"|cffffffff" .. L"Quick action at ring center" .. "|r|cff909090 / |r|cffffffff" .. L"Quick action if mouse remains still" .. "|r")
 		fc:SetChecked(false)
 		fc:SetEnabled(false)
 		fc.Text:SetVertexColor(0.6, 0.6, 0.6)
@@ -1554,8 +1658,13 @@ function api.deleteSlice(id)
 		if sliceBaseIndex == id and sliceBaseIndex > 1 then
 			sliceBaseIndex = sliceBaseIndex - 1
 		end
+		if id == currentRing.onOpen then
+			currentRing.onOpen = nil
+		elseif currentRing.onOpen and id < currentRing.onOpen then
+			currentRing.onOpen = currentRing.onOpen - 1
+		end
 		api.saveRing(currentRingName, currentRing)
-		api.updateRingLine()
+		api.updateRingLine(true)
 	end
 end
 function api.beginSliceRepick()
@@ -1621,7 +1730,7 @@ function api.addSlice(pos, ...)
 		if pos < sliceBaseIndex then sliceBaseIndex = pos end
 	end
 	api.saveRing(currentRingName, currentRing)
-	api.updateRingLine()
+	api.updateRingLine(true)
 	if wasRepick then
 		api.finishSliceRepick()
 	end
@@ -1682,11 +1791,11 @@ function api.refreshDisplay()
 		ringDetail.firstOnOpen.quarantineMark:SetShown(currentRing.quarantineOnOpen == 1)
 	end
 end
-function api.exportRing()
+function api.exportRing(includeNestedRings)
 	local input = ringDetail.exportInput
 	ringDetail.export:Hide()
 	ringDetail.exportFrame:Show()
-	input:SetText(RK:GetRingSnapshot(currentRingName))
+	input:SetText(RK:GetRingSnapshot(currentRingName, includeNestedRings))
 	input:SetCursorPosition(0)
 	input:HighlightText()
 	input:SetFocus()

@@ -24,11 +24,15 @@ frame:SetClampedToScreen(true)
 frame:SetUserPlaced(true)
 frame:RegisterForDrag("LeftButton")
 frame:SetFrameLevel(frame:GetFrameLevel() + 4)
-frame:SetMinResize(800, 400)
-frame:SetMaxResize(UIParent:GetWidth(), UIParent:GetHeight())
+if DBM:GetTOC() < 100000 then -- Is live
+	frame:SetMinResize(800, 400)
+	frame:SetMaxResize(UIParent:GetWidth(), UIParent:GetHeight())
+else -- Is DragonFlight
+	frame:SetResizeBounds(800, 400, UIParent:GetWidth(), UIParent:GetHeight())
+end
 frame:Hide()
 frame.backdropInfo = {
-	bgFile		= "Interface\\DialogFrame\\UI-DialogBox-Background", -- 131071
+	bgFile		= "Interface\\DialogFrame\\UI-DialogBox-Background-Dark", -- 131071
 	edgeFile	= "Interface\\DialogFrame\\UI-DialogBox-Border", -- 131072
 	tile		= true,
 	tileSize	= 32,
@@ -37,6 +41,7 @@ frame.backdropInfo = {
 }
 
 frame:ApplyBackdrop()
+frame:SetBackdropColor(1, 1, 1, .85)
 frame.firstshow = true
 frame:SetScript("OnShow", function(self)
 	if self.firstshow then
@@ -167,7 +172,7 @@ function OptionsList_OnLoad(self, ...)
 		hack(self, ...)
 	end
 end
-local frameList = CreateFrame("Frame", "$parentList", frame, "BackdropTemplate,OptionsFrameListTemplate")
+local frameList = CreateFrame("Frame", "$parentList", frame, "TooltipBorderBackdropTemplate")
 frameList:SetWidth(205)
 frameList:SetPoint("TOPLEFT", 22, -40)
 frameList:SetPoint("BOTTOMLEFT", frameWebsite, "TOPLEFT", 0, 5)
@@ -211,7 +216,7 @@ for i = 1, math.floor(UIParent:GetHeight() / 18) do
 		frame:UpdateMenuFrame()
 	end)
 end
-local frameListList = _G[frameList:GetName() .. "List"]
+local frameListList = CreateFrame("ScrollFrame", "$parentList", frameList, "UIPanelScrollFrameTemplate")
 frameListList.backdropInfo = {
 	edgeFile	= "Interface\\Tooltips\\UI-Tooltip-Border", -- 137057
 	tile		= true,

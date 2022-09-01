@@ -1,6 +1,6 @@
-## Interface: 20503
+## Interface: 30400
 ## Author: MysticalOS, QartemisT
-## Version: 28f01ab
+## Version: fa8a9ff
 ## Dependencies: DBM-StatusBarTimers
 ## LoadOnDemand: 0
 ## SavedVariables: DBM_AllSavedOptions, DBM_MinimapIcon
@@ -12,9 +12,10 @@
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFFFFE00ADBM|r
 ## Notes-zhCN: 功能强大的副本助手，支持所有Boss。
 
-## X-Min-Interface: 90105
-## X-Min-Interface-Classic: 11401
-## X-Min-Interface-BCC: 20503
+## X-Min-Interface: 90207
+## X-Min-Interface-Classic: 11403
+## X-Min-Interface-BCC: 20504
+## X-Min-Interface-Wrath: 30400
 ## X-Website: https://deadlybossmods.com
 ## X-Part-Of: DBM-Core
 

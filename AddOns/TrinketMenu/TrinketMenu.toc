@@ -1,4 +1,4 @@
-## Interface: 20503
+## Interface: 10000
 ## Author: Gello, Resike
 ## Version: 7.3.2
 ## SavedVariables: TrinketMenuOptions

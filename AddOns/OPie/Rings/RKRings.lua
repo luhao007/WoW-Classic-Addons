@@ -53,6 +53,7 @@ R:SetRing("DruidUtility", {
 	{id="/cast {{spell:33891/102560}}", _u="i"}, -- Incarnation
 	{id="/cast [mod][+cleanse] {{spell:88423/2782}}; {{spell:18960/193753}}", _u="p"}, -- moonglade/cleanse
 	{id=29166, _u="v"}, -- innervate
+	{id=2908, _u="s"}, -- soothe
 	name=L"Utility", hotkey="[noform:bear/cat] BUTTON5; ALT-BUTTON5", limit="DRUID", _u="OPCDU"
 })
 R:SetRing("DruidFeral", {
@@ -64,7 +65,7 @@ R:SetRing("DruidFeral", {
 	{id=61336, _u="i"}, -- survival instincts
 	{id=102401, _u="c"}, -- feral charge
 	{id="/cast {{spell:102543/102558}}", _u="n"}, -- Incarnation
-	{id="/cast [nomod,@player][mod,@none] {{spell:8936}}", show="[spec:102/104/105] hide;", _u="h"}, -- Regrowth
+	{id="#nounshift [combat,form:cat]\n/cast [nomod,@player][mod,@none] {{spell:8936}}", show="[spec:102/104/105] hide;", _u="h"}, -- Regrowth
 	name=L"Feral", hotkey="[form:bear/cat] BUTTON5; ALT-BUTTON5", limit="DRUID", _u="OPCDF"
 })
 
@@ -132,11 +133,11 @@ R:SetRing("MagePolymorph", {
 do -- MageTravel
 	local m = "/cast [mod] {{spell:%s}}; {{spell:%s}}"
 	R:SetRing("MageTravel", {
-		{id=m:format(268969, 281403), _u="8t"}, -- Boralus
-		{id=m:format(281402, 281404), _u="8z"}, -- Dazar'alor
-		{id=m:format(224871, 224869), _u="b"}, -- Dalaran Broken Isles
+		{id=m:format(344597, 344587), _u="9"}, -- Oribos
+		{id=m:format("268969/281402", "281403/281404"), _u="8"}, -- Dazar'alor/Boralus
+		{id=m:format(224871, 224869), _u="b"}, -- Dalaran (Broken Isles)
 		{id=m:format("132620/132626", "132621/132627"), _u="v"}, -- Vale of Eternal Blossoms
-		{id=m:format(53142, 53140), _u="r"}, -- Dalaran Northrend
+		{id=m:format(53142, 53140), _u="r"}, -- Dalaran (Northrend)
 		{id=m:format("35717/33691", 33690), _u="s"}, -- Shattrath
 		{id=m:format(10059, 3561), _u="w"}, -- Stormwind
 		{id=m:format(11419, 3565), _u="d"}, -- Darnassus
@@ -252,6 +253,11 @@ R:SetRing("CommonHearth", {
 	{"toy", 162973, _u="w"},
 	{"toy", 168907, _u="m"},
 	{"toy", 172179, _u="s"},
+	{"toy", 182773, _u="n"},
+	{"toy", 184353, _u="k"},
+	{"toy", 180290, _u="nf"},
+	{"toy", 183716, _u="ve"},
+	{"toy", 190237, _u="bt"},
 	name=L"Hearthstones", internal=true, _u="OPCHS"
 })
 R:SetRing("SpecMenu", {

@@ -1,10 +1,10 @@
--- $Id: Atlas_Transportation-ruRU.lua 125 2021-05-22 14:07:10Z arithmandar $
+-- $Id: Atlas_Transportation-ruRU.lua 131 2022-02-02 17:23:30Z arithmandar $
 --[[
 
 	Atlas, a World of Warcraft instance map browser
 	Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert@gmail.com>
 	Copyright 2010 - Lothaer <lothayer@gmail.com>, Atlas Team
-	Copyright 2011 ~ 2021 - Arith Hsu, Atlas Team <atlas.addon at gmail.com>
+	Copyright 2011 ~ 2022 - Arith Hsu, Atlas Team <atlas.addon at gmail.com>
 
 	This file is part of Atlas.
 
@@ -43,6 +43,8 @@ L["Boat to Echo Isles, Durotar"] = [=[Корабль на Острова Эха,
 L["Boat to Stormwind City"] = [=[Корабль в Штормград
 ]=]
 L["Camp Taurajo"] = "Лагерь Таурахо"
+--[[Translation missing --]]
+--[[ L["Change will take effect after next login; or type '/reload' command to reload addon"] = ""--]] 
 L["Class Order Halls"] = "Оплоты классов"
 L["Class Specific Only"] = "Для определённых классов"
 L["Climbing Rope"] = "Канат"
@@ -81,9 +83,13 @@ L["Require to complete \"Meet the Scout\" quest line first."] = "Необход�
 L["Requires Eagle Ally Advancement"] = "Требуется для продвижение Орлы-помощники"
 L["Requires honored faction with Sha'tari Skyguard"] = "Требуется Уважение у фракции Стражи Небес Ша'тар"
 L["Requires Teleportation Nexus Advancement"] = "Требуется для продвижение Нексус телепортации"
+--[[Translation missing --]]
+--[[ L["Return to Zuldazar"] = ""--]] 
 L["Seahorse"] = "Морской конек"
 L["Shado-Pan Rope"] = "Шадопанская веревка"
 L["Ship / Zeppelin sailing path to destination"] = "Путь корабля / дирижабля"
+--[[Translation missing --]]
+--[[ L["Show %s's transportation maps"] = ""--]] 
 L["South of the path along Lake Elune'ara"] = "Южный путь вдоль Озера Алуне'ара"
 L["Special transportation"] = "Особый транспорт"
 L["Talua <Eagle Keeper>"] = "Талуа <Хозяйка орлов>"
