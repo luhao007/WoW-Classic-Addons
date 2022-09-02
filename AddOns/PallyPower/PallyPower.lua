@@ -96,12 +96,6 @@ function PallyPower:OnInitialize()
 	self.db.RegisterCallback(self, "OnProfileCopied", "OnProfileChanged")
 	self.db.RegisterCallback(self, "OnProfileReset", "OnProfileChanged")
 
-	if not PallyPower_SavedPresets or PallyPower_SavedPresets == nil then
-		PallyPower_SavedPresets = {}
-		PallyPower_SavedPresets["PallyPower_Assignments"] = {[0] = {}}
-		PallyPower_SavedPresets["PallyPower_NormalAssignments"] = {[0] = {}}
-	end
-
 	self.opt = self.db.profile
 	self.options.args.profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db)
 
@@ -174,6 +168,19 @@ function PallyPower:OnInitialize()
 
 	if self.isVanilla then
 		LCD:Register("PallyPower")
+	end
+
+	-- the transition from TBC Classic to Wrath Classic has caused some errors for players with SavedVariables values intended for the 2.5.4 clients and earlier
+	if self.isWrath and not self.opt.WrathTransition then
+		PallyPower:Purge()
+
+		self.opt.WrathTransition = true
+	end
+
+	if not PallyPower_SavedPresets or PallyPower_SavedPresets == nil then
+		PallyPower_SavedPresets = {}
+		PallyPower_SavedPresets["PallyPower_Assignments"] = {[0] = {}}
+		PallyPower_SavedPresets["PallyPower_NormalAssignments"] = {[0] = {}}
 	end
 end
 
@@ -250,6 +257,8 @@ function PallyPower:Purge()
 	PallyPower_Assignments = {}
 	PallyPower_NormalAssignments = {}
 	PallyPower_AuraAssignments = {}
+
+	PallyPower_SavedPresets = nil
 end
 
 function PallyPower:Reset()
@@ -3740,7 +3749,7 @@ function PallyPower:SealCycle()
 			self.opt.seal = 0
 		end
 		local cur = self.opt.seal
-		for test = cur + 1, self.isWrath and 9 or 10 do
+		for test = cur + 1, self.isWrath and 10 or 11 do
 			cur = test
 			if GetSpellInfo(self.Seals[cur]) then
 				do
@@ -3748,7 +3757,7 @@ function PallyPower:SealCycle()
 				end
 			end
 		end
-		if (self.isWrath and cur == 9) or (not self.isWrath and cur == 10) then
+		if (self.isWrath and cur == 10) or (not self.isWrath and cur == 11) then
 			cur = 0
 		end
 		self:SealAssign(cur)
@@ -3767,7 +3776,7 @@ function PallyPower:SealCycleBackward()
 		end
 		local cur = self.opt.seal
 		if cur == 0 then
-			cur = self.isWrath and 9 or 10
+			cur = self.isWrath and 10 or 11
 		end
 		for test = cur - 1, 0, -1 do
 			cur = test
@@ -3856,6 +3865,7 @@ function PallyPower:StorePreset()
 	--save current Assignments to preset
 	PallyPower_SavedPresets["PallyPower_Assignments"][0] = tablecopy(PallyPower_Assignments)
 	PallyPower_SavedPresets["PallyPower_NormalAssignments"][0] = tablecopy(PallyPower_NormalAssignments)
+	PallyPower_SavedPresets["PallyPower_AuraAssignments"][0] = tablecopy(PallyPower_AuraAssignments)
 end
 
 function PallyPower:LoadPreset()
@@ -3866,6 +3876,7 @@ function PallyPower:LoadPreset()
 	PallyPower:SendMessage("CLEAR SKIP")
 	PallyPower_Assignments = tablecopy(PallyPower_SavedPresets["PallyPower_Assignments"][0])
 	PallyPower_NormalAssignments = tablecopy(PallyPower_SavedPresets["PallyPower_NormalAssignments"][0])
+	PallyPower_AuraAssignments = tablecopy(PallyPower_SavedPresets["PallyPower_AuraAssignments"][0])
 	C_Timer.After(
 		0.25,
 		function() -- send Class-Assignments

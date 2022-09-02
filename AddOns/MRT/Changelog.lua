@@ -1,6 +1,17 @@
 local GlobalAddonName, ExRT = ...
 
 ExRT.Options.Changelog = [=[
+v.4650-LK
+* Updated to WotLK version
+* Marks Bar: second click on consumables button will hide consumables window
+
+v.4630
+* Raid Check: consumables on ready check: added support for Eternal Augment Rune
+* Minor fixes
+
+v.4620
+* 9.2 Update
+
 v.4610
 * Updated Chinese translation (by martinkerth)
 

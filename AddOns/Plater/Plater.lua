@@ -98,11 +98,11 @@ local Plater = DF:CreateAddOn ("Plater", "PlaterDB", PLATER_DEFAULT_SETTINGS, { 
 	}
 })
 Plater.versionString = GetAddOnMetadata("Plater_dev", "Version") or GetAddOnMetadata("Plater", "Version")
-Plater.fullVersionInfo = Plater.versionString .. " - DetailsFramework v" .. select(2,LibStub:GetLibrary("DetailsFramework-1.0")) .. " - WoW " .. GetBuildInfo()
+Plater.fullVersionInfo = Plater.versionString .. " - DF v" .. select(2,LibStub:GetLibrary("DetailsFramework-1.0")) .. " - " .. GetBuildInfo()
 function Plater.GetVersionInfo(printOut)
 	-- update, just in case...
 	Plater.versionString = GetAddOnMetadata("Plater_dev", "Version") or GetAddOnMetadata("Plater", "Version")
-	Plater.fullVersionInfo = Plater.versionString .. " - DetailsFramework v" .. select(2,LibStub:GetLibrary("DetailsFramework-1.0")) .. " - WoW " .. GetBuildInfo()
+	Plater.fullVersionInfo = Plater.versionString .. " - DF v" .. select(2,LibStub:GetLibrary("DetailsFramework-1.0")) .. " - " .. GetBuildInfo()
 	if printOut then print("Plater version info:\n" .. Plater.fullVersionInfo) end
 	return Plater.fullVersionInfo
 end
@@ -129,8 +129,10 @@ end
 	--search .isPerformanceUnit for locations where there code for improve performance
 	--unitFrame.isPerformanceUnit healthBar.isPerformanceUnit
 	Plater.PerformanceUnits = {
-		[189706] = true, --chaotic essence (shadowlands season 4 raid affixes)
-		[189707] = true, --chaotic essence (shadowlands season 4 raid affixes)
+		--[189706] = true, --chaotic essence (shadowlands season 4 raid affixes) --this is only one single orb which casts. no need for performance
+		[189707] = true, --chaotic essence (shadowlands season 4 raid affixes) --these are the multiple spawns from the above
+		[167999] = true, --Echo of Sin (shadowlands, Castle Nathria, Sire Denathrius)
+		[176920] = true, --Domination Arrow (shadowlands, Sanctum of Domination, Sylvanas)
 	}
 	
 	--setter
@@ -1057,6 +1059,9 @@ local class_specs_coords = {
 		[182823] = true, --Cosmic Core, Rygelon SotFO
 		[183945] = true, --Unstable Matter, Rygelon SotFO
 		[183745] = true, --Protoform Schematic, Lihuvim SotFO
+		[188302] = true, --Reconfiguration Emitter, Shadowlands S4 Fated affix
+		[188703] = true, --Protoform Barrier, Shadowlands S4 Fated affix
+		[176026] = true, --Dancing Fools, Council of Blood CN
 	}
 
 	--update the settings cache for scritps
@@ -1662,7 +1667,7 @@ local class_specs_coords = {
 			Plater.PlayerIsTank = true
 		else
 			TANK_CACHE [UnitName ("player")] = false
-			if IS_WOW_PROJECT_MAINLINE then
+			if IS_WOW_PROJECT_MAINLINE or IS_WOW_PROJECT_CLASSIC_WRATH then
 				Plater.PlayerIsTank = false
 			else
 				Plater.PlayerIsTank = false or Plater.db.profile.tank_threat_colors
@@ -4170,6 +4175,12 @@ local class_specs_coords = {
 			Plater.UpdateAllNameplateColors()
 			Plater.UpdateAllPlates()
 		end,
+		
+		TALENT_GROUP_ROLE_CHANGED = function()
+			UpdatePlayerTankState()
+			Plater.UpdateAllNameplateColors()
+			Plater.UpdateAllPlates()
+		end,
 	}
 
 	function Plater.EventHandler (_, event, ...) --private
@@ -4459,6 +4470,9 @@ function Plater.OnInit() --private --~oninit ~init
 		if IS_WOW_PROJECT_NOT_MAINLINE then -- tank spec detection
 			Plater.EventHandlerFrame:RegisterEvent ("UNIT_INVENTORY_CHANGED")
 			Plater.EventHandlerFrame:RegisterEvent ("UPDATE_SHAPESHIFT_FORM")
+			if IS_WOW_PROJECT_CLASSIC_WRATH then
+				Plater.EventHandlerFrame:RegisterEvent ("TALENT_GROUP_ROLE_CHANGED")
+			end
 		end
 		
 		Plater.EventHandlerFrame:RegisterEvent ("PLAYER_LOGIN")
@@ -7751,6 +7765,8 @@ end
 			unitFrame.ExtraIconFrame:SetOption ("surpress_blizzard_cd_timer", true)
 			unitFrame.ExtraIconFrame:SetOption ("decimal_timer", Plater.db.profile.extra_icon_timer_decimals)
 			unitFrame.ExtraIconFrame:SetOption ("cooldown_reverse", Plater.db.profile.extra_icon_cooldown_reverse)
+			unitFrame.ExtraIconFrame:SetOption ("cooldown_swipe_enabled", Plater.db.profile.extra_icon_show_swipe)
+			unitFrame.ExtraIconFrame:SetOption ("cooldown_edge_texture", Plater.db.profile.extra_icon_cooldown_edge_texture)
 			
 			--> update refresh ID
 			unitFrame.ExtraIconFrame.RefreshID = PLATER_REFRESH_ID

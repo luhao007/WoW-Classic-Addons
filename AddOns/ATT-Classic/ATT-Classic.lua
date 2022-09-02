@@ -1,7 +1,7 @@
 --------------------------------------------------------------------------------
 --                        A L L   T H E   T H I N G S                         --
 --------------------------------------------------------------------------------
---				Copyright 2017-2021 Dylan Fortune (Crieve-Sargeras)           --
+--				Copyright 2017-2022 Dylan Fortune (Crieve-Sargeras)           --
 --------------------------------------------------------------------------------
 local app = select(2, ...);
 local L = app.L;
@@ -63,7 +63,6 @@ local HORDE_ONLY = {
 };
 
 -- Coroutine Helper Functions
-app.RawData = {};
 app.refreshing = {};
 local function OnUpdate(self)
 	for i=#self.__stack,1,-1 do
@@ -3145,7 +3144,11 @@ local function UpdateSearchResults(searchResults)
 		end
 		
 		-- If the data is fresh, don't force a refresh.
-		app:RefreshData(fresh, true);
+		if fresh then
+			app:RefreshDataCompletely();
+		else
+			app:RefreshDataQuietly();
+		end
 	end
 end
 app.SearchForLink = SearchForLink;
@@ -3721,19 +3724,10 @@ local function RefreshCollections()
 		while InCombatLockdown() do coroutine.yield(); end
 		app.print("Refreshing collection...");
 		app.events.QUEST_LOG_UPDATE();
-		
-		-- Wait a frame before harvesting item collection status.
 		coroutine.yield();
-		
 		RefreshSkills();
-		
-		-- Harvest Item Collections that are used by the addon.
 		app:GetDataCache();
-		
-		-- Refresh the Collection Windows!
-		app:RefreshData(false, false, true);
-		
-		-- Report success.
+		app:RefreshDataCompletely();
 		app.print("Done refreshing collection.");
 	end);
 end
@@ -3812,7 +3806,7 @@ local SetAchievementCollected = function(achievementID, collected, refresh)
 	if collected then
 		app.CurrentCharacter.Achievements[achievementID] = 1;
 		ATTAccountWideData.Achievements[achievementID] = 1;
-		if refresh then app:RefreshData(false, true); end
+		if refresh then app:RefreshDataCompletely(true); end
 	elseif app.CurrentCharacter.Achievements[achievementID] then
 		app.CurrentCharacter.Achievements[achievementID] = nil;
 		ATTAccountWideData.Achievements[achievementID] = nil;
@@ -3822,7 +3816,7 @@ local SetAchievementCollected = function(achievementID, collected, refresh)
 				break;
 			end
 		end
-		if refresh then app:RefreshData(false, true); end
+		if refresh then app:RefreshDataCompletely(true); end
 	end
 end
 local fields = {
@@ -4074,6 +4068,7 @@ if GetCategoryInfo and GetCategoryInfo(92) ~= "" then
 	end
 	app.RefreshAchievementCollection = function()
 		if ATTAccountWideData then
+			app.RefreshAchievementCollection = nil;
 			for achievementID,_ in pairs(fieldCache["achievementID"]) do
 				CheckAchievementCollectionStatus(achievementID);
 			end
@@ -5654,9 +5649,7 @@ else
 					end
 				end
 			end
-			if anythingNew then
-				app:RefreshData(true, true);
-			end
+			if anythingNew then app:RefreshDataCompletely(true); end
 		end
 		local meta = { __index = function(t, spellID)
 			RefreshCompanionCollectionStatus();
@@ -6755,7 +6748,7 @@ local itemFields = {
 								end
 							end
 							if any then
-								if not ATTAccountWideData.RWP[id] and app.lastMsg then
+								if not ATTAccountWideData.RWP[id] then
 									print((t.text or RETRIEVING_DATA) .. " was added to your collection!");
 									app:PlayFanfare();
 								end
@@ -6770,8 +6763,10 @@ local itemFields = {
 			
 			-- BOE Rules
 			if GetItemCount(id, true) > 0 and ((not b or b == 2 or b == 3) or app.Settings:GetFilterForRWP(t.f)) then
-				if not ATTAccountWideData.RWP[id] and app.lastMsg then
-					print((t.text or RETRIEVING_DATA) .. " was added to your collection!");
+				if not ATTAccountWideData.RWP[id] then
+					if app.Settings:GetTooltipSetting("Report:Collected") then
+						print((t.text or RETRIEVING_DATA) .. " was added to your collection!");
+					end
 					app:PlayFanfare();
 				end
 				app.CurrentCharacter.RWP[id] = 1;
@@ -6786,7 +6781,9 @@ local itemFields = {
 					end
 				end
 				if ATTAccountWideData.RWP[id] then
-					print((t.text or RETRIEVING_DATA) .. " was removed from your collection!");
+					if app.Settings:GetTooltipSetting("Report:Collected") then
+						print((t.text or RETRIEVING_DATA) .. " was removed from your collection!");
+					end
 					ATTAccountWideData.RWP[id] = nil;
 					app:PlayRemoveSound();
 				end
@@ -6943,10 +6940,8 @@ itemHarvesterFields.text = function(t)
 			if class == "Recipe" or class == "Mount" then
 				spellName, spellID = GetItemSpell(t.itemID);
 				if spellName == "Learning" then spellID = nil; end	-- RIP.
-				setmetatable(t, app.BaseItemTooltipHarvester);
-			else
-				setmetatable(t, app.BaseItemTooltipHarvester);
 			end
+			setmetatable(t, app.BaseItemTooltipHarvester);
 			local info = {
 				["name"] = itemName,
 				["itemID"] = t.itemID,
@@ -7049,12 +7044,12 @@ itemTooltipHarvesterFields.text = function(t)
 											if skillID then
 												t.info.requireSkill = skillID;
 											else
-												print("Unknown Skill", text);
-												table.insert(requirements, text);
+												print("Unknown Skill '" .. spellName .. "'");
+												table.insert(requirements, spellName);
 											end
 										else
-											print("Unknown Spell", text);
-											table.insert(requirements, text);
+											print("Unknown Spell '" .. spellName .. "'");
+											table.insert(requirements, spellName);
 										end
 									end
 								end
@@ -7623,9 +7618,7 @@ app.events.MAP_EXPLORATION_UPDATED = function(...)
 						end
 					end
 				end
-				if newArea then
-					app:RefreshData(true, true);
-				end
+				if newArea then app:RefreshDataCompletely(true); end
 			end
 		end
 	end);
@@ -8397,14 +8390,24 @@ app.GetSpellName = function(spellID, rank)
 		spellName = GetSpellInfo(spellID);
 	end
 	if spellName and spellName ~= "" then
+		if not rawget(app.SpellNameToSpellID, spellName) then
+			rawset(app.SpellNameToSpellID, spellName, spellID);
+			if not rawget(SpellIDToSpellName, spellID) then
+				rawset(SpellIDToSpellName, spellID, spellName);
+			end
+		end
 		if rank then
 			if (rawget(MaxSpellRankPerSpellName, spellName) or 0) < rank then
 				rawset(MaxSpellRankPerSpellName, spellName, rank);
 			end
 			spellName = spellName .. " (" .. RANK .. " " .. rank .. ")";
+			if not rawget(app.SpellNameToSpellID, spellName) then
+				rawset(app.SpellNameToSpellID, spellName, spellID);
+				if not rawget(SpellIDToSpellName, spellID) then
+					rawset(SpellIDToSpellName, spellID, spellName);
+				end
+			end
 		end
-		rawset(SpellIDToSpellName, spellID, spellName);
-		rawset(app.SpellNameToSpellID, spellName, spellID);
 		return spellName;
 	end
 end
@@ -8432,6 +8435,12 @@ app.IsSpellKnown = function(spellID, rank, ignoreHigherRanks)
 end
 app.SpellNameToSpellID = setmetatable(L.ALT_PROFESSION_TEXT_TO_ID, {
 	__index = function(t, key)
+		for _,spellID in pairs(app.SkillIDToSpellID) do
+			app.GetSpellName(spellID);
+		end
+		for specID,spellID in pairs(app.SpecializationSpellIDs) do
+			app.GetSpellName(spellID);
+		end
 		local cache = fieldCache["spellID"];
 		for spellID,g in pairs(cache) do
 			local rank;
@@ -8442,12 +8451,6 @@ app.SpellNameToSpellID = setmetatable(L.ALT_PROFESSION_TEXT_TO_ID, {
 				end
 			end
 			app.GetSpellName(spellID, rank);
-		end
-		for _,spellID in pairs(app.SkillIDToSpellID) do
-			app.GetSpellName(spellID);
-		end
-		for specID,spellID in pairs(app.SpecializationSpellIDs) do
-			app.GetSpellName(spellID);
 		end
 		local numSpellTabs, offset, lastSpellName, currentSpellRank, lastSpellRank = GetNumSpellTabs(), 1, "", 1, 1;
 		for spellTabIndex=1,numSpellTabs do
@@ -8464,7 +8467,9 @@ app.SpellNameToSpellID = setmetatable(L.ALT_PROFESSION_TEXT_TO_ID, {
 					end
 				end
 				app.GetSpellName(spellID, currentSpellRank);
-				rawset(app.SpellNameToSpellID, spellName, spellID);
+				if not rawget(t, spellName) then
+					rawset(t, spellName, spellID);
+				end
 				lastSpellRank = currentSpellRank;
 				offset = offset + 1;
 			end
@@ -9312,7 +9317,6 @@ local function CreateMiniListForGroup(group)
 	local popout = app.Windows[suffix];
 	if not popout then
 		popout = app:GetWindow(suffix);
-		popout.shouldFullRefresh = true;
 		if group.questID or group.sourceQuests then
 			-- This is a quest object. Let's show prereqs and breadcrumbs.
 			local questID = group.questID;
@@ -9543,7 +9547,6 @@ local function CreateMiniListForGroup(group)
 		popout.data.progress = 0;
 		BuildGroups(popout.data, popout.data.g);
 		UpdateGroups(popout.data, popout.data.g);
-		table.insert(app.RawData, popout.data);
 	end
 	if IsAltKeyDown() then
 		AddTomTomWaypoint(popout.data, false);
@@ -9588,7 +9591,7 @@ local function SetRowData(self, row, data)
 		if not text or text == RETRIEVING_DATA then
 			text = RETRIEVING_DATA;
 			self.processingLinks = true;
-		elseif string.find(text, "%[%]") then
+		elseif string.find(text, "%[%]") or string.find(text, "%[" .. RETRIEVING_DATA .. "%]") then
 			-- This means the link is still rendering
 			text = RETRIEVING_DATA;
 			self.processingLinks = true;
@@ -10675,7 +10678,7 @@ local function ProcessGroup(data, object)
 		end
 	end
 end
-local function UpdateWindow(self, force, got)
+local function UpdateWindow(self, force, fromTrigger)
 	-- If this window doesn't have data, do nothing.
 	if not self.data then return; end
 	if not self.rowData then
@@ -10683,12 +10686,14 @@ local function UpdateWindow(self, force, got)
 	else
 		wipe(self.rowData);
 	end
+	self.forceFullDataRefresh = self.forceFullDataRefresh or force or fromTrigger;
 	if self.data and (force or self:IsVisible()) then
 		self.data.expanded = true;
-		if self.shouldFullRefresh and (force or got) then
+		if self.forceFullDataRefresh then
 			self.data.progress = 0;
 			self.data.total = 0;
 			UpdateGroups(self.data, self.data.g);
+			self.forceFullDataRefresh = nil;
 		end
 		ProcessGroup(self.rowData, self.data);
 		
@@ -10700,7 +10705,7 @@ local function UpdateWindow(self, force, got)
 					tinsert(self.rowData, self.data);
 				end
 				if self.missingData then
-					if got then app:PlayCompleteSound(); end
+					if fromTrigger then app:PlayCompleteSound(); end
 					self.missingData = nil;
 				end
 				tinsert(self.rowData, {
@@ -10728,15 +10733,10 @@ local function UpdateWindowColor(self, suffix)
 	self:SetBackdropBorderColor(1, 1, 1, 1);
 	self:SetBackdropColor(0, 0, 0, 1);
 end
-function app:UpdateWindows(force, got)
-	local anyUpdated = false;
+function app:UpdateWindows(force, fromTrigger)
 	for name, window in pairs(app.Windows) do
-		if window:Update(force, got) then
-			--print(name .. ": Updated");
-			anyUpdated = true;
-		end
+		window:Update(force, fromTrigger);
 	end
-	return anyUpdated;
 end
 function app:UpdateWindowColors()
 	for suffix, window in pairs(app.Windows) do
@@ -10768,7 +10768,6 @@ function app:GetDataCache()
 		allData.total = 0;
 		local g, db = {};
 		allData.g = g;
-		table.insert(app.RawData, allData);
 		
 		-- Dungeons & Raids
 		db = {};
@@ -11028,7 +11027,6 @@ function app:GetDataCache()
 		]]--
 		
 		-- The Main Window's Data
-		app.refreshDataForce = true;
 		BuildGroups(allData, allData.g);
 		app:GetWindow("Prime").data = allData;
 		CacheFields(allData);
@@ -11081,7 +11079,6 @@ function app:GetDataCache()
 		allData.total = 0;
 		local g, db = {};
 		allData.g = g;
-		table.insert(app.RawData, allData);
 		
 		-- Never Implemented
 		if app.Categories.NeverImplemented then
@@ -11672,13 +11669,14 @@ function app:GetDataCache()
 	end
 	return allData;
 end
-function app:RefreshData(lazy, got, manual)
-	app.refreshDataForce = app.refreshDataForce or not lazy;
-	app.countdown = manual and 0 or 30;
-	if app.refreshingData then return; end
-	app.refreshingData = true;
-	--print("RefreshData(" .. tostring(lazy or false) .. ", " .. tostring(got or false) .. ")");
+function app:RefreshData(fromTrigger)
+	app.countdown = app.countdown or 0;
+	app.refreshFromTrigger = app.refreshFromTrigger or fromTrigger;
+	if app.currentlyRefreshingData then return; end
+	--print("RefreshData(" .. tostring(fromTrigger or false) .. ")");
 	StartCoroutine("RefreshData", function()
+		app.currentlyRefreshingData = true;
+		
 		-- While the player is in combat, wait for combat to end.
 		while InCombatLockdown() do coroutine.yield(); end
 		
@@ -11693,32 +11691,34 @@ function app:RefreshData(lazy, got, manual)
 		end
 		
 		-- Send an Update to the Windows to Rebuild their Row Data
-		if app.refreshDataForce then
-			app.refreshDataForce = nil;
+		if app.forceFullDataRefresh then
+			app.forceFullDataRefresh = nil;
 			app:GetDataCache();
-			for i,data in ipairs(app.RawData) do
-				data.progress = 0;
-				data.total = 0;
-				UpdateGroups(data, data.g);
-			end
-			
-			-- Forcibly update the windows.
-			app:UpdateWindows(true, got);
+			app:UpdateWindows(true, app.refreshFromTrigger);
 		else
-			app:UpdateWindows(nil, got);
+			app:UpdateWindows(nil, app.refreshFromTrigger);
 		end
+		app.refreshFromTrigger = nil;
 		
 		-- Send a message to your party members.
 		local data = app:GetWindow("Prime").data;
 		local msg = "A\t" .. app.Version .. "\t" .. (data.progress or 0) .. "\t" .. (data.total or 0);
-		if app.lastMsg ~= msg then
+		if app.lastProgressUpdateMessage ~= msg then
 			SendGroupMessage(msg);
 			SendGuildMessage(msg);
-			app.lastMsg = msg;
+			app.lastProgressUpdateMessage = msg;
 		end
 		wipe(searchCache);
-		app.refreshingData = nil;
+		app.currentlyRefreshingData = nil;
 	end);
+end
+function app:RefreshDataCompletely(fromTrigger)
+	app.forceFullDataRefresh = true;
+	app:RefreshData(fromTrigger);
+end
+function app:RefreshDataQuietly()
+	app.countdown = 30;
+	app:RefreshData();
 end
 function app:GetWindow(suffix, parent, onUpdate)
 	local window = app.Windows[suffix];
@@ -11767,39 +11767,6 @@ function app:GetWindow(suffix, parent, onUpdate)
 			}
 		};
 		window:Hide();
-		window.AddObject = function(self, info)
-			-- Bubble Up the Maps
-			local mapInfo;
-			local mapID = app.CurrentMapID;
-			if mapID then
-				local pos = C_Map.GetPlayerMapPosition(mapID, "player");
-				if pos then
-					local px, py = pos:GetXY();
-					info.coord = { px * 100, py * 100, mapID };
-				end
-				repeat
-					mapInfo = C_Map.GetMapInfo(mapID);
-					if mapInfo then
-						info = { ["mapID"] = mapInfo.mapID, ["g"] = { info } };
-						mapID = mapInfo.parentMapID
-					end
-				until not mapInfo or not mapID;
-			end
-			
-			MergeObject(self.data.g, CreateObject(info));
-			MergeObject(self.rawData, info);
-			self:Update();
-		end
-		window.Clear = function(self)
-			if self.rawData then
-				wipe(self.rawData);
-			else
-				self.rawData = {};
-			end
-			app.SetDataMember(self.Suffix, self.rawData);
-			wipe(self.data.g);
-			self:Update();
-		end
 		local function DelayedUpdateCoroutine()
 			while window.delayRemaining > 0 do
 				coroutine.yield();
@@ -11852,7 +11819,7 @@ function app:GetWindow(suffix, parent, onUpdate)
 		container.rows = {};
 		scrollbar:SetValue(1);
 		container:Show();
-		window:Update(true);
+		window:Update();
 	end
 	return window;
 end
@@ -12458,245 +12425,7 @@ app:GetWindow("CosmicInfuser", UIParent, function(self)
 		UpdateWindow(self, true);
 	end
 end);
-
--- Uncomment this section if you need to enable Debugger:
---[[
-app:GetWindow("Debugger", UIParent, function(self)
-	if not self.initialized then
-		self.initialized = true;
-		self.data = {
-			['text'] = "Session History",
-			['icon'] = app.asset("Achievement_Dungeon_GloryoftheRaider.blp"), 
-			["description"] = "This keeps a visual record of all of the quests, maps, loot, and vendors that you have come into contact with since the session was started.",
-			['visible'] = true, 
-			['expanded'] = true,
-			['back'] = 1,
-			['options'] = {
-				{
-					['text'] = "Clear History",
-					['icon'] = "Interface\\Icons\\Ability_Rogue_FeignDeath.blp", 
-					["description"] = "Click this to fully clear this window.\n\nNOTE: If you click this by accident, use the dynamic Restore Buttons that this generates to reapply the data that was cleared.\n\nWARNING: If you reload the UI, the data stored in the Reload Button will be lost forever!",
-					['visible'] = true,
-					['count'] = 0,
-					['OnClick'] = function(row, button)
-						local copy = {};
-						for i,o in ipairs(self.rawData) do
-							tinsert(copy, o);
-						end
-						if #copy < 1 then
-							app.print("There is nothing to clear.");
-							return true;
-						end
-						row.ref.count = row.ref.count + 1;
-						tinsert(self.data.options, {
-							['text'] = "Restore Button " .. row.ref.count,
-							['icon'] = "Interface\\Icons\\ability_monk_roll.blp", 
-							["description"] = "Click this to restore your cleared data.\n\nNOTE: Each Restore Button houses different data.\n\nWARNING: This data will be lost forever when you reload your UI!",
-							['visible'] = true,
-							['data'] = copy,
-							['OnClick'] = function(row, button)
-								for i,info in ipairs(row.ref.data) do
-									MergeObject(self.data.g, CreateObject(info));
-									MergeObject(self.rawData, info);
-								end
-								self:Update();
-								return true;
-							end,
-						});
-						wipe(self.rawData);
-						wipe(self.data.g);
-						for i=#self.data.options,1,-1 do
-							tinsert(self.data.g, 1, self.data.options[i]);
-						end
-						self:Update();
-						return true;
-					end,
-				},
-			},
-			['g'] = {},
-		};
-		self.rawData = {};
-		
-		-- Setup Event Handlers and register for events
-		self:SetScript("OnEvent", function(self, e, ...)
-			--print(e, ...);
-			if e == "VARIABLES_LOADED" then
-				if not ATTClassicDebugData then
-					ATTClassicDebugData = app.GetDataMember("Debugger", {});
-					app.SetDataMember("Debugger", nil);
-				end
-				self.rawData = ATTClassicDebugData;
-				self.data.g = CreateObject(self.rawData);
-				for i=#self.data.options,1,-1 do
-					tinsert(self.data.g, 1, self.data.options[i]);
-				end
-				self:Update();
-			elseif e == "ZONE_CHANGED" or e == "ZONE_CHANGED_NEW_AREA" then
-				-- Bubble Up the Maps
-				local mapInfo, info;
-				local mapID = app.CurrentMapID;
-				if mapID then
-					repeat
-						info = { ["mapID"] = mapID, ["g"] = info and { info } or nil };
-						mapInfo = C_Map.GetMapInfo(mapID);
-						if mapInfo then
-							mapID = mapInfo.parentMapID;
-						end
-					until not mapInfo or not mapID;
-					
-					MergeObject(self.data.g, CreateObject(info));
-					MergeObject(self.rawData, info);
-					self:Update();
-				end
-			elseif e == "MERCHANT_SHOW" or e == "MERCHANT_UPDATE" then
-				C_Timer.After(0.6, function()
-					local guid = UnitGUID("npc");
-					local ty, zero, server_id, instance_id, zone_uid, npcID, spawn_uid;
-					if guid then ty, zero, server_id, instance_id, zone_uid, npcID, spawn_uid = strsplit("-",guid); end
-					if npcID then
-						npcID = tonumber(npcID);
-						
-						-- Ignore vendor mount...
-						if npcID == 62822 then
-							return true;
-						end
-						
-						local numItems = GetMerchantNumItems();
-						--print("MERCHANT DETAILS", ty, npcID, numItems);
-						
-						local rawGroups = {};
-						for i=1,numItems,1 do
-							local link = GetMerchantItemLink(i);
-							if link then
-								local name, texture, cost, quantity, numAvailable, isPurchasable, isUsable, extendedCost = GetMerchantItemInfo(i);
-								if extendedCost then
-									cost = {};
-									local itemCount = GetMerchantItemCostInfo(i);
-									for j=1,itemCount,1 do
-										local itemTexture, itemValue, itemLink = GetMerchantItemCostItem(i, j);
-										if itemLink then
-											-- print("  ", itemValue, itemLink, gsub(itemLink, "\124", "\124\124"));
-											local m = itemLink:match("currency:(%d+)");
-											if m then
-												-- Parse as a CURRENCY.
-												tinsert(cost, {"c", tonumber(m), itemValue});
-											else
-												-- Parse as an ITEM.
-												tinsert(cost, {"i", tonumber(itemLink:match("item:(%d+)")), itemValue});
-											end
-										end
-									end
-								end
-								
-								-- Parse as an ITEM LINK.
-								table.insert(rawGroups, {["itemID"] = tonumber(link:match("item:(%d+)")), ["cost"] = cost});
-							end
-						end
-						
-						local info = { [(ty == "GameObject") and "objectID" or "npcID"] = npcID };
-						info.faction = UnitFactionGroup("npc");
-						info.text = UnitName("npc");
-						info.g = rawGroups;
-						self:AddObject(info);
-					end
-				end);
-			elseif e == "GOSSIP_SHOW" then
-				local guid = UnitGUID("npc");
-				if guid then
-					local type, zero, server_id, instance_id, zone_uid, npcID, spawn_uid = strsplit("-",guid);
-					if npcID then
-						npcID = tonumber(npcID);
-						--print("GOSSIP_SHOW", type, npcID);
-						if type == "GameObject" then
-							info = { ["objectID"] = npcID, ["text"] = UnitName("npc") };
-						else
-							info = { ["npcID"] = npcID };
-							info.name = UnitName("npc");
-						end
-						info.faction = UnitFactionGroup("npc");
-						self:AddObject(info);
-					end
-				end
-			elseif e == "QUEST_DETAIL" then
-				local questStartItemID = ...;
-				local questID = GetQuestID();
-				if questID == 0 then return false; end
-				local npc = "questnpc";
-				local guid = UnitGUID(npc);
-				if not guid then
-					npc = "npc";
-					guid = UnitGUID(npc);
-				end
-				local type, zero, server_id, instance_id, zone_uid, npcID, spawn_uid;
-				if guid then type, zero, server_id, instance_id, zone_uid, npcID, spawn_uid = strsplit("-",guid); end
-				-- print("QUEST_DETAIL", questStartItemID, " => Quest #", questID, type, npcID);
-				
-				local rawGroups = {};
-				for i=1,GetNumQuestRewards(),1 do
-					local link = GetQuestItemLink("reward", i);
-					if link then table.insert(rawGroups, { ["itemID"] = GetItemInfoInstant(link) }); end
-				end
-				for i=1,GetNumQuestChoices(),1 do
-					local link = GetQuestItemLink("choice", i);
-					if link then table.insert(rawGroups, { ["itemID"] = GetItemInfoInstant(link) }); end
-				end
-				for i=1,GetNumQuestLogRewardSpells(questID),1 do
-					local texture, name, isTradeskillSpell, isSpellLearned, hideSpellLearnText, isBoostSpell, garrFollowerID, genericUnlock, spellID = GetQuestLogRewardSpell(i, questID);
-					if spellID then
-						if isTradeskillSpell then
-							table.insert(rawGroups, { ["recipeID"] = spellID, ["name"] = name });
-						else
-							table.insert(rawGroups, { ["spellID"] = spellID, ["name"] = name });
-						end
-					end
-				end
-				
-				local info = { ["questID"] = questID, ["description"] = GetQuestText(), ["objectives"] = GetObjectiveText(), ["g"] = rawGroups };
-				if questStartItemID and questStartItemID > 0 then info.itemID = questStartItemID; end
-				if npcID then
-					npcID = tonumber(npcID);
-					if type == "GameObject" then
-						info = { ["objectID"] = npcID, ["text"] = UnitName(npc), ["g"] = { info } };
-					else
-						info.qgs = {npcID};
-						info.name = UnitName(npc);
-					end
-					info.faction = UnitFactionGroup(npc);
-				end
-				self:AddObject(info);
-			elseif e == "CHAT_MSG_LOOT" then
-				local msg, player, a, b, c, d, e, f, g, h, i, j, k, l = ...;
-				local itemString = string.match(msg, "item[%-?%d:]+");
-				if itemString then
-					self:AddObject({ ["itemID"] = GetItemInfoInstant(itemString) });
-				end
-			end
-		end);
-		self:RegisterEvent("VARIABLES_LOADED");
-		self:RegisterEvent("GOSSIP_SHOW");
-		self:RegisterEvent("QUEST_DETAIL");
-		self:RegisterEvent("TRADE_SKILL_LIST_UPDATE");
-		self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
-		self:RegisterEvent("ZONE_CHANGED");
-		self:RegisterEvent("MERCHANT_SHOW");
-		self:RegisterEvent("MERCHANT_UPDATE");
-		self:RegisterEvent("CHAT_MSG_LOOT");
-		--self:RegisterAllEvents();
-	end
-	
-	-- Update the window and all of its row data
-	if self.data.OnUpdate then self.data.OnUpdate(self.data); end
-	for i,g in ipairs(self.data.g) do
-		if g.OnUpdate then g.OnUpdate(g); end
-	end
-	self.data.index = 0;
-	self.data.back = 1;
-	self.data.indent = 0;
-	BuildGroups(self.data, self.data.g);
-	UpdateWindow(self, true);
-end);
-]]--
-app:GetWindow("CurrentInstance", UIParent, function(self, force, got)
+app:GetWindow("CurrentInstance", UIParent, function(self, force, fromTrigger)
 	if not self.initialized then
 		self.initialized = true;
 		self.openedOnLogin = false;
@@ -12719,8 +12448,6 @@ app:GetWindow("CurrentInstance", UIParent, function(self, force, got)
 				},
 			},
 		});
-		table.insert(app.RawData, self.data);
-		self.rawData = {};
 		local IsSameMap = function(data, results)
 			if data.mapID then
 				-- Exact same map?
@@ -13010,12 +12737,10 @@ app:GetWindow("CurrentInstance", UIParent, function(self, force, got)
 		app.RefreshLocation = RefreshLocation;
 		self:SetScript("OnEvent", function(self, e, ...)
 			RefreshLocation();
-			UpdateWindow(self, true, e == "QUEST_WATCH_UPDATE" or e == "CRITERIA_UPDATE");
+			self:Update(true, true);
 		end);
 		self:RegisterEvent("ZONE_CHANGED");
 		self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
-		self:RegisterEvent("QUEST_WATCH_UPDATE");
-		self:RegisterEvent("CRITERIA_UPDATE");
 	end
 	if self:IsVisible() then
 		-- Update the window and all of its row data
@@ -13029,7 +12754,7 @@ app:GetWindow("CurrentInstance", UIParent, function(self, force, got)
 		self.data.indent = 0;
 		UpdateGroups(self.data, self.data.g);
 		self.data.visible = true;
-		UpdateWindow(self, true, got);
+		UpdateWindow(self, true, fromTrigger);
 	end
 end);
 app:GetWindow("Dailies", UIParent, function(self)
@@ -13101,6 +12826,267 @@ app:GetWindow("Dailies", UIParent, function(self)
 		UpdateWindow(self, true);
 	end
 end);
+
+-- Uncomment this section if you need to enable Debugger:
+--[[
+app:GetWindow("Debugger", UIParent, function(self)
+	if not self.initialized then
+		self.initialized = true;
+		self.AddObject = function(self, info)
+			-- Bubble Up the Maps
+			local mapInfo;
+			local mapID = app.CurrentMapID;
+			if mapID then
+				local pos = C_Map.GetPlayerMapPosition(mapID, "player");
+				if pos then
+					local px, py = pos:GetXY();
+					info.coord = { px * 100, py * 100, mapID };
+				end
+				repeat
+					mapInfo = C_Map.GetMapInfo(mapID);
+					if mapInfo then
+						info = { ["mapID"] = mapInfo.mapID, ["g"] = { info } };
+						mapID = mapInfo.parentMapID
+					end
+				until not mapInfo or not mapID;
+			end
+			
+			MergeObject(self.data.g, CreateObject(info));
+			MergeObject(self.rawData, info);
+			self:Update();
+		end
+		self.data = {
+			['text'] = "Session History",
+			['icon'] = app.asset("Achievement_Dungeon_GloryoftheRaider.blp"), 
+			["description"] = "This keeps a visual record of all of the quests, maps, loot, and vendors that you have come into contact with since the session was started.",
+			['visible'] = true, 
+			['expanded'] = true,
+			['back'] = 1,
+			['options'] = {
+				{
+					['text'] = "Clear History",
+					['icon'] = "Interface\\Icons\\Ability_Rogue_FeignDeath.blp", 
+					["description"] = "Click this to fully clear this window.\n\nNOTE: If you click this by accident, use the dynamic Restore Buttons that this generates to reapply the data that was cleared.\n\nWARNING: If you reload the UI, the data stored in the Reload Button will be lost forever!",
+					['visible'] = true,
+					['count'] = 0,
+					['OnClick'] = function(row, button)
+						local copy = {};
+						for i,o in ipairs(self.rawData) do
+							tinsert(copy, o);
+						end
+						if #copy < 1 then
+							app.print("There is nothing to clear.");
+							return true;
+						end
+						row.ref.count = row.ref.count + 1;
+						tinsert(self.data.options, {
+							['text'] = "Restore Button " .. row.ref.count,
+							['icon'] = "Interface\\Icons\\ability_monk_roll.blp", 
+							["description"] = "Click this to restore your cleared data.\n\nNOTE: Each Restore Button houses different data.\n\nWARNING: This data will be lost forever when you reload your UI!",
+							['visible'] = true,
+							['data'] = copy,
+							['OnClick'] = function(row, button)
+								for i,info in ipairs(row.ref.data) do
+									MergeObject(self.data.g, CreateObject(info));
+									MergeObject(self.rawData, info);
+								end
+								self:Update();
+								return true;
+							end,
+						});
+						wipe(self.rawData);
+						wipe(self.data.g);
+						for i=#self.data.options,1,-1 do
+							tinsert(self.data.g, 1, self.data.options[i]);
+						end
+						self:Update();
+						return true;
+					end,
+				},
+			},
+			['g'] = {},
+		};
+		self.rawData = {};
+		
+		-- Setup Event Handlers and register for events
+		self:SetScript("OnEvent", function(self, e, ...)
+			--print(e, ...);
+			if e == "VARIABLES_LOADED" then
+				if not ATTClassicDebugData then
+					ATTClassicDebugData = app.GetDataMember("Debugger", {});
+					app.SetDataMember("Debugger", nil);
+				end
+				self.rawData = ATTClassicDebugData;
+				self.data.g = CreateObject(self.rawData);
+				for i=#self.data.options,1,-1 do
+					tinsert(self.data.g, 1, self.data.options[i]);
+				end
+				self:Update();
+			elseif e == "ZONE_CHANGED" or e == "ZONE_CHANGED_NEW_AREA" then
+				-- Bubble Up the Maps
+				local mapInfo, info;
+				local mapID = app.CurrentMapID;
+				if mapID then
+					repeat
+						info = { ["mapID"] = mapID, ["g"] = info and { info } or nil };
+						mapInfo = C_Map.GetMapInfo(mapID);
+						if mapInfo then
+							mapID = mapInfo.parentMapID;
+						end
+					until not mapInfo or not mapID;
+					
+					MergeObject(self.data.g, CreateObject(info));
+					MergeObject(self.rawData, info);
+					self:Update();
+				end
+			elseif e == "MERCHANT_SHOW" or e == "MERCHANT_UPDATE" then
+				C_Timer.After(0.6, function()
+					local guid = UnitGUID("npc");
+					local ty, zero, server_id, instance_id, zone_uid, npcID, spawn_uid;
+					if guid then ty, zero, server_id, instance_id, zone_uid, npcID, spawn_uid = strsplit("-",guid); end
+					if npcID then
+						npcID = tonumber(npcID);
+						
+						-- Ignore vendor mount...
+						if npcID == 62822 then
+							return true;
+						end
+						
+						local numItems = GetMerchantNumItems();
+						--print("MERCHANT DETAILS", ty, npcID, numItems);
+						
+						local rawGroups = {};
+						for i=1,numItems,1 do
+							local link = GetMerchantItemLink(i);
+							if link then
+								local name, texture, cost, quantity, numAvailable, isPurchasable, isUsable, extendedCost = GetMerchantItemInfo(i);
+								if extendedCost then
+									cost = {};
+									local itemCount = GetMerchantItemCostInfo(i);
+									for j=1,itemCount,1 do
+										local itemTexture, itemValue, itemLink = GetMerchantItemCostItem(i, j);
+										if itemLink then
+											-- print("  ", itemValue, itemLink, gsub(itemLink, "\124", "\124\124"));
+											local m = itemLink:match("currency:(%d+)");
+											if m then
+												-- Parse as a CURRENCY.
+												tinsert(cost, {"c", tonumber(m), itemValue});
+											else
+												-- Parse as an ITEM.
+												tinsert(cost, {"i", tonumber(itemLink:match("item:(%d+)")), itemValue});
+											end
+										end
+									end
+								end
+								
+								-- Parse as an ITEM LINK.
+								table.insert(rawGroups, {["itemID"] = tonumber(link:match("item:(%d+)")), ["cost"] = cost});
+							end
+						end
+						
+						local info = { [(ty == "GameObject") and "objectID" or "npcID"] = npcID };
+						info.faction = UnitFactionGroup("npc");
+						info.text = UnitName("npc");
+						info.g = rawGroups;
+						self:AddObject(info);
+					end
+				end);
+			elseif e == "GOSSIP_SHOW" then
+				local guid = UnitGUID("npc");
+				if guid then
+					local type, zero, server_id, instance_id, zone_uid, npcID, spawn_uid = strsplit("-",guid);
+					if npcID then
+						npcID = tonumber(npcID);
+						--print("GOSSIP_SHOW", type, npcID);
+						if type == "GameObject" then
+							info = { ["objectID"] = npcID, ["text"] = UnitName("npc") };
+						else
+							info = { ["npcID"] = npcID };
+							info.name = UnitName("npc");
+						end
+						info.faction = UnitFactionGroup("npc");
+						self:AddObject(info);
+					end
+				end
+			elseif e == "QUEST_DETAIL" then
+				local questStartItemID = ...;
+				local questID = GetQuestID();
+				if questID == 0 then return false; end
+				local npc = "questnpc";
+				local guid = UnitGUID(npc);
+				if not guid then
+					npc = "npc";
+					guid = UnitGUID(npc);
+				end
+				local type, zero, server_id, instance_id, zone_uid, npcID, spawn_uid;
+				if guid then type, zero, server_id, instance_id, zone_uid, npcID, spawn_uid = strsplit("-",guid); end
+				-- print("QUEST_DETAIL", questStartItemID, " => Quest #", questID, type, npcID);
+				
+				local rawGroups = {};
+				for i=1,GetNumQuestRewards(),1 do
+					local link = GetQuestItemLink("reward", i);
+					if link then table.insert(rawGroups, { ["itemID"] = GetItemInfoInstant(link) }); end
+				end
+				for i=1,GetNumQuestChoices(),1 do
+					local link = GetQuestItemLink("choice", i);
+					if link then table.insert(rawGroups, { ["itemID"] = GetItemInfoInstant(link) }); end
+				end
+				for i=1,GetNumQuestLogRewardSpells(questID),1 do
+					local texture, name, isTradeskillSpell, isSpellLearned, hideSpellLearnText, isBoostSpell, garrFollowerID, genericUnlock, spellID = GetQuestLogRewardSpell(i, questID);
+					if spellID then
+						if isTradeskillSpell then
+							table.insert(rawGroups, { ["recipeID"] = spellID, ["name"] = name });
+						else
+							table.insert(rawGroups, { ["spellID"] = spellID, ["name"] = name });
+						end
+					end
+				end
+				
+				local info = { ["questID"] = questID, ["description"] = GetQuestText(), ["objectives"] = GetObjectiveText(), ["g"] = rawGroups };
+				if questStartItemID and questStartItemID > 0 then info.itemID = questStartItemID; end
+				if npcID then
+					npcID = tonumber(npcID);
+					if type == "GameObject" then
+						info = { ["objectID"] = npcID, ["text"] = UnitName(npc), ["g"] = { info } };
+					else
+						info.qgs = {npcID};
+						info.name = UnitName(npc);
+					end
+					info.faction = UnitFactionGroup(npc);
+				end
+				self:AddObject(info);
+			elseif e == "CHAT_MSG_LOOT" then
+				local msg, player, a, b, c, d, e, f, g, h, i, j, k, l = ...;
+				local itemString = string.match(msg, "item[%-?%d:]+");
+				if itemString then
+					self:AddObject({ ["itemID"] = GetItemInfoInstant(itemString) });
+				end
+			end
+		end);
+		self:RegisterEvent("VARIABLES_LOADED");
+		self:RegisterEvent("GOSSIP_SHOW");
+		self:RegisterEvent("QUEST_DETAIL");
+		self:RegisterEvent("TRADE_SKILL_LIST_UPDATE");
+		self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
+		self:RegisterEvent("ZONE_CHANGED");
+		self:RegisterEvent("MERCHANT_SHOW");
+		self:RegisterEvent("MERCHANT_UPDATE");
+		self:RegisterEvent("CHAT_MSG_LOOT");
+		--self:RegisterAllEvents();
+	end
+	
+	-- Update the window and all of its row data
+	if self.data.OnUpdate then self.data.OnUpdate(self.data); end
+	for i,g in ipairs(self.data.g) do
+		if g.OnUpdate then g.OnUpdate(g); end
+	end
+	self.data.index = 0;
+	self.data.back = 1;
+	self.data.indent = 0;
+	BuildGroups(self.data, self.data.g);
+	UpdateWindow(self, true);
+end);
+]]--
 app:GetWindow("ItemFilter", UIParent, function(self)
 	if self:IsVisible() then
 		if not self.initialized then
@@ -13226,7 +13212,6 @@ app:GetWindow("ItemFinder", UIParent, function(self, ...)
 						for i=count,1,-1 do
 							if g[i].collected then
 								table.remove(g, i);
-								self.shouldFullRefresh = true;
 							end
 						end
 					end
@@ -13237,7 +13222,6 @@ app:GetWindow("ItemFinder", UIParent, function(self, ...)
 							local t = app.CreateItemHarvester(i);
 							t.parent = db;
 							tinsert(g, t);
-							self.shouldFullRefresh = true;
 						end
 					end
 					self:DelayedUpdate(true);
@@ -13253,7 +13237,7 @@ app:GetWindow("ItemFinder", UIParent, function(self, ...)
 			db.total = 0;
 			db.back = 1;
 			db.currentItemID = 60000;
-			db.minimumItemID = 60000;
+			db.minimumItemID = 0;
 			self.data = db;
 		end
 		self.data.progress = 0;
@@ -14846,17 +14830,20 @@ app:GetWindow("Tradeskills", UIParent, function(self, ...)
 							end
 							
 							-- Cache the Reagents used to make this item.
-							local craftedItemID = GetItemInfoInstant(GetTradeSkillItemLink(skillIndex));
-							for i=1,GetTradeSkillNumReagents(skillIndex) do
-								local reagentCount = select(3, GetTradeSkillReagentInfo(skillIndex, i));
-								local itemID = GetItemInfoInstant(GetTradeSkillReagentItemLink(skillIndex, i));
-								
-								-- Make sure a cache table exists for this item.
-								-- Index 1: The Recipe Skill IDs
-								-- Index 2: The Crafted Item IDs
-								if not reagentCache[itemID] then reagentCache[itemID] = { {}, {} }; end
-								if spellID then reagentCache[itemID][1][spellID] = reagentCount; end
-								if craftedItemID then reagentCache[itemID][2][craftedItemID] = reagentCount; end
+							local tradeSkillItemLink = GetTradeSkillItemLink(skillIndex);
+							if tradeSkillItemLink then
+								local craftedItemID = GetItemInfoInstant(tradeSkillItemLink);
+								for i=1,GetTradeSkillNumReagents(skillIndex) do
+									local reagentCount = select(3, GetTradeSkillReagentInfo(skillIndex, i));
+									local itemID = GetItemInfoInstant(GetTradeSkillReagentItemLink(skillIndex, i));
+									
+									-- Make sure a cache table exists for this item.
+									-- Index 1: The Recipe Skill IDs
+									-- Index 2: The Crafted Item IDs
+									if not reagentCache[itemID] then reagentCache[itemID] = { {}, {} }; end
+									if spellID then reagentCache[itemID][1][spellID] = reagentCount; end
+									if craftedItemID then reagentCache[itemID][2][craftedItemID] = reagentCount; end
+								end
 							end
 						end
 					end
@@ -14907,9 +14894,9 @@ app:GetWindow("Tradeskills", UIParent, function(self, ...)
 			
 				-- If something new was "learned", then refresh the data.
 				if learned > 0 then
-					app:RefreshData(false, true);
 					app.print("Cached " .. learned .. " known recipes!");
 					wipe(searchCache);
+					app:RefreshDataCompletely(true);
 				end
 			end
 		end
@@ -15026,10 +15013,10 @@ app:GetWindow("Tradeskills", UIParent, function(self, ...)
 					ATTAccountWideData.Spells[spellID] = 1;
 					if not app.CurrentCharacter.Spells[spellID] then
 						app.CurrentCharacter.Spells[spellID] = 1;
-						app:RefreshData(true, true);
 						if not previousState or not app.Settings:Get("AccountWide:Recipes") then
 							app:PlayFanfare();
 						end
+						app:RefreshDataCompletely(true);
 					end
 					self:RefreshRecipes();
 				end
@@ -15591,9 +15578,12 @@ app.events.VARIABLES_LOADED = function()
 	wipe(DirtyQuests);
 	app:RegisterEvent("QUEST_LOG_UPDATE");
 	app:RegisterEvent("QUEST_ACCEPTED");
+	app:RegisterEvent("QUEST_REMOVED");
 	app:RegisterEvent("QUEST_TURNED_IN");
+	app:RegisterEvent("QUEST_WATCH_UPDATE");
+	app:RegisterEvent("CRITERIA_UPDATE");
 	StartCoroutine("RefreshSaves", RefreshSaves);
-	app:RefreshData(false);
+	app:RefreshDataCompletely();
 	app:RefreshLocation();
 	
 	if GroupBulletinBoard_Addon then
@@ -15649,9 +15639,8 @@ end
 app.events.PLAYER_DEAD = function()
 	ATTAccountWideData.Deaths = ATTAccountWideData.Deaths + 1;
 	app.CurrentCharacter.Deaths = app.CurrentCharacter.Deaths + 1;
-	app.refreshDataForce = true;
-	app:RefreshData(true, true);
 	app:PlayDeathSound();
+	app:RefreshDataQuietly();
 end
 app.events.ADDON_LOADED = function(addonName)
 	if addonName == "Blizzard_AuctionUI" then
@@ -15674,7 +15663,6 @@ app.events.ADDON_LOADED = function(addonName)
 		
 		-- Create the movable Auction Data window.
 		local window = app:GetWindow("AuctionData");
-		window.shouldFullRefresh = true;
 		window:SetParent(AuctionFrame);
 		window:SetPoint("TOPLEFT", AuctionFrame, "TOPRIGHT", 0, -10);
 		window:SetPoint("BOTTOMLEFT", AuctionFrame, "BOTTOMRIGHT", 0, 10);
@@ -16388,7 +16376,21 @@ app.events.UPDATE_INSTANCE_INFO = function()
 end
 app.events.QUEST_ACCEPTED = function(questID)
 	wipe(searchCache);
-	app:RefreshData(true, true);
+	app:RefreshDataQuietly();
+end
+app.events.QUEST_LOG_UPDATE = function()
+	GetQuestsCompleted(CompletedQuests);
+	for questID,completed in pairs(DirtyQuests) do
+		app.QuestCompletionHelper(tonumber(questID));
+	end
+	wipe(DirtyQuests);
+	wipe(searchCache);
+	app:RefreshDataQuietly();
+	app:UnregisterEvent("QUEST_LOG_UPDATE");
+end
+app.events.QUEST_REMOVED = function(questID)
+	wipe(searchCache);
+	app:RefreshDataQuietly();
 end
 app.events.QUEST_TURNED_IN = function(questID)
 	if fieldCache.questID[questID] and not fieldCache.questID[questID][1].repeatable then
@@ -16399,15 +16401,13 @@ app.events.QUEST_TURNED_IN = function(questID)
 		wipe(DirtyQuests);
 		wipe(searchCache);
 	end
-	app:RefreshData(true, true);
+	app:RefreshDataCompletely(true);
 end
-app.events.QUEST_LOG_UPDATE = function()
-	GetQuestsCompleted(CompletedQuests);
-	for questID,completed in pairs(DirtyQuests) do
-		app.QuestCompletionHelper(tonumber(questID));
-	end
-	wipe(DirtyQuests);
+app.events.QUEST_WATCH_UPDATE = function()
 	wipe(searchCache);
-	app:RefreshData(true, true);
-	app:UnregisterEvent("QUEST_LOG_UPDATE");
+	app:RefreshDataQuietly();
+end
+app.events.CRITERIA_UPDATE = function()
+	wipe(searchCache);
+	app:RefreshDataQuietly();
 end

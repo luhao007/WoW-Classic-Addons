@@ -361,8 +361,8 @@ class Manager:
                        'RelicInspector', 'Simulationcraft', 'Titan']
         else:
             addons += ['alaCalendar', 'AtlasLootClassic', 'AtlasLootClassic_Options',
-                       'ATT-Classic', 'ClassicCastbars_Options',
-                       'Fizzle', 'GroupCalendar', 'HandyNotes_NPCs (Classic)',
+                       'ATT-Classic', 'ClassicCastbars_Options', 'Fizzle', 'GroupCalendar',
+                       'HandyNotes_NPCs (Classic)', 'HandyNotes_NPCs (Burning Crusade Classic)',
                        'PallyPower', 'SimpleChatClassic', 'TradeLog', 'TitanClassic', 'WclPlayerScore']
 
 
@@ -592,7 +592,7 @@ class Manager:
                 'AceGUI-3.0-SharedMediaWidgets', 'AceLocale-3.0',
                 'AceSerializer-3.0', 'CallbackHandler-1.0', 'HereBeDragons',
                 'LibCandyBar-3.0', 'LibDBIcon-1.0', 'LibDataBroker-1.1', 'LibDeflate',
-                'LibSharedMedia-3.0', 'LibStub'],
+                'LibDurability', 'LibSharedMedia-3.0', 'LibStub'],
             'Addons/NovaWorldBuffs/Lib',
             'Addons/NovaWorldBuffs/embeds.xml',
         )

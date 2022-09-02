@@ -1,0 +1,10 @@
+lightweight tag 5bbf292ce23ceb2b1f65c079a7cfc1d2988c79cf 9.0.1.1
+Author:	James D. Callahan III <darkenelf@gmail.com>
+Date:	Sun Oct 25 17:31:48 2020 -0500
+
+commit 5bbf292ce23ceb2b1f65c079a7cfc1d2988c79cf
+Author: James D. Callahan III <darkenelf@gmail.com>
+Date:   Sun Oct 25 17:31:48 2020 -0500
+
+    Update ToC Interface for the WoW 9.0.1 version.
+

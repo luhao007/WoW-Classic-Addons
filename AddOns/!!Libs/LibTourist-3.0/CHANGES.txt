@@ -1,0 +1,14 @@
+------------------------------------------------------------------------
+r274 | Odica_Jaedenar | 2022-08-21 19:47:35 +0000 (Sun, 21 Aug 2022) | 1 line
+Changed paths:
+   M /trunk/LibTourist-3.0.lua
+
+Oribos is now a sanctuary
+------------------------------------------------------------------------
+r273 | Odica_Jaedenar | 2022-08-21 19:38:24 +0000 (Sun, 21 Aug 2022) | 1 line
+Changed paths:
+   M /trunk/LibTourist-3.0.toc
+
+Updated version in TOC to 90207
+------------------------------------------------------------------------
+

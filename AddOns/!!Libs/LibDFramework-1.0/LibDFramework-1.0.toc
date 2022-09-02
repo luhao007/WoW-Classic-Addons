@@ -1,0 +1,8 @@
+## Interface: 90207
+## Title: Lib: LibDFramework-1.0
+## Notes: Base Framework for many Addons
+
+#@no-lib-strip@
+#@end-no-lib-strip@
+
+load.xml

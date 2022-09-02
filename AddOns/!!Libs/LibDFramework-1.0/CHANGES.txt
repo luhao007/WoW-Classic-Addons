@@ -1,0 +1,63 @@
+tag e5c14f5ced596e3e8b478be1155543d5ca5c2cba v9.2.7.329
+Author:	Tercio Jose <terciob19@hotmail.com>
+Date:	Thu Aug 18 10:16:29 2022 -0300
+
+commit ae994d6a62d36d170d6f00200ebea3c0e0198694
+Author: Tercio Jose <terciob19@hotmail.com>
+Date:   Thu Aug 18 10:16:07 2022 -0300
+
+    Toc Update
+
+commit 4d77e6f677461398ffb1f12ebd98b4b3a82d3fb3
+Author: Tercio Jose <terciob19@hotmail.com>
+Date:   Thu Aug 18 10:14:18 2022 -0300
+
+    Updates
+    
+    GetSpellBookSpells(): now also return a second indexed table with spell IDs.
+    Added CreateCheckboxGroup(): is the same as the old DF:CreateRadioGroup() but any amount of check boxes can be selected.
+
+commit 118e98972393cea33d48c7e7a203fc1842b33cd2
+Author: Tercio Jose <terciob19@hotmail.com>
+Date:   Sun Aug 14 18:18:01 2022 -0300
+
+    Added DF:GetBezierPoint(value, point1, point2, point3)
+
+commit 653efe757f49247bf2985f5b9525e3a13c3afbb6
+Author: Tercio Jose <terciob19@hotmail.com>
+Date:   Fri Aug 12 19:28:02 2022 -0300
+
+    decreased the font size for options panel
+
+commit 0473731c630544dbf454219c1e425f20658fdd1f
+Author: Tercio Jose <terciob19@hotmail.com>
+Date:   Wed Aug 10 15:40:06 2022 -0300
+
+    Small fixes and improvements
+
+commit 5fdd6cdb2a7038f636ab69c35aad818e5810e623
+Author: Tercio Jose <terciob19@hotmail.com>
+Date:   Wed Aug 10 09:57:20 2022 -0300
+
+    Some changes for 10.0, cleanups and additions
+    
+    - Added DF.table.duplicate(t1, t2): copy a table without copying wow objects.
+    - Added DF.table.append(t1, t2): add table1 into table2 (index)
+    - Added DF:TruncateNumber(number, fractionDigits): cut decimals.
+    - Added: DF:FormatColor(newFormat, r, g, b, a, decimalsAmount): transform a format of color into any other format.
+    - DF:ParseColors() now support  string with comma "1, 1, 1, 1".
+    - Color Picker: added ColorPicker:GetColor().
+    - Text Entry: added TextEntry:IgnoreNextCallback().
+
+commit b8e5bbd2fb24964be1181e7afaee9b661dcc962e
+Author: Tercio Jose <terciob19@hotmail.com>
+Date:   Sat Jul 23 13:48:34 2022 -0300
+
+    Wrath classic
+
+commit 92ea95ebae92c33f67fc983b494393106963871f
+Author: Tercio Jose <terciob19@hotmail.com>
+Date:   Sun Jun 12 19:09:56 2022 -0300
+
+    return damager if no role found by talent in classic versions of the game (Flamanis)
+

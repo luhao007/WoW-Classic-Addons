@@ -730,7 +730,7 @@ function module.main:CHAT_MSG_BN_WHISPER(msg,sender,_,_,_,_,_,_,_,_,_,_,senderBn
 				local numGameAccounts = C_BattleNet.GetFriendNumGameAccounts(friendIndex)
 				for accountIndex=1,numGameAccounts do
 					local gameAccountInfo = C_BattleNet.GetFriendGameAccountInfo(friendIndex, accountIndex)
-					if gameAccountInfo and gameAccountInfo.clientProgram == BNET_CLIENT_WOW and gameAccountInfo.factionName == UnitFactionGroup('player') and (not VMRT.InviteTool.OnlyGuild or (gameAccountInfo.characterName and UnitInGuild(gameAccountInfo.characterName))) then
+					if gameAccountInfo and gameAccountInfo.clientProgram == BNET_CLIENT_WOW and (gameAccountInfo.factionName == UnitFactionGroup('player') and not ExRT.isClassic) and (not VMRT.InviteTool.OnlyGuild or (gameAccountInfo.characterName and UnitInGuild(gameAccountInfo.characterName))) then
 						BNInviteFriend(gameAccountInfo.gameAccountID)
 					end
 				end

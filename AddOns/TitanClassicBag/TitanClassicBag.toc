@@ -2,8 +2,8 @@
 ## Author: Titan Panel Development Team (http://www.titanpanel.org)
 ## Version: 1.5.3.30400
 ## Dependencies: TitanClassic
-## OptionalDeps:
-## SavedVariables:
+## OptionalDeps: 
+## SavedVariables: 
 
 ## Title: Titan Panel Classic [|cffeda55fBag|r] |cff00aa001.5.3.30400|r
 ## Notes: Adds bag and free slot information to Titan Panel

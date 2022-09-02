@@ -1,7 +1,7 @@
 --------------------------------------------------------------------------------
 --                        A L L   T H E   T H I N G S                         --
 --------------------------------------------------------------------------------
---				Copyright 2017-2021 Dylan Fortune (Crieve-Sargeras)           --
+--				Copyright 2017-2022 Dylan Fortune (Crieve-Sargeras)           --
 --------------------------------------------------------------------------------
 local app = select(2, ...);
 local L = app.L;
@@ -368,7 +368,7 @@ end
 settings.SetFilter = function(self, filterID, value)
 	ATTClassicSettingsPerCharacter.Filters[filterID] = value;
 	self:Refresh();
-	app:RefreshData();
+	app:RefreshDataCompletely();
 end
 settings.SetTooltipSetting = function(self, setting, value)
 	ATTClassicSettings.Tooltips[setting] = value;
@@ -378,7 +378,7 @@ end
 settings.SetUnobtainableFilter = function(self, u, value)
 	ATTClassicSettings.Unobtainables[u] = value;
 	self:Refresh();
-	app:RefreshData();
+	app:RefreshDataCompletely();
 end
 settings.SetPersonal = function(self, setting, value)
 	ATTClassicSettingsPerCharacter[setting] = value;
@@ -421,7 +421,7 @@ end
 settings.SetAccountMode = function(self, accountMode)
 	self:Set("AccountMode", accountMode);
 	self:UpdateMode();
-	app:RefreshData();
+	app:RefreshDataCompletely();
 end
 settings.ToggleAccountMode = function(self)
 	self:SetAccountMode(not self:Get("AccountMode"));
@@ -430,7 +430,7 @@ settings.SetDebugMode = function(self, debugMode)
 	self:Set("DebugMode", debugMode);
 	self:UpdateMode();
 	if debugMode then app.RefreshCollections(); end
-	app:RefreshData();
+	app:RefreshDataCompletely();
 end
 settings.ToggleDebugMode = function(self)
 	self:SetDebugMode(not self:Get("DebugMode"));
@@ -439,7 +439,7 @@ settings.SetFactionMode = function(self, factionMode)
 	self:Set("FactionMode", factionMode);
 	self:UpdateMode();
 	if factionMode then app.RefreshCollections(); end
-	app:RefreshData();
+	app:RefreshDataCompletely();
 end
 settings.ToggleFactionMode = function(self)
 	self:SetFactionMode(not self:Get("FactionMode"));
@@ -448,7 +448,7 @@ settings.SetCompletedThings = function(self, checked)
 	self:Set("Show:CompletedGroups", checked);
 	self:Set("Show:CollectedThings", checked);
 	self:UpdateMode();
-	app:RefreshData();
+	app:RefreshDataCompletely();
 end
 settings.ToggleCompletedThings = function(self)
 	self:SetCompletedThings(not self:Get("Show:CompletedGroups"));
@@ -456,7 +456,7 @@ end
 settings.SetCompletedGroups = function(self, checked)
 	self:Set("Show:CompletedGroups", checked);
 	self:UpdateMode();
-	app:RefreshData();
+	app:RefreshDataCompletely();
 end
 settings.ToggleCompletedGroups = function(self)
 	self:SetCompletedGroups(not self:Get("Show:CompletedGroups"));
@@ -464,7 +464,7 @@ end
 settings.SetCollectedThings = function(self, checked)
 	self:Set("Show:CollectedThings", checked);
 	self:UpdateMode();
-	app:RefreshData();
+	app:RefreshDataCompletely();
 end
 settings.ToggleCollectedThings = function(self)
 	settings:SetCollectedThings(not self:Get("Show:CollectedThings", checked));
@@ -476,7 +476,7 @@ settings.SetHideBOEItems = function(self, checked)
 	else
 		app.RequireBindingFilter = app.NoFilter;
 	end
-	app:RefreshData();
+	app:RefreshDataCompletely();
 end
 settings.ToggleBOEItems = function(self)
 	self:SetHideBOEItems(not self:Get("Hide:BoEs"));
@@ -670,6 +670,44 @@ f:SetATTTooltip("Click this button to copy the url to get to my Twitch Channel.\
 f.copypasta = "twitch.tv/crieve";
 settings.twitch = f;
 
+local currentBuild = select(4, GetBuildInfo());
+local reasons = L["UNOBTAINABLE_ITEM_REASONS"];
+local UnobtainableFilterOnClick = function(self)
+	local checked = self:GetChecked();
+	if checked then
+		-- If the phase is active, fall through to the base setting.
+		if UnobtainableSettingsBase.__index[self.u] then
+			settings:SetUnobtainableFilter(self.u, nil);
+		else
+			settings:SetUnobtainableFilter(self.u, true);
+		end
+	else
+		settings:SetUnobtainableFilter(self.u, false);
+	end
+end;
+local UnobtainableOnRefresh = function(self)
+	if settings:Get("DebugMode") then
+		self:Disable();
+		self:SetAlpha(0.2);
+	else
+		self:SetChecked(settings:GetUnobtainableFilter(self.u));
+
+		local minimumBuild = reasons[self.u][4];
+		if minimumBuild and minimumBuild > currentBuild then
+			self:Disable();
+			self:SetAlpha(0.2);
+		else
+			self:Enable();
+			self:SetAlpha(1);
+			if UnobtainableSettingsBase.__index[self.u] then
+				self.Text:SetTextColor(0.6, 0.7, 1);
+			else
+				self.Text:SetTextColor(1, 1, 1);
+			end
+		end
+	end
+end;
+
 ------------------------------------------
 -- The "General" Tab.					--
 ------------------------------------------
@@ -823,7 +861,7 @@ end,
 function(self)
 	settings:Set("Thing:Achievements", self:GetChecked());
 	settings:UpdateMode();
-	app:RefreshData();
+	app:RefreshDataCompletely();
 end);
 AchievementsCheckBox:SetATTTooltip("Enable this option to track achievements.\n\nNOTE: At this time, they are not officially implemented in WoW's API, but ATT can kinda make its own until then.");
 AchievementsCheckBox:SetPoint("TOPLEFT", ThingsLabel, "BOTTOMLEFT", 0, -8);
@@ -842,7 +880,7 @@ end,
 function(self)
 	settings:Set("AccountWide:Achievements", self:GetChecked());
 	settings:UpdateMode();
-	app:RefreshData();
+	app:RefreshDataCompletely();
 end);
 AchievementsAccountWideCheckBox:SetATTTooltip("This behaviour is dependent on whether an achievement supports detection account wide or not. Unchecking this option just tells the achievement that you only want to check your current character. Some achievements are exclusively per-character.");
 AchievementsAccountWideCheckBox:SetPoint("TOPLEFT", AchievementsCheckBox, "TOPLEFT", 220, 0);
@@ -861,7 +899,7 @@ end,
 function(self)
 	settings:Set("Thing:BattlePets", self:GetChecked());
 	settings:UpdateMode();
-	app:RefreshData();
+	app:RefreshDataCompletely();
 end);
 BattlePetsCheckBox:SetATTTooltip("Enable this option to track battle & companion pets.\n\nNOTE: At this time, you cannot use them for battling, but they can follow you around and be all cute and stuff.\n\nGotta Horde 'em all!");
 BattlePetsCheckBox:SetPoint("TOPLEFT", AchievementsCheckBox, "BOTTOMLEFT", 0, 4);
@@ -880,7 +918,7 @@ end,
 function(self)
 	settings:Set("AccountWide:BattlePets", self:GetChecked());
 	settings:UpdateMode();
-	app:RefreshData();
+	app:RefreshDataCompletely();
 end);
 BattlePetsAccountWideCheckBox:SetATTTooltip("Companion pets can be collected on multiple characters and realistically would require that you have an insane amount of bag space in order to collect them all on one character.\n\nWe recommend you keep this turned on, but you do you fam.");
 BattlePetsAccountWideCheckBox:SetPoint("TOPLEFT", BattlePetsCheckBox, "TOPLEFT", 220, 0);
@@ -899,7 +937,7 @@ end,
 function(self)
 	settings:Set("Thing:Deaths", self:GetChecked());
 	settings:UpdateMode();
-	app:RefreshData();
+	app:RefreshDataCompletely();
 end);
 DeathsCheckBox:SetATTTooltip("Enable this option to track each time one of your characters die and show it as a Collectible section within the addon.\n\nNOTE: If you turn this off, we'll still track it, but we simply will not show the statistic unless you're in Debug Mode.");
 DeathsCheckBox:SetPoint("TOPLEFT", BattlePetsCheckBox, "BOTTOMLEFT", 0, 4);
@@ -918,7 +956,7 @@ end,
 function(self)
 	settings:Set("AccountWide:Deaths", self:GetChecked());
 	settings:UpdateMode();
-	app:RefreshData();
+	app:RefreshDataCompletely();
 end);
 DeathsAccountWideCheckBox:SetATTTooltip("Most people keep this setting turned on. It may be considered insane to turn it off!");
 DeathsAccountWideCheckBox:SetPoint("TOPLEFT", DeathsCheckBox, "TOPLEFT", 220, 0);
@@ -937,7 +975,7 @@ end,
 function(self)
 	settings:Set("Thing:Exploration", self:GetChecked());
 	settings:UpdateMode();
-	app:RefreshData();
+	app:RefreshDataCompletely();
 end);
 ExplorationCheckBox:SetATTTooltip("Enable this option to track exploration completion for outdoor maps. If you want the Explorer title, completing this in preparation for Wrath Classic will greatly help you!");
 ExplorationCheckBox:SetPoint("TOPLEFT", DeathsCheckBox, "BOTTOMLEFT", 0, 4);
@@ -956,7 +994,7 @@ end,
 function(self)
 	settings:Set("AccountWide:Exploration", self:GetChecked());
 	settings:UpdateMode();
-	app:RefreshData();
+	app:RefreshDataCompletely();
 end);
 ExplorationAccountWideCheckBox:SetATTTooltip("Flight Paths tracking is only really useful per character, but do you really want to collect them all on all 50 of your characters?");
 ExplorationAccountWideCheckBox:SetPoint("TOPLEFT", ExplorationCheckBox, "TOPLEFT", 220, 0);
@@ -975,7 +1013,7 @@ end,
 function(self)
 	settings:Set("Thing:FlightPaths", self:GetChecked());
 	settings:UpdateMode();
-	app:RefreshData();
+	app:RefreshDataCompletely();
 end);
 FlightPathsCheckBox:SetATTTooltip("Enable this option to track flight paths and ferry stations.\n\nTo collect these, open the dialog with the flight / ferry master in each continent.\n\NOTE: Due to phasing technology, you may have to phase to the other versions of a zone to get credit for those points of interest.");
 FlightPathsCheckBox:SetPoint("TOPLEFT", ExplorationCheckBox, "BOTTOMLEFT", 0, 4);
@@ -994,7 +1032,7 @@ end,
 function(self)
 	settings:Set("AccountWide:FlightPaths", self:GetChecked());
 	settings:UpdateMode();
-	app:RefreshData();
+	app:RefreshDataCompletely();
 end);
 FlightPathsAccountWideCheckBox:SetATTTooltip("Flight Paths tracking is only really useful per character, but do you really want to collect them all on all 50 of your characters?");
 FlightPathsAccountWideCheckBox:SetPoint("TOPLEFT", FlightPathsCheckBox, "TOPLEFT", 220, 0);
@@ -1013,7 +1051,7 @@ end,
 function(self)
 	settings:Set("Thing:Loot", self:GetChecked());
 	settings:UpdateMode();
-	app:RefreshData();
+	app:RefreshDataCompletely();
 end);
 LootCheckBox:SetATTTooltip("Enable this option to track loot.\n\nLoot being any item you can get from a mob, quest, or container. Loot that qualifies for one of the other filters will still appear in ATT if this filter is turned off.\n\nYou can change which sort of loot displays for you based on the Filters tab.\n\nDefault: Class Defaults, Disabled.");
 LootCheckBox:SetPoint("TOPLEFT", FlightPathsCheckBox, "BOTTOMLEFT", 0, 4);
@@ -1032,7 +1070,7 @@ end,
 function(self)
 	settings:Set("Thing:RWP", self:GetChecked());
 	settings:UpdateMode();
-	app:RefreshData();
+	app:RefreshDataCompletely();
 end);
 RWPCheckBox:SetATTTooltip("Enable this option to track future removed from game loot. Only Items tagged with 'removed with patch' data count toward this. If you find an item not tagged that should be tagged, please let me know!\n\nYou can change which sort of loot displays for you based on the Filters tab.\n\nDefault: Class Defaults, Disabled.");
 RWPCheckBox:SetPoint("TOPLEFT", LootCheckBox, "BOTTOMLEFT", 0, 4);
@@ -1051,7 +1089,7 @@ end,
 function(self)
 	settings:Set("AccountWide:RWP", self:GetChecked());
 	settings:UpdateMode();
-	app:RefreshData();
+	app:RefreshDataCompletely();
 end);
 RWPAccountWideCheckBox:SetATTTooltip("Removed from Game Items should be collected account wide. Certain items cannot be learned by every class, so ATT will do its best to only show you things that you can collect on your current character.");
 RWPAccountWideCheckBox:SetPoint("TOPLEFT", RWPCheckBox, "TOPLEFT", 220, 0);
@@ -1070,7 +1108,7 @@ end,
 function(self)
 	settings:Set("Thing:Mounts", self:GetChecked());
 	settings:UpdateMode();
-	app:RefreshData();
+	app:RefreshDataCompletely();
 end);
 MountsCheckBox:SetATTTooltip("Enable this option to track mounts.\n\nFair warning! Do this at your own risk, it will take up a lot of inventory space across your account and they can not be sent between characters!\n\nAdditionally, the cost of all Vendor mounts is reduced to 1/10 of their current prices with Wrath.");
 MountsCheckBox:SetPoint("TOPLEFT", RWPCheckBox, "BOTTOMLEFT", 0, 4);
@@ -1089,7 +1127,7 @@ end,
 function(self)
 	settings:Set("AccountWide:Mounts", self:GetChecked());
 	settings:UpdateMode();
-	app:RefreshData();
+	app:RefreshDataCompletely();
 end);
 MountsAccountWideCheckBox:SetPoint("TOPLEFT", MountsCheckBox, "TOPLEFT", 220, 0);
 
@@ -1107,7 +1145,7 @@ end,
 function(self)
 	settings:Set("Thing:Quests", self:GetChecked());
 	settings:UpdateMode();
-	app:RefreshData();
+	app:RefreshDataCompletely();
 end);
 QuestsCheckBox:SetATTTooltip("Enable this option to track quests.\n\nYou can right click any quest in the lists to pop out their full quest chain to show your progress and any prerequisite or breadcrumb quests.\n\nNOTE: Quests are not permanently tracked due to the nature of how Daily, Weekly, Yearly, and Repeatable Quests are tracked in the Blizzard Database.");
 QuestsCheckBox:SetPoint("TOPLEFT", MountsCheckBox, "BOTTOMLEFT", 0, 4);
@@ -1126,7 +1164,7 @@ end,
 function(self)
 	settings:Set("AccountWide:Quests", self:GetChecked());
 	settings:UpdateMode();
-	app:RefreshData();
+	app:RefreshDataCompletely();
 end);
 QuestsAccountWideCheckBox:SetPoint("TOPLEFT", QuestsCheckBox, "TOPLEFT", 220, 0);
 
@@ -1144,7 +1182,7 @@ end,
 function(self)
 	settings:Set("Thing:Recipes", self:GetChecked());
 	settings:UpdateMode();
-	app:RefreshData();
+	app:RefreshDataCompletely();
 end);
 RecipesCheckBox:SetATTTooltip("Enable this option to track recipes for your professions.\n\nNOTE: You must open your professions list in order to cache these.");
 RecipesCheckBox:SetPoint("TOPLEFT", QuestsCheckBox, "BOTTOMLEFT", 0, 4);
@@ -1163,7 +1201,7 @@ end,
 function(self)
 	settings:Set("AccountWide:Recipes", self:GetChecked());
 	settings:UpdateMode();
-	app:RefreshData();
+	app:RefreshDataCompletely();
 end);
 RecipesAccountWideCheckBox:SetATTTooltip("Recipes are not normally tracked account wide in Blizzard's database, but we can do that.\n\nIt is impossible to collect them all on one character, so with this, you can give your alts and their professions meaning.");
 RecipesAccountWideCheckBox:SetPoint("TOPLEFT", RecipesCheckBox, "TOPLEFT", 220, 0);
@@ -1182,7 +1220,7 @@ end,
 function(self)
 	settings:Set("Thing:Reputations", self:GetChecked());
 	settings:UpdateMode();
-	app:RefreshData();
+	app:RefreshDataCompletely();
 end);
 ReputationsCheckBox:SetATTTooltip("Enable this option to track reputations.\n\nOnce you reach Exalted with a reputation, it will be marked Collected.\n\nYou may have to do a manual refresh for this to update correctly.");
 ReputationsCheckBox:SetPoint("TOPLEFT", RecipesCheckBox, "BOTTOMLEFT", 0, 4);
@@ -1201,7 +1239,7 @@ end,
 function(self)
 	settings:Set("AccountWide:Reputations", self:GetChecked());
 	settings:UpdateMode();
-	app:RefreshData();
+	app:RefreshDataCompletely();
 end);
 ReputationsAccountWideCheckBox:SetATTTooltip("Reputations are not normally tracked account wide in Blizzard's database, but we can do that.");
 ReputationsAccountWideCheckBox:SetPoint("TOPLEFT", ReputationsCheckBox, "TOPLEFT", 220, 0);
@@ -1220,7 +1258,7 @@ end,
 function(self)
 	settings:Set("Thing:Titles", self:GetChecked());
 	settings:UpdateMode();
-	app:RefreshData();
+	app:RefreshDataCompletely();
 end);
 TitlesCheckBox:SetATTTooltip("Enable this option to track character titles.");
 TitlesCheckBox:SetPoint("TOPLEFT", ReputationsCheckBox, "BOTTOMLEFT", 0, 4);
@@ -1239,7 +1277,7 @@ end,
 function(self)
 	settings:Set("AccountWide:Titles", self:GetChecked());
 	settings:UpdateMode();
-	app:RefreshData();
+	app:RefreshDataCompletely();
 end);
 TitlesAccountWideCheckBox:SetATTTooltip("Titles are not normally tracked account wide in Blizzard's database, but we can do that.");
 TitlesAccountWideCheckBox:SetPoint("TOPLEFT", TitlesCheckBox, "TOPLEFT", 220, 0);
@@ -1258,7 +1296,7 @@ end,
 function(self)
 	settings:Set("Thing:Toys", self:GetChecked());
 	settings:UpdateMode();
-	app:RefreshData();
+	app:RefreshDataCompletely();
 end);
 ToysCheckBox:SetATTTooltip("Enable this option to track items that currently act as a toy or become a collectible toy in the future.");
 ToysCheckBox:SetPoint("TOPLEFT", TitlesCheckBox, "BOTTOMLEFT", 0, 4);
@@ -1277,7 +1315,7 @@ end,
 function(self)
 	settings:Set("AccountWide:Toys", self:GetChecked());
 	settings:UpdateMode();
-	app:RefreshData();
+	app:RefreshDataCompletely();
 end);
 ToysAccountWideCheckBox:SetATTTooltip("Toys are not normally tracked account wide in Blizzard's database, but we can do that.");
 ToysAccountWideCheckBox:SetPoint("TOPLEFT", ToysCheckBox, "TOPLEFT", 220, 0);
@@ -1323,7 +1361,7 @@ end,
 function(self)
 	settings:SetCompletedGroups(self:GetChecked());
 	settings:UpdateMode();
-	app:RefreshData();
+	app:RefreshDataCompletely();
 end);
 ShowCompletedGroupsCheckBox:SetATTTooltip("Enable this option if you want to see completed groups as a header with a completion percentage. If a group has nothing relevant for your class, this setting will also make those groups appear in the listing.\n\nWe recommend you turn this setting off as it will conserve the space in the mini list and allow you to quickly see what you are missing from the zone.");
 ShowCompletedGroupsCheckBox:SetPoint("TOPLEFT", MinimapButtonStyleCheckBox, "BOTTOMLEFT", 0, -4);
@@ -1342,7 +1380,7 @@ end,
 function(self)
 	settings:SetCollectedThings(self:GetChecked());
 	settings:UpdateMode();
-	app:RefreshData();
+	app:RefreshDataCompletely();
 end);
 ShowCollectedThingsCheckBox:SetATTTooltip("Enable this option if you want to see completed groups as a header with a completion percentage. If a group has nothing relevant for your class, this setting will also make those groups appear in the listing.\n\nWe recommend you turn this setting off as it will conserve the space in the mini list and allow you to quickly see what you are missing from the zone.");
 ShowCollectedThingsCheckBox:SetPoint("TOPLEFT", ShowCompletedGroupsCheckBox, "BOTTOMLEFT", 0, 4);
@@ -1361,7 +1399,7 @@ end,
 function(self)
 	settings:Set("Show:IncompleteThings", self:GetChecked());
 	settings:UpdateMode();
-	app:RefreshData();
+	app:RefreshDataCompletely();
 end);
 ShowIncompleteThingsCheckBox:SetATTTooltip("Enable this option if you want to see items, objects, NPCs, and headers associated with incomplete quests that don't necessarily have anything you can collect as a result of completing them.\n\nNOTE: Rare Spawns and Vignettes also appear in the listing with this setting turned on.");
 ShowIncompleteThingsCheckBox:SetPoint("TOPLEFT", ShowCollectedThingsCheckBox, "BOTTOMLEFT", 0, 4);
@@ -1380,7 +1418,7 @@ end,
 function(self)
 	settings:Set("Filter:ByLevel", self:GetChecked());
 	settings:UpdateMode();
-	app:RefreshData();
+	app:RefreshDataCompletely();
 end);
 FilterThingsByLevelCheckBox:SetATTTooltip("Enable this setting if you only want to see content available to your current level character.");
 FilterThingsByLevelCheckBox:SetPoint("TOPLEFT", ShowIncompleteThingsCheckBox, "BOTTOMLEFT", 0, -4);
@@ -1416,7 +1454,7 @@ end,
 function(self)
 	settings:Set("Filter:BoEs", self:GetChecked());
 	settings:UpdateMode();
-	app:RefreshData();
+	app:RefreshDataCompletely();
 end);
 IgnoreFiltersForBoEsCheckBox:SetATTTooltip("Enable this setting if you want to ignore armor, weapon, race, class, or profession requirements for BoE items.\n\nIf you are trying to collect things for your alts via Auction House scanning, this mode may be useful to you.");
 IgnoreFiltersForBoEsCheckBox:SetPoint("TOPLEFT", HideBoEItemsCheckBox, "BOTTOMLEFT", 0, 4);
@@ -1457,7 +1495,6 @@ end)();
 ------------------------------------------
 (function()
 local tab = settings:CreateTab("Filters");
-local reasons = L["UNOBTAINABLE_ITEM_REASONS"];
 tab.OnRefresh = function(self)
 	if settings:Get("DebugMode") then
 		PanelTemplates_DisableTab(settings, self:GetID());
@@ -1575,7 +1612,7 @@ f:SetScript("OnClick", function(self)
 		ATTClassicSettingsPerCharacter.Filters[key] = nil;
 	end
 	settings:Refresh();
-	app:RefreshData();
+	app:RefreshDataCompletely();
 end);
 f:SetATTTooltip("Click this button to reset all of the filters to your class defaults.\n\nNOTE: Only filters that are collectible for your class can be turned on.");
 f.OnRefresh = function(self)
@@ -1615,7 +1652,7 @@ f:SetScript("OnClick", function(self)
 			end
 		end
 		settings:Refresh();
-		app:RefreshData();
+		app:RefreshDataCompletely();
 	end
 end);
 f:SetATTTooltip("Click this button to toggle all of the filters at once.");
@@ -1671,48 +1708,11 @@ end)();
 ------------------------------------------
 (function()
 local tab = settings:CreateTab("Phases");
-local currentBuild = select(4, GetBuildInfo());
-local reasons = L["UNOBTAINABLE_ITEM_REASONS"];
 tab.OnRefresh = function(self)
 	if settings:Get("DebugMode") then
 		PanelTemplates_DisableTab(settings, self:GetID());
 	else
 		PanelTemplates_EnableTab(settings, self:GetID());
-	end
-end;
-local UnobtainableFilterOnClick = function(self)
-	local checked = self:GetChecked();
-	if checked then
-		-- If the phase is active, fall through to the base setting.
-		if UnobtainableSettingsBase.__index[self.u] then
-			settings:SetUnobtainableFilter(self.u, nil);
-		else
-			settings:SetUnobtainableFilter(self.u, true);
-		end
-	else
-		settings:SetUnobtainableFilter(self.u, false);
-	end
-end;
-local UnobtainableOnRefresh = function(self)
-	if settings:Get("DebugMode") then
-		self:Disable();
-		self:SetAlpha(0.2);
-	else
-		self:SetChecked(settings:GetUnobtainableFilter(self.u));
-
-		local minimumBuild = reasons[self.u][4];
-		if minimumBuild and minimumBuild > currentBuild then
-			self:Disable();
-			self:SetAlpha(0.2);
-		else
-			self:Enable();
-			self:SetAlpha(1);
-			if UnobtainableSettingsBase.__index[self.u] then
-				self.Text:SetTextColor(0.6, 0.7, 1);
-			else
-				self.Text:SetTextColor(1, 1, 1);
-			end
-		end
 	end
 end;
 
@@ -2159,7 +2159,6 @@ function(self)
 end,
 function(self)
 	settings:SetTooltipSetting("Show:Remaining", self:GetChecked());
-	-- app:RefreshData();
 	app:UpdateWindows();
 end);
 ShowRemainingCheckBox:SetATTTooltip("Enable this option if you want to see the number of items remaining instead of the progress over total.");
@@ -2236,6 +2235,7 @@ MainListScaleSlider:SetPoint("LEFT", DebuggingLabel, "LEFT", 0, 0);
 MainListScaleSlider:SetPoint("TOP", ShowRaceRequirementsCheckBox, "BOTTOM", 0, 0);
 table.insert(settings.MostRecentTab.objects, MainListScaleSlider);
 settings.MainListScaleSlider = MainListScaleSlider;
+MainListScaleSlider.currentValue = 0;
 MainListScaleSlider.tooltipText = 'Use this to customize the scale of the Main List.\n\nDefault: 1';
 MainListScaleSlider:SetOrientation('HORIZONTAL');
 MainListScaleSlider:SetWidth(280);
@@ -2250,9 +2250,12 @@ MainListScaleSlider.Label = MainListScaleSlider:CreateFontString(nil, "ARTWORK",
 MainListScaleSlider.Label:SetPoint("TOP", MainListScaleSlider, "BOTTOM", 0, 0);
 MainListScaleSlider.Label:SetText(MainListScaleSlider:GetValue());
 MainListScaleSlider:SetScript("OnValueChanged", function(self, newValue)
-	self.Label:SetText(newValue);
-	settings:SetTooltipSetting("MainListScale", newValue)
-	app:GetWindow("Prime"):SetScale(newValue);
+	if self.currentValue ~= newValue then
+		self.currentValue = newValue;
+		self.Label:SetText(newValue);
+		settings:SetTooltipSetting("MainListScale", newValue)
+		app:GetWindow("Prime"):SetScale(newValue);
+	end
 end);
 
 -- This creates the "Mini List Scale" slider.
@@ -2261,6 +2264,7 @@ MiniListScaleSlider:SetPoint("LEFT", DebuggingLabel, "LEFT", 0, 0);
 MiniListScaleSlider:SetPoint("TOP", MainListScaleSlider, "BOTTOM", 0, -32);
 table.insert(settings.MostRecentTab.objects, MiniListScaleSlider);
 settings.MiniListScaleSlider = MiniListScaleSlider;
+MiniListScaleSlider.currentValue = 0;
 MiniListScaleSlider.tooltipText = 'Use this to customize the scale of all Mini and Bitty Lists.\n\nDefault: 1';
 MiniListScaleSlider:SetOrientation('HORIZONTAL');
 MiniListScaleSlider:SetWidth(280);
@@ -2275,11 +2279,14 @@ MiniListScaleSlider.Label = MiniListScaleSlider:CreateFontString(nil, "ARTWORK",
 MiniListScaleSlider.Label:SetPoint("TOP", MiniListScaleSlider, "BOTTOM", 0, 0);
 MiniListScaleSlider.Label:SetText(MiniListScaleSlider:GetValue());
 MiniListScaleSlider:SetScript("OnValueChanged", function(self, newValue)
-	self.Label:SetText(newValue);
-	settings:SetTooltipSetting("MiniListScale", newValue)
-	for key,window in pairs(app.Windows) do
-		if key ~= "Prime" then
-			window:SetScale(newValue);
+	if self.currentValue ~= newValue then
+		self.currentValue = newValue;
+		self.Label:SetText(newValue);
+		settings:SetTooltipSetting("MiniListScale", newValue)
+		for key,window in pairs(app.Windows) do
+			if key ~= "Prime" then
+				window:SetScale(newValue);
+			end
 		end
 	end
 end);

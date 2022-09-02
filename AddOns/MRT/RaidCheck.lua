@@ -29,6 +29,12 @@ module.db.tableFood = not ExRT.isClassic and {
 	[46682]=true,	[44104]=true,	[44098]=true,	[44101]=true,	[44099]=true,	[44102]=true,	[44106]=true,	[44105]=true,	[44097]=true,
 	[44100]=true,	[43771]=true,	[33272]=true,	[19705]=true,	[19710]=true,	[19706]=true,	[19708]=true,	[46899]=true,	[19709]=true,
 	[25941]=true,	[40323]=true,	[42293]=true,	[25694]=true,	[19711]=true,	[24870]=true,
+
+	--wotlk
+	[57367]=true,	[57327]=true,	[57294]=true,	[57360]=true,	[57291]=true,	[57327]=true,	[57332]=true,	[57356]=true,
+	[57325]=true,	[57358]=true,	[57325]=true,	[57365]=true,	[57329]=true,	[57332]=true,	[57329]=true,	[57334]=true,
+	[57371]=true,	[57360]=true,	[57079]=true,	[57097]=true,	[57334]=true,	[57139]=true,	[57286]=true,	[57100]=true,
+	[57102]=true,	[57288]=true,	[53284]=true,	[57111]=true,	[57286]=true,	[57107]=true,	[57288]=true,
 }
 module.db.StaminaFood = {[201638]=true,[259457]=true,[288075]=true,[288074]=true,[297119]=true,[297040]=true,}
 
@@ -60,6 +66,13 @@ module.db.tableFlask =  not ExRT.isClassic and {
 
 	[11406]=true,	[28496]=true,	[28489]=true,	[28515]=true,	[38910]=true,	[38927]=true,	[28511]=true,
 	[28537]=true,	[28513]=true,	[28512]=true,	[28536]=true,	[28538]=true,
+
+	--wotlk
+	[53760]=true,	[53755]=true,	[67019]=true,	[53758]=true,	[54212]=true,	[62380]=true,	[53752]=true,	[53760]=true,	
+	[53755]=true,	[53758]=true,	[54212]=true,	
+	[28497]=true,	[33721]=true,	[60347]=true,	[53749]=true,	[60346]=true,	[53746]=true,	[60345]=true,	[53764]=true,
+	[53748]=true,	[60344]=true,	[60341]=true,	[53763]=true,	[53751]=true,	[60340]=true,	[53747]=true,	[60343]=true,
+	[63729]=true,	
 }
 module.db.tableFlask_headers = {0,25,38}
 module.db.tablePotion = {
@@ -198,8 +211,8 @@ module.db.minFoodLevelToActual = {
 	[125] = 14,
 }
 
---TBC SCROLLS
 module.db.tableScrolls = not ExRT.isClassic and {} or {
+	--tbc
 	[33077]=true,
 	[33082]=true,
 	[33079]=true,
@@ -212,6 +225,11 @@ module.db.tableScrolls = not ExRT.isClassic and {} or {
 	[12178]=true,
 	[12177]=true,
 	[12175]=true,
+
+	--wotlk
+	[58451]=true,	[48099]=true,	[43194]=true,	[48103]=true,	[58450]=true,	[58448]=true,	[69377]=true,	[43199]=true,
+	[58449]=true,	[48102]=true,	[43196]=true,	[58453]=true,	[58452]=true,	[69994]=true,	[48100]=true,	[43198]=true,
+	[48104]=true,	[43195]=true,	[48101]=true,	[43197]=true,
 }
 
 if not ExRT.isClassic and UnitLevel'player' > 50 then
@@ -247,16 +265,18 @@ if not ExRT.isClassic and UnitLevel'player' > 50 then
 	module.db.tableAP = {[6673]=true,}
 end
 
-module.db.classicBuffs = {
-	{"druid","Druid",136078,{[21850]=7,[21849]=6,[1126]=1,[5232]=2,[5234]=4,[6756]=3,[8907]=5,[9884]=6,[9885]=7,}},	--Gift of the Wild
-	{"int","Int",135932,{[10157]=5,[10156]=4,[1461]=3,[1460]=2,[1459]=1,[23028]=5}},	--Arcane Intellect
-	{"ap","AP",132333,{[6673]=1,[5242]=2,[6192]=3,[11549]=4,[11550]=5,[11551]=6,[25289]=7,}},	--Battle Shout
-	{"spirit","Spirit",135946,{[27681]=4,[14752]=1,[14818]=2,[14819]=3,[27841]=4,}},	--Prayer of Spirit
-	{"armor","Armor",135926,{[588]=1,[7128]=2,[602]=3,[1006]=4,[10951]=5,[10952]=6,}},	--Inner Fire
-	{"shadow","Shadow",136121,{[10958]=3,[976]=1,[10957]=2,[27683]=3,}},	--Shadow Protection
-	{"stamina","Stamina",135987,{[1243]=1,[21562]=5,[21564]=6,[1244]=2,[1245]=3,[2791]=4,[10937]=5,[10938]=6,}},	--Power Word: Fortitude
-}
-if ExRT.isBC then
+
+if ExRT.isLK then
+	module.db.classicBuffs = {
+		{"druid","Druid",136078,{[48470]=9,[26991]=8,[21850]=7,[21849]=6,[1126]=1,[5232]=2,[5234]=4,[6756]=3,[8907]=5,[9884]=6,[9885]=7,[26990]=8,[48469]=9,[69381]=9}},	--Gift of the Wild
+		{"int","Int",135932,{[43002]=7,[27126]=6,[10157]=5,[10156]=4,[1461]=3,[1460]=2,[1459]=1,[23028]=5,[27127]=6,[42995]=7}},	--Arcane Intellect
+		{"ap","AP",132333,{[6673]=1,[5242]=2,[6192]=3,[11549]=4,[11550]=5,[11551]=6,[25289]=7,[2048]=8,[47436]=9}},	--Battle Shout
+		{"spirit","Spirit",135946,{[27681]=4,[32999]=5,[48074]=6,[14752]=1,[14818]=2,[14819]=3,[27841]=4,[25312]=5,[48073]=6}},	--Prayer of Spirit
+		{"armor","Armor",135926,{[588]=1,[7128]=2,[602]=3,[1006]=4,[10951]=5,[10952]=6,[25431]=7,[48040]=8,[48168]=9}},	--Inner Fire
+		{"shadow","Shadow",136121,{[48170]=5,[25433]=4,[10958]=3,[976]=1,[10957]=2,[27683]=3,[39374]=4,}},	--Shadow Protection
+		{"stamina","Stamina",135987,{[1243]=1,[21562]=5,[21564]=6,[25392]=7,[48162]=8,[1244]=2,[1245]=3,[2791]=4,[10937]=5,[10938]=6,[25389]=7,[48161]=8}},	--Power Word: Fortitude
+	}
+elseif ExRT.isBC then
 	module.db.classicBuffs = {
 		{"druid","Druid",136078,{[26991]=8,[21850]=7,[21849]=6,[1126]=1,[5232]=2,[5234]=4,[6756]=3,[8907]=5,[9884]=6,[9885]=7,[26990]=8,}},	--Gift of the Wild
 		{"int","Int",135932,{[27126]=6,[10157]=5,[10156]=4,[1461]=3,[1460]=2,[1459]=1,[23028]=5,[27127]=6,}},	--Arcane Intellect
@@ -266,16 +286,30 @@ if ExRT.isBC then
 		{"shadow","Shadow",136121,{[25433]=4,[10958]=3,[976]=1,[10957]=2,[27683]=3,[39374]=4,}},	--Shadow Protection
 		{"stamina","Stamina",135987,{[1243]=1,[21562]=5,[21564]=6,[25392]=7,[1244]=2,[1245]=3,[2791]=4,[10937]=5,[10938]=6,[25389]=7,}},	--Power Word: Fortitude
 	}
+else
+	module.db.classicBuffs = {
+		{"druid","Druid",136078,{[21850]=7,[21849]=6,[1126]=1,[5232]=2,[5234]=4,[6756]=3,[8907]=5,[9884]=6,[9885]=7,}},	--Gift of the Wild
+		{"int","Int",135932,{[10157]=5,[10156]=4,[1461]=3,[1460]=2,[1459]=1,[23028]=5}},	--Arcane Intellect
+		{"ap","AP",132333,{[6673]=1,[5242]=2,[6192]=3,[11549]=4,[11550]=5,[11551]=6,[25289]=7,}},	--Battle Shout
+		{"spirit","Spirit",135946,{[27681]=4,[14752]=1,[14818]=2,[14819]=3,[27841]=4,}},	--Prayer of Spirit
+		{"armor","Armor",135926,{[588]=1,[7128]=2,[602]=3,[1006]=4,[10951]=5,[10952]=6,}},	--Inner Fire
+		{"shadow","Shadow",136121,{[10958]=3,[976]=1,[10957]=2,[27683]=3,}},	--Shadow Protection
+		{"stamina","Stamina",135987,{[1243]=1,[21562]=5,[21564]=6,[1244]=2,[1245]=3,[2791]=4,[10937]=5,[10938]=6,}},	--Power Word: Fortitude
+	}
 end
-if ExRT.isClassic and UnitFactionGroup("player") == "Alliance" and not ExRT.isBC then
-	module.db.classicBuffs[#module.db.classicBuffs+1] = {"bom","BoM",135908,{[19740]=1,[19834]=2,[19835]=3,[19836]=4,[19837]=5,[19838]=6,[25291]=7,[25782]=6,[25916]=7,}}	--Blessing of Might
-	module.db.classicBuffs[#module.db.classicBuffs+1] = {"bow","BoW",135970,{[19742]=1,[19850]=2,[19852]=3,[19853]=4,[19854]=5,[25290]=6,[25894]=5,[25918]=6,}}	--Blessing of Wisdom
-	module.db.classicBuffs[#module.db.classicBuffs+1] = {"bok","BoK",135993,{[20217]=1,[25898]=1,}}	--Blessing of Kings
-	module.db.classicBuffs[#module.db.classicBuffs+1] = {"bos","BoS",135967,{[1038]=1,[25895]=1,}}	--Blessing of Kings
-end
-if ExRT.isBC then
+if ExRT.isLK then
+	module.db.classicBuffs[#module.db.classicBuffs+1] = {"bom","BoM",135908,{[19740]=1,[19834]=2,[19835]=3,[19836]=4,[19837]=5,[19838]=6,[25291]=7,[27140]=8,[48931]=9,[48932]=10,[25782]=6,[25916]=7,[27141]=8,[48933]=9,[48934]=10}}	--Blessing of Might
+	module.db.classicBuffs[#module.db.classicBuffs+1] = {"bow","BoW",135970,{[19742]=1,[19850]=2,[19852]=3,[19853]=4,[19854]=5,[25290]=6,[27142]=7,[48935]=8,[48936]=9,[25894]=5,[25918]=6,[27143]=7,[48937]=8,[48938]=9}}	--Blessing of Wisdom
+	module.db.classicBuffs[#module.db.classicBuffs+1] = {"bok","BoK",135993,{[20217]=1,[25898]=1,[69378]=1}}	--Blessing of Kings
+	module.db.classicBuffs[#module.db.classicBuffs+1] = {"bos","BoS",135911,{[25899]=1,}}	--Greater Blessing of Sanctuary
+elseif ExRT.isBC then
 	module.db.classicBuffs[#module.db.classicBuffs+1] = {"bom","BoM",135908,{[19740]=1,[19834]=2,[19835]=3,[19836]=4,[19837]=5,[19838]=6,[25291]=7,[27140]=8,[25782]=6,[25916]=7,[27141]=8}}	--Blessing of Might
 	module.db.classicBuffs[#module.db.classicBuffs+1] = {"bow","BoW",135970,{[19742]=1,[19850]=2,[19852]=3,[19853]=4,[19854]=5,[25290]=6,[27142]=7,[25894]=5,[25918]=6,[27143]=7,}}	--Blessing of Wisdom
+	module.db.classicBuffs[#module.db.classicBuffs+1] = {"bok","BoK",135993,{[20217]=1,[25898]=1,}}	--Blessing of Kings
+	module.db.classicBuffs[#module.db.classicBuffs+1] = {"bos","BoS",135967,{[1038]=1,[25895]=1,}}	--Blessing of Kings
+elseif ExRT.isClassic and UnitFactionGroup("player") == "Alliance" then
+	module.db.classicBuffs[#module.db.classicBuffs+1] = {"bom","BoM",135908,{[19740]=1,[19834]=2,[19835]=3,[19836]=4,[19837]=5,[19838]=6,[25291]=7,[25782]=6,[25916]=7,}}	--Blessing of Might
+	module.db.classicBuffs[#module.db.classicBuffs+1] = {"bow","BoW",135970,{[19742]=1,[19850]=2,[19852]=3,[19853]=4,[19854]=5,[25290]=6,[25894]=5,[25918]=6,}}	--Blessing of Wisdom
 	module.db.classicBuffs[#module.db.classicBuffs+1] = {"bok","BoK",135993,{[20217]=1,[25898]=1,}}	--Blessing of Kings
 	module.db.classicBuffs[#module.db.classicBuffs+1] = {"bos","BoS",135967,{[1038]=1,[25895]=1,}}	--Blessing of Kings
 end
@@ -1340,7 +1374,8 @@ do
 		L_EncName = "^加固（%+[0-9]+ "
 		TimeLeftPatt = "（([^）]-)）$"
 	elseif ExRT.locale ~= "ruRU" and ExRT.locale ~= "enGB" and ExRT.locale ~= "enUS" then
-		L_EncName = "%(%+%d+[^%)]+%) %(%d+"
+		--L_EncName = "%(%+%d+[^%)]+%) %(%d+"
+		L_EncName = "%(%+%d+[^%)]+%) ?%(%d+"
 	end
 
 	function module:KitCheck()
@@ -2650,6 +2685,11 @@ end)
 
 
 function module:ReadyCheckWindow(starter,isTest,manual)
+	if manual and self.frame:IsShown() then
+		self.frame:Hide()
+		return
+	end
+
 	self.frame:Create()
 
 	module.db.RaidCheckReadyCheckTime = nil
@@ -3152,7 +3192,7 @@ if (not ExRT.isClassic) and UnitLevel'player' >= 60 then
 	local isElvUIFix
 
 	function module.consumables:Update()
-		if IsAddOnLoaded("ElvUI") and not isElvUIFix then
+		if (IsAddOnLoaded("ElvUI") or IsAddOnLoaded("ShestakUI")) and not isElvUIFix then
 			self:SetParent(ReadyCheckFrame)
 			self:ClearAllPoints()
 			self:SetPoint("BOTTOM",ReadyCheckFrame,"TOP",0,5)
@@ -3453,9 +3493,25 @@ if (not ExRT.isClassic) and UnitLevel'player' >= 60 then
 		end
 
 		local runeCount = GetItemCount(181468,false,true)
-		if runeCount and runeCount > 0 then
+		local runeUnlim = GetItemCount(190384,false,true)
+		if runeUnlim and runeUnlim > 0 then
+			self.buttons.rune.count:SetText("")
+			if not InCombatLockdown() then
+				self.buttons.rune.texture:SetTexture(4224736)
+				local itemName = GetItemInfo(190384)
+				if itemName then
+					self.buttons.rune.click:SetAttribute("macrotext1", format("/stopmacro [combat]\n/use %s", itemName))
+					self.buttons.rune.click:Show()
+					self.buttons.rune.click.IsON = true
+				else
+					self.buttons.rune.click:Hide()
+					self.buttons.rune.click.IsON = false
+				end
+			end
+		elseif runeCount and runeCount > 0 then
 			self.buttons.rune.count:SetFormattedText("%d",runeCount)
 			if not InCombatLockdown() then
+				self.buttons.rune.texture:SetTexture(134078)
 				local itemName = GetItemInfo(181468)
 				if itemName then
 					self.buttons.rune.click:SetAttribute("macrotext1", format("/stopmacro [combat]\n/use %s", itemName))
@@ -3475,7 +3531,7 @@ if (not ExRT.isClassic) and UnitLevel'player' >= 60 then
 		end
 
 		if LCG then
-			if runeCount and runeCount > 0 and not isRune then
+			if ((runeCount and runeCount > 0) or (runeUnlim and runeUnlim > 0)) and not isRune then
 				LCG.PixelGlow_Start(self.buttons.rune)
 			else
 				LCG.PixelGlow_Stop(self.buttons.rune)

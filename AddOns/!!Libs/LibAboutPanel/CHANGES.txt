@@ -1,0 +1,16 @@
+lightweight tag 053887905abd9023c3bd666a2357336e958d8924 v1.52
+Author:	John Pasula <ackis81@gmail.com>
+Date:	Tue May 16 11:16:20 2017 -0600
+
+commit 053887905abd9023c3bd666a2357336e958d8924
+Author: John Pasula <ackis81@gmail.com>
+Date:   Tue May 16 11:16:20 2017 -0600
+
+    Update version - still works.
+
+commit b64d5739bd57590dc775a550c6ba7749fdbffa4e
+Author: John Pasula <ackis81@gmail.com>
+Date:   Tue May 16 11:15:06 2017 -0600
+
+    Update ToC for translations.
+

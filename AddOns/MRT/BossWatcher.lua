@@ -92,6 +92,7 @@ module.db.energyLocale = {
 	[16] = "|cff"..format("%02x%02x%02x",0,255,255)..L.BossWatcherEnergyType16,
 	[17] = "|cff"..format("%02x%02x%02x",209,76,223)..L.BossWatcherEnergyType17,
 	[18] = "|cff"..format("%02x%02x%02x",255,147,0)..L.BossWatcherEnergyType18,
+	[19] = "|cff"..format("%02x%02x%02x",170,169,53)..(L.BossWatcherEnergyType19 or "Essence"),
 }
 
 module.db.energyPerClass = {
@@ -111,6 +112,10 @@ module.db.energyPerClass = {
 	["NO"] = 	{{0,1,2,3,6,10},{0,1,2,3,6,10,5,7,8,9,11,12,13,14,15,16,17,18}},
 	["ALL"] =	{{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25},{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25}},
 }
+if ExRT.is10 then
+	module.db.energyPerClass["EVOKER"] = {{0,19,10},	{0,19,10}}
+	module.db.energyPerClass["NO"] = 	{{0,1,2,3,6,10},{0,1,2,3,6,10,5,7,8,9,11,12,13,14,15,16,17,18,19}}
+end
 local energyPerClass = module.db.energyPerClass
 
 module.db.schoolsDefault = {0x1,0x2,0x4,0x8,0x10,0x20,0x40}
@@ -9220,7 +9225,7 @@ function BWInterfaceFrameLoad()
 			local healLine = heal[i]
 			local class = nil
 			if healLine.guid and healLine.guid ~= "" then
-				class = select(2,GetPlayerInfoByGUID(healLine.guid))
+				class = select(2,ExRT.F:SafeCall(GetPlayerInfoByGUID,healLine.guid))
 			end
 			local icon = ""
 			if class and CLASS_ICON_TCOORDS[class] then
