@@ -58,8 +58,8 @@ LibBabble\LibBabble-Race-3.0\lib.xml
 LibBabble\LibBabble-SubZone-3.0\lib.xml
 
 # DR Libs
-DRData-1.0\DRData-1.0.xml
 DRList-1.0\DRList-1.0.xml
+DRData-1.0\DRData-1.0.xml
 
 # Other Libs
 Krowi_WorldMapButtons-1.3\Krowi_WorldMapButtons-1.3.xml

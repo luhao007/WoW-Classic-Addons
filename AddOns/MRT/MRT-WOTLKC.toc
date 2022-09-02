@@ -12,7 +12,6 @@
 
 core.lua
 Functions.lua
-embeds.xml
 ExLib.lua
 localization\localization.ru.lua
 localization\localization.en.lua
