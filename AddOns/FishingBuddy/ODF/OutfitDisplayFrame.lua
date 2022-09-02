@@ -776,7 +776,7 @@ function OutfitDisplayItemButton_OnEnter(self)
 end
 
 function OutfitDisplayItemButton_OnEvent(self, event)
-	if ( event == "CURSOR_UPDATE" ) then
+	if ( event == "CURSOR_CHANGED" ) then
 		if ( not self.forced ) then
 			if ((self.CursorCanGoInSlot and self.CursorCanGoInSlot(self)) or
 				 SmartCursorCanGoInSlot(self)) then
@@ -828,7 +828,7 @@ function OutfitDisplayItemButton_OnLoad(self)
 	SetItemButtonTexture(self, self.backgroundTextureName);
 	self:RegisterForDrag("LeftButton");
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-	self:RegisterEvent("CURSOR_UPDATE");
+	self:RegisterEvent("CURSOR_CHANGED");
 	self:SetFrameLevel(self:GetFrameLevel()+3);
 end
 

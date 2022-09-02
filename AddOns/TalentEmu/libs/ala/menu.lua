@@ -165,7 +165,7 @@ local uireimp = __ala_meta__.uireimp;
 			Menu:RegisterEvent("PLAYER_STARTED_TURNING");
 			-- Menu:RegisterEvent("PLAYER_STOPPED_TURNING");
 		else
-			Menu:RegisterEvent("CURSOR_UPDATE");
+			Menu:RegisterEvent("CURSOR_CHANGED");
 		end
 		Menu.Buttons = {  };
 
