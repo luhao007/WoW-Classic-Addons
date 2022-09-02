@@ -502,7 +502,7 @@ class Manager:
         libs = ['AceAddon-3.0', 'AceBucket-3.0', 'AceComm-3.0', 'AceConfig-3.0',
                 'AceConsole-3.0', 'AceDB-3.0', 'AceDBOptions-3.0', 'AceEvent-3.0',
                 'AceGUI-3.0', 'AceHook-3.0', 'AceLocale-3.0', 'AceSerializer-3.0',
-                'AceTab-3.0', 'AceTimer-3.0', 'CallbackHandler-1.0',  'LibBossIDs-1.0',
+                'AceTab-3.0', 'AceTimer-3.0', 'CallbackHandler-1.0',  'DF', 'LibBossIDs-1.0',
                 'LibCompress', 'LibClassicCasterino', 'LibDBIcon-1.0', 'LibDataBroker-1.1',
                 'LibDeflate', 'LibGraph-2.0', 'LibGroupInSpecT-1.1', 'LibItemUpgradeInfo-1.0',
                 'LibSharedMedia-3.0', 'LibStub', 'LibTranslit', 'LibWindow-1.1']
@@ -522,20 +522,20 @@ class Manager:
             '					minimap = {hide = true, radius = 160, minimapPos = 160},',
         )
 
-    # @staticmethod
-    # def handle_fb():
-    #     utils.remove_libraries(
-    #         ['CallbackHandler-1.0', 'HereBeDragons',
-    #             'LibBabble-SubZone-3.0', 'LibDataBroker-1.1',
-    #             'LibDBIcon-1.0', 'LibStub', 'LibWindow-1.1'],
-    #         'AddOns/FishingBuddy/Libs',
-    #         'AddOns/FishingBuddy/Libs/Libs.xml'
-    #     )
+    @staticmethod
+    def handle_fb():
+        utils.remove_libraries(
+            ['CallbackHandler-1.0', 'HereBeDragons',
+             'LibBabble-SubZone-3.0', 'LibDataBroker-1.1',
+             'LibDBIcon-1.0', 'LibStub', 'LibWindow-1.1'],
+            'AddOns/FishingBuddy/Libs',
+            'AddOns/FishingBuddy/Libs/Libs.xml'
+        )
 
-    #     utils.change_defaults(
-    #         'Addons/FishingBuddy/FishingBuddyMinimap.lua',
-    #         '		FishingBuddy_Player["MinimapData"] = { hide=true };'
-    #     )
+        utils.change_defaults(
+            'Addons/FishingBuddy/FishingBuddyMinimap.lua',
+            '		FishingBuddy_Player["MinimapData"] = { hide=true };'
+        )
 
     @staticmethod
     @available_on(['classic', 'classic_era'])
@@ -697,7 +697,7 @@ class Manager:
         libs = ['AceAddon-3.0', 'AceBucket-3.0', 'AceComm-3.0', 'AceConfig-3.0',
                 'AceConsole-3.0', 'AceDB-3.0', 'AceDBOptions-3.0', 'AceEvent-3.0',
                 'AceGUI-3.0', 'AceLocale-3.0', 'AceSerializer-3.0',
-                'AceTimer-3.0', 'CallbackHandler-1.0', 'LibCompress',
+                'AceTimer-3.0', 'CallbackHandler-1.0', 'DF', 'LibCompress',
                 'LibClassicCasterino', 'LibClassicDurations', 'LibCustomGlow-1.0',
                 'LibDBIcon-1.0', 'LibDataBroker-1.1', 'LibDeflate',
                 'LibRangeCheck-2.0', 'LibSharedMedia-3.0', 'LibTranslit-1.0', 'LibStub']
