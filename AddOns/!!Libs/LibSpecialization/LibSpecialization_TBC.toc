@@ -1,0 +1,12 @@
+## Interface: 20504
+## Version: v9.2.2
+## Title: Lib: Specialization
+## Notes: A library for transmitting and receiving talent specialization information of players in your group.
+## Author: Funkydude
+## X-Category: Library
+## OptionalDeps: LibStub
+## X-License: Ace3 Style BSD: https://www.curseforge.com/project/13376/license
+
+embeds.xml
+LibSpecialization\LibSpecialization.xml
+

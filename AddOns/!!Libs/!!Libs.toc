@@ -45,7 +45,7 @@ HereBeDragons\HereBeDragons-Migrate.lua
 
 # Dropdown menus
 !LibUIDropDownMenu\LibUIDropDownMenu\LibUIDropDownMenu.xml
-!LibUIDropDownMenu-2.0\LibUIDropDownMenu.xml
+!LibUIDropDownMenu-2.0\LibUIDropDownMenu\LibUIDropDownMenu.xml
 
 # LibBabbles
 LibBabble\LibBabble-3.0.lua
@@ -58,8 +58,8 @@ LibBabble\LibBabble-Race-3.0\lib.xml
 LibBabble\LibBabble-SubZone-3.0\lib.xml
 
 # DR Libs
-DRList-1.0\DRList-1.0.xml
 DRData-1.0\DRData-1.0.xml
+DRList-1.0\DRList-1.0.xml
 
 # Other Libs
 Krowi_WorldMapButtons-1.3\Krowi_WorldMapButtons-1.3.xml
@@ -90,15 +90,14 @@ LibIconPath\Core.lua
 LibItemUpgradeInfo-1.0\LibItemUpgradeInfo-1.0.xml
 LibLatency\LibLatency\LibLatency.xml
 LibOO-1.0\lib.xml
-LibPetJournal-2.0\LibPetJournal-2.0.lua
 LibQTip-1.0\lib.xml
 LibRangeCheck-2.0\LibRangeCheck-2.0\LibRangeCheck-2.0.lua
 LibRealmInfo\LibRealmInfo.lua
 LibSink-2.0\LibSink-2.0\LibSink-2.0.lua
+LibSpecialization\LibSpecialization\LibSpecialization.xml
 LibSpellRange-1.0\lib.xml
 LibTextDump-1.0\lib.xml
 LibToast-1.0\lib.xml
-LibTourist-3.0\lib.xml
 LibTranslit-1.0\LibTranslit-1.0.xml
 LibWindow-1.1\LibWindow-1.1\LibWindow-1.1.lua
 NickTag-1.0\NickTag-1.0.xml

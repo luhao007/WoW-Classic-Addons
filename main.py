@@ -14,7 +14,7 @@ class Context:
         platform = utils.get_platform()
         self.game_flavour = 'vanilla_classic' if platform == 'classic_era' else platform
         self.manager = InstawowManager(self.game_flavour, False)
-        self.manager_lib = InstawowManager(self.game_flavour, True)
+        self.manager_lib = InstawowManager('retail', True)
         ctx.call_on_close(self.manager.conn.close)
         ctx.call_on_close(self.manager_lib.conn.close)
 

@@ -15,7 +15,7 @@ CLASSIC_ERA_VER = '11401'
 CLASSIC_VER = '30400'
 RETAIL_VER = '90207'
 
-IGNORED = ['FishingBuddy', 'GTFO', 'Details', 'ATT-Classic', 'TrinketMenu', 'TalentEmu']
+IGNORED = ['FishingBuddy', 'GTFO', 'TrinketMenu']
 
 
 def available_on(platforms):
@@ -219,7 +219,7 @@ class Manager:
                         '\n'
                         '# Dropdown menus\n',
                         '!LibUIDropDownMenu\\LibUIDropDownMenu\\LibUIDropDownMenu.xml\n',
-                        '!LibUIDropDownMenu-2.0\\LibUIDropDownMenu.xml\n',
+                        '!LibUIDropDownMenu-2.0\\LibUIDropDownMenu\\LibUIDropDownMenu.xml\n',
                         '\n']
 
         root = Path('Addons/!!Libs')
@@ -522,21 +522,20 @@ class Manager:
             '					minimap = {hide = true, radius = 160, minimapPos = 160},',
         )
 
-    @staticmethod
-    def handle_fb():
-        utils.remove_libraries(
-            ['CallbackHandler-1.0', 'HereBeDragons',
-                'LibBabble-SubZone-3.0', 'LibDataBroker-1.1',
-                'LibDBIcon-1.0', 'LibPetJournal-2.0',
-                'LibStub', 'LibTourist-3.0', 'LibWindow-1.1'],
-            'AddOns/FishingBuddy/Libs',
-            'AddOns/FishingBuddy/Libs/Libs.xml'
-        )
+    # @staticmethod
+    # def handle_fb():
+    #     utils.remove_libraries(
+    #         ['CallbackHandler-1.0', 'HereBeDragons',
+    #             'LibBabble-SubZone-3.0', 'LibDataBroker-1.1',
+    #             'LibDBIcon-1.0', 'LibStub', 'LibWindow-1.1'],
+    #         'AddOns/FishingBuddy/Libs',
+    #         'AddOns/FishingBuddy/Libs/Libs.xml'
+    #     )
 
-        utils.change_defaults(
-            'Addons/FishingBuddy/FishingBuddyMinimap.lua',
-            '		FishingBuddy_Player["MinimapData"] = { hide=true };'
-        )
+    #     utils.change_defaults(
+    #         'Addons/FishingBuddy/FishingBuddyMinimap.lua',
+    #         '		FishingBuddy_Player["MinimapData"] = { hide=true };'
+    #     )
 
     @staticmethod
     @available_on(['classic', 'classic_era'])
@@ -904,7 +903,7 @@ class Manager:
                 'AceSerializer-3.0', 'AceTimer-3.0', 'CallbackHandler-1.0',
                 'LibCustomGlow-1.0', 'LibCompress', 'LibDBIcon-1.0', 'LibDataBroker-1.1', 'LibDeflate',
                 'LibGetFrame-1.0', 'LibRangeCheck-2.0', 'LibSharedMedia-3.0',
-                'LibSerialize', 'LibSpellRange-1.0', 'LibStub'],
+                'LibSerialize', 'LibSpecialization', 'LibSpellRange-1.0', 'LibStub'],
             'Addons/WeakAuras/Libs',
             'Addons/WeakAuras/embeds.xml'
         )
