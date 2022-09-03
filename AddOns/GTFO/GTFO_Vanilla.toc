@@ -1,6 +1,6 @@
-## Interface: 10000
-## Author: Zensunim of Dragonblight/Myzrael
-## Version: 4.65.3
+## Interface: 30400
+## Author: Zensunim of Dragonblight
+## Version: 4.68
 ## SavedVariables: GTFOData
 ## DefaultState: Enabled
 
@@ -9,6 +9,13 @@
 ## Title-zhCN: |cFFFFE00A<|r|cFFC79C6E战斗|r|cFFFFE00A>|r |cFFFFFFFF伤害警报|r |cFFFFE00AGTFO|r
 ## Notes-zhCN: 当你站在错误的位置时发出警报
 
+## X-Min-Interface: 90207
+## X-Min-Interface-Classic: 11403
+## X-Min-Interface-BCC: 20504
+## X-Min-Interface-Wrath: 30400
+## X-WoWI-ID: 17996
+## X-Curse-Project-ID: 20697
+## X-Wago-ID: PANz0MK4
 
 Localization\enUS.lua
 Localization\esES.lua
@@ -38,6 +45,7 @@ GTFO_Spells_MP.lua
 GTFO_Spells_LGN.lua
 GTFO_Spells_BFA.lua
 GTFO_Spells_SL.lua
+GTFO_Spells_DF.lua
 GTFO_Spells_Special.lua
 GTFO_Fail_GenericRetail.lua
 GTFO_Fail_GenericClassic.lua
@@ -50,6 +58,7 @@ GTFO_Fail_MP.lua
 GTFO_Fail_LGN.lua
 GTFO_Fail_BFA.lua
 GTFO_Fail_SL.lua
+GTFO_Fail_DF.lua
 GTFO_FF_BC.lua
 GTFO_FF_LK.lua
 GTFO_FF_CAT.lua
@@ -57,5 +66,6 @@ GTFO_FF_MP.lua
 GTFO_FF_LGN.lua
 GTFO_FF_BFA.lua
 GTFO_FF_SL.lua
+GTFO_FF_DF.lua
 GTFO_Mobs.lua
 GTFO.xml

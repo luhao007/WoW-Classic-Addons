@@ -1,5 +1,5 @@
 --[[
-Copyright 2010-2021 João Cardoso
+Copyright 2010-2022 João Cardoso
 CustomTutorials is distributed under the terms of the GNU General Public License (or the Lesser GPL).
 This file is part of CustomTutorials.
 

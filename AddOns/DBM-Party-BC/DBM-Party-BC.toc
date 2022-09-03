@@ -9,7 +9,7 @@
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFF69CCF0小队|r |cFF22B14C燃烧的远征|r
 
 ## X-Min-Interface: 20501
-## X-Min-Interface-WOTLKC: 30400
+## X-Min-Interface-Wrath: 30400
 ## X-DBM-Mod: 1
 ## X-DBM-Mod-Type: PARTY
 ## X-DBM-Mod-Category: BC

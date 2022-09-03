@@ -1,7 +1,9 @@
-<Ui xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+<Ui xmlns:xsi="" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
+    <Include file="AceBucket-3.0\AceBucket-3.0.xml"/>
 
     <Include file="LibClass-2.0\LibClass-2.0.xml"/>
     <Script file="LibCommSocket-3.0\Socket.lua"/>
+    <Script file="LibNeteaseStats-1.0\Stats.lua"/>
     <Include file="tdGUI\Load.xml"/>
 </Ui>

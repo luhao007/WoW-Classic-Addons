@@ -712,72 +712,6 @@
   },
   {
     "source": "curse",
-    "id": "322865",
-    "slug": "classiccastbars",
-    "name": "Classic Castbars",
-    "description": "Adds customizable castbars to various unitframes.",
-    "url": "https://www.curseforge.com/wow/addons/classiccastbars",
-    "download_url": "https://edge.forgecdn.net/files/3937/526/ClassicCastbars-v1.5.1-wrath.zip",
-    "date_published": "2022-08-16T18:29:57.523000+00:00",
-    "version": "v1.5.1-wrath",
-    "changelog_url": "https://api.curseforge.com/v1/mods/322865/files/3937526/changelog",
-    "options": {
-      "strategy": "default"
-    },
-    "folders": [
-      {
-        "name": "ClassicCastbars"
-      },
-      {
-        "name": "ClassicCastbars_Options"
-      }
-    ],
-    "deps": [],
-    "logged_versions": [
-      {
-        "version": "v1.5.1-wrath",
-        "install_time": "2022-09-01T13:41:18+00:00"
-      },
-      {
-        "version": "v1.4.4-bcc",
-        "install_time": "2022-01-30T07:29:36+00:00"
-      },
-      {
-        "version": "v1.4.3-bcc",
-        "install_time": "2021-12-09T07:29:23+00:00"
-      },
-      {
-        "version": "v1.4.2-bcc",
-        "install_time": "2021-11-17T11:12:47+00:00"
-      },
-      {
-        "version": "v1.4.0-bcc",
-        "install_time": "2021-05-26T23:22:30+00:00"
-      },
-      {
-        "version": "v1.3.23-classic",
-        "install_time": "2021-05-21T01:44:33+00:00"
-      },
-      {
-        "version": "v1.3.22-classic",
-        "install_time": "2021-04-22T07:54:36+00:00"
-      },
-      {
-        "version": "v1.3.21-classic",
-        "install_time": "2021-04-06T09:37:40+00:00"
-      },
-      {
-        "version": "v1.3.20-classic",
-        "install_time": "2021-02-10T11:00:25+00:00"
-      },
-      {
-        "version": "v1.3.19-classic",
-        "install_time": "2021-02-06T08:57:12+00:00"
-      }
-    ]
-  },
-  {
-    "source": "curse",
     "id": "87785",
     "slug": "dbm-voicepack-yike",
     "name": "DBM Voicepack: Yike",
@@ -841,10 +775,10 @@
     "name": "Deadly Boss Mods (DBM) - PvP Mods",
     "description": "Deadly Boss Mods for Battlegrounds and Arenas",
     "url": "https://www.curseforge.com/wow/addons/dbm-pvp",
-    "download_url": "https://edge.forgecdn.net/files/3937/354/DBM-PvP-r135.zip",
-    "date_published": "2022-08-16T16:23:35.800000+00:00",
-    "version": "r135",
-    "changelog_url": "https://api.curseforge.com/v1/mods/61882/files/3937354/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3963/877/DBM-PvP-r136.zip",
+    "date_published": "2022-09-02T15:44:16.850000+00:00",
+    "version": "r136",
+    "changelog_url": "https://api.curseforge.com/v1/mods/61882/files/3963877/changelog",
     "options": {
       "strategy": "default"
     },
@@ -859,6 +793,10 @@
       }
     ],
     "logged_versions": [
+      {
+        "version": "r136",
+        "install_time": "2022-09-03T03:37:21+00:00"
+      },
       {
         "version": "r135",
         "install_time": "2022-09-01T13:41:21+00:00"
@@ -894,10 +832,6 @@
       {
         "version": "r123-bcc",
         "install_time": "2021-05-21T08:24:23+00:00"
-      },
-      {
-        "version": "r123-classic",
-        "install_time": "2021-05-21T01:44:33+00:00"
       }
     ]
   },
@@ -1004,10 +938,10 @@
     "name": "GTFO",
     "description": "GTFO warns you when you're standing in fire or other bad stuff.",
     "url": "https://www.curseforge.com/wow/addons/gtfo",
-    "download_url": "https://edge.forgecdn.net/files/3642/731/GTFO-4.65.3-BC.zip",
-    "date_published": "2022-02-10T03:18:19.227000+00:00",
-    "version": "4.65.3-BC",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/20697/file/3642731/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3964/110/GTFO-4.68-Wrath.zip",
+    "date_published": "2022-09-02T18:42:15.790000+00:00",
+    "version": "4.68-Wrath",
+    "changelog_url": "https://api.curseforge.com/v1/mods/20697/files/3964110/changelog",
     "options": {
       "strategy": "default"
     },
@@ -1018,6 +952,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "4.68-Wrath",
+        "install_time": "2022-09-03T03:37:21+00:00"
+      },
       {
         "version": "4.65.3-BC",
         "install_time": "2022-02-17T16:25:58+00:00"
@@ -1914,10 +1852,10 @@
     "name": "Pawn",
     "description": "Pawn helps you compare items and find upgrades.",
     "url": "https://www.curseforge.com/wow/addons/pawn",
-    "download_url": "https://edge.forgecdn.net/files/3957/716/Pawn-2.6-Wrath.zip",
-    "date_published": "2022-08-29T21:19:33.450000+00:00",
-    "version": "2.6 (Wrath Classic)",
-    "changelog_url": "https://api.curseforge.com/v1/mods/4646/files/3957716/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3964/620/Pawn-2.6.1-Wrath.zip",
+    "date_published": "2022-09-03T01:02:34.727000+00:00",
+    "version": "2.6.1 (Wrath)",
+    "changelog_url": "https://api.curseforge.com/v1/mods/4646/files/3964620/changelog",
     "options": {
       "strategy": "default"
     },
@@ -1928,6 +1866,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "2.6.1 (Wrath)",
+        "install_time": "2022-09-03T03:37:21+00:00"
+      },
       {
         "version": "2.6 (Wrath Classic)",
         "install_time": "2022-09-01T13:42:47+00:00"
@@ -1963,10 +1905,6 @@
       {
         "version": "2.5.4 (Burning Crusade)",
         "install_time": "2021-05-26T23:22:30+00:00"
-      },
-      {
-        "version": "2.5.3 (Classic)",
-        "install_time": "2021-05-23T07:48:35+00:00"
       }
     ]
   },
@@ -2862,8 +2800,8 @@
     "description": "A WeakAuras Companion clone.",
     "url": "https://github.com/layday/instawow",
     "download_url": "file:///C:/Users/luhao_000/AppData/Roaming/instawow/profiles/classic/plugins/instawow.wa_updater/WeakAurasCompanion.zip",
-    "date_published": "2022-09-01T17:07:59.252786+00:00",
-    "version": "8d6abf7",
+    "date_published": "2022-09-03T03:37:15.623167+00:00",
+    "version": "b115664",
     "changelog_url": "file:///C:/Users/luhao_000/AppData/Roaming/instawow/profiles/classic/plugins/instawow.wa_updater/CHANGELOG.md",
     "options": {
       "strategy": "default"
@@ -2875,6 +2813,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "b115664",
+        "install_time": "2022-09-03T03:37:21+00:00"
+      },
       {
         "version": "8d6abf7",
         "install_time": "2022-09-01T17:08:00+00:00"
@@ -2975,7 +2917,7 @@
     "download_url": "https://cdn.wowinterface.com/downloads/getfile.php?id=8814&d=1661891999&minion",
     "date_published": "2022-08-30T20:39:59+00:00",
     "version": "9.2.32",
-    "changelog_url": "data:,%5Bsize%3D5%5D%3CDBM%3E%20World%20Bosses%20%28Shadowlands%29%5B/size%5D%0D%0A%5Bsize%3D4%5D%5Burl%3Dhttps%3A//github.com/DeadlyBossMods/DBM-Retail/tree/9.2.32%5D9.2.32%5B/url%5D%20%282022-08-30%29%5B/size%5D%0D%0A%5Burl%3Dhttps%3A//github.com/DeadlyBossMods/DBM-Retail/compare/9.2.31...9.2.32%5DFull%20Changelog%5B/url%5D%20%5Burl%3Dhttps%3A//github.com/DeadlyBossMods/DBM-Retail/releases%5DPrevious%20Releases%5B/url%5D%0D%0A%5Blist%5D%0D%0A%5B%2A%5Dprep%20new%20retail%20tag%0D%0A%5B%2A%5DUpdate%20fated%20affixes%20with%20weak%205%20data%0D%0A%5B%2A%5Dbump%20alpha%0D%0A%5B%2A%5Dprep%20new%20wrath%20tag%0D%0A%5B%2A%5DUpdate%20ci.yml%20Don%27t%20forward%20to%20BCC%0D%0A%5B%2A%5DAdd%20a%20check%20only%20for%20M%2B%20for%20both%20DF%20and%20S4%0D%0A%5B%2A%5Dtweak/fix%0D%0A%5B%2A%5DRedo%20scanning%20again%20to%20always%20scan%20multiple%20times%20instead%20of%20aborting%20on%20first%20scan%2C%20this%20will%20make%20it%20more%20robust%20in%20detecting%20affixes%20that%20don%27t%20appear%20right%20away.%20Did%20reduce%20scan%20times%20from%2010%20over%2010%20seconds%20to%205%20over%2010%20seconds.%0D%0A%5B%2A%5DFix%20a%20bug%20causing%20out%20of%20control%20scheduling%20loop.%20Closes%23802%0D%0A%5B%2A%5DFix%20stupid%0D%0A%5B%2A%5Dattempt%20to%20fix%20situation%20where%20intial%20timers%20may%20fail%2C%20and%20as%20a%20result%2C%20timers%20could%20also%20fail%20to%20cancel%20on%20wipe/kill%20as%20well%20within%20the%20affixes%20mod.%20This%20was%20done%20through%20a%20more%20aggressive%20repeat%20scan%20that%20will%20persist%20for%2010%20seconds%20into%20fight%0D%0A%5B%2A%5Ddon%27t%20pass%20%5C%22force%5C%22%20arg%20on%20CALLENGE_MODE_RESET%20for%20autologging%0D%0A%5B%2A%5Dbump%20alpha%0D%0A%5B/list%5D",
+    "changelog_url": "data:,%5Bsize%3D5%5D%3CDBM%3E%20Dungeons%20%28WotLK%29%5B/size%5D%0D%0A%5Bsize%3D4%5D%5Burl%3Dhttps%3A//github.com/DeadlyBossMods/DBM-WoTLKC/tree/3.4.8%5D3.4.8%5B/url%5D%20%282022-09-02%29%5B/size%5D%0D%0A%5Burl%3Dhttps%3A//github.com/DeadlyBossMods/DBM-WoTLKC/compare/3.4.7...3.4.8%5DFull%20Changelog%5B/url%5D%20%5Burl%3Dhttps%3A//github.com/DeadlyBossMods/DBM-WoTLKC/releases%5DPrevious%20Releases%5B/url%5D%0D%0A%5Blist%5D%0D%0A%5B%2A%5DTag%20new%20wrath.%20need%20to%20get%20new%20wrath%20check%20code%20out%20asap%20before%20ptr%20to%20live%20sync%20or%20DBM%20core%20will%20be%20hella%20broken%0D%0A%5B%2A%5Dupdate%20wrath%20constance%20so%20they%20continue%20working%20when%20next%20build%20gets%20pushed%20to%20live%0D%0A%5B%2A%5DMinor%20cleanup%20Need%20a%20triggered%20rebuild%20%3A%29%29%0D%0A%5B%2A%5DBump%20alpha%0D%0A%5B%2A%5Dprep%20new%20retail%20tag%0D%0A%5B%2A%5Dbump%20alpha%0D%0A%5B/list%5D",
     "options": {
       "strategy": "default"
     },
@@ -3119,10 +3061,10 @@
     "name": "Mapster",
     "description": "Mapster is a very simple world map enhacement addon, which was designed to work in conjunction with all other map addons out there. The idea to create Mapster originated from pure lack of a simplistic addon that only modifies the world map, without adding a full scale feature set.\r\n\r\n[B]Features[/B]\r\n[LIST]\r\n[*]Map Style (Scale & Alpha)\r\n[*]Coordinates\r\n[*]Fog of War removal\r\n[*]Enhancement of the raid/party group icons\r\n[/LIST]\r\n\r\nYou can access the Mapster configuration menu through the new button on the world map, as shown in the screenshot. \r\nAll features (except the style) can be turned off individually if you do not need/want them.\r\n\r\n[I]If you're looking for a replacement to Cartographer, i also recommend the following addons:[/I][LIST][*][B]Gathering[/B] -> GatherMate (Hosted on WoWAce -> [URL=\"http://www.wowace.com/projects/gather-mate/\"]Download[/URL]) \r\n[*][B]Waypoints[/B] -> [URL=\"http://www.wowinterface.com/downloads/info7032-TomTom.html\"]TomTom[/URL]\r\n[*][B]ZoneInfo[/B] -> [URL=\"http://mods.curse.com/addons/wow/cromulent\"]Cromulent[/URL]\r\n[*][B]Notes[/B] -> [URL=\"http://mods.curse.com/addons/wow/handynotes\"]HandyNotes[/URL] | [URL=\"http://mods.curse.com/search?search=handynotes\"]HandyNotes Modules[/URL]\r\n[/LIST]",
     "url": "https://www.wowinterface.com/downloads/info8306-Mapster.html",
-    "download_url": "https://cdn.wowinterface.com/downloads/getfile.php?id=8306&d=1656327505&minion",
-    "date_published": "2022-06-27T10:58:25+00:00",
-    "version": "1.9.7",
-    "changelog_url": "data:,%5Bsize%3D5%5DMapster%5B/size%5D%0D%0A%5Bsize%3D4%5D%5Burl%3Dhttps%3A//github.com/Nevcairiel/Mapster/tree/1.9.7%5D1.9.7%5B/url%5D%20%282022-06-27%29%5B/size%5D%0D%0A%5Burl%3Dhttps%3A//github.com/Nevcairiel/Mapster/compare/1.9.6...1.9.7%5DFull%20Changelog%5B/url%5D%20%5Burl%3Dhttps%3A//github.com/Nevcairiel/Mapster/releases%5DPrevious%20Releases%5B/url%5D%0D%0A%5Blist%5D%0D%0A%5B%2A%5DUpdate%20TOC%0D%0A%5B%2A%5DUpdate%20CI/packaging%20to%20create%20one%20package%20for%20all%20game%20versions%0D%0A%5B%2A%5DUpdate%20editorconfig%20to%20handle%20all%20yaml%20files%0D%0A%5B/list%5D",
+    "download_url": "https://cdn.wowinterface.com/downloads/getfile.php?id=8306&d=1662155500&minion",
+    "date_published": "2022-09-02T21:51:40+00:00",
+    "version": "1.9.8",
+    "changelog_url": "data:,%5Bsize%3D5%5DMapster%5B/size%5D%0D%0A%5Bsize%3D4%5D%5Burl%3Dhttps%3A//github.com/Nevcairiel/Mapster/tree/1.9.8%5D1.9.8%5B/url%5D%20%282022-09-02%29%5B/size%5D%0D%0A%5Burl%3Dhttps%3A//github.com/Nevcairiel/Mapster/compare/1.9.7...1.9.8%5DFull%20Changelog%5B/url%5D%20%5Burl%3Dhttps%3A//github.com/Nevcairiel/Mapster/releases%5DPrevious%20Releases%5B/url%5D%0D%0A%5Blist%5D%0D%0A%5B%2A%5DUpdate%20retail%20toc%0D%0A%5B%2A%5DAdd%20Wrath%20FogClear%20data%0D%0A%5B/list%5D",
     "options": {
       "strategy": "default"
     },
@@ -3133,6 +3075,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "1.9.8",
+        "install_time": "2022-09-03T03:37:21+00:00"
+      },
       {
         "version": "1.9.7",
         "install_time": "2022-09-01T13:40:36+00:00"

@@ -114,7 +114,7 @@ function TSM.ModuleInfoIterator()
 end
 
 function TSM.IsWowClassic()
-	return WOW_PROJECT_ID == WOW_PROJECT_CLASSIC or WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC
+	return WOW_PROJECT_ID == WOW_PROJECT_CLASSIC or WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC
 end
 
 function TSM.IsWowVanillaClassic()
@@ -122,8 +122,7 @@ function TSM.IsWowVanillaClassic()
 end
 
 function TSM.IsWowWrathClassic()
-	assert(LE_EXPANSION_LEVEL_CURRENT == LE_EXPANSION_WRATH_OF_THE_LICH_KING)
-	return WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC
+	return WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC
 end
 
 function TSM.DebugLogout()

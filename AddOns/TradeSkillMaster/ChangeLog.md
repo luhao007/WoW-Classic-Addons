@@ -1,6 +1,5 @@
-## v4.11.40 Changes
+## v4.11.42 Changes
 
-* [Classic] Fixed issues with Inscription
-* [Classic] Fixed profession linking
+* [Classic] Fix for classic check
 
 [Known Issues](https://support.tradeskillmaster.com/en_US/known_issues)

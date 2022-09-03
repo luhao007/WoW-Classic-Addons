@@ -5,14 +5,14 @@
 
 local Search = LibStub('CustomSearch-1.0')
 local Unfit = LibStub('Unfit-1.0')
-local Lib = LibStub:NewLibrary('LibItemSearch-1.2', 23)
+local Lib = LibStub:NewLibrary('LibItemSearch-1.2', 24)
 if Lib then
 	Lib.Filters = {}
 	Lib.Scanner = LibItemSearchTooltipScanner or CreateFrame('GameTooltip', 'LibItemSearchTooltipScanner', UIParent, 'GameTooltipTemplate')
 	Lib.Scanner:RegisterEvent('GET_ITEM_INFO_RECEIVED')
 	Lib.Scanner:SetScript('OnEvent', function()
-		-- Lib.Filters.tipPhrases.keywords[FOLLOWERLIST_LABEL_CHAMPIONS:lower()] = Lib:TooltipLine('item:147556', 2)
-		-- Lib.Filters.tipPhrases.keywords[GARRISON_FOLLOWERS:lower()] = Lib:TooltipLine('item:147556', 2)
+		Lib.Filters.tipPhrases.keywords[FOLLOWERLIST_LABEL_CHAMPIONS:lower()] = Lib:TooltipLine('item:147556', 2)
+		Lib.Filters.tipPhrases.keywords[GARRISON_FOLLOWERS:lower()] = Lib:TooltipLine('item:147556', 2)
 	end)
 else
 	return
@@ -227,6 +227,39 @@ Lib.Filters.usable = {
 		end
 	end
 }
+
+
+--[[ Retail Keywords ]]--
+
+if C_ArtifactUI then
+	Lib.Filters.artifact = {
+		keyword1 = ITEM_QUALITY6_DESC:lower(),
+		keyword2 = RELICSLOT:lower(),
+
+		canSearch = function(self, operator, search)
+			return not operator and self.keyword1:find(search) or self.keyword2:find(search)
+		end,
+
+		match = function(self, link)
+			local id = link:match('item:(%d+)')
+			return id and C_ArtifactUI.GetRelicInfoByItemID(id)
+		end
+	}
+end
+
+if C_AzeriteItem and C_CurrencyInfo and C_CurrencyInfo.GetAzeriteCurrencyID then
+	Lib.Filters.azerite = {
+		keyword = C_CurrencyInfo.GetBasicCurrencyInfo(C_CurrencyInfo.GetAzeriteCurrencyID()).name:lower(),
+
+		canSearch = function(self, operator, search)
+			return not operator and self.keyword:find(search)
+		end,
+
+		match = function(self, link)
+			return C_AzeriteItem.IsAzeriteItemByID(link) or C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID(link)
+		end
+	}
+end
 
 
 --[[ Tooltips ]]--

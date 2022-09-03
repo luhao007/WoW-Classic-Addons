@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("Anub'Rekhan", "DBM-Naxx", 1)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20220714082659")
+mod:SetRevision("20220816155700")
 mod:SetCreatureID(15956)
 mod:SetEncounterID(1107)
 mod:SetModelID(15931)
@@ -25,6 +25,13 @@ local timerLocustFade 		= mod:NewBuffActiveTimer(26, 28785, nil, nil, nil, 6)
 
 mod:AddBoolOption("ArachnophobiaTimer", true, "timer", nil, nil, nil, "at1859")--Sad caviat that 10 and 25 man have own achievements and we have to show only 1 in GUI
 
+function mod:ImpaleTarget(targetname, uId)
+	if not targetname then return end
+	warnImpale:Show(targetname)
+	if targetname == UnitName("player") then
+		yellImpale:Yell()
+	end
+end
 
 function mod:OnCombatStart(delay)
 	if self:IsDifficulty("normal25") then

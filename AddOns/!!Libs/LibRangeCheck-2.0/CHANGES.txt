@@ -1,9 +1,8 @@
 ------------------------------------------------------------------------
-r212 | mitch | 2021-09-11 14:15:09 +0000 (Sat, 11 Sep 2021) | 2 lines
+r214 | mitch | 2022-09-03 08:26:18 +0000 (Sat, 03 Sep 2022) | 1 line
 Changed paths:
    M /trunk/LibRangeCheck-2.0/LibRangeCheck-2.0.lua
 
-Added 164766, -- Iwen's Enchanting Rod as 6yd range check
-
+WOTLK Classic support
 ------------------------------------------------------------------------
 

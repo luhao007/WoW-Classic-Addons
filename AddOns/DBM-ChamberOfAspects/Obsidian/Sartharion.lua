@@ -3,7 +3,7 @@ local L		= mod:GetLocalizedStrings()
 
 mod.statTypes = "normal,normal25"
 
-mod:SetRevision("20220714082659")
+mod:SetRevision("20220816155700")
 mod:SetCreatureID(28860)
 mod:SetEncounterID(1090)
 mod:SetModelID(27035)
@@ -41,13 +41,10 @@ local lastvoids = {}
 local lastfire = {}
 local tsort, tinsert, twipe = table.sort, table.insert, table.wipe
 
-local function isunitdebuffed(spellID)
-	local name = DBM:GetSpellInfo(spellID)
-	if not name then return false end
-
-	for i=1, DBM:GetNumGroupMembers(), 1 do
-		local debuffname = DBM:UnitDebuff("player", i, "HARMFUL")
-		if debuffname == name then
+local function isunitdebuffed(spellName)
+	for uId in DBM:GetGroupMembers() do
+		local debuff = DBM:UnitDebuff(uId, spellName)
+		if debuff then
 			return true
 		end
 	end
@@ -55,15 +52,15 @@ local function isunitdebuffed(spellID)
 end
 
 local function CheckDrakes(delay)
-	if isunitdebuffed(61248) then	-- Power of Tenebron
+	if isunitdebuffed(DBM:GetSpellInfo(61248)) then	-- Power of Tenebron
 		timerTenebron:Start(30 - delay)
 		warnTenebron:Schedule(25 - delay)
 	end
-	if isunitdebuffed(58105) then	-- Power of Shadron
+	if isunitdebuffed(DBM:GetSpellInfo(58105)) then	-- Power of Shadron
 		timerShadron:Start(75 - delay)
 		warnShadron:Schedule(70 - delay)
 	end
-	if isunitdebuffed(61251) then	-- Power of Vesperon
+	if isunitdebuffed(DBM:GetSpellInfo(61251)) then	-- Power of Vesperon
 		timerVesperon:Start(120 - delay)
 		warnVesperon:Schedule(115 - delay)
 	end

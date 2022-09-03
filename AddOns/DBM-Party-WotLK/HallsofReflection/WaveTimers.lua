@@ -1,7 +1,7 @@
 local mod = DBM:NewMod("HoRWaveTimer", "DBM-Party-WotLK", 16)
 local L = mod:GetLocalizedStrings()
 
-mod:SetRevision("20220713234849")
+mod:SetRevision("20220724032315")
 mod:SetCreatureID(30658)
 
 mod:RegisterEvents(
@@ -20,7 +20,6 @@ mod:AddBoolOption("ShowAllWaveTimers", false, "timer")
 
 local lastWave = 0
 local FalricDead = false
-local falric = EJ_GetEncounterInfo(601)
 
 function mod:UPDATE_UI_WIDGET(table)
 	local id = table.widgetID
@@ -61,7 +60,8 @@ function mod:UPDATE_UI_WIDGET(table)
 end
 
 function mod:UNIT_DIED(args)
-	if args.sourceName == falric then
+	local cid = self:GetCIDFromGUID(args.destGUID)
+	if cid == 38112 then--falric
 		timerNextWave:Start(60)
 		warnNewWaveSoon:Schedule(50)
 		FalricDead = true

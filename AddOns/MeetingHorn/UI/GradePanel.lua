@@ -2,7 +2,6 @@
 -- @Author : Dencer (tdaddon@163.com)
 -- @Link   : https://dengsir.github.io
 -- @Date   : 2/10/2020, 10:50:28 AM
-
 ---@type ns
 local ns = select(2, ...)
 
@@ -41,6 +40,12 @@ function GradePanel:Constructor()
 
     self:SetScript('OnShow', self.OnShow)
     self:SetScript('OnHide', self.OnHide)
+    self.QrCodeFrame:SetScript('OnShow', function()
+        if not self.QrCodeFrame.QRCode:IsDone() then
+            self.QrCodeFrame.QRCode:Refresh()
+        end
+    end)
+
 end
 
 function GradePanel:OnShow()
@@ -49,7 +54,7 @@ function GradePanel:OnShow()
     self.Tags:SetTags(ns.GoodLeader:GetGradeTags())
     self.QrCodeFrame.QRCode:SetValue(ns.MakeQRCode(self.raid.leader))
 
-    local logo = ns.RAID_LOGO[self.raid.raidName]
+    local logo = ns.GetInstanceLogo(self.raid.raidName)
     if logo then
         self.Logo:SetTexture(logo)
         self.Logo:Show()

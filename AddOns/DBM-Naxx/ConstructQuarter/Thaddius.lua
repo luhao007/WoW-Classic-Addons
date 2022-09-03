@@ -2,7 +2,7 @@
 local mod	= DBM:NewMod("Thaddius", "DBM-Naxx", 2)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20220714082659")
+mod:SetRevision("20220816155700")
 mod:SetCreatureID(15928)
 mod:SetEncounterID(1120)
 mod:SetModelID(16137)
@@ -21,6 +21,7 @@ local warnThrowSoon			= mod:NewSoonAnnounce(28338, 1)
 
 local warnChargeChanged		= mod:NewSpecialWarning("WarningChargeChanged", nil, nil, nil, 3, 2, nil, nil, 28089)
 local warnChargeNotChanged	= mod:NewSpecialWarning("WarningChargeNotChanged", false, nil, nil, 1, 12, nil, nil, 28089)
+local yellShift				= mod:NewShortPosYell(28089, DBM_CORE_L.AUTO_YELL_CUSTOM_POSITION)
 
 local enrageTimer			= mod:NewBerserkTimer(365)
 local timerNextShift		= mod:NewNextTimer(30, 28089, nil, nil, nil, 2, nil, DBM_COMMON_L.DEADLY_ICON)
@@ -71,14 +72,16 @@ do
 		if self.vb.phase ~=2 or (GetTime() - lastShift) > 5 or (GetTime() - lastShift) < 3 then return end
 		local charge
 		local i = 1
-		while DBM:UnitDebuff("player", i) do
-			local _, icon, count = DBM:UnitDebuff("player", i)
-			if icon == 135768 then--Interface\\Icons\\Spell_ChargeNegative
-				if count > 1 then return end
+		while UnitDebuff("player", i) do
+		local _, icon, count, _, _, _, _, _, _, _, _, _, _, _, _, count2 = UnitDebuff("player", i)
+			if icon == "Interface\\Icons\\Spell_ChargeNegative" or icon == 135768 then--Not sure if classic will return data ID or path, so include both
+				if (count2 or count) > 1 then return end--Incorrect aura, it's stacking damage one
 				charge = L.Charge1
-			elseif icon == 135769 then--Interface\\Icons\\Spell_ChargePositive
-				if count > 1 then return end
+				yellShift:Yell(7, "- -")
+			elseif icon == "Interface\\Icons\\Spell_ChargePositive" or icon == 135769 then--Not sure if classic will return data ID or path, so include both
+				if (count2 or count) > 1 then return end--Incorrect aura, it's stacking damage one
 				charge = L.Charge2
+				yellShift:Yell(6, "+ +")
 			end
 			i = i + 1
 		end

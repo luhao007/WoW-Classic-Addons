@@ -62,6 +62,8 @@ AL["Collections"] = "Colecciones"
 AL["Command %s not found. Use '/al slash' for a full list of commands"] = "Comando %s no se encuentra. Escribe '/al slash' para una lista de todos los comandos."
 --[[Translation missing --]]
 --[[ AL["Conqueror's %s"] = "Conqueror's %s"--]] 
+--[[Translation missing --]]
+--[[ AL["Contains."] = "Contains."--]] 
 AL["Content phase:"] = "Fase de contenido:"
 AL["Copy Box"] = "Caja de copiar"
 AL["Coren Direbrew"] = "Coren Cerveza Temible"

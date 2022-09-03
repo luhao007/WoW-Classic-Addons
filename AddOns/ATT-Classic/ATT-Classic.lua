@@ -3806,7 +3806,7 @@ local SetAchievementCollected = function(achievementID, collected, refresh)
 	if collected then
 		app.CurrentCharacter.Achievements[achievementID] = 1;
 		ATTAccountWideData.Achievements[achievementID] = 1;
-		if refresh then app:RefreshDataCompletely(true); end
+		if refresh then app:RefreshDataQuietly(true); end
 	elseif app.CurrentCharacter.Achievements[achievementID] then
 		app.CurrentCharacter.Achievements[achievementID] = nil;
 		ATTAccountWideData.Achievements[achievementID] = nil;
@@ -3816,7 +3816,7 @@ local SetAchievementCollected = function(achievementID, collected, refresh)
 				break;
 			end
 		end
-		if refresh then app:RefreshDataCompletely(true); end
+		if refresh then app:RefreshDataQuietly(true); end
 	end
 end
 local fields = {
@@ -5649,7 +5649,7 @@ else
 					end
 				end
 			end
-			if anythingNew then app:RefreshDataCompletely(true); end
+			if anythingNew then app:RefreshDataQuietly(true); end
 		end
 		local meta = { __index = function(t, spellID)
 			RefreshCompanionCollectionStatus();
@@ -7618,7 +7618,7 @@ app.events.MAP_EXPLORATION_UPDATED = function(...)
 						end
 					end
 				end
-				if newArea then app:RefreshDataCompletely(true); end
+				if newArea then app:RefreshDataQuietly(true); end
 			end
 		end
 	end);
@@ -7638,6 +7638,17 @@ app:RegisterEvent("MAP_EXPLORATION_UPDATED");
 app:RegisterEvent("UI_INFO_MESSAGE");
 app:RegisterEvent("ZONE_CHANGED");
 app:RegisterEvent("ZONE_CHANGED_NEW_AREA");
+end)();
+
+-- Music Rolls & Selfie Filter Lib: Music Rolls
+(function()
+-- Neither of these are supported at this time.
+app.CreateMusicRoll = function(questID, t)
+	return nil;
+end
+app.CreateSelfieFilter = function(id, t)
+	return nil;
+end
 end)();
 
 -- NPC Lib
@@ -10854,6 +10865,15 @@ function app:GetDataCache()
 		flightPathsCategory.text = "Flight Paths";
 		table.insert(g, flightPathsCategory);
 		
+		-- Expansion Features
+		if app.Categories.ExpansionFeatures then
+			db = {};
+			db.text = "Expansion Features";
+			db.icon = app.asset("Category_ExpansionFeatures");
+			db.g = app.Categories.ExpansionFeatures;
+			table.insert(g, db);
+		end
+		
 		-- Holidays
 		if app.Categories.Holidays then
 			db = app.CreateNPC(-5, app.Categories.Holidays);
@@ -11713,12 +11733,13 @@ function app:RefreshData(fromTrigger)
 	end);
 end
 function app:RefreshDataCompletely(fromTrigger)
+	app.countdown = 30;
 	app.forceFullDataRefresh = true;
 	app:RefreshData(fromTrigger);
 end
-function app:RefreshDataQuietly()
+function app:RefreshDataQuietly(fromTrigger)
 	app.countdown = 30;
-	app:RefreshData();
+	app:RefreshData(fromTrigger);
 end
 function app:GetWindow(suffix, parent, onUpdate)
 	local window = app.Windows[suffix];
@@ -14896,7 +14917,7 @@ app:GetWindow("Tradeskills", UIParent, function(self, ...)
 				if learned > 0 then
 					app.print("Cached " .. learned .. " known recipes!");
 					wipe(searchCache);
-					app:RefreshDataCompletely(true);
+					app:RefreshDataQuietly(true);
 				end
 			end
 		end
@@ -15016,7 +15037,7 @@ app:GetWindow("Tradeskills", UIParent, function(self, ...)
 						if not previousState or not app.Settings:Get("AccountWide:Recipes") then
 							app:PlayFanfare();
 						end
-						app:RefreshDataCompletely(true);
+						app:RefreshDataQuietly(true);
 					end
 					self:RefreshRecipes();
 				end
@@ -16401,7 +16422,7 @@ app.events.QUEST_TURNED_IN = function(questID)
 		wipe(DirtyQuests);
 		wipe(searchCache);
 	end
-	app:RefreshDataCompletely(true);
+	app:RefreshDataQuietly(true);
 end
 app.events.QUEST_WATCH_UPDATE = function()
 	wipe(searchCache);

@@ -1,9 +1,6 @@
-1.0.4 Release Notes
+1.0.5 Release Notes
 Contributions made by Crieve:
-* Fixed some additional lag caused by the CRITERIA_UPDATE event which fires waaay more offen than it should.
-* Battle Pet names now retry to resolve themselves.
-* Soothing Spices actually get removed in Wrath.
-* Updated Burning Crusade World Drops and moved them over to the Retail DB for future updates.
-* The mini list slider no longer kills the game's framerate.
-* Updated Wrath of the Lich King World Drops to work with a batch folder.
+* Added a reference to the Argent Tournament file... which needs a LOT of work.
+* Applied the proper classic phase and timeline to Argent Tournament.
+* Moved the refresh lag to when you open the ATT main list rather than when you complete a quest.
 

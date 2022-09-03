@@ -1361,7 +1361,7 @@ end,
 function(self)
 	settings:SetCompletedGroups(self:GetChecked());
 	settings:UpdateMode();
-	app:RefreshDataCompletely();
+	app:RefreshDataQuietly();
 end);
 ShowCompletedGroupsCheckBox:SetATTTooltip("Enable this option if you want to see completed groups as a header with a completion percentage. If a group has nothing relevant for your class, this setting will also make those groups appear in the listing.\n\nWe recommend you turn this setting off as it will conserve the space in the mini list and allow you to quickly see what you are missing from the zone.");
 ShowCompletedGroupsCheckBox:SetPoint("TOPLEFT", MinimapButtonStyleCheckBox, "BOTTOMLEFT", 0, -4);
@@ -1380,7 +1380,7 @@ end,
 function(self)
 	settings:SetCollectedThings(self:GetChecked());
 	settings:UpdateMode();
-	app:RefreshDataCompletely();
+	app:RefreshDataQuietly();
 end);
 ShowCollectedThingsCheckBox:SetATTTooltip("Enable this option if you want to see completed groups as a header with a completion percentage. If a group has nothing relevant for your class, this setting will also make those groups appear in the listing.\n\nWe recommend you turn this setting off as it will conserve the space in the mini list and allow you to quickly see what you are missing from the zone.");
 ShowCollectedThingsCheckBox:SetPoint("TOPLEFT", ShowCompletedGroupsCheckBox, "BOTTOMLEFT", 0, 4);
@@ -1399,7 +1399,7 @@ end,
 function(self)
 	settings:Set("Show:IncompleteThings", self:GetChecked());
 	settings:UpdateMode();
-	app:RefreshDataCompletely();
+	app:RefreshDataQuietly();
 end);
 ShowIncompleteThingsCheckBox:SetATTTooltip("Enable this option if you want to see items, objects, NPCs, and headers associated with incomplete quests that don't necessarily have anything you can collect as a result of completing them.\n\nNOTE: Rare Spawns and Vignettes also appear in the listing with this setting turned on.");
 ShowIncompleteThingsCheckBox:SetPoint("TOPLEFT", ShowCollectedThingsCheckBox, "BOTTOMLEFT", 0, 4);

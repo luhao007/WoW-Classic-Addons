@@ -155,7 +155,7 @@ function private.CreateFSM()
 				assert(name)
 				Log.Info("Showing profession: %s", name)
 				private.professionName = name
-				if TSM.IsWowClassic() then
+				if TSM.IsWowVanillaClassic() then
 					ToggleDefaultCraftButton()
 				end
 				private.RunUpdateCallbacks()

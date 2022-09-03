@@ -5,7 +5,7 @@
 GTFO Spell List - Shadowlands
 ]]--
 
-if (not (GTFO.ClassicMode or GTFO.BurningCrusadeMode)) then
+if (not (GTFO.ClassicMode or GTFO.BurningCrusadeMode or GTFO.WrathMode)) then
 
 --- ***********************
 --- * Shadowlands (World) *
@@ -192,6 +192,53 @@ GTFO.SpellID["365909"] = {
   --desc = "Desecrated Ground (Yggdreth the Despoiler)";
   sound = 1;
 };
+
+GTFO.SpellID["368715"] = {
+  --desc = "Charged Ground (Genesis Guardian)";
+  sound = 1;
+};
+
+GTFO.SpellID["363982"] = {
+  --desc = "Tainted Ground (Vitiane)";
+  sound = 1;
+};
+
+GTFO.SpellID["368617"] = {
+  --desc = "Devouring Helix (Akkaris)";
+  tankSound = 2;
+  sound = 1;
+};
+
+GTFO.SpellID["362506"] = {
+  --desc = "Corruption Beam (Octolus)";
+  sound = 1;
+};
+
+GTFO.SpellID["359932"] = {
+  --desc = "Overwhelming Darkness";
+  sound = 1;
+};
+
+GTFO.SpellID["361335"] = {
+  --desc = "Destruction Zone (Destruction Core)";
+  sound = 1;
+};
+
+GTFO.SpellID["368476"] = {
+  --desc = "Charged Ground (Protector of the First Ones)";
+  sound = 1;
+};
+
+GTFO.SpellID["336955"] = {
+  --desc = "Active Volcano";
+  sound = 1;
+};
+
+GTFO.SpellID["360677"] = {
+  --desc = "Fleeting Flames";
+  sound = 1;
+};
+
 
 --- **********************
 --- * Halls of Atonement *
@@ -433,6 +480,7 @@ GTFO.SpellID["320366"] = {
 GTFO.SpellID["333485"] = {
   --desc = "Disease Cloud (Rotspew)";
   sound = 1;
+  casterOnly = true;
   test = true;
 };
 
@@ -474,9 +522,14 @@ GTFO.SpellID["332332"] = {
 
 GTFO.SpellID["332672"] = {
   --desc = "Bladestorm (Atal'ai Deathwalker)";
-  sound = 1;
-  tankSound = 0;
-  test = true;
+  soundChallenge = 1;
+  tankSoundChallenge = 2;
+};
+
+GTFO.SpellID["332157"] = {
+  --desc = "Spinning Up (Headless Client)";
+  soundChallenge = 1;
+  tankSoundChallenge = 2;
 };
 
 GTFO.SpellID["323569"] = {
@@ -539,6 +592,11 @@ GTFO.SpellID["353633"] = {
 
 GTFO.SpellID["352676"] = {
   --desc = "Slice (Trap)";
+  sound = 1;
+};
+
+GTFO.SpellID["368015"] = {
+  --desc = "Bloated Rot Pool";
   sound = 1;
 };
 
@@ -848,6 +906,131 @@ GTFO.SpellID["356163"] = {
 --- *******************************
 
 -- TODO: Relic Collapse (Artificer Xy'mox) - Mythic only
+
+GTFO.SpellID["360412"] = {
+  --desc = "Exposed Core (Vigilant Guardian)";
+  negatingDebuffSpellID = 360403; -- Force Field
+  sound = 1;
+};
+
+GTFO.SpellID["360409"] = {
+  --desc = "Exposed Core (Vigilant Guardian)";
+  negatingDebuffSpellID = 360403; -- Force Field
+  sound = 1;
+};
+
+GTFO.SpellID["368582"] = {
+  --desc = "Shocklight Blast";
+  sound = 1;
+};
+
+GTFO.SpellID["365889"] = {
+  --desc = "Maw Expulsion";
+  sound = 1;
+};
+
+GTFO.SpellID["366070"] = {
+  --desc = "Volatile Residue (Skolex)";
+  sound = 1;
+  test = true;
+};
+
+GTFO.SpellID["361225"] = {
+  --desc = "Encroaching Dominion (Dausegne)";
+  sound = 1;
+};
+
+GTFO.SpellID["361418"] = {
+  --desc = "Obliteration Arc (Dausegne)";
+  sound = 1;
+};
+
+GTFO.SpellID["364125"] = {
+  --desc = "Progenitor Forge";
+  sound = 1;
+};
+
+GTFO.SpellID["360618"] = {
+  --desc = "Necrosis (Ossein Ritual)";
+  sound = 1;
+};
+
+GTFO.SpellID["365886"] = {
+  --desc = "Photon Expulsion";
+  sound = 1;
+};
+
+GTFO.SpellID["365719"] = {
+  --desc = "Reflective Bulwark (Ancient Sentinel)";
+  sound = 1;
+};
+
+GTFO.SpellID["360114"] = {
+  --desc = "Ephemeral Fissure (Halondrus)";
+  sound = 1;
+};
+
+GTFO.SpellID["367838"] = {
+  --desc = "Ephemeral Fissure (Halondrus)";
+  sound = 1;
+};
+
+GTFO.SpellID["368363"] = {
+  --desc = "Shattered Prism (Halondrus)";
+  sound = 1;
+};
+
+GTFO.SpellID["369207"] = {
+  --desc = "Planetcracker Beam (Halondrus)";
+  sound = 1;
+};
+
+GTFO.SpellID["366232"] = {
+  --desc = "Animastorm (Prototype of Renewal)";
+  sound = 1;
+};
+
+GTFO.SpellID["360159"] = {
+  --desc = "Unstable Mote (Lihuvim)";
+  sound = 1;
+};
+
+GTFO.SpellID["362798"] = {
+  --desc = "Cosmic Radiation (Rygelon)";
+  sound = 1;
+  test = true;
+};
+
+GTFO.SpellID["365683"] = {
+  --desc = "Desecration (Overthrown Protector)";
+  sound = 1;
+};
+
+GTFO.SpellID["360425"] = {
+  --desc = "Unholy Ground (The Jailer)";
+  sound = 1;
+  tankSound = 0;
+};
+
+GTFO.SpellID["365174"] = {
+  --desc = "Defile (The Jailer)";
+  sound = 1;
+};
+
+-- Testing only
+GTFO.SpellID["320067"] = {
+  --desc = "Faerie Dust (Shimmerbough Ritualist)";
+  applicationOnly = true;
+  sound = 1;
+  tankSound = 4;
+};
+
+GTFO.SpellID["320081"] = {
+  --desc = "Whimsy Barb (Shimmerbough Ritualist)";
+  applicationOnly = true;
+  sound = 2;
+  tankSound = 3;
+};
 
 
 end

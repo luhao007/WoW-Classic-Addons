@@ -12,19 +12,19 @@ GTFO.IgnoreSpellCategory["Fatigue"] = {
 	override = true
 }
 
-if (not (GTFO.ClassicMode or GTFO.BurningCrusadeMode)) then
+if (not (GTFO.ClassicMode or GTFO.BurningCrusadeMode or GTFO.WrathMode)) then
 
 	GTFO.IgnoreSpellCategory["HagaraWateryEntrenchment"] = {
 		-- mobID = 55689; -- Hagara the Stormbinder
 		spellID = 110317,
-		desc = "Watery Entrenchment (Hagara)"
+		desc = "Watery Entrenchment (Hagara - Cataclysm)"
 	}
 
 	GTFO.IgnoreSpellCategory["GarroshDesecrated"] = {
 		-- Garrosh Hellscream
 		spellID = 144762,
 		desc = "Desecrated Axe (Garrosh Phase 1 & 2)",
-		tooltip = "Alert from the Desecrated Axe from Garrosh Hellscream (Phase 1 & 2)",
+		tooltip = "Alert from the Desecrated Axe from Garrosh Hellscream (Phase 1 & 2 - MOP)",
 		override = true
 	}
 
@@ -88,5 +88,15 @@ GTFO.IgnoreScan["356447"] = true; -- Dreadbugs
 GTFO.IgnoreScan["209858"] = true; -- Necrotic Wound
 GTFO.IgnoreScan["355951"] = true; -- Unworthy
 GTFO.IgnoreScan["366943"] = true; -- Radioactive Core
+GTFO.IgnoreScan["368146"] = true; -- Eternity Engine
+GTFO.IgnoreScan["362130"] = true; -- Quaking Steps
+GTFO.IgnoreScan["361818"] = true; -- Hopebreaker
+GTFO.IgnoreScan["364845"] = true; -- Fractured Core
+GTFO.IgnoreScan["360287"] = true; -- Anguishing Strike
+GTFO.IgnoreScan["360302"] = true; -- Swarm of Decay
+GTFO.IgnoreScan["360303"] = true; -- Swarm of Darkness
+GTFO.IgnoreScan["361923"] = true; -- Ravenous Hunger
+GTFO.IgnoreScan["359778"] = true; -- Ephemera Dust
+GTFO.IgnoreScan["294720"] = true; -- Bottled Enimga
 
 

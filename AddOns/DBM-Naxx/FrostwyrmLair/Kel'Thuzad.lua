@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("Kel'Thuzad", "DBM-Naxx", 5)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20220714082659")
+mod:SetRevision("20220816155700")
 mod:SetCreatureID(15990)
 mod:SetEncounterID(1114)
 --mod:SetModelID(15945)--Doesn't work at all, doesn't even render.
@@ -22,7 +22,7 @@ mod:RegisterEventsInCombat(
 local warnAddsSoon			= mod:NewAnnounce("warnAddsSoon", 1, "134321")
 local warnPhase2			= mod:NewPhaseAnnounce(2, 3)
 local warnBlastTargets		= mod:NewTargetAnnounce(27808, 2)
-local warnFissure			= mod:NewSpellAnnounce(27810, 4, nil, nil, nil, nil, nil, 2)
+local warnFissure			= mod:NewTargetNoFilterAnnounce(27810, 4, nil, nil, nil, nil, nil, 2)
 local warnMana				= mod:NewTargetAnnounce(27819, 2)
 local warnChainsTargets		= mod:NewTargetNoFilterAnnounce(28410, 4)
 
@@ -39,7 +39,7 @@ local timerManaBomb			= mod:NewCDTimer(20, 27819, nil, nil, nil, 3)--20-50
 local timerFrostBlast		= mod:NewCDTimer(40.1, 27808, nil, nil, nil, 3, nil, DBM_COMMON_L.DEADLY_ICON)--40-46 (might be 33-46)
 local timerMC				= mod:NewBuffActiveTimer(20, 28410, nil, nil, nil, 3)
 --local timerMCCD			= mod:NewCDTimer(90, 28410, nil, nil, nil, 3)--actually 60 second cdish but its easier to do it this way for the first one.
-local timerPhase2			= mod:NewTimer(218, "TimerPhase2", "136116", nil, nil, 6)
+local timerPhase2			= mod:NewTimer(225, "TimerPhase2", "136116", nil, nil, 6)
 
 mod:AddSetIconOption("SetIconOnMC", 28410, true, false, {1, 2, 3})
 mod:AddSetIconOption("SetIconOnManaBomb", 27819, false, false, {8})
@@ -88,13 +88,13 @@ function mod:OnCombatStart(delay)
 	table.wipe(frostBlastTargets)
 	self.vb.warnedAdds = false
 	self.vb.MCIcon = 1
-	specwarnP2Soon:Schedule(208.1-delay)
+	specwarnP2Soon:Schedule(215-delay)
 	timerPhase2:Start()
 	--Redundancy below here isn't needed on retail but may be on wrath classic
 	if not isRetail then
-		warnPhase2:Schedule(218.1)
+		warnPhase2:Schedule(225)
 		if self.Options.RangeFrame then
-			self:Schedule(218.1-delay, RangeToggle, true)
+			self:Schedule(225-delay, RangeToggle, true)
 		end
 	end
 end

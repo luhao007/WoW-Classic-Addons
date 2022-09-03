@@ -63,6 +63,7 @@ local SHORT_NAMES = {
     [2597] = L['SHORT: Alterac Valley'], -- 奥特兰克山谷
     [3277] = L['SHORT: Warsong Gulch'], -- 战歌峡谷
     [3358] = L['SHORT: Arathi Basin'], -- 阿拉希盆地
+    ['Doomwalker'] = L['SHORT: Doomwalker'], -- 末日行者
     ['Lord Kazzak'] = L['SHORT: Lord Kazzak'], -- 卡扎克
     ['Azuregos'] = L['SHORT: Azuregos'], -- 艾索雷葛斯
     ['Ysondre'] = L['SHORT: Ysondre'], -- 伊森德雷
@@ -70,28 +71,18 @@ local SHORT_NAMES = {
     ['Emeriss'] = L['SHORT: Emeriss'], -- 艾莫莉丝
     ['Lethon'] = L['SHORT: Lethon'], -- 莱索恩
     [3457] = 'KLZ',
-    [3923] = '格鲁尔',
-    [3836] = '玛瑟里顿',
+    [3923] = 'GLR',
+    [3836] = 'MSLD',
+    [3607] = 'DS',
+    [3845] = 'FB',
+    [3606] = 'HS',
+    [3959] = 'BT',
+    [3805] = 'ZAM',
+    [4075] = 'SW',
+}
 
-    -- P(5, 1):raid(3457) -- 卡拉赞
-    -- P(5, 1):raid(3923) -- 格鲁尔的巢穴
-    -- P(5, 1):raid(3836) -- 玛瑟里顿的巢穴
-    -- P(5, 2):raid(3607) -- 毒蛇神殿
-    -- P(5, 2):raid(3845) -- 风暴要塞
-    -- P(5, 2):raid(3606) -- 海加尔山
-    -- P(5, 2):raid(3959) -- 黑暗神庙
-    -- P(5, 3):raid(3805) -- 祖阿曼
-    -- P(5, 4):raid(4075) -- 太阳井
-}
-local INSTANCE_NAMES = {
-    [C_Map.GetAreaInfo(2717)] = C_Map.GetAreaInfo(2717), -- 熔火之心
-    [C_Map.GetAreaInfo(2159)] = C_Map.GetAreaInfo(2159), -- 奥妮克希亚的巢穴
-    [C_Map.GetAreaInfo(2677)] = C_Map.GetAreaInfo(2677), -- 黑翼之巢
-    [C_Map.GetAreaInfo(3428)] = L['Ahn\'Qiraj Temple'], -- 安其拉神殿
-    [C_Map.GetAreaInfo(3456)] = C_Map.GetAreaInfo(3456), -- 纳克萨玛斯
-    [C_Map.GetAreaInfo(1977)] = C_Map.GetAreaInfo(1977), -- 祖尔格拉布
-    [C_Map.GetAreaInfo(3429)] = C_Map.GetAreaInfo(3429), -- 安其拉废墟
-}
+local SEARCH_MATCH = {['5H'] = {activityId = 'Dungeon', search = '英雄', input = '5H', name = '5H'}}
+local AVAILABLE_ACTIVITY = {}
 
 local PROJECTS = {[2] = {[2] = true}, [5] = {[2] = true, [5] = true}}
 
@@ -113,6 +104,26 @@ local function names(key, normalAndHero, isHero)
         end
     end
     return r
+end
+
+function InitAvailableActivity()
+    local categories = C_LFGList.GetAvailableCategories();
+    for k, v in ipairs(categories) do
+        local activities = C_LFGList.GetAvailableActivities(v);
+        local category = {categoryId = v, activities = {}}
+        for k1, v1 in ipairs(activities) do
+            local cfg = C_LFGList.GetActivityInfoTable(v1)
+            local name = cfg.fullName;
+            local name1, name2
+            local s, e = strfind(name, '-')
+            if s then
+                name1 = strsub(name, 0, s - 2)
+                name2 = strsub(name, e + 2)
+            end
+            tinsert(category.activities, {activityId = v1, name = name, name1 = name1, name2 = name2})
+        end
+        tinsert(AVAILABLE_ACTIVITY, category)
+    end
 end
 
 function InstanceBuilder:base(name, path, minLevel, members, class)
@@ -148,7 +159,7 @@ function InstanceBuilder:base(name, path, minLevel, members, class)
         category = CATEGORY_DATA[path],
         minLevel = minLevel or 0,
         class = class,
-        instanceName = INSTANCE_NAMES[name],
+        instanceName = ns.GetInstanceName(name),
         id = id,
     })
 
@@ -184,8 +195,8 @@ function InstanceBuilder:quest(key, minLevel)
     return self:base(names(key), 'Quest', minLevel, 40)
 end
 
-function InstanceBuilder:boss(key)
-    return self:base(names(key), 'Boss', 60, 40)
+function InstanceBuilder:boss(key, minLevel)
+    return self:base(names(key), 'Boss', minLevel, 40)
 end
 
 function InstanceBuilder:new(obj)
@@ -305,6 +316,8 @@ function Builder.End()
         tinsert(ns.MODE_MENU, menuItem)
         tinsert(ns.MODE_FILTER_MENU, menuItem)
     end
+
+    InitAvailableActivity()
 end
 
 ns.Builder = Builder
@@ -342,4 +355,25 @@ end
 ---@return MeetingHornCategoryData
 function ns.GetCategoryData(path)
     return CATEGORY_DATA[path]
+end
+
+function ns.GetMatchSearch(match)
+    return SEARCH_MATCH[match]
+end
+
+function ns.GetMatchAvailableActivity(activityId)
+    if #AVAILABLE_ACTIVITY == 0 then
+        InitAvailableActivity()
+    end
+    local activityData = ns.GetActivityData(activityId)
+    local activityName = activityData.name
+    local index = strfind(activityName, '（普通）')
+    activityName = strsub(activityName, 1, index and index - 1)
+    for k, v in ipairs(AVAILABLE_ACTIVITY) do
+        for k1, v1 in ipairs(v.activities) do
+            if v1.name == activityName or v1.name1 == activityName or v1.name2 == activityName then
+                return v.categoryId, v1.activityId
+            end
+        end
+    end
 end

@@ -14,14 +14,15 @@ function MainPanel:Constructor()
     self:SetupTabs({
         {L['Search Activity'], self.Browser}, --
         {L['Create Activity'], self.Manage}, --
-        --[=[@classic@
-        {'好团长', self.GoodLeader}, --
-        --@end-classic@]=]
+        {'星团长', self.GoodLeader}, --
+        {L['Announcement'], self.Announcement}, --
+        {L['MissionGuidance'], self.MissionGuidance}, --
         {L['Encounter'], self.Encounter}, --
         {L['Recent members'], self.Recent}, --
         --[=[@classic@
         {L['Challenge'], self.Challenge}, --
         --@end-classic@]=]
+        {'挑战活动', self.Quest},
         {L['Options'], self.Options}, --
         {L['Help'], self.Help}, --
     })
@@ -52,7 +53,9 @@ function MainPanel:Constructor()
     ns.UI.Recent:Bind(self.Recent)
     ns.UI.Challenge:Bind(self.Challenge)
     ns.UI.GoodLeaderFrame:Bind(self.GoodLeader)
-
+    ns.UI.Announcement:Bind(self.Announcement)
+    ns.UI.MissionGuidance:Bind(self.MissionGuidance)
+    ns.UI.QuestPanel:Bind(self.Quest)
     self.Manage.Applicant:Hide()
 
     local FeedBack = ns.GUI:GetClass('BlockDialog'):New(self)
@@ -166,3 +169,4 @@ function MainPanel:CreateTabButton(id)
     button:SetID(id)
     return button
 end
+

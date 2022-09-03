@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Iceoven
-## Version: 49d3d7e
+## Version: 6746e8a
 ## RequiredDeps: DBM-Core
 ## DefaultState: enabled
 

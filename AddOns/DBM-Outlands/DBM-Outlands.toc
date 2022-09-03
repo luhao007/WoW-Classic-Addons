@@ -1,5 +1,5 @@
 ## Interface: 30400
-## Version: 84caf69
+## Version: 1cfb739
 ## RequiredDeps: DBM-Core
 ## LoadOnDemand: 1
 ## SavedVariables: DBMOutlands_AllSavedVars
@@ -9,7 +9,7 @@
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFF69CCF0户外|r |cFF22B14C外域|r
 
 ## X-Min-Interface: 20501
-## X-Min-Interface-WOTLKC: 30400
+## X-Min-Interface-Wrath: 30400
 ## X-DBM-Mod: 1
 ## X-DBM-Mod-Type: RAID
 ## X-DBM-Mod-Category: BC
