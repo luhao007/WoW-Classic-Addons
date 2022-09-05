@@ -1630,10 +1630,10 @@
     "name": "Myslot",
     "description": "Myslot is for transferring settings between accounts. Feedback farmer1992@gmail.com",
     "url": "https://www.curseforge.com/wow/addons/myslot",
-    "download_url": "https://edge.forgecdn.net/files/3526/557/Myslot-v5.8.0-v2.5.2.zip",
-    "date_published": "2021-11-15T11:32:27.057000+00:00",
-    "version": "v5.8.0-v2.5.2",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/48863/file/3526557/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3969/513/Myslot-v5.8.1-v3.4.0.zip",
+    "date_published": "2022-09-05T11:36:10.330000+00:00",
+    "version": "v5.8.1-v3.4.0",
+    "changelog_url": "https://api.curseforge.com/v1/mods/48863/files/3969513/changelog",
     "options": {
       "strategy": "default"
     },
@@ -1644,6 +1644,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v5.8.1-v3.4.0",
+        "install_time": "2022-09-05T12:11:38+00:00"
+      },
       {
         "version": "v5.8.0-v2.5.2",
         "install_time": "2021-11-17T11:12:48+00:00"
@@ -2065,10 +2069,10 @@
     "name": "RaidLedger",
     "description": "GDKP gold run ledger",
     "url": "https://www.curseforge.com/wow/addons/raidledger",
-    "download_url": "https://edge.forgecdn.net/files/3594/51/RaidLedger-v1.9.5-v2.5.2.zip",
-    "date_published": "2022-01-04T20:23:06.877000+00:00",
-    "version": "v1.9.5-v2.5.2",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/349048/file/3594051/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3969/532/RaidLedger-v1.9.5-v3.4.0.zip",
+    "date_published": "2022-09-05T11:54:30.137000+00:00",
+    "version": "v1.9.5-v3.4.0",
+    "changelog_url": "https://api.curseforge.com/v1/mods/349048/files/3969532/changelog",
     "options": {
       "strategy": "default"
     },
@@ -2079,6 +2083,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v1.9.5-v3.4.0",
+        "install_time": "2022-09-05T12:11:38+00:00"
+      },
       {
         "version": "v1.9.5-v2.5.2",
         "install_time": "2022-01-30T07:29:40+00:00"
@@ -2913,72 +2921,6 @@
       {
         "version": "2.5.4",
         "install_time": "2020-11-03T05:33:04+00:00"
-      }
-    ]
-  },
-  {
-    "source": "wowi",
-    "id": "8814",
-    "slug": "8814-deadly-boss-mods",
-    "name": "Deadly Boss Mods",
-    "description": "The ultimate encounter helper to give you fight info that's easy to process at a glance. DBM aims to focus on what's happening to you, and what YOU need to do about it.\r\n\r\nMake sure you download correct version for game you are playing\r\n\r\nR - Retail (Shadowlands)\r\nWL - Wrath of the Lich King Classic\r\nBC - Burning Crusade Classic\r\nC - Classic Era",
-    "url": "https://www.wowinterface.com/downloads/info8814-DeadlyBossMods.html",
-    "download_url": "https://cdn.wowinterface.com/downloads/getfile.php?id=8814&d=1661891999&minion",
-    "date_published": "2022-08-30T20:39:59+00:00",
-    "version": "9.2.32",
-    "changelog_url": "data:,%5Bsize%3D5%5D%3CDBM%3E%20Dungeons%20%28WotLK%29%5B/size%5D%0D%0A%5Bsize%3D4%5D%5Burl%3Dhttps%3A//github.com/DeadlyBossMods/DBM-WoTLKC/tree/3.4.8%5D3.4.8%5B/url%5D%20%282022-09-02%29%5B/size%5D%0D%0A%5Burl%3Dhttps%3A//github.com/DeadlyBossMods/DBM-WoTLKC/compare/3.4.7...3.4.8%5DFull%20Changelog%5B/url%5D%20%5Burl%3Dhttps%3A//github.com/DeadlyBossMods/DBM-WoTLKC/releases%5DPrevious%20Releases%5B/url%5D%0D%0A%5Blist%5D%0D%0A%5B%2A%5DTag%20new%20wrath.%20need%20to%20get%20new%20wrath%20check%20code%20out%20asap%20before%20ptr%20to%20live%20sync%20or%20DBM%20core%20will%20be%20hella%20broken%0D%0A%5B%2A%5Dupdate%20wrath%20constance%20so%20they%20continue%20working%20when%20next%20build%20gets%20pushed%20to%20live%0D%0A%5B%2A%5DMinor%20cleanup%20Need%20a%20triggered%20rebuild%20%3A%29%29%0D%0A%5B%2A%5DBump%20alpha%0D%0A%5B%2A%5Dprep%20new%20retail%20tag%0D%0A%5B%2A%5Dbump%20alpha%0D%0A%5B/list%5D",
-    "options": {
-      "strategy": "default"
-    },
-    "folders": [
-      {
-        "name": "DBM-Affixes"
-      },
-      {
-        "name": "DBM-Brawlers"
-      },
-      {
-        "name": "DBM-CastleNathria"
-      },
-      {
-        "name": "DBM-Core"
-      },
-      {
-        "name": "DBM-DMF"
-      },
-      {
-        "name": "DBM-DragonIsles"
-      },
-      {
-        "name": "DBM-GUI"
-      },
-      {
-        "name": "DBM-SanctumOfDomination"
-      },
-      {
-        "name": "DBM-Sepulcher"
-      },
-      {
-        "name": "DBM-Shadowlands"
-      },
-      {
-        "name": "DBM-StatusBarTimers"
-      },
-      {
-        "name": "DBM-VPVEM"
-      },
-      {
-        "name": "DBM-VaultoftheIncarnates"
-      },
-      {
-        "name": "DBM-WorldEvents"
-      }
-    ],
-    "deps": [],
-    "logged_versions": [
-      {
-        "version": "9.2.32",
-        "install_time": "2022-09-01T13:40:41+00:00"
       }
     ]
   },

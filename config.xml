@@ -311,6 +311,10 @@
 				<Title>公会银行</Title>
 				<Notes>Bagnon公会银行模块</Notes>
 			</SubAddon>
+			<SubAddon name="Bagnon_ItemInfo">
+				<Title>物品等级</Title>
+				<Notes>Bagnon物品等级模块</Notes>
+			</SubAddon>
 			<SubAddon name="Bagnon_VoidStorage">
 				<Title>虚空仓库</Title>
 				<Notes>Bagnon虚空仓库模块</Notes>

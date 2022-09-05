@@ -1,10 +1,10 @@
-lightweight tag 76eba39a378eca6cf222936f141454fe901b0f88 v1.9.5-v2.5.2
+lightweight tag 67dbe8f571042084c81f032a682f390f6a2d6fe7 v1.9.5-v3.4.0
 Author:	Boshi Lian <farmer1992@gmail.com>
-Date:	Tue Jan 4 12:22:38 2022 -0800
+Date:	Mon Sep 5 04:54:05 2022 -0700
 
-commit 76eba39a378eca6cf222936f141454fe901b0f88
+commit 67dbe8f571042084c81f032a682f390f6a2d6fe7
 Author: Boshi Lian <farmer1992@gmail.com>
-Date:   Tue Jan 4 12:22:38 2022 -0800
+Date:   Mon Sep 5 04:54:05 2022 -0700
 
-    unlock bid frame totally
+    bump ver
 

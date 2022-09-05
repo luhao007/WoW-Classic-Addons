@@ -1,10 +1,14 @@
-## Interface: 11403
-## Title: HandyNotes_NPCs (Classic)
-## Version: 1.29-classic
-## Notes: Shows locations of various old world npcs
+## Interface: 30400
 ## Author: Revel of Pagle
+## Version: 1.29-classic
 ## RequiredDeps: HandyNotes
 ## SavedVariables: HandyNotes_NPCsClassicDB
+
+## Title: HandyNotes_NPCs (Classic)
+## Notes: Shows locations of various old world npcs
+## Title-zhCN: |cFFFFE00A<|r|cFF40C7EB探索|r|cFFFFE00A>|r |cFFFFFFFF地图标记|r |cFF69CCF0NPC|r
+
+## X-Part-Of: HandyNotes
 
 libs\bcc\AceHook-3.0\AceHook-3.0.lua
 libs\bcc\LibUIDropDownMenu\LibUIDropDownMenu.xml

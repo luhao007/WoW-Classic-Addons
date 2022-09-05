@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Boshi Lian(farmer1992@gmail.com)
-## Version: v1.9.5-v2.5.2
+## Version: v1.9.5-v3.4.0
 ## SavedVariablesPerCharacter: RaidLedgerDatabase
 
 ## Title: Raid Ledger

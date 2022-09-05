@@ -1,11 +1,15 @@
 ## Interface: 30400
-## Title: HandyNotes_NPCs (Classic)
-## Version: 1.29-bcc
-## Notes: Shows locations of various npcs
 ## Author: Cali
+## Version: 1.29-bcc
 ## RequiredDeps: HandyNotes
 ## OptionalDeps: LibStub, !LibUIDropDownMenu
 ## SavedVariables: HandyNotes_NPCsClassicDB
+
+## Title: HandyNotes_NPCs (Classic)
+## Notes: Shows locations of various npcs
+## Title-zhCN: |cFFFFE00A<|r|cFF40C7EB探索|r|cFFFFE00A>|r |cFFFFFFFF地图标记|r |cFF69CCF0NPC|r
+
+## X-Part-Of: HandyNotes
 
 locales\bcc\Locales.xml
 bcc\data.lua

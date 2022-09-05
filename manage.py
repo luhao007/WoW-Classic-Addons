@@ -139,7 +139,10 @@ class Manager:
         for addon in os.listdir('AddOns'):
             config = self.get_addon_config(addon)
             if not config:
-                logger.warning('%s not found!', addon)
+                for file in os.listdir(os.path.join('AddOns', addon)):
+                    if '.toc' in file:
+                        logger.warning('%s not found!', addon)
+                        break
                 continue
 
             def process(config, addon, lines):
@@ -165,8 +168,8 @@ class Manager:
 
                 return toc.to_lines()
 
-            for postfix in ['', '-Classic', '-BCC', '-WOTLKC', '-Mainline', '_TBC', '_Vanilla', '_Wrath', '_Mainline']:
-                path = os.path.join('AddOns', addon, f'{addon}{postfix}.toc')
+            for postfix in utils.TOCS:
+                path = os.path.join('AddOns', addon, f'{addon}{postfix}')
                 if os.path.exists(path):
                     utils.process_file(path, functools.partial(process, config, addon))
 
