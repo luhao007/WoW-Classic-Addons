@@ -28,6 +28,7 @@ BtWQuests = {
             Tauren = "Tauren",
             Scourge = "Scourge",
             Pandaren = "Pandaren",
+            DarkIronDwarf = "DarkIronDwarf",
         },
         Class = {
             Warrior = 1,

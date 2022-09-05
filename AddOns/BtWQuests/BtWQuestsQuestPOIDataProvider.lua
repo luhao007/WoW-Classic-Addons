@@ -43,7 +43,7 @@ function BtWQuestsQuestPOIDataProviderMixin:RefreshAllData(fromOnShow)
 	self:RemoveAllData();
 
     local uiMapID = self:GetMap():GetMapID()
-	if BtWQuestSettingsData:GetValue("showMapPOIs") then
+	if BtWQuests.Settings.showMapPOIs then
         for i=1,GetNumQuestWatches() do
             local questID = GetQuestIDForQuestWatchIndex(i)
             local data = BtWQuests.Database:GetQuestByID(questID)
@@ -99,7 +99,7 @@ function BtWQuestsQuestPOIDataProviderMixin:RefreshAllData(fromOnShow)
             end
         end
     end
-	if BtWQuestSettingsData:GetValue("showMapTurnIns") then
+	if BtWQuests.Settings.showMapTurnIns then
         for i=1,GetNumQuestLogEntries() do
             local questID = select(8, GetQuestLogTitle(i))
             if questID and questID ~= 0 and IsQuestComplete(questID) then
@@ -138,7 +138,7 @@ function BtWQuestsQuestPOIMixin:OnAcquired(questID, objectiveIndex, type, points
         self:SetScalingLimits(1, 1.0, 1.2)
         self.Circle:SetShown(objectiveIndex ~= -1)
         self.Turnin:SetShown(objectiveIndex == -1)
-        if objectiveIndex == -1 and BtWQuestSettingsData:GetValue("smallMapPins") then
+        if objectiveIndex == -1 and BtWQuests.Settings.smallMapPins then
             self:SetSize(16, 16)
         else
             self:SetSize(22, 22)

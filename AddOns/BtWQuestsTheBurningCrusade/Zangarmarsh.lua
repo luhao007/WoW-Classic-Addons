@@ -2387,6 +2387,10 @@ Database:AddChain(Chain.OtherChain, {
 Database:AddCategory(CATEGORY_ID, {
     name = BtWQuests.GetMapName(MAP_ID),
     expansion = EXPANSION_ID,
+    buttonImage = {
+        texture = [[Interface\AddOns\BtWQuestsTheBurningCrusade\UI-Category-Zangarmarsh]],
+		texCoords = {0,1,0,1},
+    },
     items = {
         {
             type = "chain",

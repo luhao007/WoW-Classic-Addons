@@ -36,6 +36,4 @@ ns.L = {
     PaperDoll                   = "人物面板",
     Chat                        = "聊天",
     Loot                        = "拾取",
-	Title						= "装备观察",
-	OptionName					= "装备观察",
 }

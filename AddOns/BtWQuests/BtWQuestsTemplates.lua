@@ -1705,6 +1705,28 @@ function BtWQuestsTooltipMixin:SetChain(chainID, character)
 
     self:AddRewards(chain, character)
 
+    if IsModifiedClick("SHIFT") then
+        local restrictions = chain:GetRestrictions()
+        if restrictions then
+            local addedRestrictions
+            for _,restriction in ipairs(restrictions) do
+                restriction = restriction:GetVariation(character) or restriction;
+
+                if not addedRestrictions then
+                    self:AddLine(" ")
+                    self:AddLine(L["BTWQUESTS_TOOLTIP_RESTRICTIONS"])
+                    addedRestrictions = true
+                end
+
+                if restriction:IsCompleted(character) then
+                    self:AddLine(" - " .. restriction:GetName(character, "restriction"), 0.5, 0.5, 0.5)
+                else
+                    self:AddLine(" - " .. restriction:GetName(character, "restriction"), 1, 1, 1)
+                end
+            end
+        end
+    end
+
     self:Show();
 end
 local IsUnitOnQuest = C_QuestLog.IsUnitOnQuest

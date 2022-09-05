@@ -48,7 +48,7 @@ local SILENT_EVENTS = {
 }
 local GENERIC_EVENTS = {
 	CHAT_MSG_SYSTEM = 1,
-	UI_ERROR_MESSAGE = 2,
+	UI_ERROR_MESSAGE = TSM.IsWowClassic() and 1 or 2,
 }
 local GENERIC_EVENT_SEP = "/"
 local DUMMY_BROWSE_QUERY = {
@@ -65,6 +65,15 @@ local API_EVENT_INFO = TSM.IsWowClassic() and
 	{ -- Classic
 		QueryAuctionItems = {
 			AUCTION_ITEM_LIST_UPDATE = { result = true },
+		},
+		PlaceAuctionBid = {
+			["CHAT_MSG_SYSTEM"..GENERIC_EVENT_SEP..ERR_AUCTION_BID_PLACED] = { result = true },
+			["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..LE_GAME_ERR_AUCTION_DATABASE_ERROR] = { result = false },
+			["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..LE_GAME_ERR_AUCTION_HIGHER_BID] = { result = false },
+			["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..LE_GAME_ERR_ITEM_NOT_FOUND] = { result = false },
+			["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..LE_GAME_ERR_AUCTION_BID_OWN] = { result = false },
+			["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..LE_GAME_ERR_NOT_ENOUGH_MONEY] = { result = false },
+			["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..LE_GAME_ERR_ITEM_MAX_COUNT] = { result = false },
 		},
 	} or
 	{ -- Retail
@@ -330,11 +339,14 @@ function AuctionHouseWrapper.ConfirmCommoditiesPurchase(itemId, quantity, totalB
 end
 
 function AuctionHouseWrapper.PlaceBid(auctionId, bidBuyout)
-	assert(not TSM.IsWowClassic())
 	if not private.CheckAllIdle() then
 		return
 	end
-	return private.wrappers.PlaceBid:Start(auctionId, bidBuyout)
+	if TSM.IsWowClassic() then
+		return private.wrappers.PlaceAuctionBid:Start("list", auctionId, bidBuyout)
+	else
+		return private.wrappers.PlaceBid:Start(auctionId, bidBuyout)
+	end
 end
 
 function AuctionHouseWrapper.PostItem(itemLocation, postTime, stackSize, bid, buyout)
@@ -626,6 +638,9 @@ function private.ArgToStr(arg)
 		elseif count == #arg then
 			if type(arg[1]) == "table" and arg[1].sortOrder then
 				return format("{sorts=%s}", private.SortsToStr(arg))
+			end
+			if TSM.IsWowClassic() and #arg == 1 and arg[1].classID then
+				return format("{classID=%s, subClassID=%s, inventoryType=%s}", tostring(arg[1].classID), tostring(arg[1].subClassID), tostring(arg[1].inventoryType))
 			end
 			return format("{<%d items>}", count)
 		else

@@ -63,7 +63,7 @@
 	</Texture>
 	<Texture name="UI-BtWQuests-CategoryGridItem-Highlight" file="Interface\Addons\BtWQuests\UI-CategoryButton" virtual="true">
 		<Size x="188" y="96"/>
-		<TexCoords left="0.7353515625" right="0.9189453125" top="0.375c" bottom="0.5625"/>
+		<TexCoords left="0.7353515625" right="0.9189453125" top="0.375" bottom="0.5625"/>
 	</Texture>
 	<Texture name="UI-BtWQuests-CategoryGridItem-Background" file="Interface\Addons\BtWQuests\UI-CategoryButton" virtual="true">
 		<Size x="188" y="96"/>
@@ -498,7 +498,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button parenyKey="CloseButton" inherits="UIPanelCloseButton">
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="7" y="2"/>
 				</Anchors>

@@ -232,6 +232,86 @@ function AtlasQuest_Instanzenchecken()
 		AQINSTANZ = 68;
 
 
+	-- Wrath of the Lich King Instances
+
+	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_WrathoftheLichKing\\Images\\CoTOldStratholme") then
+		AQINSTANZ = 69;
+
+	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_WrathoftheLichKing\\Images\\UtgardeKeep") then
+		AQINSTANZ = 70;
+
+	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_WrathoftheLichKing\\Images\\UtgardePinnacle") then
+		AQINSTANZ = 71;
+
+	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_WrathoftheLichKing\\Images\\TheNexus") then
+		AQINSTANZ = 72;
+
+	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_WrathoftheLichKing\\Images\\TheOculus") then
+		AQINSTANZ = 73;
+
+	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_WrathoftheLichKing\\Images\\TheEyeOfEternity") then
+		AQINSTANZ = 74;
+
+	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_WrathoftheLichKing\\Images\\AzjolNerub") then
+		AQINSTANZ = 75;
+
+	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_WrathoftheLichKing\\Images\\AhnKahet") then
+		AQINSTANZ = 76;
+
+	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_WrathoftheLichKing\\Images\\UlduarHallsofStone") then
+		AQINSTANZ = 77;
+
+	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_WrathoftheLichKing\\Images\\UlduarHallsofLightning") then
+		AQINSTANZ = 78;
+
+	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_WrathoftheLichKing\\Images\\ObsidianSanctum") then
+		AQINSTANZ = 79;
+
+	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_WrathoftheLichKing\\Images\\DrakTharonKeep") then
+		AQINSTANZ = 80;
+
+	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_WrathoftheLichKing\\Images\\Gundrak") then
+		AQINSTANZ = 81;
+
+	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_WrathoftheLichKing\\Images\\VioletHold") then
+		AQINSTANZ = 82;
+
+	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_Battlegrounds\\Images\\StrandOfTheAncients") then
+		AQINSTANZ = 83;
+
+	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_WrathoftheLichKing\\Images\\Naxxramas") then
+		AQINSTANZ = 84;
+
+	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_WrathoftheLichKing\\Images\\VaultOfArchavon") then
+		AQINSTANZ = 85;
+
+	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_WrathoftheLichKing\\Images\\UlduarA") or (AQATLASMAP == "Interface\\AddOns\\Atlas_WrathoftheLichKing\\Images\\UlduarB") or (AQATLASMAP == "Interface\\AddOns\\Atlas_WrathoftheLichKing\\Images\\UlduarC") or (AQATLASMAP == "Interface\\AddOns\\Atlas_WrathoftheLichKing\\Images\\UlduarD") or (AQATLASMAP == "Interface\\AddOns\\Atlas_WrathoftheLichKing\\Images\\UlduarE") then
+		AQINSTANZ = 86;
+
+	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_WrathoftheLichKing\\Images\\TrialOfTheChampion") then
+		AQINSTANZ = 87;
+
+	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_WrathoftheLichKing\\Images\\TrialOfTheCrusader") then
+		AQINSTANZ = 88;
+
+	elseif (AQATLASMAP ==  "Interface\\AddOns\\Atlas_Battlegrounds\\Images\\IsleOfConquest") then
+		AQINSTANZ = 89;
+
+	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_WrathoftheLichKing\\Images\\FHTheForgeOfSouls") or (AQATLASMAP == "Interface\\AddOns\\Atlas_WrathoftheLichKing\\Images\\TheForgeOfSouls") then
+		AQINSTANZ = 90;
+
+	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_WrathoftheLichKing\\Images\\FHPitOfSaron") or (AQATLASMAP == "Interface\\AddOns\\Atlas_WrathoftheLichKing\\Images\\PitOfSaron") then
+		AQINSTANZ = 91;
+
+	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_WrathoftheLichKing\\Images\\FHHallsOfReflection") or (AQATLASMAP == "Interface\\AddOns\\Atlas_WrathoftheLichKing\\Images\\HallsOfReflection") then
+		AQINSTANZ = 92;
+
+	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_WrathoftheLichKing\\Images\\IcecrownCitadelA") or (AQATLASMAP == "Interface\\AddOns\\Atlas_WrathoftheLichKing\\Images\\IcecrownCitadelB") or (AQATLASMAP == "Interface\\AddOns\\Atlas_WrathoftheLichKing\\Images\\IcecrownCitadelC") or (AQATLASMAP == "Interface\\AddOns\\Atlas_WrathoftheLichKing\\Images\\IcecrownStart") or (AQATLASMAP == "Interface\\AddOns\\Atlas_WrathoftheLichKing\\Images\\IcecrownEnd") then
+		AQINSTANZ = 93;
+
+	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_WrathoftheLichKing\\Images\\RubySanctum") then
+		AQINSTANZ = 94;
+
 
 	-- Default
 
@@ -325,3 +405,31 @@ end
 -- 68 = RAID: Sunwell Plateau
 
 
+-- Wrath of the Lich King Dungeons & Raids
+
+-- 69 = DUNGEON: Caverns of Time: Stratholme Past
+-- 70 = DUNGEON: Utgarde Keep: Utgarde Keep
+-- 71 = DUNGEON: Utgarde Keep: Utgarde Pinnacle
+-- 72 = DUNGEON: The Nexus: The Nexus
+-- 73 = DUNGEON: The Nexus: The Oculus
+-- 74 = RAID: The Nexus: The Eye of Eternity
+-- 75 = DUNGEON: Azjol-Nerub: The Upper Kingdom
+-- 76 = DUNGEON: Azjol-Nerub: Ahn'kahet: The Old Kingdom
+-- 77 = DUNGEON: Ulduar: Halls of Stone
+-- 78 = DUNGEON: Ulduar: Halls of Lightning
+-- 79 = RAID: The Obsidian Sanctum
+-- 80 = DUNGEON: Drak'Tharon Keep
+-- 81 = DUNGEON: Zul'Drak: Gundrak
+-- 82 = DUNGEON: The Violet Hold
+-- 83 = BATTLEGROUND: Strand of the Ancients (SotA)
+-- 84 = RAID: Naxxramas (Naxx)
+-- 85 = RAID: Vault of Archavon (VoA)
+-- 86 = RAID: Ulduar
+-- 87 = DUNGEON: Trial of the Champion (ToC)
+-- 88 = RAID: Trial of the Crusader (ToC)
+-- 89 = BATTLEGROUND: Isle of Conquest (IoC)
+-- 90 = DUNGEON: Forge of Souls (FoS)
+-- 91 = DUNGEON: Pit of Saron (PoS)
+-- 92 = DUNGEON: Halls of Reflection (HoR)
+-- 93 = RAID: Icecrown Citadel (ICC)
+-- 94 = RAID: Ruby Sanctum (RS)

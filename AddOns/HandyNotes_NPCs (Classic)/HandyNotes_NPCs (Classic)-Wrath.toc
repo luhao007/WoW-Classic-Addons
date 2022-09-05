@@ -1,0 +1,18 @@
+## Interface: 30400
+## Title: HandyNotes_NPCs (Classic)
+## Version: 1.29-bcc
+## Notes: Shows locations of various npcs
+## Author: Cali
+## RequiredDeps: HandyNotes
+## OptionalDeps: LibStub, !LibUIDropDownMenu
+## SavedVariables: HandyNotes_NPCsClassicDB
+
+locales\bcc\Locales.xml
+bcc\data.lua
+bcc\vendorData.lua
+bcc\itemData.lua
+bcc\weaponskills.lua
+bcc\HandyNotes_NPCs (Classic).lua
+bcc\options.lua
+bcc\search.lua
+bcc\altrecipes.lua

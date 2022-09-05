@@ -94,107 +94,107 @@
 
 	<Frame name="OutfitDisplayFrame" enableMouse="true" useParentLevel="true" virtual="True">
 		<Frames>
-			<Button name="FBOutfitFrameHeadSlot" inherits="OutfitDisplayItemButtonTemplate">
+			<Button name="$parentHeadSlot" inherits="OutfitDisplayItemButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="3" y="-3"/>
 				</Anchors>
 			</Button>
-			<Button name="FBOutfitFrameNeckSlot" inherits="OutfitDisplayItemButtonTemplate">
+			<Button name="$parentNeckSlot" inherits="OutfitDisplayItemButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="FBOutfitFrameHeadSlot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+					<Anchor point="TOPLEFT" relativeTo="$parentHeadSlot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 				</Anchors>
 			</Button>
-			<Button name="FBOutfitFrameShoulderSlot" inherits="OutfitDisplayItemButtonTemplate">
+			<Button name="$parentShoulderSlot" inherits="OutfitDisplayItemButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="FBOutfitFrameNeckSlot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+					<Anchor point="TOPLEFT" relativeTo="$parentNeckSlot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 				</Anchors>
 			</Button>
-			<Button name="FBOutfitFrameBackSlot" inherits="OutfitDisplayItemButtonTemplate">
+			<Button name="$parentBackSlot" inherits="OutfitDisplayItemButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="FBOutfitFrameShoulderSlot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+					<Anchor point="TOPLEFT" relativeTo="$parentShoulderSlot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 				</Anchors>
 			</Button>
-			<Button name="FBOutfitFrameChestSlot" inherits="OutfitDisplayItemButtonTemplate">
+			<Button name="$parentChestSlot" inherits="OutfitDisplayItemButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="FBOutfitFrameBackSlot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+					<Anchor point="TOPLEFT" relativeTo="$parentBackSlot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 				</Anchors>
 			</Button>
-			<Button name="FBOutfitFrameShirtSlot" inherits="OutfitDisplayItemButtonTemplate">
+			<Button name="$parentShirtSlot" inherits="OutfitDisplayItemButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="FBOutfitFrameChestSlot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+					<Anchor point="TOPLEFT" relativeTo="$parentChestSlot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 				</Anchors>
 			</Button>
-			<Button name="FBOutfitFrameTabardSlot" inherits="OutfitDisplayItemButtonTemplate">
+			<Button name="$parentTabardSlot" inherits="OutfitDisplayItemButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="FBOutfitFrameShirtSlot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+					<Anchor point="TOPLEFT" relativeTo="$parentShirtSlot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 				</Anchors>
 			</Button>
-			<Button name="FBOutfitFrameWristSlot" inherits="OutfitDisplayItemButtonTemplate">
+			<Button name="$parentWristSlot" inherits="OutfitDisplayItemButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="FBOutfitFrameTabardSlot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+					<Anchor point="TOPLEFT" relativeTo="$parentTabardSlot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 				</Anchors>
 			</Button>
-			<Button name="FBOutfitFrameHandsSlot" inherits="OutfitDisplayItemButtonTemplate">
+			<Button name="$parentHandsSlot" inherits="OutfitDisplayItemButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="290" y="-3"/>
 				</Anchors>
 			</Button>
-			<Button name="FBOutfitFrameWaistSlot" inherits="OutfitDisplayItemButtonTemplate">
+			<Button name="$parentWaistSlot" inherits="OutfitDisplayItemButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="FBOutfitFrameHandsSlot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+					<Anchor point="TOPLEFT" relativeTo="$parentHandsSlot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 				</Anchors>
 			</Button>
-			<Button name="FBOutfitFrameLegsSlot" inherits="OutfitDisplayItemButtonTemplate">
+			<Button name="$parentLegsSlot" inherits="OutfitDisplayItemButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="FBOutfitFrameWaistSlot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+					<Anchor point="TOPLEFT" relativeTo="$parentWaistSlot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 				</Anchors>
 			</Button>
-			<Button name="FBOutfitFrameFeetSlot" inherits="OutfitDisplayItemButtonTemplate">
+			<Button name="$parentFeetSlot" inherits="OutfitDisplayItemButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="FBOutfitFrameLegsSlot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+					<Anchor point="TOPLEFT" relativeTo="$parentLegsSlot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 				</Anchors>
 			</Button>
-			<Button name="FBOutfitFrameFinger0Slot" inherits="OutfitDisplayItemButtonTemplate">
+			<Button name="$parentFinger0Slot" inherits="OutfitDisplayItemButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="FBOutfitFrameFeetSlot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+					<Anchor point="TOPLEFT" relativeTo="$parentFeetSlot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 				</Anchors>
 			</Button>
-			<Button name="FBOutfitFrameFinger1Slot" inherits="OutfitDisplayItemButtonTemplate">
+			<Button name="$parentFinger1Slot" inherits="OutfitDisplayItemButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="FBOutfitFrameFinger0Slot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+					<Anchor point="TOPLEFT" relativeTo="$parentFinger0Slot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 				</Anchors>
 			</Button>
-			<Button name="FBOutfitFrameTrinket0Slot" inherits="OutfitDisplayItemButtonTemplate">
+			<Button name="$parentTrinket0Slot" inherits="OutfitDisplayItemButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="FBOutfitFrameFinger1Slot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+					<Anchor point="TOPLEFT" relativeTo="$parentFinger1Slot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 				</Anchors>
 			</Button>
-			<Button name="FBOutfitFrameTrinket1Slot" inherits="OutfitDisplayItemButtonTemplate">
+			<Button name="$parentTrinket1Slot" inherits="OutfitDisplayItemButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="FBOutfitFrameTrinket0Slot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+					<Anchor point="TOPLEFT" relativeTo="$parentTrinket0Slot" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 				</Anchors>
 			</Button>
-			<Button name="FBOutfitFrameMainHandSlot" inherits="OutfitDisplayItemButtonTemplate">
+			<Button name="$parentMainHandSlot" inherits="OutfitDisplayItemButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="80" y="50"/>
 				</Anchors>
 			</Button>
-			<Button name="FBOutfitFrameSecondaryHandSlot" inherits="OutfitDisplayItemButtonTemplate">
+			<Button name="$parentSecondaryHandSlot" inherits="OutfitDisplayItemButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="FBOutfitFrameMainHandSlot" relativePoint="TOPRIGHT" x="5" y="0"/>
+					<Anchor point="TOPLEFT" relativeTo="$parentMainHandSlot" relativePoint="TOPRIGHT" x="5" y="0"/>
 				</Anchors>
 			</Button>
-			<Button name="FBOutfitFrameRangedSlot" inherits="OutfitDisplayItemButtonTemplate">
+			<Button name="$parentRangedSlot" inherits="OutfitDisplayItemButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="FBOutfitFrameSecondaryHandSlot" relativePoint="TOPRIGHT" x="5" y="0"/>
+					<Anchor point="TOPLEFT" relativeTo="$parentSecondaryHandSlot" relativePoint="TOPRIGHT" x="5" y="0"/>
 				</Anchors>
 			</Button>
-			<Button name="FBOutfitFrameAmmoSlot">
+			<Button name="$parentAmmoSlot">
 				<Size>
 					<AbsDimension x="27" y="27"/>
 				</Size>
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="FBOutfitFrameRangedSlot" relativePoint="RIGHT">
+					<Anchor point="LEFT" relativeTo="$parentRangedSlot" relativePoint="RIGHT">
 						<Offset>
 							<AbsDimension x="15" y="0"/>
 						</Offset>
@@ -262,107 +262,107 @@
 				<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
 				<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
 			</Button>
-			<CheckButton name="FBOutfitFrameHeadSlotCheckBox" inherits="OutfitDisplayFrameCheckBoxTemplate">
+			<CheckButton name="$parentHeadSlotCheckBox" inherits="OutfitDisplayFrameCheckBoxTemplate">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="FBOutfitFrameHeadSlot" relativePoint="RIGHT" />
+					<Anchor point="LEFT" relativeTo="$parentHeadSlot" relativePoint="RIGHT" />
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="FBOutfitFrameShowHelm" inherits="OutfitDisplayFrameOverrideBoxTemplate" hidden="true">
+			<CheckButton name="$parentShowHelm" inherits="OutfitDisplayFrameOverrideBoxTemplate" hidden="true">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="FBOutfitFrameHeadSlot" relativePoint="RIGHT" />
+					<Anchor point="LEFT" relativeTo="$parentHeadSlot" relativePoint="RIGHT" />
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="FBOutfitFrameNeckSlotCheckBox" inherits="OutfitDisplayFrameCheckBoxTemplate">
+			<CheckButton name="$parentNeckSlotCheckBox" inherits="OutfitDisplayFrameCheckBoxTemplate">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="FBOutfitFrameNeckSlot" relativePoint="RIGHT" />
+					<Anchor point="LEFT" relativeTo="$parentNeckSlot" relativePoint="RIGHT" />
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="FBOutfitFrameShoulderSlotCheckBox" inherits="OutfitDisplayFrameCheckBoxTemplate">
+			<CheckButton name="$parentShoulderSlotCheckBox" inherits="OutfitDisplayFrameCheckBoxTemplate">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="FBOutfitFrameShoulderSlot" relativePoint="RIGHT" />
+					<Anchor point="LEFT" relativeTo="$parentShoulderSlot" relativePoint="RIGHT" />
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="FBOutfitFrameBackSlotCheckBox" inherits="OutfitDisplayFrameCheckBoxTemplate">
+			<CheckButton name="$parentBackSlotCheckBox" inherits="OutfitDisplayFrameCheckBoxTemplate">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="FBOutfitFrameBackSlot" relativePoint="RIGHT" />
+					<Anchor point="LEFT" relativeTo="$parentBackSlot" relativePoint="RIGHT" />
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="FBOutfitFrameShowCloak" inherits="OutfitDisplayFrameOverrideBoxTemplate" hidden="true">
+			<CheckButton name="$parentShowCloak" inherits="OutfitDisplayFrameOverrideBoxTemplate" hidden="true">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="FBOutfitFrameBackSlot" relativePoint="RIGHT" />
+					<Anchor point="LEFT" relativeTo="$parentBackSlot" relativePoint="RIGHT" />
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="FBOutfitFrameChestSlotCheckBox" inherits="OutfitDisplayFrameCheckBoxTemplate">
+			<CheckButton name="$parentChestSlotCheckBox" inherits="OutfitDisplayFrameCheckBoxTemplate">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="FBOutfitFrameChestSlot" relativePoint="RIGHT" />
+					<Anchor point="LEFT" relativeTo="$parentChestSlot" relativePoint="RIGHT" />
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="FBOutfitFrameShirtSlotCheckBox" inherits="OutfitDisplayFrameCheckBoxTemplate">
+			<CheckButton name="$parentShirtSlotCheckBox" inherits="OutfitDisplayFrameCheckBoxTemplate">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="FBOutfitFrameShirtSlot" relativePoint="RIGHT" />
+					<Anchor point="LEFT" relativeTo="$parentShirtSlot" relativePoint="RIGHT" />
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="FBOutfitFrameTabardSlotCheckBox" inherits="OutfitDisplayFrameCheckBoxTemplate">
+			<CheckButton name="$parentTabardSlotCheckBox" inherits="OutfitDisplayFrameCheckBoxTemplate">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="FBOutfitFrameTabardSlot" relativePoint="RIGHT" />
+					<Anchor point="LEFT" relativeTo="$parentTabardSlot" relativePoint="RIGHT" />
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="FBOutfitFrameWristSlotCheckBox" inherits="OutfitDisplayFrameCheckBoxTemplate">
+			<CheckButton name="$parentWristSlotCheckBox" inherits="OutfitDisplayFrameCheckBoxTemplate">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="FBOutfitFrameWristSlot" relativePoint="RIGHT" />
+					<Anchor point="LEFT" relativeTo="$parentWristSlot" relativePoint="RIGHT" />
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="FBOutfitFrameHandsSlotCheckBox" inherits="OutfitDisplayFrameCheckBoxTemplate">
+			<CheckButton name="$parentHandsSlotCheckBox" inherits="OutfitDisplayFrameCheckBoxTemplate">
 				<Anchors>
-					<Anchor point="RIGHT" relativeTo="FBOutfitFrameHandsSlot" relativePoint="LEFT" />
+					<Anchor point="RIGHT" relativeTo="$parentHandsSlot" relativePoint="LEFT" />
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="FBOutfitFrameWaistSlotCheckBox" inherits="OutfitDisplayFrameCheckBoxTemplate">
+			<CheckButton name="$parentWaistSlotCheckBox" inherits="OutfitDisplayFrameCheckBoxTemplate">
 				<Anchors>
-					<Anchor point="RIGHT" relativeTo="FBOutfitFrameWaistSlot" relativePoint="LEFT" />
+					<Anchor point="RIGHT" relativeTo="$parentWaistSlot" relativePoint="LEFT" />
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="FBOutfitFrameLegsSlotCheckBox" inherits="OutfitDisplayFrameCheckBoxTemplate">
+			<CheckButton name="$parentLegsSlotCheckBox" inherits="OutfitDisplayFrameCheckBoxTemplate">
 				<Anchors>
-					<Anchor point="RIGHT" relativeTo="FBOutfitFrameLegsSlot" relativePoint="LEFT" />
+					<Anchor point="RIGHT" relativeTo="$parentLegsSlot" relativePoint="LEFT" />
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="FBOutfitFrameFeetSlotCheckBox" inherits="OutfitDisplayFrameCheckBoxTemplate">
+			<CheckButton name="$parentFeetSlotCheckBox" inherits="OutfitDisplayFrameCheckBoxTemplate">
 				<Anchors>
-					<Anchor point="RIGHT" relativeTo="FBOutfitFrameFeetSlot" relativePoint="LEFT" />
+					<Anchor point="RIGHT" relativeTo="$parentFeetSlot" relativePoint="LEFT" />
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="FBOutfitFrameFinger0SlotCheckBox" inherits="OutfitDisplayFrameCheckBoxTemplate">
+			<CheckButton name="$parentFinger0SlotCheckBox" inherits="OutfitDisplayFrameCheckBoxTemplate">
 				<Anchors>
-					<Anchor point="RIGHT" relativeTo="FBOutfitFrameFinger0Slot" relativePoint="LEFT" />
+					<Anchor point="RIGHT" relativeTo="$parentFinger0Slot" relativePoint="LEFT" />
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="FBOutfitFrameFinger1SlotCheckBox" inherits="OutfitDisplayFrameCheckBoxTemplate">
+			<CheckButton name="$parentFinger1SlotCheckBox" inherits="OutfitDisplayFrameCheckBoxTemplate">
 				<Anchors>
-					<Anchor point="RIGHT" relativeTo="FBOutfitFrameFinger1Slot" relativePoint="LEFT" />
+					<Anchor point="RIGHT" relativeTo="$parentFinger1Slot" relativePoint="LEFT" />
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="FBOutfitFrameTrinket0SlotCheckBox" inherits="OutfitDisplayFrameCheckBoxTemplate">
+			<CheckButton name="$parentTrinket0SlotCheckBox" inherits="OutfitDisplayFrameCheckBoxTemplate">
 				<Anchors>
-					<Anchor point="RIGHT" relativeTo="FBOutfitFrameTrinket0Slot" relativePoint="LEFT" />
+					<Anchor point="RIGHT" relativeTo="$parentTrinket0Slot" relativePoint="LEFT" />
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="FBOutfitFrameTrinket1SlotCheckBox" inherits="OutfitDisplayFrameCheckBoxTemplate">
+			<CheckButton name="$parentTrinket1SlotCheckBox" inherits="OutfitDisplayFrameCheckBoxTemplate">
 				<Anchors>
-					<Anchor point="RIGHT" relativeTo="FBOutfitFrameTrinket1Slot" relativePoint="LEFT" />
+					<Anchor point="RIGHT" relativeTo="$parentTrinket1Slot" relativePoint="LEFT" />
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="FBOutfitFrameMainHandSlotCheckBox" inherits="OutfitDisplayFrameCheckBoxTemplate">
+			<CheckButton name="$parentMainHandSlotCheckBox" inherits="OutfitDisplayFrameCheckBoxTemplate">
 				<Anchors>
-					<Anchor point="BOTTOM" relativeTo="FBOutfitFrameMainHandSlot" relativePoint="TOP" />
+					<Anchor point="BOTTOM" relativeTo="$parentMainHandSlot" relativePoint="TOP" />
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="FBOutfitFrameSecondaryHandSlotCheckBox" inherits="OutfitDisplayFrameCheckBoxTemplate">
+			<CheckButton name="$parentSecondaryHandSlotCheckBox" inherits="OutfitDisplayFrameCheckBoxTemplate">
 				<Anchors>
-					<Anchor point="BOTTOM" relativeTo="FBOutfitFrameSecondaryHandSlot" relativePoint="TOP" />
+					<Anchor point="BOTTOM" relativeTo="$parentSecondaryHandSlot" relativePoint="TOP" />
 				</Anchors>
 			</CheckButton>
-			<PlayerModel name="FBOutfitFrameModelFrame">
+			<PlayerModel name="$parentModelFrame">
 				<Size x="303" y="291"/>
 				<Anchors>
 					<Anchor point="TOPLEFT">
@@ -372,7 +372,7 @@
 					</Anchor>
 				</Anchors>
 				<Frames>
-					<Button name="FBOutfitFrameModelFrameRotateRightButton">
+					<Button name="$parentModelFrameRotateRightButton">
 						<Size>
 							<AbsDimension x="35" y="35"/>
 						</Size>
@@ -397,12 +397,12 @@
 						<PushedTexture file="Interface\Buttons\UI-RotationLeft-Button-Down"/>
 						<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
 					</Button>
-					<Button name="FBOutfitFrameModelFrameRotateLeftButton">
+					<Button name="$parentModelFrameRotateLeftButton">
 						<Size>
 							<AbsDimension x="35" y="35"/>
 						</Size>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="FBOutfitFrameModelFrameRotateRightButton" relativePoint="TOPRIGHT"/>
+							<Anchor point="TOPLEFT" relativeTo="$parentModelFrameRotateRightButton" relativePoint="TOPRIGHT"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
@@ -418,7 +418,7 @@
 						<PushedTexture file="Interface\Buttons\UI-RotationRight-Button-Down"/>
 						<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
 					</Button>
-					<SimpleHTML name="FBOutfitFrameMessage">
+					<SimpleHTML name="$parentMessage">
 						<Size>
 							<AbsDimension x="183" y="64"/>
 						</Size>

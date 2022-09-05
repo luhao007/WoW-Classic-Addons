@@ -32,6 +32,7 @@
 <Script file="Locale/global-enUS.lua" />
 <Script file="Locale/classic-enUS.lua" />
 <Script file="Locale/tbc-enUS.lua" />
+<Script file="Locale/wotlk-enUS.lua" />
 
 <!--  GERMAN LOCALIZATION -->
 <Script file="Locale/global-deDE.lua" />

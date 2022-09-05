@@ -46,10 +46,8 @@ FishingTranslations["frFR"] = {
 	["CONFIG_BIGDRAENOR_ONOFF"] = "Améliore la Pêche au maximum",
 	["CONFIG_BOBBINGBERG_INFO"] = "Si activé, utilise le Bloc de glace branlant de Bipsi.",
 	["CONFIG_BOBBINGBERG_ONOFF"] = "Utiliser Bloc de glace branlant de Bipsi",
-	--[[Translation missing --]]
-	--[[ ["CONFIG_CONSERVATORY_INFO"] = "If enabled, turn on the 'Find Fish' buff when in the Queen's Conservatory.",--]] 
-	--[[Translation missing --]]
-	--[[ ["CONFIG_CONSERVATORY_ONOFF"] = "Queen's Pools",--]] 
+	["CONFIG_CONSERVATORY_INFO"] = "S'il est activé, activez le buff \"Trouver du poisson\" lorsque vous êtes dans le jardin d'hiver de la reine",
+	["CONFIG_CONSERVATORY_ONOFF"] = "Piscines de la Reine",
 	["CONFIG_CONTESTS_INFO"] = "Afficher le compte à rebours pour les concours de pêche.",
 	["CONFIG_CONTESTS_ONOFF"] = "Prise en compte du concours de pêche",
 	["CONFIG_CREATEMACRO_INFO"] = "Crée une macro qui fait les fonctions #NAME#",
@@ -146,15 +144,11 @@ FishingTranslations["frFR"] = {
 	["CONFIG_PREVENTRECAST_ONOFF"] = "Empêcher de relancer",
 	["CONFIG_RAIDACTION_INFO"] = "Si elle est activée, affichez un bouton d'action lorsque l'objet spécial est dans votre inventaire.",
 	["CONFIG_RAIDACTION_ONOFF"] = "Bouton d'action",
-	--[[Translation missing --]]
-	--[[ ["CONFIG_RAIDWATCH_INFO"] = "If enabled, the Fish Watcher will show the currency fish for the current raid boss.",--]] 
+	["CONFIG_RAIDWATCH_INFO"] = "S'il est activé, le \"Fish Watcher\" affichera le poisson de monnaie pour le boss de raid actuel.",
 	["CONFIG_RAIDWATCH_ONOFF"] = "Surveillez la monnaie",
-	--[[Translation missing --]]
-	--[[ ["CONFIG_SECRET_FISHING_GOGGES_INFO"] = "If enabled, 'Fishing Without A Poel' will use 'Secret Fishing Goggles' first.",--]] 
-	--[[Translation missing --]]
-	--[[ ["CONFIG_SECRET_FISHING_GOGGLES_INFO"] = "If enabled, 'Fishing Without A Pole' will use 'Secret Fishing Goggles' first.",--]] 
-	--[[Translation missing --]]
-	--[[ ["CONFIG_SHOWBANNER_INFO"] = "If enabled, show the #NAME# banner on login.",--]] 
+	["CONFIG_SECRET_FISHING_GOGGES_INFO"] = "Si activé, \"Pêcher sans canne\" utilisera d'abord \"lunettes-à-poissons-secrets\".",
+	["CONFIG_SECRET_FISHING_GOGGLES_INFO"] = "Si activé, \"Pêcher sans canne\" utilisera d'abord \"lunettes-à-poissons-secrets\".",
+	["CONFIG_SHOWBANNER_INFO"] = "Si activé, affiche la bannière #NAME# lors de la connexion.",
 	["CONFIG_SHOWBANNER_ONOFF"] = "Afficher le bandeau",
 	["CONFIG_SHOWLOCATIONZONES_INFO"] = "Afficher les zones et sous-zones.",
 	["CONFIG_SHOWLOCATIONZONES_ONOFF"] = "Affiche les zones",
@@ -176,10 +170,8 @@ FishingTranslations["frFR"] = {
 	["CONFIG_TOOLTIPS_ONOFF"] = "Affiche les infos de pêche en infobulle.",
 	["CONFIG_TOONMACRO_INFO"] = "Créer une macro de pêche par joueur.",
 	["CONFIG_TOONMACRO_ONOFF"] = "Par joueur",
-	--[[Translation missing --]]
-	--[[ ["CONFIG_TOWNSFOLK_INFO"] = "Fix the TownsfolkTracker error on startup.",--]] 
-	--[[Translation missing --]]
-	--[[ ["CONFIG_TOWNSFOLK_ONOFF"] = "Fix TownsfolkTracker",--]] 
+	["CONFIG_TOWNSFOLK_INFO"] = "Correction de l'erreur TownsfolkTracker au démarrage",
+	["CONFIG_TOWNSFOLK_ONOFF"] = "Fix TownsfolkTracker",
 	["CONFIG_TRADESKILL_INFO"] = "Si elle est activée, ouvrez la fenêtre TradeSkill pour connaître les niveaux de compétence. Sinon, vous devrez ouvrir manuellement la profession de pêcheur.",
 	["CONFIG_TRADESKILL_ONOFF"] = "Compétences de configuration",
 	["CONFIG_TRAWLERTOTEM_INFO"] = "S'il est activé, utilisez le jouet.",
@@ -215,13 +207,11 @@ FishingTranslations["frFR"] = {
 	["FBMACRO_HELP"] = "Exécuter le macro pour la pêche",
 	["FISH"] = "Poisson",
 	["FISHCAUGHT"] = "%d/%d %s",
-	--[[Translation missing --]]
-	--[[ ["FISHDATA"] = "fishdata",--]] 
+	["FISHDATA"] = "fishdata",
 	["FISHDATARESET_MSG"] = "Les données de localisation des poissons ont été réinitialisées.",
-	--[[Translation missing --]]
-	--[[ ["FISHDATARESETHELP"] = "|c#GREEN#/fb #FISHDATA# #RESET#|r#BRSPCS#Reset the fish database. Must be invoked twice.",--]] 
-	--[[Translation missing --]]
-	--[[ ["FISHDATARESETMORE_MSG"] = "Run |c#GREEN#/fb #FISHDATA# #RESET#|r one more time to reset fish location data.",--]] 
+	["FISHDATARESETHELP"] = "|c#GREEN#/fb #FISHDATA# #RESET#|r#BRSPCS#Réinitialisez la base de données des poissons. Doit être invoqué deux fois.",
+	["FISHDATARESETMORE_MSG"] = [=[Run |c#GREEN#/fb #FISHDATA# #RESET#|r une fois de plus pour réinitialiser les données de localisation des poissons.
+]=],
 	["FISHING_SKILL"] = "Pêche",
 	["FISHINGMODE"] = "pêche",
 	["FISHINGMODE_HELP"] = "|c#GREEN#/fb #FISHINGMODE# [démarrer|arrêter]|r#BRSPCS#Exécuter #NAME# les actions de pêche.#BRSPCS#Utile dans les macros avec '/cast Fishing'.",
@@ -303,8 +293,7 @@ FishingTranslations["frFR"] = {
 	["TOTAL"] = "Total",
 	["TOTALS"] = "Totaux",
 	["UNLEARNEDSKILLWINDOW"] = "Vous n'avez pas appris la technique de pêche pour cette zone.",
-	--[[Translation missing --]]
-	--[[ ["UPDATEDB"] = "updatedb",--]] 
+	["UPDATEDB"] = "updatedb",
 	["UPDATEDB_HELP"] = "|c#GREEN#/fb #UPDATEDB# [#FORCE#]|r#BRSPCS#Tentative de trouver les noms de tous les poissons que#BRSPCS#nous n'avons pas. Une tentative est faite pour passer les poissons « rare » qui peuvent vous déconnecter du serveur ; utiliser l'option « #FORCE# » pour remplacer la vérification.",
 	["UPDATEDB_MSG"] = "Mise à jour de %d noms de poisson.",
 	["WATCHER"] = "Observateur",

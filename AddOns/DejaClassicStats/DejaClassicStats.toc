@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Dejablue, Kakjens, loudsoul
-## Version: 30400r2
+## Version: 30400r3
 ## SavedVariables: DCS_ClassSpecDB
 ## SavedVariablesPerCharacter: DejaClassicStatsDBPC
 

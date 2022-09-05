@@ -619,19 +619,45 @@ function BtWQuests_GetTimeZone(region, realm)
         return timezones[region]
     end
 end
-function BtWQuests_GetBestLocation(locations, relativeMapID, relativeX, relativeY)
-    if relativeMapID == nil then
-        local mapID, item = next(locations)
-        if item[1] ~= nil then
-            item = item[1]
+local function GetPlayerPosition(targetMapID)
+    local sourceMapID = C_Map.GetBestMapForUnit("player")
+    local sourceCoords = C_Map.GetPlayerMapPosition(sourceMapID, "player")
+    if sourceMapID == targetMapID then
+        return sourceCoords
+    else
+        local continentID, coords = C_Map.GetWorldPosFromMapPos(sourceMapID, sourceCoords)
+        if coords == nil then
+            return nil
         end
 
-        return mapID, CreateVector2D(item.x, item.y)
+        local _, coords = C_Map.GetMapPosFromWorldPos(continentID, coords, targetMapID)
+        if coords == nil then
+            return nil
+        end
+
+        return coords
+    end
+end
+function BtWQuests_GetBestLocation(database, locations, relativeMapID) -- , relativeX, relativeY Should these be added?
+    if relativeMapID == nil then
+        local possibleLocations = {}
+        for mapID in pairs(locations) do
+            local _, item = BtWQuests_GetBestLocation(database, locations, mapID)
+            if item then
+                possibleLocations[#possibleLocations+1] = item
+            end
+        end
+
+        table.sort(possibleLocations, function (a, b)
+            return (a.distanceSq or 0) < (b.distanceSq or 0)
+        end)
+
+        local result = possibleLocations[1]
+        return result.mapID, result
     end
 
     if locations[relativeMapID] == nil then -- This'll take a while
-        -- @TODO should look for the cloest location
-        local sourceMapID, sourceCoords = BtWQuests_GetBestLocation(locations)
+        local sourceMapID, sourceCoords = BtWQuests_GetBestLocation(database, locations)
         if sourceCoords == nil then
             return nil
         end
@@ -648,12 +674,33 @@ function BtWQuests_GetBestLocation(locations, relativeMapID, relativeX, relative
 
         return relativeMapID, coords
     else
-        local item = locations[relativeMapID]
-        if item[1] ~= nil then -- @TODO look for the closest location
-            item = item[1]
+        local filtered = database:FilterItems(locations[relativeMapID], BtWQuestsCharacters:GetPlayer())
+
+        local result = filtered[1]
+        local resultDistanceSq
+        if #filtered > 1 then
+            local playerPos = GetPlayerPosition(relativeMapID)
+            if playerPos then
+                resultDistanceSq = CalculateDistanceSq(result.x, result.y, playerPos.x, playerPos.y)
+                for i=2,#filtered do
+                    local item = filtered[i]
+                    local itemDistanceSq = CalculateDistanceSq(item.x, item.y, playerPos.x, playerPos.y)
+                    if itemDistanceSq < resultDistanceSq then
+                        result = item
+                        resultDistanceSq = itemDistanceSq
+                    end
+                end
+            end
         end
 
-        return relativeMapID, CreateVector2D(item.x, item.y)
+        if not result then
+            return nil
+        end
+
+        result = CreateVector2D(result.x, result.y)
+        result.mapID = relativeMapID
+        result.distanceSq = resultDistanceSq
+        return relativeMapID, result
     end
 end
 
@@ -739,6 +786,27 @@ function DataMixin:GetPrerequisites()
     end
 
     return self.prerequisitesItems, self.hasLowPriorityPrerequisites;
+end
+function DataMixin:GetRestrictions()
+    if self.restrictionsItems == nil then
+        self.restrictionsItems = {}
+
+        if self.restrictions then
+            local restrictions = self.restrictions
+            if type(restrictions) == "number" then
+                restrictions = self.database:GetConditionByID(restrictions)
+            end
+            if restrictions[1] == nil then
+                self.restrictionsItems[#self.restrictionsItems+1] = self.database:CreateItem(-1, restrictions, item);
+            else
+                for _,restriction in ipairs(restrictions) do
+                    self.restrictionsItems[#self.restrictionsItems+1] = self.database:CreateItem(-1, restriction, item);
+                end
+            end
+        end
+    end
+
+    return self.restrictionsItems;
 end
 function DataMixin:GetRewards()
     if self.rewardsItems == nil then
@@ -862,7 +930,7 @@ function NPCMixin:GetLocation(...)
         return nil
     end
 
-    return BtWQuests_GetBestLocation(self.locations, ...)
+    return BtWQuests_GetBestLocation(self.database, self.locations, ...)
 end
 
 local ObjectMixin = CreateFromMixins(NPCMixin);
@@ -2027,7 +2095,7 @@ function NPCItemMixin:IsBreadcrumb(database, item, character)
 end
 function NPCItemMixin:GetLocation(database, item, ...)
     if item.locations ~= nil then
-        return BtWQuests_GetBestLocation(item.locations, ...)
+        return BtWQuests_GetBestLocation(database, item.locations, ...)
     end
 
     local target = self:GetTarget(database, item);
@@ -2126,7 +2194,25 @@ function ExperienceItemMixin:IsCompleted(database, item, character)
     return false
 end
 
+local Races = {}
+for i=1,100 do
+    local race = C_CreatureInfo.GetRaceInfo(i);
+    if race then
+        Races[race.clientFileString] = race
+    end
+end
 local RaceItemMixin = CreateFromMixins(ItemMixin);
+function RaceItemMixin:GetName(database, item, character, variation)
+    local name
+    if item.name then
+        name = ItemMixin.GetName(self, database, item, character);
+    else
+        local race = Races[item.id] or C_CreatureInfo.GetRaceInfo(item.id);
+        name = race and race.raceName
+    end
+    
+    return name
+end
 function RaceItemMixin:IsCompleted(database, item, character)
     if item.id then
         return character:IsRace(item.id);
@@ -2136,6 +2222,17 @@ function RaceItemMixin:IsCompleted(database, item, character)
 end
 
 local ClassItemMixin = CreateFromMixins(ItemMixin);
+function ClassItemMixin:GetName(dcatabase, item, character, variation)
+    local name
+    if item.name then
+        name = ItemMixin.GetName(self, database, item, character);
+    else
+        local class = C_CreatureInfo.GetClassInfo(item.id);
+        name = class and class.className
+    end
+    
+    return name
+end
 function ClassItemMixin:IsCompleted(database, item, character)
     if item.id then
         return character:IsClass(item.id);
@@ -2149,17 +2246,13 @@ function FactionItemMixin:GetName(database, item, character, variation)
     local name
     if item.name then
         name = ItemMixin.GetName(self, database, item, character);
+    elseif item.id == "Horde" then
+        name = FACTION_HORDE
+    elseif item.id == "Alliance" then
+        name = FACTION_ALLIANCE
     end
-    if variation == "reward" then
-        name = name or L["FACTION_REWARD"]
-    end
-
-    local factionName = (character or BtWQuestsCharacters:GetPlayer()):GetFactionInfoByID(item.id)
-    if factionName == nil then
-        factionName = L["UNKNOWN"]
-    end
-
-    return name and format(name, factionName) or factionName
+    
+    return name
 end
 function FactionItemMixin:IsCompleted(database, item, character)
     return character:IsFaction(item.id);
@@ -2398,7 +2491,7 @@ function CoordsItemMixin:IsBreadcrumb(database, item, character)
 end
 function CoordsItemMixin:GetLocation(database, item, relativeMapID, ...)
     if item.locations ~= nil then
-        return BtWQuests_GetBestLocation(item.locations, relativeMapID, ...)
+        return BtWQuests_GetBestLocation(database, item.locations, relativeMapID, ...)
     end
 
     if relativeMapID == nil or item.mapID == relativeMapID then
@@ -2535,7 +2628,11 @@ function ItemItemMixin:GetName(database, item, character, variation)
     
     local id = self:GetID(database, item);
     local name = GetItemInfo(id);
-    return string.format(L["BTWQUESTS_COLLECT"], name or L["UNKNOWN"]);
+    if variation == "reward" then
+        return name or L["UNKNOWN"];
+    else
+        return string.format(L["BTWQUESTS_COLLECT"], name or L["UNKNOWN"]);
+    end
 end
 function ItemItemMixin:IsCompleted(database, item, character)
     if character:IsPlayer() then
@@ -2615,6 +2712,27 @@ function GarrisonTalentTreeItemMixin:IsCompleted(database, item, character)
         return item.rank <= rank
     else
         return rank >= 0
+    end
+end
+local GarrisonTalentItemMixin = CreateFromMixins(ItemMixin);
+function GarrisonTalentItemMixin:GetName(database, item, character)
+    local info = C_Garrison.GetTalentInfo(item.id)
+    if item.rank then
+        return string.format(L["RESEARCH_RANK"], info and info.name or L["UNKNOWN"], item.rank)
+    else
+        return string.format(L["RESEARCH"], info and info.name or L["UNKNOWN"])
+    end
+end
+function GarrisonTalentItemMixin:IsActive(database, item, character)
+	local info = C_Garrison.GetTalentInfo(item.id);
+    return info.isBeingResearched
+end
+function GarrisonTalentItemMixin:IsCompleted(database, item, character)
+	local info = C_Garrison.GetTalentInfo(item.id);
+    if item.rank then
+        return item.rank <= info.talentRank
+    else
+        return info.researched
     end
 end
 local CampaignItemMixin = CreateFromMixins(ItemMixin);
@@ -2811,6 +2929,21 @@ function Database:IsItemValidForCharacter(item, character) -- In effect its the 
     end
     
     return true;
+end
+function Database:FilterItems(items, character, tbl)
+    tbl = tbl or {}
+    if items[1] == nil then
+        if self:IsItemValidForCharacter(items, character) then
+            tbl[#tbl+1] = items
+        end
+    else
+        for _,item in ipairs(items) do
+            if self:IsItemValidForCharacter(item, character) then
+                tbl[#tbl+1] = item
+            end
+        end
+    end
+    return tbl
 end
 -- /dump BtWQuestsDatabase:EvalRequirement()
 function Database:EvalRequirement(requirement, item, character, one)
@@ -3692,6 +3825,7 @@ Database:RegisterItemType("equipped", EquippedItemMixin);
 Database:RegisterItemType("questline", QuestLineItemMixin);
 Database:RegisterItemType("follower", FollowerItemMixin);
 Database:RegisterItemType("garrisontalenttree", GarrisonTalentTreeItemMixin);
+Database:RegisterItemType("garrisontalent", GarrisonTalentItemMixin);
 Database:RegisterItemType("campaign", CampaignItemMixin);
 Database:RegisterItemType("spell", ItemMixin); -- Is just used to track with rewards spells are used
 Database:RegisterItemType("area", AreaItemMixin);

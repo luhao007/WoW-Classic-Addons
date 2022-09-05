@@ -647,7 +647,7 @@ function private.FSMCreate()
 				end
 				context.progress = context.numConfirmed / context.numFound
 				context.progressText = L["Scan Paused"].." - "..progressText
-				if numCanAction == 0 or isPlayer or (not TSM.IsWowClassic() and numConfirming > 0) then
+				if numCanAction == 0 or isPlayer or numConfirming > 0 then
 					context.buttonsDisabled = true
 				else
 					if context.searchContext:IsBuyoutScan() then
@@ -691,7 +691,7 @@ function private.FSMCreate()
 				end
 				if TSM.IsWowClassic() then
 					local _, rawLink = context.findAuction:GetLinks()
-					if msg == LE_GAME_ERR_AUCTION_HIGHER_BID or msg == LE_GAME_ERR_ITEM_NOT_FOUND or msg == LE_GAME_ERR_AUCTION_BID_OWN or msg == LE_GAME_ERR_NOT_ENOUGH_MONEY or msg == LE_GAME_ERR_ITEM_MAX_COUNT then
+					if msg == LE_GAME_ERR_AUCTION_DATABASE_ERROR or msg == LE_GAME_ERR_AUCTION_HIGHER_BID or msg == LE_GAME_ERR_ITEM_NOT_FOUND or msg == LE_GAME_ERR_AUCTION_BID_OWN or msg == LE_GAME_ERR_NOT_ENOUGH_MONEY or msg == LE_GAME_ERR_ITEM_MAX_COUNT then
 						-- failed to bid/buy an auction
 						return "ST_CONFIRMING_BID_BUY", false
 					elseif context.searchContext:IsBidScan() and msg == ERR_AUCTION_BID_PLACED then

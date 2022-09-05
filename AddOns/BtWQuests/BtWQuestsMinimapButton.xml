@@ -50,7 +50,7 @@
     			self:RegisterEvent("PLAYER_LOGIN")
 			</OnLoad>
 			<OnEvent>
-				self:SetShown(BtWQuestSettingsData:GetValue("minimapShown"))
+				self:SetShown(BtWQuests.Settings.minimapShown)
 				if BtWQuests_Settings.minimapAngle == nil and BtWQuests_Settings.minimapX ~= nil then
 					local px,py = BtWQuests_Settings.minimapX, BtWQuests_Settings.minimapY;
 					local mx,my = Minimap:GetCenter();
@@ -80,6 +80,8 @@
 				BtWQuestsMinimapButtonDraggingFrame:Hide()
 			</OnDragStop>
 			<OnClick function="BtWQuestsMinimapButton_OnClick"/>
+			<OnEnter function="BtWQuestsMinimapButton_OnEnter"/>
+			<OnLeave function="BtWQuestsMinimapButton_OnLeave"/>
 		</Scripts>
 	</Button>
 </Ui>

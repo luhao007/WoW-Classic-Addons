@@ -646,6 +646,8 @@ app.L = {
 		[-328] = "Interface\\Icons\\inv_belt_24",									-- Waist
 		[-329] = "Interface\\Icons\\inv_pants_09",									-- Legs
 		[-330] = "Interface\\Icons\\inv_boots_09",									-- Feet
+	-- Argent Tournament
+		[-363] = "Interface\\Icons\\achievement_reputation_argentchampion",			-- The Argent Tournament
 
 		[-367] = "Interface\\Icons\\ability_rogue_deviouspoisons",					-- The Construct Quarter
 		[-368] = "Interface\\Icons\\inv_trinket_naxxramas04",						-- The Arachnid Quarter
@@ -655,6 +657,11 @@ app.L = {
 		[-383] = "Interface\\Icons\\inv_misc_gem_variety_02",						-- Miscellaneous
 		[-388] = "Interface\\Icons\\INV_Misc_Token_ScarletCrusade",					-- Main Gate (Stratholme)
 		[-389] = "Interface\\Icons\\INV_MISC_KEY_13",								-- Service Entrance (Stratholme)
+	-- Icecrown Citadel
+		[-393] = "Interface\\Icons\\achievement_dungeon_icecrown_icecrownentrance",			-- Storming the Citadel
+		[-394] = "Interface\\Icons\\achievement_dungeon_plaguewing",						-- The Plagueworks
+		[-395] = "Interface\\Icons\\achievement_dungeon_crimsonhall",						-- The Crimson Halls
+		[-396] = "Interface\\Icons\\achievement_dungeon_icecrown_frostwinghalls",			-- The Frostwing Halls
 		[-420] = "Interface\\Icons\\INV_Chest_Plate03",								-- Tier 0.5 Sets
 		[-531] = "Interface\\Icons\\inv_jewelry_amulet_03",							-- Spirit of Competition
 		[-532] = "Interface\\Icons\\ability_shaman_stormstrike",					-- Heroes of the Storm
@@ -770,6 +777,8 @@ app.L = {
 		[-328] = INVTYPE_WAIST, 												-- Waist
 		[-329] = INVTYPE_LEGS, 													-- Legs
 		[-330] = INVTYPE_FEET, 													-- Feet
+	-- Argent Tournament
+		[-363] = GetCategoryInfo(14941),										-- The Argent Tournament
 -- Dungeon/Raid Wing Info
 		[-367] = DUNGEON_FLOOR_NAXXRAMAS1, 										-- The Construct Quarter
 		[-368] = DUNGEON_FLOOR_NAXXRAMAS2, 										-- The Arachnid Quarter
@@ -779,6 +788,11 @@ app.L = {
 		[-383] = MISCELLANEOUS,													-- Miscellaneous (Holidays)
 		[-388] = "Main Gate",													-- Main Gate (Stratholme)
 		[-389] = "Service Entrance",											-- Service Entrance (Stratholme)
+	-- Icecrown Citadel
+		[-393] = "Storming the Citadel",										-- Storming the Citadel
+		[-394] = "The Plagueworks",												-- The Plagueworks
+		[-395] = "The Crimson Hall",											-- The Crimson Hall
+		[-396] = "The Frostwing Halls",											-- The Frostwing Halls
 		[-420] = "Tier 0.5 Sets",												-- Tier 0.5 Sets
 		[-422] = "Atal'ai Defenders",											-- Atal'ai Defenders
 		[-423] = "The Four Horsemen",											-- The Four Horsemen

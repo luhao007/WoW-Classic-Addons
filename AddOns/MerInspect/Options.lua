@@ -17,7 +17,7 @@ end})
 
 local DefaultDB = {
     version = VERSION,
-    ShowItemSlotString = false,             --物品部位文字
+    ShowItemSlotString = true,              --物品部位文字
     ShowItemBorder = true,                  --物品直角邊框
     ShowCharacterItemSheet = false,          --玩家自己裝備列表
     ShowCharacterItemStats = false,          --玩家自己屬性統計
@@ -81,7 +81,7 @@ end
 local function CreateSubtypeFrame(list, parent)
     if (not list) then return end
     if (not parent.SubtypeFrame) then
-        parent.SubtypeFrame = CreateFrame("Frame", nil, parent)
+        parent.SubtypeFrame = CreateFrame("Frame", nil, parent, "BackdropTemplate")
         parent.SubtypeFrame:SetScale(0.92)
         parent.SubtypeFrame:SetPoint("TOPLEFT", 333, 0)
         parent.SubtypeFrame:SetBackdrop({
@@ -134,10 +134,15 @@ local function CreateAnchorFrame(anchorkey, parent)
         end)
         frame[anchorPoint] = button
     end
-    local frame = CreateFrame("Frame", nil, parent.SubtypeFrame or parent, "ThinBorderTemplate")
+    local frame = CreateFrame("Frame", nil, parent.SubtypeFrame or parent, "ThinBorderTemplate,BackdropTemplate")
     frame.anchorkey = anchorkey
-    frame:SetBackdrop(GameTooltip:GetBackdrop())
-    frame:SetBackdropColor(GameTooltip:GetBackdropColor())
+    frame:SetBackdrop({
+            bgFile   = "Interface\\Tooltips\\UI-Tooltip-Background",
+            edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+            tile     = true, tileSize = 8, edgeSize = 16,
+            insets   = {left = 4, right = 4, top = 4, bottom = 4}
+    })
+    frame:SetBackdropColor(0, 0, 0, 0.7)
     frame:SetBackdropBorderColor(1, 1, 1, 0)
     frame:SetSize(80, 80)
     frame:SetPoint("TOPRIGHT", 100, -5)
@@ -191,8 +196,8 @@ end
 local frame = CreateFrame("Frame", nil, UIParent)
 frame.title = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
 frame.title:SetPoint("TOPLEFT", 18, -16)
-frame.title:SetText(L.Title)
-frame.name = L.OptionName
+frame.title:SetText(addon)
+frame.name = addon
 
 CreateCheckbox(options, frame, frame.title, 18, 9)
 

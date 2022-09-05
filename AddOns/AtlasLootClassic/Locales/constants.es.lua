@@ -73,6 +73,8 @@ AL["Ctrl + C to copy"] = "Ctrl + C para copiar"
 AL["Ctrl + Left Click"] = "Ctrl + Clic Izquierdo"
 AL["Custom Modules"] = "Módulos personalizados"
 AL["Dagger"] = "Daga"
+--[[Translation missing --]]
+--[[ AL["Deadly %s"] = "Deadly %s"--]] 
 AL["Dress up"] = "Probar"
 AL["Droprate:"] = "Prob. de conseguirse: "
 AL["Dungeons and Raids"] = "Mazmorras y Bandas"
@@ -95,6 +97,8 @@ AL["Gun"] = "Arma de fuego"
 --[[Translation missing --]]
 --[[ AL["H"] = "H"--]] 
 --[[Translation missing --]]
+--[[ AL["Hateful %s"] = "Hateful %s"--]] 
+--[[Translation missing --]]
 --[[ AL["Heigan the Unclean"] = "Heigan the Unclean"--]] 
 --[[Translation missing --]]
 --[[ AL["Heroes' %s"] = "Heroes' %s"--]] 
@@ -106,6 +110,10 @@ AL["Honor Hold"] = "Bastión del Honor"
 --[[ AL["Horde Expedition"] = "Horde Expedition"--]] 
 --[[Translation missing --]]
 --[[ AL["Instructor Razuvious"] = "Instructor Razuvious"--]] 
+--[[Translation missing --]]
+--[[ AL["Item level:"] = "Item level:"--]] 
+--[[Translation missing --]]
+--[[ AL["ItemID:"] = "ItemID:"--]] 
 AL["Items"] = "Objetos"
 --[[Translation missing --]]
 --[[ AL["Kel'Thuzad"] = "Kel'Thuzad"--]] 
@@ -163,6 +171,8 @@ AL["Right-click to close Atlas window."] = "Clic Derecho para cerrar la ventana 
 --[[ AL["Sanctified %s"] = "Sanctified %s"--]] 
 --[[Translation missing --]]
 --[[ AL["Sapphiron"] = "Sapphiron"--]] 
+--[[Translation missing --]]
+--[[ AL["Savage %s"] = "Savage %s"--]] 
 AL["Select Module"] = "Seleccionar módulo"
 AL["Select Subcategory"] = "Seleccionar subcategoría"
 AL["Set Favourite"] = "Seleccionar favorito"

@@ -1,11 +1,11 @@
-## Interface: 10000
+## Interface: 30400
 ## Author: Sutorix=AT=hotmail.com
-## Version: 0.7.8
+## Version: 0.7.9
 ## OptionalDeps: FB_Debugging, myAddOns, Titan, TownsfolkTracker
 ## SavedVariables: FishingBuddy_Info
 ## SavedVariablesPerCharacter: FishingBuddy_Player, FBODF_PlayerInfo
 
-## Title: Fishing Buddy (Crusade)
+## Title: Fishing Buddy (Crusade/WoTLK)
 ## Notes: Help with fishing related tasks -- clothing, fish information, etc.
 ## Title-zhCN: |cFFFFE00A<|r|cFF0070DE专业|r|cFFFFE00A>|r |cFFFFFFFF钓鱼助手|r |cFFFFE00AFishingBuddy|r
 

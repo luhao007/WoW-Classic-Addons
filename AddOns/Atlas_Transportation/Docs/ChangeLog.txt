@@ -1,4 +1,4 @@
-$Id: ChangeLog.txt 199 2022-08-30 14:50:49Z arithmandar $
+$Id: ChangeLog.txt 204 2022-09-04 14:20:33Z arithmandar $
 Atlas, a World of Warcraft instance map browser
 Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert@gmail.com>
 Copyright 2010 - Lothaer <lothayer@gmail.com>, Atlas Team
@@ -7,6 +7,16 @@ Copyright 2011 ~ 2022 - Arith Hsu, Atlas Team <atlas.addon at gmail.com>
 ==============
 = Change Log =
 ==============
+
+v1.51.08 (Sep. 04, 2022)
+------------------------
+- Fixed Stormwind docks' destination info
+- Foxed Ashran's portal destination info
+
+v1.51.07 (Sep. 04, 2022)
+------------------------
+- Map revamp: Retail Alliance's / Horde's Cosmos map
+- Map fixed: Retail Horde East map, correction on some nodes
 
 v1.51.06 (Aug. 30, 2022)
 ------------------------

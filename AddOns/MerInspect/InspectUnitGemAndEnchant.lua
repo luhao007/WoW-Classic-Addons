@@ -1,12 +1,13 @@
 
 -------------------------------------
--- 顯示附魔信息 (经典版无宝石)
+-- 顯示附魔信息和宝石
 -- @Author: M
 -- @DepandsOn: InspectUnit.lua
 -------------------------------------
 
 local addon, ns = ...
 
+local LibItemGem = LibStub:GetLibrary("LibItemGem.7000")
 local LibSchedule = LibStub:GetLibrary("LibSchedule.7000")
 local LibItemEnchant = LibStub:GetLibrary("LibItemEnchant.7000")
 
@@ -126,11 +127,49 @@ local function UpdateIconTexture(icon, texture, data, dataType)
     end
 end
 
+--图标宝石的边框颜色 @see:LibItemGem
+local function GetGemBorderColor(color)
+    if (color == "Yellow") then
+        return 1, 0.82, 0, 0.7
+    elseif (color == "Red") then
+        return 1, 0.2, 0.2, 0.7
+    elseif (color == "Blue") then
+        return 0, 0.2, 1, 0.9
+    elseif (color == "Prismatic") then
+        return 1, 0.82, 0, 0.7
+    elseif (color == "Meta") then
+        return 0.8, 0.8, 0.8, 0.7
+    end
+    return 1, 0.82, 0, 0.7
+end
+
 --讀取並顯示圖標
 local function ShowGemAndEnchant(frame, ItemLink, anchorFrame, itemframe)
     if (not ItemLink) then return 0 end
-    local num = 0
-    local _, qty, quality, texture, icon, r, g, b
+    local num, info, qty = LibItemGem:GetItemGemInfo(ItemLink)
+    local _, quality, texture, icon, r, g, b
+    for i, v in ipairs(info) do
+        icon = GetIconFrame(frame)
+        if (v.link) then
+            _, _, quality, _, _, _, _, _, _, texture = GetItemInfo(v.link)
+            r, g, b = GetItemQualityColor(quality or 0)
+            icon.bg:SetVertexColor(r, g, b)
+            icon.texture:SetTexture(texture or "Interface\\Cursor\\Quest")
+            icon.texture:SetVertexColor(1,1,1)
+            UpdateIconTexture(icon, texture, v.link, "item")
+        else
+            r, g, b, a = GetGemBorderColor(v.color)
+            icon.bg:SetVertexColor(r, g, b, a)
+            icon.texture:SetTexture("Interface\\Cursor\\Quest")
+            icon.texture:SetVertexColor(r, g, b)
+        end
+        icon.title = v.name
+        icon.itemLink = v.link
+        icon:ClearAllPoints()
+        icon:SetPoint("LEFT", anchorFrame, "RIGHT", i == 1 and 6 or 1, 0)
+        icon:Show()
+        anchorFrame = icon
+    end
     local enchantItemID, enchantID = LibItemEnchant:GetEnchantItemID(ItemLink)
     local enchantSpellID = LibItemEnchant:GetEnchantSpellID(ItemLink)
     if (enchantSpellID) then
@@ -139,6 +178,7 @@ local function ShowGemAndEnchant(frame, ItemLink, anchorFrame, itemframe)
         _, _, texture = GetSpellInfo(enchantSpellID)
         icon.bg:SetVertexColor(1,0.82,0)
         icon.texture:SetTexture(texture)
+        icon.texture:SetVertexColor(1,1,1)
         UpdateIconTexture(icon, texture, enchantSpellID, "spell")
         icon.spellID = enchantSpellID
         icon:ClearAllPoints()
@@ -152,6 +192,7 @@ local function ShowGemAndEnchant(frame, ItemLink, anchorFrame, itemframe)
         r, g, b = GetItemQualityColor(quality or 0)
         icon.bg:SetVertexColor(r, g, b)
         icon.texture:SetTexture(texture)
+        icon.texture:SetVertexColor(1,1,1)
         UpdateIconTexture(icon, texture, enchantItemID, "item")
         icon.itemLink = ItemLink
         icon:ClearAllPoints()
@@ -164,6 +205,7 @@ local function ShowGemAndEnchant(frame, ItemLink, anchorFrame, itemframe)
         icon.title = "#" .. enchantID
         icon.bg:SetVertexColor(0.1, 0.1, 0.1)
         icon.texture:SetTexture("Interface\\FriendsFrame\\InformationIcon")
+        icon.texture:SetVertexColor(1,1,1)
         icon:ClearAllPoints()
         icon:SetPoint("LEFT", anchorFrame, "RIGHT", num == 1 and 6 or 1, 0)
         icon:Show()
@@ -172,8 +214,9 @@ local function ShowGemAndEnchant(frame, ItemLink, anchorFrame, itemframe)
         num = num + 1
         icon = GetIconFrame(frame)
         icon.title = ENCHANTS .. ": " .. EnchantParts[itemframe.index][2]
-        icon.bg:SetVertexColor(1, 0.2, 0.2, 0.6)
+        icon.bg:SetVertexColor(0.1, 1, 1, 0.7)
         icon.texture:SetTexture("Interface\\Cursor\\" .. (EnchantParts[itemframe.index][1]==1 and "Quest" or "UnableQuest"))
+        icon.texture:SetVertexColor(1,1,1)
         icon:ClearAllPoints()
         icon:SetPoint("LEFT", anchorFrame, "RIGHT", num == 1 and 6 or 1, 0)
         icon:Show()

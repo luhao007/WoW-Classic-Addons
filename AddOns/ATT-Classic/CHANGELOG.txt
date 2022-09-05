@@ -1,6 +1,14 @@
-1.0.5 Release Notes
+1.0.6 Release Notes
 Contributions made by Crieve:
-* Added a reference to the Argent Tournament file... which needs a LOT of work.
-* Applied the proper classic phase and timeline to Argent Tournament.
-* Moved the refresh lag to when you open the ATT main list rather than when you complete a quest.
+* Updated Drak'Tharon Keep for Wrath Classic.
+* Updated Gundrak for Wrath Classic.
+* Updated Halls of Lightning for Wrath Classic.
+* Updated the Halls of Reflection for Wrath Classic.
+* Updated Naxxramas 10-Player  for Wrath Classic.
+* Updated Naxxramas for Wrath Classic.
+* Removed some silly nested tier pieces from tier tokens in Dalaran.
+* Updates to Achievements in order to provide Wrath Phase 1 filtering for folks working on achievements during Prepatch.
+* Added the Glory of the Icecrown Raider achievements.
+* Added the What a Long, Strange Trip It's Been achievement.
+* Swapped several custom npc IDs over to filters and categories, which are the preferred object type for headers where possible. Added a section for Wrath PVP.
 

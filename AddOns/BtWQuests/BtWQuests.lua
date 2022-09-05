@@ -27,11 +27,11 @@ end or function (questID)
     local mapID
     local quest = BtWQuestsDatabase:GetQuestByID(questID)
     if IsQuestComplete(questID) then
-        if BtWQuestSettingsData:GetValue("showMapTurnIns") and quest:HasTarget() then
+        if BtWQuests.Settings.showMapTurnIns and quest:HasTarget() then
             mapID = quest:GetTargetMapID()
         end
     elseif quest:HasObjectives() then
-        if BtWQuestSettingsData:GetValue("showMapPOIs") then
+        if BtWQuests.Settings.showMapPOIs then
             mapID = quest:GetCurrentObjectiveMapID()
         end
     end
@@ -62,137 +62,181 @@ function BtWQuestsFrameChainViewMixin:GetCharacter()
     return BtWQuestsFrame:GetCharacter()
 end
 
+local function SettingsCreate(options)
+	local optionsByKey = {};
+	local defaults = {};
+	for _,option in ipairs(options) do
+		optionsByKey[option.key] = option;
+		defaults[option.key] = option.default;
+	end
 
-BtWQuestSettingsData = {
-    options = {
-        {
-            name = L["SHOW_MINIMAP_ICON"],
-            value = "minimapShown",
-            onChange = function (id, value)
-                BtWQuestsMinimapButton:SetShown(value)
-            end,
-            default = false,
-        },
-        {
-            name = L["SHOW_MAP_PINS"],
-            value = "showMapPins",
-            onChange = function (id, value)
-                if value then
-                    -- Trigger creation of map pins
-                    BtWQuestsFrame:OnEvent("PLAYER_ENTERING_WORLD")
+	local result = Mixin({}, options);
+	local mt = {}
+    function mt.__call(_, tbl)
+        setmetatable(tbl, {__index = defaults});
+        mt.__index = tbl;
+    end
+    function mt.__newindex(self, key, value)
+        local option = optionsByKey[key];
+        if option then
+            local func = option.saveValue;
+            if func then
+                value = func(self, key, value)
+                if value ~= nil then
+                    mt.__index[key] = value
                 end
+            else
+                mt.__index[key] = value;
+            end
 
-                if WorldMapFrame:IsShown() then
-                    WorldMapFrame:RefreshAllDataProviders()
-                end
-            end,
-            default = true,
-        },
-        {
-            name = L["SHOW_MAP_OBJECTIVES"],
-            value = "showMapPOIs",
-            onChange = function (id, value)
-                if value then
-                    -- Trigger creation of map pins
-                    BtWQuestsFrame:OnEvent("PLAYER_ENTERING_WORLD")
-                end
-
-                if WorldMapFrame:IsShown() then
-                    WorldMapFrame:RefreshAllDataProviders()
-                end
-            end,
-            default = GetQuestPOIs == nil,
-            visible = GetQuestPOIs == nil,
-        },
-        {
-            name = L["SHOW_MAP_TURN_INS"],
-            value = "showMapTurnIns",
-            onChange = function (id, value)
-                if value then
-                    -- Trigger creation of map pins
-                    BtWQuestsFrame:OnEvent("PLAYER_ENTERING_WORLD")
-                end
-
-                if WorldMapFrame:IsShown() then
-                    WorldMapFrame:RefreshAllDataProviders()
-                end
-            end,
-            default = GetQuestPOIs == nil,
-            visible = GetQuestPOIs == nil,
-        },
-        {
-            name = L["USE_SMALL_MAP_ICONS"],
-            value = "smallMapPins",
-            onChange = function (id, value)
-                if WorldMapFrame:IsShown() then
-                    WorldMapFrame:RefreshAllDataProviders()
-                end
-            end,
-            default = false,
-        },
-        {
-            name = L["SHOW_CATEGORY_AS_GRID"],
-            value = "gridView",
-            default = true,
-        },
-        {
-            name = L["SHOW_CATEGORY_HEADERS"],
-            value = "categoryHeaders",
-            default = false,
-        },
-        {
-            name = L["GROUP_COMPLETED"],
-            value = "filterCompleted",
-            default = false,
-        },
-        {
-            name = L["GROUP_IGNORED"],
-            value = "filterIgnored",
-            default = false,
-        },
-        {
-            name = L["SHOW_QUEST_CHAIN_TOOLTIP"],
-            value = "showChainTooltip",
-            default = true,
-        },
-        {
-            name = L["SPOILER_FREE"],
-            value = "hideSpoilers",
-            default = false,
-        },
-        {
-            name = L["USE_TOMTOM_WAYPOINTS"],
-            value = "useTomTom",
-            default = true,
-        },
-    },
-    optionsByID = {},
-    GetValue = function (self, id)
-        if BtWQuests_Settings == nil then
-            BtWQuests_Settings = {}
-        end
-
-        local value = BtWQuests_Settings[id]
-        if value == nil then
-            value = self.optionsByID[id].default
-        end
-        return value
-    end,
-    SetValue = function (self, id, value)
-        if BtWQuests_Settings == nil then
-            BtWQuests_Settings = {}
-        end
-        BtWQuests_Settings[id] = value
-
-        local func = self.optionsByID[id].onChange
-        if func then
-            func(id, value)
+            func = option.onChange;
+            if func then
+                func(self, key, value);
+            end
+        else
+            mt.__index[key] = value;
         end
     end
-}
-for _,option in ipairs(BtWQuestSettingsData.options) do
-    BtWQuestSettingsData.optionsByID[option.value] = option
+    function mt.__add(self, option)
+        rawset(self, #self+1, option)
+        optionsByKey[option.key] = option;
+        defaults[option.key] = option.default;
+        return self
+    end
+	setmetatable(result, mt);
+	result({});
+
+	return result;
 end
+local Settings = SettingsCreate({
+    {
+        name = L["SHOW_MINIMAP_ICON"],
+        key = "minimapShown",
+        onChange = function (_, id, value)
+            BtWQuestsMinimapButton:SetShown(value)
+        end,
+            default = false,
+    },
+    {
+        name = L["SHOW_MAP_PINS"],
+        key = "showMapPins",
+        onChange = function (_, id, value)
+            if value then
+                -- Trigger creation of map pins
+                BtWQuestsFrame:OnEvent("PLAYER_ENTERING_WORLD")
+            end
+
+            if WorldMapFrame:IsShown() then
+                WorldMapFrame:RefreshAllDataProviders()
+            end
+        end,
+        default = true,
+    },
+    {
+        name = L["SHOW_MAP_OBJECTIVES"],
+        key = "showMapPOIs",
+        onChange = function (_, id, value)
+            if value then
+                -- Trigger creation of map pins
+                BtWQuestsFrame:OnEvent("PLAYER_ENTERING_WORLD")
+            end
+
+            if WorldMapFrame:IsShown() then
+                WorldMapFrame:RefreshAllDataProviders()
+            end
+        end,
+        default = GetQuestPOIs == nil,
+        visible = GetQuestPOIs == nil,
+    },
+    {
+        name = L["SHOW_MAP_TURN_INS"],
+        key = "showMapTurnIns",
+        onChange = function (_, id, value)
+            if value then
+                -- Trigger creation of map pins
+                BtWQuestsFrame:OnEvent("PLAYER_ENTERING_WORLD")
+            end
+
+            if WorldMapFrame:IsShown() then
+                WorldMapFrame:RefreshAllDataProviders()
+            end
+        end,
+        default = GetQuestPOIs == nil,
+        visible = GetQuestPOIs == nil,
+    },
+    {
+        name = L["USE_SMALL_MAP_ICONS"],
+        key = "smallMapPins",
+        onChange = function (_, id, value)
+            if WorldMapFrame:IsShown() then
+                WorldMapFrame:RefreshAllDataProviders()
+            end
+        end,
+        default = false,
+    },
+    {
+        name = L["SHOW_CATEGORY_AS_GRID"],
+        key = "gridView",
+        default = true,
+    },
+    {
+        name = L["SHOW_CATEGORY_HEADERS"],
+        key = "categoryHeaders",
+        default = false,
+    },
+    {
+        name = L["GROUP_COMPLETED"],
+        key = "filterCompleted",
+        default = false,
+    },
+    {
+        name = L["GROUP_IGNORED"],
+        key = "filterIgnored",
+        default = false,
+    },
+    {
+        name = L["SHOW_QUEST_CHAIN_TOOLTIP"],
+        key = "showChainTooltip",
+        default = true,
+    },
+    {
+        name = L["SPOILER_FREE"],
+        key = "hideSpoilers",
+        default = false,
+    },
+    {
+        name = L["USE_TOMTOM_WAYPOINTS"],
+        key = "useTomTom",
+        default = true,
+    },
+    {
+        name = L["ACCOUNT_BOUND_SETTINGS"],
+        key = "useAccountBoundSettings",
+        saveValue = function (Settings, id, value)
+            BtWQuests_Settings.useAccountBoundSettings = value
+
+            -- Clone current characters settings to account bound settings
+            if BtWQuests_AccountSettings == nil and value then
+                BtWQuests_AccountSettings = Mixin({}, BtWQuests_Settings)
+            end
+
+            if value then
+                Settings(BtWQuests_AccountSettings)
+            else
+                Settings(BtWQuests_Settings)
+            end
+
+            for _,option in ipairs(Settings) do
+                local func = option.onChange
+                if func and option.visible ~= false then
+                    func(Settings, option.key, Settings[option.key]);
+                end
+            end
+        end,
+        default = true,
+    },
+});
+BtWQuests.Settings = Settings;
 
 BtWQuestsOptionsMenuMixin = {}
 function BtWQuestsOptionsMenuMixin:OnLoad()
@@ -200,7 +244,7 @@ function BtWQuestsOptionsMenuMixin:OnLoad()
 end
 function BtWQuestsOptionsMenuMixin:Initialize()
     local function Select (button)
-        BtWQuestSettingsData:SetValue(button.value, not button.checked)
+        Settings[button.value] = not button.checked
         if BtWQuestsFrame:IsShown() then
             BtWQuestsFrame:Refresh()
         end
@@ -210,15 +254,12 @@ function BtWQuestsOptionsMenuMixin:Initialize()
     info.isNotRadio = true
     -- info.keepShownOnClick = true
 
-    for _,option in ipairs(BtWQuestSettingsData.options) do
+    for _,option in ipairs(Settings) do
         if option.visible ~= false then
             info.text = option.name
-            info.value = option.value
-            info.checked = BtWQuests_Settings[option.value]
+            info.value = option.key
+            info.checked = Settings[option.key]
             info.func = Select
-            if info.checked == nil then
-                info.checked = option.default
-            end
             self:AddButton(info)
         end
     end
@@ -578,7 +619,7 @@ function BtWQuestsMixin:DisplayExpansionList(scrollTo)
     end
 end
 function BtWQuestsMixin:DisplayItemList(items, scrollTo)
-    local gridView = BtWQuestSettingsData:GetValue("gridView")
+    local gridView = BtWQuests.Settings.gridView
 
 	self.categoryItemPool:ReleaseAll();
     local questSelect = self.Category;
@@ -663,9 +704,9 @@ function BtWQuestsMixin:DisplayItemList(items, scrollTo)
     self:Show();
 end
 function BtWQuestsMixin:DisplayCurrentExpansion(scrollTo)
-    local categoryHeaders = BtWQuestSettingsData:GetValue("categoryHeaders")
-    local filterCompleted = BtWQuestSettingsData:GetValue("filterCompleted")
-    local filterIgnored = BtWQuestSettingsData:GetValue("filterIgnored")
+    local categoryHeaders = BtWQuests.Settings.categoryHeaders
+    local filterCompleted = BtWQuests.Settings.filterCompleted
+    local filterIgnored = BtWQuests.Settings.filterIgnored
 
     local expansion = BtWQuestsDatabase:GetExpansionByID(self:GetExpansion());
     if expansion == nil then
@@ -680,9 +721,9 @@ function BtWQuestsMixin:DisplayCurrentExpansion(scrollTo)
     self:DisplayItemList(items, scrollTo)
 end
 function BtWQuestsMixin:DisplayCurrentCategory(scrollTo)
-    local categoryHeaders = BtWQuestSettingsData:GetValue("categoryHeaders")
-    local filterCompleted = BtWQuestSettingsData:GetValue("filterCompleted")
-    local filterIgnored = BtWQuestSettingsData:GetValue("filterIgnored")
+    local categoryHeaders = BtWQuests.Settings.categoryHeaders
+    local filterCompleted = BtWQuests.Settings.filterCompleted
+    local filterIgnored = BtWQuests.Settings.filterIgnored
 
     local category = BtWQuestsDatabase:GetCategoryByID(self:GetCategory())
     local items = category:GetItemList(self:GetCharacter(), not categoryHeaders, filterCompleted, filterIgnored)
@@ -696,10 +737,10 @@ function BtWQuestsMixin:DisplayCurrentChain(scrollTo, zoom)
     chain:Show();
 
     -- chain.Scroll:SetCharacter(self:GetCharacter())
-    chain.Scroll:SetHideSpoilers(BtWQuestSettingsData:GetValue("hideSpoilers"))
+    chain.Scroll:SetHideSpoilers(BtWQuests.Settings.hideSpoilers)
     chain.Scroll:SetChain(self:GetChain(), scrollTo, zoom)
 
-    if BtWQuestSettingsData:GetValue("showChainTooltip") then
+    if BtWQuests.Settings.showChainTooltip then
         chain.Tooltip:ClearAllPoints()
         chain.Tooltip:SetPoint("TOPLEFT", chain, "TOPRIGHT", 5, -3)
         chain.Tooltip:SetOwner(chain, "ANCHOR_PRESERVE")
@@ -721,7 +762,7 @@ function BtWQuestsMixin:UpdateCurrentChain()
     if chain:IsShown() then
         chain.Scroll:Update()
 
-        if BtWQuestSettingsData:GetValue("showChainTooltip") then
+        if BtWQuests.Settings.showChainTooltip then
             chain.Tooltip:SetOwner(chain, "ANCHOR_PRESERVE")
             chain.Tooltip:SetChain(self:GetChain(), self:GetCharacter())
         else
@@ -802,6 +843,17 @@ end
 function BtWQuestsMixin:OnEvent(event, ...)
     if event == "ADDON_LOADED" then
         if ... == "BtWQuests" then
+            if BtWQuests_Settings == nil then
+                BtWQuests_Settings = {}
+            end
+            Settings(BtWQuests_Settings)
+            if Settings.useAccountBoundSettings then
+                if BtWQuests_AccountSettings == nil then
+                    BtWQuests_AccountSettings = Mixin({}, BtWQuests_Settings)
+                end
+                Settings(BtWQuests_AccountSettings)
+            end
+
             BtWQuests_AutoLoad = BtWQuests_AutoLoad or {}
 
             for i=1,GetNumAddOns() do
@@ -861,7 +913,12 @@ function BtWQuestsMixin:OnEvent(event, ...)
             end
 
             if not BtWQuestsDatabase:HasMultipleExpansion() then
-                BtWQuestsDatabase:GetFirstExpansion():Load()
+                local expansion = BtWQuestsDatabase:GetFirstExpansion()
+                if expansion then
+                    expansion:Load()
+                else
+                    print(L["BTWQUESTS_NO_EXPANSION_ERROR"])
+                end
             end
 
             -- hooksecurefunc("QuestObjectiveTracker_OnOpenDropDown", function (self)
@@ -872,22 +929,20 @@ function BtWQuestsMixin:OnEvent(event, ...)
             -- end)
 
             if select(5, GetAddOnInfo("BtWQuestsEditor")) == "DEMAND_LOADED" then
-                local option = {
+                Settings = Settings + {
                     name = "Enable Editor (reload on disable)",
-                    value = "enableEditor",
+                    key = "enableEditor",
                     default = false,
-                    onChange = function(id, value)
+                    onChange = function(_, id, value)
                         if value then
                             LoadAddOn("BtWQuestsEditor")
-                        else
+                        elseif BtWQuestsEditor then
                             ReloadUI() -- Gotta reload to disable an addon
                         end
                     end
-                };
-                BtWQuestSettingsData.optionsByID[option.value] = option
-                BtWQuestSettingsData.options[#BtWQuestSettingsData.options+1] = option;
+                }
 
-                if BtWQuestSettingsData:GetValue("enableEditor") then
+                if BtWQuests.Settings.enableEditor then
                     LoadAddOn("BtWQuestsEditor")
                 end
             end
@@ -897,7 +952,7 @@ function BtWQuestsMixin:OnEvent(event, ...)
             end
         end
     elseif event == "PLAYER_ENTERING_WORLD" then
-        if not self.addedQuestDataProviders and (BtWQuestSettingsData:GetValue("showMapPins") or BtWQuestSettingsData:GetValue("showMapPOIs") or BtWQuestSettingsData:GetValue("showMapTurnIns")) then
+        if not self.addedQuestDataProviders and (BtWQuests.Settings.showMapPins or BtWQuests.Settings.showMapPOIs or BtWQuests.Settings.showMapTurnIns) then
             self.addedQuestDataProviders = true
             LibMapPinHandler[WorldMapFrame]:AddDataProvider(CreateFromMixins(BtWQuestsQuestDataProviderMixin));
             if not GetQuestPOIs then
@@ -918,7 +973,7 @@ function BtWQuestsMixin:OnEvent(event, ...)
         if ... == "LSHIFT" or ... == "RSHIFT" then
             -- Update tooltips
             local chain = self.Chain
-            if chain:IsShown() and BtWQuestSettingsData:GetValue("showChainTooltip") then
+            if chain:IsShown() and BtWQuests.Settings.showChainTooltip then
                 chain.Tooltip:SetOwner(chain, "ANCHOR_PRESERVE")
                 chain.Tooltip:SetChain(self:GetChain(), self:GetCharacter())
             end
@@ -964,12 +1019,8 @@ function BtWQuestsMixin:Refresh()
         self:SelectChain(self:GetChain(), nil, true)
     elseif self:GetCategory() ~= nil then
         self:SelectCategory(self:GetCategory(), nil, true)
-        -- self.navBar:SetCategory(self:GetCategory())
-        -- self:DisplayCurrentCategory(false)
     elseif self:GetExpansion() ~= nil then
         self:SelectExpansion(self:GetExpansion(), nil, true)
-        -- self.navBar:SetExpansion(self:GetExpansion())
-        -- self:DisplayCurrentExpansion(false)
     else
         self.navBar:Reset()
         self:DisplayExpansionList(false)
@@ -990,7 +1041,12 @@ function BtWQuestsMixin:OnShow()
             if expansion then
                 self:SelectExpansion(expansion:GetID(), nil, true)
             elseif not BtWQuestsDatabase:HasMultipleExpansion() then
-                self:SelectExpansion(BtWQuestsDatabase:GetFirstExpansion():GetID(), nil, true)
+                local expansion = BtWQuestsDatabase:GetFirstExpansion()
+                if expansion then
+                    self:SelectExpansion(BtWQuestsDatabase:GetFirstExpansion():GetID(), nil, true)
+                else
+                    print(L["BTWQUESTS_NO_EXPANSION_ERROR"])
+                end
             end
         end
 
@@ -1087,7 +1143,7 @@ end
 
 -- [[ Waypoint ]]
 function BtWQuests_AddWaypoint(mapId, x, y, name)
-    if BtWQuestSettingsData:GetValue("useTomTom") and TomTom and TomTom.AddWaypoint then
+    if BtWQuests.Settings.useTomTom and TomTom and TomTom.AddWaypoint then
         TomTom:AddWaypoint(mapId, x, y, {
             title = name,
         })

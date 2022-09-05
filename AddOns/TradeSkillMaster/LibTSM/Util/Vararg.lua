@@ -9,7 +9,9 @@
 
 local _, TSM = ...
 local Vararg = TSM.Init("Util.Vararg")
-local TempTable = TSM.Include("Util.TempTable")
+local private = {
+	iterTemp = {},
+}
 
 
 
@@ -31,7 +33,12 @@ end
 -- @param ... The values to iterate over
 -- @return An iterator with fields: `index, value`
 function Vararg.Iterator(...)
-	return TempTable.Iterator(TempTable.Acquire(...))
+	local tbl = private.iterTemp
+	assert(not tbl.inUse)
+	tbl.inUse = true
+	tbl.length = select("#", ...)
+	Vararg.IntoTable(private.iterTemp, ...)
+	return private.IteratorHelper, private.iterTemp, 0
 end
 
 --- Returns whether not the value exists within the vararg.
@@ -45,4 +52,19 @@ function Vararg.In(value, ...)
 		end
 	end
 	return false
+end
+
+
+
+-- ============================================================================
+-- Private Helper Functions
+-- ============================================================================
+
+function private.IteratorHelper(tbl, index)
+	index = index + 1
+	if index > tbl.length then
+		wipe(tbl)
+		return
+	end
+	return index, tbl[index]
 end

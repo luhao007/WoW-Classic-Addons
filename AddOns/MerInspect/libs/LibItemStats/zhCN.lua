@@ -2,6 +2,7 @@
 if (GetLocale() ~= "zhCN") then return end
 
 LibItemStatsPatterns = {
+    setprefix = "套装[：:]",
 	ignore = {
         "^使用",
         "^击中时可能",
@@ -76,9 +77,12 @@ LibItemStatsPatterns = {
 		{ key = "ManaRestore", pattern = "每5秒恢复(%d+)点法力" },
 		{ key = "ManaRestore", pattern = "每5秒法力回复%+(%d+)" },
 		{ key = "Resilience", pattern = "韧性等级提高(%d+)" },
+        { key = "Resilience", pattern = "提高(%d+)点韧性" },
 		{ key = "SpellHitRating", pattern = "法术命中等级提高(%d+)" },
+        { key = "SpellHitRating", pattern = "提高(%d+)点法术命中" },
 		{ key = "HasteSpell", pattern = "法术急速等级提高(%d+)" },
-		{ key = "SpellCrit", pattern = "法术爆击等级提高(%d+)" },
+		{ key = "SpellCrit", pattern = "法术爆击等级(%d+)" },
+        { key = "SpellCrit", pattern = "提高(%d+)点法术爆击" },
 		{ key = "SpellStrike", pattern = "法术穿透提高(%d+)" },		
 		{ key = "SpellDamage|Healing", pattern = "所有法术和魔法效果所造成的伤害和治疗效果，最多(%d+)", },
 		{ key = "SpellDamage|Healing", pattern = "使法术和魔法效果的治疗和伤害提高最多(%d+)", },
@@ -149,7 +153,7 @@ LibItemStatsPatterns = {
 		{ key = "Intellect", pattern = "智力提高(%d+)",},
 		{ key = "ResistanceFrost", pattern = "冰霜抗性提高(%d+)",},	
 		{ key = "Stamina|Agility|Strength|Intellect|Spirit", pattern = "所有属性提高(%d+)点",},
-		{ key = "ResistanceFrost|ResistanceShadow|ResistanceArcane|ResistanceFire|ResistanceNature|ResistanceHoly", pattern = "所有抗性提高(%d+)点",},
+		{ key = "ResistanceFrost|ResistanceShadow|ResistanceArcane|ResistanceFire|ResistanceNature|ResistanceHoly", pattern = "所有抗性提高(%d+)点", conflict = true },
 		{ key = "ManaRestore", pattern = "每5秒恢复(%d+)点法力",},
 		{ key = "HealthRestore", pattern = "每5秒恢复(%d+)点生命",},
 		{ key = "Stamina|Agility|Strength|Intellect|Spirit", percent = true, pattern = "所有属性提高(%d+)%%",},

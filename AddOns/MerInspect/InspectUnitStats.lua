@@ -29,7 +29,7 @@ end
 
 local function DefaultItemStatsFrame(frame, unit)
     if (not frame.statsFrame) then
-        local statsFrame = CreateFrame("Frame", nil, frame, "InsetFrameTemplate3")
+        local statsFrame = CreateFrame("Frame", nil, frame, "InsetFrameTemplate3,BackdropTemplate")
         statsFrame:SetSize(180, 157)
         statsFrame:SetPoint("TOPLEFT", frame, "TOPRIGHT", 0, -1)
         for i = 1, 32 do
@@ -108,5 +108,44 @@ hooksecurefunc("ShowInspectItemListFrame", function(unit, parent, itemLevel, max
         ShowSupportedItemStatsFrame(frame, unit)
     --else
     --    DefaultItemStatsFrame(frame, unit)
+    end
+end)
+
+LibEvent:attachTrigger("INSPECT_STATSFRAME_BACKDROP", function(self, frame)
+    local backdrop = frame:GetBackdrop() or {
+            bgFile   = "Interface\\Tooltips\\UI-Tooltip-Background",
+            edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+            tile     = true,
+            tileSize = 8,
+            edgeSize = 16,
+            insets   = {left = 4, right = 4, top = 4, bottom = 4}
+          }
+    if (MerInspectDB and MerInspectDB.ShowInspectAngularBorder) then
+        backdrop.edgeSize = 1
+        backdrop.edgeFile = "Interface\\Buttons\\WHITE8X8"
+        backdrop.insets.top = 1
+        backdrop.insets.left = 1
+        backdrop.insets.right = 1
+        backdrop.insets.bottom = 1
+        frame.backdrop = backdrop
+    else
+        backdrop.edgeSize = 16
+        backdrop.edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border"
+        backdrop.insets.top = 4
+        backdrop.insets.left = 4
+        backdrop.insets.right = 4
+        backdrop.insets.bottom = 4
+        frame.backdrop = backdrop
+    end
+end)
+
+LibEvent:attachTrigger("HANDLE_PORTRAIT_FRAME", function(self, frame)
+    if (MerInspectDB and MerInspectDB.ShowCharacterItemStats and MerInspectDB.ShowCharacterItemSheet) then
+        frame.PortraitFrame:Hide()
+        frame.AttributesCategory:SetPoint("TOPLEFT", frame, "TOPLEFT", 0, -4)
+        frame.height = frame.height - 60
+    else
+        frame.PortraitFrame:Show()
+        frame.AttributesCategory:SetPoint("TOPLEFT", frame.PortraitFrame, "BOTTOMLEFT", -14, 0)
     end
 end)

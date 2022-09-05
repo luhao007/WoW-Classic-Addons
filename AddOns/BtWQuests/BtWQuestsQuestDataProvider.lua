@@ -13,7 +13,7 @@ end
 function BtWQuestsQuestDataProviderMixin:RefreshAllData(fromOnShow)
 	self:RemoveAllData();
 
-	if BtWQuestSettingsData:GetValue("showMapPins") then
+	if BtWQuests.Settings.showMapPins then
 		local mapID = self:GetMap():GetMapID();
 		local mapInfo = C_Map.GetMapInfo(mapID);
 		if mapInfo and mapInfo.mapType ~= Enum.UIMapType.Continent and mapInfo.mapType ~= Enum.UIMapType.World and mapInfo.mapType ~= Enum.UIMapType.Cosmic then
@@ -21,7 +21,7 @@ function BtWQuestsQuestDataProviderMixin:RefreshAllData(fromOnShow)
 			for _,item in ipairs(items) do
 				local pin = self:GetMap():AcquirePin("BtWQuestsQuestPinTemplate", item.itemName);
 				pin:SetPosition(item.x, item.y);
-				if BtWQuestSettingsData:GetValue("smallMapPins") then
+				if BtWQuests.Settings.smallMapPins then
 					pin:SetSize(16, 16);
 				else
 					pin:SetSize(22, 22);

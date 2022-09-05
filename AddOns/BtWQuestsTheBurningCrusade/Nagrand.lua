@@ -2797,6 +2797,10 @@ Database:AddChain(Chain.TempChain06, {
 Database:AddCategory(CATEGORY_ID, {
     name = BtWQuests.GetMapName(MAP_ID),
     expansion = EXPANSION_ID,
+    buttonImage = {
+        texture = [[Interface\AddOns\BtWQuestsTheBurningCrusade\UI-Category-Nagrand]],
+		texCoords = {0,1,0,1},
+    },
     items = {
         {
             type = "chain",

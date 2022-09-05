@@ -51,7 +51,7 @@ AQINSTANZ = 1; -- currently shown instance-pic (see AtlasQuest_Instanzen.lua)
 AQINSTATM = ""; -- variable to check whether AQINSTANZ has changed (see function AtlasQuestSetTextandButtons())
 
 -- Sets the max number of instances and quests to check for. 
-local AQMAXINSTANCES = "68"
+local AQMAXINSTANCES = "94"
 local AQMAXQUESTS = "23"
 
 
@@ -64,9 +64,9 @@ local WoWVersion  = select(4, GetBuildInfo())
 if WoWVersion < 20000 then
 	-- CLASSIC
 	ATLASQUEST_VERSION = AQ_MSG_WRONGVERSION;
-elseif WoWVersion > 19999 and WoWVersion < 90000 then 
-	-- TBC CLASSIC
-	ATLASQUEST_VERSION = ""..BLUE.."AtlasQuest TBC "..AQVERSION;
+elseif WoWVersion > 29999 and WoWVersion < 90000 then 
+	-- WOTLK CLASSIC
+	ATLASQUEST_VERSION = ""..BLUE.."AtlasQuest LK "..AQVERSION;
 else
 	-- RETAIL / SHADOWLANDS
 	ATLASQUEST_VERSION = AQ_MSG_WRONGVERSION;

@@ -1458,6 +1458,15 @@ Database:AddChain(Chain.EmbedChain06, {
             id = 10704,
             aside = true,
             x = 0,
+            connections = {
+                1, 
+            },
+        },
+        {
+            type = "quest",
+            id = 10882,
+            aside = true,
+            x = 0,
         },
     },
 })
@@ -3296,6 +3305,10 @@ Database:AddChain(Chain.OtherChain, {
 Database:AddCategory(CATEGORY_ID, {
     name = BtWQuests.GetMapName(MAP_ID),
     expansion = EXPANSION_ID,
+    buttonImage = {
+        texture = [[Interface\AddOns\BtWQuestsTheBurningCrusade\UI-Category-Netherstorm]],
+		texCoords = {0,1,0,1},
+    },
     items = {
         {
             type = "chain",

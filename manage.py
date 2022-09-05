@@ -15,7 +15,7 @@ CLASSIC_ERA_VER = '11401'
 CLASSIC_VER = '30400'
 RETAIL_VER = '90207'
 
-IGNORED = ['Grail', 'MeetingHorn', 'Wholly', 'FishingBuddy', 'TrinketMenu']
+IGNORED = ['Grail', 'MeetingHorn', 'Wholly', 'TrinketMenu']
 
 
 def available_on(platforms):

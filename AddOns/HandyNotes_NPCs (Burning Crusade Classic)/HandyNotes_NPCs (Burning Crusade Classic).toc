@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Cali
-## Version: 1.07
+## Version: 1.08
 ## RequiredDeps: HandyNotes
 ## OptionalDeps: LibStub, !LibUIDropDownMenu
 ## SavedVariables: HandyNotes_NPCsBurningCrusadeClassicDB

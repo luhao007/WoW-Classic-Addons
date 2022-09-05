@@ -147,6 +147,8 @@ AQITEM_ONEHAND = "One-Hand,"
 AQITEM_TWOHAND = "Two-Hand,"
 
 AQITEM_ITEM = "Item" -- Use this for those oddball rewards which aren't really anything else.
+AQITEM_EMBLEM = "Emblem" 
+AQITEM_KEY = "Key" 
 AQITEM_PET = "Pet"
 AQITEM_TRINKET = "Trinket"
 AQITEM_POTION = "Potion"

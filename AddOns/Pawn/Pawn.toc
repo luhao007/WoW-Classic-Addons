@@ -1,5 +1,5 @@
 ## Interface: 30400
-## Version: 2.6.1
+## Version: 2.6.4
 ## SavedVariables: PawnCommon
 ## SavedVariablesPerCharacter: PawnOptions, PawnMrRobotScaleProviderOptions, PawnClassicScaleProviderOptions
 

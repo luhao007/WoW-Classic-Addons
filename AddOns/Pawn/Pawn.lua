@@ -7,7 +7,7 @@
 -- Main non-UI code
 ------------------------------------------------------------
 
-PawnVersion = 2.0601
+PawnVersion = 2.0604
 
 -- Pawn requires this version of VgerCore:
 local PawnVgerCoreVersionRequired = 1.17
@@ -1287,7 +1287,9 @@ function PawnGetItemData(ItemLink)
 				if PawnCommon.DebugCache then
 					VgerCore.Message(VgerCore.Color.Green .. "    Cached item and this tooltip both had " .. Item.NumLines .. " lines, so using cached item")
 				end
-				return CachedItem
+				if CachedItem.Values then
+					return CachedItem
+				end
 			else
 				-- The item in the cache has a different number of lines than this new item, so remove the old item from the cache, and then we'll add the new one later.
 				PawnUncacheItem(CachedItem)
@@ -2364,6 +2366,10 @@ function PawnGetStatsFromTooltip(TooltipName, DebugMessages)
 		PawnAddStatToTable(Stats, "MeleeMinDamage", Stats["MinDamage"])
 		PawnAddStatToTable(Stats, "MeleeMaxDamage", Stats["MaxDamage"])
 		Stats["IsMelee"] = nil
+
+		-- Feral attack power conversion (Wrath)
+		local FeralAp = PawnGetFeralAp(Stats["Dps"])
+		if FeralAp and FeralAp > 0 then PawnAddStatToTable(Stats, "FeralAp", FeralAp) end
 	end
 
 	if Stats["IsRanged"] then
@@ -3336,6 +3342,24 @@ function PawnGetGemQualityForItem(GemQualityLevels, ItemLevel)
 	end
 	VgerCore.Fail("Couldn't find an appropriate gem quality level for an item of level " .. tostring(ItemLevel) .. " in the specified item table.")
 	return GemLevel
+end
+
+-- Given a weapon's DPS, returns the amount of feral attack power the weapon would grant a druid.
+function PawnGetFeralAp(Dps)
+
+	-- In Classic Era and Burning Crusade, feral AP was just a regular stat.
+	-- In Cataclysm, it was removed entirely.
+	-- Only in Wrath was it a special fake stat that appeared on tooltips.
+	if not VgerCore.IsWrath then return 0 end
+
+	if not Dps then return 0 end
+	local FeralAp = math.floor((Dps - 54.8) * 14)
+	if FeralAp < 0 then
+		return 0
+	else
+		return FeralAp
+	end
+
 end
 
 -- Finds the best gems for a particular scale in one or more colors.

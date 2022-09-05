@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Breen
-## Version: 4.6
+## Version: 4.9
 ## Dependencies: BtWQuests
 ## LoadOnDemand: 1
 
@@ -13,6 +13,8 @@
 ## X-BtWQuests-Expansion: 1
 ## X-BtWQuests-Expansion-Image: UI-Expansion 0 0.90625 0 0.8125
 ## X-BtWQuests-Expansion-Movie-ID: 27
+## X-BtWQuests-Category-Range: 201-208
+## X-BtWQuests-Chain-Range: 20101-20108,20111-20118,20121-20129,20201-20210,20226,20301-20306,20335-20338,20401-20412,20470,20471,20468,20452,20501-20507,20526-20528,20601-20608,20621-20628,20601-20714,20731,20801-20808
 ## X-BtWQuests-AutoLoad: 1
 ## X-Part-Of: BtWQuests
 

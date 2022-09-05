@@ -17677,7 +17677,7 @@ L["%d Items"] = "%d 物品"
 L["%d of %d"] = "發佈 %d 堆，每堆 %d 個"
 L["%d Operations"] = "%d 作業"
 L["%d Players"] = "%d 玩家"
-L["%d Posted Auctions"] = "%d 個拍賣發佈"
+L["%d Posted Auctions"] = "%d 個拍賣公告"
 L["%d Professions"] = "%d 個專業技能"
 --[[Translation missing --]]
 L["%d Rarities"] = "%d Rarities"
@@ -17723,8 +17723,8 @@ L["%s Items Total"] = "%s 所有物品"
 L["%s operation"] = "%s 作業"
 L["%s operations"] = "%s 作業"
 L["%s Operations"] = "%s 作業"
-L["%s Posted Auctions"] = "%s 個拍賣發佈"
-L["%s Posted Auctions (Filtered)"] = "%s 個拍賣發佈（已篩選）"
+L["%s Posted Auctions"] = "%s 個拍賣公告"
+L["%s Posted Auctions (Filtered)"] = "%s 個拍賣公告（已篩選）"
 --[[Translation missing --]]
 L["%s previously had the max number of operations, so removed %s."] = "%s previously had the max number of operations, so removed %s."
 L["%s removed."] = "%s 移除."
@@ -17733,10 +17733,8 @@ L["%s sent you %s and %s"] = "%s 發送給你 %s 和 %s"
 --[[Translation missing --]]
 L["%s sent you a COD of %s for %s"] = "%s sent you a COD of %s for %s"
 L["%s sent you a message: %s"] = "%s 發訊息給你: %s"
---[[Translation missing --]]
-L["%s Sold Auctions"] = "%s Sold Auctions"
---[[Translation missing --]]
-L["%s Sold Auctions (Filtered)"] = "%s Sold Auctions (Filtered)"
+L["%s Sold Auctions"] = "%s 個售出的拍賣"
+L["%s Sold Auctions (Filtered)"] = "%s 個售出的拍賣（已篩選）"
 L["%s Total"] = "%s 總值"
 L["%s total"] = "%s 全部"
 --[[Translation missing --]]
@@ -17838,20 +17836,16 @@ L["Alarm Clock"] = "警示鐘"
 --[[Translation missing --]]
 L["All"] = "All"
 L["All Auctions"] = "所有拍賣"
---[[Translation missing --]]
-L["All Bought"] = "All Bought"
---[[Translation missing --]]
-L["All Cancelled"] = "All Cancelled"
+L["All Bought"] = "購入的拍賣"
+L["All Cancelled"] = "撤銷的拍賣"
 L["All Characters"] = "所有角色"
---[[Translation missing --]]
-L["All Expired"] = "All Expired"
+L["All Expired"] = "期滿的拍賣"
 --[[Translation missing --]]
 L["All Faction-Realms"] = "All Faction-Realms"
 --[[Translation missing --]]
 L["All Guilds"] = "All Guilds"
 L["All Item Classes"] = "所有物品類別"
---[[Translation missing --]]
-L["All Other"] = "All Other"
+L["All Other"] = "其他"
 L["All Players"] = "所有玩家"
 L["All Professions"] = "所有專業技能"
 L["All Rarites"] = "所有物品品質"
@@ -17860,8 +17854,7 @@ L["All Rarities"] = "所有物品品質"
 L["All Selected"] = "All Selected"
 --[[Translation missing --]]
 L["All Slots"] = "All Slots"
---[[Translation missing --]]
-L["All Sold"] = "All Sold"
+L["All Sold"] = "售出的拍賣"
 --[[Translation missing --]]
 L["All Sources"] = "All Sources"
 L["All Subclasses"] = "所有子分類"
@@ -18304,12 +18297,12 @@ L["Disenchanting Options"] = "分解選項"
 L["Display total money received in chat"] = "Display total money received in chat"
 --[[Translation missing --]]
 L["Done Canceling"] = "Done Canceling"
-L["Done Posting"] = "完成發佈"
+L["Done Posting"] = "公告完成"
 --[[Translation missing --]]
 L["Done rebuilding item cache."] = "Done rebuilding item cache."
 L["Done Scanning"] = "完成掃瞄"
-L["Don't post after this many expires"] = "多少次過期後就不再發佈"
-L["Don't Post Items"] = "不要發佈物品"
+L["Don't post after this many expires"] = "多少次過期後就不再公告"
+L["Don't Post Items"] = "不公告物品"
 --[[Translation missing --]]
 L["Don't prompt to record trades"] = "Don't prompt to record trades"
 L["Down"] = "下"
@@ -18324,7 +18317,7 @@ L["Edit"] = "Edit"
 L["Edit Custom Source"] = "Edit Custom Source"
 --[[Translation missing --]]
 L["Edit Material Price"] = "Edit Material Price"
-L["Edit Post"] = "編輯發佈"
+L["Edit Post"] = "編輯公告"
 L["Embed TSM tooltip"] = "崁入 TSM 提示框"
 --[[Translation missing --]]
 L["Empty bags"] = "Empty bags"
@@ -18747,7 +18740,7 @@ L["Max Shopping Price"] = "Max Shopping Price"
 L["Max shopping price"] = "Max shopping price"
 --[[Translation missing --]]
 L["Max sniper price"] = "Max sniper price"
-L["Maximum amount already posted."] = "已發佈的最大數量"
+L["Maximum amount already posted."] = "已公告的最大數量"
 --[[Translation missing --]]
 L["Maximum auction price"] = "Maximum auction price"
 --[[Translation missing --]]
@@ -18877,8 +18870,7 @@ L["No Sources"] = "No Sources"
 L["No Types"] = "No Types"
 --[[Translation missing --]]
 L["No value was returned by the custom price for the specified item."] = "No value was returned by the custom price for the specified item."
---[[Translation missing --]]
-L["None"] = "None"
+L["None"] = "無"
 --[[Translation missing --]]
 L["None (Always Show)"] = "None (Always Show)"
 L["None Selected"] = "未選"
@@ -18925,8 +18917,7 @@ L["On Cooldown"] = "冷卻中"
 L["Only show craftable"] = "只顯示可製造物品"
 --[[Translation missing --]]
 L["Only show items with disenchant values above this price"] = "Only show items with disenchant values above this price"
---[[Translation missing --]]
-L["Only show sold auctions"] = "Only show sold auctions"
+L["Only show sold auctions"] = "只顯示已出售的拍賣"
 L["OPEN"] = "開啟"
 L["Open All Mail"] = "開啟全部郵件"
 --[[Translation missing --]]
@@ -18970,22 +18961,19 @@ L["Performs a full, manual scan of the AH to populate some AuctionDB data if non
 L["Player Gold"] = "玩家持有金錢"
 --[[Translation missing --]]
 L["Player Invite Accept"] = "Player Invite Accept"
-L["Post"] = "發佈"
---[[Translation missing --]]
-L["Post / Cancel"] = "Post / Cancel"
-L["Post at Maximum Price"] = "以最高價格發佈"
-L["Post at Minimum Price"] = "以最低價格發佈"
-L["Post at Normal Price"] = "以正常價格發佈"
---[[Translation missing --]]
-L["Post Auction"] = "Post Auction"
-L["Post cap"] = "發佈上限"
+L["Post"] = "公告"
+L["Post / Cancel"] = "公告 / 撤銷"
+L["Post at Maximum Price"] = "以最高價格公告"
+L["Post at Minimum Price"] = "以最低價格公告"
+L["Post at Normal Price"] = "以一般價格公告"
+L["Post Auction"] = "公告拍賣"
+L["Post cap"] = "公告上限"
 --[[Translation missing --]]
 L["Post cap to bags"] = "Post cap to bags"
 --[[Translation missing --]]
 L["Post from Shopping Scan"] = "Post from Shopping Scan"
-L["Post Items from Bags"] = "發佈背包裡的物品"
---[[Translation missing --]]
-L["Post Quantity"] = "Post Quantity"
+L["Post Items from Bags"] = "公告背包裡的物品"
+L["Post Quantity"] = "公告數量"
 --[[Translation missing --]]
 L["Post Scan"] = "Post Scan"
 --[[Translation missing --]]
@@ -18993,22 +18981,21 @@ L["Post Selected"] = "Post Selected"
 L["Postage"] = "郵資"
 --[[Translation missing --]]
 L["Posted at whitelisted player's price."] = "Posted at whitelisted player's price."
-L["Posted:"] = "發佈:"
-L["Posting"] = "發佈"
---[[Translation missing --]]
-L["Posting %d / %d"] = "Posting %d / %d"
+L["Posted:"] = "公告："
+L["Posting"] = "公告"
+L["Posting %d / %d"] = "公告中 %d / %d"
 --[[Translation missing --]]
 L["Posting %d items for %s hours."] = "Posting %d items for %s hours."
 --[[Translation missing --]]
 L["Posting %d stack(s) of %d for %s hours."] = "Posting %d stack(s) of %d for %s hours."
-L["Posting at normal price."] = "以正常價格發佈."
+L["Posting at normal price."] = "以一般價格公告。"
 --[[Translation missing --]]
 L["Posting at whitelisted player's price."] = "Posting at whitelisted player's price."
-L["Posting at your current price."] = "以你目前的價格發佈"
+L["Posting at your current price."] = "以你目前的價格公告"
 --[[Translation missing --]]
 L["Posting disabled."] = "Posting disabled."
-L["Posting Options"] = "發佈選項"
-L["Posting Price"] = "發佈價格"
+L["Posting Options"] = "公告選項"
+L["Posting Price"] = "公告價格"
 --[[Translation missing --]]
 L["Posts"] = "Posts"
 --[[Translation missing --]]
@@ -19216,7 +19203,7 @@ L["Run Bid Sniper"] = "Run Bid Sniper"
 --[[Translation missing --]]
 L["Run Buyout Sniper"] = "Run Buyout Sniper"
 L["Run Cancel Scan"] = "執行撤銷掃描"
-L["Run Post Scan"] = "執行發佈掃描"
+L["Run Post Scan"] = "執行公告掃描"
 --[[Translation missing --]]
 L["Run Shopping Scan"] = "Run Shopping Scan"
 --[[Translation missing --]]
@@ -19246,8 +19233,7 @@ L["Scan was slowed down by %s seconds by other AH addons (%s seconds by %s)."] =
 L["Scanning"] = "掃描中"
 --[[Translation missing --]]
 L["SCANNING"] = "SCANNING"
---[[Translation missing --]]
-L["Scanning (%d Items)"] = "Scanning (%d Items)"
+L["Scanning (%d Items)"] = "掃描中（%d 物品）"
 L["Scroll wheel direction"] = "滾輪方向"
 L["Scroll Wheel Options"] = "滾輪選項"
 L["Search"] = "搜尋"
@@ -19430,8 +19416,7 @@ L["Sold (Min/Avg/Max Price)"] = "Sold (Min/Avg/Max Price)"
 --[[Translation missing --]]
 L["Sold (Total Price)"] = "Sold (Total Price)"
 L["Sold [%s]x%d for %s to %s"] = "販售 [%s] x %d 共 %s 給 %s"
---[[Translation missing --]]
-L["Sold for:"] = "Sold for:"
+L["Sold for:"] = "售出共："
 L["Some general Accounting options are below."] = "下列是一些一般會計選項."
 L["Some general appearance options are below."] = "下列是一些一般外觀選項."
 L["Some general Auctioning options are below."] = "下列是一些一般拍賣選項."
@@ -19796,7 +19781,7 @@ L["You can import custom themes by pasting an import string into the box below."
 L["You can import groups by pasting an import string into the box below. Group import strings can be found at: https://tradeskillmaster.com/group-maker/all"] = "You can import groups by pasting an import string into the box below. Group import strings can be found at: https://tradeskillmaster.com/group-maker/all"
 --[[Translation missing --]]
 L["You can use the export string below to share this custom theme with others."] = "You can use the export string below to share this custom theme with others."
-L["You can use the export string below to share this group with others."] = "你可以使用下列的匯出字串來分享這個群組給其他群組."
+L["You can use the export string below to share this group with others."] = "你可以使用下列的匯出字串來分享這個群組給其他群組。"
 L["You cannot use %s as part of this custom price."] = "你不能使用%s作為自定義價格的一部份。"
 --[[Translation missing --]]
 L["You cannot use %s within convert() as part of this custom price."] = "You cannot use %s within convert() as part of this custom price."
@@ -19812,7 +19797,7 @@ L["You won an auction for %sx%d for %s"] = "你贏得了 %s x %d 拍賣, 共 %s.
 L["Your auction has not been undercut."] = "此項商品是市場最低價格"
 --[[Translation missing --]]
 L["Your auction of %s expired"] = "Your auction of %s expired"
-L["Your auction of %s has sold for %s!"] = "你拍賣的 %s 已經售出共 %s !"
+L["Your auction of %s has sold for %s!"] = "你拍賣的 %s 以 %s 售出！"
 L["Your Buyout"] = "你的直購價"
 --[[Translation missing --]]
 L["Your craft value method for '%s' was invalid so it has been returned to the default. Details: %s"] = "Your craft value method for '%s' was invalid so it has been returned to the default. Details: %s"

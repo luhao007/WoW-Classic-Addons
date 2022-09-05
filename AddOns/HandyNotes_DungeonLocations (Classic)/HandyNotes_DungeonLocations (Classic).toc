@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Caliaha of Cairne
-## Version: 1.05-bcc
+## Version: 1.06-classic
 ## RequiredDeps: HandyNotes
 ## SavedVariables: HandyNotes_DungeonLocationsClassicDB
 

@@ -36,7 +36,7 @@ if ( GetBuildInfo ) then
     WOW.major = tonumber(maj);
     WOW.minor = tonumber(min);
     WOW.dot = tonumber(dot);
-    WOW.classic = (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_CLASSIC or _G.WOW_PROJECT_ID == _G.WOW_PROJECT_BURNING_CRUSADE_CLASSIC)
+    WOW.classic = (_G.WOW_PROJECT_ID ~= _G.WOW_PROJECT_MAINLINE)
 else
     WOW.major = 1;
     WOW.minor = 9;
@@ -1499,12 +1499,8 @@ function FishLib:GetCurrentMapContinent(debug)
 end
 
 function FishLib:GetCurrentMapId()
-    if not self:IsClassic() and select(4, GetBuildInfo()) < 80000 then
-        return GetCurrentMapAreaID()
-    else
-        local _, _, zone, mapId = LT:GetBestZoneCoordinate()
-        return mapId or 0
-    end
+    local _, _, zone, mapId = LT:GetBestZoneCoordinate()
+    return mapId or 0
 end
 
 function FishLib:GetZoneInfo()

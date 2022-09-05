@@ -11,6 +11,7 @@ local GetStatsValue = LibItemStats.GetStatsValue
 
 STAT_RESISTANCE_ATTRIBUTES = GetStatsName("Resistance")
 STAT_SUIT_ATTRIBUTES = GetStatsName("Suit")
+STAT_SUIT_PVP = GetStatsName("PVP")
 
 --赋数据
 local function SetStats(self, data)
@@ -20,7 +21,7 @@ end
 
 --创建单条属性按钮框体
 local function CreateStatFrame(parent, index, key, option)
-    local frame = CreateFrame("Frame", nil, parent, "CharacterStatFrameTemplate")
+    local frame = CreateFrame("Frame", nil, parent, "ClassicCharacterStatFrameTemplate")
     frame:EnableMouse(false)
     frame:SetWidth(178)
     frame.key = key
@@ -41,13 +42,14 @@ local function GetStatFrame(self)
     return CreateStatFrame(self, index)
 end
 
---头像框架(装等框架/边框颜色等) @trigger: INSPECT_FRAME_BACKDROP
+--头像框架(装等框架/边框颜色等) @trigger: INSPECT_STATSFRAME_BACKDROP
 local ItemLevelPattern = (ITEM_LEVEL_ABBR or "ilvl") .. " %.1f"
 local function HandlePortraitFrame(self)
     local ilevel = self.data.ilevel or 0
     local unit = self.data.unit or "player"
     local class = select(2, UnitClass(unit))
     local color = RAID_CLASS_COLORS[class] or NORMAL_FONT_COLOR
+    self.height = 68 + 36*3 + 15*self.maxStaticIndex
     self.PortraitFrame.Level:SetText(UnitLevel(unit))
     self.PortraitFrame.PortraitRingQuality:SetVertexColor(color.r, color.g, color.b)
     self.PortraitFrame.LevelBorder:SetVertexColor(color.r, color.g, color.b)
@@ -60,10 +62,12 @@ local function HandlePortraitFrame(self)
     self.ResistanceCategory.Title:SetTextColor(color.r, color.g, color.b)
     self.EnhancementsCategory.Title:SetTextColor(color.r, color.g, color.b)
     self.SuitCategory.Title:SetTextColor(color.r, color.g, color.b)
-    LibEvent:trigger("INSPECT_FRAME_BACKDROP", self)
+    LibEvent:trigger("INSPECT_STATSFRAME_BACKDROP", self)
     self:SetBackdrop(self.backdrop)
     self:SetBackdropColor(0, 0, 0, 0.88)
     self:SetBackdropBorderColor(color.r, color.g, color.b)
+    LibEvent:trigger("HANDLE_PORTRAIT_FRAME", self)
+    return self.height
 end
 
 
@@ -123,8 +127,7 @@ end
 
 function ClassicStatsFrameTemplate_OnShow(self)
     local button
-    local height = 66 + 36*3 + 15*self.maxStaticIndex
-    HandlePortraitFrame(self)
+    local height = HandlePortraitFrame(self)
     for i = 1, self.maxStaticIndex do
         button = self["stat"..i]
         button.Label:SetText(GetStatsName(button.key))
@@ -150,10 +153,11 @@ function ClassicStatsFrameTemplate_OnShow(self)
         if (not hasEnhancements) then
             offset = offset + 36
         end
+        offset = offset - 6
         self.SuitCategory:Show()
         self.SuitCategory:SetPoint("TOPLEFT", self.EnhancementsCategory, "BOTTOMLEFT", 0, offset)
-        height = height + 36
-        offset = offset - 36
+        height = height + 36 + 2
+        offset = offset - 36 + 6
         for _, v in ipairs(self.data.suit) do
             button = GetStatFrame(self)
             button.Label:SetText(v.colorStr .. v.value)
@@ -172,6 +176,7 @@ function ClassicStatsFrameTemplate_OnShow(self)
     end
     height = max(height, 424)
     self:SetHeight(height)
+    LibEvent:trigger("INSPECT_STATSFRAME_SHOW", self)
 end
 
 function ClassicStatsFrameTemplate_OnHide(self)

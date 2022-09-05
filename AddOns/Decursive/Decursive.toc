@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: John Wellesz
-## Version: 2.7.8.4
+## Version: 2.7.8.7
 ## OptionalDeps: Ace3, LibQTip-1.0, LibDataBroker-1.1, LibDBIcon-1.0, !BugGrabber
 ## LoadManagers: AddonLoader
 ## SavedVariables: DecursiveDB
@@ -10,13 +10,13 @@
 ## Title-zhCN: |cFFFFE00A<|r|cFFC79C6E战斗|r|cFFFFE00A>|r |cFFFFFFFF一键驱散|r |cFFFFE00ADecursive|r
 ## Notes-zhCN: 一键驱散队员的异常状态
 
-## X-Max-Interface: 90105
-## X-Min-Interface: 11400
+## X-Max-Interface: 90207
+## X-Min-Interface: 11403
 ## X-License: GNU GPL V3
 ## X-LoadOn-Class: Mage, Priest, Paladin, Druid, Hunter, Warlock, Shaman, Monk, Deathknight
 ## X-LoadOn-Slash: /decursive, /dcr
 ## X-Embeds: Ace3, LibQTip-1.0, LibDataBroker-1.1, LibDBIcon-1.0, !BugGrabber
-## X-ReleaseDate: "2021-11-11T17:02:56Z"
+## X-ReleaseDate: "2022-09-04T13:07:06Z"
 ## X-Category: Combat
 ## X-Website: http://www.2072productions.com/to/decursive.php
 ## X-Credits: Sylvin (Full french translation), Peter Sun, Ananhaid (ZhTW and zhCN translation), Fenlis, Chkid (koKR translation), Hemathio, Swix, Athariel, StingerSoft (Russian Translation), Freydis88, Floyddotnet, Vilogity, Dessa, Farook (German translation)
