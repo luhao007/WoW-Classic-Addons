@@ -68,7 +68,6 @@ LibClassicItemSets-1.0\LibClassicItemSets-1.0.xml
 LibClassicSpellActionCount-1.0\LibClassicSpellActionCount-1.0.lua
 LibCustomGlow-1.0\LibCustomGlow-1.0.xml
 LibDBIcon-1.0\LibDBIcon-1.0\LibDBIcon-1.0.lua
-LibDFramework-1.0\load.xml
 LibDialog-1.0\lib.xml
 LibDualSpec-1.0\LibDualSpec-1.0.lua
 LibDurability\LibDurability\LibDurability.xml

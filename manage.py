@@ -505,7 +505,7 @@ class Manager:
         libs = ['AceAddon-3.0', 'AceBucket-3.0', 'AceComm-3.0', 'AceConfig-3.0',
                 'AceConsole-3.0', 'AceDB-3.0', 'AceDBOptions-3.0', 'AceEvent-3.0',
                 'AceGUI-3.0', 'AceHook-3.0', 'AceLocale-3.0', 'AceSerializer-3.0',
-                'AceTab-3.0', 'AceTimer-3.0', 'CallbackHandler-1.0',  'DF', 'LibBossIDs-1.0',
+                'AceTab-3.0', 'AceTimer-3.0', 'CallbackHandler-1.0',  'LibBossIDs-1.0',
                 'LibCompress', 'LibClassicCasterino', 'LibDBIcon-1.0', 'LibDataBroker-1.1',
                 'LibDeflate', 'LibGraph-2.0', 'LibGroupInSpecT-1.1', 'LibItemUpgradeInfo-1.0',
                 'LibSharedMedia-3.0', 'LibStub', 'LibTranslit', 'LibWindow-1.1']
@@ -700,7 +700,7 @@ class Manager:
         libs = ['AceAddon-3.0', 'AceBucket-3.0', 'AceComm-3.0', 'AceConfig-3.0',
                 'AceConsole-3.0', 'AceDB-3.0', 'AceDBOptions-3.0', 'AceEvent-3.0',
                 'AceGUI-3.0', 'AceLocale-3.0', 'AceSerializer-3.0',
-                'AceTimer-3.0', 'CallbackHandler-1.0', 'DF', 'LibCompress',
+                'AceTimer-3.0', 'CallbackHandler-1.0', 'LibCompress',
                 'LibClassicCasterino', 'LibClassicDurations', 'LibCustomGlow-1.0',
                 'LibDBIcon-1.0', 'LibDataBroker-1.1', 'LibDeflate',
                 'LibRangeCheck-2.0', 'LibSharedMedia-3.0', 'LibTranslit-1.0', 'LibStub']
