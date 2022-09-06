@@ -742,15 +742,15 @@ VUHDO_I18N_TT.K578 = "Выбрать цвет подсветки иконки.";
 VUHDO_I18N_TT.K579 = "Выбрать цвет подсветки фрейма.";
 VUHDO_I18N_TT.K580 = "Выберите модификатор для использования с ПКМ для добавления дебафов в чёрный список."
 VUHDO_I18N_TT.K581 = "Отметьте, чтобы показывать ники на фреймах.";
-VUHDO_I18N_TT.K582 = "Select the unit to target.";
-VUHDO_I18N_TT.K583 = "Check to make all HoT icons fade out when the HoT is expiring.";
-VUHDO_I18N_TT.K584 = "Check to make all HoT icons flash when the HoT is expiring.";
+VUHDO_I18N_TT.K582 = "Выберите юнита для взятия в цель.";
+VUHDO_I18N_TT.K583 = "Отметьте, что бы иконки всех ХоТ-ок затухали при спадении.";
+VUHDO_I18N_TT.K584 = "Отметьте, что бы иконки всех ХоТ-ок мигали при спадении.";
 
 -- TBCC game version specific strings (tooltip IDs begin at K900)
 
 VUHDO_I18N_TT.K900 = "Check to show incoming heal using LibHealComm-4.0.";
 
-VUHDO_I18N_DEFAULT_PROFILE = "Стандартный профиль";
+VUHDO_I18N_DEFAULT_PROFILE = "Стандартный\nпрофиль";
 VUHDO_I18N_DEFAULT_LAYOUT = "Стандартная раскладка клавиш ";
 VUHDO_I18N_APPLY_TO_ALL = "Применить\nко всем";
 VUHDO_I18N_TEST = "Тест";
@@ -1062,7 +1062,7 @@ VUHDO_I18N_EMPTY_HOTS = "Пусто";
 VUHDO_I18N_MOUSE_HOVER = "Наведение мыши";
 VUHDO_I18N_COUNTER = "Счётчик";
 VUHDO_I18N_GLOBAL_COOLDOWN = "Глобальный\nоткат";
-VUHDO_I18N_GCD = "GCD";
+VUHDO_I18N_GCD = "ГКД";
 
 -- #+1.238
 VUHDO_I18N_DISPLAY_OPTIONS = "Опции отображения";
@@ -1287,18 +1287,18 @@ VUHDO_I18N_SQUARE_7 = "Квадрат 7";
 VUHDO_I18N_HP = "ХП";
 VUHDO_I18N_KNOWN_ONLY = "Только\nизвестные";
 VUHDO_I18N_MINUS_INCOMING = "- Входящее";
-VUHDO_I18N_AOE_ADVICE = "AOE\nСоветник";
+VUHDO_I18N_AOE_ADVICE = "АОЕ\nСоветник";
 VUHDO_I18N_CONE = "Конус";
 VUHDO_I18N_DEGREES = "Град.";
 VUHDO_I18N_RAID_MANAGER = "Управ.\nРейдом";
 VUHDO_I18N_CAST_TIME_ONLY = "Только\nДолгие";
 VUHDO_I18N_EMPTY_BUTTONS = "Пустые\nКнопки";
-VUHDO_I18N_HEALTH_COLOR = "Health\nColor";
+VUHDO_I18N_HEALTH_COLOR = "Цвет\nЗдоровья";
 
 VUHDO_I18N_HIDE = "Спрятать";
 VUHDO_I18N_LEAVE_ALONE = "Оставить";
 
-VUHDO_I18N_HIDE_OUT_OF_COMBAT = "Показывать только\nВ бою";
+VUHDO_I18N_HIDE_OUT_OF_COMBAT = "Только\nВ бою";
 VUHDO_I18N_IMPORT = "Импорт";
 VUHDO_I18N_IMPORT_STRING_INVALID = "Строка загрузки содержит ошибку.";
 VUHDO_I18N_REALLY_IMPORT = "Вы точно хотите импортировать ?\n\nНе импортируйте строки из сомнительных источников.";
@@ -1314,14 +1314,14 @@ VUHDO_I18N_SPEC_4 = "Спек 4";
 VUHDO_I18N_ANNOUNCE_MASS_RES = "'Массовое' Воскрешение\nСообщение";
 
 VUHDO_I18N_SPELL_TRACE = "Отслеживание заклинания";
-VUHDO_I18N_SPELL_TRACE_EDIT_BOX = "Введите название заклинания или его ID для отслеживания";
+VUHDO_I18N_SPELL_TRACE_EDIT_BOX = "Введите имя или ID для слежения";
 VUHDO_I18N_SPELL_TRACE_LIST = "Отслеживание заклинания: список";
 VUHDO_I18N_DURATION = "Длительность";
 VUHDO_I18N_SEC = "сек";
 VUHDO_I18N_TRAIL_OF_LIGHT = "Дорога \nСвета";
 
-VUHDO_I18N_BAR_GLOW_COLOR = "Подсветка фрейма";
-VUHDO_I18N_ICON_GLOW_COLOR = "Подсветка иконки";
+VUHDO_I18N_BAR_GLOW_COLOR = "Подсветка\nфрейма";
+VUHDO_I18N_ICON_GLOW_COLOR = "Подсветка\nиконки";
 VUHDO_I18N_BLACKLIST_KEY_MODIFIES = "Модификатор чёрного списка";
 
 VUHDO_I18N_NICKNAME = "Details!\nНик"
@@ -1329,27 +1329,27 @@ VUHDO_I18N_NICKNAME = "Details!\nНик"
 VUHDO_I18N_DEBUFF_SHOW_ONLY_FOR_FRIENDLY_TEXT = "Показывать только\nдля дружественных";
 VUHDO_I18N_DEBUFF_SHOW_ONLY_FOR_FRIENDLY_TOOLTIP = "Показывать дэбафы только для дружественных юнитов";
 
-VUHDO_I18N_SHOW_OVERSHIELD = "Показывать\nИзбыточный щит";
+VUHDO_I18N_SHOW_OVERSHIELD = "Избыточный\nщит";
 VUHDO_I18N_OVERSHIELD_BAR = "Избыточный щит";
 
-VUHDO_I18N_SHOW_HEAL_ABSORB = "Показывать\nАбсорб хила";
+VUHDO_I18N_SHOW_HEAL_ABSORB = "Абсорб\nхила";
 VUHDO_I18N_HEAL_ABSORB_BAR = "Абсорб хила";
 
-VUHDO_I18N_PLAYER = "Player unit";
-VUHDO_I18N_TARGET = "Target unit"
-VUHDO_I18N_TARGET_TARGET = "Target's target unit"
-VUHDO_I18N_FOCUS = "Focus unit";
-VUHDO_I18N_MOUSEOVER = "Mouseover unit";
-VUHDO_I18N_MOUSEOVER_TARGET = "Mouseover's target unit";
-VUHDO_I18N_MOUSEOVER_TARGET_TARGET = "Mouseover's target's target unit";
-VUHDO_I18N_TARGET_HARM = "Target unit (hostile only)";
-VUHDO_I18N_TARGET_TARGET_HARM = "Target's target unit (hostile only)";
-VUHDO_I18N_FOCUS_HARM = "Focus unit (hostile only)";
-VUHDO_I18N_MOUSEOVER_HARM = "Mouseover unit (hostile only)";
-VUHDO_I18N_MOUSEOVER_TARGET_HARM = "Mouseover's target unit (hostile only)";
-VUHDO_I18N_MOUSEOVER_TARGET_TARGET_HARM = "Mouseover's target's target unit (hostile only)";
+VUHDO_I18N_PLAYER = "Игрок";
+VUHDO_I18N_TARGET = "Цель"
+VUHDO_I18N_TARGET_TARGET = "Цель цели"
+VUHDO_I18N_FOCUS = "Фокус";
+VUHDO_I18N_MOUSEOVER = "Юнит под мышкой";
+VUHDO_I18N_MOUSEOVER_TARGET = "Цель юнита под мышкой";
+VUHDO_I18N_MOUSEOVER_TARGET_TARGET = "Цель цели юнита под мышкой";
+VUHDO_I18N_TARGET_HARM = "Цель юнита (только враждебный)";
+VUHDO_I18N_TARGET_TARGET_HARM = "Цель цели юнита (только враждебный)";
+VUHDO_I18N_FOCUS_HARM = "Фокус (только враждебный)";
+VUHDO_I18N_MOUSEOVER_HARM = "Под мышкой (только враждебный)";
+VUHDO_I18N_MOUSEOVER_TARGET_HARM = "Цель юнита под мышкой (только враждебный)";
+VUHDO_I18N_MOUSEOVER_TARGET_TARGET_HARM = "Цель цели юнита под мышкой (только враждебный)";
 
-VUHDO_I18N_CLOCK = "Clock";
+VUHDO_I18N_CLOCK = "Стрелка\nЧасов";
 
 -- TBCC game version specific strings
 

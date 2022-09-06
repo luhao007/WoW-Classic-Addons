@@ -1,5 +1,5 @@
 ## Interface: 20504
-## Version: v9.2.0
+## Version: v9.2.1
 ## Title: Lib: Latency
 ## Notes: A library for transmitting and receiving latency information of players.
 ## Author: Funkydude

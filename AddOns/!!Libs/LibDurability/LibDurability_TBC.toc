@@ -1,5 +1,5 @@
 ## Interface: 20504
-## Version: v9.2.0
+## Version: v9.2.1
 ## Title: Lib: Durability
 ## Notes: A library for transmitting and receiving durability information of players in your group.
 ## Author: Funkydude

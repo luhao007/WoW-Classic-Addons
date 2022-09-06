@@ -43,64 +43,64 @@ local VUHDO_ABSORB_DEBUFFS = {
 	[110214] = function(aUnit) return 280000, 2 * 60; end, -- Consuming Shroud
 
 	-- Patch 6.2 - Hellfire Citadel
-	[189030] = function(aUnit) return select(16, VUHDO_unitDebuff(aUnit, VUHDO_SPELL_ID.DEBUFF_BEFOULED)), 10 * 60; end, -- Fel Lord Zakuun
-	[189031] = function(aUnit) return select(16, VUHDO_unitDebuff(aUnit, VUHDO_SPELL_ID.DEBUFF_BEFOULED)), 10 * 60; end, -- Fel Lord Zakuun
-	[189032] = function(aUnit) return select(16, VUHDO_unitDebuff(aUnit, VUHDO_SPELL_ID.DEBUFF_BEFOULED)), 10 * 60; end, -- Fel Lord Zakuun
-	[180164] = function(aUnit) return select(16, VUHDO_unitDebuff(aUnit, VUHDO_SPELL_ID.DEBUFF_TOUCH_OF_HARM)), 10 * 60; end, -- Tyrant Velhari
-	[180166] = function(aUnit) return select(16, VUHDO_unitDebuff(aUnit, VUHDO_SPELL_ID.DEBUFF_TOUCH_OF_HARM)), 10 * 60; end, -- Tyrant Velhari
+	[189030] = function(aUnit) return select(17, VUHDO_unitDebuff(aUnit, VUHDO_SPELL_ID.DEBUFF_BEFOULED)), 10 * 60; end, -- Fel Lord Zakuun
+	[189031] = function(aUnit) return select(17, VUHDO_unitDebuff(aUnit, VUHDO_SPELL_ID.DEBUFF_BEFOULED)), 10 * 60; end, -- Fel Lord Zakuun
+	[189032] = function(aUnit) return select(17, VUHDO_unitDebuff(aUnit, VUHDO_SPELL_ID.DEBUFF_BEFOULED)), 10 * 60; end, -- Fel Lord Zakuun
+	[180164] = function(aUnit) return select(17, VUHDO_unitDebuff(aUnit, VUHDO_SPELL_ID.DEBUFF_TOUCH_OF_HARM)), 10 * 60; end, -- Tyrant Velhari
+	[180166] = function(aUnit) return select(17, VUHDO_unitDebuff(aUnit, VUHDO_SPELL_ID.DEBUFF_TOUCH_OF_HARM)), 10 * 60; end, -- Tyrant Velhari
 
 	-- Patch 7.0 - Legion
-	[221772] = function(aUnit) return select(16, VUHDO_unitDebuff(aUnit, VUHDO_SPELL_ID.DEBUFF_OVERFLOW)), 1 * 60; end, -- Mythic+ affix
+	[221772] = function(aUnit) return select(17, VUHDO_unitDebuff(aUnit, VUHDO_SPELL_ID.DEBUFF_OVERFLOW)), 1 * 60; end, -- Mythic+ affix
 
 	-- Patch 7.1 - Legion - Trial of Valor
-	[228253] = function(aUnit) return select(16, VUHDO_unitDebuff(aUnit, VUHDO_SPELL_ID.DEBUFF_SHADOW_LICK)), 10 * 60; end, -- Shadow Lick
-	[232450] = function(aUnit) return select(16, VUHDO_unitDebuff(aUnit, VUHDO_SPELL_ID.DEBUFF_CORRUPTED_AXION)), 30; end, -- Corrupted Axion
+	[228253] = function(aUnit) return select(17, VUHDO_unitDebuff(aUnit, VUHDO_SPELL_ID.DEBUFF_SHADOW_LICK)), 10 * 60; end, -- Shadow Lick
+	[232450] = function(aUnit) return select(17, VUHDO_unitDebuff(aUnit, VUHDO_SPELL_ID.DEBUFF_CORRUPTED_AXION)), 30; end, -- Corrupted Axion
 
 	-- Patch 7.1.5 - Legion - Nighthold
-	[206609] = function(aUnit) return select(16, VUHDO_unitDebuff(aUnit, VUHDO_SPELL_ID.DEBUFF_TIME_RELEASE)), 30; end, -- Chronomatic Anomaly Time Release
-	[219964] = function(aUnit) return select(16, VUHDO_unitDebuff(aUnit, VUHDO_SPELL_ID.DEBUFF_TIME_RELEASE)), 30; end, -- Chronomatic Anomaly Time Release Geen
-	[219965] = function(aUnit) return select(16, VUHDO_unitDebuff(aUnit, VUHDO_SPELL_ID.DEBUFF_TIME_RELEASE)), 30; end, -- Chronomatic Anomaly Time Release Yellow
-	[219966] = function(aUnit) return select(16, VUHDO_unitDebuff(aUnit, VUHDO_SPELL_ID.DEBUFF_TIME_RELEASE)), 30; end, -- Chronomatic Anomaly Time Release Red
+	[206609] = function(aUnit) return select(17, VUHDO_unitDebuff(aUnit, VUHDO_SPELL_ID.DEBUFF_TIME_RELEASE)), 30; end, -- Chronomatic Anomaly Time Release
+	[219964] = function(aUnit) return select(17, VUHDO_unitDebuff(aUnit, VUHDO_SPELL_ID.DEBUFF_TIME_RELEASE)), 30; end, -- Chronomatic Anomaly Time Release Geen
+	[219965] = function(aUnit) return select(17, VUHDO_unitDebuff(aUnit, VUHDO_SPELL_ID.DEBUFF_TIME_RELEASE)), 30; end, -- Chronomatic Anomaly Time Release Yellow
+	[219966] = function(aUnit) return select(17, VUHDO_unitDebuff(aUnit, VUHDO_SPELL_ID.DEBUFF_TIME_RELEASE)), 30; end, -- Chronomatic Anomaly Time Release Red
 
 	-- Patch 7.2.5 - Legion - Tomb of Sargeras
-	[233263] = function(aUnit) return select(16, VUHDO_unitDebuff(aUnit, VUHDO_SPELL_ID.DEBUFF_EMBRACE_OF_THE_ECLIPSE)), 12; end, -- Sisters Embrace of the Eclipse
+	[233263] = function(aUnit) return select(17, VUHDO_unitDebuff(aUnit, VUHDO_SPELL_ID.DEBUFF_EMBRACE_OF_THE_ECLIPSE)), 12; end, -- Sisters Embrace of the Eclipse
 
 	-- Patch 7.3 - Legion - Antorus, The Burning Throne
-	[245586] = function(aUnit) return select(16, VUHDO_unitDebuff(aUnit, VUHDO_SPELL_ID.DEBUFF_CHILLED_BLOOD)), 10; end, -- Coven Chilled Blood
+	[245586] = function(aUnit) return select(17, VUHDO_unitDebuff(aUnit, VUHDO_SPELL_ID.DEBUFF_CHILLED_BLOOD)), 10; end, -- Coven Chilled Blood
 
 	-- Patch 8.0 - Battle for Azeroth - Uldir
-	[265206] = function(aUnit) return select(16, VUHDO_unitDebuff(aUnit, VUHDO_SPELL_ID.DEBUFF_IMMUNOSUPPRESSION)), 10 * 60; end, -- Vectis Immunosuppression
+	[265206] = function(aUnit) return select(17, VUHDO_unitDebuff(aUnit, VUHDO_SPELL_ID.DEBUFF_IMMUNOSUPPRESSION)), 10 * 60; end, -- Vectis Immunosuppression
 
 	-- Patch 8.0 - Battle for Azeroth - The Underrot
-	[278961] = function(aUnit) return select(16, VUHDO_unitDebuff(aUnit, VUHDO_SPELL_ID.DEBUFF_DECAYING_MIND)), 30; end, -- Diseased Lasher Decaying Mind
+	[278961] = function(aUnit) return select(17, VUHDO_unitDebuff(aUnit, VUHDO_SPELL_ID.DEBUFF_DECAYING_MIND)), 30; end, -- Diseased Lasher Decaying Mind
 
 	-- Patch 8.1.5 - Battle for Azeroth - Crucible of Storms
-	[284722] = function(aUnit) return select(16, VUHDO_unitDebuff(aUnit, VUHDO_SPELL_ID.DEBUFF_UMBRAL_SHELL)), 10 * 60; end, -- Uu'nat Umbral Shell
-	[286771] = function(aUnit) return select(16, VUHDO_unitDebuff(aUnit, VUHDO_SPELL_ID.DEBUFF_UMBRAL_SHELL)), 10 * 60; end, -- Uu'nat Umbral Shell
+	[284722] = function(aUnit) return select(17, VUHDO_unitDebuff(aUnit, VUHDO_SPELL_ID.DEBUFF_UMBRAL_SHELL)), 10 * 60; end, -- Uu'nat Umbral Shell
+	[286771] = function(aUnit) return select(17, VUHDO_unitDebuff(aUnit, VUHDO_SPELL_ID.DEBUFF_UMBRAL_SHELL)), 10 * 60; end, -- Uu'nat Umbral Shell
 
 	-- Patch 8.3.0 - Battle for Azeroth - Ny'alotha
-	[306184] = function(aUnit) return select(16, VUHDO_unitDebuff(aUnit, VUHDO_SPELL_ID.DEBUFF_UNLEASHED_VOID)), 40; end, -- Unleashed Void
+	[306184] = function(aUnit) return select(17, VUHDO_unitDebuff(aUnit, VUHDO_SPELL_ID.DEBUFF_UNLEASHED_VOID)), 40; end, -- Unleashed Void
 
 	-- Patch 9.0.2 - Shadowlands - Castle Nathria
-	[338600] = function(aUnit) return select(16, VUHDO_unitDebuff(aUnit, VUHDO_SPELL_ID.DEBUFF_CLOAK_OF_FLAMES)), 10 * 60; end, -- Cloak of Flames
-	[343026] = function(aUnit) return select(16, VUHDO_unitDebuff(aUnit, VUHDO_SPELL_ID.DEBUFF_CLOAK_OF_FLAMES)), 10 * 60; end, -- Cloak of Flames
-	[337859] = function(aUnit) return select(16, VUHDO_unitDebuff(aUnit, VUHDO_SPELL_ID.DEBUFF_CLOAK_OF_FLAMES)), 10 * 60; end, -- Cloak of Flames
+	[338600] = function(aUnit) return select(17, VUHDO_unitDebuff(aUnit, VUHDO_SPELL_ID.DEBUFF_CLOAK_OF_FLAMES)), 10 * 60; end, -- Cloak of Flames
+	[343026] = function(aUnit) return select(17, VUHDO_unitDebuff(aUnit, VUHDO_SPELL_ID.DEBUFF_CLOAK_OF_FLAMES)), 10 * 60; end, -- Cloak of Flames
+	[337859] = function(aUnit) return select(17, VUHDO_unitDebuff(aUnit, VUHDO_SPELL_ID.DEBUFF_CLOAK_OF_FLAMES)), 10 * 60; end, -- Cloak of Flames
 
 	-- Patch 9.0.2 - Shadowlands - Necrotic Wake
-	[320462] = function(aUnit) return select(17, VUHDO_unitDebuff(aUnit, VUHDO_SPELL_ID.DEBUFF_NECROTIC_BOLT)), 1 * 60; end, -- Necrotic Bolt
-	[320170] = function(aUnit) return select(17, VUHDO_unitDebuff(aUnit, VUHDO_SPELL_ID.DEBUFF_NECROTIC_BOLT)), 2 * 60; end, -- Necrotic Bolt 
+	[320462] = function(aUnit) return select(18, VUHDO_unitDebuff(aUnit, VUHDO_SPELL_ID.DEBUFF_NECROTIC_BOLT)), 1 * 60; end, -- Necrotic Bolt
+	[320170] = function(aUnit) return select(18, VUHDO_unitDebuff(aUnit, VUHDO_SPELL_ID.DEBUFF_NECROTIC_BOLT)), 2 * 60; end, -- Necrotic Bolt 
 
 	-- Patch 9.0.2 - Shadowlands - Theater of Pain
-	[330784] = function(aUnit) return select(17, VUHDO_unitDebuff(aUnit, VUHDO_SPELL_ID.DEBUFF_NECROTIC_BOLT)), 1 * 60; end, -- Necrotic Bolt
-	[330868] = function(aUnit) return select(17, VUHDO_unitDebuff(aUnit, VUHDO_SPELL_ID.DEBUFF_NECROTIC_BOLT_VOLLEY)), 1 * 60; end, -- Necrotic Bolt Volley
+	[330784] = function(aUnit) return select(18, VUHDO_unitDebuff(aUnit, VUHDO_SPELL_ID.DEBUFF_NECROTIC_BOLT)), 1 * 60; end, -- Necrotic Bolt
+	[330868] = function(aUnit) return select(18, VUHDO_unitDebuff(aUnit, VUHDO_SPELL_ID.DEBUFF_NECROTIC_BOLT_VOLLEY)), 1 * 60; end, -- Necrotic Bolt Volley
 
 	-- Patch 9.0.2 - Death Knight ability
-	[223929] = function(aUnit) return select(16, VUHDO_unitDebuff(aUnit, VUHDO_SPELL_ID.DEBUFF_NECROTIC_WOUND)), 18; end, -- Necrotic Wound 
+	[223929] = function(aUnit) return select(17, VUHDO_unitDebuff(aUnit, VUHDO_SPELL_ID.DEBUFF_NECROTIC_WOUND)), 18; end, -- Necrotic Wound 
 
 	-- Patch 9.1.0 - Shadowlands - Sanctum of Domination
 	-- neither of these Sanctum debuff absorbs tracked the usual way (missing SPELL_HEAL etc. events w/ absorb amount), disable for now
-	--[347704] = function(aUnit) return select(17, VUHDO_unitDebuff(aUnit, VUHDO_SPELL_ID.DEBUFF_VEIL_OF_DARKNESS)), 10 * 60; end, -- Sylvanas Veil of Darkness
-	--[351091] = function(aUnit) return select(16, VUHDO_unitDebuff(aUnit, VUHDO_SPELL_ID.DEBUFF_DESTABILIZE)), 6; end, -- Mawsworn Hopebreaker Destabilize
+	--[347704] = function(aUnit) return select(18, VUHDO_unitDebuff(aUnit, VUHDO_SPELL_ID.DEBUFF_VEIL_OF_DARKNESS)), 10 * 60; end, -- Sylvanas Veil of Darkness
+	--[351091] = function(aUnit) return select(17, VUHDO_unitDebuff(aUnit, VUHDO_SPELL_ID.DEBUFF_DESTABILIZE)), 6; end, -- Mawsworn Hopebreaker Destabilize
 
 	--[79105] = function(aUnit) return 280000, 60 * 60; end, -- @TESTING PW:F
 };
@@ -214,7 +214,6 @@ local function VUHDO_removeShield(aUnit, aShieldName)
 	VUHDO_SHIELD_LEFT[aUnit][aShieldName] = nil;
 	VUHDO_SHIELD_EXPIRY[aUnit][aShieldName] = nil;
 	VUHDO_SHIELD_LAST_SOURCE_GUID[aUnit][aShieldName] = nil;
-	VUHDO_SHIELD_LEFT_TEMP[aUnit][aShieldName] = nil;
 	--VUHDO_xMsg("Removed shield " .. aShieldName .. " from " .. aUnit);
 end
 
@@ -260,7 +259,7 @@ local tRemain;
 local tSpellName;
 function VUHDO_updateShield(aUnit, aSpellId)
 
-	tSpellName, _, _, _, _, tExpirationTime, _, _, _, _, _, _, _, _, _, tRemain = VUHDO_unitBuff(aUnit, aSpellId);
+	tSpellName, _, _, _, _, tExpirationTime, _, _, _, _, _, _, _, _, _, _, tRemain = VUHDO_unitBuff(aUnit, aSpellId);
 
 	if tRemain and "number" == type(tRemain) then
 		if tRemain > 0 then

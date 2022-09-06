@@ -186,9 +186,9 @@ VUHDO_I18N_O_REALLY = "Точно?";
 
 
 -- #+v1.184
-VUHDO_I18N_BW_CD = "CD";
+VUHDO_I18N_BW_CD = "КД";
 VUHDO_I18N_BW_GO = "GO!";
-VUHDO_I18N_BW_LOW = "LOW";
+VUHDO_I18N_BW_LOW = "Низкий";
 VUHDO_I18N_BW_N_A = "|cffff0000N/A|r";
 VUHDO_I18N_BW_RNG_RED = "|cffff0000RNG|r";
 VUHDO_I18N_BW_OK = "OK";
@@ -444,7 +444,7 @@ VUHDO_I18N_FOE_STATUS = "Флаг: Враг";
 VUHDO_I18N_BOUQUET_STATUS_ALWAYS_FULL = "Полоса состояния: всегда полная";
 VUHDO_I18N_BOUQUET_STATUS_FULL_IF_ACTIVE = "Полоса состояния: полная при активности";
 VUHDO_I18N_AOE_ADVICE = "Иконка: AOE Советник";
-VUHDO_I18N_DEF_AOE_ADVICE = "AOE Советник";
+VUHDO_I18N_DEF_AOE_ADVICE = "АОЕ Советник";
 VUHDO_I18N_BOUQUET_DURATION_ABOVE = "Флаг: Длительность > сек";
 VUHDO_I18N_BOUQUET_DURATION_BELOW = "Флаг: Длительность < сек";
 VUHDO_I18N_DEF_WRACK = "Синестра: Смятие";
@@ -505,7 +505,7 @@ VUHDO_I18N_BOUQUET_STATUS_TOTAL_ABSORB = "Статус: Общий Абсорб 
 
 -- 3.67
 VUHDO_I18N_NO_BOSS = "[no NPC]";
-VUHDO_I18N_BOSSES = "NPCs";
+VUHDO_I18N_BOSSES = "НПС";
 
 -- 3.71
 VUHDO_I18N_BOUQUET_CUSTOM_FLAG = "Свой флаг";
@@ -528,8 +528,8 @@ VUHDO_I18N_DEFAULT_RES_ANNOUNCE_MASS = "Использую массовое во
 VUHDO_I18N_BOUQUET_OVERFLOW_COUNTER = "Переполняющий М+ аффикс";
 
 -- 3.82
-VUHDO_I18N_SPELL_TRACE = "Иконка: Отслеживание заклинания";
-VUHDO_I18N_DEF_SPELL_TRACE = "Отслеживание заклинания";
+VUHDO_I18N_SPELL_TRACE = "Иконка: Отслеживание";
+VUHDO_I18N_DEF_SPELL_TRACE = "Отслеживание";
 VUHDO_I18N_TRAIL_OF_LIGHT = "Иконка: Дорога Света";
 VUHDO_I18N_DEF_TRAIL_OF_LIGHT = "Дорога Света";
 
@@ -572,5 +572,5 @@ VUHDO_I18N_DEF_COUNTER_HEAL_ABSORB = "Счётчик: Всё поглощени�
 VUHDO_I18N_DEF_STATUS_HEAL_ABSORB = "Статус: Поглощение исцеления";
 
 -- 3.135
-VUHDO_I18N_TRINKET_1 = "Trinket 1";
-VUHDO_I18N_TRINKET_2 = "Trinket 2";
+VUHDO_I18N_TRINKET_1 = "Тринкет 1";
+VUHDO_I18N_TRINKET_2 = "Тринкет 2";

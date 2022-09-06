@@ -727,6 +727,24 @@ function VUHDO_OnEvent(_, anEvent, anArg1, anArg2, anArg3, anArg4, anArg5, anArg
 			end
 		end
 ]];
+	elseif "ACTIVE_TALENT_GROUP_CHANGED" == anEvent then
+		if VUHDO_VARIABLES_LOADED and not InCombatLockdown() then
+			local tSpecNum = tostring(VUHDO_getSpecialization()) or "1";
+			local tBestProfile = VUHDO_getBestProfileAfterSpecChange();
+
+			-- event sometimes fires multiple times so we must de-dupe
+			if (not VUHDO_strempty(VUHDO_SPEC_LAYOUTS[tSpecNum]) and (VUHDO_SPEC_LAYOUTS["selected"] ~= VUHDO_SPEC_LAYOUTS[tSpecNum])) or 
+				(not VUHDO_strempty(tBestProfile) and (VUHDO_CONFIG["CURRENT_PROFILE"] ~= tBestProfile)) then
+				VUHDO_activateSpecc(tSpecNum);
+			end
+
+			if ((VUHDO_RAID or tEmptyRaid)["player"] ~= nil) then
+				VUHDO_resetTalentScan("player");
+				VUHDO_initDebuffs(); -- Talentabhängige Debuff-Fähigkeiten neu initialisieren.
+				VUHDO_timeReloadUI(1);
+			end
+		end
+
 	else
 		VUHDO_Msg("Error: Unexpected event: " .. anEvent);
 	end
@@ -1556,6 +1574,7 @@ local VUHDO_ALL_EVENTS = {
 --	"INCOMING_SUMMON_CHANGED",
 	"UNIT_PHASE",
 --	"PLAYER_SPECIALIZATION_CHANGED",
+	"ACTIVE_TALENT_GROUP_CHANGED",
 };
 
 

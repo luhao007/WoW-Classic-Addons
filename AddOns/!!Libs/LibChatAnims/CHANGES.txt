@@ -1,9 +1,19 @@
 ------------------------------------------------------------------------
-r46 | funkehdude | 2022-04-22 00:54:27 +0000 (Fri, 22 Apr 2022) | 1 line
+r50 | funkehdude | 2022-09-05 22:13:58 +0000 (Mon, 05 Sep 2022) | 1 line
+Changed paths:
+   A /trunk/LibChatAnims_Wrath.toc
+
+Add Wrath toc
+------------------------------------------------------------------------
+r49 | funkehdude | 2022-09-05 22:12:15 +0000 (Mon, 05 Sep 2022) | 1 line
 Changed paths:
    M /trunk/LibChatAnims.toc
-   M /trunk/LibChatAnims_TBC.toc
-   M /trunk/LibChatAnims_Vanilla.toc
+
+bump toc
+------------------------------------------------------------------------
+r48 | funkehdude | 2022-06-01 04:21:45 +0000 (Wed, 01 Jun 2022) | 1 line
+Changed paths:
+   M /trunk/LibChatAnims.toc
 
 bump toc
 ------------------------------------------------------------------------

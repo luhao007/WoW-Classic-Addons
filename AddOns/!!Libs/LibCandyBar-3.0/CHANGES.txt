@@ -1,9 +1,25 @@
 ------------------------------------------------------------------------
-r161 | funkehdude | 2022-04-22 01:01:13 +0000 (Fri, 22 Apr 2022) | 1 line
+r166 | funkehdude | 2022-09-05 20:21:48 +0000 (Mon, 05 Sep 2022) | 1 line
+Changed paths:
+   A /trunk/LibCandyBar-3.0_Wrath.toc
+
+Add Wrath toc
+------------------------------------------------------------------------
+r165 | funkehdude | 2022-09-05 20:20:09 +0000 (Mon, 05 Sep 2022) | 1 line
+Changed paths:
+   D /trunk/ignore.txt
+
+Remove test file
+------------------------------------------------------------------------
+r164 | funkehdude | 2022-09-05 20:16:11 +0000 (Mon, 05 Sep 2022) | 1 line
 Changed paths:
    M /trunk/LibCandyBar-3.0.toc
-   M /trunk/LibCandyBar-3.0_TBC.toc
-   M /trunk/LibCandyBar-3.0_Vanilla.toc
+
+bump toc
+------------------------------------------------------------------------
+r163 | funkehdude | 2022-06-01 04:22:03 +0000 (Wed, 01 Jun 2022) | 1 line
+Changed paths:
+   M /trunk/LibCandyBar-3.0.toc
 
 bump toc
 ------------------------------------------------------------------------

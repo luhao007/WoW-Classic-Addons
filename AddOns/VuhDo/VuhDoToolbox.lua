@@ -1054,10 +1054,10 @@ function VUHDO_unitAura(aUnit, aSpell, aFilter)
 	end
 
 	for tCnt = 1, 40 do
-		local tSpellName, tIcon, tCount, tDebuffType, tDuration, tExpirationTime, tSource, tIsStealable, tNameplateShowPersonal, tSpellId, tCanApplyAura, tIsBossDebuff, tNameplateShowAll, tTimeMod, tValue1, tValue2, tValue3 = UnitAura(aUnit, tCnt, aFilter);
+		local tSpellName, tIcon, tCount, tDebuffType, tDuration, tExpirationTime, tSource, tIsStealable, tNameplateShowPersonal, tSpellId, tCanApplyAura, tIsBossDebuff, tNameplateShowAll, tTimeMod, tShouldConsolidate, tValue1, tValue2, tValue3 = UnitAura(aUnit, tCnt, aFilter);
 
 		if (aSpell == tSpellName or tonumber(aSpell) == tSpellId) then
-			return tSpellName, tIcon, tCount, tDebuffType, tDuration, tExpirationTime, tSource, tIsStealable, tNameplateShowPersonal, tSpellId, tCanApplyAura, tIsBossDebuff, tNameplateShowAll, tTimeMod, tValue1, tValue2, tValue3;
+			return tSpellName, tIcon, tCount, tDebuffType, tDuration, tExpirationTime, tSource, tIsStealable, tNameplateShowPersonal, tSpellId, tCanApplyAura, tIsBossDebuff, tNameplateShowAll, tTimeMod, tShouldConsolidate, tValue1, tValue2, tValue3;
 		end
 	end
 
@@ -1131,7 +1131,7 @@ end
 function VUHDO_getSpecialization()
 
 	if not GetSpecialization then
-		return 1;
+		return GetActiveTalentGroup();
 	else
 		return GetSpecialization();
 	end
@@ -1140,12 +1140,14 @@ end
 
 
 
-function VUHDO_getSpecializationInfo(...)
+function VUHDO_getSpecializationInfo(aSpecNum, ...)
 
-	if not GetSpecializationInfo then 
-		return 1, "Unknown", _, _, _, "NONE";
+	if not GetSpecializationInfo then
+		local tSpecNum = aSpecNum or VUHDO_getSpecialization();
+
+		return tSpecNum, tSpecNum == 1 and "Primary" or (tSpecNum == 2 and "Secondary" or "Unkown"), _, _, _, GetTalentGroupRole(tSpecNum) or "NONE";
 	else
-		return GetSpecializationInfo(...);
+		return GetSpecializationInfo(aSpecNum, ...);
 	end
 
 end
@@ -1289,6 +1291,16 @@ end
 function VUHDO_hasLFGRestrictions()
 
 	return false;
+
+end
+
+
+
+function VUHDO_unitTargetsVehicleInRaidUI(...)
+
+	-- for now UnitTargetsVehicleInRaidUI always returns false on WotLK Classic
+	-- force to true so we fall back on UnitHasVehicleUI to determine isVehicle
+	return true;
 
 end
 

@@ -1,0 +1,12 @@
+## Interface: 30400
+## Version: v9.2.1
+## Title: Lib: Durability
+## Notes: A library for transmitting and receiving durability information of players in your group.
+## Author: Funkydude
+## X-Category: Library
+## OptionalDeps: LibStub
+## X-License: All Rights Reserved
+
+embeds.xml
+LibDurability\LibDurability.xml
+

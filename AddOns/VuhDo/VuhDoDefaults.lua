@@ -171,7 +171,7 @@ local VUHDO_CLASS_DEFAULT_SPELL_ASSIGNMENT = {
 
 	["PRIEST"] = {
 		["1"] = {"", "1", VUHDO_SPELL_ID.FLASH_HEAL},
-		["2"] = {"", "2", VUHDO_SPELL_ID.HEAL},
+		["2"] = {"", "2", VUHDO_SPELL_ID.GREATER_HEAL},
 		["3"] = {"", "3", VUHDO_SPELL_ID.DESPERATE_PRAYER},
 		["4"] = {"", "4", VUHDO_SPELL_ID.RENEW},
 		["5"] = {"", "5", VUHDO_SPELL_ID.BINDING_HEAL},
@@ -859,459 +859,160 @@ function VUHDO_loadDefaultConfig()
 		VUHDO_CONFIG["VERSION"] = 4;
 	end
 
-	-- add relevant custom debuffs for raid bosses
-	-- 1.13.2 - Classic
-	VUHDO_addCustomSpellIds(45, 
-		-- [[ MolTon Core ]]
-		-- Baron Geddon
-		20475   -- Living Bomb
-	);
-	
-	-- TBCC phase 1
-	VUHDO_addCustomSpellIds(49, 
-		39171, -- Mortal Strike
-		29572, -- Mortal Strike
-		8379,  -- Disarm
-		30901, -- Sunder Armor
-		29321, -- Fear
-		30530, -- Fear
-		6016,  -- Pierce Armor
-		29574, -- Rend
-		29928, -- Immolate
-		12024, -- Net
-		-- [[ Gruul's Lair ]]
-		-- High King Maulgar
-		16508, -- Intimidating Roar
-		33130, -- Death Coil
-		33129, -- Dark Decay
-		33173, -- Greater Polymorph
-		-- Gruul
-		36240, -- Cave In
-		36297, -- Reverberation
-		-- 33813  -- Hurtful Strike (Tank)
-		-- [[Magtheridon's Lair]]
-		-- Magtheridon
-		30757,  -- Conflagration
-		44032,  -- Mind Exhaustion
-		-- [[Karazhan]]
-		29323, -- Absorb Vitality
-		29540, -- Curse of Past Burdens
-		29618, -- Burning Brand
-		29684, -- Shield Slam
-		29546, -- Oath of Fealty
-		29690, -- Drunken Skull Crack
-		29497, -- Jealousy
-		29491, -- Impending Betrayal
-		29490, -- Seduction
-		29505, -- Banshee Shriek
-		29670, -- Ice Tomb
-		29679, -- Bad Poetry
-		29768, -- Overload
-		29882, -- Loose Mana
-		29900, -- Unstable Magic
-		29942, -- Infected Blood
-		18812, -- Knockdown
-		-- Attumen the Huntsman
-		29711, -- Knockdown
-		-- 29833, -- Intangible Presence
-		-- Moroes
-		37066, -- Garrote
-		29425, -- Gouge
-		34694, -- Blind
-		13005, -- Hammer of Justice
-		-- Maiden of Virtue
-		29512, -- Holy Ground
-		29511, -- Repentance
-		29522, -- Holy Fire
-		-- Opera Hall
-		30822, -- Poisoned Thrust
-		30889, -- Powerful Attraction
-		30890, -- Blinding Passion
-		30761, -- Wide Swipe
-		30752, -- Terrifying Howl
-		31042, -- Shred Armor
-		31046, -- Brain Bash
-		31013, -- Frightened Scream
-		31069, -- Brain Wipe
-		-- Prince Malchezaar
-		39095, -- Amplify Damage
-		30843, -- Enfeeble
-		30898, -- Shadow Word: Pain
-		30854, -- Shadow Word: Pain
-		-- Shade of Aran 
-		29951, -- Blizzard
-		29946, -- Flame Wreath
-		30035, -- Mass Slow
-		29991, -- Chains of Ice
-		29964, -- Dragon's Breath
-		29990, -- Slow
-		-- Terestian Illhoof
-		30115, -- Sacrifice
-		30053, -- Amplify Flames
-		-- Netherspite
-		38637, -- Nether Exhaustion
-		38638, -- Nether Exhaustion
-		38639, -- Nether Exhaustion
-		30421, -- Nether Portal - Perseverence
-		30422, -- Nether Portal - Serenity
-		30423, -- Nether Portal - Dominance
-		-- Nightbane
-		38927, -- Fel Ache
-		30210, -- Smoldering Breath
-		30129, -- Charred Earth
-		25653, -- Tail Sweep
-		30130, -- Distracting Ash
-		36922, -- Bellowing Roar
-		22686, -- Bellowing Roar
-		-- [[World boss]]
-		-- Doom Lord Kazzak
-		21063, -- Twisted Reflection
-		32960, -- Mark of Kazzak
-		-- Doomwalker
-		33661, -- Crush Armor
-		32686  -- Earthquake
-	);
-
-	--  TBCC phase 2
-	VUHDO_addCustomSpellIds(50, 
-		-- [[ Serpentshrine Cavern ]]
+	-- 3.4.0 - Wrath of the Lich King Classic - phase 1
+	VUHDO_addCustomSpellIds(54, 
+		-- [[ Obsidian Sanctum ]]
+		60708,  -- Fade Armor
+		57491,  -- Flame Tsunami
+		-- 58766,  -- Gift of Twilight
+		-- 60430,  -- Molten Fury
+		-- 58105,  -- Power of Shadron
+		-- 61248,  -- Power of Tenebron
+		-- 61251,  -- Power of Vesperon
+		56910,  -- Tail Lash
+		58957,  -- Tail Lash
+		-- 61885,  -- Twilight Residue
+		-- 60639,  -- Twilight Revenge
+		-- 61254,  -- Will of Sartharion
+		57634,  -- Magma
+		-- [[ Eye of Eternity ]]
+		56272,  -- Arcane Breath
+		60072,  -- Arcane Breath
+		-- 56438,  -- Arcane Overload
+		-- 57060,  -- Haste
+		-- 55849,  -- Power Spark
+		-- 56152,  -- Power Spark
+		57428,  -- Static Field
+		55849,  -- Surge of Power
+		-- 61071,  -- Vortex
+		-- 61072,  -- Vortex
+		-- 61073,  -- Vortex
+		-- 61074,  -- Vortex
+		-- 61075,  -- Vortex
+		60936,  -- Surge of Power
+		-- [[ Naxxramas ]]
 		-- Trash
-		38924,   -- Spore Burst
-		39044,   -- Serpentshrine Parasite
-		38971,   -- Acid Geyser
-		38491,   -- Silence
-		38591,   -- Shatter Armor
-		38585,   -- Holy Fire
-		38572,   -- Mortal Cleave
-		-- 38603,   -- Corrupt Devotion Aura
-		38635,   -- Rain of Fire
-		38634,   -- Arcane Lightning
-		39029,   -- Virulent Poison
-		38655,   -- Poison Bolt Volley
-		39032,   -- Initial Infection
-		39015,   -- Atrophic Blow
-		38626,   -- Domination
-		39042,   -- Rampant Infection
-		38652,   -- Spore Cloud
-		38653,   -- Spore Cloud
-		37641,   -- Whirlwind
-		-- Hydross the Unstable
-		38246,   -- Vile Sludge
-		-- 38215,   -- Mark of Hydross - 10%
-		-- 38216,   -- Mark of Hydross - 25%
-		-- 38217,   -- Mark of Hydross - 50%
-		-- 38218,   -- Mark of Hydross - 100%
-		-- 38231,   -- Mark of Hydross - 250%
-		-- 40584,   -- Mark of Hydross - 500%
-		38235,   -- Water Tomb
-		-- 38219,   -- Mark of Corruption - 10%
-		-- 38220,   -- Mark of Corruption - 25%
-		-- 38221,   -- Mark of Corruption - 50%
-		-- 38222,   -- Mark of Corruption - 100%
-		-- 38230,   -- Mark of Corruption - 250%
-		-- 40583,   -- Mark of Corruption - 500%
-		-- The Lurker Below 
-		37284,   -- Scalding Water
-		-- Leotheras the Blind
-		37675,   -- Chaos Blast
-		37676,   -- Insidious Whisper
-		37749,   -- Consuming Madness
-		37527,   -- Banish
-		-- Fathom-Lord Karathress
-		-- 39261,   -- Gusting Winds
-		38441,   -- Cataclysmic Bolt
-		29436,   -- Leeching Throw
-		-- Morogrim Tidewalker
-		38187,   -- Pierce Armor
-		41932,   -- Carnivorous Bite
-		-- 37730,   -- Tidal Wave
-		38023,   -- Watery Grave
-		38024,   -- Watery Grave
-		38025,   -- Watery Grave
-		37850,   -- Watery Grave
-		-- Lady Vashj 
-		38258,   -- Panic
-		38132,   -- Paralyze
-		38253,   -- Poison Bolt
-		38280,   -- Static Charge
-		38316,   -- Entangle
-		38575,   -- Toxic Spores
-		38511,   -- Persuasion
-		38509,   -- Shock Blast
-		-- [[ Tempest Keep  ]]
-		-- Trash
-		37124,  -- Starfall
-		37122,  -- Domination
-		39077,  -- Hammer of Justice
-		37160,  -- Silence
-		37155,  -- Immolation
-		37118,  -- Shell Shock
-		37120,  -- Fragmentation Bomb
-		37123,  -- Saw Blade
-		37132,  -- Arcane Shock
-		37279,  -- Rain of Fire
-		-- 37133,  -- Arcane Buffet
-		37275,  -- Shadow Word: Pain
-		37276,  -- Mind Flay
-		37263,  -- Blizzard
-		-- Al'ar
-		35383,  -- Flame Patch
-		35410,  -- Melt Armor
-		34121,  -- Flame Buffet
-		35412,  -- Charge
-		-- Void Reaver
-		34190,  -- Arcane Orb
-		-- High Astromancer Solarian
-		33044,  -- Wrath of the Astromancer
-		33045,  -- Wrath of the Astromancer
-		33040,  -- Wrath of the Astromancer
-		33048,  -- Wrath of the Astromancer
-		33049,  -- Wrath of the Astromancer
-		-- 33023,  -- Mark of Solarian
-		-- 33390,  -- Arcane Torrent
-		-- Kael'thas Sunstrider
-		37027,  -- Remote Toy
-		30225,  -- Silence
-		37018,  -- Conflagration
-		36991,  -- Rend
-		36965,  -- Rend
-		--36970,  -- Arcane Burst
-		44863,  -- Bellowing Roar
-		36797,  -- Mind Control
-		36834,  -- Arcane Disruption
-		36482,  -- Armor Disruption
-		36731,  -- Flame Strike
-		36478,  -- Magic Disruption
-		35859   -- Nether Vapor
-	);
-
-	--  TBCC phase 3
-	VUHDO_addCustomSpellIds(51, 
-		-- [[ Black Temple ]]
-		-- Trash
-		41170,  -- Curse of the Bleakheart
-		41334,  -- Polymorph
-		39580,  -- Lightning Cloud
-		39647,  -- Curse of Mending
-		-- 40099,  -- Vile Slime
-		40103,  -- Sludge Nova
-		-- 41382,  -- Blizzard
-		41346,  -- Poisonous Throw
-		41406,  -- Dementia
-		13444,  -- Sunder Armor
-		39672,  -- Curse of Agony
-		41351,  -- Curse of Vitality
-		39665,  -- Wound Poison
-		41345,  -- Infatuation
-		41409,  -- Dementia
-		24698,  -- Gouge
-		41193,  -- Cloud of Disease
-		40078,  -- Poison Spit
-		40090,  -- Hurricane
-		25646,  -- Mortal Wound
-		41190,  -- Mind-numbing Poison
-		41355,  -- Shadow Word: Pain
-		32588,  -- Concussion Blow
-		41186,  -- Wyvern Sting
-		24336,  -- Wyvern Sting
-		13005,  -- Hammer of Justice
-		41171,  -- Skeleton Shot
-		6945,   -- Chest Pains
-		41392,  -- Riposte
-		41338,  -- Love Tap
-		40892,  -- Fixate
-		-- 40946,  -- Rain of Chaos
-		-- 39671,  -- Rain of Chaos
-		40864,  -- Throbbing Stun
-		39674,  -- Banish
-		3609,   -- Paralyzing Poison
-		41213,  -- Throw Shield
-		34654,  -- Blind
-		40936,  -- War Stomp
-		41238,  -- Blood Drain
-		41978,  -- Debilitating Poison
-		41150,  -- Fear
-		41274,  -- Fel Stomp
-		41396,  -- Sleep
-		41468,  -- Hammer of Justice
-		-- High Warlod Naj'entus
-		39837,  -- Impaling Spine
-		-- Supremus
-		40953,  -- Immolation
-		40253,  -- Molten Flame
-		-- 40875,  -- Freeze
-		-- Shade of Akama
-		-- 41092,  -- Carnivorous Bite
-		-- 42023,  -- Rain of Fire
-		41047,  -- Shadow Resonance
-		-- Teron Gorefiend
-		40251,  -- Shadow of Death
-		40243,  -- Crushing Shadows
-		40239,  -- Incinerate
-		-- Reliquary of Souls
-		41294,  -- Fixate
-		41426,  -- Spirit Shock
-		41303,  -- Soul Drain
-		41376,  -- Spite
-		41377,  -- Spite
-		41410,  -- Deaden
-		-- Gurtogg Bloodboil
-		40481,  -- Acidic Wound
-		42005,  -- Bloodboil
-		40604,  -- Fel Rage
-		40508,  -- Fel-Acid Breath
-		40491,  -- Bewildering Strike
-		40597,  -- Eject
-		40599,  -- Arcing Smash
-		-- Mother Shahraz
-		41001,  -- Fatal Attraction
-		40860,  -- Vile Beam
-		-- The Illidari Council
-		-- 41541,  -- Consecration
-		-- 41482,  -- Blizzard
-		-- 41481,  -- Flamestrike
-		41461,  -- Judgement of Blood
-		41485,  -- Deadly Poison
-		41472,  -- Divine Wrath
-		-- Illidan Stormrage
-		41917,  -- Parasitic Shadowfiend
-		41914,  -- Parasitic Shadowfiend
-		40932,  -- Agonizing Flames
-		40585,  -- Dark Barrage
-		-- [[ Hyjal Summit ]]
-		-- Trash
-		31651,  -- Banshee Curse
-		31724,  -- Flame Buffet
-		31610,  -- Knockdown
-		42205,  -- Residue of Eternity
-		42201,  -- Eternal Silence
-		-- Rage Winterchill
-		31258,  -- Death & Decay
-		31249,  -- Icebolt
-		31250,  -- Frost Nova
-		-- Anetheron
-		31306,  -- Carrion Swarm
-		31298,  -- Sleep
-		-- Kaz'rogal
-		31477,  -- Cripple
-		31480,  -- War Stomp
-		-- 31447,  -- Mark of Kaz'rogal
-		-- Azgalor
-		31341,  -- Unquenchable Flames
-		31406,  -- Cripple
-		-- 31340,  -- Rain of Fire
-		31408,  -- War Stomp
-		31347,  -- Doom
-		-- Archimonde
-		31944,  -- Doomfire
-		31972,  -- Grip of the Legion
-		32014,  -- Air Burst
-		31970   -- Fear
-	);
-
-	--  TBCC phase 4
-	VUHDO_addCustomSpellIds(52, 
-		-- [[ Zul'Aman ]]
-		-- Trash
-		43362,  -- Electrified Net
-		43359,  -- Call of the Beast
-		43530,  -- Piercing Howl
-		42497,  -- Furious Roar
-		43361,  -- Domesticate
-		20989,  -- Sleep
-		43529,  -- Mortal Strike
-		43364,  -- Tranquilizing Poison
-		35011,  -- Knockdown
-		43358,  -- Gut Rip
-		43356,  -- Pounce
-		-- Akil'zon
-		44008,  -- Static Disruption
-		43621,  -- Gust of Wind
-		--43648,  -- Electrical Storm
-		-- Nalorakk
-		44955,  -- Mangle
-		42395,  -- Lacerating Slash
-		42397,  -- Rend Flesh
-		-- 42398,  -- Deafening Roar
-		-- Jan'alai
-		43140,  -- Flame Breath
-		-- Halazzi
-		43303,  -- Flame Shock
-		43243,  -- Shred Armor
-		-- Hex Lord Malacrass
-		43501,  -- Siphon Soul
-		43522,  -- Unstable Affliction
-		43439,  -- Curse of Doom
-		43446,  -- Explosive Trap Effect
-		43590,  -- Psychic Wail
-		43448,  -- Freezing Trap
-		-- Zul'jin
-		43150,  -- Claw Rage
-		43095,  -- Creeping Paralysis
-		43437,  -- Paralyzed
-		43093   -- Grievous Throw
-	);
-
-	--  TBCC phase 5
-	VUHDO_addCustomSpellIds(53, 
-		-- [[ Sunwell Plateau ]]
-		-- Trash
-		46557, -- Slaying Shot
-		--39171, -- Mortal Strike
-		46543,  -- Ignite Mana
-		46560,  -- Shadow Word: Pain
-		46562,  -- Mind Flay
-		46561,  -- Fear
-		46469,  -- Melt Armor
-		46279,  -- Flame Buffet
-		46297,  -- Piercing Shadow
-		46298,  -- Shrink
-		46294,  -- Fevered Fatigue
-		46299,  -- Wavering Will
-		46293,  -- Corrosive Poison
-		46295,  -- Hex
-		46296,  -- Necrotic Poison
-		--45770,  -- Shadow Bolt Volley
-		46466,  -- Drain Life
-		45029,  -- Corrupting Strike
-		46283,  -- Death Coil
-		46427,  -- Domination
-		46483,  -- Volatile Disease
-		-- Kalecgos
-		45034,  -- Curse of Boundless Agony
-		45032,  -- Curse of Boundless Agony
-		45004,  -- Wild Magic
-		44978,  -- Wild Magic
-		45001,  -- Wild Magic
-		--45002,  -- Wild Magic
-		45006,  -- Wild Magic
-		45010,  -- Wild Magic
-		45029,  -- Corrupting Strike
-		-- Brutallus
-		45150,  -- Meteor Slash
-		46394,  -- Burn
-		45185,  -- Stomp
-		-- Felmyst
-		45717,  -- Fog of Corruption
-		45866,  -- Corrosion
-		45855,  -- Gas Nova
-		45662,  -- Encapsulate
-		45402,  -- Demonic Vapor
-		-- Eredar Twins
-		46771,  -- Flame Sear
-		45348,  -- Flame Touched
-		45347,  -- Dark Touched
-		--45271,  -- Dark Strike
-		45256,  -- Confounding Blow
-		45342,  -- Conflagration
-		45270,  -- Shadowfury
-		-- M'uru
-		45996,  -- Darkness
-		-- Kil'jaeden
-		45641,  -- Fire Bloom
-		45442,  -- Soul Flay
-		45885,  -- Shadow Spike
-		46190  -- Curse of Agony
+		28467,  -- Mortal Wound
+		55334,  -- Strangulate
+		55314,  -- Strangulate
+		54714,  -- Acid Volley
+		29325,  -- Acid Volley
+		54331,  -- Acidic Sludge
+		27891,  -- Acidic Sludge
+		55322,  -- Blood Plague
+		55264,  -- Blood Plague
+		28440,  -- Veil of Shadow
+		53803,  -- Veil of Shadow
+		54708,  -- Rend
+		54703,  -- Rend
+		59899,  -- Poison Charge
+		56674,  -- Poison Charge
+		54326,  -- Bile Vomit
+		27807,  -- Bile Vomit
+		54709,  -- Flesh Rot
+		56674,  -- Flesh Rot
+		56624,  -- Virulent Poison
+		56605,  -- Virulent Poison
+		54772,  -- Putrid Bite
+		30113,  -- Putrid Bite
+		33661,  -- Crush Armor
+		54769,  -- Slime Burst
+		30109,  -- Slime Burst
+		54805,  -- Mind Flay
+		28310,  -- Mind Flay
+		29407,  -- Mind Flay
+		16856,  -- Mortal Strike
+		56427,  -- War Stomp
+		27758,  -- War Stomp
+		30091,  -- Flamestrike
+		56538,  -- Plague Splash
+		54780,  -- Plague Splash
+		55318,  -- Pierce Armor
+		29848,  -- Polymorph
+		6713,   -- Disarm
+		28169,  -- Mutating Injection
+		30080,  -- Retching Plague
+		30081,  -- Retching Plague
+		56444,  -- Retching Plague
+		-- Anub'Rekhan
+		56098,  -- Acid Spit
+		28969,  -- Acid Spit
+		-- 28783,  -- Impale
+		54022,  -- Locust Swarm
+		28786,  -- Locust Swarm
+		-- 28991,  -- Web
+		-- Grand Widow Faerlina
+		-- 22886,  -- Berserker Charge
+		28796,  -- Poison Bolt Volley
+		54098,  -- Poison Bolt Volley
+		-- 28794,  -- Rain of Fire
+		-- 30225,  -- Silence
+		-- Maexxna
+		54121,  -- Necrotic Poison
+		28776,  -- Necrotic Poison
+		-- 29484,  -- Web Spray
+		28622,  -- Web Wrap
+		-- Noth the Plaguebringer
+		54814,  -- Cripple
+		29212,  -- Cripple
+		32736,  -- Mortal Strike
+		29213,  -- Curse of the Plaguebringer
+		54835,  -- Curse of the Plaguebringer
+		29214,  -- Wrath of the Plaguebringer
+		54836,  -- Wrath of the Plaguebringer
+		-- Heigan the Unclean
+		29998,  -- Decrepit Fever
+		55011,  -- Decrepit Fever
+		29310,  -- Spell Disruption
+		-- 29371,  -- Eruption
+		54772,  -- Putrid Bite
+		54769,  -- Slime Burst
+		56538,  -- Plague Splash
+		-- Loatheb
+		29204,  -- Inevitable Doom
+		55052,  -- Inevitable Doom
+		55593,  -- Necrotic Aura
+		-- 29865,  -- Deathbloom
+		-- 55053,  -- Deathbloom
+		-- Instructor Razuvious
+		55470,  -- Unbalancing Strike
+		55550,  -- Jagged Knife
+		-- Gothik the Harvester
+		27994,  -- Drain Life
+		55646,  -- Drain Life
+		27825,  -- Shadow Mark
+		27993,  -- Stomp
+		-- The Four Horsemen
+		28882,  -- Unholy Shadow
+		57369,  -- Unholy Shadow
+		-- Patchwerk
+		-- Grobbulus
+		-- 28153,  -- Disease Cloud
+		-- 28206,  -- Mutagen Explosion
+		28169,  -- Mutating Injection
+		-- Gluth
+		54378,	-- Mortal Wound
+		29306,  -- Infected Wound
+		-- Thaddius
+		-- 28059,  -- Positive Charge
+		-- 28084,	-- Negative Charge
+		-- Sapphiron
+		28542,  -- Life Drain
+		55665,  -- Life Drain
+		15847,  -- Tail Sweep
+		28547,  -- Chill
+		55699,  -- Chill
+		28522,  -- Icebolt
+		-- Kel'Thuzad
+		-- 29879,  -- Frost Blast
+		-- 10187,  -- Blizzard
+		-- 28479,  -- Frostbolt
+		-- 28478,  -- Frostbolt
+		27819,  -- Detonate Mana
+		27808,  -- Frost Blast
+		-- 28408,  -- Chains of Kel'Thuzad
+		-- 28409,  -- Chains of Kel'Thuzad
+		28410   -- Chains of Kel'Thuzad
 	);
 
 	local debuffRemovalList = {};
