@@ -73,7 +73,6 @@ LibDualSpec-1.0\LibDualSpec-1.0.lua
 LibDurability\LibDurability\LibDurability.xml
 LibGetFrame-1.0\LibGetFrame-1.0.xml
 LibGraph-2.0\LibGraph-2.0\LibGraph-2.0.lua
-LibGroupInSpecT-1.1\lib.xml
 LibItemUpgradeInfo-1.0\LibItemUpgradeInfo-1.0.xml
 LibLatency\LibLatency\LibLatency.xml
 LibQTip-1.0\lib.xml

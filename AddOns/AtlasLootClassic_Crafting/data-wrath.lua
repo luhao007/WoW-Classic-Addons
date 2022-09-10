@@ -350,6 +350,15 @@ data["BlacksmithingWrath"] = {
 				{ 10, 55834 },	-- Cobalt Bracers
 			},
 		},
+		{
+			name = AL["Enhancements"],
+			[NORMAL_DIFF] = {
+				{ 1, 55656 },	-- Eternal Belt Buckle
+				{ 3, 55641 },	-- Socket Gloves
+				{ 16, 62202 },	-- Titanium Plating
+				{ 18, 55628 },	-- Socket Bracer
+			}
+		},
 		{ -- Sets
 			name = AL["Sets"],
 			ExtraList = true,
@@ -410,6 +419,10 @@ data["EnchantingWrath"] = {
 				{ 7, 44500 },	-- Enchant Cloak - Superior Agility
 				{ 8, 44582 },	-- Enchant Cloak - Minor Power
 				{ 9, 60609 },	-- Enchant Cloak - Speed
+
+				{ 16, 60609 },	-- Enchant Cloak - Speed
+				{ 17, 44582 },	-- Enchant Cloak - Spell Piercing
+				{ 18, 60663 },	-- Enchant Cloak - Major Agility
 			}
 		},
 		{
@@ -579,6 +592,20 @@ data["EngineeringWrath"] = {
 			}
 		},
 		{
+			name = ALIL["Engineering"].." - "..AL["Enhancements"],
+			[NORMAL_DIFF] = {
+				{ 1, 54999 },	-- Hyperspeed Accelerators
+				{ 2, 54998 },	-- Hand-Mounted Pyro Rocket
+				{ 3, 63770 },	-- Reticulated Armor Webbing
+				{ 5, 55016 },	-- Nitro Boosts
+				{ 16, 54736 },	-- Personal Electromagnetic Pulse Generator
+				{ 17, 54793 },	-- Frag Belt
+				{ 19, 55002 },	-- Flexweave Underlay
+				{ 20, 63765 },	-- Springy Arachnoweave
+				{ 22, 67839 },	-- Mind Amplification Dish
+			}
+		},
+		{
 			name = AL["Misc"],
 			[NORMAL_DIFF] = {
 				{ 1,   [ATLASLOOT_IT_ALLIANCE] = { 60867 }, [ATLASLOOT_IT_HORDE] = { 60866 } }, -- Mekgineer's Chopper / Mechano-Hog
@@ -729,6 +756,9 @@ data["TailoringWrath"] = {
 			[NORMAL_DIFF] = {
 				{ 1, 56034 },	-- Master's Spellthread
 				{ 2, 56010 },	-- Azure Spellthread
+				{ 4, 55777 },	-- Schwertwallgarn
+				{ 5, 55642 },	-- Hell leuchtendes Garn
+				{ 6, 55769 },	-- Dunkel glühendes Garn
 				{ 16, 56039 },	-- Sanctified Spellthread
 				{ 17, 56008 },	-- Shining Spellthread
 			}
@@ -965,6 +995,12 @@ data["LeatherworkingWrath"] = {
 				{ 5, 50964 },	-- Jormungar Leg Armor
 				{ 6, 50966 },	-- Nerubian Leg Armor
 				{ 8, 50963 },	-- Heavy Borean Armor Kit
+
+				{ 10, 57683 },	-- Fur Lining - Attack Power
+				{ 11, 57691 },	-- Fur Lining - Spell Power
+
+				{ 25, 60584 },	-- Nerubian Leg Reinforcements
+				{ 26, 60583 },	-- Jormungar Leg Reinforcements
 			},
 		},
 		{
@@ -1290,6 +1326,35 @@ data["JewelcraftingWrath"] = {
 				{ 111, 53860 },	-- Shifting Shadow Crystal
 				{ 112, 53859 },	-- Sovereign Shadow Crystal
 				{ 113, 53861 },	-- Tenuous Shadow Crystal
+			}
+		},
+		{
+			name = AL["Raw Gems"],
+			TableType = NORMAL_ITTYPE,
+			[NORMAL_DIFF] = {
+				{ 1, 41334 }, --  Earthsiege Diamond
+				{ 2, 41266 }, --  Skyflare Diamond
+				{ 3, 36783 }, --  Northsea Pearl
+				{ 5, 36925 }, --  Majestic Zircon
+				{ 6, 36924 }, -- Sky Sapphire
+				{ 7, 36923 }, --  Chalcedony
+				{ 9, 36934 }, --  Eye of Zul
+				{ 10, 36933 }, --  Forest Emerald
+				{ 11, 36932 }, --  Dark Jade
+				{ 13, 36931 }, --  Ametrine
+				{ 14, 36930 }, --  Monarch Topaz
+				{ 15, 36929 }, --  Huge Citrine
+				{ 16, 42225 }, --  Dragon's Eye
+				{ 17, 36784 }, --  Siren's Tear
+				{ 20, 36928 }, --  Dreadstone
+				{ 21, 36927 }, --  Twilight Opal
+				{ 22, 36926 }, --  Shadow Crystal
+				{ 24, 36919 }, --  Cardinal Ruby
+				{ 25, 36918 }, --  Scarlet Ruby
+				{ 26, 36917 }, --  Bloodstone
+				{ 28, 36922 }, --  King's Amber
+				{ 29, 36921 }, --  Autumn's Glow
+				{ 30, 36920 }, --  Sun Crystal
 			}
 		},
 		{
@@ -1827,6 +1892,15 @@ data["InscriptionWrath"] = {
 			}
 		},
 		{
+			name = AL["Enhancements"],
+			[NORMAL_DIFF] = {
+				{ 1, 61117 },	-- Master's Inscription of the Axe
+				{ 2, 61119 },	-- Master's Inscription of the Pinnacle
+				{ 16, 61120 },	-- Master's Inscription of the Storm
+				{ 17, 61118 },	-- Master's Inscription of the Crag
+			},
+		},
+		{
 			name = AL["Misc"],
 			[NORMAL_DIFF] = {
 				{ 1, 59387 },	-- Certificate of Ownership
@@ -2011,6 +2085,74 @@ data["FirstAidWrath"] = {
 			[NORMAL_DIFF] = {
 				{ 1, 45546 },	-- Heavy Frostweave Bandage
 				{ 2, 45545 },	-- Frostweave Bandage
+			}
+		},
+	}
+}
+
+data["FishingWrath"] = {
+	name = ALIL["Fishing"],
+	ContentType = PROF_SEC_CONTENT,
+	LoadDifficulty = NORMAL_DIFF,
+	TableType = NORMAL_ITTYPE,
+	CorrespondingFields = private.FISHING_LINK,
+	items = {
+		{
+			name = ALIL["Fishing"],
+			[NORMAL_DIFF] = {
+				{ 1, 6533 }, --  Aquadynamic Fish Attractor
+				{ 2, 34861 }, -- Sharpened Fish Hook
+				{ 3, 46006 }, -- Glow Worm
+				{ 4, 6532 }, --  Bright Baubles
+				{ 5, 7307 }, --  Flesh Eating Worm
+				{ 6, 6811 }, --  Aquadynamic Fish Lens
+				{ 7, 6530 }, --  Nightcrawlers
+				{ 16, 34109 }, -- Weather-Beaten Journal
+				{ 18, 19971 }, -- High Test Eternium Fishing Line
+				{ 19, 34836 }, -- Spun Truesilver Fishing Line
+				{ 27, 27532 }, -- Master Fishing - The Art of Angling
+				{ 28, 16082 }, -- Artisan Fishing - The Way of the Lure
+				{ 29, 16083 }, -- Expert Fishing - The Bass and You
+				{ 30, 46054 }, -- Journeyman Fishing - Fishing for Dummies
+			}
+		},
+		{
+			name = ALIL["Fishing Pole"],
+			[NORMAL_DIFF] = {
+				{ 1, 19970 }, -- Arcanite Fishing Pole
+				{ 2, 44050 }, -- Mastercraft Kalu'ak Fishing Pole
+				{ 3, 45992 }, -- Jeweled Fishing Pole
+				{ 4, 45991 }, -- Bone Fishing Pole
+				{ 5, 45858 }, -- Nat's Lucky Fishing Pole
+				{ 6, 19022 }, -- Nat Pagle's Extreme Angler FC-5000
+				{ 7, 25978 }, -- Seth's Graphite Fishing Pole
+				{ 8, 6367 }, -- Big Iron Fishing Pole
+				{ 9, 6366 }, -- Darkwood Fishing Pole
+				{ 10, 6365 }, -- Strong Fishing Pole
+				{ 11, 12225 }, -- Blump Family Fishing Pole
+				{ 12, 6256 }, -- Fishing Pole
+				{ 13, 45120 }, -- Basic Fishing Pole
+			}
+		},
+		{
+			name = AL["Fishes"],
+			[NORMAL_DIFF] = {
+				{ 1, 43572 }, -- Magic Eater
+				{ 2, 43571 }, -- Sewer Carp
+				{ 3, 43647 }, -- Shimmering Minnow
+				{ 4, 43652 }, -- Slippery Eel
+				{ 5, 43646 }, -- Fountain Goldfish
+				{ 6, 41812 }, -- Barrelhead Goby
+				{ 7, 41808 }, -- Bonescale Snapper
+				{ 8, 41805 }, -- Borean Man O' War
+				{ 9, 41807 }, -- Dragonfin Angelfish
+				{ 10, 41810 }, -- Fangtooth Herring
+				{ 11, 41809 }, -- Glacial Salmon
+				{ 12, 41802 }, -- Imperial Manta Ray
+				{ 13, 41806 }, -- Musselback Sculpin
+				{ 14, 41813 }, -- Nettlefish
+				{ 15, 41803 }, -- Rockfin Grouper
+				{ 16, 45907 }, -- Mostly-eaten Bonescale Snapper :D
 			}
 		},
 	}

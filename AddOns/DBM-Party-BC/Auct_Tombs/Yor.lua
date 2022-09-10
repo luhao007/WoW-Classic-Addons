@@ -2,7 +2,7 @@ local mod	= DBM:NewMod(536, "DBM-Party-BC", 8, 250)
 
 mod.statTypes = "heroic"
 
-mod:SetRevision("20220903215648")
+mod:SetRevision("20220909225853")
 mod:SetCreatureID(22930)
 mod:SetEncounterID(250)
 mod:SetModelID(14173)

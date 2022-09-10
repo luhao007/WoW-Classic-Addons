@@ -740,7 +740,7 @@ class Manager:
                 utils.remove_libraries([ 'LibUIDropDownMenu'], 'AddOns/Questie/Libs', f'AddOns/Questie/Questie{postfix}.toc')
 
         root = Path('AddOns/Questie')
-        with open(root / 'Questie-BCC.toc', 'r', encoding='utf-8') as file:
+        with open(root / 'Questie-WOTLKC.toc', 'r', encoding='utf-8') as file:
             lines = file.readlines()
 
         toc = TOC(lines)

@@ -1568,23 +1568,29 @@ ResolveSymbolicLink = function(o)
 					local achievementID = o.achievementID;
 					local cache;
 					for criteriaID=1,GetAchievementNumCriteria(achievementID),1 do
-						local criteriaString, criteriaType, completed, quantity, reqQuantity, charName, flags, assetID, quantityString = GetAchievementCriteriaInfo(achievementID, criteriaID);
+						local criteriaString, criteriaType, completed, quantity, reqQuantity, charName, flags, assetID, quantityString, id = GetAchievementCriteriaInfo(achievementID, criteriaID);
 						if criteriaType == 27 then
 							cache = app.SearchForField("questID", assetID);
+						elseif criteriaType == 110 then
+							-- Ignored
 						else
-							print("Unhandled Criteria Type", criteriaType);
+							print("Unhandled Criteria Type", criteriaType, assetID);
 						end
+						local criteriaObject = app.CreateAchievementCriteria(id);
 						if cache then
 							local uniques = {};
 							MergeObjects(uniques, cache);
 							for i,o in ipairs(uniques) do
-								o.g = nil;
-								o.achievementID = nil;
-								app.CacheFields(o);
-								o.achievementID = achievementID;
-								tinsert(searchResults, app.CreateAchievementCriteria(criteriaID, o));
+								rawset(o, "text", nil);
+								for key,value in pairs(o) do
+									criteriaObject[key] = value;
+								end
+								rawset(o, "text", criteriaObject.text);
 							end
 						end
+						criteriaObject.achievementID = achievementID;
+						criteriaObject.parent = o;
+						tinsert(searchResults, criteriaObject);
 					end
 				end
 			elseif cmd == "meta_achievement" then
@@ -3961,7 +3967,7 @@ if GetCategoryInfo and GetCategoryInfo(92) ~= "" then
 					else
 						criteriaString, criteriaType, completed, quantity, reqQuantity, charName, flags, assetID, quantityString, criteriaID =GetAchievementCriteriaInfoByID(achievementID, criteriaIndex);
 					end
-					GameTooltip:AddDoubleLine(" [" .. criteriaID .. "]: " .. tostring(criteriaString) .. " (" .. tostring(criteriaType) .. " - " .. tostring(assetID) ..")", tostring(quantityString) .. " " .. (completed and 1 or 0), 1, 1, 1, 1, 1, 1);
+					GameTooltip:AddDoubleLine(" [" .. (criteriaID or "??") .. "]: " .. tostring(criteriaString) .. " (" .. tostring(criteriaType) .. " - " .. tostring(assetID) ..")", tostring(quantityString) .. " " .. (completed and 1 or 0), 1, 1, 1, 1, 1, 1);
 				end
 			end
 		end
@@ -5639,7 +5645,7 @@ else
 		return "Interface\\Icons\\INV_Misc_QuestionMark";
 	end
 	speciesFields.name = function(t)
-		return select(1, GetItemInfo(t.itemID));
+		return t.itemID and select(1, GetItemInfo(t.itemID)) or RETRIEVING_DATA;
 	end
 	mountFields.name = function(t)
 		return select(1, GetSpellInfo(t.spellID)) or RETRIEVING_DATA;
@@ -8107,10 +8113,17 @@ local questFields = {
 		return rawget(t, "isDaily") or rawget(t, "isWeekly") or rawget(t, "isMonthly") or rawget(t, "isYearly");
 	end,
 	["collectible"] = function(t)
-		return app.CollectibleQuests and ((not t.repeatable and not t.isBreadcrumb) or C_QuestLog.IsOnQuest(t.questID));
+		if C_QuestLog.IsOnQuest(t.questID) then
+			return true;
+		end
+		if t.locked then return app.AccountWideQuests; end
+		return app.CollectibleQuests and (not t.repeatable and not t.isBreadcrumb);
 	end,
 	["collected"] = function(t)
-		return not C_QuestLog.IsOnQuest(t.questID) and IsQuestFlaggedCompletedForObject(t);
+		if C_QuestLog.IsOnQuest(t.questID) then
+			return false;
+		end
+		return IsQuestFlaggedCompletedForObject(t);
 	end,
 	["trackable"] = function(t)
 		return true;
@@ -8142,24 +8155,36 @@ local questFields = {
 		return "|cffcbc3e3" .. t.name .. "|r";
 	end,
 	["collectibleAsReputation"] = function(t)
-		return app.CollectibleQuests and ((not t.repeatable and not t.isBreadcrumb) or C_QuestLog.IsOnQuest(t.questID) or (t.maxReputation and (app.CollectibleReputations or not t.repeatable)));
+		if C_QuestLog.IsOnQuest(t.questID) then
+			return true;
+		end
+		if app.CollectibleQuests then
+			if t.locked then return app.AccountWideQuests; end
+			if t.maxReputation then
+				return true;
+			end
+			return not t.repeatable and not t.isBreadcrumb;
+		end
 	end,
 	["collectedAsReputation"] = function(t)
 		if C_QuestLog.IsOnQuest(t.questID) then
 			return false;
 		end
+		local flag = IsQuestFlaggedCompletedForObject(t);
+		if flag then
+			return flag;
+		end
 		if t.maxReputation then
+			if (select(6, GetFactionInfoByID(t.maxReputation[1])) or 0) >= t.maxReputation[2] then
+				return t.repeatable and 1 or 2;
+			end
 			if app.AccountWideReputations then
 				local faction = SearchForField("factionID", t.maxReputation[1]);
 				if (faction and #faction > 0 and faction[1].collected) then
 					return 2;
 				end
 			end
-			if (select(6, GetFactionInfoByID(t.maxReputation[1])) or 0) >= t.maxReputation[2] then
-				return true;
-			end
 		end
-		return app.CollectibleQuests and IsQuestFlaggedCompletedForObject(t);
 	end,
 };
 app.BaseQuest = app.BaseObjectFields(questFields);
@@ -8174,8 +8199,107 @@ local fields = RawCloneData(questFields);
 fields.collectible = questFields.collectibleAsReputation;
 fields.collected = questFields.collectedAsReputation;
 app.BaseQuestWithReputation = app.BaseObjectFields(fields);
+
+local criteriaFuncs = {
+    ["achID"] = function(achievementID)
+        return app.CurrentCharacter.Achievements[achievementID];
+    end,
+	--[[
+	["label_achID"] = L["LOCK_CRITERIA_ACHIEVEMENT_LABEL"],
+    ["text_achID"] = function(v)
+        return select(2, GetAchievementInfo(v));
+    end,
+	]]--
+
+    ["lvl"] = function(v)
+        return app.Level >= v;
+    end,
+	--[[
+	["label_lvl"] = L["LOCK_CRITERIA_LEVEL_LABEL"],
+    ["text_lvl"] = function(v)
+        return v;
+    end,
+	]]--
+
+    ["questID"] = function(questID)
+		return IsQuestFlaggedCompleted(questID);
+	end,
+	--[[
+	["label_questID"] = L["LOCK_CRITERIA_QUEST_LABEL"],
+    ["text_questID"] = function(v)
+		local questObj = app.SearchForObject("questID", v);
+        return sformat("[%d] %s", v, questObj and questObj.text or "???");
+    end,
+	]]--
+
+    ["spellID"] = function(spellID)
+        return app.CurrentCharacter.Spells[spellID];
+    end,
+	--[[
+	["label_spellID"] = L["LOCK_CRITERIA_SPELL_LABEL"],
+    ["text_spellID"] = function(v)
+        return select(1, GetSpellInfo(v));
+    end,
+	]]--
+
+    ["factionID"] = function(v)
+		-- v = factionID.standingRequiredToLock
+		local factionID = math.floor(v + 0.00001);
+		local lockStanding = math.floor((v - factionID) * 10 + 0.00001);
+        local standing = select(3, GetFactionInfoByID(factionID)) or 4;
+		--app.print("Check Faction", factionID,  "Standing (", standing, ") is locked @ (", lockStanding, ")");
+		return standing >= lockStanding;
+    end,
+	--[[
+	["label_factionID"] = L["LOCK_CRITERIA_FACTION_LABEL"],
+    ["text_factionID"] = function(v)
+		-- v = factionID.standingRequiredToLock
+		local factionID = math.floor(v + 0.00001);
+		local lockStanding = math.floor((v - factionID) * 10 + 0.00001);
+		local name = GetFactionInfoByID(factionID);
+        return string.format(L["LOCK_CRITERIA_FACTION_FORMAT"], app.GetCurrentFactionStandingText(factionID, lockStanding), name, app.GetCurrentFactionStandingText(factionID));
+    end,
+	]]--
+};
+local OnUpdateForLockCriteria = function(t)
+	local lockCriteria = t.lc;
+	if lockCriteria then
+		local criteriaRequired = lockCriteria[1];
+		local critKey, critFunc, nonQuestLock;
+		for i=2,#lockCriteria,2 do
+			critKey = lockCriteria[i];
+			critFunc = criteriaFuncs[critKey];
+			if critFunc then
+				if critFunc(lockCriteria[i + 1]) then
+					if not nonQuestLock and critKey ~= "questID" then
+						nonQuestLock = true;
+					end
+					criteriaRequired = criteriaRequired - 1;
+					if criteriaRequired <= 0 then
+						rawset(t, "locked", true);
+						-- if this was locked due to something other than a Quest specifically, indicate it cannot be done in Party Sync
+						if nonQuestLock then
+							-- app.PrintDebug("Automatic DisablePartySync", app:Linkify(questID, app.Colors.ChatLink, "search:questID:" .. questID))
+							rawset(t, "DisablePartySync", true);
+						end
+						break;
+					end
+				end
+			else
+				app.print("Unknown 'lockCriteria' key:", critKey, lockCriteria[i + 1]);
+			end
+		end
+	end
+end
 app.CreateQuest = function(id, t)
 	if t then
+		if t.lc then
+			if t.OnUpdate then
+				print("BRUH ON UPDATE WITH LOCK CRITERIA QUEST ID #", id);
+			else
+				t.OnUpdate = OnUpdateForLockCriteria;
+			end
+		end
 		if rawget(t, "maxReputation") then
 			return setmetatable(constructor(id, t, "questID"), app.BaseQuestWithReputation);
 		elseif rawget(t, "isBreadcrumb") then
@@ -10273,6 +10397,22 @@ local function RowOnEnter(self)
 					end
 				end
 				if not found then GameTooltip:AddLine(reference.description, 0.4, 0.8, 1, 1); end
+				if reference.maps then
+					local description = "Maps: ";
+					for i=1,#reference.maps,1 do
+						if i > 1 then description = description .. ", "; end
+						description = description .. app.GetMapName(reference.maps[i]);
+					end
+					GameTooltip:AddLine(" ", 1, 1, 1, 1);
+					GameTooltip:AddLine(description, 0.4, 0.8, 1, 1);
+				end
+			elseif reference.maps then
+				local description = "Maps: ";
+				for i=1,#reference.maps,1 do
+					if i > 1 then description = description .. ", "; end
+					description = description .. app.GetMapName(reference.maps[i]);
+				end
+				GameTooltip:AddLine(description, 0.4, 0.8, 1, 1);
 			end
 			if reference.awp then
 				local found = false;
@@ -10854,6 +10994,17 @@ function app:GetDataCache()
 			db.icon = app.asset("Category_Professions");
 			db.description = "This section will only show your character's professions outside of Account and Debug Mode.";
 			db.g = app.Categories.Professions;
+			table.insert(g, db);
+		end
+
+		-- In-Game Store
+		if app.Categories.InGameShop then
+			db = {};
+			db.expanded = false;
+			db.text = BATTLE_PET_SOURCE_10;
+			db.icon = app.asset("Category_InGameShop");
+			db.description = "This section will show you things that you could buy in the In-Game Shop in Retail.";
+			db.g = app.Categories.InGameShop;
 			table.insert(g, db);
 		end
 		
@@ -11446,6 +11597,44 @@ function app:GetDataCache()
 					achievement.parent = getAchievementCategory(categories, achievement.parentCategoryID);
 					if not achievement.u or achievement.u ~= 1 then
 						tinsert(achievement.parent.g, achievement);
+					end
+				end
+			end
+			if GetCategoryList then
+				local unsortedData = app:GetWindow("Unsorted").data;
+				for _,categoryID in ipairs(GetCategoryList()) do
+					local numAchievements = GetCategoryNumAchievements(categoryID);
+					if numAchievements > 0 then
+						for i=1,numAchievements,1 do
+							local achievementID, name = GetAchievementInfo(categoryID, i);
+							if achievementID and not self.achievements[achievementID] then
+								local achievement = app.CreateAchievement(achievementID);
+								self.achievements[i] = achievement;
+								achievement.parent = getAchievementCategory(categories, achievement.parentCategoryID);
+								achievement.description = "@CRIEVE: This achievement has not been sourced yet.";
+								if not achievement.u or achievement.u ~= 1 then
+									tinsert(achievement.parent.g, achievement);
+								end
+								tinsert(unsortedData, achievement);
+								local numCriteria = GetAchievementNumCriteria(achievementID);
+								if numCriteria > 0 then
+									local g = {};
+									for j=1,numCriteria,1 do
+										local criteriaString, criteriaType, completed, quantity, reqQuantity, charName, flags, assetID, quantityString, criteriaID = GetAchievementCriteriaInfo(achievementID, j);
+										local criteriaObject = app.CreateAchievementCriteria(criteriaID);
+										criteriaObject.parent = achievement;
+										table.insert(g, criteriaObject);
+									end
+									achievement.g = g;
+								end
+								CacheFields(achievement);
+								
+								-- Put a copy in Unsorted.
+								achievement = app.CreateAchievement(achievementID);
+								achievement.parent = unsortedData;
+								tinsert(unsortedData.g, achievement);
+							end
+						end
 					end
 				end
 			end
@@ -12606,6 +12795,9 @@ app:GetWindow("CurrentInstance", UIParent, function(self, force, fromTrigger)
 						else
 							MergeObject(groups, clone);
 						end
+					elseif group.key == "criteriaID" then
+						clone.achievementID = group.achievementID;
+						MergeObject(achievementsHeader.g, clone);
 					elseif group.key == "achievementID" then
 						MergeObject(achievementsHeader.g, clone);
 					elseif group.key == "questID" then

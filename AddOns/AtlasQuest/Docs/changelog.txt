@@ -11,6 +11,12 @@ KNOWN ISSUES:
 - Some UI bugs or features may be broken or disabled.  I no longer have the time or know-how to fix and modernize AtlasQuest and this release is being provided as a "better than nothing" sort of situation.  If anyone wants to fix the bugs I'd be happy to incorporate the fixes and provide credit.
 
 
+Version 4.13.02  (for WOTLK Classic)  September 9, 2022
+
+- German translation added for Wrath of the Lich King quests.  This translation is from Patch 3.3.3 and may be inaccurate.
+
+
+
 
 Version 4.13.01  (for WOTLK Classic)  September 4, 2022
 

@@ -1,14 +1,11 @@
-1.0.6 Release Notes
+1.0.8 Release Notes
 Contributions made by Crieve:
-* Updated Drak'Tharon Keep for Wrath Classic.
-* Updated Gundrak for Wrath Classic.
-* Updated Halls of Lightning for Wrath Classic.
-* Updated the Halls of Reflection for Wrath Classic.
-* Updated Naxxramas 10-Player  for Wrath Classic.
-* Updated Naxxramas for Wrath Classic.
-* Removed some silly nested tier pieces from tier tokens in Dalaran.
-* Updates to Achievements in order to provide Wrath Phase 1 filtering for folks working on achievements during Prepatch.
-* Added the Glory of the Icecrown Raider achievements.
-* Added the What a Long, Strange Trip It's Been achievement.
-* Swapped several custom npc IDs over to filters and categories, which are the preferred object type for headers where possible. Added a section for Wrath PVP.
+* Added timeline data to the first couple WoW Anniversaries.
+* Added timeline information to all InGameShop things.
+* Fixed a timeline issue for Hallow's End that was causing the Magic Broom to lose its information.
+* ATT-Classic will now build a dynamic achievements list for all achievements in the game.
+* Added Strand of the Ancients for Wrath Classic.
+* Updated the PvP Battlegrounds for Wrath Classic.
+* Wrath Classic now references all Battleground data files.
+* Fixed a scenario where Debug Mode doesn't deactivate every filter when toggled on after initial load of the addon.
 

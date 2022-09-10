@@ -281,10 +281,10 @@
     "name": "LibCandyBar-3.0",
     "description": "Timer bars with that extra sweetness.",
     "url": "https://www.curseforge.com/wow/addons/libcandybar-3-0",
-    "download_url": "https://edge.forgecdn.net/files/3762/216/LibCandyBar-3.0-v9.2.0.zip",
-    "date_published": "2022-04-22T01:03:50.133000+00:00",
-    "version": "v9.2.0",
-    "changelog_url": "https://api.curseforge.com/v1/mods/18909/files/3762216/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3970/304/LibCandyBar-3.0-v9.2.1.zip",
+    "date_published": "2022-09-05T20:23:04.883000+00:00",
+    "version": "v9.2.1",
+    "changelog_url": "https://api.curseforge.com/v1/mods/18909/files/3970304/changelog",
     "options": {
       "strategy": "any_flavour"
     },
@@ -295,6 +295,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v9.2.1",
+        "install_time": "2022-09-06T07:17:10+00:00"
+      },
       {
         "version": "v9.2.0",
         "install_time": "2022-09-01T13:42:56+00:00"
@@ -320,10 +324,10 @@
     "name": "LibChatAnims",
     "description": "UIFrameFlash to Animation conversion library for Floating Chat Frame functions.",
     "url": "https://www.curseforge.com/wow/addons/libchatanims",
-    "download_url": "https://edge.forgecdn.net/files/3762/208/LibChatAnims-v9.2.0.zip",
-    "date_published": "2022-04-22T00:56:37.620000+00:00",
-    "version": "v9.2.0",
-    "changelog_url": "https://api.curseforge.com/v1/mods/51580/files/3762208/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3970/460/LibChatAnims-v9.2.1.zip",
+    "date_published": "2022-09-05T22:15:14.250000+00:00",
+    "version": "v9.2.1",
+    "changelog_url": "https://api.curseforge.com/v1/mods/51580/files/3970460/changelog",
     "options": {
       "strategy": "any_flavour"
     },
@@ -334,6 +338,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v9.2.1",
+        "install_time": "2022-09-06T07:17:10+00:00"
+      },
       {
         "version": "v9.2.0",
         "install_time": "2022-09-01T13:42:56+00:00"
@@ -498,10 +506,10 @@
     "name": "LibDBIcon-1.0",
     "description": "Allows addons to easily create a lightweight minimap icon as an alternative to heavier LDB displays.",
     "url": "https://www.curseforge.com/wow/addons/libdbicon-1-0",
-    "download_url": "https://edge.forgecdn.net/files/3762/202/LibDBIcon-1.0-v9.2.1.zip",
-    "date_published": "2022-04-22T00:52:19.897000+00:00",
-    "version": "v9.2.1",
-    "changelog_url": "https://api.curseforge.com/v1/mods/15552/files/3762202/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3970/178/LibDBIcon-1.0-v9.2.2.zip",
+    "date_published": "2022-09-05T19:15:21.540000+00:00",
+    "version": "v9.2.2",
+    "changelog_url": "https://api.curseforge.com/v1/mods/15552/files/3970178/changelog",
     "options": {
       "strategy": "any_flavour"
     },
@@ -512,6 +520,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v9.2.2",
+        "install_time": "2022-09-06T07:17:10+00:00"
+      },
       {
         "version": "v9.2.1",
         "install_time": "2022-09-01T13:42:56+00:00"
@@ -595,10 +607,10 @@
     "name": "LibDurability",
     "description": "A library for transmitting and receiving durability information of players in your group.",
     "url": "https://www.curseforge.com/wow/addons/libdurability",
-    "download_url": "https://edge.forgecdn.net/files/3762/194/LibDurability-v9.2.0.zip",
-    "date_published": "2022-04-22T00:41:57.287000+00:00",
-    "version": "v9.2.0",
-    "changelog_url": "https://api.curseforge.com/v1/mods/95078/files/3762194/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3970/444/LibDurability-v9.2.1.zip",
+    "date_published": "2022-09-05T22:09:35.620000+00:00",
+    "version": "v9.2.1",
+    "changelog_url": "https://api.curseforge.com/v1/mods/95078/files/3970444/changelog",
     "options": {
       "strategy": "any_flavour"
     },
@@ -609,6 +621,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v9.2.1",
+        "install_time": "2022-09-06T07:17:10+00:00"
+      },
       {
         "version": "v9.2.0",
         "install_time": "2022-09-01T13:42:57+00:00"
@@ -731,10 +747,10 @@
     "name": "LibLatency",
     "description": "A library for transmitting and receiving latency information of players.",
     "url": "https://www.curseforge.com/wow/addons/liblatency",
-    "download_url": "https://edge.forgecdn.net/files/3762/180/LibLatency-v9.2.0.zip",
-    "date_published": "2022-04-22T00:27:25.653000+00:00",
-    "version": "v9.2.0",
-    "changelog_url": "https://api.curseforge.com/v1/mods/94595/files/3762180/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3970/432/LibLatency-v9.2.1.zip",
+    "date_published": "2022-09-05T21:59:16.053000+00:00",
+    "version": "v9.2.1",
+    "changelog_url": "https://api.curseforge.com/v1/mods/94595/files/3970432/changelog",
     "options": {
       "strategy": "any_flavour"
     },
@@ -745,6 +761,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v9.2.1",
+        "install_time": "2022-09-06T07:17:10+00:00"
+      },
       {
         "version": "v9.2.0",
         "install_time": "2022-09-01T13:42:57+00:00"
@@ -914,10 +934,10 @@
     "name": "LibSink-2.0",
     "description": "Library that handles chat output.",
     "url": "https://www.curseforge.com/wow/addons/libsink-2-0",
-    "download_url": "https://edge.forgecdn.net/files/3762/170/LibSink-2.0-v9.2.1.zip",
-    "date_published": "2022-04-22T00:20:15.590000+00:00",
-    "version": "v9.2.1",
-    "changelog_url": "https://api.curseforge.com/v1/mods/14324/files/3762170/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3970/473/LibSink-2.0-v9.2.2.zip",
+    "date_published": "2022-09-05T22:23:01.117000+00:00",
+    "version": "v9.2.2",
+    "changelog_url": "https://api.curseforge.com/v1/mods/14324/files/3970473/changelog",
     "options": {
       "strategy": "any_flavour"
     },
@@ -928,6 +948,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v9.2.2",
+        "install_time": "2022-09-06T07:17:10+00:00"
+      },
       {
         "version": "v9.2.1",
         "install_time": "2022-09-01T13:42:57+00:00"

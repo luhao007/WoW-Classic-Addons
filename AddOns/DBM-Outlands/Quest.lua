@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("Quest", "DBM-Outlands")
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20220903215648")
+mod:SetRevision("20220909225853")
 mod:AddBoolOption("Timers", true)
 mod:SetModelID(18921)
 

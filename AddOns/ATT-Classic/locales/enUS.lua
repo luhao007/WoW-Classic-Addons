@@ -698,6 +698,23 @@ app.L = {
 		[-670] = "Interface\\Icons\\ability_mount_redfrostwyrm_01",							-- Relentless Gladiator: Season 7
 		[-671] = "Interface\\Icons\\ability_mount_redfrostwyrm_01",							-- Wrathful Gladiator: Season 8
 		
+	-- WoW Anniversary
+		[-5353] = "Interface\\Icons\\inv_misc_celebrationcake_01",							-- 4th Anniversary
+		[-5354] = "Interface\\Icons\\inv_misc_celebrationcake_01",							-- 5th Anniversary
+		[-5355] = "Interface\\Icons\\inv_misc_celebrationcake_01",							-- 6th Anniversary
+		[-5356] = "Interface\\Icons\\inv_misc_celebrationcake_01",							-- 7th Anniversary
+		[-5357] = "Interface\\Icons\\inv_misc_celebrationcake_01",							-- 8th Anniversary
+		[-5358] = "Interface\\Icons\\inv_misc_celebrationcake_01",							-- 9th Anniversary
+		[-5359] = "Interface\\Icons\\inv_misc_celebrationcake_01",							-- 10th Anniversary
+		[-5360] = "Interface\\Icons\\inv_misc_celebrationcake_01",							-- 11th Anniversary
+		[-5361] = "Interface\\Icons\\inv_misc_celebrationcake_01",							-- 12th Anniversary
+		[-5362] = "Interface\\Icons\\inv_misc_celebrationcake_01",							-- 13th Anniversary
+		[-5363] = "Interface\\Icons\\inv_misc_celebrationcake_01",							-- 14th Anniversary
+		[-5364] = "Interface\\Icons\\inv_misc_celebrationcake_01",							-- 15th Anniversary
+		[-5365] = "Interface\\Icons\\inv_misc_celebrationcake_01",							-- 16th Anniversary
+		[-5366] = "Interface\\Icons\\inv_misc_celebrationcake_01",							-- 17th Anniversary
+		[-5367] = "Interface\\Icons\\inv_misc_celebrationcake_01",							-- 18th Anniversary
+		
 		[-9983] = "Interface\\Icons\\inv_jewelry_amulet_03",				-- Honor
 	};
 	["HEADER_NAMES"] = {
@@ -846,6 +863,22 @@ app.L = {
 		[-669] = "Furious Gladiator",				-- Furious Gladiator: Season 6
 		[-670] = "Relentless Gladiator",			-- Relentless Gladiator: Season 7
 		[-671] = "Wrathful Gladiator",				-- Wrathful Gladiator: Season 8
+		
+		[-5353] = GetAchievementInfo and select(2,GetAchievementInfo(2398)) or "WoW's 4th Anniversary",	-- 4th Anniversary
+		[-5354] = GetAchievementInfo and select(2,GetAchievementInfo(4400)) or "WoW's 5th Anniversary",	-- 5th Anniversary
+		[-5355] = GetAchievementInfo and select(2,GetAchievementInfo(5512)) or "WoW's 6th Anniversary",	-- 6th Anniversary
+		[-5356] = GetAchievementInfo and select(2,GetAchievementInfo(5863)) or "WoW's 7th Anniversary",	-- 7th Anniversary
+		[-5357] = GetAchievementInfo and select(2,GetAchievementInfo(6131)) or "WoW's 8th Anniversary",	-- 8th Anniversary
+		[-5358] = GetAchievementInfo and select(2,GetAchievementInfo(7853)) or "WoW's 9th Anniversary",	-- 9th Anniversary
+		[-5359] = GetAchievementInfo and select(2,GetAchievementInfo(8820)) or "WoW's 10th Anniversary",	-- 10th Anniversary
+		[-5360] = GetAchievementInfo and select(2,GetAchievementInfo(10058)) or "WoW's 11th Anniversary",	-- 11th Anniversary
+		[-5361] = GetAchievementInfo and select(2,GetAchievementInfo(10741)) or "WoW's 12th Anniversary",	-- 12th Anniversary
+		[-5362] = GetAchievementInfo and select(2,GetAchievementInfo(11848)) or "WoW's 13th Anniversary",	-- 13th Anniversary
+		[-5363] = GetAchievementInfo and select(2,GetAchievementInfo(12827)) or "WoW's 14th Anniversary",	-- 14th Anniversary
+		[-5364] = GetAchievementInfo and select(2,GetAchievementInfo(13917)) or "WoW's 15th Anniversary",	-- 15th Anniversary
+		[-5365] = GetAchievementInfo and select(2,GetAchievementInfo(14271)) or "WoW's 16th Anniversary",	-- 16th Anniversary
+		[-5366] = GetAchievementInfo and select(2,GetAchievementInfo(14942)) or "WoW's 17th Anniversary",	-- 17th Anniversary
+		[-5367] = GetAchievementInfo and select(2,GetAchievementInfo(15218)) or "WoW's 18th Anniversary",	-- 18th Anniversary
 		
 		[-9983] = HONOR,							-- Honor
 -- Factions / Cities

@@ -37,6 +37,7 @@
 <!--  GERMAN LOCALIZATION -->
 <Script file="Locale/global-deDE.lua" />
 <Script file="Locale/classic-deDE.lua" />
+<Script file="Locale/wotlk-deDE.lua" />
 
 <!--  KOREAN LOCALIZATION -->
 <Script file="Locale/global-koKR.lua" />
