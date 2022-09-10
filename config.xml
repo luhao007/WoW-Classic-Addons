@@ -1332,6 +1332,10 @@
 		<Title>简单聊天增强</Title>
 		<Category>社交</Category>
 	</Addon>
+	<Addon name="SimpleItemLevel">
+		<Title>简易装备等级</Title>
+		<Category>界面</Category>
+	</Addon>
 	<Addon name="Simulationcraft">
 		<Title>输出模拟器</Title>
 		<Notes>模拟当前人物的输出，来确认哪个装备属性更好。</Notes>

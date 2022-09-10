@@ -15,7 +15,7 @@ CLASSIC_ERA_VER = '11401'
 CLASSIC_VER = '30400'
 RETAIL_VER = '90207'
 
-IGNORED = ['Grail', 'MeetingHorn', 'Wholly', 'TrinketMenu']
+IGNORED = ['Grail', 'Wholly', 'TrinketMenu']
 
 
 def available_on(platforms):
@@ -366,7 +366,8 @@ class Manager:
             addons += ['alaCalendar', 'AtlasLootClassic', 'AtlasLootClassic_Options',
                        'ATT-Classic', 'ClassicCastbars_Options', 'Fizzle', 'GroupCalendar',
                        'HandyNotes_NPCs (Classic)', 'HandyNotes_NPCs (Burning Crusade Classic)',
-                       'PallyPower', 'SimpleChatClassic', 'TradeLog', 'TitanClassic', 'WclPlayerScore']
+                       'PallyPower', 'SimpleChatClassic', 'SimpleItemLevel', 'TradeLog',
+                       'TitanClassic', 'WclPlayerScore']
 
 
         for addon in addons:
@@ -621,7 +622,7 @@ class Manager:
     @available_on(['classic', 'classic_era'])
     def handle_meetinghorn():
         utils.remove_libraries(
-            ['AceAddon-3.0', 'AceComm-3.0', 'AceConfig-3.0',
+            ['AceAddon-3.0', 'AceBucket-3.0', 'AceComm-3.0', 'AceConfig-3.0',
                 'AceDB-3.0', 'AceEvent-3.0', 'AceGUI-3.0', 'AceHook-3.0',
                 'AceLocale-3.0', 'AceSerializer-3.0', 'AceTimer-3.0',
                 'CallbackHandler-1.0', 'LibDBIcon-1.0', 'LibDataBroker-1.1',
@@ -811,6 +812,16 @@ class Manager:
         utils.change_defaults(
             'Addons/Simulationcraft/core.lua',
             '        hide = true,'
+        )
+
+    @staticmethod
+    @available_on(['classic'])
+    def handle_simple_item_level():
+        utils.change_defaults(
+            'Addons/SimpleItemLevel/addon.lua',
+            ['                character = false,',
+             '                bags = false,',
+             '                color = false,']
         )
 
     @staticmethod

@@ -6,10 +6,10 @@
     "name": "ALL THE THINGS",
     "description": "Addon for Tracking Collections & Account Completion",
     "url": "https://www.curseforge.com/wow/addons/all-the-things",
-    "download_url": "https://edge.forgecdn.net/files/3967/890/ATT-Classic-v1.0.6-wrath.zip",
-    "date_published": "2022-09-04T10:52:29.187000+00:00",
-    "version": "Wrath Classic 1.0.6",
-    "changelog_url": "https://api.curseforge.com/v1/mods/267285/files/3967890/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3973/157/ATT-Classic-v1.0.8-wrath.zip",
+    "date_published": "2022-09-08T05:37:20.810000+00:00",
+    "version": "Wrath Classic 1.0.8",
+    "changelog_url": "https://api.curseforge.com/v1/mods/267285/files/3973157/changelog",
     "options": {
       "strategy": "default"
     },
@@ -20,6 +20,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "Wrath Classic 1.0.8",
+        "install_time": "2022-09-08T12:53:33+00:00"
+      },
       {
         "version": "Wrath Classic 1.0.6",
         "install_time": "2022-09-05T11:09:41+00:00"
@@ -55,10 +59,6 @@
       {
         "version": "TBC Classic 0.7.6",
         "install_time": "2021-11-17T11:12:46+00:00"
-      },
-      {
-        "version": "TBC Classic 0.6.3",
-        "install_time": "2021-07-17T04:03:32+00:00"
       }
     ]
   },
@@ -409,10 +409,10 @@
     "name": "AtlasLootClassic",
     "description": "Shows the possible loot from the bosses",
     "url": "https://www.curseforge.com/wow/addons/atlaslootclassic",
-    "download_url": "https://edge.forgecdn.net/files/3613/43/AtlasLootClassic-v2.4.1-bcc.zip",
-    "date_published": "2022-01-19T05:35:07.877000+00:00",
-    "version": "AtlasLootClassic-v2.4.1-bcc",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/326516/file/3613043/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3974/721/AtlasLootClassic-v3.0.0.zip",
+    "date_published": "2022-09-09T09:40:12.063000+00:00",
+    "version": "v3.0.0",
+    "changelog_url": "https://api.curseforge.com/v1/mods/326516/files/3974721/changelog",
     "options": {
       "strategy": "default"
     },
@@ -444,6 +444,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v3.0.0",
+        "install_time": "2022-09-09T12:13:41+00:00"
+      },
       {
         "version": "AtlasLootClassic-v2.4.1-bcc",
         "install_time": "2022-01-30T07:29:36+00:00"
@@ -479,10 +483,6 @@
       {
         "version": "v1.5.8-classic",
         "install_time": "2020-12-06T05:50:39+00:00"
-      },
-      {
-        "version": "v1.5.6-classic",
-        "install_time": "2020-11-03T05:33:04+00:00"
       }
     ]
   },
@@ -493,10 +493,10 @@
     "name": "AtlasQuest - Fan Update",
     "description": "AtlasQuest - Fan Update",
     "url": "https://www.curseforge.com/wow/addons/atlas-quest-fan-update",
-    "download_url": "https://edge.forgecdn.net/files/3968/638/AtlasQuestLK_4.13.01.zip",
-    "date_published": "2022-09-04T19:03:29.860000+00:00",
-    "version": "4.13.01 (Wrath of the Lich King)",
-    "changelog_url": "https://api.curseforge.com/v1/mods/4918/files/3968638/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3975/793/AtlasQuestLK_4.13.02.zip",
+    "date_published": "2022-09-10T03:01:15.293000+00:00",
+    "version": "4.13.02 (Wrath of the Lich King)",
+    "changelog_url": "https://api.curseforge.com/v1/mods/4918/files/3975793/changelog",
     "options": {
       "strategy": "default"
     },
@@ -507,16 +507,20 @@
     ],
     "deps": [
       {
-        "id": "33666"
+        "id": "33667"
       },
       {
-        "id": "33667"
+        "id": "33666"
       },
       {
         "id": "301"
       }
     ],
     "logged_versions": [
+      {
+        "version": "4.13.02 (Wrath of the Lich King)",
+        "install_time": "2022-09-10T08:03:06+00:00"
+      },
       {
         "version": "4.13.01 (Wrath of the Lich King)",
         "install_time": "2022-09-05T11:09:42+00:00"
@@ -1273,10 +1277,10 @@
     "name": "HandyNotes: DungeonLocations (Classic)",
     "description": "Shows locations of old world dungeon and raid entrances",
     "url": "https://www.curseforge.com/wow/addons/handynotes_dungeonlocations-classic",
-    "download_url": "https://edge.forgecdn.net/files/3969/102/HandyNotes_DungeonLocations (Classic).zip",
-    "date_published": "2022-09-05T02:08:56.290000+00:00",
-    "version": "1.06-classic",
-    "changelog_url": "https://api.curseforge.com/v1/mods/323067/files/3969102/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3973/801/HandyNotes_DungeonLocations__Classic_-1.06a-classic.zip",
+    "date_published": "2022-09-08T17:02:54.097000+00:00",
+    "version": "1.06a-classic",
+    "changelog_url": "https://api.curseforge.com/v1/mods/323067/files/3973801/changelog",
     "options": {
       "strategy": "default"
     },
@@ -1291,6 +1295,10 @@
       }
     ],
     "logged_versions": [
+      {
+        "version": "1.06a-classic",
+        "install_time": "2022-09-10T08:03:06+00:00"
+      },
       {
         "version": "1.06-classic",
         "install_time": "2022-09-05T11:09:42+00:00"
@@ -1888,10 +1896,10 @@
     "name": "Pawn",
     "description": "Pawn helps you compare items and find upgrades.",
     "url": "https://www.curseforge.com/wow/addons/pawn",
-    "download_url": "https://edge.forgecdn.net/files/3970/343/Pawn-2.6.5-Wrath.zip",
-    "date_published": "2022-09-05T20:41:22.033000+00:00",
-    "version": "2.6.5 (Wrath)",
-    "changelog_url": "https://api.curseforge.com/v1/mods/4646/files/3970343/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3974/528/Pawn-2.6.6-Wrath.zip",
+    "date_published": "2022-09-09T04:43:47.267000+00:00",
+    "version": "2.6.6 (Wrath)",
+    "changelog_url": "https://api.curseforge.com/v1/mods/4646/files/3974528/changelog",
     "options": {
       "strategy": "default"
     },
@@ -1902,6 +1910,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "2.6.6 (Wrath)",
+        "install_time": "2022-09-09T12:13:41+00:00"
+      },
       {
         "version": "2.6.5 (Wrath)",
         "install_time": "2022-09-06T07:17:02+00:00"
@@ -1937,10 +1949,6 @@
       {
         "version": "2.5.15 (Burning Crusade)",
         "install_time": "2021-06-08T12:12:23+00:00"
-      },
-      {
-        "version": "2.5.11 (Burning Crusade)",
-        "install_time": "2021-06-03T09:20:25+00:00"
       }
     ]
   },
@@ -2014,10 +2022,10 @@
     "name": "Questie",
     "description": "The Classic Quest Helper",
     "url": "https://www.curseforge.com/wow/addons/questie",
-    "download_url": "https://edge.forgecdn.net/files/3970/275/Questie-v7.0.2.zip",
-    "date_published": "2022-09-05T20:08:01.767000+00:00",
-    "version": "v7.0.2",
-    "changelog_url": "https://api.curseforge.com/v1/mods/334372/files/3970275/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3975/421/Questie-v7.1.0.zip",
+    "date_published": "2022-09-09T20:37:15.773000+00:00",
+    "version": "v7.1.0",
+    "changelog_url": "https://api.curseforge.com/v1/mods/334372/files/3975421/changelog",
     "options": {
       "strategy": "default"
     },
@@ -2028,6 +2036,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v7.1.0",
+        "install_time": "2022-09-10T08:03:07+00:00"
+      },
       {
         "version": "v7.0.2",
         "install_time": "2022-09-06T07:17:03+00:00"
@@ -2063,10 +2075,6 @@
       {
         "version": "v6.3.13 - Universal (TBC)",
         "install_time": "2021-05-30T05:16:04+00:00"
-      },
-      {
-        "version": "v6.3.12 - Universal (TBC)",
-        "install_time": "2021-05-23T07:51:39+00:00"
       }
     ]
   },
@@ -2197,6 +2205,33 @@
       {
         "version": "9.0.1",
         "install_time": "2020-11-03T05:33:04+00:00"
+      }
+    ]
+  },
+  {
+    "source": "curse",
+    "id": "287692",
+    "slug": "simple-item-level",
+    "name": "Simple Item Levels",
+    "description": "Show item levels in the character frame",
+    "url": "https://www.curseforge.com/wow/addons/simple-item-level",
+    "download_url": "https://edge.forgecdn.net/files/3971/836/SimpleItemLevel-v18.zip",
+    "date_published": "2022-09-07T00:58:57.707000+00:00",
+    "version": "v18",
+    "changelog_url": "https://api.curseforge.com/v1/mods/287692/files/3971836/changelog",
+    "options": {
+      "strategy": "default"
+    },
+    "folders": [
+      {
+        "name": "SimpleItemLevel"
+      }
+    ],
+    "deps": [],
+    "logged_versions": [
+      {
+        "version": "v18",
+        "install_time": "2022-09-10T12:51:02+00:00"
       }
     ]
   },
@@ -2817,8 +2852,8 @@
     "description": "A WeakAuras Companion clone.",
     "url": "https://github.com/layday/instawow",
     "download_url": "file:///C:/Users/luhao_000/AppData/Roaming/instawow/profiles/classic/plugins/instawow.wa_updater/WeakAurasCompanion.zip",
-    "date_published": "2022-09-06T07:16:57.163363+00:00",
-    "version": "3b20e8e",
+    "date_published": "2022-09-07T05:50:11.897631+00:00",
+    "version": "77b42a2",
     "changelog_url": "file:///C:/Users/luhao_000/AppData/Roaming/instawow/profiles/classic/plugins/instawow.wa_updater/CHANGELOG.md",
     "options": {
       "strategy": "default"
@@ -2830,6 +2865,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "77b42a2",
+        "install_time": "2022-09-07T05:50:11+00:00"
+      },
       {
         "version": "3b20e8e",
         "install_time": "2022-09-06T07:17:04+00:00"
@@ -3001,10 +3040,10 @@
     "name": "HandyNotes",
     "description": "Handy Notes for your maps. This addon is intended to be a small and simple replacement for Cartographer_Notes and functions in a similar manner.\r\n\r\nUse /handynotes to access options.\r\n\r\nYou can add notes to the maps in 3 ways:\r\n\r\n[LIST]\r\n[*]Alt-RightClick on the world map to add a note.\r\n[*]Use \"/hnnew\" without the quotes to add a note at your current location.\r\n[*]Use \"/hnnew x,y\" without the quotes to add a note at location x,y on your current zone's map. \r\n[/LIST]\r\n\r\nSee change log tab for changes from v1.1.6 to v1.2.0\r\n\r\nHandyNotes supports plugins that other authors can write to display their own set of notes on the map. See this link for a list of such addons\r\n\r\n[URL=\"http://www.wowace.com/search/?search=handynotes\"]http://www.wowace.com/search/?search=handynotes[/URL]",
     "url": "https://www.wowinterface.com/downloads/info15716-HandyNotes.html",
-    "download_url": "https://cdn.wowinterface.com/downloads/getfile.php?id=15716&d=1654070194&minion",
-    "date_published": "2022-06-01T07:56:34+00:00",
-    "version": "v1.6.6",
-    "changelog_url": "data:,%5Bsize%3D5%5DHandyNotes%5B/size%5D%0D%0A%5Bsize%3D4%5D%5Burl%3Dhttps%3A//github.com/Nevcairiel/HandyNotes/tree/v1.6.6%5Dv1.6.6%5B/url%5D%20%282022-06-01%29%5B/size%5D%0D%0A%5Burl%3Dhttps%3A//github.com/Nevcairiel/HandyNotes/compare/v1.6.5...v1.6.6%5DFull%20Changelog%5B/url%5D%20%5Burl%3Dhttps%3A//github.com/Nevcairiel/HandyNotes/releases%5DPrevious%20Releases%5B/url%5D%0D%0A%5Blist%5D%0D%0A%5B%2A%5DUpdate%20luacheck%0D%0A%5B%2A%5DUpdate%20TOC%0D%0A%5B%2A%5DFix%20raid%20icon%20definition%0D%0A%5B%2A%5DCreate%20only%20one%20package%20for%20all%20game%20flavors%0D%0A%5B%2A%5DUse%20checkout%20v2%20for%20PRs%0D%0A%5B%2A%5DUpdate%20editorconfig%20to%20properly%20cover%20all%20yaml%20files%0D%0A%5B/list%5D",
+    "download_url": "https://cdn.wowinterface.com/downloads/getfile.php?id=15716&d=1662734155&minion",
+    "date_published": "2022-09-09T14:35:55+00:00",
+    "version": "v1.6.7",
+    "changelog_url": "data:,%5Bsize%3D5%5DHandyNotes%5B/size%5D%0D%0A%5Bsize%3D4%5D%5Burl%3Dhttps%3A//github.com/Nevcairiel/HandyNotes/tree/v1.6.7%5Dv1.6.7%5B/url%5D%20%282022-09-09%29%5B/size%5D%0D%0A%5Burl%3Dhttps%3A//github.com/Nevcairiel/HandyNotes/compare/v1.6.6...v1.6.7%5DFull%20Changelog%5B/url%5D%20%5Burl%3Dhttps%3A//github.com/Nevcairiel/HandyNotes/releases%5DPrevious%20Releases%5B/url%5D%0D%0A%5Blist%5D%0D%0A%5B%2A%5DAdd%20Northrend%20to%20the%20list%20of%20classic%20expansion%20continents%0D%0A%5B%2A%5DUpdate%20retail%20TOC%0D%0A%5B%2A%5DAdd%20Wrath%20TOC%0D%0A%5B/list%5D",
     "options": {
       "strategy": "default"
     },
@@ -3015,6 +3054,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v1.6.7",
+        "install_time": "2022-09-10T08:03:07+00:00"
+      },
       {
         "version": "v1.6.6",
         "install_time": "2022-09-01T13:40:36+00:00"
