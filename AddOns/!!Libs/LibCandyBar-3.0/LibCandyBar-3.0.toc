@@ -1,5 +1,5 @@
 ## Interface: 90207
-## Version: v9.2.1
+## Version: v9.2.2
 ## LoadOnDemand: 1
 ## Title: Lib: LibCandyBar-3.0
 ## Notes: Timer bars with that extra sweetness.

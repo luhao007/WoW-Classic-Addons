@@ -356,8 +356,7 @@ class Manager:
                        'HandyNotes_DraenorTreasures',
                        'HandyNotes_LegionClassOrderHalls',
                        'HandyNotes_LegionRaresTreasures',
-                       'HandyNotes_Shadowlands',
-                       'HandyNotes_SuramarShalAranTelemancy',
+                       'HandyNotes_Shadowlands','HandyNotes_SuramarShalAranTelemancy',
                        'HandyNotes_TimelessIsleChests',
                        'HandyNotes_VisionsOfNZoth',
                        'MinimalArchaeology', 'NPCScan', 'Omen',
@@ -366,7 +365,7 @@ class Manager:
             addons += ['alaCalendar', 'AtlasLootClassic', 'AtlasLootClassic_Options',
                        'ATT-Classic', 'ClassicCastbars_Options', 'Fizzle', 'GroupCalendar',
                        'HandyNotes_NPCs (Classic)', 'HandyNotes_NPCs (Burning Crusade Classic)',
-                       'PallyPower', 'SimpleChatClassic', 'SimpleItemLevel', 'TradeLog',
+                       'PallyPower', 'SimpleChatClassic', 'TradeLog',
                        'TitanClassic', 'WclPlayerScore']
 
 
@@ -817,6 +816,11 @@ class Manager:
     @staticmethod
     @available_on(['classic'])
     def handle_simple_item_level():
+        utils.remove_libraries(
+            ['LibStub'],
+            'Addons/SimpleItemLevel/lib',
+            'Addons/SimpleItemLevel/embeds.xml'
+        )
         utils.change_defaults(
             'Addons/SimpleItemLevel/addon.lua',
             ['                character = false,',

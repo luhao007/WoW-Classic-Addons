@@ -1,26 +1,14 @@
 ------------------------------------------------------------------------
-r166 | funkehdude | 2022-09-05 20:21:48 +0000 (Mon, 05 Sep 2022) | 1 line
+r169 | funkehdude | 2022-09-10 19:19:50 +0000 (Sat, 10 Sep 2022) | 1 line
 Changed paths:
-   A /trunk/LibCandyBar-3.0_Wrath.toc
+   M /trunk/LibCandyBar-3.0/LibCandyBar-3.0.lua
 
-Add Wrath toc
+Remove old compat code for backdrop templates
 ------------------------------------------------------------------------
-r165 | funkehdude | 2022-09-05 20:20:09 +0000 (Mon, 05 Sep 2022) | 1 line
+r168 | funkehdude | 2022-09-10 18:59:59 +0000 (Sat, 10 Sep 2022) | 1 line
 Changed paths:
-   D /trunk/ignore.txt
+   M /trunk/LibCandyBar-3.0/LibCandyBar-3.0.lua
 
-Remove test file
-------------------------------------------------------------------------
-r164 | funkehdude | 2022-09-05 20:16:11 +0000 (Mon, 05 Sep 2022) | 1 line
-Changed paths:
-   M /trunk/LibCandyBar-3.0.toc
-
-bump toc
-------------------------------------------------------------------------
-r163 | funkehdude | 2022-06-01 04:22:03 +0000 (Wed, 01 Jun 2022) | 1 line
-Changed paths:
-   M /trunk/LibCandyBar-3.0.toc
-
-bump toc
+Fix font strings for Dragonflight
 ------------------------------------------------------------------------
 
