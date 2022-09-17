@@ -75,6 +75,23 @@ local API_EVENT_INFO = TSM.IsWowClassic() and
 			["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..LE_GAME_ERR_NOT_ENOUGH_MONEY] = { result = false },
 			["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..LE_GAME_ERR_ITEM_MAX_COUNT] = { result = false },
 		},
+		CancelAuction = {
+			["CHAT_MSG_SYSTEM"..GENERIC_EVENT_SEP..ERR_AUCTION_REMOVED] = { result = true },
+			["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..LE_GAME_ERR_AUCTION_DATABASE_ERROR] = { result = false },
+			["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..LE_GAME_ERR_ITEM_NOT_FOUND] = { result = false },
+		},
+		PostAuction = {
+			["CHAT_MSG_SYSTEM"..GENERIC_EVENT_SEP..ERR_AUCTION_STARTED] = { result = true },
+			["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..LE_GAME_ERR_AUCTION_DATABASE_ERROR] = { result = false },
+			["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..LE_GAME_ERR_ITEM_NOT_FOUND] = { result = false },
+			-- TODO: Somehow convey that we can't retry these
+			["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_AUCTION_REPAIR_ITEM] = { result = false },
+			["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_AUCTION_LIMITED_DURATION_ITEM] = { result = false },
+			["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_AUCTION_USED_CHARGES] = { result = false },
+			["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_AUCTION_WRAPPED_ITEM] = { result = false },
+			["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_AUCTION_BAG] = { result = false },
+			["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_NOT_ENOUGH_MONEY] = { result = false },
+		}
 	} or
 	{ -- Retail
 		SendBrowseQuery = {
@@ -313,9 +330,10 @@ function AuctionHouseWrapper.QueryOwnedAuctions(sorts)
 end
 
 function AuctionHouseWrapper.CancelAuction(auctionId)
-	assert(not TSM.IsWowClassic())
-	-- if QueryOwnedAuctions is pending, just cancel it
-	private.wrappers.QueryOwnedAuctions:CancelIfPending()
+	if not TSM.IsWowClassic() then
+		-- if QueryOwnedAuctions is pending, just cancel it
+		private.wrappers.QueryOwnedAuctions:CancelIfPending()
+	end
 	if not private.CheckAllIdle() then
 		return
 	end
@@ -347,6 +365,21 @@ function AuctionHouseWrapper.PlaceBid(auctionId, bidBuyout)
 	else
 		return private.wrappers.PlaceBid:Start(auctionId, bidBuyout)
 	end
+end
+
+function AuctionHouseWrapper.PostAuction(bag, slot, bid, buyout, postTime, stackSize, quantity)
+	assert(TSM.IsWowClassic())
+	if not private.CheckAllIdle() then
+		return
+	end
+	-- need to set the duration in the default UI to avoid Blizzard errors
+	AuctionFrameAuctions.duration = postTime
+	ClearCursor()
+	PickupContainerItem(bag, slot)
+	ClickAuctionSellItemButton(AuctionsItemButton, "LeftButton")
+	local result = private.wrappers.PostAuction:Start(bid, buyout, postTime, stackSize, quantity)
+	ClearCursor()
+	return result
 end
 
 function AuctionHouseWrapper.PostItem(itemLocation, postTime, stackSize, bid, buyout)

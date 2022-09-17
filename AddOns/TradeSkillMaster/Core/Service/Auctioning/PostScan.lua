@@ -129,14 +129,7 @@ function PostScan.DoProcess()
 		local _, bagQuantity = GetContainerItemInfo(bag, slot)
 		Log.Info("Posting %s x %d from %d,%d (%d)", itemString, stackSize, bag, slot, bagQuantity or -1)
 		if TSM.IsWowClassic() then
-			-- need to set the duration in the default UI to avoid Blizzard errors
-			AuctionFrameAuctions.duration = postTime
-			ClearCursor()
-			PickupContainerItem(bag, slot)
-			ClickAuctionSellItemButton(AuctionsItemButton, "LeftButton")
-			PostAuction(bid, buyout, postTime, stackSize, 1)
-			ClearCursor()
-			result = true
+			result = AuctionHouseWrapper.PostAuction(bag, slot, bid, buyout, postTime, stackSize, 1)
 		else
 			bid = Math.Round(bid / stackSize, COPPER_PER_SILVER)
 			buyout = Math.Round(buyout / stackSize, COPPER_PER_SILVER)

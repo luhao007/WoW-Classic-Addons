@@ -1,9 +1,13 @@
-## Interface: 90207
-## Title: Plater
-## Notes: Nameplate addon designed for advanced users.
+## Interface: 30400
+## Version: Plater-v534-Retail
 ## SavedVariables: PlaterDB
 ## SavedVariablesPerCharacter: PlaterDBChr
-## Version: Plater-v534-Retail
+
+## Title: Plater
+## Notes: Nameplate addon designed for advanced users.
+## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFF血条增强|r |cFFFFE00APlater|r
+## Notes-zhCN: 自定义血条显示
+
 ## X-Curse-Project-ID: 100547
 ## X-Wago-ID: kRNLep6o
 

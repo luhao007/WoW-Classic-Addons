@@ -450,6 +450,8 @@ L["Custom Condition Code"] = "Custom Condition Code"
 L["Custom Configuration"] = "Custom Configuration"
 L["Custom Function"] = "Función personalizada"
 --[[Translation missing --]]
+L["Custom Grow"] = "Custom Grow"
+--[[Translation missing --]]
 L["Custom Sort"] = "Custom Sort"
 --[[Translation missing --]]
 L["Custom Text Function"] = "Custom Text Function"
@@ -575,7 +577,7 @@ L["Emalon the Storm Watcher"] = "Emalon the Storm Watcher"
 L["Emote"] = "Emoción"
 L["Empty"] = "Vacío"
 --[[Translation missing --]]
-L["Enables (incorrect) round down of seconds, which was the previous default behaviour."] = "Enables (incorrect) round down of seconds, which was the previous default behaviour."
+L["Enables (incorrect) round down of seconds, which was the previous default behavior."] = "Enables (incorrect) round down of seconds, which was the previous default behavior."
 --[[Translation missing --]]
 L["Enchant Applied"] = "Enchant Applied"
 --[[Translation missing --]]
@@ -1221,7 +1223,7 @@ L["Not On Threat Table"] = "No se encuentra en la Tabla de Amenaza"
 --[[Translation missing --]]
 L["Note, that cross realm transmission is possible if you are on the same group"] = "Note, that cross realm transmission is possible if you are on the same group"
 --[[Translation missing --]]
-L["Note: Due to how complicated the swing timer behaviour is and the lack of APIs from Blizzard, results are inaccurate in edge cases."] = "Note: Due to how complicated the swing timer behaviour is and the lack of APIs from Blizzard, results are inaccurate in edge cases."
+L["Note: Due to how complicated the swing timer behavior is and the lack of APIs from Blizzard, results are inaccurate in edge cases."] = "Note: Due to how complicated the swing timer behavior is and the lack of APIs from Blizzard, results are inaccurate in edge cases."
 --[[Translation missing --]]
 L["Note: 'Hide Alone' is not available in the new aura tracking system. A load option can be used instead."] = "Note: 'Hide Alone' is not available in the new aura tracking system. A load option can be used instead."
 --[[Translation missing --]]
@@ -1394,9 +1396,9 @@ L["Pulse"] = "Pulso"
 L["PvP Flagged"] = "Marcado JcJ"
 --[[Translation missing --]]
 L["PvP Talent %i"] = "PvP Talent %i"
-L["PvP Talent selected"] = "JcJ - Talento seleccionado"
 --[[Translation missing --]]
 L["PvP Talent Selected"] = "PvP Talent Selected"
+L["PvP Talent selected"] = "JcJ - Talento seleccionado"
 --[[Translation missing --]]
 L["Queued Action"] = "Queued Action"
 L["Radius"] = "Radio"
@@ -1765,9 +1767,9 @@ L["Talent |cFFFF0000Not|r Known"] = "Talent |cFFFF0000Not|r Known"
 L["Talent |cFFFF0000Not|r Selected"] = "Talent |cFFFF0000Not|r Selected"
 --[[Translation missing --]]
 L["Talent Known"] = "Talent Known"
+L["Talent selected"] = "Talento seleccionado"
 --[[Translation missing --]]
 L["Talent Selected"] = "Talent Selected"
-L["Talent selected"] = "Talento seleccionado"
 L["Talent Specialization"] = "Especialización de talento"
 L["Tanking And Highest"] = "Tanqueando - El más alto"
 L["Tanking But Not Highest"] = "Tanqueando - No el más alto"
@@ -1955,6 +1957,8 @@ L["Units Affected"] = "Units Affected"
 L["unknown location"] = "unknown location"
 --[[Translation missing --]]
 L["Unlimited"] = "Unlimited"
+--[[Translation missing --]]
+L["Untrigger %s"] = "Untrigger %s"
 L["Up"] = "Arriba"
 --[[Translation missing --]]
 L["Up, then Left"] = "Up, then Left"

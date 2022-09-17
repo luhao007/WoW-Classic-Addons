@@ -130,7 +130,7 @@ local L = namespace.L 				--localization
 			if DCSAboutDCSFrame:IsVisible() then
 				DCSAboutDCS_TitleFS:SetPoint("TOP", DCSAboutDCSFrame, "TOP", 0, -26)
 				DCSAboutDCS_FS:SetPoint("TOP", DCSAboutDCSFrame, "TOP", 0, -65)
-				DCSAboutDCS_ThanksFS:SetPoint("BOTTOM", DCSAboutDCSFrame, "BOTTOM", 0, 30)
+				DCSAboutDCS_ThanksFS:SetPoint("BOTTOM", DCSAboutDCSFrame, "BOTTOM", 0, 10)
 				DCSAboutDCS_TitleFS:Show()
 				DCSAboutDCS_FS:Show()
 				DCSAboutDCS_ThanksFS:Show()

@@ -81,15 +81,9 @@ function CancelScan.DoProcess()
 	end
 	local auctionId, itemString, currentBid, buyout = query:GetFirstResultAndRelease()
 	if auctionId then
-		local result = nil
-		if TSM.IsWowClassic() then
-			private.usedAuctionIndex[itemString..buyout..currentBid..auctionId] = true
-			CancelAuction(auctionId)
-			result = true
-		else
-			private.usedAuctionIndex[auctionId] = true
-			result = AuctionHouseWrapper.CancelAuction(auctionId)
-		end
+		local usedAuctionIndex = TSM.IsWowClassic() and (itemString..buyout..currentBid..auctionId) or auctionId
+		private.usedAuctionIndex[usedAuctionIndex] = true
+		local result = AuctionHouseWrapper.CancelAuction(auctionId)
 		local isRowDone = cancelRow:GetField("numProcessed") + 1 == cancelRow:GetField("numStacks")
 		cancelRow:SetField("numProcessed", cancelRow:GetField("numProcessed") + 1)
 			:Update()

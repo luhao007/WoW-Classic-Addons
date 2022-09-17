@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Lag
-## Version: v3.0.0
+## Version: v3.0.2
 ## Dependencies: AtlasLootClassic
 ## LoadOnDemand: 1
 
@@ -16,4 +16,5 @@
 
 Locales\Locales.xml
 
+private.lua
 data.lua

@@ -837,39 +837,6 @@ function private.FSMCreate()
 	Event.Register("AUCTION_HOUSE_CLOSED", function()
 		private.fsm:ProcessEvent("EV_AUCTION_HOUSE_CLOSED")
 	end)
-	if TSM.IsWowClassic() then
-		Event.Register("CHAT_MSG_SYSTEM", function(_, msg)
-			if msg == ERR_AUCTION_STARTED then
-				private.fsm:SetLoggingEnabled(false)
-				private.fsm:ProcessEvent("EV_AUCTION_POST_CONFIRM", true)
-				private.fsm:SetLoggingEnabled(true)
-			elseif msg == ERR_AUCTION_REMOVED then
-				private.fsm:SetLoggingEnabled(false)
-				private.fsm:ProcessEvent("EV_AUCTION_CANCEL_CONFIRM", true)
-				private.fsm:SetLoggingEnabled(true)
-			end
-		end)
-		local POST_ERR_MSGS = {
-			-- errors where we can retry
-			[ERR_ITEM_NOT_FOUND] = true,
-			[ERR_AUCTION_DATABASE_ERROR] = true,
-			-- errors where we can't retry
-			[ERR_AUCTION_REPAIR_ITEM] = false,
-			[ERR_AUCTION_LIMITED_DURATION_ITEM] = false,
-			[ERR_AUCTION_USED_CHARGES] = false,
-			[ERR_AUCTION_WRAPPED_ITEM] = false,
-			[ERR_AUCTION_BAG] = false,
-			[ERR_NOT_ENOUGH_MONEY] = false,
-		}
-		Event.Register("UI_ERROR_MESSAGE", function(_, _, msg)
-			if POST_ERR_MSGS[msg] ~= nil then
-				private.fsm:ProcessEvent("EV_AUCTION_POST_CONFIRM", false, POST_ERR_MSGS[msg])
-			end
-			if msg == ERR_ITEM_NOT_FOUND then
-				private.fsm:ProcessEvent("EV_AUCTION_CANCEL_CONFIRM", false, true)
-			end
-		end)
-	end
 	local fsmPrivate = {}
 	function fsmPrivate.UpdateDepositCost(context)
 		if context.scanType ~= "POST" then
@@ -1087,7 +1054,7 @@ function private.FSMCreate()
 				:SetProgressIconHidden(iconHidden)
 				:SetText(progressText)
 			local deposit = context.scanType == "POST" and Money.FromString(header:GetElement("content.item.cost.text"):GetText())
-			bottom:GetElement("processBtn"):SetDisabled(numProcessed == totalNum or (deposit and deposit > GetMoney()) or (not TSM.IsWowClassic() and context.pendingFuture))
+			bottom:GetElement("processBtn"):SetDisabled(numProcessed == totalNum or (deposit and deposit > GetMoney()) or context.pendingFuture)
 			bottom:GetElement("skipBtn"):SetDisabled(numProcessed == totalNum)
 			bottom:GetElement("pauseResumeBtn")
 				:SetDisabled(numProcessed ~= numConfirmed or scanDone)
@@ -1500,10 +1467,9 @@ function private.FSMCreate()
 				if not result then
 					-- we failed to post / cancel
 					return "ST_HANDLING_CONFIRM", false, not noRetry
-				elseif not TSM.IsWowClassic() then
-					context.pendingFuture = result
-					context.pendingFuture:SetScript("OnDone", private.FSMPendingFutureOneDone)
 				end
+				context.pendingFuture = result
+				context.pendingFuture:SetScript("OnDone", private.FSMPendingFutureOneDone)
 				fsmPrivate.UpdateScanFrame(context)
 			end)
 			:AddEvent("EV_SKIP_CLICKED", function(context)
@@ -1543,16 +1509,6 @@ function private.FSMCreate()
 					return "ST_HANDLING_CONFIRM", false, false
 				else
 					error("Invalid value: "..tostring(value))
-				end
-			end)
-			:AddEvent("EV_AUCTION_POST_CONFIRM", function(context, success, canRetry)
-				if context.scanType == "POST" then
-					return "ST_HANDLING_CONFIRM", success, canRetry
-				end
-			end)
-			:AddEvent("EV_AUCTION_CANCEL_CONFIRM", function(context, success, canRetry)
-				if context.scanType == "CANCEL" then
-					return "ST_HANDLING_CONFIRM", success, canRetry
 				end
 			end)
 			:AddEvent("EV_PAUSE_RESUME_CLICKED", function(context)

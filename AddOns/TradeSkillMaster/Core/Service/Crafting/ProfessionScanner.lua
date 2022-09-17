@@ -415,13 +415,12 @@ function private.ScanRecipe(professionName, craftString)
 	assert(itemLink, "Invalid craft: "..tostring(craftString))
 
 	-- get the itemString and craft name
-	local itemString, craftName = nil, nil
+	local itemString, craftName, indirectSpellId = nil, nil, nil
 	if strfind(itemLink, "enchant:") then
 		if TSM.IsWowClassic() and not TSM.IsWowWrathClassic() then
 			return true
 		else
 			-- result of craft is not an item
-			local indirectSpellId = nil
 			if TSM.IsWowWrathClassic() then
 				indirectSpellId = strmatch(itemLink, "enchant:(%d+)")
 				indirectSpellId = indirectSpellId and tonumber(indirectSpellId)
@@ -457,7 +456,7 @@ function private.ScanRecipe(professionName, craftString)
 
 	-- get the result number
 	local numResult = nil
-	local isEnchant = professionName == GetSpellInfo(7411) and strfind(itemLink, "enchant:")
+	local isEnchant, vellumable = TSM.Crafting.ProfessionUtil.IsEnchant(craftString)
 	if isEnchant then
 		numResult = 1
 	else
@@ -506,8 +505,8 @@ function private.ScanRecipe(professionName, craftString)
 		matQuantities[matItemString] = quantity
 	end
 	-- if this is an enchant, add a vellum to the list of mats
-	if isEnchant then
-		local matItemString = ProfessionInfo.GetVellumItemString()
+	if isEnchant and vellumable then
+		local matItemString = ProfessionInfo.GetVellumItemString(indirectSpellId)
 		TSM.db.factionrealm.internalData.mats[matItemString] = TSM.db.factionrealm.internalData.mats[matItemString] or {}
 		matQuantities[matItemString] = 1
 	end

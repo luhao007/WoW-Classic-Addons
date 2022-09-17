@@ -87,9 +87,7 @@ local function DCS_Set_Item_Quality_Color_Outlines()
 		v.ItemFrameOutlineTexture:SetVertexColor(0, 0, 0, 0);
 		v.ItemFramehighlightTexture:SetVertexColor(0, 0, 0, 0);
 		local itemLink = GetInventoryItemLink("player", v:GetID())
-		if (itemLink==nil) then
-			local iLikeCake = true
-		else
+		if itemLink then
 			local qualityBordersChecked = gdbprivate.gdb.gdbdefaults.DejaClassicStatsItemQualityBorders.ItemQualityBordersChecked
 			local qualityBordersAlpha
 			if qualityBordersChecked then
@@ -97,15 +95,12 @@ local function DCS_Set_Item_Quality_Color_Outlines()
 			else
 				qualityBordersAlpha = 0
 			end
-			local item = Item:CreateFromEquipmentSlot(v:GetID())
-			local itemName, itemLink = GetItemInfo(itemLink)
 			local r, g, b, hex = getItemQualityColor(C_Item.GetItemQualityByID(itemLink))
 			v.ItemFrameOutlineTexture:SetVertexColor(r, g, b, qualityBordersAlpha);
 			v.ItemFramehighlightTexture:SetVertexColor(r, g, b, qualityBordersAlpha);
 		end
 	end
 end
-
 
 gdbprivate.gdbdefaults.gdbdefaults.QCOA_SetSliderValue = {
 	QCOA_SliderValue = 0.75,

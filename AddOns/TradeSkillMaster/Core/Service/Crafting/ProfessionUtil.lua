@@ -258,15 +258,23 @@ end
 function ProfessionUtil.IsEnchant(craftString)
 	local spellId = CraftString.GetSpellId(craftString)
 	local name = ProfessionUtil.GetCurrentProfessionInfo()
-	if name ~= GetSpellInfo(7411) or TSM.IsWowClassic() then
+	if name ~= GetSpellInfo(7411) then
 		return false
 	end
-	if not strfind(C_TradeSkillUI.GetRecipeItemLink(spellId), "enchant:") then
-		return false
+	if TSM.IsWowClassic() then
+		local itemLink = ProfessionUtil.GetRecipeInfo(craftString)
+		if not strfind(itemLink, "enchant:") then
+			return false, false
+		end
+		return true, not TSM.IsWowVanillaClassic()
+	else
+		if not strfind(C_TradeSkillUI.GetRecipeItemLink(spellId), "enchant:") then
+			return false, false
+		end
+		local recipeInfo = C_TradeSkillUI.GetRecipeInfo(spellId)
+		local altVerb = recipeInfo.alternateVerb
+		return altVerb and true or false, true
 	end
-	local recipeInfo = C_TradeSkillUI.GetRecipeInfo(spellId)
-	local altVerb = recipeInfo.alternateVerb
-	return altVerb and true or false
 end
 
 function ProfessionUtil.OpenProfession(profession, skillId)
@@ -334,7 +342,7 @@ function ProfessionUtil.Craft(craftString, recipeId, quantity, useVellum, callba
 	if quantity == 0 then
 		return 0
 	end
-	local isEnchant = ProfessionUtil.IsEnchant(craftString)
+	local isEnchant, vellumable = ProfessionUtil.IsEnchant(craftString)
 	if isEnchant then
 		quantity = 1
 	elseif spellId ~= private.preparedSpellId or private.preparedTime == GetTime() then
@@ -371,8 +379,14 @@ function ProfessionUtil.Craft(craftString, recipeId, quantity, useVellum, callba
 		end
 		TempTable.Release(optionalMats)
 	end
-	if useVellum and isEnchant then
-		UseItemByName(ItemInfo.GetName(ProfessionInfo.GetVellumItemString()))
+	if useVellum and isEnchant and vellumable then
+		local indirectSpellId = nil
+		if TSM.IsWowWrathClassic() then
+			local itemLink = TSM.Crafting.ProfessionUtil.GetRecipeInfo(craftString)
+			indirectSpellId = strmatch(itemLink, "enchant:(%d+)")
+			indirectSpellId = indirectSpellId and tonumber(indirectSpellId)
+		end
+		UseItemByName(ItemInfo.GetName(ProfessionInfo.GetVellumItemString(indirectSpellId)))
 	end
 	private.castingTimeout = nil
 	private.craftTimeout = nil

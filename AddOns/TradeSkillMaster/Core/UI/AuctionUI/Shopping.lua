@@ -1752,47 +1752,14 @@ function private.PostButtonOnClick(button)
 		:Select("bag", "slot")
 		:Equal("itemString", itemString)
 		:GetFirstResultAndRelease()
-	if postBag and postSlot then
-		local postTime = Table.GetDistinctKey(TSM.CONST.AUCTION_DURATIONS, frame:GetElement("duration.toggle"):GetValue())
-		if not TSM.IsWowClassic() then
-			bid = Math.Round(bid, COPPER_PER_SILVER)
-			buyout = Math.Round(buyout, COPPER_PER_SILVER)
-			private.itemLocation:Clear()
-			private.itemLocation:SetBagAndSlot(postBag, postSlot)
-			local commodityStatus = C_AuctionHouse.GetItemCommodityStatus(private.itemLocation)
-			local future = nil
-			if commodityStatus == Enum.ItemCommodityStatus.Item then
-				future = AuctionHouseWrapper.PostItem(private.itemLocation, postTime, stackSize, (buyout == 0 or bid < buyout) and bid or nil, buyout > 0 and buyout or nil)
-			elseif commodityStatus == Enum.ItemCommodityStatus.Commodity then
-				future = AuctionHouseWrapper.PostCommodity(private.itemLocation, postTime, stackSize, buyout)
-			else
-				error("Unknown commodity status: "..tostring(itemString))
-			end
-			if future then
-				-- TODO: wait for the future
-				future:Cancel()
-				AuctionTracking.QueryOwnedAuctions()
-			end
-		else
-			local num = tonumber(frame:GetElement("numStacks.input"):GetValue())
-			if strfind(button:GetContext(), "^p") then
-				stackSize = 1
-				num = 1
-			end
-			if private.perItem then
-				bid = bid * stackSize
-				buyout = buyout * stackSize
-			end
-			-- need to set the duration in the default UI to avoid Blizzard errors
-			AuctionFrameAuctions.duration = postTime
-			ClearCursor()
-			PickupContainerItem(postBag, postSlot)
-			ClickAuctionSellItemButton(AuctionsItemButton, "LeftButton")
-			PostAuction(bid, buyout, postTime, stackSize, num)
-			ClearCursor()
-		end
+	if not postBag or not postSlot then
+		frame:GetBaseElement():HideDialog()
+		return
 	end
+	local postTime = Table.GetDistinctKey(TSM.CONST.AUCTION_DURATIONS, frame:GetElement("duration.toggle"):GetValue())
+	local num = TSM.IsWowClassic() and tonumber(frame:GetElement("numStacks.input"):GetValue()) or 1
 	frame:GetBaseElement():HideDialog()
+	private.fsm:ProcessEvent("EV_DO_POST", itemString, postBag, postSlot, postTime, stackSize, bid, buyout, num)
 end
 
 function private.PostDialogCloseBtnOnClick(button)
@@ -1846,7 +1813,7 @@ function private.FSMCreate()
 		searchContext = nil,
 		postContextTemp = {},
 		pausePending = nil,
-		cancelFuture = nil,
+		pendingFuture = nil,
 	}
 
 	if TSM.IsWowClassic() then
@@ -1871,16 +1838,15 @@ function private.FSMCreate()
 		if not context.scanFrame then
 			return
 		end
-		local isCanceling = context.cancelFuture and true or false
 		local bottom = context.scanFrame:GetElement("bottom")
-		bottom:GetElement("postBtn"):SetDisabled(isCanceling or context.postDisabled)
-		bottom:GetElement("bidBtn"):SetDisabled(isCanceling or context.bidDisabled)
-		bottom:GetElement("buyoutBtn"):SetDisabled(isCanceling or context.buyoutDisabled)
+		bottom:GetElement("postBtn"):SetDisabled(context.pendingFuture or context.postDisabled)
+		bottom:GetElement("bidBtn"):SetDisabled(context.pendingFuture or context.bidDisabled)
+		bottom:GetElement("buyoutBtn"):SetDisabled(context.pendingFuture or context.buyoutDisabled)
 		if context.cancelShown then
 			assert(context.buyoutDisabled)
 			bottom:GetElement("buyoutBtn"):Hide()
 			bottom:GetElement("cancelBtn")
-				:SetDisabled(isCanceling)
+				:SetDisabled(context.pendingFuture)
 				:Show()
 		else
 			bottom:GetElement("buyoutBtn"):Show()
@@ -1893,7 +1859,7 @@ function private.FSMCreate()
 			:SetDisabled((not isPaused and progress == 1) or context.pausePending ~= nil)
 			:SetHighlightLocked(context.pausePending ~= nil)
 		bottom:GetElement("progressBar"):SetProgress(context.progress)
-			:SetText(isCanceling and L["Cancelling..."] or context.progressText or "")
+			:SetText(context.pendingFuture and L["Confirming..."] or context.progressText or "")
 			:SetProgressIconHidden(context.progress == 1 or (context.findResult and context.numBought + context.numBid == context.numConfirmed) or context.progressPaused)
 		local auctionList = context.scanFrame:GetElement("auctions")
 			:SetContext(context.auctionScan)
@@ -1915,9 +1881,9 @@ function private.FSMCreate()
 					context.searchContext:OnStateChanged("DONE")
 					context.searchContext = nil
 				end
-				if context.cancelFuture then
-					context.cancelFuture:Cancel()
-					context.cancelFuture = nil
+				if context.pendingFuture then
+					context.pendingFuture:Cancel()
+					context.pendingFuture = nil
 				end
 				context.progress = 0
 				context.progressText = L["Starting Scan..."]
@@ -2119,8 +2085,10 @@ function private.FSMCreate()
 			end)
 			:AddTransition("ST_UPDATING_SCAN_PROGRESS")
 			:AddTransition("ST_FINDING_AUCTION")
+			:AddTransition("ST_POSTING")
 			:AddTransition("ST_INIT")
 			:AddEventTransition("EV_SCAN_PROGRESS_UPDATE", "ST_UPDATING_SCAN_PROGRESS")
+			:AddEventTransition("EV_DO_POST", "ST_POSTING")
 			:AddEvent("EV_AUCTION_SELECTION_CHANGED", function(context)
 				assert(context.scanFrame)
 				local selection = context.scanFrame:GetElement("auctions"):GetSelection()
@@ -2209,9 +2177,11 @@ function private.FSMCreate()
 			:AddTransition("ST_UPDATING_SCAN_PROGRESS")
 			:AddTransition("ST_AUCTION_FOUND")
 			:AddTransition("ST_AUCTION_NOT_FOUND")
+			:AddTransition("ST_POSTING")
 			:AddTransition("ST_INIT")
 			:AddEventTransition("EV_AUCTION_FOUND", "ST_AUCTION_FOUND")
 			:AddEventTransition("EV_AUCTION_NOT_FOUND", "ST_AUCTION_NOT_FOUND")
+			:AddEventTransition("EV_DO_POST", "ST_POSTING")
 			:AddEvent("EV_AUCTION_SELECTION_CHANGED", function(context)
 				assert(context.scanFrame)
 				local selection = context.scanFrame:GetElement("auctions"):GetSelection()
@@ -2394,6 +2364,7 @@ function private.FSMCreate()
 			:AddTransition("ST_BUY_CONFIRMATION")
 			:AddTransition("ST_BID_CONFIRMATION")
 			:AddTransition("ST_CANCELING")
+			:AddTransition("ST_POSTING")
 			:AddTransition("ST_PLACING_BUY")
 			:AddTransition("ST_PLACING_BID")
 			:AddTransition("ST_CONFIRMING_BID_BUY")
@@ -2403,6 +2374,7 @@ function private.FSMCreate()
 			:AddEventTransition("EV_BUYOUT_CLICKED", "ST_BUY_CONFIRMATION")
 			:AddEventTransition("EV_BID_CLICKED", "ST_BID_CONFIRMATION")
 			:AddEventTransition("EV_CANCEL_CLICKED", "ST_CANCELING")
+			:AddEventTransition("EV_DO_POST", "ST_POSTING")
 			:AddEvent("EV_CONFIRMED", function(context, isBuy, quantity)
 				return isBuy and "ST_PLACING_BUY" or "ST_PLACING_BID", quantity
 			end)
@@ -2583,8 +2555,9 @@ function private.FSMCreate()
 				Log.Info("Canceling (auctionId=%d)", auctionId)
 				local future = AuctionHouseWrapper.CancelAuction(auctionId)
 				if future then
-					future:SetScript("OnDone", private.FSMCancelFutureOnDone)
-					context.cancelFuture = future
+					future:SetScript("OnDone", private.FSMFutureOnDone)
+					assert(not context.pendingFuture)
+					context.pendingFuture = future
 					UpdateScanFrame(context)
 				else
 					Log.PrintUser(L["Failed to cancel auction due to the auction house being busy. Ensure no other addons are scanning the AH and try again."])
@@ -2593,10 +2566,10 @@ function private.FSMCreate()
 			end)
 			:AddTransition("ST_BUYING")
 			:AddTransition("ST_INIT")
-			:AddEvent("EV_CANCEL_DONE", function(context)
-				assert(context.cancelFuture)
-				local result = context.cancelFuture:GetValue()
-				context.cancelFuture = nil
+			:AddEvent("EV_FUTURE_DONE", function(context)
+				assert(context.pendingFuture)
+				local result = context.pendingFuture:GetValue()
+				context.pendingFuture = nil
 				if result then
 					context.findAuction:GetResultRow():RemoveSubRow(context.findAuction)
 					context.scanFrame:GetElement("auctions"):UpdateData()
@@ -2604,6 +2577,57 @@ function private.FSMCreate()
 					Log.PrintUser(L["Failed to cancel auction due to the auction house being busy. Ensure no other addons are scanning the AH and try again."])
 				end
 				return "ST_BUYING"
+			end)
+		)
+		:AddState(FSM.NewState("ST_POSTING")
+			:SetOnEnter(function(context, itemString, postBag, postSlot, postTime, stackSize, bid, buyout, num)
+				local future = nil
+				if TSM.IsWowClassic() then
+					if ItemString.IsPet(itemString) then
+						stackSize = 1
+						num = 1
+					end
+					if private.perItem then
+						bid = bid * stackSize
+						buyout = buyout * stackSize
+					end
+					future = AuctionHouseWrapper.PostAuction(postBag, postSlot, bid, buyout, postTime, stackSize, num)
+				else
+					bid = Math.Round(bid, COPPER_PER_SILVER)
+					buyout = Math.Round(buyout, COPPER_PER_SILVER)
+					private.itemLocation:Clear()
+					private.itemLocation:SetBagAndSlot(postBag, postSlot)
+					local commodityStatus = C_AuctionHouse.GetItemCommodityStatus(private.itemLocation)
+					if commodityStatus == Enum.ItemCommodityStatus.Item then
+						future = AuctionHouseWrapper.PostItem(private.itemLocation, postTime, stackSize, (buyout == 0 or bid < buyout) and bid or nil, buyout > 0 and buyout or nil)
+					elseif commodityStatus == Enum.ItemCommodityStatus.Commodity then
+						future = AuctionHouseWrapper.PostCommodity(private.itemLocation, postTime, stackSize, buyout)
+					else
+						error("Unknown commodity status: "..tostring(itemString))
+					end
+				end
+				if future then
+					future:SetScript("OnDone", private.FSMFutureOnDone)
+					assert(not context.pendingFuture)
+					context.pendingFuture = future
+					UpdateScanFrame(context)
+				else
+					Log.PrintUser(L["Failed to post auction due to the auction house being busy. Ensure no other addons are scanning the AH and try again."])
+					return "ST_RESULTS"
+				end
+			end)
+			:AddTransition("ST_RESULTS")
+			:AddTransition("ST_INIT")
+			:AddEvent("EV_FUTURE_DONE", function(context)
+				assert(context.pendingFuture)
+				local result = context.pendingFuture:GetValue()
+				context.pendingFuture = nil
+				if result then
+					AuctionTracking.QueryOwnedAuctions()
+				else
+					Log.PrintUser(L["Failed to post auction due to the auction house being busy. Ensure no other addons are scanning the AH and try again."])
+				end
+				return "ST_RESULTS"
 			end)
 		)
 		:AddDefaultEvent("EV_START_SCAN", function(context, searchContext)
@@ -2676,6 +2700,6 @@ function private.PopulatePostContextFromRow(postContext, row)
 	postContext.quantity = row:GetQuantities()
 end
 
-function private.FSMCancelFutureOnDone()
-	private.fsm:ProcessEvent("EV_CANCEL_DONE")
+function private.FSMFutureOnDone()
+	private.fsm:ProcessEvent("EV_FUTURE_DONE")
 end

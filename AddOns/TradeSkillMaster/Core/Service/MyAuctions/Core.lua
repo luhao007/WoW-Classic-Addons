@@ -76,16 +76,12 @@ function MyAuctions.CancelAuction(auctionId)
 	assert(hash)
 
 	Log.Info("Canceling (auctionId=%d, hash=%d)", auctionId, hash)
-	if TSM.IsWowClassic() then
-		CancelAuction(auctionId)
-	else
-		private.pendingFuture = AuctionHouseWrapper.CancelAuction(auctionId)
-		if not private.pendingFuture then
-			Log.PrintUser(L["Failed to cancel auction due to the auction house being busy. Ensure no other addons are scanning the AH and try again."])
-			return
-		end
-		private.pendingFuture:SetScript("OnDone", private.PendingFutureOnDone)
+	private.pendingFuture = AuctionHouseWrapper.CancelAuction(auctionId)
+	if not private.pendingFuture then
+		Log.PrintUser(L["Failed to cancel auction due to the auction house being busy. Ensure no other addons are scanning the AH and try again."])
+		return
 	end
+	private.pendingFuture:SetScript("OnDone", private.PendingFutureOnDone)
 
 	if private.expectedCounts[hash] and private.expectedCounts[hash] > 0 then
 		private.expectedCounts[hash] = private.expectedCounts[hash] - 1

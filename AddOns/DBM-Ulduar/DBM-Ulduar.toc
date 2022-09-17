@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Nitram
-## Version: r308
+## Version: bf28ce2
 ## RequiredDeps: DBM-Core
 ## LoadOnDemand: 1
 ## SavedVariables: DBMUlduar_AllSavedVars

@@ -41,7 +41,7 @@ elseif TSM.IsWowWrathClassic() then
 		["i:39339"] = { -- Emerald Pigment (Jadefire Ink)
 			["i:3358"] = {requiredSkill = 125, matRate = 1.0000, minAmount = 2, maxAmount = 3, amountOfMats = 0.5000}, -- Goldthorn
 			["i:3818"] = {requiredSkill = 125, matRate = 1.0000, minAmount = 2, maxAmount = 3, amountOfMats = 0.5000}, -- Fadeleaf
-			["i:3819"] = {requiredSkill = 125, matRate = 1.0000, minAmount = 2, maxAmount = 4, amountOfMats = 0.5720}, -- Dragon's Teeth
+			["i:3819"] = {requiredSkill = 125, matRate = 1.0000, minAmount = 2, maxAmount = 4, amountOfMats = 0.5720}, -- Wintersbite (Dragon's Teeth)
 			["i:3821"] = {requiredSkill = 125, matRate = 1.0000, minAmount = 2, maxAmount = 4, amountOfMats = 0.5720}, -- Khadgar's Whisker
 		},
 		["i:39340"] = { -- Violet Pigment (Celestial Ink)
@@ -58,7 +58,7 @@ elseif TSM.IsWowWrathClassic() then
 			["i:13464"] = {requiredSkill = 225, matRate = 1.0000, minAmount = 2, maxAmount = 3, amountOfMats = 0.5000}, -- Golden Sansam
 			["i:13467"] = {requiredSkill = 225, matRate = 1.0000, minAmount = 2, maxAmount = 4, amountOfMats = 0.6000}, -- Icecap
 			["i:13465"] = {requiredSkill = 225, matRate = 1.0000, minAmount = 2, maxAmount = 4, amountOfMats = 0.6000}, -- Mountain Silversage
-			["i:13466"] = {requiredSkill = 225, matRate = 1.0000, minAmount = 2, maxAmount = 4, amountOfMats = 0.6000}, -- Sorrowmoss
+			["i:13466"] = {requiredSkill = 225, matRate = 1.0000, minAmount = 2, maxAmount = 4, amountOfMats = 0.6000}, -- Plaguebloom (Sorrowmoss)
 		},
 		["i:39342"] = { -- Nether Pigment (Ethereal Ink)
 			["i:22789"] = {requiredSkill = 275, matRate = 1.0000, minAmount = 2, maxAmount = 3, amountOfMats = 0.5000}, -- Terocone
@@ -97,7 +97,7 @@ elseif TSM.IsWowWrathClassic() then
 		["i:43105"] = { -- Indigo Pigment (Royal Ink)
 			["i:3358"] = {requiredSkill = 125, matRate = 0.2500, minAmount = 1, maxAmount = 3, amountOfMats = 0.0545}, -- Goldthorn
 			["i:3818"] = {requiredSkill = 125, matRate = 0.2500, minAmount = 1, maxAmount = 3, amountOfMats = 0.0545}, -- Fadeleaf
-			["i:3819"] = {requiredSkill = 125, matRate = 0.5000, minAmount = 1, maxAmount = 3, amountOfMats = 0.1075}, -- Dragon's Teeth
+			["i:3819"] = {requiredSkill = 125, matRate = 0.5000, minAmount = 1, maxAmount = 3, amountOfMats = 0.1075}, -- Wintersbite (Dragon's Teeth)
 			["i:3821"] = {requiredSkill = 125, matRate = 0.5000, minAmount = 1, maxAmount = 3, amountOfMats = 0.1075}, -- Khadgar's Whisker
 		},
 		["i:43106"] = { -- Ruby Pigment (Fiery Ink)
@@ -114,7 +114,7 @@ elseif TSM.IsWowWrathClassic() then
 			["i:13464"] = {requiredSkill = 225, matRate = 0.2500, minAmount = 1, maxAmount = 3, amountOfMats = 0.0545}, -- Golden Sansam
 			["i:13467"] = {requiredSkill = 225, matRate = 0.5000, minAmount = 1, maxAmount = 3, amountOfMats = 0.1075}, -- Icecap
 			["i:13465"] = {requiredSkill = 225, matRate = 0.5000, minAmount = 1, maxAmount = 3, amountOfMats = 0.1075}, -- Mountain Silversage
-			["i:13466"] = {requiredSkill = 225, matRate = 0.5000, minAmount = 1, maxAmount = 3, amountOfMats = 0.1075}, -- Sorrowmoss
+			["i:13466"] = {requiredSkill = 225, matRate = 0.5000, minAmount = 1, maxAmount = 3, amountOfMats = 0.1075}, -- Plaguebloom (Sorrowmoss)
 		},
 		["i:43108"] = { -- Ebon Pigment (Darkflame Ink)
 			["i:22789"] = {requiredSkill = 275, matRate = 0.2500, minAmount = 1, maxAmount = 3, amountOfMats = 0.0545}, -- Terocone

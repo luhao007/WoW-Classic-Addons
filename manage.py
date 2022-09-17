@@ -15,7 +15,7 @@ CLASSIC_ERA_VER = '11401'
 CLASSIC_VER = '30400'
 RETAIL_VER = '90207'
 
-IGNORED = ['Grail', 'Wholly', 'TrinketMenu']
+IGNORED = ['TrinketMenu']
 
 
 def available_on(platforms):

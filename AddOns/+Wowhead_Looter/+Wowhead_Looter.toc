@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Wowhead
-## Version: 20504
+## Version: 30400
 ## LoadOnDemand: 0
 ## SavedVariables: wlTime, wlVersion, wlUploaded, wlStats, wlExportData, wlRealmList, wlAuction, wlEvent, wlItemSuffix, wlObject, wlProfile, wlProfileData, wlUnit, wlItemDurability, wlItemBonuses, wlTradeSkillDifficulty
 ## SavedVariablesPerCharacter: wlScans, wlSetting, wlPetBlacklist, wlUIReloaded

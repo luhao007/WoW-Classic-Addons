@@ -10,7 +10,6 @@ local DT = __private.DT;
 
 -->		upvalue
 	local strsub, strsplit, strmatch, gsub = string.sub, string.split, string.match, string.gsub;
-	local UnitInBattleground = UnitInBattleground;
 	local Ambiguate = Ambiguate;
 	local CreateFrame = CreateFrame;
 	local _G = _G;
@@ -32,7 +31,7 @@ MT.BuildEnv('COMM');
 -->		COMM
 	--
 	--	name, realm, force_update, popup, update_talent(nil means true), update_equipment(nil means true)
-	function MT.SendQueryRequest(name, realm, force_update, popup, update_talent, update_equipment)
+	function MT.SendQueryRequest(name, realm, force_update, popup, update_talent, update_glyph, update_equipment)
 		if name ~= nil then
 			local Tick = MT.GetUnifiedTime();
 			local shortname, r2 = strsplit("-", name);
@@ -47,6 +46,16 @@ MT.BuildEnv('COMM');
 			end
 			VT.QuerySent[name] = popup and Tick or VT.QuerySent[name] or nil;
 			VT.AutoShowEquipmentFrameOnComm[name] = popup and update_equipment ~= false and Tick or VT.AutoShowEquipmentFrameOnComm[name];
+			if name == CT.SELFNAME then
+				VT.PrevQueryRequestSentTime[name] = Tick;
+				local code = VT.VAR[CT.SELFGUID];
+				if code ~= nil then
+					return VT.__emulib.CHAT_MSG_ADDON(VT.__emulib.CT.COMM_PREFIX, code, "WHISPER", name);
+				end
+			end
+			-- if VT.__is_inbattleground then
+			-- 	local v = VT.TBattlegroundComm[name];
+			-- end
 			local ready = VT.PrevQueryRequestSentTime[name] == nil or (Tick - VT.PrevQueryRequestSentTime[name] > 0.1);
 			local cache = VT.TQueryCache[name];
 			local update_tal = update_talent ~= false and
@@ -62,7 +71,7 @@ MT.BuildEnv('COMM');
 										)
 									)
 								);
-			local update_gly = update_talent ~= false and
+			local update_gly = update_glyph ~= false and
 								ready and
 								(
 									cache == nil or
@@ -146,7 +155,7 @@ MT.BuildEnv('COMM');
 		return false, msg, ...;
 	end
 	MT._CommDistributor = {
-		OnTalent = function(name, code, version, Decoder, overheard)
+		OnTalent = function(prefix, name, code, version, Decoder, overheard)
 			local class, level, numGroup, activeGroup, data1, data2 = Decoder(code);
 			if class ~= nil then
 				if version == "V1" and DT.BUILD == "WRATH" then
@@ -175,7 +184,7 @@ MT.BuildEnv('COMM');
 				end
 			end
 		end,
-		OnGlyph = function(name, code, version, Decoder, overheard)
+		OnGlyph = function(prefix, name, code, version, Decoder, overheard)
 			if DT.BUILD ~= "WRATH" then
 				return;
 			end
@@ -193,38 +202,12 @@ MT.BuildEnv('COMM');
 			end
 			cache.time_gly = Tick;
 			cache.glyph = { data1, data2, };
-			--[=[
-			if data1 ~= nil then
-				for index = 1, 6 do
-					local val = data1[index];
-					if val ~= nil then
-						MT.Error("GlyphSet 1: ", val[1], val[2], val[3], GetSpellLink(val[3]), val[4]);
-					else
-						MT.Error("GlyphSet 1: Empty");
-					end
-				end
-			else
-				MT.Error("No GlyphSet 1");
-			end
-			if data2 ~= nil then
-				for index = 1, 6 do
-					local val = data2[index];
-					if val ~= nil then
-						MT.Error("GlyphSet 1: ", val[1], val[2], val[3], val[4], GetSpellInfo(val[3]));
-					else
-						MT.Error("GlyphSet 1: Empty");
-					end
-				end
-			else
-				MT.Error("No GlyphSet 2");
-			end
-			--]=]
 			if not overheard then
 				MT._TriggerCallback("CALLBACK_DATA_RECV", name);
 				MT._TriggerCallback("CALLBACK_GLYPH_DATA_RECV", name, true);
 			end
 		end,
-		OnEquipment = function(name, code, version, Decoder, overheard)
+		OnEquipment = function(prefix, name, code, version, Decoder, overheard)
 			-- #0#item:-1#1#item:123:::::#2#item:444:::::#3#item:-1
 			-- #(%d)#(item:[%-0-9:]+)#(%d)#(item:[%-0-9:]+)#(%d)#(item:[%-0-9:]+)#(%d)#(item:[%-0-9:]+)
 			local cache = VT.TQueryCache[name];
@@ -241,7 +224,7 @@ MT.BuildEnv('COMM');
 				end
 			end
 		end,
-		OnAddOn = function(name, code, version, Decoder, overheard)
+		OnAddOn = function(prefix, name, code, version, Decoder, overheard)
 			local Tick = MT.GetUnifiedTime();
 			local cache = VT.TQueryCache[name];
 			if cache == nil then
@@ -258,7 +241,7 @@ MT.BuildEnv('COMM');
 				MT._TriggerCallback("CALLBACK_DATA_RECV", name);
 			end
 		end,
-		OnPush = function(name, body, version, channel, zoneChannelID, isinform)
+		OnPush = function(prefix, name, body, version, channel, isinform)
 			local code, GUID, version = strsplit("#", body);
 			if code ~= nil and GUID ~= nil and version == nil then
 				local class, level, numGroup, activeGroup, data1, data2 = MT.DecodeTalent(code);
@@ -266,9 +249,9 @@ MT.BuildEnv('COMM');
 					local title = MT.GenerateTitleFromRawData(data1, class, true);
 					if title ~= nil then
 						if isinform then
-							MT.SimulateChatMessage("WHISPER_INFORM", name, MT.GenerateLink(title, class, code), zoneChannelID, GUID);
+							MT.SimulateChatMessage("WHISPER_INFORM", name, MT.GenerateLink(title, class, code), GUID);
 						else
-							MT.SimulateChatMessage(channel, name, MT.GenerateLink(title, class, code), zoneChannelID, GUID);
+							MT.SimulateChatMessage(channel, name, MT.GenerateLink(title, class, code), GUID);
 							if _TempSavedCommTalents[code] == nil then
 								local text = MT.GenerateTitleFromRawData(data1, class);
 								_TempSavedCommTalents[code] = text;
@@ -279,7 +262,7 @@ MT.BuildEnv('COMM');
 								};
 							end
 							if channel == "WHISPER" then
-								VT.__emulib.PushTalentsInformV1(code .. "#" .. CT.SELFGUID, "WHISPER", name);
+								VT.__emulib.PushTalentsInformV1(prefix, code .. "#" .. CT.SELFGUID, "WHISPER", name);
 							end
 						end
 					end
@@ -301,10 +284,10 @@ MT.BuildEnv('COMM');
 	for i = 1, 10 do
 		_TChatFrames[i] = _G["ChatFrame" .. i];
 	end
-	function MT.SimulateChatMessage(channel, sender, msg, zoneChannelID, GUID)
+	function MT.SimulateChatMessage(channel, sender, msg, GUID)
 		for i = 1, 10 do
 			if _TChatFrames[i] ~= nil then
-				ChatFrame_MessageEventHandler(_TChatFrames[i], "CHAT_MSG_" .. channel, msg, sender, "", "", sender, "", zoneChannelID, 0, "", nil, 0, GUID, nil, false, false, false);
+				ChatFrame_MessageEventHandler(_TChatFrames[i], "CHAT_MSG_" .. channel, msg, sender, "", "", sender, "", 0, 0, "", nil, 0, GUID, nil, false, false, false);
 			end
 		end
 	end

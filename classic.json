@@ -409,10 +409,10 @@
     "name": "AtlasLootClassic",
     "description": "Shows the possible loot from the bosses",
     "url": "https://www.curseforge.com/wow/addons/atlaslootclassic",
-    "download_url": "https://edge.forgecdn.net/files/3974/721/AtlasLootClassic-v3.0.0.zip",
-    "date_published": "2022-09-09T09:40:12.063000+00:00",
-    "version": "v3.0.0",
-    "changelog_url": "https://api.curseforge.com/v1/mods/326516/files/3974721/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3985/37/AtlasLootClassic-v3.0.2.zip",
+    "date_published": "2022-09-12T12:51:46.237000+00:00",
+    "version": "v3.0.2",
+    "changelog_url": "https://api.curseforge.com/v1/mods/326516/files/3985037/changelog",
     "options": {
       "strategy": "default"
     },
@@ -444,6 +444,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v3.0.2",
+        "install_time": "2022-09-12T13:26:08+00:00"
+      },
       {
         "version": "v3.0.0",
         "install_time": "2022-09-09T12:13:41+00:00"
@@ -479,10 +483,6 @@
       {
         "version": "v1.5.9-classic",
         "install_time": "2021-03-24T11:22:41+00:00"
-      },
-      {
-        "version": "v1.5.8-classic",
-        "install_time": "2020-12-06T05:50:39+00:00"
       }
     ]
   },
@@ -791,10 +791,10 @@
     "name": "Deadly Boss Mods (DBM) - PvP Mods",
     "description": "Deadly Boss Mods for Battlegrounds and Arenas",
     "url": "https://www.curseforge.com/wow/addons/dbm-pvp",
-    "download_url": "https://edge.forgecdn.net/files/3963/877/DBM-PvP-r136.zip",
-    "date_published": "2022-09-02T15:44:16.850000+00:00",
-    "version": "r136",
-    "changelog_url": "https://api.curseforge.com/v1/mods/61882/files/3963877/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3983/982/DBM-PvP-r137.zip",
+    "date_published": "2022-09-11T17:23:45.360000+00:00",
+    "version": "r137",
+    "changelog_url": "https://api.curseforge.com/v1/mods/61882/files/3983982/changelog",
     "options": {
       "strategy": "default"
     },
@@ -809,6 +809,10 @@
       }
     ],
     "logged_versions": [
+      {
+        "version": "r137",
+        "install_time": "2022-09-12T13:26:08+00:00"
+      },
       {
         "version": "r136",
         "install_time": "2022-09-03T03:37:21+00:00"
@@ -844,10 +848,6 @@
       {
         "version": "r124-bcc",
         "install_time": "2021-05-21T15:52:05+00:00"
-      },
-      {
-        "version": "r123-bcc",
-        "install_time": "2021-05-21T08:24:23+00:00"
       }
     ]
   },
@@ -858,10 +858,10 @@
     "name": "Decursive",
     "description": "Afflictions display and cleaning for solo, group and raid with advanced filtering and priority system.",
     "url": "https://www.curseforge.com/wow/addons/decursive",
-    "download_url": "https://edge.forgecdn.net/files/3968/81/Decursive-2.7.8.7-wrath.zip",
-    "date_published": "2022-09-04T13:11:57.643000+00:00",
-    "version": "2.7.8.7-wrath",
-    "changelog_url": "https://api.curseforge.com/v1/mods/2154/files/3968081/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3984/217/Decursive-2.7.8.8-wrath.zip",
+    "date_published": "2022-09-11T19:40:05.393000+00:00",
+    "version": "2.7.8.8-wrath",
+    "changelog_url": "https://api.curseforge.com/v1/mods/2154/files/3984217/changelog",
     "options": {
       "strategy": "default"
     },
@@ -872,6 +872,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "2.7.8.8-wrath",
+        "install_time": "2022-09-12T13:26:08+00:00"
+      },
       {
         "version": "2.7.8.7-wrath",
         "install_time": "2022-09-05T11:09:42+00:00"
@@ -1328,10 +1332,10 @@
     "name": "HandyNotes: TravelGuide (Classic versions)",
     "description": "Shows the boat and zepplin locations on the World Map and the MiniMap.",
     "url": "https://www.curseforge.com/wow/addons/handynotes-travelguide-classic",
-    "download_url": "https://edge.forgecdn.net/files/3960/767/HandyNotes_TravelGuide-v1.zip",
-    "date_published": "2022-08-31T17:02:02.147000+00:00",
-    "version": "WotLKC - v1",
-    "changelog_url": "https://api.curseforge.com/v1/mods/339397/files/3960767/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3987/343/HandyNotes_TravelGuide-v1.1.zip",
+    "date_published": "2022-09-13T15:03:23.887000+00:00",
+    "version": "WotLKC - v1.1",
+    "changelog_url": "https://api.curseforge.com/v1/mods/339397/files/3987343/changelog",
     "options": {
       "strategy": "default"
     },
@@ -1346,6 +1350,10 @@
       }
     ],
     "logged_versions": [
+      {
+        "version": "WotLKC - v1.1",
+        "install_time": "2022-09-14T04:48:50+00:00"
+      },
       {
         "version": "WotLKC - v1",
         "install_time": "2022-09-01T13:42:46+00:00"
@@ -1689,10 +1697,10 @@
     "name": "Nova World Buffs",
     "description": "Classic WoW world buff timers and pre buff drop warnings so you never miss a buff.",
     "url": "https://www.curseforge.com/wow/addons/nova-world-buffs",
-    "download_url": "https://edge.forgecdn.net/files/3968/340/NovaWorldBuffs-v2.31-Wrath.zip",
-    "date_published": "2022-09-04T15:31:09.743000+00:00",
-    "version": "NovaWorldBuffs-v2.31-Wrath.zip",
-    "changelog_url": "https://api.curseforge.com/v1/mods/366310/files/3968340/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3984/915/NovaWorldBuffs-v2.32-Wrath.zip",
+    "date_published": "2022-09-12T09:48:07.933000+00:00",
+    "version": "NovaWorldBuffs-v2.32-Wrath.zip",
+    "changelog_url": "https://api.curseforge.com/v1/mods/366310/files/3984915/changelog",
     "options": {
       "strategy": "default"
     },
@@ -1703,6 +1711,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "NovaWorldBuffs-v2.32-Wrath.zip",
+        "install_time": "2022-09-12T13:26:09+00:00"
+      },
       {
         "version": "NovaWorldBuffs-v2.31-Wrath.zip",
         "install_time": "2022-09-05T11:09:42+00:00"
@@ -1738,10 +1750,6 @@
       {
         "version": "NovaWorldBuffs-v2.07-TBC.zip",
         "install_time": "2021-05-30T05:16:04+00:00"
-      },
-      {
-        "version": "NovaWorldBuffs-v2.06-TBC.zip",
-        "install_time": "2021-05-26T23:22:30+00:00"
       }
     ]
   },
@@ -2022,10 +2030,10 @@
     "name": "Questie",
     "description": "The Classic Quest Helper",
     "url": "https://www.curseforge.com/wow/addons/questie",
-    "download_url": "https://edge.forgecdn.net/files/3975/421/Questie-v7.1.0.zip",
-    "date_published": "2022-09-09T20:37:15.773000+00:00",
-    "version": "v7.1.0",
-    "changelog_url": "https://api.curseforge.com/v1/mods/334372/files/3975421/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3981/270/Questie-v7.1.1.zip",
+    "date_published": "2022-09-10T15:18:12.643000+00:00",
+    "version": "v7.1.1",
+    "changelog_url": "https://api.curseforge.com/v1/mods/334372/files/3981270/changelog",
     "options": {
       "strategy": "default"
     },
@@ -2036,6 +2044,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v7.1.1",
+        "install_time": "2022-09-11T04:34:58+00:00"
+      },
       {
         "version": "v7.1.0",
         "install_time": "2022-09-10T08:03:07+00:00"
@@ -2071,10 +2083,6 @@
       {
         "version": "v6.3.14 - Universal (TBC)",
         "install_time": "2021-06-02T04:21:38+00:00"
-      },
-      {
-        "version": "v6.3.13 - Universal (TBC)",
-        "install_time": "2021-05-30T05:16:04+00:00"
       }
     ]
   },
@@ -2852,8 +2860,8 @@
     "description": "A WeakAuras Companion clone.",
     "url": "https://github.com/layday/instawow",
     "download_url": "file:///C:/Users/luhao_000/AppData/Roaming/instawow/profiles/classic/plugins/instawow.wa_updater/WeakAurasCompanion.zip",
-    "date_published": "2022-09-07T05:50:11.897631+00:00",
-    "version": "77b42a2",
+    "date_published": "2022-09-14T04:48:49.643407+00:00",
+    "version": "4a3aa2b",
     "changelog_url": "file:///C:/Users/luhao_000/AppData/Roaming/instawow/profiles/classic/plugins/instawow.wa_updater/CHANGELOG.md",
     "options": {
       "strategy": "default"
@@ -2865,6 +2873,18 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "4a3aa2b",
+        "install_time": "2022-09-14T04:48:50+00:00"
+      },
+      {
+        "version": "ad48630",
+        "install_time": "2022-09-13T12:23:46+00:00"
+      },
+      {
+        "version": "0858939",
+        "install_time": "2022-09-13T07:39:44+00:00"
+      },
       {
         "version": "77b42a2",
         "install_time": "2022-09-07T05:50:11+00:00"

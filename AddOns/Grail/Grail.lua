@@ -171,7 +171,7 @@
 --			Updates some Portuguese localizations.
 --		028	*** Will not work with Wholly 15 or older ***
 --			Corrects the mapAreaMaximumReputationChange constant.
---			Revamps the location providing routines so only the new QuestLocations() and NPCLocations() are needed, REMOVING the older ones. 
+--			Revamps the location providing routines so only the new QuestLocations() and NPCLocations() are needed, REMOVING the older ones.
 --			Updates some quest/NPC information for Un'Goro Crater, Silithus, Burning Steppes, Kezan, The Lost Isles, Northern Barrens, Ashenvale, some dungeons and Winterspring.
 --			Fixes detection of European servers to remove non-existent quests.
 --			Updates some Portuguese localizations.
@@ -1109,11 +1109,11 @@ experimental = false,	-- currently this implementation does not reduce memory si
 							self.races['D'] = { 'Draenei',  'Draenei',   'Draenei',   0x00080000 }
 							self.bitMaskRaceAll = 0x03ef8000
 						end
-						
+
 						--	To make things a little prettier, because we are using phase 0000 to represent the location of the Darkmoon Faire we
 						--	define the map area for 0000 to be that.
 						self.mapAreaMapping[0] = self.holidayMapping['F']
-						
+
 						--	For the Classic setup for Darkmoon Faire we have a special holiday which will use the same name
 						self.holidayMapping['G'] = self.holidayMapping['F']
 
@@ -1180,7 +1180,7 @@ experimental = false,	-- currently this implementation does not reduce memory si
 							[1648] = true, -- The Maw (intro version) 9.0
 							[1666] = true, -- Necrotic Wake 9.0 , (dungeon)
 							[1670] = true, -- Oribos 9.0 , TODO: so far no chests and rares
-							[1671] = true, -- Oribos 9.0, Part 2 , TODO: so far no chests and rares 
+							[1671] = true, -- Oribos 9.0, Part 2 , TODO: so far no chests and rares
 							[1681] = true, -- IceCrown Citadel 9.0 intro
 							[1688] = true, -- Hof der Ernter 9.0 , during quest 58086
 							[1693] = true, -- Spire Of Ascension 9.0, (dungeon), has quests, hidden and visible
@@ -1874,7 +1874,7 @@ if self.GDE.debug then print("GARRISON_BUILDING_UPDATE ", buildingId) end
 			['GARRISON_TALENT_COMPLETE'] = function(self, frame, ...)
 				self:_InvalidateStatusForQuestsWithTalentPrerequisites()
 			end,
-			
+
 			['GARRISON_TALENT_UPDATE'] = function(self, frame, ...)
 				self:_InvalidateStatusForQuestsWithTalentPrerequisites()
 			end,
@@ -2041,15 +2041,15 @@ end,
 			['QUEST_ACCEPTED'] = function(self, frame, questIndexOrIdBasedOnRelease, aQuestId)
 				-- If there are two parameters, the first will be the questIndex, otherwise we have no questIndex
 				local questIndex = aQuestId and questIndexOrIdBasedOnRelease or nil
-				
+
 				-- If there are two parameters, the second is the quest Id, otherwise the first is.
 				local theQuestId = aQuestId or questIndexOrIdBasedOnRelease
-				
+
 				-- In Shadowlands we need to look up the questIndex
 				if questIndex == nil and C_QuestLog.GetLogIndexForQuestID then
 					questIndex = C_QuestLog.GetLogIndexForQuestID(theQuestId)
 				end
-				
+
 				-- For the "FullAccept" notification we want to provide a payload that includes all the useful
 				-- information gathered when accepting a quest.
 				local payload = {}
@@ -2070,10 +2070,10 @@ end,
 				payload.questId = theQuestId
 				payload.questIndex = questIndex
 				payload.coordinates = self:Coordinates()
-				
+
 				-- Get rid of the information gotten from QUEST_DETAIL so we do not use it erroneously again.
 				self.questDetailInformation = nil
-				
+
 				-- Inform subscribers of what just happened
 				self:_PostNotification("FullAccept", payload)
 				self:_PostNotification("Accept", theQuestId)
@@ -2091,7 +2091,7 @@ end,
 					self:_AddTrackingMessage(message)
 				end
 			end,
-			
+
 			['WORLD_QUEST_COMPLETED_BY_SPELL'] = function(self, frame, questId)
 				if self.GDE.debug then
 					local message = strformat("WORLD_QUEST_COMPLETED_BY_SPELL completes %d", questId)
@@ -2241,7 +2241,7 @@ end,
 
 			},
 		existsClassicBasic = (WOW_PROJECT_ID == WOW_PROJECT_CLASSIC),
-		existsClassicBurningCrusade = (WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC),
+		existsClassicBurningCrusade = (WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC) or (WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC),
 		factionMapping = { ['A'] = 'Alliance', ['H'] = 'Horde', },
 		followerMapping = {},
 		forceLocalizedQuestNameLoad = true,
@@ -3447,7 +3447,7 @@ end,
 			end
 			return retval
 		end,
-		
+
 		_ExpansionName = function(self, expansionIndex)
 			return _G["EXPANSION_NAME"..expansionIndex]
 		end,
@@ -3496,7 +3496,7 @@ end,
 		_AddMapId = function(self, zoneTable, zoneName, mapId, continentMapId)
 			-- If we have processed this mapId already we do not need to do so again
 			if self.mapToContinentMapping[mapId] then return end
-			
+
 			-- If this map is part of a group there is a good chance that zoneName is going to exist more than
 			-- once and therefore we will add the specific "floor" name to the zone name.
 			local mapGroupId = C_Map.GetMapGroupID(mapId)
@@ -3828,9 +3828,9 @@ end,
 			questId = tonumber(questId)
 			if nil == questId then return end
 			local kCodeToAdd, pCodeToAdd = 'K2097152', 'P:^'..questId
-			
+
 			self:_LearnKCode(questId, kCodeToAdd)
-			
+
 			if nil == strfind(self.questPrerequisites[questId] or '', strsub(pCodeToAdd, 3), 1, true) then
 				self:_LearnQuestCode(questId, pCodeToAdd)
 				local codeToAdd = strsub(pCodeToAdd, 3)
@@ -3846,9 +3846,9 @@ end,
 			questId = tonumber(questId)
 			if nil == questId then return end
 			local kCodeToAdd, pCodeToAdd = 'K1048576', 'P:b'..questId
-			
+
 			self:_LearnKCode(questId, kCodeToAdd)
-			
+
 			if nil == strfind(self.questPrerequisites[questId] or '', strsub(pCodeToAdd, 3), 1, true) then
 				self:_LearnQuestCode(questId, pCodeToAdd)
 				local codeToAdd = strsub(pCodeToAdd, 3)
@@ -4035,7 +4035,7 @@ end,
 						baseStatusCode = bitbor(baseStatusCode, bitband(failure, Grail.bitMaskQuestFailureWithAncestor - Grail.bitMaskQuestFailure))
 					end
 				end
-				
+
 			end
 
 			return baseStatusCode
@@ -4370,7 +4370,7 @@ end,
 			end
 			return retval
 		end,
-	
+
 		---
 		--	Determines whether the soughtHolidayName is currently being celebrated.
 		--	@param soughtHolidayName The localized name of a holiday, like Brewfest or Darkmoon Faire.
@@ -4494,7 +4494,7 @@ end,
 		--		P	fails (prerequisites)
 		--		R	repeatable
 		--		U	unknown
-		--		W	low-level	
+		--		W	low-level
 		--		Y	legendary
 		ClassificationOfQuestCode = function(self, questCode, shouldDisplayHolidays, buggedQuestsUnobtainable)
 			local retval = 'U'
@@ -5875,15 +5875,15 @@ end,
 --									local possibleTypeValue = tonumber(strsub(c, 5))
 --									if possibleTypeValue then typeValue = typeValue + possibleTypeValue end
 --								end
-							
+
 							elseif 'K' == code then
 								typeValue = typeValue + (tonumber(strsub(c, 2)) or 0)
-							
+
 							elseif 'L' == code then
 --								levelValue = levelValue + (tonumber(strsub(c, 2)) or 0)
 								local questLevel, questRequiredLevel, questMaximumScalingLevel = self:QuestLevelsFromString(strsub(c, 2))
 								levelValue = levelValue + questLevel * self.bitMaskQuestLevelOffset + questRequiredLevel * self.bitMaskQuestMinLevelOffset + questMaximumScalingLevel * self.bitMaskQuestVariableLevelOffset
-							
+
 --							elseif 'l' == code then
 --								-- lLLLNNNKKK+
 --								local codeLength = strlen(c)
@@ -6241,7 +6241,7 @@ end,
 					-- Note numeric and subcode are reverse from traditional codes
 					numeric = tonumber(strsub(questCode, 2, 4))
 					subcode = tonumber(strsub(questCode, 5))
-				
+
 				-- Csn+ (s must be a number)
 				elseif '$' == code or '*' == code then
 					subcode = tonumber(strsub(questCode, 2, 2))
@@ -6483,7 +6483,7 @@ end,
 				if bitband(self:CodeType(questId), self.bitMaskQuestDaily) > 0 then
 					self:AddQuestToMapArea(questId, self.mapAreaBaseDaily, DAILY)
 				end
-				
+
 				--	Add this quest to reputation quests
 				if nil ~= self.questReputationRequirements[questId] then
 					local reputationCodes = self.questReputationRequirements[questId]
@@ -6648,7 +6648,7 @@ end
 
 				-- Now to figure out what needs to be checked based on the code
 				if code == ' ' then
-					-- We do nothing since we are using this to indicate 
+					-- We do nothing since we are using this to indicate
 				elseif code == 'A' then	shouldCheckTurnin = true
 				elseif code == 'a' then checkWorldQuestAvailable = true
 				elseif code == 'b' then checkThreatQuestAvailable = true
@@ -7986,7 +7986,7 @@ end
 				return IsQuestFlaggedCompleted(questId)
 			end
 		end,
-		
+
 		---
 		--	Returns whether the quest is in the quest log.
 		--	@param questId The standard numeric questId representing a quest.
@@ -8845,7 +8845,7 @@ end
 --			-- TODO: If none exists return true
 --			-- TODO: Otherwise determine covenant and needed level and return results of _CovenantRenownMeetsOrExceeds call
 --		end,
-		
+
 		--	Returns a boolean indicating whether the player's renown level with the specified covenant meets or exceeds the desired level.
 		_CovenantRenownMeetsOrExceeds = function(self, covenant, desiredLevel)
 			local retval = false
@@ -10449,7 +10449,7 @@ if self.GDE.debug then print("Marking OEC quest complete", oecCodes[i]) end
 			end
 			return retval
 		end,
-		
+
 		--- The suggestedLevel is found from Blizzard API, though if the quest is variable is influenced by
 		--- the current level of the player.  This attempts to determine what should be done when presented
 		--- with a suggestedLevel (which is the required level of the quest).
@@ -10813,7 +10813,7 @@ if self.GDE.debug then print("Marking OEC quest complete", oecCodes[i]) end
 			end
             return nil
 		end,
-        
+
         ---
 		--	Returns all questIds for quests with the specified name.
 		--	@param soughtName The localized name of the quest.
@@ -10967,7 +10967,7 @@ if self.GDE.debug then print("Marking OEC quest complete", oecCodes[i]) end
 
 		--	This routine will update the per-player saved information about group quests
 		--	that are currently considered accepted on a specific "daily" day.  It erases
-		--	any previous information if the "daily" day changes.  It returns the count 
+		--	any previous information if the "daily" day changes.  It returns the count
 		_RecordGroupValueChange = function(self, group, isAdding, isRemoving, questId, isWeekly)
 			local dayName = isWeekly and self:_GetWeeklyDay() or self:_GetDailyDay()
 			local categoryName = isWeekly and "weeklyGroups" or "dailyGroups"
@@ -11485,7 +11485,7 @@ if factionId == nil then print("Rep nil issue:", reputationName, reputationId, r
 				self.manuallyExecutingServerQuery = true
 				print("|cFFFFFF00Grail|r initiating server database query")
 				QueryQuestsCompleted()
-			end			
+			end
 		end,
 
 		SpellPresent = function(self, soughtSpellId)
@@ -11619,7 +11619,7 @@ if factionId == nil then print("Rep nil issue:", reputationName, reputationId, r
 		end,
 
 		_NPCLocationInvalidate = function(self, tableOfQuestIds)
-			
+
 		end,
 
 		_InvalidateStatusForQuestsWithTalentPrerequisites = function(self)
@@ -11627,7 +11627,7 @@ if factionId == nil then print("Rep nil issue:", reputationName, reputationId, r
 		end,
 
 		---
-		--	
+		--
 		_StatusCodeInvalidate = function(self, tableOfQuestIds, delay)
 			if nil ~= tableOfQuestIds then
 				for _, questId in pairs(tableOfQuestIds) do
@@ -11838,19 +11838,19 @@ if factionId == nil then print("Rep nil issue:", reputationName, reputationId, r
 				self.quest.name[questId] = questTitle
 				self:_LearnQuestName(questId, questTitle)
 			end
-			
+
 			if 'A' == npcCode and not self:_GoodNPCAccept(questId, npcId) then
 				self:_LearnQuestCode(questId, 'A:' .. npcId)
 			end
-			
+
 			if 'T' == npcCode and not self:_GoodNPCTurnin(questId, npcId) then
 				self:_LearnQuestCode(questId, 'T:' .. npcId)
 			end
-			
+
 			if kCode then
 				self:_LearnKCode(questId, kCode)
 			end
-			
+
 			if lCode then
 				local questLevel, questLevelRequired = self:QuestLevelsFromString(strsub(lCode, 2))
 				if questLevel ~= 0 then
@@ -12338,7 +12338,7 @@ end
 		Blizzard provides API that details all the quests that their servers record a player as having completed.  However,
 		this information does not show the entire picture, and could be misleading.  Therefore, Grail attempts to provide the
 		user with a better picture of reality by adjusting and accounting for the Blizzard results.
-		
+
 			* Blizzard can record multiple quests as turned in, when one is turned in.  Sometimes this includes quests
 				the player could never have completed (because they are class-specific, or from a different faction).
 			* There are a class of quests that Blizzard never records as being completed (like truly repeatable ones).

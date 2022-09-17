@@ -1021,7 +1021,7 @@ end
 -- Bonus Melee Hit Chance Modifier
 local function HitModifier()
 	local hitRating = GetCombatRatingBonus(CR_HIT_MELEE)
-	local hit = GetCombatRating(CR_ARMOR_PENETRATION)
+	local hit = GetCombatRating(CR_HIT_MELEE)
 
 	local TooltipLine1 = L["Hit Chance: "]..(format( "%.2f%%", hitRating)).."\n ("..hit.." Rating adds "..(format( "%.2f%%", hitRating) ).." Hit)"
 	local TooltipLine2 = "\n"..( format(CR_HIT_MELEE_TOOLTIP, UnitLevel("player"), hitRating, hit, GetArmorPenetration()) );

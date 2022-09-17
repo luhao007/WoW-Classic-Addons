@@ -24,7 +24,7 @@ local DT = __private.DT;
 	local IsControlKeyDown = IsControlKeyDown;
 	local IsAltKeyDown = IsAltKeyDown;
 	local IsShiftKeyDown = IsShiftKeyDown;
-	local _After = C_Timer.After;
+	local After = C_Timer.After;
 	local CreateFrame = CreateFrame;
 	local GetMouseFocus = GetMouseFocus;
 	local GetCursorPosition = GetCursorPosition;
@@ -284,7 +284,7 @@ MT.BuildEnv('UI');
 				local objects = Frame.objects;
 				objects.Name:SetText(name);
 				if VT.SET.supreme and VT.TQueryCache[name] ~= nil and VT.TQueryCache[name].pack ~= nil then
-					local info = VT.__emulib.DecodeAddonPackData(VT.TQueryCache[name].pack);
+					local _, info = VT.__emulib.DecodeAddOnPackData(VT.TQueryCache[name].pack);
 					if info then
 						objects.PackLabel:SetText(info);
 						objects.PackLabel:Show();
@@ -1745,7 +1745,7 @@ MT.BuildEnv('UI');
 			local data = Node.list[index];
 			GameTooltip:SetSpellByID(data[2]);
 			GameTooltip:Show();
-			_After(0.1, function()
+			After(0.1, function()
 				if select(2, GameTooltip:GetSpell()) ~= data[2] then
 					return;
 				end
