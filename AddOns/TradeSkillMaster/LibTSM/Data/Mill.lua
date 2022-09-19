@@ -39,10 +39,10 @@ elseif TSM.IsWowWrathClassic() then
 			["i:3357"] = {requiredSkill = 75, matRate = 1.0000, minAmount = 2, maxAmount = 4, amountOfMats = 0.6000}, -- Liferoot
 		},
 		["i:39339"] = { -- Emerald Pigment (Jadefire Ink)
-			["i:3358"] = {requiredSkill = 125, matRate = 1.0000, minAmount = 2, maxAmount = 3, amountOfMats = 0.5000}, -- Goldthorn
 			["i:3818"] = {requiredSkill = 125, matRate = 1.0000, minAmount = 2, maxAmount = 3, amountOfMats = 0.5000}, -- Fadeleaf
+			["i:3821"] = {requiredSkill = 125, matRate = 1.0000, minAmount = 2, maxAmount = 3, amountOfMats = 0.5000}, -- Goldthorn
+			["i:3358"] = {requiredSkill = 125, matRate = 1.0000, minAmount = 2, maxAmount = 4, amountOfMats = 0.5720}, -- Khadgar's Whisker
 			["i:3819"] = {requiredSkill = 125, matRate = 1.0000, minAmount = 2, maxAmount = 4, amountOfMats = 0.5720}, -- Wintersbite (Dragon's Teeth)
-			["i:3821"] = {requiredSkill = 125, matRate = 1.0000, minAmount = 2, maxAmount = 4, amountOfMats = 0.5720}, -- Khadgar's Whisker
 		},
 		["i:39340"] = { -- Violet Pigment (Celestial Ink)
 			["i:8836"] = {requiredSkill = 175, matRate = 1.0000, minAmount = 2, maxAmount = 3, amountOfMats = 0.5000}, -- Arthas' Tears
@@ -95,10 +95,10 @@ elseif TSM.IsWowWrathClassic() then
 			["i:3357"] = {requiredSkill = 75, matRate = 0.5000, minAmount = 1, maxAmount = 3, amountOfMats = 0.1075}, -- Liferoot
 		},
 		["i:43105"] = { -- Indigo Pigment (Royal Ink)
-			["i:3358"] = {requiredSkill = 125, matRate = 0.2500, minAmount = 1, maxAmount = 3, amountOfMats = 0.0545}, -- Goldthorn
 			["i:3818"] = {requiredSkill = 125, matRate = 0.2500, minAmount = 1, maxAmount = 3, amountOfMats = 0.0545}, -- Fadeleaf
+			["i:3821"] = {requiredSkill = 125, matRate = 0.2500, minAmount = 1, maxAmount = 3, amountOfMats = 0.0545}, -- Goldthorn
+			["i:3358"] = {requiredSkill = 125, matRate = 0.5000, minAmount = 1, maxAmount = 3, amountOfMats = 0.1075}, -- Khadgar's Whisker
 			["i:3819"] = {requiredSkill = 125, matRate = 0.5000, minAmount = 1, maxAmount = 3, amountOfMats = 0.1075}, -- Wintersbite (Dragon's Teeth)
-			["i:3821"] = {requiredSkill = 125, matRate = 0.5000, minAmount = 1, maxAmount = 3, amountOfMats = 0.1075}, -- Khadgar's Whisker
 		},
 		["i:43106"] = { -- Ruby Pigment (Fiery Ink)
 			["i:8836"] = {requiredSkill = 175, matRate = 0.2500, minAmount = 1, maxAmount = 3, amountOfMats = 0.0545}, -- Arthas' Tears
@@ -159,10 +159,10 @@ else
 			["i:3357"] = {matRate = 1.0000, minAmount = 2, maxAmount = 4, amountOfMats = 0.6000}, -- Liferoot
 		},
 		["i:39339"] = { -- Emerald Pigment (Jadefire Ink)
-			["i:3358"] = {matRate = 1.0000, minAmount = 2, maxAmount = 3, amountOfMats = 0.5000}, -- Goldthorn
 			["i:3818"] = {matRate = 1.0000, minAmount = 2, maxAmount = 3, amountOfMats = 0.5000}, -- Fadeleaf
+			["i:3821"] = {matRate = 1.0000, minAmount = 2, maxAmount = 3, amountOfMats = 0.5000}, -- Goldthorn
+			["i:3358"] = {matRate = 1.0000, minAmount = 2, maxAmount = 4, amountOfMats = 0.5720}, -- Khadgar's Whisker
 			["i:3819"] = {matRate = 1.0000, minAmount = 2, maxAmount = 4, amountOfMats = 0.5720}, -- Dragon's Teeth
-			["i:3821"] = {matRate = 1.0000, minAmount = 2, maxAmount = 4, amountOfMats = 0.5720}, -- Khadgar's Whisker
 		},
 		["i:39340"] = { -- Violet Pigment (Celestial Ink)
 			["i:8836"] = {matRate = 1.0000, minAmount = 2, maxAmount = 4, amountOfMats = 0.5660}, -- Arthas' Tears
@@ -288,10 +288,10 @@ else
 			["i:3357"] = {matRate = 0.5000, minAmount = 1, maxAmount = 3, amountOfMats = 0.1075}, -- Liferoot
 		},
 		["i:43105"] = { -- Indigo Pigment (Royal Ink)
-			["i:3358"] = {matRate = 0.4200, minAmount = 1, maxAmount = 3, amountOfMats = 0.0915}, -- Goldthorn
 			["i:3818"] = {matRate = 0.4200, minAmount = 1, maxAmount = 3, amountOfMats = 0.0915}, -- Fadeleaf
+			["i:3821"] = {matRate = 0.4200, minAmount = 1, maxAmount = 3, amountOfMats = 0.0915}, -- Goldthorn
+			["i:3358"] = {matRate = 0.5000, minAmount = 1, maxAmount = 3, amountOfMats = 0.1075}, -- Khadgar's Whisker
 			["i:3819"] = {matRate = 0.5000, minAmount = 1, maxAmount = 3, amountOfMats = 0.1075}, -- Dragon's Teeth
-			["i:3821"] = {matRate = 0.5000, minAmount = 1, maxAmount = 3, amountOfMats = 0.1075}, -- Khadgar's Whisker
 		},
 		["i:43106"] = { -- Ruby Pigment (Fiery Ink)
 			["i:8836"] = {matRate = 0.4000, minAmount = 1, maxAmount = 3, amountOfMats = 0.0875}, -- Arthas' Tears

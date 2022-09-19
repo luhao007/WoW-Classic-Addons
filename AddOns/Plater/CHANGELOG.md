@@ -1,7 +1,7 @@
 @cont1nuity:
-- Adding options for swipe texture on Buff Special.
-- Fixing mod Load Conditions.
-- Support for aura modRate.
-- Fixing tank/spec detection in WotLK. Using your selected talent role now.
-- Update on default 'Performance Units'.
+- Support for Druid combo points in WotLK.
+- Fixing a data leak on mod re-compile when changing mod options.
+- Adding support for Dragonflight: Evoker resources, new UNIT_AURA event data, bugfixes.
+- Adding 'Decimation' talent to execute detection for Warlocks in WotLK.
+- Fixing tank spec detection for WotLK.
 

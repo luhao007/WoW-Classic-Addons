@@ -2524,7 +2524,7 @@ function private.FSMCreate()
 					Log.PrintfUser(L["Failed to buy auction of %s."], rawLink)
 				end
 				context.numConfirmed = context.numConfirmed + (TSM.IsWowClassic() and 1 or context.lastBuyQuantity)
-				return "ST_BUYING", context.lastBuyQuantity
+				return "ST_BUYING", success and context.lastBuyQuantity or nil
 			end)
 			:AddTransition("ST_BUYING")
 		)

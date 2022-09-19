@@ -932,7 +932,7 @@ function VUHDO_getUnitDirection(aUnit)
 	tUnitX, tUnitY = VUHDO_getUnitMapPosition(aUnit);
 	if (tUnitX or 0) + (tUnitY or 0) <= 0 then return nil; end
 
-	tFacing = GetPlayerFacing();
+	tFacing = GetPlayerFacing() or 0;
 	tFacing = tFacing < 0 and tFacing + VUHDO_2_PI or tFacing;
 
 	return VUHDO_PI - VUHDO_atan2(tPlayerX - tUnitX, tUnitY - tPlayerY) - tFacing;

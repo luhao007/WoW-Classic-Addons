@@ -1,6 +1,6 @@
 
 
-local dversion = 335
+local dversion = 353
 local major, minor = "DetailsFramework-1.0", dversion
 local DF, oldminor = LibStub:NewLibrary (major, minor)
 
@@ -51,32 +51,36 @@ if (not PixelUtil) then
 	end
 end
 
+function DF.IsDragonflight()
+	return select(4, GetBuildInfo()) >= 100000
+end
+
 function DF.IsTimewalkWoW()
-	return DF.IsClassicWow() or DF.IsTBCWow() or DF.IsWotLKWow()
+    local _, _, _, buildInfo = GetBuildInfo()
+    if (buildInfo < 40000) then
+        return true
+    end
 end
 
 function DF.IsClassicWow()
-	local gameVersion = GetBuildInfo()
-	if (gameVersion:match ("%d") == "1") then
-		return true
-	end
-	return false
+    local _, _, _, buildInfo = GetBuildInfo()
+    if (buildInfo < 20000) then
+        return true
+    end
 end
 
 function DF.IsTBCWow()
-	local gameVersion = GetBuildInfo()
-	if (gameVersion:match ("%d") == "2") then
-		return true
-	end
-	return false
+    local _, _, _, buildInfo = GetBuildInfo()
+    if (buildInfo < 30000 and buildInfo >= 20000) then
+        return true
+    end
 end
 
 function DF.IsWotLKWow()
-	local gameVersion = GetBuildInfo()
-	if (gameVersion:match ("%d") == "3") then
-		return true
-	end
-	return false
+    local _, _, _, buildInfo = GetBuildInfo()
+    if (buildInfo < 40000 and buildInfo >= 30000) then
+        return true
+    end
 end
 
 local roleBySpecTextureName = {
@@ -201,7 +205,7 @@ function DF.GetSpecialization()
 	if (GetSpecialization) then
 		return GetSpecialization()
 	end
-
+	
 	return nil
 end
 
@@ -209,7 +213,7 @@ function DF.GetSpecializationInfoByID (...)
 	if (GetSpecializationInfoByID) then
 		return GetSpecializationInfoByID (...)
 	end
-
+	
 	return nil
 end
 
@@ -217,7 +221,7 @@ function DF.GetSpecializationInfo (...)
 	if (GetSpecializationInfo) then
 		return GetSpecializationInfo (...)
 	end
-
+	
 	return nil
 end
 
@@ -225,7 +229,7 @@ function DF.GetSpecializationRole (...)
 	if (GetSpecializationRole) then
 		return GetSpecializationRole (...)
 	end
-
+	
 	return nil
 end
 
@@ -236,11 +240,11 @@ DF.EncounterJournal = {
 	EJ_GetInstanceForMap = EJ_GetInstanceForMap or function() return nil end,
 	EJ_GetInstanceInfo = EJ_GetInstanceInfo or function() return nil end,
 	EJ_SelectInstance = EJ_SelectInstance or function() return nil end,
-
+	
 	EJ_GetEncounterInfoByIndex = EJ_GetEncounterInfoByIndex or function() return nil end,
 	EJ_GetEncounterInfo = EJ_GetEncounterInfo or function() return nil end,
 	EJ_SelectEncounter = EJ_SelectEncounter or function() return nil end,
-
+	
 	EJ_GetSectionInfo = EJ_GetSectionInfo or function() return nil end,
 	EJ_GetCreatureInfo = EJ_GetCreatureInfo or function() return nil end,
 	EJ_SetDifficulty = EJ_SetDifficulty or function() return nil end,
@@ -249,7 +253,7 @@ DF.EncounterJournal = {
 }
 
 if (not EJ_GetCurrentInstance) then
-
+	
 end
 
 --> will always give a very random name for our widgets
@@ -319,7 +323,7 @@ local embed_functions = {
 	"GetPlayerRole",
 	"GetCharacterTalents",
 	"GetCharacterPvPTalents",
-
+	
 	"CreateDropDown",
 	"CreateButton",
 	"CreateColorPickButton",
@@ -394,7 +398,7 @@ function DF:FadeFrame (frame, t)
 		frame.fading_in = false
 		frame:Show()
 		frame:SetAlpha (1)
-
+		
 	elseif (t == 1) then
 		frame.hidden = true
 		frame.faded = true
@@ -424,7 +428,7 @@ function DF.table.addunique (t, index, value)
 			return false
 		end
 	end
-
+	
 	tinsert (t, index, value)
 	return true
 end
@@ -501,7 +505,7 @@ end
 
 --> copy values that does exist on table2 but not on table1
 function DF.table.deploy (t1, t2)
-	for key, value in pairs (t2) do
+	for key, value in pairs (t2) do 
 		if (type (value) == "table") then
 			t1 [key] = t1 [key] or {}
 			DF.table.deploy (t1 [key], t2 [key])
@@ -519,20 +523,20 @@ function DF.table.dump (t, s, deep)
 	for i = 1, deep do
 		space = space .. "   "
 	end
-
+	
 	for key, value in pairs (t) do
 		local tpe = _type (value)
-
+		
 		if (type (key) == "function") then
 			key = "#function#"
 		elseif (type (key) == "table") then
 			key = "#table#"
-		end
-
+		end	
+		
 		if (type (key) ~= "string" and type (key) ~= "number") then
 			key = "unknown?"
 		end
-
+		
 		if (tpe == "table") then
 			if (type (key) == "number") then
 				s = s .. space .. "[" .. key .. "] = |cFFa9ffa9 {|r\n"
@@ -541,21 +545,21 @@ function DF.table.dump (t, s, deep)
 			end
 			s = s .. DF.table.dump (value, nil, deep+1)
 			s = s .. space .. "|cFFa9ffa9},|r\n"
-
+			
 		elseif (tpe == "string") then
 			s = s .. space .. "[\"" .. key .. "\"] = \"|cFFfff1c1" .. value .. "|r\",\n"
-
+			
 		elseif (tpe == "number") then
 			s = s .. space .. "[\"" .. key .. "\"] = |cFFffc1f4" .. value .. "|r,\n"
-
+			
 		elseif (tpe == "function") then
 			s = s .. space .. "[\"" .. key .. "\"] = function()end,\n"
-
+			
 		elseif (tpe == "boolean") then
 			s = s .. space .. "[\"" .. key .. "\"] = |cFF99d0ff" .. (value and "true" or "false") .. "|r,\n"
 		end
 	end
-
+	
 	return s
 end
 
@@ -641,16 +645,16 @@ else
 end
 
 function DF:CommaValue (value)
-	if (not value) then
-		return "0"
+	if (not value) then 
+		return "0" 
 	end
-
+	
 	value = floor (value)
-
+	
 	if (value == 0) then
 		return "0"
 	end
-
+	
 	--source http://richard.warburton.it
 	local left, num, right = string_match (value, '^([^%d]*%d)(%d*)(.-)$')
 	return left .. (num:reverse():gsub ('(%d%d%d)','%1,'):reverse()) .. right
@@ -661,13 +665,13 @@ function DF:GroupIterator (func, ...)
 		for i = 1, GetNumGroupMembers() do
 			DF:QuickDispatch (func, "raid" .. i, ...)
 		end
-
+	
 	elseif (IsInGroup()) then
 		for i = 1, GetNumGroupMembers() - 1 do
 			DF:QuickDispatch (func, "party" .. i, ...)
 		end
 		DF:QuickDispatch (func, "player", ...)
-
+	
 	else
 		DF:QuickDispatch (func, "player", ...)
 	end
@@ -718,7 +722,7 @@ function DF:SetFontShadow (fontString, r, g, b, a, x, y)
 	local offSetX, offSetY = fontString:GetShadowOffset()
 	x = x or offSetX
 	y = y or offSetY
-
+	
 	fontString:SetShadowOffset (x, y)
 end
 
@@ -727,7 +731,7 @@ function DF:SetFontRotation(fontString, degrees)
 		if (not fontString.__rotationAnimation) then
 			fontString.__rotationAnimation = DF:CreateAnimationHub(fontString)
 			fontString.__rotationAnimation.rotator = DF:CreateAnimation(fontString.__rotationAnimation, "rotation", 1, 0, 0)
-			fontString.__rotationAnimation.rotator:SetEndDelay(math.huge)
+			fontString.__rotationAnimation.rotator:SetEndDelay(10^8)
 			fontString.__rotationAnimation.rotator:SetSmoothProgress(1)
 		end
 		fontString.__rotationAnimation.rotator:SetDegrees(degrees)
@@ -739,18 +743,18 @@ end
 function DF:AddClassColorToText (text, class)
 	if (type (class) ~= "string") then
 		return DF:RemoveRealName (text)
-
+		
 	elseif (class == "UNKNOW" or class == "PET") then
 		return DF:RemoveRealName (text)
 	end
-
+	
 	local color = RAID_CLASS_COLORS [class]
 	if (color) then
 		text = "|c" .. color.colorStr .. DF:RemoveRealName (text) .. "|r"
 	else
 		return DF:RemoveRealName (text)
 	end
-
+	
 	return text
 end
 
@@ -762,7 +766,7 @@ end
 
 function DF:AddClassIconToText(text, playerName, class, useSpec, iconSize)
 	local size = iconSize or 16
-
+	
 	local iconToUse, spec
 	if (useSpec) then
 		if (Details) then
@@ -869,7 +873,7 @@ end
 
 function DF:TruncateText (fontString, maxWidth)
 	local text = fontString:GetText()
-
+	
 	while (fontString:GetStringWidth() > maxWidth) do
 		text = strsub (text, 1, #text - 1)
 		fontString:SetText (text)
@@ -877,7 +881,7 @@ function DF:TruncateText (fontString, maxWidth)
 			break
 		end
 	end
-
+	
 	text = DF:CleanTruncateUTF8String(text)
 	fontString:SetText (text)
 end
@@ -996,7 +1000,7 @@ local onFinish = function (self)
 		self.frame:SetAlpha (0)
 		self.frame:Hide()
 	end
-
+	
 	if (self.onFinishFunc) then
 		self:onFinishFunc (self.frame)
 	end
@@ -1008,18 +1012,18 @@ local stop = function (self)
 end
 
 local flash = function (self, fadeInTime, fadeOutTime, flashDuration, showWhenDone, flashInHoldTime, flashOutHoldTime, loopType)
-
+	
 	local FlashAnimation = self.FlashAnimation
-
+	
 	local fadeIn = FlashAnimation.fadeIn
 	local fadeOut = FlashAnimation.fadeOut
-
+	
 	fadeIn:Stop()
 	fadeOut:Stop()
 
 	fadeIn:SetDuration (fadeInTime or 1)
 	fadeIn:SetEndDelay (flashInHoldTime or 0)
-
+	
 	fadeOut:SetDuration (fadeOutTime or 1)
 	fadeOut:SetEndDelay (flashOutHoldTime or 0)
 
@@ -1027,34 +1031,34 @@ local flash = function (self, fadeInTime, fadeOutTime, flashDuration, showWhenDo
 	FlashAnimation.loopTime = FlashAnimation:GetDuration()
 	FlashAnimation.finishAt = GetTime() + flashDuration
 	FlashAnimation.showWhenDone = showWhenDone
-
+	
 	FlashAnimation:SetLooping (loopType or "REPEAT")
-
+	
 	self:Show()
 	self:SetAlpha (0)
 	FlashAnimation:Play()
 end
 
 function DF:CreateFlashAnimation (frame, onFinishFunc, onLoopFunc)
-	local FlashAnimation = frame:CreateAnimationGroup()
-
+	local FlashAnimation = frame:CreateAnimationGroup() 
+	
 	FlashAnimation.fadeOut = FlashAnimation:CreateAnimation ("Alpha") --> fade out anime
 	FlashAnimation.fadeOut:SetOrder (1)
 	FlashAnimation.fadeOut:SetFromAlpha (0)
 	FlashAnimation.fadeOut:SetToAlpha (1)
-
+	
 	FlashAnimation.fadeIn = FlashAnimation:CreateAnimation ("Alpha") --> fade in anime
 	FlashAnimation.fadeIn:SetOrder (2)
 	FlashAnimation.fadeIn:SetFromAlpha (1)
 	FlashAnimation.fadeIn:SetToAlpha (0)
-
+	
 	frame.FlashAnimation = FlashAnimation
 	FlashAnimation.frame = frame
 	FlashAnimation.onFinishFunc = onFinishFunc
-
+	
 	FlashAnimation:SetScript ("OnLoop", onLoopFunc)
 	FlashAnimation:SetScript ("OnFinished", onFinish)
-
+	
 	frame.Flash = flash
 	frame.Stop = stop
 end
@@ -1067,106 +1071,106 @@ end
 		if (not v1 and not v2) then
 			return "topleft", object.widget:GetParent(), "topleft", 0, 0
 		end
-
+		
 		if (_type (v1) == "string") then
 			local frameGlobal = _G [v1]
 			if (frameGlobal and type (frameGlobal) == "table" and frameGlobal.GetObjectType) then
 				return DF:CheckPoints (frameGlobal, v2, v3, v4, v5, object)
 			end
-
+			
 		elseif (_type (v2) == "string") then
 			local frameGlobal = _G [v2]
 			if (frameGlobal and type (frameGlobal) == "table" and frameGlobal.GetObjectType) then
 				return DF:CheckPoints (v1, frameGlobal, v3, v4, v5, object)
 			end
 		end
-
+		
 		if (_type (v1) == "string" and _type (v2) == "table") then --> :setpoint ("left", frame, _, _, _)
 			if (not v3 or _type (v3) == "number") then --> :setpoint ("left", frame, 10, 10)
 				v1, v2, v3, v4, v5 = v1, v2, v1, v3, v4
 			end
-
+			
 		elseif (_type (v1) == "string" and _type (v2) == "number") then --> :setpoint ("topleft", x, y)
 			v1, v2, v3, v4, v5 = v1, object.widget:GetParent(), v1, v2, v3
-
-		elseif (_type (v1) == "number") then --> :setpoint (x, y)
+			
+		elseif (_type (v1) == "number") then --> :setpoint (x, y) 
 			v1, v2, v3, v4, v5 = "topleft", object.widget:GetParent(), "topleft", v1, v2
 
 		elseif (_type (v1) == "table") then --> :setpoint (frame, x, y)
 			v1, v2, v3, v4, v5 = "topleft", v1, "topleft", v2, v3
-
+			
 		end
-
+		
 		if (not v2) then
 			v2 = object.widget:GetParent()
 		elseif (v2.dframework) then
 			v2 = v2.widget
 		end
-
+		
 		return v1 or "topleft", v2, v3 or "topleft", v4 or 0, v5 or 0
 	end
-
+	
 	local anchoring_functions = {
 		function (frame, anchorTo, offSetX, offSetY) --> 1 TOP LEFT
 			frame:ClearAllPoints()
 			frame:SetPoint ("bottomleft", anchorTo, "topleft", offSetX, offSetY)
 		end,
-
+		
 		function (frame, anchorTo, offSetX, offSetY) --> 2 LEFT
 			frame:ClearAllPoints()
 			frame:SetPoint ("right", anchorTo, "left", offSetX, offSetY)
 		end,
-
+		
 		function (frame, anchorTo, offSetX, offSetY) --> 3 BOTTOM LEFT
 			frame:ClearAllPoints()
 			frame:SetPoint ("topleft", anchorTo, "bottomleft", offSetX, offSetY)
 		end,
-
+		
 		function (frame, anchorTo, offSetX, offSetY) --> 4 BOTTOM
 			frame:ClearAllPoints()
 			frame:SetPoint ("top", anchorTo, "bottom", offSetX, offSetY)
 		end,
-
+		
 		function (frame, anchorTo, offSetX, offSetY) --> 5 BOTTOM RIGHT
 			frame:ClearAllPoints()
 			frame:SetPoint ("topright", anchorTo, "bottomright", offSetX, offSetY)
 		end,
-
+		
 		function (frame, anchorTo, offSetX, offSetY) --> 6 RIGHT
 			frame:ClearAllPoints()
 			frame:SetPoint ("left", anchorTo, "right", offSetX, offSetY)
 		end,
-
+		
 		function (frame, anchorTo, offSetX, offSetY) --> 7 TOP RIGHT
 			frame:ClearAllPoints()
 			frame:SetPoint ("bottomright", anchorTo, "topright", offSetX, offSetY)
 		end,
-
+		
 		function (frame, anchorTo, offSetX, offSetY) --> 8 TOP
 			frame:ClearAllPoints()
 			frame:SetPoint ("bottom", anchorTo, "top", offSetX, offSetY)
 		end,
-
+		
 		function (frame, anchorTo, offSetX, offSetY) --> 9 CENTER
 			frame:ClearAllPoints()
 			frame:SetPoint ("center", anchorTo, "center", offSetX, offSetY)
 		end,
-
+		
 		function (frame, anchorTo, offSetX, offSetY) --> 10
 			frame:ClearAllPoints()
 			frame:SetPoint ("left", anchorTo, "left", offSetX, offSetY)
 		end,
-
+		
 		function (frame, anchorTo, offSetX, offSetY) --> 11
 			frame:ClearAllPoints()
 			frame:SetPoint ("right", anchorTo, "right", offSetX, offSetY)
 		end,
-
+		
 		function (frame, anchorTo, offSetX, offSetY) --> 12
 			frame:ClearAllPoints()
 			frame:SetPoint ("top", anchorTo, "top", offSetX, offSetY)
 		end,
-
+		
 		function (frame, anchorTo, offSetX, offSetY) --> 13
 			frame:ClearAllPoints()
 			frame:SetPoint ("bottom", anchorTo, "bottom", offSetX, offSetY)
@@ -1176,7 +1180,7 @@ end
 	function DF:SetAnchor (widget, config, anchorTo)
 		anchorTo = anchorTo or widget:GetParent()
 		anchoring_functions [config.side] (widget, anchorTo, config.x, config.y)
-	end
+	end	
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --> colors
@@ -1198,15 +1202,15 @@ end
 		else
 			error ("invalid parameter.")
 		end
-
+		
 		return true
 	end
-
+	
 	local colorTableMixin = {
 		GetColor = function (self)
 			return self.r, self.g, self.b, self.a
 		end,
-
+		
 		SetColor = function (self, r, g, b, a)
 			r, g, b, a = DF:ParseColors (r, g, b, a)
 			self.r = r or self.r
@@ -1214,7 +1218,7 @@ end
 			self.b = b or self.b
 			self.a = a or self.a
 		end,
-
+		
 		IsColorTable = true,
 	}
 
@@ -1250,9 +1254,9 @@ end
 
 	function DF:CreateColorTable (r, g, b, a)
 		local t  = {
-			r = r or 1,
-			g = g or 1,
-			b = b or 1,
+			r = r or 1, 
+			g = g or 1, 
+			b = b or 1, 
 			a = a or 1,
 		}
 		DF:Mixin (t, colorTableMixin)
@@ -1349,7 +1353,7 @@ end
 
 		elseif (widgetType == "dropdown") then
 			widget = parent.widget_list_by_type[widgetType][indexTable[widgetType]]
-
+			
 			if (not widget) then
 				widget = DF:CreateDropDown (parent, function() return {} end, nil, 140, 18, nil, "$parentWidget" .. widgetType .. indexTable[widgetType])
 				widget.hasLabel = DF:CreateLabel (parent, "", 10, "white", "", nil, "$parentWidget" .. widgetType .. indexTable[widgetType] .. "label", "overlay")
@@ -1380,7 +1384,7 @@ end
 
 		elseif (widgetType == "slider") then
 			widget = parent.widget_list_by_type[widgetType][indexTable[widgetType]]
-
+			
 			if (not widget) then
 				widget = DF:CreateSlider (parent, 140, 20, 1, 2, 1, 1, false, nil, "$parentWidget" .. widgetType .. indexTable[widgetType])
 				widget.hasLabel = DF:CreateLabel (parent, "", 10, "white", "", nil, "$parentWidget" .. widgetType .. indexTable[widgetType] .. "label", "overlay")
@@ -1395,7 +1399,7 @@ end
 
 		elseif (widgetType == "color") then
 			widget = parent.widget_list_by_type[widgetType][indexTable[widgetType]]
-
+			
 			if (not widget) then
 				widget = DF:CreateColorPickButton (parent, "$parentWidget" .. widgetType .. indexTable[widgetType], nil, function()end, 1)
 				widget.hasLabel = DF:CreateLabel (parent, "", 10, "white", "", nil, "$parentWidget" .. widgetType .. indexTable[widgetType] .. "label", "overlay")
@@ -1410,7 +1414,7 @@ end
 
 		elseif (widgetType == "button") then
 			widget = parent.widget_list_by_type[widgetType][indexTable[widgetType]]
-
+			
 			if (not widget) then
 				widget = DF:CreateButton (parent, function()end, 120, 18, "", nil, nil, nil, nil, "$parentWidget" .. widgetType .. indexTable[widgetType])
 				widget.hasLabel = DF:CreateLabel (parent, "", 10, "white", "", nil, "$parentWidget" .. widgetType .. indexTable[widgetType] .. "label", "overlay")
@@ -1425,7 +1429,7 @@ end
 
 		elseif (widgetType == "textentry") then
 			widget = parent.widget_list_by_type[widgetType][indexTable[widgetType]]
-
+			
 			if (not widget) then
 				widget = DF:CreateTextEntry (parent, function()end, 120, 18, nil, "$parentWidget" .. widgetType .. indexTable[widgetType])
 				widget.hasLabel = DF:CreateLabel (parent, "", 10, "white", "", nil, "$parentWidget" .. widgetType .. indexTable[widgetType] .. "label", "overlay")
@@ -1452,7 +1456,7 @@ end
 
 	--volatile menu can be called several times, each time all settings are reset and a new menu is built using the same widgets
 	function DF:BuildMenuVolatile (parent, menu, x_offset, y_offset, height, use_two_points, text_template, dropdown_template, switch_template, switch_is_box, slider_template, button_template, value_change_hook)
-
+		
 		if (not parent.widget_list) then
 			DF:SetAsOptionsPanel (parent)
 		end
@@ -1548,7 +1552,7 @@ end
 						if (value_change_hook) then
 							dropdown:SetHook ("OnOptionSelected", value_change_hook)
 						end
-
+						
 						--> hook list (hook list is wiped when getting the widget)
 						if (widget_table.hooks) then
 							for hookName, hookFunc in pairs (widget_table.hooks) do
@@ -1559,7 +1563,7 @@ end
 						if (widget_table.id) then
 							parent.widgetids [widget_table.id] = dropdown
 						end
-
+						
 						local size = dropdown.hasLabel.widget:GetStringWidth() + 140 + 4
 						if (size > max_x) then
 							max_x = size
@@ -1579,11 +1583,11 @@ end
 						switch._get = widget_table.get
 						switch.widget_type = "toggle"
 						switch.OnSwitch = widget_table.set
-
+						
 						if (value_change_hook) then
 							switch:SetHook ("OnSwitch", value_change_hook)
 						end
-
+						
 						--> hook list
 						if (widget_table.hooks) then
 							for hookName, hookFunc in pairs (widget_table.hooks) do
@@ -1615,7 +1619,7 @@ end
 						if (widget_table.id) then
 							parent.widgetids [widget_table.id] = switch
 						end
-
+						
 						local size = switch.hasLabel:GetStringWidth() + 32
 						if (size > max_x) then
 							max_x = size
@@ -1648,7 +1652,7 @@ end
 						if (value_change_hook) then
 							slider:SetHook ("OnValueChange", value_change_hook)
 						end
-
+						
 						if (widget_table.thumbscale) then
 							slider:SetThumbSize (slider.thumb.originalWidth * widget_table.thumbscale, nil)
 						else
@@ -1664,10 +1668,10 @@ end
 
 						slider.hasLabel.text = widget_table.name .. (use_two_points and ": " or "")
 						slider.hasLabel:SetTemplate(widget_table.text_template or text_template)
-
+						
 						slider:SetPoint ("left", slider.hasLabel, "right", 2)
 						slider.hasLabel:SetPoint (cur_x, cur_y)
-
+						
 						if (widget_table.id) then
 							parent.widgetids [widget_table.id] = slider
 						end
@@ -1697,11 +1701,11 @@ end
 						else
 							colorpick:SetColor (default_value, g, b, a)
 						end
-
+						
 						if (value_change_hook) then
 							colorpick:SetHook ("OnColorChanged", value_change_hook)
 						end
-
+						
 						--> hook list
 						if (widget_table.hooks) then
 							for hookName, hookFunc in pairs (widget_table.hooks) do
@@ -1733,7 +1737,7 @@ end
 
 					--button
 					elseif (widget_table.type == "execute" or widget_table.type == "button") then
-
+						
 						local button = getMenuWidgetVolative(parent, "button", widgetIndexes)
 						widget_created = button
 
@@ -1761,9 +1765,9 @@ end
 
 						button.tooltip = widget_table.desc
 						button.widget_type = "execute"
-
+						
 						--> execute doesn't trigger global callback
-
+						
 						--> hook list
 						if (widget_table.hooks) then
 							for hookName, hookFunc in pairs (widget_table.hooks) do
@@ -1781,7 +1785,7 @@ end
 						if (widget_table.id) then
 							parent.widgetids [widget_table.id] = button
 						end
-
+						
 						local size = button:GetWidth() + 4
 						if (size > max_x) then
 							max_x = size
@@ -1810,7 +1814,7 @@ end
 						textentry.hasLabel:SetPoint (cur_x, cur_y)
 
 						--> text entry doesn't trigger global callback
-
+						
 						--> hook list
 						if (widget_table.hooks) then
 							for hookName, hookFunc in pairs (widget_table.hooks) do
@@ -1821,7 +1825,7 @@ end
 						if (widget_table.id) then
 							parent.widgetids [widget_table.id] = textentry
 						end
-
+						
 						local size = textentry.hasLabel:GetStringWidth() + 64
 						if (size > max_x) then
 							max_x = size
@@ -1832,7 +1836,7 @@ end
 					if (widget_table.nocombat) then
 						tinsert (disable_on_combat, widget_created)
 					end
-
+				
 					if (not widget_table.inline) then
 						if (widget_table.spacement) then
 							cur_y = cur_y - 30
@@ -1840,7 +1844,7 @@ end
 							cur_y = cur_y - 20
 						end
 					end
-
+					
 					if (widget_table.type == "breakline" or cur_y < height) then
 						cur_y = y_offset
 						cur_x = cur_x + max_x + 20
@@ -1858,16 +1862,16 @@ end
 	end
 
 	function DF:BuildMenu (parent, menu, x_offset, y_offset, height, use_two_points, text_template, dropdown_template, switch_template, switch_is_box, slider_template, button_template, value_change_hook)
-
+		
 		if (not parent.widget_list) then
 			DF:SetAsOptionsPanel (parent)
 		end
-
+		
 		local cur_x = x_offset
 		local cur_y = y_offset
 		local max_x = 0
 		local line_widgets_created = 0 --how many widgets has been created on this line loop pass
-
+		
 		local latestInlineWidget
 
 		height = abs ((height or parent:GetHeight()) - abs (y_offset) + 20)
@@ -1919,7 +1923,7 @@ end
 					if (widget_table.id) then
 						parent.widgetids [widget_table.id] = label
 					end
-
+				
 				elseif (widget_table.type == "select") then
 					local dropdown = DF:NewDropDown (parent, nil, "$parentWidget" .. index, nil, 140, 18, widget_table.values, widget_table.get(), dropdown_template)
 					dropdown.tooltip = widget_table.desc
@@ -1930,12 +1934,12 @@ end
 					dropdown:SetPoint ("left", label, "right", 2)
 					label:SetPoint (cur_x, cur_y)
 					dropdown.hasLabel = label
-
+					
 					--> global callback
 					if (value_change_hook) then
 						dropdown:SetHook ("OnOptionSelected", value_change_hook)
 					end
-
+					
 					--> hook list
 					if (widget_table.hooks) then
 						for hookName, hookFunc in pairs (widget_table.hooks) do
@@ -1946,34 +1950,34 @@ end
 					if (widget_table.id) then
 						parent.widgetids [widget_table.id] = dropdown
 					end
-
+					
 					local size = label.widget:GetStringWidth() + 144
 					if (size > max_x) then
 						max_x = size
 					end
-
+					
 					--store the widget created into the overall table and the widget by type
 					tinsert (parent.widget_list, dropdown)
 					tinsert (parent.widget_list_by_type.dropdown, dropdown)
 
 					widget_created = dropdown
 					line_widgets_created = line_widgets_created + 1
-
+					
 				elseif (widget_table.type == "toggle") then
 					local switch = DF:NewSwitch (parent, nil, "$parentWidget" .. index, nil, 60, 20, nil, nil, widget_table.get(), nil, nil, nil, nil, switch_template)
 					switch.tooltip = widget_table.desc
 					switch._get = widget_table.get
 					switch.widget_type = "toggle"
 					switch.OnSwitch = widget_table.set
-
+					
 					if (switch_is_box) then
 						switch:SetAsCheckBox()
 					end
-
+					
 					if (value_change_hook) then
 						switch:SetHook ("OnSwitch", value_change_hook)
 					end
-
+					
 					--> hook list
 					if (widget_table.hooks) then
 						for hookName, hookFunc in pairs (widget_table.hooks) do
@@ -2008,19 +2012,19 @@ end
 					if (widget_table.id) then
 						parent.widgetids [widget_table.id] = switch
 					end
-
+					
 					local size = label.widget:GetStringWidth() + 32
 					if (size > max_x) then
 						max_x = size
 					end
-
+					
 					--store the widget created into the overall table and the widget by type
 					tinsert (parent.widget_list, switch)
 					tinsert (parent.widget_list_by_type.switch, switch)
 
 					widget_created = switch
 					line_widgets_created = line_widgets_created + 1
-
+					
 				elseif (widget_table.type == "range") then
 					local is_decimanls = widget_table.usedecimals
 					local slider = DF:NewSlider (parent, nil, "$parentWidget" .. index, nil, 140, 20, widget_table.min, widget_table.max, widget_table.step, widget_table.get(),  is_decimanls, nil, nil, slider_template)
@@ -2028,29 +2032,29 @@ end
 					slider._get = widget_table.get
 					slider.widget_type = "range"
 					slider:SetHook ("OnValueChange", widget_table.set)
-
+					
 					if (widget_table.thumbscale) then
 						slider:SetThumbSize (slider.thumb:GetWidth()*widget_table.thumbscale, nil)
 					else
 						slider:SetThumbSize (slider.thumb:GetWidth()*1.3, nil)
 					end
-
+					
 					if (value_change_hook) then
 						slider:SetHook ("OnValueChange", value_change_hook)
 					end
-
+					
 					--> hook list
 					if (widget_table.hooks) then
 						for hookName, hookFunc in pairs (widget_table.hooks) do
 							slider:SetHook (hookName, hookFunc)
 						end
 					end
-
+					
 					local label = DF:NewLabel (parent, nil, "$parentLabel" .. index, nil, widget_table.name .. (use_two_points and ": " or ""), "GameFontNormal", widget_table.text_template or text_template or 12)
 					slider:SetPoint ("left", label, "right", 2)
 					label:SetPoint (cur_x, cur_y)
 					slider.hasLabel = label
-
+					
 					if (widget_table.id) then
 						parent.widgetids [widget_table.id] = slider
 					end
@@ -2059,14 +2063,14 @@ end
 					if (size > max_x) then
 						max_x = size
 					end
-
+					
 					--store the widget created into the overall table and the widget by type
 					tinsert (parent.widget_list, slider)
 					tinsert (parent.widget_list_by_type.slider, slider)
 
 					widget_created = slider
 					line_widgets_created = line_widgets_created + 1
-
+					
 				elseif (widget_table.type == "color") then
 					local colorpick = DF:NewColorPickButton (parent, "$parentWidget" .. index, nil, widget_table.set, nil, button_template)
 					colorpick.tooltip = widget_table.desc
@@ -2080,18 +2084,18 @@ end
 					else
 						colorpick:SetColor (default_value, g, b, a)
 					end
-
+					
 					if (value_change_hook) then
 						colorpick:SetHook ("OnColorChanged", value_change_hook)
 					end
-
+					
 					--> hook list
 					if (widget_table.hooks) then
 						for hookName, hookFunc in pairs (widget_table.hooks) do
 							colorpick:SetHook (hookName, hookFunc)
 						end
 					end
-
+					
 					local label = DF:NewLabel (parent, nil, "$parentLabel" .. index, nil, widget_table.name .. (use_two_points and ": " or ""), "GameFontNormal", widget_table.text_template or text_template or 12)
 					if (widget_table.boxfirst) then
 						label:SetPoint("left", colorpick, "right", 2)
@@ -2103,7 +2107,7 @@ end
 					end
 
 					colorpick.hasLabel = label
-
+					
 					if (widget_table.id) then
 						parent.widgetids [widget_table.id] = colorpick
 					end
@@ -2112,16 +2116,16 @@ end
 					if (size > max_x) then
 						max_x = size
 					end
-
+					
 					--store the widget created into the overall table and the widget by type
 					tinsert (parent.widget_list, colorpick)
 					tinsert (parent.widget_list_by_type.color, colorpick)
 
 					widget_created = colorpick
 					line_widgets_created = line_widgets_created + 1
-
+					
 				elseif (widget_table.type == "execute") then
-
+				
 					local button = DF:NewButton (parent, nil, "$parentWidget" .. index, nil, 120, 18, widget_table.func, widget_table.param1, widget_table.param2, nil, widget_table.name, nil, button_template, text_template)
 					if (not button_template) then
 						button:InstallCustomTexture()
@@ -2141,9 +2145,9 @@ end
 
 					button.tooltip = widget_table.desc
 					button.widget_type = "execute"
-
+					
 					--notice: execute doesn't trigger global callback
-
+					
 					--button icon
 					if (widget_table.icontexture) then
 						button:SetIcon(widget_table.icontexture, nil, nil, nil, widget_table.icontexcoords, nil, nil, 2)
@@ -2166,19 +2170,19 @@ end
 					if (widget_table.height) then
 						button:SetHeight(widget_table.height)
 					end
-
+					
 					local size = button:GetWidth() + 4
 					if (size > max_x) then
 						max_x = size
 					end
-
+					
 					--store the widget created into the overall table and the widget by type
 					tinsert (parent.widget_list, button)
 					tinsert (parent.widget_list_by_type.button, button)
 
 					widget_created = button
 					line_widgets_created = line_widgets_created + 1
-
+					
 				elseif (widget_table.type == "textentry") then
 					local textentry = DF:CreateTextEntry (parent, widget_table.func or widget_table.set, 120, 18, nil, "$parentWidget" .. index, nil, button_template)
 					textentry.tooltip = widget_table.desc
@@ -2194,7 +2198,7 @@ end
 					textentry.hasLabel = label
 
 					--> text entry doesn't trigger global callback
-
+					
 					--> hook list
 					if (widget_table.hooks) then
 						for hookName, hookFunc in pairs (widget_table.hooks) do
@@ -2205,19 +2209,19 @@ end
 					if (widget_table.id) then
 						parent.widgetids [widget_table.id] = textentry
 					end
-
+					
 					local size = label.widget:GetStringWidth() + 64
 					if (size > max_x) then
 						max_x = size
 					end
-
+					
 					--store the widget created into the overall table and the widget by type
 					tinsert (parent.widget_list, textentry)
 					tinsert (parent.widget_list_by_type.textentry, textentry)
 
 					widget_created = textentry
 					line_widgets_created = line_widgets_created + 1
-
+					
 				end
 
 				if (widget_table.nocombat) then
@@ -2279,23 +2283,23 @@ end
 				DF.PlayerHasCombatFlag = false
 			end
 			DF.RefreshUnsafeOptionsWidgets()
-
+			
 		elseif (event == "PLAYER_REGEN_ENABLED") then
 			DF.PlayerHasCombatFlag = false
 			DF.RefreshUnsafeOptionsWidgets()
-
+			
 		elseif (event == "PLAYER_REGEN_DISABLED") then
 			DF.PlayerHasCombatFlag = true
 			DF.RefreshUnsafeOptionsWidgets()
-
+			
 		end
 	end)
-
+	
 	function DF:CreateInCombatTexture (frame)
 		if (DF.debug and not frame) then
 			error ("Details! Framework: CreateInCombatTexture invalid frame on parameter 1.")
 		end
-
+	
 		local in_combat_background = DF:CreateImage (frame)
 		in_combat_background:SetColorTexture (.6, 0, 0, .1)
 		in_combat_background:Hide()
@@ -2315,17 +2319,17 @@ end
 				in_combat_label:Hide()
 			end
 		end)
-
+		
 		return in_combat_background
 	end
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --> tutorials
-
+	
 	function DF:ShowTutorialAlertFrame (maintext, desctext, clickfunc)
-
+		
 		local TutorialAlertFrame = _G.DetailsFrameworkAlertFrame
-
+		
 		if (not TutorialAlertFrame) then
 
 			TutorialAlertFrame = CreateFrame ("frame", "DetailsFrameworkAlertFrame", UIParent, "MicroButtonAlertTemplate")
@@ -2333,8 +2337,8 @@ end
 			TutorialAlertFrame:SetPoint ("left", UIParent, "left", -20, 100)
 			TutorialAlertFrame:SetFrameStrata ("TOOLTIP")
 			TutorialAlertFrame:Hide()
-
-			TutorialAlertFrame:SetScript ("OnMouseUp", function (self)
+			
+			TutorialAlertFrame:SetScript ("OnMouseUp", function (self) 
 				if (self.clickfunc and type (self.clickfunc) == "function") then
 					self.clickfunc()
 				end
@@ -2342,16 +2346,16 @@ end
 			end)
 			TutorialAlertFrame:Hide()
 		end
-
+		
 		--
 		TutorialAlertFrame.label = type (maintext) == "string" and maintext or type (desctext) == "string" and desctext or ""
 		MicroButtonAlert_SetText (TutorialAlertFrame, alert.label)
 		--
-
+		
 		TutorialAlertFrame.clickfunc = clickfunc
 		TutorialAlertFrame:Show()
 	end
-
+	
 	local refresh_options = function (self)
 		for _, widget in ipairs (self.widget_list) do
 			if (widget._get) then
@@ -2376,7 +2380,7 @@ end
 			end
 		end
 	end
-
+	
 	local get_frame_by_id = function (self, id)
 		return self.widgetids [id]
 	end
@@ -2407,21 +2411,21 @@ end
 		frame.widgetids = {}
 		frame.GetWidgetById = get_frame_by_id
 	end
-
+	
 	function DF:CreateOptionsFrame (name, title, template)
-
+	
 		template = template or 1
-
+	
 		if (template == 2) then
 			local options_frame = CreateFrame ("frame", name, UIParent, "ButtonFrameTemplate")
 			tinsert (UISpecialFrames, name)
 			options_frame:SetSize (500, 200)
 			options_frame.RefreshOptions = refresh_options
 			options_frame.widget_list = {}
-
+			
 			options_frame:SetScript ("OnMouseDown", function(self, button)
 				if (button == "RightButton") then
-					if (self.moving) then
+					if (self.moving) then 
 						self.moving = false
 						self:StopMovingOrSizing()
 					end
@@ -2432,27 +2436,27 @@ end
 				end
 			end)
 			options_frame:SetScript ("OnMouseUp", function(self)
-				if (self.moving) then
+				if (self.moving) then 
 					self.moving = false
 					self:StopMovingOrSizing()
 				end
 			end)
-
+			
 			options_frame:SetMovable (true)
 			options_frame:EnableMouse (true)
 			options_frame:SetFrameStrata ("DIALOG")
 			options_frame:SetToplevel (true)
-
+			
 			options_frame:Hide()
-
+			
 			options_frame:SetPoint ("center", UIParent, "center")
-			options_frame.TitleText:SetText (title)
-			options_frame.portrait:SetTexture ([[Interface\CHARACTERFRAME\TEMPORARYPORTRAIT-FEMALE-BLOODELF]])
-
+			options_frame.TitleText:SetText (title) --10.0 fuck
+			--options_frame.portrait:SetTexture ([[Interface\CHARACTERFRAME\TEMPORARYPORTRAIT-FEMALE-BLOODELF]])
+			
 			return options_frame
-
+	
 		elseif (template == 1) then
-
+		
 			local options_frame = CreateFrame ("frame", name, UIParent)
 			tinsert (UISpecialFrames, name)
 			options_frame:SetSize (500, 200)
@@ -2461,7 +2465,7 @@ end
 
 			options_frame:SetScript ("OnMouseDown", function(self, button)
 				if (button == "RightButton") then
-					if (self.moving) then
+					if (self.moving) then 
 						self.moving = false
 						self:StopMovingOrSizing()
 					end
@@ -2472,21 +2476,21 @@ end
 				end
 			end)
 			options_frame:SetScript ("OnMouseUp", function(self)
-				if (self.moving) then
+				if (self.moving) then 
 					self.moving = false
 					self:StopMovingOrSizing()
 				end
 			end)
-
+			
 			options_frame:SetMovable (true)
 			options_frame:EnableMouse (true)
 			options_frame:SetFrameStrata ("DIALOG")
 			options_frame:SetToplevel (true)
-
+			
 			options_frame:Hide()
-
+			
 			options_frame:SetPoint ("center", UIParent, "center")
-
+			
 			options_frame:SetBackdrop ({bgFile = "Interface\\Tooltips\\UI-Tooltip-Background", tile = true, tileSize = 16,
 			edgeFile = [[Interface\Buttons\WHITE8X8]], edgeSize = 1,
 			insets = {left = 1, right = 1, top = 1, bottom = 1}})
@@ -2499,7 +2503,7 @@ end
 			texturetitle:SetPoint ("topleft", options_frame, "topleft", 2, -3)
 			texturetitle:SetWidth (36)
 			texturetitle:SetHeight (36)
-
+			
 			local title = DF:NewLabel (options_frame, nil, "$parentTitle", nil, title, nil, 20, "yellow")
 			title:SetPoint ("left", texturetitle, "right", 2, -1)
 			DF:SetFontOutline (title, true)
@@ -2509,11 +2513,11 @@ end
 			c:SetHeight (32)
 			c:SetPoint ("TOPRIGHT",  options_frame, "TOPRIGHT", -3, -3)
 			c:SetFrameLevel (options_frame:GetFrameLevel()+1)
-
+			
 			return options_frame
 		end
-	end
-
+	end	
+	
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --> ~templates
 
@@ -2548,19 +2552,19 @@ function DF:GetBestFontForLanguage (language, western, cyrillic, china, korean, 
 
 	if (language == "enUS" or language == "deDE" or language == "esES" or language == "esMX" or language == "frFR" or language == "itIT" or language == "ptBR") then
 		return western or "Friz Quadrata TT"
-
+		
 	elseif (language == "ruRU") then
 		return cyrillic or "Arial Narrow"
-
+		
 	elseif (language == "zhCN") then
 		return china or "AR CrystalzcuheiGBK Demibold"
-
+	
 	elseif (language == "koKR") then
 		return korean or "2002"
-
+		
 	elseif (language == "zhTW") then
 		return taiwan or "AR CrystalzcuheiGBK Demibold"
-
+	
 	end
 end
 
@@ -2642,7 +2646,7 @@ DF.slider_templates ["OPTIONS_SLIDER_TEMPLATE"] = {
 function DF:InstallTemplate (widget_type, template_name, template, parent_name)
 
 	local newTemplate = {}
-
+	
 	--if has a parent, just copy the parent to the new template
 	if (parent_name and type (parent_name) == "string") then
 		local parentTemplate = DF:GetTemplate (widget_type, parent_name)
@@ -2650,23 +2654,23 @@ function DF:InstallTemplate (widget_type, template_name, template, parent_name)
 			DF.table.copy (newTemplate, parentTemplate)
 		end
 	end
-
+	
 	--copy the template passed into the new template
 	DF.table.copy (newTemplate, template)
 
 	widget_type = string.lower (widget_type)
-
+	
 	local template_table
 	if (widget_type == "font") then
 		template_table = DF.font_templates
-
+		
 		local font = template.font
 		if (font) then
 			--> fonts passed into the template has default to western
 			--> the framework will get the game client language and change the font if needed
 			font = DF:GetBestFontForLanguage (nil, font)
 		end
-
+		
 	elseif (widget_type == "dropdown") then
 		template_table = DF.dropdown_templates
 	elseif (widget_type == "button") then
@@ -2678,7 +2682,7 @@ function DF:InstallTemplate (widget_type, template_name, template, parent_name)
 	end
 
 	template_table [template_name] = newTemplate
-
+	
 	return newTemplate
 end
 
@@ -2713,12 +2717,12 @@ end
 
 function DF:RunHooksForWidget (event, ...)
 	local hooks = self.HookList [event]
-
+	
 	if (not hooks) then
 		print (self.widget:GetName(), "no hooks for", event)
 		return
 	end
-
+	
 	for i, func in ipairs (hooks) do
 		local success, canInterrupt = pcall (func, ...)
 		if (not success) then
@@ -2801,7 +2805,7 @@ function DF:AddMemberForWidget (widgetName, memberType, memberName, func)
 		if (type (memberName) == "string" and (memberType == "SET" or memberType == "GET")) then
 			if (func) then
 				local widgetControlObject = _G [DF.GlobalWidgetControlNames [widgetName]]
-
+				
 				if (memberType == "SET") then
 					widgetControlObject ["SetMembers"] [memberName] = func
 				elseif (memberType == "GET") then
@@ -2829,13 +2833,31 @@ end
 function DF:OpenInterfaceProfile()
 	-- OptionsFrame1/2 should be registered if created with DF:CreateAddOn, so open to them directly
 	if self.OptionsFrame1 then
-		InterfaceOptionsFrame_OpenToCategory (self.OptionsFrame1)
-		if self.OptionsFrame2 then
-			InterfaceOptionsFrame_OpenToCategory (self.OptionsFrame2)
+		if SettingsPanel then
+			--SettingsPanel:OpenToCategory(self.OptionsFrame1.name)
+			local category = SettingsPanel:GetCategoryList():GetCategory(self.OptionsFrame1.name)
+			if category then
+				SettingsPanel:Open()
+				SettingsPanel:SelectCategory(category)
+				if self.OptionsFrame2 and category:HasSubcategories() then
+					for _, subcategory in pairs(category:GetSubcategories()) do
+						if subcategory:GetName() == self.OptionsFrame2.name then
+							SettingsPanel:SelectCategory(subcategory)
+							break
+						end
+					end
+				end
+			end
+			return
+		elseif InterfaceOptionsFrame_OpenToCategory then
+			InterfaceOptionsFrame_OpenToCategory (self.OptionsFrame1)
+			if self.OptionsFrame2 then
+				InterfaceOptionsFrame_OpenToCategory (self.OptionsFrame2)
+			end
+			return
 		end
-		return
 	end
-
+	
 	-- fallback (broken as of ElvUI Skins in version 12.18+... maybe fix/change will come)
 	InterfaceOptionsFrame_OpenToCategory (self.__name)
 	InterfaceOptionsFrame_OpenToCategory (self.__name)
@@ -2894,31 +2916,37 @@ end
 
 function DF:CreateAnimation (animation, type, order, duration, arg1, arg2, arg3, arg4, arg5, arg6, arg7)
 	local anim = animation:CreateAnimation (type)
-
+	
 	anim:SetOrder (order or animation.NextAnimation)
 	anim:SetDuration (duration)
-
+	
 	type = string.upper (type)
-
+	
 	if (type == "ALPHA") then
 		anim:SetFromAlpha (arg1)
 		anim:SetToAlpha (arg2)
-
+	
 	elseif (type == "SCALE") then
-		anim:SetFromScale (arg1, arg2)
-		anim:SetToScale (arg3, arg4)
-		anim:SetOrigin (arg5 or "center", arg6 or 0, arg7 or 0) --point, x, y
+		if (DF.IsDragonflight()) then
+			anim:SetScaleFrom (arg1, arg2)
+			anim:SetScaleTo (arg3, arg4)
+		else
+			anim:SetFromScale (arg1, arg2)
+			anim:SetToScale (arg3, arg4)
+		end
 
+		anim:SetOrigin (arg5 or "center", arg6 or 0, arg7 or 0) --point, x, y
+	
 	elseif (type == "ROTATION") then
 		anim:SetDegrees (arg1) --degree
 		anim:SetOrigin (arg2 or "center", arg3 or 0, arg4 or 0) --point, x, y
-
+		
 	elseif (type == "TRANSLATION") then
 		anim:SetOffset (arg1, arg2)
-
+		
 	end
-
-	animation.NextAnimation = animation.NextAnimation + 1
+	
+	animation.NextAnimation = animation.NextAnimation + 1	
 	return anim
 end
 
@@ -2950,7 +2978,7 @@ FrameshakeUpdateFrame:SetScript ("OnUpdate", function (self, deltaTime)
 					frameshake_do_update (parent, shakeObject, deltaTime)
 				end
 			end
-		end
+		end	
 	end
 end)
 
@@ -2961,29 +2989,29 @@ local frameshake_shake_finished = function (parent, shakeObject)
 		shakeObject.TimeLeft = 0
 		shakeObject.IsFadingOut = false
 		shakeObject.IsFadingIn = false
-
+		
 		--> update the amount of shake running on this frame
 		parent.__frameshakes.enabled = parent.__frameshakes.enabled - 1
-
+		
 		--> restore the default anchors, in case where deltaTime was too small that didn't triggered an update
 		for i = 1, #shakeObject.Anchors do
 			local anchor = shakeObject.Anchors [i]
-
+			
 			--> automatic anchoring and reanching needs to the reviwed in the future
 			if (#anchor == 1) then
 				local anchorTo = unpack (anchor)
 				parent:ClearAllPoints()
 				parent:SetPoint (anchorTo)
-
+				
 			elseif (#anchor == 2) then
 				local anchorTo, point1 = unpack (anchor)
 				parent:ClearAllPoints()
 				parent:SetPoint (anchorTo, point1)
-
+				
 			elseif (#anchor == 3) then
 				local anchorTo, point1, point2 = unpack (anchor)
 				parent:SetPoint (anchorTo, point1, point2)
-
+				
 			elseif (#anchor == 5) then
 				local anchorName1, anchorTo, anchorName2, point1, point2 = unpack (anchor)
 				parent:SetPoint (anchorName1, anchorTo, anchorName2, point1, point2)
@@ -2997,7 +3025,7 @@ frameshake_do_update = function (parent, shakeObject, deltaTime)
 
 	--> check delta time
 	deltaTime = deltaTime or 0
-
+	
 	--> update time left
 	shakeObject.TimeLeft = max (shakeObject.TimeLeft - deltaTime, 0)
 
@@ -3014,13 +3042,13 @@ frameshake_do_update = function (parent, shakeObject, deltaTime)
 		if (shakeObject.IsFadingIn and shakeObject.IsFadingInTime > shakeObject.FadeInTime) then
 			shakeObject.IsFadingIn = false
 		end
-
+		
 		--> check if can enable fade out
 		if (not shakeObject.IsFadingOut and shakeObject.TimeLeft < shakeObject.FadeOutTime) then
 			shakeObject.IsFadingOut = true
 			shakeObject.IsFadingOutTime = shakeObject.FadeOutTime - shakeObject.TimeLeft
 		end
-
+		
 		--> update position
 		local scaleShake = min (shakeObject.IsFadingIn and (shakeObject.IsFadingInTime / shakeObject.FadeInTime) or 1, shakeObject.IsFadingOut and (1 - shakeObject.IsFadingOutTime / shakeObject.FadeOutTime) or 1)
 
@@ -3029,7 +3057,7 @@ frameshake_do_update = function (parent, shakeObject, deltaTime)
 			--> delate the time by the frequency on both X and Y offsets
 			shakeObject.XSineOffset = shakeObject.XSineOffset + (deltaTime * shakeObject.Frequency)
 			shakeObject.YSineOffset = shakeObject.YSineOffset + (deltaTime * shakeObject.Frequency)
-
+			
 			--> calc the new position
 			local newX, newY
 			if (shakeObject.AbsoluteSineX) then
@@ -3038,31 +3066,31 @@ frameshake_do_update = function (parent, shakeObject, deltaTime)
 			else
 				newX = shakeObject.Amplitude * math.sin (shakeObject.XSineOffset) * scaleShake * shakeObject.ScaleX
 			end
-
+			
 			if (shakeObject.AbsoluteSineY) then
 				newY = shakeObject.Amplitude * abs (math.sin (shakeObject.YSineOffset)) * scaleShake * shakeObject.ScaleY
 			else
 				newY = shakeObject.Amplitude * math.sin (shakeObject.YSineOffset) * scaleShake * shakeObject.ScaleY
 			end
-
+			
 			--> apply the offset to the frame anchors
 			for i = 1, #shakeObject.Anchors do
 				local anchor = shakeObject.Anchors [i]
-
+				
 				if (#anchor == 1 or #anchor == 3) then
 					local anchorTo, point1, point2 = unpack (anchor)
 					point1 = point1 or 0
 					point2 = point2 or 0
 					parent:SetPoint (anchorTo, point1 + newX, point2 + newY)
-
+					
 				elseif (#anchor == 5) then
 					local anchorName1, anchorTo, anchorName2, point1, point2 = unpack (anchor)
 					--parent:ClearAllPoints()
-
+					
 					parent:SetPoint (anchorName1, anchorTo, anchorName2, point1 + newX, point2 + newY)
 				end
 			end
-
+			
 		end
 	else
 		frameshake_shake_finished (parent, shakeObject)
@@ -3080,7 +3108,7 @@ local frameshake_play = function (parent, shakeObject, scaleDirection, scaleAmpl
 	if (shakeObject.TimeLeft > 0) then
 		--> reset the time left
 		shakeObject.TimeLeft = shakeObject.Duration
-
+		
 		if (shakeObject.IsFadingOut) then
 			if (shakeObject.FadeInTime > 0) then
 				shakeObject.IsFadingIn = true
@@ -3090,7 +3118,7 @@ local frameshake_play = function (parent, shakeObject, scaleDirection, scaleAmpl
 				shakeObject.IsFadingIn = false
 				shakeObject.IsFadingInTime = 0
 			end
-
+			
 			--> disable fade out and enable fade in
 			shakeObject.IsFadingOut = false
 			shakeObject.IsFadingOutTime = 0
@@ -3099,32 +3127,32 @@ local frameshake_play = function (parent, shakeObject, scaleDirection, scaleAmpl
 		--> create a new random offset
 		shakeObject.XSineOffset = math.pi * 2 * math.random()
 		shakeObject.YSineOffset = math.pi * 2 * math.random()
-
+		
 		--> store the initial position if case it needs a reset
 		shakeObject.StartedXSineOffset = shakeObject.XSineOffset
 		shakeObject.StartedYSineOffset = shakeObject.YSineOffset
-
+		
 		--> check if there's a fade in time
 		if (shakeObject.FadeInTime > 0) then
 			shakeObject.IsFadingIn = true
 		else
 			shakeObject.IsFadingIn = false
 		end
-
+		
 		shakeObject.IsFadingInTime = 0
 		shakeObject.IsFadingOut = false
 		shakeObject.IsFadingOutTime = 0
-
+		
 		--> apply custom scale
 		shakeObject.ScaleX = (scaleDirection or 1) * shakeObject.OriginalScaleX
 		shakeObject.ScaleY = (scaleDirection or 1) * shakeObject.OriginalScaleY
 		shakeObject.Frequency = (scaleFrequency or 1) * shakeObject.OriginalFrequency
 		shakeObject.Amplitude = (scaleAmplitude or 1) * shakeObject.OriginalAmplitude
 		shakeObject.Duration = (scaleDuration or 1) * shakeObject.OriginalDuration
-
+		
 		--> update the time left
 		shakeObject.TimeLeft = shakeObject.Duration
-
+		
 		--> check if is dynamic points
 		if (shakeObject.IsDynamicAnchor) then
 			wipe (shakeObject.Anchors)
@@ -3133,17 +3161,17 @@ local frameshake_play = function (parent, shakeObject, scaleDirection, scaleAmpl
 				shakeObject.Anchors [#shakeObject.Anchors+1] = {p1, p2, p3, p4, p5}
 			end
 		end
-
+		
 		--> update the amount of shake running on this frame
 		parent.__frameshakes.enabled = parent.__frameshakes.enabled + 1
-
+		
 		if (not parent:GetScript ("OnUpdate")) then
 			parent:SetScript ("OnUpdate", function()end)
 		end
 	end
 
 	shakeObject.IsPlaying = true
-
+	
 	frameshake_do_update (parent, shakeObject)
 end
 
@@ -3155,14 +3183,14 @@ local frameshake_set_config = function (parent, shakeObject, duration, amplitude
 	shakeObject.FadeOutTime = fadeOutTime or shakeObject.FadeOutTime
 	shakeObject.ScaleX  = scaleX or shakeObject.ScaleX
 	shakeObject.ScaleY = scaleY or shakeObject.ScaleY
-
+	
 	if (absoluteSineX ~= nil) then
 		shakeObject.AbsoluteSineX = absoluteSineX
 	end
 	if (absoluteSineY ~= nil) then
 		shakeObject.AbsoluteSineY = absoluteSineY
 	end
-
+	
 	shakeObject.OriginalScaleX = shakeObject.ScaleX
 	shakeObject.OriginalScaleY = shakeObject.ScaleY
 	shakeObject.OriginalFrequency = shakeObject.Frequency
@@ -3187,20 +3215,20 @@ function DF:CreateFrameShake (parent, duration, amplitude, frequency, absoluteSi
 		IsPlaying = false,
 		TimeLeft = 0,
 	}
-
+	
 	frameShake.OriginalScaleX = frameShake.ScaleX
 	frameShake.OriginalScaleY = frameShake.ScaleY
 	frameShake.OriginalFrequency = frameShake.Frequency
 	frameShake.OriginalAmplitude = frameShake.Amplitude
 	frameShake.OriginalDuration = frameShake.Duration
-
+	
 	if (type (anchorPoints) ~= "table") then
 		frameShake.IsDynamicAnchor = true
 		frameShake.Anchors = {}
-	else
+	else 
 		frameShake.Anchors = anchorPoints
 	end
-
+	
 	--> inject frame shake table into the frame
 	if (not parent.__frameshakes) then
 		parent.__frameshakes = {
@@ -3210,13 +3238,13 @@ function DF:CreateFrameShake (parent, duration, amplitude, frequency, absoluteSi
 		parent.StopFrameShake = frameshake_stop
 		parent.UpdateFrameShake = frameshake_do_update
 		parent.SetFrameShakeSettings = frameshake_set_config
-
+		
 		--> register the frame within the frame shake updater
 		FrameshakeUpdateFrame.RegisterFrame (parent)
 	end
 
 	tinsert (parent.__frameshakes, frameShake)
-
+	
 	return frameShake
 end
 
@@ -3258,7 +3286,7 @@ local glow_overlay_setcolor = function (self, antsColor, glowColor)
 		self.AntsColor.b = b
 		self.AntsColor.a = a
 	end
-
+	
 	if (glowColor) then
 		local r, g, b, a = DF:ParseColors (glowColor)
 		self.outerGlow:SetVertexColor (r, g, b, a)
@@ -3282,31 +3310,31 @@ function DF:CreateGlowOverlay (parent, antsColor, glowColor)
 	local glowFrame = CreateFrame ("frame", parent:GetName() and "$parentGlow2" or "OverlayActionGlow" .. math.random (1, 10000000), parent, "ActionBarButtonSpellActivationAlert")
 	glowFrame:HookScript ("OnShow", glow_overlay_onshow)
 	glowFrame:HookScript ("OnHide", glow_overlay_onhide)
-
+	
 	glowFrame.Play = glow_overlay_play
 	glowFrame.Stop = glow_overlay_stop
 	glowFrame.SetColor = glow_overlay_setcolor
-
+	
 	glowFrame:Hide()
-
+	
 	parent.overlay = glowFrame
 	local frameWidth, frameHeight = parent:GetSize()
-
+	
 	local scale = 1.4
-
+	
 	--Make the height/width available before the next frame:
 	parent.overlay:SetSize(frameWidth * scale, frameHeight * scale)
 	parent.overlay:SetPoint("TOPLEFT", parent, "TOPLEFT", -frameWidth * 0.32, frameHeight * 0.36)
 	parent.overlay:SetPoint("BOTTOMRIGHT", parent, "BOTTOMRIGHT", frameWidth * 0.32, -frameHeight * 0.36)
-
+	
 	local r, g, b, a = DF:ParseColors (antsColor or defaultColor)
 	glowFrame.ants:SetVertexColor (r, g, b, a)
 	glowFrame.AntsColor = {r, g, b, a}
-
+	
 	local r, g, b, a = DF:ParseColors (glowColor or defaultColor)
 	glowFrame.outerGlow:SetVertexColor (r, g, b, a)
 	glowFrame.GlowColor = {r, g, b, a}
-
+	
 	glowFrame.outerGlow:SetScale (1.2)
 	glowFrame:EnableMouse(false)
 	return glowFrame
@@ -3329,33 +3357,33 @@ function DF:CreateAnts (parent, antTable, leftOffset, rightOffset, topOffset, bo
 	rightOffset = rightOffset or 0
 	topOffset = topOffset or 0
 	bottomOffset = bottomOffset or 0
-
+	
 	local f = CreateFrame ("frame", nil, parent)
 	f:SetPoint ("topleft", leftOffset, topOffset)
 	f:SetPoint ("bottomright", rightOffset, bottomOffset)
-
+	
 	f.SetOffset = ants_set_texture_offset
-
+	
 	local t = f:CreateTexture (nil, "overlay")
 	t:SetAllPoints()
 	t:SetTexture (antTable.Texture)
 	t:SetBlendMode (antTable.BlendMode or "ADD")
 	t:SetVertexColor (DF:ParseColors (antTable.Color or "white"))
 	f.Texture = t
-
+	
 	f.AntTable = antTable
-
+	
 	f:SetScript ("OnUpdate", function (self, deltaTime)
 		AnimateTexCoords (t, self.AntTable.TextureWidth, self.AntTable.TextureHeight, self.AntTable.TexturePartsWidth, self.AntTable.TexturePartsHeight, self.AntTable.AmountParts, deltaTime, self.AntTable.Throttle or 0.025)
 	end)
-
+	
 	return f
 end
 
 --[=[ --test ants
 do
 	local f = DF:CreateAnts (UIParent)
-end
+end	
 --]=]
 
 -----------------------------
@@ -3369,7 +3397,7 @@ local SetBorderAlpha = function (self, alpha1, alpha2, alpha3)
 	self.Borders.Alpha1 = alpha1 or self.Borders.Alpha1
 	self.Borders.Alpha2 = alpha2 or self.Borders.Alpha2
 	self.Borders.Alpha3 = alpha3 or self.Borders.Alpha3
-
+	
 	for _, texture in ipairs (self.Borders.Layer1) do
 		texture:SetAlpha (self.Borders.Alpha1)
 	end
@@ -3398,11 +3426,11 @@ local SetLayerVisibility = function (self, layer1Shown, layer2Shown, layer3Shown
 	for _, texture in ipairs (self.Borders.Layer1) do
 		texture:SetShown (layer1Shown)
 	end
-
+	
 	for _, texture in ipairs (self.Borders.Layer2) do
 		texture:SetShown (layer2Shown)
 	end
-
+	
 	for _, texture in ipairs (self.Borders.Layer3) do
 		texture:SetShown (layer3Shown)
 	end
@@ -3410,7 +3438,7 @@ local SetLayerVisibility = function (self, layer1Shown, layer2Shown, layer3Shown
 end
 
 function DF:CreateBorder (parent, alpha1, alpha2, alpha3)
-
+	
 	parent.Borders = {
 		Layer1 = {},
 		Layer2 = {},
@@ -3419,11 +3447,11 @@ function DF:CreateBorder (parent, alpha1, alpha2, alpha3)
 		Alpha2 = alpha2 or default_border_color2,
 		Alpha3 = alpha3 or default_border_color3,
 	}
-
+	
 	parent.SetBorderAlpha = SetBorderAlpha
 	parent.SetBorderColor = SetBorderColor
 	parent.SetLayerVisibility = SetLayerVisibility
-
+	
 	local border1 = parent:CreateTexture (nil, "background")
 	PixelUtil.SetPoint (border1, "topleft", parent, "topleft", -1, 1)
 	PixelUtil.SetPoint (border1, "bottomleft", parent, "bottomleft", -1, -1)
@@ -3436,11 +3464,11 @@ function DF:CreateBorder (parent, alpha1, alpha2, alpha3)
 	PixelUtil.SetPoint (border3, "topleft", parent, "topleft", -3, 3)
 	PixelUtil.SetPoint (border3, "bottomleft", parent, "bottomleft", -3, -3)
 	border3:SetColorTexture (0, 0, 0, alpha3 or default_border_color3)
-
+	
 	tinsert (parent.Borders.Layer1, border1)
 	tinsert (parent.Borders.Layer2, border2)
 	tinsert (parent.Borders.Layer3, border3)
-
+	
 	local border1 = parent:CreateTexture (nil, "background")
 	PixelUtil.SetPoint (border1, "topleft", parent, "topleft", 0, 1)
 	PixelUtil.SetPoint (border1, "topright", parent, "topright", 1, 1)
@@ -3453,11 +3481,11 @@ function DF:CreateBorder (parent, alpha1, alpha2, alpha3)
 	PixelUtil.SetPoint (border3, "topleft", parent, "topleft", -2, 3)
 	PixelUtil.SetPoint (border3, "topright", parent, "topright", 3, 3)
 	border3:SetColorTexture (0, 0, 0, alpha3 or default_border_color3)
-
+	
 	tinsert (parent.Borders.Layer1, border1)
 	tinsert (parent.Borders.Layer2, border2)
-	tinsert (parent.Borders.Layer3, border3)
-
+	tinsert (parent.Borders.Layer3, border3)	
+	
 	local border1 = parent:CreateTexture (nil, "background")
 	PixelUtil.SetPoint (border1, "topright", parent, "topright", 1, 0)
 	PixelUtil.SetPoint (border1, "bottomright", parent, "bottomright", 1, -1)
@@ -3470,11 +3498,11 @@ function DF:CreateBorder (parent, alpha1, alpha2, alpha3)
 	PixelUtil.SetPoint (border3, "topright", parent, "topright", 3, 2)
 	PixelUtil.SetPoint (border3, "bottomright", parent, "bottomright", 3, -3)
 	border3:SetColorTexture (0, 0, 0, alpha3 or default_border_color3)
-
+	
 	tinsert (parent.Borders.Layer1, border1)
 	tinsert (parent.Borders.Layer2, border2)
-	tinsert (parent.Borders.Layer3, border3)
-
+	tinsert (parent.Borders.Layer3, border3)	
+	
 	local border1 = parent:CreateTexture (nil, "background")
 	PixelUtil.SetPoint (border1, "bottomleft", parent, "bottomleft", 0, -1)
 	PixelUtil.SetPoint (border1, "bottomright", parent, "bottomright", 0, -1)
@@ -3487,11 +3515,11 @@ function DF:CreateBorder (parent, alpha1, alpha2, alpha3)
 	PixelUtil.SetPoint (border3, "bottomleft", parent, "bottomleft", -2, -3)
 	PixelUtil.SetPoint (border3, "bottomright", parent, "bottomright", 2, -3)
 	border3:SetColorTexture (0, 0, 0, alpha3 or default_border_color3)
-
+	
 	tinsert (parent.Borders.Layer1, border1)
 	tinsert (parent.Borders.Layer2, border2)
 	tinsert (parent.Borders.Layer3, border3)
-
+	
 end
 
 --DFNamePlateBorder as copy from "NameplateFullBorderTemplate" -> DF:CreateFullBorder (name, parent)
@@ -3500,6 +3528,12 @@ local DFNamePlateBorderTemplateMixin = {};
 function DFNamePlateBorderTemplateMixin:SetVertexColor(r, g, b, a)
 	for i, texture in ipairs(self.Textures) do
 		texture:SetVertexColor(r, g, b, a);
+	end
+end
+
+function DFNamePlateBorderTemplateMixin:GetVertexColor()
+	for i, texture in ipairs(self.Textures) do
+		return texture:GetVertexColor();
 	end
 end
 
@@ -3543,7 +3577,7 @@ function DF:CreateFullBorder (name, parent)
 	border:SetFrameLevel(border:GetParent():GetFrameLevel())
 	border.Textures = {}
 	Mixin(border, DFNamePlateBorderTemplateMixin)
-
+	
 	local left = border:CreateTexture("$parentLeft", "BACKGROUND", nil, -8)
 	--left:SetDrawLayer("BACKGROUND", -8)
 	left:SetColorTexture(1, 1, 1, 1)
@@ -3552,7 +3586,7 @@ function DF:CreateFullBorder (name, parent)
 	left:SetPoint("BOTTOMRIGHT", border, "BOTTOMLEFT", 0, -1.0)
 	border.Left = left
 	tinsert(border.Textures, left)
-
+	
 	local right = border:CreateTexture("$parentRight", "BACKGROUND", nil, -8)
 	--right:SetDrawLayer("BACKGROUND", -8)
 	right:SetColorTexture(1, 1, 1, 1)
@@ -3561,7 +3595,7 @@ function DF:CreateFullBorder (name, parent)
 	right:SetPoint("BOTTOMLEFT", border, "BOTTOMRIGHT", 0, -1.0)
 	border.Right = right
 	tinsert(border.Textures, right)
-
+	
 	local bottom = border:CreateTexture("$parentBottom", "BACKGROUND", nil, -8)
 	--bottom:SetDrawLayer("BACKGROUND", -8)
 	bottom:SetColorTexture(1, 1, 1, 1)
@@ -3570,7 +3604,7 @@ function DF:CreateFullBorder (name, parent)
 	bottom:SetPoint("TOPRIGHT", border, "BOTTOMRIGHT", 0, 0)
 	border.Bottom = bottom
 	tinsert(border.Textures, bottom)
-
+	
 	local top = border:CreateTexture("$parentTop", "BACKGROUND", nil, -8)
 	--top:SetDrawLayer("BACKGROUND", -8)
 	top:SetColorTexture(1, 1, 1, 1)
@@ -3579,7 +3613,7 @@ function DF:CreateFullBorder (name, parent)
 	top:SetPoint("BOTTOMRIGHT", border, "TOPRIGHT", 0, 0)
 	border.Top = top
 	tinsert(border.Textures, top)
-
+	
 	return border
 end
 
@@ -3588,7 +3622,7 @@ function DF:CreateBorderSolid (parent, size)
 end
 
 function DF:CreateBorderWithSpread (parent, alpha1, alpha2, alpha3, size, spread)
-
+	
 	parent.Borders = {
 		Layer1 = {},
 		Layer2 = {},
@@ -3597,106 +3631,106 @@ function DF:CreateBorderWithSpread (parent, alpha1, alpha2, alpha3, size, spread
 		Alpha2 = alpha2 or default_border_color2,
 		Alpha3 = alpha3 or default_border_color3,
 	}
-
+	
 	parent.SetBorderAlpha = SetBorderAlpha
 	parent.SetBorderColor = SetBorderColor
 	parent.SetLayerVisibility = SetLayerVisibility
-
+	
 	size = size or 1
 	local minPixels = 1
 	local spread = 0
-
+	
 	--left
 	local border1 = parent:CreateTexture (nil, "background")
 	border1:SetColorTexture (0, 0, 0, alpha1 or default_border_color1)
 	PixelUtil.SetPoint (border1, "topleft", parent, "topleft", -1 + spread, 1 + (-spread), 0, 0)
 	PixelUtil.SetPoint (border1, "bottomleft", parent, "bottomleft", -1 + spread, -1 + spread, 0, 0)
 	PixelUtil.SetWidth (border1, size, minPixels)
-
+	
 	local border2 = parent:CreateTexture (nil, "background")
 	PixelUtil.SetPoint (border2, "topleft", parent, "topleft", -2 + spread, 2 + (-spread))
 	PixelUtil.SetPoint (border2, "bottomleft", parent, "bottomleft", -2 + spread, -2 + spread)
 	border2:SetColorTexture (0, 0, 0, alpha2 or default_border_color2)
 	PixelUtil.SetWidth (border2, size, minPixels)
-
+	
 	local border3 = parent:CreateTexture (nil, "background")
 	PixelUtil.SetPoint (border3, "topleft", parent, "topleft", -3 + spread, 3 + (-spread))
 	PixelUtil.SetPoint (border3, "bottomleft", parent, "bottomleft", -3 + spread, -3 + spread)
 	border3:SetColorTexture (0, 0, 0, alpha3 or default_border_color3)
 	PixelUtil.SetWidth (border3, size, minPixels)
-
+	
 	tinsert (parent.Borders.Layer1, border1)
 	tinsert (parent.Borders.Layer2, border2)
 	tinsert (parent.Borders.Layer3, border3)
-
+	
 	--top
 	local border1 = parent:CreateTexture (nil, "background")
 	PixelUtil.SetPoint (border1, "topleft", parent, "topleft", 0 + spread, 1 + (-spread))
 	PixelUtil.SetPoint (border1, "topright", parent, "topright", 1 + (-spread), 1 + (-spread))
 	border1:SetColorTexture (0, 0, 0, alpha1 or default_border_color1)
 	PixelUtil.SetHeight (border1, size, minPixels)
-
+	
 	local border2 = parent:CreateTexture (nil, "background")
 	PixelUtil.SetPoint (border2, "topleft", parent, "topleft", -1 + spread, 2 + (-spread))
 	PixelUtil.SetPoint (border2, "topright", parent, "topright", 2 + (-spread), 2 + (-spread))
 	border2:SetColorTexture (0, 0, 0, alpha2 or default_border_color2)
 	PixelUtil.SetHeight (border2, size, minPixels)
-
+	
 	local border3 = parent:CreateTexture (nil, "background")
 	PixelUtil.SetPoint (border3, "topleft", parent, "topleft", -2 + spread, 3 + (-spread))
 	PixelUtil.SetPoint (border3, "topright", parent, "topright", 3 + (-spread), 3 + (-spread))
 	border3:SetColorTexture (0, 0, 0, alpha3 or default_border_color3)
 	PixelUtil.SetHeight (border3, size, minPixels)
-
+	
 	tinsert (parent.Borders.Layer1, border1)
 	tinsert (parent.Borders.Layer2, border2)
-	tinsert (parent.Borders.Layer3, border3)
-
+	tinsert (parent.Borders.Layer3, border3)	
+	
 	--right
 	local border1 = parent:CreateTexture (nil, "background")
 	PixelUtil.SetPoint (border1, "topright", parent, "topright", 1 + (-spread), 0 + (-spread))
 	PixelUtil.SetPoint (border1, "bottomright", parent, "bottomright", 1 + (-spread), -1 + spread)
 	border1:SetColorTexture (0, 0, 0, alpha1 or default_border_color1)
 	PixelUtil.SetWidth (border1, size, minPixels)
-
+	
 	local border2 = parent:CreateTexture (nil, "background")
 	PixelUtil.SetPoint (border2, "topright", parent, "topright", 2 + (-spread), 1 + (-spread))
 	PixelUtil.SetPoint (border2, "bottomright", parent, "bottomright", 2 + (-spread), -2 + spread)
 	border2:SetColorTexture (0, 0, 0, alpha2 or default_border_color2)
 	PixelUtil.SetWidth (border2, size, minPixels)
-
+	
 	local border3 = parent:CreateTexture (nil, "background")
 	PixelUtil.SetPoint (border3, "topright", parent, "topright", 3 + (-spread), 2 + (-spread))
 	PixelUtil.SetPoint (border3, "bottomright", parent, "bottomright", 3 + (-spread), -3 + spread)
 	border3:SetColorTexture (0, 0, 0, alpha3 or default_border_color3)
 	PixelUtil.SetWidth (border3, size, minPixels)
-
+	
 	tinsert (parent.Borders.Layer1, border1)
 	tinsert (parent.Borders.Layer2, border2)
-	tinsert (parent.Borders.Layer3, border3)
-
+	tinsert (parent.Borders.Layer3, border3)	
+	
 	local border1 = parent:CreateTexture (nil, "background")
 	PixelUtil.SetPoint (border1, "bottomleft", parent, "bottomleft", 0 + spread, -1 + spread)
 	PixelUtil.SetPoint (border1, "bottomright", parent, "bottomright", 0 + (-spread), -1 + spread)
 	border1:SetColorTexture (0, 0, 0, alpha1 or default_border_color1)
 	PixelUtil.SetHeight (border1, size, minPixels)
-
+	
 	local border2 = parent:CreateTexture (nil, "background")
 	PixelUtil.SetPoint (border2, "bottomleft", parent, "bottomleft", -1 + spread, -2 + spread)
 	PixelUtil.SetPoint (border2, "bottomright", parent, "bottomright", 1 + (-spread), -2 + spread)
 	border2:SetColorTexture (0, 0, 0, alpha2 or default_border_color2)
 	PixelUtil.SetHeight (border2, size, minPixels)
-
+	
 	local border3 = parent:CreateTexture (nil, "background")
 	PixelUtil.SetPoint (border3, "bottomleft", parent, "bottomleft", -2 + spread, -3 + spread)
 	PixelUtil.SetPoint (border3, "bottomright", parent, "bottomright", 2 + (-spread), -3 + spread)
 	border3:SetColorTexture (0, 0, 0, alpha3 or default_border_color3)
 	PixelUtil.SetHeight (border3, size, minPixels)
-
+	
 	tinsert (parent.Borders.Layer1, border1)
 	tinsert (parent.Borders.Layer2, border2)
 	tinsert (parent.Borders.Layer3, border3)
-
+	
 end
 
 function DF:ReskinSlider (slider, heightOffset)
@@ -3716,7 +3750,7 @@ function DF:ReskinSlider (slider, heightOffset)
 		slider.cima:SetBackdropColor (0, 0, 0, 0.3)
 		slider.cima:SetBackdropBorderColor (0, 0, 0, 1)
 		]=]
-
+		
 		slider.baixo:SetNormalTexture ([[Interface\Buttons\Arrow-Down-Up]])
 		slider.baixo:SetPushedTexture ([[Interface\Buttons\Arrow-Down-Down]])
 		slider.baixo:SetDisabledTexture ([[Interface\Buttons\Arrow-Down-Disabled]])
@@ -3731,12 +3765,12 @@ function DF:ReskinSlider (slider, heightOffset)
 		slider.baixo:SetBackdrop ({edgeFile = [[Interface\Buttons\WHITE8X8]], edgeSize = 1, bgFile = [[Interface\AddOns\Details\images\background]]})
 		slider.baixo:SetBackdropColor (0, 0, 0, 0.35)
 		slider.baixo:SetBackdropBorderColor (0, 0, 0, 1)
-
+		
 		slider.slider:SetBackdrop ({edgeFile = [[Interface\Buttons\WHITE8X8]], edgeSize = 1, bgFile = [[Interface\AddOns\Details\images\background]]})
 		slider.slider:SetBackdropColor (0, 0, 0, 0.35)
 		slider.slider:SetBackdropBorderColor (0, 0, 0, 1)
 		]=]
-
+		
 		--slider.slider:Altura (164)
 		slider.slider:cimaPoint (0, 13)
 		slider.slider:baixoPoint (0, -13)
@@ -3744,7 +3778,7 @@ function DF:ReskinSlider (slider, heightOffset)
 		slider.slider.thumb:SetTexCoord (482/512, 492/512, 104/512, 120/512)
 		slider.slider.thumb:SetSize (12, 12)
 		slider.slider.thumb:SetVertexColor (0.6, 0.6, 0.6, 0.95)
-
+		
 	else
 		--up button
 
@@ -3754,14 +3788,14 @@ function DF:ReskinSlider (slider, heightOffset)
 			local normalTexture = slider.ScrollBar.ScrollUpButton.Normal
 			normalTexture:SetTexture ([[Interface\Buttons\Arrow-Up-Up]])
 			normalTexture:SetTexCoord (0, 1, .2, 1)
-
+			
 			normalTexture:SetPoint ("topleft", slider.ScrollBar.ScrollUpButton, "topleft", offset, 0)
 			normalTexture:SetPoint ("bottomright", slider.ScrollBar.ScrollUpButton, "bottomright", offset, 0)
-
+			
 			local pushedTexture = slider.ScrollBar.ScrollUpButton.Pushed
 			pushedTexture:SetTexture ([[Interface\Buttons\Arrow-Up-Down]])
 			pushedTexture:SetTexCoord (0, 1, .2, 1)
-
+			
 			pushedTexture:SetPoint ("topleft", slider.ScrollBar.ScrollUpButton, "topleft", offset, 0)
 			pushedTexture:SetPoint ("bottomright", slider.ScrollBar.ScrollUpButton, "bottomright", offset, 0)
 
@@ -3769,10 +3803,10 @@ function DF:ReskinSlider (slider, heightOffset)
 			disabledTexture:SetTexture ([[Interface\Buttons\Arrow-Up-Disabled]])
 			disabledTexture:SetTexCoord (0, 1, .2, 1)
 			disabledTexture:SetAlpha (.5)
-
+			
 			disabledTexture:SetPoint ("topleft", slider.ScrollBar.ScrollUpButton, "topleft", offset, 0)
 			disabledTexture:SetPoint ("bottomright", slider.ScrollBar.ScrollUpButton, "bottomright", offset, 0)
-
+			
 			slider.ScrollBar.ScrollUpButton:SetSize (16, 16)
 			--[=[
 			slider.ScrollBar.ScrollUpButton:SetBackdrop ({edgeFile = [[Interface\Buttons\WHITE8X8]], edgeSize = 1, bgFile = "Interface\\Tooltips\\UI-Tooltip-Background"})
@@ -3782,31 +3816,31 @@ function DF:ReskinSlider (slider, heightOffset)
 			--it was having problems with the texture anchor when calling ClearAllPoints() and setting new points different from the original
 			--now it is using the same points from the original with small offsets tp align correctly
 		end
-
+		
 		--down button
 		do
 			local normalTexture = slider.ScrollBar.ScrollDownButton.Normal
 			normalTexture:SetTexture ([[Interface\Buttons\Arrow-Down-Up]])
 			normalTexture:SetTexCoord (0, 1, 0, .8)
-
+			
 			normalTexture:SetPoint ("topleft", slider.ScrollBar.ScrollDownButton, "topleft", offset, -4)
 			normalTexture:SetPoint ("bottomright", slider.ScrollBar.ScrollDownButton, "bottomright", offset, -4)
-
+			
 			local pushedTexture = slider.ScrollBar.ScrollDownButton.Pushed
 			pushedTexture:SetTexture ([[Interface\Buttons\Arrow-Down-Down]])
 			pushedTexture:SetTexCoord (0, 1, 0, .8)
-
+			
 			pushedTexture:SetPoint ("topleft", slider.ScrollBar.ScrollDownButton, "topleft", offset, -4)
 			pushedTexture:SetPoint ("bottomright", slider.ScrollBar.ScrollDownButton, "bottomright", offset, -4)
-
+			
 			local disabledTexture = slider.ScrollBar.ScrollDownButton.Disabled
 			disabledTexture:SetTexture ([[Interface\Buttons\Arrow-Down-Disabled]])
 			disabledTexture:SetTexCoord (0, 1, 0, .8)
 			disabledTexture:SetAlpha (.5)
-
+			
 			disabledTexture:SetPoint ("topleft", slider.ScrollBar.ScrollDownButton, "topleft", offset, -4)
 			disabledTexture:SetPoint ("bottomright", slider.ScrollBar.ScrollDownButton, "bottomright", offset, -4)
-
+			
 			slider.ScrollBar.ScrollDownButton:SetSize (16, 16)
 			--[=[
 			slider.ScrollBar.ScrollDownButton:SetBackdrop ({edgeFile = [[Interface\Buttons\WHITE8X8]], edgeSize = 1, bgFile = "Interface\\Tooltips\\UI-Tooltip-Background"})
@@ -3817,7 +3851,7 @@ function DF:ReskinSlider (slider, heightOffset)
 			--<Anchor point="TOP" relativePoint="BOTTOM"/>
 			--slider.ScrollBar.ScrollDownButton:SetPoint ("top", slider.ScrollBar, "bottom", 0, 0)
 		end
-
+		
 		--if the parent has a editbox, this is a code editor
 		if (slider:GetParent().editbox) then
 			slider.ScrollBar:SetPoint ("TOPLEFT", slider, "TOPRIGHT", 12 + offset, -6)
@@ -3830,7 +3864,7 @@ function DF:ReskinSlider (slider, heightOffset)
 
 		slider.ScrollBar.ThumbTexture:SetColorTexture (.5, .5, .5, .3)
 		slider.ScrollBar.ThumbTexture:SetSize (12, 8)
-
+		
 		--
 		--[=[
 		slider.ScrollBar:SetBackdrop ({edgeFile = [[Interface\Buttons\WHITE8X8]], edgeSize = 1, bgFile = "Interface\\Tooltips\\UI-Tooltip-Background"})
@@ -3867,6 +3901,7 @@ local specs_per_class = {
 	["WARLOCK"] = {265, 266, 267},
 	["PALADIN"] = {65, 66, 70},
 	["MONK"] = {268, 269, 270},
+	["EVOKER"] = {1467, 1468},
 }
 
 function DF:GetClassSpecIDs (class)
@@ -3882,16 +3917,15 @@ function DF:QuickDispatch (func, ...)
 	if (type (func) ~= "function") then
 		return
 	end
-
+	
 	local okay, errortext = pcall (func, ...)
-
+	
 	if (not okay) then
 		--> trigger an error msg
-		print(func, ...)
 		dispatch_error (_, errortext)
 		return
 	end
-
+	
 	return true
 end
 
@@ -3926,7 +3960,7 @@ function DF:CoreDispatch (context, func, ...)
 		local errortext = "D!Framework " .. context .. " error: invalid function to call\n====================\n" .. stack .. "\n====================\n"
 		error (errortext)
 	end
-
+	
 	local okay, result1, result2, result3, result4 = xpcall(func, geterrorhandler(), ...)
 
 	--if (not okay) then --when using pcall
@@ -3934,7 +3968,7 @@ function DF:CoreDispatch (context, func, ...)
 		--local errortext = "D!Framework (" .. context .. ") error: " .. result1 .. "\n====================\n" .. stack .. "\n====================\n"
 		--error (errortext)
 	--end
-
+	
 	return result1, result2, result3, result4
 end
 
@@ -3947,7 +3981,7 @@ function DF_CALC_PERFORMANCE()
 	F:SetScript ("OnUpdate", function (self, deltaTime)
 		if (not J) then
 			J = true
-			return
+			return 
 		end
 		print ("Elapsed Time:", deltaTime)
 		F:SetScript ("OnUpdate", nil)
@@ -3967,6 +4001,7 @@ DF.ClassIndexToFileName = {
 	[11] = "DRUID",
 	[10] = "MONK",
 	[2] = "PALADIN",
+	[13] = "EVOKER",
 }
 
 
@@ -3983,6 +4018,7 @@ DF.ClassFileNameToIndex = {
 	["DRUID"] = 11,
 	["MONK"] = 10,
 	["PALADIN"] = 2,
+	["EVOKER"] = 13,
 }
 DF.ClassCache = {}
 
@@ -3991,7 +4027,7 @@ function DF:GetClassList()
 	if (next (DF.ClassCache)) then
 		return DF.ClassCache
 	end
-
+	
 	for className, classIndex in pairs (DF.ClassFileNameToIndex) do
 		local classTable = C_CreatureInfo.GetClassInfo (classIndex)
 		if classTable then
@@ -4005,9 +4041,9 @@ function DF:GetClassList()
 			tinsert (DF.ClassCache, t)
 		end
 	end
-
+	
 	return DF.ClassCache
-
+	
 end
 
 --hardcoded race list
@@ -4069,13 +4105,13 @@ function DF:GetCharacterRaceList()
 	if (next (DF.RaceCache)) then
 		return DF.RaceCache
 	end
-
+	
 	for i = 1, 100 do
 		local raceInfo = C_CreatureInfo.GetRaceInfo (i)
 		if (raceInfo and DF.RaceList [raceInfo.raceID]) then
 			tinsert (DF.RaceCache, {Name = raceInfo.raceName, FileString = raceInfo.clientFileString, ID = raceInfo.raceID})
 		end
-
+		
 		if IS_WOW_PROJECT_MAINLINE then
 			local alliedRaceInfo = C_AlliedRaces.GetRaceInfoByID (i)
 			if (alliedRaceInfo and DF.AlliedRaceList [alliedRaceInfo.raceID]) then
@@ -4083,16 +4119,16 @@ function DF:GetCharacterRaceList()
 			end
 		end
 	end
-
+	
 	return DF.RaceCache
 end
 
 --get a list of talents for the current spec the player is using
 --if onlySelected return an index table with only the talents the character has selected
---if onlySelectedHash return a hash table with [spelID] = true
+--if onlySelectedHash return a hash table with [spelID] = true 
 function DF:GetCharacterTalents (onlySelected, onlySelectedHash)
 	local talentList = {}
-
+	
 	for i = 1, 7 do
 		for o = 1, 3 do
 			local talentID, name, texture, selected, available = GetTalentInfo (i, o, 1)
@@ -4111,7 +4147,7 @@ function DF:GetCharacterTalents (onlySelected, onlySelectedHash)
 			end
 		end
 	end
-
+	
 	return talentList
 end
 
@@ -4128,8 +4164,8 @@ function DF:GetCharacterPvPTalents (onlySelected, onlySelectedHash)
 			end
 		end
 		return talentList
-
-	else
+		
+	else	
 		local alreadyAdded = {}
 		local talentList = {}
 		for i = 1, 4 do --4 slots - get talents available in each one
@@ -4245,7 +4281,7 @@ end
 
 DF.ClassSpecs = {
 	["DEMONHUNTER"] = {
-		[577] = true,
+		[577] = true, 
 		[581] = true,
 	},
 	["DEATHKNIGHT"] = {
@@ -4265,7 +4301,7 @@ DF.ClassSpecs = {
 	},
 	["ROGUE"] = {
 		[259] = true,
-		[260] = true,
+		[260] = true,		
 		[261] = true,
 	},
 	["DRUID"] = {
@@ -4276,7 +4312,7 @@ DF.ClassSpecs = {
 	},
 	["HUNTER"] = {
 		[253] = true,
-		[254] = true,
+		[254] = true,		
 		[255] = true,
 	},
 	["SHAMAN"] = {
@@ -4300,15 +4336,19 @@ DF.ClassSpecs = {
 		[70] = true,
 	},
 	["MONK"] = {
-		[268] = true,
-		[269] = true,
-		[270] = true,
+		[268] = true, 
+		[269] = true, 
+		[270] = true, 
+	},
+	["EVOKER"] = {
+		[1467] = true,
+		[1468] = true,
 	},
 }
 
 DF.SpecListByClass = {
 	["DEMONHUNTER"] = {
-		577,
+		577, 
 		581,
 	},
 	["DEATHKNIGHT"] = {
@@ -4328,7 +4368,7 @@ DF.SpecListByClass = {
 	},
 	["ROGUE"] = {
 		259,
-		260,
+		260,		
 		261,
 	},
 	["DRUID"] = {
@@ -4339,7 +4379,7 @@ DF.SpecListByClass = {
 	},
 	["HUNTER"] = {
 		253,
-		254,
+		254,		
 		255,
 	},
 	["SHAMAN"] = {
@@ -4363,9 +4403,13 @@ DF.SpecListByClass = {
 		70,
 	},
 	["MONK"] = {
-		268,
-		269,
-		270,
+		268, 
+		269, 
+		270, 
+	},
+	["EVOKER"] = {
+		1467,
+		1468,
 	},
 }
 
@@ -4425,7 +4469,7 @@ end
 
 		local classLoc, class = UnitClass(unitId)
 		local spec = GetSpecialization()
-
+		
 		if (spec and class) then
 			--prist
 			if (class == "PRIEST") then
@@ -4439,7 +4483,7 @@ end
 						end
 					end
 				end
-
+				
 			elseif (class == "MAGE") then
 				--playing fire mage?
 				local specID = GetSpecializationInfo(spec)
@@ -4451,7 +4495,7 @@ end
 						end
 					end
 				end
-
+				
 			elseif (class == "WARRIOR") then
 				--is playing as a Arms warrior?
 				local specID = GetSpecializationInfo(spec)
@@ -4469,7 +4513,7 @@ end
 						return 0.20
 					end
 				end
-
+				
 			elseif (class == "HUNTER") then
 				local specID = GetSpecializationInfo(spec)
 				if (specID and specID ~= 0) then
@@ -4495,7 +4539,7 @@ end
 				end
 			end
 		end
-	end
+	end	
 
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -4528,12 +4572,12 @@ end
 	local aceComm = LibStub:GetLibrary ("AceComm-3.0")
 	local LibAceSerializer = LibStub:GetLibrary ("AceSerializer-3.0")
 	local LibDeflate = LibStub:GetLibrary ("LibDeflate")
-
+	
 	DF.RegisteredScriptsComm = DF.RegisteredScriptsComm or {}
-
+	
 	function DF.OnReceiveScriptComm (...)
 		local prefix, encodedString, channel, commSource = ...
-
+		
 		local decodedString = LibDeflate:DecodeForWoWAddonChannel (encodedString)
 		if (decodedString) then
 			local uncompressedString = LibDeflate:DecompressDeflate (decodedString)
@@ -4555,7 +4599,7 @@ end
 			end
 		end
 	end
-
+	
 	function DF:RegisterScriptComm (ID, func)
 		if (ID) then
 			if (type (func) == "function") then
@@ -4565,7 +4609,7 @@ end
 			end
 		end
 	end
-
+	
 	function DF:SendScriptComm (ID, ...)
 		if (DF.RegisteredScriptsComm [ID]) then
 			local sourceName = UnitName ("player") .. "-" .. GetRealmName()
@@ -4575,11 +4619,11 @@ end
 			aceComm:SendCommMessage ("_GSC", data, "PARTY")
 		end
 	end
-
+	
 	if (aceComm and LibAceSerializer and LibDeflate) then
 		aceComm:RegisterComm ("_GSC", DF.OnReceiveScriptComm)
 	end
-
+	
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --> debug
 
@@ -4590,30 +4634,30 @@ DF.DebugMixin = {
 	CheckPoint = function (self, checkPointName, ...)
 		print (self:GetName(), checkPointName, ...)
 	end,
-
+	
 	CheckVisibilityState = function (self, widget)
-
+		
 		self = widget or self
-
+		
 		local width, height = self:GetSize()
 		width = floor (width)
 		height = floor (height)
-
+		
 		local numPoints = self:GetNumPoints()
-
+		
 		print ("shown:", self:IsShown(), "visible:", self:IsVisible(), "alpha:", self:GetAlpha(), "size:", width, height, "points:", numPoints)
 	end,
-
+	
 	CheckStack = function (self)
 		local stack = debugstack()
 		Details:Dump (stack)
 	end,
-
+	
 }
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
-
---> returns if the unit is tapped (gray health color when another player hit the unit first)
+	
+--> returns if the unit is tapped (gray health color when another player hit the unit first) 
 function DF:IsUnitTapDenied (unitId)
 	return unitId and not UnitPlayerControlled (unitId) and UnitIsTapDenied (unitId)
 end
@@ -4687,7 +4731,7 @@ do
 			end
 		end
 
-	--return the amount of objects
+	--return the amount of objects 
 		local getamount = function(self)
 			return #self.notUse + #self.inUse, #self.notUse, #self.inUse
 		end
@@ -4831,7 +4875,7 @@ end
             end
         end
     end
-
+	
 	DF.DefaultSecureScriptEnvironmentHandle = {
 		__index = function (env, key)
 
@@ -4840,7 +4884,7 @@ end
 
 			elseif (key == "_G") then
 				return env
-
+				
 			elseif (C_SubFunctionsTable[key]) then
 				return C_SubFunctionsTable[key]
 			end

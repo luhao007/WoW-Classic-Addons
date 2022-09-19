@@ -1,11 +1,16 @@
-1.0.8 Release Notes
+1.0.9 Release Notes
 Contributions made by Crieve:
-* Added timeline data to the first couple WoW Anniversaries.
-* Added timeline information to all InGameShop things.
-* Fixed a timeline issue for Hallow's End that was causing the Magic Broom to lose its information.
-* ATT-Classic will now build a dynamic achievements list for all achievements in the game.
-* Added Strand of the Ancients for Wrath Classic.
-* Updated the PvP Battlegrounds for Wrath Classic.
-* Wrath Classic now references all Battleground data files.
-* Fixed a scenario where Debug Mode doesn't deactivate every filter when toggled on after initial load of the addon.
+* The two Searing Gorge quests added with TBC are actually available to both factions.
+* Updated all Northrend Rares. Moved the Frostbitten achievement to the root and applied the npcs tag as expected. Moved the Abandoned Adventurer's Satchel to World Drops and applied crs.
+* Moved all Bloody Rare criteria to the achievement section.
+* Updated all of the meta exploration achievements.
+* Added timeline data to the DK starting area.
+* ATT no longer takes someone else's profession and uses it as your own collection when linked.
+* Added "/att breadcrumbs" to show all breadcrumb quests in the game.
+* If you have Gargul installed, ATT no longer listens to !sr commands.
+* Fixed Attack on Camp Narache. Removed all select(1 calls since they serve no purpose.
+* Haunted Momento is now marked as a toy. Added mount and species IDs for the TBC/Wrath promotional items to make them collectible.
+* Added the missing common_recipes_vendor subroutine.
+* Updated the Warpforged Key to cache its Honored version as well.
+* Updated all of the TBC Heroic Keys.
 

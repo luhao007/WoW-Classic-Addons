@@ -15,8 +15,6 @@ CLASSIC_ERA_VER = '11401'
 CLASSIC_VER = '30400'
 RETAIL_VER = '90207'
 
-IGNORED = ['TrinketMenu']
-
 
 def available_on(platforms):
     def decorator(func):
@@ -148,10 +146,7 @@ class Manager:
             def process(config, addon, lines):
                 toc = TOC(lines)
 
-                if addon in IGNORED and utils.get_platform() == 'classic':
-                    toc.tags['Interface'] = 10000
-                else:
-                    toc.tags['Interface'] = self.interface
+                toc.tags['Interface'] = self.interface
                 toc.tags['Title-zhCN'] = self.get_title(addon)
 
                 note = config.find('Notes')
@@ -344,7 +339,7 @@ class Manager:
                     'Details_RaidCheck', 'Details_Vanguard', 'MRT', 'GatherMate2', 'GTFO',
                     'HandyNotes', 'ItemRack', 'ItemRackOptions', 'MapSter',
                     'MikScrollingBattleText', 'OmniCC', 'OmniCC_Config',
-                    'Quartz', 'RangeDisplay', 'RangeDisplay_Options', 'TellMeWhen', 'TomTom']
+                    'Quartz', 'RangeDisplay', 'RangeDisplay_Options', 'TellMeWhen', 'TrinketMenu', 'TomTom']
 
         if utils.get_platform() == 'retail':
             addons += ['AllTheThings', 'Details_ChartViewer',

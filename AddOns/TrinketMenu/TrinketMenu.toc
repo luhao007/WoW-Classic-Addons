@@ -1,15 +1,16 @@
-## Interface: 10000
+## Interface: 30400
 ## Author: Gello, Resike
-## Version: 7.3.2
+## Version: 9.0.8
 ## SavedVariables: TrinketMenuOptions
 ## SavedVariablesPerCharacter: TrinketMenuPerOptions, TrinketMenuQueue
 
-## Title: TrinketMenu |cFF99CC01rev|r |cFFFF00007.3.2|r
+## Title: TrinketMenu 9.0.8
 ## Notes: Addon to manage trinkets.
 ## Title-zhCN: |cFFFFE00A<|r|cFFFFF468功能|r|cFFFFE00A>|r |cFFFFFFFF饰品助手|r |cFFFFE00ATrinketMenu|r
 ## Notes-zhCN: 小巧独立的饰品管理器
 
 
+TrinketMenuGlobals.lua
 TrinketMenu.lua
 TrinketMenu.xml
 TrinketMenuOpt.lua

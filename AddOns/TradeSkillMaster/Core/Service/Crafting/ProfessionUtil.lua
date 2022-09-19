@@ -155,7 +155,7 @@ function ProfessionUtil.GetResultInfo(craftString, level)
 				return name, nil, icon
 			end
 		end
-	elseif strfind(itemLink, "item:%d+") then
+	elseif strfind(itemLink, "item:") then
 		-- result of craft is an item
 		return TSM.UI.GetColoredItemName(itemLink), ItemString.Get(itemLink), ItemInfo.GetTexture(itemLink)
 	else

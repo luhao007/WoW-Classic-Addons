@@ -681,6 +681,9 @@ app.L = {
 		[-577] = "Interface\\Icons\\INV_MISC_FILM_01",								-- Warcraft Movie
 		[-578] = app.asset("Expansion_CLASSIC"),									-- World of Warcraft 15th Anniversary
 		[-579] = "Interface\\Icons\\achievement_dungeon_outland_dungeonmaster",		-- Dark Portal Pass
+		[-581] = app.asset("Expansion_TBC"),										-- TBC Classic Deluxe Edition
+		[-582] = app.asset("Expansion_WOTLK"),										-- Northrend Heroic Upgrade ("Cheap")
+		[-583] = app.asset("Expansion_WOTLK"),										-- Northrend Epic Upgrade
 		
 	-- PvP Set Names
 		[-659] = "Interface\\Worldmap\\GlowSkull_64Green",									-- Aspirant PvP Gear
@@ -846,6 +849,9 @@ app.L = {
 		[-577] = "Warcraft Movie",
 		[-578] = "World of Warcraft 15th Anniversary",
 		[-579] = "Dark Portal Pass",
+		[-581] = "TBC Classic Deluxe Edition",
+		[-582] = "WOTLK Northrend Heroic Upgrade",
+		[-583] = "WOTLK Northrend Epic Upgrade",
 		
 	-- PvP Set Names
 		[-659] = "Aspirant Gear",												-- Aspirant PvP Gear (WoD, BfA)

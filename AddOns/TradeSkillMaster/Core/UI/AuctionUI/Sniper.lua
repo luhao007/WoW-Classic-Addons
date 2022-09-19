@@ -793,7 +793,7 @@ function private.FSMCreate()
 				end
 				context.numConfirmed = context.numConfirmed + (TSM.IsWowClassic() and 1 or context.lastBuyQuantity)
 				context.findAuction = context.scanFrame and context.scanFrame:GetElement("auctions"):GetSelection()
-				return "ST_BIDDING_BUYING", context.lastBuyQuantity
+				return "ST_BIDDING_BUYING", success and context.lastBuyQuantity or nil
 			end)
 			:AddTransition("ST_BIDDING_BUYING")
 		)

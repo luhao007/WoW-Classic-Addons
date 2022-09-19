@@ -66,11 +66,11 @@ PawnLocal =
 	["UnusableStatMessage"] = "   -- %s 为无用的, 所以停止.",
 	["Usage"] = [=[Pawn 作者： Vger-Azjol-Nerub
 网址：www.vgermods.com
-
+ 
 /pawn -- 显示或隐藏Pawn的界面
 /pawn debug [ on | off ] -- 调试信息
 /pawn backup -- 备份你的所有属性权重项目数据
-
+ 
 想查看更多关于Pawn的信息，请查看Pawn插件文件夹里的(Readme.htm) 文件。]=],
 	["ValueCalculationMessage"] = "   %g %s x %g each = %g",
 	["VisibleScalesHeader"] = "%s的属性权重",
@@ -281,7 +281,7 @@ PawnLocal =
 		["Crit2"] = "^UNUSED$",
 		["CritPercent"] = "^装备： ?使你造成致命一击的几率提高#%%。$",
 		["CritRating"] = "^装备： 使你的爆击等级提高#。$",
-		["CritRating2"] = "^装备： 爆击等级提高#。$",
+		["CritRating2"] = "^UNUSED$",
 		["CritRating3"] = "^装备： 爆击等级提高#点。$",
 		["CritRatingShort"] = "^%+?# 爆击等级$",
 		["Crossbow"] = "^弩$",

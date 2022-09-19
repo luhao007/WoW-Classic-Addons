@@ -1291,6 +1291,35 @@ local ResolveSymbolicLink;
 (function()
 local subroutines;
 subroutines = {
+	["common_recipes_vendor"] = function(npcID)
+		return {
+			{"select", "creatureID", npcID},	-- Main Vendor
+			{"pop"},	-- Remove Main Vendor and push his children into the processing queue.
+			{"is", "itemID"},	-- Only Items
+			{"exclude", "itemID",
+				-- Borya <Tailoring Supplies> Cataclysm Tailoring
+				6270,	-- Pattern: Blue Linen Vest
+				6274,	-- Pattern: Blue Overalls
+				10314,	-- Pattern: Lavender Mageweave Shirt
+				10317,	-- Pattern: Pink Mageweave Shirt
+				5772,	-- Pattern: Red Woolen Bag
+				-- Sumi <Blacksmithing Supplies> Cataclysm Blacksmithing
+				12162,	-- Plans: Hardened Iron Shortsword
+				-- Tamar <Leatherworking Supplies> Cataclysm Leatherworking
+				18731,	-- Pattern: Heavy Leather Ball
+				-- Kithas <Enchanting Supplies> Cataclysm Enchanting
+				6349,	-- Formula: Enchant 2H Weapon - Lesser Intellect
+				20753,	-- Formula: Lesser Wizard Oil
+				20752,	-- Formula: Minor Mana Oil
+				20758,	-- Formula: Minor Wizard Oil
+				22307,	-- Pattern: Enchanted Mageweave Pouch
+				-- Marith Lazuria <Jewelcrafting Supplies> Cataclysm Jewelcrafting
+				-- Shazdar <Sous Chef> Cataclysm Cooking
+				-- Tiffany Cartier <Jewelcrafting Supplies> Northrend Jewelcrafting
+				-- Timothy Jones <Jewelcrafting Trainer> Northrend Jewelcrafting
+			},
+		};
+	end,
 	["common_vendor"] = function(npcID)
 		return {
 			{"select", "creatureID", npcID},	-- Main Vendor
@@ -3004,6 +3033,7 @@ CacheFields = function(group)
 		end
 	end
 end
+app.CacheField = CacheField;
 app.CacheFields = CacheFields;
 end)();
 local function SearchForFieldRecursively(group, field, value)
@@ -3091,7 +3121,7 @@ local function SearchForLink(link)
 		if string.sub(kind,1,2) == "|h" then
 			kind = string.sub(kind,3);
 		end
-		if id then id = tonumber(select(1, strsplit("|[", id)) or id); end
+		if id then id = tonumber(strsplit("|[", id) or id); end
 		--print(kind, id, paramA, paramB);
 		--print(string.gsub(string.gsub(link, "|c", "c"), "|h", "h"));
 		if kind == "itemid" then
@@ -3428,6 +3458,91 @@ end
 local function ClearTooltip(self)
 	self.ATTCProcessing = nil;
 end
+local function ShowItemCompareTooltips(...)
+	local items = { ... };
+	local count = #items;
+	if count > 0 then
+		for i,item in ipairs(items) do
+			local shoppingTooltip = GameTooltip.shoppingTooltips[i];
+			if shoppingTooltip then
+				shoppingTooltip.attItem = type(item) == "number" and select(2, GetItemInfo(item)) or item;
+				shoppingTooltip:SetHyperlink(shoppingTooltip.attItem);
+			else
+				break;
+			end
+		end
+		
+		-- Quick maths
+		-- Taken from https://github.com/Ennie/wow-ui-source/blob/master/FrameXML/GameTooltip.lua
+		local shoppingTooltip1, shoppingTooltip2, shoppingTooltip3 = unpack(GameTooltip.shoppingTooltips);
+		local leftPos, rightPos = (GameTooltip:GetLeft() or 0), (GameTooltip:GetRight() or 0);
+		if GetScreenWidth() - rightPos < leftPos then
+			side = "left";
+		else
+			side = "right";
+		end
+		
+		-- see if we should slide the tooltip
+		local anchorType = GameTooltip:GetAnchorType();
+		if anchorType and anchorType ~= "ANCHOR_PRESERVE" then
+			local totalWidth = shoppingTooltip1:GetWidth();
+			if count > 1 then totalWidth = totalWidth + shoppingTooltip2:GetWidth(); end
+			if count > 2 then totalWidth = totalWidth + shoppingTooltip3:GetWidth(); end
+			if ( (side == "left") and (totalWidth > leftPos) ) then
+				GameTooltip:SetAnchorType(anchorType, (totalWidth - leftPos), 0);
+			elseif ( (side == "right") and (rightPos + totalWidth) >  GetScreenWidth() ) then
+				GameTooltip:SetAnchorType(anchorType, -((rightPos + totalWidth) - GetScreenWidth()), 0);
+			end
+		end
+		
+		-- anchor the compare tooltips
+		if count > 2 then
+			shoppingTooltip3:SetOwner(GameTooltip, "ANCHOR_NONE");
+			shoppingTooltip3:ClearAllPoints();
+			if side == "left" then
+				shoppingTooltip3:SetPoint("TOPRIGHT", GameTooltip, "TOPLEFT", 0, -10);
+			else
+				shoppingTooltip3:SetPoint("TOPLEFT", GameTooltip, "TOPRIGHT", 0, -10);
+			end
+			shoppingTooltip3:SetHyperlink(shoppingTooltip3.attItem);
+			shoppingTooltip3:Show();
+			shoppingTooltip1:SetOwner(shoppingTooltip3, "ANCHOR_NONE");
+		else
+			shoppingTooltip1:SetOwner(GameTooltip, "ANCHOR_NONE");
+		end
+		shoppingTooltip1:ClearAllPoints();
+		if side == "left" then
+			if count > 2 then
+				shoppingTooltip1:SetPoint("TOPRIGHT", shoppingTooltip3, "TOPLEFT", 0, 0);
+			else
+				shoppingTooltip1:SetPoint("TOPRIGHT", GameTooltip, "TOPLEFT", 0, -10);
+			end
+		else
+			if count > 2 then
+				shoppingTooltip1:SetPoint("TOPLEFT", shoppingTooltip3, "TOPRIGHT", 0, 0);
+			else
+				shoppingTooltip1:SetPoint("TOPLEFT", GameTooltip, "TOPRIGHT", 0, -10);
+			end
+		end
+		shoppingTooltip1:SetHyperlink(shoppingTooltip1.attItem);
+		shoppingTooltip1:Show();
+
+		if count > 1 then
+			shoppingTooltip2:SetOwner(shoppingTooltip1, "ANCHOR_NONE");
+			shoppingTooltip2:ClearAllPoints();
+			if side == "left" then
+				shoppingTooltip2:SetPoint("TOPRIGHT", shoppingTooltip1, "TOPLEFT", 0, 0);
+			else
+				shoppingTooltip2:SetPoint("TOPLEFT", shoppingTooltip1, "TOPRIGHT", 0, 0);
+			end
+			shoppingTooltip2:SetHyperlink(shoppingTooltip2.attItem);
+			shoppingTooltip2:Show();
+		end
+	
+		return shoppingTooltip1, shoppingTooltip2, shoppingTooltip3;
+	end
+end
+app.ShowItemCompareTooltips = ShowItemCompareTooltips;
 
 -- Map Information Lib
 (function()
@@ -3804,7 +3919,7 @@ app.OpenMainList = OpenMainList;
 					-- We only care about currencies in the addon at the moment.
 					for currencyID, _ in pairs(cache) do
 						-- Compare the name of the currency vs the name of the token
-						if select(1, GetCurrencyInfo(currencyID)) == name then
+						if GetCurrencyInfo(currencyID) == name then
 							if not GameTooltip_SetCurrencyToken then
 								local results = SearchForField("currencyID", currencyID);
 								if results and #results > 0 then
@@ -3892,12 +4007,12 @@ if GetCategoryInfo and GetCategoryInfo(92) ~= "" then
 					if v[1] == "o" then
 						return app.ObjectNames[v[2]];
 					elseif v[1] == "i" then
-						return select(1, GetItemInfo(v[2]));
+						return GetItemInfo(v[2]);
 					end
 				end
 			end
 		end
-		if t.spellID then return select(1, GetSpellInfo(t.spellID)); end
+		if t.spellID then return GetSpellInfo(t.spellID); end
 	end
 	fields.link = function(t)
 		return GetAchievementLink(t.achievementID);
@@ -4124,12 +4239,12 @@ else
 					if v[1] == "o" then
 						return app.ObjectNames[v[2]];
 					elseif v[1] == "i" then
-						return select(1, GetItemInfo(v[2]));
+						return GetItemInfo(v[2]);
 					end
 				end
 			end
 		end
-		if t.spellID then return select(1, GetSpellInfo(t.spellID)); end
+		if t.spellID then return GetSpellInfo(t.spellID); end
 	end
 	fields.icon = function(t)
 		local data = L.ACHIEVEMENT_DATA[t.achievementID];
@@ -4276,9 +4391,9 @@ end,
 						break;
 					end
 				end
-				if not t.areas then return true; end
+				if not t.areas then return; end
 			else
-				return true;
+				return;
 			end
 		end
 		if useAchievementAPI then return; end
@@ -5067,12 +5182,12 @@ app.UpdateSoftReserve = function(app, guid, itemID, timeStamp, silentMode, isCur
 				local searchResults = SearchForLink("itemid:" .. itemID);
 				if searchResults and #searchResults > 0 then
 					if guid ~= UnitGUID("player") then
-						SendGUIDWhisper("SR: Updated to " .. (searchResults[1].link or select(1, GetItemInfo(itemID)) or ("itemid:" .. itemID)), guid);
+						SendGUIDWhisper("SR: Updated to " .. (searchResults[1].link or GetItemInfo(itemID) or ("itemid:" .. itemID)), guid);
 					end
 					if app.IsMasterLooter() then
 						C_ChatInfo.SendAddonMessage("ATTC", "!\tsrml\t" .. guid .. "\t" .. itemID, app.GetGroupType());
 						if app.Settings:GetTooltipSetting("SoftReservesLocked") then
-							SendGroupChatMessage("Updated " .. (app:GetWindow("SoftReserves").GUIDToName(guid) or UnitName(guid) or guid) .. " to " .. (searchResults[1].link or select(1, GetItemInfo(itemID)) or ("itemid:" .. itemID)));
+							SendGroupChatMessage("Updated " .. (app:GetWindow("SoftReserves").GUIDToName(guid) or UnitName(guid) or guid) .. " to " .. (searchResults[1].link or GetItemInfo(itemID) or ("itemid:" .. itemID)));
 						end
 					end
 				end
@@ -5542,7 +5657,7 @@ local mountFields = {
 		return select(3, GetSpellInfo(t.spellID));
 	end,
 	["link"] = function(t)
-		return (t.itemID and select(2, GetItemInfo(t.itemID))) or select(1, GetSpellLink(t.spellID));
+		return (t.itemID and select(2, GetItemInfo(t.itemID))) or GetSpellLink(t.spellID);
 	end,
 	["f"] = function(t)
 		return 100;
@@ -5557,14 +5672,14 @@ local mountFields = {
 		return (t.parent and t.parent.b) or 1;
 	end,
 	["name"] = function(t)
-		return select(1, GetSpellInfo(t.spellID)) or RETRIEVING_DATA;
+		return GetSpellInfo(t.spellID) or RETRIEVING_DATA;
 	end,
 	["tsmForItem"] = function(t)
 		if t.itemID then return string.format("i:%d", t.itemID); end
 		if t.parent and t.parent.itemID then return string.format("i:%d", t.parent.itemID); end
 	end,
 	["linkForItem"] = function(t)
-		return select(2, GetItemInfo(t.itemID)) or select(1, GetSpellLink(t.spellID));
+		return select(2, GetItemInfo(t.itemID)) or GetSpellLink(t.spellID);
 	end,
 };
 
@@ -5573,7 +5688,7 @@ if C_PetJournal then
 		return select(2, C_PetJournal.GetPetInfoBySpeciesID(t.speciesID));
 	end
 	speciesFields.name = function(t)
-		return select(1, C_PetJournal.GetPetInfoBySpeciesID(t.speciesID));
+		return C_PetJournal.GetPetInfoBySpeciesID(t.speciesID);
 	end
 	speciesFields.petTypeID = function(t)
 		return select(3, C_PetJournal.GetPetInfoBySpeciesID(t.speciesID));
@@ -5605,11 +5720,11 @@ if C_PetJournal then
 	mountFields.name = function(t)
 		local mountID = t.mountID;
 		if mountID then return C_MountJournal.GetMountInfoByID(mountID); end
-		return select(1, GetSpellInfo(t.spellID)) or RETRIEVING_DATA;
+		return GetSpellInfo(t.spellID) or RETRIEVING_DATA;
 	end
 	mountFields.displayID = function(t)
 		local mountID = t.mountID;
-		if mountID then return select(1, C_MountJournal.GetMountInfoExtraByID(mountID)); end
+		if mountID then return C_MountJournal.GetMountInfoExtraByID(mountID); end
 	end
 	mountFields.lore = function(t)
 		local mountID = t.mountID;
@@ -5645,10 +5760,10 @@ else
 		return "Interface\\Icons\\INV_Misc_QuestionMark";
 	end
 	speciesFields.name = function(t)
-		return t.itemID and select(1, GetItemInfo(t.itemID)) or RETRIEVING_DATA;
+		return t.itemID and GetItemInfo(t.itemID) or RETRIEVING_DATA;
 	end
 	mountFields.name = function(t)
-		return select(1, GetSpellInfo(t.spellID)) or RETRIEVING_DATA;
+		return GetSpellInfo(t.spellID) or RETRIEVING_DATA;
 	end
 	if GetCompanionInfo then
 		local CollectedBattlePetHelper = {};
@@ -5771,7 +5886,7 @@ local fields = {
 		return "currencyID";
 	end,
 	["text"] = function(t)
-		return t.link or select(1, GetCurrencyInfo(t.currencyID));
+		return t.link or GetCurrencyInfo(t.currencyID);
 	end,
 	["icon"] = function(t)
 		return select(3, GetCurrencyInfo(t.currencyID));
@@ -5792,7 +5907,7 @@ local OnUpdateForDeathTrackerLib = function(t)
 	if app.Settings:Get("Thing:Deaths") then
 		t.visible = app.GroupVisibilityFilter(t);
 		if GetStatistic then
-			local stat = select(1, GetStatistic(60)) or "0";
+			local stat = GetStatistic(60) or "0";
 			if stat == "--" then stat = "0"; end
 			local deaths = tonumber(stat);
 			if deaths > 0 and deaths > app.CurrentCharacter.Deaths then
@@ -5967,7 +6082,7 @@ if EJ_GetEncounterInfo then
 			return "encounterID";
 		end,
 		["name"] = function(t)
-			return select(1, EJ_GetEncounterInfo(t.encounterID));
+			return EJ_GetEncounterInfo(t.encounterID);
 		end,
 		["lore"] = function(t)
 			return select(2, EJ_GetEncounterInfo(t.encounterID));
@@ -6061,7 +6176,7 @@ local StandingByID = {
 	},
 };
 app.FactionNameByID = setmetatable({}, { __index = function(t, id)
-	local name = select(1, GetFactionInfoByID(id));
+	local name = GetFactionInfoByID(id);
 	if name then
 		rawset(t, id, name);
 		rawset(app.FactionIDByName, name, id);
@@ -6573,6 +6688,9 @@ end });
 local BlacklistedRWPItems = {
 	[22736] = true,	-- Andonisus, Reaper of Souls
 };
+local baseGetItemCount = function(t)
+	return GetItemCount(t.itemID, true);
+end;
 app.ParseItemID = function(itemName)
 	if type(itemName) == "number" then
 		return itemName;
@@ -6583,7 +6701,7 @@ app.ParseItemID = function(itemName)
 			return itemID;
 		else
 			-- The itemID given was actually the name or a link.
-			itemID = select(1, GetItemInfoInstant(itemName));
+			itemID = GetItemInfoInstant(itemName);
 			if itemID then
 				-- Oh good, it was cached by WoW.
 				return itemID;
@@ -6639,6 +6757,9 @@ local itemFields = {
 	end,
 	["trackableAsQuest"] = function(t)
 		return true;
+	end,
+	["GetItemCount"] = function(t)
+		return baseGetItemCount;
 	end,
 	["collectible"] = function(t)
 		return t.collectibleAsCost or t.collectibleAsRWP;
@@ -6705,17 +6826,18 @@ local itemFields = {
 		local id, partial = t.itemID;
 		local results = app.SearchForField("itemIDAsCost", id, true);
 		if results and #results > 0 then
+			local itemCount = t.GetItemCount(t) or 0;
 			for _,ref in pairs(results) do
 				if ref.itemID ~= id and app.RecursiveGroupRequirementsFilter(ref) then
 					if ref.key == "instanceID" or ((ref.key == "difficultyID" or ref.key == "mapID" or ref.key == "headerID") and (ref.parent and GetRelativeValue(ref.parent, "instanceID"))) then
-						if app.CollectibleQuests and GetItemCount(id, true) == 0 then
+						if app.CollectibleQuests and itemCount == 0 then
 							return false;
 						end
 					elseif ref.collectible and not ref.collected then
 						if ref.cost then
 							for k,v in ipairs(ref.cost) do
 								if v[2] == id and v[1] == "i" then
-									if GetItemCount(id, true) >= (v[3] or 1) then
+									if itemCount >= (v[3] or 1) then
 										partial = true;
 									else
 										return false;
@@ -6726,7 +6848,7 @@ local itemFields = {
 						if ref.providers then
 							for k,v in ipairs(ref.providers) do
 								if v[2] == id and v[1] == "i" then
-									if GetItemCount(id, true) > 0 and (not ref.objectiveID or ref.saved) then
+									if itemCount > 0 and (not ref.objectiveID or ref.saved) then
 										partial = true;
 									else
 										return false;
@@ -6738,7 +6860,7 @@ local itemFields = {
 						if ref.cost then
 							for k,v in ipairs(ref.cost) do
 								if v[2] == id and v[1] == "i" then
-									if GetItemCount(id, true) >= (v[3] or 1) then
+									if itemCount >= (v[3] or 1) then
 										partial = true;
 									else
 										return false;
@@ -6749,7 +6871,7 @@ local itemFields = {
 						if ref.providers then
 							for k,v in ipairs(ref.providers) do
 								if v[2] == id and v[1] == "i" then
-									if GetItemCount(id, true) > 0 then
+									if itemCount > 0 then
 										partial = true;
 									else
 										return false;
@@ -7500,7 +7622,7 @@ local fields = {
 		return C_Map_GetMapArtID(t.mapID);
 	end,
 	["lvl"] = function(t)
-		return select(1, C_Map_GetMapLevels(t.mapID));
+		return C_Map_GetMapLevels(t.mapID);
 	end,
 	["locks"] = function(t)
 		local locks = app.CurrentCharacter.Lockouts[t.name];
@@ -7603,7 +7725,7 @@ local instanceFields = {
 		return t.maps and t.maps[1];
 	end,
 	["lvl"] = function(t)
-		return select(1, C_Map_GetMapLevels(t.mapID));
+		return C_Map_GetMapLevels(t.mapID);
 	end,
 	["locks"] = function(t)
 		local locks = app.CurrentCharacter.Lockouts[t.name];
@@ -7824,7 +7946,7 @@ local objectFields = {
 					if v[1] == "o" then
 						return app.ObjectNames[v[2]] or RETRIEVING_DATA;
 					elseif v[1] == "i" then
-						return select(1, GetItemInfo(v[2])) or RETRIEVING_DATA;
+						return GetItemInfo(v[2]) or RETRIEVING_DATA;
 					end
 				end
 			end
@@ -7976,7 +8098,7 @@ local fields = {
 		return "professionID";
 	end,
 	["text"] = function(t)
-		return select(1, GetSpellInfo(t.spellID));
+		return GetSpellInfo(t.spellID);
 	end,
 	["icon"] = function(t)
 		return select(3, GetSpellInfo(t.spellID));
@@ -8238,7 +8360,7 @@ local criteriaFuncs = {
 	--[[
 	["label_spellID"] = L["LOCK_CRITERIA_SPELL_LABEL"],
     ["text_spellID"] = function(v)
-        return select(1, GetSpellInfo(v));
+        return GetSpellInfo(v);
     end,
 	]]--
 
@@ -8371,12 +8493,12 @@ local fields = {
 						if v[1] == "o" then
 							return app.ObjectNames[v[2]] or RETRIEVING_DATA;
 						elseif v[1] == "i" then
-							return select(1, GetItemInfo(v[2])) or RETRIEVING_DATA;
+							return GetItemInfo(v[2]) or RETRIEVING_DATA;
 						end
 					end
 				end
 			end
-			if t.spellID then return select(1, GetSpellInfo(t.spellID)); end
+			if t.spellID then return GetSpellInfo(t.spellID); end
 			return RETRIEVING_DATA;
 		end
 		return "INVALID: Must be relative to a Quest Object.";
@@ -8697,7 +8819,7 @@ local spellFields = {
 		return select(2, GetItemInfo(t.itemID)) or t.linkAsSpell;
 	end,
 	["linkAsSpell"] = function(t)
-		local link = select(1, GetSpellLink(t.spellID));
+		local link = GetSpellLink(t.spellID);
 		if not link then
 			if GetRelativeValue(t, "requireSkill") == 333 then
 				return "|cffffffff|Henchant:" .. t.spellID .. "|h[" .. t.name .. "]|h|r";
@@ -8708,10 +8830,10 @@ local spellFields = {
 		return link;
 	end,
 	["nameAsItem"] = function(t)
-		return select(1, GetItemInfo(t.itemID)) or t.nameAsSpell;
+		return GetItemInfo(t.itemID) or t.nameAsSpell;
 	end,
 	["nameAsSpell"] = function(t)
-		return select(1, GetSpellLink(t.spellID)) or RETRIEVING_DATA;
+		return GetSpellLink(t.spellID) or RETRIEVING_DATA;
 	end,
 	["tsmAsItem"] = function(t)
 		return string.format("i:%d", t.itemID);
@@ -12591,6 +12713,62 @@ app:GetWindow("Attuned", UIParent, function(self)
 		app.VisibilityFilter = visibilityFilter;
 	end
 end);
+app:GetWindow("Breadcrumbs", UIParent, function(self)
+	if self:IsVisible() then
+		if not self.initialized then
+			self.initialized = true;
+			self.dirty = true;
+			local actions = {
+				['text'] = "Follow the Breadcrumbs",
+				['icon'] = "Interface\\Icons\\INV_Misc_Food_12", 
+				["description"] = "This window shows you all of the breadcrumbs tracked by ATT. Go get 'em!",
+				['visible'] = true, 
+				['expanded'] = true,
+				['back'] = 1,
+				["indent"] = 0,
+				['OnUpdate'] = function(data)
+					--if not self.dirty then return nil; end
+					--self.dirty = nil;
+					
+					local g = {};
+					if not data.results then
+						data.results = app:BuildSearchResponseForField(app:GetWindow("Prime").data.g, "isBreadcrumb");
+					end
+					if #data.results > 0 then
+						for i,result in ipairs(data.results) do
+							table.insert(g, result);
+						end
+					end
+					data.g = g;
+					if #g > 0 then
+						for i,entry in ipairs(g) do
+							entry.indent = nil;
+						end
+						data.progress = 0;
+						data.total = 0;
+						data.indent = 0;
+						data.visible = true;
+						BuildGroups(data, data.g);
+						app.UpdateGroups(data, data.g);
+						if not data.expanded then
+							data.expanded = true;
+							ExpandGroupsRecursively(data, true);
+						end
+					end
+					BuildGroups(self.data, self.data.g);
+					UpdateWindow(self, true);
+				end,
+				['options'] = { },
+				['g'] = { },
+			};
+			self.data = actions;
+		end
+		
+		-- Update the window and all of its row data
+		if self.data.OnUpdate then self.data.OnUpdate(self.data, self); end
+		UpdateWindow(self, true);
+	end
+end);
 app:GetWindow("CosmicInfuser", UIParent, function(self)
 	if self:IsVisible() then
 		if not self.initialized then
@@ -14615,7 +14793,7 @@ app:GetWindow("SoftReserves", UIParent, function(self)
 				local count = GetNumGroupMembers();
 				if count > 0 then
 					for raidIndex = 1, 40, 1 do
-						local name = select(1, GetRaidRosterInfo(raidIndex));
+						local name = GetRaidRosterInfo(raidIndex);
 						if name and UnitGUID(name) == guid then
 							return name;
 						end
@@ -14927,6 +15105,17 @@ app:GetWindow("Tradeskills", UIParent, function(self, ...)
 		self.previousCraftSkillID = 0;
 		self.previousTradeSkillID = 0;
 		self.CacheRecipes = function(self)
+			-- If it's not yours, don't take credit for it.
+			if IsTradeSkillLinked and IsTradeSkillLinked() then
+				return;
+			end
+			if C_TradeSkillUI then
+				if (C_TradeSkillUI.IsTradeSkillLinked and C_TradeSkillUI.IsTradeSkillLinked())
+				or (C_TradeSkillUI.IsTradeSkillGuild and C_TradeSkillUI.IsTradeSkillGuild()) then
+					return;
+				end
+			end
+			
 			-- Cache Learned Spells
 			local skillCache = fieldCache["spellID"];
 			if skillCache then
@@ -15152,6 +15341,7 @@ app:GetWindow("Tradeskills", UIParent, function(self, ...)
 					while not self:IsVisible() do
 						coroutine.yield();
 					end
+					
 					self:CacheRecipes();
 					self:Update();
 					wipe(searchCache);
@@ -15238,6 +15428,16 @@ app:GetWindow("Tradeskills", UIParent, function(self, ...)
 			if e == "TRADE_SKILL_LIST_UPDATE" or e == "SKILL_LINES_CHANGED" then
 				self:Update();
 			elseif e == "TRADE_SKILL_SHOW" or e == "CRAFT_SHOW" then
+				-- If it's not yours, don't take credit for it.
+				if IsTradeSkillLinked and IsTradeSkillLinked() then
+					return;
+				end
+				if C_TradeSkillUI then
+					if (C_TradeSkillUI.IsTradeSkillLinked and C_TradeSkillUI.IsTradeSkillLinked())
+					or (C_TradeSkillUI.IsTradeSkillGuild and C_TradeSkillUI.IsTradeSkillGuild()) then
+						return;
+					end
+				end
 				if self.TSMCraftingVisible == nil then
 					self:SetTSMCraftingVisible(false);
 				end
@@ -15424,6 +15624,9 @@ SlashCmdList["ATTC"] = function(cmd)
 		elseif cmd == "rwp" then
 			app:GetWindow("RWP"):Toggle();
 			return true;
+		elseif cmd == "breadcrumbs" then
+			app:GetWindow("Breadcrumbs"):Toggle();
+			return true;
 		else
 			local subcmd = strsub(cmd, 1, 6);
 			if subcmd == "mapid:" then
@@ -15468,9 +15671,6 @@ SLASH_ATTCSR1 = "/attsr";
 SLASH_ATTCSR2 = "/attsoft";
 SLASH_ATTCSR3 = "/attsoftreserve";
 SLASH_ATTCSR4 = "/attsoftreserves";
-SLASH_ATTCSR5 = "/sr";
-SLASH_ATTCSR6 = "/softreserve";
-SLASH_ATTCSR7 = "/softreserves";
 SlashCmdList["ATTCSR"] = function(cmd)
 	if cmd and cmd ~= "" then
 		app:ParseSoftReserve(UnitGUID("player"), cmd, true, true);
@@ -16556,17 +16756,8 @@ app.events.CHAT_MSG_WHISPER = function(text, playerName, _, _, _, _, _, _, _, _,
 	if action == '!' then	-- Send
 		local lowercased = string.lower(text);
 		local cmd = strsub(lowercased, 2, 3);
-		if cmd == "sr" then
+		if cmd == "sr" and not Gargul then
 			app:ParseSoftReserve(guid, strsub(text, 4));
-		elseif cmd == "mc" then
-			GetDataSubMember("GroupQuestsByGUID", guid, {})[7848] = 1;
-		else
-			cmd = strsub(lowercased, 2, 4);
-			if cmd == "ony" then
-				GetDataSubMember("GroupQuestsByGUID", guid, {})[app.FactionID == Enum.FlightPathFaction.Horde and 6602 or 6502] = 1;
-			elseif cmd == "bwl" then
-				GetDataSubMember("GroupQuestsByGUID", guid, {})[7761] = 1;
-			end
 		end
 	elseif action == '?' then	-- Request
 		local lowercased = string.lower(text);

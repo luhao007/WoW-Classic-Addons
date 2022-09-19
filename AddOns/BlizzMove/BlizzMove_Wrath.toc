@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Kiatra, zaCade, Numy - github.com/Kiatra/BlizzMove/
-## Version: v3.4.4
+## Version: v3.4.5
 ## OptionalDeps: Ace3
 ## SavedVariables: BlizzMoveDB
 
@@ -14,8 +14,7 @@
 ## X-Embeds: Ace3
 
 # Libraries
-TaintLess.xml
-
+# TaintLess.xml
 # Add-On
 BlizzMove.lua
 BlizzMoveAPI.lua
