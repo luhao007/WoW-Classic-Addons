@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: QartemisT
-## Version: r137
+## Version: r137-1-g8333cad
 ## RequiredDeps: DBM-Core
 ## LoadOnDemand: 1
 ## SavedVariables: DBMPvP_AllSavedVars

@@ -4,7 +4,7 @@
 --]]
 
 local CONFIG, Config = ...
-Config.displayRowHeight = 105
+Config.displayRowHeight = 70
 Config.components = true
 Config.colors = true
 Config.columns = true

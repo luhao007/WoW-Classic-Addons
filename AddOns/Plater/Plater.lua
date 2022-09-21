@@ -376,8 +376,8 @@ local PLATER_GLOBAL_MOD_ENV = {}  -- contains modEnv for each mod, identified by
 local PLATER_GLOBAL_SCRIPT_ENV = {} -- contains modEnv for each script, identified by "<script name>"
 
 --> addon comm
-local COMM_PLATER_PREFIX = "PLT"
-local COMM_SCRIPT_GROUP_EXPORTED = "GE"
+Plater.COMM_PLATER_PREFIX = "PLT"
+Plater.COMM_SCRIPT_GROUP_EXPORTED = "GE"
 Plater.COMM_SCRIPT_MSG = "PLTM"
 
 --> cvars just to make them easier to read
@@ -2548,6 +2548,8 @@ local class_specs_coords = {
 	end
 	
 	--store all functions for all events that will be registered inside OnInit
+	local last_UPDATE_SHAPESHIFT_FORM = GetTime()
+	local last_GetShapeshiftForm = GetShapeshiftForm()
 	local eventFunctions = {
 
 		--when a unit from unatackable change its state, this event triggers several times, a schedule is used to only update once
@@ -4197,6 +4199,15 @@ local class_specs_coords = {
 		end,
 		
 		UPDATE_SHAPESHIFT_FORM = function()
+			local curTime = GetTime()
+			--this is to work around UPDATE_SHAPESHIFT_FORM firing for all units and not just the player... causing lag...
+			--if (curTime - last_UPDATE_SHAPESHIFT_FORM) < 1 or last_GetShapeshiftForm == GetShapeshiftForm() then
+			if last_GetShapeshiftForm == GetShapeshiftForm() then
+				return
+			end
+			last_UPDATE_SHAPESHIFT_FORM = curTime
+			last_GetShapeshiftForm = GetShapeshiftForm()
+			
 			UpdatePlayerTankState()
 			Plater.UpdateAllNameplateColors()
 			Plater.UpdateAllPlates()
@@ -10934,6 +10945,9 @@ end
 			["CreateAuraIcon"] = true,
 			["PerformanceUnits"] = true,
 			["ForceBlizzardNameplateUnits"] = true,
+			["COMM_PLATER_PREFIX"] = true,
+			["COMM_SCRIPT_GROUP_EXPORTED"] = true,
+			["COMM_SCRIPT_MSG"] = true,
 		},
 		
 		["DetailsFramework"] = {
@@ -12323,10 +12337,10 @@ end
 			local LibAceSerializer = LibStub:GetLibrary ("AceSerializer-3.0")
 			
 			if (IsInRaid (LE_PARTY_CATEGORY_HOME)) then
-				Plater:SendCommMessage (COMM_PLATER_PREFIX, LibAceSerializer:Serialize (COMM_SCRIPT_GROUP_EXPORTED, UnitName ("player"), GetRealmName(), UnitGUID ("player"), encodedString), "RAID")
+				Plater:SendCommMessage (Plater.COMM_PLATER_PREFIX, LibAceSerializer:Serialize (Plater.COMM_SCRIPT_GROUP_EXPORTED, UnitName ("player"), GetRealmName(), UnitGUID ("player"), encodedString), "RAID")
 				
 			elseif (IsInGroup (LE_PARTY_CATEGORY_HOME)) then
-				Plater:SendCommMessage (COMM_PLATER_PREFIX, LibAceSerializer:Serialize (COMM_SCRIPT_GROUP_EXPORTED, UnitName ("player"), GetRealmName(), UnitGUID ("player"), encodedString), "PARTY")
+				Plater:SendCommMessage (Plater.COMM_PLATER_PREFIX, LibAceSerializer:Serialize (Plater.COMM_SCRIPT_GROUP_EXPORTED, UnitName ("player"), GetRealmName(), UnitGUID ("player"), encodedString), "PARTY")
 				
 			else
 				Plater:Msg ("Failed to send the script: your group isn't home group.")

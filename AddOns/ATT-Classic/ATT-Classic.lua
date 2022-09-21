@@ -8282,7 +8282,7 @@ local questFields = {
 		end
 		if app.CollectibleQuests then
 			if t.locked then return app.AccountWideQuests; end
-			if t.maxReputation then
+			if t.maxReputation and app.CollectibleReputations then
 				return true;
 			end
 			return not t.repeatable and not t.isBreadcrumb;
@@ -11501,6 +11501,16 @@ function app:GetDataCache()
 						elseif not headerType then
 							headerType = GetDeepestRelativeValue(o, "headerID");
 						end
+						local coords = GetRelativeValue(o, "coords");
+						if coords then
+							if not inst.coords then
+								inst.coords = { unpack(coords) };
+							else
+								for i,coord in ipairs(coords) do
+									tinsert(inst.coords, coord);
+								end
+							end
+						end
 					end
 				end
 			end
@@ -11785,6 +11795,16 @@ function app:GetDataCache()
 						end
 						]]--
 						for key,value in pairs(o) do rawset(battlepet, key, value); end
+						local coords = GetRelativeValue(o, "coords");
+						if coords then
+							if not battlepet.coords then
+								battlepet.coords = { unpack(coords) };
+							else
+								for i,coord in ipairs(coords) do
+									tinsert(battlepet.coords, coord);
+								end
+							end
+						end
 						if o.parent and not o.sourceQuests then
 							local questID = GetRelativeValue(o, "questID");
 							if questID then
@@ -16103,8 +16123,7 @@ app.events.ADDON_LOADED = function(addonName)
 		frame:SetPoint("BOTTOMRIGHT", AuctionFrame, -8, 36);
 		
 		-- Create the movable Auction Data window.
-		local window = app:GetWindow("AuctionData");
-		window:SetParent(AuctionFrame);
+		local window = app:GetWindow("AuctionData", AuctionFrame);
 		window:SetPoint("TOPLEFT", AuctionFrame, "TOPRIGHT", 0, -10);
 		window:SetPoint("BOTTOMLEFT", AuctionFrame, "BOTTOMRIGHT", 0, 10);
 		window.data = {

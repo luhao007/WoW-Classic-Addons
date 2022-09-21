@@ -2,7 +2,7 @@ ItemRack = {}
 
 local _
 
-ItemRack.Version = "3.69"
+ItemRack.Version = "3.73"
 
 function ItemRack.IsClassic()
 	return WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
@@ -10,6 +10,10 @@ function ItemRack.IsClassic()
 
 function ItemRack.IsBCC()
 	return WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC
+end
+
+function ItemRack.IsWrath()
+	return WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC
 end
 
 local LDB = LibStub("LibDataBroker-1.1")
@@ -73,11 +77,17 @@ ItemRackItems = {
 	["25653"] = { keep=1 }, -- riding crop
 }
 
+ItemRack.NoTitansGrip = {
+	["Polearms"] = 1,
+	["Fishing Poles"] = 1,
+	["Staves"] = 1
+}
+
 ItemRack.Menu = {}
 ItemRack.LockList = {} -- index -2 to 11, flag whether item is tagged already for swap
 if ItemRack.IsClassic() then
 	ItemRack.BankSlots = { -1,5,6,7,8,9,10 }
-elseif ItemRack.IsBCC() then
+elseif ItemRack.IsBCC() or ItemRack.IsWrath() then
 	ItemRack.BankSlots = { -1,5,6,7,8,9,10,11 }
 end
 ItemRack.KnownItems = {} -- cache of known item locations for fast lookup
@@ -178,7 +188,7 @@ function ItemRack.InitEventHandlers()
 	handler.CHARACTER_POINTS_CHANGED = ItemRack.UpdateClassSpecificStuff
 	handler.PLAYER_TALENT_UPDATE = ItemRack.UpdateClassSpecificStuff
 	handler.PLAYER_ENTERING_WORLD = ItemRack.OnEnterWorld
---	handler.ACTIVE_TALENT_GROUP_CHANGED = ItemRack.UpdateClassSpecificStuff
+	handler.ACTIVE_TALENT_GROUP_CHANGED = ItemRack.UpdateClassSpecificStuff
 --	handler.PET_BATTLE_OPENING_START = ItemRack.OnEnteringPetBattle
 --	handler.PET_BATTLE_CLOSE = ItemRack.OnLeavingPetBattle
 end
@@ -382,13 +392,20 @@ end
 function ItemRack.UpdateClassSpecificStuff()
 	local _,class = UnitClass("player")
 
-	if class=="WARRIOR" or class=="ROGUE" or class=="HUNTER" or class=="MAGE" or class=="WARLOCK" then
+	if class=="WARRIOR" or class=="ROGUE" or class=="HUNTER" or class=="MAGE" or class=="WARLOCK" or class=="SHAMAN" or class=="DEATHKNIGHT" then
 		ItemRack.CanWearOneHandOffHand = 1
 	end
 
-	if class=="SHAMAN" then
-		ItemRack.CanWearOneHandOffHand = 1
+	if ItemRack.IsWrath() and class=="WARRIOR" then
+		if select(5,GetTalentInfo(2,26))>0 then
+			ItemRack.HasTitansGrip = 1
+			ItemRack.SlotInfo[17].INVTYPE_2HWEAPON = 1
+		else
+			ItemRack.HasTitansGrip = nil
+			ItemRack.SlotInfo[17].INVTYPE_2HWEAPON = nil
+		end
 	end
+
 end
 
 function ItemRack.OnSetBagItem(tooltip, bag, slot)
@@ -477,8 +494,10 @@ function ItemRack.InitCore()
 	ItemRackFrame:RegisterEvent("BANKFRAME_CLOSED")
 	ItemRackFrame:RegisterEvent("BANKFRAME_OPENED")
 	ItemRackFrame:RegisterEvent("CHARACTER_POINTS_CHANGED")
-	-- ItemRackFrame:RegisterEvent("PLAYER_TALENT_UPDATE")
-	-- ItemRackFrame:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
+	if ItemRack.IsWrath() then
+		ItemRackFrame:RegisterEvent("PLAYER_TALENT_UPDATE")
+		ItemRackFrame:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
+	end
 	-- ItemRackFrame:RegisterEvent("PET_BATTLE_OPENING_START")
 	-- ItemRackFrame:RegisterEvent("PET_BATTLE_CLOSE")
 	--if not disable_delayed_swaps then
@@ -1327,7 +1346,7 @@ function ItemRack.EquipItemByID(id,slot)
 				if not isLocked and not IsInventoryItemLocked(slot) then
 					-- neither container item nor inventory item locked, perform swap
 					local _,_,equipSlot = ItemRack.GetInfoByID(id)
-					if equipSlot~="INVTYPE_2HWEAPON" or not GetInventoryItemLink("player",17) then
+					if equipSlot~="INVTYPE_2HWEAPON" or (ItemRack.HasTitansGrip and not ItemRack.NoTitansGrip[select(7,GetItemInfo(GetContainerItemLink(b,s))) or ""]) or not GetInventoryItemLink("player",17) then
 						PickupContainerItem(b,s)
 						PickupInventoryItem(slot)
 					else

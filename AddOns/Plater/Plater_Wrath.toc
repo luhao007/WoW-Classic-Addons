@@ -1,5 +1,5 @@
 ## Interface: 30400
-## Version: Plater-v534-34-gffcfc72-Wrath
+## Version: Plater-v534-38-g1eae710-Wrath
 ## SavedVariables: PlaterDB
 ## SavedVariablesPerCharacter: PlaterDBChr
 

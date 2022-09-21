@@ -1,16 +1,13 @@
-1.0.9 Release Notes
+1.1.0 Release Notes
 Contributions made by Crieve:
-* The two Searing Gorge quests added with TBC are actually available to both factions.
-* Updated all Northrend Rares. Moved the Frostbitten achievement to the root and applied the npcs tag as expected. Moved the Abandoned Adventurer's Satchel to World Drops and applied crs.
-* Moved all Bloody Rare criteria to the achievement section.
-* Updated all of the meta exploration achievements.
-* Added timeline data to the DK starting area.
-* ATT no longer takes someone else's profession and uses it as your own collection when linked.
-* Added "/att breadcrumbs" to show all breadcrumb quests in the game.
-* If you have Gargul installed, ATT no longer listens to !sr commands.
-* Fixed Attack on Camp Narache. Removed all select(1 calls since they serve no purpose.
-* Haunted Momento is now marked as a toy. Added mount and species IDs for the TBC/Wrath promotional items to make them collectible.
-* Added the missing common_recipes_vendor subroutine.
-* Updated the Warpforged Key to cache its Honored version as well.
-* Updated all of the TBC Heroic Keys.
+* Added the horde Master of Alterac Valley achievement.
+* You can now plot coordinates directly from the Mount and Battle Pet categories, assuming there are coordinates attached to their headers somewhere in the addon.
+* The Diplomat has nothing to do with Feralas.
+* Added all Wrath of the Lich King era Thrown, Idols, Librams, Sigils, and Totems that get removed from the game with Cataclysm. Added objectives for the Death Knight starting area. (not finished, sent me on the above tangent)
+* Added a README.md for shininess on GitHub.
+* ATT and BlizzMove are no longer mortal enemies.
+* Added "Back" as a toggleable filter.
+* Pink Elekks On Parade is available in Wrath Classic this year!
+* Repeatable quests will once again use collectible reputations properly.
+* Catch the Wild Wolpertinger! is available in Wrath Classic this year!
 

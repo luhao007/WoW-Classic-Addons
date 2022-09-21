@@ -38,8 +38,8 @@ function Display:New(parent)
 	text:SetJustifyH('LEFT')
 
 	f.objects = {}
-	f.Icon, f.Text = icon, text
-	f.Left, f.Right = left, right
+	f.icon, f.text = icon, text
+	f.left, f.right = left, right
 	f:SetHeight(26)
 	f:Update()
 
@@ -150,24 +150,27 @@ end
 
 function Display:UpdateText()
 	local obj = self:GetObject()
-	self.Text:SetText(obj.text or obj.label or '')
+	local text = obj and (obj.text or obj.label or '') or 'Select Databroker Plugin'
+
+	self.text:SetText(text)
 	self:Layout()
 end
 
 function Display:UpdateIcon()
 	local obj = self:GetObject()
-	self.Icon:SetTexture(obj.icon)
-	self.Icon:SetShown(obj.icon)
+	local icon = obj and obj.icon
+	self.icon:SetTexture(icon)
+	self.icon:SetShown(icon)
 	self:Layout()
 end
 
 function Display:Layout()
-	if self.Icon:IsShown() then
-		self.Text:SetPoint('LEFT', self.Icon, 'RIGHT', 2, 0)
-		self.Text:SetPoint('RIGHT', self.Right, 'LEFT', -2, 0)
+	if self.icon:IsShown() then
+		self.text:SetPoint('LEFT', self.icon, 'RIGHT', 2, 0)
+		self.text:SetPoint('RIGHT', self.right, 'LEFT', -2, 0)
 	else
-		self.Text:SetPoint('LEFT', self.Left, 'RIGHT', 2, 0)
-		self.Text:SetPoint('RIGHT', self.Right, 'LEFT', -2, 0)
+		self.text:SetPoint('LEFT', self.left, 'RIGHT', 2, 0)
+		self.text:SetPoint('RIGHT', self.right, 'LEFT', -2, 0)
 	end
 end
 
@@ -179,7 +182,7 @@ function Display:SetNextObject()
 	local objects = self:GetAvailableObjects()
 	local i = FindInTableIf(objects, function(o) return o == current end)
 
-	self:SetObject(objects[(i or 0) % #objects + 1])
+	self:SetObject(objects[(i or 0) + 1])
 end
 
 function Display:SetPreviousObject()
@@ -187,7 +190,7 @@ function Display:SetPreviousObject()
 	local objects = self:GetAvailableObjects()
 	local i = FindInTableIf(objects, function(o) return o == current end)
 
-	self:SetObject(objects[((i or 2) - 2) % #objects + 1])
+	self:SetObject(objects[(i or 2) - 1])
 end
 
 function Display:SetObject(name)
@@ -200,7 +203,7 @@ function Display:SetObject(name)
 end
 
 function Display:GetObject()
-	return LDB:GetDataObjectByName(self:GetObjectName()) or LDB:GetDataObjectByName(ADDON .. 'Launcher')
+	return LDB:GetDataObjectByName(self:GetObjectName())
 end
 
 function Display:GetObjectName()

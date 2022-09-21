@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: MysticalOS, QartemisT
-## Version: 66405cd
+## Version: d33e6d3
 ## LoadOnDemand: 0
 ## SavedVariables: DBT_AllPersistentOptions
 ## DefaultState: enabled

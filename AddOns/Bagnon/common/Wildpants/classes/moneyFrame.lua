@@ -1,6 +1,6 @@
 --[[
 	moneyFrame.lua
-		Displays the player money stack
+		A money frame object
 --]]
 
 local ADDON, Addon = ...

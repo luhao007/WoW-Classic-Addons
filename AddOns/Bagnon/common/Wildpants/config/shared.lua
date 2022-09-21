@@ -22,10 +22,9 @@ function Group:New(id, icons)
 end
 
 function Group:AddRow(height, children)
-	local group = self:Add('Group')
-	group:SetHeight(height)
+	local group = self:Add('Group', function(row) self.row = row; children(row); self.row = nil end)
 	group:SetResizing('HORIZONTAL')
-	group:SetChildren(function(row) self.row = row; children(row); self.row = nil end)
+	group:SetHeight(height)
 	return group
 end
 

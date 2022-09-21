@@ -1578,7 +1578,7 @@ end
 
 -- Secondary Armor Classes
 last, xoffset, yoffset = ItemFiltersLabel, 180, -4;
-for i,filterID in ipairs({ 10, 9, 51, 52, 53 }) do
+for i,filterID in ipairs({ 3, 10, 9, 51, 52, 53 }) do
 	local filter = settings:CreateCheckBox(itemFilterNames[filterID] or tostring(filterID), ItemFilterOnRefresh, ItemFilterOnClick);
 	filter:SetPoint("TOPLEFT", last, "BOTTOMLEFT", xoffset, yoffset);
 	filter.filterID = filterID;

@@ -13,7 +13,6 @@
 	<Script file="dropButton.lua"/>
 	<Script file="sortButton.lua"/>
 	<Script file="moneyFrame.lua"/>
-	<Script file="currencyDisplay.lua"/>
 
 	<Script file="frame.lua"/>
 	<Script file="inventory.lua"/>

@@ -1,9 +1,6 @@
 # <DBM> PvP
 
-## [r137](https://github.com/DeadlyBossMods/DBM-PvP/tree/r137) (2022-09-11)
-[Full Changelog](https://github.com/DeadlyBossMods/DBM-PvP/compare/r136...r137) [Previous Releases](https://github.com/DeadlyBossMods/DBM-PvP/releases)
+## [r137-1-g8333cad](https://github.com/DeadlyBossMods/DBM-PvP/tree/8333cad384c139100fc37524416082a36124604a) (2022-09-19)
+[Full Changelog](https://github.com/DeadlyBossMods/DBM-PvP/compare/r137...8333cad384c139100fc37524416082a36124604a) [Previous Releases](https://github.com/DeadlyBossMods/DBM-PvP/releases)
 
-- Fix eye of storm not registering classic assault ID on wrath classic  
-- comment unused  
-- Unused variable  
-- Wrath no longer needs this hack.  
+- Fix minor bug with inoframes trackedUnitsCount not resetting.  
