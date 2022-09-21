@@ -1275,6 +1275,10 @@
 			</SubAddon>
 		</SubAddons>
 	</Addon>
+	<Addon name="RareScanner">
+		<Title>稀有精英追踪</Title>
+		<Category>收藏</Category>
+	</Addon>
 	<Addon name="Rarity">
 		<Title>稀有物品追踪</Title>
 		<Notes>显示与目标的距离。</Notes>

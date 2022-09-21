@@ -42,7 +42,7 @@ wlItemDurability, wlItemBonuses = {}, {};
 wlProfileData, wlTradeSkillDifficulty = {}, {};
 
 -- SavedVariablesPerCharacter
-wlSetting = {minimap=false};
+wlSetting = {};
 wlScans = {
     guid = nil,
     titles = "",

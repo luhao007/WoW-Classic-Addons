@@ -6,10 +6,10 @@
     "name": "ALL THE THINGS",
     "description": "Addon for Tracking Collections & Account Completion",
     "url": "https://www.curseforge.com/wow/addons/all-the-things",
-    "download_url": "https://edge.forgecdn.net/files/3973/157/ATT-Classic-v1.0.8-wrath.zip",
-    "date_published": "2022-09-08T05:37:20.810000+00:00",
-    "version": "Wrath Classic 1.0.8",
-    "changelog_url": "https://api.curseforge.com/v1/mods/267285/files/3973157/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3998/872/ATT-Classic-v1.1.0-wrath.zip",
+    "date_published": "2022-09-20T18:40:26.247000+00:00",
+    "version": "Wrath Classic 1.1.0",
+    "changelog_url": "https://api.curseforge.com/v1/mods/267285/files/3998872/changelog",
     "options": {
       "strategy": "default"
     },
@@ -20,6 +20,14 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "Wrath Classic 1.1.0",
+        "install_time": "2022-09-21T08:49:29+00:00"
+      },
+      {
+        "version": "Wrath Classic 1.0.9",
+        "install_time": "2022-09-18T08:21:50+00:00"
+      },
       {
         "version": "Wrath Classic 1.0.8",
         "install_time": "2022-09-08T12:53:33+00:00"
@@ -51,14 +59,6 @@
       {
         "version": "TBC Classic 0.8.0",
         "install_time": "2022-01-30T07:29:36+00:00"
-      },
-      {
-        "version": "TBC Classic 0.7.7",
-        "install_time": "2021-12-09T07:29:23+00:00"
-      },
-      {
-        "version": "TBC Classic 0.7.6",
-        "install_time": "2021-11-17T11:12:46+00:00"
       }
     ]
   },
@@ -625,10 +625,10 @@
     "name": "BlizzMove",
     "description": "Makes the default frames moveable via simple drag and drop",
     "url": "https://www.curseforge.com/wow/addons/blizzmove",
-    "download_url": "https://edge.forgecdn.net/files/3938/750/BlizzMove-v3.4.4.zip",
-    "date_published": "2022-08-17T09:53:57.170000+00:00",
-    "version": "v3.4.4",
-    "changelog_url": "https://api.curseforge.com/v1/mods/17809/files/3938750/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3995/116/BlizzMove-v3.4.5.zip",
+    "date_published": "2022-09-18T11:21:20.663000+00:00",
+    "version": "v3.4.5",
+    "changelog_url": "https://api.curseforge.com/v1/mods/17809/files/3995116/changelog",
     "options": {
       "strategy": "default"
     },
@@ -642,6 +642,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v3.4.5",
+        "install_time": "2022-09-19T07:18:39+00:00"
+      },
       {
         "version": "v3.4.4",
         "install_time": "2022-09-01T13:41:21+00:00"
@@ -677,10 +681,6 @@
       {
         "version": "v3.0.18-classic",
         "install_time": "2021-05-21T01:44:33+00:00"
-      },
-      {
-        "version": "v3.0.12b-classic",
-        "install_time": "2021-04-22T07:54:35+00:00"
       }
     ]
   },
@@ -1383,10 +1383,10 @@
     "name": "ItemRack Classic",
     "description": "Inventory Management Addon! Change your items quick and easy!",
     "url": "https://www.curseforge.com/wow/addons/itemrack-classic",
-    "download_url": "https://edge.forgecdn.net/files/3492/896/ItemRack-bcc-3.69.zip",
-    "date_published": "2021-10-16T15:00:42.540000+00:00",
-    "version": "ItemRack-bcc-3.69",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/340903/file/3492896/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3998/430/ItemRack-wrath-3.73.zip",
+    "date_published": "2022-09-20T11:16:05.060000+00:00",
+    "version": "ItemRack-wrath-3.73",
+    "changelog_url": "https://api.curseforge.com/v1/mods/340903/files/3998430/changelog",
     "options": {
       "strategy": "default"
     },
@@ -1400,6 +1400,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "ItemRack-wrath-3.73",
+        "install_time": "2022-09-20T13:43:22+00:00"
+      },
       {
         "version": "ItemRack-bcc-3.69",
         "install_time": "2021-11-17T11:12:47+00:00"
@@ -1435,10 +1439,6 @@
       {
         "version": "3.51",
         "install_time": "2020-11-24T11:19:24+00:00"
-      },
-      {
-        "version": "3.50",
-        "install_time": "2020-11-07T06:27:34+00:00"
       }
     ]
   },
@@ -1697,10 +1697,10 @@
     "name": "Nova World Buffs",
     "description": "Classic WoW world buff timers and pre buff drop warnings so you never miss a buff.",
     "url": "https://www.curseforge.com/wow/addons/nova-world-buffs",
-    "download_url": "https://edge.forgecdn.net/files/3984/915/NovaWorldBuffs-v2.32-Wrath.zip",
-    "date_published": "2022-09-12T09:48:07.933000+00:00",
-    "version": "NovaWorldBuffs-v2.32-Wrath.zip",
-    "changelog_url": "https://api.curseforge.com/v1/mods/366310/files/3984915/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3998/296/NovaWorldBuffs-v2.33-Wrath.zip",
+    "date_published": "2022-09-20T07:01:20.350000+00:00",
+    "version": "NovaWorldBuffs-v2.33-Wrath.zip",
+    "changelog_url": "https://api.curseforge.com/v1/mods/366310/files/3998296/changelog",
     "options": {
       "strategy": "default"
     },
@@ -1711,6 +1711,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "NovaWorldBuffs-v2.33-Wrath.zip",
+        "install_time": "2022-09-20T13:43:22+00:00"
+      },
       {
         "version": "NovaWorldBuffs-v2.32-Wrath.zip",
         "install_time": "2022-09-12T13:26:09+00:00"
@@ -1746,10 +1750,6 @@
       {
         "version": "NovaWorldBuffs-v2.08-TBC.zip",
         "install_time": "2021-06-02T04:21:37+00:00"
-      },
-      {
-        "version": "NovaWorldBuffs-v2.07-TBC.zip",
-        "install_time": "2021-05-30T05:16:04+00:00"
       }
     ]
   },
@@ -1904,10 +1904,10 @@
     "name": "Pawn",
     "description": "Pawn helps you compare items and find upgrades.",
     "url": "https://www.curseforge.com/wow/addons/pawn",
-    "download_url": "https://edge.forgecdn.net/files/3974/528/Pawn-2.6.6-Wrath.zip",
-    "date_published": "2022-09-09T04:43:47.267000+00:00",
-    "version": "2.6.6 (Wrath)",
-    "changelog_url": "https://api.curseforge.com/v1/mods/4646/files/3974528/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3995/978/Pawn-2.6.7-Wrath.zip",
+    "date_published": "2022-09-19T00:24:45.147000+00:00",
+    "version": "2.6.7 (Wrath)",
+    "changelog_url": "https://api.curseforge.com/v1/mods/4646/files/3995978/changelog",
     "options": {
       "strategy": "default"
     },
@@ -1918,6 +1918,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "2.6.7 (Wrath)",
+        "install_time": "2022-09-19T07:18:39+00:00"
+      },
       {
         "version": "2.6.6 (Wrath)",
         "install_time": "2022-09-09T12:13:41+00:00"
@@ -1953,10 +1957,6 @@
       {
         "version": "2.5.21 (Burning Crusade)",
         "install_time": "2021-07-17T04:03:36+00:00"
-      },
-      {
-        "version": "2.5.15 (Burning Crusade)",
-        "install_time": "2021-06-08T12:12:23+00:00"
       }
     ]
   },
@@ -2030,10 +2030,10 @@
     "name": "Questie",
     "description": "The Classic Quest Helper",
     "url": "https://www.curseforge.com/wow/addons/questie",
-    "download_url": "https://edge.forgecdn.net/files/3990/796/Questie-v7.1.2.zip",
-    "date_published": "2022-09-15T20:58:05.570000+00:00",
-    "version": "v7.1.2",
-    "changelog_url": "https://api.curseforge.com/v1/mods/334372/files/3990796/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3998/432/Questie-v7.1.3.zip",
+    "date_published": "2022-09-20T11:21:11.480000+00:00",
+    "version": "v7.1.3",
+    "changelog_url": "https://api.curseforge.com/v1/mods/334372/files/3998432/changelog",
     "options": {
       "strategy": "default"
     },
@@ -2044,6 +2044,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v7.1.3",
+        "install_time": "2022-09-20T13:43:23+00:00"
+      },
       {
         "version": "v7.1.2",
         "install_time": "2022-09-16T09:41:39+00:00"
@@ -2079,10 +2083,6 @@
       {
         "version": "v6.8.0 - TBC",
         "install_time": "2021-11-17T11:12:50+00:00"
-      },
-      {
-        "version": "v6.4.1 - TBC",
-        "install_time": "2021-07-17T04:03:37+00:00"
       }
     ]
   },
@@ -2164,6 +2164,33 @@
       {
         "version": "v4.9.7",
         "install_time": "2021-06-08T14:07:20+00:00"
+      }
+    ]
+  },
+  {
+    "source": "curse",
+    "id": "84208",
+    "slug": "rarescanner",
+    "name": "RareScanner",
+    "description": "RareScanner, a World of Warcraft addon to alert you when a rare, event or treasure appear in your minimap.",
+    "url": "https://www.curseforge.com/wow/addons/rarescanner",
+    "download_url": "https://edge.forgecdn.net/files/3970/162/RareScanner_3.4.0.1.zip",
+    "date_published": "2022-09-05T19:08:12.717000+00:00",
+    "version": "RareScanner_WOTLK_3.4.0.1",
+    "changelog_url": "https://api.curseforge.com/v1/mods/84208/files/3970162/changelog",
+    "options": {
+      "strategy": "default"
+    },
+    "folders": [
+      {
+        "name": "RareScanner"
+      }
+    ],
+    "deps": [],
+    "logged_versions": [
+      {
+        "version": "RareScanner_WOTLK_3.4.0.1",
+        "install_time": "2022-09-21T11:32:12+00:00"
       }
     ]
   },
@@ -2687,10 +2714,10 @@
     "name": "WeakAuras",
     "description": "A powerful, comprehensive utilty for displaying graphics and information based on buffs, debuffs, and other triggers.",
     "url": "https://www.curseforge.com/wow/addons/weakauras-2",
-    "download_url": "https://edge.forgecdn.net/files/3990/767/WeakAuras-4.1.3.zip",
-    "date_published": "2022-09-15T20:20:49.220000+00:00",
-    "version": "4.1.3",
-    "changelog_url": "https://api.curseforge.com/v1/mods/65387/files/3990767/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3998/408/WeakAuras-4.1.4.zip",
+    "date_published": "2022-09-20T10:47:54.897000+00:00",
+    "version": "4.1.4",
+    "changelog_url": "https://api.curseforge.com/v1/mods/65387/files/3998408/changelog",
     "options": {
       "strategy": "default"
     },
@@ -2713,6 +2740,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "4.1.4",
+        "install_time": "2022-09-20T13:43:25+00:00"
+      },
       {
         "version": "4.1.3",
         "install_time": "2022-09-16T09:41:41+00:00"
@@ -2748,10 +2779,6 @@
       {
         "version": "3.2.3-classic",
         "install_time": "2021-04-11T11:31:09+00:00"
-      },
-      {
-        "version": "3.2.2-classic",
-        "install_time": "2021-03-24T11:22:45+00:00"
       }
     ]
   },

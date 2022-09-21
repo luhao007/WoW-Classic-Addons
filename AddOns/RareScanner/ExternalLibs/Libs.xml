@@ -1,0 +1,10 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+
+	<!-- External libraries -->
+	<Include file="AceConfig-3.0\AceConfig-3.0.xml"/>
+	<Include file="LibQTip-1.0\lib.xml"/>
+	<Include file="LibBabble-Zone-3.0\lib.xml"/>
+
+</Ui>

@@ -776,6 +776,18 @@ class Manager:
         )
 
     @staticmethod
+    @available_on(['classic'])
+    def handle_rarescanner():
+        utils.remove_libraries(
+            ['AceAddon-3.0', 'AceDB-3.0', 'AceDBOptions-3.0', 'AceGUI-3.0', 'AceGUI-3.0-SharedMediaWidgets',
+             'AceLocale-3.0', 'AceSerializer-3.0', 'CallbackHandler-1.0', 'HereBeDragons', 'LibAboutPanel-2.0',
+             'LibDBIcon-1.0', 'LibRangeCheck-2.0', 'LibSharedMedia-3.0', 'LibStub', 'LibUIDropDownMenu'],
+            'Addons/RareScanner/ExternalLibs',
+            'Addons/RareScanner/ExternalLibs/Libs.xml'
+        )
+        # utils.remove_libraries_all('RareScanner', 'ExternalLibs')
+
+    @staticmethod
     @available_on(['retail'])
     def handle_rarity():
         utils.remove_libraries(
