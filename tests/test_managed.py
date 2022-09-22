@@ -10,10 +10,10 @@ class CheckManagedAddOns(unittest.TestCase):
 
     def test_check_addon_toc(self):
         for addon in os.listdir('AddOns'):
-            path = Path('AddOns') / addon / '{0}.toc'.format(addon)
+            path = Path('AddOns') / addon / f'{addon}.toc'
             if 'sekiro' not in addon:
                 self.assertTrue(os.path.exists(path),
-                                '{0}.toc not existed!'.format(addon))
+                                f'{addon}.toc not existed!')
 
     def test_check_libs(self):
         """Test for !!Libs.toc"""
@@ -28,7 +28,7 @@ class CheckManagedAddOns(unittest.TestCase):
             if '.toc' not in lib and lib != 'FrameXML':
                 self.assertTrue(
                     any(lib in line for line in toc.contents),
-                    '{0} in !!Libs, but not used in !!Libs.toc'.format(lib)
+                    f'{lib} in !!Libs, but not used in !!Libs.toc'
                 )
 
         # Check every file in the toc exists
@@ -38,7 +38,7 @@ class CheckManagedAddOns(unittest.TestCase):
             path = root / line.strip()
             self.assertTrue(
                 os.path.exists(str(path).replace('\\', '/', -1)),
-                '{0} in !!Libs.toc, but not exists!'.format(path)
+                f'{path} in !!Libs.toc, but not exists!'
             )
 
     def test_check_duplicate_libraries(self):
@@ -80,4 +80,4 @@ class CheckManagedAddOns(unittest.TestCase):
 
                 addon = paths[-2]
                 if addon not in whitelist:
-                    self.fail('Found duplicated libraries in {}'.format(addon))
+                    self.fail(f'Found duplicated libraries in {addon}')
