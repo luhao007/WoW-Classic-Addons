@@ -388,13 +388,13 @@ class Manager:
         utils.process_file('Addons/ACP/ACP.xml', handle)
 
     @staticmethod
-    @available_on(['classic_era'])
+    @available_on(['classic_era', 'classic'])
     def handle_ate():
         utils.remove_libraries(
                 ['CallbackHandler-1.0', 'LibDataBroker-1.1',
                  'LibDbIcon-1.0', 'LibStub'],
-                'AddOns/alaTalentEmu/Libs',
-                'AddOns/alaTalentEmu/Libs/libs.xml'
+                'AddOns/TalentEmu/Libs',
+                'AddOns/TalentEmu/Libs/libs.xml'
             )
 
     @staticmethod

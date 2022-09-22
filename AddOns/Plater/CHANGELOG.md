@@ -1,4 +1,6 @@
 @cont1nuity:
+- Ghost Auras should be shown on the debuff frame.
+- WotLK tank recognition in raids is again based on raid roles instead of party role assignments.
 - WotLK DK death runes should now show properly.
 - Throttling 'UPDATE_SHAPESHIFT_FORM' event to prevent unnecessary updates.
 - Support for Druid combo points in WotLK.
