@@ -84,7 +84,6 @@ LibSpellRange-1.0\lib.xml
 LibTranslit-1.0\LibTranslit-1.0.xml
 LibWindow-1.1\LibWindow-1.1\LibWindow-1.1.lua
 NickTag-1.0\NickTag-1.0.xml
-ThreatClassic2\ThreatClassic2.xml
 
 # Custom Luas
 custom.lua

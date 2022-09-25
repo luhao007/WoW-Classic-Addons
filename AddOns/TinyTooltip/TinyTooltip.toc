@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: M
-## Version: 9.0.3
+## Version: 9.0.8
 ## SavedVariables: BigTipDB
 ## SavedVariablesPerCharacter: TinyTooltipCharacterDB
 

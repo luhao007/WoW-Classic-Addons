@@ -94,6 +94,8 @@ local widgets = {}
 function widgets:checkbox(parent, config, labelText)
     local frame = CreateFrame("CheckButton", nil, parent, "InterfaceOptionsCheckButtonTemplate")
     frame.keystring = config.keystring
+    frame.tooltipText = labelText or L[config.keystring]
+    frame.Text:SetWidth(0)
     frame.Text:SetText(labelText or L[config.keystring])
     frame:SetChecked(GetVariable(config.keystring))
     frame:SetScript("OnClick", function(self) SetVariable(self.keystring, self:GetChecked()) end)
@@ -176,6 +178,9 @@ function widgets:colorpick(parent, config)
                 local r, g, b = ColorPickerFrame:GetColorRGB()
                 local a = 1-format("%.2f", OpacitySliderFrame:GetValue())
                 local aa = select(4, ColorPickerFrame.tipframe:GetNormalTexture():GetVertexColor())
+                r = tonumber(format("%.4f",r))
+                g = tonumber(format("%.4f",g))
+                b = tonumber(format("%.4f",b))
                 if (a ~= aa) then
                     ColorPickerFrame.tipframe:GetNormalTexture():SetVertexColor(r,g,b,a)
                     SetVariable(ColorPickerFrame.tipframe.keystring, {r,g,b,a})
@@ -184,6 +189,9 @@ function widgets:colorpick(parent, config)
             swatchFunc = function()
                 local r, g, b = ColorPickerFrame:GetColorRGB()
                 local a = 1-format("%.2f", OpacitySliderFrame:GetValue())
+                r = tonumber(format("%.4f",r))
+                g = tonumber(format("%.4f",g))
+                b = tonumber(format("%.4f",b))
                 ColorPickerFrame.tipframe:GetNormalTexture():SetVertexColor(r,g,b,a)
                 if (ColorPickerFrame.tipframe.colortype == "hex") then
                     SetVariable(ColorPickerFrame.tipframe.keystring, addon:GetHexColor(r,g,b))
@@ -363,8 +371,13 @@ saframe:SetScript("OnHide", function() grid:Hide() end)
 local caframe = CreateFrame("Frame", nil, UIParent, BackdropTemplateMixin and "ThinBorderTemplate,BackdropTemplate" or "ThinBorderTemplate")
 caframe:Hide()
 caframe:SetFrameStrata("DIALOG")
-caframe:SetBackdrop(GameTooltip:GetBackdrop())
-caframe:SetBackdropColor(GameTooltip:GetBackdropColor())
+caframe:SetBackdrop({
+    bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
+    edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+    tile = true, tileSize = 8, edgeSize = 16,
+    insets = {left = 4, right = 4, top = 4, bottom = 4}
+})
+caframe:SetBackdropColor(0.2,0.2,0.2,0.85)
 caframe:SetSize(200, 200)
 caframe:SetPoint("CENTER")
 caframe:SetClampedToScreen(true)
@@ -892,6 +905,16 @@ local function OnDragStop(self)
     LibEvent:trigger("tinytooltip:diy:player", "player", true)
 end
 
+local function OnEnter(self)
+    GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+    GameTooltip:SetText(L[self.key])
+    GameTooltip:Show()
+end
+
+local function OnLeave(self)
+    GameTooltip:Hide()
+end
+
 local function CreateElement(parent, key)
     if (not parent.elements[key]) then
         local button = CreateFrame("Button", nil, parent)
@@ -908,6 +931,8 @@ local function CreateElement(parent, key)
         button:RegisterForDrag("LeftButton")
         button:SetScript("OnDragStart", OnDragStart)
         button:SetScript("OnDragStop", OnDragStop)
+        button:SetScript("OnEnter", OnEnter)
+        button:SetScript("OnLeave", OnLeave)
         button.SetText = function(self, text)
             self.text:SetText(text)
             self:SetWidth(self.text:GetWidth()+4)
@@ -969,6 +994,10 @@ local placeholder = {
     statusAFK = "AFK",
     statusDND = "DND",
     statusDC  = "DC",
+    friendIcon = addon.icons.friend,
+    pvpIcon    = addon.icons.pvp,
+    roleIcon   = addon.icons.DAMAGER,
+    raidIcon   = ICON_LIST[8] .. "0|t",
 }
 setmetatable(placeholder, {__index = function(_, k) return k end})
 
