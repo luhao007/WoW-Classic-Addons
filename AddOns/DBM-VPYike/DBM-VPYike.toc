@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: 夏一可, Mini_Dragon
-## Version: 20191221
+## Version: 20220906
 ## RequiredDeps: DBM-Core
 ## DefaultState: enabled
 
@@ -8,11 +8,11 @@
 ## Notes: https://github.com/Mini-Dragon/DBM-VoicePack-Yike
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFF69CCF0夏一可语音包|r
 
-## X-Min-Interface: 90001
+## X-Min-Interface: 90207
 ## X-DBM-Voice: 1
 ## X-DBM-Voice-Name: 夏一可(普通话女)
 ## X-DBM-Voice-ShortName: Yike
-## X-DBM-Voice-Version: 11
+## X-DBM-Voice-Version: 13
 ## X-DBM-Voice-HasCount: 1
 ## X-Part-Of: DBM-Core
 

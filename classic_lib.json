@@ -6,10 +6,10 @@
     "name": "Ace3",
     "description": "AddOn development framework",
     "url": "https://www.curseforge.com/wow/addons/ace3",
-    "download_url": "https://edge.forgecdn.net/files/3658/640/Ace3-Release-r1259.zip",
-    "date_published": "2022-02-23T09:53:20.873000+00:00",
-    "version": "Release-r1259",
-    "changelog_url": "https://api.curseforge.com/v1/mods/13376/files/3658640/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4000/10/Ace3-Release-r1281.zip",
+    "date_published": "2022-09-21T21:27:46.890000+00:00",
+    "version": "Release-r1281",
+    "changelog_url": "https://api.curseforge.com/v1/mods/13376/files/4000010/changelog",
     "options": {
       "strategy": "any_flavour"
     },
@@ -20,6 +20,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "Release-r1281",
+        "install_time": "2022-09-22T11:59:01+00:00"
+      },
       {
         "version": "Release-r1259",
         "install_time": "2022-09-01T13:42:56+00:00"
@@ -281,10 +285,10 @@
     "name": "LibCandyBar-3.0",
     "description": "Timer bars with that extra sweetness.",
     "url": "https://www.curseforge.com/wow/addons/libcandybar-3-0",
-    "download_url": "https://edge.forgecdn.net/files/3970/304/LibCandyBar-3.0-v9.2.1.zip",
-    "date_published": "2022-09-05T20:23:04.883000+00:00",
-    "version": "v9.2.1",
-    "changelog_url": "https://api.curseforge.com/v1/mods/18909/files/3970304/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3981/625/LibCandyBar-3.0-v9.2.2.zip",
+    "date_published": "2022-09-10T19:53:42.673000+00:00",
+    "version": "v9.2.2",
+    "changelog_url": "https://api.curseforge.com/v1/mods/18909/files/3981625/changelog",
     "options": {
       "strategy": "any_flavour"
     },
@@ -295,6 +299,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v9.2.2",
+        "install_time": "2022-09-11T04:35:05+00:00"
+      },
       {
         "version": "v9.2.1",
         "install_time": "2022-09-06T07:17:10+00:00"
@@ -1107,6 +1115,33 @@
       {
         "version": "v9.0.1",
         "install_time": "2020-11-03T05:33:05+00:00"
+      }
+    ]
+  },
+  {
+    "source": "curse",
+    "id": "355497",
+    "slug": "threatclassic2",
+    "name": "ThreatClassic2",
+    "description": "A simple threat meter for WoW Classic & TBC Classic, successor of ClassicThreatMeter",
+    "url": "https://www.curseforge.com/wow/addons/threatclassic2",
+    "download_url": "https://edge.forgecdn.net/files/3910/298/ThreatClassic2-v2.45-wrath.zip",
+    "date_published": "2022-07-31T23:02:09.940000+00:00",
+    "version": "v2.45-wrath",
+    "changelog_url": "https://api.curseforge.com/v1/mods/355497/files/3910298/changelog",
+    "options": {
+      "strategy": "any_flavour"
+    },
+    "folders": [
+      {
+        "name": "ThreatClassic2"
+      }
+    ],
+    "deps": [],
+    "logged_versions": [
+      {
+        "version": "v2.45-wrath",
+        "install_time": "2022-09-25T14:50:09+00:00"
       }
     ]
   },

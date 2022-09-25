@@ -3,8 +3,6 @@
 
 	local Loc = LibStub ("AceLocale-3.0"):GetLocale ( "Details" )
 	local _detalhes = _G._detalhes
-	local PixelUtil = PixelUtil or DFPixelUtil
-
 	DETAILSPLUGIN_ALWAYSENABLED = 0x1
 	
 	--> consts
@@ -14,6 +12,7 @@
 		local CONST_PLUGINWINDOW_MENU_Y = -26
 		local CONST_PLUGINWINDOW_WIDTH = 925
 		local CONST_PLUGINWINDOW_HEIGHT = 600
+	
 	
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --> details api functions
@@ -94,7 +93,7 @@
 		for key, value in pairs (default) do 
 			if (type (value) == "table") then
 				if (type (current [key]) ~= "table") then
-					current [key] = Details.CopyTable (value)
+					current [key] = table_deepcopy (value)
 				else
 					_detalhes:CheckDefaultTable (current [key], value)
 				end
@@ -284,7 +283,7 @@
 		PluginOptions = PluginOptions or 0x0
 		local NewPlugin = {__options = PluginOptions, __enabled = true, RegisterEvent = register_event_func, UnregisterEvent = unregister_event_func}
 		
-		local Frame = CreateFrame ("Frame", FrameName, UIParent,"BackdropTemplate")
+		local Frame = CreateFrame ("Frame", FrameName, UIParent)
 		Frame:RegisterEvent ("PLAYER_LOGIN")
 		Frame:RegisterEvent ("PLAYER_LOGOUT")
 		
@@ -334,7 +333,7 @@
 		template = template or 1
 	
 		if (template == 2) then
-			local options_frame = CreateFrame ("frame", name, UIParent, "ButtonFrameTemplate,BackdropTemplate")
+			local options_frame = CreateFrame ("frame", name, UIParent, "ButtonFrameTemplate")
 			tinsert (UISpecialFrames, name)
 			options_frame:SetSize (500, 200)
 			
@@ -365,14 +364,14 @@
 			options_frame:Hide()
 			
 			options_frame:SetPoint ("center", UIParent, "center")
-			--options_frame.TitleText:SetText (title) --10.0 fuck
-			--options_frame.portrait:SetTexture ([[Interface\CHARACTERFRAME\TEMPORARYPORTRAIT-FEMALE-BLOODELF]])
+			options_frame.TitleText:SetText (title)
+			options_frame.portrait:SetTexture ([[Interface\CHARACTERFRAME\TEMPORARYPORTRAIT-FEMALE-BLOODELF]])
 			
 			return options_frame
 	
 		elseif (template == 1) then
 		
-			local options_frame = CreateFrame ("frame", name, UIParent,"BackdropTemplate")
+			local options_frame = CreateFrame ("frame", name, UIParent)
 			tinsert (UISpecialFrames, name)
 			options_frame:SetSize (500, 200)
 
@@ -419,21 +418,17 @@
 			return options_frame
 		end
 	end
-
+	
+	
 	function _detalhes:CreatePluginWindowContainer()
-
-		local f = CreateFrame ("frame", "DetailsPluginContainerWindow", UIParent,"BackdropTemplate")
+	
+		local f = CreateFrame ("frame", "DetailsPluginContainerWindow", UIParent)
 		f:EnableMouse (true)
 		f:SetMovable (true)
 		f:SetPoint ("center", UIParent, "center")
 		f:SetBackdrop (_detalhes.PluginDefaults and _detalhes.PluginDefaults.Backdrop or {bgFile = "Interface\\Tooltips\\UI-Tooltip-Background", tile = true, tileSize = 16, edgeFile = [[Interface\Buttons\WHITE8X8]], edgeSize = 1})
 		f:SetBackdropColor (0, 0, 0, 0.3)
-		f:SetBackdropBorderColor(0, 0, 0, 1)
-
-		local scaleBar = DetailsFramework:CreateScaleBar(f, Details.options_window)
-		scaleBar:SetFrameStrata("fullscreen")
-		f:SetScale(Details.options_window.scale)
-
+	
 		f:Hide()
 
 		--> members
@@ -459,24 +454,17 @@
 			LibWindow.SavePosition (f)
 			
 		--> menu background
-			local menuBackground = CreateFrame ("frame", "$parentMenuFrame", f,"BackdropTemplate")
+			local menuBackground = CreateFrame ("frame", "$parentMenuFrame", f)
 			_detalhes:FormatBackground (menuBackground)
-			local menuBackgroundTexture = menuBackground:CreateTexture("$parentBackgroundTexture", "background", nil, -2)
-			menuBackgroundTexture:SetAllPoints()
-			menuBackgroundTexture:SetColorTexture(0.2, 0.2, 0.2, .5)
 			
 		--> statusbar
-			local statusBar = CreateFrame ("frame", nil, menuBackground,"BackdropTemplate")
+			local statusBar = CreateFrame ("frame", nil, menuBackground)
 			statusBar:SetPoint ("topleft", menuBackground, "bottomleft", 0, 1)
 			statusBar:SetPoint ("topright", f, "bottomright", 0, 1)
 			statusBar:SetHeight (20)
+			_detalhes.gump:ApplyStandardBackdrop (statusBar)
 			statusBar:SetAlpha (1)
-			DetailsFramework:BuildStatusbarAuthorInfo (statusBar)
-			DetailsFramework:ApplyStandardBackdrop (statusBar)
-			local extraDarkTexture = statusBar:CreateTexture(nil, "background")
-			extraDarkTexture:SetAllPoints()
-			extraDarkTexture:SetColorTexture(.2, .2, .2, .8)
-
+			_detalhes.gump:BuildStatusbarAuthorInfo (statusBar)
 			--
 			local right_click_to_back = _detalhes.gump:CreateLabel (statusBar, "right click to close", 10, "gray")
 			right_click_to_back:SetPoint ("bottomright", statusBar, "bottomright", -1, 5)
@@ -500,28 +488,28 @@
 			
 			--
 		--> plugins menu title bar
-			local titlebar_plugins = CreateFrame ("frame", nil, menuBackground,"BackdropTemplate")
-			PixelUtil.SetPoint (titlebar_plugins, "topleft", menuBackground, "topleft", 2, -3)
-			PixelUtil.SetPoint (titlebar_plugins, "topright", menuBackground, "topright", -2, -3)
+			local titlebar_plugins = CreateFrame ("frame", nil, menuBackground)
+			DFPixelUtil.SetPoint (titlebar_plugins, "topleft", menuBackground, "topleft", 2, -3)
+			DFPixelUtil.SetPoint (titlebar_plugins, "topright", menuBackground, "topright", -2, -3)
 			titlebar_plugins:SetHeight (f.TitleHeight)
 			titlebar_plugins:SetBackdrop ({edgeFile = [[Interface\Buttons\WHITE8X8]], edgeSize = 1, bgFile = [[Interface\AddOns\Details\images\background]], tileSize = 64, tile = true})
 			titlebar_plugins:SetBackdropColor (.5, .5, .5, 1)
 			titlebar_plugins:SetBackdropBorderColor (0, 0, 0, 1)
 			--> title
 			local titleLabel = _detalhes.gump:NewLabel (titlebar_plugins, titlebar_plugins, nil, "titulo", "Plugins", "GameFontHighlightLeft", 12, {227/255, 186/255, 4/255})
-			PixelUtil.SetPoint (titleLabel, "center", titlebar_plugins , "center", 0, 0)
-			PixelUtil.SetPoint (titleLabel, "top", titlebar_plugins , "top", 0, -5)
+			DFPixelUtil.SetPoint (titleLabel, "center", titlebar_plugins , "center", 0, 0)
+			DFPixelUtil.SetPoint (titleLabel, "top", titlebar_plugins , "top", 0, -5)
 			
 		--> plugins menu title bar
-			local titlebar_tools = CreateFrame ("frame", nil, menuBackground,"BackdropTemplate")
+			local titlebar_tools = CreateFrame ("frame", nil, menuBackground)
 			titlebar_tools:SetHeight (f.TitleHeight)
 			titlebar_tools:SetBackdrop ({edgeFile = [[Interface\Buttons\WHITE8X8]], edgeSize = 1, bgFile = [[Interface\AddOns\Details\images\background]], tileSize = 64, tile = true})
 			titlebar_tools:SetBackdropColor (.5, .5, .5, 1)
 			titlebar_tools:SetBackdropBorderColor (0, 0, 0, 1)
 			--> title
 			local titleLabel = _detalhes.gump:NewLabel (titlebar_tools, titlebar_tools, nil, "titulo", "Tools", "GameFontHighlightLeft", 12, {227/255, 186/255, 4/255})
-			PixelUtil.SetPoint (titleLabel, "center", titlebar_tools , "center", 0, 0)
-			PixelUtil.SetPoint (titleLabel, "top", titlebar_tools , "top", 0, -5)
+			DFPixelUtil.SetPoint (titleLabel, "center", titlebar_tools , "center", 0, 0)
+			DFPixelUtil.SetPoint (titleLabel, "top", titlebar_tools , "top", 0, -5)
 		
 		--> scripts
 			f:SetScript ("OnShow", function()
@@ -561,7 +549,7 @@
 			--> get the plugin
 			local pluginObject = _detalhes:GetPlugin (pluginAbsName)
 			if (not pluginObject) then
-				for index, plugin in ipairs (f.EmbedPlugins) do
+				for index, plugin in ipairs (f.EmbedPlugins) do 
 					if (plugin.real_name == pluginAbsName) then
 						pluginObject = plugin
 					end
@@ -572,9 +560,9 @@
 					return
 				end
 			end
-
+			
 			--> hide or show plugin windows
-			for index, plugin in ipairs (f.EmbedPlugins) do
+			for index, plugin in ipairs (f.EmbedPlugins) do 
 				if (plugin ~= pluginObject) then
 					--> hide this plugin
 					if (plugin.Frame:IsShown()) then
@@ -582,18 +570,18 @@
 					end
 				end
 			end
-
+			
 			--> re set the point of the frame within the main plugin window
 			f.RefreshFrame (pluginObject.__var_Frame)
 			C_Timer.After (0.016, function ()
 				f.RefreshFrame (pluginObject.__var_Frame)
 			end)
-
+			
 			--> show the plugin window
 			if (pluginObject.RefreshWindow and callRefresh) then
 				DetailsFramework:QuickDispatch (pluginObject.RefreshWindow)
 			end
-
+			
 			--> highlight the plugin button on the menu
 			for index, button in ipairs (f.MenuButtons) do
 				button:Show()
@@ -606,7 +594,7 @@
 					button:SetTemplate (_detalhes.gump:GetTemplate ("button", "DETAILS_PLUGINPANEL_BUTTON_TEMPLATE"))
 				end
 			end
-
+			
 			--> show the container
 			f:Show()
 			
@@ -646,30 +634,30 @@
 			--frame:SetScript ("OnHide", on_hide)
 			frame:HookScript ("OnHide", on_hide)
 			frame:ClearAllPoints()
-			PixelUtil.SetPoint (frame, "topleft", f, "topleft", 0, 0)
+			DFPixelUtil.SetPoint (frame, "topleft", f, "topleft", 0, 0)
 			frame:Show()
 		end
-
-		--> a plugin request to be embed into the main plugin window
-		function f.EmbedPlugin(pluginObject, frame, isUtility)
-
+		
+		--> a plugin request to be embed into the main plugin window		
+		function f.EmbedPlugin (pluginObject, frame, isUtility)
+		
 			--> check if the plugin has a frame
 			if (not pluginObject.Frame) then
 				f.DebugMsg ("plugin doesn't have a frame.")
 				return
 			end
-
+			
 			--> create a button for this plugin
-			local newMenuButtom = f.CreatePluginMenuButton(pluginObject, isUtility)
-
+			local newMenuButtom = f.CreatePluginMenuButton (pluginObject, isUtility)
+			
 			--> utility is true when the object isn't a real plugin, but instead a tool frame from the main addon being embed on this panel
 			if (isUtility) then
 				pluginObject.__var_Utility = true
 			end
 			pluginObject.__var_Frame = frame
-
+			
 			--> sort buttons alphabetically, put utilities at the end
-			table.sort (f.MenuButtons, function(t1, t2)
+			table.sort (f.MenuButtons, function (t1, t2)
 				if (t1.IsUtility and t2.IsUtility) then
 					return t1.PluginName < t2.PluginName
 				elseif (t1.IsUtility) then
@@ -679,36 +667,35 @@
 				else
 					return t1.PluginName < t2.PluginName
 				end
-			end)
-
+			end) 
+			
 			--> reset the buttons points
 			local addingTools = false
-			for index, button in ipairs(f.MenuButtons) do
+			for index, button in ipairs (f.MenuButtons) do
 				button:ClearAllPoints()
-				PixelUtil.SetPoint(button, "center", menuBackground, "center", 0, 0)
+				DFPixelUtil.SetPoint (button, "center", menuBackground, "center", 0, 0)
 
 				if (button.IsUtility) then
 					--> add -20 to add a gap between plugins and utilities
-
+					
 					if (not addingTools) then
 						--> add the header
 						addingTools = true
-						PixelUtil.SetPoint (titlebar_tools, "topleft", menuBackground, "topleft", 2, f.MenuY + ( (index-1) * -f.MenuButtonHeight ) - index - 20)
-						PixelUtil.SetPoint (titlebar_tools, "topright", menuBackground, "topright", -2, f.MenuY + ( (index-1) * -f.MenuButtonHeight ) - index - 20)
+						DFPixelUtil.SetPoint (titlebar_tools, "topleft", menuBackground, "topleft", 2, f.MenuY + ( (index-1) * -f.MenuButtonHeight ) - index - 20)
+						DFPixelUtil.SetPoint (titlebar_tools, "topright", menuBackground, "topright", -2, f.MenuY + ( (index-1) * -f.MenuButtonHeight ) - index - 20)
 					end
-
-					PixelUtil.SetPoint (button, "top", menuBackground, "top", 0, f.MenuY + ( (index-1) * -f.MenuButtonHeight ) - index - 40)
+					
+					DFPixelUtil.SetPoint (button, "top", menuBackground, "top", 0, f.MenuY + ( (index-1) * -f.MenuButtonHeight ) - index - 40)
 				else
-					PixelUtil.SetPoint (button, "top", menuBackground, "top", 0, f.MenuY + ( (index-1) * -f.MenuButtonHeight ) - index)
+					DFPixelUtil.SetPoint (button, "top", menuBackground, "top", 0, f.MenuY + ( (index-1) * -f.MenuButtonHeight ) - index)
 				end
 			end
-
+			
 			--> format the plugin main frame
 			f.RefreshFrame (frame)
 			--> add the plugin to embed table
-			tinsert(f.EmbedPlugins, pluginObject)
-			frame:SetParent(f)
-
+			tinsert (f.EmbedPlugins, pluginObject)
+			
 			f.DebugMsg ("plugin added", pluginObject.__name)
 		end
 		

@@ -509,6 +509,14 @@ class Manager:
 
         utils.remove_libraries(libs, 'Addons/Details/Libs', 'Addons/Details/Libs/libs.xml')
 
+        utils.remove_libraries(
+            ['AceAddon-3.0', 'AceBucket-3.0', 'AceComm-3.0', 'AceConfig-3.0',
+                'AceConsole-3.0', 'AceDB-3.0', 'AceDBOptions-3.0', 'AceEvent-3.0',
+                'AceGUI-3.0', 'AceHook-3.0', 'AceLocale-3.0', 'AceSerializer-3.0',
+                'AceTab-3.0', 'AceTimer-3.0', 'CallbackHandler-1.0', 'LibStub'],
+            'Addons/Details/Libs/LibThreatClassic2/Libs',
+            'Addons/Details/Libs/LibThreatClassic2/lib.xml'
+        )
         utils.change_defaults(
             'Addons/Details/functions/profiles.lua',
             ('		minimap = {hide = true, radius = 160, minimapPos = 220, '
@@ -785,7 +793,6 @@ class Manager:
             'Addons/RareScanner/ExternalLibs',
             'Addons/RareScanner/ExternalLibs/Libs.xml'
         )
-        # utils.remove_libraries_all('RareScanner', 'ExternalLibs')
 
     @staticmethod
     @available_on(['retail'])

@@ -57,7 +57,6 @@ def get_platform():
         if last.startswith('_') and last.endswith('_'):
             return last[1:-1]
 
-    #default
     return 'retail'
 
 

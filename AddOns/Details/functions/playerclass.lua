@@ -10,13 +10,7 @@ do
 	local _select = select
 	local _unpack = unpack
 
-	local openRaidLib = LibStub:GetLibrary("LibOpenRaid-1.0", true)
-
 	local unknown_class_coords = {0.75, 1, 0.75, 1}
-
-	function Details:GetUnknownClassIcon()
-		return [[Interface\AddOns\Details\images\classes_small]], unpack(unknown_class_coords)
-	end
 	
 	function _detalhes:GetIconTexture (iconType, withAlpha)
 		iconType = string.lower (iconType)
@@ -101,14 +95,6 @@ do
 	
 	function _detalhes:GetSpecIcon (spec, useAlpha)
 		if (spec) then
-			if (spec > 600) then --hack to new spec ids on new leveling zones from level 1-10
-				spec = 65
-			end
-			
-			if (spec == 0) then
-				return [[Interface\AddOns\Details\images\classes_small]], unpack (_detalhes.class_coords["UNKNOW"])
-			end
-
 			if (useAlpha) then
 				return [[Interface\AddOns\Details\images\spec_icons_normal_alpha]], unpack (_detalhes.class_specs_coords [spec])
 			else
@@ -128,10 +114,8 @@ do
 		elseif (type (class) == "string") then
 			return unpack (_detalhes.class_colors [class] or default_color)
 			
-		elseif (self.color) then
-			return unpack(self.color)
 		else
-			return unpack (default_color)
+			unpack (default_color)
 		end
 	end
 	
@@ -257,36 +241,6 @@ do
 		end
 		
 	end
-
-	function Details:GetUnitId(unitName)
-		unitName = unitName or self.nome
-		if (openRaidLib) then
-			local unitId = openRaidLib.GetUnitID(unitName)
-			if (unitId) then
-				return unitId
-			end
-		end
-
-		if (IsInRaid()) then
-			for i = 1, GetNumGroupMembers() do
-				local unitId = "raid" .. i
-				if (GetUnitName(unitId, true) == unitName) then
-					return unitId
-				end
-			end
- 
-		elseif (IsInGroup()) then
-			for i = 1, GetNumGroupMembers() -1 do
-				local unitId = "party" .. i
-				if (GetUnitName(unitId, true) == unitName) then
-					return unitId
-				end
-			end
-			if (UnitName("player") == unitName) then
-				return "player"
-			end
-		end
-	end
 	
 	function _detalhes:ReGuessSpec (t)
 		local Actor, container = t[1], t[2]
@@ -304,8 +258,6 @@ do
 						Actor.spec = spec
 						Actor.classe = _detalhes.SpecIDToClass [spec] or Actor.classe
 						Actor.guessing_spec = nil
-
-						Details:SendEvent("UNIT_SPEC", nil, Actor:GetUnitId(), spec, Actor.serial)
 						
 						if (container) then
 							container.need_refresh = true
@@ -330,8 +282,6 @@ do
 						
 							Actor.spec = spec
 							Actor.classe = _detalhes.SpecIDToClass [spec] or Actor.classe
-
-							Details:SendEvent("UNIT_SPEC", nil, Actor:GetUnitId(), spec, Actor.serial)
 							
 							if (container) then
 								container.need_refresh = true
@@ -364,8 +314,6 @@ do
 									
 										Actor.spec = spec
 										Actor.classe = _detalhes.SpecIDToClass [spec] or Actor.classe
-
-										Details:SendEvent("UNIT_SPEC", nil, Actor:GetUnitId(), spec, Actor.serial)
 										
 										if (container) then
 											container.need_refresh = true
@@ -434,8 +382,6 @@ do
 					
 						Actor.spec = spec
 						Actor.classe = _detalhes.SpecIDToClass [spec] or Actor.classe
-
-						Details:SendEvent("UNIT_SPEC", nil, Actor:GetUnitId(), spec, Actor.serial)
 						
 						Actor.guessing_spec = nil
 						
@@ -461,8 +407,6 @@ do
 							Actor.spec = spec
 							Actor.classe = _detalhes.SpecIDToClass [spec] or Actor.classe
 							Actor.guessing_spec = nil
-
-							Details:SendEvent("UNIT_SPEC", nil, Actor:GetUnitId(), spec, Actor.serial)
 							
 							if (container) then
 								container.need_refresh = true
@@ -489,8 +433,6 @@ do
 						Actor.spec = spec
 						Actor.classe = _detalhes.SpecIDToClass [spec] or Actor.classe
 						Actor.guessing_spec = nil
-
-						Details:SendEvent("UNIT_SPEC", nil, Actor:GetUnitId(), spec, Actor.serial)
 						
 						if (container) then
 							container.need_refresh = true
@@ -523,8 +465,6 @@ do
 							Actor.spec = spec
 							Actor.classe = _detalhes.SpecIDToClass [spec] or Actor.classe
 							Actor.guessing_spec = nil
-
-							Details:SendEvent("UNIT_SPEC", nil, Actor:GetUnitId(), spec, Actor.serial)
 							
 							if (container) then
 								container.need_refresh = true

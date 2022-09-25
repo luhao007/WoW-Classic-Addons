@@ -4,16 +4,23 @@ from pathlib import Path
 from pprint import pprint
 
 from toc import TOC
+from utils import TOCS
 
 
 class CheckManagedAddOns(unittest.TestCase):
 
     def test_check_addon_toc(self):
         for addon in os.listdir('AddOns'):
-            path = Path('AddOns') / addon / f'{addon}.toc'
-            if 'sekiro' not in addon:
-                self.assertTrue(os.path.exists(path),
-                                f'{addon}.toc not existed!')
+            if 'sekiro' in addon:
+                continue
+
+            for toc in TOCS:
+                print(TOCS)
+                path = Path('AddOns') / addon / f'{addon}{toc}'
+                if os.path.exists(path):
+                    break
+            else:
+                self.fail(f'{addon} toc files not existed!')
 
     def test_check_libs(self):
         """Test for !!Libs.toc"""

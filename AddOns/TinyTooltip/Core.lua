@@ -26,8 +26,6 @@ local UnitEffectiveLevel = UnitEffectiveLevel or function() end
 local UnitGroupRolesAssigned = UnitGroupRolesAssigned or function() end
 local UnitIsQuestBoss = UnitIsQuestBoss or function() end
 local IsFlying = IsFlying or function() end
-local C_BattleNet_GetAccountInfoByGUID = C_BattleNet and C_BattleNet.GetAccountInfoByGUID or function() end
-
 
 local addon = TinyTooltip
 
@@ -281,14 +279,10 @@ end
 function addon:GetFriendIcon(unit)
     if (UnitIsPlayer(unit)) then
         local guid = UnitGUID(unit)
-        if (guid and C_FriendList.IsFriend(guid)) then
+        if (guid and guid~=UnitGUID("player") and C_BattleNet.GetAccountInfoByGUID(guid)) then
+            return self.icons.bnetfriend
+        elseif (guid and C_FriendList.IsFriend(guid)) then
             return self.icons.friend
-        end
-        if (guid and guid~=UnitGUID("player")) then
-            local accountInfo = C_BattleNet_GetAccountInfoByGUID(guid)
-            if (accountInfo and accountInfo.isFriend) then
-                return self.icons.bnetfriend
-            end
         end
     end
 end
@@ -566,7 +560,7 @@ addon.filterfunc.samerealm = function(raw)
 end
 
 addon.filterfunc.samecrossrealm = function(raw)
-    return UnitRealmRelationship(raw.unit) ~= LE_REALM_RELATION_COALESCED
+    return UnitRealmRelationship(raw.unit) == LE_REALM_RELATION_SAME
 end
 
 addon.filterfunc.inpvp = function(raw)
@@ -809,9 +803,6 @@ LibEvent:attachTrigger("tooltip.style.init", function(self, tip)
     if (tip.SetBackdrop) then
         tip:SetBackdrop(nil)
     end
-    if (tip.NineSlice) then
-        tip.NineSlice:Hide()
-    end
     tip.style = CreateFrame("Frame", nil, tip, BackdropTemplateMixin and "BackdropTemplate" or nil)
     tip.style:SetFrameLevel(tip:GetFrameLevel())
     tip.style:SetAllPoints()
@@ -883,28 +874,6 @@ LibEvent:attachTrigger("tooltip.style.init", function(self, tip)
     end
     addon.tooltips[#addon.tooltips+1] = tip
 end)
-
-if (SharedTooltip_SetBackdropStyle) then
-    hooksecurefunc("SharedTooltip_SetBackdropStyle", function(self, style, embedded)
-        if (self.style and self.NineSlice) then
-            self.NineSlice:Hide()
-        end
-        if (self.style and self.SetBackdrop) then
-            self:SetBackdrop(nil)
-        end
-    end)
-end
-
-if (GameTooltip_SetBackdropStyle) then
-    hooksecurefunc("GameTooltip_SetBackdropStyle", function(self, style)
-        if (self.style and self.NineSlice) then
-            self.NineSlice:Hide()
-        end
-        if (self.style and self.SetBackdrop) then
-            self:SetBackdrop(nil)
-        end
-    end)
-end
 
 LibEvent:attachTrigger("TINYTOOLTIP_GENERAL_INIT", function(self)
     LibEvent:trigger("tooltip.style.font.header", GameTooltip, addon.db.general.headerFont, addon.db.general.headerFontSize, addon.db.general.headerFontFlag)
