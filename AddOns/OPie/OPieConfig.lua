@@ -762,7 +762,7 @@ local OPC_OptionSets = {
 		{"bool", "ClickActivation", caption=L"Activate on left click"},
 		{"bool", "NoClose", caption=L"Leave open after use", depOn="ClickActivation", depValue=true, otherwise=false},
 		{"bool", "UseDefaultBindings", caption=L"Use default ring bindings"},
-		{"drop", "PadSupportMode", {"freelook", "cursor", "none", freelook=L"Camera analog stick", cursor=L"Virtual mouse cursor", none="None"}, caption=L"Controller interaction mode", hideFeature="GamePad"},
+		{"drop", "PadSupportMode", {"freelook", "cursor", "none", freelook=L"Camera analog stick", cursor=L"Virtual mouse cursor", none=L"None"}, caption=L"Controller interaction mode", hideFeature="GamePad"},
 		{"range", "IndicationOffsetX", -500, 500, 50, caption=L"Move rings right", suffix="(%d)"},
 		{"range", "IndicationOffsetY", -300, 300, 50, caption=L"Move rings down", suffix="(%d)"},
 		{"range", "MouseBucket", 5, 1, 1, caption=L"Scroll wheel sensitivity", stdLabels=true},

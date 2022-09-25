@@ -1,6 +1,7 @@
 local _, T = ...
 if T.SkipLocalActionBook then return end
 local MODERN = select(4,GetBuildInfo()) >= 8e4
+local CF_CLASSIC = not MODERN
 local AB = assert(T.ActionBook:compatible(2,21), "A compatible version of ActionBook is required")
 local RW = assert(AB:compatible("Rewire",1,14), "A compatible version of Rewire is required")
 local KR = assert(AB:compatible("Kindred",1,14), "A compatible version of Kindred is required")
@@ -118,8 +119,43 @@ do -- spell: spell ID + mount spell ID
 		return q == sid or q == GetSpellInfo(sid or 0) or (sid and q and ("" .. sid) == q)
 	end
 	local actionMap, spellMap = {}, {}
-	local function SetSpellBookItem(self, id)
-		return self:SetSpellBookItem(id, BOOKTYPE_SPELL)
+	local SetSpellBookItem, SetSpellByID do
+		if MODERN then
+			function SetSpellBookItem(self, id)
+				return self:SetSpellBookItem(id, BOOKTYPE_SPELL)
+			end
+			function SetSpellByID(self, ...)
+				return self:SetSpellByID(...)
+			end
+		else
+			local tr1 = {}
+			local function SetRankText(self, sid, ...)
+				if sid then
+					local tr = tr1[self]
+					if tr == nil and self then
+						local n = self:GetName()
+						tr = n and _G[n .. "TextRight1"]
+						tr = type(tr) == "table" and type(tr.IsObjectType) == "function" and tr:IsObjectType("FontString") and tr
+						tr1[self] = tr or false
+					end
+					local sr = tr and not tr:IsShown() and GetSpellSubtext(sid) or ""
+					if sr ~= "" then
+						tr:SetText(sr)
+						tr:SetTextColor(0.5, 0.5, 0.5)
+						tr:Show()
+						self:Show()
+					end
+				end
+				return ...
+			end
+			function SetSpellBookItem(self, id)
+				local st, sid = GetSpellBookItemInfo(id, BOOKTYPE_SPELL)
+				return SetRankText(self, st == "SPELL" and sid, self:SetSpellBookItem(id, BOOKTYPE_SPELL))
+			end
+			function SetSpellByID(self, ...)
+				return SetRankText(self, (...), self:SetSpellByID(...))
+			end
+		end
 	end
 	local function spellHint(n, _modState, target)
 		if not n then return end
@@ -140,7 +176,7 @@ do -- spell: spell ID + mount spell ID
 			cdLeft, cdLength = chargeStart-time + chargeDuration, chargeDuration
 		end
 		local sbslot = msid and msid ~= 161691 and FindSpellBookSlotBySpellID(msid)
-		return usable, state, GetSpellTexture(n), sname or n, count <= 1 and charges or count, cdLeft, cdLength, sbslot and SetSpellBookItem or (msid or sid) and GameTooltip.SetSpellByID, sbslot or sid or msid
+		return usable, state, GetSpellTexture(n), sname or n, count <= 1 and charges or count, cdLeft, cdLength, sbslot and SetSpellBookItem or (msid or sid) and SetSpellByID, sbslot or sid or msid
 	end
 	function spellFeedback(sname, target, spellId)
 		spellMap[sname] = spellId or spellMap[sname] or tonumber((GetSpellLink(sname) or ""):match("spell:(%d+)"))
@@ -153,7 +189,7 @@ do -- spell: spell ID + mount spell ID
 			return AB:GetActionSlot("mount", action)
 		end
 		
-		local laxRank = not MODERN and optToken ~= "lock-rank" and "lax-rank"
+		local laxRank = CF_CLASSIC and optToken ~= "lock-rank" and "lax-rank"
 		local castable, rwCastType = RW:IsSpellCastable(id, nil, laxRank)
 		if not castable then
 			return
@@ -168,11 +204,9 @@ do -- spell: spell ID + mount spell ID
 				o, s = pcall(GetSpellInfo, s0)
 			end
 			if not (o and s and s0) then return end
-			local r1, _ = r0
-			if not laxRank then
-				_, r1 = pcall(GetSpellSubtext, s0)
-			end
-			action = (r0 and r1 ~= r0 and FindSpellBookSlotBySpellID(id)) and (s0 .. "(" .. r0 .. ")") or s0
+			local r1 = laxRank and r0 or GetSpellSubtext(s0)
+			action = (r0 and r1 ~= r0 and (CF_CLASSIC or FindSpellBookSlotBySpellID(id))) and (s0 .. "(" .. r0 .. ")") or s0
+			id = CF_CLASSIC and select(7, GetSpellInfo(action)) or id
 		end
 		
 		if action and not actionMap[action] then
@@ -186,11 +220,11 @@ do -- spell: spell ID + mount spell ID
 	local function describeSpell(id, optToken)
 		local name2, _, icon2, rank, name, _, icon = nil, nil, nil, GetSpellSubtext(id), GetSpellInfo(id)
 		local _, castType = RW:IsSpellCastable(id)
-		local laxRank = not MODERN and optToken ~= "lock-rank" and "lax-rank"
+		local laxRank = CF_CLASSIC and optToken ~= "lock-rank" and "lax-rank"
 		if name and castType ~= "forced-id-cast" then
 			rank, name2, icon2 = GetSpellSubtext(name, rank), GetSpellInfo(name, rank)
 		end
-		return mountMap[id] and L"Mount" or L"Spell", (name2 or name or "?") .. (rank and rank ~= "" and not laxRank and rank ~= GetSpellSubtext(name) and " (" .. rank .. ")" or ""), icon2 or icon, nil, GameTooltip.SetSpellByID, id
+		return mountMap[id] and L"Mount" or L"Spell", (name2 or name or "?") .. (rank and rank ~= "" and not laxRank and rank ~= GetSpellSubtext(name) and " (" .. rank .. ")" or ""), icon2 or icon, nil, SetSpellByID, id
 	end
 	AB:RegisterActionType("spell", createSpell, describeSpell)
 	if MODERN then -- specials

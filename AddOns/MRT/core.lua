@@ -1,8 +1,8 @@
---	02.09.2022
+--	25.09.2022
 
 local GlobalAddonName, MRT = ...
 
-MRT.V = 4650
+MRT.V = 4660
 MRT.T = "R"
 
 MRT.Slash = {}			--> функции вызова из коммандной строки
@@ -30,7 +30,7 @@ do
 	local version, buildVersion, buildDate, uiVersion = GetBuildInfo()
 	
 	MRT.clientUIinterface = uiVersion
-	local expansion,majorPatch,minorPatch = (version or "4.0.0"):match("^(%d+)%.(%d+)%.(%d+)")
+	local expansion,majorPatch,minorPatch = (version or "5.0.0"):match("^(%d+)%.(%d+)%.(%d+)")
 	MRT.clientVersion = (expansion or 0) * 10000 + (majorPatch or 0) * 100 + (minorPatch or 0)
 end
 if MRT.clientVersion < 20000 then

@@ -1,5 +1,5 @@
 ## Interface: 30400
-## Version: Plater-v534-41-g2b24573-BCC
+## Version: Plater-v534-42-gdaeefe7-BCC
 ## SavedVariables: PlaterDB
 ## SavedVariablesPerCharacter: PlaterDBChr
 

@@ -10,7 +10,7 @@ Licensed under a Creative Commons "Attribution Non-Commercial Share Alike" Licen
 local _
 
 local MAJOR_VERSION = "LibFishing-1.0"
-local MINOR_VERSION = 101085
+local MINOR_VERSION = 101086
 
 if not LibStub then error(MAJOR_VERSION .. " requires LibStub") end
 
@@ -903,7 +903,7 @@ local infoslot = nil;
 function FishLib:GetInfoSlot()
     if not infoslot then
         infoslot = {}
-        for idx=1,17,1 do
+        for idx=1,18,1 do
             infoslot[slotinfo[idx].id] = slotinfo[idx]
         end
     end

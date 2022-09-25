@@ -1,8 +1,9 @@
 local AB, _, T = assert(OneRingLib.ext.ActionBook:compatible(2,14), "Requires a compatible version of ActionBook"), ...
 local MODERN = select(4,GetBuildInfo()) >= 8e4
+local CF_WRATH = not MODERN and select(4,GetBuildInfo()) >= 3e4
 local ORI, EV, L, PC = OPie.UI, T.Evie, T.L, T.OPieCore
 
-if MODERN then -- OPieTracker
+if MODERN or CF_WRATH then -- OPieTracker
 	local function generateColor(c, n)
 		local hue, v, s = (15+(c-1)*360/n) % 360, 1, 0.85
 		local h, f = math.floor(hue/60) % 6, (hue/60) % 1
@@ -55,7 +56,9 @@ do -- OPieAutoQuest
 	local exclude, questItems, IsQuestItem = PC:RegisterPVar("AutoQuestExclude", {}), {}
 	if MODERN then
 		questItems[30148] = "72986 72985"
-		local include = {[33634]=true, [35797]=true, [37888]=true, [37860]=true, [37859]=true, [37815]=true, [46847]=true, [47030]=true, [39213]=true, [42986]=true, [49278]=true, [86425]={31332, 31333, 31334, 31335, 31336, 31337}, [87214]={31752, 34774}, [90006]=true, [86536]=true, [86534]=true, [97268]=true, [111821]={34774, 31752},
+		local include = {
+			[33634]=true, [35797]=true, [37888]=true, [37860]=true, [37859]=true, [37815]=true, [46847]=true, [47030]=true, [39213]=true, [42986]=true, [49278]=true,
+			[86425]={31332, 31333, 31334, 31335, 31336, 31337}, [87214]={31752, 34774}, [90006]=true, [86536]=true, [86534]=true, [97268]=true, [111821]={34774, 31752},
 			[180008]={60609}, [180009]={60609}, [180170]={60649},
 			[174464]=true, [168035]=true,
 		}
@@ -74,23 +77,34 @@ do -- OPieAutoQuest
 			return isQuest, startQuestId and not isQuestActive
 		end
 	else
-		local hexclude, include = {}, PC:RegisterPVar("AutoQuestWhitelist", {})
-		local QUEST_ITEM = Enum.ItemClass.Questitem
-		for i in ("12460 12451 12450 12455 12457 12458 12459"):gmatch("%d+") do
-			hexclude[i+0] = true
+		local include = PC:RegisterPVar("AutoQuestWhitelist", {}) do
+			local hexclude, hinclude = {}, {}
+			for i in ("12460 12451 12450 12455 12457 12458 12459"):gmatch("%d+") do
+				hexclude[i+0] = true
+			end
+			for i in (CF_WRATH and "33634 35797 37888 37860 37859 37815 46847 47030 39213 42986 49278" or ""):gmatch("%d+") do
+				hinclude[i+0] = true
+			end
+			setmetatable(exclude, {__index=hexclude})
+			setmetatable(include, CF_WRATH and {__index=hinclude} or nil)
 		end
-		setmetatable(exclude, {__index=hexclude})
-		function IsQuestItem(iid, _bag, _slot, skipTypeCheck)
+		local QUEST_ITEM = Enum.ItemClass.Questitem
+		function IsQuestItem(iid, bag, slot, skipTypeCheck)
+			local isQuest, startsQuest = false, false
 			if include[iid] then
-				return true
+				isQuest = true
 			elseif not (iid and GetItemSpell(iid) and not exclude[iid]) then
 			elseif select(12, GetItemInfo(iid)) == QUEST_ITEM then
-				return true
+				isQuest = true
 			elseif skipTypeCheck then
-				include[iid] = true
-				return true
+				include[iid], isQuest = true, true
 			end
-			return false
+			if CF_WRATH and bag and slot then
+				local _isQuestItem, startQuestId, isQuestActive = GetContainerItemQuestInfo(bag, slot)
+				startsQuest = startQuestId and not isQuestActive and not C_QuestLog.IsQuestFlaggedCompleted(startQuestId) or false
+				isQuest = isQuest or startsQuest
+			end
+			return isQuest, startsQuest
 		end
 
 		local lastQuestAcceptTime = GetTime()-20
@@ -174,14 +188,14 @@ do -- OPieAutoQuest
 		end
 		scanQuests()
 
-		local freePos, oldCount = 2, #collection
+		local freePos, oldCount = MODERN and 2 or 1, #collection
 		for i=freePos, oldCount do
 			local v = collection[i]
 			collection[freePos], freePos, collection[v], inring[v] = collection[i], freePos + (inring[v] == current and 1 or 0), (inring[v] == current and collection[v] or nil), inring[v] == current and current or nil
 		end
 		for i=oldCount,freePos,-1 do collection[i] = nil end
 		ctok = current
-		
+
 		if changed or freePos <= oldCount then
 			AB:UpdateActionSlot(colId, collection)
 		end

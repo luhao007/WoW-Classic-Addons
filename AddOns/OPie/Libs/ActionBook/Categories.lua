@@ -1,6 +1,7 @@
 local _, T = ...
 if T.SkipLocalActionBook then return end
 local MODERN = select(4,GetBuildInfo()) >= 8e4
+local CF_WRATH = not MODERN and select(4,GetBuildInfo()) >= 3e4
 local AB, mark = assert(T.ActionBook:compatible(2, 21), "A compatible version of ActionBook is required"), {}
 local RW = assert(T.ActionBook:compatible("Rewire", 1, 10), "A compatible version of Rewire is required")
 local L = AB:locale()
@@ -28,6 +29,10 @@ do -- spellbook
 		if UnitLevel("player") >= 90 and GetExpansionLevel() >= 5 then
 			add("spell", 161691)
 		end
+		local asv = GetCVar("showAllSpellRanks")
+		if asv and asv ~= "1" and not MODERN then
+			SetCVar("showAllSpellRanks", "1")
+		end
 		for i=1,GetNumSpellTabs()+12 do
 			local _, _, ofs, c, _, sid = GetSpellTabInfo(i)
 			for j=ofs+1,sid == 0 and (ofs+c) or 0 do
@@ -44,6 +49,9 @@ do -- spellbook
 					add("spell", sid)
 				end
 			end
+		end
+		if asv and asv ~= "1" and not MODERN then
+			SetCVar("showAllSpellRanks", asv)
 		end
 	end)
 	local _, cl = UnitClass("player")
@@ -139,6 +147,13 @@ if MODERN then -- Battle pets
 		
 		running = false
 	end)
+elseif CF_WRATH then
+	AB:AugmentCategory(COMPANIONS, function(_, add)
+		for i=1, GetNumCompanions("CRITTER") do
+			local _, _, sid = GetCompanionInfo("CRITTER", i)
+			add("spell", sid)
+		end
+	end)
 end
 if MODERN then -- Mounts
 	AB:AugmentCategory(L"Mounts", function(_, add)
@@ -158,6 +173,13 @@ if MODERN then -- Mounts
 		table.sort(i2, function(a,b) return i2n[a] < i2n[b] end)
 		for i=1,#i2 do
 			add("mount", i2[i])
+		end
+	end)
+elseif CF_WRATH then
+	AB:AugmentCategory(L"Mounts", function(_, add)
+		for i=1, GetNumCompanions("MOUNT") do
+			local _, _, sid = GetCompanionInfo("MOUNT", i)
+			add("spell", sid)
 		end
 	end)
 end
@@ -188,39 +210,45 @@ AB:AugmentCategory(L"Raid markers", function(_, add)
 	end
 end)
 if MODERN then -- toys
-	local tx, search, push, pop = C_ToyBox
-	hooksecurefunc(C_ToyBox, "SetFilterString", function(s) search = s end) -- No corresponding Get
-	local fs, fc, fu, fsearch = {}
-	function push()
-		local ns = C_PetJournal.GetNumPetSources()
-		fsearch = search, tx.SetFilterString("")
-		fc = tx.GetCollectedShown(), tx.SetCollectedShown(true)
-		fu = tx.GetUncollectedShown(), tx.SetUncollectedShown(false)
-		for i=1,ns do
-			fs[i] = tx.IsSourceTypeFilterChecked(i)
-		end
-		tx.SetAllSourceTypeFilters(true)
-		tx.ForceToyRefilter()
-	end
-	function pop()
-		local ns = C_PetJournal.GetNumPetSources()
-		tx.SetFilterString(fsearch or "")
-		tx.SetCollectedShown(fc)
-		tx.SetUncollectedShown(fu)
-		for i=1,ns do
-			tx.SetSourceTypeFilter(i, not fs[i])
-		end
-		tx.ForceToyRefilter()
-	end
-	AB:AugmentCategory(L"Toys", function(_, add)
-		push()
+	local tx, fs, fx, tfs = C_ToyBox, {}, {}
+	hooksecurefunc(C_ToyBox, "SetFilterString", function(s) tfs = s end) -- No corresponding Get
+	local function doAddToys(add)
 		for i=1,C_ToyBox.GetNumFilteredToys() do
 			local iid = C_ToyBox.GetToyFromIndex(i)
 			if iid > 0 and PlayerHasToy(iid) then
 				add("toy", iid)
 			end
 		end
-		pop()
+	end
+	AB:AugmentCategory(L"Toys", function(_, add)
+		local ff = tfs
+		local fc = tx.GetCollectedShown()
+		local fu = tx.GetUncollectedShown()
+		for i=1,C_PetJournal.GetNumPetSources() do
+			fs[i] = tx.IsSourceTypeFilterChecked(i)
+		end
+		for i=1,GetNumExpansions() do
+			fx[i] = tx.IsExpansionTypeFilterChecked(i)
+		end
+		tx.SetFilterString("")
+		tx.SetCollectedShown(true)
+		tx.SetUncollectedShown(false)
+		tx.SetAllSourceTypeFilters(true)
+		tx.SetAllExpansionTypeFilters(true)
+		tx.ForceToyRefilter()
+
+		securecall(doAddToys, add)
+
+		tx.SetFilterString(ff or "")
+		tx.SetCollectedShown(fc)
+		tx.SetUncollectedShown(fu)
+		for i=1,C_PetJournal.GetNumPetSources() do
+			tx.SetSourceTypeFilter(i, fs[i])
+		end
+		for i=1,GetNumExpansions() do
+			tx.SetExpansionTypeFilter(i, fx[i])
+		end
+		tx.ForceToyRefilter()
 	end)
 end
 do -- misc

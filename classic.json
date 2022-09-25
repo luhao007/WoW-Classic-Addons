@@ -553,82 +553,15 @@
   },
   {
     "source": "curse",
-    "id": "1592",
-    "slug": "bagnon",
-    "name": "Bagnon",
-    "description": "All in one displays for your inventory, bank, and keyring",
-    "url": "https://www.curseforge.com/wow/addons/bagnon",
-    "download_url": "https://edge.forgecdn.net/files/3545/588/Bagnon-9.1.4-2.5.2.zip",
-    "date_published": "2021-12-02T19:23:43.427000+00:00",
-    "version": "9.1.4",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/1592/file/3545588/changelog",
-    "options": {
-      "strategy": "default"
-    },
-    "folders": [
-      {
-        "name": "BagBrother"
-      },
-      {
-        "name": "Bagnon"
-      },
-      {
-        "name": "Bagnon_Config"
-      },
-      {
-        "name": "Bagnon_GuildBank"
-      },
-      {
-        "name": "Bagnon_VoidStorage"
-      }
-    ],
-    "deps": [],
-    "logged_versions": [
-      {
-        "version": "9.1.4",
-        "install_time": "2021-12-09T07:29:23+00:00"
-      },
-      {
-        "version": "9.1.3",
-        "install_time": "2021-11-17T11:12:46+00:00"
-      },
-      {
-        "version": "9.1.0",
-        "install_time": "2021-07-17T04:03:33+00:00"
-      },
-      {
-        "version": "9.0.7",
-        "install_time": "2021-05-22T04:51:33+00:00"
-      },
-      {
-        "version": "9.0.6",
-        "install_time": "2021-03-24T11:22:41+00:00"
-      },
-      {
-        "version": "9.0.5",
-        "install_time": "2021-01-24T08:15:25+00:00"
-      },
-      {
-        "version": "9.0.4",
-        "install_time": "2020-11-03T05:35:33+00:00"
-      },
-      {
-        "version": "9.0.3",
-        "install_time": "2020-11-03T05:33:04+00:00"
-      }
-    ]
-  },
-  {
-    "source": "curse",
     "id": "17809",
     "slug": "blizzmove",
     "name": "BlizzMove",
     "description": "Makes the default frames moveable via simple drag and drop",
     "url": "https://www.curseforge.com/wow/addons/blizzmove",
-    "download_url": "https://edge.forgecdn.net/files/3995/116/BlizzMove-v3.4.5.zip",
-    "date_published": "2022-09-18T11:21:20.663000+00:00",
-    "version": "v3.4.5",
-    "changelog_url": "https://api.curseforge.com/v1/mods/17809/files/3995116/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4005/777/BlizzMove-v3.4.6.zip",
+    "date_published": "2022-09-25T10:34:28.113000+00:00",
+    "version": "v3.4.6",
+    "changelog_url": "https://api.curseforge.com/v1/mods/17809/files/4005777/changelog",
     "options": {
       "strategy": "default"
     },
@@ -642,6 +575,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v3.4.6",
+        "install_time": "2022-09-25T14:20:59+00:00"
+      },
       {
         "version": "v3.4.5",
         "install_time": "2022-09-19T07:18:39+00:00"
@@ -677,10 +614,6 @@
       {
         "version": "v3.0.18-bcc",
         "install_time": "2021-05-21T08:24:23+00:00"
-      },
-      {
-        "version": "v3.0.18-classic",
-        "install_time": "2021-05-21T01:44:33+00:00"
       }
     ]
   },
@@ -858,10 +791,10 @@
     "name": "Decursive",
     "description": "Afflictions display and cleaning for solo, group and raid with advanced filtering and priority system.",
     "url": "https://www.curseforge.com/wow/addons/decursive",
-    "download_url": "https://edge.forgecdn.net/files/3984/217/Decursive-2.7.8.8-wrath.zip",
-    "date_published": "2022-09-11T19:40:05.393000+00:00",
-    "version": "2.7.8.8-wrath",
-    "changelog_url": "https://api.curseforge.com/v1/mods/2154/files/3984217/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4000/177/Decursive-2.7.8.9-wrath.zip",
+    "date_published": "2022-09-22T00:09:54.110000+00:00",
+    "version": "2.7.8.9-wrath",
+    "changelog_url": "https://api.curseforge.com/v1/mods/2154/files/4000177/changelog",
     "options": {
       "strategy": "default"
     },
@@ -872,6 +805,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "2.7.8.9-wrath",
+        "install_time": "2022-09-22T11:58:55+00:00"
+      },
       {
         "version": "2.7.8.8-wrath",
         "install_time": "2022-09-12T13:26:08+00:00"
@@ -907,51 +844,6 @@
       {
         "version": "2.7.7.1-classic",
         "install_time": "2020-11-03T05:33:04+00:00"
-      }
-    ]
-  },
-  {
-    "source": "curse",
-    "id": "61284",
-    "slug": "details",
-    "name": "Details! Damage Meter",
-    "description": "Complete combat analysis, gathering damage, healing, and other importante stuff.",
-    "url": "https://www.curseforge.com/wow/addons/details",
-    "download_url": "https://edge.forgecdn.net/files/3558/772/DetailsTBC.2.5.2.0031.145.zip",
-    "date_published": "2021-12-10T21:25:35.700000+00:00",
-    "version": "DetailsTBC.2.5.2.0031.145",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/61284/file/3558772/changelog",
-    "options": {
-      "strategy": "default"
-    },
-    "folders": [
-      {
-        "name": "Details"
-      },
-      {
-        "name": "Details_Streamer"
-      },
-      {
-        "name": "Details_TinyThreat"
-      }
-    ],
-    "deps": [],
-    "logged_versions": [
-      {
-        "version": "DetailsTBC.2.5.2.0031.145",
-        "install_time": "2022-01-30T07:29:38+00:00"
-      },
-      {
-        "version": "DetailsTBC.2.5.2.0030.145",
-        "install_time": "2021-11-17T11:12:47+00:00"
-      },
-      {
-        "version": "DetailsTBC.2.5.1.0025.145",
-        "install_time": "2021-07-17T04:03:34+00:00"
-      },
-      {
-        "version": "DetailsTBC.2.5.1.0018.144",
-        "install_time": "2021-06-08T14:32:55+00:00"
       }
     ]
   },
@@ -1276,6 +1168,57 @@
   },
   {
     "source": "curse",
+    "id": "14154",
+    "slug": "handynotes",
+    "name": "HandyNotes",
+    "description": "Handy notes for your maps",
+    "url": "https://www.curseforge.com/wow/addons/handynotes",
+    "download_url": "https://edge.forgecdn.net/files/3990/319/HandyNotes-v1.6.8.zip",
+    "date_published": "2022-09-15T12:15:56.460000+00:00",
+    "version": "v1.6.8",
+    "changelog_url": "https://api.curseforge.com/v1/mods/14154/files/3990319/changelog",
+    "options": {
+      "strategy": "default"
+    },
+    "folders": [
+      {
+        "name": "HandyNotes"
+      }
+    ],
+    "deps": [],
+    "logged_versions": [
+      {
+        "version": "v1.6.8",
+        "install_time": "2022-09-25T14:30:06+00:00"
+      },
+      {
+        "version": "v1.6.4-bcc",
+        "install_time": "2021-07-17T04:03:35+00:00"
+      },
+      {
+        "version": "v1.6.3-bcc",
+        "install_time": "2021-05-21T08:24:24+00:00"
+      },
+      {
+        "version": "v1.6.3-classic",
+        "install_time": "2021-05-21T01:44:34+00:00"
+      },
+      {
+        "version": "v1.6.2-classic",
+        "install_time": "2021-03-24T11:22:42+00:00"
+      },
+      {
+        "version": "v1.6.1-classic",
+        "install_time": "2020-11-24T11:19:24+00:00"
+      },
+      {
+        "version": "v1.6.0-classic",
+        "install_time": "2020-11-03T05:33:04+00:00"
+      }
+    ]
+  },
+  {
+    "source": "curse",
     "id": "323067",
     "slug": "handynotes_dungeonlocations-classic",
     "name": "HandyNotes: DungeonLocations (Classic)",
@@ -1531,10 +1474,10 @@
     "name": "Method Raid Tools",
     "description": "Helpful addon for raiding",
     "url": "https://www.curseforge.com/wow/addons/method-raid-tools",
-    "download_url": "https://edge.forgecdn.net/files/3962/942/MRT4650-wotlk.zip",
-    "date_published": "2022-09-01T23:52:50.813000+00:00",
-    "version": "Method Raid Tools v.4650 WotLK",
-    "changelog_url": "https://api.curseforge.com/v1/mods/79879/files/3962942/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4005/488/MRT4660-wotlk.zip",
+    "date_published": "2022-09-25T02:06:17.337000+00:00",
+    "version": "Method Raid Tools v.4660 WotLK",
+    "changelog_url": "https://api.curseforge.com/v1/mods/79879/files/4005488/changelog",
     "options": {
       "strategy": "default"
     },
@@ -1548,6 +1491,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "Method Raid Tools v.4660 WotLK",
+        "install_time": "2022-09-25T05:47:40+00:00"
+      },
       {
         "version": "Method Raid Tools v.4650 WotLK",
         "install_time": "2022-09-02T04:11:00+00:00"
@@ -1697,10 +1644,10 @@
     "name": "Nova World Buffs",
     "description": "Classic WoW world buff timers and pre buff drop warnings so you never miss a buff.",
     "url": "https://www.curseforge.com/wow/addons/nova-world-buffs",
-    "download_url": "https://edge.forgecdn.net/files/3998/296/NovaWorldBuffs-v2.33-Wrath.zip",
-    "date_published": "2022-09-20T07:01:20.350000+00:00",
-    "version": "NovaWorldBuffs-v2.33-Wrath.zip",
-    "changelog_url": "https://api.curseforge.com/v1/mods/366310/files/3998296/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4001/248/NovaWorldBuffs-v2.35-Wrath.zip",
+    "date_published": "2022-09-23T00:04:02.420000+00:00",
+    "version": "NovaWorldBuffs-v2.35-Wrath.zip",
+    "changelog_url": "https://api.curseforge.com/v1/mods/366310/files/4001248/changelog",
     "options": {
       "strategy": "default"
     },
@@ -1711,6 +1658,14 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "NovaWorldBuffs-v2.35-Wrath.zip",
+        "install_time": "2022-09-23T05:43:56+00:00"
+      },
+      {
+        "version": "NovaWorldBuffs-v2.34-Wrath.zip",
+        "install_time": "2022-09-22T11:58:55+00:00"
+      },
       {
         "version": "NovaWorldBuffs-v2.33-Wrath.zip",
         "install_time": "2022-09-20T13:43:22+00:00"
@@ -1742,14 +1697,6 @@
       {
         "version": "NovaWorldBuffs-v2.16-TBC.zip",
         "install_time": "2021-11-17T11:12:48+00:00"
-      },
-      {
-        "version": "NovaWorldBuffs-v2.12-TBC.zip",
-        "install_time": "2021-07-17T04:03:36+00:00"
-      },
-      {
-        "version": "NovaWorldBuffs-v2.08-TBC.zip",
-        "install_time": "2021-06-02T04:21:37+00:00"
       }
     ]
   },
@@ -1760,10 +1707,10 @@
     "name": "OPie\u200b",
     "description": "Bind actions to a pop-up radial menu.",
     "url": "https://www.curseforge.com/wow/addons/opie",
-    "download_url": "https://edge.forgecdn.net/files/3939/687/OPie-xe8.zip",
-    "date_published": "2022-08-17T20:24:41.783000+00:00",
-    "version": "Xe 8",
-    "changelog_url": "https://api.curseforge.com/v1/mods/19406/files/3939687/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4001/939/OPie-xe9.zip",
+    "date_published": "2022-09-23T19:14:51.637000+00:00",
+    "version": "Xe 9",
+    "changelog_url": "https://api.curseforge.com/v1/mods/19406/files/4001939/changelog",
     "options": {
       "strategy": "default"
     },
@@ -1774,6 +1721,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "Xe 9",
+        "install_time": "2022-09-24T02:53:48+00:00"
+      },
       {
         "version": "Xe 8",
         "install_time": "2022-09-01T13:42:47+00:00"
@@ -2196,55 +2147,6 @@
   },
   {
     "source": "curse",
-    "id": "5422",
-    "slug": "scrap",
-    "name": "Scrap (Junk Seller)",
-    "description": "Sells all your junk when you visit a merchant. Intuitive & Easy to use.",
-    "url": "https://www.curseforge.com/wow/addons/scrap",
-    "download_url": "https://edge.forgecdn.net/files/3545/860/Scrap-9.1.2-2.5.2.zip",
-    "date_published": "2021-12-02T22:47:00.703000+00:00",
-    "version": "9.1.2",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/5422/file/3545860/changelog",
-    "options": {
-      "strategy": "default"
-    },
-    "folders": [
-      {
-        "name": "Scrap"
-      },
-      {
-        "name": "Scrap_Config"
-      },
-      {
-        "name": "Scrap_Merchant"
-      }
-    ],
-    "deps": [],
-    "logged_versions": [
-      {
-        "version": "9.1.2",
-        "install_time": "2021-12-09T07:29:25+00:00"
-      },
-      {
-        "version": "9.1.0",
-        "install_time": "2021-07-17T04:03:37+00:00"
-      },
-      {
-        "version": "9.0.6",
-        "install_time": "2021-05-22T04:51:34+00:00"
-      },
-      {
-        "version": "9.0.5",
-        "install_time": "2021-03-24T11:22:43+00:00"
-      },
-      {
-        "version": "9.0.1",
-        "install_time": "2020-11-03T05:33:04+00:00"
-      }
-    ]
-  },
-  {
-    "source": "curse",
     "id": "287692",
     "slug": "simple-item-level",
     "name": "Simple Item Levels",
@@ -2476,69 +2378,6 @@
       {
         "version": "v11305-1.1.5",
         "install_time": "2020-11-03T05:33:04+00:00"
-      }
-    ]
-  },
-  {
-    "source": "curse",
-    "id": "26886",
-    "slug": "tradeskill-master",
-    "name": "TradeSkillMaster",
-    "description": "Powerful addon to help you make gold from crafting to selling on the auction house to buying vendor items and much more!",
-    "url": "https://www.curseforge.com/wow/addons/tradeskill-master",
-    "download_url": "https://edge.forgecdn.net/files/3540/863/TradeSkillMaster_v4.11.17-BCC.zip",
-    "date_published": "2021-11-29T17:23:57.117000+00:00",
-    "version": "v4.11.17-BCC",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/26886/file/3540863/changelog",
-    "options": {
-      "strategy": "default"
-    },
-    "folders": [
-      {
-        "name": "TradeSkillMaster"
-      }
-    ],
-    "deps": [],
-    "logged_versions": [
-      {
-        "version": "v4.11.17-BCC",
-        "install_time": "2021-12-09T07:29:26+00:00"
-      },
-      {
-        "version": "v4.11.16-BCC",
-        "install_time": "2021-11-17T11:12:51+00:00"
-      },
-      {
-        "version": "v4.11.8-BCC",
-        "install_time": "2021-07-17T04:07:29+00:00"
-      },
-      {
-        "version": "v4.10.42-BCC",
-        "install_time": "2021-06-08T12:12:24+00:00"
-      },
-      {
-        "version": "v4.10.41-BCC",
-        "install_time": "2021-06-02T04:21:38+00:00"
-      },
-      {
-        "version": "v4.10.40-BCC",
-        "install_time": "2021-05-30T05:16:05+00:00"
-      },
-      {
-        "version": "v4.10.39-BCC",
-        "install_time": "2021-05-21T08:24:27+00:00"
-      },
-      {
-        "version": "v4.10.39-Classic",
-        "install_time": "2021-05-21T01:44:36+00:00"
-      },
-      {
-        "version": "v4.10.35-Classic",
-        "install_time": "2021-04-22T07:54:37+00:00"
-      },
-      {
-        "version": "v4.10.32-Classic",
-        "install_time": "2021-03-24T11:22:43+00:00"
       }
     ]
   },
@@ -3088,41 +2927,6 @@
     "logged_versions": [
       {
         "version": "90005-1",
-        "install_time": "2022-09-01T13:40:36+00:00"
-      }
-    ]
-  },
-  {
-    "source": "wowi",
-    "id": "15716",
-    "slug": "15716-handynotes",
-    "name": "HandyNotes",
-    "description": "Handy Notes for your maps. This addon is intended to be a small and simple replacement for Cartographer_Notes and functions in a similar manner.\r\n\r\nUse /handynotes to access options.\r\n\r\nYou can add notes to the maps in 3 ways:\r\n\r\n[LIST]\r\n[*]Alt-RightClick on the world map to add a note.\r\n[*]Use \"/hnnew\" without the quotes to add a note at your current location.\r\n[*]Use \"/hnnew x,y\" without the quotes to add a note at location x,y on your current zone's map. \r\n[/LIST]\r\n\r\nSee change log tab for changes from v1.1.6 to v1.2.0\r\n\r\nHandyNotes supports plugins that other authors can write to display their own set of notes on the map. See this link for a list of such addons\r\n\r\n[URL=\"http://www.wowace.com/search/?search=handynotes\"]http://www.wowace.com/search/?search=handynotes[/URL]",
-    "url": "https://www.wowinterface.com/downloads/info15716-HandyNotes.html",
-    "download_url": "https://cdn.wowinterface.com/downloads/getfile.php?id=15716&d=1663244157&minion",
-    "date_published": "2022-09-15T12:15:57+00:00",
-    "version": "v1.6.8",
-    "changelog_url": "data:,%5Bsize%3D5%5DHandyNotes%5B/size%5D%0D%0A%5Bsize%3D4%5D%5Burl%3Dhttps%3A//github.com/Nevcairiel/HandyNotes/tree/v1.6.8%5Dv1.6.8%5B/url%5D%20%282022-09-15%29%5B/size%5D%0D%0A%5Burl%3Dhttps%3A//github.com/Nevcairiel/HandyNotes/compare/v1.6.7...v1.6.8%5DFull%20Changelog%5B/url%5D%20%5Burl%3Dhttps%3A//github.com/Nevcairiel/HandyNotes/releases%5DPrevious%20Releases%5B/url%5D%0D%0A%5Blist%5D%0D%0A%5B%2A%5DAdd%20Dragon%20Isles%20to%20the%20list%20of%20continents%0D%0A%5B%2A%5DAllow%20capturing%20all%20buttons%20in%20map%20pins%20in%20WoW%2010.0%20again%0D%0A%5B%2A%5DUpdate%20EditFrame%20buttons%20for%20WoW%2010.0%0D%0A%5B/list%5D",
-    "options": {
-      "strategy": "default"
-    },
-    "folders": [
-      {
-        "name": "HandyNotes"
-      }
-    ],
-    "deps": [],
-    "logged_versions": [
-      {
-        "version": "v1.6.8",
-        "install_time": "2022-09-16T09:41:41+00:00"
-      },
-      {
-        "version": "v1.6.7",
-        "install_time": "2022-09-10T08:03:07+00:00"
-      },
-      {
-        "version": "v1.6.6",
         "install_time": "2022-09-01T13:40:36+00:00"
       }
     ]

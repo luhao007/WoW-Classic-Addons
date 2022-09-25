@@ -1,7 +1,8 @@
 local RingKeeper, _, T = {}, ...
-local RK_RingDesc, RK_CollectionIDs, RK_Version, RK_Rev, EV, PC, SV = {}, {}, 2, 51, T.Evie, T.OPieCore
+local RK_RingDesc, RK_CollectionIDs, RK_Version, RK_Rev, EV, PC, SV = {}, {}, 2, 52, T.Evie, T.OPieCore
 local unlocked, queue, RK_DeletedRings, RK_FlagStore, sharedCollection = false, {}, {}, {}, {}
 local MODERN = select(4,GetBuildInfo()) >= 8e4
+local CF_WRATH = not MODERN and select(4,GetBuildInfo()) >= 3e4
 
 local function assert(condition, text, level, ...)
 	return (not condition) and error(tostring(text):format(...), 1 + (level or 1)) or condition
@@ -240,6 +241,17 @@ local RK_ParseMacro, RK_QuantizeMacro do -- +RingKeeper:SetMountPreference(groun
 			end
 			if MODERN then
 				addModernSpells()
+			elseif CF_WRATH then
+				for k=1,2 do
+					k = k == 1 and "MOUNT" or "CRITTER"
+					for i=1,GetNumCompanions(k) do
+						local _, _, sid = GetCompanionInfo(k, i)
+						local sn = GetSpellInfo(sid)
+						if sn then
+							addSpell(sn, sid)
+						end
+					end
+				end
 			end
 			for curSpec=0,1 do
 				for i=GetNumSpellTabs()+12,1,-1 do

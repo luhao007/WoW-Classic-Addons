@@ -7,6 +7,7 @@ OUTFITDISPLAYFRAME_INVALIDOUTFIT = "Invalid outfit format.";
 OUTFITDISPLAYFRAME_EMPTYOUTFIT = "Empty outfit.";
 OUTFITDISPLAYFRAME_ITEMSINBANK = "Outfit contains banked items.";
 OUTFITDISPLAYFRAME_TOOFASTMSG = "Can't switch outfits that quickly.";
+OUTFITDISPLAYFRAME_CASTINGMSG = "Cannot interrupt current casting.";
 OUTFITDISPLAYFRAME_ALTCLICK = "Alt-click will reset to an empty slot.";
 
 OUTFITDISPLAYFRAME_USECHECKBOX = "When checked, this slot is forced empty on switch.";

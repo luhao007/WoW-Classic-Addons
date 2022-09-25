@@ -42,18 +42,19 @@ class InstawowManager:
         config = Config(global_config = global_config, addon_dir=addon_dir, game_flavour=Flavour(game_flavour), profile=self.profile)
         config.write()
 
-        setup_logging(config.logging_dir, debug=False)
+        setup_logging(config.logging_dir, log_to_stderr=False, debug=False, intercept_logging_module_calls=False)
         instawow.cli._apply_patches()
 
         self.conn = prepare_database(config.db_uri, DB_REVISION).connect()
         self.manager = Manager(config, self.conn)
 
     def run(self, awaitable):
-        from instawow.prompts import make_progress_bar
+        from instawow._cli_prompts import make_progress_bar
 
+        cache_dir = self.manager.config.global_config.cache_dir
         async def run():
             with make_progress_bar() as progress_bar, instawow.cli._cancel_tickers(progress_bar) as tickers:
-                async with instawow.cli._init_cli_web_client(progress_bar, tickers) as web_client:
+                async with instawow.cli._init_cli_web_client(cache_dir, progress_bar, tickers) as web_client:
                     contextualise(web_client=web_client)
                     return await awaitable
 

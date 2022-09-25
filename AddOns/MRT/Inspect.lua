@@ -196,6 +196,12 @@ local function InspectNext()
 	for name,timeAdded in pairs(module.db.inspectQuery) do
 		if name and UnitName(name) and (not ExRT.isClassic or CheckInteractDistance(name,1)) and CanInspect(name) and (not lastCheckNext[name] or nowTime - lastCheckNext[name] > 30) and (ExRT.isClassic or (select(4,UnitPosition'player') == select(4,UnitPosition(name)))) then
 			lastCheckNext[name] = nowTime
+			if ExRT.isLK then
+				MuteSoundFile(SOUNDKIT.IG_CHARACTER_INFO_OPEN)
+				C_Timer.After(2,function()
+					UnmuteSoundFile(SOUNDKIT.IG_CHARACTER_INFO_OPEN)
+				end)
+			end
 			NotifyInspect(name)
 
 			if (VMRT and VMRT.InspectViewer and VMRT.InspectViewer.EnableA4ivs) and not module.db.inspectDBAch[name] and not ExRT.isClassic then
@@ -217,7 +223,7 @@ local function InspectNext()
 end
 
 local function InspectQueue()
-	if RaidInCombat() or ExRT.isClassic then	--Temp fix for 'Unknown unit' or 'Out of Range' errors
+	if RaidInCombat() or (ExRT.isClassic and not ExRT.isLK) then	--Temp fix for 'Unknown unit' or 'Out of Range' errors
 		return
 	end
 	local n = GetNumGroupMembers() or 0
@@ -744,6 +750,7 @@ do
 		lastInspectTime[arg] = currTime
 		local _,_,_,race,_,name,realm = GetPlayerInfoByGUID(arg)
 		if name then
+			if ExRT.is10 then for i=#name,1,-1 do if name:sub(i,i) ~= string.char(0) then name = name:sub(1,i) break end end end	--TEMP fix
 			if realm and realm ~= "" then name = name.."-"..realm end
 			local inspectedName = name
 			if UnitName("target") == DelUnitNameServer(name) then 
@@ -820,66 +827,115 @@ do
 				end
 			end
 
-			for i=0,20 do
-				local row,col = (i-i%3)/3+1,i%3+1
-
-				local talentID, _, _, selected, available, spellID, _, _, _, _, grantedByAura = GetTalentInfo(row,col,specIndex,true,inspectedName)
-				if selected then
-					data[row] = col
-					data.talentsIDs[row] = talentID
-				end
-
-				--------> ExCD2
-				if spellID then
-					local list = cooldownsModule.db.spell_talentsList[class]
-					if not list then
-						list = {}
-						cooldownsModule.db.spell_talentsList[class] = list
+			if not ExRT.isClassic then
+				for i=0,20 do
+					local row,col = (i-i%3)/3+1,i%3+1
+	
+					local talentID, _, _, selected, available, spellID, _, _, _, _, grantedByAura = GetTalentInfo(row,col,specIndex,true,inspectedName)
+					if selected then
+						data[row] = col
+						data.talentsIDs[row] = talentID
 					end
-
-					list[specIndex] = list[specIndex] or {}
-
-					list[specIndex][i+1] = spellID
-					if selected or grantedByAura then
-						cooldownsModule.db.session_gGUIDs[name] = {spellID,"talent"}
-
-						if cooldownsModule.db.spell_talentProvideAnotherTalents[spellID] then
-							for k,v in pairs(cooldownsModule.db.spell_talentProvideAnotherTalents[spellID]) do
-								cooldownsModule.db.session_gGUIDs[name] = {v,"talent"}
-							end
-						end
-					end
-
-					cooldownsModule.db.spell_isTalent[spellID] = true
-				end
-				--------> /ExCD2
-			end
-
-			for i=1,4 do
-				local talentID = C_SpecializationInfo_GetInspectSelectedPvpTalent(inspectedName, i)
-				if talentID then
-					data[i+7] = 1
-					data.talentsIDs[i+7] = talentID
-
-					local _, _, _, selected, available, spellID, _, _, _, _, grantedByAura = GetPvpTalentInfoByID(talentID)
+	
+					--------> ExCD2
 					if spellID then
 						local list = cooldownsModule.db.spell_talentsList[class]
 						if not list then
 							list = {}
 							cooldownsModule.db.spell_talentsList[class] = list
 						end
+	
+						list[specIndex] = list[specIndex] or {}
+	
+						list[specIndex][i+1] = spellID
+						if selected or grantedByAura then
+							cooldownsModule.db.session_gGUIDs[name] = {spellID,"talent"}
+	
+							if cooldownsModule.db.spell_talentProvideAnotherTalents[spellID] then
+								for k,v in pairs(cooldownsModule.db.spell_talentProvideAnotherTalents[spellID]) do
+									cooldownsModule.db.session_gGUIDs[name] = {v,"talent"}
+								end
+							end
+						end
+	
+						cooldownsModule.db.spell_isTalent[spellID] = true
+					end
+					--------> /ExCD2
+				end
 
-						list[-1] = list[-1] or {}
-
-						list[-1][spellID] = spellID
-
-						cooldownsModule.db.session_gGUIDs[name] = {spellID,"pvptalent"}
-
-						--cooldownsModule.db.spell_isTalent[spellID] = true
-						cooldownsModule.db.spell_isPvpTalent[spellID] = true
+				for i=1,4 do
+					local talentID = C_SpecializationInfo_GetInspectSelectedPvpTalent(inspectedName, i)
+					if talentID then
+						data[i+7] = 1
+						data.talentsIDs[i+7] = talentID
+	
+						local _, _, _, selected, available, spellID, _, _, _, _, grantedByAura = GetPvpTalentInfoByID(talentID)
+						if spellID then
+							local list = cooldownsModule.db.spell_talentsList[class]
+							if not list then
+								list = {}
+								cooldownsModule.db.spell_talentsList[class] = list
+							end
+	
+							list[-1] = list[-1] or {}
+	
+							list[-1][spellID] = spellID
+	
+							cooldownsModule.db.session_gGUIDs[name] = {spellID,"pvptalent"}
+	
+							--cooldownsModule.db.spell_isTalent[spellID] = true
+							cooldownsModule.db.spell_isPvpTalent[spellID] = true
+						end
 					end
 				end
 			end
+
+			if ExRT.isLK then
+				local talentsStr = module:GetInspectTalentsClassicData(class)
+
+				data.talentsStr = talentsStr and time()..":"..talentsStr or nil
+
+				--------> ExCD2
+				local c = 0
+				while talentsStr do
+					local spellID,spellRanks,on = strsplit(":",talentsStr,3)
+					talentsStr = on
+
+					spellID = tonumber(spellID)
+					if spellID and spellID ~= 0 then
+						local rankSelected = spellRanks:sub(1,1)
+						local rankMax = spellRanks:sub(2,2)
+
+						local list = cooldownsModule.db.spell_talentsList[class]
+						if not list then
+							list = {}
+							cooldownsModule.db.spell_talentsList[class] = list
+						end
+	
+						list[0] = list[0] or {}
+	
+						if not ExRT.F.table_find(list[0],spellID) then
+							list[0][ #list[0]+1 ] = spellID
+						end
+						if rankSelected and (tonumber(rankSelected) or 0) > 0 then
+							cooldownsModule.db.session_gGUIDs[name] = {spellID,"talent"}
+	
+							if cooldownsModule.db.spell_talentProvideAnotherTalents[spellID] then
+								for k,v in pairs(cooldownsModule.db.spell_talentProvideAnotherTalents[spellID]) do
+									cooldownsModule.db.session_gGUIDs[name] = {v,"talent"}
+								end
+							end
+
+							cooldownsModule:SetTalentClassicRank(name,spellID,tonumber(rankSelected))
+						end
+	
+						cooldownsModule.db.spell_isTalent[GetSpellInfo(spellID) or "spell:"..spellID] = true
+						cooldownsModule.db.spell_isTalent[spellID] = true
+					end
+				end
+				--------> /ExCD2
+			end
+
 			InspectItems(name, inspectedName, module.db.inspectID, true)
 
 			cooldownsModule:UpdateAllData() 	--------> ExCD2
@@ -941,7 +997,7 @@ do
 end
 
 function module.main:UNIT_INVENTORY_CHANGED(arg)
-	if ExRT.isClassic then	--Temp fix for 'Unknown unit' or 'Out of Range' errors
+	if ExRT.isClassic and not ExRT.isLK then	--Temp fix for 'Unknown unit' or 'Out of Range' errors
 		return
 	end
 	if arg=='player' then return end
@@ -1161,7 +1217,7 @@ if ExRT.isLK then
 		local talents
 		for spec=1,3 do
 			for talPos=1,31 do
-				local name, iconTexture, tier, column, rank, maxRank, isExceptional, available = GetTalentInfoClassic(spec, talPos, 1)
+				local name, iconTexture, tier, column, rank, maxRank, isExceptional, available = GetTalentInfoClassic(spec, talPos)
 				if name and maxRank > 0 and rank > 0 then
 					talents = (talents and talents..":" or "") .. (module.TALENTDATA[class][spec][tier][column] or 0) .. ":" .. rank .. maxRank
 				end
@@ -1186,6 +1242,25 @@ else
 		end
 		return talents
 	end
+end
+
+function module:GetInspectTalentsClassicData(class)
+	if not ExRT.isLK then
+		return
+	end
+	if not module.TALENTDATA[class or ""] then
+		return
+	end
+	local talents
+	for spec=1,3 do
+		for talPos=1,31 do
+			local name, iconTexture, tier, column, rank, maxRank, isExceptional, available = GetTalentInfoClassic(spec, talPos, true)
+			if name and maxRank > 0 and rank > 0 then
+				talents = (talents and talents..":" or "") .. (module.TALENTDATA[class][spec][tier][column] or 0) .. ":" .. rank .. maxRank
+			end
+		end
+	end
+	return talents
 end
 
 function module:TalentClassicReq(unit)
@@ -1519,6 +1594,9 @@ function module:addonMessage(sender, prefix, subPrefix, ...)
 						if spellID and spellID ~= 0 and cooldownsModule:IsEnabled() then
 							cooldownsModule.db.session_gGUIDs[sender] = {spellID,"talent"}
 							--cooldownsModule.db.spell_isTalent[spellID] = true
+
+							cooldownsModule.db.spell_isTalent[GetSpellInfo(spellID) or "spell:"..spellID] = true	
+							cooldownsModule.db.spell_isTalent[spellID] = true
 						end
 					end
 

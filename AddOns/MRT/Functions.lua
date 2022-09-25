@@ -1774,7 +1774,7 @@ ExRT.GDB.ClassSpecializationList = {
 	["DEMONHUNTER"] = {577, 581},
 }
 if ExRT.is10 then
-	ExRT.GDB.ClassArmorType["EVOKER"] = {1467,1468}
+	ExRT.GDB.ClassSpecializationList["EVOKER"] = {1467,1468}
 end
 
 ExRT.GDB.ClassArmorType = {
@@ -2094,6 +2094,10 @@ ExRT.GDB.EncountersList = {
 	{1998,2423,2433,2429,2432,2434,2430,2436,2431,2422,2435},	--sod
 	{2047,2512,2540,2553,2544,2539,2542,2529,2546,2543,2549,2537},	--sfo
 }
+
+if ExRT.is10 then
+	tinsert(ExRT.GDB.EncountersList,{2119,2587,2639,2590,2592,2635,2605,2614,2607})
+end
 
 function ExRT.F.GetEncountersList(onlyRaid,onlyActual,reverse)
 	local new = {}

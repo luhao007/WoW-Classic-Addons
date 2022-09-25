@@ -231,7 +231,7 @@ local function updateCentralElements(self, si)
 	local osi, tok, usable, state, icon, caption, _, _, _, tipFunc, tipArg, _, stext = self.oldSlice, OneRingLib:GetOpenRingSliceAction(si)
 		
 	if tok then
-		local r,g,b = getSliceColor(tok, tokenIcon[tok] or icon or "INV_Misc_QuestionMark")
+		local r,g,b = getSliceColor(tok, tokenIcon[tok] or icon or "Interface/Icons/INV_Misc_QuestionMark")
 		centerPointer:SetVertexColor(r,g,b, 0.9)
 		centerCircle:SetVertexColor(r,g,b, 0.9)
 		centerGlow:SetVertexColor(r,g,b)

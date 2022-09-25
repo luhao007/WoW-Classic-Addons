@@ -34,7 +34,11 @@ ELib:ShadowInside(Options)
 Options.bossButton:Hide()
 Options.backToInterface:SetScript("OnClick",function ()
 	MRT.Options.Frame:Hide()
-	InterfaceOptionsFrame:Show()
+	if MRT.is10 then
+		SettingsPanel:Show()
+	else
+		InterfaceOptionsFrame:Show()
+	end
 end)
 
 
@@ -143,20 +147,37 @@ Options.modulesList:Update()
 
 MRT.Options.InBlizzardInterface = CreateFrame( "Frame", nil )
 MRT.Options.InBlizzardInterface.name = "Method Raid Tools"
-InterfaceOptions_AddCategory(MRT.Options.InBlizzardInterface)
+if MRT.is10 then
+	local category = Settings.RegisterCanvasLayoutCategory(MRT.Options.InBlizzardInterface, "Method Raid Tools")
+	Settings.RegisterAddOnCategory(category)
+else
+	InterfaceOptions_AddCategory(MRT.Options.InBlizzardInterface)
+end
 MRT.Options.InBlizzardInterface:Hide()
 
 MRT.Options.InBlizzardInterface:SetScript("OnShow",function (self)
-	if InterfaceOptionsFrame:IsShown() then
-		InterfaceOptionsFrame:Hide()
+	if MRT.is10 then
+		if SettingsPanel:IsShown() then
+			SettingsPanel:Hide()
+		end
+	else
+		if InterfaceOptionsFrame:IsShown() then
+			InterfaceOptionsFrame:Hide()
+		end
 	end
 	MRT.Options:Open()
 	self:SetScript("OnShow",nil)
 end)
 
 MRT.Options.InBlizzardInterface.button = ELib:Button(MRT.Options.InBlizzardInterface,"Method Raid Tools",0):Size(400,25):Point("TOP",0,-100):OnClick(function ()
-	if InterfaceOptionsFrame:IsShown() then
-		InterfaceOptionsFrame:Hide()
+	if MRT.is10 then
+		if SettingsPanel:IsShown() then
+			SettingsPanel:Hide()
+		end
+	else
+		if InterfaceOptionsFrame:IsShown() then
+			InterfaceOptionsFrame:Hide()
+		end
 	end
 	MRT.Options:Open()
 end)

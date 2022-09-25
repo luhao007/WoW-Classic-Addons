@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Numy - github.com/Kiatra/BlizzMove/
-## Version: v3.4.5
+## Version: v3.4.6
 ## RequiredDeps: BlizzMove
 ## LoadOnDemand: 1
 

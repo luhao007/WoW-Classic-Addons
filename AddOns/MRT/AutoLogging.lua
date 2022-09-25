@@ -6,7 +6,8 @@ local module = ExRT:New("AutoLogging",ExRT.L.Logging)
 local ELib,L = ExRT.lib,ExRT.L
 
 module.db.minRaidMapID = 1861
-module.db.minPartyMapID = 1754
+--module.db.minPartyMapID = 1754
+module.db.minPartyMapID = 959	--Since stupid overuse old content for m+
 
 module.db.mapsToLog = {}
 module.db.mapsToLog_5ppl = {

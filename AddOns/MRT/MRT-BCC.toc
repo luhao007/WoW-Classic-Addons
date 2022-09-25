@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: ykiigor
-## Version: 4650
+## Version: 4660
 ## OptionalDeps: ExRT
 ## SavedVariables: VMRT
 

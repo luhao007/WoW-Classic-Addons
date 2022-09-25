@@ -710,7 +710,7 @@ function module.options:Load()
 	self.textAddData.Button.isButton = true
 	self.textAddData.Button.isModern = true
 
-	self.imgpath = ELib:Edit(self,curr_imgpath):Size(250,20):Point("LEFT",self.curr_color_texture,"RIGHT",10,0):TopText("Image path:"):OnChange(function(self)
+	self.imgpath = ELib:Edit(self):Size(250,20):Point("LEFT",self.curr_color_texture,"RIGHT",10,0):TopText("Image path:"):Text(curr_imgpath):OnChange(function(self)
 		curr_imgpath = self:GetText():trim()
 		curr_imgpath = tonumber(curr_imgpath) or curr_imgpath
 		module.options.curr_color_texture:SetTexture(curr_imgpath)
@@ -3064,9 +3064,17 @@ function module.options:Load()
 	self.liveButton = ELib:Button(self,L.VisualNoteLiveSession):Size(90,20):Point("TOPLEFT",710,-55):OnClick(function(self)
 		if not isLiveSession then
 			module.options:GenerateString()
-			self.Texture:SetGradientAlpha("VERTICAL",0.05,0.26,0.09,1, 0.20,0.41,0.25,1)
+			if ExRT.is10 then
+				self.Texture:SetGradient("VERTICAL",CreateColor(0.05,0.26,0.09,1), CreateColor(0.20,0.41,0.25,1))
+			else
+				self.Texture:SetGradientAlpha("VERTICAL",0.05,0.26,0.09,1, 0.20,0.41,0.25,1)
+			end
 		else
-			self.Texture:SetGradientAlpha("VERTICAL",0.05,0.06,0.09,1, 0.20,0.21,0.25,1)
+			if ExRT.is10 then
+				self.Texture:SetGradient("VERTICAL",CreateColor(0.05,0.06,0.09,1), CreateColor(0.20,0.21,0.25,1))
+			else
+				self.Texture:SetGradientAlpha("VERTICAL",0.05,0.06,0.09,1, 0.20,0.21,0.25,1)
+			end
 		end
 		isLiveSession = not isLiveSession
 	end)

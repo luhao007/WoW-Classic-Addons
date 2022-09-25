@@ -2,6 +2,7 @@ local _, T = ...
 local L, R = T.L, OneRingLib and OneRingLib.ext and OneRingLib.ext.RingKeeper
 if not (R and R.SetRing) then return end
 local MODERN = select(4, GetBuildInfo()) >= 8e4 or nil
+local CF_WRATH = not MODERN and select(4,GetBuildInfo()) >= 3e4 or nil
 
 R:SetRing("RaidSymbols", {
 	{"raidmark", 1, _u="y"}, -- yellow star
@@ -21,14 +22,15 @@ R:SetRing("CommonTrades", {
 	{id="/cast {{spell:2018/51300}}", _u="b"}, -- blacksmithing
 	{id="/cast [mod] {{spell:13262}}; {{spell:7411/51313}}", _u="e"}, -- enchanting/disenchanting
 	{id="/cast {{spell:2259/51304}}", _u="a"}, -- alchemy
-	{id="/cast [mod] {{spell:818}}; {{spell:2550/51296}}", _u="c"}, -- cooking/campfire
+	{id="/cast [mod] {{spell:818}}; {{spell:2550/51296}}; {{spell:818}}", _u="c"}, -- cooking/campfire
 	{id="/cast {{spell:4036/51306}}", _u="g"}, -- engineering
 	{id=2656, _u="m"}, -- smelting
-	MODERN and {id="/cast [mod] {{spell:31252}}; {{spell:25229/51311}};", _u="j"} -- jewelcrafting/prospecting
-		or {id="/cast {{spell:3273}}", _u="f"}, -- first aid
-	MODERN and {id="/cast [mod] {{spell:51005}}; {{spell:45357/45363}}", _u="i"}, -- inscription/milling
-	MODERN and {id="/cast [mod] {{spell:80451}}; {{spell:78670/89722}}", _u="r"}, -- archaeology
-	MODERN and {id=53428, _u="u"}, -- runeforging
+	(MODERN or CF_WRATH) and {id="/cast [mod] {{spell:31252}}; {{spell:25229/51311}};", _u="j"} -- jewelcrafting/prospecting
+	        or {id="/cast {{spell:3273}}", _u="f"}, -- first aid
+	(MODERN or CF_WRATH) and {id="/cast [mod] {{spell:51005}}; {{spell:45357/45363}}", _u="i"}, -- inscription/milling
+	(MODERN or CF_WRATH) and {id=53428, _u="u"}, -- runeforging
+	MODERN and {id="/cast [mod] {{spell:80451}}; {{spell:78670/89722}}", _u="r"} -- archaeology
+	        or CF_WRATH and {id="/cast {{spell:3273}}", _u="f"}, -- first aid
 	name=L"Trade Skills", hotkey="ALT-T", _u="OPCCT"
 })
 R:SetRing("TrinketSlots", {
@@ -204,7 +206,7 @@ R:SetRing("WarlockDemons", {
 	{id=30146, _u="f"}, -- felguard
 	{id=697, _u="v"}, -- void
 	{id=688, _u="i"}, -- imp
-	{id=712, _u="s"}, -- succubus
+	{id=366222, _u="s"}, -- sayaad
 	{id=691, _u="h"}, -- felhunter
 	name=L"Demons", limit="WARLOCK", _u="OPCLD", internal=true
 })

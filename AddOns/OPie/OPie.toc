@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: foxlit
-## Version: Xe 8
+## Version: Xe 9
 ## SavedVariables: OneRing_Config, OPie_SavedData
 
 ## Title: OPie

@@ -558,9 +558,9 @@ function DatabaseTable.BulkInsertNewRow(self, ...)
 		self._data[rowIndex + i - 1] = value
 		local uniqueValues = self._uniques[field]
 		if uniqueValues then
-			-- if uniqueValues[value] ~= nil then
-			-- 	error(format("A row with this unique value (%s) already exists", tostring(value)), 2)
-			-- end
+			if uniqueValues[value] ~= nil then
+				error(format("A row with this unique value (%s) already exists", tostring(value)), 2)
+			end
 			uniqueValues[value] = uuid
 		end
 	end

@@ -1,0 +1,44 @@
+## Interface: 30400
+## Author: MysticalOS
+## RequiredDeps: DBM-Core
+## LoadOnDemand: 1
+## SavedVariables: DBMWorldEvents_AllSavedVars
+## SavedVariablesPerCharacter: DBMWorldEvents_SavedStats
+
+## Title: |cffffe00a<|r|cffff7d0aDBM|r|cffffe00a>|r |cff69ccf0World Events|r
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFF69CCF0世界事件|r
+
+## X-DBM-Mod: 1
+## X-DBM-Mod-Type: OTHER
+## X-DBM-Mod-Category: WOTLK
+## X-DBM-StatTypes: normal
+## X-DBM-Mod-World-Boss: 1
+## X-DBM-Mod-Name: World Events
+## X-DBM-Mod-Name-esES: Eventos del mundo
+## X-DBM-Mod-Name-ruRU: Игровые события
+## X-DBM-Mod-Name-zhTW: 世界事件
+## X-DBM-Mod-Name-zhCN: 世界事件
+## X-DBM-Mod-Name-koKR: 이벤트
+## X-DBM-Mod-Name-deDE: Weltereignisse
+## X-DBM-Mod-Name-ptBR: Eventos Mundiais
+## X-DBM-Mod-Name-frFR: Évènements Mondiaux
+## X-DBM-Mod-Name-itIT: Eventi Mondiali
+## X-DBM-Mod-MapID: 230,189,33,547
+## X-DBM-Mod-Sort: 1054
+## X-DBM-Mod-MinCoreRevision: 12473
+## X-Part-Of: DBM-Core
+
+localization.en.lua
+localization.ru.lua
+localization.fr.lua
+localization.tw.lua
+localization.kr.lua
+localization.de.lua
+localization.es.lua
+localization.cn.lua
+localization.br.lua
+localization.it.lua
+Holidays\ApothecaryTrio.lua
+Holidays\Ahune.lua
+Holidays\CorenDirebrew.lua
+Holidays\HeadlessHorseman.lua

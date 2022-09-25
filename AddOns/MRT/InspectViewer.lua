@@ -1032,7 +1032,7 @@ function module.options:Load()
 							end
 						end
 					elseif module.db.page == 2 and ExRT.isClassic then
-						local data = VMRT.Inspect and VMRT.Inspect.TalentsClassic and VMRT.Inspect.TalentsClassic[name]
+						local data = data.talentsStr or (VMRT.Inspect and VMRT.Inspect.TalentsClassic and VMRT.Inspect.TalentsClassic[name])
 
 						line.spec:Hide()
 						line.refreshSoulbind:Show()
@@ -1411,9 +1411,17 @@ function module.options:Load()
 
 					local cR,cG,cB = ExRT.F.classColorNum(class)
 					if name and UnitName(name) then
-						line.back:SetGradientAlpha("HORIZONTAL", cR,cG,cB, 0.5, cR,cG,cB, 0)
+						if ExRT.is10 then
+							line.back:SetGradient("HORIZONTAL",CreateColor(cR,cG,cB, 0.5), CreateColor(cR,cG,cB, 0))
+						else
+							line.back:SetGradientAlpha("HORIZONTAL", cR,cG,cB, 0.5, cR,cG,cB, 0)
+						end
 					else
-						line.back:SetGradientAlpha("HORIZONTAL", cR,cG,cB, 0, cR,cG,cB, 0.5)
+						if ExRT.is10 then
+							line.back:SetGradient("HORIZONTAL",CreateColor(cR,cG,cB, 0), CreateColor(cR,cG,cB, 0.5))
+						else
+							line.back:SetGradientAlpha("HORIZONTAL", cR,cG,cB, 0, cR,cG,cB, 0.5)
+						end
 					end
 				else
 					for j=-1,18 do
@@ -1443,7 +1451,11 @@ function module.options:Load()
 
 					line.apinfo:SetText("")
 
-					line.back:SetGradientAlpha("HORIZONTAL", 0, 0, 0, 0.5, 0, 0, 0, 0)
+					if ExRT.is10 then
+						line.back:SetGradient("HORIZONTAL",CreateColor(0, 0, 0, 0.5), CreateColor(0, 0, 0, 0))
+					else
+						line.back:SetGradientAlpha("HORIZONTAL", 0, 0, 0, 0.5, 0, 0, 0, 0)
+					end
 
 					line.perksData = nil
 				end
@@ -1794,7 +1806,11 @@ function module.options:Load()
 		line.back:SetPoint("TOPLEFT",0,0)
 		line.back:SetPoint("BOTTOMRIGHT",0,0)
 		line.back:SetColorTexture(1, 1, 1, 1)
-		line.back:SetGradientAlpha("HORIZONTAL", 0, 0, 0, 1, 0, 0, 0, 0)
+		if ExRT.is10 then
+			line.back:SetGradient("HORIZONTAL",CreateColor(0, 0, 0, 1), CreateColor(0, 0, 0, 0))
+		else
+			line.back:SetGradientAlpha("HORIZONTAL", 0, 0, 0, 1, 0, 0, 0, 0)
+		end
 
 		line.refreshArtifact = ELib:Button(line,REFRESH):Point("LEFT",245,0):Size(100,20):OnClick(Lines_RefreshArtifactButton_OnClick)
 		line.refreshArtifact:Hide()

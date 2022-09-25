@@ -1308,11 +1308,19 @@ function module.options:Load()
 
 				local c = 0.05 * (self.t > 2 and (4-self.t) or self.t)
 
-				self.Texture:SetGradientAlpha("VERTICAL",0.0+c,0.06+c,0.0+c,1, 0.05+c,0.21+c,0.05+c,1)
+				if MRT.is10 then
+					self.Texture:SetGradient("VERTICAL",CreateColor(0.0+c,0.06+c,0.0+c,1), CreateColor(0.05+c,0.21+c,0.05+c,1))
+				else
+					self.Texture:SetGradientAlpha("VERTICAL",0.0+c,0.06+c,0.0+c,1, 0.05+c,0.21+c,0.05+c,1)
+				end
 			end)
 		else
 			self:SetScript("OnUpdate",nil)
-			self.Texture:SetGradientAlpha("VERTICAL",0.05,0.06,0.09,1, 0.20,0.21,0.25,1)
+			if MRT.is10 then
+				self.Texture:SetGradient("VERTICAL",CreateColor(0.05,0.06,0.09,1), CreateColor(0.20,0.21,0.25,1))
+			else
+				self.Texture:SetGradientAlpha("VERTICAL",0.05,0.06,0.09,1, 0.20,0.21,0.25,1)
+			end
 		end
 	end
 
@@ -1829,9 +1837,14 @@ function module.options:Load()
 
 	local LCG = LibStub("LibCustomGlow-1.0",true)
 	if LCG then
-		LCG.PixelGlow_Start(self.frameTypeGlow1.f,nil,nil,nil,nil,2,1,1) 
+		if MRT.is10 then
+			MRT.F:SafeCall(LCG.PixelGlow_Start, self.frameTypeGlow1.f,nil,nil,nil,nil,2,1,1)
+			MRT.F:SafeCall(LCG.AutoCastGlow_Start, self.frameTypeGlow3.f)
+		else
+			LCG.PixelGlow_Start(self.frameTypeGlow1.f,nil,nil,nil,nil,2,1,1) 
+			LCG.AutoCastGlow_Start(self.frameTypeGlow3.f)
+		end
 		LCG.ButtonGlow_Start(self.frameTypeGlow2.f)
-		LCG.AutoCastGlow_Start(self.frameTypeGlow3.f)
 	end
 
 	if VMRT.Note.TimerGlowType == 2 then
@@ -1920,7 +1933,11 @@ module.frame:SetScript("OnDragStop", function(self)
 end)
 module.frame:SetFrameStrata("HIGH")
 module.frame:SetResizable(true)
-module.frame:SetMinResize(30, 30)
+if MRT.is10 then
+	module.frame:SetResizeBounds(30, 30, 2000, 2000)
+else
+	module.frame:SetMinResize(30, 30)
+end
 module.frame:SetScript("OnSizeChanged", function (self, width, height)
 	local width_, height_ = self:GetSize()
 	if VMRT and VMRT.Note then

@@ -38,7 +38,7 @@ module.db.tableFood = not ExRT.isClassic and {
 }
 module.db.StaminaFood = {[201638]=true,[259457]=true,[288075]=true,[288074]=true,[297119]=true,[297040]=true,}
 
-module.db.tableFood_headers = {0,5,10,14}
+module.db.tableFood_headers = ExRT.isClassic and {0,375} or {0,5,10,14}
 module.db.tableFlask =  not ExRT.isClassic and {
 	--Stamina,	Int,		Agi,		Str 
 	[251838]=25,	[251837]=25,	[251836]=25,	[251839]=25,
@@ -74,7 +74,7 @@ module.db.tableFlask =  not ExRT.isClassic and {
 	[53748]=true,	[60344]=true,	[60341]=true,	[53763]=true,	[53751]=true,	[60340]=true,	[53747]=true,	[60343]=true,
 	[63729]=true,	
 }
-module.db.tableFlask_headers = {0,25,38}
+module.db.tableFlask_headers = ExRT.isClassic and {0,1} or {0,25,38}
 module.db.tablePotion = {
 	[188024]=true,	--Run haste
 	[250871]=true,	--Mana
@@ -231,6 +231,7 @@ module.db.tableScrolls = not ExRT.isClassic and {} or {
 	[58449]=true,	[48102]=true,	[43196]=true,	[58453]=true,	[58452]=true,	[69994]=true,	[48100]=true,	[43198]=true,
 	[48104]=true,	[43195]=true,	[48101]=true,	[43197]=true,
 }
+module.db.tableFoodIsBest = {}
 
 if not ExRT.isClassic and UnitLevel'player' > 50 then
 	module.db.tableFood = {
@@ -425,6 +426,7 @@ local function PublicResults(msg,chat_type)
 end
 
 local function GetRunes(checkType)
+	if ExRT.isClassic then return end
 	local f = {[0]={}}
 	local gMax = ExRT.F.GetRaidDiffMaxGroup()
 	for j=1,40 do
@@ -496,6 +498,7 @@ end
 
 local vruneName
 local function GetVRunes(checkType)
+	if ExRT.isClassic then return end
 	if not vruneName then
 		local kjrunename = GetSpellInfo(237825)
 		if kjrunename then
@@ -584,6 +587,10 @@ local function GetFood(checkType)
 							stats = foodType
 						end
 
+						if ExRT.isClassic then
+							stats = 375
+						end
+
 						f[stats] = f[stats] or {}
 						f[stats][ #f[stats]+1 ] = name
 
@@ -601,6 +608,9 @@ local function GetFood(checkType)
 		for _,foodType in ipairs(module.db.tableFood_headers) do
 			f[foodType] = f[foodType] or {}
 			local result = format("|cff00ff00%d (%d):|r ",foodType,#f[foodType])
+			if ExRT.isClassic then
+				result = format("|cff00ff00%s (%d):|r ",foodType > 0 and L.YesText or L.NoText,#f[foodType])
+			end
 			for j=1,#f[foodType] do
 				result = result .. f[foodType][j] .. (j < #f[foodType] and ", " or "")
 				if #result > 230 then
@@ -654,6 +664,10 @@ local function GetFlask(checkType)
 				else
 					local flaskType = module.db.tableFlask[spellId]
 					if flaskType then
+						if ExRT.isClassic then
+							flaskType = 1
+						end
+
 						f[flaskType] = f[flaskType] or {}
 						expires = expires or -1
 						local lost = expires-_time
@@ -683,6 +697,9 @@ local function GetFlask(checkType)
 			local flaskStats = module.db.tableFlask_headers[i]
 			f[ flaskStats ] = f[ flaskStats ] or {}
 			local result = format("|cff00ff00%d (%d):|r ",flaskStats,#f[ flaskStats ])
+			if ExRT.isClassic then
+				result = format("|cff00ff00%s (%d):|r ",flaskStats > 0 and L.YesText or L.NoText,#f[ flaskStats ])
+			end
 			for j=1,#f[ flaskStats ] do
 				result = result .. format("%s%s",f[ flaskStats ][j][1] or "?", j < #f[ flaskStats ] and ", " or "")
 				if #result > 230 then
@@ -737,6 +754,16 @@ end
 
 local function GetRaidBuffs(checkType)
 	local buffsList,buffsListLen = module.db.raidBuffs,#module.db.raidBuffs
+	local classicBuffsList
+	if ExRT.isClassic then
+		buffsList,buffsListLen = module.db.classicBuffs,#module.db.classicBuffs
+		classicBuffsList = {}
+		for k=1,buffsListLen do
+			for s in pairs(buffsList[k][4]) do
+				classicBuffsList[s] = k
+			end
+		end
+	end
 	local f = {}
 	for k=1,buffsListLen * 2 do
 		f[k] = 0
@@ -750,7 +777,7 @@ local function GetRaidBuffs(checkType)
 				isAnyBuff[k] = false
 			end
 			for k=1,buffsListLen do
-				if class == buffsList[k][2] then
+				if (class == buffsList[k][2]) or ExRT.isClassic then
 					f[-k] = true
 				end
 			end
@@ -759,12 +786,20 @@ local function GetRaidBuffs(checkType)
 				if not auraSpellID then
 					break
 				else
-					for k=1,buffsListLen do
-						if auraSpellID == buffsList[k][3] then
+					if ExRT.isClassic then
+						local k = classicBuffsList[auraSpellID]
+						if k then
 							isAnyBuff[k] = true
 							isAnyBuff[buffsListLen + k] = true
-						elseif auraSpellID == buffsList[k][4] then
-							isAnyBuff[buffsListLen + k] = true
+						end
+					else
+						for k=1,buffsListLen do
+							if auraSpellID == buffsList[k][3] then
+								isAnyBuff[k] = true
+								isAnyBuff[buffsListLen + k] = true
+							elseif auraSpellID == buffsList[k][4] then
+								isAnyBuff[buffsListLen + k] = true
+							end
 						end
 					end
 				end
@@ -784,14 +819,14 @@ local function GetRaidBuffs(checkType)
 		if checkType == 3 then
 			checkType = nil
 		end
-		local result = format("|cff00ff00%s|r ",GARRISON_MISSION_PARTY_BUFFS)
+		local result = format("|cff00ff00%s|r ",GARRISON_MISSION_PARTY_BUFFS or "Buffs")
 
 		local isAnyBuff = true
 		for k=1,buffsListLen do
 			if f[k] > 0 and f[-k] then
 				isAnyBuff = false
 				result = result .. buffsList[k][1] .. " ("..f[k].."), "
-			elseif f[buffsListLen + k] > 0 and not f[-k] and UnitLevel'player' == 50 then	--check for minor buffs (7%), but only in BfA actually
+			elseif f[buffsListLen + k] > 0 and not f[-k] and (UnitLevel'player' == 50 and not ExRT.isClassic) then	--check for minor buffs (7%), but only in BfA actually
 				isAnyBuff = false
 				result = result .. buffsList[k][1] .. " ("..f[buffsListLen + k].."), "
 			end
@@ -806,6 +841,7 @@ local function GetRaidBuffs(checkType)
 end
 
 local function GetKits(checkType)
+	if ExRT.isClassic then return end
 	local list = {
 		YES = {},
 		NO = {},
@@ -860,6 +896,7 @@ local function GetKits(checkType)
 end
 
 local function GetOils(checkType)
+	if ExRT.isClassic then return end
 	local list = {
 		YES = {},
 		NO = {},
@@ -974,16 +1011,16 @@ function module.options:Load()
 	self.tab:SetBackdropColor(0,0,0,0)
 
 
-	self.food = ELib:Button(self.tab.tabs[1],L.raidcheckfood):Size(230,20):Point(15,-10):OnClick(function() GetFood() end)
+	self.food = ELib:Button(self.tab.tabs[1],L.raidcheckfood):Size(230,20):Point(15,-10):OnClick(function() GetFood(IsShiftKeyDown() and 3 or nil) end)
 	self.food.txt = ELib:Text(self.tab.tabs[1],"/rt food",10):Size(100,20):Point("LEFT",self.food,"RIGHT",5,0)
 
-	self.foodToChat = ELib:Button(self.tab.tabs[1],L.raidcheckfoodchat):Size(230,20):Point("LEFT",self.food,"RIGHT",71,0):OnClick(function() GetFood(1) end)
+	self.foodToChat = ELib:Button(self.tab.tabs[1],L.raidcheckfoodchat):Size(230,20):Point("LEFT",self.food,"RIGHT",71,0):OnClick(function() GetFood(IsShiftKeyDown() and 2 or 1) end)
 	self.foodToChat.txt = ELib:Text(self.tab.tabs[1],"/rt foodchat",10):Size(100,20):Point("LEFT",self.foodToChat,"RIGHT",5,0)
 
-	self.flask = ELib:Button(self.tab.tabs[1],L.raidcheckflask):Size(230,20):Point(15,-35):OnClick(function() GetFlask() end)
+	self.flask = ELib:Button(self.tab.tabs[1],L.raidcheckflask):Size(230,20):Point(15,-35):OnClick(function() GetFlask(IsShiftKeyDown() and 3 or nil) end)
 	self.flask.txt = ELib:Text(self.tab.tabs[1],"/rt flask",10):Size(100,20):Point("LEFT",self.flask,"RIGHT",5,0)
 
-	self.flaskToChat = ELib:Button(self.tab.tabs[1],L.raidcheckflaskchat):Size(230,20):Point("LEFT",self.flask,"RIGHT",71,0):OnClick(function() GetFlask(1) end)
+	self.flaskToChat = ELib:Button(self.tab.tabs[1],L.raidcheckflaskchat):Size(230,20):Point("LEFT",self.flask,"RIGHT",71,0):OnClick(function() GetFlask(IsShiftKeyDown() and 2 or 1) end)
 	self.flaskToChat.txt = ELib:Text(self.tab.tabs[1],"/rt flaskchat",10):Size(100,20):Point("LEFT",self.flaskToChat,"RIGHT",5,0)
 
 	self.runes = ELib:Button(self.tab.tabs[1],L.RaidCheckRunesCheck):Size(230,20):Point(15,-60):OnClick(function() GetRunes() end)
@@ -998,10 +1035,10 @@ function module.options:Load()
 	self.vantusrunesToChat = ELib:Button(self.tab.tabs[1],L.RaidCheckVRunesChat):Size(230,20):Point("LEFT",self.vantusrunes,"RIGHT",71,0):OnClick(function() GetVRunes(1) end)
 	self.vantusrunesToChat.txt = ELib:Text(self.tab.tabs[1],"/rt check vc",10):Size(100,22):Point("LEFT",self.vantusrunesToChat,"RIGHT",5,0)
 
-	self.raidbuffs = ELib:Button(self.tab.tabs[1],L.RaidCheckBuffs):Size(230,20):Point(15,-110):OnClick(function() GetRaidBuffs() end)
+	self.raidbuffs = ELib:Button(self.tab.tabs[1],L.RaidCheckBuffs):Size(230,20):Point(15,-110):OnClick(function() GetRaidBuffs(IsShiftKeyDown() and 3 or nil) end)
 	self.raidbuffs.txt = ELib:Text(self.tab.tabs[1],"/rt check b",10):Size(60,22):Point("LEFT",self.raidbuffs,"RIGHT",5,0)
 
-	self.raidbuffsToChat = ELib:Button(self.tab.tabs[1],L.RaidCheckBuffsToChat):Size(230,20):Point("LEFT",self.raidbuffs,"RIGHT",71,0):OnClick(function() GetRaidBuffs(1) end)
+	self.raidbuffsToChat = ELib:Button(self.tab.tabs[1],L.RaidCheckBuffsToChat):Size(230,20):Point("LEFT",self.raidbuffs,"RIGHT",71,0):OnClick(function() GetRaidBuffs(IsShiftKeyDown() and 2 or 1) end)
 	self.raidbuffsToChat.txt = ELib:Text(self.tab.tabs[1],"/rt check bc",10):Size(100,22):Point("LEFT",self.raidbuffsToChat,"RIGHT",5,0)
 
 	self.level2optLine = CreateFrame("Frame",nil,self.tab.tabs[1])
@@ -1040,7 +1077,15 @@ function module.options:Load()
 		end
 	end)
 
-	self.chkRunes = ELib:Check(self.tab.tabs[1],L.RaidCheckRunesEnable,VMRT.RaidCheck.RunesCheck):Point("TOPLEFT",self.level2optLine,7,-100):OnClick(function(self) 
+	self.disableNotInRaid = ELib:Check(self.tab.tabs[1],L.RaidCheckDisableNonRaid,VMRT.RaidCheck.disableNotInRaid):Point("TOPLEFT",self.disableLFR,"TOPLEFT",0,-25):OnClick(function(self) 
+		if self:GetChecked() then
+			VMRT.RaidCheck.disableNotInRaid = true
+		else
+			VMRT.RaidCheck.disableNotInRaid = nil
+		end
+	end)
+
+	self.chkRunes = ELib:Check(self.tab.tabs[1],L.RaidCheckRunesEnable,VMRT.RaidCheck.RunesCheck):Point("TOPLEFT",self.level2optLine,7,-125):OnClick(function(self) 
 		if self:GetChecked() then
 			VMRT.RaidCheck.RunesCheck = true
 		else
@@ -1071,6 +1116,7 @@ function module.options:Load()
 			VMRT.RaidCheck.OilsCheck = nil
 		end
 	end)
+
 
 	self.minFoodLevelText = ELib:Text(self.tab.tabs[1],L.RaidCheckMinFoodLevel,11):Point("TOPLEFT",self.chkOils,"TOPLEFT",3,-23):Size(0,25)
 
@@ -1120,12 +1166,12 @@ function module.options:Load()
 		VMRT.RaidCheck.FlaskExp = 2
 	end)
 
-	self.checkLQFlask = ELib:Check(self.tab.tabs[1],L.RaidCheckLQFlask,not VMRT.RaidCheck.FlaskLQ):Point("TOPLEFT",self.level2optLine,7,-245):OnClick(function(self) 
+	self.checkLQFlask = ELib:Check(self.tab.tabs[1],L.RaidCheckLQFlask,not VMRT.RaidCheck.FlaskLQ):Point("TOPLEFT",self.level2optLine,7,-270):OnClick(function(self) 
 		VMRT.RaidCheck.FlaskLQ = not VMRT.RaidCheck.FlaskLQ
 	end)
 
 
-	self.chkPotion = ELib:Check(self.tab.tabs[1],L.raidcheckPotionCheck,VMRT.RaidCheck.PotionCheck):Point("TOPLEFT",self.level2optLine,7,-270):OnClick(function(self) 
+	self.chkPotion = ELib:Check(self.tab.tabs[1],L.raidcheckPotionCheck,VMRT.RaidCheck.PotionCheck):Point("TOPLEFT",self.level2optLine,7,-295):OnClick(function(self) 
 		if self:GetChecked() then
 			VMRT.RaidCheck.PotionCheck = true
 			module.options.potionToChat:Enable()
@@ -1292,14 +1338,51 @@ function module.options:Load()
 
 	if ExRT.isClassic then
 		self.tab.tabs[3].button:Hide()
-		self.tab.tabs[1].button:Hide()
-		self.tab.tabs[2].button:ClearAllPoints()
-		self.tab.tabs[2].button:SetPoint("TOPLEFT", 10, 24)
+		--self.tab.tabs[1].button:Hide()
+		--self.tab.tabs[2].button:ClearAllPoints()
+		--self.tab.tabs[2].button:SetPoint("TOPLEFT", 10, 24)
 		self.tab:SetTo(2)
 
 		self.chkReadyCheckColDecLine:Hide()
 		self.chkReadyCheckColText:Hide()
 		self.chkReadyCheckColSoulstone:Hide()
+
+		self.runes:Hide()
+		self.runes.txt:Hide()
+		self.runesToChat:Hide()
+		self.runesToChat.txt:Hide()
+		self.vantusrunes:Hide()
+		self.vantusrunes.txt:Hide()
+		self.vantusrunesToChat:Hide()
+		self.vantusrunesToChat.txt:Hide()
+
+		self.raidbuffs:Point(15,-60)
+
+		self.level2optLine:SetPoint("TOPLEFT",10,-135+50)
+
+		self.chkOils:Hide()
+		self.chkKits:Hide()
+		self.chkRunes:Hide()
+		self.disableLFR:Hide()
+
+		self.disableNotInRaid:Point("TOPLEFT",self.disableLFR,"TOPLEFT",0,0)
+
+		self.chkBuffs:Point("TOPLEFT",self.chkRunes,0,25)
+
+		self.minFoodLevelText:Hide()
+		self.minFoodLevelAny:Hide()
+		self.minFoodLevel100:Hide()
+		self.minFoodLevel125:Hide()
+		self.checkLQFlask:Hide()
+		self.chkPotion:Hide()
+		self.potion:Hide()
+		self.potion.txt:Hide()
+		self.potionToChat:Hide()
+		self.potionToChat.txt:Hide()
+		self.hs:Hide()
+		self.hsToChat:Hide()
+
+		self.minFlaskExpText:Point("TOPLEFT",self.minFoodLevelText,"TOPLEFT",0,50)
 	end
 end
 
@@ -1740,10 +1823,10 @@ module.frame.lines = {}
 module.frame.lines_mini = {}
 
 local function RCW_LineOnUpdate(self)
-	if self:IsMouseOver(self) and not self.hoverShow then
+	if self:IsMouseOver() and not self.hoverShow then
 		self.hover:SetAlpha(.15)
 		self.hoverShow = true
-	elseif not self:IsMouseOver(self) and self.hoverShow then
+	elseif not self:IsMouseOver() and self.hoverShow then
 		self.hover:SetAlpha(0)
 		self.hoverShow = false
 	end
@@ -1899,7 +1982,12 @@ function module.frame:Create()
 		--line.classLeft:SetWidth(160)
 		line.classLeft:SetPoint("RIGHT",5,0)
 		line.classLeft:SetColorTexture(1,1,1,1)
-		line.classLeft:SetGradientAlpha("VERTICAL",.24,.25,.30,1,.27,.28,.33,1)
+
+		if ExRT.is10 then
+			line.classLeft:SetGradient("VERTICAL",CreateColor(.24,.25,.30,1), CreateColor(.27,.28,.33,1))
+		else
+			line.classLeft:SetGradientAlpha("VERTICAL",.24,.25,.30,1,.27,.28,.33,1)
+		end
 
 		line:SetScript("OnUpdate",RCW_LineOnUpdate)
 
@@ -1974,7 +2062,11 @@ do
 	line.back2:SetSize(WIDTH2,18)
 	line.back2:SetPoint("LEFT",line.back,"RIGHT")
 	line.back2:SetColorTexture(1,1,1)
-	line.back2:SetGradientAlpha("HORIZONTAL",cR1,cG1,cB1,1,cR1,cG1,cB1,0)
+	if ExRT.is10 then
+		line.back2:SetGradient("HORIZONTAL",CreateColor(cR1,cG1,cB1,1), CreateColor(cR1,cG1,cB1,0))
+	else
+		line.back2:SetGradientAlpha("HORIZONTAL",cR1,cG1,cB1,1,cR1,cG1,cB1,0)
+	end
 
 	line.time = ELib:Text(module.frame.maximized,"40"):Point("TOPLEFT",line,5,-34):Font(ExRT.F.defFont,12):Color():Shadow()
 	line.time:Hide()
@@ -2013,7 +2105,11 @@ do
 
 		line.time:SetText("")
 		line.back:SetColorTexture(cR1,cG1,cB1)
-		line.back2:SetGradientAlpha("HORIZONTAL",cR1,cG1,cB1,1,cR1,cG1,cB1,0)
+		if ExRT.is10 then
+			line.back2:SetGradient("HORIZONTAL",CreateColor(cR1,cG1,cB1,1), CreateColor(cR1,cG1,cB1,0))
+		else
+			line.back2:SetGradientAlpha("HORIZONTAL",cR1,cG1,cB1,1,cR1,cG1,cB1,0)
+		end
 		line.back:SetWidth(WIDTH - WIDTH2)
 
 		currR,currG,currB = cR1,cG1,cB1
@@ -2050,7 +2146,11 @@ do
 		local r,g,b = cfR - (cfR - ctR) * self:GetProgress(),cfG - (cfG - ctG) * self:GetProgress(),cfB - (cfB - ctB) * self:GetProgress()
 
 		line.back:SetColorTexture(r,g,b)
-		line.back2:SetGradientAlpha("HORIZONTAL",r,g,b,1,r,g,b,0)
+		if ExRT.is10 then
+			line.back2:SetGradient("HORIZONTAL",CreateColor(r,g,b,1), CreateColor(r,g,b,0))
+		else
+			line.back2:SetGradientAlpha("HORIZONTAL",r,g,b,1,r,g,b,0)
+		end
 
 		currR,currG,currB = r,g,b
 	end)
@@ -2247,7 +2347,11 @@ function module.frame:UpdateRoster()
 			local classColor = classColorsTable[data.class]
 			local r,g,b = classColor and classColor.r or .7,classColor and classColor.g or .7,classColor and classColor.b or .7
 
-			line.classLeft:SetGradientAlpha("HORIZONTAL",r,g,b,.4,r,g,b,0)
+			if ExRT.is10 then
+				line.classLeft:SetGradient("HORIZONTAL",CreateColor(r,g,b,.4), CreateColor(r,g,b,0))
+			else
+				line.classLeft:SetGradientAlpha("HORIZONTAL",r,g,b,.4,r,g,b,0)
+			end
 
 			line:Show()
 			line.mini:Show()
@@ -2752,6 +2856,9 @@ function module.main:ADDON_LOADED()
 	if VMRT.Addon.Version < 3930 then
 		VMRT.RaidCheck.BuffsCheck = true
 	end
+	if VMRT.Addon.Version < 4660 and ExRT.isClassic then
+		VMRT.RaidCheck.BuffsCheck = nil
+	end
 	if VMRT.Addon.Version < 4080 then
 		if not VMRT.RaidCheck.ReadyCheckFrame then
 			VMRT.RaidCheck.ReadyCheckFrame = true
@@ -2822,17 +2929,17 @@ local function PrepareDataToChat(toSelf)
 	if toSelf then
 		GetFood(3)
 		GetFlask(3)
-		if VMRT.RaidCheck.RunesCheck then
+		if VMRT.RaidCheck.RunesCheck and not ExRT.isClassic then
 			GetRunes(3)
 		end
 		if VMRT.RaidCheck.BuffsCheck then
 			GetRaidBuffs(3)
 		end
 		C_Timer.After(1,function()
-			if VMRT.RaidCheck.KitsCheck then
+			if VMRT.RaidCheck.KitsCheck and not ExRT.isClassic then
 				GetKits(3)
 			end
-			if VMRT.RaidCheck.OilsCheck then
+			if VMRT.RaidCheck.OilsCheck and not ExRT.isClassic then
 				GetOils(3)
 			end
 		end)
@@ -2843,12 +2950,18 @@ local function PrepareDataToChat(toSelf)
 				return
 			end
 		end
+		if VMRT.RaidCheck.disableNotInRaid then
+			local _,zoneType = GetInstanceInfo()
+			if zoneType ~= "raid" then
+				return
+			end
+		end
 		IsSendFoodByMe = true
 		ExRT.F.ScheduleTimer(ExRT.F.SendExMsg, 0.1, "raidcheck","FOOD\t"..ExRT.V)
 		IsSendFlaskByMe = true
 		ExRT.F.ScheduleTimer(ExRT.F.SendExMsg, 0.1, "raidcheck","FLASK\t"..ExRT.V)
 		IsSendRunesByMe = nil
-		if VMRT.RaidCheck.RunesCheck then
+		if VMRT.RaidCheck.RunesCheck and not ExRT.isClassic then
 			IsSendRunesByMe = true
 			ExRT.F.ScheduleTimer(ExRT.F.SendExMsg, 0.1, "raidcheck","RUNES\t"..ExRT.V)
 		end
@@ -2858,12 +2971,12 @@ local function PrepareDataToChat(toSelf)
 			ExRT.F.ScheduleTimer(ExRT.F.SendExMsg, 0.1, "raidcheck","BUFFS\t"..ExRT.V)
 		end
 		IsSendKitsByMe = nil
-		if VMRT.RaidCheck.KitsCheck then
+		if VMRT.RaidCheck.KitsCheck and not ExRT.isClassic then
 			IsSendKitsByMe = true
 			ExRT.F.ScheduleTimer(ExRT.F.SendExMsg, 0.1, "raidcheck","REPORT_KITS\t"..ExRT.V)
 		end
 		IsSendOilsByMe = nil
-		if VMRT.RaidCheck.OilsCheck then
+		if VMRT.RaidCheck.OilsCheck and not ExRT.isClassic then
 			IsSendOilsByMe = true
 			ExRT.F.ScheduleTimer(ExRT.F.SendExMsg, 0.1, "raidcheck","REPORT_OILS\t"..ExRT.V)
 		end
@@ -3060,7 +3173,7 @@ end)
 addonMsgFrame:RegisterEvent("CHAT_MSG_ADDON")
 
 
-if (not ExRT.isClassic) and UnitLevel'player' >= 60 then
+if (not ExRT.isClassic) and UnitLevel'player' >= 60 and not ExRT.is10 then
 	local consumables_size = 44
 
 	local lastWeaponEnchantItem

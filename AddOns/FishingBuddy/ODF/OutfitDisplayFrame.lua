@@ -65,14 +65,14 @@ end
 
 local function IsItemOneHanded(item)
 	if ( item ) then
-		local _,_,_,_,_,_,_,_,bodyslot,_ = GetItemInfo(item);
+		local _, _, _, _, _, _, _, _, bodySlot, _ = GetItemInfo("item:"..item);
 		return IsBodySlotOneHanded(bodyslot);
 	end
 	return true;
 end
 
 local function SmartCursorCanGoInSlot(button)
-	if ( button.forced ) then
+	if ( button.forced or not CursorCanGoInSlot(button.slotid)) then
 		return false;
 	end
 	local secondary = GetSlotButton(button, "SecondaryHandSlot");
@@ -141,17 +141,6 @@ local function ODF_PickupInventoryItem(slot)
 	OD_Track_Slot = slot;
 end
 
-local function GetDisplaySource(slotID)
-	local infoslot = FL:GetInfoSlot()
-	local transmogLocation = TransmogUtil.GetTransmogLocation(infoslot[slotID].name, Enum.TransmogType.Appearance, Enum.TransmogModification.Main);
-	local baseSourceID, _, appliedSourceID, _, _, _, _, _, hasPendingUndo, _ = C_Transmog.GetSlotVisualInfo(transmogLocation);
-	if ( hasPendingUndo or appliedSourceID == NO_TRANSMOG_SOURCE_ID ) then
-		return baseSourceID;
-	else
-		return appliedSourceID;
-	end
-end
-
 local function UpdateModel_ThisSlot(pname, model, idx)
 	local _,_,slotnames = FL:GetSlotInfo();
 	local slotName = slotnames[idx].name;
@@ -163,13 +152,17 @@ local function UpdateModel_ThisSlot(pname, model, idx)
 			link = "item:"..what.item;
 			model:TryOn(link, slotName);
 		end
-	elseif (slotnames[idx].transmog) then
-		local sourceID = GetDisplaySource(slotID);
-		model:TryOn(sourceID);
 	else
-		link = GetInventoryItemLink("player", slotID)
-		if (link) then
-			model:TryOn(link, slotName);
+		local itemLocation = ItemLocation:CreateFromEquipmentSlot(slotID);
+		local link = GetInventoryItemLink("player", slotID)
+		if ( itemLocation and itemLocation:IsValid() ) then
+			local itemTransmogInfo = C_Item.GetCurrentItemTransmogInfo(itemLocation);
+			-- non-equippable items won't have an appearanceID
+			if itemTransmogInfo.appearanceID ~= Constants.Transmog.NoTransmogID then
+				model:SetItemTransmogInfo(itemTransmogInfo);
+			elseif ( C_Item.IsDressableItemByID(link) ) then
+				model:TryOn(link);
+			end
 		end
 	end
 end
@@ -318,7 +311,7 @@ end
 local function FindEmptyBagSlot(family, skipbag, skipcount)
 	-- no affinity, check all bags
 	for i=NUM_BAG_SLOTS,BACKPACK_CONTAINER,-1 do
-		-- but skip any bag we already have affinity for (because it might have 
+		-- but skip any bag we already have affinity for (because it might have
 		-- already modified skipcount)
 		if ( not skipbag or skipbag ~= i ) then
 			-- Make sure this bag can hold what we need
@@ -349,7 +342,7 @@ local function FindLastEmptyBagSlot(link, skipcount, bag_affinity, slot_affinity
 	skipcount = skipcount or 0;
 
 	-- try to put the item in the requested affinity, if possible
-	if bag_affinity and slot_affinity and 
+	if bag_affinity and slot_affinity and
 			not GetContainerItemInfo(bag_affinity, slot_affinity) then
 		return bag_affinity, slot_affinity;
 	end
@@ -379,7 +372,7 @@ local function FindLastEmptyBagSlot(link, skipcount, bag_affinity, slot_affinity
 		end
 		skipcount = s;
 	end
-	
+
 	-- didn't find anything, or no preference, look for general bags
 	return FindEmptyBagSlot(0, bag_affinity, skipcount);
 end
@@ -392,7 +385,7 @@ local function swapentry_print(entry)
 	if ( DEFAULT_CHAT_FRAME ) then
 		local msg = "Entry "..tonil(entry.sb)..","..tonil(entry.si)..","..tonil(entry.db)..","..tonil(entry.di);
 		DEFAULT_CHAT_FRAME:AddMessage(msg, 1.0,0,0);
-	end		
+	end
 end
 
 local function swaplist_print(list)
@@ -502,7 +495,7 @@ swapframe:SetScript("OnUpdate",
 		if ( not outfitswap or not outfitswap.slowdown ) then
 			self:Hide();
 		end
-		
+
 		if ( not outfitswap ) then
 			return;
 		end
@@ -567,11 +560,17 @@ local mainhandslot = GetInventorySlotInfo("MainHandSlot");
 local secondaryslot = GetInventorySlotInfo("SecondaryHandSlot");
 local function SwitchOutfit(self, outfit)
 	if ( CursorHasItem() or IsSwapping() ) then
-		return OnSwapError(OUTFITDISPLAYFRAME_TOOFASTMSG); 
+		return OnSwapError(OUTFITDISPLAYFRAME_TOOFASTMSG);
 	end
 	local msg = CheckSwitchWillFail(outfit);
 	if ( msg ) then
 		return OnSwapError(msg);
+	end
+
+	local name, _, _, _, _, _, notInterruptible, spellId = UnitChannelInfo("player")
+	print(name, notInterruptible, spellId)
+	if name then
+		return OnSwapError(OUTFITDISPLAYFRAME_CASTINGMSG);
 	end
 
 	-- need to check to see that we have enough room
@@ -587,7 +586,7 @@ local function SwitchOutfit(self, outfit)
 	end
 
 	if ( not outfit["MainHandSlot"] and not outfit["SecondaryHandSlot"] ) then
-		ExecuteSwapIteration(); 
+		ExecuteSwapIteration();
 		return old;
 	end
 
@@ -596,7 +595,7 @@ local function SwitchOutfit(self, outfit)
 
 	local mainhand = outfit["MainHandSlot"];
 	local offhand = outfit["SecondaryHandSlot"];
-	
+
 	-- now do hands
 	local m_sb;
 	local m_si;
@@ -667,14 +666,14 @@ local function SwitchOutfit(self, outfit)
 				end
 			end
 		end
-  
+
 		-- Load offhand if not already there
 		if not o_ok then
 			if ( not o_sb and not o_si ) then
 				if not (not m_sb and m_si == secondaryslot) then
 					local bb, bi;
 					if LastOffSource then
-						bb, bi = FindLastEmptyBagSlot(offhand.item, skipcount, 
+						bb, bi = FindLastEmptyBagSlot(offhand.item, skipcount,
 																LastOffSource.bag, LastOffSource.slot);
 					else
 						bb, bi = FindLastEmptyBagSlot(offhand.item, skipcount);
@@ -685,14 +684,14 @@ local function SwitchOutfit(self, outfit)
 				end
 			else
 				-- if the main hand weapon is coming from the offhand slot
-				-- we need to fix up its source to be where the offhand is 
+				-- we need to fix up its source to be where the offhand is
 				-- GOING to be after the bag->off swap
 				if outfitswap and ( not m_sb and m_si == secondaryslot) then
 					outfitswap.sb = o_sb;
 					outfitswap.si = o_si;
 					-- don't set o_sb, o_si they're tested later
 				end
-				
+
 				outfitswap = swaplist_push(outfitswap, o_sb, o_si, nil, secondaryslot);
                 skipcount = SwitchToBag(outfit, "MainHandSlot", mainhandslot, skipcount);
 			end
@@ -715,10 +714,10 @@ local function SwitchOutfit(self, outfit)
             skipcount = SwitchToBag(outfit, "MainHandSlot", mainhandslot, skipcount);
 		end
 
-		if o_sb then 
-			LastOffSource = { bag = o_sb, slot = o_si }; 
+		if o_sb then
+			LastOffSource = { bag = o_sb, slot = o_si };
 		end
-	end	
+	end
 
 	-- Start moving
 	if ( PerformSlowerSwap ) then
@@ -778,8 +777,7 @@ end
 function OutfitDisplayItemButton_OnEvent(self, event)
 	if ( event == "CURSOR_UPDATE" or event == "CURSOR_CHANGED" ) then
 		if ( not self.forced ) then
-			if ((self.CursorCanGoInSlot and self.CursorCanGoInSlot(self)) or
-				 SmartCursorCanGoInSlot(self)) then
+			if (SmartCursorCanGoInSlot(self)) then
 				self:LockHighlight();
 			else
 				self:UnlockHighlight();
@@ -820,15 +818,13 @@ function OutfitDisplayItemButton_OnLoad(self)
 	local id;
     local textureName;
 
-	-- Turn off all of the Azerite stuff, since we're not using it.
-
 	id, textureName = GetInventorySlotInfo(slotName);
 	self:SetID(id);
 	self.backgroundTextureName = textureName;
 	SetItemButtonTexture(self, self.backgroundTextureName);
 	self:RegisterForDrag("LeftButton");
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-	self:RegisterEvent("CURSOR_CHANGED");
+self:RegisterEvent("CURSOR_CHANGED");
 	self:SetFrameLevel(self:GetFrameLevel()+3);
 end
 
@@ -948,7 +944,7 @@ local function SwitchWillFail(self, outfit)
 	if ( InCombatLockdown() ) then
 		return ERR_NOT_IN_COMBAT;
 	end
-	
+
 	if ( not outfit ) then
 		return OUTFITDISPLAYFRAME_INVALIDOUTFIT;
 	end
@@ -1126,7 +1122,7 @@ local function OutfitDisplayFrameModel_OnLoad(parent)
 		model.BackgroundBotLeft:SetDesaturated(true);
 		model.BackgroundBotRight:SetTexture(texture..4);
 		model.BackgroundBotRight:SetDesaturated(true);
-	
+
 		-- HACK - Adjust background brightness for different races
 		if ( strupper(fileName) == "BLOODELF") then
 			model.BackgroundOverlay:SetAlpha(0.8);
@@ -1143,7 +1139,7 @@ local function OutfitDisplayFrameModel_OnLoad(parent)
 		else
 			model.BackgroundOverlay:SetAlpha(0.7);
 		end
-		
+
 		model:RegisterEvent("DISPLAY_SIZE_CHANGED");
 		model:RegisterEvent("UNIT_MODEL_CHANGED");
 		model:RegisterEvent("PLAYER_ENTERING_WORLD");
@@ -1204,10 +1200,10 @@ function ODFLib:InitFrame(frame)
 	frame.IsSwapping = IsSwapping;
 	frame.IsWearing = IsWearing;
 	frame.UpdateMessage = UpdateMessage;
-	
+
 	-- called from ODF frame
 	frame.UpdateModel = UpdateModel;
 	frame:SetScript("OnEvent", OutfitDisplayFrame_OnEvent);
-	
+
 	return frame;
 end

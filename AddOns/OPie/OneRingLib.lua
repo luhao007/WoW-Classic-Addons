@@ -1,5 +1,6 @@
-local versionMajor, versionRev, ADDON, T, ORI = 3, 107, ...
+local versionMajor, versionRev, ADDON, T, ORI = 3, 109, ...
 local MODERN = select(4,GetBuildInfo()) >= 8e4
+local CF_WRATH = not MODERN and select(4,GetBuildInfo()) >= 3e4
 local api, OR_Rings, OR_ModifierLockState, TL, EV, OR_LoadedState = {ext={ActionBook=T.ActionBook}}, {}, nil, T.L, T.Evie, 1
 local defaultConfig = {
 	ClickActivation=false, ClickPriority=true, CloseOnRelease=false, NoClose=false, NoCloseOnSlice=false,
@@ -67,7 +68,7 @@ local function tostringf(b)
 	return b and "true" or "nil"
 end
 local function getSpecCharIdent()
-	local tg = MODERN and GetSpecialization() or 1
+	local tg = MODERN and GetSpecialization() or CF_WRATH and GetActiveTalentGroup() or 1
 	return (tg == 1 and "%s" or "%s-%d"):format(charId, tg)
 end
 local safequote do
@@ -102,24 +103,47 @@ local OR_DeferExecute do
 	end
 end
 do -- Click dispatcher
+	local lowCH = CreateFrame("Button", ("OPieLBC-%08x-%04x"):format(time() % 2^30, math.random(2^16)-1), nil, "SecureActionButtonTemplate")
+	lowCH:SetFrameStrata("BACKGROUND")
+	lowCH:SetFrameLevel(1)
+	lowCH:RegisterForClicks("AnyDown", "AnyUp")
+	lowCH:SetAllPoints()
+	lowCH:Hide()
+	OR_SecCore:WrapScript(lowCH, "OnClick", "return owner:RunFor(self, ORL_OnClick, button, down)", "owner:RunFor(self, ORL_PostClick)")
 	local bindProxy = CreateFrame("Frame", "ORL_BindProxy", nil, "SecureFrameTemplate")
 	OR_SecCore:SetFrameRef("bindProxy", bindProxy)
 	OR_SecCore:SetFrameRef("sliceBindProxy", CreateFrame("Frame", "ORL_BindProxySlice", nil, "SecureFrameTemplate"))
 	OR_SecCore:SetFrameRef("overBindProxy", CreateFrame("Frame", "ORL_BindProxyOverride", nil, "SecureFrameTemplate"))
+	OR_SecCore:SetFrameRef("lowCH", lowCH)
 	OR_SecCore:SetFrameRef("screen", CreateFrame("Frame", nil, nil, "SecureFrameTemplate"))
-	for i=1,6 do
-		local f = CreateFrame("Frame", nil, nil, "SecureFrameTemplate")
-		f:Hide()
-		f:SetFrameStrata("TOOLTIP")
-		OR_SecCore:WrapScript(f, "OnEnter", "return owner:Run(ORL_DisarmMouseMotionTrap)")
-		OR_SecCore:SetFrameRef("motion" .. i, f)
+	do -- Motion Trap
+		local trap = CreateFrame("Frame", nil, nil, "SecureFrameTemplate")
+		trap:SetFrameStrata("TOOLTIP")
+		trap:SetAllPoints()
+		trap:Hide()
+		OR_SecCore:SetFrameRef("motion0", trap)
+		OR_SecCore:WrapScript(trap, "OnEnter", "return owner:Run(ORL_SetMotionTrapArmed, false, true)")
+		trap:SetMouseClickEnabled(false)
+		for i=1,6 do
+			local f = CreateFrame("Frame", nil, trap, "SecureFrameTemplate")
+			if i < 3 then
+				f:SetSize(1/8, 1/8)
+				f:SetFrameLevel(9001)
+				f:SetMouseMotionEnabled(true)
+			else
+				OR_SecCore:WrapScript(f, "OnEnter", "return owner:Run(ORL_SetMotionTrapArmed, false, true)")
+			end
+			f:SetMouseClickEnabled(false)
+			OR_SecCore:SetFrameRef("motion" .. i, f)
+		end
 	end
 	OR_SecCore:Execute([=[-- OR_SecCore
 		ORL_GlobalOptions, ORL_RingData, ORL_RingDataN = newtable(), newtable(), newtable()
-		ORL_KnownCollections, ORL_StoredCA = newtable(), newtable()
+		ORL_KnownCollections, ORL_StoredCA, ORL_OverSAB = newtable(), newtable(), nil
 		POL_RUN_ONOPEN_ON_SWITCH, POL_JUMP_COUNT_LIMIT = true, 50
 		collections, ctokens, rotation, rtokens, fcIgnore, rotationMode, emptyTable = newtable(), newtable(), newtable(), newtable(), newtable(), newtable(), newtable()
 		modState, sizeSq, bindProxy, sliceProxy, overProxy = "", 16*9001^2, self:GetFrameRef("bindProxy"), self:GetFrameRef("sliceBindProxy"), self:GetFrameRef("overBindProxy")
+		lowCH = self:GetFrameRef("lowCH")
 		sliceBindState, visitedSlices = newtable(), newtable()
 		BUTTON_NAMEKEY_MAP = newtable()
 		BUTTON_NAMEKEY_MAP.LeftButton, BUTTON_NAMEKEY_MAP.RightButton, BUTTON_NAMEKEY_MAP.MiddleButton = "BUTTON1", "BUTTON2", "BUTTON3"
@@ -128,43 +152,45 @@ do -- Click dispatcher
 		-- TODO: check usages of AIP_Action/AI_LeftAction to allow them to coexist
 		AIP_Action, AI_LeftAction, AI_RightAction = nil
 		AIP_OnDown, AI_LeftOnDown, AI_RightOnDown = nil
-		AI_MotionArmed = false
+		AI_MotionArmed, AI_MotionArmed = false, false
 		ORL_GlobalBindingMap = newtable("OpenNestedRingBinding","mwin", "ScrollNestedRingUpBinding","mwup", "ScrollNestedRingDownBinding","mwdown")
-		AB, KR, SCREEN, MOTION = self:GetFrameRef("AB"), self:GetFrameRef("KR"), self:GetFrameRef("screen"), newtable()
-		SCREEN:SetAllPoints(); SCREEN:Hide()
-		for i=1,6 do
-			MOTION[i] = self:GetFrameRef("motion" .. i)
+		AB, KR = self:GetFrameRef("AB"), self:GetFrameRef("KR")
+		SCREEN, CENTERED_CURSOR_YPOS, MOTION_TRAP = self:GetFrameRef("screen"), "0.6", newtable()
+		SCREEN:SetAllPoints()
+		SCREEN:Hide()
+		for i=0,6 do
+			MOTION_TRAP[i] = self:GetFrameRef("motion" .. i)
 		end
 		
-		ORL_ArmMouseMotionTrap = [==[-- ORL_ArmMouseMotionTrap
-			local m, x, y = 0.5, SCREEN:GetMousePosition()
-			local w, h = SCREEN:GetWidth(), SCREEN:GetHeight()
+		ORL_SetMotionTrapArmed = [==[-- ORL_SetMotionTrapArmed
+			local arm, armFC = ...
+			if not arm then
+				MOTION_TRAP[0]:Hide()
+				AI_MotionArmed, AI_MotionArmedFC = false, false
+				if armFC and AI_LeftAction then
+					bindProxy:SetBindingClick(true, "BUTTON1", owner, "BUTTON1")
+					lowCH:Hide()
+				end
+				return
+			end
+			local x, y = SCREEN:GetMousePosition()
+			local m, w, h = 0.125, SCREEN:GetWidth(), SCREEN:GetHeight()
 			x, y = x*w, y*h
-			local x0, x1, x2, x3, x4, x5 = 0, w/2-m, w/2+m, w, -1, -1
-			for i=1,6,2 do
-				if x >= x0 and x <= x1 then
-					x1, x2, x3, x4, x5 = x-m, x+m, x1, x2, x3
-				end
-				local t, b = MOTION[i], MOTION[i+1]
-				if x0 >= x1 then
-					t:Hide(); b:Hide()
-				else
-					t:ClearAllPoints(); b:ClearAllPoints()
-					t:SetPoint("TOPLEFT", SCREEN, "TOPLEFT", x0, 0)
-					t:SetPoint("BOTTOMRIGHT", SCREEN, "BOTTOMLEFT", x1, y+m)
-					b:SetPoint("BOTTOMLEFT", SCREEN, "BOTTOMLEFT", x0, 0)
-					b:SetPoint("TOPRIGHT", SCREEN, "BOTTOMLEFT", x1, y-m)
-					t:Show(); b:Show()
-				end
-				x0, x1, x2, x3, x4, x5 = x2, x3, x4, x5
+			for i=1,6 do
+				MOTION_TRAP[i]:ClearAllPoints()
 			end
-			AI_MotionArmed = true
-		]==]
-		ORL_DisarmMouseMotionTrap = [==[--ORL_NotifyMouseMoved
-			for i=1, #MOTION do
-				MOTION[i]:Hide()
-			end
-			AI_MotionArmed = false
+			MOTION_TRAP[1]:SetPoint("CENTER", SCREEN, "BOTTOM", 0, h * CENTERED_CURSOR_YPOS)
+			MOTION_TRAP[2]:SetPoint("CENTER", SCREEN, "BOTTOMLEFT", x, y)
+			MOTION_TRAP[3]:SetPoint("TOPLEFT")
+			MOTION_TRAP[3]:SetPoint("BOTTOMRIGHT", SCREEN, "BOTTOMLEFT", x-m, 0)
+			MOTION_TRAP[4]:SetPoint("TOPLEFT")
+			MOTION_TRAP[4]:SetPoint("BOTTOMRIGHT", SCREEN, "BOTTOMRIGHT", 0, y+m)
+			MOTION_TRAP[5]:SetPoint("TOPLEFT", SCREEN, "TOPLEFT", x+m, 0)
+			MOTION_TRAP[5]:SetPoint("BOTTOMRIGHT")
+			MOTION_TRAP[6]:SetPoint("TOPLEFT", SCREEN, "BOTTOMLEFT", 0, y-m)
+			MOTION_TRAP[6]:SetPoint("BOTTOMRIGHT")
+			MOTION_TRAP[0]:Show()
+			AI_MotionArmed, AI_MotionArmedFC = true, armFC == true
 		]==]
 		ORL_PrepareCollection = [==[-- ORL_PrepareCollection
 			wipe(collections) wipe(ctokens)
@@ -204,7 +230,8 @@ do -- Click dispatcher
 			AIP_Action, AIP_AltAction, AI_LeftAction, AI_RightAction = nil
 			AIP_OnDown, AI_LeftOnDown, AI_RightOnDown = nil
 			AIP_Binding, AIP_Key, AIP_Modifier, AIP_Handler, AIP_VirtualKey = nil
-			self:Run(ORL_DisarmMouseMotionTrap)
+			self:Run(ORL_SetMotionTrapArmed, false)
+			lowCH:Hide()
 			owner:CallMethod("NotifyState", "close", old.name, old.action, selSliceIndex, selSliceAction)
 		]]
 		ORL_RegisterVariations = [[-- ORL_RegisterVariations
@@ -256,9 +283,7 @@ do -- Click dispatcher
 			if AIP_Binding and AIP_Action then
 				bindProxy:SetBindingClick(true, AIP_Binding, AIP_Handler, AIP_VirtualKey)
 			end
-			if AI_LeftAction then
-				bindProxy:SetBindingClick(true, "BUTTON1", self, "BUTTON1")
-			end
+			lowCH[AI_LeftAction and "Show" or "Hide"](lowCH)
 			if AI_RightAction and AIP_Binding ~= "BUTTON2" then
 				bindProxy:SetBindingClick(true, "BUTTON2", owner, "BUTTON2")
 			end
@@ -299,16 +324,18 @@ do -- Click dispatcher
 			end
 			fastClick = (ring.CenterAction or ring.MotionAction) and ((not fcIgnore[ring.fcToken] and ctokens[cid][ring.fcToken]) or (ring.OpprotunisticCA and ctokens[cid][firstFC])) or nil
 
-			owner:RunFor(self, ORL_UpdateInteractionBindings, setToVirtualKey)
-
 			owner:SetScale(ring.scale)
 			owner:SetPoint('CENTER', ring.ofs, ring.ofsx/owner:GetEffectiveScale(), ring.ofsy/owner:GetEffectiveScale())
+			owner:RunFor(self, ORL_UpdateInteractionBindings, setToVirtualKey)
 			if ring.ClickPriority then
 				owner:Show()
+				lowCH:Hide()
 			end
 
+			local armMotionFC = fastClick and ring.MotionAction and true
+			local needMotionTrap = armMotionFC or AI_LeftAction or AI_MotionArmed
 			owner:CallMethod("NotifyState", "open", ring.name, ring.action, fastClick, fastSwitch or fastSwitch2, modLockState)
-			owner:Run(fastClick and ring.MotionAction and ORL_ArmMouseMotionTrap or ORL_DisarmMouseMotionTrap)
+			owner:Run(ORL_SetMotionTrapArmed, needMotionTrap, armMotionFC)
 			if openCollection[0] then
 				return owner:RunFor(self, ORL_PerformSliceAction, 0, false, true, "on-open")
 			end
@@ -333,7 +360,7 @@ do -- Click dispatcher
 			openCollection, openCollectionID, fastClick = col, colID, nil
 			owner:RunFor(self, ORL_UpdateInteractionBindings) -- setToVirtualKey?
 			owner:CallMethod("NotifyState", "switch", ring and ring.name, openCollectionID, fastClick, true, modState)
-			if openCollection[0] and POL_RUN_ONOPEN_ON_SWITCH and (JUMP_COUNT or 0) < POL_JUMP_COUNT_LIMIT then
+			if openCollection[0] and POL_RUN_ONOPEN_ON_SWITCH and (ORL_JumpCount or 0) < POL_JUMP_COUNT_LIMIT then
 				return owner:RunFor(self, ORL_PerformSliceAction, 0, false, true, "switch-onopen")
 			end
 		]==]
@@ -356,7 +383,7 @@ do -- Click dispatcher
 					end
 				end
 			end
-			if AI_MotionArmed then
+			if AI_MotionArmedFC then
 				return fastClick, true
 			end
 			local x, y = owner:GetMousePosition()
@@ -404,15 +431,15 @@ do -- Click dispatcher
 			local action, at = owner:Run(ORL_ResolveNestedSlice, openCollectionID, pureSlice, true)
 			activeRing.fcToken = shouldUpdateFastClick and activeRing.CenterAction and not fcIgnore[pureToken] and pureToken or activeRing.fcToken
 			if at == "jump" then
-				JUMP_COUNT = (JUMP_COUNT or 0) + 1
+				ORL_JumpCount = (ORL_JumpCount or 0) + 1
 				return owner:RunFor(self, ORL_SwitchRing, action, interactionSource == "primary-binding" and "jump-slice-release" or "switch-binding"), 0
 			end
 			if not noClose then
 				owner:Run(ORL_CloseActiveRing, nil, pureSlice, action)
 			end
 			if action then
-				self:SetAttribute("type", "macro")
-				self:SetAttribute("macrotext", AB:RunAttribute("UseAction", action))
+				(ORL_OverSAB or self):SetAttribute("type", "macro");
+				(ORL_OverSAB or self):SetAttribute("macrotext", AB:RunAttribute("UseAction", action))
 			end
 			return action or false, 0
 		]]
@@ -517,7 +544,7 @@ do -- Click dispatcher
 		]==]
 		ORL_PostClick = [[-- ORL_PostClick
 			self:SetAttribute('type', nil)
-			JUMP_COUNT = nil
+			ORL_JumpCount, ORL_OverSAB = nil
 		]]
 		ORL_OpenClick = [[-- OpenClick
 			local rdata, cur = ORL_RingDataN[...], activeRing
@@ -527,7 +554,8 @@ do -- Click dispatcher
 				owner:Run(ORL_CloseActiveRing)
 				if cur == rdata then return end
 			end
-			return owner:RunFor(self, ORL_OpenRing, rdata.id, "open-macro")
+			ORL_OverSAB = self
+			return owner:Run(ORL_OpenRing, rdata.id, "open-macro"), 1
 		]]
 	]=])
 	OR_SecCore:SetAttribute("_onmousewheel", [[-- OR_OnMouseWheel
@@ -834,6 +862,12 @@ local OR_CameraStickOverride = {} do
 		end
 	end
 end
+function OR_SecCore:CheckCVars()
+	local ccy = not InCombatLockdown() and GetCVar("CursorCenteredYPos")
+	if tonumber(ccy) and ccy ~= OR_SecEnv.CENTERED_CURSOR_YPOS then
+		OR_SecCore:Execute("CENTERED_CURSOR_YPOS = " .. safequote(ccy))
+	end
+end
 function OR_SecCore:NotifyState(state, _ringName, collection, ...)
 	if state == "open" then
 		MouselookStop()
@@ -865,6 +899,7 @@ function OR_SecCore:NotifyState(state, _ringName, collection, ...)
 				SetGamePadCursorControl(true)
 			end
 		end
+		self:CheckCVars()
 	elseif state == "switch" then
 		OR_ActiveCollectionID, OR_ActiveSliceCount = collection, #OR_SecEnv.openCollection
 		if ORI then
@@ -922,6 +957,9 @@ function EV:PLAYER_REGEN_ENABLED()
 	OR_CheckBindings()
 	OR_SecProfilePush()
 	OR_DeferExecute()
+end
+function EV:PLAYER_REGEN_DISABLED()
+	OR_SecCore:CheckCVars()
 end
 local function OR_UnserializeConfigInstance(profile)
 	activeProfile = configRoot.ProfileStorage[profile] and profile or "default"
@@ -1079,7 +1117,7 @@ function private:GetCurrentInputs()
 	local aidx, qidx = OR_SecEnv.fastClick, nil
 	if aidx then
 		local ar = OR_SecEnv.activeRing
-		if ar.MotionAction and OR_SecEnv.AI_MotionArmed and imode ~= "stick" then
+		if ar.MotionAction and OR_SecEnv.AI_MotionArmedFC and imode ~= "stick" then
 			qidx = aidx
 		elseif ar.CenterAction and isCenterRadius then
 			qidx = aidx
