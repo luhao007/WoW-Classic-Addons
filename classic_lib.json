@@ -1119,33 +1119,6 @@
     ]
   },
   {
-    "source": "curse",
-    "id": "355497",
-    "slug": "threatclassic2",
-    "name": "ThreatClassic2",
-    "description": "A simple threat meter for WoW Classic & TBC Classic, successor of ClassicThreatMeter",
-    "url": "https://www.curseforge.com/wow/addons/threatclassic2",
-    "download_url": "https://edge.forgecdn.net/files/3910/298/ThreatClassic2-v2.45-wrath.zip",
-    "date_published": "2022-07-31T23:02:09.940000+00:00",
-    "version": "v2.45-wrath",
-    "changelog_url": "https://api.curseforge.com/v1/mods/355497/files/3910298/changelog",
-    "options": {
-      "strategy": "any_flavour"
-    },
-    "folders": [
-      {
-        "name": "ThreatClassic2"
-      }
-    ],
-    "deps": [],
-    "logged_versions": [
-      {
-        "version": "v2.45-wrath",
-        "install_time": "2022-09-25T14:50:09+00:00"
-      }
-    ]
-  },
-  {
     "source": "github",
     "id": "rgd87/LibClassicCasterino",
     "slug": "rgd87/libclassiccasterino",

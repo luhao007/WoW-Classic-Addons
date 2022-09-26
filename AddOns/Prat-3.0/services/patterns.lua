@@ -50,7 +50,7 @@ setfenv(1, select(2, ...))
 
 
 local debug = function(...)
-  -- _G.ChatFrame1:print(...)
+   --_G.ChatFrame1:print(...)
 end
 
 function CaseInsensitveWordPattern(word)
@@ -82,9 +82,9 @@ end
 --
 local PatternRegistry = { patterns = {}, sortedList = {}, sorted = true}
 
---[==[@debug@
+--[===[@debug@
 _G.Prat.PatternRegistry = PatternRegistry
---@end-debug@]==]
+--@end-debug@]===]
 
 do
   function RegisterPattern(pattern, who)
@@ -231,7 +231,12 @@ do
       k = "@##" .. tostring(t) .. "##@"
 
       if (mt[k]) then
-        text = text:gsub(k, mt[k])
+		--_G.ChatFrame1:print(k)
+		--_G.ChatFrame1:print(mt[k])
+		local test = mt[k]:gsub("%%", "%%%%")
+		--text = text:gsub("%%", "%%%%")
+        text = text:gsub(k, test)
+		--text = text:gsub(k, mt[k])
       else
         debug("ERROR", k)
       end

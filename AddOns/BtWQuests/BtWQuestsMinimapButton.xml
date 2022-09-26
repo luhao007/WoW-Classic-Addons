@@ -16,11 +16,7 @@
 						<AbsDimension x="21" y="21"/>
 					</Size>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="7" y="-6"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="7" y="-6"/>
 					</Anchors>
 				</Texture>
 			</Layer>

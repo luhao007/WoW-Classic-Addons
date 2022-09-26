@@ -182,9 +182,10 @@ local DEFAULT_DB = {
 -- [101] updated factionrealm.internalData.craftingQueue
 -- [102] removed global.internalData.optionalMatBonusIdLookup
 -- [103] updated global.auctionUIContext.auctioningAuctionScrollingTable, global.auctionUIContext.myAuctionsScrollingTable, global.auctionUIContext.shoppingAuctionScrollingTable, global.auctionUIContext.sniperScrollingTable, global.auctionUIContext.professionScrollingTable
+-- [104] removed factionrealm.internalData.{csvAuctionDBScan,auctionDBScanTime,auctionDBScanHash}
 
 local SETTINGS_INFO = {
-	version = 103,
+	version = 104,
 	global = {
 		debug = {
 			chatLoggingEnabled = { type = "boolean", default = false, lastModifiedVersion = 19 },
@@ -383,9 +384,6 @@ local SETTINGS_INFO = {
 			mats = { type = "table", default = {}, lastModifiedVersion = 10 },
 			guildGoldLog = { type = "table", default = {}, lastModifiedVersion = 25 },
 			guildGoldLogLastUpdate = { type = "table", default = {}, lastModifiedVersion = 83 },
-			csvAuctionDBScan = { type = "string", default = "", lastModifiedVersion = 50 },
-			auctionDBScanTime = { type = "number", default = 0, lastModifiedVersion = 50 },
-			auctionDBScanHash = { type = "number", default = 0, lastModifiedVersion = 50 },
 			isCraftFavorite = { type = "table", default = {}, lastModifiedVersion = 56 },
 		},
 		coreOptions = {

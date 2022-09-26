@@ -10,6 +10,7 @@ BtWQuests = {
             Legion = LE_EXPANSION_LEGION or 6,
             BattleForAzeroth = LE_EXPANSION_BATTLE_FOR_AZEROTH or 7,
             Shadowlands = LE_EXPANSION_SHADOWLANDS or 8,
+            Dragonflight = LE_EXPANSION_DRAGONFLIGHT or 9,
         },
         Faction = {
             Alliance = "Alliance",
@@ -83,6 +84,7 @@ BtWQuests = {
             WarlordsOfDraenor = {},
             BattleForAzeroth = {},
             Shadowlands = {},
+            Dragonflight = {},
         },
         Chain = {
             Classic = {},
@@ -93,6 +95,7 @@ BtWQuests = {
             WarlordsOfDraenor = {},
             BattleForAzeroth = {},
             Shadowlands = {},
+            Dragonflight = {},
         },
         Restrictions = {
             Alliance = { type = "faction", id = "Alliance" },
@@ -161,21 +164,6 @@ BTWQUESTS_TIMEZONE_ID_AMERICA_SAOPAULO = "America/Sao_Paulo"
 BTWQUESTS_TIMEZONE_ID_EUROPE_PARIS = "Europe/Paris"
 BTWQUESTS_TIMEZONE_ID_ASIA_SEOUL = "Asia/Seoul"
 BTWQUESTS_TIMEZONE_ID_ASIA_TAIPEI = "Asia/Taipei"
-
-BTWQUESTS_CLASS_STRINGS = {
-    [BTWQUESTS_CLASS_ID_WARRIOR] = "WARRIOR",
-    [BTWQUESTS_CLASS_ID_PALADIN] = "PALADIN",
-    [BTWQUESTS_CLASS_ID_HUNTER] = "HUNTER",
-    [BTWQUESTS_CLASS_ID_ROGUE] = "ROGUE",
-    [BTWQUESTS_CLASS_ID_PRIEST] = "PRIEST",
-    [BTWQUESTS_CLASS_ID_DEATHKNIGHT] = "DEATHKNIGHT",
-    [BTWQUESTS_CLASS_ID_SHAMAN] = "SHAMAN",
-    [BTWQUESTS_CLASS_ID_MAGE] = "MAGE",
-    [BTWQUESTS_CLASS_ID_WARLOCK] = "WARLOCK",
-    [BTWQUESTS_CLASS_ID_MONK] = "MONK",
-    [BTWQUESTS_CLASS_ID_DRUID] = "DRUID",
-    [BTWQUESTS_CLASS_ID_DEMONHUNTER] = "DEMONHUNTER",
-}
 
 BTWQUESTS_QUEST_TAG_GROUP = Enum.QuestTag.Group
 BTWQUESTS_QUEST_TAG_PVP = Enum.QuestTag.PvP

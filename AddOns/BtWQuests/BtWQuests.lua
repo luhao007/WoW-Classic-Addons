@@ -319,7 +319,7 @@ function BtWQuestsMixin:SelectExpansion(id, scrollTo, noHistory)
 
     local expansion = self:GetExpansion()
     if expansion and BtWQuestsDatabase:HasExpansion(expansion) then
-        self.ExpansionDropDown:SetText(BtWQuestsDatabase:GetExpansionByID(expansion));
+        self.ExpansionDropDown:SetText(BtWQuestsDatabase:GetExpansionByID(expansion):GetName());
     end
 
     if expansion == nil then
@@ -798,18 +798,31 @@ function BtWQuestsMixin:OnLoad()
 
     self:RegisterEvent("MODIFIER_STATE_CHANGED")
 
-	self.TitleText:SetText(L["BTWQUESTS_QUEST_JOURNAL"]);
-    SetPortraitToTexture(self.portrait, "Interface\\QuestFrame\\UI-QuestLog-BookIcon");
+    if self.TitleContainer then
+        self.TitleContainer.TitleText:SetText(L["BTWQUESTS_QUEST_JOURNAL"]);
+    else
+        self.TitleText:SetText(L["BTWQUESTS_QUEST_JOURNAL"]);
+    end
+    SetPortraitToTexture(self.portrait or self.PortraitContainer.portrait, "Interface\\QuestFrame\\UI-QuestLog-BookIcon");
 
     if self.NineSlice then
-        -- Updated the NineSlice frame for our extra buttons
-        self.NineSlice.TopLeftCorner:SetTexture("Interface\\Addons\\BtWQuests\\UI-Frame-Metal")
-        self.NineSlice.TopLeftCorner:SetWidth(196)
-        self.NineSlice.TopLeftCorner:SetTexCoord(0, 0.3828125, 0, 0.2578125)
+        if select(4, GetBuildInfo()) >= 100000 then
+            -- Temp fix for Dragonflight changes
+            self.NavBack:SetFrameLevel(510)
+            self.NavForward:SetFrameLevel(510)
+            self.NavHere:SetFrameLevel(510)
+            self.OptionsButton:SetFrameLevel(510)
+            self.CharacterDropDown:SetFrameLevel(510)
+        else
+            -- Updated the NineSlice frame for our extra buttons
+            self.NineSlice.TopLeftCorner:SetTexture("Interface\\Addons\\BtWQuests\\UI-Frame-Metal")
+            self.NineSlice.TopLeftCorner:SetWidth(196)
+            self.NineSlice.TopLeftCorner:SetTexCoord(0, 0.3828125, 0, 0.2578125)
 
-        self.NineSlice.TopRightCorner:SetTexture("Interface\\Addons\\BtWQuests\\UI-Frame-Metal")
-        self.NineSlice.TopRightCorner:SetTexCoord(0, 0.51171875, 0.2578125, 0.515625)
-        self.NineSlice.TopRightCorner:SetWidth(262)
+            self.NineSlice.TopRightCorner:SetTexture("Interface\\Addons\\BtWQuests\\UI-Frame-Metal")
+            self.NineSlice.TopRightCorner:SetTexCoord(0, 0.51171875, 0.2578125, 0.515625)
+            self.NineSlice.TopRightCorner:SetWidth(262)
+        end
     end
 
     self.categoryItemPool = CreateFramePoolCollection()--CreateFramePool("BUTTON", self.Category.Scroll.Child, "BtWQuestsCategoryButtonTemplate");

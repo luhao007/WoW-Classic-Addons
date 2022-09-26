@@ -1808,6 +1808,7 @@ function private.FSMCreate()
 		defaultBuyQuantity = 0,
 		numBought = 0,
 		lastBuyQuantity = 0,
+		lastBuyIndex = nil,
 		numBid = 0,
 		numConfirmed = 0,
 		searchContext = nil,
@@ -1815,16 +1816,6 @@ function private.FSMCreate()
 		pausePending = nil,
 		pendingFuture = nil,
 	}
-
-	if TSM.IsWowClassic() then
-		Event.Register("CHAT_MSG_SYSTEM", private.FSMMessageEventHandler)
-		Event.Register("UI_ERROR_MESSAGE", private.FSMMessageEventHandler)
-	else
-		Event.Register("AUCTION_HOUSE_SHOW_NOTIFICATION", private.FSMMessageEventHandler)
-		Event.Register("AUCTION_HOUSE_SHOW_FORMATTED_NOTIFICATION", private.FSMMessageEventHandler)
-		Event.Register("AUCTION_HOUSE_SHOW_ERROR", private.FSMMessageErrorEventHandler)
-		Event.Register("COMMODITY_PURCHASE_SUCCEEDED", private.FSMBuyoutSuccess)
-	end
 	Event.Register("AUCTION_HOUSE_CLOSED", function()
 		private.fsm:ProcessEvent("EV_AUCTION_HOUSE_CLOSED")
 	end)
@@ -1901,6 +1892,7 @@ function private.FSMCreate()
 				context.defaultBuyQuantity = 0
 				context.numBought = 0
 				context.lastBuyQuantity = 0
+				context.lastBuyIndex = nil
 				context.numBid = 0
 				context.numConfirmed = 0
 				if context.auctionScan then
@@ -2043,6 +2035,7 @@ function private.FSMCreate()
 				context.defaultBuyQuantity = 0
 				context.numBought = 0
 				context.lastBuyQuantity = 0
+				context.lastBuyIndex = nil
 				context.numBid = 0
 				context.numConfirmed = 0
 				local postContext = context.searchContext:GetPostContext()
@@ -2367,7 +2360,6 @@ function private.FSMCreate()
 			:AddTransition("ST_POSTING")
 			:AddTransition("ST_PLACING_BUY")
 			:AddTransition("ST_PLACING_BID")
-			:AddTransition("ST_CONFIRMING_BID_BUY")
 			:AddTransition("ST_RESULTS")
 			:AddTransition("ST_INIT")
 			:AddEventTransition("EV_AUCTION_SELECTION_CHANGED", "ST_BUYING")
@@ -2377,38 +2369,6 @@ function private.FSMCreate()
 			:AddEventTransition("EV_DO_POST", "ST_POSTING")
 			:AddEvent("EV_CONFIRMED", function(context, isBuy, quantity)
 				return isBuy and "ST_PLACING_BUY" or "ST_PLACING_BID", quantity
-			end)
-			:AddEvent("EV_MSG", function(context, msg)
-				if not context.findAuction then
-					return
-				end
-				if TSM.IsWowClassic() then
-					local _, rawLink = context.findAuction:GetLinks()
-					if msg == LE_GAME_ERR_AUCTION_DATABASE_ERROR or msg == LE_GAME_ERR_AUCTION_HIGHER_BID or msg == LE_GAME_ERR_ITEM_NOT_FOUND or msg == LE_GAME_ERR_AUCTION_BID_OWN or msg == LE_GAME_ERR_NOT_ENOUGH_MONEY or msg == LE_GAME_ERR_ITEM_MAX_COUNT then
-						-- failed to buy an auction
-						return "ST_CONFIRMING_BID_BUY", false
-					elseif msg == format(ERR_AUCTION_WON_S, ItemInfo.GetName(rawLink)) or (context.numBid > 0 and msg == ERR_AUCTION_BID_PLACED) then
-						-- bought an auction
-						return "ST_CONFIRMING_BID_BUY", true
-					end
-				else
-					if msg == Enum.AuctionHouseNotification.AuctionWon or (context.numBid > 0 and msg == Enum.AuctionHouseNotification.BidPlaced) then
-						-- bought an auction
-						return "ST_CONFIRMING_BID_BUY", true
-					end
-				end
-			end)
-			:AddEvent("EV_ERROR_MSG", function(context, msg)
-				if not context.findAuction then
-					return
-				end
-				return "ST_CONFIRMING_BID_BUY", false
-			end)
-			:AddEvent("EV_BUYOUT_SUCCESS", function(context)
-				if not context.findAuction then
-					return
-				end
-				return "ST_CONFIRMING_BID_BUY", true
 			end)
 			:AddEvent("EV_POST_BUTTON_CLICK", function(context)
 				wipe(context.postContextTemp)
@@ -2504,29 +2464,43 @@ function private.FSMCreate()
 				assert(not TSM.IsWowClassic() or index)
 				-- buy the auction
 				local buyout = context.findAuction:GetBuyouts()
-				local result = context.auctionScan:PlaceBidOrBuyout(index, buyout, context.findAuction, quantity)
-				if result then
-					MailTracking.RecordAuctionBuyout(ItemString.ToLevel(context.findAuction:GetItemString()), quantity)
-					context.numBought = context.numBought + (TSM.IsWowClassic() and 1 or quantity)
+				local future = context.auctionScan:PlaceBidOrBuyout(index, buyout, context.findAuction, quantity)
+				if future then
+					future:SetScript("OnDone", private.FSMFutureOnDone)
+					assert(not context.pendingFuture)
+					context.pendingFuture = future
 					context.lastBuyQuantity = quantity
+					context.lastBuyIndex = index
+					context.numBought = context.numBought + (TSM.IsWowClassic() and 1 or quantity)
+					UpdateScanFrame(context)
 				else
 					local _, rawLink = context.findAuction:GetLinks()
 					Log.PrintfUser(L["Failed to buy auction of %s."], rawLink)
+					return "ST_BUYING"
 				end
-				return "ST_BUYING"
 			end)
 			:AddTransition("ST_BUYING")
-		)
-		:AddState(FSM.NewState("ST_CONFIRMING_BID_BUY")
-			:SetOnEnter(function(context, success)
-				if not success then
+			:AddTransition("ST_INIT")
+			:AddEvent("EV_FUTURE_DONE", function(context)
+				assert(context.pendingFuture)
+				local result = context.pendingFuture:GetValue()
+				context.pendingFuture = nil
+				if result then
+					MailTracking.RecordAuctionBuyout(ItemString.ToLevel(context.findAuction:GetItemString()), context.lastBuyQuantity)
+					context.numConfirmed = context.numConfirmed + (TSM.IsWowClassic() and 1 or context.lastBuyQuantity)
+					return "ST_BUYING", context.lastBuyQuantity
+				else
 					local _, rawLink = context.findAuction:GetLinks()
 					Log.PrintfUser(L["Failed to buy auction of %s."], rawLink)
+					context.numBought = context.numBought - (TSM.IsWowClassic() and 1 or context.lastBuyQuantity)
+					if TSM.IsWowClassic() then
+						tinsert(context.findResult, context.lastBuyIndex)
+					end
+					context.lastBuyQuantity = nil
+					context.lastBuyIndex = nil
+					return "ST_BUYING"
 				end
-				context.numConfirmed = context.numConfirmed + (TSM.IsWowClassic() and 1 or context.lastBuyQuantity)
-				return "ST_BUYING", success and context.lastBuyQuantity or nil
 			end)
-			:AddTransition("ST_BUYING")
 		)
 		:AddState(FSM.NewState("ST_PLACING_BID")
 			:SetOnEnter(function(context, quantity)
@@ -2535,18 +2509,43 @@ function private.FSMCreate()
 				-- bid on the auction
 				local result, future = context.auctionScan:PrepareForBidOrBuyout(index, context.findAuction, false, quantity)
 				assert(not future)
-				result = result and context.auctionScan:PlaceBidOrBuyout(index, context.findAuction:GetRequiredBid(), context.findAuction, quantity)
-				if result then
-					MailTracking.RecordAuctionBuyout(ItemString.ToLevel(context.findAuction:GetItemString()), quantity)
-					context.numBid = context.numBid + (TSM.IsWowClassic() and 1 or quantity)
+				future = result and context.auctionScan:PlaceBidOrBuyout(index, context.findAuction:GetRequiredBid(), context.findAuction, quantity)
+				if future then
+					future:SetScript("OnDone", private.FSMFutureOnDone)
+					assert(not context.pendingFuture)
+					context.pendingFuture = future
 					context.lastBuyQuantity = quantity
+					context.lastBuyIndex = index
+					context.numBid = context.numBid + (TSM.IsWowClassic() and 1 or quantity)
+					UpdateScanFrame(context)
 				else
 					local _, rawLink = context.findAuction:GetLinks()
 					Log.PrintfUser(L["Failed to bid on auction of %s."], rawLink)
+					return "ST_BUYING"
 				end
-				return "ST_BUYING"
 			end)
 			:AddTransition("ST_BUYING")
+			:AddTransition("ST_INIT")
+			:AddEvent("EV_FUTURE_DONE", function(context)
+				assert(context.pendingFuture)
+				local result = context.pendingFuture:GetValue()
+				context.pendingFuture = nil
+				if result then
+					MailTracking.RecordAuctionBuyout(ItemString.ToLevel(context.findAuction:GetItemString()), context.lastBuyQuantity)
+					context.numConfirmed = context.numConfirmed + (TSM.IsWowClassic() and 1 or context.lastBuyQuantity)
+					return "ST_BUYING", context.lastBuyQuantity
+				else
+					local _, rawLink = context.findAuction:GetLinks()
+					Log.PrintfUser(L["Failed to buy auction of %s."], rawLink)
+					context.numBid = context.numBid - (TSM.IsWowClassic() and 1 or context.lastBuyQuantity)
+					if TSM.IsWowClassic() then
+						tinsert(context.findResult, context.lastBuyIndex)
+					end
+					context.lastBuyQuantity = nil
+					context.lastBuyIndex = nil
+					return "ST_BUYING"
+				end
+			end)
 		)
 		:AddState(FSM.NewState("ST_CANCELING")
 			:SetOnEnter(function(context)
@@ -2647,22 +2646,6 @@ function private.FSMCreate()
 		:AddDefaultEventTransition("EV_AUCTION_HOUSE_CLOSED", "ST_INIT")
 		:AddDefaultEventTransition("EV_SCAN_BACK_BUTTON_CLICKED", "ST_INIT")
 		:Init("ST_INIT", fsmContext)
-end
-
-function private.FSMMessageEventHandler(_, msg)
-	private.fsm:SetLoggingEnabled(false)
-	private.fsm:ProcessEvent("EV_MSG", msg)
-	private.fsm:SetLoggingEnabled(true)
-end
-
-function private.FSMMessageErrorEventHandler(_, msg)
-	private.fsm:SetLoggingEnabled(false)
-	private.fsm:ProcessEvent("EV_ERROR_MSG", msg)
-	private.fsm:SetLoggingEnabled(true)
-end
-
-function private.FSMBuyoutSuccess()
-	private.fsm:ProcessEvent("EV_BUYOUT_SUCCESS")
 end
 
 function private.FSMAuctionScanOnProgressUpdate(auctionScan)

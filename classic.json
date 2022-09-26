@@ -624,10 +624,10 @@
     "name": "BtWQuests",
     "description": "A quest journal that shows your progress within quest chains",
     "url": "https://www.curseforge.com/wow/addons/btw-quests",
-    "download_url": "https://edge.forgecdn.net/files/3968/711/BtWQuests-v2.17.0-wrath.zip",
-    "date_published": "2022-09-04T19:28:54.410000+00:00",
-    "version": "v2.17.0-wrath",
-    "changelog_url": "https://api.curseforge.com/v1/mods/280369/files/3968711/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4007/777/BtWQuests-v2.21.0-wrath.zip",
+    "date_published": "2022-09-25T23:09:49.840000+00:00",
+    "version": "v2.21.0-wrath",
+    "changelog_url": "https://api.curseforge.com/v1/mods/280369/files/4007777/changelog",
     "options": {
       "strategy": "default"
     },
@@ -637,10 +637,17 @@
       },
       {
         "name": "BtWQuestsTheBurningCrusade"
+      },
+      {
+        "name": "BtWQuestsWrathOfTheLichKing"
       }
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v2.21.0-wrath",
+        "install_time": "2022-09-26T11:35:49+00:00"
+      },
       {
         "version": "v2.17.0-wrath",
         "install_time": "2022-09-05T11:09:42+00:00"
@@ -844,6 +851,33 @@
       {
         "version": "2.7.7.1-classic",
         "install_time": "2020-11-03T05:33:04+00:00"
+      }
+    ]
+  },
+  {
+    "source": "curse",
+    "id": "500433",
+    "slug": "fishing-buddy-crusade",
+    "name": "Fishing Buddy (Classic)",
+    "description": "Fishing support for WoW Burning Crusade and WoTLK",
+    "url": "https://www.curseforge.com/wow/addons/fishing-buddy-crusade",
+    "download_url": "https://edge.forgecdn.net/files/4005/184/FishingBuddy-Classic-0.8.zip",
+    "date_published": "2022-09-24T19:35:52.753000+00:00",
+    "version": "0.8",
+    "changelog_url": "https://api.curseforge.com/v1/mods/500433/files/4005184/changelog",
+    "options": {
+      "strategy": "default"
+    },
+    "folders": [
+      {
+        "name": "FishingBuddy"
+      }
+    ],
+    "deps": [],
+    "logged_versions": [
+      {
+        "version": "0.8",
+        "install_time": "2022-09-25T14:40:31+00:00"
       }
     ]
   },
@@ -1855,10 +1889,10 @@
     "name": "Pawn",
     "description": "Pawn helps you compare items and find upgrades.",
     "url": "https://www.curseforge.com/wow/addons/pawn",
-    "download_url": "https://edge.forgecdn.net/files/3995/978/Pawn-2.6.7-Wrath.zip",
-    "date_published": "2022-09-19T00:24:45.147000+00:00",
-    "version": "2.6.7 (Wrath)",
-    "changelog_url": "https://api.curseforge.com/v1/mods/4646/files/3995978/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4007/679/Pawn-2.7-Wrath.zip",
+    "date_published": "2022-09-25T22:01:47.450000+00:00",
+    "version": "2.7 (Wrath)",
+    "changelog_url": "https://api.curseforge.com/v1/mods/4646/files/4007679/changelog",
     "options": {
       "strategy": "default"
     },
@@ -1869,6 +1903,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "2.7 (Wrath)",
+        "install_time": "2022-09-26T11:35:49+00:00"
+      },
       {
         "version": "2.6.7 (Wrath)",
         "install_time": "2022-09-19T07:18:39+00:00"
@@ -1904,10 +1942,6 @@
       {
         "version": "2.5.30 (Burning Crusade)",
         "install_time": "2021-11-17T11:12:48+00:00"
-      },
-      {
-        "version": "2.5.21 (Burning Crusade)",
-        "install_time": "2021-07-17T04:03:36+00:00"
       }
     ]
   },
@@ -2623,6 +2657,33 @@
     ]
   },
   {
+    "source": "github",
+    "id": "GoldpawsStuff/Bagnon_ItemInfo",
+    "slug": "goldpawsstuff/bagnon_iteminfo",
+    "name": "Bagnon_ItemInfo",
+    "description": "Adds item levels, bind status, and garbage desaturation to bagnon all in one, with less overhead than using multiple addons.",
+    "url": "https://github.com/GoldpawsStuff/Bagnon_ItemInfo",
+    "download_url": "https://github.com/GoldpawsStuff/Bagnon_ItemInfo/releases/download/1.0.35-Release/Bagnon_ItemInfo-1.0.35-Release-wrath.zip",
+    "date_published": "2022-08-17T12:32:08+00:00",
+    "version": "1.0.35-Release",
+    "changelog_url": "data:,%23%20Bagnon_ItemInfo%20Change%20Log%0AAll%20notable%20changes%20to%20this%20project%20will%20be%20documented%20in%20this%20file.%0A%0AThe%20format%20is%20based%20on%20%5BKeep%20a%20Changelog%5D%28http%3A//keepachangelog.com/%29%0Aand%20this%20project%20adheres%20to%20%5BSemantic%20Versioning%5D%28http%3A//semver.org/%29.%0A%0A%23%23%20%5B1.0.35-Release%5D%202022-08-17%0A-%20Bump%20to%20client%20patch%209.2.7.%0A%0A%23%23%20%5B1.0.34-Release%5D%202022-07-29%0A%23%23%23%20Fixed%0A-%20Improved%20the%20client%20detection%20code.%0A%0A%23%23%20%5B1.0.33-Release%5D%202022-07-28%0A%23%23%23%20Fixed%0A-%20Fixed%20an%20issue%20in%20WotLK%20Classic%20that%20sometimes%20could%20cause%20already%20bound%20items%20to%20still%20show%20the%20bind%20status.%0A%0A%23%23%20%5B1.0.32-Release%5D%202022-07-21%0A-%20Add%20support%20for%20WotLK%20Classic%20beta.%0A%0A%23%23%20%5B1.0.31-Release%5D%202022-07-09%0A-%20Bump%20for%20Classic%20Era%20client%20patch%201.14.3.%0A%0A%23%23%20%5B1.0.30-Release%5D%202022-06-14%0A%23%23%23%20Changed%0A-%20Some%20untested%20performance%20updates.%0A%0A%23%23%20%5B1.0.29-Release%5D%202022-05-31%0A-%20Bump%20toc%20to%20WoW%20client%20patch%209.2.5.%0A%0A%23%23%20%5B1.0.28-Release%5D%202022-04-07%0A-%20Bump%20for%20BCC%20client%20patch%202.5.4.%0A%0A%23%23%20%5B1.0.27-Release%5D%202022-02-26%0A%23%23%23%20Fixed%0A-%20Reintroduce%20tooltip%20scanning%20for%20soulbound%20status%20to%20fix%20itembind%20problems%20in%20the%20classics.%20%5B%236%5D%28https%3A//github.com/GoldpawsStuff/Bagnon_BoE/issues/6%29%0A%0A%23%23%20%5B1.0.26-Release%5D%202022-02-23%0A-%20ToC%20bump.%0A%0A%23%23%20%5B1.0.25-Release%5D%202022-02-16%0A-%20ToC%20bumps%20and%20license%20update.%0A%0A%23%23%20%5B1.0.24-Release%5D%202022-02-06%0A%23%23%23%20Fixed%0A-%20Fixed%20an%20issue%20where%20bind%20status%20would%20not%20be%20properly%20updated%20when%20equipping%20items.%0A%0A%23%23%20%5B1.0.23-Release%5D%202021-12-13%0A%23%23%23%20Fixed%0A-%20Fixed%20an%20issue%20where%20we%20attempted%20to%20check%20for%20rarity%20color%20before%20checking%20if%20we%20had%20a%20valid%20rarity%20to%20begin%20with.%0A%0A%23%23%20%5B1.0.22-Release%5D%202021-12-12%0A-%20Added%20BCC%20and%20Classic%20Era%20versions%20of%20the%20addon.%0A%0A%23%23%23%20Added%0A-%20Added%20commands%20to%20toggle%20between%20rarity%20colored%20text%2C%20and%20a%20much%20clearer%20white.%0A%0A%23%23%23%20Changed%0A-%20Added%20a%20message%20when%20the%20presence%20of%20the%20addon%20Bagnon%20ItemInfo%20causes%20this%20one%20to%20be%20auto-disabled.%0A%0A%23%23%20%5B1.0.21-Release%5D%202021-11-03%0A-%20Bump%20toc%20for%209.1.5.%0A%0A%23%23%20%5B1.0.20-Release%5D%202021-06-29%0A-%20Bump%20toc%20for%209.1.0.%0A%0A%23%23%20%5B1.0.19-Release%5D%202021-04-05%0A-%20Spring%20cleaning.%0A%0A%23%23%20%5B1.0.18-Release%5D%202021-03-10%0A-%20Bump%20to%20WoW%20client%20patch%209.0.5.%0A%0A%23%23%20%5B1.0.17-Release%5D%202020-11-18%0A-%20Bump%20to%20WoW%20Client%20patch%209.0.2.%0A%0A%23%23%20%5B1.0.16-Release%5D%202020-10-16%0A-%20Bump%20to%20WoW%20Client%20patch%209.0.1.%0A%0A%23%23%20%5B1.0.15-Release%5D%202020-09-25%0A-%20Cache%20fixes%20and%20Bagnon%209.x%20compatibility.%0A%0A%23%23%20%5B1.0.14-Release%5D%202020-08-07%0A%23%23%23%20Changed%0A-%20ToC%20updates.%0A%0A%23%23%20%5B1.0.13-Release%5D%202020-01-13%0A%23%23%23%20Fixed%0A-%20Fixed%20for%20Bagnon%208.2.29.%20Junk%20icons%20are%20working%20correctly%20now.%0A%0A%23%23%20%5B1.0.12-Release%5D%202020-01-09%0A%23%23%23%20Fixed%0A-%20Fixed%20for%20Bagnon%208.2.27%2C%20December%2026th%202019.%0A%0A%23%23%20%5B1.0.11-Release%5D%202019-10-08%0A-%20ToC%20updates.%0A%0A%23%23%20%5B1.0.10-Release%5D%202019-10-08%0A-%20Bump%20to%20WoW%20Client%20patch%208.2.5.%0A-%20Fix%20toc%20links.%0A%0A%23%23%20%5B1.0.9-Release%5D%202019-07-02%0A%23%23%23%20Changed%0A-%20Updated%20for%208.2.0.%0A%0A%23%23%20%5B1.0.8-Release%5D%202019-04-29%0A%23%23%23%20Fixed%0A-%20Changed%20how%20bag%20slot%20count%20is%20captured%20to%20be%20compatible%20with%20deDE.%0A%0A%23%23%20%5B1.0.7-Release%5D%202019-03-29%0A%23%23%23%20Changed%0A-%20Updated%20toc%20display%20name%20to%20be%20in%20line%20with%20the%20main%20bagnon%20addon.%0A-%20Updated%20description%20links%20and%20team%20name.%0A%0A%23%23%20%5B1.0.6-Release%5D%202019-03-01%0A%23%23%23%20Added%0A-%20Added%20chat%20commands%20to%20toggle%20the%20individual%20elements%2C%20since%20some%20don%27t%20want%20all%20four%2C%20but%20maybe%20just%20two%20or%20three.%0A%0A%23%23%20%5B1.0.5-Release%5D%202019-02-28%0A%23%23%23%20Fixed%0A-%20Switched%20to%20tooltip%20scanning%20using%20global%20strings%20to%20avoid%20false%20positives%20on%20uncollected%20appearances.%0A%0A%23%23%20%5B1.0.4-Release%5D%202019-02-28%0A%23%23%23%20Fixed%0A-%20Fixed%20an%20issue%20that%20sometimes%20could%20cause%20an%20%22ambigous%20syntax%22%20error.%0A%0A%23%23%20%5B1.0.3-Release%5D%202019-02-28%0A%23%23%23%20Added%0A-%20Added%20a%20purple%20eye%20to%20indicate%20items%20with%20uncollected%20transmog%20appearances.%0A%0A%23%23%20%5B1.0.2-Release%5D%202019-02-27%0A%23%23%23%20Fixed%0A-%20Item%20background%20scanning%20should%20once%20more%20update%20properly%20when%20you%20swap%20items%20in%20a%20bag%20slot%2C%20and%20not%20show%20the%20item%20level%20and%20bind%20status%20of%20the%20item%20that%20was%20previously%20there.%0A%0A%23%23%20%5B1.0.1-Release%5D%202019-02-27%0A%23%23%23%20Fixed%0A-%20Fixed%20bug%20when%20showing%20BoE/BoU%20items.%0A%0A%23%23%20%5B1.0.0-Release%5D%202019-02-27%0A-%20Initial%20commit.%0A",
+    "options": {
+      "strategy": "default"
+    },
+    "folders": [
+      {
+        "name": "Bagnon_ItemInfo"
+      }
+    ],
+    "deps": [],
+    "logged_versions": [
+      {
+        "version": "1.0.35-Release",
+        "install_time": "2022-09-25T14:41:05+00:00"
+      }
+    ]
+  },
+  {
     "source": "instawow",
     "id": "1",
     "slug": "weakauras-companion-autoupdate",
@@ -2741,6 +2802,45 @@
   },
   {
     "source": "wowi",
+    "id": "4459",
+    "slug": "4459-bagnon",
+    "name": "Bagnon",
+    "description": "[URL=\"https://www.patreon.com/user?u=9248226\"][IMG]http://jaliborc.com/images/external/patreon.png[/IMG][/URL] [URL=\"https://github.com/tullamods/Bagnon/issues\"][IMG]http://jaliborc.com/images/external/github_issue.png[/IMG][/URL] [URL=\"https://github.com/tullamods/Wildpants/wiki\"][IMG]http://jaliborc.com/images/external/github_wiki.png[/IMG][/URL]\r\n\r\n[COLOR=\"Orange\"][SIZE=\"3\"]Overview[/SIZE][/COLOR]\r\nBagnon is a highly customizable bag replacement addon designed to help the player find items as quickly and as easily as possible. Beyond the basic all-bags-in-one functionality, Bagnon provides features such as:\r\n[LIST]\r\n[*]Ability to view the items of any character, from anywhere  [SIZE=\"1\"][COLOR=\"silver\"]*[/COLOR][/SIZE]\r\n[*]Inventory, bank, vault and guild bank support\r\n[*]Coloring based on item quality and more\r\n[*]Intelligent item search engine\r\n[*]Tooltip item counts\r\n[*]Item rulesets\r\n[*]Databroker support\r\n[/LIST]\r\n[SIZE=\"1\"][I][COLOR=\"Silver\"]* - Requires the player to login and visit the bank once at each character[/COLOR][/I][/SIZE]\r\n\r\n[COLOR=\"Orange\"][SIZE=\"3\"]Plugins[/SIZE][/COLOR]\r\nA wide assortment of plugins has been made by people in the community:\r\n[LIST]\r\n[*][URL=\"https://wow.curseforge.com/projects/bagnon-currencies\"]Bagnon Currencies[/URL] - Allows you to track currencies on any window\r\n[*][URL=\"https://wow.curseforge.com/projects/bagnon-scrap\"]Bagnon Scrap[/URL] - Colors your Scrap on all windows\r\n[*][URL=\"https://wow.curseforge.com/projects/bagnon-facade\"]Bagnon Facade[/URL] - Allows windows to be skinned with Masque\r\n[*][URL=\"https://github.com/tullamods/Wildpants/wiki/Plugins\"]And many more...[/URL]\r\n[/LIST]\r\n\r\n[COLOR=\"Orange\"][SIZE=\"3\"]Notes[/SIZE][/COLOR]\r\n[LIST]\r\n[*]Please submit bugs and feature requests at [URL=\"http://github.com/tullamods/Bagnon/issues\"]GitHub[/URL].\r\n[*]Are you a developer? Bagnon provides a [URL=\"https://github.com/tullamods/Wildpants/wiki\"]rich API[/URL] for developing plugins and extra rulesets!\r\n[*]Please consider supporting Bagnon by becoming a [URL=\"https://www.patreon.com/user?u=9248226\"]patron [/URL]or submitting a [URL=\"https://www.paypal.com/cgi-bin/webscr?hosted_button_id=JVA9GGJJ75K3J&item_name=Bagnon+(from+WoWInterface)&cmd=_s-xclick\"]donation[/URL].\r\n[*]Visit me at [URL=\"http://www.jaliborc.com/\"]jaliborc.com[/URL].\r\n[/LIST]",
+    "url": "https://www.wowinterface.com/downloads/info4459-Bagnon.html",
+    "download_url": "https://cdn.wowinterface.com/downloads/getfile.php?id=4459&d=1553216401&minion",
+    "date_published": "2019-03-22T01:00:01+00:00",
+    "version": "8.1.9",
+    "changelog_url": "data:,None",
+    "options": {
+      "strategy": "default"
+    },
+    "folders": [
+      {
+        "name": "BagBrother"
+      },
+      {
+        "name": "Bagnon"
+      },
+      {
+        "name": "Bagnon_Config"
+      },
+      {
+        "name": "Bagnon_GuildBank"
+      },
+      {
+        "name": "Bagnon_VoidStorage"
+      }
+    ],
+    "deps": [],
+    "logged_versions": [
+      {
+        "version": "8.1.9",
+        "install_time": "2022-09-25T14:41:05+00:00"
+      }
+    ]
+  },
+  {
+    "source": "wowi",
     "id": "24083",
     "slug": "24083-critsound",
     "name": "CritSound",
@@ -2766,6 +2866,54 @@
       {
         "version": "2.5.4",
         "install_time": "2020-11-03T05:33:04+00:00"
+      }
+    ]
+  },
+  {
+    "source": "wowi",
+    "id": "21522",
+    "slug": "21522-deadly-boss-mods-wrath-of-the-lich-king-mods",
+    "name": "Deadly Boss Mods - Wrath of the Lich King mods",
+    "description": "DBM boss mods for all bosses in Wrath of the Lich King.",
+    "url": "https://www.wowinterface.com/downloads/info21522-DeadlyBossMods-WrathoftheLichKingmods.html",
+    "download_url": "https://cdn.wowinterface.com/downloads/getfile.php?id=21522&d=1660666948&minion",
+    "date_published": "2022-08-16T16:22:28+00:00",
+    "version": "r308",
+    "changelog_url": "data:,%5Bsize%3D5%5D%3CDBM%3E%20Icecrown%20Citadel%5B/size%5D%0D%0A%5Bsize%3D4%5D%5Burl%3Dhttps%3A//github.com/DeadlyBossMods/DBM-WotLK/tree/r308%5Dr308%5B/url%5D%20%282022-08-16%29%5B/size%5D%0D%0A%5Burl%3Dhttps%3A//github.com/DeadlyBossMods/DBM-WotLK/compare/r307...r308%5DFull%20Changelog%5B/url%5D%20%5Burl%3Dhttps%3A//github.com/DeadlyBossMods/DBM-WotLK/releases%5DPrevious%20Releases%5B/url%5D%0D%0A%5Blist%5D%0D%0A%5B%2A%5DTOC%20bumps%0D%0A%5B%2A%5Dadjust%20KT%20active%20timer%0D%0A%5B%2A%5DFix%20sapheron%20GTFO%0D%0A%5B%2A%5Dkill%20off%20roar%20completely%2C%20it%27s%20not%20in%20wrath%20naxx.%0D%0A%5B%2A%5Dslighty%20adjust%20spore%20timers%0D%0A%5B%2A%5DAdd%20polarity%20shift%20yell%20to%20thaddius%0D%0A%5B%2A%5Dkill%20gluths%20fear%20timer%2C%20it%27s%20not%20useful%0D%0A%5B%2A%5DPrevent%20shadron%2C%20Tenebron%2C%20and%20Vesperon%20from%20engaging%20if%20sartharian%20is%20already%20engaged%0D%0A%5B%2A%5DTry%20drakes%20a%20diff%20way%0D%0A%5B%2A%5Dalso%20check%20string%20and%20Id%20for%20good%20measure%2C%20cover%20all%20bases.%20Classic%20likes%20using%20old%20or%20different%20tech%0D%0A%5B%2A%5DFix%20thaddius%20again%2C%20this%20time%20considering%20that%20classic%20decided%20to%20put%20count%20somewhere%20else%20instead%20of%20using%20retail%20placement.%20Same%20issue%20as%20black%20temple%20%28which%20is%20handled%20by%20core%20infoframe%29%0D%0A%5B%2A%5DRemove%20the%20bad%20classic%20synced%20code%20for%20a%20mechanic%20that%20doesn%27t%20exist%20in%20wrath%20version.%20restore%20original%20wrath%20code%0D%0A%5B%2A%5DActually%20thaddius%20still%20won%27t%20work%20that%20way%2C%20have%20to%20just%20not%20use%20cores%20wrapper%20for%20this%0D%0A%5B%2A%5DFixed%20bug%20taht%20caused%20sarth%20drake%20detection%20not%20to%20work%20with%20modern%20unitdebuff%20checking%20in%20core%0D%0A%20%20%20%20Fixed%20bug%20taht%20caused%20thaddius%20charge%20detection%20not%20to%20work%20because%20the%20code%20wasn%27t%20using%20up%20to%20date%20UnitDebuff%20code%20%28that%20requires%20spell%20name%20or%20Id%2C%20not%20index%29%0D%0A%20%20%20%20Remove%20decimate%20timer%20on%20gluth%0D%0A%20%20%20%20Fixed%20fissure%20warning%20on%20KT%20to%20actually%20have%20target%20name%0D%0A%5B%2A%5DFix%20missing%20target%20scan%20object%20on%20anub%20when%20features%20were%20synced%20over%20from%20classic%0D%0A%5B%2A%5DRevert%20%22Remove%20unnessesary%20check.%20it%27s%20an%20oncombatstart%20function%2C%20which%20means%20it%20only%20fires%20on%20boss%20engage%2C%20which%20is%20only%20possible%20in%20right%20zone%22%0D%0A%5B%2A%5DRemove%20unnessesary%20check.%20it%27s%20an%20oncombatstart%20function%2C%20which%20means%20it%20only%20fires%20on%20boss%20engage%2C%20which%20is%20only%20possible%20in%20right%20zone%0D%0A%5B%2A%5DSet%20wrath%20classic%20stats%20type%20on%20ulduar%0D%0A%5B%2A%5DTrigger%20WOTLKC%20builds%20on%20commit%0D%0A%5B%2A%5DFixed%20a%20bug%20where%20malygos%20syncs%20would%20be%20recieved%20by%20players%20in%20group%20%28but%20not%20in%20raid%29%0D%0A%20%20%20%20Updated%20Malygos%2C%20Noth%2C%20and%20Faerlina%20mods%20to%20account%20for%20fact%20boss%20unitIds%20don%27t%20exist%20in%20wrath%20classic%0D%0A%20%20%20%20Fixed%20a%20bug%20on%20Faerlina%20where%20frenzy%20message%20would%20show%20twice%0D%0A%5B%2A%5DUniforn%20tocs%20to%20all%20use%20same%20format%20instead%20of%20some%20being%20one%20way%20and%20some%20being%20another.%0D%0A%5B%2A%5DSupport%20wrath%20interfaces%0D%0A%5B%2A%5Dfixed%20bad%20option%20spellid%0D%0A%5B%2A%5DFixed%20bad%20option%20default%20on%20Sartharion%0D%0A%20%20%20%20Fixed%20bad%20spell%20grouping%20on%20Halion%0D%0A%20%20%20%20Updated%20some%20objects%20in%20Vault%20of%20Archivon%20to%20use%20latest%20objects%0D%0A%20%20%20%20Fixed%20some%20groupings%20in%20Vault%20of%20Archavon%0D%0A%5B%2A%5Dfix%20tab%20spacing%20from%20some%20code%20pulled%20out%20of%20archive%0D%0A%5B%2A%5DSignificnt%20pass%20on%20Ulduar%20Resolving%20following%3A%0D%0A%20%20%20%20%20-%20Fixed%20several%20spells%20not%20grouped%20up%20correctly%0D%0A%20%20%20%20%20-%20Fixed%20several%20spells%20having%20wrong%20spellid%20assigned%20to%20them%20%28messing%20up%20timers%2C%20alerts%20and%20option%20text%29%0D%0A%20%20%20%20%20-%20Tweaked%20some%20No%20Filter%20rules%20for%20some%20target%20warnings%0D%0A%20%20%20%20%20-%20Re-introduced%2010%20man%20timers%20for%20certain%20encounters%20on%20classic%20difficulty%20that%20have%20different%20timings%20versus%20retail%20%28which%20uses%2025%20man%20timers%20across%20the%20board%29%0D%0A%20%20%20%20%20-%20Rolled%20achievement%20timer%20options%20back%20to%20original%20Ids%20when%20mods%20are%20not%20loading%20on%20retail%0D%0A%20%20%20%20%20-%20Made%20Options%20for%20Iron%20council%20look%20neater%0D%0A%20%20%20%20%20-%20Fixed%20bug%20where%20combat%20detection%20on%20mimiron%20was%20busted%20do%20to%20bad%20overwrite%20of%20RegisterCombat%0D%0A%20%20%20%20%20-%20Added%20distance%20filtering%20to%20Thorim%20using%20modern%20prototype%20so%20that%20alerts%20for%20tunnel%20or%20arena%20group%20aren%27t%20shown%20to%20the%20alternate%20group%0D%0A%5B%2A%5DFix%20%2316%0D%0A%5B%2A%5DSecond%20ToC%20pass%2C%20clarifying%20some%20option%20text%20and%20improving%20group%20by%20spell%20slightly%0D%0A%5B%2A%5DAnother%20pass%20on%20ICC%20with%20improvement%20to%20option%20groupings%20and%20text%20descriptions%0D%0A%5B%2A%5Dupdate%20lua%20check%20to%20make%20wrath%20happy%0D%0A%5B%2A%5DClassic%20wrath%20Naxx%20bugfixes/improvements%0D%0A%5B%2A%5Dminor%20code%20tweaks%20to%20naxx%20and%20malygos%0D%0A%5B%2A%5Dmissed%20a%20line%20deletion%0D%0A%5B%2A%5DICC%20Update%0D%0A%20%20%20%20%20-%20Modernized%20a%20lot%20of%20code%20and%20api%20usage%0D%0A%20%20%20%20%20-%20Fixed%20a%20few%20bugs%20spotted%0D%0A%20%20%20%20%20-%20Updated%20several%20things%20to%20use%20more%20modern%20features%0D%0A%20%20%20%20%20-%20Changed%20several%20icons%20used%20to%20prefer%20lower%20index%20over%20higher%20index.%20Modern%20mods%20favor%20lower%20index%20so%20skull%20and%20X%20aren%27t%20used%20if%20they%20don%27t%20have%20to%20be%20%28thus%20allowing%20raid%20leaders%20to%20actually%20use%20them%20for%20marking%20kill%20targets%29.%20legacy%20mods%20tended%20to%20favor%20using%20those%20icons%20and%20it%20just%20doesn%27t%20align%20with%20current%20mod%20design.%0D%0A%20%20%20%20%20-%20Changed%20a%20few%20target%20warnings%20to%20be%20non%20filtered%20target%20warnings%20if%20warning%20was%20deemed%20important%20and%20if%20it%20didn%27t%20have%20a%20special%20announce%20%28ie%20it%20was%20the%20only%20warning%20for%20that%20spell%29.%0D%0A%5B%2A%5DFix%20option%20type%0D%0A%5B%2A%5DFix%20option%0D%0A%5B%2A%5DChange%20bool%20-%3E%20icon%20option%0D%0A%5B%2A%5DMalygos%20touchup%0D%0A%5B%2A%5DDid%20a%20pass%20on%20Trial%20of%20Crusader%20raid%20modules%2C%20modernizing%20the%20code%20and%20features%0D%0A%5B%2A%5DModernize%20Obsidian%20and%20ruby%20sanctum%20mods%20with%20newest%20objects%20and%20features%20and%20code%20cleanup%0D%0A%5B%2A%5DFixed%20a%20bug%20where%20the%20sarth%20fail%20feature%20would%20attempt%20to%20announce%20to%20group%20if%20you%20were%20not%20in%20one.%0D%0A%20%20%20%20Also%20fixed%20a%20bug%20where%20it%27d%20try%20to%20announce%20to%20raid%20if%20you%20were%20in%20a%20small%20party%20insteead.%0D%0A%5B/list%5D",
+    "options": {
+      "strategy": "default"
+    },
+    "folders": [
+      {
+        "name": "DBM-ChamberOfAspects"
+      },
+      {
+        "name": "DBM-Coliseum"
+      },
+      {
+        "name": "DBM-EyeOfEternity"
+      },
+      {
+        "name": "DBM-Icecrown"
+      },
+      {
+        "name": "DBM-Naxx"
+      },
+      {
+        "name": "DBM-Onyxia"
+      },
+      {
+        "name": "DBM-Ulduar"
+      },
+      {
+        "name": "DBM-VoA"
+      }
+    ],
+    "deps": [],
+    "logged_versions": [
+      {
+        "version": "r308",
+        "install_time": "2022-09-25T14:40:28+00:00"
       }
     ]
   },
@@ -2904,36 +3052,6 @@
   },
   {
     "source": "wowi",
-    "id": "10783",
-    "slug": "10783-prat-3-0",
-    "name": "Prat 3.0",
-    "description": "Prat is a chat addon framework, and collection. It consists of 30+ modules which each add some functionality to the WoW chat interface. There is literally a module for just about everything chat related. While large in size, i have been working to keep the runtime memory usage down, and eliminate the costs of the unused modules without littering the addon directory with a slew of folders.\r\n\r\nFor the options menu, type \"/prat\", or if you have a broker host mod installed you will get a launcher icon.\r\n\r\nYou control the load behavior of modules via the module control screen. You have 3 choices \"Don't load\", \"Disabled\", and \"Enabled\"\r\n\r\nYou can report any bugs you find here:\r\n\r\nhttp://www.wowace.com/projects/prat-3-0/tickets/\r\n\r\n\r\nPrat has just about every feature you can think of, and then some. Really. When I get some more time, I'll try and put together a full list (Even I have lost count)\r\n\r\n(Thanks to Dreamsight for this partial list)\r\n\r\n    * Change arrows, buttons, mouse scroll for chat scroll, scroll speed\r\n    * you can add color per channel, color per lvl, color per class\r\n    * timestamps\r\n    * timestamp color\r\n    * whether to show timestamp (what format the timestamp should be in)\r\n    * whether to show players lvl\r\n    * you can select the option for channel \"stickys\" (last channel you used you auto use when hitting enter, that sort of thing \u2013 or last thing someone said)\r\n    * change the looks of the chat's editbox - as well as where it appears (you can even undock it and move it to where you'd like it to be)\r\n    * chat fading, fading delay\r\n    * You can change the font to a list of fonts, add an outline to it, monochrome it (if you don\u2019t mind messing with files a bit you could prolly even add other fonts to that list)\r\n    * change the chat frame/chat box appearance\r\n    * set Chat history\r\n    * set channel abbreviations\r\n    * set brackets and color(or something instead of brackets)round player/lvl\r\n    * alt invite option (press keyboard \u201calt\u201d button and click on the player\u2019s name to auto inv them)\r\n    * raid icon\r\n    * invite links\r\n    * info keeping\r\n    * url copying\r\n    * full chat copying + options (html,bbcode, plain, forum) + copy button\r\n    * allows pop-up msgs\r\n    * enables tell target /tt\r\n    * Alias options\r\n    * altnames options\r\n    * you can enable/disable all prat modules - dont have to have the ones you dont use running\r\n    * change chat sounds (incoming and outgoing as well as per channel\r\n    * acheivement info, and clickable links to say \"grats\"\r\n\r\n\r\nFor those interested:\r\n\r\nThere is an additional folder Prat-3.0_HighCPUUsageModules.\r\n\r\nNote: These features use CPU, so they have been placed in a special folder so that is 100% clear.",
-    "url": "https://www.wowinterface.com/downloads/info10783-Prat3.0.html",
-    "download_url": "https://cdn.wowinterface.com/downloads/getfile.php?id=10783&d=1641819721&minion",
-    "date_published": "2022-01-10T13:02:01+00:00",
-    "version": "3.9.2c",
-    "changelog_url": "data:,%5Bsize%3D5%5DPrat%203.0%5B/size%5D%0D%0A%5Bsize%3D4%5D%5Burl%3Dhttps%3A//github.com/sylvanaar/prat-3-0/tree/3.9.1%5D3.9.1%5B/url%5D%20%282020-10-25%29%5B/size%5D%0D%0A%5Burl%3Dhttps%3A//github.com/sylvanaar/prat-3-0/compare/3.9.0...3.9.1%5DFull%20Changelog%5B/url%5D%20%5Burl%3Dhttps%3A//github.com/sylvanaar/prat-3-0/releases%5DPrevious%20Releases%5B/url%5D%0D%0A%5Blist%5D%0D%0A%5B%2A%5DMerge%20pull%20request%20%23175%20from%20WanderingFox/master%0D%0A%20%20%20%20Adds%209.0%20Newcomer/Guide%20icons%0D%0A%5B%2A%5Dneed%20_G%20on%20constants%20too%0D%0A%5B%2A%5Duse%20_G%0D%0A%5B%2A%5Duser%20proper%20check%20for%20newcomer%20status%0D%0A%5B%2A%5Dformatting%0D%0A%5B%2A%5Daccount%20for%209.0%20guide/newcomer%20icons%0D%0A%5B%2A%5DMerge%20pull%20request%20%23167%20from%20KyrosKrane/GuildRoster-Fix%0D%0A%20%20%20%20Fix%20for%20GuildRoster%20issues%0D%0A%5B%2A%5DMerge%20pull%20request%20%23162%20from%20KyrosKrane/master%0D%0A%20%20%20%20Fixes%20to%20invite.lua%20module%20%28works%20with%20both%20classic%20and%20retail%29%0D%0A%5B%2A%5DFix%20for%20GuildRoster%20issues%0D%0A%5B%2A%5DFix%20to%20allow%20for%20Classic%20to%20continue%20working%0D%0A%5B%2A%5DChange%20InviteUnit%28%29%20to%20C_PartyInfo.InviteUnit%28%29%0D%0A%5B/list%5D",
-    "options": {
-      "strategy": "default"
-    },
-    "folders": [
-      {
-        "name": "Prat-3.0"
-      },
-      {
-        "name": "Prat-3.0_Libraries"
-      }
-    ],
-    "deps": [],
-    "logged_versions": [
-      {
-        "version": "3.9.2c",
-        "install_time": "2022-09-01T13:40:36+00:00"
-      }
-    ]
-  },
-  {
-    "source": "wowi",
     "id": "7158",
     "slug": "7158-quartz-modular-casting-bar",
     "name": "Quartz - Modular Casting Bar",
@@ -2956,6 +3074,33 @@
       {
         "version": "3.6.12",
         "install_time": "2022-09-01T16:04:31+00:00"
+      }
+    ]
+  },
+  {
+    "source": "wowi",
+    "id": "24688",
+    "slug": "24688-tinytooltip",
+    "name": "TinyTooltip",
+    "description": "-------------------------------------------------\r\n[CENTER][/CENTER][SIZE=\"6\"][COLOR=\"Magenta\"]A powerful tooltip![/COLOR][/SIZE]\r\n-------------------------------------------------\r\n\r\nuse [COLOR=\"Lime\"]/tinytooltip[/COLOR] or [COLOR=\"Lime\"]/tip[/COLOR] for configuration\r\nYou can drag each element after clicking DIY.\r\nYou can also configure the appearance of any one of the tooltip addon.",
+    "url": "https://www.wowinterface.com/downloads/info24688-TinyTooltip.html",
+    "download_url": "https://cdn.wowinterface.com/downloads/getfile.php?id=24688&d=1603892942&minion",
+    "date_published": "2020-10-28T13:49:02+00:00",
+    "version": "9.0.3",
+    "changelog_url": "data:,%3D%3D%209.0.3%3D%3D%0D%0A%2B%20For%20WOW%209.x%0D%0A%0D%0A%3D%3D%208.2.1.x%20%3D%3D%0D%0ABoth%208.2.x%20and%20Classic%0D%0A%2B%20For%20WOW%20Classic%201.13.x%20%28Change%20Interface%3A%2080200%20-%3E%2011302%29%0D%0A%0D%0A%0D%0A%3D%3D%208.2.0%20%3D%3D%0D%0AFor%20WOW8.2%0D%0A%0D%0A%3D%3D%208.0.8%20%3D%3D%0D%0AAdded%20SavedVariablesPerCharacter%0D%0AAdded%20Hidden%20Tooltip%20InCombat%0D%0AFixed%20CenterTop/Bottom%20for%20static%20position%0D%0A%0D%0A%3D%3D%208.0.2%20%3D%3D%0D%0AFixed%20Transparent%20border%20%28NamePlateTooltip%27s%20border%29.%0D%0A%0D%0A%3D%3D%208.0.1.1%20%3D%3D%0D%0AFixed%20%23Core.lua%3A189%2C%20thanks%20to%20Sixthly.%0D%0A%0D%0A%3D%3D%208.0.1%20%3D%3D%0D%0AFixed%20color%20in%20timewalking%20dungeon.",
+    "options": {
+      "strategy": "default"
+    },
+    "folders": [
+      {
+        "name": "TinyTooltip"
+      }
+    ],
+    "deps": [],
+    "logged_versions": [
+      {
+        "version": "9.0.3",
+        "install_time": "2022-09-25T14:41:05+00:00"
       }
     ]
   },
@@ -3016,6 +3161,37 @@
       {
         "version": "1.5.3.30400",
         "install_time": "2022-09-25T14:32:58+00:00"
+      }
+    ]
+  },
+  {
+    "source": "wowi",
+    "id": "24165",
+    "slug": "24165-tradeskillmaster",
+    "name": "TradeSkillMaster",
+    "description": "TradeSkillMaster (TSM) is an addon designed to help both casual gold makers as well as experienced goblins streamline their gold-making processes. TSM's features include everything from improving the native crafting and auctioning experiences to helping you gather needed materials and sniping that low-hanging auction house fruit!\r\n\r\nTradeSkillMaster offers the following features:\r\n\r\n[LIST]\r\n[*]The TSM Core window is your new home-base! Here you'll be able to create your all-important groups and operations, that will help you manage your targeted markets and lead you to success on the auction house. Not a fan of creating your own groups? You can easily import groups from the new and improved import/export tab. Lastly, manage your sales & expense data and track your incoming gold with the Ledger tab.\r\n[*]TSM's Crafting window allows you analyze what crafts will sell profitably and allows you to build a queue, speeding up the crafting process dramatically. It also includes the powerful Gathering function that will help guide you toward easily acquiring any needed materials.\r\n[*]Tasklist: The new tasklist feature helps with gathering and cooldown management; automatically alerting you about available craft-able cooldowns or materials needed.\r\n[*]The Destroying window helps efficiently mill, prospect, and disenchants items at super speed!\r\n[*]TSM's Mailing window allows you to quickly and easily empty your mailbox as well as automatically send items to other characters with the single click of a button.\r\n[*]Vendoring gives you an enhanced interface for buying from a vendor, and selling items from your bags to the vendor.\r\n[*]The BankUI helps manage your inventory by allowing you to easily move predefined groups of items between your bags, bank, and guild bank.\r\n[/LIST]\r\nWhether you're a new user or long time TSM veteran, please check out our website for more information and premium features related to TSM: https://www.tradeskillmaster.com/",
+    "url": "https://www.wowinterface.com/downloads/info24165-TradeSkillMaster.html",
+    "download_url": "https://cdn.wowinterface.com/downloads/getfile.php?id=24165&d=1664147620&minion",
+    "date_published": "2022-09-25T23:13:40+00:00",
+    "version": "v4.11.51",
+    "changelog_url": "data:,None",
+    "options": {
+      "strategy": "default"
+    },
+    "folders": [
+      {
+        "name": "TradeSkillMaster"
+      }
+    ],
+    "deps": [],
+    "logged_versions": [
+      {
+        "version": "v4.11.51",
+        "install_time": "2022-09-26T11:35:51+00:00"
+      },
+      {
+        "version": "v4.11.50",
+        "install_time": "2022-09-25T14:41:06+00:00"
       }
     ]
   },
