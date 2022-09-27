@@ -1,0 +1,20 @@
+## Interface: 30400
+## RequiredDeps: Details
+## OptionalDeps: Ace3
+## SavedVariablesPerCharacter: EncounterDetailsDB
+
+## Title: Details!: Encounter Breakdown (plugin)
+## Notes: Show detailed information about a boss encounter. Also provide damage per phase, graphic charts, easy weakauras creation.
+## Title-zhCN: |cFFFFE00A<|r|cFFC79C6E战斗|r|cFFFFE00A>|r |cFFFFFFFF伤害统计|r |cFF69CCF0插件|r |cFF22B14C首领详情|r
+## Notes-zhCN: 显示打断、驱散等数据，并且支持对于该首领一键生成WA
+
+## X-Part-Of: Details
+
+#@no-lib-strip@
+#@end-no-lib-strip@
+
+enUS.lua
+ptBR.lua
+frames.lua
+
+Details_EncounterDetails.lua

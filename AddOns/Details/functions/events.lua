@@ -22,6 +22,8 @@
 		
 		--> misc
 			["DETAILS_OPTIONS_MODIFIED"] = {},
+			["UNIT_SPEC"] = {},
+			["UNIT_TALENTS"] = {},
 		
 		--> data
 			["DETAILS_DATA_RESET"] = {},
@@ -116,6 +118,9 @@ local common_events = {
 	["REALM_CHANNEL_LEAVE"] = true,
 	["COMM_EVENT_RECEIVED"] = true,
 	["COMM_EVENT_SENT"] = true,
+	["UNIT_SPEC"] = true,
+	["UNIT_TALENTS"] = true,
+
 }
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -366,7 +371,7 @@ local common_events = {
 		_detalhes.last_options_modified = _detalhes.last_options_modified or (GetTime() - 5)
 		
 		if (_detalhes.last_options_modified + 0.3 < GetTime()) then
-			_detalhes:SendEvent ("DETAILS_OPTIONS_MODIFIED", nil, instance, param)
+			_detalhes:SendEvent ("DETAILS_OPTIONS_MODIFIED", nil, instance)
 			_detalhes.last_options_modified = GetTime()
 			if (_detalhes.last_options_modified_schedule) then
 				_detalhes:CancelTimer (_detalhes.last_options_modified_schedule)

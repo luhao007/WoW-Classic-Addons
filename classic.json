@@ -558,10 +558,10 @@
     "name": "BlizzMove",
     "description": "Makes the default frames moveable via simple drag and drop",
     "url": "https://www.curseforge.com/wow/addons/blizzmove",
-    "download_url": "https://edge.forgecdn.net/files/4005/777/BlizzMove-v3.4.6.zip",
-    "date_published": "2022-09-25T10:34:28.113000+00:00",
-    "version": "v3.4.6",
-    "changelog_url": "https://api.curseforge.com/v1/mods/17809/files/4005777/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4008/643/BlizzMove-v3.4.7.zip",
+    "date_published": "2022-09-26T18:49:04.390000+00:00",
+    "version": "v3.4.7",
+    "changelog_url": "https://api.curseforge.com/v1/mods/17809/files/4008643/changelog",
     "options": {
       "strategy": "default"
     },
@@ -575,6 +575,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v3.4.7",
+        "install_time": "2022-09-27T03:28:43+00:00"
+      },
       {
         "version": "v3.4.6",
         "install_time": "2022-09-25T14:20:59+00:00"
@@ -610,10 +614,6 @@
       {
         "version": "v3.0.19-bcc",
         "install_time": "2021-06-04T07:51:29+00:00"
-      },
-      {
-        "version": "v3.0.18-bcc",
-        "install_time": "2021-05-21T08:24:23+00:00"
       }
     ]
   },
@@ -1889,10 +1889,10 @@
     "name": "Pawn",
     "description": "Pawn helps you compare items and find upgrades.",
     "url": "https://www.curseforge.com/wow/addons/pawn",
-    "download_url": "https://edge.forgecdn.net/files/4007/679/Pawn-2.7-Wrath.zip",
-    "date_published": "2022-09-25T22:01:47.450000+00:00",
-    "version": "2.7 (Wrath)",
-    "changelog_url": "https://api.curseforge.com/v1/mods/4646/files/4007679/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4009/112/Pawn-2.7.1-Wrath.zip",
+    "date_published": "2022-09-27T02:33:19.503000+00:00",
+    "version": "2.7.1 (Wrath)",
+    "changelog_url": "https://api.curseforge.com/v1/mods/4646/files/4009112/changelog",
     "options": {
       "strategy": "default"
     },
@@ -1903,6 +1903,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "2.7.1 (Wrath)",
+        "install_time": "2022-09-27T03:28:43+00:00"
+      },
       {
         "version": "2.7 (Wrath)",
         "install_time": "2022-09-26T11:35:49+00:00"
@@ -1938,10 +1942,6 @@
       {
         "version": "2.5.31 (Burning Crusade)",
         "install_time": "2022-01-30T07:29:39+00:00"
-      },
-      {
-        "version": "2.5.30 (Burning Crusade)",
-        "install_time": "2021-11-17T11:12:48+00:00"
       }
     ]
   },
@@ -1952,10 +1952,10 @@
     "name": "Plater Nameplates",
     "description": "Highly customizable nameplate with support to scripts and animations.",
     "url": "https://www.curseforge.com/wow/addons/plater-nameplates",
-    "download_url": "https://edge.forgecdn.net/files/3963/361/Plater-Plater-v534.zip",
-    "date_published": "2022-09-02T08:36:52.420000+00:00",
-    "version": "Plater-v534",
-    "changelog_url": "https://api.curseforge.com/v1/mods/100547/files/3963361/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4008/628/Plater-Plater-v535.zip",
+    "date_published": "2022-09-26T18:33:54.277000+00:00",
+    "version": "Plater-v535",
+    "changelog_url": "https://api.curseforge.com/v1/mods/100547/files/4008628/changelog",
     "options": {
       "strategy": "default"
     },
@@ -1966,6 +1966,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "Plater-v535",
+        "install_time": "2022-09-27T03:28:44+00:00"
+      },
       {
         "version": "Plater-v534",
         "install_time": "2022-09-02T10:31:24+00:00"
@@ -2001,10 +2005,6 @@
       {
         "version": "Plater-v329-51-gb408bf7-bcc",
         "install_time": "2021-05-21T08:24:25+00:00"
-      },
-      {
-        "version": "Plater-1.13.6.97-Classic",
-        "install_time": "2021-04-06T09:37:43+00:00"
       }
     ]
   },
@@ -2015,10 +2015,10 @@
     "name": "Questie",
     "description": "The Classic Quest Helper",
     "url": "https://www.curseforge.com/wow/addons/questie",
-    "download_url": "https://edge.forgecdn.net/files/3998/432/Questie-v7.1.3.zip",
-    "date_published": "2022-09-20T11:21:11.480000+00:00",
-    "version": "v7.1.3",
-    "changelog_url": "https://api.curseforge.com/v1/mods/334372/files/3998432/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4009/378/Questie-v7.2.2.zip",
+    "date_published": "2022-09-27T10:43:28.320000+00:00",
+    "version": "v7.2.2",
+    "changelog_url": "https://api.curseforge.com/v1/mods/334372/files/4009378/changelog",
     "options": {
       "strategy": "default"
     },
@@ -2029,6 +2029,14 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v7.2.2",
+        "install_time": "2022-09-27T12:56:49+00:00"
+      },
+      {
+        "version": "v7.2.1",
+        "install_time": "2022-09-27T03:28:45+00:00"
+      },
       {
         "version": "v7.1.3",
         "install_time": "2022-09-20T13:43:23+00:00"
@@ -2060,14 +2068,6 @@
       {
         "version": "v6.8.3",
         "install_time": "2022-01-30T07:29:40+00:00"
-      },
-      {
-        "version": "v6.8.1",
-        "install_time": "2021-12-09T07:29:25+00:00"
-      },
-      {
-        "version": "v6.8.0 - TBC",
-        "install_time": "2021-11-17T11:12:50+00:00"
       }
     ]
   },
@@ -2159,10 +2159,10 @@
     "name": "RareScanner",
     "description": "RareScanner, a World of Warcraft addon to alert you when a rare, event or treasure appear in your minimap.",
     "url": "https://www.curseforge.com/wow/addons/rarescanner",
-    "download_url": "https://edge.forgecdn.net/files/3970/162/RareScanner_3.4.0.1.zip",
-    "date_published": "2022-09-05T19:08:12.717000+00:00",
-    "version": "RareScanner_WOTLK_3.4.0.1",
-    "changelog_url": "https://api.curseforge.com/v1/mods/84208/files/3970162/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4008/334/RareScanner_3.4.0.2.zip",
+    "date_published": "2022-09-26T13:21:53.143000+00:00",
+    "version": "RareScanner_WOTLK_3.4.0.2",
+    "changelog_url": "https://api.curseforge.com/v1/mods/84208/files/4008334/changelog",
     "options": {
       "strategy": "default"
     },
@@ -2173,6 +2173,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "RareScanner_WOTLK_3.4.0.2",
+        "install_time": "2022-09-27T03:28:45+00:00"
+      },
       {
         "version": "RareScanner_WOTLK_3.4.0.1",
         "install_time": "2022-09-21T11:32:12+00:00"
@@ -2362,10 +2366,10 @@
     "name": "VuhDo",
     "description": "Raid Frames providing click-heal functionality, buff and debuff control, main tank management and much more.",
     "url": "https://www.curseforge.com/wow/addons/vuhdo",
-    "download_url": "https://edge.forgecdn.net/files/3970/673/VuhDo-v3.138-wotlkc-wrath.zip",
-    "date_published": "2022-09-06T02:29:57.583000+00:00",
-    "version": "v3.138-wotlkc-wrath",
-    "changelog_url": "https://api.curseforge.com/v1/mods/7950/files/3970673/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4009/99/VuhDo-v3.139-wotlkc-wrath.zip",
+    "date_published": "2022-09-27T02:18:02.393000+00:00",
+    "version": "v3.139-wotlkc-wrath",
+    "changelog_url": "https://api.curseforge.com/v1/mods/7950/files/4009099/changelog",
     "options": {
       "strategy": "default"
     },
@@ -2379,6 +2383,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v3.139-wotlkc-wrath",
+        "install_time": "2022-09-27T03:28:46+00:00"
+      },
       {
         "version": "v3.138-wotlkc-wrath",
         "install_time": "2022-09-06T07:17:04+00:00"
@@ -2414,10 +2422,6 @@
       {
         "version": "v3.116-classic",
         "install_time": "2021-01-02T12:09:58+00:00"
-      },
-      {
-        "version": "v3.115-classic",
-        "install_time": "2021-01-01T15:22:32+00:00"
       }
     ]
   },
@@ -2924,10 +2928,10 @@
     "name": "DejaClassicStats (WOTLK)",
     "description": "[CENTER][SIZE=5][B][COLOR=#00ccff][FONT=verdana][B]DejaClassicStats[/B][/FONT][/COLOR][/B][/SIZE]\r\n\r\n[I][SIZE=5][FONT=verdana][B]Ready for [/B][/FONT][/SIZE][/I][I][SIZE=5][FONT=verdana][B][I][SIZE=5][FONT=verdana][B][COLOR=#6666ff]Wrath of the Lich King[/COLOR][/B][/FONT][/SIZE][/I]![/B][/FONT][/SIZE][/I]\r\n[/CENTER]\r\n\r\n[CENTER][B][FONT=verdana][SIZE=4][URL=\"https://www.youtube.com/watch?v=a-bHbqYRHTQ\"][COLOR=#faebd7][B]Watch the Video Overview[/B][/COLOR][/URL][/SIZE][/FONT][/B][/CENTER]\r\n\r\n  [CENTER][FONT=verdana][B][URL=\"https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=CL4UN8NCQLZQL&source=url\"]DejaDonate[/URL][/B] - Support DejaClassicStats' continued development by [URL=\"https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=CL4UN8NCQLZQL&source=url\"]donating[/URL] to DCS![/FONT]\r\n[/CENTER]\r\n\r\n[CENTER][CENTER] [CENTER] [CENTER][SIZE=4][I][B]DejaDonate:[/B][/I][/SIZE][/CENTER]\r\n[CENTER][SIZE=4] [URL=\"https://www.curseforge.com/linkout?remoteUrl=https%253a%252f%252fwww.paypal.com%252fdonate%253fhosted_button_id%253dCL4UN8NCQLZQL\"] [IMG]https://i.imgur.com/OuqaxDD.png[/IMG][/URL] [URL=\"https://www.curseforge.com/linkout?remoteUrl=https%253a%252f%252fwww.paypal.com%252fdonate%253fhosted_button_id%253dCL4UN8NCQLZQL\"][IMG]https://i.imgur.com/LhDP2Lo.png[/IMG][/URL][/SIZE] [/CENTER]\r\n [/CENTER]\r\n [/CENTER]\r\n [/CENTER]\r\n\r\n   [CENTER]\r\n[/CENTER]\r\n [SIZE=4] [FONT=verdana]DejaClassicStats provides an updated and logical display of the character stats.\r\n\r\n[/FONT][/SIZE] [CENTER][SIZE=3][FONT=verdana][B]Features[/B][/FONT][/SIZE]\r\n[/CENTER]\r\n [COLOR=#ffffff] [FONT=verdana][B]Options Overview:[/B][/FONT][/COLOR]\r\n[LIST]\r\n[*][FONT=verdana]Display each equipped item's level, durability, and repair cost.[/FONT]\r\n[*][FONT=verdana]Display a quick graphical \"Durability Bar\" next to each equipped item.[/FONT]\r\n[*][FONT=verdana]Display total average durability of equipped gear on your character's shirt slot.[/FONT]\r\n[*][FONT=verdana]Display \"General\", \"Primary\", \"Offense\", \"Defense\", \"Melee Enhancements\", and \"Spell Enhancements\" stats.[/FONT][/LIST][B][FONT=verdana][B]\r\n[COLOR=#ffffff]Default Display[/COLOR][/B][/FONT][/B][COLOR=#ffffff]\r\n\r\n  [FONT=verdana][B]Primary:[/B][/FONT][/COLOR]\r\n[LIST]\r\n[*][FONT=verdana]Strength[/FONT]\r\n[*][FONT=verdana]Agility[/FONT]\r\n[*][FONT=verdana]Stamina[/FONT]\r\n[*][FONT=verdana]Intellect[/FONT]\r\n[*][FONT=verdana]Spirit[/FONT][/LIST][COLOR=#ffffff] [FONT=verdana][B]General:[/B][/FONT][/COLOR]\r\n[LIST]\r\n[*][COLOR=#ff0000][I][FONT=verdana]Health*[/FONT][/I][/COLOR]\r\n[*][COLOR=#ff0000][I][FONT=verdana]Power(Mana, Energy, Rage)*[/FONT][/I][/COLOR]\r\n[*][COLOR=#ffffff][FONT=verdana]Movement Speed[/FONT]\r\n[/COLOR]\r\n[*][COLOR=#ffffff][FONT=verdana]Durability[/FONT]\r\n[/COLOR]\r\n[*][COLOR=#ffffff][FONT=verdana]Item Slot Durability Display[/FONT]\r\n[/COLOR]\r\n[*][COLOR=#ffffff][FONT=verdana]Repair Cost[/FONT]\r\n[/COLOR]\r\n[*][COLOR=#ffffff][FONT=verdana]Item Slot Repair Cost Display[/FONT][/COLOR][/LIST][COLOR=#ffffff] [FONT=verdana][B]Offense:[/B][/FONT][/COLOR]\r\n[LIST]\r\n[*][FONT=verdana]Damage[/FONT]\r\n[*][FONT=verdana]Attack Power[/FONT]\r\n[*][FONT=verdana]Attack Speed[/FONT]\r\n[*][FONT=verdana]Weapon DPS[/FONT][/LIST][COLOR=#ffffff] [FONT=verdana][B]Defense:[/B][/FONT][/COLOR]\r\n[LIST]\r\n[*][COLOR=#ffffff][FONT=verdana]Resistances(Arcane, Fire, Nature, Frost,Shadow)\r\n[/FONT][/COLOR]\r\n[*][COLOR=#ffffff][FONT=verdana]Armor[/FONT]\r\n[/COLOR]\r\n[*][COLOR=#ffffff][FONT=verdana]Dodge[/FONT][/COLOR]\r\n[*][COLOR=#ffffff][FONT=verdana]Parry[/FONT][/COLOR]\r\n[*][COLOR=#ffffff][FONT=verdana]Block[/FONT]\r\n[/COLOR]\r\n[*][COLOR=#ffffff][FONT=verdana]Defense[/FONT][/COLOR]\r\n[*][COLOR=#ff0000][I][FONT=verdana]Crushing*[/FONT][/I][/COLOR][/LIST][COLOR=#ffffff] [B][FONT=verdana]Melee Enhancements:[/FONT][/B][/COLOR]\r\n[LIST]\r\n[*]Melee Hit\r\n[*]Melee +Damage\r\n[*]Melee Critical Strike\r\n[*]Ranged Critical Strike[/LIST][COLOR=#ffffff] [B][FONT=verdana]Spell Enhancements:[/FONT][/B][/COLOR]\r\n[LIST]\r\n[*]Spell Hit\r\n[*]Spell+Damage\r\n[*]Spell Critical Strike\r\n[*]+Healing\r\n[*]MP5 (Soon\u2122)\r\n[*]Mana Regen Not Casting\r\n[*]Mana Regen Casting[/LIST]  [COLOR=#ff0000][I][FONT=verdana][B]Skills(Including XP bar):*[/B][/FONT][/I][/COLOR]\r\n[LIST]\r\n[*][COLOR=#ff0000][I][FONT=verdana]Weapon Skills(Only skills you've learned)*[/FONT][/I][/COLOR][/LIST]  [COLOR=#ff0000][I][FONT=verdana][B]Professions(Including XP bar):*[/B][/FONT][/I][/COLOR]\r\n[LIST]\r\n[*][COLOR=#ff0000][I][FONT=verdana]Both primaries*[/FONT][/I][/COLOR]\r\n[*][COLOR=#ff0000][I][FONT=verdana]Secondaries(Cooking, First Aid)*[/FONT][/I][/COLOR][/LIST]  [COLOR=#ff0000][I][FONT=verdana][B]Reputations(Including XP bar):*[/B][/FONT][/I][/COLOR]\r\n[LIST]\r\n[*][COLOR=#ff0000][I][FONT=verdana]Only Reputations you've established(Tracked always at top)*[/FONT][/I][/COLOR][/LIST][COLOR=#ffffff] [B][FONT=verdana][B]Item Level:[/B][/FONT][/B][/COLOR]\r\n[LIST]\r\n[*][COLOR=#ffffff][FONT=verdana]Item Slot Item Level Display[/FONT][/COLOR][/LIST] \r\n[COLOR=#ffffff][FONT=verdana][B]Installation and Use of DejaClassicStats[/B][/FONT][/COLOR]\r\n\r\n[COLOR=#ffffff] [FONT=verdana][B]Installation:[/B][/FONT][/COLOR]\r\n[LIST]\r\n[*][FONT=verdana]Install to your \"AddOns\" folder (World of Warcraft\\Interface\\AddOns) and login to WoW.[/FONT][/LIST][COLOR=#ffffff][FONT=verdana] [B]Interface Options Settings[/B][/FONT][/COLOR]\r\n[COLOR=#ffffff]  [FONT=verdana][B]Item Slots:[/B][/FONT][/COLOR]\r\n[LIST]\r\n[*][FONT=verdana][COLOR=#ffffff][B]Item Level:[/B][/COLOR] Displays the item level of each equipped item.[/FONT]\r\n[*][FONT=verdana][COLOR=#ffffff][B]Durability Bars:[/B][/COLOR] Displays a durability bar next to each item with less than 100% durability for a quick visual reference.[/FONT]\r\n[*][FONT=verdana][COLOR=#ffffff][B]Average Durability:[/B][/COLOR] Displays on the character shirt slot the total average durability of all equipped gear.[/FONT]\r\n[*][FONT=verdana][COLOR=#ffffff][B]Item Durability:[/B][/COLOR] Displays a durability overlay on each equipped item's slot.[/FONT]\r\n[*][FONT=verdana][COLOR=#ffffff][B]Item Repair Cost:[/B][/COLOR] Displays an overlay of the Repair Total on each equipped item's slot.[/FONT][/LIST]\r\n  [IMG]https://cdn-wow.mmoui.com/preview/pvw71788.png[/IMG]\r\n[COLOR=#ffffff]  [FONT=verdana][B]Slash Commands:[/B][/FONT][/COLOR]\r\n[LIST]\r\n[*][FONT=verdana]/dcstats: Displays the DejaClassicStats version and slash commands.[/FONT]\r\n[*][FONT=verdana]/dcstats config: Opens the DejaClassicStats addon config menu.[/FONT]\r\n[*][FONT=verdana]/dcstats reset: Resets DejaClassicStats options to default. \r\n[/FONT][/LIST][COLOR=#ffffff][FONT=verdana][B]Known Issues:[/B][/FONT][/COLOR]\r\n[LIST]\r\n[*][FONT=verdana]Repair costs doesn't show on login but shows otherwise on UI reload.[/FONT][/LIST][COLOR=#ffffff] [FONT=verdana][B]TODO:[/B][/FONT][/COLOR]\r\n[LIST]\r\n[*][FONT=verdana]Too much to list. This is a WIP. This will be updated as we remember and come across more stats we want to track.[/FONT][/LIST][COLOR=#ffffff] [FONT=verdana][B]Future Possibilities:[/B][/FONT][/COLOR]\r\n[LIST]\r\n[*][FONT=verdana]Tons! Send us suggestions [URL=\"https://www.curseforge.com/wow/addons/dejacharacterstats/issues\"]here[/URL].[/FONT][/LIST] \r\n[FONT=verdana]Found an error or bug? Reporting them by making a ticket [URL=\"https://www.curseforge.com/wow/addons/dejaclassicstats/issues\"]here[/URL] after following [URL=\"https://phanx.net/addons/help\"]these[/URL] steps makes fixing errors faster. Thanks!\r\n[/FONT]\r\n [COLOR=#ffffff][FONT=verdana][B]We would like to thank everyone that helped make DCS possible.[/B][/FONT][/COLOR]\r\n\r\n [FONT=verdana][B][COLOR=#00ccff]Contributors:[/COLOR] [COLOR=#ffffff]Dejoblue, Kakjens, loudsoul[/COLOR][/B][/FONT]\r\n [FONT=verdana][B][COLOR=#00ccff]Localization Translators:[/COLOR][/B][/FONT]\r\n[LIST]\r\n[*][FONT=verdana][B][COLOR=#00ccff]French:[/COLOR][COLOR=#ffffff] Medaleux, sv002, Darkcraft92, Ymvej, Druidzor, napnapnapnapnap[/COLOR][/B][/FONT]\r\n[*][FONT=verdana][B][COLOR=#00ccff]German:[/COLOR][COLOR=#ffffff]pas06, flow0284, Markurion, Branduril, NekoNyaaaa[/COLOR][/B][/FONT]\r\n[*][FONT=verdana][B][COLOR=#00ccff]Portuguese:[/COLOR][COLOR=#ffffff]Othra, Rhyrol[/COLOR][/B][/FONT]\r\n[*][FONT=verdana][B][COLOR=#00ccff]Spanish:[/COLOR][COLOR=#ffffff]Tholagar, Mikel391, MrUrkaz, Krounted, Valhallanem[/COLOR][/B][/FONT]\r\n[*][FONT=verdana][B][COLOR=#00ccff]Italian:[/COLOR][COLOR=#ffffff]infinitybofh, INoobInside[/COLOR][COLOR=#00ccff][COLOR=#000000]\r\n[/COLOR][/COLOR][/B][/FONT]\r\n[*][FONT=verdana][B][COLOR=#00ccff]Korean:[/COLOR] [COLOR=#ffffff]PositiveMind, yuk6196, netaras, meloppy, next96[/COLOR][/B][/FONT]\r\n[*][FONT=verdana][B][COLOR=#00ccff]Russian:[/COLOR] [COLOR=#ffffff]Nappsel, Wishko, berufegoru, Hubbotu, n1mrorox[/COLOR][/B][/FONT]\r\n[*][FONT=verdana][B][COLOR=#00ccff]Simplified Chinese:[/COLOR] [COLOR=#ffffff]C_Reus, alvisjiang, y123ao6[/COLOR][/B][/FONT]\r\n[*][FONT=verdana][B][COLOR=#00ccff]Traditional Chinese:[/COLOR] [COLOR=#ffffff]BNSSNB, killsophia, konraddo, y123ao6[/COLOR][/B][/FONT][/LIST] [FONT=verdana][B][COLOR=#00ccff]Communities:[/COLOR][COLOR=#ffffff] Blizzard, Curse, ElvUI, WoWInterface, and Reddit's /r/wow[/COLOR][/B][/FONT]\r\n [FONT=verdana][B][COLOR=#00ccff]Individuals: [/COLOR][/B][COLOR=#ffffff][B]Baudzila, 10leej, wizardanim, Phanx, Ro, Choonster, Zork, Lombra, myrroddin, Darth_Predator, sirann, and YOU[/B][/COLOR]\r\n[/FONT]\r\n[CENTER][SIZE=5][B][FONT=verdana][B][COLOR=#00ccff]Thank You![/COLOR][/B][/FONT][/B][/SIZE][/CENTER]",
     "url": "https://www.wowinterface.com/downloads/info25977-DejaClassicStatsWOTLK.html",
-    "download_url": "https://cdn.wowinterface.com/downloads/getfile.php?id=25977&d=1663347201&minion",
-    "date_published": "2022-09-16T16:53:21+00:00",
-    "version": "30400r8",
-    "changelog_url": "data:,09/16/22%0D%0A%0D%0A%20%20%20%20Reverted%20adding%20Wago%20Analytics.%0D%0A%20%20%20%20Updated%20TOC%0D%0A%0D%0A09/16/22%0D%0A%20%20%20%20Added%20Wago%20analytics%20shim.%0D%0A%20%20%20%20Updated%20TOC%0D%0A%0D%0A09/14/22%0D%0AFixed%20Melee%20Hit%20rating%20bug.%0D%0ALikely%20fixed%20item%20enchant%20equip%20bug.%0D%0AUpdated%20TOC%0D%0A%0D%0A09/03/22%0D%0AAdded%20support%20for%20Wrath%20and%20DK%20enchants%0D%0AUpdated%20TOC%0D%0A%0D%0A07/16/22%20%0D%0AFixed%20DK%20talent%20background%20art%20error.%20%0D%0AAdded%20DK%20talent%20background%20art%20to%20tables%20%0D%0AUpdated%20TOC%0D%0A%0D%0A03/23/2022%0D%0AUpdated%20TOC%0D%0A%0D%0A10/11/2021%0D%0AUpdated%20TOC%0D%0A%0D%0A06/04/2021%0D%0AFixed%20an%20issue%20with%20Ranged%20stat%20header%20causing%20other%20stats%20to%20not%20anchor%20properly.%20Thanks%20to%20sahdjay%20for%20the%20report%20and%20testing%20help%20%3A%29%0D%0AUpdated%20TOC%0D%0A%0D%0A05/30/2021%0D%0AAdded%20max%20weapon%20skill%20available%20for%20MH%2C%20OH%20and%20ranged.%0D%0AUpdated%20TOC%0D%0A%0D%0A05/30/2021%0D%0AFixed%20the%20Melee%20panel%27s%20issue%20causing%20the%20Ranged%20panel%20to%20not%20anchor%20correctly%20from%20the%20Melee%20panel.%0D%0AUpdated%20TOC%0D%0A%0D%0A05/30/2021%0D%0AAdded%20BC%20and%20Wrath%20enchant%20database%20tables.%0D%0AAdded%20Haste%2C%20Speed%2C%20and%20DPS%20stats%20for%20Melee%2C%20ranged%20and%20spells.%0D%0AAdded%20Ranged%20header%0D%0AAdded%20ratings%20in%20parenthesis%20%28%29%20for%20all%20rated%20stats%0D%0AFixed%20the%20default%20resistances%20saved%20variable%20and%20Defense%20header%20anchoring%20when%20resistances%20are%20default.%0D%0APrepped%20tables%20for%20stats%20selection%0D%0AOther%20stuff%20I%20forgot.%0D%0AUpdated%20TOC%0D%0A%0D%0A%0D%0A04/21/2021%0D%0A%0D%0A%20%20%20%20Updated%20TOC%20with%20localizations%2C%20art%2C%20and%20meta%20information",
+    "download_url": "https://cdn.wowinterface.com/downloads/getfile.php?id=25977&d=1664271684&minion",
+    "date_published": "2022-09-27T09:41:24+00:00",
+    "version": "30400r9",
+    "changelog_url": "data:,09/27/22%0D%0A%20%20%20%20Fixed%20Wrath%20enchant%20IDs.%0D%0A%20%20%20%20Updated%20TOC%0D%0A%0D%0A09/16/22%0D%0A%0D%0A%20%20%20%20Reverted%20adding%20Wago%20Analytics.%0D%0A%20%20%20%20Updated%20TOC%0D%0A%0D%0A09/16/22%0D%0A%20%20%20%20Added%20Wago%20analytics%20shim.%0D%0A%20%20%20%20Updated%20TOC%0D%0A%0D%0A09/14/22%0D%0AFixed%20Melee%20Hit%20rating%20bug.%0D%0ALikely%20fixed%20item%20enchant%20equip%20bug.%0D%0AUpdated%20TOC%0D%0A%0D%0A09/03/22%0D%0AAdded%20support%20for%20Wrath%20and%20DK%20enchants%0D%0AUpdated%20TOC%0D%0A%0D%0A07/16/22%20%0D%0AFixed%20DK%20talent%20background%20art%20error.%20%0D%0AAdded%20DK%20talent%20background%20art%20to%20tables%20%0D%0AUpdated%20TOC%0D%0A%0D%0A03/23/2022%0D%0AUpdated%20TOC%0D%0A%0D%0A10/11/2021%0D%0AUpdated%20TOC%0D%0A%0D%0A06/04/2021%0D%0AFixed%20an%20issue%20with%20Ranged%20stat%20header%20causing%20other%20stats%20to%20not%20anchor%20properly.%20Thanks%20to%20sahdjay%20for%20the%20report%20and%20testing%20help%20%3A%29%0D%0AUpdated%20TOC%0D%0A%0D%0A05/30/2021%0D%0AAdded%20max%20weapon%20skill%20available%20for%20MH%2C%20OH%20and%20ranged.%0D%0AUpdated%20TOC%0D%0A%0D%0A05/30/2021%0D%0AFixed%20the%20Melee%20panel%27s%20issue%20causing%20the%20Ranged%20panel%20to%20not%20anchor%20correctly%20from%20the%20Melee%20panel.%0D%0AUpdated%20TOC%0D%0A%0D%0A05/30/2021%0D%0AAdded%20BC%20and%20Wrath%20enchant%20database%20tables.%0D%0AAdded%20Haste%2C%20Speed%2C%20and%20DPS%20stats%20for%20Melee%2C%20ranged%20and%20spells.%0D%0AAdded%20Ranged%20header%0D%0AAdded%20ratings%20in%20parenthesis%20%28%29%20for%20all%20rated%20stats%0D%0AFixed%20the%20default%20resistances%20saved%20variable%20and%20Defense%20header%20anchoring%20when%20resistances%20are%20default.%0D%0APrepped%20tables%20for%20stats%20selection%0D%0AOther%20stuff%20I%20forgot.%0D%0AUpdated%20TOC%0D%0A%0D%0A%0D%0A04/21/2021%0D%0A%0D%0A%20%20%20%20Updated%20TOC%20with%20localizations%2C%20art%2C%20and%20meta%20information",
     "options": {
       "strategy": "default"
     },
@@ -2938,6 +2942,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "30400r9",
+        "install_time": "2022-09-27T12:56:49+00:00"
+      },
       {
         "version": "30400r8",
         "install_time": "2022-09-17T03:36:23+00:00"

@@ -378,6 +378,10 @@
 				<Title>德拉诺之王</Title>
 				<Notes>BtWQuests 德拉诺之王模块</Notes>
 			</SubAddon>
+			<SubAddon name="BtWQuestsWrathOfTheLichKing">
+				<Title>巫妖王之怒</Title>
+				<Notes>BtWQuests 巫妖王之怒模块</Notes>
+			</SubAddon>
 		</SubAddons>
 	</Addon>
 	<Addon name="ButtonForge">

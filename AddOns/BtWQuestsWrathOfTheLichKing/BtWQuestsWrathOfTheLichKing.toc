@@ -1,10 +1,14 @@
 ## Interface: 30400
-## Title: BtWQuests: Wrath of the Lich King
-## Version: 1.11
-## Notes: Wrath of the Lich King quest data for BtWQuests
 ## Author: Breen
+## Version: 1.11
 ## Dependencies: BtWQuests
 ## LoadOnDemand: 1
+
+## Title: BtWQuests: Wrath of the Lich King
+## Notes: Wrath of the Lich King quest data for BtWQuests
+## Title-zhCN: |cFFFFE00A<|r|cFF00FF96任务|r|cFFFFE00A>|r |cFFFFFFFF任务流程图|r |cFF69CCF0巫妖王之怒|r
+## Notes-zhCN: BtWQuests 巫妖王之怒模块
+
 ## X-BtWQuests: Wrath of the Lich King
 ## X-BtWQuests-Expansion: 2
 ## X-BtWQuests-Expansion-Image: UI-Expansion 0 0.90625 0 0.8125

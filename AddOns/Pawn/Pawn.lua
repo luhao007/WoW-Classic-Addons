@@ -7,7 +7,7 @@
 -- Main non-UI code
 ------------------------------------------------------------
 
-PawnVersion = 2.0700
+PawnVersion = 2.0701
 
 -- Pawn requires this version of VgerCore:
 local PawnVgerCoreVersionRequired = 1.17
@@ -4168,7 +4168,7 @@ function PawnIsArmorBestTypeForPlayer(Item)
 		else
 			return false
 		end
-	elseif Class == "HUNTER" or Class == "SHAMAN" then
+	elseif Class == "HUNTER" or Class == "SHAMAN" or Class == "EVOKER" then
 		if IsLevelForSpecialization then
 			if Stats.IsMail then return true else return false end
 		elseif Stats.IsLeather or Stats.IsCloth then

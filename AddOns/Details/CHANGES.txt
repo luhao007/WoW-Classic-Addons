@@ -1,0 +1,16 @@
+tag edd94eacb78540dfe2aa7d2f6a9f0399bf04ff77 Details.DF.SL.Wrath.10031.146
+Author:	Tercio Jose <terciob19@hotmail.com>
+Date:	Tue Sep 27 08:33:16 2022 -0300
+
+commit e10d009139c3f10bc90523c5b4a44c343d15dbbe
+Author: Tercio Jose <terciob19@hotmail.com>
+Date:   Tue Sep 27 08:32:32 2022 -0300
+
+    Updating LibOpenRaid in an attempt to fix a bug.
+
+commit bc481bef4898177ca700ae46c753b117f375b7c0
+Author: Tercio Jose <terciob19@hotmail.com>
+Date:   Mon Sep 26 22:10:46 2022 -0300
+
+    Fixed unknown .displayName after startup
+

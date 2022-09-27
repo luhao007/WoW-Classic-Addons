@@ -3,7 +3,7 @@
 do 
 	local _detalhes = 	_G._detalhes
 	local setmetatable = setmetatable
-	-------- pet cache
+	-------- container que armazena o cache de pets
 		_detalhes.container_pets = {}
 		_detalhes.container_pets.__index = _detalhes.container_pets
 		setmetatable (_detalhes.container_pets, _detalhes)
@@ -106,9 +106,25 @@ do
 	function _detalhes:GetName (actor)
 		return self.nome or actor and actor.nome
 	end
+
+	function _detalhes:GetNameNoRealm(actor)
+		local name = self.nome or actor and actor.nome
+		return Details:GetOnlyName(name)
+	end
+
 	function _detalhes:GetDisplayName (actor)
 		return self.displayName or actor and actor.displayName
 	end
+
+	function Details:SetDisplayName(actor, newDisplayName)
+		if (not newDisplayName) then
+			newDisplayName = actor
+			self.displayName = newDisplayName
+		else
+			actor.displayName = newDisplayName
+		end
+	end
+
 	function _detalhes:GetOnlyName (string)
 		if (string) then
 			return string:gsub (("%-.*"), "")

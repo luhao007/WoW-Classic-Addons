@@ -5,6 +5,7 @@
 	<!-- External libraries -->
 	<Include file="AceConfig-3.0\AceConfig-3.0.xml"/>
 	<Include file="LibQTip-1.0\lib.xml"/>
+	<Include file="Krowi_WorldMapButtons-1.4\Krowi_WorldMapButtons-1.4.lua"/>
 	<Include file="LibBabble-Zone-3.0\lib.xml"/>
 
 </Ui>

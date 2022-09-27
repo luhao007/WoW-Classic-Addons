@@ -5,9 +5,11 @@ local _detalhes = 		_G._detalhes
 function _detalhes:WipeConfig()
 	local Loc = LibStub ("AceLocale-3.0"):GetLocale ( "Details" )
 	
-	local b = CreateFrame ("button", "DetailsResetConfigButton", UIParent, "OptionsButtonTemplate")
+	local b = CreateFrame ("button", "DetailsResetConfigButton", UIParent)
 	tinsert (UISpecialFrames, "DetailsResetConfigButton")
 	
+	DetailsFramework:ApplyStandardBackdrop(b)
+
 	b:SetSize (250, 40)
 	b:SetText (Loc ["STRING_SLASH_WIPECONFIG_CONFIRM"])
 	b:SetScript ("OnClick", function() _detalhes.wipe_full_config = true; ReloadUI(); end)
@@ -31,16 +33,17 @@ function _detalhes:SaveLocalInstanceConfig()
 		local a1, a2 = instance:GetDisplay()
 		
 		local t = {
-			pos = table_deepcopy (instance:GetPosition()), 
+			pos = Details.CopyTable (instance:GetPosition()),
 			is_open = instance:IsEnabled(),
-			attribute = a1,
-			sub_attribute = a2,
-			mode = instance:GetMode(),
-			segment = instance:GetSegment(),
-			snap = table_deepcopy (instance.snap),
+			attribute = a1 or 1,
+			sub_attribute = a2 or 1,
+			modo = instance:GetMode() or 2,
+			mode = instance:GetMode() or 2,
+			segment = instance:GetSegment() or 0,
+			snap = Details.CopyTable (instance.snap),
 			horizontalSnap = instance.horizontalSnap,
 			verticalSnap = instance.verticalSnap,
-			sub_atributo_last = instance.sub_atributo_last,
+			sub_atributo_last = instance.sub_atributo_last or {1, 1, 1, 1, 1},
 			isLocked = instance.isLocked,
 			last_raid_plugin = instance.last_raid_plugin
 		}
@@ -48,14 +51,15 @@ function _detalhes:SaveLocalInstanceConfig()
 		if (t.isLocked == nil) then
 			t.isLocked = false
 		end
+		
 		if (_detalhes.profile_save_pos) then
 			local cprofile = _detalhes:GetProfile()
 			local skin = cprofile.instances [instance:GetId()]
 			if (skin) then
-				t.pos = table_deepcopy (skin.__pos)
+				t.pos = Details.CopyTable (skin.__pos)
 				t.horizontalSnap = skin.__snapH
 				t.verticalSnap = skin.__snapV
-				t.snap = table_deepcopy (skin.__snap)
+				t.snap = Details.CopyTable (skin.__snap)
 				t.is_open = skin.__was_opened
 				t.isLocked = skin.__locked
 			end
