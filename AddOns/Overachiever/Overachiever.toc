@@ -1,0 +1,34 @@
+## Interface: 30400
+## Version: 1.2.6 Wrath
+## OptionalDeps: LibBabble-SubZone-3.0, LibBabble-Inventory-3.0, LibSharedMedia-3.0
+## SavedVariables: Overachiever_Settings, Overachiever_CharVars_Default
+## SavedVariablesPerCharacter: Overachiever_CharVars, Overachiever_CharVars_Consumed
+
+## Title: Overachiever
+## Notes: Tools and tweaks to make the lives of players seeking achievements a little bit easier.
+## Title-zhCN: |cFFFFE00A<|r|cFFA9D271收藏|r|cFFFFE00A>|r |cFFFFFFFF成就助手|r |cFFFFE00AOverachiever|r
+## Notes-zhCN: 提供一些辅助管理成就的功能
+
+## X-WoWI-ID: 11361
+
+#@no-lib-strip@
+#@end-no-lib-strip@
+
+libs\TjOptions.lua
+libs\TjSharedMediaDropDown\lib.xml
+libs\TjDragIt.lua
+libs\TjBagWatch.lua
+libs\TjThreads.lua
+libs\TjAchieve.lua
+libs\TjCalendar.lua
+
+localization.lua
+Templates.xml
+Overachiever.lua
+AchieveID.lua
+AchieveTip.lua
+GameTip.lua
+Options.lua
+Calendar.lua
+AchieveTracking.lua
+AchieveSearch.lua

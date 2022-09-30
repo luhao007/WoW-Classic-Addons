@@ -183,9 +183,10 @@ local DEFAULT_DB = {
 -- [102] removed global.internalData.optionalMatBonusIdLookup
 -- [103] updated global.auctionUIContext.auctioningAuctionScrollingTable, global.auctionUIContext.myAuctionsScrollingTable, global.auctionUIContext.shoppingAuctionScrollingTable, global.auctionUIContext.sniperScrollingTable, global.auctionUIContext.professionScrollingTable
 -- [104] removed factionrealm.internalData.{csvAuctionDBScan,auctionDBScanTime,auctionDBScanHash}
+-- [105] updated factionrealm.internalData.crafts, factionrealm.userData.craftingCooldownIgnore, char.internalData.craftingCooldowns
 
 local SETTINGS_INFO = {
-	version = 104,
+	version = 105,
 	global = {
 		debug = {
 			chatLoggingEnabled = { type = "boolean", default = false, lastModifiedVersion = 19 },
@@ -379,7 +380,7 @@ local SETTINGS_INFO = {
 			mailDisenchantablesChar = { type = "string", default = "", lastModifiedVersion = 49 },
 			mailExcessGoldChar = { type = "string", default = "", lastModifiedVersion = 49 },
 			mailExcessGoldLimit = { type = "number", default = 10000000000, lastModifiedVersion = 49 },
-			crafts = { type = "table", default = {}, lastModifiedVersion = 99 },
+			crafts = { type = "table", default = {}, lastModifiedVersion = 105 },
 			craftingQueue = { type = "table", default = {}, lastModifiedVersion = 101 },
 			mats = { type = "table", default = {}, lastModifiedVersion = 10 },
 			guildGoldLog = { type = "table", default = {}, lastModifiedVersion = 25 },
@@ -397,7 +398,7 @@ local SETTINGS_INFO = {
 			professions = { type = "table", default = {}, lastModifiedVersion = 32 },
 		},
 		userData = {
-			craftingCooldownIgnore = { type = "table", default = {}, lastModifiedVersion = 99 },
+			craftingCooldownIgnore = { type = "table", default = {}, lastModifiedVersion = 105 },
 		},
 	},
 	realm = {
@@ -419,7 +420,7 @@ local SETTINGS_INFO = {
 		internalData = {
 			auctionPrices = { type = "table", default = {}, lastModifiedVersion = 10 },
 			auctionMessages = { type = "table", default = {}, lastModifiedVersion = 10 },
-			craftingCooldowns = { type = "table", default = {}, lastModifiedVersion = 99 },
+			craftingCooldowns = { type = "table", default = {}, lastModifiedVersion = 105 },
 			auctionSaleHints = { type = "table", default = {}, lastModifiedVersion = 45 },
 		},
 		auctionUIContext = {
@@ -699,6 +700,18 @@ Settings:OnSettingsLoad(function()
 					cooldownData["c:"..spellId] = data
 				end
 				db:Set("char", factionrealm, "internalData", "craftingCooldowns", cooldownData)
+			end
+		end
+	end
+	if prevVersion < 105 and not TSM.IsWowClassic() then
+		for key, value in upgradeObj:RemovedSettingIterator() do
+			local scopeType, factionrealm, namespace, settingKey = upgradeObj:GetKeyInfo(key)
+			if scopeType == "factionrealm" and namespace == "internalData" and settingKey == "crafts" then
+				db:Set("factionrealm", factionrealm, "internalData", "crafts", value)
+			elseif scopeType == "factionrealm" and namespace == "userData" and settingKey == "craftingCooldownIgnore" then
+				db:Set("factionrealm", factionrealm, "userData", "craftingCooldownIgnore", value)
+			elseif scopeType == "char" and namespace == "internalData" and settingKey == "craftingCooldowns" then
+				db:Set("char", factionrealm, "internalData", "craftingCooldowns", value)
 			end
 		end
 	end

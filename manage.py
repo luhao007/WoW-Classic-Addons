@@ -682,7 +682,7 @@ class Manager:
         )
 
     @staticmethod
-    @available_on(['retail'])
+    @available_on(['retail', 'classic'])
     def handle_oa():
         utils.remove_libraries(
             ['CallbackHandler-1.0', 'LibBabble-Inventory-3.0',

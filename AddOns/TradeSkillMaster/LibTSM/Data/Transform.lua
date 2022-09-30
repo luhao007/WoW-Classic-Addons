@@ -16,24 +16,24 @@ local private = {}
 
 local DATA = {
 	-- ================================== Essences / Illusion Dust =================================
-	["i:52719"] = {
+	["i:52719"] = not TSM.IsWowClassic() and {
 		["i:52718"] = 1/3, -- Greater Celestial Essence
-	},
-	["i:52718"] = {
+	} or nil,
+	["i:52718"] = not TSM.IsWowClassic() and {
 		["i:52719"] = 3, -- Lesser Celestial Essence
-	},
-	["i:34055"] = {
+	} or nil,
+	["i:34055"] = not TSM.IsWowVanillaClassic() and {
 		["i:34056"] = 1/3, -- Greater Cosmic Essence
-	},
-	["i:34056"] = {
+	} or nil,
+	["i:34056"] = not TSM.IsWowVanillaClassic() and {
 		["i:34055"] = 3, -- Lesser Cosmic Essence
-	},
-	["i:22446"] = {
+	} or nil,
+	["i:22446"] = not TSM.IsWowVanillaClassic() and {
 		["i:22447"] = 1/3, -- Greater Planar Essence
-	},
-	["i:22447"] = {
+	} or nil,
+	["i:22447"] = not TSM.IsWowVanillaClassic() and {
 		["i:22446"] = 3, -- Lesser Planar Essence
-	},
+	} or nil,
 	["i:16203"] = {
 		["i:16202"] = 1/3, -- Greater Eternal Essence
 	},
@@ -64,131 +64,131 @@ local DATA = {
 	["i:10938"] = {
 		["i:10939"] = 3, -- Lesser Magic Essence
 	},
-	["i:156930"] = {
+	["i:156930"] = not TSM.IsWowClassic() and {
 		["i:16204"] = 1/3, -- Rich Illusion Dust
-	},
-	["i:16204"] = {
+	} or nil,
+	["i:16204"] = not TSM.IsWowClassic() and {
 		["i:156930"] = 3, -- Light Illusion Dust
-	},
+	} or nil,
 	-- ============================================ Shards =========================================
-	["i:52721"] = {
-		["i:52720"] = 1/3, -- Heavenly Shard
-	},
-	["i:34052"] = {
+	["i:34052"] = not TSM.IsWowVanillaClassic() and {
 		["i:34053"] = 1/3, -- Dream Shard
-	},
-	["i:74247"] = {
+	} or nil,
+	["i:52721"] = not TSM.IsWowClassic() and {
+		["i:52720"] = 1/3, -- Heavenly Shard
+	} or nil,
+	["i:74247"] = not TSM.IsWowClassic() and {
 		["i:74252"] = 1/3, -- Ethereal Shard
-	},
-	["i:111245"] = {
+	} or nil,
+	["i:111245"] = not TSM.IsWowClassic() and {
 		["i:115502"] = 0.1, -- Luminous Shard
-	},
+	} or nil,
 	-- =========================================== Crystals ========================================
-	["i:113588"] = {
+	["i:113588"] = not TSM.IsWowClassic() and {
 		["i:115504"] = 0.1, -- Temporal Crystal
-	},
+	} or nil,
 	-- ======================================== Primals / Motes ====================================
-	["i:21885"] = {
+	["i:21885"] = not TSM.IsWowVanillaClassic() and {
 		["i:22578"] = 0.1, -- Water
-	},
-	["i:22456"] = {
+	} or nil,
+	["i:22456"] = not TSM.IsWowVanillaClassic() and {
 		["i:22577"] = 0.1, -- Shadow
-	},
-	["i:22457"] = {
+	} or nil,
+	["i:22457"] = not TSM.IsWowVanillaClassic() and {
 		["i:22576"] = 0.1, -- Mana
-	},
-	["i:21886"] = {
+	} or nil,
+	["i:21886"] = not TSM.IsWowVanillaClassic() and {
 		["i:22575"] = 0.1, -- Life
-	},
-	["i:21884"] = {
+	} or nil,
+	["i:21884"] = not TSM.IsWowVanillaClassic() and {
 		["i:22574"] = 0.1, -- Fire
-	},
-	["i:22452"] = {
+	} or nil,
+	["i:22452"] = not TSM.IsWowVanillaClassic() and {
 		["i:22573"] = 0.1, -- Earth
-	},
-	["i:22451"] = {
+	} or nil,
+	["i:22451"] = not TSM.IsWowVanillaClassic() and {
 		["i:22572"] = 0.1, -- Air
-	},
+	} or nil,
 	-- ===================================== Crystalized / Eternal =================================
-	["i:37700"] = {
+	["i:37700"] = not TSM.IsWowClassic() and {
 		["i:35623"] = 10, -- Air
-	},
-	["i:35623"] = {
+	} or nil,
+	["i:35623"] = not TSM.IsWowClassic() and {
 		["i:37700"] = 0.1, -- Air
-	},
-	["i:37701"] = {
+	} or nil,
+	["i:37701"] = not TSM.IsWowClassic() and {
 		["i:35624"] = 10, -- Earth
-	},
-	["i:35624"] = {
+	} or nil,
+	["i:35624"] = not TSM.IsWowClassic() and {
 		["i:37701"] = 0.1, -- Earth
-	},
-	["i:37702"] = {
+	} or nil,
+	["i:37702"] = not TSM.IsWowClassic() and {
 		["i:36860"] = 10, -- Fire
-	},
-	["i:36860"] = {
+	} or nil,
+	["i:36860"] = not TSM.IsWowClassic() and {
 		["i:37702"] = 0.1, -- Fire
-	},
-	["i:37703"] = {
+	} or nil,
+	["i:37703"] = not TSM.IsWowClassic() and {
 		["i:35627"] = 10, -- Shadow
-	},
-	["i:35627"] = {
+	} or nil,
+	["i:35627"] = not TSM.IsWowClassic() and {
 		["i:37703"] = 0.1, -- Shadow
-	},
-	["i:37704"] = {
+	} or nil,
+	["i:37704"] = not TSM.IsWowClassic() and {
 		["i:35625"] = 10, -- Life
-	},
-	["i:35625"] = {
+	} or nil,
+	["i:35625"] = not TSM.IsWowClassic() and {
 		["i:37704"] = 0.1, -- Life
-	},
-	["i:37705"] = {
+	} or nil,
+	["i:37705"] = not TSM.IsWowClassic() and {
 		["i:35622"] = 10, -- Water
-	},
-	["i:35622"] = {
+	} or nil,
+	["i:35622"] = not TSM.IsWowClassic() and {
 		["i:37705"] = 0.1, -- Water
-	},
+	} or nil,
 	-- ========================================= Wod Fish ==========================================
-	["i:109137"] = {
+	["i:109137"] = not TSM.IsWowClassic() and {
 		["i:111601"] = 4, -- Enormous Crescent Saberfish
 		["i:111595"] = 2, -- Crescent Saberfish
 		["i:111589"] = 1, -- Small Crescent Saberfish
-	},
-	["i:109138"] = {
+	} or nil,
+	["i:109138"] = not TSM.IsWowClassic() and {
 		["i:111676"] = 4, -- Enormous Jawless Skulker
 		["i:111669"] = 2, -- Jawless Skulker
 		["i:111650"] = 1, -- Small Jawless Skulker
-	},
-	["i:109139"] = {
+	} or nil,
+	["i:109139"] = not TSM.IsWowClassic() and {
 		["i:111675"] = 4, -- Enormous Fat Sleeper
 		["i:111668"] = 2, -- Fat Sleeper
 		["i:111651"] = 1, -- Small Fat Sleeper
-	},
-	["i:109140"] = {
+	} or nil,
+	["i:109140"] = not TSM.IsWowClassic() and {
 		["i:111674"] = 4, -- Enormous Blind Lake Sturgeon
 		["i:111667"] = 2, -- Blind Lake Sturgeon
 		["i:111652"] = 1, -- Small Blind Lake Sturgeon
-	},
-	["i:109141"] = {
+	} or nil,
+	["i:109141"] = not TSM.IsWowClassic() and {
 		["i:111673"] = 4, -- Enormous Fire Ammonite
 		["i:111666"] = 2, -- Fire Ammonite
 		["i:111656"] = 1, -- Small Fire Ammonite
-	},
-	["i:109142"] = {
+	} or nil,
+	["i:109142"] = not TSM.IsWowClassic() and {
 		["i:111672"] = 4, -- Enormous Sea Scorpion
 		["i:111665"] = 2, -- Sea Scorpion
 		["i:111658"] = 1, -- Small Sea Scorpion
-	},
-	["i:109143"] = {
+	} or nil,
+	["i:109143"] = not TSM.IsWowClassic() and {
 		["i:111671"] = 4, -- Enormous Abyssal Gulper Eel
 		["i:111664"] = 2, -- Abyssal Gulper Eel
 		["i:111659"] = 1, -- Small Abyssal Gulper Eel
-	},
-	["i:109144"] = {
+	} or nil,
+	["i:109144"] = not TSM.IsWowClassic() and {
 		["i:111670"] = 4, -- Enormous Blackwater Whiptail
 		["i:111663"] = 2, -- Blackwater Whiptail
 		["i:111662"] = 1, -- Small Blackwater Whiptail
-	},
+	} or nil,
 	-- ========================================== Aromatic Fish Oil (BFA) ===========================
-	["i:160711"] = {
+	["i:160711"] = not TSM.IsWowClassic() and {
 		["i:152543"] = 1, -- Sand Shifter
 		["i:152544"] = 1, -- Slimy Mackerel
 		["i:152545"] = 1, -- Frenzied Fangtooth
@@ -200,105 +200,105 @@ local DATA = {
 		["i:168646"] = 1, -- Mauve Stinger
 		["i:174327"] = 1, -- Malformed Gnasher
 		["i:174328"] = 1, -- Aberrant Voidfin
-	},
+	} or nil,
 	-- ========================================== Ore Nuggets =======================================
-	["i:2771"] = {
+	["i:2771"] = not TSM.IsWowClassic() and {
 		["i:108295"] = 0.1, -- Tin Ore
-	},
-	["i:2772"] = {
+	} or nil,
+	["i:2772"] = not TSM.IsWowClassic() and {
 		["i:108297"] = 0.1, -- Iron Ore
-	},
-	["i:2775"] = {
+	} or nil,
+	["i:2775"] = not TSM.IsWowClassic() and {
 		["i:108294"] = 0.1, -- Silver Ore
-	},
-	["i:2776"] = {
+	} or nil,
+	["i:2776"] = not TSM.IsWowClassic() and {
 		["i:108296"] = 0.1, -- Gold Ore
-	},
-	["i:3858"] = {
+	} or nil,
+	["i:3858"] = not TSM.IsWowClassic() and {
 		["i:108300"] = 0.1, -- Mithril Ore
-	},
-	["i:7911"] = {
+	} or nil,
+	["i:7911"] = not TSM.IsWowClassic() and {
 		["i:108299"] = 0.1, -- Truesilver Ore
-	},
-	["i:10620"] = {
+	} or nil,
+	["i:10620"] = not TSM.IsWowClassic() and {
 		["i:108298"] = 0.1, -- Thorium Ore
-	},
-	["i:23424"] = {
+	} or nil,
+	["i:23424"] = not TSM.IsWowClassic() and {
 		["i:108301"] = 0.1, -- Fel Iron Ore
-	},
-	["i:23425"] = {
+	} or nil,
+	["i:23425"] = not TSM.IsWowClassic() and {
 		["i:108302"] = 0.1, -- Adamantite Ore
-	},
-	["i:23426"] = {
+	} or nil,
+	["i:23426"] = not TSM.IsWowClassic() and {
 		["i:108304"] = 0.1, -- Khorium Ore
-	},
-	["i:23427"] = {
+	} or nil,
+	["i:23427"] = not TSM.IsWowClassic() and {
 		["i:108303"] = 0.1, -- Eternium Ore
-	},
-	["i:36909"] = {
+	} or nil,
+	["i:36909"] = not TSM.IsWowClassic() and {
 		["i:108305"] = 0.1, -- Cobalt Ore
-	},
-	["i:36910"] = {
+	} or nil,
+	["i:36910"] = not TSM.IsWowClassic() and {
 		["i:108391"] = 0.1, -- Titanium Ore
-	},
-	["i:36912"] = {
+	} or nil,
+	["i:36912"] = not TSM.IsWowClassic() and {
 		["i:108306"] = 0.1, -- Saronite Ore
-	},
-	["i:52183"] = {
+	} or nil,
+	["i:52183"] = not TSM.IsWowClassic() and {
 		["i:108309"] = 0.1, -- Pyrite Ore
-	},
-	["i:52185"] = {
+	} or nil,
+	["i:52185"] = not TSM.IsWowClassic() and {
 		["i:108308"] = 0.1, -- Elementium Ore
-	},
-	["i:53038"] = {
+	} or nil,
+	["i:53038"] = not TSM.IsWowClassic() and {
 		["i:108307"] = 0.1, -- Obsidium Ore
-	},
-	["i:72092"] = {
+	} or nil,
+	["i:72092"] = not TSM.IsWowClassic() and {
 		["i:97512"] = 0.1, -- Ghost Iron Ore
-	},
-	["i:109119"] = {
+	} or nil,
+	["i:109119"] = not TSM.IsWowClassic() and {
 		["i:109991"] = 0.1, -- True Iron Ore
-	},
+	} or nil,
 	-- =========================================== Herb Parts ======================================
-	["i:2449"] = {
+	["i:2449"] = not TSM.IsWowClassic() and {
 		["i:108319"] = 0.1, -- Earthroot Stem
-	},
-	["i:2453"] = {
+	} or nil,
+	["i:2453"] = not TSM.IsWowClassic() and {
 		["i:108322"] = 0.1, -- Bruiseweed Stem
-	},
-	["i:3357"] = {
+	} or nil,
+	["i:3357"] = not TSM.IsWowClassic() and {
 		["i:108325"] = 0.1, -- Liferoot Stem
-	},
-	["i:3358"] = {
+	} or nil,
+	["i:3358"] = not TSM.IsWowClassic() and {
 		["i:108326"] = 0.1, -- Khadgar's Whisker Stem
-	},
-	["i:3819"] = {
+	} or nil,
+	["i:3819"] = not TSM.IsWowClassic() and {
 		["i:108329"] = 0.1, -- Dragon's Teeth Stem
-	},
-	["i:8839"] = {
+	} or nil,
+	["i:8839"] = not TSM.IsWowClassic() and {
 		["i:108336"] = 0.1, -- Blindweed Stem
-	},
-	["i:22792"] = {
+	} or nil,
+	["i:22792"] = not TSM.IsWowClassic() and {
 		["i:108350"] = 0.1, -- Nightmare Vine Stem
-	},
-	["i:36903"] = {
+	} or nil,
+	["i:36903"] = not TSM.IsWowClassic() and {
 		["i:108353"] = 0.1, -- Adder's Tongue Stem
-	},
-	["i:52985"] = {
+	} or nil,
+	["i:52985"] = not TSM.IsWowClassic() and {
 		["i:108362"] = 0.1, -- Azshara's Veil Stem
-	},
-	["i:52988"] = {
+	} or nil,
+	["i:52988"] = not TSM.IsWowClassic() and {
 		["i:108365"] = 0.1, -- Whiptail Stem
-	},
-	["i:72235"] = {
+	} or nil,
+	["i:72235"] = not TSM.IsWowClassic() and {
 		["i:97621"] = 0.1, -- Silkweed Stem
-	},
-	["i:109124"] = {
+	} or nil,
+	["i:109124"] = not TSM.IsWowClassic() and {
 		["i:109624"] = 0.1, -- Broken Frostweed Stem
-	},
-	["i:109125"] = {
+	} or nil,
+	["i:109125"] = not TSM.IsWowClassic() and {
 		["i:109625"] = 0.1, -- Broken Fireweed Stem
-	},
+	} or nil,
 }
 
 

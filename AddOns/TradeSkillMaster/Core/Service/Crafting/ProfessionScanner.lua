@@ -262,6 +262,7 @@ function private.ScanProfession()
 				name, _, skillType = GetCraftInfo(i)
 				if skillType ~= "header" then
 					hash = Math.CalculateHash(name)
+					hash = Math.CalculateHash(GetCraftIcon(i), hash)
 					for j = 1, GetCraftNumReagents(i) do
 						local _, _, quantity = GetCraftReagentInfo(i, j)
 						hash = Math.CalculateHash(ItemString.Get(GetCraftReagentItemLink(i, j)), hash)
@@ -272,6 +273,7 @@ function private.ScanProfession()
 				name, skillType = GetTradeSkillInfo(i)
 				if skillType ~= "header" then
 					hash = Math.CalculateHash(name)
+					hash = Math.CalculateHash(GetTradeSkillIcon(i), hash)
 					for j = 1, GetTradeSkillNumReagents(i) do
 						local _, _, quantity = GetTradeSkillReagentInfo(i, j)
 						hash = Math.CalculateHash(ItemString.Get(GetTradeSkillReagentItemLink(i, j)), hash)

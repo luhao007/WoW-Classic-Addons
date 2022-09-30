@@ -2688,6 +2688,42 @@
     ]
   },
   {
+    "source": "github",
+    "id": "Hyphie24/Overachiever_Wrath",
+    "slug": "hyphie24/overachiever_wrath",
+    "name": "Overachiever_Wrath",
+    "description": "Overachiever for Wrath Classic",
+    "url": "https://github.com/Hyphie24/Overachiever_Wrath",
+    "download_url": "https://github.com/Hyphie24/Overachiever_Wrath/releases/download/v1.2.6-alpha/Overachiever.zip",
+    "date_published": "2022-09-05T04:12:08+00:00",
+    "version": "v1.2.6-alpha",
+    "changelog_url": "data:,-%20Updated%20toc%20for%20Wrath%20Classic%0D%0A-%20Fixed%20search%20to%20not%20show%20later%20expansions%20achievements%0D%0A-%20Suggestions%20tabs%20working%20for%20current%20dungeons/raids%0D%0A-%20Tradeskills%20%2Amay%20be%20working%2A%20I%27m%20unable%20to%20test%20being%20I%20have%20no%20max%20level%20on%20classic%20and%20no%20max%20cooking%0D%0A%0D%0ACurrent%20build%20update%2C%20possibly%20full%20with%20bugs%20but%20at%20the%20moment%20nothing%20is%20found%20%28if%20max%20levels%20find%20error%20please%20submit%20issues%29%0D%0A%0D%0AIf%20anyone%20finds%20out%20how%20to%20load%20the%20tabs%20to%20achievements%20window%2C%20please%20let%20me%20know%0D%0A%0D%0AAgain%20work%20around%20on%20getting%20achievement%20tabs%20to%20load%0D%0A%0D%0A%2A%2ASTEPS%20TO%20GET%20TABS%20TO%20LOAD%2A%2A%0D%0A%0D%0A1.%20Open%20achievement%20frame%20when%20logged%20into%20world%0D%0A2.%20open%20addon%20control%20panel%20or%20similar%0D%0A3.%20hit%20load%20to%20force%20load%20and%20will%20work%20normal%20%28until%20logout%29%0D%0A%0D%0A%21%5BCurrent%20work%20around%5D%28https%3A//i.ibb.co/261HspS/Workaround.png%29%20",
+    "options": {
+      "strategy": "default"
+    },
+    "folders": [
+      {
+        "name": "Overachiever"
+      },
+      {
+        "name": "Overachiever_Cache"
+      },
+      {
+        "name": "Overachiever_Tabs"
+      },
+      {
+        "name": "Overachiever_Trade"
+      }
+    ],
+    "deps": [],
+    "logged_versions": [
+      {
+        "version": "v1.2.6-alpha",
+        "install_time": "2022-09-27T13:58:52+00:00"
+      }
+    ]
+  },
+  {
     "source": "instawow",
     "id": "1",
     "slug": "weakauras-companion-autoupdate",
