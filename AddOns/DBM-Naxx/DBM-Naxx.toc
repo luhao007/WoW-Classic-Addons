@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Tandanu/Nitram
-## Version: bf28ce2
+## Version: 88434f7
 ## RequiredDeps: DBM-Core
 ## LoadOnDemand: 1
 ## SavedVariables: DBMNaxx_AllSavedVars

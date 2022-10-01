@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Aznamir, Dyaxler, Es, gallantron
-## Version: v1.4.9-classic
+## Version: v1.5.0-classic
 ## Dependencies: 
 ## OptionalDeps: Ace3, LibSharedMedia-3.0, SharedMedia
 ## SavedVariables: PallyPowerDB, PallyPower_Assignments, PallyPower_NormalAssignments, PallyPower_AuraAssignments, PallyPower_SavedPresets, PallyPower_ChanNames, LCD_Data, LCD_GUIDAccess

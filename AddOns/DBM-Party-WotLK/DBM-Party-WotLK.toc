@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Arta
-## Version: 3.4.14-1-g182ecac
+## Version: 3.4.14-4-g59ebfb7
 ## RequiredDeps: DBM-Core
 ## LoadOnDemand: 1
 ## SavedVariables: DBMPartyWotLK_AllSavedVars
