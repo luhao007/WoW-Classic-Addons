@@ -558,9 +558,9 @@ function DatabaseTable.BulkInsertNewRow(self, ...)
 		self._data[rowIndex + i - 1] = value
 		local uniqueValues = self._uniques[field]
 		if uniqueValues then
-			-- if uniqueValues[value] ~= nil then
-			-- 	error(format("A row with this unique value (%s) already exists", tostring(value)), 2)
-			-- end
+			if uniqueValues[value] ~= nil then
+				error(format("A row with this unique value (%s) already exists", tostring(value)), 2)
+			end
 			uniqueValues[value] = uuid
 		end
 	end
@@ -595,9 +595,9 @@ function DatabaseTable.BulkInsertNewRowFast6(self, v1, v2, v3, v4, v5, v6, extra
 	if self._bulkInsertContext.fastUnique == 1 then
 		-- the first field is always a unique (and the only unique)
 		local uniqueValues = self._uniques[self._storedFieldList[1]]
-		-- if uniqueValues[v1] ~= nil then
-		-- 	error(format("A row with this unique value (%s) already exists", tostring(v1)), 2)
-		-- end
+		if uniqueValues[v1] ~= nil then
+			error(format("A row with this unique value (%s) already exists", tostring(v1)), 2)
+		end
 		uniqueValues[v1] = uuid
 	elseif self._bulkInsertContext.fastUnique then
 		error("Invalid unique field num")
@@ -635,9 +635,9 @@ function DatabaseTable.BulkInsertNewRowFast8(self, v1, v2, v3, v4, v5, v6, v7, v
 	if self._bulkInsertContext.fastUnique == 1 then
 		-- the first field is always a unique (and the only unique)
 		local uniqueValues = self._uniques[self._storedFieldList[1]]
-		-- if uniqueValues[v1] ~= nil then
-		-- 	error(format("A row with this unique value (%s) already exists", tostring(v1)), 2)
-		-- end
+		if uniqueValues[v1] ~= nil then
+			error(format("A row with this unique value (%s) already exists", tostring(v1)), 2)
+		end
 		uniqueValues[v1] = uuid
 	elseif self._bulkInsertContext.fastUnique then
 		error("Invalid unique field num")
@@ -679,9 +679,9 @@ function DatabaseTable.BulkInsertNewRowFast12(self, v1, v2, v3, v4, v5, v6, v7, 
 	if self._bulkInsertContext.fastUnique == 1 then
 		-- the first field is always a unique (and the only unique)
 		local uniqueValues = self._uniques[self._storedFieldList[1]]
-		-- if uniqueValues[v1] ~= nil then
-		-- 	error(format("A row with this unique value (%s) already exists", tostring(v1)), 2)
-		-- end
+		if uniqueValues[v1] ~= nil then
+			error(format("A row with this unique value (%s) already exists", tostring(v1)), 2)
+		end
 		uniqueValues[v1] = uuid
 	elseif self._bulkInsertContext.fastUnique then
 		error("Invalid unique field num")
@@ -725,9 +725,9 @@ function DatabaseTable.BulkInsertNewRowFast14(self, v1, v2, v3, v4, v5, v6, v7, 
 	if self._bulkInsertContext.fastUnique == 1 then
 		-- the first field is always a unique (and the only unique)
 		local uniqueValues = self._uniques[self._storedFieldList[1]]
-		-- if uniqueValues[v1] ~= nil then
-		-- 	error(format("A row with this unique value (%s) already exists", tostring(v1)), 2)
-		-- end
+		if uniqueValues[v1] ~= nil then
+			error(format("A row with this unique value (%s) already exists", tostring(v1)), 2)
+		end
 		uniqueValues[v1] = uuid
 	elseif self._bulkInsertContext.fastUnique then
 		error("Invalid unique field num")
@@ -1071,9 +1071,9 @@ function DatabaseTable._InsertRow(self, row)
 		tinsert(self._data, value)
 		local uniqueValues = self._uniques[field]
 		if uniqueValues then
-			-- if uniqueValues[value] ~= nil then
-			-- 	error(format("A row with this unique value (%s) already exists", tostring(value)), 2)
-			-- end
+			if uniqueValues[value] ~= nil then
+				error(format("A row with this unique value (%s) already exists", tostring(value)), 2)
+			end
 			uniqueValues[value] = uuid
 		end
 	end

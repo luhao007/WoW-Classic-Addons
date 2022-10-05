@@ -1,13 +1,16 @@
-1.1.0 Release Notes
+1.1.1 Release Notes
 Contributions made by Crieve:
-* Added the horde Master of Alterac Valley achievement.
-* You can now plot coordinates directly from the Mount and Battle Pet categories, assuming there are coordinates attached to their headers somewhere in the addon.
-* The Diplomat has nothing to do with Feralas.
-* Added all Wrath of the Lich King era Thrown, Idols, Librams, Sigils, and Totems that get removed from the game with Cataclysm. Added objectives for the Death Knight starting area. (not finished, sent me on the above tangent)
-* Added a README.md for shininess on GitHub.
-* ATT and BlizzMove are no longer mortal enemies.
-* Added "Back" as a toggleable filter.
-* Pink Elekks On Parade is available in Wrath Classic this year!
-* Repeatable quests will once again use collectible reputations properly.
-* Catch the Wild Wolpertinger! is available in Wrath Classic this year!
+* Updated Brewfest for 2022-09-20
+* Fixed a bug that prevented you from detecting that you have learned Riding Skill, thus making Learn to Ride not disappear for some characters.
+* Fixed some achievement criteria in Grizzly Hills and Zul'Drak. Added a note to the tooltip for all pvp related things.
+* Updated Tiffany Cartier in Dalaran. (I hate you, Cataclysm.) Added the PVP Jewelcrafting Vendors in SW and Org. (removed with Cata) Added the Gem Perfection quests for Jewelcrafters. (removed with Cata)
+* Fixed Jepetto Joybuzz for Wrath Classic.
+* Added missing timeline data for Zul'Drak quests added with Cata.
+* Added some missing versions of quests that were removed with the Cataclysm in Zul'Drak.
+* Updated The Coin Master and Chasing Marcia in Dalaran for Wrath Classic.
+* Portable Hole was added Wrath Phase Four. Fixed a bug where a battle pet with coordinates directly attached would result in an infinite loop.
+* Updated Northrend Flight Paths to include their npcs and faction requirements.
+* Updates to several Northrend achievements.
+* Added Item Level as an Interface option.
+* Temporarily disabled the spellID missing in ATT debug message. (I KNOW! I'M SORRY!)
 

@@ -2464,6 +2464,7 @@ function private.FSMCreate()
 				assert(not TSM.IsWowClassic() or index)
 				-- buy the auction
 				local buyout = context.findAuction:GetBuyouts()
+				assert(not TSM.IsWowClassic() or buyout == select(10, GetAuctionItemInfo("list", index)))
 				local future = context.auctionScan:PlaceBidOrBuyout(index, buyout, context.findAuction, quantity)
 				if future then
 					future:SetScript("OnDone", private.FSMFutureOnDone)

@@ -9,6 +9,7 @@ icons["Dungeon"] = "Interface\\Addons\\HandyNotes_DungeonLocations (Classic)\\du
 icons["Raid"] = "Interface\\Addons\\HandyNotes_DungeonLocations (Classic)\\raid.tga"
 icons["Mixed"] = "Interface\\Addons\\HandyNotes_DungeonLocations (Classic)\\merged.tga"
 icons["Gray"] = "Interface\\Addons\\HandyNotes_DungeonLocations (Classic)\\gray.tga"
+icons["MeetingStone"] = "Interface\\Addons\\HandyNotes_DungeonLocations (Classic)\\gray.tga"
 
 local db
 local mapToContinent = { }
@@ -396,6 +397,7 @@ local defaults = {
    Dungeon = true,
    Raid = true,
    Mixed = true,
+   MeetingStone = true,
   },
  },
 }
@@ -796,8 +798,16 @@ nodes[1421] = { -- Silverpine
 		type = "Dungeon",
 	}, -- Shadowfang Keep
 }
+--[[
+[53237057] = {
+		name = L["The Stockade"],
+		type = "MeetingStone",
+		min = 21,
+		max = 29,
+	},
+	]]--
 nodes[1453] = { -- StormwindCity
-	[40285521] = {
+	[50486638] = {
 		name = L["The Stockade"],
 		type = "Dungeon",
 	}, -- The Stockade

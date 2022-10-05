@@ -73,15 +73,15 @@ local YELLOW = "|cffFFd200";   -- Ingame Yellow
 --------------- INST69 - Caverns of Time: Stratholme Past ---------------
 
 Inst69Story = "Prior to his unthinkable merger with the Lich King, Arthas waged war against the Scourge, bent on eradicating the plague of undeath that had spread throughout Lordaeron. After Arthas watched villages succumb to darkness and saw his fallen subjects transformed into hideous undead creatures, fear and hate engulfed his mind. Upon discovering signs of the plague within Stratholme, he knew it was only a matter of time before the residents of the city were reborn as Scourge agents. For Arthas, there was only one course of action: purge the city. Yet within the Caverns of Time, deceptive magic permeates Stratholme. The infinite dragons and their agents have targeted Arthas and his quest to cull the city, seeking to alter history. Fearing the temporal disruption might jeopardize Azeroth's very existence, the bronze dragonflight has called upon mortals to assist Arthas and ensure that the purge is carried out successfully. Regardless of how vile the event might seem, the keepers of time maintain that what was, must always be."
-Inst69Caption = "CoT: Stratholme Past"
-Inst69QAA = "2 Quests"
-Inst69QAH = "2 Quests"
+Inst69Caption = "Culling of Stratholme"
+Inst69QAA = "4 Quests"
+Inst69QAH = "4 Quests"
 
 --Quest 1 Alliance
 Inst69Quest1 = "1. Dispelling Illusions"
 Inst69Quest1_Aim = "Chromie wants you to use the Arcane Disruptor on the suspicious crates in Stratholme Past, then speak to her near the entrance to Stratholme."
-Inst69Quest1_Location = "Chromie (Stratholme Past; "..YELLOW.."[1]"..WHITE..")"
-Inst69Quest1_Note = "The crates are found near the houses along the road on the way to Stratholme. After completion, you can turn the quest in to another Chromie at "..YELLOW.."[2]"..WHITE.."."
+Inst69Quest1_Location = "Chromie (Stratholme Past; "..GREEN.."[1']"..WHITE..")"
+Inst69Quest1_Note = "The crates are found near the houses along the road on the way to Stratholme. After completion, you can turn the quest in to another Chromie at the bridge before you enter the city."
 Inst69Quest1_Prequest = "None"
 Inst69Quest1_Folgequest = "A Royal Escort"
 -- No Rewards for this quest
@@ -89,7 +89,7 @@ Inst69Quest1_Folgequest = "A Royal Escort"
 --Quest 2 Alliance
 Inst69Quest2 = "2. A Royal Escort"
 Inst69Quest2_Aim = "Chromie has asked you to accompany Arthas in the Culling of Stratholme. You are to speak with her again after Mal'Ganis is defeated."
-Inst69Quest2_Location = "Chromie (Stratholme Past; "..YELLOW.."[2]"..WHITE..")"
+Inst69Quest2_Location = "Chromie (Stratholme Past; "..GREEN.."[1']"..WHITE..")"
 Inst69Quest2_Note = "Mal'Ganis is at "..YELLOW.."[5]"..WHITE..". Chromie will appear there after the event is over."
 Inst69Quest2_Prequest = "Dispelling Illusions"
 Inst69Quest2_Folgequest = "None"
@@ -98,6 +98,31 @@ Inst69Quest2name1 = "Gloves of the Time Guardian"
 Inst69Quest2name2 = "Handwraps of Preserved History"
 Inst69Quest2name3 = "Grips of Chronological Events"
 Inst69Quest2name4 = "Gauntlets of The Culling"
+
+--Quest 3 Alliance
+Inst69Quest3 = "3. Timear Foresees Infinite Agents in your Future!"
+Inst69Quest3_Aim = "Archmage Timear in Dalaran has foreseen that you must slay 4 Infinite Agents."
+Inst69Quest3_Location = "Archmage Timear (Dalaran - The Violet Hold; "..YELLOW.."64.2, 54.7"..WHITE..")"
+Inst69Quest3_Note = "This is a daily quest. The Infinite Agents are found in the Town Hall Building between the second and third bosses."
+Inst69Quest3_Prequest = "None"
+Inst69Quest3_Folgequest = "None"
+--
+Inst69Quest3name1 = "Kirin Tor Commendation Badge"
+Inst69Quest3name2 = "Argent Crusade Commendation Badge"
+Inst69Quest3name3 = "Ebon Blade Commendation Badge"
+Inst69Quest3name4 = "Wyrmrest Commendation Badge"
+Inst69Quest3name5 = "Sons of Hodir Commendation Badge"
+Inst69Quest3name6 = "Emblem of Conquest"
+
+--Quest 4 Alliance
+Inst69Quest4 = "4. Proof of Demise: Mal'Ganis"
+Inst69Quest4_Aim = "Archmage Lan'dalock in Dalaran wants you to return with the Artifact from the Nathrezim Homeworld."
+Inst69Quest4_Location = "Archmage Lan'dalock (Dalaran - The Violet Hold; "..YELLOW.."57.6, 66.9"..WHITE..")"
+Inst69Quest4_Note = "This daily quest can only be completed on Heroic difficulty.\n\nMal'Ganis is at "..YELLOW.."[5]"..WHITE.."."
+Inst69Quest4_Prequest = "None"
+Inst69Quest4_Folgequest = "None"
+--
+Inst69Quest4name1 = "Emblem of Triumph"
 
 
 --Quest 1 Horde  (same as Quest 1 Alliance)
@@ -122,14 +147,39 @@ Inst69Quest2name2_HORDE = Inst69Quest2name2
 Inst69Quest2name3_HORDE = Inst69Quest2name3
 Inst69Quest2name4_HORDE = Inst69Quest2name4
 
+--Quest 3 Horde  (same as Quest 3 Alliance)
+Inst69Quest3_HORDE = Inst69Quest3
+Inst69Quest3_HORDE_Aim = Inst69Quest3_Aim
+Inst69Quest3_HORDE_Location = Inst69Quest3_Location
+Inst69Quest3_HORDE_Note = Inst69Quest3_Note
+Inst69Quest3_HORDE_Prequest = Inst69Quest3_Prequest
+Inst69Quest3_HORDE_Folgequest = Inst69Quest3_Folgequest
+--
+Inst69Quest3name1_HORDE = Inst69Quest3name1
+Inst69Quest3name2_HORDE = Inst69Quest3name2
+Inst69Quest3name3_HORDE = Inst69Quest3name3
+Inst69Quest3name4_HORDE = Inst69Quest3name4
+Inst69Quest3name5_HORDE = Inst69Quest3name5
+Inst69Quest3name6_HORDE = Inst69Quest3name6
+
+--Quest 4 Horde  (same as Quest 4 Alliance)
+Inst69Quest4_HORDE = Inst69Quest4
+Inst69Quest4_HORDE_Aim = Inst69Quest4_Aim
+Inst69Quest4_HORDE_Location = Inst69Quest4_Location
+Inst69Quest4_HORDE_Note = Inst69Quest4_Note
+Inst69Quest4_HORDE_Prequest = Inst69Quest4_Prequest
+Inst69Quest4_HORDE_Folgequest = Inst69Quest4_Folgequest
+--
+Inst69Quest4name1_HORDE = Inst69Quest4name1
+
 
 
 --------------- INST70 - Utgarde Keep: Utgarde Keep ---------------
 
 Inst70Story = "Among the cliffs of the Daggercap Bay in the Howling Fjord stands Utgarde Keep, an impervious fortress occupied by the savage and enigmatic vrykul. With mysterious, foul magic and proto-dragons at their command, the vrykul of Utgarde Keep pose an imminent threat to both the Alliance and the Horde. Only the bravest would dare to strike against Ymiron's faithful and delve into the heart of the vrykul's primeval home."
 Inst70Caption = "Utgarde Keep"
-Inst70QAA = "2 Quests"
-Inst70QAH = "3 Quests"
+Inst70QAA = "3 Quests"
+Inst70QAH = "4 Quests"
 
 --Quest 1 Alliance
 Inst70Quest1 = "1. Into Utgarde!"
@@ -155,6 +205,16 @@ Inst70Quest2name1 = "Amulet of the Tranquil Mind"
 Inst70Quest2name2 = "Razor-Blade Pendant"
 Inst70Quest2name3 = "Necklace of Fragmented Light"
 Inst70Quest2name4 = "Woven Steel Necklace"
+
+--Quest 3 Alliance
+Inst70Quest3 = "3. Proof of Demise: Ingvar the Plunderer"
+Inst70Quest3_Aim = "Archmage Lan'dalock in Dalaran wants you to return with the Axe of the Plunderer."
+Inst70Quest3_Location = "Archmage Lan'dalock (Dalaran - The Violet Hold; "..YELLOW.."57.6, 66.9"..WHITE..")"
+Inst70Quest3_Note = "This daily quest can only be completed on Heroic difficulty.\n\nIngvar the Plunderer is at "..YELLOW.."[3]"..WHITE.."."
+Inst70Quest3_Prequest = "None"
+Inst70Quest3_Folgequest = "None"
+--
+Inst70Quest3name1 = "Emblem of Triumph"
 
 
 --Quest 1 Horde
@@ -195,14 +255,24 @@ Inst70Quest3name2_HORDE = "Hundred Tooth Necklace"
 Inst70Quest3name3_HORDE = "Amulet of Constrained Power"
 Inst70Quest3name4_HORDE = "Tiled-Stone Pendant"
 
+--Quest 4 Horde  (same as Quest 3 Alliance)
+Inst70Quest4_HORDE = Inst70Quest3
+Inst70Quest4_HORDE_Aim = Inst70Quest3_Aim
+Inst70Quest4_HORDE_Location = Inst70Quest3_Location
+Inst70Quest4_HORDE_Note = Inst70Quest3_Note
+Inst70Quest4_HORDE_Prequest = Inst70Quest3_Prequest
+Inst70Quest4_HORDE_Folgequest = Inst70Quest3_Folgequest
+--
+Inst70Quest4name1_HORDE = Inst70Quest3name1
+
 
 
 --------------- INST71 - Utgarde Keep: Utgarde Pinnacle ---------------
 
 Inst71Story = "Among the cliffs of the Daggercap Bay in the Howling Fjord stands Utgarde Keep, an impervious fortress occupied by the savage and enigmatic vrykul. With mysterious, foul magic and proto-dragons at their command, the vrykul of Utgarde Keep pose an imminent threat to both the Alliance and the Horde. Only the bravest would dare to strike against Ymiron's faithful and delve into the heart of the vrykul's primeval home."
 Inst71Caption = "Utgarde Pinnacle"
-Inst71QAA = "2 Quests"
-Inst71QAH = "2 Quests"
+Inst71QAA = "4 Quests"
+Inst71QAH = "4 Quests"
 
 --Quest 1 Alliance
 Inst71Quest1 = "1. Junk in My Trunk"
@@ -230,6 +300,31 @@ Inst71Quest2name2 = "Headguard of Retaliation"
 Inst71Quest2name3 = "Helmet of Just Retribution"
 Inst71Quest2name4 = "Faceguard of Punishment"
 Inst71Quest2name5 = "Platehelm of Irate Revenge"
+
+--Quest 3 Alliance
+Inst71Quest3 = "3. Timear Foresees Ymirjar Berserkers in your Future!"
+Inst71Quest3_Aim = "Archmage Timear in Dalaran wants you to slay 7 Ymirjar Berserkers."
+Inst71Quest3_Location = "Archmage Timear (Dalaran - The Violet Hold; "..YELLOW.."64.2, 54.7"..WHITE..")"
+Inst71Quest3_Note = "This is a daily quest."
+Inst71Quest3_Prequest = "None"
+Inst71Quest3_Folgequest = "None"
+--
+Inst71Quest3name1 = "Kirin Tor Commendation Badge"
+Inst71Quest3name2 = "Argent Crusade Commendation Badge"
+Inst71Quest3name3 = "Ebon Blade Commendation Badge"
+Inst71Quest3name4 = "Wyrmrest Commendation Badge"
+Inst71Quest3name5 = "Sons of Hodir Commendation Badge"
+Inst71Quest3name6 = "Emblem of Conquest"
+
+--Quest 4 Alliance
+Inst71Quest4 = "4. Proof of Demise: King Ymiron"
+Inst71Quest4_Aim = "Archmage Lan'dalock in Dalaran wants you to return with the Locket of the Deceased Queen."
+Inst71Quest4_Location = "Archmage Lan'dalock (Dalaran - The Violet Hold; "..YELLOW.."57.6, 66.9"..WHITE..")"
+Inst71Quest4_Note = "This daily quest can only be completed on Heroic difficulty.\n\nKing Ymiron is at "..YELLOW.."[4]"..WHITE.."."
+Inst71Quest4_Prequest = "None"
+Inst71Quest4_Folgequest = "None"
+--
+Inst71Quest4name1 = "Emblem of Triumph"
 
 
 --Quest 1 Horde  (same as Quest 1 Alliance)
@@ -259,14 +354,39 @@ Inst71Quest2name3_HORDE = Inst71Quest2name3
 Inst71Quest2name4_HORDE = Inst71Quest2name4
 Inst71Quest2name5_HORDE = Inst71Quest2name5
 
+--Quest 3 Horde  (same as Quest 3 Alliance)
+Inst71Quest3_HORDE = Inst71Quest3
+Inst71Quest3_HORDE_Aim = Inst71Quest3_Aim
+Inst71Quest3_HORDE_Location = Inst71Quest3_Location
+Inst71Quest3_HORDE_Note = Inst71Quest3_Note
+Inst71Quest3_HORDE_Prequest = Inst71Quest3_Prequest
+Inst71Quest3_HORDE_Folgequest = Inst71Quest3_Folgequest
+--
+Inst71Quest3name1_HORDE = Inst71Quest3name1
+Inst71Quest3name2_HORDE = Inst71Quest3name2
+Inst71Quest3name3_HORDE = Inst71Quest3name3
+Inst71Quest3name4_HORDE = Inst71Quest3name4
+Inst71Quest3name5_HORDE = Inst71Quest3name5
+Inst71Quest3name6_HORDE = Inst71Quest3name6
+
+--Quest 4 Horde  (same as Quest 4 Alliance)
+Inst71Quest4_HORDE = Inst71Quest4
+Inst71Quest4_HORDE_Aim = Inst71Quest4_Aim
+Inst71Quest4_HORDE_Location = Inst71Quest4_Location
+Inst71Quest4_HORDE_Note = Inst71Quest4_Note
+Inst71Quest4_HORDE_Prequest = Inst71Quest4_Prequest
+Inst71Quest4_HORDE_Folgequest = Inst71Quest4_Folgequest
+--
+Inst71Quest4name1_HORDE = Inst71Quest4name1
+
 
 
 --------------- INST72 - The Nexus: The Nexus ---------------
 
 Inst72Story = "The blue Dragon Aspect, Malygos, has created rifts with his manipulation of raw magical power: tears in the very fabric of the magical dimension. The Kirin Tor, the elite magi of Dalaran, have formed a council with the red dragonflight, who are charged with the preservation of life. To this end, the two groups have begun actively subverting Malygos's devastating campaign. The sides have been chosen; the battle lines have been drawn. The only question that remains now is...Who will win."
 Inst72Caption = "The Nexus"
-Inst72QAA = "4 Quests"
-Inst72QAH = "4 Quests"
+Inst72QAA = "5 Quests"
+Inst72QAH = "5 Quests"
 
 --Quest 1 Alliance
 Inst72Quest1 = "1. Have They No Shame?"
@@ -319,6 +439,16 @@ Inst72Quest4name2 = "Treads of Torn Future"
 Inst72Quest4name3 = "Spiked Treads of Mutation"
 Inst72Quest4name4 = "Invigorating Sabatons"
 Inst72Quest4name5 = "Boots of the Unbowed Protector"
+
+--Quest 5 Alliance
+Inst72Quest5 = "5. Proof of Demise: Keristrasza"
+Inst72Quest5_Aim = "Archmage Lan'dalock in Dalaran wants you to return with Keristrasza's Broken Heart."
+Inst72Quest5_Location = "Archmage Lan'dalock (Dalaran - The Violet Hold; "..YELLOW.."57.6, 66.9"..WHITE..")"
+Inst72Quest5_Note = "This daily quest can only be completed on Heroic difficulty.\n\nKeristrasza is at "..YELLOW.."[5]"..WHITE.."."
+Inst72Quest5_Prequest = "None"
+Inst72Quest5_Folgequest = "None"
+--
+Inst72Quest5name1 = "Emblem of Triumph"
 
 
 --Quest 1 Horde  (same as Quest 1 Alliance)
@@ -373,14 +503,24 @@ Inst72Quest4name3_HORDE = Inst72Quest4name3
 Inst72Quest4name4_HORDE = Inst72Quest4name4
 Inst72Quest4name5_HORDE = Inst72Quest4name5
 
+--Quest 5 Horde  (same as Quest 5 Alliance)
+Inst72Quest5_HORDE = Inst72Quest5
+Inst72Quest5_HORDE_Aim = Inst72Quest5_Aim
+Inst72Quest5_HORDE_Location = Inst72Quest5_Location
+Inst72Quest5_HORDE_Note = Inst72Quest5_Note
+Inst72Quest5_HORDE_Prequest = Inst72Quest5_Prequest
+Inst72Quest5_HORDE_Folgequest = Inst72Quest5_Folgequest
+--
+Inst72Quest5name1_HORDE = Inst72Quest5name1
+
 
 
 --------------- INST73 - The Nexus: The Oculus ---------------
 
 Inst73Story = "The blue Dragon Aspect, Malygos, has created rifts with his manipulation of raw magical power: tears in the very fabric of the magical dimension. The Kirin Tor, the elite magi of Dalaran, have formed a council with the red dragonflight, who are charged with the preservation of life. To this end, the two groups have begun actively subverting Malygos's devastating campaign. The sides have been chosen; the battle lines have been drawn. The only question that remains now is...Who will win."
 Inst73Caption = "The Oculus"
-Inst73QAA = "4 Quests"
-Inst73QAH = "4 Quests"
+Inst73QAA = "6 Quests"
+Inst73QAH = "6 Quests"
 
 --Quest 1 Alliance
 Inst73Quest1 = "1. The Struggle Persists"
@@ -425,6 +565,31 @@ Inst73Quest4name1 = "Cuffs of Gratitude"
 Inst73Quest4name2 = "Soaring Wristwraps"
 Inst73Quest4name3 = "Bindings of Raelorasz"
 Inst73Quest4name4 = "Bracers of Reverence"
+
+--Quest 5 Alliance
+Inst73Quest5 = "5. Timear Foresees Centrifuge Constructs in your Future!"
+Inst73Quest5_Aim = "Archmage Timear in Dalaran has foreseen that you must destroy 10 Centrifuge Constructs."
+Inst73Quest5_Location = "Archmage Timear (Dalaran - The Violet Hold; "..YELLOW.."64.2, 54.7"..WHITE..")"
+Inst73Quest5_Note = "This is a daily quest. You find the Centrifuge Constructs in six different groups between the first and second bosses, at "..YELLOW.."1'"..WHITE.."."
+Inst73Quest5_Prequest = "None"
+Inst73Quest5_Folgequest = "None"
+--
+Inst73Quest5name1 = "Kirin Tor Commendation Badge"
+Inst73Quest5name2 = "Argent Crusade Commendation Badge"
+Inst73Quest5name3 = "Ebon Blade Commendation Badge"
+Inst73Quest5name4 = "Wyrmrest Commendation Badge"
+Inst73Quest5name5 = "Sons of Hodir Commendation Badge"
+Inst73Quest5name6 = "Emblem of Conquest"
+
+--Quest 6 Alliance
+Inst73Quest6 = "6. Proof of Demise: Ley-Guardian Eregos"
+Inst73Quest6_Aim = "Archmage Lan'dalock in Dalaran wants you to return with a Ley Line Tuner."
+Inst73Quest6_Location = "Archmage Lan'dalock (Dalaran - The Violet Hold; "..YELLOW.."57.6, 66.9"..WHITE..")"
+Inst73Quest6_Note = "This daily quest can only be completed on Heroic difficulty.\n\nThe Ley Line Tuner comes from the Cache of Eregos at "..YELLOW.."[5]"..WHITE.."."
+Inst73Quest6_Prequest = "None"
+Inst73Quest6_Folgequest = "None"
+--
+Inst73Quest6name1 = "Emblem of Triumph"
 
 
 --Quest 1 Horde  (same as Quest 1 Alliance)
@@ -471,6 +636,31 @@ Inst73Quest4name2_HORDE = Inst73Quest4name2
 Inst73Quest4name3_HORDE = Inst73Quest4name3
 Inst73Quest4name4_HORDE = Inst73Quest4name4
 
+--Quest 5 Horde  (same as Quest 5 Alliance)
+Inst73Quest5_HORDE = Inst73Quest5
+Inst73Quest5_HORDE_Aim = Inst73Quest5_Aim
+Inst73Quest5_HORDE_Location = Inst73Quest5_Location
+Inst73Quest5_HORDE_Note = Inst73Quest5_Note
+Inst73Quest5_HORDE_Prequest = Inst73Quest5_Prequest
+Inst73Quest5_HORDE_Folgequest = Inst73Quest5_Folgequest
+--
+Inst73Quest5name1_HORDE = Inst73Quest5name1
+Inst73Quest5name2_HORDE = Inst73Quest5name2
+Inst73Quest5name3_HORDE = Inst73Quest5name3
+Inst73Quest5name4_HORDE = Inst73Quest5name4
+Inst73Quest5name5_HORDE = Inst73Quest5name5
+Inst73Quest5name6_HORDE = Inst73Quest5name6
+
+--Quest 6 Horde  (same as Quest 6 Alliance)
+Inst73Quest6_HORDE = Inst73Quest6
+Inst73Quest6_HORDE_Aim = Inst73Quest6_Aim
+Inst73Quest6_HORDE_Location = Inst73Quest6_Location
+Inst73Quest6_HORDE_Note = Inst73Quest6_Note
+Inst73Quest6_HORDE_Prequest = Inst73Quest6_Prequest
+Inst73Quest6_HORDE_Folgequest = Inst73Quest6_Folgequest
+--
+Inst73Quest6name1_HORDE = Inst73Quest6name1
+
 
 
 --------------- INST74 - The Nexus: The Eye of Eternity ---------------
@@ -494,7 +684,7 @@ Inst74Quest1name3 = "Pendant of the Dragonsworn"
 Inst74Quest1name4 = "Drakescale Collar"
 
 --Quest 2 Alliance
-Inst74Quest2 = "2. Heroic Judgment at the Eye of Eternity (Heroic)"
+Inst74Quest2 = "2. Heroic Judgment at the Eye of Eternity"
 Inst74Quest2_Aim = "Krasus atop Wyrmrest Temple in the Dragonblight wants you to return with the Heart of Magic."
 Inst74Quest2_Location = "Krasus (Dragonblight - Wyrmrest Temple; "..YELLOW.."59.8, 54.6"..WHITE..")"
 Inst74Quest2_Note = "After Malygos dies, his Heart of Magic can be found in a Red Heart floating near Alexstrasza's Gift."
@@ -561,8 +751,8 @@ Inst74Quest3name2_HORDE = Inst74Quest3name2
 
 Inst75Story = "Azjol-Nerub is a vast underground dungeon hub home to the arachnid-like nerubian. Located in icy Dragonblight, Azjol-Nerub can be divided into two sections: the Old Kingdom and the Upper Kingdom. Many of deepest areas in Azjol-Nerub are held by faceless ones.\n\nAzjol-Nerub: The Upper Kingdom is a mystery waiting to be explored. It once held a powerful and advanced civilization, and many of its treasures still rest here undamaged. Great riches litter the lower halls, not only gems and magic items but art and literature and scholarly tomes. The Scourge infest this place. Forgotten ones seethe below, eager to return to the world above.\n\n"..GREEN.."Quoted from WoWWiki"
 Inst75Caption = "Azjol-Nerub"
-Inst75QAA = "2 Quests"
-Inst75QAH = "2 Quests"
+Inst75QAA = "3 Quests"
+Inst75QAH = "3 Quests"
 
 --Quest 1 Alliance
 Inst75Quest1 = "1. Don't Forget the Eggs!"
@@ -589,6 +779,16 @@ Inst75Quest2name1 = "Kilix's Silk Slippers"
 Inst75Quest2name2 = "Don Soto's Boots"
 Inst75Quest2name3 = "Husk Shard Sabatons"
 Inst75Quest2name4 = "Greaves of the Traitor"
+
+--Quest 3 Alliance
+Inst75Quest3 = "3. Proof of Demise: Anub'arak"
+Inst75Quest3_Aim = "Archmage Lan'dalock in Dalaran wants you to return with the Idle Crown of Anub'arak."
+Inst75Quest3_Location = "Archmage Lan'dalock (Dalaran - The Violet Hold; "..YELLOW.."57.6, 66.9"..WHITE..")"
+Inst75Quest3_Note = "This daily quest can only be completed on Heroic difficulty.\n\nAnub'arak is at "..YELLOW.."[3]"..WHITE.."."
+Inst75Quest3_Prequest = "None"
+Inst75Quest3_Folgequest = "None"
+--
+Inst75Quest3name1 = "Emblem of Triumph"
 
 
 --Quest 1 Horde  (same as Quest 1 Alliance)
@@ -617,17 +817,27 @@ Inst75Quest2name2_HORDE = Inst75Quest2name2
 Inst75Quest2name3_HORDE = Inst75Quest2name3
 Inst75Quest2name4_HORDE = Inst75Quest2name4
 
+--Quest 3 Horde  (same as Quest 3 Alliance)
+Inst75Quest3_HORDE = Inst75Quest3
+Inst75Quest3_HORDE_Aim = Inst75Quest3_Aim
+Inst75Quest3_HORDE_Location = Inst75Quest3_Location
+Inst75Quest3_HORDE_Note = Inst75Quest3_Note
+Inst75Quest3_HORDE_Prequest = Inst75Quest3_Prequest
+Inst75Quest3_HORDE_Folgequest = Inst75Quest3_Folgequest
+--
+Inst75Quest3name1_HORDE = Inst75Quest3name1
+
 
 
 --------------- INST76 - Ahn'kahet: The Old Kingdom ---------------
 
 Inst76Story = "Azjol-Nerub is a vast underground dungeon hub home to the arachnid-like nerubian. Located in icy Dragonblight, Azjol-Nerub can be divided into two sections: the Old Kingdom and the Upper Kingdom. Many of deepest areas in Azjol-Nerub are held by faceless ones.\n\nAhn'kahet: The Old Kingdom is the second dungeon located within Azjol-Nerub and is controlled by nerubians.\n\n"..GREEN.."Quoted from WoWWiki"
 Inst76Caption = "Ahn'kahet: The Old Kingdom"
-Inst76QAA = "3 Quests"
-Inst76QAH = "3 Quests"
+Inst76QAA = "4 Quests"
+Inst76QAH = "4 Quests"
 
 --Quest 1 Alliance
-Inst76Quest1 = "1. All Things in Good Time (Heroic Daily)"
+Inst76Quest1 = "1. All Things in Good Time"
 Inst76Quest1_Aim = "Kilix the Unraveler in the Pit of Narjun wants you to obtain an Ahn'kahar Watcher's Corpse and place it upon the Ahn'kahet Brazier in Ahn'kahet."
 Inst76Quest1_Location = "Kilix the Unraveler (Dragonblight - Azjol-Nerub; "..YELLOW.."26.1, 50.0"..WHITE..")"
 Inst76Quest1_Note = "This daily quest can only be completed on Heroic difficulty.\n\nThe Ahn'kahet Brazier is behind Herald Volazj at "..YELLOW.."[6]"..WHITE..". The corpse has a 1 hour duration timer and will disappear if you leave the instance while alive."
@@ -656,6 +866,16 @@ Inst76Quest3name1 = "Mantle of Thwarted Evil"
 Inst76Quest3name2 = "Shoulderpads of Abhorrence"
 Inst76Quest3name3 = "Shoulderplates of the Abolished"
 Inst76Quest3name4 = "Epaulets of the Faceless Ones"
+
+--Quest 4 Alliance
+Inst76Quest4 = "4. Proof of Demise: Herald Volazj"
+Inst76Quest4_Aim = "Archmage Lan'dalock in Dalaran wants you to return with the Faceless One's Withered Brain."
+Inst76Quest4_Location = "Archmage Lan'dalock (Dalaran - The Violet Hold; "..YELLOW.."57.6, 66.9"..WHITE..")"
+Inst76Quest4_Note = "This daily quest can only be completed on Heroic difficulty.\n\nHerald Volazj is at "..YELLOW.."[5]"..WHITE.."."
+Inst76Quest4_Prequest = "None"
+Inst76Quest4_Folgequest = "None"
+--
+Inst76Quest4name1 = "Emblem of Triumph"
 
 
 --Quest 1 Horde  (same as Quest 1 Alliance)
@@ -689,14 +909,24 @@ Inst76Quest3name2_HORDE = Inst76Quest3name2
 Inst76Quest3name3_HORDE = Inst76Quest3name3
 Inst76Quest3name4_HORDE = Inst76Quest3name4
 
+--Quest 4 Horde  (same as Quest 4 Alliance)
+Inst76Quest4_HORDE = Inst76Quest4
+Inst76Quest4_HORDE_Aim = Inst76Quest4_Aim
+Inst76Quest4_HORDE_Location = Inst76Quest4_Location
+Inst76Quest4_HORDE_Note = Inst76Quest4_Note
+Inst76Quest4_HORDE_Prequest = Inst76Quest4_Prequest
+Inst76Quest4_HORDE_Folgequest = Inst76Quest4_Folgequest
+--
+Inst76Quest4name1_HORDE = Inst76Quest4name1
+
 
 
 --------------- INST77 - Ulduar: Halls of Stone ---------------
 
 Inst77Story = "In the frigid cliffs of the Storm Peaks, legendary explorer Brann Bronzebeard spent countless hours piecing together clues about a recently discovered titan city known as Ulduar. But far from unearthing the mysteries of the titans, the explorer found the city overrun with iron dwarves. Eager to save the priceless information within the titan city before it was destroyed and lost forever, Brann feared that an even greater evil could be at work behind the fall of Ulduar...."
 Inst77Caption = "Halls of Stone"
-Inst77QAA = "1 Quest"
-Inst77QAH = "1 Quest"
+Inst77QAA = "2 Quests"
+Inst77QAH = "2 Quests"
 
 --Quest 1 Alliance
 Inst77Quest1 = "1. Halls of Stone"
@@ -710,6 +940,16 @@ Inst77Quest1name1 = "Mantle of the Intrepid Explorer"
 Inst77Quest1name2 = "Shoulderpads of the Adventurer"
 Inst77Quest1name3 = "Spaulders of Lost Secrets"
 Inst77Quest1name4 = "Pauldrons of Reconnaissance"
+
+--Quest 2 Alliance
+Inst77Quest2 = "2. Proof of Demise: Sjonnir The Ironshaper"
+Inst77Quest2_Aim = "Archmage Lan'dalock in Dalaran wants you to return with the Curse of Flesh Disc."
+Inst77Quest2_Location = "Archmage Lan'dalock (Dalaran - The Violet Hold; "..YELLOW.."57.6, 66.9"..WHITE..")"
+Inst77Quest2_Note = "This daily quest can only be completed on Heroic difficulty.\n\nSjonnir the Ironshaper is at "..YELLOW.."[5]"..WHITE.."."
+Inst77Quest2_Prequest = "None"
+Inst77Quest2_Folgequest = "None"
+--
+Inst77Quest2name1 = "Emblem of Triumph"
 
 
 --Quest 1 Horde  (same as Quest 1 Alliance)
@@ -725,14 +965,24 @@ Inst77Quest1name2_HORDE = Inst77Quest1name2
 Inst77Quest1name3_HORDE = Inst77Quest1name3
 Inst77Quest1name4_HORDE = Inst77Quest1name4
 
+--Quest 2 Horde  (same as Quest 2 Alliance)
+Inst77Quest2_HORDE = Inst77Quest2
+Inst77Quest2_HORDE_Aim = Inst77Quest2_Aim
+Inst77Quest2_HORDE_Location = Inst77Quest2_Location
+Inst77Quest2_HORDE_Note = Inst77Quest2_Note
+Inst77Quest2_HORDE_Prequest = Inst77Quest2_Prequest
+Inst77Quest2_HORDE_Folgequest = Inst77Quest2_Folgequest
+--
+Inst77Quest2name1_HORDE = Inst77Quest2name1
+
 
 
 --------------- INST78 - Ulduar: Halls of Lightning ---------------
 
 Inst78Story = "In the frigid cliffs of the Storm Peaks, legendary explorer Brann Bronzebeard spent countless hours piecing together clues about a recently discovered titan city known as Ulduar. But far from unearthing the mysteries of the titans, the explorer found the city overrun with iron dwarves. Eager to save the priceless information within the titan city before it was destroyed and lost forever, Brann feared that an even greater evil could be at work behind the fall of Ulduar...."
 Inst78Caption = "Halls of Lightning"
-Inst78QAA = "2 Quests"
-Inst78QAH = "2 Quests"
+Inst78QAA = "4 Quests"
+Inst78QAH = "4 Quests"
 
 --Quest 1 Alliance
 Inst78Quest1 = "1. Whatever it Takes!"
@@ -762,6 +1012,31 @@ Inst78Quest2name3 = "Stormforged Shoulders"
 Inst78Quest2name4 = "Pauldrons of Extinguished Hatred"
 Inst78Quest2name5 = "Mantle of Volkhan"
 
+--Quest 3 Alliance
+Inst78Quest3 = "3. Timear Foresees Titanium Vanguards in your Future!"
+Inst78Quest3_Aim = "Archmage Timear in Dalaran has foreseen that you must slay 7 Titanium Vanguards."
+Inst78Quest3_Location = "Archmage Timear (Dalaran - The Violet Hold; "..YELLOW.."64.2, 54.7"..WHITE..")"
+Inst78Quest3_Note = "This is a daily quest."
+Inst78Quest3_Prequest = "None"
+Inst78Quest3_Folgequest = "None"
+--
+Inst78Quest3name1 = "Kirin Tor Commendation Badge"
+Inst78Quest3name2 = "Argent Crusade Commendation Badge"
+Inst78Quest3name3 = "Ebon Blade Commendation Badge"
+Inst78Quest3name4 = "Wyrmrest Commendation Badge"
+Inst78Quest3name5 = "Sons of Hodir Commendation Badge"
+Inst78Quest3name6 = "Emblem of Conquest"
+
+--Quest 4 Alliance
+Inst78Quest4 = "4. Proof of Demise: Loken"
+Inst78Quest4_Aim = "Archmage Lan'dalock in Dalaran wants you to return with the Celestial Ruby Ring."
+Inst78Quest4_Location = "Archmage Lan'dalock (Dalaran - The Violet Hold; "..YELLOW.."57.6, 66.9"..WHITE..")"
+Inst78Quest4_Note = "This daily quest can only be completed on Heroic difficulty.\n\nLoken is at "..YELLOW.."[4]"..WHITE.."."
+Inst78Quest4_Prequest = "None"
+Inst78Quest4_Folgequest = "None"
+--
+Inst78Quest4name1 = "Emblem of Triumph"
+
 
 --Quest 1 Horde  (same as Quest 1 Alliance)
 Inst78Quest1_HORDE = Inst78Quest1
@@ -789,6 +1064,31 @@ Inst78Quest2name2_HORDE = Inst78Quest2name2
 Inst78Quest2name3_HORDE = Inst78Quest2name3
 Inst78Quest2name4_HORDE = Inst78Quest2name4
 Inst78Quest2name5_HORDE = Inst78Quest2name5
+
+--Quest 3 Horde  (same as Quest 3 Alliance)
+Inst78Quest3_HORDE = Inst78Quest3
+Inst78Quest3_HORDE_Aim = Inst78Quest3_Aim
+Inst78Quest3_HORDE_Location = Inst78Quest3_Location
+Inst78Quest3_HORDE_Note = Inst78Quest3_Note
+Inst78Quest3_HORDE_Prequest = Inst78Quest3_Prequest
+Inst78Quest3_HORDE_Folgequest = Inst78Quest3_Folgequest
+--
+Inst78Quest3name1_HORDE = Inst78Quest3name1
+Inst78Quest3name2_HORDE = Inst78Quest3name2
+Inst78Quest3name3_HORDE = Inst78Quest3name3
+Inst78Quest3name4_HORDE = Inst78Quest3name4
+Inst78Quest3name5_HORDE = Inst78Quest3name5
+Inst78Quest3name6_HORDE = Inst78Quest3name6
+
+--Quest 4 Horde  (same as Quest 4 Alliance)
+Inst78Quest4_HORDE = Inst78Quest4
+Inst78Quest4_HORDE_Aim = Inst78Quest4_Aim
+Inst78Quest4_HORDE_Location = Inst78Quest4_Location
+Inst78Quest4_HORDE_Note = Inst78Quest4_Note
+Inst78Quest4_HORDE_Prequest = Inst78Quest4_Prequest
+Inst78Quest4_HORDE_Folgequest = Inst78Quest4_Folgequest
+--
+Inst78Quest4name1_HORDE = Inst78Quest4name1
 
 
 
@@ -828,8 +1128,8 @@ Inst79Quest1name2_HORDE = Inst79Quest1name2
 
 Inst80Story = "Drak'Tharon Keep is located in the icy northlands of Northrend, in the northwestern part of the Grizzly Hills, and is an ancient ice troll stronghold. The Scourge drove the trolls out and took possession, and now the Scourge has a solid garrison there holding the mountain passes. The strange dungeon is filled with dinosaurs and lizards, while teeming with undead. You are sent in to discover the reasoning behind why the trolls are leaving their home of Zul'Drak.\n\n"..GREEN.."Quoted from WoWWiki"
 Inst80Caption = "Drak'Tharon Keep"
-Inst80QAA = "3 Quests"
-Inst80QAH = "3 Quests"
+Inst80QAA = "4 Quests"
+Inst80QAH = "4 Quests"
 
 --Quest 1 Alliance
 Inst80Quest1 = "1. Cleansing Drak'Tharon"
@@ -868,6 +1168,16 @@ Inst80Quest3name1 = "Shameful Cuffs"
 Inst80Quest3name2 = "Scorned Bands"
 Inst80Quest3name3 = "Accused Wristguards"
 Inst80Quest3name4 = "Disavowed Bracers"
+
+--Quest 4 Alliance
+Inst80Quest4 = "4. Proof of Demise: The Prophet Tharon'ja"
+Inst80Quest4_Aim = "Archmage Lan'dalock in Dalaran wants you to return with the Prophet's Enchanted Tiki."
+Inst80Quest4_Location = "Archmage Lan'dalock (Dalaran - The Violet Hold; "..YELLOW.."57.6, 66.9"..WHITE..")"
+Inst80Quest4_Note = "This daily quest can only be completed on Heroic difficulty.\n\nThe Prophet Tharon'ja is at "..YELLOW.."[5]"..WHITE.."."
+Inst80Quest4_Prequest = "None"
+Inst80Quest4_Folgequest = "None"
+--
+Inst80Quest4name1 = "Emblem of Triumph"
 
 
 --Quest 1 Horde  (same as Quest 1 Alliance)
@@ -908,14 +1218,24 @@ Inst80Quest3name2_HORDE = Inst80Quest3name2
 Inst80Quest3name3_HORDE = Inst80Quest3name3
 Inst80Quest3name4_HORDE = Inst80Quest3name4
 
+--Quest 4 Horde  (same as Quest 4 Alliance)
+Inst80Quest4_HORDE = Inst80Quest4
+Inst80Quest4_HORDE_Aim = Inst80Quest4_Aim
+Inst80Quest4_HORDE_Location = Inst80Quest4_Location
+Inst80Quest4_HORDE_Note = Inst80Quest4_Note
+Inst80Quest4_HORDE_Prequest = Inst80Quest4_Prequest
+Inst80Quest4_HORDE_Folgequest = Inst80Quest4_Folgequest
+--
+Inst80Quest4name1_HORDE = Inst80Quest4name1
+
 
 
 --------------- INST81 - Gundrak ---------------
 
 Inst81Story = "Gundrak is the capital of the Ice Trolls. Located in Zul'Drak, the instance contains three entrances which all lead into a main circle. The Drakkari tribe rule Zul'Drak from here, constantly battling the mighty forces of the Scourge. This dungeon shows the Ice Trolls in all their glory, including the opportunity to fight the Ice Troll leader, and teach us why they have been so successful against the Scourge.\n\n"..GREEN.."Quoted from WoWWiki"
 Inst81Caption = "Gundrak"
-Inst81QAA = "3 Quests"
-Inst81QAH = "3 Quests"
+Inst81QAA = "4 Quests"
+Inst81QAH = "4 Quests"
 
 --Quest 1 Alliance
 Inst81Quest1 = "1. For Posterity"
@@ -956,6 +1276,16 @@ Inst81Quest3name2 = "Rhino Hide Kneeboots"
 Inst81Quest3name3 = "Scaled Boots of Fallen Hope"
 Inst81Quest3name4 = "Slippers of the Mojo Dojo"
 Inst81Quest3name5 = "Trollkickers"
+
+--Quest 4 Alliance
+Inst81Quest4 = "4. Proof of Demise: Gal'darah"
+Inst81Quest4_Aim = "Archmage Lan'dalock in Dalaran wants you to return with the Mojo Remnant of Akali."
+Inst81Quest4_Location = "Archmage Lan'dalock (Dalaran - The Violet Hold; "..YELLOW.."57.6, 66.9"..WHITE..")"
+Inst81Quest4_Note = "This daily quest can only be completed on Heroic difficulty.\n\nGal'darah is at "..YELLOW.."[5]"..WHITE.."."
+Inst81Quest4_Prequest = "None"
+Inst81Quest4_Folgequest = "None"
+--
+Inst81Quest4name1 = "Emblem of Triumph"
 
 
 --Quest 1 Horde  (same as Quest 1 Alliance)
@@ -998,14 +1328,24 @@ Inst81Quest3name3_HORDE = Inst81Quest3name3
 Inst81Quest3name4_HORDE = Inst81Quest3name4
 Inst81Quest3name5_HORDE = Inst81Quest3name5
 
+--Quest 4 Horde  (same as Quest 4 Alliance)
+Inst81Quest4_HORDE = Inst81Quest4
+Inst81Quest4_HORDE_Aim = Inst81Quest4_Aim
+Inst81Quest4_HORDE_Location = Inst81Quest4_Location
+Inst81Quest4_HORDE_Note = Inst81Quest4_Note
+Inst81Quest4_HORDE_Prequest = Inst81Quest4_Prequest
+Inst81Quest4_HORDE_Folgequest = Inst81Quest4_Folgequest
+--
+Inst81Quest4name1_HORDE = Inst81Quest4name1
+
 
 
 --------------- INST82 - The Violet Hold ---------------
 
 Inst82Story = "Among the ornate spires and enchanted streets of Dalaran, a dark presence stirs within the mighty walls of the Violet Hold. Long used to restrain threats to the city, the tower holds row upon row of deadly inmates, and it has been diligently watched over by the Kirin Tor. However, a sudden assault has tested the integrity of the hold, putting at risk the safety of everyone outside the prison's walls. Using the dungeon as a means to breach the city, Malygos and his blue dragonflight have begun to chip away at the Violet Hold's defenses, hungry to reclaim arcane dominance over Azeroth. Only the brave souls of those protecting the prison stand between the continued existence of Dalaran and the city's utter annihilation."
 Inst82Caption = "The Violet Hold"
-Inst82QAA = "2 Quests"
-Inst82QAH = "2 Quests"
+Inst82QAA = "3 Quests"
+Inst82QAH = "3 Quests"
 
 --Quest 1 Alliance
 Inst82Quest1 = "1. Discretion is Key"
@@ -1029,6 +1369,16 @@ Inst82Quest2name2 = "Conferred Pantaloons"
 Inst82Quest2name3 = "Labyrinthine Legguards"
 Inst82Quest2name4 = "Dalaran Warden's Legplates"
 
+--Quest 3 Alliance
+Inst82Quest3 = "3. Proof of Demise: Cyanigosa"
+Inst82Quest3_Aim = "Archmage Lan'dalock in Dalaran wants you to return with the Head of Cyanigosa."
+Inst82Quest3_Location = "Archmage Lan'dalock (Dalaran - The Violet Hold; "..YELLOW.."57.6, 66.9"..WHITE..")"
+Inst82Quest3_Note = "This daily quest can only be completed on Heroic difficulty.\n\nCyanigosa is at "..YELLOW.."[6]"..WHITE.."."
+Inst82Quest3_Prequest = "None"
+Inst82Quest3_Folgequest = "None"
+--
+Inst82Quest3name1 = "Emblem of Triumph"
+
 
 --Quest 1 Horde  (same as Quest 1 Alliance)
 Inst82Quest1_HORDE = Inst82Quest1
@@ -1051,6 +1401,16 @@ Inst82Quest2name1_HORDE = Inst82Quest2name1
 Inst82Quest2name2_HORDE = Inst82Quest2name2
 Inst82Quest2name3_HORDE = Inst82Quest2name3
 Inst82Quest2name4_HORDE = Inst82Quest2name4
+
+--Quest 3 Horde  (same as Quest 3 Alliance)
+Inst82Quest3_HORDE = Inst82Quest3
+Inst82Quest3_HORDE_Aim = Inst82Quest3_Aim
+Inst82Quest3_HORDE_Location = Inst82Quest3_Location
+Inst82Quest3_HORDE_Note = Inst82Quest3_Note
+Inst82Quest3_HORDE_Prequest = Inst82Quest3_Prequest
+Inst82Quest3_HORDE_Folgequest = Inst82Quest3_Folgequest
+--
+Inst82Quest3name1_HORDE = Inst82Quest3name1
 
 
 
@@ -1641,8 +2001,29 @@ Inst86Quest20name2_HORDE = Inst86Quest20name2
 
 Inst87Story = "The time to strike at the heart of the Scourge is drawing close. Clouds blanket the skies of Azeroth and heroes gather beneath battle-worn banners in preparation for the coming storm. They say that even the darkest cloud has a silver lining. It is this hope that drives the men and women of the Argent Crusade: hope that the Light will see them through these trying times, hope that good will triumph over evil, hope that a hero blessed by the Light will come forth to put an end to the Lich King's dark reign. \n\nSo the Argent Crusade has sent out the call, a call to arms for all heroes far and wide, to meet at the very doorstep of the Lich King's domain and to prove their might in a tournament the likes of which Azeroth has never seen. Of course, a tournament such as this needs a fitting stage. A place where potential candidates are tested to the limits of exhaustion. A place where heroes... become champions. A place called the Crusaders' Coliseum."
 Inst87Caption = "Trial of the Champion"
-Inst87QAA = "No Quests"
-Inst87QAH = "No Quests"
+Inst87QAA = "1 Quest"
+Inst87QAH = "1 Quest"
+
+--Quest 1 Alliance
+Inst87Quest1 = "1. Proof of Demise: The Black Knight"
+Inst87Quest1_Aim = "Archmage Lan'dalock in Dalaran wants you to return with a Fragment of the Black Knight's Soul."
+Inst87Quest1_Location = "Archmage Lan'dalock (Dalaran - The Violet Hold; "..YELLOW.."57.6, 66.9"..WHITE..")"
+Inst87Quest1_Note = "This daily quest can only be completed on Heroic difficulty.\n\nThe Black Knight is the final boss in Trial of the Champion."
+Inst87Quest1_Prequest = "None"
+Inst87Quest1_Folgequest = "None"
+--
+Inst87Quest1name1 = "Emblem of Triumph"
+
+
+--Quest 1 Horde  (same as Quest 1 Alliance)
+Inst87Quest1_HORDE = Inst87Quest1
+Inst87Quest1_HORDE_Aim = Inst87Quest1_Aim
+Inst87Quest1_HORDE_Location = Inst87Quest1_Location
+Inst87Quest1_HORDE_Note = Inst87Quest1_Note
+Inst87Quest1_HORDE_Prequest = Inst87Quest1_Prequest
+Inst87Quest1_HORDE_Folgequest = Inst87Quest1_Folgequest
+--
+Inst87Quest1name1_HORDE = Inst87Quest1name1
 
 
 

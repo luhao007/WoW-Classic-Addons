@@ -43,7 +43,7 @@ local ITEM_KEY_KEYS = {
 	"battlePetSpeciesID",
 }
 local SILENT_EVENTS = {
-	AUCTION_ITEM_LIST_UPDATE = true,
+	AUCTION_ITEM_LIST_UPDATE = not TSM.IsWowClassic(),
 	REPLICATE_ITEM_LIST_UPDATE = true,
 }
 local GENERIC_EVENTS = {

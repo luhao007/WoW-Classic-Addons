@@ -1598,14 +1598,16 @@ ResolveSymbolicLink = function(o)
 					local cache;
 					for criteriaID=1,GetAchievementNumCriteria(achievementID),1 do
 						local criteriaString, criteriaType, completed, quantity, reqQuantity, charName, flags, assetID, quantityString, id = GetAchievementCriteriaInfo(achievementID, criteriaID);
+						local criteriaObject = app.CreateAchievementCriteria(id);
 						if criteriaType == 27 then
 							cache = app.SearchForField("questID", assetID);
+						elseif criteriaType == 36 or criteriaType == 42 then
+							criteriaObject.providers = {{ "i", assetID }};
 						elseif criteriaType == 110 then
 							-- Ignored
 						else
 							print("Unhandled Criteria Type", criteriaType, assetID);
 						end
-						local criteriaObject = app.CreateAchievementCriteria(id);
 						if cache then
 							local uniques = {};
 							MergeObjects(uniques, cache);
@@ -1620,6 +1622,7 @@ ResolveSymbolicLink = function(o)
 						criteriaObject.achievementID = achievementID;
 						criteriaObject.parent = o;
 						tinsert(searchResults, criteriaObject);
+						app.CacheFields(criteriaObject);
 					end
 				end
 			elseif cmd == "meta_achievement" then
@@ -1883,7 +1886,6 @@ local function GetCachedSearchResults(search, method, paramA, paramB, ...)
 			if not paramB then
 				local itemString = string.match(paramA, "item[%-?%d:]+");
 				if itemString then
-					if app.Settings:GetTooltipSetting("itemString") then tinsert(info, { left = itemString }); end
 					local itemID2 = select(2, strsplit(":", itemString));
 					if itemID2 then
 						itemID = tonumber(itemID2);
@@ -1923,7 +1925,10 @@ local function GetCachedSearchResults(search, method, paramA, paramB, ...)
 						end
 					end
 				end
+				local itemName, itemLink = GameTooltip:GetItem();
 				if app.Settings:GetTooltipSetting("itemID") then tinsert(info, { left = L["ITEM_ID"], right = tostring(itemID) }); end
+				if app.Settings:GetTooltipSetting("itemLevel") then tinsert(info, { left = "Item Level", right = select(4, GetItemInfo(itemLink or itemID)) }); end
+				if app.Settings:GetTooltipSetting("itemString") and itemLink then tinsert(info, { left = "Item String", right = string.match(itemLink, "item[%-?%d:]+") }); end
 				
 				-- Show Reservations
 				local reservesForItem = GetTempDataMember("SoftReservesByItemID")[itemID];
@@ -2227,6 +2232,10 @@ local function GetCachedSearchResults(search, method, paramA, paramB, ...)
 		
 		if group.isLimited then
 			tinsert(info, 1, { left = L.LIMITED_QUANTITY, wrap = true, color = "ff66ccff" });
+		end
+		
+		if group.pvp then
+			tinsert(info, { left = L["REQUIRES_PVP"] });
 		end
 		
 		local showOtherCharacterQuests = app.Settings:GetTooltipSetting("Show:OtherCharacterQuests");
@@ -3850,7 +3859,17 @@ local function RefreshSkills()
 				end
 				activeSkills[spellID] = { skillRank, skillMaxRank };
 			else
-				-- print(skillName, header, isExpanded, skillRank, numTempPoints, skillModifier, skillMaxRank, isAbandonable, stepCost, rankCost, minLevel, skillCostType, skillDescription);
+				for _,s in pairs(app.SkillIDToSpellID) do
+					if GetSpellInfo(s) == skillName then
+						spellID = s;
+						break;
+					end
+				end
+				if spellID then
+					activeSkills[spellID] = { skillRank, skillMaxRank };
+				else
+					--print(skillName, header, isExpanded, skillRank, numTempPoints, skillModifier, skillMaxRank, isAbandonable, stepCost, rankCost, minLevel, skillCostType, skillDescription);
+				end
 			end
 		end
 	end
@@ -4272,7 +4291,7 @@ else
 		if t.collectible then
 			local spellID = t.spellID;
 			local collected = app.IsSpellKnown(spellID, t.rank);
-			if collected then
+			if collected or app.CurrentCharacter.ActiveSkills[spellID] then
 				app.CurrentCharacter.Spells[spellID] = 1;
 				ATTAccountWideData.Spells[spellID] = 1;
 			else
@@ -6227,7 +6246,7 @@ app.GetFactionStandingThresholdFromString = function(replevel)
 	end
 end
 app.IsFactionExclusive = function(factionID)
-	return factionID == 934 or factionID == 932;
+	return factionID == 934 or factionID == 932 or factionID == 1104 or factionID == 1105;
 end
 local fields = {
 	["key"] = function(t)
@@ -6353,7 +6372,7 @@ local arrOfNodes = {
 	1944,	-- Hellfire Peninsula (All of Outland)
 	
 	-- TODO:
-	--118,	-- Icecrown (All of Northrend)
+	118,	-- Icecrown (All of Northrend)
 	--422,	-- Dread Wastes (All of Pandaria)
 	--525,	-- Frostfire Ridge (All of Draenor)
 	--630,	-- Azsuna (All of Broken Isles)
@@ -8028,6 +8047,9 @@ app.SkillIDToSpellID = setmetatable({
 	[40] = 2842,	-- Poisons
 	[633] = 1809,	-- Lockpicking
 	
+	-- Riding
+	[762] = 33388,	-- Riding
+	
 	-- Specializations
 	[20219] = 20219,	-- Gnomish Engineering
 	[20222] = 20222,	-- Goblin Engineering
@@ -8355,7 +8377,7 @@ local criteriaFuncs = {
 	]]--
 
     ["spellID"] = function(spellID)
-        return app.CurrentCharacter.Spells[spellID];
+        return app.CurrentCharacter.Spells[spellID] or app.CurrentCharacter.ActiveSkills[spellID];
     end,
 	--[[
 	["label_spellID"] = L["LOCK_CRITERIA_SPELL_LABEL"],
@@ -10365,7 +10387,7 @@ local function RowOnEnter(self)
 		if reference.f and reference.f > 0 and app.Settings:GetTooltipSetting("filterID") then GameTooltip:AddDoubleLine(L["FILTER_ID"], tostring(L["FILTER_ID_TYPES"][reference.f])); end
 		if reference.achievementID and app.Settings:GetTooltipSetting("achievementID") then
 			GameTooltip:AddDoubleLine(L["ACHIEVEMENT_ID"], tostring(reference.achievementID));
-			if reference.sourceQuests then
+			if reference.sourceQuests and not (GetCategoryInfo and GetCategoryInfo(92) ~= "") then
 				GameTooltip:AddLine("This achievement has associated quests that can be completed before the introduction of the Achievement system coming with the Wrath Prepatch. Not all achievements can be tracked this way, but for those that can, they will be displayed. All other non-trackable achievements will be activated with the prepatch.", 0.4, 0.8, 1, true);
 			end
 		end
@@ -10655,6 +10677,7 @@ local function RowOnEnter(self)
 		elseif reference.isMontly then GameTooltip:AddLine("This can be completed monthly.");
 		elseif reference.isYearly then GameTooltip:AddLine("This can be completed yearly.");
 		elseif reference.repeatable then GameTooltip:AddLine("This can be repeated multiple times."); end
+		if reference.pvp then GameTooltip:AddLine(L["REQUIRES_PVP"], 1, 1, 1, 1, true); end
 		if not GameTooltipModel:TrySetModel(reference) then
 			local texture = reference.preview or reference.icon;
 			if texture then
@@ -11799,7 +11822,7 @@ function app:GetDataCache()
 						if coords then
 							if not battlepet.coords then
 								battlepet.coords = { unpack(coords) };
-							else
+							elseif battlepet.coords ~= coords then
 								for i,coord in ipairs(coords) do
 									tinsert(battlepet.coords, coord);
 								end
@@ -15215,11 +15238,11 @@ app:GetWindow("Tradeskills", UIParent, function(self, ...)
 									learned = learned + 1;
 								end
 								if not skillCache[spellID] then
-									app.print("Missing " .. craftName .. " (Spell ID #" .. spellID .. ") in ATT Database. Please report it!");
+									--app.print("Missing " .. craftName .. " (Spell ID #" .. spellID .. ") in ATT Database. Please report it!");
 									skillCache[spellID] = { {} };
 								end
 							else
-								app.print("Missing " .. craftName .. " spellID in ATT Database. Please report it!");
+								--app.print("Missing " .. craftName .. " spellID in ATT Database. Please report it!");
 							end
 							
 							if craftType ~= "none" then
@@ -15272,11 +15295,11 @@ app:GetWindow("Tradeskills", UIParent, function(self, ...)
 									learned = learned + 1;
 								end
 								if not skillCache[spellID] then
-									app.print("Missing " .. (skillName or "[??]") .. " (Spell ID #" .. spellID .. ") in ATT Database. Please report it!");
+									--app.print("Missing " .. (skillName or "[??]") .. " (Spell ID #" .. spellID .. ") in ATT Database. Please report it!");
 									skillCache[spellID] = { {} };
 								end
 							else
-								app.print("Missing " .. (skillName or "[??]") .. " spellID in ATT Database. Please report it!");
+								--app.print("Missing " .. (skillName or "[??]") .. " spellID in ATT Database. Please report it!");
 							end
 							
 							-- Cache the Reagents used to make this item.

@@ -99,6 +99,7 @@ for key,value in pairs({
 	["Ingenieurskunst"] = 4036,	-- Engineering
 	["Erste Hilfe"] = 3273,	-- First Aid
 	["Lederverarbeitung"] = 2108,	-- Leatherworking
+	["Reiten"] = 33388,	-- Riding
 })
 do a[key] = value; end
 

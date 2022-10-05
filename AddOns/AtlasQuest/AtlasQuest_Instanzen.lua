@@ -189,13 +189,13 @@ function AtlasQuest_Instanzenchecken()
 	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_BurningCrusade\\Images\\CL_CFRSerpentshrineCavern") then
 		AQINSTANZ = 51;
 
-	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_BurningCrusade\\Images\\CL_CoTBlackMorass") then
+	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_BurningCrusade\\Images\\CoTBlackMorass") then
 		AQINSTANZ = 52;
 
-	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_BurningCrusade\\Images\\CL_CoTHyjal") then
+	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_BurningCrusade\\Images\\CoTHyjal") then
 		AQINSTANZ = 53;
 
-	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_BurningCrusade\\Images\\CL_CoTOldHillsbrad") then
+	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_BurningCrusade\\Images\\CoTOldHillsbrad") then
 		AQINSTANZ = 54;
 
 	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_BurningCrusade\\Images\\CL_GruulsLair") then
@@ -234,7 +234,7 @@ function AtlasQuest_Instanzenchecken()
 
 	-- Wrath of the Lich King Instances
 
-	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_WrathoftheLichKing\\Images\\CoTOldStratholme") then
+	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_BurningCrusade\\Images\\CoTOldStratholme") then
 		AQINSTANZ = 69;
 
 	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_WrathoftheLichKing\\Images\\UtgardeKeep") then

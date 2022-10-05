@@ -27,6 +27,7 @@ app.L = {
 	["I_ONLY_CARE_ABOUT_MY_MAIN"] = "|cff3399ffI only care about my main.|r";
 
 	["FACTION_MODE_TOOLTIP"] = "Turn this setting on if you want to see Account Mode data only for races and classes of your current faction.";
+	["REQUIRES_PVP"] = "|CFF00FFDEThis may require participation in PvP.|r";
 
 	-- Binding Localizations
 	["TOGGLE_ACCOUNT_MODE"] = "Toggle Account Mode";
@@ -1096,7 +1097,9 @@ app.L = {
 	},
 	
 	-- This is necessary because sometimes the names of spells do not match for different languages.
-	["ALT_PROFESSION_TEXT_TO_ID"] = {};
+	["ALT_PROFESSION_TEXT_TO_ID"] = {
+		["Riding"] = 33388,	-- Riding
+	};
 	
 	-- Unobtainable Listing
 	["UNOBTAINABLE_ITEM_TEXTURES"] = {

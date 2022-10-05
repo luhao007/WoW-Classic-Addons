@@ -303,7 +303,7 @@ function addon:PostUpdate()
 			widthCPU = addon:GetCellWidth(formatNumber(maxCPUValue,patternCPU):gsub("%d","0"))
 		end
 		-- update width of memory and cpu headers
-		local widthMemColumn = widthMem+14+widthPercent
+		local widthMemColumn = widthMem+24+widthPercent
 		local widthCPUColumn = 0
 		addon.MemHeader:SetWidth(widthMemColumn)
 		addon.Totals.Mem:SetWidth(widthMemColumn-4)
@@ -335,7 +335,11 @@ end
 function addon:UpdateMinResize()
 	-- 200 is the width of the window outside the cpu and memory columns
 	local minWidth = addon.Totals:GetWidth() + 200
-	addon:SetMinResize(minWidth,200) -- this 200 is the height and no relationship to width
+	if select(4,GetBuildInfo())>=100000 then
+		addon:SetResizeBounds(minWidth,200)
+	else
+		addon:SetMinResize(minWidth,200) -- this 200 is the height and no relationship to width
+	end
 	if addon:GetWidth()<minWidth then
 		addon:SetWidth(minWidth)
 		addon:SetUserPlaced(true)

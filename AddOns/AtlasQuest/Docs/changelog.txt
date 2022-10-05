@@ -11,6 +11,32 @@ KNOWN ISSUES:
 - Some UI bugs or features may be broken or disabled.  I no longer have the time or know-how to fix and modernize AtlasQuest and this release is being provided as a "better than nothing" sort of situation.  If anyone wants to fix the bugs I'd be happy to incorporate the fixes and provide credit.
 
 
+
+Version 4.13.03  (for WOTLK Classic)  October 4, 2022
+
+- Fixed Caverns of Time quests not showing up.
+
+- Quests re-added:  (English only, no German translation yet)
+	- Culling of Stratholme: Timear Foresees Infinite Agents in your Future!
+	- Culling of Stratholme: Proof of Demise: Mal'Ganis
+	- Utgarde Keep: Proof of Demise: Ingvar the Plunderer
+	- Utgarde Pinnacle: Timear Foresees Ymirjar Berserkers in your Future!
+	- Utgarde Pinnacle: Proof of Demise: King Ymiron
+	- The Nexus: Proof of Demise: Keristrasza
+	- The Oculus: Timear Foresees Centrifuge Constructs in your Future!
+	- The Oculus: Proof of Demise: Ley-Guardian Eregos
+	- Azjol-Nerub: Proof of Demise: Anub'arak
+	- Ahn'kahet: The Old Kingdom: Proof of Demise: Herald Volazj
+	- Halls of Stone: Proof of Demise: Sjonnir The Ironshaper
+	- Halls of Lightning: Timear Foresees Titanium Vanguards in your Future!
+	- Halls of Lightning: Proof of Demise: Loken
+	- Drak'Tharon Keep: Proof of Demise: The Prophet Tharon'ja
+	- Gundrak: Proof of Demise: Gal'darah
+	- Violet Hold: Proof of Demise: Cyanigosa
+	- Trial of the Champion: Proof of Demise: The Black Knight
+
+
+
 Version 4.13.02  (for WOTLK Classic)  September 9, 2022
 
 - German translation added for Wrath of the Lich King quests.  This translation is from Patch 3.3.3 and may be inaccurate.
