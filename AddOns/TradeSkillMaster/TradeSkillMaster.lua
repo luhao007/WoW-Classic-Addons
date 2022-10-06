@@ -217,7 +217,9 @@ function TSM.OnInitialize()
 	SlashCommands.Register("get", TSM.Banking.GetByFilter, L["Gets items from the bank or guild bank matching the item or partial text entered."])
 	SlashCommands.Register("put", TSM.Banking.PutByFilter, L["Puts items matching the item or partial text entered into the bank or guild bank."])
 	SlashCommands.Register("restock_help", TSM.Crafting.RestockHelp, L["Tells you why a specific item is not being restocked and added to the queue."])
-
+	if TSM.IsWowClassic() then
+		SlashCommands.Register("scan", TSM.AuctionDB.RunScan, L["Performs a full, manual scan of the AH to populate some AuctionDB data if none is otherwise available."])
+	end
 	-- create / register the minimap button
 	local dataObj = LibStub("LibDataBroker-1.1"):NewDataObject("TradeSkillMaster", {
 		type = "launcher",

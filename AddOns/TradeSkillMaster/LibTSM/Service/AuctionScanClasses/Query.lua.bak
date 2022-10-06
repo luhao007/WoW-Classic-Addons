@@ -639,7 +639,6 @@ end
 
 function AuctionQuery._BrowseRequestMore(self, isRetry)
 	if TSM.IsWowClassic() then
-		assert(not self._getAll)
 		if self._specifiedPage then
 			return self:_SendWowQuery()
 		end

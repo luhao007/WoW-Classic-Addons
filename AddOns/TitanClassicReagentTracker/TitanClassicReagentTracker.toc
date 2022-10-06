@@ -1,14 +1,17 @@
 ## Interface: 30400
-## Author: Farwalker & cliaz
-## Version: 2.5.1.38707
+## Author: cliaz
+## Version: 3.0.0.30400
 ## Dependencies: TitanClassic
+## SavedVariables: ShowSpellIcons
 
-## Title: Titan Panel [|cffeda55fReagent Tracker|r] |cff00aa002.5.1.38707|r
-## Notes: Monitors spell reagents. Fork of Titan Reagent by L'ombra.
+## Title: Titan Panel Classic [|cffeda55fReagent Tracker|r] |cff00aa003.0.0.30400|r
+## Notes: Monitors and buys spell reagents.
 ## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFF泰坦面板|r |cFF69CCF0施法材料|r
 ## Notes-zhCN: 泰坦面板的施法材料模块
 
+## X-Category: Interface Enhancements
 ## X-Child-Of: TitanClassic
+## X-Credits: L'ombra, Farwalker
 ## X-Part-Of: TitanClassic
 
 spellData.lua

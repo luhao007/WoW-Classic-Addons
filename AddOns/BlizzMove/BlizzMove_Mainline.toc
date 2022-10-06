@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Kiatra, zaCade, Numy - github.com/Kiatra/BlizzMove/
-## Version: v3.4.9
+## Version: v3.4.10
 ## OptionalDeps: Ace3
 ## SavedVariables: BlizzMoveDB
 

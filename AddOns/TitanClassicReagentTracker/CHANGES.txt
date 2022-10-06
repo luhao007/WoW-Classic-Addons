@@ -1,24 +1,53 @@
-tag cfbd7b591b498126cc23fdb496ece0f0383dc74e 2.2.0
+tag 2e5ccc3782662d96b0c6576787fb04e32669a763 v3.0.0
 Author:	cliaz <3636531+cliaz@users.noreply.github.com>
-Date:	Mon Aug 23 15:08:11 2021 +1000
+Date:	Thu Oct 6 18:03:18 2022 +1100
 
-Supports 4 and 5-stack purchasing
+Version v3.0.0: WotLK release. Added reagents for
+new spells, but no new functionality
+-----BEGIN PGP SIGNATURE-----
 
-commit 62b7c993a8c61fd361543aaf583ede13f155d157
-Author: ch00ka <59885965+ch00ka@users.noreply.github.com>
-Date:   Wed Aug 18 17:40:59 2021 +1000
+iQIzBAABCAAdFiEEVRGRjowwCnZkS8LqEhHYpomKagMFAmM+fc4ACgkQEhHYpomK
+agOftA/+PMuSn+BrlT2zwidGl8X3tX7q9XXw50zCEaqd5JTNCutfEwUXAkhXB56T
+CXZV/n/9xxGY4LuZaH01ZSxunoxTLMBQQRoDVAopX+ahGX8Xk4cBlJ5EYJcAy+Iy
+XwfiHCMoQ/FTd6vmU7URV4hmHTUJEofg03MRzqGBhX0xtkBmTZEiW/1wT3R1t04j
++3bALtEG38R6Hd4fNow7GG98Ut5oNXS25loAHjOhEZ3hw2UdR7CFry6xt1FZc0PO
+foUKSekF9Df8kpyOplZaN8FlFcWhAE7aL+cf84tcLAUxToaOjANlaSwLANrFs959
+PKKg+aUWHBnJhluz3w9A04E5NUtjpL0WQ1zngQYJaaEk66Xqm1Tp+Z/T61PHrOp+
+sXyGbLxlXFNBx4mZafCxi6NuIA0yCQTkJNpkF9VwhUlWkjxNn09eX2ve6DCppi19
+ozDqZD7HspYtbVXFkzJ3kBOzuyHQs63Xo/ifYx8PhDgQQGIememgZmnPZ0sORhAI
+NIKCvNeOSLVSWaq/VMATSQyePIeGorCvlYdyr6UyC5d1skIWHH3Hc2VQMWKOGn5T
+bVhOcdNMd2EAHKYmuQX6MXhrJm5bPIxcs6gWup07tfnaYKr04gppYDfJu7igZ+JG
+exu4tvo2h4CONop2Z0D/IwZM/QyGmDbyJEKtT+PWuf8YNO0bK/Y=
+=TlSq
+-----END PGP SIGNATURE-----
 
-    Added options for 4 and 5 stacks.
-
-commit 62b7c993a8c61fd361543aaf583ede13f155d157
-Author: ch00ka <59885965+ch00ka@users.noreply.github.com>
-Date:   Wed Aug 18 17:40:59 2021 +1000
-
-    Added options for 4 and 5 stacks.
-
-commit 06d3e723122f89f5ef74a006cef436195925f253
+commit 569bc719f197c377ab9286671183b6bef050b7a7
 Author: cliaz <3636531+cliaz@users.noreply.github.com>
-Date:   Tue Jun 15 15:29:45 2021 +1000
+Date:   Thu Oct 6 14:54:11 2022 +1100
 
-    Split purchasing into single stack operations
+    WotLK interface version update
+
+commit 569bc719f197c377ab9286671183b6bef050b7a7
+Author: cliaz <3636531+cliaz@users.noreply.github.com>
+Date:   Thu Oct 6 14:54:11 2022 +1100
+
+    WotLK interface version update
+
+commit ba61be2be0ffce486d5dbe98595416e29ba62244
+Author: cliaz <3636531+cliaz@users.noreply.github.com>
+Date:   Mon Oct 3 18:31:19 2022 +1100
+
+    Added WotLK spells & reagents
+
+commit f1613ab1f70069f8f60900a6db67a067ec36e428
+Author: cliaz <3636531+cliaz@users.noreply.github.com>
+Date:   Fri Aug 19 09:38:39 2022 +1000
+
+    Update README.md
+
+commit a185edfdfad18ff8d8ddfb4a8f2f4bd6119ab068
+Author: cliaz <3636531+cliaz@users.noreply.github.com>
+Date:   Sat May 21 15:56:21 2022 +1000
+
+    Update README.md
 

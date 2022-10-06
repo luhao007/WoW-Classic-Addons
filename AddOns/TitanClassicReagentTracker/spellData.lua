@@ -2,6 +2,12 @@ local _, addon = ...
 
 -- database of buff spells and reagents
 addon.spells = {
+	DEATHKNIGHT = {
+		{	
+			spells = {48289}, -- Raise Dead
+			reagent = 37201, -- Corpse Dust
+		},
+	},
 	DRUID = {
 		{	
 			spells = {20484}, -- Rebirth (Rank 1)
@@ -16,7 +22,7 @@ addon.spells = {
 			reagent = 17036, -- Ashwood Seed
 		},
 		{	
-			spells = {20747}, -- Rebirth (Rank 1)
+			spells = {20747}, -- Rebirth (Rank 4)
 			reagent = 17037, -- Hornbeam Seed
 		},
 		{	
@@ -26,6 +32,10 @@ addon.spells = {
 		{	
 			spells = {26994}, -- Rebirth (Rank 6)
 			reagent = 22147, -- Flintweed Seed
+		},
+		{	
+			spells = {48477}, -- Rebirth (Rank 7)
+			reagent = 44614, -- Starleaf Seed
 		},
 		{	
 			spells = {21849}, -- Gift of the Wild (Rank 1)
@@ -38,6 +48,10 @@ addon.spells = {
 		{	
 			spells = {26991}, -- Gift of the Wild (Rank 3)
 			reagent = 22148, -- Wild Quillvine
+		},
+		{	
+			spells = {48470}, -- Gift of the Wild (Rank 4)
+			reagent = 44605, -- Wild Spineleaf
 		},
 	},
 	MAGE = {
@@ -130,6 +144,14 @@ addon.spells = {
 				25392,	-- Prayer of Fortitude (Rank 3)
 			},
 			reagent = 17029,	-- Sacred Candle
+		},
+		{	
+			spells = {
+				48162,	-- Prayer of Fortitude (Rank 4)
+				48170,	-- Prayer of Shadow Protection (Rank 3)
+				48074,	-- Prayer of Spirit (Rank 3)
+			},
+			reagent = 44615,	-- Devout Candle
 		},
 	},
 	-- using the "Poisons" skill for all poisons
