@@ -360,7 +360,7 @@ class Manager:
             addons += ['alaCalendar', 'AtlasLootClassic', 'AtlasLootClassic_Options',
                        'ATT-Classic', 'ClassicCastbars_Options', 'Fizzle', 'GroupCalendar',
                        'HandyNotes_NPCs (Classic)', 'HandyNotes_NPCs (Burning Crusade Classic)',
-                       'MountsJournal', 'PallyPower', 'SimpleChatClassic', 'TradeLog',
+                       'PallyPower', 'SimpleChatClassic', 'TradeLog',
                        'TitanClassic', 'WclPlayerScore']
 
 
@@ -656,6 +656,16 @@ class Manager:
                                 '"MonkeySpeed"'
                             ) if '"Title"' in line else line
                             for line in lines]
+        )
+
+    @staticmethod
+    @available_on(['classic'])
+    def handle_mj():
+        utils.remove_libraries(
+            ['CallbackHandler-1.0', 'LibDBIcon-1.0', 'LibDataBroker-1.1',
+             'LibStub'],
+            'Addons/MountsJournal/libs',
+            'Addons/MountsJournal/embeds.xml'
         )
 
     @staticmethod

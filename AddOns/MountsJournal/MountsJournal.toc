@@ -10,6 +10,7 @@
 ## Notes-zhCN: 坐骑手册增强，支持随机坐骑。
 
 
+embeds.xml
 locales.xml
 Util.lua
 widgets\Binding.lua

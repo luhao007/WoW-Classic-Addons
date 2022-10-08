@@ -6,10 +6,10 @@
     "name": "ALL THE THINGS",
     "description": "Addon for Tracking Collections & Account Completion",
     "url": "https://www.curseforge.com/wow/addons/all-the-things",
-    "download_url": "https://edge.forgecdn.net/files/3998/872/ATT-Classic-v1.1.0-wrath.zip",
-    "date_published": "2022-09-20T18:40:26.247000+00:00",
-    "version": "Wrath Classic 1.1.0",
-    "changelog_url": "https://api.curseforge.com/v1/mods/267285/files/3998872/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4021/590/ATT-Classic-v1.1.3-wrath.zip",
+    "date_published": "2022-10-08T08:15:15.937000+00:00",
+    "version": "Wrath Classic 1.1.3",
+    "changelog_url": "https://api.curseforge.com/v1/mods/267285/files/4021590/changelog",
     "options": {
       "strategy": "default"
     },
@@ -20,6 +20,14 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "Wrath Classic 1.1.3",
+        "install_time": "2022-10-08T09:12:34+00:00"
+      },
+      {
+        "version": "Wrath Classic 1.1.1",
+        "install_time": "2022-10-01T13:34:05+00:00"
+      },
       {
         "version": "Wrath Classic 1.1.0",
         "install_time": "2022-09-21T08:49:29+00:00"
@@ -51,14 +59,6 @@
       {
         "version": "Wrath Classic 1.0.2",
         "install_time": "2022-09-01T13:42:45+00:00"
-      },
-      {
-        "version": "TBC Classic 0.8.3",
-        "install_time": "2022-02-17T16:25:55+00:00"
-      },
-      {
-        "version": "TBC Classic 0.8.0",
-        "install_time": "2022-01-30T07:29:36+00:00"
       }
     ]
   },
@@ -69,10 +69,10 @@
     "name": "Addon Usage",
     "description": "Compares the relative memory and cpu usage of running addons",
     "url": "https://www.curseforge.com/wow/addons/addon-usage",
-    "download_url": "https://edge.forgecdn.net/files/3961/744/AddonUsage_3_0_16.zip",
-    "date_published": "2022-09-01T07:56:28.150000+00:00",
-    "version": "AddonUsage_3_0_16.zip",
-    "changelog_url": "https://api.curseforge.com/v1/mods/67954/files/3961744/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4018/55/AddonUsage_3_1_0.zip",
+    "date_published": "2022-10-04T16:43:24.877000+00:00",
+    "version": "AddonUsage_3_1_0.zip",
+    "changelog_url": "https://api.curseforge.com/v1/mods/67954/files/4018055/changelog",
     "options": {
       "strategy": "default"
     },
@@ -83,6 +83,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "AddonUsage_3_1_0.zip",
+        "install_time": "2022-10-05T04:46:48+00:00"
+      },
       {
         "version": "AddonUsage_3_0_16.zip",
         "install_time": "2022-09-01T13:42:45+00:00"
@@ -409,10 +413,10 @@
     "name": "AtlasLootClassic",
     "description": "Shows the possible loot from the bosses",
     "url": "https://www.curseforge.com/wow/addons/atlaslootclassic",
-    "download_url": "https://edge.forgecdn.net/files/3985/37/AtlasLootClassic-v3.0.2.zip",
-    "date_published": "2022-09-12T12:51:46.237000+00:00",
-    "version": "v3.0.2",
-    "changelog_url": "https://api.curseforge.com/v1/mods/326516/files/3985037/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4018/6/AtlasLootClassic-v3.0.5.zip",
+    "date_published": "2022-10-04T15:37:29.410000+00:00",
+    "version": "v3.0.5",
+    "changelog_url": "https://api.curseforge.com/v1/mods/326516/files/4018006/changelog",
     "options": {
       "strategy": "default"
     },
@@ -445,6 +449,18 @@
     "deps": [],
     "logged_versions": [
       {
+        "version": "v3.0.5",
+        "install_time": "2022-10-05T04:46:48+00:00"
+      },
+      {
+        "version": "v3.0.4",
+        "install_time": "2022-10-01T13:34:05+00:00"
+      },
+      {
+        "version": "v3.0.3",
+        "install_time": "2022-09-30T13:06:01+00:00"
+      },
+      {
         "version": "v3.0.2",
         "install_time": "2022-09-12T13:26:08+00:00"
       },
@@ -471,18 +487,6 @@
       {
         "version": "v2.2.0-bcc",
         "install_time": "2021-05-26T23:22:30+00:00"
-      },
-      {
-        "version": "v2.1.0-bc",
-        "install_time": "2021-05-21T08:24:23+00:00"
-      },
-      {
-        "version": "v2.1.0-classic",
-        "install_time": "2021-05-21T01:44:33+00:00"
-      },
-      {
-        "version": "v1.5.9-classic",
-        "install_time": "2021-03-24T11:22:41+00:00"
       }
     ]
   },
@@ -493,10 +497,10 @@
     "name": "AtlasQuest - Fan Update",
     "description": "AtlasQuest - Fan Update",
     "url": "https://www.curseforge.com/wow/addons/atlas-quest-fan-update",
-    "download_url": "https://edge.forgecdn.net/files/3975/793/AtlasQuestLK_4.13.02.zip",
-    "date_published": "2022-09-10T03:01:15.293000+00:00",
-    "version": "4.13.02 (Wrath of the Lich King)",
-    "changelog_url": "https://api.curseforge.com/v1/mods/4918/files/3975793/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4017/669/AtlasQuestLK_4.13.03.zip",
+    "date_published": "2022-10-04T04:03:43.407000+00:00",
+    "version": "4.13.03 (Wrath of the Lich King)",
+    "changelog_url": "https://api.curseforge.com/v1/mods/4918/files/4017669/changelog",
     "options": {
       "strategy": "default"
     },
@@ -517,6 +521,10 @@
       }
     ],
     "logged_versions": [
+      {
+        "version": "4.13.03 (Wrath of the Lich King)",
+        "install_time": "2022-10-04T10:58:57+00:00"
+      },
       {
         "version": "4.13.02 (Wrath of the Lich King)",
         "install_time": "2022-09-10T08:03:06+00:00"
@@ -558,10 +566,10 @@
     "name": "BlizzMove",
     "description": "Makes the default frames moveable via simple drag and drop",
     "url": "https://www.curseforge.com/wow/addons/blizzmove",
-    "download_url": "https://edge.forgecdn.net/files/4008/643/BlizzMove-v3.4.7.zip",
-    "date_published": "2022-09-26T18:49:04.390000+00:00",
-    "version": "v3.4.7",
-    "changelog_url": "https://api.curseforge.com/v1/mods/17809/files/4008643/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4019/19/BlizzMove-v3.4.10.zip",
+    "date_published": "2022-10-05T16:53:04.257000+00:00",
+    "version": "v3.4.10",
+    "changelog_url": "https://api.curseforge.com/v1/mods/17809/files/4019019/changelog",
     "options": {
       "strategy": "default"
     },
@@ -575,6 +583,14 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v3.4.10",
+        "install_time": "2022-10-06T09:39:32+00:00"
+      },
+      {
+        "version": "v3.4.9",
+        "install_time": "2022-10-03T03:39:16+00:00"
+      },
       {
         "version": "v3.4.7",
         "install_time": "2022-09-27T03:28:43+00:00"
@@ -606,14 +622,6 @@
       {
         "version": "v3.2.3-bcc",
         "install_time": "2021-11-17T11:12:46+00:00"
-      },
-      {
-        "version": "v3.1.2-bcc",
-        "install_time": "2021-07-17T04:03:33+00:00"
-      },
-      {
-        "version": "v3.0.19-bcc",
-        "install_time": "2021-06-04T07:51:29+00:00"
       }
     ]
   },
@@ -888,10 +896,10 @@
     "name": "GTFO",
     "description": "GTFO warns you when you're standing in fire or other bad stuff.",
     "url": "https://www.curseforge.com/wow/addons/gtfo",
-    "download_url": "https://edge.forgecdn.net/files/3964/110/GTFO-4.68-Wrath.zip",
-    "date_published": "2022-09-02T18:42:15.790000+00:00",
-    "version": "4.68-Wrath",
-    "changelog_url": "https://api.curseforge.com/v1/mods/20697/files/3964110/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4020/28/GTFO-4.69-Wrath.zip",
+    "date_published": "2022-10-06T17:32:08.357000+00:00",
+    "version": "4.69-Wrath",
+    "changelog_url": "https://api.curseforge.com/v1/mods/20697/files/4020028/changelog",
     "options": {
       "strategy": "default"
     },
@@ -902,6 +910,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "4.69-Wrath",
+        "install_time": "2022-10-08T09:12:35+00:00"
+      },
       {
         "version": "4.68-Wrath",
         "install_time": "2022-09-03T03:37:21+00:00"
@@ -990,10 +1002,10 @@
     "name": "GatherMate2 Data Wowhead classic",
     "description": "GatherMate2 data from Wowhead",
     "url": "https://www.curseforge.com/wow/addons/gathermate2-data-wowhead-classic",
-    "download_url": "https://edge.forgecdn.net/files/3959/902/gathermate2_data_wowhead_classic_v2022-08-31.zip",
-    "date_published": "2022-08-31T05:19:58.237000+00:00",
-    "version": "gathermate2_data_wowhead_classic_v2022-08-31.zip",
-    "changelog_url": "https://api.curseforge.com/v1/mods/350035/files/3959902/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4020/193/gathermate2_data_wowhead_classic_v2022-10-06.zip",
+    "date_published": "2022-10-06T20:31:59.083000+00:00",
+    "version": "gathermate2_data_wowhead_classic_v2022-10-06.zip",
+    "changelog_url": "https://api.curseforge.com/v1/mods/350035/files/4020193/changelog",
     "options": {
       "strategy": "default"
     },
@@ -1004,6 +1016,14 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "gathermate2_data_wowhead_classic_v2022-10-06.zip",
+        "install_time": "2022-10-08T09:12:35+00:00"
+      },
+      {
+        "version": "gathermate2_data_wowhead_classic_v2022-09-28.zip",
+        "install_time": "2022-09-29T12:57:00+00:00"
+      },
       {
         "version": "gathermate2_data_wowhead_classic_v2022-08-31.zip",
         "install_time": "2022-09-01T13:42:46+00:00"
@@ -1035,14 +1055,6 @@
       {
         "version": "gathermate2_data_wowhead_classic_v2021-05-26.zip",
         "install_time": "2021-05-26T23:22:30+00:00"
-      },
-      {
-        "version": "gathermate2_data_wowhead_classic_v2021-05-23.zip",
-        "install_time": "2021-05-23T10:40:37+00:00"
-      },
-      {
-        "version": "gathermate2_data_wowhead_classic_v2021-05-19.zip",
-        "install_time": "2021-05-21T08:24:23+00:00"
       }
     ]
   },
@@ -1258,10 +1270,10 @@
     "name": "HandyNotes: DungeonLocations (Classic)",
     "description": "Shows locations of old world dungeon and raid entrances",
     "url": "https://www.curseforge.com/wow/addons/handynotes_dungeonlocations-classic",
-    "download_url": "https://edge.forgecdn.net/files/3973/801/HandyNotes_DungeonLocations__Classic_-1.06a-classic.zip",
-    "date_published": "2022-09-08T17:02:54.097000+00:00",
-    "version": "1.06a-classic",
-    "changelog_url": "https://api.curseforge.com/v1/mods/323067/files/3973801/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4007/934/HandyNotes_DungeonLocations__Classic_-1.06b-classic.zip",
+    "date_published": "2022-09-26T02:30:08.567000+00:00",
+    "version": "1.06b-classic",
+    "changelog_url": "https://api.curseforge.com/v1/mods/323067/files/4007934/changelog",
     "options": {
       "strategy": "default"
     },
@@ -1276,6 +1288,10 @@
       }
     ],
     "logged_versions": [
+      {
+        "version": "1.06b-classic",
+        "install_time": "2022-10-02T03:28:54+00:00"
+      },
       {
         "version": "1.06a-classic",
         "install_time": "2022-09-10T08:03:06+00:00"
@@ -1309,10 +1325,10 @@
     "name": "HandyNotes: TravelGuide (Classic versions)",
     "description": "Shows the boat and zepplin locations on the World Map and the MiniMap.",
     "url": "https://www.curseforge.com/wow/addons/handynotes-travelguide-classic",
-    "download_url": "https://edge.forgecdn.net/files/3987/343/HandyNotes_TravelGuide-v1.1.zip",
-    "date_published": "2022-09-13T15:03:23.887000+00:00",
-    "version": "WotLKC - v1.1",
-    "changelog_url": "https://api.curseforge.com/v1/mods/339397/files/3987343/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4011/813/HandyNotes_TravelGuide-v1.2.zip",
+    "date_published": "2022-09-29T17:48:06.903000+00:00",
+    "version": "WotLKC - v1.2",
+    "changelog_url": "https://api.curseforge.com/v1/mods/339397/files/4011813/changelog",
     "options": {
       "strategy": "default"
     },
@@ -1327,6 +1343,10 @@
       }
     ],
     "logged_versions": [
+      {
+        "version": "WotLKC - v1.2",
+        "install_time": "2022-09-30T13:06:01+00:00"
+      },
       {
         "version": "WotLKC - v1.1",
         "install_time": "2022-09-14T04:48:50+00:00"
@@ -1426,10 +1446,10 @@
     "name": "LootMonitor",
     "description": "Announce Loots",
     "url": "https://www.curseforge.com/wow/addons/lootmonitor",
-    "download_url": "https://edge.forgecdn.net/files/3383/344/LootMonitor-v3.30(BCC).zip",
-    "date_published": "2021-07-10T05:17:27.160000+00:00",
-    "version": "v3.30(BCC)",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/390962/file/3383344/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4021/425/LootMonitor-v3.30(WotLK).zip",
+    "date_published": "2022-10-08T01:52:07.263000+00:00",
+    "version": "v3.30(WotLK)",
+    "changelog_url": "https://api.curseforge.com/v1/mods/390962/files/4021425/changelog",
     "options": {
       "strategy": "default"
     },
@@ -1440,6 +1460,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v3.30(WotLK)",
+        "install_time": "2022-10-08T09:12:35+00:00"
+      },
       {
         "version": "v3.30(BCC)",
         "install_time": "2021-07-17T04:03:35+00:00"
@@ -1678,10 +1702,10 @@
     "name": "Nova World Buffs",
     "description": "Classic WoW world buff timers and pre buff drop warnings so you never miss a buff.",
     "url": "https://www.curseforge.com/wow/addons/nova-world-buffs",
-    "download_url": "https://edge.forgecdn.net/files/4001/248/NovaWorldBuffs-v2.35-Wrath.zip",
-    "date_published": "2022-09-23T00:04:02.420000+00:00",
-    "version": "NovaWorldBuffs-v2.35-Wrath.zip",
-    "changelog_url": "https://api.curseforge.com/v1/mods/366310/files/4001248/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4020/397/NovaWorldBuffs-v2.39-Wrath.zip",
+    "date_published": "2022-10-07T00:34:14.023000+00:00",
+    "version": "NovaWorldBuffs-v2.39-Wrath.zip",
+    "changelog_url": "https://api.curseforge.com/v1/mods/366310/files/4020397/changelog",
     "options": {
       "strategy": "default"
     },
@@ -1692,6 +1716,14 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "NovaWorldBuffs-v2.39-Wrath.zip",
+        "install_time": "2022-10-08T09:12:35+00:00"
+      },
+      {
+        "version": "NovaWorldBuffs-v2.36-Wrath.zip",
+        "install_time": "2022-09-30T13:06:02+00:00"
+      },
       {
         "version": "NovaWorldBuffs-v2.35-Wrath.zip",
         "install_time": "2022-09-23T05:43:56+00:00"
@@ -1723,14 +1755,6 @@
       {
         "version": "NovaWorldBuffs-v2.19-TBC.zip",
         "install_time": "2022-01-30T07:29:39+00:00"
-      },
-      {
-        "version": "NovaWorldBuffs-v2.17-TBC.zip",
-        "install_time": "2021-12-09T07:29:24+00:00"
-      },
-      {
-        "version": "NovaWorldBuffs-v2.16-TBC.zip",
-        "install_time": "2021-11-17T11:12:48+00:00"
       }
     ]
   },
@@ -1846,10 +1870,10 @@
     "name": "PallyPower",
     "description": "Personal and Raid/Party Paladin buffs",
     "url": "https://www.curseforge.com/wow/addons/pally-power",
-    "download_url": "https://edge.forgecdn.net/files/3963/113/PallyPower-v1.4.9-classic.zip",
-    "date_published": "2022-09-02T03:12:08.243000+00:00",
-    "version": "v1.4.9-classic",
-    "changelog_url": "https://api.curseforge.com/v1/mods/2703/files/3963113/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4012/741/PallyPower-v1.5.0-classic.zip",
+    "date_published": "2022-09-30T13:59:25.923000+00:00",
+    "version": "v1.5.0-classic",
+    "changelog_url": "https://api.curseforge.com/v1/mods/2703/files/4012741/changelog",
     "options": {
       "strategy": "default"
     },
@@ -1860,6 +1884,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v1.5.0-classic",
+        "install_time": "2022-10-01T02:56:14+00:00"
+      },
       {
         "version": "v1.4.9-classic",
         "install_time": "2022-09-02T04:11:00+00:00"
@@ -1889,10 +1917,10 @@
     "name": "Pawn",
     "description": "Pawn helps you compare items and find upgrades.",
     "url": "https://www.curseforge.com/wow/addons/pawn",
-    "download_url": "https://edge.forgecdn.net/files/4009/112/Pawn-2.7.1-Wrath.zip",
-    "date_published": "2022-09-27T02:33:19.503000+00:00",
-    "version": "2.7.1 (Wrath)",
-    "changelog_url": "https://api.curseforge.com/v1/mods/4646/files/4009112/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4014/637/Pawn-2.7.2-Wrath.zip",
+    "date_published": "2022-10-02T00:21:33.510000+00:00",
+    "version": "2.7.2 (Wrath)",
+    "changelog_url": "https://api.curseforge.com/v1/mods/4646/files/4014637/changelog",
     "options": {
       "strategy": "default"
     },
@@ -1903,6 +1931,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "2.7.2 (Wrath)",
+        "install_time": "2022-10-02T03:28:54+00:00"
+      },
       {
         "version": "2.7.1 (Wrath)",
         "install_time": "2022-09-27T03:28:43+00:00"
@@ -1938,10 +1970,6 @@
       {
         "version": "2.6 (Wrath Classic)",
         "install_time": "2022-09-01T13:42:47+00:00"
-      },
-      {
-        "version": "2.5.31 (Burning Crusade)",
-        "install_time": "2022-01-30T07:29:39+00:00"
       }
     ]
   },
@@ -2015,10 +2043,10 @@
     "name": "Questie",
     "description": "The Classic Quest Helper",
     "url": "https://www.curseforge.com/wow/addons/questie",
-    "download_url": "https://edge.forgecdn.net/files/4009/378/Questie-v7.2.2.zip",
-    "date_published": "2022-09-27T10:43:28.320000+00:00",
-    "version": "v7.2.2",
-    "changelog_url": "https://api.curseforge.com/v1/mods/334372/files/4009378/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4020/216/Questie-v7.3.2.zip",
+    "date_published": "2022-10-06T21:07:01.977000+00:00",
+    "version": "v7.3.2",
+    "changelog_url": "https://api.curseforge.com/v1/mods/334372/files/4020216/changelog",
     "options": {
       "strategy": "default"
     },
@@ -2029,6 +2057,26 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v7.3.2",
+        "install_time": "2022-10-08T09:12:37+00:00"
+      },
+      {
+        "version": "v7.3.1",
+        "install_time": "2022-10-05T04:46:49+00:00"
+      },
+      {
+        "version": "v7.3.0",
+        "install_time": "2022-10-02T03:28:54+00:00"
+      },
+      {
+        "version": "v7.2.4",
+        "install_time": "2022-09-30T13:06:04+00:00"
+      },
+      {
+        "version": "v7.2.3",
+        "install_time": "2022-09-29T12:57:01+00:00"
+      },
       {
         "version": "v7.2.2",
         "install_time": "2022-09-27T12:56:49+00:00"
@@ -2048,26 +2096,6 @@
       {
         "version": "v7.1.1",
         "install_time": "2022-09-11T04:34:58+00:00"
-      },
-      {
-        "version": "v7.1.0",
-        "install_time": "2022-09-10T08:03:07+00:00"
-      },
-      {
-        "version": "v7.0.2",
-        "install_time": "2022-09-06T07:17:03+00:00"
-      },
-      {
-        "version": "v7.01",
-        "install_time": "2022-09-01T13:41:22+00:00"
-      },
-      {
-        "version": "v6.8.4",
-        "install_time": "2022-02-17T16:26:00+00:00"
-      },
-      {
-        "version": "v6.8.3",
-        "install_time": "2022-01-30T07:29:40+00:00"
       }
     ]
   },
@@ -2244,10 +2272,10 @@
     "name": "Titan Panel [Reagent Tracker]",
     "description": "Tracks reagents for class-specific spells. Titan Panel plugin.",
     "url": "https://www.curseforge.com/wow/addons/titan-panel-reagent-tracker",
-    "download_url": "https://edge.forgecdn.net/files/3435/132/TitanClassicReagentTracker-2.2.0.zip",
-    "date_published": "2021-08-23T05:09:54.607000+00:00",
-    "version": "2.2.0",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/339548/file/3435132/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4019/595/TitanClassicReagentTracker-v3.0.0.zip",
+    "date_published": "2022-10-06T07:03:50.053000+00:00",
+    "version": "v3.0.0",
+    "changelog_url": "https://api.curseforge.com/v1/mods/339548/files/4019595/changelog",
     "options": {
       "strategy": "default"
     },
@@ -2258,6 +2286,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v3.0.0",
+        "install_time": "2022-10-06T09:39:32+00:00"
+      },
       {
         "version": "2.2.0",
         "install_time": "2021-11-17T11:12:51+00:00"
@@ -2694,10 +2726,10 @@
     "name": "Overachiever_Wrath",
     "description": "Overachiever for Wrath Classic",
     "url": "https://github.com/Hyphie24/Overachiever_Wrath",
-    "download_url": "https://github.com/Hyphie24/Overachiever_Wrath/releases/download/v1.2.6-alpha/Overachiever.zip",
-    "date_published": "2022-09-05T04:12:08+00:00",
-    "version": "v1.2.6-alpha",
-    "changelog_url": "data:,-%20Updated%20toc%20for%20Wrath%20Classic%0D%0A-%20Fixed%20search%20to%20not%20show%20later%20expansions%20achievements%0D%0A-%20Suggestions%20tabs%20working%20for%20current%20dungeons/raids%0D%0A-%20Tradeskills%20%2Amay%20be%20working%2A%20I%27m%20unable%20to%20test%20being%20I%20have%20no%20max%20level%20on%20classic%20and%20no%20max%20cooking%0D%0A%0D%0ACurrent%20build%20update%2C%20possibly%20full%20with%20bugs%20but%20at%20the%20moment%20nothing%20is%20found%20%28if%20max%20levels%20find%20error%20please%20submit%20issues%29%0D%0A%0D%0AIf%20anyone%20finds%20out%20how%20to%20load%20the%20tabs%20to%20achievements%20window%2C%20please%20let%20me%20know%0D%0A%0D%0AAgain%20work%20around%20on%20getting%20achievement%20tabs%20to%20load%0D%0A%0D%0A%2A%2ASTEPS%20TO%20GET%20TABS%20TO%20LOAD%2A%2A%0D%0A%0D%0A1.%20Open%20achievement%20frame%20when%20logged%20into%20world%0D%0A2.%20open%20addon%20control%20panel%20or%20similar%0D%0A3.%20hit%20load%20to%20force%20load%20and%20will%20work%20normal%20%28until%20logout%29%0D%0A%0D%0A%21%5BCurrent%20work%20around%5D%28https%3A//i.ibb.co/261HspS/Workaround.png%29%20",
+    "download_url": "https://github.com/Hyphie24/Overachiever_Wrath/releases/download/v1.2.6/Overachiever.zip",
+    "date_published": "2022-10-04T01:48:00+00:00",
+    "version": "v1.2.6",
+    "changelog_url": "data:,Big%20thanks%20to%20Jncl%20on%20Curse%21%20Got%20the%20tabs%20to%20load%20%28first%20load%20tabs%20are%20small%2C%20but%20closing%20and%20re-opening%20achievement%20window%20makes%20tabs%20normal%29%0D%0A%0D%0AShould%20still%20work%20with%20Krowi%27s%20Achievement%20Filter%21",
     "options": {
       "strategy": "default"
     },
@@ -2718,6 +2750,10 @@
     "deps": [],
     "logged_versions": [
       {
+        "version": "v1.2.6",
+        "install_time": "2022-10-04T10:58:57+00:00"
+      },
+      {
         "version": "v1.2.6-alpha",
         "install_time": "2022-09-27T13:58:52+00:00"
       }
@@ -2731,8 +2767,8 @@
     "description": "A WeakAuras Companion clone.",
     "url": "https://github.com/layday/instawow",
     "download_url": "file:///C:/Users/luhao_000/AppData/Roaming/instawow/profiles/classic/plugins/instawow.wa_updater/WeakAurasCompanion.zip",
-    "date_published": "2022-09-17T03:36:22.533770+00:00",
-    "version": "63702f4",
+    "date_published": "2022-10-06T09:40:46.795768+00:00",
+    "version": "6f9ca9c",
     "changelog_url": "file:///C:/Users/luhao_000/AppData/Roaming/instawow/profiles/classic/plugins/instawow.wa_updater/CHANGELOG.md",
     "options": {
       "strategy": "default"
@@ -2744,6 +2780,26 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "6f9ca9c",
+        "install_time": "2022-10-06T09:40:46+00:00"
+      },
+      {
+        "version": "3bac940",
+        "install_time": "2022-10-05T16:01:29+00:00"
+      },
+      {
+        "version": "6c4f05f",
+        "install_time": "2022-10-05T04:46:49+00:00"
+      },
+      {
+        "version": "b730336",
+        "install_time": "2022-10-03T03:39:16+00:00"
+      },
+      {
+        "version": "eb04333",
+        "install_time": "2022-10-01T02:56:14+00:00"
+      },
       {
         "version": "63702f4",
         "install_time": "2022-09-17T03:36:23+00:00"
@@ -2763,26 +2819,6 @@
       {
         "version": "0858939",
         "install_time": "2022-09-13T07:39:44+00:00"
-      },
-      {
-        "version": "77b42a2",
-        "install_time": "2022-09-07T05:50:11+00:00"
-      },
-      {
-        "version": "3b20e8e",
-        "install_time": "2022-09-06T07:17:04+00:00"
-      },
-      {
-        "version": "66847aa",
-        "install_time": "2022-09-05T11:09:43+00:00"
-      },
-      {
-        "version": "b6ce385",
-        "install_time": "2022-09-03T13:26:11+00:00"
-      },
-      {
-        "version": "b115664",
-        "install_time": "2022-09-03T03:37:21+00:00"
       }
     ]
   },
@@ -3215,9 +3251,9 @@
     "name": "TradeSkillMaster",
     "description": "TradeSkillMaster (TSM) is an addon designed to help both casual gold makers as well as experienced goblins streamline their gold-making processes. TSM's features include everything from improving the native crafting and auctioning experiences to helping you gather needed materials and sniping that low-hanging auction house fruit!\r\n\r\nTradeSkillMaster offers the following features:\r\n\r\n[LIST]\r\n[*]The TSM Core window is your new home-base! Here you'll be able to create your all-important groups and operations, that will help you manage your targeted markets and lead you to success on the auction house. Not a fan of creating your own groups? You can easily import groups from the new and improved import/export tab. Lastly, manage your sales & expense data and track your incoming gold with the Ledger tab.\r\n[*]TSM's Crafting window allows you analyze what crafts will sell profitably and allows you to build a queue, speeding up the crafting process dramatically. It also includes the powerful Gathering function that will help guide you toward easily acquiring any needed materials.\r\n[*]Tasklist: The new tasklist feature helps with gathering and cooldown management; automatically alerting you about available craft-able cooldowns or materials needed.\r\n[*]The Destroying window helps efficiently mill, prospect, and disenchants items at super speed!\r\n[*]TSM's Mailing window allows you to quickly and easily empty your mailbox as well as automatically send items to other characters with the single click of a button.\r\n[*]Vendoring gives you an enhanced interface for buying from a vendor, and selling items from your bags to the vendor.\r\n[*]The BankUI helps manage your inventory by allowing you to easily move predefined groups of items between your bags, bank, and guild bank.\r\n[/LIST]\r\nWhether you're a new user or long time TSM veteran, please check out our website for more information and premium features related to TSM: https://www.tradeskillmaster.com/",
     "url": "https://www.wowinterface.com/downloads/info24165-TradeSkillMaster.html",
-    "download_url": "https://cdn.wowinterface.com/downloads/getfile.php?id=24165&d=1664147620&minion",
-    "date_published": "2022-09-25T23:13:40+00:00",
-    "version": "v4.11.51",
+    "download_url": "https://cdn.wowinterface.com/downloads/getfile.php?id=24165&d=1665074814&minion",
+    "date_published": "2022-10-06T16:46:54+00:00",
+    "version": "v4.11.55",
     "changelog_url": "data:,None",
     "options": {
       "strategy": "default"
@@ -3229,6 +3265,22 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v4.11.55",
+        "install_time": "2022-10-08T09:12:38+00:00"
+      },
+      {
+        "version": "v4.11.54",
+        "install_time": "2022-10-02T03:28:55+00:00"
+      },
+      {
+        "version": "v4.11.53",
+        "install_time": "2022-09-30T13:06:04+00:00"
+      },
+      {
+        "version": "v4.11.52",
+        "install_time": "2022-09-28T03:04:28+00:00"
+      },
       {
         "version": "v4.11.51",
         "install_time": "2022-09-26T11:35:51+00:00"
@@ -3273,10 +3325,10 @@
     "name": "WIM (WoW Instant Messenger)",
     "description": "WIM (WoW Instant Messenger) is a World of Warcraft addon which helps you to manage your whispers by making them into a classic instant messenger interface such as AIM, Yahoo and MSN. \r\n\r\nWith game play in mind, WIM has a large array of options where you can customize how WIM interacts during different situations, such as while you are in combat or in town talking to friends or selling your crafts.\r\n\r\n[B]Some of WIM's major features are:[/B]\r\n-Tabbed or windowed messages\r\n-History\r\n-Filtering\r\n-Fully customizable\r\n-and more...\r\n\r\nTo keep up to date with WIM and its developement, be sure to visit [URL]http://www.wimaddon.com[/URL]. WIMAddon.com is a great place to converse with the developers and users of WIM.\r\n\r\n\r\n*I welcome all comments and suggestions. It is the wow community which helps in creating a success.\r\n\r\n**Special thanks to everyone who has helped me test this addon.",
     "url": "https://www.wowinterface.com/downloads/info5342-WIMWoWInstantMessenger.html",
-    "download_url": "https://cdn.wowinterface.com/downloads/getfile.php?id=5342&d=1653885719&minion",
-    "date_published": "2022-05-30T04:41:59+00:00",
-    "version": "3.9.6",
-    "changelog_url": "data:,%5Bsize%3D5%5DWIM%5B/size%5D%0D%0A%5Bsize%3D4%5D%5Burl%3Dhttps%3A//github.com/Legacy-of-Sylvanaar/wow-instant-messenger/tree/3.9.6%5D3.9.6%5B/url%5D%20%282022-05-30%29%5B/size%5D%0D%0A%5Burl%3Dhttps%3A//github.com/Legacy-of-Sylvanaar/wow-instant-messenger/compare/3.9.5...3.9.6%5DFull%20Changelog%5B/url%5D%20%5Burl%3Dhttps%3A//github.com/Legacy-of-Sylvanaar/wow-instant-messenger/releases%5DPrevious%20Releases%5B/url%5D%0D%0A%5Blist%5D%0D%0A%5B%2A%5DFix%20emoticon%20parsing%2C%20now%20compatable%20with%20TwitchEmotes%0D%0A%5B%2A%5Dclean%20up%20luacheck%20errors%0D%0A%5B%2A%5Dfix%28Emoticons%29%3A%20preserver%20preexisting%20textures.%0D%0A%5B%2A%5Dbump%20BCC%20toc%0D%0A%5B/list%5D",
+    "download_url": "https://cdn.wowinterface.com/downloads/getfile.php?id=5342&d=1664814255&minion",
+    "date_published": "2022-10-03T16:24:15+00:00",
+    "version": "3.9.8",
+    "changelog_url": "data:,%5Bsize%3D5%5DWIM%5B/size%5D%0D%0A%5Bsize%3D4%5D%5Burl%3Dhttps%3A//github.com/Legacy-of-Sylvanaar/wow-instant-messenger/tree/3.9.8%5D3.9.8%5B/url%5D%20%282022-10-03%29%5B/size%5D%0D%0A%5Burl%3Dhttps%3A//github.com/Legacy-of-Sylvanaar/wow-instant-messenger/compare/3.9.7...3.9.8%5DFull%20Changelog%5B/url%5D%20%5Burl%3Dhttps%3A//github.com/Legacy-of-Sylvanaar/wow-instant-messenger/releases%5DPrevious%20Releases%5B/url%5D%0D%0A%5Blist%5D%0D%0A%5B%2A%5DMerge%20pull%20request%20%2314%20from%20mcarn/master%0D%0A%20%20%20%20Updated%20esES%20translations%0D%0A%5B%2A%5DUpdated%20esES%20translations%0D%0A%5B/list%5D",
     "options": {
       "strategy": "default"
     },
@@ -3287,6 +3339,14 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "3.9.8",
+        "install_time": "2022-10-04T10:58:58+00:00"
+      },
+      {
+        "version": "3.9.7",
+        "install_time": "2022-10-01T13:34:05+00:00"
+      },
       {
         "version": "3.9.6",
         "install_time": "2022-09-01T13:40:42+00:00"
