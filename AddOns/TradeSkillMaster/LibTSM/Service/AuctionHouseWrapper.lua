@@ -30,8 +30,6 @@ local private = {
 	lastAuctionCanceledAuctionId = nil,
 	lastAuctionCanceledTime = 0,
 	auctionIdUpdateCallbacks = {},
-	canSendAuctionQueryValue = true,
-	canSendAuctionQueryCallbacks = {},
 }
 local API_TIMEOUT = 5
 local GET_ALL_TIMEOUT = 30
@@ -45,7 +43,7 @@ local ITEM_KEY_KEYS = {
 	"battlePetSpeciesID",
 }
 local SILENT_EVENTS = {
-	AUCTION_ITEM_LIST_UPDATE = true,
+	AUCTION_ITEM_LIST_UPDATE = not TSM.IsWowClassic(),
 	REPLICATE_ITEM_LIST_UPDATE = true,
 }
 local GENERIC_EVENTS = {
@@ -210,9 +208,7 @@ AuctionHouseWrapper:OnModuleLoad(function()
 		private.wrappers[apiName] = APIWrapper(apiName)
 	end
 
-	if TSM.IsWowClassic() then
-		Delay.AfterTime("CHECK_CAN_SEND_AUCTION_QUERY", 0.1, private.CheckCanSendAuctionQuery, 0.1)
-	else
+	if not TSM.IsWowClassic() then
 		-- extra hooks to track search query calls since they are limited
 		hooksecurefunc(C_AuctionHouse, "SendSearchQuery", function()
 			tinsert(private.searchQueryAPITimes, GetTime())
@@ -249,10 +245,6 @@ end
 
 function AuctionHouseWrapper.IsOpen()
 	return private.isAHOpen
-end
-
-function AuctionHouseWrapper.RegisterCanSendAuctionQueryCallback(callback)
-	tinsert(private.canSendAuctionQueryCallbacks, callback)
 end
 
 function AuctionHouseWrapper.GetAndResetTotalHookedTime()
@@ -798,15 +790,4 @@ end
 
 function private.GetAnalyticsRegionRealm()
 	return TSM.GetRegion().."-"..gsub(GetRealmName(), "\226", "'")
-end
-
-function private.CheckCanSendAuctionQuery()
-	assert(TSM.IsWowClassic())
-	local value = CanSendAuctionQuery() and true or false
-	if value ~= private.canSendAuctionQueryValue then
-		private.canSendAuctionQueryValue = value
-		for _, callback in ipairs(private.canSendAuctionQueryCallbacks) do
-			callback(value)
-		end
-	end
 end

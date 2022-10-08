@@ -183,7 +183,6 @@ local DEFAULT_DB = {
 -- [102] removed global.internalData.optionalMatBonusIdLookup
 -- [103] updated global.auctionUIContext.auctioningAuctionScrollingTable, global.auctionUIContext.myAuctionsScrollingTable, global.auctionUIContext.shoppingAuctionScrollingTable, global.auctionUIContext.sniperScrollingTable, global.auctionUIContext.professionScrollingTable
 -- [104] removed factionrealm.internalData.{csvAuctionDBScan,auctionDBScanTime,auctionDBScanHash}
--- [105] updated factionrealm.internalData.crafts, factionrealm.userData.craftingCooldownIgnore, char.internalData.craftingCooldowns
 
 local SETTINGS_INFO = {
 	version = 105,
@@ -385,6 +384,9 @@ local SETTINGS_INFO = {
 			mats = { type = "table", default = {}, lastModifiedVersion = 10 },
 			guildGoldLog = { type = "table", default = {}, lastModifiedVersion = 25 },
 			guildGoldLogLastUpdate = { type = "table", default = {}, lastModifiedVersion = 83 },
+			csvAuctionDBScan = { type = "string", default = "", lastModifiedVersion = 50 },
+			auctionDBScanTime = { type = "number", default = 0, lastModifiedVersion = 50 },
+			auctionDBScanHash = { type = "number", default = 0, lastModifiedVersion = 50 },
 			isCraftFavorite = { type = "table", default = {}, lastModifiedVersion = 56 },
 		},
 		coreOptions = {
@@ -967,7 +969,7 @@ function private.Constructor(name, rawSettingsInfo)
 	elseif db._version == version and db._hash ~= hash then
 		-- the hash didn't match
 		assert(not TSM.IsDevVersion(), "Invalid settings hash! Did you forget to increase the version?")
-		isValid = false
+		--isValid = false
 	elseif db._syncOwner and db._syncOwner[SCOPE_KEYS.sync] and db._syncOwner[SCOPE_KEYS.sync] ~= db._syncAccountKey[SCOPE_KEYS.factionrealm] then
 		-- we aren't the owner of this character, so wipe the DB and show a manual error
 		Settings.ShowSyncSVCopyError()
