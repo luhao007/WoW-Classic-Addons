@@ -138,6 +138,8 @@ function QuestieLib:GetColoredQuestName(questId, showLevel, showState, blizzLike
     return QuestieLib:PrintDifficultyColor(level, name, QuestieDB.IsRepeatable(questId))
 end
 
+---@param randomSeed number
+---@return Color
 function QuestieLib:GetRandomColor(randomSeed)
     QuestieLib:MathRandomSeed(randomSeed)
     return {
@@ -335,7 +337,7 @@ local cachedVersion
 
 ---@return number, number, number
 function QuestieLib:GetAddonVersionInfo()
-    return 7, 3, 1
+    return 7, 3, 2
 end
 --    if (not cachedVersion) then
 --        cachedVersion = GetAddOnMetadata("Questie", "Version")
@@ -550,7 +552,7 @@ end
 ---* Memoize a function with a cache
 --! This does not support nil, never input nil into the table
 ---@param func function
----@param __mode TableWeakMode|nil
+---@param __mode TableWeakMode?
 ---@return table
 function QuestieLib:TableMemoizeFunction(func, __mode)
     return setmetatable({}, {

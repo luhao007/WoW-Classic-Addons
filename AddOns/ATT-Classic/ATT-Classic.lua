@@ -2916,12 +2916,6 @@ fieldConverters = {
 			cacheCreatureID(group, questGiverID);
 		end
 	end,
-	["altQuests"] = function(group, value)
-		_cache = rawget(fieldConverters, "questID");
-		for i,questID in ipairs(value) do
-			_cache(group, questID);
-		end
-	end,
 	["providers"] = function(group, value)
 		for k,v in pairs(value) do
 			if v[2] > 0 then
@@ -5833,8 +5827,10 @@ else
 		end
 		app:RegisterEvent("COMPANION_LEARNED");
 		app:RegisterEvent("COMPANION_UNLEARNED");
+		app:RegisterEvent("COMPANION_UPDATE");
 		app.events.COMPANION_LEARNED = RefreshCompanionCollectionStatus;
 		app.events.COMPANION_UNLEARNED = RefreshCompanionCollectionStatus;
+		app.events.COMPANION_UPDATE = RefreshCompanionCollectionStatus;
 	else
 		speciesFields.collected = function(t)
 			return SetBattlePetCollected(t.speciesID, t.itemID and GetItemCount(t.itemID, true) > 0);
@@ -7064,6 +7060,9 @@ app.CreateItem = function(id, t)
 	end
 	return setmetatable(constructor(id, t, "itemID"), app.BaseItem);
 end
+
+-- No difference between an item and an heirloom in classic, yet.
+app.CreateHeirloom = app.CreateItem;
 
 local fields = RawCloneData(itemFields);
 fields.collectible = function(t)
@@ -10677,7 +10676,7 @@ local function RowOnEnter(self)
 		elseif reference.isMontly then GameTooltip:AddLine("This can be completed monthly.");
 		elseif reference.isYearly then GameTooltip:AddLine("This can be completed yearly.");
 		elseif reference.repeatable then GameTooltip:AddLine("This can be repeated multiple times."); end
-		if reference.pvp then GameTooltip:AddLine(L["REQUIRES_PVP"], 1, 1, 1, 1, true); end
+		if reference.pvp and not reference.itemID then GameTooltip:AddLine(L["REQUIRES_PVP"], 1, 1, 1, 1, true); end
 		if not GameTooltipModel:TrySetModel(reference) then
 			local texture = reference.preview or reference.icon;
 			if texture then
@@ -11124,6 +11123,7 @@ function app:GetDataCache()
 		if app.Categories.Craftables then
 			db = {};
 			db.expanded = false;
+			db.isCraftedCategory = true;
 			db.text = LOOT_JOURNAL_LEGENDARIES_SOURCE_CRAFTED_ITEM;
 			db.icon = app.asset("Category_Crafting");
 			db.DontEnforceSkillRequirements = true;
@@ -11511,18 +11511,16 @@ function app:GetDataCache()
 							headerType = "pvp";
 						elseif GetRelativeValue(o, "isEventCategory") then
 							headerType = "event";
-						elseif o.parent.headerID == 0 or o.parent.headerID == -1 or o.parent.headerID == -82 or GetRelativeValue(o, "isWorldDropCategory") then
+						elseif GetRelativeValue(o, "isWorldDropCategory") or o.parent.headerID == -1 then
 							headerType = "drop";
-						elseif o.parent.key == "npcID" then
-							if GetRelativeValue(o, "headerID") == -2 then
-								headerType = -2;
-							else
-								headerType = "drop";
-							end
-						elseif o.parent.key == "categoryID" then
+						elseif o.parent.npcID then
+							headerType = o.parent.parent.headerID == -2 and -2 or "drop";
+						elseif GetRelativeValue(o, "isCraftedCategory") then
 							headerType = "crafted";
-						elseif not headerType then
-							headerType = GetDeepestRelativeValue(o, "headerID");
+						elseif o.parent.achievementID then
+							headerType = -4;
+						else
+							headerType = GetDeepestRelativeValue(o, "headerID") or "drop";
 						end
 						local coords = GetRelativeValue(o, "coords");
 						if coords then

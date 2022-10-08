@@ -1815,6 +1815,7 @@ function private.FSMCreate()
 		postContextTemp = {},
 		pausePending = nil,
 		pendingFuture = nil,
+		canSendAuctionQuery = true,
 	}
 	Event.Register("AUCTION_HOUSE_CLOSED", function()
 		private.fsm:ProcessEvent("EV_AUCTION_HOUSE_CLOSED")
@@ -1825,19 +1826,24 @@ function private.FSMCreate()
 	AuctionHouseWrapper.RegisterAuctionIdUpdateCallback(function(...)
 		private.fsm:ProcessEvent("EV_AUCTION_ID_UPDATE", ...)
 	end)
+	if TSM.IsWowClassic() then
+		AuctionHouseWrapper.RegisterCanSendAuctionQueryCallback(function(...)
+			private.fsm:ProcessEvent("EV_CAN_SEND_AUCTION_QUERY_UPDATE", ...)
+		end)
+	end
 	local function UpdateScanFrame(context)
 		if not context.scanFrame then
 			return
 		end
 		local bottom = context.scanFrame:GetElement("bottom")
-		bottom:GetElement("postBtn"):SetDisabled(context.pendingFuture or context.postDisabled)
-		bottom:GetElement("bidBtn"):SetDisabled(context.pendingFuture or context.bidDisabled)
-		bottom:GetElement("buyoutBtn"):SetDisabled(context.pendingFuture or context.buyoutDisabled)
+		bottom:GetElement("postBtn"):SetDisabled(context.pendingFuture or context.postDisabled or not context.canSendAuctionQuery)
+		bottom:GetElement("bidBtn"):SetDisabled(context.pendingFuture or context.bidDisabled or not context.canSendAuctionQuery)
+		bottom:GetElement("buyoutBtn"):SetDisabled(context.pendingFuture or context.buyoutDisabled or not context.canSendAuctionQuery)
 		if context.cancelShown then
 			assert(context.buyoutDisabled)
 			bottom:GetElement("buyoutBtn"):Hide()
 			bottom:GetElement("cancelBtn")
-				:SetDisabled(context.pendingFuture)
+				:SetDisabled(context.pendingFuture or not context.canSendAuctionQuery)
 				:Show()
 		else
 			bottom:GetElement("buyoutBtn"):Show()
@@ -1849,9 +1855,10 @@ function private.FSMCreate()
 		bottom:GetElement("pauseResumeBtn")
 			:SetDisabled((not isPaused and progress == 1) or context.pausePending ~= nil)
 			:SetHighlightLocked(context.pausePending ~= nil)
+		local processIconHidden = context.progress == 1 or (context.findResult and context.numBought + context.numBid == context.numConfirmed) or context.progressPaused
 		bottom:GetElement("progressBar"):SetProgress(context.progress)
-			:SetText(context.pendingFuture and L["Confirming..."] or context.progressText or "")
-			:SetProgressIconHidden(context.progress == 1 or (context.findResult and context.numBought + context.numBid == context.numConfirmed) or context.progressPaused)
+			:SetText((processIconHidden and not context.canSendAuctionQuery and L["Preparing..."]) or (context.pendingFuture and L["Confirming..."]) or context.progressText or "")
+			:SetProgressIconHidden(context.canSendAuctionQuery and processIconHidden)
 		local auctionList = context.scanFrame:GetElement("auctions")
 			:SetContext(context.auctionScan)
 			:SetAuctionScan(context.auctionScan)
@@ -2643,6 +2650,12 @@ function private.FSMCreate()
 		:AddDefaultEvent("EV_SCAN_FRAME_HIDDEN", function(context)
 			context.scanFrame = nil
 			context.findAuction = nil
+		end)
+		:AddDefaultEvent("EV_CAN_SEND_AUCTION_QUERY_UPDATE", function(context, canSendAuctionQuery)
+			context.canSendAuctionQuery = canSendAuctionQuery
+			if context.scanFrame then
+				UpdateScanFrame(context)
+			end
 		end)
 		:AddDefaultEventTransition("EV_AUCTION_HOUSE_CLOSED", "ST_INIT")
 		:AddDefaultEventTransition("EV_SCAN_BACK_BUTTON_CLICKED", "ST_INIT")

@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Zensunim of Dragonblight
-## Version: 4.68
+## Version: 4.69
 ## SavedVariables: GTFOData
 ## DefaultState: Enabled
 

@@ -1117,6 +1117,11 @@
 		<Notes>显示当前移动速度</Notes>
 		<Category>界面</Category>
 	</Addon>
+	<Addon name="MountsJournal">
+		<Title>坐骑手册</Title>
+		<Notes>坐骑手册增强，支持随机坐骑。</Notes>
+		<Category>收藏</Category>
+	</Addon>
 	<Addon name="MRT">
 		<Title>Method团队助手</Title>
 		<Notes>提供团队和小队的一些辅助功能</Notes>

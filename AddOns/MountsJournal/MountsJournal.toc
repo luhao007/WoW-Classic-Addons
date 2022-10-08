@@ -1,0 +1,28 @@
+## Interface: 30400
+## Author: sfmict
+## Version: v3.4.16
+## SavedVariables: MountsJournalDB
+## SavedVariablesPerCharacter: MountsJournalChar
+
+## Title: MountsJournal
+## Notes: Improved Mounts Journal.
+## Title-zhCN: |cFFFFE00A<|r|cFFA9D271收藏|r|cFFFFE00A>|r |cFFFFFFFF坐骑手册|r |cFFFFE00AMountsJournal|r
+## Notes-zhCN: 坐骑手册增强，支持随机坐骑。
+
+
+locales.xml
+Util.lua
+widgets\Binding.lua
+templates.xml
+Mounts.lua
+db.lua
+config\Main.lua
+config\Classes.lua
+config\About.lua
+Journal.lua
+components\Tags.lua
+components\Camera.lua
+components\MountAnimations.lua
+components\DungeonRaidButton.lua
+components\Profiles.lua
+components\Hyperlinks.lua

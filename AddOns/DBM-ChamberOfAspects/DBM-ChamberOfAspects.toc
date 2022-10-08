@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Tandanu/Nitram/MysticalOS
-## Version: 88434f7
+## Version: 073d688
 ## RequiredDeps: DBM-Core
 ## LoadOnDemand: 1
 ## SavedVariables: DBMChamberOfAspects_AllSavedVars

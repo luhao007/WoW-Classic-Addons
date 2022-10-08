@@ -263,4 +263,121 @@ select(2, ...).FlightPathDB = {
 	[316] = {
 		name="Ebon Hold - Acherus -> Death's Breach Start",
 	},
+	[290] = {
+		name="Argent Stand, Zul'Drak",
+	},
+	[242] = {
+		name="Quest - Dragonblight - Spiritual Vision - Begin",
+	},
+	[358] = {
+		name="Quest - Icecrown - North Sea Kraken Bombing - Start",
+	},
+	[359] = {
+		name="Quest - Icecrown - North Sea Kraken Bombing - End",
+	},
+	[301] = {
+		name="Quest - Borean Tundra - Check In With Bixie - Begin",
+	},
+	[186] = {
+		name="Quest - Howling Fjord - Flight to the Windrunner - Start",
+	},
+	[187] = {
+		name="Quest - Howling Fjord - Flight to the Windrunner - End",
+	},
+	[188] = {
+		name="Quest - Howling Fjord - Test at Sea - Start",
+	},
+	[311] = {
+		name="Camp Onequah, Grizzly Hills (Quest)",
+	},
+	[221] = {
+		name="Amber Ledge, Borean (To Beryl)",
+	},
+	[313] = {
+		name="Westfall Brigade, Grizzly Hills (Quest)",
+	},
+	[314] = {
+		name="Zim'Torga, Zul'Drak (Quest)",
+	},
+	[193] = {
+		name="Quest - Howling Fjord - Mission: Plague This! - End",
+	},
+	[225] = {
+		name="Amber Ledge, Borean (to Coldarra)",
+	},
+	[194] = {
+		name="Quest - Howling Fjord - Mission: Plague This! - Start",
+	},
+	[261] = {
+		name="Quest - Stars' Rest to Wintergarde End",
+	},
+	[262] = {
+		name="Grizzly Hills, Alliance Log Ride Start 01",
+	},
+	[267] = {
+		name="Grizzly Hills, Alliance Log Ride Start",
+	},
+	[199] = {
+		name="Quest - Howling Fjord - McGoyver Start",
+	},
+	[269] = {
+		name="Quest - Westguard Keep to Wintergarde Keep Begin",
+	},
+	[200] = {
+		name="Quest - Howling Fjord - McGoyver End",
+	},
+	[232] = {
+		name="Borean Tundra - Warsong Hold Wolf Start",
+	},
+	[273] = {
+		name="Wyrmrest Temple - bottom to top, Dragonblight - Begin",
+	},
+	[234] = {
+		name="Coldarra Ledge, Coldarra",
+	},
+	[203] = {
+		name="Quest - Stars' Rest -> Wintergarde",
+	},
+	[277] = {
+		name="Wyrmrest Temple - top to middle, Dragonblight - Begin",
+	},
+	[240] = {
+		name="Borean Tundra - Quest - Dusk - End",
+	},
+	[236] = {
+		name="Coldarra, Keristrasza to Malygos",
+	},
+	[280] = {
+		name="Wyrmrest Temple - middle to top, Dragonblight - Begin",
+	},
+	[270] = {
+		name="Quest - Westguard Keep to Wintergarde Keep End",
+	},
+	[282] = {
+		name="Wyrmrest Temple - middle to bottom, Dragonblight - Begin",
+	},
+	[271] = {
+		name="Grizzly Hills, Horde Log Ride Start",
+	},
+	[284] = {
+		name="Wyrmrest Temple - bottom to middle, Dragonblight - Begin",
+	},
+	[239] = {
+		name="Borean Tundra - Quest - Dusk Start",
+	},
+	[275] = {
+		name="Wyrmrest Temple - top to bottom, Dragonblight - Begin",
+	},
+	[177] = {
+		name="Quest - Howling Fjord Tauren Canoe (End)",
+	},
+	[176] = {
+		name="Quest - Howling Fjord Tauren Canoe (Start)",
+	},
+	[222] = {
+		name="Beryl Point, Borean",
+	},
+	[235] = {
+		name="Transitus Shield, Coldarra (NOT USED)",
+	},
 };

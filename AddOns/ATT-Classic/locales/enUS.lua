@@ -940,6 +940,7 @@ app.L = {
 		["The Battle for Mount Hyjal"] = "Hyjal Summit";
 		["Black Temple"] = "The Black Temple";
 		["The Sunwell"] = "Sunwell Plateau";
+		["Violet Hold"] = "The Violet Hold";
 	};
 
 	-- This is necessary to have because Blizzard does not always have the correct map ID at the time of zone change.

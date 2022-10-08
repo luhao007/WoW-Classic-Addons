@@ -1760,3 +1760,8 @@ Change Log:
 * Wrath Classic support
 * Dragonflight support (initial)
 
+4.69
+* Dragonflight support (Interface)
+* Added Dragonflight spells (world)
+* Added Wrath spells for Old Kingdom
+* Added Legion spells for Return to Karazhan

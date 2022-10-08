@@ -13,6 +13,7 @@
 12. 保存窗口位置。
 13. 支持LDB。
 14. 支持TBC副本。
+15. 更新TOC文件。
 
 Readme:
 1. Slash Command /lm or /lootmonitor to open/close LootMonitor Window.
@@ -29,3 +30,4 @@ Readme:
 12. Save Set/Output Window position.
 13. Support LDB.
 14. Support BCC Raid Instance.
+15. Update TOC file.
