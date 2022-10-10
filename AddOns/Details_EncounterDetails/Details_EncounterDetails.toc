@@ -10,9 +10,6 @@
 
 ## X-Part-Of: Details
 
-#@no-lib-strip@
-#@end-no-lib-strip@
-
 enUS.lua
 ptBR.lua
 frames.lua

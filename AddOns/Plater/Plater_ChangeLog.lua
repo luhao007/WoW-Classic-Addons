@@ -8,6 +8,13 @@ function Plater.GetChangelogTable()
 	if (not Plater.ChangeLogTable) then
 		Plater.ChangeLogTable = {
 			
+			{1665344387,  "Bug Fix", "October 9th, 2022", "Fixing labels on some options not showing up properly.", "Terciob"},
+			{1665344387,  "Bug Fix", "October 9th, 2022", "Hiding test cast bars properly after test mode turned off.", "cont1nuity"},
+			{1665344387,  "Backend Change", "October 6th, 2022", "Limit Ghost Auras to enemy units.", "cont1nuity"},
+			{1665344387,  "Backend Change", "October 2nd, 2022", "Fixing spec recognition on dual spec change in WotLK.", "cont1nuity"},
+			{1665344387,  "Backend Change", "September 28th, 2022", "Adding cache for campaign quests: 'Plater.QuestCacheCampaign'.", "Terciob"},
+			{1665344387,  "Backend Change", "September 21st, 2022", "Added Hunter Kill Shot to execute detection.", "cont1nuity"},
+			
 			{1662995032,  "Bug Fix", "September 21st, 2022", "Ghost Auras should be shown on the debuff frame.", "cont1nuity"},
 			{1662995032,  "Bug Fix", "September 21st, 2022", "WotLK tank recognition in raids is again based on raid roles instead of party role assignments.", "cont1nuity"},
 			{1662995032,  "Bug Fix", "September 20th, 2022", "WotLK DK death runes should now show properly.", "cont1nuity"},

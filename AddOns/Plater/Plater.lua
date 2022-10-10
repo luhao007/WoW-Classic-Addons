@@ -81,7 +81,7 @@ local LDB = LibStub ("LibDataBroker-1.1", true)
 local LDBIcon = LDB and LibStub ("LibDBIcon-1.0", true)
 local _
 
-local Plater = DF:CreateAddOn ("Plater", "PlaterDB", PLATER_DEFAULT_SETTINGS, { --options table
+local Plater = DF:CreateAddOn ("Plater", "PlaterDB", PLATER_DEFAULT_SETTINGS, InterfaceOptionsFrame and { --options table --TODO: DISABLED FOR DRAGONFLIGHT FOR NOW!
 	name = "Plater Nameplates",
 	type = "group",
 	args = {
@@ -101,6 +101,7 @@ local Plater = DF:CreateAddOn ("Plater", "PlaterDB", PLATER_DEFAULT_SETTINGS, { 
 		},
 	}
 })
+
 Plater.versionString = GetAddOnMetadata("Plater_dev", "Version") or GetAddOnMetadata("Plater", "Version")
 Plater.fullVersionInfo = Plater.versionString .. " - DF v" .. select(2,LibStub:GetLibrary("DetailsFramework-1.0")) .. " - " .. GetBuildInfo()
 function Plater.GetVersionInfo(printOut)
@@ -1038,6 +1039,8 @@ local class_specs_coords = {
 	
 	--store quests the player is in
 	Plater.QuestCache = {}
+	--store only campaign quests
+	Plater.QuestCacheCampaign = {}
 	
 	--cache the profile settings for each actor type on this table, so scripts can have access to profile
 	Plater.ActorTypeSettingsCache = { --private
@@ -1275,6 +1278,11 @@ local class_specs_coords = {
 						lowExecute = 0.35
 					else
 						lowExecute = 0.25
+					end
+				elseif (class == "HUNTER") then
+					-- Kill Shot
+					if GetSpellInfo(GetSpellInfo(53351)) then
+						lowExecute = 0.2
 					end
 				end
 			end
@@ -2592,6 +2600,14 @@ local class_specs_coords = {
 			end
 		end,
 
+		ACTIVE_TALENT_GROUP_CHANGED = function()
+			C_Timer.After (0.5, UpdatePlayerTankState)
+			C_Timer.After (0.5, Plater.Resources.OnSpecChanged) --~resource
+			C_Timer.After (2, Plater.GetSpellForRangeCheck)
+			C_Timer.After (2, Plater.GetHealthCutoffValue)
+			C_Timer.After (1, Plater.DispatchTalentUpdateHookEvent)
+		end,
+		
 		PLAYER_SPECIALIZATION_CHANGED = function()
 			C_Timer.After (0.5, Plater.Resources.OnSpecChanged) --~resource
 			C_Timer.After (2, Plater.GetSpellForRangeCheck)
@@ -3793,8 +3809,10 @@ local class_specs_coords = {
 			
 			plateFrame.QuestAmountCurrent = nil
 			plateFrame.QuestAmountTotal = nil
+			plateFrame.QuestIsCampaign = nil
 			unitFrame.QuestAmountCurrent = nil
 			unitFrame.QuestAmountTotal = nil
+			unitFrame.QuestIsCampaign = nil
 			
 			--cache the unit target id, so it doesnt need to waste cycles building up on aggro checks
 			unitFrame.targetUnitID = unitID .. "target"
@@ -4493,8 +4511,10 @@ function Plater.OnInit() --private --~oninit ~init
 		Plater.EventHandlerFrame:RegisterEvent ("UNIT_QUEST_LOG_CHANGED")
 		if IS_WOW_PROJECT_MAINLINE then
 			Plater.EventHandlerFrame:RegisterEvent ("PLAYER_SPECIALIZATION_CHANGED")
-			Plater.EventHandlerFrame:RegisterEvent ("PLAYER_TALENT_UPDATE")
+		elseif IS_WOW_PROJECT_CLASSIC_WRATH then
+			Plater.EventHandlerFrame:RegisterEvent ("ACTIVE_TALENT_GROUP_CHANGED")
 		end
+		Plater.EventHandlerFrame:RegisterEvent ("PLAYER_TALENT_UPDATE")
 		
 		Plater.EventHandlerFrame:RegisterEvent ("ENCOUNTER_START")
 		Plater.EventHandlerFrame:RegisterEvent ("ENCOUNTER_END")
@@ -4815,6 +4835,7 @@ function Plater.OnInit() --private --~oninit ~init
 
 						if (castBar.finished and not castBar.playedFinishedTest) then
 							Plater.CastBarOnEvent_Hook (castBar, "UNIT_SPELLCAST_STOP", plateFrame.unitFrame.unit, plateFrame.unitFrame.unit)
+							castBar:Hide()
 							castBar.playedFinishedTest = true
 						end
 					end
@@ -9173,7 +9194,7 @@ function Plater.SetCVarsOnFirstRun()
 
 	--> view distance
 	if IS_WOW_PROJECT_MAINLINE then
-		SetCVar ("nameplateMaxDistance", 100)
+		SetCVar ("nameplateMaxDistance", 60)
 	else
 		SetCVar ("nameplateMaxDistance", 41)
 	end
@@ -9292,6 +9313,9 @@ end
 					total = 0,
 					yourQuest = false,
 				}
+
+				local isCampaignQuest = Plater.QuestCacheCampaign[text]
+
 				local amount1, amount2, questText = nil, nil, nil
 				local j = i
 				while (ScanQuestTextCache [j+1]) do
@@ -9349,11 +9373,13 @@ end
 					plateFrame.QuestAmountCurrent = amount1
 					plateFrame.QuestAmountTotal = amount2
 					plateFrame.QuestText = questText
+					plateFrame.QuestIsCampaign = isCampaignQuest
 					
 					--expose to scripts
 					plateFrame.unitFrame.QuestAmountCurrent = amount1
 					plateFrame.unitFrame.QuestAmountTotal = amount2
 					plateFrame.unitFrame.QuestText = questText
+					plateFrame.unitFrame.QuestIsCampaign = isCampaignQuest
 				end
 				
 				if not isGroupQuest then
@@ -9380,6 +9406,7 @@ end
 
 		--clear the quest cache
 		wipe (Plater.QuestCache)
+		wipe (Plater.QuestCacheCampaign)
 
 		--do not update if is inside an instance
 		local isInInstance = IsInInstance()
@@ -9396,6 +9423,9 @@ end
 				--ViragDevTool_AddData({questDetails = questDetails, QuestObjectives = C_QuestLog.GetQuestObjectives(questDetails.questID), Title = C_QuestLog.GetTitleForLogIndex(questLogId)}, "QuestUpdate - " .. questLogId)
 				if (questDetails and not questDetails.isHeader and questDetails.title and type (questDetails.questID) == "number" and questDetails.questID > 0) then
 					Plater.QuestCache [questDetails.title] = true
+					if (questDetails.campaignID) then
+						Plater.QuestCacheCampaign[questDetails.title] = true
+					end
 				end
 			else
 				local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questId, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isStory = GetQuestLogTitle (questLogId)
@@ -12664,18 +12694,18 @@ function SlashCmdList.PLATER (msg, editbox)
 		
 		return
 	
-	elseif (msg == "profstart" or msg == "profstartcore") then
-		Plater.EnableProfiling(true)
+	elseif (msg == "profstart" or msg == "profstartcore" or msg == "profstartadvance") then
+		Plater.EnableProfiling(true, true)
 		
 		return
 	
 	elseif (msg == "profstartmods") then
-		Plater.EnableProfiling(false)
+		Plater.EnableProfiling(false, true)
 		
 		return
 	
-	elseif (msg == "profstartadvance") then
-		Plater.EnableProfiling(true, true)
+	elseif (msg == "profstartold") then
+		Plater.EnableProfiling(true, false)
 		
 		return
 	

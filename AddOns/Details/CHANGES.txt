@@ -1,28 +1,10 @@
-tag c603e3de36138cf50563aaacb364745deb1bf715 Details.DF.SL.Wrath.10033.146
+tag 3810854f1e0505c3cea465d67536650ef91e7e95 Details.DF.SL.Wrath.10136.146
 Author:	Tercio Jose <terciob19@hotmail.com>
-Date:	Thu Sep 29 13:37:23 2022 -0300
+Date:	Sun Oct 9 20:49:31 2022 -0300
 
-commit 11aa42e4da603f0c1a9eb89cc254eb75fe390503
+commit b588d5e30cec44d78125022adcfdf76c760f825b
 Author: Tercio Jose <terciob19@hotmail.com>
-Date:   Thu Sep 29 13:36:43 2022 -0300
+Date:   Sun Oct 9 20:48:47 2022 -0300
 
-    General fixes, framework update
-
-commit 5a327a5f624464faef9fea6abe91e31c97f470ad
-Author: Flamanis <Flamanis@users.noreply.github.com>
-Date:   Thu Sep 29 07:36:33 2022 -0500
-
-    LibOpenRaid use C_Container if it exists
-
-commit 5a327a5f624464faef9fea6abe91e31c97f470ad
-Author: Flamanis <Flamanis@users.noreply.github.com>
-Date:   Thu Sep 29 07:36:33 2022 -0500
-
-    LibOpenRaid use C_Container if it exists
-
-commit 797fb75bad242c78a11a3d3d1689f4ba379a0cda
-Author: Tercio Jose <terciob19@hotmail.com>
-Date:   Thu Sep 29 09:00:52 2022 -0300
-
-    Fixed segment menu background color being trasparent
+    Fixed an error while trying to move the window by clicking and holding on a window line
 

@@ -413,10 +413,10 @@
     "name": "AtlasLootClassic",
     "description": "Shows the possible loot from the bosses",
     "url": "https://www.curseforge.com/wow/addons/atlaslootclassic",
-    "download_url": "https://edge.forgecdn.net/files/4018/6/AtlasLootClassic-v3.0.5.zip",
-    "date_published": "2022-10-04T15:37:29.410000+00:00",
-    "version": "v3.0.5",
-    "changelog_url": "https://api.curseforge.com/v1/mods/326516/files/4018006/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4021/848/AtlasLootClassic-v3.0.6.zip",
+    "date_published": "2022-10-08T13:58:32.143000+00:00",
+    "version": "v3.0.6",
+    "changelog_url": "https://api.curseforge.com/v1/mods/326516/files/4021848/changelog",
     "options": {
       "strategy": "default"
     },
@@ -448,6 +448,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v3.0.6",
+        "install_time": "2022-10-09T05:32:01+00:00"
+      },
       {
         "version": "v3.0.5",
         "install_time": "2022-10-05T04:46:48+00:00"
@@ -483,10 +487,6 @@
       {
         "version": "v2.2.1-bcc",
         "install_time": "2021-05-30T05:16:03+00:00"
-      },
-      {
-        "version": "v2.2.0-bcc",
-        "install_time": "2021-05-26T23:22:30+00:00"
       }
     ]
   },
@@ -1917,10 +1917,10 @@
     "name": "Pawn",
     "description": "Pawn helps you compare items and find upgrades.",
     "url": "https://www.curseforge.com/wow/addons/pawn",
-    "download_url": "https://edge.forgecdn.net/files/4014/637/Pawn-2.7.2-Wrath.zip",
-    "date_published": "2022-10-02T00:21:33.510000+00:00",
-    "version": "2.7.2 (Wrath)",
-    "changelog_url": "https://api.curseforge.com/v1/mods/4646/files/4014637/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4022/416/Pawn-2.7.3-Wrath.zip",
+    "date_published": "2022-10-08T22:50:50.537000+00:00",
+    "version": "2.7.3 (Wrath)",
+    "changelog_url": "https://api.curseforge.com/v1/mods/4646/files/4022416/changelog",
     "options": {
       "strategy": "default"
     },
@@ -1931,6 +1931,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "2.7.3 (Wrath)",
+        "install_time": "2022-10-09T05:32:01+00:00"
+      },
       {
         "version": "2.7.2 (Wrath)",
         "install_time": "2022-10-02T03:28:54+00:00"
@@ -1966,10 +1970,6 @@
       {
         "version": "2.6.1 (Wrath)",
         "install_time": "2022-09-03T03:37:21+00:00"
-      },
-      {
-        "version": "2.6 (Wrath Classic)",
-        "install_time": "2022-09-01T13:42:47+00:00"
       }
     ]
   },
@@ -3241,53 +3241,6 @@
       {
         "version": "1.5.3.30400",
         "install_time": "2022-09-25T14:32:58+00:00"
-      }
-    ]
-  },
-  {
-    "source": "wowi",
-    "id": "24165",
-    "slug": "24165-tradeskillmaster",
-    "name": "TradeSkillMaster",
-    "description": "TradeSkillMaster (TSM) is an addon designed to help both casual gold makers as well as experienced goblins streamline their gold-making processes. TSM's features include everything from improving the native crafting and auctioning experiences to helping you gather needed materials and sniping that low-hanging auction house fruit!\r\n\r\nTradeSkillMaster offers the following features:\r\n\r\n[LIST]\r\n[*]The TSM Core window is your new home-base! Here you'll be able to create your all-important groups and operations, that will help you manage your targeted markets and lead you to success on the auction house. Not a fan of creating your own groups? You can easily import groups from the new and improved import/export tab. Lastly, manage your sales & expense data and track your incoming gold with the Ledger tab.\r\n[*]TSM's Crafting window allows you analyze what crafts will sell profitably and allows you to build a queue, speeding up the crafting process dramatically. It also includes the powerful Gathering function that will help guide you toward easily acquiring any needed materials.\r\n[*]Tasklist: The new tasklist feature helps with gathering and cooldown management; automatically alerting you about available craft-able cooldowns or materials needed.\r\n[*]The Destroying window helps efficiently mill, prospect, and disenchants items at super speed!\r\n[*]TSM's Mailing window allows you to quickly and easily empty your mailbox as well as automatically send items to other characters with the single click of a button.\r\n[*]Vendoring gives you an enhanced interface for buying from a vendor, and selling items from your bags to the vendor.\r\n[*]The BankUI helps manage your inventory by allowing you to easily move predefined groups of items between your bags, bank, and guild bank.\r\n[/LIST]\r\nWhether you're a new user or long time TSM veteran, please check out our website for more information and premium features related to TSM: https://www.tradeskillmaster.com/",
-    "url": "https://www.wowinterface.com/downloads/info24165-TradeSkillMaster.html",
-    "download_url": "https://cdn.wowinterface.com/downloads/getfile.php?id=24165&d=1665074814&minion",
-    "date_published": "2022-10-06T16:46:54+00:00",
-    "version": "v4.11.55",
-    "changelog_url": "data:,None",
-    "options": {
-      "strategy": "default"
-    },
-    "folders": [
-      {
-        "name": "TradeSkillMaster"
-      }
-    ],
-    "deps": [],
-    "logged_versions": [
-      {
-        "version": "v4.11.55",
-        "install_time": "2022-10-08T09:12:38+00:00"
-      },
-      {
-        "version": "v4.11.54",
-        "install_time": "2022-10-02T03:28:55+00:00"
-      },
-      {
-        "version": "v4.11.53",
-        "install_time": "2022-09-30T13:06:04+00:00"
-      },
-      {
-        "version": "v4.11.52",
-        "install_time": "2022-09-28T03:04:28+00:00"
-      },
-      {
-        "version": "v4.11.51",
-        "install_time": "2022-09-26T11:35:51+00:00"
-      },
-      {
-        "version": "v4.11.50",
-        "install_time": "2022-09-25T14:41:06+00:00"
       }
     ]
   },

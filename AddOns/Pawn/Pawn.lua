@@ -7,7 +7,7 @@
 -- Main non-UI code
 ------------------------------------------------------------
 
-PawnVersion = 2.0702
+PawnVersion = 2.0703
 
 -- Pawn requires this version of VgerCore:
 local PawnVgerCoreVersionRequired = 1.17
@@ -199,15 +199,13 @@ function PawnInitialize()
 		-- WoW 10.0 moved UseContainerItem into C_Container.
 		hooksecurefunc(C_Container, "UseContainerItem", function(BagID, Slot)
 			if MerchantFrame:IsShown() then
-				local ItemLink = C_Container GetContainerItemLink(BagID, Slot)
-				if ItemLink then PawnOnItemLost(ItemLink) end
+				PawnOnItemLost(C_Container.GetContainerItemLink(BagID, Slot))
 			end
 		end)
 	else
 		hooksecurefunc("UseContainerItem", function(BagID, Slot)
 			if MerchantFrame:IsShown() then
-				local ItemLink = GetContainerItemLink(BagID, Slot)
-				if ItemLink then PawnOnItemLost(ItemLink) end
+				PawnOnItemLost(GetContainerItemLink(BagID, Slot))
 			end
 		end)
 	end
@@ -461,6 +459,11 @@ function PawnInitialize()
 		-- works on its own, but breaks other addons that hook this function like CanIMogIt. So, our best option appears to
 		-- be to just let the default version run, and then change its results immediately after.
 		hooksecurefunc("ContainerFrameItemButton_UpdateItemUpgradeIcon", PawnUpdateItemUpgradeIcon)
+	end
+
+	-- Dragonflight professions UI
+	if C_TradeSkillUI and C_TradeSkillUI.SetTooltipRecipeResultItem then
+		hooksecurefunc(C_TradeSkillUI, "SetTooltipRecipeResultItem", function(self, ...) PawnUpdateTooltip("GameTooltip", "C_TradeSkillUI.SetTooltipRecipeResultItem") end)
 	end
 
 	-- We're now effectively initialized.  Just the last steps of scale initialization remain.
@@ -2126,7 +2129,7 @@ end
 -- Parameters: TooltipName, DebugMessages
 --		TooltipName: The tooltip to read.
 --		DebugMessages: If true (default), debug messages will be shown.
--- Return value: Stats, UnknownLines
+-- Return value: Stats, SocketBonusStats, UnknownLines, PrettyLink
 --		Stats: The table of stats for the item.
 --		SocketBonusStats: The table of stats for the item's socket bonus.
 --		UnknownLines: A list of lines in the tooltip that were not understood.
@@ -4064,6 +4067,7 @@ end)
 function PawnOnItemLost(ItemLink)
 	if not ItemLink then return end
 	ItemLink = PawnUnenchantItemLink(ItemLink, true)
+	if not ItemLink then return end -- If it's, say, a battle pet.
 	local _, _, _, _, _, _, _, _, InvType = GetItemInfo(ItemLink)
 	if not InvType or InvType == "" or InvType == "INVTYPE_TRINKET" or InvType == "INVTYPE_BAG" or InvType == "INVTYPE_QUIVER" or InvType == "INVTYPE_TABARD" or InvType == "INVTYPE_BODY" then return end
 	if InvType == "INVTYPE_SHIELD" or InvType == "INVTYPE_HOLDABLE" then

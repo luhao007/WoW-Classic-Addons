@@ -1,3 +1,4 @@
+local addonName, platerInternal = ...
 
 local Plater = _G.Plater
 local GameCooltip = GameCooltip2
@@ -31,7 +32,7 @@ local CONST_ENUMNAME_CHI = "Chi"
 local CONST_ENUMNAME_SOULCHARGES = "SoulShards"
 local CONST_ENUMNAME_ESSENCE = "Essence"
 
-local startX, startY, heightSize = 10, -130, 710
+local startX, startY, heightSize = 10, platerInternal.optionsYStart, 755
 
 --templates
 local options_text_template = DF:GetTemplate("font", "OPTIONS_FONT_TEMPLATE")
@@ -303,8 +304,8 @@ function Plater.Resources.BuildResourceOptionsTab(frame)
 				end
                 Plater.UpdateAllPlates()
             end,
-            name = "Use Plater Rsources",
-            desc = "Use Plater Rsources",
+            name = "Use Plater Resources",
+            desc = "Use Plater Resources",
         },
 
         --show on personal bar
@@ -318,11 +319,6 @@ function Plater.Resources.BuildResourceOptionsTab(frame)
             name = "Show On Personal Bar",
             desc = "Show On Personal Bar",
         },
-
-        --alignment (is this implemented?)
-
-        --grow direction (is this implemented?)
-
 
         --show depleted
         {
@@ -426,6 +422,12 @@ function Plater.Resources.BuildResourceOptionsTab(frame)
 	_G.C_Timer.After(1.4, function()
 		--TODO to other frame for now
 		--DF:BuildMenu(optionsFrame, globalResourceOptions, 5, -5, CONST_SCROLLBOX_HEIGHT, true, options_text_template, options_dropdown_template, options_switch_template, true, options_slider_template, options_button_template, optionChangedCallback)
-		DF:BuildMenu(frame, globalResourceOptions, startX, startY, heightSize, true, options_text_template, options_dropdown_template, options_switch_template, true, options_slider_template, options_button_template, optionChangedCallback)
+
+        globalResourceOptions.always_boxfirst = true
+		DF:BuildMenu(frame, globalResourceOptions, startX, startY, heightSize, false, options_text_template, options_dropdown_template, options_switch_template, true, options_slider_template, options_button_template, optionChangedCallback)
+
+        --for widgetId, widget in pairs(frame.widgetids) do
+        --    print(widget.hasLabel:GetText())
+        --end
 	end)
 end
