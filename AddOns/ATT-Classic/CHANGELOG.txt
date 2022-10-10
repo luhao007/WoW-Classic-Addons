@@ -1,25 +1,14 @@
-1.1.3 Release Notes
+1.1.4 Release Notes
 Contributions made by Crieve:
-* Marked some quests as dailies in Dalaran.
-* The dailies in Sholazar Basin should now disappear when one of their respective sibling dailies is completed. Merged over Classic ATT Tailoring.
-* Commented out the tailoring u-tag debugger. (enable when debugging only)
-* Tailoring on the Retail DB is now the source of truth for Wrath Classic. Removed an explicit Tailoring requireSkill assignment that was overriding specialization assignments.
-* Added Wrath Tailoring Recipes.
-* Updated Alchemy for Wrath Classic.
-* Moved Alchemy over to the Retail DB.
-* Updated Alchemy for Wrath Classic and added missing recipe data.
-* Marked the Cardinal Ruby transmute quest as Phase 3.
-* Moved all Cooking quests to their respective zones. Added all Cooking recipes for Wrath Classic. Updated Small Frog maps. (some spawns weren't available until Cata)
-* No longer caching altQuests.
-* Eggs that "hatch" over time now utilize provider to reduce the amount of unnecessary nesting that occurs. (pun intended)
-* Updated the structure of the Engineering profession for Wrath Classic. (not finished!)
-* Updated Engineering quest format.
-* Added Engineering recipes for Wrath Classic. Moved Engineering over to the Retail DB.
-* Moved Engineering quests into their source zones.
-* Updated Enchanting for Wrath Classic.
-* Moved Enchanting over to the Retail DB.
-* Updated syntax to match retail files, for easier merging of the Leatherworking file.
-* Moved Leatherworking quests to their respective source files. Added timeline data to Classic Leatherworking recipes.
-* Updated Leatherworking and moved everything over to the Retail DB.
-* Added Leatherworking recipes for Wrath Classic.
+* Warlock Pet Books are now marked removed from game.
+* Yet another attempt to fix the Frenzyheart tooltip logic.
+* Updated Blacksmithing for Wrath Classic.
+* All professions now reference the Retail DB for their source of truth!
+* Added Blacksmithing recipes for Wrath Classic.
+* Added new exploration data for Wrath Classic. Updated how coordinates are generated for exploration objects. (max up to 10, randomly drawn from the pool)
+* Added a timeline to Friends in Dalaran. (originally comes out with Cataclysm)
+* Moved all Blacksmithing quests to their respective source locations.
+* Added three inscription recipes for Wrath Classic that get removed with Cata. Discovery now has an icon.
+* The Phase 4 Bullets for Engineering actually have a specific specialization requirement.
+* Marked the Cache of the Ley-Guardian as never implemented for Wrath Classic. Added Timear Fortress and Proof of Demise to Dalaran.
 

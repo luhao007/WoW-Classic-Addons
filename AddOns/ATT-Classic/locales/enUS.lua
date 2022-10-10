@@ -602,6 +602,7 @@ app.L = {
 		[-30] = "Interface\\FriendsFrame\\PlusManz-Alliance",								-- Alliance
 		[-31] = "Interface\\FriendsFrame\\PlusManz-Horde", 									-- Horde
 		[-32] = "Interface\\Icons\\inv_sword_48",											-- Honor Titles
+		[-37] = "Interface\\Icons\\inv_misc_book_07",										-- Discovery
 		[-38] = app.asset("Category_Professions"),											-- Professions
 		[-47] = app.asset("Holiday_Lunar"),													-- Lunar Festival
 		[-50] = app.asset("Holiday_love"),													-- Love is in the Air

@@ -2821,6 +2821,7 @@ end
 fieldCache["achievementID"] = {};
 fieldCache["creatureID"] = {};
 fieldCache["currencyID"] = {};
+fieldCache["explorationID"] = {};
 fieldCache["factionID"] = {};
 fieldCache["flightPathID"] = {};
 fieldCache["headerID"] = {};
@@ -2866,6 +2867,9 @@ fieldConverters = {
 	["creatureID"] = cacheCreatureID,
 	["currencyID"] = function(group, value)
 		CacheField(group, "currencyID", value);
+	end,
+	["explorationID"] = function(group, value)
+		CacheField(group, "explorationID", value);
 	end,
 	["factionID"] = function(group, value)
 		CacheField(group, "factionID", value);
@@ -7519,6 +7523,88 @@ for i=0,levelOfDetail,1 do
 end
 
 local DiscoveredNewArea = {};
+local simplifyExplorationData = function()
+	local i = 100;
+	while InCombatLockdown() do coroutine.yield(); end
+	while i > 0 do i = i - 1; coroutine.yield(); end
+	app.print("Simplifying Exploration Data...");
+	local allMapData = {};
+	local explorationDB = {};
+	local explorationAreaPositionDB = {};
+	for areaID,coords in pairs(app.ExplorationAreaPositionDB) do
+		for i,coord in ipairs(coords) do
+			local mapID = coord[3];
+			if mapID then
+				local x, y = math.floor(coord[1] * 100), math.floor(coord[2] * 100);
+				local hash = x .. ":" .. y;
+				local mapData = allMapData[mapID];
+				if not mapData then
+					mapData = {};
+					mapData.areas = {};
+					mapData.areaList = {};
+					mapData.hits = {};
+					allMapData[mapID] = mapData;
+					explorationDB[mapID] = mapData.areaList;
+				end
+				if not mapData.areas[areaID] then
+					mapData.areas[areaID] = 1;
+					tinsert(mapData.areaList, areaID);
+				end
+				if not mapData.hits[hash] then
+					mapData.hits[hash] = { areaID };
+				else
+					tinsert(mapData.hits[hash], areaID);
+				end
+			end
+		end
+	end
+	app.print("Determining best coordinates for areas...");
+	coroutine.yield();
+	local sortMethod = function(a, b)
+		return a[1] > b[1];
+	end;
+	for mapID,mapData in pairs(allMapData) do
+		app.print("Determining best coordinates for map ".. mapID);
+		local hitsByAreaID, hitsByCount = {}, {};
+		for i,areaID in ipairs(mapData.areaList) do
+			hitsByAreaID[areaID] = {};
+		end
+		for hash,hits in pairs(mapData.hits) do
+			tinsert(hitsByCount, { #hits, hash, hits});
+		end
+		insertionSort(hitsByCount, sortMethod);
+		coroutine.yield();
+		
+		-- Now randomly grab hashes until every area has a few hashes
+		while #hitsByCount > 0 do
+			local index = math.random(#hitsByCount);
+			local hit = hitsByCount[index];
+			table.remove(hitsByCount, index);
+			for i,areaID in ipairs(hit[3]) do
+				local hits = hitsByAreaID[areaID];
+				if #hits < 10 then tinsert(hits, hit[2]); end
+			end
+		end
+		
+		-- Now that each has some hashes (probably), let's simplfy that data table.
+		for areaID,hits in pairs(hitsByAreaID) do
+			local positions = explorationAreaPositionDB[areaID];
+			if not positions then
+				positions = {};
+				explorationAreaPositionDB[areaID] = positions;
+			end
+			for i,hash in ipairs(hits) do
+				local x, y = hash:match("(%d+):(%d+)");
+				tinsert(positions, { tonumber(x) * 0.01, tonumber(y) * 0.01, mapID });
+			end
+		end
+	end
+	ATTClassicAD.ExplorationDB = explorationDB;
+	ATTClassicAD.ExplorationAreaPositionDB = explorationAreaPositionDB;
+	app.ExplorationDB = explorationDB;
+	app.ExplorationAreaPositionDB = explorationAreaPositionDB;
+	app.print("Done Simplifying Exploration Data.");
+end
 local onMapUpdate = function(t)
 	local explorationByAreaID = {};
 	local explorationHeader = nil;
@@ -7552,7 +7638,7 @@ local onMapUpdate = function(t)
 				app.CurrentCharacter.Exploration[areaID] = 1;
 				ATTAccountWideData.Exploration[areaID] = 1;
 				local o = explorationByAreaID[areaID];
-				if not o and not DiscoveredNewArea[areaID] then
+				if not o and not DiscoveredNewArea[areaID] and not app.SearchForField("explorationID", areaID) then
 					DiscoveredNewArea[areaID] = true;
 					o = app.CreateExploration(areaID);
 					explorationByAreaID[areaID] = o;
@@ -7585,7 +7671,7 @@ local onMapUpdate = function(t)
 					local missing = ATTClassicAD.ExplorationAreaPositionDB;
 					if not missing then
 						missing = {};
-						ATTClassicAD.ExplorationAreaPositionDB = missing;
+						--ATTClassicAD.ExplorationAreaPositionDB = missing;
 					end
 					missing[areaID] = coords;
 				end
@@ -7617,7 +7703,22 @@ local onMapUpdate = function(t)
 		insertionSort(explorationHeader.g, sortByTextSafely);
 	end
 	rawset(t, "OnUpdate", nil);
+	--StartCoroutine("Simplifying Exploration Data", simplifyExplorationData);
 end;
+app.SortExplorationDB = function()
+	local e,t=ATTC.ExplorationDB,{};
+	for mapID,areas in pairs(e) do 
+		local s = {};
+		t[mapID] = s;
+		for i,areaID in ipairs(areas) do
+			tinsert(s, { areaID, C_Map.GetAreaInfo(areaID) });
+		end
+		insertionSort(s, function(a, b)
+			return a[2] < b[2];
+		end);
+	end
+	ATTClassicAD.NamedExplorationDB = t;
+end
 local fields = {
 	["key"] = function(t)
 		return "mapID";
