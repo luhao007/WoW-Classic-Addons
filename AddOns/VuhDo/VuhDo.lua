@@ -474,6 +474,10 @@ function VUHDO_updateHealth(aUnit, aMode)
 		tOwner = VUHDO_RAID[aUnit]["ownerUnit"];
 		-- tOwner may not be present when leaving a vehicle
 		if VUHDO_RAID[tOwner] and VUHDO_RAID[tOwner]["isVehicle"] then
+			if not VUHDO_INTERNAL_TOGGLES[26] then
+				VUHDO_setHealth(aUnit, aMode);
+			end
+
 			VUHDO_setHealth(tOwner, aMode);
 			VUHDO_updateHealthBarsFor(tOwner, aMode);
 		end

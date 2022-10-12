@@ -509,7 +509,7 @@ function VUHDO_getWeaponEnchantName(aSlot)
 	for tCnt = 1, VuhDoScanTooltip:NumLines() do
 		tName = strmatch(_G["VuhDoScanTooltipTextLeft" .. tCnt]:GetText(), "^.+ %(%d+%s+.+%)$");
 		if tName then
-			tEnchant = gsub(tName, " %(.+%)", "");
+			tEnchant = gsub(tName, " [0-9]+ %(.+%)", "");
 			return tEnchant;
 		end
 	end
@@ -1184,7 +1184,7 @@ function VUHDO_unitGetIncomingHeals(aUnit, aCasterUnit)
 		return 0;
 	end
 
-	if VUHDO_LibHealComm and VUHDO_CONFIG["SHOW_LIBHEALCOMM_INCOMING"] then
+	if VUHDO_LibHealComm and (VUHDO_CONFIG["SHOW_LIBHEALCOMM_INCOMING"] or true) then
 		local tTargetGUID = UnitGUID(aUnit);
 
 		if aCasterUnit then

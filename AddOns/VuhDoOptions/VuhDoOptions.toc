@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Iza@Gilneas, humfras, Ivaria@Hyjal
-## Version: 3.139-wotlkc
+## Version: 3.140-wotlkc
 ## Dependencies: VuhDo
 ## LoadOnDemand: 0
 ## SavedVariables: VUHDO_OPTIONS_SETTINGS

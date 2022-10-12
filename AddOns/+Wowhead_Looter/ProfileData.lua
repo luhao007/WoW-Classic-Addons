@@ -217,6 +217,8 @@ end
 function private.getTalentHash()
     local result = {};
     local pos = 1;
+    local talentPoints = {};
+    local talentKeys = {};
 
     for tab=1, GetNumTalentTabs() do
         if tab > 1 then
@@ -224,9 +226,20 @@ function private.getTalentHash()
             result[pos] = '-';
             pos = pos + 1;
         end
+        --- GetTalentInfo() doesn't return talents in order. Fetch all the data then sort it.
+        wipe(talentPoints);
+        wipe(talentKeys);
+        local keyCount = 0;
         for idx=1, GetNumTalents(tab) do
-            local _, _, _, _, currentPoints = GetTalentInfo(tab, idx);
-            result[pos] = currentPoints;
+            local _, _, tier, column, currentPoints = GetTalentInfo(tab, idx);
+            local talentKey = tier * 10 + column;
+            talentPoints[talentKey] = currentPoints;
+            keyCount = keyCount + 1;
+            talentKeys[keyCount] = talentKey;
+        end
+        sort(talentKeys);
+        for idx=1, keyCount do
+            result[pos] = talentPoints[talentKeys[idx]];
             pos = pos + 1;
         end
         --- Trim trailing 0s
