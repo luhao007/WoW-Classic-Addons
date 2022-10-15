@@ -1,56 +1,54 @@
-    return v7, 3, 3
+---@class QuestieLib
+local QuestieLib = QuestieLoader:CreateModule("QuestieLib")
+
+---@type QuestieDB
+local QuestieDB = QuestieLoader:ImportModule("QuestieDB")
+---@type QuestiePlayer
+local QuestiePlayer = QuestieLoader:ImportModule("QuestiePlayer")
+---@type l10n
+local l10n = QuestieLoader:ImportModule("l10n")
+
+QuestieLib.AddonPath = "Interface\\Addons\\Questie\\"
+
+local math_abs = math.abs
+local math_sqrt = math.sqrt
+local math_max = math.max
+local tinsert = table.insert
+local stringSub = string.sub
+local stringGsub = string.gsub
+local strim = string.trim
+local smatch = string.match
+local tonumber = tonumber
+
+--[[
+    Red: 5+ level above player
+    Orange: 3 - 4 level above player
+    Yellow: max 2 level below/above player
+    Green: 3 - GetQuestGreenRange() level below player (GetQuestGreenRange() changes on specific player levels)
+    Gray: More than GetQuestGreenRange() below player
+--]]
+function QuestieLib:PrintDifficultyColor(level, text, isDailyQuest)
+    if isDailyQuest then
+        return "|cFF21CCE7" .. text .. "|r" -- Blue
+    end
+
+    if level == -1 then
+        level = QuestiePlayer.GetPlayerLevel()
+    end
+    local levelDiff = level - QuestiePlayer.GetPlayerLevel()
+
+    if (levelDiff >= 5) then
+        return "|cFFFF1A1A" .. text .. "|r" -- Red
+    elseif (levelDiff >= 3) then
+        return "|cFFFF8040" .. text .. "|r" -- Orange
+    elseif (levelDiff >= -2) then
+        return "|cFFFFFF00" .. text .. "|r" -- Yellow
+    elseif (-levelDiff <= GetQuestGreenRange("player")) then
+        return "|cFF40C040" .. text .. "|r" -- Green
+    else
+        return "|cFFC0C0C0" .. text .. "|r" -- Grey
+    end
 end
---end
---local QuestieLib = QuestieLoader:CreateModule("QuestieLib")
---
------@type QuestieDB
---local QuestieDB = QuestieLoader:ImportModule("QuestieDB")
------@type QuestiePlayer
---local QuestiePlayer = QuestieLoader:ImportModule("QuestiePlayer")
------@type l10n
---local l10n = QuestieLoader:ImportModule("l10n")
---
---QuestieLib.AddonPath = "Interface\\Addons\\Questie\\"
---
---local math_abs = math.abs
---local math_sqrt = math.sqrt
---local math_max = math.max
---local tinsert = table.insert
---local stringSub = string.sub
---local stringGsub = string.gsub
---local strim = string.trim
---local smatch = string.match
---local tonumber = tonumber
---
-----[[
---    Red: 5+ level above player
---    Orange: 3 - 4 level above player
---    Yellow: max 2 level below/above player
---    Green: 3 - GetQuestGreenRange() level below player (GetQuestGreenRange() changes on specific player levels)
---    Gray: More than GetQuestGreenRange() below player
-----]]
---function QuestieLib:PrintDifficultyColor(level, text, isDailyQuest)
---    if isDailyQuest then
---        return "|cFF21CCE7" .. text .. "|r" -- Blue
---    end
---
---    if level == -1 then
---        level = QuestiePlayer.GetPlayerLevel()
---    end
---    local levelDiff = level - QuestiePlayer.GetPlayerLevel()
---
---    if (levelDiff >= 5) then
---        return "|cFFFF1A1A" .. text .. "|r" -- Red
---    elseif (levelDiff >= 3) then
---        return "|cFFFF8040" .. text .. "|r" -- Orange
---    elseif (levelDiff >= -2) then
---        return "|cFFFFFF00" .. text .. "|r" -- Yellow
---    elseif (-levelDiff <= GetQuestGreenRange("player")) then
---        return "|cFF40C040" .. text .. "|r" -- Green
---    else
---        return "|cFFC0C0C0" .. text .. "|r" -- Grey
---    end
---end
 
 function QuestieLib:GetDifficultyColorPercent(level)
 
@@ -339,7 +337,7 @@ local cachedVersion
 
 ---@return number, number, number
 function QuestieLib:GetAddonVersionInfo()
-    return v7, 3, 3
+    return 7, 3, 3
 end
 --    if (not cachedVersion) then
 --        cachedVersion = GetAddOnMetadata("Questie", "Version")

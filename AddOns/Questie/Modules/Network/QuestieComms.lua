@@ -1058,7 +1058,7 @@ function _QuestieComms:CreatePacket(messageId)
     pkt.data = {}
     -- Set messageId
     local major, minor, patch = QuestieLib:GetAddonVersionInfo();
-    pkt.data.ver = "v7.3.3";
+    pkt.data.ver = "7.3.3";
     pkt.data.msgVer = commMessageVersion;
     pkt.data.msgId = messageId
     -- Some messages initialize

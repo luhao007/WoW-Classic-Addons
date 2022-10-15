@@ -761,6 +761,7 @@ class Manager:
 
         version = toc.tags['Version']
         major, minor, patch = version.split(' ')[0].split('.')
+        major = major.replace('v', '')
 
         def handle(lines):
             func = 'function QuestieLib:GetAddonVersionInfo()'
