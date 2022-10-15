@@ -3419,6 +3419,12 @@ local function AttachTooltip(self)
 							elseif guid == "Player-4372-00006B41" then
 								local leftSide = _G[self:GetName() .. "TextLeft1"];
 								if leftSide then leftSide:SetText("|cffF58CBA" .. UnitName(target) .. " the Huggler|r"); end
+							elseif guid == "Player-4647-031D0890" then
+								local leftSide = _G[self:GetName() .. "TextLeft1"];
+								if leftSide then leftSide:SetText("|cff665a2c" .. UnitName(target) .. " the Time-Loser|r"); end
+								local rightSide = _G[self:GetName() .. "TextRight2"];
+								if rightSide then rightSide:SetText(GetCollectionIcon(0)); end
+								self:AddLine("This scumbag abused an auto-invite addon to steal the Time-Lost Proto Drake from a person that had them on their friends list. ATT has deemed this unacceptable behaviour and will forever stain this player's reputation so long as they remain on the server.", 0.4, 0.8, 1, true);
 							end
 						elseif type == "Creature" or type == "Vehicle" then
 							if app.Settings:GetTooltipSetting("creatureID") then self:AddDoubleLine(L["CREATURE_ID"], tostring(npcID)); end
@@ -9000,73 +9006,29 @@ end)();
 
 -- Tier Lib
 (function()
-	local tiers = {
-		{	-- Classic
-			["text"] = "Classic",
-			["icon"] = app.asset("Expansion_CLASSIC"),
-			["lore"] = L["CLASSIC_TIER_DESC"],
-		},
-		{	-- Burning Crusade
-			["text"] = "Burning Crusade",
-			["icon"] = app.asset("Expansion_TBC"),
-			["lore"] = L["TBC_TIER_DESC"],
-			["lvl"] = 55,
-		},
-		{	-- Wrath of the Lich King
-			["text"] = "Wrath of the Lich King",
-			["icon"] = app.asset("Expansion_WOTLK"),
-			["lore"] = L["WOTLK_TIER_DESC"],
-			["lvl"] = 65,
-		},
-		{	-- Cataclysm
-			["text"] = "Cataclysm",
-			["icon"] = app.asset("Expansion_CATA"),
-			["lore"] = L["CATA_TIER_DESC"],
-			["lvl"] = 75,
-		},
-		{	-- Mists of Pandaria
-			["text"] = "Mists of Pandaria",
-			["icon"] = app.asset("Expansion_MOP"),
-			["lore"] = L["MOP_TIER_DESC"],
-			["lvl"] = 82,
-		},
-		{	-- Warlords of Draenor
-			["text"] = "Warlords of Draenor",
-			["icon"] = app.asset("Expansion_WOD"),
-			["lore"] = L["WOD_TIER_DESC"],
-			["lvl"] = 88,
-		},
-		{	-- Legion
-			["text"] = "Legion",
-			["icon"] = app.asset("Expansion_LEGION"),
-			["lore"] = L["LEGION_TIER_DESC"],
-			["lvl"] = 98,
-		},
-		{	-- Battle for Azeroth
-			["text"] = "Battle for Azeroth",
-			["icon"] = app.asset("Expansion_BFA"),
-			["lore"] = L["BFA_TIER_DESC"],
-			["lvl"] = 108,
-		},
-		{	-- Shadowlands
-			["text"] = "Shadowlands",
-			["icon"] = app.asset("Expansion_SL"),
-			["lore"] = L["SL_TIER_DESC"],
-			["lvl"] = 50,
-		},
-	};
+	local math_floor = math.floor;
 	app.BaseTier = {
 		__index = function(t, key)
 			if key == "key" then
 				return "tierID";
 			else
-				local info = rawget(tiers, t.tierID);
+				local info = rawget(L.TIER_DATA, t.tierID);
 				return info and rawget(info, key);
 			end
 		end
 	};
 	app.CreateTier = function(id, t)
-		return setmetatable(constructor(id, t, "tierID"), app.BaseTier);
+		-- patch can be included in the id
+		local tierID = math_floor(id);
+		t = constructor(tierID, t, "tierID");
+		if id > tierID then
+			local patch_decimal = 100 * (id - tierID);
+			local patch = math_floor(patch_decimal + 0.0001);
+			local rev = math_floor(10 * (patch_decimal - patch) + 0.0001);
+			-- print("tier cache",id,tierID,patch_decimal,patch,rev)
+			rawset(t, "text", tostring(tierID).."."..tostring(patch).."."..tostring(rev));
+		end
+		return setmetatable(t, app.BaseTier);
 	end
 end)();
 

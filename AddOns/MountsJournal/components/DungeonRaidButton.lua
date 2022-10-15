@@ -45,8 +45,6 @@ MountsJournalFrame:on("MODULES_INIT", function(journal)
 	}
 	journal.mapSettings.dnr = dd
 
-
-
 	dd:ddSetDisplayMode(addon)
 	dd:ddSetInitFunc(function(self, level, value)
 		local info = {}

@@ -1,14 +1,9 @@
-1.1.4 Release Notes
+1.1.5 Release Notes
 Contributions made by Crieve:
-* Warlock Pet Books are now marked removed from game.
-* Yet another attempt to fix the Frenzyheart tooltip logic.
-* Updated Blacksmithing for Wrath Classic.
-* All professions now reference the Retail DB for their source of truth!
-* Added Blacksmithing recipes for Wrath Classic.
-* Added new exploration data for Wrath Classic. Updated how coordinates are generated for exploration objects. (max up to 10, randomly drawn from the pool)
-* Added a timeline to Friends in Dalaran. (originally comes out with Cataclysm)
-* Moved all Blacksmithing quests to their respective source locations.
-* Added three inscription recipes for Wrath Classic that get removed with Cata. Discovery now has an icon.
-* The Phase 4 Bullets for Engineering actually have a specific specialization requirement.
-* Marked the Cache of the Ley-Guardian as never implemented for Wrath Classic. Added Timear Fortress and Proof of Demise to Dalaran.
+* Northrend Goggle recipes actually have hidden class requirements until 7.3.0
+* Added the fishing pole from Nat's quest.
+* Updated the Tier Object to pull all of its data from the localization tables, should an override be necessary.
+* Added map information to Hemet Nesingwary: The Collected Quests.
+* Fixed achievement criteria and a provider in dal.
+* Added the "Time-Loser" title.
 

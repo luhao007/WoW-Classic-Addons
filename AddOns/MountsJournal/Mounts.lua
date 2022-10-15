@@ -2,6 +2,7 @@ local addon, L = ...
 local C_Map, MapUtil, next, wipe, random, C_PetJournal, IsSpellKnown, GetTime, IsFlyableArea, IsSubmerged, GetInstanceInfo, IsIndoors, UnitInVehicle, IsMounted, InCombatLockdown, GetSpellCooldown, UnitBuff, GetCompanionInfo, CallCompanion, GetSubZoneText = C_Map, MapUtil, next, wipe, random, C_PetJournal, IsSpellKnown, GetTime, IsFlyableArea, IsSubmerged, GetInstanceInfo, IsIndoors, UnitInVehicle, IsMounted, InCombatLockdown, GetSpellCooldown, UnitBuff, GetCompanionInfo, CallCompanion, GetSubZoneText
 local util = MountsJournalUtil
 local mounts = CreateFrame("Frame", "MountsJournal")
+util.setEventsMixin(mounts)
 
 
 mounts:SetScript("OnEvent", function(self, event, ...) self[event](self, ...) end)
@@ -361,9 +362,11 @@ function mounts:COMPANION_LEARNED(companionType)
 					return
 				end
 			end
+			self:event("MOUNT_LEARNED")
 		end
 		if GetNumCompanions("CRITTER") ~= #self.indexPetBySpellID then
 			self:updateIndexPetBySpellID()
+			self:event("CRITTER_LEARNED")
 		end
 	end
 end

@@ -8,7 +8,7 @@ util.setEventsMixin(journal)
 
 local COLLECTION_ACHIEVEMENT_CATEGORY = 15246
 local MOUNT_ACHIEVEMENT_CATEGORY = 15248
-local NIGHT_FAE_BLUE_COLOR = CreateColor(0.5020, 0.7098, 0.9922)
+local NIGHT_FAE_BLUE_COLOR = CreateColor(.5020, .7098, .9922)
 
 
 journal.colors = {
@@ -96,7 +96,6 @@ function journal:init()
 
 		self:updateMountsList()
 		self:updateMountDisplay()
-		self:COMPANION_LEARNED()
 
 		if InCombatLockdown() then
 			bgFrame.summon1.icon:SetDesaturated(true)
@@ -168,7 +167,6 @@ function journal:init()
 	-- MOUNT COUNT
 	self.mountCount.collectedLabel:SetText(L["Collected:"])
 	self:updateCountMounts()
-	self:RegisterEvent("COMPANION_LEARNED")
 
 	-- HINT
 	self.bgFrame.hint:SetScript("OnEnter", function(hint)
@@ -335,6 +333,12 @@ function journal:init()
 	self.default_UpdateMountList = function(...) self:defaultUpdateMountList(...) end
 	self.grid3_UpdateMountList = function(...) self:grid3UpdateMountList(...) end
 	self:setScrollGridMounts(mounts.config.gridToggle)
+
+	-- MOUNT LEARNED
+	self:on("MOUNT_LEARNED", function()
+		self:updateCountMounts()
+		self:sortMounts()
+	end)
 
 	-- FILTERS BAR
 	self.filtersBar.clear:SetScript("OnClick", function() self:clearBtnFilters() end)
@@ -592,7 +596,7 @@ function journal:init()
 		modelSceneCameraInfo.yaw = 2.6179938316345
 		modelSceneCameraInfo.pitch = 0
 		modelSceneCameraInfo.roll = 0
-		modelSceneCameraInfo.zoomedYawOffset = 0.17453292012215
+		modelSceneCameraInfo.zoomedYawOffset = .17453292012215
 		modelSceneCameraInfo.zoomedPitchOffset = 0
 		modelSceneCameraInfo.zoomedRollOffset = 0
 		modelSceneCameraInfo.minZoomDistance = 8
@@ -626,7 +630,7 @@ function journal:init()
 		modelSceneCameraInfo.yaw = 2.6179938316345
 		modelSceneCameraInfo.pitch = 0
 		modelSceneCameraInfo.roll = 0
-		modelSceneCameraInfo.zoomedYawOffset = 0.17453292012215
+		modelSceneCameraInfo.zoomedYawOffset = .17453292012215
 		modelSceneCameraInfo.zoomedPitchOffset = 0
 		modelSceneCameraInfo.zoomedRollOffset = 0
 		modelSceneCameraInfo.minZoomDistance = 8
@@ -923,8 +927,6 @@ function journal:COMPANION_UPDATE(companionType)
 	if companionType == "MOUNT" then
 		self.scrollFrame:update()
 		self:updateMountDisplay()
-	elseif not companionType then
-		self:COMPANION_LEARNED()
 	end
 end
 
@@ -1328,14 +1330,6 @@ function journal:sortMounts()
 	end)
 
 	self:updateMountsList()
-end
-
-
-function journal:COMPANION_LEARNED(...)
-	if GetNumCompanions("MOUNT") ~= #mounts.indexBySpellID then
-		self:updateCountMounts()
-		self:sortMounts()
-	end
 end
 
 
@@ -2516,7 +2510,7 @@ function journal:updateMountsList()
 		-- COLLECTED
 		and (isCollected and filters.collected or not isCollected and filters.notCollected)
 		-- UNUSABLE
-		and (mounts:isUsable(spellID, canUseFlying) or not isCollected or filters.unusable)
+		and (filters.unusable or not isCollected or mounts:isUsable(spellID, canUseFlying))
 		-- EXPANSIONS
 		and expansions[expansion]
 		-- SOURCES

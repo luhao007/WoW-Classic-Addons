@@ -139,8 +139,7 @@ function MJCompanionsPanelMixin:onShow()
 		self:petListUpdate()
 		self:scrollToSelectedPet()
 		self:on("UPDATE_PROFILE", self.refresh)
-		self:RegisterEvent("COMPANION_UPDATE")
-		self:RegisterEvent("COMPANION_LEARNED")
+		self:on("CRITTER_LEARNED", self.petListUpdate)
 	end)
 end
 
@@ -201,7 +200,7 @@ end
 
 function MJCompanionsPanelMixin:scrollToSelectedPet()
 	local selectedPetSpellID = self.journal.petForMount[self.journal.selectedSpellID]
-	if type(selectedPetSpellID) ~= "string" then return end
+	if type(selectedPetSpellID) ~= "number" then return end
 	local scrollFrame = self.listScroll
 
 	for i = 1, #self.petFiltredList do
@@ -274,14 +273,6 @@ function MJCompanionsPanelMixin:petListUpdate()
 
 	self:petListSort()
 end
-
-
-function MJCompanionsPanelMixin:COMPANION_LEARNED(companionType)
-	if not companionType and GetNumCompanions("CRITTER") ~= #self.petList then
-		self:petListUpdate()
-	end
-end
-MJCompanionsPanelMixin.COMPANION_UPDATE = MJCompanionsPanelMixin.COMPANION_LEARNED
 
 
 function MJCompanionsPanelMixin:petListSort()

@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: maqjav, Maciza-Tyrande
-## Version: 3.4.0.2
+## Version: 3.4.0.3
 ## OptionalDeps: Ace3
 ## SavedVariables: RareScannerDB
 
@@ -11,7 +11,7 @@
 
 ## X-Category: Achievements, Map, Miscellaneous
 ## X-Credits: maqjav, Maciza-Tyrande
-## X-Date: Sep. 24, 2022
+## X-Date: Oct. 12, 2022
 ## X-Email: maqjav@gmail.com
 ## X-License: All Rights Reserved
 ## X-Localizations: enUS, enGB, deDE, esES, esMX, frFR, ruRU, itIT, ptBR, koKR, zhCN, zhTW

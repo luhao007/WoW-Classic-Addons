@@ -211,7 +211,9 @@ function macroFrame:PLAYER_LOGIN()
 			and not self.sFlags.isSubmerged
 			and not self.sFlags.isMounted
 			and not self.sFlags.inVehicle
-			and (self.classConfig.useMacroAlways or not self.magicBroom and (GetUnitSpeed("player") > 0 or IsFalling()))
+			and (self.classConfig.useMacroAlways
+			     or not self.magicBroom and (GetUnitSpeed("player") > 0
+			                                 or IsFalling()))
 			then
 				local spellID = getFormSpellID()
 				if spellID ~= 783 and spellID ~= 33943 and spellID ~= 40120 then
@@ -392,9 +394,10 @@ function macroFrame:getMacro()
 			macro = "/dismount"
 		end
 	-- CLASSMACRO
-	elseif self.macro and
-		(self.class == "DRUID" and self.classConfig.useMacroAlways
-		or not self.magicBroom and (self.sFlags.isIndoors or GetUnitSpeed("player") > 0 or IsFalling()))
+	elseif self.macro and (self.class == "DRUID" and self.classConfig.useMacroAlways
+	                       or not self.magicBroom and (self.sFlags.isIndoors
+	                       	                           or GetUnitSpeed("player") > 0
+	                       	                           or IsFalling()))
 	then
 		macro = self.macro
 	-- MOUNT

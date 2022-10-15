@@ -784,6 +784,11 @@ class Manager:
 
         utils.process_file(root / 'Modules/Libs/QuestieLib.lua', handle)
 
+        utils.change_defaults(
+            'AddOns/Questie/Modules/Network/QuestieComms.lua',
+            f'    pkt.data.ver = "{major}.{minor}.{patch}";'
+        )
+
     @staticmethod
     @available_on(['classic', 'classic_era'])
     def handle_rl():
