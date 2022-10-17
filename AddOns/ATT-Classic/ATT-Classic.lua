@@ -719,31 +719,34 @@ local function BuildGroups(parent, g)
 		end
 	end
 end
-local function BuildSourceText(group, l)
+local function BuildSourceText(group, l, skip)
 	local parent = group.parent;
 	if parent then
-		if not group.itemID and (parent.key == "filterID" or parent.key == "spellID" or ((parent.headerID or (parent.spellID and (group.categoryID or group.tierID)))
+		if not group.itemID and not skip and (parent.key == "filterID" or parent.key == "spellID" or ((parent.headerID or (parent.spellID and (group.categoryID or group.tierID)))
 			and ((parent.headerID == -2 or parent.headerID == -17 or parent.headerID == -7) or (parent.parent and parent.parent.parent)))) then
-			return BuildSourceText(parent.parent, 5) .. DESCRIPTION_SEPARATOR .. (group.text or RETRIEVING_DATA) .. " (" .. (parent.text or RETRIEVING_DATA) .. ")";
+			return BuildSourceText(parent.parent, 5, skip) .. DESCRIPTION_SEPARATOR .. (group.text or RETRIEVING_DATA) .. " (" .. (parent.text or RETRIEVING_DATA) .. ")";
 		end
 		if group.headerID then
 			if group.headerID == 0 then
 				if group.crs and #group.crs == 1 then
-					return BuildSourceText(parent, l + 1) .. DESCRIPTION_SEPARATOR .. (NPCNameFromID[group.crs[1]] or RETRIEVING_DATA) .. " (Drop)";
+					return BuildSourceText(parent, l + 1, skip) .. DESCRIPTION_SEPARATOR .. (NPCNameFromID[group.crs[1]] or RETRIEVING_DATA) .. " (Drop)";
 				end
-				return BuildSourceText(parent, l + 1) .. DESCRIPTION_SEPARATOR .. (group.text or RETRIEVING_DATA);
+				return BuildSourceText(parent, l + 1, skip) .. DESCRIPTION_SEPARATOR .. (group.text or RETRIEVING_DATA);
+			end
+			if parent.difficultyID then
+				return BuildSourceText(parent, l + 1, skip);
 			end
 			if parent.parent then
-				return BuildSourceText(parent, l + 1) .. DESCRIPTION_SEPARATOR .. (group.text or RETRIEVING_DATA);
+				return BuildSourceText(parent, l + 1, skip) .. DESCRIPTION_SEPARATOR .. (group.text or RETRIEVING_DATA);
 			end
 		end
 		if parent.key == "categoryID" or parent.key == "tierID" or group.key == "filterID" or group.key == "spellID" or group.key == "encounterID" or (parent.key == "mapID" and group.key == "npcID") then
-			return BuildSourceText(parent, 5) .. DESCRIPTION_SEPARATOR .. (group.text or RETRIEVING_DATA);
+			return BuildSourceText(parent, 5, skip) .. DESCRIPTION_SEPARATOR .. (group.text or RETRIEVING_DATA);
 		end
 		if l < 1 then
-			return BuildSourceText(parent, l + 1);
+			return BuildSourceText(parent, l + 1, group.itemID or skip);
 		else
-			return BuildSourceText(parent, l + 1) .. " > " .. (group.text or RETRIEVING_DATA);
+			return BuildSourceText(parent, l + 1, group.itemID or skip) .. " > " .. (group.text or RETRIEVING_DATA);
 		end
 	end
 	return group.text or RETRIEVING_DATA;
@@ -3300,15 +3303,19 @@ local function AttachTooltipRawSearchResults(self, lineNumber, group)
 	if group then
 		-- If there was info text generated for this search result, then display that first.
 		if group.tooltipInfo and #group.tooltipInfo > 0 then
-			local left, right;
-			local name = self:GetName() .. "TextLeft";
+			local left, right, o;
+			local leftname = self:GetName() .. "TextLeft";
+			local rightname = self:GetName() .. "TextRight";
 			for i,entry in ipairs(group.tooltipInfo) do
 				local found = false;
 				left = entry.left;
 				for i=self:NumLines(),1,-1 do
-					if _G[name..i]:GetText() == left then
-						found = true;
-						break;
+					if _G[leftname..i]:GetText() == left then
+						o = _G[rightname..i];
+						if o and o:GetText() == entry.right then
+							found = true;
+							break;
+						end
 					end
 				end
 				if not found then
@@ -3791,8 +3798,18 @@ local function RefreshSaves()
 	for guid,character in pairs(ATTCharacterData) do
 		local locks = character.Lockouts;
 		if locks then
-			for name,lock in pairs(locks) do
-				if serverTime >= lock.reset then
+			for name,instance in pairs(locks) do
+				local count = 0;
+				for difficulty,lock in pairs(instance) do
+					if type(lock) ~= "table" or type(lock.reset) ~= "number" or serverTime >= lock.reset then
+						-- Clean this up.
+						instance[difficulty] = nil;
+					else
+						count = count + 1;
+					end
+				end
+				if count == 0 then
+					-- Clean this up.
 					locks[name] = nil;
 				end
 			end
@@ -3818,21 +3835,77 @@ local function RefreshSaves()
 		local name, id, reset, difficulty, locked, _, _, isRaid, _, _, numEncounters = GetSavedInstanceInfo(instanceIter);
 		if locked then
 			-- Update the name of the instance and cache the lock for this instance
+			difficulty = difficulty or 7;
 			name = converter[name] or name;
 			reset = serverTime + reset;
-			local lock = myLockouts[name];
+			local locks = myLockouts[name];
+			if not locks then
+				locks = {};
+				myLockouts[name] = locks;
+			end
+
+			-- Create the lock for this difficulty
+			local lock = locks[difficulty];
 			if not lock then
 				lock = { ["id"] = id, ["reset"] = reset, ["encounters"] = {}};
-				myLockouts[name] = lock;
+				locks[difficulty] = lock;
+			else
+				lock.id = id;
+				lock.reset = reset;
 			end
 			
-			-- Check Encounter locks
-			for encounterIter=1,numEncounters do
-				local name, _, isKilled = GetSavedInstanceEncounterInfo(instanceIter, encounterIter);
-				if not lock.encounters[encounterIter] then
-					table.insert(lock.encounters, { ["name"] = name, ["isKilled"] = isKilled });
-				elseif isKilled then
-					lock.encounters[encounterIter].isKilled = true;
+			-- If this is LFR, then don't share.
+			if difficulty == 7 or difficulty == 17 then
+				if #lock.encounters == 0 then
+					-- Check Encounter locks
+					for encounterIter=1,numEncounters do
+						local name, _, isKilled = GetSavedInstanceEncounterInfo(instanceIter, encounterIter);
+						tinsert(lock.encounters, { ["name"] = name, ["isKilled"] = isKilled });
+					end
+				else
+					-- Check Encounter locks
+					for encounterIter=1,numEncounters do
+						local name, _, isKilled = GetSavedInstanceEncounterInfo(instanceIter, encounterIter);
+						if not lock.encounters[encounterIter] then
+							tinsert(lock.encounters, { ["name"] = name, ["isKilled"] = isKilled });
+						elseif isKilled then
+							lock.encounters[encounterIter].isKilled = true;
+						end
+					end
+				end
+			else
+				-- Create the pseudo "shared" lock
+				local shared = locks["shared"];
+				if not shared then
+					shared = {};
+					shared.id = id;
+					shared.reset = reset;
+					shared.encounters = {};
+					locks["shared"] = shared;
+
+					-- Check Encounter locks
+					for encounterIter=1,numEncounters do
+						local name, _, isKilled = GetSavedInstanceEncounterInfo(instanceIter, encounterIter);
+						tinsert(lock.encounters, { ["name"] = name, ["isKilled"] = isKilled });
+
+						-- Shared Encounter is always assigned if this is the first lock seen for this instance
+						tinsert(shared.encounters, { ["name"] = name, ["isKilled"] = isKilled });
+					end
+				else
+					-- Check Encounter locks
+					for encounterIter=1,numEncounters do
+						local name, _, isKilled = GetSavedInstanceEncounterInfo(instanceIter, encounterIter);
+						if not lock.encounters[encounterIter] then
+							tinsert(lock.encounters, { ["name"] = name, ["isKilled"] = isKilled });
+						elseif isKilled then
+							lock.encounters[encounterIter].isKilled = true;
+						end
+						if not shared.encounters[encounterIter] then
+							tinsert(shared.encounters, { ["name"] = name, ["isKilled"] = isKilled });
+						elseif isKilled then
+							shared.encounters[encounterIter].isKilled = true;
+						end
+					end
 				end
 			end
 		end
@@ -4078,7 +4151,7 @@ if GetCategoryInfo and GetCategoryInfo(92) ~= "" then
 	end
 	local onTooltipForAchievement = function(t)
 		local achievementID = t.achievementID;
-		if achievementID then
+		if achievementID and IsShiftKeyDown() then
 			local totalCriteria = GetAchievementNumCriteria(achievementID) or 0;
 			GameTooltip:AddLine(" ", 1, 1, 1);
 			GameTooltip:AddDoubleLine("Total Criteria", tostring(totalCriteria), 0.8, 0.8, 1);
@@ -13164,6 +13237,19 @@ app:GetWindow("CurrentInstance", UIParent, function(self, force, fromTrigger)
 					end
 					for i,o in ipairs(bottom) do
 						table.insert(results.g, o);
+					end
+				end
+				
+				local difficultyID = (IsInInstance() and select(3, GetInstanceInfo())) or (EJ_GetDifficulty and EJ_GetDifficulty()) or 0;
+				if difficultyID ~= 0 then
+					for _,row in ipairs(header.g) do
+						if row.difficultyID or row.difficulties then
+							if (row.difficultyID or -1) == difficultyID or (row.difficulties and containsValue(row.difficulties, difficultyID)) then
+								if not row.expanded then ExpandGroupsRecursively(row, true, true); expanded = true; end
+							elseif row.expanded then
+								ExpandGroupsRecursively(row, false, true);
+							end
+						end
 					end
 				end
 				

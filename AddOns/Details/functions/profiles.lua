@@ -2,7 +2,7 @@
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 	local _detalhes = 		_G._detalhes
-	local Loc = LibStub ("AceLocale-3.0"):GetLocale ( "Details" )
+	local Loc = LibStub("AceLocale-3.0"):GetLocale ( "Details" )
 	local _
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -27,7 +27,7 @@ end
 
 function _detalhes:CreateProfile (name)
 
-	if (not name or type (name) ~= "string" or name == "") then
+	if (not name or type(name) ~= "string" or name == "") then
 		return false
 	end
 
@@ -37,7 +37,7 @@ function _detalhes:CreateProfile (name)
 		end
 
 	--copy the default table
-		local new_profile = Details.CopyTable (_detalhes.default_profile)
+		local new_profile = Details.CopyTable(_detalhes.default_profile)
 		new_profile.instances = {}
 
 	--add to global container
@@ -126,7 +126,7 @@ function _detalhes:SetProfileCProp (name, cprop, value)
 
 	if (profile) then
 		if (type(value) == "table") then
-			rawset (profile, cprop, Details.CopyTable (value))
+			rawset (profile, cprop, Details.CopyTable(value))
 		else
 			rawset (profile, cprop, value)
 		end
@@ -165,13 +165,13 @@ function _detalhes:ResetProfile (profile_name)
 		end
 
 	--reset the profile
-		table.wipe (profile.instances)
+		table.wipe(profile.instances)
 
 		--export first instance
 		local instance = _detalhes:GetInstance(1)
 		local exported = instance:ExportSkin()
 		exported.__was_opened = instance:IsEnabled()
-		exported.__pos = Details.CopyTable (instance:GetPosition())
+		exported.__pos = Details.CopyTable(instance:GetPosition())
 		exported.__locked = instance.isLocked
 		exported.__snap = {}
 		exported.__snapH = false
@@ -194,9 +194,9 @@ function _detalhes:CreatePanicWarning()
 	_detalhes.instance_load_failed = CreateFrame("frame", "DetailsPanicWarningFrame", UIParent,"BackdropTemplate")
 	_detalhes.instance_load_failed:SetHeight(80)
 	--tinsert(UISpecialFrames, "DetailsPanicWarningFrame")
-	_detalhes.instance_load_failed.text = _detalhes.instance_load_failed:CreateFontString (nil, "overlay", "GameFontNormal")
+	_detalhes.instance_load_failed.text = _detalhes.instance_load_failed:CreateFontString(nil, "overlay", "GameFontNormal")
 	_detalhes.instance_load_failed.text:SetPoint("center", _detalhes.instance_load_failed, "center")
-	_detalhes.instance_load_failed.text:SetTextColor (1, 0.6, 0)
+	_detalhes.instance_load_failed.text:SetTextColor(1, 0.6, 0)
 	_detalhes.instance_load_failed:SetBackdrop({bgFile = [[Interface\Tooltips\UI-Tooltip-Background]], tileSize = 64, tile = true})
 	_detalhes.instance_load_failed:SetBackdropColor(1, 0, 0, 0.2)
 	_detalhes.instance_load_failed:SetPoint("topleft", UIParent, "topleft", 0, -250)
@@ -204,7 +204,7 @@ function _detalhes:CreatePanicWarning()
 end
 
 local safe_load = function(func, param1, ...)
-	local okey, errortext = pcall (func, param1, ...)
+	local okey, errortext = pcall(func, param1, ...)
 	if (not okey) then
 		if (not _detalhes.instance_load_failed) then
 			_detalhes:CreatePanicWarning()
@@ -222,7 +222,7 @@ function _detalhes:ApplyProfile (profile_name, nosave, is_copy)
 
 	--if the profile doesn't exist, just quit
 		if (not profile) then
-			_detalhes:Msg ("Profile Not Found.")
+			_detalhes:Msg("Profile Not Found.")
 			return false
 		end
 
@@ -239,7 +239,7 @@ function _detalhes:ApplyProfile (profile_name, nosave, is_copy)
 			--the entire key doesn't exist
 			if (profile [key] == nil) then
 				if (type(value) == "table") then
-					profile [key] = Details.CopyTable (_detalhes.default_profile [key])
+					profile [key] = Details.CopyTable(_detalhes.default_profile [key])
 				else
 					profile [key] = value
 				end
@@ -247,7 +247,7 @@ function _detalhes:ApplyProfile (profile_name, nosave, is_copy)
 			--the key exist and is a table, check for missing values on sub tables
 			elseif (type(value) == "table") then
 				--deploy only copy non existing data
-				_detalhes.table.deploy (profile [key], value)
+				_detalhes.table.deploy(profile [key], value)
 			end
 		end
 
@@ -257,10 +257,10 @@ function _detalhes:ApplyProfile (profile_name, nosave, is_copy)
 
 			if (type(value) == "table") then
 				if (key == "class_specs_coords") then
-					value = Details.CopyTable (_detalhes.default_profile.class_specs_coords)
+					value = Details.CopyTable(_detalhes.default_profile.class_specs_coords)
 				end
 
-				local ctable = Details.CopyTable (value)
+				local ctable = Details.CopyTable(value)
 				_detalhes [key] = ctable
 			else
 				_detalhes [key] = value
@@ -283,9 +283,9 @@ function _detalhes:ApplyProfile (profile_name, nosave, is_copy)
 
 		--then close all opened instances
 		for index, instance in _detalhes:ListInstances() do
-			if (not getmetatable (instance)) then
+			if (not getmetatable(instance)) then
 				instance.iniciada = false
-				setmetatable (instance, _detalhes)
+				setmetatable(instance, _detalhes)
 			end
 			if (instance:IsStarted()) then
 				if (instance:IsEnabled()) then
@@ -341,7 +341,7 @@ function _detalhes:ApplyProfile (profile_name, nosave, is_copy)
 				--copy skin
 				for key, value in pairs(skin) do
 					if (type(value) == "table") then
-						instance [key] = Details.CopyTable (value)
+						instance [key] = Details.CopyTable(value)
 					else
 						instance [key] = value
 					end
@@ -372,21 +372,21 @@ function _detalhes:ApplyProfile (profile_name, nosave, is_copy)
 				instance:LoadLocalInstanceConfig()
 				--check window positioning
 				if (_detalhes.profile_save_pos) then
-					--print ("is profile save pos", skin.__pos.normal.x, skin.__pos.normal.y)
+					--print("is profile save pos", skin.__pos.normal.x, skin.__pos.normal.y)
 					if (skin.__pos) then
-						instance.posicao = Details.CopyTable (skin.__pos)
+						instance.posicao = Details.CopyTable(skin.__pos)
 					else
 						if (not instance.posicao) then
-							print ("|cFFFF2222Details!: Position for a window wasn't found! Moving it to the center of the screen.|r\nType '/details exitlog' to check for errors.")
+							print("|cFFFF2222Details!: Position for a window wasn't found! Moving it to the center of the screen.|r\nType '/details exitlog' to check for errors.")
 							instance.posicao = {normal = {x = 1, y = 1, w = 300, h = 200}, solo = {}}
 						elseif (not instance.posicao.normal) then
-							print ("|cFFFF2222Details!: Normal position for a window wasn't found! Moving it to the center of the screen.|r\nType '/details exitlog' to check for errors.")
+							print("|cFFFF2222Details!: Normal position for a window wasn't found! Moving it to the center of the screen.|r\nType '/details exitlog' to check for errors.")
 							instance.posicao.normal = {x = 1, y = 1, w = 300, h = 200}
 						end
 					end
 
 					instance.isLocked = skin.__locked
-					instance.snap = Details.CopyTable (skin.__snap) or {}
+					instance.snap = Details.CopyTable(skin.__snap) or {}
 					instance.horizontalSnap = skin.__snapH
 					instance.verticalSnap = skin.__snapV
 				else
@@ -445,8 +445,8 @@ function _detalhes:ApplyProfile (profile_name, nosave, is_copy)
 			if (not _detalhes.initializing) then
 				for _, instance in _detalhes:ListInstances() do
 					if (instance:IsEnabled()) then
-						_detalhes.move_janela_func (instance.baseframe, true, instance)
-						_detalhes.move_janela_func (instance.baseframe, false, instance)
+						_detalhes.move_janela_func(instance.baseframe, true, instance)
+						_detalhes.move_janela_func(instance.baseframe, false, instance)
 					end
 				end
 			else
@@ -502,6 +502,9 @@ function _detalhes:ApplyProfile (profile_name, nosave, is_copy)
 		--refresh broadcaster tools
 		_detalhes:LoadFramesForBroadcastTools()
 
+		--change the rogue spec combat icon to outlaw depending on the game version
+		Details:HandleRogueCombatSpecIconByGameVersion()
+
 	if (_detalhes.initializing) then
 		_detalhes.profile_loaded = true
 	end
@@ -533,7 +536,7 @@ function _detalhes:SaveProfile (saveas)
 			local current_value = _detalhes [key]
 
 			if (type(current_value) == "table") then
-				local ctable = Details.CopyTable (current_value)
+				local ctable = Details.CopyTable(current_value)
 				profile [key] = ctable
 			else
 				profile [key] = current_value
@@ -846,9 +849,12 @@ local default_profile = {
 		},
 
 		["EVOKER"] = {
-			0.31764705882353, -- [1]
-			0.24313725490196, -- [2]
-			0.91372549019608, -- [3]
+			--0.31764705882353, -- [1]
+			--0.24313725490196, -- [2]
+			--0.91372549019608, -- [3]
+			0.2000,
+			0.4980,
+			0.5764,
 		},
 	},
 
@@ -1005,6 +1011,8 @@ local default_profile = {
 		use_battleground_server_parser = false,
 		force_activity_time_pvp = true,
 		death_tooltip_width = 350,
+		death_tooltip_spark = false,
+		death_tooltip_texture = "Details Serenity",
 		override_spellids = true,
 		all_players_are_group = false,
 
@@ -1499,7 +1507,7 @@ function _detalhes:SaveProfileSpecial()
 			local current_value = _detalhes_database [key] or _detalhes_global [key] or _detalhes.default_player_data [key] or _detalhes.default_global_data [key]
 
 			if (type(current_value) == "table") then
-				local ctable = Details.CopyTable (current_value)
+				local ctable = Details.CopyTable(current_value)
 				profile [key] = ctable
 			else
 				profile [key] = current_value
@@ -1508,7 +1516,7 @@ function _detalhes:SaveProfileSpecial()
 		end
 
 	--save skins
-		table.wipe (profile.instances)
+		table.wipe(profile.instances)
 
 		if (_detalhes.tabela_instancias) then
 			for index, instance in ipairs(_detalhes.tabela_instancias) do
@@ -1594,7 +1602,7 @@ function _detalhes:RestoreState_CurrentMythicDungeonRun()
 
 				print("D! (debug) mythic dungeon state restored.")
 
-				C_Timer.After (2, function()
+				C_Timer.After(2, function()
 					_detalhes:SendEvent("COMBAT_MYTHICDUNGEON_START")
 				end)
 				return
@@ -1683,7 +1691,7 @@ function Details:ExportCurrentProfile()
 	for key, _ in pairs(defaultPlayerData) do
 		if (not exportProfileBlacklist[key]) then
 			if (type(Details[key]) == "table") then
-				playerData [key] = DetailsFramework.table.copy ({}, Details[key])
+				playerData [key] = DetailsFramework.table.copy({}, Details[key])
 			else
 				playerData [key] = Details[key]
 			end
@@ -1692,7 +1700,7 @@ function Details:ExportCurrentProfile()
 	for key, _ in pairs(defaultGlobalData) do
 		if (not exportProfileBlacklist[key]) then
 			if (type(Details[key]) == "table") then
-				globaData [key] = DetailsFramework.table.copy ({}, Details[key])
+				globaData [key] = DetailsFramework.table.copy({}, Details[key])
 			else
 				globaData [key] = Details[key]
 			end
@@ -1712,7 +1720,7 @@ end
 
 function Details:ImportProfile (profileString, newProfileName)
 
-	if (not newProfileName or type (newProfileName) ~= "string" or string.len (newProfileName) < 2) then
+	if (not newProfileName or type(newProfileName) ~= "string" or string.len(newProfileName) < 2) then
 		Details:Msg("invalid profile name or profile name is too short.") --localize-me
 		return
 	end
@@ -1751,7 +1759,7 @@ function Details:ImportProfile (profileString, newProfileName)
 			local importedValue = playerData[key]
 			if (importedValue ~= nil) then
 				if (type(importedValue) == "table") then
-					Details [key] = DetailsFramework.table.copy ({}, importedValue)
+					Details [key] = DetailsFramework.table.copy({}, importedValue)
 				else
 					Details [key] = importedValue
 				end
@@ -1762,7 +1770,7 @@ function Details:ImportProfile (profileString, newProfileName)
 			local importedValue = globalData[key]
 			if (importedValue ~= nil) then
 				if (type(importedValue) == "table") then
-					Details [key] = DetailsFramework.table.copy ({}, importedValue)
+					Details [key] = DetailsFramework.table.copy({}, importedValue)
 				else
 					Details [key] = importedValue
 				end
@@ -1774,7 +1782,7 @@ function Details:ImportProfile (profileString, newProfileName)
 			local importedValue = profileData[key]
 			if (importedValue ~= nil) then
 				if (type(importedValue) == "table") then
-					profileObject [key] = DetailsFramework.table.copy ({}, importedValue)
+					profileObject [key] = DetailsFramework.table.copy({}, importedValue)
 				else
 					profileObject [key] = importedValue
 				end
@@ -1801,7 +1809,7 @@ function Details:ImportProfile (profileString, newProfileName)
 		Details.segments_amount_to_save = 40
 
 		--transfer instance data to the new created profile
-		profileObject.instances = DetailsFramework.table.copy ({}, profileData.instances)
+		profileObject.instances = DetailsFramework.table.copy({}, profileData.instances)
 
 		Details:ApplyProfile (newProfileName)
 

@@ -1,6 +1,6 @@
 # TomTom
 
-## [v3.1.4](https://github.com/jnwhiteh/TomTom/tree/v3.1.4) (2022-08-31)
-[Full Changelog](https://github.com/jnwhiteh/TomTom/compare/v3.1.3...v3.1.4) [Previous Releases](https://github.com/jnwhiteh/TomTom/releases)
+## [v3.1.4-release](https://github.com/jnwhiteh/TomTom/tree/v3.1.4-release) (2022-10-15)
+[Full Changelog](https://github.com/jnwhiteh/TomTom/compare/v3.1.4...v3.1.4-release) [Previous Releases](https://github.com/jnwhiteh/TomTom/releases)
 
-- Add TOC support for Wrath at 30400  
+- Update embedded Ace libraries  

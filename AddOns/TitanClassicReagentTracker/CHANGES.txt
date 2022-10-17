@@ -1,53 +1,38 @@
-tag 2e5ccc3782662d96b0c6576787fb04e32669a763 v3.0.0
+tag d7b2c8e7f9131e353cb81b9b561dee49bea2d059 v3.0.1
 Author:	cliaz <3636531+cliaz@users.noreply.github.com>
-Date:	Thu Oct 6 18:03:18 2022 +1100
+Date:	Mon Oct 17 10:54:24 2022 +1100
 
-Version v3.0.0: WotLK release. Added reagents for
-new spells, but no new functionality
+Adding wotlk mage spells, credit @mjblack
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEVRGRjowwCnZkS8LqEhHYpomKagMFAmM+fc4ACgkQEhHYpomK
-agOftA/+PMuSn+BrlT2zwidGl8X3tX7q9XXw50zCEaqd5JTNCutfEwUXAkhXB56T
-CXZV/n/9xxGY4LuZaH01ZSxunoxTLMBQQRoDVAopX+ahGX8Xk4cBlJ5EYJcAy+Iy
-XwfiHCMoQ/FTd6vmU7URV4hmHTUJEofg03MRzqGBhX0xtkBmTZEiW/1wT3R1t04j
-+3bALtEG38R6Hd4fNow7GG98Ut5oNXS25loAHjOhEZ3hw2UdR7CFry6xt1FZc0PO
-foUKSekF9Df8kpyOplZaN8FlFcWhAE7aL+cf84tcLAUxToaOjANlaSwLANrFs959
-PKKg+aUWHBnJhluz3w9A04E5NUtjpL0WQ1zngQYJaaEk66Xqm1Tp+Z/T61PHrOp+
-sXyGbLxlXFNBx4mZafCxi6NuIA0yCQTkJNpkF9VwhUlWkjxNn09eX2ve6DCppi19
-ozDqZD7HspYtbVXFkzJ3kBOzuyHQs63Xo/ifYx8PhDgQQGIememgZmnPZ0sORhAI
-NIKCvNeOSLVSWaq/VMATSQyePIeGorCvlYdyr6UyC5d1skIWHH3Hc2VQMWKOGn5T
-bVhOcdNMd2EAHKYmuQX6MXhrJm5bPIxcs6gWup07tfnaYKr04gppYDfJu7igZ+JG
-exu4tvo2h4CONop2Z0D/IwZM/QyGmDbyJEKtT+PWuf8YNO0bK/Y=
-=TlSq
+iQIzBAABCAAdFiEEVRGRjowwCnZkS8LqEhHYpomKagMFAmNMmbAACgkQEhHYpomK
+agMZ3Q/+M1e+5KjCy8c61EQ+mOF1tdTYkAHxMso7V5k5wkCmAU0TiLD+B6uYCCZl
+MZk/LAvZ5nsGoYTLm1AIJQOK0HmIlSBozQKGf1TvHKPyt6kMq/s+KbbzXuV1dE9J
++bD3bca3dXDOMYVC9shhgEyWqMuglQ0QnzsKLW5nR5uXbxeAPYZdLS4vs7Un/R0m
+vMBg+Ac4ZwHKmP/6GOTKmda01rvtY6HJNdEIAxLDasgqSOVnNfXaHEkV5rWVuqfC
+5bccNYoL4+8k4eOb9bTOXFC17iv6NlF/NYcC98E374lX/RHfoyKfdEV9PivYYm2N
+24Vk4DOZulu0J8/cSJs/F9SziS8+GWK+Z5JroaU6MaBVvcMWezwBPAJlAatTVjsA
+VLlPBd9HDfnlydkQG+vXfQKXBoAN/wUypqQcjehdCqhFgWSKPt+ha6aOuozX8eMY
+AbGSkNC0X4mQnNy3iGQoEEGwTPqJbFGPzLCwYgTe87vvt/ft88I+++qh6JCfhQud
+oqioeT/cLdLHNtauk3Kws7jzZxvRxNQBLZHm8Du2XLTWj/BA+k7mZWdcBfynndLK
+gw2a+tZUb7ZoObiU7lagdRfMP1Fxl5YSEsqCLEegUyAX/mKVjEnUr3OaGRVtlMG8
+1s+ev38O0ARbZGyE+iajSopiyyc3Ogejs+WT/UELCsmbwoV0S58=
+=cQRo
 -----END PGP SIGNATURE-----
 
-commit 569bc719f197c377ab9286671183b6bef050b7a7
-Author: cliaz <3636531+cliaz@users.noreply.github.com>
-Date:   Thu Oct 6 14:54:11 2022 +1100
+commit 88c7331ba18580cfbba4f6e4220b7e4dcf256d2e
+Author: mjblack <mjblack@gmail.com>
+Date:   Sat Oct 15 10:54:16 2022 -0500
 
-    WotLK interface version update
+    Added newer ranks for mage spells
+    
+    Added missing ranks for Arcane Brilliance and Ritual of Refreshment spells
 
-commit 569bc719f197c377ab9286671183b6bef050b7a7
-Author: cliaz <3636531+cliaz@users.noreply.github.com>
-Date:   Thu Oct 6 14:54:11 2022 +1100
+commit 88c7331ba18580cfbba4f6e4220b7e4dcf256d2e
+Author: mjblack <mjblack@gmail.com>
+Date:   Sat Oct 15 10:54:16 2022 -0500
 
-    WotLK interface version update
-
-commit ba61be2be0ffce486d5dbe98595416e29ba62244
-Author: cliaz <3636531+cliaz@users.noreply.github.com>
-Date:   Mon Oct 3 18:31:19 2022 +1100
-
-    Added WotLK spells & reagents
-
-commit f1613ab1f70069f8f60900a6db67a067ec36e428
-Author: cliaz <3636531+cliaz@users.noreply.github.com>
-Date:   Fri Aug 19 09:38:39 2022 +1000
-
-    Update README.md
-
-commit a185edfdfad18ff8d8ddfb4a8f2f4bd6119ab068
-Author: cliaz <3636531+cliaz@users.noreply.github.com>
-Date:   Sat May 21 15:56:21 2022 +1000
-
-    Update README.md
+    Added newer ranks for mage spells
+    
+    Added missing ranks for Arcane Brilliance and Ritual of Refreshment spells
 

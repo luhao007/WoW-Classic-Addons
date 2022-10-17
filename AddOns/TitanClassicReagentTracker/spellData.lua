@@ -97,7 +97,9 @@ addon.spells = {
             spells = {
                 23028,  -- Arcane Brilliance (Rank 1)
                 27127,  -- Arcane Brilliance (Rank 2)
-                43987,  -- Ritual of Refreshment
+                43002,  -- Arcane Brilliance (Rank 3)
+                43987,  -- Ritual of Refreshment (Rank 1)
+                58659,  -- Ritual of Refreshment (Rank 2)
             },
             reagent = 17020,
         },
