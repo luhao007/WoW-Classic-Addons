@@ -33,7 +33,7 @@ function VUHDO_macroFactoryInitLocalOverrides()
 	sIsAnyAutoFireConfigured = VUHDO_SPELL_CONFIG["IS_AUTO_FIRE"]	and (
 		VUHDO_SPELL_CONFIG["IS_FIRE_TRINKET_1"]
 		or VUHDO_SPELL_CONFIG["IS_FIRE_TRINKET_2"]
---		or VUHDO_SPELL_CONFIG["IS_FIRE_GLOVES"]
+		or VUHDO_SPELL_CONFIG["IS_FIRE_GLOVES"]
 		or (VUHDO_SPELL_CONFIG["IS_FIRE_CUSTOM_1"] and not VUHDO_strempty(VUHDO_SPELL_CONFIG["FIRE_CUSTOM_1_SPELL"]))
 		or (VUHDO_SPELL_CONFIG["IS_FIRE_CUSTOM_2"] and not VUHDO_strempty(VUHDO_SPELL_CONFIG["FIRE_CUSTOM_2_SPELL"]))
 	);
@@ -109,12 +109,10 @@ local function VUHDO_getFireText(anAction)
 			end
 
 			tModi = VUHDO_SPELL_CONFIG["IS_FIRE_OUT_FIGHT"] and " " or " [combat] ";
-			
-			--[[
+
 			if VUHDO_SPELL_CONFIG["IS_FIRE_GLOVES"] then
 				sFireText = sFireText .. "/use".. tModi .."10\n";
 			end
-			]]
 
 			if VUHDO_SPELL_CONFIG["IS_FIRE_TRINKET_1"] then
 				sFireText = sFireText .. "/use".. tModi .."13\n";

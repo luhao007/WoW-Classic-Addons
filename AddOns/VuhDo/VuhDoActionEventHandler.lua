@@ -388,7 +388,7 @@ end
 local tPosition;
 function VUHDO_savePanelCoords(aPanel)
 	tPosition = VUHDO_PANEL_SETUP[VUHDO_getPanelNum(aPanel)]["POSITION"];
-	tPosition["orientation"], _, tPosition["relativePoint"], tPosition["x"], tPosition["y"] = aPanel:GetPoint(0);
+	tPosition["orientation"], _, tPosition["relativePoint"], tPosition["x"], tPosition["y"] = aPanel:GetPoint();
 	tPosition["width"] = aPanel:GetWidth();
 	tPosition["height"] = aPanel:GetHeight();
 end

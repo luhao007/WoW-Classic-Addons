@@ -131,7 +131,7 @@
 							</OnLoad>
 						</Scripts>
 					</CheckButton>
-					<!--
+
 					<CheckButton name="$parentGlovesCheckButton" text="VUHDO_I18N_GLOVES" inherits="VuhDoCheckButtonTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT">
@@ -148,7 +148,7 @@
 							</OnLoad>
 						</Scripts>
 					</CheckButton>
-					-->
+
 					<Frame name="$parentTriggerWhatLabel" inherits="VuhDoLabelFrameTemplate">
 						<Layers>
 							<Layer>

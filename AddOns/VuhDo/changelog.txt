@@ -1,3 +1,47 @@
+Version 3.141-wotlkc  
+  
+  
+Known issues:  
+-- Spells by rank can be specified using a rank suffix:  
+--  Example: Lesser Heal(Rank 1)  
+-- Debuff tooltips are currently bugged when using ElvUI  
+--   Deselect 'VuhDo Options > Panels > Tooltips > Tooltips > Debuffs'  
+-- Shield bar is not working due to unavailable Blizzard APIs  
+-- Spell trace only works for known spells in the player's spellbook  
+-- Group roster changes will not be reflected during combat  
+--   Swapping a player between groups during combat will cause  
+--   unpredictable, negative results.  Be warned!  
+-- Built-in Blizzard APIs for incoming healing are no longer working  
+--   LibHealComm will always be used for now regardless of setting under:  
+--   'VuhDo Options > General > Threat / Incoming > Incoming Heal > Use LibHealComm'  
+  
+  
+Bugfixes:  
+-- Re-enabled auto-trigger of Engineering glove tinker after Blizzard hotfix  
+  
+  
+Improvements:  
+  
+  
+--------------------------------------------------------------  
+Version 3.141  
+  
+  
+Known issues:  
+-- Shadowlands stat squish cleanup still a work in progress  
+--   AOE Advice spell equations need complete overhaul  
+--   Some text providers need changes to better display small numbers  
+-- Debuff tooltips are currently bugged when using ElvUI  
+--   Deselect 'VuhDo Options > Panels > Tooltips > Tooltips > Debuffs'  
+  
+  
+Bugfixes:  
+  
+  
+Improvements:  
+  
+  
+--------------------------------------------------------------  
 Version 3.140-wotlkc  
   
   
@@ -20,7 +64,6 @@ Bugfixes:
 -- Fixed vehicle health updates when panels contain no pet groups  
 -- Added workaround for even more broken Blizzard APIs for incoming healing  
 -- Fixed Shaman weapon enchants in Buff Watch  
--- Disabled auto-trigger of Engineering glove due to Blizzard GCD change  
   
   
 Improvements:  
