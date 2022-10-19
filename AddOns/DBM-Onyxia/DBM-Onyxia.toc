@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Tandanu/Nitram
-## Version: 4219c3a
+## Version: 6a695e2
 ## RequiredDeps: DBM-Core
 ## LoadOnDemand: 1
 ## SavedVariables: DBMOnyxia_AllSavedVars

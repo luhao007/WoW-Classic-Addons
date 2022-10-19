@@ -4851,6 +4851,24 @@ end,
 		end
 	end
 end,
+["DEDICATED_10M_OnUpdate"] = function(t)
+	rawset(t, "collectible", nil);
+	if app.Settings:Get("DebugMode") or app.Settings:Get("AccountMode") then
+		return false;
+	elseif IsInGroup() and GetNumGroupMembers() >= 9 then
+		rawset(t, "collectible", false);
+		return true;
+	end
+end,
+["DEDICATED_25M_OnUpdate"] = function(t)
+	rawset(t, "collectible", nil);
+	if app.Settings:Get("DebugMode") or app.Settings:Get("AccountMode") then
+		return false;
+	elseif IsInGroup() and GetNumGroupMembers() >= 21 then
+		rawset(t, "collectible", false);
+		return true;
+	end
+end,
 };
 end)();
 
@@ -13084,8 +13102,6 @@ app:GetWindow("CurrentInstance", UIParent, function(self, force, fromTrigger)
 				table.insert(groups, factionsHeader);
 				local flightPathsHeader = app.CreateNPC(-6, { ["g"] = {} });
 				table.insert(groups, flightPathsHeader);
-				local holidaysHeader = app.CreateNPC(-5, { ["g"] = {} });
-				table.insert(groups, holidaysHeader);
 				local questsHeader = app.CreateNPC(-17, { ["g"] = {} });
 				table.insert(groups, questsHeader);
 				local raresHeader = app.CreateNPC(-16, { ["g"] = {} });
@@ -13121,24 +13137,7 @@ app:GetWindow("CurrentInstance", UIParent, function(self, force, fromTrigger)
 					if r then clone.r = r; end
 					setmetatable(clone, getmetatable(group));
 					
-					-- If this is relative to a holiday, let's do something special
-					local holidayID = GetRelativeValue(group, "holidayID");
-					if holidayID or GetRelativeField(group, "headerID", -5) then
-						if group.key == "headerID" then
-							if GetRelativeField(group, "headerID", -2) or GetRelativeField(group, "headerID", -173) then	-- It's a Vendor. (or a timewaking vendor)
-								if group.headerID ~= -2 then clone = app.CreateNPC(-2, { g = { clone } }); end
-							elseif GetRelativeField(group, "headerID", -17) then	-- It's a Quest.
-								if group.headerID ~= -17 then clone = app.CreateNPC(-17, { g = { clone } }); end
-							end
-						elseif group.key == "questID" then
-							clone = app.CreateNPC(-17, { g = { clone } });
-						elseif group.key == "npcID" and group.parent.headerID == -2 then
-							clone = app.CreateNPC(-2, { g = { clone } });
-							clone.OnTooltip = group.parent.OnTooltip;
-						end
-						if holidayID then clone = app.CreateHoliday(holidayID, { g = { clone } }); end
-						MergeObject(holidaysHeader.g, clone);
-					elseif group.key == "mapID" or group.key == "instanceID" then
+					if group.key == "mapID" or group.key == "instanceID" then
 						header.key = group.key;
 						header[group.key] = group[group.key];
 						MergeObject({header}, clone);

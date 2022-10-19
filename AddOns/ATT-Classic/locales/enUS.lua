@@ -1053,6 +1053,9 @@ app.L = {
 		["The Underbog"] = 262,
 		["Sunwell Plateau"] = 335,
 		["Zul'Aman"] = 333,
+		
+		-- Wrath
+		[C_Map.GetAreaInfo(4560)] = 126,	-- The Underbelly
 	};
 	
 	-- These are alternative map names that we don't want to display, but used for mapID calculations.

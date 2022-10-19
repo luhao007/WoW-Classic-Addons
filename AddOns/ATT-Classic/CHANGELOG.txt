@@ -1,5 +1,8 @@
-1.1.8 Release Notes
+1.1.9 Release Notes
 Contributions made by Crieve:
-* Yet another saved instance data cleanup attempt.
-* This is definitely the one.
+* When you're in a group for Naxx for Wrath Classic you'll no longer see Dedicated Few on the tooltip for boses when in a group with more than the required amount of players. Updated Glory of the Raider metas.
+* The candy bucket for Tranquillien now points to Ghostlands as intended.
+* Treat Bags and Handfuls of Treats were actually quite boring pre-4.2.0.
+* Temporarily disabling the holiday header on the mini list.
+* Fixed the azeroth meta for pre-4.2.0 clients.
 
