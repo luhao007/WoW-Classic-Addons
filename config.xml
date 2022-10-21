@@ -354,6 +354,10 @@
 				<Title>大灾变</Title>
 				<Notes>BtWQuests 大灾变模块</Notes>
 			</SubAddon>
+			<SubAddon name="BtWQuestsDragonflight">
+				<Title>巨龙时代</Title>
+				<Notes>BtWQuests 巨龙时代模块</Notes>
+			</SubAddon>
 			<SubAddon name="BtWQuestsLegion">
 				<Title>军团再临</Title>
 				<Notes>BtWQuests 军团再临模块</Notes>
@@ -465,6 +469,10 @@
 			</SubAddon>
 			<SubAddon name="DBM-BastionTwilight">
 				<Title>暮光堡垒</Title>
+			</SubAddon>
+			<SubAddon name="DBM-BfA">
+				<Title>户外</Title>
+				<TitleExtra>艾泽拉斯（争霸艾泽拉斯）</TitleExtra>
 			</SubAddon>
 			<SubAddon name="DBM-BlackrockFoundry">
 				<Title>黑石铸造厂</Title>
@@ -596,6 +604,10 @@
 				<Title>小队</Title>
 				<TitleExtra>经典旧世</TitleExtra>
 			</SubAddon>
+			<SubAddon name="DBM-Party-Dragonflight">
+				<Title>小队</Title>
+				<TitleExtra>巨龙时代</TitleExtra>
+			</SubAddon>
 			<SubAddon name="DBM-Party-Legion">
 				<Title>小队</Title>
 				<TitleExtra>军团再临</TitleExtra>
@@ -675,6 +687,9 @@
 			</SubAddon>
 			<SubAddon name="DBM-Ulduar">
 				<Title>奥杜尔</Title>
+			</SubAddon>
+			<SubAddon name="DBM-VaultoftheIncarnates">
+				<Title>化身巨龙牢窟</Title>
 			</SubAddon>
 			<SubAddon name="DBM-VoA">
 				<Title>阿尔卡冯的宝库</Title>
@@ -820,7 +835,7 @@
 		<Title>角斗士助手</Title>
 		<Category>PVP</Category>
 		<SubAddons>
-			<SubAddon name="GladiatorlosSA_zhCN">
+			<SubAddon name="GladiatorlosSA2_zhCN">
 				<Title>夏一可语音包</Title>
 			</SubAddon>
 		</SubAddons>
@@ -913,6 +928,10 @@
 				<Title>宝藏/稀有</Title>
 				<TitleExtra>争霸艾泽拉斯</TitleExtra>
 			</SubAddon>
+			<SubAddon name="HandyNotes_BattleForAzerothTreasures">
+				<Title>宝藏</Title>
+				<TitleExtra>争霸艾泽拉斯</TitleExtra>
+			</SubAddon>
 			<SubAddon name="HandyNotes_BrokenShore">
 				<Title>宝藏/稀有</Title>
 				<TitleExtra>破碎海滩</TitleExtra>
@@ -961,6 +980,10 @@
 				<TitleExtra>潘达利亚</TitleExtra>
 			</SubAddon>
 			<SubAddon name="HandyNotes_Shadowlands">
+				<Title>宝藏/稀有</Title>
+				<TitleExtra>暗影国度</TitleExtra>
+			</SubAddon>
+			<SubAddon name="HandyNotes_ShadowlandsTreasures">
 				<Title>宝藏/稀有</Title>
 				<TitleExtra>暗影国度</TitleExtra>
 			</SubAddon>
@@ -1256,6 +1279,15 @@
 			<SubAddon name="RaidAchievement_OldModules">
 				<Title>经典模块</Title>
 			</SubAddon>
+			<SubAddon name="RaidAchievement_PandaHeroics">
+				<Title>熊猫人之谜小队</Title>
+			</SubAddon>
+			<SubAddon name="RaidAchievement_PandaRaids">
+				<Title>熊猫人之谜团队</Title>
+			</SubAddon>
+			<SubAddon name="RaidAchievement_PandaScenarios">
+				<Title>熊猫人之谜场景战役</Title>
+			</SubAddon>
 			<SubAddon name="RaidAchievement_Ulduar">
 				<Title>奥杜尔</Title>
 			</SubAddon>
@@ -1434,6 +1466,10 @@
 				<Notes>泰坦面板的修理模块</Notes>
 			</SubAddon>
 			<SubAddon name="TitanReputation">
+				<Title>声望</Title>
+				<Notes>泰坦面板的声望模块</Notes>
+			</SubAddon>
+			<SubAddon name="TitanReputations">
 				<Title>声望</Title>
 				<Notes>泰坦面板的声望模块</Notes>
 			</SubAddon>

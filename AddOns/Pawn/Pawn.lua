@@ -7,7 +7,7 @@
 -- Main non-UI code
 ------------------------------------------------------------
 
-PawnVersion = 2.0703
+PawnVersion = 2.0704
 
 -- Pawn requires this version of VgerCore:
 local PawnVgerCoreVersionRequired = 1.17
@@ -127,6 +127,8 @@ function PawnOnEvent(Event, arg1, arg2, ...)
 	elseif Event == "ITEM_LOCKED" then
 		PawnOnItemLocked(arg1, arg2)
 		PawnOnInventoryChanged()
+	elseif Event == "MERCHANT_UPDATE" then
+		PawnOnItemLost(GetBuybackItemLink(GetNumBuybackItems()))
 	elseif Event == "ADDON_LOADED" then
 		PawnOnAddonLoaded(arg1)
 	elseif Event == "PLAYER_SPECIALIZATION_CHANGED" and arg1 == "player" then
@@ -195,20 +197,6 @@ function PawnInitialize()
 		function()
 			PawnOnItemLost(PawnLastCursorItemLink)
 		end)
-	if C_Container and C_Container.UseContainerItem then
-		-- WoW 10.0 moved UseContainerItem into C_Container.
-		hooksecurefunc(C_Container, "UseContainerItem", function(BagID, Slot)
-			if MerchantFrame:IsShown() then
-				PawnOnItemLost(C_Container.GetContainerItemLink(BagID, Slot))
-			end
-		end)
-	else
-		hooksecurefunc("UseContainerItem", function(BagID, Slot)
-			if MerchantFrame:IsShown() then
-				PawnOnItemLost(GetContainerItemLink(BagID, Slot))
-			end
-		end)
-	end
 	hooksecurefunc("PickupMerchantItem",
 		function(Index)
 			if Index == 0 then PawnOnItemLost(PawnLastCursorItemLink) end
@@ -422,7 +410,7 @@ function PawnInitialize()
 		end
 		PawnUpdateItemUpgradeIcon = function(self)
 			if self.isExtended then return end
-			local IsUpgrade = PawnIsContainerItemAnUpgrade(self:GetParent():GetID(), self:GetID())
+			local IsUpgrade = PawnIsContainerItemAnUpgrade(self.GetBagID and self:GetBagID() or self:GetParent():GetID(), self:GetID())
 
 			if IsUpgrade == nil then
 				self.UpgradeIcon:SetShown(false)
@@ -437,18 +425,15 @@ function PawnInitialize()
 	if ContainerFrameItemButtonMixin and ContainerFrameItemButtonMixin.UpdateItemUpgradeIcon then
 		-- Dragonflight onward
 
-		-- IMPORTANT: As of October 1, this does not work with the new combined bags, only the traditional style.
-		-- But, the built-in upgrade arrows don't appear to work with either version, so... improvement?
-
 		-- First, hook ContainerFrameItemButtonMixin to affect all future bag frames.
 		hooksecurefunc(ContainerFrameItemButtonMixin, "UpdateItemUpgradeIcon", PawnUpdateItemUpgradeIcon)
-		-- Unfortunately, the Mixin is not a prototype and changes are not retroactive to bags that have already been created,
+		-- Unfortunately, the Mixin is not a prototype so changes are not retroactive to bags that have already been created,
 		-- so now we need to update all of those.
 		for i = 1, NUM_TOTAL_BAG_FRAMES do
 			local Bag = _G["ContainerFrame" .. i]
 			if Bag.Items then
 				for j, Button in Bag:EnumerateItems() do
-					Mixin(Button, ContainerFrameItemButtonMixin)
+					hooksecurefunc(Button, "UpdateItemUpgradeIcon", PawnUpdateItemUpgradeIcon)
 				end
 			end
 		end
