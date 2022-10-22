@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: The WeakAuras Team
-## Version: 4.1.4
+## Version: 4.1.5
 ## OptionalDeps: Ace3, LibCompress, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, Masque, GTFO, LibButtonGlow-1.0, LibSpellRange-1.0, LibRangeCheck-2.0, LibDBIcon-1.0, LibClassicDurations, LibClassicCasterino, LibGetFrame-1.0, LibSpecialization
 ## LoadOnDemand: 0
 ## SavedVariables: WeakAurasSaved
@@ -22,8 +22,6 @@
 embeds.xml
 
 # Client flavor specific libs
-Libs\LibSpecialization\LibSpecialization.lua
-
 Init.lua
 locales.xml
 ArchiveTypes\Repository.lua

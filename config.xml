@@ -969,6 +969,10 @@
 				<Title>节日</Title>
 				<TitleExtra>春节</TitleExtra>
 			</SubAddon>
+			<SubAddon name="Handynotes_MistsOfPandariaTreasures">
+				<Title>宝藏/稀有</Title>
+				<TitleExtra>潘达利亚</TitleExtra>
+			</SubAddon>
 			<SubAddon name="HandyNotes_NPCs (Classic)">
 				<Title>NPC</Title>
 			</SubAddon>

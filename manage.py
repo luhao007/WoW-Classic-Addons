@@ -952,13 +952,13 @@ class Manager:
                 'AceSerializer-3.0', 'AceTimer-3.0', 'CallbackHandler-1.0',
                 'LibCustomGlow-1.0', 'LibCompress', 'LibDBIcon-1.0', 'LibDataBroker-1.1', 'LibDeflate',
                 'LibGetFrame-1.0', 'LibRangeCheck-2.0', 'LibSharedMedia-3.0',
-                'LibSerialize', 'LibSpecialization', 'LibSpellRange-1.0', 'LibStub'],
+                'LibSerialize', 'LibSpellRange-1.0', 'LibStub'],
             'Addons/WeakAuras/Libs',
             'Addons/WeakAuras/embeds.xml'
         )
 
         utils.remove_libraries(
-            ['LibClassicCasterino', 'LibClassicDurations', 'LibClassicSpellActionCount-1.0', ],
+            ['LibClassicCasterino', 'LibClassicDurations', 'LibClassicSpellActionCount-1.0', 'LibSpecialization'],
             'Addons/WeakAuras/Libs',
             'Addons/WeakAuras/WeakAuras.toc'
         )

@@ -463,7 +463,7 @@ local _loadupTime_removeme = GetTime() -- this will be removed in 6.0.1 or 6.1, 
 -- yelling quests on login. Not enough time to make and test a proper fix
 
 function QuestieComms:YellProgress(questId)
-    if Questie.db.global.disableYellComms or badYellLocations[C_Map.GetBestMapForUnit("player")] or GetNumGroupMembers() > 4 or GetTime() - _loadupTime_removeme < 8 then
+    if Questie.db.global.disableYellComms or badYellLocations[C_Map.GetBestMapForUnit("player")] or QuestiePlayer.numberOfGroupMembers > 4 or GetTime() - _loadupTime_removeme < 8 then
         return
     end
     if not QuestieComms._yellWaitingQuests[questId] then
@@ -950,7 +950,7 @@ _QuestieComms.packets = {
 -- Renamed Write function
 function _QuestieComms:Broadcast(packet)
     -- If the priority is not set, it must not be very important
-    if packet.writeMode ~= _QuestieComms.QC_WRITE_WHISPER and (GetNumGroupMembers() > 15 or UnitInBattleground("Player")) then
+    if packet.writeMode ~= _QuestieComms.QC_WRITE_WHISPER and (QuestiePlayer.numberOfGroupMembers > 15 or UnitInBattleground("Player")) then
         -- dont broadcast to large raids
         return
     end
@@ -1058,7 +1058,7 @@ function _QuestieComms:CreatePacket(messageId)
     pkt.data = {}
     -- Set messageId
     local major, minor, patch = QuestieLib:GetAddonVersionInfo();
-    pkt.data.ver = "7.4.1";
+    pkt.data.ver = "7.4.2";
     pkt.data.msgVer = commMessageVersion;
     pkt.data.msgId = messageId
     -- Some messages initialize
