@@ -49,7 +49,6 @@ local function HandlePortraitFrame(self)
     local unit = self.data.unit or "player"
     local class = select(2, UnitClass(unit))
     local color = RAID_CLASS_COLORS[class] or NORMAL_FONT_COLOR
-    self.height = 68 + 36*3 + 15*self.maxStaticIndex
     self.PortraitFrame.Level:SetText(UnitLevel(unit))
     self.PortraitFrame.PortraitRingQuality:SetVertexColor(color.r, color.g, color.b)
     self.PortraitFrame.LevelBorder:SetVertexColor(color.r, color.g, color.b)
@@ -66,8 +65,6 @@ local function HandlePortraitFrame(self)
     self:SetBackdrop(self.backdrop)
     self:SetBackdropColor(0, 0, 0, 0.88)
     self:SetBackdropBorderColor(color.r, color.g, color.b)
-    LibEvent:trigger("HANDLE_PORTRAIT_FRAME", self)
-    return self.height
 end
 
 
@@ -103,12 +100,17 @@ function ClassicStatsFrameTemplate_Onload(self)
     anchor = self.ResistanceCategory
     local colors = {{0.9,0.1,0.1},{0,0.9,0.3},{0,0.7,0.7},{1,0.3,0.9},{0.7,0,0.4},{0.9,0.5,0.1}}
     for i, key in ipairs({"ResistanceFire","ResistanceNature","ResistanceFrost","ResistanceArcane","ResistanceShadow","ResistanceHoly"}) do
+        
+   
         frame = CreateStatFrame(self, index, key)
         frame:SetPoint("TOPLEFT", anchor, "BOTTOMLEFT", 0, 0)
         frame.Label:SetTextColor(unpack(colors[i]))
         anchor = frame
         index = index + 1
         keys = keys .. key .. ","
+            
+        
+
     end
     --记录固值的index值
     self.maxStaticIndex = index - 1
@@ -127,7 +129,8 @@ end
 
 function ClassicStatsFrameTemplate_OnShow(self)
     local button
-    local height = HandlePortraitFrame(self)
+    local height = 68 + 36*3 + 15*self.maxStaticIndex
+    HandlePortraitFrame(self)
     for i = 1, self.maxStaticIndex do
         button = self["stat"..i]
         button.Label:SetText(GetStatsName(button.key))

@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: M(Mermaid)
-## Version: 1.0.3.1
+## Version: 1.0.3
 ## SavedVariables: MerInspectDB
 
 ## Title: MerInspect

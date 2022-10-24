@@ -258,7 +258,7 @@ function lib:GetUnitBuffStats(unit, stats)
     end
 end
 
---读取天赋加成
+--读取天赋加成 @todo
 function lib:GetUnitTalentStats(unit, stats, class, race, level)
     local inspect = (unit ~= "player")
     local numTabs = GetNumTalentTabs(inspect)
@@ -298,10 +298,6 @@ function lib:GetUnitRaceStats(unit, stats, class, race, level)
         SetStaticValueAndFinal(stats, 5, "ResistanceShadow")
     end
     --HPMP @todo
-    
-    if (race == "Tauren") then
-		SetPercentValue(stats, 0.05, "Stamina", "Stamina")
-	end
     
     --原始属性 @todo
     

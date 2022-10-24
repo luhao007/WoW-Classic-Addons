@@ -1,6 +1,6 @@
 
 -------------------------------------
--- 顯示附魔信息和宝石
+-- 顯示寶石和附魔信息
 -- @Author: M
 -- @DepandsOn: InspectUnit.lua
 -------------------------------------
@@ -13,13 +13,16 @@ local LibItemEnchant = LibStub:GetLibrary("LibItemEnchant.7000")
 
 --0:optional
 local EnchantParts = {
-    [5]  = {1, CHESTSLOT},
-    [8]  = {1, FEETSLOT},
-    [9]  = {1, WRISTSLOT},
-    [10] = {1, HANDSSLOT},
-    [15] = {1, BACKSLOT},
-    [16] = {1, MAINHANDSLOT},
-    [17] = {0, SECONDARYHANDSLOT},
+    [1] = { 1, HEADSLOT },
+    [3] = { 1, SHOULDERSLOT },
+    [5]  = { 1, CHESTSLOT },
+    [7] = { 1, LEGSSLOT },
+    [8]  = { 1, FEETSLOT },
+    [9]  = { 1, WRISTSLOT },
+    [10] = { 1, HANDSSLOT },
+    [15] = { 1, BACKSLOT },
+    [16] = { 1, MAINHANDSLOT },
+    [17] = { 0, SECONDARYHANDSLOT },
 }
 
 --創建圖標框架
@@ -74,7 +77,7 @@ local function HideAllIconFrame(frame)
         frame["xicon"..index]:Hide()
         index = index + 1
     end
-    LibSchedule:RemoveTask("InspectGemAndEnchant", true)
+    --LibSchedule:RemoveTask("InspectGemAndEnchant", true)
 end
 
 --獲取可用的圖標框架
@@ -114,7 +117,7 @@ end
 --Schedule模式更新圖標
 local function UpdateIconTexture(icon, texture, data, dataType)
     if (not texture) then
-        LibSchedule:AddTask({
+        --[[ LibSchedule:AddTask({
             identity  = "InspectGemAndEnchant" .. icon.index,
             timer     = 0.1,
             elasped   = 0.5,
@@ -123,31 +126,16 @@ local function UpdateIconTexture(icon, texture, data, dataType)
             icon      = icon,
             data      = data,
             dataType  = dataType,
-        })
+        }) ]]
     end
-end
-
---图标宝石的边框颜色 @see:LibItemGem
-local function GetGemBorderColor(color)
-    if (color == "Yellow") then
-        return 1, 0.82, 0, 0.7
-    elseif (color == "Red") then
-        return 1, 0.2, 0.2, 0.7
-    elseif (color == "Blue") then
-        return 0, 0.2, 1, 0.9
-    elseif (color == "Prismatic") then
-        return 1, 0.82, 0, 0.7
-    elseif (color == "Meta") then
-        return 0.8, 0.8, 0.8, 0.7
-    end
-    return 1, 0.82, 0, 0.7
 end
 
 --讀取並顯示圖標
 local function ShowGemAndEnchant(frame, ItemLink, anchorFrame, itemframe)
     if (not ItemLink) then return 0 end
-    local num, info, qty = LibItemGem:GetItemGemInfo(ItemLink)
+    local num, info = LibItemGem:GetItemGemInfo(ItemLink)
     local _, quality, texture, icon, r, g, b
+
     for i, v in ipairs(info) do
         icon = GetIconFrame(frame)
         if (v.link) then
@@ -155,13 +143,13 @@ local function ShowGemAndEnchant(frame, ItemLink, anchorFrame, itemframe)
             r, g, b = GetItemQualityColor(quality or 0)
             icon.bg:SetVertexColor(r, g, b)
             icon.texture:SetTexture(texture or "Interface\\Cursor\\Quest")
-            icon.texture:SetVertexColor(1,1,1)
             UpdateIconTexture(icon, texture, v.link, "item")
+        elseif (v.texture) then
+            icon.bg:SetVertexColor(1, 1, 1, 1)
+            icon.texture:SetTexture(v.texture)    
         else
-            r, g, b, a = GetGemBorderColor(v.color)
-            icon.bg:SetVertexColor(r, g, b, a)
+            icon.bg:SetVertexColor(1, 0.82, 0, 0.5)
             icon.texture:SetTexture("Interface\\Cursor\\Quest")
-            icon.texture:SetVertexColor(r, g, b)
         end
         icon.title = v.name
         icon.itemLink = v.link
@@ -172,29 +160,27 @@ local function ShowGemAndEnchant(frame, ItemLink, anchorFrame, itemframe)
     end
     local enchantItemID, enchantID = LibItemEnchant:GetEnchantItemID(ItemLink)
     local enchantSpellID = LibItemEnchant:GetEnchantSpellID(ItemLink)
-    if (enchantSpellID) then
-        num = num + 1
-        icon = GetIconFrame(frame)
-        _, _, texture = GetSpellInfo(enchantSpellID)
-        icon.bg:SetVertexColor(1,0.82,0)
-        icon.texture:SetTexture(texture)
-        icon.texture:SetVertexColor(1,1,1)
-        UpdateIconTexture(icon, texture, enchantSpellID, "spell")
-        icon.spellID = enchantSpellID
-        icon:ClearAllPoints()
-        icon:SetPoint("LEFT", anchorFrame, "RIGHT", num == 1 and 6 or 1, 0)
-        icon:Show()
-        anchorFrame = icon
-    elseif (enchantItemID) then
+    if (enchantItemID) then
         num = num + 1
         icon = GetIconFrame(frame)
         _, ItemLink, quality, _, _, _, _, _, _, texture = GetItemInfo(enchantItemID)
         r, g, b = GetItemQualityColor(quality or 0)
         icon.bg:SetVertexColor(r, g, b)
         icon.texture:SetTexture(texture)
-        icon.texture:SetVertexColor(1,1,1)
         UpdateIconTexture(icon, texture, enchantItemID, "item")
         icon.itemLink = ItemLink
+        icon:ClearAllPoints()
+        icon:SetPoint("LEFT", anchorFrame, "RIGHT", num == 1 and 6 or 1, 0)
+        icon:Show()
+        anchorFrame = icon
+    elseif (enchantSpellID) then 
+        num = num + 1
+        icon = GetIconFrame(frame)
+        _, _, texture = GetSpellInfo(enchantSpellID)
+        icon.bg:SetVertexColor(1,0.82,0)
+        icon.texture:SetTexture(texture)
+        UpdateIconTexture(icon, texture, enchantSpellID, "spell")
+        icon.spellID = enchantSpellID
         icon:ClearAllPoints()
         icon:SetPoint("LEFT", anchorFrame, "RIGHT", num == 1 and 6 or 1, 0)
         icon:Show()
@@ -205,27 +191,31 @@ local function ShowGemAndEnchant(frame, ItemLink, anchorFrame, itemframe)
         icon.title = "#" .. enchantID
         icon.bg:SetVertexColor(0.1, 0.1, 0.1)
         icon.texture:SetTexture("Interface\\FriendsFrame\\InformationIcon")
-        icon.texture:SetVertexColor(1,1,1)
         icon:ClearAllPoints()
         icon:SetPoint("LEFT", anchorFrame, "RIGHT", num == 1 and 6 or 1, 0)
         icon:Show()
         anchorFrame = icon
     elseif (not enchantID and EnchantParts[itemframe.index]) then
-        num = num + 1
-        icon = GetIconFrame(frame)
-        icon.title = ENCHANTS .. ": " .. EnchantParts[itemframe.index][2]
-        icon.bg:SetVertexColor(0.1, 1, 1, 0.7)
-        icon.texture:SetTexture("Interface\\Cursor\\" .. (EnchantParts[itemframe.index][1]==1 and "Quest" or "UnableQuest"))
-        icon.texture:SetVertexColor(1,1,1)
-        icon:ClearAllPoints()
-        icon:SetPoint("LEFT", anchorFrame, "RIGHT", num == 1 and 6 or 1, 0)
-        icon:Show()
-        anchorFrame = icon
+        local itemEquip = select(9, GetItemInfo(ItemLink))
+        if (itemframe.index ~= 17) or (itemEquip ~= "INVTYPE_HOLDABLE") then
+            num = num + 1
+            icon = GetIconFrame(frame)
+            icon.title = ENCHANTS .. ": " .. EnchantParts[itemframe.index][2]
+            icon.bg:SetVertexColor(1, 0.2, 0.2, 0.6)
+            icon.texture:SetTexture("Interface\\Cursor\\Quest")
+            icon:ClearAllPoints()
+            icon:SetPoint("LEFT", anchorFrame, "RIGHT", num == 1 and 6 or 1, 0)
+            icon:Show()
+            anchorFrame = icon
+        end
     end
     return num * 18
 end
 
 --功能附着
+
+local guidCache = {}
+
 hooksecurefunc("ShowInspectItemListFrame", function(unit, parent, itemLevel, maxLevel)
     local frame = parent.inspectFrame
     if (not frame) then return end
@@ -243,5 +233,15 @@ hooksecurefunc("ShowInspectItemListFrame", function(unit, parent, itemLevel, max
     end
     if (width > frame:GetWidth()) then
         frame:SetWidth(width)
+    end
+
+    -- 第一次观察时重复观察暂时修复宝石信息
+    local guid = UnitGUID(unit)
+    if not guidCache[guid] then
+        C_Timer.After(.1, function()
+            ReInspect(unit)
+        end)
+
+        guidCache[guid] = true
     end
 end)

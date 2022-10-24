@@ -43,14 +43,9 @@ local function GetInspectItemListFrame(parent)
             edgeSize = 16,
             insets   = {left = 4, right = 4, top = 4, bottom = 4}
         }
-        if (not frame.GetBackdrop) then
-            frame.GetBackdrop = function(self)
-                return self.backdrop
-            end
-        end
         local height = 424
         frame:SetSize(160, height)
-        --frame:SetFrameLevel(0)
+        frame:SetFrameLevel(0)
         frame:SetPoint("TOPLEFT", parent, "TOPRIGHT", 0, 0)
         frame:SetBackdrop(frame.backdrop)
         frame:SetBackdropColor(0, 0, 0, 0.8)
@@ -250,14 +245,7 @@ LibEvent:attachTrigger("INSPECT_FRAME_SHOWN", function(self, frame, parent, ilev
     if (f == "InspectFrame" or f == "PaperDollFrame") then
         x, y = 33, 14
     end
-    local backdrop = frame:GetBackdrop() or {
-            bgFile   = "Interface\\Tooltips\\UI-Tooltip-Background",
-            edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-            tile     = true,
-            tileSize = 8,
-            edgeSize = 16,
-            insets   = {left = 4, right = 4, top = 4, bottom = 4}
-          }
+    local backdrop = frame:GetBackdrop()
     if (MerInspectDB and MerInspectDB.ShowInspectAngularBorder) then
         backdrop.edgeSize = 1
         backdrop.edgeFile = "Interface\\Buttons\\WHITE8X8"
