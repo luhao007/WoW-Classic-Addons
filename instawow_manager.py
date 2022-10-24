@@ -16,6 +16,8 @@ from instawow.manager import Manager, contextualise, DB_REVISION
 from instawow.models import Pkg, pkg_converter
 from instawow.resolvers import Defn
 from instawow.results import PkgUpToDate
+from instawow._cli_prompts import make_progress_bar
+from instawow.cli import _cancel_tickers, _init_cli_web_client
 
 
 class InstawowManager:
@@ -49,12 +51,11 @@ class InstawowManager:
         self.manager = Manager(config, self.conn)
 
     def run(self, awaitable):
-        from instawow._cli_prompts import make_progress_bar
-
         cache_dir = self.manager.config.global_config.cache_dir
+
         async def run():
-            with make_progress_bar() as progress_bar, instawow.cli._cancel_tickers(progress_bar) as tickers:
-                async with instawow.cli._init_cli_web_client(cache_dir, progress_bar, tickers) as web_client:
+            with make_progress_bar() as progress_bar, _cancel_tickers(progress_bar) as tickers:
+                async with _init_cli_web_client(cache_dir, progress_bar, tickers) as web_client:
                     contextualise(web_client=web_client)
                     return await awaitable
 
@@ -84,7 +85,7 @@ class InstawowManager:
         return [self.to_defn(addon) if isinstance(addon, str) else self.to_defn(*addon) for addon in addons]
 
     def update(self):
-        addons = [Defn.from_pkg(p) for p in self.get_addons()]
+        addons = [p.to_defn() for p in self.get_addons()]
         results = self.run(self.manager.update(addons, False))
         report = instawow.cli.Report(results.items(),
                                      lambda r: not isinstance(r, PkgUpToDate))

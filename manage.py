@@ -360,6 +360,7 @@ class Manager:
             addons += ['alaCalendar', 'AtlasLootClassic', 'AtlasLootClassic_Options',
                        'ATT-Classic', 'ClassicCastbars_Options', 'Fizzle', 'GroupCalendar',
                        'HandyNotes_NPCs (Classic)', 'HandyNotes_NPCs (Burning Crusade Classic)',
+                       'HandyNotes_DungeonLocations (Classic)',
                        'PallyPower', 'SimpleChatClassic', 'TradeLog',
                        'TitanClassic', 'WclPlayerScore']
 

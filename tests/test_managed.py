@@ -11,7 +11,7 @@ class CheckManagedAddOns(unittest.TestCase):
 
     def test_check_addon_toc(self):
         for addon in os.listdir('AddOns'):
-            if 'sekiro' in addon:
+            if 'sekiro' in addon or 'Ruru' in addon:
                 continue
 
             for toc in TOCS:

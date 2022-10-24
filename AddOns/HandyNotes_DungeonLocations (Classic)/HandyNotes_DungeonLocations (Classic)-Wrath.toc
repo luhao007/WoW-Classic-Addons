@@ -12,6 +12,5 @@
 ## X-WoWI-ID: 25298
 ## X-Part-Of: HandyNotes
 
-libs\LibQTip-1.0\LibQTip-1.0.lua
 locales\wrath\Locales.xml
 wrath.lua
