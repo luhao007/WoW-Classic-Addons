@@ -479,7 +479,7 @@ end
 
 
 function mounts:setMountsList()
-	self.mapInfo = C_Map.GetMapInfo(C_Map.GetBestMapForUnit("player"))
+	self.mapInfo = C_Map.GetMapInfo(C_Map.GetBestMapForUnit("player") or C_Map.GetFallbackWorldMapID())
 	local mapInfo = self.mapInfo
 	local zoneMounts = self.zoneMounts
 	self.mapFlags = nil

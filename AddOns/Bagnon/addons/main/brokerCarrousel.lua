@@ -1,17 +1,17 @@
 ﻿--[[
-	brokerDisplay.lua
-		A databroker display object
+	brokerCarrousel.lua
+		A databroker display object that cycles between plugins
 --]]
 
 local ADDON, Addon = ...
 local LDB = LibStub('LibDataBroker-1.1')
-local Display = Addon.Parented:NewClass('BrokerDisplay', 'Button')
+local Carrousel = Addon.Tipped:NewClass('BrokerCarrousel', 'Button')
 
 
 --[[ Construct ]]--
 
-function Display:New(parent)
-	local f = self:Super(Display):New(parent)
+function Carrousel:New(parent)
+	local f = self:Super(Carrousel):New(parent)
 	f:SetScript('OnMouseWheel', f.OnMouseWheel)
 	f:SetScript('OnEnter', f.OnEnter)
 	f:SetScript('OnLeave', f.OnLeave)
@@ -38,15 +38,15 @@ function Display:New(parent)
 	text:SetJustifyH('LEFT')
 
 	f.objects = {}
-	f.icon, f.text = icon, text
-	f.left, f.right = left, right
+	f.Icon, f.Text = icon, text
+	f.Left, f.Right = left, right
 	f:SetHeight(26)
 	f:Update()
 
 	return f
 end
 
-function Display:CreateArrowButton(text)
+function Carrousel:CreateArrowButton(text)
 	local b = CreateFrame('Button', nil, self)
 	b:SetNormalFontObject('GameFontNormal')
 	b:SetHighlightFontObject('GameFontHighlight')
@@ -60,13 +60,13 @@ end
 
 --[[ Messages ]]--
 
-function Display:ObjectCreated(_, name)
+function Carrousel:ObjectCreated(_, name)
 	if self:GetObjectName() == name then
 		self:UpdateDisplay()
 	end
 end
 
-function Display:AttributeChanged(_, object, attr)
+function Carrousel:AttributeChanged(_, object, attr)
 	if self:GetObjectName() == object then
 		if attr == 'icon' then
 			self:UpdateIcon()
@@ -79,13 +79,13 @@ end
 
 --[[ Frame Events ]]--
 
-function Display:OnEnter()
+function Carrousel:OnEnter()
 	local object = self:GetObject()
 	if object then
 		if object.OnEnter then
 			object.OnEnter(self)
 		else
-			GameTooltip:SetOwner(self, self:GetRight() > (GetScreenWidth() / 2) and 'ANCHOR_TOPLEFT' or 'ANCHOR_TOPRIGHT')
+			GameTooltip:SetOwner(self:GetTipAnchor())
 
 			if object.OnTooltipShow then
 				object.OnTooltipShow(GameTooltip)
@@ -98,31 +98,31 @@ function Display:OnEnter()
 	end
 end
 
-function Display:OnLeave()
+function Carrousel:OnLeave()
 	local object = self:GetObject()
 	if object and object.OnLeave then
 		object.OnLeave(self)
-	elseif GameTooltip:IsOwned(self) then
-		GameTooltip:Hide()
+	else
+		self:Super(Carrousel):OnLeave()
 	end
 end
 
-function Display:OnClick(...)
+function Carrousel:OnClick(...)
 	local object = self:GetObject()
 	if object and object.OnClick then
 		object.OnClick(self, ...)
 	end
 end
 
-function Display:OnShow()
+function Carrousel:OnShow()
 	self:Update()
 end
 
-function Display:OnHide()
+function Carrousel:OnHide()
 	LDB.UnregisterAllCallbacks(self)
 end
 
-function Display:OnMouseWheel(direction)
+function Carrousel:OnMouseWheel(direction)
 	if direction > 0 then
 		self:SetNextObject()
 	else
@@ -133,67 +133,64 @@ end
 
 --[[ Update ]]--
 
-function Display:Update()
+function Carrousel:Update()
 	self:RegisterEvents()
 	self:UpdateDisplay()
 end
 
-function Display:RegisterEvents()
+function Carrousel:RegisterEvents()
 	LDB.RegisterCallback(self, 'LibDataBroker_DataObjectCreated', 'ObjectCreated')
 	LDB.RegisterCallback(self, 'LibDataBroker_AttributeChanged', 'AttributeChanged')
 end
 
-function Display:UpdateDisplay()
+function Carrousel:UpdateDisplay()
 	self:UpdateText()
 	self:UpdateIcon()
 end
 
-function Display:UpdateText()
+function Carrousel:UpdateText()
 	local obj = self:GetObject()
-	local text = obj and (obj.text or obj.label or '') or 'Select Databroker Plugin'
-
-	self.text:SetText(text)
+	self.Text:SetText(obj.text or obj.label or '')
 	self:Layout()
 end
 
-function Display:UpdateIcon()
+function Carrousel:UpdateIcon()
 	local obj = self:GetObject()
-	local icon = obj and obj.icon
-	self.icon:SetTexture(icon)
-	self.icon:SetShown(icon)
+	self.Icon:SetTexture(obj.icon)
+	self.Icon:SetShown(obj.icon)
 	self:Layout()
 end
 
-function Display:Layout()
-	if self.icon:IsShown() then
-		self.text:SetPoint('LEFT', self.icon, 'RIGHT', 2, 0)
-		self.text:SetPoint('RIGHT', self.right, 'LEFT', -2, 0)
+function Carrousel:Layout()
+	if self.Icon:IsShown() then
+		self.Text:SetPoint('LEFT', self.Icon, 'RIGHT', 2, 0)
+		self.Text:SetPoint('RIGHT', self.Right, 'LEFT', -2, 0)
 	else
-		self.text:SetPoint('LEFT', self.left, 'RIGHT', 2, 0)
-		self.text:SetPoint('RIGHT', self.right, 'LEFT', -2, 0)
+		self.Text:SetPoint('LEFT', self.Left, 'RIGHT', 2, 0)
+		self.Text:SetPoint('RIGHT', self.Right, 'LEFT', -2, 0)
 	end
 end
 
 
 --[[ LDB Objects ]]--
 
-function Display:SetNextObject()
+function Carrousel:SetNextObject()
 	local current = self:GetObjectName()
 	local objects = self:GetAvailableObjects()
 	local i = FindInTableIf(objects, function(o) return o == current end)
 
-	self:SetObject(objects[(i or 0) + 1])
+	self:SetObject(objects[(i or 0) % #objects + 1])
 end
 
-function Display:SetPreviousObject()
+function Carrousel:SetPreviousObject()
 	local current = self:GetObjectName()
 	local objects = self:GetAvailableObjects()
 	local i = FindInTableIf(objects, function(o) return o == current end)
 
-	self:SetObject(objects[(i or 2) - 1])
+	self:SetObject(objects[((i or 2) - 2) % #objects + 1])
 end
 
-function Display:SetObject(name)
+function Carrousel:SetObject(name)
 	self:GetProfile().brokerObject = name
 	self:UpdateDisplay()
 
@@ -202,15 +199,15 @@ function Display:SetObject(name)
 	end
 end
 
-function Display:GetObject()
-	return LDB:GetDataObjectByName(self:GetObjectName())
+function Carrousel:GetObject()
+	return LDB:GetDataObjectByName(self:GetObjectName()) or LDB:GetDataObjectByName(ADDON .. 'Launcher')
 end
 
-function Display:GetObjectName()
+function Carrousel:GetObjectName()
 	return self:GetProfile().brokerObject
 end
 
-function Display:GetAvailableObjects()
+function Carrousel:GetAvailableObjects()
 	wipe(self.objects)
 
 	for name, obj in LDB:DataObjectIterator() do

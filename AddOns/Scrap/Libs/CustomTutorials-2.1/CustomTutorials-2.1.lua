@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with CustomTutorials. If not, see <http://www.gnu.org/licenses/>.
 --]]
 
-local Lib = LibStub:NewLibrary('CustomTutorials-2.1', 11)
+local Lib = LibStub:NewLibrary('CustomTutorials-2.1', 12)
 if Lib then
 	Lib.NewFrame, Lib.NewButton, Lib.UpdateFrame = nil
 	Lib.numFrames = Lib.numFrames or 1
@@ -45,6 +45,9 @@ local function UpdateFrame(frame, i)
 	end
 
 	-- Frame
+	local title = frame.TitleText or frame.TitleContainer.TitleText
+	title:SetText(data.title or frame.data.title)
+
 	frame.text:SetPoint('BOTTOM', frame, 0, (data.textY or 20) + 30)
 	frame.text:SetWidth(frame:GetWidth() - (data.textX or 30) * 2)
 	frame.text:SetText(data.text)
@@ -52,7 +55,6 @@ local function UpdateFrame(frame, i)
 	frame:ClearAllPoints()
 	frame:SetPoint(data.point or 'CENTER', data.anchor or UIParent, data.relPoint or data.point or 'CENTER', data.x or 0, data.y or 0)
 	frame:SetHeight((data.height or data.image and 220 or 100) + (data.text and frame.text:GetHeight() + (data.textY or 20) or 0))
-	frame.TitleText:SetText(data.title or frame.data.title)
 	frame.i = i
 	frame:Show()
 
@@ -146,7 +148,7 @@ local function NewFrame()
 	local text = frame:CreateFontString(nil, nil, 'GameFontHighlight')
 	text:SetJustifyH('LEFT')
 
-	local shine = CreateFrame('Frame', nil, nil, BackdropTemplateMixin and 'BackdropTemplate')
+	local shine = CreateFrame('Frame', nil, UIParent, BackdropTemplateMixin and 'BackdropTemplate')
 	shine:SetBackdrop({edgeFile = 'Interface\\TutorialFrame\\UI-TutorialFrame-CalloutGlow', edgeSize = 16})
 
 	local flash = shine:CreateAnimationGroup()

@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: mitch0
-## Version: v4.9.9
+## Version: v4.9.10
 ## Dependencies: RangeDisplay
 ## OptionalDeps: AceGUI-3.0-SharedMediaWidgets
 ## LoadOnDemand: 1

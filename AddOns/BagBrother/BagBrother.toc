@@ -1,17 +1,17 @@
 ## Interface: 30400
-## Author: Jaliborc (JoÃ£o Cardoso)
-## OptionalDeps: LibStub, WoWUnit
+## Author: Jaliborc (João Cardoso)
+## OptionalDeps: WoWUnit
 ## SavedVariables: BrotherBags
 
-## Title: BagBrother
-## Notes: Stores data about your characters inventory, bank, vault and guild bank, so that you may view them from anywhere.
+## Title: |TInterface/Addons/BagBrother/Art/Bagnon-Small:16:16|t|TInterface/Addons/BagBrother/Art/Bagnonium-Small:16:16|t BagBrother
+## Notes: Bagnon and Bagnonium's shared data storage to view inventories,|nbanks, vaults and guild banks from anywhere.|n|cffbbbbbbBy João Cardoso|r|n|n|TInterface/Addons/BagBrother/Art/Paypal:12:12|t |cff82c5ffpaypal.me/jaliborc|r|n|TInterface/Addons/BagBrother/Art/Patreon:12:12:0:-4|t |cff82c5ffpatreon.com/jaliborc|r
 ## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFF背包整合|r |cFF69CCF0助手|r
 ## Notes-zhCN: 记录背包和银行中的物品
 
 ## X-Part-Of: Bagnon
 
-LibStub.lua
-Startup.lua
-Events.lua
-API.lua
-Interface.lua
+Code\LibStub.lua
+Code\Startup.lua
+Code\Events.lua
+Code\API.lua
+Code\Interface.lua

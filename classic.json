@@ -6,10 +6,10 @@
     "name": "ALL THE THINGS",
     "description": "Addon for Tracking Collections & Account Completion",
     "url": "https://www.curseforge.com/wow/addons/all-the-things",
-    "download_url": "https://edge.forgecdn.net/files/4021/590/ATT-Classic-v1.1.3-wrath.zip",
-    "date_published": "2022-10-08T08:15:15.937000+00:00",
-    "version": "Wrath Classic 1.1.3",
-    "changelog_url": "https://api.curseforge.com/v1/mods/267285/files/4021590/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4033/272/ATT-Classic-v1.1.9-wrath.zip",
+    "date_published": "2022-10-18T15:04:52.457000+00:00",
+    "version": "Wrath Classic 1.1.9",
+    "changelog_url": "https://api.curseforge.com/v1/mods/267285/files/4033272/changelog",
     "options": {
       "strategy": "default"
     },
@@ -20,6 +20,22 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "Wrath Classic 1.1.9",
+        "install_time": "2022-10-19T04:13:10+00:00"
+      },
+      {
+        "version": "Wrath Classic 1.1.8",
+        "install_time": "2022-10-17T11:52:02+00:00"
+      },
+      {
+        "version": "Wrath Classic 1.1.5",
+        "install_time": "2022-10-14T14:29:59+00:00"
+      },
+      {
+        "version": "Wrath Classic 1.1.4",
+        "install_time": "2022-10-10T10:35:01+00:00"
+      },
       {
         "version": "Wrath Classic 1.1.3",
         "install_time": "2022-10-08T09:12:34+00:00"
@@ -43,22 +59,6 @@
       {
         "version": "Wrath Classic 1.0.6",
         "install_time": "2022-09-05T11:09:41+00:00"
-      },
-      {
-        "version": "Wrath Classic 1.0.5",
-        "install_time": "2022-09-03T09:07:22+00:00"
-      },
-      {
-        "version": "Wrath Classic 1.0.4",
-        "install_time": "2022-09-02T10:31:24+00:00"
-      },
-      {
-        "version": "Wrath Classic 1.0.3",
-        "install_time": "2022-09-02T04:11:00+00:00"
-      },
-      {
-        "version": "Wrath Classic 1.0.2",
-        "install_time": "2022-09-01T13:42:45+00:00"
       }
     ]
   },
@@ -413,10 +413,10 @@
     "name": "AtlasLootClassic",
     "description": "Shows the possible loot from the bosses",
     "url": "https://www.curseforge.com/wow/addons/atlaslootclassic",
-    "download_url": "https://edge.forgecdn.net/files/4021/848/AtlasLootClassic-v3.0.6.zip",
-    "date_published": "2022-10-08T13:58:32.143000+00:00",
-    "version": "v3.0.6",
-    "changelog_url": "https://api.curseforge.com/v1/mods/326516/files/4021848/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4027/710/AtlasLootClassic-v3.0.7.zip",
+    "date_published": "2022-10-13T16:16:40.043000+00:00",
+    "version": "v3.0.7",
+    "changelog_url": "https://api.curseforge.com/v1/mods/326516/files/4027710/changelog",
     "options": {
       "strategy": "default"
     },
@@ -448,6 +448,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v3.0.7",
+        "install_time": "2022-10-14T14:30:00+00:00"
+      },
       {
         "version": "v3.0.6",
         "install_time": "2022-10-09T05:32:01+00:00"
@@ -483,10 +487,6 @@
       {
         "version": "v2.3.1-bcc",
         "install_time": "2021-06-08T12:12:22+00:00"
-      },
-      {
-        "version": "v2.2.1-bcc",
-        "install_time": "2021-05-30T05:16:03+00:00"
       }
     ]
   },
@@ -566,10 +566,10 @@
     "name": "BlizzMove",
     "description": "Makes the default frames moveable via simple drag and drop",
     "url": "https://www.curseforge.com/wow/addons/blizzmove",
-    "download_url": "https://edge.forgecdn.net/files/4019/19/BlizzMove-v3.4.10.zip",
-    "date_published": "2022-10-05T16:53:04.257000+00:00",
-    "version": "v3.4.10",
-    "changelog_url": "https://api.curseforge.com/v1/mods/17809/files/4019019/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4022/953/BlizzMove-v3.4.11.zip",
+    "date_published": "2022-10-09T11:30:46.107000+00:00",
+    "version": "v3.4.11",
+    "changelog_url": "https://api.curseforge.com/v1/mods/17809/files/4022953/changelog",
     "options": {
       "strategy": "default"
     },
@@ -583,6 +583,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v3.4.11",
+        "install_time": "2022-10-10T03:59:53+00:00"
+      },
       {
         "version": "v3.4.10",
         "install_time": "2022-10-06T09:39:32+00:00"
@@ -618,10 +622,6 @@
       {
         "version": "v3.2.7-bcc",
         "install_time": "2021-12-09T07:29:23+00:00"
-      },
-      {
-        "version": "v3.2.3-bcc",
-        "install_time": "2021-11-17T11:12:46+00:00"
       }
     ]
   },
@@ -1002,10 +1002,10 @@
     "name": "GatherMate2 Data Wowhead classic",
     "description": "GatherMate2 data from Wowhead",
     "url": "https://www.curseforge.com/wow/addons/gathermate2-data-wowhead-classic",
-    "download_url": "https://edge.forgecdn.net/files/4020/193/gathermate2_data_wowhead_classic_v2022-10-06.zip",
-    "date_published": "2022-10-06T20:31:59.083000+00:00",
-    "version": "gathermate2_data_wowhead_classic_v2022-10-06.zip",
-    "changelog_url": "https://api.curseforge.com/v1/mods/350035/files/4020193/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4030/645/gathermate2_data_wowhead_classic_v2022-10-16.zip",
+    "date_published": "2022-10-16T11:34:17.870000+00:00",
+    "version": "gathermate2_data_wowhead_classic_v2022-10-16.zip",
+    "changelog_url": "https://api.curseforge.com/v1/mods/350035/files/4030645/changelog",
     "options": {
       "strategy": "default"
     },
@@ -1016,6 +1016,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "gathermate2_data_wowhead_classic_v2022-10-16.zip",
+        "install_time": "2022-10-17T11:52:02+00:00"
+      },
       {
         "version": "gathermate2_data_wowhead_classic_v2022-10-06.zip",
         "install_time": "2022-10-08T09:12:35+00:00"
@@ -1051,10 +1055,6 @@
       {
         "version": "gathermate2_data_wowhead_classic_v2021-05-31.zip",
         "install_time": "2021-06-02T04:21:36+00:00"
-      },
-      {
-        "version": "gathermate2_data_wowhead_classic_v2021-05-26.zip",
-        "install_time": "2021-05-26T23:22:30+00:00"
       }
     ]
   },
@@ -1917,10 +1917,10 @@
     "name": "Pawn",
     "description": "Pawn helps you compare items and find upgrades.",
     "url": "https://www.curseforge.com/wow/addons/pawn",
-    "download_url": "https://edge.forgecdn.net/files/4022/416/Pawn-2.7.3-Wrath.zip",
-    "date_published": "2022-10-08T22:50:50.537000+00:00",
-    "version": "2.7.3 (Wrath)",
-    "changelog_url": "https://api.curseforge.com/v1/mods/4646/files/4022416/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4035/517/Pawn-2.7.4-Wrath.zip",
+    "date_published": "2022-10-20T15:10:41.333000+00:00",
+    "version": "2.7.4 (Wrath)",
+    "changelog_url": "https://api.curseforge.com/v1/mods/4646/files/4035517/changelog",
     "options": {
       "strategy": "default"
     },
@@ -1931,6 +1931,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "2.7.4 (Wrath)",
+        "install_time": "2022-10-21T12:26:55+00:00"
+      },
       {
         "version": "2.7.3 (Wrath)",
         "install_time": "2022-10-09T05:32:01+00:00"
@@ -1966,10 +1970,6 @@
       {
         "version": "2.6.2 (Wrath)",
         "install_time": "2022-09-04T05:20:01+00:00"
-      },
-      {
-        "version": "2.6.1 (Wrath)",
-        "install_time": "2022-09-03T03:37:21+00:00"
       }
     ]
   },
@@ -1980,10 +1980,10 @@
     "name": "Plater Nameplates",
     "description": "Highly customizable nameplate with support to scripts and animations.",
     "url": "https://www.curseforge.com/wow/addons/plater-nameplates",
-    "download_url": "https://edge.forgecdn.net/files/4008/628/Plater-Plater-v535.zip",
-    "date_published": "2022-09-26T18:33:54.277000+00:00",
-    "version": "Plater-v535",
-    "changelog_url": "https://api.curseforge.com/v1/mods/100547/files/4008628/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4024/114/Plater-Plater-v536.1.zip",
+    "date_published": "2022-10-10T06:51:06.627000+00:00",
+    "version": "Plater-v536.1",
+    "changelog_url": "https://api.curseforge.com/v1/mods/100547/files/4024114/changelog",
     "options": {
       "strategy": "default"
     },
@@ -1994,6 +1994,14 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "Plater-v536.1",
+        "install_time": "2022-10-10T10:35:01+00:00"
+      },
+      {
+        "version": "Plater-v536",
+        "install_time": "2022-10-10T03:59:54+00:00"
+      },
       {
         "version": "Plater-v535",
         "install_time": "2022-09-27T03:28:44+00:00"
@@ -2025,14 +2033,6 @@
       {
         "version": "Plater-v331-bcc",
         "install_time": "2021-06-04T07:51:29+00:00"
-      },
-      {
-        "version": "Plater-v330-bcc",
-        "install_time": "2021-05-26T23:22:31+00:00"
-      },
-      {
-        "version": "Plater-v329-51-gb408bf7-bcc",
-        "install_time": "2021-05-21T08:24:25+00:00"
       }
     ]
   },
@@ -2043,10 +2043,10 @@
     "name": "Questie",
     "description": "The Classic Quest Helper",
     "url": "https://www.curseforge.com/wow/addons/questie",
-    "download_url": "https://edge.forgecdn.net/files/4020/216/Questie-v7.3.2.zip",
-    "date_published": "2022-10-06T21:07:01.977000+00:00",
-    "version": "v7.3.2",
-    "changelog_url": "https://api.curseforge.com/v1/mods/334372/files/4020216/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4036/786/Questie-v7.4.2.zip",
+    "date_published": "2022-10-21T19:07:07.430000+00:00",
+    "version": "v7.4.2",
+    "changelog_url": "https://api.curseforge.com/v1/mods/334372/files/4036786/changelog",
     "options": {
       "strategy": "default"
     },
@@ -2057,6 +2057,18 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v7.4.2",
+        "install_time": "2022-10-22T03:17:57+00:00"
+      },
+      {
+        "version": "v7.4.1",
+        "install_time": "2022-10-17T11:52:03+00:00"
+      },
+      {
+        "version": "v7.3.3",
+        "install_time": "2022-10-12T04:51:07+00:00"
+      },
       {
         "version": "v7.3.2",
         "install_time": "2022-10-08T09:12:37+00:00"
@@ -2084,18 +2096,6 @@
       {
         "version": "v7.2.1",
         "install_time": "2022-09-27T03:28:45+00:00"
-      },
-      {
-        "version": "v7.1.3",
-        "install_time": "2022-09-20T13:43:23+00:00"
-      },
-      {
-        "version": "v7.1.2",
-        "install_time": "2022-09-16T09:41:39+00:00"
-      },
-      {
-        "version": "v7.1.1",
-        "install_time": "2022-09-11T04:34:58+00:00"
       }
     ]
   },
@@ -2187,10 +2187,10 @@
     "name": "RareScanner",
     "description": "RareScanner, a World of Warcraft addon to alert you when a rare, event or treasure appear in your minimap.",
     "url": "https://www.curseforge.com/wow/addons/rarescanner",
-    "download_url": "https://edge.forgecdn.net/files/4008/334/RareScanner_3.4.0.2.zip",
-    "date_published": "2022-09-26T13:21:53.143000+00:00",
-    "version": "RareScanner_WOTLK_3.4.0.2",
-    "changelog_url": "https://api.curseforge.com/v1/mods/84208/files/4008334/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4026/370/RareScanner_3.4.0.3.zip",
+    "date_published": "2022-10-12T05:42:33.137000+00:00",
+    "version": "RareScanner_WOTLK_3.4.0.3",
+    "changelog_url": "https://api.curseforge.com/v1/mods/84208/files/4026370/changelog",
     "options": {
       "strategy": "default"
     },
@@ -2201,6 +2201,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "RareScanner_WOTLK_3.4.0.3",
+        "install_time": "2022-10-13T12:22:06+00:00"
+      },
       {
         "version": "RareScanner_WOTLK_3.4.0.2",
         "install_time": "2022-09-27T03:28:45+00:00"
@@ -2272,10 +2276,10 @@
     "name": "Titan Panel [Reagent Tracker]",
     "description": "Tracks reagents for class-specific spells. Titan Panel plugin.",
     "url": "https://www.curseforge.com/wow/addons/titan-panel-reagent-tracker",
-    "download_url": "https://edge.forgecdn.net/files/4019/595/TitanClassicReagentTracker-v3.0.0.zip",
-    "date_published": "2022-10-06T07:03:50.053000+00:00",
-    "version": "v3.0.0",
-    "changelog_url": "https://api.curseforge.com/v1/mods/339548/files/4019595/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4031/538/TitanClassicReagentTracker-v3.0.1.zip",
+    "date_published": "2022-10-17T00:08:28.580000+00:00",
+    "version": "v3.0.1",
+    "changelog_url": "https://api.curseforge.com/v1/mods/339548/files/4031538/changelog",
     "options": {
       "strategy": "default"
     },
@@ -2286,6 +2290,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v3.0.1",
+        "install_time": "2022-10-17T11:52:03+00:00"
+      },
       {
         "version": "v3.0.0",
         "install_time": "2022-10-06T09:39:32+00:00"
@@ -2311,10 +2319,10 @@
     "name": "TomTom",
     "description": "Acts as your portable navigation assistant",
     "url": "https://www.curseforge.com/wow/addons/tomtom",
-    "download_url": "https://edge.forgecdn.net/files/3960/808/TomTom-v3.1.4.zip",
-    "date_published": "2022-08-31T17:16:09.443000+00:00",
-    "version": "v3.1.4",
-    "changelog_url": "https://api.curseforge.com/v1/mods/18808/files/3960808/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4029/708/TomTom-v3.1.4-release.zip",
+    "date_published": "2022-10-15T16:07:33.707000+00:00",
+    "version": "v3.1.4-release",
+    "changelog_url": "https://api.curseforge.com/v1/mods/18808/files/4029708/changelog",
     "options": {
       "strategy": "default"
     },
@@ -2325,6 +2333,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v3.1.4-release",
+        "install_time": "2022-10-16T02:51:29+00:00"
+      },
       {
         "version": "v3.1.4",
         "install_time": "2022-09-01T13:41:18+00:00"
@@ -2398,10 +2410,10 @@
     "name": "VuhDo",
     "description": "Raid Frames providing click-heal functionality, buff and debuff control, main tank management and much more.",
     "url": "https://www.curseforge.com/wow/addons/vuhdo",
-    "download_url": "https://edge.forgecdn.net/files/4009/99/VuhDo-v3.139-wotlkc-wrath.zip",
-    "date_published": "2022-09-27T02:18:02.393000+00:00",
-    "version": "v3.139-wotlkc-wrath",
-    "changelog_url": "https://api.curseforge.com/v1/mods/7950/files/4009099/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4032/860/VuhDo-v3.141-wotlkc-wrath.zip",
+    "date_published": "2022-10-18T03:52:58.803000+00:00",
+    "version": "v3.141-wotlkc-wrath",
+    "changelog_url": "https://api.curseforge.com/v1/mods/7950/files/4032860/changelog",
     "options": {
       "strategy": "default"
     },
@@ -2415,6 +2427,14 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v3.141-wotlkc-wrath",
+        "install_time": "2022-10-18T10:00:40+00:00"
+      },
+      {
+        "version": "v3.140-wotlkc-wrath",
+        "install_time": "2022-10-11T03:17:22+00:00"
+      },
       {
         "version": "v3.139-wotlkc-wrath",
         "install_time": "2022-09-27T03:28:46+00:00"
@@ -2446,14 +2466,6 @@
       {
         "version": "v3.118-classic",
         "install_time": "2021-05-21T01:44:36+00:00"
-      },
-      {
-        "version": "v3.117-classic",
-        "install_time": "2021-03-24T11:22:44+00:00"
-      },
-      {
-        "version": "v3.116-classic",
-        "install_time": "2021-01-02T12:09:58+00:00"
       }
     ]
   },
@@ -2527,10 +2539,10 @@
     "name": "WeakAuras",
     "description": "A powerful, comprehensive utilty for displaying graphics and information based on buffs, debuffs, and other triggers.",
     "url": "https://www.curseforge.com/wow/addons/weakauras-2",
-    "download_url": "https://edge.forgecdn.net/files/3998/408/WeakAuras-4.1.4.zip",
-    "date_published": "2022-09-20T10:47:54.897000+00:00",
-    "version": "4.1.4",
-    "changelog_url": "https://api.curseforge.com/v1/mods/65387/files/3998408/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4036/681/WeakAuras-4.1.5.zip",
+    "date_published": "2022-10-21T17:14:43.863000+00:00",
+    "version": "4.1.5",
+    "changelog_url": "https://api.curseforge.com/v1/mods/65387/files/4036681/changelog",
     "options": {
       "strategy": "default"
     },
@@ -2553,6 +2565,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "4.1.5",
+        "install_time": "2022-10-22T03:18:01+00:00"
+      },
       {
         "version": "4.1.4",
         "install_time": "2022-09-20T13:43:25+00:00"
@@ -2588,10 +2604,6 @@
       {
         "version": "3.4.1-classic",
         "install_time": "2021-05-21T01:44:38+00:00"
-      },
-      {
-        "version": "3.2.3-classic",
-        "install_time": "2021-04-11T11:31:09+00:00"
       }
     ]
   },
@@ -2699,10 +2711,10 @@
     "name": "Bagnon_ItemInfo",
     "description": "Adds item levels, bind status, and garbage desaturation to bagnon all in one, with less overhead than using multiple addons.",
     "url": "https://github.com/GoldpawsStuff/Bagnon_ItemInfo",
-    "download_url": "https://github.com/GoldpawsStuff/Bagnon_ItemInfo/releases/download/1.0.35-Release/Bagnon_ItemInfo-1.0.35-Release-wrath.zip",
-    "date_published": "2022-08-17T12:32:08+00:00",
-    "version": "1.0.35-Release",
-    "changelog_url": "data:,%23%20Bagnon_ItemInfo%20Change%20Log%0AAll%20notable%20changes%20to%20this%20project%20will%20be%20documented%20in%20this%20file.%0A%0AThe%20format%20is%20based%20on%20%5BKeep%20a%20Changelog%5D%28http%3A//keepachangelog.com/%29%0Aand%20this%20project%20adheres%20to%20%5BSemantic%20Versioning%5D%28http%3A//semver.org/%29.%0A%0A%23%23%20%5B1.0.35-Release%5D%202022-08-17%0A-%20Bump%20to%20client%20patch%209.2.7.%0A%0A%23%23%20%5B1.0.34-Release%5D%202022-07-29%0A%23%23%23%20Fixed%0A-%20Improved%20the%20client%20detection%20code.%0A%0A%23%23%20%5B1.0.33-Release%5D%202022-07-28%0A%23%23%23%20Fixed%0A-%20Fixed%20an%20issue%20in%20WotLK%20Classic%20that%20sometimes%20could%20cause%20already%20bound%20items%20to%20still%20show%20the%20bind%20status.%0A%0A%23%23%20%5B1.0.32-Release%5D%202022-07-21%0A-%20Add%20support%20for%20WotLK%20Classic%20beta.%0A%0A%23%23%20%5B1.0.31-Release%5D%202022-07-09%0A-%20Bump%20for%20Classic%20Era%20client%20patch%201.14.3.%0A%0A%23%23%20%5B1.0.30-Release%5D%202022-06-14%0A%23%23%23%20Changed%0A-%20Some%20untested%20performance%20updates.%0A%0A%23%23%20%5B1.0.29-Release%5D%202022-05-31%0A-%20Bump%20toc%20to%20WoW%20client%20patch%209.2.5.%0A%0A%23%23%20%5B1.0.28-Release%5D%202022-04-07%0A-%20Bump%20for%20BCC%20client%20patch%202.5.4.%0A%0A%23%23%20%5B1.0.27-Release%5D%202022-02-26%0A%23%23%23%20Fixed%0A-%20Reintroduce%20tooltip%20scanning%20for%20soulbound%20status%20to%20fix%20itembind%20problems%20in%20the%20classics.%20%5B%236%5D%28https%3A//github.com/GoldpawsStuff/Bagnon_BoE/issues/6%29%0A%0A%23%23%20%5B1.0.26-Release%5D%202022-02-23%0A-%20ToC%20bump.%0A%0A%23%23%20%5B1.0.25-Release%5D%202022-02-16%0A-%20ToC%20bumps%20and%20license%20update.%0A%0A%23%23%20%5B1.0.24-Release%5D%202022-02-06%0A%23%23%23%20Fixed%0A-%20Fixed%20an%20issue%20where%20bind%20status%20would%20not%20be%20properly%20updated%20when%20equipping%20items.%0A%0A%23%23%20%5B1.0.23-Release%5D%202021-12-13%0A%23%23%23%20Fixed%0A-%20Fixed%20an%20issue%20where%20we%20attempted%20to%20check%20for%20rarity%20color%20before%20checking%20if%20we%20had%20a%20valid%20rarity%20to%20begin%20with.%0A%0A%23%23%20%5B1.0.22-Release%5D%202021-12-12%0A-%20Added%20BCC%20and%20Classic%20Era%20versions%20of%20the%20addon.%0A%0A%23%23%23%20Added%0A-%20Added%20commands%20to%20toggle%20between%20rarity%20colored%20text%2C%20and%20a%20much%20clearer%20white.%0A%0A%23%23%23%20Changed%0A-%20Added%20a%20message%20when%20the%20presence%20of%20the%20addon%20Bagnon%20ItemInfo%20causes%20this%20one%20to%20be%20auto-disabled.%0A%0A%23%23%20%5B1.0.21-Release%5D%202021-11-03%0A-%20Bump%20toc%20for%209.1.5.%0A%0A%23%23%20%5B1.0.20-Release%5D%202021-06-29%0A-%20Bump%20toc%20for%209.1.0.%0A%0A%23%23%20%5B1.0.19-Release%5D%202021-04-05%0A-%20Spring%20cleaning.%0A%0A%23%23%20%5B1.0.18-Release%5D%202021-03-10%0A-%20Bump%20to%20WoW%20client%20patch%209.0.5.%0A%0A%23%23%20%5B1.0.17-Release%5D%202020-11-18%0A-%20Bump%20to%20WoW%20Client%20patch%209.0.2.%0A%0A%23%23%20%5B1.0.16-Release%5D%202020-10-16%0A-%20Bump%20to%20WoW%20Client%20patch%209.0.1.%0A%0A%23%23%20%5B1.0.15-Release%5D%202020-09-25%0A-%20Cache%20fixes%20and%20Bagnon%209.x%20compatibility.%0A%0A%23%23%20%5B1.0.14-Release%5D%202020-08-07%0A%23%23%23%20Changed%0A-%20ToC%20updates.%0A%0A%23%23%20%5B1.0.13-Release%5D%202020-01-13%0A%23%23%23%20Fixed%0A-%20Fixed%20for%20Bagnon%208.2.29.%20Junk%20icons%20are%20working%20correctly%20now.%0A%0A%23%23%20%5B1.0.12-Release%5D%202020-01-09%0A%23%23%23%20Fixed%0A-%20Fixed%20for%20Bagnon%208.2.27%2C%20December%2026th%202019.%0A%0A%23%23%20%5B1.0.11-Release%5D%202019-10-08%0A-%20ToC%20updates.%0A%0A%23%23%20%5B1.0.10-Release%5D%202019-10-08%0A-%20Bump%20to%20WoW%20Client%20patch%208.2.5.%0A-%20Fix%20toc%20links.%0A%0A%23%23%20%5B1.0.9-Release%5D%202019-07-02%0A%23%23%23%20Changed%0A-%20Updated%20for%208.2.0.%0A%0A%23%23%20%5B1.0.8-Release%5D%202019-04-29%0A%23%23%23%20Fixed%0A-%20Changed%20how%20bag%20slot%20count%20is%20captured%20to%20be%20compatible%20with%20deDE.%0A%0A%23%23%20%5B1.0.7-Release%5D%202019-03-29%0A%23%23%23%20Changed%0A-%20Updated%20toc%20display%20name%20to%20be%20in%20line%20with%20the%20main%20bagnon%20addon.%0A-%20Updated%20description%20links%20and%20team%20name.%0A%0A%23%23%20%5B1.0.6-Release%5D%202019-03-01%0A%23%23%23%20Added%0A-%20Added%20chat%20commands%20to%20toggle%20the%20individual%20elements%2C%20since%20some%20don%27t%20want%20all%20four%2C%20but%20maybe%20just%20two%20or%20three.%0A%0A%23%23%20%5B1.0.5-Release%5D%202019-02-28%0A%23%23%23%20Fixed%0A-%20Switched%20to%20tooltip%20scanning%20using%20global%20strings%20to%20avoid%20false%20positives%20on%20uncollected%20appearances.%0A%0A%23%23%20%5B1.0.4-Release%5D%202019-02-28%0A%23%23%23%20Fixed%0A-%20Fixed%20an%20issue%20that%20sometimes%20could%20cause%20an%20%22ambigous%20syntax%22%20error.%0A%0A%23%23%20%5B1.0.3-Release%5D%202019-02-28%0A%23%23%23%20Added%0A-%20Added%20a%20purple%20eye%20to%20indicate%20items%20with%20uncollected%20transmog%20appearances.%0A%0A%23%23%20%5B1.0.2-Release%5D%202019-02-27%0A%23%23%23%20Fixed%0A-%20Item%20background%20scanning%20should%20once%20more%20update%20properly%20when%20you%20swap%20items%20in%20a%20bag%20slot%2C%20and%20not%20show%20the%20item%20level%20and%20bind%20status%20of%20the%20item%20that%20was%20previously%20there.%0A%0A%23%23%20%5B1.0.1-Release%5D%202019-02-27%0A%23%23%23%20Fixed%0A-%20Fixed%20bug%20when%20showing%20BoE/BoU%20items.%0A%0A%23%23%20%5B1.0.0-Release%5D%202019-02-27%0A-%20Initial%20commit.%0A",
+    "download_url": "https://github.com/GoldpawsStuff/Bagnon_ItemInfo/releases/download/2.0.40-Release/Bagnon_ItemInfo-2.0.40-Release.zip",
+    "date_published": "2022-10-13T19:01:30+00:00",
+    "version": "2.0.40-Release",
+    "changelog_url": "data:,%23%20Bagnon_ItemInfo%20Change%20Log%0AAll%20notable%20changes%20to%20this%20project%20will%20be%20documented%20in%20this%20file.%0A%0AThe%20format%20is%20based%20on%20%5BKeep%20a%20Changelog%5D%28http%3A//keepachangelog.com/%29%0Aand%20this%20project%20adheres%20to%20%5BSemantic%20Versioning%5D%28http%3A//semver.org/%29.%0A%0A%23%23%20%5B2.0.40-Release%5D%202022-10-13%0A%23%23%23%20Fixed%0A-%20Fixed%20an%20issue%20where%20the%20wrong%20bag%20slot%20would%20be%20queried%2C%20resulting%20in%20wrong%20information%20on%20the%20items.%0A%0A%23%23%20%5B2.0.39-Release%5D%202022-10-12%0A%23%23%23%20Fixed%0A-%20The%20transmog%20collection%20module%20is%20no%20longer%20loaded%20in%20classics%20where%20it%20is%20not%20supported.%0A-%20The%20chat%20commands%20are%20once%20again%20in%20place%20and%20works.%0A%0A%23%23%20%5B2.0.37-Release%5D%202022-10-12%0A%23%23%23%20Fixed%0A-%20Itemlevels%20are%20now%20once%20more%20only%20shown%20for%20actual%20gear.%0A%0A%23%23%20%5B2.0.36-RC%5D%202022-10-12%0A-%20Full%20performance%20rewrite%20to%20take%20much%20better%20advantage%20of%20Bagnon%20and%20Wildpant%27s%20APIs.%0A%0A%23%23%20%5B1.0.35-Release%5D%202022-08-17%0A-%20Bump%20to%20client%20patch%209.2.7.%0A%0A%23%23%20%5B1.0.34-Release%5D%202022-07-29%0A%23%23%23%20Fixed%0A-%20Improved%20the%20client%20detection%20code.%0A%0A%23%23%20%5B1.0.33-Release%5D%202022-07-28%0A%23%23%23%20Fixed%0A-%20Fixed%20an%20issue%20in%20WotLK%20Classic%20that%20sometimes%20could%20cause%20already%20bound%20items%20to%20still%20show%20the%20bind%20status.%0A%0A%23%23%20%5B1.0.32-Release%5D%202022-07-21%0A-%20Add%20support%20for%20WotLK%20Classic%20beta.%0A%0A%23%23%20%5B1.0.31-Release%5D%202022-07-09%0A-%20Bump%20for%20Classic%20Era%20client%20patch%201.14.3.%0A%0A%23%23%20%5B1.0.30-Release%5D%202022-06-14%0A%23%23%23%20Changed%0A-%20Some%20untested%20performance%20updates.%0A%0A%23%23%20%5B1.0.29-Release%5D%202022-05-31%0A-%20Bump%20toc%20to%20WoW%20client%20patch%209.2.5.%0A%0A%23%23%20%5B1.0.28-Release%5D%202022-04-07%0A-%20Bump%20for%20BCC%20client%20patch%202.5.4.%0A%0A%23%23%20%5B1.0.27-Release%5D%202022-02-26%0A%23%23%23%20Fixed%0A-%20Reintroduce%20tooltip%20scanning%20for%20soulbound%20status%20to%20fix%20itembind%20problems%20in%20the%20classics.%20%5B%236%5D%28https%3A//github.com/GoldpawsStuff/Bagnon_BoE/issues/6%29%0A%0A%23%23%20%5B1.0.26-Release%5D%202022-02-23%0A-%20ToC%20bump.%0A%0A%23%23%20%5B1.0.25-Release%5D%202022-02-16%0A-%20ToC%20bumps%20and%20license%20update.%0A%0A%23%23%20%5B1.0.24-Release%5D%202022-02-06%0A%23%23%23%20Fixed%0A-%20Fixed%20an%20issue%20where%20bind%20status%20would%20not%20be%20properly%20updated%20when%20equipping%20items.%0A%0A%23%23%20%5B1.0.23-Release%5D%202021-12-13%0A%23%23%23%20Fixed%0A-%20Fixed%20an%20issue%20where%20we%20attempted%20to%20check%20for%20rarity%20color%20before%20checking%20if%20we%20had%20a%20valid%20rarity%20to%20begin%20with.%0A%0A%23%23%20%5B1.0.22-Release%5D%202021-12-12%0A-%20Added%20BCC%20and%20Classic%20Era%20versions%20of%20the%20addon.%0A%0A%23%23%23%20Added%0A-%20Added%20commands%20to%20toggle%20between%20rarity%20colored%20text%2C%20and%20a%20much%20clearer%20white.%0A%0A%23%23%23%20Changed%0A-%20Added%20a%20message%20when%20the%20presence%20of%20the%20addon%20Bagnon%20ItemInfo%20causes%20this%20one%20to%20be%20auto-disabled.%0A%0A%23%23%20%5B1.0.21-Release%5D%202021-11-03%0A-%20Bump%20toc%20for%209.1.5.%0A%0A%23%23%20%5B1.0.20-Release%5D%202021-06-29%0A-%20Bump%20toc%20for%209.1.0.%0A%0A%23%23%20%5B1.0.19-Release%5D%202021-04-05%0A-%20Spring%20cleaning.%0A%0A%23%23%20%5B1.0.18-Release%5D%202021-03-10%0A-%20Bump%20to%20WoW%20client%20patch%209.0.5.%0A%0A%23%23%20%5B1.0.17-Release%5D%202020-11-18%0A-%20Bump%20to%20WoW%20Client%20patch%209.0.2.%0A%0A%23%23%20%5B1.0.16-Release%5D%202020-10-16%0A-%20Bump%20to%20WoW%20Client%20patch%209.0.1.%0A%0A%23%23%20%5B1.0.15-Release%5D%202020-09-25%0A-%20Cache%20fixes%20and%20Bagnon%209.x%20compatibility.%0A%0A%23%23%20%5B1.0.14-Release%5D%202020-08-07%0A%23%23%23%20Changed%0A-%20ToC%20updates.%0A%0A%23%23%20%5B1.0.13-Release%5D%202020-01-13%0A%23%23%23%20Fixed%0A-%20Fixed%20for%20Bagnon%208.2.29.%20Junk%20icons%20are%20working%20correctly%20now.%0A%0A%23%23%20%5B1.0.12-Release%5D%202020-01-09%0A%23%23%23%20Fixed%0A-%20Fixed%20for%20Bagnon%208.2.27%2C%20December%2026th%202019.%0A%0A%23%23%20%5B1.0.11-Release%5D%202019-10-08%0A-%20ToC%20updates.%0A%0A%23%23%20%5B1.0.10-Release%5D%202019-10-08%0A-%20Bump%20to%20WoW%20Client%20patch%208.2.5.%0A-%20Fix%20toc%20links.%0A%0A%23%23%20%5B1.0.9-Release%5D%202019-07-02%0A%23%23%23%20Changed%0A-%20Updated%20for%208.2.0.%0A%0A%23%23%20%5B1.0.8-Release%5D%202019-04-29%0A%23%23%23%20Fixed%0A-%20Changed%20how%20bag%20slot%20count%20is%20captured%20to%20be%20compatible%20with%20deDE.%0A%0A%23%23%20%5B1.0.7-Release%5D%202019-03-29%0A%23%23%23%20Changed%0A-%20Updated%20toc%20display%20name%20to%20be%20in%20line%20with%20the%20main%20bagnon%20addon.%0A-%20Updated%20description%20links%20and%20team%20name.%0A%0A%23%23%20%5B1.0.6-Release%5D%202019-03-01%0A%23%23%23%20Added%0A-%20Added%20chat%20commands%20to%20toggle%20the%20individual%20elements%2C%20since%20some%20don%27t%20want%20all%20four%2C%20but%20maybe%20just%20two%20or%20three.%0A%0A%23%23%20%5B1.0.5-Release%5D%202019-02-28%0A%23%23%23%20Fixed%0A-%20Switched%20to%20tooltip%20scanning%20using%20global%20strings%20to%20avoid%20false%20positives%20on%20uncollected%20appearances.%0A%0A%23%23%20%5B1.0.4-Release%5D%202019-02-28%0A%23%23%23%20Fixed%0A-%20Fixed%20an%20issue%20that%20sometimes%20could%20cause%20an%20%22ambigous%20syntax%22%20error.%0A%0A%23%23%20%5B1.0.3-Release%5D%202019-02-28%0A%23%23%23%20Added%0A-%20Added%20a%20purple%20eye%20to%20indicate%20items%20with%20uncollected%20transmog%20appearances.%0A%0A%23%23%20%5B1.0.2-Release%5D%202019-02-27%0A%23%23%23%20Fixed%0A-%20Item%20background%20scanning%20should%20once%20more%20update%20properly%20when%20you%20swap%20items%20in%20a%20bag%20slot%2C%20and%20not%20show%20the%20item%20level%20and%20bind%20status%20of%20the%20item%20that%20was%20previously%20there.%0A%0A%23%23%20%5B1.0.1-Release%5D%202019-02-27%0A%23%23%23%20Fixed%0A-%20Fixed%20bug%20when%20showing%20BoE/BoU%20items.%0A%0A%23%23%20%5B1.0.0-Release%5D%202019-02-27%0A-%20Initial%20commit.%0A",
     "options": {
       "strategy": "default"
     },
@@ -2713,6 +2725,14 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "2.0.40-Release",
+        "install_time": "2022-10-14T14:30:00+00:00"
+      },
+      {
+        "version": "2.0.39-Release",
+        "install_time": "2022-10-13T12:22:06+00:00"
+      },
       {
         "version": "1.0.35-Release",
         "install_time": "2022-09-25T14:41:05+00:00"
@@ -2767,8 +2787,8 @@
     "description": "A WeakAuras Companion clone.",
     "url": "https://github.com/layday/instawow",
     "download_url": "file:///C:/Users/luhao_000/AppData/Roaming/instawow/profiles/classic/plugins/instawow.wa_updater/WeakAurasCompanion.zip",
-    "date_published": "2022-10-06T09:40:46.795768+00:00",
-    "version": "6f9ca9c",
+    "date_published": "2022-10-14T14:29:46.607014+00:00",
+    "version": "909cccd",
     "changelog_url": "file:///C:/Users/luhao_000/AppData/Roaming/instawow/profiles/classic/plugins/instawow.wa_updater/CHANGELOG.md",
     "options": {
       "strategy": "default"
@@ -2780,6 +2800,18 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "909cccd",
+        "install_time": "2022-10-14T14:30:00+00:00"
+      },
+      {
+        "version": "422bdf1",
+        "install_time": "2022-10-13T12:22:06+00:00"
+      },
+      {
+        "version": "f05e5a3",
+        "install_time": "2022-10-10T10:35:01+00:00"
+      },
       {
         "version": "6f9ca9c",
         "install_time": "2022-10-06T09:40:46+00:00"
@@ -2807,18 +2839,6 @@
       {
         "version": "8c854dc",
         "install_time": "2022-09-16T09:41:41+00:00"
-      },
-      {
-        "version": "4a3aa2b",
-        "install_time": "2022-09-14T04:48:50+00:00"
-      },
-      {
-        "version": "ad48630",
-        "install_time": "2022-09-13T12:23:46+00:00"
-      },
-      {
-        "version": "0858939",
-        "install_time": "2022-09-13T07:39:44+00:00"
       }
     ]
   },

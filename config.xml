@@ -1465,6 +1465,10 @@
 				<Title>性能</Title>
 				<Notes>泰坦面板的性能模块</Notes>
 			</SubAddon>
+			<SubAddon name="TitanRaidLockout">
+				<Title>团本锁定</Title>
+				<Notes>泰坦面板的团本锁定模块</Notes>
+			</SubAddon>
 			<SubAddon name="TitanRepair">
 				<Title>修理</Title>
 				<Notes>泰坦面板的修理模块</Notes>

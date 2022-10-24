@@ -10,7 +10,7 @@ License: Public Domain
 
 local AppName, RangeDisplay = ...
 local OptionsAppName = AppName .. "_Options"
-local VERSION = AppName .. "-v4.9.9"
+local VERSION = AppName .. "-v4.9.10"
 --[===[@debug@
 local VERSION = AppName .. "-r" .. ("$Revision: 406 $"):match("%d+")
 --@end-debug@]===]

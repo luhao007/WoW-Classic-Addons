@@ -5,12 +5,16 @@ local GetInventoryItemID,GetItemInfo = GetInventoryItemID,GetItemInfo
 local function gr(unit)
     sum = 0
     for i = 1, 18 do
-        local slot = GetInventoryItemID(unit,i)
-        if (slot == nil) then
-            gear = 0
-        else
-            gear = select(4,GetItemInfo(GetInventoryItemID(unit,i))) or 0
-        end
+		if (i == 4) then
+			gear = 0
+		else
+			local slot = GetInventoryItemID(unit,i)
+			if (slot == nil) then
+				gear = 0
+			else
+				gear = select(4,GetItemInfo(slot)) or 0
+			end
+		end
         sum = sum + gear
     end
 

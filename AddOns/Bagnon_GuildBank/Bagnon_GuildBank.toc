@@ -1,10 +1,10 @@
 ## Interface: 30400
-## Author: Tuller & Jaliborc (JoÃ£o Cardoso)
+## Author: Jaliborc (João Cardoso)
 ## RequiredDeps: Bagnon
 ## LoadOnDemand: 1
 
-## Title: Bagnon Guild Bank
-## Notes: Single window display for your guild bank
+## Title: |TInterface/Addons/BagBrother/Art/Bagnon-Small:16:16|t Bagnon |cffffffffGuild Bank|r
+## Notes: Load on demand guild bank display.|n|cffbbbbbbBy João Cardoso|r|n|n|TInterface/Addons/BagBrother/Art/Paypal:12:12|t |cff82c5ffpaypal.me/jaliborc|r|n|TInterface/Addons/BagBrother/Art/Patreon:12:12:0:-4|t |cff82c5ffpatreon.com/jaliborc|r|n|n
 ## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFF背包整合|r |cFF69CCF0公会银行|r
 ## Notes-zhCN: Bagnon公会银行模块
 

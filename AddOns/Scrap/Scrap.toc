@@ -1,16 +1,14 @@
 ## Interface: 30400
-## Author: Jaliborc (JoÃ£o Cardoso)
-## Version: 9.2.1
+## Author: Jaliborc (João Cardoso)
+## Version: 10.0.2
 ## OptionalDeps: WoWUnit, TestPoncho
 ## SavedVariables: Scrap_Sets
 ## SavedVariablesPerCharacter: Scrap_CharSets
 
-## Title: Scrap
-## Notes: Sells all your junk at the merchant.
+## Title: |TInterface/Addons/Scrap/Art/Enabled-Icon:16:16|t Scrap
+## Notes: Sells all your junk at the merchant.|n|cffbbbbbbBy João Cardoso|r|n|n|TInterface/Addons/Scrap/Art/Paypal:12:12|t |cff82c5ffpaypal.me/jaliborc|r|n|TInterface/Addons/Scrap/Art/Patreon:12:12:0:-4|t |cff82c5ffpatreon.com/jaliborc|r
 ## Title-zhCN: |cFFFFE00A<|r|cFFFFF468功能|r|cFFFFE00A>|r |cFFFFFFFF垃圾管理|r |cFFFFE00AScrap|r
 ## Notes-zhCN: 自动出售灰色物品
 
-## X-License: GNU General Public License Version 3
-## X-Category: Inventory
 
 addons\main\main.xml

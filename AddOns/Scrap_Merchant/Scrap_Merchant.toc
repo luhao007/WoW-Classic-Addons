@@ -1,15 +1,13 @@
 ## Interface: 30400
-## Author: Jaliborc (JoÃ£o Cardoso)
+## Author: Jaliborc (João Cardoso)
 ## Dependencies: Scrap
 ## LoadOnDemand: 1
 
-## Title: Scrap Merchant
-## Notes: Load on demand merchant UI for Scrap.
+## Title: |TInterface/Addons/Scrap/Art/Enabled-Icon:16:16|t Scrap |cffffffffMerchant|r
+## Notes: Load on demand merchant UI for Scrap.|n|cffbbbbbbBy João Cardoso|r|n|n|TInterface/Addons/Scrap/Art/Paypal:12:12|t |cff82c5ffpaypal.me/jaliborc|r|n|TInterface/Addons/Scrap/Art/Patreon:12:12:0:-4|t |cff82c5ffpatreon.com/jaliborc|r|n|n
 ## Title-zhCN: |cFFFFE00A<|r|cFFFFF468功能|r|cFFFFE00A>|r |cFFFFFFFF垃圾管理|r |cFF69CCF0商人|r
 ## Notes-zhCN: 在商人出售界面添加出售垃圾的按钮
 
-## X-License: GNU General Public License Version 3
-## X-Category: Inventory
 ## X-Part-Of: Scrap
 
 ..\Scrap\addons\merchant\merchant.xml

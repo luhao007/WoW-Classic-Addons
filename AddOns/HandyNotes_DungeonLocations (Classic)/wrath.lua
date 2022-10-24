@@ -2,6 +2,8 @@ local HandyNotes = LibStub("AceAddon-3.0"):GetAddon("HandyNotes", true)
 if not HandyNotes then return end
 local L = LibStub("AceLocale-3.0"):GetLocale("HandyNotes_DungeonLocations (Classic)")
 
+local LibQTip = LibStub('LibQTip-1.0')
+
 local iconDefault = "Interface\\Addons\\HandyNotes_DungeonLocations (Classic)\\dungeon.tga"
 local icons = { }
 
@@ -112,7 +114,7 @@ local DUNGEON_DATA = {
 		recommendedLevelRange = '60',
 	},
 	[L["Naxxramas"]] = {
-		minimumLevel = 60,
+		minimumLevel = 80,
 	},
 	[L["Hellfire Ramparts"]] = {
 		recommendedLevelRange = '60-62',
@@ -189,13 +191,76 @@ local DUNGEON_DATA = {
 	[L["Sunwell Plateau"]] = {
 		recommendedLevelRange = '70',
 	},
+	[L["Utgarde Keep"]] = {
+		recommendedLevelRange = '70-72',
+	},
+	[L["Azjol-Nerub"]] = {
+		recommendedLevelRange = '72-74',
+	},
+	[L["Ahn'kahet: The Old Kingdom"]] = {
+		recommendedLevelRange = '73-75',
+	},
 	[L["The Nexus"]] = {
 		recommendedLevelRange = '71-73',
 	},
+	[L["Drak'Tharon Keep"]] = {
+		recommendedLevelRange = '74-76',
+	},
+	[L["The Violet Hold"]] = {
+		recommendedLevelRange = '75-77',
+	},
+	[L["Gundrak"]] = {
+		recommendedLevelRange = '76-78',
+	},
+	[L["Halls of Stone"]] = {
+		recommendedLevelRange = '77-79',
+	},
+	[L["Halls of Lightning"]] = {
+		recommendedLevelRange = '79-80',
+	},
 	[L["The Oculus"]] = {
+		recommendedLevelRange = '79-80',
+	},
+	[L["Utgarde Pinnacle"]] = {
+		recommendedLevelRange = '79-80',
+	},
+	[L["The Culling of Stratholme"]] = {
+		recommendedLevelRange = '79-80',
+	},
+	[L["Trial of the Champion"]] = {
+		recommendedLevelRange = '79-80',
+	},
+	[L["The Forge of Souls"]] = {
+		recommendedLevelRange = '79-80',
+	},
+	[L["Pit of Saron"]] = {
+		recommendedLevelRange = '79-80',
+	},
+	[L["Halls of Reflection"]] = {
+		recommendedLevelRange = '79-80',
+	},
+	[L["Trial of the Crusader"]] = {
+		recommendedLevelRange = '80',
+	},
+	[L["The Obsidian Sanctum"]] = {
+		recommendedLevelRange = '80',
+	},
+	[L["The Ruby Sanctum"]] = {
+		recommendedLevelRange = '80',
+	},
+	[L["Ulduar"]] = {
 		recommendedLevelRange = '80',
 	},
 	[L["The Eye of Eternity"]] = {
+		recommendedLevelRange = '80',
+	},
+	[L["Icecrown Citadel"]] = {
+		recommendedLevelRange = '80',
+	},
+	[L["Vault of Archavon"]] = {
+		recommendedLevelRange = '80',
+	},
+	[L["Onyxia's Lair"]] = {
 		recommendedLevelRange = '80',
 	},
 }
@@ -213,12 +278,14 @@ function pluginHandler:OnEnter(uiMapId, coord)
 	
 	if (not nodeData) then return end
 	
-	local tooltip = self:GetParent() == WorldMapButton and WorldMapTooltip or GameTooltip
-	if ( self:GetCenter() > UIParent:GetCenter() ) then -- compare X coordinate
-		tooltip:SetOwner(self, "ANCHOR_LEFT")
-	else
-		tooltip:SetOwner(self, "ANCHOR_RIGHT")
-	end
+	--local tooltip = self:GetParent() == WorldMapButton and WorldMapTooltip or GameTooltip
+	--if ( self:GetCenter() > UIParent:GetCenter() ) then -- compare X coordinate
+	--	tooltip:SetOwner(self, "ANCHOR_LEFT")
+	--else
+	--	tooltip:SetOwner(self, "ANCHOR_RIGHT")
+	--end
+	local tooltip = LibQTip:Acquire("HandyNotes_DungeonLocations", 2, "LEFT", "RIGHT")
+	self.tooltip = tooltip
 
     if (not nodeData.name) then return end
 
@@ -227,20 +294,26 @@ function pluginHandler:OnEnter(uiMapId, coord)
 	for i, v in pairs(instances) do
 		if DUNGEON_DATA[v]then
 			if DUNGEON_DATA[v].recommendedLevelRange then
-				tooltip:AddLine(v .. '     [' .. DUNGEON_DATA[v].recommendedLevelRange .. ']')
+				tooltip:AddLine(v, '[' .. DUNGEON_DATA[v].recommendedLevelRange .. ']')
 			elseif DUNGEON_DATA[v].meetingStone then
-				tooltip:AddLine(v .. '     [' .. DUNGEON_DATA[v].meetingStone .. ']')
+				tooltip:AddLine(v, '[' .. DUNGEON_DATA[v].meetingStone .. ']')
 			elseif DUNGEON_DATA[v].minimumLevel then
-				tooltip:AddLine(v .. '     [' .. DUNGEON_DATA[v].minimumLevel .. ']')
+				tooltip:AddLine(v, '[' .. DUNGEON_DATA[v].minimumLevel .. ']')
 			end
 		else
-			tooltip:AddLine(v, nil, nil, nil, false)
+			tooltip:AddLine(v)
 		end
 	end
+	tooltip:SmartAnchorTo(self)
 	tooltip:Show()
 end
 
 function pluginHandler:OnLeave(mapFile, coord)
+	if self.tooltip then
+		LibQTip:Release(self.tooltip)
+		self.tooltip = nil
+		return
+	end
 	if self:GetParent() == WorldMapButton then
 		WorldMapTooltip:Hide()
 	else
@@ -755,14 +828,17 @@ nodes[1445] = { -- Dustwallow
 	}, -- Onyxia's Lair
 }
 nodes[1423] = { -- EasternPlaguelands
-	[30851700] = { --
+	[27081092] = { --
 		name = L["Stratholme"],
 		type = "Dungeon",
 	}, -- Stratholme World 52902870
-	[39002600] = { -- Naxxramas
-		name = L["Naxxramas"],
-		type = "Raid",
-	},
+	--[39002600] = { -- Naxxramas		name = L["Naxxramas"],		type = "Raid",	}, Fairly sure this is gone now
+}
+nodes[1415] = { -- Stratholme
+	[52902867] = { --
+		name = L["Stratholme"],
+		type = "Dungeon",
+	}, -- Stratholme World 52902870
 }
 nodes[1444] = { -- Feralas
 	 [77063695] = {
@@ -1194,7 +1270,7 @@ nodes[113] = { -- Northrend
  --[80407600] = { 285,  type = "Dungeon", false, 286 }, -- Utgarde Keep, Utgarde Pinnacle CONTINENT MERGE Location is slightly incorrect
  [47501750] = {
   id = { 757, 284 },
-  name = L["Trial of the Crusader"] .. '\n' .. L["Trial of the Champion"],
+  name = L["Trial of the Champion"] .. '\n' .. L["Trial of the Crusader"],
   type = "Mixed",
   showOnContinent = true,
  }, -- Trial of the Crusader and Trial of the Champion

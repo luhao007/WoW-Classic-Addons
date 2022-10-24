@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with SecureTabs. If not, see <http://www.gnu.org/licenses/>.
 --]]
 
-local Lib, old = LibStub:NewLibrary('SecureTabs-2.0', 4)
+local Lib, old = LibStub:NewLibrary('SecureTabs-2.0', 6)
 if not Lib then
 	return
 elseif not old then
@@ -28,6 +28,7 @@ end
 
 Lib.tabs = Lib.tabs or {}
 Lib.covers = Lib.covers or {}
+Lib.template = PanelTabButtonMixin and 'PanelTabButtonTemplate' or 'CharacterFrameTabButtonTemplate'
 
 
 --[[ Main API ]]--
@@ -37,15 +38,15 @@ function Lib:Add(panel, frame, label)
 	local id = #secureTabs
 	local anchor = id > 0 and 'SecureTab' .. (id-1) or 'Tab' .. panel.numTabs
 
-	local tab = CreateFrame('Button', '$parentSecureTab' .. id, panel, 'CharacterFrameTabButtonTemplate')
-	tab:SetPoint('LEFT', panel:GetName() .. anchor, 'RIGHT', -16, 0)
+	local tab = CreateFrame('Button', '$parentSecureTab' .. id, panel, self.template)
+	tab:SetPoint('LEFT', panel:GetName() .. anchor, 'RIGHT', PanelTabButtonMixin and 3 or -16, 0)
 	tab:SetScript('OnClick', function(tab) self:Select(tab) end)
 	tab:SetText(label)
 	tab.frame = frame
 	tinsert(secureTabs, tab)
 	PanelTemplates_DeselectTab(tab)
 
-	local cover = self.covers[panel] or CreateFrame('Button', '$parentCoverTab', panel, 'CharacterFrameTabButtonTemplate')
+	local cover = self.covers[panel] or CreateFrame('Button', '$parentCoverTab', panel, self.template)
 	cover:SetScript('OnClick', function(tab) self:Uncover(panel) end)
 	PanelTemplates_DeselectTab(cover)
 
@@ -114,15 +115,15 @@ function Lib:Update(panel, selection)
 		local cover = self.covers[panel]
 		local tab = _G[panel:GetName() .. 'Tab'.. panel.selectedTab]
 
-		local tabname = tab:GetName()
-		local leftDisabled = tab.LeftDisabled or _G[tabname..'LeftDisabled']
-		local middleDisabled = tab.MiddleDisabled or _G[tabname..'MiddleDisabled']
-		local rightDisabled = tab.RightDisabled or _G[tabname..'RightDisabled']
+		local name = tab:GetName()
+		local left = tab.LeftActive or _G[name..'LeftDisabled']
+		local middle = tab.MiddleActive or _G[name..'MiddleDisabled']
+		local right = tab.RightActive or _G[name..'RightDisabled']
 
 		cover:SetShown(selection)
-		leftDisabled:SetShown(not selection)
-		middleDisabled:SetShown(not selection)
-		rightDisabled:SetShown(not selection)
+		left:SetShown(not selection)
+		middle:SetShown(not selection)
+		right:SetShown(not selection)
 
  		if selection then
 			cover:SetParent(tab)
