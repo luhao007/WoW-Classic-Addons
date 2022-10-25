@@ -4,7 +4,6 @@
 ## Version: v4.12.9020745161
 ## X-Category: Libraries
 ## X-Website: https://www.wowace.com/projects/libuidropdownmenu
-## OptionalDeps: LibStub
 
 #@no-lib-strip@
 #@end-no-lib-strip@

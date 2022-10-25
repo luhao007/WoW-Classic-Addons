@@ -19,6 +19,8 @@
 ## X-Website: https://deadlybossmods.com
 ## X-Part-Of: DBM-Core
 
+Libs\LibSerialize\lib.xml
+
 localization.en.lua
 localization.br.lua
 localization.cn.lua

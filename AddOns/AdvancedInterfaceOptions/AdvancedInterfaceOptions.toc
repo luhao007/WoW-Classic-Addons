@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Stanzilla, Semlar
-## Version: 1.7.2-2-g3742126
+## Version: 1.7.2-3-g004ec6b
 ## LoadOnDemand: 0
 ## SavedVariables: AdvancedInterfaceOptionsSaved
 ## DefaultState: Enabled
@@ -20,5 +20,3 @@ semlib\semlib.xml
 cvars.lua
 basicOptions.lua
 browser.lua
-
-tempfix.lua

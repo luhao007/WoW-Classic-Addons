@@ -7,7 +7,6 @@
 ## Author: Sylvanaar
 ## X-Category: Library
 
-## OptDeps: LibStub, CallbackHandler-1.0, Ace3
 
 ## LoadOnDemand: 1
 

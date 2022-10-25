@@ -4,7 +4,6 @@
 ## Notes: A library for transmitting and receiving latency information of players.
 ## Author: Funkydude
 ## X-Category: Library
-## OptionalDeps: LibStub
 ## X-License: All Rights Reserved
 
 LibLatency\LibLatency.xml

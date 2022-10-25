@@ -18,7 +18,6 @@
 ## X-Website: http://www.wowwiki.com/LibAboutPanel
 ## X-Feedback: http://wow.curse.com/downloads/wow-addons/details/libaboutpanel.aspx
 
-## OptionalDeps: LibStub, CallbackHandler-1.0
 
 #@no-lib-strip@
 #@end-no-lib-strip@

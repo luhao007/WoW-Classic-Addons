@@ -17,6 +17,19 @@ Color.ORANGE = "|cFFE77324"
 local SEX = UnitSex("player")
 
 local GetFriendshipReputation = GetFriendshipReputation or nop
+if not GetFriendshipReputation and C_GossipInfo and C_GossipInfo.GetFriendshipReputation then
+	GetFriendshipReputation = function(factionId)
+		local info = C_GossipInfo.GetFriendshipReputation(factionId)
+		if not info then return end
+		local texture = info.texture
+		if (texture == 0) then
+			texture = nil
+		end
+		--     friendID,                 friendRep,     _, _, friendText, texture, friendTextLevel, friendThreshold,     nextFriendThreshold
+		return info.friendshipFactionID, info.standing, nil, nil, info.text, texture, info.reaction, info.reactionThreshold, info.nextThreshold
+	end
+end
+GetFriendshipReputation = GetFriendshipReputation or nop
 
 local sessionStart = {}
 
@@ -78,7 +91,7 @@ local function GetValueAndMaximum(standingId, barValue, bottomValue, topValue, f
 		return mod(currentValue, threshold), threshold, color, standingText, hasRewardPending, session
 	end
 
-	local friendID, friendRep, friendMaxRep, friendName, friendText, friendTexture, friendTextLevel, friendThreshold, nextFriendThreshold = GetFriendshipReputation(factionId)
+	local friendID, friendRep, _, _, _, _, friendTextLevel, friendThreshold, nextFriendThreshold = GetFriendshipReputation(factionId)
 	if (friendID) then
 		standingText = " (" .. friendTextLevel .. ")"
 
@@ -138,7 +151,7 @@ local function GetButtonText(self, id)
 end
 
 local function IsNeutral(factionId, standingId)
-	local friendID, friendRep, friendMaxRep, friendName, friendText, friendTexture, friendTextLevel, friendThreshold, nextFriendThreshold = GetFriendshipReputation(factionId)
+	local friendID = GetFriendshipReputation(factionId)
 
 	if friendID then
 		return false
@@ -148,7 +161,7 @@ local function IsNeutral(factionId, standingId)
 end
 
 local function IsMaxed(factionId, standingId)
-	local friendID, friendRep, friendMaxRep, friendName, friendText, friendTexture, friendTextLevel, friendThreshold, nextFriendThreshold = GetFriendshipReputation(factionId)
+	local friendID, _, _, _, _, _, _, _, nextFriendThreshold = GetFriendshipReputation(factionId)
 
 	if friendID then
 		return not nextFriendThreshold

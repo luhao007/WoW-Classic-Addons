@@ -326,6 +326,11 @@
 		<Notes>显示战斗宠物的品种（如速度型）</Notes>
 		<Category>收藏</Category>
 	</Addon>
+	<Addon name="Bistooltip">
+		<Title>最佳装备提示</Title>
+		<Notes>提示最佳装备</Notes>
+		<Category>界面</Category>
+	</Addon>
 	<Addon name="BlizzMove">
 		<Title>窗口移动</Title>
 		<Notes>移动内置的各种窗口</Notes>
@@ -1162,6 +1167,11 @@
 	<Addon name="Myslot">
 		<Title>键位设置</Title>
 		<Category>功能</Category>
+	</Addon>
+	<Addon name="NovaRaidCompanion">
+		<Title>团队助手</Title>
+		<Notes>提示团队技能冷却</Notes>
+		<Category>战斗</Category>
 	</Addon>
 	<Addon name="NovaWorldBuffs">
 		<Title>世界增益</Title>

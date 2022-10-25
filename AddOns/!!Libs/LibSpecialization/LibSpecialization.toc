@@ -4,7 +4,6 @@
 ## Notes: A library for transmitting and receiving talent specialization information of players in your group.
 ## Author: Funkydude
 ## X-Category: Library
-## OptionalDeps: LibStub
 ## X-License: Ace3 Style BSD: https://www.curseforge.com/project/13376/license
 
 LibSpecialization\LibSpecialization.xml

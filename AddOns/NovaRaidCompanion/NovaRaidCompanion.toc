@@ -1,0 +1,43 @@
+## Interface: 30400
+## Author: Novaspark-Arugal OCE
+## Version: 1.23
+## SavedVariables: NRCdatabase
+
+## Title: Nova Raid Companion
+## Notes: Raid and combat helpers, raid wide cooldown tracking.
+## Title-zhCN: |cFFFFE00A<|r|cFFC79C6E战斗|r|cFFFFE00A>|r |cFFFFFFFF团队助手|r |cFFFFE00ANovaRaidCompanion|r
+## Notes-zhCN: 提示团队技能冷却
+
+
+embeds.xml
+Locale\Locales.xml
+Media\Templates.xml
+NovaRaidCompanion.lua
+DB\Classic_DB.lua
+DB\Classic_TalentData.lua
+DB\Classic_Cooldowns.lua
+DB\TBC_DB.lua
+DB\TBC_TalentData.lua
+DB\TBC_Cooldowns.lua
+DB\Wrath_DB.lua
+DB\Wrath_TalentData.lua
+DB\Wrath_Cooldowns.lua
+DB\zDB_Tools.lua
+Modules\Tools.lua
+Modules\Frames.lua
+Modules\Options.lua
+Modules\Data.lua
+Modules\Group.lua
+Modules\Auras.lua
+Modules\RaidStatus.lua
+Modules\RaidCooldowns.lua
+Modules\RaidLog.lua
+Modules\ScrollingRaidEvents.lua
+Modules\Classes\Warlock.lua
+Modules\Classes\Hunter.lua
+Modules\Classes\Rogue.lua
+Modules\Encounters.lua
+Modules\Talents.lua
+Modules\Trades.lua
+Modules\RaidMana.lua
+Modules\Export.lua
