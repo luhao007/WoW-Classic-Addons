@@ -334,37 +334,7 @@ class Manager:
 
     @staticmethod
     def handle_dup_libraries():
-        addons = ['Atlas', 'BlizzMove', 'DBM-Core', 'Details_Streamer',
-                    'Details_TinyThreat',  'Details_EncounterDetails',
-                    'Details_RaidCheck', 'Details_Vanguard', 'MRT', 'GatherMate2', 'GTFO',
-                    'HandyNotes', 'ItemRack', 'ItemRackOptions', 'MapSter',
-                    'MikScrollingBattleText', 'OmniCC', 'OmniCC_Config',
-                    'Quartz', 'RangeDisplay', 'RangeDisplay_Options', 'TellMeWhen', 'TrinketMenu', 'TomTom']
-
-        if utils.get_platform() == 'retail':
-            addons += ['AllTheThings', 'Details_ChartViewer',
-                       'Details_DeathGraphs', 'Details_TimeLine', 'FasterCamera',
-                       'GladiatorlosSA2', 'Gladius',
-                       'HandyNotes_Argus', 'HandyNotes_BrokenShore',
-                       'HandyNotes_BattleForAzeroth',
-                       'HandyNotes_Draenor',
-                       'HandyNotes_DraenorTreasures',
-                       'HandyNotes_LegionClassOrderHalls',
-                       'HandyNotes_LegionRaresTreasures',
-                       'HandyNotes_Shadowlands','HandyNotes_SuramarShalAranTelemancy',
-                       'HandyNotes_TimelessIsleChests',
-                       'HandyNotes_VisionsOfNZoth',
-                       'MinimalArchaeology', 'NPCScan', 'Omen',
-                       'RelicInspector', 'Simulationcraft', 'Titan']
-        else:
-            addons += ['alaCalendar', 'AtlasLootClassic', 'AtlasLootClassic_Options',
-                       'ATT-Classic', 'ClassicCastbars_Options', 'Fizzle', 'GroupCalendar',
-                       'HandyNotes_NPCs (Classic)', 'HandyNotes_NPCs (Burning Crusade Classic)',
-                       'HandyNotes_DungeonLocations (Classic)',
-                       'PallyPower', 'SimpleChatClassic', 'TradeLog',
-                       'TitanClassic', 'WclPlayerScore']
-
-
+        addons = [addon for addon in os.listdir('AddOns') if addon not in ['!!Libs', 'Questie']]
         for addon in addons:
             utils.remove_libraries_all(addon)
 
@@ -389,16 +359,6 @@ class Manager:
         utils.process_file('Addons/ACP/ACP.xml', handle)
 
     @staticmethod
-    @available_on(['classic_era', 'classic'])
-    def handle_ate():
-        utils.remove_libraries(
-                ['CallbackHandler-1.0', 'LibDataBroker-1.1',
-                 'LibDbIcon-1.0', 'LibStub'],
-                'AddOns/TalentEmu/Libs',
-                'AddOns/TalentEmu/Libs/libs.xml'
-            )
-
-    @staticmethod
     def handle_att():
         addon = 'AllTheThings' if utils.get_platform() == 'retail' else 'ATT-Classic'
         utils.change_defaults(
@@ -410,11 +370,6 @@ class Manager:
     @staticmethod
     def handle_atlas():
         utils.change_defaults(
-            'AddOns/Atlas/Core/Atlas.lua',
-            'addon.LocName = "Atlas"',
-        )
-
-        utils.change_defaults(
             'Addons/Atlas/Data/Constants.lua',
             '			hide = true,'
         )
@@ -422,34 +377,9 @@ class Manager:
     @staticmethod
     @available_on(['classic', 'classic_era'])
     def handle_atlasloot():
-        if utils.get_platform() == 'retail':
-            utils.remove_libraries(
-                ['CallbackHandler-1.0', 'LibBabble-Boss-3.0',
-                    'LibBabble-Faction-3.0', 'LibBabble-ItemSet-3.0',
-                    'LibDBIcon-1.0', 'LibDataBroker-1.1', 'LibDialog-1.0',
-                    'LibSharedMedia-3.0', 'LibStub'],
-                'AddOns/AtlasLoot/Libs',
-                'AddOns/AtlasLoot/embeds.xml'
-            )
         utils.change_defaults(
             'Addons/AtlasLootClassic/db.lua',
             '		shown = true,'
-        )
-
-    @staticmethod
-    def handle_bagnon():
-        utils.rm_tree('AddOns/Bagnon/common/LibDataBroker-1.1')
-        utils.process_file(
-            'AddOns/Bagnon/AddOns/main/main.xml',
-            lambda lines: [line for line in lines
-                            if 'LibDataBroker' not in line]
-        )
-
-        utils.remove_libraries(
-            ['AceEvent-3.0', 'AceLocale-3.0',
-                'CallbackHandler-1.0', 'LibStub'],
-            'AddOns/Bagnon/common/Wildpants/libs',
-            'AddOns/Bagnon/common/Wildpants/libs/libs.xml'
         )
 
     @staticmethod
@@ -483,42 +413,7 @@ class Manager:
         )
 
     @staticmethod
-    def handle_decursive():
-        for lib in os.listdir('AddOns/Decursive/Libs'):
-            if lib == 'BugGrabber':
-                continue
-
-            utils.rm_tree(Path('AddOns/Decursive/Libs') / lib)
-
-        utils.process_file(
-            'AddOns/Decursive/embeds.xml',
-            lambda lines: [line for line in lines
-                            if 'Libs' not in line or 'BugGrabber' in line]
-        )
-
-    @staticmethod
     def handle_details():
-        libs = ['AceAddon-3.0', 'AceBucket-3.0', 'AceComm-3.0', 'AceConfig-3.0',
-                'AceConsole-3.0', 'AceDB-3.0', 'AceDBOptions-3.0', 'AceEvent-3.0',
-                'AceGUI-3.0', 'AceHook-3.0', 'AceLocale-3.0', 'AceSerializer-3.0',
-                'AceTab-3.0', 'AceTimer-3.0', 'CallbackHandler-1.0',  'LibBossIDs-1.0',
-                'LibCompress', 'LibClassicCasterino', 'LibDBIcon-1.0', 'LibDataBroker-1.1',
-                'LibDeflate', 'LibGraph-2.0', 'LibGroupInSpecT-1.1', 'LibItemUpgradeInfo-1.0',
-                'LibSharedMedia-3.0', 'LibStub', 'LibTranslit', 'LibWindow-1.1']
-        if utils.get_platform() != 'classic_era':
-            libs += ['NickTag-1.0']
-
-        utils.remove_libraries(libs, 'Addons/Details/Libs', 'Addons/Details/Libs/libs.xml')
-
-        if utils.get_platform() == 'classic_era':
-            utils.remove_libraries(
-                ['AceAddon-3.0', 'AceBucket-3.0', 'AceComm-3.0', 'AceConfig-3.0',
-                    'AceConsole-3.0', 'AceDB-3.0', 'AceDBOptions-3.0', 'AceEvent-3.0',
-                    'AceGUI-3.0', 'AceHook-3.0', 'AceLocale-3.0', 'AceSerializer-3.0',
-                    'AceTab-3.0', 'AceTimer-3.0', 'CallbackHandler-1.0', 'LibStub'],
-                'Addons/Details/Libs/LibThreatClassic2/Libs',
-                'Addons/Details/Libs/LibThreatClassic2/lib.xml'
-            )
         utils.change_defaults(
             'Addons/Details/functions/profiles.lua',
             ('		minimap = {hide = true, radius = 160, minimapPos = 220, '
@@ -532,14 +427,6 @@ class Manager:
 
     @staticmethod
     def handle_fb():
-        utils.remove_libraries(
-            ['CallbackHandler-1.0', 'HereBeDragons',
-             'LibBabble-SubZone-3.0', 'LibDataBroker-1.1',
-             'LibDBIcon-1.0', 'LibStub', 'LibWindow-1.1'],
-            'AddOns/FishingBuddy/Libs',
-            'AddOns/FishingBuddy/Libs/Libs.xml'
-        )
-
         utils.change_defaults(
             'Addons/FishingBuddy/FishingBuddyMinimap.lua',
             '		FishingBuddy_Player["MinimapData"] = { hide=true };'
@@ -566,15 +453,6 @@ class Manager:
     @staticmethod
     @available_on(['classic_era'])
     def handle_goodleader():
-        utils.remove_libraries(
-            ['AceAddon-3.0', 'AceBucket-3.0', 'AceComm-3.0', 'AceDB-3.0',
-                'AceEvent-3.0', 'AceHook-3.0', 'AceLocale-3.0',
-                'AceSerializer-3.0', 'AceTimer-3.0', 'CallbackHandler-1.0',
-                'LibDBIcon-1.0', 'LibDataBroker-1.1', 'LibStub'],
-            'AddOns/GoodLeader/Libs',
-            'AddOns/GoodLeader/Libs/Libs.xml'
-        )
-
         utils.rm_tree('Addons/GoodLeader/Libs/tdGUI/Libs')
         utils.remove_libs_in_file('Addons/GoodLeader/Libs/tdGUI/Load.xml',
                                     ['Libs'])
@@ -589,34 +467,9 @@ class Manager:
             if local in ['deDE', 'esES', 'esMX', 'frFR', 'itIT', 'koKR', 'ptBR', 'ruRU', 'zhTW']:
                 utils.rm_tree(Path('Addons') / folder)
 
-
-    @staticmethod
-    @available_on(['classic', 'classic_era'])
-    def handle_nwb():
-        utils.remove_libraries(
-            ['AceAddon-3.0', 'AceComm-3.0', 'AceConfig-3.0', 'AceConsole-3.0',
-                'AceDB-3.0', 'AceDBOptions-3.0', 'AceGUI-3.0',
-                'AceGUI-3.0-SharedMediaWidgets', 'AceLocale-3.0',
-                'AceSerializer-3.0', 'CallbackHandler-1.0', 'HereBeDragons',
-                'LibCandyBar-3.0', 'LibDBIcon-1.0', 'LibDataBroker-1.1', 'LibDeflate',
-                'LibDurability', 'LibSharedMedia-3.0', 'LibStub'],
-            'Addons/NovaWorldBuffs/Lib',
-            'Addons/NovaWorldBuffs/embeds.xml',
-        )
-
     @staticmethod
     @available_on(['retail'])
     def handle_meetingstone():
-        utils.remove_libraries(
-            ['AceAddon-3.0', 'AceBucket-3.0', 'AceComm-3.0', 'AceConfig-3.0',
-                'AceDB-3.0', 'AceEvent-3.0', 'AceGUI-3.0', 'AceHook-3.0',
-                'AceLocale-3.0', 'AceSerializer-3.0', 'AceTimer-3.0',
-                'CallbackHandler-1.0', 'LibDBIcon-1.0', 'LibDataBroker-1.1',
-                'LibStub', 'LibWindow-1.1'],
-            'Addons/MeetingStone/Libs',
-            'Addons/MeetingStone/Libs/Embeds.xml'
-        )
-
         utils.change_defaults(
             'Addons/MeetingStone/Profile.lua',
             '            minimap = { hide = true,'
@@ -625,16 +478,6 @@ class Manager:
     @staticmethod
     @available_on(['classic', 'classic_era'])
     def handle_meetinghorn():
-        utils.remove_libraries(
-            ['AceAddon-3.0', 'AceBucket-3.0', 'AceComm-3.0', 'AceConfig-3.0',
-                'AceDB-3.0', 'AceEvent-3.0', 'AceGUI-3.0', 'AceHook-3.0',
-                'AceLocale-3.0', 'AceSerializer-3.0', 'AceTimer-3.0',
-                'CallbackHandler-1.0', 'LibDBIcon-1.0', 'LibDataBroker-1.1',
-                'LibStub'],
-            'Addons/MeetingHorn/Libs',
-            'Addons/MeetingHorn/Libs/Libs.xml'
-        )
-
         utils.rm_tree('Addons/MeetingHorn/Libs/tdGUI/Libs')
         utils.remove_libs_in_file('Addons/MeetingHorn/Libs/tdGUI/Load.xml',
                                     ['Libs'])
@@ -659,23 +502,6 @@ class Manager:
                             for line in lines]
         )
 
-    @staticmethod
-    @available_on(['classic'])
-    def handle_mj():
-        utils.remove_libraries(
-            ['CallbackHandler-1.0', 'LibDBIcon-1.0', 'LibDataBroker-1.1',
-             'LibStub'],
-            'Addons/MountsJournal/libs',
-            'Addons/MountsJournal/embeds.xml'
-        )
-
-    @staticmethod
-    def handle_myslot():
-        utils.remove_libraries(
-            ['CallbackHandler-1.0', 'LibDBIcon-1.0', 'LibDataBroker-1.1', 'LibStub'],
-            'Addons/Myslot/libs',
-            'Addons/Myslot/Myslot.toc'
-        )
 
     @staticmethod
     def handle_omnicc():
@@ -695,41 +521,12 @@ class Manager:
     @staticmethod
     @available_on(['retail', 'classic'])
     def handle_oa():
-        utils.remove_libraries(
-            ['CallbackHandler-1.0', 'LibBabble-Inventory-3.0',
-                'LibBabble-SubZone-3.0', 'LibSharedMedia-3.0', 'LibStub'],
-            'Addons/Overachiever/libs',
-            'Addons/Overachiever/Overachiever.toc'
-        )
-
         utils.process_file(
             'Addons/Overachiever/Overachiever.lua',
             lambda lines: [line.replace(
                 'GetAddOnMetadata("Overachiever", "Title")',
                 '"Overarchiever"'
             ) for line in lines]
-        )
-
-    @staticmethod
-    def handle_plater():
-        libs = ['AceAddon-3.0', 'AceBucket-3.0', 'AceComm-3.0', 'AceConfig-3.0',
-                'AceConsole-3.0', 'AceDB-3.0', 'AceDBOptions-3.0', 'AceEvent-3.0',
-                'AceGUI-3.0', 'AceLocale-3.0', 'AceSerializer-3.0',
-                'AceTimer-3.0', 'CallbackHandler-1.0', 'LibCompress',
-                'LibClassicCasterino', 'LibClassicDurations', 'LibCustomGlow-1.0',
-                'LibDBIcon-1.0', 'LibDataBroker-1.1', 'LibDeflate',
-                'LibRangeCheck-2.0', 'LibSharedMedia-3.0', 'LibTranslit-1.0', 'LibStub']
-
-        utils.remove_libraries(libs, 'Addons/Plater/libs', 'Addons/Plater/libs/libs.xml')
-
-    @staticmethod
-    @available_on(['retail'])
-    def handle_pt():
-        utils.remove_libraries(
-            ['AceEvent-3.0', 'AceLocale-3.0', 'CallbackHandler-1.0',
-                'LibPetJournal-2.0', 'LibStub'],
-            'Addons/PetTracker/libs',
-            'Addons/PetTracker/libs/main.xml'
         )
 
     @staticmethod
@@ -792,52 +589,6 @@ class Manager:
         )
 
     @staticmethod
-    @available_on(['classic', 'classic_era'])
-    def handle_rl():
-        utils.remove_libraries(
-            ['CallbackHandler-1.0', 'LibDBIcon-1.0', 'LibDataBroker-1.1',
-                'LibStub'],
-            'Addons/RaidLedger/lib',
-            'Addons/RaidLedger/RaidLedger.toc'
-        )
-
-    @staticmethod
-    @available_on(['classic'])
-    def handle_rarescanner():
-        utils.remove_libraries(
-            ['AceAddon-3.0', 'AceDB-3.0', 'AceDBOptions-3.0', 'AceGUI-3.0', 'AceGUI-3.0-SharedMediaWidgets',
-             'AceLocale-3.0', 'AceSerializer-3.0', 'CallbackHandler-1.0', 'HereBeDragons', 'LibAboutPanel-2.0',
-             'LibDBIcon-1.0', 'LibRangeCheck-2.0', 'LibSharedMedia-3.0', 'LibStub', 'LibUIDropDownMenu'],
-            'Addons/RareScanner/ExternalLibs',
-            'Addons/RareScanner/ExternalLibs/Libs.xml'
-        )
-
-    @staticmethod
-    @available_on(['retail'])
-    def handle_rarity():
-        utils.remove_libraries(
-            ['AceAddon-3.0', 'AceBucket-3.0', 'AceConfig-3.0',
-                'AceConsole-3.0', 'AceDB-3.0', 'AceDBOptions-3.0', 'AceEvent-3.0',
-                'AceGUI-3.0', 'AceGUI-3.0-SharedMediaWidgets', 'AceLocale-3.0',
-                'AceSerializer-3.0', 'AceTimer-3.0', 'CallbackHandler-1.0',
-                'HereBeDragons-2.0', 'LibBabble-Boss-3.0',
-                'LibBabble-CreatureType-3.0', 'LibBabble-SubZone-3.0',
-                'LibCompress', 'LibDBIcon-1.0', 'LibDataBroker-1.1',
-                'LibQTip-1.0', 'LibSharedMedia-3.0', 'LibSink-2.0', 'LibStub'],
-            'AddOns/Rarity/Libs',
-            'AddOns/Rarity/Rarity.toc'
-        )
-
-    @staticmethod
-    def handle_scrap():
-        utils.remove_libraries(
-            ['AceEvent-3.0', 'AceLocale-3.0',
-                'CallbackHandler-1.0', 'LibStub'],
-            'AddOns/Scrap/libs',
-            'AddOns/Scrap/libs/main.xml'
-        )
-
-    @staticmethod
     @available_on(['retail'])
     def handle_sc():
         utils.change_defaults(
@@ -848,25 +599,11 @@ class Manager:
     @staticmethod
     @available_on(['classic'])
     def handle_simple_item_level():
-        utils.remove_libraries(
-            ['LibStub'],
-            'Addons/SimpleItemLevel/lib',
-            'Addons/SimpleItemLevel/embeds.xml'
-        )
         utils.change_defaults(
             'Addons/SimpleItemLevel/addon.lua',
             ['                character = false,',
              '                bags = false,',
              '                color = false,']
-        )
-
-    @staticmethod
-    @available_on(['retail'])
-    def handle_talentsm():
-        utils.remove_libraries(
-            ['CallBackHandler', 'LibDataBroker', 'LibStub'],
-            'AddOns/TalentSetManager/libs',
-            'AddOns/TalentSetManager/libs/libs.xml'
         )
 
     @staticmethod
@@ -921,17 +658,6 @@ class Manager:
 
     @staticmethod
     def handle_vuhdo():
-        utils.remove_libraries(
-            ['AceAddon-3.0', 'AceBucket-3.0', 'AceComm-3.0', 'AceConfig-3.0',
-                'AceEvent-3.0', 'AceGUI-3.0', 'AceLocale-3.0',
-                'AceSerializer-3.0', 'AceTimer-3.0', 'CallbackHandler-1.0',
-                'LibClassicDurations', 'LibCompress', 'LibCustomGlow-1.0',
-                'LibDBIcon-1.0', 'LibDataBroker-1.1', 'LibSharedMedia-3.0',
-                'LibStub', 'LibThreatClassic2', 'NickTag-1.0', 'UTF8'],
-            'Addons/VuhDo/Libs',
-            'Addons/VuhDo/Libs/Libs.xml'
-        )
-
         if utils.get_platform() != 'retail':
             utils.rm_tree('Addons/Vuhdo/Libs/!LibTotemInfo/LibStub')
             utils.remove_libs_in_file(
@@ -947,23 +673,6 @@ class Manager:
 
     @staticmethod
     def handle_wa():
-        utils.remove_libraries(
-            ['AceComm-3.0', 'AceConfig-3.0', 'AceConsole-3.0', 'AceEvent-3.0',
-                'AceGUI-3.0', 'AceGUI-3.0-SharedMediaWidgets',
-                'AceSerializer-3.0', 'AceTimer-3.0', 'CallbackHandler-1.0',
-                'LibCustomGlow-1.0', 'LibCompress', 'LibDBIcon-1.0', 'LibDataBroker-1.1', 'LibDeflate',
-                'LibGetFrame-1.0', 'LibRangeCheck-2.0', 'LibSharedMedia-3.0',
-                'LibSerialize', 'LibSpellRange-1.0', 'LibStub'],
-            'Addons/WeakAuras/Libs',
-            'Addons/WeakAuras/embeds.xml'
-        )
-
-        utils.remove_libraries(
-            ['LibClassicCasterino', 'LibClassicDurations', 'LibClassicSpellActionCount-1.0', 'LibSpecialization'],
-            'Addons/WeakAuras/Libs',
-            'Addons/WeakAuras/WeakAuras.toc'
-        )
-
         utils.remove_libraries_all('WeakAuras/Libs/Archivist')
 
         utils.change_defaults(
@@ -971,15 +680,6 @@ class Manager:
             '      db.minimap = db.minimap or { hide = true };'
         )
 
-    @staticmethod
-    @available_on(['classic', 'classic_era'])
-    def handle_wim():
-        utils.remove_libraries(
-            ['CallbackHandler-1.0', 'ChatThrottleLib', 'LibChatAnims',
-                'LibSharedMedia-3.0', 'LibStub'],
-            'Addons/WIM/Libs',
-            'Addons/WIM/Libs/includes.xml'
-        )
 
     @staticmethod
     def handle_whlooter():

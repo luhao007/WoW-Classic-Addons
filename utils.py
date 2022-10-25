@@ -60,10 +60,10 @@ def get_platform():
     return 'retail'
 
 
-def remove_libs_in_file(path: str | Path, libs: list[str]):
+def remove_libs_in_file(path: str | Path, libs: list[str] | set[str]):
     def process(lines):
         if str(path).endswith('.toc'):
-            pattern = r'\s*(?i){}.*'
+            pattern = r'\s*.*?(?i){}.*'
         else:
             pattern = r'\s*<((Script)|(Include))+ file\s*=\s*"(?i){}[\\\"\.].*'
 
@@ -85,21 +85,23 @@ def remove_libraries_all(addon: str, lib_path: Optional[str] = None):
         else:
             return
 
-    rm_tree(Path('AddOns') / addon / lib_path)
+    libs = os.listdir('AddOns/!!Libs') + os.listdir('AddOns/!!Libs/Ace3')
+    libs = set(libs).intersection(os.listdir(Path('AddOns') / addon / lib_path))
 
-    # Extra library that need to be removed
-    libs = ['embeds.xml', 'Embeds.xml', 'libs.xml', 'include.xml', 'Include.xml',
-            'Libs.xml', 'LibDataBroker-1.1.lua']
+    if not libs:
+        return
+
+    print(f'Removing {libs} in {addon}')
+
     for lib in libs:
-        path = Path('AddOns') / addon / lib
-        if os.path.exists(path):
-            os.remove(path)
+        rm_tree(Path('AddOns') / addon / lib_path / lib)
 
-    for lib in ['.xml'] + TOCS:
+    for lib_file in ['.xml'] + TOCS:
         path = Path('AddOns') / addon
-        path /= f"{addon.split('/')[-1]}{lib}"
+        path /= f"{addon.split('/')[-1]}{lib_file}"
         if os.path.exists(str(path)):
-            remove_libs_in_file(path, libs + [lib_path])
+            print(f'{path} {libs}')
+            remove_libs_in_file(path, libs)
 
 
 def remove_libraries(libs, root: str, xml_path: str):
@@ -107,11 +109,7 @@ def remove_libraries(libs, root: str, xml_path: str):
     for lib in libs:
         rm_tree(Path(root) / lib)
 
-    process_file(
-        xml_path,
-        lambda lines: [line for line in lines
-                        if not any(lib.lower()+'\\' in line.lower() for lib in libs)]
-    )
+    remove_libs_in_file(xml_path, libs)
 
 
 def change_defaults(path: str, defaults: str | list[str]):
