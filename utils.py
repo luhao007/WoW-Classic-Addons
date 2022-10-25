@@ -63,7 +63,7 @@ def get_platform():
 def remove_libs_in_file(path: str | Path, libs: list[str] | set[str]):
     def process(lines):
         if str(path).endswith('.toc'):
-            pattern = r'\s*.*?(?i){}.*'
+            pattern = r'\s*(?i){}.*'
         else:
             pattern = r'\s*<((Script)|(Include))+ file\s*=\s*"(?i){}[\\\"\.].*'
 
@@ -75,7 +75,7 @@ def remove_libs_in_file(path: str | Path, libs: list[str] | set[str]):
 
 
 def remove_libraries_all(addon: str, lib_path: Optional[str] = None):
-    """Remove all embedded libraries."""
+    """Remove all duplicate embedded libraries."""
     if not lib_path:
         for lib in ['libs', 'lib']:
             path = Path('Addons') / addon / lib
@@ -100,8 +100,7 @@ def remove_libraries_all(addon: str, lib_path: Optional[str] = None):
         path = Path('AddOns') / addon
         path /= f"{addon.split('/')[-1]}{lib_file}"
         if os.path.exists(str(path)):
-            print(f'{path} {libs}')
-            remove_libs_in_file(path, libs)
+            remove_libs_in_file(path, [f'{lib_path}\\\\{lib}' for lib in libs])
 
 
 def remove_libraries(libs, root: str, xml_path: str):
@@ -109,7 +108,7 @@ def remove_libraries(libs, root: str, xml_path: str):
     for lib in libs:
         rm_tree(Path(root) / lib)
 
-    remove_libs_in_file(xml_path, libs)
+    remove_libs_in_file(xml_path, [f"{root.split('/')[-1]}\\\\{lib}" for lib in libs])
 
 
 def change_defaults(path: str, defaults: str | list[str]):

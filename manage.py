@@ -60,7 +60,7 @@ class Manager:
 
     def process(self):
         for func in dir(self):
-            if func.startswith('handle'):
+            if func.startswith('handle') and not func.startswith('handle_lib'):
                 getattr(self, func)()
 
         self.process_toc()
