@@ -1,7 +1,7 @@
 **Raid Lockout is a tiny raid info module for Titan Panel Classic**
 
 See at a glance if you are locked for any raid instance and when it resets - directly in Titan Panel.
-Now supports Classic TBC with raids and heroic dungeons.
+Now supports Classic WoTLK and TBC with raids and heroic dungeons.
 
 ![Example image](http://obstrom.com/github/raidlockout/readme2.jpg)
 

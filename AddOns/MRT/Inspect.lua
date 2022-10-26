@@ -25,6 +25,8 @@ local ELib,L = ExRT.lib,ExRT.L
 
 local cooldownsModule = ExRT.A.ExCD2
 
+local LibDeflate = LibStub:GetLibrary("LibDeflate")
+
 module.db.inspectDB = {}
 module.db.inspectDBAch = {}
 module.db.inspectQuery = {}
@@ -32,6 +34,8 @@ module.db.inspectItemsOnly = {}
 module.db.inspectNotItemsOnly = {}
 module.db.inspectID = nil
 module.db.inspectCleared = nil
+
+module.db.inspectTrees = {}
 
 cooldownsModule.db.inspectDB = module.db.inspectDB	--Quick fix for other modules
 
@@ -634,12 +638,19 @@ function module.main:ADDON_LOADED()
 
 	module:Enable()
 
-	for senderFull,str in pairs(VMRT.Inspect.Soulbinds) do
-		local sender
-		if select(2,strsplit("-",senderFull)) == ExRT.SDB.realmKey then
-			sender = strsplit("-",senderFull)
+	if UnitLevel'player' <= 60 then
+		for senderFull,str in pairs(VMRT.Inspect.Soulbinds) do
+			local sender
+			if select(2,strsplit("-",senderFull)) == ExRT.SDB.realmKey then
+				sender = strsplit("-",senderFull)
+			end
+			module:ParseSoulbind(sender or senderFull,str)
 		end
-		module:ParseSoulbind(sender or senderFull,str)
+	else
+		for _ in pairs(VMRT.Inspect.Soulbinds) do
+			wipe(VMRT.Inspect.Soulbinds)
+			break
+		end
 	end
 end
 
@@ -827,7 +838,149 @@ do
 				end
 			end
 
-			if not ExRT.isClassic then
+			if ExRT.is10 then
+				local activeConfig = Constants.TraitConsts.INSPECT_TRAIT_CONFIG_ID--C_ClassTalents.GetActiveConfigID()
+				local config = C_Traits.GetConfigInfo(activeConfig)
+				local treeID = config.treeIDs[1]
+				local treeInfo = C_Traits.GetTreeInfo(activeConfig,treeID)
+				local nodes = C_Traits.GetTreeNodes(treeID)
+
+				if not module.db.inspectTrees[data.spec] then
+					local tree = {
+						minX = math.huge,
+						maxX = 0,
+						minY = math.huge,
+						maxY = 0,
+						spellIDtoNode = {},
+						nodeIDToNum = {},
+					}
+					module.db.inspectTrees[data.spec] = tree
+
+					for i=1,#nodes do
+						local nodeID = nodes[i]
+						local node = C_Traits.GetNodeInfo(activeConfig,nodeID)
+						if node and node.ID ~= 0 and node.entryIDs then
+							for j=1,#node.entryIDs do
+								local entryID = node.entryIDs[j]
+								local entry = C_Traits.GetEntryInfo(activeConfig,entryID)
+								if entry then
+									local definitionInfo = C_Traits.GetDefinitionInfo(entry.definitionID)
+									if definitionInfo and definitionInfo.spellID then
+										local spellID = definitionInfo.spellID
+										if j==1 then
+											tree[#tree+1] = {
+												spellID = spellID,
+												x = node.posX,
+												y = node.posY,
+												max = node.maxRanks and node.maxRanks > 1 and node.maxRanks or nil,
+											}
+											if tree.minX > node.posX then tree.minX = node.posX end
+											if tree.maxX < node.posX then tree.maxX = node.posX end
+											if tree.minY > node.posY then tree.minY = node.posY end
+											if tree.maxY < node.posY then tree.maxY = node.posY end
+											if node.visibleEdges then
+												for k=1,#node.visibleEdges do
+													local edge = node.visibleEdges[k]
+													local targetNode = edge.targetNode
+
+													tree[#tree].edges = tree[#tree].edges or {}
+													tinsert(tree[#tree].edges,targetNode)
+												end
+											end
+										else
+											if not tree[#tree].spellIDs then
+												tree[#tree].spellIDs = {tree[#tree].spellID}
+											end
+											tinsert(tree[#tree].spellIDs,spellID)
+										end
+										tree.spellIDtoNode[spellID] = #tree
+										tree.nodeIDToNum[nodeID] = #tree
+									end
+								end
+							end
+						end
+					end
+				end
+				
+
+				local c = 0
+				for i=1,#nodes do
+					local nodeID = nodes[i]
+					local node = C_Traits.GetNodeInfo(activeConfig,nodeID)
+					if node and node.ID ~= 0 and node.activeEntry then
+						local entryID = node.activeEntry.entryID
+						local entry = C_Traits.GetEntryInfo(activeConfig,entryID)
+						if entry then
+							local definitionInfo = C_Traits.GetDefinitionInfo(entry.definitionID)
+							if definitionInfo then
+								local spellID = definitionInfo.spellID
+								--------> ExCD2
+								if spellID then
+									local list = cooldownsModule.db.spell_talentsList[class]
+									if not list then
+										list = {}
+										cooldownsModule.db.spell_talentsList[class] = list
+									end
+				
+									list[specIndex] = list[specIndex] or {}
+				
+									if not ExRT.F.table_find(list[specIndex],spellID) then
+										list[specIndex][ #list[specIndex]+1 ] = spellID
+									end
+									if node.currentRank and node.currentRank > 0 then
+										c = c + 1
+										data[c] = spellID
+										if node.maxRanks and node.maxRanks > 1 then
+											data[-c] = node.activeRank
+										end
+
+										cooldownsModule.db.session_gGUIDs[name] = {spellID,"talent"}
+				
+										if cooldownsModule.db.spell_talentProvideAnotherTalents[spellID] then
+											for k,v in pairs(cooldownsModule.db.spell_talentProvideAnotherTalents[spellID]) do
+												cooldownsModule.db.session_gGUIDs[name] = {v,"talent"}
+											end
+										end
+									end
+				
+									cooldownsModule.db.spell_isTalent[spellID] = true
+								end
+								--------> /ExCD2
+							end
+						end
+					end
+				end
+				for i=c+1,1000 do
+					if not data[i] then
+						break
+					end
+					data[i] = nil
+					data[-i] = nil
+				end
+
+				for i=1,4 do
+					local talentID = C_SpecializationInfo_GetInspectSelectedPvpTalent(inspectedName, i)
+					if talentID then	
+						local _, _, _, _, available, spellID = GetPvpTalentInfoByID(talentID)
+						if spellID then
+							local list = cooldownsModule.db.spell_talentsList[class]
+							if not list then
+								list = {}
+								cooldownsModule.db.spell_talentsList[class] = list
+							end
+	
+							list[-1] = list[-1] or {}
+	
+							list[-1][spellID] = spellID
+	
+							cooldownsModule.db.session_gGUIDs[name] = {spellID,"pvptalent"}
+	
+							--cooldownsModule.db.spell_isTalent[spellID] = true
+							cooldownsModule.db.spell_isPvpTalent[spellID] = true
+						end
+					end
+				end
+			elseif not ExRT.isClassic then
 				for i=0,20 do
 					local row,col = (i-i%3)/3+1,i%3+1
 	
@@ -1021,6 +1174,9 @@ function module:PrepCovenantData()
 	if ExRT.isClassic then
 		return
 	end
+	if UnitLevel'player' > 60 then
+		return
+	end
 
 	local covenantID = C_Covenants.GetActiveCovenantID()
 	if covenantID == 0 then
@@ -1044,7 +1200,7 @@ function module:PrepCovenantData()
 			if node.state == Enum.SoulbindNodeState.Selected then
 				if node.conduitID ~= 0 then
 					soulbinds = soulbinds .. ":" .. node.conduitID .. "-".. (node.conduitRank + (node.socketEnhanced and 2 or 0)) .. "-"..node.conduitType
-				else
+				elseif node.spellID ~= 0 then
 					soulbinds = soulbinds .. ":" .. node.spellID
 				end
 			end
@@ -1343,20 +1499,80 @@ function module.main:ENCOUNTER_START()
 
 
 	local tal = ""
-	for tier=1,7 do
-		local tierSpellID
-		for col=1,3 do
-			local talentID, _, _, selected, available, spellID, _, _, _, _, grantedByAura = GetTalentInfo(tier,col,1)
-			if selected then
-				tierSpellID = spellID
-				break
+	if ExRT.is10 then
+		--[[
+		local configID = C_ClassTalents.GetActiveConfigID()
+		local configInfo = C_Traits.GetConfigInfo(configID)
+		local treeID = configInfo.treeIDs[1]
+		if not ((ClassTalentFrame) and (ClassTalentFrame.TalentsTab) and (ClassTalentFrame.TalentsTab.GetLoadoutExportString)) then
+			LoadAddOn("Blizzard_ClassTalentUI")
+		end
+
+		local exportStream = ExportUtil.MakeExportDataStream()
+		local currentSpecID = PlayerUtil.GetCurrentSpecID()
+		local treeInfo = C_Traits.GetTreeInfo(configID,treeID)
+		local treeHash = C_Traits.GetTreeHash(treeInfo.ID)
+		local serializationVersion = C_Traits.GetLoadoutSerializationVersion()
+	
+		ClassTalentFrame.TalentsTab:WriteLoadoutHeader(exportStream, serializationVersion, currentSpecID, treeHash)
+		ClassTalentFrame.TalentsTab:WriteLoadoutContent(exportStream, configID, treeInfo.ID)
+
+		tal = exportStream:GetExportString()
+		]]
+
+		local activeConfig = C_ClassTalents.GetActiveConfigID()
+		local config = C_Traits.GetConfigInfo(activeConfig)
+		local treeID = config.treeIDs[1]
+		local treeInfo = C_Traits.GetTreeInfo(activeConfig,treeID)
+		local nodes = C_Traits.GetTreeNodes(treeID)
+
+		for i=1,#nodes do
+			local nodeID = nodes[i]
+			local node = C_Traits.GetNodeInfo(activeConfig,nodeID)
+			if node and node.ID ~= 0 and node.activeEntry and node.currentRank and node.currentRank > 0 then
+				local entryID = node.activeEntry.entryID
+				local entry = C_Traits.GetEntryInfo(activeConfig,entryID)
+				if entry then
+					local definitionInfo = C_Traits.GetDefinitionInfo(entry.definitionID)
+					if definitionInfo then
+						local spellID = definitionInfo.spellID
+						if spellID then
+							tal = tal .. ":" .. (spellID or 0)
+							if node.maxRanks and node.maxRanks > 1 then
+								tal = tal .. "-" .. (node.activeRank)
+							end
+						end
+					end
+				end
 			end
 		end
 
-		tal = tal .. ":" .. (tierSpellID or 0)
+		if tal ~= "" then
+			local compressed = LibDeflate:CompressDeflate(tal,{level = 9})
+			local encoded = LibDeflate:EncodeForWoWAddonChannel(compressed)
+			
+			if encoded then
+				tal = encoded:gsub("%^","##")
+				ExRT.F.SendExMsg("inspect","R\tY"..tal)	
+			end
+			tal = ""
+		end
+	else
+		for tier=1,7 do
+			local tierSpellID
+			for col=1,3 do
+				local talentID, _, _, selected, available, spellID, _, _, _, _, grantedByAura = GetTalentInfo(tier,col,1)
+				if selected then
+					tierSpellID = spellID
+					break
+				end
+			end
+	
+			tal = tal .. ":" .. (tierSpellID or 0)
+		end
 	end
 	if tal ~= "" then
-		str = str .. (str ~= "" and "^" or "") .. "T" .. tal
+		str = str .. (str ~= "" and "^" or "") .. (ExRT.is10 and "Y" or "T") .. tal
 	end
 
 	if isAzeriteItemEnabled then
@@ -1398,10 +1614,14 @@ end
 
 function module.main:ENCOUNTER_START_SIM()
 	local f = ExRT.F.SendExMsg
-	ExRT.F.SendExMsg = print
+	local y
+	local function o(...)y=select(2,...):sub(3) print(...) end
+	ExRT.F.SendExMsg = o
 	module.main:ENCOUNTER_START()
 	ExRT.F.SendExMsg = f
+	module:addonMessage(UnitName'player', "inspect", "R", y)
 end
+--/run GMRT.A.Inspect.main:ENCOUNTER_START_SIM()
 
 function module:ParseSoulbind(sender,main)
 	if cooldownsModule:IsEnabled() then
@@ -1531,6 +1751,56 @@ function module:addonMessage(sender, prefix, subPrefix, ...)
 							end
 						end
 					end
+				elseif key == "Y" then
+					if cooldownsModule:IsEnabled() then
+						cooldownsModule:ClearSessionDataReason(sender,"talent")
+					end
+
+					local str2 = main:sub(2):gsub("##","^")
+						
+					local decoded = LibDeflate:DecodeForWoWAddonChannel(str2)
+					if not decoded then return end
+					local decompressed = LibDeflate:DecompressDeflate(decoded)
+					if not decompressed then return end
+
+					local inspectData = module.db.inspectDB[sender]
+
+					local list = decompressed
+					local c = 0
+					while list do
+						local spellID,on = strsplit(":",list,2)
+						list = on
+						local rank
+
+						spellID,rank = strsplit("-",spellID)
+						spellID = tonumber(spellID or "?")
+						if spellID then
+							if spellID ~= 0 then
+								if cooldownsModule:IsEnabled() then
+									cooldownsModule.db.session_gGUIDs[sender] = {spellID,"talent"}
+									cooldownsModule.db.spell_isTalent[spellID] = true
+									--print(sender,'added talent',spellID)
+								end
+								if inspectData then
+									c = c + 1
+									inspectData[c] = spellID
+									rank = tonumber(rank or "")
+									if rank then
+										inspectData[-c] = rank
+									end
+								end
+							end
+						end
+					end
+					if inspectData then
+						for i=c+1,1000 do
+							if not inspectData[i] then
+								break
+							end
+							inspectData[i] = nil
+							inspectData[-i] = nil
+						end
+					end
 				elseif key == "A" then
 					if cooldownsModule:IsEnabled() then
 						cooldownsModule:ClearSessionDataReason(sender,"azerite")
@@ -1579,7 +1849,9 @@ function module:addonMessage(sender, prefix, subPrefix, ...)
 						end
 					end
 
-					VMRT.Inspect.Soulbinds[senderFull] = time()..main:sub(2)
+					if UnitLevel'player' <= 60 then
+						VMRT.Inspect.Soulbinds[senderFull] = time()..main:sub(2)
+					end
 				elseif key == "t" and ExRT.isClassic then
 					if cooldownsModule:IsEnabled() then
 						cooldownsModule:ClearSessionDataReason(sender,"talent")

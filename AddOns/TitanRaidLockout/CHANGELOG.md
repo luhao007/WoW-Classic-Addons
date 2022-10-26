@@ -1,3 +1,9 @@
+### v1.3.1 WoTLK
+
+-   Addition: Showing 10/25-man version for WoTLK raids
+
+Thanks to work done by margathon for this addition.
+
 ### v1.3.0 WoTLK
 
 -   Addition: Added support for WoTLK raids and heroics

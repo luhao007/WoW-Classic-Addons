@@ -1,8 +1,10 @@
 # Quartz
 
-## [3.6.12-4-g0bc9824](https://github.com/Nevcairiel/Quartz/tree/0bc98243fccd86cc160cede14ad98c2174399fc8) (2022-10-24)
-[Full Changelog](https://github.com/Nevcairiel/Quartz/compare/3.6.12...0bc98243fccd86cc160cede14ad98c2174399fc8) [Previous Releases](https://github.com/Nevcairiel/Quartz/releases)
+## [3.7.0](https://github.com/Nevcairiel/Quartz/tree/3.7.0) (2022-10-25)
+[Full Changelog](https://github.com/Nevcairiel/Quartz/compare/3.6.12...3.7.0) [Previous Releases](https://github.com/Nevcairiel/Quartz/releases)
 
+- Update TOC for 10.0  
+- Update unlock dialog for WoW 10.0  
 - Update player castbar hiding for 10.0  
 - DIALOG is not a valid texture layer, use ARTWORK instead  
 - Enable using the non-interruptible property on Wrath Classic  

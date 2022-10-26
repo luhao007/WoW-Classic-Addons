@@ -416,13 +416,23 @@ function Graph._DrawFillLine(self, xFrom, yFrom, xTo, yTo, thickness, plotHeight
 	else
 		fillTop:SetTexCoord(1, 0, 1, 1, 0, 0, 0, 1)
 	end
-	fillTop:SetGradientAlpha("VERTICAL", r, g, b, barMaxAlpha, r, g, b, topMaxAlpha)
+	if TSM.IsWowDragonflight() then
+		-- TODO: Create the ColorMixin objects from our color object
+		fillTop:SetGradient("VERTICAL", CreateColor(r, g, b, barMaxAlpha), CreateColor(r, g, b, topMaxAlpha))
+	else
+		fillTop:SetGradientAlpha("VERTICAL", r, g, b, barMaxAlpha, r, g, b, topMaxAlpha)
+	end
 	fillTop:SetPoint("BOTTOMLEFT", xFrom, minY)
 	fillTop:SetPoint("TOPRIGHT", fillTop:GetParent(), "BOTTOMLEFT", xTo, maxY)
 
 	local fillBar = self:_AcquireTexture("ARTWORK", -1)
 	fillBar:SetTexture("Interface\\Buttons\\WHITE8X8")
-	fillBar:SetGradientAlpha("VERTICAL", r, g, b, 0, r, g, b, barMaxAlpha)
+	if TSM.IsWowDragonflight() then
+		-- TODO: Create the ColorMixin objects from our color object
+		fillBar:SetGradient("VERTICAL", CreateColor(r, g, b, 0), CreateColor(r, g, b, barMaxAlpha))
+	else
+		fillBar:SetGradientAlpha("VERTICAL", r, g, b, 0, r, g, b, barMaxAlpha)
+	end
 	fillBar:SetPoint("BOTTOMLEFT", xFrom, 0)
 	fillBar:SetPoint("TOPRIGHT", fillBar:GetParent(), "BOTTOMLEFT", xTo, minY)
 

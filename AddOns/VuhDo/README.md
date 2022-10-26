@@ -33,7 +33,7 @@ What VuhDo can do:
 - Shields
 
 2. Casting
-- You can heal, decurse, target, assist or focus raid memers with just one click
+- You can heal, decurse, target, assist or focus raid members with just one click
 - You can bind any usable item and any macro to mouse clicks
 - You can assign up to 40 mouse click combinations to cast on raid members
 - You can assign up to 16 keys to cast when mouse over

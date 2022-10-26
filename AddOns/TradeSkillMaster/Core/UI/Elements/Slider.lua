@@ -136,18 +136,18 @@ function Slider.Draw(self)
 	local textColor = Theme.GetColor("TEXT")
 
 	-- wow renders the font slightly bigger than the designs would indicate, so subtract one from the font height
-	frame.inputRight:SetFont(fontPath, fontHeight)
+	frame.inputRight:SetFont(fontPath, fontHeight, "")
 	frame.inputRight:SetTextColor(textColor:GetFractionalRGBA())
 	frame.inputRight:SetPoint("RIGHT", 0)
 	frame.inputRight:SetNumber(self._rightValue)
 
-	frame.dash:SetFont(fontPath, fontHeight)
+	frame.dash:SetFont(fontPath, fontHeight, "")
 	frame.dash:SetTextColor(textColor:GetFractionalRGBA())
 	frame.dash:SetText("-")
 	frame.dash:SetPoint("RIGHT", frame.inputRight, "LEFT", 0, 0)
 
 	-- wow renders the font slightly bigger than the designs would indicate, so subtract one from the font height
-	frame.inputLeft:SetFont(fontPath, fontHeight)
+	frame.inputLeft:SetFont(fontPath, fontHeight, "")
 	frame.inputLeft:SetTextColor(textColor:GetFractionalRGBA())
 	frame.inputLeft:SetPoint("RIGHT", frame.dash, "LEFT", 0)
 	frame.inputLeft:SetNumber(self._leftValue)

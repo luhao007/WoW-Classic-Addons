@@ -1184,7 +1184,7 @@ function VUHDO_unitGetIncomingHeals(aUnit, aCasterUnit)
 		return 0;
 	end
 
-	if VUHDO_LibHealComm and (VUHDO_CONFIG["SHOW_LIBHEALCOMM_INCOMING"] or true) then
+	if VUHDO_LibHealComm and VUHDO_CONFIG["SHOW_LIBHEALCOMM_INCOMING"] then
 		local tTargetGUID = UnitGUID(aUnit);
 
 		if aCasterUnit then

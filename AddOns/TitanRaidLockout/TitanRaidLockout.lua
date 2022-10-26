@@ -20,6 +20,7 @@ local COLOR = {
     ["yellow"] = "|cFFFFF244",
     ["heroic"] = "|cFFFFB700",
     ["orange"] = "|cFFFF8C00",
+    ["darkorange"] = "|cFFFF6100",
     ["classic"] = "|cFFCE8731"
 }
 local PLAYER_NAME = UnitName("player")
@@ -94,6 +95,17 @@ local LOCALIZED_WOTLK_RAID_NAMES = {
     ["RS"] = GetRealZoneText(724)
 }
 
+
+local LOCALIZED_WOTLK_RAID_NAMES_10 = {}
+for k, v in pairs(LOCALIZED_WOTLK_RAID_NAMES) do
+    LOCALIZED_WOTLK_RAID_NAMES_10[k .. "10"] = v .. " 10"
+end
+
+local LOCALIZED_WOTLK_RAID_NAMES_25 = {}
+for k, v in pairs(LOCALIZED_WOTLK_RAID_NAMES) do
+    LOCALIZED_WOTLK_RAID_NAMES_25[k .. "25"] = v .. " 25"
+end
+
 -- Collect separate heroics tables into one table
 local LOCALIZED_ALL_HEROIC_NAMES = {}
 for k, v in pairs(LOCALIZED_TBC_HEROIC_NAMES) do
@@ -111,7 +123,10 @@ end
 for k, v in pairs(LOCALIZED_TBC_RAID_NAMES) do
     LOCALIZED_ALL_RAID_NAMES[k] = v
 end
-for k, v in pairs(LOCALIZED_WOTLK_RAID_NAMES) do
+for k, v in pairs(LOCALIZED_WOTLK_RAID_NAMES_10) do
+    LOCALIZED_ALL_RAID_NAMES[k] = v
+end
+for k, v in pairs(LOCALIZED_WOTLK_RAID_NAMES_25) do
     LOCALIZED_ALL_RAID_NAMES[k] = v
 end
 
@@ -379,8 +394,15 @@ function TRaidLockout_UpdateLockoutData()
     -- Save character data
     LOCKOUT_DATA["Players"][PLAYER_REALM][PLAYER_NAME]["NumSaved"] = GetNumSavedInstances()
     for savedIndex = 1, numSaved do
-        local name, _, reset, _, _, _, _, _, _, _, numEncounters, encounterProgress, _ =
+        local name, _, reset, difficulty, _, _, _, _, _, _, numEncounters, encounterProgress, _ =
             GetSavedInstanceInfo(savedIndex)
+
+        if difficulty == 3 then
+            name = name .. " 10"
+        end
+        if difficulty == 4 then
+            name = name .. " 25"
+        end
 
         LOCKOUT_DATA["Players"][PLAYER_REALM][PLAYER_NAME]["Lockouts"][name] = {
             ["Reset"] = reset + GetServerTime(),
@@ -438,6 +460,17 @@ function TRaidLockout_SetButtonText()
         ["RS"] = {L["RS"], false}
     }
 
+    
+    local raidsTableWoTLK10 = {}
+    for k, v in pairs(raidsTableWoTLK) do
+        raidsTableWoTLK10[k .. "10"] = {v[1] .. "10", false}
+    end
+
+    local raidsTableWoTLK25 = {}
+    for k, v in pairs(raidsTableWoTLK) do
+        raidsTableWoTLK25[k .. "25"] = {v[1] .. "25", false}
+    end
+
     if showUnlocked then -- Show green abbr
 
         if numSaved > 0 then
@@ -459,14 +492,37 @@ function TRaidLockout_SetButtonText()
             end
 
             if coloredText then
-                buttonText = buttonText .. COLOR.red
+                buttonText = buttonText .. COLOR.darkorange
             end
-            -- Loop again and check if this instance in the loop is a Raid
+            -- Loop again and check if this instance in the loop is a 10man Raid
             for savedIndex = 1, numSaved do
-                local name = GetSavedInstanceInfo(savedIndex)
+                local name, _, _, difficulty = GetSavedInstanceInfo(savedIndex)
+    
+                if difficulty == 3 then name = name .. " 10" end
+                
                 if TitanUtils_TableContainsValue(LOCALIZED_ALL_RAID_NAMES, name) then
 
-                    for key, subTable in pairs(raidsTableWoTLK) do
+                    for key, subTable in pairs(raidsTableWoTLK10) do
+                        if name == LOCALIZED_ALL_RAID_NAMES[key] then
+                            buttonText = buttonText .. " " .. subTable[1]
+                            subTable[2] = true
+                        end
+                    end
+
+                end
+            end
+
+            if coloredText then
+                buttonText = buttonText .. COLOR.red
+            end
+             -- Loop again and check if this instance in the loop is a 25man Raid
+             for savedIndex = 1, numSaved do
+                local name, _, _, difficulty = GetSavedInstanceInfo(savedIndex)
+    
+                if difficulty == 4 then name = name .. " 25" end
+                
+                if TitanUtils_TableContainsValue(LOCALIZED_ALL_RAID_NAMES, name) then
+                    for key, subTable in pairs(raidsTableWoTLK25) do
                         if name == LOCALIZED_ALL_RAID_NAMES[key] then
                             buttonText = buttonText .. " " .. subTable[1]
                             subTable[2] = true
@@ -481,7 +537,14 @@ function TRaidLockout_SetButtonText()
 
         buttonText = buttonText .. TitanUtils_Ternary(coloredText, COLOR.green, " |")
 
-        for index, subTable in pairs(raidsTableWoTLK) do
+        for index, subTable in pairs(raidsTableWoTLK10) do
+            if not subTable[2] then
+                buttonText = buttonText .. " " .. subTable[1]
+            end
+        end
+
+        
+        for index, subTable in pairs(raidsTableWoTLK25) do
             if not subTable[2] then
                 buttonText = buttonText .. " " .. subTable[1]
             end
@@ -504,13 +567,34 @@ function TRaidLockout_SetButtonText()
             end
 
             if coloredText then
+                buttonText = buttonText .. COLOR.darkorange
+            end
+            -- Loop again and check if this instance in the loop is a 10man Raid
+            for savedIndex = 1, numSaved do
+                local name, _, _, difficulty = GetSavedInstanceInfo(savedIndex)
+    
+                if difficulty == 3 then name = name .. " 10" end
+
+                if TitanUtils_TableContainsValue(LOCALIZED_ALL_RAID_NAMES, name) then
+                    for key, subTable in pairs(raidsTableWoTLK10) do
+                        if name == LOCALIZED_ALL_RAID_NAMES[key] then
+                            buttonText = buttonText .. " " .. subTable[1]
+                        end
+                    end
+                end
+            end
+
+            if coloredText then
                 buttonText = buttonText .. COLOR.red
             end
-            -- Loop again and check if this instance in the loop is a Raid
+            -- Loop again and check if this instance in the loop is a 25man Raid
             for savedIndex = 1, numSaved do
-                local name = GetSavedInstanceInfo(savedIndex)
+                local name, _, _, difficulty = GetSavedInstanceInfo(savedIndex)
+    
+                if difficulty == 4 then name = name .. " 25" end
+
                 if TitanUtils_TableContainsValue(LOCALIZED_ALL_RAID_NAMES, name) then
-                    for key, subTable in pairs(raidsTableWoTLK) do
+                    for key, subTable in pairs(raidsTableWoTLK25) do
                         if name == LOCALIZED_ALL_RAID_NAMES[key] then
                             buttonText = buttonText .. " " .. subTable[1]
                         end
@@ -577,11 +661,15 @@ function TRaidLockout_ToolTip_StringFormat_PlayerCharLockouts(isPlayerChar, show
         local tbcResultsText = TitanUtils_Ternary(showClassicRaids, TRaidLockout_ToolTip_InstanceDataLoop(
             LOCALIZED_TBC_RAID_NAMES, charData, COLOR.classic), "")
 
-        -- Then show any wotlk raids
-        local wotlkResultsText = TRaidLockout_ToolTip_InstanceDataLoop(LOCALIZED_WOTLK_RAID_NAMES, charData,
+        -- Then show any 10man wotlk raids
+        local wotlk10ResultsText = TRaidLockout_ToolTip_InstanceDataLoop(LOCALIZED_WOTLK_RAID_NAMES_10, charData,
             COLOR.orange)
 
-        resultText = resultText .. heroicsResultsText .. classicResultsText .. tbcResultsText .. wotlkResultsText
+        -- Then show any 25man wotlk raids
+        local wotlk25ResultsText = TRaidLockout_ToolTip_InstanceDataLoop(LOCALIZED_WOTLK_RAID_NAMES_25, charData,
+            COLOR.darkorange)
+
+        resultText = resultText .. heroicsResultsText .. classicResultsText .. tbcResultsText .. wotlk10ResultsText .. wotlk25ResultsText
     end
 
     return resultText

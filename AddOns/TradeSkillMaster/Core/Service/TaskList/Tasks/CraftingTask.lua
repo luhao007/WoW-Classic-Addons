@@ -110,16 +110,7 @@ function CraftingTask.OnButtonClick(self)
 		local craftString = self._craftStrings[1]
 		local spellId = CraftString.GetSpellId(craftString)
 		local quantity = self._craftQuantity[craftString]
-		local _, numMax = nil, nil
-		if TSM.IsWowClassic() then
-			if TSM.Crafting.ProfessionState.IsClassicCrafting() then
-				_, numMax = 1, 1
-			else
-				_, numMax = GetTradeSkillNumMade(spellId)
-			end
-		else
-			_, numMax = C_TradeSkillUI.GetRecipeNumItemsProduced(spellId)
-		end
+		local _, _, numMax = TSM.Crafting.ProfessionUtil.GetRecipeInfo(craftString)
 		if numMax and numMax > 1 then
 			-- need minimum this many repeats
 			quantity = ceil(quantity / numMax)
@@ -196,6 +187,7 @@ function private.ChatMsgLootEventHandler(_, msg)
 		return
 	end
 	local msgItemLink, quantity = nil, nil
+	-- TODO: Replace this with ProfessionUtil.GetRecipeInfo
 	local numMin, numMax = nil, nil
 	if TSM.IsWowClassic() then
 		if TSM.Crafting.ProfessionState.IsClassicCrafting() then
@@ -203,6 +195,9 @@ function private.ChatMsgLootEventHandler(_, msg)
 		else
 			numMin, numMax = GetTradeSkillNumMade(private.pendingSpellId)
 		end
+	elseif TSM.IsWowDragonflight() then
+		local info = C_TradeSkillUI.GetRecipeSchematic(private.pendingSpellId, false, 0)
+		numMin, numMax = info.quantityMin, info.quantityMax
 	else
 		numMin, numMax = C_TradeSkillUI.GetRecipeNumItemsProduced(private.pendingSpellId)
 	end

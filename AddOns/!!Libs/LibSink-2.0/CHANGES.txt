@@ -1,18 +1,7 @@
 ------------------------------------------------------------------------
-r145 | funkehdude | 2022-09-05 22:20:12 +0000 (Mon, 05 Sep 2022) | 1 line
+r147 | funkehdude | 2022-10-26 00:43:01 +0000 (Wed, 26 Oct 2022) | 1 line
 Changed paths:
-   A /trunk/LibSink-2.0_Wrath.toc
-
-Add Wrath toc
-------------------------------------------------------------------------
-r144 | funkehdude | 2022-09-05 22:19:21 +0000 (Mon, 05 Sep 2022) | 1 line
-Changed paths:
-   M /trunk/LibSink-2.0.toc
-
-bump toc
-------------------------------------------------------------------------
-r143 | funkehdude | 2022-06-01 04:19:18 +0000 (Wed, 01 Jun 2022) | 1 line
-Changed paths:
+   M /trunk/LibSink-2.0/LibSink-2.0.lua
    M /trunk/LibSink-2.0.toc
 
 bump toc

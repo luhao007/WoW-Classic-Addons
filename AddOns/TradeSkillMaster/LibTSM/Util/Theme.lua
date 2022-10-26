@@ -61,15 +61,23 @@ local GROUP_COLORS = {
 	Color.NewFromHex("#ffb85c"),
 	Color.NewFromHex("#51b599"),
 }
-local PROFESSION_DIFFICULTY_COLORS = {
-	optimal = Color.NewFromHex("#ff8040"),
-	medium = Color.NewFromHex("#ffff00"),
-	easy = Color.NewFromHex("#40c040"),
-	trivial = Color.NewFromHex("#808080"),
-	header = Color.NewFromHex("#ffd100"),
-	subheader = Color.NewFromHex("#ffd100"),
-	nodifficulty = Color.NewFromHex("#f5f5f5"),
-}
+local PROFESSION_DIFFICULTY_COLORS = TSM.IsWowDragonflight() and {
+		[Enum.TradeskillRelativeDifficulty.Optimal] = Color.NewFromHex("#ff8040"),
+		[Enum.TradeskillRelativeDifficulty.Medium] = Color.NewFromHex("#ffff00"),
+		[Enum.TradeskillRelativeDifficulty.Easy] = Color.NewFromHex("#40c040"),
+		[Enum.TradeskillRelativeDifficulty.Trivial] = Color.NewFromHex("#808080"),
+		header = Color.NewFromHex("#ffd100"),
+		subheader = Color.NewFromHex("#ffd100"),
+		nodifficulty = Color.NewFromHex("#f5f5f5"),
+	} or {
+		optimal = Color.NewFromHex("#ff8040"),
+		medium = Color.NewFromHex("#ffff00"),
+		easy = Color.NewFromHex("#40c040"),
+		trivial = Color.NewFromHex("#808080"),
+		header = Color.NewFromHex("#ffd100"),
+		subheader = Color.NewFromHex("#ffd100"),
+		nodifficulty = Color.NewFromHex("#f5f5f5"),
+	}
 -- NOTE: there is a global ITEM_QUALITY_COLORS so we need to use another name
 local TSM_ITEM_QUALITY_COLORS = {
 	[0] = Color.NewFromHex("#9d9d9d"),
@@ -337,7 +345,7 @@ function private.QueueFontLoad(path)
 	fontString:SetPoint("CENTER")
 	fontString:SetWidth(10000)
 	fontString:SetHeight(6)
-	fontString:SetFont(path, 6)
+	fontString:SetFont(path, 6, "")
 	fontString:SetText("1")
 	private.fontFrame.texts[path] = fontString
 	private.fontFrame:Show()

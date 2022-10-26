@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Lars Norberg
-## Version: 2.0.40-Release
+## Version: 2.0.41-Release
 ## RequiredDeps: Bagnon
 ## SavedVariables: BagnonItemInfo_DB
 

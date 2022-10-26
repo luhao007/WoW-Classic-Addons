@@ -151,7 +151,7 @@ function private.ErrorHandler(msg, thread)
 	end
 
 	-- shorten the paths in the error message
-	msg = gsub(msg, "%.%.%.T?r?a?d?e?S?k?i?l?l?M?a?ster([_A-Za-z]*)\\", "TradeSkillMaster%1\\")
+	msg = gsub(msg, "%.%.%.T?r?a?d?e?S?k?i?l?l?M?a?ster([_A-Za-z]*[\\/])", "TradeSkillMaster%1")
 	msg = strsub(msg, strfind(msg, "TradeSkillMaster") or 1)
 	msg = gsub(msg, "TradeSkillMaster([^%.])", "TSM%1")
 
@@ -351,7 +351,7 @@ function private.GetStackLevelInfo(level, thread, prevStackFunc)
 	end
 	stackLine = gsub(stackLine, "^%[string \"@([^%.]+%.lua)\"%]", "%1")
 	local locals = debuglocals(level)
-	stackLine = gsub(stackLine, "%.%.%.T?r?a?d?e?S?k?i?l?l?M?a?ster([_A-Za-z]*)\\", "TradeSkillMaster%1\\")
+	stackLine = gsub(stackLine, "%.%.%.T?r?a?d?e?S?k?i?l?l?M?a?ster([_A-Za-z]*[\\/])", "TradeSkillMaster%1")
 	stackLine = gsub(stackLine, "%.%.%.", "")
 	stackLine = gsub(stackLine, "`", "<", 1)
 	stackLine = gsub(stackLine, "'", ">", 1)
@@ -370,7 +370,7 @@ function private.GetStackLevelInfo(level, thread, prevStackFunc)
 	end
 	locationStr = strsub(locationStr, strfind(locationStr, "TradeSkillMaster") or 1)
 	locationStr = gsub(locationStr, "TradeSkillMaster([^%.])", "TSM%1")
-	functionStr = functionStr and gsub(gsub(functionStr, ".*\\", ""), "[<>]", "") or ""
+	functionStr = functionStr and gsub(gsub(functionStr, ".*[\\/]", ""), "[<>]", "") or ""
 	local file, line = strmatch(locationStr, "^(.+):(%d+)$")
 	file = file or locationStr
 	line = tonumber(line) or 0
@@ -399,7 +399,7 @@ function private.ParseLocals(locals, file)
 	end
 
 	local fileName = strmatch(file, "([A-Za-z%-_0-9]+)%.lua")
-	local isBlizzardFile = strmatch(file, "Interface\\FrameXML\\")
+	local isBlizzardFile = strmatch(file, "Interface[\\/]FrameXML[\\/]")
 	local isPrivateTable, isLocaleTable, isPackageTable, isSelfTable = false, false, false, false
 	wipe(private.localLinesTemp)
 	locals = gsub(locals, "<([a-z]+)> {[\n\t ]+}", "<%1> {}")
@@ -420,7 +420,7 @@ function private.ParseLocals(locals, file)
 		if not shouldIgnoreLine then
 			local level = #strmatch(localLine, "^ *")
 			localLine = strrep("  ", level)..strtrim(localLine)
-			localLine = gsub(localLine, "Interface\\[Aa]dd[Oo]ns\\TradeSkillMaster", "TSM")
+			localLine = gsub(localLine, "Interface[\\/][Aa]dd[Oo]ns[\\/]TradeSkillMaster", "TSM")
 			localLine = gsub(localLine, "\124", "\\124")
 			for matchStr, replaceStr in pairs(private.globalNameTranslation) do
 				localLine = gsub(localLine, matchStr, replaceStr)
@@ -476,24 +476,24 @@ function private.ParseLocals(locals, file)
 end
 
 function private.IsTSMAddon(str)
-	if strfind(str, "Auc-Adcanced\\CoreScan.lua") then
+	if strfind(str, "Auc-Adcanced[\\/]CoreScan.lua") then
 		-- ignore auctioneer errors
 		return nil
-	elseif strfind(str, "Master\\External\\") then
+	elseif strfind(str, "Master[\\/]External[\\/]") then
 		-- ignore errors from libraries
 		return nil
-	elseif strfind(str, "Master\\Core\\API.lua") then
+	elseif strfind(str, "Master[\\/]Core[\\/]API.lua") then
 		-- ignore errors from public APIs
 		return nil
-	elseif strfind(str, "Master_AppHelper\\") then
+	elseif strfind(str, "Master_AppHelper[\\/]") then
 		return "TradeSkillMaster_AppHelper"
-	elseif strfind(str, "lMaster\\") then
+	elseif strfind(str, "lMaster[\\/]") then
 		return "TradeSkillMaster"
-	elseif strfind(str, "ster\\Core\\UI\\") then
+	elseif strfind(str, "ster[\\/]Core[\\/]UI[\\/]") then
 		return "TradeSkillMaster"
-	elseif strfind(str, "r\\LibTSM\\") then
+	elseif strfind(str, "r[\\/]LibTSM[\\/]") then
 		return "TradeSkillMaster"
-	elseif strfind(str, "^TSM\\") then
+	elseif strfind(str, "^TSM[\\/]") then
 		return "TradeSkillMaster"
 	end
 	return nil
@@ -719,7 +719,7 @@ do
 		if private.ignoreErrors then
 			-- we're ignoring errors
 			tsmErrMsg = nil
-		elseif strmatch(tsmErrMsg, "auc%-stat%-wowuction") or strmatch(tsmErrMsg, "TheUndermineJournal%.lua") or strmatch(tsmErrMsg, "\\SavedVariables\\TradeSkillMaster") or strmatch(tsmErrMsg, "AddOn TradeSkillMaster[_a-zA-Z]* attempted") or (strmatch(tsmErrMsg, "ItemTooltipClasses\\Wrapper%.lua:98") and strmatch(tsmErrMsg, "SetQuest")) then
+		elseif strmatch(tsmErrMsg, "auc%-stat%-wowuction") or strmatch(tsmErrMsg, "TheUndermineJournal%.lua") or strmatch(tsmErrMsg, "[\\/]SavedVariables[\\/]TradeSkillMaster") or strmatch(tsmErrMsg, "AddOn TradeSkillMaster[_a-zA-Z]* attempted") or (strmatch(tsmErrMsg, "ItemTooltipClasses[\\/]Wrapper%.lua:98") and strmatch(tsmErrMsg, "SetQuest")) then
 			-- explicitly ignore these errors
 			tsmErrMsg = nil
 		elseif strmatch(tsmErrMsg, "Blizzard_AuctionUI%.lua:751") then
@@ -735,7 +735,7 @@ do
 					-- ignore errors from old modules
 					return
 				end
-				if not strmatch(stackLine, "^%[C%]:") and not strmatch(stackLine, "%(tail call%):") and not strmatch(stackLine, "^%[string \"[^@]") and not strmatch(stackLine, "lMaster\\External\\[A-Za-z0-9%-_%.]+\\") and not strmatch(stackLine, "SharedXML") and not strmatch(stackLine, "CallbackHandler") and not strmatch(stackLine, "!BugGrabber") and not strmatch(stackLine, "ErrorHandler%.lua") then
+				if not strmatch(stackLine, "^%[C%]:") and not strmatch(stackLine, "%(tail call%):") and not strmatch(stackLine, "^%[string \"[^@]") and not strmatch(stackLine, "lMaster[\\/]External[\\/][A-Za-z0-9%-_%.]+\\") and not strmatch(stackLine, "SharedXML") and not strmatch(stackLine, "CallbackHandler") and not strmatch(stackLine, "!BugGrabber") and not strmatch(stackLine, "ErrorHandler%.lua") then
 					if not private.IsTSMAddon(stackLine) then
 						tsmErrMsg = nil
 					end

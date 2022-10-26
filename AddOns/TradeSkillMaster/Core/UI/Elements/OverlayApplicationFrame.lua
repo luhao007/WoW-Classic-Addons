@@ -67,7 +67,11 @@ function OverlayApplicationFrame.Release(self)
 	self._contentFrame = nil
 	self._contextTable = nil
 	self._defaultContextTable = nil
-	self:_GetBaseFrame():SetMinResize(0, 0)
+	if TSM.IsWowDragonflight() then
+		self:_GetBaseFrame():SetResizeBounds(0, 0)
+	else
+		self:_GetBaseFrame():SetMinResize(0, 0)
+	end
 	self.__super:Release()
 end
 

@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Xinhuan
-## Version: v1.6.8
+## Version: v1.6.9
 ## OptionalDeps: Ace3, TomTom, HereBeDragons
 ## LoadManagers: AddonLoader
 ## SavedVariables: HandyNotesDB, HandyNotes_HandyNotesDB

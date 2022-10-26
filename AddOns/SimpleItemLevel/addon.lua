@@ -46,12 +46,14 @@ ns:RegisterEvent("ADDON_LOADED")
 
 local function PrepareItemButton(button)
     if button.simpleilvl then
+        button.simpleilvloverlay:SetFrameLevel(button:GetFrameLevel() + 1)
         return
     end
 
     local overlayFrame = CreateFrame("FRAME", nil, button)
-    overlayFrame:SetFrameLevel(4) -- Azerite overlay must be overlaid itself...
     overlayFrame:SetAllPoints()
+    overlayFrame:SetFrameLevel(button:GetFrameLevel() + 1)
+    button.simpleilvloverlay = overlayFrame
 
     button.simpleilvl = overlayFrame:CreateFontString('$parentItemLevel', 'OVERLAY')
     button.simpleilvl:SetPoint('TOPRIGHT', -2, -2)
@@ -171,24 +173,36 @@ end)
 
 -- Bags:
 
-local function UpdateContainerButton(button, bag)
+local function UpdateContainerButton(button, bag, slot)
     CleanButton(button)
     if not db.bags then
         return
     end
-    local slot = button:GetID()
-    local item = Item:CreateFromBagAndSlot(bag, slot)
+    local item = Item:CreateFromBagAndSlot(bag, slot or button:GetID())
     UpdateButtonFromItem(button, item)
 end
 
-hooksecurefunc("ContainerFrame_Update", function(container)
-    local bag = container:GetID()
-    local name = container:GetName()
-    for i = 1, container.size, 1 do
-        local button = _G[name .. "Item" .. i]
-        UpdateContainerButton(button, bag)
+if _G.ContainerFrame_Update then
+    hooksecurefunc("ContainerFrame_Update", function(container)
+        local bag = container:GetID()
+        local name = container:GetName()
+        for i = 1, container.size, 1 do
+            local button = _G[name .. "Item" .. i]
+            UpdateContainerButton(button, bag)
+        end
+    end)
+else
+    local update = function(frame)
+        for _, itemButton in frame:EnumerateValidItems() do
+            UpdateContainerButton(itemButton, itemButton:GetBagID(), itemButton:GetID())
+        end
     end
-end)
+    -- can't use ContainerFrameUtil_EnumerateContainerFrames because it depends on the combined bags setting
+    hooksecurefunc(ContainerFrameCombinedBags, "UpdateItems", update)
+    for _, frame in ipairs(UIParent.ContainerFrames) do
+        hooksecurefunc(frame, "UpdateItems", update)
+    end
+end
 
 hooksecurefunc("BankFrameItemButton_Update", function(button)
     if not button.isBag then
@@ -239,9 +253,24 @@ end)
 -- Inventorian
 ns:RegisterAddonHook("Inventorian", function()
     local inv = LibStub("AceAddon-3.0", true):GetAddon("Inventorian", true)
-    hooksecurefunc(inv.Item.prototype, "Update", function(self, ...)
-        UpdateContainerButton(self, self.bag)
-    end)
+    local function ToIndex(bag, slot) -- copied from inside Inventorian
+        return (bag < 0 and bag * 100 - slot) or (bag * 100 + slot)
+    end
+    local function invContainerUpdateSlot(self, bag, slot)
+        if not self.items[ToIndex(bag, slot)] then return end
+        UpdateContainerButton(self.items[ToIndex(bag, slot)], bag, slot)
+    end
+    local function hookInventorian()
+        hooksecurefunc(inv.bag.itemContainer, "UpdateSlot", invContainerUpdateSlot)
+        hooksecurefunc(inv.bank.itemContainer, "UpdateSlot", invContainerUpdateSlot)
+    end
+    if inv.bag then
+        hookInventorian()
+    else
+        hooksecurefunc(inv, "OnEnable", function()
+            hookInventorian()
+        end)
+    end
 end)
 
 --Baggins:

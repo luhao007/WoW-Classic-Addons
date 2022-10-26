@@ -1,3 +1,6 @@
+10/25/2022 version 3.1.1
+- Update for Dragonflight clients
+
 10/04/2022 version 3.1.0
 - Update to support Dragonflight clients
 - Beta/PTR users will need to load out of date addons for this to work until the update for Dragonflight pre-patch

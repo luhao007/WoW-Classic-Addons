@@ -913,8 +913,8 @@ do
 			askFrame:SetSize(M_WIDTH,M_HEIGHT)
 			askFrame:SetPoint("CENTER")
 			askFrame:SetFrameStrata("DIALOG")
-			local mainbg = ELib:Texture(askFrame,[[Interface\AddOns\MRT\media\askjt]]):TexCoord(0,1,0,650/1024):Size(M_WIDTH,M_HEIGHT):Point("TOPLEFT")
-			local hiddenask = ELib:Texture(askFrame,[[Interface\AddOns\MRT\media\askjt]]):TexCoord(0,146/1024,651/1024,874/1024):Size(147,223):Point("CENTER",mainbg,35,-112)
+			local mainbg = ELib:Texture(askFrame,[[Interface\AddOns\MRT\media\askjt]],"BACKGROUND"):TexCoord(0,1,0,650/1024):Size(M_WIDTH,M_HEIGHT):Point("TOPLEFT")
+			local hiddenask = ELib:Texture(askFrame,[[Interface\AddOns\MRT\media\askjt]],"BORDER"):TexCoord(0,146/1024,651/1024,874/1024):Size(147,223):Point("CENTER",mainbg,35,-112)
 			hiddenask:SetAlpha(0)
 
 			askFrame:SetMovable(true)

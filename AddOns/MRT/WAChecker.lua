@@ -124,7 +124,8 @@ function module.options:Load()
 				ChatFrame_OpenChat(link)
 			end
 		else
-			local id = self:GetParent().db.data.id
+			local db = self:GetParent().db
+			local id = db and db.data and db.data.id or "--"
 			module:SendReq({[id]=true})
 		end
 	end

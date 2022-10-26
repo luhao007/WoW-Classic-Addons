@@ -44,10 +44,10 @@ local FONT_OBJECT_MT = {
 			-- wow renders the font slightly bigger than the designs would indicate, so subtract one from the font height
 			if context.path == "Fonts\\ARKai_C.ttf" then
 				-- this font is a bit smaller than it should be, so increase it by 1
-				return context.path, context.size + 1
+				return context.path, context.size + 1, ""
 			else
 				-- wow renders other fonts slightly bigger than the designs would indicate, so decrease the height by 1
-				return context.path, context.size - 1
+				return context.path, context.size - 1, ""
 			end
 		end,
 		GetSpacing = function(self)

@@ -62,14 +62,8 @@ def get_platform():
 
 def remove_libs_in_file(path: str | Path, libs: list[str] | set[str]):
     def process(lines):
-        if str(path).endswith('.toc'):
-            pattern = r'\s*(?i){}.*'
-        else:
-            pattern = r'\s*<((Script)|(Include))+ file\s*=\s*"(?i){}[\\\"\.].*'
-
         return [line for line in lines
-                if not any(re.match(pattern.format(lib), line)
-                            for lib in libs)]
+                if not any(f'{lib}\\'.lower() in line.lower() for lib in libs)]
 
     process_file(path, process)
 
@@ -96,11 +90,18 @@ def remove_libraries_all(addon: str, lib_path: Optional[str] = None):
     for lib in libs:
         rm_tree(Path('AddOns') / addon / lib_path / lib)
 
-    for lib_file in ['.xml'] + TOCS:
-        path = Path('AddOns') / addon
-        path /= f"{addon.split('/')[-1]}{lib_file}"
-        if os.path.exists(str(path)):
-            remove_libs_in_file(path, [f'{lib_path}\\\\{lib}' for lib in libs])
+    # Remove lib entry in root folder
+    lib_files = [Path('AddOns') / addon / f"{addon.split('/')[-1]}{postfix}" for postfix in ['.xml'] + TOCS]
+    lib_files += [Path('Addons') / addon / 'embeds.xml']
+    lib_files = [path for path in lib_files if os.path.exists(str(path))]
+    for path in lib_files:
+        remove_libs_in_file(path, [f'{lib_path}\\{lib}' for lib in libs])
+
+    # Remove lib entry in lib folder
+    lib_files = [Path('Addons') / addon / lib_path / lib_file for lib_file in ['Includes.xml', 'Libs.xml']]
+    lib_files = [path for path in lib_files if os.path.exists(str(path))]
+    for path in lib_files:
+        remove_libs_in_file(path, libs)
 
 
 def remove_libraries(libs, root: str, xml_path: str):
@@ -108,7 +109,7 @@ def remove_libraries(libs, root: str, xml_path: str):
     for lib in libs:
         rm_tree(Path(root) / lib)
 
-    remove_libs_in_file(xml_path, [f"{root.split('/')[-1]}\\\\{lib}" for lib in libs])
+    remove_libs_in_file(xml_path, libs)
 
 
 def change_defaults(path: str, defaults: str | list[str]):

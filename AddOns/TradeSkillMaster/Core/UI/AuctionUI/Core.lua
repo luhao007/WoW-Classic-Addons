@@ -38,7 +38,16 @@ function AuctionUI.OnInitialize()
 		:AddKey("global", "auctionUIContext", "showDefault")
 		:AddKey("global", "auctionUIContext", "frame")
 	UIParent:UnregisterEvent("AUCTION_HOUSE_SHOW")
-	Event.Register("AUCTION_HOUSE_SHOW", private.AuctionFrameInit)
+	if TSM.IsWowDragonflight() then
+		hooksecurefunc(PlayerInteractionFrameManager, "ShowFrame", function(_, interaction)
+			if interaction ~= Enum.PlayerInteractionType.Auctioneer or GameLimitedMode_IsActive() then
+				return
+			end
+			private.AuctionFrameInit()
+		end)
+	else
+		Event.Register("AUCTION_HOUSE_SHOW", private.AuctionFrameInit)
+	end
 	Event.Register("AUCTION_HOUSE_CLOSED", private.HideAuctionFrame)
 	if TSM.IsWowClassic() then
 		Delay.AfterTime(1, function() LoadAddOn("Blizzard_AuctionUI") end)
@@ -205,8 +214,13 @@ function private.AuctionFrameInit()
 		end
 	end
 	if private.settings.showDefault then
-		UIParent_OnEvent(UIParent, "AUCTION_HOUSE_SHOW")
+		if not TSM.IsWowDragonflight() then
+			UIParent_OnEvent(UIParent, "AUCTION_HOUSE_SHOW")
+		end
 	else
+		if TSM.IsWowDragonflight() then
+			HideUIPanel(AuctionHouseFrame)
+		end
 		PlaySound(SOUNDKIT.AUCTION_WINDOW_OPEN)
 		private.ShowAuctionFrame()
 	end

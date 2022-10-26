@@ -1,7 +1,9 @@
 local L = LibStub("AceLocale-3.0"):NewLocale("PlaterNameplates", "ruRU") 
 if not L then return end 
 
-L["OPTIONS_ALPHA"] = "Альфа"
+L["OPTIONS_ALPHA"] = [=[target shading amount
+
+]=]
 L["OPTIONS_ANCHOR"] = "Крепление"
 L["OPTIONS_ANCHOR_BOTTOM"] = "Снизу"
 L["OPTIONS_ANCHOR_BOTTOMLEFT"] = "Внизу слева"

@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: The WeakAuras Team
-## Version: 4.1.5
+## Version: 5.0.1
 ## OptionalDeps: Ace3, LibCompress, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, Masque, GTFO, LibButtonGlow-1.0, LibSpellRange-1.0, LibRangeCheck-2.0, LibDBIcon-1.0, LibClassicDurations, LibClassicCasterino, LibGetFrame-1.0
 ## LoadOnDemand: 0
 ## SavedVariables: WeakAurasSaved
@@ -39,13 +39,13 @@ Animations.lua
 Conditions.lua
 
 # Trigger systems
-BuffTrigger.lua
 BuffTrigger2.lua
 GenericTrigger.lua
 
 # Helper Systems
 AuraWarnings.lua
 AuraEnvironment.lua
+AuraEnvironmentWrappedSystems.lua
 DebugLog.lua
 
 # Region support
@@ -67,6 +67,3 @@ SubRegionTypes\Border.lua
 SubRegionTypes\Glow.lua
 SubRegionTypes\Tick.lua
 SubRegionTypes\Model.lua
-
-# Misc
-Legendaries.lua

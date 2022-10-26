@@ -269,10 +269,28 @@ do
 			PreHookHelper(self, quantityFunc, 3, ...)
 		end,
 		SetRecipeReagentItem = function(self, ...)
-			local reg = PreHookHelper(self, C_TradeSkillUI.GetRecipeReagentInfo, 3, ...)
-			reg.item = C_TradeSkillUI.GetRecipeReagentItemLink(...)
+			if TSM.IsWowDragonflight() then
+				local spellId, dataSlotIndex = ...
+				local info = C_TradeSkillUI.GetRecipeSchematic(spellId, false)
+				local quantity = 1
+				for _, reagentInfo in ipairs(info.reagentSlotSchematics) do
+					if reagentInfo.dataSlotIndex == dataSlotIndex then
+						quantity = reagentInfo.quantityRequired
+						break
+					end
+				end
+				local reg = PreHookHelper(self, quantity)
+				reg.item = C_TradeSkillUI.GetRecipeFixedReagentItemLink(spellId, dataSlotIndex)
+			else
+				local reg = PreHookHelper(self, C_TradeSkillUI.GetRecipeReagentInfo, 3, ...)
+				reg.item = C_TradeSkillUI.GetRecipeReagentItemLink(...)
+			end
 		end,
 		SetRecipeResultItem = function(self, ...)
+			if TSM.IsWowDragonflight() then
+				-- TODO: Is this not used in DF?
+				return
+			end
 			private.OnTooltipCleared(self)
 			local reg = private.tooltipRegistry[self]
 			reg.ignoreOnCleared = true

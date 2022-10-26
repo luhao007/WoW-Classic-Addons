@@ -62,14 +62,14 @@ function TableRow.__init(self)
 	frame.background = frame:CreateTexture(nil, "BACKGROUND")
 	frame.background:SetAllPoints()
 
-	frame.highlight = frame:CreateTexture(nil, "ARTWORK", -1)
+	frame.highlight = frame:CreateTexture(nil, "ARTWORK", nil, -1)
 	frame.highlight:SetAllPoints()
 	frame.highlight:Hide()
 
-	frame.sortBackground = frame:CreateTexture(nil, "ARTWORK", -2)
+	frame.sortBackground = frame:CreateTexture(nil, "ARTWORK", nil, -2)
 	frame.sortBackground:Hide()
 
-	frame.sortFlag = frame:CreateTexture(nil, "ARTWORK", -1)
+	frame.sortFlag = frame:CreateTexture(nil, "ARTWORK", nil, -1)
 	frame.sortFlag:SetHeight(3)
 	frame.sortFlag:Hide()
 end
@@ -149,7 +149,7 @@ function TableRow.Release(self)
 		end
 		button:Hide()
 		button:SetMouseClickEnabled(true)
-		button:RegisterForDrag(nil)
+		button:RegisterForDrag()
 		button:SetResizable(false)
 		button:SetMovable(false)
 		ScriptWrapper.Clear(button, "OnEnter")
@@ -180,10 +180,14 @@ end
 function TableRow.SetData(self, data)
 	for _, col in self._tableInfo:_ColIterator() do
 		local id = col:_GetId()
-		local text, r, g, b, a = col:_GetText(data)
-		self._texts[id]:SetText(text)
-		if r then
-			self._texts[id]:SetTextColor(r, g, b, a)
+		if col:_HasText() then
+			local text, r, g, b, a = col:_GetText(data)
+			self._texts[id]:SetText(text)
+			if r then
+				self._texts[id]:SetTextColor(r, g, b, a)
+			end
+		else
+			self._texts[id]:SetText("")
 		end
 		if col:_GetIconSize() then
 			local button = self._buttons["_icon_"..id]
@@ -643,7 +647,11 @@ function TableRow._LayoutHeaderRow(self)
 			end
 			-- the minimum header width is either our header icon width or the minimum text width
 			local minHeaderWidth = iconTexture and TSM.UI.TexturePacks.GetWidth(iconTexture) or MIN_TEXT_WIDTH
-			button:SetMinResize(max(minContentWidth, minHeaderWidth), 0)
+			if TSM.IsWowDragonflight() then
+				button:SetResizeBounds(max(minContentWidth, minHeaderWidth), 0)
+			else
+				button:SetMinResize(max(minContentWidth, minHeaderWidth), 0)
+			end
 
 			-- layout the resizer button
 			local resizerButton = self._buttons["_resizer_"..id]

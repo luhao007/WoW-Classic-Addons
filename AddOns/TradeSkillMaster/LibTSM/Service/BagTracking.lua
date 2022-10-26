@@ -40,6 +40,7 @@ local private = {
 }
 local BANK_BAG_SLOTS = {}
 local BANK_NON_REAGENT_BAG_SLOTS = {}
+local REAGENT_BAG_INDEX = TSM.IsWowDragonflight() and (NUM_BAG_SLOTS + NUM_BANKBAGSLOTS + NUM_REAGENTBAG_SLOTS) or nil
 
 
 
@@ -349,6 +350,8 @@ function private.BagUpdateHandler(_, bag)
 		tinsert(private.bagUpdates.bagList, bag)
 	elseif bag == BANK_CONTAINER or (bag > NUM_BAG_SLOTS and bag <= NUM_BAG_SLOTS + NUM_BANKBAGSLOTS) then
 		tinsert(private.bagUpdates.bankList, bag)
+	elseif bag == REAGENT_BAG_INDEX then
+		-- TODO
 	elseif bag ~= KEYRING_CONTAINER then
 		error("Unexpected bag: "..tostring(bag))
 	end
@@ -585,6 +588,9 @@ function private.ChangeBagItemTotal(bag, levelItemString, changeQuantity)
 	elseif bag == REAGENTBANK_CONTAINER then
 		totalsTable = private.settings.reagentBankQuantity
 		field = "reagentBankQuantity"
+	elseif bag == REAGENT_BAG_INDEX then
+		-- TODO
+		return
 	else
 		error("Unexpected bag: "..tostring(bag))
 	end

@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Nevcairiel
-## Version: 1.9.8
+## Version: 1.10.0
 ## OptionalDeps: Ace3, LibWindow-1.1
 ## SavedVariables: MapsterDB
 

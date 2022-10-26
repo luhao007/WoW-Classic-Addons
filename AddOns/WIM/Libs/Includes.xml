@@ -2,5 +2,6 @@
 ..\FrameXML\UI.xsd">
 
 
+<Include file="ChatThrottleLib\ChatThrottleLib.xml"/>
 <Include file="LibChatHandler-1.0\lib.xml"/>
 </Ui>

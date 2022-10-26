@@ -282,7 +282,7 @@ function ProfessionScrollingTable._UpdateData(self)
 				for i = 1, #newCategoryPath do
 					local newCategoryId = newCategoryPath[i]
 					if currentCategoryPath[i] ~= newCategoryId then
-						if not self:_IsCategoryHidden(newCategoryId) then
+						if not self:_IsCategoryHidden(newCategoryId) and private.CategoryGetName(newCategoryId) then
 							tinsert(self._data, newCategoryId)
 						end
 					end

@@ -51,6 +51,9 @@ end
 
 function RecipeString.FromCraftString(craftString, optionalMats, overrideRank, overrideLevel)
 	local spellId = strmatch(craftString, "^c:(%d+)")
+	if overrideRank and overrideRank < 0 then
+		overrideRank = nil
+	end
 	local rank = overrideRank or strmatch(craftString, ":r(%d)$")
 	local level = overrideLevel or strmatch(craftString, ":l(%d)$")
 	return RecipeString.Get(spellId, optionalMats, rank, level)

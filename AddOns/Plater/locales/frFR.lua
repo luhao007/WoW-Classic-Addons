@@ -67,8 +67,7 @@ L["OPTIONS_TABNAME_CASTCOLORS"] = "\"Cast Colors and Names\""
 L["OPTIONS_TABNAME_COMBOPOINTS"] = "Combo Points"
 L["OPTIONS_TABNAME_GENERALSETTINGS"] = "Réglages généraux"
 L["OPTIONS_TABNAME_MODDING"] = "Modding"
---[[Translation missing --]]
-L["OPTIONS_TABNAME_NPC_COLORNAME"] = "Npc Colors and Names"
+L["OPTIONS_TABNAME_NPC_COLORNAME"] = "Couleurs et noms des PNJ"
 L["OPTIONS_TABNAME_NPCENEMY"] = "Ennemi Npc"
 L["OPTIONS_TABNAME_NPCFRIENDLY"] = "Pnj Amical"
 L["OPTIONS_TABNAME_PERSONAL"] = "Barre personnelle"
@@ -77,8 +76,7 @@ L["OPTIONS_TABNAME_PLAYERFRIENDLY"] = "Joueur amical"
 L["OPTIONS_TABNAME_PROFILES"] = [=[Profils
 ]=]
 L["OPTIONS_TABNAME_SCRIPTING"] = "Scripting"
---[[Translation missing --]]
-L["OPTIONS_TABNAME_SEARCH"] = "Search"
+L["OPTIONS_TABNAME_SEARCH"] = "Recherche"
 L["OPTIONS_TABNAME_STRATA"] = "Niveau & strate"
 L["OPTIONS_TABNAME_TARGET"] = "Cible"
 L["OPTIONS_TABNAME_THREAT"] = "Menace / Aggro"

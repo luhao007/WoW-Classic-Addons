@@ -9,6 +9,8 @@
 ## X-Curse-Project-ID: 354259
 
 # externals
+libs/LibStub/LibStub.lua
+libs/LibDeflate/LibDeflate.lua
 
 Archivist.lua
 

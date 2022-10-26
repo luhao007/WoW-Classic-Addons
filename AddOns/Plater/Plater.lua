@@ -42,7 +42,6 @@ local AlphaBlending = ALPHA_BLEND_AMOUNT + 0.0654785
 --> locals
 local unpack = unpack
 local ipairs = ipairs
-local pairs = pairs
 local rawset = rawset
 local rawget = rawget
 local setfenv = setfenv
@@ -921,6 +920,7 @@ local class_specs_coords = {
 	local DB_LERP_COLOR_SPEED
 	local DB_PLATE_CONFIG
 	local DB_HOVER_HIGHLIGHT
+	local DB_CLASS_COLORS
 
 	--auras
 	local DB_AURA_ENABLED
@@ -1283,6 +1283,16 @@ local class_specs_coords = {
 					-- Kill Shot
 					if GetSpellInfo(GetSpellInfo(53351)) then
 						lowExecute = 0.2
+					end
+				elseif (class == "PRIEST") then
+					for i = 1, 6 do
+						local enabled, _, glyphSpellID = GetGlyphSocketInfo(i)
+						if enabled and glyphSpellID then
+							if glyphSpellID == 55682 then --Glyph of Shadow Word: Death
+								lowExecute = 0.35
+								break
+							end
+						end
 					end
 				end
 			end
@@ -1937,18 +1947,17 @@ local class_specs_coords = {
 		["nameplateShowEnemyMinus"] = true,
 		["nameplateShowEnemyPets"] = true,
 		["nameplateShowEnemyTotems"] = true,
+		["nameplateShowFriends"] = true,
 		["nameplateShowFriendlyGuardians"] = true,
-		["nameplateShowFriendlyMinions"] = true,
 		["nameplateShowFriendlyNPCs"] = true,
+		["nameplateShowFriendlyMinions"] = true,
 		["nameplateShowFriendlyPets"] = true,
 		["nameplateShowFriendlyTotems"] = true,
-		["nameplateShowFriends"] = true,
 		["nameplateShowOnlyNames"] = true,
 		["nameplateShowSelf"] = (IS_WOW_PROJECT_MAINLINE),
 		["nameplateTargetBehindMaxDistance"] = true,
 		["clampTargetNameplateToScreen"] = true,
 		["nameplateTargetRadialPosition"] = true,
-		--["showQuestTrackingTooltips"] = true, -- this seems to be gone as of 18.12.2020
 		["nameplateSelectedAlpha"] = true,
 		["nameplateNotSelectedAlpha"] = (IS_WOW_PROJECT_NOT_MAINLINE),
 		["nameplateRemovalAnimation"] = (IS_WOW_PROJECT_NOT_MAINLINE),
@@ -2015,8 +2024,16 @@ local class_specs_coords = {
 		--> try to restore cvars from the profile
 		local savedCVars = Plater.db and Plater.db.profile and Plater.db.profile.saved_cvars
 		if (savedCVars) then
-			for CVarName, CVarValue in pairs (savedCVars) do
-				if cvars_to_store [CVarName] then --only restore what we want to store/restore!
+			--pre-sort restore order:
+			local orderKeys = {}
+			for k in pairs (cvars_to_store) do
+				tinsert(orderKeys, k)
+			end
+			table.sort(orderKeys)
+			
+			for CVarName in pairs (orderKeys) do
+				local CVarValue = savedCVars [CVarName]
+				if CVarValue then --only restore what we want to store/restore!
 					SetCVar (CVarName, get_cvar_value(CVarValue))
 				end
 			end
@@ -2069,6 +2086,14 @@ local class_specs_coords = {
 		
 		DB_TICK_THROTTLE = profile.update_throttle
 		DB_LERP_COLOR = profile.use_color_lerp
+
+		--class colors
+		DB_CLASS_COLORS = profile.class_colors
+		--update colorStr
+		for className, colorTable in pairs(profile.class_colors) do
+			colorTable.colorStr = DetailsFramework:FormatColor("hex", colorTable.r, colorTable.g, colorTable.b, 1)
+		end
+
 		DB_LERP_COLOR_SPEED = profile.color_lerp_speed
 		DB_PLATE_CONFIG = profile.plate_config
 		DB_TRACK_METHOD = profile.aura_tracker.track_method
@@ -2614,9 +2639,15 @@ local class_specs_coords = {
 			C_Timer.After (2, Plater.GetHealthCutoffValue)
 			C_Timer.After (1, Plater.DispatchTalentUpdateHookEvent)
 		end,
+		
+		TRAIT_CONFIG_UPDATED = function()
+			C_Timer.After (2, Plater.GetSpellForRangeCheck)
+			C_Timer.After (2, Plater.GetHealthCutoffValue)
+			C_Timer.After (1, Plater.DispatchTalentUpdateHookEvent)
+		end,
 
 		PLAYER_TALENT_UPDATE = function()
-			--C_Timer.After (2, Plater.GetSpellForRangeCheck)
+			C_Timer.After (2, Plater.GetSpellForRangeCheck)
 			C_Timer.After (2, Plater.GetHealthCutoffValue)
 			C_Timer.After (1, Plater.DispatchTalentUpdateHookEvent)
 		end,
@@ -3809,9 +3840,13 @@ local class_specs_coords = {
 			
 			plateFrame.QuestAmountCurrent = nil
 			plateFrame.QuestAmountTotal = nil
+			plateFrame.QuestText = nil
+			plateFrame.QuestName = nil
 			plateFrame.QuestIsCampaign = nil
 			unitFrame.QuestAmountCurrent = nil
 			unitFrame.QuestAmountTotal = nil
+			unitFrame.QuestText = nil
+			unitFrame.QuestName = nil
 			unitFrame.QuestIsCampaign = nil
 			
 			--cache the unit target id, so it doesnt need to waste cycles building up on aggro checks
@@ -4511,7 +4546,7 @@ function Plater.OnInit() --private --~oninit ~init
 		Plater.EventHandlerFrame:RegisterEvent ("UNIT_QUEST_LOG_CHANGED")
 		if IS_WOW_PROJECT_MAINLINE then
 			Plater.EventHandlerFrame:RegisterEvent ("PLAYER_SPECIALIZATION_CHANGED")
-			Plater.EventHandlerFrame:RegisterEvent ("PLAYER_TALENT_UPDATE")
+			Plater.EventHandlerFrame:RegisterEvent (C_Traits and "TRAIT_CONFIG_UPDATED" or "PLAYER_TALENT_UPDATE")
 		elseif IS_WOW_PROJECT_CLASSIC_WRATH then
 			Plater.EventHandlerFrame:RegisterEvent ("ACTIVE_TALENT_GROUP_CHANGED")
 			Plater.EventHandlerFrame:RegisterEvent ("PLAYER_TALENT_UPDATE")
@@ -4624,6 +4659,10 @@ function Plater.OnInit() --private --~oninit ~init
 				if (not DB_PLATE_CONFIG.player.healthbar_enabled) then
 					--the health bar is set when the nameplate is shown
 					healthBar:SetUnit (nil)
+					
+					-- hide target glow
+					plateFrame.TargetNeonUp:Hide()
+					plateFrame.TargetNeonDown:Hide()
 				end
 				
 				if (DB_PLATE_CONFIG.player.power_enabled) then
@@ -5470,8 +5509,14 @@ function Plater.OnInit() --private --~oninit ~init
 
 		Plater.UpdateSelfPlate()
 		
+		--update quest log after the addon initialization
 		C_Timer.After (4.1, Plater.QuestLogUpdated)
-		C_Timer.After (5.1, function() Plater.IncreaseRefreshID(); Plater.UpdateAllPlates() end)
+
+		--update all nameplate after the addon initialized
+		C_Timer.After (5.1, function() 
+			Plater.IncreaseRefreshID()
+			Plater.FullRefreshAllPlates()
+		end)
 	
 		for i = 1, 3 do
 			C_Timer.After (i, Plater.RefreshDBUpvalues)
@@ -5619,7 +5664,7 @@ end
 				if (unitFrame.ActorType == ACTORTYPE_FRIENDLY_PLAYER) then
 					if (Plater.db.profile.use_playerclass_color) then
 						local _, class = UnitClass (unitID)
-						local classColor = RAID_CLASS_COLORS [class]
+						local classColor = DB_CLASS_COLORS [class]
 						if (classColor) then -- and unitFrame.optionTable.useClassColors
 							r, g, b, a = classColor.r, classColor.g, classColor.b, classColor.a
 						end
@@ -5629,7 +5674,7 @@ end
 				elseif (unitFrame.ActorType == ACTORTYPE_ENEMY_PLAYER) then
 					if (Plater.db.profile.plate_config.enemyplayer.use_playerclass_color) then
 						local _, class = UnitClass (unitID)
-						local classColor = RAID_CLASS_COLORS [class]
+						local classColor = DB_CLASS_COLORS [class]
 						if (classColor) then -- and unitFrame.optionTable.useClassColors
 							r, g, b, a = classColor.r, classColor.g, classColor.b, classColor.a
 						end
@@ -5685,7 +5730,7 @@ end
 				_, class = UnitClass (unit)
 			end
 			if (class) then
-				local color = RAID_CLASS_COLORS [class]
+				local color = DB_CLASS_COLORS [class]
 				if (color) then
 					text = "|c" .. color.colorStr .. DF:RemoveRealName (text) .. "|r"
 				end
@@ -5862,6 +5907,9 @@ end
 			--PixelUtil.SetSize (castBar.BorderShield, castBarHeight * 1.4, castBarHeight * 1.4)
 			PixelUtil.SetSize (castBar.Spark, profile.cast_statusbar_spark_width, castBarHeight)
 			Plater.UpdateCastbarIcon(castBar)
+
+			castBar._points = {{"topleft", healthBar, "bottomleft", castBarOffSetXRel + castBarOffSetX, castBarOffSetY},
+			{"topright", healthBar, "bottomright", -castBarOffSetXRel + castBarOffSetX, castBarOffSetY}}
 
 		--power bar
 			powerBar:ClearAllPoints()
@@ -6975,7 +7023,7 @@ end
 				if (plateConfigs.actorname_use_class_color) then
 					local _, unitClass = UnitClass (plateFrame.unitFrame [MEMBER_UNITID])
 					if (unitClass) then
-						local color = RAID_CLASS_COLORS [unitClass]
+						local color = DB_CLASS_COLORS [unitClass]
 						DF:SetFontColor (nameFontString, color.r, color.g, color.b)
 					else
 						DF:SetFontColor (nameFontString, plateConfigs.actorname_text_color)
@@ -7167,7 +7215,7 @@ end
 			
 			local _, unitClass = UnitClass (plateFrame.unitFrame [MEMBER_UNITID])
 			if (unitClass) then
-				local color = RAID_CLASS_COLORS [unitClass]
+				local color = DB_CLASS_COLORS [unitClass]
 				DF:SetFontColor (nameString, color.r, color.g, color.b)
 				DF:SetFontColor (guildString, color.r, color.g, color.b)
 			else
@@ -7181,7 +7229,7 @@ end
 			
 			local _, unitClass = UnitClass (plateFrame.unitFrame [MEMBER_UNITID])
 			if (unitClass) then
-				local color = RAID_CLASS_COLORS [unitClass]
+				local color = DB_CLASS_COLORS [unitClass]
 				DF:SetFontColor (nameString, color.r, color.g, color.b)
 				DF:SetFontColor (guildString, color.r, color.g, color.b)
 			else
@@ -7629,7 +7677,7 @@ end
 			else
 				local _, class = UnitClass (unitFrame [MEMBER_UNITID])
 				if (class) then		
-					local color = RAID_CLASS_COLORS [class]
+					local color = DB_CLASS_COLORS [class]
 					Plater.ChangeHealthBarColor_Internal (healthBar, color.r, color.g, color.b, color.a)
 				else
 					Plater.ChangeHealthBarColor_Internal (healthBar, 1, 1, 1, 1)
@@ -7656,7 +7704,7 @@ end
 				if (DB_PLATE_CONFIG [actorType].use_playerclass_color) then
 					local _, class = UnitClass (unitFrame [MEMBER_UNITID])
 					if (class) then		
-						local color = RAID_CLASS_COLORS [class]
+						local color = DB_CLASS_COLORS [class]
 						Plater.ChangeHealthBarColor_Internal (healthBar, color.r, color.g, color.b, color.a)
 					else
 						Plater.ChangeHealthBarColor_Internal (healthBar, unpack (DB_PLATE_CONFIG [actorType].fixed_class_color))
@@ -8915,6 +8963,12 @@ end
 				local castBar = unitFrame.castBar
 				if (unitFrame.PlaterOnScreen and castBar:IsShown()) then
 					if (plateFrame [MEMBER_GUID] == targetGUID) then
+						--get owner name if a pet interrupted
+						local petOwnerTable = PET_CACHE[sourceGUID]
+						if (petOwnerTable) then
+							name = petOwnerTable.ownerName or name
+							sourceGUID = petOwnerTable.ownerGUID or sourceGUID
+						end
 						if DB_USE_NAME_TRANSLIT then
 							name = LibTranslit:Transliterate(name, TRANSLIT_MARK)
 						end
@@ -8923,6 +8977,43 @@ end
 						castBar.InterruptSourceName = sourceName
 						castBar.InterruptSourceGUID = sourceGUID
 						
+						--interrupt animation
+						if (Plater.db.profile.cast_statusbar_interrupt_anim) then
+							local interruptAnim = castBar._interruptAnim
+							if (not interruptAnim) then
+								--scale animation
+								local duration = 0.05
+								local animationHub = DF:CreateAnimationHub(castBar)
+								animationHub.ScaleUp = DF:CreateAnimation(animationHub, "scale", 1, duration,	1, 	1, 	1, 	1.05)
+								animationHub.ScaleDown = DF:CreateAnimation(animationHub, "scale", 2, duration,	1, 	1.05, 	1, 	0.95)
+
+								--shake animattion
+								local duration = 0.36
+								local amplitude = 0.58
+								local frequency = 37.39
+								local absolute_sineX = false
+								local absolute_sineY = false
+								local scaleX = 0
+								local scaleY = 1.2
+								local fade_out = 0.33
+								local fade_in = 0.001
+								local cooldown = 0.5
+
+								local points = castBar._points
+								local frameShakeObject = DF:CreateFrameShake(castBar, duration, amplitude, frequency, absolute_sineX, absolute_sineY, scaleX, scaleY, fade_in, fade_out, points)
+
+								castBar._interruptAnim = {
+									Scale = animationHub,
+									Shake = frameShakeObject
+								}
+
+								interruptAnim = castBar._interruptAnim
+							end
+
+							interruptAnim.Scale:Play()
+							castBar:PlayFrameShake(interruptAnim.Shake)
+						end
+
 						castBar.FrameOverlay.TargetName:Hide() -- hide the target immediately
 						--> check and stop the casting script if any
 						castBar:OnHideWidget()
@@ -9211,14 +9302,6 @@ function Plater.SetCVarsOnFirstRun()
 	
 	Plater.RunFunctionForEvent ("ZONE_CHANGED_NEW_AREA")
 	
-	--InterfaceOptionsNamesPanelUnitNameplatesMakeLarger:Click() --this isn't required anymore since we use our own unitframe now
-	--InterfaceOptionsNamesPanelUnitNameplatesPersonalResource:Click() --removing this since I don't have documentation on why this was added
-	--InterfaceOptionsNamesPanelUnitNameplatesPersonalResource:Click()
-	
-	--[=[
-	Plater.RestoreProfileCVars()
-	--]=]
-	
 	--Plater:Msg ("Plater has been successfully installed on this character.")
 	
 	Plater.RestoreProfileCVars() -- restore profile, if existing
@@ -9262,8 +9345,14 @@ end
 		-- reset quest amount
 		plateFrame.QuestAmountCurrent = nil
 		plateFrame.QuestAmountTotal = nil
+		plateFrame.QuestText = nil
+		plateFrame.QuestName = nil
+		plateFrame.QuestIsCampaign = nil
 		plateFrame.unitFrame.QuestAmountCurrent = nil
 		plateFrame.unitFrame.QuestAmountTotal = nil
+		plateFrame.unitFrame.QuestText = nil
+		plateFrame.unitFrame.QuestName = nil
+		plateFrame.unitFrame.QuestIsCampaign = nil
 		
 		local useQuestie = false
 		local QuestieTooltips = QuestieLoader and QuestieLoader._modules["QuestieTooltips"]
@@ -9284,6 +9373,7 @@ end
 		end
 		
 		local playerName = UnitName("player")
+		local isInGroup = IsInGroup()
 		local unitQuestData = {}
 		
 		local isQuestUnit = false
@@ -9303,6 +9393,8 @@ end
 			if (Plater.QuestCache [text]) then
 				--unit belongs to a quest
 				isQuestUnit = true
+				
+				local isCampaignQuest = Plater.QuestCacheCampaign[text]
 				local isGroupQuest, yourQuest = nil, nil
 				local questData = {
 					questName = text,
@@ -9311,13 +9403,14 @@ end
 					groupQuest = false,
 					groupFinished = true,
 					amount = 0,
+					groupAmount = 0,
 					total = 0,
 					yourQuest = false,
+					isCampaignQuest = isCampaignQuest,
 				}
 
-				local isCampaignQuest = Plater.QuestCacheCampaign[text]
-
 				local amount1, amount2, questText = nil, nil, nil
+				local amountSet = false
 				local j = i
 				while (ScanQuestTextCache [j+1]) do
 					--check if the unit objective isn't already done
@@ -9333,13 +9426,21 @@ end
 					end
 					
 					if (nextLineText) then
-						if nextLineText == playerName then
+						if useQuestie then
+							local isQuestieOwn = nextLineText:match ("%(("..playerName..")%)%s*$") and true or false
+							local isQuestieGroup = nextLineText:match ("%((%w+)%)%s*$") and isInGroup and true or false
+							yourQuest = isQuestieOwn or not isQuestieGroup
+							isGroupQuest = isQuestieGroup
+							questData.yourQuest = yourQuest
+							questData.groupQuest = isGroupQuest
+						end
+						if not useQuestie and isInGroup and nextLineText == playerName then
 							yourQuest = true
 							isGroupQuest = true
 							questData.yourQuest = true
 							questData.groupQuest = true
 						elseif not nextLineText:match(THREAT_TOOLTIP) then
-							local p1, p2 = nextLineText:match ("(%d+)/(%d+)") 
+							local p1, p2 = nextLineText:match ("(%d+)/(%d+)")
 							if (not p1) then
 								-- check for % based quests
 								p1 = nextLineText:match ("(%d+%%)")
@@ -9353,15 +9454,24 @@ end
 								-- quest not completed
 								atLeastOneQuestUnfinished = true
 								amount1, amount2 = p1, p2
-								questData.amount = amount1
+								if not amountSet or ((tonumber(p1) or 0) < (tonumber(questData.groupAmount) or 0)) then
+									questData.groupAmount = amount1
+								end
+								
 								questData.total = amount2
 								if yourQuest ~= false then
-									yourQuest = false
+									yourQuest = false -- already set on data
 									questData.finished = false
+									questData.amount = amount1
 								end
 								questData.groupFinished = false
 								questData.questText = nextLineText
 								questText = nextLineText
+								amountSet = true
+							elseif yourQuest and (p1 and p2 and (p1 == p2)) or (p1 and not p2 and (p1 == "100")) then
+								yourQuest = false -- already set on data
+								questData.finished = true
+								questData.amount = p1
 							end
 						else
 							j = 99 --safely break here, as we saw threat% -> quest text is done
@@ -9371,15 +9481,17 @@ end
 				end
 
 				if (amount1 and atLeastOneQuestUnfinished) then
-					plateFrame.QuestAmountCurrent = amount1
+					plateFrame.QuestAmountCurrent = questData.groupAmount
 					plateFrame.QuestAmountTotal = amount2
 					plateFrame.QuestText = questText
+					plateFrame.QuestName = text
 					plateFrame.QuestIsCampaign = isCampaignQuest
 					
 					--expose to scripts
-					plateFrame.unitFrame.QuestAmountCurrent = amount1
+					plateFrame.unitFrame.QuestAmountCurrent = questData.groupAmount
 					plateFrame.unitFrame.QuestAmountTotal = amount2
 					plateFrame.unitFrame.QuestText = questText
+					plateFrame.unitFrame.QuestName = text
 					plateFrame.unitFrame.QuestIsCampaign = isCampaignQuest
 				end
 				
@@ -11517,13 +11629,15 @@ end
 				globalScriptObject [hookName] = compiledScript()
 				
 				--insert the script in the global script container, remove existing, as option changes re-compile only single mod without wipe
+				local isReplace = false
 				for i, curScriptObject in ipairs(globalScriptContainer) do
 					if scriptObject.scriptId == curScriptObject.scriptId then
 						tremove(globalScriptContainer, i)
+						isReplace = true
 					end
 				end
 				tinsert (globalScriptContainer, globalScriptObject)
-				globalScriptContainer.ScriptAmount = globalScriptContainer.ScriptAmount + 1
+				globalScriptContainer.ScriptAmount = globalScriptContainer.ScriptAmount + (isReplace and 0 or 1)
 				
 				if (hookName == "Constructor") then
 					globalScriptObject.HasConstructor = true

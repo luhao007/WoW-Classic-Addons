@@ -987,7 +987,7 @@ local function GetScrolls(checkType)
 	end
 
 	if not checkType or checkType == 1 then
-		result = ""
+		local result = ""
 		PublicResults(result,checkType)
 	end
 end
@@ -3173,7 +3173,7 @@ end)
 addonMsgFrame:RegisterEvent("CHAT_MSG_ADDON")
 
 
-if (not ExRT.isClassic) and UnitLevel'player' >= 60 and not ExRT.is10 then
+if (not ExRT.isClassic) and UnitLevel'player' == 60 then
 	local consumables_size = 44
 
 	local lastWeaponEnchantItem
@@ -3249,7 +3249,7 @@ if (not ExRT.isClassic) and UnitLevel'player' >= 60 and not ExRT.is10 then
 			button.click = CreateFrame("Button",nil,button,"SecureActionButtonTemplate")
 			button.click:SetAllPoints()
 			button.click:Hide()
-			button.click:RegisterForClicks("AnyDown")
+			button.click:RegisterForClicks("AnyUp")
 			if i == 4 or i == 7 then
 				button.click:SetAttribute("type", "item")
 				button.click:SetAttribute("target-slot", i == 4 and "16" or "17")

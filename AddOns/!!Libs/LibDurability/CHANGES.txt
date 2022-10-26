@@ -1,18 +1,7 @@
 ------------------------------------------------------------------------
-r32 | funkehdude | 2022-09-05 22:07:12 +0000 (Mon, 05 Sep 2022) | 1 line
+r34 | funkehdude | 2022-10-26 00:42:02 +0000 (Wed, 26 Oct 2022) | 1 line
 Changed paths:
-   A /trunk/LibDurability_Wrath.toc
-
-Add Wrath toc
-------------------------------------------------------------------------
-r31 | funkehdude | 2022-09-05 22:04:43 +0000 (Mon, 05 Sep 2022) | 1 line
-Changed paths:
-   M /trunk/LibDurability.toc
-
-bump toc
-------------------------------------------------------------------------
-r30 | funkehdude | 2022-06-01 04:20:17 +0000 (Wed, 01 Jun 2022) | 1 line
-Changed paths:
+   M /trunk/LibDurability/LibDurability.lua
    M /trunk/LibDurability.toc
 
 bump toc

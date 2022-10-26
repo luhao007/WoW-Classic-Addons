@@ -24,13 +24,13 @@ module.db.sessionInRaid = nil
 local BNGetFriendInfo = function(friendIndex)
 	local accountInfo = C_BattleNet.GetFriendAccountInfo(friendIndex)
 	if accountInfo then
-		local wowProjectID = accountInfo.wowProjectID or 0
-		local clientProgram = accountInfo.clientProgram ~= "" and accountInfo.clientProgram or nil
+		local wowProjectID = accountInfo.gameAccountInfo and accountInfo.gameAccountInfo.wowProjectID or 0
+		local clientProgram = accountInfo.gameAccountInfo and accountInfo.gameAccountInfo.clientProgram ~= "" and accountInfo.gameAccountInfo.clientProgram or nil
 
 		return	accountInfo.bnetAccountID, accountInfo.accountName, accountInfo.battleTag, accountInfo.isBattleTagFriend,
-				accountInfo.characterName, accountInfo.gameAccountID, clientProgram,
-				accountInfo.isOnline, accountInfo.lastOnlineTime, accountInfo.isAFK, accountInfo.isDND, accountInfo.customMessage, accountInfo.note, true,
-				accountInfo.customMessageTime, wowProjectID, accountInfo.isRecruitAFriend, accountInfo.canSummon, accountInfo.isFavorite, accountInfo.isWowMobile
+				accountInfo.gameAccountInfo.characterName, accountInfo.gameAccountInfo.gameAccountID, clientProgram,
+				accountInfo.gameAccountInfo.isOnline, accountInfo.lastOnlineTime, accountInfo.isAFK, accountInfo.isDND, accountInfo.customMessage, accountInfo.note, true,
+				accountInfo.customMessageTime, wowProjectID, accountInfo.rafLinkType == Enum.RafLinkType.Recruit, accountInfo.gameAccountInfo.canSummon, accountInfo.isFavorite, accountInfo.gameAccountInfo.isWowMobile
 	end
 end
 

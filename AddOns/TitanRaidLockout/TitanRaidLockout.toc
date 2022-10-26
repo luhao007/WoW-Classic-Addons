@@ -1,10 +1,10 @@
 ## Interface: 30400
 ## Author: Gamut - Nethergarde Keep EU
-## Version: v1.3.0-classic-wotlk
+## Version: v1.3.1-classic-wotlk
 ## Dependencies: TitanClassic
 ## SavedVariables: SavedLockoutTable
 
-## Title: Titan Panel Classic [|cffeda55fRaidLockout|r] |cff00aa001.3.0 WoTLK|r
+## Title: Titan Panel Classic [|cffeda55fRaidLockout|r] |cff00aa001.3.1 WoTLK|r
 ## Notes: Adds raid lockout info to Titan Panel
 ## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFF泰坦面板|r |cFF69CCF0团本锁定|r
 ## Notes-zhCN: 泰坦面板的团本锁定模块

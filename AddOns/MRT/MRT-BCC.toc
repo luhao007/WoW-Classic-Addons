@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: ykiigor
-## Version: 4660
+## Version: 4680
 ## OptionalDeps: ExRT
 ## SavedVariables: VMRT
 
@@ -12,6 +12,7 @@
 
 core.lua
 Functions.lua
+embeds.xml
 ExLib.lua
 localization\localization.ru.lua
 localization\localization.en.lua
@@ -44,7 +45,6 @@ AutoLogging.lua
 LootLink.lua
 WAChecker.lua
 Bindings.lua
-Bindings.xml
 Blank.lua
 Profiles.lua
 Changelog.lua
