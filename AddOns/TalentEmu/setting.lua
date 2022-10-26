@@ -1,4 +1,4 @@
-﻿--[[--
+--[[--
 	by ALA @ 163UI
 --]]--
 ----------------------------------------------------------------------------------------------------
@@ -30,7 +30,7 @@ local DT = __private.DT;
 		show_equipment = true,
 		inspect_pack = false,
 		max_recv_msg = 16,
-		minimap = true,
+		minimap = false,
 		minimapPos = 185,
 		autoShowEquipmentFrame = true,
 	};

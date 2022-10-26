@@ -109,7 +109,7 @@ RegEvent("ADDON_LOADED", function()
         b.text = b:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         b.text:SetPoint("LEFT", b, "RIGHT", 0, 1)
         b.text:SetText(L["Minimap Icon"])
-        b:SetChecked(Database:GetConfigOrDefault("minimapicon", true))
+        b:SetChecked(Database:GetConfigOrDefault("minimapicon", false))
         b:SetScript("OnClick", function()
             Database:SetConfig("minimapicon", b:GetChecked())
 
@@ -187,21 +187,21 @@ RegEvent("ADDON_LOADED", function()
         t:SetPoint("TOPLEFT", f, 25, -180)
         t:SetWidth(550)
         t:SetHeight(200)
-        t:SetBackdrop({ 
+        t:SetBackdrop({
             bgFile = "Interface/Tooltips/UI-Tooltip-Background",
             edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
             tile = true,
             tileEdge = true,
             tileSize = 16,
             edgeSize = 16,
-            insets = { left = 2, right = 2, top = 2, bottom = 2 },    
+            insets = { left = 2, right = 2, top = 2, bottom = 2 },
         })
         t:SetBackdropColor(0, 0, 0);
-    
+
         local s = CreateFrame("ScrollFrame", nil, t, "UIPanelScrollFrameTemplate")
         s:SetWidth(510)
         s:SetHeight(175)
-        s:SetPoint("TOPLEFT", 10, -10)        
+        s:SetPoint("TOPLEFT", 10, -10)
 
         local edit = CreateFrame("EditBox", nil, s)
         edit.cursorOffset = 0
@@ -221,7 +221,7 @@ RegEvent("ADDON_LOADED", function()
         s:SetScrollChild(edit)
 
         editDebitTemplate = edit
-    end    
+    end
 
     do
         local t = CreateFrame("Frame", nil, f, "UIDropDownMenuTemplate")
@@ -341,7 +341,7 @@ RegEvent("ADDON_LOADED", function()
 
         do
             local idx = Database:GetConfigOrDefault("debittemplateidx", nil)
-            UIDropDownMenu_SetSelectedValue(t, idx)    
+            UIDropDownMenu_SetSelectedValue(t, idx)
             onclick({value = idx})
         end
 
@@ -416,7 +416,7 @@ RegEvent("ADDON_LOADED", function()
                 end
             end)
         end
-       
+
         do
             local b = CreateFrame("Button", nil, f, "GameMenuButtonTemplate")
             b:SetWidth(70)
@@ -482,22 +482,22 @@ RegEvent("ADDON_LOADED", function()
             t:SetPoint("TOPLEFT", f, 25, -400)
             t:SetWidth(550)
             t:SetHeight(100)
-            t:SetBackdrop({ 
+            t:SetBackdrop({
                 bgFile = "Interface/Tooltips/UI-Tooltip-Background",
                 edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
                 tile = true,
                 tileEdge = true,
                 tileSize = 16,
                 edgeSize = 16,
-                insets = { left = 2, right = 2, top = 2, bottom = 2 },    
+                insets = { left = 2, right = 2, top = 2, bottom = 2 },
             })
             t:SetBackdropColor(0, 0, 0);
-        
+
             local s = CreateFrame("ScrollFrame", nil, t, "UIPanelScrollFrameTemplate")
             s:SetWidth(510)
             s:SetHeight(75)
-            s:SetPoint("TOPLEFT", 10, -10)        
-    
+            s:SetPoint("TOPLEFT", 10, -10)
+
             local edit = CreateFrame("EditBox", nil, s)
             edit.cursorOffset = 0
             edit:SetWidth(500)
@@ -513,12 +513,12 @@ RegEvent("ADDON_LOADED", function()
             end)
             edit:SetScript("OnCursorChanged", ScrollingEdit_OnCursorChanged)
             edit:SetScript("OnEscapePressed", edit.ClearFocus)
-    
+
             s:SetScrollChild(edit)
             edit:SetText(Database:GetConfigOrDefault("filteritems", L["# one item per line, can be item name or item id"] .. "\n" .. L["# line starts with # will be ignored"] .. "\n"))
-        end    
-    
-          
+        end
+
+
     end
 
 end)

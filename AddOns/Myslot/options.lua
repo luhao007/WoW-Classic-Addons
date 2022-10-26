@@ -36,7 +36,7 @@ RegEvent("ADDON_LOADED", function()
 
     do
         MyslotSettings = MyslotSettings or {}
-        MyslotSettings.minimap = MyslotSettings.minimap or { hide = false }
+        MyslotSettings.minimap = MyslotSettings.minimap or { hide = true }
         local config = MyslotSettings.minimap
 
         local b = CreateFrame("CheckButton", nil, f, "UICheckButtonTemplate")
@@ -116,6 +116,6 @@ StaticPopupDialogs["MYSLOT_CONFIRM_CLEAR"] = {
         else
             MySlot:Print(L["Please type %s to confirm"]:format(data))
         end
-        
+
     end,
 }

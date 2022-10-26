@@ -379,7 +379,7 @@ class Manager:
     def handle_atlasloot():
         utils.change_defaults(
             'Addons/AtlasLootClassic/db.lua',
-            '		shown = true,'
+            '			shown = false,'
         )
 
     @staticmethod
@@ -502,6 +502,13 @@ class Manager:
                             for line in lines]
         )
 
+    @staticmethod
+    @available_on(['classic'])
+    def handle_myslot():
+        utils.change_defaults(
+            'AddOns/Myslot/options.lua',
+            ['        MyslotSettings.minimap = MyslotSettings.minimap or { hide = true }']
+        )
 
     @staticmethod
     def handle_omnicc():
@@ -589,6 +596,22 @@ class Manager:
         )
 
     @staticmethod
+    @available_on(['classic'])
+    def handle_rl():
+        utils.change_defaults(
+            'AddOns/RaidLedger/options.lua',
+            ['        b:SetChecked(Database:GetConfigOrDefault("minimapicon", false))']
+        )
+
+    @staticmethod
+    @available_on(['classic'])
+    def handle_rs():
+        utils.change_defaults(
+            'AddOns/RareScanner/Core/Libs/RSConstants.lua',
+            ['				hide = true']
+        )
+
+    @staticmethod
     @available_on(['retail'])
     def handle_sc():
         utils.change_defaults(
@@ -604,6 +627,14 @@ class Manager:
             ['                character = false,',
              '                bags = false,',
              '                color = false,']
+        )
+
+    @staticmethod
+    @available_on(['classic'])
+    def handle_talentemu():
+        utils.change_defaults(
+            'AddOns/TalentEmu/setting.lua',
+            ['		minimap = false,']
         )
 
     @staticmethod
@@ -631,6 +662,11 @@ class Manager:
             'AddOns/TradeSkillMaster/TradeSkillMaster.toc',
             lambda lines: [line for line in lines
                             if 'EmbeddedLibs' not in line]
+        )
+
+        utils.change_defaults(
+            'AddOns/TradeSkillMaster/LibTSM/Service/Settings.lua',
+            ['			minimapIcon = { type = "table", default = { hide = true, minimapPos = 220, radius = 80 }, lastModifiedVersion = 10 },']
         )
 
     @staticmethod

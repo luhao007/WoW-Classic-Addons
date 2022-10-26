@@ -74,7 +74,7 @@ AtlasLoot.AtlasLootDBDefaults = {
 			buttonOnTitleBar = true,
 		},
 		minimap = {
-			shown = true,
+			shown = false,
 			locked = false,
 			minimapPos = 218,
 		},

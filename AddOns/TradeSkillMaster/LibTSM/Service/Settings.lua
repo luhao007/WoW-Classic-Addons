@@ -276,7 +276,7 @@ local SETTINGS_INFO = {
 			protectAuctionHouse = { type = "boolean", default = false, lastModifiedVersion = 77 },
 			chatFrame = { type = "string", default = "", lastModifiedVersion = 10 },
 			auctionSaleSound = { type = "string", default = Sound.GetNoSoundKey(), lastModifiedVersion = 10 },
-			minimapIcon = { type = "table", default = { hide = false, minimapPos = 220, radius = 80 }, lastModifiedVersion = 10 },
+			minimapIcon = { type = "table", default = { hide = true, minimapPos = 220, radius = 80 }, lastModifiedVersion = 10 },
 			destroyValueSource = { type = "string", default = "dbmarket", lastModifiedVersion = 10 },
 			groupPriceSource = { type = "string", default = "dbmarket", lastModifiedVersion = 41 },
 		},
