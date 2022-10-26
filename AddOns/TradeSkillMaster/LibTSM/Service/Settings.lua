@@ -385,6 +385,9 @@ local SETTINGS_INFO = {
 			mats = { type = "table", default = {}, lastModifiedVersion = 10 },
 			guildGoldLog = { type = "table", default = {}, lastModifiedVersion = 25 },
 			guildGoldLogLastUpdate = { type = "table", default = {}, lastModifiedVersion = 83 },
+			csvAuctionDBScan = { type = "string", default = "", lastModifiedVersion = 50 },
+			auctionDBScanTime = { type = "number", default = 0, lastModifiedVersion = 50 },
+			auctionDBScanHash = { type = "number", default = 0, lastModifiedVersion = 50 },
 			isCraftFavorite = { type = "table", default = {}, lastModifiedVersion = 56 },
 		},
 		coreOptions = {

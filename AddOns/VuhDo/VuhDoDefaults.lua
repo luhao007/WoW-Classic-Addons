@@ -111,7 +111,7 @@ end
 
 local VUHDO_DEFAULT_MODELS = {
 	{ VUHDO_ID_GROUP_1, VUHDO_ID_GROUP_2, VUHDO_ID_GROUP_3, VUHDO_ID_GROUP_4, VUHDO_ID_GROUP_5, VUHDO_ID_GROUP_6, VUHDO_ID_GROUP_7, VUHDO_ID_GROUP_8, VUHDO_ID_PETS },
-	{ VUHDO_ID_PRIVATE_TANKS, VUHDO_ID_BOSSES }, 
+	{ VUHDO_ID_PRIVATE_TANKS, VUHDO_ID_BOSSES },
 };
 
 
@@ -391,9 +391,9 @@ end
 --
 local function VUHDO_makeFullColorWoOpacity(...)
 	local tColor = VUHDO_makeFullColor(...);
-	
+
 	tColor["useOpacity"] = false;
-	
+
 	return tColor;
 end
 
@@ -402,14 +402,14 @@ end
 --
 local function VUHDO_makeHotColor(...)
 	local tColor = VUHDO_makeFullColor(...);
-	
+
 	tColor["isFullDuration"] = false;
 	tColor["isClock"] = false;
 	tColor["countdownMode"] = 1;
 	tColor["useOpacity"] = false;
 	tColor["isFadeOut"] = false;
 	tColor["isFlashWhenLow"] = false;
-	
+
 	return tColor;
 end
 
@@ -442,7 +442,7 @@ local function VUHDO_customDebuffsAddDefaultSettings(aBuffName)
 		VUHDO_CONFIG["CUSTOM_DEBUFF"]["STORED_SETTINGS"][aBuffName]["color"]
 			= VUHDO_makeFullColor(0.6, 0.3, 0, 1,   0.8, 0.5, 0, 1);
 	end
-	
+
 	if (not VUHDO_CONFIG["CUSTOM_DEBUFF"]["STORED_SETTINGS"][aBuffName]["isBarGlow"]) then
 		VUHDO_CONFIG["CUSTOM_DEBUFF"]["STORED_SETTINGS"][aBuffName]["barGlowColor"] = nil;
 	elseif (VUHDO_CONFIG["CUSTOM_DEBUFF"]["STORED_SETTINGS"][aBuffName]["barGlowColor"] == nil) then
@@ -607,8 +607,8 @@ local VUHDO_DEFAULT_CONFIG = {
 		["isIcon"] = true,
 		["isColor"] = false,
 		["isStacks"] = false,
-		["isName"] = false, 
-		["isShowOnlyForFriendly"] = false, 
+		["isName"] = false,
+		["isShowOnlyForFriendly"] = false,
 		["blacklistModi"] = "ALT-CTRL-SHIFT",
 		["SELECTED"] = "",
 		["point"] = "TOPRIGHT",
@@ -860,7 +860,7 @@ function VUHDO_loadDefaultConfig()
 	end
 
 	-- 3.4.0 - Wrath of the Lich King Classic - phase 1
-	VUHDO_addCustomSpellIds(54, 
+	VUHDO_addCustomSpellIds(54,
 		-- [[ Obsidian Sanctum ]]
 		60708,  -- Fade Armor
 		57491,  -- Flame Tsunami
@@ -1019,7 +1019,7 @@ function VUHDO_loadDefaultConfig()
 
 	for tIndex, tName in pairs(VUHDO_CONFIG["CUSTOM_DEBUFF"]["STORED"]) do
 		-- I introduced a bug which added some default custom debuffs by spell ID
-		-- where spell ID was a number and not a string, this causes all sorts of odd 
+		-- where spell ID was a number and not a string, this causes all sorts of odd
 		-- bugs in the custom debuff code particularly any getKeyFromValue table lookups
 		if (type(tName) == "number") then
 			-- if we encounter a custom debuff stored by an actual number flag this key for removal
@@ -1041,7 +1041,7 @@ function VUHDO_loadDefaultConfig()
 	end
 
 	-- add default spells to track with spell trace
-	VUHDO_addSpellTraceSpellIds(1, 
+	VUHDO_addSpellTraceSpellIds(1,
 		-- Shaman
 		1064,   -- Chain Heal
 		-- Priest
@@ -1404,7 +1404,7 @@ local VUHDO_DEFAULT_PER_PANEL_SETUP = {
 	},
 
 	["ID_TEXT"] = {
-		["showName"] = true, 
+		["showName"] = true,
 		["showNickname"] = false,
 		["showClass"] = false,
 		["showTags"] = true,
@@ -1563,7 +1563,7 @@ function VUHDO_loadDefaultPanelSetup()
 
 		VUHDO_PANEL_SETUP[tPanelNum] = VUHDO_ensureSanity("VUHDO_PANEL_SETUP[" .. tPanelNum .. "]", VUHDO_PANEL_SETUP[tPanelNum], VUHDO_DEFAULT_PER_PANEL_SETUP);
 	end
-	
+
 	VUHDO_PANEL_SETUP = VUHDO_ensureSanity("VUHDO_PANEL_SETUP", VUHDO_PANEL_SETUP, VUHDO_DEFAULT_PANEL_SETUP);
 	VUHDO_DEFAULT_PANEL_SETUP = VUHDO_compressAndPackTable(VUHDO_DEFAULT_PANEL_SETUP);
 	VUHDO_DEFAULT_PER_PANEL_SETUP = VUHDO_compressAndPackTable(VUHDO_DEFAULT_PER_PANEL_SETUP);

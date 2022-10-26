@@ -1,7 +1,6 @@
 import functools
 import logging
 import os
-import re
 import shutil
 from collections.abc import Callable
 from pathlib import Path
@@ -71,7 +70,7 @@ def remove_libs_in_file(path: str | Path, libs: list[str] | set[str]):
 def remove_libraries_all(addon: str, lib_path: Optional[str] = None):
     """Remove all duplicate embedded libraries."""
     if not lib_path:
-        for lib in ['libs', 'lib']:
+        for lib in ['Libs', 'Lib', 'ExternalLibs']:
             path = Path('Addons') / addon / lib
             if os.path.exists(path):
                 lib_path = lib

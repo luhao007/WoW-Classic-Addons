@@ -334,7 +334,7 @@ class Manager:
 
     @staticmethod
     def handle_dup_libraries():
-        addons = [addon for addon in os.listdir('AddOns') if addon not in ['!!Libs', 'Questie']]
+        addons = [addon for addon in os.listdir('AddOns') if addon not in ['!!Libs', 'Questie', 'RareScanner']]
         for addon in addons:
             utils.remove_libraries_all(addon)
 

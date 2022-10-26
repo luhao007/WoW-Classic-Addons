@@ -1,0 +1,13 @@
+## Interface: 30400
+## Author: Shapeshift
+## Version: 1.18
+## SavedVariables: PcdDb
+## DefaultState: enabled
+
+## Title: Profession Cooldown Tracker
+## Notes: Tool to track profession cooldowns across characters on your account.
+## Title-zhCN: |cFFFFE00A<|r|cFF0070DE专业|r|cFFFFE00A>|r |cFFFFFFFF商业技能冷却|r |cFFFFE00AProfessionCooldown|r
+
+
+embeds.xml
+pcd.lua
