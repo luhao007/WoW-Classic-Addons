@@ -67,6 +67,13 @@ def remove_libs_in_file(path: str | Path, libs: list[str] | set[str]):
     process_file(path, process)
 
 
+@functools.lru_cache
+def get_libraries_list():
+    libs = [os.path.split(x[0])[-1] for x in os.walk(Path('AddOns') / '!!Libs')]
+    libs += [os.path.split(x[0])[-1] for x in os.walk(Path('AddOns') / '!!Libs' / 'Ace3')]
+    return libs
+
+
 def remove_libraries_all(addon: str, lib_path: Optional[str] = None):
     """Remove all duplicate embedded libraries."""
     if not lib_path:
@@ -78,8 +85,7 @@ def remove_libraries_all(addon: str, lib_path: Optional[str] = None):
         else:
             return
 
-    libs = os.listdir('AddOns/!!Libs') + os.listdir('AddOns/!!Libs/Ace3')
-    libs = set(libs).intersection(os.listdir(Path('AddOns') / addon / lib_path))
+    libs = set(get_libraries_list()).intersection(os.listdir(Path('AddOns') / addon / lib_path))
 
     if not libs:
         return

@@ -1,3 +1,21 @@
+-- Translate
+local MINOR_INSCRIPTION_RESEARCH = "小型雕文研究"
+local NORTHREND_INSCRIPTION_RESEARCH = "诺森德雕文研究"
+local SMELT_TITANSTEEL = "熔炼泰坦精钢"
+local ICY_PRISM = "冰冻棱柱"
+local MOONSHROUD = "月影布"
+local EBONWEAVE = "乌纹布"
+local SPELLWEAVE = "法纹布"
+local GLACIAL_BAG = "冰川背包"
+local NORTHREND_ALCHEMY_RESEARCH = "诺森德炼金研究"
+local TRANSMUTE = "转化"
+local ALCHEMY = "炼金术"
+local TAILORING = "裁缝"
+local LEATHERWORKING = "制皮"
+local JEWELCRAFTING = "宝石加工"
+local ENCHANTING = "附魔"
+local INSCRIPTION = "铭文"
+local MINING = "采矿"
 -- PCD start
 local pcdVersion = 118
 pcdShowMinimapButton = nil
@@ -74,28 +92,28 @@ lootMsgFrame:SetScript("OnEvent", function(self, event, arg1, arg2)
     end
 end)
 function getProfessionName(abilityName)
-    if string.find(abilityName, "Transmute") then
-        return "Alchemy"
+    if string.find(abilityName, TRANSMUTE) then
+        return ALCHEMY
     elseif string.find(abilityName, "Cloth") or string.find(abilityName, "cloth") or string.find(abilityName, "weave") or string.find(abilityName, "shroud") then
-        return "Tailoring"
+        return TAILORING
     elseif string.find(abilityName, "Brilliant Glass") or string.find(abilityName, "Prism") then
-        return "Jewelcrafting"
+        return JEWELCRAFTING
     elseif string.find(abilityName, "Inscription Research") then
-        return "Inscription"
-    elseif string.find(abilityName, "Smelt Titansteel") then
-        return "Mining"
+        return INSCRIPTION
+    elseif string.find(abilityName, SMELT_TITANSTEEL) then
+        return MINING
     end
     return nil
 end
 
-local profNamesToConsider = { 
-    ["Alchemy"] = true,
-    ["Tailoring"] = true,
-    ["Leatherworking"] = true,
-    ["Jewelcrafting"] = true,
-    ["Enchanting"] = true,
-    ["Inscription"] = true,
-    ["Mining"] = true,
+local profNamesToConsider = {
+    [ALCHEMY] = true,
+    [TAILORING] = true,
+    [LEATHERWORKING] = true,
+    [JEWELCRAFTING] = true,
+    [ENCHANTING] = true,
+    [INSCRIPTION] = true,
+    [MINING] = true,
 }
 
 local spellweaveId = 56003
@@ -117,16 +135,16 @@ local tbcCdNamesToConsider = {
 }
 
 local northrendCdNamesToConsider = {
-    ["Minor Inscription Research"] = true,
-    ["Northrend Inscription Research"] = true,
-    ["Smelt Titansteel"] = true,
-    ["Icy Prism"] = true,
-    ["Moonshroud"] = true,
-    ["Ebonweave"] = true,
-    ["Spellweave"] = true,
-    ["Glacial Bag"] = true,
-    ["Northrend Alchemy Research"] = true,
-    ["Transmute"] = true,
+    [MINOR_INSCRIPTION_RESEARCH] = true,
+    [NORTHREND_INSCRIPTION_RESEARCH] = true,
+    [SMELT_TITANSTEEL] = true,
+    [ICY_PRISM] = true,
+    [MOONSHROUD] = true,
+    [EBONWEAVE] = true,
+    [SPELLWEAVE] = true,
+    [GLACIAL_BAG] = true,
+    [NORTHREND_ALCHEMY_RESEARCH] = true,
+    [TRANSMUTE] = true,
     -- ["Transmute (Wrath)"] = true,
 }
 
@@ -163,7 +181,7 @@ local classColors = {
 
 function initProfessionIfNeeded(profName)
     local charName = UnitName("player")
-    if not PcdDb[charName] then 
+    if not PcdDb[charName] then
         PcdDb[charName] = {}
     end
     if not PcdDb[charName]["professions"] then
@@ -211,12 +229,12 @@ end
 
 function UpdateSaltShakerCd()
     local charName = UnitName("player")
-    local lw = PcdDb[charName]["professions"]["Leatherworking"]
+    local lw = PcdDb[charName]["professions"][LEATHERWORKING]
     if lw and lw["skill"] >= 250 then
         local startTime, duration, _ = GetItemCooldown(15846)
         local secondsLeft = GetCooldownLeftOnItem(startTime, duration)
         if (secondsLeft > 0) then
-            PcdDb[charName]["professions"]["Leatherworking"]["cooldowns"] = { ["Salt Shaker"] = secondsLeft + GetServerTime() }
+            PcdDb[charName]["professions"][LEATHERWORKING]["cooldowns"] = { ["Salt Shaker"] = secondsLeft + GetServerTime() }
         end
     end
 end
@@ -229,7 +247,7 @@ function GetCooldownLeftOnItem(start, duration)
     if start < GetTime() then
         local cdEndTime = start + duration
         local cdLeftDuration = cdEndTime - GetTime()
-        
+
         return cdLeftDuration
     end
 
@@ -240,11 +258,11 @@ function GetCooldownLeftOnItem(start, duration)
     local cdStartTime = startupTime - cdTime
     local cdEndTime = cdStartTime + duration
     local cdLeftDuration = cdEndTime - time
-    
+
     return cdLeftDuration
 end
 
--- tbc 
+-- tbc
 local primalMightId = 29688
 local primalMoonclothId = 26751
 local spellclothId = 31373
@@ -332,63 +350,63 @@ function GetCooldownsFromSpellIds()
     InitDbTable()
     local charName = UnitName("Player")
     if PcdDb and PcdDb[charName] and PcdDb[charName]["professions"] then
-        if PcdDb[charName]["professions"]["Alchemy"] then
+        if PcdDb[charName]["professions"][ALCHEMY] then
             logIfLevel(1, "alchemy found")
-            if PcdDb[charName]["professions"]["Alchemy"]["skill"] >= 225 then
+            if PcdDb[charName]["professions"][ALCHEMY]["skill"] >= 225 then
                 local highestTransmuteCd = GetTransmuteCd()
                 if highestTransmuteCd > 0 then
-                    SetCooldownTo("Transmute", "Alchemy", highestTransmuteCd)
+                    SetCooldownTo(TRANSMUTE, ALCHEMY, highestTransmuteCd)
                 end
                 logIfLevel(2, "highest transmute cd: " .. highestTransmuteCd)
             end
-            if PcdDb[charName]["professions"]["Alchemy"]["skill"] >= 400 then
-                SetCooldownForSpell("Northrend Alchemy Research", "Alchemy", northrendAlchemyId)
+            if PcdDb[charName]["professions"][ALCHEMY]["skill"] >= 400 then
+                SetCooldownForSpell(NORTHREND_ALCHEMY_RESEARCH, ALCHEMY, northrendAlchemyId)
             end
         end
-        if PcdDb[charName]["professions"]["Tailoring"] then
+        if PcdDb[charName]["professions"][TAILORING] then
             logIfLevel(1, "Tailoring found")
-            if PcdDb[charName]["professions"]["Tailoring"]["skill"] >= 350 then
-                SetCooldownForSpell("Primal Mooncloth", "Tailoring", primalMoonclothId)
-                SetCooldownForSpell("Spellcloth", "Tailoring", spellclothId)
-                SetCooldownForSpell("Shadowcloth", "Tailoring", shadowclothId)
+            if PcdDb[charName]["professions"][TAILORING]["skill"] >= 350 then
+                SetCooldownForSpell("Primal Mooncloth", TAILORING, primalMoonclothId)
+                SetCooldownForSpell("Spellcloth", TAILORING, spellclothId)
+                SetCooldownForSpell("Shadowcloth", TAILORING, shadowclothId)
             end
-            if PcdDb[charName]["professions"]["Tailoring"]["skill"] >= 415 then
-                SetCooldownForSpell("Moonshroud", "Tailoring", moonshroudId)
-                SetCooldownForSpell("Spellweave", "Tailoring", spellweaveId)
-                SetCooldownForSpell("Ebonweave", "Tailoring", ebonweaveId)
+            if PcdDb[charName]["professions"][TAILORING]["skill"] >= 415 then
+                SetCooldownForSpell(MOONSHROUD, TAILORING, moonshroudId)
+                SetCooldownForSpell(SPELLWEAVE, TAILORING, spellweaveId)
+                SetCooldownForSpell(EBONWEAVE, TAILORING, ebonweaveId)
             end
-            if PcdDb[charName]["professions"]["Tailoring"]["skill"] >= 445 then
-                SetCooldownForSpell("Glacial Bag", "Tailoring", glacialBagId)
+            if PcdDb[charName]["professions"][TAILORING]["skill"] >= 445 then
+                SetCooldownForSpell(GLACIAL_BAG, TAILORING, glacialBagId)
             end
         end
-        if PcdDb[charName]["professions"]["Jewelcrafting"] then
+        if PcdDb[charName]["professions"][JEWELCRAFTING] then
             logIfLevel(1, "Jewelcrafting found")
-            if PcdDb[charName]["professions"]["Jewelcrafting"]["skill"] >= 350 then
-                SetCooldownForSpell("Brilliant Glass", "Jewelcrafting", brilliantGlassId)
+            if PcdDb[charName]["professions"][JEWELCRAFTING]["skill"] >= 350 then
+                SetCooldownForSpell("Brilliant Glass", JEWELCRAFTING, brilliantGlassId)
             end
-            if PcdDb[charName]["professions"]["Jewelcrafting"]["skill"] >= 425 then
-                SetCooldownForSpell("Icy Prism", "Jewelcrafting", icyPrismId)
+            if PcdDb[charName]["professions"][JEWELCRAFTING]["skill"] >= 425 then
+                SetCooldownForSpell(ICY_PRISM, JEWELCRAFTING, icyPrismId)
             end
         end
-        if PcdDb[charName]["professions"]["Enchanting"] then
+        if PcdDb[charName]["professions"][ENCHANTING] then
             logIfLevel(1, "Enchanting found")
-            if PcdDb[charName]["professions"]["Enchanting"]["skill"] >= 350 then
-                SetCooldownForSpell("Void Sphere", "Enchanting", voidSphereId)
+            if PcdDb[charName]["professions"][ENCHANTING]["skill"] >= 350 then
+                SetCooldownForSpell("Void Sphere", ENCHANTING, voidSphereId)
             end
         end
-        if PcdDb[charName]["professions"]["Inscription"] then
+        if PcdDb[charName]["professions"][INSCRIPTION] then
             logIfLevel(1, "Inscription found")
-            if PcdDb[charName]["professions"]["Inscription"]["skill"] >= 75 then
-                SetCooldownForSpell("Minor Inscription Research", "Inscription", minorInscriptionResearchId)
+            if PcdDb[charName]["professions"][INSCRIPTION]["skill"] >= 75 then
+                SetCooldownForSpell(MINOR_INSCRIPTION_RESEARCH, INSCRIPTION, minorInscriptionResearchId)
             end
-            if PcdDb[charName]["professions"]["Inscription"]["skill"] >= 385 then
-                SetCooldownForSpell("Northrend Inscription Research", "Inscription", northrendInscriptionResearch)
+            if PcdDb[charName]["professions"][INSCRIPTION]["skill"] >= 385 then
+                SetCooldownForSpell(NORTHREND_INSCRIPTION_RESEARCH, INSCRIPTION, northrendInscriptionResearch)
             end
         end
-        if PcdDb[charName]["professions"]["Mining"] then
+        if PcdDb[charName]["professions"][MINING] then
             logIfLevel(1, "Mining found")
-            if PcdDb[charName]["professions"]["Mining"]["skill"] >= 450 then
-                SetCooldownForSpell("Smelt Titansteel", "Mining", titanSteelId)
+            if PcdDb[charName]["professions"][MINING]["skill"] >= 450 then
+                SetCooldownForSpell(SMELT_TITANSTEEL, MINING, titanSteelId)
             end
         end
     end
@@ -595,9 +613,9 @@ function InitDbTable()
             PcdDb[dbCharName]["filters"] = {}
         end
         local initVal = "y"
-        if dbCharName == "settings" then 
-            initVal = "x" 
-        else 
+        if dbCharName == "settings" then
+            initVal = "x"
+        else
             InitFilterIfUndefined(dbCharName, "Global", "x")
         end
         local cdNamesToConsider = GetCdNamesToConsider()
@@ -691,8 +709,8 @@ function AddTextWithCDToFrame(theFrame, charName, cdText, rightText, position, c
     local cdNameFont
     local cdFont
     if not theFrame.fontStrings[position] then
-        theFrame.fontStrings[position] = { 
-            ["L"] = theFrame:CreateFontString(nil, "Overlay"), 
+        theFrame.fontStrings[position] = {
+            ["L"] = theFrame:CreateFontString(nil, "Overlay"),
             ["R"] = theFrame:CreateFontString(nil, "Overlay")
         }
     end
@@ -751,7 +769,7 @@ end
 pcdOptionsFrame = CreateFrame("Frame", "PcdOptionsFrame", UIParent)
 pcdOptionsFrame:Hide()
 function CreatePcdOptionsFrame()
-    if not pcdOptionsFrame.close then 
+    if not pcdOptionsFrame.close then
         pcdOptionsFrame.close = CreateFrame("Button", "$parentClose", pcdOptionsFrame, "UIPanelCloseButton")
     end
     pcdOptionsFrame.close:SetSize(24, 24)
@@ -766,7 +784,7 @@ function CreatePcdOptionsFrame()
             EnableMinimapButton(false)
         end
         -- if PcdDb["settings"]["ShowOldCds"] == "y" then
-        --     EnableShowOldCdsInFilters(false) 
+        --     EnableShowOldCdsInFilters(false)
         -- end
     end
 
@@ -792,7 +810,7 @@ function CreatePcdOptionsFrame()
     pcdOptionsFrame.ShowMinimapButtonText:SetPoint("TOPLEFT", 40, -60)
     pcdOptionsFrame.ShowMinimapButtonText:SetText("Show mini map button")
     pcdOptionsFrame.ShowMinimapButtonText:SetFont("Fonts\\FRIZQT__.ttf", 11, "OUTLINE")
-    
+
     if PcdDb["settings"]["CloseOnEscape"] == "y" then
         pcdOptionsFrame.CloseOnEscape:SetChecked(PcdDb["settings"]["CloseOnEscape"])
     else
@@ -806,7 +824,7 @@ function CreatePcdOptionsFrame()
     end
 
     pcdOptionsFrame.CloseOnEscape:SetPoint("TOPLEFT", 350, -34)
-    pcdOptionsFrame.CloseOnEscape:SetScript("OnClick", 
+    pcdOptionsFrame.CloseOnEscape:SetScript("OnClick",
         function()
             local isChecked = pcdOptionsFrame.CloseOnEscape:GetChecked()
             if (isChecked) then
@@ -834,13 +852,13 @@ function CreatePcdOptionsFrame()
                 DisableMinimapButton(true)
             end
         end)
-    
+
     pcdOptionsFrame.CloseOnEscape:Show()
     pcdOptionsFrame.ShowMinimapButton:Show()
     pcdOptionsFrame.CloseOnEscape.tooltip = "If checked, Pcd frames will close when hitting the escape key"
     SetFrameTitle(pcdOptionsFrame, "PCD options")
     RegisterFrameForDrag(pcdOptionsFrame, false)
-    
+
     pcdOptionsFrame:Show()
     pcdOptionsFrame:SetPoint("CENTER", UIParent, "CENTER")
     pcdOptionsFrame:SetSize(400, 120)
@@ -857,7 +875,7 @@ function CreatePCDFrame()
     pcdFrame.close:SetSize(24, 24)
     pcdFrame.close:SetPoint("TOPRIGHT")
     pcdFrame.close:SetScript("OnClick", function(self) self:GetParent():Hide(); end)
-    
+
     if PcdDb and PcdDb["settings"] and PcdDb["settings"]["position"] and next(PcdDb["settings"]["position"]) then
         local pos = PcdDb["settings"]["position"]
         pcdFrame:SetPoint(pos["Point"], UIParent, pos["RelativePoint"], pos["XOfs"], pos["YOfs"])
@@ -876,8 +894,8 @@ function CreatePCDFrame()
         sortedProfData[i] = charSpellAndCd[i]
     end
     table.sort(sortedProfData, function (lhs, rhs) return lhs[3] < rhs[3] end)
-    
-    
+
+
     ClearFontStrings(pcdFrame)
     local printedItemCount = 0
     for i = 1, #sortedProfData do
@@ -888,7 +906,7 @@ function CreatePCDFrame()
                 local cooldownText = GetCooldownText(line[3])
                 AddTextWithCDToFrame(pcdFrame, line[1], line[2], "" .. cooldownText.text, printedItemCount + 1, cooldownText.color)
                 printedItemCount = printedItemCount + 1
-            else 
+            else
                 logIfLevel(1, "skipped " .. line[1] .. " - " .. line[2])
             end
         end
@@ -902,7 +920,7 @@ end
 
 pcdFiltersFrame = CreateFrame("Frame", "PCDFiltersFrame", UIParent)
 pcdFiltersFrame:Hide()
-function CreatePcdFiltersFrame() 
+function CreatePcdFiltersFrame()
     -- char
     pcdFiltersFrame:ClearAllPoints()
     pcdFiltersFrame:Hide()
@@ -913,7 +931,7 @@ function CreatePcdFiltersFrame()
     pcdFiltersFrame.close:SetSize(24, 24)
     pcdFiltersFrame.close:SetPoint("TOPRIGHT")
     pcdFiltersFrame.close:SetScript("OnClick", function(self) self:GetParent():Hide(); end)
-    
+
     if not (pcdFiltersFrame.CheckButtons) then
         pcdFiltersFrame.CheckButtons = {}
     end
@@ -952,50 +970,50 @@ end
 
 function GetSpellIndex(cdName)
     if cdName == "Global"           then return 1 end
-    if cdName == "Transmute"        then return 2 end
-    if cdName == "Northrend Alchemy Research" then return 3 end
-    if cdName == "Spellweave"       then return 4 end
-    if cdName == "Moonshroud"       then return 5 end
-    if cdName == "Ebonweave"        then return 6 end
-    if cdName == "Glacial Bag"      then return 7 end
-    if cdName == "Northrend Inscription Research" then return 8 end
-    if cdName == "Minor Inscription Research" then return 9 end
-    if cdName == "Icy Prism" then return 10 end
+    if cdName == TRANSMUTE        then return 2 end
+    if cdName == NORTHREND_ALCHEMY_RESEARCH then return 3 end
+    if cdName == SPELLWEAVE       then return 4 end
+    if cdName == MOONSHROUD       then return 5 end
+    if cdName == EBONWEAVE        then return 6 end
+    if cdName == GLACIAL_BAG      then return 7 end
+    if cdName == NORTHREND_INSCRIPTION_RESEARCH then return 8 end
+    if cdName == MINOR_INSCRIPTION_RESEARCH then return 9 end
+    if cdName == ICY_PRISM then return 10 end
     if cdName == "Brilliant Glass"  then return 11 end
-    if cdName == "Smelt Titansteel" then return 12 end
+    if cdName == SMELT_TITANSTEEL then return 12 end
     if cdName == "Void Sphere"      then return 13 end
     return -1
 end
 
 function GetSpellIconFromName(cdName)
-    if cdName == "Transmute"        then return 23571 end -- primal might
-    if cdName == "Northrend Alchemy Research" then return 7810 end
-    if cdName == "Spellweave"       then return 41595 end
-    if cdName == "Moonshroud"       then return 41594 end
-    if cdName == "Ebonweave"        then return 41593 end
-    if cdName == "Glacial Bag"      then return 41600 end
-    if cdName == "Northrend Inscription Research" then return 43127 end -- snowfall ink
-    if cdName == "Minor Inscription Research" then return 39469 end -- moonglow ink
-    if cdName == "Icy Prism" then return 44943 end
+    if cdName == TRANSMUTE        then return 23571 end -- primal might
+    if cdName == NORTHREND_ALCHEMY_RESEARCH then return 7810 end
+    if cdName == SPELLWEAVE       then return 41595 end
+    if cdName == MOONSHROUD       then return 41594 end
+    if cdName == EBONWEAVE        then return 41593 end
+    if cdName == GLACIAL_BAG      then return 41600 end
+    if cdName == NORTHREND_INSCRIPTION_RESEARCH then return 43127 end -- snowfall ink
+    if cdName == MINOR_INSCRIPTION_RESEARCH then return 39469 end -- moonglow ink
+    if cdName == ICY_PRISM then return 44943 end
     if cdName == "Brilliant Glass"  then return 35945 end
-    if cdName == "Smelt Titansteel" then return 37663 end
+    if cdName == SMELT_TITANSTEEL then return 37663 end
     if cdName == "Void Sphere"      then return 22459 end
     return -1
 end
 
 function GetSpellNameFromIndex(index)
     if index == 1 then return "Global" end
-    if index == 2 then return "Transmute" end
-    if index == 3 then return "Northrend Alchemy Research" end
-    if index == 4 then return "Spellweave" end
-    if index == 5 then return "Moonshroud" end
-    if index == 6 then return "Ebonweave" end
-    if index == 7 then return "Glacial Bag" end
-    if index == 8 then return "Northrend Inscription Research" end
-    if index == 9 then return "Minor Inscription Research" end
-    if index == 10 then return "Icy Prism" end
+    if index == 2 then return TRANSMUTE end
+    if index == 3 then return NORTHREND_ALCHEMY_RESEARCH end
+    if index == 4 then return SPELLWEAVE end
+    if index == 5 then return MOONSHROUD end
+    if index == 6 then return EBONWEAVE end
+    if index == 7 then return GLACIAL_BAG end
+    if index == 8 then return NORTHREND_INSCRIPTION_RESEARCH end
+    if index == 9 then return MINOR_INSCRIPTION_RESEARCH end
+    if index == 10 then return ICY_PRISM end
     if index == 11 then return "Brilliant Glass" end
-    if index == 12 then return "Smelt Titansteel" end
+    if index == 12 then return SMELT_TITANSTEEL end
     if index == 13 then return "Void Sphere" end
     return "Unknown"
 end
@@ -1028,7 +1046,7 @@ function AddIconToFiltersFrame(index, itemId)
     return AddIconToFrame(pcdFiltersFrame, "TOPLEFT", posX, -50, 30, 30, GetItemIcon(itemId))
 end
 
-function AddIconToFrame(frame, pos, posX, posY, width, height, icon) 
+function AddIconToFrame(frame, pos, posX, posY, width, height, icon)
     local iconFrame = frame:CreateTexture(icon, "OVERLAY")
     iconFrame:SetWidth(width)
     iconFrame:SetHeight(height)
@@ -1056,8 +1074,8 @@ function addPcdFilterData()
 end
 
 function GetClassColorString(charName)
-    if PcdDb["settings"]["ClassColors"] == "y" and PcdDb[charName] and PcdDb[charName]["class"] then 
-        return classColors[PcdDb[charName]["class"]] 
+    if PcdDb["settings"]["ClassColors"] == "y" and PcdDb[charName] and PcdDb[charName]["class"] then
+        return classColors[PcdDb[charName]["class"]]
     else
         return STD_WHITE
     end
@@ -1087,7 +1105,7 @@ function CreateGlobalCheckButtonForCds()
         local spellIndex = GetSpellIndex(cdName)
         CreateCheckButton(1, pcdFiltersFrame, spellIndex)
         pcdFiltersFrame.CheckButtons[1][spellIndex]:SetChecked(checkedValue)
-        pcdFiltersFrame.CheckButtons[1][spellIndex]:SetScript("OnClick", 
+        pcdFiltersFrame.CheckButtons[1][spellIndex]:SetScript("OnClick",
             function()
                 local isChecked = pcdFiltersFrame.CheckButtons[1][spellIndex]:GetChecked()
                 if (isChecked) then
@@ -1114,10 +1132,10 @@ function CharacterHasCooldownWithName(charName, cdName)
             if PcdDb[charName]["professions"][profName]["cooldowns"][cdName] ~= nil then
                 return true
             end
-        end 
+        end
     else
         logIfLevel(1, 'table was null for ' .. charName .. " and " .. cdName)
-    end 
+    end
     return false
 end
 
@@ -1137,7 +1155,7 @@ function CharacterHasProfessionsCooldowns(charName)
         end
     else
         logIfLevel(1, 'CharacterHasProfessionsCooldowns: charData table was null for ' .. charName)
-    end 
+    end
     return false
 end
 
@@ -1179,7 +1197,7 @@ function CreateCheckButtonForCharacterFilter(index, frame, charName, spellName, 
     elseif spellIndex > 1 then
         frame.CheckButtons[index][spellIndex]:Enable()
     end
-    frame.CheckButtons[index][spellIndex]:SetScript("OnClick", 
+    frame.CheckButtons[index][spellIndex]:SetScript("OnClick",
         function()
             local isChecked = frame.CheckButtons[index][spellIndex]:GetChecked()
             if (isChecked) then
@@ -1482,7 +1500,7 @@ function CreateBroker()
 				InitDbTable()
                 if pcdOptionsFrame and pcdOptionsFrame:IsShown() then
                     pcdOptionsFrame:Hide()
-                else 
+                else
                     CreatePcdOptionsFrame()
                 end
 			end
