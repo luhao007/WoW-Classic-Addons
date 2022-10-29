@@ -21,6 +21,7 @@ local private = {
 }
 -- don't use MAX_GUILDBANK_SLOTS_PER_TAB since it isn't available right away
 local GUILD_BANK_TAB_SLOTS = 98
+local NUM_REAL_BAG_SLOTS = not TSM.IsWowClassic() and NUM_BAG_SLOTS + NUM_REAGENTBAG_SLOTS or NUM_BAG_SLOTS
 
 
 
@@ -61,7 +62,7 @@ function BagToBankMoveContext.GetEmptySlotsThreaded(self, emptySlotIds)
 		private.GetEmptySlotsHelper(REAGENTBANK_CONTAINER, emptySlotIds, sortValue)
 	end
 	private.GetEmptySlotsHelper(BANK_CONTAINER, emptySlotIds, sortValue)
-	for bag = NUM_BAG_SLOTS + 1, NUM_BAG_SLOTS + NUM_BANKBAGSLOTS do
+	for bag = NUM_REAL_BAG_SLOTS + 1, NUM_REAL_BAG_SLOTS + NUM_BANKBAGSLOTS do
 		private.GetEmptySlotsHelper(bag, emptySlotIds, sortValue)
 	end
 	Table.SortWithValueLookup(emptySlotIds, sortValue)
@@ -257,7 +258,7 @@ end
 
 function private.BagGetEmptySlotsThreaded(emptySlotIds)
 	local sortValue = Threading.AcquireSafeTempTable()
-	for bag = BACKPACK_CONTAINER, NUM_BAG_SLOTS do
+	for bag = BACKPACK_CONTAINER, NUM_REAL_BAG_SLOTS do
 		private.GetEmptySlotsHelper(bag, emptySlotIds, sortValue)
 	end
 	Table.SortWithValueLookup(emptySlotIds, sortValue)

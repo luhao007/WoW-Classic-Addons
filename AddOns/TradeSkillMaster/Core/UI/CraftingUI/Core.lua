@@ -239,13 +239,13 @@ function private.FSMCreate()
 				else
 					UIParent_OnEvent(UIParent, "TRADE_SKILL_SHOW")
 				end
-				local defaultFrame = (TSM.IsWowDragonflight() and ProfessionsFrame) or (not TSM.IsWowDragonflight() and TradeSkillFrame)
+				local defaultFrame = TSM.IsWowClassic() and TradeSkillFrame or ProfessionsFrame
 				if not private.defaultUISwitchBtn then
 					private.defaultUISwitchBtn = UIElements.New("ActionButton", "switchBtn")
 						:SetSize(60, TSM.IsWowClassic() and 16 or 15)
 						:SetFont("BODY_BODY3_MEDIUM")
 						:AddAnchor("TOPRIGHT", TSM.IsWowClassic() and -60 or -27, TSM.IsWowClassic() and -16 or -4)
-						:SetRelativeLevel(TSM.IsWowDragonflight() and 600 or 3)
+						:SetRelativeLevel(TSM.IsWowClassic() and 3 or 600)
 						:DisableClickCooldown()
 						:SetText(L["TSM4"])
 						:SetScript("OnClick", private.SwitchBtnOnClick)
@@ -275,7 +275,7 @@ function private.FSMCreate()
 				end
 			end)
 			:SetOnExit(function(context)
-				local defaultFrame = (TSM.IsWowDragonflight() and ProfessionsFrame) or (not TSM.IsWowDragonflight() and TradeSkillFrame)
+				local defaultFrame = TSM.IsWowClassic() and TradeSkillFrame or ProfessionsFrame
 				if private.craftOpen then
 					if CraftFrame then
 						ScriptWrapper.Clear(CraftFrame, "OnHide")

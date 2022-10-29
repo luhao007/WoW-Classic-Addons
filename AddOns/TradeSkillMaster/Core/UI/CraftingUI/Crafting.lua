@@ -1442,7 +1442,7 @@ function private.FSMCreate()
 	function fsmPrivate.StartCraft(context, recipeString, quantity)
 		local craftString = CraftString.FromRecipeString(recipeString)
 		local numCrafted = TSM.Crafting.ProfessionUtil.Craft(craftString, recipeString, quantity, context.craftingType ~= "craft", fsmPrivate.CraftCallback)
-		Log.Info("Crafting %d (requested %s) of %d", numCrafted, quantity == math.huge and "all" or quantity, recipeString)
+		Log.Info("Crafting %d (requested %s) of %s", numCrafted, quantity == math.huge and "all" or quantity, recipeString)
 		if numCrafted == 0 then
 			return
 		end

@@ -647,10 +647,10 @@ function TableRow._LayoutHeaderRow(self)
 			end
 			-- the minimum header width is either our header icon width or the minimum text width
 			local minHeaderWidth = iconTexture and TSM.UI.TexturePacks.GetWidth(iconTexture) or MIN_TEXT_WIDTH
-			if TSM.IsWowDragonflight() then
-				button:SetResizeBounds(max(minContentWidth, minHeaderWidth), 0)
-			else
+			if TSM.IsWowClassic() then
 				button:SetMinResize(max(minContentWidth, minHeaderWidth), 0)
+			else
+				button:SetResizeBounds(max(minContentWidth, minHeaderWidth), 0)
 			end
 
 			-- layout the resizer button

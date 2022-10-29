@@ -53,8 +53,8 @@ GuildTracking:OnSettingsLoad(function()
 		:AddNumberField("quantity")
 		:Commit()
 	if not TSM.IsWowVanillaClassic() then
-		Event.Register("GUILDBANKFRAME_OPENED", private.GuildBankFrameOpenedHandler)
-		Event.Register("GUILDBANKFRAME_CLOSED", private.GuildBankFrameClosedHandler)
+		Event.Register(TSM.IsWowClassic() and "GUILDBANKFRAME_OPENED" or "PLAYER_INTERACTION_MANAGER_FRAME_SHOW", private.GuildBankFrameOpenedHandler)
+		Event.Register(TSM.IsWowClassic() and "GUILDBANKFRAME_CLOSED" or "PLAYER_INTERACTION_MANAGER_FRAME_HIDE", private.GuildBankFrameClosedHandler)
 		Event.Register("GUILDBANKBAGSLOTS_CHANGED", private.GuildBankBagSlotsChangedHandler)
 		Delay.AfterFrame(1, private.GetGuildName)
 		Event.Register("PLAYER_GUILD_UPDATE", private.GetGuildName)
@@ -150,7 +150,10 @@ function private.RebuildQuantityDB()
 	private.quantityDB:BulkInsertEnd()
 end
 
-function private.GuildBankFrameOpenedHandler()
+function private.GuildBankFrameOpenedHandler(event, frameType)
+	if not TSM.IsWowClassic() and frameType ~= Enum.PlayerInteractionType.GuildBanker then
+		return
+	end
 	local initialTab = GetCurrentGuildBankTab()
 	for i = 1, GetNumGuildBankTabs() do
 		QueryGuildBankTab(i)
@@ -159,7 +162,10 @@ function private.GuildBankFrameOpenedHandler()
 	private.isOpen = true
 end
 
-function private.GuildBankFrameClosedHandler()
+function private.GuildBankFrameClosedHandler(event, frameType)
+	if not TSM.IsWowClassic() and frameType ~= Enum.PlayerInteractionType.GuildBanker then
+		return
+	end
 	private.isOpen = nil
 end
 

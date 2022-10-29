@@ -195,11 +195,9 @@ function private.ChatMsgLootEventHandler(_, msg)
 		else
 			numMin, numMax = GetTradeSkillNumMade(private.pendingSpellId)
 		end
-	elseif TSM.IsWowDragonflight() then
+	else
 		local info = C_TradeSkillUI.GetRecipeSchematic(private.pendingSpellId, false, 0)
 		numMin, numMax = info.quantityMin, info.quantityMax
-	else
-		numMin, numMax = C_TradeSkillUI.GetRecipeNumItemsProduced(private.pendingSpellId)
 	end
 	if numMin == 1 then
 		numMin = numMin + 1

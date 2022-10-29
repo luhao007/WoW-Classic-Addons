@@ -152,14 +152,18 @@ function private.FSMCreate()
 		)
 		:AddState(FSM.NewState("ST_DEFAULT_OPEN")
 			:SetOnEnter(function(context, isIgnored)
-				MailFrame_OnEvent(MailFrame, "MAIL_SHOW")
+				if TSM.IsWowClassic() then
+					MailFrame_OnEvent(MailFrame, "MAIL_SHOW")
+				else
+					ShowUIPanel(MailFrame)
+				end
 
 				if not private.defaultUISwitchBtn then
 					private.defaultUISwitchBtn = UIElements.New("ActionButton", "switchBtn")
 						:SetSize(60, TSM.IsWowClassic() and 16 or 15)
 						:SetFont("BODY_BODY3")
 						:AddAnchor("TOPRIGHT", TSM.IsWowClassic() and -26 or -27, TSM.IsWowClassic() and -3 or -4)
-						:SetRelativeLevel(TSM.IsWowDragonflight() and 600 or 3)
+						:SetRelativeLevel(TSM.IsWowClassic() and 3 or 600)
 						:DisableClickCooldown()
 						:SetText(L["TSM4"])
 						:SetScript("OnClick", private.SwitchBtnOnClick)

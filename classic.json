@@ -846,10 +846,10 @@
     "name": "Decursive",
     "description": "Afflictions display and cleaning for solo, group and raid with advanced filtering and priority system.",
     "url": "https://www.curseforge.com/wow/addons/decursive",
-    "download_url": "https://edge.forgecdn.net/files/4000/177/Decursive-2.7.8.9-wrath.zip",
-    "date_published": "2022-09-22T00:09:54.110000+00:00",
-    "version": "2.7.8.9-wrath",
-    "changelog_url": "https://api.curseforge.com/v1/mods/2154/files/4000177/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4053/420/Decursive-2.7.8.11-wrath.zip",
+    "date_published": "2022-10-27T10:02:54.643000+00:00",
+    "version": "2.7.8.11-wrath",
+    "changelog_url": "https://api.curseforge.com/v1/mods/2154/files/4053420/changelog",
     "options": {
       "any_flavour": false,
       "any_release_type": false,
@@ -862,6 +862,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "2.7.8.11-wrath",
+        "install_time": "2022-10-29T02:01:22+00:00"
+      },
       {
         "version": "2.7.8.9-wrath",
         "install_time": "2022-09-22T11:58:55+00:00"
@@ -897,10 +901,6 @@
       {
         "version": "2.7.8-classic",
         "install_time": "2020-11-24T11:19:24+00:00"
-      },
-      {
-        "version": "2.7.7.1-classic",
-        "install_time": "2020-11-03T05:33:04+00:00"
       }
     ]
   },
@@ -1605,55 +1605,6 @@
   },
   {
     "source": "curse",
-    "id": "48863",
-    "slug": "myslot",
-    "name": "Myslot",
-    "description": "Myslot is for transferring settings between accounts. Feedback farmer1992@gmail.com",
-    "url": "https://www.curseforge.com/wow/addons/myslot",
-    "download_url": "https://edge.forgecdn.net/files/4030/546/Myslot-v5.8.2-v3.4.0.zip",
-    "date_published": "2022-10-16T09:31:12.357000+00:00",
-    "version": "v5.8.2-v3.4.0",
-    "changelog_url": "https://api.curseforge.com/v1/mods/48863/files/4030546/changelog",
-    "options": {
-      "any_flavour": false,
-      "any_release_type": false,
-      "version_eq": false
-    },
-    "folders": [
-      {
-        "name": "Myslot"
-      }
-    ],
-    "deps": [],
-    "logged_versions": [
-      {
-        "version": "v5.8.2-v3.4.0",
-        "install_time": "2022-10-24T10:20:29+00:00"
-      },
-      {
-        "version": "v5.8.1-v3.4.0",
-        "install_time": "2022-09-05T12:11:38+00:00"
-      },
-      {
-        "version": "v5.8.0-v2.5.2",
-        "install_time": "2021-11-17T11:12:48+00:00"
-      },
-      {
-        "version": "v5.5.1-tbc",
-        "install_time": "2021-05-21T08:24:24+00:00"
-      },
-      {
-        "version": "v5.5.1-classic",
-        "install_time": "2021-01-19T09:02:55+00:00"
-      },
-      {
-        "version": "v5.3.4-classic",
-        "install_time": "2020-11-03T05:33:04+00:00"
-      }
-    ]
-  },
-  {
-    "source": "curse",
     "id": "19406",
     "slug": "opie",
     "name": "OPie\u200b",
@@ -1700,10 +1651,10 @@
     "name": "OmniCC",
     "description": "Cooldown count for everything",
     "url": "https://www.curseforge.com/wow/addons/omni-cc",
-    "download_url": "https://edge.forgecdn.net/files/3934/436/OmniCC-9.2.1.zip",
-    "date_published": "2022-08-14T18:16:27.670000+00:00",
-    "version": "9.2.1",
-    "changelog_url": "https://api.curseforge.com/v1/mods/2057/files/3934436/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4054/866/OmniCC-10.0.1.zip",
+    "date_published": "2022-10-28T12:26:52.207000+00:00",
+    "version": "10.0.1",
+    "changelog_url": "https://api.curseforge.com/v1/mods/2057/files/4054866/changelog",
     "options": {
       "any_flavour": false,
       "any_release_type": false,
@@ -1719,6 +1670,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "10.0.1",
+        "install_time": "2022-10-29T02:01:23+00:00"
+      },
       {
         "version": "9.2.1",
         "install_time": "2022-09-01T13:42:47+00:00"
@@ -1754,10 +1709,6 @@
       {
         "version": "9.0.4-classic",
         "install_time": "2020-11-24T11:19:25+00:00"
-      },
-      {
-        "version": "9.0.3-classic",
-        "install_time": "2020-11-10T10:27:08+00:00"
       }
     ]
   },
@@ -1817,10 +1768,10 @@
     "name": "Pawn",
     "description": "Pawn helps you compare items and find upgrades.",
     "url": "https://www.curseforge.com/wow/addons/pawn",
-    "download_url": "https://edge.forgecdn.net/files/4035/517/Pawn-2.7.4-Wrath.zip",
-    "date_published": "2022-10-20T15:10:41.333000+00:00",
-    "version": "2.7.4 (Wrath)",
-    "changelog_url": "https://api.curseforge.com/v1/mods/4646/files/4035517/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4052/455/Pawn-2.7.6-Wrath.zip",
+    "date_published": "2022-10-26T17:55:26.620000+00:00",
+    "version": "2.7.6 (Wrath)",
+    "changelog_url": "https://api.curseforge.com/v1/mods/4646/files/4052455/changelog",
     "options": {
       "any_flavour": false,
       "any_release_type": false,
@@ -1833,6 +1784,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "2.7.6 (Wrath)",
+        "install_time": "2022-10-29T02:01:23+00:00"
+      },
       {
         "version": "2.7.4 (Wrath)",
         "install_time": "2022-10-21T12:26:55+00:00"
@@ -1868,10 +1823,6 @@
       {
         "version": "2.6.4 (Wrath)",
         "install_time": "2022-09-05T11:09:43+00:00"
-      },
-      {
-        "version": "2.6.2 (Wrath)",
-        "install_time": "2022-09-04T05:20:01+00:00"
       }
     ]
   },
@@ -2245,10 +2196,10 @@
     "name": "TomTom",
     "description": "Acts as your portable navigation assistant",
     "url": "https://www.curseforge.com/wow/addons/tomtom",
-    "download_url": "https://edge.forgecdn.net/files/4049/955/TomTom-v3.2.0-release.zip",
-    "date_published": "2022-10-25T14:54:40.603000+00:00",
-    "version": "v3.2.0-release",
-    "changelog_url": "https://api.curseforge.com/v1/mods/18808/files/4049955/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4053/849/TomTom-v3.3.0-release.zip",
+    "date_published": "2022-10-27T17:02:56.740000+00:00",
+    "version": "v3.3.0-release",
+    "changelog_url": "https://api.curseforge.com/v1/mods/18808/files/4053849/changelog",
     "options": {
       "any_flavour": false,
       "any_release_type": false,
@@ -2261,6 +2212,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v3.3.0-release",
+        "install_time": "2022-10-29T02:01:24+00:00"
+      },
       {
         "version": "v3.2.0-release",
         "install_time": "2022-10-26T03:38:23+00:00"
@@ -2477,10 +2432,10 @@
     "name": "WeakAuras",
     "description": "A powerful, comprehensive utilty for displaying graphics and information based on buffs, debuffs, and other triggers.",
     "url": "https://www.curseforge.com/wow/addons/weakauras-2",
-    "download_url": "https://edge.forgecdn.net/files/4051/234/WeakAuras-5.0.1.zip",
-    "date_published": "2022-10-26T02:42:57.230000+00:00",
-    "version": "5.0.1",
-    "changelog_url": "https://api.curseforge.com/v1/mods/65387/files/4051234/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4055/641/WeakAuras-5.0.5.zip",
+    "date_published": "2022-10-28T23:10:09.683000+00:00",
+    "version": "5.0.5",
+    "changelog_url": "https://api.curseforge.com/v1/mods/65387/files/4055641/changelog",
     "options": {
       "any_flavour": false,
       "any_release_type": false,
@@ -2505,6 +2460,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "5.0.5",
+        "install_time": "2022-10-29T02:01:26+00:00"
+      },
       {
         "version": "5.0.1",
         "install_time": "2022-10-26T03:38:25+00:00"
@@ -2540,10 +2499,6 @@
       {
         "version": "3.4.2-bcc",
         "install_time": "2021-05-30T05:16:05+00:00"
-      },
-      {
-        "version": "3.4.1-bcc",
-        "install_time": "2021-05-21T08:24:28+00:00"
       }
     ]
   },
@@ -2554,10 +2509,10 @@
     "name": "tullaRange",
     "description": "Colors out of range action buttons",
     "url": "https://www.curseforge.com/wow/addons/tullarange",
-    "download_url": "https://edge.forgecdn.net/files/3921/440/tullaRange-9.2.1.zip",
-    "date_published": "2022-08-06T16:18:18.133000+00:00",
-    "version": "9.2.1",
-    "changelog_url": "https://api.curseforge.com/v1/mods/26753/files/3921440/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4055/753/tullaRange-10.0.2.zip",
+    "date_published": "2022-10-29T00:59:18.867000+00:00",
+    "version": "10.0.2",
+    "changelog_url": "https://api.curseforge.com/v1/mods/26753/files/4055753/changelog",
     "options": {
       "any_flavour": false,
       "any_release_type": false,
@@ -2573,6 +2528,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "10.0.2",
+        "install_time": "2022-10-29T02:01:26+00:00"
+      },
       {
         "version": "9.2.1",
         "install_time": "2022-09-01T13:42:47+00:00"
@@ -2698,8 +2657,8 @@
     "description": "A WeakAuras Companion clone.",
     "url": "https://github.com/layday/instawow",
     "download_url": "file:///C:/Users/luhao_000/AppData/Roaming/instawow/profiles/classic/plugins/instawow.wa_updater/WeakAurasCompanion.zip",
-    "date_published": "2022-10-24T11:41:02.442951+00:00",
-    "version": "f5dc91b",
+    "date_published": "2022-10-29T02:01:18.950090+00:00",
+    "version": "b9b4b78",
     "changelog_url": "file:///C:/Users/luhao_000/AppData/Roaming/instawow/profiles/classic/plugins/instawow.wa_updater/CHANGELOG.md",
     "options": {
       "any_flavour": false,
@@ -2713,6 +2672,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "b9b4b78",
+        "install_time": "2022-10-29T02:01:26+00:00"
+      },
       {
         "version": "f5dc91b",
         "install_time": "2022-10-24T11:41:03+00:00"
@@ -2748,10 +2711,6 @@
       {
         "version": "eb04333",
         "install_time": "2022-10-01T02:56:14+00:00"
-      },
-      {
-        "version": "63702f4",
-        "install_time": "2022-09-17T03:36:23+00:00"
       }
     ]
   },
@@ -2791,10 +2750,10 @@
     "name": "AdvancedInterfaceOptions",
     "description": "Restores access to removed interface options in Legion and ads a CVar browser for settings galore.\r\n\r\nWe are currently covering simple options for the following:\r\n\r\nGeneral:\r\n\r\n* Player Titles\r\n* Guild Names\r\n* Guild Titles\r\n* Stop Auto Attack\r\n* Attack on Assist\r\n* Cast action keybinds on key down\r\n* Fade Map when Moving\r\n* Secure Ability Toggle\r\n* Display Lua Errors\r\n* No Debuff Filter on Target\r\n* Reverse Cleanup Bags\r\n* Quest sorting mode (top vs proximity)\r\n* Select Action Cam mode\r\n\r\nChat:\r\n\r\n* Remove Chat Hover Delay\r\n* Enable Mouse Wheel Scrolling\r\n\r\nFloating Combat Text:\r\n\r\n* Float mode (up/down/arc)\r\n* Energy Gains\r\n* Auras\r\n* Honor Gains\r\n* Reputation\r\n* Combo Points\r\n* Combat State (Entering/Leaving Combat)\r\n* Spell Mechanics\r\n* Healing\r\n* Absorb (Self and Target)\r\n* Directional Scale (brings back the classic, only upwards moving text)\r\n* Low HP/Mana\r\n\r\nAnd many more via the built in CVar browser, including stuff that has never ever been exposed as an UI option by Blizzard like the violence level or the new setting that changes the distance nameplates are visible at!\r\n\r\nType /aio in chat or go to the Interface Options and look for AdvancedInterfaceOptions",
     "url": "https://www.wowinterface.com/downloads/info25002-AdvancedInterfaceOptions.html",
-    "download_url": "https://cdn.wowinterface.com/downloads/getfile.php?id=25002&d=1660687148&minion",
-    "date_published": "2022-08-16T21:59:08+00:00",
-    "version": "1.7.2",
-    "changelog_url": "data:,%5Bsize%3D5%5DAdvanced%20Interface%20Options%5B/size%5D%0D%0A%5Bsize%3D4%5D%5Burl%3Dhttps%3A//github.com/Stanzilla/AdvancedInterfaceOptions/tree/1.7.2%5D1.7.2%5B/url%5D%20%282022-08-16%29%5B/size%5D%0D%0A%5Burl%3Dhttps%3A//github.com/Stanzilla/AdvancedInterfaceOptions/compare/1.7.1...1.7.2%5DFull%20Changelog%5B/url%5D%20%5Burl%3Dhttps%3A//github.com/Stanzilla/AdvancedInterfaceOptions/releases%5DPrevious%20Releases%5B/url%5D%0D%0A%5Blist%5D%0D%0A%5B%2A%5DBump%20retail%20toc%20for%209.2.7%0D%0A%5B/list%5D",
+    "download_url": "https://cdn.wowinterface.com/downloads/getfile.php?id=25002&d=1666814772&minion",
+    "date_published": "2022-10-26T20:06:12+00:00",
+    "version": "1.8.1",
+    "changelog_url": "data:,%5Bsize%3D5%5DAdvanced%20Interface%20Options%5B/size%5D%0D%0A%5Bsize%3D4%5D%5Burl%3Dhttps%3A//github.com/Stanzilla/AdvancedInterfaceOptions/tree/1.8.1%5D1.8.1%5B/url%5D%20%282022-10-26%29%5B/size%5D%0D%0A%5Burl%3Dhttps%3A//github.com/Stanzilla/AdvancedInterfaceOptions/compare/1.8.0...1.8.1%5DFull%20Changelog%5B/url%5D%20%5Burl%3Dhttps%3A//github.com/Stanzilla/AdvancedInterfaceOptions/releases%5DPrevious%20Releases%5B/url%5D%0D%0A%5Blist%5D%0D%0A%5B%2A%5DFix%20missing%20BlizzardOptionsPanel_UpdateCombatText%20function%0D%0A%5B/list%5D",
     "options": {
       "any_flavour": false,
       "any_release_type": false,
@@ -2807,6 +2766,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "1.8.1",
+        "install_time": "2022-10-29T02:01:26+00:00"
+      },
       {
         "version": "1.7.2",
         "install_time": "2022-09-01T13:40:36+00:00"

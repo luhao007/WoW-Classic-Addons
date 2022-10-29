@@ -39,8 +39,8 @@ local private = {
 	callbacks = {},
 }
 local BANK_BAG_SLOTS = {}
-local BANK_NON_REAGENT_BAG_SLOTS = {}
-local REAGENT_BAG_INDEX = TSM.IsWowDragonflight() and (NUM_BAG_SLOTS + NUM_BANKBAGSLOTS + NUM_REAGENTBAG_SLOTS) or nil
+local NUM_REAL_BAG_SLOTS = TSM.IsWowClassic() and NUM_BAG_SLOTS or NUM_BAG_SLOTS + NUM_REAGENTBAG_SLOTS
+local REAGENT_BAG_INDEX = not TSM.IsWowClassic() and (NUM_BAG_SLOTS + NUM_BANKBAGSLOTS + NUM_REAGENTBAG_SLOTS) or nil
 
 
 
@@ -50,10 +50,8 @@ local REAGENT_BAG_INDEX = TSM.IsWowDragonflight() and (NUM_BAG_SLOTS + NUM_BANKB
 
 do
 	BANK_BAG_SLOTS[BANK_CONTAINER] = true
-	BANK_NON_REAGENT_BAG_SLOTS[BANK_CONTAINER] = true
-	for i = NUM_BAG_SLOTS + 1, NUM_BAG_SLOTS + NUM_BANKBAGSLOTS do
+	for i = NUM_REAL_BAG_SLOTS + 1, NUM_REAL_BAG_SLOTS + NUM_BANKBAGSLOTS do
 		BANK_BAG_SLOTS[i] = true
-		BANK_NON_REAGENT_BAG_SLOTS[i] = true
 	end
 	if not TSM.IsWowClassic() then
 		BANK_BAG_SLOTS[REAGENTBANK_CONTAINER] = true
@@ -149,21 +147,19 @@ BagTracking:OnSettingsLoad(function()
 end)
 
 BagTracking:OnGameDataLoad(function()
-	-- we'll scan all the bags and reagent bank right away, so wipe the existing quantities
+	-- we'll scan all the bags right away, so wipe the existing quantities
 	wipe(private.settings.bagQuantity)
-	wipe(private.settings.reagentBankQuantity)
 	private.quantityDB:SetQueryUpdatesPaused(true)
 	local query = private.quantityDB:NewQuery()
 	for _, row in query:Iterator() do
-		local oldValue = row:GetField("bagQuantity") + row:GetField("reagentBankQuantity")
-		if row:GetField("bankQuantity") == 0 then
+		local oldBagQuantity = row:GetField("bagQuantity")
+		if row:GetField("bankQuantity") + row:GetField("reagentBankQuantity") == 0 then
 			-- remove this row
-			assert(oldValue > 0)
+			assert(oldBagQuantity > 0)
 			private.quantityDB:DeleteRow(row)
-		elseif oldValue ~= 0 then
+		elseif oldBagQuantity ~= 0 then
 			-- update this row
 			row:SetField("bagQuantity", 0)
-				:SetField("reagentBankQuantity", 0)
 				:Update()
 		end
 	end
@@ -173,16 +169,6 @@ BagTracking:OnGameDataLoad(function()
 	-- WoW does not fire an update event for the backpack when you log in, so trigger one
 	private.BagUpdateHandler(nil, 0)
 	private.BagUpdateDelayedHandler()
-	-- trigger an update event for all bank (initial container) and reagent bank slots since we won't get one otherwise on login
-	assert(GetContainerNumSlots(BANK_CONTAINER) == NUM_BANKGENERIC_SLOTS)
-	for slot = 1, GetContainerNumSlots(BANK_CONTAINER) do
-		private.BankSlotChangedHandler(nil, slot)
-	end
-	if not TSM.IsWowClassic() and IsReagentBankUnlocked() then
-		for slot = 1, GetContainerNumSlots(REAGENTBANK_CONTAINER) do
-			private.ReagentBankSlotChangedHandler(nil, slot)
-		end
-	end
 end)
 
 
@@ -204,7 +190,7 @@ end
 function BagTracking.FilterQueryBags(query)
 	return query
 		:GreaterThanOrEqual("slotId", SlotId.Join(0, 1))
-		:LessThanOrEqual("slotId", SlotId.Join(NUM_BAG_SLOTS + 1, 0))
+		:LessThanOrEqual("slotId", SlotId.Join(NUM_REAL_BAG_SLOTS + 1, 0))
 end
 
 function BagTracking.CreateQueryBags()
@@ -267,7 +253,7 @@ function BagTracking.ForceBankQuantityDeduction(itemString, quantity)
 	private.slotDB:SetQueryUpdatesPaused(true)
 	local query = private.slotDB:NewQuery()
 		:Equal("itemString", itemString)
-		:InTable("bag", BANK_NON_REAGENT_BAG_SLOTS)
+		:InTable("bag", BANK_BAG_SLOTS)
 	local levelItemString = ItemString.ToLevel(itemString)
 	for _, row in query:Iterator() do
 		if quantity > 0 then
@@ -315,17 +301,19 @@ function private.BankOpenedHandler()
 		private.isFirstBankOpen = false
 		-- this is the first time opening the bank so we'll scan all the items so wipe our existing quantities
 		wipe(private.settings.bankQuantity)
+		wipe(private.settings.reagentBankQuantity)
 		private.quantityDB:SetQueryUpdatesPaused(true)
 		local query = private.quantityDB:NewQuery()
 		for _, row in query:Iterator() do
-			local oldValue = row:GetField("bankQuantity")
-			if row:GetField("bagQuantity") + row:GetField("reagentBankQuantity") == 0 then
+			local oldValue = row:GetField("bankQuantity") + row:GetField("reagentBankQuantity")
+			if row:GetField("bagQuantity") == 0 then
 				-- remove this row
 				assert(oldValue > 0)
 				private.quantityDB:DeleteRow(row)
 			elseif oldValue ~= 0 then
 				-- update this row
 				row:SetField("bankQuantity", 0)
+					:SetField("reagentBankQuantity", 0)
 					:Update()
 			end
 		end
@@ -333,8 +321,18 @@ function private.BankOpenedHandler()
 		private.quantityDB:SetQueryUpdatesPaused(false)
 	end
 	private.bankOpen = true
+	private.BagUpdateHandler(nil, BANK_CONTAINER)
+	for bag = NUM_REAL_BAG_SLOTS + 1, NUM_REAL_BAG_SLOTS + NUM_BANKBAGSLOTS do
+		private.BagUpdateHandler(nil, bag)
+	end
+	if not TSM.IsWowClassic() and IsReagentBankUnlocked() then
+		for slot = 1, GetContainerNumSlots(REAGENTBANK_CONTAINER) do
+			private.ReagentBankSlotChangedHandler(nil, slot)
+		end
+	end
 	private.BagUpdateDelayedHandler()
 	private.BankSlotUpdateDelayed()
+	private.ReagentBankSlotUpdateDelayed()
 end
 
 function private.BankClosedHandler()
@@ -346,9 +344,9 @@ function private.BagUpdateHandler(_, bag)
 		return
 	end
 	private.bagUpdates.pending[bag] = true
-	if bag >= BACKPACK_CONTAINER and bag <= NUM_BAG_SLOTS then
+	if bag >= BACKPACK_CONTAINER and bag <= NUM_REAL_BAG_SLOTS then
 		tinsert(private.bagUpdates.bagList, bag)
-	elseif bag == BANK_CONTAINER or (bag > NUM_BAG_SLOTS and bag <= NUM_BAG_SLOTS + NUM_BANKBAGSLOTS) then
+	elseif bag == BANK_CONTAINER or (bag > NUM_REAL_BAG_SLOTS and bag <= NUM_REAL_BAG_SLOTS + NUM_BANKBAGSLOTS) then
 		tinsert(private.bagUpdates.bankList, bag)
 	elseif bag == REAGENT_BAG_INDEX then
 		-- TODO
@@ -579,10 +577,10 @@ end
 function private.ChangeBagItemTotal(bag, levelItemString, changeQuantity)
 	local totalsTable = nil
 	local field = nil
-	if bag >= BACKPACK_CONTAINER and bag <= NUM_BAG_SLOTS then
+	if bag >= BACKPACK_CONTAINER and bag <= NUM_REAL_BAG_SLOTS then
 		totalsTable = private.settings.bagQuantity
 		field = "bagQuantity"
-	elseif bag == BANK_CONTAINER or (bag > NUM_BAG_SLOTS and bag <= NUM_BAG_SLOTS + NUM_BANKBAGSLOTS) then
+	elseif bag == BANK_CONTAINER or (bag > NUM_REAL_BAG_SLOTS and bag <= NUM_REAL_BAG_SLOTS + NUM_BANKBAGSLOTS) then
 		totalsTable = private.settings.bankQuantity
 		field = "bankQuantity"
 	elseif bag == REAGENTBANK_CONTAINER then

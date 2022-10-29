@@ -269,7 +269,10 @@ do
 			PreHookHelper(self, quantityFunc, 3, ...)
 		end,
 		SetRecipeReagentItem = function(self, ...)
-			if TSM.IsWowDragonflight() then
+			if TSM.IsWowClassic() then
+				local reg = PreHookHelper(self, C_TradeSkillUI.GetRecipeReagentInfo, 3, ...)
+				reg.item = C_TradeSkillUI.GetRecipeReagentItemLink(...)
+			else
 				local spellId, dataSlotIndex = ...
 				local info = C_TradeSkillUI.GetRecipeSchematic(spellId, false)
 				local quantity = 1
@@ -281,13 +284,10 @@ do
 				end
 				local reg = PreHookHelper(self, quantity)
 				reg.item = C_TradeSkillUI.GetRecipeFixedReagentItemLink(spellId, dataSlotIndex)
-			else
-				local reg = PreHookHelper(self, C_TradeSkillUI.GetRecipeReagentInfo, 3, ...)
-				reg.item = C_TradeSkillUI.GetRecipeReagentItemLink(...)
 			end
 		end,
 		SetRecipeResultItem = function(self, ...)
-			if TSM.IsWowDragonflight() then
+			if not TSM.IsWowClassic() then
 				-- TODO: Is this not used in DF?
 				return
 			end

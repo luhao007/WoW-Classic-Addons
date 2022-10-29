@@ -61,19 +61,19 @@ local GROUP_COLORS = {
 	Color.NewFromHex("#ffb85c"),
 	Color.NewFromHex("#51b599"),
 }
-local PROFESSION_DIFFICULTY_COLORS = TSM.IsWowDragonflight() and {
-		[Enum.TradeskillRelativeDifficulty.Optimal] = Color.NewFromHex("#ff8040"),
-		[Enum.TradeskillRelativeDifficulty.Medium] = Color.NewFromHex("#ffff00"),
-		[Enum.TradeskillRelativeDifficulty.Easy] = Color.NewFromHex("#40c040"),
-		[Enum.TradeskillRelativeDifficulty.Trivial] = Color.NewFromHex("#808080"),
-		header = Color.NewFromHex("#ffd100"),
-		subheader = Color.NewFromHex("#ffd100"),
-		nodifficulty = Color.NewFromHex("#f5f5f5"),
-	} or {
+local PROFESSION_DIFFICULTY_COLORS = TSM.IsWowClassic() and {
 		optimal = Color.NewFromHex("#ff8040"),
 		medium = Color.NewFromHex("#ffff00"),
 		easy = Color.NewFromHex("#40c040"),
 		trivial = Color.NewFromHex("#808080"),
+		header = Color.NewFromHex("#ffd100"),
+		subheader = Color.NewFromHex("#ffd100"),
+		nodifficulty = Color.NewFromHex("#f5f5f5"),
+	} or {
+		[Enum.TradeskillRelativeDifficulty.Optimal] = Color.NewFromHex("#ff8040"),
+		[Enum.TradeskillRelativeDifficulty.Medium] = Color.NewFromHex("#ffff00"),
+		[Enum.TradeskillRelativeDifficulty.Easy] = Color.NewFromHex("#40c040"),
+		[Enum.TradeskillRelativeDifficulty.Trivial] = Color.NewFromHex("#808080"),
 		header = Color.NewFromHex("#ffd100"),
 		subheader = Color.NewFromHex("#ffd100"),
 		nodifficulty = Color.NewFromHex("#f5f5f5"),

@@ -88,20 +88,11 @@ function Tooltip.Show(parent, data, noWrapping, xOffset)
 			for _, slotId, itemId in RecipeString.OptionalMatIterator(data) do
 				local info = tremove(private.unusedOptionalMatTempTables) or {}
 				info.itemID = itemId
-				if TSM.IsWowDragonflight() then
-					info.dataSlotIndex = slotId
-					info.quantity = 1
-				else
-					info.slot = slotId
-					info.count = 1
-				end
+				info.dataSlotIndex = slotId
+				info.quantity = 1
 				tinsert(private.optionalMatTable, info)
 			end
-			if TSM.IsWowDragonflight() then
-				C_TradeSkillUI.SetTooltipRecipeResultItem(spellId, private.optionalMatTable, nil, level)
-			else
-				GameTooltip:SetRecipeResultItem(spellId, private.optionalMatTable, level)
-			end
+			C_TradeSkillUI.SetTooltipRecipeResultItem(spellId, private.optionalMatTable, nil, level)
 		end
 	elseif type(data) == "string" and (strfind(data, "^\124c.+\124Hitem:") or ItemString.IsItem(data)) then
 		GameTooltip:SetHyperlink(ItemInfo.GetLink(data))
