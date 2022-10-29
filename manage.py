@@ -504,14 +504,6 @@ class Manager:
 
     @staticmethod
     @available_on(['classic'])
-    def handle_myslot():
-        utils.change_defaults(
-            'AddOns/Myslot/options.lua',
-            ['        MyslotSettings.minimap = MyslotSettings.minimap or { hide = true }']
-        )
-
-    @staticmethod
-    @available_on(['classic'])
     def handle_omnicc():
         utils.process_file(
             'AddOns/OmniCC/core/core.xml',
