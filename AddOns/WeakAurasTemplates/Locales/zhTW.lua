@@ -43,8 +43,7 @@ local L = WeakAuras.L
 	L["Charge Tracking"] = "次數監控"
 	L["cooldown"] = "冷卻"
 	L["Cooldown Tracking"] = "冷卻監控"
-	--[[Translation missing --]]
-	L["Cooldowns"] = "Cooldowns"
+	L["Cooldowns"] = "冷卻"
 	L["Create Auras"] = "建立提醒效果"
 	L["debuff"] = "減益"
 	L["Debuffs"] = "減益 DEBUFF/DOT"

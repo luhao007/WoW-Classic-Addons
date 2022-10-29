@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Stanzilla, Semlar
-## Version: 1.7.2-3-g004ec6b
+## Version: 1.8.1
 ## LoadOnDemand: 0
 ## SavedVariables: AdvancedInterfaceOptionsSaved
 ## DefaultState: Enabled

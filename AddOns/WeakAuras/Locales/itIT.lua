@@ -617,6 +617,12 @@ L["Emalon the Storm Watcher"] = "Emalon the Storm Watcher"
 --[[Translation missing --]]
 L["Emote"] = "Emote"
 --[[Translation missing --]]
+L["Empower Cast End"] = "Empower Cast End"
+--[[Translation missing --]]
+L["Empower Cast Interrupt"] = "Empower Cast Interrupt"
+--[[Translation missing --]]
+L["Empower Cast Start"] = "Empower Cast Start"
+--[[Translation missing --]]
 L["Empowered"] = "Empowered"
 --[[Translation missing --]]
 L["Empowered 1"] = "Empowered 1"
@@ -1436,8 +1442,6 @@ L["Only if on a different realm"] = "Only if on a different realm"
 --[[Translation missing --]]
 L["Only if Primary"] = "Only if Primary"
 --[[Translation missing --]]
-L["Only if selected"] = "Only if selected"
---[[Translation missing --]]
 L["Onyxia"] = "Onyxia"
 --[[Translation missing --]]
 L["Onyxia's Lair"] = "Onyxia's Lair"
@@ -1535,8 +1539,6 @@ L["Player"] = "Player"
 L["Player Character"] = "Player Character"
 --[[Translation missing --]]
 L["Player Class"] = "Player Class"
---[[Translation missing --]]
-L["Player Covenant"] = "Player Covenant"
 --[[Translation missing --]]
 L["Player Effective Level"] = "Player Effective Level"
 --[[Translation missing --]]
@@ -2147,8 +2149,6 @@ L["Threat Situation"] = "Threat Situation"
 L["Threat Value"] = "Threat Value"
 --[[Translation missing --]]
 L["Tick"] = "Tick"
---[[Translation missing --]]
-L["Tier "] = "Tier "
 --[[Translation missing --]]
 L["Time Format"] = "Time Format"
 --[[Translation missing --]]

@@ -556,6 +556,12 @@ L["Elite"] = "Elite"
 L["Emalon the Storm Watcher"] = "Emalon the Storm Watcher"
 L["Emote"] = "Emote"
 --[[Translation missing --]]
+L["Empower Cast End"] = "Empower Cast End"
+--[[Translation missing --]]
+L["Empower Cast Interrupt"] = "Empower Cast Interrupt"
+--[[Translation missing --]]
+L["Empower Cast Start"] = "Empower Cast Start"
+--[[Translation missing --]]
 L["Empowered"] = "Empowered"
 --[[Translation missing --]]
 L["Empowered 1"] = "Empowered 1"
@@ -1206,8 +1212,6 @@ L["Only if DBM shows it on it's bar"] = "Only if DBM shows it on it's bar"
 --[[Translation missing --]]
 L["Only if on a different realm"] = "Only if on a different realm"
 L["Only if Primary"] = "Nur falls Primär"
---[[Translation missing --]]
-L["Only if selected"] = "Only if selected"
 L["Onyxia"] = "Onyxia"
 L["Onyxia's Lair"] = "Onyxias Hort"
 L["Opaque"] = "Deckend"
@@ -1283,8 +1287,6 @@ L["Player"] = "Spieler (Selbst)"
 L["Player Character"] = "Spieler-Charakter (PC)"
 L["Player Class"] = "Spielerklasse"
 --[[Translation missing --]]
-L["Player Covenant"] = "Player Covenant"
---[[Translation missing --]]
 L["Player Effective Level"] = "Player Effective Level"
 --[[Translation missing --]]
 L["Player Experience"] = "Player Experience"
@@ -1338,9 +1340,9 @@ L["Pulse"] = "Pulsieren"
 L["PvP Flagged"] = "PvP aktiv"
 --[[Translation missing --]]
 L["PvP Talent %i"] = "PvP Talent %i"
+L["PvP Talent selected"] = "Gewähltes PvP-Talent"
 --[[Translation missing --]]
 L["PvP Talent Selected"] = "PvP Talent Selected"
-L["PvP Talent selected"] = "Gewähltes PvP-Talent"
 --[[Translation missing --]]
 L["Queued Action"] = "Queued Action"
 L["Radius"] = "Radius"
@@ -1773,7 +1775,6 @@ L["Threat Situation"] = "Bedrohungssituation"
 L["Threat Value"] = "Threat Value"
 --[[Translation missing --]]
 L["Tick"] = "Tick"
-L["Tier "] = "Tier"
 --[[Translation missing --]]
 L["Time Format"] = "Time Format"
 --[[Translation missing --]]

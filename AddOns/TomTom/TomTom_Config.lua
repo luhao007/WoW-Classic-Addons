@@ -1,3 +1,5 @@
+local addonName, addon = ...
+
 local L = TomTomLocals
 
 local function createconfig()
@@ -911,24 +913,34 @@ local function createBlizzOptions()
 	return blizzPanel
 end
 
-SLASH_TOMTOM1 = "/tomtom"
+local aboutOptions = {
+	type = "group",
+	args = {
+		version = {
+			order = 1,
+			type = "description",
+			name = function() return "Version: TomTom-".. addon.version end,
+
+		}
+	},
+}
+
 local blizzPanel
-SlashCmdList["TOMTOM"] = function(msg)
+function addon:CreateConfigPanels()
+	config:RegisterOptionsTable("TomTom", aboutOptions)
+	local aboutFrame = dialog:AddToBlizOptions("TomTom", "TomTom")
 	if not registered then
 		blizzPanel = createBlizzOptions()
 		registered = true
 	end
-
-	InterfaceOptionsFrame_OpenToCategory("TomTom")
-	InterfaceOptionsFrame_OpenToCategory("TomTom")
 end
 
-local hijackFrame = CreateFrame("Frame", nil, InterfaceOptionsFrame)
-hijackFrame:SetScript("OnShow", function(self)
-	if not registered then
-		blizzPanel = createBlizzOptions()
-		registered = true
+SLASH_TOMTOM1 = "/tomtom"
+SlashCmdList["TOMTOM"] = function(msg)
+	if Settings then
+		Settings.OpenToCategory("TomTom")
+	elseif InterfaceOptionsFrame_OpenToCategory then
+		InterfaceOptionsFrame_OpenToCategory("TomTom")
+		InterfaceOptionsFrame_OpenToCategory("TomTom")
 	end
-
-	self:SetScript("OnShow", nil)
-end)
+end

@@ -351,8 +351,8 @@ Off Screen]=]
 	L["Collapse all pending Import"] = "Collapse all pending Import"
 	--[[Translation missing --]]
 	L["Collapsible Group"] = "Collapsible Group"
-	L["Color"] = "Colore"
 	L["color"] = "Colore"
+	L["Color"] = "Colore"
 	L["Column Height"] = "Altezza Colonna"
 	--[[Translation missing --]]
 	L["Column Space"] = "Column Space"
@@ -1551,9 +1551,9 @@ It might not work correctly with your version!]=]
 	--[[Translation missing --]]
 	L["Use Texture"] = "Use Texture"
 	--[[Translation missing --]]
-	L["Used in auras:"] = "Used in auras:"
-	--[[Translation missing --]]
 	L["Used in Auras:"] = "Used in Auras:"
+	--[[Translation missing --]]
+	L["Used in auras:"] = "Used in auras:"
 	--[[Translation missing --]]
 	L["Uses UnitIsVisible() to check if in range. This is polled every second."] = "Uses UnitIsVisible() to check if in range. This is polled every second."
 	--[[Translation missing --]]
@@ -1607,9 +1607,9 @@ It might not work correctly with your version!]=]
 	--[[Translation missing --]]
 	L["Yes"] = "Yes"
 	--[[Translation missing --]]
-	L["Y-Offset"] = "Y-Offset"
-	--[[Translation missing --]]
 	L["y-Offset"] = "y-Offset"
+	--[[Translation missing --]]
+	L["Y-Offset"] = "Y-Offset"
 	--[[Translation missing --]]
 	L["You already have this group/aura. Importing will create a duplicate."] = "You already have this group/aura. Importing will create a duplicate."
 	--[[Translation missing --]]

@@ -3,7 +3,6 @@ import logging
 import os
 import shutil
 from pathlib import Path
-from statistics import linear_regression
 
 from defusedxml import ElementTree
 
@@ -512,6 +511,7 @@ class Manager:
         )
 
     @staticmethod
+    @available_on(['classic'])
     def handle_omnicc():
         utils.process_file(
             'AddOns/OmniCC/core/core.xml',
@@ -527,49 +527,6 @@ class Manager:
                 'GetAddOnMetadata("Overachiever", "Title")',
                 '"Overarchiever"'
             ) for line in lines]
-        )
-
-    @staticmethod
-    @available_on(['classic'])
-    def handle_profcd():
-        def handle(lines):
-            translate = {
-                "Minor Inscription Research": "小型雕文研究",
-                "Northrend Inscription Research": "诺森德雕文研究",
-                "Smelt Titansteel": "熔炼泰坦精钢",
-                "Icy Prism": "冰冻棱柱",
-                "Moonshroud": "月影布",
-                "Ebonweave": "乌纹布",
-                "Spellweave": "法纹布",
-                "Glacial Bag": "冰川背包",
-                "Northrend Alchemy Research": "诺森德炼金研究",
-                "Transmute": "转化",
-
-                "Alchemy": "炼金术",
-                "Tailoring": "裁缝",
-                "Leatherworking": "制皮",
-                "Jewelcrafting": "宝石加工",
-                "Enchanting": "附魔",
-                "Inscription": "铭文",
-                "Mining": "采矿",
-            }
-
-            ret = []
-            if 'Translate' not in lines[0]:
-                ret += ['-- Translate\n']
-                ret += [f'local {en.upper().replace(" ", "_")} = "{cn}"\n' for en, cn in translate.items()]
-
-            for line in lines:
-                for en in translate.keys():
-                    if f'"{en}"' in line:
-                        line = line.replace(f'"{en}"', f'{en.upper().replace(" ", "_")}')
-                ret.append(line)
-
-            return ret
-
-        utils.process_file(
-            'AddOns/ProfessionCooldown/pcd.lua',
-            handle,
         )
 
     @staticmethod

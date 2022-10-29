@@ -195,8 +195,8 @@ Enable this setting if you want this timer to be hidden, or when using a WeakAur
 	L["Anchor"] = "Anchor"
 	L["Anchor Point"] = "Punto de anclaje"
 	L["Anchored To"] = "Anclado a"
-	L["and"] = "y"
 	L["And "] = "y"
+	L["and"] = "y"
 	L["and aligned left"] = "y alineado a la izquierda"
 	L["and aligned right"] = "y alineado a la derecha"
 	--[[Translation missing --]]
@@ -334,8 +334,8 @@ Off Screen]=]
 	L["Collapse all pending Import"] = "Collapse all pending Import"
 	--[[Translation missing --]]
 	L["Collapsible Group"] = "Collapsible Group"
-	L["Color"] = "Color"
 	L["color"] = "Color"
+	L["Color"] = "Color"
 	--[[Translation missing --]]
 	L["Column Height"] = "Column Height"
 	--[[Translation missing --]]
@@ -1347,9 +1347,9 @@ It might not work correctly with your version!]=]
 	--[[Translation missing --]]
 	L["Use Texture"] = "Use Texture"
 	--[[Translation missing --]]
-	L["Used in auras:"] = "Used in auras:"
-	--[[Translation missing --]]
 	L["Used in Auras:"] = "Used in Auras:"
+	--[[Translation missing --]]
+	L["Used in auras:"] = "Used in auras:"
 	--[[Translation missing --]]
 	L["Uses UnitIsVisible() to check if in range. This is polled every second."] = "Uses UnitIsVisible() to check if in range. This is polled every second."
 	--[[Translation missing --]]
@@ -1381,8 +1381,8 @@ It might not work correctly with your version!]=]
 	L["X Offset"] = "Posición de X"
 	L["X Rotation"] = "Rotación de X"
 	L["X Scale"] = "Ajuste de tamaño de X"
-	L["x-Offset"] = "Desplazamiento X"
 	L["X-Offset"] = "Desplazamiento X"
+	L["x-Offset"] = "Desplazamiento X"
 	L["Y Offset"] = "Posición de Y"
 	L["Y Rotation"] = "Rotación de Y"
 	L["Y Scale"] = "Ajuste de tamaño de Y"

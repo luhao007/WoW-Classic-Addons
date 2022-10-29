@@ -10,6 +10,7 @@
 ## X-Part-Of: Details
 
 #@no-lib-strip@
+embeds.xml
 #@end-no-lib-strip@
 
 Details_Streamer.lua

@@ -587,6 +587,12 @@ L["Elite"] = "Elite"
 L["Emalon the Storm Watcher"] = "Emalon the Storm Watcher"
 L["Emote"] = "Emoción"
 --[[Translation missing --]]
+L["Empower Cast End"] = "Empower Cast End"
+--[[Translation missing --]]
+L["Empower Cast Interrupt"] = "Empower Cast Interrupt"
+--[[Translation missing --]]
+L["Empower Cast Start"] = "Empower Cast Start"
+--[[Translation missing --]]
 L["Empowered"] = "Empowered"
 --[[Translation missing --]]
 L["Empowered 1"] = "Empowered 1"
@@ -1283,8 +1289,6 @@ L["Only if DBM shows it on it's bar"] = "Only if DBM shows it on it's bar"
 L["Only if on a different realm"] = "Only if on a different realm"
 L["Only if Primary"] = "Solo primario"
 --[[Translation missing --]]
-L["Only if selected"] = "Only if selected"
---[[Translation missing --]]
 L["Onyxia"] = "Onyxia"
 --[[Translation missing --]]
 L["Onyxia's Lair"] = "Onyxia's Lair"
@@ -1365,8 +1369,6 @@ L["Play"] = "Play"
 L["Player"] = "Jugador"
 L["Player Character"] = "Personaje del jugador"
 L["Player Class"] = "Clase del jugador"
---[[Translation missing --]]
-L["Player Covenant"] = "Player Covenant"
 --[[Translation missing --]]
 L["Player Effective Level"] = "Player Effective Level"
 --[[Translation missing --]]
@@ -1880,7 +1882,6 @@ L["Threat Percent"] = "Threat Percent"
 L["Threat Situation"] = "Situación de la amenaza"
 L["Threat Value"] = "Valor de amenaza"
 L["Tick"] = "Tic"
-L["Tier "] = "Tier"
 L["Time Format"] = "Formato de tiempo"
 L["Time in GCDs"] = "Tiempo en reutilización global"
 L["Timed"] = "Temporizado"

@@ -1294,9 +1294,9 @@ It might not work correctly with your version!]=]
 	--[[Translation missing --]]
 	L["Use Texture"] = "Use Texture"
 	--[[Translation missing --]]
-	L["Used in auras:"] = "Used in auras:"
-	--[[Translation missing --]]
 	L["Used in Auras:"] = "Used in Auras:"
+	--[[Translation missing --]]
+	L["Used in auras:"] = "Used in auras:"
 	--[[Translation missing --]]
 	L["Uses UnitIsVisible() to check if in range. This is polled every second."] = "Uses UnitIsVisible() to check if in range. This is polled every second."
 	--[[Translation missing --]]
@@ -1326,9 +1326,9 @@ It might not work correctly with your version!]=]
 	L["X Offset"] = "X-Versatz"
 	L["X Rotation"] = "X-Rotation"
 	L["X Scale"] = "Skalierung (X)"
+	L["X-Offset"] = "X-Versatz"
 	--[[Translation missing --]]
 	L["x-Offset"] = "x-Offset"
-	L["X-Offset"] = "X-Versatz"
 	L["Y Offset"] = "Y-Versatz"
 	L["Y Rotation"] = "Y-Rotation"
 	L["Y Scale"] = "Skalierung (Y)"

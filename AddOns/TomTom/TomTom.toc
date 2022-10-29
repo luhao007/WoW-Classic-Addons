@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Cladhaire, Ludovicus
-## Version: v3.2.0-release
+## Version: v3.3.0-release
 ## OptionalDeps: HereBeDragons-2.0
 ## SavedVariables: TomTomDB, TomTomWaypoints, TomTomWaypointsM
 
@@ -14,6 +14,8 @@
 ## X-Curse-Project-ID: 18808
 ## X-WoWI-ID: 7032
 ## X-Wago-ID: Rn6VaONd
+
+libs\LibDropDown\embed.xml
 
 AddonCore.lua
 

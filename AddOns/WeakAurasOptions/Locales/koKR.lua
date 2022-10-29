@@ -32,17 +32,13 @@ local L = WeakAuras.L
 	L["%s - Condition Custom Code %s"] = "%s - Condition Custom Code %s"
 	--[[Translation missing --]]
 	L["%s - Custom Anchor"] = "%s - Custom Anchor"
-	--[[Translation missing --]]
-	L["%s - Custom Grow"] = "%s - Custom Grow"
-	--[[Translation missing --]]
-	L["%s - Custom Sort"] = "%s - Custom Sort"
-	--[[Translation missing --]]
-	L["%s - Custom Text"] = "%s - Custom Text"
+	L["%s - Custom Grow"] = "%s - 사용자 정의 성장"
+	L["%s - Custom Sort"] = "%s - 사용자 정의 정렬"
+	L["%s - Custom Text"] = "%s - 사용자 정의 문자"
 	L["%s - Finish"] = "%s - 종료"
 	--[[Translation missing --]]
 	L["%s - Finish Action"] = "%s - Finish Action"
-	--[[Translation missing --]]
-	L["%s - Finish Custom Text"] = "%s - Finish Custom Text"
+	L["%s - Finish Custom Text"] = "%s - 사용자 정의 문자 종료"
 	--[[Translation missing --]]
 	L["%s - Init Action"] = "%s - Init Action"
 	--[[Translation missing --]]
@@ -55,8 +51,7 @@ local L = WeakAuras.L
 	L["%s - Start"] = "%s - 시작"
 	--[[Translation missing --]]
 	L["%s - Start Action"] = "%s - Start Action"
-	--[[Translation missing --]]
-	L["%s - Start Custom Text"] = "%s - Start Custom Text"
+	L["%s - Start Custom Text"] = "%s - 사용자 정의 문자 시작"
 	--[[Translation missing --]]
 	L["%s - Translate Animation"] = "%s - Translate Animation"
 	--[[Translation missing --]]
@@ -475,8 +470,7 @@ UNIT_POWER_UPDATE, UNIT_AURA PLAYER_TARGET_CHANGED]=]
 	L["File Height"] = "File Height"
 	--[[Translation missing --]]
 	L["File Width"] = "File Width"
-	--[[Translation missing --]]
-	L["Filter based on the spell Name string."] = "Filter based on the spell Name string."
+	L["Filter based on the spell Name string."] = "주문 이름 문자열 기반으로 필터링합니다."
 	--[[Translation missing --]]
 	L["Filter by Arena Spec"] = "Filter by Arena Spec"
 	L["Filter by Class"] = "직업별 필터"
@@ -851,8 +845,7 @@ Can use \ to escape -.]=] ] = "필터 형식: '이름', '이름-서버', '-서�
 	L["Saved Data"] = "Saved Data"
 	L["Scale"] = "크기 비율"
 	L["Search"] = "검색"
-	--[[Translation missing --]]
-	L["Select Talent"] = "Select Talent"
+	L["Select Talent"] = "특성 선택"
 	L["Select the auras you always want to be listed first"] = "목록에서 첫번째로 표시할 오라를 선택하세요"
 	--[[Translation missing --]]
 	L["Selected Frame"] = "Selected Frame"
@@ -961,8 +954,7 @@ Can use \ to escape -.]=] ] = "필터 형식: '이름', '이름-서버', '-서�
 	L["Texture Settings"] = "텍스쳐 설정"
 	L["Texture Wrap"] = "텍스쳐 줄바꿈"
 	L["The duration of the animation in seconds."] = "애니메이션 지속시간 (초)"
-	--[[Translation missing --]]
-	L["The duration of the animation in seconds. The finish animation does not start playing until after the display would normally be hidden."] = "The duration of the animation in seconds. The finish animation does not start playing until after the display would normally be hidden."
+	L["The duration of the animation in seconds. The finish animation does not start playing until after the display would normally be hidden."] = "애니메이션의 지속 시간(초)입니다. 종료 애니메이션은 디스플레이가 보통 숨겨질 때까지 재생을 시작하지 않습니다."
 	L["The type of trigger"] = "활성 조건의 유형"
 	--[[Translation missing --]]
 	L["Then "] = "Then "

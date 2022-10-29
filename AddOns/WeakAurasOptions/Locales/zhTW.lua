@@ -52,8 +52,7 @@ local L = WeakAuras.L
 	L["%s Keep Aspect Ratio"] = "%s保持寬高比例"
 	L["%s Name Function"] = "%s 名稱功能"
 	L["%s Stacks Function"] = "%s 堆疊功能"
-	--[[Translation missing --]]
-	L["%s stores around %s KB of data"] = "%s stores around %s KB of data"
+	L["%s stores around %s KB of data"] = "%s 儲存了約 %s KB 的資料"
 	L["%s Texture"] = "%s 材質"
 	L["%s Texture Function"] = "%s 材質功能"
 	L["%s total auras"] = "總共 %s 個提醒效果"
@@ -130,8 +129,8 @@ Enable this setting if you want this timer to be hidden, or when using a WeakAur
 	L["Anchor"] = "對齊"
 	L["Anchor Point"] = "對齊點"
 	L["Anchored To"] = "對齊到"
-	L["and"] = "和"
 	L["And "] = "和 "
+	L["and"] = "和"
 	L["and aligned left"] = "和靠左對齊"
 	L["and aligned right"] = "和靠右對齊"
 	L["and rotated left"] = "和向左旋轉"
@@ -220,8 +219,7 @@ Off Screen]=] ] = [=[提醒效果
 	L["Choose"] = "選擇"
 	L["Class"] = "職業"
 	L["Clear Debug Logs"] = "清除偵錯紀錄"
-	--[[Translation missing --]]
-	L["Clear Saved Data"] = "Clear Saved Data"
+	L["Clear Saved Data"] = "清空已儲存的資料"
 	L["Clip Overlays"] = "裁剪疊加圖層"
 	L["Clipped by Progress"] = "被進度縮減"
 	L["Close"] = "關閉"
@@ -286,10 +284,8 @@ UNIT_POWER, UNIT_AURA PLAYER_TARGET_CHANGED]=]
 
 |cFF4444FF例如:|r
 UNIT_POWER, UNIT_AURA PLAYER_TARGET_CHANGED]=]
-	--[[Translation missing --]]
-	L["Custom Trigger: Ignore Lua Errors on OPTIONS event"] = "Custom Trigger: Ignore Lua Errors on OPTIONS event"
-	--[[Translation missing --]]
-	L["Custom Trigger: Send fake events instead of STATUS event"] = "Custom Trigger: Send fake events instead of STATUS event"
+	L["Custom Trigger: Ignore Lua Errors on OPTIONS event"] = "自訂觸發: 忽略 OPTIONS 事件的 Lua 錯誤"
+	L["Custom Trigger: Send fake events instead of STATUS event"] = "自訂觸發: 發送假的事件而不是 STATUS 事件"
 	L["Custom Untrigger"] = "自訂取消觸發"
 	L["Custom Variables"] = "自訂變數"
 	L["Debuff Type"] = "減益類型"
@@ -698,8 +694,7 @@ Can use \ to escape -.]=] ] = "過濾器格式：'名字'，'名字-伺服器'�
 	L["Rows"] = "列"
 	L["Same"] = "相同"
 	L["Same texture as Foreground"] = "與前景相同的材質"
-	--[[Translation missing --]]
-	L["Saved Data"] = "Saved Data"
+	L["Saved Data"] = "已儲存的資料"
 	L["Scale"] = "縮放大小"
 	L["Search"] = "搜尋"
 	L["Select Talent"] = "選擇天賦"
@@ -889,15 +884,15 @@ It might not work correctly with your version!]=] ] = "這個提醒效果是用�
 	L["X Offset"] = "水平位置"
 	L["X Rotation"] = "水平旋轉"
 	L["X Scale"] = "水平縮放"
-	L["x-Offset"] = "水平位置偏移"
 	L["X-Offset"] = "水平位置"
+	L["x-Offset"] = "水平位置偏移"
 	L["Y Offset"] = "垂直位置"
 	L["Y Rotation"] = "垂直旋轉"
 	L["Y Scale"] = "垂直縮放"
 	L["Yellow Rune"] = "黃色符文"
 	L["Yes"] = "是"
-	L["Y-Offset"] = "垂直位置"
 	L["y-Offset"] = "垂直位置偏移"
+	L["Y-Offset"] = "垂直位置"
 	L["You already have this group/aura. Importing will create a duplicate."] = "你已經有了這個群組/提醒效果。匯入後將會建立另一個複製版本。"
 	L["You are about to delete %d aura(s). |cFFFF0000This cannot be undone!|r Would you like to continue?"] = "你正準備要刪除 %d 個提醒效果，刪除後將|cFFFF0000無法還原!|r 請問是否要繼續?"
 	L["You are about to delete a trigger. |cFFFF0000This cannot be undone!|r Would you like to continue?"] = "你正要刪除觸發。 |cFFFF0000刪除後將無法還原!|r 是否確定要繼續?"

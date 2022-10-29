@@ -1,6 +1,9 @@
 # TomTom
 
-## [v3.2.0-release](https://github.com/jnwhiteh/TomTom/tree/v3.2.0-release) (2022-10-25)
-[Full Changelog](https://github.com/jnwhiteh/TomTom/compare/v3.1.4-release...v3.2.0-release) [Previous Releases](https://github.com/jnwhiteh/TomTom/releases)
+## [v3.3.0-release](https://github.com/jnwhiteh/TomTom/tree/v3.3.0-release) (2022-10-27)
+[Full Changelog](https://github.com/jnwhiteh/TomTom/compare/v3.2.2-release...v3.3.0-release) [Previous Releases](https://github.com/jnwhiteh/TomTom/releases)
 
-- Update TOC for 10.x  
+- Fix an issue with duplicate waypoint registration  
+- Replace UIDropdown with LibDropdown  
+- Include LibDropDown  
+- Update libraries  

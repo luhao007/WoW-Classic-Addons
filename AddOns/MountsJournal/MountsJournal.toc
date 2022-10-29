@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: sfmict
-## Version: v3.4.22
+## Version: v3.4.23
 ## SavedVariables: MountsJournalDB
 ## SavedVariablesPerCharacter: MountsJournalChar
 
@@ -27,3 +27,4 @@ components\MountAnimations.lua
 components\DungeonRaidButton.lua
 components\Profiles.lua
 components\Hyperlinks.lua
+components\Pets.lua

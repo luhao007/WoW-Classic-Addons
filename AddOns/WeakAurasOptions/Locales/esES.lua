@@ -356,9 +356,9 @@ Off Screen]=]
 	L["Collapse all pending Import"] = "Collapse all pending Import"
 	--[[Translation missing --]]
 	L["Collapsible Group"] = "Collapsible Group"
-	L["Color"] = "Color"
 	--[[Translation missing --]]
 	L["color"] = "color"
+	L["Color"] = "Color"
 	--[[Translation missing --]]
 	L["Column Height"] = "Column Height"
 	--[[Translation missing --]]

@@ -561,6 +561,12 @@ L["Emalon the Storm Watcher"] = "Emalon the Storm Watcher"
 --[[Translation missing --]]
 L["Emote"] = "Emote"
 --[[Translation missing --]]
+L["Empower Cast End"] = "Empower Cast End"
+--[[Translation missing --]]
+L["Empower Cast Interrupt"] = "Empower Cast Interrupt"
+--[[Translation missing --]]
+L["Empower Cast Start"] = "Empower Cast Start"
+--[[Translation missing --]]
 L["Empowered"] = "Empowered"
 --[[Translation missing --]]
 L["Empowered 1"] = "Empowered 1"
@@ -1332,8 +1338,6 @@ L["Only if on a different realm"] = "Only if on a different realm"
 --[[Translation missing --]]
 L["Only if Primary"] = "Only if Primary"
 --[[Translation missing --]]
-L["Only if selected"] = "Only if selected"
---[[Translation missing --]]
 L["Onyxia"] = "Onyxia"
 --[[Translation missing --]]
 L["Onyxia's Lair"] = "Onyxia's Lair"
@@ -1419,8 +1423,6 @@ L["Play"] = "Play"
 L["Player"] = "Jogador"
 L["Player Character"] = "Personagem do Jogador"
 L["Player Class"] = "Classe do Jogador"
---[[Translation missing --]]
-L["Player Covenant"] = "Player Covenant"
 --[[Translation missing --]]
 L["Player Effective Level"] = "Player Effective Level"
 --[[Translation missing --]]
@@ -1873,9 +1875,9 @@ L["Talent |cFFFF0000Not|r Selected"] = "Talent |cFFFF0000Not|r Selected"
 --[[Translation missing --]]
 L["Talent Known"] = "Talent Known"
 --[[Translation missing --]]
-L["Talent selected"] = "Talent selected"
---[[Translation missing --]]
 L["Talent Selected"] = "Talent Selected"
+--[[Translation missing --]]
+L["Talent selected"] = "Talent selected"
 L["Talent Specialization"] = "Especialização de talentos"
 --[[Translation missing --]]
 L["Tanking And Highest"] = "Tanking And Highest"
@@ -1960,8 +1962,6 @@ L["Threat Situation"] = "Situação de ameaça"
 L["Threat Value"] = "Threat Value"
 --[[Translation missing --]]
 L["Tick"] = "Tick"
---[[Translation missing --]]
-L["Tier "] = "Tier "
 --[[Translation missing --]]
 L["Time Format"] = "Time Format"
 --[[Translation missing --]]
