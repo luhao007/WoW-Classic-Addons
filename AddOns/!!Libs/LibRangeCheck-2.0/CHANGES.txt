@@ -1,8 +1,11 @@
 ------------------------------------------------------------------------
-r214 | mitch | 2022-09-03 08:26:18 +0000 (Sat, 03 Sep 2022) | 1 line
+r216 | mitch | 2022-10-29 16:21:01 +0000 (Sat, 29 Oct 2022) | 1 line
 Changed paths:
-   M /trunk/LibRangeCheck-2.0/LibRangeCheck-2.0.lua
+   M /trunk/LibRangeCheck-2.0.toc
+   A /trunk/LibRangeCheck-2.0_TBC.toc
+   A /trunk/LibRangeCheck-2.0_Vanilla.toc
+   A /trunk/LibRangeCheck-2.0_Wrath.toc
 
-WOTLK Classic support
+toc update
 ------------------------------------------------------------------------
 

@@ -1210,12 +1210,16 @@ do
 
 			if self.gameVersion >= 100000 then
 				-- fix anchor family connection issues with the combined bag
-				self:RawHook("UpdateContainerFrameAnchors", function()
-					for _, frame in ipairs(ContainerFrameSettingsManager:GetBagsShown()) do
-						frame:ClearAllPoints();
+				local skipHook = false
+				self:SecureHook(ContainerFrameSettingsManager, "GetBagsShown", function()
+					if skipHook then return end
+					skipHook = true
+					local bags = ContainerFrameSettingsManager:GetBagsShown()
+					for _, bag in pairs(bags or {}) do
+						bag:ClearAllPoints()
 					end
-					self.hooks.UpdateContainerFrameAnchors();
-				end, true);
+					skipHook = false
+				end);
 			end
 		end
 	end

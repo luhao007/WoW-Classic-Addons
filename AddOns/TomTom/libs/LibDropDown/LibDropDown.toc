@@ -1,10 +1,14 @@
-## Interface: 90207
+## Interface: 100000
 ## Author: p3lim
-## Version: v3.3.0-release
+## Version: v3.3.1-release
 ## Title: Lib: DropDown
 ## Notes: Library that allows easy creation of DropDown menus
 ## OptionalDeps: LibStub
 
-LibStub\LibStub.lua
+#@non-debug@
+# LibStub\LibStub.lua
+#@end-non-debug@
 
 embed.xml
+
+#tests\dropdown.lua

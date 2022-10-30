@@ -1,0 +1,10 @@
+lightweight tag c8f7cf6f0692edd11d8eefe698dfa138e2f632fe v5.0.1
+Author:	Péter Radics <mitchnull@gmail.com>
+Date:	Sat Oct 29 17:56:29 2022 +0200
+
+commit c8f7cf6f0692edd11d8eefe698dfa138e2f632fe
+Author: Péter Radics <mitchnull@gmail.com>
+Date:   Sat Oct 29 17:56:29 2022 +0200
+
+    remove dummyOpts
+
