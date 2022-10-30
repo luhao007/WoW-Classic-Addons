@@ -13,6 +13,7 @@ local Math = TSM.Include("Util.Math")
 local Log = TSM.Include("Util.Log")
 local Table = TSM.Include("Util.Table")
 local TempTable = TSM.Include("Util.TempTable")
+local DefaultUI = TSM.Include("Service.DefaultUI")
 local Settings = TSM.Include("Service.Settings")
 local PlayerInfo = TSM.Include("Service.PlayerInfo")
 local private = {
@@ -38,7 +39,7 @@ local ERRONEOUS_ZERO_THRESHOLD = 5 * 1000 * COPPER_PER_GOLD
 
 function GoldTracker.OnInitialize()
 	if not TSM.IsWowVanillaClassic() then
-		Event.Register("GUILDBANKFRAME_OPENED", private.GuildLogGold)
+		DefaultUI.RegisterGuildBankVisibleCallback(private.GuildLogGold, true)
 		Event.Register("GUILDBANK_UPDATE_MONEY", private.GuildLogGold)
 	end
 	Event.Register("PLAYER_MONEY", private.PlayerLogGold)

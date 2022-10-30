@@ -8,12 +8,12 @@ local _, TSM = ...
 local Open = TSM.Mailing:NewPackage("Open")
 local L = TSM.Include("Locale").GetTable()
 local Delay = TSM.Include("Util.Delay")
-local Event = TSM.Include("Util.Event")
 local String = TSM.Include("Util.String")
 local Money = TSM.Include("Util.Money")
 local Log = TSM.Include("Util.Log")
 local ItemString = TSM.Include("Util.ItemString")
 local Theme = TSM.Include("Util.Theme")
+local DefaultUI = TSM.Include("Service.DefaultUI")
 local Threading = TSM.Include("Service.Threading")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local MailTracking = TSM.Include("Service.MailTracking")
@@ -34,9 +34,7 @@ local MAIL_REFRESH_TIME = TSM.IsWowClassic() and 60 or 15
 
 function Open.OnInitialize()
 	private.thread = Threading.New("MAIL_OPENING", private.OpenMailThread)
-
-	Event.Register("MAIL_SHOW", private.ScheduleCheck)
-	Event.Register("MAIL_CLOSED", private.MailClosedHandler)
+	DefaultUI.RegisterMailVisibleCallback(private.FrameVisibleCallback)
 end
 
 function Open.KillThread()
@@ -144,6 +142,14 @@ end
 -- Private Helper Functions
 -- ============================================================================
 
+function private.FrameVisibleCallback(visible)
+	if visible then
+		private.ScheduleCheck()
+	else
+		Delay.Cancel("mailInboxCheck")
+	end
+end
+
 function private.CheckInbox()
 	if private.isOpening then
 		private.ScheduleCheck()
@@ -226,8 +232,4 @@ function private.ScheduleCheck()
 		local nextUpdate = MAIL_REFRESH_TIME - (time() - private.lastCheck)
 		Delay.AfterTime("mailInboxCheck", nextUpdate, private.CheckInbox)
 	end
-end
-
-function private.MailClosedHandler()
-	Delay.Cancel("mailInboxCheck")
 end

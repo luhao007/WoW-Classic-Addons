@@ -13,6 +13,7 @@ local SlotId = TSM.Include("Util.SlotId")
 local Log = TSM.Include("Util.Log")
 local TempTable = TSM.Include("Util.TempTable")
 local ItemString = TSM.Include("Util.ItemString")
+local DefaultUI = TSM.Include("Service.DefaultUI")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local InventoryInfo = TSM.Include("Service.InventoryInfo")
 local Settings = TSM.Include("Service.Settings")
@@ -33,7 +34,6 @@ local private = {
 		pending = {},
 		list = {},
 	},
-	bankOpen = false,
 	isFirstBankOpen = true,
 	callbackQuery = nil, -- luacheck: ignore 1004 - just stored for GC reasons
 	callbacks = {},
@@ -67,8 +67,7 @@ end
 BagTracking:OnSettingsLoad(function()
 	Event.Register("BAG_UPDATE", private.BagUpdateHandler)
 	Event.Register("BAG_UPDATE_DELAYED", private.BagUpdateDelayedHandler)
-	Event.Register("BANKFRAME_OPENED", private.BankOpenedHandler)
-	Event.Register("BANKFRAME_CLOSED", private.BankClosedHandler)
+	DefaultUI.RegisterBankVisibleCallback(private.BankVisible, true)
 	Event.Register("PLAYERBANKSLOTS_CHANGED", private.BankSlotChangedHandler)
 	if not TSM.IsWowClassic() then
 		Event.Register("PLAYERREAGENTBANKSLOTS_CHANGED", private.ReagentBankSlotChangedHandler)
@@ -247,7 +246,7 @@ function BagTracking.CreateQueryBankItem(itemString)
 end
 
 function BagTracking.ForceBankQuantityDeduction(itemString, quantity)
-	if private.bankOpen then
+	if DefaultUI.IsBankVisible() then
 		return
 	end
 	private.slotDB:SetQueryUpdatesPaused(true)
@@ -296,7 +295,7 @@ end
 -- Event Handlers
 -- ============================================================================
 
-function private.BankOpenedHandler()
+function private.BankVisible()
 	if private.isFirstBankOpen then
 		private.isFirstBankOpen = false
 		-- this is the first time opening the bank so we'll scan all the items so wipe our existing quantities
@@ -320,7 +319,6 @@ function private.BankOpenedHandler()
 		query:Release()
 		private.quantityDB:SetQueryUpdatesPaused(false)
 	end
-	private.bankOpen = true
 	private.BagUpdateHandler(nil, BANK_CONTAINER)
 	for bag = NUM_REAL_BAG_SLOTS + 1, NUM_REAL_BAG_SLOTS + NUM_BANKBAGSLOTS do
 		private.BagUpdateHandler(nil, bag)
@@ -333,10 +331,6 @@ function private.BankOpenedHandler()
 	private.BagUpdateDelayedHandler()
 	private.BankSlotUpdateDelayed()
 	private.ReagentBankSlotUpdateDelayed()
-end
-
-function private.BankClosedHandler()
-	private.bankOpen = false
 end
 
 function private.BagUpdateHandler(_, bag)
@@ -371,7 +365,7 @@ function private.BagUpdateDelayedHandler()
 		Delay.AfterFrame("bagBankScan", 2, private.BagUpdateDelayedHandler)
 	end
 
-	if private.bankOpen then
+	if DefaultUI.IsBankVisible() then
 		-- scan any pending bank bags
 		for i = #private.bagUpdates.bankList, 1, -1 do
 			local bag = private.bagUpdates.bankList[i]
@@ -404,7 +398,7 @@ end
 
 -- this is not a WoW event, but we fake it based on a delay from private.BankSlotChangedHandler
 function private.BankSlotUpdateDelayed()
-	if not private.bankOpen then
+	if not DefaultUI.IsBankVisible() then
 		return
 	end
 	private.slotDB:SetQueryUpdatesPaused(true)

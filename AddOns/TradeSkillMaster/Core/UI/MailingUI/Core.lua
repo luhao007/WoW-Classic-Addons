@@ -9,9 +9,9 @@ local MailingUI = TSM.UI:NewPackage("MailingUI")
 local L = TSM.Include("Locale").GetTable()
 local Delay = TSM.Include("Util.Delay")
 local FSM = TSM.Include("Util.FSM")
-local Event = TSM.Include("Util.Event")
 local ScriptWrapper = TSM.Include("Util.ScriptWrapper")
 local Settings = TSM.Include("Service.Settings")
+local DefaultUI = TSM.Include("Service.DefaultUI")
 local UIElements = TSM.Include("UI.UIElements")
 local private = {
 	settings = nil,
@@ -116,11 +116,12 @@ function private.FSMCreate()
 	local function MailShowDelayed()
 		private.fsm:ProcessEvent("EV_MAIL_SHOW")
 	end
-	Event.Register("MAIL_SHOW", function()
-		Delay.AfterFrame("MAIL_SHOW_DELAYED", 0, MailShowDelayed)
-	end)
-	Event.Register("MAIL_CLOSED", function()
-		private.fsm:ProcessEvent("EV_MAIL_CLOSED")
+	DefaultUI.RegisterMailVisibleCallback(function(visible)
+		if visible then
+			Delay.AfterFrame("MAIL_SHOW_DELAYED", 0, MailShowDelayed)
+		else
+			private.fsm:ProcessEvent("EV_MAIL_CLOSED")
+		end
 	end)
 
 	MailFrame:UnregisterEvent("MAIL_SHOW")

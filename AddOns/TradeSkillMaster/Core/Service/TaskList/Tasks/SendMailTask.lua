@@ -7,6 +7,7 @@
 local _, TSM = ...
 local SendMailTask = TSM.Include("LibTSMClass").DefineClass("SendMailTask", TSM.TaskList.ItemTask)
 local L = TSM.Include("Locale").GetTable()
+local DefaultUI = TSM.Include("Service.DefaultUI")
 TSM.TaskList.SendMailTask = SendMailTask
 local private = {
 	registeredCallbacks = false,
@@ -25,7 +26,7 @@ function SendMailTask.__init(self)
 	self._target = nil
 	self._isSending = false
 	if not private.registeredCallbacks then
-		TSM.Mailing.RegisterFrameCallback(private.FrameCallback)
+		DefaultUI.RegisterMailVisibleCallback(private.FrameCallback)
 		private.registeredCallbacks = true
 	end
 end
@@ -68,7 +69,7 @@ end
 -- ============================================================================
 
 function SendMailTask._UpdateState(self)
-	if not TSM.Mailing.IsOpen() then
+	if not DefaultUI.IsMailVisible() then
 		return self:_SetButtonState(false, L["NOT OPEN"])
 	elseif self._isSending then
 		return self:_SetButtonState(false, L["SENDING"])

@@ -22,6 +22,7 @@ local Math = TSM.Include("Util.Math")
 local String = TSM.Include("Util.String")
 local Log = TSM.Include("Util.Log")
 local Table = TSM.Include("Util.Table")
+local DefaultUI = TSM.Include("Service.DefaultUI")
 local Settings = TSM.Include("Service.Settings")
 local private = {
 	db = nil,
@@ -289,7 +290,7 @@ ItemInfo:OnSettingsLoad(function()
 	-- process pending item info every 0.05 seconds
 	Delay.AfterTime("PROCESS_ITEM_INFO", 0, private.ProcessItemInfo, ITEM_INFO_INTERVAL)
 	-- scan the merchant when the goods are shown
-	Event.Register("MERCHANT_SHOW", private.ScanMerchant)
+	DefaultUI.RegisterMerchantVisibleCallback(private.ScanMerchant, true)
 	Event.Register("MERCHANT_UPDATE", private.UpdateMerchant)
 end)
 

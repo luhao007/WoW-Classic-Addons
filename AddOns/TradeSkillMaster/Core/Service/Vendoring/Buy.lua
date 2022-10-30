@@ -13,6 +13,7 @@ local Log = TSM.Include("Util.Log")
 local TempTable = TSM.Include("Util.TempTable")
 local Theme = TSM.Include("Util.Theme")
 local ItemString = TSM.Include("Util.ItemString")
+local DefaultUI = TSM.Include("Service.DefaultUI")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local Inventory = TSM.Include("Service.Inventory")
 local private = {
@@ -41,8 +42,7 @@ function Buy.OnInitialize()
 		:AddNumberField("stackSize")
 		:AddNumberField("numAvailable")
 		:Commit()
-	Event.Register("MERCHANT_SHOW", private.MerchantShowEventHandler)
-	Event.Register("MERCHANT_CLOSED", private.MerchantClosedEventHandler)
+	DefaultUI.RegisterMerchantVisibleCallback(private.MechantVisibilityHandler)
 	Event.Register("MERCHANT_UPDATE", private.MerchantUpdateEventHandler)
 	Event.Register("CHAT_MSG_LOOT", private.ChatMsgLootEventHandler)
 end
@@ -127,15 +127,15 @@ end
 -- Private Helper Functions
 -- ============================================================================
 
-function private.MerchantShowEventHandler()
-	Delay.AfterFrame("UPDATE_MERCHANT_DB", 1, private.UpdateMerchantDB)
-end
-
-function private.MerchantClosedEventHandler()
-	private.ClearPendingContext()
-	Delay.Cancel("UPDATE_MERCHANT_DB")
-	Delay.Cancel("RESCAN_MERCHANT_DB")
-	private.merchantDB:Truncate()
+function private.MechantVisibilityHandler(visible)
+	if visible then
+		Delay.AfterFrame("UPDATE_MERCHANT_DB", 1, private.UpdateMerchantDB)
+	else
+		private.ClearPendingContext()
+		Delay.Cancel("UPDATE_MERCHANT_DB")
+		Delay.Cancel("RESCAN_MERCHANT_DB")
+		private.merchantDB:Truncate()
+	end
 end
 
 function private.MerchantUpdateEventHandler()

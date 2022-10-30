@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: TradeSkillMaster Team
-## Version: v4.11.61
+## Version: v4.11.63
 ## OptionalDeps: ArkInventory, Auc-Advanced, Auctionator, TheUndermineJournal, BootyBayGazette, AuctionDB
 ## SavedVariables: TradeSkillMasterDB, TSMItemInfoDB
 
@@ -77,6 +77,7 @@ LibTSM\Util\ScriptWrapper.lua
 
 # LibTSM service files
 LibTSM\Service\ErrorHandler.lua
+LibTSM\Service\DefaultUI.lua
 LibTSM\Service\Threading.lua
 LibTSM\Service\SlashCommands.lua
 LibTSM\Service\Settings.lua

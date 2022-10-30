@@ -14,6 +14,7 @@ local Money = TSM.Include("Util.Money")
 local ScriptWrapper = TSM.Include("Util.ScriptWrapper")
 local Settings = TSM.Include("Service.Settings")
 local ItemLinked = TSM.Include("Service.ItemLinked")
+local DefaultUI = TSM.Include("Service.DefaultUI")
 local UIElements = TSM.Include("UI.UIElements")
 local private = {
 	settings = nil,
@@ -48,7 +49,7 @@ function AuctionUI.OnInitialize()
 			private.AuctionFrameInit()
 		end)
 	end
-	Event.Register("AUCTION_HOUSE_CLOSED", private.HideAuctionFrame)
+	DefaultUI.RegisterAuctionHouseVisibleCallback(private.HideAuctionFrame, false)
 	if TSM.IsWowClassic() then
 		Delay.AfterTime(1, function() LoadAddOn("Blizzard_AuctionUI") end)
 	else
@@ -202,7 +203,6 @@ function private.AuctionFrameInit()
 			tab:SetPoint("LEFT", _G["AuctionFrameTab"..tabId - 1], "RIGHT", -8, 0)
 		else
 			tab:SetPoint("LEFT", AuctionHouseFrame.Tabs[tabId - 1], "RIGHT", -15, 0)
-			tinsert(AuctionHouseFrame.Tabs, tab)
 		end
 		tab:Show()
 		PanelTemplates_SetNumTabs(private.defaultFrame, tabId)

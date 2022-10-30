@@ -6,10 +6,10 @@
 
 local _, TSM = ...
 local Mail = TSM.Accounting:NewPackage("Mail")
-local Event = TSM.Include("Util.Event")
 local Delay = TSM.Include("Util.Delay")
 local String = TSM.Include("Util.String")
 local ItemString = TSM.Include("Util.ItemString")
+local DefaultUI = TSM.Include("Service.DefaultUI")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local InventoryInfo = TSM.Include("Service.InventoryInfo")
 local AuctionTracking = TSM.Include("Service.AuctionTracking")
@@ -29,8 +29,13 @@ local OUTBID_MATCH_TEXT = AUCTION_OUTBID_MAIL_SUBJECT:gsub("%%s", "(.+)")
 -- ============================================================================
 
 function Mail.OnInitialize()
-	Event.Register("MAIL_SHOW", function() Delay.AfterTime("ACCOUNTING_GET_SELLERS", 0.1, private.RequestSellerInfo, 0.1) end)
-	Event.Register("MAIL_CLOSED", function() Delay.Cancel("ACCOUNTING_GET_SELLERS") end)
+	DefaultUI.RegisterMailVisibleCallback(function(visible)
+		if visible then
+			Delay.AfterTime("ACCOUNTING_GET_SELLERS", 0.1, private.RequestSellerInfo, 0.1)
+		else
+			Delay.Cancel("ACCOUNTING_GET_SELLERS")
+		end
+	end)
 	-- hook certain mail functions
 	private.hooks.TakeInboxItem = TakeInboxItem
 	TakeInboxItem = function(...)

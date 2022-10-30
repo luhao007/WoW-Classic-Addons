@@ -12,6 +12,7 @@ local Future = TSM.Include("Util.Future")
 local Log = TSM.Include("Util.Log")
 local ItemString = TSM.Include("Util.ItemString")
 local Event = TSM.Include("Util.Event")
+local DefaultUI = TSM.Include("Service.DefaultUI")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local AuctionHouseWrapper = TSM.Include("Service.AuctionHouseWrapper")
 local Util = TSM.Include("Service.AuctionScanClasses.Util")
@@ -236,7 +237,7 @@ Scanner:OnModuleLoad(function()
 		:AddState(FSM.NewState("ST_RESET_SELLER_CACHE")
 			:SetOnEnter(function()
 				assert(not TSM.IsWowClassic())
-				if not AuctionHouseWrapper.IsOpen() then
+				if not DefaultUI.IsAuctionHouseVisible() then
 					return "ST_CANCELING"
 				end
 				if private.useCachedData and private.searchRow:HasCachedSearchData() then
@@ -264,7 +265,7 @@ Scanner:OnModuleLoad(function()
 		:AddState(FSM.NewState("ST_SEARCH_SEND")
 			:SetOnEnter(function()
 				assert(not TSM.IsWowClassic())
-				if not AuctionHouseWrapper.IsOpen() then
+				if not DefaultUI.IsAuctionHouseVisible() then
 					return "ST_CANCELING"
 				end
 				local future, delayTime = private.searchRow:SearchSend()

@@ -17,6 +17,7 @@ local Log = TSM.Include("Util.Log")
 local Math = TSM.Include("Util.Math")
 local ItemString = TSM.Include("Util.ItemString")
 local Delay = TSM.Include("Util.Delay")
+local DefaultUI = TSM.Include("Service.DefaultUI")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local CustomPrice = TSM.Include("Service.CustomPrice")
 local AuctionTracking = TSM.Include("Service.AuctionTracking")
@@ -1817,9 +1818,7 @@ function private.FSMCreate()
 		pendingFuture = nil,
 		canSendAuctionQuery = true,
 	}
-	Event.Register("AUCTION_HOUSE_CLOSED", function()
-		private.fsm:ProcessEvent("EV_AUCTION_HOUSE_CLOSED")
-	end)
+	DefaultUI.RegisterAuctionHouseVisibleCallback(function() private.fsm:ProcessEvent("EV_AUCTION_HOUSE_CLOSED") end, false)
 	Event.Register("BAG_UPDATE_DELAYED", function()
 		private.fsm:ProcessEvent("EV_BAG_UPDATE_DELAYED")
 	end)
