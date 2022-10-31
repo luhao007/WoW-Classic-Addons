@@ -974,7 +974,7 @@
 				<Title>节日</Title>
 				<TitleExtra>春节</TitleExtra>
 			</SubAddon>
-			<SubAddon name="Handynotes_MistsOfPandariaTreasures">
+			<SubAddon name="HandyNotes_MistsOfPandariaTreasures">
 				<Title>宝藏/稀有</Title>
 				<TitleExtra>潘达利亚</TitleExtra>
 			</SubAddon>
@@ -1042,6 +1042,10 @@
 				<Title>设置</Title>
 			</SubAddon>
 		</SubAddons>
+	</Addon>
+	<Addon name="Leatrix_Plus">
+		<Title>功能百宝箱</Title>
+		<Category>功能</Category>
 	</Addon>
 	<Addon name="LootMonitor">
 		<Title>黑手检测</Title>

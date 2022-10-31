@@ -1,8 +1,17 @@
-1.1.9 Release Notes
+1.2.0 Release Notes
 Contributions made by Crieve:
-* When you're in a group for Naxx for Wrath Classic you'll no longer see Dedicated Few on the tooltip for boses when in a group with more than the required amount of players. Updated Glory of the Raider metas.
-* The candy bucket for Tranquillien now points to Ghostlands as intended.
-* Treat Bags and Handfuls of Treats were actually quite boring pre-4.2.0.
-* Temporarily disabling the holiday header on the mini list.
-* Fixed the azeroth meta for pre-4.2.0 clients.
+* Added some missing 25 man Dedicated few criterias. The Savior of Hallow's End achievement now appears in its respective zones.
+* Updated the Treat Bag's loot table for Wrath Classic.
+* The Silver Covenant is no longer nested in the Argent Tournament without reason.
+* Just Checkin' is now marked as a breadcrumb.
+* Converted from explicit REMOVED_FROM_GAME assignments into timelines.
+* Updated the Personal Ejector Seat / Gnomish Gravity Well for Wrath Classic.
+* Separated the Elemental Unrest world event into its own file with full and proper quest documentation for Wrath Classic.
+* Runed Copper Breastplate is Armor. Operation: Gnomeregan has been moved to its own section.
+* Parser no longer forgets to include AWP fields after a created state is activated NYI.
+* Zalazane's Fall has been moved to its own section and had its quest data added for Wrath Classic.
+* Slightly adjusted some Feast of the Winter Veil achievements for Wrath Classic.
+* Added the Kalu'ak Fishing Derby.
+* Added the currently unavailable Looking For More achievements and rewards.
+* Moved the Celestial Dragon to NYI until 4.2.0. Marked the Perky Pug NYI until Blizzard actually adds the ability to complete the achievement.
 

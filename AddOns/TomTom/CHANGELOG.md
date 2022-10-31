@@ -1,7 +1,6 @@
 # TomTom
 
-## [v3.3.1-release](https://github.com/jnwhiteh/TomTom/tree/v3.3.1-release) (2022-10-29)
-[Full Changelog](https://github.com/jnwhiteh/TomTom/compare/v3.3.0-release...v3.3.1-release) [Previous Releases](https://github.com/jnwhiteh/TomTom/releases)
+## [v3.3.2-release](https://github.com/jnwhiteh/TomTom/tree/v3.3.2-release) (2022-10-31)
+[Full Changelog](https://github.com/jnwhiteh/TomTom/compare/v3.3.1-release...v3.3.2-release) [Previous Releases](https://github.com/jnwhiteh/TomTom/releases)
 
-- Fix world map dropdown  
-- Update LibDropdown  
+- Fix frame strata of world map elements  

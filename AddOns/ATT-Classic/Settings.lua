@@ -1680,7 +1680,7 @@ table.insert(settings.MostRecentTab.objects, SeasonalHolidayFiltersLabel);
 
 -- Seasonal Filters
 last, xoffset, yoffset = SeasonalHolidayFiltersLabel, 0, -4;
-for i,u in ipairs({ 1000, 1001, 1002, 1012, 1003, 1004, 1005, 1006, 1007, 1008, 1010, 1011, 1013, 1015 }) do
+for i,u in ipairs({ 1000, 1001, 1002, 1012, 1003, 1004, 1005, 1018, 1006, 1007, 1008, 1010, 1011, 1013, 1015 }) do
 	local filter = settings:CreateCheckBox(reasons[u][3] or tostring(u), UnobtainableOnRefresh, UnobtainableFilterOnClick);
 	filter:SetATTTooltip(reasons[u][2]);
 	filter:SetPoint("TOPLEFT", last, "BOTTOMLEFT", 0, yoffset);
@@ -1791,7 +1791,7 @@ WrathPhasesLabel:Show();
 table.insert(settings.MostRecentTab.objects, WrathPhasesLabel);
 
 last, xoffset, yoffset = WrathPhasesLabel, 0, -4;
-for i,o in ipairs({ { 30, 0, 0 }, {3001, spacing, -vspacing }, { 31, 0, -vspacing }, {3101, spacing, -vspacing }, { 32, 0, -vspacing }, { 33, 0 }, {3301, spacing, -vspacing }, { 34, 0, -vspacing }, }) do
+for i,o in ipairs({ { 30, 0, 0 }, {3001, spacing, -vspacing }, { 31, 0, -vspacing }, {3101, spacing, -vspacing }, { 32, 0, -vspacing }, { 33, 0 }, {3301, spacing, -vspacing }, { 34, 0, -vspacing }, { 35, 0, -vspacing }, }) do
 	local u = o[1];
 	yoffset = o[3] or 6;
 	local reason = reasons[u];

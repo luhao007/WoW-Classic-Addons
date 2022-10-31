@@ -2,4 +2,3 @@
 ..\FrameXML\UI.xsd">
 	<Include file="LibSharedMedia-3.0\lib.xml"/>
 </Ui>
-

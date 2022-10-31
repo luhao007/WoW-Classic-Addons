@@ -617,6 +617,7 @@ app.L = {
 		[-60] = app.asset("Holiday_Pilgrim"),												-- Pilgrim's Bounty
 		[-61] = app.asset("Holiday_winter_veil"),											-- Feast of Winter Veil
 		[-62] = "Interface\\Icons\\inv_misc_fish_06",										-- Stranglethorn Fishing Extravaganza
+		[-63] = "Interface\\Icons\\inv_fishingpole_03",										-- Kalu'ak Fishing Derby
 		[-69] = "Interface\\Icons\\spell_arcane_portalironforge",							-- Maraudon Purple
 		[-70] = "Interface\\Icons\\INV_Misc_Gem_Opal_01",									-- Orange
 		[-71] = "Interface\\Icons\\INV_Misc_Gem_Amethyst_02",								-- Purple
@@ -665,6 +666,9 @@ app.L = {
 		[-395] = "Interface\\Icons\\achievement_dungeon_crimsonhall",						-- The Crimson Halls
 		[-396] = "Interface\\Icons\\achievement_dungeon_icecrown_frostwinghalls",			-- The Frostwing Halls
 		[-420] = "Interface\\Icons\\INV_Chest_Plate03",								-- Tier 0.5 Sets
+		[-522] = "Interface\\Icons\\inv_misc_tournaments_banner_troll",						-- Zalazane's Fall
+		[-523] = app.asset("Expansion_CATA"),										-- Elemental Unrest
+		[-524] = "Interface\\Icons\\inv_misc_tournaments_symbol_gnome",						-- Operation: Gnomeregan
 		[-531] = "Interface\\Icons\\inv_jewelry_amulet_03",							-- Spirit of Competition
 		[-532] = "Interface\\Icons\\ability_shaman_stormstrike",					-- Heroes of the Storm
 		[-533] = "Interface\\Icons\\Inv_misc_rune_01",								-- Hearthstone
@@ -766,6 +770,7 @@ app.L = {
 		[-60] = "Pilgrim's Bounty",												-- Pilgrim's Bounty
 		[-61] = "Feast of Winter Veil",											-- Feast of Winter Veil
 		[-62] = "Stranglethorn Fishing Extravaganza",
+		[-63] = "Kalu'ak Fishing Derby",
 		
 		[-69] = "Maraudon Portal",												-- Maraudon Portal
 		[-70] = DUNGEON_FLOOR_DESOLACE22 .. " [Orange]",						-- Foulspore Cavern [Orange]
@@ -820,6 +825,9 @@ app.L = {
 		[-423] = "The Four Horsemen",											-- The Four Horsemen
 
 -- Blizzard Events and Anniversaries
+		[-522] = "Zalazane's Fall",												-- Zalazane's Fall
+		[-523] = "Elemental Unrest",											-- Elemental Unrest
+		[-524] = "Operation: Gnomeregan",										-- Operation: Gnomeregan
 		[-531] = "Spirit of Competition",
 		[-532] = "Heroes of the Storm",
 		[-533] = "Hearthstone",
@@ -1206,6 +1214,7 @@ app.L = {
 		[33] = {2, "|CFFAAFFAAThis was not available until Phase 4 of Wrath Classic.|r", "Phase 4", 30400, 30403, "\n \n|CFFFFAAAAIncluded Icecrown Citadel.|r" },
 		[3301] = {2, "|CFFAAFFAAThe wielder of this Axe silently mourns for all the people that don't have it.|r", "Shadowmourne Prio", 30400, 30403, "\n \n|CFFFFAAAADue to the exclusivity of Shadowmourne and how prio isn't always given to collectors over sweaties, Crieve decided it was appropriate for now to provide a filter to reduce guild drama.\n\nThis filter will be defaulted on after cata prepatch.\n\nIf you do actually have Shadowmourne prio, simply turn this on.|r" },
 		[34] = {2, "|CFFAAFFAAThis was not available until Phase 5 of Wrath Classic.|r", "Phase 5", 30400, 30404, "\n \n|CFFFFAAAAIncluded The Ruby Sanctum...?|r" },
+		[35] = {2, "|CFFAAFFAAThis was not available until Phase 6 of Wrath Classic.|r", "Phase 6", 30400, 30404, "\n \n|CFFFFAAAAThe Elemental Unrest Pre-Expansion Event?|r" },
 
 		-- Seasonal Filters
 		[1000] = {4, "|CFF00FFDEThis requires the Brewfest Holiday to be Active.|r", "Brewfest" },
@@ -1226,5 +1235,6 @@ app.L = {
 		[1015] = {4, "|CFF00FFDEThis requires the Stranglethorn Fishing Extravaganza to be active.|r", "Stranglethorn Fishing"},
 		[1016] = {4, "|CFFFF0000This requires the Timewalking Event to be active.\nOnly dungeon content released during the active Timewalking expansion will be available.|r", "Timewalking"},
 		[1017] = {4, "|CFF00FFDEThis requires the WoW Anniversary Event to be active.|r", "WoW Anniversary"},
+		[1018] = {4, "|CFF00FFDEThis requires the Kalu'ak Fishing Derby to be active.|r", "Kalu'ak Fishing Derby"},
 	};
 };

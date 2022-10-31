@@ -78,6 +78,7 @@ LibLatency\LibLatency\LibLatency.xml
 LibQTip-1.0\lib.xml
 LibRangeCheck-2.0\LibRangeCheck-2.0\LibRangeCheck-2.0.lua
 LibRealmInfo\LibRealmInfo.lua
+LibSerialize\lib.xml
 LibSink-2.0\LibSink-2.0\LibSink-2.0.lua
 LibSpecialization\LibSpecialization\LibSpecialization.xml
 LibSpellRange-1.0\lib.xml
