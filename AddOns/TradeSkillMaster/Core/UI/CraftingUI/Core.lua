@@ -312,10 +312,6 @@ function private.FSMCreate()
 		)
 		:AddState(FSM.NewState("ST_FRAME_OPEN")
 			:SetOnEnter(function(context)
-				if not TSM.IsWowClassic() then
-					-- Workaround for being able to craft multiple
-					ProfessionsFrame.CraftingPage:RegisterEvent("UPDATE_TRADESKILL_CAST_COMPLETE")
-				end
 				assert(not context.frame)
 				context.frame = private.CreateMainFrame()
 				context.frame:Show()
