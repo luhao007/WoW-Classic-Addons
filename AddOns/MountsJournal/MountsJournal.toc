@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: sfmict
-## Version: v3.4.23
+## Version: v3.4.24
 ## SavedVariables: MountsJournalDB
 ## SavedVariablesPerCharacter: MountsJournalChar
 
