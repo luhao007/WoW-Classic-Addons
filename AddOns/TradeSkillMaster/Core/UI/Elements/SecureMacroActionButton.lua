@@ -27,6 +27,7 @@ function SecureMacroActionButton.__init(self, name)
 	local frame = self:_GetBaseFrame()
 	frame:SetAttribute("type1", "macro")
 	frame:SetAttribute("macrotext1", "")
+	frame:RegisterForClicks("AnyDown")
 end
 
 function SecureMacroActionButton.Release(self)

@@ -266,13 +266,6 @@ function private.FSMCreate()
 				else
 					ScriptWrapper.Set(defaultFrame, "OnHide", DefaultFrameOnHide)
 				end
-				if not TSM.IsWowClassic() then
-					local linked, linkedName = TSM.Crafting.ProfessionUtil.IsLinkedProfession()
-					if TSM.Crafting.ProfessionUtil.IsDataStable() and not TSM.Crafting.ProfessionUtil.IsGuildProfession() and (not linked or (linked and linkedName == UnitName("player"))) then
-						defaultFrame:OnEvent("TRADE_SKILL_DATA_SOURCE_CHANGED")
-						defaultFrame:OnEvent("TRADE_SKILL_LIST_UPDATE")
-					end
-				end
 			end)
 			:SetOnExit(function(context)
 				local defaultFrame = TSM.IsWowClassic() and TradeSkillFrame or ProfessionsFrame

@@ -505,6 +505,14 @@ function private.AddonBlockedHandler(event, addonName, addonFunc)
 	end
 	-- just log it - it might not be TSM that cause the taint
 	Log.Err("[%s] AddOn '%s' tried to call the protected function '%s'.", event, addonName or "<name>", addonFunc or "<func>")
+
+	if TSM.IsDevVersion() then
+		local status, ret = pcall(private.ErrorHandler, "BLOCKED")
+		if not status and not private.hitInternalError then
+			private.hitInternalError = true
+			print("Internal TSM error: "..tostring(ret))
+		end
+	end
 end
 
 function private.SanitizeString(str)

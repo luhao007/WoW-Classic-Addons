@@ -58,6 +58,7 @@ LibBabble\LibBabble-Race-3.0\lib.xml
 LibBabble\LibBabble-SubZone-3.0\lib.xml
 
 # Other Libs
+LibAHTab\LibAHTab.xml
 LibAboutPanel\lib.xml
 LibAlts-1.0\lib.xml
 LibCandyBar-3.0\lib.xml

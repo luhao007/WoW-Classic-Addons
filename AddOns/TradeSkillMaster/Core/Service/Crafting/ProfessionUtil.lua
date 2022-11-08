@@ -299,7 +299,10 @@ function ProfessionUtil.PrepareToCraft(craftString, recipeString, quantity, leve
 	if quantity == 0 then
 		return
 	end
-	if ProfessionUtil.IsEnchant(craftString) then
+	if not TSM.IsWowClassic() then
+		-- Workaround for bug where addons seemingly can't craft > 1 on retail
+		quantity = 1
+	elseif ProfessionUtil.IsEnchant(craftString) then
 		quantity = 1
 	end
 	private.preparedSpellId = spellId
@@ -326,7 +329,10 @@ function ProfessionUtil.Craft(craftString, recipeId, quantity, useVellum, callba
 		return 0
 	end
 	local isEnchant, vellumable = ProfessionUtil.IsEnchant(craftString)
-	if isEnchant then
+	if not TSM.IsWowClassic() then
+		-- Workaround for bug where addons seemingly can't craft > 1 on retail
+		quantity = 1
+	elseif isEnchant then
 		quantity = 1
 	elseif spellId ~= private.preparedSpellId or private.preparedTime == GetTime() then
 		-- We can only craft one of this item due to a bug on Blizzard's end

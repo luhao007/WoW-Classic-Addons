@@ -8,7 +8,7 @@ import instawow.cli
 import instawow.db
 import sqlalchemy
 from attrs import asdict, evolve
-from instawow.common import Flavour
+from instawow.common import Flavour, Strategy
 from instawow.db import prepare_database
 from instawow.config import (Config, GlobalConfig, config_converter,
                              setup_logging)
@@ -98,9 +98,9 @@ class InstawowManager:
         defns = self.to_defns(addons)
 
         if '_lib' in self.profile:
-            defns = [evolve(d, strategy='any_flavour' if d.source == 'curse' else 'default') for d in defns]
+            defns = [evolve(d, strategies=evolve(d.strategies, **{Strategy.any_flavour: True})) for d in defns]
         elif strategy:
-            defns = [evolve(d, strategy=strategy) for d in defns]
+            defns = [evolve(d, strategies=evolve(d.strategies, **{Strategy.any_flavour: strategy == 'any_flavour'})) for d in defns]
 
         if reinstall:
             results = self.run(self.manager.remove(defns, False))

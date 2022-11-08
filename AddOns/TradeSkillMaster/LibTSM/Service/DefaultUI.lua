@@ -47,19 +47,8 @@ DefaultUI:OnModuleLoad(function()
 		Event.Register("MERCHANT_SHOW", function() private.HandleEvent(FRAMES.MERCHANT, true) end)
 		Event.Register("MERCHANT_CLOSED", function() private.HandleEvent(FRAMES.MERCHANT, false) end)
 	else
-		Event.Register("PLAYER_INTERACTION_MANAGER_FRAME_SHOW", function(_, frameType)
-			if frameType == Enum.PlayerInteractionType.MailInfo then
-				private.HandleEvent(FRAMES.MAIL, true)
-			elseif frameType == Enum.PlayerInteractionType.Auctioneer then
-				private.HandleEvent(FRAMES.AUCTION_HOUSE, true)
-			elseif frameType == Enum.PlayerInteractionType.Banker then
-				private.HandleEvent(FRAMES.BANK, true)
-			elseif frameType == Enum.PlayerInteractionType.GuildBanker then
-				private.HandleEvent(FRAMES.GUILDBANK, true)
-			elseif frameType == Enum.PlayerInteractionType.Merchant then
-				private.HandleEvent(FRAMES.MERCHANT, true)
-			end
-		end)
+		Event.Register("PLAYER_INTERACTION_MANAGER_FRAME_SHOW", private.PlayerInteractionShowHandler)
+		hooksecurefunc(PlayerInteractionFrameManager, "ShowFrame", private.PlayerInteractionShowHandler)
 		Event.Register("PLAYER_INTERACTION_MANAGER_FRAME_HIDE", function(_, frameType)
 			if frameType == Enum.PlayerInteractionType.MailInfo then
 				private.HandleEvent(FRAMES.MAIL, false)
@@ -127,6 +116,20 @@ end
 -- ============================================================================
 -- Private Helper Functions
 -- ============================================================================
+
+function private.PlayerInteractionShowHandler(_, interactionType)
+	if interactionType == Enum.PlayerInteractionType.MailInfo then
+		private.HandleEvent(FRAMES.MAIL, true)
+	elseif interactionType == Enum.PlayerInteractionType.Auctioneer then
+		private.HandleEvent(FRAMES.AUCTION_HOUSE, true)
+	elseif interactionType == Enum.PlayerInteractionType.Banker then
+		private.HandleEvent(FRAMES.BANK, true)
+	elseif interactionType == Enum.PlayerInteractionType.GuildBanker then
+		private.HandleEvent(FRAMES.GUILDBANK, true)
+	elseif interactionType == Enum.PlayerInteractionType.Merchant then
+		private.HandleEvent(FRAMES.MERCHANT, true)
+	end
+end
 
 function private.RegisterCallback(frame, callback, visibleFilter)
 	tinsert(private.callbacks[frame], callback)

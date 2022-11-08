@@ -1,0 +1,8 @@
+## Interface: 100000
+## Title: LibAHTab
+## Version: @project-version@
+## Author: plusmouse
+## OptionalDeps: LibStub
+
+
+LibAHTab.xml

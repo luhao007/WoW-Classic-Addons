@@ -8,14 +8,15 @@ local _, TSM = ...
 local AuctionUI = TSM.UI:NewPackage("AuctionUI")
 local L = TSM.Include("Locale").GetTable()
 local Delay = TSM.Include("Util.Delay")
-local Event = TSM.Include("Util.Event")
 local Log = TSM.Include("Util.Log")
 local Money = TSM.Include("Util.Money")
 local ScriptWrapper = TSM.Include("Util.ScriptWrapper")
+local Theme = TSM.Include("Util.Theme")
 local Settings = TSM.Include("Service.Settings")
 local ItemLinked = TSM.Include("Service.ItemLinked")
 local DefaultUI = TSM.Include("Service.DefaultUI")
 local UIElements = TSM.Include("UI.UIElements")
+local LibAHTab = LibStub("LibAHTab-1-0")
 local private = {
 	settings = nil,
 	topLevelPages = {},
@@ -27,6 +28,7 @@ local private = {
 	defaultFrame = nil,
 }
 local MIN_FRAME_SIZE = { width = 750, height = 450 }
+local AH_TAB_ID = "TSM_AH_TAB"
 
 
 
@@ -39,16 +41,7 @@ function AuctionUI.OnInitialize()
 		:AddKey("global", "auctionUIContext", "showDefault")
 		:AddKey("global", "auctionUIContext", "frame")
 	UIParent:UnregisterEvent("AUCTION_HOUSE_SHOW")
-	if TSM.IsWowClassic() then
-		Event.Register("AUCTION_HOUSE_SHOW", private.AuctionFrameInit)
-	else
-		hooksecurefunc(PlayerInteractionFrameManager, "ShowFrame", function(_, interaction)
-			if interaction ~= Enum.PlayerInteractionType.Auctioneer or GameLimitedMode_IsActive() then
-				return
-			end
-			private.AuctionFrameInit()
-		end)
-	end
+	DefaultUI.RegisterAuctionHouseVisibleCallback(private.AuctionFrameInit, true)
 	DefaultUI.RegisterAuctionHouseVisibleCallback(private.HideAuctionFrame, false)
 	if TSM.IsWowClassic() then
 		Delay.AfterTime(1, function() LoadAddOn("Blizzard_AuctionUI") end)
@@ -183,6 +176,9 @@ local function NoOp()
 end
 
 function private.AuctionFrameInit()
+	if GameLimitedMode_IsActive() then
+		return
+	end
 	local tabTemplateName = nil
 	if TSM.IsWowClassic() then
 		private.defaultFrame = AuctionFrame
@@ -193,22 +189,21 @@ function private.AuctionFrameInit()
 	end
 	if not private.hasShown then
 		private.hasShown = true
-		local tabId = private.defaultFrame.numTabs + 1
-		local tab = CreateFrame("Button", "AuctionFrameTab"..tabId, private.defaultFrame, tabTemplateName)
-		tab:Hide()
-		tab:SetID(tabId)
-		tab:SetText(Log.ColorUserAccentText("TSM4"))
-		tab:SetNormalFontObject(GameFontHighlightSmall)
 		if TSM.IsWowClassic() then
+			local tabId = private.defaultFrame.numTabs + 1
+			local tab = CreateFrame("Button", "AuctionFrameTab"..tabId, private.defaultFrame, tabTemplateName)
+			tab:Hide()
+			tab:SetID(tabId)
+			tab:SetText(Theme.GetColor("INDICATOR_ALT"):ColorText("TSM"))
+			tab:SetNormalFontObject(GameFontHighlightSmall)
 			tab:SetPoint("LEFT", _G["AuctionFrameTab"..tabId - 1], "RIGHT", -8, 0)
+			tab:Show()
+			PanelTemplates_SetNumTabs(private.defaultFrame, tabId)
+			PanelTemplates_EnableTab(private.defaultFrame, tabId)
+			ScriptWrapper.Set(tab, "OnClick", private.TSMTabOnClick)
 		else
-			tab:SetPoint("LEFT", AuctionHouseFrame.Tabs[tabId - 1], "RIGHT", -15, 0)
-		end
-		tab:Show()
-		PanelTemplates_SetNumTabs(private.defaultFrame, tabId)
-		PanelTemplates_EnableTab(private.defaultFrame, tabId)
-		ScriptWrapper.Set(tab, "OnClick", private.TSMTabOnClick)
-		if not TSM.IsWowClassic() then
+			LibAHTab:CreateTab(AH_TAB_ID, CreateFrame("Frame"), Theme.GetColor("INDICATOR_ALT"):ColorText("TSM"))
+			ScriptWrapper.Set(LibAHTab:GetButton(AH_TAB_ID), "OnClick", private.TSMTabOnClick)
 			AuctionHouseFrame:HookScript("OnShow", function(self)
 				self:UnregisterEvent("AUCTION_HOUSE_AUCTION_CREATED")
 				self:UnregisterEvent("AUCTION_HOUSE_SHOW_NOTIFICATION")
