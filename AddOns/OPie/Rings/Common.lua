@@ -1,4 +1,4 @@
-local AB, _, T = assert(OneRingLib.ext.ActionBook:compatible(2,14), "Requires a compatible version of ActionBook"), ...
+local AB, _, T = assert(OPie.ActionBook:compatible(2,14), "Requires a compatible version of ActionBook"), ...
 local MODERN = select(4,GetBuildInfo()) >= 8e4
 local CF_WRATH = not MODERN and select(4,GetBuildInfo()) >= 3e4
 local ORI, EV, L, PC = OPie.UI, T.Evie, T.L, T.OPieCore
@@ -16,6 +16,16 @@ if MODERN or CF_WRATH then -- OPieTracker
 		elseif h == 4 then return t, p, v
 		elseif h == 5 then return v, p, q
 		end
+	end
+	
+	local function GetTrackingInfo(...)
+		return (MODERN and C_Minimap or _G).GetTrackingInfo(...)
+	end
+	local function SetTracking(...)
+		return (MODERN and C_Minimap or _G).SetTracking(...)
+	end
+	local function GetNumTrackingTypes(...)
+		return (MODERN and C_Minimap or _G).GetNumTrackingTypes(...)
 	end
 	
 	local collectionData = {}
@@ -46,7 +56,7 @@ if MODERN or CF_WRATH then -- OPieTracker
 		end
 	end
 	local col = AB:CreateActionSlot(nil,nil, "collection", collectionData)
-	OneRingLib:SetRing("OPieTracking", col, {name=L"Minimap Tracking", hotkey="ALT-F"})
+	OPie:SetRing("OPieTracking", col, {name=L"Minimap Tracking", hotkey="ALT-F"})
 	AB:AddObserver("internal.collection.preopen", preClick, col)
 	function EV.PLAYER_ENTERING_WORLD()
 		return "remove", preClick(col, nil, col)
@@ -201,7 +211,7 @@ do -- OPieAutoQuest
 		end
 	end
 	colId = AB:CreateActionSlot(nil,nil, "collection",collection)
-	OneRingLib:SetRing("OPieAutoQuest", colId, {name=L"Quest Items", hotkey="ALT-Q"})
+	OPie:SetRing("OPieAutoQuest", colId, {name=L"Quest Items", hotkey="ALT-Q"})
 	AB:AddObserver("internal.collection.preopen", syncRing)
 	function EV.PLAYER_REGEN_DISABLED()
 		syncRing(nil, nil, colId)

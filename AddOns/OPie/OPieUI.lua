@@ -55,36 +55,37 @@ local GhostIndication = {} do
 	local spareGroups, spareSlices, currentGroups, activeGroup = {}, {}, {}
 	local function AnimateHide(self, elapsed)
 		local total = configCache.XTZoomTime
-		self.expire = (self.expire or total) - elapsed
-		if self.expire < 0 then
+		local ex = (self.expire or total) - elapsed
+		if ex <= 0 then
 			self.expire = nil
 			self:SetScript("OnUpdate", nil)
 			self:Hide()
 		else
-			self:SetAlpha(self.expire/total)
+			self.expire = ex
+			self:SetAlpha(ex <= total and ex/total or 1)
 		end
 	end
 	local function AnimateShow(self, elapsed)
 		local zoomTime = configCache.XTZoomTime
 		local et = self.expire
 		et = et and (et - elapsed) or (zoomTime + configCache.GhostShowDelay)
-		if et < 0 then
+		if et <= 0 then
 			self.expire = nil
 			self:SetScript("OnUpdate", nil)
 			self:SetAlpha(1)
 		else
 			self.expire = et
-			self:SetAlpha(et > zoomTime and 0 or (1-self.expire/zoomTime))
+			self:SetAlpha(et > zoomTime and 0 or (1-et/zoomTime))
 		end
 	end
 	function GhostIndication:ActivateGroup(index, count, incidentAngle, mainRadius, mainScale)
-		local ret = currentGroups[index] or next(spareGroups) or cc("SetScale", cc("SetSize", CreateFrame("Frame", nil, mainFrame), 1, 1), 0.80)
+		local ret = currentGroups[index] or next(spareGroups) or cc("Hide", cc("SetScale", cc("SetSize", CreateFrame("Frame", nil, mainFrame), 1, 1), 0.80))
 		currentGroups[index], spareGroups[ret] = ret
 		if not ret:IsShown() then
 			ret.expire = nil
 			ret:SetScript("OnUpdate", AnimateShow)
-			ret:Show()
 			AnimateShow(ret, 0)
+			ret:Show()
 		end
 		if activeGroup ~= ret then GhostIndication:Deactivate() end
 		if ret.incident ~= incidentAngle or ret.count ~= count then
@@ -144,8 +145,8 @@ local SwitchIndicatorFactory, ValidateIndicator do
 		SetCooldown=0, SetCooldownTextShown="supportsCooldownNumbers", SetShortLabel="supportsShortLabels",
 		SetEquipState=0, SetHighlighted=0, SetActive=0, SetOuterGlow=0,
 	}
-	function ValidateIndicator(apiLevel, info, errorLevel)
-		if apiLevel < 0 or (info.reqAPILevel or apiLevel) > CURRENT_API_LEVEL then
+	function ValidateIndicator(apiLevel, reqAPILevel, info, errorLevel)
+		if apiLevel < 0 or (reqAPILevel or apiLevel) > CURRENT_API_LEVEL then
 			error("API level " .. apiLevel .. " is not supported (current is " .. CURRENT_API_LEVEL .. ")", errorLevel)
 		end
 		local f = info.CreateIndicator(nil, mainFrame, 48)
@@ -228,7 +229,7 @@ local function SetDefaultAnchor(tt, owner)
 	end
 end
 local function updateCentralElements(self, si)
-	local osi, tok, usable, state, icon, caption, _, _, _, tipFunc, tipArg, _, stext = self.oldSlice, OneRingLib:GetOpenRingSliceAction(si)
+	local osi, tok, usable, state, icon, caption, _, _, _, tipFunc, tipArg, _, stext = self.oldSlice, PC:GetOpenRingSliceAction(si)
 		
 	if tok then
 		local r,g,b = getSliceColor(tok, tokenIcon[tok] or icon or "Interface/Icons/INV_Misc_QuestionMark")
@@ -276,7 +277,8 @@ local function updateCentralElements(self, si)
 		centerGlow:SetAlpha(0.75)
 	elseif gAnim then
 		local pg = (gEnd-time)/0.3*0.75
-		centerGlow:SetAlpha(usable and (0.75 - pg) or pg)
+		local a = usable and (pg > 0.75 and 0 or (0.75 - pg)) or pg
+		centerGlow:SetAlpha(a < 0 and 0 or a)
 	end
 	self.oldSlice = si
 end
@@ -363,10 +365,10 @@ local function OnUpdate_Main(self, elapsed)
 	else
 		self.omState, self.schedMultiUpdate = cmState, -0.05
 		for i=1,count do
-			updateSlice(Slices[i], 90 - (i-1)*360/count - offset, si == i, OneRingLib:GetOpenRingSliceAction(i))
+			updateSlice(Slices[i], 90 - (i-1)*360/count - offset, si == i, PC:GetOpenRingSliceAction(i))
 		end
 		if configCache.GhostMIRings then
-			local _, _, _, nestedCount, atype = OneRingLib:GetOpenRingSlice(si or 0)
+			local _, _, _, nestedCount, atype = PC:GetOpenRingSlice(si or 0)
 			if (nestedCount or 0) == 0 then
 				GhostIndication:Deactivate()
 			else
@@ -374,7 +376,7 @@ local function OnUpdate_Main(self, elapsed)
 				local originAngle = 90 - 360/count*(si-1) - offset
 				local group = GhostIndication:ActivateGroup(si, nestedCount + jump1, originAngle, self.radius*(configCache.MIScale and 1.10 or 1), 1.10)
 				for i=2-jump1, nestedCount do
-					updateSlice(group[i+jump1], 90, false, OneRingLib:GetOpenRingSliceAction(si, i))
+					updateSlice(group[i+jump1], 90, false, PC:GetOpenRingSliceAction(si, i))
 				end
 			end
 		end
@@ -394,13 +396,13 @@ local function OnUpdate_ZoomIn(self, elapsed)
 	self.eleft, delta = delta, delta > 0 and delta/configCache.XTZoomTime or 0
 	if delta == 0 then self:SetScript("OnUpdate", OnUpdate_Main) end
 	self:SetScale(configCache.RingScale/max(0.20,cos(65*delta)))
-	self:SetAlpha(1-delta)
+	self:SetAlpha(delta < 1 and 1-delta or 0)
 	return OnUpdate_Main(self, elapsed)
 end
 local function OnUpdate_ZoomOut(self, elapsed)
 	local delta = self.eleft - elapsed
 	self.eleft, delta = delta, delta > 0 and delta/configCache.XTZoomTime or 0
-	if delta == 0 then
+	if delta <= 0 then
 		self:Hide()
 		self:SetScript("OnUpdate", nil)
 	elseif configCache.MISpinOnHide then
@@ -416,7 +418,7 @@ local function OnUpdate_ZoomOut(self, elapsed)
 	else
 		self:SetScale(configCache.RingScale*delta)
 	end
-	self:SetAlpha(delta)
+	self:SetAlpha(delta > 1 and 1 or delta)
 end
 mainFrame:SetScript("OnHide", function(self)
 	if self:IsShown() and self:GetScript("OnUpdate") == OnUpdate_ZoomOut then
@@ -426,19 +428,18 @@ mainFrame:SetScript("OnHide", function(self)
 end)
 
 function iapi:Show(_, fcSlice, fastOpen)
-	lastConAngle, _, mainFrame.count, mainFrame.offset = nil, OneRingLib:GetOpenRing(configCache)
+	lastConAngle, _, mainFrame.count, mainFrame.offset = nil, PC:GetOpenRing(configCache)
 	SwitchIndicatorFactory(configCache.IndicatorFactory)
 
 	local baseSize = 48 + 48*configCache.MIButtonMargin
 	mainFrame.radius = CalculateRingRadius(mainFrame.count or 3, baseSize, baseSize, 100, 90-(mainFrame.offset or 0))
-	mainFrame:SetScript("OnUpdate", OnUpdate_ZoomIn)
 	mainFrame.eleft, mainFrame.fastClickSlice, mainFrame.oldSlice, mainFrame.angle, mainFrame.omState, mainFrame.oldIsGlowing = configCache.XTZoomTime * (fastOpen and 0.5 or 1), fcSlice or 0, -1
 	mainFrame.rotPeriod = nil
 	GhostIndication:Reset()
 
 	local astep, radius, usedMI = mainFrame.count == 0 and 0 or -360/mainFrame.count, mainFrame.radius, mainFrame.count
 	for i=1, usedMI do
-		local indic, _, _, sliceBind = Slices[i] or rawset(Slices, i, next(ActiveIndicatorFactory.mainPool) or CreateIndicator(nil, mainFrame, 48))[i], OneRingLib:GetOpenRingSlice(i)
+		local indic, _, _, sliceBind = Slices[i] or rawset(Slices, i, next(ActiveIndicatorFactory.mainPool) or CreateIndicator(nil, mainFrame, 48))[i], PC:GetOpenRingSlice(i)
 		ActiveIndicatorFactory.mainPool[indic] = nil
 		indic:SetBinding(configCache.ShowKeys and sliceBind or nil)
 		SetAngle(indic, (i - 1) * astep - mainFrame.offset, radius)
@@ -461,6 +462,8 @@ function iapi:Show(_, fcSlice, fastOpen)
 	else
 		anchorFrame:SetPoint("CENTER", nil, "CENTER", configCache.IndicationOffsetX, -configCache.IndicationOffsetY)
 	end
+	mainFrame:SetScript("OnUpdate", OnUpdate_ZoomIn)
+	OnUpdate_ZoomIn(mainFrame, 0)
 	mainFrame:Show()
 end
 function iapi:Hide()
@@ -488,16 +491,16 @@ function api:RegisterIndicatorConstructor(key, info)
 	local errorLevel = 3 + ricErrorOffset
 	ricErrorOffset = 0
 	assert(type(key) == "string" and type(info) == "table", 'Syntax: OPieUI:RegisterIndicatorConstructor("key", infoTable)', errorLevel)
-	local func, apiLevel = info.CreateIndicator, info.apiLevel
-	assert(IndicatorFactories[key] == nil or key == "legacy", 'RegisterIndicatorConstructor: an indicator constructor with the specified key is already registered', errorLevel)
+	local func, apiLevel, iname, reqAPILevel = info.CreateIndicator, info.apiLevel, info.name, info.reqAPILevel
+	assert(IndicatorFactories[key] == nil, 'RegisterIndicatorConstructor: an indicator constructor with the specified key is already registered', errorLevel)
 	assert(type(func) == "function", 'RegisterIndicatorConstructor: info.CreateIndicator must be a function', errorLevel)
 	assert(type(apiLevel) == "number" and apiLevel < math.huge, 'RegisterIndicatorConstructor: info.apiLevel must be a finite number', errorLevel)
-	assert(type(info.name) == "string", 'RegisterIndicatorConstructor: info.name must be a string', errorLevel)
-	assert(type(info.reqAPILevel) == "number" or info.reqAPILevel == nil, 'RegisterIndicatorConstructor: info.reqAPILevel, if set, must be a number', errorLevel)
+	assert(type(iname) == "string", 'RegisterIndicatorConstructor: info.name must be a string', errorLevel)
+	assert(type(reqAPILevel) == "number" or reqAPILevel == nil, 'RegisterIndicatorConstructor: info.reqAPILevel, if set, must be a number', errorLevel)
 
-	local mainPool = ValidateIndicator(apiLevel, info, 1+errorLevel)
+	local mainPool = ValidateIndicator(apiLevel, reqAPILevel, info, 1+errorLevel)
 	LastRegisteredIndicatorFactory, IndicatorFactories[key] = key, {
-		name = info.name:gsub("|", ""),
+		name = iname:gsub("|", ""),
 		apiLevel = apiLevel,
 		CreateIndicator = func,
 		mainPool = mainPool,
@@ -516,23 +519,3 @@ end
 api:RegisterIndicatorConstructor("mirage", T.Mirage)
 
 T.OPieUI, OPie.UI = iapi, api
-
-local dapi = {}
--- DEPRECATED: call RegisterIndicatorConstructor (once); OPie will switch (or not) based on user prefs.
-function dapi:SetIndicatorConstructor(func)
-	if func then
-		ricErrorOffset = 1
-		return api:RegisterIndicatorConstructor("legacy", {
-			CreateIndicator=func,
-			apiLevel=0,
-			name="Legacy",
-		})
-	else
-		LastRegisteredIndicatorFactory = "mirage"
-	end
-end
--- Moved; alias for a bit longer
-dapi.SetQuestHint = api.SetQuestHint
-dapi.SetDisplayOptions = api.SetDisplayOptions
-
-OneRingLib.ext.OPieUI = dapi

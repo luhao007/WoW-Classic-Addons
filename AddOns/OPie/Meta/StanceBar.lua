@@ -1,4 +1,5 @@
-local frame, _, T = StanceBarFrame, ...
+local TEN = select(4, GetBuildInfo()) >= 10e4
+local frame, _, T = TEN and StanceBar or StanceBarFrame, ...
 local keeper, parent, EV, pendingValue = CreateFrame("Frame"), frame:GetParent(), T.Evie
 keeper:Hide()
 

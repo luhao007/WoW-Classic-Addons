@@ -1,0 +1,19 @@
+## Interface: 30400
+## Author: Leatrix
+## Version: 3.0.51
+## OptionalDeps: ElvUI, Glass
+## SavedVariables: LeaPlusDB
+
+## Title: Leatrix Plus
+## Notes: Quality of life addon.
+## Title-zhCN: |cFFFFE00A<|r|cFFFFF468功能|r|cFFFFE00A>|r |cFFFFFFFF功能百宝箱|r |cFFFFE00ALeatrix_Plus|r
+## Notes-zhCN: 哆啦A梦的百宝袋
+
+## X-Curse-Project-ID: 463863
+
+Leatrix_Plus_Library.lua
+Leatrix_Plus_Locale.lua
+Leatrix_Plus_Media.lua
+Leatrix_Plus_Flight_Alliance.lua
+Leatrix_Plus_Flight_Horde.lua
+Leatrix_Plus.lua

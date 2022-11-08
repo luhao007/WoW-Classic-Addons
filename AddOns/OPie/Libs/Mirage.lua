@@ -1,5 +1,6 @@
 local _, T = ...
 local gfxBase = ([[Interface\AddOns\%s\gfx\]]):format((...))
+local TEN = select(4, GetBuildInfo()) >= 10e4
 
 local function cc(m, f, ...)
 	f[m](f, ...)
@@ -306,10 +307,18 @@ end
 
 local CreateIndicator do
 	local apimeta = {__index=indicatorAPI}
+	local function Indicator_ApplyParentAlpha(self)
+		local p = self:GetParent()
+		if p then
+			self:SetAlpha(p:GetEffectiveAlpha())
+		end
+	end
 	function CreateIndicator(name, parent, size, nested)
-		local e = cc("SetSize", CreateFrame("Frame", name, parent), size, size)
+		local b = cc("SetSize", CreateFrame("Frame", name, parent), size, size)
+		cc(TEN and "SetIsFrameBuffer" or "SetFrameBuffer", cc("SetFlattensRenderLayers", b, true), true)
+		local e = cc("SetAllPoints", CreateFrame("Frame", nil, b))
 		local cd = CreateCooldown(e, size)
-		local r = setmetatable({[0]=e, cd=cd, cdText=cd.cdText,
+		local r = setmetatable({[0]=b, cd=cd, cdText=cd.cdText,
 			edge = cc("SetAllPoints", cc("SetTexture", e:CreateTexture(nil, "OVERLAY"), gfxBase .. "borderlo")),
 			hiEdge = cc("SetAllPoints", cc("SetTexture", e:CreateTexture(nil, "OVERLAY", nil, 1), gfxBase .. "borderhi")),
 			oglow = cc("SetShown", CreateQuadTexture("BACKGROUND", size*2, gfxBase .. "oglow", e), false),
@@ -323,6 +332,8 @@ local CreateIndicator do
 			equipBanner = cc("SetPoint", cc("SetTexCoord", cc("SetTexture", cc("SetSize", e:CreateTexture(nil, "ARTWORK", nil, 2), size/5, size/4), "Interface\\GuildFrame\\GuildDifficulty"), 0, 42/128, 6/64, 52/64), "TOPLEFT", 6*size/64, -3*size/64),
 			label = cc("SetPoint", cc("SetMaxLines", cc("SetJustifyV", cc("SetJustifyH", cc("SetSize", e:CreateFontString(nil, "OVERLAY", "TextStatusBarText", -1), size-4, 12), "CENTER"), "BOTTOM"), 1), "BOTTOMLEFT", 3, 4)
 		}, apimeta)
+		b:SetScript("OnUpdate", Indicator_ApplyParentAlpha)
+		b:SetScript("OnShow", Indicator_ApplyParentAlpha)
 		r.label:SetPoint("BOTTOMRIGHT", r.count, "BOTTOMLEFT", 2, 0)
 		return r
 	end

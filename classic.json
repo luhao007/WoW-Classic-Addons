@@ -6,10 +6,10 @@
     "name": "ALL THE THINGS",
     "description": "Addon for Tracking Collections & Account Completion",
     "url": "https://www.curseforge.com/wow/addons/all-the-things",
-    "download_url": "https://edge.forgecdn.net/files/4033/272/ATT-Classic-v1.1.9-wrath.zip",
-    "date_published": "2022-10-18T15:04:52.457000+00:00",
-    "version": "Wrath Classic 1.1.9",
-    "changelog_url": "https://api.curseforge.com/v1/mods/267285/files/4033272/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4059/469/ATT-Classic-v1.2.0-wrath.zip",
+    "date_published": "2022-10-31T07:15:44.690000+00:00",
+    "version": "Wrath Classic 1.2.0",
+    "changelog_url": "https://api.curseforge.com/v1/mods/267285/files/4059469/changelog",
     "options": {
       "any_flavour": false,
       "any_release_type": false,
@@ -22,6 +22,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "Wrath Classic 1.2.0",
+        "install_time": "2022-10-31T11:42:15+00:00"
+      },
       {
         "version": "Wrath Classic 1.1.9",
         "install_time": "2022-10-19T04:13:10+00:00"
@@ -57,10 +61,6 @@
       {
         "version": "Wrath Classic 1.0.8",
         "install_time": "2022-09-08T12:53:33+00:00"
-      },
-      {
-        "version": "Wrath Classic 1.0.6",
-        "install_time": "2022-09-05T11:09:41+00:00"
       }
     ]
   },
@@ -592,10 +592,10 @@
     "name": "BlizzMove",
     "description": "Makes the default frames moveable via simple drag and drop",
     "url": "https://www.curseforge.com/wow/addons/blizzmove",
-    "download_url": "https://edge.forgecdn.net/files/4050/392/BlizzMove-v3.5.1.zip",
-    "date_published": "2022-10-25T19:09:06.383000+00:00",
-    "version": "v3.5.1",
-    "changelog_url": "https://api.curseforge.com/v1/mods/17809/files/4050392/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4062/16/BlizzMove-v3.5.3.zip",
+    "date_published": "2022-11-01T22:51:40.423000+00:00",
+    "version": "v3.5.3",
+    "changelog_url": "https://api.curseforge.com/v1/mods/17809/files/4062016/changelog",
     "options": {
       "any_flavour": false,
       "any_release_type": false,
@@ -611,6 +611,14 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v3.5.3",
+        "install_time": "2022-11-02T09:03:34+00:00"
+      },
+      {
+        "version": "v3.5.2",
+        "install_time": "2022-10-30T03:01:28+00:00"
+      },
       {
         "version": "v3.5.1",
         "install_time": "2022-10-26T03:38:21+00:00"
@@ -642,14 +650,6 @@
       {
         "version": "v3.4.5",
         "install_time": "2022-09-19T07:18:39+00:00"
-      },
-      {
-        "version": "v3.4.4",
-        "install_time": "2022-09-01T13:41:21+00:00"
-      },
-      {
-        "version": "v3.2.10-bcc",
-        "install_time": "2022-02-17T16:25:56+00:00"
       }
     ]
   },
@@ -1144,10 +1144,10 @@
     "name": "HandyNotes",
     "description": "Handy notes for your maps",
     "url": "https://www.curseforge.com/wow/addons/handynotes",
-    "download_url": "https://edge.forgecdn.net/files/4050/762/HandyNotes-v1.6.9.zip",
-    "date_published": "2022-10-25T22:25:20.853000+00:00",
-    "version": "v1.6.9",
-    "changelog_url": "https://api.curseforge.com/v1/mods/14154/files/4050762/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4059/483/HandyNotes-v1.6.10.zip",
+    "date_published": "2022-10-31T07:32:21.870000+00:00",
+    "version": "v1.6.10",
+    "changelog_url": "https://api.curseforge.com/v1/mods/14154/files/4059483/changelog",
     "options": {
       "any_flavour": false,
       "any_release_type": false,
@@ -1160,6 +1160,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v1.6.10",
+        "install_time": "2022-10-31T11:42:15+00:00"
+      },
       {
         "version": "v1.6.9",
         "install_time": "2022-10-26T03:38:22+00:00"
@@ -1581,10 +1585,10 @@
     "name": "MonkeySpeed",
     "description": "Displays your current speed as a percentage of normal speed, everywhere and anytime.",
     "url": "https://www.curseforge.com/wow/addons/monkey-speed",
-    "download_url": "https://edge.forgecdn.net/files/3087/907/MonkeySpeed_v3.5.0c.zip",
-    "date_published": "2020-10-20T19:36:42.693000+00:00",
-    "version": "v3.5.0c",
-    "changelog_url": "data:,",
+    "download_url": "https://edge.forgecdn.net/files/4057/91/MonkeySpeed_v3.6.0.zip",
+    "date_published": "2022-10-29T20:36:48.650000+00:00",
+    "version": "v3.6.0",
+    "changelog_url": "https://api.curseforge.com/v1/mods/2862/files/4057091/changelog",
     "options": {
       "any_flavour": false,
       "any_release_type": false,
@@ -1597,6 +1601,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v3.6.0",
+        "install_time": "2022-10-30T03:01:28+00:00"
+      },
       {
         "version": "v3.5.0c",
         "install_time": "2020-11-03T05:33:04+00:00"
@@ -1963,10 +1971,10 @@
     "name": "RaidLedger",
     "description": "GDKP gold run ledger",
     "url": "https://www.curseforge.com/wow/addons/raidledger",
-    "download_url": "https://edge.forgecdn.net/files/3969/532/RaidLedger-v1.9.5-v3.4.0.zip",
-    "date_published": "2022-09-05T11:54:30.137000+00:00",
-    "version": "v1.9.5-v3.4.0",
-    "changelog_url": "https://api.curseforge.com/v1/mods/349048/files/3969532/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4060/367/RaidLedger-v1.10.0-v3.4.0.zip",
+    "date_published": "2022-10-31T19:25:22.070000+00:00",
+    "version": "v1.10.0-v3.4.0",
+    "changelog_url": "https://api.curseforge.com/v1/mods/349048/files/4060367/changelog",
     "options": {
       "any_flavour": false,
       "any_release_type": false,
@@ -1979,6 +1987,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v1.10.0-v3.4.0",
+        "install_time": "2022-11-02T09:03:34+00:00"
+      },
       {
         "version": "v1.9.5-v3.4.0",
         "install_time": "2022-09-05T12:11:38+00:00"
@@ -2008,10 +2020,10 @@
     "name": "RangeDisplay",
     "description": "Estimated range display. Type /rangedisplay for config",
     "url": "https://www.curseforge.com/wow/addons/range-display",
-    "download_url": "https://edge.forgecdn.net/files/4040/427/RangeDisplay-v4.9.10.zip",
-    "date_published": "2022-10-22T09:27:13.473000+00:00",
-    "version": "v4.9.10",
-    "changelog_url": "https://api.curseforge.com/v1/mods/14570/files/4040427/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4056/655/RangeDisplay-v5.0.1.zip",
+    "date_published": "2022-10-29T16:01:58.827000+00:00",
+    "version": "v5.0.1",
+    "changelog_url": "https://api.curseforge.com/v1/mods/14570/files/4056655/changelog",
     "options": {
       "any_flavour": true,
       "any_release_type": false,
@@ -2027,6 +2039,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v5.0.1",
+        "install_time": "2022-10-30T03:01:29+00:00"
+      },
       {
         "version": "v4.9.10",
         "install_time": "2022-10-23T08:26:40+00:00"
@@ -2196,10 +2212,10 @@
     "name": "TomTom",
     "description": "Acts as your portable navigation assistant",
     "url": "https://www.curseforge.com/wow/addons/tomtom",
-    "download_url": "https://edge.forgecdn.net/files/4053/849/TomTom-v3.3.0-release.zip",
-    "date_published": "2022-10-27T17:02:56.740000+00:00",
-    "version": "v3.3.0-release",
-    "changelog_url": "https://api.curseforge.com/v1/mods/18808/files/4053849/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4059/491/TomTom-v3.3.2-release.zip",
+    "date_published": "2022-10-31T07:40:09.353000+00:00",
+    "version": "v3.3.2-release",
+    "changelog_url": "https://api.curseforge.com/v1/mods/18808/files/4059491/changelog",
     "options": {
       "any_flavour": false,
       "any_release_type": false,
@@ -2212,6 +2228,14 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v3.3.2-release",
+        "install_time": "2022-10-31T11:42:15+00:00"
+      },
+      {
+        "version": "v3.3.1-release",
+        "install_time": "2022-10-30T03:01:29+00:00"
+      },
       {
         "version": "v3.3.0-release",
         "install_time": "2022-10-29T02:01:24+00:00"
@@ -2243,14 +2267,6 @@
       {
         "version": "v3.0.1-classic",
         "install_time": "2021-05-21T01:44:35+00:00"
-      },
-      {
-        "version": "v11306-1.2.0",
-        "install_time": "2020-12-23T09:23:22+00:00"
-      },
-      {
-        "version": "v11305-1.1.5",
-        "install_time": "2020-11-03T05:33:04+00:00"
       }
     ]
   },
@@ -2299,10 +2315,10 @@
     "name": "VuhDo",
     "description": "Raid Frames providing click-heal functionality, buff and debuff control, main tank management and much more.",
     "url": "https://www.curseforge.com/wow/addons/vuhdo",
-    "download_url": "https://edge.forgecdn.net/files/4050/965/VuhDo-v3.142-wotlkc-wrath.zip",
-    "date_published": "2022-10-26T00:19:34.680000+00:00",
-    "version": "v3.142-wotlkc-wrath",
-    "changelog_url": "https://api.curseforge.com/v1/mods/7950/files/4050965/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4060/918/VuhDo-v3.143-wotlkc-wrath.zip",
+    "date_published": "2022-11-01T03:33:52.503000+00:00",
+    "version": "v3.143-wotlkc-wrath",
+    "changelog_url": "https://api.curseforge.com/v1/mods/7950/files/4060918/changelog",
     "options": {
       "any_flavour": false,
       "any_release_type": false,
@@ -2318,6 +2334,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v3.143-wotlkc-wrath",
+        "install_time": "2022-11-02T09:03:35+00:00"
+      },
       {
         "version": "v3.142-wotlkc-wrath",
         "install_time": "2022-10-26T03:38:24+00:00"
@@ -2353,10 +2373,6 @@
       {
         "version": "v3.124-tbcc-bc",
         "install_time": "2021-06-02T04:21:38+00:00"
-      },
-      {
-        "version": "v3.123-tbcc-bc",
-        "install_time": "2021-05-21T08:24:27+00:00"
       }
     ]
   },
@@ -2657,8 +2673,8 @@
     "description": "A WeakAuras Companion clone.",
     "url": "https://github.com/layday/instawow",
     "download_url": "file:///C:/Users/luhao_000/AppData/Roaming/instawow/profiles/classic/plugins/instawow.wa_updater/WeakAurasCompanion.zip",
-    "date_published": "2022-10-29T02:01:18.950090+00:00",
-    "version": "b9b4b78",
+    "date_published": "2022-10-31T11:42:12.011529+00:00",
+    "version": "df1f105",
     "changelog_url": "file:///C:/Users/luhao_000/AppData/Roaming/instawow/profiles/classic/plugins/instawow.wa_updater/CHANGELOG.md",
     "options": {
       "any_flavour": false,
@@ -2672,6 +2688,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "df1f105",
+        "install_time": "2022-10-31T11:42:15+00:00"
+      },
       {
         "version": "b9b4b78",
         "install_time": "2022-10-29T02:01:26+00:00"
@@ -2707,10 +2727,6 @@
       {
         "version": "b730336",
         "install_time": "2022-10-03T03:39:16+00:00"
-      },
-      {
-        "version": "eb04333",
-        "install_time": "2022-10-01T02:56:14+00:00"
       }
     ]
   },

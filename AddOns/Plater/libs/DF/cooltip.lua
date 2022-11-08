@@ -15,7 +15,7 @@ local max = math.max
 
 --api locals
 local PixelUtil = PixelUtil or DFPixelUtil
-local version = 4
+local version = 7
 
 local CONST_MENU_TYPE_MAINMENU = "main"
 local CONST_MENU_TYPE_SUBMENU = "sub"
@@ -62,6 +62,24 @@ function DF:CreateCoolTip()
 		end
 
 		return CONST_MENU_TYPE_MAINMENU
+	end
+
+	gameCooltip.LanguageEditBox = gameCooltip.LanguageEditBox or CreateFrame("editbox")
+	gameCooltip.LanguageEditBox:SetFontObject("GameFontNormal")
+	gameCooltip.LanguageEditBox:ClearFocus()
+	gameCooltip.LanguageEditBox:SetAutoFocus(false)
+
+	function gameCooltip.CheckNeedNewFont(text)
+		--local file = gameCooltip.LanguageEditBox:GetFont()
+		--print("1", file, text)
+		--gameCooltip.LanguageEditBox:SetText("Цены аукциона")
+		--local file2 = gameCooltip.LanguageEditBox:GetFont()
+		--print("2", file2)
+		--gameCooltip.LanguageEditBox:ClearFocus()
+
+		--if (file ~= file2) then
+		--	gameCooltip:SetOption("TextFont", file2)
+		--end
 	end
 
 	--containers
@@ -296,7 +314,7 @@ function DF:CreateCoolTip()
 		end
 	end
 
-	--> main frame
+	--main frame
 		local frame1 = GameCooltipFrame1
 		if (not GameCooltipFrame1) then
 			frame1 = CreateFrame("Frame", "GameCooltipFrame1", UIParent, "BackdropTemplate")
@@ -310,7 +328,7 @@ function DF:CreateCoolTip()
 
 		createTooltipFrames(frame1)
 
-	--> secondary frame
+	--secondary frame
 		local frame2 = GameCooltipFrame2
 		if (not GameCooltipFrame2) then
 			frame2 = CreateFrame("Frame", "GameCooltipFrame2", UIParent, "BackdropTemplate")
@@ -519,8 +537,8 @@ function DF:CreateCoolTip()
 		statusbar.texture = statusbar:CreateTexture("$parent_Texture", "BACKGROUND")
 		statusbar.texture:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-Skills-Bar")
 		statusbar.texture:SetSize(300, 14)
-		statusbar:SetStatusBarTexture (statusbar.texture)
-		statusbar:SetMinMaxValues (0, 100)
+		statusbar:SetStatusBarTexture(statusbar.texture)
+		statusbar:SetMinMaxValues(0, 100)
 
 		statusbar.spark = statusbar:CreateTexture("$parent_Spark", "BACKGROUND")
 		statusbar.spark:Hide()
@@ -582,8 +600,8 @@ function DF:CreateCoolTip()
 		statusbar2.texture = statusbar2:CreateTexture("$parent_Texture", "BACKGROUND")
 		statusbar2.texture:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-Skills-Bar")
 		statusbar2.texture:SetSize(300, 14)
-		statusbar2:SetStatusBarTexture (statusbar2.texture)
-		statusbar2:SetMinMaxValues (0, 100)
+		statusbar2:SetStatusBarTexture(statusbar2.texture)
+		statusbar2:SetMinMaxValues(0, 100)
 
 		--on load
 		self:RegisterForClicks("LeftButtonDown")
@@ -869,7 +887,7 @@ function DF:CreateCoolTip()
 			local func = gameCooltip.FunctionsTableMain[self.index]
 			local okay, errortext = pcall(func, gameCooltip.Host, gameCooltip.FixedValue, parameterTable[1], parameterTable[2], parameterTable[3], button)
 			if (not okay) then
-				print ("Cooltip OnClick Error:", errortext)
+				print("Cooltip OnClick Error:", errortext)
 			end
 		end
 	end
@@ -1134,7 +1152,7 @@ function DF:CreateCoolTip()
 
 	function gameCooltip:RefreshSpark(menuButton)
 		menuButton.spark:ClearAllPoints()
-		menuButton.spark:SetPoint("LEFT", menuButton.statusbar, "LEFT", (menuButton.statusbar:GetValue() * (menuButton.statusbar:GetWidth() / 100)) - 5, 0)
+		menuButton.spark:SetPoint("left", menuButton.statusbar, "left", (menuButton.statusbar:GetValue() * (menuButton.statusbar:GetWidth() / 100)) - 5, 0)
 		menuButton.spark2:ClearAllPoints()
 		menuButton.spark2:SetPoint("left", menuButton.statusbar, "left", menuButton.statusbar:GetValue() * (menuButton.statusbar:GetWidth()/100) - 16, 0)
 	end
@@ -1142,7 +1160,7 @@ function DF:CreateCoolTip()
 	function gameCooltip:StatusBar(menuButton, statusBarSettings)
 		if (statusBarSettings) then
 			menuButton.statusbar:SetValue(statusBarSettings[1])
-			menuButton.statusbar:SetStatusBarColor (statusBarSettings[2], statusBarSettings[3], statusBarSettings[4], statusBarSettings[5])
+			menuButton.statusbar:SetStatusBarColor(statusBarSettings[2], statusBarSettings[3], statusBarSettings[4], statusBarSettings[5])
 			menuButton.statusbar:SetHeight(20 + (gameCooltip.OptionsTable.StatusBarHeightMod or 0))
 
 			menuButton.spark2:Hide()
@@ -1160,9 +1178,9 @@ function DF:CreateCoolTip()
 				end
 				if (statusBarSettings[7].color) then
 					local colorRed, colorGreen, colorBlue, colorAlpha = DF:ParseColors(statusBarSettings[7].color)
-					menuButton.statusbar2:SetStatusBarColor (colorRed, colorGreen, colorBlue, colorAlpha)
+					menuButton.statusbar2:SetStatusBarColor(colorRed, colorGreen, colorBlue, colorAlpha)
 				else
-					menuButton.statusbar2:SetStatusBarColor (1, 1, 1, 1)
+					menuButton.statusbar2:SetStatusBarColor(1, 1, 1, 1)
 				end
 			else
 				menuButton.statusbar2:SetValue(0)
@@ -1863,13 +1881,13 @@ function DF:CreateCoolTip()
 
 			if (centerY) then
 				if (centerY + helpScreenHeight > screenHeight) then
-					--> out of top side
+					--out of top side
 					local moveDownOffset = (centerY + helpScreenHeight) - screenHeight
 					gameCooltip.internal_y_mod = -moveDownOffset
 					return gameCooltip:SetMyPoint(host, 0, -moveDownOffset)
 
 				elseif (centerY - helpScreenHeight < 0) then
-					--> out of bottom side
+					--out of bottom side
 					local moveUpOffset = centerY - helpScreenHeight
 					gameCooltip.internal_y_mod = moveUpOffset * -1
 					return gameCooltip:SetMyPoint(host, 0, moveUpOffset * -1)
@@ -1959,6 +1977,11 @@ function DF:CreateCoolTip()
 	--return the current frame using cooltip
 	function gameCooltip:GetOwner()
 		return gameCooltip.Host
+	end
+
+	function gameCooltip:IsOwner(frame)
+		local currentOwner = gameCooltip:GetOwner()
+		return currentOwner == frame
 	end
 
 	--set the anchor of cooltip, parameters: frame [, cooltip anchor point, frame anchor point[, x mod, y mod]]
@@ -2730,6 +2753,8 @@ function DF:CreateCoolTip()
 			end
 		end
 
+		gameCooltip.CheckNeedNewFont(leftText)
+
 		local rightTextType = type(rightText)
 		if (rightTextType ~= "string") then
 			if (rightTextType == "number") then
@@ -2738,6 +2763,8 @@ function DF:CreateCoolTip()
 				rightText = ""
 			end
 		end
+
+		gameCooltip.CheckNeedNewFont(rightText)
 
 		if (type(ColorR1) ~= "number") then
 			ColorR2, ColorG2, ColorB2, ColorA2, fontSize, fontFace, fontFlag = ColorG1, ColorB1, ColorA1, ColorR2, ColorG2, ColorB2, ColorA2
@@ -3202,6 +3229,31 @@ function DF:CreateCoolTip()
 			gameCooltip:Hide()
 		end)
 	end
+
+	local cyrillic = "АБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯЁЂЃЄЅІЇЈЉЊЋЌЎЏҐабвгдежзийклмнопрстуфхцчшщъыьэюяёђѓєѕіїјљњћќўџґАаБбВвГгДдЕеЁёЖжЗзИиЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщЪъЫыЬьЭэЮюЯя"
+	local latin = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	local chinese = "ｦｧｨｩｪｫｬｭｮｯｰｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝﾞﾟﾡﾢﾣﾤﾥﾦﾧﾨﾩﾪﾫﾬﾭﾮﾯﾰﾱﾲﾳﾴﾵﾶﾷﾸﾹﾺﾻﾼﾽﾾￂￃￄￅￆￇￊￋￌￍￎￏￒￓￔￕￖￗￚￛￜ"
+
+	local alphabetTable = {}
+
+	for letter in latin:gmatch(".") do
+		alphabetTable[letter] = "enUS"
+	end
+	for letter in cyrillic:gmatch(".") do
+		alphabetTable[letter] = "ruRU"
+	end
+	for letter in chinese:gmatch(".") do
+		alphabetTable[letter] = "zhCN"
+	end
+
+	function gameCooltip:DetectLanguageId(text)
+		for letter in text:gmatch(".") do
+			if (alphabetTable[letter]) then
+				return alphabetTable[letter]
+			end
+		end
+	end
+
 	return gameCooltip
 end
 

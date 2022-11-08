@@ -1,0 +1,40 @@
+## Interface: 30400
+## Title: Ask Mr. Robot Classic
+## Author: Team Robot, Inc.
+## Version: 11
+## Notes: Gear import/export, combat logging, and more.
+## URL: www.askmrrobot.com/classic
+## SavedVariables: AskMrRobotDbClassic
+
+
+localization\enUS.lua
+localization\ruRU.lua
+localization\ptBR.lua
+localization\frFR.lua
+localization\itIT.lua
+
+AskMrRobotClassic-Serializer\AskMrRobotClassic-Serializer.xml
+
+Core.lua
+Constants.lua
+ui\Ui.lua
+
+ui\AmrUiLabel.lua
+ui\AmrUiButton.lua
+ui\AmrUiTextButton.lua
+ui\AmrUiCheckBox.lua
+ui\AmrUiTextarea.lua
+ui\AmrUiDropDown.lua
+ui\AmrUiPanel.lua
+ui\AmrUiFrame.lua
+ui\AmrUiTabGroup.lua
+ui\AmrUiIcon.lua
+ui\AmrUiScrollFrame.lua
+
+Export.lua
+Import.lua
+Junk.lua
+Shopping.lua
+Gear.lua
+CombatLog.lua
+Options.lua

@@ -1,10 +1,10 @@
-lightweight tag c8f7cf6f0692edd11d8eefe698dfa138e2f632fe v5.0.1
+lightweight tag affb2c721e83cc575066f619a51ceec872cd5771 v5.0.3
 Author:	Péter Radics <mitchnull@gmail.com>
-Date:	Sat Oct 29 17:56:29 2022 +0200
+Date:	Sat Nov 5 13:07:13 2022 +0100
 
-commit c8f7cf6f0692edd11d8eefe698dfa138e2f632fe
+commit affb2c721e83cc575066f619a51ceec872cd5771
 Author: Péter Radics <mitchnull@gmail.com>
-Date:   Sat Oct 29 17:56:29 2022 +0200
+Date:   Sat Nov 5 13:07:13 2022 +0100
 
-    remove dummyOpts
+    [ISSUE-2] handle focus and arena units in class-wrath, too
 

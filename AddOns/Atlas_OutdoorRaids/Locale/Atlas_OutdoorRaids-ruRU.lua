@@ -38,30 +38,22 @@ local L = AceLocale:NewLocale("Atlas_OutdoorRaids", "ruRU", false);
 
 if L then
 L["Ancient Skull Pile"] = "Груда древних черепов"
---[[Translation missing --]]
---[[ L["Azuregos"] = ""--]] 
+L["Azuregos"] = "Азурегос"
 --[[Translation missing --]]
 --[[ L["Battle for Azeroth"] = ""--]] 
 L["Broken Isles World Bosses"] = "Мировые боссы Расколотого острова"
 L["Broken Shore World Bosses"] = "Мировые боссы Сломанного берега"
 L["Darkscreecher Akkarai"] = "Темный Крикун Аккарай"
---[[Translation missing --]]
---[[ L["Doom Lord Kazzak"] = ""--]] 
---[[Translation missing --]]
---[[ L["Doomwalker"] = ""--]] 
+L["Doom Lord Kazzak"] = "Владыка Судеб Каззак"
+L["Doomwalker"] = "Владыка Рока"
 L["Draenor World Bosses"] = "Боссы Дренора"
---[[Translation missing --]]
---[[ L["Dragons of Nightmare"] = ""--]] 
---[[Translation missing --]]
---[[ L["Dreamroarer"] = ""--]] 
---[[Translation missing --]]
---[[ L["Dreamstalker"] = ""--]] 
---[[Translation missing --]]
---[[ L["Dreamtracker"] = ""--]] 
+L["Dragons of Nightmare"] = "Драконы Кошмаров"
+L["Dreamroarer"] = "Рыкун Сна"
+L["Dreamstalker"] = "Ловчий Снов"
+L["Dreamtracker"] = "Сноходец"
 --[[Translation missing --]]
 --[[ L["Eastern Kingdoms World Bosses"] = ""--]] 
---[[Translation missing --]]
---[[ L["Emeriss"] = ""--]] 
+L["Emeriss"] = "Эмерисс"
 L["Gezzarak the Huntress"] = "Геззарак Охотница"
 L["Grella <Skyguard Quartermaster>"] = "Грелла <Интендант Стражи небес>"
 L["Hazzik"] = "Хаззик"
@@ -75,14 +67,12 @@ L["Karrog"] = "Каррог"
 --[[ L["Kul Tiras World Bosses"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["Lethlas"] = ""--]] 
---[[Translation missing --]]
---[[ L["Lethon"] = ""--]] 
+L["Lethon"] = "Летон"
 L["Outdoor Raid Encounters"] = "Места внешних рейдовых схваток"
 L["Pandaria World Bosses"] = "Pandaria World Bosses"
 --[[Translation missing --]]
 --[[ L["Phantim"] = ""--]] 
---[[Translation missing --]]
---[[ L["Rothos"] = ""--]] 
+L["Rothos"] = "Ротос"
 L["Sahaak <Keeper of Scrolls>"] = "Сахаак <Хранитель Свитков>"
 L["Severin <Skyguard Medic>"] = "Северин <Врач Стражи небес>"
 L["Skull Pile"] = "Груда черепов"
@@ -90,19 +80,15 @@ L["Sky Commander Adaris"] = "Небесный командир Адарис"
 L["Sky Sergeant Doryn"] = "Небесный сержант Дорин"
 L["Skyguard Handler Deesak"] = "Укротитель Диисак из Стражи Небес"
 L["Skyguard Prisoner"] = "Плененный Страж Небес"
---[[Translation missing --]]
---[[ L["Taerar"] = ""--]] 
+L["Taerar"] = "Таэрар"
 L["Talonpriest Ishaal"] = "Жрец Когтя Ишааль"
 L["Talonpriest Skizzik"] = "Жрец Когтя Скиззик"
 L["Talonpriest Zellek"] = "Жрец Когтя Зеллек"
 L["Terokk"] = "Терокк"
---[[Translation missing --]]
---[[ L["The Dragons"] = ""--]] 
+L["The Dragons"] = "Драконы"
 L["Vakkiz the Windrager"] = "Ваккиз Ветроярость"
---[[Translation missing --]]
---[[ L["Various"] = ""--]] 
---[[Translation missing --]]
---[[ L["Ysondre"] = ""--]] 
+L["Various"] = "Различное"
+L["Ysondre"] = "Исондра"
 --[[Translation missing --]]
 --[[ L["Zandalar World Bosses"] = ""--]] 
 

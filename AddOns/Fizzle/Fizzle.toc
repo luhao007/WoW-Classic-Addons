@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: phyber
-## Version: 90005-1
+## Version: 100000-1
 ## OptionalDeps: Ace3, Voyeur
 ## SavedVariablesPerCharacter: FizzleDB
 
@@ -15,6 +15,7 @@
 ## X-WoWI-ID: 5018
 
 #@no-lib-strip@
+embeds.xml
 #@end-no-lib-strip@
 
 Locales\locales.xml

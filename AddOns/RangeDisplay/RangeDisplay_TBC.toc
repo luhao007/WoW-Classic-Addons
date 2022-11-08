@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: mitch0
-## Version: v5.0.1
+## Version: v5.0.3
 ## OptionalDeps: LibStub, CallbackHandler-1.0, LibRangeCheck-2.0, Ace3, LibSharedMedia-3.0, LibDualSpec-1.0
 ## LoadManagers: AddonLoader
 ## SavedVariables: RangeDisplayDB3

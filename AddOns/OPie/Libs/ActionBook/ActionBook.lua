@@ -1,4 +1,4 @@
-local apiV, AB, MAJ, REV, ext, T = {}, {}, 2, 28, ...
+local apiV, AB, MAJ, REV, ext, T = {}, {}, 2, 29, ...
 if T.ActionBook then return end
 apiV[MAJ], ext, T.Kindred, T.Rewire = AB, {Kindred=T.Kindred, Rewire=T.Rewire, ActionBook={}}
 
@@ -107,7 +107,7 @@ local actionCallbacks, core, coreEnv = {}, CreateFrame("Frame", nil, nil, "Secur
 		local bni, bn = 1 repeat
 			bn, bni = "AB!" .. bni .. s, bni + 1
 		until GetClickFrame(bn) == nil
-		core:WrapScript(CreateFrame("Button", bn, core, "SecureActionButtonTemplate"), "OnClick",
+		core:WrapScript(T.TenSABT(CreateFrame("Button", bn, core, "SecureActionButtonTemplate")), "OnClick",
 		[[-- AB:OnClick_Pre
 			local t = actInfo[tonumber(button)]
 			busy[self], idle[self] = t
@@ -192,14 +192,18 @@ core:SetAttribute("GetCollectionContent", [[-- AB:GetCollectionContent(slot)
 	until i == 0
 	return ret, metadata["openAction-" .. root] -- 2nd return is deprecated; use idx 0 actions in ret
 ]])
-core:SetAttribute("UseAction", [[-- AB:UseAction(slot[, ...])
-	local at = actInfo[...]
+core:SetAttribute("UseAction", [[-- AB:UseAction(slot[, modLock])
+	local slot, modLock = ...
+	local at = actInfo[slot]
+	if modLock ~= nil then
+		self:SetAttribute("modLock", modLock)
+	end
 	if at == "icall" then
-		return self:CallMethod("icall", ...) or ""
+		return self:CallMethod("icall", slot) or ""
 	elseif type(at) ~= "table" then
 	elseif at[1] == "attribute" then
 		local _, name = next(idle)
-		return ("/click %s %d"):format(name, ...)
+		return ("/click %s %d"):format(name, slot)
 	elseif at[1] == "recall" then
 		return at[2]:RunAttribute(select(3, unpack(at))) or ""
 	end
@@ -209,6 +213,12 @@ core:SetAttribute("CastSpellByID", [[-- AB:CastSpellByID(sid[, "target"])
 	local at = actInfo[sidCastID]
 	at[4], at[6] = ...
 	return self:RunAttribute("UseAction", sidCastID)
+]])
+core:SetAttribute("ComputeModifierLock", [[-- AB:ComputeModifierLock("binding"[, "modState"])
+	local bind, modState = ...
+	modState = modState or ((IsAltKeyDown() and "A" or "") .. (IsControlKeyDown() and "C" or "") .. (IsShiftKeyDown() and "S" or "") .. (IsModifiedClick("META-X") and "M" or ""))
+	local modLockState = (modState:match("A") or bind:match("ALT%-") and "a" or "-") .. (modState:match("S") or bind:match("SHIFT%-") and "s" or "-") .. (modState:match("C") or bind:match("CTRL%-") and "c" or "-") .. (modState:match("M") or bind:match("META%-") and "m" or "-")
+	return modState, modLockState
 ]])
 
 function core:notifyCollectionOpen(id)
@@ -535,7 +545,6 @@ function AB:compatible(module, maj, rev, ...)
 		return ext[module]:compatible(maj, rev, ...)
 	elseif type(module) == "number" and type(maj) == "number" and rev == nil then
 		maj, rev = module, maj -- Oh hey, it's us!
-		if maj == 1 then securecall(error, "ActionBook v1 API is deprecated.", 3) end
 		return rev <= REV and apiV[maj], MAJ, REV
 	end
 end
@@ -547,31 +556,6 @@ function AB:locale(getWritableHandle)
 		return assert(r, "A writable locale handle has already been returned")
 	end
 	return L
-end
-
-apiV[1] = {uniq=AB.CreateToken, get=AB.GetActionSlot, describe=AB.GetActionDescription, info=AB.GetSlotInfo, options=AB.GetActionOptions, actionType=AB.GetSlotImplementation,
-	register=AB.RegisterActionType, update=AB.UpdateActionSlot, notify=AB.NotifyObservers, observe=AB.AddObserver, lastupdate=AB.GetLastObserverUpdateToken, compatible=AB.compatible} do
-	apiV[1].miscaction = function(_self, ...) return AB:AddActionToCategory(L"Miscellaneous", ...) end
-	apiV[1].category = function(_self, name, numFunc, getFunc)
-		assert(type(name) == "string" and type(numFunc) == "function" and type(getFunc) == "function", 'Syntax: ActionBook:category("name", countFunc, entryFunc)')
-		local count = numFunc()
-		assert(type(count) == "number" and count >= 0, "countFunc() must return a non-negative integer")
-		return AB:AugmentCategory(name, function(_, add)
-			for i=1, numFunc() do
-				add(getFunc(i))
-			end
-		end)
-	end
-	local proxy = CreateFrame("Frame", nil, nil, "SecureHandlerBaseTemplate")
-	proxy:SetFrameRef("core", core)
-	proxy:Execute("core = self:GetFrameRef('core'), self:SetAttribute('frameref-core', nil)")
-	proxy:SetAttribute("collection", "return core:RunAttribute('GetCollectionContent', ...)")
-	proxy:SetAttribute("triggerMacro", "return core:RunAttribute('UseAction', ...)")
-	apiV[1].seclib = function() return proxy end
-	apiV[1].create = function(_self, atype, hint, ...)
-		assert(type(atype) == "string" and (hint == nil or type(hint) == "function"), 'Syntax: id = ActionBook:create("actionType", hintFunc, ...)')
-		return AB:CreateActionSlot(hint, nextActionId, atype, ...)
-	end
 end
 
 T.ActionBook, ext.ActionBook.compatible = ext.ActionBook, AB.compatible

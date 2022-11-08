@@ -293,7 +293,7 @@ core:SetAttribute("RegisterStateDriver", [=[-- Kindred:RegisterStateDriver(*fram
 		end
 	end
 ]=])
-core:SetAttribute("EvaluateCmdOptions", [=[-- Kindred:EvaluateCmdOptions("options")
+core:SetAttribute("EvaluateCmdOptions", [=[-- Kindred:EvaluateCmdOptions("options"[, modLock, skipChunks])
 	return SecureCmdOptionParse(owner:Run(OptionConstruct, ...))
 ]=])
 core:SetAttribute("UpdateThresholdConditional", [=[-- Kindred:UpdateThresholdConditional("name", value or false)

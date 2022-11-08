@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: foxlit
-## Version: Xe 9
+## Version: Yuzu 1
 ## SavedVariables: OneRing_Config, OPie_SavedData
 
 ## Title: OPie
@@ -9,24 +9,26 @@
 ## Notes-zhCN: 当你按下快捷键时显示一个环形的技能分组.
 
 ## X-Website: https://www.townlong-yak.com/addons/opie
-## X-M6-AB: OneRingLib.ext.ActionBook
+## X-M6-AB: OPie.ActionBook
 
 Libs\Evie.lua
 Libs\Niji.lua
 Libs\Mirage.lua
 Libs\TaintLess.xml
+Libs\Ten.lua
+Libs\TenSettings.lua
 Libs\ActionBook\ActionBook.xml
 Libs\ActionBook\ActionBookUI.xml
 Locale.lua
-OneRingLib.lua
+OPieCore.lua
 OPieUI.lua
-OPieConfig.lua
+OPieOptions.lua
 OPieBindings.lua
+CustomRings.lua
+CustomRingsConfig.lua
 Meta\StanceBar.lua
-Meta\RingKeeper.lua
-Meta\RingKeeperConfig.lua
 Meta\SpecSet.lua
 Meta\DataBroker.lua
 Meta\PSConfig.lua
 Rings\Common.lua
-Rings\RKRings.lua
+Rings\Default.lua

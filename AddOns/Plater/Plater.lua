@@ -1948,10 +1948,10 @@ local class_specs_coords = {
 		["nameplateShowEnemyPets"] = true,
 		["nameplateShowEnemyTotems"] = true,
 		["nameplateShowFriends"] = true,
-		["nameplateShowFriendlyGuardians"] = true,
 		["nameplateShowFriendlyNPCs"] = true,
 		["nameplateShowFriendlyMinions"] = true,
 		["nameplateShowFriendlyPets"] = true,
+		["nameplateShowFriendlyGuardians"] = true,
 		["nameplateShowFriendlyTotems"] = true,
 		["nameplateShowOnlyNames"] = true,
 		["nameplateShowSelf"] = (IS_WOW_PROJECT_MAINLINE),
@@ -1966,7 +1966,32 @@ local class_specs_coords = {
 		["nameplateShowDebuffsOnFriendly"] = true,
 	}
 	
-	function get_cvar_value(value)
+	--keep this separate for now, with only stuff that NEEDS restoring in order
+	function cvar_restore_order(v1, v2)
+		local restoreOrder = {
+			["nameplateShowFriends"] = 1,
+			["nameplateShowFriendlyNPCs"] = 2,
+			["nameplateShowFriendlyMinions"] = 3,
+			["nameplateShowFriendlyPets"] = 4,
+			["nameplateShowFriendlyGuardians"] = 5,
+			["nameplateShowFriendlyTotems"] = 6,
+		}
+		
+		local order1, order2 = restoreOrder[v1], restoreOrder[v2]
+		
+		if order1 and not order2 then
+			return false
+		elseif not order1 and order2 then
+			return true
+		elseif order1 and order2 then
+			return order1 < order2
+		elseif not order1 and not order2 then
+			return v1 < v2
+		end
+		
+	end
+	
+	function Plater.ParseCVarValue(value)
 		if value == nil then return nil end
 		--bool checks
 		if type(value) == "boolean" then
@@ -1997,11 +2022,11 @@ local class_specs_coords = {
 		if not cvar then -- store all
 			for CVarName, enabled in pairs (cvars_to_store) do
 				if enabled then
-					cvarTable [CVarName] = get_cvar_value(GetCVar (CVarName))
+					cvarTable [CVarName] = Plater.ParseCVarValue(GetCVar (CVarName))
 				end
 			end
 		elseif cvars_to_store [cvar] then
-			cvarTable [cvar] = get_cvar_value(value)
+			cvarTable [cvar] = Plater.ParseCVarValue(value)
 			local callstack = debugstack(2) -- starts at "SetCVar" or caller
 			local caller, line = callstack:match("\"@([^\"]+)\"%]:(%d+)")
 			if not caller then
@@ -2029,12 +2054,12 @@ local class_specs_coords = {
 			for k in pairs (cvars_to_store) do
 				tinsert(orderKeys, k)
 			end
-			table.sort(orderKeys)
+			table.sort(orderKeys, cvar_restore_order)
 			
-			for CVarName in pairs (orderKeys) do
+			for _, CVarName in pairs (orderKeys) do
 				local CVarValue = savedCVars [CVarName]
 				if CVarValue then --only restore what we want to store/restore!
-					SetCVar (CVarName, get_cvar_value(CVarValue))
+					SetCVar (CVarName, Plater.ParseCVarValue(CVarValue))
 				end
 			end
 		end
@@ -2045,7 +2070,7 @@ local class_specs_coords = {
 		cvar = cvar and cvar:gsub(" ", "") or nil
 		if cvar and cvar ~= "" then
 			if cvars_to_store[cvar] then
-				print("CVar info:\nName: '" .. cvar .. "'\nCurrent Value: " .. (get_cvar_value(GetCVar (cvar)) or "<not set>") .. "\nStored Value: " .. (Plater.db.profile.saved_cvars[cvar] or "<not stored>") ..  "\nLast changed by: " .. (Plater.db.profile.saved_cvars_last_change[cvar] and ("\n" .. Plater.db.profile.saved_cvars_last_change[cvar]) or "<no info>"))
+				print("CVar info:\nName: '" .. cvar .. "'\nCurrent Value: " .. (Plater.ParseCVarValue(GetCVar (cvar)) or "<not set>") .. "\nStored Value: " .. (Plater.db.profile.saved_cvars[cvar] or "<not stored>") ..  "\nLast changed by: " .. (Plater.db.profile.saved_cvars_last_change[cvar] and ("\n" .. Plater.db.profile.saved_cvars_last_change[cvar]) or "<no info>"))
 			else
 				print("CVar '" .. cvar .. "' is not stored in Plater.")
 			end
@@ -2053,7 +2078,7 @@ local class_specs_coords = {
 			print("No CVar name provided. Printing all stored CVar names. Use '/plater cvar <cvar name> for more details.'")
 			local savedCVars = Plater.db and Plater.db.profile and Plater.db.profile.saved_cvars or {}
 			for CVarName, CVarValue in pairs (savedCVars) do
-				print("'" .. CVarName .. "' = " .. (get_cvar_value(CVarValue) or "<not set>"))
+				print("'" .. CVarName .. "' = " .. (Plater.ParseCVarValue(CVarValue) or "<not set>"))
 			end
 		end
 	end
@@ -3080,6 +3105,8 @@ local class_specs_coords = {
 					FadeOutTime = 0.66,
 					SparkHeight = 20,
 					LazyUpdateCooldown = 0.1,
+					FillOnInterrupt = false,
+					HideSparkOnInterrupt = false,
 				}
 				
 				local powerBarOptions = {
@@ -7548,6 +7575,9 @@ end
 		local buffFrame2 = unitFrame.BuffFrame2
 		local nameFrame = unitFrame.healthBar.unitName
 		
+		castBar.Settings.FillOnInterrupt = Plater.db.profile.cast_statusbar_spark_filloninterrupt
+		castBar.Settings.HideSparkOnInterrupt = Plater.db.profile.cast_statusbar_spark_hideoninterrupt
+
 		plateFrame.actorType = actorType
 		unitFrame.actorType = actorType
 		unitFrame.ActorType = actorType --exposed to scripts
@@ -8956,7 +8986,7 @@ end
 			if (not Plater.db.profile.show_interrupt_author) then
 				return
 			end
-			
+			--~interrupt
 			local name = sourceName
 			for _, plateFrame in ipairs (Plater.GetAllShownPlates()) do
 				local unitFrame = plateFrame.unitFrame
@@ -8990,7 +9020,7 @@ end
 								--shake animattion
 								local duration = 0.36
 								local amplitude = 0.58
-								local frequency = 37.39
+								local frequency = 3.39
 								local absolute_sineX = false
 								local absolute_sineY = false
 								local scaleX = 0
@@ -11777,7 +11807,8 @@ end
 					triggerId = GetSpellInfo(triggerId)
 					if (not triggerId) then
 						if IS_WOW_PROJECT_MAINLINE then -- disable this in classic for now... too spammy
-							Plater:Msg ("failed to get the spell name for spellId: " .. (scriptObject [triggerContainer] [i] or "invalid spellId") .. "for script '" .. scriptObject.Name .. "'")
+							--just ignore, the spell on trigger list will be blank with a remove trigger button
+							--Plater:Msg ("failed to get the spell name for spellId: " .. (scriptObject [triggerContainer] [i] or "invalid spellId") .. " for script '" .. scriptObject.Name .. "', the spell has been removed from the triggers.")
 						end
 					end
 				end

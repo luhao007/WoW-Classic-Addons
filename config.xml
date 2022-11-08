@@ -1446,6 +1446,11 @@
 		<Notes>在鼠标提示中显示更多信息，并可选择鼠标提示窗口的位置</Notes>
 		<Category>界面</Category>
 	</Addon>
+	<Addon name="TinyTooltip-Reforged">
+		<Title>鼠标提示增强</Title>
+		<Notes>在鼠标提示中显示更多信息，并可选择鼠标提示窗口的位置</Notes>
+		<Category>界面</Category>
+	</Addon>
 	<Addon name="Titan">
 		<Title>泰坦面板</Title>
 		<Notes>在屏幕顶端/底端增加一个可视化侧边栏</Notes>

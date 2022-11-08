@@ -1,8 +1,5 @@
-@Terciob:
-- Updates to hit animations.
-- Use Plater internal class colors.
-
 @cont1nuity:
+- Fixing CVar restore (again, for real).
 - Several updates for Dragonflight compatibility.
 - Adding shadow priest execute for WotLK.
 - Retail toc bump for Dragonflight pre-patch.
@@ -11,4 +8,8 @@
 - Fixing CVar restore not working properly in some cases.
 - Fixing an issue with mod/script options not working properly.
 - Fixing aura types auto tracking for Dragonflight.
+
+@Terciob:
+- Updates to hit animations.
+- Use Plater internal class colors.
 

@@ -1,5 +1,5 @@
-if select(4, GetBuildInfo()) < 9e4 then return end
 local _, T = ...
+local PC = T.OPieCore
 
 local S = {
 	{"set-gamepad-mode", "PadSupportMode", {"stick", "cursor", "none"}, {stick="freelook", cursor="cursor", none="none"}},
@@ -10,9 +10,9 @@ local S = {
 }
 local function printOptionHint(ii)
 	local s =  "|cffffff00/opie " .. ii[1] .. " "
-	local cv, oa, om = OneRingLib:GetOption(ii[2]), ii[3], ii[4]
+	local cv, oa, om = PC:GetOption(ii[2]), ii[3], ii[4]
 	for i=1, oa and #oa or 0 do
-		s = s .. (i == 1 and "|cffb0b0b0{|r" or "|cffb0b0b0|||r") .. (cv == om[oa[i]] and "|cf00dd00d" or "|cfff0f0f0") .. oa[i] .. "|r"
+		s = s .. (i == 1 and "|cffb0b0b0{|r" or "|cffb0b0b0|||r") .. (cv == om[oa[i]] and "|cf00dd00d" or "|cf0f0f0f0") .. oa[i] .. "|r"
 	end
 	if oa then
 		s = s .. "|cffb0b0b0}|r"
@@ -28,7 +28,7 @@ for i=1,#S do
 		local _q, r = args:match("^%s*(%S+)%s?(.*)$")
 		local rn, om = r and tonumber(r), ii[4]
 		if om and om[r] ~= nil or (om == nil and rn and rn >= ii.min and rn <= ii.max) then
-			OneRingLib:SetOption(ii[2], om == nil and rn or om[r])
+			PC:SetOption(ii[2], om == nil and rn or om[r])
 		else
 			printOptionHint(ii)
 		end
@@ -36,6 +36,11 @@ for i=1,#S do
 end
 
 T.AddSlashSuffix(function()
+	local zc, oc = "|cf00dd00d", "|cf0f0f0f0"
+	if GetCVarBool("GamePadEnable") then
+		zc, oc = oc, zc
+	end
+	print("|cffffff00" .. SLASH_CONSOLE1 .. " GamePadEnable |cffb0b0b0{|r" .. zc .. "0|r|cffb0b0b0|||r" .. oc .. "1|r|cffb0b0b0}")
 	for i=1,#S do
 		printOptionHint(S[i])
 	end

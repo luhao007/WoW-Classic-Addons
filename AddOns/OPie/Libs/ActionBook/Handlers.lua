@@ -47,6 +47,7 @@ if MODERN then -- mount: mount ID
 					C_MountJournal.SummonByID(btn)
 				end
 			end)
+			T.TenSABT(b)
 			clickPrefix = SLASH_CLICK1 .. " " .. bn .. " "
 		end
 		summonAction = function(mountID)

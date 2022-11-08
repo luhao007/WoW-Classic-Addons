@@ -1,4 +1,4 @@
-local RW, MAJ, REV, _, T = {}, 1, 21, ...
+local RW, MAJ, REV, _, T = {}, 1, 22, ...
 if T.ActionBook then return end
 local AB, KR = nil, assert(T.Kindred:compatible(1,8), "A compatible version of Kindred is required.")
 local MODERN = select(4,GetBuildInfo()) >= 8e4
@@ -59,7 +59,7 @@ local core, coreEnv = CreateFrame("Frame", nil, nil, "SecureHandlerBaseTemplate"
 		local bn repeat
 			bn, bni = "RW!" .. bni, bni + 1
 		until GetClickFrame(bn) == nil
-		core:WrapScript(CreateFrame("Button", bn, core, "SecureActionButtonTemplate"), "OnClick",
+		core:WrapScript(T.TenSABT(CreateFrame("Button", bn, core, "SecureActionButtonTemplate")), "OnClick",
 		[=[-- Rewire:OnClick_Pre
 			if ns == 0 then return false end
 			idle[self], numIdle, numActive, ns = nil, numIdle - 1, numActive + 1, ns - 1
@@ -77,9 +77,9 @@ local core, coreEnv = CreateFrame("Frame", nil, nil, "SecureHandlerBaseTemplate"
 	end
 	core:SetFrameRef("Kindred", KR:seclib())
 	core:Execute([=[-- Rewire_Init
-		KR = self:GetFrameRef("Kindred")
+		KR, AB = self:GetFrameRef("Kindred"), nil
 		execQueue, mutedAbove, QUEUE_LIMIT, overfull = newtable(), -1, 20000, false
-		idle, cache, numIdle, numActive, ns = newtable(), newtable(), 0, 0, 0
+		idle, cache, numIdle, numActive, ns, modLock = newtable(), newtable(), 0, 0, 0
 		macros, commandInfo, commandHandler, commandAlias = newtable(), newtable(), newtable(), newtable()
 		MACRO_TOKEN, metaCommands, transferTokens = newtable(nil, nil, nil, "MACRO_TOKEN"), newtable(), newtable()
 		metaCommands.mute, metaCommands.unmute, metaCommands.mutenext, metaCommands.parse, metaCommands.nounshift = 1, 1, 1, 1, 1
@@ -89,6 +89,9 @@ local core, coreEnv = CreateFrame("Frame", nil, nil, "SecureHandlerBaseTemplate"
 			k:SetAttribute("type", "macro")
 		end
 	]=])
+	if MODERN then
+		core:Execute("TEN = true")
+	end
 	coreEnv = GetManagedEnvironment(core)
 end
 core:SetAttribute("RunSlashCmd", [=[-- Rewire:Internal_RunSlashCmd
@@ -157,7 +160,7 @@ core:SetAttribute("RunSlashCmd", [=[-- Rewire:Internal_RunSlashCmd
 		local m = execQueue[#execQueue]
 		if m and m[2] and m[3] then
 			execQueue[#execQueue] = nil
-			local parsed = KR:RunAttribute("EvaluateCmdOptions", m[3], nil, nil)
+			local parsed = KR:RunAttribute("EvaluateCmdOptions", m[3], modLock, nil)
 			if parsed then
 				return m[2] .. " " .. parsed
 			end
@@ -190,6 +193,9 @@ core:SetAttribute("RunMacro", [=[-- Rewire:RunMacro
 		if #execQueue > QUEUE_LIMIT then
 			overfull = true, owner:CallMethod("throw", "Rewire execution queue overfull; ignoring subsequent commands.")
 		else
+			if TEN and #execQueue == 0 then
+				modLock = AB:GetAttribute("modLock")
+			end
 			local ni = #execQueue+1
 			if transferButtonState then
 				local nbs = SecureCmdOptionParse("[btn:1] 1; [btn:2] 2; [btn:3] 3; [btn:4] 4; [btn:5] 5")
@@ -228,7 +234,7 @@ core:SetAttribute("RunMacro", [=[-- Rewire:RunMacro
 		local meta = m[4]
 		if ct % 2 > 0 and m[3] ~= "" then
 			local skipChunks = nil
-			v, t = KR:RunAttribute("EvaluateCmdOptions", m[3], nil, skipChunks)
+			v, t = KR:RunAttribute("EvaluateCmdOptions", m[3], modLock, skipChunks)
 			if v and ct % 32 >= 16 then
 				v = KR:RunAttribute("ResolveUnitAlias", v)
 			end

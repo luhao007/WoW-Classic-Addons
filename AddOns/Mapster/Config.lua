@@ -6,6 +6,7 @@ All rights reserved.
 local Mapster = LibStub("AceAddon-3.0"):GetAddon("Mapster")
 local L = LibStub("AceLocale-3.0"):GetLocale("Mapster")
 
+local WoWRetail = (WOW_PROJECT_ID == WOW_PROJECT_MAINLINE)
 local WoWClassic = (WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE)
 
 local optGetter, optSetter
@@ -52,7 +53,7 @@ local function getOptions()
 							name = MAP_FADE_TEXT,
 							desc = L["The map will fade out to the configured Fade Alpha level when you start moving."],
 							get = function() return GetCVarBool("mapFade") end,
-							set = function(_, v) v = v and 1 or 0; SetCVar("mapFade", v); end,
+							set = function(_, v) v = v and 1 or 0; SetCVar("mapFade", v); Mapster:Refresh(); end,
 							width = "full",
 						},
 						alpha = {
@@ -77,6 +78,12 @@ local function getOptions()
 							type = "description",
 							name = L["Change the scale of the world map if you do not want the whole screen filled while the map is open."],
 						},
+						scaledesc_wow10 = {
+							order = 5.5,
+							type = "description",
+							name = L["NOTE: Currently unavailable in WoW 10.x since it can break the map."],
+							hidden = not WoWRetail,
+						},
 						scale = {
 							order = 6,
 							name = L["Scale"],
@@ -84,6 +91,7 @@ local function getOptions()
 							type = "range",
 							min = 0.1, max = 2, bigStep = 0.01,
 							isPercent = true,
+							disabled = WoWRetail,
 						},
 						arrowScale = {
 							order = 7,

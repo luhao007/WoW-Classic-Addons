@@ -1,10 +1,7 @@
 # WIM
 
-## [3.9.9](https://github.com/Legacy-of-Sylvanaar/wow-instant-messenger/tree/3.9.9) (2022-10-25)
-[Full Changelog](https://github.com/Legacy-of-Sylvanaar/wow-instant-messenger/compare/3.9.8...3.9.9) [Previous Releases](https://github.com/Legacy-of-Sylvanaar/wow-instant-messenger/releases)
+## [3.9.10](https://github.com/Legacy-of-Sylvanaar/wow-instant-messenger/tree/3.9.10) (2022-11-07)
+[Full Changelog](https://github.com/Legacy-of-Sylvanaar/wow-instant-messenger/compare/3.9.9...3.9.10) [Previous Releases](https://github.com/Legacy-of-Sylvanaar/wow-instant-messenger/releases)
 
-- Bump toc file  
-- Important annotation.  
-- Dragonflight support.  
-- chore: ignore manually added libs for development purposes.  
-- Fix one 10.0 api. Couldn't figure out how to fix the rest. This is only one i found documentation for  
+- fix(History): reference correct table in OnDisable  
+- fix(ClickControl): refactor behavior so module doesn't need to be unregistered if WIM is disabled.  

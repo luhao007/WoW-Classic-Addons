@@ -1917,15 +1917,18 @@ local function GetCachedSearchResults(search, method, paramA, paramB, ...)
 			
 			if itemID then
 				-- Show the unobtainable source text
+				local u = 99999999;
 				for i,j in ipairs(group) do
 					if j.itemID == itemID then
-						if j.u and (not j.crs or paramA == "itemID") then
-							local reason = L["UNOBTAINABLE_ITEM_REASONS"][j.u];
-							if reason and (not reason[5] or select(4, GetBuildInfo()) < reason[5]) then
-								tinsert(info, { left = reason[2], wrap = true });
-							end
-							break;
+						if j.u and u > j.u and (not j.crs or paramA == "itemID") then
+							u = j.u;
 						end
+					end
+				end
+				if u < 99999999 then
+					local reason = L["UNOBTAINABLE_ITEM_REASONS"][u];
+					if reason and (not reason[5] or select(4, GetBuildInfo()) < reason[5]) then
+						tinsert(info, { left = reason[2], wrap = true });
 					end
 				end
 				local itemName, itemLink = GameTooltip:GetItem();

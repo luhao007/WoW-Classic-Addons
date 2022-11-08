@@ -1,17 +1,11 @@
-1.2.0 Release Notes
+1.2.1 Release Notes
 Contributions made by Crieve:
-* Added some missing 25 man Dedicated few criterias. The Savior of Hallow's End achievement now appears in its respective zones.
-* Updated the Treat Bag's loot table for Wrath Classic.
-* The Silver Covenant is no longer nested in the Argent Tournament without reason.
-* Just Checkin' is now marked as a breadcrumb.
-* Converted from explicit REMOVED_FROM_GAME assignments into timelines.
-* Updated the Personal Ejector Seat / Gnomish Gravity Well for Wrath Classic.
-* Separated the Elemental Unrest world event into its own file with full and proper quest documentation for Wrath Classic.
-* Runed Copper Breastplate is Armor. Operation: Gnomeregan has been moved to its own section.
-* Parser no longer forgets to include AWP fields after a created state is activated NYI.
-* Zalazane's Fall has been moved to its own section and had its quest data added for Wrath Classic.
-* Slightly adjusted some Feast of the Winter Veil achievements for Wrath Classic.
-* Added the Kalu'ak Fishing Derby.
-* Added the currently unavailable Looking For More achievements and rewards.
-* Moved the Celestial Dragon to NYI until 4.2.0. Marked the Perky Pug NYI until Blizzard actually adds the ability to complete the achievement.
+* Macabre Marionette is not actually collectible until patch 5.4.0.
+* Updated the coordinates for Catrina and the Cheerful Human Spirit for the Day of the Dead.
+* The Reins of the Blue Drake is now marked Never Implemented in Wrath Classic.
+* Added the original heirloom vendors to Dalaran.
+* Fixed some classic phases on the Frozen Orb vendor in Dalaran.
+* The most accessible phase identifier is the one that will be used for an item's tooltip now.
+* Updated the Emblem of Valor, Conquest, and Triumph Quartermasters in Dalaran.
+* Updated Dalaran vendors (outside of the underbelly) for Wrath Classic.
 
