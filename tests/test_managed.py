@@ -4,23 +4,17 @@ from pathlib import Path
 from pprint import pprint
 
 from toc import TOC
-from utils import TOCS
+from utils import get_libraries_list
 
 
 class CheckManagedAddOns(unittest.TestCase):
 
     def test_check_addon_toc(self):
         for addon in os.listdir('AddOns'):
-            if 'sekiro' in addon or 'Ruru' in addon:
-                continue
-
-            for toc in TOCS:
-                print(TOCS)
-                path = Path('AddOns') / addon / f'{addon}{toc}'
-                if os.path.exists(path):
-                    break
-            else:
-                self.fail(f'{addon} toc files not existed!')
+            path = Path('AddOns') / addon / f'{addon}.toc'
+            if 'sekiro' not in addon:
+                self.assertTrue(os.path.exists(path),
+                                f'{addon}.toc not existed!')
 
     def test_check_libs(self):
         """Test for !!Libs.toc"""
@@ -49,15 +43,7 @@ class CheckManagedAddOns(unittest.TestCase):
             )
 
     def test_check_duplicate_libraries(self):
-        root = Path('AddOns/!!Libs')
-        paths = [root, root / 'Ace3', root / 'Ace3/AceConfig-3.0',
-                 root / 'LibBabble']
-        libs = []
-        for path in paths:
-            libs += [lib for lib in os.listdir(path)
-                     if os.path.isdir(path / lib)]
-
-        libs += ['HereBeDragons-2.0']
+        libs = get_libraries_list()
 
         duplicates = {}
         for root, dirs, _ in os.walk('AddOns'):
@@ -73,7 +59,7 @@ class CheckManagedAddOns(unittest.TestCase):
             pprint(duplicates)
 
             # Ignore these embedded liraries, as they have customized versions
-            whitelist = ['Questie', 'RareScanner']
+            whitelist = ['Questie']
 
             for k in duplicates:
                 paths = []

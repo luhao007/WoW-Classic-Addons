@@ -69,8 +69,10 @@ def remove_libs_in_file(path: str | Path, libs: list[str] | set[str]):
 
 @functools.lru_cache
 def get_libraries_list():
-    libs = [os.path.split(x[0])[-1] for x in os.walk(Path('AddOns') / '!!Libs')]
-    libs += [os.path.split(x[0])[-1] for x in os.walk(Path('AddOns') / '!!Libs' / 'Ace3')]
+    root = Path('AddOns/!!Libs')
+    paths = [root, root / 'Ace3', root / 'Ace3' / 'AceConfig-3.0', root / 'LibBabble']
+    libs = sum([[lib for lib in os.listdir(path) if os.path.isdir(path / lib)] for path in paths], [])
+    libs += ['HereBeDragons-2.0']       # Alternative name
     return libs
 
 
