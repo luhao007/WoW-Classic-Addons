@@ -383,6 +383,11 @@ class Manager:
         )
 
     @staticmethod
+    def handle_bagnon():
+        utils.remove_libraries_all('Bagnon/common/Wildpants')
+        utils.remove_libraries(['LibDataBroker-1.1'], 'AddOns/Bagnon/common/', 'AddOns/Bagnon/addons/main/main.xml')
+
+    @staticmethod
     @available_on(['classic', 'retail'])
     def handle_btwquest():
         def process(lines):
