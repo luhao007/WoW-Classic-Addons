@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: MysticalOS, QartemisT
-## Version: 494a4d8
+## Version: 5b00279
 ## Dependencies: DBM-StatusBarTimers
 ## LoadOnDemand: 0
 ## SavedVariables: DBM_AllSavedOptions, DBM_MinimapIcon

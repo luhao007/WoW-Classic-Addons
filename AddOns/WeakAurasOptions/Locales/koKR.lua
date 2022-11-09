@@ -126,9 +126,9 @@ local L = WeakAuras.L
 
 |cffff0000참고|r: 게임은 모든 유효한 유닛ID에 대해 이벤트를 발생시키지 않으므로 이 활성 조건으로 일부를 추적할 수 없습니다.
 
-• |cffffff00파티|r, |cffffff00공격대|r, |cffffff00우두머리|r, |cffffff00투기장|r 및 |cffffff00이름표|r는 해당 unitID 여러 개와 일치할 수 있습니다.
+• |cffffff00파티|r, |cffffff00공격대|r, |cffffff00우두머리|r, |cffffff00투기장|r 및 |cffffff00이름표|r는 해당 유닛ID 여러 개와 일치할 수 있습니다.
 
-• |cffffff00스마트 그룹|r은 현재 그룹 유형에 맞게 조정되어 단독일 때는 \"플레이어\"만, 파티에서는 \"파티\" 유닛(\"플레이어\" 포함) 또는 공격대에서는 \"공격대\" 유닛과 일치합니다.
+• |cffffff00스마트 그룹|r은 현재 그룹 유형에 맞게 조정되어 혼자일 때는 "플레이어"만 파티에서는 "파티" 유닛("플레이어" 포함), 공격대에서는 "공격대" 유닛과 일치합니다.
 
 • |cffffff00다중 대상|r은 영향을 받는 유닛을 추적하기 위해 유닛ID가 아닌 전투 기록 이벤트를 사용하려고 시도합니다.
 
@@ -314,8 +314,7 @@ Off Screen]=] ] = "Aura가 화면 밖에 있음"
 	L["Count"] = "횟수"
 	L["Counts the number of matches over all units."] = "모든 유닛에 대해 일치 횟수를 계산합니다."
 	L["Counts the number of matches per unit."] = "유닛당 일치 횟수를 계산합니다."
-	--[[Translation missing --]]
-	L["Create a Copy"] = "Create a Copy"
+	L["Create a Copy"] = "사본 생성"
 	L["Creating buttons: "] = "버튼 생성 중:"
 	L["Creating options: "] = "옵션 생성:"
 	L["Crop X"] = "X 자르기"
@@ -393,14 +392,17 @@ UNIT_POWER_UPDATE, UNIT_AURA PLAYER_TARGET_CHANGED]=]
 	L["Dynamic Information"] = "유동적 정보"
 	L["Dynamic information from first active trigger"] = "첫 번째 활성화된 활성 조건의 유동적 정보"
 	L["Dynamic information from Trigger %i"] = "활성 조건 %i의 유동적 정보"
-	L["Dynamic text tooltip"] = [=[이 문자를 유동적으로 만들 수 있는 특별 코드들입니다:
+	L["Dynamic text tooltip"] = [=[이 문자를 동적으로 만들 수 있는 몇 가지 특별 코드입니다:
 
-|cFFFF0000%p|r - 진행 - 타이머의 남은 시간, 또는 비-타이머 값
-|cFFFF0000%t|r - 전체 - 타이머의 최대 지속시간, 또는 최대 비-타이머 값
-|cFFFF0000%n|r - 이름 - 디스플레이의 이름 (보통 오라 이름), 또는 유동적 이름이 없을 때 디스플레이의 ID
-|cFFFF0000%i|r - 아이콘 - 디스플레이와 연관된 아이콘
-|cFFFF0000%s|r - 중첩 - 오라의 중첩 횟수 (보통)
-|cFFFF0000%c|r - 사용자 설정 - 표시할 string 값을 반환하는 사용자 설정 Lua 함수 정의를 허용합니다]=]
+|cFFFF0000%p|r - 진행 - 타이머의 남은 시간 또는 타이머 아닌 값
+|cFFFF0000%t|r - 전체 - 타이머의 최대 지속시간 또는 타이머 아닌 최댓값
+|cFFFF0000%n|r - 이름 - 디스플레이(보통 효과 이름) 이름 또는 동적 이름이 없는 경우 디스플레이 ID
+|cFFFF0000%i|r - 아이콘 - 디스플레이와 관련된 아이콘
+|cFFFF0000%s|r - 중첩 - (보통) 효과의 중첩 횟수
+|cFFFF0000%c|r - 사용자 정의 - 문자열 값 목록을 반환하는 사용자 정의 Lua 함수를 정의할 수 있습니다. %c1|1은;는; 반환된 첫 번째 값으로, %c2|1은;는; 두 번째 값 등으로 대체됩니다.
+|cFFFF0000%%|r - % - 백분율 기호를 표시하려면
+
+기본으로 동적 정보를 통해 선택한 활성 조건의 정보가 표시됩니다. 특정 활성 조건의 정보는 예를 들어 %2.p를 통해 표시될 수 있습니다.]=]
 	--[[Translation missing --]]
 	L["Ease Strength"] = "Ease Strength"
 	--[[Translation missing --]]
@@ -471,10 +473,8 @@ UNIT_POWER_UPDATE, UNIT_AURA PLAYER_TARGET_CHANGED]=]
 	L["Fetch Raid Mark Information"] = "Fetch Raid Mark Information"
 	L["Fetch Role Information"] = "역할 정보 가져오기"
 	L["Fetch Tooltip Information"] = "툴팁 정보 가져오기"
-	--[[Translation missing --]]
-	L["File Height"] = "File Height"
-	--[[Translation missing --]]
-	L["File Width"] = "File Width"
+	L["File Height"] = "파일 높이"
+	L["File Width"] = "파일 너비"
 	L["Filter based on the spell Name string."] = "주문 이름 문자열 기반으로 필터링합니다."
 	--[[Translation missing --]]
 	L["Filter by Arena Spec"] = "Filter by Arena Spec"
@@ -623,14 +623,11 @@ Can use \ to escape -.]=] ] = "필터 형식: '이름', '이름-서버', '-서�
 	L["Import a display from an encoded string"] = "암호화된 문자열에서 디스플레이 가져오기"
 	--[[Translation missing --]]
 	L["Import as Copy"] = "Import as Copy"
-	--[[Translation missing --]]
-	L["Import has no UID, cannot be matched to existing auras."] = "Import has no UID, cannot be matched to existing auras."
+	L["Import has no UID, cannot be matched to existing auras."] = "가져오기에는 UID가 없으며 기존 효과와 일치시킬 수 없습니다."
 	L["Importing"] = "가져오기"
 	L["Importing %s"] = "%s 가져오기"
-	--[[Translation missing --]]
-	L["Importing a group with %s child auras."] = "Importing a group with %s child auras."
-	--[[Translation missing --]]
-	L["Importing a stand-alone aura."] = "Importing a stand-alone aura."
+	L["Importing a group with %s child auras."] = "자식 효과가 %s개 있는 그룹을 가져오는 중입니다."
+	L["Importing a stand-alone aura."] = "독립형 효과를 가져오는 중입니다."
 	L["Importing...."] = "가져오는 중...."
 	L["Include Pets"] = "소환수 포함"
 	--[[Translation missing --]]

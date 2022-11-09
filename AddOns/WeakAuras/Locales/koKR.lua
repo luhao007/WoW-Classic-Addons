@@ -25,20 +25,24 @@ L["|cFFFF0000Not|r Item Bonus Id Equipped"] = "|cFFFF0000착용하지 않은|r �
 L["|cFFFF0000Not|r Player Name/Realm"] = "플레이어 이름/서버 |cFFFF0000불일치|r"
 L["|cFFffcc00Extra Options:|r %s"] = "|cFFffcc00추가 옵션:|r %s"
 L["|cFFffcc00Extra Options:|r None"] = "|cFFffcc00추가 옵션:|r 없음"
---[[Translation missing --]]
 L[ [=[• |cff00ff00Player|r, |cff00ff00Target|r, |cff00ff00Focus|r, and |cff00ff00Pet|r correspond directly to those individual unitIDs.
 • |cff00ff00Specific Unit|r lets you provide a specific valid unitID to watch.
 |cffff0000Note|r: The game will not fire events for all valid unitIDs, making some untrackable by this trigger.
 • |cffffff00Party|r, |cffffff00Raid|r, |cffffff00Boss|r, |cffffff00Arena|r, and |cffffff00Nameplate|r can match multiple corresponding unitIDs.
 • |cffffff00Smart Group|r adjusts to your current group type, matching just the "player" when solo, "party" units (including "player") in a party or "raid" units in a raid.
 
-|cffffff00*|r Yellow Unit settings will create clones for each matching unit while this trigger is providing Dynamic Info to the Aura.]=] ] = [=[• |cff00ff00Player|r, |cff00ff00Target|r, |cff00ff00Focus|r, and |cff00ff00Pet|r correspond directly to those individual unitIDs.
-• |cff00ff00Specific Unit|r lets you provide a specific valid unitID to watch.
-|cffff0000Note|r: The game will not fire events for all valid unitIDs, making some untrackable by this trigger.
-• |cffffff00Party|r, |cffffff00Raid|r, |cffffff00Boss|r, |cffffff00Arena|r, and |cffffff00Nameplate|r can match multiple corresponding unitIDs.
-• |cffffff00Smart Group|r adjusts to your current group type, matching just the "player" when solo, "party" units (including "player") in a party or "raid" units in a raid.
+|cffffff00*|r Yellow Unit settings will create clones for each matching unit while this trigger is providing Dynamic Info to the Aura.]=] ] = [=[• |cff00ff00플레이어|r, |cff00ff00대상|r, |cff00ff00주시대상|r 및 |cff00ff00소환수|r는 개별 유닛ID에 직접 대응합니다.
 
-|cffffff00*|r Yellow Unit settings will create clones for each matching unit while this trigger is providing Dynamic Info to the Aura.]=]
+• |cff00ff00특정 유닛|r으로 감시할 유효한 특정 유닛ID를 제공할 수 있습니다.
+
+|cffff0000참고|r: 게임은 모든 유효한 유닛ID에 대해 이벤트를 발생시키지 않으므로 이 활성 조건으로 일부를 추적할 수 없습니다.
+
+• |cffffff00파티|r, |cffffff00공격대|r, |cffffff00우두머리|r, |cffffff00투기장|r 및 |cffffff00이름표|r는 해당 유닛ID 여러 개와 일치할 수 있습니다.
+
+• |cffffff00스마트 그룹|r은 현재 그룹 유형에 맞게 조정되어 혼자일 때는 "플레이어"만 파티에서는 "파티" 유닛("플레이어" 포함), 공격대에서는 "공격대" 유닛과 일치합니다.
+
+
+|cffffff00*|r 노란색 유닛 설정은 이 활성 조건이 효과에 동적 정보를 제공하는 동안 일치하는 각 유닛에 대해 복제를 생성합니다.]=]
 L["10 Man Raid"] = "10인 공격대"
 L["10 Player Raid"] = "10인 공격대"
 L["10 Player Raid (Heroic)"] = "10인 공격대 (영웅)"
@@ -52,7 +56,7 @@ L["25 Player Raid (Normal)"] = "25인 공격대 (일반)"
 L["40 Man Raid"] = "40인 공격대"
 L["40 Player Raid"] = "40인 공격대"
 L["5 Man Dungeon"] = "5인 던전"
-L["Abbreviate"] = "약식"
+L["Abbreviate"] = "축약"
 L["AbbreviateLargeNumbers (Blizzard)"] = "큰 숫자 축약 (블리자드)"
 L["AbbreviateNumbers (Blizzard)"] = "숫자 축약 (블리자드)"
 L["Absorb"] = "흡수"
@@ -107,12 +111,9 @@ L["AOE"] = "광역 범위 효과"
 L["Arcane Resistance"] = "비전 저항"
 L["Archavon the Stone Watcher"] = "바위 감시자 아카본"
 L["Archimonde"] = "아키몬드"
---[[Translation missing --]]
 L[ [=[Are you sure you want to run the |cffff0000EXPERIMENTAL|r repair tool?
 This will overwrite any changes you have made since the last database upgrade.
-Last upgrade: %s]=] ] = [=[Are you sure you want to run the |cffff0000EXPERIMENTAL|r repair tool?
-This will overwrite any changes you have made since the last database upgrade.
-Last upgrade: %s]=]
+Last upgrade: %s]=] ] = "|cffff0000실험용|r 복구 도구를 실행할까요? 이는 마지막 데이터베이스 업그레이드 이후에 수행한 모든 변경 사항을 덮어씁니다. 마지막 업그레이드: %s"
 L["Arena"] = "투기장"
 L["Armor (%)"] = "방어도(%)"
 L["Armor against Target (%)"] = "대상 방어도(%)"
@@ -292,8 +293,7 @@ L["Charges"] = "충전량"
 L["Charges Changed Event"] = "충전량 변경 이벤트"
 L["Chat Frame"] = "대화창"
 L["Chat Message"] = "대화 메시지"
---[[Translation missing --]]
-L["Check if a single talent match a Rank"] = "Check if a single talent match a Rank"
+L["Check if a single talent match a Rank"] = "단일 특성이 등급과 일치하는지 확인"
 --[[Translation missing --]]
 L["Check nameplate's target every 0.2s"] = "Check nameplate's target every 0.2s"
 L["Chess Event"] = "체스 이벤트"
@@ -526,8 +526,7 @@ L["Extra Amount"] = "추가 수치"
 L["Extra Attacks"] = "추가 공격"
 L["Extra Spell Name"] = "추가 주문 이름"
 L["Faction"] = "진영"
---[[Translation missing --]]
-L["Faction Champions"] = "Faction Champions"
+L["Faction Champions"] = "진영 용사"
 L["Faction Name"] = "진영 이름"
 L["Faction Reputation"] = "진영 평판"
 --[[Translation missing --]]
@@ -568,8 +567,7 @@ L["Foreground"] = "전경"
 L["Foreground Color"] = "전경 색상"
 L["Form"] = "변신"
 L["Format"] = "형식"
---[[Translation missing --]]
-L["Formats |cFFFF0000%unit|r"] = "Formats |cFFFF0000%unit|r"
+L["Formats |cFFFF0000%unit|r"] = "|cFFFF0000%unit|r 형식"
 L["Formats Player's |cFFFF0000%guid|r"] = "플레이어의 |cFFFF0000%GUID|r 형식"
 --[[Translation missing --]]
 L["Forward"] = "Forward"
@@ -701,8 +699,7 @@ L["Ignore Rune CDs"] = "룬 재사용 대기시간 무시"
 L["Ignore Self"] = "본인 무시"
 L["Illidan Stormrage"] = "일리단 스톰레이지"
 L["Immune"] = "면역"
---[[Translation missing --]]
-L["Important"] = "Important"
+L["Important"] = "중요"
 L["Importing will start after combat ends."] = "전투 종료 후 가져오기가 시작됩니다."
 L["In Combat"] = "전투 중"
 L["In Encounter"] = "교전 중"
@@ -950,10 +947,8 @@ L["Old Blizzard (2h | 3m | 10s | 2.4)"] = "옛 블리자드 (2h | 3m | 10s | 2.4
 L["On Cooldown"] = "재사용 대기 중일 때"
 --[[Translation missing --]]
 L["On Taxi"] = "On Taxi"
---[[Translation missing --]]
-L["Only if BigWigs shows it on it's bar"] = "Only if BigWigs shows it on it's bar"
---[[Translation missing --]]
-L["Only if DBM shows it on it's bar"] = "Only if DBM shows it on it's bar"
+L["Only if BigWigs shows it on it's bar"] = "BigWigs가 바에 표시하는 경우에만"
+L["Only if DBM shows it on it's bar"] = "DBM이 바에 표시하는 경우에만"
 --[[Translation missing --]]
 L["Only if on a different realm"] = "Only if on a different realm"
 L["Only if Primary"] = "주 자원일때만"
@@ -1071,8 +1066,7 @@ L["Raid Warning"] = "공격대 경보"
 L["Raids"] = "공격대"
 L["Range"] = "원거리"
 L["Range Check"] = "거리 확인"
---[[Translation missing --]]
-L["Rank"] = "Rank"
+L["Rank"] = "등급"
 L["Rare"] = "희귀"
 L["Rare Elite"] = "희귀 정예"
 L["Rated Arena"] = "평점제 투기장"
@@ -1420,8 +1414,7 @@ L["Transmission error"] = "전송 오류"
 L["Trial of the Crusader"] = "십자군의 시험장"
 L["Trigger"] = "활성 조건"
 L["Trigger %i"] = "활성 조건 %i"
---[[Translation missing --]]
-L["Trigger %s"] = "Trigger %s"
+L["Trigger %s"] = "활성 조건 %s"
 L["Trigger 1"] = "활성 조건 1"
 L["Trigger State Updater (Advanced)"] = "활성 조건 상태 업데이터 (고급)"
 L["Trigger Update"] = "활성 조건 업데이트"
@@ -1468,10 +1461,8 @@ L["Use Custom Color"] = "사용자 정의 색상 사용"
 L["Use Legacy floor rounding"] = "Use Legacy floor rounding"
 --[[Translation missing --]]
 L["Use Watched Faction"] = "Use Watched Faction"
---[[Translation missing --]]
-L["Using WeakAuras.clones is deprecated. Use WeakAuras.GetRegion(id, cloneId) instead."] = "Using WeakAuras.clones is deprecated. Use WeakAuras.GetRegion(id, cloneId) instead."
---[[Translation missing --]]
-L["Using WeakAuras.regions is deprecated. Use WeakAuras.GetRegion(id) instead."] = "Using WeakAuras.regions is deprecated. Use WeakAuras.GetRegion(id) instead."
+L["Using WeakAuras.clones is deprecated. Use WeakAuras.GetRegion(id, cloneId) instead."] = "WeakAuras.clones는 더 이상 사용되지 않습니다. 대신 WeakAuras.GetRegion(id, cloneId)를 사용하세요."
+L["Using WeakAuras.regions is deprecated. Use WeakAuras.GetRegion(id) instead."] = "WeakAuras.regions는 더 이상 사용되지 않습니다. 대신 WeakAuras.GetRegion(id)를 사용하세요."
 L["Vaelastrasz the Corrupt"] = "타락한 밸라스트라즈"
 L["Valithria Dreamwalker"] = "발리스리아 드림워커"
 L["Val'kyr Twins"] = "발키르 쌍둥이"

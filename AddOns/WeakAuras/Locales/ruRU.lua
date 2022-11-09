@@ -467,10 +467,8 @@ L["Eredar Twins"] = "Эредарские близнецы"
 L["Error"] = "Ошибка"
 L[ [=[Error '%s' created a secure clone. We advise deleting the aura. For more information:
 https://github.com/WeakAuras/WeakAuras2/wiki/Protected-Frames]=] ] = "Ошибка при возвращении в пул клона индикации %s, поскольку кадр защищён. Советуем удалить эту индикацию. Подробная информация на странице: https://github.com/WeakAuras/WeakAuras2/wiki/Protected-Frames"
---[[Translation missing --]]
-L["Error decoding."] = "Error decoding."
---[[Translation missing --]]
-L["Error decompressing"] = "Error decompressing"
+L["Error decoding."] = "Ошибка декодирования."
+L["Error decompressing"] = "Ошибка распаковки"
 --[[Translation missing --]]
 L["Error decompressing. This doesn't look like a WeakAuras import."] = "Error decompressing. This doesn't look like a WeakAuras import."
 --[[Translation missing --]]
@@ -485,8 +483,7 @@ L["Event(s)"] = "События"
 L["Every Frame"] = "Каждый кадр"
 L["Every Frame (High CPU usage)"] = "Каждый кадр (высокая загрузка ЦП)"
 L["Experience (%)"] = "Опыт (%)"
---[[Translation missing --]]
-L["Expertise Bonus"] = "Expertise Bonus"
+L["Expertise Bonus"] = "Бонус мастерства"
 L["Expertise Rating"] = "Рейтинг мастерства"
 L["Extend Outside"] = "Выйти за границы"
 L["Extra Amount"] = "Дополнительное количество"
@@ -1273,8 +1270,7 @@ L["Total Experience"] = "Общее количество опыта"
 L["Total Match Count"] = "Количество совпадений"
 L["Total Stacks"] = "Общее количество стаков"
 L["Total stacks over all matches"] = "Количество стаков для всех совпадений"
---[[Translation missing --]]
-L["Total Stages"] = "Total Stages"
+L["Total Stages"] = "Всего этапов"
 L["Total Unit Count"] = "Общее количество единиц"
 L["Total Units"] = "Общее количество единиц"
 L["Totem"] = "Тотем"
