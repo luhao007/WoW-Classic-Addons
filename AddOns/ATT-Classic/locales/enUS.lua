@@ -1006,16 +1006,13 @@ app.L = {
 		["Blackrock Mountain"] = 33,
 		["Blackrock Spire"] = 250,
 		[DUNGEON_FLOOR_TANARIS18] = 75,	-- Caverns of Time
-		[C_Map.GetAreaInfo(132)] = 427,	-- Coldridge Valley
 		["Deadmines"] = 291,
-		[C_Map.GetAreaInfo(154)] = 465,	-- Deathknell
 		["Dire Maul"] = 234,
 		["Deeprun Tram"] = 499,
 		["Gnomeregan"] = 226,
 		["Maraudon"] = 280,
 		["Molten Core"] = 232,
 		["Naxxramas"] = 162,
-		[C_Map.GetAreaInfo(9)] = 425,	-- Northshire Valley
 		["Onyxia's Lair"] = 248,
 		["Ragefire Chasm"] = 213,
 		["Razorfen Downs"] = 300,
@@ -1025,8 +1022,6 @@ app.L = {
 		["Scholomance"] = 476,
 		["Shadowfang Keep"] = 310,
 		["Stratholme"] = 317,
-		[C_Map.GetAreaInfo(3431)] = 467,	-- Sunstrider Isle
-		[C_Map.GetAreaInfo(3526)] = 468,	-- Ammen Vale
 		["Temple of Ahn'Qiraj"] = 320,
 		["The Temple of Atal'hakkar"] = 220,
 		["The Stockade"] = 225,
@@ -1061,9 +1056,6 @@ app.L = {
 		["The Underbog"] = 262,
 		["Sunwell Plateau"] = 335,
 		["Zul'Aman"] = 333,
-		
-		-- Wrath
-		[C_Map.GetAreaInfo(4560)] = 126,	-- The Underbelly
 	};
 	
 	-- These are alternative map names that we don't want to display, but used for mapID calculations.
@@ -1076,15 +1068,6 @@ app.L = {
 		["The Temple of Atal'Hakkar"] = 220,
 		["The Battle for Mount Hyjal"] = 329,
 		["The Eye"] = 334,
-		[C_Map.GetAreaInfo(800)] = 427,	-- Coldridge Pass
-		[C_Map.GetAreaInfo(3527)] = 468,	-- Ammen Vale (Crash Site)
-		[C_Map.GetAreaInfo(3560)] = 468,	-- Ammen Vale (Ammen Fields)
-		[C_Map.GetAreaInfo(3528)] = 468,	-- Ammen Vale (Silverline Lake)
-		[C_Map.GetAreaInfo(3559)] = 468,	-- Ammen Vale (Nestlewood Hills)
-		[C_Map.GetAreaInfo(3529)] = 468,	-- Ammen Vale (Nestlewood Thicket)
-		[C_Map.GetAreaInfo(3530)] = 468,	-- Ammen Vale (Shadow Ridge)
-		[C_Map.GetAreaInfo(3561)] = 468,	-- Ammen Vale (The Sacred Grove)
-		[C_Map.GetAreaInfo(4095)] = 348,	-- Magisters' Terrace
 	};
 	
 	-- This is a conversion table for acronyms to instanceIDs for LFG Bulletin Board integration.

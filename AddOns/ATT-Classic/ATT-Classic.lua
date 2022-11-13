@@ -61,6 +61,9 @@ local HORDE_ONLY = {
 	35,
 	36,
 };
+function distance( x1, y1, x2, y2 )
+	return math.sqrt( (x2-x1)^2 + (y2-y1)^2 )
+end
 
 -- Coroutine Helper Functions
 app.refreshing = {};
@@ -1330,6 +1333,18 @@ subroutines = {
 			{"is", "itemID"},	-- Only Items
 		};
 	end,
+	["pvp_gear_base"] = function(tierID, headerID1, headerID2)
+		local b = {
+			{ "select", "tierID", tierID },	-- Select the Expansion header
+			{ "pop" },	-- Discard the Expansion header and acquire the children.
+			{ "where", "headerID", headerID1 },	-- Select the Season header
+		};
+		if headerID2 then
+			tinsert(b, { "pop" });	-- Discard the Season header and acquire the children.
+			tinsert(b, { "where", "headerID", headerID2 });	-- Select the Set header
+		end
+		return b;
+	end,
 };
 ResolveSymbolicLink = function(o)
 	if o.resolved then return o.resolved; end
@@ -1606,7 +1621,7 @@ ResolveSymbolicLink = function(o)
 							cache = app.SearchForField("questID", assetID);
 						elseif criteriaType == 36 or criteriaType == 42 then
 							criteriaObject.providers = {{ "i", assetID }};
-						elseif criteriaType == 110 then
+						elseif criteriaType == 110 or criteriaType == 29 or criteriaType == 69 then
 							-- Ignored
 						else
 							print("Unhandled Criteria Type", criteriaType, assetID);
@@ -3048,6 +3063,54 @@ CacheFields = function(group)
 end
 app.CacheField = CacheField;
 app.CacheFields = CacheFields;
+local objectNamesToIDs = {};
+for objectID,name in pairs(app.ObjectNames) do
+	local o = objectNamesToIDs[name];
+	if not o then
+		o = { objectID };
+		objectNamesToIDs[name] = o;
+	else
+		tinsert(o, objectID);
+	end
+end
+app.GetBestObjectIDForName = function(name)
+	local o = objectNamesToIDs[name];
+	if o then
+		if #o > 1 then
+			local mapID = app.GetCurrentMapID();
+			local px, py = GetPlayerMapPosition("player");
+			if px then
+				local closestDistance, closestObjectID, dist = 99999, o[1];
+				for i,objectID in ipairs(o) do
+					local searchResults = app.SearchForField("objectID", objectID);
+					if searchResults and #searchResults > 0 then
+						for j,searchResult in ipairs(searchResults) do
+							if searchResult.coord and searchResult.coord[3] == mapID then
+								dist = distance(px, py, searchResult.coord[1], searchResult.coord[2]);
+								if dist and dist < closestDistance then
+									closestDistance = dist;
+									closestObjectID = objectID;
+								end
+							elseif searchResult.coords then
+								for k,coord in ipairs(searchResult.coords) do
+									if coord[3] == mapID then
+										dist = distance(px, py, coord[1], coord[2]);
+										if dist and dist < closestDistance then
+											closestDistance = dist;
+											closestObjectID = objectID;
+										end
+									end
+								end
+							end
+						end
+					end
+				end
+				return closestObjectID;
+			end
+		end
+		return o[1];
+	end
+end
 end)();
 local function SearchForFieldRecursively(group, field, value)
 	if group.g then
@@ -3461,6 +3524,13 @@ local function AttachTooltip(self)
 				
 				-- If the owner has a ref, it's an ATT row. Ignore it.
 				if owner and owner.ref then return true; end
+				
+				local objectID = app.GetBestObjectIDForName(_G[self:GetName() .. "TextLeft1"]:GetText());
+				if objectID then
+					AttachTooltipSearchResults(self, 1, "objectID:" .. objectID, SearchForField, "objectID", objectID);
+					self:Show();
+					return true;
+				end
 				
 				-- Addons Menu?
 				if numLines == 2 then
@@ -4125,7 +4195,8 @@ if GetCategoryInfo and GetCategoryInfo(92) ~= "" then
 			for k,v in ipairs(t.providers) do
 				if v[2] > 0 then
 					if v[1] == "o" then
-						return app.ObjectIcons[v[2]] or "Interface\\Worldmap\\Gear_64Grey";
+						local icon = app.ObjectIcons[v[2]];
+						if icon then return icon; end
 					elseif v[1] == "i" then
 						return select(5, GetItemInfoInstant(v[2])) or "Interface\\Worldmap\\Gear_64Grey";
 					end
@@ -4168,7 +4239,7 @@ if GetCategoryInfo and GetCategoryInfo(92) ~= "" then
 	end
 	local onTooltipForAchievementCriteria = function(t)
 		local achievementID = t.achievementID;
-		if achievementID then
+		if achievementID and IsShiftKeyDown() then
 			local totalCriteria = GetAchievementNumCriteria(achievementID) or 0;
 			GameTooltip:AddLine(" ", 1, 1, 1);
 			GameTooltip:AddDoubleLine("Total Criteria", tostring(totalCriteria), 0.8, 0.8, 1);
@@ -4352,7 +4423,8 @@ else
 			for k,v in ipairs(t.providers) do
 				if v[2] > 0 then
 					if v[1] == "o" then
-						return app.ObjectIcons[v[2]] or "Interface\\Worldmap\\Gear_64Grey";
+						local icon = app.ObjectIcons[v[2]];
+						if icon then return icon; end
 					elseif v[1] == "i" then
 						return select(5, GetItemInfoInstant(v[2])) or "Interface\\Worldmap\\Gear_64Grey";
 					end
@@ -6553,7 +6625,7 @@ app.CacheFlightPathDataForMap = function(mapID, nodes)
 						local coord = node.coords and node.coords[1];
 						if coord then
 							-- Allow for a little bit of leeway.
-							if math.sqrt((coord[1] - px)^2 + (coord[2] - py)^2) < 0.6 then
+							if distance(px, py, coord[1], coord[2]) < 0.6 then
 								nodes[nodeID] = true;
 							end
 						end
@@ -7455,6 +7527,29 @@ local C_Map_GetMapLevels = C_Map.GetMapLevels;
 local C_Map_GetBestMapForUnit = C_Map.GetBestMapForUnit;
 local C_MapExplorationInfo_GetExploredMapTextures = C_MapExplorationInfo.GetExploredMapTextures;
 local C_MapExplorationInfo_GetExploredAreaIDsAtPosition = C_MapExplorationInfo.GetExploredAreaIDsAtPosition;
+local mapIDToMapName, mapIDToAreaID = {}, {
+	[126] = { 4560 },	-- The Underbelly
+	[427] = { 132, 800 },	-- Coldridge Valley, Coldridge Pass
+	[465] = { 154 },	-- Deathknell
+	[425] = { 9 },	-- Northshire Valley
+	[460] = { 188 },	-- Shadowglen
+	[467] = { 3431 },	-- Sunstrider Isle
+	[468] = { 3526, 3527, 3560, 3528, 3559, 3529, 3530, 3561 },	-- Ammen Vale, Crash Site, Ammen Fields, Silverline Lake, Nestlewood Hills, Nestlewood Thicket, Shadow Ridge, The Sacred Grove
+	[348] = { 4095 },	-- Magisters' Terrace
+};
+for mapID,area in pairs(mapIDToAreaID) do
+	local info = C_Map.GetAreaInfo(area[1]);
+	if info then
+		mapIDToMapName[mapID] = info;
+		L.ZONE_TEXT_TO_MAP_ID[info] = mapID;
+		if #area > 1 then
+			for i=2,#area,1 do
+				local info = C_Map.GetAreaInfo(area[i]);
+				if info then L.ALT_ZONE_TEXT_TO_MAP_ID[info] = mapID; end
+			end
+		end
+	end
+end
 app.GetCurrentMapID = function()
 	local real = GetRealZoneText();
 	if real then
@@ -7470,16 +7565,17 @@ app.GetCurrentMapID = function()
 end
 app.GetMapName = function(mapID)
 	if mapID and mapID > 0 then
+		if mapIDToMapName[mapID] then return mapIDToMapName[mapID]; end
 		local info = C_Map_GetMapInfo(mapID);
 		if info then
 			return info.name;
 		else
-			for name,m in pairs(L["ZONE_TEXT_TO_MAP_ID"]) do
+			for name,m in pairs(L.ZONE_TEXT_TO_MAP_ID) do
 				if mapID == m then
 					return name;
 				end
 			end
-			for name,m in pairs(L["ALT_ZONE_TEXT_TO_MAP_ID"]) do
+			for name,m in pairs(L.ALT_ZONE_TEXT_TO_MAP_ID) do
 				if mapID == m then
 					return name;
 				end
@@ -8177,7 +8273,8 @@ local objectFields = {
 			for k,v in ipairs(t.providers) do
 				if v[2] > 0 then
 					if v[1] == "o" then
-						return app.ObjectIcons[v[2]] or "Interface\\Icons\\INV_Misc_Bag_10";
+						local icon = app.ObjectIcons[v[2]];
+						if icon then return icon; end
 					elseif v[1] == "i" then
 						return select(5, GetItemInfoInstant(v[2])) or "Interface\\Icons\\INV_Misc_Bag_10";
 					end
@@ -8424,7 +8521,8 @@ local questFields = {
 			for k,v in ipairs(t.providers) do
 				if v[2] > 0 then
 					if v[1] == "o" then
-						return app.ObjectIcons[v[2]] or "Interface\\Icons\\INV_Misc_Bag_10";
+						local icon = app.ObjectIcons[v[2]];
+						if icon then return icon; end
 					elseif v[1] == "i" then
 						return select(5, GetItemInfoInstant(v[2])) or "Interface\\Icons\\INV_Misc_Book_09";
 					end
@@ -8730,7 +8828,8 @@ local fields = {
 			for k,v in ipairs(t.providers) do
 				if v[2] > 0 then
 					if v[1] == "o" then
-						return app.ObjectIcons[v[2]] or "Interface\\Worldmap\\Gear_64Grey";
+						local icon = app.ObjectIcons[v[2]];
+						if icon then return icon; end
 					elseif v[1] == "i" then
 						return select(5, GetItemInfoInstant(v[2])) or "Interface\\Worldmap\\Gear_64Grey";
 					end
@@ -9462,7 +9561,7 @@ UpdateGroup = function(parent, group)
 					visible = true;
 				elseif app.ShowIncompleteThings(group) and not group.saved then
 					visible = true;
-				elseif group.itemID and app.CollectibleLoot and group.f then
+				elseif ((group.itemID and group.f) or group.sym) and app.CollectibleLoot then
 					visible = true;
 				end
 			else
@@ -9489,7 +9588,7 @@ UpdateGroup = function(parent, group)
 					if app.ShowIncompleteThings(group) and not group.saved then
 						visible = true;
 					end
-				elseif group.itemID and app.CollectibleLoot and group.f then
+				elseif ((group.itemID and group.f) or group.sym) and app.CollectibleLoot then
 					visible = true;
 				elseif app.Settings:Get("DebugMode") then
 					visible = true;
@@ -10774,6 +10873,7 @@ local function RowOnEnter(self)
 				local reason = L["UNOBTAINABLE_ITEM_REASONS"][reference.u];
 				if reason and (not reason[5] or select(4, GetBuildInfo()) < reason[5]) then GameTooltip:AddLine(reason[2], 1, 1, 1, true); end
 			end
+			if reference.sym then GameTooltip:AddLine("Right click to view more information.", 0.8, 0.8, 1, true); end
 		end
 		if reference.titleID then
 			if app.Settings:GetTooltipSetting("titleID") then GameTooltip:AddDoubleLine(L["TITLE_ID"], tostring(reference.titleID)); end
@@ -15759,6 +15859,9 @@ GameTooltip:HookScript("OnTooltipSetQuest", AttachTooltip);
 GameTooltip:HookScript("OnTooltipSetItem", AttachTooltip);
 GameTooltip:HookScript("OnTooltipSetUnit", AttachTooltip);
 GameTooltip:HookScript("OnTooltipCleared", ClearTooltip);
+GameTooltip:HookScript("OnShow", AttachTooltip);
+GameTooltip:HookScript("OnUpdate", AttachTooltip);
+GameTooltip:HookScript("OnHide", ClearTooltip);
 ItemRefTooltip:HookScript("OnShow", AttachTooltip);
 ItemRefTooltip:HookScript("OnTooltipSetQuest", AttachTooltip);
 ItemRefTooltip:HookScript("OnTooltipSetItem", AttachTooltip);
@@ -15777,7 +15880,6 @@ WorldMapTooltip.ItemTooltip.Tooltip:HookScript("OnTooltipSetUnit", AttachTooltip
 WorldMapTooltip.ItemTooltip.Tooltip:HookScript("OnTooltipCleared", ClearTooltip);
 WorldMapTooltip:HookScript("OnTooltipSetItem", AttachTooltip);
 WorldMapTooltip:HookScript("OnTooltipSetQuest", AttachTooltip);
-WorldMapTooltip:HookScript("OnTooltipCleared", ClearTooltip);
 WorldMapTooltip:HookScript("OnTooltipCleared", ClearTooltip);
 WorldMapTooltip:HookScript("OnShow", AttachTooltip);
 
@@ -15913,6 +16015,7 @@ app:RegisterEvent("ADDON_LOADED");
 app:RegisterEvent("BOSS_KILL");
 app:RegisterEvent("CHAT_MSG_ADDON");
 app:RegisterEvent("CHAT_MSG_WHISPER")
+app:RegisterEvent("CURSOR_CHANGED");
 app:RegisterEvent("PLAYER_DEAD");
 app:RegisterEvent("VARIABLES_LOADED");
 app:RegisterEvent("PARTY_LOOT_METHOD_CHANGED");
@@ -16967,6 +17070,14 @@ app.events.CHAT_MSG_WHISPER = function(text, playerName, _, _, _, _, _, _, _, _,
 		end
 	end
 end
+app.events.CURSOR_CHANGED = function()
+	StartCoroutine("UpdateTooltip", function()
+		while not GameTooltip:IsShown() do
+			coroutine.yield();
+		end
+		AttachTooltip(GameTooltip);
+	end);
+end
 app.events.PARTY_LOOT_METHOD_CHANGED = function()
 	if GetLootMethod() == "master" then
 		app.PushSoftReserve();
@@ -17016,7 +17127,8 @@ app.events.QUEST_REMOVED = function(questID)
 	app:RefreshDataQuietly();
 end
 app.events.QUEST_TURNED_IN = function(questID)
-	if fieldCache.questID[questID] and not fieldCache.questID[questID][1].repeatable then
+	local quest = fieldCache.questID[questID];
+	if quest and (not quest[1].repeatable or quest[1].isDaily or quest[1].isYearly) then
 		CompletedQuests[questID] = true;
 		for questID,completed in pairs(DirtyQuests) do
 			app.QuestCompletionHelper(tonumber(questID));

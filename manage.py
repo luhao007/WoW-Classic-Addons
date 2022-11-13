@@ -338,25 +338,25 @@ class Manager:
         for addon in addons:
             utils.remove_libraries_all(addon)
 
-    @staticmethod
-    def handle_acp():
-        def handle(lines):
-            ret = []
-            start1 = start2 = 0
-            for i, line in enumerate(lines):
-                if 'FontString name="$parentTitle"' in line:
-                    start1 = i
-                elif 'FontString name="$parentStatus"' in line:
-                    start2 = i
+    # @staticmethod
+    # def handle_acp():
+    #     def handle(lines):
+    #         ret = []
+    #         start1 = start2 = 0
+    #         for i, line in enumerate(lines):
+    #             if 'FontString name="$parentTitle"' in line:
+    #                 start1 = i
+    #             elif 'FontString name="$parentStatus"' in line:
+    #                 start2 = i
 
-            ret = lines[:start1+2]
-            ret.append(' '*24 + '<AbsDimension x="270" y="12"/>\n')
-            ret += lines[start1+3:start2+2]
-            ret.append(' '*24 + '<AbsDimension x="90" y="12"/>\n')
-            ret += lines[start2+3:]
-            return ret
+    #         ret = lines[:start1+2]
+    #         ret.append(' '*24 + '<AbsDimension x="270" y="12"/>\n')
+    #         ret += lines[start1+3:start2+2]
+    #         ret.append(' '*24 + '<AbsDimension x="90" y="12"/>\n')
+    #         ret += lines[start2+3:]
+    #         return ret
 
-        utils.process_file('Addons/ACP/ACP.xml', handle)
+    #     utils.process_file('Addons/ACP/ACP.xml', handle)
 
     @staticmethod
     def handle_att():

@@ -4,6 +4,8 @@
 <!--@no-lib-strip@-->
 <!--@end-no-lib-strip@-->
 <!--@no-lib-strip@-->
+<Script file="LibUIDropDownMenu\LibUIDropDownMenu.lua"/>
+<Include file="Krowi_WorldMapButtons\Krowi_WorldMapButtons-1.4.xml"/>
 <!--@end-no-lib-strip@-->
 
 </Ui>

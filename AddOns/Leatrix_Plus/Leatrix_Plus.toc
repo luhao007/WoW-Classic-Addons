@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Leatrix
-## Version: 3.0.51
+## Version: 3.0.53
 ## OptionalDeps: ElvUI, Glass
 ## SavedVariables: LeaPlusDB
 
