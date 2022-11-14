@@ -7,7 +7,7 @@
 -- Main non-UI code
 ------------------------------------------------------------
 
-PawnVersion = 2.0707
+PawnVersion = 2.0708
 
 -- Pawn requires this version of VgerCore:
 local PawnVgerCoreVersionRequired = 1.17
@@ -2876,7 +2876,7 @@ function PawnGetGemListString(ScaleName, ListAll, ItemLevel, Color)
 			end
 		elseif Color == "Red" or Color == "Yellow" or Color == "Blue" then
 			-- If there are three or more best gems AND it's a specific color, we can at least return the socket color.
-			return _G[toupper(Color) .. "_GEM"], true
+			return _G[strupper(Color) .. "_GEM"], true
 		end
 	end
 
