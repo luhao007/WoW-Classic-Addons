@@ -51,6 +51,44 @@ NRC.cooldowns = {
 			[48447] = "Tranquility", --Rank 7.
 		},
 	},
+	["Survival Instincts"] = {
+		class = "DRUID",
+		icon = "Interface\\Icons\\ability_druid_tigersroar",
+		cooldown = 60,
+		minLevel = 45,
+		talentOnly = {
+			tabIndex = 1,
+			talentIndex = 23,
+		},
+		spellIDs = {
+			[61336] = "Survival Instincts", --Rank 1.
+		},
+	},
+	["Challenging Roar"] = {
+		class = "DRUID",
+		icon = "Interface\\Icons\\ability_druid_challangingroar",
+		cooldown = 180,
+		minLevel = 28,
+		spellIDs = {
+			[5209] = "Challenging Roar", --Rank 1.
+		},
+	},
+	["Starfall"] = {
+		class = "DRUID",
+		icon = "Interface\\Icons\\ability_druid_starfall",
+		cooldown = 90,
+		minLevel = 60,
+		talentOnly = {
+			tabIndex = 1,
+			talentIndex = 28,
+		},
+		spellIDs = {
+			[48505] = "Starfall", --Rank 1.
+			[53199] = "Starfall", --Rank 2.
+			[53200] = "Starfall", --Rank 3.
+			[53201] = "Starfall", --Rank 4.
+		},
+	},
 	--Hunter.
 	["Misdirection"] = {
 		class = "HUNTER",
@@ -168,6 +206,65 @@ NRC.cooldowns = {
 			[66009] = "Hand of Protection", --Rank 3 too? Not sure wy 2 spellIDs.
 		},
 	},
+	["Divine Sacrifice"] = {
+		class = "PALADIN",
+		icon = "Interface\\Icons\\spell_holy_powerwordbarrier",
+		cooldown = 120,
+		minLevel = 20,
+		talentOnly = {
+			tabIndex = 2,
+			talentIndex = 6,
+		},
+		spellIDs = {
+			[64205] = "Divine Sacrifice", --Rank 1.
+		},
+	},
+	["Divine Guardian"] = {
+		class = "PALADIN",
+		icon = "Interface\\Icons\\spell_holy_powerwordbarrier",
+		cooldown = 120,
+		minLevel = 20,
+		talentOnly = {
+			tabIndex = 2,
+			talentIndex = 9,
+		},
+		spellIDs = {
+			[70940] = "Divine Guardian", --Rank 1.
+		},
+	},
+	["Aura Mastery"] = {
+		class = "PALADIN",
+		icon = "Interface\\Icons\\spell_holy_auramastery",
+		cooldown = 120,
+		minLevel = 20,
+		talentOnly = {
+			tabIndex = 1,
+			talentIndex = 6,
+		},
+		spellIDs = {
+			[31821] = "Aura Mastery", --Rank 1.
+		},
+	},
+	["Hand of Sacrifice"] = {
+		class = "PALADIN",
+		icon = "Interface\\Icons\\spell_holy_sealofsacrifice",
+		cooldown = 120,
+		minLevel = 45,
+		title = "Hand of Sac",
+		spellIDs = {
+			[6940] = "Hand of Sacrifice", --Rank 1.
+		},
+	},
+	["Hand of Salvation"] = {
+		class = "PALADIN",
+		icon = "Interface\\Icons\\spell_holy_sealofsalvation",
+		cooldown = 120,
+		minLevel = 26,
+		title = "Hand of Salv",
+		spellIDs = {
+			[1038] = "Hand of Salvation", --Rank 1.
+		},
+	},
 	--Priest.
 	["Fear Ward"] = {
 		class = "PRIEST",
@@ -238,6 +335,37 @@ NRC.cooldowns = {
 			[33206] = "Pain Suppression", --Rank 1.
 		},
 	},
+	["Divine Hymn"] = {
+		class = "PRIEST",
+		icon = "Interface\\Icons\\spell_holy_divinehymn",
+		cooldown = 480,
+		minLevel = 80,
+		spellIDs = {
+			[64843] = "Divine Hymn", --Rank 1.
+		},
+	},
+	["Hymn of Hope"] = {
+		class = "PRIEST",
+		icon = "Interface\\Icons\\spell_holy_symbolofhope",
+		cooldown = 360,
+		minLevel = 80,
+		spellIDs = {
+			[64901] = "Hymn of Hope", --Rank 1.
+		},
+	},
+	["Guardian Spirit"] = {
+		class = "PRIEST",
+		icon = "Interface\\Icons\\spell_holy_guardianspirit",
+		cooldown = 180,
+		minLevel = 60,
+		talentOnly = {
+			tabIndex = 2,
+			talentIndex = 27,
+		},
+		spellIDs = {
+			[47788] = "Guardian Spirit", --Rank 1.
+		},
+	},
 	--Rogue.
 	["Blind"] = {
 		class = "ROGUE",
@@ -296,6 +424,16 @@ NRC.cooldowns = {
 			[1725] = "Distract", --Rank 1.
 		},
 	},
+	["Tricks of the Trade"] = {
+		class = "ROGUE",
+		icon = "Interface\\Icons\\ability_rogue_tricksofthetrade",
+		cooldown = 30,
+		minLevel = 75,
+		title = "Tricks",
+		spellIDs = {
+			[57934] = "Tricks of the Trade", --Rank 1.
+		},
+	},
 	--[[["Cloak of Shadow"] = {
 		class = "ROGUE",
 		icon = "Interface\\Icons\\spell_shadow_nethercloak",
@@ -319,6 +457,15 @@ NRC.cooldowns = {
 		minLevel = 66,
 		spellIDs = {
 			[2062] = "Earth Elemental Totem", --Rank 1.
+		},
+	},
+	["Fire Elemental"] = {
+		class = "SHAMAN",
+		icon = "Interface\\Icons\\spell_fire_elemental_totem",
+		cooldown = 600,
+		minLevel = 68,
+		spellIDs = {
+			[2894] = "Fire Elemental Totem", --Rank 1.
 		},
 	},
 	["Reincarnation"] = {
@@ -467,6 +614,28 @@ NRC.cooldowns = {
 		},
 		spellIDs = {
 			[871] = "Shield Wall", --Rank 1.
+		},
+	},
+	["Bladestorm"] = {
+		class = "WARRIOR",
+		icon = "Interface\\Icons\\ability_warrior_bladestorm",
+		cooldown = 90,
+		minLevel = 60,
+		talentOnly = {
+			tabIndex = 3,
+			talentIndex = 31,
+		},
+		spellIDs = {
+			[46924] = "Bladestorm", --Rank 1.
+		},
+	},
+	["Shattering Throw"] = {
+		class = "WARRIOR",
+		icon = "Interface\\Icons\\ability_warrior_shatteringthrow",
+		cooldown = 300,
+		minLevel = 71,
+		spellIDs = {
+			[64382] = "Shattering Throw", --Rank 1.
 		},
 	},
 	
@@ -648,155 +817,6 @@ NRC.cooldowns = {
 		minLevel = 68,
 		spellIDs = {
 			[48707] = "Anti-Magic Shield", --Rank 1.
-		},
-	},
-	--Druid.
-	["Survival Instincts"] = {
-		class = "DRUID",
-		icon = "Interface\\Icons\\ability_druid_tigersroar",
-		cooldown = 60,
-		minLevel = 45,
-		talentOnly = {
-			tabIndex = 1,
-			talentIndex = 23,
-		},
-		spellIDs = {
-			[61336] = "Survival Instincts", --Rank 1.
-		},
-	},
-	--None.
-	--Hunter.
-	--none.
-	--Mage.
-	--None.
-	--Paladin.
-	["Divine Sacrifice"] = {
-		class = "PALADIN",
-		icon = "Interface\\Icons\\spell_holy_powerwordbarrier",
-		cooldown = 120,
-		minLevel = 20,
-		talentOnly = {
-			tabIndex = 2,
-			talentIndex = 6,
-		},
-		spellIDs = {
-			[64205] = "Divine Sacrifice", --Rank 1.
-		},
-	},
-	["Divine Guardian"] = {
-		class = "PALADIN",
-		icon = "Interface\\Icons\\spell_holy_powerwordbarrier",
-		cooldown = 120,
-		minLevel = 20,
-		talentOnly = {
-			tabIndex = 2,
-			talentIndex = 9,
-		},
-		spellIDs = {
-			[70940] = "Divine Guardian", --Rank 1.
-		},
-	},
-	["Aura Mastery"] = {
-		class = "PALADIN",
-		icon = "Interface\\Icons\\spell_holy_auramastery",
-		cooldown = 120,
-		minLevel = 20,
-		talentOnly = {
-			tabIndex = 1,
-			talentIndex = 6,
-		},
-		spellIDs = {
-			[31821] = "Aura Mastery", --Rank 1.
-		},
-	},
-	["Hand of Sacrifice"] = {
-		class = "PALADIN",
-		icon = "Interface\\Icons\\spell_holy_sealofsacrifice",
-		cooldown = 120,
-		minLevel = 45,
-		title = "Hand of Sac",
-		spellIDs = {
-			[6940] = "Hand of Sacrifice", --Rank 1.
-		},
-	},
-	["Hand of Salvation"] = {
-		class = "PALADIN",
-		icon = "Interface\\Icons\\spell_holy_sealofsalvation",
-		cooldown = 120,
-		minLevel = 26,
-		title = "Hand of Salv",
-		spellIDs = {
-			[1038] = "Hand of Salvation", --Rank 1.
-		},
-	},
-	--Priest.
-	["Divine Hymn"] = {
-		class = "PRIEST",
-		icon = "Interface\\Icons\\spell_holy_divinehymn",
-		cooldown = 480,
-		minLevel = 80,
-		spellIDs = {
-			[64843] = "Divine Hymn", --Rank 1.
-		},
-	},
-	["Hymn of Hope"] = {
-		class = "PRIEST",
-		icon = "Interface\\Icons\\spell_holy_symbolofhope",
-		cooldown = 360,
-		minLevel = 80,
-		spellIDs = {
-			[64901] = "Hymn of Hope", --Rank 1.
-		},
-	},
-	["Guardian Spirit"] = {
-		class = "PRIEST",
-		icon = "Interface\\Icons\\spell_holy_guardianspirit",
-		cooldown = 180,
-		minLevel = 60,
-		talentOnly = {
-			tabIndex = 2,
-			talentIndex = 31,
-		},
-		spellIDs = {
-			[47788] = "Guardian Spirit", --Rank 1.
-		},
-	},
-	--Rogue.
-	["Tricks of the Trade"] = {
-		class = "ROGUE",
-		icon = "Interface\\Icons\\ability_rogue_tricksofthetrade",
-		cooldown = 30,
-		minLevel = 75,
-		title = "Tricks",
-		spellIDs = {
-			[57934] = "Tricks of the Trade", --Rank 1.
-		},
-	},
-	--Shaman.
-	--None.
-	--Warlock.
-	--None.
-	--Warrior.
-	["Bladestorm"] = {
-		class = "WARRIOR",
-		icon = "Interface\\Icons\\ability_warrior_bladestorm",
-		cooldown = 90,
-		minLevel = 60,
-		talentOnly = {
-			tabIndex = 3,
-			talentIndex = 31,
-		},
-		spellIDs = {
-			[46924] = "Bladestorm", --Rank 1.
-		},
-	},
-	["Shattering Throw"] = {
-		class = "WARRIOR",
-		icon = "Interface\\Icons\\ability_warrior_shatteringthrow",
-		cooldown = 300,
-		minLevel = 71,
-		spellIDs = {
-			[64382] = "Shattering Throw", --Rank 1.
 		},
 	},
 };

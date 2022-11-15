@@ -45,7 +45,7 @@ L["Config"] = "Config"
 L["Lockouts"] = "Lockouts"
 L["Trades"] = "Trades";
 L["All Trades"] = "All Trades";
-L["tradesForSingleRaid"] = "Trades during %s raid (Log %s)";
+L["tradesForSingleRaid"] = "Trades during %s (Log %s)";
 L["Set"] = "Set";
 L["Reset"] = "Reset";
 L["Clear"] = "Clear";
@@ -220,6 +220,7 @@ L["leftClickMinimapButton"] = "Left-Click|r Open Raid Status";
 L["rightClickMinimapButton"] = "Right-Click|r Open Raid Log";
 L["shiftLeftClickMinimapButton"] = "Shift Left-Click|r Open Trade Log";
 L["shiftRightClickMinimapButton"] = "Shift Right-Click|r Open Config";
+L["controlLeftClickMinimapButton"] = "Control Left-Click|r Open Loot Log";
 
 L["Merged"] = "Merged";
 L["mergedDesc"] = "Merge %s cooldowns? (Untick this if you want to see player cooldowns without needing mouseover)";
@@ -748,7 +749,7 @@ L["sreShowCooldownResetTitle"] = "Cooldown Resets";
 L["sreShowCooldownResetDesc"] = "If you have the Raid Cooldowns tracker enabled you can also enable this option to show when those cooldowns reset and come off cooldown.";
 
 L["sreShowInterruptsTitle"] = "Interrupts";
-L["sreShowInterruptsDesc"] = "Show all interrupts (Intterupts will show no matter the source, overriding Group/Mine/NPCs settings).";
+L["sreShowInterruptsDesc"] = "Show all interrupts (Interrupts will show no matter the source, overriding Group/Mine/NPCs settings).";
 
 L["sreShowCauldronsTitle"] = "Feasts and Cauldrons";
 L["sreShowCauldronsDesc"] = "Food Feasts and Cauldrons being placed on the group for you to use.";
@@ -1059,6 +1060,7 @@ L["lowAmmoCheckThresholdTitle"] = "Low Ammo Threshold";
 L["lowAmmoCheckThresholdDesc"] = "Below how much ammo should you get a warning?";
 
 L["exportTypeTooltip"] = "Export format";
+L["exportDateTooltip"] = "Date format";
 
 L["changeLootEntry"] = "Set looter for entry %s";
 L["renamedLootEntry"] = "Changed loot %s to %s for %s";
@@ -1100,3 +1102,86 @@ L["releaseWarningDesc"] = "Show a warning when you die during a raid boss encoun
 
 L["showTrainsetTitle"] = "Trainset Warning";
 L["showTrainsetDesc"] = "Show a /say msg when someone drops a trainset in your raid, also prints to yourself when not in a raid.";
+
+L["autoInvTitle"] = "Auto Invite";
+L["autoInvDesc"] = "Auto invite people that send you a whisper with the keyword.";
+
+L["autoInvKeywordTitle"] = "Auto invite Keyword";
+L["autoInvKeywordDesc"] = "Set the auto invite keyword.";
+
+L["tradeExportItemsTypeTooltip"] = "How do you want items to be displayed?"
+
+L["dispelledCast"] = "dispelled %s from %s"
+
+L["dispelsMainTextDesc"] = "Chat Msgs for Offensive Dispels and Enrage Effects including Tranq Shot.";
+L["dispelsMainText2Desc"] = "NOTE: Keep in mind if you have NovaWorldBuffs installed it also has dispel msg options that may do the same thing as some of these enemy player options if you have them enabled.";
+
+L["dispelsFriendlyPlayersTitle"] = "Friendly Players";
+L["dispelsFriendlyPlayersDesc"] = "Show dispels when a friend player casts it.";
+
+L["dispelsEnemyPlayersTitle"] = "Enemy Players";
+L["dispelsEnemyPlayersDesc"] = "Show dispels when a friend player casts it.";
+
+L["dispelsCreaturesTitle"] = "Creatures/NPCs";
+L["dispelsCreaturesDesc"] = "Show dispels when a creature/npc casts it.";
+
+L["dispelsTranqOnlyTitle"] = "Tranq Shot Only";
+L["dispelsTranqOnlyDesc"] = "Only display dispels for hunter tranq shot, other class dispels won't work. This is here just incase you only want to track tranq shot enrage dispels and not your other characters.";
+					
+L["dispelsMyCastGroupTitle"] = "Mine Group Chat";
+L["dispelsMyCastGroupDesc"] = "Post my dispels and enrage effect removals in group chat?";
+
+L["dispelsMyCastSayTitle"] = "Mine Say";
+L["dispelsMyCastSayDesc"] = "Post my dispels and enrage effect removals in /say? If not in an instance this will print to chat window instead.";
+
+L["dispelsMyCastPrintTitle"] = "Mine Print";
+L["dispelsMyCastPrintDesc"] = "Print my dispels to my own chat window?";
+
+L["dispelsMyCastRaidTitle"] = "Mine Raids";
+L["dispelsMyCastRaidDesc"] = "Enable my dispel msgs inside battlegrounds and arena?";
+
+L["dispelsMyCastWorldTitle"] = "Mine Outside World";
+L["dispelsMyCastWorldDesc"] = "Enable my dispel msgs in the outside world when not in a raid or dungeon? Only works for /say and print so as not to spam group chat.";
+
+L["dispelsMyCastPvpTitle"] = "Mine PvP Instances";
+L["dispelsMyCastPvpDesc"] = "Enable my dispel msgs inside battlegrounds and arena? Only works for /say and print so as not to spam group chat.";
+
+L["dispelsOtherCastGroupTitle"] = "Others Dispels Group";
+L["dispelsOtherCastGroupDesc"] = "Post Other Friendly Players dispels and enrage effect removals in group chat? Only works in raids and dungeons.";
+
+L["dispelsOtherCastSayTitle"] = "Others Dispels Say";
+L["dispelsOtherCastSayDesc"] = "Post Other Friendly Players dispels and enrage effect removals in /say? Only works in raids and dungeons.";
+
+L["dispelsOtherCastPrintTitle"] = "Others Dispels Print";
+L["dispelsOtherCastPrintDesc"] = "Print Other Friendly Players dispels to my own chat window?";
+
+L["dispelsOtherCastRaidTitle"] = "Others Raids";
+L["dispelsOtherCastRaidDesc"] = "Enable other players dispel msgs inside battlegrounds and arena?";
+
+L["dispelsOtherCastWorldTitle"] = "Others Outside World";
+L["dispelsOtherCastWorldDesc"] = "Enable other players dispel msgs in the outside world when not in a raid or dungeon? Only works for /say and print so as not to spam group chat.";
+
+L["dispelsOtherCastPvpTitle"] = "Others PvP Instances";
+L["dispelsOtherCastPvpDesc"] = "Enable other players dispel msgs inside battlegrounds and arena? Only works for /say and print so as not to spam group chat.";
+
+L["hunterDistractingShotGroupTitle"] = "Distracting Shot Group";
+L["hunterDistractingShotGroupDesc"] = "Show your Distracting Shot casts and target to group chat?";
+
+L["hunterDistractingShotSayTitle"] = "Distracting Shot Say";
+L["hunterDistractingShotSayDesc"] = "Show your Distracting Shot casts and target to /say?";
+
+L["hunterDistractingShotYellTitle"] = "Distracting Shot Yell";
+L["hunterDistractingShotYellDesc"] = "Show your Distracting Shot casts and target to /yell? This will override /say so you don't send both.";
+
+L["sreShowDispelsTitle"] = "Offensive Dispels";
+L["sreShowDispelsDesc"] = "Show all Dispels (Dispels will show no matter the source, overriding Group/Mine/NPCs settings).";
+
+
+L["raidCooldownChallengingRoarTitle"] = "Challenging Roar";
+L["raidCooldownChallengingRoarDesc"] = "Show Challenging Roar raid cooldowns?";
+
+L["raidCooldownStarfallTitle"] = "Starfall";
+L["raidCooldownStarfallDesc"] = "Show Starfall raid cooldowns?";
+
+L["raidCooldownFireElementalTitle"] = "Fire Elemental";
+L["raidCooldownFireElementalDesc"] = "Show Fire Elemental raid cooldowns?";

@@ -1,7 +1,6 @@
 ------------------------------------------------------------------------
-r171 | funkehdude | 2022-10-26 00:29:45 +0000 (Wed, 26 Oct 2022) | 1 line
+r173 | funkehdude | 2022-11-14 15:22:42 +0000 (Mon, 14 Nov 2022) | 1 line
 Changed paths:
-   M /trunk/LibCandyBar-3.0/LibCandyBar-3.0.lua
    M /trunk/LibCandyBar-3.0.toc
 
 bump toc

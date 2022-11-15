@@ -316,7 +316,7 @@ local cauldrons = {
 local lastGeyser = 0;
 local function combatLogEventUnfiltered(...)
 	local timestamp, subEvent, hideCaster, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, 
-			destName, destFlags, destRaidFlags, spellID, spellName = CombatLogGetCurrentEventInfo();
+			destName, destFlags, destRaidFlags, spellID, spellName = ...;
 	--[[if (spellID == 38971 and NRC.config.acidGeyserWarning) then
 		--Acid Geyser used by Underbog Colossus in SCC.
 		--Mainly for my own raid, dbm doesn't do this for some reason.
@@ -373,6 +373,154 @@ local function combatLogEventUnfiltered(...)
 					SendChatMessage(msg, "RAID");
 				elseif (IsInGroup()) then
 					SendChatMessage(msg, "PARTY");
+				end
+			end
+		end
+	elseif (subEvent == "SPELL_DISPEL") then
+		if (destGUID == sourceGUID) then
+			return;
+		end
+		local dispelledSpellID, dispelledSpellName, auraType = select(15, ...), select(16, ...), select(18, ...);
+		if (auraType ~= "BUFF") then
+			return;
+		end
+		if (C_Map.GetBestMapForUnit("player") == 125) then
+			--Duelers dispel spam while in dal.
+			return;
+		end
+		if (NRC.config.sreShowDispels and sourceGUID and string.find(sourceGUID, "Player")) then
+			local _, sourceClass = GetPlayerInfoByGUID(sourceGUID);
+			local isSourceNpc, isDestNpc;
+			if (sourceGUID and strfind(sourceGUID, "Creature")) then
+				isSourceNpc = true;
+			end
+			if (destGUID and strfind(destGUID, "Creature")) then
+				isDestNpc = true;
+			end
+			local destClass;
+			if (destGUID and strfind(destGUID, "Player")) then
+				_, destClass = GetPlayerInfoByGUID(destGUID);
+			end
+			local destSpellID, destSpellName = select(15, ...);
+			local _, _, icon = GetSpellInfo(spellID);
+			local _, _, destIcon = GetSpellInfo(destSpellID);
+			NRC:sreDispelEvent(spellID, spellName, destSpellName, icon, destIcon, sourceName, sourceClass, destName, destClass, isSourceNpc, isDestNpc);
+		end
+		if (NRC.config.dispelsTranqOnly and spellID ~= 19801) then
+			return;
+		end
+		local inOurGroup = NRC:inOurGroup(sourceName);
+		if (destGUID and sourceGUID == UnitGUID("player") or inOurGroup) then
+			local inInstance, instanceType = IsInInstance();
+			local spellName = GetSpellInfo(spellID);
+			local isPlayer = strfind(destGUID, "Player");
+			local isCreature = strfind(destGUID, "Creature");
+			local isPvp = (instanceType == "pvp");
+			
+			local allow;
+			if (isCreature and NRC.config.dispelsCreatures) then
+				allow = true;
+			end
+			if (isPlayer) then
+				if (NRC.config.dispelsFriendlyPlayers and bit.band(sourceFlags, COMBATLOG_OBJECT_REACTION_FRIENDLY) == COMBATLOG_OBJECT_REACTION_FRIENDLY) then
+					allow = true;
+				end
+				if (NRC.config.dispelsEnemyPlayers and bit.band(sourceFlags, COMBATLOG_OBJECT_REACTION_HOSTILE) == COMBATLOG_OBJECT_REACTION_HOSTILE) then
+					allow = true;
+				end
+			end
+			if (not allow) then
+				return;
+			end
+
+			if (not spellName or spellName == "") then
+				spellName = "Unknown";
+			end
+			local dispelledSpellLink;
+			if (not NRC.isClassic) then
+				dispelledSpellLink = GetSpellLink(dispelledSpellID);
+			end
+			local source = sourceName;
+			local dest = destName;
+			local you;
+			if (sourceGUID == UnitGUID("player")) then
+				you = "You";
+			end
+			local _, sourceClass = GetPlayerInfoByGUID(sourceGUID);
+			if (sourceClass) then
+				local _, _, _, classHex = GetClassColor(sourceClass);
+				source = "|c" .. classHex .. source .. "|r";
+			end
+			if (strfind(destGUID, "Player")) then
+				local _, destClass = GetPlayerInfoByGUID(destGUID);
+				if (destClass) then
+					local _, _, _, classHex = GetClassColor(destClass);
+					dest = "|c" .. classHex .. dest .. "|r";
+				end
+			end
+			local msg = source .. " " .. string.format(L["dispelledCast"], dispelledSpellLink or dispelledSpellName, dest) .. ".";
+			local printMsg = (you or source) .. " " .. string.format(L["dispelledCast"], dispelledSpellLink or dispelledSpellName, dest) .. ".";
+			--If group enabled send to group.
+			--If print enabled then print, but only if we didn't send to group.
+			--If say enabled then send either way if inside an instance, or print if outside.
+			---The print settings interfere with NWB, so disabled for now until I add a settings global for dispels there.
+			local printed;
+			if (sourceGUID == UnitGUID("player")) then
+				if ((inInstance and not isPvp and NRC.config.dispelsMyCastRaid)
+						or (not inInstance and NRC.config.dispelsMyCastWorld)
+						or (isPvp and NRC.config.dispelsMyCastPvp)) then
+					--[[if (not inInstance and not isPvp and NRC.config.dispelsMyCastRaid) then
+						return;
+					end
+					if (isPvp and not NRC.config.dispelsMyCastPvp) then
+						return;
+					end]]
+					if (IsInGroup() and not isPvp) then
+						if (NRC.config.dispelsMyCastGroup and not isPvp) then
+							--Never send to group inside bgs.
+							NRC:sendGroup(NRC:stripColors(msg));
+						end
+					end
+					if (NRC.config.dispelsMyCastPrint) then
+						printed = true;
+						NRC:print(printMsg);
+					end
+					if (inInstance and not isPvp) then
+						if (NRC.config.dispelsMyCastSay) then
+							printed = true;
+							SendChatMessage(NRC:stripColors(msg), "SAY");
+						end
+					end
+					if (not printed and NRC.config.dispelsMyCastSay) then
+						NRC:print(printMsg);
+					end
+				end
+			elseif (inOurGroup) then
+				if ((inInstance and not isPvp and NRC.config.dispelsOtherCastRaid)
+						or (not inInstance and NRC.config.dispelsOtherCastWorld)
+						or (isPvp and NRC.config.dispelsOtherCastPvp)) then
+					--Disabled group chat for other peoples dispels, the msgs would probably be a bit obnoxious.
+					--[[if (IsInGroup()) then
+						if (NRC.config.dispelsOtherCastGroup and not isPvp) then
+							--Never send to group inside bgs.
+							NRC:sendGroup(NRC:stripColors(msg));
+						end
+					end]]
+					if (NRC.config.dispelsOtherCastPrint) then
+						printed = true;
+						NRC:print(printMsg);
+					end
+					--[[if (inInstance) then
+						if (NRC.config.dispelsOtherCastSay) then
+							if (not isPvp) then
+								SendChatMessage(NRC:stripColors(msg), "SAY");
+								printed = true;
+							end
+						end
+					end]]
+					if (not printed and NRC.config.dispelsOtherCastPrint) then
+						NRC:print(printMsg);
+					end
 				end
 			end
 		end
@@ -518,7 +666,7 @@ f:RegisterEvent("GOSSIP_SHOW");
 f:RegisterEvent("UNIT_INVENTORY_CHANGED");
 f:SetScript('OnEvent', function(self, event, ...)
 	if (event == "COMBAT_LOG_EVENT_UNFILTERED") then
-		combatLogEventUnfiltered(...);
+		combatLogEventUnfiltered(CombatLogGetCurrentEventInfo());
 	elseif (event == "PLAYER_ENTERING_WORLD") then
 		local isLogon, isReload = ...;
 		--NRC:playerEnteringWorldEncounters(...);

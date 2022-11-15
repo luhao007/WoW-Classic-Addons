@@ -219,6 +219,22 @@ NRC.options = {
 					get = "getShowTrainset",
 					set = "setShowTrainset",
 				},
+				autoInv = {
+					type = "toggle",
+					name = L["autoInvTitle"],
+					desc = L["autoInvDesc"],
+					order = 112,
+					get = "getAutoInv",
+					set = "setAutoInv",
+				},
+				autoInvKeyword = {
+					type = "input",
+					name = L["autoInvKeywordTitle"],
+					desc = L["autoInvKeywordDesc"],
+					get = "getAutoInvKeyword",
+					set = "setAutoInvKeyword",
+					order = 113,
+				},
 				timeStampFormat = {
 					type = "select",
 					name = L["timeStampFormatTitle"],
@@ -723,6 +739,35 @@ NRC.options = {
 					width = frameWidth,
 					get = function(info) return NRC.config.raidCooldownTranquilityFrame; end,
 					set = function(info, value) NRC.config.raidCooldownTranquilityFrame = value; NRC:reloadRaidCooldowns(); end,
+				},
+				raidCooldownChallengingRoar = {
+					type = "toggle",
+					name = "|cFFFF7C0A" .. L["raidCooldownChallengingRoarTitle"],
+					desc = L["raidCooldownChallengingRoarDesc"],
+					order = 211,
+					width = spellWidth,
+					get = "getRaidCooldownChallengingRoar",
+					set = "setRaidCooldownChallengingRoar",
+				},
+				raidCooldownChallengingRoarMerged = {
+					type = "toggle",
+					name = "|cFFFF7C0A" .. L["Merged"],
+					desc = string.format(L["mergedDesc"], L["Challenging Roar"]),
+					order = 212,
+					width = mergedWidth,
+					get = function(info) return NRC.config.raidCooldownChallengingRoarMerged; end,
+					set = function(info, value) NRC.config.raidCooldownChallengingRoarMerged = value; NRC:reloadRaidCooldowns(); end,
+				},
+				raidCooldownChallengingRoarFrame = {
+					type = "select",
+					name = "",
+					desc = string.format(L["frameDesc"], L["Challenging Roar"]),
+					values = setCooldownFrameOption(true),
+					sorting = setCooldownFrameOption(),
+					order = 213,
+					width = frameWidth,
+					get = function(info) return NRC.config.raidCooldownChallengingRoarFrame; end,
+					set = function(info, value) NRC.config.raidCooldownChallengingRoarFrame = value; NRC:reloadRaidCooldowns(); end,
 				},
 				--Hunter.
 				raidCooldownMisdirection = {
@@ -1281,11 +1326,40 @@ NRC.options = {
 					get = function(info) return NRC.config.raidCooldownEarthElementalFrame; end,
 					set = function(info, value) NRC.config.raidCooldownEarthElementalFrame = value; NRC:reloadRaidCooldowns(); end,
 				},
+				raidCooldownFireElemental = {
+					type = "toggle",
+					name = "|cFF0070DD" .. L["raidCooldownFireElementalTitle"],
+					desc = L["raidCooldownFireElementalDesc"],
+					order = 904,
+					width = spellWidth,
+					get = "getRaidCooldownFireElemental",
+					set = "setRaidCooldownFireElemental",
+				},
+				raidCooldownFireElementalMerged = {
+					type = "toggle",
+					name = "|cFF0070DD" .. L["Merged"],
+					desc = string.format(L["mergedDesc"], L["Fire Elemental"]),
+					order = 905,
+					width = mergedWidth,
+					get = function(info) return NRC.config.raidCooldownFireElementalMerged; end,
+					set = function(info, value) NRC.config.raidCooldownFireElementalMerged = value; NRC:reloadRaidCooldowns(); end,
+				},
+				raidCooldownFireElementalFrame = {
+					type = "select",
+					name = "",
+					desc = string.format(L["frameDesc"], L["Fire Elemental"]),
+					values = setCooldownFrameOption(true),
+					sorting = setCooldownFrameOption(),
+					order = 906,
+					width = frameWidth,
+					get = function(info) return NRC.config.raidCooldownFireElementalFrame; end,
+					set = function(info, value) NRC.config.raidCooldownFireElementalFrame = value; NRC:reloadRaidCooldowns(); end,
+				},
 				raidCooldownReincarnation = {
 					type = "toggle",
 					name = "|cFF0070DD" .. L["raidCooldownReincarnationTitle"],
 					desc = L["raidCooldownReincarnationDesc"],
-					order = 904,
+					order = 907,
 					width = spellWidth,
 					get = "getRaidCooldownReincarnation",
 					set = "setRaidCooldownReincarnation",
@@ -1294,7 +1368,7 @@ NRC.options = {
 					type = "toggle",
 					name = "|cFF0070DD" .. L["Merged"],
 					desc = string.format(L["mergedDesc"], L["Reincarnation"]),
-					order = 905,
+					order = 908,
 					width = mergedWidth,
 					get = function(info) return NRC.config.raidCooldownReincarnationMerged; end,
 					set = function(info, value) NRC.config.raidCooldownReincarnationMerged = value; NRC:reloadRaidCooldowns(); end,
@@ -1305,7 +1379,7 @@ NRC.options = {
 					desc = string.format(L["frameDesc"], L["Reincarnation"]),
 					values = setCooldownFrameOption(true),
 					sorting = setCooldownFrameOption(),
-					order = 906,
+					order = 909,
 					width = frameWidth,
 					get = function(info) return NRC.config.raidCooldownReincarnationFrame; end,
 					set = function(info, value) NRC.config.raidCooldownReincarnationFrame = value; NRC:reloadRaidCooldowns(); end,
@@ -1314,7 +1388,7 @@ NRC.options = {
 					type = "toggle",
 					name = "|cFF0070DD" .. L["raidCooldownManaTideTitle"],
 					desc = L["raidCooldownManaTideDesc"],
-					order = 907,
+					order = 910,
 					width = spellWidth,
 					get = "getRaidCooldownManaTide",
 					set = "setRaidCooldownManaTide",
@@ -1323,7 +1397,7 @@ NRC.options = {
 					type = "toggle",
 					name = "|cFF0070DD" .. L["Merged"],
 					desc = string.format(L["mergedDesc"], L["Mana Tide"]),
-					order = 908,
+					order = 911,
 					width = mergedWidth,
 					get = function(info) return NRC.config.raidCooldownManaTideMerged; end,
 					set = function(info, value) NRC.config.raidCooldownManaTideMerged = value; NRC:reloadRaidCooldowns(); end,
@@ -1334,7 +1408,7 @@ NRC.options = {
 					desc = string.format(L["frameDesc"], L["Mana Tide"]),
 					values = setCooldownFrameOption(true),
 					sorting = setCooldownFrameOption(),
-					order = 909,
+					order = 912,
 					width = frameWidth,
 					get = function(info) return NRC.config.raidCooldownManaTideFrame; end,
 					set = function(info, value) NRC.config.raidCooldownManaTideFrame = value; NRC:reloadRaidCooldowns(); end,
@@ -2595,11 +2669,19 @@ NRC.options = {
 					get = "getSreShowInterrupts",
 					set = "setSreShowInterrupts",
 				},
+				sreShowDispels = {
+					type = "toggle",
+					name = L["sreShowDispelsTitle"],
+					desc = L["sreShowDispelsDesc"],
+					order = 45,
+					get = "getSreShowDispels",
+					set = "setSreShowDispels",
+				},
 				sreShowSpellName = {
 					type = "toggle",
 					name = L["sreShowSpellNameTitle"],
 					desc = L["sreShowSpellNameDesc"],
-					order = 45,
+					order = 46,
 					get = "getSreShowSpellName",
 					set = "setSreShowSpellName",
 				},
@@ -2707,6 +2789,169 @@ NRC.options = {
 					end,
 					fontSize = "medium",
 					order = 80,
+				},
+			},
+		},
+		dispels = {
+			name = "Offensive Dispels",
+			desc = "Chat msgs for offensive dispels and tranq shot.",
+			type = "group",
+			order = 44,
+			args = {
+				dispelsText = {
+					type = "description",
+					name = "|cFF3CE13F" .. L["dispelsMainTextDesc"],
+					fontSize = "medium",
+					order = 200,
+				},
+				dispelsHeader = {
+					type = "header",
+					name = "|cFFFF6900" .. L["Sources"],
+					order = 201,
+				},
+				dispelsFriendlyPlayers = {
+					type = "toggle",
+					name = L["dispelsFriendlyPlayersTitle"],
+					desc = L["dispelsFriendlyPlayersDesc"],
+					order = 202,
+					get = "getDispelsFriendlyPlayers",
+					set = "setDispelsFriendlyPlayers",
+				},
+				dispelsEnemyPlayers = {
+					type = "toggle",
+					name = L["dispelsEnemyPlayersTitle"],
+					desc = L["dispelsEnemyPlayersDesc"],
+					order = 203,
+					get = "getDispelsEnemyPlayers",
+					set = "setDispelsEnemyPlayers",
+				},
+				dispelsCreatures = {
+					type = "toggle",
+					name = L["dispelsCreaturesTitle"],
+					desc = L["dispelsCreaturesDesc"],
+					order = 204,
+					get = "getDispelsCreatures",
+					set = "setDispelsCreatures",
+				},
+				dispelsTranqOnly = {
+					type = "toggle",
+					name = L["dispelsTranqOnlyTitle"],
+					desc = L["dispelsTranqOnlyDesc"],
+					order = 205,
+					get = "getDispelsTranqOnly",
+					set = "setDispelsTranqOnly",
+				},
+				dispelsHeader2 = {
+					type = "header",
+					name = "|cFFFF6900" .. L["My Offensive Dispel Casts"],
+					order = 220,
+				},
+				dispelsMyCastGroup = {
+					type = "toggle",
+					name = L["dispelsMyCastGroupTitle"],
+					desc = L["dispelsMyCastGroupDesc"],
+					order = 221,
+					get = "getDispelsMyCastGroup",
+					set = "setDispelsMyCastGroup",
+				},
+				dispelsMyCastSay = {
+					type = "toggle",
+					name = L["dispelsMyCastSayTitle"],
+					desc = L["dispelsMyCastSayDesc"],
+					order = 222,
+					get = "getDispelsMyCastSay",
+					set = "setDispelsMyCastSay",
+				},
+				dispelsMyCastPrint = {
+					type = "toggle",
+					name = L["dispelsMyCastPrintTitle"],
+					desc = L["dispelsMyCastPrintDesc"],
+					order = 223,
+					get = "getDispelsMyCastPrint",
+					set = "setDispelsMyCastPrint",
+				},
+				dispelsMyCastRaid = {
+					type = "toggle",
+					name = L["dispelsMyCastRaidTitle"],
+					desc = L["dispelsMyCastRaidDesc"],
+					order = 227,
+					get = "getDispelsMyCastRaid",
+					set = "setDispelsMyCastRaid",
+				},
+				dispelsMyCastWorld = {
+					type = "toggle",
+					name = L["dispelsMyCastWorldTitle"],
+					desc = L["dispelsMyCastWorldDesc"],
+					order = 228,
+					get = "getDispelsMyCastWorld",
+					set = "setDispelsMyCastWorld",
+				},
+				dispelsMyCastPvp = {
+					type = "toggle",
+					name = L["dispelsMyCastPvpTitle"],
+					desc = L["dispelsMyCastPvpDesc"],
+					order = 229,
+					get = "getDispelsMyCastPvp",
+					set = "setDispelsMyCastPvp",
+				},
+				dispelsHeader3 = {
+					type = "header",
+					name = "|cFFFF6900" .. L["Other Players/Creatures Offensive Dispel Casts"],
+					order = 240,
+				},
+				--[[dispelsOtherCastGroup = {
+					type = "toggle",
+					name = L["dispelsOtherCastGroupTitle"],
+					desc = L["dispelsOtherCastGroupDesc"],
+					order = 241,
+					get = "getDispelsOtherCastGroup",
+					set = "setDispelsOtherCastGroup",
+				},]]
+				--[[dispelsOtherCastSay = {
+					type = "toggle",
+					name = L["dispelsOtherCastSayTitle"],
+					desc = L["dispelsOtherCastSayDesc"],
+					order = 242,
+					get = "getDispelsOtherCastSay",
+					set = "setDispelsOtherCastSay",
+				},]]
+				dispelsOtherCastPrint = {
+					type = "toggle",
+					name = L["dispelsOtherCastPrintTitle"],
+					desc = L["dispelsOtherCastPrintDesc"],
+					order = 243,
+					get = "getDispelsOtherCastPrint",
+					set = "setDispelsOtherCastPrint",
+				},
+				dispelsOtherCastRaid = {
+					type = "toggle",
+					name = L["dispelsOtherCastRaidTitle"],
+					desc = L["dispelsOtherCastRaidDesc"],
+					order = 244,
+					get = "getDispelsOtherCastRaid",
+					set = "setDispelsOtherCastRaid",
+				},
+				dispelsOtherCastWorld = {
+					type = "toggle",
+					name = L["dispelsOtherCastWorldTitle"],
+					desc = L["dispelsOtherCastWorldDesc"],
+					order = 245,
+					get = "getDispelsOtherCastWorld",
+					set = "setDispelsOtherCastWorld",
+				},
+				dispelsOtherCastPvp = {
+					type = "toggle",
+					name = L["dispelsOtherCastPvpTitle"],
+					desc = L["dispelsOtherCastPvpDesc"],
+					order = 246,
+					get = "getDispelsOtherCastPvp",
+					set = "setDispelsOtherCastPvp",
+				},
+				dispelsText2 = {
+					type = "description",
+					name = "\n|cFF9CD6DE" .. L["dispelsMainText2Desc"],
+					fontSize = "medium",
+					order = 260,
 				},
 			},
 		},
@@ -2999,6 +3244,33 @@ NRC.options = {
 					softMax = 10000,
 					step = 100,
 					--width = 2,
+				},
+				hunterDistractingShotGroup = {
+					type = "toggle",
+					name = L["hunterDistractingShotGroupTitle"],
+					desc = L["hunterDistractingShotGroupDesc"],
+					order = 43,
+					get = "getHunterDistractingShotGroup",
+					set = "setHunterDistractingShotGroup",
+					width = 1.2,
+				},
+				hunterDistractingShotSay = {
+					type = "toggle",
+					name = L["hunterDistractingShotSayTitle"],
+					desc = L["hunterDistractingShotSayDesc"],
+					order = 44,
+					get = "getHunterDistractingShotSay",
+					set = "setHunterDistractingShotSay",
+					width = 1.2,
+				},
+				hunterDistractingShotYell = {
+					type = "toggle",
+					name = L["hunterDistractingShotYellTitle"],
+					desc = L["hunterDistractingShotYellDesc"],
+					order = 45,
+					get = "getHunterDistractingShotYell",
+					set = "setHunterDistractingShotYell",
+					width = 1.2,
 				},
 			},
 		},
@@ -3325,14 +3597,6 @@ function NRC:loadExtraOptions()
 		width = 1,
 	};
 	if (not NRC.isTBC and not NRC.isClassic) then
-		NRC.options.args.classRogue = {
-			--Remove this after these options are no longer new.
-			name = "   |cFFFFF468Rogue|r  |cFFFFFFFF(NEW)",
-			desc = "Rogue tools.",
-			type = "group",
-			order = 105,
-			args = {},
-		};
 		NRC.options.args.classRogue.args.classRogueLayoutHeader = {
 			type = "header",
 			name = "|cFFFFFF00My " .. L["Tricks"] .. " Casts",
@@ -3541,7 +3805,7 @@ function NRC:loadExtraOptions()
 			type = "toggle",
 			name = "|cFFFF7C0A" .. L["raidCooldownSurvivalInstinctsTitle"],
 			desc = L["raidCooldownSurvivalInstinctsDesc"],
-			order = 211,
+			order = 221,
 			width = spellWidth,
 			get = "getRaidCooldownSurvivalInstincts",
 			set = "setRaidCooldownSurvivalInstincts",
@@ -3550,7 +3814,7 @@ function NRC:loadExtraOptions()
 			type = "toggle",
 			name = "|cFFFF7C0A" .. L["Merged"],
 			desc = string.format(L["mergedDesc"], L["Survival Instincts"]),
-			order = 212,
+			order = 222,
 			width = mergedWidth,
 			get = function(info) return NRC.config.raidCooldownSurvivalInstinctsMerged; end,
 			set = function(info, value) NRC.config.raidCooldownSurvivalInstinctsMerged = value; NRC:reloadRaidCooldowns(); end,
@@ -3561,10 +3825,39 @@ function NRC:loadExtraOptions()
 			desc = string.format(L["frameDesc"], L["Survival Instincts"]),
 			values = setCooldownFrameOption(true),
 			sorting = setCooldownFrameOption(),
-			order = 213,
+			order = 223,
 			width = frameWidth,
 			get = function(info) return NRC.config.raidCooldownSurvivalInstinctsFrame; end,
 			set = function(info, value) NRC.config.raidCooldownSurvivalInstinctsFrame = value; NRC:reloadRaidCooldowns(); end,
+		};
+		NRC.options.args.raidCooldowns.args.raidCooldownStarfall = {
+			type = "toggle",
+			name = "|cFFFF7C0A" .. L["raidCooldownStarfallTitle"],
+			desc = L["raidCooldownStarfallDesc"],
+			order = 224,
+			width = spellWidth,
+			get = "getRaidCooldownStarfall",
+			set = "setRaidCooldownStarfall",
+		};
+		NRC.options.args.raidCooldowns.args.raidCooldownStarfallMerged = {
+			type = "toggle",
+			name = "|cFFFF7C0A" .. L["Merged"],
+			desc = string.format(L["mergedDesc"], L["Starfall"]),
+			order = 225,
+			width = mergedWidth,
+			get = function(info) return NRC.config.raidCooldownStarfallMerged; end,
+			set = function(info, value) NRC.config.raidCooldownStarfallMerged = value; NRC:reloadRaidCooldowns(); end,
+		};
+		NRC.options.args.raidCooldowns.args.raidCooldownStarfallFrame = {
+			type = "select",
+			name = "",
+			desc = string.format(L["frameDesc"], L["Starfall"]),
+			values = setCooldownFrameOption(true),
+			sorting = setCooldownFrameOption(),
+			order = 226,
+			width = frameWidth,
+			get = function(info) return NRC.config.raidCooldownStarfallFrame; end,
+			set = function(info, value) NRC.config.raidCooldownStarfallFrame = value; NRC:reloadRaidCooldowns(); end,
 		};
 		--Death Knight.
 		NRC.options.args.raidCooldowns.args.raidCooldownArmyoftheDead = {
@@ -4317,6 +4610,7 @@ NRC.optionDefaults = {
 		sreAddRaidCooldownsToSpellList = true,
 		sreShowCooldownReset = false,
 		sreShowInterrupts = true,
+		sreShowDispels = false,
 		sreShowSpellName = true,
 		sreOnlineStatus = false,
 		sreShowCauldrons = true,
@@ -4336,6 +4630,8 @@ NRC.optionDefaults = {
 		checkMetaGem = true,
 		releaseWarning = true,
 		showTrainset = false,
+		autoInv = false,
+		autoInvKeyword = "inv",
 		
 		raidManaEnabled = true,
 		raidManaShowSelf = true,
@@ -4362,12 +4658,40 @@ NRC.optionDefaults = {
 		mapLootDisplayToTrades = true,
 		exportCustomHeader = "date;player;itemlink;itemid",
 		exportCustomString = "%date%;%player%;%itemlink%;%itemid%",
+		exportDate = "yyyy/mm/dd",
 		
 		raidCooldownsLeftClick = 1,
 		raidCooldownsRightClick = 1,
 		raidCooldownsShiftLeftClick = 1,
 		raidCooldownsShiftRightClick = 1,
 		
+		tradeExportGoldGiven = true,
+		tradeExportGoldReceived = true,
+		tradeExportItemsGiven = true,
+		tradeExportItemsReceived = true,
+		tradeExportEnchants = false,
+		tradeExportItemsType = "wowhead",
+		tradeExportStart = 1,
+		tradeExportEnd = 400,
+		tradeExportAttendees = true,
+		
+		dispelsMyCastGroup = false,
+		dispelsMyCastPrint = false,
+		dispelsMyCastSay = false,
+		dispelsMyCastRaid = false,
+		dispelsMyCastWorld = false,
+		dispelsMyCastPvp = false,
+		dispelsOtherCastGroup = false,
+		dispelsOtherCastPrint = false,
+		dispelsOtherCastSay = false,
+		dispelsOtherCastRaid = false,
+		dispelsOtherCastWorld = false,
+		dispelsOtherCastPvP = false,
+		dispelsCreatures = true,
+		dispelsTranqOnly = false,
+		dispelsFriendlyPlayers = true,
+		dispelsEnemyPlayers = false,
+			
 		--Death Knight.
 		raidCooldownArmyoftheDead = false,
 		raidCooldownArmyoftheDeadMerged = true,
@@ -4400,6 +4724,12 @@ NRC.optionDefaults = {
 		raidCooldownSurvivalInstincts = false,
 		raidCooldownSurvivalInstinctsMerged = true,
 		raidCooldownSurvivalInstinctsFrame = 1,
+		raidCooldownChallengingRoar = false,
+		raidCooldownChallengingRoarMerged = true,
+		raidCooldownChallengingRoarFrame = 1,
+		raidCooldownStarfall = false,
+		raidCooldownStarfallMerged = true,
+		raidCooldownStarfallFrame = 1,
 		--Hunter
 		raidCooldownMisdirection = false,
 		raidCooldownMisdirectionMerged = true,
@@ -4418,6 +4748,9 @@ NRC.optionDefaults = {
 		mdSendTarget = false,
 		lowAmmoCheck = true,
 		lowAmmoCheckThreshold = 1000,
+		hunterDistractingShotGroup = false,
+		hunterDistractingShotSay = false,
+		hunterDistractingShotYell = false,
 		--Mage.
 		raidCooldownEvocation = false,
 		raidCooldownEvocationMerged = true,
@@ -4526,6 +4859,9 @@ NRC.optionDefaults = {
 		raidCooldownEarthElemental = false,
 		raidCooldownEarthElementalMerged = true,
 		raidCooldownEarthElementalFrame = 1,
+		raidCooldownFireElemental = false,
+		raidCooldownFireElementalMerged = true,
+		raidCooldownFireElementalFrame = 1,
 		raidCooldownReincarnation = true,
 		raidCooldownReincarnationMerged = true,
 		raidCooldownReincarnationFrame = 1,
@@ -4716,7 +5052,8 @@ end
 
 local linesVersion;
 local function loadNewVersionFrame()
-	local frame = NRC:createSimpleScrollFrame("NRCNewVersionFrame", 600, 400, 0, 150, true);
+	--local frame = NRC:createSimpleScrollFrame("NRCNewVersionFrame", 600, 400, 0, 150, true);
+	local frame = NRC:createSimpleScrollFrame("NRCNewVersionFrame", 600, 670, 0, 0, true);
 	frame:SetFrameStrata("HIGH");
 	frame:SetClampedToScreen(true);
 	frame.scrollChild.fs:SetFont(NRC.regionFont, 14);
@@ -4737,10 +5074,12 @@ local function loadNewVersionFrame()
 	frame.scrollChild.fs:SetText("|cFFFFFF00Nova Raid Companion");
 	frame.scrollChild.fs2:SetText("|cFFFFFF00New in version|r |cFFFF6900" .. string.format("%.2f", NRC.version));
 	frame:Hide();
-	linesVersion = 1.23;
+	linesVersion = 1.24;
 	local lines = {
-		"Added a don't release warning if a raid encounter is still in progress as a reminder to wait so your cooldowns will reset.\nAdded repair bots, jeeves, and mailbox to /say msg when dropped in raid.\nAdded a /say msg in raids if someone drops a trainset with their name, this is disabled by default and must be turned on in config.\nAdded wrath mana/healing potions and flame cap to the tracked consumes list.\nAdded raid difficulty type to alt raid lockouts window (10m/25m/heroic).\nAdded Survival Instincts to raid cooldown options.\nAdded Anti-Magic Shell to raid cooldown options.\nAdded Divine Protection to raid cooldown options.\nAdded Divine Guardian to raid cooldown options.\nAdded Hand of Sacrifice to raid cooldown options.\nAdded Hand of Salvation to raid cooldown options.\nAdded Vampiric Blood to raid cooldown options.",
-		"Fixed soulstone timer bars to be 15mins in wrath.\nFixed Divine Sacrifice cooldown not showing for players with the talent.\nFixed missing instance display icons for some wrath raids in the raid log.\nFixed Blessing of Sanctuary not showing as max rank in raid buffs window.\nFixed Power Infusion and Pain Suppresion cooldown times not being shorter if the player has talents trained for it.\nFixed hunter misdirect tally counting all dmg since the previous MD if it wasn't used and ran out.\nFixed a few lua errors that popped up in the prepatch.\nThe meta gem check will no longer work if you have the curseforge version of Ratingbuster installed, it seems to break the meta gem tooltip on and off and give false meta gem inactive reports I suggest getting the wowinterface version by raethkcj instead.",
+		"New feature: Glyph inspecting.\n-Inspecting a player with NRC or the weakaura helper will also show their glyphs.\n-Clicking the talents icon of a player in the raid status window when expanding with the \"More\" button will show their glyphs if they have NRC.",
+		"New feature: Dispels tracking\n-Offensive Dispel options added to send your offensive dispels/purges/tranq shot to group or /say or just print to your own window.\n-Seperate options for your own dispels and other players dispels.\n-This was mainly added for hunter tranq shot removing enrage but works for all classes with a dispel.\n-All dispel options are turned off by default, you need to enable if you want them.\n-New dispels options have also been added to scrolling raid events if you want see them scroll by there.",
+		"New feature: Trades exporting to spreadsheet.\n-An export button has been added to the \"All Trades\" window and Trades tab for a specific raid in the log.\n-For \"All Trades\" chose with the sliders the start and end trade to export all between those numbers.\n-For the Trades tab in a specific raid only trades during that raid will be included.",
+		"Added autoinvite to group via whisper option with keyword.\nAdded a dropdown box on the loot export window to change date format.\nAdded shortcut to open current raid loot log, control left click minimap button or type /nrc loot.\nAdded raid type (10m/25m) info to minimap button tooltip lockouts and raid log entries.\nAdded Dalaran Intellect and Brilliance buffs to raid status.\nAdded Fort/Int/Motw/Kings runescrolls and drums to raid status.\nAdded Starfall to raid cooldowns.\nAdded Challenging Road aoe taunt to raid cooldowns.\nAdded Fire Elemental Totem to raid cooldowns.\nAdded hunter distracting shot options to announce your cast to group or yell/say.\nItems in the loot log shows tooltip on mouseover instead of clicking, you can still right click an itemlink or anywhere on the entry to change looter.\nFixed Malygos and Sarth data so loot can be assigned correctly and models show up in raid log.\nFixed config option for dk Unholy Frenzy raid cooldown, it can now be enabled.\nFixed config option for druid Tranquility raid cooldown., it can now be enabled.\nFixed priest guardian spirit cooldown not showing up (it had wrong talent data).\nThe NRC helper weakaura has been updated for wrath on wago https://wago.io/sof4ehBA6 (for people without the addon to share shares talents/glyphs data etc).",
 	};
 	local text = "";
 	--Seperator lines couldn't be used because the wow client won't render 1 pixel frames if they are in certain posotions.
@@ -5299,7 +5638,7 @@ function NRC:getRaidCooldownAntiMagicShield(info)
 	return self.config.raidCooldownAntiMagicShield;
 end
 
-function NRC:setRaidCooldownVampiricBlood(info, value)
+function NRC:setRaidCooldownUnholyFrenzy(info, value)
 	self.config.raidCooldownUnholyFrenzy = value;
 	NRC:reloadRaidCooldowns();
 end
@@ -5336,7 +5675,7 @@ function NRC:getRaidCooldownInnervate(info)
 	return self.config.raidCooldownInnervate;
 end
 
-function NRC:setRaidCooldownSurvivalInstincts(info, value)
+function NRC:setRaidCooldownTranquility(info, value)
 	self.config.raidCooldownTranquility = value;
 	NRC:reloadRaidCooldowns();
 end
@@ -5352,6 +5691,24 @@ end
 
 function NRC:getRaidCooldownSurvivalInstincts(info)
 	return self.config.raidCooldownSurvivalInstincts;
+end
+
+function NRC:setRaidCooldownChallengingRoar(info, value)
+	self.config.raidCooldownChallengingRoar = value;
+	NRC:reloadRaidCooldowns();
+end
+
+function NRC:getRaidCooldownChallengingRoar(info)
+	return self.config.raidCooldownChallengingRoar;
+end
+
+function NRC:setRaidCooldownStarfall(info, value)
+	self.config.raidCooldownStarfall = value;
+	NRC:reloadRaidCooldowns();
+end
+
+function NRC:getRaidCooldownStarfall(info)
+	return self.config.raidCooldownStarfall;
 end
 
 --Hunter raid cooldowns.
@@ -5619,6 +5976,15 @@ end
 
 function NRC:getRaidCooldownEarthElemental(info)
 	return self.config.raidCooldownEarthElemental;
+end
+
+function NRC:setRaidCooldownFireElemental(info, value)
+	self.config.raidCooldownFireElemental = value;
+	NRC:reloadRaidCooldowns();
+end
+
+function NRC:getRaidCooldownFireElemental(info)
+	return self.config.raidCooldownFireElemental;
 end
 
 function NRC:setRaidCooldownReincarnation(info, value)
@@ -6124,6 +6490,24 @@ function NRC:getShowTrainset(info)
 	return self.config.showTrainset;
 end
 
+--Auto inv.
+function NRC:setAutoInv(info, value)
+	self.config.autoInv = value;
+end
+
+function NRC:getAutoInv(info)
+	return self.config.autoInv;
+end
+
+--Auto inv keyword.
+function NRC:setAutoInvKeyword(info, value)
+	self.config.autoInvKeyword = value;
+end
+
+function NRC:getAutoInvKeyword(info)
+	return self.config.autoInvKeyword;
+end
+
 --Colorize raid status groups.
 function NRC:setSortRaidStatusByGroupsColor(info, value)
 	self.config.sortRaidStatusByGroupsColor = value;
@@ -6281,6 +6665,33 @@ end
 
 function NRC:getLowAmmoCheckThreshold(info)
 	return self.config.lowAmmoCheckThreshold;
+end
+
+--Distracting Shot group msg.
+function NRC:setHunterDistractingShotGroup(info, value)
+	self.config.hunterDistractingShotGroup = value;
+end
+
+function NRC:getHunterDistractingShotGroup(info)
+	return self.config.hunterDistractingShotGroup;
+end
+
+--Distracting Shot say msg.
+function NRC:setHunterDistractingShotSay(info, value)
+	self.config.hunterDistractingShotSay = value;
+end
+
+function NRC:getHunterDistractingShotSay(info)
+	return self.config.hunterDistractingShotSay;
+end
+
+--Distracting Shot yell msg.
+function NRC:setHunterDistractingShotYell(info, value)
+	self.config.hunterDistractingShotYell = value;
+end
+
+function NRC:getHunterDistractingShotYell(info)
+	return self.config.hunterDistractingShotYell;
 end
 
 --SRE animaton speed.
@@ -6481,6 +6892,16 @@ end
 
 function NRC:getSreShowInterrupts(info)
 	return self.config.sreShowInterrupts;
+end
+
+--SRE show dispels.
+function NRC:setSreShowDispels(info, value)
+	self.config.sreShowDispels = value;
+	NRC:sreUpdateSettings();
+end
+
+function NRC:getSreShowDispels(info)
+	return self.config.sreShowDispels;
 end
 
 --SRE show cauldrons.
@@ -7226,4 +7647,157 @@ end
 
 function NRC:getTricksOnlyWhenDamage(info)
 	return self.config.tricksOnlyWhenDamage;
+end
+
+--Dispels creature casts.
+function NRC:setDispelsCreatures(info, value)
+	self.config.dispelsCreatures = value;
+end
+
+function NRC:getDispelsCreatures(info)
+	return self.config.dispelsCreatures;
+end
+
+--Dispels tranq shot only.
+function NRC:setDispelsTranqOnly(info, value)
+	self.config.dispelsTranqOnly = value;
+end
+
+function NRC:getDispelsTranqOnly(info)
+	return self.config.dispelsTranqOnly;
+end
+
+--Dispels friendly players casts.
+function NRC:setDispelsFriendlyPlayers(info, value)
+	self.config.dispelsFriendlyPlayers = value;
+end
+
+function NRC:getDispelsFriendlyPlayers(info)
+	return self.config.dispelsFriendlyPlayers;
+end
+
+--Dispels enemy players casts.
+function NRC:setDispelsEnemyPlayers(info, value)
+	self.config.dispelsEnemyPlayers = value;
+end
+
+function NRC:getDispelsEnemyPlayers(info)
+	return self.config.dispelsEnemyPlayers;
+end
+
+--Dispels mine group.
+function NRC:setDispelsMyCastGroup(info, value)
+	self.config.dispelsMyCastGroup = value;
+end
+
+function NRC:getDispelsMyCastGroup(info)
+	return self.config.dispelsMyCastGroup;
+end
+
+--Dispels mine say.
+function NRC:setDispelsMyCastPrint(info, value)
+	self.config.dispelsMyCastPrint = value;
+end
+
+function NRC:getDispelsMyCastPrint(info)
+	return self.config.dispelsMyCastPrint;
+end
+
+--Dispels mine print.
+function NRC:setDispelsMyCastSay(info, value)
+	self.config.dispelsMyCastSay = value;
+end
+
+function NRC:getDispelsMyCastSay(info)
+	return self.config.dispelsMyCastSay;
+end
+
+--Dispels mine in raids/dungeons.
+function NRC:setDispelsMyCastRaid(info, value)
+	self.config.dispelsMyCastRaid = value;
+end
+
+function NRC:getDispelsMyCastRaid(info)
+	return self.config.dispelsMyCastRaid;
+end
+
+--Dispels mine in My.
+function NRC:setDispelsMyCastWorld(info, value)
+	self.config.dispelsMyCastWorld = value;
+end
+
+function NRC:getDispelsMyCastWorld(info)
+	return self.config.dispelsMyCastWorld;
+end
+
+--Dispels mine pvp.
+function NRC:setDispelsMyCastPvp(info, value)
+	self.config.dispelsMyCastPvp = value;
+end
+
+function NRC:getDispelsMyCastPvp(info)
+	return self.config.dispelsMyCastPvp;
+end
+
+--Dispels others group.
+function NRC:setDispelsOtherCastGroup(info, value)
+	self.config.dispelsOtherCastGroup = value;
+end
+
+function NRC:getDispelsOtherCastGroup(info)
+	return self.config.dispelsOtherCastGroup;
+end
+
+--Dispels others say.
+function NRC:setDispelsOtherCastPrint(info, value)
+	self.config.dispelsOtherCastPrint = value;
+end
+
+function NRC:getDispelsOtherCastPrint(info)
+	return self.config.dispelsOtherCastPrint;
+end
+
+--Dispels others print.
+function NRC:setDispelsOtherCastSay(info, value)
+	self.config.dispelsOtherCastSay = value;
+end
+
+function NRC:getDispelsOtherCastSay(info)
+	return self.config.dispelsOtherCastSay;
+end
+
+--Dispels others in raids/dungeons.
+function NRC:setDispelsOtherCastRaid(info, value)
+	self.config.dispelsOtherCastRaid = value;
+end
+
+function NRC:getDispelsOtherCastRaid(info)
+	return self.config.dispelsOtherCastRaid;
+end
+
+--Dispels others in world.
+function NRC:setDispelsOtherCastWorld(info, value)
+	self.config.dispelsOtherCastWorld = value;
+end
+
+function NRC:getDispelsOtherCastWorld(info)
+	return self.config.dispelsOtherCastWorld;
+end
+
+--Dispels others pvp.
+function NRC:setDispelsOtherCastPvp(info, value)
+	self.config.dispelsOtherCastPvp = value;
+end
+
+function NRC:getDispelsOtherCastPvp(info)
+	return self.config.dispelsOtherCastPvp;
+end
+
+--Dispels include players.
+function NRC:setDispelsIncludePlayers(info, value)
+	self.config.dispelsIncludePlayers = value;
+end
+
+function NRC:getDispelsIncludePlayers(info)
+	return self.config.dispelsIncludePlayers;
 end

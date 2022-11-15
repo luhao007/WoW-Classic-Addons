@@ -858,7 +858,7 @@ function NRC:isMe(who)
 	if (who == UnitGUID("player")) then
 		return true;
 	end
-	local nameOnly = strsplit(who, "-");
+	local nameOnly = strsplit("-", who);
 	if (who == UnitName("player") or who == nameOnly) then
 		return true;
 	end
@@ -932,4 +932,29 @@ function NRC:sendGroup(msg, delay)
 			SendChatMessage(msg, "PARTY");
 		end
 	end
+end
+
+function NRC:addDiffcultyText(name, difficultyName, difficultyID, extraSpace, color)
+	--Check name first, if no name then there's an ID before the version we started recording names.
+	--If we only have ID it won't be localized.
+	if (not extraSpace) then
+		extraSpace = "";
+	end
+	if (not color) then
+		color = "|cFFFFAE42";
+	end
+	if (difficultyName) then
+		name = name .. " " .. extraSpace .. color .. "(" .. difficultyName .. ")|r";
+	--[[elseif (difficultyID) then
+		if (difficultyID == 1) then
+			name = name .. "  |cFFFF6900(Normal)|r";
+		elseif (difficultyID == 2) then
+			name = name .. "  |cFFFF6900(Heroic)|r";
+		elseif (difficultyID == 3) then
+			name = name .. "  |cFFFF6900(10 Player)|r";
+		elseif (difficultyID == 4) then
+			name = name .. "  |cFFFF6900(25 Player)|r";
+		end]]
+	end
+	return name;
 end

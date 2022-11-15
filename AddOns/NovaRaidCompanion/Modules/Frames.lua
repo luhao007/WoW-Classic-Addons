@@ -1444,8 +1444,12 @@ function NRC:createMainFrame(name, width, height, x, y, tabs)
 	frame.titleText2.texture:SetTexCoord(0, 0.76171875, 0.06, 0.60625); --I crop out the top and bottom a little so it has sharper edges.
 	frame.titleText2.fs = frame.titleText2:CreateFontString("$parentFS", "MEDIUM");
 	frame.titleText2.fs:SetPoint("LEFT", 0, 0);
-	frame.titleText2.fs:SetFontObject(QuestFont_Super_Huge);
+	frame.titleText2.fs:SetFontObject(QuestFont_Huge);
+	frame.titleText2.fs:SetTextColor(1, 0.82, 0);
 	frame.titleText2.fs:SetJustifyH("LEFT");
+	frame.titleText3 = frame:CreateFontString("$parentFS", "MEDIUM");
+	frame.titleText3:SetPoint("TOP", 0, -30);
+	frame.titleText3:SetFontObject(QuestFont_Super_Huge);
 	--Back button.
 	frame.backButton = CreateFrame("Button", "$parentBackButton", frame, "UIPanelButtonTemplate");
 	frame.backButton:SetPoint("TOPLEFT", 55.5, -0.5);
@@ -2019,6 +2023,7 @@ function NRC:createMainFrame(name, width, height, x, y, tabs)
 		obj.borderFrame:Show();
 		obj:updateTooltip();
 		obj:SetScript("OnClick", nil);
+		frame.updateSimpleLineFrameHyperlinkHandling(obj);
 		return obj;
 	end
 	frame.createSimpleLineFrame = function(count, data)
@@ -2071,8 +2076,109 @@ function NRC:createMainFrame(name, width, height, x, y, tabs)
 			obj.fs2:SetWordWrap(false);
 			obj:EnableMouse(true);
 			obj:SetHyperlinksEnabled(true);
-			--obj:SetScript("OnHyperlinkClick", ChatFrame_OnHyperlinkShow);
-			--obj:SetScript("OnHyperlinkClick", function(self, link, text, button)
+			obj.tooltip = CreateFrame("Frame", name .. "LineTooltip" .. count, frame, "TooltipBorderedFrameTemplate");
+			obj.tooltip:SetPoint("CENTER", obj, "CENTER", 0, -46);
+			obj.tooltip:SetFrameStrata("MEDIUM");
+			obj.tooltip:SetFrameLevel(4);
+			--Change the alpha.
+			obj.tooltip.NineSlice:SetCenterColor(0, 0, 0, 1);
+			obj.tooltip.fs = obj.tooltip:CreateFontString(name .. "LineTooltipFS" .. count, "ARTWORK");
+			obj.tooltip.fs:SetPoint("CENTER", 0, 0);
+			obj.tooltip.fs:SetFont(NRC.regionFont, 13);
+			obj.tooltip.fs:SetJustifyH("LEFT");
+			obj.updateTooltip = function(text)
+				if (text) then
+					obj.tooltip.fs:SetText(text);
+					obj.tooltip:SetWidth(obj.tooltip.fs:GetStringWidth() + 18);
+					obj.tooltip:SetHeight(obj.tooltip.fs:GetStringHeight() + 12);
+				else
+					obj.tooltip.fs:SetText("");
+					obj.tooltip:SetWidth(0);
+					obj.tooltip:SetHeight(0);
+				end
+			end
+			obj.tooltip:SetScript("OnUpdate", function(self)
+				--Keep our custom tooltip at the mouse when it moves.
+				if (obj.tooltip.fs:GetText() ~= "" and obj.tooltip.fs:GetText() ~= nil) then
+					local scale, x, y = obj.tooltip:GetEffectiveScale(), GetCursorPosition();
+					obj.tooltip:SetPoint("RIGHT", nil, "BOTTOMLEFT", (x / scale) - 20, (y / scale) + 20);
+				end
+			end)
+			obj:SetScript("OnEnter", function(self)
+				if (obj.tooltip.fs:GetText() ~= "" and obj.tooltip.fs:GetText() ~= nil) then
+					obj.tooltip:Show();
+					local scale, x, y = obj.tooltip:GetEffectiveScale(), GetCursorPosition();
+					obj.tooltip:SetPoint("CENTER", nil, "BOTTOMLEFT", x / scale, y / scale);
+				end
+			end)
+			obj:SetScript("OnLeave", function(self)
+				obj.tooltip:Hide();
+			end)
+			frame.updateSimpleLineFrameHyperlinkHandling(obj);
+			obj.tooltip:Hide();
+			frame.simpleLineFrames[count] = obj;
+		end
+	end
+	frame.updateSimpleLineFrameHyperlinkHandling = function(obj)
+		--obj:SetScript("OnHyperlinkClick", ChatFrame_OnHyperlinkShow);
+		--obj:SetScript("OnHyperlinkClick", function(self, link, text, button)
+		if (frame.hyperLinkType == 2) then
+			obj:SetScript("OnHyperlinkClick", function(self, link, text, button, region, left, bottom, width, height)
+				if (button == "LeftButton") then
+					--Changed to OnEnter.
+				elseif (button == "RightButton") then
+					--Mimic behavior of the frame underneath the hyperlink for right click.
+					obj:GetScript("OnClick")(self, button);
+				end
+			end)
+			obj:SetScript("OnHyperlinkEnter", function(self, link, text, region, boundsLeft, boundsBottom, boundsWidth, boundsHeight)
+					local linkType, linkArg;
+					if (link) then
+						linkType, linkArg = strsplit(":", link);
+					end
+					if (linkType == "NRCItem") then
+						if (linkArg) then
+							local itemID = tonumber(linkArg);
+							if (itemID) then
+								GameTooltip:SetOwner(UIParent, "ANCHOR_NONE");
+								--GameTooltip_SetDefaultAnchor(GameTooltip, UIParent);
+								GameTooltip:SetItemByID(itemID);
+								--local scale, x, y = UIParent:GetEffectiveScale(), GetCursorPosition();
+								GameTooltip:Show();
+								GameTooltip:ClearAllPoints();
+								--GameTooltip:SetPoint("BOTTOMRIGHT", nil, "BOTTOMLEFT", (x / scale) - 5, y / scale + 14);
+								GameTooltip:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -3, -24);
+							end
+						end
+					elseif (linkType == "NRCSpell") then
+						if (linkArg) then
+							local spellID = tonumber(linkArg);
+							if (spellID) then
+								GameTooltip:SetOwner(UIParent, "ANCHOR_NONE");
+								--GameTooltip_SetDefaultAnchor(GameTooltip, UIParent);
+								GameTooltip:SetSpellByID(spellID);
+								--local scale, x, y = UIParent:GetEffectiveScale(), GetCursorPosition();
+								GameTooltip:Show();
+								GameTooltip:ClearAllPoints();
+								--GameTooltip:SetPoint("BOTTOMRIGHT", nil, "BOTTOMLEFT", (x / scale) - 5, y / scale + 14);
+								GameTooltip:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -3, -24);
+							end
+						end
+					else
+						ChatFrame_OnHyperlinkShow(self, link, text);
+						local scale, x, y = UIParent:GetEffectiveScale(), GetCursorPosition();
+						ItemRefTooltip:ClearAllPoints();
+						--ItemRefTooltip:SetPoint("BOTTOMRIGHT", nil, "BOTTOMLEFT", (x / scale) - 5, y / scale + 14);
+						ItemRefTooltip:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -3, -24);
+					end
+			end)
+			obj:SetScript("OnHyperlinkLeave", function(self, link, text, button)
+				GameTooltip:Hide();
+				ItemRefTooltip:Hide();
+			end)
+		else
+			obj:SetScript("OnHyperlinkEnter", function() end);
+			obj:SetScript("OnHyperlinkLeave", function() end);
 			obj:SetScript("OnHyperlinkClick", function(self, link, text, button, region, left, bottom, width, height)
 				if (button == "LeftButton") then
 					local linkType, linkArg;
@@ -2116,49 +2222,17 @@ function NRC:createMainFrame(name, width, height, x, y, tabs)
 					obj:GetScript("OnClick")(self, button);
 				end
 			end)
-			--obj:SetScript("OnHyperlinkLeave", function(self, link, text, button)
-			--	GameTooltip:Hide();
-			--end)
-			obj.tooltip = CreateFrame("Frame", name .. "LineTooltip" .. count, frame, "TooltipBorderedFrameTemplate");
-			obj.tooltip:SetPoint("CENTER", obj, "CENTER", 0, -46);
-			obj.tooltip:SetFrameStrata("MEDIUM");
-			obj.tooltip:SetFrameLevel(4);
-			--Change the alpha.
-			obj.tooltip.NineSlice:SetCenterColor(0, 0, 0, 1);
-			obj.tooltip.fs = obj.tooltip:CreateFontString(name .. "LineTooltipFS" .. count, "ARTWORK");
-			obj.tooltip.fs:SetPoint("CENTER", 0, 0);
-			obj.tooltip.fs:SetFont(NRC.regionFont, 13);
-			obj.tooltip.fs:SetJustifyH("LEFT");
-			obj.updateTooltip = function(text)
-				if (text) then
-					obj.tooltip.fs:SetText(text);
-					obj.tooltip:SetWidth(obj.tooltip.fs:GetStringWidth() + 18);
-					obj.tooltip:SetHeight(obj.tooltip.fs:GetStringHeight() + 12);
-				else
-					obj.tooltip.fs:SetText("");
-					obj.tooltip:SetWidth(0);
-					obj.tooltip:SetHeight(0);
-				end
-			end
-			obj.tooltip:SetScript("OnUpdate", function(self)
-				--Keep our custom tooltip at the mouse when it moves.
-				if (obj.tooltip.fs:GetText() ~= "" and obj.tooltip.fs:GetText() ~= nil) then
-					local scale, x, y = obj.tooltip:GetEffectiveScale(), GetCursorPosition();
-					obj.tooltip:SetPoint("RIGHT", nil, "BOTTOMLEFT", (x / scale) - 20, (y / scale) + 20);
-				end
-			end)
-			obj:SetScript("OnEnter", function(self)
-				if (obj.tooltip.fs:GetText() ~= "" and obj.tooltip.fs:GetText() ~= nil) then
-					obj.tooltip:Show();
-					local scale, x, y = obj.tooltip:GetEffectiveScale(), GetCursorPosition();
-					obj.tooltip:SetPoint("CENTER", nil, "BOTTOMLEFT", x / scale, y / scale);
-				end
-			end)
-			obj:SetScript("OnLeave", function(self)
-				obj.tooltip:Hide();
-			end)
-			obj.tooltip:Hide();
-			frame.simpleLineFrames[count] = obj;
+		end
+	end
+	frame.hyperLinkType = 1;
+	frame.updateAllSimpleLineFramesHyperlinkHandling = function(type)
+		--Only update if it's not already that type.
+		if (frame.hyperLinkType == type) then
+			return;
+		end
+		frame.hyperLinkType = type;
+		for k, v in pairs(frame.simpleLineFrames) do
+			frame.updateSimpleLineFrameHyperlinkHandling(v);
 		end
 	end
 	frame.hideAllSimpleLineFrames = function()
@@ -2659,6 +2733,63 @@ function NRC:createTalentFrame(name, width, height, x, y, borderSpacing)
 			end
 		end
 	end
+	frame.glyphs = CreateFrame("Frame", frame:GetName() .. "Glyphs", frame, "TooltipBorderedFrameTemplate");
+	frame.glyphs:SetHyperlinksEnabled(true);
+	frame.glyphs:SetScript("OnHyperlinkEnter", ChatFrame_OnHyperlinkShow);
+	frame.glyphs:SetScript("OnHyperlinkLeave", function(self, link, text, button)
+		--GameTooltip:Hide();
+		ItemRefTooltip:Hide();
+	end)
+	frame.glyphs:SetPoint("TOPLEFT", frame, "TOPRIGHT", 1, 2);
+	frame.glyphs.fsTitle = frame.glyphs:CreateFontString("$parentFSTitle", "ARTWORK");
+	frame.glyphs.fsTitle:SetPoint("TOP", 0, -5);
+	frame.glyphs.fsTitle:SetFontObject(Game15Font);
+	frame.glyphs.fsTitle:SetText("|cFFFF6900Glyphs");
+	frame.glyphs.fsMajor = frame.glyphs:CreateFontString("$parentMajor", "ARTWORK");
+	frame.glyphs.fsMajor:SetPoint("TOPLEFT", 10, -30);
+	frame.glyphs.fsMajor:SetFontObject(NRC_Game14Font);
+	frame.glyphs.fsMajor:SetJustifyH("LEFT");
+	frame.glyphs.fsMajor:SetText("|cFFFFFF00Major:");
+	frame.glyphs.fs1 = frame.glyphs:CreateFontString("$parentFS1", "ARTWORK");
+	frame.glyphs.fs1:SetPoint("TOPLEFT", 10, -48);
+	frame.glyphs.fs1:SetFontObject(Game13Font);
+	frame.glyphs.fs1:SetJustifyH("LEFT");
+	frame.glyphs.fs2 = frame.glyphs:CreateFontString("$parentFS2", "ARTWORK");
+	frame.glyphs.fs2:SetPoint("TOPLEFT", 10, -66);
+	frame.glyphs.fs2:SetFontObject(Game13Font);
+	frame.glyphs.fs2:SetJustifyH("LEFT");
+	frame.glyphs.fs3 = frame.glyphs:CreateFontString("$parentFS3", "ARTWORK");
+	frame.glyphs.fs3:SetPoint("TOPLEFT", 10, -84);
+	frame.glyphs.fs3:SetFontObject(Game13Font);
+	frame.glyphs.fs3:SetJustifyH("LEFT");
+	frame.glyphs.fsMinor = frame.glyphs:CreateFontString("$parentMinor", "ARTWORK");
+	frame.glyphs.fsMinor:SetPoint("TOPLEFT", 10, -110);
+	frame.glyphs.fsMinor:SetFontObject(NRC_Game14Font);
+	frame.glyphs.fsMinor:SetJustifyH("LEFT");
+	frame.glyphs.fsMinor:SetText("|cFFFFFF00Minor:");
+	frame.glyphs.fs4 = frame.glyphs:CreateFontString("$parentFS4", "ARTWORK");
+	frame.glyphs.fs4:SetPoint("TOPLEFT", 10, -128);
+	frame.glyphs.fs4:SetFontObject(Game13Font);
+	frame.glyphs.fs4:SetJustifyH("LEFT");
+	frame.glyphs.fs5 = frame.glyphs:CreateFontString("$parentFS5", "ARTWORK");
+	frame.glyphs.fs5:SetPoint("TOPLEFT", 10, -146);
+	frame.glyphs.fs5:SetFontObject(Game13Font);
+	frame.glyphs.fs5:SetJustifyH("LEFT");
+	frame.glyphs.fs6 = frame.glyphs:CreateFontString("$parentFS6", "ARTWORK");
+	frame.glyphs.fs6:SetPoint("TOPLEFT", 10, -164);
+	frame.glyphs.fs6:SetFontObject(Game13Font);
+	frame.glyphs.fs6:SetJustifyH("LEFT");
+	--[[frame.glyphs.updateGlyphs = function(text)
+		if (not text or text == "") then
+			frame.glyphs:Hide();
+		else
+			frame.glyphs.fs2:SetText(text);
+			frame.glyphs:SetSize(frame.glyphs.fs2:GetWrappedWidth() + 20, (frame.glyphs.fsMajor:GetHeight() * 2) + (frame.glyphs.fs1:GetHeight() * 6) + 34);
+			frame.glyphs:Show();
+		end
+	end]]
+	frame.glyphs:SetScale(0.9);
+	frame.glyphs:Hide();
 	frame:Hide();
 	return frame;
 end
@@ -3827,7 +3958,7 @@ function NRC:createExportFrame(name, width, height, x, y, notSpecialFrames)
 	--Click button to be used for whatever, set onclick in the frame data func.
 	frame.topFrame.button = CreateFrame("Button", "$parentButton", frame.topFrame, "UIPanelButtonTemplate");
 	frame.topFrame.button:SetFrameLevel(15);
-	frame.topFrame.button:SetPoint("TOPRIGHT", frame.topFrame, "TOPRIGHT", -34, -42);
+	frame.topFrame.button:SetPoint("TOPRIGHT", frame.topFrame, "TOPRIGHT", -34, -55);
 	frame.topFrame.button:SetWidth(200);
 	frame.topFrame.button:SetHeight(22);
 	frame.topFrame.button:Hide();
@@ -3893,7 +4024,7 @@ function NRC:createExportFrame(name, width, height, x, y, notSpecialFrames)
 		frame["checkbox" .. i] = checkbox;
 	end
 	
-	for i = 1, 1 do
+	for i = 1, 2 do
 		local dropdownMenu = NRC.DDM:Create_UIDropDownMenu("$parentDropdownMenu" .. i, frame.topFrame);
 		dropdownMenu.tooltip = CreateFrame("Frame", "$parentDropdownMenuTooltip", dropdownMenu, "TooltipBorderedFrameTemplate");
 		dropdownMenu.tooltip:SetFrameStrata("TOOLTIP");
@@ -3910,7 +4041,210 @@ function NRC:createExportFrame(name, width, height, x, y, notSpecialFrames)
 		end)
 		--NRC.DDM:UIDropDownMenu_SetWidth(dropdownMenu, 100);
 		dropdownMenu.tooltip:Hide();
+		dropdownMenu:Hide();
 		frame["dropdownMenu" .. i] = dropdownMenu;
+	end
+	
+	frame:SetClampedToScreen(true);
+	frame.topFrame:SetClampedToScreen(true);
+	
+	--Top right X close button.
+	frame.close = CreateFrame("Button", name .. "Close", frame.topFrame, "UIPanelCloseButton");
+	frame.close:SetPoint("TOPRIGHT", -3, -3);
+	frame.close:SetWidth(20);
+	frame.close:SetHeight(20);
+	frame.close:SetFrameLevel(5);
+	frame.close:SetScript("OnClick", function(self, arg)
+		frame:Hide();
+	end)
+	frame.close:GetNormalTexture():SetTexCoord(0.1875, 0.8125, 0.1875, 0.8125);
+	frame.close:GetHighlightTexture():SetTexCoord(0.1875, 0.8125, 0.1875, 0.8125);
+	frame.close:GetPushedTexture():SetTexCoord(0.1875, 0.8125, 0.1875, 0.8125);
+	frame.close:GetDisabledTexture():SetTexCoord(0.1875, 0.8125, 0.1875, 0.8125);
+	
+	frame:Hide();
+	return frame;
+end
+
+function NRC:createTradeExportFrame(name, width, height, x, y, notSpecialFrames)
+	local frame = CreateFrame("ScrollFrame", name, UIParent, "BackdropTemplate,InputScrollFrameTemplate");
+	--_G[name .. "Close"]:Hide();
+	frame:SetBackdrop({
+		bgFile = "Interface\\Buttons\\WHITE8x8",
+		insets = {top = 0, left = 0, bottom = 0, right = 0},
+		--edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+		--tileEdge = true,
+		--edgeSize = 16,
+	});
+	frame:SetBackdropColor(0, 0, 0, 0.9);
+	--frame:SetBackdropBorderColor(1, 1, 1, 0.7);
+	frame.CharCount:Hide();
+	frame.EditBox:SetFont(NRC.regionFont, 14);
+	frame:SetToplevel(true);
+	frame:SetMovable(true);
+	frame:EnableMouse(true);
+	frame:SetFrameLevel(5);
+	if (not notSpecialFrames) then
+		tinsert(UISpecialFrames, frame);
+	end
+	frame:SetPoint("CENTER", UIParent, x, y);
+	frame:SetSize(width, height);
+	frame:SetFrameStrata("HIGH");
+	frame.EditBox:SetWidth(width - 15);
+	
+	frame.topFrame = CreateFrame("Frame", "$parentTopFrame", frame, "BackdropTemplate");
+	frame.topFrame:SetBackdrop({
+		bgFile = "Interface\\Buttons\\WHITE8x8",
+		insets = {top = 2, left = 2, bottom = 18, right = 2},
+		edgeFile = "Interface\\Addons\\NovaRaidCompanion\\Media\\UI-Tooltip-Border-NoBottom",
+		tileEdge = true,
+		edgeSize = 16,
+	});
+	frame.topFrame:SetBackdropColor(0, 0, 0, 0.9);
+	frame.topFrame:SetBackdropBorderColor(1, 1, 1, 0.7);
+	frame.topFrame:SetToplevel(true);
+	frame.topFrame:EnableMouse(true);
+	frame.topFrame:SetWidth(width + 12);
+	frame.topFrame:SetHeight(128);
+	frame.topFrame:SetPoint("BOTTOM", frame, "TOP", 0, -13);
+	frame.topFrame:SetFrameLevel(4);
+	frame.topFrame.fs = frame.topFrame:CreateFontString("$parentFS", "HIGH");
+	frame.topFrame.fs:SetPoint("TOP", -10, -4);
+	--frame.topFrame.fs:SetFont(NRC.regionFont, 15);
+	frame.topFrame.fs:SetFontObject(NRC_Game14Font);
+	frame.topFrame.fs2 = frame.topFrame:CreateFontString("$parentFS2", "HIGH");
+	frame.topFrame.fs2:SetPoint("TOP", 0, -40);
+	frame.topFrame.fs2:SetFontObject(QuestFont_Huge);
+	--Click button to be used for whatever, set onclick in the frame data func.
+	frame.topFrame.button = CreateFrame("Button", "$parentButton", frame.topFrame, "UIPanelButtonTemplate");
+	frame.topFrame.button:SetFrameLevel(15);
+	frame.topFrame.button:SetPoint("TOPRIGHT", frame.topFrame, "TOPRIGHT", -34, -55);
+	frame.topFrame.button:SetWidth(200);
+	frame.topFrame.button:SetHeight(22);
+	frame.topFrame.button:Hide();
+	frame.topFrame:SetScript("OnMouseDown", function(self, button)
+		if (button == "LeftButton" and not frame.isMoving) then
+			--frame.EditBox:ClearFocus();
+			frame:StartMoving();
+			frame.isMoving = true;
+			--frame:SetUserPlaced(false);
+		end
+	end)
+	frame.topFrame:SetScript("OnMouseUp", function(self, button)
+		if (button == "LeftButton" and frame.isMoving) then
+			frame:StopMovingOrSizing();
+			frame.isMoving = false;
+			frame:SetUserPlaced(false);
+			NRC.db.global[frame:GetName() .. "_point"], _, NRC.db.global[frame:GetName() .. "_relativePoint"], 
+					NRC.db.global[frame:GetName() .. "_x"], NRC.db.global[frame:GetName() .. "_y"] = frame:GetPoint();
+		end
+	end)
+	frame.topFrame:SetScript("OnHide", function(self)
+		if (frame.isMoving) then
+			frame:StopMovingOrSizing();
+			frame.isMoving = false;
+		end
+	end)
+	if (NRC.db.global[frame:GetName() .. "_point"]) then
+		frame.ignoreFramePositionManager = true;
+		frame:ClearAllPoints();
+		frame:SetPoint(NRC.db.global[frame:GetName() .. "_point"], nil, NRC.db.global[frame:GetName() .. "_relativePoint"],
+				NRC.db.global[frame:GetName() .. "_x"], NRC.db.global[frame:GetName() .. "_y"]);
+		frame:SetUserPlaced(false);
+	end
+	
+	for i = 1, 6 do
+		local checkbox = CreateFrame("CheckButton", "$parentCheckbox" .. i, frame.topFrame, "ChatConfigCheckButtonTemplate");
+		checkbox.Text:SetFont(NRC.regionFont, 13);
+		checkbox.Text:SetPoint("LEFT", checkbox, "RIGHT", 0, 0);
+		checkbox:SetWidth(23);
+		checkbox:SetHeight(23);
+		checkbox:SetHitRectInsets(0, 0, -10, 7);
+		--Create a more compact tooltip, must be named tooltip2 because tooltip gets overwritten by the frame.
+		checkbox.tooltip2 = CreateFrame("Frame", "$parentCheckboxTooltip", frame.checkbox, "TooltipBorderedFrameTemplate");
+		checkbox.tooltip2:SetFrameStrata("TOOLTIP");
+		checkbox.tooltip2:SetFrameLevel(9);
+		checkbox.tooltip2:SetPoint("RIGHT", frame.checkbox, "LEFT", -2, 0);
+		checkbox.tooltip2.fs = checkbox.tooltip2:CreateFontString("$parentCheckboxTooltipFS", "ARTWORK");
+		checkbox.tooltip2.fs:SetPoint("CENTER", 0, 0);
+		checkbox.tooltip2.fs:SetFont(NRC.regionFont, 12);
+		checkbox.tooltip2:Hide();
+		checkbox:SetScript("OnEnter", function(self)
+			if (checkbox.tooltip2.fs:GetText() and checkbox.tooltip2.fs:GetText() ~= "") then
+				checkbox.tooltip2:SetWidth(checkbox.tooltip2.fs:GetStringWidth() + 18);
+				checkbox.tooltip2:SetHeight(checkbox.tooltip2.fs:GetStringHeight() + 12);
+				checkbox.tooltip2:Show();
+			end
+		end)
+		checkbox:SetScript("OnLeave", function(self)
+			checkbox.tooltip2:Hide();
+		end)
+		--checkbox.scrollChild.checkbox:SetFrameLevel(6); --One level above the dropdown menu so they can be close together.
+		checkbox:Hide();
+		frame["checkbox" .. i] = checkbox;
+	end
+	
+	for i = 1, 2 do
+		local dropdownMenu = NRC.DDM:Create_UIDropDownMenu("$parentDropdownMenu" .. i, frame.topFrame);
+		dropdownMenu.tooltip = CreateFrame("Frame", "$parentDropdownMenuTooltip", dropdownMenu, "TooltipBorderedFrameTemplate");
+		dropdownMenu.tooltip:SetFrameStrata("TOOLTIP");
+		dropdownMenu.tooltip:SetFrameLevel(9);
+		dropdownMenu.tooltip:SetPoint("RIGHT", dropdownMenu, "LEFT", 0, 0);
+		dropdownMenu.tooltip.fs = dropdownMenu.tooltip:CreateFontString("$parentDropdownMenuTooltipFS", "ARTWORK");
+		dropdownMenu.tooltip.fs:SetPoint("CENTER", 0, 0);
+		dropdownMenu.tooltip.fs:SetFont(NRC.regionFont, 12);
+		dropdownMenu:HookScript("OnEnter", function(self)
+			dropdownMenu.tooltip:Show();
+		end)
+		dropdownMenu:HookScript("OnLeave", function(self)
+			dropdownMenu.tooltip:Hide();
+		end)
+		--NRC.DDM:UIDropDownMenu_SetWidth(dropdownMenu, 100);
+		dropdownMenu.tooltip:Hide();
+		dropdownMenu:Hide();
+		frame["dropdownMenu" .. i] = dropdownMenu;
+	end
+	
+	for i = 1, 2 do
+		local slider = CreateFrame("Slider", "$parentSlider" .. i, frame.topFrame, "OptionsSliderTemplate");
+		--slider:SetFrameStrata("HIGH");
+		slider:SetFrameLevel(5);
+		slider:SetWidth(224);
+		slider:SetHeight(16);
+		--slider:SetMinMaxValues(1, 100);
+	    slider:SetObeyStepOnDrag(true);
+	    slider:SetValueStep(1);
+	    slider:SetStepsPerPage(1);
+		local function EditBox_OnEscapePressed(frame)
+			frame:ClearFocus();
+		end
+		local function EditBox_OnEnter(frame)
+			frame:SetBackdropBorderColor(0.5, 0.5, 0.5, 1);
+		end
+		local function EditBox_OnLeave(frame)
+			frame:SetBackdropBorderColor(0.3, 0.3, 0.3, 0.8);
+		end
+		local ManualBackdrop = {
+			bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
+			edgeFile = "Interface\\ChatFrame\\ChatFrameBackground",
+			tile = true, edgeSize = 1, tileSize = 5,
+		};
+		slider.editBox = CreateFrame("EditBox", nil, slider, "BackdropTemplate");
+		slider.editBox:SetAutoFocus(false);
+		slider.editBox:SetFontObject(GameFontHighlightSmall);
+		slider.editBox:SetPoint("TOP", slider, "BOTTOM");
+		slider.editBox:SetHeight(14);
+		slider.editBox:SetWidth(70);
+		slider.editBox:SetJustifyH("CENTER");
+		slider.editBox:EnableMouse(true);
+		slider.editBox:SetBackdrop(ManualBackdrop);
+		slider.editBox:SetBackdropColor(0, 0, 0, 0.5);
+		slider.editBox:SetBackdropBorderColor(0.3, 0.3, 0.30, 0.80);
+		slider.editBox:SetScript("OnEnter", EditBox_OnEnter);
+		slider.editBox:SetScript("OnLeave", EditBox_OnLeave);
+		--slider.editBox:SetScript("OnEnterPressed", EditBox_OnEnterPressed); --Set during init.
+		slider.editBox:SetScript("OnEscapePressed", EditBox_OnEscapePressed);
+		frame["slider" .. i] = slider;
 	end
 	
 	frame:SetClampedToScreen(true);

@@ -253,7 +253,7 @@ function NRC:sreSendEvent(text, icon, name, isNpc, isInterrupt)
 		local send;
 		local instance, instanceType = IsInInstance();
 		if (isInterrupt) then
-			--if interrupt then send no matter the source.
+			--If interrupt or dispel then send no matter the source.
 			send = true;
 		elseif (isNpc) then
 			if (NRC.config.sreNpcsRaidOnly) then
@@ -424,6 +424,35 @@ function NRC:sreInterruptEvent(spellID, spellName, destSpellName, icon, destIcon
 		text = text .. name .. " Interrupt-> " .. targetIconString .. " ".. destName;
 	else
 		text = text .. name .. " Interrupt-> " .. destName;
+	end
+	--if (NRC.config.sreShowSpellName) then
+	--	text = text .. " (" .. L["Interrupt"] .. ")";
+	--end
+	NRC:sreSendEvent(text, nil, name, nil, true);
+end
+
+function NRC:sreDispelEvent(spellID, spellName, destSpellName, icon, destIcon, sourceName, sourceClass, destName, destClass, isSourceNpc, isDestNpc)
+	local name;
+	if (isSourceNpc) then
+		name = "|cFFFFAE42" .. sourceName .. "|r";
+	else
+		local _, _, _, classHex = GetClassColor(sourceClass);
+		name = "|c" .. classHex .. sourceName .. "|r";
+	end
+	if (destName) then
+		if (isDestNpc) then
+			destName = "|cFFFFAE42" .. destName .. "|r";
+		else
+			local _, _, _, classHex = GetClassColor(destClass);
+			destName = "|c" .. classHex .. destName .. "|r";
+		end
+	end
+	local text = "|T" .. icon .. ":" .. lineFrameHeight .. ":" .. lineFrameHeight .. "|t";
+	if (destIcon) then
+		local targetIconString = "|T" .. destIcon .. ":" .. lineFrameHeight .. ":" .. lineFrameHeight .. "|t";
+		text = text .. name .. " Dispel-> " .. targetIconString .. " ".. destName;
+	else
+		text = text .. name .. " Dispel-> " .. destName;
 	end
 	--if (NRC.config.sreShowSpellName) then
 	--	text = text .. " (" .. L["Interrupt"] .. ")";
@@ -615,7 +644,7 @@ local function combatLogEventUnfiltered(...)
 				local destSpellID, destSpellName = select(15, ...);
 				local _, _, icon = GetSpellInfo(spellID);
 				local _, _, destIcon = GetSpellInfo(destSpellID);
-				NRC:sreInterruptEvent(spellID, spellName, destSpellName, icon, destIcon, sourceName, sourceClass, destName, destClass, isSourceNpc, isDestNpc)
+				NRC:sreInterruptEvent(spellID, spellName, destSpellName, icon, destIcon, sourceName, sourceClass, destName, destClass, isSourceNpc, isDestNpc);
 			end
 		elseif (subEvent == "SPELL_CAST_FAILED") then
 			if (resSpellsCache[spellID]) then

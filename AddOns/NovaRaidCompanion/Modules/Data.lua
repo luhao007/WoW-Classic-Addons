@@ -13,6 +13,10 @@ function NRC:OnCommReceived(commPrefix, string, distribution, sender)
 		NRC:OnHelperCommReceived(commPrefix, string, distribution, sender);
 		return;
 	end
+	if (distribution == "WHISPER") then
+		NRC:OnWhisperCommReceived(commPrefix, string, distribution, sender);
+		return;
+	end
 	--if (NRC.isDebug) then
 	--	return;
 	--end
@@ -93,6 +97,9 @@ function NRC:OnCommReceived(commPrefix, string, distribution, sender)
 	elseif (cmd == "tal") then
 		--Talents.
 		NRC:receivedTalents(data, sender, distribution);
+	elseif (cmd == "gly") then
+		--Glyphs.
+		NRC:receivedGlyphs(data, sender, distribution);
 	elseif (cmd == "rd") then
 		--Raid data, dura enchants resistances.
 		NRC:receivedRaidData(data, sender, distribution)
@@ -101,6 +108,48 @@ function NRC:OnCommReceived(commPrefix, string, distribution, sender)
 		NRC:sendRaidData();
 	end
 	NRC:versionCheck(remoteVersion, distribution, sender);
+end
+
+function NRC:OnWhisperCommReceived(commPrefix, string, distribution, sender)
+	local me = UnitName("player") .. "-" .. GetRealmName();
+	local meNormalized = UnitName("player") .. "-" .. GetNormalizedRealmName();
+	if (sender == UnitName("player") or sender == me or sender == meNormalized) then
+		NRC.hasAddon[meNormalized] = tostring(version);
+		return;
+	end
+	local _, realm = strsplit("-", sender, 2);
+	--If no realm in name it must be our realm so add it.
+	if (not strfind(sender, "-")) then
+		--Add normalized realm since roster checks use this.
+		sender = sender .. "-" .. GetNormalizedRealmName();
+	end
+	local decoded = NRC.libDeflate:DecodeForWoWAddonChannel(string);
+	if (not decoded) then
+		NRC:debug("decode error");
+		return;
+	end
+	local decompressed = NRC.libDeflate:DecompressDeflate(decoded);
+	if (not decompressed) then
+		NRC:debug("decompress error");
+		return;
+	end
+	local deserializeResult, deserialized = NRC.serializer:Deserialize(decompressed);
+	if (not deserializeResult) then
+		NRC:debug("deserialize error");
+		return;
+	end
+	local args = NRC:explode(" ", deserialized, 2);
+	local cmd = args[1]; --Cmd (first arg) so we know where to send the data.
+	local remoteVersion = args[2]; --Version number.
+	local data = args[3]; --Data.
+	if (tonumber(remoteVersion) < 1.22) then
+		return;
+	end
+	if (cmd == "glyrec") then
+		NRC:receivedGlyphs(data, sender, distribution, true);
+	elseif (cmd == "glyreq") then
+		NRC:sendGlyphs(sender)
+	end
 end
 
 function NRC:OnHelperCommReceived(commPrefix, string, distribution, sender)
@@ -150,6 +199,8 @@ function NRC:OnHelperCommReceived(commPrefix, string, distribution, sender)
 		NRC:receivedEnchants(data, sender, distribution);
 	elseif (cmd == "tal") then
 		NRC:receivedTalents(data, sender, distribution);
+	elseif (cmd == "gly") then
+		NRC:receivedGlyphs(data, sender, distribution);
 	elseif (cmd == "rd") then
 		NRC:receivedRaidData(data, sender, distribution);
 	end
@@ -360,7 +411,7 @@ function NRC:createData(distribution, includeSettings)
 	--Raid data such as weapon enchants, resistances, talents are included with group join.
 	local raidData = NRC:createRaidData();
 	if (raidData and next(raidData)) then
-		data.raidData = NRC:createRaidData();
+		data.raidData = raidData;
 	end
 	--Settings are included when we join a group.
 	if (includeSettings) then
@@ -563,7 +614,7 @@ function NRC:receivedString(cmd, dataReceived, sender, distribution)
 										charData.destClass = destClass;
 										local cooldownName, spellName, _, spellTableName = NRC:getCooldownFromSpellID(spellID);
 										--Strip realm from sender for realm check.
-										local name, realm = strsplit(sender, "-", 2);
+										local name, realm = strsplit("-", sender, 2);
 										if (realm ~= NRC.realm) then
 											--Talents are stored without realm name for people on same realm.
 											--If not same realm then add it.
@@ -810,6 +861,9 @@ f:RegisterEvent("GROUP_LEFT");
 f:RegisterEvent("UNIT_RESISTANCES");
 f:RegisterEvent("UNIT_INVENTORY_CHANGED");
 f:RegisterEvent("CHARACTER_POINTS_CHANGED");
+f:RegisterEvent("GLYPH_ADDED");
+f:RegisterEvent("GLYPH_UPDATED");
+f:RegisterEvent("GLYPH_REMOVED");
 if (not NRC.isTBC and not NRC.isClassic) then
 	f:RegisterEvent("PLAYER_TALENT_UPDATE");
 end
@@ -833,6 +887,7 @@ f:SetScript('OnEvent', function(self, event, ...)
 		NRC:checkMyRes(true);
 		NRC:checkMyEnchants(true);
 		NRC.checkMyTalents();
+		NRC.checkMyGlyphs();
 		local isLogon, isReload = ...;
 		if (isReload) then
 			--If reload then group join won't fire so send it here instead.
@@ -863,6 +918,8 @@ f:SetScript('OnEvent', function(self, event, ...)
 	elseif (event == "CHARACTER_POINTS_CHANGED" or event == "PLAYER_TALENT_UPDATE") then
 		myTalentsChanged = true;
 		NRC:throddleEventByFunc("CHARACTER_POINTS_CHANGED", 10, "sendTalents");
+	elseif (event == "GLYPH_ADDED" or event == "GLYPH_UPDATED" or event == "GLYPH_REMOVED") then
+		NRC:throddleEventByFunc("GLYPH_UPDATED", 5, "sendGlyphs");
 	end
 end)
 
@@ -1082,12 +1139,61 @@ function NRC:checkMyTalents()
 	end
 end
 
+function NRC:sendGlyphs(sender)
+	if (not IsInGroup() and not sender) then
+		return;
+	end
+	local glyphs = NRC:createGlyphString();
+	local me = UnitName("player");
+	NRC.glyphs[me] = glyphs;
+	NRC:debug("sending glyphs update");
+	local data = NRC.serializer:Serialize(glyphs);
+	if (sender) then
+		local name, realm = strsplit("-", sender, 2);
+		if (realm == NRC.realm) then
+			sender = name;
+		end
+		NRC:sendComm("WHISPER", "glyrec " .. NRC.version .. " " .. data, sender);
+	elseif (IsInRaid()) then
+		NRC:sendComm("RAID", "gly " .. NRC.version .. " " .. data);
+	elseif (IsInGroup()) then
+		NRC:sendComm("PARTY", "gly " .. NRC.version .. " " .. data);
+	end
+end
+
+function NRC:receivedGlyphs(data, sender, distribution, isWhisper)
+	local name, realm = strsplit("-", sender, 2);
+	if (realm == NRC.realm) then
+		sender = name;
+	end
+	NRC:debug("received glyphs update from", sender);
+	local deserializeResult, raidData = NRC.serializer:Deserialize(data);
+	if (not deserializeResult) then
+		NRC:debug("Failed to deserialize glyphs.");
+		return;
+	end
+	NRC.glyphs[sender] = raidData;
+	if (isWhisper) then
+		local data = NRC:createGlyphDataFromString(NRC.glyphs[name]);
+		--This is only used for inspect, if that ever changes then always supplying NRCInspectTalentFrame will error.
+		NRC:updateGlyphFrame(data, NRCInspectTalentFrame, sender);
+	end
+end
+
+function NRC:checkMyGlyphs()
+	if (IsInGroup()) then
+		local me = UnitName("player");
+		NRC.glyphs[me] = NRC:createGlyphString();
+	end
+end
+
 --Send raid data only, no settings etc.
 --This is sent when someone requests it by opening the raid status frame, throddled.
 function NRC:createRaidData()
 	NRC:checkMyRes(true);
 	NRC:checkMyEnchants(true);
 	NRC:checkMyTalents();
+	NRC.checkMyGlyphs();
 	local me = UnitName("player");
 	NRC.resistances[me] = myRes;
 	local data = {};
@@ -1108,6 +1214,10 @@ function NRC:createRaidData()
 		if (broken and broken > 0) then
 			data.e = broken;
 		end
+	end
+	local g = NRC:createGlyphString();
+	if (g) then
+		data.g = g;
 	end
 	return data;
 end
@@ -1181,6 +1291,9 @@ function NRC:receivedRaidData(data, sender, distribution, alreadyDeserialized)
 				raidData.e = 0;
 			end
 			updateDura(raidData.d, raidData.e, sender, distribution)
+		end
+		if (raidData.g) then
+			NRC.glyphs[sender] = raidData.g;
 		end
 	end
 end

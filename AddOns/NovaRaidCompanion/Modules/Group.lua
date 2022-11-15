@@ -34,7 +34,7 @@ function NRC:updateGroupCache()
 		if (name) then
 			if (strfind(name, "-")) then
 				--Record realm if they're from a different realm than ours.
-				name, realm = strsplit(name, "-", 2);
+				name, realm = strsplit("-", name, 2);
 			end
 			group[name] = {
 				class = classEnglish,
@@ -297,7 +297,7 @@ function NRC:inOurGroup(who)
 			--Check for for less reliable name only matches for group members from other realms.
 			--Shouldn't ever really be used unless another piece of code isn't including correctly..
 			--[[for k, v in pairs(NRC.groupCache) do
-				local nameOnly = strsplit(k, "-");
+				local nameOnly = strsplit("-", k);
 				if (nameOnly == who) then
 					return true;
 				end
@@ -316,7 +316,7 @@ function NRC:getGroupGuidFromName(name, class)
 	end
 	--Check for for less reliable name only matches.
 	for k, v in pairs(NRC.groupCache) do
-		local nameOnly = strsplit(k, "-");
+		local nameOnly = strsplit("-", k);
 		if (name == nameOnly and class == v.class) then
 			return v.guid;
 		end
@@ -833,6 +833,10 @@ local function openInspectTalentsFrame()
 			inspectTalentsFrame:SetScale(0.875);
 			inspectTalentsFrame:Show();
 		end
+		if (realm and realm ~= "" and realm ~= NRC.realm) then
+			name = name .. "-" .. realm;
+		end
+		NRC:sendComm("WHISPER", "glyreq " .. NRC.version, name);
 	end
 end
 

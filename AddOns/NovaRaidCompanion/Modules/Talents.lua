@@ -56,6 +56,7 @@ end
 
 function NRC:updateTalentFrame(name, talentString, frame, talentString2, showOffspec)
 	local talentFrame = frame or talentFrame;
+	talentFrame.player = name;
 	--talentFrame.activeSpec = talentString;
 	--talentFrame.offSpec = talentString2;
 	local displayTalentString = talentString;
@@ -130,6 +131,94 @@ function NRC:updateTalentFrame(name, talentString, frame, talentString2, showOff
 				frame:SetAlpha(0.7);
 				frame.currentRank = 0;
 			end
+		end
+	end
+	if (showOffspec) then
+		--Not displaying glyphs for offspec yet, maybe in later version.
+		--The data sync will need to rewritten to include offspec glyphs and keep track of which is the active spec since it can't be inspected.
+		frame.glyphs:Hide();
+	else
+		--local glyphText = "|cFF9CD6DEMajor:|r\n";
+		--[[glyphText = glyphText .. "(1) Glyph of Test\n";
+		glyphText = glyphText .. "(2) Glyph of Test2\n";
+		glyphText = glyphText .. "(3) Empty Slot\n";
+		glyphText = glyphText .. "|cFF9CD6DEMinor:|r\n";
+		glyphText = glyphText .. "(1) Glyph of Test\n";
+		glyphText = glyphText .. "(2) Glyph of Test2\n";
+		glyphText = glyphText .. "(3) Empty Slot";]]
+		if (NRC.glyphs[name]) then
+			local data = NRC:createGlyphDataFromString(NRC.glyphs[name]);
+			NRC:updateGlyphFrame(data, talentFrame);
+			C_Timer.After(0.1, function()
+				NRC:updateGlyphFrame(data, talentFrame);
+			end)
+			talentFrame.glyphs:Show();
+		else
+			talentFrame.glyphs:Hide();
+		end
+	end
+end
+
+function NRC:updateGlyphFrame(data, frame, name)
+	if (not frame) then
+		return;
+	end
+	for i = 1, 6 do
+		frame.glyphs["fs" .. i]:SetText("");
+	end
+	local width = 50;
+	if (data) then
+		for i = 1, 6 do
+			if (data[i] and data[i] > 0) then
+				local spell = Spell:CreateFromSpellID(data[i])
+				if (spell and not spell:IsSpellEmpty()) then
+					spell:ContinueOnSpellLoad(function()
+						local name = (spell:GetSpellName() or "Unknown Glyph");
+						local _, class = GetClassInfo(data.class);
+						--local icon = GetSpellTexture(data[i]);
+						local icon;
+						if (class) then
+							if (i < 4) then
+								icon = "Interface\\Icons\\Inv_glyph_major" .. strlower(class);
+							else
+								icon = "Interface\\Icons\\Inv_glyph_minor" .. strlower(class);
+							end
+						end
+						local texture = "|T134400:0|t";
+						if (icon) then
+							texture = "|T" .. icon .. ":0|t";
+						end
+						local itemLink = GetSpellLink(data[i]);
+						frame.glyphs["fs" .. i]:SetText(texture .. " " .. (itemLink or "[" .. name .. "]"));
+						local w = frame.glyphs["fs" .. i]:GetWidth();
+						if (w > width) then
+							width = w;
+						end
+					end)
+				else
+					frame.glyphs["fs" .. i]:SetText("Error");
+				end
+			else
+				frame.glyphs["fs" .. i]:SetText("|T134400:0|t [Empty Slot]");
+			end
+		end
+	else
+		frame.glyphs.fs1:SetText("No glyph data found.");
+	end
+	frame.glyphs:SetSize(width + 20, 190);
+	if (frame:GetName() == "NRCInspectTalentFrame") then
+		frame.glyphs:SetScale(0.9);
+	else
+		frame.glyphs:SetScale(0.8);
+	end
+	--If name is included then it's a data update and we should check if talent inspect is open waiting for glyph data.
+	if (name) then
+		--If inspect frame or supplied frame is open then show new glyph data.
+		if (NRCInspectTalentFrame and NRCInspectTalentFrame:IsShown() and NRCInspectTalentFrame.player == name) then
+			NRCInspectTalentFrame.glyphs:Show();
+		end
+		if (frame and frame:IsShown() and frame.frame == name) then
+			frame.glyphs:Show();
 		end
 	end
 end
@@ -437,4 +526,88 @@ function NRC:copyRaidTalents()
 		local talents = NRC:tableCopy(obj);
 		return talents;
 	end
+end
+
+--First 3 major, second 3 minor.
+function NRC:createGlyphString(f)
+	local _, _, classID = UnitClass("player");
+	local glyphString, glyphString2 = classID, classID;
+	local activeSpec = GetActiveTalentGroup();
+	local offSpec = (activeSpec == 1 and 2 or 1);
+	local temp = {};
+	local count = 0;
+	---Active spec.
+	for i = 1, GetNumGlyphSockets() do
+		local enabled, type, spellID, icon = GetGlyphSocketInfo(i, activeSpec);
+		if (type == 1) then
+			count = count + 1;
+			temp[count] = spellID or 0;
+		end
+	end
+	table.sort(temp, function(a, b) return a > b end);
+	--Make sure filled slots are first.
+	for i = 1, 3 do
+		glyphString = glyphString .. "-" .. (temp[i] or 0);
+	end
+	temp = {};
+	count = 0;
+	for i = 1, GetNumGlyphSockets() do
+		local enabled, type, spellID, texture = GetGlyphSocketInfo(i, activeSpec);
+		if (type == 2) then
+			count = count + 1;
+			temp[count] = spellID or 0;
+		end
+	end
+	table.sort(temp, function(a, b) return a > b end);
+	for i = 1, 3 do
+		glyphString = glyphString .. "-" .. (temp[i] or 0);
+	end
+	---Offspec.
+	temp = {};
+	count = 0;
+	--Active spec.
+	for i = 1, GetNumGlyphSockets() do
+		local enabled, type, spellID, icon = GetGlyphSocketInfo(i, offSpec);
+		if (type == 1) then
+			count = count + 1;
+			temp[count] = spellID or 0;
+		end
+	end
+	table.sort(temp, function(a, b) return a > b end);
+	--Make sure filled slots are first.
+	for i = 1, 3 do
+		glyphString2 = glyphString2 .. "-" .. (temp[i] or 0);
+	end
+	temp = {};
+	count = 0;
+	for i = 1, GetNumGlyphSockets() do
+		local enabled, type, spellID, texture = GetGlyphSocketInfo(i, offSpec);
+		if (type == 2) then
+			count = count + 1;
+			temp[count] = spellID or 0;
+		end
+	end
+	table.sort(temp, function(a, b) return a > b end);
+	for i = 1, 3 do
+		glyphString2 = glyphString2 .. "-" .. (temp[i] or 0);
+	end
+	--We're only using current spec glyph string atm, probably add dual spec support later.
+	--glyphString2 isn't used by any funcs yet.
+	--Glyph data can't be inspected and only gets sent others with the addon so mainspec will always be sent.
+	--Mainspec glyphs should always be updated by others with the addon so inspecting main spec should always be in sync.
+	--On the inspect frame we only display glyphs for main spec.
+	return glyphString, glyphString2;
+end
+
+function NRC:createGlyphDataFromString(glyphString)
+	local temp = {strsplit("-", glyphString)};
+	local data = {};
+	for k, v in pairs(temp) do
+		if (k == 1) then
+			data.class = tonumber(v);
+		else
+			data[k - 1] = tonumber(v);
+		end
+	end
+	return data;
 end

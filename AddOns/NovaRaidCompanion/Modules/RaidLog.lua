@@ -5,7 +5,7 @@
 local addonName, NRC = ...;
 local L = LibStub("AceLocale-3.0"):GetLocale("NovaRaidCompanion");
 local raidLogFrame, raid, raidName, encounter, raidLogModelFrame, portableModelFrame, bossViewFrame;
-local logRenameFrame, lootRenameFrame, tradeFilterFrame, exportFrame;
+local logRenameFrame, lootRenameFrame, tradeFilterFrame, exportFrame, tradeFilterString;
 local lastEnteringWorld = 0;
 local lastEncounterSuccess = {};
 local badges = {};
@@ -878,6 +878,10 @@ local function getTradeData(logID, raidID)
 	return data;
 end
 
+function NRC:getTradeData(logID, raidID)
+	return getTradeData(logID, raidID);
+end
+
 local function getLootData(logID, minQuality, exactQuality, showKtWeapons, encounterID, instanceID, ignoreTradeskill, mapToTrades)
 	local data = NRC.db.global.instances[logID];
 	if (not data) then
@@ -968,7 +972,7 @@ local function getLootData(logID, minQuality, exactQuality, showKtWeapons, encou
 			for tradeID, tradeData in ipairs(trades) do
 				if (tradeData.playerItems) then
 					for _, itemData in pairs(tradeData.playerItems) do
-						if (v.itemLink == itemData.itemLink) then
+						if (v.itemLink == itemData.itemLink and not v.traded) then
 							v.traded = tradeData.tradeWho;
 							v.tradedClass = tradeData.tradeWhoClass;
 							v.gold = tradeData.targetMoney;
@@ -1221,6 +1225,7 @@ local function setBottomText(data, logID)
 end
 
 local function clearRaidLogFrame()
+	raidLogFrame.scrollChild.exportButton:SetParent(raidLogFrame.scrollChild);
 	local childFrames = {raidLogFrame.scrollChild:GetChildren()};
 	for k, v in pairs(childFrames) do
 		--Handle clearing the scrollchild in a neater way later, but for now during dev just hide them.
@@ -1277,10 +1282,15 @@ local function clearRaidLogFrame()
 		raidLogFrame.instanceDisplay:Hide();
 	end
 	raidLogFrame.titleText2.texture:SetTexture();
+	raidLogFrame.titleText2:SetSize(1, 1);
+	raidLogFrame.titleText2:ClearAllPoints();
+	--raidLogFrame.titleText2:Hide();
+	--raidLogFrame.titleText2.texture:Hide();
 	raidLogFrame.hideAllExtraButtons();
 	if (tradeFilterFrame) then
 		tradeFilterFrame:Hide();
 	end
+	raidLogFrame.titleText3:SetText("");
 end
 
 local function updateFrames()
@@ -1378,6 +1388,11 @@ local function updateFrames()
 		raidLogFrame.Tabs[5]:SetText("");
 		raidLogFrame.backButton:Enable();
 	end
+	if (frameType == "loot" or frameType == "bossLoot" or frameType == "consumes" or frameType == "bossConsumes") then
+		raidLogFrame.updateAllSimpleLineFramesHyperlinkHandling(2);
+	else
+		raidLogFrame.updateAllSimpleLineFramesHyperlinkHandling(1);
+	end
 	raidLogFrame.hideAllExpandedFrames();
 	raidLogFrame.scrollFrame:SetVerticalScroll(0);
 end
@@ -1465,13 +1480,19 @@ function NRC:recalcRaidLog(clearRaidLog)
 	if (clearRaidLog) then
 		updateFrames();
 		clearRaidLogFrame();
-		raidLogFrame.titleText2.fs:SetText(L["Raid Log"]);
+		--[[raidLogFrame.titleText2.fs:SetText(L["Raid Log"]);
 		raidLogFrame.titleText2:ClearAllPoints();
 		raidLogFrame.titleText2:SetPoint("TOP", raidLogFrame, "TOP", 0, -41);
 		--Adjust frame width the instance name text sits on so it centers.
 		raidLogFrame.titleText2:SetWidth(raidLogFrame.titleText2.fs:GetStringWidth());
 		raidLogFrame.titleText2:Show();
+		raidLogFrame.titleText2.texture:Hide();]]
+		raidLogFrame.titleText2:Hide();
 		raidLogFrame.titleText2.texture:Hide();
+		raidLogFrame.titleText3:SetText(L["Raid Log"]);
+		raidLogFrame.titleText3:ClearAllPoints();
+		raidLogFrame.titleText3:SetPoint("TOP", raidLogFrame, "TOP", 0, -30);
+		--Adjust frame width the instance name text sits on so it centers.
 		if (raidLogFrame.frameType == "log") then
 			raidLogFrame.scrollFrame.selectedTab = 1;
 			PanelTemplates_UpdateTabs(raidLogFrame.scrollFrame);
@@ -1626,6 +1647,7 @@ end
 
 function NRC:buildRaidLogLineFrameString(v, logID)
 	local player = v.playerName;
+	--local data = NRC.db.global.instances[logID];
 	local _, _, _, classColorHex = GetClassColor(v.classEnglish);
 	--Safeguard for weakauras/addons that like to overwrite and break the GetClassColor() function.
 	if (not classColorHex and v.classEnglish == "SHAMAN") then
@@ -1640,9 +1662,10 @@ function NRC:buildRaidLogLineFrameString(v, logID)
 	instance = string.gsub(instance, "Auchindoun: ", "");
 	instance = string.gsub(instance, "Tempest Keep: ", "");
 	instance = string.gsub(instance, "Opening of the Dark Portal", "Black Morass");
-	if (v.difficultyID == 174) then
-		instance = instance .. " (|cFFFF2222H|r)";
-	end
+	instance = NRC:addDiffcultyText(instance, v.difficultyName, v.difficultyID, " ");
+	--if (v.difficultyID == 174) then
+	--	instance = instance .. " (|cFFFF2222H|r)";
+	--end
 	if (v.logName) then
 		--If the log entry has been renamed by user.
 		instance = v.logName .. " (" .. instance .. ")";
@@ -1790,7 +1813,8 @@ function NRC:loadRaidLogInstance(logID)
 	raidLogFrame.raidID = data.raidID;
 	local startOffset, padding, offset = 50, 70, 0;
 	--Remove prefix from certain instance names.
-	local instanceName = string.gsub(NRC.db.global.instances[logID].instanceName, ".+: ", "");
+	local instanceName = string.gsub(data.instanceName, ".+: ", "");
+	instanceName = NRC:addDiffcultyText(instanceName, data.difficultyName, data.difficultyID);
 	raidLogFrame.titleText2.fs:SetText(instanceName);
 	raidLogFrame.titleText2:ClearAllPoints();
 	raidLogFrame.titleText2:SetPoint("TOPRIGHT", raidLogFrame, "TOPRIGHT", -92, -41);
@@ -2152,6 +2176,14 @@ function NRC:loadRaidLogDeaths(logID)
 	raidLogFrame.scrollChild.fs:Show();
 	raidLogFrame.scrollChild.fs2:Show();
 	raidLogFrame.scrollChild.rfs:Show();
+	--Remove prefix from certain instance names.
+	local instanceName = string.gsub(data.instanceName, ".+: ", "");
+	instanceName = NRC:addDiffcultyText(instanceName, data.difficultyName, data.difficultyID);
+	raidLogFrame.titleText2.fs:SetText(instanceName);
+	raidLogFrame.titleText2:ClearAllPoints();
+	raidLogFrame.titleText2:SetPoint("TOPRIGHT", raidLogFrame, "TOPRIGHT", -92, -41);
+	--Adjust frame width the instance name text sits on so it centers.
+	raidLogFrame.titleText2:SetWidth(raidLogFrame.titleText2.fs:GetStringWidth());
 	local text = "|cFFFFFF00" .. L["Total Deaths"] .. ": ";
 	local text2 = "";
 	local text3 = "";
@@ -2345,6 +2377,7 @@ function NRC:loadRenameLootFrame(logID, lootID, lineFrameCount, displayNum, fram
 		lootRenameFrame.resetButton:Show();
 	end
 	local data = NRC.db.global.instances[logID];
+	local looter = data.loot[lootID].name;
 	lootRenameFrame.dropdownMenu.initialize = function(dropdown)
 		if (data and next(data.group)) then
 			local first;
@@ -2378,7 +2411,19 @@ function NRC:loadRenameLootFrame(logID, lootID, lineFrameCount, displayNum, fram
 				end
 				NRC.DDM:UIDropDownMenu_AddButton(info);
 			end
-			NRC.DDM:UIDropDownMenu_SetText(lootRenameFrame.dropdownMenu, "Select Character");
+			local text = "Select Character";
+			if (data.loot[lootID].override) then
+				local _, _, _, classHex = GetClassColor(data.loot[lootID].overrideClass);
+				text = "|c" .. classHex .. data.loot[lootID].override;
+			elseif (looter) then
+				for k, v in ipairs(options) do
+					if (looter == v.name) then
+						local _, _, _, classHex = GetClassColor(v.class);
+						text = "|c" .. classHex .. v.name;
+					end
+				end
+			end
+			NRC.DDM:UIDropDownMenu_SetText(lootRenameFrame.dropdownMenu, text);
 		else
 			local info = NRC.DDM:UIDropDownMenu_CreateInfo()
 			info.text = "No group found";
@@ -2396,11 +2441,12 @@ function NRC:loadRenameLootFrame(logID, lootID, lineFrameCount, displayNum, fram
 	
 	lootRenameFrame.logID = logID;
 	lootRenameFrame.lootID = lootID;
-	local itemLink = NRC.db.global.instances[lootRenameFrame.logID].loot[lootRenameFrame.lootID].itemLink;
+	local itemLink = data.loot[lootID].itemLink;
 	lootRenameFrame.fs:SetText("|cFFFFFF00" .. string.format(L["changeLootEntry"], "|cFFFF6900" .. displayNum .. "|r"));
 	lootRenameFrame.fs2:SetText(itemLink);
 	lootRenameFrame:ClearAllPoints();
-	lootRenameFrame:SetPoint("CENTER", frame, "CENTER", 0, 0);
+	--lootRenameFrame:SetPoint("CENTER", frame, "CENTER", -150, 0);
+	lootRenameFrame:SetPoint("BOTTOMLEFT", frame, "TOPLEFT", 70, 0);
 	lootRenameFrame.setButton:SetScript("OnClick", function(self, arg)
 		local text = NRC.DDM:UIDropDownMenu_GetText(lootRenameFrame.dropdownMenu);
 		local data = NRC.DDM:UIDropDownMenu_GetSelectedValue(lootRenameFrame.dropdownMenu);
@@ -2527,6 +2573,15 @@ function NRC:loadRaidLogLoot(logID)
 	raidLogFrame.scrollChild.fs2:Show();
 	raidLogFrame.scrollChild.fs3:Show();
 	raidLogFrame.scrollChild.rfs:Show();
+	--Remove prefix from certain instance names.
+	local instanceName = string.gsub(data.instanceName, ".+: ", "");
+	instanceName = NRC:addDiffcultyText(instanceName, data.difficultyName, data.difficultyID);
+	raidLogFrame.titleText2.fs:SetText(instanceName);
+	raidLogFrame.titleText2:ClearAllPoints();
+	raidLogFrame.titleText2:SetPoint("TOPRIGHT", raidLogFrame, "TOPRIGHT", -92, -41);
+	--Adjust frame width the instance name text sits on so it centers.
+	raidLogFrame.titleText2:SetWidth(raidLogFrame.titleText2.fs:GetStringWidth());
+	raidLogFrame.scrollChild.exportButton:ClearAllPoints();
 	raidLogFrame.scrollChild.exportButton:SetPoint("TOPRIGHT", -200, -5);
 	raidLogFrame.scrollChild.exportButton:SetSize(110, 25);
 	raidLogFrame.scrollChild.exportButton:SetText(L["Export"]);
@@ -2886,11 +2941,23 @@ function NRC:loadRaidBossLoot(logID, encounterID, encounterName, attemptID)
 	raidLogFrame.scrollChild.fs:Show();
 	raidLogFrame.scrollChild.fs2:Show();
 	raidLogFrame.scrollChild.fs3:Show();
+	--Remove prefix from certain instance names.
+	local instanceName = string.gsub(data.instanceName, ".+: ", "");
+	instanceName = NRC:addDiffcultyText(instanceName, data.difficultyName, data.difficultyID);
+	raidLogFrame.titleText2.fs:SetText(instanceName);
+	raidLogFrame.titleText2:ClearAllPoints();
+	raidLogFrame.titleText2:SetPoint("TOPRIGHT", raidLogFrame, "TOPRIGHT", -92, -41);
+	--Adjust frame width the instance name text sits on so it centers.
+	raidLogFrame.titleText2:SetWidth(raidLogFrame.titleText2.fs:GetStringWidth());
 	local model = NRC:getPortableModelFrame(encounterID, encounterName);
-	model:ClearAllPoints();
-	model:SetPoint("TOPLEFT", raidLogFrame.scrollChild, "TOPLEFT", 0, 0);
-	model:SetSize(200, 200);
-	model:Show();
+	if (model) then
+		model:ClearAllPoints();
+		model:SetPoint("TOPLEFT", raidLogFrame.scrollChild, "TOPLEFT", 0, 0);
+		model:SetSize(200, 200);
+		model:Show();
+	else
+		NRC:debug("Missing model info for:", encounterID, encounterName);
+	end
 	local text = "|cFFFFFF00" .. encounterName .. " " .. L["Loot"] .. ":|r ";
 	local text2 = "";
 	local text3 = "";
@@ -2962,11 +3029,23 @@ function NRC:loadRaidTalents(logID, encounterID, encounterName, attemptID)
 	raidLogFrame.scrollChild.fs:Show();
 	raidLogFrame.scrollChild.fs2:Show();
 	raidLogFrame.scrollChild.fs3:Show();
+	--Remove prefix from certain instance names.
+	local instanceName = string.gsub(data.instanceName, ".+: ", "");
+	instanceName = NRC:addDiffcultyText(instanceName, data.difficultyName, data.difficultyID);
+	raidLogFrame.titleText2.fs:SetText(instanceName);
+	raidLogFrame.titleText2:ClearAllPoints();
+	raidLogFrame.titleText2:SetPoint("TOPRIGHT", raidLogFrame, "TOPRIGHT", -92, -41);
+	--Adjust frame width the instance name text sits on so it centers.
+	raidLogFrame.titleText2:SetWidth(raidLogFrame.titleText2.fs:GetStringWidth());
 	local model = NRC:getPortableModelFrame(encounterID, encounterName);
-	model:ClearAllPoints();
-	model:SetPoint("TOPLEFT", raidLogFrame.scrollChild, "TOPLEFT", 0, 0);
-	model:SetSize(200, 200);
-	model:Show();
+	if (model) then
+		model:ClearAllPoints();
+		model:SetPoint("TOPLEFT", raidLogFrame.scrollChild, "TOPLEFT", 0, 0);
+		model:SetSize(200, 200);
+		model:Show();
+	else
+		NRC:debug("Missing model info for:", encounterID, encounterName);
+	end
 	local text = "|cFFFFFF00" .. L["Talent Snapshot for"] .. " " .. encounterName .. "|r";
 	local text2 = "";
 	local talents = NRC:getAllTalentsFromEncounter(logID, encounterID, attemptID);
@@ -3354,7 +3433,14 @@ function NRC:loadRaidLogConsumes(logID, encounterID, encounterName, attemptID, g
 	raidLogFrame.scrollChild.fs:Show();
 	raidLogFrame.scrollChild.fs2:Show();
 	raidLogFrame.scrollChild.rfs:Show();
-	
+	--Remove prefix from certain instance names.
+	local instanceName = string.gsub(data.instanceName, ".+: ", "");
+	instanceName = NRC:addDiffcultyText(instanceName, data.difficultyName, data.difficultyID);
+	raidLogFrame.titleText2.fs:SetText(instanceName);
+	raidLogFrame.titleText2:ClearAllPoints();
+	raidLogFrame.titleText2:SetPoint("TOPRIGHT", raidLogFrame, "TOPRIGHT", -92, -41);
+	--Adjust frame width the instance name text sits on so it centers.
+	raidLogFrame.titleText2:SetWidth(raidLogFrame.titleText2.fs:GetStringWidth());
 	raidLogFrame.scrollChild.dropdownMenu:SetPoint("TOPRIGHT", raidLogFrame.scrollChild, "TOPRIGHT", -15, -1);
 	raidLogFrame.scrollChild.dropdownMenu.tooltip.fs:SetText("|Cffffd000" .. L["consumesEncounterTooltip"]);
 	raidLogFrame.scrollChild.dropdownMenu.tooltip:SetWidth(raidLogFrame.scrollChild.dropdownMenu.tooltip.fs:GetStringWidth() + 18);
@@ -3913,7 +3999,6 @@ function NRC:updateTradeFrame(allTrades, open, noFrameUpdate)
 	end
 end
 
-local tradeFilterString;
 local function loadTradeFilter(logID, raidID)
 	if (not tradeFilterFrame) then
 		tradeFilterFrame = NRC:createTextInputOnly("NRCRaidLogTradeFilterFrame", 150, 70, raidLogFrame);
@@ -4010,7 +4095,7 @@ function NRC:loadTrades(logID, raidID, open, filterUpdate)
 	end
 	setInstanceTexture(logID);
 	local text, data;
-	local startOffset, padding, offset = 20, 18, 0;
+	local startOffset, padding, offset = 25, 18, 0;
 	if (logID and raidID) then
 		raidLogFrame.frameType = "raidTrades";
 		raidLogFrame.logID = logID;
@@ -4025,10 +4110,28 @@ function NRC:loadTrades(logID, raidID, open, filterUpdate)
 		--text = text .. " |cFF9CD6DE(" .. NRC:getTimeString(instanceData.startTime, true) .. " " .. L["ago"] .. ")|r";
 		startOffset = 50;
 		loadTradeFilter(logID, raidID);
+		--Remove prefix from certain instance names.
+		local instanceName = string.gsub(instanceData.instanceName, ".+: ", "");
+		instanceName = NRC:addDiffcultyText(instanceName, instanceData.difficultyName, instanceData.difficultyID);
+		raidLogFrame.titleText2.fs:SetText(instanceName);
+		raidLogFrame.titleText2:ClearAllPoints();
+		raidLogFrame.titleText2:SetPoint("TOPRIGHT", raidLogFrame, "TOPRIGHT", -92, -41);
+		--Adjust frame width the instance name text sits on so it centers.
+		raidLogFrame.titleText2:SetWidth(raidLogFrame.titleText2.fs:GetStringWidth());
+		raidLogFrame.scrollChild.exportButton:SetParent(raidLogFrame.scrollChild);
+		raidLogFrame.scrollChild.exportButton:ClearAllPoints();
+		raidLogFrame.scrollChild.exportButton:SetPoint("TOPRIGHT", -40, -5);
+		raidLogFrame.scrollChild.exportButton:SetSize(90, 22);
+		raidLogFrame.scrollChild.exportButton:SetText(L["Export"]);
+		raidLogFrame.scrollChild.exportButton:SetScript("OnClick", function(self, arg)
+			NRC:loadTradesExportFrame(logID, raidID);
+		end)
+		raidLogFrame.scrollChild.exportButton:Show();
 	else
 		raidLogFrame.titleText2.fs:SetText(L["All Trades"]);
 		raidLogFrame.titleText2:ClearAllPoints();
 		raidLogFrame.titleText2:SetPoint("TOP", raidLogFrame, "TOP", 0, -41);
+		raidLogFrame.titleText2:Show();
 		raidLogFrame.frameType = "allTrades";
 		raidLogFrame.button2:Show();
 		raidLogFrame.button2:SetSize(50, 18);
@@ -4045,6 +4148,17 @@ function NRC:loadTrades(logID, raidID, open, filterUpdate)
 			NRC:openLockoutsFrame();
 		end)
 		loadTradeFilter();
+		raidLogFrame.scrollChild.exportButton:SetParent(raidLogFrame);
+		raidLogFrame.scrollChild.exportButton:ClearAllPoints();
+		--raidLogFrame.scrollChild.exportButton:SetPoint("TOP", raidLogFrame.titleText2, "TOP", 160, -32);
+		raidLogFrame.scrollChild.exportButton:SetPoint("LEFT", raidLogFrame.titleText2.fs, "RIGHT", 20, 0);
+		--raidLogFrame.scrollChild.exportButton:SetPoint("TOPRIGHT", -200, -1);
+		raidLogFrame.scrollChild.exportButton:SetSize(90, 22);
+		raidLogFrame.scrollChild.exportButton:SetText(L["Export"]);
+		raidLogFrame.scrollChild.exportButton:SetScript("OnClick", function(self, arg)
+			NRC:loadTradesExportFrame(logID);
+		end)
+		raidLogFrame.scrollChild.exportButton:Show();
 	end
 	local data = getTradeData(logID, raidID);
 	raidLogFrame.raidID = raidID;
@@ -4171,7 +4285,7 @@ function NRC:loadTrades(logID, raidID, open, filterUpdate)
 					for _, itemData in pairs(v.playerItemsEnchant) do
 						local enchantString = "";
 						if (itemData.enchant and type(itemData.enchant) ~= "boolean") then
-							enchantString = "|cFFFFD200[" .. itemData.enchant .. "]|r";
+							enchantString = " |cFFFFD200[" .. itemData.enchant .. "]|r";
 						end
 						if (itemData.itemLink) then
 							msg = msg .. enchantString  .. " " .. L["on"] .. " " .. itemData.itemLink;
@@ -4961,7 +5075,7 @@ function NRC:recalcLockoutsFrame()
 								local timeString = "(" .. NRC:getTimeString(instanceData.resetTime - GetServerTime(), true, NRC.db.global.timeStringType) .. ")";
 								local name = instanceData.name;
 								if (instanceData.name and instanceData.difficultyName) then
-									name = GetDungeonNameWithDifficulty(instanceData.name, instanceData.difficultyName);
+									name = NRC:addDiffcultyText(instanceData.name, instanceData.difficultyName, nil, "", "|cFFFFFF00");
 								end
 								text2 = text2 .. "\n  |cFFFFFF00-|r|cFFFFAE42" .. name .. "|r |cFF9CD6DE" .. timeString .. "|r";
 								found = true;
@@ -5249,6 +5363,7 @@ function NRC:enteredInstanceRD(isReload, isLogon)
 				instanceID = instanceID,
 				instanceType = instanceType,
 				difficultyID = difficultyID,
+				difficultyName = difficultyName,
 				type = type,
 				enteredTime = GetServerTime(),
 				leftTime = 0,
@@ -5715,6 +5830,18 @@ function NRC:chatMsgCombatFactionChange(...)
 	end
 end
 
+function NRC:chatMsgWhisper(...)
+	if (NRC.config.autoInv) then
+		local msg, name = ...;
+		local keyword = NRC.config.autoInvKeyword;
+		if (keyword and type(keyword) == "string") then
+			if (strlower(msg) == strlower(keyword)) then
+				InviteUnit(name);
+			end
+		end
+	end
+end
+
 local f = CreateFrame("Frame", "NRCRaidLog");
 f:RegisterEvent("ENCOUNTER_START");
 f:RegisterEvent("ENCOUNTER_END");
@@ -5722,6 +5849,7 @@ f:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED");
 f:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
 f:RegisterEvent("GROUP_ROSTER_UPDATE");
 f:RegisterEvent("CHAT_MSG_LOOT");
+f:RegisterEvent("CHAT_MSG_WHISPER");
 f:RegisterEvent("PLAYER_REGEN_DISABLED");
 f:RegisterEvent("PLAYER_REGEN_ENABLED");
 f:RegisterEvent("PLAYER_LEAVING_WORLD");
@@ -5740,6 +5868,8 @@ f:SetScript('OnEvent', function(self, event, ...)
 		NRC:recordGroupInfo();
 	elseif (event == "CHAT_MSG_LOOT") then
 		NRC:chatMsgLoot(...);
+	elseif (event == "CHAT_MSG_WHISPER") then
+		NRC:chatMsgWhisper(...);
 	elseif (event == "PLAYER_REGEN_DISABLED") then
 		NRC:startCombatTime();
 	elseif (event == "PLAYER_REGEN_ENABLED") then

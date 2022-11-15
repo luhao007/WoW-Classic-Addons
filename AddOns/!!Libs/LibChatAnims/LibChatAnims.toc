@@ -1,5 +1,5 @@
-## Interface: 100000
-## Version: v10.0.0
+## Interface: 100002
+## Version: v10.0.1
 ## Title: Lib: ChatAnims
 ## Notes: UIFrameFlash to Animation conversion library for Floating Chat Frame functions.
 ## Author: Funkydude
@@ -7,4 +7,6 @@
 ## OptionalDeps: LibStub
 ## X-License: All Rights Reserved
 
+embeds.xml
 LibChatAnims\LibChatAnims.xml
+

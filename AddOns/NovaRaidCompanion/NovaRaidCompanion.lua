@@ -67,6 +67,8 @@ NRC.resistances = {};
 NRC.weaponEnchants = {};
 NRC.talents = {};
 NRC.talents2 = {};
+NRC.glyphs = {};
+--NRC.glyphs2 = {};
 NRC_Installed = true;
 
 local function init()
@@ -172,6 +174,10 @@ function SlashCmdList.NRCCMD(msg, editBox)
 		NRC:openRaidLogFrame();
 	elseif (msg == "lockouts" or msg == "lockout") then
 		NRC:openLockoutsFrame();
+	elseif (msg == "loot") then
+		NRC:openRaidLogFrame();
+		NRC:loadRaidLogInstance(1);
+		NRC:loadRaidLogLoot(1);
 	elseif (msg == "lock") then
 		if (NRC.config.lockAllFrames) then
 			NRC:print("Frames are already locked.");
@@ -235,7 +241,9 @@ function NRC:createBroker()
 					NRC:updateTradeFrame(true, true);
 				end
 			elseif (button == "LeftButton" and IsControlKeyDown()) then
-				
+				NRC:openRaidLogFrame();
+				NRC:loadRaidLogInstance(1);
+				NRC:loadRaidLogLoot(1);
 			elseif (button == "LeftButton") then
 				NRC:openRaidStatusFrame();
 			elseif (button == "RightButton" and IsShiftKeyDown()) then
@@ -315,8 +323,11 @@ function NRC:updateMinimapButton(tooltip, frame)
 						if (charData.savedInstances) then
 							for instance, instanceData in pairs(charData.savedInstances) do
 								if (instanceData.locked and instanceData.resetTime and instanceData.resetTime > GetServerTime()) then
-									local timeString = "(" .. NRC:getTimeString(instanceData.resetTime - GetServerTime(), true, NRC.db.global.timeStringType) .. ")";
+									local timeString = "(" .. NRC:getTimeString(instanceData.resetTime - GetServerTime(), true, "short") .. ")";
 									local instanceName = instanceData.name;
+									if (instanceData.difficultyName) then
+										instanceName = NRC:addDiffcultyText(instanceData.name, instanceData.difficultyName, nil, "", "|cFFFFFF00");
+									end
 									instanceName = string.gsub(instanceName, "Hellfire Citadel: ", "");
 									instanceName = string.gsub(instanceName, "Coilfang: ", "");
 									instanceName = string.gsub(instanceName, "Auchindoun: ", "");
@@ -383,6 +394,7 @@ function NRC:updateMinimapButton(tooltip, frame)
 	tooltip:AddLine("|cFF9CD6DE" .. L["rightClickMinimapButton"]);
 	tooltip:AddLine("|cFF9CD6DE" .. L["shiftLeftClickMinimapButton"]);
 	tooltip:AddLine("|cFF9CD6DE" .. L["shiftRightClickMinimapButton"]);
+	tooltip:AddLine("|cFF9CD6DE" .. L["controlLeftClickMinimapButton"]);
 	tooltip:Show();
 	C_Timer.After(0.1, function()
 		NRC:updateMinimapButton(tooltip, frame);

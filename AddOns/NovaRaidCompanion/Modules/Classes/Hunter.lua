@@ -401,6 +401,30 @@ local function combatLogEventUnfiltered(...)
 					NRC:sendGroupSettingsCheck(msg, "mdSendOtherCastGroup", "mdSendMyCastGroup", sourceName);
 				end
 			end
+		elseif (spellID == 20736) then
+			if (sourceGUID == UnitGUID("player")) then
+				local inInstance = IsInInstance();
+				if (not inInstance) then
+					return;
+				end
+				local target = destName;
+				if (not target or target == "") then
+					target = "Unknown";
+				end
+				local spellLink;
+				if (not NRC.isClassic) then
+					spellLink = GetSpellLink(spellID);
+				end
+				local msg = (spellLink or spellName) .. " on " .. target .. " (6 seconds).";
+				if (NRC.config.hunterDistractingShotGroup) then
+					NRC:sendGroup(msg);
+				end
+				if (NRC.config.hunterDistractingShotYell) then
+					SendChatMessage(msg, "YELL");
+				elseif (NRC.config.hunterDistractingShotSay) then
+					SendChatMessage(msg, "SAY");
+				end
+			end
 		elseif (misdirection and hits[sourceName] and distractingShot[spellID]) then
 			local tableID = #hits[sourceName] + 1;
 			--Distracting shot has no dmg.

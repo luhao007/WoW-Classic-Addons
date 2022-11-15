@@ -1,8 +1,8 @@
 ------------------------------------------------------------------------
-r149 | funkehdude | 2022-11-07 07:04:19 +0000 (Mon, 07 Nov 2022) | 1 line
+r151 | funkehdude | 2022-11-14 15:23:54 +0000 (Mon, 14 Nov 2022) | 1 line
 Changed paths:
-   M /trunk/LibSink-2.0/LibSink-2.0.lua
+   M /trunk/LibSink-2.0.toc
 
-Change how we deal with Blizzard's FCT. It's now always available as an option, and force loaded if selected.
+bump toc
 ------------------------------------------------------------------------
 

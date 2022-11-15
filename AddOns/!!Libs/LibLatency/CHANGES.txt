@@ -1,7 +1,6 @@
 ------------------------------------------------------------------------
-r38 | funkehdude | 2022-10-26 00:42:24 +0000 (Wed, 26 Oct 2022) | 1 line
+r40 | funkehdude | 2022-11-14 15:23:36 +0000 (Mon, 14 Nov 2022) | 1 line
 Changed paths:
-   M /trunk/LibLatency/LibLatency.lua
    M /trunk/LibLatency.toc
 
 bump toc

@@ -598,10 +598,10 @@ NRC.encounters = {
 	[1194] = {"623", "Daakara", "", 38118, 522217, 9, 2, 568},
 	
 	--Vault of Archavon.
-	[1126] = {"3849", "Archavon the Stone Watcher", "", 26967, 1385715, 64, 3, 624},
-	[1127] = {"3850", "Emalon the Storm Watcher", "", 27108, 1385727, 64, 3, 624},
-	[1128] = {"3851", "Koralon the Flame Watcher", "", 29524, 1385748, 64, 3, 624},
-	[1129] = {"3852", "Toravon the Ice Watcher", "", 31089, 1385767, 65, 3, 624},
+	[772] = {"3849", "Archavon the Stone Watcher", "", 26967, 1385715, 64, 3, 624},
+	[774] = {"3850", "Emalon the Storm Watcher", "", 27108, 1385727, 64, 3, 624},
+	[776] = {"3851", "Koralon the Flame Watcher", "", 29524, 1385748, 64, 3, 624},
+	[885] = {"3852", "Toravon the Ice Watcher", "", 31089, 1385767, 65, 3, 624},
 	--Naxx.
 	[1107] = {"3853", "Anub'Rekhan", "", 15931, 1378964, 9, 3, 533},
 	[1110] = {"3854", "Grand Widow Faerlina", "", 15940, 1378980, 9, 3, 533},
@@ -619,45 +619,45 @@ NRC.encounters = {
 	[1119] = {"3870", "Sapphiron", "", 16033, 1379010, 9, 3, 533},
 	[1114] = {"3871", "Kel'Thuzad", "", 15945, 1378989, 9, 3, 533},
 	--Obsidian sanctum.
-	[1090] = {"3875", "Sartharion", "", 27035, 1385765, 9, 3, 615},
+	[742] = {"3875", "Sartharion", "", 27035, 1385765, 9, 3, 615},
 	--Eye of eternity.
-	[1094] = {"3876", "Malygos", "", 26752, 1385753, 9, 3, 616},
+	[734] = {"3876", "Malygos", "", 26752, 1385753, 9, 3, 616},
 	--Ulduar.
-	[1132] = {"3928", "Flame Leviathan", "", 28875, 1385731, 9, 3, 603},
-	[1136] = {"3929", "Ignis the Furnace Master", "", 29185, 1385742, 64, 3, 603},
-	[1139] = {"3930", "Razorscale", "", 28787, 1385763, 9, 3, 603},
-	[1142] = {"3931", "XT-002 Deconstructor", "", 28611, 1385773, 9, 3, 603},
-	[1140] = {"3933", "Steelbreaker", "", 28344, 1390439, 65, 3, 603},
-	[1137] = {"3935", "Kologarn", "", 28638, 1385747, 90, 3, 603},
-	[1131] = {"3936", "Auriaya", "", 28651, 1385717, 67, 3, 603},
-	[1135] = {"3937", "Hodir", "", 28743, 1385740, 65, 3, 603},
-	[1141] = {"3939", "Thorim", "", 28977, 1385770, 65, 3, 603},
-	[1133] = {"3941", "Freya", "", 28777, 1385733, 67, 3, 603},
-	[1138] = {"3944", "Mimiron", "", 28578, 1385754, 9, 3, 603},
-	[1134] = {"3945", "General Vezax", "", 28548, 1385735, 9, 3, 603},
-	[1143] = {"3946", "Yogg-Saron", "", 28817, 1385774, 9, 3, 603},
-	[1130] = {"3947", "Algalon the Observer", "", 28641, 1385713, 9, 3, 603},
+	[744] = {"3928", "Flame Leviathan", "", 28875, 1385731, 9, 3, 603},
+	[745] = {"3929", "Ignis the Furnace Master", "", 29185, 1385742, 64, 3, 603},
+	[746] = {"3930", "Razorscale", "", 28787, 1385763, 9, 3, 603},
+	[747] = {"3931", "XT-002 Deconstructor", "", 28611, 1385773, 9, 3, 603},
+	[748] = {"3933", "The Iron Council", "", 28344, 1390439, 65, 3, 603}, --Steelbreaker.
+	[749] = {"3935", "Kologarn", "", 28638, 1385747, 90, 3, 603},
+	[750] = {"3936", "Auriaya", "", 28651, 1385717, 67, 3, 603},
+	[751] = {"3937", "Hodir", "", 28743, 1385740, 65, 3, 603},
+	[752] = {"3939", "Thorim", "", 28977, 1385770, 65, 3, 603},
+	[753] = {"3941", "Freya", "", 28777, 1385733, 67, 3, 603},
+	[754] = {"3944", "Mimiron", "", 28578, 1385754, 9, 3, 603},
+	[755] = {"3945", "General Vezax", "", 28548, 1385735, 9, 3, 603},
+	[756] = {"3946", "Yogg-Saron", "", 28817, 1385774, 9, 3, 603},
+	[757] = {"3947", "Algalon the Observer", "", 28641, 1385713, 9, 3, 603},
 	--Trial of the crusader.
-	[1088] = {"3878", "Gormok the Impaler", "", 29614, 1390440, 9, 3, 649},
-	[1087] = {"3881", "Lord Jaraxxus", "", 29615, 1385752, 9, 3, 649},
-	[1086] = {"3907", "Birana Stormhoof", "", 29781, 1390441, 9, 3, 649},
-	[1089] = {"3911", "Fjola Lightbane", "", 29240, 1390443, 9, 3, 649},
-	[1085] = {"3912", "Anub'arak", "", 29268, 607542, 9, 3, 649},
+	[629] = {"3878", "Northrend Beasts", "", 29614, 1390440, 9, 3, 649}, --Gormok the Impaler.
+	[633] = {"3881", "Lord Jaraxxus", "", 29615, 1385752, 9, 3, 649},
+	[637] = {"3907", "Faction Champions", "", 29781, 1390441, 9, 3, 649}, --Birana Stormhoof.
+	[641] = {"3911", "Val'kyr Twins", "", 29240, 1390443, 9, 3, 649}, --Fjola Lightbane.
+	[645] = {"3912", "Anub'arak", "", 29268, 607542, 9, 3, 649},
 	--Onyxia.
 	[1084] = {"3948", "Onyxia", "", 8570, 1379025, 9, 3, 249, 3, 249},
 	--ICC.
-	[1101] = {"3913", "Lord Marrowgar", "", 31119, 1378992, 9, 3, 631},
-	[1100] = {"3914", "Lady Deathwhisper", "", 30893, 1378990, 9, 3, 631},
-	[1099] = {"3915", "High Overlord Saurfang", "", 30416, 1385737, 9, 3, 631},
-	[1096] = {"3917", "Deathbringer Saurfang", "", 30790, 1378970, 9, 3, 631},
-	[1097] = {"3918", "Festergut", "", 31006, 1378972, 66, 3, 631},
-	[1104] = {"3919", "Rotface", "", 31005, 1379009, 66, 3, 631},
-	[1102] = {"3920", "Professor Putricide", "", 30881, 1379007, 9, 3, 631},
-	[1095] = {"3922", "Prince Valanar", "", 30858, 1385721, 9, 3, 631},
-	[1103] = {"3924", "Blood-Queen Lana'thel", "", 31165, 1378967, 9, 3, 631},
-	[1098] = {"3925", "Valithria Dreamwalker", "", 30318, 1379023, 9, 3, 631},
-	[1105] = {"3926", "Sindragosa", "", 30362, 1379014, 9, 3, 631},
-	[1106] = {"3927", "The Lich King", "", 30721, 607688, 9, 3, 631},
+	[845] = {"3913", "Lord Marrowgar", "", 31119, 1378992, 9, 3, 631},
+	[846] = {"3914", "Lady Deathwhisper", "", 30893, 1378990, 9, 3, 631},
+	[847] = {"3915", "Icecrown Gunship Battle", "", 30416, 1385737, 9, 3, 631}, --High Overlord Saurfang.
+	[848] = {"3917", "Deathbringer Saurfang", "", 30790, 1378970, 9, 3, 631},
+	[849] = {"3918", "Festergut", "", 31006, 1378972, 66, 3, 631},
+	[850] = {"3919", "Rotface", "", 31005, 1379009, 66, 3, 631},
+	[851] = {"3920", "Professor Putricide", "", 30881, 1379007, 9, 3, 631},
+	[852] = {"3922", "Blood Council", "", 30858, 1385721, 9, 3, 631}, --Prince Valanar.
+	[853] = {"3924", "Blood-Queen Lana'thel", "", 31165, 1378967, 9, 3, 631},
+	[854] = {"3925", "Valithria Dreamwalker", "", 30318, 1379023, 9, 3, 631},
+	[855] = {"3926", "Sindragosa", "", 30362, 1379014, 9, 3, 631},
+	[856] = {"3927", "The Lich King", "", 30721, 607688, 9, 3, 631},
 	--Ruby sanctum.
 	[1150] = {"3949", "Halion", "", 31952, 1385738, 9, 3, 724},
 	
@@ -5818,7 +5818,7 @@ NRC.npcs = {
 	--Eye of Eternity.
 	[28859] = {
 		name = "Malygos",
-		encounterID = 1094,
+		encounterID = 734,
 		instanceID = 616,
 		hp = 19523000,
 		type = "Dragonkin",
@@ -5864,7 +5864,7 @@ NRC.npcs = {
 	--Obsidian Sanctum.
 	[28860] = {
 		name = "Sartharion",
-		encounterID = 1090,
+		encounterID = 742,
 		instanceID = 615,
 		hp = 7669750,
 		type = "Dragonkin",
@@ -5929,7 +5929,7 @@ NRC.npcs = {
 	--Vault of Archavon.
 	[31125] = {
 		name = "Archavon the Stone Watcher",
-		encounterID = 1126,
+		encounterID = 772,
 		instanceID = 624,
 		hp = 0,
 		type = "Giant",
@@ -6018,7 +6018,7 @@ NRC.npcs = {
 	},
 	[33993] = {
 		name = "Emalon the Storm Watcher",
-		encounterID = 1127,
+		encounterID = 774,
 		instanceID = 624,
 		hp = 0,
 		type = "Giant",
@@ -6107,7 +6107,7 @@ NRC.npcs = {
 	},
 	[35013] = {
 		name = "Koralon the Flame Watcher",
-		encounterID = 1128,
+		encounterID = 776,
 		instanceID = 624,
 		hp = 0,
 		type = "Giant",
@@ -6196,7 +6196,7 @@ NRC.npcs = {
 	},
 	[38433] = {
 		name = "Toravon the Ice Watcher",
-		encounterID = 1129,
+		encounterID = 885,
 		instanceID = 624,
 		hp = 0,
 		type = "Humanoid",
@@ -7285,6 +7285,13 @@ NRC.int = {
 		rank = 7,
 		maxRank = true,
 	},
+	[61024] = {
+		name = "Dalaran Intellect",
+		icon = 135932,
+		desc = "+60 Int",
+		rank = 7,
+		maxRank = true,
+	},
 	[23028] = {
 		name = "Arcane Brilliance",
 		icon = 135869,
@@ -7304,11 +7311,25 @@ NRC.int = {
 		rank = 3,
 		maxRank = true,
 	},
+	[61316] = {
+		name = "Dalaran Brilliance",
+		icon = 135869,
+		desc = "+60 Int",
+		rank = 3,
+		maxRank = true,
+	},
 	[46302] = { --Sunwell zone buff doesn't stack with int, but is overwritten by fort..
 		name = "K'iru's Song of Victory",
 		icon = 135981,
 		desc = "+40 Int",
 		rank = 1,
+		maxRank = true,
+	},
+	--Runescroll.
+	[69994] = {
+		name = "Runescroll of Brilliance",
+		icon = 135932,
+		desc = "+48 Int",
 		maxRank = true,
 	},
 };
@@ -7386,6 +7407,13 @@ NRC.fort = {
 		icon = 135941,
 		desc = "+165 Stam",
 		rank = 4,
+		maxRank = true,
+	},
+	--Runescroll.
+	[69377] = {
+		name = "Runescroll of Fortitude",
+		icon = 135987,
+		desc = "+165 Stam",
 		maxRank = true,
 	},
 };
@@ -7583,6 +7611,13 @@ NRC.motw = {
 		rank = 4,
 		maxRank = true,
 	},
+	--Drums.
+	[69381] = {
+		name = "Drums of the Wild",
+		icon = 136078,
+		desc = "Gives the Gift of the Wild to all party and raid members",
+		maxRank = true,
+	},
 };
 
 NRC.pal = {
@@ -7622,6 +7657,13 @@ NRC.pal = {
 		desc = "+10% Stats",
 		maxRank = true,
 		order = 2,
+	},
+	[69378] = { --Drums.
+		name = "Drums of Forgotten Kings",
+		icon = 135995,
+		desc = "Gives all members of the raid or group the Blessing of Forgotten Kings",
+		order = 2,
+		maxRank = true,
 	},
 	--Might.
 	[19740] = {

@@ -538,6 +538,7 @@ function NRC:openRaidStatusFrame(showOnly, fromLog, buttonID)
 		raidStatusFrame:Hide();
 		--raidStatusFrame.showRes = nil;
 	end
+	NRC:updateRaidStatusReadyCheckStatus();
 end
 
 local function updateGridTooltip(frame, localBuffData, buffData)
