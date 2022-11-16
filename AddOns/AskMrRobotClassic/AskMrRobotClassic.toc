@@ -1,10 +1,12 @@
 ## Interface: 30400
-## Title: Ask Mr. Robot Classic
 ## Author: Team Robot, Inc.
 ## Version: 11
-## Notes: Gear import/export, combat logging, and more.
-## URL: www.askmrrobot.com/classic
 ## SavedVariables: AskMrRobotDbClassic
+
+## Title: Ask Mr. Robot Classic
+## Notes: Gear import/export, combat logging, and more.
+## Title-zhCN: |cFFFFE00A<|r|cFFFFF468功能|r|cFFFFE00A>|r |cFFFFFFFF机器人模拟|r |cFFFFE00AAskMrRobotClassic|r
+## Notes-zhCN: 生成可以在AskMrRobot网站模拟的字符串
 
 
 localization\enUS.lua

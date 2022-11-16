@@ -563,8 +563,7 @@ function private.GetOptionalMats(spellId, level)
 				tinsert(options, craftingReagent.itemID)
 			end
 			local matList = table.concat(options, ",")
-			-- FIXME: `data.slotInfo.slotText` seems to not exist here, not sure how Blizzard gets this text
-			-- TSM.Crafting.ProfessionUtil.StoreOptionalMatText(matList, data.slotInfo.slotText or OPTIONAL_REAGENT_POSTFIX)
+			TSM.Crafting.ProfessionUtil.StoreOptionalMatText(matList, data.slotInfo.slotText or OPTIONAL_REAGENT_POSTFIX)
 			optionalMats[data.dataSlotIndex] = "o:"..data.dataSlotIndex..":"..matList
 		end
 	end

@@ -8,6 +8,7 @@ local _, TSM = ...
 local Shopping = TSM.UI.AuctionUI:NewPackage("Shopping")
 local ItemClass = TSM.Include("Data.ItemClass")
 local L = TSM.Include("Locale").GetTable()
+local Container = TSM.Include("Util.Container")
 local FSM = TSM.Include("Util.FSM")
 local Event = TSM.Include("Util.Event")
 local TempTable = TSM.Include("Util.TempTable")
@@ -58,10 +59,10 @@ local private = {
 local MAX_ITEM_LEVEL = 500
 local PLAYER_NAME = UnitName("player")
 local ARMOR_TYPES = {
-	[GetItemSubClassInfo(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_PLATE)] = true,
-	[GetItemSubClassInfo(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_MAIL)] = true,
-	[GetItemSubClassInfo(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_LEATHER)] = true,
-	[GetItemSubClassInfo(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_CLOTH)] = true,
+	[GetItemSubClassInfo(Enum.ItemClass.Armor, Enum.ItemArmorSubclass.Plate)] = true,
+	[GetItemSubClassInfo(Enum.ItemClass.Armor, Enum.ItemArmorSubclass.Mail)] = true,
+	[GetItemSubClassInfo(Enum.ItemClass.Armor, Enum.ItemArmorSubclass.Leather)] = true,
+	[GetItemSubClassInfo(Enum.ItemClass.Armor, Enum.ItemArmorSubclass.Cloth)] = true,
 }
 local INVENTORY_TYPES = {
 	GetItemInventorySlotInfo(Enum.InventoryType.IndexHeadType),
@@ -1190,7 +1191,7 @@ function private.ClassDropdownOnSelectionChanged(dropdown)
 		for _, v in pairs(ItemClass.GetSubClasses(selection)) do
 			tinsert(subClasses, v)
 		end
-		if dropdown:GetSelectedItem() == GetItemClassInfo(LE_ITEM_CLASS_ARMOR) then
+		if dropdown:GetSelectedItem() == GetItemClassInfo(Enum.ItemClass.Armor) then
 			for _, v in pairs(GENERIC_TYPES) do
 				tinsert(subClasses, v)
 			end
@@ -1212,7 +1213,7 @@ function private.SubClassDropdownOnSelectionChanged(dropdown)
 	local classDropdown = dropdown:GetElement("__parent.classDropdown")
 	local itemSlotDropdown = dropdown:GetElement("__parent.__parent.itemSlot.frame.dropdown")
 	local selection = dropdown:GetSelectedItem()
-	if selection and classDropdown:GetSelectedItem() == GetItemClassInfo(LE_ITEM_CLASS_ARMOR) and ARMOR_TYPES[selection] then
+	if selection and classDropdown:GetSelectedItem() == GetItemClassInfo(Enum.ItemClass.Armor) and ARMOR_TYPES[selection] then
 		itemSlotDropdown:SetItems(INVENTORY_TYPES)
 		itemSlotDropdown:SetDisabled(false)
 		itemSlotDropdown:SetSelectedItem(nil)
@@ -1723,7 +1724,7 @@ function private.UpdateDepositCostAndPostButton(frame)
 			buyout = buyout * stackSize
 		end
 		ClearCursor()
-		PickupContainerItem(postBag, postSlot)
+		Container.PickupItem(postBag, postSlot)
 		ClickAuctionSellItemButton(AuctionsItemButton, "LeftButton")
 		ClearCursor()
 		depositCost = GetAuctionDeposit(postTime, bid, buyout, stackSize, numAuctions)

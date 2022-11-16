@@ -9,6 +9,7 @@ local Mail = TSM.Accounting:NewPackage("Mail")
 local Delay = TSM.Include("Util.Delay")
 local String = TSM.Include("Util.String")
 local ItemString = TSM.Include("Util.ItemString")
+local Container = TSM.Include("Util.Container")
 local DefaultUI = TSM.Include("Service.DefaultUI")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local InventoryInfo = TSM.Include("Service.InventoryInfo")
@@ -98,12 +99,12 @@ function private.CanLootMailIndex(index, copper)
 		if maxUnique > 0 and maxUnique < playerQty + quantity then
 			return
 		end
-		for bag = 0, NUM_BAG_SLOTS do
+		for bag = 0, Container.GetNumBags() do
 			if InventoryInfo.ItemWillGoInBag(link, bag) then
-				for slot = 1, GetContainerNumSlots(bag) do
-					local iString = ItemString.Get(GetContainerItemLink(bag, slot))
+				for slot = 1, Container.GetNumSlots(bag) do
+					local iString = ItemString.Get(Container.GetItemLink(bag, slot))
 					if iString == itemString then
-						local _, stackSize = GetContainerItemInfo(bag, slot)
+						local _, stackSize = Container.GetItemInfo(bag, slot)
 						local maxStackSize = ItemInfo.GetMaxStack(itemString) or 1
 						if (maxStackSize - stackSize) >= quantity then
 							return true

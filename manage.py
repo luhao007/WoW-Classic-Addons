@@ -690,12 +690,6 @@ class Manager:
     @staticmethod
     @available_on(['classic'])
     def handle_vuhdo():
-        if utils.get_platform() != 'retail':
-            utils.rm_tree('Addons/Vuhdo/Libs/!LibTotemInfo/LibStub')
-            utils.remove_libs_in_file(
-                'Addons/Vuhdo/Libs/!LibTotemInfo/embeds.xml',
-                ['LibStub']
-            )
         utils.rm_tree('Addons/Vuhdo/Libs/LibBase64-1.0/LibStub')
 
         utils.change_defaults(

@@ -9,6 +9,7 @@ local Sell = TSM.Vendoring:NewPackage("Sell")
 local Database = TSM.Include("Util.Database")
 local TempTable = TSM.Include("Util.TempTable")
 local ItemString = TSM.Include("Util.ItemString")
+local Container = TSM.Include("Util.Container")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local CustomPrice = TSM.Include("Service.CustomPrice")
 local BagTracking = TSM.Include("Service.BagTracking")
@@ -136,8 +137,8 @@ function Sell.SellItem(itemString, includeSoulbound)
 		:Equal("isBoP", false)
 		:Equal("isBoA", false)
 	for _, bag, slot, bagItemString in query:Iterator() do
-		if itemString == bagItemString and ItemString.Get(GetContainerItemLink(bag, slot)) == itemString then
-			UseContainerItem(bag, slot)
+		if itemString == bagItemString and ItemString.Get(Container.GetItemLink(bag, slot)) == itemString then
+			Container.UseItem(bag, slot)
 		end
 	end
 	query:Release()

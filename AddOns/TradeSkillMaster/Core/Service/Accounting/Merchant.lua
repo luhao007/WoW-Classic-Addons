@@ -9,6 +9,7 @@ local Merchant = TSM.Accounting:NewPackage("Merchant")
 local Event = TSM.Include("Util.Event")
 local Math = TSM.Include("Util.Math")
 local ItemString = TSM.Include("Util.ItemString")
+local Container = TSM.Include("Util.Container")
 local DefaultUI = TSM.Include("Service.DefaultUI")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local private = {
@@ -33,7 +34,11 @@ function Merchant.OnInitialize()
 	DefaultUI.RegisterMerchantVisibleCallback(private.MechantVisibilityHandler)
 	Event.Register("BAG_UPDATE_DELAYED", private.OnMerchantUpdate)
 	Event.Register("UPDATE_INVENTORY_DURABILITY", private.AddRepairCosts)
-	hooksecurefunc("UseContainerItem", private.CheckMerchantSale)
+	if TSM.IsWowDragonflightPTR() then
+		hooksecurefunc(C_Container, "UseContainerItem", private.CheckMerchantSale)
+	else
+		hooksecurefunc("UseContainerItem", private.CheckMerchantSale)
+	end
 	hooksecurefunc("BuyMerchantItem", private.OnMerchantBuy)
 	hooksecurefunc("BuybackItem", private.OnMerchantBuyback)
 end
@@ -99,14 +104,14 @@ function private.CheckMerchantSale(bag, slot, onSelf)
 		return
 	end
 
-	local itemString = ItemString.Get(GetContainerItemLink(bag, slot))
-	local _, quantity = GetContainerItemInfo(bag, slot)
+	local itemString = ItemString.Get(Container.GetItemLink(bag, slot))
+	local _, stackSize = Container.GetItemInfo(bag, slot)
 	local copper = ItemInfo.GetVendorSell(itemString)
-	if not itemString or not quantity or not copper then
+	if not itemString or not stackSize or not copper then
 		return
 	end
 	tinsert(private.pendingSales.itemString, itemString)
-	tinsert(private.pendingSales.quantity, quantity)
+	tinsert(private.pendingSales.quantity, stackSize)
 	tinsert(private.pendingSales.copper, copper)
 	tinsert(private.pendingSales.insertTime, GetTime())
 end

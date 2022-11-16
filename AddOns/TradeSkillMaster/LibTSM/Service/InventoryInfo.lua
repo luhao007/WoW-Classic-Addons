@@ -6,6 +6,7 @@
 
 local _, TSM = ...
 local InventoryInfo = TSM.Init("Service.InventoryInfo")
+local Container = TSM.Include("Util.Container")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local Event = TSM.Include("Util.Event")
 local SlotId = TSM.Include("Util.SlotId")
@@ -54,11 +55,11 @@ function InventoryInfo.ItemWillGoInBag(link, bag)
 		return IsReagentBankUnlocked() and ItemInfo.IsCraftingReagent(link)
 	end
 	local itemFamily = GetItemFamily(link) or 0
-	if ItemInfo.GetClassId(link) == LE_ITEM_CLASS_CONTAINER then
+	if ItemInfo.GetClassId(link) == Enum.ItemClass.Container then
 		-- bags report their family as what can go inside them, not what they can go inside
 		itemFamily = 0
 	end
-	local _, bagFamily = GetContainerNumFreeSlots(bag)
+	local _, bagFamily = Container.GetNumFreeSlots(bag)
 	if not bagFamily then
 		return
 	end
@@ -81,7 +82,7 @@ function InventoryInfo.IsSoulbound(bag, slot)
 	TSMScanTooltip:SetOwner(UIParent, "ANCHOR_NONE")
 	TSMScanTooltip:ClearLines()
 
-	if GetContainerItemID(bag, slot) == ItemString.ToId(ItemString.GetPetCage()) then
+	if Container.GetItemID(bag, slot) == ItemString.ToId(ItemString.GetPetCage()) then
 		-- battle pets are never BoP or BoA
 		private.slotIdSoulboundCached[slotId] = true
 		private.slotIdIsBoP[slotId] = false
@@ -125,7 +126,7 @@ end
 
 function InventoryInfo.HasUsedCharges(bag, slot)
 	-- figure out if this item has a max number of charges
-	local itemId = GetContainerItemID(bag, slot)
+	local itemId = Container.GetItemID(bag, slot)
 	if not itemId or itemId == ItemString.ToId(ItemString.GetPetCage()) then
 		return false
 	end

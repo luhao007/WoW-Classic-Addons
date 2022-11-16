@@ -12,6 +12,7 @@ local Money = TSM.Include("Util.Money")
 local SlotId = TSM.Include("Util.SlotId")
 local Log = TSM.Include("Util.Log")
 local ItemString = TSM.Include("Util.ItemString")
+local Container = TSM.Include("Util.Container")
 local Threading = TSM.Include("Service.Threading")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local CustomPrice = TSM.Include("Service.CustomPrice")
@@ -219,18 +220,18 @@ function private.SellItemThreaded(itemString, operationSettings)
 		local bag, slot = SlotId.Split(slotId)
 		local quantity = BagTracking.GetQuantityBySlotId(slotId)
 		if quantity <= numToSell then
-			UseContainerItem(bag, slot)
+			Container.UseItem(bag, slot)
 			totalValue = totalValue + ((ItemInfo.GetVendorSell(itemString) or 0) * quantity)
 			numToSell = numToSell - quantity
 		else
 			if #emptySlotIds > 0 then
 				local splitBag, splitSlot = SlotId.Split(tremove(emptySlotIds, 1))
-				SplitContainerItem(bag, slot, numToSell)
-				PickupContainerItem(splitBag, splitSlot)
+				Container.SplitItem(bag, slot, numToSell)
+				Container.PickupItem(splitBag, splitSlot)
 				-- wait for the stack to be split
 				Threading.WaitForFunction(private.BagSlotHasItem, splitBag, splitSlot)
-				PickupContainerItem(splitBag, splitSlot)
-				UseContainerItem(splitBag, splitSlot)
+				Container.PickupItem(splitBag, splitSlot)
+				Container.UseItem(splitBag, splitSlot)
 				totalValue = totalValue + ((ItemInfo.GetVendorSell(itemString) or 0) * quantity)
 			elseif not private.printedBagsFullMsg then
 				Log.PrintUser(L["Could not sell items due to not having free bag space available to split a stack of items."])
@@ -253,19 +254,8 @@ end
 function private.GetEmptyBagSlotsThreaded(itemFamily)
 	local emptySlotIds = Threading.AcquireSafeTempTable()
 	local sortvalue = Threading.AcquireSafeTempTable()
-	for bag = 0, NUM_BAG_SLOTS do
-		-- make sure the item can go in this bag
-		local bagFamily = bag ~= 0 and GetItemFamily(GetInventoryItemLink("player", ContainerIDToInventoryID(bag))) or 0
-		if bagFamily == 0 or bit.band(itemFamily, bagFamily) > 0 then
-			for slot = 1, GetContainerNumSlots(bag) do
-				if not GetContainerItemInfo(bag, slot) then
-					local slotId = SlotId.Join(bag, slot)
-					tinsert(emptySlotIds, slotId)
-					-- use special bags first
-					sortvalue[slotId] = slotId + (bagFamily > 0 and 0 or 100000)
-				end
-			end
-		end
+	for bag = 0, Container.GetNumBags() do
+		Container.GenerateSortedEmptyFamilySlots(bag, itemFamily, emptySlotIds, sortvalue)
 		Threading.Yield()
 	end
 	Table.SortWithValueLookup(emptySlotIds, sortvalue)
@@ -274,5 +264,5 @@ function private.GetEmptyBagSlotsThreaded(itemFamily)
 end
 
 function private.BagSlotHasItem(bag, slot)
-	return GetContainerItemInfo(bag, slot) and true or false
+	return Container.GetItemInfo(bag, slot) and true or false
 end

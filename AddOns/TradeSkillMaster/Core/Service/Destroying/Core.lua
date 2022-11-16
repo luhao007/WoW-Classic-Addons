@@ -7,6 +7,7 @@
 local _, TSM = ...
 local Destroying = TSM:NewPackage("Destroying")
 local DisenchantInfo = TSM.Include("Data.DisenchantInfo")
+local Container = TSM.Include("Util.Container")
 local Database = TSM.Include("Util.Database")
 local Event = TSM.Include("Util.Event")
 local SlotId = TSM.Include("Util.SlotId")
@@ -219,8 +220,8 @@ function private.CombineThread()
 	while Destroying.CanCombine() do
 		for _, combineSlotId in ipairs(private.pendingCombines) do
 			local sourceBag, sourceSlot, targetBag, targetSlot = private.CombineSlotIdToBagSlot(combineSlotId)
-			PickupContainerItem(sourceBag, sourceSlot)
-			PickupContainerItem(targetBag, targetSlot)
+			Container.PickupItem(sourceBag, sourceSlot)
+			Container.PickupItem(targetBag, targetSlot)
 		end
 		-- wait for the bagDB to change
 		private.newBagUpdate = false
@@ -441,10 +442,10 @@ function private.IsDestroyable(itemString)
 	local classId = ItemInfo.GetClassId(itemString)
 	local subClassId = ItemInfo.GetSubClassId(itemString)
 	-- Workaround for Fire Leaf (i:39970) not being treated as an herb (at least in classsic)
-	if (classId == LE_ITEM_CLASS_TRADEGOODS and subClassId == ITEM_SUB_CLASS_HERB) or itemString == "i:39970" then
+	if (classId == Enum.ItemClass.Tradegoods and subClassId == ITEM_SUB_CLASS_HERB) or itemString == "i:39970" then
 		conversionMethod = Conversions.METHOD.MILL
 		destroySpellId = SPELL_IDS.milling
-	elseif classId == LE_ITEM_CLASS_TRADEGOODS and subClassId == ITEM_SUB_CLASS_METAL_AND_STONE then
+	elseif classId == Enum.ItemClass.Tradegoods and subClassId == ITEM_SUB_CLASS_METAL_AND_STONE then
 		conversionMethod = Conversions.METHOD.PROSPECT
 		destroySpellId = SPELL_IDS.prospect
 	else

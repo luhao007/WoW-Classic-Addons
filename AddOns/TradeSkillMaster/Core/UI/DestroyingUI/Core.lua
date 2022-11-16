@@ -249,7 +249,7 @@ function private.ItemsOnSelectionChanged(self)
 	itemFrame:GetElement("header.icon")
 		:SetBackground(ItemInfo.GetTexture(itemString))
 		:SetTooltip(itemString)
-		itemFrame:GetElement("header.name")
+	itemFrame:GetElement("header.name")
 		:SetText(TSM.UI.GetColoredItemName(itemString) or "")
 
 	local info, targetItems = private.GetDestroyInfo(itemString)

@@ -14,6 +14,7 @@ local Delay = TSM.Include("Util.Delay")
 local Math = TSM.Include("Util.Math")
 local Log = TSM.Include("Util.Log")
 local ItemString = TSM.Include("Util.ItemString")
+local Container = TSM.Include("Util.Container")
 local DefaultUI = TSM.Include("Service.DefaultUI")
 local Threading = TSM.Include("Service.Threading")
 local ItemInfo = TSM.Include("Service.ItemInfo")
@@ -124,7 +125,7 @@ function PostScan.DoProcess()
 	local itemString, stackSize, bid, buyout, itemBuyout, postTime = postRow:GetFields("itemString", "stackSize", "bid", "buyout", "itemBuyout", "postTime")
 	local bag, slot = private.GetPostBagSlot(itemString, stackSize)
 	if bag then
-		local _, bagQuantity = GetContainerItemInfo(bag, slot)
+		local _, bagQuantity = Container.GetItemInfo(bag, slot)
 		Log.Info("Posting %s x %d from %d,%d (%d)", itemString, stackSize, bag, slot, bagQuantity or -1)
 		if TSM.IsWowClassic() then
 			result = AuctionHouseWrapper.PostAuction(bag, slot, bid, buyout, postTime, stackSize, 1)
@@ -851,14 +852,14 @@ function private.GetPostBagSlot(itemString, quantity)
 	local removeContext = TempTable.Acquire()
 	bag, slot = private.ItemBagSlotHelper(itemString, bag, slot, quantity, removeContext)
 
-	local bagItemString = ItemString.Get(GetContainerItemLink(bag, slot))
+	local bagItemString = ItemString.Get(Container.GetItemLink(bag, slot))
 	if not bagItemString or TSM.Groups.TranslateItemString(bagItemString) ~= itemString then
 		-- something changed with the player's bags so we can't post the item right now
 		TempTable.Release(removeContext)
 		private.DebugLogInsert(itemString, "Bags changed")
 		return nil, nil
 	end
-	local _, _, _, quality = GetContainerItemInfo(bag, slot)
+	local _, _, _, quality = Container.GetItemInfo(bag, slot)
 	assert(quality)
 	if quality == -1 then
 		-- the game client doesn't have item info cached for this item, so we can't post it yet
@@ -981,12 +982,11 @@ function private.ErrorForItem(itemString, errorStr)
 		end
 	end
 	Log.Info("Bag state:")
-	for b = 0, NUM_BAG_SLOTS do
-		for s = 1, GetContainerNumSlots(b) do
-			if ItemString.GetBase(GetContainerItemLink(b, s)) == itemString then
-				local _, q = GetContainerItemInfo(b, s)
-				Log.Info("%d in %d, %d", q, b, s)
-			end
+	for slotId in Container.GetBagSlotIterator() do
+		local bag, slot = SlotId.Split(slotId)
+		if ItemString.GetBase(Container.GetItemLink(bag, slot)) == itemString then
+			local _, stackSize = Container.GetItemInfo(bag, slot)
+			Log.Info("%d in %d, %d", stackSize, bag, slot)
 		end
 	end
 	error(errorStr, 2)

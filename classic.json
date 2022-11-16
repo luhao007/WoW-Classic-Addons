@@ -6,10 +6,10 @@
     "name": "ALL THE THINGS",
     "description": "Addon for Tracking Collections & Account Completion",
     "url": "https://www.curseforge.com/wow/addons/all-the-things",
-    "download_url": "https://edge.forgecdn.net/files/4059/469/ATT-Classic-v1.2.0-wrath.zip",
-    "date_published": "2022-10-31T07:15:44.690000+00:00",
-    "version": "Wrath Classic 1.2.0",
-    "changelog_url": "https://api.curseforge.com/v1/mods/267285/files/4059469/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4089/260/ATT-Classic-v1.2.3-wrath.zip",
+    "date_published": "2022-11-15T21:00:11.420000+00:00",
+    "version": "Wrath Classic 1.2.3",
+    "changelog_url": "https://api.curseforge.com/v1/mods/267285/files/4089260/changelog",
     "options": {
       "any_flavour": false,
       "any_release_type": false,
@@ -22,6 +22,18 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "Wrath Classic 1.2.3",
+        "install_time": "2022-11-16T03:48:25+00:00"
+      },
+      {
+        "version": "Wrath Classic 1.2.2",
+        "install_time": "2022-11-13T08:56:19+00:00"
+      },
+      {
+        "version": "Wrath Classic 1.2.1",
+        "install_time": "2022-11-03T09:52:35+00:00"
+      },
       {
         "version": "Wrath Classic 1.2.0",
         "install_time": "2022-10-31T11:42:15+00:00"
@@ -49,18 +61,6 @@
       {
         "version": "Wrath Classic 1.1.1",
         "install_time": "2022-10-01T13:34:05+00:00"
-      },
-      {
-        "version": "Wrath Classic 1.1.0",
-        "install_time": "2022-09-21T08:49:29+00:00"
-      },
-      {
-        "version": "Wrath Classic 1.0.9",
-        "install_time": "2022-09-18T08:21:50+00:00"
-      },
-      {
-        "version": "Wrath Classic 1.0.8",
-        "install_time": "2022-09-08T12:53:33+00:00"
       }
     ]
   },
@@ -71,10 +71,10 @@
     "name": "Addon Usage",
     "description": "Compares the relative memory and cpu usage of running addons",
     "url": "https://www.curseforge.com/wow/addons/addon-usage",
-    "download_url": "https://edge.forgecdn.net/files/4050/899/AddonUsage_3_1_1.zip",
-    "date_published": "2022-10-25T23:40:10.087000+00:00",
-    "version": "AddonUsage_3_1_1.zip",
-    "changelog_url": "https://api.curseforge.com/v1/mods/67954/files/4050899/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4088/657/AddonUsage_3_1_2.zip",
+    "date_published": "2022-11-15T17:17:41.593000+00:00",
+    "version": "AddonUsage_3_1_2.zip",
+    "changelog_url": "https://api.curseforge.com/v1/mods/67954/files/4088657/changelog",
     "options": {
       "any_flavour": false,
       "any_release_type": false,
@@ -87,6 +87,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "AddonUsage_3_1_2.zip",
+        "install_time": "2022-11-16T03:48:25+00:00"
+      },
       {
         "version": "AddonUsage_3_1_1.zip",
         "install_time": "2022-10-26T03:38:21+00:00"
@@ -120,10 +124,10 @@
     "name": "Atlas",
     "description": "Instance map browser",
     "url": "https://www.curseforge.com/wow/addons/atlas",
-    "download_url": "https://edge.forgecdn.net/files/3959/104/Atlas-v1.51.06.zip",
-    "date_published": "2022-08-30T18:21:08.923000+00:00",
-    "version": "v1.51.06",
-    "changelog_url": "https://api.curseforge.com/v1/mods/301/files/3959104/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4082/299/Atlas-v1.52.01.zip",
+    "date_published": "2022-11-12T12:13:09.610000+00:00",
+    "version": "v1.52.01",
+    "changelog_url": "https://api.curseforge.com/v1/mods/301/files/4082299/changelog",
     "options": {
       "any_flavour": false,
       "any_release_type": false,
@@ -136,6 +140,14 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v1.52.01",
+        "install_time": "2022-11-13T08:56:20+00:00"
+      },
+      {
+        "version": "v1.52.00",
+        "install_time": "2022-11-07T10:56:40+00:00"
+      },
       {
         "version": "v1.51.06",
         "install_time": "2022-09-01T13:42:45+00:00"
@@ -169,10 +181,10 @@
     "name": "Atlas Battlegrounds",
     "description": "Battleground Maps",
     "url": "https://www.curseforge.com/wow/addons/atlas-battlegrounds",
-    "download_url": "https://edge.forgecdn.net/files/3958/717/Atlas_Battlegrounds-v1.51.04.zip",
-    "date_published": "2022-08-30T14:36:50.533000+00:00",
-    "version": "v1.51.04",
-    "changelog_url": "https://api.curseforge.com/v1/mods/32829/files/3958717/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4070/230/Atlas_Battlegrounds-v1.52.00.zip",
+    "date_published": "2022-11-06T14:27:35.603000+00:00",
+    "version": "v1.52.00",
+    "changelog_url": "https://api.curseforge.com/v1/mods/32829/files/4070230/changelog",
     "options": {
       "any_flavour": false,
       "any_release_type": false,
@@ -183,12 +195,12 @@
         "name": "Atlas_Battlegrounds"
       }
     ],
-    "deps": [
-      {
-        "id": "301"
-      }
-    ],
+    "deps": [],
     "logged_versions": [
+      {
+        "version": "v1.52.00",
+        "install_time": "2022-11-07T10:56:40+00:00"
+      },
       {
         "version": "v1.51.04",
         "install_time": "2022-09-01T13:42:45+00:00"
@@ -218,10 +230,10 @@
     "name": "Atlas Classic WoW",
     "description": "Classic WoW Instances' Maps",
     "url": "https://www.curseforge.com/wow/addons/atlas-classicwow",
-    "download_url": "https://edge.forgecdn.net/files/3947/67/Atlas_ClassicWoW-v1.51.02.zip",
-    "date_published": "2022-08-22T16:07:10.950000+00:00",
-    "version": "v1.51.02",
-    "changelog_url": "https://api.curseforge.com/v1/mods/33667/files/3947067/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4070/242/Atlas_ClassicWoW-v1.52.00.zip",
+    "date_published": "2022-11-06T14:30:44.620000+00:00",
+    "version": "v1.52.00",
+    "changelog_url": "https://api.curseforge.com/v1/mods/33667/files/4070242/changelog",
     "options": {
       "any_flavour": false,
       "any_release_type": false,
@@ -232,12 +244,12 @@
         "name": "Atlas_ClassicWoW"
       }
     ],
-    "deps": [
-      {
-        "id": "301"
-      }
-    ],
+    "deps": [],
     "logged_versions": [
+      {
+        "version": "v1.52.00",
+        "install_time": "2022-11-07T10:56:41+00:00"
+      },
       {
         "version": "v1.51.02",
         "install_time": "2022-09-01T13:42:46+00:00"
@@ -267,10 +279,10 @@
     "name": "Atlas Dungeon Locations",
     "description": "Maps for instances' location",
     "url": "https://www.curseforge.com/wow/addons/atlas-dungeon-locations",
-    "download_url": "https://edge.forgecdn.net/files/3955/215/Atlas_DungeonLocs-v1.51.07.zip",
-    "date_published": "2022-08-28T08:38:01.187000+00:00",
-    "version": "v1.51.07",
-    "changelog_url": "https://api.curseforge.com/v1/mods/32830/files/3955215/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4070/247/Atlas_DungeonLocs-v1.52.00.zip",
+    "date_published": "2022-11-06T14:32:40.910000+00:00",
+    "version": "v1.52.00",
+    "changelog_url": "https://api.curseforge.com/v1/mods/32830/files/4070247/changelog",
     "options": {
       "any_flavour": false,
       "any_release_type": false,
@@ -281,12 +293,12 @@
         "name": "Atlas_DungeonLocs"
       }
     ],
-    "deps": [
-      {
-        "id": "301"
-      }
-    ],
+    "deps": [],
     "logged_versions": [
+      {
+        "version": "v1.52.00",
+        "install_time": "2022-11-07T10:56:41+00:00"
+      },
       {
         "version": "v1.51.07",
         "install_time": "2022-09-01T13:42:46+00:00"
@@ -316,10 +328,10 @@
     "name": "Atlas Outdoor Raids",
     "description": "Maps for Outdoor Raid Encounters",
     "url": "https://www.curseforge.com/wow/addons/atlas-outdoor-raids",
-    "download_url": "https://edge.forgecdn.net/files/3958/681/Atlas_OutdoorRaids-v1.51.02.zip",
-    "date_published": "2022-08-30T14:14:33.640000+00:00",
-    "version": "v1.51.02",
-    "changelog_url": "https://api.curseforge.com/v1/mods/32831/files/3958681/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4070/255/Atlas_OutdoorRaids-v1.52.00.zip",
+    "date_published": "2022-11-06T14:34:56.390000+00:00",
+    "version": "v1.52.00",
+    "changelog_url": "https://api.curseforge.com/v1/mods/32831/files/4070255/changelog",
     "options": {
       "any_flavour": false,
       "any_release_type": false,
@@ -330,12 +342,12 @@
         "name": "Atlas_OutdoorRaids"
       }
     ],
-    "deps": [
-      {
-        "id": "301"
-      }
-    ],
+    "deps": [],
     "logged_versions": [
+      {
+        "version": "v1.52.00",
+        "install_time": "2022-11-07T10:56:41+00:00"
+      },
       {
         "version": "v1.51.02",
         "install_time": "2022-09-01T17:08:00+00:00"
@@ -349,10 +361,10 @@
     "name": "Atlas Transportation",
     "description": "Transportation Maps",
     "url": "https://www.curseforge.com/wow/addons/atlas-transportation",
-    "download_url": "https://edge.forgecdn.net/files/3968/280/Atlas_Transportation-v1.51.08.zip",
-    "date_published": "2022-09-04T15:02:16.793000+00:00",
-    "version": "v1.51.08",
-    "changelog_url": "https://api.curseforge.com/v1/mods/32832/files/3968280/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4070/263/Atlas_Transportation-v1.52.00.zip",
+    "date_published": "2022-11-06T14:36:34.890000+00:00",
+    "version": "v1.52.00",
+    "changelog_url": "https://api.curseforge.com/v1/mods/32832/files/4070263/changelog",
     "options": {
       "any_flavour": false,
       "any_release_type": false,
@@ -363,12 +375,12 @@
         "name": "Atlas_Transportation"
       }
     ],
-    "deps": [
-      {
-        "id": "301"
-      }
-    ],
+    "deps": [],
     "logged_versions": [
+      {
+        "version": "v1.52.00",
+        "install_time": "2022-11-07T10:56:42+00:00"
+      },
       {
         "version": "v1.51.08",
         "install_time": "2022-09-05T11:09:42+00:00"
@@ -402,10 +414,10 @@
     "name": "Atlas Wrath of the Lich King",
     "description": "Wrath of the Lich King Instances' Maps",
     "url": "https://www.curseforge.com/wow/addons/atlas-wrathofthelichking",
-    "download_url": "https://edge.forgecdn.net/files/3947/7/Atlas_WrathoftheLichKing-v1.51.02.zip",
-    "date_published": "2022-08-22T15:30:21.780000+00:00",
-    "version": "v1.51.02",
-    "changelog_url": "https://api.curseforge.com/v1/mods/33668/files/3947007/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4070/269/Atlas_WrathoftheLichKing-v1.52.00.zip",
+    "date_published": "2022-11-06T14:37:56.883000+00:00",
+    "version": "v1.52.00",
+    "changelog_url": "https://api.curseforge.com/v1/mods/33668/files/4070269/changelog",
     "options": {
       "any_flavour": false,
       "any_release_type": false,
@@ -416,12 +428,12 @@
         "name": "Atlas_WrathoftheLichKing"
       }
     ],
-    "deps": [
-      {
-        "id": "301"
-      }
-    ],
+    "deps": [],
     "logged_versions": [
+      {
+        "version": "v1.52.00",
+        "install_time": "2022-11-07T10:56:42+00:00"
+      },
       {
         "version": "v1.51.02",
         "install_time": "2022-09-01T17:08:00+00:00"
@@ -592,10 +604,10 @@
     "name": "BlizzMove",
     "description": "Makes the default frames moveable via simple drag and drop",
     "url": "https://www.curseforge.com/wow/addons/blizzmove",
-    "download_url": "https://edge.forgecdn.net/files/4062/16/BlizzMove-v3.5.3.zip",
-    "date_published": "2022-11-01T22:51:40.423000+00:00",
-    "version": "v3.5.3",
-    "changelog_url": "https://api.curseforge.com/v1/mods/17809/files/4062016/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4089/173/BlizzMove-v3.5.5.zip",
+    "date_published": "2022-11-15T20:42:18.043000+00:00",
+    "version": "v3.5.5",
+    "changelog_url": "https://api.curseforge.com/v1/mods/17809/files/4089173/changelog",
     "options": {
       "any_flavour": false,
       "any_release_type": false,
@@ -611,6 +623,14 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v3.5.5",
+        "install_time": "2022-11-16T03:48:25+00:00"
+      },
+      {
+        "version": "v3.5.4",
+        "install_time": "2022-11-04T11:19:10+00:00"
+      },
       {
         "version": "v3.5.3",
         "install_time": "2022-11-02T09:03:34+00:00"
@@ -642,14 +662,6 @@
       {
         "version": "v3.4.7",
         "install_time": "2022-09-27T03:28:43+00:00"
-      },
-      {
-        "version": "v3.4.6",
-        "install_time": "2022-09-25T14:20:59+00:00"
-      },
-      {
-        "version": "v3.4.5",
-        "install_time": "2022-09-19T07:18:39+00:00"
       }
     ]
   },
@@ -740,10 +752,10 @@
     "name": "Deadly Boss Mods (DBM) - Event Pack",
     "description": "Several media files for DBM encounter Event feature.",
     "url": "https://www.curseforge.com/wow/addons/deadly-boss-mods-dbm-event-sound-pack",
-    "download_url": "https://edge.forgecdn.net/files/4049/977/DBM-SoundEventsPack-1.6.19.zip",
-    "date_published": "2022-10-25T14:58:02.733000+00:00",
-    "version": "1.6.19",
-    "changelog_url": "https://api.curseforge.com/v1/mods/289311/files/4049977/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4087/886/DBM-SoundEventsPack-1.6.20.zip",
+    "date_published": "2022-11-15T05:48:12.303000+00:00",
+    "version": "1.6.20",
+    "changelog_url": "https://api.curseforge.com/v1/mods/289311/files/4087886/changelog",
     "options": {
       "any_flavour": false,
       "any_release_type": false,
@@ -761,6 +773,10 @@
     ],
     "logged_versions": [
       {
+        "version": "1.6.20",
+        "install_time": "2022-11-16T03:48:26+00:00"
+      },
+      {
         "version": "1.6.19",
         "install_time": "2022-10-26T03:38:21+00:00"
       },
@@ -777,10 +793,10 @@
     "name": "Deadly Boss Mods (DBM) - PvP Mods",
     "description": "Deadly Boss Mods for Battlegrounds and Arenas",
     "url": "https://www.curseforge.com/wow/addons/dbm-pvp",
-    "download_url": "https://edge.forgecdn.net/files/4049/982/DBM-PvP-r138.zip",
-    "date_published": "2022-10-25T14:59:14.270000+00:00",
-    "version": "r138",
-    "changelog_url": "https://api.curseforge.com/v1/mods/61882/files/4049982/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4087/884/DBM-PvP-r139.zip",
+    "date_published": "2022-11-15T05:47:33.560000+00:00",
+    "version": "r139",
+    "changelog_url": "https://api.curseforge.com/v1/mods/61882/files/4087884/changelog",
     "options": {
       "any_flavour": false,
       "any_release_type": false,
@@ -797,6 +813,10 @@
       }
     ],
     "logged_versions": [
+      {
+        "version": "r139",
+        "install_time": "2022-11-16T03:48:26+00:00"
+      },
       {
         "version": "r138",
         "install_time": "2022-10-26T03:38:21+00:00"
@@ -832,10 +852,6 @@
       {
         "version": "r125-bcc",
         "install_time": "2021-07-17T04:03:34+00:00"
-      },
-      {
-        "version": "r124-classic",
-        "install_time": "2021-05-23T07:48:34+00:00"
       }
     ]
   },
@@ -940,10 +956,10 @@
     "name": "GTFO",
     "description": "GTFO warns you when you're standing in fire or other bad stuff.",
     "url": "https://www.curseforge.com/wow/addons/gtfo",
-    "download_url": "https://edge.forgecdn.net/files/4020/28/GTFO-4.69-Wrath.zip",
-    "date_published": "2022-10-06T17:32:08.357000+00:00",
-    "version": "4.69-Wrath",
-    "changelog_url": "https://api.curseforge.com/v1/mods/20697/files/4020028/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4089/856/GTFO-4.69.2-Wrath.zip",
+    "date_published": "2022-11-16T02:00:22.803000+00:00",
+    "version": "4.69.2-Wrath",
+    "changelog_url": "https://api.curseforge.com/v1/mods/20697/files/4089856/changelog",
     "options": {
       "any_flavour": false,
       "any_release_type": false,
@@ -956,6 +972,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "4.69.2-Wrath",
+        "install_time": "2022-11-16T03:48:26+00:00"
+      },
       {
         "version": "4.69-Wrath",
         "install_time": "2022-10-08T09:12:35+00:00"
@@ -991,10 +1011,6 @@
       {
         "version": "4.57.2-classic",
         "install_time": "2020-12-23T09:23:21+00:00"
-      },
-      {
-        "version": "4.57.1-classic",
-        "install_time": "2020-12-19T15:21:54+00:00"
       }
     ]
   },
@@ -1050,10 +1066,10 @@
     "name": "GatherMate2 Data Wowhead classic",
     "description": "GatherMate2 data from Wowhead",
     "url": "https://www.curseforge.com/wow/addons/gathermate2-data-wowhead-classic",
-    "download_url": "https://edge.forgecdn.net/files/4030/645/gathermate2_data_wowhead_classic_v2022-10-16.zip",
-    "date_published": "2022-10-16T11:34:17.870000+00:00",
-    "version": "gathermate2_data_wowhead_classic_v2022-10-16.zip",
-    "changelog_url": "https://api.curseforge.com/v1/mods/350035/files/4030645/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4069/838/gathermate2_data_wowhead_classic_v2022-11-06.zip",
+    "date_published": "2022-11-06T09:54:17.793000+00:00",
+    "version": "gathermate2_data_wowhead_classic_v2022-11-06.zip",
+    "changelog_url": "https://api.curseforge.com/v1/mods/350035/files/4069838/changelog",
     "options": {
       "any_flavour": false,
       "any_release_type": false,
@@ -1066,6 +1082,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "gathermate2_data_wowhead_classic_v2022-11-06.zip",
+        "install_time": "2022-11-07T10:56:42+00:00"
+      },
       {
         "version": "gathermate2_data_wowhead_classic_v2022-10-16.zip",
         "install_time": "2022-10-17T11:52:02+00:00"
@@ -1101,10 +1121,6 @@
       {
         "version": "gathermate2_data_wowhead_classic_v2021-06-03.zip",
         "install_time": "2021-06-04T07:51:29+00:00"
-      },
-      {
-        "version": "gathermate2_data_wowhead_classic_v2021-05-31.zip",
-        "install_time": "2021-06-02T04:21:36+00:00"
       }
     ]
   },
@@ -1144,10 +1160,10 @@
     "name": "HandyNotes",
     "description": "Handy notes for your maps",
     "url": "https://www.curseforge.com/wow/addons/handynotes",
-    "download_url": "https://edge.forgecdn.net/files/4059/483/HandyNotes-v1.6.10.zip",
-    "date_published": "2022-10-31T07:32:21.870000+00:00",
-    "version": "v1.6.10",
-    "changelog_url": "https://api.curseforge.com/v1/mods/14154/files/4059483/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4073/235/HandyNotes-v1.6.12.zip",
+    "date_published": "2022-11-07T20:20:44.360000+00:00",
+    "version": "v1.6.12",
+    "changelog_url": "https://api.curseforge.com/v1/mods/14154/files/4073235/changelog",
     "options": {
       "any_flavour": false,
       "any_release_type": false,
@@ -1160,6 +1176,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v1.6.12",
+        "install_time": "2022-11-08T11:09:35+00:00"
+      },
       {
         "version": "v1.6.10",
         "install_time": "2022-10-31T11:42:15+00:00"
@@ -1618,10 +1638,10 @@
     "name": "OPie\u200b",
     "description": "Bind actions to a pop-up radial menu.",
     "url": "https://www.curseforge.com/wow/addons/opie",
-    "download_url": "https://edge.forgecdn.net/files/4001/939/OPie-xe9.zip",
-    "date_published": "2022-09-23T19:14:51.637000+00:00",
-    "version": "Xe 9",
-    "changelog_url": "https://api.curseforge.com/v1/mods/19406/files/4001939/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4064/419/OPie-yuzu1.zip",
+    "date_published": "2022-11-02T21:31:07.633000+00:00",
+    "version": "Yuzu 1",
+    "changelog_url": "https://api.curseforge.com/v1/mods/19406/files/4064419/changelog",
     "options": {
       "any_flavour": false,
       "any_release_type": false,
@@ -1634,6 +1654,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "Yuzu 1",
+        "install_time": "2022-11-03T09:52:35+00:00"
+      },
       {
         "version": "Xe 9",
         "install_time": "2022-09-24T02:53:48+00:00"
@@ -1776,10 +1800,10 @@
     "name": "Pawn",
     "description": "Pawn helps you compare items and find upgrades.",
     "url": "https://www.curseforge.com/wow/addons/pawn",
-    "download_url": "https://edge.forgecdn.net/files/4052/455/Pawn-2.7.6-Wrath.zip",
-    "date_published": "2022-10-26T17:55:26.620000+00:00",
-    "version": "2.7.6 (Wrath)",
-    "changelog_url": "https://api.curseforge.com/v1/mods/4646/files/4052455/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4084/820/Pawn-2.7.8-Wrath.zip",
+    "date_published": "2022-11-13T17:17:45.007000+00:00",
+    "version": "2.7.8 (Wrath)",
+    "changelog_url": "https://api.curseforge.com/v1/mods/4646/files/4084820/changelog",
     "options": {
       "any_flavour": false,
       "any_release_type": false,
@@ -1792,6 +1816,14 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "2.7.8 (Wrath)",
+        "install_time": "2022-11-14T09:55:51+00:00"
+      },
+      {
+        "version": "2.7.7 (Wrath)",
+        "install_time": "2022-11-06T07:48:30+00:00"
+      },
       {
         "version": "2.7.6 (Wrath)",
         "install_time": "2022-10-29T02:01:23+00:00"
@@ -1823,14 +1855,6 @@
       {
         "version": "2.6.6 (Wrath)",
         "install_time": "2022-09-09T12:13:41+00:00"
-      },
-      {
-        "version": "2.6.5 (Wrath)",
-        "install_time": "2022-09-06T07:17:02+00:00"
-      },
-      {
-        "version": "2.6.4 (Wrath)",
-        "install_time": "2022-09-05T11:09:43+00:00"
       }
     ]
   },
@@ -1841,10 +1865,10 @@
     "name": "Plater Nameplates",
     "description": "Highly customizable nameplate with support to scripts and animations.",
     "url": "https://www.curseforge.com/wow/addons/plater-nameplates",
-    "download_url": "https://edge.forgecdn.net/files/4050/635/Plater-Plater-v537.1.zip",
-    "date_published": "2022-10-25T21:33:46.723000+00:00",
-    "version": "Plater-v537.1",
-    "changelog_url": "https://api.curseforge.com/v1/mods/100547/files/4050635/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4069/116/Plater-Plater-v538.zip",
+    "date_published": "2022-11-05T19:31:44.373000+00:00",
+    "version": "Plater-v538",
+    "changelog_url": "https://api.curseforge.com/v1/mods/100547/files/4069116/changelog",
     "options": {
       "any_flavour": false,
       "any_release_type": false,
@@ -1857,6 +1881,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "Plater-v538",
+        "install_time": "2022-11-06T07:48:31+00:00"
+      },
       {
         "version": "Plater-v537.1",
         "install_time": "2022-10-26T03:38:23+00:00"
@@ -1892,10 +1920,6 @@
       {
         "version": "Plater-v336-bcc",
         "install_time": "2021-07-17T04:03:36+00:00"
-      },
-      {
-        "version": "Plater-v331.1-bcc",
-        "install_time": "2021-06-08T12:12:23+00:00"
       }
     ]
   },
@@ -1906,10 +1930,10 @@
     "name": "Questie",
     "description": "The Classic Quest Helper",
     "url": "https://www.curseforge.com/wow/addons/questie",
-    "download_url": "https://edge.forgecdn.net/files/4036/786/Questie-v7.4.2.zip",
-    "date_published": "2022-10-21T19:07:07.430000+00:00",
-    "version": "v7.4.2",
-    "changelog_url": "https://api.curseforge.com/v1/mods/334372/files/4036786/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4073/190/Questie-v7.4.5.zip",
+    "date_published": "2022-11-07T19:31:36.957000+00:00",
+    "version": "v7.4.5",
+    "changelog_url": "https://api.curseforge.com/v1/mods/334372/files/4073190/changelog",
     "options": {
       "any_flavour": false,
       "any_release_type": false,
@@ -1922,6 +1946,18 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v7.4.5",
+        "install_time": "2022-11-08T11:09:36+00:00"
+      },
+      {
+        "version": "v7.4.4",
+        "install_time": "2022-11-04T11:19:10+00:00"
+      },
+      {
+        "version": "v7.4.3",
+        "install_time": "2022-11-03T09:52:36+00:00"
+      },
       {
         "version": "v7.4.2",
         "install_time": "2022-10-22T03:17:57+00:00"
@@ -1949,18 +1985,6 @@
       {
         "version": "v7.2.4",
         "install_time": "2022-09-30T13:06:04+00:00"
-      },
-      {
-        "version": "v7.2.3",
-        "install_time": "2022-09-29T12:57:01+00:00"
-      },
-      {
-        "version": "v7.2.2",
-        "install_time": "2022-09-27T12:56:49+00:00"
-      },
-      {
-        "version": "v7.2.1",
-        "install_time": "2022-09-27T03:28:45+00:00"
       }
     ]
   },
@@ -2020,10 +2044,10 @@
     "name": "RangeDisplay",
     "description": "Estimated range display. Type /rangedisplay for config",
     "url": "https://www.curseforge.com/wow/addons/range-display",
-    "download_url": "https://edge.forgecdn.net/files/4056/655/RangeDisplay-v5.0.1.zip",
-    "date_published": "2022-10-29T16:01:58.827000+00:00",
-    "version": "v5.0.1",
-    "changelog_url": "https://api.curseforge.com/v1/mods/14570/files/4056655/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4068/605/RangeDisplay-v5.0.3.zip",
+    "date_published": "2022-11-05T12:16:44.050000+00:00",
+    "version": "v5.0.3",
+    "changelog_url": "https://api.curseforge.com/v1/mods/14570/files/4068605/changelog",
     "options": {
       "any_flavour": true,
       "any_release_type": false,
@@ -2039,6 +2063,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v5.0.3",
+        "install_time": "2022-11-06T07:48:32+00:00"
+      },
       {
         "version": "v5.0.1",
         "install_time": "2022-10-30T03:01:29+00:00"
@@ -2095,39 +2123,6 @@
       {
         "version": "RareScanner_WOTLK_3.4.0.1",
         "install_time": "2022-09-21T11:32:12+00:00"
-      }
-    ]
-  },
-  {
-    "source": "curse",
-    "id": "287692",
-    "slug": "simple-item-level",
-    "name": "Simple Item Levels",
-    "description": "Show item levels in the character frame",
-    "url": "https://www.curseforge.com/wow/addons/simple-item-level",
-    "download_url": "https://edge.forgecdn.net/files/4051/246/SimpleItemLevel-v19.1.zip",
-    "date_published": "2022-10-26T02:52:39.007000+00:00",
-    "version": "v19.1",
-    "changelog_url": "https://api.curseforge.com/v1/mods/287692/files/4051246/changelog",
-    "options": {
-      "any_flavour": false,
-      "any_release_type": false,
-      "version_eq": false
-    },
-    "folders": [
-      {
-        "name": "SimpleItemLevel"
-      }
-    ],
-    "deps": [],
-    "logged_versions": [
-      {
-        "version": "v19.1",
-        "install_time": "2022-10-26T03:38:23+00:00"
-      },
-      {
-        "version": "v18",
-        "install_time": "2022-09-10T12:51:02+00:00"
       }
     ]
   },
@@ -2212,10 +2207,10 @@
     "name": "TomTom",
     "description": "Acts as your portable navigation assistant",
     "url": "https://www.curseforge.com/wow/addons/tomtom",
-    "download_url": "https://edge.forgecdn.net/files/4059/491/TomTom-v3.3.2-release.zip",
-    "date_published": "2022-10-31T07:40:09.353000+00:00",
-    "version": "v3.3.2-release",
-    "changelog_url": "https://api.curseforge.com/v1/mods/18808/files/4059491/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4073/249/TomTom-v3.3.4-release.zip",
+    "date_published": "2022-11-07T20:34:30.747000+00:00",
+    "version": "v3.3.4-release",
+    "changelog_url": "https://api.curseforge.com/v1/mods/18808/files/4073249/changelog",
     "options": {
       "any_flavour": false,
       "any_release_type": false,
@@ -2228,6 +2223,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v3.3.4-release",
+        "install_time": "2022-11-08T11:09:36+00:00"
+      },
       {
         "version": "v3.3.2-release",
         "install_time": "2022-10-31T11:42:15+00:00"
@@ -2263,10 +2262,6 @@
       {
         "version": "v3.0.1-bcc",
         "install_time": "2021-05-21T08:24:26+00:00"
-      },
-      {
-        "version": "v3.0.1-classic",
-        "install_time": "2021-05-21T01:44:35+00:00"
       }
     ]
   },
@@ -2315,10 +2310,10 @@
     "name": "VuhDo",
     "description": "Raid Frames providing click-heal functionality, buff and debuff control, main tank management and much more.",
     "url": "https://www.curseforge.com/wow/addons/vuhdo",
-    "download_url": "https://edge.forgecdn.net/files/4060/918/VuhDo-v3.143-wotlkc-wrath.zip",
-    "date_published": "2022-11-01T03:33:52.503000+00:00",
-    "version": "v3.143-wotlkc-wrath",
-    "changelog_url": "https://api.curseforge.com/v1/mods/7950/files/4060918/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4089/955/VuhDo-v3.144-wotlkc-wrath.zip",
+    "date_published": "2022-11-16T03:40:05.587000+00:00",
+    "version": "v3.144-wotlkc-wrath",
+    "changelog_url": "https://api.curseforge.com/v1/mods/7950/files/4089955/changelog",
     "options": {
       "any_flavour": false,
       "any_release_type": false,
@@ -2334,6 +2329,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v3.144-wotlkc-wrath",
+        "install_time": "2022-11-16T03:48:26+00:00"
+      },
       {
         "version": "v3.143-wotlkc-wrath",
         "install_time": "2022-11-02T09:03:35+00:00"
@@ -2369,10 +2368,6 @@
       {
         "version": "v3.129-tbcc-bcc",
         "install_time": "2021-11-17T11:12:52+00:00"
-      },
-      {
-        "version": "v3.124-tbcc-bc",
-        "install_time": "2021-06-02T04:21:38+00:00"
       }
     ]
   },
@@ -2448,10 +2443,10 @@
     "name": "WeakAuras",
     "description": "A powerful, comprehensive utilty for displaying graphics and information based on buffs, debuffs, and other triggers.",
     "url": "https://www.curseforge.com/wow/addons/weakauras-2",
-    "download_url": "https://edge.forgecdn.net/files/4055/641/WeakAuras-5.0.5.zip",
-    "date_published": "2022-10-28T23:10:09.683000+00:00",
-    "version": "5.0.5",
-    "changelog_url": "https://api.curseforge.com/v1/mods/65387/files/4055641/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4088/866/WeakAuras-5.2.0.zip",
+    "date_published": "2022-11-15T18:33:10.200000+00:00",
+    "version": "5.2.0",
+    "changelog_url": "https://api.curseforge.com/v1/mods/65387/files/4088866/changelog",
     "options": {
       "any_flavour": false,
       "any_release_type": false,
@@ -2476,6 +2471,18 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "5.2.0",
+        "install_time": "2022-11-16T03:48:27+00:00"
+      },
+      {
+        "version": "5.1.1",
+        "install_time": "2022-11-09T03:59:06+00:00"
+      },
+      {
+        "version": "5.1.0",
+        "install_time": "2022-11-08T11:09:38+00:00"
+      },
       {
         "version": "5.0.5",
         "install_time": "2022-10-29T02:01:26+00:00"
@@ -2503,18 +2510,6 @@
       {
         "version": "3.7.8-bcc",
         "install_time": "2022-01-30T07:29:42+00:00"
-      },
-      {
-        "version": "3.7.3-bcc",
-        "install_time": "2021-11-17T11:12:52+00:00"
-      },
-      {
-        "version": "3.5.0-bcc",
-        "install_time": "2021-07-17T04:07:29+00:00"
-      },
-      {
-        "version": "3.4.2-bcc",
-        "install_time": "2021-05-30T05:16:05+00:00"
       }
     ]
   },
@@ -2589,10 +2584,10 @@
     "name": "Bagnon_ItemInfo",
     "description": "Adds item levels, bind status, and garbage desaturation to bagnon all in one, with less overhead than using multiple addons.",
     "url": "https://github.com/GoldpawsStuff/Bagnon_ItemInfo",
-    "download_url": "https://github.com/GoldpawsStuff/Bagnon_ItemInfo/releases/download/2.0.41-Release/Bagnon_ItemInfo-2.0.41-Release.zip",
-    "date_published": "2022-10-25T16:40:04+00:00",
-    "version": "2.0.41-Release",
-    "changelog_url": "data:,%23%20Bagnon_ItemInfo%20Change%20Log%0AAll%20notable%20changes%20to%20this%20project%20will%20be%20documented%20in%20this%20file.%0A%0AThe%20format%20is%20based%20on%20%5BKeep%20a%20Changelog%5D%28http%3A//keepachangelog.com/%29%0Aand%20this%20project%20adheres%20to%20%5BSemantic%20Versioning%5D%28http%3A//semver.org/%29.%0A%0A%23%23%20%5B2.0.41-Release%5D%202022-10-25%0A-%20Bumped%20retail%20version%20to%20the%2010.0.0%20patch.%0A%0A%23%23%20%5B2.0.40-Release%5D%202022-10-13%0A%23%23%23%20Fixed%0A-%20Fixed%20an%20issue%20where%20the%20wrong%20bag%20slot%20would%20be%20queried%2C%20resulting%20in%20wrong%20information%20on%20the%20items.%0A%0A%23%23%20%5B2.0.39-Release%5D%202022-10-12%0A%23%23%23%20Fixed%0A-%20The%20transmog%20collection%20module%20is%20no%20longer%20loaded%20in%20classics%20where%20it%20is%20not%20supported.%0A-%20The%20chat%20commands%20are%20once%20again%20in%20place%20and%20works.%0A%0A%23%23%20%5B2.0.37-Release%5D%202022-10-12%0A%23%23%23%20Fixed%0A-%20Itemlevels%20are%20now%20once%20more%20only%20shown%20for%20actual%20gear.%0A%0A%23%23%20%5B2.0.36-RC%5D%202022-10-12%0A-%20Full%20performance%20rewrite%20to%20take%20much%20better%20advantage%20of%20Bagnon%20and%20Wildpant%27s%20APIs.%0A%0A%23%23%20%5B1.0.35-Release%5D%202022-08-17%0A-%20Bump%20to%20client%20patch%209.2.7.%0A%0A%23%23%20%5B1.0.34-Release%5D%202022-07-29%0A%23%23%23%20Fixed%0A-%20Improved%20the%20client%20detection%20code.%0A%0A%23%23%20%5B1.0.33-Release%5D%202022-07-28%0A%23%23%23%20Fixed%0A-%20Fixed%20an%20issue%20in%20WotLK%20Classic%20that%20sometimes%20could%20cause%20already%20bound%20items%20to%20still%20show%20the%20bind%20status.%0A%0A%23%23%20%5B1.0.32-Release%5D%202022-07-21%0A-%20Add%20support%20for%20WotLK%20Classic%20beta.%0A%0A%23%23%20%5B1.0.31-Release%5D%202022-07-09%0A-%20Bump%20for%20Classic%20Era%20client%20patch%201.14.3.%0A%0A%23%23%20%5B1.0.30-Release%5D%202022-06-14%0A%23%23%23%20Changed%0A-%20Some%20untested%20performance%20updates.%0A%0A%23%23%20%5B1.0.29-Release%5D%202022-05-31%0A-%20Bump%20toc%20to%20WoW%20client%20patch%209.2.5.%0A%0A%23%23%20%5B1.0.28-Release%5D%202022-04-07%0A-%20Bump%20for%20BCC%20client%20patch%202.5.4.%0A%0A%23%23%20%5B1.0.27-Release%5D%202022-02-26%0A%23%23%23%20Fixed%0A-%20Reintroduce%20tooltip%20scanning%20for%20soulbound%20status%20to%20fix%20itembind%20problems%20in%20the%20classics.%20%5B%236%5D%28https%3A//github.com/GoldpawsStuff/Bagnon_BoE/issues/6%29%0A%0A%23%23%20%5B1.0.26-Release%5D%202022-02-23%0A-%20ToC%20bump.%0A%0A%23%23%20%5B1.0.25-Release%5D%202022-02-16%0A-%20ToC%20bumps%20and%20license%20update.%0A%0A%23%23%20%5B1.0.24-Release%5D%202022-02-06%0A%23%23%23%20Fixed%0A-%20Fixed%20an%20issue%20where%20bind%20status%20would%20not%20be%20properly%20updated%20when%20equipping%20items.%0A%0A%23%23%20%5B1.0.23-Release%5D%202021-12-13%0A%23%23%23%20Fixed%0A-%20Fixed%20an%20issue%20where%20we%20attempted%20to%20check%20for%20rarity%20color%20before%20checking%20if%20we%20had%20a%20valid%20rarity%20to%20begin%20with.%0A%0A%23%23%20%5B1.0.22-Release%5D%202021-12-12%0A-%20Added%20BCC%20and%20Classic%20Era%20versions%20of%20the%20addon.%0A%0A%23%23%23%20Added%0A-%20Added%20commands%20to%20toggle%20between%20rarity%20colored%20text%2C%20and%20a%20much%20clearer%20white.%0A%0A%23%23%23%20Changed%0A-%20Added%20a%20message%20when%20the%20presence%20of%20the%20addon%20Bagnon%20ItemInfo%20causes%20this%20one%20to%20be%20auto-disabled.%0A%0A%23%23%20%5B1.0.21-Release%5D%202021-11-03%0A-%20Bump%20toc%20for%209.1.5.%0A%0A%23%23%20%5B1.0.20-Release%5D%202021-06-29%0A-%20Bump%20toc%20for%209.1.0.%0A%0A%23%23%20%5B1.0.19-Release%5D%202021-04-05%0A-%20Spring%20cleaning.%0A%0A%23%23%20%5B1.0.18-Release%5D%202021-03-10%0A-%20Bump%20to%20WoW%20client%20patch%209.0.5.%0A%0A%23%23%20%5B1.0.17-Release%5D%202020-11-18%0A-%20Bump%20to%20WoW%20Client%20patch%209.0.2.%0A%0A%23%23%20%5B1.0.16-Release%5D%202020-10-16%0A-%20Bump%20to%20WoW%20Client%20patch%209.0.1.%0A%0A%23%23%20%5B1.0.15-Release%5D%202020-09-25%0A-%20Cache%20fixes%20and%20Bagnon%209.x%20compatibility.%0A%0A%23%23%20%5B1.0.14-Release%5D%202020-08-07%0A%23%23%23%20Changed%0A-%20ToC%20updates.%0A%0A%23%23%20%5B1.0.13-Release%5D%202020-01-13%0A%23%23%23%20Fixed%0A-%20Fixed%20for%20Bagnon%208.2.29.%20Junk%20icons%20are%20working%20correctly%20now.%0A%0A%23%23%20%5B1.0.12-Release%5D%202020-01-09%0A%23%23%23%20Fixed%0A-%20Fixed%20for%20Bagnon%208.2.27%2C%20December%2026th%202019.%0A%0A%23%23%20%5B1.0.11-Release%5D%202019-10-08%0A-%20ToC%20updates.%0A%0A%23%23%20%5B1.0.10-Release%5D%202019-10-08%0A-%20Bump%20to%20WoW%20Client%20patch%208.2.5.%0A-%20Fix%20toc%20links.%0A%0A%23%23%20%5B1.0.9-Release%5D%202019-07-02%0A%23%23%23%20Changed%0A-%20Updated%20for%208.2.0.%0A%0A%23%23%20%5B1.0.8-Release%5D%202019-04-29%0A%23%23%23%20Fixed%0A-%20Changed%20how%20bag%20slot%20count%20is%20captured%20to%20be%20compatible%20with%20deDE.%0A%0A%23%23%20%5B1.0.7-Release%5D%202019-03-29%0A%23%23%23%20Changed%0A-%20Updated%20toc%20display%20name%20to%20be%20in%20line%20with%20the%20main%20bagnon%20addon.%0A-%20Updated%20description%20links%20and%20team%20name.%0A%0A%23%23%20%5B1.0.6-Release%5D%202019-03-01%0A%23%23%23%20Added%0A-%20Added%20chat%20commands%20to%20toggle%20the%20individual%20elements%2C%20since%20some%20don%27t%20want%20all%20four%2C%20but%20maybe%20just%20two%20or%20three.%0A%0A%23%23%20%5B1.0.5-Release%5D%202019-02-28%0A%23%23%23%20Fixed%0A-%20Switched%20to%20tooltip%20scanning%20using%20global%20strings%20to%20avoid%20false%20positives%20on%20uncollected%20appearances.%0A%0A%23%23%20%5B1.0.4-Release%5D%202019-02-28%0A%23%23%23%20Fixed%0A-%20Fixed%20an%20issue%20that%20sometimes%20could%20cause%20an%20%22ambigous%20syntax%22%20error.%0A%0A%23%23%20%5B1.0.3-Release%5D%202019-02-28%0A%23%23%23%20Added%0A-%20Added%20a%20purple%20eye%20to%20indicate%20items%20with%20uncollected%20transmog%20appearances.%0A%0A%23%23%20%5B1.0.2-Release%5D%202019-02-27%0A%23%23%23%20Fixed%0A-%20Item%20background%20scanning%20should%20once%20more%20update%20properly%20when%20you%20swap%20items%20in%20a%20bag%20slot%2C%20and%20not%20show%20the%20item%20level%20and%20bind%20status%20of%20the%20item%20that%20was%20previously%20there.%0A%0A%23%23%20%5B1.0.1-Release%5D%202019-02-27%0A%23%23%23%20Fixed%0A-%20Fixed%20bug%20when%20showing%20BoE/BoU%20items.%0A%0A%23%23%20%5B1.0.0-Release%5D%202019-02-27%0A-%20Initial%20commit.%0A",
+    "download_url": "https://github.com/GoldpawsStuff/Bagnon_ItemInfo/releases/download/2.0.42-Release/Bagnon_ItemInfo-2.0.42-Release.zip",
+    "date_published": "2022-11-02T10:26:18+00:00",
+    "version": "2.0.42-Release",
+    "changelog_url": "data:,%23%20Bagnon_ItemInfo%20Change%20Log%0AAll%20notable%20changes%20to%20this%20project%20will%20be%20documented%20in%20this%20file.%0A%0AThe%20format%20is%20based%20on%20%5BKeep%20a%20Changelog%5D%28http%3A//keepachangelog.com/%29%0Aand%20this%20project%20adheres%20to%20%5BSemantic%20Versioning%5D%28http%3A//semver.org/%29.%0A%0A%23%23%20%5B2.0.42-Release%5D%202022-11-02%0A-%20Add%20support%20for%20retail%2010.0.2%20C_Container%20API.%0A%0A%23%23%20%5B2.0.41-Release%5D%202022-10-25%0A-%20Bumped%20retail%20version%20to%20the%2010.0.0%20patch.%0A%0A%23%23%20%5B2.0.40-Release%5D%202022-10-13%0A%23%23%23%20Fixed%0A-%20Fixed%20an%20issue%20where%20the%20wrong%20bag%20slot%20would%20be%20queried%2C%20resulting%20in%20wrong%20information%20on%20the%20items.%0A%0A%23%23%20%5B2.0.39-Release%5D%202022-10-12%0A%23%23%23%20Fixed%0A-%20The%20transmog%20collection%20module%20is%20no%20longer%20loaded%20in%20classics%20where%20it%20is%20not%20supported.%0A-%20The%20chat%20commands%20are%20once%20again%20in%20place%20and%20works.%0A%0A%23%23%20%5B2.0.37-Release%5D%202022-10-12%0A%23%23%23%20Fixed%0A-%20Itemlevels%20are%20now%20once%20more%20only%20shown%20for%20actual%20gear.%0A%0A%23%23%20%5B2.0.36-RC%5D%202022-10-12%0A-%20Full%20performance%20rewrite%20to%20take%20much%20better%20advantage%20of%20Bagnon%20and%20Wildpant%27s%20APIs.%0A%0A%23%23%20%5B1.0.35-Release%5D%202022-08-17%0A-%20Bump%20to%20client%20patch%209.2.7.%0A%0A%23%23%20%5B1.0.34-Release%5D%202022-07-29%0A%23%23%23%20Fixed%0A-%20Improved%20the%20client%20detection%20code.%0A%0A%23%23%20%5B1.0.33-Release%5D%202022-07-28%0A%23%23%23%20Fixed%0A-%20Fixed%20an%20issue%20in%20WotLK%20Classic%20that%20sometimes%20could%20cause%20already%20bound%20items%20to%20still%20show%20the%20bind%20status.%0A%0A%23%23%20%5B1.0.32-Release%5D%202022-07-21%0A-%20Add%20support%20for%20WotLK%20Classic%20beta.%0A%0A%23%23%20%5B1.0.31-Release%5D%202022-07-09%0A-%20Bump%20for%20Classic%20Era%20client%20patch%201.14.3.%0A%0A%23%23%20%5B1.0.30-Release%5D%202022-06-14%0A%23%23%23%20Changed%0A-%20Some%20untested%20performance%20updates.%0A%0A%23%23%20%5B1.0.29-Release%5D%202022-05-31%0A-%20Bump%20toc%20to%20WoW%20client%20patch%209.2.5.%0A%0A%23%23%20%5B1.0.28-Release%5D%202022-04-07%0A-%20Bump%20for%20BCC%20client%20patch%202.5.4.%0A%0A%23%23%20%5B1.0.27-Release%5D%202022-02-26%0A%23%23%23%20Fixed%0A-%20Reintroduce%20tooltip%20scanning%20for%20soulbound%20status%20to%20fix%20itembind%20problems%20in%20the%20classics.%20%5B%236%5D%28https%3A//github.com/GoldpawsStuff/Bagnon_BoE/issues/6%29%0A%0A%23%23%20%5B1.0.26-Release%5D%202022-02-23%0A-%20ToC%20bump.%0A%0A%23%23%20%5B1.0.25-Release%5D%202022-02-16%0A-%20ToC%20bumps%20and%20license%20update.%0A%0A%23%23%20%5B1.0.24-Release%5D%202022-02-06%0A%23%23%23%20Fixed%0A-%20Fixed%20an%20issue%20where%20bind%20status%20would%20not%20be%20properly%20updated%20when%20equipping%20items.%0A%0A%23%23%20%5B1.0.23-Release%5D%202021-12-13%0A%23%23%23%20Fixed%0A-%20Fixed%20an%20issue%20where%20we%20attempted%20to%20check%20for%20rarity%20color%20before%20checking%20if%20we%20had%20a%20valid%20rarity%20to%20begin%20with.%0A%0A%23%23%20%5B1.0.22-Release%5D%202021-12-12%0A-%20Added%20BCC%20and%20Classic%20Era%20versions%20of%20the%20addon.%0A%0A%23%23%23%20Added%0A-%20Added%20commands%20to%20toggle%20between%20rarity%20colored%20text%2C%20and%20a%20much%20clearer%20white.%0A%0A%23%23%23%20Changed%0A-%20Added%20a%20message%20when%20the%20presence%20of%20the%20addon%20Bagnon%20ItemInfo%20causes%20this%20one%20to%20be%20auto-disabled.%0A%0A%23%23%20%5B1.0.21-Release%5D%202021-11-03%0A-%20Bump%20toc%20for%209.1.5.%0A%0A%23%23%20%5B1.0.20-Release%5D%202021-06-29%0A-%20Bump%20toc%20for%209.1.0.%0A%0A%23%23%20%5B1.0.19-Release%5D%202021-04-05%0A-%20Spring%20cleaning.%0A%0A%23%23%20%5B1.0.18-Release%5D%202021-03-10%0A-%20Bump%20to%20WoW%20client%20patch%209.0.5.%0A%0A%23%23%20%5B1.0.17-Release%5D%202020-11-18%0A-%20Bump%20to%20WoW%20Client%20patch%209.0.2.%0A%0A%23%23%20%5B1.0.16-Release%5D%202020-10-16%0A-%20Bump%20to%20WoW%20Client%20patch%209.0.1.%0A%0A%23%23%20%5B1.0.15-Release%5D%202020-09-25%0A-%20Cache%20fixes%20and%20Bagnon%209.x%20compatibility.%0A%0A%23%23%20%5B1.0.14-Release%5D%202020-08-07%0A%23%23%23%20Changed%0A-%20ToC%20updates.%0A%0A%23%23%20%5B1.0.13-Release%5D%202020-01-13%0A%23%23%23%20Fixed%0A-%20Fixed%20for%20Bagnon%208.2.29.%20Junk%20icons%20are%20working%20correctly%20now.%0A%0A%23%23%20%5B1.0.12-Release%5D%202020-01-09%0A%23%23%23%20Fixed%0A-%20Fixed%20for%20Bagnon%208.2.27%2C%20December%2026th%202019.%0A%0A%23%23%20%5B1.0.11-Release%5D%202019-10-08%0A-%20ToC%20updates.%0A%0A%23%23%20%5B1.0.10-Release%5D%202019-10-08%0A-%20Bump%20to%20WoW%20Client%20patch%208.2.5.%0A-%20Fix%20toc%20links.%0A%0A%23%23%20%5B1.0.9-Release%5D%202019-07-02%0A%23%23%23%20Changed%0A-%20Updated%20for%208.2.0.%0A%0A%23%23%20%5B1.0.8-Release%5D%202019-04-29%0A%23%23%23%20Fixed%0A-%20Changed%20how%20bag%20slot%20count%20is%20captured%20to%20be%20compatible%20with%20deDE.%0A%0A%23%23%20%5B1.0.7-Release%5D%202019-03-29%0A%23%23%23%20Changed%0A-%20Updated%20toc%20display%20name%20to%20be%20in%20line%20with%20the%20main%20bagnon%20addon.%0A-%20Updated%20description%20links%20and%20team%20name.%0A%0A%23%23%20%5B1.0.6-Release%5D%202019-03-01%0A%23%23%23%20Added%0A-%20Added%20chat%20commands%20to%20toggle%20the%20individual%20elements%2C%20since%20some%20don%27t%20want%20all%20four%2C%20but%20maybe%20just%20two%20or%20three.%0A%0A%23%23%20%5B1.0.5-Release%5D%202019-02-28%0A%23%23%23%20Fixed%0A-%20Switched%20to%20tooltip%20scanning%20using%20global%20strings%20to%20avoid%20false%20positives%20on%20uncollected%20appearances.%0A%0A%23%23%20%5B1.0.4-Release%5D%202019-02-28%0A%23%23%23%20Fixed%0A-%20Fixed%20an%20issue%20that%20sometimes%20could%20cause%20an%20%22ambigous%20syntax%22%20error.%0A%0A%23%23%20%5B1.0.3-Release%5D%202019-02-28%0A%23%23%23%20Added%0A-%20Added%20a%20purple%20eye%20to%20indicate%20items%20with%20uncollected%20transmog%20appearances.%0A%0A%23%23%20%5B1.0.2-Release%5D%202019-02-27%0A%23%23%23%20Fixed%0A-%20Item%20background%20scanning%20should%20once%20more%20update%20properly%20when%20you%20swap%20items%20in%20a%20bag%20slot%2C%20and%20not%20show%20the%20item%20level%20and%20bind%20status%20of%20the%20item%20that%20was%20previously%20there.%0A%0A%23%23%20%5B1.0.1-Release%5D%202019-02-27%0A%23%23%23%20Fixed%0A-%20Fixed%20bug%20when%20showing%20BoE/BoU%20items.%0A%0A%23%23%20%5B1.0.0-Release%5D%202019-02-27%0A-%20Initial%20commit.%0A",
     "options": {
       "any_flavour": false,
       "any_release_type": false,
@@ -2605,6 +2600,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "2.0.42-Release",
+        "install_time": "2022-11-03T09:52:36+00:00"
+      },
       {
         "version": "2.0.41-Release",
         "install_time": "2022-10-26T03:38:26+00:00"
@@ -2673,8 +2672,8 @@
     "description": "A WeakAuras Companion clone.",
     "url": "https://github.com/layday/instawow",
     "download_url": "file:///C:/Users/luhao_000/AppData/Roaming/instawow/profiles/classic/plugins/instawow.wa_updater/WeakAurasCompanion.zip",
-    "date_published": "2022-10-31T11:42:12.011529+00:00",
-    "version": "df1f105",
+    "date_published": "2022-11-16T03:48:20.295356+00:00",
+    "version": "2395a6c",
     "changelog_url": "file:///C:/Users/luhao_000/AppData/Roaming/instawow/profiles/classic/plugins/instawow.wa_updater/CHANGELOG.md",
     "options": {
       "any_flavour": false,
@@ -2688,6 +2687,22 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "2395a6c",
+        "install_time": "2022-11-16T03:48:27+00:00"
+      },
+      {
+        "version": "1cfff68",
+        "install_time": "2022-11-14T09:55:51+00:00"
+      },
+      {
+        "version": "ae90741",
+        "install_time": "2022-11-13T08:56:20+00:00"
+      },
+      {
+        "version": "42f5a9c",
+        "install_time": "2022-11-07T10:56:42+00:00"
+      },
       {
         "version": "df1f105",
         "install_time": "2022-10-31T11:42:15+00:00"
@@ -2711,22 +2726,6 @@
       {
         "version": "f05e5a3",
         "install_time": "2022-10-10T10:35:01+00:00"
-      },
-      {
-        "version": "6f9ca9c",
-        "install_time": "2022-10-06T09:40:46+00:00"
-      },
-      {
-        "version": "3bac940",
-        "install_time": "2022-10-05T16:01:29+00:00"
-      },
-      {
-        "version": "6c4f05f",
-        "install_time": "2022-10-05T04:46:49+00:00"
-      },
-      {
-        "version": "b730336",
-        "install_time": "2022-10-03T03:39:16+00:00"
       }
     ]
   },
@@ -2872,10 +2871,10 @@
     "name": "Deadly Boss Mods - Wrath of the Lich King mods",
     "description": "DBM boss mods for all bosses in Wrath of the Lich King.",
     "url": "https://www.wowinterface.com/downloads/info21522-DeadlyBossMods-WrathoftheLichKingmods.html",
-    "download_url": "https://cdn.wowinterface.com/downloads/getfile.php?id=21522&d=1666709969&minion",
-    "date_published": "2022-10-25T14:59:29+00:00",
-    "version": "r309",
-    "changelog_url": "data:,%5Bsize%3D5%5D%3CDBM%3E%20Icecrown%20Citadel%5B/size%5D%0D%0A%5Bsize%3D4%5D%5Burl%3Dhttps%3A//github.com/DeadlyBossMods/DBM-WotLK/tree/r309%5Dr309%5B/url%5D%20%282022-10-25%29%5B/size%5D%0D%0A%5Burl%3Dhttps%3A//github.com/DeadlyBossMods/DBM-WotLK/compare/r308...r309%5DFull%20Changelog%5B/url%5D%20%5Burl%3Dhttps%3A//github.com/DeadlyBossMods/DBM-WotLK/releases%5DPrevious%20Releases%5B/url%5D%0D%0A%5Blist%5D%0D%0A%5B%2A%5Dfix%20missed%20line%0D%0A%5B%2A%5DBump%20TOC%20files%0D%0A%5B%2A%5DYou%20know%20what%27s%20nice%20when%20%22teleport%20in%2010%20seconds%22%20actually%20occurs%2010%20seconds%20before%20and%20not%2020.%0D%0A%5B%2A%5DShow%20spore%20count%20in%20announce%0D%0A%5B%2A%5DFix%20bad%20option%20spellId%0D%0A%5B%2A%5Dturn%20off%20frost%20blast%20timer%20by%20default%20since%20it%20has%20an%20extreme%20timer%20variance.%0D%0A%5B%2A%5DFix%20fissure%20on%20KT%20so%20it%20has%20voice%20pack%20support%20again%0D%0A%5B%2A%5DFixed%20a%20bug%20with%20iron%20council%2C%20horseman%2C%20and%20faction%20champinos%20were%20wipe%20HP%20would%20report%20lowest%20HP%20instead%20of%20highest%0D%0A%5B%2A%5DBump%20hotfix%20and%20minsync%20on%20drakes%20to%20todays%20date%0D%0A%5B%2A%5Dmore%20work%20around%20for%20blizzard%20bugs%2C%20this%20time%20further%20throttling%20on%20void%20zones%20on%20sarth.%20It%20appears%20that%20the%20drakes%20are%20not%20only%20firing%20ENCOUNTER_START%20when%20they%20land%20on%20sarth%2C%20but%20also%20%20running%20their%20solo%20encounter%20scripts%20too%2C%20resulting%20in%20extra%20extra%20void%20zones.%20It%27s%20basically%20sarth%2B3drakes%2Bdrake%2Bdrake%2Bdrake%0D%0A%5B%2A%5DFix%20a%20bug%20wehre%20yell%20or%20warning%20may%20show%20multiple%20times%20on%20thaddius%0D%0A%5B%2A%5DFix%20initial%2025%20man%20doom%20timer%20on%20loatheb%0D%0A%5B%2A%5DAdjustments%20to%20account%20for%20fact%20SUCCESS%20still%20doesn%27t%20have%20target%20in%20classic%20so%20more%20features%20had%20to%20be%20turned%20off%20there.%0D%0A%20%20%20%20Update%20minsync%20for%20shadron%2C%20tenabron%20and%20vesperon%20so%20they%20don%27t%20sync%20bad%20combat%20starts%20and%20require%20an%20up%20to%20date%20core/module%0D%0A%20%20%20%20Fixed%20count%20not%20being%20on%20the%20doom%20timer%20on%20Loatheb%0D%0A%20%20%20%20adjusted%20KT%20phase%202%20timer%20to%20be%201%20second%20faster%0D%0A%5B%2A%5DUpdate%20README.md%0D%0A%5B%2A%5DUpdate%20README.md%0D%0A%5B%2A%5DUpdate%20README.md%0D%0A%5B%2A%5DUpdate%20koKR%20%28Wrath%29%20%28%2318%29%0D%0A%20%20%20%20Co-authored-by%3A%20Adam%20%3CMysticalOS%40users.noreply.github.com%3E%5B/list%5D",
+    "download_url": "https://cdn.wowinterface.com/downloads/getfile.php?id=21522&d=1668491375&minion",
+    "date_published": "2022-11-15T05:49:35+00:00",
+    "version": "r310",
+    "changelog_url": "data:,%5Bsize%3D5%5D%3CDBM%3E%20Icecrown%20Citadel%5B/size%5D%0D%0A%5Bsize%3D4%5D%5Burl%3Dhttps%3A//github.com/DeadlyBossMods/DBM-WotLK/tree/r310%5Dr310%5B/url%5D%20%282022-11-15%29%5B/size%5D%0D%0A%5Burl%3Dhttps%3A//github.com/DeadlyBossMods/DBM-WotLK/compare/r309...r310%5DFull%20Changelog%5B/url%5D%20%5Burl%3Dhttps%3A//github.com/DeadlyBossMods/DBM-WotLK/releases%5DPrevious%20Releases%5B/url%5D%0D%0A%5Blist%5D%0D%0A%5B%2A%5DBump%20TOC%20files%0D%0A%5B%2A%5DUpdate%20localization.ru.lua%20%28%2324%29%0D%0A%20%20%20%20Correct%20translate.%0D%0A%5B%2A%5DMerge%20pull%20request%20%2322%20from%20Hollicsh/patch-5%0D%0A%20%20%20%20Update%20localization.ru.lua%0D%0A%5B%2A%5DMerge%20pull%20request%20%2323%20from%20Hollicsh/patch-4%0D%0A%20%20%20%20Update%20localization.ru.lua%0D%0A%5B%2A%5DUpdate%20localization.ru.lua%0D%0A%5B%2A%5DUpdate%20localization.ru.lua%0D%0A%20%20%20%20Correct%20translate.%0D%0A%5B%2A%5DUpdate%20localization.ru.lua%0D%0A%20%20%20%20Correct%20translate.%0D%0A%5B%2A%5DMerge%20pull%20request%20%2321%20from%20Hollicsh/patch-3%0D%0A%20%20%20%20Update%20localization.ru.lua%0D%0A%5B%2A%5DMerge%20pull%20request%20%2320%20from%20Hollicsh/patch-2%0D%0A%20%20%20%20Update%20localization.ru.lua%0D%0A%5B%2A%5DMerge%20pull%20request%20%2319%20from%20Hollicsh/patch-1%0D%0A%20%20%20%20Update%20localization.ru.lua%0D%0A%5B%2A%5DUpdate%20localization.ru.lua%0D%0A%20%20%20%20Minor%20fix.%0D%0A%5B%2A%5DUpdate%20localization.ru.lua%0D%0A%20%20%20%20Correct%20translate.%0D%0A%5B%2A%5DUpdate%20localization.ru.lua%0D%0A%20%20%20%20Correct%20translate.%0D%0A%5B%2A%5DAdd%20icon%20to%20arachnophobia%20timer.%0D%0A%5B%2A%5DFixed%20bug%20with%20missing%20sound%20on%20shadow%20fissure%20in%20last%20update%0D%0A%5B/list%5D",
     "options": {
       "any_flavour": false,
       "any_release_type": false,
@@ -2909,6 +2908,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "r310",
+        "install_time": "2022-11-16T03:48:27+00:00"
+      },
       {
         "version": "r309",
         "install_time": "2022-10-26T03:38:26+00:00"
@@ -3013,9 +3016,9 @@
     "name": "Fizzle",
     "description": "[U][B]Fizzle[/B][/U]\r\n\r\n[I]Description[/I]\r\nFizzle is an addon that will show you an items durability values above the item in your character frame.\r\nIt can show you either the raw values, or a percentage value.\r\nWhy Fizzle?  Well, I suck at coming up with names is why. :)\r\n\r\n[I]Slash Commands[/I]\r\n[I]/fizzle[/I] or [I]/fizz[/I]\r\n[list][*]percent - Toggle between raw and percentage display.\r\n[*]border - Toggles the quality colours on the border of items.\r\n[*]invert - Changes how the durability is shown.  Eg. 0% = Max durability, 100% = No durability.\r\n[*]hidetext - Hides the durability text, incase you just want the item quality colouring.\r\n[*]showfull - Toggles showing durability when full.  If enabled, durability text is always shown, if disabled, durability text is only shown if durability is less than 100%\r\n[*]inspect - Toggles the inspection module.[/list]",
     "url": "https://www.wowinterface.com/downloads/info5018-Fizzle.html",
-    "download_url": "https://cdn.wowinterface.com/downloads/getfile.php?id=5018&d=1622895339&minion",
-    "date_published": "2021-06-05T12:15:39+00:00",
-    "version": "90005-1",
+    "download_url": "https://cdn.wowinterface.com/downloads/getfile.php?id=5018&d=1667563162&minion",
+    "date_published": "2022-11-04T11:59:22+00:00",
+    "version": "100000-1",
     "changelog_url": "data:,%5Bsize%3D%226%22%5D80205-1%5B/size%5D%0A%0A%5Blist%5D%0A%5B%2A%5DUpdate%20%5Bfont%3D%22monospace%22%5DzhCN%5B/font%5D%20and%20%5Bfont%3D%22monospace%22%5DzhTW%5B/font%5D%20translations.%20Thanks%2C%20wolfcon.%0A%5B/list%5D%0A%0A%5Bsize%3D%226%22%5D80200-4%5B/size%5D%0A%0A%5Blist%5D%0A%5B%2A%5DFixes%20to%20packaging%0A%5B/list%5D%0A%0A%5Bsize%3D%226%22%5D80200-2%5B/size%5D%0A%0A%5Blist%5D%0A%5B%2A%5DAdd%20Luacheck%20and%20fix%20some%20issies%0A%5B%2A%5DAdd%20%5Bfont%3D%22monospace%22%5DCHANGELOG.md%5B/font%5D%0A%5B%2A%5DAdd%20Github%20Actions%20pipeline%20for%20classic%20addon%20release%0A%5B/list%5D",
     "options": {
       "any_flavour": false,
@@ -3030,6 +3033,10 @@
     "deps": [],
     "logged_versions": [
       {
+        "version": "100000-1",
+        "install_time": "2022-11-06T07:48:32+00:00"
+      },
+      {
         "version": "90005-1",
         "install_time": "2022-09-01T13:40:36+00:00"
       }
@@ -3042,10 +3049,10 @@
     "name": "Mapster",
     "description": "Mapster is a very simple world map enhacement addon, which was designed to work in conjunction with all other map addons out there. The idea to create Mapster originated from pure lack of a simplistic addon that only modifies the world map, without adding a full scale feature set.\r\n\r\n[B]Features[/B]\r\n[LIST]\r\n[*]Map Style (Scale & Alpha)\r\n[*]Coordinates\r\n[*]Fog of War removal\r\n[*]Enhancement of the raid/party group icons\r\n[/LIST]\r\n\r\nYou can access the Mapster configuration menu through the new button on the world map, as shown in the screenshot. \r\nAll features (except the style) can be turned off individually if you do not need/want them.\r\n\r\n[I]If you're looking for a replacement to Cartographer, i also recommend the following addons:[/I][LIST][*][B]Gathering[/B] -> GatherMate (Hosted on WoWAce -> [URL=\"http://www.wowace.com/projects/gather-mate/\"]Download[/URL]) \r\n[*][B]Waypoints[/B] -> [URL=\"http://www.wowinterface.com/downloads/info7032-TomTom.html\"]TomTom[/URL]\r\n[*][B]ZoneInfo[/B] -> [URL=\"http://mods.curse.com/addons/wow/cromulent\"]Cromulent[/URL]\r\n[*][B]Notes[/B] -> [URL=\"http://mods.curse.com/addons/wow/handynotes\"]HandyNotes[/URL] | [URL=\"http://mods.curse.com/search?search=handynotes\"]HandyNotes Modules[/URL]\r\n[/LIST]",
     "url": "https://www.wowinterface.com/downloads/info8306-Mapster.html",
-    "download_url": "https://cdn.wowinterface.com/downloads/getfile.php?id=8306&d=1666737625&minion",
-    "date_published": "2022-10-25T22:40:25+00:00",
-    "version": "1.10.0",
-    "changelog_url": "data:,%5Bsize%3D5%5DMapster%5B/size%5D%0D%0A%5Bsize%3D4%5D%5Burl%3Dhttps%3A//github.com/Nevcairiel/Mapster/tree/1.10.0%5D1.10.0%5B/url%5D%20%282022-10-25%29%5B/size%5D%0D%0A%5Burl%3Dhttps%3A//github.com/Nevcairiel/Mapster/compare/1.9.8...1.10.0%5DFull%20Changelog%5B/url%5D%20%5Burl%3Dhttps%3A//github.com/Nevcairiel/Mapster/releases%5DPrevious%20Releases%5B/url%5D%0D%0A%5Blist%5D%0D%0A%5B%2A%5DUpdate%20TOC%20for%2010.0%0D%0A%5B%2A%5DImport%20FogClear%20data%20for%20WoW%2010.0%0D%0A%5B%2A%5DUpdate%20for%20WoW%2010.0%0D%0A%5B/list%5D",
+    "download_url": "https://cdn.wowinterface.com/downloads/getfile.php?id=8306&d=1667846686&minion",
+    "date_published": "2022-11-07T18:44:46+00:00",
+    "version": "1.10.3",
+    "changelog_url": "data:,%5Bsize%3D5%5DMapster%5B/size%5D%0D%0A%5Bsize%3D4%5D%5Burl%3Dhttps%3A//github.com/Nevcairiel/Mapster/tree/1.10.3%5D1.10.3%5B/url%5D%20%282022-11-07%29%5B/size%5D%0D%0A%5Burl%3Dhttps%3A//github.com/Nevcairiel/Mapster/compare/1.10.2...1.10.3%5DFull%20Changelog%5B/url%5D%20%5Burl%3Dhttps%3A//github.com/Nevcairiel/Mapster/releases%5DPrevious%20Releases%5B/url%5D%0D%0A%5Blist%5D%0D%0A%5B%2A%5DOverride%20scale%20on%20retail%20to%20fix%20saved%20size%20in%20LibWindow%0D%0A%5B/list%5D",
     "options": {
       "any_flavour": false,
       "any_release_type": false,
@@ -3058,6 +3065,14 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "1.10.3",
+        "install_time": "2022-11-08T11:09:38+00:00"
+      },
+      {
+        "version": "1.10.1",
+        "install_time": "2022-11-07T10:56:42+00:00"
+      },
       {
         "version": "1.10.0",
         "install_time": "2022-10-26T03:38:26+00:00"
@@ -3079,10 +3094,10 @@
     "name": "Quartz - Modular Casting Bar",
     "description": "Quartz is a modular approach to a casting bar addon.  An overview of (hopefully most of) the modules:\r\n\r\n[b]*Player[/b]\r\nThe core of Quartz is lightweight implementation of a standard casting bar, with configurable size, text and icon positioning, and colors.\r\n[b]*Target/Focus[/b]\r\nImplementation of target and focus casting bars in similar fashion to the player cast bar.\r\n[b]*Buffs[/b]\r\nDisplay of target and focus buffs and debuffs as duration bars using the new API introduced in patch 2.1.\r\n[b]*Flight[/b]\r\nHooks into FlightMap or InFlight to display the current flight progress on your casting bar.\r\n[b]*Global Cooldown[/b]\r\nDisplays a tiny spark-bar to show your Global Cooldown near the cast bar.  Helpful for those who'd rather not squint at their action bars to see when they can cast again.\r\n[b]*Interrupt[/b]\r\nChanges the color and text of your casting bar to help show that your cast has been interrupted (and show who interrupted it).\r\n[b]*Latency[/b]\r\nDisplays the amount of time spent between cast send and start events, in the form of a bar at the end of your casting bar, with optional text that displays the actual duration of the lag.  This helps in canceling casts when they will not actually be interrupted, especially for users with consistently high pings.\r\n[b]*Mirror[/b]\r\nShows the 'basic' timers such as breath and feign death, as well as some 'odd' ones such as party invite time, resurrect timeout, and arena game start, and a framework for injecting custom timers into the bars.\r\n[b]*Range[/b]\r\nRecolors the casting bar when your cast target moves out of range mid-cast.\r\n[b]*Swing[/b]\r\nDisplays a swing timer for your melee weapon as well as hunter autoshot.\r\n[b]*Timer[/b]\r\nAllows for creating custom timers displayed on the mirror bars.\r\n[b]*Tradeskill Merge[/b]\r\nMerges multiple casts of the same tradeskill item into one big cast bar.\r\n\r\n\r\nUse /quartz to bring up the configuration menu.",
     "url": "https://www.wowinterface.com/downloads/info7158-Quartz-ModularCastingBar.html",
-    "download_url": "https://cdn.wowinterface.com/downloads/getfile.php?id=7158&d=1666736511&minion",
-    "date_published": "2022-10-25T22:21:51+00:00",
-    "version": "3.7.0",
-    "changelog_url": "data:,%5Bsize%3D5%5DQuartz%5B/size%5D%0D%0A%5Bsize%3D4%5D%5Burl%3Dhttps%3A//github.com/Nevcairiel/Quartz/tree/3.7.0%5D3.7.0%5B/url%5D%20%282022-10-25%29%5B/size%5D%0D%0A%5Burl%3Dhttps%3A//github.com/Nevcairiel/Quartz/compare/3.6.12...3.7.0%5DFull%20Changelog%5B/url%5D%20%5Burl%3Dhttps%3A//github.com/Nevcairiel/Quartz/releases%5DPrevious%20Releases%5B/url%5D%0D%0A%5Blist%5D%0D%0A%5B%2A%5DUpdate%20TOC%20for%2010.0%0D%0A%5B%2A%5DUpdate%20unlock%20dialog%20for%20WoW%2010.0%0D%0A%5B%2A%5DUpdate%20player%20castbar%20hiding%20for%2010.0%0D%0A%5B%2A%5DDIALOG%20is%20not%20a%20valid%20texture%20layer%2C%20use%20ARTWORK%20instead%0D%0A%5B%2A%5DEnable%20using%20the%20non-interruptible%20property%20on%20Wrath%20Classic%0D%0A%20%20%20%20The%20events%20to%20toggle%20the%20property%20are%20still%20missing%2C%20just%20classic%0D%0A%20%20%20%20things.%0D%0A%5B%2A%5DUse%20an%20alternate%20flight%20bar%20icon%20on%20WoW%20Classic%0D%0A%20%20%20%20Fixes%20%2326%0D%0A%5B/list%5D",
+    "download_url": "https://cdn.wowinterface.com/downloads/getfile.php?id=7158&d=1668532334&minion",
+    "date_published": "2022-11-15T17:12:14+00:00",
+    "version": "3.7.1",
+    "changelog_url": "data:,%5Bsize%3D5%5DQuartz%5B/size%5D%0D%0A%5Bsize%3D4%5D%5Burl%3Dhttps%3A//github.com/Nevcairiel/Quartz/tree/3.7.1%5D3.7.1%5B/url%5D%20%282022-11-15%29%5B/size%5D%0D%0A%5Burl%3Dhttps%3A//github.com/Nevcairiel/Quartz/compare/3.7.0...3.7.1%5DFull%20Changelog%5B/url%5D%20%5Burl%3Dhttps%3A//github.com/Nevcairiel/Quartz/releases%5DPrevious%20Releases%5B/url%5D%0D%0A%5Blist%5D%0D%0A%5B%2A%5DFix%20luacheck%0D%0A%5B%2A%5DFix%20Tradeskill%20Merge%20on%20WoW%2010.0%0D%0A%20%20%20%20Fixes%20%2361%0D%0A%5B%2A%5DUpdate%20TOC%20for%2010.0.2%0D%0A%5B%2A%5DAllow%20scale%20to%20exceed%201.0%0D%0A%5B%2A%5DFix%20position%20of%20the%20empowered%20markers%0D%0A%5B%2A%5DRe-structure%20options%20a%20bit%20for%20better%20usability%0D%0A%5B%2A%5DAdd%20ability%20for%20the%20cast%20bar%20to%20count%20up%20to%20the%20total.%200%25%20-%3E%20100%25%20instead%20of%20100%25%20-%3E%200%25%20of%20the%20time.%0D%0A%5B%2A%5DAdd%20strata%20option%20to%20Player%2C%20Target%2C%20Pet%2C%20and%20Focus%20bars.%0D%0A%5B%2A%5DAdd%20ticks%20for%20priest%27s%20channeled%20spells%20on%20WotLK%0D%0A%5B%2A%5DAdd%20Evoker%20Disintegrate%20channeling%20spell%0D%0A%20%20%20%20Fixes%20%2362%0D%0A%5B%2A%5DFix%20disabling%20hide%20blizzard%20on%20the%20player%20castbar%0D%0A%5B%2A%5DAdd%20support%20for%20empowered%20spells%0D%0A%5B/list%5D",
     "options": {
       "any_flavour": false,
       "any_release_type": false,
@@ -3095,6 +3110,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "3.7.1",
+        "install_time": "2022-11-16T03:48:28+00:00"
+      },
       {
         "version": "3.7.0",
         "install_time": "2022-10-26T03:38:26+00:00"
@@ -3232,10 +3251,10 @@
     "name": "WIM (WoW Instant Messenger)",
     "description": "WIM (WoW Instant Messenger) is a World of Warcraft addon which helps you to manage your whispers by making them into a classic instant messenger interface such as AIM, Yahoo and MSN. \r\n\r\nWith game play in mind, WIM has a large array of options where you can customize how WIM interacts during different situations, such as while you are in combat or in town talking to friends or selling your crafts.\r\n\r\n[B]Some of WIM's major features are:[/B]\r\n-Tabbed or windowed messages\r\n-History\r\n-Filtering\r\n-Fully customizable\r\n-and more...\r\n\r\nTo keep up to date with WIM and its developement, be sure to visit [URL]http://www.wimaddon.com[/URL]. WIMAddon.com is a great place to converse with the developers and users of WIM.\r\n\r\n\r\n*I welcome all comments and suggestions. It is the wow community which helps in creating a success.\r\n\r\n**Special thanks to everyone who has helped me test this addon.",
     "url": "https://www.wowinterface.com/downloads/info5342-WIMWoWInstantMessenger.html",
-    "download_url": "https://cdn.wowinterface.com/downloads/getfile.php?id=5342&d=1666710798&minion",
-    "date_published": "2022-10-25T15:13:18+00:00",
-    "version": "3.9.9",
-    "changelog_url": "data:,%5Bsize%3D5%5DWIM%5B/size%5D%0D%0A%5Bsize%3D4%5D%5Burl%3Dhttps%3A//github.com/Legacy-of-Sylvanaar/wow-instant-messenger/tree/3.9.9%5D3.9.9%5B/url%5D%20%282022-10-25%29%5B/size%5D%0D%0A%5Burl%3Dhttps%3A//github.com/Legacy-of-Sylvanaar/wow-instant-messenger/compare/3.9.8...3.9.9%5DFull%20Changelog%5B/url%5D%20%5Burl%3Dhttps%3A//github.com/Legacy-of-Sylvanaar/wow-instant-messenger/releases%5DPrevious%20Releases%5B/url%5D%0D%0A%5Blist%5D%0D%0A%5B%2A%5DBump%20toc%20file%0D%0A%5B%2A%5DImportant%20annotation.%0D%0A%5B%2A%5DDragonflight%20support.%0D%0A%5B%2A%5Dchore%3A%20ignore%20manually%20added%20libs%20for%20development%20purposes.%0D%0A%5B%2A%5DFix%20one%2010.0%20api.%20Couldn%27t%20figure%20out%20how%20to%20fix%20the%20rest.%20This%20is%20only%20one%20i%20found%20documentation%20for%0D%0A%5B/list%5D",
+    "download_url": "https://cdn.wowinterface.com/downloads/getfile.php?id=5342&d=1668543906&minion",
+    "date_published": "2022-11-15T20:25:06+00:00",
+    "version": "3.9.11",
+    "changelog_url": "data:,%5Bsize%3D5%5DWIM%5B/size%5D%0D%0A%5Bsize%3D4%5D%5Burl%3Dhttps%3A//github.com/Legacy-of-Sylvanaar/wow-instant-messenger/tree/3.9.11%5D3.9.11%5B/url%5D%20%282022-11-15%29%5B/size%5D%0D%0A%5Burl%3Dhttps%3A//github.com/Legacy-of-Sylvanaar/wow-instant-messenger/compare/3.9.10...3.9.11%5DFull%20Changelog%5B/url%5D%20%5Burl%3Dhttps%3A//github.com/Legacy-of-Sylvanaar/wow-instant-messenger/releases%5DPrevious%20Releases%5B/url%5D%0D%0A%5Blist%5D%0D%0A%5B%2A%5DMerge%20branch%20%27master%27%20of%20https%3A//github.com/Legacy-of-Sylvanaar/wow-instant-messenger%0D%0A%5B%2A%5DBump%20TOC%0D%0A%5B%2A%5DFix%20Emoticons%20and%20URLHandler%20bug%20introducted%20by%20ElvUI%20string%20encoding%20which%20broke%20gsub.%20%2321%0D%0A%5B%2A%5DMerge%20branch%20%27master%27%20of%20https%3A//github.com/Legacy-of-Sylvanaar/wow-instant-messenger%0D%0A%5B%2A%5DFix%20Emoticons%20and%20URLHandler%20bug%20introducted%20by%20ElvUI%20string%20encoding%20which%20broke%20gsub.%0D%0A%5B%2A%5DBump%20TOC%20file%0D%0A%5B/list%5D",
     "options": {
       "any_flavour": false,
       "any_release_type": false,
@@ -3248,6 +3267,14 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "3.9.11",
+        "install_time": "2022-11-16T03:48:28+00:00"
+      },
+      {
+        "version": "3.9.10",
+        "install_time": "2022-11-08T11:09:38+00:00"
+      },
       {
         "version": "3.9.9",
         "install_time": "2022-10-26T03:38:27+00:00"

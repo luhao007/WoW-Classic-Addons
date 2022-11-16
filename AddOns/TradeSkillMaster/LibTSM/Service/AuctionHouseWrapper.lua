@@ -7,6 +7,7 @@
 local _, TSM = ...
 local AuctionHouseWrapper = TSM.Init("Service.AuctionHouseWrapper")
 local LibTSMClass = TSM.Include("LibTSMClass")
+local Container = TSM.Include("Util.Container")
 local Log = TSM.Include("Util.Log")
 local Delay = TSM.Include("Util.Delay")
 local Event = TSM.Include("Util.Event")
@@ -378,7 +379,7 @@ function AuctionHouseWrapper.PostAuction(bag, slot, bid, buyout, postTime, stack
 	-- need to set the duration in the default UI to avoid Blizzard errors
 	AuctionFrameAuctions.duration = postTime
 	ClearCursor()
-	PickupContainerItem(bag, slot)
+	Container.PickupItem(bag, slot)
 	ClickAuctionSellItemButton(AuctionsItemButton, "LeftButton")
 	local result = private.wrappers.PostAuction:Start(bid, buyout, postTime, stackSize, quantity)
 	ClearCursor()

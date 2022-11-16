@@ -125,6 +125,10 @@ function TSM.IsWowWrathClassic()
 	return WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC or WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC
 end
 
+function TSM.IsWowDragonflightPTR()
+	return select(4, GetBuildInfo()) >= 100002
+end
+
 function TSM.DebugLogout()
 	private.UnloadAll()
 end

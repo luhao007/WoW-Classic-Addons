@@ -8,6 +8,7 @@ local _, TSM = ...
 local Auctioning = TSM.UI.AuctionUI:NewPackage("Auctioning")
 local L = TSM.Include("Locale").GetTable()
 local FSM = TSM.Include("Util.FSM")
+local Container = TSM.Include("Util.Container")
 local Table = TSM.Include("Util.Table")
 local Sound = TSM.Include("Util.Sound")
 local Money = TSM.Include("Util.Money")
@@ -863,7 +864,7 @@ function private.FSMCreate()
 		if postBag and postSlot then
 			if TSM.IsWowClassic() then
 				ClearCursor()
-				PickupContainerItem(postBag, postSlot)
+				Container.PickupItem(postBag, postSlot)
 				ClickAuctionSellItemButton(AuctionsItemButton, "LeftButton")
 				ClearCursor()
 				local bid = Money.FromString(detailsHeader1:GetElement("bid.text"):GetText())

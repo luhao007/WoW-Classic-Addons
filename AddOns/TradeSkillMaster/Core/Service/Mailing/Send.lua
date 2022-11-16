@@ -13,6 +13,7 @@ local SlotId = TSM.Include("Util.SlotId")
 local Log = TSM.Include("Util.Log")
 local ItemString = TSM.Include("Util.ItemString")
 local Theme = TSM.Include("Util.Theme")
+local Container = TSM.Include("Util.Container")
 local Threading = TSM.Include("Service.Threading")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local InventoryInfo = TSM.Include("Service.InventoryInfo")
@@ -94,7 +95,7 @@ function private.SendMailThread(recipient, subject, body, money, items, isGroup,
 				local info = itemInfo[itemString].locations[i]
 				if info.quantity > 0 then
 					if quantity == info.quantity then
-						PickupContainerItem(info.bag, info.slot)
+						Container.PickupItem(info.bag, info.slot)
 						ClickSendMailItemButton()
 
 						if private.GetNumPendingAttachments() == ATTACHMENTS_MAX_SEND or (isGroup and TSM.db.global.mailingOptions.sendItemsIndividually) then
@@ -120,10 +121,10 @@ function private.SendMailThread(recipient, subject, body, money, items, isGroup,
 					if items[itemString] < info.quantity then
 						if #emptySlotIds > 0 then
 							local splitBag, splitSlot = SlotId.Split(tremove(emptySlotIds, 1))
-							SplitContainerItem(info.bag, info.slot, items[itemString])
-							PickupContainerItem(splitBag, splitSlot)
+							Container.SplitItem(info.bag, info.slot, items[itemString])
+							Container.PickupItem(splitBag, splitSlot)
 							Threading.WaitForFunction(private.BagSlotHasItem, splitBag, splitSlot)
-							PickupContainerItem(splitBag, splitSlot)
+							Container.PickupItem(splitBag, splitSlot)
 							ClickSendMailItemButton()
 
 							if private.GetNumPendingAttachments() == ATTACHMENTS_MAX_SEND then
@@ -136,7 +137,7 @@ function private.SendMailThread(recipient, subject, body, money, items, isGroup,
 							break
 						end
 					else
-						PickupContainerItem(info.bag, info.slot)
+						Container.PickupItem(info.bag, info.slot)
 						ClickSendMailItemButton()
 
 						if private.GetNumPendingAttachments() == ATTACHMENTS_MAX_SEND then
@@ -258,30 +259,19 @@ function private.GetNumPendingAttachments()
 	return totalAttached
 end
 
-function private.BagSlotHasItem(bag, slot)
-	return GetContainerItemInfo(bag, slot) and true or false
-end
-
 function private.GetEmptyBagSlotsThreaded(itemFamily)
 	local emptySlotIds = Threading.AcquireSafeTempTable()
 	local sortvalue = Threading.AcquireSafeTempTable()
-	for bag = 0, NUM_BAG_SLOTS do
-		-- make sure the item can go in this bag
-		local bagFamily = bag ~= 0 and GetItemFamily(GetInventoryItemLink("player", ContainerIDToInventoryID(bag))) or 0
-		if bagFamily == 0 or bit.band(itemFamily, bagFamily) > 0 then
-			for slot = 1, GetContainerNumSlots(bag) do
-				if not GetContainerItemInfo(bag, slot) then
-					local slotId = SlotId.Join(bag, slot)
-					tinsert(emptySlotIds, slotId)
-					-- use special bags first
-					sortvalue[slotId] = slotId + (bagFamily > 0 and 0 or 100000)
-				end
-			end
-		end
+	for bag = 0, Container.GetNumBags() do
+		Container.GenerateSortedEmptyFamilySlots(bag, itemFamily, emptySlotIds, sortvalue)
 		Threading.Yield()
 	end
 	Table.SortWithValueLookup(emptySlotIds, sortvalue)
 	Threading.ReleaseSafeTempTable(sortvalue)
 
 	return emptySlotIds
+end
+
+function private.BagSlotHasItem(bag, slot)
+	return Container.GetItemInfo(bag, slot) and true or false
 end

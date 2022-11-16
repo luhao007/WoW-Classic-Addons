@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Nitram
-## Version: 0812bef
+## Version: r310
 ## RequiredDeps: DBM-Core
 ## LoadOnDemand: 1
 ## SavedVariables: DBMColiseum_AllSavedVars

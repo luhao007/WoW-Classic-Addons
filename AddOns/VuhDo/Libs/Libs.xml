@@ -6,7 +6,6 @@
 	<Include file="TaintLess\TaintLess.xml" />
 	<Script file="LibBase64-1.0\LibBase64-1.0.lua" />
 
-	<Include file="!LibTotemInfo\embeds.xml" />
-        <Include file="LibHealComm-4.0\LibHealComm-4.0.xml" />
+	<Include file="LibHealComm-4.0\LibHealComm-4.0.xml" />
 
 </Ui>

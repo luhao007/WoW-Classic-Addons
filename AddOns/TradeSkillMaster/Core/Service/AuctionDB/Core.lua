@@ -561,7 +561,7 @@ function private.GetBaseItemHelper(itemString)
 	local quality = ItemInfo.GetQuality(itemString)
 	local itemLevel = ItemInfo.GetItemLevel(itemString)
 	local classId = ItemInfo.GetClassId(itemString)
-	if quality and quality >= 2 and itemLevel and itemLevel >= TSM.CONST.MIN_BONUS_ID_ITEM_LEVEL and (classId == LE_ITEM_CLASS_WEAPON or classId == LE_ITEM_CLASS_ARMOR) then
+	if quality and quality >= 2 and itemLevel and itemLevel >= TSM.CONST.MIN_BONUS_ID_ITEM_LEVEL and (classId == Enum.ItemClass.Weapon or classId == Enum.ItemClass.Armor) then
 		if strmatch(itemString, "^i:[0-9]+:[0-9%-]*:") then
 			return nil
 		end

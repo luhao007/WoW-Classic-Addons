@@ -489,8 +489,7 @@ UNIT_POWER_UPDATE, UNIT_AURA PLAYER_TARGET_CHANGED]=]
 
 Supports multiple entries, separated by commas
 Can use \ to escape -.]=] ] = "필터 형식: '이름', '이름-서버', '-서버'. 쉼표로 구분된 여러 항목을 지원합니다. \\를 사용하여 - 이스케이프 가능."
-	--[[Translation missing --]]
-	L["Filter to only dispellable de/buffs of the given type(s)"] = "Filter to only dispellable de/buffs of the given type(s)"
+	L["Filter to only dispellable de/buffs of the given type(s)"] = "주어진 유형의 해제 가능한 약화 효과만 필터링"
 	L["Find Auras"] = "Aura 찾기"
 	L["Finish"] = "종료"
 	L["Fire Orb"] = "화염 구슬"
@@ -510,7 +509,7 @@ Can use \ to escape -.]=] ] = "필터 형식: '이름', '이름-서버', '-서�
 	L["Frame Rate"] = "프레임률"
 	--[[Translation missing --]]
 	L["Frame Selector"] = "Frame Selector"
-	L["Frame Strata"] = "프레임 우선순위"
+	L["Frame Strata"] = "프레임 계층"
 	--[[Translation missing --]]
 	L["Frame Width"] = "Frame Width"
 	L["Frequency"] = "빈도"
@@ -815,8 +814,7 @@ Can use \ to escape -.]=] ] = "필터 형식: '이름', '이름-서버', '-서�
 	L["Report bugs on our issue tracker."] = "이슈 트래커에 버그를 알립니다."
 	L["Require unit from trigger"] = "활성 조건에서 유닛 필요"
 	L["Required for Activation"] = "활성화에 필요"
-	--[[Translation missing --]]
-	L["Requires LibSpecialization, that is e.g. a up-to date WeakAuras version"] = "Requires LibSpecialization, that is e.g. a up-to date WeakAuras version"
+	L["Requires LibSpecialization, that is e.g. a up-to date WeakAuras version"] = "LibSpecialization (예를 들어 최신 WeakAuras 버전)이 필요"
 	L["Requires syncing the specialization via LibSpecialization."] = "LibSpecialization을 통해 전문화를 동기화해야 합니다."
 	L["Reset all options to their default values."] = "모든 옵션을 기본값으로 재설정하십시오."
 	--[[Translation missing --]]

@@ -110,40 +110,40 @@ local DATA = {
 		["i:22572"] = 0.1, -- Air
 	} or nil,
 	-- ===================================== Crystalized / Eternal =================================
-	["i:37700"] = not TSM.IsWowClassic() and {
+	["i:37700"] = not TSM.IsWowVanillaClassic() and {
 		["i:35623"] = 10, -- Air
 	} or nil,
-	["i:35623"] = not TSM.IsWowClassic() and {
+	["i:35623"] = not TSM.IsWowVanillaClassic() and {
 		["i:37700"] = 0.1, -- Air
 	} or nil,
-	["i:37701"] = not TSM.IsWowClassic() and {
+	["i:37701"] = not TSM.IsWowVanillaClassic() and {
 		["i:35624"] = 10, -- Earth
 	} or nil,
-	["i:35624"] = not TSM.IsWowClassic() and {
+	["i:35624"] = not TSM.IsWowVanillaClassic() and {
 		["i:37701"] = 0.1, -- Earth
 	} or nil,
-	["i:37702"] = not TSM.IsWowClassic() and {
+	["i:37702"] = not TSM.IsWowVanillaClassic() and {
 		["i:36860"] = 10, -- Fire
 	} or nil,
-	["i:36860"] = not TSM.IsWowClassic() and {
+	["i:36860"] = not TSM.IsWowVanillaClassic() and {
 		["i:37702"] = 0.1, -- Fire
 	} or nil,
-	["i:37703"] = not TSM.IsWowClassic() and {
+	["i:37703"] = not TSM.IsWowVanillaClassic() and {
 		["i:35627"] = 10, -- Shadow
 	} or nil,
-	["i:35627"] = not TSM.IsWowClassic() and {
+	["i:35627"] = not TSM.IsWowVanillaClassic() and {
 		["i:37703"] = 0.1, -- Shadow
 	} or nil,
-	["i:37704"] = not TSM.IsWowClassic() and {
+	["i:37704"] = not TSM.IsWowVanillaClassic() and {
 		["i:35625"] = 10, -- Life
 	} or nil,
-	["i:35625"] = not TSM.IsWowClassic() and {
+	["i:35625"] = not TSM.IsWowVanillaClassic() and {
 		["i:37704"] = 0.1, -- Life
 	} or nil,
-	["i:37705"] = not TSM.IsWowClassic() and {
+	["i:37705"] = not TSM.IsWowVanillaClassic() and {
 		["i:35622"] = 10, -- Water
 	} or nil,
-	["i:35622"] = not TSM.IsWowClassic() and {
+	["i:35622"] = not TSM.IsWowVanillaClassic() and {
 		["i:37705"] = 0.1, -- Water
 	} or nil,
 	-- ========================================= Wod Fish ==========================================

@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: MysticalOS, Pardua, Cigawoot
-## Version: 1.6.19
+## Version: 1.6.20
 ## RequiredDeps: DBM-Core
 ## DefaultState: enabled
 

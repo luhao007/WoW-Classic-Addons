@@ -188,7 +188,7 @@ end
 function private.SellTrashBtnOnClick(button)
 	for _, row in private.query:Iterator() do
 		local itemString, quality = row:GetFields("itemString", "quality")
-		if quality == (TSM.IsWowClassic() and LE_ITEM_QUALITY_POOR or Enum.ItemQuality.Poor) then
+		if quality == Enum.ItemQuality.Poor then
 			TSM.Vendoring.Sell.SellItem(itemString)
 		end
 	end

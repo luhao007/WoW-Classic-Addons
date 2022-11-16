@@ -63,7 +63,7 @@ local VUHDO_isInBattleground;
 local VUHDO_brightenTextColor;
 local VUHDO_isConfigDemoUsers;
 
-local GetTotemInfo = VUHDO_LibTotemInfo.GetTotemInfo;
+local GetTotemInfo = GetTotemInfo;
 local table = table;
 local strsub = strsub;
 local GetTime = GetTime;

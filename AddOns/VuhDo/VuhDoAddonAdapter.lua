@@ -17,7 +17,6 @@ VUHDO_LibCustomGlow = LibStub("LibCustomGlow-1.0");
 VUHDO_LibNickTag = LibStub("NickTag-1.0");
 
 VUHDO_LibHealComm = LibStub("LibHealComm-4.0");
-VUHDO_LibTotemInfo = LibStub("LibTotemInfo-1.0");
 
 VUHDO_LibSharedMedia:Register("font", "Arial Black", "Interface\\AddOns\\VuhDo\\Fonts\\ariblk.ttf");
 VUHDO_LibSharedMedia:Register("font", "Emblem",	"Interface\\AddOns\\VuhDo\\Fonts\\Emblem.ttf");

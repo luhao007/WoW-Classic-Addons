@@ -92,7 +92,11 @@ function Tooltip.Show(parent, data, noWrapping, xOffset)
 				info.quantity = 1
 				tinsert(private.optionalMatTable, info)
 			end
-			C_TradeSkillUI.SetTooltipRecipeResultItem(spellId, private.optionalMatTable, nil, level)
+			if TSM.IsWowDragonflightPTR() then
+				GameTooltip:SetRecipeResultItem(spellId, private.optionalMatTable, nil, level)
+			else
+				C_TradeSkillUI.SetTooltipRecipeResultItem(spellId, private.optionalMatTable, nil, level)
+			end
 		end
 	elseif type(data) == "string" and (strfind(data, "^\124c.+\124Hitem:") or ItemString.IsItem(data)) then
 		GameTooltip:SetHyperlink(ItemInfo.GetLink(data))
@@ -162,7 +166,7 @@ end
 -- ============================================================================
 
 function private.UpdateCompareState()
-	if private.currentParent and GameTooltip:IsVisible() and IsShiftKeyDown() and not GameTooltip:IsEquippedItem() then
+	if private.currentParent and GameTooltip:IsVisible() and IsShiftKeyDown() then
 		GameTooltip_ShowCompareItem(GameTooltip)
 	else
 		GameTooltip_HideShoppingTooltips(GameTooltip)

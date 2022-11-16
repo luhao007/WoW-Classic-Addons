@@ -32,6 +32,11 @@
 		<Title>钥石助手</Title>
 		<Category>副本</Category>
 	</Addon>
+	<Addon name="AskMrRobotClassic">
+		<Title>机器人模拟</Title>
+		<Notes>生成可以在AskMrRobot网站模拟的字符串</Notes>
+		<Category>功能</Category>
+	</Addon>
 	<Addon name="ATT-Classic">
 		<Title>收集控助手</Title>
 		<Notes>追踪账号完成度，提示诸如任务、飞行点、配方等各个分类的收集和完成情况</Notes>

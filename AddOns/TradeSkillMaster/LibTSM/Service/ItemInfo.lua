@@ -624,7 +624,7 @@ function ItemInfo.GetQuality(item)
 	elseif itemType == "i" and bonusOrQuality then
 		-- this item has bonusIds
 		local classId = ItemInfo.GetClassId(itemString)
-		if classId and classId ~= LE_ITEM_CLASS_WEAPON and classId ~= LE_ITEM_CLASS_ARMOR then
+		if classId and classId ~= Enum.ItemClass.Weapon and classId ~= Enum.ItemClass.Armor then
 			-- the bonusId does not affect the quality of this item
 			quality = ItemInfo.GetQuality(ItemString.GetBase(itemString))
 		end
@@ -835,7 +835,7 @@ function ItemInfo.GetClassId(item)
 	elseif ItemString.ParseLevel(itemString) then
 		itemString = ItemString.GetBaseFast(itemString)
 	end
-	local classId = private.GetFieldValueHelper(itemString, "classId", true, true, LE_ITEM_CLASS_BATTLEPET)
+	local classId = private.GetFieldValueHelper(itemString, "classId", true, true, Enum.ItemClass.Battlepet)
 	if classId then
 		return classId
 	end
@@ -926,7 +926,7 @@ function ItemInfo.IsDisenchantable(item)
 	if not quality or not classId then
 		return nil
 	end
-	return quality >= (Enum.ItemQuality.Good or Enum.ItemQuality.Uncommon) and quality < Enum.ItemQuality.Legendary and (classId == LE_ITEM_CLASS_ARMOR or classId == LE_ITEM_CLASS_WEAPON)
+	return quality >= (Enum.ItemQuality.Good or Enum.ItemQuality.Uncommon) and quality < Enum.ItemQuality.Legendary and (classId == Enum.ItemClass.Armor or classId == Enum.ItemClass.Weapon)
 end
 
 --- Get whether or not the item is a commodity in WoW 8.3 (and above).
@@ -951,14 +951,14 @@ function ItemInfo.CanHaveVariations(item)
 	if not classId then
 		return nil
 	end
-	if classId == LE_ITEM_CLASS_ARMOR or classId == LE_ITEM_CLASS_WEAPON or classId == LE_ITEM_CLASS_BATTLEPET then
+	if classId == Enum.ItemClass.Armor or classId == Enum.ItemClass.Weapon or classId == Enum.ItemClass.Battlepet then
 		return true
-	elseif classId == LE_ITEM_CLASS_GEM then
+	elseif classId == Enum.ItemClass.Gem then
 		local subClassId = ItemInfo.GetSubClassId(item)
 		if not subClassId then
 			return nil
 		end
-		return subClassId == LE_ITEM_GEM_ARTIFACTRELIC
+		return subClassId == Enum.ItemGemSubclass.Artifactrelic
 	else
 		return false
 	end
@@ -1375,7 +1375,7 @@ function private.StoreGetItemInfoInstant(itemString)
 			return
 		end
 		-- we can now store all the info for this pet
-		local classId = LE_ITEM_CLASS_BATTLEPET
+		local classId = Enum.ItemClass.Battlepet
 		local subClassId = petTypeId - 1
 		local invSlotId = 0
 		local minLevel = extra1 or 0

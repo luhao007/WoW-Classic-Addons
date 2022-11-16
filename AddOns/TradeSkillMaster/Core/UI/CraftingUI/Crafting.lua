@@ -508,7 +508,7 @@ function private.CreateProfessionBtnOnClick(button)
 
 	for _, itemString in query:IteratorAndRelease() do
 		local classId = ItemInfo.GetClassId(itemString)
-		if itemString and not TSM.Groups.IsItemInGroup(itemString) and not ItemInfo.IsSoulbound(itemString) and classId ~= LE_ITEM_CLASS_WEAPON and classId ~= LE_ITEM_CLASS_ARMOR then
+		if itemString and not TSM.Groups.IsItemInGroup(itemString) and not ItemInfo.IsSoulbound(itemString) and classId ~= Enum.ItemClass.Weapon and classId ~= Enum.ItemClass.Armor then
 			TSM.Groups.SetItemGroup(itemString, mats)
 			numMats = numMats + 1
 		end
@@ -1303,7 +1303,7 @@ function private.FSMCreate()
 			:Show()
 		detailsFrame:GetElement("content.cost.text")
 			:SetText(Money.ToString(craftingCost) or "")
-		local _, lNum, hNum, toolsStr, hasTools = TSM.Crafting.ProfessionUtil.GetRecipeInfo(context.selectedCraftString)
+		local _, lNum, hNum = TSM.Crafting.ProfessionUtil.GetRecipeInfo(context.selectedCraftString)
 		if lNum == hNum then
 			detailsFrame:GetElement("left.craft.num")
 				:SetFormattedText(L["Crafts %d"], lNum)
@@ -1313,11 +1313,12 @@ function private.FSMCreate()
 		end
 		local errorText = detailsFrame:GetElement("left.craft.error")
 		local canCraft, errStr = false, nil
+		local toolsStr, hasTools = TSM.Crafting.ProfessionUtil.GetRecipeToolInfo(context.selectedCraftString)
 		if toolsStr and not hasTools then
 			errStr = REQUIRES_LABEL.." "..toolsStr
 		elseif TSM.Crafting.ProfessionUtil.GetRemainingCooldown(context.selectedCraftString) then
 			errStr = L["On Cooldown"]
-		elseif TSM.Crafting.ProfessionUtil.GetNumCraftable(context.selectedCraftString, context.selectedCraftLevel) == 0 then
+		elseif TSM.Crafting.ProfessionUtil.GetNumCraftableRecipeString(RecipeString.Get(spellId, private.optionalMats, rank, level)) == 0 then
 			errStr = L["Missing Materials"]
 		else
 			canCraft = true
@@ -1368,7 +1369,7 @@ function private.FSMCreate()
 		local nextCraftRecord = queueFrame:GetElement("queueList"):GetFirstData()
 		local nextRecipeString = nextCraftRecord and nextCraftRecord:GetField("recipeString")
 		local nextCraftString = nextCraftRecord and CraftString.FromRecipeString(nextRecipeString)
-		if nextCraftRecord and (not professionLoaded or not TSM.Crafting.ProfessionScanner.HasCraftString(nextCraftString) or TSM.Crafting.ProfessionUtil.GetNumCraftable(nextCraftString) == 0) then
+		if nextCraftRecord and (not professionLoaded or not TSM.Crafting.ProfessionScanner.HasCraftString(nextCraftString) or TSM.Crafting.ProfessionUtil.GetNumCraftableRecipeString(nextRecipeString) == 0) then
 			nextCraftRecord = nil
 		end
 		local canCraftFromQueue = professionLoaded and private.IsPlayerProfession()
@@ -1383,16 +1384,18 @@ function private.FSMCreate()
 	end
 	function fsmPrivate.UpdateCraftButtons(context)
 		if context.page == "profession" and private.IsProfessionLoaded() and context.selectedCraftString then
-			local _, _, _, toolsStr, hasTools = TSM.Crafting.ProfessionUtil.GetRecipeInfo(context.selectedCraftString)
+			local toolsStr, hasTools = TSM.Crafting.ProfessionUtil.GetRecipeToolInfo(context.selectedCraftString)
 			local detailsFrame = context.frame:GetElement("left.viewContainer.main.content.profession.recipeContent.details")
 			local errorText = detailsFrame:GetElement("left.craft.error")
 			local canCraft, errStr = false, nil
+			local spellId = CraftString.GetSpellId(context.selectedCraftString)
+			local rank = CraftString.GetRank(context.selectedCraftString)
+			local level = detailsFrame:GetElement("left.rankDropdown"):GetSelectedItemKey()
 			if toolsStr and not hasTools then
 				errStr = REQUIRES_LABEL.." "..toolsStr
 			elseif TSM.Crafting.ProfessionUtil.GetRemainingCooldown(context.selectedCraftString) then
 				errStr = L["On Cooldown"]
-			-- TODO: handle missing optional mats to disable craft buttons
-			elseif TSM.Crafting.ProfessionUtil.GetNumCraftable(context.selectedCraftString, context.selectedCraftLevel) == 0 then
+			elseif TSM.Crafting.ProfessionUtil.GetNumCraftableRecipeString(RecipeString.Get(spellId, private.optionalMats, rank, level)) == 0 then
 				errStr = L["Missing Materials"]
 			else
 				canCraft = true
@@ -1430,7 +1433,7 @@ function private.FSMCreate()
 		local nextCraftRecord = context.frame:GetElement("queue.queueList"):GetFirstData()
 		local nextRecipeString = nextCraftRecord and nextCraftRecord:GetField("recipeString")
 		local nextCraftString = nextCraftRecord and CraftString.FromRecipeString(nextRecipeString)
-		if nextCraftRecord and (not professionLoaded or not TSM.Crafting.ProfessionScanner.HasCraftString(nextCraftString) or TSM.Crafting.ProfessionUtil.GetNumCraftable(nextCraftString) == 0) then
+		if nextCraftRecord and (not professionLoaded or not TSM.Crafting.ProfessionScanner.HasCraftString(nextCraftString) or TSM.Crafting.ProfessionUtil.GetNumCraftableRecipeString(nextRecipeString) == 0) then
 			nextCraftRecord = nil
 		end
 		local canCraftFromQueue = professionLoaded and private.IsPlayerProfession()
@@ -1475,6 +1478,7 @@ function private.FSMCreate()
 		)
 		:AddState(FSM.NewState("ST_FRAME_OPEN_NO_PROFESSION")
 			:SetOnEnter(function(context)
+				context.frame:GetBaseElement():HideDialog()
 				context.recipeString = nil
 				context.craftingQuantity = nil
 				context.craftingType = nil
@@ -1605,9 +1609,11 @@ function private.FSMCreate()
 				wipe(private.optionalMats)
 				fsmPrivate.UpdateContentPage(context)
 				fsmPrivate.UpdateOptionalMaterials(context)
+				fsmPrivate.UpdateCraftButtons(context)
 			end)
 			:AddEvent("EV_RECIPE_OPTIONAL_MATS_UPDATED", function(context)
 				fsmPrivate.UpdateOptionalMaterials(context)
+				fsmPrivate.UpdateCraftButtons(context)
 			end)
 			:AddEvent("EV_RECIPE_LEVEL_SELECTION_UPDATED", function(context, level)
 				context.selectedCraftLevel = level
@@ -1644,8 +1650,8 @@ function private.FSMCreate()
 					-- already crafting something
 					return
 				end
-				local _, _, _, toolsStr, hasTools = TSM.Crafting.ProfessionUtil.GetRecipeInfo(craftString)
-				if (toolsStr and not hasTools) or TSM.Crafting.ProfessionUtil.GetNumCraftable(craftString) == 0 or TSM.Crafting.ProfessionUtil.GetRemainingCooldown(craftString) then
+				local toolsStr, hasTools = TSM.Crafting.ProfessionUtil.GetRecipeToolInfo(craftString)
+				if (toolsStr and not hasTools) or TSM.Crafting.ProfessionUtil.GetNumCraftableRecipeString(recipeString) == 0 or TSM.Crafting.ProfessionUtil.GetRemainingCooldown(craftString) then
 					-- can't craft this
 					return
 				end

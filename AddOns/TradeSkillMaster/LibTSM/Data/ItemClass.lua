@@ -21,50 +21,49 @@ local STATIC_DATA = {
 -- ============================================================================
 
 do
-	-- Needed because NUM_LE_ITEM_CLASSS contains an erroneous value
 	local ITEM_CLASS_IDS = nil
 	if not TSM.IsWowClassic() then
 		ITEM_CLASS_IDS = {
-			LE_ITEM_CLASS_WEAPON,
-			LE_ITEM_CLASS_ARMOR,
-			LE_ITEM_CLASS_CONTAINER,
-			LE_ITEM_CLASS_GEM,
-			LE_ITEM_CLASS_ITEM_ENHANCEMENT,
-			LE_ITEM_CLASS_CONSUMABLE,
-			LE_ITEM_CLASS_GLYPH,
-			LE_ITEM_CLASS_TRADEGOODS,
-			LE_ITEM_CLASS_RECIPE,
-			LE_ITEM_CLASS_BATTLEPET,
-			LE_ITEM_CLASS_QUESTITEM,
-			LE_ITEM_CLASS_MISCELLANEOUS,
+			Enum.ItemClass.Weapon,
+			Enum.ItemClass.Armor,
+			Enum.ItemClass.Container,
+			Enum.ItemClass.Gem,
+			Enum.ItemClass.ItemEnhancement,
+			Enum.ItemClass.Consumable,
+			Enum.ItemClass.Glyph,
+			Enum.ItemClass.Tradegoods,
+			Enum.ItemClass.Recipe,
+			Enum.ItemClass.Battlepet,
+			Enum.ItemClass.Questitem,
+			Enum.ItemClass.Miscellaneous,
 		}
 	elseif TSM.IsWowWrathClassic() then
 		ITEM_CLASS_IDS = {
-			LE_ITEM_CLASS_WEAPON,
-			LE_ITEM_CLASS_ARMOR,
-			LE_ITEM_CLASS_CONTAINER,
-			LE_ITEM_CLASS_CONSUMABLE,
-			LE_ITEM_CLASS_GLYPH,
-			LE_ITEM_CLASS_TRADEGOODS,
-			LE_ITEM_CLASS_PROJECTILE,
-			LE_ITEM_CLASS_QUIVER,
-			LE_ITEM_CLASS_RECIPE,
-			LE_ITEM_CLASS_GEM,
-			LE_ITEM_CLASS_MISCELLANEOUS,
-			LE_ITEM_CLASS_QUESTITEM,
+			Enum.ItemClass.Weapon,
+			Enum.ItemClass.Armor,
+			Enum.ItemClass.Container,
+			Enum.ItemClass.Consumable,
+			Enum.ItemClass.Glyph,
+			Enum.ItemClass.Tradegoods,
+			Enum.ItemClass.Projectile,
+			Enum.ItemClass.Quiver,
+			Enum.ItemClass.Recipe,
+			Enum.ItemClass.Gem,
+			Enum.ItemClass.Miscellaneous,
+			Enum.ItemClass.Questitem,
 		}
 	else
 		ITEM_CLASS_IDS = {
-			LE_ITEM_CLASS_WEAPON,
-			LE_ITEM_CLASS_ARMOR,
-			LE_ITEM_CLASS_CONTAINER,
-			LE_ITEM_CLASS_CONSUMABLE,
-			LE_ITEM_CLASS_TRADEGOODS,
-			LE_ITEM_CLASS_PROJECTILE,
-			LE_ITEM_CLASS_QUIVER,
-			LE_ITEM_CLASS_RECIPE,
-			LE_ITEM_CLASS_REAGENT,
-			LE_ITEM_CLASS_MISCELLANEOUS,
+			Enum.ItemClass.Weapon,
+			Enum.ItemClass.Armor,
+			Enum.ItemClass.Container,
+			Enum.ItemClass.Consumable,
+			Enum.ItemClass.Tradegoods,
+			Enum.ItemClass.Projectile,
+			Enum.ItemClass.Quiver,
+			Enum.ItemClass.Recipe,
+			Enum.ItemClass.Reagent,
+			Enum.ItemClass.Miscellaneous,
 		}
 	end
 

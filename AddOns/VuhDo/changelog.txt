@@ -1,3 +1,50 @@
+Version 3.144-wotlkc  
+  
+  
+Known issues:  
+-- Spells by rank can be specified using a rank suffix:  
+--  Example: Lesser Heal(Rank 1)  
+-- Debuff tooltips are currently bugged when using ElvUI  
+--   Deselect 'VuhDo Options > Panels > Tooltips > Tooltips > Debuffs'  
+-- Shield bar is not working due to unavailable Blizzard APIs  
+-- Spell trace only works for known spells in the player's spellbook  
+-- Group roster changes will not be reflected during combat  
+--   Swapping a player between groups during combat will cause  
+--   unpredictable, negative results.  Be warned!  
+-- Built-in Blizzard APIs for incoming healing only partially working  
+--   If other healers are using LibHealComm enable it under:  
+--   'VuhDo Options > General > Threat / Incoming > Incoming Heal > Use LibHealComm'  
+  
+  
+Bugfixes:  
+-- Fixed Shaman totem timers for Buff Watch  
+  
+  
+Improvements:  
+  
+  
+--------------------------------------------------------------  
+Version 3.144  
+  
+  
+Known issues:  
+-- Shadowlands stat squish cleanup still a work in progress  
+--   AOE Advice spell equations need complete overhaul  
+--   Some text providers need changes to better display small numbers  
+-- Debuff tooltips are currently bugged when using ElvUI  
+--   Deselect 'VuhDo Options > Panels > Tooltips > Tooltips > Debuffs'  
+-- Blizzard continues to have a bug that breaks proper spell targeting.  
+--   Under 'Game Menu > Options > Gameplay > Combat' deselect 'Auto Self Cast'  
+--   and set 'Self Cast Key' to 'None'  
+  
+  
+Bugfixes:  
+  
+  
+Improvements:  
+  
+  
+--------------------------------------------------------------  
 Version 3.143-wotlkc  
   
   
@@ -40,9 +87,26 @@ Known issues:
   
 Bugfixes:  
 -- Fixed game stutters caused by macro'ed console commands  
+-- Fixed error where bouquets are evaluated before decompression  
+-- Fixed application of specified opacity for HoT Icons  
   
   
 Improvements:  
+-- Added Druid spell 'Mark of the Wild' to Buff Watch  
+-- Added Shaman totem 'Liquid Magma Totem' to Buff Watch  
+-- Added Shaman totem 'Wind Rush Totem' to Buff Watch  
+-- Added Shaman totem 'Tranquil Air Totem' to Buff Watch  
+-- Added Shaman totem 'Storm Elemental Totem' to Buff Watch  
+-- Added Shaman totem 'Stoneskin Totem' to Buff Watch  
+-- Added Shaman totem 'Mana Spring Totem' to Buff Watch  
+-- Added Shaman totem 'Poison Cleansing Totem' to Buff Watch  
+-- Added Shaman weapon enchant 'Earthliving Weapon' to Buff Watch  
+-- Added Priest spell 'Guardian Spirit' to Buff Watch  
+-- Added Mage spell 'Timewarp' to Buff Watch  
+-- Added Hunter spell 'Ancient Hysteria' to Buff Watch  
+-- Added Evoker spell 'Blessing of the Bronze' to Buff Watch  
+-- Added Evoker spell 'Fury of the Aspects' to Buff Watch  
+-- Added Paladin battle resurrection spell 'Intercession'  
   
   
 --------------------------------------------------------------  

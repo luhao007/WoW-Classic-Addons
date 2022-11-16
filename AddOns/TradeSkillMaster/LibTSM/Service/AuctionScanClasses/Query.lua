@@ -37,14 +37,14 @@ local DEFAULT_SORTS = TSM.IsWowClassic() and
 	}
 local EMPTY_SORTS = {}
 local INV_TYPES = {
-	CHEST = TSM.IsWowClassic() and LE_INVENTORY_TYPE_CHEST_TYPE or Enum.InventoryType.IndexChestType,
-	ROBE = TSM.IsWowClassic() and LE_INVENTORY_TYPE_ROBE_TYPE or Enum.InventoryType.IndexRobeType,
-	NECK = TSM.IsWowClassic() and LE_INVENTORY_TYPE_NECK_TYPE or Enum.InventoryType.IndexNeckType,
-	FINGER = TSM.IsWowClassic() and LE_INVENTORY_TYPE_FINGER_TYPE or Enum.InventoryType.IndexFingerType,
-	TRINKET = TSM.IsWowClassic() and LE_INVENTORY_TYPE_TRINKET_TYPE or Enum.InventoryType.IndexTrinketType,
-	HOLDABLE = TSM.IsWowClassic() and LE_INVENTORY_TYPE_HOLDABLE_TYPE or Enum.InventoryType.IndexHoldableType,
-	BODY = TSM.IsWowClassic() and LE_INVENTORY_TYPE_BODY_TYPE or Enum.InventoryType.IndexBodyType,
-	CLOAK = TSM.IsWowClassic() and LE_INVENTORY_TYPE_CLOAK_TYPE or Enum.InventoryType.IndexCloakType,
+	CHEST = Enum.InventoryType.IndexChestType,
+	ROBE = Enum.InventoryType.IndexRobeType,
+	NECK = Enum.InventoryType.IndexNeckType,
+	FINGER = Enum.InventoryType.IndexFingerType,
+	TRINKET = Enum.InventoryType.IndexTrinketType,
+	HOLDABLE = Enum.InventoryType.IndexHoldableType,
+	BODY = Enum.InventoryType.IndexBodyType,
+	CLOAK = Enum.InventoryType.IndexCloakType,
 }
 assert(Table.Count(INV_TYPES) == 8)
 
@@ -454,22 +454,22 @@ function AuctionQuery._SendWowQuery(self)
 	wipe(self._classFilter2)
 	if self._invType == INV_TYPES.CHEST or self._invType == INV_TYPES.ROBE then
 		-- default AH only sends in queries for robe chest type, we need to mimic this when using a chest filter
-		self._classFilter1.classID = LE_ITEM_CLASS_ARMOR
+		self._classFilter1.classID = Enum.ItemClass.Armor
 		self._classFilter1.subClassID = self._subClass
 		self._classFilter1.inventoryType = INV_TYPES.CHEST
 		tinsert(self._classFiltersTemp, self._classFilter1)
-		self._classFilter2.classID = LE_ITEM_CLASS_ARMOR
+		self._classFilter2.classID = Enum.ItemClass.Armor
 		self._classFilter2.subClassID = self._subClass
 		self._classFilter2.inventoryType = INV_TYPES.ROBE
 		tinsert(self._classFiltersTemp, self._classFilter2)
 	elseif self._invType == INV_TYPES.NECK or self._invType == INV_TYPES.FINGER or self._invType == INV_TYPES.TRINKET or self._invType == INV_TYPES.HOLDABLE or self._invType == INV_TYPES.BODY then
-		self._classFilter1.classID = LE_ITEM_CLASS_ARMOR
-		self._classFilter1.subClassID = LE_ITEM_ARMOR_GENERIC
+		self._classFilter1.classID = Enum.ItemClass.Armor
+		self._classFilter1.subClassID = Enum.ItemArmorSubclass.Generic
 		self._classFilter1.inventoryType = self._invType
 		tinsert(self._classFiltersTemp, self._classFilter1)
 	elseif self._invType == INV_TYPES.CLOAK then
-		self._classFilter1.classID = LE_ITEM_CLASS_ARMOR
-		self._classFilter1.subClassID = LE_ITEM_ARMOR_CLOTH
+		self._classFilter1.classID = Enum.ItemClass.Armor
+		self._classFilter1.subClassID = Enum.ItemArmorSubclass.Cloth
 		self._classFilter1.inventoryType = self._invType
 		tinsert(self._classFiltersTemp, self._classFilter1)
 	elseif self._class then

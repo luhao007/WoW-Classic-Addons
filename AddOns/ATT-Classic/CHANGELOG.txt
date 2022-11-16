@@ -1,46 +1,5 @@
-1.2.2 Release Notes
+1.2.3 Release Notes
 Contributions made by Crieve:
-* Fixed the Shimmering Wyrmling's pet type assignment.
-* Updated Pilgrim's Bounty achievements.
-* Updated the Dalaran Underbelly vendors for Wrath Classic and Cata Classic.
-* Xazi and Zom have way too many ids associated with them.
-* Updated Grex Brainboiler and his clones in Netherstorm.
-* Updated Netherstorm PVP Vendors for Wrath and Cata Classic.
-* Things that have symbolic links attached now appear in Loot Mode. Also added a message about how you can right click to see more information for these things.
-* Maps that don't yet have a separate map in the WoW API that we separate for reasons now appropriately appear as their expected map name. (The Underbelly instead of 'Dalaran')
-* Armor and Weapon smithing recipes no longer appear for the wrong specialization in Dalaran.
-* Updated Dalaran for Wrath Classic.
-* Updated the format of Darnassus.
-* Fixed Saronite Mindcrusher.
-* In preparation for the Kalimdor Classic Quest migration, Kalimdor zone files have been consolidated into single standalone zone files so that it makes the merging process less annoying.
-* Updated Darnassus to include future expansion information.
-* Darnassus now resides on the Retail Database.
-* Updated Moonglade to include future expansion information.
-* Moonglade now resides on the Retail Database.
-* Updated Stonetalon Mountains to include future expansion information.
-* Stonetalon Mountains now resides on the Retail Database.
-* Object tooltips now work!
-* More testing for the Object Tooltips for Wrath Classic... it works!
-* Objects will now prefer the icons of items acting as a provider, if one was not explicitly specified for the object.
-* Updated Thousand Needles to include future expansion information.
-* Thousand Needles now resides on the Retail Database.
-* Updated Thunder Bluff to include future expansion information. Updated Warrior class-specific Mail items to automatically convert to Plate if over level 40, thus allowing the RWP filter the ability to "collect" it. (They eventually get converted to Plate for transmog purposes)
-* Thunder Bluff now resides on the Retail Database.
-* Updated Teldrassil (incomplete) and added a constant for Shadowglen.
-* Added the Crystalsong Carrot object.
-* Added objects for Shiny Treasures in Sholazar Basin.
-* Tooltips are now much more responsive.
-* Added a couple more objects.
-* Added some missing WOTLK objects.
-* Updated Teldrassil to include future expansion information.
-* Teldrassil now resides on the Retail Database.
-* Added Pool of Blood for a Dalaran Fishing Daily.
-* Updated Winterspring to include future expansion information.
-* Winterspring now resides on the Retail Database.
-* Updated Felwood to include future expansion information.
-* Felwood now resides on the Retail Database.
-* Updated Dustwallow Marsh to include future expansion information.
-* Dustwallow Marsh now resides on the Retail Database.
-* Updated Un'Goro Crater to include future expansion information.
-* Un'Goro Crater now resides on the Retail Database.
+* Fixed an issue with C_Map.
+* Unfinished Feralas updates.
 
