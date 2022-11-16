@@ -616,16 +616,6 @@ class Manager:
 
     @staticmethod
     @available_on(['classic'])
-    def handle_simple_item_level():
-        utils.change_defaults(
-            'Addons/SimpleItemLevel/addon.lua',
-            ['                character = false,',
-             '                bags = false,',
-             '                color = false,']
-        )
-
-    @staticmethod
-    @available_on(['classic'])
     def handle_talentemu():
         utils.change_defaults(
             'AddOns/TalentEmu/setting.lua',
