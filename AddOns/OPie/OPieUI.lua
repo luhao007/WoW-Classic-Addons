@@ -486,19 +486,16 @@ function api:GetTexColor(icon)
 	return getSliceColor(nil, icon)
 end
 
-local ricErrorOffset = 0
 function api:RegisterIndicatorConstructor(key, info)
-	local errorLevel = 3 + ricErrorOffset
-	ricErrorOffset = 0
-	assert(type(key) == "string" and type(info) == "table", 'Syntax: OPieUI:RegisterIndicatorConstructor("key", infoTable)', errorLevel)
+	assert(type(key) == "string" and type(info) == "table", 'Syntax: OPieUI:RegisterIndicatorConstructor("key", infoTable)', 2)
 	local func, apiLevel, iname, reqAPILevel = info.CreateIndicator, info.apiLevel, info.name, info.reqAPILevel
-	assert(IndicatorFactories[key] == nil, 'RegisterIndicatorConstructor: an indicator constructor with the specified key is already registered', errorLevel)
-	assert(type(func) == "function", 'RegisterIndicatorConstructor: info.CreateIndicator must be a function', errorLevel)
-	assert(type(apiLevel) == "number" and apiLevel < math.huge, 'RegisterIndicatorConstructor: info.apiLevel must be a finite number', errorLevel)
-	assert(type(iname) == "string", 'RegisterIndicatorConstructor: info.name must be a string', errorLevel)
-	assert(type(reqAPILevel) == "number" or reqAPILevel == nil, 'RegisterIndicatorConstructor: info.reqAPILevel, if set, must be a number', errorLevel)
+	assert(IndicatorFactories[key] == nil, 'RegisterIndicatorConstructor: an indicator constructor with the specified key is already registered', 2)
+	assert(type(func) == "function", 'RegisterIndicatorConstructor: info.CreateIndicator must be a function', 2)
+	assert(type(apiLevel) == "number" and apiLevel < math.huge, 'RegisterIndicatorConstructor: info.apiLevel must be a finite number', 2)
+	assert(type(iname) == "string", 'RegisterIndicatorConstructor: info.name must be a string', 2)
+	assert(type(reqAPILevel) == "number" or reqAPILevel == nil, 'RegisterIndicatorConstructor: info.reqAPILevel, if set, must be a number', 2)
 
-	local mainPool = ValidateIndicator(apiLevel, reqAPILevel, info, 1+errorLevel)
+	local mainPool = ValidateIndicator(apiLevel, reqAPILevel, info, 3)
 	LastRegisteredIndicatorFactory, IndicatorFactories[key] = key, {
 		name = iname:gsub("|", ""),
 		apiLevel = apiLevel,

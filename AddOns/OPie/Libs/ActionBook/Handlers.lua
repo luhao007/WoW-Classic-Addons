@@ -260,10 +260,13 @@ do -- item: items ID/inventory slot
 				end
 			end
 		end
+		local ns = MODERN and C_Container.GetContainerNumSlots or GetContainerNumSlots
+		local giid = MODERN and C_Container.GetContainerItemID or GetContainerItemID
+		local gil = MODERN and C_Container.GetContainerItemLink or GetContainerItemLink
 		for i=0,4 do
-			for j=1,GetContainerNumSlots(i) do
-				if iid == GetContainerItemID(i, j) then
-					n = GetItemInfo(GetContainerItemLink(i, j))
+			for j=1, ns(i) do
+				if iid == giid(i, j) then
+					n = GetItemInfo(gil(i, j))
 					if n == name or n and name2 and n:lower() == name2 then
 						return i, j
 					elseif not cs then
@@ -281,7 +284,7 @@ do -- item: items ID/inventory slot
 			if invid == nil then return end
 			bag, slot, name, link = nil, invid, GetItemInfo(GetInventoryItemLink("player", ident) or invid)
 			if name then ident = name end
-		else
+		elseif ident then
 			name, link, _, _, _, _, _, _, _, icon = GetItemInfo(ident)
 		end
 		local iid, cdStart, cdLen, enabled, cdLeft = (link and tonumber(link:match("item:([x%x]+)"))) or itemIdMap[ident]
@@ -349,7 +352,7 @@ do -- macrotext
 	local function createMacrotext(macrotext)
 		if type(macrotext) ~= "string" then return end
 		if not map[macrotext] then
-			map[macrotext] = AB:CreateActionSlot(macroHint, macrotext, "recall", RW:seclib(), "RunMacro", macrotext)
+			map[macrotext] = AB:CreateActionSlot(macroHint, macrotext, "recall", RW:seclib(), "RunMacro", macrotext, false, true)
 		end
 		return map[macrotext]
 	end
@@ -594,9 +597,10 @@ if MODERN then -- equipmentset: equipment sets by name
 		return type(fid) == "number" and fid or ("Interface/Icons/" .. (fid or "INV_Misc_QuestionMark"))
 	end
 	local function equipmentsetHint(name)
-		local _, icon, _, active, total, equipped, available = C_EquipmentSet.GetEquipmentSetInfo(name and C_EquipmentSet.GetEquipmentSetID(name) or -1)
+		local esid = name and C_EquipmentSet.GetEquipmentSetID(name) or -1
+		local _, icon, _, active, total, equipped, available = C_EquipmentSet.GetEquipmentSetInfo(esid)
 		if icon then
-			return total == equipped or (available > 0), active and 1 or 0, resolveIcon(icon), name, nil, 0, 0, GameTooltip.SetEquipmentSet, name
+			return total == equipped or (available > 0), active and 1 or 0, resolveIcon(icon), name, nil, 0, 0, GameTooltip.SetEquipmentSet, esid
 		end
 	end
 	function EV.EQUIPMENT_SETS_CHANGED()
@@ -611,8 +615,9 @@ if MODERN then -- equipmentset: equipment sets by name
 		return setMap[name]
 	end
 	local function describeEquipSet(name)
-		local _, ico = C_EquipmentSet.GetEquipmentSetInfo(name and C_EquipmentSet.GetEquipmentSetID(name) or -1)
-		return L"Equipment Set", name, ico and resolveIcon(ico) or "Interface/Icons/INV_Misc_QuestionMark", nil, GameTooltip.SetEquipmentSet, name
+		local esid = name and C_EquipmentSet.GetEquipmentSetID(name) or -1
+		local _, ico = C_EquipmentSet.GetEquipmentSetInfo(esid)
+		return L"Equipment Set", name, ico and resolveIcon(ico) or "Interface/Icons/INV_Misc_QuestionMark", nil, GameTooltip.SetEquipmentSet, esid
 	end
 	AB:RegisterActionType("equipmentset", createEquipSet, describeEquipSet)
 	RW:SetCommandHint(SLASH_EQUIP_SET1, 80, function(_, _, clause)

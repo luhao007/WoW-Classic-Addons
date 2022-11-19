@@ -56,6 +56,7 @@ R:AddDefaultRing("DruidUtility", {
 	{id="/cast [mod][+cleanse] {{spell:88423/2782}}; {{spell:18960/193753}}", _u="p"}, -- moonglade/cleanse
 	{id=29166, _u="v"}, -- innervate
 	{id=2908, _u="s"}, -- soothe
+	{id=1126, _u="w"}, -- motw
 	name=L"Utility", hotkey="[noform:bear/cat] BUTTON5; ALT-BUTTON5", limit="DRUID", _u="OPCDU"
 })
 R:AddDefaultRing("DruidFeral", {
@@ -87,7 +88,7 @@ R:AddDefaultRing("HunterAspects", {
 	{id=186265, _u="t"}, -- turtle
 	{id=781, _u="d"}, -- disengage
 	{id=5384, _u="g"}, -- feign
-	{"ring", "HunterPets", onlyNonEmpty=true, _u="e", show="[nospec:2][notalent:15.1]"},
+	{"ring", "HunterPets", _u="e", show="[nospec:2]"},
 	{id=147362, _u="i"}, -- counter
 	name=L"Aspects", hotkey="BUTTON4", limit="HUNTER", _u="OPCHA"
 })
@@ -103,17 +104,16 @@ R:AddDefaultRing("MageCombat", {
 	{id=30449, _u="s"}, -- spellsteal
 	{id=55342, _u="m"}, -- mirror image
 	{id=12051, _u="e"}, -- evocation
-	{id=12042, _u="a"}, -- arcane power
 	{id=108839, _u="f"}, -- ice floes
 	{id=80353, _u="t"}, -- time warp
-	{id=11426, _u="i"}, -- ice barrier
+	{id="/cast {{spell:11426}}; {{spell:235450}}; {{spell:235313}}", _u="i"}, -- barrier
 	{id=190319, _u="c"}, -- combustion
 	name=L"Combat", limit="MAGE", hotkey="BUTTON4", _u="OPCMC"
 })
 R:AddDefaultRing("MageTools", {
 	{id=42955, _u="f"}, -- food
 	{id=66, _u="i"}, -- (greater) invisibility
-	{"ring", "MagePolymorph", onlyNonEmpty=true, _u="t"},
+	{"ring", "MagePolymorph", _u="t"},
 	{id=130, _u="s"}, -- slow fall
 	{id=1459, _u="n"}, -- intellect
 	name=L"Utility", limit="MAGE", hotkey="BUTTON5", _u="OPCMT"
@@ -135,6 +135,7 @@ R:AddDefaultRing("MagePolymorph", {
 do -- MageTravel
 	local m = "/cast [mod] {{spell:%s}}; {{spell:%s}}"
 	R:AddDefaultRing("MageTravel", {
+		{id=m:format(395289, 395277), _u="0"}, -- Valdrakken
 		{id=m:format(344597, 344587), _u="9"}, -- Oribos
 		{id=m:format("268969/281402", "281403/281404"), _u="8"}, -- Dazar'alor/Boralus
 		{id=m:format(224871, 224869), _u="b"}, -- Dalaran (Broken Isles)
@@ -147,7 +148,7 @@ do -- MageTravel
 		{id=m:format(11418, 3563), _u="u"}, -- Undercity
 		{id=m:format(11416, 3562), _u="i"}, -- Ironforge
 		{id=m:format(11417, 3567), _u="o"}, -- Orgrimmar
-		{"ring", "ExtraPortals", onlyNonEmpty=true, _u="e"}, -- Extra Portals
+		{"ring", "ExtraPortals", _u="e"}, -- Extra Portals
 		{id=m:format(32267, 32272), _u="l"}, -- Silvermoon
 		{id=m:format(32266, 32271), _u="x"}, -- Exodar
 	  name=L"Portals and Teleports", hotkey="ALT-G", limit="MAGE", _u="OPCMP"
@@ -163,7 +164,7 @@ do -- MageTravel
 end
 
 R:AddDefaultRing("PaladinAuras", {
-	{"ring", "PaladinBlessing", onlyNonEmpty=true, _u="b"},
+	{"ring", "PaladinBlessing", _u="b"},
 	{id=1022, _u="t"}, -- hand of protection
 	{id=1044, _u="e"}, -- hand of freedom
 	{id=25780, _u="f"}, -- righteous fury
@@ -197,7 +198,7 @@ R:AddDefaultRing("WarlockCombat", {
 	{id="/cast [nomod] {{spell:48018}}; {{spell:48020}}", _u="t"}, -- demonic circle
 	{id=1098, _u="e"}, -- enslave
 	{id=710, _u="a"}, -- banish
-	{id="/cast {{spell:111400}}; {{spell:111397}}; {{spell:108482}}", _u="m"}, -- tier 4 talents [combat-ish]
+	{id=111400, _u="m"}, -- burning rush
 	{id=5782, _u="f"}, -- fear
 	{id=5484, _u="h"}, -- howl
 	name=L"Warlock Combat", hotkey="BUTTON5", limit="WARLOCK", _u="OPCLO"
@@ -270,7 +271,7 @@ R:AddDefaultRing("SpecMenu", {
 	{id="/cast {{spell:50977}}; {{spell:193753}}; {{spell:126892}}; {{spell:193759}}", _u="c"},
 	{"item", 110560, _u="g"},
 	{"item", 140192, _u="d"},
-	{"ring", "CommonHearth", onlyNonEmpty=true, rotationMode="shuffle", _u="t"},
+	{"ring", "CommonHearth", rotationMode="shuffle", _u="t"},
 	{"spell", 556, _u="a"},
 	{"item", 141605, _u="w", show="[in:broken isles/bfa]"},
 	name=L"Specializations and Travel", hotkey="ALT-H", _u="OPCTA"

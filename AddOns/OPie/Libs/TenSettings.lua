@@ -441,6 +441,31 @@ function M:CreateLineInputBox(parent, common, width)
 	end
 	return input
 end
+function M:CreateOptionsSlider(parent, name, width)
+	local s, t = CreateFrame("Slider", name, parent, TEN and "MinimalSliderTemplate" or "OptionsSliderTemplate")
+	s:SetWidth(width)
+	if TEN then
+		t = s:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+		t, s.text = s:CreateFontString(nil, "OVERLAY"), t
+		t, s.lo = s:CreateFontString(nil, "OVERLAY"), t
+		s.hi = t
+	else
+		s.text, s.hi, s.lo = s.Text, s.High, s.Low
+		s.hi:ClearAllPoints()
+		s.lo:ClearAllPoints()
+		s.text:ClearAllPoints()
+	end
+	s.lo:SetFontObject(GameFontHighlightSmall)
+	s.hi:SetFontObject(GameFontHighlightSmall)
+	s.lo:SetTextColor(0.8, 0.8, 0.8)
+	s.hi:SetTextColor(0.8, 0.8, 0.8)
+	s.lo:SetPoint("RIGHT", s, "LEFT", -2, 1)
+	s.hi:SetPoint("LEFT", s, "RIGHT", 2, 1)
+	s.lo:SetText(LOW)
+	s.hi:SetText(HIGH)
+	s:SetScript("OnValueChanged", nil)
+	return s, TEN and 4 or 0, s:GetHeight()/2
+end
 
 do -- M:ShowFrameOverlay(self, overlayFrame)
 	local container, watcher, occupant = CreateFrame("Frame"), CreateFrame("Frame") do
@@ -474,15 +499,17 @@ do -- M:ShowFrameOverlay(self, overlayFrame)
 		local cw, ch = overlayFrame:GetSize()
 		local w2, h2 = self:GetSize()
 		local w, h, isRefresh = cw + 24, ch + 24, occupant == overlayFrame
+		local frameLevel = (math.ceil(self:GetFrameLevel()/500)+1)*500
 		w2, h2, occupant = w2 > w and (w-w2)/2 or 0, h2 > h and (h-h2)/2 or 0
 		container:SetSize(w, h)
 		container:SetHitRectInsets(w2, w2, h2, h2)
 		container:SetParent(self)
 		container:SetPoint("CENTER")
-		container:SetFrameLevel(self:GetFrameLevel()+20)
+		container:SetFrameLevel(frameLevel)
 		container.fader:ClearAllPoints()
 		container.fader:SetPoint("TOPLEFT", self, "TOPLEFT", 2, -2)
 		container.fader:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -2, TEN and I.GetBottomOverlayOffset(self) or 2)
+		container:SetFrameStrata("DIALOG")
 		container:Show()
 		overlayFrame:ClearAllPoints()
 		overlayFrame:SetParent(container)
@@ -510,35 +537,32 @@ do -- M:ShowPromptOverlay(...)
 		promptInfo.detail:SetPoint("TOP", promptInfo.editBox, "BOTTOM", 0, -8)
 		promptInfo.prompt:SetWidth(380)
 		promptInfo.detail:SetWidth(380)
-				
+
 		promptInfo.cancel:SetScript("OnClick", function() promptFrame:Hide() end)
 		promptInfo.editBox:SetScript("OnTextChanged", function(self)
-			promptInfo.accept:SetEnabled(promptInfo.callback == nil or promptInfo.callback(self, self:GetText() or "", false, promptFrame:GetParent():GetParent()))
+			promptInfo.accept:SetEnabled(promptInfo.callback == nil or promptInfo.callback(self, self:GetText() or "", false, promptInfo.owner))
 		end)
 		promptInfo.accept:SetScript("OnClick", function()
 			local callback, text = promptInfo.callback, promptInfo.editBox:GetText() or ""
-			if callback == nil or callback(promptInfo.editBox, text, true, promptFrame:GetParent():GetParent()) then
+			if callback == nil or callback(promptInfo.editBox, text, true, promptInfo.owner) then
 				promptFrame:Hide()
 			end
 		end)
 		promptInfo.editBox:SetScript("OnEnterPressed", function() promptInfo.accept:Click() end)
 		promptInfo.editBox:SetScript("OnEscapePressed", function() promptInfo.cancel:Click() end)
 	end
-	function M:ShowPromptOverlay(frame, title, prompt, explainText, acceptText, callback, editBoxWidth, cancelText)
-		promptInfo.callback = callback
+	function M:ShowPromptOverlay(frame, title, prompt, explainText, acceptText, callback, editBoxWidth, cancelText, editText)
+		local showEditBox = editBoxWidth ~= false
+		editText = showEditBox and type(editText) == "string" and editText or ""
+		promptInfo.owner, promptInfo.callback = frame, callback
 		promptInfo.title:SetText(title or "")
 		promptInfo.prompt:SetText(prompt or "")
 		promptInfo.detail:SetText(explainText or "")
-		promptInfo.editBox:SetText("")
+		promptInfo.editBox:SetText(editText)
+		promptInfo.editBox:HighlightText(0, #editText)
+		promptInfo.editBox:SetShown(editBoxWidth ~= false)
+		promptInfo.editBox:SetWidth(math.max(40, (editBoxWidth or 0.50) * 380))
 		promptFrame:SetHeight(55 + math.max(20, promptInfo.prompt:GetStringHeight()) + (editBoxWidth ~= false and 30 or 0) + ((explainText or "") ~= "" and 20 or 0))
-		M:ShowFrameOverlay(frame, promptFrame)
-		if editBoxWidth ~= false then
-			promptInfo.editBox:Show()
-			promptInfo.editBox:SetWidth((editBoxWidth or 0.50) * 380)
-			promptInfo.editBox:SetFocus()
-		else
-			promptInfo.editBox:Hide()
-		end
 		promptInfo.cancel:ClearAllPoints()
 		promptInfo.accept:ClearAllPoints()
 		if acceptText ~= false then
@@ -550,11 +574,14 @@ do -- M:ShowPromptOverlay(...)
 		else
 			promptInfo.accept:Hide()
 			promptInfo.cancel:SetText(cancelText or OKAY)
-			promptInfo.cancel:SetPoint("BOTTOM", 5, 0)
+			promptInfo.cancel:SetPoint("BOTTOM", 5, 2)
 		end
-		promptInfo.cancel:SetWidth(math.max(125, 15+promptInfo.cancel:GetFontString():GetStringWidth()))
-		promptInfo.accept:SetWidth(math.max(125, 15+promptInfo.accept:GetFontString():GetStringWidth()))
-		return promptFrame
+		promptInfo.cancel:SetWidth(math.max(125, 25+promptInfo.cancel:GetFontString():GetStringWidth()))
+		promptInfo.accept:SetWidth(math.max(125, 25+promptInfo.accept:GetFontString():GetStringWidth()))
+		M:ShowFrameOverlay(frame, promptFrame)
+		if showEditBox then
+			promptInfo.editBox:SetFocus()
+		end
 	end
 end
 function M:ShowAlertOverlay(frame, title, message, dissmissText)
@@ -573,7 +600,8 @@ function M:CreateOptionsPanel(name, parent, opts)
 	t:SetText(name)
 	t, f.title = a:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall"), t
 	t:SetPoint("TOPLEFT", f.title, "TOPRIGHT", 4, 3)
-	t, f.version = a:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmallLeftTop"), t
+	t, f.version = a:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall2"), t
+	t:SetJustifyH("LEFT")
 	t:SetPoint("TOPLEFT", f.title, "BOTTOMLEFT", 0, -8)
 	t:SetWidth(590)
 	f.desc = t

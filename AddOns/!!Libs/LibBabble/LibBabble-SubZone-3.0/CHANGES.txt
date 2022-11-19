@@ -1,8 +1,30 @@
 ------------------------------------------------------------------------
-r252 | arithmandar | 2022-08-17 14:32:07 +0000 (Wed, 17 Aug 2022) | 1 line
+r256 | arithmandar | 2022-11-17 16:58:35 +0000 (Thu, 17 Nov 2022) | 1 line
 Changed paths:
    M /trunk/LibBabble-SubZone-3.0.toc
 
-Toc update to support 9.2.7
+Toc update to support 10.0.2
+------------------------------------------------------------------------
+r255 | arithmandar | 2022-11-17 16:57:49 +0000 (Thu, 17 Nov 2022) | 1 line
+Changed paths:
+   M /trunk/LibBabble-SubZone-3.0.toc
+
+Toc update to support 10.0.0
+------------------------------------------------------------------------
+r254 | arithmandar | 2022-11-17 16:56:35 +0000 (Thu, 17 Nov 2022) | 1 line
+Changed paths:
+   M /trunk/LibBabble-SubZone-3.0.lua
+   M /trunk/LibBabble-SubZone-3.0_deDE.lua
+   M /trunk/LibBabble-SubZone-3.0_esES.lua
+   M /trunk/LibBabble-SubZone-3.0_esMX.lua
+   M /trunk/LibBabble-SubZone-3.0_frFR.lua
+   M /trunk/LibBabble-SubZone-3.0_itIT.lua
+   M /trunk/LibBabble-SubZone-3.0_koKR.lua
+   M /trunk/LibBabble-SubZone-3.0_ptBR.lua
+   M /trunk/LibBabble-SubZone-3.0_ruRU.lua
+   M /trunk/LibBabble-SubZone-3.0_zhCN.lua
+   M /trunk/LibBabble-SubZone-3.0_zhTW.lua
+
+10.0.2.46479 AreaTable, Map data imported
 ------------------------------------------------------------------------
 

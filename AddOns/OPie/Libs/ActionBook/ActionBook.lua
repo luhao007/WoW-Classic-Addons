@@ -1,4 +1,4 @@
-local apiV, AB, MAJ, REV, ext, T = {}, {}, 2, 29, ...
+local apiV, AB, MAJ, REV, ext, T = {}, {}, 2, 30, ...
 if T.ActionBook then return end
 apiV[MAJ], ext, T.Kindred, T.Rewire = AB, {Kindred=T.Kindred, Rewire=T.Rewire, ActionBook={}}
 
@@ -199,7 +199,7 @@ core:SetAttribute("UseAction", [[-- AB:UseAction(slot[, modLock])
 		self:SetAttribute("modLock", modLock)
 	end
 	if at == "icall" then
-		return self:CallMethod("icall", slot) or ""
+		self:CallMethod("icall", slot)
 	elseif type(at) ~= "table" then
 	elseif at[1] == "attribute" then
 		local _, name = next(idle)

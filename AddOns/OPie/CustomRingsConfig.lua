@@ -1,5 +1,5 @@
 local api, _, T = {}, ...
-local PC, RK, ORI, conf = T.OPieCore, T.RingKeeper, OPie.UI, T.config
+local PC, RK, ORI, config = T.OPieCore, T.RingKeeper, OPie.UI, T.config
 local L, MODERN = T.L, select(4,GetBuildInfo()) >= 8e4
 local AB = assert(T.ActionBook:compatible(2,23), "A compatible version of ActionBook is required")
 local gfxBase, EV = [[Interface\AddOns\OPie\gfx\]], T.Evie
@@ -34,8 +34,26 @@ local function prepEditBox(self, save)
 	end
 	self:SetScript("OnEditFocusLost", save)
 end
-local function createIconButton(name, parent, id)
-	local f = CreateFrame("CheckButton", name, parent)
+local function addIconSlotTextures(tex, sz)
+	local p = tex:GetParent()
+	local bg = p:CreateTexture(nil, "BACKGROUND", nil, -1)
+	bg:SetTexture("Interface/Buttons/UI-EmptySlot-Disabled")
+	bg:SetPoint("CENTER", tex, "CENTER")
+	bg:SetSize(1.5*sz, 1.5*sz)
+	local edge = p:CreateTexture(nil, "OVERLAY", nil, -1)
+	edge:SetTexture("Interface/Buttons/UI-Quickslot2")
+	edge:SetSize(1.625*sz, 1.625*sz)
+	edge:SetPoint("CENTER", tex, "CENTER", 0.25, -0.25)
+	if MODERN then
+		local m = p:CreateMaskTexture()
+		m:SetTexture("Interface/FrameGeneral/UIFrameIconMask")
+		m:SetAllPoints(tex)
+		tex:AddMaskTexture(m)
+	end
+	return bg, edge
+end
+local function createIconButton(name, parent, id, skipSlotDecorations)
+	local f = CreateFrame("CheckButton", name, parent, nil, id or 0)
 	f:SetSize(32,32)
 	f:SetNormalTexture("")
 	f:SetHighlightTexture("Interface/Buttons/ButtonHilight-Square")
@@ -43,9 +61,11 @@ local function createIconButton(name, parent, id)
 	f:SetCheckedTexture("Interface/Buttons/CheckButtonHilight")
 	f:GetCheckedTexture():SetBlendMode("ADD")
 	f:SetPushedTexture("Interface/Buttons/UI-Quickslot-Depress")
-	f.tex = f:CreateTexture()
+	f.tex = f:CreateTexture(nil, "ARTWORK")
 	f.tex:SetAllPoints()
-	f:SetID(id or 0)
+	if skipSlotDecorations ~= true then
+		f.background, f.edge = addIconSlotTextures(f.tex, 32)
+	end
 	return f
 end
 local function PlayCheckboxSound(self)
@@ -56,8 +76,8 @@ local function SetCursor(tex)
 end
 local function SaveRingVersion(name, liveData)
 	local key = "RKRing#" .. name
-	if not conf.undo.search(key) then
-		conf.undo.push(key, RK.SetRing, RK, name, liveData == true and RK:GetRingDescription(name) or liveData or false)
+	if not config.undo.search(key) then
+		config.undo.push(key, RK.SetRing, RK, name, liveData == true and RK:GetRingDescription(name) or liveData or false)
 	end
 end
 local function CreateToggleButton(parent)
@@ -122,7 +142,7 @@ local function GetPositiveFileIDFromPath(path)
 end
 
 local ringContainer, ringDetail, sliceDetail, newSlice, newRing
-local panel = conf.createPanel(L"Custom Rings", "OPie")
+local panel = config.createPanel(L"Custom Rings", "OPie")
 	panel.desc:SetText(L"Customize OPie by modifying existing rings, or creating your own.")
 local ringDropDown = CreateFrame("Frame", "RKC_RingSelectionDropDown", panel, "UIDropDownMenuTemplate")
 	ringDropDown:SetPoint("TOP", -70, -60)
@@ -136,7 +156,7 @@ newRing = CreateFrame("Frame") do
 	newRing:Hide()
 	local title = newRing:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
 	local toggle1, toggle2 = CreateToggleButton(newRing), CreateToggleButton(newRing)
-	local name, snap = conf.ui.lineInput(newRing, true, 240), conf.ui.lineInput(newRing, true, 240)
+	local name, snap = config.ui.lineInput(newRing, true, 240), config.ui.lineInput(newRing, true, 240)
 	local nameLabel, snapLabel = newRing:CreateFontString(nil, "OVERLAY", "GameFontHighlight"), snap:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
 	local accept, cancel = CreateButton(newRing, 125), CreateButton(newRing, 125)
 	local importNested = T.TenSettings:CreateOptionsCheckButton(nil, newRing)
@@ -203,7 +223,7 @@ newRing = CreateFrame("Frame") do
 		importNested:SetShown(hasBundledRings)
 		accept:SetEnabled(type(nameText) == "string" and nameText:match("%S") and snapOK)
 		if newRing:IsVisible() then
-			conf.overlay(panel, newRing)
+			T.TenSettings:ShowFrameOverlay(panel, newRing)
 		end
 	end
 	local function toggle(self)
@@ -273,7 +293,7 @@ newRing = CreateFrame("Frame") do
 		toggle1:Click()
 		accept:Disable()
 		importNested:SetChecked(false)
-		conf.overlay(panel, newRing)
+		T.TenSettings:ShowFrameOverlay(panel, newRing)
 		name:SetFocus()
 	end)
 end
@@ -345,7 +365,7 @@ ringContainer = CreateFrame("Frame", nil, panel) do
 		end
 		for i=0,11 do
 			local ico = createIconButton(nil, ringContainer, i)
-			ico:SetPoint("TOP", ringContainer.prev, "BOTTOMRIGHT", -2, -34*i+2)
+			ico:SetPoint("TOP", ringContainer.prev, "BOTTOMRIGHT", -2, -34*i)
 			ico:SetScript("OnClick", onClick)
 			ico:RegisterForDrag("LeftButton")
 			ico:SetScript("OnDragStart", dragStart)
@@ -358,19 +378,19 @@ ringContainer = CreateFrame("Frame", nil, panel) do
 			ico.auto:SetAllPoints()
 			ico.auto:SetTexture("Interface/Buttons/UI-AutoCastableOverlay")
 			ico.auto:SetTexCoord(14/64, 49/64, 14/64, 49/64)
-			
 			ringContainer.slices[i+1] = ico
 		end
 	end
-	ringContainer.newSlice = createIconButton(nil, ringContainer) do
+	ringContainer.newSlice = createIconButton(nil, ringContainer, nil, true) do
 		local b = ringContainer.newSlice
-		b:SetSize(24,24) b.tex:SetTexture("Interface/GuildBankFrame/UI-GuildBankFrame-NewTab")
+		b:SetSize(24,24)
+		b.tex:SetTexture("Interface/GuildBankFrame/UI-GuildBankFrame-NewTab")
 		b:SetScript("OnClick", function(self)
 			PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON)
-			conf.ui.HideTooltip(self)
+			config.ui.HideTooltip(self)
 			if IsAltKeyDown() then
 				self:SetChecked(not self:GetChecked())
-				conf.prompt(panel, L"Custom slice", L"Input a slice action specification:", (L"Example: %s."):format(GREEN_FONT_COLOR_CODE .. '"item", 19019|r'), nil, api.addCustomSlice, 0.95)
+				T.TenSettings:ShowPromptOverlay(panel, L"Custom slice", L"Input a slice action specification:", (L"Example: %s."):format(GREEN_FONT_COLOR_CODE .. '"item", 19019|r'), nil, api.addCustomSlice, 0.95)
 				return
 			end
 			if newSlice:IsShown() then
@@ -392,7 +412,7 @@ ringContainer = CreateFrame("Frame", nil, panel) do
 			GameTooltip:AddLine(L"Add a new slice", 1, 1, 1)
 			GameTooltip:Show()
 		end)
-		b:SetScript("OnLeave", conf.ui.HideTooltip)
+		b:SetScript("OnLeave", config.ui.HideTooltip)
 		b:SetPoint("TOP", ringContainer.slices[12], "BOTTOM", 0, -2)
 	end
 end
@@ -415,7 +435,7 @@ ringDetail = CreateFrame("Frame", nil, ringContainer) do
 	ringDetail.scope.label = ringDetail.scope:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
 	ringDetail.scope.label:SetPoint("TOPLEFT", ringDetail, "TOPLEFT", 10, -47)
 	ringDetail.scope.label:SetText(L"Make this ring available to:")
-	ringDetail.binding = conf.createBindingButton(ringDetail)
+	ringDetail.binding = config.createBindingButton(ringDetail)
 	ringDetail.bindingContainerFrame = panel
 	ringDetail.binding:SetPoint("TOPLEFT", 267, -68) ringDetail.binding:SetWidth(265)
 	function ringDetail:SetBinding(bind) return api.setRingProperty("hotkey", bind) end
@@ -427,22 +447,29 @@ ringDetail = CreateFrame("Frame", nil, ringContainer) do
 	ringDetail.bindingQuarantine:SetHitRectInsets(0,0,0,0)
 	ringDetail.bindingQuarantine:SetPoint("RIGHT", ringDetail.binding, "LEFT", 0, 0)
 	ringDetail.bindingQuarantine:SetScript("OnClick", function(self) PlayCheckboxSound(self) api.setRingProperty("hotkey", api.getRingProperty("quarantineBind")) end)
-	ringDetail.bindingQuarantine:SetScript("OnEnter", conf.ui.ShowControlTooltip)
-	ringDetail.bindingQuarantine:SetScript("OnLeave", conf.ui.HideTooltip)
+	ringDetail.bindingQuarantine:SetScript("OnEnter", config.ui.ShowControlTooltip)
+	ringDetail.bindingQuarantine:SetScript("OnLeave", config.ui.HideTooltip)
 	ringDetail.bindingQuarantine.tooltipText = L"To enable the default binding for this ring, check this box or change the binding."
-	ringDetail.rotation = CreateFrame("Slider", "RKC_RingRotation", ringDetail, "OptionsSliderTemplate")
-	ringDetail.rotation:SetPoint("TOPLEFT", 270, -95) ringDetail.rotation:SetWidth(260) ringDetail.rotation:SetMinMaxValues(0, 345) ringDetail.rotation:SetValueStep(15) ringDetail.rotation:SetObeyStepOnDrag(true)
-	ringDetail.rotation:SetScript("OnValueChanged", function(_, value) api.setRingProperty("offset", value) end)
-	RKC_RingRotationLow:SetText("0°") RKC_RingRotationHigh:SetText("345°")
-	ringDetail.rotation.label = ringDetail.scope:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-	ringDetail.rotation.label:SetPoint("TOPLEFT", ringDetail, "TOPLEFT", 10, -96)
-	ringDetail.rotation.label:SetText(L"Rotation:")
+	do -- ringDetail.rotation
+		local s, sliderLeftMargin, centerLine = T.TenSettings:CreateOptionsSlider(ringDetail, nil, 250)
+		s:SetPoint("TOPLEFT", 270-sliderLeftMargin, -95)
+		s:SetMinMaxValues(0, 345)
+		s:SetValueStep(15)
+		s:SetObeyStepOnDrag(true)
+		s:SetScript("OnValueChanged", function(_, value) api.setRingProperty("offset", value) end)
+		s.lo:SetText("0°")
+		s.hi:SetText("345°")
+		s.text:SetPoint("LEFT", ringDetail, "TOPLEFT", 10, -95-centerLine)
+		s.text:SetText(L"Rotation:")
+		s.text:Show()
+		ringDetail.rotation, s.label = s, s.text
+	end
 	ringDetail.opportunistCA = T.TenSettings:CreateOptionsCheckButton(nil, ringDetail)
 	ringDetail.opportunistCA:SetPoint("TOPLEFT", 266, -118)
 	ringDetail.opportunistCA:SetMotionScriptsWhileDisabled(1)
 	ringDetail.opportunistCA.Text:SetText(L"Pre-select a quick action slice")
-	ringDetail.opportunistCA:SetScript("OnEnter", conf.ui.ShowControlTooltip)
-	ringDetail.opportunistCA:SetScript("OnLeave", conf.ui.HideTooltip)
+	ringDetail.opportunistCA:SetScript("OnEnter", config.ui.ShowControlTooltip)
+	ringDetail.opportunistCA:SetScript("OnLeave", config.ui.HideTooltip)
 	ringDetail.opportunistCA:SetScript("OnClick", function(self) PlayCheckboxSound(self) api.setRingProperty("noOpportunisticCA", (not self:GetChecked()) or nil) api.setRingProperty("noPersistentCA", (not self:GetChecked()) or nil) end)
 	ringDetail.hiddenRing = T.TenSettings:CreateOptionsCheckButton(nil, ringDetail)
 	ringDetail.hiddenRing:SetPoint("TOPLEFT", ringDetail.opportunistCA, "BOTTOMLEFT", 0, 2)
@@ -509,7 +536,7 @@ ringDetail = CreateFrame("Frame", nil, ringContainer) do
 	CreateEdge(exportBg, {edgeFile="Interface/Tooltips/UI-Tooltip-Border", bgFile="Interface/DialogFrame/UI-DialogBox-Background-Dark", tile=true, edgeSize=16, tileSize=16, insets={left=4,right=4,bottom=4,top=4}}, 0xb2000000, 0xb2b2b2)
 	exportBg:SetSize(265, 124) exportBg:Hide()
 	exportBg:SetPoint("TOPLEFT", ringDetail.shareLabel2, "BOTTOMLEFT", -2, -2)
-	ringDetail.exportFrame, ringDetail.exportInput, scroll = exportBg, conf.ui.multilineInput("RKC_ExportInput", exportBg, 235)
+	ringDetail.exportFrame, ringDetail.exportInput, scroll = exportBg, config.ui.multilineInput("RKC_ExportInput", exportBg, 235)
 	scroll:SetPoint("TOPLEFT", 5, -4) scroll:SetPoint("BOTTOMRIGHT", -26, 4)
 	ringDetail.exportInput:SetFontObject(GameFontHighlightSmall)
 	ringDetail.exportInput:SetScript("OnEscapePressed", function() exportBg:Hide() ringDetail.export:Show() end)
@@ -531,7 +558,7 @@ ringDetail = CreateFrame("Frame", nil, ringContainer) do
 	ringDetail.remove:SetScript("OnClick", function() PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON) api.deleteRing() end)
 	
 	ringDetail.restore = CreateButton(ringDetail)
-	ringDetail.restore:SetPoint("RIGHT", ringDetail.remove, "LEFT", -10, 0)
+	ringDetail.restore:SetPoint("RIGHT", ringDetail.remove, "LEFT", -20, 0)
 	ringDetail.restore:SetText(L"Restore default")
 	ringDetail.restore:SetScript("OnClick", function() PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON) api.restoreDefault() end)
 
@@ -557,7 +584,7 @@ sliceDetail = CreateFrame("Frame", nil, ringContainer) do
 		s.label:SetPoint("TOPLEFT", sliceDetail, "TOPLEFT", 10, -47)
 		s.label:SetText(L"Show this slice for:")
 	end
-	sliceDetail.showConditional = conf.ui.lineInput(sliceDetail, true, 260) do
+	sliceDetail.showConditional = config.ui.lineInput(sliceDetail, true, 260) do
 		local c = sliceDetail.showConditional
 		c:SetPoint("TOPLEFT", 274, -oy)
 		oy = oy + 23
@@ -574,9 +601,9 @@ sliceDetail = CreateFrame("Frame", nil, ringContainer) do
 			GameTooltip:AddLine((L"Example: %s."):format(GREEN_FONT_COLOR_CODE .. "[combat,@target,noexists] hide; show|r"), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b)
 			GameTooltip:Show()
 		end)
-		c:SetScript("OnLeave", conf.ui.HideTooltip)
+		c:SetScript("OnLeave", config.ui.HideTooltip)
 	end
-	sliceDetail.color = conf.ui.lineInput(sliceDetail, true, 85) do
+	sliceDetail.color = config.ui.lineInput(sliceDetail, true, 85) do
 		local c = sliceDetail.color
 		c:SetPoint("TOPLEFT", 274, -oy)
 		oy = oy + 23
@@ -649,13 +676,15 @@ sliceDetail = CreateFrame("Frame", nil, ringContainer) do
 		f.label:SetText(L"Icon:")
 		
 		local frame = CreateFrame("Frame", nil, f)
+		local ICONGRID_ROWS, ICONGRID_COLUMNS, ICONGRID_CELL_WIDTH, ICONGRID_CELL_HEIGHT = 7, 14, 36, 36
 		CreateEdge(frame, {bgFile = "Interface/ChatFrame/ChatFrameBackground", edgeFile = "Interface/DialogFrame/UI-DialogBox-Border", tile = true, tileSize = 32, edgeSize = 32, insets = { left = 11, right = 11, top = 12, bottom = 10 }}, 0xd8000000)
-		frame:SetSize(554, 19+34*6) frame:SetPoint("TOPLEFT", f, "TOPLEFT", -265, -18) frame:SetFrameStrata("DIALOG")
+		frame:SetSize(42+ICONGRID_COLUMNS*ICONGRID_CELL_WIDTH, 20+ICONGRID_CELL_HEIGHT*ICONGRID_ROWS)
+		frame:SetPoint("TOPLEFT", f, "TOPLEFT", -268, -18)
 		frame:EnableMouse(1) frame:SetToplevel(1) frame:Hide()
 		f:SetScript("OnClick", function() frame:SetShown(not frame:IsShown()) PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON) end)
 		frame:SetScript("OnHide", frame.Hide)
 		do
-			local ed = conf.ui.lineInput(frame, false, 280)
+			local ed = config.ui.lineInput(frame, false, 280)
 			local hint = ed:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
 			hint:SetPoint("CENTER")
 			hint:SetText("|cffa0a0a0" .. L"(enter an icon name or path here)")
@@ -695,16 +724,16 @@ sliceDetail = CreateFrame("Frame", nil, ringContainer) do
 			api.setSliceProperty("icon", self:GetChecked() and self.tex:GetTexture() or nil)
 			selectedIcon = self:GetChecked() and self or nil
 		end
-		for i=0,89 do
+		for i=0,(ICONGRID_COLUMNS*ICONGRID_ROWS)-1 do
 			local j = createIconButton(nil, frame, i)
-			j:SetPoint("TOPLEFT", (i % 15)*34+12, -11 - 34*math.floor(i / 15))
+			j:SetPoint("TOPLEFT", 12 + (i % ICONGRID_COLUMNS)*ICONGRID_CELL_WIDTH, -12 - ICONGRID_CELL_HEIGHT*math.floor(i / ICONGRID_COLUMNS))
 			j:SetScript("OnClick", onClick)
 			icons[i] = j
 		end
 		local icontex, initTexture = {}, nil
 		local slider = CreateFrame("Slider", "RKC_IconSelectionSlider", frame, "UIPanelScrollBarTrimTemplate")
 			slider:SetPoint("TOPRIGHT",-11, -26) slider:SetPoint("BOTTOMRIGHT", -11, 25)
-			slider:SetValueStep(15) slider:SetObeyStepOnDrag(true) slider.scrollStep = 45
+			slider:SetValueStep(ICONGRID_COLUMNS) slider:SetObeyStepOnDrag(true) slider.scrollStep = ICONGRID_COLUMNS*4
 			slider.Up, slider.Down = RKC_IconSelectionSliderScrollUpButton, RKC_IconSelectionSliderScrollDownButton
 			slider:SetScript("OnValueChanged", function(self, value)
 				self.Up:SetEnabled(value > 1)
@@ -734,8 +763,7 @@ sliceDetail = CreateFrame("Frame", nil, ringContainer) do
 			end
 		end
 		frame:SetScript("OnShow", function(self)
-			self:SetFrameStrata("DIALOG")
-			self:SetFrameLevel(sliceDetail.icon:GetFrameLevel()+10)
+			self:SetFrameLevel(sliceDetail.icon:GetFrameLevel()+200)
 			icontex = GetMacroIcons()
 			FixLooseIcons(GetLooseMacroIcons, icontex)
 			GetMacroItemIcons(icontex)
@@ -766,8 +794,8 @@ sliceDetail = CreateFrame("Frame", nil, ringContainer) do
 		e:SetHitRectInsets(0, -200, 4, 4) e:SetMotionScriptsWhileDisabled(1)
 		e:SetPoint("TOPLEFT", 266, -oy)
 		e:SetScript("OnClick", function(self) PlayCheckboxSound(self) return api.setSliceProperty("fastClick", self:GetChecked() and true or nil) end)
-		e:SetScript("OnEnter", conf.ui.ShowControlTooltip)
-		e:SetScript("OnLeave", conf.ui.HideTooltip)
+		e:SetScript("OnEnter", config.ui.ShowControlTooltip)
+		e:SetScript("OnLeave", config.ui.HideTooltip)
 		e.Text:SetText(L"Allow as quick action")
 		e.label = sliceDetail:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
 		e.label:SetPoint("TOPLEFT", sliceDetail, "TOPLEFT", 10, -142)
@@ -918,7 +946,7 @@ newSlice = CreateFrame("Frame", nil, ringContainer) do
 		end
 	end
 	do -- newSlice.search
-		local s = conf.ui.lineInput(newSlice, true, 153)
+		local s = config.ui.lineInput(newSlice, true, 153)
 		s:SetPoint("TOPLEFT", 7, -1) s:SetTextInsets(16, 0, 0, 0)
 		local i = s:CreateTexture(nil, "OVERLAY")
 		i:SetSize(14, 14) i:SetPoint("LEFT", 0, -1)
@@ -931,9 +959,9 @@ newSlice = CreateFrame("Frame", nil, ringContainer) do
 			i:SetVertexColor(0.90, 0.90, 0.90)
 			tip:SetFrameStrata("TOOLTIP")
 			tip:SetOwner(s, "ANCHOR_BOTTOM")
-			tip:AddLine(L"Press |cffffffffEnter|r to search")
-			tip:AddLine(L"|cffffffffCtrl+Enter|r to search within current results", nil, nil, nil, true)
-			tip:AddLine(L"|cffffffffEscape|r to cancel", true)
+			tip:AddLine((L"Press %s to search"):format(HIGHLIGHT_FONT_COLOR_CODE .. GetBindingText("ENTER") .. "|r"))
+			tip:AddLine((L"%s to search within current results"):format(HIGHLIGHT_FONT_COLOR_CODE .. GetBindingText("CTRL-ENTER") .. "|r"), nil, nil, nil, true)
+			tip:AddLine((L"%s to cancel"):format(HIGHLIGHT_FONT_COLOR_CODE .. GetBindingText("ESCAPE") .. "|r"), true)
 			tip:Show()
 		end)
 		s:SetScript("OnEditFocusLost", function(s)
@@ -982,6 +1010,7 @@ newSlice = CreateFrame("Frame", nil, ringContainer) do
 	newSlice.close = CreateFrame("Button", "RKC_CloseNewSliceBrowser", newSlice, "UIPanelCloseButton")
 	newSlice.close:SetPoint("TOPRIGHT", 3, 4)
 	newSlice.close:SetSize(30, 30)
+	newSlice.close:SetFrameLevel(newSlice:GetFrameLevel()+120)
 	newSlice.close:SetScript("OnClick", function()
 		PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON)
 		api.closeActionPicker("close-picker-button")
@@ -1060,9 +1089,10 @@ newSlice = CreateFrame("Frame", nil, ringContainer) do
 		f:SetScript("OnDragStop", onDragStop)
 		f:SetScript("OnDoubleClick", onClick)
 		f:SetScript("OnEnter", onEnter)
-		f:SetScript("OnLeave", conf.ui.HideTooltip)
+		f:SetScript("OnLeave", config.ui.HideTooltip)
 		f.ico = f:CreateTexture(nil, "ARTWORK")
 		f.ico:SetSize(32,32) f.ico:SetPoint("LEFT", 1, 0)
+		addIconSlotTextures(f.ico, 32)
 		f.name = f:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 		f.name:SetHeight(12)
 		f.name:SetPoint("TOPLEFT", f.ico, "TOPRIGHT", 3, -2)
@@ -1300,10 +1330,10 @@ function ringDropDown:initialize(level, nameList)
 			return
 		end
 	elseif nameList == "overflow-main" then
-		conf.ui.scrollingDropdown:Display(2, ringNames, ringDropDown_EntryFormat, api.selectRing, 16)
+		config.ui.scrollingDropdown:Display(2, ringNames, ringDropDown_EntryFormat, api.selectRing, 16)
 		return
 	elseif nameList then
-		conf.ui.scrollingDropdown:Display(2, nameList, ringDropDown_EntryFormat, api.selectRing)
+		config.ui.scrollingDropdown:Display(2, nameList, ringDropDown_EntryFormat, api.selectRing)
 		return
 	end
 	local stopAt = #ringNames > 20 and 16 or #ringNames
@@ -1514,7 +1544,7 @@ function api.setRingProperty(name, value)
 		ringDetail.bindingQuarantine:Hide()
 		ringDetail.binding:SetBindingText(value)
 		if OPie:GetRingInfo(currentRingName) then
-			conf.undo.saveProfile()
+			config.undo.saveProfile()
 			PC:SetRingBinding(currentRingName, value)
 		end
 	elseif name == "internal" then
@@ -1692,7 +1722,7 @@ end
 function api.deleteRing()
 	if currentRing then
 		ringContainer:Hide()
-		conf.undo.saveProfile()
+		config.undo.saveProfile()
 		api.saveRing(currentRingName, false)
 		api.deselectRing()
 	end
@@ -1782,7 +1812,8 @@ function api.refreshDisplay()
 	if currentRing then
 		ringDetail.binding:SetBindingText(api.getRingProperty("hotkey"))
 		ringDetail.exportFrame:GetScript("OnHide")(ringDetail.exportFrame)
-		local noCA = not PC:GetOption("CenterAction", currentRingName) and (L"You must enable the %s option for this ring in OPie options to use quick actions."):format("|cffffffff" .. L"Quick action at ring center" .. "|r") or nil
+		local caOptionNames = "|cffffffff" .. L"Quick action at ring center" .. "|r|cff909090 / |r|cffffffff" .. L"Quick action if mouse remains still" .. "|r"
+		local noCA = not PC:GetOption("CenterAction", currentRingName) and (L"You must enable the %s option for this ring in OPie options to use quick actions."):format(caOptionNames) or nil
 		ringDetail.opportunistCA.tooltipText = noCA
 		ringDetail.opportunistCA:SetEnabled(not noCA)
 		ringDetail.opportunistCA:SetChecked(not noCA and not currentRing.noOpportunisticCA)
@@ -1844,11 +1875,10 @@ local function prot(f)
 	return function() return securecall(f) end
 end
 panel.okay, panel.default, panel.refresh = prot(panel.okay), prot(panel.default), prot(panel.refresh)
-if MODERN then panel.refresh() end
-panel:SetScript("OnShow", conf.checkSVState)
+panel:SetScript("OnShow", config.checkSVState)
 
 SLASH_OPIE_CUSTOM_RINGS1 = "/rk"
 function SlashCmdList.OPIE_CUSTOM_RINGS()
-	conf.open(panel)
+	config.open(panel)
 end
 T.AddSlashSuffix(SlashCmdList.OPIE_CUSTOM_RINGS, "custom", "rings")

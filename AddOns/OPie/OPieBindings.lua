@@ -3,14 +3,14 @@ local L, PC, config, KR = T.L, T.OPieCore, T.config, OPie.ActionBook:compatible(
 
 local frame = config.createPanel("Bindings", "OPie")
 local OBC_Profile = CreateFrame("Frame", "OBC_Profile", frame, "UIDropDownMenuTemplate")
-	OBC_Profile:SetPoint("TOPLEFT", 0, -75) UIDropDownMenu_SetWidth(OBC_Profile, 200)
+	OBC_Profile:SetPoint("TOPLEFT", 0, -80) UIDropDownMenu_SetWidth(OBC_Profile, 200)
 	OBC_Profile.initialize = OPC_Profile.initialize
 local bindSet = CreateFrame("Frame", "OPC_BindingSet", frame, "UIDropDownMenuTemplate")
 	bindSet:SetPoint("LEFT", OBC_Profile, "RIGHT")	UIDropDownMenu_SetWidth(bindSet, 250)
 
 local lRing = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 local lBinding = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-	lBinding:SetPoint("TOPLEFT", 16, -115)
+	lBinding:SetPoint("TOPLEFT", 32, -120)
 	lRing:SetPoint("LEFT", lBinding, "LEFT", 215, 0)
 	lBinding:SetWidth(180)
 local bindLines, bindZone = {}, CreateFrame("Frame", nil, frame) do
@@ -18,10 +18,15 @@ local bindLines, bindZone = {}, CreateFrame("Frame", nil, frame) do
 	local function onMacroClick(self)
 		bindZone.showMacroPopup(self:GetParent():GetID())
 	end
-	for i=1,19 do
+	for i=1,16 do
 		local bind = config.createBindingButton(bindZone)
 		local label = bind:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-		bind:SetPoint("TOPLEFT", lBinding, "BOTTOMLEFT", 0, 16-20*i)
+		bind:SetPoint("TOPLEFT", lBinding, "BOTTOMLEFT", 0, 20-24*i)
+		label:SetPoint("LEFT", 216, -1)
+		bind.warn = bind:CreateTexture(nil, "ARTWORK")
+		bind.warn:SetTexture("Interface/EncounterJournal/UI-EJ-WarningTextIcon")
+		bind.warn:SetSize(14, 14)
+		bind.warn:SetPoint("RIGHT", bind, "LEFT", -3, 0)
 		bind.macro = CreateFrame("Button", nil, bind, "UIPanelButtonTemplate")
 		bind.macro:SetWidth(24) bind.macro:SetPoint("LEFT", bind, "RIGHT", 1, 0)
 		local ico = bind.macro:CreateTexture(nil, "ARTWORK")
@@ -30,7 +35,6 @@ local bindLines, bindZone = {}, CreateFrame("Frame", nil, frame) do
 		bind:SetScript("OnEnter", config.ui.ShowControlTooltip)
 		bind:SetScript("OnLeave", config.ui.HideTooltip)
 		bind:SetWidth(180) bind:GetFontString():SetWidth(170)
-		label:SetPoint("LEFT", 215, 2)
 		bind:SetNormalFontObject(GameFontNormalSmall)
 		bind:SetHighlightFontObject(GameFontHighlightSmall)
 		bindLines[i], bind.label = bind, label
@@ -66,15 +70,15 @@ end
 function ringBindings:get(id)
 	local name, key = OPie:GetRingInfo(self.map[id])
 	local bind, cBind, isOverride, isActiveInt, isActiveExt = PC:GetRingBinding(key)
-	local prefix, tipTitle, tipText
+	local showWarning, prefix, tipTitle, tipText = false
 	local cebind = cBind or (bind and KR:EvaluateCmdOptions(bind))
 	if not isOverride and not PC:GetOption("UseDefaultBindings", key) then
 		if bind then
-			prefix, tipTitle = "|cffa0a0a0", L"Default binding disabled"
-			tipText = (L"Choose a binding for this ring, or enable the %s option in OPie options."):format("|cffffffff" .. L"Use default ring bindings" .. "|r")
+			showWarning, prefix, tipTitle = true, "|cffa0a0a0", HIGHLIGHT_FONT_COLOR_CODE .. L"Default binding disabled"
+			tipText = (L"Choose a binding for this ring, or enable the %s option in OPie options."):format(HIGHLIGHT_FONT_COLOR_CODE .. L"Use default ring bindings" .. "|r")
 		end
 	elseif cBind and isActiveExt ~= true then
-		tipTitle = L"Binding conflict"
+		showWarning, tipTitle = true, HIGHLIGHT_FONT_COLOR_CODE .. L"Binding conflict"
 		if isActiveInt == false then
 			prefix = isOverride and "|cfffa2800" or "|cffa0a0a0"
 			tipText = L"This binding is not currently active because it conflicts with another."
@@ -87,13 +91,12 @@ function ringBindings:get(id)
 			tipText = tipText .. "\n\n" .. (L"Conflicts with: %s"):format("|cffe0e0e0" .. lab .. "|r")
 		end
 	elseif cBind == nil and cebind and not isActiveInt then
-		prefix, tipTitle, tipText = "|cffa0a0a0", L"Binding conflict", L"This binding is not currently active because it conflicts with another."
-	elseif cBind and not isActiveInt then
-		prefix, tipTitle = "|cffa0a0a0", tostring(isActiveInt) .. "/" .. tostring(cBind)
+		showWarning, tipTitle = true, HIGHLIGHT_FONT_COLOR_CODE .. L"Binding conflict"
+		prefix, tipText = "|cffa0a0a0", L"This binding is not currently active because it conflicts with another."
 	elseif isOverride then
 		prefix = "|cffffffff"
 	end
-	return bind, name or key or "?", prefix, cBind, tipTitle, tipText
+	return bind, name or key or "?", prefix, cBind, tipTitle, tipText, showWarning
 end
 function ringBindings:set(id, key)
 	id = self.map[id]
@@ -102,10 +105,7 @@ function ringBindings:set(id, key)
 end
 function ringBindings:arrow(id)
 	local name, key, macro = OPie:GetRingInfo(self.map[id])
-	local inputFrame = config.prompt(frame, name or key, (L"The following macro command opens this ring:"):format("|cffFFD029" .. (name or key) .. "|r"), false, false, nil, 0.90)
-	inputFrame.editBox:SetText(macro)
-	inputFrame.editBox:HighlightText(0, #macro)
-	inputFrame.editBox:SetFocus()
+	T.TenSettings:ShowPromptOverlay(frame, name or key, (L"The following macro command opens this ring:"):format("|cffFFD029" .. (name or key) .. "|r"), false, false, nil, 0.90, nil, macro)
 end
 function ringBindings:default()
 	PC:ResetRingBindings()
@@ -214,10 +214,11 @@ local function updatePanelContent()
 		if j > m then
 			e:Hide()
 		else
-			local binding, text, prefix, _, title, tip = currentOwner:get(j)
+			local binding, text, prefix, _, title, tip, showWarningIcon = currentOwner:get(j)
 			e.tooltipTitle, e.tooltipText = title, tip
 			e.label:SetText(text)
 			e.macro:SetShown(currentOwner.arrow)
+			e.warn:SetShown(showWarningIcon)
 			e:SetBindingText(binding, prefix)
 			e:SetID(j) e:Hide() e:Show()
 		end

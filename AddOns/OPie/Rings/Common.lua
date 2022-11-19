@@ -74,7 +74,8 @@ do -- OPieAutoQuest
 		}
 		function IsQuestItem(iid, bag, slot)
 			if exclude[iid] then return false end
-			local isQuest, startQuestId, isQuestActive = GetContainerItemQuestInfo(bag, slot)
+			local iqi = C_Container.GetContainerItemQuestInfo(bag, slot)
+			local isQuest, startQuestId, isQuestActive = iqi.isQuestItem, iqi.questID, iqi.isActive
 			isQuest = iid and ((isQuest and GetItemSpell(iid)) or (include[iid] == true) or (startQuestId and not isQuestActive and not C_QuestLog.IsQuestFlaggedCompleted(startQuestId)))
 			if not isQuest and type(include[iid]) == "table" then
 				isQuest = true
@@ -175,10 +176,12 @@ do -- OPieAutoQuest
 	local function syncRing(_, _, upId)
 		if upId ~= colId then return end
 		changed, current = false, (ctok + 1) % 2
-
+		
+		local ns = MODERN and C_Container.GetContainerNumSlots or GetContainerNumSlots
+		local giid = MODERN and C_Container.GetContainerItemID or GetContainerItemID
 		for bag=0,4 do
-			for slot=1,GetContainerNumSlots(bag) do
-				local iid = GetContainerItemID(bag, slot)
+			for slot=1, ns(bag) do
+				local iid = giid(bag, slot)
 				local isQuest, startsQuestMark = IsQuestItem(iid, bag, slot)
 				if isQuest then
 					local tok = "OPieBundleQuest" .. iid

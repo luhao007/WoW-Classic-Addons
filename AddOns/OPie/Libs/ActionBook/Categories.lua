@@ -80,11 +80,13 @@ do -- spellbook
 end
 AB:AugmentCategory(L"Items", function(_, add)
 	wipe(mark)
+	local ns = MODERN and C_Container.GetContainerNumSlots or GetContainerNumSlots
+	local giid = MODERN and C_Container.GetContainerItemID or GetContainerItemID
 	for t=0,1 do
 		t = t == 0 and GetItemSpell or IsEquippableItem
 		for bag=0,4 do
-			for slot=1,GetContainerNumSlots(bag) do
-				local iid = GetContainerItemID(bag, slot)
+			for slot=1, ns(bag) do
+				local iid = giid(bag, slot)
 				if iid and not mark[iid] and t(iid) then
 					add("item", iid)
 					mark[iid] = 1

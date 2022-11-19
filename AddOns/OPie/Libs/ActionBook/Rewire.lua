@@ -1,4 +1,4 @@
-local RW, MAJ, REV, _, T = {}, 1, 22, ...
+local RW, MAJ, REV, _, T = {}, 1, 23, ...
 if T.ActionBook then return end
 local AB, KR = nil, assert(T.Kindred:compatible(1,8), "A compatible version of Kindred is required.")
 local MODERN = select(4,GetBuildInfo()) >= 8e4
@@ -81,13 +81,23 @@ local core, coreEnv = CreateFrame("Frame", nil, nil, "SecureHandlerBaseTemplate"
 		execQueue, mutedAbove, QUEUE_LIMIT, overfull = newtable(), -1, 20000, false
 		idle, cache, numIdle, numActive, ns, modLock = newtable(), newtable(), 0, 0, 0
 		macros, commandInfo, commandHandler, commandAlias = newtable(), newtable(), newtable(), newtable()
-		MACRO_TOKEN, metaCommands, transferTokens = newtable(nil, nil, nil, "MACRO_TOKEN"), newtable(), newtable()
+		MACRO_TOKEN, NIL, metaCommands, transferTokens = newtable(nil, nil, nil, "MACRO_TOKEN"), newtable(), newtable(), newtable()
 		metaCommands.mute, metaCommands.unmute, metaCommands.mutenext, metaCommands.parse, metaCommands.nounshift = 1, 1, 1, 1, 1
 		castEscapes, castAliases = newtable(), newtable()
 		for _, k in pairs(self:GetChildList(newtable())) do
 			idle[k], numIdle = 1, numIdle + 1
 			k:SetAttribute("type", "macro")
 		end
+		RW_ReleaseTransferToken = [==[-- RW_ReleaseTransferToken
+			local m = transferTokens[#transferTokens]
+			if m[3] ~= NIL then
+				KR:RunAttribute("SetButtonState", m[3])
+			end
+			if m[5] ~= NIL then
+				modLock = m[5]
+			end
+			m[3], m[5] = NIL, NIL
+		]==]
 	]=])
 	if MODERN then
 		core:Execute("TEN = true")
@@ -122,7 +132,7 @@ core:SetAttribute("RunSlashCmd", [=[-- Rewire:Internal_RunSlashCmd
 			m = r and r[4]
 			if m == "TRANSFER_TOKEN" then
 				transferTokens[#transferTokens+1] = r
-				KR:RunAttribute("SetButtonState", r[3])
+				self:Run(RW_ReleaseTransferToken)
 			elseif m == "UNSHIFT_RESTORE" then
 				self:CallMethod("manageUnshift", true)
 			end
@@ -175,7 +185,7 @@ core:SetAttribute("RunSlashCmd", [=[-- Rewire:Internal_RunSlashCmd
 	end
 ]=])
 core:SetAttribute("RunMacro", [=[-- Rewire:RunMacro
-	local m, macrotext, transferButtonState = cache[...], ...
+	local m, macrotext, transferButtonState, applyModLock = cache[...], ...
 	if macrotext and not m then
 		m = newtable()
 		for line in macrotext:gmatch("%S[^\n\r]*") do
@@ -193,16 +203,20 @@ core:SetAttribute("RunMacro", [=[-- Rewire:RunMacro
 		if #execQueue > QUEUE_LIMIT then
 			overfull = true, owner:CallMethod("throw", "Rewire execution queue overfull; ignoring subsequent commands.")
 		else
-			if TEN and #execQueue == 0 then
-				modLock = AB:GetAttribute("modLock")
-			end
 			local ni = #execQueue+1
-			if transferButtonState then
-				local nbs = SecureCmdOptionParse("[btn:1] 1; [btn:2] 2; [btn:3] 3; [btn:4] 4; [btn:5] 5")
-				if not (#execQueue == 0 and nbs == "1") then
-					local nt, os = #transferTokens, KR:RunAttribute("SetButtonState", nbs)
-					local tt = nt > 0 and transferTokens[nt] or newtable(nil, nil, nil, "TRANSFER_TOKEN")
-					execQueue[ni], ni, tt[3], transferTokens[nt] = tt, ni + 1, os
+			local nbs = transferButtonState and SecureCmdOptionParse("[btn:1] 1; [btn:2] 2; [btn:3] 3; [btn:4] 4; [btn:5] 5") or nil
+			local nml = TEN and (applyModLock == true and AB:GetAttribute("modLock") or type(applyModLock) == "string" and applyModLock) or nil
+			nbs = (not (ni == 1 and nbs == "1")) and nbs or nil
+			nml = nml and nml ~= modLock and nml
+			if nbs or nml then
+				local nt = #transferTokens
+				local tt = nt > 0 and transferTokens[nt] or newtable(nil, nil, NIL, "TRANSFER_TOKEN", NIL)
+				execQueue[ni], ni, transferTokens[nt] = tt, ni + 1
+				if nbs then
+					tt[3] = KR:RunAttribute("SetButtonState", nbs)
+				end
+				if nml then
+					modLock, tt[5] = nml, modLock
 				end
 			end
 			execQueue[ni], ni = MACRO_TOKEN, ni + 1
@@ -244,8 +258,8 @@ core:SetAttribute("RunMacro", [=[-- Rewire:RunMacro
 				nextLine = m[2] .. " [form:42]"
 			end
 		elseif meta == "TRANSFER_TOKEN" then
-			KR:RunAttribute("SetButtonState", m[3])
 			transferTokens[#transferTokens+1], nextLine = m
+			self:Run(RW_ReleaseTransferToken)
 		elseif meta == "UNSHIFT_RESTORE" then
 			self:CallMethod("manageUnshift", true)
 		else

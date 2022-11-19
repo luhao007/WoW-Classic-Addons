@@ -278,7 +278,7 @@ end
 do -- config.bind
 	local unbindMap, activeCaptureButton = {}
 	local alternateFrame = CreateFrame("Frame", nil, UIParent) do
-		CreateEdge(alternateFrame, { bgFile="Interface/ChatFrame/ChatFrameBackground", edgeFile="Interface/DialogFrame/UI-DialogBox-Border", tile=true, tileSize=32, edgeSize=32, insets={left=11, right=11, top=12, bottom=10}}, 0xd8000000)
+		CreateEdge(alternateFrame, { bgFile="Interface/ChatFrame/ChatFrameBackground", edgeFile="Interface/DialogFrame/UI-DialogBox-Border", tile=true, tileSize=32, edgeSize=32, insets={left=11, right=11, top=11, bottom=10}}, 0xd8000000)
 		alternateFrame:SetSize(380, 115)
 		alternateFrame:EnableMouse(1)
 		alternateFrame:SetScript("OnHide", alternateFrame.Hide)
@@ -433,7 +433,7 @@ do -- config.bind
 			alternateFrame:Hide()
 		else
 			alternateFrame.apiFrame, alternateFrame.owner = self:GetParent(), self
-			alternateFrame.caption:SetText(L"Press ENTER to save.")
+			alternateFrame.caption:SetFormattedText(L"Press %s to save.", NORMAL_FONT_COLOR_CODE .. GetBindingText("ENTER") .. "|r")
 			alternateFrame.input:SetText(bind or "")
 			alternateFrame:SetParent(self)
 			alternateFrame:SetFrameLevel(self:GetFrameLevel()+10)
@@ -494,17 +494,6 @@ do -- config.undo
 		table.wipe(undoStack)
 	end
 end
-do -- config.overlay
-	function config.overlay(self, overlayFrame)
-		return T.TenSettings:ShowFrameOverlay(self, overlayFrame)
-	end
-	function config.prompt(frame, title, prompt, explainText, acceptText, callback, editBoxWidth, cancelText)
-		return T.TenSettings:ShowPromptOverlay(frame, title, prompt, explainText, acceptText, callback, editBoxWidth, cancelText)
-	end
-	function config.alert(frame, title, message, dissmissText)
-		return T.TenSettings:ShowAlertOverlay(frame, title, message, dissmissText)
-	end
-end
 do -- config.pulseDropdown
 	local function cloneTex(tex)
 		local l, sl = tex:GetDrawLayer()
@@ -556,7 +545,7 @@ end
 
 function config.checkSVState(frame)
 	if not PC:GetSVState() then
-		config.alert(frame, L"Changes will not be saved", L"World of Warcraft could not load OPie's saved variables due to a lack of memory. Try disabling other addons.\n\nAny changes you make now will not be saved.", L"Understood; edit anyway")
+		T.TenSettings:ShowAlertOverlay(frame, L"Changes will not be saved", L"World of Warcraft could not load OPie's saved variables due to a lack of memory. Try disabling other addons.\n\nAny changes you make now will not be saved.", L"Understood; edit anyway")
 	end
 end
 
@@ -594,7 +583,7 @@ local OPC_OptionSets = {
 local frame = config.createPanel("OPie", nil, {forceRootVersion=true})
 	frame.version:SetFormattedText("%s", OPie:GetVersion() or "")
 local OPC_Profile = CreateFrame("Frame", "OPC_Profile", frame, "UIDropDownMenuTemplate")
-	OPC_Profile:SetPoint("TOPLEFT", frame, 0, -75)
+	OPC_Profile:SetPoint("TOPLEFT", frame, 0, -80)
 	UIDropDownMenu_SetWidth(OPC_Profile, 200)
 local OPC_OptionDomain = CreateFrame("Frame", "OPC_OptionDomain", frame, "UIDropDownMenuTemplate")
 	OPC_OptionDomain:SetPoint("LEFT", OPC_Profile, "RIGHT")
@@ -646,62 +635,24 @@ do -- Widget construction
 		hooksecurefunc(b, "SetEnabled", OnStateChange)
 		return b, ofsY - (halfpoint and rowHeight or 0), not halfpoint, halfpoint and 0 or 20
 	end
-	function build.range9(v, ofsY, halfpoint, rowHeight, rframe)
+	function build.range(v, ofsY, halfpoint, rowHeight, rframe)
 		if halfpoint then
 			ofsY = ofsY - rowHeight
 		end
-		local b = CreateFrame("Slider", "OPC_Slider_" .. v[2], frame, "OptionsSliderTemplate")
-		b:SetWidth(175)
-		b:SetMinMaxValues(v[3] < v[4] and v[3] or -v[3], v[4] > v[3] and v[4] or -v[4])
-		b:SetValueStep(v[5] or 0.1)
-		b:SetHitRectInsets(0,0,0,0)
-		b.id, b.text, b.hi, b.lo, b.desc = v[2], _G["OPC_Slider_" .. v[2] .. "Text"], _G["OPC_Slider_" .. v[2] .. "High"], _G["OPC_Slider_" .. v[2] .. "Low"], v
-		b.hi:ClearAllPoints()
-		b.hi:SetPoint("LEFT", b, "RIGHT", 2, 1)
-		b.lo:ClearAllPoints()
-		b.lo:SetPoint("RIGHT", b, "LEFT", -2, 1)
-		b.text:ClearAllPoints()
-		b.text:SetPoint("TOPLEFT", rframe, "TOPLEFT", 44, ofsY-7)
-		if not v.stdLabels then
-			b.lo:SetText(v[3])
-			b.hi:SetText(v[4])
-		end
-		b:SetPoint("TOPRIGHT", rframe, "TOPRIGHT", -105, ofsY-5)
-		b:SetScript("OnValueChanged", notifyChange)
-		b:SetObeyStepOnDrag(true)
-		return b, ofsY - 20, false, 0
-	end
-	function build.range10(v, ofsY, halfpoint, rowHeight, rframe)
-		if halfpoint then
-			ofsY = ofsY - rowHeight
-		end
-		local b, t = CreateFrame("Frame", nil, frame, "MinimalSliderWithSteppersTemplate")
-		b:SetHeight(20)
-		b:SetPoint("TOPLEFT", rframe, "TOPLEFT", 296, ofsY-5)
-		b.Back:SetHitRectInsets(-4, -4, 0, 0)
-		b.Forward:SetHitRectInsets(-4, -4, 0, 0)
-		t = b.Back:CreateTexture(nil, "HIGHLIGHT")
-		t:SetPoint("CENTER")
-		t:SetAtlas("Minimal_SliderBar_Button_Left", true)
-		t:SetBlendMode("ADD")
-		t:SetVertexColor(1,0.75,0, 0.65)
-		t = b.Forward:CreateTexture(nil, "HIGHLIGHT")
-		t:SetPoint("CENTER")
-		t:SetAtlas("Minimal_SliderBar_Button_Right", true)
-		t:SetBlendMode("ADD")
-		t:SetVertexColor(1,0.75,0, 0.65)
-		local s = b.Slider
-		s.text = b.Labels[1]
-		s.text:SetFontObject(GameFontHighlight)
-		s.text:ClearAllPoints()
-		s.text:SetPoint("TOPLEFT", rframe, "TOPLEFT", 44, ofsY-9)
+		local s, leftMargin, centerLine = T.TenSettings:CreateOptionsSlider(frame, nil, 212)
+		s:SetPoint("TOPLEFT", rframe, "TOPLEFT", 319-leftMargin, ofsY-5)
+		s.text:SetPoint("LEFT", rframe, "TOPLEFT", 44, ofsY-5-centerLine)
 		s.text:Show()
 		s:SetValueStep(v[5] or 0.1)
 		s:SetMinMaxValues(v[3] < v[4] and v[3] or -v[3], v[4] > v[3] and v[4] or -v[4])
 		s:SetObeyStepOnDrag(true)
 		s:SetScript("OnValueChanged", notifyChange)
 		s.id, s.desc = v[2], v
-		return s, ofsY - 22, false, 0
+		if not v.stdLabels then
+			s.lo:SetText(v[3])
+			s.hi:SetText(v[4])
+		end
+		return s, ofsY - 20, false, 0
 	end
 	function build.drop(v, ofsY, halfpoint, rowHeight, rframe)
 		local f = CreateFrame("Frame", "OPC_Drop" .. v[2], frame, "UIDropDownMenuTemplate")
@@ -724,9 +675,8 @@ do -- Widget construction
 		anchor_OnVisibilityChange(f)
 		return f
 	end
-	build.range, build.range10, build.range9 = build[MODERN and "range10" or "range9"]
 
-	local cY, halfpoint, rframe, rowHeight = MODERN and -100 or -90, false, frame
+	local cY, halfpoint, rframe, rowHeight = -100, false, frame
 	for _, v in ipairs(OPC_OptionSets) do
 		v.label = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
 		v.label:SetPoint("TOP", rframe, "TOP", -50, cY-15)
@@ -828,7 +778,7 @@ end
 local function OPC_Profile_NewCallback(self, text, apply, frame)
 	local name = text:match("^%s*(.-)%s*$")
 	if name == "" or PC:ProfileExists(name) then
-		if apply then self.editBox:SetText("") end
+		if apply then self:SetText("") end
 		return false
 	elseif apply then
 		config.undo.saveProfile(true)
@@ -849,7 +799,7 @@ function OPC_Profile:switch(arg1, frame)
 	frame.refresh("profile")
 end
 function OPC_Profile:new(_, frame)
-	config.prompt(frame, L"Create a New Profile", L"New profile name:", L"Profiles save options and ring bindings.", L"Create Profile", OPC_Profile_NewCallback)
+	T.TenSettings:ShowPromptOverlay(frame, L"Create a New Profile", L"New profile name:", L"Profiles save options and ring bindings.", L"Create Profile", OPC_Profile_NewCallback)
 end
 function OPC_Profile:delete(_, frame)
 	config.undo.saveProfile()

@@ -1,10 +1,10 @@
-lightweight tag affb2c721e83cc575066f619a51ceec872cd5771 v5.0.3
+lightweight tag eae30de82b6029b04fd1d020cec1faea3c09561f v5.0.4
 Author:	Péter Radics <mitchnull@gmail.com>
-Date:	Sat Nov 5 13:07:13 2022 +0100
+Date:	Fri Nov 18 20:16:13 2022 +0100
 
-commit affb2c721e83cc575066f619a51ceec872cd5771
+commit eae30de82b6029b04fd1d020cec1faea3c09561f
 Author: Péter Radics <mitchnull@gmail.com>
-Date:   Sat Nov 5 13:07:13 2022 +0100
+Date:   Fri Nov 18 20:16:13 2022 +0100
 
-    [ISSUE-2] handle focus and arena units in class-wrath, too
+    toc bump
 

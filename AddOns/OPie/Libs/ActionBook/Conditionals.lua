@@ -58,7 +58,7 @@ end
 do -- me:Player Name/Class
 	KR:SetStateConditionalValue("me", UnitName("player") .. "/" .. playerClassLocal .. "/" .. playerClass)
 end
-do -- known:spell id
+if not MODERN then -- known:spell id
 	KR:SetSecureExecConditional("known", [=[-- KR_KnownSpell
 		local ids = ...
 		for sid in (type(ids) == "string" and ids or ""):gmatch("[^/]+") do
