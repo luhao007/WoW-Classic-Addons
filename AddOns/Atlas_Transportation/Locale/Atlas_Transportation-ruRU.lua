@@ -112,6 +112,8 @@ L["Wind Rider"] = "Укротитель ветрокрылов"
 L["Wind Rider Master"] = "Укротитель ветрокрылов"
 L["Won't be available once the Battle for Andorhal chain is finished."] = "Не будет доступна пока не завершена серия заданий битвы за Андорал."
 L["Yellow"] = "Жёлтый"
+--[[Translation missing --]]
+--[[ L["Zeppelin to Orgrimmar"] = ""--]] 
 L["Zeppelin Towers"] = "Башни дирижаблей"
 
 end

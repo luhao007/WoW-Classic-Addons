@@ -47,6 +47,8 @@ L["Darkscreecher Akkarai"] = "Темный Крикун Аккарай"
 L["Doom Lord Kazzak"] = "Владыка Судеб Каззак"
 L["Doomwalker"] = "Владыка Рока"
 L["Draenor World Bosses"] = "Боссы Дренора"
+--[[Translation missing --]]
+--[[ L["Dragon Isles World Bosses"] = ""--]] 
 L["Dragons of Nightmare"] = "Драконы Кошмаров"
 L["Dreamroarer"] = "Рыкун Сна"
 L["Dreamstalker"] = "Ловчий Снов"

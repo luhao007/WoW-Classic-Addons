@@ -535,6 +535,7 @@ local options = {
         { keystring = "general.anchor",             type = "anchor", dropdata = {"default","cursorRight","cursor","static"} },
         { keystring = "item.coloredItemBorder",     type = "checkbox" },
         { keystring = "item.showItemIcon",          type = "checkbox" },
+        { keystring = "item.showStackCount",          type = "checkbox" },
         { keystring = "quest.coloredQuestBorder",   type = "checkbox" },
         { keystring = "general.alwaysShowIdInfo",   type = "checkbox" },
         { keystring = "general.SavedVariablesPerCharacter",   type = "checkbox" },
@@ -818,7 +819,7 @@ end
 
 
 ----------------
--- DIY Frame 
+-- DIY Frame
 ----------------
 
 local diytable, diyPlayerTable = {}, {}

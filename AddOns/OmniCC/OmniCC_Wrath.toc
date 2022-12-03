@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Tuller
-## Version: 10.0.1
+## Version: 10.0.2
 ## SavedVariables: OmniCCDB, OmniCC4Config
 
 ## Title: OmniCC

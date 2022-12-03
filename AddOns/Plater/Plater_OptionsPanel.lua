@@ -39,6 +39,9 @@ local IMPORT_EXPORT_EDIT_MAX_LETTERS = 0 --128000*4 -- 0 appears to be "no limit
 
 local highlightColorLastCombat = {1, 1, .2, .25}
 
+local dropdownStatusBarTexture = platerInternal.Defaults.dropdownStatusBarTexture
+local dropdownStatusBarColor = platerInternal.Defaults.dropdownStatusBarColor
+
  --cvars
 local CVAR_ENABLED = "1"
 local CVAR_DISABLED = "0"
@@ -113,7 +116,7 @@ Plater.RegisterRefreshDBCallback (on_refresh_db)
 local update_wago_update_icons = function()
 	local countMods, countScripts, hasProfileUpdate = Plater.CheckWagoUpdates(true)
 	local mainFrame = PlaterOptionsPanelContainer
-	local scriptButton		= mainFrame.AllButtons [6]
+	local scriptButton		= mainFrame.AllButtons [6] --~changeindex1
 	local modButton			= mainFrame.AllButtons [7]
 	local profileButton		= mainFrame.AllButtons [22]
 	
@@ -245,6 +248,7 @@ function Plater.OpenOptionsPanel()
 
 		{name = "WagoIo", title = "Wago Imports"}, --wago_imports --localize-me
 		{name = "SearchFrame", title = L["OPTIONS_TABNAME_SEARCH"]},
+		{name = "PluginsFrame", title = "Plugins"}, --localize-me
 		
 	}, 
 	frame_options, hookList)
@@ -350,12 +354,14 @@ function Plater.OpenOptionsPanel()
 	--4th row
 	local wagoIoFrame 			= mainFrame.AllFrames [25] --wago_imports
 	local searchFrame			= mainFrame.AllFrames [26]
+	local pluginsFrame			= mainFrame.AllFrames [27]
 
-	local scriptButton		= mainFrame.AllButtons [6] --also need update on line 115 and 13818
+	local scriptButton		= mainFrame.AllButtons [6] --also need update on ~changeindex1 and ~changeindex2
 	local modButton		 	= mainFrame.AllButtons [7]
 	local profileButton		= mainFrame.AllButtons [22]
 	local ghostAurasButton	= mainFrame.AllButtons [12]
 
+	--[=[ ghost auras isn't new anymore, keeping this code in case need to add the button into another tab
 	if (time() + 60*60*24*15 > 1647542962) then
 		ghostAuras.newTexture = ghostAurasButton:CreateTexture(nil, "overlay", nil, 7)
 		ghostAuras.newTexture:SetTexture([[Interface\AddOns\Plater\images\new]])
@@ -363,10 +369,12 @@ function Plater.OpenOptionsPanel()
 		ghostAuras.newTexture:SetSize(35, 35)
 		ghostAuras.newTexture:SetAlpha(0.88)
 	end
+	--]=]
 
 	Plater.Resources.BuildResourceOptionsTab(resourceFrame)
 	Plater.Auras.BuildGhostAurasOptionsTab(ghostAuras)
 	Plater.CreateCastColorOptionsFrame(castColorsFrame)
+	platerInternal.Plugins.CreatePluginsOptionsTab(pluginsFrame)
 	
 	local generalOptionsAnchor = CreateFrame ("frame", "$parentOptionsAnchor", frontPageFrame, BackdropTemplateMixin and "BackdropTemplate")
 	generalOptionsAnchor:SetSize (1, 1)
@@ -1126,6 +1134,8 @@ function Plater.OpenOptionsPanel()
 			tinsert (t, {
 				label = label,
 				value = value,
+                statusbar = dropdownStatusBarTexture,
+                statusbarcolor = dropdownStatusBarColor,
 				onclick = function (_, _, value)
 					if (actorType) then
 						Plater.db.profile.plate_config [actorType][member] = value
@@ -1167,6 +1177,8 @@ function Plater.OpenOptionsPanel()
 			tinsert (t, {
 				label = anchor_names[i], 
 				value = i, 
+                statusbar = dropdownStatusBarTexture,
+                statusbarcolor = dropdownStatusBarColor,
 				onclick = function (_, _, value)
 					if (actorType) then
 						Plater.db.profile.plate_config [actorType][member].side = value
@@ -1275,7 +1287,14 @@ function Plater.OpenOptionsPanel()
 	end
 	local cast_spark_texture_selected_options = {}
 	for index, texturePath in ipairs (Plater.SparkTextures) do
-		cast_spark_texture_selected_options [#cast_spark_texture_selected_options + 1] = {value = texturePath, label = "Texture " .. index, statusbar = texturePath, onclick = cast_spark_texture_selected}
+		cast_spark_texture_selected_options [#cast_spark_texture_selected_options + 1] = {
+			value = texturePath,
+			label = "Texture " .. index,
+			onclick = cast_spark_texture_selected,
+			centerTexture = texturePath,
+			statusbar = dropdownStatusBarTexture,
+			statusbarcolor = dropdownStatusBarColor,
+		}
 	end
 	
 	
@@ -2659,6 +2678,7 @@ Plater.CreateAuraTesting()
 			
 			local onToggleEnabled = function (self, npcID, state)
 				if (not DB_NPCID_COLORS [npcID]) then
+					--[1] enabled [2] only script [3] color
 					DB_NPCID_COLORS [npcID] = {false, false, "blue"}
 				end
 				DB_NPCID_COLORS [npcID][1] = state
@@ -13249,6 +13269,27 @@ end
 			desc = "Show Healthbars on not attackable units instead of defaulting to 'name only'.",
 		},
 		
+		{
+			type = "toggle",
+			get = function() return Plater.db.profile.show_healthbars_on_softinteract end,
+			set = function (self, fixedparam, value) 
+				Plater.db.profile.show_healthbars_on_softinteract = value
+				Plater.UpdateAllPlates()
+			end,
+			name = "Always show soft-interact target",
+			desc = "Always show the name or healthbar on your soft-interact target instead of hiding them on NPCs.",
+		},
+		{
+			type = "toggle",
+			get = function() return Plater.db.profile.ignore_softinteract_objects end,
+			set = function (self, fixedparam, value) 
+				Plater.db.profile.ignore_softinteract_objects = value
+				Plater.UpdateAllPlates()
+			end,
+			name = "Use blizzard soft-interact for objects",
+			desc = "Only show Plater soft-interact nameplates on NPCs.",
+		},
+		
 		{type = "blank"},
 		
 		{type = "label", get = function() return "Client Settings (CVars):" end, text_template = DF:GetTemplate ("font", "ORANGE_FONT_TEMPLATE")},
@@ -14141,7 +14182,7 @@ end
 		--resources
 	}
 	
-	local allTabHeaders = {
+	local allTabHeaders = { --~changeindex2
 		mainFrame.AllButtons [1].button.text:GetText(), -- general
 		mainFrame.AllButtons [2].button.text:GetText(), -- threat & aggro
 		mainFrame.AllButtons [3].button.text:GetText(), -- target

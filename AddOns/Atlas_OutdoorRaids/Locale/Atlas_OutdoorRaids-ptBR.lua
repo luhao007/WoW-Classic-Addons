@@ -40,6 +40,8 @@ L["Darkscreecher Akkarai"] = "Akkarai le Hurle-sombre"
 L["Doom Lord Kazzak"] = "Seigneur Funeste Kazzak"
 L["Doomwalker"] = "Marche-funeste"
 L["Draenor World Bosses"] = "Boss de Monde de Draenor"
+--[[Translation missing --]]
+--[[ L["Dragon Isles World Bosses"] = ""--]] 
 L["Dragons of Nightmare"] = "Dragons du Cauchemard"
 L["Dreamroarer"] = "Hurle-rêve"
 L["Dreamstalker"] = "Traque-rêve"

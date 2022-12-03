@@ -1337,6 +1337,10 @@
 		<Title>金团账本</Title>
 		<Category>副本</Category>
 	</Addon>
+	<Addon name="RankSentinel">
+		<Title>低级技能提示</Title>
+		<Category>战斗</Category>
+	</Addon>
 	<Addon name="RangeDisplay">
 		<Title>目标距离</Title>
 		<Notes>显示与目标的距离。</Notes>

@@ -1,4 +1,4 @@
--- $Id: Atlas_OutdoorRaids-enUS.lua 80 2022-08-30 14:09:26Z arithmandar $
+-- $Id: Atlas_OutdoorRaids-enUS.lua 84 2022-11-19 08:48:16Z arithmandar $
 --[[
 
 	Atlas, a World of Warcraft instance map browser
@@ -39,6 +39,7 @@ L["Darkscreecher Akkarai"] = "Darkscreecher Akkarai"
 L["Doom Lord Kazzak"] = "Doom Lord Kazzak"
 L["Doomwalker"] = "Doomwalker"
 L["Draenor World Bosses"] = "Draenor World Bosses"
+L["Dragon Isles World Bosses"] = "Dragon Isles World Bosses"
 L["Dragons of Nightmare"] = "Dragons of Nightmare"
 L["Dreamroarer"] = "Dreamroarer"
 L["Dreamstalker"] = "Dreamstalker"

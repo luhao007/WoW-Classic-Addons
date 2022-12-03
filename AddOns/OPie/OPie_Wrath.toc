@@ -1,7 +1,8 @@
 ## Interface: 30400
 ## Author: foxlit
-## Version: Yuzu 2
+## Version: Yuzu 3
 ## SavedVariables: OneRing_Config, OPie_SavedData
+## SavedVariablesPerCharacter: OPie_SavedDataPC
 
 ## Title: OPie
 ## Notes: Group abilities into rings that appear when you hold down a binding.

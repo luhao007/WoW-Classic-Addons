@@ -173,6 +173,8 @@ if L then
 --[[Translation missing --]]
 --[[ L["Yellow"] = ""--]] 
 --[[Translation missing --]]
+--[[ L["Zeppelin to Orgrimmar"] = ""--]] 
+--[[Translation missing --]]
 --[[ L["Zeppelin Towers"] = ""--]] 
 
 end

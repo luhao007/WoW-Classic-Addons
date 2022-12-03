@@ -3,7 +3,7 @@
 	Author: Eliote
 --]]
 
-local MAJOR, MINOR = "Elib-4.0", 4
+local MAJOR, MINOR = "Elib-4.0", 12
 local Elib = LibStub:NewLibrary(MAJOR, MINOR)
 if not Elib then return end
 
@@ -46,6 +46,7 @@ end
 local function setDefaultSavedVariables(sv, menus)
 	if sv.ShowIcon == nil then sv.ShowIcon = 1 end
 	sv.ShowLabelText = sv.ShowLabelText or false
+	if sv.ShowRegularText == nil then sv.ShowRegularText = 1 end
 
 	if menus then
 		for k, v in ipairs(menus) do
@@ -127,6 +128,7 @@ function Elib.Register(easyObject)
 
 		EDDM.UIDropDownMenu_AddButton(createTitanOption(id, Titan_L["TITAN_PANEL_MENU_SHOW_ICON"], "ShowIcon"))
 		EDDM.UIDropDownMenu_AddButton(createTitanOption(id, Titan_L["TITAN_PANEL_MENU_SHOW_LABEL_TEXT"], "ShowLabelText"))
+		EDDM.UIDropDownMenu_AddButton(createTitanOption(id, Titan_L["TITAN_PANEL_MENU_SHOW_PLUGIN_TEXT"], "ShowRegularText"))
 
 		local menus = easyObject.menus
 		if menus then
@@ -213,11 +215,17 @@ function Elib.Register(easyObject)
 				if easyObject.onUpdate(self, easyObject.id) then elap = 0 end
 			end)
 		end
+
+		if easyObject.afterLoad then easyObject.afterLoad(self, easyObject.id) end
 	end
 
 	if easyObject.getButtonText then
 		_G["TitanPanelButton_Get" .. easyObject.id .. "ButtonText"] = function(...)
-			return easyObject.getButtonText(frame, easyObject.id, ...)
+			local returns = { easyObject.getButtonText(frame, easyObject.id, ...) }
+			if (returns[2] and not TitanGetVar(easyObject.id, "ShowRegularText")) then
+				returns[2] = ""
+			end
+			return unpack(returns)
 		end
 	end
 

@@ -1,7 +1,17 @@
-$Id: Revision.txt 113 2022-11-17 17:08:49Z arithmandar $
+$Id: Revision.txt 117 2022-11-29 15:36:42Z arithmandar $
 
 Revision History:
 =================
+
+v4.18.10000046801 (2022/11/29)
+------------------------------
+- Replace SetBackdrop with backdropInfo
+
+v4.17.10000046801 (2022/11/29)
+------------------------------
+- update backdrop template to DialogBorderDarkTemplate
+  - update BACKDROP_DIALOG_DARK.insets.bottom to 11
+- update menubackdrop template to TooltipBackdropTemplate
 
 v4.16.10000046689 (2022/11/18)
 ------------------------------

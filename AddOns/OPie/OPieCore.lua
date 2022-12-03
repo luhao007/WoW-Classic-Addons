@@ -1,5 +1,5 @@
-local versionMajor, versionRev, ADDON, T, ORI = 4, 110, ...
-local MODERN = select(4,GetBuildInfo()) >= 8e4
+local versionMajor, versionRev, ADDON, T, ORI = 4, 111, ...
+local MODERN = select(4,GetBuildInfo()) >= 10e4
 local CF_WRATH = not MODERN and select(4,GetBuildInfo()) >= 3e4
 local api, private = {ActionBook=T.ActionBook}, {}
 local OR_Rings, OR_ModifierLockState, TL, EV, OR_LoadedState = {}, nil, T.L, T.Evie, 1
@@ -672,9 +672,6 @@ local function OR_SyncRing(name, actionId, newprops)
 				local pMode, rMode = newprops[i].rotationMode, nil
 				if pMode and (pMode == "random" or pMode == "shuffle" or pMode == "cycle" or pMode == "reset" or pMode == "jump") then
 					rMode = pMode
-				elseif newprops[i].lockRotation then
-					-- DEPRECATED [1902/3.96/W1]: lockRotation->rotationMode="reset" transition
-					rMode = "reset"
 				end
 				fcBlock = fcBlock .. ("fcIgnore[%s], rotationMode[%1$s] = %s, %s "):format(safequote(newprops[i].sliceToken), tostringf(not newprops[i].fastClick), rMode and safequote(rMode) or "nil")
 			end
@@ -1049,6 +1046,16 @@ function EV:PLAYER_LOGIN()
 	OR_NotifyPVars("LOGIN")
 	return "remove"
 end
+function EV:PLAYER_ENTERING_WORLD(_, isReload)
+	if isReload and type(OPie_SavedDataPC) == "table" and type(OPie_SavedDataPC.FlagState) == "table" then
+		local FM = AB and AB:compatible("FlagMast", 1)
+		if FM then
+			FM:RestoreState(OPie_SavedDataPC.FlagState)
+		end
+	end
+	OPie_SavedDataPC = nil
+	return "remove"
+end
 function EV:PLAYER_LOGOUT()
 	OPie_SavedData = configRoot
 	OneRing_Config = svMigrationState ~= 2 and configRoot or nil
@@ -1069,6 +1076,9 @@ function EV:PLAYER_LOGOUT()
 		if v.Bindings and next(v.Bindings) == nil then v.Bindings = nil end
 		if v.RotationTokens and next(v.RotationTokens) == nil then v.RotationTokens = nil end
 	end
+	local FM = AB and AB:compatible("FlagMast", 1)
+	local fs = FM and FM:GetState()
+	OPie_SavedDataPC = fs and {FlagState=fs} or nil
 end
 local function OR_SaveCurrentProfile()
 	OR_NotifyPVars("SAVE", nil, true)

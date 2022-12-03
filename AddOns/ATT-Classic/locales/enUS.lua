@@ -805,7 +805,7 @@ app.L = {
 		[-329] = INVTYPE_LEGS, 													-- Legs
 		[-330] = INVTYPE_FEET, 													-- Feet
 	-- Argent Tournament
-		[-363] = GetCategoryInfo(14941),										-- The Argent Tournament
+		[-363] = GetCategoryInfo and GetCategoryInfo(14941),										-- The Argent Tournament
 -- Dungeon/Raid Wing Info
 		[-367] = DUNGEON_FLOOR_NAXXRAMAS1, 										-- The Construct Quarter
 		[-368] = DUNGEON_FLOOR_NAXXRAMAS2, 										-- The Arachnid Quarter

@@ -1,5 +1,5 @@
 local api, private, _, T = {}, {}, ...
-local RK_RingDesc, RK_CollectionIDs, RK_FluxRings, RK_Version, RK_Rev, EV, PC, SV = {}, {}, {}, 3, 53, T.Evie, T.OPieCore
+local RK_RingDesc, RK_CollectionIDs, RK_FluxRings, RK_Version, RK_Rev, EV, PC, SV = {}, {}, {}, 3, 54, T.Evie, T.OPieCore
 local unlocked, queue, RK_DeletedRings, RK_FlagStore, sharedCollection = false, {}, {}, {}, {}
 local MODERN = select(4,GetBuildInfo()) >= 8e4
 local CF_WRATH = not MODERN and select(4,GetBuildInfo()) >= 3e4
@@ -212,8 +212,7 @@ local RK_ParseMacro, RK_QuantizeMacro, RK_SetMountPreference do
 				local node = C_Traits.GetNodeInfo(cid, nodes[i])
 				for i=1,#node.entryIDs do
 					local entry = C_Traits.GetEntryInfo(cid, node.entryIDs[i])
-					local did = entry.definitionID
-					local def = C_Traits.GetDefinitionInfo(did)
+					local def = C_Traits.GetDefinitionInfo(entry.definitionID)
 					local sid = def and def.spellID and not IsPassiveSpell(def.spellID) and def.spellID
 					if sid then
 						local name, name2 = GetSpellInfo(sid), def.overrideName
@@ -647,11 +646,6 @@ local function RK_SanitizeDescription(props)
 			v[1], v[2], v.rtype, v.id = "macrotext", id
 		elseif v[1] == nil then
 			table.remove(props, i)
-		end
-		if v.lockRotation ~= nil and v.rotationMode == nil then
-			-- DEPRECATED [1902/3.96/W1]: lockRotation->rotationMode transition.
-			v.rotationMode = v.lockRotation and "reset" or nil
-			v.lockRotation = nil
 		end
 		v.show = v.show ~= "" and v.show or nil
 		v.sliceToken = v.sliceToken or (uprefix and type(v._u) == "string" and (uprefix .. v._u)) or AB:CreateToken()

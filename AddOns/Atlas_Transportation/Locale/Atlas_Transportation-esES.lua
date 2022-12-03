@@ -140,6 +140,8 @@ L["Wind Rider"] = "Jinete del viento"
 --[[Translation missing --]]
 --[[ L["Won't be available once the Battle for Andorhal chain is finished."] = ""--]] 
 L["Yellow"] = "Amarillo"
+--[[Translation missing --]]
+--[[ L["Zeppelin to Orgrimmar"] = ""--]] 
 L["Zeppelin Towers"] = "Aeropuertos Zepelín"
 
 end

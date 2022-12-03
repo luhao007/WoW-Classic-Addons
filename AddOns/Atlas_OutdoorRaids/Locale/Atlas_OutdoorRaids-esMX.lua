@@ -53,6 +53,8 @@ L["Darkscreecher Akkarai"] = "Estridador oscuro Akkarai"
 --[[Translation missing --]]
 --[[ L["Draenor World Bosses"] = ""--]] 
 --[[Translation missing --]]
+--[[ L["Dragon Isles World Bosses"] = ""--]] 
+--[[Translation missing --]]
 --[[ L["Dragons of Nightmare"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["Dreamroarer"] = ""--]] 

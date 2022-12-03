@@ -1,4 +1,4 @@
-local RW, MAJ, REV, _, T = {}, 1, 23, ...
+local RW, MAJ, REV, _, T = {}, 1, 24, ...
 if T.ActionBook then return end
 local AB, KR = nil, assert(T.Kindred:compatible(1,8), "A compatible version of Kindred is required.")
 local MODERN = select(4,GetBuildInfo()) >= 8e4
@@ -70,7 +70,7 @@ local core, coreEnv = CreateFrame("Frame", nil, nil, "SecureHandlerBaseTemplate"
 			if ns == 0 and #execQueue > 0 then
 				owner:CallMethod("throw", "Rewire executor pool exhausted; spilling queue (n=" .. #execQueue .. ").")
 				wipe(execQueue)
-				overfull, mutedAbove = false, -1, mutedAbove >= 0 and owner:CallMethod("setMute", false)
+				overfull, mutedAbove, modLock = false, -1, mutedAbove >= 0 and owner:CallMethod("setMute", false), nil
 				KR:RunAttribute("SetButtonState", false)
 			end
 		]=])
@@ -350,8 +350,9 @@ local function getAliases(p, i)
 	end
 end
 
-local setCommandHinter, getMacroHint, getCommandHint, getCommandHintRaw, metaFilters, metaFilterTypes do
+local setCommandHinter, getMacroHint, getCommandHint, getCommandHintRaw, getSpeculationID, metaFilters, metaFilterTypes do
 	local hintFunc, pri, cache, ht, ht2, nInf, cDepth, DEPTH_LIMIT = {}, {}, {}, {}, {}, -math.huge, 0, 20
+	local speculationID, nextSpeculationID, SPECULATION_ID_WRAP = nil, 221125, 2^53
 	local store do
 		local function write(t, n, i, a,b,c,d, ...)
 			if n > 0 then
@@ -425,16 +426,20 @@ local setCommandHinter, getMacroHint, getCommandHint, getCommandHintRaw, metaFil
 		return hf(...)
 	end
 	local function clearDepth(...)
-		cDepth = 0
+		cDepth, speculationID = 0, nil
 		return ...
+	end
+	local function prepCall(...)
+		if cDepth ~= 0 then error("invalid state") end
+		cDepth, speculationID, nextSpeculationID = 1, nextSpeculationID, nextSpeculationID ~= SPECULATION_ID_WRAP and nextSpeculationID + 1 or -nextSpeculationID
+		return clearDepth(securecall(...))
 	end
 	function getCommandHint(priLimit, slash, args, modState, otarget, msg, priBias)
 		slash = coreEnv.commandAlias[slash] or slash
 		local hf, pri, args2, target = hintFunc[slash], pri[slash]
 		if hf and pri > (priLimit or nInf) - (priBias or 0) then
 			if cDepth == 0 then
-				cDepth = 1
-				return clearDepth(securecall(getCommandHint, priLimit, slash, args, modState, otarget, msg, priBias))
+				return prepCall(getCommandHint, priLimit, slash, args, modState, otarget, msg, priBias)
 			elseif cDepth > DEPTH_LIMIT then
 				return false
 			elseif otarget ~= nil then
@@ -443,11 +448,11 @@ local setCommandHinter, getMacroHint, getCommandHint, getCommandHintRaw, metaFil
 				if args == "" then
 					args2, args = ""
 				else
-					args, args2, target = nil, KR:EvaluateCmdOptions(args, modState)
+					args, args2, target = nil, KR:EvaluateCmdOptions(args, modState, nil, speculationID)
 				end
 			end
 			cDepth = cDepth + 1
-			local res = store(securecall(hf, slash, args, args2, target, modState, priLimit, msg))
+			local res = store(securecall(hf, slash, args, args2, target, modState, priLimit, msg, speculationID))
 			cDepth = cDepth - 1
 			if res == "stop" then
 				return res, pri
@@ -462,6 +467,9 @@ local setCommandHinter, getMacroHint, getCommandHint, getCommandHintRaw, metaFil
 	end
 	function getMacroHint(macrotext, modState, minPriority)
 		if not macrotext then return end
+		if cDepth == 0 then
+			return prepCall(getMacroHint, macrotext, modState, minPriority)
+		end
 		local m, lowPri = cache[macrotext], minPriority or nInf
 		if not m then
 			m = {}
@@ -535,6 +543,9 @@ local setCommandHinter, getMacroHint, getCommandHint, getCommandHintRaw, metaFil
 	end
 	function setCommandHinter(slash, priority, hint)
 		hintFunc[slash], pri[slash] = hint, hint and priority
+	end
+	function getSpeculationID()
+		return speculationID
 	end
 end
 
@@ -781,5 +792,6 @@ function RW:IsSpellCastable(id, disallowRewireEscapes, laxRank)
 	local castable = not not (name and GetSpellInfo(name, rank))
 	return castable, castable and "double-gsi"
 end
+RW.GetSpeculationID = getSpeculationID
 
 T.Rewire = {compatible=RW.compatible}

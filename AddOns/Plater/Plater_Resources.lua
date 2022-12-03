@@ -1244,12 +1244,14 @@ end
 			if not runeReady then
 				resourceBar.runesOnCooldown[index] = true
 				if start then
+                    cooldown:SetAlpha(1)
 					CooldownFrame_Set(cooldown, start, duration, 1, true);
-                    --cooldown:SetCooldown(start, duration)
 				end
 				if not DB_PLATER_RESOURCE_SHOW_DEPLETED then
 					cooldown:SetAlpha(0)
 				end
+                runeButton.ShowAnimation:Stop()
+                runeButton.texture:SetAlpha(0)
 			else
 				if (resourceBar.runesOnCooldown[index]) then
 					local _, _, runeReadyNow = GetRuneCooldown(index)
@@ -1263,7 +1265,7 @@ end
 					runeButton.texture:SetAlpha(1)
 				end
 
-				cooldown:SetAlpha(1)
+				cooldown:SetAlpha(0)
 				cooldown:Hide()
 			end
 		end
@@ -1359,6 +1361,8 @@ end
 
         --amount of resources the player has now
         local currentResources = UnitPower("player", Plater.Resources.playerResourceId)
+        local maxResources = UnitPowerMax("player", Plater.Resources.playerResourceId)
+        local isAtMaxPoints = currentResources == maxResources
         local pace, interrupted = GetPowerRegenForPowerType(Enum.PowerType.Essence)
         if (pace == nil or pace == 0) then
             pace = 0.2
@@ -1406,7 +1410,6 @@ end
             widget:Show()
         end
 
-        local isAtMaxPoints = currentResources == resourceBar.widgetsInUseAmount
         local cooldownDuration = 1 / pace
         local animationSpeedMultiplier = FillingAnimationTime / cooldownDuration
         local widget = resourceBar.widgets[currentResources + 1]

@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("Ignis", "DBM-Ulduar")
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20220701215737")
+mod:SetRevision("20221124043300")
 mod:SetCreatureID(33118)
 mod:SetEncounterID(1136)
 mod:SetModelID(29185)

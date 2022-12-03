@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: arith, Dynaletik, dubcat
-## Version: v1.52.00
+## Version: v1.52.01
 ## RequiredDeps: Atlas
 
 ## Title: Atlas |r|cFF0099FF[Wrath of the Lich King]|r
@@ -8,7 +8,7 @@
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本地图|r |cFF69CCF0巫妖王之怒|r
 ## Notes-zhCN: 巫妖王之怒副本地图
 
-## X-Date: 2022-11-06T14:37:29Z
+## X-Date: 2022-11-19T7:40:55Z
 ## X-Credits: Dan Gilbert, Lothaer
 ## X-Email: atlas.addon at gmail dot com
 ## X-Website: http://www.atlasmod.com

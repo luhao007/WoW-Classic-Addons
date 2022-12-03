@@ -107,6 +107,8 @@ L["Wind Rider"] = "와이번"
 L["Wind Rider Master"] = "와이번 조련사"
 L["Won't be available once the Battle for Andorhal chain is finished."] = "일단 안돌할 전투 연계 퀘스트를 완료하면 이용할 수 없습니다."
 L["Yellow"] = "노란색"
+--[[Translation missing --]]
+--[[ L["Zeppelin to Orgrimmar"] = ""--]] 
 L["Zeppelin Towers"] = "비행선 탑승장"
 
 end

@@ -6,7 +6,6 @@
 local ADDON_NAME, L = ...;
 local VERSION = GetAddOnMetadata(ADDON_NAME, "Version")
 
-
 local Color = {}
 Color.WHITE = "|cFFFFFFFF"
 Color.RED = "|cFFDC2924"
@@ -16,11 +15,13 @@ Color.ORANGE = "|cFFE77324"
 
 local SEX = UnitSex("player")
 
-local GetFriendshipReputation = GetFriendshipReputation or nop
+local GetFriendshipReputation = GetFriendshipReputation
 if not GetFriendshipReputation and C_GossipInfo and C_GossipInfo.GetFriendshipReputation then
 	GetFriendshipReputation = function(factionId)
 		local info = C_GossipInfo.GetFriendshipReputation(factionId)
-		if not info then return end
+		if not info or not info.friendshipFactionID or info.friendshipFactionID == 0 then
+			return
+		end
 		local texture = info.texture
 		if (texture == 0) then
 			texture = nil
@@ -31,7 +32,13 @@ if not GetFriendshipReputation and C_GossipInfo and C_GossipInfo.GetFriendshipRe
 end
 GetFriendshipReputation = GetFriendshipReputation or nop
 
+local IsMajorFaction = C_Reputation.IsMajorFaction or nop
+local GetMajorFactionData = C_MajorFactions and C_MajorFactions.GetMajorFactionData and C_MajorFactions.GetMajorFactionData or nop
+local HasMaximumRenown = C_MajorFactions and C_MajorFactions.HasMaximumRenown and C_MajorFactions.HasMaximumRenown or nop
+local GetCurrentRenownLevel = C_MajorFactions and C_MajorFactions.GetCurrentRenownLevel or nop
+
 local sessionStart = {}
+local sessionStartMajorFaction = {}
 
 local defaultColors = {
 	[1] = "FFCC2222",
@@ -43,12 +50,17 @@ local defaultColors = {
 	[7] = "FF00FFCC",
 	[8] = "FF00FFFF",
 	paragon = "FF6DB3FF",
+	renown = "FF00BFF3",
 }
 
 local defaultColorsSortedKeys = {}
-for k, _ in pairs(defaultColors) do table.insert(defaultColorsSortedKeys, k) end
+for k, _ in pairs(defaultColors) do
+	table.insert(defaultColorsSortedKeys, k)
+end
 table.sort(defaultColorsSortedKeys, function(a, b)
-	if type(a) == type(b) then return a < b end
+	if type(a) == type(b) then
+		return a < b
+	end
 	return type(b) == "string"
 end)
 
@@ -61,49 +73,82 @@ local function GetColors(id)
 end
 
 local function GetFactionLabel(standingId)
-	if standingId == "paragon" then return "Paragon" end
-	return (SEX == 2 and _G["FACTION_STANDING_LABEL" .. standingId]) or _G["FACTION_STANDING_LABEL" .. standingId .. "_FEMALE"] or "?"
+	if standingId == "paragon" then
+		return L["Paragon"]
+	end
+	if (standingId == "renown") then
+		return L["Renown"]
+	end
+	return GetText("FACTION_STANDING_LABEL" .. standingId, SEX)
+end
+
+local function GetBalanceForMajorFaction(factionId, currentXp, currentLvl)
+	if (not sessionStartMajorFaction[factionId]) then
+		local data = GetMajorFactionData(factionId)
+		sessionStartMajorFaction[factionId] = {
+			startLvl = data.renownLevel,
+			[data.renownLevel] = { start = 0, max = data.renownLevelThreshold }
+		}
+	end
+	local balance = 0
+	local start = sessionStartMajorFaction[factionId].startLvl
+	for i = start, currentLvl do
+		local data = sessionStartMajorFaction[factionId][i]
+		-- we might not have data yet if we just leveled and UPDATE_FACTION run before MAJOR_FACTION_RENOWN_LEVEL_CHANGED
+		if (data) then
+			local endXp = (currentLvl == i) and currentXp or data.max
+			balance = balance + (endXp - data.start)
+		end
+	end
+	return balance
 end
 
 -- @return current, maximun, color, standingText
 local function GetValueAndMaximum(standingId, barValue, bottomValue, topValue, factionId, colors)
-	if (standingId == nil) then return "0", "0", "|cFFFF0000", "??? - " .. (factionId .. "?") end
+	if (IsMajorFaction(factionId)) then
+		local data = GetMajorFactionData(factionId)
+		local isCapped = HasMaximumRenown(factionId)
+		local current = isCapped and data.renownLevelThreshold or data.renownReputationEarned or 0
+		local standingText = " (" .. (RENOWN_LEVEL_LABEL .. data.renownLevel) .. ")"
+		local session = GetBalanceForMajorFaction(factionId, current, data.renownLevel)
+		return current, data.renownLevelThreshold, colors.renown, standingText, nil, session
+	end
 
-	local current = barValue - bottomValue
-	local maximun = topValue - bottomValue
-	local color = colors[5]
-	local standingText = " (" .. GetFactionLabel(standingId) .. ")"
-
-	sessionStart[factionId] = sessionStart[factionId] or barValue
-	local session = barValue - sessionStart[factionId]
+	if (standingId == nil) then
+		return "0", "0", "|cFFFF0000", "??? - " .. (factionId .. "?")
+	end
 
 	if (C_Reputation.IsFactionParagon(factionId)) then
-		color = colors.paragon
-
+		local color = colors.paragon
 		local currentValue, threshold, _, hasRewardPending = C_Reputation.GetFactionParagonInfo(factionId);
-
+		local standingText = " (" .. GetFactionLabel("paragon") .. ")"
 		if hasRewardPending then
 			standingText = " (" .. GetFactionLabel("paragon") .. " |A:ParagonReputation_Bag:0:0|a" .. ")"
-		else
-			standingText = " (" .. GetFactionLabel("paragon") .. ")"
 		end
-
+		sessionStart[factionId] = sessionStart[factionId] or barValue
+		local session = barValue - sessionStart[factionId]
 		return mod(currentValue, threshold), threshold, color, standingText, hasRewardPending, session
 	end
 
 	local friendID, friendRep, _, _, _, _, friendTextLevel, friendThreshold, nextFriendThreshold = GetFriendshipReputation(factionId)
 	if (friendID) then
-		standingText = " (" .. friendTextLevel .. ")"
-
+		local standingText = " (" .. friendTextLevel .. ")"
+		local color = colors[standingId] or colors[5]
+		local maximun, current = 1, 1
 		if (nextFriendThreshold) then
 			maximun, current = nextFriendThreshold - friendThreshold, friendRep - friendThreshold
-		else
-			maximun, current = 1, 1
 		end
-	else
-		color = colors[standingId] or color
+		sessionStart[factionId] = sessionStart[factionId] or friendRep
+		local session = friendRep - sessionStart[factionId]
+		return current, maximun, color, standingText, nil, session
 	end
 
+	local current = barValue - bottomValue
+	local maximun = topValue - bottomValue
+	local color = colors[standingId] or colors[5]
+	local standingText = " (" .. GetFactionLabel(standingId) .. ")"
+	sessionStart[factionId] = sessionStart[factionId] or barValue
+	local session = barValue - sessionStart[factionId]
 	return current, maximun, color, standingText, nil, session
 end
 
@@ -151,6 +196,10 @@ local function GetButtonText(self, id)
 end
 
 local function IsNeutral(factionId, standingId)
+	if (IsMajorFaction(factionId)) then
+		return false
+	end
+
 	local friendID = GetFriendshipReputation(factionId)
 
 	if friendID then
@@ -160,7 +209,16 @@ local function IsNeutral(factionId, standingId)
 	return standingId <= 4
 end
 
+local function MajorFactionMaxLevel(factionId)
+	local list = C_MajorFactions.GetRenownLevels(factionId)
+	return list[#list].level
+end
+
 local function IsMaxed(factionId, standingId)
+	if (IsMajorFaction(factionId)) then
+		return HasMaximumRenown(factionId) and GetCurrentRenownLevel(factionId) == MajorFactionMaxLevel(factionId)
+	end
+
 	local friendID, _, _, _, _, _, _, _, nextFriendThreshold = GetFriendshipReputation(factionId)
 
 	if friendID then
@@ -239,7 +297,8 @@ local function GetTooltipText(self, id)
 					local nameColor = (atWarWith and Color.RED) or ""
 
 					local prefix = "-"
-					if isHeader then -- this is for headers with reputation
+					if isHeader then
+						-- this is for headers with reputation
 						nameColor = Color.WHITE
 						prefix = ""
 					end
@@ -261,13 +320,26 @@ local function GetTooltipText(self, id)
 	return topText .. text
 end
 
-local function prepareSessioTable()
+local function prepareSessionTable()
 	local numFactions = GetNumFactions()
 	for factionIndex = 1, numFactions do
-		local name, _, standingId, bottomValue, topValue, earnedValue, atWarWith, _, isHeader, _, hasRep, isWatched, _, factionId, hasBonusRepGain, canBeLFGBonus = GetFactionInfo(factionIndex)
-
-		if name and factionId then
-			sessionStart[factionId] = earnedValue
+		local name, _, _, _, _, earnedValue, _, _, _, _, _, _, _, factionId = GetFactionInfo(factionIndex)
+		local friendID, friendRep = GetFriendshipReputation(factionId)
+		if (factionId) then
+			if (IsMajorFaction(factionId)) then
+				local data = GetMajorFactionData(factionId)
+				local isCapped = HasMaximumRenown(factionId)
+				earnedValue = isCapped and data.renownLevelThreshold or data.renownReputationEarned or 0
+				sessionStartMajorFaction[factionId] = {
+					startLvl = data.renownLevel,
+					[data.renownLevel] = { start = earnedValue, max = data.renownLevelThreshold },
+				}
+				sessionStart[factionId] = earnedValue
+			elseif (friendID) then
+				sessionStart[factionId] = friendRep
+			elseif name then
+				sessionStart[factionId] = earnedValue
+			end
 		end
 	end
 end
@@ -276,14 +348,22 @@ local eventsTable = {
 	PLAYER_ENTERING_WORLD = function(self)
 		self:UnregisterEvent("PLAYER_ENTERING_WORLD")
 
-		prepareSessioTable()
+		prepareSessionTable()
 
 		TitanPanelButton_UpdateButton(self.registry.id)
 	end,
 	UPDATE_FACTION = function(self)
 		TitanPanelButton_UpdateButton(self.registry.id)
-	end
+	end,
 }
+
+if (C_Reputation.IsMajorFaction) then
+	eventsTable.MAJOR_FACTION_RENOWN_LEVEL_CHANGED = function(self, factionId, newRenownLevel, oldRenownLevel)
+		local data = GetMajorFactionData(factionId)
+		sessionStartMajorFaction[factionId][newRenownLevel] = { start = 0, max = data.renownLevelThreshold }
+		TitanPanelButton_UpdateButton(self.registry.id)
+	end
+end
 
 local function OnClick(self, button)
 	if (button == "LeftButton") then

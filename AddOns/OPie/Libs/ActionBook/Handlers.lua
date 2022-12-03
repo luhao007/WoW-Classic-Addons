@@ -1,6 +1,7 @@
 local _, T = ...
 if T.SkipLocalActionBook then return end
 local MODERN = select(4,GetBuildInfo()) >= 8e4
+local MODERN_CONTAINERS = MODERN or C_Container and C_Container.GetContainerNumSlots
 local CF_CLASSIC = not MODERN
 local AB = assert(T.ActionBook:compatible(2,21), "A compatible version of ActionBook is required")
 local RW = assert(AB:compatible("Rewire",1,14), "A compatible version of Rewire is required")
@@ -260,9 +261,9 @@ do -- item: items ID/inventory slot
 				end
 			end
 		end
-		local ns = MODERN and C_Container.GetContainerNumSlots or GetContainerNumSlots
-		local giid = MODERN and C_Container.GetContainerItemID or GetContainerItemID
-		local gil = MODERN and C_Container.GetContainerItemLink or GetContainerItemLink
+		local ns = MODERN_CONTAINERS and C_Container.GetContainerNumSlots or GetContainerNumSlots
+		local giid = MODERN_CONTAINERS and C_Container.GetContainerItemID or GetContainerItemID
+		local gil = MODERN_CONTAINERS and C_Container.GetContainerItemLink or GetContainerItemLink
 		for i=0,4 do
 			for j=1, ns(i) do
 				if iid == giid(i, j) then
@@ -426,7 +427,7 @@ do -- macrotext
 				t[v], tv[0] = tv, seed
 			end
 			v = t[v]
-			v, v[0] = v[1 + v[0] % #v], (v[0] * 37 + 13) % 2^32
+			v, v[0] = v[1 + v[0] % #v], (v[0] * 12616645 + 16777213) % 2^32
 			return RW:RunAttribute("RunSlashCmd", "/cast", v, target, "opt-into-cr-fallback")
 		]])
 		RW:RegisterCommand(SLASH_USERANDOM1, true, true, f)
@@ -446,7 +447,8 @@ do -- macrotext
 			end
 			if t then
 				local nextArg = t[1 + t[0] % #t]
-				if tonumber(nextArg) and  GetItemInfo(nextArg) then
+				local nextN = tonumber(nextArg)
+				if nextN and nextN > 20 and GetItemInfo(nextN) then
 					nextArg = "item:" .. nextArg
 				end
 				return RW:GetCommandAction("/use", nextArg, target, nil, "castrandom-fallback")

@@ -1,5 +1,11 @@
-1.2.3 Release Notes
+1.2.6 Release Notes
 Contributions made by Crieve:
-* Fixed an issue with C_Map.
-* Unfinished Feralas updates.
+* Updated Feralas to include legacy information.
+* Feralas now resides on the Retail Database.
+* Fixed yet another issue with C_Map.GetPlayerMapPosition.
+* Restructured the database format to allow one addon version to work for Classic, TBC, and Wrath.
+* In case someone installs ATT-Classic to Retail, it should still be shown as ATT-Classic as the design is simplified.
+* ATT-Classic now supports building for Cataclysm.
+* ATT-Classic is once again compatible with Classic Era.
+* Schematic: Steam Tonk Controller is not available until TBC.
 

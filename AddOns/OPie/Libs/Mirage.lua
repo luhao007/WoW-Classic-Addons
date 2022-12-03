@@ -1,6 +1,5 @@
 local _, T = ...
 local gfxBase = ([[Interface\AddOns\%s\gfx\]]):format((...))
-local TEN = select(4, GetBuildInfo()) >= 10e4
 
 local function cc(m, f, ...)
 	f[m](f, ...)
@@ -39,6 +38,7 @@ local CreateQuadTexture do
 		end
 		return group
 	end
+	T.CreateQuadTexture = CreateQuadTexture
 end
 
 local function cooldownFormat(cd)
@@ -315,7 +315,7 @@ local CreateIndicator do
 	end
 	function CreateIndicator(name, parent, size, nested)
 		local b = cc("SetSize", CreateFrame("Frame", name, parent), size, size)
-		cc(TEN and "SetIsFrameBuffer" or "SetFrameBuffer", cc("SetFlattensRenderLayers", b, true), true)
+		cc(b.SetIsFrameBuffer and "SetIsFrameBuffer" or "SetFrameBuffer", cc("SetFlattensRenderLayers", b, true), true)
 		local e = cc("SetAllPoints", CreateFrame("Frame", nil, b))
 		local cd = CreateCooldown(e, size)
 		local r = setmetatable({[0]=b, cd=cd, cdText=cd.cdText,
@@ -346,6 +346,4 @@ T.Mirage = {
 
 	supportsCooldownNumbers=true,
 	supportsShortLabels=true,
-
-	_CreateQuadTexture=CreateQuadTexture,
 }

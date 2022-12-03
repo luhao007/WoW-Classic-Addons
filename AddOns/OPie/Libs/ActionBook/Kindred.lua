@@ -1,4 +1,4 @@
-local KR, MAJ, REV, execQueue, _, T = {}, 1, 16, {}, ...
+local KR, MAJ, REV, execQueue, _, T = {}, 1, 17, {}, ...
 if T.ActionBook then return end
 
 local function assert(condition, err, ...)
@@ -77,7 +77,7 @@ core:Execute([==[-- Kindred.Init
 		pcache[conditional] = ret
 	]=]
 	OptionConstruct = [=[-- Kindred_OptionConstruct
-		local cond, modState, skipChunks = ...
+		local cond, modState, skipChunks, futureID = ...
 		local cond, out, msI, msA, msS, msC, msM = pcache[cond] or owner:Run(OptionParse, cond) or pcache[cond]
 		local getNextSkip = type(skipChunks) == "string" and skipChunks:gmatch("()s")
 		local skipNext = getNextSkip and getNextSkip()
@@ -155,7 +155,7 @@ core:Execute([==[-- Kindred.Init
 							if type(s) == "string" then
 								cres = sandbox:Run(s, c[5], target, c[4])
 							elseif _shadowES and _shadowES[name] then
-								cres = _shadowES[name](name, c[5], target, c[4])
+								cres = _shadowES[name](name, c[5], target, c[4], futureID)
 							elseif s then
 								cres = s:RunAttribute("EvaluateMacroConditional", name, c[5], target, c[4])
 							end
@@ -165,7 +165,7 @@ core:Execute([==[-- Kindred.Init
 							if isInLockdown then
 								cres = markType == "+"
 							elseif _shadowES and _shadowES[name] then
-								cres = (not not _shadowES[name](name, c[5], target, markType)) == goal
+								cres = (not not _shadowES[name](name, c[5], target, markType, futureID)) == goal
 							else
 								self:CallMethod("irun", name, c[5], target, markType)
 								cres = (not not self:GetAttribute("irun-result")) == goal

@@ -31,6 +31,7 @@ R:AddDefaultRing("CommonTrades", {
 	(MODERN or CF_WRATH) and {id=53428, _u="u"}, -- runeforging
 	MODERN and {id="/cast [mod] {{spell:80451}}; {{spell:78670/89722}}", _u="r"} -- archaeology
 	        or CF_WRATH and {id="/cast {{spell:3273}}", _u="f"}, -- first aid
+	MODERN and {id=271990, _u="j"}, -- fish journal
 	name=L"Trade Skills", hotkey="ALT-T", _u="OPCCT"
 })
 R:AddDefaultRing("TrinketSlots", {
@@ -260,6 +261,7 @@ R:AddDefaultRing("CommonHearth", {
 	{"toy", 184353, _u="k"},
 	{"toy", 180290, _u="nf"},
 	{"toy", 183716, _u="ve"},
+	{"toy", 188952, _u="do"},
 	{"toy", 190237, _u="bt"},
 	name=L"Hearthstones", internal=true, _u="OPCHS"
 })

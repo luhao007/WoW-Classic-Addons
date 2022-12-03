@@ -35,6 +35,12 @@ LibSharedMedia:Register ("font", "TrashHand", [[Interface\Addons\Plater\fonts\Tr
 LibSharedMedia:Register ("font", "Harry P", [[Interface\Addons\Plater\fonts\HARRYP__.TTF]])
 LibSharedMedia:Register ("font", "FORCED SQUARE", [[Interface\Addons\Plater\fonts\FORCED SQUARE.ttf]])
 
+LibSharedMedia:Register("sound", "Plater HiHat", [[Interface\Addons\Plater\sounds\Plater HiHat.ogg]])
+LibSharedMedia:Register("sound", "Plater Hit", [[Interface\Addons\Plater\sounds\Plater Hit.ogg]])
+LibSharedMedia:Register("sound", "Plater Shaker", [[Interface\Addons\Plater\sounds\Plater Shaker.ogg]])
+LibSharedMedia:Register("sound", "Plater Steel", [[Interface\Addons\Plater\sounds\Plater Steel.ogg]])
+LibSharedMedia:Register("sound", "Plater Wood", [[Interface\Addons\Plater\sounds\Plater Wood.ogg]])
+
 --font templates
 DF:InstallTemplate ("font", "PLATER_SCRIPTS_NAME", {color = "orange", size = 10, font = "Friz Quadrata TT"})
 DF:InstallTemplate ("font", "PLATER_SCRIPTS_TYPE", {color = "gray", size = 9, font = "Friz Quadrata TT"})
@@ -90,6 +96,12 @@ PLATER_DEFAULT_SETTINGS = {
 		saved_cvars_last_change = {},
 		keybinds = {},
 
+		--store the enabled or disabled state of a plugin, this table is not shared on exporting profile
+		plugins_data = {},
+
+		--executed once for each expansion
+		expansion_triggerwipe = {},
+
 		class_colors = {
 			["HUNTER"] = {r = 0.66666668653488, g = 0.82745105028152, b = 0.44705885648727, a = 1, colorStr = "ffaad372"},
 			["WARRIOR"] = {r = 0.77647066116333, g = 0.60784316062927, b = 0.42745101451874, a = 1, colorStr = "ffc69b6d"},
@@ -113,11 +125,15 @@ PLATER_DEFAULT_SETTINGS = {
 		--enabled1 is if the color is enabled overall, enabled2 is if the color is only for scripts
 		npc_colors = {},
 
+		--store audio cues for spells
+		--format: [SpellID] = filePath
+		cast_audiocues = {},
+
 		--store the cast colors customized by the user
 		cast_colors = {}, --[spellId] = {[1] = color, [2] = enabled, [3] = custom spell name}
 		cast_color_settings = { --these are settings for the original cast color settings
-			enabled = true,
-			width = 12,
+			enabled = false,
+			width = 6,
 			height_offset = 0,
 			alpha = 0.8,
 			anchor = {side = 11, x = 0, y = 0},
@@ -618,6 +634,8 @@ PLATER_DEFAULT_SETTINGS = {
 		quick_hide = false, --hide the nameplate when the unit hits 0 health points | making disabled by default, this maybe is bugging hunters FD
 		
 		show_healthbars_on_not_attackable = false,
+		show_healthbars_on_softinteract = true,
+		ignore_softinteract_objects = true,
 		
 		enable_masque_support = false,
 		

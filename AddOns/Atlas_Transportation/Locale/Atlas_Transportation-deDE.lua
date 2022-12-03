@@ -100,6 +100,8 @@ L["Wind Rider"] = "Windreiter"
 L["Wind Rider Master"] = "Windreitermeister"
 L["Won't be available once the Battle for Andorhal chain is finished."] = "Nicht mehr verfügbar, wenn die Schlacht um Andorhal abgeschlossen ist."
 L["Yellow"] = "Gelb"
+--[[Translation missing --]]
+--[[ L["Zeppelin to Orgrimmar"] = ""--]] 
 L["Zeppelin Towers"] = "Zeppelintürme"
 
 end

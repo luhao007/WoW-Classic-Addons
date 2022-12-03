@@ -607,6 +607,16 @@ class Manager:
         )
 
     @staticmethod
+    @available_on(['classic'])
+    def handle_sil():
+        utils.change_defaults(
+            'AddOns/SimpleItemLevel/addon.lua',
+            ['    character = false,',
+             '    bags = false,',
+             '    upgrades = false,',]
+        )
+
+    @staticmethod
     @available_on(['retail'])
     def handle_sc():
         utils.change_defaults(

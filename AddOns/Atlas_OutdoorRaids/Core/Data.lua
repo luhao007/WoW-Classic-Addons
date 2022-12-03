@@ -1,4 +1,4 @@
--- $Id: Data.lua 80 2022-08-30 14:09:26Z arithmandar $
+-- $Id: Data.lua 86 2022-11-19 08:52:37Z arithmandar $
 --[[
 
 	Atlas, a World of Warcraft instance map browser
@@ -57,10 +57,23 @@ local function Atlas_GetBossName(bossname, encounterID, creatureIndex)
 end
 
 local myData = {
+	OR_DragonIsles = {
+		ZoneName = { L["Dragon Isles World Bosses"] },
+		Location = { BZ["Dragon Isles"] },
+		LevelRange = "70+",
+		PlayerLimit = "40",
+		JournalInstanceID = 1205,
+		WorldMapID = 1978,
+		ALModule = "Atlas_BattleforAzeroth",
+		{ WHIT.." 1) "..Atlas_GetBossName("Strunraan, The Sky's Misery", 2515), 2515 },
+		{ WHIT.." 2) "..Atlas_GetBossName("Liskanoth, The Futurebane", 2518), 2518 },
+		{ WHIT.." 3) "..Atlas_GetBossName("Bazual, The Dreaded Flame", 2517), 2517 },
+		{ WHIT.." 3) "..Atlas_GetBossName("Basrikron, The Shale Wing", 2506), 2506 },
+	},
 	OR_KulTiras = {
 		ZoneName = { L["Kul Tiras World Bosses"] },
 		Location = { BZ["Kul Tiras"] },
-		LevelRange = "120+",
+		LevelRange = "60+",
 		PlayerLimit = "40",
 		JournalInstanceID = 1028,
 		WorldMapID = 876,
@@ -72,7 +85,7 @@ local myData = {
 	OR_Zandalar = {
 		ZoneName = { L["Zandalar World Bosses"] },
 		Location = { BZ["Zandalar"] },
-		LevelRange = "120+",
+		LevelRange = "60+",
 		PlayerLimit = "40",
 		JournalInstanceID = 1028,
 		WorldMapID = 875,
@@ -86,7 +99,7 @@ local myData = {
 	OR_Azeroth = {
 		ZoneName = { L["Eastern Kingdoms World Bosses"] },
 		Location = { BZ["Eastern Kingdoms"] },
-		LevelRange = "120+",
+		LevelRange = "60+",
 		PlayerLimit = "40",
 		JournalInstanceID = 1028,
 		WorldMapID = 13,
@@ -103,7 +116,7 @@ local myData = {
 	OR_Kalimdor = {
 		ZoneName = { L["Kalimdor World Bosses"] },
 		Location = { BZ["Kalimdor"] },
-		LevelRange = "120+",
+		LevelRange = "60+",
 		PlayerLimit = "40",
 		JournalInstanceID = 1028,
 		WorldMapID = 12,
@@ -114,7 +127,7 @@ local myData = {
 	OR_BrokenIsles = {
 		ZoneName = { L["Broken Isles World Bosses"] },
 		Location = { BZ["Broken Isles"] },
-		LevelRange = "110+",
+		LevelRange = "45+",
 		PlayerLimit = "40",
 		JournalInstanceID = 822,
 		WorldMapID = 619,
@@ -146,7 +159,7 @@ local myData = {
 	OR_BrokenShore = {
 		ZoneName = { L["Broken Shore World Bosses"] },
 		Location = { BZ["Broken Shore"] },
-		LevelRange = "110+",
+		LevelRange = "45+",
 		PlayerLimit = "40",
 		JournalInstanceID = 822,
 		WorldMapID = 646,
@@ -164,7 +177,7 @@ local myData = {
 	OR_Draenor = {
 		ZoneName = { L["Draenor World Bosses"] },
 		Location = { BZ["Draenor"] },
-		LevelRange = "100-110",
+		LevelRange = "40+",
 		PlayerLimit = "--",
 		JournalInstanceID = 557,
 		WorldMapID = 572,
@@ -186,7 +199,7 @@ local myData = {
 	OR_Pandaria = {
 		ZoneName = { L["Pandaria World Bosses"] },
 		Location = { BZ["Pandaria"] },
-		LevelRange = "90-100",
+		LevelRange = "35+",
 		PlayerLimit = "--",
 		JournalInstanceID = 322,
 		WorldMapID = 424,
@@ -215,7 +228,7 @@ local myData = {
 	OR_Skettis = {
 		ZoneName = { BZ["Skettis"] },
 		Location = { BZ["Blackwind Valley"]..", "..BZ["Terokkar Forest"] },
-		LevelRange = "70-80",
+		LevelRange = "30+",
 		PlayerLimit = "40",
 		{ WHIT.."1) "..BZ["Blackwind Landing"], 10001 },
 		{ WHIT..INDENT..L["Sky Commander Adaris"] },
@@ -242,7 +255,7 @@ local myData = {
 	OR_DoomLordKazzak = {
 		ZoneName = { Atlas_GetBossName("Doom Lord Kazzak") },
 		Location = { BZ["Hellfire Peninsula"] },
-		LevelRange = "70-80",
+		LevelRange = "30+",
 		PlayerLimit = "40",
 		{ WHIT.."1) "..Atlas_GetBossName("Doom Lord Kazzak"), 10001 },
 		{ WHIT.."2) "..BZ["Invasion Point: Annihilator"], 10002 },
@@ -253,13 +266,19 @@ local myData = {
 	OR_Doomwalker = {
 		ZoneName = { Atlas_GetBossName("Doomwalker") },
 		Location = { BZ["Shadowmoon Valley"] },
-		LevelRange = "70-80",
+		LevelRange = "30+",
 		PlayerLimit = "40",
 		{ WHIT.."1) "..Atlas_GetBossName("Doomwalker"), 10001 },
 	},
 }
 
 local myDB = {
+	OR_DragonIsles = {
+		{ 1, 2515, 294, 348 },
+		{ 2, 2518, 20, 20 },
+		{ 3, 2517, 20, 60 },
+		{ 3, 2506, 20, 100 },
+	},
 	OR_KulTiras = {
 		{ 1, 2198, 407, 128 },
 		{ 2, 2199, 310, 247 },

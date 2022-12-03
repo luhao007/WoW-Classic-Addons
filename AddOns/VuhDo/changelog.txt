@@ -1,3 +1,50 @@
+Version 3.145-wotlkc  
+  
+  
+Known issues:  
+-- Spells by rank can be specified using a rank suffix:  
+--  Example: Lesser Heal(Rank 1)  
+-- Debuff tooltips are currently bugged when using ElvUI  
+--   Deselect 'VuhDo Options > Panels > Tooltips > Tooltips > Debuffs'  
+-- Shield bar is not working due to unavailable Blizzard APIs  
+-- Spell trace only works for known spells in the player's spellbook  
+-- Group roster changes will not be reflected during combat  
+--   Swapping a player between groups during combat will cause  
+--   unpredictable, negative results.  Be warned!  
+-- Built-in Blizzard APIs for incoming healing only partially working  
+--   If other healers are using LibHealComm enable it under:  
+--   'VuhDo Options > General > Threat / Incoming > Incoming Heal > Use LibHealComm'  
+  
+  
+Bugfixes:  
+  
+  
+Improvements:  
+  
+  
+--------------------------------------------------------------  
+Version 3.145  
+  
+  
+Known issues:  
+-- Shadowlands stat squish cleanup still a work in progress  
+--   AOE Advice spell equations need complete overhaul  
+--   Some text providers need changes to better display small numbers  
+-- Debuff tooltips are currently bugged when using ElvUI  
+--   Deselect 'VuhDo Options > Panels > Tooltips > Tooltips > Debuffs'  
+-- Blizzard continues to have a bug that breaks proper spell targeting.  
+--   Under 'Game Menu > Options > Gameplay > Combat' deselect 'Auto Self Cast'  
+--   and set 'Self Cast Key' to 'None'  
+  
+  
+Bugfixes:  
+-- Fixed tracking of ambiguously named HoTs by spell ID  
+  
+  
+Improvements:  
+  
+  
+--------------------------------------------------------------  
 Version 3.144-wotlkc  
   
   
@@ -39,9 +86,18 @@ Known issues:
   
   
 Bugfixes:  
+-- Fixed visibility of empty panels containing only target/focus models  
+-- Fixed visibility of empty panels on show/hide of 'VuhDo Options > Move!'  
+-- Fixed VuhDo Options demo mode when 'Hide Panels > Empty' selected  
+-- Fixed keybindings under 'Game Menu > Options > Gameplay > Keybindings > AddOns'  
+-- Fixed mouse/key bindings after spells are learned from talent changes  
+-- Fixed debuff types for both basic and talented Shaman 'Purify Spirit'  
+-- Fixed clock sweep for HoT Icons whose duration increases post application  
   
   
 Improvements:  
+-- Added option to only show text with no icon for HoT Icons  
+-- Bump TOC interface for 10.0.2  
   
   
 --------------------------------------------------------------  

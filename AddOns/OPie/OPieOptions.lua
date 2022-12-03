@@ -1,13 +1,36 @@
-local config, _, T, KR, PC = {}, ...
-local L, MODERN = T.L, select(4,GetBuildInfo()) >= 8e4
-T.config, KR, PC = config, T.ActionBook:compatible("Kindred",1,0), T.OPieCore
+local config, _, T = {}, ...
+local L, MODERN, frame = T.L, select(4,GetBuildInfo()) >= 10e4, nil
+T.config = config
+
+do -- /opie
+	local slashExtensions = {}
+	local function addSuffix(func, word, ...)
+		if word then
+			slashExtensions[word:lower()] = func
+			addSuffix(func, ...)
+		end
+	end
+	addSuffix(function()
+		print("|cff0080ffOPie|r |cffffffff" .. GetAddOnMetadata("OPie", "Version") .. "|r")
+	end, "version")
+	T.AddSlashSuffix = addSuffix
+
+	SLASH_OPIE1, SLASH_OPIE2 = "/opie", "/op"
+	SlashCmdList["OPIE"] = function(args, ...)
+		local ext = slashExtensions[(args:match("%S+") or ""):lower()]
+		if ext then
+			ext(args, ...)
+		else
+			frame:OpenPanel()
+		end
+	end
+end
+
+local KR, PC = T.ActionBook:compatible("Kindred",1,0), T.OPieCore
 local CreateEdge = T.CreateEdge
 
 function config.createPanel(...)
 	return T.TenSettings:CreateOptionsPanel(...)
-end
-function config.open(panel)
-	return panel:OpenPanel()
 end
 do -- config.ui
 	config.ui = {}
@@ -580,7 +603,7 @@ local OPC_OptionSets = {
 	}
 }
 
-local frame = config.createPanel("OPie", nil, {forceRootVersion=true})
+frame = config.createPanel("OPie", nil, {forceRootVersion=true})
 	frame.version:SetFormattedText("%s", OPie:GetVersion() or "")
 local OPC_Profile = CreateFrame("Frame", "OPC_Profile", frame, "UIDropDownMenuTemplate")
 	OPC_Profile:SetPoint("TOPLEFT", frame, 0, -80)
@@ -933,26 +956,8 @@ frame:SetScript("OnHide", function()
 	end
 end)
 
-local slashExtensions = {}
-local function addSuffix(func, word, ...)
-	if word then
-		slashExtensions[word:lower()] = func
-		addSuffix(func, ...)
-	end
-end
-T.AddSlashSuffix = addSuffix
-
-SLASH_OPIE1, SLASH_OPIE2 = "/opie", "/op"
-SlashCmdList["OPIE"] = function(args, ...)
-	local ext = slashExtensions[(args:match("%S+") or ""):lower()]
-	if ext then
-		ext(args, ...)
-	else
-		config.open(frame)
-	end
-end
 function T.ShowOPieOptionsPanel(ringKey)
-	config.open(frame)
+	frame:OpenPanel()
 	OPC_OptionDomain:click(ringKey)
 	frame.resetOnHide = true
 	config.pulseDropdown(OPC_OptionDomain)

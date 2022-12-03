@@ -89,14 +89,14 @@ local GeneralSettingsBase = {
 		["AccountWide:BattlePets"] = true,
 		["AccountWide:Deaths"] = true,
 		["AccountWide:Exploration"] = false,
-		["AccountWide:FlightPaths"] = true,
+		["AccountWide:FlightPaths"] = false,
 		["AccountWide:Mounts"] = true,
 		["AccountWide:PVPRanks"] = false,
 		["AccountWide:Quests"] = false,
 		["AccountWide:Recipes"] = true,
-		["AccountWide:Reputations"] = true,
+		["AccountWide:Reputations"] = false,
 		["AccountWide:RWP"] = true,
-		["AccountWide:Titles"] = true,
+		["AccountWide:Titles"] = false,
 		["AccountWide:Toys"] = true,
 		["Thing:Achievements"] = true,
 		["Thing:BattlePets"] = true,
@@ -104,7 +104,7 @@ local GeneralSettingsBase = {
 		["Thing:Exploration"] = true,
 		["Thing:FlightPaths"] = true,
 		--["Thing:Loot"] = false,
-		--["Thing:Mounts"] = false,
+		["Thing:Mounts"] = true,
 		--["Thing:PVPRanks"] = false,
 		["Thing:Quests"] = true,
 		["Thing:Recipes"] = true,
@@ -331,9 +331,6 @@ settings.GetModeString = function(self)
 			mode = "Normal " .. mode;
 		end
 
-		if self:Get("Thing:Mounts") then
-			mode = mode .. " + Mounts";
-		end
 		if self:Get("Thing:RWP") then
 			mode = mode .. " + RWP";
 		end

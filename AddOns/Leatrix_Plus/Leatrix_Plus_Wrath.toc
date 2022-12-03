@@ -1,7 +1,7 @@
 ## Interface: 30400
 ## Author: Leatrix
-## Version: 3.0.57
-## OptionalDeps: ElvUI, Glass
+## Version: 3.0.62
+## OptionalDeps: Leatrix_enUS, ElvUI, Glass
 ## SavedVariables: LeaPlusDB
 
 ## Title: Leatrix Plus
@@ -16,4 +16,5 @@ Leatrix_Plus_Locale.lua
 Leatrix_Plus_Media.lua
 Leatrix_Plus_Flight_Alliance.lua
 Leatrix_Plus_Flight_Horde.lua
+Leatrix_Plus_Edit.xml
 Leatrix_Plus.lua

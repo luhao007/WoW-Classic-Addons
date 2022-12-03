@@ -66,7 +66,7 @@ L["OPTIONS_TABNAME_BUFF_TRACKING"] = "BUFF 跟蹤"
 --[[Translation missing --]]
 L["OPTIONS_TABNAME_CASTBAR"] = "Cast Bar"
 --[[Translation missing --]]
-L["OPTIONS_TABNAME_CASTCOLORS"] = "\"Cast Colors and Names\""
+L["OPTIONS_TABNAME_CASTCOLORS"] = "Cast Colors and Names"
 --[[Translation missing --]]
 L["OPTIONS_TABNAME_COMBOPOINTS"] = "Combo Points"
 L["OPTIONS_TABNAME_GENERALSETTINGS"] = "常規設置"

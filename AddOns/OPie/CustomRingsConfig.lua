@@ -1300,7 +1300,8 @@ local typePrefix = {
 }
 do
 	for k, v in pairs(CLASS_ICON_TCOORDS) do
-		typePrefix[k] = ("|cff%s|TInterface/GLUES/CHARACTERCREATE/UI-CharacterCreate-Classes:16:16:0:0:256:256:%d:%d:%d:%d|t "):format(RAID_CLASS_COLORS[k].colorStr:sub(3), v[1]*256+6,v[2]*256-6,v[3]*256+6,v[4]*256-6)
+		local cc = RAID_CLASS_COLORS[k]
+		typePrefix[k] = ("|cff%s|TInterface/GLUES/CHARACTERCREATE/UI-CharacterCreate-Classes:16:16:0:0:256:256:%d:%d:%d:%d|t "):format(cc and cc.colorStr:sub(3) or "a0ff00", v[1]*256+6,v[2]*256-6,v[3]*256+6,v[4]*256-6)
 	end
 end
 local function sortNames(a,b)
@@ -1879,6 +1880,6 @@ panel:SetScript("OnShow", config.checkSVState)
 
 SLASH_OPIE_CUSTOM_RINGS1 = "/rk"
 function SlashCmdList.OPIE_CUSTOM_RINGS()
-	config.open(panel)
+	panel:OpenPanel()
 end
 T.AddSlashSuffix(SlashCmdList.OPIE_CUSTOM_RINGS, "custom", "rings")

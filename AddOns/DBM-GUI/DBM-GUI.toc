@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: MysticalOS, QartemisT
-## Version: 5b00279
+## Version: 5bd31e2
 ## Dependencies: DBM-Core
 ## LoadOnDemand: 1
 ## DefaultState: enabled
@@ -25,6 +25,7 @@ localization.es.lua
 localization.br.lua
 
 DBM-GUI.lua
+DBM-GUI_DropDown.xml
 DBM-GUI_DropDown.lua
 
 # Modules

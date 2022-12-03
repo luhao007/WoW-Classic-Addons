@@ -111,6 +111,8 @@ L["Wind Rider"] = "驭风者"
 L["Wind Rider Master"] = "双足飞龙管理员"
 L["Won't be available once the Battle for Andorhal chain is finished."] = "“安多哈尔之战”任务链完成之前不可使用。"
 L["Yellow"] = "黄"
+--[[Translation missing --]]
+--[[ L["Zeppelin to Orgrimmar"] = ""--]] 
 L["Zeppelin Towers"] = "飞艇塔"
 
 end

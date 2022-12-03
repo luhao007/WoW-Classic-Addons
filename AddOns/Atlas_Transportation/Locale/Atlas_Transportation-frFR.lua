@@ -132,6 +132,8 @@ L["Wind Rider"] = "Coursier du vent"
 L["Won't be available once the Battle for Andorhal chain is finished."] = "N'est plus disponible une fois la série de quêtes de la Bataille pour Andorhal terminée."
 --[[Translation missing --]]
 --[[ L["Yellow"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["Zeppelin to Orgrimmar"] = ""--]] 
 L["Zeppelin Towers"] = "Tours de Zeppelin"
 
 end

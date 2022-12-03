@@ -1,0 +1,32 @@
+## Title: ATT-Classic |cfd9b9b9b(Cata)|r
+## Name: ATT-Classic
+## Notes: Addon for Tracking Collections & Account Completion
+## Author: Crieve-Sargeras
+## Version: 1.2.6
+## Interface: 40400
+## X-Interface: 40400
+## X-Curse-Project-ID: 267285
+## SavedVariables: ATTCharacterData, ATTAccountWideData, ATTClassicSettings, ATTClassicAD, ATTClassicAuctionData, ATTClassicDebugData
+## SavedVariablesPerCharacter: ATTClassicSettingsPerCharacter
+lib\LibStub\LibStub.lua
+lib\CallbackHandler-1.0\CallbackHandler-1.0.lua
+lib\LibDataBroker-1.1\LibDataBroker-1.1.lua
+src\base.lua
+db\Presets.lua
+db\Cata\CategoryDB.lua
+db\Cata\ExplorationDB.lua
+db\Cata\ObjectDB.lua
+db\FlightPathDB.lua
+db\RaceDB.lua
+locales\enUS.lua
+locales\esES.lua
+locales\deDE.lua
+locales\frFR.lua
+locales\itIT.lua
+locales\koKR.lua
+locales\ptBR.lua
+locales\ruRU.lua
+locales\zhCN.lua
+Settings.lua
+ATT-Classic.lua
+db\Cata\Categories.lua

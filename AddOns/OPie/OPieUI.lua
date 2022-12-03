@@ -1,5 +1,5 @@
 local configCache, _, T = {}, ...
-local PC, api, iapi, MODERN = T.OPieCore, {}, {}, select(4, GetBuildInfo()) > 9e4
+local PC, api, iapi, MODERN = T.OPieCore, {}, {}, select(4, GetBuildInfo()) >= 10e4
 local max, min, abs, floor, sin, cos = math.max, math.min, math.abs, math.floor, sin, cos
 local function cc(m, f, ...)
 	f[m](f, ...)
@@ -17,8 +17,8 @@ local ringQuad, setRingRotationPeriod, centerCircle, centerGlow = {} do
 	for i=1,4 do
 		ringQuad[i] = cc("SetPoint", cc("SetSize", CreateFrame("Frame", nil, mainFrame), 32, 32), quadPoints[i], mainFrame, "CENTER")
 	end
-	centerCircle = T.Mirage._CreateQuadTexture("ARTWORK", 64, gfxBase .. "circle", nil, ringQuad)
-	centerGlow = T.Mirage._CreateQuadTexture("BACKGROUND", 128, gfxBase .. "glow", nil, ringQuad)
+	centerCircle = T.CreateQuadTexture("ARTWORK", 64, gfxBase .. "circle", nil, ringQuad)
+	centerGlow = T.CreateQuadTexture("BACKGROUND", 128, gfxBase .. "glow", nil, ringQuad)
 	for i=1,4 do
 		local g = cc("SetLooping", ringQuad[i]:CreateAnimationGroup(), "REPEAT")
 		animations[i] = cc("SetOrigin", cc("SetDegrees", cc("SetDuration", g:CreateAnimation("Rotation"), 4), -360), quadPoints[i], 0, 0)

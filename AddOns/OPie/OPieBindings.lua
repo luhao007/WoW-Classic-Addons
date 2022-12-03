@@ -305,10 +305,10 @@ frame:SetScript("OnHide", function()
 	end
 end)
 
-T.AddSlashSuffix(function() config.open(frame) end, "bind", "binding", "bindings")
+T.AddSlashSuffix(function() frame:OpenPanel() end, "bind", "binding", "bindings")
 
 function T.ShowSliceBindingPanel(ringKey)
-	config.open(frame)
+	frame:OpenPanel()
 	bindSet.set(nil, subBindings, ringKey)
 	frame.resetOnHide = true
 	config.pulseDropdown(bindSet)

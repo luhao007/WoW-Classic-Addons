@@ -723,7 +723,7 @@ end
 		for slug, entry in pairs(slugs) do
 			local isUpdate, isScipt, isMod, isProfile = is_wago_update(slug)
 			
-			local newScriptObject = { -- Dummy data
+			local newScriptObject = { -- Dummy data --~prototype
 				Enabled = true,
 				Name = "New Mod",
 				Icon = "",
@@ -774,7 +774,7 @@ end
 			local isAlreadyImported = is_wago_stash_slug_already_imported(slug)
 			
 			if not isAlreadyImported then
-				local newScriptObject = { -- Dummy data
+				local newScriptObject = { -- Dummy data --~prototype
 					Enabled = true,
 					Name = "New Mod",
 					Icon = "",
@@ -866,7 +866,13 @@ end
 				return
 			end
 			Plater.ExportScriptToGroup (scriptId, mainFrame.ScriptType)
-			
+
+		elseif (option == "exporttriggers") then
+			mainFrame.ExportScriptTriggers(scriptId)
+
+		elseif (option == "exportastable") then
+			mainFrame.ExportScriptAsLuaTable(scriptId)
+
 		elseif (option == "wago_update") then
 			local scriptObject = mainFrame.GetScriptObject (scriptId)
 			update_from_wago(scriptObject)
@@ -1021,6 +1027,20 @@ end
 				GameCooltip:AddLine ("Send to Your Party/Raid", "", 2)
 				GameCooltip:AddIcon ([[Interface\BUTTONS\UI-GuildButton-MOTD-Up]], 2, 1, 16, 16, 1, 0, 0, 1)
 				GameCooltip:AddMenu (2, onclick_menu_scroll_line, "sendtogroup", mainFrame)
+
+				if (mainFrame:GetName():find("Scripting")) then
+					GameCooltip:AddLine("$div", "$div", 2)
+					GameCooltip:AddLine("Export Triggers as Array", "", 2)
+					GameCooltip:AddIcon([[Interface\BUTTONS\UI-GuildButton-MOTD-Up]], 2, 1, 16, 16, 1, 0, 0, 1)
+					GameCooltip:AddMenu(2, onclick_menu_scroll_line, "exporttriggers", mainFrame)
+				end
+
+				if (mainFrame:GetName():find("Scripting")) then
+					GameCooltip:AddLine("$div", "$div", 2)
+					GameCooltip:AddLine("Export Table (debug)", "", 2)
+					GameCooltip:AddIcon([[Interface\BUTTONS\UI-GuildButton-MOTD-Up]], 2, 1, 16, 16, 1, 0, 0, 1)
+					GameCooltip:AddMenu(2, onclick_menu_scroll_line, "exportastable", mainFrame)
+				end
 				
 				GameCooltip:AddLine ("Remove")
 				GameCooltip:AddMenu (1, onclick_menu_scroll_line, "remove", mainFrame)
@@ -1248,9 +1268,26 @@ end
 		if (mainFrame.SearchString ~= "") then
 			for i = 1, #data do
 				if not data[i].hidden then
-					local name = data[i].FullName or data[i].Name or ""
-					if (name:lower():find (mainFrame.SearchString)) then
-						dataInOrder [#dataInOrder+1] = {i, data [i], data[i].Name, data[i].Enabled and 1 or 0, data[i].hasWagoUpdateFromImport and 1 or 0}
+					local bFoundMatch = false
+					local triggerSpellIdList = data[i].SpellIds
+					if (triggerSpellIdList and type(triggerSpellIdList) == "table") then
+						for o, spellId in ipairs(triggerSpellIdList) do
+							local spellName = GetSpellInfo(spellId)
+							if (spellName) then
+								spellName = spellName:lower()
+								if (spellName:find(mainFrame.SearchString)) then
+									dataInOrder[#dataInOrder+1] = {i, data [i], data[i].Name, data[i].Enabled and 1 or 0, data[i].hasWagoUpdateFromImport and 1 or 0}
+									bFoundMatch = true
+								end
+							end
+						end
+					end
+					
+					if (not bFoundMatch) then
+						local name = data[i].FullName or data[i].Name or ""
+						if (name:lower():find (mainFrame.SearchString)) then
+							dataInOrder [#dataInOrder+1] = {i, data [i], data[i].Name, data[i].Enabled and 1 or 0, data[i].hasWagoUpdateFromImport and 1 or 0}
+						end
 					end
 				end
 			end
@@ -2384,7 +2421,7 @@ function Plater.CreateHookingPanel()
 	function hookFrame.CreateNewScript()
 
 		--build the table of the new script
-		local newScriptObject = {
+		local newScriptObject = { --~prototype
 			Enabled = true,
 			Name = "New Mod",
 			Icon = "",
@@ -3132,7 +3169,7 @@ function Plater.CreateScriptingPanel()
 	function scriptingFrame.CreateNewScript()
 
 		--build the table of the new script
-		local newScriptObject = {
+		local newScriptObject = { --~prototype
 			Enabled = true,
 			ScriptType = 0x1,
 			Name = "New Script",
@@ -3427,6 +3464,75 @@ function Plater.CreateScriptingPanel()
 		scriptingFrame.UpdateOverlapButton()
 	end
 	
+	function scriptingFrame.ExportScriptAsLuaTable(scriptId)
+		local scriptObject = scriptingFrame.GetScriptObject(scriptId)
+		local stringToExport = DF.table.dump(scriptObject)
+
+		stringToExport = "local scriptObject = {\n" .. stringToExport .. "\n}"
+
+		scriptingFrame.ImportTextEditor.IsImporting = false
+		scriptingFrame.ImportTextEditor.IsExporting = true
+
+		scriptingFrame.ImportTextEditor:Show()
+		scriptingFrame.CodeEditorLuaEntry:Hide()
+		scriptingFrame.ScriptOptionsPanelAdmin:Hide()
+		scriptingFrame.ScriptOptionsPanelUser:Hide()
+
+		scriptingFrame.ImportTextEditor:SetText(stringToExport)
+		scriptingFrame.ImportTextEditor.TextInfo.text = "Exporting '" .. scriptObject.Name .. "' as Table"
+		
+		--if there's anything being edited, start editing the script which is being exported
+		if (not scriptingFrame.GetCurrentScriptObject()) then
+			scriptingFrame.EditScript(scriptId)
+		end
+		
+		scriptingFrame.EditScriptFrame:Show()
+		
+		C_Timer.After (0.3, function()
+			scriptingFrame.ImportTextEditor.editbox:SetFocus(true)
+			scriptingFrame.ImportTextEditor.editbox:HighlightText()
+		end)		
+	end
+
+	function scriptingFrame.ExportScriptTriggers(scriptId)
+		local scriptObject = scriptingFrame.GetScriptObject(scriptId)
+		local listOfTriggers = {}
+
+		for i = 1, #scriptObject.SpellIds do
+			listOfTriggers[#listOfTriggers+1] = scriptObject.SpellIds[i]
+		end
+
+		for i = 1, #scriptObject.NpcNames do
+			listOfTriggers[#listOfTriggers+1] = scriptObject.NpcNames[i]
+		end
+
+		local resultString = table.concat(listOfTriggers, ", ")
+		resultString = resultString .. ", "
+
+		scriptingFrame.ImportTextEditor.IsImporting = false
+		scriptingFrame.ImportTextEditor.IsExporting = true
+
+		scriptingFrame.ImportTextEditor:Show()
+		scriptingFrame.CodeEditorLuaEntry:Hide()
+		scriptingFrame.ScriptOptionsPanelAdmin:Hide()
+		scriptingFrame.ScriptOptionsPanelUser:Hide()
+
+		scriptingFrame.ImportTextEditor:SetText(resultString)
+		scriptingFrame.ImportTextEditor.TextInfo.text = "Exporting '" .. scriptObject.Name .. "'"
+		
+		--if there's anything being edited, start editing the script which is being exported
+		if (not scriptingFrame.GetCurrentScriptObject()) then
+			scriptingFrame.EditScript(scriptId)
+		end
+		
+		scriptingFrame.EditScriptFrame:Show()
+		
+		C_Timer.After (0.3, function()
+			scriptingFrame.ImportTextEditor.editbox:SetFocus(true)
+			scriptingFrame.ImportTextEditor.editbox:HighlightText()
+		end)
+	end
+
 	--called from the context menu when right click an option in the script menu
 	function scriptingFrame.ExportScript (scriptId)
 		local scriptToBeExported = scriptingFrame.GetScriptObject (scriptId)

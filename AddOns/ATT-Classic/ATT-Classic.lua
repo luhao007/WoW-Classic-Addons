@@ -3078,8 +3078,10 @@ app.GetBestObjectIDForName = function(name)
 	if o then
 		if #o > 1 then
 			local mapID = app.GetCurrentMapID();
-			local px, py = C_Map.GetPlayerMapPosition("player");
-			if px then
+			local pos = C_Map.GetPlayerMapPosition(mapID, "player");
+			if pos then
+				local px, py = pos:GetXY();
+				px, py = px * 100, py * 100;
 				local closestDistance, closestObjectID, dist = 99999, o[1];
 				for i,objectID in ipairs(o) do
 					local searchResults = app.SearchForField("objectID", objectID);
@@ -4387,7 +4389,6 @@ if GetCategoryInfo and GetCategoryInfo(92) ~= "" then
 	end
 	app.RefreshAchievementCollection = function()
 		if ATTAccountWideData then
-			app.RefreshAchievementCollection = nil;
 			for achievementID,_ in pairs(fieldCache["achievementID"]) do
 				CheckAchievementCollectionStatus(achievementID);
 			end
@@ -6617,8 +6618,7 @@ app.CacheFlightPathDataForMap = function(mapID, nodes)
 				local pos = C_Map.GetPlayerMapPosition(mapID, "player");
 				if pos then
 					local px, py = pos:GetXY();
-					px = px * 100;
-					py = py * 100;
+					px, py = px * 100, py * 100;
 					
 					-- Select the best flight path node.
 					for nodeID,node in pairs(temp) do
@@ -8073,7 +8073,8 @@ app.events.MAP_EXPLORATION_UPDATED = function(...)
 		end
 		local pos = C_Map.GetPlayerMapPosition(mapID, "player");
 		if pos then
-			local x, y = pos:GetXY();
+			local px, py = pos:GetXY();
+			px, py = px * 100, py * 100;
 			local explored = C_MapExplorationInfo_GetExploredAreaIDsAtPosition(app.CurrentMapID, pos);
 			if explored then
 				local newArea = false;
@@ -8083,7 +8084,7 @@ app.events.MAP_EXPLORATION_UPDATED = function(...)
 						ATTAccountWideData.Exploration[areaID] = 1;
 						newArea = true;
 						if not app.ExplorationAreaPositionDB[areaID] then
-							local coord = {x * 100, y * 100, app.CurrentMapID};
+							local coord = {px, py, app.CurrentMapID};
 							print("New Coordinate: ", C_Map.GetAreaInfo(areaID), coord);
 							app.ExplorationAreaPositionDB[areaID] = { coord };
 						end
@@ -12343,14 +12344,13 @@ function app:RefreshData(fromTrigger)
 			coroutine.yield();
 		end
 		
-		if app.RefreshAchievementCollection then
-			app.RefreshAchievementCollection();
-		end
-		
 		-- Send an Update to the Windows to Rebuild their Row Data
 		if app.forceFullDataRefresh then
 			app.forceFullDataRefresh = nil;
 			app:GetDataCache();
+			if app.RefreshAchievementCollection then
+				app.RefreshAchievementCollection();
+			end
 			app:UpdateWindows(true, app.refreshFromTrigger);
 		else
 			app:UpdateWindows(nil, app.refreshFromTrigger);
@@ -16014,8 +16014,10 @@ end
 app:RegisterEvent("ADDON_LOADED");
 app:RegisterEvent("BOSS_KILL");
 app:RegisterEvent("CHAT_MSG_ADDON");
-app:RegisterEvent("CHAT_MSG_WHISPER")
-app:RegisterEvent("CURSOR_CHANGED");
+app:RegisterEvent("CHAT_MSG_WHISPER");
+if select(4, GetBuildInfo()) > 11403 then
+	app:RegisterEvent("CURSOR_CHANGED");
+end
 app:RegisterEvent("PLAYER_DEAD");
 app:RegisterEvent("VARIABLES_LOADED");
 app:RegisterEvent("PARTY_LOOT_METHOD_CHANGED");

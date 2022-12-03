@@ -28,11 +28,12 @@ addon.L = {
     ["general.alwaysShowIdInfo"]            = "始终显示id信息(关闭后按住alt/shift显示)",
     ["general.skinMoreFrames"]              = "样式应用于更多框架 |cffcccc33(重载生效)|r",
     ["general.SavedVariablesPerCharacter"]  = "为每个角色保存独立配置",
-    
+
     ["item.coloredItemBorder"]              = "物品边框染色",
     ["item.showItemIcon"]                   = "显示物品图标",
+    ["item.showStackCount"]                 = "显示物品堆叠",
     ["quest.coloredQuestBorder"]            = "任务边框染色",
-    
+
     ["unit.player.anchor.position"]         = "框架锚点",
     ["unit.player.anchor.returnInCombat"]   = "战斗时固定",
     ["unit.player.anchor.hiddenInCombat"]   = "战斗时隐藏",
@@ -69,7 +70,7 @@ addon.L = {
     ["unit.player.elements.role"]           = "角色",
     ["unit.player.elements.moveSpeed"]      = "移动速度",
     ["unit.player.elements.zone"]           = "地区",
-    
+
     ["unit.npc.anchor.position"]            = "框架锚点",
     ["unit.npc.anchor.returnInCombat"]      = "战斗时固定",
     ["unit.npc.anchor.hiddenInCombat"]      = "战斗时隐藏",
@@ -93,11 +94,11 @@ addon.L = {
     ["unit.npc.elements.creature"]          = "类型",
     ["unit.npc.elements.reactionName"]      = "声望",
     ["unit.npc.elements.moveSpeed"]         = "移动速度",
-    
+
     ["spell.background"]                    = "背景顔色",
     ["spell.borderColor"]                   = "边框颜色",
     ["spell.showIcon"]                      = "法术图标",
-    
+
     ["dropdown.inherit"]        = "|cffffee00继承全局|r",
     ["dropdown.default"]        = "|cffaaaaaa系统默认|r",
     ["dropdown.angular"]        = "直角边框",
@@ -139,15 +140,15 @@ addon.L = {
     ["dropdown.not ininstance"]     = "|cffff3333非|r副本时",
     ["dropdown.not samerealm"]      = "|cffff3333非|r同服务器",
     ["dropdown.not samecrossrealm"]  = "|cffff3333非|r同跨服务器",
-    
+
     ["headerFont"]        = "标头字体",
     ["headerFontSize"]    = "标头字体大小",
     ["headerFontFlag"]    = "标头字体描边",
     ["bodyFont"]          = "内容字体",
     ["bodyFontSize"]      = "内容字体大小",
     ["bodyFontFlag"]      = "内容字体描边",
-    
+
     ["Anchor"]   = "锚点器",
-    
+
     ["TargetBy"] = "被关注",
 }

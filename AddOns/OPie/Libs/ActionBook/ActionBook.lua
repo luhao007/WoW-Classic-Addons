@@ -1,4 +1,4 @@
-local apiV, AB, MAJ, REV, ext, T = {}, {}, 2, 30, ...
+local apiV, AB, MAJ, REV, ext, T = {}, {}, 2, 31, ...
 if T.ActionBook then return end
 apiV[MAJ], ext, T.Kindred, T.Rewire = AB, {Kindred=T.Kindred, Rewire=T.Rewire, ActionBook={}}
 
@@ -556,6 +556,13 @@ function AB:locale(getWritableHandle)
 		return assert(r, "A writable locale handle has already been returned")
 	end
 	return L
+end
+
+-- TODO: Needs a better mechanism
+function AB:_RegisterModule(key, api)
+	assert(type(key) == "string" and type(api) == "table" and type(api.compatible) == "function", 'Syntax: ActionBook:_RegisterModule("key", apiTable)')
+	assert(ext[key] == nil, 'Duplicate module registration')
+	ext[key] = api
 end
 
 T.ActionBook, ext.ActionBook.compatible = ext.ActionBook, AB.compatible
