@@ -1,11 +1,14 @@
 ## Interface: 30400
-## Version: 1.4.9
-## Title: MailLogger
 ## Author: Aoikaze
-## SavedVariables: MailLoggerDB
-## Notes-zhCN: 邮件、交易自动记录
-## Notes: Automatic Log Mails & Trades.
+## Version: 1.4.9
 ## OptionalDeps: TitanClassic
+## SavedVariables: MailLoggerDB
+
+## Title: MailLogger
+## Notes: Automatic Log Mails & Trades.
+## Title-zhCN: |cFFFFE00A<|r|cFFFFF468功能|r|cFFFFE00A>|r |cFFFFFFFF邮件交易记录|r |cFFFFE00AMailLogger|r
+## Notes-zhCN: 邮件、交易自动记录
+
 
 Locale.lua
 Core.lua

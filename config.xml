@@ -753,6 +753,10 @@
 				<TitleExtra>图表查看器</TitleExtra>
 				<Notes>使用简单的线条图表查看Details!收集的数据</Notes>
 			</SubAddon>
+			<SubAddon name='Details_Compare2'>
+				<Title>比较</Title>
+				<Notes>第二版Details!比较窗口</Notes>
+			</SubAddon>
 			<SubAddon name='Details_DataStorage'>
 				<Title>数据存储</Title>
 				<Notes>存储Details!的统计数据</Notes>
@@ -1058,6 +1062,10 @@
 	</Addon>
 	<Addon name="LootMonitor">
 		<Title>黑手检测</Title>
+		<Category>功能</Category>
+	</Addon>
+	<Addon name="MailLogger">
+		<Title>邮件交易记录</Title>
 		<Category>功能</Category>
 	</Addon>
 	<Addon name="Mapster">
