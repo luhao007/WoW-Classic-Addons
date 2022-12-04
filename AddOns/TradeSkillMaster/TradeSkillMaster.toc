@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: TradeSkillMaster Team
-## Version: v4.11.68
+## Version: v4.12.5
 ## OptionalDeps: ArkInventory, Auc-Advanced, Auctionator, TheUndermineJournal, BootyBayGazette, AuctionDB
 ## SavedVariables: TradeSkillMasterDB, TSMItemInfoDB
 
@@ -11,12 +11,12 @@
 ## X-Embeds: AccurateTime, Ace3, LibDataBroker-1.1, LibDBIcon-1.0, LibRealmInfo, LibDeflate, LibSerialize
 
 # External libraries
-# Our core init file
-LibTSM\Core.lua
-
 # 1st-party libraries
 External\AccurateTime\AccurateTime.lua
 External\LibTSMClass\LibTSMClass.lua
+
+# Our core init file
+LibTSM\Core.lua
 
 # Locale file
 Locale\Locale.lua
@@ -48,18 +48,15 @@ LibTSM\Util\HSLuv.lua
 LibTSM\Util\Color.lua
 LibTSM\Util\FontObject.lua
 LibTSM\Util\NineSlice.lua
-LibTSM\Util\Theme.lua
 LibTSM\Util\Money.lua
 LibTSM\Util\CSV.lua
 LibTSM\Util\JSON.lua
-LibTSM\Util\Log.lua
-LibTSM\Util\Event.lua
-LibTSM\Util\Delay.lua
 LibTSM\Util\ObjectPool.lua
-LibTSM\Util\Analytics.lua
-LibTSM\Util\FSMClasses\State.lua
-LibTSM\Util\FSMClasses\Machine.lua
-LibTSM\Util\FSM.lua
+LibTSM\Util\ReactiveClasses\Publisher.lua
+LibTSM\Util\ReactiveClasses\State.lua
+LibTSM\Util\ReactiveClasses\StateSchema.lua
+LibTSM\Util\ReactiveClasses\Stream.lua
+LibTSM\Util\Reactive.lua
 LibTSM\Util\DatabaseClasses\Constants.lua
 LibTSM\Util\DatabaseClasses\Util.lua
 LibTSM\Util\DatabaseClasses\QueryResultRow.lua
@@ -74,11 +71,21 @@ LibTSM\Util\CraftString.lua
 LibTSM\Util\RecipeString.lua
 LibTSM\Util\Future.lua
 LibTSM\Util\Wow.lua
+LibTSM\Util\Theme.lua
+LibTSM\Util\Log.lua
 LibTSM\Util\ScriptWrapper.lua
+LibTSM\Util\Analytics.lua
+LibTSM\Util\Delay.lua
+LibTSM\Util\TextureAtlas.lua
+LibTSM\Util\FSMClasses\State.lua
+LibTSM\Util\FSMClasses\Machine.lua
+LibTSM\Util\FSM.lua
+LibTSM\Util\Event.lua
 
 # LibTSM service files
 LibTSM\Service\ErrorHandler.lua
 LibTSM\Service\DefaultUI.lua
+LibTSM\Service\TooltipScanning.lua
 LibTSM\Service\Threading.lua
 LibTSM\Service\SlashCommands.lua
 LibTSM\Service\Settings.lua
@@ -117,15 +124,20 @@ LibTSM\Service\AltTracking.lua
 LibTSM\Service\Inventory.lua
 
 # LibTSM UI files
+LibTSM\UI\WidgetExtensions.lua
 LibTSM\UI\DragContext.lua
 LibTSM\UI\Tooltip.lua
 LibTSM\UI\UIElements.lua
+LibTSM\UI\SyntaxHelpers.lua
+LibTSM\UI\Rectangle.lua
+LibTSM\UI\UIManager.lua
 
 # Constant data files (no dependencies)
 Core\Const\__init.lua
 
 # Lib files which only depend on Util files
 Core\Lib\Addon.lua
+Core\Lib\AppHelper.lua
 
 # Main addon file
 TradeSkillMaster.lua
@@ -142,28 +154,44 @@ Core\UI\Util\TableRow.lua
 Core\UI\Util\ScrollingTableInfo.lua
 Core\UI\Util\QueryScrollingTableInfo.lua
 
-Core\UI\Elements\Element.lua
-Core\UI\Elements\Text.lua
-Core\UI\Elements\Button.lua
-Core\UI\Elements\ActionButton.lua
-Core\UI\Elements\SecureMacroActionButton.lua
+Core\UI\BaseElements\Element.lua
+Core\UI\BaseElements\Text.lua
+Core\UI\BaseElements\Texture.lua
+Core\UI\BaseElements\ActionButton.lua
+Core\UI\BaseElements\SecureMacroActionButton.lua
+Core\UI\BaseElements\Button.lua
+Core\UI\BaseElements\Checkbox.lua
+Core\UI\BaseElements\ProgressBar.lua
+Core\UI\BaseElements\EditableText.lua
+Core\UI\BaseElements\ListRow.lua
+Core\UI\BaseElements\List.lua
+Core\UI\BaseElements\Spacer.lua
+Core\UI\BaseElements\RangeInput.lua
+
+Core\UI\Components\Graph.lua
+Core\UI\Components\ItemList.lua
+Core\UI\Components\Toggle.lua
+Core\UI\Components\ToggleYesNo.lua
+Core\UI\Components\CraftingMatList.lua
+Core\UI\Components\SyntaxInput.lua
+
+Core\UI\Containers\Container.lua
+Core\UI\Containers\ViewContainer.lua
+Core\UI\Containers\TabGroup.lua
+
 Core\UI\Elements\GroupSelector.lua
-Core\UI\Elements\Checkbox.lua
 Core\UI\Elements\BaseDropdown.lua
 Core\UI\Elements\SelectionDropdown.lua
 Core\UI\Elements\MultiselectionDropdown.lua
-Core\UI\Elements\Graph.lua
 Core\UI\Elements\BaseInput.lua
 Core\UI\Elements\Input.lua
 Core\UI\Elements\MultiLineInput.lua
-Core\UI\Elements\ProgressBar.lua
-Core\UI\Elements\Slider.lua
-Core\UI\Elements\PlayerGoldText.lua
-Core\UI\Elements\EditableText.lua
-Core\UI\Elements\Texture.lua
-Core\UI\Elements\Spacer.lua
 
-Core\UI\Elements\Container.lua
+Core\UI\Views\Core.lua
+Core\UI\Views\PlayerGoldText.lua
+Core\UI\Views\Line.lua
+Core\UI\Views\CustomStringDialog.lua
+
 Core\UI\Elements\Frame.lua
 Core\UI\Elements\PopupFrame.lua
 Core\UI\Elements\AlphaAnimatedFrame.lua
@@ -171,8 +199,6 @@ Core\UI\Elements\ApplicationFrame.lua
 Core\UI\Elements\LargeApplicationFrame.lua
 Core\UI\Elements\OverlayApplicationFrame.lua
 Core\UI\Elements\ScrollFrame.lua
-Core\UI\Elements\Toggle.lua
-Core\UI\Elements\ToggleOnOff.lua
 Core\UI\Elements\DividedContainer.lua
 Core\UI\Elements\CollapsibleContainer.lua
 
@@ -186,8 +212,6 @@ Core\UI\Elements\SearchList.lua
 Core\UI\Elements\DropdownList.lua
 Core\UI\Elements\SelectionList.lua
 Core\UI\Elements\CommodityList.lua
-Core\UI\Elements\CraftingMatList.lua
-Core\UI\Elements\ItemList.lua
 Core\UI\Elements\OperationTree.lua
 Core\UI\Elements\QueryScrollingTable.lua
 Core\UI\Elements\MyAuctionsScrollingTable.lua
@@ -195,10 +219,6 @@ Core\UI\Elements\SelectionScrollingTable.lua
 Core\UI\Elements\AuctionScrollingTable.lua
 Core\UI\Elements\SniperScrollingTable.lua
 Core\UI\Elements\ProfessionScrollingTable.lua
-
-Core\UI\Elements\ViewContainer.lua
-Core\UI\Elements\SimpleTabGroup.lua
-Core\UI\Elements\TabGroup.lua
 
 Core\UI\Support\TexturePacks.lua
 

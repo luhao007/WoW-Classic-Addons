@@ -4,7 +4,7 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local AuctionUI = TSM.UI:NewPackage("AuctionUI")
 local L = TSM.Include("Locale").GetTable()
 local Delay = TSM.Include("Util.Delay")
@@ -43,12 +43,9 @@ function AuctionUI.OnInitialize()
 	UIParent:UnregisterEvent("AUCTION_HOUSE_SHOW")
 	DefaultUI.RegisterAuctionHouseVisibleCallback(private.AuctionFrameInit, true)
 	DefaultUI.RegisterAuctionHouseVisibleCallback(private.HideAuctionFrame, false)
-	if TSM.IsWowClassic() then
-		Delay.AfterTime(1, function() LoadAddOn("Blizzard_AuctionUI") end)
-	else
-		Delay.AfterTime(1, function() LoadAddOn("Blizzard_AuctionHouseUI") end)
-	end
-	ItemLinked.RegisterCallback(private.ItemLinkedCallback)
+	ItemLinked.RegisterCallback(private.ItemLinkedCallback, true)
+	local loadTimer = Delay.CreateTimer("AUCTION_UI_LOAD_BLIZZ", function() LoadAddOn(TSM.IsWowClassic() and "Blizzard_AuctionUI" or "Blizzard_AuctionHouseUI") end)
+	loadTimer:RunForTime(1)
 end
 
 function AuctionUI.OnDisable()

@@ -14,15 +14,15 @@ local L = TSM.Include("Locale").GetTable()
 local Table = TSM.Include("Util.Table")
 local Analytics = TSM.Include("Util.Analytics")
 local Theme = TSM.Include("Util.Theme")
-local NineSlice = TSM.Include("Util.NineSlice")
+local TextureAtlas = TSM.Include("Util.TextureAtlas")
+local Rectangle = TSM.Include("UI.Rectangle")
 local ScriptWrapper = TSM.Include("Util.ScriptWrapper")
 local UIElements = TSM.Include("UI.UIElements")
-local GroupSelector = TSM.Include("LibTSMClass").DefineClass("GroupSelector", TSM.UI.Element)
-UIElements.Register(GroupSelector)
-TSM.UI.GroupSelector = GroupSelector
+local GroupSelector = UIElements.Define("GroupSelector", "Element")
 local private = {}
 local TEXT_MARGIN = 8
-local ICON_MARGIN = 8
+local ICON_MARGIN = 4
+local CORNER_RADIUS = 4
 local DEFAULT_CONTEXT = { selected = {}, collapsed = {} }
 
 
@@ -37,10 +37,18 @@ function GroupSelector.__init(self)
 	self.__super:__init(frame)
 
 	frame.text = UIElements.CreateFontString(self, frame)
+	frame.text:SetFont(Theme.GetFont("BODY_BODY2_MEDIUM"):GetWowFont())
 	frame.text:SetPoint("TOPLEFT", TEXT_MARGIN, 0)
-	frame.text:SetPoint("BOTTOMRIGHT", -ICON_MARGIN - TSM.UI.TexturePacks.GetWidth("iconPack.18x18/Add/Default") - TEXT_MARGIN, 0)
-	frame.text:SetJustifyH("LEFT")
+	frame.text:SetPoint("BOTTOMRIGHT", -TEXT_MARGIN, 0)
+	frame.text:SetJustifyH("CENTER")
 	frame.text:SetJustifyV("MIDDLE")
+
+	frame.hintText = UIElements.CreateFontString(self, frame)
+	frame.hintText:SetFont(Theme.GetFont("BODY_BODY2"):GetWowFont())
+	frame.hintText:SetPoint("TOPLEFT", TEXT_MARGIN, 0)
+	frame.hintText:SetPoint("BOTTOMRIGHT", -ICON_MARGIN - TextureAtlas.GetWidth("iconPack.18x18/Add/Default") - TEXT_MARGIN, 0)
+	frame.hintText:SetJustifyH("LEFT")
+	frame.hintText:SetJustifyV("MIDDLE")
 
 	frame.icon = frame:CreateTexture(nil, "ARTWORK")
 	frame.icon:SetPoint("RIGHT", -ICON_MARGIN, 0)
@@ -49,11 +57,17 @@ function GroupSelector.__init(self)
 	frame.iconBtn:SetAllPoints(frame.icon)
 	ScriptWrapper.Set(frame.iconBtn, "OnClick", private.OnIconClick, self)
 
-	self._nineSlice = NineSlice.New(frame)
+	self._backgroundTexture = Rectangle.New(frame)
+	self._backgroundTexture:SetCornerRadius(CORNER_RADIUS)
 
 	self._groupTreeContext = CopyTable(DEFAULT_CONTEXT)
+	self._text = ""
 	self._hintText = ""
 	self._selectedText = L["%d groups"]
+	self._dialogWidth = 464
+	self._dialogHeight = 500
+	self._dialogTitleText = nil
+	self._dialogButtonText = nil
 	self._singleSelection = nil
 	self._onSelectionChanged = nil
 	self._customQueryFunc = nil
@@ -63,13 +77,29 @@ end
 function GroupSelector.Release(self)
 	wipe(self._groupTreeContext.collapsed)
 	wipe(self._groupTreeContext.selected)
+	self._text = ""
 	self._hintText = ""
 	self._selectedText = L["%d groups"]
+	self._dialogWidth = 464
+	self._dialogHeight = 500
+	self._dialogTitleText = nil
+	self._dialogButtonText = nil
 	self._singleSelection = nil
 	self._onSelectionChanged = nil
 	self._customQueryFunc = nil
 	self._showCreateNew = false
 	self.__super:Release()
+end
+
+--- Sets the text.
+-- @tparam GroupSelector self The group selector object
+-- @tparam string text The text
+-- @treturn GroupSelector The group selector object
+function GroupSelector.SetText(self, text)
+	assert(type(text) == "string")
+	self._text = text
+	self._hintText = ""
+	return self
 end
 
 --- Sets the hint text.
@@ -79,6 +109,7 @@ end
 function GroupSelector.SetHintText(self, text)
 	assert(type(text) == "string")
 	self._hintText = text
+	self._text = ""
 	return self
 end
 
@@ -107,7 +138,7 @@ function GroupSelector.SetScript(self, script, handler)
 	return self
 end
 
---- Sets a function to generate a custom query to use for the group tree
+--- Sets a function to generate a custom query to use for the group tree.
 -- @tparam GroupSelector self The group selector object
 -- @tparam function func A function to call to create the custom query (gets auto-released by the GroupTree)
 -- @treturn GroupSelector The group selector object
@@ -178,18 +209,45 @@ function GroupSelector.ClearSelectedGroups(self, silent)
 	return self
 end
 
+--- Sets the dialog size opened by the group selector.
+-- @tparam GroupSelector self The group selector object
+-- @tparam number width The width for the dialog
+-- @tparam number height The height for the dialog
+-- @tparam string titleText The text for the dialog title
+-- @tparam string buttonText The text for the dialog button
+-- @treturn GroupSelector The group selector object
+function GroupSelector.SetDialogInfo(self, width, height, titleText, buttonText)
+	self._dialogWidth = width
+	self._dialogHeight = height
+	self._dialogTitleText = titleText
+	self._dialogButtonText = buttonText
+	return self
+end
+
 function GroupSelector.Draw(self)
 	self.__super:Draw()
 	local frame = self:_GetBaseFrame()
 
-	frame.text:SetFont(Theme.GetFont("BODY_BODY2"):GetWowFont())
-	local numGroups = Table.Count(self._groupTreeContext.selected)
-	frame.text:SetText(numGroups == 0 and self._hintText or (self._singleSelection and TSM.Groups.Path.Format(next(self._groupTreeContext.selected)) or format(self._selectedText, numGroups)))
+	if self._text ~= "" then
+		frame.hintText:Hide()
+		frame.icon:Hide()
+		frame.iconBtn:Hide()
 
-	TSM.UI.TexturePacks.SetTextureAndSize(frame.icon, numGroups == 0 and "iconPack.18x18/Add/Default" or "iconPack.18x18/Close/Default")
+		frame.text:SetText(self._text)
+		frame.text:Show()
+	else
+		frame.text:Hide()
 
-	self._nineSlice:SetStyle("rounded")
-	self._nineSlice:SetVertexColor(Theme.GetColor("ACTIVE_BG"):GetFractionalRGBA())
+		local numGroups = Table.Count(self._groupTreeContext.selected)
+		frame.hintText:SetText(numGroups == 0 and self._hintText or (self._singleSelection and TSM.Groups.Path.Format(next(self._groupTreeContext.selected)) or format(self._selectedText, numGroups)))
+
+		TextureAtlas.SetTextureAndSize(frame.icon, numGroups == 0 and "iconPack.18x18/Add/Default" or "iconPack.18x18/Close/Default")
+		frame.hintText:Show()
+		frame.icon:Show()
+		frame.iconBtn:Show()
+	end
+
+	self._backgroundTexture:SetColor(Theme.GetColor("ACTIVE_BG"))
 end
 
 
@@ -220,7 +278,7 @@ end
 function private.OnClick(self)
 	self:GetBaseElement():ShowDialogFrame(UIElements.New("Frame", "frame", "DIALOG")
 		:SetLayout("VERTICAL")
-		:SetSize(464, 500)
+		:SetSize(self._dialogWidth, self._dialogHeight)
 		:SetPadding(8)
 		:AddAnchor("CENTER")
 		:SetBackgroundColor("FRAME_BG", true)
@@ -231,9 +289,9 @@ function private.OnClick(self)
 			:SetMargin(0, 0, 0, 8)
 			:AddChild(UIElements.New("Text", "title")
 				:SetMargin(32, 8, 0, 0)
-				:SetFont("BODY_BODY2_MEDIUM")
+				:SetFont("BODY_BODY1_BOLD")
 				:SetJustifyH("CENTER")
-				:SetText(L["Select Group"])
+				:SetText(self._dialogTitleText or L["Select Group"])
 			)
 			:AddChild(UIElements.New("Button", "closeBtn")
 				:SetBackgroundAndSize("iconPack.24x24/Close/Default")
@@ -290,7 +348,7 @@ function private.OnClick(self)
 			:SetHeight(24)
 			:SetMargin(0, 0, 8, 0)
 			:SetContext(self)
-			:SetText(L["Select Group"])
+			:SetText(self._dialogButtonText or L["Select Group"])
 			:SetScript("OnClick", private.DialogSelectOnClick)
 		)
 	)
@@ -309,12 +367,7 @@ function private.OnIconClick(self)
 end
 
 function private.DialogCloseBtnOnClick(button)
-	local self = button:GetElement("__parent.__parent.groupBtn"):GetContext()
 	button:GetBaseElement():HideDialog()
-	self:Draw()
-	if self._onSelectionChanged then
-		self:_onSelectionChanged()
-	end
 end
 
 function private.DialogFilterOnValueChanged(input)

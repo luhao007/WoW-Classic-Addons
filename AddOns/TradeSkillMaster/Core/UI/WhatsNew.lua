@@ -18,13 +18,15 @@ local private = {
 	settings = nil,
 	showTime = nil,
 }
-local WHATS_NEW_VERSION = 2
+local WHATS_NEW_VERSION = 3
 local CONTENT_LINES = {
-	Theme.GetColor("INDICATOR"):ColorText(L["Full Shadowlands Profession Support"]).." "..L["This includes support for optional reagents for your recipes as well as legendary craft ranks."],
-	Theme.GetColor("INDICATOR"):ColorText(L["Improved Group & Item Management."]).." "..L["Now you can drag and drop selected items between Groups, without needing to remove them or have them on hand."],
-	Theme.GetColor("INDICATOR"):ColorText(L["Custom Themes."]).." "..L["We've added the option to customise the colour palette to your own preferences, including the ability to export a string to share with your friends to import."],
-	Theme.GetColor("INDICATOR"):ColorText(L["Addon Optimisations."]).." "..L["Various under-the-hood tweaks and tuning have been implemented, with an aim to improve stability and reduce lag throughout the addon."],
-	Theme.GetColor("INDICATOR"):ColorText(L["DBRegionMinBuyoutAvg Retired."]).." "..L["The DBRegionMinBuyoutAvg price source has been retired, it can be removed from any operation or custom string you are using."],
+	Theme.GetColor("INDICATOR"):ColorText(L["Custom String Editing UI."]).." "..L["The experience of editing Custom Strings has been supercharged with IDE-style syntax highlighting and formatting."],
+	Theme.GetColor("INDICATOR"):ColorText(L["New Crafting UI."]).." "..L["To support the upcoming Dragonflight Profession changes, the Crafting UI has been revamped."],
+	Theme.GetColor("INDICATOR"):ColorText(L["New DBRecent Price Source"]).." "..L["This Price Source uses the same approach for 'AuctionDB Market Value' however it is only applied to the auctions contained in the most recent pricing snapshot."],
+	Theme.GetColor("INDICATOR"):ColorText(L["Trend Indicators."]).." "..L["New trend indicators have been added to tooltips alongside AuctionDB Market Value and AuctionDB Region Market Value which show how they are changing against the Historical Price."],
+	Theme.GetColor("INDICATOR"):ColorText(L["Improvements to Region Sale Data."]).." "..L["Both Region Sale Rate and Region Sold Per Day have been given another decimal point to give more visibility on items that sell infrequently."],
+	Theme.GetColor("INDICATOR"):ColorText(L["Retail Scanning Improvements."]).." "..L["Due to outstanding issues on Blizzard's end with the Auction House on retail, TSM's dependance on seller information for posted auctions has been reduced as much as possible, which should improve scanning performance. As a result, the 'blacklist' and 'whitelist' features have been retired on Retail."],
+	Theme.GetColor("INDICATOR"):ColorText(L["Cross-Faction Support in Retail"]).." "..L["Support has been added for cross-faction alts across the addon, from inventory tracking, to Ledger, to the Dashboard."],
 }
 
 
@@ -59,7 +61,7 @@ function WhatsNew.GetDialog()
 			:AddChild(UIElements.New("Text", "title")
 				:SetJustifyH("CENTER")
 				:SetFont("BODY_BODY1_BOLD")
-				:SetFormattedText(L["TSM %s: What's new"], "4.11")
+				:SetFormattedText(L["TSM %s: What's new"], "4.12")
 			)
 			:AddChild(UIElements.New("Button", "closeBtn")
 				:SetMargin(0, -4, 0, 0)
@@ -69,7 +71,7 @@ function WhatsNew.GetDialog()
 		)
 		:AddChild(UIElements.New("ScrollFrame", "body")
 			:AddChild(UIElements.New("Text", "content1")
-				:SetHeight(290)
+				:SetHeight(500)
 				:SetFont("BODY_BODY2")
 				:SetText(table.concat(CONTENT_LINES, "\n\n"))
 			)

@@ -4,24 +4,29 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local Mail = TSM.Accounting:NewPackage("Mail")
 local Delay = TSM.Include("Util.Delay")
 local String = TSM.Include("Util.String")
 local ItemString = TSM.Include("Util.ItemString")
+local Vararg = TSM.Include("Util.Vararg")
 local Container = TSM.Include("Util.Container")
 local DefaultUI = TSM.Include("Service.DefaultUI")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local InventoryInfo = TSM.Include("Service.InventoryInfo")
 local AuctionTracking = TSM.Include("Service.AuctionTracking")
-local Inventory = TSM.Include("Service.Inventory")
+local BagTracking = TSM.Include("Service.BagTracking")
+local TooltipScanning = TSM.Include("Service.TooltipScanning")
 local private = {
 	hooks = {},
+	sellersTimer = nil,
+	rescanTimer = nil,
+	rescanContext = {},
 }
 local SECONDS_PER_DAY = 24 * 60 * 60
-local EXPIRED_MATCH_TEXT = AUCTION_EXPIRED_MAIL_SUBJECT:gsub("%%s", "")
-local CANCELLED_MATCH_TEXT = AUCTION_REMOVED_MAIL_SUBJECT:gsub("%%s", "")
-local OUTBID_MATCH_TEXT = AUCTION_OUTBID_MAIL_SUBJECT:gsub("%%s", "(.+)")
+local EXPIRED_MATCH_TEXT = gsub(AUCTION_EXPIRED_MAIL_SUBJECT, "%%s", "")
+local CANCELLED_MATCH_TEXT = gsub(AUCTION_REMOVED_MAIL_SUBJECT, "%%s", "")
+local OUTBID_MATCH_TEXT = gsub(AUCTION_OUTBID_MAIL_SUBJECT, "%%s", "(.+)")
 
 
 
@@ -30,25 +35,27 @@ local OUTBID_MATCH_TEXT = AUCTION_OUTBID_MAIL_SUBJECT:gsub("%%s", "(.+)")
 -- ============================================================================
 
 function Mail.OnInitialize()
+	private.sellersTimer = Delay.CreateTimer("ACCOUNTING_MAIL_SELLERS", private.RequestSellerInfo)
+	private.rescanTimer = Delay.CreateTimer("ACCOUNTING_MAIL_RESCANE", private.RescanHandler)
 	DefaultUI.RegisterMailVisibleCallback(function(visible)
 		if visible then
-			Delay.AfterTime("ACCOUNTING_GET_SELLERS", 0.1, private.RequestSellerInfo, 0.1)
+			private.sellersTimer:RunForTime(0.1)
 		else
-			Delay.Cancel("ACCOUNTING_GET_SELLERS")
+			private.sellersTimer:Cancel()
 		end
 	end)
 	-- hook certain mail functions
 	private.hooks.TakeInboxItem = TakeInboxItem
 	TakeInboxItem = function(...)
-		Mail:ScanCollectedMail("TakeInboxItem", 1, ...)
+		private.ScanCollectedMail("TakeInboxItem", 1, ...)
 	end
 	private.hooks.TakeInboxMoney = TakeInboxMoney
 	TakeInboxMoney = function(...)
-		Mail:ScanCollectedMail("TakeInboxMoney", 1, ...)
+		private.ScanCollectedMail("TakeInboxMoney", 1, ...)
 	end
 	private.hooks.AutoLootMailItem = AutoLootMailItem
 	AutoLootMailItem = function(...)
-		Mail:ScanCollectedMail("AutoLootMailItem", 1, ...)
+		private.ScanCollectedMail("AutoLootMailItem", 1, ...)
 	end
 	private.hooks.SendMail = SendMail
 	SendMail = private.CheckSendMail
@@ -68,8 +75,8 @@ function private.RequestSellerInfo()
 			isDone = false
 		end
 	end
-	if isDone and GetInboxNumItems() > 0 then
-		Delay.Cancel("ACCOUNTING_GET_SELLERS")
+	if not isDone or GetInboxNumItems() == 0 then
+		private.sellersTimer:RunForTime(0.1)
 	end
 end
 
@@ -93,10 +100,9 @@ function private.CanLootMailIndex(index, copper)
 		end
 		local _, _, _, count = GetInboxItem(index, j)
 		local quantity = count or 0
-		local maxUnique = private.GetInboxMaxUnique(index, j)
+		local maxUnique = TooltipScanning.GetInboxMaxUnique(index, j)
 		-- dont record unique items that we can't loot
-		local playerQty = Inventory.GetBagQuantity(itemString) + Inventory.GetBankQuantity(itemString) + Inventory.GetReagentBankQuantity(itemString)
-		if maxUnique > 0 and maxUnique < playerQty + quantity then
+		if maxUnique > 0 and maxUnique < BagTracking.GetTotalQuantity(ItemString.GetBaseFast(itemString)) + quantity then
 			return
 		end
 		for bag = 0, Container.GetNumBags() do
@@ -118,49 +124,8 @@ function private.CanLootMailIndex(index, copper)
 	end
 end
 
-function private.GetInboxMaxUnique(index, num)
-	if not num then
-		num = 1
-	end
-
-	if not TSMScanTooltip then
-		CreateFrame("GameTooltip", "TSMScanTooltip", UIParent, "GameTooltipTemplate")
-	end
-
-	TSMScanTooltip:SetOwner(UIParent, "ANCHOR_NONE")
-	TSMScanTooltip:ClearLines()
-
-	local _, speciesId = TSMScanTooltip:SetInboxItem(index, num)
-	if (speciesId or 0) > 0 then
-		return 0
-	else
-		for id = 2, TSMScanTooltip:NumLines() do
-			local text = private.GetTooltipText(_G["TSMScanTooltipTextLeft"..id])
-			if text then
-				if text == ITEM_UNIQUE then
-					return 1
-				else
-					local match = text and strmatch(text, "^"..ITEM_UNIQUE.." %((%d+)%)$")
-					if match then
-						return tonumber(match)
-					end
-				end
-			end
-		end
-	end
-
-	return 0
-end
-
-function private.GetTooltipText(text)
-	local textStr = strtrim(text and text:GetText() or "")
-	if textStr == "" then return end
-
-	return textStr
-end
-
 -- scans the mail that the player just attempted to collected (Pre-Hook)
-function Mail:ScanCollectedMail(oFunc, attempt, index, subIndex)
+function private.ScanCollectedMail(oFunc, attempt, index, subIndex)
 	local invoiceType, itemName, buyer, bid, _, _, ahcut, _, _, _, quantity = GetInboxInvoiceInfo(index)
 	buyer = buyer or (invoiceType == "buyer" and AUCTION_HOUSE_MAIL_MULTIPLE_SELLERS or AUCTION_HOUSE_MAIL_MULTIPLE_BUYERS)
 	local _, stationeryIcon, sender, subject, money, codAmount, daysLeft = GetInboxHeaderInfo(index)
@@ -321,12 +286,18 @@ function Mail:ScanCollectedMail(oFunc, attempt, index, subIndex)
 	if success then
 		private.hooks[oFunc](index, subIndex)
 	elseif (not stationeryIcon or (invoiceType and (not buyer or buyer == ""))) and attempt <= 5 then
-		Delay.AfterTime("accountingHookDelay", 0.2, function() Mail:ScanCollectedMail(oFunc, attempt + 1, index, subIndex) end)
+		wipe(private.rescanContext)
+		Vararg.IntoTable(private.rescanContext, oFunc, attempt + 1, index, subIndex)
+		private.rescanTimer:RunForTime(0.2)
 	elseif attempt > 5 then
 		private.hooks[oFunc](index, subIndex)
 	else
 		private.hooks[oFunc](index, subIndex)
 	end
+end
+
+function private.RescanHandler()
+	private.ScanCollectedMail(unpack(private.rescanContext))
 end
 
 
@@ -378,18 +349,21 @@ function private.CheckSendMail(destination, currentSubject, ...)
 end
 
 function private.GetFirstInboxItemLink(index)
-	if not TSMAccountingMailTooltip then
-		CreateFrame("GameTooltip", "TSMAccountingMailTooltip", UIParent, "GameTooltipTemplate")
+	-- Find the first attachment index with an item
+	local attachIndex = nil
+	for i = 1, ATTACHMENTS_MAX do
+		if GetInboxItem(index, i) then
+			attachIndex = i
+			break
+		end
 	end
-	TSMAccountingMailTooltip:SetOwner(UIParent, "ANCHOR_NONE")
-	TSMAccountingMailTooltip:ClearLines()
-	local _, speciesId, level, breedQuality, maxHealth, power, speed = TSMAccountingMailTooltip:SetInboxItem(index)
-	local link = nil
-	if (speciesId or 0) > 0 then
-		link = ItemInfo.GetLink(strjoin(":", "p", speciesId, level, breedQuality, maxHealth, power, speed))
+	if not attachIndex then
+		error(format("Invalid attachIndex for index %s", tostring(index)))
+	end
+	local speciesId, level, breedQuality, maxHealth, power, speed = TooltipScanning.GetInboxBattlePetInfo(index, attachIndex)
+	if speciesId and speciesId > 0 then
+		return ItemInfo.GetLink(strjoin(":", "p", speciesId, level, breedQuality, maxHealth, power, speed))
 	else
-		link = GetInboxItemLink(index, 1)
+		return GetInboxItemLink(index, attachIndex)
 	end
-	TSMAccountingMailTooltip:Hide()
-	return link
 end

@@ -146,7 +146,7 @@ function private.DrawOtherPage(recordType)
 					:SetTitle(L["Amount"])
 					:SetFont("ITEM_BODY3")
 					:SetJustifyH("RIGHT")
-					:SetTextInfo("amount", Money.ToString)
+					:SetTextInfo("amount", private.TableGetAmountText)
 					:SetSortInfo("amount")
 					:Commit()
 				:NewColumn("time")
@@ -172,8 +172,12 @@ function private.TableGetTypeText(typeValue)
 	return TYPE_STR_LOOKUP[typeValue]
 end
 
-function private.TableGetTimeText(timevalue)
-	return SecondsToTime(time() - timevalue)
+function private.TableGetAmountText(amount)
+	return Money.ToString(amount, nil, "OPT_RETAIL_ROUND")
+end
+
+function private.TableGetTimeText(timeValue)
+	return SecondsToTime(time() - timeValue)
 end
 
 

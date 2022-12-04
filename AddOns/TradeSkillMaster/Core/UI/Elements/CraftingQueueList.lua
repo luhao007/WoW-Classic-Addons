@@ -15,9 +15,9 @@ local TempTable = TSM.Include("Util.TempTable")
 local Money = TSM.Include("Util.Money")
 local RecipeString = TSM.Include("Util.RecipeString")
 local Theme = TSM.Include("Util.Theme")
+local TextureAtlas = TSM.Include("Util.TextureAtlas")
 local ScriptWrapper = TSM.Include("Util.ScriptWrapper")
 local ItemInfo = TSM.Include("Service.ItemInfo")
-local Inventory = TSM.Include("Service.Inventory")
 local CraftingQueueList = TSM.Include("LibTSMClass").DefineClass("CraftingQueueList", TSM.UI.ScrollingTable)
 local UIElements = TSM.Include("UI.UIElements")
 UIElements.Register(CraftingQueueList)
@@ -41,10 +41,12 @@ function CraftingQueueList.__init(self)
 	self._query = nil
 	self._numCraftableCache = {}
 	self._onRowMouseDownHandler = nil
+	self._dialogRecipeString = nil
+	self._dialogInputValue = nil
 end
 
 function CraftingQueueList.Acquire(self)
-	self._headerHidden = true
+	self._headerMode = "NONE"
 	self.__super:Acquire()
 	self:SetSelectionDisabled(true)
 	self:GetScrollingTableInfo()
@@ -74,6 +76,8 @@ end
 
 function CraftingQueueList.Release(self)
 	self._onRowMouseDownHandler = nil
+	self._dialogRecipeString = nil
+	self._dialogInputValue = nil
 	wipe(self._numCraftableCache)
 	wipe(self._collapsed)
 	if self._query then
@@ -254,11 +258,11 @@ function private.GetItemText(self, data)
 		local profession, players = strsplit(CATEGORY_SEP, data)
 		local name = TSM.Crafting.ProfessionUtil.GetCurrentProfessionInfo()
 		local isValid = private.PlayersContains(players, UnitName("player")) and strlower(profession) == strlower(name or "")
-		local text = Theme.GetColor("INDICATOR"):ColorText(profession.." ("..players..")")
+		local text = Theme.GetColor("INDICATOR"):ColorText(profession).." ("..players..")"
 		if isValid then
 			return text
 		else
-			return text.."  "..TSM.UI.TexturePacks.GetTextureLink("iconPack.12x12/Attention")
+			return text.."  "..TextureAtlas.GetTextureLink("iconPack.12x12/Attention")
 		end
 	else
 		local recipeString = data:GetField("recipeString")
@@ -291,30 +295,24 @@ function private.GetItemTooltip(self, data)
 	tinsert(tooltipLines, name.." (x"..numQueued..")")
 	local numResult = TSM.Crafting.GetNumResult(craftString)
 	local profit = TSM.Crafting.Cost.GetProfitByRecipeString(recipeString)
-	local profitStr = profit and Money.ToString(profit * numResult, Theme.GetFeedbackColor(profit >= 0 and "GREEN" or "RED"):GetTextColorPrefix()) or "---"
-	local totalProfitStr = profit and Money.ToString(profit * numResult * numQueued, Theme.GetFeedbackColor(profit >= 0 and "GREEN" or "RED"):GetTextColorPrefix()) or "---"
+	local profitStr = profit and Money.ToString(profit * numResult, Theme.GetColor(profit >= 0 and "FEEDBACK_GREEN" or "FEEDBACK_RED"):GetTextColorPrefix(), "OPT_RETAIL_ROUND") or "---"
+	local totalProfitStr = profit and Money.ToString(profit * numResult * numQueued, Theme.GetColor(profit >= 0 and "FEEDBACK_GREEN" or "FEEDBACK_RED"):GetTextColorPrefix(), "OPT_RETAIL_ROUND") or "---"
 	tinsert(tooltipLines, L["Profit (Total)"]..": "..profitStr.." ("..totalProfitStr..")")
 	for _, matItemString, quantity in TSM.Crafting.MatIterator(craftString) do
-		local numHave = Inventory.GetBagQuantity(matItemString)
-		if not TSM.IsWowClassic() then
-			numHave = numHave + Inventory.GetReagentBankQuantity(matItemString) + Inventory.GetBankQuantity(matItemString)
-		end
+		local numHave = TSM.Crafting.ProfessionUtil.GetPlayerMatQuantity(matItemString)
 		local numNeed = quantity * numQueued
-		local color = Theme.GetFeedbackColor(numHave >= numNeed and "GREEN" or "RED")
+		local color = Theme.GetColor(numHave >= numNeed and "FEEDBACK_GREEN" or "FEEDBACK_RED")
 		tinsert(tooltipLines, color:ColorText(numHave.."/"..numNeed).." - "..(ItemInfo.GetName(matItemString) or "?"))
 	end
 	for _, _, itemId in RecipeString.OptionalMatIterator(recipeString) do
 		local matItemString = "i:"..itemId
-		local numHave = Inventory.GetBagQuantity(matItemString)
-		if not TSM.IsWowClassic() then
-			numHave = numHave + Inventory.GetReagentBankQuantity(matItemString) + Inventory.GetBankQuantity(matItemString)
-		end
-		local numNeed = 1 * numQueued
-		local color = Theme.GetFeedbackColor(numHave >= numNeed and "GREEN" or "RED")
+		local numHave = TSM.Crafting.ProfessionUtil.GetPlayerMatQuantity(matItemString)
+		local numNeed = TSM.Crafting.GetOptionalMatQuantity(craftString, itemId)* numQueued
+		local color = Theme.GetColor(numHave >= numNeed and "FEEDBACK_GREEN" or "FEEDBACK_RED")
 		tinsert(tooltipLines, color:ColorText(numHave.."/"..numNeed).." - "..(ItemInfo.GetName(matItemString) or "?"))
 	end
 	if TSM.Crafting.ProfessionUtil.GetRemainingCooldown(craftString) then
-		tinsert(tooltipLines, Theme.GetFeedbackColor("RED"):ColorText(L["On Cooldown"]))
+		tinsert(tooltipLines, Theme.GetColor("FEEDBACK_RED"):ColorText(L["On Cooldown"]))
 	end
 	return strjoin("\n", TempTable.UnpackAndRelease(tooltipLines)), true, true
 end
@@ -351,6 +349,9 @@ function private.OnEditIconClick(self, data, iconIndex)
 	end
 	local name = private.GetItemText(self, data)
 	local texture, tooltip = private.GetItemIcon(self, data)
+	local recipeString, num = currentRow:GetData():GetFields("recipeString", "num")
+	self._dialogRecipeString = recipeString
+	self._dialogInputValue = num
 	local dialogFrame = UIElements.New("Frame", "qty")
 		:SetLayout("HORIZONTAL")
 		:AddAnchor("LEFT", currentRow._frame, Theme.GetColSpacing() / 2, 0)
@@ -375,11 +376,11 @@ function private.OnEditIconClick(self, data, iconIndex)
 			:SetWidth(75)
 			:SetBackgroundColor("ACTIVE_BG")
 			:SetJustifyH("CENTER")
-			:SetContext(currentRow:GetData():GetField("recipeString"))
 			:SetSubAddEnabled(true)
 			:SetValidateFunc("NUMBER", "1:9999")
-			:SetValue(currentRow:GetData():GetField("num"))
+			:SetValue(num)
 			:SetScript("OnFocusLost", private.QtyInputOnFocusLost)
+			:SetScript("OnValueChanged", private.DialogInputOnValueChanged)
 		)
 	local baseFrame = self:GetBaseElement()
 	baseFrame:ShowDialogFrame(dialogFrame)
@@ -387,9 +388,16 @@ function private.OnEditIconClick(self, data, iconIndex)
 end
 
 function private.DialogOnHide(frame)
-	local input = frame:GetElement("input")
-	TSM.Crafting.Queue.SetNum(input:GetContext(), tonumber(input:GetValue()))
-	frame:GetContext():Draw()
+	local self = frame:GetContext()
+	TSM.Crafting.Queue.SetNum(self._dialogRecipeString, self._dialogInputValue)
+	self._dialogRecipeString = nil
+	self._dialogInputValue = nil
+	self:Draw()
+end
+
+function private.DialogInputOnValueChanged(input)
+	local self = input:GetParentElement():GetContext()
+	self._dialogInputValue = tonumber(input:GetValue())
 end
 
 function private.QtyInputOnFocusLost(input)
@@ -405,7 +413,7 @@ function private.GetQty(self, data)
 	local recipeString = data:GetField("recipeString")
 	local craftString = CraftString.FromRecipeString(recipeString)
 	local onCooldown = TSM.Crafting.ProfessionUtil.GetRemainingCooldown(craftString)
-	local color = Theme.GetFeedbackColor(((numCraftable == 0 or onCooldown) and "RED") or (numCraftable < numQueued and "YELLOW") or "GREEN")
+	local color = Theme.GetColor(((numCraftable == 0 or onCooldown) and "FEEDBACK_RED") or (numCraftable < numQueued and "FEEDBACK_YELLOW") or "FEEDBACK_GREEN")
 	return color:ColorText(format("%s / %s", numCraftable, numQueued))
 end
 

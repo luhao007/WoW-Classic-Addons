@@ -4,13 +4,13 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
-local QueryClause = TSM.Init("Util.DatabaseClasses.QueryClause")
+local TSM = select(2, ...) ---@type TSM
+local QueryClause = TSM.Init("Util.DatabaseClasses.QueryClause") ---@class Util.DatabaseClasses.QueryClause
 local Constants = TSM.Include("Util.DatabaseClasses.Constants")
 local Util = TSM.Include("Util.DatabaseClasses.Util")
 local ObjectPool = TSM.Include("Util.ObjectPool")
 local LibTSMClass = TSM.Include("LibTSMClass")
-local DatabaseQueryClause = LibTSMClass.DefineClass("DatabaseQueryClause")
+local DatabaseQueryClause = LibTSMClass.DefineClass("DatabaseQueryClause") ---@class DatabaseQueryClause
 local private = {
 	objectPool = nil,
 }
@@ -31,9 +31,12 @@ end)
 -- Module Functions
 -- ============================================================================
 
-function QueryClause.Get(query, parent)
+---Gets a new query clause.
+---@param parent? DatabaseQueryClause The parent query clause
+---@return DatabaseQuery @The new query clause
+function QueryClause.Get(parent)
 	local clause = private.objectPool:Get()
-	clause:_Acquire(query, parent)
+	clause:_Acquire(parent)
 	return clause
 end
 
@@ -43,8 +46,7 @@ end
 -- Class Method Methods
 -- ============================================================================
 
-function DatabaseQueryClause.__init(self)
-	self._query = nil
+function DatabaseQueryClause:__init()
 	self._operation = nil
 	self._parent = nil
 	-- comparison
@@ -56,13 +58,11 @@ function DatabaseQueryClause.__init(self)
 	self._subClauses = {}
 end
 
-function DatabaseQueryClause._Acquire(self, query, parent)
-	self._query = query
+function DatabaseQueryClause:_Acquire(parent)
 	self._parent = parent
 end
 
-function DatabaseQueryClause._Release(self)
-	self._query = nil
+function DatabaseQueryClause:_Release()
 	self._operation = nil
 	self._parent = nil
 	self._field = nil
@@ -82,71 +82,71 @@ end
 -- Public Class Method
 -- ============================================================================
 
-function DatabaseQueryClause.Equal(self, field, value, otherField)
+function DatabaseQueryClause:Equal(field, value, otherField)
 	return self:_SetComparisonOperation("EQUAL", field, value, otherField)
 end
 
-function DatabaseQueryClause.NotEqual(self, field, value, otherField)
+function DatabaseQueryClause:NotEqual(field, value, otherField)
 	return self:_SetComparisonOperation("NOT_EQUAL", field, value, otherField)
 end
 
-function DatabaseQueryClause.LessThan(self, field, value, otherField)
+function DatabaseQueryClause:LessThan(field, value, otherField)
 	return self:_SetComparisonOperation("LESS", field, value, otherField)
 end
 
-function DatabaseQueryClause.LessThanOrEqual(self, field, value, otherField)
+function DatabaseQueryClause:LessThanOrEqual(field, value, otherField)
 	return self:_SetComparisonOperation("LESS_OR_EQUAL", field, value, otherField)
 end
 
-function DatabaseQueryClause.GreaterThan(self, field, value, otherField)
+function DatabaseQueryClause:GreaterThan(field, value, otherField)
 	return self:_SetComparisonOperation("GREATER", field, value, otherField)
 end
 
-function DatabaseQueryClause.GreaterThanOrEqual(self, field, value, otherField)
+function DatabaseQueryClause:GreaterThanOrEqual(field, value, otherField)
 	return self:_SetComparisonOperation("GREATER_OR_EQUAL", field, value, otherField)
 end
 
-function DatabaseQueryClause.Matches(self, field, value)
+function DatabaseQueryClause:Matches(field, value)
 	return self:_SetComparisonOperation("MATCHES", field, value)
 end
 
-function DatabaseQueryClause.Contains(self, field, value)
+function DatabaseQueryClause:Contains(field, value)
 	return self:_SetComparisonOperation("CONTAINS", field, value)
 end
 
-function DatabaseQueryClause.StartsWith(self, field, value)
+function DatabaseQueryClause:StartsWith(field, value)
 	return self:_SetComparisonOperation("STARTS_WITH", field, value)
 end
 
-function DatabaseQueryClause.IsNil(self, field)
+function DatabaseQueryClause:IsNil(field)
 	return self:_SetComparisonOperation("IS_NIL", field)
 end
 
-function DatabaseQueryClause.IsNotNil(self, field)
+function DatabaseQueryClause:IsNotNil(field)
 	return self:_SetComparisonOperation("IS_NOT_NIL", field)
 end
 
-function DatabaseQueryClause.Custom(self, func, arg)
+function DatabaseQueryClause:Custom(func, arg)
 	return self:_SetComparisonOperation("CUSTOM", func, arg)
 end
 
-function DatabaseQueryClause.HashEqual(self, fields, value)
+function DatabaseQueryClause:HashEqual(fields, value)
 	return self:_SetComparisonOperation("HASH_EQUAL", fields, value)
 end
 
-function DatabaseQueryClause.InTable(self, field, value)
+function DatabaseQueryClause:InTable(field, value)
 	return self:_SetComparisonOperation("IN_TABLE", field, value)
 end
 
-function DatabaseQueryClause.NotInTable(self, field, value)
+function DatabaseQueryClause:NotInTable(field, value)
 	return self:_SetComparisonOperation("NOT_IN_TABLE", field, value)
 end
 
-function DatabaseQueryClause.Or(self)
+function DatabaseQueryClause:Or()
 	return self:_SetSubClauseOperation("OR")
 end
 
-function DatabaseQueryClause.And(self)
+function DatabaseQueryClause:And()
 	return self:_SetSubClauseOperation("AND")
 end
 
@@ -156,11 +156,11 @@ end
 -- Private Class Method
 -- ============================================================================
 
-function DatabaseQueryClause._GetParent(self)
+function DatabaseQueryClause:_GetParent()
 	return self._parent
 end
 
-function DatabaseQueryClause._IsTrue(self, row, ignoreField)
+function DatabaseQueryClause:_IsTrue(row, ignoreField)
 	if ignoreField and self._field == ignoreField then
 		return true
 	end
@@ -220,7 +220,7 @@ function DatabaseQueryClause._IsTrue(self, row, ignoreField)
 	end
 end
 
-function DatabaseQueryClause._GetIndexValue(self, indexField)
+function DatabaseQueryClause:_GetIndexValue(indexField)
 	if self._operation == "EQUAL" then
 		if self._field ~= indexField then
 			return
@@ -308,7 +308,7 @@ function DatabaseQueryClause._GetIndexValue(self, indexField)
 	end
 end
 
-function DatabaseQueryClause._GetTrigramIndexValue(self, indexField)
+function DatabaseQueryClause:_GetTrigramIndexValue(indexField)
 	if self._operation == "EQUAL" then
 		if self._field ~= indexField then
 			return
@@ -358,7 +358,7 @@ function DatabaseQueryClause._GetTrigramIndexValue(self, indexField)
 	end
 end
 
-function DatabaseQueryClause._IsStrictIndex(self, indexField, indexValueMin, indexValueMax)
+function DatabaseQueryClause:_IsStrictIndex(indexField, indexValueMin, indexValueMax)
 	if self._value == Constants.OTHER_FIELD_QUERY_PARAM then
 		return false
 	end
@@ -395,7 +395,7 @@ function DatabaseQueryClause._IsStrictIndex(self, indexField, indexValueMin, ind
 	end
 end
 
-function DatabaseQueryClause._UsesField(self, field)
+function DatabaseQueryClause:_UsesField(field)
 	if field == self._field or self._operation == "CUSTOM" then
 		return true
 	end
@@ -409,42 +409,37 @@ function DatabaseQueryClause._UsesField(self, field)
 	return false
 end
 
-function DatabaseQueryClause._InsertSubClause(self, subClause)
+function DatabaseQueryClause:_InsertSubClause(subClause)
 	assert(self._operation == "OR" or self._operation == "AND")
 	tinsert(self._subClauses, subClause)
-	self._query:_MarkResultStale()
 	return self
 end
 
-function DatabaseQueryClause._SetComparisonOperation(self, operation, field, value, otherField)
+function DatabaseQueryClause:_SetComparisonOperation(operation, field, value, otherField)
 	assert(not self._operation)
 	assert(value == Constants.OTHER_FIELD_QUERY_PARAM or not otherField)
 	self._operation = operation
 	self._field = field
 	self._value = value
 	self._otherField = otherField
-	self._query:_MarkResultStale()
 	return self
 end
 
-function DatabaseQueryClause._SetSubClauseOperation(self, operation)
+function DatabaseQueryClause:_SetSubClauseOperation(operation)
 	assert(not self._operation)
 	self._operation = operation
 	assert(#self._subClauses == 0)
-	self._query:_MarkResultStale()
 	return self
 end
 
-function DatabaseQueryClause._BindParams(self, ...)
+function DatabaseQueryClause:_BindParams(...)
 	if self._value == Constants.BOUND_QUERY_PARAM then
 		self._boundValue = ...
-		self._query:_MarkResultStale()
 		return 1
 	end
 	local valuesUsed = 0
 	for _, clause in ipairs(self._subClauses) do
 		valuesUsed = valuesUsed + clause:_BindParams(select(valuesUsed + 1, ...))
 	end
-	self._query:_MarkResultStale()
 	return valuesUsed
 end

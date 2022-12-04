@@ -13,6 +13,7 @@ local _, TSM = ...
 local OperationTree = TSM.Include("LibTSMClass").DefineClass("OperationTree", TSM.UI.ScrollingTable)
 local L = TSM.Include("Locale").GetTable()
 local Theme = TSM.Include("Util.Theme")
+local TextureAtlas = TSM.Include("Util.TextureAtlas")
 local ScriptWrapper = TSM.Include("Util.ScriptWrapper")
 local UIElements = TSM.Include("UI.UIElements")
 UIElements.Register(OperationTree)
@@ -41,7 +42,7 @@ end
 
 function OperationTree.Acquire(self)
 	self._backgroundColor = "PRIMARY_BG_ALT"
-	self._headerHidden = true
+	self._headerMode = "NONE"
 	self.__super:Acquire()
 	self:GetScrollingTableInfo()
 		:NewColumn("text")
@@ -214,17 +215,17 @@ function private.GetActionIcon(self, data, iconIndex, isMouseOver)
 	if iconIndex == 1 then
 		if operationName and data == self._selectedOperation then
 			local texturePack = "iconPack.14x14/Duplicate"
-			return true, isMouseOver and TSM.UI.TexturePacks.GetColoredKey(texturePack, Theme.GetColor("INDICATOR")) or texturePack
+			return true, isMouseOver and TextureAtlas.GetColoredKey(texturePack, "INDICATOR") or texturePack
 		elseif operationName then
 			return false, nil
 		else
 			local texturePack = "iconPack.14x14/Add/Circle"
-			return true, isMouseOver and TSM.UI.TexturePacks.GetColoredKey(texturePack, Theme.GetColor("INDICATOR")) or texturePack
+			return true, isMouseOver and TextureAtlas.GetColoredKey(texturePack, "INDICATOR") or texturePack
 		end
 	elseif iconIndex == 2 then
 		if operationName and data == self._selectedOperation then
 			local texturePack = "iconPack.14x14/Delete"
-			return true, isMouseOver and TSM.UI.TexturePacks.GetColoredKey(texturePack, Theme.GetColor("INDICATOR")) or texturePack
+			return true, isMouseOver and TextureAtlas.GetColoredKey(texturePack, "INDICATOR") or texturePack
 		else
 			return false, nil
 		end

@@ -4,16 +4,17 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local ShoppingTask = TSM.Include("LibTSMClass").DefineClass("ShoppingTask", TSM.TaskList.ItemTask)
 local L = TSM.Include("Locale").GetTable()
 local Delay = TSM.Include("Util.Delay")
 local Log = TSM.Include("Util.Log")
 TSM.TaskList.ShoppingTask = ShoppingTask
 local private = {
-	registeredCallbacks = false,
+	initialized = false,
 	currentlyScanning = nil,
 	activeTasks = {},
+	updateTimer = nil,
 }
 
 
@@ -29,10 +30,11 @@ function ShoppingTask.__init(self, searchType)
 	assert(searchType == "NORMAL" or searchType == "DISENCHANT" or searchType == "CRAFTING")
 	self._searchType = searchType
 
-	if not private.registeredCallbacks then
+	if not private.initialized then
+		private.updateTimer = Delay.CreateTimer("SHOPPING_TASK_UPDATE", private.UIUpdateCallbackDelayed)
 		TSM.UI.AuctionUI.RegisterUpdateCallback(private.UIUpdateCallback)
 		TSM.UI.AuctionUI.Shopping.RegisterUpdateCallback(private.UIUpdateCallback)
-		private.registeredCallbacks = true
+		private.initialized = true
 	end
 end
 
@@ -114,7 +116,7 @@ end
 -- ============================================================================
 
 function private.UIUpdateCallback()
-	Delay.AfterFrame("SHOPPING_TASK_UPDATE_CALLBACK", 1, private.UIUpdateCallbackDelayed)
+	private.updateTimer:RunForFrames(1)
 end
 
 function private.UIUpdateCallbackDelayed()

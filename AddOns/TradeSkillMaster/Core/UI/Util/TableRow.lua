@@ -4,13 +4,14 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local L = TSM.Include("Locale").GetTable()
 local TableRow = TSM.Include("LibTSMClass").DefineClass("TableRow")
 local Table = TSM.Include("Util.Table")
 local Math = TSM.Include("Util.Math")
 local Wow = TSM.Include("Util.Wow")
 local Theme = TSM.Include("Util.Theme")
+local TextureAtlas = TSM.Include("Util.TextureAtlas")
 local ScriptWrapper = TSM.Include("Util.ScriptWrapper")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local Tooltip = TSM.Include("UI.Tooltip")
@@ -19,6 +20,7 @@ local private = {
 	rowFrameLookup = {},
 	layoutTemp = {},
 	colIdsTemp = {},
+	inwardIteratorContext = {},
 }
 local FLAG_WIDTH = 6
 local FLAG_SPACING = 2
@@ -87,8 +89,8 @@ function TableRow.Acquire(self, scrollingTable, isHeader)
 
 	if isHeader then
 		self:_CreateHeaderRowCols()
-		self._frame:SetPoint("TOPLEFT", 0, -HEADER_LINE_WIDTH)
-		self._frame:SetPoint("TOPRIGHT", 0, -HEADER_LINE_WIDTH)
+		self._frame:SetPoint("TOPLEFT", 0, scrollingTable._headerMode == "COMPACT" and 0 or -HEADER_LINE_WIDTH)
+		self._frame:SetPoint("TOPRIGHT", 0, scrollingTable._headerMode == "COMPACT" and 0 or -HEADER_LINE_WIDTH)
 		self:_LayoutHeaderRow()
 	else
 		self:_CreateDataRowCols()
@@ -192,8 +194,8 @@ function TableRow.SetData(self, data)
 		if col:_GetIconSize() then
 			local button = self._buttons["_icon_"..id]
 			local texture = col:_GetIcon(data, button and button:IsMouseOver())
-			if type(texture) == "string" and TSM.UI.TexturePacks.IsValid(texture) then
-				TSM.UI.TexturePacks.SetTexture(self._icons[id], texture)
+			if type(texture) == "string" and TextureAtlas.IsValid(texture) then
+				TextureAtlas.SetTexture(self._icons[id], texture)
 			else
 				self._icons[id]:SetTexture(texture)
 			end
@@ -204,7 +206,7 @@ function TableRow.SetData(self, data)
 end
 
 function TableRow.SetHeaderData(self)
-	if self._scrollingTable._headerHidden then
+	if self._scrollingTable._headerMode == "NONE" then
 		return
 	end
 	for _, col in self._tableInfo:_ColIterator() do
@@ -385,7 +387,7 @@ function TableRow._GetSepTexture(self)
 end
 
 function TableRow._CreateHeaderRowCols(self)
-	if self._scrollingTable._headerHidden then
+	if self._scrollingTable._headerMode == "NONE" then
 		return
 	end
 	if self._scrollingTable:_CanResizeCols() then
@@ -395,7 +397,7 @@ function TableRow._CreateHeaderRowCols(self)
 		self._buttons._more = button
 		local moreIcon = self:_GetTexture()
 		moreIcon:SetDrawLayer("ARTWORK")
-		TSM.UI.TexturePacks.SetTextureAndSize(moreIcon, "iconPack.12x12/More/Vertical")
+		TextureAtlas.SetTextureAndSize(moreIcon, "iconPack.12x12/More/Vertical")
 		self._icons._more = moreIcon
 		self._icons._sep__more = self:_GetSepTexture()
 	end
@@ -430,7 +432,7 @@ function TableRow._CreateHeaderRowCols(self)
 		if iconTexture then
 			local icon = self:_GetTexture()
 			icon:SetDrawLayer("ARTWORK", 1)
-			TSM.UI.TexturePacks.SetTextureAndSize(icon, iconTexture)
+			TextureAtlas.SetTextureAndSize(icon, iconTexture)
 			self._icons[id] = icon
 		else
 			local text = self:_GetFontString()
@@ -506,7 +508,7 @@ function TableRow._CreateDataRowCols(self)
 			-- add the check texture
 			local expander = self:_GetTexture()
 			expander:SetDrawLayer("ARTWORK", 1)
-			TSM.UI.TexturePacks.SetTextureAndSize(expander, "iconPack.14x14/Checkmark/Default")
+			TextureAtlas.SetTextureAndSize(expander, "iconPack.14x14/Checkmark/Default")
 			self._icons["_check_"..id] = expander
 		end
 		if col:_HasBadge() then
@@ -537,7 +539,7 @@ function TableRow._CreateDataRowCols(self)
 end
 
 function TableRow._LayoutHeaderRow(self)
-	if self._scrollingTable._headerHidden then
+	if self._scrollingTable._headerMode == "NONE" then
 		return
 	end
 
@@ -578,7 +580,7 @@ function TableRow._LayoutHeaderRow(self)
 	end
 
 	-- build buttons from the left until we get to the col without a width, then switch to building from the right
-	for i, col, isAscending in Table.InwardIterator(cols) do
+	for i, col, isAscending in private.InwardIterator(cols) do
 		local id = col:_GetId()
 		local button = self._buttons[id]
 		local leftButton = i > 1 and self._buttons[cols[i - 1]:_GetId()] or (self._scrollingTable:_CanResizeCols() and self._buttons._more) or nil
@@ -637,16 +639,16 @@ function TableRow._LayoutHeaderRow(self)
 				minContentWidth = minContentWidth + FLAG_WIDTH
 			end
 			if col:_HasExpander() then
-				minContentWidth = minContentWidth + TSM.UI.TexturePacks.GetWidth("iconPack.12x12/Caret/Right") + ICON_SPACING
+				minContentWidth = minContentWidth + TextureAtlas.GetWidth("iconPack.12x12/Caret/Right") + ICON_SPACING
 			end
 			if col:_HasCheck() then
-				minContentWidth = minContentWidth + TSM.UI.TexturePacks.GetWidth("iconPack.14x14/Checkmark/Default") + ICON_SPACING
+				minContentWidth = minContentWidth + TextureAtlas.GetWidth("iconPack.14x14/Checkmark/Default") + ICON_SPACING
 			end
 			if col:_HasBadge() then
-				minContentWidth = minContentWidth + TSM.UI.TexturePacks.GetWidth("uiFrames.AuctionCounterTexture") + ICON_SPACING
+				minContentWidth = minContentWidth + TextureAtlas.GetWidth("uiFrames.AuctionCounterTexture") + ICON_SPACING
 			end
 			-- the minimum header width is either our header icon width or the minimum text width
-			local minHeaderWidth = iconTexture and TSM.UI.TexturePacks.GetWidth(iconTexture) or MIN_TEXT_WIDTH
+			local minHeaderWidth = iconTexture and TextureAtlas.GetWidth(iconTexture) or MIN_TEXT_WIDTH
 			if TSM.IsWowClassic() then
 				button:SetMinResize(max(minContentWidth, minHeaderWidth), 0)
 			else
@@ -668,7 +670,7 @@ function TableRow._LayoutHeaderRow(self)
 			else
 				-- we found the button which will expand to fill the extra width, so reverse the iterator direction (only once)
 				assert(isAscending)
-				Table.InwardIteratorReverse(cols)
+				private.InwardIteratorReverse()
 				if rightButton then
 					-- anchor the right of this button to the left of the next one
 					button:SetPoint("RIGHT", rightButton, "LEFT", -Theme.GetColSpacing(), 0)
@@ -778,7 +780,7 @@ function TableRow._LayoutDataRow(self)
 	end
 
 	-- build from the left until we get to the col without a width, then switch to building from the right
-	for i, col, isAscending in Table.InwardIterator(cols) do
+	for i, col, isAscending in private.InwardIterator(cols) do
 		local id = private.colIdsTemp[i]
 		local text = self._texts[id]
 		local flag = self._icons["_flag_"..id]
@@ -829,14 +831,14 @@ function TableRow._LayoutDataRow(self)
 				private.LayoutTempInsertSpacing(indentWidth or (abs(indentLevel) * INDENT_WIDTH))
 			end
 			local texture = expanded and (largeCaretIcons and "iconPack.14x14/Caret/Down" or "iconPack.12x12/Caret/Down") or (largeCaretIcons and "iconPack.14x14/Caret/Right" or "iconPack.12x12/Caret/Right")
-			local expanderWidth = TSM.UI.TexturePacks.GetWidth(texture)
+			local expanderWidth = TextureAtlas.GetWidth(texture)
 			-- check if there is only spacing before the expander and the expander can fit within the spacing
 			local firstLayoutElement = #private.layoutTemp == 1 and not leftText and private.layoutTemp[1] or nil
 			if type(firstLayoutElement) == "number" and Math.Round(expanderWidth + expanderSpacing) <= Math.Round(firstLayoutElement) then
 				private.layoutTemp[1] = private.layoutTemp[1] - expanderWidth - expanderSpacing
 			end
 			if visible then
-				TSM.UI.TexturePacks.SetTextureAndSize(expander, texture)
+				TextureAtlas.SetTextureAndSize(expander, texture)
 				expander:Show()
 				expanderButton:Show()
 				private.LayoutTempInsertElementWithSpacing(expander, expanderSpacing)
@@ -936,8 +938,8 @@ function TableRow._LayoutDataRow(self)
 				end
 				actionIcon:Show()
 				actionIconButton:SetMouseClickEnabled(true)
-				if type(texture) == "string" and TSM.UI.TexturePacks.IsValid(texture) then
-					TSM.UI.TexturePacks.SetTexture(actionIcon, texture)
+				if type(texture) == "string" and TextureAtlas.IsValid(texture) then
+					TextureAtlas.SetTexture(actionIcon, texture)
 				else
 					actionIcon:SetTexture(texture)
 				end
@@ -1031,7 +1033,7 @@ function TableRow._LayoutDataRow(self)
 		else
 			-- we found the text which will expand to fill the extra width, so reverse the iterator direction (only once)
 			assert(isAscending and not canResize)
-			Table.InwardIteratorReverse(cols)
+			private.InwardIteratorReverse()
 			if rightText then
 				-- anchor the right of this the last element for this col to the left of the next one
 				lastElement:SetPoint("RIGHT", rightText, "LEFT", -Theme.GetColSpacing(), 0)
@@ -1118,15 +1120,15 @@ function private.MenuDialogIterator(self, prevIndex)
 end
 
 function private.GetMoreDialogColRowContent(col)
-	local color = Theme.GetColor(col:_IsHidden() and "TEXT+DISABLED" or "TEXT")
+	local color = col:_IsHidden() and "TEXT+DISABLED" or "TEXT"
 	local titleText = col:_GetTitle()
 	if titleText then
-		return color:ColorText(titleText)
+		return Theme.GetColor(color):ColorText(titleText)
 	end
 	local titleIcon = col:_GetTitleIcon()
 	if titleIcon then
-		local textureKey = TSM.UI.TexturePacks.GetColoredKey(titleIcon, color)
-		return TSM.UI.TexturePacks.GetTextureLink(textureKey)
+		local textureKey = TextureAtlas.GetColoredKey(titleIcon, color)
+		return TextureAtlas.GetTextureLink(textureKey)
 	end
 	error("Unknown title")
 end
@@ -1279,8 +1281,8 @@ function private.IconButtonOnEnter(button)
 	self._frame:GetScript("OnEnter")(self._frame)
 	local col, icon = self:_LookupIconByButton(button)
 	local texture, tooltip = col:_GetIcon(self:GetData(), true)
-	if type(texture) == "string" and TSM.UI.TexturePacks.IsValid(texture) then
-		TSM.UI.TexturePacks.SetTexture(icon, texture)
+	if type(texture) == "string" and TextureAtlas.IsValid(texture) then
+		TextureAtlas.SetTexture(icon, texture)
 	else
 		icon:SetTexture(texture)
 	end
@@ -1294,8 +1296,8 @@ function private.IconButtonOnLeave(button)
 	self._frame:GetScript("OnLeave")(self._frame)
 	local col, icon = self:_LookupIconByButton(button)
 	local texture, tooltip = col:_GetIcon(self:GetData(), false)
-	if type(texture) == "string" and TSM.UI.TexturePacks.IsValid(texture) then
-		TSM.UI.TexturePacks.SetTexture(icon, texture)
+	if type(texture) == "string" and TextureAtlas.IsValid(texture) then
+		TextureAtlas.SetTexture(icon, texture)
 	else
 		icon:SetTexture(texture)
 	end
@@ -1321,8 +1323,8 @@ function private.ActionIconButtonOnEnter(button)
 	if tooltip then
 		Tooltip.Show(button, tooltip)
 	end
-	if type(texture) == "string" and TSM.UI.TexturePacks.IsValid(texture) then
-		TSM.UI.TexturePacks.SetTexture(icon, texture)
+	if type(texture) == "string" and TextureAtlas.IsValid(texture) then
+		TextureAtlas.SetTexture(icon, texture)
 	else
 		icon:SetTexture(texture)
 	end
@@ -1344,8 +1346,8 @@ function private.ActionIconButtonOnLeave(button)
 	if not visible then
 		return
 	end
-	if type(texture) == "string" and TSM.UI.TexturePacks.IsValid(texture) then
-		TSM.UI.TexturePacks.SetTexture(icon, texture)
+	if type(texture) == "string" and TextureAtlas.IsValid(texture) then
+		TextureAtlas.SetTexture(icon, texture)
 	else
 		icon:SetTexture(texture)
 	end
@@ -1485,4 +1487,39 @@ function private.LayoutTempInsertElementWithSpacing(element, spacing, index)
 		private.layoutTemp[length + 1] = element
 		private.layoutTemp[length + 2] = spacing
 	end
+end
+
+
+function private.InwardIterator(tbl)
+	assert(type(tbl) == "table" and not next(private.inwardIteratorContext))
+	private.inwardIteratorContext.tbl = tbl
+	private.inwardIteratorContext.leftIndex = 1
+	private.inwardIteratorContext.rightIndex = #tbl
+	private.inwardIteratorContext.isAscending = true
+	return private.InwardIteratorHelper
+end
+
+---Reverses the direction of the current inward iterator.
+---@param tbl table The table being iterated over
+function private.InwardIteratorReverse()
+	assert(private.inwardIteratorContext.tbl)
+	private.inwardIteratorContext.isAscending = not private.inwardIteratorContext.isAscending
+end
+
+function private.InwardIteratorHelper()
+	if private.inwardIteratorContext.leftIndex > private.inwardIteratorContext.rightIndex then
+		wipe(private.inwardIteratorContext)
+		return
+	end
+	local index = nil
+	if private.inwardIteratorContext.isAscending then
+		-- iterating in ascending order
+		index = private.inwardIteratorContext.leftIndex
+		private.inwardIteratorContext.leftIndex = private.inwardIteratorContext.leftIndex + 1
+	else
+		-- iterating in descending order
+		index = private.inwardIteratorContext.rightIndex
+		private.inwardIteratorContext.rightIndex = private.inwardIteratorContext.rightIndex - 1
+	end
+	return index, private.inwardIteratorContext.tbl[index], private.inwardIteratorContext.isAscending
 end

@@ -253,20 +253,20 @@ function private.GetCraftingCostHelper(craftString, recipeString, optionalMats)
 			local matchStr1 = "[:,]"..optionalMatItemId.."$"
 			local matchStr2 = "[:,]"..optionalMatItemId..","
 			for itemString, quantity in pairs(mats) do
-				if quantity < 0 and (strmatch(itemString, matchStr1) or strmatch(itemString, matchStr2)) then
-					mats[optionalMatItemString] = (mats[optionalMatItemString] or 0) + 1
+				if (strmatch(itemString, matchStr1) or strmatch(itemString, matchStr2)) then
+					mats[optionalMatItemString] = ((mats[optionalMatItemString] or 0) + 1) * quantity
 					break
 				end
 			end
 		end
 	elseif optionalMats then
-		for _, optionalMatItemString in ipairs(optionalMats) do
+		for _, optionalMatItemString in pairs(optionalMats) do
 			local optionalMatItemId = ItemString.ToId(optionalMatItemString)
 			local matchStr1 = "[:,]"..optionalMatItemId.."$"
 			local matchStr2 = "[:,]"..optionalMatItemId..","
 			for itemString, quantity in pairs(mats) do
-				if quantity < 0 and (strmatch(itemString, matchStr1) or strmatch(itemString, matchStr2)) then
-					mats[optionalMatItemString] = (mats[optionalMatItemString] or 0) + 1
+				if (strmatch(itemString, matchStr1) or strmatch(itemString, matchStr2)) then
+					mats[optionalMatItemString] = ((mats[optionalMatItemString] or 0) + 1) * quantity
 					break
 				end
 			end
@@ -278,7 +278,7 @@ function private.GetCraftingCostHelper(craftString, recipeString, optionalMats)
 		didSetProfession = true
 	end
 	for itemString, quantity in pairs(mats) do
-		if quantity > 0 then
+		if not strmatch(itemString, "^[qof]:") then
 			hasMats = true
 			local matCost = Cost.GetMatCost(itemString)
 			if not matCost then

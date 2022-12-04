@@ -4,7 +4,7 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local VendoringUI = TSM.UI:NewPackage("VendoringUI")
 local L = TSM.Include("Locale").GetTable()
 local Delay = TSM.Include("Util.Delay")
@@ -19,6 +19,7 @@ local private = {
 	fsm = nil,
 	defaultUISwitchBtn = nil,
 	isVisible = false,
+	showTimer = nil,
 }
 local MIN_FRAME_SIZE = { width = 560, height = 500 }
 
@@ -32,6 +33,7 @@ function VendoringUI.OnInitialize()
 	private.settings = Settings.NewView()
 		:AddKey("global", "vendoringUIContext", "showDefault")
 		:AddKey("global", "vendoringUIContext", "frame")
+	private.showTimer = Delay.CreateTimer("VENDORING_SHOW", function() private.fsm:ProcessEvent("EV_MERCHANT_SHOW") end)
 	private.FSMCreate()
 end
 
@@ -103,15 +105,12 @@ end
 -- ============================================================================
 
 function private.FSMCreate()
-	local function MerchantShowDelayed()
-		private.fsm:ProcessEvent("EV_MERCHANT_SHOW")
-	end
 	local function CurrencyUpdate()
 		private.fsm:ProcessEvent("EV_CURRENCY_UPDATE")
 	end
 	DefaultUI.RegisterMerchantVisibleCallback(function(visible)
 		if visible then
-			Delay.AfterFrame("MERCHANT_SHOW_DELAYED", 0, MerchantShowDelayed)
+			private.showTimer:RunForFrames(0)
 		else
 			private.fsm:ProcessEvent("EV_MERCHANT_CLOSED")
 		end

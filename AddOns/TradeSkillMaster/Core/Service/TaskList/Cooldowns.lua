@@ -4,7 +4,7 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local Cooldowns = TSM.TaskList:NewPackage("Cooldowns")
 local L = TSM.Include("Locale").GetTable()
 local Delay = TSM.Include("Util.Delay")
@@ -17,6 +17,7 @@ local private = {
 	activeTasks = {},
 	activeTaskByProfession = {},
 	ignoredQuery = nil, -- luacheck: ignore 1004 - just stored for GC reasons
+	updateTimer = nil,
 }
 
 
@@ -27,6 +28,7 @@ local private = {
 
 function Cooldowns.OnEnable()
 	TSM.TaskList.RegisterTaskPool(private.ActiveTaskIterator)
+	private.updateTimer = Delay.CreateTimer("COOLDOWNS_UPDATE", private.PopulateTasks)
 	private.query = TSM.Crafting.CreateCooldownSpellsQuery()
 		:Select("profession", "craftString")
 		:Custom(private.QueryPlayerFilter, UnitName("player"))
@@ -99,9 +101,9 @@ function private.PopulateTasks()
 	TSM.TaskList.OnTaskUpdated()
 
 	if minPendingCooldown ~= math.huge then
-		Delay.AfterTime("COOLDOWN_UPDATE", minPendingCooldown, private.PopulateTasks)
+		private.updateTimer:RunForTime(minPendingCooldown)
 	else
-		Delay.Cancel("COOLDOWN_UPDATE")
+		private.updateTimer:Cancel()
 	end
 end
 

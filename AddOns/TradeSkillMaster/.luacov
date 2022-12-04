@@ -1,0 +1,11 @@
+return {
+	statsfile = "luacov.stats.out",
+	reportfile = "luacov.report.out",
+	runreport = true,
+	deletestats = false,
+	codefromstrings = true,
+	include = {
+		'^Core%/.+$',
+		'^LibTSM%/.+$',
+	},
+}

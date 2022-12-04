@@ -4,7 +4,7 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local Buy = TSM.Vendoring:NewPackage("Buy")
 local Database = TSM.Include("Util.Database")
 local Delay = TSM.Include("Util.Delay")
@@ -15,11 +15,14 @@ local Theme = TSM.Include("Util.Theme")
 local ItemString = TSM.Include("Util.ItemString")
 local DefaultUI = TSM.Include("Service.DefaultUI")
 local ItemInfo = TSM.Include("Service.ItemInfo")
-local Inventory = TSM.Include("Service.Inventory")
+local BagTracking = TSM.Include("Service.BagTracking")
 local private = {
 	merchantDB = nil,
 	pendingIndex = nil,
 	pendingQuantity = 0,
+	buyTimoutTimer = nil,
+	updateTimer = nil,
+	rescanTimer = nil,
 }
 local FIRST_BUY_TIMEOUT = 5
 local FIRST_BUY_TIMEOUT_PER_STACK = 1
@@ -42,6 +45,9 @@ function Buy.OnInitialize()
 		:AddNumberField("stackSize")
 		:AddNumberField("numAvailable")
 		:Commit()
+	private.buyTimoutTimer = Delay.CreateTimer("VENDOR_BUY_TIMEOUT", private.BuyTimeout)
+	private.updateTimer = Delay.CreateTimer("VENDOR_BUY_UPDATE_DB", private.UpdateMerchantDB)
+	private.rescanTimer = Delay.CreateTimer("VENDOR_BUY_RESCAN", private.UpdateMerchantDB)
 	DefaultUI.RegisterMerchantVisibleCallback(private.MechantVisibilityHandler)
 	Event.Register("MERCHANT_UPDATE", private.MerchantUpdateEventHandler)
 	Event.Register("CHAT_MSG_LOOT", private.ChatMsgLootEventHandler)
@@ -90,7 +96,7 @@ function Buy.GetMaxCanAfford(index)
 			local costItemString = ItemString.Get(costItemLink)
 			local costNumHave = nil
 			if costItemString then
-				costNumHave = Inventory.GetBagQuantity(costItemString) + Inventory.GetBankQuantity(costItemString) + Inventory.GetReagentBankQuantity(costItemString)
+				costNumHave = BagTracking.GetTotalQuantity(costItemString)
 			elseif currencyName then
 				local info = C_CurrencyInfo.GetCurrencyInfoFromLink(costItemLink)
 				costNumHave = info.quantity
@@ -129,17 +135,17 @@ end
 
 function private.MechantVisibilityHandler(visible)
 	if visible then
-		Delay.AfterFrame("UPDATE_MERCHANT_DB", 1, private.UpdateMerchantDB)
+		private.updateTimer:RunForFrames(1)
 	else
 		private.ClearPendingContext()
-		Delay.Cancel("UPDATE_MERCHANT_DB")
-		Delay.Cancel("RESCAN_MERCHANT_DB")
+		private.updateTimer:Cancel()
+		private.rescanTimer:Cancel()
 		private.merchantDB:Truncate()
 	end
 end
 
 function private.MerchantUpdateEventHandler()
-	Delay.AfterFrame("UPDATE_MERCHANT_DB", 1, private.UpdateMerchantDB)
+	private.updateTimer:RunForFrames(1)
 end
 
 function private.UpdateMerchantDB()
@@ -176,7 +182,7 @@ function private.UpdateMerchantDB()
 						error(format("Unknown item cost (%d, %d, %s)", i, costNum, tostring(costItemLink)))
 					end
 					if TSM.Vendoring.Buy.GetMaxCanAfford(i) < stackSize then
-						costNum = Theme.GetFeedbackColor("RED"):ColorText(costNum)
+						costNum = Theme.GetColor("FEEDBACK_RED"):ColorText(costNum)
 					end
 					local suffix = (TSM.IsWowWrathClassic() and currencyName == HONOR_POINTS) and ":14:14:00:0:64:64:0:40:0:40|t" or ":12|t"
 					tinsert(costItems, costNum.." |T"..(texture or "")..suffix)
@@ -191,9 +197,9 @@ function private.UpdateMerchantDB()
 
 	if needsRetry then
 		Log.Err("Failed to scan merchant")
-		Delay.AfterTime("RESCAN_MERCHANT_DB", 0.2, private.UpdateMerchantDB)
+		private.rescanTimer:RunForTime(0.2)
 	else
-		Delay.Cancel("RESCAN_MERCHANT_DB")
+		private.rescanTimer:Cancel()
 	end
 end
 
@@ -230,7 +236,7 @@ function private.BuyIndex(index, quantity)
 		numStacks = numStacks + 1
 	end
 	Log.Info("Buying %d of %d (%d stacks)", private.pendingQuantity, index, numStacks)
-	Delay.AfterTime("VENDORING_BUY_TIMEOUT", numStacks * FIRST_BUY_TIMEOUT_PER_STACK + FIRST_BUY_TIMEOUT, private.BuyTimeout)
+	private.buyTimoutTimer:RunForTime(numStacks * FIRST_BUY_TIMEOUT_PER_STACK + FIRST_BUY_TIMEOUT)
 end
 
 function private.ChatMsgLootEventHandler(_, msg)
@@ -269,8 +275,8 @@ function private.ChatMsgLootEventHandler(_, msg)
 	end
 
 	-- reset the timeout
-	Delay.Cancel("VENDORING_BUY_TIMEOUT")
-	Delay.AfterTime("VENDORING_BUY_TIMEOUT", CONSECUTIVE_BUY_TIMEOUT, private.BuyTimeout)
+	private.buyTimoutTimer:Cancel()
+	private.buyTimoutTimer:RunForTime(CONSECUTIVE_BUY_TIMEOUT)
 end
 
 function private.ExtractFormatValue(str, fmtStr)
@@ -287,5 +293,5 @@ end
 function private.ClearPendingContext()
 	private.pendingIndex = nil
 	private.pendingQuantity = 0
-	Delay.Cancel("VENDORING_BUY_TIMEOUT")
+	private.buyTimoutTimer:Cancel()
 end

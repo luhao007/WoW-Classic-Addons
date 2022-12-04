@@ -4,13 +4,10 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local Auctioning = TSM.MainUI.Operations:NewPackage("Auctioning")
 local L = TSM.Include("Locale").GetTable()
 local String = TSM.Include("Util.String")
-local Money = TSM.Include("Util.Money")
-local Vararg = TSM.Include("Util.Vararg")
-local CustomPrice = TSM.Include("Service.CustomPrice")
 local UIElements = TSM.Include("UI.UIElements")
 local private = {
 	currentOperationName = nil,
@@ -26,7 +23,29 @@ local BELOW_MIN_ITEMS = { L["Don't Post Items"], L["Post at Minimum Price"], L["
 local BELOW_MIN_KEYS = { "none", "minPrice", "maxPrice", "normalPrice", "ignore" }
 local ABOVE_MAX_ITEMS = { L["Don't Post Items"], L["Post at Minimum Price"], L["Post at Maximum Price"], L["Post at Normal Price"] }
 local ABOVE_MAX_KEYS = { "none", "minPrice", "maxPrice", "normalPrice" }
-local BAD_PRICE_SOURCES = { auctioningopmin = true, auctioningopmax = true, auctioningopnormal = true }
+local POST_CAP_VALIDATE_CONTEXT = {
+	isNumber = true,
+}
+local STACK_SIZE_VALIDATE_CONTEXT = {
+	isNumber = true,
+}
+local KEEP_QUANTITY_VALIDATE_CONTEXT = {
+	isNumber = true,
+}
+local MAX_EXPIRES_VALIDATE_CONTEXT = {
+	isNumber = true,
+}
+local UNDERCUT_VALIDATE_CONTEXT = {
+	isUndercut = true,
+}
+local PRICE_VALIDATE_CONTEXT = {
+	badSources = {
+		auctioningopmin = true,
+		auctioningopmax = true,
+		auctioningopnormal = true,
+	}
+}
+
 
 
 -- ============================================================================
@@ -34,6 +53,13 @@ local BAD_PRICE_SOURCES = { auctioningopmin = true, auctioningopmax = true, auct
 -- ============================================================================
 
 function Auctioning.OnInitialize()
+	-- Set min and max values
+	POST_CAP_VALIDATE_CONTEXT.minValue, POST_CAP_VALIDATE_CONTEXT.maxValue = TSM.Operations.Auctioning.GetMinMaxValues("postCap")
+	if TSM.IsWowClassic() then
+		STACK_SIZE_VALIDATE_CONTEXT.minValue, STACK_SIZE_VALIDATE_CONTEXT.maxValue = TSM.Operations.Auctioning.GetMinMaxValues("stackSize")
+	end
+	KEEP_QUANTITY_VALIDATE_CONTEXT.minValue, KEEP_QUANTITY_VALIDATE_CONTEXT.maxValue = TSM.Operations.Auctioning.GetMinMaxValues("keepQuantity")
+	MAX_EXPIRES_VALIDATE_CONTEXT.minValue, MAX_EXPIRES_VALIDATE_CONTEXT.maxValue = TSM.Operations.Auctioning.GetMinMaxValues("maxExpires")
 	TSM.MainUI.Operations.RegisterModule("Auctioning", private.GetAuctioningOperationSettings)
 end
 
@@ -78,17 +104,6 @@ function private.GetDetailsSettings()
 						:SetScript("OnSelectionChanged", private.IgnoreLowDurationOnSelectionChanged)
 					)
 				)
-				:AddChild(TSM.MainUI.Operations.CreateLinkedSettingLine("blacklist", L["Blacklisted players"])
-					:SetLayout("VERTICAL")
-					:SetHeight(48)
-					:AddChild(UIElements.New("Input", "input")
-						:SetHeight(24)
-						:SetBackgroundColor("ACTIVE_BG")
-						:SetHintText(L["Enter player name"])
-						:SetDisabled(TSM.Operations.HasRelationship("Auctioning", private.currentOperationName, "blacklist"))
-						:SetScript("OnEnterPressed", private.BlacklistInputOnEnterPressed)
-					)
-				)
 				:AddChildrenWithFunction(private.AddBlacklistPlayers)
 			)
 		)
@@ -119,12 +134,17 @@ function private.GetPostingSettings()
 					:SetSelectedItemByKey(operation.duration)
 					:SetScript("OnSelectionChanged", private.SetAuctioningDuration)
 				)
-
 			)
-			:AddChild(private.CreateInputLine("postCap", L["Post cap"], false, true))
+			:AddChild(TSM.MainUI.Operations.CreateLinkedPriceInput("postCap", L["Post cap"], POST_CAP_VALIDATE_CONTEXT)
+				:SetMargin(0, 0, 0, 12)
+			)
 			:AddChildrenWithFunction(private.AddStackSizeSettings)
-			:AddChild(private.CreateInputLine("keepQuantity", L["Amount kept in bags"], false, true))
-			:AddChild(private.CreateInputLine("maxExpires", L["Don't post after this many expires"]))
+			:AddChild(TSM.MainUI.Operations.CreateLinkedPriceInput("keepQuantity", L["Amount kept in bags"], KEEP_QUANTITY_VALIDATE_CONTEXT)
+				:SetMargin(0, 0, 0, 12)
+			)
+			:AddChild(TSM.MainUI.Operations.CreateLinkedPriceInput("maxExpires", L["Don't post after this many expires"], MAX_EXPIRES_VALIDATE_CONTEXT)
+				:SetMargin(0, 0, 0, 4)
+			)
 		)
 		:AddChild(TSM.MainUI.Operations.CreateExpandableSection("Auctioning", "priceSettings", L["Posting Price"], L["Adjust the settings below to set how groups attached to this operation will be priced."])
 			:AddChild(TSM.MainUI.Operations.CreateLinkedSettingLine("bidPercent", L["Set bid as percentage of buyout"])
@@ -150,10 +170,10 @@ function private.GetPostingSettings()
 					)
 				)
 			)
-			:AddChild(TSM.MainUI.Operations.CreateLinkedPriceInput("undercut", L["Undercut amount"], 66, private.CheckUndercut)
+			:AddChild(TSM.MainUI.Operations.CreateLinkedPriceInput("undercut", L["Undercut amount"], UNDERCUT_VALIDATE_CONTEXT)
 				:SetMargin(0, 0, 0, 12)
 			)
-			:AddChild(TSM.MainUI.Operations.CreateLinkedPriceInput("minPrice", L["Minimum price"], 126, BAD_PRICE_SOURCES))
+			:AddChild(TSM.MainUI.Operations.CreateLinkedPriceInput("minPrice", L["Minimum price"], PRICE_VALIDATE_CONTEXT))
 			:AddChild(TSM.MainUI.Operations.CreateLinkedSettingLine("priceReset", L["When below minimum:"])
 				:SetMargin(0, 0, 12, 12)
 				:AddChild(UIElements.New("SelectionDropdown", "dropdown")
@@ -163,7 +183,7 @@ function private.GetPostingSettings()
 					:SetSettingInfo(operation, "priceReset")
 				)
 			)
-			:AddChild(TSM.MainUI.Operations.CreateLinkedPriceInput("maxPrice", L["Maximum price"], 126, BAD_PRICE_SOURCES))
+			:AddChild(TSM.MainUI.Operations.CreateLinkedPriceInput("maxPrice", L["Maximum price"], PRICE_VALIDATE_CONTEXT))
 			:AddChild(TSM.MainUI.Operations.CreateLinkedSettingLine("aboveMax", L["When above maximum:"])
 				:SetMargin(0, 0, 12, 12)
 				:AddChild(UIElements.New("SelectionDropdown", "dropdown")
@@ -173,7 +193,7 @@ function private.GetPostingSettings()
 					:SetSettingInfo(operation, "aboveMax")
 				)
 			)
-			:AddChild(TSM.MainUI.Operations.CreateLinkedPriceInput("normalPrice", L["Normal price"], 126, BAD_PRICE_SOURCES))
+			:AddChild(TSM.MainUI.Operations.CreateLinkedPriceInput("normalPrice", L["Normal price"], PRICE_VALIDATE_CONTEXT))
 		)
 end
 
@@ -181,7 +201,9 @@ function private.AddStackSizeSettings(frame)
 	if not TSM.IsWowClassic() then
 		return
 	end
-	frame:AddChild(private.CreateInputLine("stackSize", L["Stack size"], false, true))
+	frame:AddChild(TSM.MainUI.Operations.CreateLinkedPriceInput("stackSize", L["Stack size"], STACK_SIZE_VALIDATE_CONTEXT)
+		:SetMargin(0, 0, 0, 12)
+	)
 	frame:AddChild(private.CreateToggleLine("stackSizeIsCap", L["Allow partial stack"]))
 end
 
@@ -192,7 +214,7 @@ function private.GetCancelingSettings()
 		:AddChild(TSM.MainUI.Operations.CreateExpandableSection("Auctioning", "priceSettings", L["Canceling Options"], L["Adjust the settings below to set how groups attached to this operation will be cancelled."])
 			:AddChild(private.CreateToggleLine("cancelUndercut", L["Cancel undercut auctions"]))
 			:AddChild(private.CreateToggleLine("cancelRepost", L["Cancel to repost higher"]))
-			:AddChild(TSM.MainUI.Operations.CreateLinkedPriceInput("cancelRepostThreshold", L["Repost threshold"], 66))
+			:AddChild(TSM.MainUI.Operations.CreateLinkedPriceInput("cancelRepostThreshold", L["Repost threshold"]))
 		)
 end
 
@@ -210,12 +232,27 @@ function private.GetAuctioningSettings(self, button)
 end
 
 function private.AddBlacklistPlayers(frame)
+	if not TSM.IsWowClassic() then
+		return
+	end
+	frame:AddChild(TSM.MainUI.Operations.CreateLinkedSettingLine("blacklist", L["Blacklisted players"])
+		:SetLayout("VERTICAL")
+		:SetHeight(48)
+		:AddChild(UIElements.New("Input", "input")
+			:SetHeight(24)
+			:SetBackgroundColor("ACTIVE_BG")
+			:SetHintText(L["Enter player name"])
+			:SetDisabled(TSM.Operations.HasRelationship("Auctioning", private.currentOperationName, "blacklist"))
+			:SetScript("OnEnterPressed", private.BlacklistInputOnEnterPressed)
+		)
+	)
 	local operation = TSM.Operations.GetSettings("Auctioning", private.currentOperationName)
 	if operation.blacklist == "" then return end
 	local containerFrame = UIElements.New("Frame", "blacklistFrame")
 		:SetLayout("FLOW")
-	for index, player in Vararg.Iterator(strsplit(",", operation.blacklist)) do
-		containerFrame:AddChild(UIElements.New("Frame", "blacklist" .. index)
+	local index = 1
+	for player in String.SplitIterator(operation.blacklist, ",") do
+		containerFrame:AddChild(UIElements.New("Frame", "blacklist"..index)
 			:SetLayout("HORIZONTAL")
 			:SetSize(100, 20)
 			:SetMargin(0, 12, 0, 0)
@@ -232,35 +269,9 @@ function private.AddBlacklistPlayers(frame)
 			)
 			:AddChild(UIElements.New("Spacer", "spacer"))
 		)
+		index = index + 1
 	end
 	frame:AddChild(containerFrame)
-end
-
-function private.CreateInputLine(key, label, disabled, margin)
-	local operation = TSM.Operations.GetSettings("Auctioning", private.currentOperationName)
-	local hasRelationship = TSM.Operations.HasRelationship("Auctioning", private.currentOperationName, key)
-	return TSM.MainUI.Operations.CreateLinkedSettingLine(key, label, disabled)
-		:SetLayout("VERTICAL")
-		:SetHeight(48)
-		:SetMargin(0, 0, 0, margin and 12 or 4)
-		:AddChild(UIElements.New("Frame", "content")
-			:SetLayout("HORIZONTAL")
-			:SetHeight(24)
-			:AddChild(UIElements.New("Input", "input")
-				:SetMargin(0, 8, 0, 0)
-				:SetBackgroundColor("ACTIVE_BG")
-				:SetContext(key)
-				:SetDisabled(hasRelationship or disabled)
-				:SetValidateFunc("CUSTOM_PRICE")
-				:SetSettingInfo(operation, key)
-			)
-			:AddChild(UIElements.New("Text", "label")
-				:SetWidth("AUTO")
-				:SetFont("BODY_BODY3")
-				:SetTextColor((hasRelationship or disabled) and "TEXT_DISABLED" or "TEXT")
-				:SetFormattedText(L["Supported value range: %d - %d"], TSM.Operations.Auctioning.GetMinMaxValues(key))
-			)
-		)
 end
 
 function private.CreateToggleLine(key, label)
@@ -269,25 +280,11 @@ function private.CreateToggleLine(key, label)
 		:SetLayout("VERTICAL")
 		:SetHeight(48)
 		:SetMargin(0, 0, 0, 12)
-		:AddChild(UIElements.New("ToggleOnOff", "toggle")
+		:AddChild(UIElements.New("ToggleYesNo", "toggle")
 			:SetHeight(18)
 			:SetDisabled(TSM.Operations.HasRelationship("Auctioning", private.currentOperationName, key))
 			:SetSettingInfo(operation, key)
 		)
-end
-
-function private.CheckUndercut(_, value)
-	if not TSM.IsWowClassic() and Money.FromString(Money.ToString(value) or value) == 0 then
-		return true
-	elseif not TSM.IsWowClassic() and (Money.FromString(Money.ToString(value) or value) or math.huge) < COPPER_PER_SILVER then
-		return false, L["Invalid undercut. To post below the cheapest auction without a significant undercut, set your undercut to 0c."]
-	else
-		local isValid, err = CustomPrice.Validate(value)
-		if isValid then
-			return true
-		end
-		return false, L["Invalid custom price."].." "..err
-	end
 end
 
 
@@ -308,15 +305,9 @@ function private.BlacklistInputOnEnterPressed(input)
 		return
 	end
 	local operation = TSM.Operations.GetSettings("Auctioning", private.currentOperationName)
-	local found = false
-	for _, player in Vararg.Iterator(strsplit(",", operation.blacklist)) do
-		if newPlayer == player then
-			-- this player is already added
-			input:SetValue("")
-			found = true
-		end
-	end
-	if found then
+	if String.SeparatedContains(operation.blacklist, ",", newPlayer) then
+		-- this player is already added
+		input:SetValue("")
 		return
 	end
 	operation.blacklist = (operation.blacklist == "") and newPlayer or (operation.blacklist..","..newPlayer)

@@ -8,8 +8,8 @@ local _, TSM = ...
 if not TSMDEV then
 	return
 end
-TSMDEV.Profiling = {}
-local Profiling = TSMDEV.Profiling
+local Profiling = {}
+TSMDEV.Profiling = Profiling
 local Math = TSM.Include("Util.Math")
 local private = {
 	startTime = nil,
@@ -30,15 +30,16 @@ local NODE_PATH_SEP = "`"
 -- Module Functions
 -- ============================================================================
 
---- Starts profiling.
+---Starts profiling
 function Profiling.Start()
 	assert(not private.startTime, "Profiling already started")
 	private.startTime = debugprofilestop()
 end
 
---- Starts profiling of a node.
--- Profiling must have been started for this to have any effect.
--- @tparam string node The name of the profiling node
+---Starts profiling of a node.
+---
+---Profiling must have been started for this to have any effect.
+---@param node string The name of the profiling node
 function Profiling.StartNode(node)
 	if not private.startTime then
 		-- profiling is not running
@@ -64,10 +65,11 @@ function Profiling.StartNode(node)
 	private.nodeStart[node] = debugprofilestop()
 end
 
---- Ends profiling of a node.
--- Profiling of this node must have been started for this to have any effect.
--- @tparam string node The name of the profiling node
--- @param[opt] arg An extra argument which is printed if this invocation represents the max duration for the node
+---Ends profiling of a node.
+---
+---Profiling of this node must have been started for this to have any effect.
+---@param node string The name of the profiling node
+---@param arg? any Any extra argument which is printed if this invocation represents the max duration for the node
 function Profiling.EndNode(node, arg)
 	if not private.startTime then
 		-- profiling is not running
@@ -93,8 +95,8 @@ function Profiling.EndNode(node, arg)
 	end
 end
 
---- Ends profiling and prints the results to chat.
--- @tparam[opt=0] number minTotalTime The minimum total time to print the profiling info
+---Ends profiling and prints the results to chat.
+---@param minTotalTime? number The minimum total time to print the profiling info
 function Profiling.End(minTotalTime)
 	if not private.startTime then
 		-- profiling is not running
@@ -134,14 +136,14 @@ function Profiling.End(minTotalTime)
 	wipe(private.nodeMaxTime)
 end
 
---- Checks whether or not we're currently profiling.
--- @treturn boolean Whether or not we're currently profiling.
+---Checks whether or not we're currently profiling.
+---@return boolean
 function Profiling.IsActive()
 	return private.startTime and true or false
 end
 
---- Gets the total memory used by TSM.
--- @treturn number The amount of memory being used in bytes
+---Gets the total memory used by TSM in bytes.
+---@return number
 function Profiling.GetMemoryUsage()
 	collectgarbage()
 	UpdateAddOnMemoryUsage("TradeSkillMaster")

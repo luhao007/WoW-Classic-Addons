@@ -4,7 +4,7 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local Mirror = TSM.Init("Service.SyncClasses.Mirror")
 local Delay = TSM.Include("Util.Delay")
 local TempTable = TSM.Include("Util.TempTable")
@@ -18,6 +18,7 @@ local private = {
 	numConnected = 0,
 	accountStatus = {},
 	callbacks = {},
+	characterHashesTimer = nil,
 }
 local BROADCAST_INTERVAL = 3
 
@@ -28,6 +29,7 @@ local BROADCAST_INTERVAL = 3
 -- ============================================================================
 
 Mirror:OnModuleLoad(function()
+	private.characterHashesTimer = Delay.CreateTimer("SYNC_MIRROR_CHARACTER_HASHES", private.SendCharacterHashes)
 	Connection.RegisterConnectionChangedCallback(private.ConnectionChangedHandler)
 	Comm.RegisterHandler(Constants.DATA_TYPES.CHARACTER_HASHES_BROADCAST, private.CharacterHashesBroadcastHandler)
 	Comm.RegisterHandler(Constants.DATA_TYPES.CHARACTER_SETTING_HASHES_REQUEST, private.CharacterSettingHashesRequestHandler)
@@ -79,11 +81,11 @@ function private.ConnectionChangedHandler(account, player, connected)
 	assert(private.numConnected >= 0)
 	if connected then
 		private.accountStatus[account] = "UPDATING"
-		Delay.AfterTime("mirrorCharacterHashes", 0, private.SendCharacterHashes, BROADCAST_INTERVAL)
+		private.characterHashesTimer:RunForTime(0)
 	else
 		private.accountStatus[account] = nil
 		if private.numConnected == 0 then
-			Delay.Cancel("mirrorCharacterHashes")
+			private.characterHashesTimer:Cancel()
 		end
 	end
 end
@@ -96,6 +98,7 @@ end
 
 function private.SendCharacterHashes()
 	assert(private.numConnected > 0)
+	private.characterHashesTimer:RunForTime(BROADCAST_INTERVAL)
 
 	-- calculate the hashes of the sync settings for all characters on this account
 	local hashes = TempTable.Acquire()

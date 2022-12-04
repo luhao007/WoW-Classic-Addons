@@ -51,13 +51,20 @@ local COLOR_KEYS = {
 	TEXT = true,
 	TEXT_ALT = true,
 	TEXT_DISABLED = true,
-}
-local FEEDBACK_COLOR_KEYS = {
-	RED = true,
-	YELLOW = true,
-	GREEN = true,
-	BLUE = true,
-	ORANGE = true,
+	FEEDBACK_RED = true,
+	FEEDBACK_YELLOW = true,
+	FEEDBACK_GREEN = true,
+	FEEDBACK_BLUE = true,
+	FEEDBACK_ORANGE = true,
+	GROUP_ONE = true,
+	GROUP_TWO = true,
+	GROUP_THREE = true,
+	GROUP_FOUR = true,
+	GROUP_FIVE = true,
+	FULL_BLACK = true,
+	FULL_WHITE = true,
+	BLIZZARD_YELLOW = true,
+	BLIZZARD_GM = true,
 }
 local FONT_KEYS = {
 	HEADING_H5 = true,
@@ -74,15 +81,15 @@ local FONT_KEYS = {
 	TABLE_TABLE1 = true,
 }
 local ELEMENT_STYLE_KEYS = {
-	"_background",
 	"_texture",
 	"_backgroundColor",
 	"_borderColor",
-	"_textStr",
-	"_textColor",
 	"_font",
 	"_roundedCorners",
 	"_borderSize",
+}
+local IGNORED_FRAMES = {
+	GlobalFXDialogModelScene = true
 }
 
 
@@ -170,7 +177,7 @@ function private.OnUpdate(self)
 
 	local frame = EnumerateFrames()
 	while frame do
-		if frame ~= self.highlightFrame and not frame:IsForbidden() and frame:IsVisible() and MouseIsOver(frame) then
+		if frame ~= self.highlightFrame and not frame:IsForbidden() and frame:IsVisible() and MouseIsOver(frame) and not IGNORED_FRAMES[frame:GetName() or ""] then
 			tinsert(framesByStrata[frame:GetFrameStrata()], frame)
 			for _, region in Vararg.Iterator(frame:GetRegions()) do
 				if region:IsObjectType("Texture") and not region:IsForbidden() and region:IsVisible() and MouseIsOver(region) and UIElements.GetByFrame(region) then
@@ -217,6 +224,17 @@ function private.OnUpdate(self)
 									self:AddLine(format("    %s = %s", tostring(k), vStr), 0.7, 0.7, 0.7)
 								end
 							end
+						end
+						local state = element._state:_GetData()
+						if next(state) then
+							self:AddLine("    _state = {", 0.7, 0.7, 0.7)
+							for k, v in pairs(state) do
+								local vStr = private.GetStyleValueStr(v)
+								if vStr then
+									self:AddLine(format("        %s = %s", tostring(k), vStr), 0.7, 0.7, 0.7)
+								end
+							end
+							self:AddLine("    }", 0.7, 0.7, 0.7)
 						end
 					end
 				elseif mouseEnabled then
@@ -268,7 +286,7 @@ end
 
 function private.GetFrameNodeInfo(frame)
 	local globalName = not frame:IsObjectType("Texture") and frame:GetName()
-	if globalName and not strmatch(globalName, "^TSM_UI_ELEMENT:") then
+	if globalName and not strmatch(globalName, "^TSM_UI_ELEMENT:") and not strmatch(globalName, "^TSM_FONT_STRING:") then
 		return globalName, frame:GetParent()
 	end
 
@@ -316,14 +334,6 @@ function private.GetStyleValueStr(value)
 		if value == Theme.GetColor(key) then
 			return "ThemeColor<"..key..">"
 		end
-	end
-	for key in pairs(FEEDBACK_COLOR_KEYS) do
-		if value == Theme.GetFeedbackColor(key) then
-			return "ThemeColor<"..key..">"
-		end
-	end
-	if value == Theme.GetBlizzardColor() then
-		return "ThemeColor<BLIZZARD>"
 	end
 	for key in pairs(FONT_KEYS) do
 		if value == Theme.GetFont(key) then

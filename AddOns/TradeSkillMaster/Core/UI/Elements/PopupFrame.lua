@@ -31,5 +31,5 @@ function PopupFrame.Draw(self)
 	self.__super:Draw()
 	self._nineSlice:SetStyle("popup")
 	-- TOOD: fix the texture color properly
-	self._nineSlice:SetPartVertexColor("center", Theme.GetColor("PRIMARY_BG_ALT", "duskwood"):GetFractionalRGBA())
+	self._nineSlice:SetPartVertexColor("center", Theme.GetColor("PRIMARY_BG_ALT:duskwood"):GetFractionalRGBA())
 end

@@ -12,9 +12,9 @@ local Filter = LibTSMClass.DefineClass("ItemFilter")
 local ItemClass = TSM.Include("Data.ItemClass")
 local Money = TSM.Include("Util.Money")
 local String = TSM.Include("Util.String")
-local Vararg = TSM.Include("Util.Vararg")
 local Log = TSM.Include("Util.Log")
 local ItemInfo = TSM.Include("Service.ItemInfo")
+local private = {}
 
 
 
@@ -33,7 +33,7 @@ end
 -- ============================================================================
 
 function Filter.__init(self)
-	self._isValid = nil
+	self._isValid = false
 	self._str = nil
 	self._escapedStr = nil
 	self._class = nil
@@ -57,12 +57,13 @@ function Filter.__init(self)
 	self._crafting = nil
 	self._disenchant = nil
 	self._item = nil
+	self._callbacks = {}
 
 	self:_Reset()
 end
 
 function Filter._Reset(self)
-	self._isValid = nil
+	self._isValid = false
 	self._str = ""
 	self._escapedStr = ""
 	self._class = nil
@@ -88,38 +89,180 @@ function Filter._Reset(self)
 	self._item = nil
 end
 
-function Filter._ItemQualityToIndex(self, str)
-	for i = 0, 7 do
-		local text = _G["ITEM_QUALITY"..i.."_DESC"]
-		if strlower(str) == strlower(text) then
-			return i
-		end
-	end
+function Filter.RegisterCallback(self, callback)
+	self._callbacks[callback] = true
 end
 
-function Filter.ParseStr(self, str)
-	self:_Reset()
-	local errMsg = nil
+function Filter.UnregisterCallback(self, callback)
+	self._callbacks[callback] = nil
+end
+
+function Filter.ValidateStr(self, str)
+	local class = nil
+	local uncollected = nil
+	local usable = nil
+	local upgrades = nil
+	local unlearned = nil
+	local canlearn = nil
+	local exactOnly = nil
+	local crafting = nil
+	local disenchant = nil
 	local numLevelParts, numItemLevelParts, numPriceParts, numQualityParts = 0, 0, 0, 0
-	self._isValid = nil
 	local hasNonCraftingPart = false
-	for i, part in Vararg.Iterator(strsplit("/", strtrim(str))) do
+	for part in String.SplitIterator(strtrim(str), "/") do
+		if strmatch(part, "^[ip]:[0-9]+") then
+			-- Request item info in case we fail due to not having it (for next time)
+			ItemInfo.FetchInfo(part)
+		end
+	end
+	local isFirstPart = true
+	for part in String.SplitIterator(strtrim(str), "/", true) do
 		part = strtrim(part)
-		if self._isValid ~= nil then
-			-- already done iterating, but can't break / return out of a VarargIterator
-			if strmatch(part, "^[ip]:[0-9]+") then
-				-- request item info in case we failed due to not having it (for next time)
-				ItemInfo.FetchInfo(part)
-			end
-		elseif i == 1 then
+		if isFirstPart then
+			isFirstPart = false
 			-- first part must be a filter string or an item
 			if strmatch(part, "^[ip]:[0-9]+") then
 				local name = ItemInfo.GetName(part)
 				local level = ItemInfo.GetMinLevel(part)
 				local quality = ItemInfo.GetQuality(part)
 				if not name or not level or not quality then
-					errMsg = L["The specified item was not found."]
-					self._isValid = false
+					return false, L["The specified item was not found."]
+				else
+					exactOnly = true
+					class = ItemInfo.GetClassId(part) or 0
+				end
+			end
+		elseif part == "" then
+			-- ignore an empty part
+		elseif tonumber(part) then
+			if numLevelParts >= 2 then
+				-- already have min / max level
+				return false, L["The same filter was specified multiple times."]
+			end
+			numLevelParts = numLevelParts + 1
+			hasNonCraftingPart = true
+		elseif tonumber(strmatch(part, "^i(%d+)$")) then
+			if numItemLevelParts >= 2 then
+				-- already have min / max item level
+				return false, L["The same filter was specified multiple times."]
+			end
+			numItemLevelParts = numItemLevelParts + 1
+			hasNonCraftingPart = true
+		elseif ItemClass.GetClassIdFromClassString(part) then
+			class = ItemClass.GetClassIdFromClassString(part)
+			hasNonCraftingPart = true
+		elseif class and ItemClass.GetSubClassIdFromSubClassString(part, class) then
+			hasNonCraftingPart = true
+		elseif ItemClass.GetInventorySlotIdFromInventorySlotString(part) then
+			hasNonCraftingPart = true
+		elseif private.ItemQualityToIndex(part) then
+			if numQualityParts >= 2 then
+				-- already have min / max quality
+				return false, L["The same filter was specified multiple times."]
+			end
+			numQualityParts = numQualityParts + 1
+			hasNonCraftingPart = true
+		elseif Money.FromString(part) then
+			if numPriceParts >= 2 then
+				-- already have min / max price
+				return false, L["The same filter was specified multiple times."]
+			end
+			numPriceParts = numPriceParts + 1
+			hasNonCraftingPart = true
+		elseif not TSM.IsWowClassic() and strlower(part) == "uncollected" then
+			if uncollected then
+				return false, L["The same filter was specified multiple times."]
+			end
+			uncollected = true
+			hasNonCraftingPart = true
+		elseif strlower(part) == "usable" then
+			if usable then
+				return false, L["The same filter was specified multiple times."]
+			end
+			usable = true
+			hasNonCraftingPart = true
+		elseif not TSM.IsWowClassic() and strlower(part) == "upgrades" then
+			if upgrades then
+				return false, L["The same filter was specified multiple times."]
+			end
+			upgrades = true
+			hasNonCraftingPart = true
+		elseif strlower(part) == "unlearned" then
+			if unlearned then
+				return false, L["The same filter was specified multiple times."]
+			end
+			if CanIMogIt and CanIMogIt.PlayerKnowsTransmog then
+				unlearned = true
+			else
+				Log.PrintUser(L["The unlearned filter was ignored because the CanIMogIt addon was not found."])
+			end
+			hasNonCraftingPart = true
+		elseif strlower(part) == "canlearn" then
+			if canlearn then
+				return false, L["The same filter was specified multiple times."]
+			end
+			if CanIMogIt and CanIMogIt.CharacterCanLearnTransmog then
+				canlearn = true
+			else
+				Log.PrintUser(L["The canlearn filter was ignored because the CanIMogIt addon was not found."])
+			end
+			hasNonCraftingPart = true
+		elseif strlower(part) == "exact" then
+			if exactOnly then
+				return false, L["The same filter was specified multiple times."]
+			end
+			exactOnly = true
+			hasNonCraftingPart = true
+		elseif tonumber(strmatch(part, "^x(%d+)$")) then
+			if tonumber(strmatch(part, "^x(%d+)$")) == 0 then
+				return false, L["The max quantity cannot be zero."]
+			end
+		elseif strlower(part) == "crafting" then
+			if crafting or disenchant then
+				return false, L["The same filter was specified multiple times."]
+			end
+			crafting = true
+		elseif strlower(part) == "disenchant" then
+			if disenchant or crafting then
+				return false, L["The same filter was specified multiple times."]
+			end
+			disenchant = true
+		else
+			-- invalid part
+			return false, format(L["Unknown word (%s)."], part)
+		end
+	end
+
+	if (crafting or disenchant) and hasNonCraftingPart then
+		return false, L["Cannot use additional filters with /crafting or /disenchant."]
+	end
+
+	return true, nil
+end
+
+function Filter.ParseStr(self, str)
+	self:_Reset()
+	self._isValid = false
+	local numLevelParts, numItemLevelParts, numPriceParts, numQualityParts = 0, 0, 0, 0
+	local hasNonCraftingPart = false
+	for part in String.SplitIterator(strtrim(str), "/") do
+		if strmatch(part, "^[ip]:[0-9]+") then
+			-- Request item info in case we fail due to not having it (for next time)
+			ItemInfo.FetchInfo(part)
+		end
+	end
+	local isFirstPart = true
+	for part in String.SplitIterator(strtrim(str), "/", true) do
+		part = strtrim(part)
+		if isFirstPart then
+			isFirstPart = false
+			-- first part must be a filter string or an item
+			if strmatch(part, "^[ip]:[0-9]+") then
+				local name = ItemInfo.GetName(part)
+				local level = ItemInfo.GetMinLevel(part)
+				local quality = ItemInfo.GetQuality(part)
+				if not name or not level or not quality then
+					return false, L["The specified item was not found."]
 				else
 					self._exactOnly = true
 					self._item = part
@@ -145,8 +288,7 @@ function Filter.ParseStr(self, str)
 				self._maxLevel = tonumber(part)
 			else
 				-- already have min / max level
-				errMsg = L["The same filter was specified multiple times."]
-				self._isValid = false
+				return false, L["The same filter was specified multiple times."]
 			end
 			numLevelParts = numLevelParts + 1
 			hasNonCraftingPart = true
@@ -157,8 +299,7 @@ function Filter.ParseStr(self, str)
 				self._maxItemLevel = tonumber(strmatch(part, "^i(%d+)$"))
 			else
 				-- already have min / max item level
-				errMsg = L["The same filter was specified multiple times."]
-				self._isValid = false
+				return false, L["The same filter was specified multiple times."]
 			end
 			numItemLevelParts = numItemLevelParts + 1
 			hasNonCraftingPart = true
@@ -171,15 +312,14 @@ function Filter.ParseStr(self, str)
 		elseif ItemClass.GetInventorySlotIdFromInventorySlotString(part) then
 			self._invSlotId = ItemClass.GetInventorySlotIdFromInventorySlotString(part)
 			hasNonCraftingPart = true
-		elseif self:_ItemQualityToIndex(part) then
+		elseif private.ItemQualityToIndex(part) then
 			if numQualityParts == 0 then
-				self._minQuality = self:_ItemQualityToIndex(part)
+				self._minQuality = private.ItemQualityToIndex(part)
 			elseif numQualityParts == 1 then
-				self._maxQuality = self:_ItemQualityToIndex(part)
+				self._maxQuality = private.ItemQualityToIndex(part)
 			else
 				-- already have min / max quality
-				errMsg = L["The same filter was specified multiple times."]
-				self._isValid = false
+				return false, L["The same filter was specified multiple times."]
 			end
 			numQualityParts = numQualityParts + 1
 			hasNonCraftingPart = true
@@ -191,36 +331,31 @@ function Filter.ParseStr(self, str)
 				self._maxPrice = Money.FromString(part)
 			else
 				-- already have min / max price
-				errMsg = L["The same filter was specified multiple times."]
-				self._isValid = false
+				return false, L["The same filter was specified multiple times."]
 			end
 			numPriceParts = numPriceParts + 1
 			hasNonCraftingPart = true
 		elseif not TSM.IsWowClassic() and strlower(part) == "uncollected" then
 			if self._uncollected then
-				errMsg = L["The same filter was specified multiple times."]
-				self._isValid = false
+				return false, L["The same filter was specified multiple times."]
 			end
 			self._uncollected = true
 			hasNonCraftingPart = true
 		elseif strlower(part) == "usable" then
 			if self._usable then
-				errMsg = L["The same filter was specified multiple times."]
-				self._isValid = false
+				return false, L["The same filter was specified multiple times."]
 			end
 			self._usable = true
 			hasNonCraftingPart = true
 		elseif not TSM.IsWowClassic() and strlower(part) == "upgrades" then
 			if self._upgrades then
-				errMsg = L["The same filter was specified multiple times."]
-				self._isValid = false
+				return false, L["The same filter was specified multiple times."]
 			end
 			self._upgrades = true
 			hasNonCraftingPart = true
 		elseif strlower(part) == "unlearned" then
 			if self._unlearned then
-				errMsg = L["The same filter was specified multiple times."]
-				self._isValid = false
+				return false, L["The same filter was specified multiple times."]
 			end
 			if CanIMogIt and CanIMogIt.PlayerKnowsTransmog then
 				self._unlearned = true
@@ -230,8 +365,7 @@ function Filter.ParseStr(self, str)
 			hasNonCraftingPart = true
 		elseif strlower(part) == "canlearn" then
 			if self._canlearn then
-				errMsg = L["The same filter was specified multiple times."]
-				self._isValid = false
+				return false, L["The same filter was specified multiple times."]
 			end
 			if CanIMogIt and CanIMogIt.CharacterCanLearnTransmog then
 				self._canlearn = true
@@ -241,45 +375,40 @@ function Filter.ParseStr(self, str)
 			hasNonCraftingPart = true
 		elseif strlower(part) == "exact" then
 			if self._exactOnly then
-				errMsg = L["The same filter was specified multiple times."]
-				self._isValid = false
+				return false, L["The same filter was specified multiple times."]
 			end
 			self._exactOnly = true
 			hasNonCraftingPart = true
 		elseif tonumber(strmatch(part, "^x(%d+)$")) then
 			self._maxQuantity = tonumber(strmatch(part, "^x(%d+)$"))
 			if self._maxQuantity == 0 then
-				errMsg = L["The max quantity cannot be zero."]
-				self._isValid = false
+				return false, L["The max quantity cannot be zero."]
 			end
 		elseif strlower(part) == "crafting" then
 			if self._crafting or self._disenchant then
-				errMsg = L["The same filter was specified multiple times."]
-				self._isValid = false
+				return false, L["The same filter was specified multiple times."]
 			end
 			self._crafting = true
 		elseif strlower(part) == "disenchant" then
 			if self._disenchant or self._crafting then
-				errMsg = L["The same filter was specified multiple times."]
-				self._isValid = false
+				return false, L["The same filter was specified multiple times."]
 			end
 			self._disenchant = true
 		else
 			-- invalid part
-			errMsg = format(L["Unknown word (%s)."], part)
-			self._isValid = false
+			return false, format(L["Unknown word (%s)."], part)
 		end
 	end
 
 	if (self._crafting or self._disenchant) and hasNonCraftingPart then
-		errMsg = L["Cannot use additional filters with /crafting or /disenchant."]
-		self._isValid = false
+		return false, L["Cannot use additional filters with /crafting or /disenchant."]
 	end
 
-	if self._isValid == nil then
-		self._isValid = true
+	self._isValid = true
+	for callback in pairs(self._callbacks) do
+		callback()
 	end
-	return self._isValid, errMsg
+	return true, nil
 end
 
 function Filter.GetStr(self)
@@ -377,26 +506,26 @@ function Filter.Matches(self, item, price)
 
 	-- check the name
 	local name = ItemInfo.GetName(item)
-	name = name and strlower(name)
-	if not name or not strfind(name, self._escapedStr) or (self._exactOnly and name ~= self._str) then
+	name = name and strlower(name) or ""
+	if not strfind(name, self._escapedStr) or (self._exactOnly and name ~= self._str) then
 		return false
 	end
 
 	-- check the quality
-	local quality = ItemInfo.GetQuality(item)
-	if not quality or quality < self._minQuality or quality > self._maxQuality then
+	local quality = ItemInfo.GetQuality(item) or -1
+	if quality < self._minQuality or quality > self._maxQuality then
 		return false
 	end
 
 	-- check the item level
-	local itemLevel = ItemInfo.GetItemLevel(item)
-	if not itemLevel or itemLevel < self._minItemLevel or itemLevel > self._maxItemLevel then
+	local itemLevel = ItemInfo.GetItemLevel(item) or 0
+	if itemLevel < self._minItemLevel or itemLevel > self._maxItemLevel then
 		return false
 	end
 
 	-- check the required level
-	local level = ItemInfo.GetMinLevel(item)
-	if not level or level < self._minLevel or level > self._maxLevel then
+	local level = ItemInfo.GetMinLevel(item) or 0
+	if level < self._minLevel or level > self._maxLevel then
 		return false
 	end
 
@@ -433,4 +562,19 @@ function Filter.Matches(self, item, price)
 
 	-- it passed!
 	return true
+end
+
+
+
+-- ============================================================================
+-- Private Helper Functions
+-- ============================================================================
+
+function private.ItemQualityToIndex(str)
+	for i = 0, 7 do
+		local text =  _G["ITEM_QUALITY"..i.."_DESC"]
+		if strlower(str) == strlower(text) then
+			return i
+		end
+	end
 end

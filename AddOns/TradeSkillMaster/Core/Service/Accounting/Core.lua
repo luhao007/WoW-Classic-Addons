@@ -42,7 +42,7 @@ end
 
 function Accounting.GetSaleRate(itemString)
 	-- since auction data only goes back 180 days, limit the sales to that same time range
-	local _, totalSaleNum = TSM.Accounting.Transactions.GetSaleStats(itemString, 180 * SECONDS_PER_DAY)
+	local _, totalSaleNum = TSM.Accounting.Transactions.GetSaleStats(itemString, time() - 180 * SECONDS_PER_DAY)
 	if not totalSaleNum then
 		return nil
 	end

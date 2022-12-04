@@ -4,7 +4,8 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local TSM_NAME, TSM = ...
+local ADDON_NAME = select(1, ...)
+local TSM = select(2, ...) ---@type TSM
 local Analytics = TSM.Include("Util.Analytics")
 local Event = TSM.Include("Util.Event")
 local Log = TSM.Include("Util.Log")
@@ -184,7 +185,7 @@ end
 -- ============================================================================
 
 do
-	LibTSMClass.ConstructWithTable(TSM, Addon, TSM_NAME)
+	LibTSMClass.ConstructWithTable(TSM, Addon, ADDON_NAME)
 end
 
 

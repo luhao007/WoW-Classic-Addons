@@ -4,7 +4,7 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local Sniper = TSM.UI.AuctionUI:NewPackage("Sniper")
 local L = TSM.Include("Locale").GetTable()
 local Delay = TSM.Include("Util.Delay")
@@ -14,6 +14,7 @@ local Sound = TSM.Include("Util.Sound")
 local Money = TSM.Include("Util.Money")
 local Log = TSM.Include("Util.Log")
 local ItemString = TSM.Include("Util.ItemString")
+local TextureAtlas = TSM.Include("Util.TextureAtlas")
 local DefaultUI = TSM.Include("Service.DefaultUI")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local AuctionScan = TSM.Include("Service.AuctionScan")
@@ -28,6 +29,8 @@ local private = {
 	selectionFrame = nil,
 	hasLastScan = nil,
 	contentPath = "selection",
+	phaseTimer = nil,
+	rescanTimer = nil,
 }
 local PHASED_TIME = 60
 local RETAIL_RESCAN_DELAY = 30
@@ -42,6 +45,8 @@ function Sniper.OnInitialize()
 	private.settings = Settings.NewView()
 		:AddKey("global", "auctionUIContext", "sniperScrollingTable")
 		:AddKey("global", "sniperOptions", "sniperSound")
+	private.phaseTimer = Delay.CreateTimer("SNIPER_PHASE", private.FSMPhasedCallback)
+	private.rescanTimer = Delay.CreateTimer("SNIPER_RESCAN", private.FSMRescanDelayed)
 	TSM.UI.AuctionUI.RegisterTopLevelPage(L["Sniper"], private.GetSniperFrame, private.OnItemLinked)
 	private.FSMCreate()
 end
@@ -121,8 +126,7 @@ function private.GetScanFrame()
 			:AddChild(UIElements.New("ActionButton", "backBtn")
 				:SetSize(64, 24)
 				:SetMargin(0, 16, 0, 0)
-				:SetIcon("iconPack.14x14/Chevron/Right@180")
-				:SetText(BACK)
+				:SetText(TextureAtlas.GetTextureLink(TextureAtlas.GetFlippedHorizontallyKey("iconPack.14x14/Chevron/Right"))..BACK)
 				:SetScript("OnClick", private.BackButtonOnClick)
 			)
 			:AddChild(UIElements.New("Text", "title")
@@ -140,10 +144,7 @@ function private.GetScanFrame()
 			:SetScript("OnSelectionChanged", private.AuctionsOnSelectionChanged)
 			:SetScript("OnRowRemoved", private.AuctionsOnRowRemoved)
 		)
-		:AddChild(UIElements.New("Texture", "line")
-			:SetHeight(2)
-			:SetTexture("ACTIVE_BG")
-		)
+		:AddChild(TSM.UI.Views.Line.NewHorizontal("line"))
 		:AddChild(UIElements.New("Frame", "bottom")
 			:SetLayout("HORIZONTAL")
 			:SetHeight(40)
@@ -152,7 +153,7 @@ function private.GetScanFrame()
 			:AddChild(UIElements.New("ActionButton", "pauseResumeBtn")
 				:SetSize(24, 24)
 				:SetMargin(0, 8, 0, 0)
-				:SetIcon("iconPack.18x18/PlayPause")
+				:SetText(TextureAtlas.GetTextureLink("iconPack.18x18/PlayPause"))
 				:SetScript("OnClick", private.PauseResumeBtnOnClick)
 			)
 			:AddChild(UIElements.New("ProgressBar", "progressBar")
@@ -408,11 +409,11 @@ function private.FSMCreate()
 				UpdateScanFrame(context)
 				context.searchContext:StartThread(private.FSMScanCallback, context.auctionScan)
 				if TSM.IsWowClassic() then
-					Delay.AfterTime("sniperPhaseDetect", PHASED_TIME, private.FSMPhasedCallback)
+					private.phaseTimer:RunForTime(PHASED_TIME)
 				end
 			end)
 			:SetOnExit(function(context)
-				Delay.Cancel("sniperPhaseDetect")
+				private.phaseTimer:Cancel()
 			end)
 			:AddTransition("ST_RESULTS")
 			:AddTransition("ST_PAUSED_SCAN")
@@ -433,7 +434,7 @@ function private.FSMCreate()
 					else
 						-- wait 30 seconds before rescanning to avoid spamming the server with API calls
 						context.scanDone = true
-						Delay.AfterTime("SNIPER_RESCAN_DELAY", RETAIL_RESCAN_DELAY, private.FSMRescanDelayed)
+						private.rescanTimer:RunForTime(RETAIL_RESCAN_DELAY)
 					end
 				end
 			end)
@@ -728,7 +729,7 @@ function private.FSMCreate()
 			:SetOnEnter(function(context)
 				local selection = context.scanFrame:GetElement("auctions"):GetSelection()
 				local index = TSM.IsWowClassic() and context.findResult[#context.findResult] or nil
-				if TSM.UI.AuctionUI.BuyUtil.ShowConfirmation(context.scanFrame, selection, context.searchContext:IsBuyoutScan(), context.numConfirmed + 1, context.numFound, context.maxQuantity, private.FSMConfirmationCallback, context.auctionScan, index, true, context.searchContext:GetMarketValueFunc()) then
+				if TSM.UI.AuctionUI.BuyUtil.ShowConfirmation(context.scanFrame, selection, context.searchContext:IsBuyoutScan(), context.numConfirmed + 1, context.numFound, context.maxQuantity, private.FSMConfirmationCallback, context.auctionScan, index, true, context.searchContext) then
 					return "ST_BIDDING_BUYING"
 				else
 					local quantity = selection:GetQuantities()

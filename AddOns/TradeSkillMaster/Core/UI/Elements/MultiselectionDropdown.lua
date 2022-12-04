@@ -12,10 +12,8 @@ local _, TSM = ...
 local L = TSM.Include("Locale").GetTable()
 local Table = TSM.Include("Util.Table")
 local Theme = TSM.Include("Util.Theme")
-local MultiselectionDropdown = TSM.Include("LibTSMClass").DefineClass("MultiselectionDropdown", TSM.UI.BaseDropdown)
 local UIElements = TSM.Include("UI.UIElements")
-UIElements.Register(MultiselectionDropdown)
-TSM.UI.MultiselectionDropdown = MultiselectionDropdown
+local MultiselectionDropdown = UIElements.Define("MultiselectionDropdown", "BaseDropdown")
 local private = {}
 
 
@@ -234,9 +232,8 @@ function MultiselectionDropdown._AddDialogChildren(self, frame)
 		)
 		:AddChild(UIElements.New("Spacer", "spacer"))
 	)
-	frame:AddChild(UIElements.New("Texture", "line")
-		:SetHeight(2)
-		:SetTexture("ACTIVE_BG_ALT")
+	frame:AddChild(TSM.UI.Views.Line.NewHorizontal("line")
+		:SetColor("ACTIVE_BG_ALT")
 	)
 	frame:AddChild(UIElements.New("DropdownList", "list")
 		:SetMultiselect(true)

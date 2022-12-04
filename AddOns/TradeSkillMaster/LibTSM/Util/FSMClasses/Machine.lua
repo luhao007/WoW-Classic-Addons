@@ -4,17 +4,13 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
---- FSMMachine Class.
--- This class allows implementing event-driving finite state machines.
--- @classmod FSMMachine
-
-local _, TSM = ...
-local Machine = TSM.Init("Util.FSMClasses.Machine")
+local TSM = select(2, ...) ---@type TSM
+local Machine = TSM.Init("Util.FSMClasses.Machine") ---@class Util.FSMClasses.Machine
 local State = TSM.Include("Util.FSMClasses.State")
 local TempTable = TSM.Include("Util.TempTable")
 local Log = TSM.Include("Util.Log")
 local LibTSMClass = TSM.Include("LibTSMClass")
-local FSMMachine = LibTSMClass.DefineClass("FSMMachine")
+local FSMObject = LibTSMClass.DefineClass("FSMObject") ---@class FSMObject
 local private = {
 	eventTransitionHandlerCache = {},
 }
@@ -26,7 +22,7 @@ local private = {
 -- ============================================================================
 
 function Machine.Create(name)
-	return FSMMachine(name)
+	return FSMObject(name)
 end
 
 
@@ -35,7 +31,7 @@ end
 -- Class Meta Methods
 -- ============================================================================
 
-function FSMMachine.__init(self, name)
+function FSMObject:__init(name)
 	self._name = name
 	self._currentState = nil
 	self._context = nil
@@ -51,11 +47,10 @@ end
 -- Public Class Methods
 -- ============================================================================
 
---- Add an FSM state.
--- @tparam FSM self The FSM object
--- @tparam FSMState stateObj The FSM state object to add
--- @treturn FSM The FSM object
-function FSMMachine.AddState(self, stateObj)
+---Add an FSM state.
+---@param stateObj FSMState The FSM state object to add
+---@return FSMObject @The FSM object
+function FSMObject:AddState(stateObj)
 	assert(State.IsInstance(stateObj))
 	local name = stateObj:_GetName()
 	assert(not self._stateObjs[name], "state already exists")
@@ -63,23 +58,21 @@ function FSMMachine.AddState(self, stateObj)
 	return self
 end
 
---- Add a default event handler.
--- @tparam FSM self The FSM object
--- @tparam string event The event name
--- @tparam function handler The default event handler
--- @treturn FSM The FSM object
-function FSMMachine.AddDefaultEvent(self, event, handler)
+---Add a default event handler.
+---@param event string The event name
+---@param handler function The default event handler
+---@return FSM @The FSM object
+function FSMObject:AddDefaultEvent(event, handler)
 	assert(not self._defaultEvents[event], "event already exists")
 	self._defaultEvents[event] = handler
 	return self
 end
 
---- Add a simple default event-based transition.
--- @tparam FSMMachine self The FSMMachine object
--- @tparam string event The event name
--- @tparam string toState The state to transition to
--- @treturn FSMMachine The FSMMachine object
-function FSMMachine.AddDefaultEventTransition(self, event, toState)
+---Add a simple default event-based transition.
+---@param event string The event name
+---@param toState string The state to transition to
+---@return FSMObject @The FSM object
+function FSMObject:AddDefaultEventTransition(event, toState)
 	if not private.eventTransitionHandlerCache[toState] then
 		private.eventTransitionHandlerCache[toState] = function(context, ...)
 			return toState, ...
@@ -88,12 +81,11 @@ function FSMMachine.AddDefaultEventTransition(self, event, toState)
 	return self:AddDefaultEvent(event, private.eventTransitionHandlerCache[toState])
 end
 
---- Initialize the FSM.
--- @tparam FSM self The FSM object
--- @tparam string initialState The name of the initial state
--- @param[opt={}] context The FSM context table which gets passed to all state and event handlers
--- @treturn FSM The FSM object
-function FSMMachine.Init(self, initialState, context)
+---Initialize the FSM.
+---@param initialState string The name of the initial state
+---@param context? table The FSM context table which gets passed to all state and event handlers
+---@return FSMObject @The FSM object
+function FSMObject:Init(initialState, context)
 	assert(self._stateObjs[initialState], "invalid initial state")
 	self._currentState = initialState
 	self._context = context or {}
@@ -106,12 +98,11 @@ function FSMMachine.Init(self, initialState, context)
 	return self
 end
 
---- Process an event.
--- @tparam FSM self The FSM object
--- @tparam string event The name of the event
--- @tparam[opt] vararg ... Additional arguments to pass to the handler function
--- @treturn FSM The FSM object
-function FSMMachine.ProcessEvent(self, event, ...)
+---Process an event.
+---@param event string The name of the event
+---@param ... any Additional arguments to pass to the handler function
+---@return FSMObject @The FSM object
+function FSMObject:ProcessEvent(event, ...)
 	assert(self._currentState, "FSM not initialized")
 	if self._handlingEvent then
 		Log.RaiseStackLevel()
@@ -141,11 +132,10 @@ function FSMMachine.ProcessEvent(self, event, ...)
 	return self
 end
 
---- Enable or disable event and state transition logs (can be called recursively).
--- @tparam FSM self The FSM object
--- @tparam boolean enabled Whether or not logging should be enabled
--- @treturn FSM The FSM object
-function FSMMachine.SetLoggingEnabled(self, enabled)
+---Enable or disable event and state transition logs (can be called recursively).
+---@param enabled boolean Whether or not logging should be enabled
+---@return FSMObject @The FSM object
+function FSMObject:SetLoggingEnabled(enabled)
 	self._loggingDisabledCount = self._loggingDisabledCount + (enabled and -1 or 1)
 	assert(self._loggingDisabledCount >= 0)
 	return self
@@ -157,7 +147,7 @@ end
 -- Private Class Methods
 -- ============================================================================
 
-function FSMMachine._Transition(self, eventResult)
+function FSMObject:_Transition(eventResult)
 	local result = eventResult
 	while result[1] do
 		-- perform the transition

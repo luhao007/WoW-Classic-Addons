@@ -54,13 +54,12 @@ end
 function MyAuctions.CreateQuery()
 	local query = AuctionTracking.CreateQuery()
 		:LeftJoin(private.pendingDB, "index")
-		:InnerJoin(ItemInfo.GetDBForJoin(), "itemString")
 		:VirtualField("group", "string", TSM.Groups.GetPathByItem, "itemString", "")
 	if TSM.IsWowClassic() then
 		query:OrderBy("index", false)
 	else
 		query:OrderBy("saleStatus", false)
-		query:OrderBy("name", true)
+		query:OrderBy("itemName", true)
 		query:OrderBy("auctionId", true)
 	end
 	return query

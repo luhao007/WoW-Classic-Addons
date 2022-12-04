@@ -4,7 +4,7 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local SearchCommon = TSM.Shopping:NewPackage("SearchCommon")
 local Delay = TSM.Include("Util.Delay")
 local Threading = TSM.Include("Service.Threading")
@@ -13,6 +13,7 @@ local private = {
 	callback = nil,
 	isRunning = false,
 	pendingStartArgs = {},
+	startTimer = nil,
 }
 
 
@@ -25,6 +26,7 @@ function SearchCommon.OnInitialize()
 	-- initialize threads
 	private.findThreadId = Threading.New("FIND_SEARCH", private.FindThread)
 	Threading.SetCallback(private.findThreadId, private.ThreadCallback)
+	private.startTimer = Delay.CreateTimer("SEARCH_COMMON_START", private.StartThread)
 end
 
 function SearchCommon.StartFindAuction(auctionScan, auction, callback, noSeller)
@@ -33,7 +35,7 @@ function SearchCommon.StartFindAuction(auctionScan, auction, callback, noSeller)
 	private.pendingStartArgs.auction = auction
 	private.pendingStartArgs.callback = callback
 	private.pendingStartArgs.noSeller = noSeller
-	Delay.AfterTime("SEARCH_COMMON_THREAD_START", 0, private.StartThread)
+	private.startTimer:RunForTime(0)
 end
 
 function SearchCommon.StopFindAuction(noKill)
@@ -60,7 +62,7 @@ function private.StartThread()
 		return
 	end
 	if private.isRunning then
-		Delay.AfterTime("SEARCH_COMMON_THREAD_START", 0.1, private.StartThread)
+		private.startTimer:RunForTime(0.1)
 		return
 	end
 	private.isRunning = true

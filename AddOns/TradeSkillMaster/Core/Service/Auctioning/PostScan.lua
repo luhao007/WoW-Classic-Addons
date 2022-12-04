@@ -4,7 +4,7 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local PostScan = TSM.Auctioning:NewPackage("PostScan")
 local L = TSM.Include("Locale").GetTable()
 local Database = TSM.Include("Util.Database")
@@ -32,6 +32,7 @@ local private = {
 	subRowsTemp = {},
 	groupsQuery = nil, --luacheck: ignore 1004 - just stored for GC reasons
 	operationsQuery = nil, --luacheck: ignore 1004 - just stored for GC reasons
+	operationsChangedTimer = nil,
 }
 local RESET_REASON_LOOKUP = {
 	minPrice = "postResetMin",
@@ -53,6 +54,7 @@ local MAX_COMMODITY_STACKS_PER_AUCTION = 40
 -- ============================================================================
 
 function PostScan.OnInitialize()
+	private.operationsChangedTimer = Delay.CreateTimer("POST_SCAN_OPERATIONS_CHANGED", private.UpdateOperationDB)
 	BagTracking.RegisterCallback(private.UpdateOperationDB)
 	DefaultUI.RegisterAuctionHouseVisibleCallback(private.UpdateOperationDB, true)
 	private.operationDB = Database.NewSchema("AUCTIONING_OPERATIONS")
@@ -270,7 +272,7 @@ end
 -- ============================================================================
 
 function private.OnGroupsOperationsChanged()
-	Delay.AfterFrame("POST_GROUP_OPERATIONS_CHANGED", 1, private.UpdateOperationDB)
+	private.operationsChangedTimer:RunForFrames(1)
 end
 
 function private.UpdateOperationDB()

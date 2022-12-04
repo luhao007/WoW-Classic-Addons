@@ -4,11 +4,8 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
---- Recipe String functions
--- @module RecipeString
-
-local _, TSM = ...
-local RecipeString = TSM.Init("Util.RecipeString")
+local TSM = select(2, ...) ---@type TSM
+local RecipeString = TSM.Init("Util.RecipeString") ---@class Util.RecipeString
 local String = TSM.Include("Util.String")
 local Table = TSM.Include("Util.Table")
 local private = {
@@ -23,6 +20,12 @@ local private = {
 -- Module Functions
 -- ============================================================================
 
+---Creates a recipe string from its components.
+---@param spellId number The spell ID of the recipe
+---@param optionalMats table<number,number> The optional materials (slotId -> itemId table)
+---@param rank? number The rank of the recipe
+---@param level? number The level of the recipe
+---@return string @The recipe string
 function RecipeString.Get(spellId, optionalMats, rank, level)
 	local recipeString = "r:"..spellId
 	local suffix = ""
@@ -49,6 +52,12 @@ function RecipeString.Get(spellId, optionalMats, rank, level)
 	return recipeString
 end
 
+---Creates a recipe string from a craft string.
+---@param craftString string The recipe string
+---@param optionalMats table<number,number> The optional materials (slotId -> itemId table)
+---@param overrideRank? number Overrides the rank of the craft string
+---@param overrideLevel? number Overrides the level of the craft string
+---@return string @The recipe string
 function RecipeString.FromCraftString(craftString, optionalMats, overrideRank, overrideLevel)
 	local spellId = strmatch(craftString, "^c:(%d+)")
 	if overrideRank and overrideRank < 0 then
@@ -59,21 +68,33 @@ function RecipeString.FromCraftString(craftString, optionalMats, overrideRank, o
 	return RecipeString.Get(spellId, optionalMats, rank, level)
 end
 
+---Gets the spell ID from the recipe string.
+---@param recipeString string The recipe string
+---@return number @The spell ID
 function RecipeString.GetSpellId(recipeString)
 	local spellId = strmatch(recipeString, "^r:(%d+)")
 	return tonumber(spellId)
 end
 
+---Gets the rank from the recipe string.
+---@param recipeString string The recipe string
+---@return number|nil @The rank
 function RecipeString.GetRank(recipeString)
 	local rank = strmatch(recipeString, ":r(%d)$")
 	return tonumber(rank)
 end
 
+---Gets the level from the recipe string.
+---@param recipeString string The recipe string
+---@return number|nil @The level
 function RecipeString.GetLevel(recipeString)
 	local level = strmatch(recipeString, ":l(%d)$")
 	return tonumber(level)
 end
 
+---Iterates over the optional mats within the recipe string.
+---@param recipeString string The recipe string
+---@return fun():number, string, number @An iterator with fields: `index`, `slotId`, `itemId`
 function RecipeString.OptionalMatIterator(recipeString)
 	recipeString = gsub(recipeString, ":l%d$", "")
 	recipeString = gsub(recipeString, ":r%d$", "")
@@ -89,6 +110,9 @@ function RecipeString.OptionalMatIterator(recipeString)
 	return private.OptionalMatIteratorHelper, private.iterTemp, 0
 end
 
+---Returns whether or not the recipe string includes optional materials.
+---@param recipeString string The recipe string
+---@return boolean
 function RecipeString.HasOptionalMats(recipeString)
 	recipeString = gsub(recipeString, ":l%d$", "")
 	recipeString = gsub(recipeString, ":r%d$", "")

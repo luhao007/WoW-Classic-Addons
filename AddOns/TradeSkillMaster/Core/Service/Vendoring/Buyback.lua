@@ -4,7 +4,7 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local Buyback = TSM.Vendoring:NewPackage("Buyback")
 local Database = TSM.Include("Util.Database")
 local Delay = TSM.Include("Util.Delay")
@@ -14,6 +14,7 @@ local DefaultUI = TSM.Include("Service.DefaultUI")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local private = {
 	buybackDB = nil,
+	updateTimer = nil,
 }
 
 
@@ -29,13 +30,14 @@ function Buyback.OnInitialize()
 		:AddNumberField("price")
 		:AddNumberField("quantity")
 		:Commit()
+	private.updateTimer = Delay.CreateTimer("VENDOR_BUYBACK_UPDATE", private.UpdateBuybackDB)
 	DefaultUI.RegisterMerchantVisibleCallback(private.MechantVisibilityHandler)
 	Event.Register("MERCHANT_UPDATE", private.MerchantUpdateEventHandler)
 end
 
 function Buyback.CreateQuery()
 	return private.buybackDB:NewQuery()
-		:InnerJoin(ItemInfo.GetDBForJoin(), "itemString")
+		:VirtualField("name", "string", ItemInfo.GetName, "itemString", "?")
 end
 
 function Buyback.BuybackItem(index)
@@ -50,15 +52,15 @@ end
 
 function private.MechantVisibilityHandler(visible)
 	if visible then
-		Delay.AfterFrame("UPDATE_BUYBACK_DB", 1, private.UpdateBuybackDB)
+		private.updateTimer:RunForFrames(1)
 	else
-		Delay.Cancel("UPDATE_BUYBACK_DB")
+		private.updateTimer:Cancel()
 		private.buybackDB:Truncate()
 	end
 end
 
 function private.MerchantUpdateEventHandler()
-	Delay.AfterFrame("UPDATE_BUYBACK_DB", 1, private.UpdateBuybackDB)
+	private.updateTimer:RunForFrames(1)
 end
 
 function private.UpdateBuybackDB()

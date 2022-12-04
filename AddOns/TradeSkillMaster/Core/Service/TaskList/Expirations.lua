@@ -4,7 +4,7 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local Expirations = TSM.TaskList:NewPackage("Expirations")
 local L = TSM.Include("Locale").GetTable()
 local Delay = TSM.Include("Util.Delay")
@@ -18,6 +18,8 @@ local private = {
 	activeTasks = {},
 	expiringMailTasks = {},
 	expiredAuctionTasks = {},
+	updateDelayedTimer = nil,
+	updateTimer = nil,
 }
 local PLAYER_NAME = UnitName("player")
 local DAYS_LEFT_LIMIT = 1
@@ -29,6 +31,8 @@ local DAYS_LEFT_LIMIT = 1
 -- ============================================================================
 
 function Expirations.OnEnable()
+	private.updateDelayedTimer = Delay.CreateTimer("EXPIRATIONS_UPDATE_DELAYED", private.PopulateTasks)
+	private.updateTimer = Delay.CreateTimer("EXPIRATIONS_UPDATE", private.PopulateTasks)
 	AuctionTracking.RegisterExpiresCallback(Expirations.Update)
 	MailTracking.RegisterExpiresCallback(private.UpdateDelayed)
 	TSM.TaskList.RegisterTaskPool(private.ActiveTaskIterator)
@@ -46,7 +50,7 @@ end
 -- ============================================================================
 
 function private.UpdateDelayed()
-	Delay.AfterTime("EXPIRATION_UPDATE_DELAYED", 0.5, private.PopulateTasks)
+	private.updateDelayedTimer:RunForTime(0.5)
 end
 
 function private.ActiveTaskIterator()
@@ -133,9 +137,9 @@ function private.PopulateTasks()
 	TSM.TaskList.OnTaskUpdated()
 
 	if minPendingCooldown ~= math.huge and minPendingCooldown < DAYS_LEFT_LIMIT then
-		Delay.AfterTime("EXPIRATION_UPDATE", minPendingCooldown, private.PopulateTasks)
+		private.updateTimer:RunForTime(minPendingCooldown)
 	else
-		Delay.Cancel("EXPIRATION_UPDATE")
+		private.updateTimer:Cancel()
 	end
 end
 

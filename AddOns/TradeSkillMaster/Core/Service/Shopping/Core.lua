@@ -16,10 +16,11 @@ TSM.Shopping.ShoppingSearchContext = ShoppingSearchContext
 -- ShoppingSearchContext - Public Class Methods
 -- ============================================================================
 
-function ShoppingSearchContext.__init(self, threadId, marketValueFunc)
+function ShoppingSearchContext.__init(self, threadId, marketValueFunc, gatheringResultsFunction)
 	assert(threadId and marketValueFunc)
 	self._threadId = threadId
 	self._marketValueFunc = marketValueFunc
+	self._gatheringResultsFunction = gatheringResultsFunction
 	self._name = nil
 	self._filterInfo = nil
 	self._postContext = nil
@@ -57,6 +58,10 @@ end
 
 function ShoppingSearchContext.GetMarketValueFunc(self)
 	return self._marketValueFunc
+end
+
+function ShoppingSearchContext.GetGatheringResultsFunc(self)
+	return self._gatheringResultsFunction
 end
 
 function ShoppingSearchContext.GetPctTooltip(self)

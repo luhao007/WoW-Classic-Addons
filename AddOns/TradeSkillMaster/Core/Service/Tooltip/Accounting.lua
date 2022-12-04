@@ -148,6 +148,6 @@ function private.PopulatePurchaseLines(tooltip, itemString)
 		assert(minPrice and maxPrice)
 		tooltip:AddQuantityValueLine(L["Purchased (Min/Avg/Max Price)"], totalNum, minPrice, Math.Round(totalPrice / totalNum), maxPrice)
 	end
-	tooltip:AddValueLine(L["Smart Avg Buy Price"], smartAvgPrice)
+	tooltip:AddItemValueLine(L["Smart Avg Buy Price"], smartAvgPrice)
 	tooltip:AddTextLine(L["Last Purchased"], format(L["%s ago"], SecondsToTime(time() - lastBuyTime)))
 end

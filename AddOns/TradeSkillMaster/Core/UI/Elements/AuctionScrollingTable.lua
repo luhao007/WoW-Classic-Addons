@@ -16,6 +16,7 @@ local Money = TSM.Include("Util.Money")
 local String = TSM.Include("Util.String")
 local TempTable = TSM.Include("Util.TempTable")
 local Theme = TSM.Include("Util.Theme")
+local TextureAtlas = TSM.Include("Util.TextureAtlas")
 local ScriptWrapper = TSM.Include("Util.ScriptWrapper")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local PlayerInfo = TSM.Include("Service.PlayerInfo")
@@ -839,7 +840,7 @@ function private.GetItemBidCellText(self, subRow)
 	end
 	local _, itemDisplayedBid = subRow:GetDisplayedBids()
 	local _, _, _, isHighBidder = subRow:GetBidInfo()
-	return Money.ToString(itemDisplayedBid, isHighBidder and Theme.GetFeedbackColor("GREEN"):GetTextColorPrefix() or nil, "OPT_83_NO_COPPER")
+	return Money.ToString(itemDisplayedBid, isHighBidder and Theme.GetColor("FEEDBACK_GREEN"):GetTextColorPrefix() or nil, "OPT_83_NO_COPPER")
 end
 
 function private.GetBidCellText(self, subRow)
@@ -852,7 +853,7 @@ function private.GetBidCellText(self, subRow)
 	end
 	local displayedBid = subRow:GetDisplayedBids()
 	local _, _, _, isHighBidder = subRow:GetBidInfo()
-	return Money.ToString(displayedBid, isHighBidder and Theme.GetFeedbackColor("GREEN"):GetTextColorPrefix() or nil, "OPT_83_NO_COPPER")
+	return Money.ToString(displayedBid, isHighBidder and Theme.GetColor("FEEDBACK_GREEN"):GetTextColorPrefix() or nil, "OPT_83_NO_COPPER")
 end
 
 function private.GetItemBuyoutCellText(self, subRow)
@@ -992,7 +993,7 @@ function private.GetPendingIcon(self, subRow, iconIndex)
 				texture = "iconPack.12x12/Running"
 				shouldRotate = not isPaused
 			else
-				texture = TSM.UI.TexturePacks.GetColoredKey("iconPack.12x12/Running", "ACTIVE_BG_ALT")
+				texture = TextureAtlas.GetColoredKey("iconPack.12x12/Running", "ACTIVE_BG_ALT")
 				shouldRotate = false
 			end
 			return true, texture, true, nil, shouldRotate

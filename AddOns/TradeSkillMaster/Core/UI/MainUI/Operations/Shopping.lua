@@ -13,7 +13,14 @@ local private = {
 }
 local RESTOCK_SOURCES = { L["Alts"], L["Auctions"], BANK, GUILD }
 local RESTOCK_SOURCES_KEYS = { "alts", "auctions", "bank", "guild" }
-local BAD_PRICE_SOURCES = { shoppingopmax = true }
+local MAX_QUANTITY_VALIDATE_CONTEXT = {
+	isNumber = true,
+}
+local MAX_PRICE_VALIDATE_CONTEXT = {
+	badSources = {
+		shoppingopmax = true,
+	}
+}
 
 
 
@@ -22,6 +29,7 @@ local BAD_PRICE_SOURCES = { shoppingopmax = true }
 -- ============================================================================
 
 function Shopping.OnInitialize()
+	MAX_QUANTITY_VALIDATE_CONTEXT.minValue, MAX_QUANTITY_VALIDATE_CONTEXT.maxValue = TSM.Operations.Shopping.GetRestockRange()
 	TSM.MainUI.Operations.RegisterModule("Shopping", private.GetShoppingOperationSettings)
 end
 
@@ -39,38 +47,19 @@ function private.GetShoppingOperationSettings(operationName)
 		:SetPadding(8, 8, 8, 0)
 		:SetBackgroundColor("PRIMARY_BG")
 		:AddChild(TSM.MainUI.Operations.CreateExpandableSection("Shopping", "generalOptions", L["General Options"], L["Set what items are shown during a Shopping scan."])
-			:AddChild(TSM.MainUI.Operations.CreateLinkedPriceInput("maxPrice", L["Maximum auction price"], 124, BAD_PRICE_SOURCES))
+			:AddChild(TSM.MainUI.Operations.CreateLinkedPriceInput("maxPrice", L["Maximum auction price"], MAX_PRICE_VALIDATE_CONTEXT))
 			:AddChild(TSM.MainUI.Operations.CreateLinkedSettingLine("showAboveMaxPrice", L["Show auctions above max price"])
 				:SetLayout("VERTICAL")
 				:SetHeight(48)
 				:SetMargin(0, 0, 12, 12)
-				:AddChild(UIElements.New("ToggleOnOff", "toggle")
+				:AddChild(UIElements.New("ToggleYesNo", "toggle")
 					:SetHeight(18)
 					:SetSettingInfo(operation, "showAboveMaxPrice")
 					:SetDisabled(TSM.Operations.HasRelationship("Shopping", private.currentOperationName, "showAboveMaxPrice"))
 				)
 			)
-			:AddChild(TSM.MainUI.Operations.CreateLinkedSettingLine("restockQuantity", L["Maximum restock quantity"])
-				:SetLayout("VERTICAL")
-				:SetHeight(48)
+			:AddChild(TSM.MainUI.Operations.CreateLinkedPriceInput("restockQuantity", L["Maximum restock quantity"], MAX_QUANTITY_VALIDATE_CONTEXT)
 				:SetMargin(0, 0, 0, 12)
-				:AddChild(UIElements.New("Frame", "content")
-					:SetLayout("HORIZONTAL")
-					:SetHeight(24)
-					:AddChild(UIElements.New("Input", "input")
-						:SetMargin(0, 8, 0, 0)
-						:SetBackgroundColor("ACTIVE_BG")
-						:SetValidateFunc("CUSTOM_PRICE")
-						:SetSettingInfo(operation, "restockQuantity")
-						:SetDisabled(TSM.Operations.HasRelationship("Shopping", private.currentOperationName, "restockQuantity"))
-					)
-					:AddChild(UIElements.New("Text", "label")
-						:SetWidth("AUTO")
-						:SetFont("BODY_BODY3")
-						:SetTextColor(TSM.Operations.HasRelationship("Shopping", private.currentOperationName, "restockQuantity") and "TEXT_DISABLED" or "TEXT")
-						:SetFormattedText(L["Supported range: %d - %d"], TSM.Operations.Shopping.GetRestockRange())
-					)
-				)
 			)
 			:AddChild(TSM.MainUI.Operations.CreateLinkedSettingLine("restockSources", L["Sources to include for restock"])
 				:SetLayout("VERTICAL")

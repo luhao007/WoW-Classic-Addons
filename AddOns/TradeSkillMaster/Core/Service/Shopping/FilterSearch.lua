@@ -42,7 +42,7 @@ function FilterSearch.OnInitialize()
 	private.scanThreadId = Threading.New("FILTER_SEARCH", private.ScanThread)
 	private.itemFilter = ItemFilter.New()
 	private.searchContext = FilterSearchContext(private.scanThreadId, private.MarketValueFunction)
-	private.gatheringSearchContext = FilterSearchContext(private.scanThreadId, private.MarketValueFunction)
+	private.gatheringSearchContext = FilterSearchContext(private.scanThreadId, private.MarketValueFunction, private.GatheringResultsFunction)
 end
 
 function FilterSearch.GetGreatDealsSearchContext(filterStr)
@@ -324,6 +324,21 @@ function private.MarketValueFunction(subRow)
 	else
 		return CustomPrice.GetValue(private.marketValueSource, itemString or baseItemString)
 	end
+end
+
+function private.GatheringResultsFunction(auctionScan, marketValueFunc, itemString, quantity, maxQuantity)
+	local filterQuantity = 0
+	for _, query in auctionScan:QueryIterator() do
+		for _, subRow in query:ItemSubRowIterator(itemString) do
+			local _, itemBuyout = subRow:GetBuyouts()
+			if marketValueFunc(subRow) >= itemBuyout then
+				local _, numOwnerItems = subRow:GetOwnerInfo()
+				local quantityAvailable = subRow:GetQuantities() - numOwnerItems
+				filterQuantity = filterQuantity + quantityAvailable
+			end
+		end
+	end
+	return filterQuantity > 0 and min(filterQuantity, quantity, maxQuantity) or min(quantity, maxQuantity)
 end
 
 function private.GetTargetItemRate(targetItemString, itemString)

@@ -31,7 +31,7 @@ function SelectionList.__init(self)
 end
 
 function SelectionList.Acquire(self)
-	self._headerHidden = true
+	self._headerMode = "NONE"
 	self.__super:Acquire()
 	self:SetSelectionDisabled(true)
 	self:GetScrollingTableInfo()

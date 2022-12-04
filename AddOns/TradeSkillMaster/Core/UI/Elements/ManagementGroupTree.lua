@@ -12,12 +12,13 @@
 local _, TSM = ...
 local L = TSM.Include("Locale").GetTable()
 local Analytics = TSM.Include("Util.Analytics")
-local DragContext = TSM.Include("Util.DragContext")
 local String = TSM.Include("Util.String")
 local Theme = TSM.Include("Util.Theme")
+local TextureAtlas = TSM.Include("Util.TextureAtlas")
 local Log = TSM.Include("Util.Log")
 local ScriptWrapper = TSM.Include("Util.ScriptWrapper")
 local ManagementGroupTree = TSM.Include("LibTSMClass").DefineClass("ManagementGroupTree", TSM.UI.GroupTree)
+local DragContext = TSM.Include("UI.DragContext")
 local UIElements = TSM.Include("UI.UIElements")
 UIElements.Register(ManagementGroupTree)
 TSM.UI.ManagementGroupTree = ManagementGroupTree
@@ -186,11 +187,11 @@ end
 function private.GetActionIcon(self, data, iconIndex, isMouseOver)
 	if iconIndex == 1 then
 		local texturePack = "iconPack.14x14/Add/Circle"
-		return true, isMouseOver and TSM.UI.TexturePacks.GetColoredKey(texturePack, Theme.GetColor("INDICATOR")) or texturePack
+		return true, isMouseOver and TextureAtlas.GetColoredKey(texturePack, "INDICATOR") or texturePack
 	elseif iconIndex == 2 then
 		if data ~= TSM.CONST.ROOT_GROUP_PATH then
 			local texturePack = "iconPack.14x14/Delete"
-			return true, isMouseOver and TSM.UI.TexturePacks.GetColoredKey(texturePack, Theme.GetColor("INDICATOR")) or texturePack
+			return true, isMouseOver and TextureAtlas.GetColoredKey(texturePack, "INDICATOR") or texturePack
 		else
 			return false, nil
 		end
@@ -236,7 +237,7 @@ end
 
 function private.MoveFrameOnUpdate(frame)
 	local self = frame:GetContext()
-	local uiScale = UIParent:GetEffectiveScale()
+	local uiScale = frame:_GetBaseFrame():GetEffectiveScale()
 	local x, y = GetCursorPosition()
 	x = x / uiScale
 	y = y / uiScale
@@ -264,12 +265,11 @@ function private.RowOnDragStart(row)
 		return
 	end
 	local level = select('#', strsplit(TSM.CONST.GROUP_SEP, groupPath))
-	local levelColor = Theme.GetGroupColor(level)
 	self._dragGroupPath = groupPath
 	self._moveFrame:Show()
 	self._moveFrame:SetHeight(self._rowHeight)
 	local moveFrameText = self._moveFrame:GetElement("text")
-	moveFrameText:SetTextColor(levelColor)
+	moveFrameText:SetTextColor(Theme.GetGroupColorKey(level))
 	moveFrameText:SetText(TSM.Groups.Path.GetName(groupPath))
 	moveFrameText:SetWidth(1000)
 	moveFrameText:Draw()

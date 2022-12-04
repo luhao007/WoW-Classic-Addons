@@ -7,117 +7,33 @@
 local _, TSM = ...
 local TexturePacks = TSM.UI:NewPackage("TexturePacks")
 local NineSlice = TSM.Include("Util.NineSlice")
-local Color = TSM.Include("Util.Color")
-local Theme = TSM.Include("Util.Theme")
-local private = {
-	colorLookup = {},
-}
+local Rectangle = TSM.Include("UI.Rectangle")
+local TextureAtlas = TSM.Include("Util.TextureAtlas")
 local TEXTURE_FILE_INFO = {
 	uiFrames = {
 		path = "Interface\\Addons\\TradeSkillMaster\\Media\\UIFrames.tga",
 		scale = 1,
-		width = 256,
-		height = 256,
+		width = 512,
+		height = 512,
 		coord = {
-			["AuctionCounterTexture"] = { 166, 189, 214, 225 },
-			["DividerHandle"] = { 3, 11, 3, 85 },
-			["GlobalEdgeBottomEdge"] = { 68, 78, 217, 227 },
-			["GlobalEdgeBottomLeftCorner"] = { 83, 93, 217, 227 },
-			["GlobalEdgeBottomRightCorner"] = { 194, 204, 3, 13 },
-			["GlobalEdgeLeftEdge"] = { 194, 204, 18, 28 },
-			["GlobalEdgeRightEdge"] = { 243, 253, 3, 13 },
-			["GlobalEdgeTopEdge"] = { 243, 253, 18, 28 },
-			["GlobalEdgeTopLeftCorner"] = { 194, 204, 33, 43 },
-			["GlobalEdgeTopRightCorner"] = { 243, 253, 33, 43 },
-			["HighlightDot"] = { 97, 105, 48, 56 },
-			["InnerFrameBottomEdge"] = { 110, 120, 87, 97 },
-			["InnerFrameBottomLeftCorner"] = { 110, 120, 102, 112 },
-			["InnerFrameBottomRightCorner"] = { 118, 128, 66, 76 },
-			["InnerFrameLeftEdge"] = { 133, 143, 3, 13 },
-			["InnerFrameRightEdge"] = { 148, 158, 3, 13 },
-			["InnerFrameTopEdge"] = { 133, 143, 18, 28 },
-			["InnerFrameTopLeftCorner"] = { 148, 158, 18, 28 },
-			["InnerFrameTopRightCorner"] = { 67, 77, 33, 43 },
-			["LargeActiveButtonLeft"] = { 14, 26, 90, 114 },
-			["LargeActiveButtonMiddle"] = { 14, 26, 119, 143 },
-			["LargeActiveButtonRight"] = { 16, 28, 3, 27 },
-			["LargeClickedButtonLeft"] = { 16, 28, 32, 56 },
-			["LargeClickedButtonMiddle"] = { 16, 28, 61, 85 },
-			["LargeClickedButtonRight"] = { 31, 43, 90, 114 },
-			["LargeHoverButtonLeft"] = { 31, 43, 119, 143 },
-			["LargeHoverButtonMiddle"] = { 33, 45, 3, 27 },
-			["LargeHoverButtonRight"] = { 33, 45, 32, 56 },
-			["LargeInactiveButtonLeft"] = { 33, 45, 61, 85 },
-			["LargeInactiveButtonMiddle"] = { 48, 60, 90, 114 },
-			["LargeInactiveButtonRight"] = { 48, 60, 119, 143 },
-			["LoadingBarLeft"] = { 50, 62, 3, 27 },
-			["LoadingBarMiddle"] = { 50, 62, 32, 56 },
-			["LoadingBarRight"] = { 50, 62, 61, 85 },
-			["MediumActiveButtonLeft"] = { 3, 15, 232, 252 },
-			["MediumActiveButtonMiddle"] = { 20, 32, 232, 252 },
-			["MediumActiveButtonRight"] = { 37, 49, 232, 252 },
-			["MediumClickedButtonLeft"] = { 54, 66, 232, 252 },
-			["MediumClickedButtonMiddle"] = { 65, 77, 117, 137 },
-			["MediumClickedButtonRight"] = { 65, 77, 142, 162 },
-			["MediumHoverButtonLeft"] = { 68, 80, 167, 187 },
-			["MediumHoverButtonMiddle"] = { 68, 80, 192, 212 },
-			["MediumHoverButtonRight"] = { 71, 83, 232, 252 },
-			["MediumInactiveButtonLeft"] = { 88, 100, 232, 252 },
-			["MediumInactiveButtonMiddle"] = { 82, 94, 117, 137 },
-			["MediumInactiveButtonRight"] = { 82, 94, 142, 162 },
-			["OuterFrameBottomEdge"] = { 67, 77, 48, 58 },
-			["OuterFrameBottomLeftCorner"] = { 67, 77, 3, 13 },
-			["OuterFrameBottomRightCorner"] = { 67, 77, 18, 28 },
-			["OuterFrameLeftEdge"] = { 82, 92, 33, 43 },
-			["OuterFrameRightEdge"] = { 82, 92, 48, 58 },
-			["OuterFrameTopEdge"] = { 82, 92, 3, 13 },
-			["OuterFrameTopLeftCorner"] = { 82, 92, 18, 28 },
-			["OuterFrameTopRightCorner"] = { 97, 107, 33, 43 },
-			["PopupBottomEdge"] = { 14, 26, 148, 160 },
-			["PopupBottomLeftCorner"] = { 31, 43, 148, 160 },
-			["PopupBottomRightCorner"] = { 48, 60, 148, 160 },
-			["PopupLeftEdge"] = { 98, 110, 214, 226 },
-			["PopupRightEdge"] = { 115, 127, 214, 226 },
-			["PopupTopEdge"] = { 132, 144, 214, 226 },
-			["PopupTopLeftCorner"] = { 149, 161, 214, 226 },
-			["PopupTopRightCorner"] = { 65, 105, 90, 112 },
-			["RoundDarkBottom"] = { 110, 118, 48, 56 },
-			["RoundDarkBottomLeft"] = { 112, 120, 33, 41 },
-			["RoundDarkBottomRight"] = { 123, 131, 46, 54 },
-			["RoundDarkCenter"] = { 125, 133, 33, 41 },
-			["RoundDarkLeft"] = { 149, 156, 55, 62 },
-			["RoundDarkRight"] = { 138, 146, 33, 41 },
-			["RoundDarkTop"] = { 133, 140, 59, 66 },
-			["RoundDarkTopLeft"] = { 209, 216, 45, 52 },
-			["RoundDarkTopRight"] = { 151, 159, 33, 41 },
-			["RoundedBottomCenter"] = { 183, 187, 3, 11 },
-			["RoundedBottomLeft"] = { 97, 105, 3, 11 },
-			["RoundedBottomRight"] = { 97, 105, 16, 24 },
-			["RoundedCenter"] = { 110, 118, 3, 11 },
-			["RoundedLeft"] = { 149, 157, 46, 50 },
-			["RoundedRight"] = { 149, 157, 46, 50 },
-			["RoundedTop"] = { 183, 187, 3, 11 },
-			["RoundedTopLeft"] = { 110, 118, 16, 24 },
-			["RoundedTopRight"] = { 136, 144, 46, 54 },
-			["SettingsNavShadow"] = { 3, 9, 90, 162 },
-			["SmallActiveButtonLeft"] = { 99, 111, 117, 133 },
-			["SmallActiveButtonMiddle"] = { 99, 111, 138, 154 },
-			["SmallActiveButtonRight"] = { 209, 221, 3, 19 },
-			["SmallClickedButtonLeft"] = { 166, 178, 3, 19 },
-			["SmallClickedButtonMiddle"] = { 166, 178, 24, 40 },
-			["SmallClickedButtonRight"] = { 226, 238, 3, 19 },
-			["SmallHoverButtonLeft"] = { 209, 221, 24, 40 },
-			["SmallHoverButtonMiddle"] = { 226, 238, 24, 40 },
-			["SmallHoverButtonRight"] = { 166, 178, 45, 61 },
-			["SmallInactiveButtonLeft"] = { 67, 79, 66, 82 },
-			["SmallInactiveButtonMiddle"] = { 84, 96, 66, 82 },
-			["SmallInactiveButtonRight"] = { 101, 113, 66, 82 },
-			["SmallLogo"] = { 85, 161, 167, 186 },
-			["TSMLogo"] = { 3, 63, 167, 227 },
-			["ToggleDisabledOff"] = { 85, 132, 191, 209 },
-			["ToggleDisabledOn"] = { 105, 152, 231, 249 },
-			["ToggleOff"] = { 137, 184, 191, 209 },
-			["ToggleOn"] = { 157, 204, 231, 249 },
+			["AuctionCounterTexture"] = { 65, 88, 402, 413 },
+			["HighlightDot"] = { 54, 62, 476, 484 },
+			["LargeRadiusBottomRight"] = { 3, 131, 3, 131 },
+			["LargeRadiusBottomLeft"] = { 3, 131, 136, 264 },
+			["LargeRadiusTopLeft"] = { 3, 131, 269, 397 },
+			["LargeRadiusTopRight"] = { 146, 274, 3, 131 },
+			["LoadingBarLeft"] = { 3, 15, 402, 426 },
+			["LoadingBarMiddle"] = { 3, 15, 431, 455 },
+			["LoadingBarRight"] = { 3, 15, 460, 484 },
+			["PopupBottomEdge"] = { 20, 32, 429, 441 },
+			["PopupBottomLeftCorner"] = { 20, 32, 446, 458 },
+			["PopupBottomRightCorner"] = { 20, 32, 463, 475 },
+			["PopupLeftEdge"] = { 37, 49, 429, 441 },
+			["PopupRightEdge"] = { 37, 49, 446, 458 },
+			["PopupTopEdge"] = { 37, 49, 463, 475 },
+			["PopupTopLeftCorner"] = { 54, 66, 429, 441 },
+			["PopupTopRightCorner"] = { 20, 60, 402, 424 },
+			["SmallLogo"] = { 3, 79, 489, 508 }
 		},
 	},
 	iconPack = {
@@ -290,39 +206,6 @@ local TEXTURE_FILE_INFO = {
 	},
 }
 local NINE_SLICE_STYLES = {
-	rounded = {
-		topLeft = "uiFrames.RoundedTopLeft",
-		bottomLeft = "uiFrames.RoundedBottomLeft",
-		topRight = "uiFrames.RoundedTopRight",
-		bottomRight = "uiFrames.RoundedBottomRight",
-		left = "uiFrames.RoundedLeft",
-		right = "uiFrames.RoundedRight",
-		top = "uiFrames.RoundedTop",
-		bottom = "uiFrames.RoundedBottomCenter",
-		center = "uiFrames.RoundedCenter",
-	},
-	global = {
-		topLeft = "uiFrames.GlobalEdgeTopLeftCorner",
-		bottomLeft = "uiFrames.GlobalEdgeBottomLeftCorner",
-		topRight = "uiFrames.GlobalEdgeTopRightCorner",
-		bottomRight = "uiFrames.GlobalEdgeBottomRightCorner",
-		left = "uiFrames.GlobalEdgeLeftEdge",
-		right = "uiFrames.GlobalEdgeRightEdge",
-		top = "uiFrames.GlobalEdgeTopEdge",
-		bottom = "uiFrames.GlobalEdgeBottomEdge",
-		center = nil,
-	},
-	outerFrame = {
-		topLeft = "uiFrames.OuterFrameTopLeftCorner",
-		bottomLeft = "uiFrames.OuterFrameBottomLeftCorner",
-		topRight = "uiFrames.OuterFrameTopRightCorner",
-		bottomRight = "uiFrames.OuterFrameBottomRightCorner",
-		left = "uiFrames.OuterFrameLeftEdge",
-		right = "uiFrames.OuterFrameRightEdge",
-		top = "uiFrames.OuterFrameTopEdge",
-		bottom = "uiFrames.OuterFrameBottomEdge",
-		center = "__WHITE",
-	},
 	popup = {
 		topLeft = "uiFrames.PopupTopLeftCorner",
 		bottomLeft = "uiFrames.PopupBottomLeftCorner",
@@ -334,17 +217,12 @@ local NINE_SLICE_STYLES = {
 		bottom = "uiFrames.PopupBottomEdge",
 		center = "__WHITE",
 	},
-	solid = {
-		topLeft = "__WHITE",
-		bottomLeft = "__WHITE",
-		topRight = "__WHITE",
-		bottomRight = "__WHITE",
-		left = "__WHITE",
-		right = "__WHITE",
-		top = "__WHITE",
-		bottom = "__WHITE",
-		center = "__WHITE",
-	}
+}
+local ROUNDED_RECTANGLE_CORNERS = {
+	topLeft = "uiFrames.LargeRadiusTopLeft",
+	bottomLeft = "uiFrames.LargeRadiusBottomLeft",
+	topRight = "uiFrames.LargeRadiusTopRight",
+	bottomRight = "uiFrames.LargeRadiusBottomRight",
 }
 
 
@@ -354,10 +232,14 @@ local NINE_SLICE_STYLES = {
 -- ============================================================================
 
 function TexturePacks.OnInitialize()
+	for key, info in pairs(TEXTURE_FILE_INFO) do
+		TextureAtlas.RegisterFile(key, info)
+	end
+
 	for _, info in pairs(NINE_SLICE_STYLES) do
 		-- extract the texture info
-		for part, texturePack in pairs(info) do
-			if texturePack == "__WHITE" then
+		for part, key in pairs(info) do
+			if key == "__WHITE" then
 				info[part] = {
 					texture = "Interface\\Buttons\\WHITE8X8",
 					coord = { 0, 1, 0, 1 },
@@ -365,15 +247,10 @@ function TexturePacks.OnInitialize()
 					height = 8,
 				}
 			else
-				local width, height = TexturePacks.GetSize(texturePack)
-				local fileInfo, coord, color, angle = private.SplitTexturePath(texturePack)
-				assert(not color and not angle)
-				info[part] = {
-					texture = fileInfo.path,
-					coord = { private.GetTexCoord(fileInfo, coord) },
-					width = width,
-					height = height,
-				}
+				info[part] = TextureAtlas.ExtractFileInfo(key)
+				local width, height = TextureAtlas.GetSize(key)
+				info[part].width = width
+				info[part].height = height
 			end
 		end
 	end
@@ -386,149 +263,11 @@ function TexturePacks.OnInitialize()
 	for key, info in pairs(NINE_SLICE_STYLES) do
 		NineSlice.RegisterStyle(key, info)
 	end
-end
 
-function TexturePacks.IsValid(key)
-	local fileInfo, coord = private.SplitTexturePath(key)
-	return fileInfo and coord and true or false
-end
-
-function TexturePacks.GetSize(key)
-	local fileInfo, coord = private.SplitTexturePath(key)
-	assert(fileInfo and coord)
-	local minX, maxX, minY, maxY = unpack(coord)
-	local width = (maxX - minX) / fileInfo.scale
-	local height = (maxY - minY) / fileInfo.scale
-	return width, height
-end
-
-function TexturePacks.GetWidth(key)
-	local width = TexturePacks.GetSize(key)
-	return width
-end
-
-function TexturePacks.GetHeight(key)
-	local _, height = TexturePacks.GetSize(key)
-	return height
-end
-
-function TexturePacks.SetTexture(texture, key)
-	local fileInfo, coord, color, angle = private.SplitTexturePath(key)
-	texture:SetTexture(fileInfo.path)
-	if angle then
-		texture:SetTexCoord(private.GetTexCoordRotated(fileInfo, coord, angle))
-	else
-		texture:SetTexCoord(private.GetTexCoord(fileInfo, coord))
+	-- extract the rounded rectangle corner texture info
+	for part, key in pairs(ROUNDED_RECTANGLE_CORNERS) do
+		ROUNDED_RECTANGLE_CORNERS[part] = TextureAtlas.ExtractFileInfo(key)
 	end
-	if color then
-		texture:SetVertexColor((private.colorLookup[color] or Theme.GetColor(color)):GetFractionalRGBA())
-	else
-		texture:SetVertexColor(1, 1, 1, 1)
-	end
-end
 
-function TexturePacks.SetSize(texture, key)
-	local width, height = TexturePacks.GetSize(key)
-	texture:SetWidth(width)
-	texture:SetHeight(height)
-end
-
-function TexturePacks.SetWidth(texture, key)
-	texture:SetWidth(TexturePacks.GetWidth(key))
-end
-
-function TexturePacks.SetHeight(texture, key)
-	texture:SetHeight(TexturePacks.GetHeight(key))
-end
-
-function TexturePacks.SetTextureAndWidth(texture, key)
-	TexturePacks.SetTexture(texture, key)
-	TexturePacks.SetWidth(texture, key)
-end
-
-function TexturePacks.SetTextureAndHeight(texture, key)
-	TexturePacks.SetTexture(texture, key)
-	TexturePacks.SetHeight(texture, key)
-end
-
-function TexturePacks.SetTextureAndSize(texture, key)
-	TexturePacks.SetTexture(texture, key)
-	TexturePacks.SetSize(texture, key)
-end
-
-function TexturePacks.GetTextureLink(key)
-	local width, height = TexturePacks.GetSize(key)
-	local fileInfo, coord, color = private.SplitTexturePath(key)
-	assert(fileInfo and coord)
-	local minX, maxX, minY, maxY = unpack(coord)
-	local r, g, b, a = 255, 255, 255, 255
-	if color then
-		r, g, b, a = (private.colorLookup[color] or Theme.GetColor(color)):GetRGBA()
-	end
-	assert(a == 255)
-	return "|T"..strjoin(":", fileInfo.path, width, height, 0, 0, fileInfo.width, fileInfo.height, minX, maxX, minY, maxY, r, g, b).."|t"
-end
-
-function TexturePacks.GetColoredKey(key, color)
-	local fileInfo, _, existingColor = private.SplitTexturePath(key)
-	assert(fileInfo and not existingColor)
-	if type(color) == "string" then
-		-- this is a theme color key, so just add it on
-		return key.."#"..color
-	elseif color:Equals(Color.GetFullWhite()) then
-		return key
-	end
-	assert(not color:Equals(Color.GetTransparent()))
-	local hex = color:GetHex()
-	private.colorLookup[hex] = color
-	return key..hex
-end
-
-
-
--- ============================================================================
--- Private Helper Functions
--- ============================================================================
-
-function private.SplitTexturePath(key)
-	local file, entry, color, angle, color2 = strmatch(key, "^([^%.]+)%.([^#@]+)(#?[0-9a-fA-Z_]*)@?([0-9]*)(#?[0-9a-fA-Z_]*)$")
-	color = (color ~= "" and color) or (color2 ~= "" and color2) or nil
-	angle = angle ~= "" and tonumber(angle) or nil
-	local fileInfo = file and TEXTURE_FILE_INFO[file]
-	if color and not strmatch(color, "^#[0-9a-fA-F]+$") then
-		-- remove the leading '#' from theme color keys
-		color = strsub(color, 2)
-	end
-	return fileInfo, fileInfo and fileInfo.coord[entry], color, angle
-end
-
-function private.GetTexCoord(fileInfo, coord)
-	local minX, maxX, minY, maxY = unpack(coord)
-	minX = minX / fileInfo.width
-	maxX = maxX / fileInfo.width
-	minY = minY / fileInfo.height
-	maxY = maxY / fileInfo.height
-	return minX, maxX, minY, maxY
-end
-
-function private.GetTexCoordRotated(fileInfo, coord, angle)
-	local minX, maxX, minY, maxY = private.GetTexCoord(fileInfo, coord)
-	local aspect = fileInfo.width / fileInfo.height
-	local centerX = (minX + maxX) / 2
-	local centerY = (minY + maxY) / 2
-	local ULx, ULy = private.RotateCoordPair(minX, minY, centerX, centerY, angle, aspect)
-	local LLx, LLy = private.RotateCoordPair(minX, maxY, centerX, centerY, angle, aspect)
-	local URx, URy = private.RotateCoordPair(maxX, minY, centerX, centerY, angle, aspect)
-	local LRx, LRy = private.RotateCoordPair(maxX, maxY, centerX, centerY, angle, aspect)
-	return ULx, ULy, LLx, LLy, URx, URy, LRx, LRy
-end
-
-function private.RotateCoordPair(x, y, originX, originY, angle, aspect)
-	local cosResult = cos(angle)
-	local sinResult = sin(angle)
-	y = y / aspect
-	originY = originY / aspect
-	local resultX = originX + (x - originX) * cosResult - (y - originY) * sinResult
-	local resultY = (originY + (y - originY) * cosResult + (x - originX) * sinResult) * aspect
-	return resultX, resultY
+	Rectangle.RegisterTextures(ROUNDED_RECTANGLE_CORNERS)
 end

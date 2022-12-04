@@ -4,7 +4,7 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local PlayerProfessions = TSM.Crafting:NewPackage("PlayerProfessions")
 local ProfessionInfo = TSM.Include("Data.ProfessionInfo")
 local Database = TSM.Include("Util.Database")
@@ -12,13 +12,14 @@ local Event = TSM.Include("Util.Event")
 local Delay = TSM.Include("Util.Delay")
 local String = TSM.Include("Util.String")
 local TempTable = TSM.Include("Util.TempTable")
-local Vararg = TSM.Include("Util.Vararg")
+local CraftString = TSM.Include("Util.CraftString")
 local Threading = TSM.Include("Service.Threading")
 local private = {
 	playerProfessionsThread = nil,
 	playerProfessionsThreadRunning = false,
 	db = nil,
 	query = nil,
+	retryTimer = nil,
 }
 local TAILORING_ES = "Sastrería"
 local TAILORING_SKILL_ES = "Costura"
@@ -52,6 +53,7 @@ function PlayerProfessions.OnInitialize()
 		:OrderBy("profession", true)
 	private.playerProfessionsThread = Threading.New("PLAYER_PROFESSIONS", private.PlayerProfessionsThread)
 	private.StartPlayerProfessionsThread()
+	private.retryTimer = Delay.CreateTimer("PLAYER_PROFESSIONS_RETRY", private.PlayerProfessionsSkillUpdate)
 	Event.Register("SKILL_LINES_CHANGED", private.PlayerProfessionsSkillUpdate)
 	Event.Register("LEARNED_SPELL_IN_TAB", private.StartPlayerProfessionsThread)
 end
@@ -107,7 +109,7 @@ function private.PlayerProfessionsSkillUpdate()
 		for i = offset + 1, offset + numSpells do
 			local name, subName = GetSpellBookItemName(i, BOOKTYPE_SPELL)
 			if not subName then
-				Delay.AfterTime(0.05, private.PlayerProfessionsSkillUpdate)
+				private.retryTimer:RunForTime(0.05)
 				return
 			end
 			if name and subName and (ProfessionInfo.IsSubNameClassic(strtrim(subName, " ")) or name == ProfessionInfo.GetName("Smelting") or name == ProfessionInfo.GetName("Poisons") or name == LEATHERWORKING_ES or name == TAILORING_ES or name == ENGINEERING_FR or name == FIRST_AID_FR) and not TSM.UI.CraftingUI.IsProfessionIgnored(name) then
@@ -256,12 +258,15 @@ function private.PlayerProfessionsThread()
 	-- clean up crafts which are no longer known
 	local matUsed = Threading.AcquireSafeTempTable()
 	local craftStrings = Threading.AcquireSafeTempTable()
+	local spellIds = Threading.AcquireSafeTempTable()
 	for _, craftString in TSM.Crafting.CraftStringIterator() do
 		tinsert(craftStrings, craftString)
+		local spellId = CraftString.GetSpellId(craftString)
+		spellIds[spellId] = true
 	end
 	for _, craftString in ipairs(craftStrings) do
 		local playersToRemove = TempTable.Acquire()
-		for _, player in Vararg.Iterator(TSM.Crafting.GetPlayers(craftString)) do
+		for player in TSM.Crafting.PlayerIterator(craftString) do
 			-- check if the player still exists and still has this profession
 			local playerProfessions = TSM.db:Get("sync", TSM.db:GetSyncScopeKeyByCharacter(player), "internalData", "playerProfessions")
 			if not playerProfessions or not playerProfessions[TSM.Crafting.GetProfession(craftString)] then
@@ -287,6 +292,14 @@ function private.PlayerProfessionsThread()
 		Threading.Yield()
 	end
 	Threading.ReleaseSafeTempTable(craftStrings)
+
+	-- clean up favorite crafts
+	for spellId, isFavorite in pairs(TSM.db.factionrealm.internalData.isCraftFavorite) do
+		if not isFavorite or not spellIds[spellId] then
+			TSM.db.factionrealm.internalData.isCraftFavorite[spellId] = nil
+		end
+	end
+	Threading.ReleaseSafeTempTable(spellIds)
 
 	-- clean up mats which aren't used anymore
 	local toRemove = TempTable.Acquire()

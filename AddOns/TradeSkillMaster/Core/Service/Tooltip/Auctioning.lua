@@ -75,5 +75,5 @@ function private.PopulatePricesLine(tooltip, itemString)
 		normalPrice = TSM.Auctioning.Util.GetPrice("normalPrice", operation, itemString)
 		maxPrice = TSM.Auctioning.Util.GetPrice("maxPrice", operation, itemString)
 	end
-	tooltip:AddValueLine(L["Min/Normal/Max Prices"], minPrice, normalPrice, maxPrice)
+	tooltip:AddItemValuesLine(L["Min/Normal/Max Prices"], minPrice, normalPrice, maxPrice)
 end

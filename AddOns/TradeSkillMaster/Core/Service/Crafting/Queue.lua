@@ -13,7 +13,7 @@ local Math = TSM.Include("Util.Math")
 local Log = TSM.Include("Util.Log")
 local RecipeString = TSM.Include("Util.RecipeString")
 local ItemString = TSM.Include("Util.ItemString")
-local Inventory = TSM.Include("Service.Inventory")
+local AltTracking = TSM.Include("Service.AltTracking")
 local CustomPrice = TSM.Include("Service.CustomPrice")
 local private = {
 	db = nil,
@@ -108,7 +108,7 @@ function Queue.GetNumItems()
 end
 
 function Queue.GetTotals()
-	local totalCost, totalProfit, totalCastTimeMs, totalNumQueued = nil, nil, nil, 0
+	local totalCost, totalProfit, totalCastTimeMs = nil, nil, nil
 	local query = private.db:NewQuery()
 		:Select("recipeString", "craftString", "num")
 	for _, recipeString, craftString, numQueued in query:Iterator() do
@@ -125,11 +125,9 @@ function Queue.GetTotals()
 		if castTime then
 			totalCastTimeMs = (totalCastTimeMs or 0) + castTime * numQueued
 		end
-		totalNumQueued = totalNumQueued + numQueued
-
 	end
 	query:Release()
-	return totalCost, totalProfit, totalCastTimeMs and ceil(totalCastTimeMs / 1000) or nil, totalNumQueued
+	return totalCost, totalProfit, totalCastTimeMs and ceil(totalCastTimeMs / 1000) or nil
 end
 
 function Queue.RestockGroups(groups)
@@ -175,16 +173,16 @@ function private.RestockItem(itemString)
 	local haveQuantity = CustomPrice.GetItemPrice(itemString, "NumInventory") or 0
 	for guild, ignored in pairs(TSM.db.global.craftingOptions.ignoreGuilds) do
 		if ignored then
-			haveQuantity = haveQuantity - Inventory.GetGuildQuantity(itemString, guild)
+			haveQuantity = haveQuantity - AltTracking.GetGuildQuantity(itemString, guild)
 		end
 	end
 	for player, ignored in pairs(TSM.db.global.craftingOptions.ignoreCharacters) do
 		if ignored then
-			haveQuantity = haveQuantity - Inventory.GetBagQuantity(itemString, player)
-			haveQuantity = haveQuantity - Inventory.GetBankQuantity(itemString, player)
-			haveQuantity = haveQuantity - Inventory.GetReagentBankQuantity(itemString, player)
-			haveQuantity = haveQuantity - Inventory.GetAuctionQuantity(itemString, player)
-			haveQuantity = haveQuantity - Inventory.GetMailQuantity(itemString, player)
+			haveQuantity = haveQuantity - AltTracking.GetBagQuantity(itemString, player)
+			haveQuantity = haveQuantity - AltTracking.GetBankQuantity(itemString, player)
+			haveQuantity = haveQuantity - AltTracking.GetReagentBankQuantity(itemString, player)
+			haveQuantity = haveQuantity - AltTracking.GetAuctionQuantity(itemString, player)
+			haveQuantity = haveQuantity - AltTracking.GetMailQuantity(itemString, player)
 		end
 	end
 	assert(haveQuantity >= 0)

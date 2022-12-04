@@ -4,7 +4,7 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local RPC = TSM.Init("Service.SyncClasses.RPC")
 local Delay = TSM.Include("Util.Delay")
 local TempTable = TSM.Include("Util.TempTable")
@@ -16,6 +16,7 @@ local private = {
 	rpcFunctions = {},
 	pendingRPC = {},
 	rpcSeqNum = 0,
+	pendingTimer = nil,
 }
 local RPC_EXTRA_TIMEOUT = 15
 local CALLBACK_TIME_WARNING_THRESHOLD_MS = 20
@@ -27,6 +28,7 @@ local CALLBACK_TIME_WARNING_THRESHOLD_MS = 20
 -- ============================================================================
 
 RPC:OnModuleLoad(function()
+	private.pendingTimer = Delay.CreateTimer("SYNC_RPC_PENDING", private.HandlePendingRPC)
 	Comm.RegisterHandler(Constants.DATA_TYPES.RPC_CALL, private.HandleCall)
 	Comm.RegisterHandler(Constants.DATA_TYPES.RPC_RETURN, private.HandleReturn)
 	Comm.RegisterHandler(Constants.DATA_TYPES.RPC_PREAMBLE, private.HandlePreamble)
@@ -65,7 +67,7 @@ function RPC.Call(name, targetPlayer, handler, ...)
 	context.handler = handler
 	context.timeoutTime = time() + RPC_EXTRA_TIMEOUT + private.EstimateTransferTime(numBytes)
 	private.pendingRPC[private.rpcSeqNum] = context
-	Delay.AfterTime("SYNC_PENDING_RPC", 1, private.HandlePendingRPC)
+	private.pendingTimer:RunForTime(1)
 
 	return true, (context.timeoutTime - time()) * 2 / 3
 end

@@ -4,8 +4,8 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
-local Log = TSM.Init("Util.Log")
+local TSM = select(2, ...) ---@type TSM
+local Log = TSM.Init("Util.Log") ---@class Util.Log
 local Debug = TSM.Include("Util.Debug")
 local Theme = TSM.Include("Util.Theme")
 local private = {
@@ -23,11 +23,16 @@ local private = {
 }
 local MAX_ROWS = 200
 local MAX_MSG_LEN = 200
+---@alias LogSeverity
+---|'"TRACE"'
+---|'"INFO"'
+---|'"WARN"'
+---|'"ERR"'
 local CHAT_LOG_COLOR_KEYS = {
-	TRACE = "BLUE",
-	INFO = "GREEN",
-	WARN = "YELLOW",
-	ERR = "RED",
+	TRACE = "FEEDBACK_BLUE",
+	INFO = "FEEDBACK_GREEN",
+	WARN = "FEEDBACK_YELLOW",
+	ERR = "FEEDBACK_RED",
 }
 
 
@@ -36,10 +41,14 @@ local CHAT_LOG_COLOR_KEYS = {
 -- Module Functions
 -- ============================================================================
 
+---Sets the chat frame to display messages within.
+---@param chatFrame any
 function Log.SetChatFrame(chatFrame)
 	private.chatFrame = strlower(chatFrame)
 end
 
+---Enables or disables printing log messages to chat.
+---@param enabled boolean
 function Log.SetLoggingToChatEnabled(enabled)
 	if TSM.IsTestEnvironment() then
 		-- always enable in test environments
@@ -62,73 +71,108 @@ function Log.SetLoggingToChatEnabled(enabled)
 	end
 end
 
+---Registers a function for getting the name of the current thread to include in log messages.
+---@param func fun(): string A function which returns the name of the currently-running thread
 function Log.SetCurrentThreadNameFunction(func)
 	private.currentThreadNameFunc = func
 end
 
+---Gets the length of the log buffer.
+---@return number
 function Log.Length()
 	return private.len
 end
 
+---Gets a log entry from the log buffer.
+---@param index number The index within the buffer
+---@return LogSeverity severity
+---@return string location
+---@return string timeStr
+---@return string msg
 function Log.Get(index)
 	assert(index <= private.len)
 	local readIndex = (private.writeIndex - private.len + index - 2) % MAX_ROWS + 1
 	return private.severity[readIndex], private.location[readIndex], private.timeStr[readIndex], private.msg[readIndex]
 end
 
+---Raises the stack level of log messages.
 function Log.RaiseStackLevel()
 	private.stackLevel = private.stackLevel + 1
 end
 
+---Lowers the stack level of log messages.
 function Log.LowerStackLevel()
 	private.stackLevel = private.stackLevel - 1
 end
 
-function Log.StackTrace()
+---Logs a stack trace.
+---@param maxLines? number The maximum number of lines (defaults to all available)
+function Log.StackTrace(maxLines)
+	maxLines = maxLines or math.huge
 	Log.RaiseStackLevel()
 	Log.Trace("Stack Trace:")
 	local level = 2
 	local line = Debug.GetStackLevelLocation(level)
-	while line do
+	while line and maxLines > 0 do
 		Log.Trace("  " .. line)
 		level = level + 1
 		line = Debug.GetStackLevelLocation(level)
+		maxLines = maxLines - 1
 	end
 	Log.LowerStackLevel()
 end
 
+---Logs a formatted message at the trace level.
+---@param ... string
 function Log.Trace(...)
 	private.Log("TRACE", ...)
 end
 
+---Logs a formatted message at the info level.
+---@param ... string
 function Log.Info(...)
 	private.Log("INFO", ...)
 end
 
+---Logs a formatted message at the warning level.
+---@param ... string
 function Log.Warn(...)
 	private.Log("WARN", ...)
 end
 
+---Logs a formatted message at the error level.
+---@param ... string
 function Log.Err(...)
 	private.Log("ERR", ...)
 end
 
+---Prints a raw user-facing message to chat.
+---@param str string The message
 function Log.PrintUserRaw(str)
 	private.GetChatFrame():AddMessage(str)
 end
 
+---Prints a raw, formatted user-facing message to chat.
+---@param ... string The message
 function Log.PrintfUserRaw(...)
 	Log.PrintUserRaw(format(...))
 end
 
+---Prints a user-facing message to chat.
+---@param str string The message
 function Log.PrintUser(str)
 	Log.PrintUserRaw(Theme.GetColor("INDICATOR"):ColorText("TSM")..": "..str)
 end
 
+---Prints a formatted user-facing message to chat.
+---@param ... string The message
 function Log.PrintfUser(...)
 	Log.PrintUser(format(...))
 end
 
+---Colors some accent text for display to the user.
+---@param text string The text to color
+---@return string @The colored text
 function Log.ColorUserAccentText(text)
 	return Theme.GetColor("INDICATOR_ALT"):ColorText(text)
 end
@@ -189,5 +233,5 @@ function private.Log(severity, fmtStr, ...)
 end
 
 function private.LogToChat(severity, location, timeStr, msg)
-	print(strjoin(" ", timeStr, Theme.GetFeedbackColor(CHAT_LOG_COLOR_KEYS[severity]):ColorText("{"..location.."}"), msg))
+	print(strjoin(" ", timeStr, Theme.GetColor(CHAT_LOG_COLOR_KEYS[severity]):ColorText("{"..location.."}"), msg))
 end

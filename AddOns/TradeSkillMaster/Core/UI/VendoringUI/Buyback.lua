@@ -69,7 +69,7 @@ function private.GetFrame()
 					:SetTitle(L["Cost"])
 					:SetFont("TABLE_TABLE1")
 					:SetJustifyH("RIGHT")
-					:SetTextInfo("price", Money.ToString)
+					:SetTextInfo("price", private.GetCostPriceText)
 					:SetSortInfo("price")
 					:Commit()
 				:SetCursor("BUY_CURSOR")
@@ -77,10 +77,7 @@ function private.GetFrame()
 			:SetQuery(private.query)
 			:SetScript("OnRowClick", private.RowOnClick)
 		)
-		:AddChild(UIElements.New("Texture", "line")
-			:SetHeight(2)
-			:SetTexture("ACTIVE_BG")
-		)
+		:AddChild(TSM.UI.Views.Line.NewHorizontal("line"))
 		:AddChild(UIElements.New("Frame", "footer")
 			:SetLayout("HORIZONTAL")
 			:SetHeight(40)
@@ -91,7 +88,7 @@ function private.GetFrame()
 				:SetWidth(166)
 				:SetMargin(0, 8, 0, 0)
 				:SetPadding(4)
-				:AddChild(UIElements.New("PlayerGoldText", "text"))
+				:AddChild(TSM.UI.Views.PlayerGoldText.New("text"))
 			)
 			:AddChild(UIElements.New("ActionButton", "buybackAllBtn")
 				:SetText(L["Buyback All"])
@@ -102,6 +99,10 @@ end
 
 function private.GetItemText(itemString)
 	return TSM.UI.GetColoredItemName(itemString) or "?"
+end
+
+function private.GetCostPriceText(value)
+	return Money.ToString(value, nil, "OPT_RETAIL_ROUND")
 end
 
 

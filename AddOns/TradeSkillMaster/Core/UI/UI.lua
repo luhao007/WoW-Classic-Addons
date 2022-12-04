@@ -11,6 +11,7 @@ local _, TSM = ...
 local UI = TSM:NewPackage("UI")
 local Analytics = TSM.Include("Util.Analytics")
 local Theme = TSM.Include("Util.Theme")
+local Wow = TSM.Include("Util.Wow")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local private = {
 	analyticsPath = {
@@ -28,10 +29,10 @@ local TIME_LEFT_STRINGS = {}
 do
 	-- generate the TIME_LEFT_STRINGS values
 	local colors = {
-		Theme.GetFeedbackColor("RED"),
-		Theme.GetFeedbackColor("RED"),
-		Theme.GetFeedbackColor("YELLOW"),
-		Theme.GetFeedbackColor("GREEN"),
+		Theme.GetColor("FEEDBACK_RED"),
+		Theme.GetColor("FEEDBACK_RED"),
+		Theme.GetColor("FEEDBACK_YELLOW"),
+		Theme.GetColor("FEEDBACK_GREEN"),
 	}
 	local strs = TSM.IsWowClassic() and { "30m", "2h", "8h", "24h" } or { "1h", "2h", "24h", "48h" }
 	assert(#colors == #strs)
@@ -95,4 +96,16 @@ function UI.AnalyticsRecordClose(uiName)
 	end
 	Analytics.Action("UI_NAVIGATION", private.analyticsPath[uiName], "")
 	private.analyticsPath[uiName] = ""
+end
+
+function UI.HandleModifiedItemClick(itemString)
+	local link = ItemInfo.GetLink(itemString)
+	if not link then
+		return
+	end
+	if IsShiftKeyDown() then
+		Wow.SafeItemRef(link)
+	elseif IsControlKeyDown() then
+		DressUpItemLink(link)
+	end
 end

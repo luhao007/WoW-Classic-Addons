@@ -206,9 +206,9 @@ function AuctionScanManager.FindAuctionThreaded(self, findSubRow, noSeller)
 	assert(Threading.IsThreadContext())
 	wipe(self._findResult)
 	if TSM.IsWowClassic() then
-		return self:_FindAuctionThreaded(findSubRow, noSeller)
+		return self:_FindAuctionThreadedClassic(findSubRow, noSeller)
 	else
-		return self:_FindAuctionThreaded83(findSubRow, noSeller)
+		return self:_FindAuctionThreadedRetail(findSubRow)
 	end
 end
 
@@ -439,7 +439,7 @@ function AuctionScanManager._DoBrowseSearchHelper(self, query, future)
 	return result
 end
 
-function AuctionScanManager._FindAuctionThreaded(self, row, noSeller)
+function AuctionScanManager._FindAuctionThreadedClassic(self, row, noSeller)
 	self._cancelled = false
 	-- make sure we're not in the middle of a query where the results are going to change on us
 	Threading.WaitForFunction(CanSendAuctionQuery)
@@ -485,7 +485,7 @@ function AuctionScanManager._FindAuctionThreaded(self, row, noSeller)
 			break
 		end
 
-		local numPages = ceil(select(2, GetNumAuctionItems("list")) / NUM_AUCTION_ITEMS_PER_PAGE)
+		local numPages = AuctionHouseWrapper.GetNumPages()
 		local canBeLater = private.FindAuctionCanBeOnLaterPage(row)
 		maxPage = maxPage or numPages - 1
 		if not canBeLater and page < maxPage then
@@ -502,7 +502,7 @@ end
 
 function AuctionScanManager._FindAuctionOnCurrentPage(self, subRow, noSeller)
 	local found = false
-	for i = 1, GetNumAuctionItems("list") do
+	for i = 1, AuctionHouseWrapper.GetNumAuctions() do
 		if subRow:EqualsIndex(i, noSeller) then
 			tinsert(self._findResult, i)
 			found = true
@@ -511,10 +511,9 @@ function AuctionScanManager._FindAuctionOnCurrentPage(self, subRow, noSeller)
 	return found
 end
 
-function AuctionScanManager._FindAuctionThreaded83(self, findSubRow, noSeller)
+function AuctionScanManager._FindAuctionThreadedRetail(self, findSubRow)
 	assert(findSubRow:IsSubRow())
 	self._cancelled = false
-	noSeller = noSeller or findSubRow:IsCommodity()
 
 	local row = findSubRow:GetResultRow()
 	local findHash, findHashNoSeller = findSubRow:GetHashes()
@@ -558,7 +557,7 @@ function private.NewQueryCallback(query, self)
 end
 
 function private.FindAuctionCanBeOnLaterPage(row)
-	local pageAuctions = GetNumAuctionItems("list")
+	local pageAuctions = AuctionHouseWrapper.GetNumAuctions()
 	if pageAuctions == 0 then
 		-- there are no auctions on this page, so it cannot be on a later one
 		return false

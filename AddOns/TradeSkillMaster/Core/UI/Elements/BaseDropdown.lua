@@ -10,18 +10,18 @@
 -- @classmod BaseDropdown
 
 local _, TSM = ...
-local NineSlice = TSM.Include("Util.NineSlice")
+local Rectangle = TSM.Include("UI.Rectangle")
 local Color = TSM.Include("Util.Color")
 local Theme = TSM.Include("Util.Theme")
 local ScriptWrapper = TSM.Include("Util.ScriptWrapper")
-local BaseDropdown = TSM.Include("LibTSMClass").DefineClass("BaseDropdown", TSM.UI.Text, "ABSTRACT")
+local TextureAtlas = TSM.Include("Util.TextureAtlas")
 local UIElements = TSM.Include("UI.UIElements")
-UIElements.Register(BaseDropdown)
-TSM.UI.BaseDropdown = BaseDropdown
+local BaseDropdown = UIElements.Define("BaseDropdown", "Text", "ABSTRACT")
 local private = {}
 local EXPANDER_SIZE = 18
 local TEXT_PADDING = 8
-local EXPANDER_PADDING = 8
+local EXPANDER_PADDING = 4
+local CORNER_RADIUS = 4
 
 
 
@@ -34,7 +34,8 @@ function BaseDropdown.__init(self)
 
 	self.__super:__init(frame)
 
-	self._nineSlice = NineSlice.New(frame)
+	self._backgroundTexture = Rectangle.New(frame)
+	self._backgroundTexture:SetCornerRadius(CORNER_RADIUS)
 
 	ScriptWrapper.Set(frame, "OnClick", private.FrameOnClick, self)
 	frame.arrow = frame:CreateTexture(nil, "ARTWORK")
@@ -42,7 +43,7 @@ function BaseDropdown.__init(self)
 	self._widthText = UIElements.CreateFontString(self, frame)
 	self._widthText:Hide()
 
-	self._font = "BODY_BODY2"
+	self._state.font = "BODY_BODY2"
 	self._hintText = ""
 	self._items = {}
 	self._itemKeyLookup = {}
@@ -60,7 +61,7 @@ function BaseDropdown.Release(self)
 	self._onSelectionChangedHandler = nil
 	self:_GetBaseFrame():Enable()
 	self.__super:Release()
-	self._font = "BODY_BODY2"
+	self._state.font = "BODY_BODY2"
 end
 
 
@@ -174,7 +175,7 @@ function BaseDropdown.Draw(self)
 	self.__super:SetText(self:_GetCurrentSelectionString())
 	self.__super:Draw()
 	local frame = self:_GetBaseFrame()
-	TSM.UI.TexturePacks.SetTexture(frame.arrow, "iconPack.18x18/Chevron/Down")
+	TextureAtlas.SetTexture(frame.arrow, "iconPack.18x18/Chevron/Down")
 	local frameHeight = frame:GetHeight()
 	local paddingX = EXPANDER_PADDING
 	local paddingY = (frameHeight - EXPANDER_SIZE) / 2
@@ -186,10 +187,18 @@ function BaseDropdown.Draw(self)
 	frame.arrow:SetPoint("TOPRIGHT", -paddingX, -paddingY)
 
 	-- set textures and text color depending on the state
-	self._nineSlice:SetStyle("rounded")
-	local textColor = self:_GetTextColor()
+	local backgroundColor = Theme.GetColor(self._disabled and "PRIMARY_BG_ALT" or "ACTIVE_BG")
+	local textColor = nil
+	-- the text color should have maximum contrast with the dropdown color, so set it to white/black based on the dropdown color
+	if backgroundColor:IsLight() then
+		-- the dropdown is light, so set the text to black
+		textColor = Color.GetFullBlack():GetTint(self._disabled and "-DISABLED" or 0)
+	else
+		-- the dropdown is dark, so set the text to white
+		textColor = Color.GetFullWhite():GetTint(self._disabled and "+DISABLED" or 0)
+	end
 	frame.text:SetTextColor(textColor:GetFractionalRGBA())
-	self._nineSlice:SetVertexColor(Theme.GetColor(self._disabled and "PRIMARY_BG_ALT" or "ACTIVE_BG"):GetFractionalRGBA())
+	self._backgroundTexture:SetColor(Theme.GetColor(self._disabled and "PRIMARY_BG_ALT" or "ACTIVE_BG"))
 	frame.arrow:SetVertexColor(textColor:GetFractionalRGBA())
 end
 
@@ -199,22 +208,10 @@ end
 -- Private Class Methods
 -- ============================================================================
 
-function BaseDropdown._GetTextColor(self)
-	local color = Theme.GetColor(self._disabled and "PRIMARY_BG_ALT" or "ACTIVE_BG")
-	-- the text color should have maximum contrast with the dropdown color, so set it to white/black based on the dropdown color
-	if color:IsLight() then
-		-- the dropdown is light, so set the text to black
-		return Color.GetFullBlack():GetTint(self._disabled and "-DISABLED" or 0)
-	else
-		-- the dropdown is dark, so set the text to white
-		return Color.GetFullWhite():GetTint(self._disabled and "+DISABLED" or 0)
-	end
-end
-
 function BaseDropdown._GetDialogSize(self)
 	local maxStringWidth = 100 -- no smaller than 100
 	self._widthText:Show()
-	self._widthText:SetFont(Theme.GetFont(self._font):GetWowFont())
+	self._widthText:SetFont(Theme.GetFont(self._state.font):GetWowFont())
 	for _, item in ipairs(self._items) do
 		self._widthText:SetText(item)
 		maxStringWidth = max(maxStringWidth, self._widthText:GetUnboundedStringWidth())

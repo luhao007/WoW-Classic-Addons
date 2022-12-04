@@ -8,7 +8,7 @@
 -- @module DragContext
 
 local _, TSM = ...
-local DragContext = TSM.Init("Util.DragContext")
+local DragContext = TSM.Init("UI.DragContext")
 local private = {
 	context = nil,
 }

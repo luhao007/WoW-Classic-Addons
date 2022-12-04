@@ -24,7 +24,7 @@ local private = {
 }
 
 local PLAYER_NAME = UnitName("player")
-local PLAYER_NAME_REALM = string.gsub(PLAYER_NAME.."-"..GetRealmName(), "%s+", "")
+local PLAYER_NAME_REALM = gsub(PLAYER_NAME.."-"..GetRealmName(), "%s+", "")
 
 
 
@@ -186,9 +186,9 @@ function private.PrintMailMessage(money, items, target, isGroup, isDryRun)
 
 	if next(items) and money < 0 then
 		if isDryRun then
-			Log.PrintfUser(L["Would send %s to %s with a COD of %s"], itemList, target, Money.ToString(money, Theme.GetFeedbackColor("RED"):GetTextColorPrefix()))
+			Log.PrintfUser(L["Would send %s to %s with a COD of %s"], itemList, target, Money.ToString(money, Theme.GetColor("FEEDBACK_RED"):GetTextColorPrefix()))
 		else
-			Log.PrintfUser(L["Sending %s to %s with a COD of %s"], itemList, target, Money.ToString(money, Theme.GetFeedbackColor("RED"):GetTextColorPrefix()))
+			Log.PrintfUser(L["Sending %s to %s with a COD of %s"], itemList, target, Money.ToString(money, Theme.GetColor("FEEDBACK_RED"):GetTextColorPrefix()))
 		end
 	elseif next(items) then
 		if isDryRun then

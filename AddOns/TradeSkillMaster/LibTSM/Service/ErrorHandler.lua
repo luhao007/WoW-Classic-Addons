@@ -6,7 +6,7 @@
 
 -- TSM's error handler
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local ErrorHandler = TSM.Init("Service.ErrorHandler")
 local Log = TSM.Include("Util.Log")
 local String = TSM.Include("Util.String")
@@ -14,6 +14,7 @@ local Event = TSM.Include("Util.Event")
 local JSON = TSM.Include("Util.JSON")
 local TempTable = TSM.Include("Util.TempTable")
 local L = TSM.Include("Locale").GetTable()
+local LibTSMClass = TSM.Include("LibTSMClass")
 local private = {
 	origErrorHandler = nil,
 	errorFrame = nil,
@@ -66,17 +67,6 @@ local ADDON_SUITES = {
 	"WowPro",
 	"ZOMGBuffs",
 }
-local OLD_TSM_MODULES = {
-	"TradeSkillMaster_Accounting",
-	"TradeSkillMaster_AuctionDB",
-	"TradeSkillMaster_Auctioning",
-	"TradeSkillMaster_Crafting",
-	"TradeSkillMaster_Destroying",
-	"TradeSkillMaster_Mailing",
-	"TradeSkillMaster_Shopping",
-	"TradeSkillMaster_Vendoring",
-	"TradeSkillMaster_Warehousing",
-}
 local PRINT_PREFIX = "|cffff0000TSM:|r "
 
 
@@ -86,12 +76,6 @@ local PRINT_PREFIX = "|cffff0000TSM:|r "
 -- ============================================================================
 
 function ErrorHandler.ShowForThread(err, thread)
-	local stackLine = debugstack(thread, 0, 1, 0)
-	local oldModule = strmatch(stackLine, "(lMaster_[A-Za-z]+)")
-	if oldModule and tContains(OLD_TSM_MODULES, "TradeSkil"..oldModule) then
-		-- ignore errors from old modules
-		return
-	end
 	-- show an error, but don't cause an exception to be thrown
 	private.isSilent = true
 	private.ErrorHandler(err, thread)
@@ -167,7 +151,8 @@ function private.ErrorHandler(msg, thread)
 	end)
 
 	-- build stack trace with locals and get addon name
-	local stackInfo = private.GetStackInfo(msg, thread)
+	local stackInfo, newMsg = private.GetStackInfo(msg, thread)
+	msg = newMsg
 	local addonName = isSilent and "TradeSkillMaster" or nil
 	for _, info in ipairs(stackInfo) do
 		if not addonName then
@@ -272,7 +257,7 @@ function private.ErrorHandler(msg, thread)
 	-- show this error
 	local stackInfoLines = {}
 	for _, info in ipairs(errorInfo.stackInfo) do
-		local localsStr = info.locals ~= "" and ("\n  |cffaaaaaa"..gsub(info.locals, "\n", "\n  ").."|r") or ""
+		local localsStr = info.localsStr ~= "" and ("\n  |cffaaaaaa"..gsub(info.localsStr, "\n", "\n  ").."|r") or ""
 		local locationStr = info.line ~= 0 and strjoin(":", info.file, info.line) or info.file
 		tinsert(stackInfoLines, locationStr.." <"..info.func..">"..localsStr)
 	end
@@ -312,36 +297,79 @@ end
 
 function private.GetStackInfo(msg, thread)
 	local errLocation = strmatch(msg, "[A-Za-z]+%.lua:[0-9]+")
-	local stackInfo = {}
-	local stackStarted = false
-	for i = 0, MAX_STACK_DEPTH do
-		local prevStackFunc = #stackInfo > 0 and stackInfo[#stackInfo].func or nil
-		local file, line, func, localsStr, newPrevStackFunc = private.GetStackLevelInfo(i, thread, prevStackFunc)
-		if newPrevStackFunc then
-			stackInfo[#stackInfo].func = newPrevStackFunc
-		end
-		if file then
-			if not stackStarted then
-				if errLocation then
-					stackStarted = strmatch(file..":"..line, "[A-Za-z]+%.lua:[0-9]+") == errLocation
+	local stackFrames = private.GetStackFrames(thread)
+	local startIndex = nil
+	for i, frame in ipairs(stackFrames) do
+		local prevFrame = stackFrames[i-1]
+		if prevFrame and strfind(frame.file, "LibTSMClass%.lua") then
+			-- TODO: Ignore stack frames from the class code's wrapper function
+			if frame.func ~= "?" and prevFrame.func and not strmatch(frame.func, "^.+:[0-9]+$") and strmatch(prevFrame.func, "^.+:[0-9]+$") then
+				-- This stack frame includes the class method we were accessing in the previous one, so go back and fix it up
+				if frame.rawLocals then
+					local className, objKey = strmatch(frame.rawLocals, "\n +str = \"([A-Za-z_0-9]+):([0-9A-F]+)\"\n")
+					if className then
+						if TSM.IsDevVersion() then
+							prevFrame.localsStr = prevFrame.localsStr.."\n"..LibTSMClass.GetDebugInfo(className..":"..objKey, 5, private.LocalTableLookupFunc)
+						end
+						prevFrame.func = className.."."..frame.func
+					else
+						prevFrame.func = "?."..frame.func
+					end
 				else
-					stackStarted = i > (thread and 1 or 4) and file ~= "[C]"
+					prevFrame.func = "?."..frame.func
 				end
 			end
-			if stackStarted then
-				tinsert(stackInfo, {
-					file = file,
-					line = line,
-					func = func,
-					locals = localsStr,
-				})
+		end
+		if not startIndex then
+			if errLocation and strmatch(frame.file..":"..frame.line, "[A-Za-z]+%.lua:[0-9]+") == errLocation then
+				startIndex = strfind(frame.file, "LibTSMClass%.lua") and (i - 1) or i
+			elseif not errLocation and i > (thread and 1 or 4) and frame.file ~= "[C]" then
+				startIndex = i
 			end
 		end
 	end
-	return stackInfo
+	if not startIndex then
+		return {}
+	end
+
+	-- Remove the extra frames from the top
+	for _ = 1, startIndex - 1 do
+		tremove(stackFrames, 1)
+	end
+
+	-- Fix up the error message
+	if errLocation and strfind(errLocation, "LibTSMClass%.lua:%d+") and stackFrames[1] and not strfind(stackFrames[1].file, "LibTSMClass%.lua") then
+		msg = gsub(msg, ".+LibTSMClass%.lua:[0-9]+", stackFrames[1].file..":"..stackFrames[1].line)
+	end
+
+	return stackFrames, msg
 end
 
-function private.GetStackLevelInfo(level, thread, prevStackFunc)
+function private.GetStackFrames(thread)
+	local stackFrames = {}
+	local consecutiveIgnored = nil
+	for i = 0, math.huge do
+		local file, line, func, locals = private.GetStackFrame(i, thread)
+		if file then
+			tinsert(stackFrames, {
+				file = file,
+				line = line,
+				func = func,
+				rawLocals = locals,
+				localsStr = locals and private.ParseLocals(locals, file) or "",
+			})
+			consecutiveIgnored = 0
+		else
+			consecutiveIgnored = consecutiveIgnored + 1
+			if consecutiveIgnored >= 20 or #stackFrames >= MAX_STACK_DEPTH then
+				break
+			end
+		end
+	end
+	return stackFrames
+end
+
+function private.GetStackFrame(level, thread)
 	local stackLine = nil
 	if thread then
 		stackLine = debugstack(thread, level, 1, 0)
@@ -377,20 +405,7 @@ function private.GetStackLevelInfo(level, thread, prevStackFunc)
 
 	local func = strsub(functionStr, strfind(functionStr, "`") and 2 or 1, -1) or "?"
 	func = func ~= "" and func or "?"
-
-	if strfind(locationStr, "LibTSMClass%.lua:") then
-		-- ignore stack frames from the class code's wrapper function
-		if func ~= "?" and prevStackFunc and not strmatch(func, "^.+:[0-9]+$") and strmatch(prevStackFunc, "^.+:[0-9]+$") then
-			-- this stack frame includes the class method we were accessing in the previous one, so go back and fix it up
-			local className = locals and strmatch(locals, "\n +str = \"([A-Za-z_0-9]+):[0-9A-F]+\"\n") or "?"
-			prevStackFunc = className.."."..func
-		end
-		return nil, nil, nil, nil, prevStackFunc
-	end
-
-	-- add locals for addon functions (debuglocals() doesn't always work - or ever for threads)
-	local localsStr = locals and private.ParseLocals(locals, file) or ""
-	return file, line, func, localsStr, nil
+	return file, line, func, locals
 end
 
 function private.ParseLocals(locals, file)
@@ -400,15 +415,17 @@ function private.ParseLocals(locals, file)
 
 	local fileName = strmatch(file, "([A-Za-z%-_0-9]+)%.lua")
 	local isBlizzardFile = strmatch(file, "Interface[\\/]FrameXML[\\/]")
-	local isPrivateTable, isLocaleTable, isPackageTable, isSelfTable = false, false, false, false
+	local isPrivateTable, isLocaleTable, isPackageTable, isSelfTable, isTemporaryTable = false, false, false, false, false
 	wipe(private.localLinesTemp)
 	locals = gsub(locals, "<([a-z]+)> {[\n\t ]+}", "<%1> {}")
 	locals = gsub(locals, " = <function> defined @", "@")
 	locals = gsub(locals, "<table> {", "{")
 
+	local level = 0
 	for localLine in gmatch(locals, "[^\n]+") do
 		local shouldIgnoreLine = false
-		if strmatch(localLine, "^ *%(") then
+		if strmatch(localLine, "^ *%(%*temporary%) = nil") then
+			-- ignore nil temporary variables
 			shouldIgnoreLine = true
 		elseif strmatch(localLine, "LibTSMClass%.lua:") then
 			-- ignore class methods
@@ -416,9 +433,18 @@ function private.ParseLocals(locals, file)
 		elseif strmatch(localLine, "<unnamed> {}$") then
 			-- ignore internal WoW frame members
 			shouldIgnoreLine = true
+		elseif strtrim(localLine) == "" then
+			-- ignore empty lines
+			shouldIgnoreLine = true
+		elseif strmatch(localLine, "^ += .+$") then
+			-- ignore lines which start with a '='
+			shouldIgnoreLine = true
+		elseif strmatch(localLine, "= <([^>]+)$") then
+			-- ignore lines with unmatched '<', '>' in their value
+			shouldIgnoreLine = true
 		end
 		if not shouldIgnoreLine then
-			local level = #strmatch(localLine, "^ *")
+			level = #strmatch(localLine, "^ *")
 			localLine = strrep("  ", level)..strtrim(localLine)
 			localLine = gsub(localLine, "Interface[\\/][Aa]dd[Oo]ns[\\/]TradeSkillMaster", "TSM")
 			localLine = gsub(localLine, "\124", "\\124")
@@ -432,11 +458,17 @@ function private.ParseLocals(locals, file)
 				elseif strmatch(localLine, "^ *[_]*[A-Z].+@TSM") then
 					-- ignore table methods (based on their name being UpperCamelCase - potentially with leading underscores)
 					shouldIgnoreLine = true
+				elseif strmatch(localLine, "^ *[_]*[A-Z].+@") and not strmatch(localLine, ":%d+$") then
+					-- ignore cut-off table method lines
+					shouldIgnoreLine = true
 				elseif isLocaleTable then
 					-- ignore everything within the locale table
 					shouldIgnoreLine = true
 				elseif isPackageTable then
 					-- ignore the package table completely
+					shouldIgnoreLine = true
+				elseif isTemporaryTable then
+					-- Ignore temporary tables completely
 					shouldIgnoreLine = true
 				elseif (isSelfTable or isPrivateTable) and strmatch(localLine, "^ *[_a-zA-Z0-9]+ = {}") then
 					-- ignore empty tables within objects or the private table
@@ -454,18 +486,29 @@ function private.ParseLocals(locals, file)
 				isPrivateTable = strmatch(localLine, "%s*private = {") and true or false
 				isLocaleTable = strmatch(localLine, "%s*L = {") and true or false
 				isSelfTable = strmatch(localLine, "%s*self = {") and true or false
+				isTemporaryTable = strmatch(localLine, "%s*%(%*temporary%) =.*{") and true or false
 			end
 		end
+	end
+	-- add closing brackets for tables which got cut off at the end
+	while level > 0 do
+		level = level - 1
+		tinsert(private.localLinesTemp, strrep("  ", level).."}")
 	end
 
 	-- remove any top-level empty tables
 	local i = #private.localLinesTemp
 	while i > 0 do
-		if i > 1 and private.localLinesTemp[i] == "}" and strmatch(private.localLinesTemp[i - 1], "^[A-Za-z_].* = {$") then
+		if i > 1 and private.localLinesTemp[i] == "}" and strmatch(private.localLinesTemp[i - 1], "^[A-Za-z_%(].* = {$") then
 			tremove(private.localLinesTemp, i)
 			tremove(private.localLinesTemp, i - 1)
 			i = i - 2
-		elseif strmatch(private.localLinesTemp[i], "^[A-Za-z_].* = {}$") then
+		elseif strmatch(private.localLinesTemp[i], "^[A-Za-z_%(].* = {}$") then
+			tremove(private.localLinesTemp, i)
+			i = i - 1
+		elseif i > 1 and private.localLinesTemp[i] == "}" and strmatch(private.localLinesTemp[i - 1], "^[A-Za-z_%(].* =.*{$") then
+			-- Don't remove this table, but collapse it
+			private.localLinesTemp[i - 1] = private.localLinesTemp[i - 1].."}"
 			tremove(private.localLinesTemp, i)
 			i = i - 1
 		else
@@ -473,6 +516,11 @@ function private.ParseLocals(locals, file)
 		end
 	end
 	return #private.localLinesTemp > 0 and table.concat(private.localLinesTemp, "\n") or nil
+end
+
+function private.LocalTableLookupFunc(tbl)
+	local status, result = pcall(function() return TSM.Include("Util.ReactiveClasses.State").GetDebugInfo(tbl) end)
+	return status and result ~= "" and result or nil
 end
 
 function private.IsTSMAddon(str)
@@ -722,7 +770,7 @@ end
 
 do
 	private.origErrorHandler = geterrorhandler()
-	local function ErrorHandlerFunc(errMsg, isBugGrabber)
+	local function ErrorHandlerFunc(errMsg)
 		local tsmErrMsg = strtrim(tostring(errMsg))
 		if private.ignoreErrors then
 			-- we're ignoring errors
@@ -732,18 +780,13 @@ do
 			tsmErrMsg = nil
 		elseif strmatch(tsmErrMsg, "Blizzard_AuctionUI%.lua:751") then
 			-- suppress this Blizzard error
-			return
+			return true
 		end
 		if tsmErrMsg then
 			-- look at the stack trace to see if this is a TSM error
 			for i = 2, MAX_STACK_DEPTH do
 				local stackLine = debugstack(i, 1, 0)
-				local oldModule = strmatch(stackLine, "(lMaster_[A-Za-z]+)")
-				if oldModule and tContains(OLD_TSM_MODULES, "TradeSkil"..oldModule) then
-					-- ignore errors from old modules
-					return
-				end
-				if not strmatch(stackLine, "^%[C%]:") and not strmatch(stackLine, "%(tail call%):") and not strmatch(stackLine, "^%[string \"[^@]") and not strmatch(stackLine, "lMaster[\\/]External[\\/][A-Za-z0-9%-_%.]+\\") and not strmatch(stackLine, "SharedXML") and not strmatch(stackLine, "CallbackHandler") and not strmatch(stackLine, "!BugGrabber") and not strmatch(stackLine, "ErrorHandler%.lua") then
+				if not strmatch(stackLine, "^%[C%]:") and not strmatch(stackLine, "%(tail call%):") and not strmatch(stackLine, "^%[string \"[^@]") and not strmatch(stackLine, "lMaster[\\/]External[\\/][A-Za-z0-9%-_%.]+[\\/]") and not strmatch(stackLine, "SharedXML") and not strmatch(stackLine, "CallbackHandler") and not strmatch(stackLine, "!BugGrabber") and not strmatch(stackLine, "ErrorHandler%.lua") then
 					if not private.IsTSMAddon(stackLine) then
 						tsmErrMsg = nil
 					end
@@ -760,19 +803,19 @@ do
 				print("Internal TSM error: "..tostring(ret))
 			end
 		end
-		local oldModule = strmatch(errMsg, "(lMaster_[A-Za-z]+)")
-		if oldModule and tContains(OLD_TSM_MODULES, "TradeSkil"..oldModule) then
-			-- ignore errors from old modules
-			return
-		end
-		if not isBugGrabber then
-			return private.origErrorHandler and private.origErrorHandler(errMsg) or nil
-		end
+		return false
 	end
-	seterrorhandler(ErrorHandlerFunc)
+	-- Wrap the error handler logic in a loadstring to avoid our locals / stack frames showing in other error handlers
+	local WRAPPER_FUNC_STR = [[
+		return select(1, ...)(select(3, ...)) or (select(2, ...) and select(2, ...)((select(3, ...)))) or nil
+	]]
+	local wrapperFunc = assert(loadstring(WRAPPER_FUNC_STR, "=[tsm error check]"))
+	seterrorhandler(function(msg)
+		return wrapperFunc(ErrorHandlerFunc, private.origErrorHandler, msg)
+	end)
 	if BugGrabber and BugGrabber.RegisterCallback then
 		BugGrabber.RegisterCallback({}, "BugGrabber_BugGrabbed", function(_, errObj)
-			ErrorHandlerFunc(errObj.message, true)
+			ErrorHandlerFunc(errObj.message)
 		end)
 	end
 	Event.Register("ADDON_ACTION_FORBIDDEN", private.AddonBlockedHandler)

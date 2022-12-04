@@ -68,6 +68,10 @@ function SniperSearchContext.GetMarketValueFunc(self)
 	return self._marketValueFunc
 end
 
+function SniperSearchContext.GetGatheringResultsFunc(self)
+	return nil
+end
+
 function SniperSearchContext.IsBuyoutScan(self)
 	return self._scanType == "BUYOUT"
 end

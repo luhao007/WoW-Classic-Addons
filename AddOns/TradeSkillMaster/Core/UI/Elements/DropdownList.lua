@@ -4,14 +4,18 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
+--- DropdownList UI Element Class.
+-- A dropdown list provides selectable options in a modal shown by a dropdown element.
+-- @classmod DropdownList
+
 local _, TSM = ...
-local Color = TSM.Include("Util.Color")
 local Theme = TSM.Include("Util.Theme")
+local TextureAtlas = TSM.Include("Util.TextureAtlas")
 local UIElements = TSM.Include("UI.UIElements")
-local DropdownList = TSM.Include("LibTSMClass").DefineClass("DropdownList", TSM.UI.ScrollingTable)
-UIElements.Register(DropdownList)
-TSM.UI.DropdownList = DropdownList
+local DropdownList = UIElements.Define("DropdownList", "List")
 local private = {}
+local ROW_HEIGHT = 20
+local CHECK_TEXTURE = "iconPack.12x12/Checkmark/Default"
 
 
 
@@ -21,51 +25,42 @@ local private = {}
 
 function DropdownList.__init(self)
 	self.__super:__init()
+	self._items = {}
 	self._selectedItems = {}
-	self._multiselect = false
+	self._multiselect = nil
 	self._onSelectionChangedHandler = nil
 end
 
 function DropdownList.Acquire(self)
-	self._backgroundColor = "ACTIVE_BG"
-	self._headerHidden = true
-	self.__super:Acquire()
-	self:SetSelectionDisabled(true)
-	self:GetScrollingTableInfo()
-		:NewColumn("text")
-			:SetFont("BODY_BODY3")
-			:SetJustifyH("LEFT")
-			:SetTextFunction(private.GetText)
-			:SetIconSize(12)
-			:SetIconFunction(private.GetIcon)
-			:DisableHiding()
-			:Commit()
-		:Commit()
+	self.__super:Acquire(ROW_HEIGHT)
+	self:SetBackgroundColor("ACTIVE_BG")
 end
 
 function DropdownList.Release(self)
+	wipe(self._items)
 	wipe(self._selectedItems)
-	self._multiselect = false
+	self._multiselect = nil
 	self._onSelectionChangedHandler = nil
 	self.__super:Release()
 end
 
 function DropdownList.SetMultiselect(self, multiselect)
+	assert(multiselect ~= nil and self._multiselect == nil)
 	self._multiselect = multiselect
 	return self
 end
 
-function DropdownList.SetItems(self, items, selection, redraw)
-	wipe(self._data)
+function DropdownList.SetItems(self, items, selection)
+	wipe(self._items)
 	for _, item in ipairs(items) do
-		tinsert(self._data, item)
+		tinsert(self._items, item)
 	end
-	self:_SetSelectionHelper(selection)
-
-	if redraw then
-		self:Draw()
+	if self._multiselect then
+		self:_SetSelectionHelper(selection)
+	else
+		assert(self._multiselect == false and selection == nil)
 	end
-
+	self:_SetNumRows(#self._items)
 	return self
 end
 
@@ -73,41 +68,20 @@ function DropdownList.ItemIterator(self)
 	return private.ItemIterator, self, 0
 end
 
-function DropdownList.SetSelection(self, selection)
-	self:_SetSelectionHelper(selection)
-	if self._onSelectionChangedHandler then
-		self:_onSelectionChangedHandler(self._multiselect and self._selectedItems or selection)
-	end
-	return self
-end
-
-function DropdownList.GetSelection(self)
-	if self._multiselect then
-		return self._selectedItems
-	else
-		local selectedItem = next(self._selectedItems)
-		return selectedItem
-	end
-end
-
 function DropdownList.SelectAll(self)
 	assert(self._multiselect)
-	for _, data in ipairs(self._data) do
-		self._selectedItems[data] = true
-	end
+	self:_SetSelectionHelper(true)
 	if self._onSelectionChangedHandler then
 		self:_onSelectionChangedHandler(self._selectedItems)
 	end
-	self:Draw()
 end
 
 function DropdownList.DeselectAll(self)
 	assert(self._multiselect)
-	wipe(self._selectedItems)
+	self:_SetSelectionHelper(false)
 	if self._onSelectionChangedHandler then
 		self:_onSelectionChangedHandler(self._selectedItems)
 	end
-	self:Draw()
 end
 
 function DropdownList.SetScript(self, script, handler)
@@ -119,55 +93,88 @@ function DropdownList.SetScript(self, script, handler)
 	return self
 end
 
-function DropdownList.Draw(self)
-	self.__super:Draw()
-
-	local textColor = nil
-
-	local color = Theme.GetColor(self._backgroundColor)
-	-- the text color should have maximum contrast with the background color, so set it to white/black based on the background color
-	if color:IsLight() then
-		-- the background is light, so set the text to black
-		textColor = Color.GetFullBlack()
-	else
-		-- the background is dark, so set the text to white
-		textColor = Color.GetFullWhite()
-	end
-	for _, row in ipairs(self._rows) do
-		row:SetTextColor(textColor)
-	end
-end
-
 
 
 -- ============================================================================
--- Private Class Methods
+-- Protected/Private Class Methods
 -- ============================================================================
 
-function DropdownList._SetSelectionHelper(self, selection)
-	wipe(self._selectedItems)
-	if selection then
-		if self._multiselect then
-			assert(type(selection) == "table")
-			for item, selected in pairs(selection) do
-				self._selectedItems[item] = selected
-			end
-		else
-			assert(type(selection) == "string" or type(selection) == "number")
-			self._selectedItems[selection] = true
-		end
-	end
-end
+function DropdownList.__protected._HandleRowAcquired(self, row)
+	assert(self._multiselect ~= nil)
 
-function DropdownList._HandleRowClick(self, data)
+	-- Add the text
+	local text = row:AddText("text")
+	text:SetFont(Theme.GetFont("BODY_BODY3"):GetWowFont())
+	text:SetJustifyH("LEFT")
+	text:SetHeight(ROW_HEIGHT)
+	text:SetPoint("RIGHT", -Theme.GetColSpacing(), 0)
+
 	if self._multiselect then
-		self._selectedItems[data] = not self._selectedItems[data] or nil
-		if self._onSelectionChangedHandler then
-			self:_onSelectionChangedHandler(self._selectedItems)
-		end
-		self:Draw()
+		-- Add the check texture
+		local check = row:AddTexture("check")
+		check:SetDrawLayer("ARTWORK", 1)
+		TextureAtlas.SetTextureAndSize(check, CHECK_TEXTURE)
+		check:SetPoint("LEFT", Theme.GetColSpacing() / 2, 0)
+		text:SetPoint("LEFT", check, "RIGHT", Theme.GetColSpacing() / 2, 0)
 	else
-		self:SetSelection(data)
+		text:SetPoint("LEFT", Theme.GetColSpacing() / 2, 0)
+	end
+end
+
+function DropdownList.__protected._HandleRowDraw(self, row)
+	local item = self._items[row:GetDataIndex()]
+	if self._multiselect then
+		self:_DrawRowSelectedState(row, self._selectedItems[item])
+	end
+	local text = row:GetText("text")
+	text:SetText(item)
+	-- The text color should have maximum contrast with the background color, so set it to white/black based on the background color
+	if self:_IsBackgroundColorLight() then
+		-- The background is light, so set the text to black
+		text:SetTextColor(0, 0, 0, 1)
+	else
+		-- The background is dark, so set the text to white
+		text:SetTextColor(1, 1, 1, 1)
+	end
+end
+
+function DropdownList.__private._DrawRowSelectedState(self, row, selected)
+	local check = row:GetTexture("check")
+	if selected then
+		check:Show()
+	else
+		check:Hide()
+	end
+end
+
+function DropdownList.__protected._HandleRowClick(self, row, mouseButton)
+	local item = self._items[row:GetDataIndex()]
+	if self._multiselect then
+		self._selectedItems[item] = not self._selectedItems[item] or nil
+		self:_DrawRowSelectedState(row, self._selectedItems[item])
+	end
+	if self._onSelectionChangedHandler then
+		self:_onSelectionChangedHandler(self._multiselect and self._selectedItems or item)
+	end
+end
+
+function DropdownList.__private._SetSelectionHelper(self, selection)
+	assert(self._multiselect)
+	wipe(self._selectedItems)
+	for i, item in ipairs(self._items) do
+		if selection == true then
+			-- select all
+			self._selectedItems[item] = true
+		elseif selection == false then
+			-- deselect all - do nothing
+		else
+			-- selection table
+			self._selectedItems[item] = selection[item] and true or nil
+		end
+		local row = self:_GetRow(i)
+		if row then
+			self:_DrawRowSelectedState(row, self._selectedItems[item])
+		end
 	end
 end
 
@@ -177,17 +184,9 @@ end
 -- Local Script Handlers
 -- ============================================================================
 
-function private.GetText(self, data)
-	return data
-end
-
-function private.GetIcon(self, data)
-	return self._multiselect and self._selectedItems[data] and "iconPack.12x12/Checkmark/Default" or ""
-end
-
 function private.ItemIterator(self, index)
 	index = index + 1
-	local item = self._data[index]
+	local item = self._items[index]
 	if not item then
 		return
 	end

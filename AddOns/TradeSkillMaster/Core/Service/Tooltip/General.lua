@@ -4,26 +4,31 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local General = TSM.Tooltip:NewPackage("General")
 local L = TSM.Include("Locale").GetTable()
 local DisenchantInfo = TSM.Include("Data.DisenchantInfo")
 local TempTable = TSM.Include("Util.TempTable")
-local String = TSM.Include("Util.String")
 local ItemString = TSM.Include("Util.ItemString")
+local Wow = TSM.Include("Util.Wow")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local CustomPrice = TSM.Include("Service.CustomPrice")
 local Conversions = TSM.Include("Service.Conversions")
 local Inventory = TSM.Include("Service.Inventory")
+local AltTracking = TSM.Include("Service.AltTracking")
+local BagTracking = TSM.Include("Service.BagTracking")
+local MailTracking = TSM.Include("Service.MailTracking")
+local AuctionTracking = TSM.Include("Service.AuctionTracking")
+local Settings = TSM.Include("Service.Settings")
 local private = {
 	tooltipInfo = nil,
-	guildQuantityCache = {},
+	settings = nil,
 }
-local DESTROY_INFO = {
-	{ key = "deTooltip", method = Conversions.METHOD.DISENCHANT },
-	{ key = "millTooltip", method = Conversions.METHOD.MILL },
-	{ key = "prospectTooltip", method = Conversions.METHOD.PROSPECT },
-	{ key = "transformTooltip", method = Conversions.METHOD.TRANSFORM },
+local CONVERT_METHODS = {
+	Conversions.METHOD.MILL,
+	Conversions.METHOD.PROSPECT,
+	Conversions.METHOD.TRANSFORM,
+	Conversions.METHOD.VENDOR_TRADE,
 }
 
 
@@ -33,6 +38,11 @@ local DESTROY_INFO = {
 -- ============================================================================
 
 function General.OnInitialize()
+	private.settings = Settings.NewView()
+		:AddKey("sync", "internalData", "classKey")
+		:AddKey("global", "userData", "customPriceSources")
+		:AddKey("global", "coreOptions", "destroyValueSource")
+
 	local tooltipInfo = TSM.Tooltip.CreateInfo()
 		:SetHeadings(L["TSM General Info"])
 	private.tooltipInfo = tooltipInfo
@@ -47,10 +57,12 @@ function General.OnInitialize()
 	end
 
 	-- destroy info
-	for _, info in ipairs(DESTROY_INFO) do
-		tooltipInfo:AddSettingEntry(info.key, nil, private.PopulateDestroyValueLine, info.method)
-		tooltipInfo:AddSettingEntry("detailedDestroyTooltip", nil, private.PopulateDetailLines, info.method)
-	end
+	tooltipInfo:AddSettingValueEntry("destroyTooltipFormat", "full", "none", private.PopulateFullDestroyLines)
+	tooltipInfo:AddSettingValueEntry("destroyTooltipFormat", "simple", "none", private.PopulateSimpleDestroyLines)
+
+	-- convert info
+	tooltipInfo:AddSettingValueEntry("convertTooltipFormat", "full", "none", private.PopulateFullConvertLines)
+	tooltipInfo:AddSettingValueEntry("convertTooltipFormat", "simple", "none", private.PopulateSimpleConvertLines)
 
 	-- vendor prices
 	tooltipInfo:AddSettingEntry("vendorBuyTooltip", nil, private.PopulateVendorBuyLine)
@@ -69,7 +81,7 @@ end
 function private.UpdateCustomSources()
 	private.tooltipInfo:DeleteSettingsByKeyMatch("^customPriceTooltips%.")
 	local customPriceSources = TempTable.Acquire()
-	for name in pairs(TSM.db.global.userData.customPriceSources) do
+	for name in pairs(private.settings.customPriceSources) do
 		tinsert(customPriceSources, name)
 	end
 	sort(customPriceSources)
@@ -138,26 +150,57 @@ function private.PopulateOperationLine(tooltip, itemString, moduleName)
 	TempTable.Release(operations)
 end
 
-function private.PopulateDestroyValueLine(tooltip, itemString, method)
-	local value = nil
+function private.PopulateFullDestroyLines(tooltip, itemString)
+	private.PopulateSimpleDestroyLines(tooltip, itemString)
 	if itemString == ItemString.GetPlaceholder() then
 		-- example tooltip
-		if method == Conversions.METHOD.DISENCHANT then
-			value = 10
-		elseif method == Conversions.METHOD.MILL then
-			value = 50
-		elseif method == Conversions.METHOD.PROSPECT then
-			value = 20
-		elseif method == Conversions.METHOD.TRANSFORM then
-			value = 30
-		else
-			error("Invalid method: "..tostring(method))
+		tooltip:StartSection()
+		tooltip:AddSubItemValueLine(ItemString.GetPlaceholder(), 2, 10, 1, 1, 20)
+		tooltip:EndSection()
+		return
+	end
+	local value, method = CustomPrice.GetConversionsValue(itemString, private.settings.destroyValueSource)
+	if not value then
+		return nil, nil
+	end
+
+	tooltip:StartSection()
+	if method == Conversions.METHOD.DISENCHANT then
+		local classId = ItemInfo.GetClassId(itemString)
+		local quality = ItemInfo.GetQuality(itemString)
+		local itemLevel = not TSM.IsWowClassic() and ItemInfo.GetItemLevel(itemString) or ItemInfo.GetItemLevel(ItemString.GetBase(itemString))
+		local expansion = not TSM.IsWowClassic() and ItemInfo.GetExpansion(itemString) or nil
+		for targetItemString in DisenchantInfo.TargetItemIterator() do
+			local amountOfMats, matRate, minAmount, maxAmount = DisenchantInfo.GetTargetItemSourceInfo(targetItemString, classId, quality, itemLevel, expansion)
+			if amountOfMats then
+				local matValue = CustomPrice.GetItemPrice(targetItemString, private.settings.destroyValueSource) or 0
+				if matValue > 0 then
+					tooltip:AddSubItemValueLine(targetItemString, matValue, amountOfMats, matRate, minAmount, maxAmount)
+				end
+			end
 		end
 	else
-		value = CustomPrice.GetConversionsValue(itemString, TSM.db.global.coreOptions.destroyValueSource, method)
+		for targetItemString, amountOfMats, matRate, minAmount, maxAmount in Conversions.TargetItemsByMethodIterator(itemString, method) do
+			local matValue = CustomPrice.GetItemPrice(targetItemString, private.settings.destroyValueSource) or 0
+			if matValue > 0 then
+				tooltip:AddSubItemValueLine(targetItemString, matValue, amountOfMats, matRate, minAmount, maxAmount)
+			end
+		end
+	end
+	tooltip:EndSection()
+end
+
+function private.PopulateSimpleDestroyLines(tooltip, itemString)
+	local value, method = nil, nil
+	if itemString == ItemString.GetPlaceholder() then
+		-- example tooltip
+		value = 20
+		method = Conversions.METHOD.PROSPECT
+	else
+		value, method = CustomPrice.GetConversionsValue(itemString, private.settings.destroyValueSource)
 	end
 	if not value then
-		return
+		return nil, nil
 	end
 
 	local label = nil
@@ -169,57 +212,86 @@ function private.PopulateDestroyValueLine(tooltip, itemString, method)
 		label = L["Prospect Value"]
 	elseif method == Conversions.METHOD.TRANSFORM then
 		label = L["Transform Value"]
+	elseif method == Conversions.METHOD.VENDOR_TRADE then
+		label = L["Vendor Trade Value"]
 	else
 		error("Invalid method: "..tostring(method))
 	end
 	tooltip:AddItemValueLine(label, value)
 end
 
-function private.PopulateDetailLines(tooltip, itemString, method)
+function private.PopulateFullConvertLines(tooltip, itemString)
 	if itemString == ItemString.GetPlaceholder() then
 		-- example tooltip
+		tooltip:AddTextLine(format(L["Convert Value (%s)"], L["Transform"]), 55)
 		tooltip:StartSection()
-		if method == Conversions.METHOD.DISENCHANT then
-			tooltip:AddSubItemValueLine(ItemString.GetPlaceholder(), 1, 10, 1, 1, 20)
-		elseif method == Conversions.METHOD.MILL then
-			tooltip:AddSubItemValueLine(ItemString.GetPlaceholder(), 5, 10, 1)
-		elseif method == Conversions.METHOD.PROSPECT then
-			tooltip:AddSubItemValueLine(ItemString.GetPlaceholder(), 2, 10, 1, 1, 20)
-		elseif method == Conversions.METHOD.TRANSFORM then
-			tooltip:AddSubItemValueLine(ItemString.GetPlaceholder(), 3, 10, 1)
-		else
-			error("Invalid method: "..tostring(method))
-		end
+		tooltip:AddSubItemValueLine(ItemString.GetPlaceholder(), 55, 1)
 		tooltip:EndSection()
-		return
-	elseif not CustomPrice.GetConversionsValue(itemString, TSM.db.global.coreOptions.destroyValueSource, method) then
 		return
 	end
 
-	tooltip:StartSection()
-	if method == Conversions.METHOD.DISENCHANT then
-		local quality = ItemInfo.GetQuality(itemString)
-		local itemLevel = not TSM.IsWowClassic() and ItemInfo.GetItemLevel(itemString) or ItemInfo.GetItemLevel(ItemString.GetBase(itemString))
-		local classId = ItemInfo.GetClassId(itemString)
-		local expansion = not TSM.IsWowClassic() and ItemInfo.GetExpansion(itemString) or nil
-		for targetItemString in DisenchantInfo.TargetItemIterator() do
-			local amountOfMats, matRate, minAmount, maxAmount = DisenchantInfo.GetTargetItemSourceInfo(targetItemString, classId, quality, itemLevel, expansion)
-			if amountOfMats then
-				local matValue = CustomPrice.GetValue(TSM.db.global.coreOptions.destroyValueSource, targetItemString) or 0
-				if matValue > 0 then
-					tooltip:AddSubItemValueLine(targetItemString, matValue, amountOfMats, matRate, minAmount, maxAmount)
+	local sources = TempTable.Acquire()
+	local minValue, method, methodStr = private.GetConvertTooltipInfo(itemString, sources)
+	if minValue then
+		tooltip:AddItemValueLine(format(L["Convert Value (%s)"], methodStr), minValue)
+		tooltip:StartSection()
+		for _, sourceItemString in ipairs(sources) do
+			local price = sources[sourceItemString]
+			tooltip:AddSubItemValueLine(sourceItemString, price, 1 / Conversions.GetRate(sourceItemString, itemString, method))
+		end
+		tooltip:EndSection()
+	end
+	TempTable.Release(sources)
+end
+
+function private.PopulateSimpleConvertLines(tooltip, itemString)
+	if itemString == ItemString.GetPlaceholder() then
+		-- example tooltip
+		tooltip:AddTextLine(format(L["Convert Value (%s)"], L["Transform"]), 55)
+		return
+	end
+
+	local minValue, _, methodStr = private.GetConvertTooltipInfo(itemString)
+	if not minValue then
+		return
+	end
+	tooltip:AddItemValueLine(format(L["Convert Value (%s)"], methodStr), minValue)
+end
+
+function private.GetConvertTooltipInfo(itemString, sourcesResultTbl)
+	local minValue, method = nil, nil
+	for i = 1, #CONVERT_METHODS do
+		method = CONVERT_METHODS[i]
+		for sourceItemString, rate in Conversions.SourceItemsByMethodIterator(itemString, method) do
+			local value = CustomPrice.GetItemPrice(sourceItemString, private.settings.destroyValueSource)
+			if value then
+				if sourcesResultTbl then
+					tinsert(sourcesResultTbl, sourceItemString)
+					sourcesResultTbl[sourceItemString] = value
 				end
+				minValue = min(minValue or math.huge, value / rate)
 			end
 		end
-	else
-		for targetItemString, amountOfMats, matRate, minAmount, maxAmount in Conversions.TargetItemsByMethodIterator(itemString, method) do
-			local matValue = CustomPrice.GetValue(TSM.db.global.coreOptions.destroyValueSource, targetItemString) or 0
-			if matValue > 0 then
-				tooltip:AddSubItemValueLine(targetItemString, matValue, amountOfMats, matRate, minAmount, maxAmount)
-			end
+		if minValue then
+			break
 		end
 	end
-	tooltip:EndSection()
+	if not minValue then
+		return nil, nil
+	end
+	local methodStr = nil
+	if method == Conversions.METHOD.MILL then
+		methodStr = L["Mill"]
+	elseif method == Conversions.METHOD.PROSPECT then
+		methodStr = L["Prospect"]
+	elseif method == Conversions.METHOD.TRANSFORM then
+		methodStr = L["Transform"]
+	elseif method == Conversions.METHOD.VENDOR_TRADE then
+		methodStr = L["Vendor Trade"]
+	else
+		error("Invalid method")
+	end
+	return minValue, method, methodStr
 end
 
 function private.PopulateVendorBuyLine(tooltip, itemString)
@@ -250,7 +322,7 @@ end
 
 function private.PopulateCustomPriceLine(tooltip, itemString, name)
 	assert(name)
-	if not TSM.db.global.userData.customPriceSources[name] then
+	if not private.settings.customPriceSources[name] then
 		-- TODO: this custom price source has been removed (ideally shouldn't get here)
 		return
 	end
@@ -275,7 +347,7 @@ function private.PopulateFullInventoryLines(tooltip, itemString)
 		local playerTotal = bag + bank + auction + mail
 		totalNum = totalNum + playerTotal
 		tooltip:StartSection(L["Inventory"], format(L["%s total"], tooltip:ApplyValueColor(totalNum)))
-		local classColor = RAID_CLASS_COLORS[TSM.db:Get("sync", TSM.db:GetSyncScopeKeyByCharacter(UnitName("player")), "internalData", "classKey")]
+		local classColor = RAID_CLASS_COLORS[private.settings.classKey]
 		local rightText = private.RightTextFormatHelper(tooltip, L["%s (%s bags, %s bank, %s AH, %s mail)"], playerTotal, bag, bank, auction, mail)
 		if classColor then
 			tooltip:AddLine("|c"..classColor.colorStr..playerName.."|r", rightText)
@@ -288,58 +360,50 @@ function private.PopulateFullInventoryLines(tooltip, itemString)
 		return
 	end
 
-	-- calculate the total number
-	local totalNum = 0
-	for factionrealm in TSM.db:GetConnectedRealmIterator("factionrealm") do
-		for _, character in TSM.db:FactionrealmCharacterIterator(factionrealm) do
-			local bag = Inventory.GetBagQuantity(itemString, character, factionrealm)
-			local bank = Inventory.GetBankQuantity(itemString, character, factionrealm)
-			local reagentBank = Inventory.GetReagentBankQuantity(itemString, character, factionrealm)
-			local auction = Inventory.GetAuctionQuantity(itemString, character, factionrealm)
-			local mail = Inventory.GetMailQuantity(itemString, character, factionrealm)
-			totalNum = totalNum + bag + bank + reagentBank + auction + mail
-		end
-	end
-	wipe(private.guildQuantityCache)
-	for guildName in pairs(TSM.db.factionrealm.internalData.guildVaults) do
-		local guildQuantity = Inventory.GetGuildQuantity(itemString, guildName)
-		if guildQuantity > 0 then
-			private.guildQuantityCache[guildName] = guildQuantity
-			totalNum = totalNum + guildQuantity
-		end
-	end
+	-- Calculate the total number
+	local totalNum = Inventory.GetTotalQuantity(itemString)
 	tooltip:StartSection(L["Inventory"], format(L["%s total"], tooltip:ApplyValueColor(totalNum)))
 
-	-- add the lines
-	for factionrealm in TSM.db:GetConnectedRealmIterator("factionrealm") do
-		for _, character in TSM.db:FactionrealmCharacterIterator(factionrealm) do
-			local realm = strmatch(factionrealm, "^.* "..String.Escape("-").." (.*)")
-			if realm == GetRealmName() then
-				realm = ""
-			else
-				realm = " - "..realm
-			end
-			local bag = Inventory.GetBagQuantity(itemString, character, factionrealm)
-			local bank = Inventory.GetBankQuantity(itemString, character, factionrealm)
-			local reagentBank = Inventory.GetReagentBankQuantity(itemString, character, factionrealm)
-			local auction = Inventory.GetAuctionQuantity(itemString, character, factionrealm)
-			local mail = Inventory.GetMailQuantity(itemString, character, factionrealm)
-			local playerTotal = bag + bank + reagentBank + auction + mail
-			if playerTotal > 0 then
-				local classColor = RAID_CLASS_COLORS[TSM.db:Get("sync", TSM.db:GetSyncScopeKeyByCharacter(character, factionrealm), "internalData", "classKey")]
-				local rightText = private.RightTextFormatHelper(tooltip, L["%s (%s bags, %s bank, %s AH, %s mail)"], playerTotal, bag, bank + reagentBank, auction, mail)
-				if classColor then
-					tooltip:AddLine("|c"..classColor.colorStr..character..realm.."|r", rightText)
-				else
-					tooltip:AddLine(character..realm, rightText)
-				end
-			end
-		end
+	-- Add a line for the current character
+	private.AddInventoryLine(tooltip, itemString)
+
+	-- Add lines for alts
+	for _, character, factionrealm in AltTracking.CharacterIterator() do
+		private.AddInventoryLine(tooltip, itemString, character, factionrealm)
 	end
-	for guildName, guildQuantity in pairs(private.guildQuantityCache) do
+
+	-- Add lines for guilds
+	for _, guildName, guildQuantity in AltTracking.GuildQuantityIterator(itemString) do
 		tooltip:AddLine(guildName, format(L["%s in guild vault"], tooltip:ApplyValueColor(guildQuantity)))
 	end
+
 	tooltip:EndSection()
+end
+
+function private.AddInventoryLine(tooltip, itemString, character, factionrealm)
+	local bag, bank, reagentBank, auction, mail = nil, nil, nil, nil, nil
+	if character then
+		bag = AltTracking.GetBagQuantity(itemString, character, factionrealm)
+		bank = AltTracking.GetBankQuantity(itemString, character, factionrealm)
+		reagentBank = AltTracking.GetReagentBankQuantity(itemString, character, factionrealm)
+		auction = AltTracking.GetAuctionQuantity(itemString, character, factionrealm)
+		mail = AltTracking.GetMailQuantity(itemString, character, factionrealm)
+	else
+		bag = BagTracking.GetBagQuantity(itemString)
+		bank = BagTracking.GetBankQuantity(itemString)
+		reagentBank = BagTracking.GetReagentBankQuantity(itemString)
+		auction = AuctionTracking.GetQuantity(itemString)
+		mail = MailTracking.GetQuantity(itemString)
+	end
+	local playerTotal = bag + bank + reagentBank + auction + mail
+	if playerTotal <= 0 then
+		return
+	end
+	local characterStr = character and Wow.FormatCharacterName(character, factionrealm) or Wow.GetCharacterName()
+	local classKey = private.settings:GetForScopeKey("classKey", character or Wow.GetCharacterName(), factionrealm)
+	characterStr = RAID_CLASS_COLORS[classKey] and "|c"..RAID_CLASS_COLORS[classKey].colorStr..characterStr.."|r" or characterStr
+	local rightText = private.RightTextFormatHelper(tooltip, L["%s (%s bags, %s bank, %s AH, %s mail)"], playerTotal, bag, bank + reagentBank, auction, mail)
+	tooltip:AddLine(characterStr, rightText)
 end
 
 function private.PopulateSimpleInventoryLine(tooltip, itemString)
@@ -356,26 +420,10 @@ function private.PopulateSimpleInventoryLine(tooltip, itemString)
 		tooltip:AddLine(L["Inventory"], rightText2)
 	end
 
-	local totalPlayer, totalAlt, totalGuild, totalAuction = 0, 0, 0, 0
-	for factionrealm in TSM.db:GetConnectedRealmIterator("factionrealm") do
-		for _, character in TSM.db:FactionrealmCharacterIterator(factionrealm) do
-			local bag = Inventory.GetBagQuantity(itemString, character, factionrealm)
-			local bank = Inventory.GetBankQuantity(itemString, character, factionrealm)
-			local reagentBank = Inventory.GetReagentBankQuantity(itemString, character, factionrealm)
-			local auction = Inventory.GetAuctionQuantity(itemString, character, factionrealm)
-			local mail = Inventory.GetMailQuantity(itemString, character, factionrealm)
-			if character == UnitName("player") then
-				totalPlayer = totalPlayer + bag + bank + reagentBank + mail
-				totalAuction = totalAuction + auction
-			else
-				totalAlt = totalAlt + bag + bank + reagentBank + mail
-				totalAuction = totalAuction + auction
-			end
-		end
-	end
-	for guildName in pairs(TSM.db.factionrealm.internalData.guildVaults) do
-		totalGuild = totalGuild + Inventory.GetGuildQuantity(itemString, guildName)
-	end
+	local totalAlt, totalAltAuction = AltTracking.GetQuantity(itemString)
+	local totalPlayer = BagTracking.GetBagQuantity(itemString) + BagTracking.GetBankQuantity(itemString) + BagTracking.GetReagentBankQuantity(itemString) + MailTracking.GetQuantity(itemString)
+	local totalAuction = AuctionTracking.GetQuantity(itemString) + totalAltAuction
+	local totalGuild = AltTracking.GetTotalGuildQuantity(itemString)
 	local totalNum = totalPlayer + totalAlt + totalGuild + totalAuction
 	if totalNum > 0 then
 		local rightText = nil

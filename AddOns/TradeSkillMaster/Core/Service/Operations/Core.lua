@@ -9,6 +9,7 @@ local Operations = TSM:NewPackage("Operations")
 local TempTable = TSM.Include("Util.TempTable")
 local Log = TSM.Include("Util.Log")
 local Database = TSM.Include("Util.Database")
+local TextureAtlas = TSM.Include("Util.TextureAtlas")
 local private = {
 	db = nil,
 	operations = nil,
@@ -338,7 +339,7 @@ function Operations.GetRelationshipColors(operationType, operationName, settingK
 	else
 		linkColor = "TEXT"
 	end
-	local linkTexture = TSM.UI.TexturePacks.GetColoredKey("iconPack.14x14/Link", linkColor)
+	local linkTexture = TextureAtlas.GetColoredKey("iconPack.14x14/Link", linkColor)
 	return relationshipSet, linkTexture, value and not relationshipSet and "TEXT" or "TEXT_DISABLED"
 end
 
@@ -354,14 +355,20 @@ function Operations.SetStoredGlobally(storeGlobally)
 		-- move current profile to global
 		TSM.db.global.userData.operations = CopyTable(TSM.db.profile.userData.operations)
 		-- clear out old operations
-		for _ in TSM.GetTSMProfileIterator() do
+		local originalProfile = TSM.db:GetCurrentProfile()
+		for _, profile in TSM.db:ProfileIterator() do
+			TSM.db:SetProfile(profile)
 			TSM.db.profile.userData.operations = nil
 		end
+		TSM.db:SetProfile(originalProfile)
 	else
 		-- move global to all profiles
-		for _ in TSM.GetTSMProfileIterator() do
+		local originalProfile = TSM.db:GetCurrentProfile()
+		for _, profile in TSM.db:ProfileIterator() do
+			TSM.db:SetProfile(profile)
 			TSM.db.profile.userData.operations = CopyTable(TSM.db.global.userData.operations)
 		end
+		TSM.db:SetProfile(originalProfile)
 		-- clear out old operations
 		TSM.db.global.userData.operations = nil
 	end

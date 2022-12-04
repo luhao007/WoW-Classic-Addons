@@ -12,7 +12,12 @@ local Money = TSM.Include("Util.Money")
 local ItemString = TSM.Include("Util.ItemString")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local CustomPrice = TSM.Include("Service.CustomPrice")
-local Inventory = TSM.Include("Service.Inventory")
+local AltTracking = TSM.Include("Service.AltTracking")
+local GuildTracking = TSM.Include("Service.GuildTracking")
+local MailTracking = TSM.Include("Service.MailTracking")
+local AuctionTracking = TSM.Include("Service.AuctionTracking")
+local BagTracking = TSM.Include("Service.BagTracking")
+local Settings = TSM.Include("Service.Settings")
 TSM_API = {}
 local private = {}
 
@@ -48,14 +53,11 @@ end
 -- @tparam function func The function to call - passed `false` when hidden, and `true, frame` when shown
 function TSM_API.RegisterUICallback(uiName, addonTag, func)
 	private.CheckCallMethod(uiName)
-	if type(addonTag) ~= "string" then
-		error("Invalid `addonTag` argument type (must be a string): "..tostring(addonTag), 2)
-	elseif addonTag == "" then
+	private.ValidateArgumentType(addonTag, "string", "addonTag")
+	if addonTag == "" then
 		error("Invalid `addonTag` argument (cannot be an empty string)", 2)
 	end
-	if type(func) ~= "function" then
-		error("Invalid `func` argument type (must be a function): "..tostring(func), 2)
-	end
+	private.ValidateArgumentType(func, "function", "func")
 	if uiName == "CRAFTING" then
 		TSM.UI.CraftingUI.RegisterApiCallback(addonTag, func)
 	else
@@ -75,9 +77,7 @@ end
 -- @treturn table The passed table, populated with group paths
 function TSM_API.GetGroupPaths(result)
 	private.CheckCallMethod(result)
-	if type(result) ~= "table" then
-		error("Invalid 'result' argument type (must be a table): "..tostring(result), 2)
-	end
+	private.ValidateArgumentType(result, "table", "result")
 	for _, groupPath in TSM.Groups.GroupIterator() do
 		tinsert(result, groupPath)
 	end
@@ -90,11 +90,7 @@ end
 -- @treturn string The formatted group path
 function TSM_API.FormatGroupPath(path)
 	private.CheckCallMethod(path)
-	if type(path) ~= "string" then
-		error("Invalid 'path' argument type (must be a string): "..tostring(path), 2)
-	elseif path == "" then
-		error("Invalid 'path' argument (empty string)", 2)
-	end
+	private.ValidateGroupPath(path)
 	return TSM.Groups.Path.Format(path)
 end
 
@@ -105,11 +101,7 @@ end
 -- @treturn string The name of the group
 function TSM_API.SplitGroupPath(path)
 	private.CheckCallMethod(path)
-	if type(path) ~= "string" then
-		error("Invalid 'path' argument type (must be a string): "..tostring(path), 2)
-	elseif path == "" then
-		error("Invalid 'path' argument (empty string)", 2)
-	end
+	private.ValidateGroupPath(path)
 	local parentPath, groupName = TSM.Groups.Path.Split(path)
 	if parentPath == TSM.CONST.ROOT_GROUP_PATH then
 		parentPath = nil
@@ -126,6 +118,23 @@ function TSM_API.GetGroupPathByItem(itemString)
 	itemString = private.ValidateTSMItemString(itemString)
 	local path = TSM.Groups.GetPathByItem(itemString)
 	return path ~= TSM.CONST.ROOT_GROUP_PATH and path or nil
+end
+
+--- Gets all the items within a group.
+-- @within Group
+-- @tparam string path The group path to get the items for
+-- @tparam boolean includeSubGroups Whether or not to include items in subgroups
+-- @tparam table result A table to store the result in
+-- @treturn table The passed table, populated with group paths
+function TSM_API.GetGroupItems(path, includeSubGroups, result)
+	private.CheckCallMethod(path, result)
+	private.ValidateGroupPath(path)
+	private.ValidateArgumentType(includeSubGroups, "boolean", "includeSubGroups")
+	private.ValidateArgumentType(result, "table", "result")
+	for _, itemString in TSM.Groups.ItemIterator(path, includeSubGroups) do
+		tinsert(result, itemString)
+	end
+	return result
 end
 
 
@@ -180,10 +189,8 @@ end
 -- @treturn table The passed table, populated with price source keys
 function TSM_API.GetPriceSourceKeys(result)
 	private.CheckCallMethod(result)
-	if type(result) ~= "table" then
-		error("Invalid 'result' argument type (must be a table): "..tostring(result), 2)
-	end
-	for key in CustomPrice.Iterator() do
+	private.ValidateArgumentType(result, "table", "result")
+	for _, key in CustomPrice.Iterator() do
 		tinsert(result, key)
 	end
 	return result
@@ -195,9 +202,7 @@ end
 -- @treturn string The localized description
 function TSM_API.GetPriceSourceDescription(key)
 	private.CheckCallMethod(key)
-	if type(key) ~= "string" then
-		error("Invalid 'key' argument type (must be a string): "..tostring(key), 2)
-	end
+	private.ValidateArgumentType(key, "string", "key")
 	local result = CustomPrice.GetDescription(key)
 	if not result then
 		error("Unknown price source key: "..tostring(key), 2)
@@ -212,9 +217,7 @@ end
 -- @treturn string The (localized) error message or nil if the custom price was valid
 function TSM_API.IsCustomPriceValid(customPriceStr)
 	private.CheckCallMethod(customPriceStr)
-	if type(customPriceStr) ~= "string" then
-		error("Invalid 'customPriceStr' argument type (must be a string): "..tostring(customPriceStr), 2)
-	end
+	private.ValidateArgumentType(customPriceStr, "string", "customPriceStr")
 	return CustomPrice.Validate(customPriceStr)
 end
 
@@ -226,9 +229,7 @@ end
 -- @treturn string The (localized) error message if the custom price string is not valid or nil if it is valid
 function TSM_API.GetCustomPriceValue(customPriceStr, itemString)
 	private.CheckCallMethod(customPriceStr)
-	if type(customPriceStr) ~= "string" then
-		error("Invalid 'customPriceStr' argument type (must be a string): "..tostring(customPriceStr), 2)
-	end
+	private.ValidateArgumentType(customPriceStr, "string", "customPriceStr")
 	itemString = private.ValidateTSMItemString(itemString)
 	return CustomPrice.GetValue(customPriceStr, itemString)
 end
@@ -245,9 +246,7 @@ end
 -- @treturn string The formatted money string
 function TSM_API.FormatMoneyString(value)
 	private.CheckCallMethod(value)
-	if type(value) ~= "number" then
-		error("Invalid 'value' argument type (must be a number): "..tostring(value), 2)
-	end
+	private.ValidateArgumentType(value, "number", "value")
 	local result = Money.ToString(value)
 	assert(result)
 	return result
@@ -259,9 +258,7 @@ end
 -- @treturn number The money value in copper
 function TSM_API.ParseMoneyString(str)
 	private.CheckCallMethod(str)
-	if type(str) ~= "string" then
-		error("Invalid 'str' argument type (must be a string): "..tostring(str), 2)
-	end
+	private.ValidateArgumentType(str, "string", "str")
 	local result = Money.FromString(str)
 	assert(result)
 	return result
@@ -279,9 +276,7 @@ end
 -- @treturn string The TSM item string or nil if the specified item could not be converted
 function TSM_API.ToItemString(item)
 	private.CheckCallMethod(item)
-	if type(item) ~= "string" then
-		error("Invalid 'item' argument type (must be a string): "..tostring(item), 2)
-	end
+	private.ValidateArgumentType(item, "string", "item")
 	return ItemString.Get(item)
 end
 
@@ -315,7 +310,7 @@ end
 
 --- Gets the quantity of an item in a character's bags.
 -- @within Inventory
--- @tparam string itemString The TSM item string (note that inventory data is tracked per base item)
+-- @tparam string itemString The TSM item string (inventory is tracked by either levelItemString baseItemString)
 -- @tparam ?string character The character to get data for (defaults to the current character if not set)
 -- @tparam ?string factionrealm The factionrealm to get data for (defaults to the current factionrealm if not set)
 -- @treturn number The quantity of the specified item
@@ -324,12 +319,17 @@ function TSM_API.GetBagQuantity(itemString, character, factionrealm)
 	itemString = private.ValidateTSMItemString(itemString)
 	assert(character == nil or type(character) == "string")
 	assert(factionrealm == nil or type(factionrealm) == "string")
-	return Inventory.GetBagQuantity(itemString, character, factionrealm)
+	if not character then
+		assert(not factionrealm)
+		return BagTracking.GetBagQuantity(itemString)
+	else
+		return AltTracking.GetBagQuantity(itemString, character, factionrealm)
+	end
 end
 
 --- Gets the quantity of an item in a character's bank.
 -- @within Inventory
--- @tparam string itemString The TSM item string (note that inventory data is tracked per base item)
+-- @tparam string itemString The TSM item string (inventory is tracked by either levelItemString baseItemString)
 -- @tparam ?string character The character to get data for (defaults to the current character if not set)
 -- @tparam ?string factionrealm The factionrealm to get data for (defaults to the current factionrealm if not set)
 -- @treturn number The quantity of the specified item
@@ -338,12 +338,17 @@ function TSM_API.GetBankQuantity(itemString, character, factionrealm)
 	itemString = private.ValidateTSMItemString(itemString)
 	assert(character == nil or type(character) == "string")
 	assert(factionrealm == nil or type(factionrealm) == "string")
-	return Inventory.GetBankQuantity(itemString, character, factionrealm)
+	if not character then
+		assert(not factionrealm)
+		return BagTracking.GetBankQuantity(itemString)
+	else
+		return AltTracking.GetBankQuantity(itemString, character, factionrealm)
+	end
 end
 
 --- Gets the quantity of an item in a character's reagent bank.
 -- @within Inventory
--- @tparam string itemString The TSM item string (note that inventory data is tracked per base item)
+-- @tparam string itemString The TSM item string (inventory is tracked by either levelItemString baseItemString)
 -- @tparam ?string character The character to get data for (defaults to the current character if not set)
 -- @tparam ?string factionrealm The factionrealm to get data for (defaults to the current factionrealm if not set)
 -- @treturn number The quantity of the specified item
@@ -352,12 +357,17 @@ function TSM_API.GetReagentBankQuantity(itemString, character, factionrealm)
 	itemString = private.ValidateTSMItemString(itemString)
 	assert(character == nil or type(character) == "string")
 	assert(factionrealm == nil or type(factionrealm) == "string")
-	return Inventory.GetReagentBankQuantity(itemString, character, factionrealm)
+	if not character then
+		assert(not factionrealm)
+		return BagTracking.GetReagentBankQuantity(itemString)
+	else
+		return AltTracking.GetReagentBankQuantity(itemString, character, factionrealm)
+	end
 end
 
 --- Gets the quantity of an item posted to the auction house by a character.
 -- @within Inventory
--- @tparam string itemString The TSM item string (note that inventory data is tracked per base item)
+-- @tparam string itemString The TSM item string (inventory is tracked by either levelItemString baseItemString)
 -- @tparam ?string character The character to get data for (defaults to the current character if not set)
 -- @tparam ?string factionrealm The factionrealm to get data for (defaults to the current factionrealm if not set)
 -- @treturn number The quantity of the specified item
@@ -366,12 +376,17 @@ function TSM_API.GetAuctionQuantity(itemString, character, factionrealm)
 	itemString = private.ValidateTSMItemString(itemString)
 	assert(character == nil or type(character) == "string")
 	assert(factionrealm == nil or type(factionrealm) == "string")
-	return Inventory.GetAuctionQuantity(itemString, character, factionrealm)
+	if not character then
+		assert(not factionrealm)
+		return AuctionTracking.GetQuantity(itemString)
+	else
+		return AltTracking.GetAuctionQuantity(itemString, character, factionrealm)
+	end
 end
 
 --- Gets the quantity of an item in a character's mailbox.
 -- @within Inventory
--- @tparam string itemString The TSM item string (note that inventory data is tracked per base item)
+-- @tparam string itemString The TSM item string (inventory is tracked by either levelItemString baseItemString)
 -- @tparam ?string character The character to get data for (defaults to the current character if not set)
 -- @tparam ?string factionrealm The factionrealm to get data for (defaults to the current factionrealm if not set)
 -- @treturn number The quantity of the specified item
@@ -380,24 +395,33 @@ function TSM_API.GetMailQuantity(itemString, character, factionrealm)
 	itemString = private.ValidateTSMItemString(itemString)
 	assert(character == nil or type(character) == "string")
 	assert(factionrealm == nil or type(factionrealm) == "string")
-	return Inventory.GetMailQuantity(itemString, character, factionrealm)
+	if not character then
+		assert(not factionrealm)
+		return MailTracking.GetQuantity(itemString)
+	else
+		return AltTracking.GetMailQuantity(itemString, character, factionrealm)
+	end
 end
 
 --- Gets the quantity of an item in a guild's bank.
 -- @within Inventory
--- @tparam string itemString The TSM item string (note that inventory data is tracked per base item)
+-- @tparam string itemString The TSM item string (inventory is tracked by either levelItemString baseItemString)
 -- @tparam ?string guild The guild to get data for (defaults to the current character's guild if not set)
 -- @treturn number The quantity of the specified item
 function TSM_API.GetGuildQuantity(itemString, guild)
 	private.CheckCallMethod(itemString)
 	itemString = private.ValidateTSMItemString(itemString)
 	assert(guild == nil or type(guild) == "string")
-	return Inventory.GetGuildQuantity(itemString, guild)
+	if not guild then
+		return GuildTracking.GetQuantity(itemString)
+	else
+		return AltTracking.GetGuildQuantity(itemString, guild)
+	end
 end
 
 --- Get some total quantities for an item.
 -- @within Inventory
--- @tparam string itemString The TSM item string (note that inventory data is tracked per base item)
+-- @tparam string itemString The TSM item string (inventory is tracked by either levelItemString baseItemString)
 -- @treturn number The total quantity the current player has (bags, bank, reagent bank, and mail)
 -- @treturn number The total quantity alt characters have (bags, bank, reagent bank, and mail)
 -- @treturn number The total quantity the current player has on the auction house
@@ -405,17 +429,32 @@ end
 function TSM_API.GetPlayerTotals(itemString)
 	private.CheckCallMethod(itemString)
 	itemString = private.ValidateTSMItemString(itemString)
-	return Inventory.GetPlayerTotals(itemString)
+	local numPlayer, numAlts, numAuctions, numAltAuctions = 0, 0, 0, 0
+	numPlayer = numPlayer + BagTracking.GetBagQuantity(itemString)
+	numPlayer = numPlayer + BagTracking.GetBankQuantity(itemString)
+	numPlayer = numPlayer + BagTracking.GetReagentBankQuantity(itemString)
+	numPlayer = numPlayer + MailTracking.GetQuantity(itemString)
+	numAuctions = numAuctions + AuctionTracking.GetQuantity(itemString)
+	for _, factionrealm, character in Settings.ConnectedFactionrealmAltCharacterIterator() do
+		numAlts = numAlts + AltTracking.GetBagQuantity(itemString, character, factionrealm)
+		numAlts = numAlts + AltTracking.GetBankQuantity(itemString, character, factionrealm)
+		numAlts = numAlts + AltTracking.GetReagentBankQuantity(itemString, character, factionrealm)
+		numAlts = numAlts + AltTracking.GetMailQuantity(itemString, character, factionrealm)
+		local auctionQuantity = AltTracking.GetAuctionQuantity(itemString, character, factionrealm)
+		numAltAuctions = numAltAuctions + auctionQuantity
+		numAuctions = numAuctions + auctionQuantity
+	end
+	return numPlayer, numAlts, numAuctions, numAltAuctions
 end
 
 --- Get the total number of items in all tracked guild banks.
 -- @within Inventory
--- @tparam string itemString The TSM item string (note that inventory data is tracked per base item)
+-- @tparam string itemString The TSM item string (inventory is tracked by either levelItemString baseItemString)
 -- @treturn number The total quantity in all tracked guild banks
 function TSM_API.GetGuildTotal(itemString)
 	private.CheckCallMethod(itemString)
 	itemString = private.ValidateTSMItemString(itemString)
-	return Inventory.GetGuildTotal(itemString)
+	return AltTracking.GetTotalGuildQuantity(itemString)
 end
 
 
@@ -424,8 +463,14 @@ end
 -- Private Helper Functions
 -- ============================================================================
 
+function private.ValidateArgumentType(val, expectedType, name)
+	if type(val) ~= expectedType then
+		error("Invalid '"..name.."' argument type (must be a "..expectedType.."): "..tostring(val), 3)
+	end
+end
+
 function private.ValidateTSMItemString(itemString)
-	if type(itemString) ~= "string" or not strmatch(itemString, "[ip]:%d+") then
+	if type(itemString) ~= "string" or not strmatch(itemString, "^[ip]:%d+") then
 		error("Invalid 'itemString' argument type (must be a TSM item string): "..tostring(itemString), 3)
 	end
 	local newItemString = ItemString.Get(itemString)
@@ -433,6 +478,14 @@ function private.ValidateTSMItemString(itemString)
 		error("Invalid TSM itemString: "..itemString, 3)
 	end
 	return newItemString
+end
+
+function private.ValidateGroupPath(path)
+	if type(path) ~= "string" then
+		error("Invalid 'path' argument type (must be a string): "..tostring(path), 3)
+	elseif path == "" then
+		error("Invalid 'path' argument (empty string)", 3)
+	end
 end
 
 function private.CheckCallMethod(firstArg)

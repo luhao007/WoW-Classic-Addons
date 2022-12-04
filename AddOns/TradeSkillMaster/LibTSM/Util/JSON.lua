@@ -4,11 +4,8 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
---- JSON Functions
--- @module JSON
-
-local _, TSM = ...
-local JSON = TSM.Init("Util.JSON")
+local TSM = select(2, ...) ---@type TSM
+local JSON = TSM.Init("Util.JSON") ---@class Util.JSON
 local private = {}
 
 
@@ -17,6 +14,9 @@ local private = {}
 -- Module Functions
 -- ============================================================================
 
+---Encodes a value as a JSON string.
+---@param value any
+---@return string @The JSON string
 function JSON.Encode(value)
 	if type(value) == "string" then
 		return "\""..private.SanitizeString(value).."\""

@@ -4,8 +4,8 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
-local Analytics = TSM.Init("Util.Analytics")
+local TSM = select(2, ...) ---@type TSM
+local Analytics = TSM.Init("Util.Analytics") ---@class Util.Analytics
 local Debug = TSM.Include("Util.Debug")
 local Log = TSM.Include("Util.Log")
 local private = {
@@ -26,10 +26,15 @@ local HIT_TYPE_IS_VALID = {
 -- Module Functions
 -- ============================================================================
 
+---Inserts a new analytics action event.
+---@param name string The name of the action
+---@param ... any Additional parameters for the action
 function Analytics.Action(name, ...)
 	private.InsertHit("AC", name, ...)
 end
 
+---Saves analytics into the TSM_AppHelper saved variables.
+---@param appDB table The TSM_AppHelper SV database
 function Analytics.Save(appDB)
 	appDB.analytics = appDB.analytics or {updateTime=0, data={}}
 	if private.lastEventTime then

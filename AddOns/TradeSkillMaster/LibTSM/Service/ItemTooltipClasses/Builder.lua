@@ -43,7 +43,7 @@ function TooltipBuilder.__init(self)
 	self._levelNumLines = {}
 	self._levelHasHeading = {}
 	self._lastUpdate = 0
-	self._modifier = nil
+	self._modifierHash = nil
 	self._inCombat = false
 	self._itemString = nil
 	self._quantity = nil
@@ -72,17 +72,17 @@ function TooltipBuilder.FormatMoney(self, value, color)
 	if not value then
 		return self:ApplyValueColor("---")
 	end
-	return Money.ToString(value, color:GetTextColorPrefix(), TSM.db.global.tooltipOptions.tooltipPriceFormat == "icon" and "OPT_ICON" or nil, self._disabled and "OPT_DISABLE" or nil)
+	return Money.ToString(value, color:GetTextColorPrefix(), TSM.db.global.tooltipOptions.tooltipPriceFormat == "icon" and "OPT_ICON" or nil, self._disabled and "OPT_DISABLE" or nil, "OPT_RETAIL_ROUND")
 end
 
-function TooltipBuilder.AddLine(self, lineLeft, lineRight, color)
+function TooltipBuilder.AddLine(self, lineLeft, lineRight)
 	if lineRight then
 		lineLeft = strjoin(LINE_PART_SEP, lineLeft, lineRight)
 	end
 	local line = strrep("  ", self._level)..lineLeft
-	color = color or Theme.GetColor("INDICATOR_ALT")
+	local color = "INDICATOR_ALT"
 	if self._disabled then
-		color = color:GetTint(DISABLED_TINT)
+		color = color.."+DISABLED"
 	end
 	assert(not self._lineColors[line] or self._lineColors[line] == color)
 	self._lineColors[line] = color
@@ -98,20 +98,27 @@ function TooltipBuilder.AddTextLine(self, label, text, ...)
 	end
 end
 
-function TooltipBuilder.AddValueLine(self, label, ...)
-	self:AddLine(label, self:_ValuesToStr(...))
-end
-
-function TooltipBuilder.AddItemValueLine(self, label, value)
+function TooltipBuilder.AddItemValueLine(self, label, value, prefixText)
 	if self._quantity > 1 then
 		label = label.." x"..self._quantity
 		value = value * self._quantity
 	end
-	self:AddLine(label, self:FormatMoney(value))
+	local text = self:FormatMoney(value)
+	if prefixText then
+		text = prefixText.." "..text
+	end
+	self:AddLine(label, text)
+end
+
+function TooltipBuilder.AddItemValuesLine(self, label, ...)
+	if self._quantity > 1 then
+		label = label.." x"..self._quantity
+	end
+	self:AddLine(label, self:_ValuesToStr(self._quantity, ...))
 end
 
 function TooltipBuilder.AddQuantityValueLine(self, label, quantity, ...)
-	self:AddLine(label, self:ApplyValueColor(quantity).." ("..self:_ValuesToStr(...)..")")
+	self:AddLine(label, self:ApplyValueColor(quantity).." ("..self:_ValuesToStr(1, ...)..")")
 end
 
 function TooltipBuilder.AddSubItemValueLine(self, itemString, value, multiplier, matRate, minAmount, maxAmount)
@@ -182,7 +189,7 @@ function TooltipBuilder._IsCached(self, itemString, quantity)
 	if itemString == ItemString.GetPlaceholder() then
 		return false
 	end
-	if self:_GetModifierHash() ~= self._modifier then
+	if self:_GetModifierHash() ~= self._modifierHash then
 		return false
 	end
 	if self._itemString ~= itemString or self._quantity ~= quantity then
@@ -210,7 +217,7 @@ function TooltipBuilder._Prepare(self, itemString, quantity)
 	self._level = 0
 	self._levelNumLines[self._level] = 0
 	self._lastUpdate = GetTime()
-	self._modifier = self:_GetModifierHash()
+	self._modifierHash = self:_GetModifierHash()
 	self._inCombat = InCombatLockdown()
 	self._itemString = itemString
 	self._quantity = quantity
@@ -243,11 +250,12 @@ function TooltipBuilder._TextsToStr(self, ...)
 	return result
 end
 
-function TooltipBuilder._ValuesToStr(self, ...)
+function TooltipBuilder._ValuesToStr(self, quantity, ...)
 	-- can't just build the table with the vararg as there may be nils
 	local valueParts = TempTable.Acquire()
 	for i = 1, select("#", ...) do
 		local value = select(i, ...)
+		value = value and value * quantity or nil
 		valueParts[i] = self:FormatMoney(value)
 	end
 	local result = table.concat(valueParts, " / ")

@@ -4,8 +4,8 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
-local Groups = TSM:NewPackage("Groups")
+local TSM = select(2, ...) ---@type TSM
+local Groups = TSM:NewPackage("Groups") ---@class TSM.Groups
 local Database = TSM.Include("Util.Database")
 local TempTable = TSM.Include("Util.TempTable")
 local Table = TSM.Include("Util.Table")
@@ -182,9 +182,7 @@ function Groups.RebuildDatabase()
 	end
 	private.itemDB:BulkInsertEnd()
 	private.itemStringMap:SetCallbacksPaused(true)
-	for key in private.itemStringMap:Iterator() do
-		private.itemStringMap:ValueChanged(key)
-	end
+	private.itemStringMap:Invalidate()
 	private.RebuildDB()
 	private.itemStringMap:SetCallbacksPaused(false)
 end
@@ -361,6 +359,16 @@ function Groups.SetItemGroup(itemString, groupPath)
 	end
 end
 
+function Groups.SetItemsGroup(items, groupPath)
+	private.itemDB:SetQueryUpdatesPaused(true)
+	private.itemStringMap:SetCallbacksPaused(true)
+	for _, itemString in ipairs(items) do
+		Groups.SetItemGroup(itemString, groupPath)
+	end
+	private.itemStringMap:SetCallbacksPaused(false)
+	private.itemDB:SetQueryUpdatesPaused(false)
+end
+
 function Groups.BulkCreateFromImport(groupName, items, groups, groupOperations, moveExistingItems)
 	-- create all the groups
 	assert(not TSM.db.profile.userData.groups[groupName])
@@ -408,23 +416,30 @@ function Groups.ItemByBaseItemStringIterator(baseItemString)
 	return private.baseItemStringItemIteratorQuery:Iterator()
 end
 
-function Groups.ItemIterator(groupPathFilter, includeSubGroups)
+function Groups.CreateItemsQuery(groupPathFilter, includeSubGroups)
 	assert(groupPathFilter ~= TSM.CONST.ROOT_GROUP_PATH)
 	local query = private.itemDB:NewQuery()
-		:Select("itemString", "groupPath")
-	if groupPathFilter then
-		if includeSubGroups then
-			query:StartsWith("groupPath", groupPathFilter)
-			query:Custom(private.GroupPathQueryFilter, groupPathFilter)
-		else
-			query:Equal("groupPath", groupPathFilter)
-		end
+	if includeSubGroups then
+		query:Or()
+				:Equal("groupPath", groupPathFilter)
+				:Matches("groupPath", "^"..String.Escape(groupPathFilter)..TSM.CONST.GROUP_SEP)
+			:End()
+	else
+		query:Equal("groupPath", groupPathFilter)
 	end
-	return query:IteratorAndRelease()
+	return query
 end
 
-function private.GroupPathQueryFilter(row, groupPathFilter)
-	return row:GetField("groupPath") == groupPathFilter or strmatch(row:GetField("groupPath"), "^"..String.Escape(groupPathFilter)..TSM.CONST.GROUP_SEP)
+function Groups.ItemIterator(groupPathFilter, includeSubGroups)
+	if groupPathFilter then
+		return Groups.CreateItemsQuery(groupPathFilter, includeSubGroups)
+			:Select("itemString", "groupPath")
+			:IteratorAndRelease()
+	else
+		return private.itemDB:NewQuery()
+			:Select("itemString", "groupPath")
+			:IteratorAndRelease()
+	end
 end
 
 function Groups.GetNumItems(groupPathFilter)

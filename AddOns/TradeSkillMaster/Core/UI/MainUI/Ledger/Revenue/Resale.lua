@@ -67,7 +67,8 @@ function private.DrawResalePage()
 	end
 
 	private.summaryQuery = private.summaryQuery or TSM.Accounting.Transactions.CreateSummaryQuery()
-		:InnerJoin(ItemInfo.GetDBForJoin(), "itemString")
+		:VirtualField("name", "string", ItemInfo.GetName, "itemString", "?")
+		:VirtualField("quality", "number", ItemInfo.GetQuality, "itemString", 0)
 		:OrderBy("name", true)
 	private.UpdateQuery()
 	local totalProfit = 0
@@ -195,10 +196,7 @@ function private.DrawResalePage()
 			:SetQuery(private.summaryQuery)
 			:SetScript("OnRowClick", private.TableSelectionChanged)
 		)
-		:AddChild(UIElements.New("Texture", "line")
-			:SetHeight(2)
-			:SetTexture("ACTIVE_BG")
-		)
+		:AddChild(TSM.UI.Views.Line.NewHorizontal("line"))
 		:AddChild(UIElements.New("Frame", "footer")
 			:SetLayout("HORIZONTAL")
 			:SetHeight(40)
@@ -209,15 +207,13 @@ function private.DrawResalePage()
 				:SetFont("BODY_BODY2_MEDIUM")
 				:SetText(format(L["%s Items Resold"], Theme.GetColor("INDICATOR"):ColorText(FormatLargeNumber(numItems))))
 			)
-			:AddChild(UIElements.New("Texture", "line")
+			:AddChild(TSM.UI.Views.Line.NewVertical("line")
 				:SetMargin(4, 8, 0, 0)
-				:SetWidth(2)
-				:SetTexture("ACTIVE_BG")
 			)
 			:AddChild(UIElements.New("Text", "profit")
 				:SetWidth("AUTO")
 				:SetFont("BODY_BODY2_MEDIUM")
-				:SetText(format(L["%s Total Profit"], Money.ToString(totalProfit)))
+				:SetText(format(L["%s Total Profit"], Money.ToString(totalProfit, nil, "OPT_RETAIL_ROUND")))
 			)
 			:AddChild(UIElements.New("Spacer", "spacer"))
 		)
@@ -230,15 +226,15 @@ end
 -- ============================================================================
 
 function private.GetMoneyText(value)
-	return Money.ToString(value)
+	return Money.ToString(value, nil, "OPT_RETAIL_ROUND")
 end
 
 function private.GetColoredMoneyText(value)
-	return Money.ToString(value, Theme.GetFeedbackColor(value >= 0 and "GREEN" or "RED"):GetTextColorPrefix())
+	return Money.ToString(value, Theme.GetColor(value >= 0 and "FEEDBACK_GREEN" or "FEEDBACK_RED"):GetTextColorPrefix(), "OPT_RETAIL_ROUND")
 end
 
 function private.GetPctText(value)
-	return Theme.GetFeedbackColor(value >= 0 and "GREEN" or "RED"):ColorText(value.."%")
+	return Theme.GetColor(value >= 0 and "FEEDBACK_GREEN" or "FEEDBACK_RED"):ColorText(value.."%")
 end
 
 
@@ -258,7 +254,7 @@ function private.FilterChangedCommon(dropdown)
 	dropdown:GetElement("__parent.__parent.scrollingTable"):UpdateData(true)
 	local footer = dropdown:GetElement("__parent.__parent.footer")
 	footer:GetElement("num"):SetText(format(L["%s Items Resold"], Theme.GetColor("INDICATOR"):ColorText(FormatLargeNumber(numItems))))
-	footer:GetElement("profit"):SetText(format(L["%s Total Profit"], Money.ToString(totalProfit)))
+	footer:GetElement("profit"):SetText(format(L["%s Total Profit"], Money.ToString(totalProfit, nil, "OPT_RETAIL_ROUND")))
 	footer:Draw()
 end
 

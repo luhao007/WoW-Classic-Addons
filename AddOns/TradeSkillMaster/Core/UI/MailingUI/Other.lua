@@ -21,7 +21,7 @@ local private = {
 }
 
 local PLAYER_NAME = UnitName("player")
-local PLAYER_NAME_REALM = string.gsub(PLAYER_NAME.."-"..GetRealmName(), "%s+", "")
+local PLAYER_NAME_REALM = gsub(PLAYER_NAME.."-"..GetRealmName(), "%s+", "")
 
 
 

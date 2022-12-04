@@ -4,21 +4,18 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
---- Delay Functions
--- @module Delay
-
-local _, TSM = ...
-local Delay = TSM.Init("Util.Delay")
-local Debug = TSM.Include("Util.Debug")
+local TSM = select(2, ...) ---@type TSM
+local Delay = TSM.Init("Util.Delay") ---@class Util.Delay
 local Log = TSM.Include("Util.Log")
-local TempTable = TSM.Include("Util.TempTable")
+local DelayTimer = TSM.Include("LibTSMClass").DefineClass("DelayTimer") ---@class DelayTimer
 local private = {
-	delays = {},
+	activeTimers = {},
 	frameNumber = 0,
 	frame = nil,
 }
 local CALLBACK_TIME_WARNING_THRESHOLD_MS = 20
 local MIN_TIME_DURATION = 0.0001
+local MIN_FRAMES = 1
 
 
 
@@ -38,93 +35,76 @@ end)
 -- Module Functions
 -- ============================================================================
 
---- Call a callback after a set amount of time.
--- Note that the delay may be up to 1 frame time longer than requested.
--- @tparam[opt] string label A label for the delay (to allow it to be cancelled)
--- @tparam number duration The amount of time to delay for
--- @tparam function callback The function called when the delay is finished
--- @tparam[opt] number repeatDelay The amount of time to set this delay for once it completes
--- @param[opt=nil] context A context value to pass along to the callback (ignored if the delay was previously started)
-function Delay.AfterTime(label, duration, callback, repeatDelay, context)
-	if type(label) == "number" then
-		-- no label specified
-		assert(not repeatDelay)
-		duration, callback, repeatDelay, context = label, duration, callback, repeatDelay
-		label = nil
-	end
-	assert(type(duration) == "number" and type(callback) == "function" and (not repeatDelay or type(repeatDelay) == "number"))
-	repeatDelay = repeatDelay and max(repeatDelay, MIN_TIME_DURATION) or nil
-	duration = max(duration, MIN_TIME_DURATION)
-
-	if label then
-		for _, delay in ipairs(private.delays) do
-			if delay.label == label then
-				-- delay is already running, so just return
-				return
-			end
-		end
-	else
-		label = Debug.GetStackLevelLocation(2)
-	end
-
-	local delayTbl = TempTable.Acquire()
-	delayTbl.endTime = GetTime() + duration
-	delayTbl.callback = callback
-	delayTbl.label = label
-	delayTbl.repeatDelay = repeatDelay
-	delayTbl.context = context
-	tinsert(private.delays, delayTbl)
+---Creates a new timer.
+---@param label string A label which is used for debugging purposes
+---@param callback function The function to call when the timer expires
+---@return DelayTimer
+function Delay.CreateTimer(label, callback)
+	assert(type(label) == "string" and type(callback) == "function")
+	return DelayTimer(label, callback)
 end
 
---- Call a callback after a set number of frames.
--- Note that the delay may be up to 1 frame time longer than requested.
--- @tparam[opt] string label A label for the delay (to allow it to be cancelled)
--- @tparam number duration The number of frames to delay for
--- @tparam function callback The function called when the delay is finished
--- @tparam[opt] number repeatDelay The number of frames to set this delay for once it completes
--- @param[opt=nil] context A context value to pass along to the callback (ignored if the delay was previously started)
-function Delay.AfterFrame(label, duration, callback, repeatDelay, context)
-	if type(label) == "number" then
-		-- no label specified
-		assert(not repeatDelay)
-		duration, callback, repeatDelay, context = label, duration, callback, repeatDelay
-		label = nil
-	end
-	assert(type(duration) == "number" and type(callback) == "function" and (not repeatDelay or type(repeatDelay) == "number"))
-	repeatDelay = repeatDelay and max(repeatDelay, 1) or nil
-	duration = max(duration, 1)
 
-	if label then
-		for _, delay in ipairs(private.delays) do
-			if delay.label == label then
-				-- delay is already running, so just return
-				return
-			end
-		end
-	else
-		label = Debug.GetStackLevelLocation(2)
-		assert(label)
-	end
 
-	local delayTbl = TempTable.Acquire()
-	delayTbl.endFrame = private.frameNumber + duration
-	delayTbl.callback = callback
-	delayTbl.label = label
-	delayTbl.repeatDelay = repeatDelay
-	delayTbl.context = context
-	tinsert(private.delays, delayTbl)
+-- ============================================================================
+-- DelayTimer Class Methods
+-- ============================================================================
+
+function DelayTimer:__init(name, callback)
+	self._name = name
+	self._callback = callback
+	self._endTime = nil
+	self._endFrame = nil
 end
 
---- Cancel a delay.
--- This works for both time and frame delays.
--- @tparam string label The label the delay was created with
-function Delay.Cancel(label)
-	for i, delay in ipairs(private.delays) do
-		if delay.label == label then
-			TempTable.Release(tremove(private.delays, i))
-			return
-		end
+function DelayTimer:RunForTime(seconds)
+	if self._endTime then
+		-- Already running
+		return
 	end
+	assert(not self._endFrame)
+	self._endTime = GetTime() + max(seconds, MIN_TIME_DURATION)
+	assert(not private.activeTimers[self])
+	private.activeTimers[self] = true
+end
+
+function DelayTimer:RunForFrames(frames)
+	if self._endFrame then
+		-- Already running
+		return
+	end
+	assert(not self._endTime)
+	self._endFrame = private.frameNumber + max(frames, MIN_FRAMES)
+	assert(not private.activeTimers[self])
+	private.activeTimers[self] = true
+end
+
+function DelayTimer:Cancel()
+	if not self._endTime and not self._endFrame then
+		-- Not running
+		return
+	end
+	assert(private.activeTimers[self])
+	private.activeTimers[self] = nil
+	self._endTime = nil
+	self._endFrame = nil
+end
+
+function DelayTimer:_CheckIfDone()
+	assert(private.activeTimers[self])
+	if (self._endTime or math.huge) <= GetTime() or (self._endFrame or math.huge) <= private.frameNumber then
+		self._endTime = nil
+		self._endFrame = nil
+		private.activeTimers[self] = nil
+		local startTime = debugprofilestop()
+		self._callback()
+		local timeTaken = debugprofilestop() - startTime
+		if timeTaken > CALLBACK_TIME_WARNING_THRESHOLD_MS then
+			Log.Warn("Delay callback (%s) took %0.2fms", self._name, timeTaken)
+		end
+		return true
+	end
+	return false
 end
 
 
@@ -135,43 +115,15 @@ end
 
 function private.ProcessDelays()
 	private.frameNumber = private.frameNumber + 1
-	-- the delays can change as we do our callbacks, so keep looping through them until there are no more pending
-	while true do
-		local pendingLabel, pendingCallback, pendingContext = nil, nil, nil
-		for i, delay in ipairs(private.delays) do
-			assert(delay.endFrame or delay.endTime)
-			if delay.endFrame and delay.endFrame <= private.frameNumber then
-				pendingLabel = delay.label
-				pendingCallback = delay.callback
-				pendingContext = delay.context
-				if delay.repeatDelay then
-					delay.endFrame = private.frameNumber + delay.repeatDelay
-				else
-					TempTable.Release(tremove(private.delays, i))
-				end
-				break
-			elseif delay.endTime and delay.endTime <= GetTime() then
-				pendingLabel = delay.label
-				pendingCallback = delay.callback
-				pendingContext = delay.context
-				if delay.repeatDelay then
-					delay.endTime = GetTime() + delay.repeatDelay
-				else
-					TempTable.Release(tremove(private.delays, i))
-				end
+	-- The active timers can change as we complete them, so only do one per loop and keep looping until they're all processed
+	local hadDoneTimer = true
+	while hadDoneTimer do
+		hadDoneTimer = false
+		for timer in pairs(private.activeTimers) do
+			if timer:_CheckIfDone() then
+				hadDoneTimer = true
 				break
 			end
-		end
-		if not pendingLabel then
-			-- no more pending delays to process
-			assert(not pendingCallback)
-			break
-		end
-		local startTime = debugprofilestop()
-		pendingCallback(pendingContext)
-		local timeTaken = debugprofilestop() - startTime
-		if timeTaken > CALLBACK_TIME_WARNING_THRESHOLD_MS then
-			Log.Warn("Delay callback (%s) took %0.2fms", pendingLabel, timeTaken)
 		end
 	end
 end

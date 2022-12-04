@@ -32,7 +32,7 @@ function SearchList.__init(self)
 end
 
 function SearchList.Acquire(self)
-	self._headerHidden = true
+	self._headerMode = "NONE"
 	self.__super:Acquire()
 	self:GetScrollingTableInfo()
 		:NewColumn("name")

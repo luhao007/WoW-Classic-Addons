@@ -9,21 +9,19 @@
 -- @{MultiLineInput} classes. It is a subclass of the @{Element} class.
 -- @classmod BaseInput
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local L = TSM.Include("Locale").GetTable()
-local NineSlice = TSM.Include("Util.NineSlice")
+local Rectangle = TSM.Include("UI.Rectangle")
 local Log = TSM.Include("Util.Log")
-local Color = TSM.Include("Util.Color")
 local Theme = TSM.Include("Util.Theme")
 local Delay = TSM.Include("Util.Delay")
 local ScriptWrapper = TSM.Include("Util.ScriptWrapper")
 local CustomPrice = TSM.Include("Service.CustomPrice")
-local BaseInput = TSM.Include("LibTSMClass").DefineClass("BaseInput", TSM.UI.Element, "ABSTRACT")
 local UIElements = TSM.Include("UI.UIElements")
-UIElements.Register(BaseInput)
-TSM.UI.BaseInput = BaseInput
+local BaseInput = UIElements.Define("BaseInput", "Element", "ABSTRACT")
 local private = {}
 local BORDER_THICKNESS = 1
+local CORNER_RADIUS = 4
 
 
 
@@ -34,11 +32,10 @@ local BORDER_THICKNESS = 1
 function BaseInput.__init(self, frame)
 	self.__super:__init(frame)
 
-	self._borderNineSlice = NineSlice.New(frame)
-	self._borderNineSlice:Hide()
-
-	self._backgroundNineSlice = NineSlice.New(frame, 1)
-	self._backgroundNineSlice:Hide()
+	self._borderTexture = Rectangle.New(frame)
+	self._borderTexture:SetCornerRadius(CORNER_RADIUS)
+	self._backgroundTexture = Rectangle.New(frame, 1)
+	self._backgroundTexture:SetCornerRadius(CORNER_RADIUS)
 
 	self._editBox:SetShadowColor(0, 0, 0, 0)
 	self._editBox:SetAutoFocus(false)
@@ -48,7 +45,7 @@ function BaseInput.__init(self, frame)
 	ScriptWrapper.Set(self._editBox, "OnEditFocusLost", private.OnEditFocusLost, self)
 	ScriptWrapper.Set(self._editBox, "OnChar", self._OnChar, self)
 
-	self._lostFocusDelayName = "INPUT_LOST_FOCUS_"..tostring(frame)
+	self._lostFocusTimer = Delay.CreateTimer("INPUT_LOST_FOCUS_"..tostring(frame), self:__closure("_HandleFocusLost"))
 	self._backgroundColor = "ACTIVE_BG_ALT"
 	self._borderColor = nil
 	self._value = ""
@@ -79,7 +76,7 @@ function BaseInput.Acquire(self)
 end
 
 function BaseInput.Release(self)
-	Delay.Cancel(self._lostFocusDelayName)
+	self._lostFocusTimer:Cancel()
 	ScriptWrapper.Clear(self._editBox, "OnEnterPressed")
 	ScriptWrapper.Clear(self._editBox, "OnTextChanged")
 	self._editBox:SetText("")
@@ -120,7 +117,7 @@ end
 -- @tparam ?string|nil color The background color as a theme color key or nil
 -- @treturn BaseInput The input object
 function BaseInput.SetBackgroundColor(self, color)
-	assert(color == nil or Theme.GetColor(color))
+	assert(color == nil or Theme.IsValidColor(color))
 	self._backgroundColor = color
 	return self
 end
@@ -130,7 +127,7 @@ end
 -- @tparam ?string|nil color The border color as a theme color key or nil
 -- @treturn BaseInput The input object
 function BaseInput.SetBorderColor(self, color)
-	assert(color == nil or Theme.GetColor(color))
+	assert(color == nil or Theme.IsValidColor(color))
 	self._borderColor = color
 	return self
 end
@@ -357,7 +354,7 @@ function BaseInput.Draw(self)
 	self._editBox:SetJustifyV(self._justifyV)
 
 	-- set the text color
-	self._editBox:SetTextColor(self:_GetTextColor():GetFractionalRGBA())
+	self._editBox:SetTextColor(Theme.GetColor(self:_GetTextColorKey()):GetFractionalRGBA())
 
 	-- set the highlight color
 	self._editBox:SetHighlightColor(Theme.GetColor("TEXT%HIGHLIGHT"):GetFractionalRGBA())
@@ -374,15 +371,16 @@ end
 -- Private Class Methods
 -- ============================================================================
 
-function BaseInput._GetTextColor(self, tint)
-	local color = Theme.GetColor(self._disabled and "PRIMARY_BG_ALT" or self._backgroundColor)
+function BaseInput._GetTextColorKey(self, tintKey)
 	-- the text color should have maximum contrast with the input color, so set it to white/black based on the input color
-	if color:IsLight() then
-		-- the input is light, so set the text to black
-		return Color.GetFullBlack():GetTint(self._disabled and "-DISABLED" or tint or 0)
+	local backgroundIsLight = Theme.GetColor(self._disabled and "PRIMARY_BG_ALT" or self._backgroundColor):IsLight()
+	local colorKey = backgroundIsLight and "FULL_BLACK" or "FULL_WHITE"
+	if self._disabled then
+		return colorKey..(backgroundIsLight and "-DISABLED" or "+DISABLED")
+	elseif tintKey then
+		return colorKey..(backgroundIsLight and "+" or "-")..tintKey
 	else
-		-- the input is dark, so set the text to white
-		return Color.GetFullWhite():GetTint(self._disabled and "+DISABLED" or tint or 0)
+		return colorKey
 	end
 end
 
@@ -424,13 +422,13 @@ end
 
 function BaseInput._DrawBackgroundAndBorder(self)
 	assert(self._backgroundColor)
-	self._backgroundNineSlice:SetStyle("rounded", (self._borderColor or not self._isValid) and BORDER_THICKNESS or nil)
-	self._backgroundNineSlice:SetVertexColor(Theme.GetColor(self._disabled and "PRIMARY_BG_ALT" or self._backgroundColor):GetFractionalRGBA())
+	self._backgroundTexture:SetInset((self._borderColor or not self._isValid) and BORDER_THICKNESS or 0)
+	self._backgroundTexture:SetColor(Theme.GetColor(self._disabled and "PRIMARY_BG_ALT" or self._backgroundColor))
 	if self._borderColor or not self._isValid then
-		self._borderNineSlice:SetStyle("rounded")
-		self._borderNineSlice:SetVertexColor((not self._isValid and Theme.GetFeedbackColor("RED") or Theme.GetColor(self._borderColor)):GetFractionalRGBA())
+		self._borderTexture:Show()
+		self._borderTexture:SetColor(Theme.GetColor(not self._isValid and "FEEDBACK_RED" or self._borderColor))
 	else
-		self._borderNineSlice:Hide()
+		self._borderTexture:Hide()
 	end
 end
 
@@ -450,6 +448,15 @@ end
 function BaseInput._ShouldKeepFocus(self)
 	-- can be overridden
 	return false
+end
+
+function BaseInput._HandleFocusLost(self)
+	if self:HasFocus() then
+		return
+	end
+	if self._onFocusLostHandler then
+		self:_onFocusLostHandler()
+	end
 end
 
 
@@ -507,7 +514,7 @@ function private.OnEnterPressed(self)
 end
 
 function private.OnEditFocusGained(self)
-	Delay.Cancel(self._lostFocusDelayName)
+	self._lostFocusTimer:Cancel()
 	self:Draw()
 	self:HighlightText()
 end
@@ -530,16 +537,7 @@ function private.OnEditFocusLost(self)
 		end
 	end
 	-- wait until the next frame before calling the handler
-	Delay.AfterFrame(self._lostFocusDelayName, 0, private.OnFocusLost, nil, self)
-end
-
-function private.OnFocusLost(self)
-	if self:HasFocus() then
-		return
-	end
-	if self._onFocusLostHandler then
-		self:_onFocusLostHandler()
-	end
+	self._lostFocusTimer:RunForFrames(0)
 end
 
 function private.OnTextChanged(self, isUserInput)

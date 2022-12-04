@@ -6,12 +6,14 @@
     "name": "Ace3",
     "description": "AddOn development framework",
     "url": "https://www.curseforge.com/wow/addons/ace3",
-    "download_url": "https://edge.forgecdn.net/files/4000/10/Ace3-Release-r1281.zip",
-    "date_published": "2022-09-21T21:27:46.890000+00:00",
-    "version": "Release-r1281",
-    "changelog_url": "https://api.curseforge.com/v1/mods/13376/files/4000010/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4040/413/Ace3-Release-r1294.zip",
+    "date_published": "2022-10-22T09:10:26.243000+00:00",
+    "version": "Release-r1294",
+    "changelog_url": "https://api.curseforge.com/v1/mods/13376/files/4040413/changelog",
     "options": {
-      "strategy": "any_flavour"
+      "any_flavour": true,
+      "any_release_type": false,
+      "version_eq": false
     },
     "folders": [
       {
@@ -20,6 +22,10 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "Release-r1294",
+        "install_time": "2022-10-23T08:26:46+00:00"
+      },
       {
         "version": "Release-r1281",
         "install_time": "2022-09-22T11:59:01+00:00"
@@ -50,7 +56,9 @@
     "version": "r65-release",
     "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/13380/file/3086941/changelog",
     "options": {
-      "strategy": "any_flavour"
+      "any_flavour": true,
+      "any_release_type": false,
+      "version_eq": false
     },
     "folders": [
       {
@@ -72,12 +80,14 @@
     "name": "HereBeDragons",
     "description": "HereBeDragons is a data API for the World of Warcraft mapping system",
     "url": "https://www.curseforge.com/wow/addons/herebedragons",
-    "download_url": "https://edge.forgecdn.net/files/3956/811/HereBeDragons-2.09-release.zip",
-    "date_published": "2022-08-29T08:05:18.203000+00:00",
-    "version": "2.09-release",
-    "changelog_url": "https://api.curseforge.com/v1/mods/94348/files/3956811/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4090/685/HereBeDragons-2.12-release.zip",
+    "date_published": "2022-11-16T14:21:22.767000+00:00",
+    "version": "2.12-release",
+    "changelog_url": "https://api.curseforge.com/v1/mods/94348/files/4090685/changelog",
     "options": {
-      "strategy": "any_flavour"
+      "any_flavour": true,
+      "any_release_type": false,
+      "version_eq": false
     },
     "folders": [
       {
@@ -86,6 +96,18 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "2.12-release",
+        "install_time": "2022-11-19T02:45:45+00:00"
+      },
+      {
+        "version": "2.11-release",
+        "install_time": "2022-10-31T11:42:22+00:00"
+      },
+      {
+        "version": "2.10-release",
+        "install_time": "2022-10-23T08:26:47+00:00"
+      },
       {
         "version": "2.09-release",
         "install_time": "2022-09-01T13:42:56+00:00"
@@ -116,7 +138,9 @@
     "version": "2.0.1",
     "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/15745/file/2349705/changelog",
     "options": {
-      "strategy": "any_flavour"
+      "any_flavour": true,
+      "any_release_type": false,
+      "version_eq": false
     },
     "folders": [
       {
@@ -143,7 +167,9 @@
     "version": "9.0-release6",
     "changelog_url": "https://api.curseforge.com/v1/mods/14262/files/3120160/changelog",
     "options": {
-      "strategy": "any_flavour"
+      "any_flavour": true,
+      "any_release_type": false,
+      "version_eq": false
     },
     "folders": [
       {
@@ -170,7 +196,9 @@
     "version": "9.0-release6",
     "changelog_url": "https://api.curseforge.com/v1/mods/14264/files/3120161/changelog",
     "options": {
-      "strategy": "any_flavour"
+      "any_flavour": true,
+      "any_release_type": false,
+      "version_eq": false
     },
     "folders": [
       {
@@ -197,7 +225,9 @@
     "version": "9.0-release7",
     "changelog_url": "https://api.curseforge.com/v1/mods/14265/files/3120209/changelog",
     "options": {
-      "strategy": "any_flavour"
+      "any_flavour": true,
+      "any_release_type": false,
+      "version_eq": false
     },
     "folders": [
       {
@@ -224,7 +254,9 @@
     "version": "9.0-release6",
     "changelog_url": "https://api.curseforge.com/v1/mods/16748/files/3120163/changelog",
     "options": {
-      "strategy": "any_flavour"
+      "any_flavour": true,
+      "any_release_type": false,
+      "version_eq": false
     },
     "folders": [
       {
@@ -246,12 +278,14 @@
     "name": "LibBabble-SubZone-3.0",
     "description": "A library to help with localization of in-game subzone names.",
     "url": "https://www.curseforge.com/wow/addons/libbabble-subzone-3-0",
-    "download_url": "https://edge.forgecdn.net/files/3939/124/LibBabble-SubZone-3.0-9.2-release5.zip",
-    "date_published": "2022-08-17T14:32:35.200000+00:00",
-    "version": "9.2-release5",
-    "changelog_url": "https://api.curseforge.com/v1/mods/24454/files/3939124/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4099/674/LibBabble-SubZone-3.0-10.0-release2.zip",
+    "date_published": "2022-11-20T01:53:20.830000+00:00",
+    "version": "10.0-release2",
+    "changelog_url": "https://api.curseforge.com/v1/mods/24454/files/4099674/changelog",
     "options": {
-      "strategy": "any_flavour"
+      "any_flavour": true,
+      "any_release_type": false,
+      "version_eq": false
     },
     "folders": [
       {
@@ -260,6 +294,14 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "10.0-release2",
+        "install_time": "2022-11-20T05:09:08+00:00"
+      },
+      {
+        "version": "10.0-release1",
+        "install_time": "2022-11-19T02:45:45+00:00"
+      },
       {
         "version": "9.2-release5",
         "install_time": "2022-09-01T13:42:56+00:00"
@@ -285,12 +327,14 @@
     "name": "LibCandyBar-3.0",
     "description": "Timer bars with that extra sweetness.",
     "url": "https://www.curseforge.com/wow/addons/libcandybar-3-0",
-    "download_url": "https://edge.forgecdn.net/files/3981/625/LibCandyBar-3.0-v9.2.2.zip",
-    "date_published": "2022-09-10T19:53:42.673000+00:00",
-    "version": "v9.2.2",
-    "changelog_url": "https://api.curseforge.com/v1/mods/18909/files/3981625/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4086/595/LibCandyBar-3.0-v10.0.1.zip",
+    "date_published": "2022-11-14T17:49:42.763000+00:00",
+    "version": "v10.0.1",
+    "changelog_url": "https://api.curseforge.com/v1/mods/18909/files/4086595/changelog",
     "options": {
-      "strategy": "any_flavour"
+      "any_flavour": true,
+      "any_release_type": false,
+      "version_eq": false
     },
     "folders": [
       {
@@ -299,6 +343,14 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v10.0.1",
+        "install_time": "2022-11-15T04:02:19+00:00"
+      },
+      {
+        "version": "v10.0.0",
+        "install_time": "2022-10-26T03:38:33+00:00"
+      },
       {
         "version": "v9.2.2",
         "install_time": "2022-09-11T04:35:05+00:00"
@@ -332,12 +384,14 @@
     "name": "LibChatAnims",
     "description": "UIFrameFlash to Animation conversion library for Floating Chat Frame functions.",
     "url": "https://www.curseforge.com/wow/addons/libchatanims",
-    "download_url": "https://edge.forgecdn.net/files/3970/460/LibChatAnims-v9.2.1.zip",
-    "date_published": "2022-09-05T22:15:14.250000+00:00",
-    "version": "v9.2.1",
-    "changelog_url": "https://api.curseforge.com/v1/mods/51580/files/3970460/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4086/597/LibChatAnims-v10.0.1.zip",
+    "date_published": "2022-11-14T17:50:30.133000+00:00",
+    "version": "v10.0.1",
+    "changelog_url": "https://api.curseforge.com/v1/mods/51580/files/4086597/changelog",
     "options": {
-      "strategy": "any_flavour"
+      "any_flavour": true,
+      "any_release_type": false,
+      "version_eq": false
     },
     "folders": [
       {
@@ -346,6 +400,14 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v10.0.1",
+        "install_time": "2022-11-15T04:02:19+00:00"
+      },
+      {
+        "version": "v10.0.0",
+        "install_time": "2022-10-26T03:38:33+00:00"
+      },
       {
         "version": "v9.2.1",
         "install_time": "2022-09-06T07:17:10+00:00"
@@ -380,7 +442,9 @@
     "version": "1.69a-classic",
     "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/323800/file/3288614/changelog",
     "options": {
-      "strategy": "any_flavour"
+      "any_flavour": true,
+      "any_release_type": false,
+      "version_eq": false
     },
     "folders": [
       {
@@ -407,7 +471,9 @@
     "version": "WoW-1.13.2-r3",
     "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/331895/file/2758873/changelog",
     "options": {
-      "strategy": "any_flavour"
+      "any_flavour": true,
+      "any_release_type": false,
+      "version_eq": false
     },
     "folders": [
       {
@@ -434,7 +500,9 @@
     "version": "v3",
     "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/354607/file/2843785/changelog",
     "options": {
-      "strategy": "any_flavour"
+      "any_flavour": true,
+      "any_release_type": false,
+      "version_eq": false
     },
     "folders": [
       {
@@ -461,7 +529,9 @@
     "version": "r86-release",
     "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/14273/file/3221442/changelog",
     "options": {
-      "strategy": "any_flavour"
+      "any_flavour": true,
+      "any_release_type": false,
+      "version_eq": false
     },
     "folders": [
       {
@@ -492,7 +562,9 @@
     "version": "1.0.3",
     "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/302151/file/2759172/changelog",
     "options": {
-      "strategy": "any_flavour"
+      "any_flavour": true,
+      "any_release_type": false,
+      "version_eq": false
     },
     "folders": [
       {
@@ -514,12 +586,14 @@
     "name": "LibDBIcon-1.0",
     "description": "Allows addons to easily create a lightweight minimap icon as an alternative to heavier LDB displays.",
     "url": "https://www.curseforge.com/wow/addons/libdbicon-1-0",
-    "download_url": "https://edge.forgecdn.net/files/3970/178/LibDBIcon-1.0-v9.2.2.zip",
-    "date_published": "2022-09-05T19:15:21.540000+00:00",
-    "version": "v9.2.2",
-    "changelog_url": "https://api.curseforge.com/v1/mods/15552/files/3970178/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4086/598/LibDBIcon-1.0-v10.0.1.zip",
+    "date_published": "2022-11-14T17:51:02.453000+00:00",
+    "version": "v10.0.1",
+    "changelog_url": "https://api.curseforge.com/v1/mods/15552/files/4086598/changelog",
     "options": {
-      "strategy": "any_flavour"
+      "any_flavour": true,
+      "any_release_type": false,
+      "version_eq": false
     },
     "folders": [
       {
@@ -528,6 +602,14 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v10.0.1",
+        "install_time": "2022-11-15T04:02:19+00:00"
+      },
+      {
+        "version": "v10.0.0",
+        "install_time": "2022-10-26T03:38:33+00:00"
+      },
       {
         "version": "v9.2.2",
         "install_time": "2022-09-06T07:17:10+00:00"
@@ -566,7 +648,9 @@
     "version": "1.0.2-release",
     "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/293814/file/2989500/changelog",
     "options": {
-      "strategy": "any_flavour"
+      "any_flavour": true,
+      "any_release_type": false,
+      "version_eq": false
     },
     "folders": [
       {
@@ -593,7 +677,9 @@
     "version": "9.0.1.1",
     "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/32560/file/3093048/changelog",
     "options": {
-      "strategy": "any_flavour"
+      "any_flavour": true,
+      "any_release_type": false,
+      "version_eq": false
     },
     "folders": [
       {
@@ -615,12 +701,14 @@
     "name": "LibDurability",
     "description": "A library for transmitting and receiving durability information of players in your group.",
     "url": "https://www.curseforge.com/wow/addons/libdurability",
-    "download_url": "https://edge.forgecdn.net/files/3970/444/LibDurability-v9.2.1.zip",
-    "date_published": "2022-09-05T22:09:35.620000+00:00",
-    "version": "v9.2.1",
-    "changelog_url": "https://api.curseforge.com/v1/mods/95078/files/3970444/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4086/602/LibDurability-v10.0.1.zip",
+    "date_published": "2022-11-14T17:52:26.993000+00:00",
+    "version": "v10.0.1",
+    "changelog_url": "https://api.curseforge.com/v1/mods/95078/files/4086602/changelog",
     "options": {
-      "strategy": "any_flavour"
+      "any_flavour": true,
+      "any_release_type": false,
+      "version_eq": false
     },
     "folders": [
       {
@@ -629,6 +717,14 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v10.0.1",
+        "install_time": "2022-11-15T04:02:19+00:00"
+      },
+      {
+        "version": "v10.0.0",
+        "install_time": "2022-10-26T03:38:33+00:00"
+      },
       {
         "version": "v9.2.1",
         "install_time": "2022-09-06T07:17:10+00:00"
@@ -663,7 +759,9 @@
     "version": "1.5.10",
     "changelog_url": "https://api.curseforge.com/v1/mods/310275/files/3795686/changelog",
     "options": {
-      "strategy": "any_flavour"
+      "any_flavour": true,
+      "any_release_type": false,
+      "version_eq": false
     },
     "folders": [
       {
@@ -706,7 +804,9 @@
     "version": "v2.0.4",
     "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/14287/file/2647097/changelog",
     "options": {
-      "strategy": "any_flavour"
+      "any_flavour": true,
+      "any_release_type": false,
+      "version_eq": false
     },
     "folders": [
       {
@@ -733,7 +833,9 @@
     "version": "Release-90001-31",
     "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/52100/file/3084344/changelog",
     "options": {
-      "strategy": "any_flavour"
+      "any_flavour": true,
+      "any_release_type": false,
+      "version_eq": false
     },
     "folders": [
       {
@@ -755,12 +857,14 @@
     "name": "LibLatency",
     "description": "A library for transmitting and receiving latency information of players.",
     "url": "https://www.curseforge.com/wow/addons/liblatency",
-    "download_url": "https://edge.forgecdn.net/files/3970/432/LibLatency-v9.2.1.zip",
-    "date_published": "2022-09-05T21:59:16.053000+00:00",
-    "version": "v9.2.1",
-    "changelog_url": "https://api.curseforge.com/v1/mods/94595/files/3970432/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4086/604/LibLatency-v10.0.1.zip",
+    "date_published": "2022-11-14T17:53:24.223000+00:00",
+    "version": "v10.0.1",
+    "changelog_url": "https://api.curseforge.com/v1/mods/94595/files/4086604/changelog",
     "options": {
-      "strategy": "any_flavour"
+      "any_flavour": true,
+      "any_release_type": false,
+      "version_eq": false
     },
     "folders": [
       {
@@ -769,6 +873,14 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v10.0.1",
+        "install_time": "2022-11-15T04:02:19+00:00"
+      },
+      {
+        "version": "v10.0.0",
+        "install_time": "2022-10-26T03:38:33+00:00"
+      },
       {
         "version": "v9.2.1",
         "install_time": "2022-09-06T07:17:10+00:00"
@@ -803,7 +915,9 @@
     "version": "9.1.5-1-g4c6a3d8",
     "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/15487/file/3514334/changelog",
     "options": {
-      "strategy": "any_flavour"
+      "any_flavour": true,
+      "any_release_type": false,
+      "version_eq": false
     },
     "folders": [
       {
@@ -829,12 +943,14 @@
     "name": "LibRangeCheck-2.0",
     "description": "A library to determine estimated range.",
     "url": "https://www.curseforge.com/wow/addons/librangecheck-2-0",
-    "download_url": "https://edge.forgecdn.net/files/3965/24/LibRangeCheck-2.0-v4.3.7.zip",
-    "date_published": "2022-09-03T08:28:14.043000+00:00",
-    "version": "v4.3.7",
-    "changelog_url": "https://api.curseforge.com/v1/mods/14305/files/3965024/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4068/699/LibRangeCheck-2.0-v5.0.1.zip",
+    "date_published": "2022-11-05T14:06:57.207000+00:00",
+    "version": "v5.0.1",
+    "changelog_url": "https://api.curseforge.com/v1/mods/14305/files/4068699/changelog",
     "options": {
-      "strategy": "any_flavour"
+      "any_flavour": true,
+      "any_release_type": false,
+      "version_eq": false
     },
     "folders": [
       {
@@ -843,6 +959,14 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v5.0.1",
+        "install_time": "2022-11-06T07:48:40+00:00"
+      },
+      {
+        "version": "v4.3.8",
+        "install_time": "2022-10-30T03:01:37+00:00"
+      },
       {
         "version": "v4.3.7",
         "install_time": "2022-09-03T09:07:30+00:00"
@@ -877,7 +1001,9 @@
     "version": "17",
     "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/83224/file/3175669/changelog",
     "options": {
-      "strategy": "any_flavour"
+      "any_flavour": true,
+      "any_release_type": false,
+      "version_eq": false
     },
     "folders": [
       {
@@ -903,12 +1029,14 @@
     "name": "LibSharedMedia-3.0",
     "description": "Shared handling of media data (fonts, sounds, textures, ...) between addons.",
     "url": "https://www.curseforge.com/wow/addons/libsharedmedia-3-0",
-    "download_url": "https://edge.forgecdn.net/files/3957/936/LibSharedMedia-3.0-v9.2.7.zip",
-    "date_published": "2022-08-30T00:18:42.133000+00:00",
-    "version": "v9.2.7",
-    "changelog_url": "https://api.curseforge.com/v1/mods/14320/files/3957936/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4086/606/LibSharedMedia-3.0-v10.0.1.zip",
+    "date_published": "2022-11-14T17:54:16.993000+00:00",
+    "version": "v10.0.1",
+    "changelog_url": "https://api.curseforge.com/v1/mods/14320/files/4086606/changelog",
     "options": {
-      "strategy": "any_flavour"
+      "any_flavour": true,
+      "any_release_type": false,
+      "version_eq": false
     },
     "folders": [
       {
@@ -917,6 +1045,14 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v10.0.1",
+        "install_time": "2022-11-15T04:02:19+00:00"
+      },
+      {
+        "version": "v10.0.0",
+        "install_time": "2022-10-26T03:38:33+00:00"
+      },
       {
         "version": "v9.2.7",
         "install_time": "2022-09-01T13:42:57+00:00"
@@ -942,12 +1078,14 @@
     "name": "LibSink-2.0",
     "description": "Library that handles chat output.",
     "url": "https://www.curseforge.com/wow/addons/libsink-2-0",
-    "download_url": "https://edge.forgecdn.net/files/3970/473/LibSink-2.0-v9.2.2.zip",
-    "date_published": "2022-09-05T22:23:01.117000+00:00",
-    "version": "v9.2.2",
-    "changelog_url": "https://api.curseforge.com/v1/mods/14324/files/3970473/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4086/610/LibSink-2.0-v10.0.2.zip",
+    "date_published": "2022-11-14T17:55:14.763000+00:00",
+    "version": "v10.0.2",
+    "changelog_url": "https://api.curseforge.com/v1/mods/14324/files/4086610/changelog",
     "options": {
-      "strategy": "any_flavour"
+      "any_flavour": true,
+      "any_release_type": false,
+      "version_eq": false
     },
     "folders": [
       {
@@ -956,6 +1094,18 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v10.0.2",
+        "install_time": "2022-11-15T04:02:19+00:00"
+      },
+      {
+        "version": "v10.0.1",
+        "install_time": "2022-11-07T10:56:47+00:00"
+      },
+      {
+        "version": "v10.0.0",
+        "install_time": "2022-10-26T03:38:33+00:00"
+      },
       {
         "version": "v9.2.2",
         "install_time": "2022-09-06T07:17:10+00:00"
@@ -990,7 +1140,9 @@
     "version": "1.0.15",
     "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/44605/file/3085852/changelog",
     "options": {
-      "strategy": "any_flavour"
+      "any_flavour": true,
+      "any_release_type": false,
+      "version_eq": false
     },
     "folders": [
       {
@@ -1017,7 +1169,9 @@
     "version": "1.0.4",
     "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/322175/file/2734926/changelog",
     "options": {
-      "strategy": "any_flavour"
+      "any_flavour": true,
+      "any_release_type": false,
+      "version_eq": false
     },
     "folders": [
       {
@@ -1039,12 +1193,14 @@
     "name": "LibUIDropDownMenu",
     "description": "A Replacement for standard UIDropDownMenu",
     "url": "https://www.curseforge.com/wow/addons/libuidropdownmenu",
-    "download_url": "https://edge.forgecdn.net/files/3947/78/!LibUIDropDownMenu-v4.12.9020745161.zip",
-    "date_published": "2022-08-22T16:12:42.813000+00:00",
-    "version": "v4.12.9020745161",
-    "changelog_url": "https://api.curseforge.com/v1/mods/268264/files/3947078/changelog",
+    "download_url": "https://edge.forgecdn.net/files/4123/654/!LibUIDropDownMenu-v4.18.10000046801.zip",
+    "date_published": "2022-11-29T15:37:30.160000+00:00",
+    "version": "v4.18.10000046801",
+    "changelog_url": "https://api.curseforge.com/v1/mods/268264/files/4123654/changelog",
     "options": {
-      "strategy": "any_flavour"
+      "any_flavour": true,
+      "any_release_type": false,
+      "version_eq": false
     },
     "folders": [
       {
@@ -1053,6 +1209,18 @@
     ],
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v4.18.10000046801",
+        "install_time": "2022-11-30T02:47:58+00:00"
+      },
+      {
+        "version": "v4.16.10000046689",
+        "install_time": "2022-11-19T02:45:45+00:00"
+      },
+      {
+        "version": "v4.14.10000046455",
+        "install_time": "2022-11-04T11:19:18+00:00"
+      },
       {
         "version": "v4.12.9020745161",
         "install_time": "2022-09-01T13:42:57+00:00"
@@ -1095,7 +1263,9 @@
     "version": "v9.0.2.14",
     "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/64293/file/3173727/changelog",
     "options": {
-      "strategy": "any_flavour"
+      "any_flavour": true,
+      "any_release_type": false,
+      "version_eq": false
     },
     "folders": [
       {
@@ -1130,7 +1300,9 @@
     "version": "1.20",
     "changelog_url": "data:,%23%20LibClassicCasterino%0D%0A%0D%0A%23%23%20%5B1.20%5D%28https%3A//github.com/rgd87/LibClassicCasterino/tree/1.20%29%20%282019-10-03%29%0D%0A%5BFull%20Changelog%5D%28https%3A//github.com/rgd87/LibClassicCasterino/compare/1.16...1.20%29%0D%0A%0D%0A-%20Added%20Mage%27s%20Teleports%20and%20Portals%20%20%0D%0A-%20Aimed%20Shot%20for%20player%20%20%0D%0A-%20Bump%20Minor%20%20%0D%0A-%20Merge%20pull%20request%20%2315%20from%20siweia/patch-1%20%20%0D%0A%20%20%20%20Fix%20castbar%20visibility%20when%20unit%20is%20player%20itself%20%20%0D%0A-%20Fix%20castbar%20visibility%20when%20unit%20is%20player%20itself%20%20%0D%0A-%20Changed%20fallback%20icon%20%20%0D%0A-%20UNIT%5C_SPELLCAST%5C_SUCCEEDED%20passthrough%20%20%0D%0A",
     "options": {
-      "strategy": "latest"
+      "any_flavour": false,
+      "any_release_type": true,
+      "version_eq": false
     },
     "folders": [
       {

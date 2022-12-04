@@ -9,7 +9,7 @@ local _, TSM = ...
 if not TSM.IsDevVersion() and not TSM.IsTestEnvironment() then
 	return
 end
-TSMDEV = {}
+TSMDEV = {} ---@class TSMDEV
 
 
 

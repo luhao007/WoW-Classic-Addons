@@ -100,7 +100,7 @@ function ScrollingTable.__init(self)
 	self._prevDataOffset = nil
 	self._lastDataUpdate = nil
 	self._rowHoverEnabled = true
-	self._headerHidden = false
+	self._headerMode = "FULL"
 	self._targetScrollValue = nil
 	self._totalScrollDistance = nil
 	self._rightClickToggle = nil
@@ -155,7 +155,7 @@ function ScrollingTable.Release(self)
 	wipe(self._rows)
 	self._tableInfo:_Release()
 	wipe(self._data)
-	self._headerHidden = false
+	self._headerMode = "FULL"
 	self._targetScrollValue = nil
 	self._totalScrollDistance = nil
 	self.__super:Release()
@@ -181,7 +181,7 @@ end
 -- @tparam boolean hidden Whether or not the header should be hidden
 -- @treturn ScrollingTable The scrolling table object
 function ScrollingTable.SetHeaderHidden(self, hidden)
-	self._headerHidden = hidden
+	self._headerMode = "NONE"
 	return self
 end
 
@@ -190,7 +190,7 @@ end
 -- @tparam string color The background color as a theme color key
 -- @treturn ScrollingTable The scrolling table object
 function ScrollingTable.SetBackgroundColor(self, color)
-	assert(Theme.GetColor(color))
+	assert(Theme.IsValidColor(color))
 	self._backgroundColor = color
 	return self
 end
@@ -347,10 +347,14 @@ function ScrollingTable.Draw(self)
 	end
 
 	-- update the scrollbar layout
-	if self._headerHidden then
+	if self._headerMode == "NONE" then
 		self._vScrollbar:SetPoint("TOPRIGHT", -Theme.GetScrollbarMargin(), -Theme.GetScrollbarMargin())
-	else
+	elseif self._headerMode == "COMPACT" then
+		self._vScrollbar:SetPoint("TOPRIGHT", -Theme.GetScrollbarMargin(), -Theme.GetScrollbarMargin() - HEADER_HEIGHT - HEADER_LINE_HEIGHT)
+	elseif self._headerMode == "FULL" then
 		self._vScrollbar:SetPoint("TOPRIGHT", -Theme.GetScrollbarMargin(), -Theme.GetScrollbarMargin() - HEADER_HEIGHT - HEADER_LINE_HEIGHT * 2)
+	else
+		error("Invalid header mode: "..tostring(self._headerMode))
 	end
 
 	local totalWidth = 0
@@ -386,20 +390,33 @@ function ScrollingTable.Draw(self)
 	self._hScrollbar:SetValue(hScrollOffset)
 	self._content:SetHeight(numVisibleRows * rowHeight)
 
-	if self._headerHidden then
+	if self._headerMode == "NONE" then
 		self._lineTop:Hide()
 		self._lineBottom:Hide()
 		self._header:SetHeight(0)
 		self._header:SetBackgroundColor(Color.GetTransparent())
 		self._vScrollFrame:SetPoint("TOPLEFT", 0, 0)
-	else
+	elseif self._headerMode == "COMPACT" then
+		self._lineBottom:SetColorTexture(Theme.GetColor("ACTIVE_BG"):GetFractionalRGBA())
+		self._lineBottom:SetPoint("TOPLEFT", 0, -HEADER_HEIGHT)
+		self._lineBottom:SetPoint("TOPRIGHT", 0, -HEADER_HEIGHT)
+		self._lineTop:Hide()
+		self._lineBottom:Show()
+		self._vScrollFrame:SetPoint("TOPLEFT", 0, -HEADER_HEIGHT - HEADER_LINE_HEIGHT)
+		self._header:SetBackgroundColor(Theme.GetColor("FRAME_BG"))
+		self._header:SetHeight(HEADER_HEIGHT)
+	elseif self._headerMode == "FULL" then
 		self._lineTop:SetColorTexture(Theme.GetColor("ACTIVE_BG"):GetFractionalRGBA())
 		self._lineBottom:SetColorTexture(Theme.GetColor("ACTIVE_BG"):GetFractionalRGBA())
+		self._lineBottom:SetPoint("TOPLEFT", 0, -HEADER_HEIGHT - HEADER_LINE_HEIGHT)
+		self._lineBottom:SetPoint("TOPRIGHT", 0, -HEADER_HEIGHT - HEADER_LINE_HEIGHT)
 		self._lineTop:Show()
 		self._lineBottom:Show()
 		self._vScrollFrame:SetPoint("TOPLEFT", 0, -HEADER_HEIGHT - HEADER_LINE_HEIGHT * 2)
 		self._header:SetBackgroundColor(Theme.GetColor("FRAME_BG"))
 		self._header:SetHeight(HEADER_HEIGHT)
+	else
+		error("Invalid header mode: "..tostring(self._headerMode))
 	end
 
 	if Math.Round(vScrollOffset + visibleHeight) == totalHeight then
@@ -512,11 +529,11 @@ function ScrollingTable._GetMaxHScroll(self)
 end
 
 function ScrollingTable._UpdateData(self)
-	error("Must be implemented by the child class")
+	error("Must be implemented by the subclass")
 end
 
 function ScrollingTable._ToggleSort(self, id)
-	error("Must be implemented by the child class")
+	error("Must be implemented by the subclass")
 end
 
 function ScrollingTable._IsSelected(self, data)

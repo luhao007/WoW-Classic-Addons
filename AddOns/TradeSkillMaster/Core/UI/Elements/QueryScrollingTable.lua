@@ -16,7 +16,6 @@ local Table = TSM.Include("Util.Table")
 local UIElements = TSM.Include("UI.UIElements")
 UIElements.Register(QueryScrollingTable)
 TSM.UI.QueryScrollingTable = QueryScrollingTable
-local private = {}
 
 
 
@@ -27,6 +26,7 @@ local private = {}
 function QueryScrollingTable.__init(self)
 	self.__super:__init()
 	self._query = nil
+	self._queryCancellable = nil
 	self._sortCol = nil
 	self._sortAscending = nil
 	self._autoReleaseQuery = false
@@ -34,7 +34,8 @@ end
 
 function QueryScrollingTable.Release(self)
 	if self._query then
-		self._query:SetUpdateCallback()
+		self._queryCancellable:Cancel()
+		self._queryCancellable = nil
 		if self._autoReleaseQuery then
 			self._query:Release()
 		end
@@ -57,14 +58,16 @@ function QueryScrollingTable.SetQuery(self, query, redraw)
 		return self
 	end
 	if self._query then
-		self._query:SetUpdateCallback()
+		self._queryCancellable:Cancel()
+		if self._autoReleaseQuery then
+			self._query:Release()
+		end
 	end
 	self._query = query
-	self._query:SetUpdateCallback(private.QueryUpdateCallback, self)
-
 	self:_UpdateSortFromQuery()
-	self:_ForceLastDataUpdate()
-	self:UpdateData(redraw)
+	self._queryCancellable = query:Publisher()
+		:CallMethod(self, "_HandleQueryUpdate")
+		:Stored()
 	return self
 end
 
@@ -243,13 +246,7 @@ function QueryScrollingTable._HandleRowClick(self, uuid, mouseButton)
 	end
 end
 
-
-
--- ============================================================================
--- Private Helper Functions
--- ============================================================================
-
-function private.QueryUpdateCallback(_, uuid, self)
+function QueryScrollingTable._HandleQueryUpdate(self, uuid)
 	self:_SetLastDataUpdate(uuid)
 	if not uuid then
 		self:_UpdateData()

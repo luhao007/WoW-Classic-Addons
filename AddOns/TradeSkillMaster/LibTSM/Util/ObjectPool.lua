@@ -4,106 +4,76 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
---- ObjectPool Functions.
--- @module ObjectPool
-
-local _, TSM = ...
-local ObjectPool = TSM.Init("Util.ObjectPool")
+local TSM = select(2, ...) ---@type TSM
+local ObjectPool = TSM.Init("Util.ObjectPool") ---@class Util.ObjectPool
 local Debug = TSM.Include("Util.Debug")
 local private = {
 	debugLeaks = TSM.IsTestEnvironment() or false,
-	instances = {},
-	context = {},
+	instances = {}, ---@type table<string, Pool>
 }
 local DEBUG_STATS_MIN_COUNT = 1
 
 
 
 -- ============================================================================
--- Metatable
+-- Class Definition
 -- ============================================================================
 
-local OBJECT_POOL_MT = {
-	__index = {
-		Get = function(self)
-			local context = private.context[self]
-			local obj = tremove(context.freeList)
-			if not obj then
-				context.numCreated = context.numCreated + 1
-				obj = context.createFunc()
-				assert(obj)
-			end
-			if private.debugLeaks then
-				context.state[obj] = (Debug.GetStackLevelLocation(2 + context.extraStackOffset) or "?").." -> "..(Debug.GetStackLevelLocation(3 + context.extraStackOffset) or "?")
-			else
-				context.state[obj] = "???"
-			end
-			return obj
-		end,
-		Recycle = function(self, obj)
-			local context = private.context[self]
-			assert(context.state[obj])
-			context.state[obj] = nil
-			tinsert(context.freeList, obj)
-		end,
-	},
-	__newindex = function(self, key, value) error("Object pool cannot be modified") end,
-	__metatable = false,
-}
+---@class Util.ObjectPool.Pool
+local Pool = TSM.Include("LibTSMClass").DefineClass("ObjectPool")
 
-
-
--- ============================================================================
--- Module Functions
--- ============================================================================
-
---- Create a new object pool.
--- @tparam string name The name of the object pool for debug purposes
--- @tparam function createFunc The function which is called to create a new object
--- @tparam[opt=0] number extraStackOffset The extra stack offset for tracking where objects are being used from or nil to disable stack info
--- @treturn ObjectPool The object pool object
-function ObjectPool.New(name, createFunc, extraStackOffset)
-	assert(createFunc)
-	assert(not private.instances[name])
-	local pool = setmetatable({}, OBJECT_POOL_MT)
-	private.context[pool] = {
-		createFunc = createFunc,
-		extraStackOffset = extraStackOffset or 0,
-		freeList = {},
-		state = {},
-		numCreated = 0,
-	}
-	private.instances[name] = private.context[pool]
-	return pool
+function Pool.__init(self, createFunc, extraStackOffset)
+	self._createFunc = createFunc
+	self._extraStackOffset = extraStackOffset
+	self._freeList = {}
+	self._state = {}
+	self._numCreated = 0
 end
 
-function ObjectPool.EnableLeakDebug()
-	private.debugLeaks = true
-end
 
-function ObjectPool.GetDebugInfo()
-	local debugInfo = {}
-	for name, context in pairs(private.instances) do
-		local numCreated, numInUse, info = private.GetDebugStats(context)
-		debugInfo[name] = {
-			numCreated = numCreated,
-			numInUse = numInUse,
-			info = info,
-		}
+
+-- ============================================================================
+-- Public Class Methods
+-- ============================================================================
+
+--- Either returns a recycled instance of the object or creates a new one as applicable.
+---@generic T
+---@return T @The object instance
+function Pool:Get()
+	local obj = tremove(self._freeList)
+	if not obj then
+		self._numCreated = self._numCreated + 1
+		obj = self._createFunc()
+		assert(obj)
 	end
-	return debugInfo
+	if private.debugLeaks then
+		self._state[obj] = (Debug.GetStackLevelLocation(2 + self._extraStackOffset) or "?").." -> "..(Debug.GetStackLevelLocation(3 + self._extraStackOffset) or "?")
+	else
+		self._state[obj] = "???"
+	end
+	return obj
+end
+
+--- Recycles an instance of the object back into the pool.
+---@generic T
+---@param obj T @The object to recycle
+function Pool:Recycle(obj)
+	assert(self._state[obj])
+	self._state[obj] = nil
+	tinsert(self._freeList, obj)
 end
 
 
 
 -- ============================================================================
--- Private Helper Functions
+-- Private Class Methods
 -- ============================================================================
 
-function private.GetDebugStats(context)
+---@return Util.ObjectPool.PoolDebugInfo
+function Pool:_GetDebugInfo()
 	local counts = {}
 	local totalCount = 0
-	for _, caller in pairs(context.state) do
+	for _, caller in pairs(self._state) do
 		counts[caller] = (counts[caller] or 0) + 1
 		totalCount = totalCount + 1
 	end
@@ -116,5 +86,48 @@ function private.GetDebugStats(context)
 	if #debugInfo == 0 then
 		tinsert(debugInfo, "<none>")
 	end
-	return context.numCreated, totalCount, debugInfo
+	---@class Util.ObjectPool.PoolDebugInfo
+	---@field numCreated number The total number of objects created
+	---@field numInUse number The number of objects currently in use
+	---@field info string[] The debug info strings
+	return {
+		numCreated = self._numCreated,
+		numInUse = totalCount,
+		info = debugInfo,
+	}
+end
+
+
+
+-- ============================================================================
+-- Module Functions
+-- ============================================================================
+
+---Create a new object pool.
+---@param name string The name of the object pool for debug purposes
+---@param createFunc function The function which is called to create a new object
+---@param extraStackOffset? number The extra stack offset for tracking where objects are being used from or nil to
+---disable stack info
+---@return Util.ObjectPool.Pool # The object pool
+function ObjectPool.New(name, createFunc, extraStackOffset)
+	assert(createFunc)
+	assert(not private.instances[name])
+	local pool = Pool(createFunc, extraStackOffset or 0)
+	private.instances[name] = pool
+	return pool
+end
+
+---Enables leak debugging.
+function ObjectPool.EnableLeakDebug()
+	private.debugLeaks = true
+end
+
+---Gets debug information which represents the current state of all the created object pools
+---@return table<string,Util.ObjectPool.PoolDebugInfo>
+function ObjectPool.GetDebugInfo()
+	local debugInfo = {}
+	for name, pool in pairs(private.instances) do
+		debugInfo[name] = pool:_GetDebugInfo()
+	end
+	return debugInfo
 end

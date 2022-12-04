@@ -4,7 +4,7 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local DBViewer = TSM.UI:NewPackage("DBViewer")
 local Database = TSM.Include("Util.Database")
 local Log = TSM.Include("Util.Log")
@@ -35,9 +35,9 @@ local DEFAULT_DIVIDED_CONTAINER_CONTEXT = {
 local DEFAULT_STRUCTURE_SCROLLING_TABLE_CONTEXT = {
 	colWidth = {
 		order = 24,
-		field = 450,
+		field = 346,
 		type = 60,
-		attributes = 96,
+		attributes = 200,
 	},
 	colHidden = {},
 }
@@ -101,9 +101,8 @@ function private.AddTableRows(frame)
 			:SetPadding(8, 0, 0, 0)
 			:SetFont("BODY_BODY3")
 			:SetJustifyH("LEFT")
-			:SetHighlightEnabled(true)
+			:SetBackground("PRIMARY_BG", true)
 			:SetText(name)
-			:SetBackground("PRIMARY_BG")
 			:SetScript("OnClick", private.NavButtonOnClick)
 		)
 	end

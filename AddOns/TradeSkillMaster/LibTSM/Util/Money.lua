@@ -4,11 +4,9 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
---- Money Functions
--- @module Money
-
-local _, TSM = ...
-local Money = TSM.Init("Util.Money")
+local TSM = select(2, ...) ---@type TSM
+local Money = TSM.Init("Util.Money") ---@class Util.Money
+local Math = TSM.Include("Util.Math")
 local String = TSM.Include("Util.String")
 local private = {
 	textMoneyParts = {},
@@ -25,6 +23,12 @@ local COPPER_TEXT = "|cffeda55fc|r"
 local GOLD_TEXT_DISABLED = "|cff5d5222g|r"
 local SILVER_TEXT_DISABLED = "|cff464646s|r"
 local COPPER_TEXT_DISABLED = "|cff402d22c|r"
+---@alias MoneyStringOption
+---|'"OPT_ICON"' # Use texture icons instead of g/s/c letters
+---|'"OPT_TRIM"' # Remove any non-significant 0 valued denominations (i.e. "1g" instead of "1g 0s 0c")
+---|'"OPT_83_NO_COPPER"' # Remove the copper value entirely if we're patch 8.3 or newer
+---|'"OPT_DISABLE"' # Uses a muted color from the denomination text (not allowed with "OPT_ICON")
+---|'"OPT_RETAIL_ROUND"' # Round to the nearest silver on retail when >= 1g
 
 
 
@@ -32,17 +36,11 @@ local COPPER_TEXT_DISABLED = "|cff402d22c|r"
 -- Module Functions
 -- ============================================================================
 
---- Converts a numeric money value (in copper) to a string for display in the UI.
--- Supported options:
---
--- * OPT\_ICON Use texture icons instead of g/s/c letters
--- * OPT\_TRIM Remove any non-significant 0 valued denominations (i.e. "1g" instead of "1g 0s 0c")
--- * OPT\_83\_NO\_COPPER Remove the copper value entirely if we're patch 8.3
--- * OPT\_DISABLE Uses a muted color from the denomination text (not allowed with "OPT\_ICON" or "OPT\_NO\_COLOR")
--- @tparam number value The money value to be converted in copper (100 copper per silver, 100 silver per gold)
--- @tparam[opt] string color A color prefix to use for the numbers in the result (i.e. "|cff00ff00" for red)
--- @param[opt] ... One or more options to modify the format of the result
--- @return The string representation of the specified money value
+---Converts a numeric money value (in copper) to a string for display in the UI.
+---@param value number The money value to be converted in copper (100 copper per silver, 100 silver per gold)
+---@param color? string A color prefix to use for the numbers in the result (i.e. "|cff00ff00" for red)
+---@param ... MoneyStringOption One or more options to modify the format of the result
+---@return string @The string representation of the specified money value
 function Money.ToString(value, color, ...)
 	value = tonumber(value)
 	if not value then
@@ -51,7 +49,7 @@ function Money.ToString(value, color, ...)
 	assert(not color or strmatch(color, "^\124cff[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F]$"))
 
 	-- parse the options
-	local isIcon, trim, disabled, noCopper = false, false, false, false
+	local isIcon, trim, disabled, roundCopper, noCopper = false, false, false, false, false
 	for i = 1, select('#', ...) do
 		local opt = select(i, ...)
 		if opt == nil then
@@ -62,6 +60,8 @@ function Money.ToString(value, color, ...)
 			trim = true
 		elseif opt == "OPT_DISABLE" then
 			disabled = true
+		elseif opt == "OPT_RETAIL_ROUND" then
+			roundCopper = not TSM.IsWowClassic()
 		elseif opt == "OPT_83_NO_COPPER" then
 			noCopper = not TSM.IsWowClassic()
 		else
@@ -71,6 +71,9 @@ function Money.ToString(value, color, ...)
 
 	local isNegative = value < 0
 	value = abs(value)
+	if roundCopper and value >= COPPER_PER_GOLD then
+		value = Math.Round(value, COPPER_PER_SILVER)
+	end
 	local gold = floor(value / COPPER_PER_GOLD)
 	local silver = floor((value % COPPER_PER_GOLD) / COPPER_PER_SILVER)
 	local copper = floor(value % COPPER_PER_SILVER)
@@ -104,7 +107,7 @@ function Money.ToString(value, color, ...)
 		private.InsertMoneyPart(silver, color, silverText)
 	end
 	-- add copper
-	if copper > 0 or (not trim and not noCopper and (gold + silver) > 0) then
+	if copper > 0 or (not trim and not roundCopper and not noCopper and (gold + silver) > 0) then
 		private.InsertMoneyPart(copper, color, copperText)
 	end
 	local text = table.concat(private.textMoneyParts, " ")
@@ -115,10 +118,10 @@ function Money.ToString(value, color, ...)
 	end
 end
 
---- Converts a string money value to a number value (in copper).
--- The value passed to this function can contain colored text, but must use g/s/c for the denominations and not icons.
--- @tparam string value The money value to be converted as a string
--- @treturn string The numeric representation of the specified money value
+---Converts a string money value to a number value (in copper).
+---The value passed to this function can contain colored text, but must use g/s/c for the denominations and not icons.
+---@param value string The money value to be converted as a string
+---@return string @The numeric representation of the specified money value
 function Money.FromString(value)
 	-- remove any colors
 	value = gsub(gsub(strtrim(value), "\124c([0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F])", ""), "\124r", "")
@@ -140,8 +143,20 @@ function Money.FromString(value)
 	return ((gold or 0) * COPPER_PER_GOLD) + ((silver or 0) * COPPER_PER_SILVER) + (copper or 0)
 end
 
---- Returns the colored gold indicator text
--- @treturn string The colored gold indicator text
+---Returns the colored copper indicator text.
+---@return string
+function Money.GetCopperText()
+	return COPPER_TEXT
+end
+
+---Returns the colored silver indicator text.
+---@return string
+function Money.GetSilverText()
+	return SILVER_TEXT
+end
+
+---Returns the colored gold indicator text.
+---@return string
 function Money.GetGoldText()
 	return GOLD_TEXT
 end

@@ -4,7 +4,7 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local AccountingSync = TSM.Accounting:NewPackage("Sync")
 local L = TSM.Include("Locale").GetTable()
 local Delay = TSM.Include("Util.Delay")
@@ -17,6 +17,8 @@ local private = {
 	accountStatus = {},
 	pendingChunks = {},
 	dataTemp = {},
+	changeTimer = nil,
+	hashesRetryTimer = nil
 }
 local CHANGE_NOTIFICATION_DELAY = 5
 local RETRY_DELAY = 5
@@ -28,6 +30,8 @@ local RETRY_DELAY = 5
 -- ============================================================================
 
 function AccountingSync.OnInitialize()
+	private.changeTimer = Delay.CreateTimer("ACCOUNTING_SYNC_CHANGE", private.NotifyChange)
+	private.hashesRetryTimer = Delay.CreateTimer("ACCOUNTING_SYNC_HASHES_RETRY", private.RetryGetPlayerHashRPC)
 	Sync.RegisterConnectionChangedCallback(private.ConnectionChangedHandler)
 	Sync.RegisterRPC("ACCOUNTING_GET_PLAYER_HASH", private.RPCGetPlayerHash)
 	Sync.RegisterRPC("ACCOUNTING_GET_PLAYER_CHUNKS", private.RPCGetPlayerChunks)
@@ -38,18 +42,18 @@ end
 function AccountingSync.GetStatus(account)
 	local status = private.accountStatus[account]
 	if not status then
-		return Theme.GetFeedbackColor("RED"):ColorText(L["Not Connected"])
+		return Theme.GetColor("FEEDBACK_RED"):ColorText(L["Not Connected"])
 	elseif status == "GET_PLAYER_HASH" or status == "GET_PLAYER_CHUNKS" or status == "GET_PLAYER_DATA" or status == "RETRY" then
-		return Theme.GetFeedbackColor("YELLOW"):ColorText(L["Updating"])
+		return Theme.GetColor("FEEDBACK_YELLOW"):ColorText(L["Updating"])
 	elseif status == "SYNCED" then
-		return Theme.GetFeedbackColor("GREEN"):ColorText(L["Up to date"])
+		return Theme.GetColor("FEEDBACK_GREEN"):ColorText(L["Up to date"])
 	else
 		error("Invalid status: "..tostring(status))
 	end
 end
 
 function AccountingSync.OnTransactionsChanged()
-	Delay.AfterTime("ACCOUNTING_SYNC_CHANGE", CHANGE_NOTIFICATION_DELAY, private.NotifyChange)
+	private.changeTimer:RunForTime(CHANGE_NOTIFICATION_DELAY)
 end
 
 
@@ -265,7 +269,7 @@ function private.QueueRetryByPlayer(player)
 	local account = private.accountLookup[player]
 	Log.Info("Retrying (%s, %s, %s)", player, account, private.accountStatus[account])
 	private.accountStatus[account] = "RETRY"
-	Delay.AfterTime(RETRY_DELAY, private.RetryGetPlayerHashRPC)
+	private.hashesRetryTimer:RunForTime(RETRY_DELAY)
 end
 
 function private.RetryGetPlayerHashRPC()

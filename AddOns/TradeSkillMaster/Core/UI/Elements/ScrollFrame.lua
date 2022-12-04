@@ -12,7 +12,7 @@
 local _, TSM = ...
 local ScriptWrapper = TSM.Include("Util.ScriptWrapper")
 local Theme = TSM.Include("Util.Theme")
-local NineSlice = TSM.Include("Util.NineSlice")
+local Rectangle = TSM.Include("UI.Rectangle")
 local ScrollFrame = TSM.Include("LibTSMClass").DefineClass("ScrollFrame", TSM.UI.Container)
 local UIElements = TSM.Include("UI.UIElements")
 UIElements.Register(ScrollFrame)
@@ -30,8 +30,9 @@ function ScrollFrame.__init(self)
 
 	self.__super:__init(frame)
 
-	self._backgroundNineSlice = NineSlice.New(frame, 1)
-	self._backgroundNineSlice:Hide()
+	self._background = Rectangle.New(frame, 1)
+	self._background:SetCornerRadius(0)
+	self._background:Hide()
 
 	frame:EnableMouseWheel(true)
 	frame:SetClipsChildren(true)
@@ -60,7 +61,7 @@ end
 function ScrollFrame.Release(self)
 	self._onUpdateHandler = nil
 	self._backgroundColor = nil
-	self._backgroundNineSlice:Hide()
+	self._background:Hide()
 	self.__super:Release()
 end
 
@@ -87,10 +88,10 @@ function ScrollFrame.Draw(self)
 	self.__super.__super:Draw()
 
 	if self._backgroundColor then
-		self._backgroundNineSlice:SetStyle("solid")
-		self._backgroundNineSlice:SetVertexColor(Theme.GetColor(self._backgroundColor):GetFractionalRGBA())
+		self._background:Show()
+		self._background:SetColor(Theme.GetColor(self._backgroundColor))
 	else
-		self._backgroundNineSlice:Hide()
+		self._background:Hide()
 	end
 
 	local width = self:_GetDimension("WIDTH")
@@ -158,7 +159,7 @@ function ScrollFrame._GetMinimumDimension(self, dimension)
 	end
 	if styleResult then
 		return styleResult, false
-	elseif dimension == "HEIGHT" or self:GetNumLayoutChildren() == 0 then
+	elseif dimension == "HEIGHT" or self:_GetNumLayoutChildren() == 0 then
 		-- regarding the first condition for this if statment, a scrollframe can be any height (including greater than
 		-- the height of the content if no scrolling is needed), so has no minimum and can always expand
 		return 0, true

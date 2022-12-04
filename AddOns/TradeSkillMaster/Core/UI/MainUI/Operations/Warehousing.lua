@@ -54,7 +54,7 @@ function private.CreateEnabledSettingLine(key, enableText, text, minValue, maxVa
 				:SetLayout("VERTICAL")
 				:SetHeight(48)
 				:SetMargin(0, 0, 0, 12)
-				:AddChild(UIElements.New("ToggleOnOff", "toggle")
+				:AddChild(UIElements.New("ToggleYesNo", "toggle")
 					:SetHeight(18)
 					:SetValue(operation[key] ~= 0)
 					:SetDisabled(hasRelationship)

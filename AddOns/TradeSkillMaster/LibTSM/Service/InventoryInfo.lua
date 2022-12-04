@@ -8,9 +8,9 @@ local _, TSM = ...
 local InventoryInfo = TSM.Init("Service.InventoryInfo")
 local Container = TSM.Include("Util.Container")
 local ItemInfo = TSM.Include("Service.ItemInfo")
+local TooltipScanning = TSM.Include("Service.TooltipScanning")
 local Event = TSM.Include("Util.Event")
 local SlotId = TSM.Include("Util.SlotId")
-local ItemString = TSM.Include("Util.ItemString")
 local Table = TSM.Include("Util.Table")
 local private = {
 	slotIdLocked = {},
@@ -75,88 +75,13 @@ function InventoryInfo.IsSoulbound(bag, slot)
 	if private.slotIdSoulboundCached[slotId] then
 		return private.slotIdIsBoP[slotId], private.slotIdIsBoA[slotId]
 	end
-	if not TSMScanTooltip then
-		CreateFrame("GameTooltip", "TSMScanTooltip", UIParent, "GameTooltipTemplate")
-	end
-
-	TSMScanTooltip:SetOwner(UIParent, "ANCHOR_NONE")
-	TSMScanTooltip:ClearLines()
-
-	if Container.GetItemID(bag, slot) == ItemString.ToId(ItemString.GetPetCage()) then
-		-- battle pets are never BoP or BoA
+	local scanned, isBOP, isBOA = TooltipScanning.IsSoulbound(bag, slot)
+	if scanned then
 		private.slotIdSoulboundCached[slotId] = true
-		private.slotIdIsBoP[slotId] = false
-		private.slotIdIsBoA[slotId] = false
-		return false, false
+		private.slotIdIsBoP[slotId] = isBOP
+		private.slotIdIsBoA[slotId] = isBOA
 	end
-
-	-- set TSMScanTooltip to show the inventory item
-	if bag == BANK_CONTAINER then
-		TSMScanTooltip:SetInventoryItem("player", BankButtonIDToInvSlotID(slot))
-	elseif bag == REAGENTBANK_CONTAINER then
-		TSMScanTooltip:SetInventoryItem("player", ReagentBankButtonIDToInvSlotID(slot))
-	else
-		TSMScanTooltip:SetBagItem(bag, slot)
-	end
-
-	-- scan the tooltip
-	local numLines = TSMScanTooltip:NumLines()
-	if numLines < 1 then
-		-- the tooltip didn't fully load or there's nothing in this slot
-		return nil, nil
-	end
-	local isBOP, isBOA = false, false
-	for id = 2, numLines do
-		local text = private.GetTooltipText(_G["TSMScanTooltipTextLeft"..id])
-		if text then
-			if (text == ITEM_BIND_ON_PICKUP and id < 4) or text == ITEM_SOULBOUND or text == ITEM_BIND_QUEST then
-				isBOP = true
-				break
-			elseif (text == ITEM_ACCOUNTBOUND or text == ITEM_BIND_TO_ACCOUNT or text == ITEM_BIND_TO_BNETACCOUNT or text == ITEM_BNETACCOUNTBOUND) then
-				isBOA = true
-				break
-			end
-		end
-	end
-	private.slotIdSoulboundCached[slotId] = true
-	private.slotIdIsBoP[slotId] = isBOP
-	private.slotIdIsBoA[slotId] = isBOA
 	return isBOP, isBOA
-end
-
-function InventoryInfo.HasUsedCharges(bag, slot)
-	-- figure out if this item has a max number of charges
-	local itemId = Container.GetItemID(bag, slot)
-	if not itemId or itemId == ItemString.ToId(ItemString.GetPetCage()) then
-		return false
-	end
-	if not TSMScanTooltip then
-		CreateFrame("GameTooltip", "TSMScanTooltip", UIParent, "GameTooltipTemplate")
-	end
-
-	TSMScanTooltip:SetOwner(UIParent, "ANCHOR_NONE")
-	TSMScanTooltip:ClearLines()
-	TSMScanTooltip:SetItemByID(itemId)
-
-	local maxCharges = private.GetScanTooltipCharges()
-	if not maxCharges then
-		return false
-	end
-
-	-- set TSMScanTooltip to show the inventory item
-	if bag == BANK_CONTAINER then
-		TSMScanTooltip:SetInventoryItem("player", BankButtonIDToInvSlotID(slot))
-	elseif bag == REAGENTBANK_CONTAINER then
-		TSMScanTooltip:SetInventoryItem("player", ReagentBankButtonIDToInvSlotID(slot))
-	else
-		TSMScanTooltip:SetBagItem(bag, slot)
-	end
-
-	-- check if there are used charges
-	if maxCharges and private.GetScanTooltipCharges() ~= maxCharges then
-		return true
-	end
-	return false
 end
 
 
@@ -201,33 +126,4 @@ end
 function private.ReagentBankSlotChangedHandler(_, slot)
 	-- clear the soulbound cache for this slot
 	private.slotIdSoulboundCached[SlotId.Join(REAGENTBANK_CONTAINER, slot)] = nil
-end
-
-function private.GetTooltipText(text)
-	local textStr = strtrim(text and text:GetText() or "")
-	if textStr == "" then return end
-
-	local r, g, b = text:GetTextColor()
-	return textStr, floor(r * 256), floor(g * 256), floor(b * 256)
-end
-
-function private.GetScanTooltipCharges()
-	for id = 2, TSMScanTooltip:NumLines() do
-		local text = private.GetTooltipText(_G["TSMScanTooltipTextLeft"..id])
-		local num = text and strmatch(text, "%d+")
-		local chargesStr = gsub(ITEM_SPELL_CHARGES, "%%d", "%%d+")
-		if strfind(chargesStr, ":") then
-			if num == 1 then
-				chargesStr = gsub(chargesStr, "\1244(.+):.+;", "%1")
-			else
-				chargesStr = gsub(chargesStr, "\1244.+:(.+);", "%1")
-			end
-		end
-
-		local maxCharges = text and strmatch(text, "^"..chargesStr.."$")
-
-		if maxCharges then
-			return maxCharges
-		end
-	end
 end

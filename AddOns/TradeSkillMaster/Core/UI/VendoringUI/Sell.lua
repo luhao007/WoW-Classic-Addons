@@ -110,7 +110,7 @@ function private.GetFrame()
 					:SetTitle(L["Potential"])
 					:SetFont("TABLE_TABLE1")
 					:SetJustifyH("RIGHT")
-					:SetTextInfo("potentialValue", Money.ToString)
+					:SetTextInfo("potentialValue", private.GetPotentialSellText)
 					:SetSortInfo("potentialValue")
 					:Commit()
 				:SetCursor("BUY_CURSOR")
@@ -118,10 +118,7 @@ function private.GetFrame()
 			:SetQuery(private.query)
 			:SetScript("OnRowClick", private.RowOnClick)
 		)
-		:AddChild(UIElements.New("Texture", "line")
-			:SetHeight(2)
-			:SetTexture("ACTIVE_BG")
-		)
+		:AddChild(TSM.UI.Views.Line.NewHorizontal("line"))
 		:AddChild(UIElements.New("Frame", "footer")
 			:SetLayout("HORIZONTAL")
 			:SetHeight(40)
@@ -150,8 +147,12 @@ function private.GetItemText(itemString)
 	return TSM.UI.GetColoredItemName(itemString) or "?"
 end
 
+function private.GetPotentialSellText(value)
+	return Money.ToString(value, nil, "OPT_RETAIL_ROUND")
+end
+
 function private.GetVendorSellText(vendorSell)
-	return vendorSell > 0 and Money.ToString(vendorSell) or ""
+	return vendorSell > 0 and Money.ToString(vendorSell, nil, "OPT_RETAIL_ROUND") or ""
 end
 
 

@@ -39,11 +39,17 @@ end)
 -- Module Functions
 -- ============================================================================
 
-function ItemLinked.RegisterCallback(callback, priority)
+function ItemLinked.RegisterCallback(callback, highPriority)
 	assert(type(callback) == "function")
 	tinsert(private.callbacks, callback)
-	private.priorityLookup[callback] = (priority or 0) + #private.callbacks * 0.01
-	Table.SortWithValueLookup(private.callbacks, private.priorityLookup)
+	private.priorityLookup[callback] = highPriority and 1 or 0
+	Table.SortWithValueLookup(private.callbacks, private.priorityLookup, false, true)
+end
+
+function ItemLinked.UnregisterCallback(callback)
+	assert(type(callback) == "function")
+	private.priorityLookup[callback] = nil
+	assert(Table.RemoveByValue(private.callbacks, callback) == 1)
 end
 
 

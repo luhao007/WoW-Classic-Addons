@@ -10,12 +10,11 @@
 
 local _, TSM = ...
 local Theme = TSM.Include("Util.Theme")
+local TextureAtlas = TSM.Include("Util.TextureAtlas")
 local ScriptWrapper = TSM.Include("Util.ScriptWrapper")
 local ItemLinked = TSM.Include("Service.ItemLinked")
 local UIElements = TSM.Include("UI.UIElements")
-local Input = TSM.Include("LibTSMClass").DefineClass("Input", TSM.UI.BaseInput)
-UIElements.Register(Input)
-TSM.UI.Input = Input
+local Input = UIElements.Define("Input", "BaseInput")
 local private = {}
 local PADDING_LEFT = 8
 local PADDING_RIGHT = 8
@@ -48,7 +47,7 @@ function Input.__init(self)
 
 	self._subIcon = frame:CreateTexture(nil, "ARTWORK")
 	self._subIcon:SetPoint("LEFT", PADDING_LEFT / 2, 0)
-	TSM.UI.TexturePacks.SetTextureAndSize(self._subIcon, "iconPack.14x14/Subtract/Default")
+	TextureAtlas.SetTextureAndSize(self._subIcon, "iconPack.14x14/Subtract/Default")
 
 	self._subBtn = CreateFrame("Button", nil, frame)
 	self._subBtn:SetAllPoints(self._subIcon)
@@ -58,7 +57,7 @@ function Input.__init(self)
 
 	self._addIcon = frame:CreateTexture(nil, "ARTWORK")
 	self._addIcon:SetPoint("RIGHT", -PADDING_RIGHT / 2, 0)
-	TSM.UI.TexturePacks.SetTextureAndSize(self._addIcon, "iconPack.14x14/Add/Default")
+	TextureAtlas.SetTextureAndSize(self._addIcon, "iconPack.14x14/Add/Default")
 
 	self._addBtn = CreateFrame("Button", nil, frame)
 	self._addBtn:SetAllPoints(self._addIcon)
@@ -80,7 +79,7 @@ function Input.__init(self)
 		end
 		return true
 	end
-	ItemLinked.RegisterCallback(ItemLinkedCallback, -1)
+	ItemLinked.RegisterCallback(ItemLinkedCallback)
 
 	self._clearEnabled = false
 	self._subAddEnabled = false
@@ -88,6 +87,8 @@ function Input.__init(self)
 	self._autoComplete = nil
 	self._allowItemInsert = nil
 	self._lostFocusOnButton = false
+	self._onEnterHandler = nil
+	self._onLeaveHandler = nil
 end
 
 function Input.Release(self)
@@ -97,6 +98,8 @@ function Input.Release(self)
 	self._autoComplete = nil
 	self._allowItemInsert = nil
 	self._lostFocusOnButton = false
+	self._onEnterHandler = nil
+	self._onLeaveHandler = nil
 	self._hintText:SetText("")
 	self.__super:Release()
 end
@@ -168,7 +171,7 @@ end
 -- @tparam[opt=nil] string iconTexture The texture string to use for the icon texture
 -- @treturn Input The input object
 function Input.SetIconTexture(self, iconTexture)
-	assert(iconTexture == nil or TSM.UI.TexturePacks.IsValid(iconTexture))
+	assert(iconTexture == nil or TextureAtlas.IsValid(iconTexture))
 	assert(not self._subAddEnabled)
 	self._iconTexture = iconTexture
 	return self
@@ -184,6 +187,38 @@ function Input.AllowItemInsert(self, insertLink)
 	return self
 end
 
+--- Subtract from the input.
+-- @tparam Input self The input object
+-- @treturn Input The input object
+function Input.Subtract(self)
+	private.SubBtnOnClick(self)
+	return self
+end
+
+--- Add to the input.
+-- @tparam Input self The input object
+-- @treturn Input The input object
+function Input.Add(self)
+	private.AddBtnOnClick(self)
+	return self
+end
+
+--- Registers a script handler.
+-- @tparam BaseInput self The input object
+-- @tparam string script The script to register for
+-- @tparam[opt=nil] function handler The script handler which should be called
+-- @treturn BaseInput The element object
+function Input.SetScript(self, script, handler)
+	if script == "OnEnter" then
+		self._onEnterHandler = handler
+	elseif script == "OnLeave" then
+		self._onLeaveHandler = handler
+	else
+		return self.__super:SetScript(script, handler)
+	end
+	return self
+end
+
 function Input.Draw(self)
 	self.__super:Draw()
 	self:_UpdateIconsForValue(self._value)
@@ -195,15 +230,6 @@ end
 -- Private Class Methods
 -- ============================================================================
 
-function Input._GetHintTextColor(self)
-	local color = Theme.GetColor(self._disabled and "PRIMARY_BG_ALT" or self._backgroundColor)
-	if color:IsLight() then
-		return self:_GetTextColor("+HOVER")
-	else
-		return self:_GetTextColor("-HOVER")
-	end
-end
-
 function Input._UpdateIconsForValue(self, value)
 	local frame = self:_GetBaseFrame()
 	local leftPadding, rightPadding = PADDING_LEFT, PADDING_RIGHT
@@ -211,7 +237,7 @@ function Input._UpdateIconsForValue(self, value)
 	-- set the hint text
 	if value == "" and self._hintText:GetText() ~= "" then
 		self._hintText:SetFont(Theme.GetFont(self._font):GetWowFont())
-		self._hintText:SetTextColor(self:_GetHintTextColor():GetFractionalRGBA())
+		self._hintText:SetTextColor(Theme.GetColor(self:_GetTextColorKey("HOVER")):GetFractionalRGBA())
 		self._hintText:Show()
 	else
 		self._hintText:Hide()
@@ -234,16 +260,16 @@ function Input._UpdateIconsForValue(self, value)
 	local iconTexture = nil
 	if self._clearEnabled and value ~= "" then
 		self._clearBtn:Show()
-		iconTexture = TSM.UI.TexturePacks.GetColoredKey("iconPack.18x18/Close/Default", self:_GetTextColor())
+		iconTexture = TextureAtlas.GetColoredKey("iconPack.18x18/Close/Default", self:_GetTextColorKey())
 	else
 		self._clearBtn:Hide()
-		iconTexture = not frame:HasFocus() and self._iconTexture and TSM.UI.TexturePacks.GetColoredKey(self._iconTexture, self:_GetTextColor()) or nil
+		iconTexture = not frame:HasFocus() and self._iconTexture and TextureAtlas.GetColoredKey(self._iconTexture, self:_GetTextColorKey()) or nil
 	end
 	if iconTexture then
 		assert(not showSubAdd)
 		self._icon:Show()
-		TSM.UI.TexturePacks.SetTextureAndSize(self._icon, iconTexture)
-		rightPadding = rightPadding + TSM.UI.TexturePacks.GetWidth(iconTexture)
+		TextureAtlas.SetTextureAndSize(self._icon, iconTexture)
+		rightPadding = rightPadding + TextureAtlas.GetWidth(iconTexture)
 	else
 		self._icon:Hide()
 	end
@@ -344,8 +370,14 @@ end
 
 function private.OnEnter(self)
 	self:_UpdateIconsForValue(self._value)
+	if self._onEnterHandler then
+		self:_onEnterHandler()
+	end
 end
 
 function private.OnLeave(self)
 	self:_UpdateIconsForValue(self._value)
+	if self._onLeaveHandler then
+		self:_onLeaveHandler()
+	end
 end

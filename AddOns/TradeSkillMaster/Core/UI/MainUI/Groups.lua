@@ -4,20 +4,21 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local Groups = TSM.MainUI:NewPackage("Groups")
 local L = TSM.Include("Locale").GetTable()
 local Analytics = TSM.Include("Util.Analytics")
 local TempTable = TSM.Include("Util.TempTable")
-local Table = TSM.Include("Util.Table")
 local String = TSM.Include("Util.String")
 local Log = TSM.Include("Util.Log")
 local Theme = TSM.Include("Util.Theme")
+local TextureAtlas = TSM.Include("Util.TextureAtlas")
 local ItemString = TSM.Include("Util.ItemString")
 local Database = TSM.Include("Util.Database")
+local SmartMap = TSM.Include("Util.SmartMap")
+local CustomPrice = TSM.Include("Service.CustomPrice")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local ItemFilter = TSM.Include("Service.ItemFilter")
-local CustomPrice = TSM.Include("Service.CustomPrice")
 local BagTracking = TSM.Include("Service.BagTracking")
 local Settings = TSM.Include("Service.Settings")
 local UIElements = TSM.Include("UI.UIElements")
@@ -25,12 +26,11 @@ local private = {
 	settings = nil,
 	currentGroupPath = TSM.CONST.ROOT_GROUP_PATH,
 	moveGroupPath = nil,
+	baseItemInfoQuery = nil,
 	itemFilter = ItemFilter.New(),
-	groupedItemList = {},
-	ungroupedItemList = { {}, {} },
+	itemFilterSmartMap = nil,
+	ungroupedItemStringSmartMap = nil,
 	moduleCollapsed = {},
-	results = { {}, {} },
-	resultsRaw = {},
 	filterText = "",
 	groupSearch = "",
 	itemSearch = "",
@@ -39,7 +39,6 @@ local private = {
 	importExportGroupDB = nil,
 	exportSubGroups = {},
 	importGroupTreeContext = {},
-	ungroupedItemMode = "specific", -- luacheck: ignore 1005 - hidden modify via SetSettingInfo()
 }
 local DRAG_SCROLL_SPEED_FACTOR = 12
 local OPERATION_LABELS = {
@@ -63,10 +62,13 @@ function Groups.OnInitialize()
 	private.settings = Settings.NewView()
 		:AddKey("global", "coreOptions", "groupPriceSource")
 		:AddKey("global", "mainUIContext", "groupsDividedContainer")
+		:AddKey("global", "userData", "ungroupedItemMode")
 		:AddKey("char", "mainUIContext", "groupsManagementGroupTree")
 		:AddKey("profile", "userData", "groups")
 	TSM.MainUI.RegisterTopLevelPage(L["Groups"], private.GetGroupsFrame)
 	private.itemFilter:ParseStr("")
+	private.itemFilterSmartMap = SmartMap.New("string", "boolean", private.ItemFilterLookup)
+	private.ungroupedItemStringSmartMap = SmartMap.New("string", "string", private.UngroupedItemStringLookup)
 	private.importExportGroupDB = Database.NewSchema("IMPORT_EXPORT_GROUPS")
 		:AddStringField("groupPath")
 		:AddStringField("orderStr")
@@ -122,10 +124,7 @@ function private.GetGroupsFrame()
 					:SetTooltip(L["Import group"])
 				)
 			)
-			:AddChild(UIElements.New("Texture", "line")
-				:SetHeight(2)
-				:SetTexture("ACTIVE_BG_ALT")
-			)
+			:AddChild(TSM.UI.Views.Line.NewHorizontal("line"))
 			:AddChild(UIElements.New("ManagementGroupTree", "groupTree")
 				:SetSettingsContext(private.settings, "groupsManagementGroupTree")
 				:SetQuery(TSM.Groups.CreateQuery())
@@ -148,8 +147,6 @@ end
 
 function private.GetViewContainerContent(viewContainer, path)
 	if path == "content" then
-		wipe(private.results[1])
-		wipe(private.results[2])
 		return private.GetContentFrame()
 	elseif path == "search" then
 		return private.GetSearchFrame()
@@ -168,20 +165,17 @@ function private.GetContentFrame()
 			:SetPadding(8)
 			:AddChild(UIElements.New("Frame", "title")
 				:SetLayout("HORIZONTAL")
-				:SetWidth("EXPAND")
 				:AddChild(UIElements.New("Texture", "icon")
 					:SetMargin(0, 8, 0, 0)
-					:SetTextureAndSize(TSM.UI.TexturePacks.GetColoredKey("iconPack.18x18/Folder", "TEXT"))
+					:SetTextureAndSize(TextureAtlas.GetColoredKey("iconPack.18x18/Folder", "TEXT"))
 				)
 				:AddChild(UIElements.New("EditableText", "text")
-					:SetWidth("AUTO")
 					:AllowItemInsert(true)
 					:SetFont("BODY_BODY1_BOLD")
 					:SetText(L["Base Group"])
 					:SetScript("OnValueChanged", private.GroupNameChanged)
 					:SetScript("OnEditingChanged", private.NameOnEditingChanged)
 				)
-				:AddChild(UIElements.New("Spacer", "spacer"))
 				:AddChild(UIElements.New("Button", "renameBtn")
 					:SetMargin(8, 0, 0, 0)
 					:SetBackgroundAndSize("iconPack.18x18/Edit")
@@ -208,6 +202,7 @@ function private.GetContentFrame()
 end
 
 function private.GetSearchFrame()
+	private.UpdateBaseItemInfoQuery()
 	return UIElements.New("Frame", "content")
 		:SetLayout("VERTICAL")
 		:SetBackgroundColor("PRIMARY_BG")
@@ -218,8 +213,7 @@ function private.GetSearchFrame()
 			:AddChild(UIElements.New("ActionButton", "button")
 				:SetWidth(64)
 				:SetMargin(0, 8, 0, 0)
-				:SetIcon("iconPack.14x14/Chevron/Right@180")
-				:SetText(BACK)
+				:SetText(TextureAtlas.GetTextureLink(TextureAtlas.GetFlippedHorizontallyKey("iconPack.14x14/Chevron/Right"))..BACK)
 				:SetScript("OnClick", private.SearchBackButtonOnClick)
 			)
 			:AddChild(UIElements.New("Input", "input")
@@ -228,6 +222,7 @@ function private.GetSearchFrame()
 				:AllowItemInsert()
 				:SetClearButtonEnabled(true)
 				:SetValidateFunc(private.ValidateBaseSearchValue)
+				:SetHintText(L["Search items"])
 				:SetValue(private.itemSearch)
 				:SetScript("OnValueChanged", private.BaseSearchOnValueChanged)
 			)
@@ -241,37 +236,32 @@ function private.GetSearchFrame()
 		:AddChild(UIElements.New("Frame", "header2")
 			:SetLayout("HORIZONTAL")
 			:SetHeight(30)
-			:SetPadding(8, 8, 5, 5)
+			:SetPadding(8, 8, 0, 8)
 			:AddChild(UIElements.New("Text", "label")
-				:SetFont("BODY_BODY3")
+				:SetFont("BODY_BODY2")
 				:SetText(format(L["%d Results"], 0))
 			)
-			:AddChild(UIElements.New("Text", "label")
-				:SetWidth("AUTO")
-				:SetPadding(8, 8, 0, 0)
-				:SetFont("BODY_BODY3")
-				:SetText(format(L["Show results as:"], 0))
+			:AddChild(UIElements.New("Text", "text")
+				:SetWidth("AUTO", 24)
+				:SetMargin(0, 8, 0, 0)
+				:SetFont("BODY_BODY2")
+				:SetText(L["Show results as:"])
 			)
 			:AddChild(UIElements.New("SelectionDropdown", "itemMode")
 				:SetSize(150, 24)
 				:AddItem(L["Specific Item"], "specific")
 				:AddItem(L["Item Level"], "level")
 				:AddItem(L["Base Item"], "base")
-				:SetSettingInfo(private, "ungroupedItemMode")
+				:SetSettingInfo(private.settings, "ungroupedItemMode")
 				:SetScript("OnSelectionChanged", private.SearchItemModeOnValueChanged)
 			)
 		)
-		:AddChild(UIElements.New("Texture", "line")
-			:SetHeight(2)
-			:SetTexture("ACTIVE_BG")
-		)
+		:AddChild(TSM.UI.Views.Line.NewHorizontal("line"))
 		:AddChild(UIElements.New("ItemList", "itemList")
+			:AddSectionQuery(Theme.GetColor("INDICATOR"):ColorText(L["Search Results"]), private.baseItemInfoQuery, true)
 			:SetScript("OnSelectionChanged", private.ItemListOnSelectionChanged)
 		)
-		:AddChild(UIElements.New("Texture", "line")
-			:SetHeight(2)
-			:SetTexture("ACTIVE_BG")
-		)
+		:AddChild(TSM.UI.Views.Line.NewHorizontal("line2"))
 		:AddChild(UIElements.New("Frame", "bottom")
 			:SetLayout("HORIZONTAL")
 			:SetHeight(40)
@@ -297,6 +287,8 @@ end
 function private.GetGroupsPage(_, button)
 	private.itemSearch = ""
 	private.itemFilter:ParseStr("")
+	private.itemFilterSmartMap:Invalidate()
+	private.ungroupedItemStringSmartMap:Invalidate()
 	if button == L["Information"] then
 		TSM.UI.AnalyticsRecordPathChange("main", "groups", "information")
 		return UIElements.New("Frame", "items")
@@ -309,34 +301,51 @@ function private.GetGroupsPage(_, button)
 				:SetFont("BODY_BODY3")
 				:SetText(L["The Base Group contains all ungrouped items in the game. Use the search and filter controls to find items to add to other groups."])
 			)
-			:AddChild(UIElements.New("Input", "filter")
-				:SetHeight(24)
-				:SetMargin(8, 8, 0, 8)
-				:SetIconTexture("iconPack.18x18/Search")
-				:AllowItemInsert()
-				:SetClearButtonEnabled(true)
-				:SetValidateFunc(private.ValidateBaseSearchValue)
-				:SetHintText(L["Search items"])
-				:SetScript("OnValueChanged", private.InformationSearchOnValueChanged)
+			:AddChild(UIElements.New("Frame", "header")
+				:SetLayout("HORIZONTAL")
+				:SetHeight(40)
+				:SetPadding(8)
+				:AddChild(UIElements.New("Input", "filter")
+					:SetHeight(24)
+					:SetMargin(0, 8, 0, 0)
+					:SetIconTexture("iconPack.18x18/Search")
+					:AllowItemInsert()
+					:SetClearButtonEnabled(true)
+					:SetValidateFunc(private.ValidateBaseSearchValue)
+					:SetHintText(L["Search items"])
+					:SetScript("OnValueChanged", private.InformationSearchOnValueChanged)
+				)
+				:AddChild(UIElements.New("Button", "selectAllBtn")
+					:SetSize(24, 24)
+					:SetBackground("iconPack.18x18/Select All")
+					:SetScript("OnClick", private.SelectAllResultsOnClick)
+					:SetTooltip(L["Select / Deselect All Results"])
+				)
 			)
-			:AddChild(UIElements.New("SelectionDropdown", "itemMode")
+			:AddChild(UIElements.New("Frame", "header2")
+				:SetLayout("HORIZONTAL")
 				:SetHeight(24)
 				:SetMargin(8, 8, 0, 8)
-				:AddItem(L["Specific Item"], "specific")
-				:AddItem(L["Item Level"], "level")
-				:AddItem(L["Base Item"], "base")
-				:SetSettingInfo(private, "ungroupedItemMode")
-				:SetScript("OnSelectionChanged", private.ItemModeBaseOnSelectionChanged)
+				:AddChild(UIElements.New("Text", "text")
+					:SetSize("AUTO", 24)
+					:SetMargin(0, 8, 0, 0)
+					:SetFont("BODY_BODY2")
+					:SetText(L["Show ungrouped items as:"])
+				)
+				:AddChild(UIElements.New("SelectionDropdown", "itemMode")
+					:SetHeight(24)
+					:AddItem(L["Specific Item"], "specific")
+					:AddItem(L["Item Level"], "level")
+					:AddItem(L["Base Item"], "base")
+					:SetSettingInfo(private.settings, "ungroupedItemMode")
+					:SetScript("OnSelectionChanged", private.ItemModeOnSelectionChanged)
+				)
 			)
 			:AddChild(UIElements.New("ItemList", "itemList")
-				:SetItems(private.GetUngroupedBagItemList())
-				:SetFilterFunction(private.ItemListItemIsFiltered)
+				:AddSectionQuery(Theme.GetColor("INDICATOR"):ColorText(L["Ungrouped Items in Bags"]), private.CreateUngroupedBagItemQuery())
 				:SetScript("OnSelectionChanged", private.ItemListOnSelectionChanged)
 			)
-			:AddChild(UIElements.New("Texture", "line")
-				:SetHeight(2)
-				:SetTexture("ACTIVE_BG")
-			)
+			:AddChild(TSM.UI.Views.Line.NewHorizontal("line"))
 			:AddChild(UIElements.New("Frame", "bottom")
 				:SetLayout("HORIZONTAL")
 				:SetHeight(40)
@@ -360,9 +369,8 @@ function private.GetGroupsPage(_, button)
 	elseif button == L["Items"] then
 		TSM.UI.AnalyticsRecordPathChange("main", "groups", "items")
 		assert(private.currentGroupPath ~= TSM.CONST.ROOT_GROUP_PATH)
-		local parentGroup = TSM.Groups.Path.GetParent(private.currentGroupPath)
-		parentGroup = parentGroup ~= TSM.CONST.ROOT_GROUP_PATH and parentGroup or nil
-		return UIElements.New("Frame", "items")
+		local hasParent = TSM.Groups.Path.GetParent(private.currentGroupPath) ~= TSM.CONST.ROOT_GROUP_PATH
+		local frame = UIElements.New("Frame", "items")
 			:SetLayout("VERTICAL")
 			:SetPadding(8)
 			:SetBackgroundColor("PRIMARY_BG")
@@ -375,7 +383,7 @@ function private.GetGroupsPage(_, button)
 				:SetHintText(L["Search items in group"])
 				:SetScript("OnValueChanged", private.ItemFilterOnValueChanged)
 			)
-			:AddChild(UIElements.New("Frame", "filter")
+			:AddChild(UIElements.New("Frame", "header")
 				:SetLayout("HORIZONTAL")
 				:SetHeight(24)
 				:SetMargin(0, 0, 0, 8)
@@ -390,7 +398,7 @@ function private.GetGroupsPage(_, button)
 					:AddItem(L["Specific Item"], "specific")
 					:AddItem(L["Item Level"], "level")
 					:AddItem(L["Base Item"], "base")
-					:SetSettingInfo(private, "ungroupedItemMode")
+					:SetSettingInfo(private.settings, "ungroupedItemMode")
 					:SetScript("OnSelectionChanged", private.ItemModeOnSelectionChanged)
 				)
 			)
@@ -424,13 +432,12 @@ function private.GetGroupsPage(_, button)
 							:AddAnchor("BOTTOMLEFT", "header")
 							:AddAnchor("BOTTOMRIGHT", "header")
 							:SetHeight(4)
-							:SetTexture("FRAME_BG")
+							:SetColor("FRAME_BG")
 						)
 						:AddChild(UIElements.New("ItemList", "itemList")
 							:SetMargin(0, 0, 0, 7)
 							:SetBackgroundColor("PRIMARY_BG_ALT")
-							:SetItems(private.GetUngroupedItemList())
-							:SetFilterFunction(private.ItemListItemIsFiltered)
+							:AddSectionQuery(Theme.GetColor("INDICATOR"):ColorText(L["Ungrouped Items in Bags"]), private.CreateUngroupedBagItemQuery())
 							:SetScript("OnSelectionChanged", private.UngroupedItemsOnSelectionChanged)
 						)
 					)
@@ -469,17 +476,16 @@ function private.GetGroupsPage(_, button)
 							:AddAnchor("BOTTOMLEFT", "header")
 							:AddAnchor("BOTTOMRIGHT", "header")
 							:SetHeight(4)
-							:SetTexture("FRAME_BG")
+							:SetColor("FRAME_BG")
 						)
 						:AddChild(UIElements.New("ItemList", "itemList")
 							:SetMargin(0, 0, 0, 7)
 							:SetBackgroundColor("PRIMARY_BG_ALT")
-							:SetItems(private.GetGroupedItemList())
-							:SetFilterFunction(private.ItemListItemIsFiltered)
+							:SetSingleQuery(private.CreateGroupedItemQuery())
 							:SetScript("OnSelectionChanged", private.GroupedItemsOnSelectionChanged)
 						)
 					)
-					:AddChildIf(parentGroup, UIElements.New("ActionButton", "btn")
+					:AddChildIf(hasParent, UIElements.New("ActionButton", "btn")
 						:SetHeight(26)
 						:SetMargin(0, 0, 10, 0)
 						:SetText(L["Remove"])
@@ -488,7 +494,7 @@ function private.GetGroupsPage(_, button)
 						:SetScript("OnClick", private.RemoveItemsOnClick)
 						:SetTooltip(L["Hold shift to move the items to the parent group instead of removing them."])
 					)
-					:AddChildIf(not parentGroup, UIElements.New("ActionButton", "btn")
+					:AddChildIf(not hasParent, UIElements.New("ActionButton", "btn")
 						:SetHeight(26)
 						:SetMargin(0, 0, 10, 0)
 						:SetText(L["Remove"])
@@ -497,6 +503,11 @@ function private.GetGroupsPage(_, button)
 					)
 				)
 			)
+		if hasParent then
+			local ungruopedItemList = frame:GetElement("content.ungrouped.content.itemList")
+			ungruopedItemList:AddSectionQuery(Theme.GetColor("INDICATOR"):ColorText(L["Parent Items"]), private.CreateParentGroupItemQuery())
+		end
+		return frame
 	elseif button == L["Operations"] then
 		TSM.UI.AnalyticsRecordPathChange("main", "groups", "operations")
 		return UIElements.New("ScrollFrame", "operations")
@@ -536,7 +547,6 @@ function private.GetModuleOperationFrame(moduleName)
 			:SetHeight(20)
 			:SetMargin(0, 0, 6, 0)
 			:SetFont("BODY_BODY2")
-			:SetCheckboxPosition("LEFT")
 			:SetText(L["Override Parent Operations"])
 			:SetChecked(override)
 			:SetScript("OnValueChanged", private.OverrideToggleOnValueChanged)
@@ -598,7 +608,7 @@ function private.AddOperationRows(container)
 						:AddAnchor("TOPRIGHT")
 						:AddAnchor("BOTTOMRIGHT")
 						:SetWidth(6)
-						:SetTexture("FRAME_BG")
+						:SetColor("FRAME_BG")
 					)
 					:AddChildNoLayout(UIElements.New("Texture", "texture")
 						:AddAnchor("LEFT")
@@ -673,7 +683,7 @@ end
 
 function private.DragFrameOnUpdate(frame)
 	local scrollFrame = frame:GetElement("__parent.__parent.__parent.__parent.__parent.__parent")
-	local uiScale = UIParent:GetEffectiveScale()
+	local uiScale = frame:_GetBaseFrame():GetEffectiveScale()
 	local x, y = GetCursorPosition()
 	x = x / uiScale
 	y = y / uiScale
@@ -713,9 +723,8 @@ function private.GroupSearchOnValueChanged(input)
 				:SetTextColor("TEXT")
 				:SetText(L["Base Group"])
 		else
-			local groupColor = Theme.GetGroupColor(select('#', strsplit(TSM.CONST.GROUP_SEP, private.currentGroupPath)))
 			titleFrame:GetElement("text")
-				:SetTextColor(groupColor)
+				:SetTextColor(Theme.GetGroupColorKey(select('#', strsplit(TSM.CONST.GROUP_SEP, private.currentGroupPath))))
 				:SetText(TSM.Groups.Path.GetName(private.currentGroupPath))
 		end
 		titleFrame:GetElement("renameBtn"):Show()
@@ -828,9 +837,8 @@ function private.GetImportSummaryDialog()
 				:SetJustifyH("CENTER")
 				:SetText(format(L["%d Groups"], 0))
 			)
-			:AddChild(UIElements.New("Texture", "line")
-				:SetWidth(2)
-				:SetTexture("ACTIVE_BG_ALT")
+			:AddChild(TSM.UI.Views.Line.NewHorizontal("line")
+				:SetColor("ACTIVE_BG_ALT")
 			)
 			:AddChild(UIElements.New("Button", "operations")
 				:SetWidth("AUTO")
@@ -839,9 +847,8 @@ function private.GetImportSummaryDialog()
 				:SetJustifyH("CENTER")
 				:SetText(format(L["%d Operations"], 0))
 			)
-			:AddChild(UIElements.New("Texture", "line2")
-				:SetWidth(2)
-				:SetTexture("ACTIVE_BG_ALT")
+			:AddChild(TSM.UI.Views.Line.NewVertical("line2")
+				:SetColor("ACTIVE_BG_ALT")
 			)
 			:AddChild(UIElements.New("Button", "items")
 				:SetWidth("AUTO")
@@ -897,7 +904,6 @@ function private.GetImportSummaryDialog()
 				:SetWidth("AUTO")
 				:SetMargin(0, 8, 0, 0)
 				:SetFont("BODY_BODY3")
-				:SetCheckboxPosition("LEFT")
 				:SetChecked(true)
 			)
 			:AddChild(UIElements.New("Spacer", "spacer"))
@@ -910,7 +916,6 @@ function private.GetImportSummaryDialog()
 				:SetWidth("AUTO")
 				:SetMargin(0, 8, 0, 0)
 				:SetFont("BODY_BODY3")
-				:SetCheckboxPosition("LEFT")
 				:SetChecked(true)
 				:SetText(L["Include operations?"])
 				:SetScript("OnValueChanged", private.ImportIncludeOperationsCheckboxOnValueChanged)
@@ -919,7 +924,6 @@ function private.GetImportSummaryDialog()
 				:SetWidth("AUTO")
 				:SetMargin(0, 8, 0, 0)
 				:SetFont("BODY_BODY3")
-				:SetCheckboxPosition("LEFT")
 				:SetChecked(true)
 			)
 			:AddChild(UIElements.New("Spacer", "spacer"))
@@ -1075,7 +1079,7 @@ function private.GroupTreeOnGroupSelected(groupTree, path)
 
 	if path == TSM.CONST.ROOT_GROUP_PATH then
 		titleFrame:GetElement("icon")
-			:SetTextureAndSize(TSM.UI.TexturePacks.GetColoredKey("iconPack.18x18/Folder", "TEXT"))
+			:SetTextureAndSize(TextureAtlas.GetColoredKey("iconPack.18x18/Folder", "TEXT"))
 		titleFrame:GetElement("text")
 			:SetTextColor("TEXT")
 			:SetText(L["Base Group"])
@@ -1084,11 +1088,11 @@ function private.GroupTreeOnGroupSelected(groupTree, path)
 		titleFrame:GetElement("exportBtn"):Hide()
 		buttonsFrame:RenamePath(L["Information"], 1)
 	else
-		local groupColor = Theme.GetGroupColor(select('#', strsplit(TSM.CONST.GROUP_SEP, path)))
+		local groupColorKey = Theme.GetGroupColorKey(select('#', strsplit(TSM.CONST.GROUP_SEP, path)))
 		titleFrame:GetElement("icon")
-			:SetTextureAndSize(TSM.UI.TexturePacks.GetColoredKey("iconPack.18x18/Folder", groupColor))
+			:SetTextureAndSize(TextureAtlas.GetColoredKey("iconPack.18x18/Folder", groupColorKey))
 		titleFrame:GetElement("text")
-			:SetTextColor(groupColor)
+			:SetTextColor(groupColorKey)
 			:SetText(TSM.Groups.Path.GetName(path))
 			:SetEditing(false)
 		titleFrame:GetElement("renameBtn"):Show()
@@ -1107,21 +1111,21 @@ function private.GroupTreeOnNewGroup(groupTree)
 end
 
 function private.GroupTreeOnDragRecieved(groupTree, context, destPath)
-	for _, itemString in pairs(context) do
+	local items = TempTable.Acquire()
+	for _, itemString in ipairs(context) do
 		if TSM.Groups.GetPathByItem(itemString) ~= destPath then
-			TSM.Groups.SetItemGroup(itemString, destPath ~= TSM.CONST.ROOT_GROUP_PATH and destPath or nil)
+			tinsert(items, itemString)
 		end
 	end
+	TSM.Groups.SetItemsGroup(items, destPath ~= TSM.CONST.ROOT_GROUP_PATH and destPath or nil)
+	TempTable.Release(items)
 	local view = groupTree:GetElement("__parent.__parent.view")
 	if view:GetPath() == "content" then
 		local contentFrame = view:GetElement("content")
 		contentFrame:GetElement("buttons"):ReloadContent()
 	elseif view:GetPath() == "search" then
-		private.UpdateBaseItemList()
-		local itemList = view:GetElement("content.itemList")
-		itemList:SetItems(private.results, true)
-		itemList:GetElement("__parent.header2.label")
-			:SetText(format(L["%d Results"], #private.results[1]))
+		view:GetElement("content.header2.label")
+			:SetText(format(L["%d Results"], private.baseItemInfoQuery:Count()))
 			:Draw()
 	else
 		error("Unexpected path: "..tostring(view))
@@ -1181,7 +1185,7 @@ function private.ExportBtnOnClick(button)
 	private.importExportGroupDB:BulkInsertEnd()
 
 	local str, numItems, numSubGroups, numOperations, numCustomSources = TSM.Groups.ImportExport.GenerateExport(private.currentGroupPath, private.exportSubGroups, false, false)
-	local groupColor = Theme.GetGroupColor(select('#', strsplit(TSM.CONST.GROUP_SEP, private.currentGroupPath)))
+	local coloredGroupName = Theme.GetGroupColor(select('#', strsplit(TSM.CONST.GROUP_SEP, private.currentGroupPath))):ColorText(TSM.Groups.Path.GetName(private.currentGroupPath))
 	button:GetBaseElement():ShowDialogFrame(UIElements.New("Frame", "frame")
 		:SetLayout("VERTICAL")
 		:SetSize(658, 408)
@@ -1196,7 +1200,7 @@ function private.ExportBtnOnClick(button)
 			:AddChild(UIElements.New("Text", "title")
 				:SetFont("BODY_BODY2_BOLD")
 				:SetJustifyH("CENTER")
-				:SetText(L["Export"]..": "..groupColor:ColorText(TSM.Groups.Path.GetName(private.currentGroupPath)))
+				:SetText(L["Export"]..": "..coloredGroupName)
 			)
 			:AddChild(UIElements.New("Button", "closeBtn")
 				:SetBackgroundAndSize("iconPack.24x24/Close/Default")
@@ -1226,7 +1230,6 @@ function private.ExportBtnOnClick(button)
 				:SetWidth("AUTO")
 				:SetMargin(0, 12, 0, 0)
 				:SetFont("BODY_BODY3")
-				:SetCheckboxPosition("LEFT")
 				:SetText(L["Exclude operations?"])
 				:SetScript("OnValueChanged", private.ExportOptionOnValueChanged)
 			)
@@ -1234,7 +1237,6 @@ function private.ExportBtnOnClick(button)
 				:SetWidth("AUTO")
 				:SetMargin(0, 12, 0, 0)
 				:SetFont("BODY_BODY3")
-				:SetCheckboxPosition("LEFT")
 				:SetText(L["Exclude custom sources?"])
 				:SetScript("OnValueChanged", private.ExportOptionOnValueChanged)
 			)
@@ -1254,10 +1256,7 @@ function private.ExportBtnOnClick(button)
 				:SetValue(str)
 				:SetScript("OnValueChanged", private.ExportInputOnEnterPressed)
 			)
-			:AddChild(UIElements.New("Texture", "line")
-				:SetHeight(2)
-				:SetTexture("ACTIVE_BG")
-			)
+			:AddChild(TSM.UI.Views.Line.NewHorizontal("line"))
 			:AddChild(UIElements.New("Frame", "footer")
 				:SetLayout("HORIZONTAL")
 				:SetHeight(28)
@@ -1269,30 +1268,21 @@ function private.ExportBtnOnClick(button)
 					:SetFont("BODY_BODY2_MEDIUM")
 					:SetText(format(L["%d Items"], numItems))
 				)
-				:AddChild(UIElements.New("Texture", "line1")
-					:SetWidth(2)
-					:SetTexture("ACTIVE_BG")
-				)
+				:AddChild(TSM.UI.Views.Line.NewVertical("line1"))
 				:AddChild(UIElements.New("Text", "subGroups")
 					:SetWidth("AUTO")
 					:SetMargin(8, 8, 0, 0)
 					:SetFont("BODY_BODY2_MEDIUM")
 					:SetText(format(L["%d Sub-Groups"], numSubGroups))
 				)
-				:AddChild(UIElements.New("Texture", "line2")
-					:SetWidth(2)
-					:SetTexture("ACTIVE_BG")
-				)
+				:AddChild(TSM.UI.Views.Line.NewVertical("line2"))
 				:AddChild(UIElements.New("Text", "operations")
 					:SetWidth("AUTO")
 					:SetMargin(8, 8, 0, 0)
 					:SetFont("BODY_BODY2_MEDIUM")
 					:SetText(format(L["%d Operations"], numOperations))
 				)
-				:AddChild(UIElements.New("Texture", "line3")
-					:SetWidth(2)
-					:SetTexture("ACTIVE_BG")
-				)
+				:AddChild(TSM.UI.Views.Line.NewVertical("line3"))
 				:AddChild(UIElements.New("Text", "customSources")
 					:SetWidth("AUTO")
 					:SetMargin(8, 0, 0, 0)
@@ -1340,7 +1330,7 @@ function private.ExportInputOnEnterPressed(input)
 end
 
 function private.ItemFilterValidateFunc(_, value)
-	return private.itemFilter:ParseStr(value)
+	return private.itemFilter:ValidateStr(value)
 end
 
 function private.ItemFilterOnValueChanged(input)
@@ -1349,42 +1339,8 @@ function private.ItemFilterOnValueChanged(input)
 		return
 	end
 	private.itemSearch = text
-
-	input:GetElement("__parent.content.ungrouped.content.itemList")
-		:SetFilterFunction(private.ItemListItemIsFiltered)
-		:Draw()
-	input:GetElement("__parent.content.grouped.content.itemList")
-		:SetFilterFunction(private.ItemListItemIsFiltered)
-		:Draw()
-end
-
-function private.UpdateBaseItemList()
-	wipe(private.results[1])
-	wipe(private.results[2])
-	local addedItems = TempTable.Acquire()
-	for _, itemString in ipairs(private.resultsRaw) do
-		if private.ungroupedItemMode == "level" then
-			if ItemString.IsPet(itemString) and itemString == ItemString.GetBase(itemString) then
-				addedItems[itemString] = true
-			else
-				itemString = ItemString.ToLevel(itemString)
-			end
-		elseif private.ungroupedItemMode == "base" then
-			itemString = ItemString.GetBase(itemString)
-		elseif private.ungroupedItemMode == "specific" then
-			if ItemString.IsPet(itemString) and itemString == ItemString.GetBase(itemString) then
-				addedItems[itemString] = true
-			end
-		else
-			error("Invalid ungrouped item mode: "..tostring(private.ungroupedItemMode))
-		end
-		if not TSM.Groups.IsItemInGroup(itemString) and not addedItems[itemString] then
-			tinsert(private.results[1], itemString)
-			addedItems[itemString] = true
-		end
-	end
-	TempTable.Release(addedItems)
-	private.results[1].header = Theme.GetColor("INDICATOR"):ColorText(L["Search Results"].."|r")
+	private.itemFilter:ParseStr(text)
+	private.itemFilterSmartMap:Invalidate()
 end
 
 function private.ValidateBaseSearchValue(_, value)
@@ -1413,19 +1369,36 @@ function private.InformationSearchOnValueChanged(input)
 		:ClearHighlight()
 end
 
+function private.UpdateBaseItemInfoQuery()
+	local shouldPause = private.baseItemInfoQuery ~= nil
+	if shouldPause then
+		private.baseItemInfoQuery:SetUpdatesPaused(true)
+	end
+	private.baseItemInfoQuery = ItemInfo.MatchItemFilterQuery(private.itemFilter, private.baseItemInfoQuery)
+		:Select("ungroupedItemString", "texture", "coloredItemName")
+		:VirtualSmartMapField("ungroupedItemString", private.ungroupedItemStringSmartMap, "itemString")
+		:Distinct("ungroupedItemString")
+		:LeftJoin(TSM.Groups.GetItemDBForJoin(), "ungroupedItemString", "itemString")
+		:IsNil("groupPath")
+		:OrderBy("name", true)
+		:VirtualField("coloredItemName", "string", TSM.UI.GetColoredItemName, "itemString", Theme.GetColor("FEEDBACK_RED"):ColorText("?"))
+	if shouldPause then
+		private.baseItemInfoQuery:SetUpdatesPaused(false)
+	end
+end
+
 function private.BaseSearchOnValueChanged(input)
 	local value = input:GetValue()
 	if private.itemSearch == value or value == "" then
 		return
 	end
 	assert(private.itemFilter:ParseStr(value))
+	private.itemFilterSmartMap:Invalidate()
 	private.itemSearch = value
-	ItemInfo.MatchItemFilter(private.itemFilter, wipe(private.resultsRaw))
-	private.UpdateBaseItemList()
+	private.UpdateBaseItemInfoQuery()
 	private.frame:GetBaseElement():GetElement("content.groups.view"):SetPath("search", true)
-	private.frame:GetBaseElement():GetElement("content.groups.view.content.itemList"):SetItems(private.results, true)
 	private.frame:GetBaseElement():GetElement("content.groups.view.content.header2.label")
-		:SetText(format(L["%d Results"], #private.results[1]))
+		:SetText(format(L["%d Results"], private.baseItemInfoQuery:Count()))
 		:Draw()
 end
 
@@ -1434,21 +1407,14 @@ function private.SelectAllResultsOnClick(button)
 end
 
 function private.SearchItemModeOnValueChanged(checkbox, checked)
-	private.UpdateBaseItemList()
-	checkbox:GetElement("__parent.__parent.itemList")
-		:SetItems(private.results, true)
+	private.ungroupedItemStringSmartMap:Invalidate()
 	checkbox:GetElement("__parent.label")
-		:SetText(format(L["%d Results"], #private.results[1]))
+		:SetText(format(L["%d Results"], private.baseItemInfoQuery:Count()))
 		:Draw()
 end
 
 function private.SearchBackButtonOnClick(button)
 	button:GetBaseElement():GetElement("content.groups.view"):SetPath("content", true)
-end
-
-function private.ItemModeBaseOnSelectionChanged(dropdown)
-	-- update the base item list
-	dropdown:GetElement("__parent.itemList"):SetItems(private.GetUngroupedBagItemList(), true)
 end
 
 function private.ItemListOnSelectionChanged(itemList)
@@ -1463,80 +1429,57 @@ end
 function private.BaseMoveItemOnClick(button)
 	assert(private.moveGroupPath)
 	local itemList = button:GetElement("__parent.__parent.itemList")
-	local numAdded = 0
-	for _, itemString in ipairs(private.results[1]) do
-		if itemList:IsItemSelected(itemString) then
-			TSM.Groups.SetItemGroup(itemString, private.moveGroupPath)
-			numAdded = numAdded + 1
-		end
-	end
-	Analytics.Action("ADDED_GROUP_ITEMS", private.moveGroupPath, numAdded)
-	private.UpdateBaseItemList()
-	itemList:SetItems(private.results, true)
+	local addedItems = TempTable.Acquire()
+	itemList:GetSelectedItems(addedItems)
+	TSM.Groups.SetItemsGroup(addedItems, private.moveGroupPath)
+	Analytics.Action("ADDED_GROUP_ITEMS", private.moveGroupPath, #addedItems)
+	TempTable.Release(addedItems)
 	itemList:GetElement("__parent.header2.label")
-		:SetText(format(L["%d Results"], #private.results[1]))
+		:SetText(format(L["%d Results"], private.baseItemInfoQuery:Count()))
 		:Draw()
 end
 
 function private.MoveItemOnClick(button)
 	assert(private.moveGroupPath)
 	local itemList = button:GetElement("__parent.__parent.itemList")
-	local numAdded = 0
-	for _, items in ipairs(private.GetUngroupedBagItemList()) do
-		for _, itemString in ipairs(items) do
-			if itemList:IsItemSelected(itemString) then
-				TSM.Groups.SetItemGroup(itemString, private.moveGroupPath)
-				numAdded = numAdded + 1
-			end
-		end
-	end
-	Analytics.Action("ADDED_GROUP_ITEMS", private.moveGroupPath, numAdded)
-	itemList:SetItems(private.GetUngroupedBagItemList(), true)
+	local addedItems = TempTable.Acquire()
+	itemList:GetSelectedItems(addedItems)
+	TSM.Groups.SetItemsGroup(addedItems, private.moveGroupPath)
+	Analytics.Action("ADDED_GROUP_ITEMS", private.moveGroupPath, #addedItems)
+	TempTable.Release(addedItems)
 end
 
-function private.BaseGroupOnSelectionChanged(self)
-	local selection = self:GetSelection()
+function private.BaseGroupOnSelectionChanged(groupSelector)
+	local selection = groupSelector:GetSelection()
 	private.moveGroupPath = selection
-	local numSelected = self:GetBaseElement():GetElement("content.groups.view.content.itemList"):GetNumSelected()
-	self:GetBaseElement():GetElement("content.groups.view.content.bottom.move")
+	local numSelected = groupSelector:GetBaseElement():GetElement("content.groups.view.content.itemList"):GetNumSelected()
+	groupSelector:GetBaseElement():GetElement("content.groups.view.content.bottom.move")
 		:SetDisabled(not selection or numSelected == 0)
 		:SetText(numSelected == 0 and L["Move Item"] or format(L["Move %d |4Item:Items"], numSelected))
 		:Draw()
 end
 
-function private.GroupOnSelectionChanged(self)
-	local selection = self:GetSelection()
+function private.GroupOnSelectionChanged(groupSelector)
+	local selection = groupSelector:GetSelection()
 	private.moveGroupPath = selection
-	local numSelected = self:GetBaseElement():GetElement("content.groups.view.content.buttons.items.itemList"):GetNumSelected()
-	self:GetBaseElement():GetElement("content.groups.view.content.buttons.items.bottom.move")
+	local numSelected = groupSelector:GetBaseElement():GetElement("content.groups.view.content.buttons.items.itemList"):GetNumSelected()
+	groupSelector:GetBaseElement():GetElement("content.groups.view.content.buttons.items.bottom.move")
 		:SetDisabled(not selection or numSelected == 0)
 		:SetText(numSelected == 0 and L["Move Item"] or format(L["Move %d |4Item:Items"], numSelected))
 		:Draw()
 end
 
 function private.ItemModeOnSelectionChanged(dropdown)
-	-- update the ungrouped item list
-	dropdown:GetElement("__parent.__parent.content.ungrouped.content.itemList")
-		:SetItems(private.GetUngroupedItemList(), true)
+	private.ungroupedItemStringSmartMap:Invalidate()
 end
 
 function private.AddItemsOnClick(button)
 	local itemList = button:GetElement("__parent.content.itemList")
-	local numAdded = 0
-	for _, items in ipairs(private.GetUngroupedItemList()) do
-		for _, itemString in ipairs(items) do
-			if itemList:IsItemSelected(itemString) then
-				TSM.Groups.SetItemGroup(itemString, private.currentGroupPath)
-				numAdded = numAdded + 1
-			end
-		end
-	end
-	Analytics.Action("ADDED_GROUP_ITEMS", private.currentGroupPath, numAdded)
-
-	-- update the item lists
-	itemList:SetItems(private.GetUngroupedItemList(), true)
-	local otherItemList = button:GetElement("__parent.__parent.grouped.content.itemList")
-	otherItemList:SetItems(private.GetGroupedItemList(), true)
+	local addedItems = TempTable.Acquire()
+	itemList:GetSelectedItems(addedItems)
+	TSM.Groups.SetItemsGroup(addedItems, private.currentGroupPath)
+	Analytics.Action("ADDED_GROUP_ITEMS", private.currentGroupPath, #addedItems)
+	TempTable.Release(addedItems)
 end
 
 function private.ItemListSelectAllOnClick(button)
@@ -1570,13 +1513,9 @@ function private.RebuildModuleOperations(moduleOperationFrame)
 
 	-- remove the existing operations container and add more row
 	local content = moduleOperationFrame:GetElement("content")
-	local container = content:GetElement("container")
-	content:RemoveChild(container)
-	container:Release()
+	content:RemoveChild(content:GetElement("container"))
 	if content:HasChildById("addMore") then
-		local addMore = content:GetElement("addMore")
-		content:RemoveChild(addMore)
-		addMore:Release()
+		content:RemoveChild(content:GetElement("addMore"))
 	end
 
 	local numGroupOperations = 0
@@ -1610,22 +1549,14 @@ end
 
 function private.RemoveItemsOnClick(button)
 	local itemList = button:GetElement("__parent.content.itemList")
-	local numRemoved = 0
 	local parentGroup = TSM.Groups.Path.GetParent(private.currentGroupPath)
 	parentGroup = parentGroup ~= TSM.CONST.ROOT_GROUP_PATH and parentGroup or nil
 	local targetGroup = IsShiftKeyDown() and parentGroup or nil
-	for _, itemString in ipairs(private.GetGroupedItemList()) do
-		if itemList:IsItemSelected(itemString) then
-			TSM.Groups.SetItemGroup(itemString, targetGroup)
-			numRemoved = numRemoved + 1
-		end
-	end
-	Analytics.Action("REMOVED_GROUP_ITEMS", private.currentGroupPath, numRemoved, targetGroup or "")
-
-	-- update the item lists
-	itemList:SetItems(private.GetGroupedItemList(), true)
-	local otherItemList = button:GetElement("__parent.__parent.ungrouped.content.itemList")
-	otherItemList:SetItems(private.GetUngroupedItemList(), true)
+	local removedItems = TempTable.Acquire()
+	itemList:GetSelectedItems(removedItems)
+	TSM.Groups.SetItemsGroup(removedItems, targetGroup)
+	Analytics.Action("REMOVED_GROUP_ITEMS", private.currentGroupPath, #removedItems, targetGroup or "")
+	TempTable.Release(removedItems)
 end
 
 function private.OverrideToggleOnValueChanged(checkbox, value)
@@ -1744,7 +1675,7 @@ function private.AddOperationCreateBtnOnEnter(button)
 end
 
 function private.AddOperationCreateBtnOnLeave(button)
-	button:SetTextColor(Theme.GetGroupColor(1))
+	button:SetTextColor(Theme.GetGroupColorKey(1))
 		:Draw()
 end
 
@@ -1821,98 +1752,58 @@ end
 -- Private Helper Functions
 -- ============================================================================
 
-function private.ItemSortHelper(a, b)
-	return (ItemInfo.GetName(a) or "") < (ItemInfo.GetName(b) or "")
+function private.CreateUngroupedBagItemQuery()
+	return BagTracking.CreateQueryBags()
+		:Select("ungroupedItemString", "texture", "coloredItemName")
+		:Equal("isBoP", false)
+		:VirtualSmartMapField("ungroupedItemString", private.ungroupedItemStringSmartMap, "itemString")
+		:Distinct("ungroupedItemString")
+		:LeftJoin(TSM.Groups.GetItemDBForJoin(), "ungroupedItemString", "itemString")
+		:IsNil("groupPath")
+		:VirtualField("name", "string", ItemInfo.GetName, "ungroupedItemString", "?")
+		:VirtualField("texture", "number", ItemInfo.GetTexture, "ungroupedItemString", ItemInfo.GetTexture(ItemString.GetUnknown()))
+		:VirtualField("coloredItemName", "string", TSM.UI.GetColoredItemName, "ungroupedItemString", Theme.GetColor("FEEDBACK_RED"):ColorText("?"))
+		:VirtualSmartMapField("matchesFilter", private.itemFilterSmartMap, "ungroupedItemString")
+		:Equal("matchesFilter", true)
+		:OrderBy("name", true)
 end
 
-function private.GetUngroupedBagItemList()
-	wipe(private.ungroupedItemList[1])
-	wipe(private.ungroupedItemList[2])
-
-	-- items in bags
-	local addedItems = TempTable.Acquire()
-	local query = BagTracking.CreateQueryBags()
-		:OrderBy("slotId", true)
-		:Select("itemString")
-		:Equal("isBoP", false)
-	for _, itemString in query:Iterator() do
-		if private.ungroupedItemMode == "level" then
-			itemString = ItemString.ToLevel(itemString)
-		elseif private.ungroupedItemMode == "base" then
-			itemString = ItemString.GetBase(itemString)
-		elseif private.ungroupedItemMode ~= "specific" then
-			error("Invalid ungrouped item mode: "..tostring(private.ungroupedItemMode))
-		end
-		if not TSM.Groups.IsItemInGroup(itemString) and not addedItems[itemString] then
-			tinsert(private.ungroupedItemList[1], itemString)
-			addedItems[itemString] = true
-		end
-	end
-	query:Release()
-	TempTable.Release(addedItems)
-	private.ungroupedItemList[1].header = Theme.GetColor("INDICATOR"):ColorText(L["Ungrouped Items in Bags"])
-
-	sort(private.ungroupedItemList[1], private.ItemSortHelper)
-	return private.ungroupedItemList
-end
-
-function private.GetUngroupedItemList()
-	wipe(private.ungroupedItemList[1])
-	wipe(private.ungroupedItemList[2])
-
-	-- items in bags
-	local addedItems = TempTable.Acquire()
-	local query = BagTracking.CreateQueryBags()
-		:OrderBy("slotId", true)
-		:Select("itemString")
-		:Equal("isBoP", false)
-	for _, itemString in query:Iterator() do
-		if private.ungroupedItemMode == "level" then
-			itemString = ItemString.ToLevel(itemString)
-		elseif private.ungroupedItemMode == "base" then
-			itemString = ItemString.GetBase(itemString)
-		elseif private.ungroupedItemMode ~= "specific" then
-			error("Invalid ungrouped item mode: "..tostring(private.ungroupedItemMode))
-		end
-		if not TSM.Groups.IsItemInGroup(itemString) and not addedItems[itemString] then
-			tinsert(private.ungroupedItemList[1], itemString)
-			addedItems[itemString] = true
-		end
-	end
-	query:Release()
-	TempTable.Release(addedItems)
-	private.ungroupedItemList[1].header = Theme.GetColor("INDICATOR"):ColorText(L["Ungrouped Items in Bags"])
-
-	-- items in the parent group
+function private.CreateParentGroupItemQuery()
 	local parentGroupPath = TSM.Groups.Path.GetParent(private.currentGroupPath)
-	if parentGroupPath ~= TSM.CONST.ROOT_GROUP_PATH then
-		for _, itemString in TSM.Groups.ItemIterator(parentGroupPath) do
-			tinsert(private.ungroupedItemList[2], itemString)
-		end
-	end
-	private.ungroupedItemList[2].header = Theme.GetColor("INDICATOR"):ColorText(L["Parent Items"])
-
-	sort(private.ungroupedItemList[1], private.ItemSortHelper)
-	sort(private.ungroupedItemList[2], private.ItemSortHelper)
-	return private.ungroupedItemList
+	return TSM.Groups.CreateItemsQuery(parentGroupPath, false)
+		:Select("itemString", "texture", "coloredItemName")
+		:VirtualField("name", "string", ItemInfo.GetName, "itemString", "?")
+		:VirtualField("texture", "number", ItemInfo.GetTexture, "itemString", ItemInfo.GetTexture(ItemString.GetUnknown()))
+		:VirtualField("coloredItemName", "string", TSM.UI.GetColoredItemName, "itemString", Theme.GetColor("FEEDBACK_RED"):ColorText("?"))
+		:VirtualSmartMapField("matchesFilter", private.itemFilterSmartMap, "itemString")
+		:Equal("matchesFilter", true)
+		:OrderBy("name", true)
 end
 
-function private.GetGroupedItemList()
-	wipe(private.groupedItemList)
-
-	-- items in this group or a subgroup
-	local itemNames = TempTable.Acquire()
-	for _, itemString in TSM.Groups.ItemIterator(private.currentGroupPath, true) do
-		tinsert(private.groupedItemList, itemString)
-		itemNames[itemString] = ItemInfo.GetName(itemString) or ""
-	end
-
-	Table.SortWithValueLookup(private.groupedItemList, itemNames)
-	TempTable.Release(itemNames)
-	return private.groupedItemList
+function private.CreateGroupedItemQuery()
+	return TSM.Groups.CreateItemsQuery(private.currentGroupPath, true)
+		:Select("itemString", "texture", "coloredItemName")
+		:VirtualField("name", "string", ItemInfo.GetName, "itemString", "?")
+		:VirtualField("texture", "number", ItemInfo.GetTexture, "itemString", ItemInfo.GetTexture(ItemString.GetUnknown()))
+		:VirtualField("coloredItemName", "string", TSM.UI.GetColoredItemName, "itemString", Theme.GetColor("FEEDBACK_RED"):ColorText("?"))
+		:VirtualSmartMapField("matchesFilter", private.itemFilterSmartMap, "itemString")
+		:Equal("matchesFilter", true)
+		:OrderBy("name", true)
 end
 
-function private.ItemListItemIsFiltered(itemString)
+function private.ItemFilterLookup(itemString)
 	local basePrice = CustomPrice.GetValue(private.settings.groupPriceSource, itemString)
-	return not private.itemFilter:Matches(itemString, basePrice)
+	return private.itemFilter:Matches(itemString, basePrice)
+end
+
+function private.UngroupedItemStringLookup(itemString)
+	if private.settings.ungroupedItemMode == "level" then
+		return ItemString.ToLevel(itemString)
+	elseif private.settings.ungroupedItemMode == "base" then
+		return ItemString.GetBase(itemString)
+	elseif private.settings.ungroupedItemMode == "specific" then
+		return itemString
+	else
+		error("Invalid ungrouped item mode: "..tostring(private.settings.ungroupedItemMode))
+	end
 end

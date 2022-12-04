@@ -29,11 +29,12 @@ function CommodityList.__init(self)
 	self.__super:__init()
 	self._row = nil
 	self._marketValueFunc = nil
+	self._marketThreshold = math.huge
 	self._alertThreshold = math.huge
 end
 
 function CommodityList.Acquire(self)
-	self._headerHidden = true
+	self._headerMode = "NONE"
 	self.__super:Acquire()
 	self:GetScrollingTableInfo()
 		:NewColumn("warning")
@@ -70,6 +71,7 @@ end
 function CommodityList.Release(self)
 	self._row = nil
 	self._marketValueFunc = nil
+	self._marketThreshold = math.huge
 	self._alertThreshold = math.huge
 	self.__super:Release()
 end
@@ -133,6 +135,15 @@ end
 -- @treturn CommodityList The commodity list object
 function CommodityList.SetAlertThreshold(self, threshold)
 	self._alertThreshold = threshold or math.huge
+	return self
+end
+
+--- Sets the market threshold.
+-- @tparam CommodityList self The commodity list object
+-- @tparam number threshold The item buyout above which the alert icon should be shown
+-- @treturn CommodityList The commodity list object
+function CommodityList.SetMarketThreshold(self, threshold)
+	self._marketThreshold = threshold or math.huge
 	return self
 end
 
@@ -218,10 +229,10 @@ function private.GetWarningIcon(self, index)
 	local subRow = self:_GetSubRow(index)
 	assert(subRow)
 	local _, itemBuyout = subRow:GetBuyouts()
-	if itemBuyout < self._alertThreshold then
+	if itemBuyout < self._alertThreshold and itemBuyout < self._marketThreshold then
 		return
 	end
-	return "iconPack.12x12/Attention", L["This price is above your confirmation alert threshold."]
+	return "iconPack.12x12/Attention", itemBuyout >= self._marketThreshold and L["This price is above your material value."] or L["This price is above your confirmation alert threshold."]
 end
 
 function private.GetItemBuyoutText(self, index)

@@ -115,7 +115,7 @@ function Util.OnInitialize()
 	-- register the custom theme
 	local isCustomActive = private.settings.colorSet == CUSTOM_COLOR_SET_KEY
 	local customColors = {}
-	for _, key in Theme.ThemeColorKeyIterator() do
+	for key in Theme.ThemeColorKeyIterator() do
 		customColors[key] = Color.NewFromHex(isCustomActive and private.settings.customColorSet[key] or "#000000")
 	end
 	Theme.RegisterColorSet(CUSTOM_COLOR_SET_KEY, L["Custom"], customColors)
@@ -143,8 +143,8 @@ function Util.SetCustomColor(key, r, g, b)
 	private.SetCustomColorHelper(key, r, g, b)
 end
 
-function Util.GetCustomColor(key)
-	return Theme.GetColor(key, CUSTOM_COLOR_SET_KEY)
+function Util.GetCustomColorThemeKey(key)
+	return key..":"..CUSTOM_COLOR_SET_KEY
 end
 
 function Util.GetCustomColorSetKey()
@@ -178,7 +178,7 @@ end
 
 function private.SetCustomColorHelper(key, r, g, b)
 	Theme.UpdateColor(CUSTOM_COLOR_SET_KEY, key, r, g, b)
-	private.settings.customColorSet[key] = Theme.GetColor(key, CUSTOM_COLOR_SET_KEY):GetHexNoAlpha()
+	private.settings.customColorSet[key] = Theme.GetColor(key..":"..CUSTOM_COLOR_SET_KEY):GetHexNoAlpha()
 end
 
 function private.ColorSetIterator(tbl, index)

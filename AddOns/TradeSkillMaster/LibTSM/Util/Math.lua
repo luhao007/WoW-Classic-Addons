@@ -4,11 +4,8 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
---- Math Functions
--- @module Math
-
-local _, TSM = ...
-local Math = TSM.Init("Util.Math")
+local TSM = select(2, ...) ---@type TSM
+local Math = TSM.Init("Util.Math") ---@class Util.Math
 local TempTable = TSM.Include("Util.TempTable")
 local NAN = math.huge * 0
 local IS_NAN_GT_INF = (NAN or 0) > math.huge
@@ -23,16 +20,16 @@ local private = {
 -- Module Functions
 -- ============================================================================
 
---- Returns NAN.
--- @treturn number NAN
+---Returns NAN.
+---@return number @NAN
 function Math.GetNan()
 	assert(NAN)
 	return NAN
 end
 
---- Checks if a value is NAN.
--- @tparam number value The number to check
--- @treturn boolean Whether or not the value is NAN
+---Checks if a value is NAN.
+---@param value number The number to check
+---@return boolean @Whether or not the value is NAN
 function Math.IsNan(value)
 	assert(NAN)
 	if IS_NAN_GT_INF then
@@ -43,61 +40,62 @@ function Math.IsNan(value)
 	end
 end
 
---- Rounds a value to a specified significant value.
--- @tparam number value The number to be rounded
--- @tparam number sig The value to round to the nearest multiple of
--- @treturn number The rounded value
+---Rounds a value to a specified significant value.
+---@param value number The number to be rounded
+---@param sig? number The value to round to the nearest multiple of (defaults to 1)
+---@return number @The rounded value
 function Math.Round(value, sig)
 	sig = sig or 1
 	return floor((value / sig) + 0.5) * sig
 end
 
---- Rounds a value down to a specified significant value.
--- @tparam number value The number to be rounded
--- @tparam number sig The value to round down to the nearest multiple of
--- @treturn number The rounded value
+---Rounds a value down to a specified significant value.
+---@param value number The number to be rounded
+---@param sig? number The value to round down to the nearest multiple of (defaults to 1)
+---@return number @The rounded value
 function Math.Floor(value, sig)
 	sig = sig or 1
 	return floor(value / sig) * sig
 end
 
---- Rounds a value up to a specified significant value.
--- @tparam number value The number to be rounded
--- @tparam number sig The value to round up to the nearest multiple of
--- @treturn number The rounded value
+---Rounds a value up to a specified significant value.
+---@param value number The number to be rounded
+---@param sig? number The value to round up to the nearest multiple of (defaults to 1)
+---@return number @The rounded value
 function Math.Ceil(value, sig)
 	sig = sig or 1
 	return ceil(value / sig) * sig
 end
 
---- Scales a value from one range to another.
--- @tparam number value The number to be scaled
--- @tparam number fromStart The start value of the range to scale from
--- @tparam number fromEnd The end value of the range to scale from (can be less than fromStart)
--- @tparam number toStart The start value of the range to scale to
--- @tparam number toEnd The end value of the range to scale to (can be less than toStart)
--- @treturn number The scaled value
+---Scales a value from one range to another.
+---@param value number The number to be scaled
+---@param fromStart number The start value of the range to scale from
+---@param fromEnd number The end value of the range to scale from (can be less than fromStart)
+---@param toStart number The start value of the range to scale to
+---@param toEnd number The end value of the range to scale to (can be less than toStart)
+---@return number @The scaled value
 function Math.Scale(value, fromStart, fromEnd, toStart, toEnd)
 	assert(value >= min(fromStart, fromEnd) and value <= max(fromStart, fromEnd))
 	return toStart + ((value - fromStart) / (fromEnd - fromStart)) * (toEnd - toStart)
 end
 
---- Bounds a number between a min and max value.
--- @tparam number value The number to be bounded
--- @tparam number minValue The min value
--- @tparam number maxValue The max value
--- @treturn number The bounded value
+---Bounds a number between a min and max value.
+---@param value number The number to be bounded
+---@param minValue number The min value
+---@param maxValue number The max value
+---@return number @The bounded value
 function Math.Bound(value, minValue, maxValue)
 	return min(max(value, minValue), maxValue)
 end
 
---- Calculates the has of the specified data
+---Calculates the hash of the specified data
+---
 -- This data can handle data of type string or number. It can also handle a table being passed as the data assuming
 -- all keys and values of the table are also hashable (strings, numbers, or tables with the same restriction). This
 -- function uses the [djb2 algorithm](http://www.cse.yorku.ca/~oz/hash.html).
--- @param data The data to be hased
--- @tparam[opt] number hash The initial value of the hash
--- @treturn number The hash value
+---@param data any The data to be hased
+---@param hash? number hash The initial value of the hash
+---@return number @The hash value
 function Math.CalculateHash(data, hash)
 	hash = hash or 5381
 	local maxValue = 2 ^ 24

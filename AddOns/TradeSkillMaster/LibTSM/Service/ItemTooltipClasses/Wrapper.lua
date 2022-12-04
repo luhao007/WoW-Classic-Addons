@@ -11,6 +11,7 @@ local Builder = TSM.Include("Service.ItemTooltipClasses.Builder")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local Settings = TSM.Include("Service.Settings")
 local ItemString = TSM.Include("Util.ItemString")
+local Theme = TSM.Include("Util.Theme")
 local private = {
 	builder = nil,
 	settings = nil,
@@ -91,27 +92,21 @@ function private.RegisterTooltip(tooltip)
 		end
 		tooltip:HookScript("OnHide", private.OnTooltipCleared)
 	else
-		local scriptHooks = {
-			OnTooltipSetItem = private.OnTooltipSetItem,
-			OnTooltipCleared = private.OnTooltipCleared
-		}
-		for script, prehook in pairs(scriptHooks) do
-			if script == "OnTooltipSetItem" and TSM.IsWowDragonflightPTR() then
-				TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Item, private.OnTooltipSetItem)
-			else
-				tooltip:HookScript(script, prehook)
+		tooltip:HookScript("OnTooltipCleared", private.OnTooltipCleared)
+		if TSM.IsWowClassic() then
+			tooltip:HookScript("OnTooltipSetItem", private.OnTooltipSetItem)
+			for method, prehook in pairs(private.tooltipMethodPrehooks) do
+				local posthook = private.tooltipMethodPosthooks[method]
+				local orig = tooltip[method]
+				tooltip[method] = function(...)
+					prehook(...)
+					local a, b, c, d, e, f, g, h, i, j, k = orig(...)
+					posthook(...)
+					return a, b, c, d, e, f, g, h, i, j, k
+				end
 			end
-		end
-
-		for method, prehook in pairs(private.tooltipMethodPrehooks) do
-			local posthook = private.tooltipMethodPosthooks[method]
-			local orig = tooltip[method]
-			tooltip[method] = function(...)
-				prehook(...)
-				local a, b, c, d, e, f, g, h, i, j, k = orig(...)
-				posthook(...)
-				return a, b, c, d, e, f, g, h, i, j, k
-			end
+		else
+			TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Item, private.OnTooltipSetItem)
 		end
 	end
 end
@@ -123,10 +118,8 @@ function private.IsBattlePetTooltip(tooltip)
 	return tooltip == BattlePetTooltip or tooltip == FloatingBattlePetTooltip
 end
 
-function private.OnTooltipSetItem(tooltip)
+function private.OnTooltipSetItem(tooltip, data)
 	local reg = private.tooltipRegistry[tooltip]
-	-- The new tooltip postcall is triggered for every other non-registered item tooltips
-	-- Gonna need to rewrite our tooltip scanning to the new method to save calls here
 	if not reg then
 		return
 	end
@@ -136,7 +129,10 @@ function private.OnTooltipSetItem(tooltip)
 
 	tooltip:Show()
 	local testName, item = tooltip:GetItem()
-	if not item then
+	if not TSM.IsWowClassic() and item and data.id and data.id ~= ItemString.ToId(item) then
+		-- GetItem() seems to be broken for recipes on retail, so just look it up by ID
+		item = ItemString.Get(data.id)
+	elseif not item then
 		item = reg.item
 	elseif testName == "" then
 		-- this is likely a case where :GetItem() is broken for recipes - detect and try to fix it
@@ -225,7 +221,7 @@ function private.SetTooltipItem(tooltip, link)
 	local targetTip = useExtraTip and reg.extraTip or tooltip
 	targetTip:AddLine(" ")
 	for _, left, right, lineColor in private.builder:_LineIterator() do
-		local r, g, b = lineColor:GetFractionalRGBA()
+		local r, g, b = Theme.GetColor(lineColor):GetFractionalRGBA()
 		if right then
 			targetTip:AddDoubleLine(left, right, r, g, b, r, g, b)
 		else
@@ -316,10 +312,10 @@ do
 			reg.quantity = lNum == hNum and lNum or 1
 		end,
 		SetBagItem = function(self, ...)
-			if TSM.IsWowDragonflightPTR() then
-				PreHookHelper(self, C_Container.GetContainerItemInfo, "stackCount", ...)
-			else
+			if TSM.IsWowClassic() then
 				PreHookHelper(self, GetContainerItemInfo, 2, ...)
+			else
+				PreHookHelper(self, C_Container.GetContainerItemInfo, "stackCount", ...)
 			end
 		end,
 		SetGuildBankItem = function(self, ...)
@@ -336,11 +332,11 @@ do
 		end,
 		SetMerchantCostItem = function(self, ...) PreHookHelper(self, GetMerchantItemCostItem, 2, ...) end,
 		SetBuybackItem = function(self, ...) PreHookHelper(self, GetBuybackItemInfo, 4, ...) end,
-		SetAuctionItem = function(self, ...)
+		SetAuctionItem = TSM.IsWowClassic() and function(self, ...)
 			local reg = PreHookHelper(self, GetAuctionItemInfo, 3, ...)
 			reg.item = GetAuctionItemLink(...)
-		end,
-		SetAuctionSellItem = function(self, ...) PreHookHelper(self, GetAuctionSellItemInfo, 3, ...) end,
+		end or nil,
+		SetAuctionSellItem = TSM.IsWowClassic() and function(self, ...) PreHookHelper(self, GetAuctionSellItemInfo, 3, ...) end or nil,
 		SetInboxItem = function(self, index) PreHookHelper(self, GetInboxItem, 4, index, 1) end,
 		SetSendMailItem = function(self, ...) PreHookHelper(self, GetSendMailItem, 4, ...) end,
 		SetLootItem = function(self, ...) PreHookHelper(self, GetLootSlotInfo, 3, ...) end,
@@ -354,10 +350,6 @@ do
 			reg.item = link
 		end,
 	}
-	if not TSM.IsWowClassic() then
-		private.tooltipMethodPrehooks["SetAuctionItem"] = nil
-		private.tooltipMethodPrehooks["SetAuctionSellItem"] = nil
-	end
 
 	-- populate all the posthooks
 	local function TooltipMethodPostHook(self)

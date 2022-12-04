@@ -4,7 +4,7 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local Destroying = TSM:NewPackage("Destroying")
 local DisenchantInfo = TSM.Include("Data.DisenchantInfo")
 local Container = TSM.Include("Util.Container")
@@ -13,7 +13,9 @@ local Event = TSM.Include("Util.Event")
 local SlotId = TSM.Include("Util.SlotId")
 local TempTable = TSM.Include("Util.TempTable")
 local ItemString = TSM.Include("Util.ItemString")
+local Reactive = TSM.Include("Util.Reactive")
 local Future = TSM.Include("Util.Future")
+local Log = TSM.Include("Util.Log")
 local Threading = TSM.Include("Service.Threading")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local CustomPrice = TSM.Include("Service.CustomPrice")
@@ -29,7 +31,6 @@ local private = {
 	destroyQuantityCache = {},
 	pendingCombines = {},
 	newBagUpdate = false,
-	bagUpdateCallback = nil,
 	pendingSpellId = nil,
 	ignoreDB = nil,
 	destroyInfoDB = nil,
@@ -38,6 +39,7 @@ local private = {
 	inscriptionSkillLevel = nil,
 	combineFuture = Future.New("DESTROYING_COMBINE_FUTURE"),
 	destroyFuture = Future.New("DESTROYING_DESTROY_FUTURE"),
+	state = nil,
 }
 local SPELL_IDS = {
 	milling = 51005,
@@ -55,6 +57,10 @@ local GEM_CHIPS = {
 	["i:130203"] = "i:129100",
 	["i:130204"] = "i:129100",
 }
+local START_MESSAGE = newproxy()
+local STATE_SCHEMA = Reactive.CreateStateSchema()
+	:AddBooleanField("canCombine", false)
+	:Commit()
 
 
 
@@ -63,6 +69,7 @@ local GEM_CHIPS = {
 -- ============================================================================
 
 function Destroying.OnInitialize()
+	private.state = STATE_SCHEMA:CreateState()
 	private.combineThread = Threading.New("COMBINE_STACKS", private.CombineThread)
 	Threading.SetCallback(private.combineThread, private.CombineThreadDone)
 	private.destroyThread = Threading.New("DESTROY", private.DestroyThread)
@@ -102,6 +109,7 @@ function Destroying.OnInitialize()
 		:AddNumberField("spellId")
 		:Commit()
 
+	Event.Register("LOOT_READY", private.SendEventToThread)
 	Event.Register("LOOT_CLOSED", private.SendEventToThread)
 	Event.Register("BAG_UPDATE_DELAYED", private.SendEventToThread)
 	Event.Register("UNIT_SPELLCAST_START", private.SpellCastEventHandler)
@@ -119,23 +127,18 @@ function Destroying.OnInitialize()
 	end)
 end
 
-function Destroying.SetBagUpdateCallback(callback)
-	assert(not private.bagUpdateCallback)
-	private.bagUpdateCallback = callback
-end
-
 function Destroying.CreateBagQuery()
 	return BagTracking.CreateQueryBags()
 		:LeftJoin(private.ignoreDB, "itemString")
 		:InnerJoin(private.destroyInfoDB, "itemString")
-		:InnerJoin(ItemInfo.GetDBForJoin(), "itemString")
+		:VirtualField("name", "string", ItemInfo.GetName, "itemString", "?")
 		:NotEqual("ignoreSession", true)
 		:NotEqual("ignorePermanent", true)
 		:GreaterThanOrEqual("quantity", Database.OtherFieldQueryParam("minQuantity"))
 end
 
-function Destroying.CanCombine()
-	return #private.pendingCombines > 0
+function Destroying.CanCombinePublisher()
+	return private.state:PublisherForKeyChange("canCombine")
 end
 
 function Destroying.StartCombine()
@@ -149,7 +152,7 @@ function Destroying.StartDestroy(button, row, callback)
 	private.destroyThreadRunning = true
 	Threading.Start(private.destroyThread, button, row)
 	-- we need the thread to run now so send it a sync message
-	Threading.SendSyncMessage(private.destroyThread)
+	Threading.SendSyncMessage(private.destroyThread, START_MESSAGE)
 	return private.destroyFuture
 end
 
@@ -205,7 +208,8 @@ end
 
 function Destroying.CreateIgnoreQuery()
 	return private.ignoreDB:NewQuery()
-		:InnerJoin(ItemInfo.GetDBForJoin(), "itemString")
+		:VirtualField("name", "string", ItemInfo.GetName, "itemString", "?")
+		:VirtualField("texture", "number", ItemInfo.GetTexture, "itemString", ItemInfo.GetTexture(ItemString.GetUnknown()))
 		:Equal("ignorePermanent", true)
 		:OrderBy("name", true)
 end
@@ -217,7 +221,7 @@ end
 -- ============================================================================
 
 function private.CombineThread()
-	while Destroying.CanCombine() do
+	while private.state.canCombine do
 		for _, combineSlotId in ipairs(private.pendingCombines) do
 			local sourceBag, sourceSlot, targetBag, targetSlot = private.CombineSlotIdToBagSlot(combineSlotId)
 			Container.PickupItem(sourceBag, sourceSlot)
@@ -252,68 +256,82 @@ end
 -- ============================================================================
 
 function private.DestroyThread(button, row)
-	-- we get sent a sync message so we run right away
-	Threading.ReceiveMessage()
+	-- We get sent a sync message so we run right away
+	assert(Threading.ReceiveMessage() == START_MESSAGE)
 
 	local itemString, spellId, bag, slot = row:GetFields("itemString", "spellId", "bag", "slot")
+	local startQuantity = select(2, Container.GetItemInfo(bag, slot))
 	local spellName = GetSpellInfo(spellId)
 	button:SetMacroText(format("/cast %s;\n/use %d %d", spellName, bag, slot))
 
-	-- wait for the spell cast to start or fail
+	-- Wait for the spell cast to start or fail
 	private.pendingSpellId = spellId
 	local event = Threading.ReceiveMessage()
 	if event ~= "UNIT_SPELLCAST_START" then
-		-- the spell cast failed for some reason
+		-- The spell cast failed for some reason
 		ClearCursor()
 		return false
 	end
 
-	-- discard any other messages
+	-- Discard any other messages
 	Threading.Yield(true)
 	while Threading.HasPendingMessage() do
 		Threading.ReceiveMessage()
 	end
 
-	-- wait for the spell cast to finish
-	event = Threading.ReceiveMessage()
-	if event ~= "UNIT_SPELLCAST_SUCCEEDED" then
-		-- the spell cast was interrupted
-		return false
+	-- Wait for the spell cast to finish and the loot window to open and then close
+	local lootResult = nil
+	local hasSpellcastSucceeded, hasLootClosed, hasBagUpdateDelayed = false, false, false
+	while not hasSpellcastSucceeded or not lootResult or not hasLootClosed or not hasBagUpdateDelayed do
+		event = Threading.ReceiveMessage()
+		Log.Info("Got event: %s", tostring(event))
+		if event == "UNIT_SPELLCAST_SUCCEEDED" then
+			hasSpellcastSucceeded = true
+		elseif event == "LOOT_READY" then
+			if not lootResult and GetNumLootItems() > 0 then
+				lootResult = {}
+				for i = 1, GetNumLootItems() do
+					local lootItemString = ItemString.Get(GetLootSlotLink(i))
+					local _, _, quantity = GetLootSlotInfo(i)
+					if lootItemString and (quantity or 0) > 0 then
+						lootItemString = GEM_CHIPS[lootItemString] or lootItemString
+						lootResult[lootItemString] = quantity
+					end
+				end
+			end
+		elseif event == "LOOT_CLOSED" then
+			if lootResult then
+				hasLootClosed = true
+			end
+		elseif event == "BAG_UPDATE_DELAYED" then
+			if lootResult then
+				hasBagUpdateDelayed = true
+			end
+		else
+			-- the spell cast was interrupted
+			return false
+		end
 	end
 
-	-- wait for the loot window to open
-	Threading.WaitForEvent("LOOT_READY")
-
-	-- add to the log
+	-- Add to the log
 	local newEntry = {
 		item = itemString,
 		time = time(),
-		result = {},
+		result = lootResult,
 	}
-	assert(GetNumLootItems() > 0)
-	for i = 1, GetNumLootItems() do
-		local lootItemString = ItemString.Get(GetLootSlotLink(i))
-		local _, _, quantity = GetLootSlotInfo(i)
-		if lootItemString and (quantity or 0) > 0 then
-			lootItemString = GEM_CHIPS[lootItemString] or lootItemString
-			newEntry.result[lootItemString] = quantity
-		end
-	end
 	private.settings.destroyingHistory[spellName] = private.settings.destroyingHistory[spellName] or {}
 	tinsert(private.settings.destroyingHistory[spellName], newEntry)
 
-	-- wait for the loot window to close
-	local hasLootClosed, hasBagUpdateDelayed = false, false
-	while not hasLootClosed or not hasBagUpdateDelayed do
-		event = Threading.ReceiveMessage()
-		if event == "LOOT_CLOSED" then
-			hasLootClosed = true
-		elseif event == "BAG_UPDATE_DELAYED" then
-			hasBagUpdateDelayed = true
+	-- Wait up to a second for the item we destroyed to be removed from the bags
+	local timeout = GetTime() + 1
+	while startQuantity == select(2, Container.GetItemInfo(bag, slot)) do
+		if GetTime() > timeout then
+			return false
 		end
+		Threading.Sleep(0.1)
 	end
 
-	-- we're done
+	-- We're done
 	return true
 end
 
@@ -385,11 +403,8 @@ function private.UpdateBagDB()
 	TempTable.Release(checkedItem)
 	TempTable.Release(itemPrevSlotId)
 	private.destroyInfoDB:BulkInsertEnd()
-
+	private.state.canCombine = #private.pendingCombines > 0
 	private.newBagUpdate = true
-	if private.bagUpdateCallback then
-		private.bagUpdateCallback()
-	end
 end
 
 function private.ProcessBagItem(itemString)

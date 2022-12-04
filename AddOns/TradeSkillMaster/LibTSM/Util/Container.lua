@@ -59,10 +59,10 @@ end
 -- @tparam number bag The index of the bag
 -- @treturn number The number of slots
 function Container.GetNumSlots(bag)
-	if TSM.IsWowDragonflightPTR() then
-		return C_Container.GetContainerNumSlots(bag)
-	else
+	if TSM.IsWowClassic() then
 		return GetContainerNumSlots(bag)
+	else
+		return C_Container.GetContainerNumSlots(bag)
 	end
 end
 
@@ -70,10 +70,10 @@ end
 -- @tparam number bag The index of the bag
 -- @treturn number The number of free slots
 function Container.GetNumFreeSlots(bag)
-	if TSM.IsWowDragonflightPTR() then
-		return C_Container.GetContainerNumFreeSlots(bag)
-	else
+	if TSM.IsWowClassic() then
 		return GetContainerNumFreeSlots(bag)
+	else
+		return C_Container.GetContainerNumFreeSlots(bag)
 	end
 end
 
@@ -82,10 +82,10 @@ end
 -- @tparam number slot The index of the slot whitin the bag
 -- @treturn number The item id stored in the bag slot
 function Container.GetItemID(bag, slot)
-	if TSM.IsWowDragonflightPTR() then
-		return C_Container.GetContainerItemID(bag, slot)
-	else
+	if TSM.IsWowClassic() then
 		return GetContainerItemID(bag, slot)
+	else
+		return C_Container.GetContainerItemID(bag, slot)
 	end
 end
 
@@ -104,16 +104,15 @@ end
 -- @treturn number itemId The unique identifier for the item in the bag slot
 -- @treturn boolean isBound Whether the item is bound of the character
 function Container.GetItemInfo(bag, slot)
-	local iconFileID, stackCount, isLocked, quality, isReadable, hasLoot, link, isFiltered, hasNoValue, itemId, isBound = nil, nil, nil, nil, nil, nil, nil, nil, nil, nil
-	if TSM.IsWowDragonflightPTR() then
-		local info = C_Container.GetContainerItemInfo(bag, slot)
-		if info then
-			iconFileID, stackCount, isLocked, quality, isReadable, hasLoot, link, isFiltered, hasNoValue, itemId, isBound = info.iconFileID, info.stackCount, info.isLocked, info.quality, info.isReadable, info.HasLoot, info.hyperlink, info.isFiltered, info.hasNoValue, info.itemID, info.isBound
-		end
+	if TSM.IsWowClassic() then
+		return GetContainerItemInfo(bag, slot)
 	else
-		iconFileID, stackCount, isLocked, quality, isReadable, hasLoot, link, isFiltered, hasNoValue, itemId, isBound = GetContainerItemInfo(bag, slot)
+		local info = C_Container.GetContainerItemInfo(bag, slot)
+		if not info then
+			return
+		end
+		return info.iconFileID, info.stackCount, info.isLocked, info.quality, info.isReadable, info.hasLoot, info.hyperlink, info.isFiltered, info.hasNoValue, info.itemID, info.isBound
 	end
-	return iconFileID, stackCount, isLocked, quality, isReadable, hasLoot, link, isFiltered, hasNoValue, itemId, isBound
 end
 
 --- Returns a link of the object located in the specified slot of a specified bag.
@@ -121,10 +120,10 @@ end
 -- @tparam number slot The index of the slot whitin the bag
 -- @treturn string The item link for the object in the given bag slot
 function Container.GetItemLink(bag, slot)
-	if TSM.IsWowDragonflightPTR() then
-		return C_Container.GetContainerItemLink(bag, slot)
-	else
+	if TSM.IsWowClassic() then
 		return GetContainerItemLink(bag, slot)
+	else
+		return C_Container.GetContainerItemLink(bag, slot)
 	end
 end
 
@@ -132,10 +131,10 @@ end
 -- @tparam number bag The index of the bag
 -- @treturn number The inventory slot index
 function Container.IDToInventoryID(bag)
-	if TSM.IsWowDragonflightPTR() then
-		return C_Container.ContainerIDToInventoryID(bag)
-	else
+	if TSM.IsWowClassic() then
 		return ContainerIDToInventoryID(bag)
+	else
+		return C_Container.ContainerIDToInventoryID(bag)
 	end
 end
 
@@ -143,10 +142,10 @@ end
 -- @tparam number bag The index of the bag
 -- @tparam number slot The index of the slot whitin the bag
 function Container.UseItem(bag, slot)
-	if TSM.IsWowDragonflightPTR() then
-		return C_Container.UseContainerItem(bag, slot)
-	else
+	if TSM.IsWowClassic() then
 		return UseContainerItem(bag, slot)
+	else
+		return C_Container.UseContainerItem(bag, slot)
 	end
 end
 
@@ -154,10 +153,10 @@ end
 -- @tparam number bag The index of the bag
 -- @tparam number slot The index of the slot whitin the bag
 function Container.PickupItem(bag, slot)
-	if TSM.IsWowDragonflightPTR() then
-		return C_Container.PickupContainerItem(bag, slot)
-	else
+	if TSM.IsWowClassic() then
 		return PickupContainerItem(bag, slot)
+	else
+		return C_Container.PickupContainerItem(bag, slot)
 	end
 end
 
@@ -165,9 +164,9 @@ end
 -- @tparam number bag The index of the bag
 -- @tparam number slot The index of the slot whitin the bag
 function Container.SplitItem(bag, slot, count)
-	if TSM.IsWowDragonflightPTR() then
-		return C_Container.SplitContainerItem(bag, slot, count)
-	else
+	if TSM.IsWowClassic() then
 		return SplitContainerItem(bag, slot, count)
+	else
+		return C_Container.SplitContainerItem(bag, slot, count)
 	end
 end

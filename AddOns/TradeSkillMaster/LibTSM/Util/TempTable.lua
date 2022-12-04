@@ -4,11 +4,8 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
---- TempTable Functions
--- @module TempTable
-
-local _, TSM = ...
-local TempTable = TSM.Init("Util.TempTable")
+local TSM = select(2, ...) ---@type TSM
+local TempTable = TSM.Init("Util.TempTable") ---@class Util.TempTable
 local Debug = TSM.Include("Util.Debug")
 local private = {
 	debugLeaks = TSM.IsTestEnvironment() or false,
@@ -31,14 +28,17 @@ local RELEASED_TEMP_TABLE_MT = {
 -- Module Functions
 -- ============================================================================
 
---- Acquires a temporary table.
--- Temporary tables are recycled tables which can be used instead of creating a new table every time one is needed for a
--- defined lifecycle. This avoids relying on the garbage collector and improves overall performance.
--- @param ... Any number of valuse to insert into the table initially
--- @treturn table The temporary table
+---Acquires a temporary table.
+---
+---Temporary tables are recycled tables which can be used instead of creating a new table every time one is needed for a
+---defined lifecycle. This avoids relying on the garbage collector and improves overall performance.
+---@param ... any Any number of valuse to insert into the table initially
+---@return table @The temporary table
 function TempTable.Acquire(...)
-	local tbl = tremove(private.freeTempTables, 1)
-	assert(tbl, "Could not acquire temp table")
+	local tbl = tremove(private.freeTempTables)
+	if not tbl then
+		error("Could not acquire temp table")
+	end
 	setmetatable(tbl, nil)
 	if private.debugLeaks then
 		private.tempTableState[tbl] = (Debug.GetStackLevelLocation(2) or "?").." -> "..(Debug.GetStackLevelLocation(3) or "?")
@@ -51,11 +51,12 @@ function TempTable.Acquire(...)
 	return tbl
 end
 
---- Iterators over a temporary table, releasing it when done.
--- NOTE: This iterator must be run to completion and not interrupted (i.e. with a `break` or `return`).
--- @tparam table tbl The temporary table to iterator over
--- @tparam[opt=1] number numFields The number of fields to unpack with each iteration
--- @return An iterator with fields: `index, {numFields...}`
+---Iterators over a temporary table, releasing it when done.
+---
+---**NOTE:** This iterator must be run to completion and not be interrupted (i.e. with a `break` or `return`).
+---@param tbl table The temporary table to iterator over
+---@param numFields? number The number of fields to unpack with each iteration (defaults to 1)
+---@return fun(): number, ... @An iterator with fields: `index, {numFields...}`
 function TempTable.Iterator(tbl, numFields)
 	numFields = numFields or 1
 	assert(numFields >= 1 and #tbl % numFields == 0)
@@ -64,25 +65,28 @@ function TempTable.Iterator(tbl, numFields)
 	return private.TempTableIteratorHelper, tbl, 1 - numFields
 end
 
---- Releases a temporary table.
--- The temporary table will be returned to the pool and must not be accessed after being released.
--- @tparam table tbl The temporary table to release
+---Releases a temporary table.
+---
+---The temporary table will be returned to the pool and must not be accessed after being released.
+---@param tbl table The temporary table to release
 function TempTable.Release(tbl)
 	private.TempTableReleaseHelper(tbl)
 end
 
---- Releases a temporary table and returns its values.
--- Releases the temporary table (see @{TempTable.Release}) and returns its unpacked values.
--- @tparam table tbl The temporary table to release and unpack
--- @return The result of calling `unpack` on the table
+---Releases the temporary table and returns its unpacked values.
+---@param tbl table The temporary table to release and unpack
+---@return ... @The result of calling `unpack` on the table
 function TempTable.UnpackAndRelease(tbl)
 	return private.TempTableReleaseHelper(tbl, unpack(tbl))
 end
 
+---Enables tracking of where temp tables are created from in order to debug leaks.
 function TempTable.EnableLeakDebug()
 	private.debugLeaks = true
 end
 
+---Gets debug information describing allocated and free temp tables.
+---@return string[] @The debug information
 function TempTable.GetDebugInfo()
 	local debugInfo = {}
 	local counts = {}
@@ -119,7 +123,9 @@ function private.TempTableIteratorHelper(tbl, index)
 end
 
 function private.TempTableReleaseHelper(tbl, ...)
-	assert(private.tempTableState[tbl])
+	if not private.tempTableState[tbl] then
+		error("Invalid table")
+	end
 	wipe(tbl)
 	tinsert(private.freeTempTables, tbl)
 	private.tempTableState[tbl] = nil

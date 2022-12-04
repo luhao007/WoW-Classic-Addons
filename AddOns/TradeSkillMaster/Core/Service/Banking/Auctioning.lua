@@ -8,7 +8,10 @@ local _, TSM = ...
 local Auctioning = TSM.Banking:NewPackage("Auctioning")
 local TempTable = TSM.Include("Util.TempTable")
 local BagTracking = TSM.Include("Service.BagTracking")
-local Inventory = TSM.Include("Service.Inventory")
+local AltTracking = TSM.Include("Service.AltTracking")
+local AuctionTracking = TSM.Include("Service.AuctionTracking")
+local MailTracking = TSM.Include("Service.MailTracking")
+local Settings = TSM.Include("Service.Settings")
 local private = {}
 
 
@@ -64,7 +67,11 @@ function private.GetNumToMoveToBags(itemString, numHave, includeAH)
 		:Equal("autoBaseItemString", itemString)
 		:SumAndRelease("quantity")
 	if includeAH then
-		numInBags = numInBags + select(3, Inventory.GetPlayerTotals(itemString)) + Inventory.GetMailQuantity(itemString)
+		numInBags = numInBags + AuctionTracking.GetQuantity(itemString) + MailTracking.GetQuantity(itemString)
+		-- include alt auctions
+		for _, factionrealm, character in Settings.ConnectedFactionrealmAltCharacterIterator() do
+			numInBags = numInBags + AltTracking.GetAuctionQuantity(itemString, character, factionrealm)
+		end
 	end
 
 	for _, _, operationSettings in TSM.Operations.GroupOperationIterator("Auctioning", TSM.Groups.GetPathByItem(itemString)) do

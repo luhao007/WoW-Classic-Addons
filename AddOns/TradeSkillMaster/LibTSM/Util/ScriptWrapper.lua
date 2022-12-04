@@ -4,8 +4,8 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
-local ScriptWrapper = TSM.Init("Util.ScriptWrapper")
+local TSM = select(2, ...) ---@type TSM
+local ScriptWrapper = TSM.Init("Util.ScriptWrapper") ---@class Util.ScriptWrapper
 local Log = TSM.Include("Util.Log")
 local private = {
 	handlers = {},
@@ -22,11 +22,11 @@ local SCRIPT_CALLBACK_TIME_WARNING_THRESHOLD_MS = 20
 -- Module Functions
 -- ============================================================================
 
---- Sets the handler for a script on a frame.
--- @tparam table frame The frame to call SetScript() on
--- @tparam string script The script to set
--- @tparam function handler The handler to set
--- @tparam[opt=frame] table obj The object to pass to the handler as the first parameter (instead of frame)
+---Sets the handler for a script on a frame.
+---@param frame table The frame to call SetScript() on
+---@param script string The script to set
+---@param handler function The handler to set
+---@param obj? table The object to pass to the handler as the first parameter (instead of frame)
 function ScriptWrapper.Set(frame, script, handler, obj)
 	assert(type(frame) == "table" and type(script) == "string" and type(handler) == "function")
 	local key = private.GetFrameScriptKey(frame, script)
@@ -40,10 +40,10 @@ function ScriptWrapper.Set(frame, script, handler, obj)
 	frame:SetScript(script, private.wrappers[script])
 end
 
---- Sets the script handler to simply propogate the script to the parent element.
--- @tparam table frame The frame to call SetScript() on
--- @tparam string script The script which should be propagated
--- @tparam[opt=frame] table obj The object to pass to the handler as the first parameter (instead of frame)
+---Sets the script handler to simply propogate the script to the parent element.
+---@param frame table The frame to call SetScript() on
+---@param script string The script which should be propagated
+---@param obj? table The object to pass to the handler as the first parameter (instead of frame)
 function ScriptWrapper.SetPropagate(frame, script, obj)
 	if not private.propagateWrappers[script] then
 		private.propagateWrappers[script] = function(f, ...)
@@ -58,9 +58,9 @@ function ScriptWrapper.SetPropagate(frame, script, obj)
 	ScriptWrapper.Set(frame, script, private.propagateWrappers[script], obj)
 end
 
---- Clears a previously-registered script handler.
--- @tparam table frame The frame to clear the scrip ton
--- @tparam string script The script which should be cleared
+---Clears a previously-registered script handler.
+---@param frame table The frame to clear the script on
+---@param script string The script which should be cleared
 function ScriptWrapper.Clear(frame, script)
 	local key = private.GetFrameScriptKey(frame, script)
 	private.handlers[key] = nil

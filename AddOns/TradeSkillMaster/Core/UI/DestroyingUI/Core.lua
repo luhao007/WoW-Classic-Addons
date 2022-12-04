@@ -4,28 +4,41 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local DestroyingUI = TSM.UI:NewPackage("DestroyingUI")
 local L = TSM.Include("Locale").GetTable()
 local DisenchantInfo = TSM.Include("Data.DisenchantInfo")
-local FSM = TSM.Include("Util.FSM")
 local ItemString = TSM.Include("Util.ItemString")
 local Log = TSM.Include("Util.Log")
 local TempTable = TSM.Include("Util.TempTable")
 local Theme = TSM.Include("Util.Theme")
-local Event = TSM.Include("Util.Event")
-local Delay = TSM.Include("Util.Delay")
+local TextureAtlas = TSM.Include("Util.TextureAtlas")
+local Reactive = TSM.Include("Util.Reactive")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local Conversions = TSM.Include("Service.Conversions")
 local Settings = TSM.Include("Service.Settings")
 local UIElements = TSM.Include("UI.UIElements")
+local UIManager = TSM.Include("UI.UIManager")
 local private = {
-	enterWorldTime = nil,
+	manager = nil,
 	settings = nil,
-	fsm = nil,
 	query = nil,
 }
 local MIN_FRAME_SIZE = { width = 280, height = 280 }
+local CONVERSION_METHODS = {
+	Conversions.METHOD.PROSPECT,
+	Conversions.METHOD.MILL,
+}
+local STATE_SCHEMA = Reactive.CreateStateSchema()
+	:AddOptionalTableField("combineFuture")
+	:AddOptionalTableField("destroyFuture")
+	:AddOptionalTableField("frame")
+	:AddBooleanField("canCombine", false)
+	:AddBooleanField("canDestroy", false)
+	:AddBooleanField("autoShow", false)
+	:AddBooleanField("autoCombine", false)
+	:AddBooleanField("didAutoShow", false)
+	:Commit()
 
 
 
@@ -33,25 +46,124 @@ local MIN_FRAME_SIZE = { width = 280, height = 280 }
 -- Module Functions
 -- ============================================================================
 
-function DestroyingUI.OnInitialize()
-	Event.Register("PLAYER_ENTERING_WORLD", function()
-		private.enterWorldTime = GetTime()
-	end)
+function DestroyingUI.OnEnable()
 	private.settings = Settings.NewView()
 		:AddKey("global", "destroyingUIContext", "frame")
 		:AddKey("global", "destroyingUIContext", "itemsScrollingTable")
 		:AddKey("global", "destroyingOptions", "autoShow")
 		:AddKey("global", "destroyingOptions", "autoStack")
-	private.FSMCreate()
+
+	local state = STATE_SCHEMA:CreateState()
+	private.manager = UIManager.Create(state, private.ActionHandler)
+
+	-- Setup publisher to set state.canCombine
+	private.manager:SetStateFromPublisher("canCombine", TSM.Destroying.CanCombinePublisher())
+
+	-- Create query and setup publisher for state.canDestroy
+	private.query = TSM.Destroying.CreateBagQuery()
+	private.manager:SetStateFromPublisher("canDestroy", private.query:Publisher()
+		:MapToValue(private.query)
+		:MapWithMethod("Count")
+		:MapBooleanNotEquals(0)
+	)
+
+	-- Setup publishers to set state.autoShow/autoCombine from settings
+	private.manager:SetStateFromPublisher("autoCombine", private.settings:PublisherForKey("autoStack"))
+	private.manager:SetStateFromPublisher("autoShow", private.settings:PublisherForKey("autoShow"))
+
+	-- Publisher for when we have something to combine/destory
+	private.manager:ProcessActionFromPublisher("ACTION_CAN_COMBINE_OR_DESTROY", state:Publisher()
+		:IgnoreDuplicatesWithKeys("canDestroy", "canCombine", "autoShow", "didAutoShow")
+		:IgnoreWithFunction(private.StateToShouldShow)
+	)
+
+	-- Publisher for when we don't have anything to combine/destory
+	private.manager:ProcessActionFromPublisher("ACTION_CAN_NOT_COMBINE_OR_DESTROY", state:Publisher()
+		:IgnoreDuplicatesWithKeys("canDestroy", "canCombine")
+		:IgnoreWithFunction(private.StateToShouldHide)
+	)
 end
 
 function DestroyingUI.OnDisable()
-	-- hide the frame
-	private.fsm:ProcessEvent("EV_FRAME_HIDE")
+	private.manager:ProcessAction("ACTION_ON_DISABLE")
 end
 
 function DestroyingUI.Toggle()
-	private.fsm:ProcessEvent("EV_FRAME_TOGGLE")
+	private.manager:ProcessAction("ACTION_TOGGLE")
+end
+
+
+
+-- ============================================================================
+-- Action Handler
+-- ============================================================================
+
+function private.ActionHandler(state, action)
+	Log.Info("Handling action %s", action)
+	if action == "ACTION_FRAME_SHOW" then
+		assert(not state.frame and (state.canCombine or state.canDestroy))
+		TSM.UI.AnalyticsRecordPathChange("destroying")
+		state.didAutoShow = true
+		state.frame = private.CreateMainFrame(state)
+		state.frame:Show()
+		state.frame:Draw()
+		private.ItemsOnSelectionChanged(state.frame:GetElement("content.items"))
+
+		if state.autoCombine then
+			-- We should auto-combine first
+			return "ACTION_COMBINE_START"
+		end
+	elseif action == "ACTION_FRAME_ON_HIDE" then
+		TSM.UI.AnalyticsRecordClose("destroying")
+		assert(state.frame)
+		if state.combineFuture then
+			state.combineFuture:Cancel()
+			state.combineFuture = nil
+		end
+		if state.destroyFuture then
+			state.destroyFuture:Cancel()
+			state.destroyFuture = nil
+		end
+		state.frame:Hide()
+		state.frame:Release()
+		state.frame = nil
+	elseif action == "ACTION_COMBINE_START" then
+		assert(not state.combineFuture)
+		local future = TSM.Destroying.StartCombine()
+		future:SetScript("OnDone", private.CombineFutureOnDone)
+		state.combineFuture = future
+	elseif action == "ACTION_COMBINE_DONE" then
+		-- Don't care what the result was
+		state.combineFuture:GetValue()
+		state.combineFuture = nil
+	elseif action == "ACTION_DESTROY_START" then
+		assert(not state.destroyFuture)
+		local future = TSM.Destroying.StartDestroy(state.frame:GetElement("content.destroyBtn"), state.frame:GetElement("content.items"):GetSelection())
+		future:SetScript("OnDone", private.DestroyFutureOnDone)
+		state.destroyFuture = future
+	elseif action == "ACTION_DESTROY_DONE" then
+		-- Don't care what the result was
+		state.destroyFuture:GetValue()
+		state.destroyFuture = nil
+	elseif action == "ACTION_TOGGLE" then
+		if state.frame then
+			state.frame:Hide()
+		elseif state.canCombine or state.canDestroy then
+			return "ACTION_FRAME_SHOW"
+		end
+	elseif action == "ACTION_ON_DISABLE" or action == "ACTION_CAN_NOT_COMBINE_OR_DESTROY" then
+		if not state.frame then
+			return
+		end
+		state.frame:Hide()
+	elseif action == "ACTION_CAN_COMBINE_OR_DESTROY" then
+		if state.frame then
+			return
+		end
+		return "ACTION_FRAME_SHOW"
+	else
+		error("Unknown action: "..tostring(action))
+	end
 end
 
 
@@ -60,8 +172,7 @@ end
 -- Main Frame
 -- ============================================================================
 
-function private.CreateMainFrame()
-	TSM.UI.AnalyticsRecordPathChange("destroying")
+function private.CreateMainFrame(state)
 	local frame = UIElements.New("ApplicationFrame", "base")
 		:SetParent(UIParent)
 		:SetSettingsContext(private.settings, "frame")
@@ -92,12 +203,12 @@ function private.CreateMainFrame()
 						:SetFont("ITEM_BODY2")
 					)
 				)
-				-- draw a line along the bottom to hide the rounded corners at the bottom of the header frame
+				-- Draw a line along the bottom to hide the rounded corners at the bottom of the header frame
 				:AddChildNoLayout(UIElements.New("Texture", "line")
 					:AddAnchor("BOTTOMLEFT", "header")
 					:AddAnchor("BOTTOMRIGHT", "header")
 					:SetHeight(4)
-					:SetTexture("FRAME_BG")
+					:SetColor("FRAME_BG")
 				)
 				:AddChild(UIElements.New("Frame", "container")
 					:SetLayout("VERTICAL")
@@ -135,25 +246,40 @@ function private.CreateMainFrame()
 				:SetQuery(private.query)
 				:SetScript("OnSelectionChanged", private.ItemsOnSelectionChanged)
 			)
-			:AddChild(UIElements.New("Texture", "lineBottom")
-				:SetHeight(2)
-				:SetTexture("ACTIVE_BG")
-			)
+			:AddChild(TSM.UI.Views.Line.NewHorizontal("lineBottom"))
 			:AddChild(UIElements.New("ActionButton", "combineBtn")
 				:SetHeight(26)
 				:SetMargin(12, 12, 12, 0)
-				:SetText(L["Combine Partial Stacks"])
+				:SetTextPublisher(state:PublisherForKeyChange("combineFuture")
+					:MapToBoolean()
+					:MapBooleanWithValues(L["Combining..."], L["Combine Partial Stacks"])
+				)
+				:SetDisabledPublisher(state:Publisher()
+					:IgnoreDuplicatesWithKeys("canCombine", "combineFuture", "destroyFuture")
+					:MapWithFunction(private.StateToCombineDisabled)
+				)
+				:SetPressedPublisher(state:PublisherForKeyChange("combineFuture")
+					:MapToBoolean()
+				)
 				:SetScript("OnClick", private.CombineButtonOnClick)
 			)
 			:AddChild(UIElements.NewNamed("SecureMacroActionButton", "destroyBtn", "TSMDestroyBtn")
 				:SetHeight(26)
 				:SetMargin(12, 12, 8, 12)
-				:SetText(L["Destroy Next"])
+				:SetTextPublisher(state:PublisherForKeyChange("destroyFuture")
+					:MapToBoolean()
+					:MapBooleanWithValues(L["Destroying..."], L["Destroy Next"])
+				)
+				:SetDisabledPublisher(state:Publisher()
+					:IgnoreDuplicatesWithKeys("canDestroy", "combineFuture", "destroyFuture")
+					:MapWithFunction(private.StateToDestroyDisabled)
+				)
+				:SetPressedPublisher(state:PublisherForKeyChange("destroyFuture")
+					:MapToBoolean()
+				)
 				:SetScript("PreClick", private.DestroyButtonPreClick)
 			)
 		)
-	frame:GetElement("titleFrame.closeBtn"):SetScript("OnClick", private.CloseButtonOnClick)
-		:Draw()
 	return frame
 end
 
@@ -164,22 +290,21 @@ end
 -- ============================================================================
 
 function private.FrameOnHide()
-	TSM.UI.AnalyticsRecordClose("destroying")
-	private.fsm:ProcessEvent("EV_FRAME_TOGGLE")
+	private.manager:ProcessAction("ACTION_FRAME_ON_HIDE")
 end
 
-function private.GetHideIcon(self, data, iconIndex, isMouseOver)
+function private.GetHideIcon(_, data, iconIndex, isMouseOver)
 	assert(iconIndex == 1)
 	-- TODO: needs a new texture for the icon
-	return true, isMouseOver and TSM.UI.TexturePacks.GetColoredKey("iconPack.12x12/Hide", "TEXT_ALT") or "iconPack.12x12/Hide", true, L["Click to hide this item for the current session. Hold shift to hide this item permanently."]
+	return true, isMouseOver and TextureAtlas.GetColoredKey("iconPack.12x12/Hide", "TEXT_ALT") or "iconPack.12x12/Hide", true, L["Click to hide this item for the current session. Hold shift to hide this item permanently."]
 end
 
-function private.OnHideIconClick(self, data, iconIndex, mouseButton)
+function private.OnHideIconClick(scrollingTable, data, iconIndex, mouseButton)
 	assert(iconIndex == 1)
 	if mouseButton ~= "LeftButton" then
 		return
 	end
-	local row = self._query:GetResultRowByUUID(data)
+	local row = scrollingTable._query:GetResultRowByUUID(data)
 	local itemString = row:GetField("itemString")
 	if IsShiftKeyDown() then
 		Log.PrintfUser(L["Destroying will ignore %s permanently. You can remove it from the ignored list in the settings."], ItemInfo.GetName(itemString))
@@ -188,64 +313,17 @@ function private.OnHideIconClick(self, data, iconIndex, mouseButton)
 		Log.PrintfUser(L["Destroying will ignore %s until you log out."], ItemInfo.GetName(itemString))
 		TSM.Destroying.IgnoreItemSession(itemString)
 	end
-	if self._query:Count() == 0 then
-		private.fsm:ProcessEvent("EV_FRAME_TOGGLE")
-	end
 end
 
-function private.GetDestroyInfo(itemString)
-	local classId = ItemInfo.GetClassId(itemString)
-	local quality = ItemInfo.GetQuality(itemString)
-	local itemLevel = not TSM.IsWowClassic() and ItemInfo.GetItemLevel(itemString) or ItemInfo.GetItemLevel(ItemString.GetBase(itemString))
-	local expansion = not TSM.IsWowClassic() and ItemInfo.GetExpansion(itemString) or nil
-	local info = TempTable.Acquire()
-	local targetItems = TempTable.Acquire()
-	for targetItemString in DisenchantInfo.TargetItemIterator() do
-		local amountOfMats, matRate, minAmount, maxAmount = DisenchantInfo.GetTargetItemSourceInfo(targetItemString, classId, quality, itemLevel, expansion)
-		if amountOfMats then
-			local name = ItemInfo.GetName(targetItemString)
-			local color = ItemInfo.GetQualityColor(targetItemString)
-			if name and color then
-				matRate = matRate and matRate * 100
-				matRate = matRate and matRate.."% " or ""
-				local range = (minAmount and maxAmount) and Theme.GetFeedbackColor("YELLOW"):ColorText(minAmount ~= maxAmount and (" ["..minAmount.."-"..maxAmount.."]") or (" ["..minAmount.."]")) or ""
-				tinsert(info, color..matRate..name.." x"..amountOfMats.."|r"..range)
-				tinsert(targetItems, targetItemString)
-			end
-		end
-	end
-	for targetItemString, amountOfMats, matRate, minAmount, maxAmount in Conversions.TargetItemsByMethodIterator(itemString, Conversions.METHOD.PROSPECT) do
-		local name = ItemInfo.GetName(targetItemString)
-		local color = ItemInfo.GetQualityColor(targetItemString)
-		if name and color then
-			matRate = matRate and matRate * 100
-			matRate = matRate and matRate.."% " or ""
-			local range = (minAmount and maxAmount) and Theme.GetFeedbackColor("YELLOW"):ColorText(minAmount ~= maxAmount and (" ["..minAmount.."-"..maxAmount.."]") or (" ["..minAmount.."]")) or ""
-			tinsert(info, color..matRate..name.." x"..amountOfMats.."|r"..range)
-			tinsert(targetItems, targetItemString)
-		end
-	end
-	for targetItemString, amountOfMats, matRate, minAmount, maxAmount in Conversions.TargetItemsByMethodIterator(itemString, Conversions.METHOD.MILL) do
-		local name = ItemInfo.GetName(targetItemString)
-		local color = ItemInfo.GetQualityColor(targetItemString)
-		if name and color then
-			matRate = matRate and matRate * 100
-			matRate = matRate and matRate.."% " or ""
-			local range = (minAmount and maxAmount) and Theme.GetFeedbackColor("YELLOW"):ColorText(minAmount ~= maxAmount and (" ["..minAmount.."-"..maxAmount.."]") or (" ["..minAmount.."]")) or ""
-			tinsert(info, color..matRate..name.." x"..amountOfMats.."|r"..range)
-			tinsert(targetItems, targetItemString)
-		end
-	end
-	return info, targetItems
-end
-
-function private.ItemsOnSelectionChanged(self)
-	if not self:GetSelection() then
-		return
+function private.ItemsOnSelectionChanged(scrollingTable)
+	if not scrollingTable:GetSelection() then
+		-- select the first row
+		local result = private.query:GetFirstResult()
+		return scrollingTable:SetSelection(result and result:GetUUID() or nil)
 	end
 
-	local itemString = self:GetSelection():GetField("itemString")
-	local itemFrame = self:GetElement("__parent.item")
+	local itemString = scrollingTable:GetSelection():GetField("itemString")
+	local itemFrame = scrollingTable:GetElement("__parent.item")
 	itemFrame:GetElement("header.icon")
 		:SetBackground(ItemInfo.GetTexture(itemString))
 		:SetTooltip(itemString)
@@ -269,191 +347,77 @@ function private.ItemsOnSelectionChanged(self)
 	itemFrame:Draw()
 end
 
-function private.CloseButtonOnClick(button)
-	private.fsm:ProcessEvent("EV_FRAME_TOGGLE")
-end
-
 function private.CombineButtonOnClick(button)
-	button:SetPressed(true)
-	button:Draw()
-	private.fsm:ProcessEvent("EV_COMBINE_BUTTON_CLICKED")
+	private.manager:ProcessAction("ACTION_COMBINE_START")
 end
 
 function private.DestroyButtonPreClick(button)
-	button:SetPressed(true)
-	button:Draw()
-	private.fsm:ProcessEvent("EV_DESTROY_BUTTON_PRE_CLICK")
+	private.manager:ProcessAction("ACTION_DESTROY_START")
 end
 
 
 
 -- ============================================================================
--- FSM
+-- Private Helper Functions
 -- ============================================================================
 
-function private.FSMCreate()
-	TSM.Destroying.SetBagUpdateCallback(private.FSMBagUpdate)
-	local fsmContext = {
-		frame = nil,
-		combineFuture = nil,
-		destroyFuture = nil,
-		didShowOnce = false,
-		didAutoCombine = false,
-	}
-	local function UpdateDestroyingFrame(context, noDraw)
-		if not context.frame then
-			return
-		end
-
-		local combineBtn = context.frame:GetElement("content.combineBtn")
-		combineBtn:SetText(context.combineFuture and L["Combining..."] or L["Combine Partial Stacks"])
-		combineBtn:SetDisabled(context.combineFuture or context.destroyFuture or not TSM.Destroying.CanCombine())
-		local destroyBtn = context.frame:GetElement("content.destroyBtn")
-		destroyBtn:SetText(context.destroyFuture and L["Destroying..."] or L["Destroy Next"])
-		destroyBtn:SetDisabled(context.combineFuture or context.destroyFuture or private.query:Count() == 0)
-		if not noDraw then
-			context.frame:Draw()
+function private.GetDestroyInfo(itemString)
+	local classId = ItemInfo.GetClassId(itemString)
+	local quality = ItemInfo.GetQuality(itemString)
+	local itemLevel = not TSM.IsWowClassic() and ItemInfo.GetItemLevel(itemString) or ItemInfo.GetItemLevel(ItemString.GetBase(itemString))
+	local expansion = not TSM.IsWowClassic() and ItemInfo.GetExpansion(itemString) or nil
+	local info = TempTable.Acquire()
+	local targetItems = TempTable.Acquire()
+	for targetItemString in DisenchantInfo.TargetItemIterator() do
+		local amountOfMats, matRate, minAmount, maxAmount = DisenchantInfo.GetTargetItemSourceInfo(targetItemString, classId, quality, itemLevel, expansion)
+		if amountOfMats then
+			local name = ItemInfo.GetName(targetItemString)
+			local color = ItemInfo.GetQualityColor(targetItemString)
+			if name and color then
+				matRate = matRate and matRate * 100
+				matRate = matRate and matRate.."% " or ""
+				local range = (minAmount and maxAmount) and Theme.GetColor("FEEDBACK_YELLOW"):ColorText(minAmount ~= maxAmount and (" ["..minAmount.."-"..maxAmount.."]") or (" ["..minAmount.."]")) or ""
+				tinsert(info, color..matRate..name.." x"..amountOfMats.."|r"..range)
+				tinsert(targetItems, targetItemString)
+			end
 		end
 	end
-	private.fsm = FSM.New("DESTROYING")
-		:AddState(FSM.NewState("ST_FRAME_CLOSED")
-			:SetOnEnter(function(context)
-				if context.frame then
-					context.frame:Hide()
-					context.frame:Release()
-					context.frame = nil
-				end
-				if context.combineFuture then
-					context.combineFuture:Cancel()
-					context.combineFuture = nil
-				end
-				if context.destroyFuture then
-					context.destroyFuture:Cancel()
-					context.destroyFuture = nil
-				end
-				context.didAutoCombine = false
-			end)
-			:AddTransition("ST_FRAME_OPENING")
-			:AddEventTransition("EV_FRAME_TOGGLE", "ST_FRAME_OPENING")
-			:AddEvent("EV_BAG_UPDATE", function(context)
-				if not context.didShowOnce and private.settings.autoShow then
-					return "ST_FRAME_OPENING"
-				end
-			end)
-		)
-		:AddState(FSM.NewState("ST_FRAME_OPENING")
-			:SetOnEnter(function(context)
-				private.query = private.query or TSM.Destroying.CreateBagQuery()
-				private.query:ResetOrderBy()
-				private.query:OrderBy("name", true)
-				if (not private.settings.autoStack or not TSM.Destroying.CanCombine()) and private.query:Count() == 0 then
-					-- nothing to destroy or combine, so bail
-					return "ST_FRAME_CLOSED"
-				end
-				context.didShowOnce = true
-				context.frame = private.CreateMainFrame()
-				context.frame:Show()
-				private.ItemsOnSelectionChanged(context.frame:GetElement("content.items"))
-				return "ST_FRAME_OPEN"
-			end)
-			:AddTransition("ST_FRAME_OPEN")
-			:AddTransition("ST_FRAME_CLOSED")
-		)
-		:AddState(FSM.NewState("ST_FRAME_OPEN")
-			:SetOnEnter(function(context)
-				UpdateDestroyingFrame(context)
-				if not context.frame:GetElement("content.items"):GetSelection() then
-					-- select the first row
-					local result = private.query:GetFirstResult()
-					context.frame:GetElement("content.items"):SetSelection(result and result:GetUUID() or nil)
-				end
-				if private.settings.autoStack and not context.didAutoCombine and TSM.Destroying.CanCombine() then
-					context.didAutoCombine = true
-					context.frame:GetElement("content.combineBtn")
-						:SetPressed(true)
-						:Draw()
-					return "ST_COMBINING_STACKS"
-				elseif not TSM.Destroying.CanCombine() and private.query:Count() == 0 then
-					-- nothing left to destroy or combine
-					return "ST_FRAME_CLOSED"
-				end
-				context.didAutoCombine = true
-			end)
-			:AddTransition("ST_FRAME_OPEN")
-			:AddTransition("ST_COMBINING_STACKS")
-			:AddTransition("ST_DESTROYING")
-			:AddTransition("ST_FRAME_CLOSED")
-			:AddEventTransition("EV_COMBINE_BUTTON_CLICKED", "ST_COMBINING_STACKS")
-			:AddEventTransition("EV_DESTROY_BUTTON_PRE_CLICK", "ST_DESTROYING")
-			:AddEventTransition("EV_BAG_UPDATE", "ST_FRAME_OPEN")
-			:AddEventTransition("EV_FRAME_HIDE", "ST_FRAME_CLOSED")
-		)
-		:AddState(FSM.NewState("ST_COMBINING_STACKS")
-			:SetOnEnter(function(context)
-				assert(not context.combineFuture)
-				context.combineFuture = TSM.Destroying.StartCombine()
-				context.combineFuture:SetScript("OnDone", private.FSMCombineFutureOnDone)
-				UpdateDestroyingFrame(context, true)
-			end)
-			:AddTransition("ST_COMBINING_DONE")
-			:AddTransition("ST_FRAME_CLOSED")
-			:AddEventTransition("EV_COMBINE_DONE", "ST_COMBINING_DONE")
-			:AddEventTransition("EV_FRAME_HIDE", "ST_FRAME_CLOSED")
-		)
-		:AddState(FSM.NewState("ST_COMBINING_DONE")
-			:SetOnEnter(function(context)
-				-- don't care what the result was
-				context.combineFuture:GetValue()
-				context.combineFuture = nil
-				context.frame:GetElement("content.combineBtn")
-					:SetPressed(false)
-					:Draw()
-				return "ST_FRAME_OPEN"
-			end)
-			:AddTransition("ST_FRAME_OPEN")
-		)
-		:AddState(FSM.NewState("ST_DESTROYING")
-			:SetOnEnter(function(context)
-				assert(not context.destroyFuture)
-				context.destroyFuture = TSM.Destroying.StartDestroy(context.frame:GetElement("content.destroyBtn"), context.frame:GetElement("content.items"):GetSelection())
-				context.destroyFuture:SetScript("OnDone", private.FSMDestroyFutureOnDone)
-				UpdateDestroyingFrame(context, true)
-			end)
-			:AddTransition("ST_DESTROYING_DONE")
-			:AddTransition("ST_FRAME_CLOSED")
-			:AddEventTransition("EV_DESTROY_DONE", "ST_DESTROYING_DONE")
-			:AddEventTransition("EV_FRAME_HIDE", "ST_FRAME_CLOSED")
-		)
-		:AddState(FSM.NewState("ST_DESTROYING_DONE")
-			:SetOnEnter(function(context)
-				-- don't care what the result was
-				context.destroyFuture:GetValue()
-				context.destroyFuture = nil
-				context.isDestroying = false
-				context.frame:GetElement("content.destroyBtn")
-					:SetPressed(false)
-					:Draw()
-				return "ST_FRAME_OPEN"
-			end)
-			:AddTransition("ST_FRAME_OPEN")
-		)
-		:AddDefaultEventTransition("EV_FRAME_TOGGLE", "ST_FRAME_CLOSED")
-		:Init("ST_FRAME_CLOSED", fsmContext)
-end
-
-function private.FSMBagUpdate()
-	if not private.enterWorldTime or private.enterWorldTime == GetTime() then
-		-- delay for another frame as wow closes special frames in its PLAYER_ENTERING_WORLD handler
-		Delay.AfterTime("DESTROYING_BAG_UPDATE_DELAY", 0, private.FSMBagUpdate)
-		return
+	for _, method in ipairs(CONVERSION_METHODS) do
+		for targetItemString, amountOfMats, matRate, minAmount, maxAmount in Conversions.TargetItemsByMethodIterator(itemString, method) do
+			local name = ItemInfo.GetName(targetItemString)
+			local color = ItemInfo.GetQualityColor(targetItemString)
+			if name and color then
+				matRate = matRate and matRate * 100
+				matRate = matRate and matRate.."% " or ""
+				local range = (minAmount and maxAmount) and Theme.GetColor("FEEDBACK_YELLOW"):ColorText(minAmount ~= maxAmount and (" ["..minAmount.."-"..maxAmount.."]") or (" ["..minAmount.."]")) or ""
+				tinsert(info, color..matRate..name.." x"..amountOfMats.."|r"..range)
+				tinsert(targetItems, targetItemString)
+			end
+		end
 	end
-	private.fsm:ProcessEvent("EV_BAG_UPDATE")
+	return info, targetItems
 end
 
-function private.FSMCombineFutureOnDone()
-	private.fsm:ProcessEvent("EV_COMBINE_DONE")
+function private.StateToCombineDisabled(state)
+	return state.combineFuture or state.destroyFuture or not state.canCombine
 end
 
-function private.FSMDestroyFutureOnDone()
-	private.fsm:ProcessEvent("EV_DESTROY_DONE")
+function private.StateToDestroyDisabled(state)
+	return state.combineFuture or state.destroyFuture or not state.canDestroy
+end
+
+function private.StateToShouldShow(state)
+	return state.autoShow and not state.didAutoShow and (state.canDestroy or state.canCombine)
+end
+
+function private.StateToShouldHide(state)
+	return not state.canDestroy and not state.canCombine
+end
+
+function private.CombineFutureOnDone()
+	private.manager:ProcessAction("ACTION_COMBINE_DONE")
+end
+
+function private.DestroyFutureOnDone()
+	private.manager:ProcessAction("ACTION_DESTROY_DONE")
 end

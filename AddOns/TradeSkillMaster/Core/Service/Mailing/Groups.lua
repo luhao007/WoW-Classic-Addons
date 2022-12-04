@@ -9,7 +9,6 @@ local Groups = TSM.Mailing:NewPackage("Groups")
 local L = TSM.Include("Locale").GetTable()
 local Log = TSM.Include("Util.Log")
 local Threading = TSM.Include("Service.Threading")
-local Inventory = TSM.Include("Service.Inventory")
 local PlayerInfo = TSM.Include("Service.PlayerInfo")
 local BagTracking = TSM.Include("Service.BagTracking")
 local private = {
@@ -62,7 +61,7 @@ function private.GroupsMailThread(groupList, sendRepeat, isDryRun)
 							keep[itemString] = max(keep[itemString] or 0, operationSettings.keepQty)
 							numMailable[itemString] = numMailable[itemString] or BagTracking.GetNumMailable(itemString)
 							local numAvailable = numMailable[itemString] - used[itemString] - keep[itemString]
-							local quantity = private.GetItemQuantity(itemString, numAvailable, operationSettings)
+							local quantity = TSM.Operations.Mailing.GetNumToSend(itemString, numAvailable)
 							assert(quantity >= 0)
 							if PlayerInfo.IsPlayer(target) then
 								keep[itemString] = max(keep[itemString], quantity)
@@ -115,47 +114,4 @@ end
 
 function private.SendCallback()
 	private.sendDone = true
-end
-
-function private.GetItemQuantity(itemString, numAvailable, operationSettings)
-	if numAvailable <= 0 then
-		return 0
-	end
-	local numToSend = 0
-	local isTargetPlayer = PlayerInfo.IsPlayer(operationSettings.target)
-	if operationSettings.maxQtyEnabled then
-		if operationSettings.restock then
-			local targetQty = private.GetTargetQuantity(operationSettings.target, itemString, operationSettings.restockSources)
-			if isTargetPlayer and targetQty <= operationSettings.maxQty then
-				numToSend = numAvailable
-			else
-				numToSend = min(numAvailable, operationSettings.maxQty - targetQty)
-			end
-			if isTargetPlayer then
-				numToSend = numAvailable - (targetQty - operationSettings.maxQty)
-			end
-		else
-			numToSend = min(numAvailable, operationSettings.maxQty)
-		end
-	elseif not isTargetPlayer then
-		numToSend = numAvailable
-	end
-	return max(numToSend, 0)
-end
-
-function private.GetTargetQuantity(player, itemString, sources)
-	if player then
-		player = strtrim(strmatch(player, "^[^-]+"))
-	end
-	local num = Inventory.GetBagQuantity(itemString, player) + Inventory.GetMailQuantity(itemString, player) + Inventory.GetAuctionQuantity(itemString, player)
-	if sources then
-		if sources.guild then
-			num = num + Inventory.GetGuildQuantity(itemString, PlayerInfo.GetPlayerGuild(player))
-		end
-		if sources.bank then
-			num = num + Inventory.GetBankQuantity(itemString, player) + Inventory.GetReagentBankQuantity(itemString, player)
-		end
-	end
-
-	return num
 end

@@ -15,43 +15,43 @@ local private = {
 }
 local REASON_INFO = {
 	-- general
-	invalidItemGroup = { color = "RED", str = L["Item/Group is invalid (see chat)."] },
-	invalidSeller = { color = "RED", str = L["Invalid seller data returned by server."] },
+	invalidItemGroup = { color = "FEEDBACK_RED", str = L["Item/Group is invalid (see chat)."] },
+	invalidSeller = { color = "FEEDBACK_RED", str = L["Invalid seller data returned by server."] },
 	-- post scan
-	postDisabled = { color = "ORANGE", str = L["Posting disabled."] },
-	postNotEnough = { color = "ORANGE", str = L["Not enough items in bags."] },
-	postMaxExpires = { color = "ORANGE", str = L["Above max expires."] },
-	postBelowMin = { color = "ORANGE", str = L["Cheapest auction below min price."] },
-	postTooMany = { color = "BLUE", str = L["Maximum amount already posted."] },
-	postNormal = { color = "GREEN", str = L["Posting at normal price."] },
-	postResetMin = { color = "GREEN", str = L["Below min price. Posting at min."] },
-	postResetMax = { color = "GREEN", str = L["Below min price. Posting at max."] },
-	postResetNormal = { color = "GREEN", str = L["Below min price. Posting at normal."] },
-	postAboveMaxMin = { color = "GREEN", str = L["Above max price. Posting at min."] },
-	postAboveMaxMax = { color = "GREEN", str = L["Above max price. Posting at max."] },
-	postAboveMaxNormal = { color = "GREEN", str = L["Above max price. Posting at normal."] },
-	postAboveMaxNoPost = { color = "ORANGE", str = L["Above max price. Not posting."] },
-	postUndercut = { color = "GREEN", str = L["Undercutting competition."] },
-	postPlayer = { color = "GREEN", str = L["Posting at your current price."] },
-	postWhitelist = { color = "GREEN", str = L["Posting at whitelisted player's price."] },
-	postWhitelistNoPost = { color = "ORANGE", str = L["Lowest auction by whitelisted player."] },
-	postBlacklist = { color = "GREEN", str = L["Undercutting blacklisted player."] },
+	postDisabled = { color = "FEEDBACK_ORANGE", str = L["Posting disabled."] },
+	postNotEnough = { color = "FEEDBACK_ORANGE", str = L["Not enough items in bags."] },
+	postMaxExpires = { color = "FEEDBACK_ORANGE", str = L["Above max expires."] },
+	postBelowMin = { color = "FEEDBACK_ORANGE", str = L["Cheapest auction below min price."] },
+	postTooMany = { color = "FEEDBACK_BLUE", str = L["Maximum amount already posted."] },
+	postNormal = { color = "FEEDBACK_GREEN", str = L["Posting at normal price."] },
+	postResetMin = { color = "FEEDBACK_GREEN", str = L["Below min price. Posting at min."] },
+	postResetMax = { color = "FEEDBACK_GREEN", str = L["Below min price. Posting at max."] },
+	postResetNormal = { color = "FEEDBACK_GREEN", str = L["Below min price. Posting at normal."] },
+	postAboveMaxMin = { color = "FEEDBACK_GREEN", str = L["Above max price. Posting at min."] },
+	postAboveMaxMax = { color = "FEEDBACK_GREEN", str = L["Above max price. Posting at max."] },
+	postAboveMaxNormal = { color = "FEEDBACK_GREEN", str = L["Above max price. Posting at normal."] },
+	postAboveMaxNoPost = { color = "FEEDBACK_ORANGE", str = L["Above max price. Not posting."] },
+	postUndercut = { color = "FEEDBACK_GREEN", str = L["Undercutting competition."] },
+	postPlayer = { color = "FEEDBACK_GREEN", str = L["Posting at your current price."] },
+	postWhitelist = { color = "FEEDBACK_GREEN", str = L["Posting at whitelisted player's price."] },
+	postWhitelistNoPost = { color = "FEEDBACK_ORANGE", str = L["Lowest auction by whitelisted player."] },
+	postBlacklist = { color = "FEEDBACK_GREEN", str = L["Undercutting blacklisted player."] },
 	-- cancel scan
-	cancelDisabled = { color = "ORANGE", str = L["Canceling disabled."] },
-	cancelNotUndercut = { color = "GREEN", str = L["Your auction has not been undercut."] },
-	cancelBid = { color = "BLUE", str = L["Auction has been bid on."] },
-	cancelNoMoney = { color = "BLUE", str = L["Not enough money to cancel."] },
-	cancelKeepPosted = { color = "BLUE", str = L["Keeping undercut auctions posted."] },
-	cancelBelowMin = { color = "ORANGE", str = L["Not canceling auction below min price."] },
-	cancelAtReset = { color = "GREEN", str = L["Not canceling auction at reset price."] },
-	cancelAtNormal = { color = "GREEN", str = L["At normal price and not undercut."] },
-	cancelAtAboveMax = { color = "GREEN", str = L["At above max price and not undercut."] },
-	cancelAtWhitelist = { color = "GREEN", str = L["Posted at whitelisted player's price."] },
-	cancelUndercut = { color = "RED", str = L["You've been undercut."] },
-	cancelRepost = { color = "BLUE", str = L["Canceling to repost at higher price."] },
-	cancelReset = { color = "BLUE", str = L["Canceling to repost at reset price."] },
-	cancelWhitelistUndercut = { color = "RED", str = L["Undercut by whitelisted player."] },
-	cancelPlayerUndercut = { color = "BLUE", str = L["Canceling auction you've undercut."] },
+	cancelDisabled = { color = "FEEDBACK_ORANGE", str = L["Canceling disabled."] },
+	cancelNotUndercut = { color = "FEEDBACK_GREEN", str = L["Your auction has not been undercut."] },
+	cancelBid = { color = "FEEDBACK_BLUE", str = L["Auction has been bid on."] },
+	cancelNoMoney = { color = "FEEDBACK_BLUE", str = L["Not enough money to cancel."] },
+	cancelKeepPosted = { color = "FEEDBACK_BLUE", str = L["Keeping undercut auctions posted."] },
+	cancelBelowMin = { color = "FEEDBACK_ORANGE", str = L["Not canceling auction below min price."] },
+	cancelAtReset = { color = "FEEDBACK_GREEN", str = L["Not canceling auction at reset price."] },
+	cancelAtNormal = { color = "FEEDBACK_GREEN", str = L["At normal price and not undercut."] },
+	cancelAtAboveMax = { color = "FEEDBACK_GREEN", str = L["At above max price and not undercut."] },
+	cancelAtWhitelist = { color = "FEEDBACK_GREEN", str = L["Posted at whitelisted player's price."] },
+	cancelUndercut = { color = "FEEDBACK_RED", str = L["You've been undercut."] },
+	cancelRepost = { color = "FEEDBACK_BLUE", str = L["Canceling to repost at higher price."] },
+	cancelReset = { color = "FEEDBACK_BLUE", str = L["Canceling to repost at reset price."] },
+	cancelWhitelistUndercut = { color = "FEEDBACK_RED", str = L["Undercut by whitelisted player."] },
+	cancelPlayerUndercut = { color = "FEEDBACK_BLUE", str = L["Canceling auction you've undercut."] },
 }
 
 
@@ -120,15 +120,14 @@ function Log.AddEntry(itemString, operationName, reasonKey, seller, buyout, inde
 end
 
 function Log.GetColorFromReasonKey(reasonKey)
-	return Theme.GetFeedbackColor(REASON_INFO[reasonKey].color)
+	return REASON_INFO[reasonKey].color
 end
 
 function Log.GetInfoStr(row)
 	local state, reasonKey = row:GetFields("state", "reasonKey")
 	local reasonInfo = REASON_INFO[reasonKey]
-	local color = nil
 	if state == "PENDING" then
-		return Theme.GetFeedbackColor(reasonInfo.color):ColorText(reasonInfo.str)
+		return Theme.GetColor(reasonInfo.color):ColorText(reasonInfo.str)
 	elseif state == "POSTED" then
 		return Theme.GetColor("INDICATOR"):ColorText(L["Posted:"]).." "..reasonInfo.str
 	elseif state == "CANCELLED" then
@@ -138,5 +137,4 @@ function Log.GetInfoStr(row)
 	else
 		error("Invalid state: "..tostring(state))
 	end
-	return color:ColorText(reasonInfo.str)
 end

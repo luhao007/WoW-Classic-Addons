@@ -9,7 +9,12 @@ local Shopping = TSM.Operations:NewPackage("Shopping")
 local private = {}
 local L = TSM.Include("Locale").GetTable()
 local CustomPrice = TSM.Include("Service.CustomPrice")
-local Inventory = TSM.Include("Service.Inventory")
+local BagTracking = TSM.Include("Service.BagTracking")
+local GuildTracking = TSM.Include("Service.GuildTracking")
+local MailTracking = TSM.Include("Service.MailTracking")
+local AltTracking = TSM.Include("Service.AltTracking")
+local AuctionTracking = TSM.Include("Service.AuctionTracking")
+local Settings = TSM.Include("Service.Settings")
 local OPERATION_INFO = {
 	restockQuantity = { type = "string", default = "0" },
 	maxPrice = { type = "string", default = "dbmarket" },
@@ -82,19 +87,31 @@ function Shopping.ValidAndGetRestockQuantity(itemString)
 	end
 	if restockQuantity > 0 then
 		-- include mail and bags
-		local numHave = Inventory.GetBagQuantity(itemString) + Inventory.GetMailQuantity(itemString)
+		local numHave = MailTracking.GetQuantity(itemString)
 		if operationSettings.restockSources.bank then
-			numHave = numHave + Inventory.GetBankQuantity(itemString) + Inventory.GetReagentBankQuantity(itemString)
+			numHave = numHave + BagTracking.GetTotalQuantity(itemString)
+		else
+			numHave = numHave + BagTracking.GetBagQuantity(itemString)
 		end
 		if operationSettings.restockSources.guild then
-			numHave = numHave + Inventory.GetGuildQuantity(itemString)
+			numHave = numHave + GuildTracking.GetQuantity(itemString)
 		end
-		local _, numAlts, numAuctions = Inventory.GetPlayerTotals(itemString)
-		if operationSettings.restockSources.alts then
-			numHave = numHave + numAlts
-		end
-		if operationSettings.restockSources.auctions then
-			numHave = numHave + numAuctions
+		if operationSettings.restockSources.alts or operationSettings.restockSources.auctions then
+			local numAuctions = AuctionTracking.GetQuantity(itemString)
+			local numAlts = 0
+			for _, factionrealm, character in Settings.ConnectedFactionrealmAltCharacterIterator() do
+				numAlts = numAlts + AltTracking.GetBagQuantity(itemString, character, factionrealm)
+				numAlts = numAlts + AltTracking.GetBankQuantity(itemString, character, factionrealm)
+				numAlts = numAlts + AltTracking.GetReagentBankQuantity(itemString, character, factionrealm)
+				numAlts = numAlts + AltTracking.GetMailQuantity(itemString, character, factionrealm)
+				numAuctions = numAuctions + AltTracking.GetAuctionQuantity(itemString, character, factionrealm)
+			end
+			if operationSettings.restockSources.alts then
+				numHave = numHave + numAlts
+			end
+			if operationSettings.restockSources.auctions then
+				numHave = numHave + numAuctions
+			end
 		end
 		if numHave >= restockQuantity then
 			return false, nil

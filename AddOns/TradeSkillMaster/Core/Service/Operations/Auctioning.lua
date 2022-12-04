@@ -12,7 +12,6 @@ local TempTable = TSM.Include("Util.TempTable")
 local Money = TSM.Include("Util.Money")
 local OPERATION_INFO = {
 	-- general
-	blacklist = { type = "string", default = "" },
 	ignoreLowDuration = { type = "number", default = 0 },
 	-- post
 	postCap = { type = "string", default = "5" },
@@ -37,6 +36,7 @@ local OPERATION_VALUE_LIMITS = {
 	maxExpires = { min = 0, max = 50000 },
 }
 if TSM.IsWowClassic() then
+	OPERATION_INFO.blacklist = { type = "string", default = "" }
 	OPERATION_INFO.undercut.default = "1c"
 	OPERATION_INFO.matchStackSize = { type = "boolean", default = false }
 	OPERATION_INFO.stackSize = { type = "string", default = "1" }

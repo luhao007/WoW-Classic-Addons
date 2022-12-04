@@ -16,15 +16,16 @@ local private = {}
 local MACRO_NAME = "TSMMacro"
 local MACRO_ICON = TSM.IsWowClassic() and "INV_Misc_Flower_01" or "Achievement_Faction_GoldenLotus"
 local BINDING_NAME = "MACRO "..MACRO_NAME
-local BUTTON_MAPPING = {
-	["row1.myauctionsCheckbox"] = "TSMCancelAuctionBtn",
-	["row1.auctioningCheckbox"] = "TSMAuctioningBtn",
-	["row2.shoppingCheckbox"] = "TSMShoppingBuyoutBtn",
-	["row2.bidBuyConfirmBtn"] = "TSMBidBuyConfirmBtn",
-	["row3.sniperCheckbox"] = "TSMSniperBtn",
-	["row3.craftingCheckbox"] = "TSMCraftingBtn",
-	["row4.destroyingCheckbox"] = "TSMDestroyBtn",
-	["row4.vendoringCheckbox"] = "TSMVendoringSellAllButton",
+local buttonEvent = not TSM.IsWowClassic() and (GetCVarBool("ActionButtonUseKeyDown") and "1" or "0") or nil
+local BUTTON_INFO = {
+	["row1.myauctionsCheckbox"] = {name = "TSMCancelAuctionBtn"},
+	["row1.auctioningCheckbox"] = {name = "TSMAuctioningBtn"},
+	["row2.shoppingCheckbox"] = {name = "TSMShoppingBuyoutBtn"},
+	["row2.bidBuyConfirmBtn"] = {name = "TSMBidBuyConfirmBtn"},
+	["row3.sniperCheckbox"] = {name = "TSMSniperBtn"},
+	["row3.craftingCheckbox"] = {name = "TSMCraftingBtn"},
+	["row4.destroyingCheckbox"] = {name = "TSMDestroyBtn", button = not TSM.IsWowClassic() and "LeftButton "..buttonEvent or nil},
+	["row4.vendoringCheckbox"] = {name = "TSMVendoringSellAllButton"},
 }
 local CHARACTER_BINDING_SET = 2
 local MAX_MACRO_LENGTH = 255
@@ -194,9 +195,9 @@ function private.GetMacrosSettingsFrame()
 			)
 		)
 
-	for path, buttonName in pairs(BUTTON_MAPPING) do
+	for path, info in pairs(BUTTON_INFO) do
 		frame:GetElement("setup.content."..path)
-			:SetChecked(strfind(body, buttonName) and true or false)
+			:SetChecked(strfind(body, info.name) and true or false)
 	end
 	return frame
 end
@@ -222,9 +223,13 @@ function private.CreateButtonOnClick(button)
 	-- create the new macro
 	local scrollFrame = button:GetParentElement():GetParentElement():GetParentElement()
 	local lines = TempTable.Acquire()
-	for elementPath, buttonName in pairs(BUTTON_MAPPING) do
+	for elementPath, info in pairs(BUTTON_INFO) do
 		if scrollFrame:GetElement("setup.content."..elementPath):IsChecked() then
-			tinsert(lines, "/click "..buttonName)
+			if info.button then
+				tinsert(lines, "/click "..info.name.." "..info.button)
+			else
+				tinsert(lines, "/click "..info.name)
+			end
 		end
 	end
 	local macroText = table.concat(lines, "\n")

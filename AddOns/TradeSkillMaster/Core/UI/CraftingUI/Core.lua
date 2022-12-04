@@ -117,6 +117,10 @@ function private.CreateMainFrame()
 		:AddSwitchButton(private.SwitchBtnOnClick)
 		:SetScript("OnHide", private.BaseFrameOnHide)
 
+	frame:GetElement("content")
+		:SetPadding(0)
+		:SetBorderColor(nil)
+
 	for _, info in ipairs(private.topLevelPages) do
 		frame:AddNavButton(info.name, info.callback)
 	end

@@ -17,6 +17,7 @@ local ItemString = TSM.Include("Util.ItemString")
 local Theme = TSM.Include("Util.Theme")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local Settings = TSM.Include("Service.Settings")
+local CustomPrice = TSM.Include("Service.CustomPrice")
 local UIElements = TSM.Include("UI.UIElements")
 local private = {
 	settings = nil,
@@ -358,21 +359,21 @@ function private.CraftsGetCostItemValueText(costItemValue)
 	if Math.IsNan(costItemValue) then
 		return ""
 	end
-	return Money.ToString(costItemValue)
+	return Money.ToString(costItemValue, nil, "OPT_RETAIL_ROUND")
 end
 
 function private.CraftsGetProfitText(profit)
 	if Math.IsNan(profit) then
 		return ""
 	end
-	return Money.ToString(profit, (profit >= 0 and Theme.GetFeedbackColor("GREEN") or Theme.GetFeedbackColor("RED")):GetTextColorPrefix())
+	return Money.ToString(profit, (profit >= 0 and Theme.GetColor("FEEDBACK_GREEN") or Theme.GetColor("FEEDBACK_RED")):GetTextColorPrefix(), "OPT_RETAIL_ROUND")
 end
 
 function private.GetProfitPctText(profitPct)
 	if Math.IsNan(profitPct) then
 		return ""
 	end
-	local color = Theme.GetFeedbackColor(profitPct >= 0 and "GREEN" or "RED")
+	local color = Theme.GetColor(profitPct >= 0 and "FEEDBACK_GREEN" or "FEEDBACK_RED")
 	return color:ColorText(profitPct.."%") or ""
 end
 
@@ -391,7 +392,7 @@ function private.MatsGetPriceText(matCost)
 	if Math.IsNan(matCost) then
 		return ""
 	end
-	return Money.ToString(matCost)
+	return Money.ToString(matCost, nil, "OPT_RETAIL_ROUND")
 end
 
 function private.MatsGetNumText(totalQuantity)
@@ -445,100 +446,53 @@ end
 
 function private.MatsOnRowClick(scrollingTable, row)
 	local itemString = row:GetField("itemString")
-	local priceStr = private.settings.mats[itemString].customValue or private.settings.defaultMatCostMethod
-	scrollingTable:GetBaseElement():ShowDialogFrame(UIElements.New("Frame", "frame")
-		:SetLayout("VERTICAL")
-		:SetSize(478, 312)
-		:SetPadding(12)
-		:AddAnchor("CENTER")
-		:SetBackgroundColor("FRAME_BG", true)
-		:SetContext(itemString)
-		:AddChild(UIElements.New("Frame", "header")
+	local matInfo = private.settings.mats[itemString]
+	local priceStr = matInfo.customValue or private.settings.defaultMatCostMethod
+	scrollingTable:GetBaseElement():ShowDialogFrame(TSM.UI.Views.CustomStringDialog.New(priceStr, L["Material Cost"], private.MatPriceValidateFunc, nil, private.MatPriceDialogOnHide, itemString)
+		:AddChildBeforeById("input", UIElements.New("Frame", "item")
 			:SetLayout("HORIZONTAL")
-			:SetHeight(24)
-			:SetMargin(0, 0, -4, 10)
-			:AddChild(UIElements.New("Spacer", "spacer")
-				:SetWidth(20)
-			)
-			:AddChild(UIElements.New("Text", "title")
-				:SetJustifyH("CENTER")
-				:SetFont("BODY_BODY1_BOLD")
-				:SetText(L["Edit Material Price"])
-			)
-			:AddChild(UIElements.New("Button", "closeBtn")
-				:SetMargin(0, -4, 0, 0)
-				:SetBackgroundAndSize("iconPack.24x24/Close/Default")
-				:SetScript("OnClick", private.DialogCloseBtnOnClick)
-			)
-		)
-		:AddChild(UIElements.New("Frame", "item")
-			:SetLayout("HORIZONTAL")
+			:SetHeight(36)
 			:SetPadding(6)
 			:SetMargin(0, 0, 0, 10)
 			:SetBackgroundColor("PRIMARY_BG_ALT", true)
+			:SetContext(itemString)
 			:AddChild(UIElements.New("Button", "icon")
-				:SetSize(36, 36)
+				:SetWidth(24)
 				:SetMargin(0, 8, 0, 0)
 				:SetBackground(ItemInfo.GetTexture(itemString))
 				:SetTooltip(itemString)
 			)
 			:AddChild(UIElements.New("Text", "name")
-				:SetHeight(36)
+				:SetMargin(0, 8, 0, 0)
 				:SetFont("ITEM_BODY1")
 				:SetText(TSM.UI.GetColoredItemName(itemString))
 			)
-		)
-		:AddChild(UIElements.New("Text", "desc")
-			:SetHeight(20)
-			:SetMargin(0, 0, 0, 6)
-			:SetFont("BODY_BODY2_MEDIUM")
-			:SetText(L["Material Price"])
-		)
-		:AddChild(UIElements.New("MultiLineInput", "input")
-			:SetMargin(0, 0, 0, 12)
-			:SetBackgroundColor("PRIMARY_BG_ALT")
-			:SetFont("BODY_BODY2_MEDIUM")
-			:SetValidateFunc("CUSTOM_PRICE")
-			:SetValue(Money.ToString(priceStr) or priceStr)
-			:SetScript("OnValueChanged", private.MatPriceInputOnValueChanged)
-		)
-		:AddChild(UIElements.New("Frame", "buttons")
-			:SetLayout("HORIZONTAL")
-			:SetHeight(24)
 			:AddChild(UIElements.New("Button", "resetBtn")
 				:SetWidth("AUTO")
 				:SetFont("BODY_BODY3_MEDIUM")
-				:SetTextColor(private.settings.mats[itemString].customValue and "TEXT" or "TEXT_ALT")
-				:SetDisabled(not private.settings.mats[itemString].customValue)
+				:SetTextColor(matInfo.customValue and "TEXT" or "TEXT_ALT")
+				:SetDisabled(not matInfo.customValue)
 				:SetText(L["Reset to Default"])
 				:SetScript("OnClick", private.ResetButtonOnClick)
-			)
-			:AddChild(UIElements.New("Frame", "spacer"))
-			:AddChild(UIElements.New("ActionButton", "closeBtn")
-				:SetWidth(342)
-				:SetText(L["Save"])
-				:SetScript("OnClick", private.DialogCloseBtnOnClick)
 			)
 		)
 	)
 end
 
-function private.DialogCloseBtnOnClick(button)
-	button:GetBaseElement():HideDialog()
+function private.MatPriceValidateFunc(input, value)
+	local isValid, errMsg = CustomPrice.Validate(value)
+	if not isValid and value ~= "" then
+		return false, errMsg
+	end
+	return true
 end
 
-function private.MatPriceInputOnValueChanged(input)
-	local value = input:GetValue()
-	local itemString = input:GetParentElement():GetContext()
+function private.MatPriceDialogOnHide(value, itemString)
 	TSM.Crafting.SetMatCustomValue(itemString, value)
-	input:GetElement("__parent.buttons.resetBtn")
-		:SetTextColor("TEXT")
-		:SetDisabled(false)
-		:Draw()
 end
 
 function private.ResetButtonOnClick(button)
-	local itemString = button:GetParentElement():GetParentElement():GetContext()
+	local itemString = button:GetParentElement():GetContext()
 	TSM.Crafting.SetMatCustomValue(itemString, nil)
 	assert(not private.settings.mats[itemString].customValue)
 	button:SetTextColor("TEXT_ALT")
@@ -596,7 +550,7 @@ function private.UpdateMatsQueryWithFilters(frame)
 	-- apply search filter
 	local filter = strtrim(frame:GetElement("search.input"):GetValue())
 	if filter ~= "" then
-		private.matsQuery:Custom(private.MatItemNameQueryFilter, strlower(String.Escape(filter)))
+		private.matsQuery:Matches("name", strlower(String.Escape(filter)))
 	end
 	-- apply dropdown filters
 	local profession = frame:GetElement("profession.dropdown"):GetSelectedItem()
@@ -616,12 +570,6 @@ function private.UpdateMatsQueryWithFilters(frame)
 		private.matsQuery:NotEqual("customValue", "")
 	end
 	frame:GetElement("__parent.mats"):SetQuery(private.matsQuery, true)
-end
-
-function private.MatItemNameQueryFilter(row, filter)
-	local name = ItemInfo.GetName(row:GetField("itemString"))
-	if not name then return end
-	return strmatch(strlower(name), filter)
 end
 
 function private.CraftsMatsMenuIterator(scrollingTable, prevIndex)

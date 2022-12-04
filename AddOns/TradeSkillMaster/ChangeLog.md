@@ -1,5 +1,7 @@
-## v4.11.68 Changes
+## v4.12.5 Changes
 
-* Fixed bug with last bag not being properly tracked for posted.
+* [Retail] Updated bonusIds tracked by TSM
+* [Retail] Fixed error when running Vendor search
+* [Retail] Fixed error when opening mail
 
 [Known Issues](https://support.tradeskillmaster.com/en_US/known_issues)

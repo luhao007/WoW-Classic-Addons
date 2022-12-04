@@ -17,7 +17,10 @@ local Threading = TSM.Include("Service.Threading")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local CustomPrice = TSM.Include("Service.CustomPrice")
 local BagTracking = TSM.Include("Service.BagTracking")
-local Inventory = TSM.Include("Service.Inventory")
+local GuildTracking = TSM.Include("Service.GuildTracking")
+local MailTracking = TSM.Include("Service.MailTracking")
+local AuctionTracking = TSM.Include("Service.AuctionTracking")
+local AltTracking = TSM.Include("Service.AltTracking")
 local private = {
 	buyThreadId = nil,
 	sellThreadId = nil,
@@ -77,7 +80,6 @@ function private.BuyThread(groups)
 	local itemsToBuy = Threading.AcquireSafeTempTable()
 	local itemBuyQuantity = Threading.AcquireSafeTempTable()
 	local query = TSM.Vendoring.Buy.CreateMerchantQuery()
-		:InnerJoin(ItemInfo.GetDBForJoin(), "itemString")
 		:InnerJoin(TSM.Groups.GetItemDBForJoin(), "itemString")
 		:Select("itemString", "groupPath", "numAvailable")
 	for _, itemString, groupPath, numAvailable in query:Iterator() do
@@ -109,26 +111,28 @@ function private.BuyThread(groups)
 end
 
 function private.GetNumToBuy(itemString, operationSettings)
+	-- TODO: Need to look into why we're doing this complex query for bags, but not for anything else
 	local numHave = BagTracking.CreateQueryBagsItem(itemString)
 		:VirtualField("autoBaseItemString", "string", TSM.Groups.TranslateItemString, "itemString")
 		:Equal("autoBaseItemString", itemString)
 		:Equal("isBoA", false)
 		:SumAndRelease("quantity")
 	if operationSettings.restockSources.bank then
-		numHave = numHave + Inventory.GetBankQuantity(itemString) + Inventory.GetReagentBankQuantity(itemString)
+		local _, bankQuantity, reagentBankQuantity = BagTracking.GetQuantities(itemString)
+		numHave = numHave + bankQuantity + reagentBankQuantity
 	end
 	if operationSettings.restockSources.guild then
-		numHave = numHave + Inventory.GetGuildQuantity(itemString)
+		numHave = numHave + GuildTracking.GetQuantity(itemString)
 	end
 	if operationSettings.restockSources.ah then
-		numHave = numHave + Inventory.GetAuctionQuantity(itemString)
+		numHave = numHave + AuctionTracking.GetQuantity(itemString)
 	end
 	if operationSettings.restockSources.mail then
-		numHave = numHave + Inventory.GetMailQuantity(itemString)
+		numHave = numHave + MailTracking.GetQuantity(itemString)
 	end
 	if operationSettings.restockSources.alts or operationSettings.restockSources.alts_ah then
-		local _, alts, _, altsAH = Inventory.GetPlayerTotals(itemString)
-		numHave = numHave + (operationSettings.restockSources.alts and alts or 0) + (operationSettings.restockSources.alts_ah and altsAH or 0)
+		local numAlts, numAltAuctions = AltTracking.GetQuantity(itemString)
+		numHave = numHave + (operationSettings.restockSources.alts and numAlts or 0) + (operationSettings.restockSources.alts_ah and numAltAuctions or 0)
 	end
 	return max(operationSettings.restockQty - numHave, 0)
 end

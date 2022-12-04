@@ -4,13 +4,12 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
-local Schema = TSM.Init("Util.DatabaseClasses.Schema")
-local Constants = TSM.Include("Util.DatabaseClasses.Constants")
+local TSM = select(2, ...) ---@type TSM
+local Schema = TSM.Init("Util.DatabaseClasses.Schema") ---@class Util.DatabaseClasses.Schema
 local DBTable = TSM.Include("Util.DatabaseClasses.DBTable")
 local ObjectPool = TSM.Include("Util.ObjectPool")
 local LibTSMClass = TSM.Include("LibTSMClass")
-local DatabaseSchema = LibTSMClass.DefineClass("DatabaseSchema")
+local DatabaseSchema = LibTSMClass.DefineClass("DatabaseSchema") ---@class DatabaseSchema
 local private = {
 	objectPool = nil,
 }
@@ -19,7 +18,6 @@ local FIELD_TYPE_IS_VALID = {
 	number = true,
 	boolean = true,
 }
-local MAX_MULTI_FIELD_INDEX_PARTS = 2
 
 
 
@@ -27,6 +25,9 @@ local MAX_MULTI_FIELD_INDEX_PARTS = 2
 -- Modules Functions
 -- ============================================================================
 
+---Gets a new DB schema object.
+---@param name string The name of the schema
+---@return DatabaseSchema @The schema object
 function Schema.Get(name)
 	if not private.objectPool then
 		private.objectPool = ObjectPool.New("DATABASE_SCHEMAS", DatabaseSchema, 2)
@@ -36,17 +37,13 @@ function Schema.Get(name)
 	return schema
 end
 
-function Schema.IsClass(obj)
-	return obj:__isa(DatabaseSchema)
-end
-
 
 
 -- ============================================================================
 -- Class Method Methods
 -- ============================================================================
 
-function DatabaseSchema.__init(self)
+function DatabaseSchema:__init()
 	self._name = nil
 	self._fieldList = {}
 	self._fieldTypeLookup = {}
@@ -57,12 +54,12 @@ function DatabaseSchema.__init(self)
 	self._trigramIndexField = nil
 end
 
-function DatabaseSchema._Acquire(self, name)
+function DatabaseSchema:_Acquire(name)
 	assert(type(name) == "string")
 	self._name = name
 end
 
-function DatabaseSchema._Release(self)
+function DatabaseSchema:_Release()
 	self._name = nil
 	wipe(self._fieldList)
 	wipe(self._fieldTypeLookup)
@@ -79,38 +76,53 @@ end
 -- Public Class Method
 -- ============================================================================
 
-function DatabaseSchema.Release(self)
-	self:_Release()
-	private.objectPool:Recycle(self)
-end
-
-function DatabaseSchema.AddStringField(self, fieldName)
+---Adds a string field to the DB schema.
+---@param fieldName string The name of the field
+---@return DatabaseSchema @The DB schema
+function DatabaseSchema:AddStringField(fieldName)
 	self:_AddField("string", fieldName)
 	return self
 end
 
-function DatabaseSchema.AddNumberField(self, fieldName)
+---Adds a number field to the DB schema.
+---@param fieldName string The name of the field
+---@return DatabaseSchema @The DB schema
+function DatabaseSchema:AddNumberField(fieldName)
 	self:_AddField("number", fieldName)
 	return self
 end
 
-function DatabaseSchema.AddBooleanField(self, fieldName)
+---Adds a boolean field to the DB schema.
+---@param fieldName string The name of the field
+---@return DatabaseSchema @The DB schema
+function DatabaseSchema:AddBooleanField(fieldName)
 	self:_AddField("boolean", fieldName)
 	return self
 end
 
-function DatabaseSchema.AddUniqueStringField(self, fieldName)
+---Adds a string field with a unique index to the DB schema.
+---@param fieldName string The name of the field
+---@return DatabaseSchema @The DB schema
+function DatabaseSchema:AddUniqueStringField(fieldName)
 	self:_AddField("string", fieldName, true)
 	self._isUnique[fieldName] = true
 	return self
 end
 
-function DatabaseSchema.AddUniqueNumberField(self, fieldName)
+---Adds a number field with a unique index to the DB schema.
+---@param fieldName string The name of the field
+---@return DatabaseSchema @The DB schema
+function DatabaseSchema:AddUniqueNumberField(fieldName)
 	self:_AddField("number", fieldName, true)
 	return self
 end
 
-function DatabaseSchema.AddSmartMapField(self, fieldName, map, inputFieldName)
+---Adds a smart map field to the DB schema.
+---@param fieldName string The name of the field
+---@param map SmartMapObject The smart map object
+---@param inputFieldName string The name of the field which is used as an input to the smart map
+---@return DatabaseSchema @The DB schema
+function DatabaseSchema:AddSmartMapField(fieldName, map, inputFieldName)
 	assert(self._fieldTypeLookup[inputFieldName] == map:GetKeyType())
 	self:_AddField(map:GetValueType(), fieldName)
 	self._smartMapLookup[fieldName] = map
@@ -118,27 +130,30 @@ function DatabaseSchema.AddSmartMapField(self, fieldName, map, inputFieldName)
 	return self
 end
 
-function DatabaseSchema.AddIndex(self, ...)
-	local numFields = select("#", ...)
-	assert(numFields > 0)
-	assert(numFields <= MAX_MULTI_FIELD_INDEX_PARTS, "Unsupported number of fields in index")
-	for i = 1, numFields do
-		local fieldName = select(i, ...)
-		assert(self._fieldTypeLookup[fieldName])
-	end
-	self._isIndex[strjoin(Constants.DB_INDEX_FIELD_SEP, ...)] = true
+---Adds an index which speeds up querying for the field.
+---@param fieldName string The name of the field to index
+---@return DatabaseSchema @The DB schema
+function DatabaseSchema:AddIndex(fieldName)
+	assert(self._fieldTypeLookup[fieldName] and not self._isIndex[fieldName])
+	self._isIndex[fieldName] = true
 	return self
 end
 
-function DatabaseSchema.AddTrigramIndex(self, fieldName)
+---Adds a trigram index which speeds up text searching.
+---@param fieldName string The name of the field to index
+---@return DatabaseSchema @The DB schema
+function DatabaseSchema:AddTrigramIndex(fieldName)
 	assert(not self._trigramIndexField)
 	self._trigramIndexField = fieldName
 	return self
 end
 
-function DatabaseSchema.Commit(self)
+---Commits the schema and creates a DB table.
+---@return DatabaseTable @The new DB table
+function DatabaseSchema:Commit()
 	local db = DBTable.Create(self)
-	self:Release()
+	self:_Release()
+	private.objectPool:Recycle(self)
 	return db
 end
 
@@ -148,13 +163,13 @@ end
 -- Private Class Method
 -- ============================================================================
 
-function DatabaseSchema._GetName(self)
+function DatabaseSchema:_GetName()
 	return self._name
 end
 
-function DatabaseSchema._AddField(self, fieldType, fieldName, isUnique)
+function DatabaseSchema:_AddField(fieldType, fieldName, isUnique)
 	assert(FIELD_TYPE_IS_VALID[fieldType])
-	assert(type(fieldName) == "string" and strsub(fieldName, 1, 1) ~= "_" and not strmatch(fieldName, Constants.DB_INDEX_FIELD_SEP))
+	assert(type(fieldName) == "string" and strsub(fieldName, 1, 1) ~= "_")
 	assert(not self._fieldTypeLookup[fieldName])
 	tinsert(self._fieldList, fieldName)
 	self._fieldTypeLookup[fieldName] = fieldType
@@ -163,12 +178,8 @@ function DatabaseSchema._AddField(self, fieldType, fieldName, isUnique)
 	end
 end
 
-function DatabaseSchema._FieldIterator(self)
+function DatabaseSchema:_FieldIterator()
 	return private.FieldIterator, self, 0
-end
-
-function DatabaseSchema._MultiFieldIndexIterator(self)
-	return private.MultiFieldIndexIterator, self, nil
 end
 
 
@@ -176,23 +187,11 @@ end
 -- Private Helper Functions
 -- ============================================================================
 
-function private.FieldIterator(self, index)
+function private.FieldIterator(schema, index)
 	index = index + 1
-	if index > #self._fieldList then
+	if index > #schema._fieldList then
 		return
 	end
-	local fieldName = self._fieldList[index]
-	return index, fieldName, self._fieldTypeLookup[fieldName], self._isIndex[fieldName], self._isUnique[fieldName], self._smartMapLookup[fieldName], self._smartMapInputLookup[fieldName]
-end
-
-function private.MultiFieldIndexIterator(self, fieldName)
-	while true do
-		fieldName = next(self._isIndex, fieldName)
-		if not fieldName then
-			return
-		end
-		if strmatch(fieldName, Constants.DB_INDEX_FIELD_SEP) then
-			return fieldName
-		end
-	end
+	local fieldName = schema._fieldList[index]
+	return index, fieldName, schema._fieldTypeLookup[fieldName], schema._isIndex[fieldName], schema._isUnique[fieldName], schema._trigramIndexField == fieldName, schema._smartMapLookup[fieldName], schema._smartMapInputLookup[fieldName]
 end

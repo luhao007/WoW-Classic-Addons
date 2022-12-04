@@ -11,7 +11,7 @@ local _, TSM = ...
 local Scrollbar = TSM.UI:NewPackage("Scrollbar")
 local Math = TSM.Include("Util.Math")
 local Theme = TSM.Include("Util.Theme")
-local ScriptWrapper = TSM.Include("Util.ScriptWrapper")
+local WidgetExtensions = TSM.Include("UI.WidgetExtensions")
 local private = {
 	scrollbars = {},
 }
@@ -30,6 +30,7 @@ end
 -- @return The newly-created scrollbar
 function Scrollbar.Create(parent, isHorizontal)
 	local scrollbar = CreateFrame("Slider", nil, parent, nil)
+	WidgetExtensions.AddToObject(scrollbar)
 	scrollbar:ClearAllPoints()
 	if isHorizontal then
 		scrollbar:SetOrientation("HORIZONTAL")
@@ -48,13 +49,13 @@ function Scrollbar.Create(parent, isHorizontal)
 	end
 	scrollbar:SetValueStep(1)
 	scrollbar:SetObeyStepOnDrag(true)
-	ScriptWrapper.Set(scrollbar, "OnShow", private.ScrollbarOnLeave)
-	ScriptWrapper.Set(scrollbar, "OnHide", private.ScrollbarOnMouseUp)
-	ScriptWrapper.Set(scrollbar, "OnUpdate", private.ScrollbarOnUpdate)
-	ScriptWrapper.Set(scrollbar, "OnEnter", private.ScrollbarOnEnter)
-	ScriptWrapper.Set(scrollbar, "OnLeave", private.ScrollbarOnLeave)
-	ScriptWrapper.Set(scrollbar, "OnMouseDown", private.ScrollbarOnMouseDown)
-	ScriptWrapper.Set(scrollbar, "OnMouseUp", private.ScrollbarOnMouseUp)
+	scrollbar:TSMSetScript("OnShow", private.ScrollbarOnLeave)
+	scrollbar:TSMSetScript("OnHide", private.ScrollbarOnMouseUp)
+	scrollbar:TSMSetScript("OnUpdate", private.ScrollbarOnUpdate)
+	scrollbar:TSMSetScript("OnEnter", private.ScrollbarOnEnter)
+	scrollbar:TSMSetScript("OnLeave", private.ScrollbarOnLeave)
+	scrollbar:TSMSetScript("OnMouseDown", private.ScrollbarOnMouseDown)
+	scrollbar:TSMSetScript("OnMouseUp", private.ScrollbarOnMouseUp)
 
 	scrollbar:SetThumbTexture(scrollbar:CreateTexture())
 	scrollbar.thumb = scrollbar:GetThumbTexture()

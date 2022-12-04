@@ -29,8 +29,8 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ]]
 
-local _, TSM = ...
-local HSLuv = TSM.Init("Util.HSLuv")
+local TSM = select(2, ...) ---@type TSM
+local HSLuv = TSM.Init("Util.HSLuv") ---@class Util.HSLuv
 local Math = TSM.Include("Util.Math")
 local private = {}
 local M = {
@@ -55,10 +55,24 @@ local EPSILON = 0.0088564516
 -- Module Functions
 -- ============================================================================
 
+---Converts from HSLuv to RGB
+---@param h number
+---@param s number
+---@param l number
+---@return number r
+---@return number g
+---@return number b
 function HSLuv.ToRGB(h, s, l)
 	return private.HSLuvToRGB(h, s, l)
 end
 
+---Converts from RGB to HSLuv
+---@param r number
+---@param g number
+---@param b number
+---@return number h
+---@return number s
+---@return number l
 function HSLuv.FromRGB(r, g, b)
 	return private.RGBToHSLuv(r, g, b)
 end

@@ -4,7 +4,7 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local ProfessionState = TSM.Crafting:NewPackage("ProfessionState")
 local Event = TSM.Include("Util.Event")
 local Delay = TSM.Include("Util.Delay")
@@ -17,6 +17,7 @@ local private = {
 	craftOpen = nil,
 	tradeSkillOpen = nil,
 	professionName = nil,
+	readyTimer = nil,
 }
 local WAIT_FRAME_DELAY = 5
 
@@ -27,6 +28,10 @@ local WAIT_FRAME_DELAY = 5
 -- ============================================================================
 
 function ProfessionState.OnInitialize()
+	private.readyTimer = Delay.CreateTimer("PROFESSION_STATE_READY", function()
+		private.readyTimer:RunForFrames(WAIT_FRAME_DELAY)
+		private.fsm:ProcessEvent("EV_FRAME_DELAY")
+	end)
 	private.CreateFSM()
 end
 
@@ -109,9 +114,6 @@ function private.CreateFSM()
 			CraftCreateButton:Hide()
 		end
 	end
-	local function FrameDelayCallback()
-		private.fsm:ProcessEvent("EV_FRAME_DELAY")
-	end
 	private.fsm = FSM.New("PROFESSION_STATE")
 		:AddState(FSM.NewState("ST_CLOSED")
 			:SetOnEnter(function()
@@ -133,10 +135,10 @@ function private.CreateFSM()
 		)
 		:AddState(FSM.NewState("ST_WAITING_FOR_READY")
 			:SetOnEnter(function()
-				Delay.AfterFrame("PROFESSION_STATE_TIME", WAIT_FRAME_DELAY, FrameDelayCallback, WAIT_FRAME_DELAY)
+				private.readyTimer:RunForFrames(WAIT_FRAME_DELAY)
 			end)
 			:SetOnExit(function()
-				Delay.Cancel("PROFESSION_STATE_TIME")
+				private.readyTimer:Cancel()
 			end)
 			:AddTransition("ST_SHOWN")
 			:AddTransition("ST_DATA_CHANGING")

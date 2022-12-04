@@ -4,13 +4,14 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local General = TSM.MainUI.Settings:NewPackage("General")
 local L = TSM.Include("Locale").GetTable()
 local Log = TSM.Include("Util.Log")
 local TempTable = TSM.Include("Util.TempTable")
 local Table = TSM.Include("Util.Table")
 local Theme = TSM.Include("Util.Theme")
+local Wow = TSM.Include("Util.Wow")
 local Settings = TSM.Include("Service.Settings")
 local Sync = TSM.Include("Service.Sync")
 local PlayerInfo = TSM.Include("Service.PlayerInfo")
@@ -19,9 +20,11 @@ local UIElements = TSM.Include("UI.UIElements")
 local private = {
 	frame = nil,
 	characterList = {},
+	characterKeys = {},
 	guildList = {},
 	chatFrameList = {},
 }
+local CHARACTER_SEP = "\001"
 
 
 
@@ -64,14 +67,16 @@ function private.GetGeneralSettingsFrame()
 	end
 
 	wipe(private.characterList)
-	for _, character in PlayerInfo.CharacterIterator(true) do
-		if character ~= UnitName("player") then
-			tinsert(private.characterList, character)
+	wipe(private.characterKeys)
+	for _, character, factionrealm in PlayerInfo.CharacterIterator(true) do
+		if not Wow.IsPlayer(character, factionrealm) then
+			tinsert(private.characterKeys, character..CHARACTER_SEP..factionrealm)
+			tinsert(private.characterList, Wow.FormatCharacterName(character, factionrealm))
 		end
 	end
 
 	wipe(private.guildList)
-	for guild in PlayerInfo.GuildIterator(true) do
+	for _, guild in PlayerInfo.GuildIterator(true) do
 		tinsert(private.guildList, guild)
 	end
 
@@ -136,7 +141,7 @@ function private.GetGeneralSettingsFrame()
 				)
 				:AddChild(UIElements.New("SelectionDropdown", "forgetDropdown")
 					:SetMargin(0, 16, 0, 0)
-					:SetItems(private.characterList, private.characterList)
+					:SetItems(private.characterList, private.characterKeys)
 					:SetScript("OnSelectionChanged", private.ForgetCharacterOnSelectionChanged)
 				)
 				:AddChild(UIElements.New("MultiselectionDropdown", "ignoreDropdown")
@@ -195,7 +200,6 @@ function private.AddProfileRows(frame)
 				:SetLayout("HORIZONTAL")
 				:SetHeight(20)
 				:AddChild(UIElements.New("Checkbox", "checkbox")
-					:SetCheckboxPosition("LEFT")
 					:SetText(profileName)
 					:SetFont("BODY_BODY2")
 					:SetChecked(isCurrentProfile)
@@ -262,9 +266,9 @@ function private.AddAccountSyncRows(frame)
 		local isConnected, connectedCharacter = Sync.GetConnectionStatus(account)
 		local statusText = nil
 		if isConnected then
-			statusText = Theme.GetFeedbackColor("GREEN"):ColorText(format(L["Connected to %s"], connectedCharacter))
+			statusText = Theme.GetColor("FEEDBACK_GREEN"):ColorText(format(L["Connected to %s"], connectedCharacter))
 		else
-			statusText = Theme.GetFeedbackColor("RED"):ColorText(L["Offline"])
+			statusText = Theme.GetColor("FEEDBACK_RED"):ColorText(L["Offline"])
 		end
 		statusText = statusText.." | "..table.concat(characters, ", ")
 		TempTable.Release(characters)
@@ -348,15 +352,27 @@ function private.ChatTabOnSelectionChanged(dropdown)
 end
 
 function private.ForgetCharacterOnSelectionChanged(self)
-	local character = self:GetSelectedItem()
-	if not character then return end
-	TSM.db:RemoveSyncCharacter(character)
-	TSM.db.factionrealm.internalData.pendingMail[character] = nil
-	TSM.db.factionrealm.internalData.characterGuilds[character] = nil
-	Log.PrintfUser(L["%s removed."], character)
-	assert(Table.RemoveByValue(private.characterList, character) == 1)
+	local key = self:GetSelectedItemKey()
+	if not key then
+		return
+	end
+	local character, factionrealm = strsplit(CHARACTER_SEP, key)
+	TSM.db:RemoveSyncCharacter(character, factionrealm)
+	local pendingMail = TSM.db:Get("factionrealm", factionrealm, "internalData", "pendingMail")
+	if pendingMail then
+		pendingMail[character] = nil
+	end
+	local characterGuilds = TSM.db:Get("factionrealm", factionrealm, "internalData", "characterGuilds")
+	if characterGuilds then
+		characterGuilds[character] = nil
+	end
+	Log.PrintfUser(L["%s removed."], Wow.FormatCharacterName(character, factionrealm))
+	local index = Table.KeyByValue(private.characterKeys, key)
+	assert(index)
+	tremove(private.characterList, index)
+	tremove(private.characterKeys, index)
 	self:SetSelectedItem(nil)
-		:SetItems(private.characterList)
+		:SetItems(private.characterList, private.characterKeys)
 		:Draw()
 end
 
@@ -608,11 +624,11 @@ function private.AccountSyncTextOnEnter(text)
 		local mirrorConnected, mirrorSynced = Sync.GetMirrorStatus(account)
 		local mirrorStatus = nil
 		if not mirrorConnected then
-			mirrorStatus = Theme.GetFeedbackColor("RED"):ColorText(L["Not Connected"])
+			mirrorStatus = Theme.GetColor("FEEDBACK_RED"):ColorText(L["Not Connected"])
 		elseif not mirrorSynced then
-			mirrorStatus = Theme.GetFeedbackColor("YELLOW"):ColorText(L["Updating"])
+			mirrorStatus = Theme.GetColor("FEEDBACK_YELLOW"):ColorText(L["Updating"])
 		else
-			mirrorStatus = Theme.GetFeedbackColor("GREEN"):ColorText(L["Up to date"])
+			mirrorStatus = Theme.GetColor("FEEDBACK_GREEN"):ColorText(L["Up to date"])
 		end
 		tinsert(tooltipLines, L["Inventory / Gold Graph"]..Tooltip.GetSepChar()..mirrorStatus)
 		tinsert(tooltipLines, L["Profession Info"]..Tooltip.GetSepChar()..TSM.Crafting.Sync.GetStatus(account))

@@ -4,7 +4,7 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local Comm = TSM.Init("Service.SyncClasses.Comm")
 local Delay = TSM.Include("Util.Delay")
 local Table = TSM.Include("Util.Table")
@@ -16,6 +16,7 @@ local private = {
 	handler = {},
 	queuedPacket = {},
 	queuedSourceCharacter = {},
+	queueTimer = nil,
 }
 -- load libraries
 LibStub("AceComm-3.0"):Embed(Comm)
@@ -29,6 +30,7 @@ local LibDeflate = LibStub("LibDeflate")
 -- ============================================================================
 
 Comm:OnModuleLoad(function()
+	private.queueTimer = Delay.CreateTimer("SYNC_COMM_QUEUE", private.ProcessReceiveQueue)
 	Comm:RegisterComm("TSMSyncData", private.OnCommReceived)
 end)
 
@@ -73,7 +75,7 @@ function private.OnCommReceived(_, packet, _, sourceCharacter)
 	-- delay the processing to make sure it happens within a debuggable context (this function is called via pcall)
 	tinsert(private.queuedPacket, packet)
 	tinsert(private.queuedSourceCharacter, sourceCharacter)
-	Delay.AfterFrame("commReceiveQueue", 0, private.ProcessReceiveQueue)
+	private.queueTimer:RunForFrames(0)
 end
 
 function private.ProcessReceiveQueue()

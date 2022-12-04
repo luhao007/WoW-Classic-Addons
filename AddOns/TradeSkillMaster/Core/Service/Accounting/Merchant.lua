@@ -34,10 +34,10 @@ function Merchant.OnInitialize()
 	DefaultUI.RegisterMerchantVisibleCallback(private.MechantVisibilityHandler)
 	Event.Register("BAG_UPDATE_DELAYED", private.OnMerchantUpdate)
 	Event.Register("UPDATE_INVENTORY_DURABILITY", private.AddRepairCosts)
-	if TSM.IsWowDragonflightPTR() then
-		hooksecurefunc(C_Container, "UseContainerItem", private.CheckMerchantSale)
-	else
+	if TSM.IsWowClassic() then
 		hooksecurefunc("UseContainerItem", private.CheckMerchantSale)
+	else
+		hooksecurefunc(C_Container, "UseContainerItem", private.CheckMerchantSale)
 	end
 	hooksecurefunc("BuyMerchantItem", private.OnMerchantBuy)
 	hooksecurefunc("BuybackItem", private.OnMerchantBuyback)

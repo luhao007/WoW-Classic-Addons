@@ -11,10 +11,8 @@
 local _, TSM = ...
 local Theme = TSM.Include("Util.Theme")
 local ScriptWrapper = TSM.Include("Util.ScriptWrapper")
-local MultiLineInput = TSM.Include("LibTSMClass").DefineClass("MultiLineInput", TSM.UI.BaseInput)
 local UIElements = TSM.Include("UI.UIElements")
-UIElements.Register(MultiLineInput)
-TSM.UI.MultiLineInput = MultiLineInput
+local MultiLineInput = UIElements.Define("MultiLineInput", "BaseInput")
 local private = {}
 
 
@@ -37,7 +35,6 @@ function MultiLineInput.__init(self)
 	self._scrollbar = TSM.UI.Scrollbar.Create(frame)
 	ScriptWrapper.Set(self._scrollbar, "OnValueChanged", private.OnScrollbarValueChanged, self)
 
-	self._editBox:SetSpacing(4)
 	self._editBox:SetMultiLine(true)
 	self._editBox:SetTextInsets(8, 8, 4, 4)
 	frame:SetScrollChild(self._editBox)
@@ -102,8 +99,8 @@ end
 
 function private.OnCursorChanged(self, _, y, _, lineHeight)
 	y = abs(y)
-	local offset = self._scrollValue - y
-	if offset > 0 or offset < self:_GetDimension("HEIGHT") + lineHeight then
+	local offset = y - self._scrollValue
+	if offset < 0 or offset > self:_GetDimension("HEIGHT") - lineHeight then
 		self._scrollbar:SetValue(y)
 	end
 end

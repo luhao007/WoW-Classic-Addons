@@ -7,8 +7,6 @@
 local _, TSM = ...
 local TaskList = TSM:NewPackage("TaskList")
 local TempTable = TSM.Include("Util.TempTable")
-local Task = TSM.Include("LibTSMClass").DefineClass("TASK", nil, "ABSTRACT")
-TaskList.Task = Task
 local private = {
 	updateCallback = nil,
 	iterFuncs = {},

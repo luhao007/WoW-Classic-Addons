@@ -6,8 +6,9 @@
 
 local _, TSM = ...
 local Mailing = TSM.MainUI.Operations:NewPackage("Mailing")
-local PlayerInfo = TSM.Include("Service.PlayerInfo")
 local L = TSM.Include("Locale").GetTable()
+local TextureAtlas = TSM.Include("Util.TextureAtlas")
+local PlayerInfo = TSM.Include("Service.PlayerInfo")
 local UIElements = TSM.Include("UI.UIElements")
 local private = {
 	currentOperationName = nil,
@@ -85,7 +86,7 @@ function private.GetMailingOperationSettings(operationName)
 				:SetLayout("VERTICAL")
 				:SetHeight(42)
 				:SetMargin(0, 0, 0, 12)
-				:AddChild(UIElements.New("ToggleOnOff", "toggle")
+				:AddChild(UIElements.New("ToggleYesNo", "toggle")
 					:SetHeight(18)
 					:SetSettingInfo(operation, "maxQtyEnabled")
 					:SetDisabled(TSM.Operations.HasRelationship("Mailing", private.currentOperationName, "maxQtyEnabled"))
@@ -118,7 +119,7 @@ function private.GetMailingOperationSettings(operationName)
 				:SetLayout("VERTICAL")
 				:SetHeight(42)
 				:SetMargin(0, 0, 0, 12)
-				:AddChild(UIElements.New("ToggleOnOff", "toggle")
+				:AddChild(UIElements.New("ToggleYesNo", "toggle")
 					:SetHeight(18)
 					:SetSettingInfo(operation, "restock")
 					:SetDisabled(TSM.Operations.HasRelationship("Mailing", private.currentOperationName, "restock") or not operation.maxQtyEnabled)
@@ -177,13 +178,13 @@ function private.MaxQuantityToggleOnValueChanged(toggle, value)
 
 	relationshipSet = TSM.Operations.HasRelationship("Mailing", private.currentOperationName, "restockSources")
 	if relationshipSet and value and restockValue then
-		linkTexture = TSM.UI.TexturePacks.GetColoredKey("iconPack.14x14/Link", "INDICATOR")
+		linkTexture = TextureAtlas.GetColoredKey("iconPack.14x14/Link", "INDICATOR")
 	elseif (relationshipSet and not value and restockValue) or (relationshipSet and value and not restockValue) or (relationshipSet and not value and not restockValue) then
-		linkTexture = TSM.UI.TexturePacks.GetColoredKey("iconPack.14x14/Link", "INDICATOR_DISABLED")
+		linkTexture = TextureAtlas.GetColoredKey("iconPack.14x14/Link", "INDICATOR_DISABLED")
 	elseif (value and not restockValue) or (not value and restockValue) or (not value and not restockValue) then
-		linkTexture = TSM.UI.TexturePacks.GetColoredKey("iconPack.14x14/Link", "TEXT_DISABLED")
+		linkTexture = TextureAtlas.GetColoredKey("iconPack.14x14/Link", "TEXT_DISABLED")
 	else
-		linkTexture = TSM.UI.TexturePacks.GetColoredKey("iconPack.14x14/Link", "TEXT")
+		linkTexture = TextureAtlas.GetColoredKey("iconPack.14x14/Link", "TEXT")
 	end
 	settingsFrame:GetElement("restockSources.line.linkBtn")
 		:SetBackground(linkTexture)
@@ -201,13 +202,13 @@ function private.RestockToggleOnValueChanged(toggle, value)
 	local relationshipSet = TSM.Operations.HasRelationship("Mailing", private.currentOperationName, "restockSources")
 	local linkTexture = nil
 	if relationshipSet and value and maxQtyEnabled then
-		linkTexture = TSM.UI.TexturePacks.GetColoredKey("iconPack.14x14/Link", "INDICATOR")
+		linkTexture = TextureAtlas.GetColoredKey("iconPack.14x14/Link", "INDICATOR")
 	elseif (relationshipSet and not value and maxQtyEnabled) or (relationshipSet and value and not maxQtyEnabled) or (relationshipSet and not value and not maxQtyEnabled) then
-		linkTexture = TSM.UI.TexturePacks.GetColoredKey("iconPack.14x14/Link", "INDICATOR_DISABLED")
+		linkTexture = TextureAtlas.GetColoredKey("iconPack.14x14/Link", "INDICATOR_DISABLED")
 	elseif (value and not maxQtyEnabled) or (not value and maxQtyEnabled) or (not value and not maxQtyEnabled) then
-		linkTexture = TSM.UI.TexturePacks.GetColoredKey("iconPack.14x14/Link", "TEXT_DISABLED")
+		linkTexture = TextureAtlas.GetColoredKey("iconPack.14x14/Link", "TEXT_DISABLED")
 	else
-		linkTexture = TSM.UI.TexturePacks.GetColoredKey("iconPack.14x14/Link", "TEXT")
+		linkTexture = TextureAtlas.GetColoredKey("iconPack.14x14/Link", "TEXT")
 	end
 	settingsFrame:GetElement("restockSources.line.linkBtn")
 		:SetBackground(linkTexture)

@@ -119,6 +119,18 @@ function Conversions.GetSourceItems(targetItemString)
 	return private.sourceItemCache[targetItemString]
 end
 
+function Conversions.SourceItemsByMethodIterator(targetItemString, method)
+	local context = TempTable.Acquire()
+	context.targetItemString = targetItemString
+	context.method = method
+	return private.SourceItemsByMethodIteratorHelper, context, nil
+end
+
+function Conversions.GetRate(sourceItemString, targetItemString)
+	local info = private.data[targetItemString][sourceItemString]
+	return info and info.rate or nil
+end
+
 
 
 -- ============================================================================
@@ -177,7 +189,25 @@ function private.TargetItemsByMethodIteratorHelper(context, index)
 		end
 		local info = items[context.sourceItemString]
 		if info and ((not context.method and info.method ~= Conversions.METHOD.CRAFT) or info.method == context.method) then
-			return index, info.rate, info.amount, info.minAmount, info.maxAmount, info.skillRequired
+			return index, info.rate, info.amount, info.minAmount, info.maxAmount, info.skillRequired, info.method
+		end
+	end
+end
+
+function private.SourceItemsByMethodIteratorHelper(context, index)
+	if not private.data[context.targetItemString] then
+		TempTable.Release(context)
+		return
+	end
+	while true do
+		index = next(private.data[context.targetItemString], index)
+		local info = private.data[context.targetItemString][index]
+		if not info then
+			TempTable.Release(context)
+			return
+		end
+		if info.method == context.method then
+			return index, info.rate
 		end
 	end
 end

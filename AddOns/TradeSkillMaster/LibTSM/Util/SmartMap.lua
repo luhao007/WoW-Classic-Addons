@@ -4,16 +4,24 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
---- Smart Map.
--- @module SmartMap
-
-local _, TSM = ...
-local SmartMap = TSM.Init("Util.SmartMap")
+local TSM = select(2, ...) ---@type TSM
+local SmartMap = TSM.Init("Util.SmartMap") ---@class Util.SmartMap
+local SmartMapObject = TSM.Include("LibTSMClass").DefineClass("SmartMapObject") ---@class SmartMapObject
 local private = {
-	mapContext = {},
 	readerContext = {},
 }
-local VALID_FIELD_TYPES = {
+---@alias SmartMapKeyType
+---|'"string"'
+---|'"number"'
+local VALID_KEY_TYPES = {
+	string = true,
+	number = true,
+}
+---@alias SmartMapValueType
+---|'"string"'
+---|'"number"'
+---|'"boolean"'
+local VALID_VALUE_TYPES = {
 	string = true,
 	number = true,
 	boolean = true,
@@ -22,130 +30,87 @@ local VALID_FIELD_TYPES = {
 
 
 -- ============================================================================
--- Metatable Methods
--- ============================================================================
-
-local SMART_MAP_MT = {
-	-- getter
-	__index = function(self, key)
-		if key == nil then
-			error("Attempt to get nil key")
-		end
-		if key == "ValueChanged" then
-			return private.MapValueChanged
-		elseif key == "SetCallbacksPaused" then
-			return private.MapSetCallbacksPaused
-		elseif key == "CreateReader" then
-			return private.MapCreateReader
-		elseif key == "GetKeyType" then
-			return private.MapGetKeyType
-		elseif key == "GetValueType" then
-			return private.MapGetValueType
-		elseif key == "Iterator" then
-			return private.MapIterator
-		else
-			error("Invalid map method: "..tostring(key), 2)
-		end
-	end,
-
-	-- setter
-	__newindex = function(self, key, value)
-		error("Map cannot be written to directly", 2)
-	end,
-
-	__tostring = function(self)
-		return "SmartMap:"..strmatch(tostring(private.mapContext[self]), "table:[^0-9a-fA-F]*([0-9a-fA-F]+)")
-	end,
-
-	__metatable = false,
-}
-
-local READER_MT = {
-	-- getter
-	__index = function(self, key)
-		-- check if the map already has the value for this key cached
-		local readerContext = private.readerContext[self]
-		local map = readerContext.map
-		local mapContext = private.mapContext[map]
-		if mapContext.data[key] ~= nil then
-			return mapContext.data[key]
-		end
-
-		-- get the value for this key
-		local value = mapContext.func(key)
-		if value == nil then
-			error(format("No value for key (%s)", tostring(key)))
-		elseif type(value) ~= mapContext.valueType then
-			error(format("Invalid type of value (got %s, expected %s): %s", type(value), mapContext.valueType, tostring(value)))
-		end
-
-		-- cache the value both on the map and on this reader
-		mapContext.data[key] = value
-		rawset(self, key, value)
-
-		return value
-	end,
-
-	-- setter
-	__newindex = function(self, key, value)
-		error("Reader is read-only", 2)
-	end,
-
-	__tostring = function(self)
-		return "SmartMapReader:"..strmatch(tostring(private.readerContext[self]), "table:[^0-9a-fA-F]*([0-9a-fA-F]+)")
-	end,
-
-	__metatable = false,
-}
-
-
-
--- ============================================================================
 -- Module Functions
 -- ============================================================================
 
-function SmartMap.New(keyType, valueType, callable)
-	assert(VALID_FIELD_TYPES[keyType] and VALID_FIELD_TYPES[valueType])
-	local map = setmetatable({}, SMART_MAP_MT)
-	private.mapContext[map] = {
-		keyType = keyType,
-		valueType = valueType,
-		func = callable,
-		data = {},
-		readers = {},
-		callbacksPaused = 0,
-		hasReaderCallback = false,
-	}
-	return map
+---Create a new smart map object.
+---@generic K, V
+---@param keyType SmartMapKeyType The type of the keys
+---@param valueType SmartMapValueType The type of the values
+---@param lookupFunc fun(key: K): V A function which looks up the value for a specific key
+---@return SmartMapObject
+function SmartMap.New(keyType, valueType, lookupFunc)
+	assert(VALID_KEY_TYPES[keyType] and VALID_VALUE_TYPES[valueType])
+	return SmartMapObject(keyType, valueType, lookupFunc)
 end
 
 
 
 -- ============================================================================
--- Private Helper Functions
+-- SmartMapReader Metatable
 -- ============================================================================
 
-function private.MapValueChanged(self, key)
-	local mapContext = private.mapContext[self]
-	local oldValue = mapContext.data[key]
+---@class SmartMapReader
+
+local READER_MT = {
+	__index = function(self, key)
+		-- check if the map already has the value for this key cached
+		local readerContext = private.readerContext[self]
+		local value = readerContext.map:_Get(key)
+		-- Cache the value on this reader
+		rawset(self, key, value)
+		return value
+	end,
+	__call = function(self, key)
+		return self[key]
+	end,
+	__newindex = function()
+		error("Reader is read-only", 2)
+	end,
+	__tostring = function(self)
+		return "SmartMapReader:"..strmatch(tostring(private.readerContext[self]), "table:[^0-9a-fA-F]*([0-9a-fA-F]+)")
+	end,
+	__metatable = false,
+}
+
+
+
+-- ============================================================================
+-- SmartMapObject Class Methods
+-- ============================================================================
+
+function SmartMapObject:__init(keyType, valueType, lookupFunc)
+	self._keyType = keyType
+	self._valueType = valueType
+	self._func = lookupFunc
+	self._data = {}
+	self._readers = {}
+	self._callbacksPaused = 0
+	self._hasReaderCallback = false
+end
+
+---Called when the value has changed for a given key to fetch the new one and notify the readers.
+---@param key string|number The key which changed
+function SmartMapObject:ValueChanged(key)
+	local oldValue = self._data[key]
 	if oldValue == nil then
 		-- nobody cares about this value
 		return
 	end
 
-	if not mapContext.hasReaderCallback then
+	if not self._hasReaderCallback then
 		-- no reader has registered a callback, so just clear the value
-		mapContext.data[key] = nil
-		for _, reader in ipairs(mapContext.readers) do
+		self._data[key] = nil
+		for _, reader in ipairs(self._readers) do
 			rawset(reader, key, nil)
 		end
 		return
 	end
 
 	-- get the new value
-	local newValue = mapContext.func(key)
-	if type(newValue) ~= mapContext.valueType then
-		error(format("Invalid type (got %s, expected %s)", type(newValue), mapContext.valueType))
+	local newValue = self._func(key)
+	if type(newValue) ~= self._valueType then
+		error(format("Invalid type (got %s, expected %s)", type(newValue), self._valueType))
 	end
 	if oldValue == newValue then
 		-- the value didn't change
@@ -153,16 +118,16 @@ function private.MapValueChanged(self, key)
 	end
 
 	-- update the data
-	mapContext.data[key] = newValue
+	self._data[key] = newValue
 
-	for _, reader in ipairs(mapContext.readers) do
+	for _, reader in ipairs(self._readers) do
 		local readerContext = private.readerContext[reader]
 		local prevValue = rawget(reader, key)
 		if prevValue ~= nil then
 			rawset(reader, key, newValue)
 			if readerContext.callback then
 				readerContext.pendingChanges[key] = prevValue
-				if mapContext.callbacksPaused == 0 then
+				if self._callbacksPaused == 0 then
 					readerContext.callback(reader, readerContext.pendingChanges)
 					wipe(readerContext.pendingChanges)
 				end
@@ -171,15 +136,16 @@ function private.MapValueChanged(self, key)
 	end
 end
 
-function private.MapSetCallbacksPaused(self, paused)
-	local mapContext = private.mapContext[self]
+---Pausese or unpauses reader callbacks.
+---@param paused boolean Whether or not callbacks are paused
+function SmartMapObject:SetCallbacksPaused(paused)
 	if paused then
-		mapContext.callbacksPaused = mapContext.callbacksPaused + 1
+		self._callbacksPaused = self._callbacksPaused + 1
 	else
-		mapContext.callbacksPaused = mapContext.callbacksPaused - 1
-		assert(mapContext.callbacksPaused >= 0)
-		if mapContext.callbacksPaused == 0 then
-			for _, reader in ipairs(mapContext.readers) do
+		self._callbacksPaused = self._callbacksPaused - 1
+		assert(self._callbacksPaused >= 0)
+		if self._callbacksPaused == 0 then
+			for _, reader in ipairs(self._readers) do
 				local readerContext = private.readerContext[reader]
 				if readerContext.callback and next(readerContext.pendingChanges) then
 					readerContext.callback(reader, readerContext.pendingChanges)
@@ -190,12 +156,14 @@ function private.MapSetCallbacksPaused(self, paused)
 	end
 end
 
-function private.MapCreateReader(self, callback)
+---Creates a new reader.
+---@param callback? fun(reader: SmartMapReader, pendingChanges: table) The function to call when a value within the map changes
+---@return SmartMapReader @The reader object
+function SmartMapObject:CreateReader(callback)
 	assert(callback == nil or type(callback) == "function")
 	local reader = setmetatable({}, READER_MT)
-	local mapContext = private.mapContext[self]
-	tinsert(mapContext.readers, reader)
-	mapContext.hasReaderCallback = mapContext.hasReaderCallback or (callback and true or false)
+	tinsert(self._readers, reader)
+	self._hasReaderCallback = self._hasReaderCallback or (callback and true or false)
 	private.readerContext[reader] = {
 		map = self,
 		callback = callback,
@@ -204,14 +172,48 @@ function private.MapCreateReader(self, callback)
 	return reader
 end
 
-function private.MapGetKeyType(self)
-	return private.mapContext[self].keyType
+---Gets the type of the smart map's keys.
+---@return SmartMapKeyType
+function SmartMapObject:GetKeyType()
+	return self._keyType
 end
 
-function private.MapGetValueType(self)
-	return private.mapContext[self].valueType
+---Gets the type of the smart map's values.
+---@return SmartMapValueType
+function SmartMapObject:GetValueType()
+	return self._valueType
 end
 
-function private.MapIterator(self)
-	return pairs(private.mapContext[self].data)
+---Iterates over all data in the smart map.
+---@return fun(): string|number, string|number|boolean @An iterator with fields: `key`, `value`
+function SmartMapObject:Iterator()
+	return pairs(self._data)
+end
+
+---Invalidates all data in the smart map.
+function SmartMapObject:Invalidate()
+	self:SetCallbacksPaused(true)
+	for key in pairs(self._data) do
+		self:ValueChanged(key)
+	end
+	self:SetCallbacksPaused(false)
+end
+
+function SmartMapObject:_Get(key)
+	local value = self._data[key]
+	if value ~= nil then
+		return value
+	end
+
+	-- Use the function to get the value for this key
+	value = self._func(key)
+	if value == nil then
+		error(format("No value for key (%s)", tostring(key)))
+	elseif type(value) ~= self._valueType then
+		error(format("Invalid type of value (got %s, expected %s): %s", type(value), self._valueType, tostring(value)))
+	end
+
+	-- Cache the value on the map
+	self._data[key] = value
+	return value
 end

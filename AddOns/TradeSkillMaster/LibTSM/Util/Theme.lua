@@ -4,36 +4,53 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
---- Theme Functions.
--- @module Theme
-
-local _, TSM = ...
-local Theme = TSM.Init("Util.Theme")
+local TSM = select(2, ...) ---@type TSM
+local Theme = TSM.Init("Util.Theme") ---@class Util.Theme
 local FontPaths = TSM.Include("Data.FontPaths")
 local Color = TSM.Include("Util.Color")
 local Table = TSM.Include("Util.Table")
 local FontObject = TSM.Include("Util.FontObject")
+local Reactive = TSM.Include("Util.Reactive")
 local private = {
 	callbacks = {},
 	names = {},
 	colorSets = {},
-	currentColorSet = nil,
+	currentColorSetKey = nil,
 	fontFrame = nil,
 	currentFontSet = nil,
+	streams = {},
+	publisherKey = {},
+	publishKeysTemp = {},
 }
 local THEME_COLOR_KEYS = {
-	"PRIMARY_BG",
-	"PRIMARY_BG_ALT",
-	"FRAME_BG",
-	"ACTIVE_BG",
-	"ACTIVE_BG_ALT",
+	PRIMARY_BG = true,
+	PRIMARY_BG_ALT = true,
+	FRAME_BG = true,
+	ACTIVE_BG = true,
+	ACTIVE_BG_ALT = true,
 }
-local VALID_THEME_COLOR_KEYS = {}
-do
-	for _, key in ipairs(THEME_COLOR_KEYS) do
-		VALID_THEME_COLOR_KEYS[key] = true
-	end
-end
+---@alias ThemeColorKey
+---|'"INDICATOR"'
+---|'"INDICATOR_ALT"'
+---|'"INDICATOR_DISABLED"'
+---|'"TEXT"'
+---|'"TEXT_ALT"'
+---|'"TEXT_DISABLED"'
+---|'"FEEDBACK_RED"'
+---|'"FEEDBACK_YELLOW"'
+---|'"FEEDBACK_GREEN"'
+---|'"FEEDBACK_BLUE"'
+---|'"FEEDBACK_ORANGE"'
+---|'"GROUP_ONE"'
+---|'"GROUP_TWO"'
+---|'"GROUP_THREE"'
+---|'"GROUP_FOUR"'
+---|'"GROUP_FIVE"'
+---|'"FULL_BLACK"'
+---|'"FULL_WHITE"'
+---|'"TRANSPARENT"'
+---|'"BLIZZARD_YELLOW"'
+---|'"BLIZZARD_GM"'
 local STATIC_COLORS = {
 	INDICATOR = Color.NewFromHex("#ffd839"),
 	INDICATOR_ALT = Color.NewFromHex("#79a2ff"),
@@ -42,25 +59,41 @@ local STATIC_COLORS = {
 	TEXT = Color.NewFromHex("#ffffff"),
 	TEXT_ALT = Color.NewFromHex("#e2e2e2"),
 	TEXT_DISABLED = Color.NewFromHex("#424242"),
+
+	FEEDBACK_RED = Color.NewFromHex("#f72d20"),
+	FEEDBACK_YELLOW = Color.NewFromHex("#e1f720"),
+	FEEDBACK_GREEN = Color.NewFromHex("#4ff720"),
+	FEEDBACK_BLUE = Color.NewFromHex("#2076f7"),
+	FEEDBACK_ORANGE = Color.NewFromHex("#f77a20"),
+
+	GROUP_ONE = Color.NewFromHex("#fcf141"),
+	GROUP_TWO = Color.NewFromHex("#bdaec6"),
+	GROUP_THREE = Color.NewFromHex("#06a2cb"),
+	GROUP_FOUR = Color.NewFromHex("#ffb85c"),
+	GROUP_FIVE = Color.NewFromHex("#51b599"),
+
+	FULL_BLACK = Color.GetFullBlack(),
+	FULL_WHITE = Color.GetFullWhite(),
+	TRANSPARENT = Color.GetTransparent(),
+
+	BLIZZARD_YELLOW = Color.NewFromHex("#ffff00"),
+	BLIZZARD_GM = Color.NewFromHex("#00b4ff"),
 }
-local FEEDBACK_COLORS = {
-	RED = Color.NewFromHex("#f72d20"),
-	YELLOW = Color.NewFromHex("#e1f720"),
-	GREEN = Color.NewFromHex("#4ff720"),
-	BLUE = Color.NewFromHex("#2076f7"),
-	ORANGE = Color.NewFromHex("#f77a20"),
+local GROUP_COLOR_KEYS = {
+	"GROUP_ONE",
+	"GROUP_TWO",
+	"GROUP_THREE",
+	"GROUP_FOUR",
+	"GROUP_FIVE",
 }
-local STANDARD_COLORS = {
-	YELLOW = Color.NewFromHex("#ffff00"),
-}
-local BLIZZARD_COLOR = Color.NewFromHex("#00b4ff")
-local GROUP_COLORS = {
-	Color.NewFromHex("#fcf141"),
-	Color.NewFromHex("#bdaec6"),
-	Color.NewFromHex("#06a2cb"),
-	Color.NewFromHex("#ffb85c"),
-	Color.NewFromHex("#51b599"),
-}
+---@alias ProfessionDifficultyColorKey
+---|'"optimal"'
+---|'"medium"'
+---|'"easy"'
+---|'"trivial"'
+---|'"header"'
+---|'"subheader"'
+---|'"nodifficulty"'
 local PROFESSION_DIFFICULTY_COLORS = TSM.IsWowClassic() and {
 		optimal = Color.NewFromHex("#ff8040"),
 		medium = Color.NewFromHex("#ffff00"),
@@ -92,23 +125,23 @@ local TSM_ITEM_QUALITY_COLORS = {
 }
 local AUCTION_PCT_COLORS = {
 	{ -- blue
-		color = "BLUE",
+		color = "FEEDBACK_BLUE",
 		value = 50,
 	},
 	{ -- green
-		color = "GREEN",
+		color = "FEEDBACK_GREEN",
 		value = 80,
 	},
 	{ -- yellow
-		color = "YELLOW",
+		color = "FEEDBACK_YELLOW",
 		value = 110,
 	},
 	{ -- orange
-		color = "ORANGE",
+		color = "FEEDBACK_ORANGE",
 		value = 135,
 	},
 	{ -- red
-		color = "RED",
+		color = "FEEDBACK_RED",
 		value = math.huge,
 	},
 	default = "TEXT",
@@ -129,8 +162,7 @@ local CONSTANTS = {
 
 Theme:OnModuleLoad(function()
 	Table.SetReadOnly(STATIC_COLORS)
-	Table.SetReadOnly(FEEDBACK_COLORS)
-	Table.SetReadOnly(GROUP_COLORS)
+	Table.SetReadOnly(GROUP_COLOR_KEYS)
 	Table.SetReadOnly(PROFESSION_DIFFICULTY_COLORS)
 	Table.SetReadOnly(TSM_ITEM_QUALITY_COLORS)
 	Table.SetReadOnly(CONSTANTS)
@@ -169,71 +201,112 @@ end)
 -- Module Functions
 -- ============================================================================
 
---- Registers a callback when the theme changes.
--- @tparam function callback The callback function
+---Registers a callback when the theme changes.
+---@param callback function The callback function
 function Theme.RegisterChangeCallback(callback)
 	assert(type(callback) == "function")
 	tinsert(private.callbacks, callback)
 end
 
---- Registers a new color set.
--- @tparam string key The key which represents the color set
--- @tparam string name The name of the color set
--- @tparam table colorSet The colors which make up the color set (with keys specified in `THEME_COLOR_KEYS`)
+---Registers a new color set.
+---@param key string The key which represents the color set
+---@param name string The name of the color set
+---@param colorSet table The colors which make up the color set (with keys specified in `THEME_COLOR_KEYS`)
 function Theme.RegisterColorSet(key, name, colorSet)
-	assert(not private.colorSets[key])
-	for _, k in ipairs(THEME_COLOR_KEYS) do
+	assert(not private.colorSets[key] and type(key) == "string" and strmatch(key, "^[a-zA-Z]+$"))
+	for k in pairs(THEME_COLOR_KEYS) do
 		assert(Color.IsInstance(colorSet[k]))
 	end
 	private.names[key] = name
 	private.colorSets[key] = colorSet
 end
 
---- Sets the active color set.
--- @tparam string key The key which represents the color set
-function Theme.SetActiveColorSet(key)
-	assert(private.colorSets[key])
-	if private.currentColorSet == private.colorSets[key] then
+---Gets a theme color publisher which publishes deduplicated color values.
+---@param key string The theme color key
+---@return ReactivePublisher
+function Theme.GetPublisher(key)
+	assert(Theme.IsValidColor(key))
+	local colorKey = private.GetColorKeyInfo(key)
+	if not private.streams[colorKey] then
+		local stream = Reactive.CreateStream()
+		stream:SetScript("OnPublisherCancelled", private.HandlePublisherCancel)
+		private.streams[colorKey] = stream
+	end
+	local publisher = private.streams[colorKey]:PublisherWithInitialValue(key)
+		:IgnoreIfNotEquals(key)
+		:MapWithFunction(Theme.GetColor)
+		:IgnoreDuplicatesWithMethod("GetHex")
+	private.publisherKey[publisher] = key
+	return publisher
+end
+
+---Sets the active color set.
+---@param colorSetKey string The key which represents the color set
+function Theme.SetActiveColorSet(colorSetKey)
+	assert(private.colorSets[colorSetKey])
+	if private.currentColorSetKey == colorSetKey then
 		return
 	end
-	private.currentColorSet = private.colorSets[key]
+	private.currentColorSetKey = colorSetKey
+	private.HandleColorChange(colorSetKey, nil)
 	for _, callback in ipairs(private.callbacks) do
 		callback()
 	end
 end
 
---- Replaces a specific color within a theme (for user-generated themes)
--- @tparam string colorSetKey The key of the color set to change
--- @tparam string colorKey The key of the color to change
--- @tparam number r The new red value (0-255)
--- @tparam number g The new green value (0-255)
--- @tparam number b The new blue value (0-255)
+---Replaces a specific color within a theme (for user-generated themes)
+---@param colorSetKey string The key of the color set to change
+---@param colorKey string The key of the color to change
+---@param r number The new red value (0-255)
+---@param g number The new green value (0-255)
+---@param b number The new blue value (0-255)
 function Theme.UpdateColor(colorSetKey, colorKey, r, g, b)
 	local colorSet = private.colorSets[colorSetKey]
-	assert(VALID_THEME_COLOR_KEYS[colorKey] and colorSet)
+	assert(THEME_COLOR_KEYS[colorKey] and colorSet)
 	local color = colorSet[colorKey]
 	assert(color)
 	color:SetRGBA(r, g, b, 255)
-	if colorSet == private.currentColorSet then
+	private.HandleColorChange(colorSetKey, colorKey)
+	if colorSetKey == private.currentColorSetKey then
 		for _, callback in ipairs(private.callbacks) do
 			callback()
 		end
 	end
 end
 
---- Gets the color object from the current active color set.
--- @tparam string key The key of the color to get
--- @tparam[opt=nil] string colorSet The key of the color set to get the color for (defaults to the active color set)
--- @treturn Color The color object
-function Theme.GetColor(key, colorSetKey)
-	local colorKey, tintPct, opacityPct = strmatch(key, "^([A-Z_]+)([%-%+]?[0-9A-Z_]*)%%?([0-9A-Z_]*)$")
-	tintPct = tonumber(tintPct) or (tintPct ~= "" and tintPct or nil)
-	opacityPct = tonumber(opacityPct) or (opacityPct ~= "" and opacityPct or nil)
+---Returns whether or not a theme color key is valid.
+---@param key string The theme color key
+---@return boolean
+function Theme.IsValidColor(key)
+	local colorKey, _, _, colorSetKey = private.GetColorKeyInfo(key)
+	if not colorKey then
+		return false
+	end
+	local color = nil
+	if THEME_COLOR_KEYS[colorKey] then
+		colorSetKey = colorSetKey or private.currentColorSetKey
+		color = private.colorSets[colorSetKey][colorKey]
+	else
+		if colorSetKey then
+			return false
+		end
+		color = STATIC_COLORS[colorKey]
+	end
+	return color and true or false
+end
+
+---Gets the color object from the current active color set.
+---@param key string The key of the color to get
+---@return ColorValue
+function Theme.GetColor(key)
+	local colorKey, tintPct, opacityPct, colorSetKey = private.GetColorKeyInfo(key)
 	assert(colorKey)
 	local color = nil
-	if VALID_THEME_COLOR_KEYS[colorKey] then
-		color = colorSetKey and private.colorSets[colorSetKey][colorKey] or private.currentColorSet[colorKey]
+	if THEME_COLOR_KEYS[colorKey] then
+		colorSetKey = colorSetKey or private.currentColorSetKey
+		color = private.colorSets[colorSetKey][colorKey]
 	else
+		assert(not colorSetKey)
 		color = STATIC_COLORS[colorKey]
 	end
 	assert(color)
@@ -246,89 +319,87 @@ function Theme.GetColor(key, colorSetKey)
 	return color
 end
 
---- Gets the color object for a given feedback color key.
--- @tparam string key The key of the feedback color to get
--- @treturn Color The color object
-function Theme.GetFeedbackColor(key)
-	return FEEDBACK_COLORS[key]
+---Gets the theme color key for a given group level.
+---@param level number The level of the group (1-based)
+---@return string @The theme color key for the group
+function Theme.GetGroupColorKey(level)
+	level = ((level - 1) % #GROUP_COLOR_KEYS) + 1
+	return GROUP_COLOR_KEYS[level]
 end
 
---- Gets the color object for a given color key.
--- @tparam string key The key of the color to get
--- @treturn Color The color object
-function Theme.GetStandardColor(key)
-	return STANDARD_COLORS[key]
-end
-
---- Gets the color object for Blizzard GMs.
--- @treturn Color The color object
-function Theme.GetBlizzardColor()
-	return BLIZZARD_COLOR
-end
-
---- Gets the color object for a given group level.
--- @tparam number level The level of the group (1-based)
--- @treturn Color The color object
+---Gets the color object for a given group level.
+---@param level number The level of the group (1-based)
+---@return ColorValue @The color object
 function Theme.GetGroupColor(level)
-	level = ((level - 1) % #GROUP_COLORS) + 1
-	return GROUP_COLORS[level]
+	return STATIC_COLORS[Theme.GetGroupColorKey(level)]
 end
 
+---Gets the color for a profession.
+---@param difficulty ProfessionDifficultyColorKey
+---@return ColorValue
 function Theme.GetProfessionDifficultyColor(difficulty)
 	return PROFESSION_DIFFICULTY_COLORS[difficulty]
 end
 
+---Gets the color for an item quality.
+---@param quality number
+---@return ColorValue
 function Theme.GetItemQualityColor(quality)
 	return TSM_ITEM_QUALITY_COLORS[quality]
 end
 
+---Gets the color for an auction percentage.
+---@param pct number
+---@return ColorValue
 function Theme.GetAuctionPercentColor(pct)
 	if pct == "BID" then
 		return Theme.GetColor(AUCTION_PCT_COLORS.bid)
 	end
 	for _, info in ipairs(AUCTION_PCT_COLORS) do
 		if pct < info.value then
-			return Theme.GetFeedbackColor(info.color)
+			return Theme.GetColor(info.color)
 		end
 	end
 	return Theme.GetColor(AUCTION_PCT_COLORS.default)
 end
 
---- Gets the font object from the current active font set.
--- @tparam string key The key of the font to get
--- @treturn FontObject The font object
+---Gets the font object from the current active font set.
+---@param key string The key of the font to get
+---@return FontObjectValue @The font object
 function Theme.GetFont(key)
 	local fontObj = private.currentFontSet[key]
 	assert(fontObj)
 	return fontObj
 end
 
---- Gets the column spacing constant value.
--- @treturn number The column spacing
+---Gets the column spacing constant value.
+---@return number
 function Theme.GetColSpacing()
 	return CONSTANTS.COL_SPACING
 end
 
---- Gets the scrollbar margin constant value.
--- @treturn number The scrollbar margin
+---Gets the scrollbar margin constant value.
+---@return number
 function Theme.GetScrollbarMargin()
 	return CONSTANTS.SCROLLBAR_MARGIN
 end
 
---- Gets the scrollbar width constant value.
--- @treturn number The scrollbar width
+---Gets the scrollbar width constant value.
+---@return number
 function Theme.GetScrollbarWidth()
 	return CONSTANTS.SCROLLBAR_WIDTH
 end
 
---- Gets the scrollbar width constant value.
--- @treturn number The scrollbar width
+---Gets the mouse scroll amount value.
+---@return number
 function Theme.GetMouseWheelScrollAmount()
 	return CONSTANTS.MOUSE_WHEEL_SCROLL_AMOUNT
 end
 
+---Iterates over the theme color keys.
+---@return fun(): string @An iterator with fields: `key`
 function Theme.ThemeColorKeyIterator()
-	return ipairs(THEME_COLOR_KEYS)
+	return Table.KeyIterator(THEME_COLOR_KEYS)
 end
 
 
@@ -359,4 +430,30 @@ function private.FontFrameOnUpdate(frame)
 		end
 	end
 	frame:Hide()
+end
+
+function private.GetColorKeyInfo(key)
+	local colorKey, tintPct, opacityPct, colorSetKey = strmatch(key, "^([A-Z_]+)([%-%+]?[0-9A-Z_]*)%%?([0-9A-Z_]*):?([a-zA-Z]*)$")
+	tintPct = tonumber(tintPct) or (tintPct ~= "" and tintPct or nil)
+	opacityPct = tonumber(opacityPct) or (opacityPct ~= "" and opacityPct or nil)
+	colorSetKey = colorSetKey ~= "" and colorSetKey or nil
+	return colorKey, tintPct, opacityPct, colorSetKey
+end
+
+function private.HandleColorChange(changedColorSetKey, changedColorKey)
+	assert(not next(private.publishKeysTemp))
+	for _, key in pairs(private.publisherKey) do
+		local colorKey, _, _, colorSetKey = private.GetColorKeyInfo(key)
+		colorSetKey = colorSetKey or private.currentColorSetKey
+		if not private.publishKeysTemp[key] and colorSetKey == changedColorSetKey and (not changedColorKey or colorKey == changedColorKey) then
+			private.publishKeysTemp[key] = true
+			private.streams[colorKey]:Send(key)
+		end
+	end
+	wipe(private.publishKeysTemp)
+end
+
+function private.HandlePublisherCancel(_, publisher)
+	assert(private.publisherKey[publisher])
+	private.publisherKey[publisher] = nil
 end

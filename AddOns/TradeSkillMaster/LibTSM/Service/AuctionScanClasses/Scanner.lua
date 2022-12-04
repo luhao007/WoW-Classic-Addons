@@ -4,7 +4,7 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local Scanner = TSM.Init("Service.AuctionScanClasses.Scanner")
 local Delay = TSM.Include("Util.Delay")
 local FSM = TSM.Include("Util.FSM")
@@ -33,6 +33,8 @@ local private = {
 	requestFuture = Future.New("AUCTION_SCANNER_FUTURE"),
 	requestResult = nil,
 	fsm = nil,
+	retryTimer = nil,
+	doneTimer = nil,
 }
 
 
@@ -42,8 +44,10 @@ local private = {
 -- ============================================================================
 
 Scanner:OnModuleLoad(function()
+	private.retryTimer = Delay.CreateTimer("AUCTION_SCANNER_RETRY", private.RetryHandler)
+	private.doneTimer = Delay.CreateTimer("AUCTION_SCANNER_DONE", private.RequestDoneHandler)
 	private.requestFuture:SetScript("OnCleanup", function()
-		Delay.Cancel("AUCTION_SCANNER_DONE")
+		private.doneTimer:Cancel()
 		private.fsm:ProcessEvent("EV_CANCEL")
 	end)
 
@@ -71,7 +75,7 @@ Scanner:OnModuleLoad(function()
 				private.searchRow = nil
 				private.callback = nil
 				private.retryCount = 0
-				Delay.Cancel("AUCTION_SCANNER_RETRY")
+				private.retryTimer:Cancel()
 				if private.pendingFuture then
 					private.pendingFuture:Cancel()
 					private.pendingFuture = nil
@@ -119,7 +123,7 @@ Scanner:OnModuleLoad(function()
 		:AddState(FSM.NewState("ST_BROWSE_SORT")
 			:SetOnEnter(function()
 				if not private.query:_SetSort() then
-					Delay.AfterTime("AUCTION_SCANNER_RETRY", 0.5, private.RetryHandler)
+					private.retryTimer:RunForTime(0.5)
 					return
 				end
 				return "ST_BROWSE_SEND"
@@ -159,7 +163,7 @@ Scanner:OnModuleLoad(function()
 					return "ST_BROWSE_REQUEST_MORE"
 				elseif not private.CheckBrowseResults() then
 					-- result's aren't valid yet, so check again
-					Delay.AfterFrame("AUCTION_SCANNER_RETRY", 1, private.RetryHandler)
+					private.retryTimer:RunForTime(1)
 					return
 				end
 				-- we're done with this set of browse results
@@ -222,44 +226,16 @@ Scanner:OnModuleLoad(function()
 			:SetOnEnter(function()
 				assert(not TSM.IsWowClassic())
 				if not private.searchRow:SearchIsReady() then
-					Delay.AfterTime("AUCTION_SCANNER_RETRY", 0.1, private.RetryHandler)
+					private.retryTimer:RunForTime(0.1)
 					return
 				end
-				return "ST_RESET_SELLER_CACHE"
+				return "ST_SEARCH_SEND"
 			end)
 			:AddTransition("ST_SEARCH_GET_KEY")
-			:AddTransition("ST_RESET_SELLER_CACHE")
-			:AddTransition("ST_CANCELING")
-			:AddEventTransition("EV_FUTURE_SUCCESS", "ST_RESET_SELLER_CACHE")
-			:AddEventTransition("EV_RETRY", "ST_SEARCH_GET_KEY")
-			:AddEventTransition("EV_CANCEL", "ST_CANCELING")
-		)
-		:AddState(FSM.NewState("ST_RESET_SELLER_CACHE")
-			:SetOnEnter(function()
-				assert(not TSM.IsWowClassic())
-				if not DefaultUI.IsAuctionHouseVisible() then
-					return "ST_CANCELING"
-				end
-				if private.useCachedData and private.searchRow:HasCachedSearchData() then
-					return "ST_SEARCH_REQUEST_MORE"
-				end
-				local future, delayTime = AuctionHouseWrapper.ResetSellerCache()
-				if future then
-					private.HandleAuctionHouseWrapperResult(future)
-				else
-					if not delayTime then
-						Log.Err("Failed to send dummy search query - retrying")
-						delayTime = 0.5
-					end
-					-- try again after a delay
-					Delay.AfterTime("AUCTION_SCANNER_RETRY", delayTime, private.RetryHandler)
-				end
-			end)
-			:AddTransition("ST_RESET_SELLER_CACHE")
 			:AddTransition("ST_SEARCH_SEND")
 			:AddTransition("ST_CANCELING")
 			:AddEventTransition("EV_FUTURE_SUCCESS", "ST_SEARCH_SEND")
-			:AddEventTransition("EV_RETRY", "ST_RESET_SELLER_CACHE")
+			:AddEventTransition("EV_RETRY", "ST_SEARCH_GET_KEY")
 			:AddEventTransition("EV_CANCEL", "ST_CANCELING")
 		)
 		:AddState(FSM.NewState("ST_SEARCH_SEND")
@@ -267,6 +243,9 @@ Scanner:OnModuleLoad(function()
 				assert(not TSM.IsWowClassic())
 				if not DefaultUI.IsAuctionHouseVisible() then
 					return "ST_CANCELING"
+				end
+				if private.useCachedData and private.searchRow:HasCachedSearchData() then
+					return "ST_SEARCH_REQUEST_MORE"
 				end
 				local future, delayTime = private.searchRow:SearchSend()
 				if future then
@@ -277,7 +256,7 @@ Scanner:OnModuleLoad(function()
 						delayTime = 0.5
 					end
 					-- try again after a delay
-					Delay.AfterTime("AUCTION_SCANNER_RETRY", delayTime, private.RetryHandler)
+					private.retryTimer:RunForTime(delayTime)
 				end
 			end)
 			:AddTransition("ST_SEARCH_SEND")
@@ -294,7 +273,7 @@ Scanner:OnModuleLoad(function()
 				-- get if the item is a commodity or not
 				local isCommodity = ItemInfo.IsCommodity(baseItemString)
 				if isCommodity == nil then
-					Delay.AfterTime("AUCTION_SCANNER_RETRY", 0.1, private.RetryHandler)
+					private.retryTimer:RunForTime(0.1)
 					return
 				end
 
@@ -304,20 +283,20 @@ Scanner:OnModuleLoad(function()
 				elseif future then
 					private.HandleAuctionHouseWrapperResult(future)
 				else
-					Delay.AfterTime("AUCTION_SCANNER_RETRY", 0.5, private.RetryHandler)
+					private.retryTimer:RunForTime(0.5)
 				end
 			end)
-			:AddTransition("ST_RESET_SELLER_CACHE")
+			:AddTransition("ST_SEARCH_SEND")
 			:AddTransition("ST_SEARCH_CHECKING")
 			:AddTransition("ST_CANCELING")
 			:AddEventTransition("EV_FUTURE_SUCCESS", "ST_SEARCH_CHECKING")
-			:AddEventTransition("EV_RETRY", "ST_RESET_SELLER_CACHE")
+			:AddEventTransition("EV_RETRY", "ST_SEARCH_SEND")
 			:AddEventTransition("EV_CANCEL", "ST_CANCELING")
 		)
 		:AddState(FSM.NewState("ST_SEARCH_CHECKING")
 			:SetOnEnter(function()
 				assert(not TSM.IsWowClassic())
-				Delay.Cancel("AUCTION_SCANNER_RETRY")
+				private.retryTimer:Cancel()
 				private.searchRow:PopulateSubRows(private.browseId)
 
 				-- check if all the sub rows have their data
@@ -340,7 +319,7 @@ Scanner:OnModuleLoad(function()
 				elseif missingInfo then
 					-- We'll try again
 					private.retryCount = private.retryCount + 1
-					Delay.AfterTime("AUCTION_SCANNER_RETRY", 0.5, private.RetryHandler)
+					private.retryTimer:RunForTime(0.5)
 					return
 				end
 
@@ -376,7 +355,7 @@ Scanner:OnModuleLoad(function()
 		)
 		:AddState(FSM.NewState("ST_CANCELING")
 			:SetOnEnter(function()
-				Delay.Cancel("AUCTION_SCANNER_DONE")
+				private.doneTimer:Cancel()
 				return "ST_INIT"
 			end)
 			:AddTransition("ST_INIT")
@@ -435,7 +414,7 @@ function private.PendingFutureDoneHandler()
 	if result then
 		private.fsm:ProcessEvent("EV_FUTURE_SUCCESS", result)
 	else
-		Delay.AfterTime("AUCTION_SCANNER_RETRY", 0.1, private.RetryHandler)
+		private.retryTimer:RunForTime(0.1)
 	end
 end
 
@@ -456,20 +435,20 @@ function private.HandleAuctionHouseWrapperResult(future)
 		private.pendingFuture = future
 		private.pendingFuture:SetScript("OnDone", private.PendingFutureDoneHandler)
 	else
-		Delay.AfterTime("AUCTION_SCANNER_RETRY", 0.1, private.RetryHandler)
+		private.retryTimer:RunForTime(0.1)
 	end
 end
 
 function private.HandleRequestDone(result)
 	private.requestResult = result
 	-- delay a bit so that we complete our current FSM transition
-	Delay.AfterTime("AUCTION_SCANNER_DONE", 0, private.RequestDoneHandler)
+	private.doneTimer:RunForTime(0)
 end
 
 function private.CheckBrowseResults()
 	if TSM.IsWowClassic() then
 		-- process as many auctions as we can
-		local numAuctions = GetNumAuctionItems("list")
+		local numAuctions = AuctionHouseWrapper.GetNumAuctions()
 		for i = #private.browsePendingIndexes, 1, -1 do
 			local index = private.browsePendingIndexes[i]
 			if private.ProcessBrowseResultClassic(index) then

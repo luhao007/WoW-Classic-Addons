@@ -83,20 +83,17 @@ function Util.GetLowestAuction(subRows, itemString, operationSettings, resultTbl
 			local quantity = subRow:GetQuantities()
 			local timeLeft = subRow:GetListingInfo()
 			if not foundLowest and not Util.IsFiltered(itemString, operationSettings, itemBuyout, quantity, timeLeft) then
-				local ownerStr = subRow:GetOwnerInfo()
+				local ownerStr, numOwnerAuctions = subRow:GetOwnerInfo()
 				local _, auctionId = subRow:GetListingInfo()
 				local _, itemMinBid = subRow:GetBidInfo()
-				local firstSeller = strsplit(",", ownerStr)
+				local firstSeller = strsplit(",", ownerStr) or (numOwnerAuctions > 0 and UnitName("player")) or "?"
 				resultTbl.buyout = itemBuyout
 				resultTbl.bid = itemMinBid
 				resultTbl.seller = firstSeller
 				resultTbl.auctionId = auctionId
-				resultTbl.isWhitelist = TSM.db.factionrealm.auctioningOptions.whitelist[strlower(firstSeller)] and true or false
-				resultTbl.isBlacklist = String.SeparatedContains(strlower(operationSettings.blacklist), ",", strlower(firstSeller))
-				resultTbl.isPlayer = PlayerInfo.IsPlayer(firstSeller, true, true, true)
-				if not subRow:HasOwners() then
-					resultTbl.hasInvalidSeller = true
-				end
+				resultTbl.isWhitelist = false
+				resultTbl.isBlacklist = false
+				resultTbl.isPlayer = numOwnerAuctions > 0
 				foundLowest = true
 			end
 		end

@@ -43,7 +43,7 @@ function private.GetCraftingSettingsFrame()
 	for _, character in PlayerInfo.CharacterIterator(true) do
 		tinsert(private.altCharacters, character)
 	end
-	for name in PlayerInfo.GuildIterator() do
+	for _, name in PlayerInfo.GuildIterator() do
 		tinsert(private.altGuilds, name)
 	end
 

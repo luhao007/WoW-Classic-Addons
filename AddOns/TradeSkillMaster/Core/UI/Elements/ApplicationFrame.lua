@@ -13,15 +13,14 @@ local L = TSM.Include("Locale").GetTable()
 local Math = TSM.Include("Util.Math")
 local TempTable = TSM.Include("Util.TempTable")
 local Color = TSM.Include("Util.Color")
-local NineSlice = TSM.Include("Util.NineSlice")
+local Rectangle = TSM.Include("UI.Rectangle")
 local Table = TSM.Include("Util.Table")
 local ScriptWrapper = TSM.Include("Util.ScriptWrapper")
 local Theme = TSM.Include("Util.Theme")
+local TextureAtlas = TSM.Include("Util.TextureAtlas")
 local Tooltip = TSM.Include("UI.Tooltip")
 local UIElements = TSM.Include("UI.UIElements")
-local ApplicationFrame = TSM.Include("LibTSMClass").DefineClass("ApplicationFrame", TSM.UI.Frame)
-UIElements.Register(ApplicationFrame)
-TSM.UI.ApplicationFrame = ApplicationFrame
+local ApplicationFrame = UIElements.Define("ApplicationFrame", "Frame")
 local private = {
 	menuDialogContext = {},
 }
@@ -33,6 +32,7 @@ local HEADER_HEIGHT = 40
 local MIN_SCALE = 0.3
 local DIALOG_OPACITY_PCT = 65
 local MIN_ON_SCREEN_PX = 50
+local CORNER_RADIUS = 6
 local function NoOp() end
 
 
@@ -58,12 +58,12 @@ function ApplicationFrame.__init(self)
 	-- insert our frames before other addons (i.e. Skillet) to avoid conflicts
 	tinsert(UISpecialFrames, 1, globalFrameName)
 
-	self._nineSlice = NineSlice.New(frame)
-	self._nineSlice:SetStyle("outerFrame")
+	self._backgroundTexture = Rectangle.New(frame)
+	self._backgroundTexture:SetCornerRadius(CORNER_RADIUS)
 
 	frame.resizeIcon = frame:CreateTexture(nil, "ARTWORK")
 	frame.resizeIcon:SetPoint("BOTTOMRIGHT")
-	TSM.UI.TexturePacks.SetTextureAndSize(frame.resizeIcon, "iconPack.14x14/Resize")
+	TextureAtlas.SetTextureAndSize(frame.resizeIcon, "iconPack.14x14/Resize")
 
 	frame.resizeBtn = CreateFrame("Button", nil, frame)
 	frame.resizeBtn:SetAllPoints(frame.resizeIcon)
@@ -138,7 +138,7 @@ end
 -- @treturn ApplicationFrame The application frame object
 function ApplicationFrame.AddPlayerGold(self)
 	local titleFrame = self:GetElement("titleFrame")
-	titleFrame:AddChildBeforeById(titleFrame:HasChildById("switchBtn") and "switchBtn" or "closeBtn", UIElements.New("PlayerGoldText", "playerGold")
+	titleFrame:AddChildBeforeById(titleFrame:HasChildById("switchBtn") and "switchBtn" or "closeBtn", TSM.UI.Views.PlayerGoldText.New("playerGold")
 		:SetWidth("AUTO")
 		:SetMargin(0, 8, 0, 0)
 	)
@@ -150,23 +150,23 @@ end
 -- @treturn ApplicationFrame The application frame object
 function ApplicationFrame.AddAppStatusIcon(self)
 	local color, texture = nil, nil
-	local appUpdateAge = time() - TSM.GetAppUpdateTime()
+	local appUpdateAge = time() - (TSM.AppHelper.GetLastSync() or 0)
 	local auctionDBRealmTime, auctionDBRegionTime = TSM.AuctionDB.GetAppDataUpdateTimes()
 	local auctionDBRealmAge = time() - auctionDBRealmTime
 	local auctionDBRegionAge = time() - auctionDBRegionTime
 	if appUpdateAge >= 2 * SECONDS_PER_DAY or auctionDBRealmAge > 2 * SECONDS_PER_DAY or auctionDBRegionAge > 2 * SECONDS_PER_DAY then
-		color = "RED"
+		color = "FEEDBACK_RED"
 		texture = "iconPack.14x14/Attention"
 	elseif appUpdateAge >= SECONDS_PER_HOUR or auctionDBRealmAge >= 4 * SECONDS_PER_HOUR then
-		color = "YELLOW"
+		color = "FEEDBACK_YELLOW"
 		texture = "iconPack.14x14/Attention"
 	else
-		color = "GREEN"
+		color = "FEEDBACK_GREEN"
 		texture = "iconPack.14x14/Checkmark/Circle"
 	end
 	local titleFrame = self:GetElement("titleFrame")
-	titleFrame:AddChildBeforeById("playerGold", UIElements.New("Button", "playerGold")
-		:SetBackgroundAndSize(TSM.UI.TexturePacks.GetColoredKey(texture, Theme.GetFeedbackColor(color)))
+	titleFrame:AddChildBeforeById("playerGold", UIElements.New("Button", "appStatus")
+		:SetBackgroundAndSize(TextureAtlas.GetColoredKey(texture, color))
 		:SetMargin(0, 8, 0, 0)
 		:SetTooltip(private.GetAppStatusTooltip)
 	)
@@ -387,15 +387,13 @@ function ApplicationFrame.HideDialog(self)
 		return
 	end
 	dialogFrame:GetParentElement():RemoveChild(dialogFrame)
-	dialogFrame:Hide()
-	dialogFrame:Release()
 end
 
 function ApplicationFrame.Draw(self)
 	local frame = self:_GetBaseFrame()
 	frame:SetToplevel(true)
 	frame:Raise()
-	self._nineSlice:SetVertexColor(Theme.GetColor("FRAME_BG"):GetFractionalRGBA())
+	self._backgroundTexture:SetColor(Theme.GetColor("FRAME_BG"))
 
 	-- update the size if it's less than the set min size
 	assert(self._minWidth > 0 and self._minHeight > 0)
@@ -605,8 +603,7 @@ function private.CreateMenuDialogFrame(id, iter)
 				:SetHeight(21)
 				:SetPadding(8, 0, 0, 0)
 				:SetFont("BODY_BODY3_MEDIUM")
-				:SetBackground("PRIMARY_BG_ALT")
-				:SetHighlightEnabled(true)
+				:SetBackground("PRIMARY_BG_ALT", true)
 				:SetJustifyH("LEFT")
 				:SetIcon(subIter and "iconPack.12x12/Chevron/Right" or nil, subIter and "RIGHT" or nil)
 				:SetText(text)
@@ -644,7 +641,6 @@ function private.MenuDialogRowDefaultOnEnter(button)
 			prevRow:GetElement("btn"):SetHighlightLocked(false)
 		end
 		frame:RemoveChild(subFrame)
-		subFrame:Release()
 		frame:Draw()
 	end
 end
@@ -663,35 +659,35 @@ end
 
 function private.GetAppStatusTooltip()
 	local tooltipLines = TempTable.Acquire()
-	local regionRealmName = TSM.GetRegion().."-"..GetRealmName()
+	local regionRealmName = TSM.AppHelper.GetRegion().."-"..GetRealmName()
 	if TSM.IsWowClassic() then
 		regionRealmName = regionRealmName.."-"..UnitFactionGroup("player")
 	end
 	tinsert(tooltipLines, format(L["TSM Desktop App Status (%s)"], regionRealmName))
 
-	local appUpdateAge = time() - TSM.GetAppUpdateTime()
+	local appUpdateAge = time() - (TSM.AppHelper.GetLastSync() or 0)
 	if appUpdateAge < SECONDS_PER_HOUR then
-		tinsert(tooltipLines, Theme.GetFeedbackColor("GREEN"):ColorText(format(L["App Synced %s Ago"], SecondsToTime(appUpdateAge))))
+		tinsert(tooltipLines, Theme.GetColor("FEEDBACK_GREEN"):ColorText(format(L["App Synced %s Ago"], SecondsToTime(appUpdateAge))))
 	elseif appUpdateAge < 2 * SECONDS_PER_DAY then
-		tinsert(tooltipLines, Theme.GetFeedbackColor("YELLOW"):ColorText(format(L["App Synced %s Ago"], SecondsToTime(appUpdateAge))))
+		tinsert(tooltipLines, Theme.GetColor("FEEDBACK_YELLOW"):ColorText(format(L["App Synced %s Ago"], SecondsToTime(appUpdateAge))))
 	else
-		tinsert(tooltipLines, Theme.GetFeedbackColor("RED"):ColorText(L["App Not Synced"]))
+		tinsert(tooltipLines, Theme.GetColor("FEEDBACK_RED"):ColorText(L["App Not Synced"]))
 	end
 
 	local auctionDBRealmTime, auctionDBRegionTime = TSM.AuctionDB.GetAppDataUpdateTimes()
 	local auctionDBRealmAge = time() - auctionDBRealmTime
 	local auctionDBRegionAge = time() - auctionDBRegionTime
 	if auctionDBRealmAge < 4 * SECONDS_PER_HOUR then
-		tinsert(tooltipLines, Theme.GetFeedbackColor("GREEN"):ColorText(format(L["AuctionDB Realm Data is %s Old"], SecondsToTime(auctionDBRealmAge))))
+		tinsert(tooltipLines, Theme.GetColor("FEEDBACK_GREEN"):ColorText(format(L["AuctionDB Realm Data is %s Old"], SecondsToTime(auctionDBRealmAge))))
 	elseif auctionDBRealmAge < 2 * SECONDS_PER_DAY then
-		tinsert(tooltipLines, Theme.GetFeedbackColor("YELLOW"):ColorText(format(L["AuctionDB Realm Data is %s Old"], SecondsToTime(auctionDBRealmAge))))
+		tinsert(tooltipLines, Theme.GetColor("FEEDBACK_YELLOW"):ColorText(format(L["AuctionDB Realm Data is %s Old"], SecondsToTime(auctionDBRealmAge))))
 	else
-		tinsert(tooltipLines, Theme.GetFeedbackColor("RED"):ColorText(L["No AuctionDB Realm Data"]))
+		tinsert(tooltipLines, Theme.GetColor("FEEDBACK_RED"):ColorText(L["No AuctionDB Realm Data"]))
 	end
 	if auctionDBRegionAge < 2 * SECONDS_PER_DAY then
-		tinsert(tooltipLines, Theme.GetFeedbackColor("GREEN"):ColorText(format(L["AuctionDB Region Data is %s Old"], SecondsToTime(auctionDBRegionAge))))
+		tinsert(tooltipLines, Theme.GetColor("FEEDBACK_GREEN"):ColorText(format(L["AuctionDB Region Data is %s Old"], SecondsToTime(auctionDBRegionAge))))
 	else
-		tinsert(tooltipLines, Theme.GetFeedbackColor("RED"):ColorText(L["No AuctionDB Region Data"]))
+		tinsert(tooltipLines, Theme.GetColor("FEEDBACK_RED"):ColorText(L["No AuctionDB Region Data"]))
 	end
 
 	return strjoin("\n", TempTable.UnpackAndRelease(tooltipLines)), true, 16

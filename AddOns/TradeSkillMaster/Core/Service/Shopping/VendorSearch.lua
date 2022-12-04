@@ -39,14 +39,14 @@ end
 -- ============================================================================
 
 function private.ScanThread(auctionScan)
-	if (TSM.AuctionDB.GetLastCompleteScanTime() or 0) < time() - 60 * 60 * 12 then
+	if (TSM.AuctionDB.GetAppDataUpdateTimes() or 0) < time() - 60 * 60 * 12 then
 		Log.PrintUser(L["No recent AuctionDB scan data found."])
 		return false
 	end
 
 	-- create the list of items
 	wipe(private.itemList)
-	for _, itemString, _, minBuyout in TSM.AuctionDB.LastScanIteratorThreaded() do
+	for itemString, minBuyout in TSM.AuctionDB.LastScanIteratorThreaded() do
 		local vendorSell = ItemInfo.GetVendorSell(itemString) or 0
 		if vendorSell and minBuyout and minBuyout < vendorSell then
 			tinsert(private.itemList, itemString)

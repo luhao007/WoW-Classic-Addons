@@ -32,6 +32,8 @@ function DividedContainer.__init(self)
 	self._defaultContextTable = nil
 	self._minLeftWidth = nil
 	self._minRightWidth = nil
+	self._dividerHidden = false
+	self._mouseOver = false
 end
 
 function DividedContainer.Acquire(self)
@@ -44,10 +46,13 @@ function DividedContainer.Acquire(self)
 		:SetHitRectInsets(-2, -2, 0, 0)
 		:SetRelativeLevel(2)
 		:EnableRightClick()
+		:SetBackground("ACTIVE_BG", true)
 		:SetScript("OnMouseDown", private.HandleOnMouseDown)
 		:SetScript("OnMouseUp", private.HandleOnMouseUp)
 		:SetScript("OnClick", private.HandleOnClick)
 		:SetScript("OnUpdate", private.HandleOnUpdate)
+		:SetScript("OnEnter", private.HandleOnEnter)
+		:SetScript("OnLeave", private.HandleOnLeave)
 	)
 	self.__super:AddChildNoLayout(UIElements.New("Frame", "rightEmpty")
 		:AddAnchor("TOPLEFT", "divider", "TOPRIGHT")
@@ -67,6 +72,8 @@ function DividedContainer.Release(self)
 	self._defaultContextTable = nil
 	self._minLeftWidth = nil
 	self._minRightWidth = nil
+	self._dividerHidden = false
+	self._mouseOver = false
 	self.__super:Release()
 end
 
@@ -85,6 +92,11 @@ function DividedContainer.SetVertical(self)
 		:AddAnchor("TOPLEFT", "divider", "BOTTOMLEFT")
 		:AddAnchor("BOTTOMRIGHT")
 	self.__super:SetLayout("VERTICAL")
+	return self
+end
+
+function DividedContainer.HideDivider(self)
+	self._dividerHidden = true
 	return self
 end
 
@@ -182,9 +194,11 @@ end
 function DividedContainer.Draw(self)
 	assert(self._contextTable and self._minLeftWidth and self._minRightWidth)
 	self.__super.__super.__super:Draw()
-	self:GetElement("divider")
-		:SetBackground("ACTIVE_BG")
-		:SetHighlightEnabled(true)
+	if self._dividerHidden and not self._mouseOver and not self._resizeStartX then
+		self:GetElement("divider"):SetBackground(nil)
+	else
+		self:GetElement("divider"):SetBackground("ACTIVE_BG", true)
+	end
 
 	local width = self:_GetDimension(self._isVertical and "HEIGHT" or "WIDTH") - DIVIDER_SIZE
 	local leftWidth = self._contextTable.leftWidth + self._resizeOffset
@@ -277,5 +291,17 @@ function private.HandleOnClick(handle, mouseButton)
 	end
 	local self = handle:GetParentElement()
 	self._contextTable.leftWidth = self._defaultContextTable.leftWidth
+	self:Draw()
+end
+
+function private.HandleOnEnter(handle)
+	local self = handle:GetParentElement()
+	self._mouseOver = true
+	self:Draw()
+end
+
+function private.HandleOnLeave(handle)
+	local self = handle:GetParentElement()
+	self._mouseOver = false
 	self:Draw()
 end

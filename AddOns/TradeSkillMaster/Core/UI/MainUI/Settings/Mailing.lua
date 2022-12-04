@@ -25,7 +25,7 @@ local ITEM_QUALITY_KEYS = { 2, 3, 4 }
 
 function Mailing.OnInitialize()
 	TSM.MainUI.Settings.RegisterSettingPage(L["Mailing"], "middle", private.GetMailingSettingsFrame)
-	for key, name in pairs(Sound.GetSounds()) do
+	for key, name in Sound.Iterator() do
 		tinsert(private.sounds, name)
 		tinsert(private.soundkeys, key)
 	end

@@ -214,15 +214,15 @@ function Threading.GetDebugStr()
 	for _, thread in pairs(private.threads) do
 		if thread:_IsAlive() then
 			local name, stateStr, timeStr, createStr, startStr, backtrace = thread:_GetDebugInfo()
-			tinsert(lines, "  "..name)
-			tinsert(lines, "    "..stateStr)
-			tinsert(lines, "    "..timeStr)
-			tinsert(lines, "    "..createStr)
-			tinsert(lines, "    "..startStr)
+			tinsert(lines, name)
+			tinsert(lines, "  "..stateStr)
+			tinsert(lines, "  "..timeStr)
+			tinsert(lines, "  "..createStr)
+			tinsert(lines, "  "..startStr)
 			if #backtrace > 0 then
-				tinsert(lines, "    Backtrace:")
+				tinsert(lines, "  Backtrace:")
 				for _, line in ipairs(backtrace) do
-					tinsert(lines, "      "..line)
+					tinsert(lines, "    "..line)
 				end
 			end
 		end

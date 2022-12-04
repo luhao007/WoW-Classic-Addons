@@ -4,13 +4,30 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
---- Sound Functions
--- @module Sound
-
-local _, TSM = ...
-local Sound = TSM.Init("Util.Sound")
+local TSM = select(2, ...) ---@type TSM
+local Sound = TSM.Init("Util.Sound") ---@class Util.Sound
 local L = TSM.Include("Locale").GetTable()
 local NO_SOUND_KEY = "TSM_NO_SOUND" -- this can never change
+---@alias SoundKey
+---|'"TSM_NO_SOUND"'
+---|'"AuctionWindowOpen"'
+---|'"AuctionWindowClose"'
+---|'"alarmclockwarning3"'
+---|'"UI_AutoQuestComplete"'
+---|'"TSM_CASH_REGISTER"'
+---|'"HumanExploration"'
+---|'"Fishing Reel in"'
+---|'"LevelUp"'
+---|'"MapPing"'
+---|'"MONEYFRAMEOPEN"'
+---|'"IgPlayerInviteAccept"'
+---|'"QUESTADDED"'
+---|'"QUESTCOMPLETED"'
+---|'"UI_QuestObjectivesComplete"'
+---|'"RaidWarning"'
+---|'"ReadyCheck"'
+---|'"UnwrapGift"'
+---@type table<SoundKey,string>
 local SOUNDS = {
 	[NO_SOUND_KEY] = "<"..L["No Sound"]..">",
 	["AuctionWindowOpen"] = L["Auction Window Open"],
@@ -56,21 +73,20 @@ local SOUNDKITIDS = {
 -- Module Functions
 -- ============================================================================
 
---- Gets the key used to represent no sound.
--- @return The key used to represent no sound
+---Gets the key used to represent no sound.
+---@return SoundKey @The key used to represent no sound
 function Sound.GetNoSoundKey()
 	return NO_SOUND_KEY
 end
 
---- Gets the key-value table containing all supported sounds.
--- The key is the what gets passed to @{Sound.PlaySound} and the value is a localized string describing the sound.
--- @return The sounds table
-function Sound.GetSounds()
-	return SOUNDS
+---Iterates over the available sounds.
+---@return fun():SoundKey, string @An iterator with two fields, the sound key and a localized description
+function Sound.Iterator()
+	return pairs(SOUNDS)
 end
 
---- Plays a sound and flashes the client icon.
--- @param soundKey The key of the sound (from @{Sound.GetSounds}) to play
+---Plays a sound and flashes the client icon.
+---@param soundKey SoundKey The sound key to play
 function Sound.PlaySound(soundKey)
 	if soundKey == NO_SOUND_KEY then
 		-- do nothing
