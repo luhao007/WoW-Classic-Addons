@@ -1,14 +1,15 @@
-# [5.2.2](https://github.com/WeakAuras/WeakAuras2/tree/5.2.2) (2022-11-28)
+# [5.3.1](https://github.com/WeakAuras/WeakAuras2/tree/5.3.1) (2022-12-04)
 
-[Full Changelog](https://github.com/WeakAuras/WeakAuras2/compare/5.2.1...5.2.2)
+[Full Changelog](https://github.com/WeakAuras/WeakAuras2/compare/5.3.0...5.3.1)
 
 ## Highlights
 
- - Fix for textures 
+ - bug fixes 
 
 ## Commits
 
-mrbuds (1):
+mrbuds (2):
 
-- Texture: disable legacyZoomOut with atlas texture and reorder options
+- AuraBar gradient: fix bug on classic
+- Disable item cooldown triggers on wotlk PTR
 

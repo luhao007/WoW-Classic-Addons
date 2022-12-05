@@ -324,8 +324,8 @@ local function prepareSessionTable()
 	local numFactions = GetNumFactions()
 	for factionIndex = 1, numFactions do
 		local name, _, _, _, _, earnedValue, _, _, _, _, _, _, _, factionId = GetFactionInfo(factionIndex)
-		local friendID, friendRep = GetFriendshipReputation(factionId)
 		if (factionId) then
+			local friendID, friendRep = GetFriendshipReputation(factionId)
 			if (IsMajorFaction(factionId)) then
 				local data = GetMajorFactionData(factionId)
 				local isCapped = HasMaximumRenown(factionId)

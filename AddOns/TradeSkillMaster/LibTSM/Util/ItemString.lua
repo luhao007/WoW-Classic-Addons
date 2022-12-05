@@ -235,11 +235,7 @@ function ItemString.ToWow(itemString)
 	local itemId, rand, extraPart = nil, nil, nil
 	if itemStringLevel then
 		itemId, rand = select(2, strsplit(":", itemString))
-		local bonusId, levelModifier = BonusIds.GetIdForLevel(itemStringLevel, isAbsItemStringLevel)
-		extraPart = "1:"..bonusId
-		if levelModifier then
-			extraPart = extraPart..":1:9:"..levelModifier
-		end
+		extraPart = BonusIds.GetBonusStringForLevel(itemStringLevel, isAbsItemStringLevel)
 	else
 		local _, extra = nil, nil
 		itemId, rand, extra = select(2, strsplit(":", itemString))

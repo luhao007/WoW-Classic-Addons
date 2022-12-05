@@ -316,8 +316,7 @@ L["PROSPECT_TOOLTIP_TOOLTIP_TEXT"] = "Afficher la valeur estimée de la prospect
 L["PURCHASED_X_XX"] = "Acheté %s x%s"
 L["QUANTITY"] = "Quantité"
 L["REAGENT_SEARCH"] = "Composants"
---[[Translation missing --]]
-L["REAGENTS_VALUE_COLON"] = "Reagents Value:"
+L["REAGENTS_VALUE_COLON"] = "Valeur des Composants:"
 L["REALM_HISTORY"] = "Historique du royaume"
 L["RECENT_SEARCHES"] = "Recherches récentes"
 L["REFRESH"] = "Actualiser"
@@ -358,46 +357,27 @@ L["SHOPPING_TAB"] = "Achat"
 L["SHOPPING_TAB_HEADER_2"] = "Auctionator - Achats"
 L["SKIP"] = "Passer"
 L["SORT"] = "Trier"
---[[Translation missing --]]
-L["SPLASH_100015_ALL_VERSIONS_1"] = "Autocomplete search terms when searching in the Shopping tab."
---[[Translation missing --]]
-L["SPLASH_100015_ALL_VERSIONS_2"] = "Quick search terms are immediately editable in the Shopping tab after a search."
---[[Translation missing --]]
-L["SPLASH_100015_ALL_VERSIONS_3"] = "Option to preserve last selected duration in the Selling tab."
---[[Translation missing --]]
-L["SPLASH_100015_ALL_VERSIONS_4"] = "Both crafting cost and profit can be displayed simultaneously in the crafting views."
---[[Translation missing --]]
-L["SPLASH_100015_ALL_VERSIONS_5"] = "Scroll areas have been reworked to be smoother."
---[[Translation missing --]]
-L["SPLASH_100015_ALL_VERSIONS_6"] = "General bugfixes and compatibility changes for WoW."
---[[Translation missing --]]
-L["SPLASH_100015_ALL_VERSIONS_HEADER"] = "Recent features for all versions"
+L["SPLASH_100015_ALL_VERSIONS_1"] = "Compléter automatiquement les termes de recherche lors d'une recherche dans l'onglet \"Achats\"."
+L["SPLASH_100015_ALL_VERSIONS_2"] = "Les termes de recherche rapide sont immédiatement modifiables dans l'onglet \"Achats\" après une recherche."
+L["SPLASH_100015_ALL_VERSIONS_3"] = "Option permettant de conserver la dernière durée sélectionnée dans l'onglet Vente."
+L["SPLASH_100015_ALL_VERSIONS_4"] = "Les coûts et les bénéfices de l'artisanat peuvent être affichés simultanément dans les vues de l'artisanat."
+L["SPLASH_100015_ALL_VERSIONS_5"] = "Les zones de défilement ont été retravaillées pour être plus fluides."
+L["SPLASH_100015_ALL_VERSIONS_6"] = "Corrections de bogues généraux et changements de compatibilité pour WoW."
+L["SPLASH_100015_ALL_VERSIONS_HEADER"] = "Fonctions récentes pour toutes les versions"
 --[[Translation missing --]]
 L["SPLASH_100015_CLASSIC_1"] = "Warning when posting with a massive undercut (50% or more) to reduce mistakes."
---[[Translation missing --]]
-L["SPLASH_100015_CLASSIC_2"] = "New optional \"Top?\" column in the Shopping tab to see if your auction is top for an item."
---[[Translation missing --]]
-L["SPLASH_100015_CLASSIC_3"] = "Prospecting ore estimated values as an optional tooltip."
---[[Translation missing --]]
-L["SPLASH_100015_CLASSIC_4"] = "Milling herb estimated values as an optional tooltip."
---[[Translation missing --]]
-L["SPLASH_100015_CLASSIC_5"] = "Shows posting history as an extra option in an item's price history view."
---[[Translation missing --]]
-L["SPLASH_100015_CLASSIC_6"] = "In the Selling tab removed extra scan after posting an item."
---[[Translation missing --]]
-L["SPLASH_100015_CLASSIC_7"] = "Option to prevent the post button going grey/disabled and to allow attempts to post immediately, with no-cost retries on failure."
---[[Translation missing --]]
-L["SPLASH_100015_CLASSIC_HEADER"] = "Recent features for Classic"
---[[Translation missing --]]
-L["SPLASH_100015_DESCRIPTION"] = "Lots of improvements, including compatibility with Dragonflight"
---[[Translation missing --]]
-L["SPLASH_100015_RETAIL_1"] = "Crafting cost and profit updates based on the reagents and quality selected."
---[[Translation missing --]]
-L["SPLASH_100015_RETAIL_2"] = "Selling tab has an expanded prices view with historical prices available in a separate tab. Reverting to the split screen view is available as an option."
---[[Translation missing --]]
-L["SPLASH_100015_RETAIL_3"] = "Reagents value on the auction house is shown when listing a crafting order."
---[[Translation missing --]]
-L["SPLASH_100015_RETAIL_HEADER"] = "Recent features for Retail"
+L["SPLASH_100015_CLASSIC_2"] = "Nouvelle colonne facultative \"Top ?\" dans l'onglet \"Achats\" pour savoir si votre enchère est la meilleure pour un article."
+L["SPLASH_100015_CLASSIC_3"] = "Valeurs estimées des minerais de prospection en tant qu'infobulle facultative."
+L["SPLASH_100015_CLASSIC_4"] = "Les valeurs estimées de l'herbe de mouture sont présentées sous forme d'infobulle."
+L["SPLASH_100015_CLASSIC_5"] = "Affiche l'historique des publications en tant qu'option supplémentaire dans la vue de l'historique des prix d'un article."
+L["SPLASH_100015_CLASSIC_6"] = "Dans l'onglet Vente, suppression de l'analyse supplémentaire après la publication d'un article."
+L["SPLASH_100015_CLASSIC_7"] = "Option permettant d'éviter que le bouton d'envoi ne devienne gris/désactivé et d'autoriser les tentatives d'envoi immédiat, avec des tentatives sans frais en cas d'échec."
+L["SPLASH_100015_CLASSIC_HEADER"] = "Fonctionnalités récentes pour Classic"
+L["SPLASH_100015_DESCRIPTION"] = "Beaucoup d'améliorations, y compris la compatibilité avec Dragonflight"
+L["SPLASH_100015_RETAIL_1"] = "Mise à jour des coûts et des bénéfices de l'artisanat en fonction des réactifs et de la qualité choisis."
+L["SPLASH_100015_RETAIL_2"] = "L'onglet Vente présente une vue élargie des prix avec des prix historiques disponibles dans un onglet séparé. Le retour à l'affichage en écran partagé est disponible en option."
+L["SPLASH_100015_RETAIL_3"] = "La valeur des réactifs à l'hôtel des ventes est indiquée lors de l'inscription d'une commande d'artisanat."
+L["SPLASH_100015_RETAIL_HEADER"] = "Fonctionnalités récentes pour Retail"
 L["SPLASH_830_BUGS_1"] = "Veuillez nous rejoindre sur le serveur Discord d'Auctionator %s"
 L["SPLASH_830_BUGS_2"] = "Veuillez signaler les bugs sur Github %s"
 L["SPLASH_830_BUGS_3"] = "Nous sommes surtout actifs sur Discord, et ne prenons pas les rapports de bugs sur les forums de Curseforge ou Auctionator"

@@ -204,7 +204,7 @@ function Item:Update()
 end
 
 function Item:UpdateSecondary()
-	if self:GetFrame() and self.hasItem then
+	if self:GetFrame() then
 		self:UpdateFocus()
 		self:UpdateSearch()
 		self:UpdateCooldown()
@@ -277,7 +277,7 @@ end
 
 function Item:UpdateUpgradeIcon()
 	local isUpgrade = self:IsUpgrade()
-	if self.hasItem and isUpgrade == nil then
+	if isUpgrade == nil then
 		self:Delay(0.5, 'UpdateUpgradeIcon')
 	else
 		self.UpgradeIcon:SetShown(isUpgrade)
@@ -306,7 +306,7 @@ end
 
 function Item:UpdateSearch()
 	local search = Addon.canSearch and Addon.search or ''
-	local matches = search == '' or Search:Matches(self.info.link, search)
+	local matches = search == '' or self.hasItem and Search:Matches(self.info.link, search)
 
 	self:SetAlpha(matches and 1 or 0.3)
 	self:SetLocked(not matches or self.info.locked)
@@ -320,8 +320,8 @@ function Item:UpdateFocus()
 	end
 end
 
-function Item:FlashFind(button)
-	if IsAltKeyDown() and button == 'LeftButton' and Addon.sets.flashFind and self.info.id then
+function Item:FlashFind(mouse)
+	if IsAltKeyDown() and mouse == 'LeftButton' and Addon.sets.flashFind and self.info.id then
 		self:SendSignal('FLASH_ITEM', self.info.id)
 		return true
 	end
@@ -453,11 +453,12 @@ function Item:IsPaid()
 end
 
 function Item:IsUpgrade()
-	if PawnShouldItemLinkHaveUpgradeArrow then
-		return self:GetItem() and PawnShouldItemLinkHaveUpgradeArrow(self:GetItem()) or false
-	elseif IsContainerItemAnUpgrade then
-		return not self:IsCached() and IsContainerItemAnUpgrade(self:GetBag(), self:GetID())
-	else
-		return false
+	if self.hasItem then
+		if PawnShouldItemLinkHaveUpgradeArrow then
+			return self:GetItem() and PawnShouldItemLinkHaveUpgradeArrow(self:GetItem()) or false
+		elseif IsContainerItemAnUpgrade then
+			return not self.info.cached and IsContainerItemAnUpgrade(self:GetBag(), self:GetID())
+		end
 	end
+	return false
 end

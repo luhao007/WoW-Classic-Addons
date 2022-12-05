@@ -1481,6 +1481,7 @@ function private.FSMCreate()
 				end
 				fsmPrivate.UpdateContentPage(context)
 				fsmPrivate.UpdateOptionalMaterials(context)
+				fsmPrivate.UpdateCraftButtons(context)
 				fsmPrivate.UpdateFilter(context)
 				fsmPrivate.UpdateQueueFrame(context)
 				if not context.queueQuery then

@@ -84,7 +84,14 @@ local GENERIC_TYPES = {
 	GetItemInventorySlotInfo(Enum.InventoryType.IndexHoldableType),
 	GetItemInventorySlotInfo(Enum.InventoryType.IndexBodyType),
 }
-local MAX_LEVEL = TSM.IsWowWrathClassic() and 80 or 60
+local MAX_LEVEL = nil
+if TSM.IsWowWrathClassic() then
+	MAX_LEVEL = 80
+elseif TSM.IsWowClassic() then
+	MAX_LEVEL = 60
+else
+	MAX_LEVEL = 70
+end
 
 
 

@@ -6200,6 +6200,7 @@ local BONUS_ID_INFO = {
 	[8777] = {curveId=34347, curve={[45]=222, [58]=222, [69]=332, [70]=343, [80]=343}},
 	[8778] = {curveId=34345, curve={[45]=226, [58]=226, [69]=336, [70]=347, [80]=347}},
 	[8779] = {curveId=34348, curve={[45]=242, [58]=242, [69]=352, [70]=363, [80]=363}},
+	[8785] = {base=400},
 	[8798] = {rel=0},
 	[8799] = {rel=2},
 	[8800] = {rel=4},
@@ -6210,6 +6211,20 @@ local BONUS_ID_INFO = {
 	[8805] = {rel=12},
 	[8806] = {rel=19},
 	[8807] = {rel=26},
+	[8836] = {base=382},
+	[8837] = {base=306},
+	[8839] = {base=333},
+	[8841] = {base=320},
+	[8843] = {base=346},
+	[8844] = {base=372},
+	[8845] = {base=395},
+	[8846] = {base=408},
+	[8847] = {base=333},
+	[8848] = {base=359},
+	[8849] = {base=346},
+	[8850] = {base=372, hasOther=true},
+	[8851] = {base=333},
+	[8903] = {base=1},
 	[8935] = {curveId=45172, curve={[1]=3, [25]=31, [26]=31, [27]=32, [28]=33, [31]=37, [32]=37, [39]=45, [40]=46, [43]=49, [44]=50, [45]=50, [46]=51, [48]=83, [50]=92, [59]=146, [60]=252, [70]=252}},
 	[8936] = {curveId=45206, curve={[59]=146, [60]=252, [70]=252}},
 	[8979] = {curveId=56397, curve={[1]=5, [3]=5, [24]=29, [26]=31, [27]=32, [30]=35, [32]=37, [33]=37, [35]=41, [38]=43, [39]=44, [40]=46, [44]=50, [45]=50, [50]=85, [59]=155, [60]=272, [70]=392}},
@@ -6337,17 +6352,25 @@ local BONUS_ID_INFO = {
 	[9123] = {curveId=60974, curve={[1]=39, [7]=45, [10]=51, [11]=54, [12]=58, [14]=64, [15]=66, [17]=72, [18]=74, [21]=82, [22]=84, [24]=90, [25]=92, [37]=128, [38]=132, [40]=138, [41]=142, [43]=148, [44]=152, [47]=162, [49]=170, [50]=173, [53]=185, [54]=188, [60]=212, [70]=212}},
 	[9124] = {curveId=60975, curve={[1]=41, [7]=47, [10]=53, [11]=56, [12]=60, [14]=66, [15]=68, [17]=74, [18]=76, [21]=84, [22]=86, [24]=92, [25]=94, [37]=130, [38]=134, [40]=140, [41]=144, [43]=150, [44]=154, [47]=164, [49]=172, [50]=175, [53]=187, [54]=190, [60]=214, [70]=214}, hasOther=true},
 	[9125] = {curveId=60976, curve={[1]=43, [7]=49, [10]=55, [11]=58, [12]=62, [14]=68, [15]=70, [17]=76, [18]=78, [21]=86, [22]=88, [24]=94, [25]=96, [37]=132, [38]=136, [40]=142, [41]=146, [43]=152, [44]=156, [47]=166, [49]=174, [50]=177, [53]=189, [54]=192, [60]=216, [70]=216}, hasOther=true},
+	[9128] = {base=333},
 	[9156] = {curveId=30724, curve={[45]=206, [58]=206, [69]=316, [70]=327, [80]=327}},
 	[9232] = {curveId=62385, curve={[60]=249, [69]=329, [70]=340, [72]=340}},
 	[9233] = {curveId=62415, curve={[1]=21, [7]=27, [10]=33, [11]=36, [12]=40, [14]=46, [15]=48, [17]=54, [18]=56, [21]=64, [22]=66, [24]=72, [25]=74, [37]=110, [38]=114, [40]=120, [41]=124, [43]=130, [44]=134, [47]=144, [49]=152, [50]=155, [53]=167, [54]=170, [59]=190, [60]=236, [70]=236}},
 }
 local BONUS_ID_INFO_LIST = {}
+local BASE_BONUS_IDS = {}
 do
 	-- generate a sorted list of bonusIds we have info for
 	for bonusId in pairs(BONUS_ID_INFO) do
 		tinsert(BONUS_ID_INFO_LIST, bonusId)
 	end
 	sort(BONUS_ID_INFO_LIST)
+	-- generate a table of base levels and their bonusIds
+	for bonusId, info in pairs(BONUS_ID_INFO) do
+		if info.base then
+			BASE_BONUS_IDS[info.base] = bonusId
+		end
+	end
 end
 local BONUS_ID_TO_CRAFTING_STAT_MODIFIER = {
 	[6647] = 32,
@@ -6381,6 +6404,7 @@ function BonusIds.GetItemLevel(itemString)
 	local itemLevelModifierValue = nil
 	local relLevel = nil
 	local importantBonusId = nil
+	local baseLevel = nil
 	for bonusId in gmatch(bonusIds, "([0-9]+)") do
 		bonusId = tonumber(bonusId)
 		if numBonusIds > 0 then
@@ -6388,6 +6412,8 @@ function BonusIds.GetItemLevel(itemString)
 			if info then
 				if info.rel then
 					relLevel = (relLevel or 0) + info.rel
+				elseif info.base then
+					baseLevel = baseLevel or info.base
 				else
 					if not importantBonusId then
 						importantBonusId = bonusId
@@ -6416,7 +6442,11 @@ function BonusIds.GetItemLevel(itemString)
 	end
 	assert(not nextIsItemLevelModifier)
 	if not importantBonusId then
-		return relLevel, false
+		if baseLevel then
+			return (relLevel or 0) + baseLevel, true
+		else
+			return relLevel, false
+		end
 	end
 	local absLevel = nil
 	local info = BONUS_ID_INFO[importantBonusId]
@@ -6430,7 +6460,7 @@ function BonusIds.GetItemLevel(itemString)
 	return absLevel, true
 end
 
-function BonusIds.GetIdForLevel(itemLevel, isAbs)
+function BonusIds.GetBonusStringForLevel(itemLevel, isAbs)
 	local curveBonusId, curveLevelModifier = nil, nil
 	for _, bonusId in ipairs(BONUS_ID_INFO_LIST) do
 		local info = BONUS_ID_INFO[bonusId]
@@ -6438,7 +6468,15 @@ function BonusIds.GetIdForLevel(itemLevel, isAbs)
 			-- ignore this bonusId
 		elseif (isAbs and info.abs == itemLevel) or (not isAbs and info.rel == itemLevel) then
 			-- this is a match
-			return bonusId
+			return "1:"..bonusId
+		elseif isAbs and info.rel and BASE_BONUS_IDS[itemLevel - info.rel] then
+			-- This is a match with a base level bonusId
+			local bonusId2 = BASE_BONUS_IDS[itemLevel - info.rel]
+			if bonusId < bonusId2 then
+				return "2:"..bonusId..":"..bonusId2
+			else
+				return "2:"..bonusId2..":"..bonusId
+			end
 		elseif info.curveId and isAbs and not curveBonusId then
 			-- check for this itemLevel on the curve
 			local lowerLevelBound, upperLevelBound = nil, nil
@@ -6472,7 +6510,7 @@ function BonusIds.GetIdForLevel(itemLevel, isAbs)
 	if not curveBonusId then
 		error(format("Could not find id (%s, %s)", tostring(itemLevel), tostring(isAbs)))
 	end
-	return curveBonusId, curveLevelModifier
+	return "1:"..curveBonusId..":1:9:"..curveLevelModifier
 end
 
 function BonusIds.GetCraftingStatModifier(bonusId)
