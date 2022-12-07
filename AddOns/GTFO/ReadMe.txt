@@ -1774,3 +1774,22 @@ Change Log:
 4.69.2
 * Updated for patch 10.0.2
 * Added DF spells for Uldaman: Legacy of Tyr
+
+4.69.3
+* Added Dragonflight spells (world)
+
+4.69.4
+* Added Dragonflight spells (world)
+* Added Dragonflight for Ruby Life Pools
+* Added Dragonflight for The Nokhud Offensive
+* Added Dragonflight for Halls of Infusion
+* Added Dragonflight for Brackenhide Hollow
+
+4.70
+* Fixed an issue that could cause tank detection to fail on some classes after reloading UI
+* Added Dragonflight spells (world)
+* Added Dragonflight for Ruby Life Pools
+* Added Dragonflight for The Nokhud Offensive
+* Added Dragonflight for Halls of Infusion
+* Added Dragonflight for Algeth'ar Academy
+* Added Dragonflight for The Azure Vault

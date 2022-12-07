@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: zwj@oldgun
-## Version: 1.8.247
+## Version: 1.8.781
 ## DefaultState: enabled
 
 ## Title: WclPlayerScore

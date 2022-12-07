@@ -161,6 +161,7 @@ local function drawSpecData()
 end
 
 local function buildClassDict()
+    class_options = {}
     for ci, class in ipairs(Bistooltip_classes) do
         local option_name = "|T" .. Bistooltip_spec_icons[class.name].classIcon .. ":14|t " .. class.name
         table.insert(class_options, option_name)
@@ -287,6 +288,7 @@ function BistooltipAddon:createMainFrame()
     end
     main_frame = AceGUI:Create("Frame")
     main_frame:SetWidth(450)
+    main_frame.frame:SetMinResize(420,300)
     main_frame:SetCallback("OnClose", function(widget)
         spec_frame = nil
         items = {}
@@ -296,17 +298,24 @@ function BistooltipAddon:createMainFrame()
     end)
     main_frame:SetLayout("List")
     main_frame:SetTitle(BistooltipAddon.AddonNameAndVersion)
-    main_frame:SetStatusText("AceGUI-3.0")
+    main_frame:SetStatusText(Bistooltip_source_to_url[BistooltipAddon.db.char["data_source"]])
     drawDropdowns()
     createSpecFrame()
     drawSpecData()
 end
 
+function BistooltipAddon:closeMainFrame()
+    if main_frame then
+        AceGUI:Release(main_frame)
+        return
+    end
+end
+
+
 function BistooltipAddon:initBislists()
+    buildClassDict()
     loadData()
     LibStub("AceConsole-3.0"):RegisterChatCommand("bistooltip", function()
         BistooltipAddon:createMainFrame()
     end, persist)
 end
-
-buildClassDict()

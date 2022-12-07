@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: MysticalOS, QartemisT
-## Version: 5bd31e2
+## Version: 05da521
 ## Dependencies: DBM-StatusBarTimers
 ## LoadOnDemand: 0
 ## SavedVariables: DBM_AllSavedOptions, DBM_MinimapIcon
@@ -18,6 +18,8 @@
 ## X-Min-Interface-Wrath: 30400
 ## X-Website: https://deadlybossmods.com
 ## X-Part-Of: DBM-Core
+
+Libs\LibDropDownMenu\LibDropDownMenu.xml
 
 localization.en.lua
 localization.br.lua

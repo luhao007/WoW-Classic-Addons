@@ -1,0 +1,30 @@
+## Interface: 30400
+## RequiredDeps: Details
+
+## Title: Details_ChartViewer (plugin)
+## Notes: Plugin for Details
+## Title-zhCN: |cFFFFE00A<|r|cFFC79C6E战斗|r|cFFFFE00A>|r |cFFFFFFFF伤害统计|r |cFF69CCF0插件|r |cFF22B14C图表查看器|r
+## Notes-zhCN: 使用简单的线条图表查看Details!收集的数据
+
+## X-Curse-Project-ID: 79620
+## X-Wago-ID: RaN0oaGj
+## X-Part-Of: Details
+
+#@no-lib-strip@
+embeds.xml
+#@end-no-lib-strip@
+
+locales\enUS.lua
+locales\deDE.lua
+locales\esES.lua
+locales\esMX.lua
+locales\frFR.lua
+locales\itIT.lua
+locales\koKR.lua
+locales\ptBR.lua
+locales\ruRU.lua
+locales\zhCN.lua
+locales\zhTW.lua
+
+Details_ChartViewer.xml
+Details_ChartViewer.lua

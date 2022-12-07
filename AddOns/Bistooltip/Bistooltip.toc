@@ -1,11 +1,11 @@
 ## Interface: 30400
 ## Author: Dweem
-## Version: 6.8
+## Version: 7.2
 ## OptionalDeps: 
 ## SavedVariables: BisTooltipDB
 
 ## Title: BiS-Tooltip
-## Notes: v6.8. In game BiS lists and item tooltip enrichment.
+## Notes: v7.2. In game BiS lists and item tooltip enrichment.
 ## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFF最佳装备提示|r |cFFFFE00ABistooltip|r
 ## Notes-zhCN: 提示最佳装备
 
@@ -13,9 +13,11 @@
 # Libs.
 lib\LibExtraTip\Load.xml
 
-Bistooltip_items.lua
 Bistooltip_classes.lua
-Bistooltip_bislists.lua
+Bistooltip_wowtbc_items.lua
+Bistooltip_wowtbc_bislists.lua
+Bistooltip_wh_items.lua
+Bistooltip_wh_bislists.lua
 Core.lua
 Config.lua
 Bistooltip.lua

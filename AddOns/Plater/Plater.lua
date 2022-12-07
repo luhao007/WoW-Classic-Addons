@@ -1984,6 +1984,8 @@ local class_specs_coords = {
 		["nameplateMinAlpha"] = true,
 		["nameplateMinAlphaDistance"] = true,
 		["nameplateShowDebuffsOnFriendly"] = true,
+		["SoftTargetIconGameObject"] = (IS_WOW_PROJECT_MAINLINE),
+		["SoftTargetInteract"] = (IS_WOW_PROJECT_MAINLINE),
 	}
 	
 	--keep this separate for now, with only stuff that NEEDS restoring in order
@@ -4918,6 +4920,8 @@ function Plater.OnInit() --private --~oninit ~init
 		
 		function Plater.DoCastBarTest (castNoInterrupt, castTime)
 
+			Plater.CastBarTestFrame.castTime = castTime or 3
+			
 			for _, plateFrame in ipairs (Plater.GetAllShownPlates()) do
 				if plateFrame.unitFrame.PlaterOnScreen then
 					local castBar = plateFrame.unitFrame.castBar
@@ -4938,6 +4942,7 @@ function Plater.OnInit() --private --~oninit ~init
 					castBar.maxValue = (castTime or 3)
 					castBar.canInterrupt = castNoInterrupt or math.random (1, 2) == 1
 					--castBar.canInterrupt = true
+					--castBar.channeling = true
 					castBar:UpdateCastColor()
 
 					castBar.spellName = 		spellName
@@ -4954,7 +4959,11 @@ function Plater.OnInit() --private --~oninit ~init
 					castBar.flashTexture:Hide()
 					castBar:Animation_StopAllAnimations()
 
-					Plater.CastBarOnEvent_Hook(castBar, "UNIT_SPELLCAST_START", plateFrame.unitFrame.unit, plateFrame.unitFrame.unit)
+					if (castBar.channeling) then
+						Plater.CastBarOnEvent_Hook(castBar, "UNIT_SPELLCAST_CHANNEL_START", plateFrame.unitFrame.unit, plateFrame.unitFrame.unit)
+					else
+						Plater.CastBarOnEvent_Hook(castBar, "UNIT_SPELLCAST_START", plateFrame.unitFrame.unit, plateFrame.unitFrame.unit)
+					end
 					
 					if (not castBar:IsShown()) then
 						castBar:Animation_FadeIn()
@@ -10020,9 +10029,12 @@ end
 		return unitFrame and unitFrame.AuraCache and unitFrame.AuraCache.canStealOrPurge
 	end
 	
-	--get npc color set in the colors tab
-	function Plater.GetNpcColor (unitFrame)
-		return DB_UNITCOLOR_SCRIPT_CACHE [unitFrame [MEMBER_NPCID]]
+	--get npc color set in the colors tab, it is getting the color set by the user with or without the "scripts only checked"
+	function Plater.GetNpcColor(unitFrame)
+		local npcId = unitFrame[MEMBER_NPCID]
+		if (npcId) then
+			return DB_UNITCOLOR_CACHE[npcId] or DB_UNITCOLOR_SCRIPT_CACHE[npcId]
+		end
 	end
 
 	--pass some colors and return the first valid color
@@ -12395,6 +12407,7 @@ end
 								
 								--keep the enabled state
 								wasEnabled = scriptObject.Enabled
+								--carry the enabled state from user
 								newScript.Enabled = scriptObject.Enabled
 								
 								Plater.UpdateOptionsForModScriptImport(newScript, scriptObject)

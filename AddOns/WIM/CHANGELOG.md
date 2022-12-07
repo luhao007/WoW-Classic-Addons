@@ -1,7 +1,9 @@
 # WIM
 
-## [3.9.13](https://github.com/Legacy-of-Sylvanaar/wow-instant-messenger/tree/3.9.13) (2022-11-21)
-[Full Changelog](https://github.com/Legacy-of-Sylvanaar/wow-instant-messenger/compare/3.9.12...3.9.13) [Previous Releases](https://github.com/Legacy-of-Sylvanaar/wow-instant-messenger/releases)
+## [3.10.1](https://github.com/Legacy-of-Sylvanaar/wow-instant-messenger/tree/3.10.1) (2022-12-07)
+[Full Changelog](https://github.com/Legacy-of-Sylvanaar/wow-instant-messenger/compare/3.10.0...3.10.1) [Previous Releases](https://github.com/Legacy-of-Sylvanaar/wow-instant-messenger/releases)
 
-- fix some missing connections to libDropDownMenu  
-- Fix: Whispers were not always being grouped with chat windows correctly.  
+- delint pull request  
+- Merge pull request #24 from cxmplex/master  
+    fix bnet user messaging (@cxmplex)  
+- fix bnet user messaging  

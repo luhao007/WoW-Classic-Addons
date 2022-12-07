@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Crieve-Sargeras
-## Version: 1.2.6
+## Version: 1.2.7
 ## SavedVariables: ATTCharacterData, ATTAccountWideData, ATTClassicSettings, ATTClassicAD, ATTClassicAuctionData, ATTClassicDebugData
 ## SavedVariablesPerCharacter: ATTClassicSettingsPerCharacter
 
@@ -10,6 +10,7 @@
 ## Notes-zhCN: 追踪账号完成度，提示诸如任务、飞行点、配方等各个分类的收集和完成情况
 
 ## X-Interface: 20504
+## X-Wago-ID: yQKyY5K7
 ## X-Curse-Project-ID: 267285
 
 src\base.lua

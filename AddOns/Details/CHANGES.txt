@@ -1,92 +1,14 @@
-Changes since tag Details.DF.Wrath.10304.147
+Changes since tag Details.DF.Wrath.10333.147
 
-commit 5d04d6c2298de93bc9082c8eb83c198dd1d203f1
-Author: Tercio Jose <terciob19@hotmail.com>
-Date:   Sun Dec 4 15:19:06 2022 -0300
-
-    Double check for Astral Bomb explosion
-
-commit 85f18dddd4da8e44f3f9103de73892edcfddd4a0
-Author: Tercio Jose <terciob19@hotmail.com>
-Date:   Sun Dec 4 15:06:38 2022 -0300
-
-    Removed Malganis Friendly Fire check from WOW Shadowlands
-
-commit e12ec18381a1aa208e4868f58c4781da0a4cfc1e
-Author: Tercio Jose <terciob19@hotmail.com>
-Date:   Sun Dec 4 12:21:44 2022 -0300
-
-    Added played class time to /played, also added a command to disable it
-
-commit bdb3fa2f6b8104079bc2eca8c4398358b4c98bd0
+commit 31bf84882b707b43e489a739d06fa3083bd2e1ce
 Author: Flamanis <Flamanis@users.noreply.github.com>
-Date:   Sun Dec 4 09:08:41 2022 -0600
+Date:   Mon Dec 5 10:47:50 2022 -0600
 
-    Add DetailsPluginContainerWindow to UISpecialFrames
+    Add calls to Wrath With Retail for frame setup
 
-commit bdb3fa2f6b8104079bc2eca8c4398358b4c98bd0
+commit 31bf84882b707b43e489a739d06fa3083bd2e1ce
 Author: Flamanis <Flamanis@users.noreply.github.com>
-Date:   Sun Dec 4 09:08:41 2022 -0600
+Date:   Mon Dec 5 10:47:50 2022 -0600
 
-    Add DetailsPluginContainerWindow to UISpecialFrames
-
-commit 0f69a261f6a335f366a4770f4bfe43614e96cb8e
-Author: Tercio Jose <terciob19@hotmail.com>
-Date:   Fri Dec 2 22:27:59 2022 -0300
-
-    Added Pet Frenzy Uptime
-
-commit f1eaedb01b90f70a2f9fba6941343ec4e711e741
-Author: Tercio Jose <terciob19@hotmail.com>
-Date:   Fri Dec 2 19:38:55 2022 -0300
-
-    Much better texture on tooltips
-
-commit 5571749ef64a0863764862427a9312b9bbd59a10
-Author: Tercio Jose <terciob19@hotmail.com>
-Date:   Fri Dec 2 19:32:51 2022 -0300
-
-    Using portrait for enemy faces
-
-commit f17f8642b7065ca9dbb96f23f401e444e47e654f
-Author: Tercio Jose <terciob19@hotmail.com>
-Date:   Thu Dec 1 22:52:25 2022 -0300
-
-    Added option to merge pets at the Player Breakdown window
-
-commit cad2f6e6194c5e313737cf8357e7ed64c7cd57ae
-Author: Tercio Jose <terciob19@hotmail.com>
-Date:   Thu Dec 1 13:11:45 2022 -0300
-
-    fixes
-
-commit 2dcb54d90b8ed9e4782134be68c3ffa5e9eb3535
-Author: Tercio Jose <terciob19@hotmail.com>
-Date:   Wed Nov 30 23:19:17 2022 -0300
-
-    Fix for the merged spells in the breakdown window
-
-commit 8a3302d83e989fd213ff002331616fa989d15065
-Author: Tercio Jose <terciob19@hotmail.com>
-Date:   Wed Nov 30 14:55:33 2022 -0300
-
-    Merging spells with the same name in the Player Breakdown Window
-
-commit 2dff960030df8983076eac8496f09d8dfecdc683
-Author: Tercio Jose <terciob19@hotmail.com>
-Date:   Tue Nov 29 17:30:51 2022 -0300
-
-    Played-a-Life
-
-commit 82ec1fbcac8898022a39b36372cd44c0404cf788
-Author: Tercio Jose <terciob19@hotmail.com>
-Date:   Tue Nov 29 16:30:18 2022 -0300
-
-    Fixed an issue with wrath
-
-commit 5c3f964c84c90bf406ce63a1d33425829e52b6ee
-Author: Tercio Jose <terciob19@hotmail.com>
-Date:   Mon Nov 28 17:54:11 2022 -0300
-
-    attempt to improve pet detection
+    Add calls to Wrath With Retail for frame setup
 

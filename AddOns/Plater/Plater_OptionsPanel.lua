@@ -42,6 +42,9 @@ local highlightColorLastCombat = {1, 1, .2, .25}
 local dropdownStatusBarTexture = platerInternal.Defaults.dropdownStatusBarTexture
 local dropdownStatusBarColor = platerInternal.Defaults.dropdownStatusBarColor
 
+--when opening the options after an encounter, open at the tab "spell list", it shows the spells used on the encounter
+local CONST_LASTEVENTS_TAB_INDEX = 19
+
  --cvars
 local CVAR_ENABLED = "1"
 local CVAR_DISABLED = "0"
@@ -144,7 +147,7 @@ Plater.UpdateOptionsTabUpdateState = update_wago_update_icons
 function Plater.CheckOptionsTab()
 	if (Plater.LatestEncounter) then
 		if (Plater.LatestEncounter + 60 > time()) then
-			PlaterOptionsPanelContainer:SelectIndex (Plater, 12)
+			PlaterOptionsPanelContainer:SelectIndex (Plater, CONST_LASTEVENTS_TAB_INDEX)
 		end
 	end
 	update_wago_update_icons()
@@ -13267,6 +13270,24 @@ end
 			end,
 			name = "Show healthbars on not attackable units",
 			desc = "Show Healthbars on not attackable units instead of defaulting to 'name only'.",
+		},
+		
+		{
+			type = "toggle",
+			boxfirst = true,
+			get = function() return GetCVarBool ("SoftTargetIconGameObject") and tonumber(GetCVar("SoftTargetInteract") or 0) == 3 end,
+			set = function (self, fixedparam, value) 
+				if (not InCombatLockdown()) then
+					
+					SetCVar ("SoftTargetIconGameObject", value and "1" or "0")
+					SetCVar ("SoftTargetInteract", value and "3" or "0")
+				else
+					Plater:Msg (L["OPTIONS_ERROR_CVARMODIFY"])
+				end
+			end,
+			name = "Show soft-interact on game objects" .. CVarIcon,
+			desc = "Show soft-interact on game objects." .. CVarDesc,
+			nocombat = true,
 		},
 		
 		{

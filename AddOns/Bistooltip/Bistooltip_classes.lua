@@ -50,8 +50,8 @@ Bistooltip_classes[10] = { ["name"] = "Warrior", ["specs"] = {
     [2] = "Fury",
     [3] = "Protection"
 } };
-Bistooltip_classes.toIndex = {
-    ["knight"] = 1,
+Bistooltip_classes_indexes = {
+    ["Death knight"] = 1,
     ["Druid"] = 2,
     ["Hunter"] = 3,
     ["Mage"] = 4,

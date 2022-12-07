@@ -1,11 +1,21 @@
-1.2.6 Release Notes
+1.2.7 Release Notes
 Contributions made by Crieve:
-* Updated Feralas to include legacy information.
-* Feralas now resides on the Retail Database.
-* Fixed yet another issue with C_Map.GetPlayerMapPosition.
-* Restructured the database format to allow one addon version to work for Classic, TBC, and Wrath.
-* In case someone installs ATT-Classic to Retail, it should still be shown as ATT-Classic as the design is simplified.
-* ATT-Classic now supports building for Cataclysm.
-* ATT-Classic is once again compatible with Classic Era.
-* Schematic: Steam Tonk Controller is not available until TBC.
+* Updated the Build Tool for ATT-Classic.
+* Added the WAGO Project ID.
+* Marked the original Heirlooms provided in Wrath as BoA.
+* Updated Clamlette Surprise (13825) to account for knowing the recipe.
+* Updated Azshara to include future expansion information.
+* Azshara now resides on the Retail Database.
+* Removed an invalid build number from various timelines.
+* Updated Mulgore for Wrath Classic.
+* Mulgore now resides on the Retail Database.
+* Updated Durotar for future expansion information.
+* Durotar now resides on the Retail Database.
+* Added Muddy Churning Waters to ZG.
+* Moved the Brazier of Madness trinkets to the object itself.
+* Robe of the Void is actually useable by any class after Wrath.
+* The never implemented tag on Schematic: Khorium Toolbox no longer applies to the titanium one.
+* Updated Desolace to include future expansion information.
+* Desolace now resides on the Retail Database.
+* Added some missing object information.
 

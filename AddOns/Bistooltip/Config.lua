@@ -1,4 +1,15 @@
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
+local AceGUI = LibStub("AceGUI-3.0")
+
+local sources = {
+    wh = "wh",
+    wowtbc = "wowtbc"
+}
+
+Bistooltip_source_to_url = {
+    ["wh"] = "wowhead.com/wotlk [beta]",
+    ["wowtbc"] = "wowtbc.gg/wotlk"
+}
 
 local db_defaults = {
     char = {
@@ -6,7 +17,8 @@ local db_defaults = {
         spec_index = 1,
         phase_index = 1,
         filter_specs = {},
-        highlight_spec = {}
+        highlight_spec = {},
+        data_source = Nil
     }
 }
 
@@ -15,6 +27,7 @@ local configTable = {
     args = {
         filter_class_names = {
             name = "Filter class names",
+            order = 0,
             desc = "Removes class name separators from item tooltips",
             type = "toggle",
             set = function(info, val)
@@ -24,8 +37,24 @@ local configTable = {
                 return BistooltipAddon.db.char.filter_class_names
             end
         },
+        data_source = {
+            name = "Data source",
+            order = 1,
+            desc = "Changes bis data source",
+            type = "select",
+            style = "dropdown",
+            values = Bistooltip_source_to_url,
+            set = function(info, key, val)
+                BistooltipAddon.db.char.data_source = key
+                BistooltipAddon:changeSpec(key)
+            end,
+            get = function(info, key)
+                return BistooltipAddon.db.char.data_source
+            end
+        },
         filter_specs = {
             name = "Filter specs",
+            order = 2,
             desc = "Removes unselected specs from item tooltips",
             type = "multiselect",
             values = nil,
@@ -54,6 +83,7 @@ local configTable = {
         },
         highlight_spec = {
             name = "Highlight spec",
+            order = 3,
             desc = "Highlights selected spec in item tooltips",
             type = "multiselect",
             values = nil,
@@ -95,6 +125,45 @@ local function buildFilterSpecOptions()
     configTable.args.highlight_spec.values = filter_specs_options
 end
 
+local function openSourceSelectDialog()
+    local frame = AceGUI:Create("Window")
+    frame:SetWidth(300)
+    frame:SetHeight(150)
+    frame:EnableResize(false)
+    frame:SetCallback("OnClose", function(widget)
+        AceGUI:Release(widget)
+        frame = nil
+    end)
+    frame:SetLayout("List")
+    frame:SetTitle(BistooltipAddon.AddonNameAndVersion)
+
+    local labelEmpty = AceGUI:Create("Label")
+    labelEmpty:SetFont("Fonts\\FRIZQT__.TTF", 14, "")
+    labelEmpty:SetText(" ")
+    frame:AddChild(labelEmpty)
+
+    local label = AceGUI:Create("Label")
+    label:SetText("Please select a bis data source to be used for this addon:")
+    label:SetFont("Fonts\\FRIZQT__.TTF", 14, "")
+    label:SetRelativeWidth(1)
+    frame:AddChild(label)
+
+    local labelEmpty2 = AceGUI:Create("Label")
+    labelEmpty2:SetFont("Fonts\\FRIZQT__.TTF", 14, "")
+    labelEmpty2:SetText(" ")
+    frame:AddChild(labelEmpty2)
+
+    local sourceDropdown = AceGUI:Create("Dropdown")
+    sourceDropdown:SetCallback("OnValueChanged", function(_, _, key)
+        BistooltipAddon.db.char.data_source = key
+        BistooltipAddon:changeSpec(key)
+    end)
+    sourceDropdown:SetRelativeWidth(1)
+    sourceDropdown:SetList(Bistooltip_source_to_url)
+    sourceDropdown:SetValue(BistooltipAddon.db.char["data_source"])
+    frame:AddChild(sourceDropdown)
+end
+
 local function migrateAddonDB()
     if not BistooltipAddon.db.char["version"] then
         BistooltipAddon.db.char.version = 6.1
@@ -103,6 +172,10 @@ local function migrateAddonDB()
         BistooltipAddon.db.char.class_index = 1
         BistooltipAddon.db.char.spec_index = 1
         BistooltipAddon.db.char.phase_index = 1
+    end
+    if BistooltipAddon.db.char["data_source"] == Nil then
+        BistooltipAddon.db.char.data_source = sources.wowtbc
+        openSourceSelectDialog()
     end
 end
 
@@ -117,11 +190,56 @@ function BistooltipAddon:openConfigDialog()
     config_shown = not (config_shown)
 end
 
+local function rebuildClassesTable()
+    Bistooltip_classes = {}
+    for class_name, specs_arr in pairs(Bistooltip_bislists) do
+        local specs = {}
+        local specs_index = 1
+        for spec_name, v in pairs(specs_arr) do
+            specs[specs_index] = spec_name
+            specs_index = specs_index + 1
+        end
+        Bistooltip_classes[Bistooltip_classes_indexes[class_name]] = {
+            ["name"] = class_name,
+            ["specs"] = specs
+        }
+    end
+end
+
+local function enableSpec(spec_name)
+    BistooltipAddon:closeMainFrame()
+    if spec_name == sources.wowtbc then
+        Bistooltip_bislists = Bistooltip_wowtbc_bislists;
+        Bistooltip_items = Bistooltip_wowtbc_items;
+    elseif spec_name == sources.wh then
+        Bistooltip_bislists = Bistooltip_wh_bislists;
+        Bistooltip_items = Bistooltip_wh_items;
+    end
+    rebuildClassesTable()
+    buildFilterSpecOptions()
+end
+
+function BistooltipAddon:changeSpec(spec_name)
+    enableSpec(spec_name)
+
+    BistooltipAddon.db.char.class_index = 1
+    BistooltipAddon.db.char.spec_index = 1
+    BistooltipAddon.db.char.phase_index = 1
+
+    BistooltipAddon:initBislists()
+end
+
 function BistooltipAddon:initConfig()
+
     BistooltipAddon.db = LibStub("AceDB-3.0"):New("BisTooltipDB", db_defaults, true)
 
-    buildFilterSpecOptions()
     LibStub("AceConfig-3.0"):RegisterOptionsTable(BistooltipAddon.AceAddonName, configTable)
     AceConfigDialog:AddToBlizOptions(BistooltipAddon.AceAddonName, BistooltipAddon.AceAddonName)
+
     migrateAddonDB()
+
+    Bistooltip_bislists = {};
+    Bistooltip_items = {};
+
+    enableSpec(BistooltipAddon.db.char["data_source"])
 end
