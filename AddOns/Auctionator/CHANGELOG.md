@@ -1,8 +1,8 @@
 # Auctionator
 
-## [10.0.19](https://github.com/Auctionator/Auctionator/tree/10.0.19) (2022-12-06)
-[Full Changelog](https://github.com/Auctionator/Auctionator/compare/10.0.18...10.0.19) 
+## [10.0.25](https://github.com/Auctionator/Auctionator/tree/10.0.25) (2022-12-09)
+[Full Changelog](https://github.com/Auctionator/Auctionator/compare/10.0.24...10.0.25) 
 
-- Mainline: IncrementalScan: Fix not treating profession equipment as gear  
-- [Fixes #1292] Mainline: Profession gear item level isn't used for auction prices  
-- [Fixes #1291] Mainline: CraftingInfo: Craftable reagents show wrong output value  
+- [Fixes #1298] Cancelling: Error if dragging scroll bar when undercut scan active  
+- Mainline: CraftingInfo: Fix caching issue breaking profit info on some reagents  
+- Mainline: CraftingInfo: Commenting  

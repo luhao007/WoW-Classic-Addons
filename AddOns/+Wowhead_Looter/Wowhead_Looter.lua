@@ -10,6 +10,9 @@
 -----------------------------------------
 
 
+-- When this version of the addon was made.
+local WL_ADDON_UPDATED = "2022-12-09";
+
 local WL_NAME = "|cffffff7fWowhead Looter|r";
 local WL_VERSION = 30400;
 local WL_VERSION_PATCH = 0;
@@ -521,6 +524,31 @@ local sub, gsub = sub, gsub;
 local lower = lower;
 local time = time;
 
+local C_Container = C_Container;
+if not C_Container then
+    C_Container = {}
+    C_Container.GetContainerNumSlots = GetContainerNumSlots;
+    C_Container.GetContainerItemID = GetContainerItemID;
+    C_Container.GetContainerItemDurability = GetContainerItemDurability;
+    C_Container.GetContainerItemLink = GetContainerItemLink;
+    C_Container.GetContainerItemInfo = function(index, slot)
+        local iconFileID, stackCount, isLocked, quality, isReadable, hasLoot, hyperlink, isFiltered, hasNoValue, itemID, isBound = GetContainerItemInfo(index, slot);
+        return {
+            hasLoot = hasLoot,
+            hyperlink = hyperlink,
+            iconFileID = iconFileID,
+            hasNoValue = hasNoValue,
+            isLocked = isLocked,
+            itemID = itemID,
+            isBound = isBound,
+            stackCount = stackCount,
+            isFiltered = isFiltered,
+            isReadable = isReadable,
+            quality = quality,
+        };
+    end
+end
+
 -- Local Variables
 local wlTracker = {};
 local wlNpcInfo = {};
@@ -670,7 +698,7 @@ function wlEvent_PLAYER_LOGIN(self)
 
     wlScanTitles();
 
-    wlMessage(WL_LOADED:format(WL_NAME, WL_VERSION), true);
+    wlMessage(WL_LOADED:format(WL_NAME, WL_VERSION) .. " - " .. WL_ADDON_UPDATED, true);
 end
 
 --**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--
@@ -2246,8 +2274,9 @@ function wlBagItemOnUse(link, bag, slot)
 
     local id = wlParseItemLink(link);
     if bag and slot then
-        local openable = select(6, GetContainerItemInfo(bag, slot));
-        if openable then
+
+        local info = C_Container.GetContainerItemInfo(bag, slot);
+        if info and info.hasLoot then
             wlGameTooltip:ClearLines();
             wlGameTooltip:SetBagItem(bag, slot);
             for i=2, wlGameTooltip:NumLines() do
@@ -2277,8 +2306,8 @@ end
 function wlGuessBagAndSlot(link)
     local itemID = wlParseItemLink(link);
     for bag = NUM_BAG_FRAMES, 0, -1 do
-        for slot=1, GetContainerNumSlots(bag) do
-            if wlParseItemLink(GetContainerItemLink(bag, slot)) == itemID then
+        for slot=1, C_Container.GetContainerNumSlots(bag) do
+            if wlParseItemLink(C_Container.GetContainerItemLink(bag, slot)) == itemID then
                 return bag, slot;
             end
         end
@@ -2291,9 +2320,10 @@ end
 function wlGetLockedID()
     -- an item becomes locked (grayed out) when it is being looted
     for bag = NUM_BAG_FRAMES, 0, -1 do
-        for slot=1, GetContainerNumSlots(bag) do
-            if select(3, GetContainerItemInfo(bag, slot)) then
-                local link = GetContainerItemLink(bag, slot);
+        for slot=1, C_Container.GetContainerNumSlots(bag) do
+            local info = C_Container.GetContainerItemInfo(bag, slot);
+            if info and info.isLocked then
+                local link = C_Container.GetContainerItemLink(bag, slot);
                 return wlParseItemLink(link);
             end
         end
@@ -2608,10 +2638,11 @@ function wlEvent_ITEM_LOCK_CHANGED(self, bag, slot)
         return;
     end
 
-    local itemLink = GetContainerItemLink(bag, slot);
+    local itemLink = C_Container.GetContainerItemLink(bag, slot);
     local itemID = wlParseItemLink(itemLink);
 
-    if select(3, GetContainerItemInfo(bag, slot)) and wlTracker.spell.id == itemID then
+    local info = C_Container.GetContainerItemInfo(bag, slot);
+    if info and info.isLocked and wlTracker.spell.id == itemID then
         wlLockedID = itemID;
     end
 
@@ -4796,11 +4827,17 @@ function wlHook()
         end
     end);
 
-    hooksecurefunc("UseContainerItem", function(bag, slot, target)
+    local onUseContainerItem = function(bag, slot, target)
         if not target then
-            wlBagItemOnUse(GetContainerItemLink(bag, slot), bag, slot);
+            wlBagItemOnUse(C_Container.GetContainerItemLink(bag, slot), bag, slot);
         end
-    end);
+    end
+
+    if UseContainerItem then
+        hooksecurefunc("UseContainerItem", onUseContainerItem);
+    elseif C_Container and C_Container.UseContainerItem then
+        hooksecurefunc(C_Container, "UseContainerItem", onUseContainerItem);
+    end
 
     hooksecurefunc("PlaceAuctionBid", wlPlaceAuctionBid);
 end
@@ -4836,10 +4873,10 @@ end
 
 function wlGetItemDurability()
     for i=0, NUM_BAG_SLOTS do
-        for j=1, GetContainerNumSlots(i) do
-            local itemID = GetContainerItemID(i, j);
+        for j=1, C_Container.GetContainerNumSlots(i) do
+            local itemID = C_Container.GetContainerItemID(i, j);
             if itemID and itemID ~= 0 then
-                local _, maxDura = GetContainerItemDurability(i, j);
+                local _, maxDura = C_Container.GetContainerItemDurability(i, j);
                 wlItemDurability[itemID] = maxDura or 0;
             end
         end

@@ -1,4 +1,4 @@
-local versionMajor, versionRev, ADDON, T, ORI = 4, 111, ...
+local versionMajor, versionRev, ADDON, T, ORI = 4, 112, ...
 local MODERN = select(4,GetBuildInfo()) >= 10e4
 local CF_WRATH = not MODERN and select(4,GetBuildInfo()) >= 3e4
 local api, private = {ActionBook=T.ActionBook}, {}
@@ -324,6 +324,7 @@ do -- Click dispatcher
 				ring.fcToken, ORL_StoredCA[ring.name] = ORL_StoredCA[ring.name]
 			end
 			fastClick = (ring.CenterAction or ring.MotionAction) and ((not fcIgnore[ring.fcToken] and ctokens[cid][ring.fcToken]) or (ring.OpprotunisticCA and ctokens[cid][firstFC])) or nil
+			fastClick = fastClick ~= 0 and fastClick or nil
 
 			owner:SetScale(ring.scale)
 			owner:SetPoint('CENTER', ring.ofs, ring.ofsx/owner:GetEffectiveScale(), ring.ofsy/owner:GetEffectiveScale())
@@ -350,7 +351,7 @@ do -- Click dispatcher
 				return false
 			end
 			if switchCause == "switch-binding" then
-			elseif switchCause == "jump-slice-release" then
+			elseif switchCause == "jump-slice-release" or switchCause == "jump-slice-used" or switchCause == "jump-slice-switch" then
 				AIP_Binding, AIP_Key, AIP_Modifier, AIP_Handler, AIP_VirtualKey = nil
 				AIP_Action, AIP_AltAction, AI_LeftAction, AI_RightAction = "close", nil, (ring and ring.NoClose) and "usenow" or "use", "close"
 				AIP_OnDown, AI_LeftOnDown, AI_RightOnDown = true, false, true
@@ -433,7 +434,7 @@ do -- Click dispatcher
 			activeRing.fcToken = shouldUpdateFastClick and activeRing.CenterAction and not fcIgnore[pureToken] and pureToken or activeRing.fcToken
 			if at == "jump" then
 				ORL_JumpCount = (ORL_JumpCount or 0) + 1
-				return owner:RunFor(self, ORL_SwitchRing, action, interactionSource == "primary-binding" and "jump-slice-release" or "switch-binding"), 0
+				return owner:RunFor(self, ORL_SwitchRing, action, interactionSource == "primary-binding" and "jump-slice-release" or "jump-slice-used"), 0
 			end
 			if not noClose then
 				owner:Run(ORL_CloseActiveRing, nil, pureSlice, action)
@@ -521,9 +522,10 @@ do -- Click dispatcher
 					end
 				end
 			elseif activeRing and button == "mwin" and down then
-				local aid = openCollection[owner:Run(ORL_GetCursorSlice)]
+				local slice = owner:Run(ORL_GetCursorSlice)
+				local aid, rt = openCollection[slice], rotationMode[(ctokens[openCollectionID] or "")[slice]]
 				if collections[aid] then
-					return owner:RunFor(self, ORL_SwitchRing, aid, "switch-binding")
+					return owner:RunFor(self, ORL_SwitchRing, aid, rt == "jump" and "jump-slice-switch" or "switch-binding")
 				end
 			elseif activeRing and button:match("^mw[ud]") then
 				return false, down and owner:Run(ORL_OnWheel, (button:match("^mwup") and 1 or -1) * (button:match("K$") and activeRing.bucket or 1))

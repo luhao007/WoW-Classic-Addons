@@ -59,7 +59,7 @@ do -- config.ui
 			input:SetWidth(width)
 			input:SetMultiLine(true)
 			input:SetAutoFocus(false)
-			input:SetTextInsets(2,4,0,2)
+			input:SetTextInsets(2,4,2,2)
 			input:SetFontObject(GameFontHighlight)
 			input:SetScript("OnCursorChanged", onNavigate)
 			scroller:EnableMouse(1)

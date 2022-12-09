@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: foxlit
-## Version: Yuzu 3
+## Version: Yuzu 4
 ## SavedVariables: OneRing_Config, OPie_SavedData
 ## SavedVariablesPerCharacter: OPie_SavedDataPC
 
@@ -31,5 +31,6 @@ Meta\StanceBar.lua
 Meta\SpecSet.lua
 Meta\DataBroker.lua
 Meta\PSConfig.lua
-Rings\Common.lua
-Rings\Default.lua
+Bundle\QuestItems.lua
+Bundle\Tracking.lua
+Bundle\Editable.lua

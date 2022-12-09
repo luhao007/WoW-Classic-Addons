@@ -1,18 +1,17 @@
 local api, private, _, T = {}, {}, ...
-local RK_RingDesc, RK_CollectionIDs, RK_FluxRings, RK_Version, RK_Rev, EV, PC, SV = {}, {}, {}, 3, 54, T.Evie, T.OPieCore
+local COMPAT = select(4,GetBuildInfo())
+local MODERN, CF_WRATH = COMPAT >= 10e4, COMPAT < 10e4 and COMPAT >= 3e4
+local AB = assert(T.ActionBook:compatible(2,19), "A compatible version of ActionBook is required")
+local RW = assert(T.ActionBook:compatible("Rewire", 1,10), "A compatible version of Rewire is required")
+local ORI = OPie.UI
+
+local RK_RingDesc, RK_CollectionIDs, RK_FluxRings, RK_Version, RK_Rev, EV, PC, SV = {}, {}, {}, 3, 55, T.Evie, T.OPieCore
 local unlocked, queue, RK_DeletedRings, RK_FlagStore, sharedCollection = false, {}, {}, {}, {}
-local MODERN = select(4,GetBuildInfo()) >= 8e4
-local CF_WRATH = not MODERN and select(4,GetBuildInfo()) >= 3e4
+local CLASS, FULLNAME, FACTION
 
 local function assert(condition, text, level, ...)
 	return (not condition) and error(tostring(text):format(...), 1 + (level or 1)) or condition
 end
-
-local AB = assert(T.ActionBook:compatible(2,19), "A compatible version of ActionBook is required")
-local RW = assert(T.ActionBook:compatible("Rewire", 1,10), "A compatible version of Rewire is required")
-local ORI = OPie.UI
-local CLASS, FULLNAME, FACTION
-
 local RK_ParseMacro, RK_QuantizeMacro, RK_SetMountPreference do
 	local castAlias = {["#show"]=0, ["#showtooltip"]=0} do
 		for n,v in ("CAST:1 USE:1 CASTSEQUENCE:2 CASTRANDOM:3 USERANDOM:3"):gmatch("(%a+):(%d+)") do
@@ -53,7 +52,7 @@ local RK_ParseMacro, RK_QuantizeMacro, RK_SetMountPreference do
 		end
 	end
 	local replaceMountTag do
-		local skip, gmSid, gmPref, fmSid, fmPref = {[44153]=1, [44151]=1, [61451]=1, [75596]=1, [61309]=1, [169952]=1, [171844]=1, [213339]=1,}
+		local skip, gmSid, gmPref, fmSid, fmPref, drSid, drPref = {[44153]=1, [44151]=1, [61451]=1, [75596]=1, [61309]=1, [169952]=1, [171844]=1, [213339]=1,}
 		local function IsKnownSpell(sid)
 			local sn, sr = GetSpellInfo(sid or 0), GetSpellSubtext(sid or 0)
 			return GetSpellInfo(sn, sr) ~= nil and sid or (RW:GetCastEscapeAction(sn) and sid)
@@ -90,21 +89,20 @@ local RK_ParseMacro, RK_QuantizeMacro, RK_SetMountPreference do
 			elseif tag == "air" then
 				fmSid = fmSid and IsKnownSpell(fmSid) or findMount(fmPref or fmSid, 248)
 				return replaceSpellID(ctype, tostring(fmSid), prefix)
+			elseif tag == "dragon" then
+				drSid = drSid and IsKnownSpell(drSid) or findMount(drPref or drSid, 402)
+				return replaceSpellID(ctype, tostring(drSid), prefix)
 			end
 			return nil
 		end
-		function RK_SetMountPreference(groundSpellID, airSpellID)
-			if type(groundSpellID) == "number" then
-				gmPref = groundSpellID
-			elseif groundSpellID == false then
-				gmPref = nil
-			end
-			if type(airSpellID) == "number" then
-				fmPref = airSpellID
-			elseif airSpellID == false then
-				fmPref = nil
-			end
-			return gmPref, fmPref
+		local function editPreference(orig, new)
+			return type(new) == "number" and new or new ~= false and orig or nil
+		end
+		function RK_SetMountPreference(groundSpellID, airSpellID, dragonSpellID)
+			gmPref = editPreference(gmPref, groundSpellID)
+			fmPref = editPreference(fmPref, airSpellID)
+			drPref = editPreference(drPref, dragonSpellID)
+			return gmPref, fmPref, drPref
 		end
 	end
 	local function replaceAlternatives(ctype, replaceFunc, args)
@@ -163,14 +161,16 @@ local RK_ParseMacro, RK_QuantizeMacro, RK_SetMountPreference do
 			end
 			return value
 		end)
-		local spells, OTHER_SPELL_IDS = {}, {150544, 243819}
+		local spells, specialTokens, OTHER_SPELL_IDS = {}, {}, {150544, 243819}
+		local abTokens = {["Ground Mount"]="{{mount:ground}}", ["Flying Mount"]="{{mount:air}}", ["Dragonriding Mount"]="{{mount:dragon}}"}
 		quantizeLine = genLineParser(function(ctype, value, ctx, args, cpos)
 			if type(ctx) == "number" and ctx > 0 then
 				return nil, ctx-1
 			end
 			local cc, mark, name = 0, value:match("^%s*(!?)(.-)%s*$")
 			repeat
-				local sid, peek, cnpos = spells[name:lower()]
+				local lowname = name:lower()
+				local sid, peek, cnpos = spells[lowname]
 				if sid then
 					if not MODERN then
 						local rname = name:gsub("%s*%([^)]+%)$", "")
@@ -180,6 +180,8 @@ local RK_ParseMacro, RK_QuantizeMacro, RK_SetMountPreference do
 						end
 					end
 					return (mark .. "{{spell:" .. sid .. "}}"), cc
+				elseif specialTokens[lowname] then
+					return mark .. specialTokens[lowname], cc
 				end
 				if ctype >= 2 and args then
 					peek, cnpos = args:match("^([^,]+),?()", cpos)
@@ -253,6 +255,7 @@ local RK_ParseMacro, RK_QuantizeMacro, RK_SetMountPreference do
 		function prepareQuantizer(reuse)
 			if reuse and next(spells) then return end
 			wipe(spells)
+			wipe(specialTokens)
 			for i=1,#OTHER_SPELL_IDS do
 				local sn = GetSpellInfo(OTHER_SPELL_IDS[i])
 				if sn then
@@ -261,6 +264,10 @@ local RK_ParseMacro, RK_QuantizeMacro, RK_SetMountPreference do
 			end
 			if MODERN then
 				addModernSpells()
+				local L = T.ActionBook.L
+				for k, tok in pairs(abTokens) do
+					specialTokens[k:lower()], specialTokens[L(k):lower()] = tok, tok
+				end
 			elseif CF_WRATH then
 				for k=1,2 do
 					k = k == 1 and "MOUNT" or "CRITTER"
@@ -290,7 +297,11 @@ local RK_ParseMacro, RK_QuantizeMacro, RK_SetMountPreference do
 		return macro
 	end
 	function RK_QuantizeMacro(macro, useCache)
-		return type(macro) == "string" and (prepareQuantizer(useCache) or true) and ("\n" .. macro):gsub("(\n([#/]%S+) ?)([^\n]*)", quantizeLine):sub(2) or macro
+		if type(macro) ~= "string" then
+			return macro
+		end
+		prepareQuantizer(useCache)
+		return ("\n" .. macro):gsub("(\n([#/]%S+) ?)([^\n]*)", quantizeLine):sub(2)
 	end
 end
 local function RK_IsRelevantRingDescription(desc)
@@ -628,28 +639,32 @@ local function dropUnderscoreKeys(t)
 	end
 end
 local function RK_SanitizeDescription(props)
-	local uprefix = type(props._u) == "string" and props._u
+	local uprefix, marks = type(props._u) == "string" and props._u, {}
 	for i=#props,1,-1 do
 		local v = props[i]
-		if type(v.c) == "string" then
-			local r,g,b = v.c:match("^(%x%x)(%x%x)(%x%x)$")
-			if r then
-				v._r, v._g, v._b = tonumber(r, 16)/255, tonumber(g, 16)/255, tonumber(b, 16)/255
+		repeat
+			local rt, id = v.rtype, v.id
+			if rt and id then
+				v[1], v[2], v.rtype, v.id = rt, id
+			elseif type(id) == "number" then
+				v[1], v[2], v.rtype, v.id = "spell", id
+			elseif type(id) == "string" then
+				v[1], v[2], v.rtype, v.id = "macrotext", id
+			elseif v[1] == nil then
+				table.remove(props, i)
+				break
 			end
-		end
-		local rt, id = v.rtype, v.id
-		if rt and id then
-			v[1], v[2], v.rtype, v.id = rt, id
-		elseif type(id) == "number" then
-			v[1], v[2], v.rtype, v.id = "spell", id
-		elseif type(id) == "string" then
-			v[1], v[2], v.rtype, v.id = "macrotext", id
-		elseif v[1] == nil then
-			table.remove(props, i)
-		end
-		v.show = v.show ~= "" and v.show or nil
-		v.sliceToken = v.sliceToken or (uprefix and type(v._u) == "string" and (uprefix .. v._u)) or AB:CreateToken()
-		v._action, v._embed = nil
+			if type(v.c) == "string" then
+				local r,g,b = v.c:match("^(%x%x)(%x%x)(%x%x)$")
+				if r then
+					v._r, v._g, v._b = tonumber(r, 16)/255, tonumber(g, 16)/255, tonumber(b, 16)/255
+				end
+			end
+			v.show = v.show ~= "" and v.show or nil
+			local sliceToken = v.sliceToken or (uprefix and type(v._u) == "string" and (uprefix .. v._u))
+			sliceToken = marks[sliceToken] == nil and sliceToken or AB:CreateToken()
+			v.sliceToken, marks[sliceToken] = sliceToken, 1
+		until 0
 	end
 	props._embed = nil
 	return props

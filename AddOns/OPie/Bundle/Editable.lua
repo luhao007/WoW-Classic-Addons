@@ -1,8 +1,8 @@
 local _, T = ...
 local L, R = T.L, OPie.CustomRings
 if not (R and R.AddDefaultRing) then return end
-local MODERN = select(4, GetBuildInfo()) >= 8e4 or nil
-local CF_WRATH = not MODERN and select(4,GetBuildInfo()) >= 3e4 or nil
+local COMPAT = select(4,GetBuildInfo())
+local MODERN, CF_WRATH = COMPAT >= 10e4 or nil, COMPAT < 10e4 and COMPAT >= 3e4 or nil
 
 R:AddDefaultRing("RaidSymbols", {
 	{"raidmark", 1, _u="y"}, -- yellow star
@@ -24,14 +24,16 @@ R:AddDefaultRing("CommonTrades", {
 	{id="/cast {{spell:2259/51304}}", _u="a"}, -- alchemy
 	{id="/cast [mod] {{spell:818}}; {{spell:2550/51296}}; {{spell:818}}", _u="c"}, -- cooking/campfire
 	{id="/cast {{spell:4036/51306}}", _u="g"}, -- engineering
-	{id=2656, _u="m"}, -- smelting
+	{id=2656, _u="m"}, -- smelting/mining journal
 	(MODERN or CF_WRATH) and {id="/cast [mod] {{spell:31252}}; {{spell:25229/51311}};", _u="j"} -- jewelcrafting/prospecting
 	        or {id="/cast {{spell:3273}}", _u="f"}, -- first aid
 	(MODERN or CF_WRATH) and {id="/cast [mod] {{spell:51005}}; {{spell:45357/45363}}", _u="i"}, -- inscription/milling
 	(MODERN or CF_WRATH) and {id=53428, _u="u"}, -- runeforging
 	MODERN and {id="/cast [mod] {{spell:80451}}; {{spell:78670/89722}}", _u="r"} -- archaeology
 	        or CF_WRATH and {id="/cast {{spell:3273}}", _u="f"}, -- first aid
-	MODERN and {id=271990, _u="j"}, -- fish journal
+	MODERN and {id=271990, _u="fj"}, -- fish journal
+	MODERN and {id=194174, _u ="sj"}, -- skinning journal
+	MODERN and {id=193290, _u="hj"}, -- herbalism journal
 	name=L"Trade Skills", hotkey="ALT-T", _u="OPCCT"
 })
 R:AddDefaultRing("TrinketSlots", {
@@ -43,7 +45,7 @@ R:AddDefaultRing("TrinketSlots", {
 if not MODERN then return end
 
 R:AddDefaultRing("DruidShift", {
-	{id="/cancelform [noflyable,noform:moonkin]\n/cast [flyable,outdoors,nocombat,noswimming,nomod][flying] {{spell:783}}; [outpost:corral,nomod,nospec:103/104] {{spell:161691}}; [swimming,nomod][flyable,nomod][flying] {{spell:783}}; [nocombat,outdoors,nomod:alt] {{mount:ground}}; [outdoors] {{spell:783}}", show="[known:783]", _u="f"}, -- Travel
+	{id="/cancelform [noflyable,noform:moonkin]\n/cast [flyable,outdoors,nocombat,noswimming,nomod][flying] {{spell:783}}; [outpost:corral,nomod,nospec:103/104] {{spell:161691}}; [swimming,nomod][flyable,nomod][flying] {{spell:783}}; [nocombat,outdoors,nomod:alt,in:dragon isles] {{mount:dragon}}; [nocombat,outdoors,nomod:alt] {{mount:ground}}; [outdoors] {{spell:783}}\n/stopmacro [swimming,nomod][flyable,nomod][flying][mounted]\n/changeactionbar [noflyable,nocombat,outdoors,nomod:alt,in:dragon isles] 1", show="[known:783]", _u="f"}, -- Travel
 	{c="c74cff", id=24858, _u="k"}, -- Moonkin
 	{c="fff04d", id=768, _u="c"}, -- Cat
 	{c="ff0000", id=5487, _u="b"}, -- Bear
@@ -57,7 +59,7 @@ R:AddDefaultRing("DruidUtility", {
 	{id="/cast [mod][+cleanse] {{spell:88423/2782}}; {{spell:18960/193753}}", _u="p"}, -- moonglade/cleanse
 	{id=29166, _u="v"}, -- innervate
 	{id=2908, _u="s"}, -- soothe
-	{id=1126, _u="w"}, -- motw
+	{id="/cast [@target,help][@player,nomod][] {{spell:1126}}", _u="w"}, -- motw
 	name=L"Utility", hotkey="[noform:bear/cat] BUTTON5; ALT-BUTTON5", limit="DRUID", _u="OPCDU"
 })
 R:AddDefaultRing("DruidFeral", {

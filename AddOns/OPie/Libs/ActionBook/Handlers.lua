@@ -944,20 +944,26 @@ end
 
 if MODERN then -- Profession /cast alias: work around incorrectly inferred ranks
 	local activeSet, reserveSet, pendingSync = {}, {}
-	local function procProfession(a, ...)
-		if not a then return end
-		local _, _, _, _, scount, sofs = GetProfessionInfo(a)
-		for i=sofs+1, sofs+scount do
-			local et, eid = GetSpellBookItemInfo(i, "player")
-			if et == "SPELL" and not IsPassiveSpell(eid) then
-				local vid, sn, sr = "spell:" .. eid, GetSpellInfo(eid), GetSpellSubtext(eid)
-				reserveSet[sn], reserveSet[sn .. "()"] = vid, vid
-				if sr and sr ~= "" then
-					reserveSet[sn .. "(" .. sr .. ")"] = vid
+	local function procProfessions(n, a, ...)
+		if a then
+			local _, _, _, _, scount, sofs = GetProfessionInfo(a)
+			for i=sofs+1, sofs+scount do
+				local et, eid = GetSpellBookItemInfo(i, "player")
+				if et == "SPELL" and not IsPassiveSpell(eid) then
+					local vid, sn, sr = "spell:" .. eid, GetSpellInfo(eid), GetSpellSubtext(eid)
+					reserveSet[sn], reserveSet[sn .. "()"] = vid, vid
+					if sr and sr ~= "" then
+						reserveSet[sn .. "(" .. sr .. ")"] = vid
+					end
 				end
 			end
 		end
-		return procProfession(...)
+		if n > 1 then
+			return procProfessions(n-1, ...)
+		end
+	end
+	local function countValues(...)
+		return select("#", ...), ...
 	end
 	local function syncProf(e)
 		if InCombatLockdown() then
@@ -968,7 +974,7 @@ if MODERN then -- Profession /cast alias: work around incorrectly inferred ranks
 		end
 		pendingSync = false
 		wipe(reserveSet)
-		procProfession(GetProfessions())
+		procProfessions(countValues(GetProfessions()))
 		activeSet, reserveSet = reserveSet, activeSet
 		local changed
 		for k in pairs(reserveSet) do

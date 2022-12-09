@@ -5270,7 +5270,7 @@ local SPELL_POWER_PAIN = SPELL_POWER_PAIN or (PowerEnum and PowerEnum.Pain) or 1
 				if (Details.show_warning_id1) then
 					if (Details.show_warning_id1_amount < 2) then
 						Details.show_warning_id1_amount = Details.show_warning_id1_amount + 1
-						Details:Msg("|cFFFFFF00you might find differences on damage done, this is due to a bug in the game client, nothing related to Details! itself (" .. Details.show_warning_id1_amount .. " / 10).")
+						--Details:Msg("|cFFFFFF00you might find differences on damage done, this is due to a bug in the game client, nothing related to Details! itself (" .. Details.show_warning_id1_amount .. " / 10).")
 					end
 				end
 			end)
@@ -5385,7 +5385,7 @@ local SPELL_POWER_PAIN = SPELL_POWER_PAIN or (PowerEnum and PowerEnum.Pain) or 1
 				if (Details.show_warning_id1) then
 					if (Details.show_warning_id1_amount < 2) then
 						Details.show_warning_id1_amount = Details.show_warning_id1_amount + 1
-						Details:Msg("|cFFFFFF00you may find differences on damage done, this is due to a bug in the game client, nothing related to Details! itself (" .. Details.show_warning_id1_amount .. " / 10).")
+						--Details:Msg("|cFFFFFF00you may find differences on damage done, this is due to a bug in the game client, nothing related to Details! itself (" .. Details.show_warning_id1_amount .. " / 10).")
 					end
 				end
 			end)
@@ -6136,9 +6136,9 @@ local SPELL_POWER_PAIN = SPELL_POWER_PAIN or (PowerEnum and PowerEnum.Pain) or 1
 			_instance_backup = {},
 		}
 		local exitErrors = __details_backup._exit_error
-		
+
 		local addToExitErrors = function(text)
-			table.insert(exitErrors, 1, text)
+			table.insert(exitErrors, 1, date() .. "|" .. text)
 			table.remove(exitErrors, 10)
 		end
 
@@ -6150,7 +6150,7 @@ local SPELL_POWER_PAIN = SPELL_POWER_PAIN or (PowerEnum and PowerEnum.Pain) or 1
 		end)
 
 		if (not savePlayTimeClass) then
-			addToExitErrors("Saving Play Time:" .. savePlayTimeError)
+			addToExitErrors("Saving Play Time: " .. savePlayTimeError)
 		end
 
 		--SAVINGDATA = true

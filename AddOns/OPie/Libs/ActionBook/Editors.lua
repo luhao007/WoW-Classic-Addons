@@ -30,7 +30,7 @@ local multilineInput do
 		input:SetWidth(width)
 		input:SetMultiLine(true)
 		input:SetAutoFocus(false)
-		input:SetTextInsets(2,4,0,2)
+		input:SetTextInsets(2,4,2,2)
 		input:SetFontObject(GameFontHighlight)
 		input:SetScript("OnCursorChanged", onNavigate)
 		scroller:EnableMouse(1)
@@ -136,6 +136,7 @@ do -- .macrotext
 			:gsub("{{(spellr?):([%d/]+)}}", decodeSpellLink)
 			:gsub("{{mount:ground}}", "|cff71d5ff|Hrkmount:ground|h" .. L"Ground Mount" .. "|h|r")
 			:gsub("{{mount:air}}", "|cff71d5ff|Hrkmount:air|h" .. L"Flying Mount" .. "|h|r")
+			:gsub("{{mount:dragon}}", "|cff71d5ff|Hrkmount:dragon|h" .. L"Dragonriding Mount" .. "|h|r")
 			:gsub("|Hrk", tagReplace)
 		))
 	end
@@ -152,25 +153,27 @@ do -- .macrotext
 	function bg:IsOwned(owner)
 		return bg:GetParent() == owner
 	end
+	local function isCursorOnEmptyLine(box)
+		box:Insert("") -- Clobber selection
+		local text, cp = box:GetText() or "", box:GetCursorPosition()
+		local isEmptyLine = text == ""
+		if text ~= "" then
+			isEmptyLine = (cp == 0 or text:match("^\n", cp)) and (text:match("^%s*\n", cp+1) or cp == #text)
+		end
+		return isEmptyLine
+	end
 	bg.editBox, bg.scrollFrame = bg, eb
-	do -- Hook linking
-		local old = ChatEdit_InsertLink
-		function ChatEdit_InsertLink(link, ...)
-			if GetCurrentKeyBoardFocus() == eb then
-				local isEmpty = eb:GetText() == ""
-				if link:match("item:") then
-					eb:Insert((isEmpty and (GetItemSpell(link) and SLASH_USE1 or SLASH_EQUIP1) or "") .. " " .. GetItemInfo(link))
-				elseif link:match("spell:") and not IsPassiveSpell(tonumber(link:match("spell:(%d+)"))) then
-					eb:Insert((isEmpty and SLASH_CAST1 or "") .. " " .. decodeSpellLink(link:match("(spell):(%d+)")):gsub("|Hrk", tagReplace))
-				else
-					eb:Insert(link:match("|h%[?(.-[^%]])%]?|h"))
-				end
-				return true
+	hooksecurefunc("ChatEdit_InsertLink", function(link, ...)
+		if GetCurrentKeyBoardFocus() == eb then
+			if link:match("item:") then
+				eb:Insert((isCursorOnEmptyLine(eb) and (GetItemSpell(link) and SLASH_USE1 or SLASH_EQUIP1) or "") .. " " .. GetItemInfo(link))
+			elseif link:match("spell:") and not IsPassiveSpell(tonumber(link:match("spell:(%d+)"))) then
+				eb:Insert((isCursorOnEmptyLine(eb) and SLASH_CAST1 or "") .. " " .. decodeSpellLink(link:match("(spell):(%d+)")):gsub("|Hrk", tagReplace))
 			else
-				return old(link, ...)
+				eb:Insert(link:match("|h%[?(.-[^%]])%]?|h"))
 			end
 		end
-	end
+	end)
 	AB:RegisterEditorPanel("macrotext", bg)
 end
 

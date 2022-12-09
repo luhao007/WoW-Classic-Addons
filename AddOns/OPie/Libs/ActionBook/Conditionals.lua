@@ -151,14 +151,11 @@ do -- instance:arena/bg/ratedbg/lfr/raid/scenario + outland/northrend/...
 		[2222]="world/shadowlands",
 		[2453]="world/torghast", -- lobby
 		[2162]="torghast", -- towers
+		[2444]="world/dragon isles/df",
 		
 		garrison="world/draenor/garrison",
-		[1158]="garrison",
-		[1331]="garrison",
-		[1159]="garrison",
-		[1152]="garrison",
-		[1330]="garrison",
-		[1153]="garrison",
+		[1158]="garrison", [1331]="garrison", [1159]="garrison",
+		[1152]="garrison", [1330]="garrison", [1153]="garrison",
 		
 		[1893]="island", -- The Dread Chain
 		[1814]="island", -- Havenswood (?)
@@ -171,9 +168,18 @@ do -- instance:arena/bg/ratedbg/lfr/raid/scenario + outland/northrend/...
 		[1882]="island", -- Verdant Wilds
 		[1883]="island", -- Whispering Reef
 	}
-	function EV.PLAYER_ENTERING_WORLD()
+	local mapZoneCheck, zoneChecked = {
+		[2512]="world/gta", [2085e6+2512]="world/dragon isles/df/gta"
+	}, true
+	local function syncInstance(e)
 		local _, itype, did, _, _, _, _, imid = GetInstanceInfo()
-		if imid and mapTypes[imid] then
+		if mapZoneCheck[imid] then
+			if e == "PLAYER_ENTERING_WORLD" and zoneChecked then
+				zoneChecked, EV.ZONE_CHANGED_NEW_AREA = false, syncInstance
+			end
+			local bm = C_Map.GetBestMapForUnit("player")
+			itype = mapZoneCheck[bm and bm*1e6 + imid or nil] or mapZoneCheck[imid] or mapTypes[imid]
+		elseif mapTypes[imid] then
 			itype = mapTypes[imid]
 		elseif itype == "pvp" and MODERN and C_PvP.IsRatedBattleground() then
 			itype = "ratedbg"
@@ -185,7 +191,12 @@ do -- instance:arena/bg/ratedbg/lfr/raid/scenario + outland/northrend/...
 			end
 		end
 		KR:SetStateConditionalValue("in", mapTypes[itype] or itype)
+		if e == "ZONE_CHANGED_NEW_AREA" then
+			zoneChecked = true
+			return "remove"
+		end
 	end
+	EV.PLAYER_ENTERING_WORLD = syncInstance
 	KR:SetAliasConditional("instance", "in")
 	KR:SetStateConditionalValue("in", "daze")
 end

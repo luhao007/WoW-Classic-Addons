@@ -2,16 +2,21 @@ local _, T = ...
 
 if select(4, GetBuildInfo()) >= 10e4 then
 	local pv = {}
+	local function SetCVarQuietly(k, v)
+		CVarCallbackRegistry:UnregisterEvent("CVAR_UPDATE")
+		SetCVar(k, v)
+		CVarCallbackRegistry:RegisterEvent("CVAR_UPDATE")
+	end
 	local function PreClick(self, _, down)
 		local pa = pv[self] or {}
 		pv[self], pa[#pa+1] = pa, GetCVar("ActionButtonUseKeyDown")
-		SetCVar("ActionButtonUseKeyDown", down and 1 or 0)
+		SetCVarQuietly("ActionButtonUseKeyDown", down and 1 or 0)
 	end
 	local function PostClick(self)
 		local pa, lv = pv[self]
 		if pa and pa[1] ~= nil then
 			lv, pa[#pa] = pa[#pa], nil
-			SetCVar("ActionButtonUseKeyDown", lv)
+			SetCVarQuietly("ActionButtonUseKeyDown", lv)
 		end
 	end
 	function T.TenSABT(self)
