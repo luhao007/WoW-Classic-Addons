@@ -2,6 +2,7 @@ local myname, ns = ...
 local myfullname = GetAddOnMetadata(myname, "Title")
 local db
 local isClassic = WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE
+ns.DEBUG = GetAddOnMetadata(myname, "Version") == "@".."project-version@"
 
 local SLOT_MAINHAND = GetInventorySlotInfo("MainHandSlot")
 local SLOT_OFFHAND = GetInventorySlotInfo("SecondaryHandSlot")
@@ -24,6 +25,7 @@ end
 
 local LAI = LibStub("LibAppropriateItems-1.0")
 
+ns.soulboundAtlas = isClassic and "AzeriteReady" or "Soulbind-32x32" -- UF-SoulShard-Icon-2x
 ns.upgradeString = CreateAtlasMarkup("poi-door-arrow-up")
 ns.gemString = CreateAtlasMarkup(isClassic and "worldquest-icon-jewelcrafting" or "jailerstower-score-gem-tooltipicon") -- Professions-ChatIcon-Quality-Tier5-Cap
 ns.enchantString = RED_FONT_COLOR:WrapTextInColorCode("E")
@@ -48,23 +50,33 @@ ns.PositionOffsets = {
 }
 
 ns.defaults = {
+    -- places
     character = false,
     inspect = true,
     bags = false,
     loot = true,
-    upgrades = false,
-    color = true,
     tooltip = isClassic,
-    -- Shadowlands has Uncommon, BCC/Classic has Good
-    quality = Enum.ItemQuality.Good or Enum.ItemQuality.Uncommon,
+    characteravg = isClassic,
+    inspectavg = true,
     equipmentonly = true,
+    -- things
+    itemlevel = true,
+    upgrades = false,
     missinggems = true,
     missingenchants = true,
+    bound = true,
+    -- display
+    color = true,
+    -- Shadowlands has Uncommon, BCC/Classic has Good
+    quality = Enum.ItemQuality.Good or Enum.ItemQuality.Uncommon,
     -- appearance config
     font = "NumberNormal",
     position = "TOPRIGHT",
     positionup = "TOPLEFT",
     positionmissing = "LEFT",
+    positionbound = "BOTTOMLEFT",
+    scaleup = 1,
+    scalebound = 1,
 }
 
 function ns:ADDON_LOADED(event, addon)
@@ -94,13 +106,18 @@ local function PrepareItemButton(button)
         button.simpleilvl:Hide()
 
         button.simpleilvlup = overlayFrame:CreateTexture(nil, "OVERLAY")
-        button.simpleilvlup:SetSize(8, 8)
+        button.simpleilvlup:SetSize(10, 10)
         -- MiniMap-PositionArrowUp?
         button.simpleilvlup:SetAtlas("poi-door-arrow-up")
         button.simpleilvlup:Hide()
 
         button.simpleilvlmissing = overlayFrame:CreateFontString(nil, "OVERLAY")
         button.simpleilvlmissing:Hide()
+
+        button.simpleilvlbound = overlayFrame:CreateTexture(nil, "OVERLAY")
+        button.simpleilvlbound:SetSize(10, 10)
+        button.simpleilvlbound:SetAtlas(ns.soulboundAtlas) -- Soulbind-32x32
+        button.simpleilvlbound:Hide()
 
         ns.frames[button] = overlayFrame
     end
@@ -111,12 +128,18 @@ local function PrepareItemButton(button)
     button.simpleilvl:SetPoint(db.position, unpack(ns.PositionOffsets[db.position]))
     button.simpleilvl:SetFontObject(ns.Fonts[db.font] or NumberFontNormal)
     -- button.simpleilvl:SetJustifyH('RIGHT')
+
     button.simpleilvlup:ClearAllPoints()
     button.simpleilvlup:SetPoint(db.positionup, unpack(ns.PositionOffsets[db.positionup]))
+    button.simpleilvlup:SetScale(db.scaleup)
 
     button.simpleilvlmissing:ClearAllPoints()
     button.simpleilvlmissing:SetPoint(db.positionmissing, unpack(ns.PositionOffsets[db.positionmissing]))
     button.simpleilvlmissing:SetFont([[Fonts\ARIALN.TTF]], 11, "OUTLINE,MONOCHROME")
+
+    button.simpleilvlbound:ClearAllPoints()
+    button.simpleilvlbound:SetPoint(db.positionbound, unpack(ns.PositionOffsets[db.positionbound]))
+    button.simpleilvlbound:SetScale(db.scalebound)
 end
 ns.PrepareItemButton = PrepareItemButton
 
@@ -124,6 +147,7 @@ local function CleanButton(button)
     if button.simpleilvl then button.simpleilvl:Hide() end
     if button.simpleilvlup then button.simpleilvlup:Hide() end
     if button.simpleilvlmissing then button.simpleilvlmissing:Hide() end
+    if button.simpleilvlbound then button.simpleilvlbound:Hide() end
 end
 ns.CleanButton = CleanButton
 
@@ -134,7 +158,7 @@ function ns.RefreshOverlayFrames()
 end
 
 local function AddLevelToButton(button, itemLevel, itemQuality)
-    if not itemLevel then
+    if not (db.itemlevel and itemLevel) then
         return button.simpleilvl and button.simpleilvl:Hide()
     end
     PrepareItemButton(button)
@@ -184,6 +208,17 @@ local function AddMissingToButton(button, itemLink)
     button.simpleilvlmissing:SetFormattedText("%s%s", missingGems and ns.gemString or "", missingEnchants and ns.enchantString or "")
     button.simpleilvlmissing:Show()
 end
+local function AddBoundToButton(button, item)
+    if not db.bound then
+        return button.simpleilvlbound and button.simpleilvlbound:Hide()
+    end
+    if item and item:IsItemInPlayersControl() then
+        local itemLocation = item:GetItemLocation()
+        if itemLocation and C_Item.IsBound(itemLocation) then
+            button.simpleilvlbound:Show()
+        end
+    end
+end
 local function ShouldShowOnItem(item)
     local quality = item:GetItemQuality()
     if quality < db.quality then
@@ -212,6 +247,7 @@ local function UpdateButtonFromItem(button, item)
         AddLevelToButton(button, item:GetCurrentItemLevel(), item:GetItemQuality())
         AddUpgradeToButton(button, item, equipLoc, minLevel)
         AddMissingToButton(button, link)
+        AddBoundToButton(button, item)
     end)
 end
 ns.UpdateButtonFromItem = UpdateButtonFromItem
@@ -223,7 +259,7 @@ local function AddAverageLevelToFontString(unit, fontstring)
     end
     fontstring:Hide()
     local key = unit == "player" and "character" or "inspect"
-    if not db[key] then
+    if not db[key .. "avg"] then
         return
     end
     local mainhandEquipLoc, offhandEquipLoc
@@ -248,9 +284,14 @@ local function AddAverageLevelToFontString(unit, fontstring)
     if mainhandEquipLoc and offhandEquipLoc then
         numSlots = 16
     else
-        local isFuryWarrior = _G.GetInspectSpecialization and select(2, UnitClass(unit)) == "WARRIOR" and GetInspectSpecialization(unit) == 72
-        -- unit is holding a one-handed weapon, a main-handed weapon, or a 2h weapon while Fury: 17 slots
-        -- otherwise 16 slots
+        local isFuryWarrior = select(2, UnitClass(unit)) == "WARRIOR"
+        if unit == "player" then
+            isFuryWarrior = isFuryWarrior and IsSpellKnown(46917) -- knows titan's grip
+        else
+            isFuryWarrior = isFuryWarrior and _G.GetInspectSpecialization and GetInspectSpecialization(unit) == 72
+        end
+        -- unit is holding a one-handed weapon, a main-handed weapon, or a 2h weapon while Fury: 16 slots
+        -- otherwise 15 slots
         local equippedLocation = mainhandEquipLoc or offhandEquipLoc
         numSlots = (
             equippedLocation == "INVTYPE_WEAPON" or
@@ -258,7 +299,7 @@ local function AddAverageLevelToFontString(unit, fontstring)
             (equippedLocation == "INVTYPE_2HWEAPON" and isFuryWarrior)
         ) and 16 or 15
     end
-    if isClassic then numSlots = numSlots + 1 end -- ranged slot
+    if isClassic then numSlots = numSlots + 1 end -- ranged slot exists in classic
     continuableContainer:ContinueOnLoad(function()
         local totalLevel = 0
         for _, item in ipairs(items) do
@@ -266,7 +307,6 @@ local function AddAverageLevelToFontString(unit, fontstring)
         end
         fontstring:SetFormattedText(ITEM_LEVEL, totalLevel / numSlots)
         fontstring:Show()
-        continuableContainer = nil
     end)
 end
 
@@ -299,13 +339,14 @@ do
     local levelUpdater = CreateFrame("Frame")
     levelUpdater:SetScript("OnUpdate", function(self)
         if not self.avglevel then
-            self.avglevel = PaperDollFrame:CreateFontString(nil, "OVERLAY")
-            self.avglevel:SetFontObject(NumberFontNormal)
             if isClassic then
-                self.avglevel:SetPoint("BOTTOMLEFT", 24, 88)
+                self.avglevel = CharacterModelFrame:CreateFontString(nil, "OVERLAY")
+                self.avglevel:SetPoint("BOTTOMLEFT", 5, 35)
             else
-                self.avglevel:SetPoint("BOTTOMLEFT", 12, 12)
+                self.avglevel = CharacterModelScene:CreateFontString(nil, "OVERLAY")
+                self.avglevel:SetPoint("BOTTOM", 0, 20)
             end
+            self.avglevel:SetFontObject(NumberFontNormal) -- GameFontHighlightSmall isn't bad
         end
         AddAverageLevelToFontString("player", self.avglevel)
         self:Hide()
@@ -314,9 +355,7 @@ do
 
     hooksecurefunc("PaperDollItemSlotButton_Update", function(button)
         UpdateItemSlotButton(button, "player")
-        if isClassic then
-            levelUpdater:Show()
-        end
+        levelUpdater:Show()
     end)
 end
 
@@ -328,13 +367,9 @@ ns:RegisterAddonHook("Blizzard_InspectUI", function()
     local avglevel
     hooksecurefunc("InspectPaperDollFrame_UpdateButtons", function()
         if not avglevel then
-            avglevel = InspectFrame:CreateFontString(nil, "OVERLAY")
+            avglevel = InspectModelFrame:CreateFontString(nil, "OVERLAY")
             avglevel:SetFontObject(NumberFontNormal)
-            if isClassic then
-                avglevel:SetPoint("BOTTOMLEFT", 24, 88)
-            else
-                avglevel:SetPoint("BOTTOMLEFT", 12, 12)
-            end
+            avglevel:SetPoint("BOTTOM", 0, isClassic and 0 or 20)
         end
         AddAverageLevelToFontString(InspectFrame.unit or "target", avglevel)
     end)
@@ -641,19 +676,17 @@ do
         -- retail
         INVTYPE_CHEST = true,
         INVTYPE_ROBE = true,
+        INVTYPE_LEGS = true,
         INVTYPE_FEET = true,
         INVTYPE_WRIST = true,
-        INVTYPE_HAND = true,
         INVTYPE_FINGER = true,
         INVTYPE_CLOAK = true,
         INVTYPE_WEAPON = true,
-        -- INVTYPE_SHIELD = true, -- ...are there?
         INVTYPE_2HWEAPON = true,
         INVTYPE_WEAPONMAINHAND = true,
         INVTYPE_RANGED = true,
         INVTYPE_RANGEDRIGHT = true,
         INVTYPE_WEAPONOFFHAND = true,
-        INVTYPE_HOLDABLE = true,
     }
     function ns.ItemIsMissingEnchants(itemLink)
         if not itemLink then return false end

@@ -9,6 +9,7 @@ local QueryClause = TSM.Init("Util.DatabaseClasses.QueryClause") ---@class Util.
 local Constants = TSM.Include("Util.DatabaseClasses.Constants")
 local Util = TSM.Include("Util.DatabaseClasses.Util")
 local ObjectPool = TSM.Include("Util.ObjectPool")
+local Vararg = TSM.Include("Util.Vararg")
 local LibTSMClass = TSM.Include("LibTSMClass")
 local DatabaseQueryClause = LibTSMClass.DefineClass("DatabaseQueryClause") ---@class DatabaseQueryClause
 local private = {
@@ -33,7 +34,7 @@ end)
 
 ---Gets a new query clause.
 ---@param parent? DatabaseQueryClause The parent query clause
----@return DatabaseQuery @The new query clause
+---@return DatabaseQueryClause @The new query clause
 function QueryClause.Get(parent)
 	local clause = private.objectPool:Get()
 	clause:_Acquire(parent)
@@ -130,16 +131,16 @@ function DatabaseQueryClause:Custom(func, arg)
 	return self:_SetComparisonOperation("CUSTOM", func, arg)
 end
 
-function DatabaseQueryClause:HashEqual(fields, value)
-	return self:_SetComparisonOperation("HASH_EQUAL", fields, value)
-end
-
 function DatabaseQueryClause:InTable(field, value)
 	return self:_SetComparisonOperation("IN_TABLE", field, value)
 end
 
 function DatabaseQueryClause:NotInTable(field, value)
 	return self:_SetComparisonOperation("NOT_IN_TABLE", field, value)
+end
+
+function DatabaseQueryClause:ListContains(field, value)
+	return self:_SetComparisonOperation("LIST_CONTAINS", field, value)
 end
 
 function DatabaseQueryClause:Or()
@@ -195,12 +196,12 @@ function DatabaseQueryClause:_IsTrue(row, ignoreField)
 		return row[self._field] ~= nil
 	elseif operation == "CUSTOM" then
 		return self._field(row, value) and true or false
-	elseif operation == "HASH_EQUAL" then
-		return row:CalculateHash(self._field) == value
 	elseif operation == "IN_TABLE" then
 		return value[row[self._field]] ~= nil
 	elseif operation == "NOT_IN_TABLE" then
 		return value[row[self._field]] == nil
+	elseif operation == "LIST_CONTAINS" then
+		return Vararg.In(value, row:GetField(self._field))
 	elseif operation == "OR" then
 		for i = 1, #self._subClauses do
 			if self._subClauses[i]:_IsTrue(row, ignoreField) then

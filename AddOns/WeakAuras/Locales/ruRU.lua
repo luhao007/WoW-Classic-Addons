@@ -44,10 +44,22 @@ L[ [=[• |cff00ff00Player|r, |cff00ff00Target|r, |cff00ff00Focus|r, and |cff00f
 • |cffffff00Smart Group|r adjusts to your current group type, matching just the "player" when solo, "party" units (including "player") in a party or "raid" units in a raid.
 
 |cffffff00*|r Yellow Unit settings will create clones for each matching unit while this trigger is providing Dynamic Info to the Aura.]=]
+--[[Translation missing --]]
+L["1. Profession 1. Accessory"] = "1. Profession 1. Accessory"
+--[[Translation missing --]]
+L["1. Profession 2. Accessory"] = "1. Profession 2. Accessory"
+--[[Translation missing --]]
+L["1. Professsion Tool"] = "1. Professsion Tool"
 L["10 Man Raid"] = "Рейд на 10 игроков"
 L["10 Player Raid"] = "Рейд на 10 игроков"
 L["10 Player Raid (Heroic)"] = "Рейд на 10 игроков (героический)"
 L["10 Player Raid (Normal)"] = "Рейд на 10 игроков (обычный)"
+--[[Translation missing --]]
+L["2. Profession 1. Accessory"] = "2. Profession 1. Accessory"
+--[[Translation missing --]]
+L["2. Profession 2. Accessory"] = "2. Profession 2. Accessory"
+--[[Translation missing --]]
+L["2. Professsion Tool"] = "2. Professsion Tool"
 L["20 Man Raid"] = "Рейд на 20 игроков"
 L["20 Player Raid"] = "Рейд на 20 игроков"
 L["25 Man Raid"] = "Рейд на 25 игроков"
@@ -343,6 +355,8 @@ L["Custom Sort"] = "Свой критерий сортировки"
 --[[Translation missing --]]
 L["Custom Text Function"] = "Custom Text Function"
 L["Custom Trigger Combination"] = "Комбинация триггеров"
+--[[Translation missing --]]
+L["Custom Variables"] = "Custom Variables"
 L["Daakara"] = "Даакара"
 L["Damage"] = "Урон"
 L["Damage Shield"] = "Урон от щита"

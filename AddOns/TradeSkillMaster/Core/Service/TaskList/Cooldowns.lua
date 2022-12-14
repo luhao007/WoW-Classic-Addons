@@ -10,7 +10,6 @@ local L = TSM.Include("Locale").GetTable()
 local Delay = TSM.Include("Util.Delay")
 local ObjectPool = TSM.Include("Util.ObjectPool")
 local Table = TSM.Include("Util.Table")
-local String = TSM.Include("Util.String")
 local private = {
 	query = nil,
 	taskPool = ObjectPool.New("COOLDOWN_TASK", TSM.TaskList.CooldownCraftingTask, 0),
@@ -31,7 +30,7 @@ function Cooldowns.OnEnable()
 	private.updateTimer = Delay.CreateTimer("COOLDOWNS_UPDATE", private.PopulateTasks)
 	private.query = TSM.Crafting.CreateCooldownSpellsQuery()
 		:Select("profession", "craftString")
-		:Custom(private.QueryPlayerFilter, UnitName("player"))
+		:ListContains("players", UnitName("player"))
 		:SetUpdateCallback(private.PopulateTasks)
 	private.ignoredQuery = TSM.Crafting.CreateIgnoredCooldownQuery()
 		:SetUpdateCallback(private.PopulateTasks)
@@ -46,10 +45,6 @@ end
 
 function private.ActiveTaskIterator()
 	return ipairs(private.activeTasks)
-end
-
-function private.QueryPlayerFilter(row, player)
-	return String.SeparatedContains(row:GetField("players"), ",", player)
 end
 
 function private.PopulateTasks()

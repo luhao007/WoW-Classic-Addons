@@ -22,6 +22,10 @@ local private = {
 	smartMapReaderFieldLookup = {},
 	usedTrigramSubStrTemp = {},
 }
+local LIST_FIELD_ENTRY_TYPE_LOOKUP = {
+	STRING_LIST = "string",
+	NUMBER_LIST = "number",
+}
 
 
 
@@ -65,6 +69,7 @@ function DatabaseTable:__init(schema)
 	self._smartMapInputLookup = {}
 	self._smartMapInputFields = {}
 	self._smartMapReaderLookup = {}
+	self._listData = nil
 
 	-- process all the fields and grab the indexFields for further processing
 	local indexFields = TempTable.Acquire()
@@ -84,6 +89,9 @@ function DatabaseTable:__init(schema)
 			tinsert(self._storedFieldList, fieldName)
 		end
 		self._fieldTypeLookup[fieldName] = fieldType
+		if not self._listData and LIST_FIELD_ENTRY_TYPE_LOOKUP[fieldType] then
+			self._listData = { nextIndex = 1 }
+		end
 		if isIndex then
 			self._indexLists[fieldName] = {}
 			tinsert(indexFields, fieldName)
@@ -159,38 +167,7 @@ function DatabaseTable:DeleteRowByUUID(uuid)
 	for field, uniqueValues in pairs(self._uniques) do
 		uniqueValues[self:GetRowFieldByUUID(uuid, field)] = nil
 	end
-
-	-- lookup the index of the row being deleted
-	local uuidIndex = ((self._uuidToDataOffsetLookup[uuid] - 1) / self._numStoredFields) + 1
-	local rowIndex = self._uuidToDataOffsetLookup[uuid]
-	assert(rowIndex)
-
-	-- get the index of the last row
-	local lastUUIDIndex = #self._data / self._numStoredFields
-	local lastRowIndex = #self._data - self._numStoredFields + 1
-	assert(lastRowIndex > 0 and lastUUIDIndex > 0)
-
-	-- remove this row from both lookups
-	self._uuidToDataOffsetLookup[uuid] = nil
-
-	if rowIndex == lastRowIndex then
-		-- this is the last row so just remove it
-		table.removemulti(self._data, #self._data - self._numStoredFields + 1, self._numStoredFields)
-		assert(uuidIndex == #self._uuids)
-		self._uuids[#self._uuids] = nil
-	else
-		-- this row is in the middle, so move the last row into this slot
-		local moveRowUUID = tremove(self._uuids)
-		self._uuids[uuidIndex] = moveRowUUID
-		self._uuidToDataOffsetLookup[moveRowUUID] = rowIndex
-		for i = self._numStoredFields, 1, -1 do
-			local moveDataIndex = lastRowIndex + i - 1
-			assert(moveDataIndex == #self._data)
-			self._data[rowIndex + i - 1] = self._data[moveDataIndex]
-			tremove(self._data)
-		end
-	end
-
+	self:_DeleteRowHelper(uuid)
 	self:_UpdateQueries()
 end
 
@@ -205,37 +182,7 @@ function DatabaseTable:BulkDelete(uuids)
 		for field, uniqueValues in pairs(self._uniques) do
 			uniqueValues[self:GetRowFieldByUUID(uuid, field)] = nil
 		end
-
-		-- lookup the index of the row being deleted
-		local uuidIndex = ((self._uuidToDataOffsetLookup[uuid] - 1) / self._numStoredFields) + 1
-		local rowIndex = self._uuidToDataOffsetLookup[uuid]
-		assert(rowIndex)
-
-		-- get the index of the last row
-		local lastUUIDIndex = #self._data / self._numStoredFields
-		local lastRowIndex = #self._data - self._numStoredFields + 1
-		assert(lastRowIndex > 0 and lastUUIDIndex > 0)
-
-		-- remove this row from both lookups
-		self._uuidToDataOffsetLookup[uuid] = nil
-
-		if rowIndex == lastRowIndex then
-			-- this is the last row so just remove it
-			table.removemulti(self._data, #self._data - self._numStoredFields + 1, self._numStoredFields)
-			assert(uuidIndex == #self._uuids)
-			self._uuids[#self._uuids] = nil
-		else
-			-- this row is in the middle, so move the last row into this slot
-			local moveRowUUID = tremove(self._uuids)
-			self._uuids[uuidIndex] = moveRowUUID
-			self._uuidToDataOffsetLookup[moveRowUUID] = rowIndex
-			for i = self._numStoredFields, 1, -1 do
-				local moveDataIndex = lastRowIndex + i - 1
-				assert(moveDataIndex == #self._data)
-				self._data[rowIndex + i - 1] = self._data[moveDataIndex]
-				tremove(self._data)
-			end
-		end
+		self:_DeleteRowHelper(uuid)
 	end
 
 	-- re-build the indexes
@@ -272,6 +219,10 @@ function DatabaseTable:Truncate()
 	wipe(self._uuids)
 	wipe(self._uuidToDataOffsetLookup)
 	wipe(self._data)
+	if self._listData then
+		wipe(self._listData)
+		self._listData.nextIndex = 1
+	end
 	for _, indexList in pairs(self._indexLists) do
 		wipe(indexList)
 	end
@@ -333,7 +284,7 @@ function DatabaseTable:GetUniqueRowField(uniqueField, uniqueValue, field)
 	end
 	local uuid = self:_GetUniqueRow(uniqueField, uniqueValue)
 	if not uuid then
-		return nil
+		return
 	end
 	return self:GetRowFieldByUUID(uuid, field)
 end
@@ -385,6 +336,8 @@ function DatabaseTable:SetUniqueRowField(uniqueField, uniqueValue, field, value)
 		error(format("Field %s is not unique", tostring(uniqueField)), 3)
 	elseif not fieldType then
 		error(format("Field %s doesn't exist", tostring(field)), 3)
+	elseif self:_GetListFieldType(field) then
+		error("Cannot set list field using this method")
 	elseif fieldType ~= type(value) then
 		error(format("Field %s should be a %s, got %s", tostring(field), tostring(fieldType), type(value)), 3)
 	elseif self:_IsUnique(field) then
@@ -459,7 +412,12 @@ function DatabaseTable:GetRowFieldByUUID(uuid, field)
 	if result == nil then
 		error("Failed to get row data")
 	end
-	return result
+	if self._listData and self:_GetListFieldType(field) then
+		local len = self._listData[result]
+		return unpack(self._listData, result + 1, result + len)
+	else
+		return result
+	end
 end
 
 ---Starts a bulk insert into the database.
@@ -469,7 +427,7 @@ function DatabaseTable:BulkInsertStart()
 	self._bulkInsertContext.firstDataIndex = nil
 	self._bulkInsertContext.firstUUIDIndex = nil
 	self._bulkInsertContext.partitionUUIDIndex = nil
-	self._bulkInsertContext.fastNum = self._numStoredFields
+	self._bulkInsertContext.fastNum = not self._listData and self._numStoredFields or nil -- TODO: Support this?
 	if Table.Count(self._uniques) == 1 then
 		local uniqueField = next(self._uniques)
 		self._bulkInsertContext.fastUnique = Table.GetDistinctKey(self._storedFieldList, uniqueField)
@@ -537,10 +495,27 @@ function DatabaseTable:BulkInsertNewRow(...)
 		local field = self._storedFieldList[i]
 		local value = tempTbl[i]
 		local fieldType = self._fieldTypeLookup[field]
-		if type(value) ~= fieldType then
+		local listFieldType = LIST_FIELD_ENTRY_TYPE_LOOKUP[fieldType]
+		if listFieldType then
+			if type(value) ~= "table" then
+				error(format("Expected list value, got %s", type(value)), 2)
+			end
+			local len = #value
+			for j, v in pairs(value) do
+				if type(i) ~= "number" or j < 1 or j > len then
+					error("Invalid table index: "..tostring(j), 2)
+				elseif type(v) ~= listFieldType then
+					error(format("List (%s) entries should be of type %s, got %s", tostring(field), listFieldType, tostring(v)), 2)
+				end
+			end
+		elseif type(value) ~= fieldType then
 			error(format("Field %s should be a %s, got %s", tostring(field), tostring(fieldType), type(value)), 2)
 		end
-		self._data[rowIndex + i - 1] = value
+		if listFieldType then
+			self._data[rowIndex + i - 1] = self:_InsertListData(value)
+		else
+			self._data[rowIndex + i - 1] = value
+		end
 		local uniqueValues = self._uniques[field]
 		if uniqueValues then
 			if uniqueValues[value] ~= nil then
@@ -673,16 +648,16 @@ function DatabaseTable:BulkInsertNewRowFast12(v1, v2, v3, v4, v5, v6, v7, v8, v9
 	end
 end
 
----An optimized version of BulkInsertNewRow() for 14 fields with minimal error checking.
-function DatabaseTable:BulkInsertNewRowFast14(v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, ...)
+---An optimized version of BulkInsertNewRow() for 15 fields with minimal error checking.
+function DatabaseTable:BulkInsertNewRowFast15(v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, ...)
 	local uuid = private.GetNextUUID()
 	local rowIndex = #self._data + 1
 	local uuidIndex = #self._uuids + 1
 	if not self._bulkInsertContext then
 		error("Bulk insert hasn't been started")
-	elseif self._bulkInsertContext.fastNum ~= 14 then
+	elseif self._bulkInsertContext.fastNum ~= 15 then
 		error("Invalid usage of fast insert")
-	elseif v11 == nil or ... ~= nil then
+	elseif v15 == nil or ... ~= nil then
 		error("Wrong number of values")
 	elseif not self._bulkInsertContext.firstDataIndex then
 		self._bulkInsertContext.firstDataIndex = rowIndex
@@ -706,6 +681,7 @@ function DatabaseTable:BulkInsertNewRowFast14(v1, v2, v3, v4, v5, v6, v7, v8, v9
 	self._data[rowIndex + 11] = v12
 	self._data[rowIndex + 12] = v13
 	self._data[rowIndex + 13] = v14
+	self._data[rowIndex + 14] = v15
 
 	if self._bulkInsertContext.fastUnique == 1 then
 		-- the first field is always a unique (and the only unique)
@@ -859,6 +835,7 @@ end
 ---Returns a raw iterator over all rows in the database.
 ---@return fun(): number, ... @The iterator with fields (index, <DB_FIELDS...>)
 function DatabaseTable:RawIterator()
+	assert(not self._listData)
 	return private.RawIterator, self, 1 - self._numStoredFields
 end
 
@@ -871,6 +848,7 @@ end
 ---Gets the raw database data table for highly-optimized low-level operations.
 ---@return table
 function DatabaseTable:GetRawData()
+	assert(not self._listData)
 	return self._data
 end
 
@@ -892,6 +870,14 @@ end
 
 function DatabaseTable:_GetFieldType(field)
 	return self._fieldTypeLookup[field]
+end
+
+function DatabaseTable:_GetListFieldType(field)
+	local fieldType = self._fieldTypeLookup[field]
+	if not fieldType then
+		error("Invalid field: "..tostring(field))
+	end
+	return LIST_FIELD_ENTRY_TYPE_LOOKUP[fieldType]
 end
 
 function DatabaseTable:_IsIndex(field)
@@ -920,6 +906,18 @@ end
 
 function DatabaseTable:_ContainsUUID(uuid)
 	return self._uuidToDataOffsetLookup[uuid] and true or false
+end
+
+function DatabaseTable:_GetListFields(result)
+	if not self._listData then
+		return
+	end
+	for field in pairs(self._fieldTypeLookup) do
+		local listFieldType = self:_GetListFieldType(field)
+		if listFieldType then
+			result[field] = listFieldType
+		end
+	end
 end
 
 function DatabaseTable:_IndexListBinarySearch(indexField, indexValue, matchLowest, low, high)
@@ -1041,15 +1039,19 @@ function DatabaseTable:_TrigramIndexRemove(uuid)
 	end
 end
 
-function DatabaseTable:_InsertRow(row)
+function DatabaseTable:_InsertRow(row, values)
 	local uuid = row:GetUUID()
 	local rowIndex = #self._data + 1
 	self._uuidToDataOffsetLookup[uuid] = rowIndex
 	tinsert(self._uuids, uuid)
 	for i = 1, self._numStoredFields do
 		local field = self._storedFieldList[i]
-		local value = row:GetField(field)
-		tinsert(self._data, value)
+		local value = values[field]
+		if self:_GetListFieldType(field) then
+			tinsert(self._data, self:_InsertListData(value))
+		else
+			tinsert(self._data, value)
+		end
 		local uniqueValues = self._uniques[field]
 		if uniqueValues then
 			if uniqueValues[value] ~= nil then
@@ -1075,22 +1077,29 @@ function DatabaseTable:_InsertRow(row)
 	end
 end
 
-function DatabaseTable:_UpdateRow(row, oldValues)
+function DatabaseTable:_UpdateRow(row, changeContext)
 	local uuid = row:GetUUID()
 	-- cache the min index within the index lists for the old values ot make removing from the index faster
 	local oldIndexMinIndex = TempTable.Acquire()
 	for indexField in pairs(self._indexLists) do
-		if oldValues[indexField] then
-			oldIndexMinIndex[indexField] = self:_IndexListBinarySearch(indexField, Util.ToIndexValue(oldValues[indexField]), true)
+		if changeContext[indexField] then
+			oldIndexMinIndex[indexField] = self:_IndexListBinarySearch(indexField, Util.ToIndexValue(changeContext[indexField]), true)
 		end
 	end
 	local index = self._uuidToDataOffsetLookup[uuid]
 	for i = 1, self._numStoredFields do
-		self._data[index + i - 1] = row:GetField(self._storedFieldList[i])
+		local field = self._storedFieldList[i]
+		if changeContext[field] then
+			if self._listData and self:_GetListFieldType(field) then
+				self._data[index + i - 1] = self:_InsertListData(changeContext[field])
+			else
+				self._data[index + i - 1] = row:GetField(field)
+			end
+		end
 	end
 	local changedIndexUnique = false
 	for indexField, indexList in pairs(self._indexLists) do
-		if oldValues[indexField] or (self:_IsSmartMapField(indexField) and oldValues[self._smartMapInputLookup[indexField]]) then
+		if changeContext[indexField] or (self:_IsSmartMapField(indexField) and changeContext[self._smartMapInputLookup[indexField]]) then
 			-- remove and re-add row to the index list since the index value changed
 			if oldIndexMinIndex[indexField] then
 				local deleteIndex = nil
@@ -1110,12 +1119,12 @@ function DatabaseTable:_UpdateRow(row, oldValues)
 		end
 	end
 	TempTable.Release(oldIndexMinIndex)
-	if self._trigramIndexField and oldValues[self._trigramIndexField] then
+	if self._trigramIndexField and changeContext[self._trigramIndexField] then
 		self:_TrigramIndexRemove(uuid)
 		self:_TrigramIndexInsert(uuid)
 	end
 	for field, uniqueValues in pairs(self._uniques) do
-		local oldValue = oldValues[field]
+		local oldValue = changeContext[field]
 		if oldValue ~= nil then
 			assert(uniqueValues[oldValue] == uuid)
 			uniqueValues[oldValue] = nil
@@ -1124,7 +1133,7 @@ function DatabaseTable:_UpdateRow(row, oldValues)
 		end
 	end
 	if not changedIndexUnique then
-		self:_UpdateQueries(uuid, oldValues)
+		self:_UpdateQueries(uuid, changeContext)
 	else
 		self:_UpdateQueries()
 	end
@@ -1188,6 +1197,63 @@ function DatabaseTable:_HandleSmartMapReaderUpdate(reader, changes)
 	end
 
 	self:_UpdateQueries()
+end
+
+function DatabaseTable:_InsertListData(value)
+	local dataIndex = self._listData.nextIndex
+	self._listData[self._listData.nextIndex] = #value
+	for j = 1, #value do
+		self._listData[self._listData.nextIndex + j] = value[j]
+	end
+	self._listData.nextIndex = self._listData.nextIndex + #value + 1
+	return dataIndex
+end
+
+function DatabaseTable:_DeleteRowHelper(uuid)
+	-- lookup the index of the row being deleted
+	local uuidIndex = ((self._uuidToDataOffsetLookup[uuid] - 1) / self._numStoredFields) + 1
+	local rowIndex = self._uuidToDataOffsetLookup[uuid]
+	assert(rowIndex)
+
+	-- get the index of the last row
+	local lastUUIDIndex = #self._data / self._numStoredFields
+	local lastRowIndex = #self._data - self._numStoredFields + 1
+	assert(lastRowIndex > 0 and lastUUIDIndex > 0)
+
+	-- remove this row from both lookups
+	self._uuidToDataOffsetLookup[uuid] = nil
+
+	if self._listData then
+		-- remove any list field data for this row
+		for field in pairs(self._fieldTypeLookup) do
+			if self:_GetListFieldType(field) then
+				local fieldOffset = self._fieldOffsetLookup[field]
+				local dataIndex = self._data[rowIndex + fieldOffset - 1]
+				local len = self._listData[dataIndex]
+				for i = 0, len do
+					self._listData[dataIndex + i] = nil
+				end
+			end
+		end
+	end
+
+	if rowIndex == lastRowIndex then
+		-- this is the last row so just remove it
+		table.removemulti(self._data, #self._data - self._numStoredFields + 1, self._numStoredFields)
+		assert(uuidIndex == #self._uuids)
+		self._uuids[#self._uuids] = nil
+	else
+		-- this row is in the middle, so move the last row into this slot
+		local moveRowUUID = tremove(self._uuids)
+		self._uuids[uuidIndex] = moveRowUUID
+		self._uuidToDataOffsetLookup[moveRowUUID] = rowIndex
+		for i = self._numStoredFields, 1, -1 do
+			local moveDataIndex = lastRowIndex + i - 1
+			assert(moveDataIndex == #self._data)
+			self._data[rowIndex + i - 1] = self._data[moveDataIndex]
+			tremove(self._data)
+		end
+	end
 end
 
 

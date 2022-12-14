@@ -90,7 +90,7 @@ function AltTracking.GetQuantity(itemString)
 		return private.baseItemQuantityQuery:Sum("inventory"), private.baseItemQuantityQuery:Sum("auctions")
 	else
 		local levelItemString = ItemString.ToLevel(itemString)
-		return private.quantityDB:GetUniqueRowField("levelItemString", levelItemString, "inventory") or 0, private.quantityDB:GetUniqueRowField("levelItemString", levelItemString, "auction") or 0
+		return private.quantityDB:GetUniqueRowField("levelItemString", levelItemString, "inventory") or 0, private.quantityDB:GetUniqueRowField("levelItemString", levelItemString, "auctions") or 0
 	end
 end
 

@@ -394,22 +394,6 @@ function Table.RotateRight(tbl, amount, startIndex, endIndex)
 	private.ReverseTable(tbl, startIndex + amount, endIndex)
 end
 
----Removes a range of indexes from a table.
----@param tbl table The table to remove from
----@param startIndex number The first index to remove
----@param endIndex number The last index to remove
-function Table.RemoveRange(tbl, startIndex, endIndex)
-	local numToRemove = endIndex - startIndex + 1
-	if numToRemove == 0 then
-		return
-	end
-	assert(numToRemove > 0)
-	Table.RotateRight(tbl, -numToRemove, startIndex)
-	for i = #tbl, #tbl - (numToRemove - 1), -1 do
-		tbl[i] = nil
-	end
-end
-
 ---Inserts fill values into the table.
 ---@param tbl table The table to insert into
 ---@param startIndex number The index to insert at

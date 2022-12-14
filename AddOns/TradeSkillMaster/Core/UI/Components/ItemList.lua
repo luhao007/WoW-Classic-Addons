@@ -237,7 +237,9 @@ function ItemList:_HandleQueryUpdate(query)
 				if sectionIndex then
 					self._sectionNumRows[sectionIndex] = self._sectionNumRows[sectionIndex] - #uuids
 				end
-				Table.RemoveRange(self._data, startIndex, startIndex + #uuids - 1)
+				if #uuids > 0 then
+					table.removemulti(self._data, startIndex, #uuids)
+				end
 				for _, uuid in ipairs(uuids) do
 					local itemString = self._itemString[uuid]
 					assert(itemString)
@@ -314,7 +316,9 @@ function ItemList:_HandleQueryUpdate(query)
 					self._selectedData[prevItemString] = nil
 				end
 			end
-			Table.RemoveRange(self._data, dataStartOffset + 1, dataStartOffset + dataLen)
+			if dataLen > 0 then
+				table.removemulti(self._data, dataStartOffset + 1, dataLen)
+			end
 		end
 		dataLen = query:Count()
 		if dataLen > 0 then

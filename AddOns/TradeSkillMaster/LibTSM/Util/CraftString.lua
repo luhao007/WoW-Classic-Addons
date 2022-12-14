@@ -17,16 +17,24 @@ local CraftString = TSM.Init("Util.CraftString") ---@class Util.CraftString
 ---@param spellId number The craft's spell ID
 ---@param rank? number The rank of the craft
 ---@param level? number The level of the craft
+---@param level? number The quality of the craft
 ---@return string @The craft string
-function CraftString.Get(spellId, rank, level)
+function CraftString.Get(spellId, rank, level, quality)
 	local suffix = ""
 	if rank and rank > 0 then
 		assert(not level or level <= 0)
+		assert(not quality or quality <= 0)
 		suffix = ":r"..rank
 	end
 	if level and level > 0 then
 		assert(not rank or rank <= 0)
+		assert(not quality or quality <= 0)
 		suffix = ":l"..level
+	end
+	if quality and quality > 0 then
+		assert(not rank or rank <= 0)
+		assert(not level or level <= 0)
+		suffix = ":q"..quality
 	end
 	return "c:"..spellId..suffix
 end
@@ -60,4 +68,11 @@ end
 ---@return number|nil @The level
 function CraftString.GetLevel(craftString)
 	return tonumber(strmatch(craftString, ":l(%d+)"))
+end
+
+---Gets the quality from the craft string.
+---@param craftString string The craft string
+---@return number|nil @The level
+function CraftString.GetQuality(craftString)
+	return tonumber(strmatch(craftString, ":q(%d+)"))
 end

@@ -57,8 +57,8 @@ NRC.cooldowns = {
 		cooldown = 60,
 		minLevel = 45,
 		talentOnly = {
-			tabIndex = 1,
-			talentIndex = 23,
+			tabIndex = 2,
+			talentIndex = 7,
 		},
 		spellIDs = {
 			[61336] = "Survival Instincts", --Rank 1.

@@ -9,6 +9,61 @@ Bistooltip_wowtbc_bislists["Rogue"] = {};
 Bistooltip_wowtbc_bislists["Shaman"] = {};
 Bistooltip_wowtbc_bislists["Warrior"] = {};
 Bistooltip_wowtbc_bislists["Warlock"] = {};
+Bistooltip_wowtbc_classes = {};
+Bistooltip_wowtbc_classes[1] = { ["name"] = "Death knight", ["specs"] = { 
+    [1] = "Blood tank",
+    [2] = "Frost",
+    [3] = "Unholy"
+}};
+Bistooltip_wowtbc_classes[2] = { ["name"] = "Druid", ["specs"] = { 
+    [1] = "Balance",
+    [2] = "Feral tank",
+    [3] = "Feral dps",
+    [4] = "Restoration"
+}};
+Bistooltip_wowtbc_classes[3] = { ["name"] = "Hunter", ["specs"] = { 
+    [1] = "Beast mastery",
+    [2] = "Marksmanship",
+    [3] = "Survival"
+}};
+Bistooltip_wowtbc_classes[4] = { ["name"] = "Mage", ["specs"] = { 
+    [1] = "Arcane",
+    [2] = "Fire",
+    [3] = "Fire FFB",
+    [4] = "Frost"
+}};
+Bistooltip_wowtbc_classes[5] = { ["name"] = "Paladin", ["specs"] = { 
+    [1] = "Holy",
+    [2] = "Protection",
+    [3] = "Retribution"
+}};
+Bistooltip_wowtbc_classes[6] = { ["name"] = "Priest", ["specs"] = { 
+    [1] = "Discipline",
+    [2] = "Holy",
+    [3] = "Shadow"
+}};
+Bistooltip_wowtbc_classes[7] = { ["name"] = "Rogue", ["specs"] = { 
+    [1] = "Assassination",
+    [2] = "Combat"
+}};
+Bistooltip_wowtbc_classes[8] = { ["name"] = "Shaman", ["specs"] = { 
+    [1] = "Elemental",
+    [2] = "Enhancement",
+    [3] = "Restoration"
+}};
+Bistooltip_wowtbc_classes[9] = { ["name"] = "Warrior", ["specs"] = { 
+    [1] = "Arms",
+    [2] = "Fury",
+    [3] = "Protection"
+}};
+Bistooltip_wowtbc_classes[10] = { ["name"] = "Warlock", ["specs"] = { 
+    [1] = "Affliction",
+    [2] = "Demonology",
+    [3] = "Destruction"
+}};
+
+Bistooltip_wowtbc_phases = { "PR", "T7" };
+
 Bistooltip_wowtbc_bislists["Death knight"]["Blood tank"] = {};
 Bistooltip_wowtbc_bislists["Death knight"]["Blood tank"]["PR"] = {};
 Bistooltip_wowtbc_bislists["Death knight"]["Blood tank"]["T7"] = {};
@@ -549,7 +604,7 @@ Bistooltip_wowtbc_bislists["Paladin"]["Retribution"]["PR"][10] = { ["slot_name"]
 Bistooltip_wowtbc_bislists["Paladin"]["Retribution"]["PR"][11] = { ["slot_name"] = "Finger", ["enhs"] = { }, [1] = 44935, [2] = 37642, [3] = 43251, [4] = 40586, [5] = 37685, [6] = 42642 }
 Bistooltip_wowtbc_bislists["Paladin"]["Retribution"]["PR"][12] = { ["slot_name"] = "Trinket", ["enhs"] = { }, [1] = 42987, [2] = 37166, [3] = 40684, [4] = 37723, [5] = 44914, [6] = 42990 }
 Bistooltip_wowtbc_bislists["Paladin"]["Retribution"]["PR"][13] = { ["slot_name"] = "Weapon", ["enhs"] = { [1] = { ["type"] = "spell", ["id"] = 59621 } }, [1] = 37852, [2] = 41257, [3] = 37653, [4] = 37733, [5] = 44249, [6] = 43409 }
-Bistooltip_wowtbc_bislists["Paladin"]["Retribution"]["PR"][14] = { ["slot_name"] = "Relic", ["enhs"] = { }, [1] = 37574, [2] = 42851, [3] = 38362, [4] = -1, [5] = -1, [6] = -1 }
+Bistooltip_wowtbc_bislists["Paladin"]["Retribution"]["PR"][14] = { ["slot_name"] = "Relic", ["enhs"] = { }, [1] = 37574, [2] = 38362, [3] = -1, [4] = -1, [5] = -1, [6] = -1 }
 Bistooltip_wowtbc_bislists["Paladin"]["Retribution"]["T7"][1] = { ["slot_name"] = "Head", ["enhs"] = { [1] = { ["type"] = "item", ["id"] = 44879 }, [2] = { ["type"] = "item", ["id"] = 41398 }, [3] = { ["type"] = "none", ["id"] = 0 }, [4] = { ["type"] = "item", ["id"] = 42702 } }, [1] = 44006, [2] = 41386, [3] = 40576, [4] = 40543, [5] = 39399, [6] = 39403 }
 Bistooltip_wowtbc_bislists["Paladin"]["Retribution"]["T7"][2] = { ["slot_name"] = "Neck", ["enhs"] = { [1] = { ["type"] = "none", ["id"] = 0 }, [2] = { ["type"] = "item", ["id"] = 39996 } }, [1] = 44664, [2] = 40065, [3] = 39146, [4] = 44659, [5] = 39421, [6] = 40369 }
 Bistooltip_wowtbc_bislists["Paladin"]["Retribution"]["T7"][3] = { ["slot_name"] = "Shoulder", ["enhs"] = { [1] = { ["type"] = "item", ["id"] = 44871 }, [2] = { ["type"] = "item", ["id"] = 39996 } }, [1] = 40578, [2] = 40414, [3] = 39637, [4] = 39249, [5] = 39237, [6] = 40315 }
@@ -563,7 +618,7 @@ Bistooltip_wowtbc_bislists["Paladin"]["Retribution"]["T7"][10] = { ["slot_name"]
 Bistooltip_wowtbc_bislists["Paladin"]["Retribution"]["T7"][11] = { ["slot_name"] = "Finger", ["enhs"] = { }, [1] = 40075, [2] = 40717, [3] = 40474, [4] = 40074, [5] = 39401, [6] = 43993 }
 Bistooltip_wowtbc_bislists["Paladin"]["Retribution"]["T7"][12] = { ["slot_name"] = "Trinket", ["enhs"] = { }, [1] = 42987, [2] = 40431, [3] = 37166, [4] = 40371, [5] = 40684, [6] = 40256 }
 Bistooltip_wowtbc_bislists["Paladin"]["Retribution"]["T7"][13] = { ["slot_name"] = "Weapon", ["enhs"] = { [1] = { ["type"] = "spell", ["id"] = 59621 } }, [1] = 40384, [2] = 39758, [3] = 39417, [4] = 40497, [5] = 40406, [6] = 40343 }
-Bistooltip_wowtbc_bislists["Paladin"]["Retribution"]["T7"][14] = { ["slot_name"] = "Relic", ["enhs"] = { }, [1] = 42852, [2] = 42851, [3] = 40191, [4] = 37574, [5] = 38362, [6] = -1 }
+Bistooltip_wowtbc_bislists["Paladin"]["Retribution"]["T7"][14] = { ["slot_name"] = "Relic", ["enhs"] = { }, [1] = 42852, [2] = 40191, [3] = 37574, [4] = 38362, [5] = -1, [6] = -1 }
 Bistooltip_wowtbc_bislists["Priest"]["Discipline"] = {};
 Bistooltip_wowtbc_bislists["Priest"]["Discipline"]["PR"] = {};
 Bistooltip_wowtbc_bislists["Priest"]["Discipline"]["T7"] = {};

@@ -1244,7 +1244,7 @@ function private.FSMCreate()
 			:Show()
 		headerFrame:GetElement("craftingCostText")
 			:SetText(Money.ToString(craftingCost, nil, "OPT_RETAIL_ROUND") or "")
-		local _, lNum, hNum = TSM.Crafting.ProfessionUtil.GetRecipeInfo(context.selectedCraftString)
+		local lNum, hNum = TSM.Crafting.ProfessionUtil.GetRecipeInfo(context.selectedCraftString)
 		if lNum == hNum then
 			if lNum < 2 then
 				headerFrame:GetElement("craftNum")

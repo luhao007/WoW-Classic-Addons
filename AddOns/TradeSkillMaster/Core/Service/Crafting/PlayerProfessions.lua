@@ -266,7 +266,7 @@ function private.PlayerProfessionsThread()
 	end
 	for _, craftString in ipairs(craftStrings) do
 		local playersToRemove = TempTable.Acquire()
-		for player in TSM.Crafting.PlayerIterator(craftString) do
+		for _, player in TSM.Crafting.PlayerIterator(craftString) do
 			-- check if the player still exists and still has this profession
 			local playerProfessions = TSM.db:Get("sync", TSM.db:GetSyncScopeKeyByCharacter(player), "internalData", "playerProfessions")
 			if not playerProfessions or not playerProfessions[TSM.Crafting.GetProfession(craftString)] then

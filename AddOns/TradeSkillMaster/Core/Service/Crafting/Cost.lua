@@ -234,6 +234,9 @@ function private.GetOptionalMats(itemString, resultTbl)
 end
 
 function private.GetCraftingCostHelper(craftString, recipeString, optionalMats)
+	if CraftString.GetQuality(craftString) then
+		return TSM.Crafting.DFCrafting.GetCraftingCostByCraftString(craftString, optionalMats)
+	end
 	local cost = 0
 	local hasMats = false
 	local mats = nil

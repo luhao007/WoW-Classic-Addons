@@ -1,55 +1,6 @@
 Bistooltip_classes = {}
-Bistooltip_classes[1] = { ["name"] = "Death knight", ["specs"] = {
-    [1] = "Blood tank",
-    [2] = "Frost",
-    [3] = "Unholy"
-} };
-Bistooltip_classes[2] = { ["name"] = "Druid", ["specs"] = {
-    [1] = "Balance",
-    [2] = "Feral tank",
-    [3] = "Feral dps",
-    [4] = "Restoration"
-} };
-Bistooltip_classes[3] = { ["name"] = "Hunter", ["specs"] = {
-    [1] = "Beast mastery",
-    [2] = "Marksmanship",
-    [3] = "Survival"
-} };
-Bistooltip_classes[4] = { ["name"] = "Mage", ["specs"] = {
-    [1] = "Arcane",
-    [2] = "Fire",
-    [3] = "Fire FFB",
-    [4] = "Frost"
-} };
-Bistooltip_classes[5] = { ["name"] = "Paladin", ["specs"] = {
-    [1] = "Holy",
-    [2] = "Protection",
-    [3] = "Retribution"
-} };
-Bistooltip_classes[6] = { ["name"] = "Priest", ["specs"] = {
-    [1] = "Discipline",
-    [2] = "Holy",
-    [3] = "Shadow"
-} };
-Bistooltip_classes[7] = { ["name"] = "Rogue", ["specs"] = {
-    [1] = "Assassination",
-    [2] = "Combat"
-} };
-Bistooltip_classes[8] = { ["name"] = "Shaman", ["specs"] = {
-    [1] = "Elemental",
-    [2] = "Enhancement",
-    [3] = "Restoration"
-} };
-Bistooltip_classes[9] = { ["name"] = "Warlock", ["specs"] = {
-    [1] = "Affliction",
-    [2] = "Demonology",
-    [3] = "Destruction"
-} };
-Bistooltip_classes[10] = { ["name"] = "Warrior", ["specs"] = {
-    [1] = "Arms",
-    [2] = "Fury",
-    [3] = "Protection"
-} };
+Bistooltip_phases = {}
+
 Bistooltip_classes_indexes = {
     ["Death knight"] = 1,
     ["Druid"] = 2,

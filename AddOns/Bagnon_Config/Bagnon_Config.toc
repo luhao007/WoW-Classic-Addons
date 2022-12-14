@@ -10,4 +10,5 @@
 
 ## X-Part-Of: Bagnon
 
-..\Bagnon\addons\config\config.xml
+..\Bagnon\src\config.lua
+..\BagBrother\addons\config\config.xml

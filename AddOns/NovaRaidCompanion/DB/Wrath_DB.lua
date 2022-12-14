@@ -3013,6 +3013,13 @@ NRC.trackedConsumes = {
 		itemID = 22788,
 		quality = 1,
 	},
+	[351359] = {
+		name = "Greater Drums of Speed",
+		icon = 133844,
+		desc = "Increases movement speed of party members within 40 yards by 15%. Lasts 30 sec.",
+		itemID = 185851,
+		quality = 3,
+	},
 	--Wrath.
 	[53908] = {
 		name = "Potion of Speed",

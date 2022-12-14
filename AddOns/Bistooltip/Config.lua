@@ -43,6 +43,7 @@ local configTable = {
             desc = "Changes bis data source",
             type = "select",
             style = "dropdown",
+            width = "double",
             values = Bistooltip_source_to_url,
             set = function(info, key, val)
                 BistooltipAddon.db.char.data_source = key
@@ -190,43 +191,30 @@ function BistooltipAddon:openConfigDialog()
     config_shown = not (config_shown)
 end
 
-local function rebuildClassesTable()
-    Bistooltip_classes = {}
-    for class_name, specs_arr in pairs(Bistooltip_bislists) do
-        local specs = {}
-        local specs_index = 1
-        for spec_name, v in pairs(specs_arr) do
-            specs[specs_index] = spec_name
-            specs_index = specs_index + 1
-        end
-        Bistooltip_classes[Bistooltip_classes_indexes[class_name]] = {
-            ["name"] = class_name,
-            ["specs"] = specs
-        }
-    end
-end
-
 local function enableSpec(spec_name)
-    BistooltipAddon:closeMainFrame()
+    BistooltipAddon.db.char.class_index = 1
+    BistooltipAddon.db.char.spec_index = 1
+    BistooltipAddon.db.char.phase_index = 1
+
     if spec_name == sources.wowtbc then
         Bistooltip_bislists = Bistooltip_wowtbc_bislists;
         Bistooltip_items = Bistooltip_wowtbc_items;
+        Bistooltip_classes = Bistooltip_wowtbc_classes;
+        Bistooltip_phases = Bistooltip_wowtbc_phases;
     elseif spec_name == sources.wh then
         Bistooltip_bislists = Bistooltip_wh_bislists;
         Bistooltip_items = Bistooltip_wh_items;
+        Bistooltip_classes = Bistooltip_wh_classes;
+        Bistooltip_phases = Bistooltip_wh_phases;
     end
-    rebuildClassesTable()
     buildFilterSpecOptions()
 end
 
 function BistooltipAddon:changeSpec(spec_name)
     enableSpec(spec_name)
 
-    BistooltipAddon.db.char.class_index = 1
-    BistooltipAddon.db.char.spec_index = 1
-    BistooltipAddon.db.char.phase_index = 1
-
     BistooltipAddon:initBislists()
+    BistooltipAddon:reloadData()
 end
 
 function BistooltipAddon:initConfig()

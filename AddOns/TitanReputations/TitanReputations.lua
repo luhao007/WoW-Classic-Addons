@@ -5,6 +5,8 @@
 
 local ADDON_NAME, L = ...;
 local VERSION = GetAddOnMetadata(ADDON_NAME, "Version")
+local PLUGIN_ID = "TITAN_REPUTATION_XP"
+local ICON = "Interface\\Icons\\INV_MISC_NOTE_02"
 
 local Color = {}
 Color.WHITE = "|cFFFFFFFF"
@@ -39,6 +41,7 @@ local GetCurrentRenownLevel = C_MajorFactions and C_MajorFactions.GetCurrentReno
 
 local sessionStart = {}
 local sessionStartMajorFaction = {}
+local lastReps = {}
 
 local defaultColors = {
 	[1] = "FFCC2222",
@@ -103,7 +106,7 @@ local function GetBalanceForMajorFaction(factionId, currentXp, currentLvl)
 	return balance
 end
 
--- @return current, maximun, color, standingText
+-- @return current, maximun, color, standingText, hasRewardPending, session, texture
 local function GetValueAndMaximum(standingId, barValue, bottomValue, topValue, factionId, colors)
 	if (IsMajorFaction(factionId)) then
 		local data = GetMajorFactionData(factionId)
@@ -111,7 +114,8 @@ local function GetValueAndMaximum(standingId, barValue, bottomValue, topValue, f
 		local current = isCapped and data.renownLevelThreshold or data.renownReputationEarned or 0
 		local standingText = " (" .. (RENOWN_LEVEL_LABEL .. data.renownLevel) .. ")"
 		local session = GetBalanceForMajorFaction(factionId, current, data.renownLevel)
-		return current, data.renownLevelThreshold, colors.renown, standingText, nil, session
+		local texture = data.textureKit and ([[Interface\Icons\UI_MajorFaction_%s]]):format(data.textureKit)
+		return current, data.renownLevelThreshold, colors.renown, standingText, nil, session, texture
 	end
 
 	if (standingId == nil) then
@@ -130,7 +134,7 @@ local function GetValueAndMaximum(standingId, barValue, bottomValue, topValue, f
 		return mod(currentValue, threshold), threshold, color, standingText, hasRewardPending, session
 	end
 
-	local friendID, friendRep, _, _, _, _, friendTextLevel, friendThreshold, nextFriendThreshold = GetFriendshipReputation(factionId)
+	local friendID, friendRep, _, _, _, friendTexture, friendTextLevel, friendThreshold, nextFriendThreshold = GetFriendshipReputation(factionId)
 	if (friendID) then
 		local standingText = " (" .. friendTextLevel .. ")"
 		local color = colors[standingId] or colors[5]
@@ -140,7 +144,7 @@ local function GetValueAndMaximum(standingId, barValue, bottomValue, topValue, f
 		end
 		sessionStart[factionId] = sessionStart[factionId] or friendRep
 		local session = friendRep - sessionStart[factionId]
-		return current, maximun, color, standingText, nil, session
+		return current, maximun, color, standingText, nil, session, friendTexture
 	end
 
 	local current = barValue - bottomValue
@@ -152,13 +156,37 @@ local function GetValueAndMaximum(standingId, barValue, bottomValue, topValue, f
 	return current, maximun, color, standingText, nil, session
 end
 
-local function GetButtonText(self, id)
-	local name, standingID, bottomValue, topValue, barValue, factionId = GetWatchedFactionInfo()
+local function GetButtonMainRepInfo(self)
+	local name, standingId, bottomValue, topValue, barValue, factionId, atWarWith, _
+	factionId = TitanGetVar(self.registry.id, "LastUpdatedReputation")
+	if (factionId and factionId ~= 0 and TitanGetVar(PLUGIN_ID, "SmartReputation") == 1) then
+		name, _, standingId, bottomValue, topValue, barValue, atWarWith = GetFactionInfoByID(factionId)
+	else
+		name, standingId, bottomValue, topValue, barValue, factionId = GetWatchedFactionInfo()
+		if (factionId) then
+			atWarWith = select(7, GetFactionInfoByID(factionId))
+		end
+	end
+	return {
+		name = name,
+		standingId = standingId,
+		bottomValue = bottomValue,
+		topValue = topValue,
+		barValue = barValue,
+		factionId = factionId,
+		atWarWith = atWarWith
+	}
+end
 
-	if not name then
+local function GetButtonText(self, id)
+	local info = GetButtonMainRepInfo(self, id)
+	if not info or not info.name then
 		return "", ""
 	end
-	local value, max, color, _, hasRewardPending, balance = GetValueAndMaximum(standingID, barValue, bottomValue, topValue, factionId, GetColors(id))
+	local value, max, color, _, hasRewardPending, balance, texture = GetValueAndMaximum(
+			info.standingId, info.barValue, info.bottomValue, info.topValue, info.factionId, GetColors(id)
+	)
+	self.registry.icon = texture or ICON
 
 	local text = "" .. color
 
@@ -192,7 +220,7 @@ local function GetButtonText(self, id)
 		text = text .. " [" .. balance .. "]"
 	end
 
-	return name .. ":", text
+	return info.name .. ":", text
 end
 
 local function IsNeutral(factionId, standingId)
@@ -228,14 +256,17 @@ local function IsMaxed(factionId, standingId)
 	return standingId == 8
 end
 
-local function formatRep(nameColor, name, valueColor, value, max, standing, balance)
+local function formatRep(nameColor, name, valueColor, value, max, standing, balance, texture, prefix)
 	if (balance == 0) then
 		balance = ""
 	else
 		balance = " [" .. balance .. "]"
 	end
 
-	return nameColor .. name .. "\t" .. valueColor .. value .. "/" .. max .. standing .. balance .. "|r\n"
+	texture = texture and (" |T" .. texture .. ":0|t") or ""
+	prefix = prefix or ""
+
+	return nameColor .. prefix .. name .. texture .. "\t" .. valueColor .. value .. "/" .. max .. standing .. balance .. "|r\n"
 end
 
 local function GetTooltipText(self, id)
@@ -244,27 +275,28 @@ local function GetTooltipText(self, id)
 	local hideNeutral = TitanGetVar(id, "HideNeutral")
 	local showHeaders = TitanGetVar(id, "ShowHeaders")
 	local alwaysShowParagon = TitanGetVar(id, "AlwaysShowParagon")
-
-	local numFactions = GetNumFactions()
+	local colors = GetColors(id)
 
 	local topText = ""
+	do
+		local info = GetButtonMainRepInfo(self, id)
+		if (info and info.name) then
+			local value, max, color, standing, _, balance, texture = GetValueAndMaximum(
+					info.standingId, info.barValue, info.bottomValue, info.topValue, info.factionId, colors
+			)
+			local nameColor = (info.atWarWith and Color.RED) or ""
+			topText = formatRep(nameColor, info.name, color, value, max, standing, balance, texture) .. "\n"
+		end
+	end
 
 	local headerText
 	local childText = ""
 
-	local colors = GetColors(id)
-
+	local numFactions = GetNumFactions()
 	for factionIndex = 1, numFactions do
-		local name, _, standingId, bottomValue, topValue, earnedValue, atWarWith, _, isHeader, _, hasRep, isWatched, _, factionId, hasBonusRepGain, canBeLFGBonus = GetFactionInfo(factionIndex)
+		local name, _, standingId, bottomValue, topValue, earnedValue, atWarWith, _, isHeader, _, hasRep, isWatched, _, factionId = GetFactionInfo(factionIndex)
 
 		if name then
-			if isWatched then
-				local value, max, color, standing, _, balance = GetValueAndMaximum(standingId, earnedValue, bottomValue, topValue, factionId, colors)
-				local nameColor = (atWarWith and Color.RED) or ""
-
-				topText = formatRep(nameColor, name, color, value, max, standing, balance) .. "\n"
-			end
-
 			if isHeader and not hasRep then
 				-- if the previous header has child
 				if (headerText and childText ~= "") then
@@ -293,7 +325,7 @@ local function GetTooltipText(self, id)
 				end
 
 				if show then
-					local value, max, color, standing, _, balance = GetValueAndMaximum(standingId, earnedValue, bottomValue, topValue, factionId, colors)
+					local value, max, color, standing, _, balance, texture = GetValueAndMaximum(standingId, earnedValue, bottomValue, topValue, factionId, colors)
 					local nameColor = (atWarWith and Color.RED) or ""
 
 					local prefix = "-"
@@ -303,7 +335,7 @@ local function GetTooltipText(self, id)
 						prefix = ""
 					end
 
-					childText = childText .. prefix .. formatRep(nameColor, name, color, value, max, standing, balance)
+					childText = childText .. formatRep(nameColor, name, color, value, max, standing, balance, texture, prefix)
 				end
 			end
 		end
@@ -320,7 +352,7 @@ local function GetTooltipText(self, id)
 	return topText .. text
 end
 
-local function prepareSessionTable()
+local function PrepareSessionTable()
 	local numFactions = GetNumFactions()
 	for factionIndex = 1, numFactions do
 		local name, _, _, _, _, earnedValue, _, _, _, _, _, _, _, factionId = GetFactionInfo(factionIndex)
@@ -335,24 +367,85 @@ local function prepareSessionTable()
 					[data.renownLevel] = { start = earnedValue, max = data.renownLevelThreshold },
 				}
 				sessionStart[factionId] = earnedValue
+				lastReps[factionId] = {
+					lvl = data.renownLevel,
+					rep = data.renownReputationEarned,
+				}
 			elseif (friendID) then
 				sessionStart[factionId] = friendRep
+				lastReps[factionId] = friendRep
 			elseif name then
 				sessionStart[factionId] = earnedValue
+				lastReps[factionId] = earnedValue
 			end
 		end
 	end
+end
+
+local GUILD_ID = 1168
+local lastUpdate = 0
+local needUpdate = false
+
+local function UpdateLastRepIfNeeded()
+	-- the idea here, is to throttle how many times this runs, making sure the last update will eventually run
+	if (not needUpdate or (GetTime() - lastUpdate < 5)) then
+		return
+	end
+
+	needUpdate = false
+	local numFactions = GetNumFactions()
+	local lastUpdateId
+	for factionIndex = 1, numFactions do
+		local name, _, _, _, _, earnedValue, _, _, _, _, _, _, _, factionId = GetFactionInfo(factionIndex)
+		if (factionId and factionId ~= GUILD_ID) then
+			if (IsMajorFaction(factionId)) then
+				local data = GetMajorFactionData(factionId)
+				local lastValue = lastReps[factionId]
+				lastReps[factionId] = {
+					lvl = data.renownLevel,
+					rep = data.renownReputationEarned,
+				}
+				if (not lastValue or (lastValue.lvl ~= data.renownLevel or lastValue.rep ~= data.renownReputationEarned)) then
+					lastUpdateId = factionId
+				end
+			else
+				local lastValue = lastReps[factionId]
+				local friendID, friendRep = GetFriendshipReputation(factionId)
+				if (friendID) then
+					lastReps[factionId] = friendRep
+				elseif name then
+					lastReps[factionId] = earnedValue
+				end
+				if (lastValue ~= lastReps[factionId]) then
+					lastUpdateId = factionId
+				end
+			end
+		end
+	end
+	if (lastUpdateId) then
+		TitanSetVar(PLUGIN_ID, "LastUpdatedReputation", lastUpdateId)
+	end
+end
+
+local function OnUpdate()
+	UpdateLastRepIfNeeded()
 end
 
 local eventsTable = {
 	PLAYER_ENTERING_WORLD = function(self)
 		self:UnregisterEvent("PLAYER_ENTERING_WORLD")
 
-		prepareSessionTable()
+		PrepareSessionTable()
+
+		self:SetScript("OnUpdate", OnUpdate)
 
 		TitanPanelButton_UpdateButton(self.registry.id)
 	end,
 	UPDATE_FACTION = function(self)
+		if (TitanGetVar(self.registry.id, "SmartReputation") == 1) then
+			needUpdate = true
+			UpdateLastRepIfNeeded()
+		end
 		TitanPanelButton_UpdateButton(self.registry.id)
 	end,
 }
@@ -372,7 +465,12 @@ local function OnClick(self, button)
 end
 
 local subColor = {}
+local savedVariables = {
+	LastUpdatedReputation = 0,
+}
 for _, k in ipairs(defaultColorsSortedKeys) do
+	local var = "ColorStanding" .. k
+	savedVariables[var] = defaultColors[k]
 	table.insert(subColor, {
 		type = "button",
 		text = GetFactionLabel(k),
@@ -387,8 +485,8 @@ for _, k in ipairs(defaultColorsSortedKeys) do
 				type = "button",
 				text = L["Reset"],
 				func = function()
-					TitanSetVar("TITAN_REPUTATION_XP", "ColorStanding" .. k, defaultColors[k])
-					TitanPanelButton_UpdateButton("TITAN_REPUTATION_XP")
+					TitanSetVar(PLUGIN_ID, "ColorStanding" .. k, defaultColors[k])
+					TitanPanelButton_UpdateButton(PLUGIN_ID)
 				end
 			}
 		}
@@ -405,12 +503,13 @@ local menus = {
 	{ type = "toggle", text = L["HideExalted"], var = "HideExalted", def = false, keepShown = true },
 	{ type = "toggle", text = L["AlwaysShowParagon"], var = "AlwaysShowParagon", def = true, keepShown = true },
 	{ type = "toggle", text = L["ShowSessionBalance"], var = "ShowSessionBalance", def = false, keepShown = true },
+	{ type = "toggle", text = L["SmartReputation"], var = "SmartReputation", def = false, keepShown = true },
 	{ type = "space" },
 	{ type = "button", text = COLORS, menuList = subColor }
 }
 
 LibStub("Elib-4.0").Register({
-	id = "TITAN_REPUTATION_XP",
+	id = PLUGIN_ID,
 	name = L["Reputation"],
 	tooltip = L["Reputation"],
 	icon = "Interface\\Icons\\INV_MISC_NOTE_02",
@@ -420,7 +519,8 @@ LibStub("Elib-4.0").Register({
 	getTooltipText = GetTooltipText,
 	eventsTable = eventsTable,
 	menus = menus,
-	onClick = OnClick
+	onClick = OnClick,
+	savedVariables = savedVariables
 })
 
 

@@ -214,6 +214,8 @@ L["CONFIRM_POST_LOW_PRICE"] = [=[O preço de %s parece um pouco baixo. Tem certe
 L["CONFIRM_POST_PRICE_DROP"] = "O preço unitário de %s é uma grande queda de preço. Tem certeza de que deseja postar a esse preço?"
 --[[Translation missing --]]
 L["CONFIRM_X_TOTAL_PRICE_X"] = "Confirm %s, total price %s"
+--[[Translation missing --]]
+L["CONTINUE"] = "Continue"
 L["CONTRIBUTORS_HEADER"] = "Contribuidores"
 L["COPY_ITEM_ADDED"] = [=[Copiou %s para %s
 ]=]
@@ -366,6 +368,8 @@ L["PRICE"] = "Preço"
 L["PRICE_HISTORY"] = "Price History"
 L["PRICE_INCREASE_WARNING"] = [=[Preço aumentado em %s, aguardando %ss
 ]=]
+--[[Translation missing --]]
+L["PRICE_INCREASE_WARNING_2"] = "Price increased by %s. Do you want to continue?"
 L["PROFILE_TOGGLE_TOOLTIP_HEADER"] = "Ativar definições específicas para cada personagem"
 L["PROFILE_TOGGLE_TOOLTIP_TEXT"] = "Faz mudanças para as configurações do Auctionator afetar apenas este personagem."
 L["PROFIT_COLON"] = [=[Lucro:
@@ -655,6 +659,8 @@ L["STARTING_PRICE_PERCENTAGE_TOOLTIP_HEADER"] = [=[Preço inicial do lance
 ]=]
 L["STARTING_PRICE_PERCENTAGE_TOOLTIP_TEXT"] = [=[A porcentagem do preço inicial será usada para definir o valor do lance padrão usado para quaisquer leilões publicados. Por exemplo, definir isso para 95, para um preço de pilha de 10 segundos, definirá o preço de oferta para 9s50c.
 ]=]
+--[[Translation missing --]]
+L["STOP"] = "Stop"
 L["TEMPORARY_LOWER_CASE"] = "temporário"
 L["TIME_LEFT"] = "Tempo Restante"
 L["TIME_LEFT_H"] = "Tempo restante (h)"

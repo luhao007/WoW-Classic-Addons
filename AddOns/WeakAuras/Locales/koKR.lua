@@ -43,10 +43,22 @@ L[ [=[• |cff00ff00Player|r, |cff00ff00Target|r, |cff00ff00Focus|r, and |cff00f
 
 
 |cffffff00*|r 노란색 유닛 설정은 이 활성 조건이 효과에 동적 정보를 제공하는 동안 일치하는 각 유닛에 대해 복제를 생성합니다.]=]
+--[[Translation missing --]]
+L["1. Profession 1. Accessory"] = "1. Profession 1. Accessory"
+--[[Translation missing --]]
+L["1. Profession 2. Accessory"] = "1. Profession 2. Accessory"
+--[[Translation missing --]]
+L["1. Professsion Tool"] = "1. Professsion Tool"
 L["10 Man Raid"] = "10인 공격대"
 L["10 Player Raid"] = "10인 공격대"
 L["10 Player Raid (Heroic)"] = "10인 공격대 (영웅)"
 L["10 Player Raid (Normal)"] = "10인 공격대 (일반)"
+--[[Translation missing --]]
+L["2. Profession 1. Accessory"] = "2. Profession 1. Accessory"
+--[[Translation missing --]]
+L["2. Profession 2. Accessory"] = "2. Profession 2. Accessory"
+--[[Translation missing --]]
+L["2. Professsion Tool"] = "2. Professsion Tool"
 L["20 Man Raid"] = "20인 공격대"
 L["20 Player Raid"] = "20인 공격대"
 L["25 Man Raid"] = "25인 공격대"
@@ -368,6 +380,8 @@ L["Custom Sort"] = "사용자 정의 정렬"
 --[[Translation missing --]]
 L["Custom Text Function"] = "Custom Text Function"
 L["Custom Trigger Combination"] = "사용자 정의 활성 조건 조합"
+--[[Translation missing --]]
+L["Custom Variables"] = "Custom Variables"
 L["Daakara"] = "다카라"
 L["Damage"] = "피해"
 L["Damage Shield"] = "피해 반사"

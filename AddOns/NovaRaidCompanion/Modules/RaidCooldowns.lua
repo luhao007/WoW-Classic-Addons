@@ -1127,7 +1127,7 @@ function NRC:updateRaidCooldowns()
 					local rawName = name;
 					lineSubFrame = lineFrame.subFrame:getLineFrame(subFrameCount);
 					lineSubFrame:SetBackdropColor(0, 0, 0, 1);
-					lineSubFrame:SetBackdropBorderColor(1, 1, 1, 8);
+					lineSubFrame:SetBackdropBorderColor(1, 1, 1, 1);
 					lineSubFrame.enabled = true;
 					--Shorten name if it's long.
 					if (LOCALE_koKR) then

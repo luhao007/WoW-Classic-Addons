@@ -247,7 +247,7 @@ function NRC:createListFrame(name, width, height, x, y, desc, isSubFrame, label)
 		lineFrame.fs3:SetFont(NRC.LSM:Fetch("font", frame.lineFrameFont), parent.lineFrameFontSize - 1, parent.lineFrameFontOutline);
 		lineFrame.fs4:SetFont(NRC.LSM:Fetch("font", frame.lineFrameFontNumbers), parent.lineFrameFontSize + 1, parent.lineFrameFontOutline);
 		
-		lineFrame.texture = lineFrame:CreateTexture(nil, "MEDIUM");
+		lineFrame.texture = lineFrame:CreateTexture(nil, "ARTWORK");
 		lineFrame.texture:SetTexture("error");
 		lineFrame.texture:SetPoint("LEFT", 1, 0);
 		lineFrame.texture:SetSize(parent.lineFrameHeight - 2, parent.lineFrameHeight - 2);
@@ -615,7 +615,7 @@ function NRC:styleTimerBar(bar, duration, maxDuration, name, height, guid, test)
 	bar:SetAlpha(0.7);
 	bar.nameString = name;
 	if (not bar.texture) then
-		bar.texture = bar:CreateTexture(nil, "MEDIUM");
+		bar.texture = bar:CreateTexture(nil, "ARTWORK");
 		bar.texture:SetTexture("Interface\\Icons\\spell_shadow_soulgem");
 		bar.texture:SetPoint("LEFT", bar, "RIGHT", 0, 0);
 		bar.texture:SetSize(height - 2, height - 2);
@@ -625,7 +625,8 @@ function NRC:styleTimerBar(bar, duration, maxDuration, name, height, guid, test)
 	--Custom timer text so we can update it at the same time as the rest of the raid cooldown bars
 	--And change the format a little.
 	if (not bar.customTimer) then
-		bar.customTimer = bar:CreateFontString(nil, "HIGH", GameFontHighlightSmallOutline);
+		--bar.customTimer = bar:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmallOutline");
+		bar.customTimer = bar:CreateFontString(nil, "ARTWORK");
 		bar.customTimer:SetFont(GameFontHighlightSmallOutline:GetFont());
 		bar.customTimer:SetPoint("TOPLEFT", bar, "TOPLEFT", 2, 0.3)
 		bar.customTimer:SetPoint("BOTTOMRIGHT", bar, "BOTTOMRIGHT", -2, 0.3);
@@ -682,7 +683,7 @@ function NRC:styleTimerBar(bar, duration, maxDuration, name, height, guid, test)
 		bar:SetAlpha(0.7);
 		bar.nameString = name;
 		if (not bar.texture) then
-			bar.texture = bar:CreateTexture(nil, "MEDIUM");
+			bar.texture = bar:CreateTexture(nil, "ARTWORK");
 			bar.texture:SetTexture("Interface\\Icons\\spell_shadow_soulgem");
 			bar.texture:SetPoint("LEFT", bar, "RIGHT", 0, 0);
 			bar.texture:SetSize(height - 2, height - 2);
@@ -692,7 +693,7 @@ function NRC:styleTimerBar(bar, duration, maxDuration, name, height, guid, test)
 		--Custom timer text so we can update it at the same time as the rest of the raid cooldown bars
 		--And change the format a little.
 		if (not bar.customTimer) then
-			bar.customTimer = bar:CreateFontString(nil, "HIGH", GameFontHighlightSmallOutline);
+			bar.customTimer = bar:CreateFontString(nil, "ARTWORK", GameFontHighlightSmallOutline);
 			bar.customTimer:SetFont(GameFontHighlightSmallOutline:GetFont());
 			bar.customTimer:SetPoint("TOPLEFT", bar, "TOPLEFT", 2, 0.3)
 			bar.customTimer:SetPoint("BOTTOMRIGHT", bar, "BOTTOMRIGHT", -2, 0.3);
@@ -813,7 +814,7 @@ function NRC:createGridFrame(name, width, height, x, y, borderSpacing)
 	});
 	frame.descFrame:SetBackdropColor(0, 0, 0, 0.9);
 	frame.descFrame:SetBackdropBorderColor(1, 1, 1, 0.2);
-	frame.descFrame.fs = frame.descFrame:CreateFontString("$parentFS", "MEDIUM");
+	frame.descFrame.fs = frame.descFrame:CreateFontString("$parentFS", "ARTWORK");
 	--frame.descFrame.fs:SetJustifyH("LEFT");
 	--frame.descFrame.fs:SetFont("Fonts\\FRIZQT__.TTF", 13);
 	frame.descFrame.fs:SetFontObject(SystemFont_Outline);
@@ -992,16 +993,16 @@ function NRC:createGridFrame(name, width, height, x, y, borderSpacing)
 					frame.subFrames[gridName].fs:SetPoint("CENTER", 0, 0);
 					frame.subFrames[gridName].fs:SetFont(NRC.LSM:Fetch("font", frame.subFrameFont), frame.subFrameFontSize, frame.subFrameFontOutline);
 					frame.subFrames[gridName].fs:SetJustifyH("LEFT");
-					frame.subFrames[gridName].texture = frame.subFrames[gridName]:CreateTexture(frame:GetName() .. "Texture_" .. gridName, "MEDIUM");
+					frame.subFrames[gridName].texture = frame.subFrames[gridName]:CreateTexture(frame:GetName() .. "Texture_" .. gridName, "ARTWORK");
 					frame.subFrames[gridName].texture:SetPoint("CENTER", 0, 0);
-					frame.subFrames[gridName].texture2 = frame.subFrames[gridName]:CreateTexture(frame:GetName() .. "Texture2_" .. gridName, "MEDIUM");
+					frame.subFrames[gridName].texture2 = frame.subFrames[gridName]:CreateTexture(frame:GetName() .. "Texture2_" .. gridName, "ARTWORK");
 					frame.subFrames[gridName].texture2:SetPoint("CENTER", 0, 0);
-					frame.subFrames[gridName].texture3 = frame.subFrames[gridName]:CreateTexture(frame:GetName() .. "Texture3_" .. gridName, "MEDIUM");
+					frame.subFrames[gridName].texture3 = frame.subFrames[gridName]:CreateTexture(frame:GetName() .. "Texture3_" .. gridName, "ARTWORK");
 					frame.subFrames[gridName].texture3:SetPoint("CENTER", 0, 0);
-					frame.subFrames[gridName].texture4 = frame.subFrames[gridName]:CreateTexture(frame:GetName() .. "Texture4_" .. gridName, "MEDIUM");
+					frame.subFrames[gridName].texture4 = frame.subFrames[gridName]:CreateTexture(frame:GetName() .. "Texture4_" .. gridName, "ARTWORK");
 					frame.subFrames[gridName].texture4:SetPoint("CENTER", 0, 0);
 					if (columnCount == 1) then
-						frame.subFrames[gridName].readyCheckTexture = frame.subFrames[gridName]:CreateTexture(frame:GetName() .. "ReadyCheckTexture_" .. gridName, "MEDIUM");
+						frame.subFrames[gridName].readyCheckTexture = frame.subFrames[gridName]:CreateTexture(frame:GetName() .. "ReadyCheckTexture_" .. gridName, "ARTWORK");
 						frame.subFrames[gridName].readyCheckTexture:SetPoint("LEFT", frame.subFrames[gridName], "LEFT", 2, 0);
 						frame.subFrames[gridName].readyCheckTexture:SetSize(16, 16);
 					end
@@ -1183,10 +1184,10 @@ function NRC:createSimpleTextFrame(name, width, height, x, y, borderSpacing)
 	frame:SetFrameStrata("MEDIUM");
 	frame:SetFrameLevel(10);
 	frame:SetPoint("TOP", UIParent, "CENTER", x, y);
-	frame.fs = frame:CreateFontString(name .. "FS", "HIGH");
+	frame.fs = frame:CreateFontString(name .. "FS", "ARTWORK");
 	frame.fs:SetPoint("TOP", 0, -3);
 	frame.fs:SetFont(NRC.regionFont, 14);
-	frame.fs2 = frame:CreateFontString(name .. "FS", "HIGH");
+	frame.fs2 = frame:CreateFontString(name .. "FS", "ARTWORK");
 	frame.fs2:SetPoint("TOPLEFT", 7, -25);
 	frame.fs2:SetFont(NRC.regionFont, 14);
 	frame.fs2:SetJustifyH("LEFT");
@@ -1324,14 +1325,14 @@ function NRC:createSimpleScrollFrame(name, width, height, x, y, notSpecialFrames
 	frame.scrollChild:SetScript("OnHyperlinkClick", ChatFrame_OnHyperlinkShow);
 	--Set all fonts in the module using the frame.
 	--Header string.
-	frame.scrollChild.fs = frame.scrollChild:CreateFontString(name .. "FS", "HIGH");
+	frame.scrollChild.fs = frame.scrollChild:CreateFontString(name .. "FS", "ARTWORK");
 	frame.scrollChild.fs:SetPoint("TOP", 0, -0);
 	--The main display string.
-	frame.scrollChild.fs2 = frame.scrollChild:CreateFontString(name .. "FS", "HIGH");
+	frame.scrollChild.fs2 = frame.scrollChild:CreateFontString(name .. "FS", "ARTWORK");
 	frame.scrollChild.fs2:SetPoint("TOPLEFT", 10, -24);
 	frame.scrollChild.fs2:SetJustifyH("LEFT");
 	--Bottom string.
-	frame.scrollChild.fs3 = frame.scrollChild:CreateFontString(name .. "FS", "HIGH");
+	frame.scrollChild.fs3 = frame.scrollChild:CreateFontString(name .. "FS", "ARTWORK");
 	frame.scrollChild.fs3:SetPoint("BOTTOM", 0, -20);
 	--frame.scrollChild.fs3:SetFont(NRC.regionFont, 14);
 	--Top right X close button.
@@ -1383,7 +1384,7 @@ function NRC:createSimpleInputScrollFrame(name, width, height, x, y, notSpecialF
 			end
 		end
 	end)
-	frame.fs = frame.EditBox:CreateFontString(name .. "FS", "HIGH");
+	frame.fs = frame.EditBox:CreateFontString(name .. "FS", "ARTWORK");
 	frame.fs:SetPoint("TOP", 0, -0);
 	frame.fs:SetFont(NRC.regionFont, 14);
 	frame.EditBox:SetWidth(width);
@@ -1442,12 +1443,12 @@ function NRC:createMainFrame(name, width, height, x, y, tabs)
 	--frame.titleText2.texture:SetTexture("Interface\\Addons\\NovaRaidCompanion\\Media\\Blizzard\\UI-EJ-LOREBG-Default");
 	--frame.titleText2.texture:SetTexCoord(0, 0.76171875, 0, 0.65625); --Blizards coords.
 	frame.titleText2.texture:SetTexCoord(0, 0.76171875, 0.06, 0.60625); --I crop out the top and bottom a little so it has sharper edges.
-	frame.titleText2.fs = frame.titleText2:CreateFontString("$parentFS", "MEDIUM");
+	frame.titleText2.fs = frame.titleText2:CreateFontString("$parentFS", "ARTWORK");
 	frame.titleText2.fs:SetPoint("LEFT", 0, 0);
 	frame.titleText2.fs:SetFontObject(QuestFont_Huge);
 	frame.titleText2.fs:SetTextColor(1, 0.82, 0);
 	frame.titleText2.fs:SetJustifyH("LEFT");
-	frame.titleText3 = frame:CreateFontString("$parentFS", "MEDIUM");
+	frame.titleText3 = frame:CreateFontString("$parentFS", "ARTWORK");
 	frame.titleText3:SetPoint("TOP", 0, -30);
 	frame.titleText3:SetFontObject(QuestFont_Super_Huge);
 	--Back button.
@@ -1519,25 +1520,25 @@ function NRC:createMainFrame(name, width, height, x, y, tabs)
 	scrollChild:SetWidth(scrollFrame:GetWidth());
 	scrollChild:SetHeight(1);
 	scrollFrame:SetScrollChild(scrollChild);
-	scrollChild.fs = scrollChild:CreateFontString("$parentFS", "MEDIUM");
+	scrollChild.fs = scrollChild:CreateFontString("$parentFS", "ARTWORK");
 	scrollChild.fs:SetJustifyH("LEFT");
 	scrollChild.fs:SetFontObject(Game16Font);
-	scrollChild.fs2 = scrollChild:CreateFontString("$parentFS2", "MEDIUM");
+	scrollChild.fs2 = scrollChild:CreateFontString("$parentFS2", "ARTWORK");
 	scrollChild.fs2:SetJustifyH("LEFT");
 	scrollChild.fs2:SetFont(NRC.regionFont, 14);
-	scrollChild.fs3 = scrollChild:CreateFontString("$parentFS3", "MEDIUM");
+	scrollChild.fs3 = scrollChild:CreateFontString("$parentFS3", "ARTWORK");
 	scrollChild.fs3:SetJustifyH("LEFT");
 	scrollChild.fs3:SetFont(NRC.regionFont, 14);
-	scrollChild.fs4 = scrollChild:CreateFontString("$parentFS4", "MEDIUM");
+	scrollChild.fs4 = scrollChild:CreateFontString("$parentFS4", "ARTWORK");
 	scrollChild.fs4:SetJustifyH("LEFT");
 	scrollChild.fs4:SetFont(NRC.regionFont, 14);
-	scrollChild.fs5 = scrollChild:CreateFontString("$parentFS5", "MEDIUM");
+	scrollChild.fs5 = scrollChild:CreateFontString("$parentFS5", "ARTWORK");
 	scrollChild.fs5:SetJustifyH("LEFT");
 	scrollChild.fs5:SetFont(NRC.regionFont, 14);
-	scrollChild.rfs = scrollChild:CreateFontString("$parentRFS", "MEDIUM");
+	scrollChild.rfs = scrollChild:CreateFontString("$parentRFS", "ARTWORK");
 	scrollChild.rfs:SetJustifyH("RIGHT");
 	scrollChild.rfs:SetFont(NRC.regionFont, 14);
-	frame.bottomfs = frame:CreateFontString("$parentBottomFS", "MEDIUM");
+	frame.bottomfs = frame:CreateFontString("$parentBottomFS", "ARTWORK");
 	frame.bottomfs:SetJustifyH("RIGHT");
 	frame.bottomfs:SetFont(NRC.regionFont, 14);
 	frame.bottomfs:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -20, 8);
@@ -1772,7 +1773,7 @@ function NRC:createMainFrame(name, width, height, x, y, tabs)
 	--The text is split up between multiple fontstrings anchored to the bottom of each other.
 	scrollChild.splitfs = {};
 	for i = 1, 100 do
-		scrollChild.splitfs[i] = scrollChild:CreateFontString("$parentSplitFS" .. i, "MEDIUM");
+		scrollChild.splitfs[i] = scrollChild:CreateFontString("$parentSplitFS" .. i, "ARTWORK");
 		scrollChild.splitfs[i]:SetJustifyH("LEFT");
 		scrollChild.splitfs[i]:SetFont(NRC.regionFont, 14);
 	end
@@ -1808,13 +1809,13 @@ function NRC:createMainFrame(name, width, height, x, y, tabs)
 			end
 		end
 	end)
-	frame.fs = frame:CreateFontString(name .. "FS", "MEDIUM");
+	frame.fs = frame:CreateFontString(name .. "FS", "ARTWORK");
 	frame.fs:SetPoint("TOP", 0, -0);
 	frame.fs:SetFont(NRC.regionFont, 14);
-	frame.fs2 = frame:CreateFontString(name .. "FS", "MEDIUM");
+	frame.fs2 = frame:CreateFontString(name .. "FS", "ARTWORK");
 	frame.fs2:SetPoint("TOPLEFT", 0, -14);
 	frame.fs2:SetFont(NRC.regionFont, 14);
-	frame.fs3 = frame:CreateFontString(name .. "FS", "MEDIUM");
+	frame.fs3 = frame:CreateFontString(name .. "FS", "ARTWORK");
 	frame.fs3:SetPoint("BOTTOM", 0, -20);
 	frame.fs3:SetFont(NRC.regionFont, 14);
 	
@@ -1830,7 +1831,7 @@ function NRC:createMainFrame(name, width, height, x, y, tabs)
 	frame.dragFrame.tooltip:SetFrameStrata("TOOLTIP");
 	frame.dragFrame.tooltip:SetFrameLevel(9);
 	frame.dragFrame.tooltip:SetAlpha(.8);
-	frame.dragFrame.tooltip.fs = frame.dragFrame.tooltip:CreateFontString(name .. "DragTooltipFS", "MEDIUM");
+	frame.dragFrame.tooltip.fs = frame.dragFrame.tooltip:CreateFontString(name .. "DragTooltipFS", "ARTWORK");
 	frame.dragFrame.tooltip.fs:SetPoint("CENTER", 0, 0.5);
 	frame.dragFrame.tooltip.fs:SetFont(NRC.regionFont, 12);
 	frame.dragFrame.tooltip.fs:SetText("Hold to drag");
@@ -1891,7 +1892,7 @@ function NRC:createMainFrame(name, width, height, x, y, tabs)
 			obj.highlightTex:SetTexture("Interface\\ClassTrainerFrame\\TrainerTextures");
 			obj.highlightTex:SetTexCoord(0.00195313, 0.57421875, 0.75390625, 0.84570313);
 			obj.count = count;
-			--local bg = obj:CreateTexture(nil, "HIGH");
+			--local bg = obj:CreateTexture(nil, "HIGHLIGHT");
 			--bg:SetAllPoints(obj);
 			--obj.texture = bg;
 			obj.leftTexture = obj:CreateTexture(nil);
@@ -2056,7 +2057,7 @@ function NRC:createMainFrame(name, width, height, x, y, tabs)
 			--obj:SetNormalTexture(obj.normalTex);
 			obj:SetHighlightTexture(obj.highlightTex);
 			obj.count = count;
-			--local bg = obj:CreateTexture(nil, "HIGH");
+			--local bg = obj:CreateTexture(nil, "HIGHLIGHT");
 			--bg:SetAllPoints(obj);
 			--obj.texture = bg;
 			obj.leftTexture = obj:CreateTexture(nil);
@@ -2082,12 +2083,13 @@ function NRC:createMainFrame(name, width, height, x, y, tabs)
 			obj.tooltip:SetFrameLevel(4);
 			--Change the alpha.
 			obj.tooltip.NineSlice:SetCenterColor(0, 0, 0, 1);
-			obj.tooltip.fs = obj.tooltip:CreateFontString(name .. "LineTooltipFS" .. count, "ARTWORK");
+			obj.tooltip.fs = obj.tooltip:CreateFontString("$parentFS" .. count, "ARTWORK");
 			obj.tooltip.fs:SetPoint("CENTER", 0, 0);
 			obj.tooltip.fs:SetFont(NRC.regionFont, 13);
 			obj.tooltip.fs:SetJustifyH("LEFT");
 			obj.updateTooltip = function(text)
-				if (text) then
+				if (text and type(text) == "string") then
+					NRC:debug(text)
 					obj.tooltip.fs:SetText(text);
 					obj.tooltip:SetWidth(obj.tooltip.fs:GetStringWidth() + 18);
 					obj.tooltip:SetHeight(obj.tooltip.fs:GetStringHeight() + 12);
@@ -2310,10 +2312,10 @@ function NRC:createMainFrame(name, width, height, x, y, tabs)
 		if (not frame.extraButtons[count]) then
 			local obj = CreateFrame("Button", frame.scrollFrame:GetName() .. "EB" .. count, frame.scrollChild, "NRC_EJButtonTemplate");
 			obj.count = count;
-			obj.fs2 = obj:CreateFontString(frame.scrollFrame:GetName() .. "FS" .. count, "MEDIUM");
+			obj.fs2 = obj:CreateFontString(frame.scrollFrame:GetName() .. "FS" .. count, "ARTWORK");
 			obj.fs2:SetPoint("CENTER", 0, 0);
 			obj.fs2:SetFontObject(Game11Font);
-			obj.fs3 = obj:CreateFontString(frame.scrollFrame:GetName() .. "FS" .. count, "MEDIUM");
+			obj.fs3 = obj:CreateFontString(frame.scrollFrame:GetName() .. "FS" .. count, "ARTWORK");
 			obj.fs3:SetPoint("LEFT", -28, 0);
 			obj.fs3:SetFontObject(Game11Font);
 			frame.extraButtons[count] = obj;
@@ -2393,11 +2395,11 @@ function NRC:createModelFrame(name, width, height, x, y, addCloseButton, transpa
 		frame.closeButton:GetPushedTexture():SetTexCoord(0.1875, 0.8125, 0.1875, 0.8125);
 		frame.closeButton:GetDisabledTexture():SetTexCoord(0.1875, 0.8125, 0.1875, 0.8125);
 	end
-	frame.fs = frame:CreateFontString("$parentFS", "MEDIUM");
+	frame.fs = frame:CreateFontString("$parentFS", "ARTWORK");
 	frame.fs:SetJustifyH("LEFT");
 	frame.fs:SetFontObject(NRC_Game14Font);
 	frame.fs:SetPoint("TOPLEFT", frame, "TOPLEFT", 50, -30);
-	frame.fs2 = frame:CreateFontString("$parentFS2", "MEDIUM");
+	frame.fs2 = frame:CreateFontString("$parentFS2", "ARTWORK");
 	frame.fs2:SetJustifyH("LEFT");
 	frame.fs2:SetFont(NRC.regionFont, 13);
 	frame.fs2:SetPoint("TOPLEFT", frame, "TOPLEFT", 50, -50);
@@ -2445,13 +2447,13 @@ function NRC:createTalentFrame(name, width, height, x, y, borderSpacing)
 	if (x and y) then
 		frame:SetPoint("TOP", UIParent, "CENTER", x, y);
 	end
-	frame.fs = frame:CreateFontString("$parentFS", "HIGH");
+	frame.fs = frame:CreateFontString("$parentFS", "ARTWORK");
 	frame.fs:SetPoint("TOPLEFT", 5, -5);
 	frame.fs:SetFontObject(Game11Font);
-	frame.fs2 = frame:CreateFontString("$parentFS2", "HIGH");
+	frame.fs2 = frame:CreateFontString("$parentFS2", "ARTWORK");
 	frame.fs2:SetPoint("TOP", -6, -3);
 	frame.fs2:SetFontObject(NRC_Game14Font);
-	frame.fs3 = frame:CreateFontString("$parentFS3", "HIGH");
+	frame.fs3 = frame:CreateFontString("$parentFS3", "ARTWORK");
 	frame.fs3:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -30, -3);
 	frame.fs3:SetFontObject(Game13Font);
 	frame.titleTexture = frame:CreateTexture(nil, nil);
@@ -2459,7 +2461,7 @@ function NRC:createTalentFrame(name, width, height, x, y, borderSpacing)
 	--frame.titleTexture:SetPoint("LEFT", frame.fs2, "RIGHT", 8, -1.1);
 	frame.titleTexture:SetPoint("RIGHT", frame.fs2, "LEFT", -8, -1.1);
 	--frame.fs2:SetJustifyH("LEFT");
-	frame.fs4 = frame:CreateFontString("$parentFS4", "HIGH");
+	frame.fs4 = frame:CreateFontString("$parentFS4", "ARTWORK");
 	frame.fs4:SetPoint("RIGHT", frame.titleTexture, "LEFT", -8, 1.1);
 	frame.fs4:SetFontObject(NRC_Game14Font);
 	--Click button to be used for whatever, set onclick in the frame data func.
@@ -2526,16 +2528,16 @@ function NRC:createTalentFrame(name, width, height, x, y, borderSpacing)
 			edgeSize = 16,
 			insets = {top = 2, left = 2, bottom = 2, right = 2},
 		});
-		frame.trees[i].topLeft = frame.trees[i]:CreateTexture(frame.trees[i], "BACKGROUND");
+		frame.trees[i].topLeft = frame.trees[i]:CreateTexture(nil, "OVERLAY");
 		frame.trees[i].topLeft:SetPoint("TOPLEFT");
 		frame.trees[i].topLeft:SetSize(300, 600);
-		frame.trees[i].topRight = frame.trees[i]:CreateTexture(frame.trees[i], "BACKGROUND");
+		frame.trees[i].topRight = frame.trees[i]:CreateTexture(nil, "BACKGROUND");
 		frame.trees[i].topRight:SetPoint("TOPLEFT", frame.trees[i].topLeft, "TOPRIGHT");
-		frame.trees[i].bottomLeft = frame.trees[i]:CreateTexture(frame.trees[i], "BACKGROUND");
+		frame.trees[i].bottomLeft = frame.trees[i]:CreateTexture(nil, "BACKGROUND");
 		frame.trees[i].bottomLeft:SetPoint("TOPLEFT", frame.trees[i].topLeft, "BOTTOMLEFT");
-		frame.trees[i].bottomRight = frame.trees[i]:CreateTexture(frame.trees[i], "BACKGROUND");
+		frame.trees[i].bottomRight = frame.trees[i]:CreateTexture(nil, "BACKGROUND");
 		frame.trees[i].bottomRight:SetPoint("TOPLEFT", frame.trees[i].topLeft, "BOTTOMRIGHT");
-		frame.trees[i].fs = frame.trees[i]:CreateFontString("$parentFS", "HIGH");
+		frame.trees[i].fs = frame.trees[i]:CreateFontString("$parentFS", "ARTWORK");
 		frame.trees[i].fs:SetPoint("TOP", 0, -20);
 		frame.trees[i].fs:SetFontObject(Game11Font);
 		frame.trees[i].titleTexture = frame.trees[i]:CreateTexture(nil, nil);
@@ -2674,25 +2676,25 @@ function NRC:createTalentFrame(name, width, height, x, y, borderSpacing)
 			talentFrame.texture:SetSize(64, 64);
 			talentFrame.texture:SetAllPoints(talentFrame);
 			
-			talentFrame.normalTexture = talentFrame:CreateTexture(talentFrame, "BORDER");
+			talentFrame.normalTexture = talentFrame:CreateTexture(nil, "BORDER");
 			talentFrame.normalTexture:SetTexture("Interface\\Buttons\\UI-Quickslot2");
 			talentFrame.normalTexture:SetSize(64, 64);
 			talentFrame.normalTexture:SetPoint("CENTER", 0, -1);
 			talentFrame:SetNormalTexture(talentFrame.normalTexture);
 			
-			talentFrame.pushedTexture = talentFrame:CreateTexture(talentFrame, nil);
+			talentFrame.pushedTexture = talentFrame:CreateTexture(nil, nil);
 			talentFrame.pushedTexture:SetTexture("Interface\\Buttons\\UI-Quickslot-Depress");
 			talentFrame.pushedTexture:SetSize(36, 36);
 			talentFrame.pushedTexture:SetPoint("CENTER");
 			talentFrame:SetPushedTexture(talentFrame.pushedTexture);
 			
-			talentFrame.highlightTexture = talentFrame:CreateTexture(talentFrame, "HIGHLIGHT");
+			talentFrame.highlightTexture = talentFrame:CreateTexture(nil, "HIGHLIGHT");
 			talentFrame.highlightTexture:SetTexture("Interface\\Buttons\\ButtonHilight-Square");
 			talentFrame.highlightTexture:SetBlendMode("ADD");
 			talentFrame.highlightTexture:SetAllPoints();
 			talentFrame:SetHighlightTexture(frame.highlightTexture);
 			
-			talentFrame.outerTexture = talentFrame:CreateTexture(talentFrame, "BACKGROUND");
+			talentFrame.outerTexture = talentFrame:CreateTexture(nil, "BACKGROUND");
 			talentFrame.outerTexture:SetTexture("Interface\\Buttons\\UI-EmptySlot-White");
 			talentFrame.outerTexture:SetSize(66, 66);
 			talentFrame.outerTexture:SetPoint("CENTER", 0, -1);
@@ -2813,7 +2815,7 @@ function NRC:createTextInputFrame(name, width, height, parent)
 	});
 	frame:SetBackdropColor(0, 0, 0, 1);
 	frame:SetBackdropBorderColor(1, 1, 1, 1);
-	frame.fs = frame:CreateFontString("$parentFS", "MEDIUM");
+	frame.fs = frame:CreateFontString("$parentFS", "ARTWORK");
 	frame.fs:SetFontObject(Game11Font);
 	frame.fs:SetPoint("TOP", 0, -6);
 	frame.closeButton = CreateFrame("Button", name .. "Close", frame, "UIPanelCloseButton");
@@ -2900,13 +2902,13 @@ function NRC:createTextInputFrameLoot(name, width, height, parent)
 	});
 	frame:SetBackdropColor(0, 0, 0, 1);
 	frame:SetBackdropBorderColor(1, 1, 1, 1);
-	frame.fs = frame:CreateFontString("$parentFS", "MEDIUM");
+	frame.fs = frame:CreateFontString("$parentFS", "ARTWORK");
 	frame.fs:SetFontObject(Game11Font);
 	frame.fs:SetPoint("TOP", 0, -6);
-	frame.fs2 = frame:CreateFontString("$parentFS2", "MEDIUM");
+	frame.fs2 = frame:CreateFontString("$parentFS2", "ARTWORK");
 	frame.fs2:SetFontObject(Game11Font);
 	frame.fs2:SetPoint("TOP", 0, -20);
-	frame.fs3 = frame:CreateFontString("$parentFS2", "MEDIUM");
+	frame.fs3 = frame:CreateFontString("$parentFS2", "ARTWORK");
 	frame.fs3:SetFontObject(Game11Font);
 	frame.fs3:SetPoint("TOP", 0, -30);
 	frame.closeButton = CreateFrame("Button", name .. "Close", frame, "UIPanelCloseButton");
@@ -3025,7 +3027,7 @@ function NRC:createTextInputOnly(name, width, height, parent)
 	frame.resetButton:SetScript("OnClick", function(self, arg)
 		--Set where frame is used.
 	end)
-	frame.fs = frame:CreateFontString("$parentFS", "MEDIUM");
+	frame.fs = frame:CreateFontString("$parentFS", "ARTWORK");
 	if (NRC.regionFontBoldItalic) then
 		frame.fs:SetFont(NRC.regionFontBoldItalic, 12);
 	else
@@ -3034,7 +3036,7 @@ function NRC:createTextInputOnly(name, width, height, parent)
 	frame.fs:SetAlpha(0.3);
 	frame.fs:SetPoint("LEFT", 5, 0);
 	frame.fs:Hide();
-	frame.fs2 = frame:CreateFontString("$parentFS2", "MEDIUM");
+	frame.fs2 = frame:CreateFontString("$parentFS2", "ARTWORK");
 	if (NRC.regionFontBoldItalic) then
 		frame.fs2:SetFont(NRC.regionFontBoldItalic, 12);
 	else
@@ -3043,7 +3045,7 @@ function NRC:createTextInputOnly(name, width, height, parent)
 	frame.fs2:SetAlpha(0.5);
 	frame.fs2:SetPoint("LEFT", 15, 0);
 	frame.fs2:Hide();
-	frame.fs3 = frame:CreateFontString("$parentFS3", "MEDIUM");
+	frame.fs3 = frame:CreateFontString("$parentFS3", "ARTWORK");
 	if (NRC.regionFontBoldItalic) then
 		frame.fs3:SetFont(NRC.regionFontBoldItalic, 12);
 	else
@@ -3052,7 +3054,7 @@ function NRC:createTextInputOnly(name, width, height, parent)
 	frame.fs3:SetAlpha(0.5);
 	frame.fs3:SetPoint("LEFT", 25, 0);
 	frame.fs3:Hide();
-	frame.fs4 = frame:CreateFontString("$parentFS4", "MEDIUM");
+	frame.fs4 = frame:CreateFontString("$parentFS4", "ARTWORK");
 	if (NRC.regionFontBoldItalic) then
 		frame.fs4:SetFont(NRC.regionFontBoldItalic, 12);
 	else
@@ -3061,7 +3063,7 @@ function NRC:createTextInputOnly(name, width, height, parent)
 	frame.fs4:SetAlpha(0.5);
 	frame.fs4:SetPoint("LEFT", 35, 0);
 	frame.fs4:Hide();
-	frame.fs5 = frame:CreateFontString("$parentFS5", "MEDIUM");
+	frame.fs5 = frame:CreateFontString("$parentFS5", "ARTWORK");
 	if (NRC.regionFontBoldItalic) then
 		frame.fs5:SetFont(NRC.regionFontBoldItalic, 12);
 	else
@@ -3070,7 +3072,7 @@ function NRC:createTextInputOnly(name, width, height, parent)
 	frame.fs5:SetAlpha(0.5);
 	frame.fs5:SetPoint("LEFT", 45, 0);
 	frame.fs5:Hide();
-	frame.fs6 = frame:CreateFontString("$parentFS6", "MEDIUM");
+	frame.fs6 = frame:CreateFontString("$parentFS6", "ARTWORK");
 	if (NRC.regionFontBoldItalic) then
 		frame.fs6:SetFont(NRC.regionFontBoldItalic, 12);
 	else
@@ -3152,7 +3154,7 @@ function NRC:createAutoScrollingFrame(name, width, height, x, y, lineFrameHeight
 		--lineFrame.fs:SetFont(NRC.regionFont, lineFrameHeight - 2);
 		lineFrame.fs:SetFont(NRC.LSM:Fetch("font", frame.lineFrameFont), frame.lineFrameFontSize, frame.lineFrameFontOutline);
 		lineFrame.fs:SetJustifyH("LEFT");
-		lineFrame.texture = lineFrame:CreateTexture(nil, "MEDIUM");
+		lineFrame.texture = lineFrame:CreateTexture(nil, "ARTWORK");
 		lineFrame.texture:SetTexture("error");
 		lineFrame.texture:SetPoint("LEFT", 0, 0);
 		lineFrame.texture:SetSize(frame.lineFrameHeight - 0, frame.lineFrameHeight - 0);
@@ -3617,7 +3619,7 @@ function NRC:createRaidDataFrame(name, width, height, x, y)
 		lineFrame.fs2:SetFont(NRC.LSM:Fetch("font", frame.lineFrameFont), frame.lineFrameFontSize + 2, frame.lineFrameFontOutline);
 		lineFrame.fs3:SetFont(NRC.LSM:Fetch("font", frame.lineFrameFont), frame.lineFrameFontSize + 2, frame.lineFrameFontOutline);
 		
-		lineFrame.texture = lineFrame:CreateTexture(nil, "MEDIUM");
+		lineFrame.texture = lineFrame:CreateTexture(nil, "ARTWORK");
 		lineFrame.texture:SetTexture("error");
 		lineFrame.texture:SetPoint("LEFT", 1, 0);
 		lineFrame.texture:SetSize(parent.lineFrameHeight - 0, parent.lineFrameHeight - 0);
@@ -3747,7 +3749,7 @@ function NRC:createRaidDataFrame(name, width, height, x, y)
 		--lineFrame.castBar.line:SetColorTexture(1, 1, 0, 0.9);
 		lineFrame.arrowFrame:SetWidth(28);
 		lineFrame.arrowFrame:SetHeight(15);
-		--lineFrame.arrowFrame.texture = lineFrame.arrowFrame:CreateTexture(nil, "MEDIUM");
+		--lineFrame.arrowFrame.texture = lineFrame.arrowFrame:CreateTexture(nil, "ARTWORK");
 		--lineFrame.arrowFrame.texture:SetPoint("LEFT", frame.titleText2, "RIGHT", 7, 0);
 		--lineFrame.arrowFrame.texture:SetTexture("Interface\\Addons\\NovaRaidCompanion\\Media\\Yellow-Right-Arrow.tga");
 		--lineFrame.arrowFrame.texture:SetAllPoints();
@@ -3952,7 +3954,7 @@ function NRC:createExportFrame(name, width, height, x, y, notSpecialFrames)
 	frame.topFrame:SetHeight(100);
 	frame.topFrame:SetPoint("BOTTOM", frame, "TOP", 0, -13);
 	frame.topFrame:SetFrameLevel(4);
-	frame.topFrame.fs = frame.topFrame:CreateFontString("$parentFS", "HIGH");
+	frame.topFrame.fs = frame.topFrame:CreateFontString("$parentFS", "ARTWORK");
 	frame.topFrame.fs:SetPoint("TOP", -10, -4);
 	frame.topFrame.fs:SetFont(NRC.regionFont, 15);
 	--Click button to be used for whatever, set onclick in the frame data func.
@@ -4108,11 +4110,11 @@ function NRC:createTradeExportFrame(name, width, height, x, y, notSpecialFrames)
 	frame.topFrame:SetHeight(128);
 	frame.topFrame:SetPoint("BOTTOM", frame, "TOP", 0, -13);
 	frame.topFrame:SetFrameLevel(4);
-	frame.topFrame.fs = frame.topFrame:CreateFontString("$parentFS", "HIGH");
+	frame.topFrame.fs = frame.topFrame:CreateFontString("$parentFS", "ARTWORK");
 	frame.topFrame.fs:SetPoint("TOP", -10, -4);
 	--frame.topFrame.fs:SetFont(NRC.regionFont, 15);
 	frame.topFrame.fs:SetFontObject(NRC_Game14Font);
-	frame.topFrame.fs2 = frame.topFrame:CreateFontString("$parentFS2", "HIGH");
+	frame.topFrame.fs2 = frame.topFrame:CreateFontString("$parentFS2", "ARTWORK");
 	frame.topFrame.fs2:SetPoint("TOP", 0, -40);
 	frame.topFrame.fs2:SetFontObject(QuestFont_Huge);
 	--Click button to be used for whatever, set onclick in the frame data func.

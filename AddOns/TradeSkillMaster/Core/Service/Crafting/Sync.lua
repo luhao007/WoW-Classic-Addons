@@ -110,7 +110,7 @@ function private.RPCGetSpells(professions)
 	local query = TSM.Crafting.CreateRawCraftsQuery()
 		:Select("craftString", "profession")
 		:Custom(private.QueryProfessionFilter, professions)
-		:Custom(private.QueryPlayerFilter, player)
+		:ListContains("players", player)
 		:OrderBy("craftString", true)
 	for _, craftString, profession in query:Iterator() do
 		private.spellsProfessionLookupTemp[craftString] = profession
@@ -139,7 +139,7 @@ function private.RPCGetSpellsResultHandler(player, professionLookup, spells)
 	local query = TSM.Crafting.CreateRawCraftsQuery()
 		:Select("craftString", "profession")
 		:Custom(private.QueryProfessionFilter, professions)
-		:Custom(private.QueryPlayerFilter, player)
+		:ListContains("players", player)
 		:OrderBy("craftString", true)
 	local toRemove = TempTable.Acquire()
 	for _, craftString, profession in query:Iterator() do
@@ -246,13 +246,9 @@ function private.QueryProfessionFilter(row, professions)
 	return professions[row:GetField("profession")]
 end
 
-function private.QueryPlayerFilter(row, player)
-	return String.SeparatedContains(row:GetField("players"), ",", player)
-end
-
 function private.GetPlayerProfessionHashes(player, resultTbl)
 	local query = TSM.Crafting.CreateRawCraftsQuery()
-		:Custom(private.QueryPlayerFilter, player)
+		:ListContains("players", player)
 		:OrderBy("craftString", true)
 	query:GroupedHash(PROFESSION_HASH_FIELDS, "profession", resultTbl)
 	query:Release()

@@ -53,6 +53,7 @@ function ROW_METHODS:_Acquire(db, query, newRowUUID)
 	if newRowUUID then
 		context.uuid = newRowUUID
 	end
+	db:_GetListFields(context.listFields)
 end
 
 function ROW_METHODS:_Release()
@@ -97,7 +98,20 @@ end
 ---@param field string The name of the field
 ---@return any @The value of the field
 function ROW_METHODS:GetField(field)
-	return self[field]
+	local context = private.context[self]
+	if context.listFields[field] then
+		if context.pendingChanges and context.pendingChanges[field] then
+			return unpack(context.pendingChanges[field])
+		elseif context.query then
+			-- use the query to lookup the result
+			return context.query:_GetResultRowData(context.uuid, field)
+		else
+			-- we're not tied to a query so this should be a local DB field
+			return context.db:GetRowFieldByUUID(context.uuid, field)
+		end
+	else
+		return self[field]
+	end
 end
 
 ---Gets up to 10 fields at a time from the row.
@@ -147,10 +161,11 @@ end
 ---Sets the value of a field in the row.
 ---@param field string The name of the field
 ---@param value any The value for the field
----@return DatabaseRow @The database row
+---@return DatabaseRow
 function ROW_METHODS:SetField(field, value)
 	local context = private.context[self]
-	local isSameValue = not context.isNewRow and value == self[field]
+	local listFieldType = context.db:_GetListFieldType(field)
+	local isSameValue = not listFieldType and not context.isNewRow and value == self[field]
 	if isSameValue and not context.pendingChanges then
 		-- setting to the same value, so ignore this call
 		return self
@@ -161,6 +176,18 @@ function ROW_METHODS:SetField(field, value)
 	local fieldType = context.db:_GetFieldType(field)
 	if not fieldType then
 		error(format("Field %s doesn't exist", tostring(field)), 3)
+	elseif listFieldType then
+		local len = #value
+		if type(value) ~= "table" then
+			error(format("Expected list value, got %s", type(value)), 2)
+		end
+		for i, v in pairs(value) do
+			if type(i) ~= "number" or i < 1 or i > len then
+				error("Invalid table index: "..tostring(i), 2)
+			elseif type(v) ~= listFieldType then
+				error(format("List (%s) entries should be of type %s, got %s", tostring(field), listFieldType, tostring(v)), 2)
+			end
+		end
 	elseif fieldType ~= type(value) then
 		error(format("Field %s should be a %s, got %s", tostring(field), tostring(fieldType), type(value)), 2)
 	end
@@ -178,23 +205,32 @@ function ROW_METHODS:SetField(field, value)
 	return self
 end
 
----Creates the row within the database.
+---Creates the row within the database and releases the row.
 function ROW_METHODS:Create()
-	self:_CreateHelper()
-	private.context[self].db:_InsertRow(self)
-end
+	local context = private.context[self]
+	assert(context.isNewRow and context.pendingChanges)
 
----Creates the row within the database and returns a clone of the row.
----@return DatabaseRow @The cloned row
-function ROW_METHODS:CreateAndClone()
-	self:_CreateHelper()
-	local clonedRow = self:Clone()
-	private.context[self].db:_InsertRow(self)
-	return clonedRow
+	-- make sure all the fields are set
+	for field in context.db:FieldIterator() do
+		assert(context.pendingChanges[field] ~= nil)
+	end
+
+	-- apply all the pending changes
+	for field, value in pairs(context.pendingChanges) do
+		if not context.listFields[field] then
+			rawset(self, field, value)
+		end
+	end
+
+	local values = context.pendingChanges
+	context.pendingChanges = nil
+	context.isNewRow = nil
+	context.db:_InsertRow(self, values)
+	TempTable.Release(values)
 end
 
 ---Updates the row within the database.
----@return DatabaseRow @The database row
+---@return DatabaseRow
 function ROW_METHODS:Update()
 	local context = private.context[self]
 	assert(not context.isNewRow)
@@ -203,17 +239,21 @@ function ROW_METHODS:Update()
 	end
 
 	-- apply all the pending changes
-	local oldValues = TempTable.Acquire()
+	local changeContext = TempTable.Acquire()
 	for field, value in pairs(context.pendingChanges) do
-		oldValues[field] = self[field]
-		-- cache this new value
-		rawset(self, field, value)
+		if context.listFields[field] then
+			changeContext[field] = value
+		else
+			changeContext[field] = self[field]
+			-- cache this new value
+			rawset(self, field, value)
+		end
 	end
 
 	TempTable.Release(context.pendingChanges)
 	context.pendingChanges = nil
-	context.db:_UpdateRow(self, oldValues)
-	TempTable.Release(oldValues)
+	context.db:_UpdateRow(self, changeContext)
+	TempTable.Release(changeContext)
 	return self
 end
 
@@ -251,26 +291,6 @@ function ROW_METHODS:_SetUUID(uuid)
 	wipe(self)
 end
 
-function ROW_METHODS:_CreateHelper()
-	local context = private.context[self]
-	assert(context.isNewRow and context.pendingChanges)
-
-	-- make sure all the fields are set
-	for field in context.db:FieldIterator() do
-		assert(context.pendingChanges[field] ~= nil)
-	end
-
-	-- apply all the pending changes
-	for field, value in pairs(context.pendingChanges) do
-		-- cache this new value
-		rawset(self, field, value)
-	end
-
-	TempTable.Release(context.pendingChanges)
-	context.pendingChanges = nil
-	context.isNewRow = nil
-end
-
 
 
 -- ============================================================================
@@ -290,6 +310,8 @@ local ROW_MT = {
 		local context = private.context[self]
 		if context.isNewRow then
 			error("Getting value on a new row: "..tostring(key))
+		elseif context.listFields[key] then
+			error("Cannot get list fields by indexing row")
 		end
 		local result = nil
 		if context.query then
@@ -336,6 +358,7 @@ function private.CreateNew()
 		query = nil,
 		isNewRow = nil,
 		uuid = nil,
+		listFields = {},
 	}
 	return row
 end

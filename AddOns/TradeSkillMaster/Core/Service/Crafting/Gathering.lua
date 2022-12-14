@@ -12,9 +12,9 @@ local Table = TSM.Include("Util.Table")
 local Delay = TSM.Include("Util.Delay")
 local CraftString = TSM.Include("Util.CraftString")
 local RecipeString = TSM.Include("Util.RecipeString")
-local String = TSM.Include("Util.String")
 local TempTable = TSM.Include("Util.TempTable")
 local Wow = TSM.Include("Util.Wow")
+local Vararg = TSM.Include("Util.Vararg")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local Conversions = TSM.Include("Service.Conversions")
 local BagTracking = TSM.Include("Service.BagTracking")
@@ -139,14 +139,12 @@ end
 
 function private.UpdateCrafterList()
 	local query = TSM.Crafting.CreateQueuedCraftsQuery()
-		:Select("players")
-		:Distinct("players")
 	wipe(private.crafterList)
-	for _, players in query:Iterator() do
-		for character in gmatch(players, "[^,]+") do
-			if not private.crafterList[character] then
-				private.crafterList[character] = true
-				tinsert(private.crafterList, character)
+	for _, row in query:Iterator() do
+		for _, player in Vararg.Iterator(row:GetField("players")) do
+			if not private.crafterList[player] then
+				private.crafterList[player] = true
+				tinsert(private.crafterList, player)
 			end
 		end
 	end
@@ -171,7 +169,7 @@ function private.UpdateProfessionList()
 		-- populate the list of professions
 		local query = TSM.Crafting.CreateQueuedCraftsQuery()
 			:Select("profession")
-			:Custom(private.QueryPlayerFilter, TSM.db.factionrealm.gatheringContext.crafter)
+			:ListContains("players", TSM.db.factionrealm.gatheringContext.crafter)
 			:Distinct("profession")
 		for _, profession in query:Iterator() do
 			private.professionList[profession] = true
@@ -217,7 +215,7 @@ function private.UpdateDB()
 	local matsNumNeed = TempTable.Acquire()
 	local query = TSM.Crafting.CreateQueuedCraftsQuery()
 		:Select("recipeString", "num")
-		:Custom(private.QueryPlayerFilter, crafter)
+		:ListContains("players", crafter)
 		:Or()
 	for profession in pairs(TSM.db.factionrealm.gatheringContext.professions) do
 		query:Equal("profession", profession)
@@ -528,10 +526,6 @@ function private.ProcessSource(itemString, numNeed, source, sourceList)
 		error("Unkown source: "..tostring(source))
 	end
 	return numNeed
-end
-
-function private.QueryPlayerFilter(row, player)
-	return String.SeparatedContains(row:GetField("players"), ",", player)
 end
 
 function private.GetCrafterInventoryQuantity(itemString)

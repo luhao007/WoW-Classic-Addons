@@ -178,6 +178,8 @@ L["CONFIRM_POST_BELOW_VENDOR"] = "您可以将其出售给商人来赚取更多�
 L["CONFIRM_POST_LOW_PRICE"] = "%s 的价格有点低。你确定要以这个价格发布吗？"
 L["CONFIRM_POST_PRICE_DROP"] = "%s 的单价大幅降价。你确定要按这价格发布吗？"
 L["CONFIRM_X_TOTAL_PRICE_X"] = "确认 %s，总价 %s"
+--[[Translation missing --]]
+L["CONTINUE"] = "Continue"
 L["CONTRIBUTORS_HEADER"] = "贡献者"
 L["COPY_ITEM_ADDED"] = "已将 %s 复制到 %s"
 L["COPY_NO_LIST_SELECTED"] = "无法复制物品。未选择购物清单"
@@ -305,6 +307,8 @@ L["POST_ATTEMPT_FAILED"] = "你最后一次拍卖没有发布成功。请再试�
 L["PRICE"] = "价格"
 L["PRICE_HISTORY"] = "历史价格记录"
 L["PRICE_INCREASE_WARNING"] = "价格上涨了 %s，等候 %ss"
+--[[Translation missing --]]
+L["PRICE_INCREASE_WARNING_2"] = "Price increased by %s. Do you want to continue?"
 L["PROFILE_TOGGLE_TOOLTIP_HEADER"] = "启用角色专用设定"
 L["PROFILE_TOGGLE_TOOLTIP_TEXT"] = "更改拍卖小帮手的设定只会影响这个角色。"
 L["PROFIT_COLON"] = "利润:"
@@ -512,6 +516,8 @@ L["STARTING_PRICE_PERCENTAGE"] = "起始价格"
 L["STARTING_PRICE_PERCENTAGE_SUFFIX"] = "% 堆叠价格"
 L["STARTING_PRICE_PERCENTAGE_TOOLTIP_HEADER"] = "起始竞标价格"
 L["STARTING_PRICE_PERCENTAGE_TOOLTIP_TEXT"] = "起始价格百分比将用在设置发布的任何拍卖的预设出价金额。例如，将其设置为 95，对于 10银 的整组价格，将竞标价格设置为 9银50铜。"
+--[[Translation missing --]]
+L["STOP"] = "Stop"
 L["TEMPORARY_LOWER_CASE"] = "暂时"
 L["TIME_LEFT"] = "剩余时间"
 L["TIME_LEFT_H"] = "剩余时间 (小时)"

@@ -207,6 +207,8 @@ L["CONFIRM_POST_LOW_PRICE"] = "%s의 가격이 약간 낮아 보입니다. 정�
 L["CONFIRM_POST_PRICE_DROP"] = "%s의 단가는 큰 가격 하락입니다. 정말 그 가격에 게시할까요?"
 --[[Translation missing --]]
 L["CONFIRM_X_TOTAL_PRICE_X"] = "Confirm %s, total price %s"
+--[[Translation missing --]]
+L["CONTINUE"] = "Continue"
 L["CONTRIBUTORS_HEADER"] = "기증자"
 L["COPY_ITEM_ADDED"] = "%s 을 %s 로 복사"
 L["COPY_NO_LIST_SELECTED"] = "아이템을 복사할 수 없습니다. 선택한 구매 목록이 없습니다"
@@ -340,6 +342,8 @@ L["POST_ATTEMPT_FAILED"] = "Your last post attempt didn't work. Try again."
 L["PRICE"] = "가격"
 L["PRICE_HISTORY"] = "가격 기록"
 L["PRICE_INCREASE_WARNING"] = "가격 %s 오름, %s초 대기 중"
+--[[Translation missing --]]
+L["PRICE_INCREASE_WARNING_2"] = "Price increased by %s. Do you want to continue?"
 L["PROFILE_TOGGLE_TOOLTIP_HEADER"] = "캐릭터별 설정 사용"
 L["PROFILE_TOGGLE_TOOLTIP_TEXT"] = "캐릭터 별 옥셔네이터 설정을 적용합니다."
 L["PROFIT_COLON"] = "수익:"
@@ -596,6 +600,8 @@ L["STARTING_PRICE_PERCENTAGE"] = "시작 가격"
 L["STARTING_PRICE_PERCENTAGE_SUFFIX"] = "묶음 가격 %"
 L["STARTING_PRICE_PERCENTAGE_TOOLTIP_HEADER"] = "입찰 시작가"
 L["STARTING_PRICE_PERCENTAGE_TOOLTIP_TEXT"] = "시작 가격 비율은 게시된 경매에 사용되는 기본 입찰 금액을 설정하는 데 사용됩니다. 예를 들어 95실버로 설정한다면 10실버 묶음 가격의 경우 입찰 가격이 9실버 50코퍼로 설정됩니다."
+--[[Translation missing --]]
+L["STOP"] = "Stop"
 L["TEMPORARY_LOWER_CASE"] = "임시"
 L["TIME_LEFT"] = "남은 시간"
 L["TIME_LEFT_H"] = "남은 시간(시)"

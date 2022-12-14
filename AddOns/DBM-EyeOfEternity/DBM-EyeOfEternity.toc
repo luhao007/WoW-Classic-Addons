@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Tandanu/Nitram
-## Version: ecc9aa4
+## Version: c8da079
 ## RequiredDeps: DBM-Core
 ## LoadOnDemand: 1
 ## SavedVariables: DBMEyeOfEternity_AllSavedVars

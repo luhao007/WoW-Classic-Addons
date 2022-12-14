@@ -277,6 +277,9 @@ function AuctionTracking.CreateQueryUnsoldItem(itemString)
 end
 
 function AuctionTracking.GetSaleHintItemString(name, stackSize, buyout)
+	if not TSM.IsWowClassic() and stackSize > 1 then
+		buyout = buyout / stackSize
+	end
 	for info in pairs(private.settings.auctionSaleHints) do
 		local infoName, itemString, infoStackSize, infoBuyout = strsplit(SALE_HINT_SEP, info)
 		if infoName == name and tonumber(infoStackSize) == stackSize and tonumber(infoBuyout) == buyout then

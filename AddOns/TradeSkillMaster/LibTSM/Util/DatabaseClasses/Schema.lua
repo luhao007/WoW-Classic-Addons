@@ -13,11 +13,6 @@ local DatabaseSchema = LibTSMClass.DefineClass("DatabaseSchema") ---@class Datab
 local private = {
 	objectPool = nil,
 }
-local FIELD_TYPE_IS_VALID = {
-	string = true,
-	number = true,
-	boolean = true,
-}
 
 
 
@@ -78,7 +73,7 @@ end
 
 ---Adds a string field to the DB schema.
 ---@param fieldName string The name of the field
----@return DatabaseSchema @The DB schema
+---@return DatabaseSchema
 function DatabaseSchema:AddStringField(fieldName)
 	self:_AddField("string", fieldName)
 	return self
@@ -86,7 +81,7 @@ end
 
 ---Adds a number field to the DB schema.
 ---@param fieldName string The name of the field
----@return DatabaseSchema @The DB schema
+---@return DatabaseSchema
 function DatabaseSchema:AddNumberField(fieldName)
 	self:_AddField("number", fieldName)
 	return self
@@ -94,7 +89,7 @@ end
 
 ---Adds a boolean field to the DB schema.
 ---@param fieldName string The name of the field
----@return DatabaseSchema @The DB schema
+---@return DatabaseSchema
 function DatabaseSchema:AddBooleanField(fieldName)
 	self:_AddField("boolean", fieldName)
 	return self
@@ -102,18 +97,33 @@ end
 
 ---Adds a string field with a unique index to the DB schema.
 ---@param fieldName string The name of the field
----@return DatabaseSchema @The DB schema
+---@return DatabaseSchema
 function DatabaseSchema:AddUniqueStringField(fieldName)
 	self:_AddField("string", fieldName, true)
-	self._isUnique[fieldName] = true
 	return self
 end
 
 ---Adds a number field with a unique index to the DB schema.
 ---@param fieldName string The name of the field
----@return DatabaseSchema @The DB schema
+---@return DatabaseSchema
 function DatabaseSchema:AddUniqueNumberField(fieldName)
 	self:_AddField("number", fieldName, true)
+	return self
+end
+
+---Adds a string list field to the DB schema.
+---@param fieldName string The name of the field
+---@return DatabaseSchema
+function DatabaseSchema:AddStringListField(fieldName)
+	self:_AddField("STRING_LIST", fieldName)
+	return self
+end
+
+---Adds a number list field to the DB schema.
+---@param fieldName string The name of the field
+---@return DatabaseSchema
+function DatabaseSchema:AddNumberListField(fieldName)
+	self:_AddField("NUMBER_LIST", fieldName)
 	return self
 end
 
@@ -121,10 +131,12 @@ end
 ---@param fieldName string The name of the field
 ---@param map SmartMapObject The smart map object
 ---@param inputFieldName string The name of the field which is used as an input to the smart map
----@return DatabaseSchema @The DB schema
+---@return DatabaseSchema
 function DatabaseSchema:AddSmartMapField(fieldName, map, inputFieldName)
 	assert(self._fieldTypeLookup[inputFieldName] == map:GetKeyType())
-	self:_AddField(map:GetValueType(), fieldName)
+	local fieldType = map:GetValueType()
+	assert(fieldType == "string" or fieldType == "number" or fieldType == "boolean")
+	self:_AddField(fieldType, fieldName)
 	self._smartMapLookup[fieldName] = map
 	self._smartMapInputLookup[fieldName] = inputFieldName
 	return self
@@ -132,18 +144,20 @@ end
 
 ---Adds an index which speeds up querying for the field.
 ---@param fieldName string The name of the field to index
----@return DatabaseSchema @The DB schema
+---@return DatabaseSchema
 function DatabaseSchema:AddIndex(fieldName)
-	assert(self._fieldTypeLookup[fieldName] and not self._isIndex[fieldName])
+	local fieldType = self._fieldTypeLookup[fieldName]
+	assert(fieldType and fieldType ~= "STRING_LIST" and not self._isIndex[fieldName])
 	self._isIndex[fieldName] = true
 	return self
 end
 
 ---Adds a trigram index which speeds up text searching.
 ---@param fieldName string The name of the field to index
----@return DatabaseSchema @The DB schema
+---@return DatabaseSchema
 function DatabaseSchema:AddTrigramIndex(fieldName)
-	assert(not self._trigramIndexField)
+	local fieldType = self._fieldTypeLookup[fieldName]
+	assert(fieldType and fieldType ~= "STRING_LIST" and not self._trigramIndexField)
 	self._trigramIndexField = fieldName
 	return self
 end
@@ -168,7 +182,6 @@ function DatabaseSchema:_GetName()
 end
 
 function DatabaseSchema:_AddField(fieldType, fieldName, isUnique)
-	assert(FIELD_TYPE_IS_VALID[fieldType])
 	assert(type(fieldName) == "string" and strsub(fieldName, 1, 1) ~= "_")
 	assert(not self._fieldTypeLookup[fieldName])
 	tinsert(self._fieldList, fieldName)

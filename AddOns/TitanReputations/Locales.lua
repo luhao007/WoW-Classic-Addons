@@ -12,6 +12,7 @@ L["ShowSessionBalance"] = "Show session balance in button"
 L["Reset"] = "Reset"
 L["Paragon"] = "Paragon"
 L["Renown"] = "Renown"
+L["SmartReputation"] = "Follow the last reputation with progress change"
 
 if GetLocale() == "ptBR" then
 	L["Reputation"] = "Reputação"
@@ -26,4 +27,5 @@ if GetLocale() == "ptBR" then
 	L["ResetColor"] = "Resetar"
 	L["Paragon"] = "Paragão"
 	L["Renown"] = "Renome"
+	L["SmartReputation"] = "Seguir a última reputação com mudança de progresso"
 end

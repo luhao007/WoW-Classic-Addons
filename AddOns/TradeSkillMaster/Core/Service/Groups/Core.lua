@@ -283,7 +283,7 @@ function Groups.Delete(groupPath)
 	local query = private.itemDB:NewQuery()
 		:Or()
 			:Equal("groupPath", groupPath)
-			:Matches("groupPath", "^"..String.Escape(groupPath)..TSM.CONST.GROUP_SEP)
+			:StartsWith("groupPath", groupPath..TSM.CONST.GROUP_SEP)
 		:End()
 	local updateMapItems = TempTable.Acquire()
 	for _, row in query:Iterator() do
@@ -422,7 +422,7 @@ function Groups.CreateItemsQuery(groupPathFilter, includeSubGroups)
 	if includeSubGroups then
 		query:Or()
 				:Equal("groupPath", groupPathFilter)
-				:Matches("groupPath", "^"..String.Escape(groupPathFilter)..TSM.CONST.GROUP_SEP)
+				:StartsWith("groupPath", groupPathFilter..TSM.CONST.GROUP_SEP)
 			:End()
 	else
 		query:Equal("groupPath", groupPathFilter)

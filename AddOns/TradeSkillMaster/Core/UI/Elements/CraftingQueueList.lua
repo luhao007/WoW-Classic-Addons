@@ -162,7 +162,8 @@ function CraftingQueueList._UpdateData(self)
 	wipe(self._numCraftableCache)
 	wipe(private.sortProfitCache)
 	for _, row in self._query:Iterator() do
-		local rawCategory = strjoin(CATEGORY_SEP, row:GetFields("profession", "players"))
+		local players = strjoin(",", row:GetField("players"))
+		local rawCategory = strjoin(CATEGORY_SEP, row:GetField("profession"), players)
 		local category = strlower(rawCategory)
 		if not categories[category] then
 			tinsert(categories, category)
@@ -456,19 +457,23 @@ function private.DataSortComparator(a, b)
 		return private.categoryOrder[strlower(a)] < private.categoryOrder[strlower(b)]
 	elseif type(a) == "string" then
 		aCategory = strlower(a)
-		bCategory = strlower(strjoin(CATEGORY_SEP, b:GetFields("profession", "players")))
+		local bPlayers = strjoin(",", b:GetField("players"))
+		bCategory = strlower(strjoin(CATEGORY_SEP, b:GetField("profession"), bPlayers))
 		if aCategory == bCategory then
 			return true
 		end
 	elseif type(b) == "string" then
-		aCategory = strlower(strjoin(CATEGORY_SEP, a:GetFields("profession", "players")))
+		local aPlayers = strjoin(",", a:GetField("players"))
+		aCategory = strlower(strjoin(CATEGORY_SEP, a:GetField("profession"), aPlayers))
 		bCategory = strlower(b)
 		if aCategory == bCategory then
 			return false
 		end
 	else
-		aCategory = strlower(strjoin(CATEGORY_SEP, a:GetFields("profession", "players")))
-		bCategory = strlower(strjoin(CATEGORY_SEP, b:GetFields("profession", "players")))
+		local aPlayers = strjoin(",", a:GetField("players"))
+		aCategory = strlower(strjoin(CATEGORY_SEP, a:GetField("profession"), aPlayers))
+		local bPlayers = strjoin(",", b:GetField("players"))
+		bCategory = strlower(strjoin(CATEGORY_SEP, b:GetField("profession"), bPlayers))
 	end
 	if aCategory ~= bCategory then
 		return private.categoryOrder[aCategory] < private.categoryOrder[bCategory]

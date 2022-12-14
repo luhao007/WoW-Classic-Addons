@@ -526,12 +526,7 @@ function private.UpdateCraftsQueryWithFilters(frame)
 		local profession, player = strmatch(professionPlayer, "^(.+) %- ([^ ]+)$")
 		private.craftsQuery
 			:Equal("profession", profession)
-			:Or()
-				:Equal("players", player)
-				:Matches("players", "^"..player..",")
-				:Matches("players", ","..player..",")
-				:Matches("players", ","..player.."$")
-			:End()
+			:ListContains("players", player)
 	end
 	-- apply craftable filter
 	local craftableOnly = frame:GetElement("craftable.checkbox"):IsChecked()

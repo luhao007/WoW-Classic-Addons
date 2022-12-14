@@ -11,9 +11,11 @@ class CheckManagedAddOns(unittest.TestCase):
 
     def test_check_addon_toc(self):
         for addon in os.listdir('AddOns'):
-            path = Path('AddOns') / addon / f'{addon}.toc'
-            if 'sekiro' not in addon:
-                self.assertTrue(os.path.exists(path),
+            if 'sekiro' not in addon and 'Rurutia' not in addon:
+                root = Path('AddOns') / addon
+                paths = [root / f'{addon}.toc', root / f'{addon}_Wrath.toc', root / f'{addon}-Wrath.toc',
+                         root / f'{addon}_WOTLKC.toc', root / f'{addon}_Mainline.toc', root / f'{addon}-Mainline.toc']
+                self.assertTrue(any(os.path.exists(path) for path in paths),
                                 f'{addon}.toc not existed!')
 
     def test_check_libs(self):
@@ -59,7 +61,7 @@ class CheckManagedAddOns(unittest.TestCase):
             pprint(duplicates)
 
             # Ignore these embedded liraries, as they have customized versions
-            whitelist = ['Questie']
+            whitelist = ['Questie', 'RareScanner']
 
             for k in duplicates:
                 paths = []

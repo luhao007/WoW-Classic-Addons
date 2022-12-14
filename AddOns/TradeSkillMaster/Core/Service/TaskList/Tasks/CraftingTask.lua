@@ -110,7 +110,7 @@ function CraftingTask.OnButtonClick(self)
 		local craftString = self._craftStrings[1]
 		local spellId = CraftString.GetSpellId(craftString)
 		local quantity = self._craftQuantity[craftString]
-		local _, _, numMax = TSM.Crafting.ProfessionUtil.GetRecipeInfo(craftString)
+		local _, numMax = TSM.Crafting.ProfessionUtil.GetRecipeInfo(craftString)
 		if numMax and numMax > 1 then
 			-- need minimum this many repeats
 			quantity = ceil(quantity / numMax)

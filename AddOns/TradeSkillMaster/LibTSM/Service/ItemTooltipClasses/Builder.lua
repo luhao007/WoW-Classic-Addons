@@ -124,8 +124,13 @@ end
 function TooltipBuilder.AddSubItemValueLine(self, itemString, value, multiplier, matRate, minAmount, maxAmount)
 	local name = ItemInfo.GetName(itemString)
 	local color = ItemInfo.GetQualityColor(itemString)
+	local craftedQuality = ItemInfo.GetCraftedQuality(itemString)
 	if not name or not color then
 		return
+	end
+	local craftedQualityIcon = craftedQuality and Professions.GetChatIconMarkupForQuality(craftedQuality, true)
+	if craftedQualityIcon then
+		name = name..craftedQualityIcon
 	end
 	multiplier = Math.Round(multiplier * self._quantity, 0.001)
 	matRate = matRate and matRate * 100

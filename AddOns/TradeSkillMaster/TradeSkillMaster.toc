@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: TradeSkillMaster Team
-## Version: v4.12.6
+## Version: v4.12.9
 ## OptionalDeps: ArkInventory, Auc-Advanced, Auctionator, TheUndermineJournal, BootyBayGazette, AuctionDB
 ## SavedVariables: TradeSkillMasterDB, TSMItemInfoDB
 
@@ -331,6 +331,7 @@ Core\Service\Crafting\Cost.lua
 Core\Service\Crafting\Queue.lua
 Core\Service\Crafting\Gathering.lua
 Core\Service\Crafting\Sync.lua
+Core\Service\Crafting\DFCrafting.lua
 Core\Service\Destroying\Core.lua
 Core\Service\Mailing\Core.lua
 Core\Service\Mailing\Inbox.lua

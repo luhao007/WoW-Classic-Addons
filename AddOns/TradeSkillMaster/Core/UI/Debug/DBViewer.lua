@@ -216,12 +216,24 @@ function private.CreateBrowseFrame()
 
 	local stInfo = frame:GetElement("table"):GetScrollingTableInfo()
 	for _, field in fieldQuery:Iterator() do
+		local function TextFunc(row)
+			return strjoin(",", tostringall(row:GetField(field)))
+		end
+		local function TooltipFunc(row)
+			local value = TextFunc(row)
+			if not strmatch(value, ",") and (strmatch(value, "item:") or strmatch(value, "battlepet:") or strmatch(value, "[ip]:")) then
+				-- this is an item string or item link
+				return value
+			else
+				return "Value: "..value
+			end
+		end
 		stInfo:NewColumn(field)
 			:SetTitle(field)
 			:SetFont("ITEM_BODY3")
 			:SetJustifyH("LEFT")
-			:SetTextInfo(field, tostring)
-			:SetTooltipInfo(field, private.TooltipFunc)
+			:SetTextInfo(nil, TextFunc)
+			:SetTooltipInfo(nil, TooltipFunc)
 			:Commit()
 	end
 	fieldQuery:Release()
@@ -269,20 +281,4 @@ function private.QueryInputOnEnterPressed(input)
 		return
 	end
 	tableElement:UpdateData(true)
-end
-
-
-
--- ============================================================================
--- Private Helper Functions
--- ============================================================================
-
-function private.TooltipFunc(value)
-	value = tostring(value)
-	if strmatch(value, "item:") or strmatch(value, "battlepet:") or strmatch(value, "[ip]:") then
-		-- this is an item string or item link
-		return value
-	else
-		return "Value: "..value
-	end
 end

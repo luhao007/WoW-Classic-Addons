@@ -1832,11 +1832,11 @@ function NRC:loadRaidLogInstance(logID)
 				frame = CreateFrame("Button", "NRCBossButton" .. k, raidLogFrame.scrollChild);
 				frame:SetSize(325, 55);
 				
-				frame.fs = frame:CreateFontString("$parentFS", "HIGH");
+				frame.fs = frame:CreateFontString("$parentFS", "ARTWORK");
 				frame.fs:SetPoint("LEFT", 115, 10);
 				frame.fs:SetJustifyH("LEFT");
 				frame.fs:SetFontObject(GameFontNormalMed3);
-				frame.fs2 = frame:CreateFontString("$parentFS2", "HIGH");
+				frame.fs2 = frame:CreateFontString("$parentFS2", "ARTWORK");
 				frame.fs2:SetPoint("LEFT", 115, -10);
 				frame.fs2:SetJustifyH("LEFT");
 				frame.fs2:SetFont(NRC.regionFont, 14);
@@ -1962,12 +1962,12 @@ function NRC:loadRaidLogInstance(logID)
 			frame = CreateFrame("Button", "NRCBossButton" .. k, raidLogFrame.scrollChild);
 			frame:SetSize(325, 55);
 			
-			frame.fs = frame:CreateFontString("$parentFS", "HIGH");
+			frame.fs = frame:CreateFontString("$parentFS", "ARTWORK");
 			frame.fs:SetPoint("LEFT", 115, 10);
 			frame.fs:SetJustifyH("LEFT");
 			--frame.fs:SetFont(NRC.regionFont, 14);
 			frame.fs:SetFontObject(GameFontNormalMed3);
-			frame.fs2 = frame:CreateFontString("$parentFS2", "HIGH");
+			frame.fs2 = frame:CreateFontString("$parentFS2", "ARTWORK");
 			frame.fs2:SetPoint("LEFT", 115, -10);
 			frame.fs2:SetJustifyH("LEFT");
 			frame.fs2:SetFont(NRC.regionFont, 14);
@@ -4476,7 +4476,7 @@ local modelFrame;
 		frame.closeButton:GetHighlightTexture():SetTexCoord(0.1875, 0.8125, 0.1875, 0.8125);
 		frame.closeButton:GetPushedTexture():SetTexCoord(0.1875, 0.8125, 0.1875, 0.8125);
 		frame.closeButton:GetDisabledTexture():SetTexCoord(0.1875, 0.8125, 0.1875, 0.8125);
-		frame.fs = frame:CreateFontString("$parentFS", "MEDIUM");
+		frame.fs = frame:CreateFontString("$parentFS", "ARTWORK");
 		frame.fs:SetJustifyH("LEFT");
 		frame.fs:SetFont("Fonts\\FRIZQT__.TTF", 13);
 		frame.fs:SetPoint("TOPLEFT", 20, -30);
@@ -4568,7 +4568,7 @@ end]]
 		frame.closeButton:GetHighlightTexture():SetTexCoord(0.1875, 0.8125, 0.1875, 0.8125);
 		frame.closeButton:GetPushedTexture():SetTexCoord(0.1875, 0.8125, 0.1875, 0.8125);
 		frame.closeButton:GetDisabledTexture():SetTexCoord(0.1875, 0.8125, 0.1875, 0.8125);
-		frame.fs = frame:CreateFontString("$parentFS", "MEDIUM");
+		frame.fs = frame:CreateFontString("$parentFS", "ARTWORK");
 		frame.fs:SetJustifyH("LEFT");
 		frame.fs:SetFont("Fonts\\FRIZQT__.TTF", 13);
 		frame.fs:SetPoint("TOPLEFT", 20, -30);
@@ -4650,7 +4650,7 @@ end]]
 		frame.closeButton:GetHighlightTexture():SetTexCoord(0.1875, 0.8125, 0.1875, 0.8125);
 		frame.closeButton:GetPushedTexture():SetTexCoord(0.1875, 0.8125, 0.1875, 0.8125);
 		frame.closeButton:GetDisabledTexture():SetTexCoord(0.1875, 0.8125, 0.1875, 0.8125);
-		frame.fs = frame:CreateFontString("$parentFS", "MEDIUM");
+		frame.fs = frame:CreateFontString("$parentFS", "ARTWORK");
 		frame.fs:SetJustifyH("LEFT");
 		frame.fs:SetFont("Fonts\\FRIZQT__.TTF", 13);
 		frame.fs:SetPoint("TOPLEFT", 20, -30);
@@ -4920,7 +4920,11 @@ function NRC:loadAllBossView()
 			else
 				frame.fs:SetPoint("LEFT", 5, 0);
 			end
-			frame:SetNormalTexture(nil);
+			if (frame.ClearNormalTexture) then
+				frame:ClearNormalTexture();
+			else
+				frame:SetNormalTexture(nil);
+			end
 			frame:SetHighlightTexture(nil);
 			frame.leftTexture:SetSize(5, 5);
 			frame.leftTexture:SetScale(0.8);
@@ -4983,7 +4987,11 @@ function NRC:loadAllBossView()
 							else
 								frame.fs:SetPoint("LEFT", 5, 0);
 							end
-							frame:SetNormalTexture(nil);
+							if (frame.ClearNormalTexture) then
+								frame:ClearNormalTexture();
+							else
+								frame:SetNormalTexture(nil);
+							end
 							frame:SetHighlightTexture(nil);
 							frame.leftTexture:SetSize(5, 5);
 							frame.leftTexture:SetScale(0.8);
@@ -5316,6 +5324,18 @@ function NRC:getNewRaidID()
 	return raidID;
 end
 
+local function doubleCheckRaidDifficuly()
+	NRC:debug("Rechecking instance difficulty.");
+	if (NRC.inInstance) then
+		local _, _, difficultyID, difficultyName = GetInstanceInfo();
+		if (difficultyID and difficultyID > 0 and difficultyName and difficultyName ~= "") then
+			NRC.db.global.instances[1].difficultyID = difficultyID;
+			NRC.db.global.instances[1].difficultyName = difficultyName;
+			NRC:debug("Updated instance difficulty data.");
+		end
+	end
+end
+
 local isGhost = false;
 NRC.lastInstanceName = "(Unknown Instance)";
 function NRC:enteredInstanceRD(isReload, isLogon)
@@ -5398,6 +5418,12 @@ function NRC:enteredInstanceRD(isReload, isLogon)
 		C_Timer.After(30, function()
 			NRC:recordGroupInfo();
 		end)
+		--Sometimes difficulyID isn't known when entering, bug on Blizzards end? Seems to happen a lot at Malygos.
+		if (difficultyID and difficultyID < 1) then
+			C_Timer.After(2, function()
+				doubleCheckRaidDifficuly();
+			end)
+		end
 		instanceDetectionFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
 	end
 	if (instanceType == "raid" and NRC.config.autoCombatLog) then

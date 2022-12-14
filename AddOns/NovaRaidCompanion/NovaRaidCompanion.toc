@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Novaspark-Arugal OCE
-## Version: 1.24
+## Version: 1.25
 ## SavedVariables: NRCdatabase
 
 ## Title: Nova Raid Companion

@@ -10,4 +10,4 @@
 
 ## X-Part-Of: Bagnon
 
-..\Bagnon\addons\vault\vault.xml
+..\BagBrother\addons\vault\vault.xml

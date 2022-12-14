@@ -180,6 +180,8 @@ function DatabaseQuery:VirtualField(field, fieldType, func, argField, defaultVal
 		error("Field type must be string, number, or boolean")
 	elseif argField and not self:_GetFieldType(argField) then
 		error("Arg field doesn't exist: "..tostring(argField))
+	elseif self:_GetListFieldType(argField) then
+		error("Cannot use list fields for arg")
 	elseif defaultValue ~= nil and type(defaultValue) ~= fieldType then
 		error("Invalid defaultValue type: "..tostring(defaultValue))
 	end
@@ -195,7 +197,9 @@ function DatabaseQuery:VirtualSmartMapField(field, map, inputFieldName)
 	if self:_GetFieldType(field) or self._virtualFieldFunc[field] then
 		error("Field already exists: "..tostring(field))
 	elseif self:_GetFieldType(inputFieldName) ~= map:GetKeyType() then
-		error("Invalid input field type or input field doesn't exists: "..tostring(inputFieldName))
+		error("Invalid input field type or input field doesn't exist: "..tostring(inputFieldName))
+	elseif self:_GetListFieldType(inputFieldName) then
+		error("Cannot use list fields as input")
 	end
 	self:_NewVirtualField(field, self:_GetSmartMapReader(map), inputFieldName, map:GetValueType(), nil)
 	return self
@@ -207,12 +211,7 @@ end
 ---@param otherField? string The name of the other field to compare with
 ---@return DatabaseQuery @The database query object
 function DatabaseQuery:Equal(field, value, otherField)
-	if value == Constants.OTHER_FIELD_QUERY_PARAM then
-		local fieldType = self:_GetFieldType(field)
-		assert(fieldType and fieldType == self:_GetFieldType(otherField))
-	elseif value ~= Constants.BOUND_QUERY_PARAM then
-		assert(self:_GetFieldType(field) == type(value))
-	end
+	self:_ValidateComparisonValue(field, value, otherField)
 	self:_NewClause()
 		:Equal(field, value, otherField)
 	return self
@@ -224,12 +223,7 @@ end
 ---@param otherField? string The name of the other field to compare with
 ---@return DatabaseQuery @The database query object
 function DatabaseQuery:NotEqual(field, value, otherField)
-	if value == Constants.OTHER_FIELD_QUERY_PARAM then
-		local fieldType = self:_GetFieldType(field)
-		assert(fieldType and fieldType == self:_GetFieldType(otherField))
-	elseif value ~= Constants.BOUND_QUERY_PARAM then
-		assert(self:_GetFieldType(field) == type(value))
-	end
+	self:_ValidateComparisonValue(field, value, otherField)
 	self:_NewClause()
 		:NotEqual(field, value, otherField)
 	return self
@@ -241,12 +235,7 @@ end
 ---@param otherField? string The name of the other field to compare with
 ---@return DatabaseQuery @The database query object
 function DatabaseQuery:LessThan(field, value, otherField)
-	if value == Constants.OTHER_FIELD_QUERY_PARAM then
-		local fieldType = self:_GetFieldType(field)
-		assert(fieldType and fieldType == self:_GetFieldType(otherField))
-	elseif value ~= Constants.BOUND_QUERY_PARAM then
-		assert(self:_GetFieldType(field) == type(value))
-	end
+	self:_ValidateComparisonValue(field, value, otherField)
 	self:_NewClause()
 		:LessThan(field, value, otherField)
 	return self
@@ -258,12 +247,7 @@ end
 ---@param otherField? string The name of the other field to compare with
 ---@return DatabaseQuery @The database query object
 function DatabaseQuery:LessThanOrEqual(field, value, otherField)
-	if value == Constants.OTHER_FIELD_QUERY_PARAM then
-		local fieldType = self:_GetFieldType(field)
-		assert(fieldType and fieldType == self:_GetFieldType(otherField))
-	elseif value ~= Constants.BOUND_QUERY_PARAM then
-		assert(self:_GetFieldType(field) == type(value))
-	end
+	self:_ValidateComparisonValue(field, value, otherField)
 	self:_NewClause()
 		:LessThanOrEqual(field, value, otherField)
 	return self
@@ -275,12 +259,7 @@ end
 ---@param otherField? string The name of the other field to compare with
 ---@return DatabaseQuery @The database query object
 function DatabaseQuery:GreaterThan(field, value, otherField)
-	if value == Constants.OTHER_FIELD_QUERY_PARAM then
-		local fieldType = self:_GetFieldType(field)
-		assert(fieldType and fieldType == self:_GetFieldType(otherField))
-	elseif value ~= Constants.BOUND_QUERY_PARAM then
-		assert(self:_GetFieldType(field) == type(value))
-	end
+	self:_ValidateComparisonValue(field, value, otherField)
 	self:_NewClause()
 		:GreaterThan(field, value, otherField)
 	return self
@@ -292,12 +271,7 @@ end
 ---@param otherField? string The name of the other field to compare with
 ---@return DatabaseQuery @The database query object
 function DatabaseQuery:GreaterThanOrEqual(field, value, otherField)
-	if value == Constants.OTHER_FIELD_QUERY_PARAM then
-		local fieldType = self:_GetFieldType(field)
-		assert(fieldType and fieldType == self:_GetFieldType(otherField))
-	elseif value ~= Constants.BOUND_QUERY_PARAM then
-		assert(self:_GetFieldType(field) == type(value))
-	end
+	self:_ValidateComparisonValue(field, value, otherField)
 	self:_NewClause()
 		:GreaterThanOrEqual(field, value, otherField)
 	return self
@@ -343,6 +317,7 @@ end
 ---@param field string The name of the field
 ---@return DatabaseQuery @The database query object
 function DatabaseQuery:IsNil(field)
+	assert(not self:_GetListFieldType(field), "Cannot use this method on list fields")
 	assert(self:_GetJoinType(field) == "LEFT", "Must be a left join")
 	self:_NewClause()
 		:IsNil(field)
@@ -353,6 +328,7 @@ end
 ---@param field string The name of the field
 ---@return DatabaseQuery @The database query object
 function DatabaseQuery:IsNotNil(field)
+	assert(not self:_GetListFieldType(field), "Cannot use this method on list fields")
 	assert(self:_GetJoinType(field) == "LEFT", "Must be a left join")
 	self:_NewClause()
 		:IsNotNil(field)
@@ -371,47 +347,41 @@ function DatabaseQuery:Custom(func, arg)
 	return self
 end
 
----Where the hash of a row equals a value.
----@param fields string[] An ordered list of fields to hash
----@param value number The hash value to compare to
----@return DatabaseQuery @The database query object
-function DatabaseQuery:HashEqual(fields, value)
-	assert(value ~= Constants.BOUND_QUERY_PARAM, "This method does not support bound values")
-	assert(type(fields) == "table")
-	for _, field in ipairs(fields) do
-		local fieldType = self:_GetFieldType(field)
-		if not fieldType then
-			error(format("Field %s doesn't exist", tostring(field)))
-		elseif fieldType ~= "number" and fieldType ~= "string" then
-			error(format("Cannot hash field of type %s", fieldType))
-		end
-	end
-	self:_NewClause()
-		:HashEqual(fields, value)
-	return self
-end
-
----Where a field exists as a key within a table
+---Where a field exists as a key within a table.
 ---@param field string The name of the field
 ---@param value table The table to check against
 ---@return DatabaseQuery @The database query object
 function DatabaseQuery:InTable(field, value)
-	assert(value ~= Constants.BOUND_QUERY_PARAM, "This method does not support bound values")
+	assert(value ~= Constants.BOUND_QUERY_PARAM and value ~= Constants.OTHER_FIELD_QUERY_PARAM, "This method does not support indirect values")
+	assert(not self:_GetListFieldType(field), "Cannot use this method on list fields")
 	assert(type(value) == "table")
 	self:_NewClause()
 		:InTable(field, value)
 	return self
 end
 
----Where a field does not exists as a key within a table
+---Where a field does not exists as a key within a table.
 ---@param field string The name of the field
 ---@param value table The table to check against
 ---@return DatabaseQuery @The database query object
 function DatabaseQuery:NotInTable(field, value)
-	assert(value ~= Constants.BOUND_QUERY_PARAM, "This method does not support bound values")
+	assert(value ~= Constants.BOUND_QUERY_PARAM and value ~= Constants.OTHER_FIELD_QUERY_PARAM, "This method does not support indirect values")
+	assert(not self:_GetListFieldType(field), "Cannot use this method on list fields")
 	assert(type(value) == "table")
 	self:_NewClause()
 		:NotInTable(field, value)
+	return self
+end
+
+---Where a list field contains a value.
+---@param field string The name of the list field
+---@param value table The table to check against
+---@return DatabaseQuery @The database query object
+function DatabaseQuery:ListContains(field, value)
+	assert(value ~= Constants.BOUND_QUERY_PARAM and value ~= Constants.OTHER_FIELD_QUERY_PARAM, "This method does not support indirect values")
+	assert(type(value) == self:_GetListFieldType(field))
+	self:_NewClause()
+		:ListContains(field, value)
 	return self
 end
 
@@ -504,6 +474,7 @@ end
 ---@return DatabaseQuery @The database query object
 function DatabaseQuery:Distinct(field)
 	assert(self:_GetFieldType(field), format("Field %s doesn't exist within local DB", tostring(field)))
+	assert(not self:_GetListFieldType(field), "Cannot use this method on list fields")
 	self._distinct = field
 	self._resultIsStale = true
 	return self
@@ -709,6 +680,12 @@ end
 function DatabaseQuery:Count()
 	self:_Execute()
 	return #self._result
+end
+
+---Get if the result is not empty and release the query.
+---@return boolean
+function DatabaseQuery:IsNotEmptyAndRelease()
+	return self:CountAndRelease() > 0
 end
 
 ---Get the number of resulting rows and release the query.
@@ -1112,6 +1089,17 @@ end
 -- Private Class Methods
 -- ============================================================================
 
+function DatabaseQuery:_ValidateComparisonValue(field, value, otherField)
+	local fieldType = self:_GetFieldType(field)
+	assert(fieldType, "Field does not exist")
+	assert(not self:_GetListFieldType(field), "Cannot use this method on list fields")
+	if value == Constants.OTHER_FIELD_QUERY_PARAM then
+		assert(fieldType == self:_GetFieldType(otherField))
+	elseif value ~= Constants.BOUND_QUERY_PARAM then
+		assert(fieldType == type(value))
+	end
+end
+
 function DatabaseQuery:_GetJoinType(field)
 	for i, db in ipairs(self._joinDBs) do
 		if db:_GetFieldType(field) then
@@ -1133,6 +1121,20 @@ function DatabaseQuery:_GetFieldType(field)
 		end
 		if fieldType then
 			return fieldType
+		end
+	end
+end
+
+function DatabaseQuery:_GetListFieldType(field)
+	if self._virtualFieldType[field] then
+		return nil
+	end
+	if self._db:_GetFieldType(field) then
+		return self._db:_GetListFieldType(field)
+	end
+	for _, db in ipairs(self._joinDBs) do
+		if db:_GetFieldType(field) then
+			return db:_GetListFieldType(field)
 		end
 	end
 end
@@ -1635,6 +1637,7 @@ function DatabaseQuery:_JoinHelper(joinType, db, field, foreignField, aggregateQ
 	assert(foreignFieldType, "Foreign field doesn't exist: "..foreignField)
 	assert(not Table.KeyByValue(self._joinDBs, db), "Already joining with this DB")
 	assert(self._iteratorState == "IDLE")
+	assert((self._virtualFieldType[field] or not self._db:_GetListFieldType(field)) and not db:_GetListFieldType(foreignField))
 	if aggregateQuery then
 		assert(aggregateQuery.__class == DatabaseQuery)
 		assert(strmatch(joinType, "^AGGREGATE_"))

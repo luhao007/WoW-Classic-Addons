@@ -1,44 +1,10 @@
-tag 98b39211b08fb15467131637fa55155f7bfd9b23 Details.DF.Wrath.10334.147
+tag 8020d523b6e13b2de9200c111fb0f092c3a2f46a Details.DF.Wrath.10336.148
 Author:	Tercio Jose <terciob19@hotmail.com>
-Date:	Thu Dec 8 15:42:05 2022 -0300
+Date:	Mon Dec 12 19:06:58 2022 -0300
 
-commit 6609580f092bdb80f665c079409d98b66eb32ca3
+commit 388154a5408f10b5c7ffc0f2fa4b874a700b23e8
 Author: Tercio Jose <terciob19@hotmail.com>
-Date:   Thu Dec 8 15:41:24 2022 -0300
+Date:   Mon Dec 12 19:06:43 2022 -0300
 
-    fixed class played time spamming chat
-
-commit 9a4734031729add8b243a0487ebdc099630304b0
-Author: Flamanis <Flamanis@users.noreply.github.com>
-Date:   Wed Dec 7 16:01:03 2022 -0600
-
-    Use Wrath with Retail API check for gradients
-    
-    Wrath does now have SetGradient, but I believe it is the 'old' version that does not accept the colormixins. Adding this check makes the fallback happen again which will correctly apply the gradient on current wrath.
-
-commit 9a4734031729add8b243a0487ebdc099630304b0
-Author: Flamanis <Flamanis@users.noreply.github.com>
-Date:   Wed Dec 7 16:01:03 2022 -0600
-
-    Use Wrath with Retail API check for gradients
-    
-    Wrath does now have SetGradient, but I believe it is the 'old' version that does not accept the colormixins. Adding this check makes the fallback happen again which will correctly apply the gradient on current wrath.
-
-commit 9cad7e318535557bb0821bbf724c42cc63769baa
-Author: Tercio Jose <terciob19@hotmail.com>
-Date:   Wed Dec 7 17:55:01 2022 -0300
-
-    Removed portraits from tooltips and OpenRaidLib update
-
-commit 31bf84882b707b43e489a739d06fa3083bd2e1ce
-Author: Flamanis <Flamanis@users.noreply.github.com>
-Date:   Mon Dec 5 10:47:50 2022 -0600
-
-    Add calls to Wrath With Retail for frame setup
-
-commit 31bf84882b707b43e489a739d06fa3083bd2e1ce
-Author: Flamanis <Flamanis@users.noreply.github.com>
-Date:   Mon Dec 5 10:47:50 2022 -0600
-
-    Add calls to Wrath With Retail for frame setup
+    Lib Update
 

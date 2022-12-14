@@ -217,7 +217,6 @@ class Manager:
                         '\n'
                         '# Dropdown menus\n',
                         '!LibUIDropDownMenu\\LibUIDropDownMenu\\LibUIDropDownMenu.xml\n',
-                        '!LibUIDropDownMenu-2.0\\LibUIDropDownMenu.xml\n',
                         '\n']
 
         root = Path('Addons/!!Libs')
@@ -338,26 +337,6 @@ class Manager:
         for addon in addons:
             utils.remove_libraries_all(addon)
 
-    # @staticmethod
-    # def handle_acp():
-    #     def handle(lines):
-    #         ret = []
-    #         start1 = start2 = 0
-    #         for i, line in enumerate(lines):
-    #             if 'FontString name="$parentTitle"' in line:
-    #                 start1 = i
-    #             elif 'FontString name="$parentStatus"' in line:
-    #                 start2 = i
-
-    #         ret = lines[:start1+2]
-    #         ret.append(' '*24 + '<AbsDimension x="270" y="12"/>\n')
-    #         ret += lines[start1+3:start2+2]
-    #         ret.append(' '*24 + '<AbsDimension x="90" y="12"/>\n')
-    #         ret += lines[start2+3:]
-    #         return ret
-
-    #     utils.process_file('Addons/ACP/ACP.xml', handle)
-
     @staticmethod
     def handle_att():
         addon = 'AllTheThings' if utils.get_platform() == 'retail' else 'ATT-Classic'
@@ -381,11 +360,6 @@ class Manager:
             'Addons/AtlasLootClassic/db.lua',
             '			shown = false,'
         )
-
-    @staticmethod
-    def handle_bagnon():
-        utils.remove_libraries_all('Bagnon/common/Wildpants')
-        utils.remove_libraries(['LibDataBroker-1.1'], 'AddOns/Bagnon/common/', 'AddOns/Bagnon/addons/main/main.xml')
 
     @staticmethod
     @available_on(['classic', 'retail'])

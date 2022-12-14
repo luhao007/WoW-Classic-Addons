@@ -179,6 +179,8 @@ L["CONFIRM_POST_BELOW_VENDOR"] = "Vous pouvez faire plus d'or en vendant ceci à
 L["CONFIRM_POST_LOW_PRICE"] = "Le prix de %s semble un peu bas. Êtes-vous sûr de vouloir publier à ce prix?"
 L["CONFIRM_POST_PRICE_DROP"] = "Le prix unitaire de %s à une baisse de prix importante. Êtes-vous sûr de vouloir vendre à ce prix ?"
 L["CONFIRM_X_TOTAL_PRICE_X"] = "Confirmer %s, prix total %s"
+--[[Translation missing --]]
+L["CONTINUE"] = "Continue"
 L["CONTRIBUTORS_HEADER"] = "Contributeurs"
 L["COPY_ITEM_ADDED"] = "%s copié vers %s"
 L["COPY_NO_LIST_SELECTED"] = "Impossible de copier l'objet. Aucune liste d'achats sélectionnée."
@@ -307,6 +309,8 @@ L["POST_ATTEMPT_FAILED"] = "Votre dernière tentative de post n'a pas fonctionn�
 L["PRICE"] = "Prix"
 L["PRICE_HISTORY"] = "Historique des prix"
 L["PRICE_INCREASE_WARNING"] = "Prix augmenté de %s, attente de %ss"
+--[[Translation missing --]]
+L["PRICE_INCREASE_WARNING_2"] = "Price increased by %s. Do you want to continue?"
 L["PROFILE_TOGGLE_TOOLTIP_HEADER"] = "Activer les paramètres par personnage"
 L["PROFILE_TOGGLE_TOOLTIP_TEXT"] = "Les modifications apportées aux paramètres d'Auctionator n'affecteront que ce personnage."
 L["PROFIT_COLON"] = "Gains :"
@@ -516,6 +520,8 @@ L["STARTING_PRICE_PERCENTAGE"] = "Prix d'enchère initiale"
 L["STARTING_PRICE_PERCENTAGE_SUFFIX"] = "% du prix d'achat immédiat"
 L["STARTING_PRICE_PERCENTAGE_TOOLTIP_HEADER"] = "Prix d'enchère initiale"
 L["STARTING_PRICE_PERCENTAGE_TOOLTIP_TEXT"] = "Le pourcentage du prix de départ sera utilisé pour définir le montant de l'offre par défaut utilisé pour toutes les enchères créées. Par exemple, si vous le fixez à 95, pour un prix de départ de 10s, le prix de l'offre sera de 9s50c."
+--[[Translation missing --]]
+L["STOP"] = "Stop"
 L["TEMPORARY_LOWER_CASE"] = "temporaire"
 L["TIME_LEFT"] = "Temps restant"
 L["TIME_LEFT_H"] = "Temps restant (h)"

@@ -431,18 +431,24 @@ function private.ScanRecipe(professionName, craftString)
 	-- get the links
 	local spellId = CraftString.GetSpellId(craftString)
 	local level = CraftString.GetLevel(craftString)
-	local itemLink, lNum, hNum = TSM.Crafting.ProfessionUtil.GetRecipeInfo(craftString)
-	assert(itemLink, "Invalid craft: "..tostring(craftString))
+	local resultItem = TSM.Crafting.ProfessionUtil.GetRecipeResultItem(craftString)
+	local lNum, hNum = TSM.Crafting.ProfessionUtil.GetRecipeInfo(craftString)
 
 	-- get the itemString and craft name
 	local itemString, craftName, indirectSpellId = nil, nil, nil
-	if strfind(itemLink, "enchant:") then
+	if type(resultItem) == "table" then
+		for i = 1, #resultItem do
+			resultItem[i] = ItemString.GetBase(resultItem[i])
+		end
+		itemString = resultItem
+		craftName = ItemInfo.GetName(resultItem[1])
+	elseif strfind(resultItem, "enchant:") then
 		if TSM.IsWowClassic() and not TSM.IsWowWrathClassic() then
 			return true
 		else
 			-- result of craft is not an item
 			if TSM.IsWowWrathClassic() then
-				indirectSpellId = strmatch(itemLink, "enchant:(%d+)")
+				indirectSpellId = strmatch(resultItem, "enchant:(%d+)")
 				indirectSpellId = indirectSpellId and tonumber(indirectSpellId)
 				if not indirectSpellId then
 					return true
@@ -457,10 +463,10 @@ function private.ScanRecipe(professionName, craftString)
 			end
 			craftName = GetSpellInfo(indirectSpellId)
 		end
-	elseif strfind(itemLink, "item:") then
+	elseif strfind(resultItem, "item:") then
 		-- result of craft is item
-		itemString = ItemString.GetBase(itemLink)
-		craftName = ItemInfo.GetName(itemLink)
+		itemString = ItemString.GetBase(resultItem)
+		craftName = ItemInfo.GetName(resultItem)
 		-- Blizzard broke Brilliant Scarlet Ruby in 8.3, so just hard-code a workaround
 		if spellId == 53946 and not itemString and not craftName then
 			itemString = "i:39998"
@@ -501,7 +507,25 @@ function private.ScanRecipe(professionName, craftString)
 
 	-- store general info about this recipe
 	local hasCD = TSM.Crafting.ProfessionUtil.HasCooldown(craftString)
-	TSM.Crafting.CreateOrUpdate(craftString, itemString, professionName, craftName, numResult, UnitName("player"), hasCD)
+	local baseRecipeQuality = nil
+	if type(itemString) == "table" then
+		assert(craftString == "c:"..spellId)
+		local recipeDifficulty = nil
+		recipeDifficulty, baseRecipeQuality = TSM.Crafting.ProfessionUtil.GetRecipeQualityInfo(craftString)
+		if not baseRecipeQuality then
+			-- Just ignore this craft for now
+			Log.Warn("Could not look up base quality (%s, %s)", tostring(professionName), tostring(craftString))
+			return true
+		end
+		for i = 1, #itemString do
+			local qualityCraftString = CraftString.Get(spellId, nil, nil, i)
+			if i >= floor(baseRecipeQuality) then
+				TSM.Crafting.CreateOrUpdate(qualityCraftString, itemString[i], professionName, craftName, numResult, UnitName("player"), hasCD, recipeDifficulty, baseRecipeQuality, #itemString)
+			end
+		end
+	else
+		TSM.Crafting.CreateOrUpdate(craftString, itemString, professionName, craftName, numResult, UnitName("player"), hasCD)
+	end
 
 	-- get the mat quantities and add mats to our DB
 	local matQuantities = TempTable.Acquire()
@@ -545,7 +569,16 @@ function private.ScanRecipe(professionName, craftString)
 				matQuantities[matStr] = optionalQuantity[dataSlotIndex]
 			end
 		end
-		TSM.Crafting.SetMats(craftString, matQuantities)
+		if type(itemString) == "table" then
+			assert(craftString == "c:"..spellId)
+			for i = 1, #itemString do
+				if i >= floor(baseRecipeQuality) then
+					TSM.Crafting.SetMats(CraftString.Get(spellId, nil, nil, i), matQuantities)
+				end
+			end
+		else
+			TSM.Crafting.SetMats(craftString, matQuantities)
+		end
 	end
 	TempTable.Release(matQuantities)
 	return not haveInvalidMats
