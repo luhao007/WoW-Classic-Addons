@@ -1,66 +1,82 @@
 ------------------------------------------------------------------------
-r56 | Resike | 2018-12-12 18:44:14 +0000 (Wed, 12 Dec 2018) | 1 line
+r69 | Meorawr | 2022-12-17 10:06:08 +0000 (Sat, 17 Dec 2022) | 3 lines
 Changed paths:
+   A /tags/2.0.5 (from /trunk:68)
+   M /tags/2.0.5/LibGraph-2.0.toc
    M /trunk/LibGraph-2.0.toc
 
-- TOC update
+- Tag release v2.0.5
+
+
 ------------------------------------------------------------------------
-r55 | Tercioo | 2018-03-09 18:12:54 +0000 (Fri, 09 Mar 2018) | 1 line
+r68 | Ketho | 2022-12-03 16:00:04 +0000 (Sat, 03 Dec 2022) | 1 line
 Changed paths:
    M /trunk/LibGraph-2.0/LibGraph-2.0.lua
 
-- RefreshLineGraph now passes the Data index to the Draw function, so custom DrawLine functions know what data set the line belongs to.
+Prepend TextureDirectory path again with "Interface\\AddOns\\"
 ------------------------------------------------------------------------
-r54 | Resike | 2016-08-05 13:09:39 +0000 (Fri, 05 Aug 2016) | 3 lines
+r66 | Meorawr | 2022-12-03 14:52:43 +0000 (Sat, 03 Dec 2022) | 1 line
+Changed paths:
+   D /trunk/Desktop.ini
+
+Remove errant Desktop.ini file
+------------------------------------------------------------------------
+r64 | Meorawr | 2022-12-03 14:42:06 +0000 (Sat, 03 Dec 2022) | 3 lines
+Changed paths:
+   M /trunk/LibGraph-2.0/LibGraph-2.0.lua
+
+Disabled the SetTextureDirectory method as this function cannot be used safely across library upgrades.
+
+
+------------------------------------------------------------------------
+r63 | Ketho | 2022-12-03 14:23:38 +0000 (Sat, 03 Dec 2022) | 1 line
+Changed paths:
+   A /trunk/Desktop.ini
+
+
+------------------------------------------------------------------------
+r62 | tercioo | 2022-10-30 14:07:47 +0000 (Sun, 30 Oct 2022) | 2 lines
+Changed paths:
+   M /trunk/LibGraph-2.0/LibGraph-2.0.lua
+
+- Reverted the fix for getting the texture path as another fix was already in place.
+- Added: lib:SetTextureDirectory(path) to use a different directory, good if you want to use custom textures.
+------------------------------------------------------------------------
+r61 | Terciob | 2022-10-30 13:28:38 +0000 (Sun, 30 Oct 2022) | 2 lines
 Changed paths:
    M /trunk/LibGraph-2.0/LibGraph-2.0.lua
    M /trunk/LibGraph-2.0.toc
 
-- Updated to 7.0.3.
-- Fixed a major issue with the grid size determination and update.
-- Some other fixes.
+Fixed the path to the library directory.
+Toc update for patch 10.0 (Dragonflight).
 ------------------------------------------------------------------------
-r53 | Resike | 2016-07-21 15:41:52 +0000 (Thu, 21 Jul 2016) | 1 line
+r60 | Meorawr | 2022-10-09 12:34:55 +0000 (Sun, 09 Oct 2022) | 3 lines
 Changed paths:
    M /trunk/LibGraph-2.0/LibGraph-2.0.lua
 
-- Texture fix.
+Update SetGradientAlpha usages for 10.x compatibility
+
+
 ------------------------------------------------------------------------
-r52 | tercioo | 2014-09-26 13:36:47 +0000 (Fri, 26 Sep 2014) | 3 lines
+r59 | Meorawr | 2022-10-09 10:08:56 +0000 (Sun, 09 Oct 2022) | 8 lines
 Changed paths:
    M /trunk/LibGraph-2.0/LibGraph-2.0.lua
 
-- Added 4th parameter `linetexture` for AddDataSeries()
-- Added function SetLineTexture(texture)
-- Added function SetBorderSize (border side, size)
-------------------------------------------------------------------------
-r51 | Resike | 2014-08-01 16:44:30 +0000 (Fri, 01 Aug 2014) | 1 line
-Changed paths:
-   M /trunk/LibGraph-2.0/LibGraph-2.0.lua
+Allow forward slashes in texture directory match
 
-- More clean up.
+In patch 10.0 onwards error messages have changed format slightly to use forward
+slashes as path separators. For compatibility with existing retail clients
+and classic, the pattern for finding the library directory will accept both
+backslashes and forward slashes in the error message.
+
+
 ------------------------------------------------------------------------
-r50 | Resike | 2014-07-31 22:07:10 +0000 (Thu, 31 Jul 2014) | 5 lines
+r58 | Terciob | 2020-10-25 14:52:19 +0000 (Sun, 25 Oct 2020) | 2 lines
 Changed paths:
    M /trunk/LibGraph-2.0/LibGraph-2.0.lua
    M /trunk/LibGraph-2.0.toc
 
-- Code clean up.
-- Added more upvalues.
-- Fixed some globals and locals.
-- Some typo fixes.
-- Some other smaller fixes.
-------------------------------------------------------------------------
-r49 | elsia | 2012-08-22 04:31:21 +0000 (Wed, 22 Aug 2012) | 1 line
-Changed paths:
-   M /trunk/LibGraph-2.0/LibGraph-2.0.lua
-
-- Undoing the MOP beta client crash bandaid for math.floor(math.huge) as the crash bug has been fixed as of build 16010.
-------------------------------------------------------------------------
-r48 | elsia | 2012-08-04 04:08:22 +0000 (Sat, 04 Aug 2012) | 1 line
-Changed paths:
-   M /trunk/LibGraph-2.0/LibGraph-2.0.lua
-
-- Band-aid change to prevent LibGraph-2.0 to crash on the MOP beta client when displaying line graphs. Currently math.floor(math.huge) or math.ceil(math.huge) will guarantee a crash.
+- Added backdrop templates on graph frames, this is required due to 9.0 (Shadowlands) changes.
+- Toc updated to 90001.
 ------------------------------------------------------------------------
 

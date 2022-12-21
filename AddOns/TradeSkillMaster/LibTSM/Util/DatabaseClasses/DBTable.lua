@@ -1082,14 +1082,14 @@ function DatabaseTable:_UpdateRow(row, changeContext)
 	-- cache the min index within the index lists for the old values ot make removing from the index faster
 	local oldIndexMinIndex = TempTable.Acquire()
 	for indexField in pairs(self._indexLists) do
-		if changeContext[indexField] then
+		if changeContext[indexField] ~= nil then
 			oldIndexMinIndex[indexField] = self:_IndexListBinarySearch(indexField, Util.ToIndexValue(changeContext[indexField]), true)
 		end
 	end
 	local index = self._uuidToDataOffsetLookup[uuid]
 	for i = 1, self._numStoredFields do
 		local field = self._storedFieldList[i]
-		if changeContext[field] then
+		if changeContext[field] ~= nil then
 			if self._listData and self:_GetListFieldType(field) then
 				self._data[index + i - 1] = self:_InsertListData(changeContext[field])
 			else
@@ -1099,7 +1099,7 @@ function DatabaseTable:_UpdateRow(row, changeContext)
 	end
 	local changedIndexUnique = false
 	for indexField, indexList in pairs(self._indexLists) do
-		if changeContext[indexField] or (self:_IsSmartMapField(indexField) and changeContext[self._smartMapInputLookup[indexField]]) then
+		if changeContext[indexField] ~= nil or (self:_IsSmartMapField(indexField) and changeContext[self._smartMapInputLookup[indexField]] ~= nil) then
 			-- remove and re-add row to the index list since the index value changed
 			if oldIndexMinIndex[indexField] then
 				local deleteIndex = nil
@@ -1119,7 +1119,7 @@ function DatabaseTable:_UpdateRow(row, changeContext)
 		end
 	end
 	TempTable.Release(oldIndexMinIndex)
-	if self._trigramIndexField and changeContext[self._trigramIndexField] then
+	if self._trigramIndexField and changeContext[self._trigramIndexField] ~= nil then
 		self:_TrigramIndexRemove(uuid)
 		self:_TrigramIndexInsert(uuid)
 	end

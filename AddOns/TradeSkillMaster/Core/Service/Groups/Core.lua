@@ -388,6 +388,8 @@ function Groups.BulkCreateFromImport(groupName, items, groups, groupOperations, 
 		end
 	end
 	local numItems = 0
+	private.itemDB:SetQueryUpdatesPaused(true)
+	private.itemStringMap:SetCallbacksPaused(true)
 	for itemString, relGroupPath in pairs(items) do
 		if moveExistingItems or not Groups.IsItemInGroup(itemString) then
 			local groupPath = relGroupPath == "" and groupName or TSM.Groups.Path.Join(groupName, relGroupPath)
@@ -395,6 +397,8 @@ function Groups.BulkCreateFromImport(groupName, items, groups, groupOperations, 
 			numItems = numItems + 1
 		end
 	end
+	private.itemStringMap:SetCallbacksPaused(false)
+	private.itemDB:SetQueryUpdatesPaused(false)
 	private.RebuildDB()
 	return numItems
 end

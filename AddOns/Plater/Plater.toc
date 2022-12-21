@@ -1,5 +1,5 @@
 ## Interface: 30400
-## Version: Plater-v542-Retail
+## Version: Plater-v545-Retail
 ## SavedVariables: PlaterDB
 ## SavedVariablesPerCharacter: PlaterDBChr
 

@@ -1,5 +1,9 @@
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 local AceGUI = LibStub("AceGUI-3.0")
+local LDB = LibStub("LibDataBroker-1.1", true)
+local LDBIcon = LDB and LibStub("LibDBIcon-1.0", true)
+local icon_loaded = false
+local icon_name = "BisTooltipIcon"
 
 local sources = {
     wh = "wh",
@@ -18,13 +22,35 @@ local db_defaults = {
         phase_index = 1,
         filter_specs = {},
         highlight_spec = {},
-        data_source = Nil
+        data_source = Nil,
+        minimap_icon = true
     }
 }
 
 local configTable = {
     type = "group",
     args = {
+        minimap_icon = {
+            name = "Show minimap icon",
+            order = 0,
+            desc = "Shows/hides minimap icon",
+            type = "toggle",
+            set = function(info, val)
+                BistooltipAddon.db.char.minimap_icon = val
+                if val == true then
+                    if icon_loaded == true then
+                        LDBIcon:Show(icon_name)
+                    else
+                        BistooltipAddon:addMapIcon()
+                    end
+                else
+                    LDBIcon:Hide(icon_name)
+                end
+            end,
+            get = function(info)
+                return BistooltipAddon.db.char.minimap_icon
+            end
+        },
         filter_class_names = {
             name = "Filter class names",
             order = 0,
@@ -208,6 +234,37 @@ local function enableSpec(spec_name)
         Bistooltip_phases = Bistooltip_wh_phases;
     end
     buildFilterSpecOptions()
+end
+
+function BistooltipAddon:addMapIcon()
+    if BistooltipAddon.db.char.minimap_icon then
+        icon_loaded = true
+        local LDB = LibStub("LibDataBroker-1.1", true)
+        local LDBIcon = LDB and LibStub("LibDBIcon-1.0", true)
+        if LDB then
+            local PC_MinimapBtn = LDB:NewDataObject(icon_name, {
+                type = "launcher",
+                text = icon_name,
+                icon = "interface/icons/inv_weapon_glave_01.blp",
+                OnClick = function(_, button)
+                    if button == "LeftButton" then
+                        BistooltipAddon:createMainFrame()
+                    end
+                    if button == "RightButton" then
+                        BistooltipAddon:openConfigDialog()
+                    end
+                end,
+                OnTooltipShow = function(tt)
+                    tt:AddLine(BistooltipAddon.AddonNameAndVersion)
+                    tt:AddLine("|cffffff00Left click|r to open the BiS lists window")
+                    tt:AddLine("|cffffff00Right click|r to open addon configuration window")
+                end,
+            })
+            if LDBIcon then
+                LDBIcon:Register(icon_name, PC_MinimapBtn, BistooltipAddon.db.char)
+            end
+        end
+    end
 end
 
 function BistooltipAddon:changeSpec(spec_name)

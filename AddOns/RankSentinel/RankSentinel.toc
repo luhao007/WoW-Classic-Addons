@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: SabreValkyrn
-## Version: v2.3.0
+## Version: v2.3.1
 ## SavedVariables: RankSentinelDB
 
 ## Title: RankSentinel
@@ -13,6 +13,7 @@
 ## X-Embeds: Ace3
 
 locale\enUS.lua
+locale\frFR.lua
 
 RankSentinel.lua
 

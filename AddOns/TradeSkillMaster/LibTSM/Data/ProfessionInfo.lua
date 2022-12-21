@@ -883,6 +883,50 @@ local ENCHANTING_RECIPIES = {
 	[324773] = "i:177962", -- Enchant Chest - Eternal Stats
 	[342316] = "i:183738", -- Enchant Chest - Eternal Insight
 }
+local DF_ENCHANTING_RECIPES = {
+	[388930] = {"i:199957", "i:199999", "i:200041"}, -- Enchant Ring - Writ of Critical Strike
+	[389135] = {"i:199958", "i:200000", "i:200042"}, -- Enchant Ring - Writ of Haste
+	[389136] = {"i:199959", "i:200001", "i:200043"}, -- Enchant Ring - Writ of Mastery
+	[389151] = {"i:199960", "i:200002", "i:200044"}, -- Enchant Ring - Writ of Versatility
+	[389292] = {"i:199953", "i:199995", "i:200037"}, -- Enchant Ring - Devotion of Critical Strike
+	[389293] = {"i:199954", "i:199996", "i:200038"}, -- Enchant Ring - Devotion of Haste
+	[389294] = {"i:199955", "i:199997", "i:200039"}, -- Enchant Ring - Devotion of Mastery
+	[389295] = {"i:199956", "i:199998", "i:200040"}, -- Enchant Ring - Devotion of Versatility
+	[389297] = {"i:199940", "i:199982", "i:200024"}, -- Enchant Bracer - Writ of Avoidance
+	[389298] = {"i:199941", "i:199983", "i:200025"}, -- Enchant Bracer - Writ of Leech
+	[389300] = {"i:199942", "i:199984", "i:200026"}, -- Enchant Bracer - Writ of Speed
+	[389301] = {"i:199937", "i:199979", "i:200021"}, -- Enchant Bracer - Devotion of Avoidance
+	[389303] = {"i:199938", "i:199980", "i:200022"}, -- Enchant Bracer - Devotion of Leech
+	[389304] = {"i:199939", "i:199981", "i:200023"}, -- Enchant Bracer - Devotion of Speed
+	[389397] = {"i:199950", "i:199992", "i:200034"}, -- Enchant Cloak - Writ of Avoidance
+	[389398] = {"i:199951", "i:199993", "i:200035"}, -- Enchant Cloak - Writ of Leech
+	[389400] = {"i:199952", "i:199994", "i:200036"}, -- Enchant Cloak - Writ of Speed
+	[389403] = {"i:199947", "i:199989", "i:200031"}, -- Enchant Cloak - Graceful Avoidance
+	[389404] = {"i:199949", "i:199991", "i:200033"}, -- Enchant Cloak - Regenerative Leech
+	[389405] = {"i:199948", "i:199990", "i:200032"}, -- Enchant Cloak - Homebound Speed
+	[389410] = {"i:199946", "i:199988", "i:200030"}, -- Enchant Chest - Waking Stats
+	[389416] = {"i:199943", "i:199985", "i:200027"}, -- Enchant Chest - Accelerated Agility
+	[389417] = {"i:199944", "i:199986", "i:200028"}, -- Enchant Chest - Reserve of Intellect
+	[389419] = {"i:199945", "i:199987", "i:200029"}, -- Enchant Chest - Sustained Strength
+	[389479] = {"i:199934", "i:199976", "i:200018"}, -- Enchant Boots - Plainsrunner's Breeze
+	[389480] = {"i:199935", "i:199977", "i:200019"}, -- Enchant Boots - Rider's Reassurance
+	[389484] = {"i:199936", "i:199978", "i:200020"}, -- Enchant Boots - Watcher's Loam
+	[389508] = {"i:199961", "i:200003", "i:200045"}, -- Enchant Tool - Draconic Deftness
+	[389513] = {"i:199962", "i:200004", "i:200046"}, -- Enchant Tool - Draconic Finesse
+	[389519] = {"i:199963", "i:200005", "i:200047"}, -- Enchant Tool - Draconic Inspiration
+	[389525] = {"i:199964", "i:200006", "i:200048"}, -- Enchant Tool - Draconic Perception
+	[389530] = {"i:199965", "i:200007", "i:200049"}, -- Enchant Tool - Draconic Resourcefulness
+	[389537] = {"i:199967", "i:200009", "i:200051"}, -- Enchant Weapon - Burning Writ
+	[389540] = {"i:199969", "i:200011", "i:200053"}, -- Enchant Weapon - Earthen Writ
+	[389542] = {"i:199971", "i:200013", "i:200055"}, -- Enchant Weapon - Sophic Writ
+	[389543] = {"i:199973", "i:200015", "i:200057"}, -- Enchant Weapon - Frozen Writ
+	[389546] = {"i:199975", "i:200017", "i:200059"}, -- Enchant Weapon - Wafting Writ
+	[389547] = {"i:199966", "i:200008", "i:200050"}, -- Enchant Weapon - Burning Devotion
+	[389549] = {"i:199968", "i:200010", "i:200052"}, -- Enchant Weapon - Earthen Devotion
+	[389550] = {"i:199970", "i:200012", "i:200054"}, -- Enchant Weapon - Sophic Devotion
+	[389551] = {"i:199972", "i:200014", "i:200056"}, -- Enchant Weapon - Frozen Devotion
+	[389558] = {"i:199974", "i:200016", "i:200058"}, -- Enchant Weapon - Wafting Devotion
+}
 local OPTIONAL_MAT_INFO = {
 	["i:173161"] = { statModifier = 32 }, -- Missive of Critical Strike
 	["i:173160"] = { statModifier = 36 }, -- Missive of Haste
@@ -1277,7 +1321,7 @@ function ProfessionInfo.IsMassMill(spellId)
 end
 
 function ProfessionInfo.GetIndirectCraftResult(spellId)
-	return ENCHANTING_RECIPIES[spellId] or MASS_MILLING_RECIPES[spellId] or nil
+	return ENCHANTING_RECIPIES[spellId] or MASS_MILLING_RECIPES[spellId] or DF_ENCHANTING_RECIPES[spellId] or nil
 end
 
 function ProfessionInfo.GetOptionalMatByItemLevel(itemLevel)

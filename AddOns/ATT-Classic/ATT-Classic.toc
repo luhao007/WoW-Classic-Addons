@@ -1,23 +1,23 @@
 ## Interface: 30400
 ## Author: Crieve-Sargeras
-## Version: 1.2.7
+## Version: 1.2.8
 ## SavedVariables: ATTCharacterData, ATTAccountWideData, ATTClassicSettings, ATTClassicAD, ATTClassicAuctionData, ATTClassicDebugData
 ## SavedVariablesPerCharacter: ATTClassicSettingsPerCharacter
 
-## Title: ATT-Classic |cfd9b9b9b(TBC)|r
+## Title: ATT-Classic |cfd9b9b9b(Wrath)|r
 ## Notes: Addon for Tracking Collections & Account Completion
 ## Title-zhCN: |cFFFFE00A<|r|cFFA9D271收藏|r|cFFFFE00A>|r |cFFFFFFFF收集控助手|r |cFFFFE00AATT-Classic|r
 ## Notes-zhCN: 追踪账号完成度，提示诸如任务、飞行点、配方等各个分类的收集和完成情况
 
-## X-Interface: 20504
+## X-Interface: 30400
 ## X-Wago-ID: yQKyY5K7
 ## X-Curse-Project-ID: 267285
 
 src\base.lua
 db\Presets.lua
-db\TBC\CategoryDB.lua
-db\TBC\ExplorationDB.lua
-db\TBC\ObjectDB.lua
+db\Wrath\CategoryDB.lua
+db\Wrath\ExplorationDB.lua
+db\Wrath\ObjectDB.lua
 db\FlightPathDB.lua
 db\RaceDB.lua
 locales\enUS.lua
@@ -31,4 +31,4 @@ locales\ruRU.lua
 locales\zhCN.lua
 Settings.lua
 ATT-Classic.lua
-db\TBC\Categories.lua
+db\Wrath\Categories.lua

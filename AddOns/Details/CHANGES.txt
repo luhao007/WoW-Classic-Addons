@@ -1,10 +1,22 @@
-tag 8020d523b6e13b2de9200c111fb0f092c3a2f46a Details.DF.Wrath.10336.148
+tag 08a643d81e8d53ff6537f828b214aa7b623646f5 Details.DF.Wrath.10337.148
 Author:	Tercio Jose <terciob19@hotmail.com>
-Date:	Mon Dec 12 19:06:58 2022 -0300
+Date:	Thu Dec 15 11:48:23 2022 -0300
 
-commit 388154a5408f10b5c7ffc0f2fa4b874a700b23e8
+commit 8d93d677ca54f67ec87aeb9922525a5e9344b146
 Author: Tercio Jose <terciob19@hotmail.com>
-Date:   Mon Dec 12 19:06:43 2022 -0300
+Date:   Thu Dec 15 11:47:58 2022 -0300
 
-    Lib Update
+    Fixed an issue with open raid library
+
+commit 55f21591198166ac1010089eb4619254828349f7
+Author: Tercio Jose <terciob19@hotmail.com>
+Date:   Wed Dec 14 08:06:39 2022 -0300
+
+    Framework update
+
+commit 6542699b750f9ad8507ab56c5d92da030b91df4d
+Author: Tercio Jose <terciob19@hotmail.com>
+Date:   Tue Dec 13 08:32:16 2022 -0300
+
+    don't print the class played time if the played time is already in the chat window
 

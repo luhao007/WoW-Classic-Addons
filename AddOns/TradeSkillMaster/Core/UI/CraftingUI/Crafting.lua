@@ -964,8 +964,7 @@ function private.FSMCreate()
 		private.matsDB:TruncateAndBulkInsertStart()
 		local numMats = TSM.Crafting.ProfessionUtil.GetNumMats(spellId, context.selectedCraftLevel)
 		for i = 1, numMats do
-			local itemLink, _, _, quantity = TSM.Crafting.ProfessionUtil.GetMatInfo(spellId, i, context.selectedCraftLevel)
-			local itemString = ItemString.Get(itemLink)
+			local itemString, _, _, quantity = TSM.Crafting.ProfessionUtil.GetMatInfo(spellId, i, context.selectedCraftLevel)
 			private.matsDB:BulkInsertNewRow(itemString, quantity)
 		end
 		assert(not next(private.optionalMatOrderTemp))

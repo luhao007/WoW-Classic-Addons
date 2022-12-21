@@ -6,10 +6,10 @@
 
 local TSM = select(2, ...) ---@type TSM
 local DFCrafting = TSM.Crafting:NewPackage("DFCrafting")
-local Math = TSM.Include("Util.Math")
 local String = TSM.Include("Util.String")
 local CraftString = TSM.Include("Util.CraftString")
 local TempTable = TSM.Include("Util.TempTable")
+local Table = TSM.Include("Util.Table")
 local ProfessionInfo = TSM.Include("Data.ProfessionInfo")
 local private = {
 	matQualityIterContext = {
@@ -35,56 +35,28 @@ local QUALITY_MAT_STRING_ITEM_ID_PATTERNS = {
 -- Module Functions
 -- ============================================================================
 
-function DFCrafting.GetCraftingCostByCraftString(craftString, usedMats)
-	local recipeDifficulty, recipeQuality, recipeMaxQuality = TSM.Crafting.GetQualityInfo(craftString)
-	if not recipeDifficulty then
-		return
-	end
-	local targetQuality = CraftString.GetQuality(craftString)
-	-- Calculate how much skill we need to add in order to craft the target item
-	local difficultyPerQuality = recipeDifficulty / (recipeMaxQuality - 1)
-	local neededSkill, maxAddedSkill = 0, 0
-	local minQuality = floor(recipeQuality)
-	if targetQuality < minQuality then
-		-- We can't craft this low of a quality anymore
-		return nil, nil
-	elseif targetQuality == recipeMaxQuality then
-		neededSkill = difficultyPerQuality * (targetQuality - recipeQuality)
-		maxAddedSkill = math.huge
-	else
-		neededSkill = max(difficultyPerQuality * (targetQuality - recipeQuality), 0)
-		maxAddedSkill = difficultyPerQuality * (targetQuality + 1 - recipeQuality)
-	end
-	assert(neededSkill >= 0 and maxAddedSkill > 0)
-	local maxQualityMatDifficulty = recipeDifficulty * MAX_QUALITY_MAT_DIFFICULTY_RATIO
-
-	local mats = private.AcquireTempTable()
-	TSM.Crafting.GetMatsAsTable(craftString, mats)
-	local cost = private.CraftingCostHelper(craftString, mats, neededSkill, maxAddedSkill, maxQualityMatDifficulty, usedMats)
-	private.ReleaseTempTable(mats)
-	return cost
+function DFCrafting.CanCraftQuality(targetQuality, recipeDifficulty, recipeQuality, recipeMaxQuality)
+	return private.GetNeededSkill(targetQuality, recipeDifficulty, recipeQuality, recipeMaxQuality) and true or false
 end
 
+function DFCrafting.GetOptionalMats(craftString, mats, optionalMats)
+	local recipeDifficulty, recipeQuality, recipeMaxQuality = TSM.Crafting.GetQualityInfo(craftString)
+	if not recipeDifficulty then
+		return false
+	end
+	local targetQuality = CraftString.GetQuality(craftString)
+	local neededSkill, maxAddedSkill, maxQualityMatSkill = private.GetNeededSkill(targetQuality, recipeDifficulty, recipeQuality, recipeMaxQuality)
+	if not neededSkill then
+		return false
+	end
 
-
--- ============================================================================
--- Private Helper Functions
--- ============================================================================
-
-function private.CraftingCostHelper(craftString, mats, neededSkill, maxAddedSkill, maxQualityMatDifficulty, usedMats)
-	local cost = 0
+	-- Cache the cost of each quality mat and calculate the total weight
 	local totalWeight = 0
 	local qualityMatCostTemp = private.AcquireTempTable()
-	-- Sum up the cost of all the base mats and cache the cost of each quality mat
 	for matString, quantity in pairs(mats) do
 		local prefix = strsub(matString, 1, 2)
 		if prefix == "i:" then
-			local matCost = TSM.Crafting.Cost.GetMatCost(matString)
-			if not matCost then
-				cost = nil
-				break
-			end
-			cost = cost + matCost * quantity
+			-- Not worrying about regular mats here
 		elseif prefix == "q:" then
 			local isFirst = true
 			local _, dataSlotIndex, itemList = strsplit(":", matString)
@@ -100,8 +72,8 @@ function private.CraftingCostHelper(craftString, mats, neededSkill, maxAddedSkil
 				end
 			end
 			if not hasValidCost then
-				cost = nil
-				break
+				private.ReleaseTempTable(qualityMatCostTemp)
+				return false
 			end
 			assert(not isFirst)
 		elseif prefix == "f:" or prefix == "o:" then
@@ -110,10 +82,7 @@ function private.CraftingCostHelper(craftString, mats, neededSkill, maxAddedSkil
 			error("Invalid matString: "..tostring(matString))
 		end
 	end
-	if not cost then
-		private.ReleaseTempTable(qualityMatCostTemp)
-		return nil
-	end
+
 	-- Get all combinations of quality mats
 	local lowestQualityMatCost = math.huge
 	for qualities in private.MatQualityIterator(mats) do
@@ -137,38 +106,68 @@ function private.CraftingCostHelper(craftString, mats, neededSkill, maxAddedSkil
 			end
 			currentMatCost = currentMatCost + matCost * quantity
 		end
-		local bonusSkill = (weight / totalWeight) * maxQualityMatDifficulty
+		local bonusSkill = (weight / totalWeight) * maxQualityMatSkill
 		if bonusSkill >= neededSkill and bonusSkill <= maxAddedSkill and currentMatCost < lowestQualityMatCost then
 			lowestQualityMatCost = currentMatCost
-			if usedMats then
-				wipe(usedMats)
-				for matString in pairs(mats) do
-					local prefix = strsub(matString, 1, 2)
-					if prefix == "i:" then
-						-- pass
-					elseif prefix == "q:" then
-						local quality = qualities[matString]
-						local matItemString = "i:"..strmatch(matString, QUALITY_MAT_STRING_ITEM_ID_PATTERNS[quality])
-						tinsert(usedMats, matItemString)
-					elseif prefix == "f:" or prefix == "o:" then
-						-- Ignore for now
-					else
-						error("Invalid matString: "..tostring(matString))
-					end
+			wipe(optionalMats)
+			for matString in pairs(mats) do
+				local prefix = strsub(matString, 1, 2)
+				if prefix == "i:" then
+					-- Not worrying about regular mats here
+				elseif prefix == "q:" then
+					local quality = qualities[matString]
+					local matItemString = "i:"..strmatch(matString, QUALITY_MAT_STRING_ITEM_ID_PATTERNS[quality])
+					tinsert(optionalMats, matItemString)
+					optionalMats[matItemString] = matString
+				elseif prefix == "f:" or prefix == "o:" then
+					-- Ignore for now
+				else
+					error("Invalid matString: "..tostring(matString))
 				end
 			end
 		end
 	end
 	private.ReleaseTempTable(qualityMatCostTemp)
 	if lowestQualityMatCost == math.huge then
-		return nil
+		return false
 	end
-	local numResult = TSM.Crafting.GetNumResult(craftString)
-	cost = Math.Round((cost + lowestQualityMatCost) / numResult)
-	if cost <= 0 then
-		return nil
+	Table.SortWithValueLookup(optionalMats, optionalMats)
+	return true
+end
+
+
+
+-- ============================================================================
+-- Private Helper Functions
+-- ============================================================================
+
+function private.GetNeededSkill(targetQuality, recipeDifficulty, recipeQuality, recipeMaxQuality)
+	if recipeMaxQuality == 1 then
+		-- This recipe has quality mats, but doesn't produce a quality item
+		return 0, math.huge, 0
 	end
-	return cost
+	-- Calculate how much skill we need to add in order to craft the target item
+	local difficultyPerQuality = recipeDifficulty / (recipeMaxQuality - 1)
+	local neededSkill, maxAddedSkill = 0, 0
+	local minQuality = floor(recipeQuality)
+	if targetQuality < minQuality then
+		-- We can't craft this low of a quality anymore
+		return nil, nil
+	elseif targetQuality == recipeMaxQuality then
+		neededSkill = difficultyPerQuality * (targetQuality - recipeQuality)
+		maxAddedSkill = math.huge
+	else
+		neededSkill = max(difficultyPerQuality * (targetQuality - recipeQuality), 0)
+		maxAddedSkill = difficultyPerQuality * (targetQuality + 1 - recipeQuality)
+	end
+	assert(neededSkill >= 0 and maxAddedSkill > 0)
+	local maxQualityMatSkill = recipeDifficulty * MAX_QUALITY_MAT_DIFFICULTY_RATIO
+	if neededSkill > maxQualityMatSkill then
+		-- We can't get this much skill with just quality reagents
+		-- TODO: We potentically could with finishing / optional(?) mats
+		return nil, nil
+	end
+	return neededSkill, maxAddedSkill, maxQualityMatSkill
 end
 
 function private.MatQualityIterator(mats)

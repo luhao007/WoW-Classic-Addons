@@ -1,13 +1,18 @@
 # Simple Item Level
 
-## [v27](https://github.com/kemayo/wow-simpleitemlevel/tree/v27) (2022-12-13)
-[Full Changelog](https://github.com/kemayo/wow-simpleitemlevel/compare/v26...v27) [Previous Releases](https://github.com/kemayo/wow-simpleitemlevel/releases)
+## [v28](https://github.com/kemayo/wow-simpleitemlevel/tree/v28) (2022-12-17)
+[Full Changelog](https://github.com/kemayo/wow-simpleitemlevel/compare/v27...v28) [Previous Releases](https://github.com/kemayo/wow-simpleitemlevel/releases)
 
-- Tweak new positions again in classic  
-- Better position for the checkboxes in settings  
-- Separate config for the average character/inspect item level  
-- Change position of item level on character/inspect frames  
-    Fixes #19  
-- Debug-mode was triggering too easily, making character item level show on retail  
-    Refs #19  
-- Fix missing enchants display  
+- Don't 100% fall back on item links for bagnon  
+    Fixes #24  
+- Split out the "equipment only" option into subtypes  
+    Also, add an option to only show the missing-things on the character  
+    frame.  
+    Fixes #21  
+- Fix errors coming from Bagnon void storage  
+    Fixes #22  
+- For caged battle pets show their level/quality rather than the cage's  
+    Caged pets are all item 82800, "Pet Cage", which is item level 20.  
+    This also fixes an error that was happening when it tried to check the  
+    caged pet for gem slots.  
+    Fixes #20  

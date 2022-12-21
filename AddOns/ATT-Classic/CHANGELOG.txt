@@ -1,21 +1,13 @@
-1.2.7 Release Notes
+1.2.8 Release Notes
 Contributions made by Crieve:
-* Updated the Build Tool for ATT-Classic.
-* Added the WAGO Project ID.
-* Marked the original Heirlooms provided in Wrath as BoA.
-* Updated Clamlette Surprise (13825) to account for knowing the recipe.
-* Updated Azshara to include future expansion information.
-* Azshara now resides on the Retail Database.
-* Removed an invalid build number from various timelines.
-* Updated Mulgore for Wrath Classic.
-* Mulgore now resides on the Retail Database.
-* Updated Durotar for future expansion information.
-* Durotar now resides on the Retail Database.
-* Added Muddy Churning Waters to ZG.
-* Moved the Brazier of Madness trinkets to the object itself.
-* Robe of the Void is actually useable by any class after Wrath.
-* The never implemented tag on Schematic: Khorium Toolbox no longer applies to the titanium one.
-* Updated Desolace to include future expansion information.
-* Desolace now resides on the Retail Database.
-* Added some missing object information.
+* Razzashi Hatchling did not drop in the original STV zone.
+* Added the Basket of Bloodkelp and Blood of Heroes objectIDs.
+* The original version of Sting of the Scorpid is now properly timelined for 4.0.3
+* The Tier 0.5 Quest chains no longer appear for classes that aren't involved in the quest chain at all. Additionally, those quests now appropriately appear in the mini list for Blackrock Spire regardless of which submap you're in.
+* Updated Ashenvale for future expansion information.
+* Ashenvale now resides on the Retail Database.
+* Fixed Hallowed Be Thy Name for Horde players in Wrath Classic.
+* Updated Feast of Winter Veil for Wrath Classic.
+* Proof of Treachery / Return to Jaina were removed in 3.0.2 for Wrath Classic.
+* Show Your Work was also removed in 3.0.2 for Wrath Classic.
 

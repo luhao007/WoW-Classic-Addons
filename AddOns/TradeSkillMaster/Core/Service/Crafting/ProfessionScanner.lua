@@ -404,15 +404,21 @@ function private.ScanProfession()
 
 	-- scan all the recipes
 	TSM.Crafting.SetSpellDBQueryUpdatesPaused(true)
+	local inactiveCraftStrings = TempTable.Acquire()
 	local query = private.db:NewQuery()
 		:Select("craftString")
 	local numFailed = 0
 	for _, craftString in query:Iterator() do
-		if not private.ScanRecipe(professionName, craftString) then
+		if not private.ScanRecipe(professionName, craftString, inactiveCraftStrings) then
 			numFailed = numFailed + 1
 		end
 	end
 	query:Release()
+	-- remove crafts which are not active (i.e. lower quality)
+	if next(inactiveCraftStrings) then
+		TSM.Crafting.RemovePlayerSpells(inactiveCraftStrings)
+	end
+	TempTable.Release(inactiveCraftStrings)
 	TSM.Crafting.SetSpellDBQueryUpdatesPaused(false)
 
 	Log.Info("Scanned %s (failed to scan %d)", professionName, numFailed)
@@ -427,7 +433,7 @@ function private.ScanProfession()
 	collectgarbage()
 end
 
-function private.ScanRecipe(professionName, craftString)
+function private.ScanRecipe(professionName, craftString, inactiveCraftStrings)
 	-- get the links
 	local spellId = CraftString.GetSpellId(craftString)
 	local level = CraftString.GetLevel(craftString)
@@ -507,11 +513,9 @@ function private.ScanRecipe(professionName, craftString)
 
 	-- store general info about this recipe
 	local hasCD = TSM.Crafting.ProfessionUtil.HasCooldown(craftString)
-	local baseRecipeQuality = nil
 	if type(itemString) == "table" then
 		assert(craftString == "c:"..spellId)
-		local recipeDifficulty = nil
-		recipeDifficulty, baseRecipeQuality = TSM.Crafting.ProfessionUtil.GetRecipeQualityInfo(craftString)
+		local recipeDifficulty, baseRecipeQuality = TSM.Crafting.ProfessionUtil.GetRecipeQualityInfo(craftString)
 		if not baseRecipeQuality then
 			-- Just ignore this craft for now
 			Log.Warn("Could not look up base quality (%s, %s)", tostring(professionName), tostring(craftString))
@@ -519,12 +523,16 @@ function private.ScanRecipe(professionName, craftString)
 		end
 		for i = 1, #itemString do
 			local qualityCraftString = CraftString.Get(spellId, nil, nil, i)
-			if i >= floor(baseRecipeQuality) then
+			if TSM.Crafting.DFCrafting.CanCraftQuality(i, recipeDifficulty, baseRecipeQuality, #itemString) then
 				TSM.Crafting.CreateOrUpdate(qualityCraftString, itemString[i], professionName, craftName, numResult, UnitName("player"), hasCD, recipeDifficulty, baseRecipeQuality, #itemString)
+			else
+				inactiveCraftStrings[qualityCraftString] = true
+				itemString[i] = false
 			end
 		end
 	else
-		TSM.Crafting.CreateOrUpdate(craftString, itemString, professionName, craftName, numResult, UnitName("player"), hasCD)
+		local recipeDifficulty, baseRecipeQuality = TSM.Crafting.ProfessionUtil.GetRecipeQualityInfo(craftString)
+		TSM.Crafting.CreateOrUpdate(craftString, itemString, professionName, craftName, numResult, UnitName("player"), hasCD, recipeDifficulty, baseRecipeQuality, 1)
 	end
 
 	-- get the mat quantities and add mats to our DB
@@ -532,8 +540,7 @@ function private.ScanRecipe(professionName, craftString)
 	local haveInvalidMats = false
 	local numReagents = TSM.Crafting.ProfessionUtil.GetNumMats(spellId, level)
 	for i = 1, numReagents do
-		local matItemLink, name, _, quantity, isQualityMat = TSM.Crafting.ProfessionUtil.GetMatInfo(spellId, i, level)
-		local matItemString = ItemString.GetBase(matItemLink)
+		local matItemString, name, _, quantity, isQualityMat = TSM.Crafting.ProfessionUtil.GetMatInfo(spellId, i, level)
 		if not matItemString then
 			Log.Warn("Failed to get itemString for mat %d (%s, %s)", i, tostring(professionName), tostring(craftString))
 			haveInvalidMats = true
@@ -572,7 +579,7 @@ function private.ScanRecipe(professionName, craftString)
 		if type(itemString) == "table" then
 			assert(craftString == "c:"..spellId)
 			for i = 1, #itemString do
-				if i >= floor(baseRecipeQuality) then
+				if itemString[i] then
 					TSM.Crafting.SetMats(CraftString.Get(spellId, nil, nil, i), matQuantities)
 				end
 			end

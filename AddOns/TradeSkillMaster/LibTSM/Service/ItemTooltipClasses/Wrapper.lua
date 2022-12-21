@@ -126,6 +126,10 @@ function private.OnTooltipSetItem(tooltip, data)
 	if reg.hasItem then
 		return
 	end
+	local itemLocation = not TSM.IsWowClassic() and data.guid and C_Item.GetItemLocation(data.guid)
+	if itemLocation and itemLocation:IsBagAndSlot() then
+		reg.quantity = C_Container.GetContainerItemInfo(itemLocation.bagID, itemLocation.slotIndex).stackCount
+	end
 
 	tooltip:Show()
 	local testName, item = tooltip:GetItem()

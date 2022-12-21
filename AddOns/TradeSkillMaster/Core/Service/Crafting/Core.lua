@@ -18,6 +18,7 @@ local String = TSM.Include("Util.String")
 local Log = TSM.Include("Util.Log")
 local ItemString = TSM.Include("Util.ItemString")
 local Vararg = TSM.Include("Util.Vararg")
+local Wow = TSM.Include("Util.Wow")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local CustomPrice = TSM.Include("Service.CustomPrice")
 local Conversions = TSM.Include("Service.Conversions")
@@ -28,7 +29,7 @@ local private = {
 	matDB = nil,
 	matItemDB = nil,
 	matDBSpellIdQuery = nil,
-	matDBMatsInTableQuery = nil,
+	matDBAllMatsQuery = nil,
 	matDBMatNamesQuery = nil,
 	ignoredCooldownDB = nil,
 	numMatDBRows = {},
@@ -129,7 +130,7 @@ function Crafting.OnInitialize()
 	private.spellDB:BulkInsertEnd()
 	private.matDB:BulkInsertEnd()
 
-	private.matDBMatsInTableQuery = private.matDB:NewQuery()
+	private.matDBAllMatsQuery = private.matDB:NewQuery()
 		:Select("itemString", "quantity")
 		:Equal("craftString", Database.BoundQueryParam())
 	private.matDBMatNamesQuery = private.matDB:NewQuery()
@@ -364,7 +365,7 @@ function Crafting.HasOptionalMats(craftString)
 end
 
 function Crafting.GetMatsAsTable(craftString, tbl)
-	private.matDBMatsInTableQuery
+	private.matDBAllMatsQuery
 		:BindParams(craftString)
 		:AsTable(tbl)
 end
@@ -412,10 +413,14 @@ function Crafting.RemovePlayers(craftString, playersToRemove)
 end
 
 function Crafting.RemovePlayerSpells(inactiveSpellIds)
-	local playerName = UnitName("player")
+	local playerName = Wow.GetCharacterName()
 	local query = private.spellDB:NewQuery()
 		:InTable("craftString", inactiveSpellIds)
 		:ListContains("players", playerName)
+	if query:Count() == 0 then
+		query:Release()
+		return
+	end
 	local removedCraftStrings = TempTable.Acquire()
 	local toRemove = TempTable.Acquire()
 	private.spellDB:SetQueryUpdatesPaused(true)
@@ -659,6 +664,18 @@ end
 function Crafting.GetMatNames(craftString)
 	return private.matDBMatNamesQuery:BindParams(craftString)
 		:JoinedString("name", "")
+end
+
+function Crafting.IsQualityCraft(craftString)
+	if TSM.IsWowClassic() then
+		return false
+	elseif CraftString.GetQuality(craftString) then
+		return true
+	elseif TSM.db.factionrealm.internalData.crafts[craftString] and Crafting.GetQualityInfo(craftString) then
+		return true
+	else
+		return false
+	end
 end
 
 function Crafting.GetQualityInfo(craftString)

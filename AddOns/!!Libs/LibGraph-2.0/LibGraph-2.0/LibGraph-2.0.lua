@@ -1,6 +1,6 @@
 --[[
 Name: LibGraph-2.0
-Revision: $Rev: 55 $
+Revision: $Rev: 68 $
 Author(s): Cryect (cryect@gmail.com), Xinhuan
 Website: http://www.wowace.com/
 Documentation: http://www.wowace.com/wiki/GraphLib
@@ -11,7 +11,7 @@ Description: Allows for easy creation of graphs
 --Thanks to Nelson Minar for catching several errors where width was being used instead of height (damn copy and paste >_>)
 
 local major = "LibGraph-2.0"
-local minor = 90000 + tonumber(("$Revision: 55 $"):match("(%d+)"))
+local minor = 90000 + tonumber(("$Revision: 68 $"):match("(%d+)"))
 
 
 --Search for just Addon\\ at the front since the interface part often gets trimmed
@@ -19,7 +19,8 @@ local minor = 90000 + tonumber(("$Revision: 55 $"):match("(%d+)"))
 --doesn't get modified with a newer revision (this one)
 local TextureDirectory = "Interface\\AddOns\\!!Libs\\LibGraph-2.0\\LibGraph-2.0\\"
 --do
---	local path = string.match(debugstack(1, 1, 0), "AddOns\\(.+)LibGraph%-2%.0%.lua")
+--	local path = string.match(debugstack(1, 1, 0), "AddOns[\\/](.+)LibGraph%-2%.0%.lua")
+--
 --	if path then
 --		TextureDirectory = "Interface\\AddOns\\"..path
 --	else
@@ -27,11 +28,30 @@ local TextureDirectory = "Interface\\AddOns\\!!Libs\\LibGraph-2.0\\LibGraph-2.0\
 --	end
 --end
 
-
 if not LibStub then error(major .. " requires LibStub") end
 
 local lib, oldLibMinor = LibStub:NewLibrary(major, minor)
 if not lib then return end
+
+--manually set the path in case want to use custom textures
+function lib:SetTextureDirectory(path)
+	-- Disabled as this function is not safe across runtime library upgrades.
+	--
+	--  1. If a texture directory is set by Addon A and then Addon B loads a
+	--     newer version of the library, the configured path is lost.
+	--
+	--  2. If Addon B loads a newer version of the library and then Addon A
+	--     loads an older version and customizes the path, it may set the path
+	--     to a directory with missing textures that were only added in the
+	--     newer version.
+	--
+	--  3. If the library can't figure out the path to assets automatically
+	--     it would error before defining this function anyway, preventing
+	--     any "manual" fixups for specifying the texture path.
+
+	-- assert(type(path) == "string", "Usage: lib:SetTextureDirectory(string: path)")
+	-- TextureDirectory = path
+end
 
 local GraphFunctions = {}
 
@@ -74,6 +94,15 @@ lib.RegisteredGraphLine			= lib.RegisteredGraphLine or {}
 lib.RegisteredGraphScatterPlot	= lib.RegisteredGraphScatterPlot or {}
 lib.RegisteredGraphPieChart		= lib.RegisteredGraphPieChart or {}
 
+local function SetTextureGradient(texture, orientation, minR, minG, minB, minA, maxR, maxG, maxB, maxA)
+	if texture.SetGradientAlpha then
+		texture:SetGradientAlpha(orientation, minR, minG, minB, minA, maxR, maxG, maxB, maxA)
+	else
+		local minColor = { r = minR, g = minG, b = minB, a = minA }
+		local maxColor = { r = maxR, g = maxG, b = maxB, a = maxA }
+		texture:SetGradient(orientation, minColor, maxColor)
+	end
+end
 
 --------------------------------------------------------------------------------
 --Graph Creation Functions
@@ -135,7 +164,7 @@ end
 function lib:CreateGraphRealtime(name, parent, relative, relativeTo, offsetX, offsetY, Width, Height)
 	local graph
 	local i
-	graph = CreateFrame("Frame", name, parent)
+	graph = CreateFrame("Frame", name, parent, BackdropTemplateMixin and "BackdropTemplate")
 
 	Width = math_floor(Width)
 
@@ -152,7 +181,7 @@ function lib:CreateGraphRealtime(name, parent, relative, relativeTo, offsetX, of
 	graph.Height = Height
 	for i = 1, Width do
 		local bar
-		bar = CreateFrame("StatusBar", name.."Bar"..i, graph)--graph:CreateTexture(nil, "ARTWORK")
+		bar = CreateFrame("StatusBar", name.."Bar"..i, graph, BackdropTemplateMixin and "BackdropTemplate")--graph:CreateTexture(nil, "ARTWORK")
 		bar:SetPoint("BOTTOMLEFT", graph, "BOTTOMLEFT", i - 1, 0)
 		bar:SetHeight(Height)
 		bar:SetWidth(1)
@@ -163,7 +192,7 @@ function lib:CreateGraphRealtime(name, parent, relative, relativeTo, offsetX, of
 		bar:GetStatusBarTexture():SetVertTile(false)
 
 		local t = bar:GetStatusBarTexture()
-		t:SetGradientAlpha("VERTICAL", 0.2, 0.0, 0.0, 0.5, 1.0, 0.0, 0.0, 1.0)
+		SetTextureGradient(t, "VERTICAL", 0.2, 0.0, 0.0, 0.5, 1.0, 0.0, 0.0, 1.0)
 
 		bar:Show()
 		tinsert(graph.Bars, bar)
@@ -267,7 +296,7 @@ end
 function lib:CreateGraphLine(name, parent, relative, relativeTo, offsetX, offsetY, Width, Height)
 	local graph
 	local i
-	graph = CreateFrame("Frame", name, parent)
+	graph = CreateFrame("Frame", name, parent, BackdropTemplateMixin and "BackdropTemplate")
 
 
 	graph:SetPoint(relative, parent, relativeTo, offsetX, offsetY)
@@ -357,7 +386,7 @@ end
 function lib:CreateGraphScatterPlot(name, parent, relative, relativeTo, offsetX, offsetY, Width, Height)
 	local graph
 	local i
-	graph = CreateFrame("Frame",name, parent)
+	graph = CreateFrame("Frame",name, parent, BackdropTemplateMixin and "BackdropTemplate")
 
 
 	graph:SetPoint(relative, parent, relativeTo, offsetX, offsetY)
@@ -425,7 +454,7 @@ end
 function lib:CreateGraphPieChart(name, parent, relative, relativeTo, offsetX, offsetY, Width, Height)
 	local graph
 	local i
-	graph = CreateFrame("Frame",name, parent)
+	graph = CreateFrame("Frame",name, parent, BackdropTemplateMixin and "BackdropTemplate")
 
 
 	graph:SetPoint(relative, parent, relativeTo, offsetX, offsetY)
@@ -504,7 +533,7 @@ function GraphFunctions:SetBarColors(BotColor, TopColor)
 	end
 	for i = 1, self.BarNum do
 		local t = self.Bars[i]:GetStatusBarTexture()
-		t:SetGradientAlpha("VERTICAL", BotColor[1], BotColor[2], BotColor[3], BotColor[4], TopColor[1], TopColor[2], TopColor[3], TopColor[4])
+		SetTextureGradient(t, "VERTICAL", BotColor[1], BotColor[2], BotColor[3], BotColor[4], TopColor[1], TopColor[2], TopColor[3], TopColor[4])
 	end
 end
 
@@ -529,7 +558,7 @@ function GraphFunctions:RealtimeSetColors(BotColor, TopColor)
 	self.BarColorBot = BotColor
 	self.BarColorTop = TopColor
 	for _, v in pairs(self.Bars) do
-		v:GetStatusBarTexture():SetGradientAlpha("VERTICAL", self.BarColorBot[1], self.BarColorBot[2], self.BarColorBot[3], self.BarColorBot[4], self.BarColorTop[1], self.BarColorTop[2], self.BarColorTop[3], self.BarColorTop[4])
+		SetTextureGradient(v:GetStatusBarTexture(), "VERTICAL", self.BarColorBot[1], self.BarColorBot[2], self.BarColorBot[3], self.BarColorBot[4], self.BarColorTop[1], self.BarColorTop[2], self.BarColorTop[3], self.BarColorTop[4])
 	end
 end
 
@@ -555,7 +584,7 @@ function GraphFunctions:RealtimeSetWidth(Width)
 			bar:GetStatusBarTexture():SetVertTile(false)
 
 			local t = bar:GetStatusBarTexture()
-			t:SetGradientAlpha("VERTICAL", self.BarColorBot[1], self.BarColorBot[2], self.BarColorBot[3], self.BarColorBot[4], self.BarColorTop[1], self.BarColorTop[2], self.BarColorTop[3], self.BarColorTop[4])
+			SetTextureGradient(t, "VERTICAL", self.BarColorBot[1], self.BarColorBot[2], self.BarColorBot[3], self.BarColorBot[4], self.BarColorTop[1], self.BarColorTop[2], self.BarColorTop[3], self.BarColorTop[4])
 
 			tinsert(self.Bars, bar)
 		else

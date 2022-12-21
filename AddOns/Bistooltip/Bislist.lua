@@ -34,6 +34,7 @@ local function createItemFrame(item_id, size, with_checkmark)
 
     if (items[item_id]:GetItemID()) then
         items[item_id]:ContinueOnItemLoad(function()
+            local ilink = items[item_id]:GetItemLink()
             item_frame:SetImage(items[item_id]:GetItemIcon())
             if with_checkmark == true then
                 local checkMark = item_frame.frame:CreateTexture(nil, "OVERLAY")
@@ -45,12 +46,12 @@ local function createItemFrame(item_id, size, with_checkmark)
             end
 
             item_frame:SetCallback("OnClick", function(button)
-                SetItemRef(items[item_id]:GetItemLink(), items[item_id]:GetItemLink(), "LeftButton");
+                SetItemRef(ilink, ilink, "LeftButton");
             end)
             item_frame:SetCallback("OnEnter", function(widget)
                 GameTooltip:SetOwner(item_frame.frame)
                 GameTooltip:SetPoint("TOPRIGHT", item_frame.frame, "TOPRIGHT", 220, -13);
-                GameTooltip:SetHyperlink(items[item_id]:GetItemLink())
+                GameTooltip:SetHyperlink(ilink)
             end)
             item_frame:SetCallback("OnLeave", function(widget)
                 GameTooltip:Hide()
