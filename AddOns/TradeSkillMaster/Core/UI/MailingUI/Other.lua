@@ -15,6 +15,7 @@ local ItemInfo = TSM.Include("Service.ItemInfo")
 local BagTracking = TSM.Include("Service.BagTracking")
 local PlayerInfo = TSM.Include("Service.PlayerInfo")
 local UIElements = TSM.Include("UI.UIElements")
+local UIUtils = TSM.Include("UI.UIUtils")
 local private = {
 	frame = nil,
 	fsm = nil,
@@ -41,7 +42,7 @@ end
 -- ============================================================================
 
 function private.GetOtherFrame()
-	TSM.UI.AnalyticsRecordPathChange("mailing", "other")
+	UIUtils.AnalyticsRecordPathChange("mailing", "other")
 	local frame = UIElements.New("Frame", "other")
 		:SetLayout("VERTICAL")
 		:SetPadding(10)

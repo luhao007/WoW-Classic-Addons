@@ -13,6 +13,7 @@ local Theme = TSM.Include("Util.Theme")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local Settings = TSM.Include("Service.Settings")
 local UIElements = TSM.Include("UI.UIElements")
+local UIUtils = TSM.Include("UI.UIUtils")
 local SECONDS_PER_DAY = 24 * 60 * 60
 local private = {
 	settings = nil,
@@ -55,13 +56,13 @@ end
 -- ============================================================================
 
 function private.DrawExpiredPage()
-	TSM.UI.AnalyticsRecordPathChange("main", "ledger", "failed_auctions", "expired")
+	UIUtils.AnalyticsRecordPathChange("main", "ledger", "failed_auctions", "expired")
 	private.type = "expire"
 	return private.DrawAuctionsPage()
 end
 
 function private.DrawCancelledPage()
-	TSM.UI.AnalyticsRecordPathChange("main", "ledger", "failed_auctions", "cancelled")
+	UIUtils.AnalyticsRecordPathChange("main", "ledger", "failed_auctions", "cancelled")
 	private.type = "cancel"
 	return private.DrawAuctionsPage()
 end
@@ -139,7 +140,7 @@ function private.DrawAuctionsPage()
 					:SetTitle(L["Item"])
 					:SetFont("ITEM_BODY3")
 					:SetJustifyH("LEFT")
-					:SetTextInfo("itemString", TSM.UI.GetColoredItemName)
+					:SetTextInfo("itemString", UIUtils.GetColoredItemName)
 					:SetTooltipInfo("itemString")
 					:SetSortInfo("name")
 					:DisableHiding()
@@ -176,7 +177,7 @@ function private.DrawAuctionsPage()
 			:SetQuery(private.query)
 			:SetScript("OnRowClick", private.TableSelectionChanged)
 		)
-		:AddChild(TSM.UI.Views.Line.NewHorizontal("line"))
+		:AddChild(UIElements.New("HorizontalLine", "line"))
 		:AddChild(UIElements.New("Frame", "footer")
 			:SetLayout("HORIZONTAL")
 			:SetHeight(40)

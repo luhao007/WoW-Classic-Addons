@@ -886,8 +886,8 @@ if MODERN then -- toy: item ID, forceShow
 		end
 		return name and cdStart == 0 and usable, 0, icon or GetItemIcon(iid), name, 0, (cdStart or 0) > 0 and (cdStart+cdLength-GetTime()) or 0, cdLength, GameTooltip.SetToyByItemID, iid
 	end
-	function EV:GET_ITEM_INFO_RECEIVED(iid)
-		if not uq[iid] then
+	function EV:GET_ITEM_INFO_RECEIVED(iid, ok)
+		if not (ok and uq[iid]) then
 			return
 		end
 		local iu = C_ToyBox.IsToyUsable(iid)
@@ -895,7 +895,7 @@ if MODERN then -- toy: item ID, forceShow
 			lastUsability[iid], uq[iid] = iu, nil
 		elseif not whinedAboutGIIR then
 			whinedAboutGIIR = true
-			error("Curse your sudden but inevitable betrayal")
+			error("Curse your sudden but inevitable betrayal [" .. iid .. "]")
 		end
 	end
 	local function wrapCondition(cnd, ...)

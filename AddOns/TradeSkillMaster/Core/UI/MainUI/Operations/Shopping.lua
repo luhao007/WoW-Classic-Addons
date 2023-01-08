@@ -8,6 +8,7 @@ local _, TSM = ...
 local Shopping = TSM.MainUI.Operations:NewPackage("Shopping")
 local L = TSM.Include("Locale").GetTable()
 local UIElements = TSM.Include("UI.UIElements")
+local UIUtils = TSM.Include("UI.UIUtils")
 local private = {
 	currentOperationName = nil,
 }
@@ -40,7 +41,7 @@ end
 -- ============================================================================
 
 function private.GetShoppingOperationSettings(operationName)
-	TSM.UI.AnalyticsRecordPathChange("main", "operations", "shopping")
+	UIUtils.AnalyticsRecordPathChange("main", "operations", "shopping")
 	private.currentOperationName = operationName
 	local operation = TSM.Operations.GetSettings("Shopping", private.currentOperationName)
 	return UIElements.New("ScrollFrame", "settings")

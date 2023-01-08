@@ -1,11 +1,11 @@
 ## Interface: 30400
 ## Author: Dweem
-## Version: 7.5
+## Version: 7.9
 ## OptionalDeps: 
 ## SavedVariables: BisTooltipDB
 
 ## Title: BiS-Tooltip
-## Notes: v7.5. In game BiS lists and item tooltip enrichment.
+## Notes: v7.9. In game BiS lists and item tooltip enrichment.
 ## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFF最佳装备提示|r |cFFFFE00ABistooltip|r
 ## Notes-zhCN: 提示最佳装备
 

@@ -9,6 +9,7 @@ local Vendoring = TSM.MainUI.Settings:NewPackage("Vendoring")
 local L = TSM.Include("Locale").GetTable()
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local UIElements = TSM.Include("UI.UIElements")
+local UIUtils = TSM.Include("UI.UIUtils")
 local private = {}
 
 
@@ -27,7 +28,7 @@ end
 -- ============================================================================
 
 function private.GetVendoringSettingsFrame()
-	TSM.UI.AnalyticsRecordPathChange("main", "settings", "vendoring")
+	UIUtils.AnalyticsRecordPathChange("main", "settings", "vendoring")
 	return UIElements.New("ScrollFrame", "vendoringSettings")
 		:SetPadding(8, 8, 8, 0)
 		:AddChild(TSM.MainUI.Settings.CreateExpandableSection("Vendoring", "general", L["General Options"], "")
@@ -54,7 +55,7 @@ function private.GetVendoringSettingsFrame()
 						:SetFont("ITEM_BODY3")
 						:SetJustifyH("LEFT")
 						:SetIconSize(12)
-						:SetTextInfo("itemString", TSM.UI.GetColoredItemName)
+						:SetTextInfo("itemString", UIUtils.GetColoredItemName)
 						:SetIconInfo("itemString", ItemInfo.GetTexture)
 						:SetTooltipInfo("itemString")
 						:SetSortInfo("name")

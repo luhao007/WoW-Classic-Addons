@@ -203,6 +203,18 @@ function PawnUI_HookArtifactUI()
 	-- individual slots: ArtifactFrame.PerksTab.TitleContainer.RelicSlots[1]
 end
 
+function PawnUI_HookEncounterJournal()
+	-- aka the Adventure Guide
+	-- (This wouldn't be necessary if you hooked GameTooltip.ProcessInfo instead, but you can't do that until you go through and
+	-- disable all of the old GameTooltip.Set__ methods on Dragonflight because otherwise you'd do double the work!)
+	if EncounterJournal_SetTooltipWithCompare then
+		hooksecurefunc("EncounterJournal_SetTooltipWithCompare", function(Tooltip, ItemLink)
+			if Tooltip ~= GameTooltip then return end
+			if ItemLink then PawnUpdateTooltip("GameTooltip", "SetHyperlink", ItemLink) end
+		end)
+	end
+end
+
 ------------------------------------------------------------
 -- Scale selector events
 ------------------------------------------------------------
@@ -1992,7 +2004,7 @@ function PawnUIFrame_ShowBagUpgradeAdvisorCheck_OnClick()
 			if BagFrame.UpdateItemUpgradeIcons then
 				-- Dragonflight onward
 				BagFrame:UpdateItemUpgradeIcons()
-			else
+			elseif ContainerFrame_UpdateItemUpgradeIcons then
 				-- Legion through Shadowlands
 				ContainerFrame_UpdateItemUpgradeIcons(BagFrame)
 			end

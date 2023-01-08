@@ -9,6 +9,7 @@ local Inbox = TSM.Mailing:NewPackage("Inbox")
 local Database = TSM.Include("Util.Database")
 local TempTable = TSM.Include("Util.TempTable")
 local MailTracking = TSM.Include("Service.MailTracking")
+local UIUtils = TSM.Include("UI.UIUtils")
 local private = {
 	itemsQuery = nil,
 }
@@ -40,7 +41,7 @@ function private.GetItemLinkVirtualField(row)
 
 	local items = TempTable.Acquire()
 	for _, itemsRow in private.itemsQuery:Iterator() do
-		local itemName = TSM.UI.GetColoredItemName(itemsRow:GetField("itemLink")) or ""
+		local itemName = UIUtils.GetColoredItemName(itemsRow:GetField("itemLink")) or ""
 		local qty = itemsRow:GetField("quantity")
 
 		tinsert(items, qty > 1 and (itemName.." (x"..qty..")") or itemName)

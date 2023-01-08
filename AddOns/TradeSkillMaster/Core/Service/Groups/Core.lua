@@ -312,51 +312,7 @@ function Groups.Exists(groupPath)
 end
 
 function Groups.SetItemGroup(itemString, groupPath)
-	assert(not groupPath or (groupPath ~= TSM.CONST.ROOT_GROUP_PATH and TSM.db.profile.userData.groups[groupPath]))
-
-	local row = private.itemDB:GetUniqueRow("itemString", itemString)
-	local updateMap = false
-	if row then
-		if groupPath then
-			row:SetField("groupPath", groupPath)
-				:Update()
-			row:Release()
-		else
-			private.itemDB:DeleteRow(row)
-			row:Release()
-			-- we just removed an item from a group, so update the map
-			updateMap = true
-		end
-	else
-		assert(groupPath)
-		private.itemDB:NewRow()
-			:SetField("itemString", itemString)
-			:SetField("groupPath", groupPath)
-			:Create()
-		-- we just added a new item to a group, so update the map
-		updateMap = true
-	end
-	TSM.db.profile.userData.items[itemString] = groupPath
-	if updateMap then
-		private.itemStringMap:SetCallbacksPaused(true)
-		private.itemStringMap:ValueChanged(itemString)
-		if itemString == ItemString.GetBaseFast(itemString) then
-			-- this is a base item string, so need to also update all other items whose base item is equal to this item
-			for mapItemString in private.itemStringMap:Iterator() do
-				if ItemString.GetBaseFast(mapItemString) == itemString then
-					private.itemStringMap:ValueChanged(mapItemString)
-				end
-			end
-		elseif itemString == ItemString.ToLevel(itemString) then
-			-- this is a level item string, so need to also update all other items whose level item is equal to this item
-			for mapItemString in private.itemStringMap:Iterator() do
-				if ItemString.ToLevel(mapItemString) == itemString then
-					private.itemStringMap:ValueChanged(mapItemString)
-				end
-			end
-		end
-		private.itemStringMap:SetCallbacksPaused(false)
-	end
+	private.SetItemGroup(itemString, groupPath)
 end
 
 function Groups.SetItemsGroup(items, groupPath)
@@ -387,16 +343,32 @@ function Groups.BulkCreateFromImport(groupName, items, groups, groupOperations, 
 			end
 		end
 	end
-	local numItems = 0
 	private.itemDB:SetQueryUpdatesPaused(true)
 	private.itemStringMap:SetCallbacksPaused(true)
+	local moveItems = TempTable.Acquire()
+	local insertItems = TempTable.Acquire()
+	local numItems = 0
 	for itemString, relGroupPath in pairs(items) do
-		if moveExistingItems or not Groups.IsItemInGroup(itemString) then
-			local groupPath = relGroupPath == "" and groupName or TSM.Groups.Path.Join(groupName, relGroupPath)
-			Groups.SetItemGroup(itemString, groupPath)
+		local groupPath = relGroupPath == "" and groupName or TSM.Groups.Path.Join(groupName, relGroupPath)
+		if not Groups.IsItemInGroup(itemString) then
+			insertItems[itemString] = groupPath
+			numItems = numItems + 1
+		elseif moveExistingItems then
+			moveItems[itemString] = groupPath
 			numItems = numItems + 1
 		end
 	end
+	private.itemDB:TruncateAndBulkInsertStart()
+	for itemString, groupPath in pairs(insertItems) do
+		private.SetItemGroup(itemString, groupPath, true, true)
+	end
+	private.itemDB:BulkInsertEnd()
+	for itemString, groupPath in pairs(moveItems) do
+		private.SetItemGroup(itemString, groupPath, false, true)
+	end
+	TempTable.Release(moveItems)
+	TempTable.Release(insertItems)
+	private.itemStringMap:Invalidate()
 	private.itemStringMap:SetCallbacksPaused(false)
 	private.itemDB:SetQueryUpdatesPaused(false)
 	private.RebuildDB()
@@ -613,6 +585,60 @@ function private.UpdateChildGroupOperations(groupPath, moduleName)
 		if TSM.Groups.Path.IsChild(childGroupPath, groupPath) and not Groups.HasOperationOverride(childGroupPath, moduleName) then
 			private.InheritParentOperations(childGroupPath, moduleName)
 		end
+	end
+end
+
+function private.SetItemGroup(itemString, groupPath, bulkInsert, noMapUpdate)
+	assert(not groupPath or (groupPath ~= TSM.CONST.ROOT_GROUP_PATH and TSM.db.profile.userData.groups[groupPath]))
+
+	local row = private.itemDB:GetUniqueRow("itemString", itemString)
+	local updateMap = false
+	if row then
+		assert(not bulkInsert)
+		if groupPath then
+			row:SetField("groupPath", groupPath)
+				:Update()
+			row:Release()
+		else
+			private.itemDB:DeleteRow(row)
+			row:Release()
+			-- we just removed an item from a group, so update the map
+			updateMap = not noMapUpdate
+		end
+	else
+		assert(groupPath)
+		if bulkInsert then
+			private.itemDB:BulkInsertNewRow(itemString, groupPath)
+		else
+			private.itemDB:NewRow()
+				:SetField("itemString", itemString)
+				:SetField("groupPath", groupPath)
+				:Create()
+		end
+		-- we just added a new item to a group, so update the map
+		updateMap = not noMapUpdate
+	end
+	TSM.db.profile.userData.items[itemString] = groupPath
+	if updateMap then
+		assert(not bulkInsert)
+		private.itemStringMap:SetCallbacksPaused(true)
+		private.itemStringMap:ValueChanged(itemString)
+		if itemString == ItemString.GetBaseFast(itemString) then
+			-- this is a base item string, so need to also update all other items whose base item is equal to this item
+			for mapItemString in private.itemStringMap:Iterator() do
+				if ItemString.GetBaseFast(mapItemString) == itemString then
+					private.itemStringMap:ValueChanged(mapItemString)
+				end
+			end
+		elseif itemString == ItemString.ToLevel(itemString) then
+			-- this is a level item string, so need to also update all other items whose level item is equal to this item
+			for mapItemString in private.itemStringMap:Iterator() do
+				if ItemString.ToLevel(mapItemString) == itemString then
+					private.itemStringMap:ValueChanged(mapItemString)
+				end
+			end
+		end
+		private.itemStringMap:SetCallbacksPaused(false)
 	end
 end
 

@@ -273,7 +273,7 @@ function private.GetEmptySlotsHelper(bag, emptySlotIds, sortValue)
 	elseif bag == BACKPACK_CONTAINER or bag == BANK_CONTAINER then
 		isSpecial = false
 	else
-		isSpecial = (GetItemFamily(GetInventoryItemLink("player", Container.IDToInventoryID(bag))) or 0) ~= 0
+		isSpecial = Container.GetBagItemFamily(bag) ~= 0
 	end
 	for slot = 1, Container.GetNumSlots(bag) do
 		if not private.BagSlotHasItem(bag, slot) then

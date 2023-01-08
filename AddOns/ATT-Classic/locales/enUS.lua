@@ -635,6 +635,7 @@ app.L = {
 		[-88] = "Interface\\Icons\\inv_helmet_12",											-- Cathedral (SM)
 		
 		[-165] = "Interface\\Icons\\inv_box_01",											-- Junkboxes
+		[-212] = "Interface\\Icons\\inv_box_02",											-- Treasures
 		
 		[-297] = "Interface\\Icons\\inv_letter_17", 								-- Mailbox
 		[-304] = "Interface\\Icons\\INV_BannerPVP_02",								-- Battlegrounds
@@ -790,6 +791,7 @@ app.L = {
 		[-88] = "Cathedral",
 		
 		[-165] = GetItemSubClassInfo(13,1),										-- Junkboxes
+		[-212] = "Treasures",													-- Treasures
 -- Other
 		[-297] = MINIMAP_TRACKING_MAILBOX,										-- Mailbox
 		[-304] = BATTLEGROUNDS,													-- Battlegrounds

@@ -984,7 +984,7 @@ function private.ErrorForItem(itemString, errorStr)
 		end
 	end
 	Log.Info("Bag state:")
-	for slotId in Container.GetBagSlotIterator() do
+	for _, slotId in Container.GetBagSlotIterator() do
 		local bag, slot = SlotId.Split(slotId)
 		if ItemString.GetBase(Container.GetItemLink(bag, slot)) == itemString then
 			local _, stackSize = Container.GetItemInfo(bag, slot)

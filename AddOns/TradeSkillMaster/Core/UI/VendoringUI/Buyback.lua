@@ -11,6 +11,7 @@ local Money = TSM.Include("Util.Money")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local Settings = TSM.Include("Service.Settings")
 local UIElements = TSM.Include("UI.UIElements")
+local UIUtils = TSM.Include("UI.UIUtils")
 local private = {
 	settings = nil,
 	query = nil,
@@ -35,7 +36,7 @@ end
 -- ============================================================================
 
 function private.GetFrame()
-	TSM.UI.AnalyticsRecordPathChange("vendoring", "buyback")
+	UIUtils.AnalyticsRecordPathChange("vendoring", "buyback")
 	private.query = private.query or TSM.Vendoring.Buyback.CreateQuery()
 	private.query:ResetOrderBy()
 	private.query:OrderBy("name", true)
@@ -77,7 +78,7 @@ function private.GetFrame()
 			:SetQuery(private.query)
 			:SetScript("OnRowClick", private.RowOnClick)
 		)
-		:AddChild(TSM.UI.Views.Line.NewHorizontal("line"))
+		:AddChild(UIElements.New("HorizontalLine", "line"))
 		:AddChild(UIElements.New("Frame", "footer")
 			:SetLayout("HORIZONTAL")
 			:SetHeight(40)
@@ -98,7 +99,7 @@ function private.GetFrame()
 end
 
 function private.GetItemText(itemString)
-	return TSM.UI.GetColoredItemName(itemString) or "?"
+	return UIUtils.GetColoredItemName(itemString) or "?"
 end
 
 function private.GetCostPriceText(value)

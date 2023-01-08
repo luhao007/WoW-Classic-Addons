@@ -8,6 +8,7 @@ local _, TSM = ...
 local Crafting = TSM.Tooltip:NewPackage("Crafting")
 local L = TSM.Include("Locale").GetTable()
 local ItemString = TSM.Include("Util.ItemString")
+local MatString = TSM.Include("Util.MatString")
 local Theme = TSM.Include("Util.Theme")
 local TempTable = TSM.Include("Util.TempTable")
 local private = {}
@@ -82,10 +83,10 @@ function private.PopulateDetailedMatsLines(tooltip, itemString)
 
 	-- only include optional mats which actually belong to the spell
 	local hasOptionalMat = TempTable.Acquire()
-	for _, optionalMatString in TSM.Crafting.OptionalMatIterator(craftString) do
+	for _, matString in TSM.Crafting.OptionalMatIterator(craftString) do
 		for _, optionalMatItemString in ipairs(optionalMats) do
 			local itemId = ItemString.ToId(optionalMatItemString)
-			if strmatch(optionalMatString, "[:,]"..itemId.."$") or strmatch(optionalMatString, "[:,]"..itemId..",") then
+			if MatString.ContainsItem(matString, itemId) then
 				hasOptionalMat[optionalMatItemString] = true
 			end
 		end

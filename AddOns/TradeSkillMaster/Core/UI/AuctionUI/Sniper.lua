@@ -23,6 +23,7 @@ local Settings = TSM.Include("Service.Settings")
 local AuctionHouseWrapper = TSM.Include("Service.AuctionHouseWrapper")
 local PlayerInfo = TSM.Include("Service.PlayerInfo")
 local UIElements = TSM.Include("UI.UIElements")
+local UIUtils = TSM.Include("UI.UIUtils")
 local private = {
 	settings = nil,
 	fsm = nil,
@@ -58,7 +59,7 @@ end
 -- ============================================================================
 
 function private.GetSniperFrame()
-	TSM.UI.AnalyticsRecordPathChange("auction", "sniper")
+	UIUtils.AnalyticsRecordPathChange("auction", "sniper")
 	if not private.hasLastScan then
 		private.contentPath = "selection"
 	end
@@ -81,7 +82,7 @@ function private.GetSniperContentFrame(viewContainer, path)
 end
 
 function private.GetSelectionFrame()
-	TSM.UI.AnalyticsRecordPathChange("auction", "sniper", "selection")
+	UIUtils.AnalyticsRecordPathChange("auction", "sniper", "selection")
 	local frame = UIElements.New("Frame", "selection")
 		:SetLayout("VERTICAL")
 		:SetBackgroundColor("PRIMARY_BG_ALT")
@@ -115,7 +116,7 @@ function private.GetSelectionFrame()
 end
 
 function private.GetScanFrame()
-	TSM.UI.AnalyticsRecordPathChange("auction", "sniper", "scan")
+	UIUtils.AnalyticsRecordPathChange("auction", "sniper", "scan")
 	return UIElements.New("Frame", "scan")
 		:SetLayout("VERTICAL")
 		:SetBackgroundColor("PRIMARY_BG_ALT")
@@ -144,7 +145,7 @@ function private.GetScanFrame()
 			:SetScript("OnSelectionChanged", private.AuctionsOnSelectionChanged)
 			:SetScript("OnRowRemoved", private.AuctionsOnRowRemoved)
 		)
-		:AddChild(TSM.UI.Views.Line.NewHorizontal("line"))
+		:AddChild(UIElements.New("HorizontalLine", "line"))
 		:AddChild(UIElements.New("Frame", "bottom")
 			:SetLayout("HORIZONTAL")
 			:SetHeight(40)

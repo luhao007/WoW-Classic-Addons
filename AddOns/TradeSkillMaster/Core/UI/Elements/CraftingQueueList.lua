@@ -17,7 +17,9 @@ local RecipeString = TSM.Include("Util.RecipeString")
 local Theme = TSM.Include("Util.Theme")
 local TextureAtlas = TSM.Include("Util.TextureAtlas")
 local ScriptWrapper = TSM.Include("Util.ScriptWrapper")
-local ItemInfo = TSM.Include("Service.ItemInfo")
+local Profession = TSM.Include("Service.Profession")
+local BagTracking = TSM.Include("Service.BagTracking")
+local UIUtils = TSM.Include("UI.UIUtils")
 local CraftingQueueList = TSM.Include("LibTSMClass").DefineClass("CraftingQueueList", TSM.UI.ScrollingTable)
 local UIElements = TSM.Include("UI.UIElements")
 UIElements.Register(CraftingQueueList)
@@ -95,7 +97,7 @@ function CraftingQueueList.Release(self)
 end
 
 --- Gets the data of the first row.
--- @tparam CraftingMatList self The crafting queue list object
+-- @tparam CraftingQueueList self The crafting queue list object
 -- @treturn CraftingQueueList The crafting queue list object
 function CraftingQueueList.GetFirstData(self)
 	for _, data in ipairs(self._data) do
@@ -257,7 +259,7 @@ end
 function private.GetItemText(self, data)
 	if type(data) == "string" then
 		local profession, players = strsplit(CATEGORY_SEP, data)
-		local name = TSM.Crafting.ProfessionUtil.GetCurrentProfessionInfo()
+		local name = Profession.GetSkillLine()
 		local isValid = private.PlayersContains(players, UnitName("player")) and strlower(profession) == strlower(name or "")
 		local text = Theme.GetColor("INDICATOR"):ColorText(profession).." ("..players..")"
 		if isValid then
@@ -270,14 +272,14 @@ function private.GetItemText(self, data)
 		local craftString = CraftString.FromRecipeString(recipeString)
 		local itemString = TSM.Crafting.GetItemString(craftString)
 		local spellId = CraftString.GetSpellId(craftString)
-		return itemString and TSM.UI.GetColoredItemName(itemString) or GetSpellInfo(spellId) or "?"
+		return itemString and UIUtils.GetColoredCraftedItemName(itemString) or GetSpellInfo(spellId) or "?"
 	end
 end
 
 function private.GetItemTooltip(self, data)
 	if type(data) == "string" then
 		local profession, players = strsplit(CATEGORY_SEP, data)
-		local name = TSM.Crafting.ProfessionUtil.GetCurrentProfessionInfo()
+		local name = Profession.GetSkillLine()
 		if not private.PlayersContains(players, UnitName("player")) then
 			return L["You are not on one of the listed characters."]
 		elseif strlower(profession) ~= strlower(name or "") then
@@ -291,7 +293,7 @@ function private.GetItemTooltip(self, data)
 	local numQueued = data:GetField("num")
 	local itemString = TSM.Crafting.GetItemString(craftString)
 	local spellId = CraftString.GetSpellId(craftString)
-	local name = itemString and TSM.UI.GetColoredItemName(itemString) or GetSpellInfo(spellId) or "?"
+	local name = itemString and UIUtils.GetColoredCraftedItemName(itemString) or GetSpellInfo(spellId) or "?"
 	local tooltipLines = TempTable.Acquire()
 	tinsert(tooltipLines, name.." (x"..numQueued..")")
 	local numResult = TSM.Crafting.GetNumResult(craftString)
@@ -300,20 +302,21 @@ function private.GetItemTooltip(self, data)
 	local totalProfitStr = profit and Money.ToString(profit * numResult * numQueued, Theme.GetColor(profit >= 0 and "FEEDBACK_GREEN" or "FEEDBACK_RED"):GetTextColorPrefix(), "OPT_RETAIL_ROUND") or "---"
 	tinsert(tooltipLines, L["Profit (Total)"]..": "..profitStr.." ("..totalProfitStr..")")
 	for _, matItemString, quantity in TSM.Crafting.MatIterator(craftString) do
-		local numHave = TSM.Crafting.ProfessionUtil.GetPlayerMatQuantity(matItemString)
+		local numHave = BagTracking.GetCraftingMatQuantity(matItemString)
 		local numNeed = quantity * numQueued
 		local color = Theme.GetColor(numHave >= numNeed and "FEEDBACK_GREEN" or "FEEDBACK_RED")
-		tinsert(tooltipLines, color:ColorText(numHave.."/"..numNeed).." - "..(ItemInfo.GetName(matItemString) or "?"))
+		tinsert(tooltipLines, color:ColorText(numHave.."/"..numNeed).." - "..(UIUtils.GetColoredCraftedItemName(matItemString) or "?"))
 	end
 	for _, _, itemId in RecipeString.OptionalMatIterator(recipeString) do
 		local matItemString = "i:"..itemId
-		local numHave = TSM.Crafting.ProfessionUtil.GetPlayerMatQuantity(matItemString)
+		local numHave = BagTracking.GetCraftingMatQuantity(matItemString)
 		local numNeed = TSM.Crafting.GetOptionalMatQuantity(craftString, itemId)* numQueued
 		local color = Theme.GetColor(numHave >= numNeed and "FEEDBACK_GREEN" or "FEEDBACK_RED")
-		tinsert(tooltipLines, color:ColorText(numHave.."/"..numNeed).." - "..(ItemInfo.GetName(matItemString) or "?"))
+		tinsert(tooltipLines, color:ColorText(numHave.."/"..numNeed).." - "..(UIUtils.GetColoredCraftedItemName(matItemString) or "?"))
 	end
-	if TSM.Crafting.ProfessionUtil.GetRemainingCooldown(craftString) then
-		tinsert(tooltipLines, Theme.GetColor("FEEDBACK_RED"):ColorText(L["On Cooldown"]))
+	local cooldown = Profession.GetRemainingCooldown(craftString)
+	if cooldown then
+		tinsert(tooltipLines, Theme.GetColor("FEEDBACK_RED"):ColorText(format(L["On Cooldown for %s"], SecondsToTime(cooldown))))
 	end
 	return strjoin("\n", TempTable.UnpackAndRelease(tooltipLines)), true, true
 end
@@ -413,7 +416,7 @@ function private.GetQty(self, data)
 	local numCraftable = min(self._numCraftableCache[data], numQueued)
 	local recipeString = data:GetField("recipeString")
 	local craftString = CraftString.FromRecipeString(recipeString)
-	local onCooldown = TSM.Crafting.ProfessionUtil.GetRemainingCooldown(craftString)
+	local onCooldown = Profession.GetRemainingCooldown(craftString)
 	local color = Theme.GetColor(((numCraftable == 0 or onCooldown) and "FEEDBACK_RED") or (numCraftable < numQueued and "FEEDBACK_YELLOW") or "FEEDBACK_GREEN")
 	return color:ColorText(format("%s / %s", numCraftable, numQueued))
 end
@@ -428,7 +431,7 @@ function private.CategorySortComparator(a, b)
 	local aProfession, aPlayers = strsplit(CATEGORY_SEP, a)
 	local bProfession, bPlayers = strsplit(CATEGORY_SEP, b)
 	if aProfession ~= bProfession then
-		local currentProfession = TSM.Crafting.ProfessionUtil.GetCurrentProfessionInfo()
+		local currentProfession = Profession.GetSkillLine()
 		currentProfession = strlower(currentProfession or "")
 		if aProfession == currentProfession then
 			return true

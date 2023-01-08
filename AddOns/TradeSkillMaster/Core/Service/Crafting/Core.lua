@@ -9,12 +9,12 @@ local Crafting = TSM:NewPackage("Crafting")
 local L = TSM.Include("Locale").GetTable()
 local ProfessionInfo = TSM.Include("Data.ProfessionInfo")
 local CraftString = TSM.Include("Util.CraftString")
+local MatString = TSM.Include("Util.MatString")
 local Database = TSM.Include("Util.Database")
 local TempTable = TSM.Include("Util.TempTable")
 local Table = TSM.Include("Util.Table")
 local Math = TSM.Include("Util.Math")
 local Money = TSM.Include("Util.Money")
-local String = TSM.Include("Util.String")
 local Log = TSM.Include("Util.Log")
 local ItemString = TSM.Include("Util.ItemString")
 local Vararg = TSM.Include("Util.Vararg")
@@ -51,13 +51,8 @@ local BAD_CRAFTING_PRICE_SOURCES = {
 function Crafting.OnInitialize()
 	local used = TempTable.Acquire()
 	for _, craftInfo in pairs(TSM.db.factionrealm.internalData.crafts) do
-		for itemString in pairs(craftInfo.mats) do
-			if strmatch(itemString, "^[qof]:") then
-				local _, _, matList = strsplit(":", itemString)
-				for matItemId in String.SplitIterator(matList, ",") do
-					used["i:"..matItemId] = true
-				end
-			else
+		for matString in pairs(craftInfo.mats) do
+			for itemString in MatString.ItemIterator(matString) do
 				used[itemString] = true
 			end
 		end
@@ -106,23 +101,17 @@ function Crafting.OnInitialize()
 		local itemName = ItemInfo.GetName(craftInfo.itemString) or ""
 		private.spellDB:BulkInsertNewRow(craftString, craftInfo.itemString, itemName, craftInfo.name or "", craftInfo.profession, craftInfo.numResult, playersTemp, craftInfo.hasCD and true or false)
 
-		for matItemString, matQuantity in pairs(craftInfo.mats) do
-			private.matDB:BulkInsertNewRow(craftString, matItemString, matQuantity)
-			private.HandleMatDBAddRow(matItemString)
+		for matString, matQuantity in pairs(craftInfo.mats) do
+			private.matDB:BulkInsertNewRow(craftString, matString, matQuantity)
+			private.HandleMatDBAddRow(matString)
 			professionItems[craftInfo.profession] = professionItems[craftInfo.profession] or TempTable.Acquire()
 			matCountByCraft[craftString] = (matCountByCraft[craftString] or 0) + 1
 			if matQuantity > 0 then
-				matFirstItemString[craftString] = matItemString
+				matFirstItemString[craftString] = matString
 				matFirstQuantity[craftString] = matQuantity
 			end
-			if strmatch(matItemString, "^[qof]:") then
-				local _, _, matList = strsplit(":", matItemString)
-				for matItemId in String.SplitIterator(matList, ",") do
-					local optionalMatItemString = "i:"..matItemId
-					professionItems[craftInfo.profession][optionalMatItemString] = true
-				end
-			else
-				professionItems[craftInfo.profession][matItemString] = true
+			for itemString in MatString.ItemIterator(matString) do
+				professionItems[craftInfo.profession][itemString] = true
 			end
 		end
 	end
@@ -329,9 +318,8 @@ end
 
 function Crafting.OptionalMatIterator(craftString)
 	return private.matDB:NewQuery()
-		:Select("itemString", "slotId", "text")
-		:VirtualField("slotId", "number", private.OptionalMatSlotIdVirtualField, "itemString")
-		:VirtualField("text", "string", private.OptionalMatTextVirtualField, "itemString")
+		:Select("itemString", "slotId")
+		:VirtualField("slotId", "number", MatString.GetSlotId, "itemString")
 		:Equal("craftString", craftString)
 		:Matches("itemString", "^[qof]:")
 		:OrderBy("slotId", true)
@@ -350,7 +338,7 @@ end
 function Crafting.QualityMatIterator(craftString)
 	return private.matDB:NewQuery()
 		:Select("itemString", "slotId")
-		:VirtualField("slotId", "number", private.OptionalMatSlotIdVirtualField, "itemString")
+		:VirtualField("slotId", "number", MatString.GetSlotId, "itemString")
 		:Equal("craftString", craftString)
 		:StartsWith("itemString", "q:")
 		:OrderBy("slotId", true)
@@ -582,21 +570,15 @@ function Crafting.SetMats(craftString, matQuantities)
 		end
 	end
 	local profession = Crafting.GetProfession(craftString)
-	for itemString, quantity in pairs(matQuantities) do
-		if not usedMats[itemString] then
+	for matString, quantity in pairs(matQuantities) do
+		if not usedMats[matString] then
 			private.matDB:NewRow()
 				:SetField("craftString", craftString)
-				:SetField("itemString", itemString)
+				:SetField("itemString", matString)
 				:SetField("quantity", quantity)
 				:Create()
-			private.HandleMatDBAddRow(itemString)
-			if strmatch(itemString, "^[qof]:") then
-				local _, _, matList = strsplit(":", itemString)
-				for matItemId in String.SplitIterator(matList, ",") do
-					local optionalMatItemString = "i:"..matItemId
-					private.MatItemDBUpdateOrInsert(optionalMatItemString, profession)
-				end
-			else
+			private.HandleMatDBAddRow(matString)
+			for itemString in MatString.ItemIterator(matString) do
 				private.MatItemDBUpdateOrInsert(itemString, profession)
 			end
 		end
@@ -701,18 +683,8 @@ end
 
 function private.ProcessRemovedMats(removedMats)
 	private.matItemDB:SetQueryUpdatesPaused(true)
-	for itemString in pairs(removedMats) do
-		if strmatch(itemString, "^[qof]:") then
-			local _, _, matList = strsplit(":", itemString)
-			for matItemId in String.SplitIterator(matList, ",") do
-				local optionalMatItemString = "i:"..matItemId
-				if not private.numMatDBRows[optionalMatItemString] then
-					local matItemRow = private.matItemDB:GetUniqueRow("itemString", optionalMatItemString)
-					private.matItemDB:DeleteRow(matItemRow)
-					matItemRow:Release()
-				end
-			end
-		else
+	for matString in pairs(removedMats) do
+		for itemString in MatString.ItemIterator(matString) do
 			if not private.numMatDBRows[itemString] then
 				local matItemRow = private.matItemDB:GetUniqueRow("itemString", itemString)
 				private.matItemDB:DeleteRow(matItemRow)
@@ -746,29 +718,14 @@ function private.MatDBDeleteCraftStrings(craftStrings)
 	TempTable.Release(removedMats)
 end
 
-function private.HandleMatDBAddRow(itemString)
-	if strmatch(itemString, "^[qof]:") then
-		local _, _, matList = strsplit(":", itemString)
-		for matItemId in String.SplitIterator(matList, ",") do
-			local optionalMatItemString = "i:"..matItemId
-			private.numMatDBRows[optionalMatItemString] = (private.numMatDBRows[optionalMatItemString] or 0) + 1
-		end
-	else
+function private.HandleMatDBAddRow(matString)
+	for itemString in MatString.ItemIterator(matString) do
 		private.numMatDBRows[itemString] = (private.numMatDBRows[itemString] or 0) + 1
 	end
 end
 
-function private.HandleMatDBDeleteRow(itemString)
-	if strmatch(itemString, "^[qof]:") then
-		local _, _, matList = strsplit(":", itemString)
-		for matItemId in String.SplitIterator(matList, ",") do
-			local optionalMatItemString = "i:"..matItemId
-			private.numMatDBRows[optionalMatItemString] = private.numMatDBRows[optionalMatItemString] - 1
-			if private.numMatDBRows[optionalMatItemString] == 0 then
-				private.numMatDBRows[optionalMatItemString] = nil
-			end
-		end
-	else
+function private.HandleMatDBDeleteRow(matString)
+	for itemString in MatString.ItemIterator(matString) do
 		private.numMatDBRows[itemString] = private.numMatDBRows[itemString] - 1
 		if private.numMatDBRows[itemString] == 0 then
 			private.numMatDBRows[itemString] = nil
@@ -783,16 +740,6 @@ end
 
 function private.SaleRateVirtualField(itemString)
 	return TSM.AuctionDB.GetRegionItemData(itemString, "regionSalePercent") or Math.GetNan()
-end
-
-function private.OptionalMatSlotIdVirtualField(matStr)
-	local _, slotId = strsplit(":", matStr)
-	return tonumber(slotId)
-end
-
-function private.OptionalMatTextVirtualField(matStr)
-	local _, _, matList = strsplit(":", matStr)
-	return TSM.Crafting.ProfessionUtil.GetOptionalMatText(matList)
 end
 
 function private.GetRestockHelpMessage(itemString)

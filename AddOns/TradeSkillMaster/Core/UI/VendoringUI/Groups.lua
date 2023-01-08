@@ -11,6 +11,7 @@ local TempTable = TSM.Include("Util.TempTable")
 local FSM = TSM.Include("Util.FSM")
 local Settings = TSM.Include("Service.Settings")
 local UIElements = TSM.Include("UI.UIElements")
+local UIUtils = TSM.Include("UI.UIUtils")
 local private = {
 	settings = nil,
 	groupSearch = "",
@@ -37,7 +38,7 @@ end
 -- ============================================================================
 
 function private.GetFrame()
-	TSM.UI.AnalyticsRecordPathChange("vendoring", "groups")
+	UIUtils.AnalyticsRecordPathChange("vendoring", "groups")
 	return UIElements.New("Frame", "buy")
 		:SetLayout("VERTICAL")
 		:AddChild(UIElements.New("Frame", "container")
@@ -76,14 +77,14 @@ function private.GetFrame()
 				)
 			)
 		)
-		:AddChild(TSM.UI.Views.Line.NewHorizontal("line"))
+		:AddChild(UIElements.New("HorizontalLine", "line"))
 		:AddChild(UIElements.New("ApplicationGroupTree", "groupTree")
 			:SetSettingsContext(private.settings, "groupTree")
 			:SetQuery(TSM.Groups.CreateQuery(), "Vendoring")
 			:SetSearchString(private.groupSearch)
 			:SetScript("OnGroupSelectionChanged", private.GroupTreeOnGroupSelectionChanged)
 		)
-		:AddChild(TSM.UI.Views.Line.NewHorizontal("line2"))
+		:AddChild(UIElements.New("HorizontalLine", "line2"))
 		:AddChild(UIElements.New("Frame", "footer")
 			:SetLayout("HORIZONTAL")
 			:SetHeight(40)

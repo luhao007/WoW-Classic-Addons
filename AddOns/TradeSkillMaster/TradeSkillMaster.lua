@@ -29,11 +29,12 @@ local L = TSM.Include("Locale").GetTable()
 local private = {
 	settings = nil,
 	itemInfoPublisher = nil,  --luacheck: ignore 1004 - just stored for GC reasons
+	oribosExchangeTemp = {},
 }
 local LOGOUT_TIME_WARNING_THRESHOLD_MS = 20
 do
 	-- show a message if we were updated
-	if GetAddOnMetadata("TradeSkillMaster", "Version") ~= "v4.12.12" then
+	if GetAddOnMetadata("TradeSkillMaster", "Version") ~= "v4.12.18" then
 		Wow.ShowBasicMessage("TSM was just updated and may not work properly until you restart WoW.")
 	end
 end
@@ -137,25 +138,14 @@ function TSM.OnInitialize()
 		CustomPrice.RegisterSource("External", "AtrValue", L["Auctionator - Auction Value"], Atr_GetAuctionBuyout, true)
 	end
 
-	-- TheUndermineJournal and BootyBayGazette price sources
-	if Wow.IsAddonEnabled("TheUndermineJournal") and TUJMarketInfo then
-		local function GetTUJPrice(itemLink, arg)
-			local data = TUJMarketInfo(itemLink)
+	-- OribosExchange price sources
+	if Wow.IsAddonEnabled("OribosExchange") and OEMarketInfo then
+		local function GetOEPrice(itemLink, arg)
+			local data = OEMarketInfo(itemLink, private.oribosExchangeTemp)
 			return data and data[arg] or nil
 		end
-		CustomPrice.RegisterSource("External", "TUJRecent", L["TUJ 3-Day Price"], GetTUJPrice, true, "recent")
-		CustomPrice.RegisterSource("External", "TUJMarket", L["TUJ 14-Day Price"], GetTUJPrice, true, "market")
-		CustomPrice.RegisterSource("External", "TUJGlobalMean", L["TUJ Global Mean"], GetTUJPrice, true, "globalMean")
-		CustomPrice.RegisterSource("External", "TUJGlobalMedian", L["TUJ Global Median"], GetTUJPrice, true, "globalMedian")
-	elseif Wow.IsAddonEnabled("BootyBayGazette") and TUJMarketInfo then
-		local function GetBBGPrice(itemLink, arg)
-			local data = TUJMarketInfo(itemLink)
-			return data and data[arg] or nil
-		end
-		CustomPrice.RegisterSource("External", "BBGRecent", L["BBG 3-Day Price"], GetBBGPrice, true, "recent")
-		CustomPrice.RegisterSource("External", "BBGMarket", L["BBG 14-Day Price"], GetBBGPrice, true, "market")
-		CustomPrice.RegisterSource("External", "BBGGlobalMean", L["BBG Global Mean"], GetBBGPrice, true, "globalMean")
-		CustomPrice.RegisterSource("External", "BBGGlobalMedian", L["BBG Global Median"], GetBBGPrice, true, "globalMedian")
+		CustomPrice.RegisterSource("External", "OERealm", L["Oribos Exchange Realm Price"], GetOEPrice, true, "market")
+		CustomPrice.RegisterSource("External", "OERegion", L["Oribos Exchange Region Price"], GetOEPrice, true, "region")
 	end
 
 	-- AHDB price sources

@@ -1416,6 +1416,10 @@
 			</SubAddon>
 		</SubAddons>
 	</Addon>
+	<Addon name="SenderInfo">
+		<Title>开团助手</Title>
+		<Category>社交</Category>
+	</Addon>
 	<Addon name="SimpleChat">
 		<Title>简单聊天增强</Title>
 		<Category>社交</Category>
@@ -1745,6 +1749,30 @@
 	<Addon name="WclPlayerScore">
 		<Title>WCL评分</Title>
 		<Category>辅助</Category>
+	</Addon>
+	<Addon name="WclPlayerScore-WotLK">
+		<Title>WCL评分WLK</Title>
+		<Category>辅助</Category>
+		<SubAddons>
+			<SubAddon name="WclPlayerScore-WotLK_DB1">
+				<Title>数据1</Title>
+			</SubAddon>
+			<SubAddon name="WclPlayerScore-WotLK_DB2">
+				<Title>数据1</Title>
+			</SubAddon>
+			<SubAddon name="WclPlayerScore-WotLK_DB3">
+				<Title>数据1</Title>
+			</SubAddon>
+			<SubAddon name="WclPlayerScore-WotLK_DB4">
+				<Title>数据1</Title>
+			</SubAddon>
+			<SubAddon name="WclPlayerScore-WotLK_DB5">
+				<Title>数据1</Title>
+			</SubAddon>
+			<SubAddon name="WclPlayerScore-WotLK_DB6">
+				<Title>数据1</Title>
+			</SubAddon>
+		</SubAddons>
 	</Addon>
 	<Addon name="WIM">
 		<Title>即时通信</Title>

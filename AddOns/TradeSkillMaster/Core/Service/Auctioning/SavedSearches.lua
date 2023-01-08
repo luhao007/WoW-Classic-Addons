@@ -13,6 +13,7 @@ local Database = TSM.Include("Util.Database")
 local TempTable = TSM.Include("Util.TempTable")
 local Theme = TSM.Include("Util.Theme")
 local Settings = TSM.Include("Service.Settings")
+local UIUtils = TSM.Include("UI.UIUtils")
 local private = {
 	settings = nil,
 	db = nil,
@@ -182,7 +183,7 @@ function private.GetSearchName(filter, searchType)
 		local numItems = 0
 		for itemString in gmatch(filter, "[^"..FILTER_SEP.."]+") do
 			numItems = numItems + 1
-			local coloredName = TSM.UI.GetColoredItemName(itemString)
+			local coloredName = UIUtils.GetColoredItemName(itemString)
 			if coloredName then
 				tinsert(filters, coloredName)
 			end

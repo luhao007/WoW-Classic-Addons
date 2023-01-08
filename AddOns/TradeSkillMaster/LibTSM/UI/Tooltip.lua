@@ -15,6 +15,7 @@ local CraftString = TSM.Include("Util.CraftString")
 local String = TSM.Include("Util.String")
 local Event = TSM.Include("Util.Event")
 local ItemInfo = TSM.Include("Service.ItemInfo")
+local Profession = TSM.Include("Service.Profession")
 local private = {
 	currentParent = nil,
 	registeredEvent = false,
@@ -73,7 +74,7 @@ function Tooltip.Show(parent, data, noWrapping, xOffset)
 	elseif type(data) == "string" and strfind(data, "^r:") then
 		local spellId = RecipeString.GetSpellId(data)
 		if TSM.IsWowClassic() then
-			local index = TSM.Crafting.ProfessionScanner.GetIndexByCraftString(CraftString.Get(spellId))
+			local index = Profession.GetIndexByCraftString(CraftString.Get(spellId))
 			if index then
 				GameTooltip:SetTradeSkillItem(index)
 			end

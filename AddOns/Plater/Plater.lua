@@ -133,6 +133,9 @@ platerInternal.Defaults = {
 	dropdownStatusBarTexture = [[Interface\Tooltips\UI-Tooltip-Background]],
 	dropdownStatusBarColor = {.1, .1, .1, .8},
 }
+platerInternal.Comms = {}
+platerInternal.Frames = {}
+platerInternal.Data = {}
 
 --> namespaces:
 	--resources
@@ -389,6 +392,9 @@ local PLATER_GLOBAL_SCRIPT_ENV = {} -- contains modEnv for each script, identifi
 Plater.COMM_PLATER_PREFIX = "PLT"
 Plater.COMM_SCRIPT_GROUP_EXPORTED = "GE"
 Plater.COMM_SCRIPT_MSG = "PLTM"
+Plater.COMM_NPC_NAME_EXPORTED = "NN"
+Plater.COMM_NPC_COLOR_EXPORTED = "NC"
+Plater.COMM_NPC_OR_CAST_CUSTOMIZATION = "NCC"
 
 --> cvars just to make them easier to read
 local CVAR_ENABLED = "1"
@@ -2312,7 +2318,7 @@ local class_specs_coords = {
 
 	--a patch is a function stored in the Plater_ScriptLibrary file and are executed only once to change a profile setting, remove or add an aura into the tracker or modify a script
 	--patch versions are stored within the profile, so importing or creating a new profile will apply all patches that wasn't applyed into it yet
-	function Plater.ApplyPatches() --private
+	function Plater.ApplyPatches() --private ~updates ~scriptupdates
 		if (PlaterPatchLibrary) then
 			local currentPatch = Plater.db.profile.patch_version
 			for i = currentPatch+1, #PlaterPatchLibrary do
@@ -3627,7 +3633,7 @@ local class_specs_coords = {
 			--get and format the reaction to always be the value of the constants, then cache the reaction in some widgets for performance
 			local isSoftInteract = UnitIsUnit(unitID, "softinteract")
 			local reaction = UnitReaction (unitID, "player")
-			local isObject = reaction == nil
+			local isObject = (IS_WOW_PROJECT_MAINLINE and UnitIsGameObject(unitID)) or reaction == nil
 			local isSoftInteractObject = isObject and isSoftInteract
 			reaction = reaction or isSoftInteract and Plater.UnitReaction.UNITREACTION_NEUTRAL or Plater.UnitReaction.UNITREACTION_HOSTILE
 			reaction = reaction <= Plater.UnitReaction.UNITREACTION_HOSTILE and Plater.UnitReaction.UNITREACTION_HOSTILE or reaction >= Plater.UnitReaction.UNITREACTION_FRIENDLY and Plater.UnitReaction.UNITREACTION_FRIENDLY or Plater.UnitReaction.UNITREACTION_NEUTRAL
@@ -11987,12 +11993,22 @@ end
 		return scriptsWithOverlap, amount
 	end
 
+	function platerInternal.Scripts.RemoveTriggerFromAnyScript(triggerId)
+		local allScripts = Plater.db.profile.script_data
+		for i = 1, #allScripts do
+			local scriptObject = allScripts[i]
+			if (platerInternal.Scripts.DoesScriptHasTrigger(scriptObject, triggerId)) then
+				platerInternal.Scripts.RemoveTriggerFromScript(scriptObject, triggerId)
+			end
+		end
+	end
+
 	function platerInternal.Scripts.IsTriggerOnAnyScript(triggerId)
 		local allScripts = Plater.db.profile.script_data
 		for i = 1, #allScripts do
 			local scriptObject = allScripts[i]
 			if (platerInternal.Scripts.DoesScriptHasTrigger(scriptObject, triggerId)) then
-				return true
+				return scriptObject
 			end
 		end
 	end
@@ -12033,6 +12049,20 @@ end
 		local index = DF.table.find(scriptObject.NpcNames, trigger)
 		if (index) then
 			return true
+		end
+	end
+
+	function platerInternal.Scripts.RemoveTriggerFromScript(scriptObject, triggerId)
+		local index = DF.table.find(scriptObject.SpellIds, triggerId)
+		if (index) then
+			tremove(scriptObject.SpellIds, index)
+			Plater.WipeAndRecompileAllScripts("script")
+		end
+
+		local index = DF.table.find(scriptObject.NpcNames, triggerId)
+		if (index) then
+			tremove(scriptObject.NpcNames, index)
+			Plater.WipeAndRecompileAllScripts("script")
 		end
 	end
 
@@ -12500,7 +12530,7 @@ end
 	end
 
 	--transform the string into a indexScriptTable and then transform it into a scriptObject
-	function Plater.DecodeImportedString (str)
+	function Plater.DecodeImportedString (str) --not in use? (can't find something calling this - tercio)
 		local LibAceSerializer = LibStub:GetLibrary ("AceSerializer-3.0")
 		if (LibAceSerializer) then
 			-- ~zip

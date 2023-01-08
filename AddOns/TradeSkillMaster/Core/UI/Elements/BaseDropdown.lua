@@ -105,6 +105,13 @@ function BaseDropdown.SetItems(self, items, itemKeys)
 	return self
 end
 
+--- Clears all set items.
+function BaseDropdown.ClearItems(self)
+	wipe(self._items)
+	wipe(self._itemKeyLookup)
+	return self
+end
+
 --- Set whether or not the dropdown is disabled.
 -- @tparam BaseDropdown self The dropdown object
 -- @tparam boolean disabled Whether or not to disable the dropdown

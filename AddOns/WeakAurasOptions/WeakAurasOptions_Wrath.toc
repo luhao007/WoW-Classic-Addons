@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: The WeakAuras Team
-## Version: 5.3.3
+## Version: 5.3.4
 ## Dependencies: WeakAuras
 ## LoadOnDemand: 1
 ## SavedVariables: WeakAurasOptionsSaved

@@ -9,6 +9,7 @@ local Vendoring = TSM.MainUI.Operations:NewPackage("Vendoring")
 local L = TSM.Include("Locale").GetTable()
 local TextureAtlas = TSM.Include("Util.TextureAtlas")
 local UIElements = TSM.Include("UI.UIElements")
+local UIUtils = TSM.Include("UI.UIUtils")
 local private = {
 	currentOperationName = nil,
 }
@@ -43,7 +44,7 @@ end
 -- ============================================================================
 
 function private.GetVendoringOperationSettings(operationName)
-	TSM.UI.AnalyticsRecordPathChange("main", "operations", "vendoring")
+	UIUtils.AnalyticsRecordPathChange("main", "operations", "vendoring")
 	private.currentOperationName = operationName
 
 	local operation = TSM.Operations.GetSettings("Vendoring", private.currentOperationName)

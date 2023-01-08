@@ -20,6 +20,7 @@ local MailTracking = TSM.Include("Service.MailTracking")
 local AltTracking = TSM.Include("Service.AltTracking")
 local Settings = TSM.Include("Service.Settings")
 local UIElements = TSM.Include("UI.UIElements")
+local UIUtils = TSM.Include("UI.UIUtils")
 local private = {
 	settings = nil,
 	db = nil,
@@ -69,7 +70,7 @@ end
 -- ============================================================================
 
 function private.DrawInventoryPage()
-	TSM.UI.AnalyticsRecordPathChange("main", "ledger", "inventory")
+	UIUtils.AnalyticsRecordPathChange("main", "ledger", "inventory")
 	local items = TempTable.Acquire()
 	local bagQuantityLookup = TempTable.Acquire()
 	local bankQuantityLookup = TempTable.Acquire()
@@ -188,7 +189,7 @@ function private.DrawInventoryPage()
 						:SetTitle(L["Item"])
 						:SetFont("ITEM_BODY3")
 						:SetJustifyH("LEFT")
-						:SetTextInfo("levelItemString", TSM.UI.GetColoredItemName)
+						:SetTextInfo("levelItemString", UIUtils.GetColoredItemName)
 						:SetTooltipInfo("levelItemString")
 						:SetSortInfo("name")
 						:DisableHiding()

@@ -16,6 +16,7 @@ local Log = TSM.Include("Util.Log")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local Settings = TSM.Include("Service.Settings")
 local UIElements = TSM.Include("UI.UIElements")
+local UIUtils = TSM.Include("UI.UIUtils")
 local SECONDS_PER_DAY = 24 * 60 * 60
 local private = {
 	settings = nil,
@@ -67,7 +68,7 @@ end
 -- ============================================================================
 
 function private.GetLedgerFrame()
-	TSM.UI.AnalyticsRecordPathChange("main", "ledger")
+	UIUtils.AnalyticsRecordPathChange("main", "ledger")
 	local defaultPage = private.pages[1]
 	local frame = UIElements.New("Frame", "ledger")
 		:SetLayout("HORIZONTAL")
@@ -77,7 +78,7 @@ function private.GetLedgerFrame()
 			:SetWidth(160)
 			:SetPadding(12, 12, 1, 9)
 		)
-		:AddChild(TSM.UI.Views.Line.NewVertical("divider"))
+		:AddChild(UIElements.New("VerticalLine", "divider"))
 		:AddChild(UIElements.New("Frame", "contentFrame")
 			:SetLayout("VERTICAL")
 			:AddChild(UIElements.New("ViewContainer", "content")
@@ -242,7 +243,7 @@ function private.GetItemDetail()
 				)
 				:AddChild(UIElements.New("Text", "itemName")
 					:SetFont("ITEM_BODY1")
-					:SetText(TSM.UI.GetColoredItemName(private.contextItemString))
+					:SetText(UIUtils.GetColoredItemName(private.contextItemString))
 				)
 			)
 			:AddChild(UIElements.New("Frame", "content")
@@ -476,7 +477,7 @@ function private.ItemDetailScrollingTableOnRowClick(scrollingTable, row, button)
 	end
 	local subtitle = nil
 	local recordType, itemString, quantity, otherPlayer, price = row:GetFields("type", "itemString", "quantity", "otherPlayer", "price")
-	local name = TSM.UI.GetColoredItemName(itemString) or "?"
+	local name = UIUtils.GetColoredItemName(itemString) or "?"
 	local amount = Money.ToString(price * quantity, nil, "OPT_RETAIL_ROUND")
 	if recordType == "sale" then
 		subtitle = format(L["Sold %d of %s to %s for %s"], quantity, name, otherPlayer, amount)

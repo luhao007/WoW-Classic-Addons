@@ -44,9 +44,10 @@ local DEFAULT_INST_FIELDS = {
 		return private.instInfo[self].str
 	end,
 	__dump = function(self)
-		return private.InstDump(self)
+		private.InstDump(self)
 	end,
 }
+local DUMP_KEY_PATH_DELIM = "\001"
 
 
 
@@ -122,16 +123,21 @@ end
 ---@param tableLookupFunc? fun(tbl: table): string? A lookup function which is used to get debug information for an unknown table
 ---@return string? @The properties dumped as a multiline string
 function Lib.GetDebugInfo(instStr, maxDepth, tableLookupFunc)
+	local inst = nil
 	for obj, info in pairs(private.instInfo) do
 		if info.str == instStr then
-			assert(not next(private.tempTable))
-			private.InstDump(obj, private.tempTable, maxDepth, tableLookupFunc)
-			local result = table.concat(private.tempTable, "\n")
-			wipe(private.tempTable)
-			return result
+			inst = obj
+			break
 		end
 	end
-	return nil
+	if not inst then
+		return nil
+	end
+	assert(not next(private.tempTable))
+	private.InstDump(inst, private.tempTable, maxDepth, tableLookupFunc)
+	local result = table.concat(private.tempTable, "\n")
+	wipe(private.tempTable)
+	return result
 end
 
 
@@ -504,40 +510,70 @@ function private.InstDump(inst, resultTbl, maxDepth, tableLookupFunc)
 	local context = {
 		resultTbl = resultTbl,
 		maxDepth = maxDepth or 2,
-		keyStack = {},
-		seen = {},
+		maxTableEntries = 100,
 		tableLookupFunc = tableLookupFunc,
+		tableRefs = {},
+		depth = 0,
 	}
-	private.InstDumpHelper(inst, "self", context)
-end
 
-function private.InstDumpHelper(inst, varName, context)
-	local instInfo = private.instInfo[inst]
-	local tbl = instInfo.hasSuperclass and instInfo.fields or inst
-	private.InstDumpLine(varName.." = <"..instInfo.str.."> {", context)
-	for key, value in pairs(tbl) do
-		tinsert(context.keyStack, key)
-		private.InstDumpVariable(key, value, context)
-		tremove(context.keyStack)
-	end
-	private.InstDumpLine("}", context)
-end
-
-function private.InstDumpVariable(key, value, context)
-	if type(value) == "table" then
-		if context.seen[value] then
-			private.InstDumpKeyValue(key, "\"REF{."..context.seen[value].."}\"", context)
-			return
+	-- Build up our table references via a breadth-first search
+	local bfsQueueKeyPath = {""}
+	local bfsQueueDepth = {0}
+	local bfsQueueValue = {inst}
+	while #bfsQueueKeyPath > 0 do
+		local keyPath = tremove(bfsQueueKeyPath, 1)
+		local depth = tremove(bfsQueueDepth, 1)
+		local value = tremove(bfsQueueValue, 1)
+		if not context.tableRefs[value] then
+			context.tableRefs[value] = keyPath
+			if depth <= context.maxDepth and not private.classInfo[value] then
+				if private.instInfo[value] then
+					local instInfo = private.instInfo[value]
+					value = instInfo.hasSuperclass and instInfo.fields or value
+				end
+				for k, v in pairs(value) do
+					if type(v) == "table" and not strfind(k, DUMP_KEY_PATH_DELIM, nil, true) then
+						tinsert(bfsQueueKeyPath, keyPath..DUMP_KEY_PATH_DELIM..k)
+						tinsert(bfsQueueDepth, depth + 1)
+						tinsert(bfsQueueValue, v)
+					end
+				end
+			end
 		end
-		context.seen[value] = table.concat(context.keyStack, "")
-		if private.classInfo[value] then
-			-- this is a class or instance of a class
-			private.InstDumpKeyValue(key, "\""..tostring(value).."\"", context)
+	end
+
+	private.InstDumpVariable("self", inst, context, "")
+end
+
+function private.InstDumpVariable(key, value, context, strKeyPath)
+	if strfind(key, DUMP_KEY_PATH_DELIM, nil, true) then
+		-- Ignore keys with our deliminator in them
+		return
+	end
+	if type(value) == "table" and private.classInfo[value] then
+		-- This is a class
+		private.InstDumpKeyValue(key, "\""..tostring(value).."\"", context)
+	elseif type(value) == "table" then
+		local refKeyPath = context.tableRefs[value]
+		assert(refKeyPath)
+		if refKeyPath ~= strKeyPath then
+			local refValue = "\"REF{"..gsub(refKeyPath, DUMP_KEY_PATH_DELIM, ".").."}\""
+			private.InstDumpKeyValue(key, refValue, context)
 		elseif private.instInfo[value] then
 			-- This is an instance of a class
-			if #context.keyStack <= context.maxDepth then
+			if context.depth <= context.maxDepth then
 				-- Recurse into the class
-				private.InstDumpHelper(value, key, context)
+				local instInfo = private.instInfo[value]
+				local tbl = instInfo.hasSuperclass and instInfo.fields or value
+				private.InstDumpLine(key.." = <"..instInfo.str.."> {", context)
+				context.depth = context.depth + 1
+				for key2, value2 in pairs(tbl) do
+					if type(key2) == "string" or type(key2) == "number" or type(key2) == "boolean" then
+						private.InstDumpVariable(key2, value2, context, strKeyPath..DUMP_KEY_PATH_DELIM..key2)
+					end
+				end
+				context.depth = context.depth - 1
+				private.InstDumpLine("}", context)
 			else
 				private.InstDumpKeyValue(key, "\""..tostring(value).."\"", context)
 			end
@@ -551,42 +587,37 @@ function private.InstDumpVariable(key, value, context)
 				end
 			end
 			if isEmpty then
-				if context.tableLookupFunc then
-					local info = context.tableLookupFunc(value)
-					if info then
-						info = {strsplit("\n", info)}
-						if #context.keyStack <= context.maxDepth then
-							-- Display the table values
-							private.InstDumpKeyValue(key, "{", context)
-							tinsert(context.keyStack, "")
-							for _, line in ipairs(info) do
-								private.InstDumpLine(line, context)
-							end
-							tremove(context.keyStack)
-							private.InstDumpLine("}", context)
-						else
-							private.InstDumpKeyValue(key, "{ ... }", context)
-						end
-					else
-						private.InstDumpKeyValue(key, "{}", context)
+				local info = context.tableLookupFunc and context.tableLookupFunc(value) or nil
+				if info and context.depth <= context.maxDepth then
+					-- Display the table values
+					private.InstDumpKeyValue(key, "{", context)
+					context.depth = context.depth + 1
+					for _, line in ipairs({strsplit("\n", info)}) do
+						private.InstDumpLine(line, context)
 					end
+					context.depth = context.depth - 1
+					private.InstDumpLine("}", context)
+				elseif info then
+					private.InstDumpKeyValue(key, "{ ... }", context)
 				else
 					private.InstDumpKeyValue(key, "{}", context)
 				end
 			else
-				if #context.keyStack <= context.maxDepth then
+				if context.depth <= context.maxDepth then
 					-- Recurse into the table
 					private.InstDumpKeyValue(key, "{", context)
+					context.depth = context.depth + 1
 					local numTableEntries = 0
 					for key2, value2 in pairs(value) do
-						numTableEntries = numTableEntries + 1
-						if numTableEntries > 100 then
+						if numTableEntries >= context.maxTableEntries then
 							break
 						end
-						tinsert(context.keyStack, key2)
-						private.InstDumpVariable(key2, value2, context)
-						tremove(context.keyStack)
+						if type(key2) == "string" or type(key2) == "number" or type(key2) == "boolean" then
+							numTableEntries = numTableEntries + 1
+							private.InstDumpVariable(key2, value2, context, strKeyPath..DUMP_KEY_PATH_DELIM..key2)
+						end
 					end
+					context.depth = context.depth - 1
 					private.InstDumpLine("}", context)
 				else
 					private.InstDumpKeyValue(key, "{ ... }", context)
@@ -601,7 +632,7 @@ function private.InstDumpVariable(key, value, context)
 end
 
 function private.InstDumpLine(line, context)
-	line = strrep("  ", #context.keyStack)..line
+	line = strrep("  ", context.depth)..line
 	if context.resultTbl then
 		tinsert(context.resultTbl, line)
 	else

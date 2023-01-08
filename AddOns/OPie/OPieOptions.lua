@@ -1,5 +1,6 @@
-local config, _, T = {}, ...
-local L, MODERN, frame = T.L, select(4,GetBuildInfo()) >= 10e4, nil
+local config, COMPAT, _, T = {}, select(4,GetBuildInfo()), ...
+local MODERN, CF_WRATH = COMPAT >= 10e4, COMPAT < 10e4 and COMPAT >= 3e4
+local L, EV, frame = T.L, T.Evie, nil
 T.config = config
 
 do -- /opie
@@ -211,8 +212,12 @@ do -- config.ui
 
 			clipRoot:SetAllPoints()
 			clipRoot:SetClipsChildren(true)
+			local bb = scrollingDropdown:CreateTexture(nil, "BACKGROUND")
+			bb:SetColorTexture(0.3, 0.3, 0.3)
+			bb:SetPoint("BOTTOMLEFT", -4, -2)
+			bb:SetPoint("BOTTOMRIGHT", 0, -2)
 			slider:SetPoint("TOPRIGHT", -1, -12)
-			slider:SetPoint("BOTTOMRIGHT", -1, 10)
+			slider:SetPoint("BOTTOMRIGHT", -1, 15)
 			bindToCounter(slider)
 			bindToCounter(slider.ScrollUpButton)
 			bindToCounter(slider.ScrollDownButton)
@@ -258,7 +263,7 @@ do -- config.ui
 				self:Hide()
 				ReleaseDataSource()
 			end)
-			function sdAPI:Display(level, dataList, entryFormatter, entrySelect, skipFirst)
+			function sdAPI:Display(level, dataList, entryFormatter, entrySelect, skipFirst, willContinue)
 				skipFirst = type(skipFirst) == "number" and skipFirst or 0
 				local count = #dataList-skipFirst
 				if count < MIN_SCROLL_ENTRIES then
@@ -284,15 +289,17 @@ do -- config.ui
 				for i=n1,nX do
 					UIDropDownMenu_AddButton(info, level)
 				end
-				local b1, bX = _G[baseName .. "Button" .. n1], _G[baseName .. "Button" .. nX]
+				local b1, bX, boY = _G[baseName .. "Button" .. n1], _G[baseName .. "Button" .. nX], willContinue and 0 or -4
 				scrollingDropdown.parent = host
 				scrollingDropdown:SetParent(host)
 				scrollingDropdown:SetPoint("TOPLEFT", b1)
-				scrollingDropdown:SetPoint("BOTTOMRIGHT", bX)
+				scrollingDropdown:SetPoint("BOTTOMRIGHT", bX, "BOTTOMRIGHT", 0, boY)
 				SetDataSource(dataList, entryFormatter, entrySelect, skipFirst)
 				scrollingDropdown:Show()
 				scrollingDropdown:SetFrameLevel(b1:GetFrameLevel()+2)
 				slider:SetFrameLevel(scrollingDropdown:GetFrameLevel()+3)
+				bb:SetHeight(PixelUtil.GetPixelToUIUnitFactor()/scrollingDropdown:GetEffectiveScale()*1.001)
+				bb:SetShown(not not willContinue)
 			end
 		end
 		config.ui.scrollingDropdown = sdAPI
@@ -384,7 +391,7 @@ do -- config.bind
 			return
 		end
 		Deactivate(self)
-		local bind, p = bind and ((IsAltKeyDown() and "ALT-" or "") ..  (IsControlKeyDown() and "CTRL-" or "") .. (IsShiftKeyDown() and "SHIFT-" or "") .. (MODERN and IsMetaKeyDown() and "META-" or "") .. bind), self:GetParent()
+		local bind, p = bind and ((IsAltKeyDown() and "ALT-" or "") ..  (IsControlKeyDown() and "CTRL-" or "") .. (IsShiftKeyDown() and "SHIFT-" or "") .. (IsMetaKeyDown() and "META-" or "") .. bind), self:GetParent()
 		if p and type(p.SetBinding) == "function" then
 			p.SetBinding(self, bind)
 		end
@@ -442,9 +449,8 @@ do -- config.bind
 		return GetBindingText(specialSymbolMap[key] or key)
 	end
 	local function bindFormat(bind)
-		return bind and bind ~= "" and bind:gsub("[^%-]+$", bindNameLookup) or L"Not bound"
+		return bind and bind ~= "" and GetBindingText((bind:gsub("[^%-]+$", bindNameLookup))) or L"Not bound"
 	end
-	config.bindingFormat = bindFormat
 	local function SetBindingText(self, bind, pre, post)
 		if type(bind) == "string" and bind:match("%[.*%]") then
 			return SetBindingText(self, KR:EvaluateCmdOptions(bind), pre, post or " |cff20ff20[+]|r")
@@ -496,25 +502,34 @@ end
 do -- config.undo
 	local undoStack, undo = {}, {}
 	config.undo = undo
-	function undo.unwind()
+	function undo:unwind()
 		local entry
 		for i=#undoStack,1,-1 do
 			entry, undoStack[i] = undoStack[i]
 			securecall(entry.func, unpack(entry, 1, entry.n))
 		end
 	end
-	function undo.search(key)
+	function undo:clear()
+		undoStack = {}
+	end
+	function undo:search(key)
 		for i=#undoStack,1,-1 do
 			if undoStack[i].key == key then
 				return true
 			end
 		end
 	end
-	function undo.push(key, func, ...)
-		undoStack[#undoStack + 1] = {key=key, func=func, n=select("#", ...), ...}
+	local function undoEntry(key, func, ...)
+		return {key=key, func=func, n=select("#", ...), ...}
 	end
-	function undo.clear()
-		table.wipe(undoStack)
+	function undo:push(...)
+		undoStack[#undoStack + 1] = undoEntry(...)
+	end
+	function undo:sink(...)
+		for i=#undoStack, 1, -1 do
+			undoStack[i+1] = undoStack[i]
+		end
+		undoStack[1] = undoEntry(...)
 	end
 end
 do -- config.pulseDropdown
@@ -557,12 +572,25 @@ do -- config.pulseDropdown
 	end
 end
 
-function config.undo.saveProfile(noData)
-	local undo, name = config.undo, OPie:GetCurrentProfile()
-	if noData then
-		undo.push("OPieLightProfile#" .. name, PC.SwitchProfile, PC, name)
-	elseif not undo.search("OPieProfile#" .. name) then
-		undo.push("OPieProfile#" .. name, PC.SwitchProfile, PC, name, (PC:ExportProfile(name)))
+local function CallSwitchProfile(...)
+	return PC:SwitchProfile(...)
+end
+local function CallSetSpecProfiles(...)
+	return PC:SetSpecProfiles(...)
+end
+local function CallDeleteProfile(...)
+	return PC:DeleteProfile(...)
+end
+function config.undo:saveSpecProfiles()
+	if not self:search("profile-specs-init") then
+		self:sink("profile-specs-init", CallSetSpecProfiles, PC:GetSpecProfiles())
+	end
+end
+function config.undo:saveActiveProfile()
+	self:saveSpecProfiles()
+	local name = OPie:GetCurrentProfile()
+	if not self:search("OPieProfile#" .. name) then
+		self:push("OPieProfile#" .. name, CallSwitchProfile, name, (PC:ExportProfile(name)))
 	end
 end
 
@@ -605,6 +633,8 @@ local OPC_OptionSets = {
 
 frame = config.createPanel("OPie", nil, {forceRootVersion=true})
 	frame.version:SetFormattedText("%s", OPie:GetVersion() or "")
+	frame.desc:SetText(L"Customize OPie's appearance and behavior. Right clicking a checkbox restores it to its default state."
+		.. (MODERN and "\n" .. L"Profiles activate automatically when you switch character specializations." or ""))
 local OPC_Profile = CreateFrame("Frame", "OPC_Profile", frame, "UIDropDownMenuTemplate")
 	OPC_Profile:SetPoint("TOPLEFT", frame, 0, -80)
 	UIDropDownMenu_SetWidth(OPC_Profile, 200)
@@ -758,7 +788,7 @@ function OPC_AlterOption(widget, option, newval, ...)
 	if control[1] == "range" and control[3] > control[4] and type(newval) == "number" then
 		newval = -newval
 	end
-	config.undo.saveProfile()
+	config.undo:saveActiveProfile()
 	PC:SetOption(option, newval, OR_CurrentOptionsDomain)
 	local setval = PC:GetOption(option, OR_CurrentOptionsDomain)
 	if widget:IsObjectType("Slider") then
@@ -781,7 +811,7 @@ function OPC_AlterOption(widget, option, newval, ...)
 		end
 	end end
 end
-function OPC_OptionDomain:click(ringName)
+local function OPC_OptionDomain_click(_, ringName)
 	OR_CurrentOptionsDomain = ringName or nil
 	frame.resetOnHide = nil
 	frame.refresh()
@@ -796,51 +826,97 @@ function OPC_OptionDomain:initialize()
 		local color = ct and ct[scope] or "|cffacd7e6"
 		list[#list+1], list[key] = key, (L"Ring: %s"):format(color .. (name or key) .. "|r")
 	end
-	config.ui.scrollingDropdown:Display(1, list, OPC_OptionDomain_Format, OPC_OptionDomain.click)
+	config.ui.scrollingDropdown:Display(1, list, OPC_OptionDomain_Format, OPC_OptionDomain_click)
 end
-local function OPC_Profile_NewCallback(self, text, apply, frame)
-	local name = text:match("^%s*(.-)%s*$")
-	if name == "" or PC:ProfileExists(name) then
-		if apply then self:SetText("") end
-		return false
-	elseif apply then
-		config.undo.saveProfile(true)
-		PC:SwitchProfile(name, true)
-		if not config.undo.search("OPieProfile#" .. name) then
-			config.undo.push("OPieProfile#" .. name, PC.DeleteProfile, PC, name)
-		end
-		frame.refresh("profile")
+function OPC_OptionDomain:text()
+	local label = L"Defaults for all rings"
+	if OR_CurrentOptionsDomain then
+		local name, key = OPie:GetRingInfo(OR_CurrentOptionsDomain)
+		label = (L"Ring: %s"):format("|cffaaffff" .. (name or key) .."|r")
 	end
-	return true
+	UIDropDownMenu_SetText(self, label)
 end
 local function OPC_Profile_FormatName(ident)
 	return ident == "default" and L"default" or ident
 end
-function OPC_Profile:switch(arg1, frame)
-	config.undo.saveProfile(true)
-	PC:SwitchProfile(arg1)
-	frame.refresh("profile")
-end
-function OPC_Profile:new(_, frame)
-	T.TenSettings:ShowPromptOverlay(frame, L"Create a New Profile", L"New profile name:", L"Profiles save options and ring bindings.", L"Create Profile", OPC_Profile_NewCallback)
-end
-function OPC_Profile:delete(_, frame)
-	config.undo.saveProfile()
-	PC:DeleteProfile(OPie:GetCurrentProfile())
-	frame.refresh("profile")
-end
-function OPC_Profile:initialize()
-	local info = {func=OPC_Profile.switch, arg2=self:GetParent()}
-	for ident, isActive in PC.Profiles do
-		info.text, info.arg1, info.checked = OPC_Profile_FormatName(ident), ident, isActive or nil
+do -- OPC_Profile:initialize
+	local curProfile
+	local function dup(n, v)
+		if n > 0 then
+			return v, dup(n-1, v)
+		end
+	end
+	local function prependCount(...)
+		return select("#", ...), ...
+	end
+	local function OPC_Profile_format(ident, list)
+		return list[ident], curProfile == ident, ident
+	end
+	local function OPC_Profile_switch(_, ident)
+		config.undo:saveSpecProfiles()
+		PC:SwitchProfile(ident)
+	end
+	local function OPC_Profile_new_callback(self, text, apply, _frame)
+		local name = text:match("^%s*(.-)%s*$")
+		if name == "" or PC:ProfileExists(name) then
+			if apply then self:SetText("") end
+			return false
+		elseif apply then
+			config.undo:saveSpecProfiles()
+			PC:SwitchProfile(name, true)
+			if not config.undo:search("OPieProfile#" .. name) then
+				config.undo:push("OPieProfile#" .. name, CallDeleteProfile, name)
+			end
+		end
+		return true
+	end
+	local function OPC_Profile_new(_, _, frame)
+		T.TenSettings:ShowPromptOverlay(frame, L"Create a New Profile", L"New profile name:", L"Profiles save options and ring bindings.", L"Create Profile", OPC_Profile_new_callback)
+	end
+	local function OPC_Profile_delete()
+		config.undo:saveActiveProfile()
+		PC:DeleteProfile(OPie:GetCurrentProfile())
+	end
+	local function OPC_Profile_assignAllSpecs(_, curProfile)
+		config.undo:saveSpecProfiles()
+		PC:SetSpecProfiles(dup(select("#", PC:GetSpecProfiles()), curProfile))
+	end
+	function OPC_Profile:initialize()
+		local hasPartialSpecProfiles, ns, p1, p2, p3, p4, plist = false, prependCount(PC:GetSpecProfiles())
+		curProfile, plist, ns = OPie:GetCurrentProfile(), PC:GetAllProfiles(), ns > 1 and ns or 0
+		for k=1, #plist do
+			local ident = plist[k]
+			local name, suf, ni = OPC_Profile_FormatName(ident), "", 0
+			for i=1, ns do
+				if ident == select(i, p1, p2, p3, p4) then
+					if MODERN then
+						local _, _, _, ico = GetSpecializationInfo(i)
+						ni, suf = ni + 1, (ni > 0 and suf .. "|T" or " |T") .. (ico or "Interface/Icons/INV_Misc_QuestionMark") .. ":16:16:4:0:64:64:4:60:4:60|t"
+					elseif CF_WRATH then
+						ni, suf = ni + 1, suf .. " |cffff99ff[" .. i .."]|r"
+					end
+				end
+			end
+			if ni > 0 and ni < ns then
+				name, hasPartialSpecProfiles = name .. suf, true
+			end
+			plist[ident] = name
+		end
+		config.ui.scrollingDropdown:Display(1, plist, OPC_Profile_format, OPC_Profile_switch, nil, true)
+		local info = {arg2=self:GetParent(), text="", disabled=true, notCheckable=true, justifyH="CENTER"}
+		UIDropDownMenu_AddButton(info)
+		info.text, info.disabled, info.func, info.arg1 = L"Assign to all specializations", not hasPartialSpecProfiles, OPC_Profile_assignAllSpecs, curProfile
+		if ns > 1 then
+			UIDropDownMenu_AddButton(info)
+		end
+		info.text, info.minWidth, info.func, info.arg1, info.disabled = L"Create a new profile", self:GetWidth()-40, OPC_Profile_new, nil, nil
+		UIDropDownMenu_AddButton(info)
+		info.text, info.func = curProfile ~= "default" and L"Delete current profile" or L"Restore default settings", OPC_Profile_delete
 		UIDropDownMenu_AddButton(info)
 	end
-	info.text, info.disabled, info.checked, info.notCheckable, info.justifyH = "", true, nil, true, "CENTER"
-	UIDropDownMenu_AddButton(info)
-	info.text, info.disabled, info.minWidth, info.func = L"Create a new profile", false, self:GetWidth()-40, OPC_Profile.new
-	UIDropDownMenu_AddButton(info)
-	info.text, info.func = OPie:GetCurrentProfile() ~= "default" and L"Delete current profile" or L"Restore default settings", OPC_Profile.delete
-	UIDropDownMenu_AddButton(info)
+end
+function OPC_Profile:text()
+	UIDropDownMenu_SetText(self, L"Profile" .. ": " .. OPC_Profile_FormatName(OPie:GetCurrentProfile()))
 end
 function OPC_AppearanceFactory:formatText(key, outOfDate, name)
 	name = name or T.OPieUI:GetIndicatorConstructorName(key)
@@ -894,18 +970,11 @@ function OPC_AppearanceFactory:set(key)
 end
 function frame.refresh()
 	OPC_BlockInput = true
-	frame.desc:SetText(L"Customize OPie's appearance and behavior. Right clicking a checkbox restores it to its default state."
-		.. (MODERN and "\n" .. L"Profiles activate automatically when you switch character specializations." or ""))
 	for _, v in pairs(OPC_OptionSets) do
 		v.label:SetText(v[1])
 	end
-	local label = L"Defaults for all rings"
-	if OR_CurrentOptionsDomain then
-		local name, key = OPie:GetRingInfo(OR_CurrentOptionsDomain)
-		label = (L"Ring: %s"):format("|cffaaffff" .. (name or key) .."|r")
-	end
-	UIDropDownMenu_SetText(OPC_OptionDomain, label)
-	UIDropDownMenu_SetText(OPC_Profile, L"Profile" .. ": " .. OPC_Profile_FormatName(OPie:GetCurrentProfile()))
+	OPC_OptionDomain:text()
+	OPC_Profile:text()
 	OPC_AppearanceFactory:text()
 	OPC_AppearanceFactory:SetShown(T.OPieUI:HasMultipleIndicatorConstructors())
 	for _, set in pairs(OPC_OptionSets) do for j=2,#set do
@@ -937,16 +1006,16 @@ function frame.refresh()
 	config.checkSVState(frame)
 end
 function frame.cancel()
-	config.undo.unwind()
+	config.undo:unwind()
 	OR_CurrentOptionsDomain = nil
 end
 function frame.default()
-	config.undo.saveProfile()
+	config.undo:saveActiveProfile()
 	PC:ResetOptions(true)
 	frame.refresh()
 end
 function frame.okay()
-	config.undo.clear()
+	config.undo:clear()
 	OR_CurrentOptionsDomain = nil
 end
 frame:SetScript("OnShow", frame.refresh)
@@ -956,9 +1025,15 @@ frame:SetScript("OnHide", function()
 	end
 end)
 
+function EV:OPIE_PROFILE_SWITCHED(_new, _old)
+	if frame:IsVisible() then
+		frame.refresh()
+	end
+end
+
 function T.ShowOPieOptionsPanel(ringKey)
 	frame:OpenPanel()
-	OPC_OptionDomain:click(ringKey)
+	OPC_OptionDomain_click(nil, ringKey)
 	frame.resetOnHide = true
 	config.pulseDropdown(OPC_OptionDomain)
 end

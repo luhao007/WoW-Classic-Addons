@@ -1,13 +1,12 @@
-1.2.8 Release Notes
+1.3.0 Release Notes
 Contributions made by Crieve:
-* Razzashi Hatchling did not drop in the original STV zone.
-* Added the Basket of Bloodkelp and Blood of Heroes objectIDs.
-* The original version of Sting of the Scorpid is now properly timelined for 4.0.3
-* The Tier 0.5 Quest chains no longer appear for classes that aren't involved in the quest chain at all. Additionally, those quests now appropriately appear in the mini list for Blackrock Spire regardless of which submap you're in.
-* Updated Ashenvale for future expansion information.
-* Ashenvale now resides on the Retail Database.
-* Fixed Hallowed Be Thy Name for Horde players in Wrath Classic.
-* Updated Feast of Winter Veil for Wrath Classic.
-* Proof of Treachery / Return to Jaina were removed in 3.0.2 for Wrath Classic.
-* Show Your Work was also removed in 3.0.2 for Wrath Classic.
+* Fixed a display bug for Runeforging spells.
+* Added objectIDs for Outland Schools.
+* Bejeweled Dagger / Gleaming Scale Breastplate still available for the Horde.
+* Added Species ID to the interface options. The BOE T0 pieces now count as collected if they're in your bags waiting to be turned in.
+* Fixed the format of Heartswood.
+* Fixed a one of the druid swift flight form quest givers.
+* Added timelines for a couple of Elywynn Forest rare items.
+* Added some missing mapIDs for low level blacksmithing quests.
+* The quest "Feedin' Da Goolz" can't be completed if you finished Betrayal.
 

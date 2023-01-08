@@ -658,6 +658,7 @@ end
 app.GetProgressText = GetProgressTextDefault;
 app.GetProgressTextDefault = GetProgressTextDefault;
 app.GetProgressTextRemaining = GetProgressTextRemaining;
+app.GetProgressColorText = GetProgressColorText;
 CS:Hide();
 
 -- NPC & Title Name Harvesting Lib (https://us.battle.net/forums/en/wow/topic/20758497390?page=1#post-4, Thanks Gello!)
@@ -2460,19 +2461,57 @@ local function GetCachedSearchResults(search, method, paramA, paramB, ...)
 		end
 		
 		-- If the item is a recipe, then show which characters know this recipe.
-		if group.collectible and group.spellID and group.f ~= 100 and app.Settings:GetTooltipSetting("KnownBy") then
-			local knownBy = {};
-			for guid,character in pairs(ATTCharacterData) do
-				if character.Spells and character.Spells[group.spellID] then
-					table.insert(knownBy, character);
+		if group.collectible and app.Settings:GetTooltipSetting("KnownBy") then
+			local knownBy, kind = {}, nil;
+			if group.speciesID then
+				kind = "Owned by ";
+				for guid,character in pairs(ATTCharacterData) do
+					if character.BattlePets and character.BattlePets[group.speciesID] then
+						table.insert(knownBy, character);
+					end
+				end
+			elseif group.spellID then
+				kind = "Known by ";
+				for guid,character in pairs(ATTCharacterData) do
+					if character.Spells and character.Spells[group.spellID] then
+						table.insert(knownBy, character);
+					end
+				end
+			elseif group.itemID then
+				kind = "Owned by ";
+				for guid,character in pairs(ATTCharacterData) do
+					if (character.RWP and character.RWP[group.itemID])
+					or (character.Toys and character.Toys[group.itemID]) then
+						table.insert(knownBy, character);
+					end
+				end
+			elseif group.achievementID then
+				kind = "Completed by ";
+				for guid,character in pairs(ATTCharacterData) do
+					if character.Achievements and character.Achievements[group.achievementID] then
+						table.insert(knownBy, character);
+					end
+				end
+			elseif group.questID then
+				kind = "Completed by ";
+				for guid,character in pairs(ATTCharacterData) do
+					if character.Quests and character.Quests[group.questID] then
+						table.insert(knownBy, character);
+					end
 				end
 			end
-			if #knownBy > 0 then
+			if #knownBy > 0 and kind then
 				insertionSort(knownBy, sortByNameSafely);
-				local desc = "Known by ";
+				local desc = kind;
 				for i,character in ipairs(knownBy) do
 					if i > 1 then desc = desc .. ", "; end
 					desc = desc .. (character.text or "???");
+					if group.itemID and character == app.CurrentCharacter then
+						local count = GetItemCount(group.itemID, true);
+						if count and count > 1 then
+							desc = desc .. " (x" .. count .. ")";
+						end
+					end
 				end
 				tinsert(info, { left = string.gsub(desc, "-" .. GetRealmName(), ""), wrap = true, color = "ff66ccff" });
 			end
@@ -4280,12 +4319,6 @@ if GetCategoryInfo and GetCategoryInfo(92) ~= "" then
 		return setmetatable(constructor(id, t, "achievementID"), app.BaseAchievement);
 	end
 	
-	local onClickForCriteria = function(row, button)
-		if button == "RightButton" then
-			app.CreateMiniListForGroup(app.CreateAchievement(row.ref.achievementID));
-			return true;
-		end
-	end;
 	app.BaseAchievementCriteria = app.BaseObjectFields({
 		["key"] = function(t)
 			return "criteriaID";
@@ -4371,9 +4404,6 @@ if GetCategoryInfo and GetCategoryInfo(92) ~= "" then
 					end
 				end
 			end
-		end,
-		["OnClick"] = function()
-			return onClickForCriteria;
 		end,
 		["OnTooltip"] = function()
 			return onTooltipForAchievementCriteria;
@@ -7014,17 +7044,17 @@ local itemFields = {
 		return t.collectedAsCost or t.collectedAsRWP;
 	end,
 	["collectedAsCost"] = function(t)
-		local id, partial = t.itemID;
+		local id, any, partial = t.itemID;
 		local results = app.SearchForField("itemIDAsCost", id, true);
 		if results and #results > 0 then
 			local itemCount = t.GetItemCount(t) or 0;
 			for _,ref in pairs(results) do
-				if ref.itemID ~= id and app.RecursiveGroupRequirementsFilter(ref) then
+				if ref.itemID ~= id and app.RecursiveDefaultClassAndRaceFilter(ref) then
 					if ref.key == "instanceID" or ((ref.key == "difficultyID" or ref.key == "mapID" or ref.key == "headerID") and (ref.parent and GetRelativeValue(ref.parent, "instanceID"))) then
 						if app.CollectibleQuests and itemCount == 0 then
 							return false;
 						end
-					elseif ref.collectible and not ref.collected then
+					elseif ref.collectible and ref.collected ~= 1 then
 						if ref.cost then
 							for k,v in ipairs(ref.cost) do
 								if v[2] == id and v[1] == "i" then
@@ -7071,9 +7101,22 @@ local itemFields = {
 							end
 						end
 					end
+					any = true;
 				end
 			end
-			return partial and 2 or 1;
+			if any then
+				if (t.rwp or (t.u and (t.u == 2 or t.u == 3 or t.u == 4))) and app.CollectibleRWP and t.f and app.Settings:GetFilterForRWP(t.f) then
+					if not ATTAccountWideData.RWP[id] then
+						if app.Settings:GetTooltipSetting("Report:Collected") then
+							print((t.text or RETRIEVING_DATA) .. " was added to your collection!");
+						end
+						app:PlayFanfare();
+					end
+					app.CurrentCharacter.RWP[id] = 1;
+					ATTAccountWideData.RWP[id] = 1;
+				end
+				return partial and 2 or 1;
+			end
 		end
 	end,
 	["collectedAsCostAfterFailure"] = function(t)
@@ -8998,7 +9041,7 @@ app.GetSpellName = function(spellID, rank)
 	else
 		spellName = GetSpellInfo(spellID);
 	end
-	if spellName and spellName ~= "" then
+	if spellName and spellName ~= "" and spellName ~= RETRIEVING_DATA then
 		if not rawget(app.SpellNameToSpellID, spellName) then
 			rawset(app.SpellNameToSpellID, spellName, spellID);
 			if not rawget(SpellIDToSpellName, spellID) then
@@ -9157,7 +9200,7 @@ local spellFields = {
 		return GetItemInfo(t.itemID) or t.nameAsSpell;
 	end,
 	["nameAsSpell"] = function(t)
-		return GetSpellLink(t.spellID) or RETRIEVING_DATA;
+		return GetSpellLink(t.spellID) or app.GetSpellName(t.spellID) or RETRIEVING_DATA;
 	end,
 	["tsmAsItem"] = function(t)
 		return string.format("i:%d", t.itemID);
@@ -9613,7 +9656,7 @@ UpdateGroups = function(parent, g)
 		local visible = false;
 		for key, group in ipairs(g) do
 			if group.OnUpdate then
-				if not group:OnUpdate() then
+				if not group:OnUpdate(group) then
 					if UpdateGroup(parent, group) then
 						visible = true;
 					end
@@ -9876,7 +9919,28 @@ app.CreateMinimapButton = CreateMinimapButton;
 
 -- Row Helper Functions
 local CreateRow;
-local function CreateMiniListForGroup(group)
+local function CreateMiniListForGroup(group, retried)
+	local achievementID = group.achievementID;
+	if achievementID and not retried then
+		if group.criteriaID or not group.g then
+			local searchResults = SearchForField("achievementID", achievementID);
+			if searchResults and #searchResults > 0 then
+				local bestResult;
+				for i=1,#searchResults,1 do
+					local searchResult = searchResults[i];
+					if searchResult.achievementID == achievementID and not searchResult.criteriaID then
+						if not bestResult or searchResult.g then
+							bestResult = searchResult;
+						end
+					end
+				end
+				if bestResult then
+					return CreateMiniListForGroup(bestResult, true);
+				end
+			end
+		end
+	end
+	
 	-- Pop Out Functionality! :O
 	local suffix = BuildSourceTextForChat(group, 0) .. " > " .. (group.text or "") .. (group.key and group[group.key] or "");
 	local popout = app.Windows[suffix];
@@ -10110,6 +10174,100 @@ local function CreateMiniListForGroup(group)
 		popout.data.indent = 0;
 		popout.data.total = 0;
 		popout.data.progress = 0;
+		
+		-- If this is an achievement, build the criteria within it if possible.
+		if achievementID then
+			local searchResults = SearchForField("achievementID", achievementID);
+			if searchResults and #searchResults > 0 then
+				for i=1,#searchResults,1 do
+					local searchResult = searchResults[i];
+					if searchResult.achievementID == achievementID and searchResult.criteriaID then
+						if not popout.data.g then popout.data.g = {}; end
+						MergeObject(popout.data.g, CloneData(searchResult));
+					end
+				end
+			end
+		end
+		
+		if popout.data.key then
+			if group.cost and type(group.cost) == "table" then
+				local costGroup = {
+					["text"] = "Cost",
+					["description"] = "The following contains all of the relevant items or currencies needed to acquire this.",
+					["icon"] = "Interface\\Icons\\INV_Misc_Coin_02",
+					["OnUpdate"] = app.AlwaysShowUpdate,
+					["g"] = {},
+				};
+				local costItem;
+				for i,c in ipairs(group.cost) do
+					costItem = nil;
+					if c[1] == "c" then
+						costItem = app.CreateCurrencyClass(c[2]);
+					elseif c[1] == "i" then
+						costItem = app.CreateItem(c[2]);
+					end
+					if costItem then
+						costItem = CloneData(costItem);
+						costItem.visible = true;
+						costItem.OnUpdate = app.AlwaysShowUpdate;
+						MergeObject(costGroup.g, costItem);
+					end
+				end
+				if #costGroup.g > 0 then
+					if not popout.data.g then popout.data.g = {}; end
+					MergeObject(popout.data.g, costGroup, 1);
+				end
+			end
+			
+			if group.providers or group.qgs or group.crs then
+				local sourceGroup = {
+					["text"] = "Sources",
+					["description"] = "The following contains all of the relevant sources.",
+					["icon"] = "Interface\\Icons\\INV_Misc_Coin_02",
+					["OnUpdate"] = app.AlwaysShowUpdate,
+					["g"] = {},
+				};
+				local sourceItem;
+				if group.providers then
+					for _,p in ipairs(group.providers) do
+						sourceItem = nil;
+						if p[1] == "n" then
+							sourceItem = app.CreateNPC(p[2]);
+						elseif p[1] == "o" then
+							sourceItem = app.CreateObject(p[2]);
+						elseif p[1] == "i" then
+							sourceItem = app.CreateItem(p[2]);
+						end
+						if sourceItem then
+							sourceItem.visible = true;
+							sourceItem.OnUpdate = app.AlwaysShowUpdate;
+							MergeObject(sourceGroup.g, sourceItem);
+						end
+					end
+				end
+				if group.crs then
+					for _,cr in ipairs(group.crs) do
+						sourceItem = app.CreateNPC(cr);
+						sourceItem.visible = true;
+						sourceItem.OnUpdate = app.AlwaysShowUpdate;
+						MergeObject(sourceGroup.g, sourceItem);
+					end
+				end
+				if group.qgs then
+					for _,qg in ipairs(group.qgs) do
+						sourceItem = app.CreateNPC(qg);
+						sourceItem.visible = true;
+						sourceItem.OnUpdate = app.AlwaysShowUpdate;
+						MergeObject(sourceGroup.g, sourceItem);
+					end
+				end
+				if #sourceGroup.g > 0 then
+					if not popout.data.g then popout.data.g = {}; end
+					MergeObject(popout.data.g, sourceGroup, 1);
+				end
+			end
+		end
+		
 		BuildGroups(popout.data, popout.data.g);
 		UpdateGroups(popout.data, popout.data.g);
 	end
@@ -10589,8 +10747,15 @@ local function RowOnEnter(self)
 				local link = reference.link;
 				if link then
 					pcall(GameTooltip.SetHyperlink, GameTooltip, link);
-					if reference.spellID and GetRelativeValue(reference, "requireSkill") == 333 then
-						AttachTooltipSearchResults(GameTooltip, 1, "spellID:" .. reference.spellID, SearchForField, "spellID", reference.spellID);
+					if reference.spellID then
+						local requireSkill = GetRelativeValue(reference, "requireSkill");
+						if requireSkill == 333 then
+							AttachTooltipSearchResults(GameTooltip, 1, "spellID:" .. reference.spellID, SearchForField, "spellID", reference.spellID);
+						elseif requireSkill == 960 then
+							GameTooltip:AddLine(GameTooltipTextLeft1:GetText(), 1, 1, 1, true);
+							GameTooltipTextLeft1:SetText(reference.name);
+							GameTooltip:Show();
+						end
 					end
 				end
 			end
@@ -10694,6 +10859,7 @@ local function RowOnEnter(self)
 			end
 		end
 		if reference.objectID and app.Settings:GetTooltipSetting("objectID") then GameTooltip:AddDoubleLine(L["OBJECT_ID"], tostring(reference.objectID)); end
+		if reference.speciesID and app.Settings:GetTooltipSetting("speciesID") then GameTooltip:AddDoubleLine(L["SPECIES_ID"], tostring(reference.speciesID)); end
 		if reference.spellID then
 			if app.Settings:GetTooltipSetting("spellID") then GameTooltip:AddDoubleLine(L["SPELL_ID"], tostring(reference.spellID) .. " (" .. (app.GetSpellName(reference.spellID, reference.rank) or "??") .. ")"); end
 			
@@ -10701,7 +10867,7 @@ local function RowOnEnter(self)
 			if not reference.collectible and app.Settings:GetTooltipSetting("KnownBy") then
 				local knownBy = {};
 				for _,character in pairs(ATTCharacterData) do
-					if character.ActiveSkills then
+					if character.ActiveSkills and not character.ignored then
 						local skills = character.ActiveSkills[reference.spellID];
 						if skills then table.insert(knownBy, { character, skills[1], skills[2] }); end
 					end
@@ -14556,8 +14722,8 @@ app:GetWindow("RWP", UIParent, function(self)
 				['back'] = 1,
 				["indent"] = 0,
 				['OnUpdate'] = function(data)
-					--if not self.dirty then return nil; end
-					--self.dirty = nil;
+					if not self.dirty then return nil; end
+					self.dirty = nil;
 					
 					local g = {};
 					if not data.results then
@@ -14595,7 +14761,7 @@ app:GetWindow("RWP", UIParent, function(self)
 		
 		-- Update the window and all of its row data
 		if self.data.OnUpdate then self.data.OnUpdate(self.data, self); end
-		UpdateWindow(self, true);
+		UpdateWindow(self);
 	end
 end);
 app:GetWindow("SoftReserves", UIParent, function(self)

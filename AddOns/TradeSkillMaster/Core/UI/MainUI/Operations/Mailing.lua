@@ -10,6 +10,7 @@ local L = TSM.Include("Locale").GetTable()
 local TextureAtlas = TSM.Include("Util.TextureAtlas")
 local PlayerInfo = TSM.Include("Service.PlayerInfo")
 local UIElements = TSM.Include("UI.UIElements")
+local UIUtils = TSM.Include("UI.UIUtils")
 local private = {
 	currentOperationName = nil,
 }
@@ -31,7 +32,7 @@ end
 -- ============================================================================
 
 function private.GetMailingOperationSettings(operationName)
-	TSM.UI.AnalyticsRecordPathChange("main", "operations", "mailing")
+	UIUtils.AnalyticsRecordPathChange("main", "operations", "mailing")
 	private.currentOperationName = operationName
 	local operation = TSM.Operations.GetSettings("Mailing", private.currentOperationName)
 	return UIElements.New("ScrollFrame", "content")

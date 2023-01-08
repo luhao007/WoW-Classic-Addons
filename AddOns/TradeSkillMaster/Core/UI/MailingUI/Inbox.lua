@@ -19,6 +19,7 @@ local ItemInfo = TSM.Include("Service.ItemInfo")
 local MailTracking = TSM.Include("Service.MailTracking")
 local Settings = TSM.Include("Service.Settings")
 local UIElements = TSM.Include("UI.UIElements")
+local UIUtils = TSM.Include("UI.UIUtils")
 local private = {
 	settings = nil,
 	fsm = nil,
@@ -64,7 +65,7 @@ end
 -- ============================================================================
 
 function private.GetInboxFrame()
-	TSM.UI.AnalyticsRecordPathChange("mailing", "inbox")
+	UIUtils.AnalyticsRecordPathChange("mailing", "inbox")
 	local frame = UIElements.New("Frame", "frame")
 		:SetLayout("VERTICAL")
 		:AddChild(UIElements.New("ViewContainer", "view")
@@ -156,7 +157,7 @@ function private.GetInboxMailsFrame()
 			:SetScript("OnRowClick", private.QueryOnRowClick)
 			:SetScript("OnDataUpdated", private.InboxOnDataUpdated)
 		)
-		:AddChild(TSM.UI.Views.Line.NewHorizontal("line"))
+		:AddChild(UIElements.New("HorizontalLine", "line"))
 		:AddChild(UIElements.New("Frame", "footer")
 			:SetLayout("HORIZONTAL")
 			:SetHeight(26)
@@ -202,7 +203,7 @@ function private.GetInboxMailsFrame()
 				)
 			)
 		)
-		:AddChild(TSM.UI.Views.Line.NewHorizontal("line"))
+		:AddChild(UIElements.New("HorizontalLine", "line"))
 	if TSM.IsWowClassic() then
 		frame:AddChild(UIElements.New("Frame", "bottom")
 			:SetLayout("VERTICAL")
@@ -430,7 +431,7 @@ function private.GetInboxItemsFrame()
 					)
 				)
 			)
-			:AddChild(TSM.UI.Views.Line.NewHorizontal("line"))
+			:AddChild(UIElements.New("HorizontalLine", "line"))
 			:AddChild(UIElements.New("Frame", "body")
 				:SetLayout("VERTICAL")
 				:SetPadding(4, 4, 8, 12)
@@ -494,7 +495,7 @@ function private.GetInboxItemsFrame()
 				)
 			)
 		)
-		:AddChild(TSM.UI.Views.Line.NewHorizontal("line"))
+		:AddChild(UIElements.New("HorizontalLine", "line"))
 		:AddChild(UIElements.New("Frame", "footer")
 			:SetLayout("HORIZONTAL")
 			:SetHeight(42)
@@ -728,7 +729,7 @@ function private.FormatInboxItem(row)
 		return L["Gold"]..": "..Money.ToString(row:GetField("itemLink"), Theme.GetColor("FEEDBACK_GREEN"):GetTextColorPrefix())
 	end
 
-	local coloredItem = TSM.UI.GetColoredItemName(row:GetField("itemLink")) or ""
+	local coloredItem = UIUtils.GetColoredItemName(row:GetField("itemLink")) or ""
 	local quantity = row:GetField("quantity")
 
 	local item = ""
@@ -836,7 +837,7 @@ function private.FormatItem(row)
 	local same = true
 	local qty = 0
 	for _, itemsRow in private.itemsQuery:Iterator() do
-		local coloredItem = TSM.UI.GetColoredItemName(itemsRow:GetField("itemLink")) or ""
+		local coloredItem = UIUtils.GetColoredItemName(itemsRow:GetField("itemLink")) or ""
 		local quantity = itemsRow:GetField("quantity")
 
 		if not item then

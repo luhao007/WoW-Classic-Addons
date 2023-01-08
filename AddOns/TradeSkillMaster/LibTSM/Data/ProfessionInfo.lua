@@ -4,8 +4,8 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
-local ProfessionInfo = TSM.Init("Data.ProfessionInfo")
+local TSM = select(2, ...) ---@type TSM
+local ProfessionInfo = TSM.Init("Data.ProfessionInfo") ---@class Data.ProfessionInfo
 
 
 
@@ -27,6 +27,12 @@ local CLASSIC_SUB_NAMES = {
 	[GRAND_MASTER] = true,
 	["大师级"] = true, -- zhCN ARTISAN
 	["Мастеровой"] = true, -- ruRU ARTISAN
+}
+local PROFESSION_NAME_MAP = {
+	["Costura"] = "Sastrería",
+	["Marroquinería"] = "Peletería",
+	["Ingénierie"] = "Ingénieur",
+	["Secourisme"] = "Premiers soins",
 }
 local VELLUM_ITEM_STRING = "i:38682"
 local WRATH_VELLUMS = {
@@ -1306,6 +1312,10 @@ end
 function ProfessionInfo.IsSubNameClassic(str)
 	assert(TSM.IsWowClassic())
 	return CLASSIC_SUB_NAMES[str] or false
+end
+
+function ProfessionInfo.MapProfessionName(str)
+	return PROFESSION_NAME_MAP[str]
 end
 
 function ProfessionInfo.GetVellumItemString(spellId)

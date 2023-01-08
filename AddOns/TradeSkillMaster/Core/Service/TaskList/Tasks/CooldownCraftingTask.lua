@@ -7,6 +7,7 @@
 local _, TSM = ...
 local CooldownCraftingTask = TSM.Include("LibTSMClass").DefineClass("CooldownCraftingTask", TSM.TaskList.CraftingTask)
 local Math = TSM.Include("Util.Math")
+local Profession = TSM.Include("Service.Profession")
 TSM.TaskList.CooldownCraftingTask = CooldownCraftingTask
 local private = {
 	registeredCallbacks = false,
@@ -71,7 +72,7 @@ end
 
 function CooldownCraftingTask._IsOnCooldown(self, craftString)
 	assert(not TSM.db.char.internalData.craftingCooldowns[craftString])
-	local remainingCooldown = TSM.Crafting.ProfessionUtil.GetRemainingCooldown(craftString)
+	local remainingCooldown = Profession.GetRemainingCooldown(craftString)
 	if remainingCooldown then
 		TSM.db.char.internalData.craftingCooldowns[craftString] = time() + Math.Round(remainingCooldown)
 		return true

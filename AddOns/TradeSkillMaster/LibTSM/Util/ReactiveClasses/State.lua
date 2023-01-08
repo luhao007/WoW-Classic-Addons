@@ -185,10 +185,10 @@ function State.GetDebugInfo(state)
 	for key, fieldType in context.schema:_FieldIterator() do
 		local value = context.data[key]
 		if value ~= nil then
-			if fieldType == "number" or fieldType == "boolean" then
-				tinsert(private.debugLinesTemp, format("%s = %s", key, value))
-			elseif fieldType == "string" then
+			if fieldType == "string" then
 				tinsert(private.debugLinesTemp, format("%s = \"%s\"", key, value))
+			else
+				tinsert(private.debugLinesTemp, format("%s = %s", key, tostring(value)))
 			end
 		end
 	end

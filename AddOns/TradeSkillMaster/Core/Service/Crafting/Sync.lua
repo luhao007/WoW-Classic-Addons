@@ -9,7 +9,7 @@ local CraftingSync = TSM.Crafting:NewPackage("Sync")
 local L = TSM.Include("Locale").GetTable()
 local Delay = TSM.Include("Util.Delay")
 local TempTable = TSM.Include("Util.TempTable")
-local String = TSM.Include("Util.String")
+local MatString = TSM.Include("Util.MatString")
 local Log = TSM.Include("Util.Log")
 local Theme = TSM.Include("Util.Theme")
 local Sync = TSM.Include("Service.Sync")
@@ -204,9 +204,8 @@ function private.RPCGetSpellInfoResultHandler(player, professionLookup, spellInf
 		for itemString, quantity in pairs(spellInfo.mats[i]) do
 			TSM.db.factionrealm.internalData.mats[itemString] = TSM.db.factionrealm.internalData.mats[itemString] or {}
 			if quantity < 0 then
-				local _, _, matList = strsplit(":", itemString)
-				for matItemId in String.SplitIterator(matList, ",") do
-					TSM.db.factionrealm.internalData.mats["i:"..matItemId] = TSM.db.factionrealm.internalData.mats["i:"..matItemId] or {}
+				for matItemString in MatString.ItemIterator(itemString) do
+					TSM.db.factionrealm.internalData.mats[matItemString] = TSM.db.factionrealm.internalData.mats[matItemString] or {}
 				end
 			end
 		end

@@ -41,8 +41,9 @@ if TEN then
 		defaults:SetPoint("BOTTOMLEFT", WINDOW_PADDING_H + WINDOW_LEFT_GAP/2, WINDOW_PADDING_BOTTOM)
 		defaults:SetText(DEFAULTS)
 		TenSettingsFrame.Reset = defaults
-		TenSettingsFrame.ClosePanelButton:SetScript("PostClick", function()
+		TenSettingsFrame.ClosePanelButton:SetScript("OnClick", function()
 			PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE)
+			TenSettingsFrame:Hide()
 		end)
 		TenSettingsFrame:SetScript("OnKeyDown", function(self, key)
 			self:SetPropagateKeyboardInput(key ~= "ESCAPE")

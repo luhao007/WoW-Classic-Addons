@@ -16,6 +16,7 @@ local Settings = TSM.Include("Service.Settings")
 local ItemLinked = TSM.Include("Service.ItemLinked")
 local DefaultUI = TSM.Include("Service.DefaultUI")
 local UIElements = TSM.Include("UI.UIElements")
+local UIUtils = TSM.Include("UI.UIUtils")
 local LibAHTab = LibStub("LibAHTab-1-0")
 local private = {
 	settings = nil,
@@ -249,7 +250,7 @@ function private.HideAuctionFrame()
 end
 
 function private.CreateMainFrame()
-	TSM.UI.AnalyticsRecordPathChange("auction")
+	UIUtils.AnalyticsRecordPathChange("auction")
 	local frame = UIElements.New("LargeApplicationFrame", "base")
 		:SetParent(UIParent)
 		:SetSettingsContext(private.settings, "frame")
@@ -288,7 +289,7 @@ function private.BaseFrameOnHide(frame)
 			C_AuctionHouse.CloseAuctionHouse()
 		end
 	end
-	TSM.UI.AnalyticsRecordClose("auction")
+	UIUtils.AnalyticsRecordClose("auction")
 end
 
 function private.SwitchBtnOnClick(button)

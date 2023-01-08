@@ -1,10 +1,12 @@
 local _, T = ...
-local L, PC, config, KR = T.L, T.OPieCore, T.config, OPie.ActionBook:compatible("Kindred", 1, 0)
+local L, EV, PC, config, KR = T.L, T.Evie, T.OPieCore, T.config, OPie.ActionBook:compatible("Kindred", 1, 0)
 
-local frame = config.createPanel("Bindings", "OPie")
+local frame = config.createPanel(L"Ring Bindings", "OPie")
+	frame.desc:SetText(L"Customize OPie key bindings below. |cffa0a0a0Gray|r and |cffFA2800red|r bindings conflict with others and are not currently active." .. "\n" ..
+		(L"Alt+Left Click on a button to set a conditional binding, indicated by %s."):format("|cff4CFF40[+]|r"))
 local OBC_Profile = CreateFrame("Frame", "OBC_Profile", frame, "UIDropDownMenuTemplate")
 	OBC_Profile:SetPoint("TOPLEFT", 0, -80) UIDropDownMenu_SetWidth(OBC_Profile, 200)
-	OBC_Profile.initialize = OPC_Profile.initialize
+	OBC_Profile.initialize, OBC_Profile.text = OPC_Profile.initialize, OPC_Profile.text
 local bindSet = CreateFrame("Frame", "OPC_BindingSet", frame, "UIDropDownMenuTemplate")
 	bindSet:SetPoint("LEFT", OBC_Profile, "RIGHT")	UIDropDownMenu_SetWidth(bindSet, 250)
 
@@ -13,6 +15,7 @@ local lBinding = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	lBinding:SetPoint("TOPLEFT", 32, -120)
 	lRing:SetPoint("LEFT", lBinding, "LEFT", 215, 0)
 	lBinding:SetWidth(180)
+	lBinding:SetText(L"Binding")
 local bindLines, bindZone = {}, CreateFrame("Frame", nil, frame) do
 	bindZone.bindingContainerFrame = frame
 	local function onMacroClick(self)
@@ -42,6 +45,7 @@ local bindLines, bindZone = {}, CreateFrame("Frame", nil, frame) do
 end
 local btnUnbind = config.createUnbindButton(bindZone)
 	btnUnbind:SetPoint("TOP", bindLines[#bindLines], "BOTTOM", 0, -3)
+	btnUnbind:SetText(L"Unbind")
 local btnUp = CreateFrame("Button", nil, frame, "UIPanelScrollUpButtonTemplate")
 	btnUp:SetPoint("RIGHT", btnUnbind, "LEFT", -10)
 local btnDown = CreateFrame("Button", nil, frame, "UIPanelScrollDownButtonTemplate")
@@ -100,7 +104,7 @@ function ringBindings:get(id)
 end
 function ringBindings:set(id, key)
 	id = self.map[id]
-	config.undo.saveProfile()
+	config.undo:saveActiveProfile()
 	PC:SetRingBinding(id, key)
 end
 function ringBindings:arrow(id)
@@ -146,7 +150,7 @@ function subBindings:set(id, bind)
 	local firstListSize = self.scope and 1 or 4
 	if id <= firstListSize then
 		id = (self.scope and 3 or 0) + id
-		config.undo.saveProfile()
+		config.undo:saveActiveProfile()
 		PC:SetOption(self.options[id], bind == false and "" or bind, self.scope)
 		return
 	else
@@ -175,7 +179,7 @@ function subBindings:set(id, bind)
 	local v = table.concat(t, " ")
 	if self.scope == nil and v == default then v = nil
 	elseif self.scope ~= nil and v == (global or default) then v = nil end
-	config.undo.saveProfile()
+	config.undo:saveActiveProfile()
 	PC:SetOption("SliceBindingString", v, self.scope)
 end
 local subBindings_List = {}
@@ -267,27 +271,16 @@ function bindSet:set(owner, scope)
 	frame.resetOnHide = nil
 end
 
-function frame.localize()
-	frame.name = L"Ring Bindings"
-	frame.title:SetText(frame.name)
-	frame.desc:SetText(L"Customize OPie key bindings below. |cffa0a0a0Gray|r and |cffFA2800red|r bindings conflict with others and are not currently active." .. "\n" ..
-		(L"Alt+Left Click on a button to set a conditional binding, indicated by %s."):format("|cff4CFF40[+]|r"))
-	lBinding:SetText(L"Binding")
-	btnUnbind:SetText(L"Unbind")
-	local p = OPie:GetCurrentProfile()
-	p = p == "default" and L"default" or p
-	UIDropDownMenu_SetText(OBC_Profile, L"Profile" .. ": " .. p)
-end
 function frame.refresh()
 	for _, v in pairs(bindingTypes) do
 		if v.refresh then v:refresh() end
 	end
-	frame.localize()
+	OBC_Profile:text()
 	updatePanelContent()
 	config.checkSVState(frame)
 end
 function frame.default()
-	config.undo.saveProfile()
+	config.undo:saveActiveProfile()
 	for _, v in pairs(bindingTypes) do
 		if v.default then v:default() end
 	end
@@ -312,4 +305,9 @@ function T.ShowSliceBindingPanel(ringKey)
 	bindSet.set(nil, subBindings, ringKey)
 	frame.resetOnHide = true
 	config.pulseDropdown(bindSet)
+end
+function EV:OPIE_PROFILE_SWITCHED()
+	if frame:IsVisible() then
+		frame.refresh()
+	end
 end

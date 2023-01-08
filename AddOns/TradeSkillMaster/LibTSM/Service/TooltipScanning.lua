@@ -19,7 +19,7 @@ local private = {
 -- ============================================================================
 
 function TooltipScanning.IsSoulbound(bag, slot)
-	local itemId = Container.GetItemID(bag, slot)
+	local itemId = Container.GetItemId(bag, slot)
 	if not itemId then
 		-- No item in this slot
 		return true, false, false
@@ -52,7 +52,7 @@ end
 
 function TooltipScanning.HasUsedCharges(bag, slot)
 	assert(TSM.IsWowClassic())
-	local itemId = Container.GetItemID(bag, slot)
+	local itemId = Container.GetItemId(bag, slot)
 	if not itemId then
 		-- No item in this slot
 		return false
@@ -112,7 +112,7 @@ function TooltipScanning.GetInboxBattlePetInfo(index, attachIndex)
 		return private.SetInboxItem(index, attachIndex)
 	else
 		local info = private.SetInboxItem(index, attachIndex)
-		return info.battlePetSpeciesID, info.battlePetLevel, info.battlePetBreedQuality, info.battlePetMaxHealth, info.battlePetPower, info.battlePetSpeed
+		return info.battlePetSpeciesID, info.battlePetLevel, info.battlePetBreedQuality
 	end
 end
 

@@ -163,7 +163,7 @@ do -- .macrotext
 		return isEmptyLine
 	end
 	bg.editBox, bg.scrollFrame = bg, eb
-	hooksecurefunc("ChatEdit_InsertLink", function(link, ...)
+	hooksecurefunc("ChatEdit_InsertLink", function(link)
 		if GetCurrentKeyBoardFocus() == eb then
 			if link:match("item:") then
 				eb:Insert((isCursorOnEmptyLine(eb) and (GetItemSpell(link) and SLASH_USE1 or SLASH_EQUIP1) or "") .. " " .. GetItemInfo(link))

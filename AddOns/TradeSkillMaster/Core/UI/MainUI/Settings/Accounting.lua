@@ -9,6 +9,7 @@ local Accounting = TSM.MainUI.Settings:NewPackage("Accounting")
 local L = TSM.Include("Locale").GetTable()
 local Log = TSM.Include("Util.Log")
 local UIElements = TSM.Include("UI.UIElements")
+local UIUtils = TSM.Include("UI.UIUtils")
 local private = {}
 local DAYS_OLD_OPTIONS = { 0, 15, 30, 45, 60, 75, 90, 180, 360 }
 
@@ -29,7 +30,7 @@ end
 -- ============================================================================
 
 function private.GetAccountingSettingsFrame()
-	TSM.UI.AnalyticsRecordPathChange("main", "settings", "accounting")
+	UIUtils.AnalyticsRecordPathChange("main", "settings", "accounting")
 	return UIElements.New("ScrollFrame", "accountingSettings")
 		:SetPadding(8, 8, 8, 0)
 		:AddChild(TSM.MainUI.Settings.CreateExpandableSection("Accounting", "accounting", L["General Options"], L["Some general Accounting options are below."])

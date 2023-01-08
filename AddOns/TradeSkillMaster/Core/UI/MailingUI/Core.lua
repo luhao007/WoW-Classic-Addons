@@ -13,6 +13,7 @@ local ScriptWrapper = TSM.Include("Util.ScriptWrapper")
 local Settings = TSM.Include("Service.Settings")
 local DefaultUI = TSM.Include("Service.DefaultUI")
 local UIElements = TSM.Include("UI.UIElements")
+local UIUtils = TSM.Include("UI.UIUtils")
 local private = {
 	settings = nil,
 	topLevelPages = {},
@@ -61,7 +62,7 @@ end
 -- ============================================================================
 
 function private.CreateMainFrame()
-	TSM.UI.AnalyticsRecordPathChange("mailing")
+	UIUtils.AnalyticsRecordPathChange("mailing")
 	-- Always show the Inbox first
 	private.settings.frame.page = 1
 	local frame = UIElements.New("LargeApplicationFrame", "base")
@@ -88,7 +89,7 @@ end
 -- ============================================================================
 
 function private.BaseFrameOnHide()
-	TSM.UI.AnalyticsRecordClose("mailing")
+	UIUtils.AnalyticsRecordClose("mailing")
 	private.fsm:ProcessEvent("EV_FRAME_HIDE")
 end
 

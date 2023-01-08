@@ -4,11 +4,8 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
---- Item Info Functions
--- @module ItemInfo
-
 local TSM = select(2, ...) ---@type TSM
-local ItemInfo = TSM.Init("Service.ItemInfo")
+local ItemInfo = TSM.Init("Service.ItemInfo") ---@class Service.ItemInfo
 local L = TSM.Include("Locale").GetTable()
 local ItemClass = TSM.Include("Data.ItemClass")
 local VendorSell = TSM.Include("Data.VendorSell")
@@ -450,30 +447,30 @@ function ItemInfo.ClearDB()
 	ReloadUI()
 end
 
---- Gets a publisher for item info changes.
--- @treturn ReactivePublisher The publisher
+---Gets a publisher for item info changes.
+---@return ReactivePublisher
 function ItemInfo.GetPublisher()
 	return private.stream:Publisher()
 end
 
---- Sets whether or not query updates are paused on the item info DB
--- @tparam boolean paused Whether or not query updates are paused
+---Sets whether or not query updates are paused on the item info DB
+---@param paused boolean Whether or not query updates are paused
 function ItemInfo.SetQueryUpdatesPaused(paused)
 	private.db:SetQueryUpdatesPaused(paused)
 end
 
---- Store the name of an item.
+---Store the name of an item.
 -- This function is used to opportunistically populate the item cache with item names.
--- @tparam string itemString The itemString
--- @tparam string name The item name
+---@param itemString string The itemString
+---@param name string The item name
 function ItemInfo.StoreItemName(itemString, name)
 	assert(not ItemString.ParseLevel(itemString))
 	private.SetSingleField(itemString, "name", name)
 end
 
---- Store information about an item from its link.
--- This function is used to opportunistically populate the item cache with item info.
--- @tparam string itemLink The item link
+---Store information about an item from its link.
+---This function is used to opportunistically populate the item cache with item info.
+---@param itemLink string The item link
 function ItemInfo.StoreItemInfoByLink(itemLink)
 	-- see if we can extract the quality and name from the link
 	local colorHex, name = strmatch(itemLink, "^(\124cff[0-9a-z]+)\124[Hh].+\124h%[(.+)%]\124h\124r$")
@@ -497,11 +494,11 @@ function ItemInfo.StoreItemInfoByLink(itemLink)
 	end
 end
 
---- Get the itemString from an item name.
--- This API will return the base itemString when there are multiple variants with the same name and will return nil if
--- there are multiple distinct items with the same name.
--- @tparam string name The item name
--- @treturn ?string The itemString
+---Get the itemString from an item name.
+---This API will return the base itemString when there are multiple variants with the same name and will return nil if
+---there are multiple distinct items with the same name.
+---@param name string The item name
+---@return string?
 function ItemInfo.ItemNameToItemString(name)
 	local result = nil
 	local query = private.db:NewQuery()
@@ -523,9 +520,9 @@ function ItemInfo.ItemNameToItemString(name)
 	return result
 end
 
---- Get the name.
--- @tparam string item The item
--- @treturn ?string The name
+---Get the name.
+---@param item string The item
+---@return string?
 function ItemInfo.GetName(item)
 	local itemString = ItemString.Get(item)
 	if not itemString then
@@ -560,9 +557,9 @@ function ItemInfo.GetName(item)
 	return name
 end
 
---- Get the link.
--- @tparam string item The item
--- @treturn string The link or an "Unknown Item" link
+---Get the link (or an "Unknown Item" link).
+---@param item string The item
+---@return string?
 function ItemInfo.GetLink(item)
 	local itemString = ItemString.Get(item)
 	if not itemString then
@@ -584,9 +581,9 @@ function ItemInfo.GetLink(item)
 	return link
 end
 
---- Get the expansion id.
--- @tparam string item The item
--- @treturn ?number The expansion id
+---Get the expansion id.
+---@param item string The item
+---@return number?
 function ItemInfo.GetExpansion(item)
 	local itemString = ItemString.Get(item)
 	if not itemString then
@@ -598,6 +595,9 @@ function ItemInfo.GetExpansion(item)
 	return expansionId
 end
 
+---Gets the crafted quality.
+---@param item string The item
+---@return number?
 function ItemInfo.GetCraftedQuality(item)
 	local itemString = ItemString.Get(item)
 	if itemString == ItemString.GetUnknown() or itemString == ItemString.GetPlaceholder() then
@@ -609,9 +609,9 @@ function ItemInfo.GetCraftedQuality(item)
 	return (craftedQuality or 0) > 0 and craftedQuality or nil
 end
 
---- Get the quality.
--- @tparam string item The item
--- @treturn ?number The quality
+---Get the quality.
+---@param item string The item
+---@return number?
 function ItemInfo.GetQuality(item)
 	local itemString = ItemString.Get(item)
 	if not itemString then
@@ -646,9 +646,9 @@ function ItemInfo.GetQuality(item)
 	return quality
 end
 
---- Get the quality color.
--- @tparam string item The item
--- @treturn ?string The quality color string
+---Get the quality color.
+---@param item string The item
+---@return string?
 function ItemInfo.GetQualityColor(item)
 	local itemString = ItemString.Get(item)
 	if itemString == ItemString.GetUnknown() then
@@ -657,12 +657,12 @@ function ItemInfo.GetQualityColor(item)
 		return "|cffffffff"
 	end
 	local quality = ItemInfo.GetQuality(itemString)
-	return ITEM_QUALITY_COLORS[quality] and ITEM_QUALITY_COLORS[quality].hex
+	return quality and ITEM_QUALITY_COLORS[quality] and ITEM_QUALITY_COLORS[quality].hex or nil
 end
 
---- Get the item level.
--- @tparam string item The item
--- @treturn ?number The item level
+---Get the item level.
+---@param item string The item
+---@return number?
 function ItemInfo.GetItemLevel(item)
 	local itemString = ItemString.Get(item)
 	if not itemString then
@@ -712,9 +712,9 @@ function ItemInfo.GetItemLevel(item)
 	return itemLevel
 end
 
---- Get the min level.
--- @tparam string item The item
--- @treturn ?number The min level
+---Get the min level.
+---@param item string The item
+---@return number?
 function ItemInfo.GetMinLevel(item)
 	local itemString = ItemString.Get(item)
 	if not itemString then
@@ -741,9 +741,9 @@ function ItemInfo.GetMinLevel(item)
 	return minLevel
 end
 
---- Get the max stack size.
--- @tparam string item The item
--- @treturn ?number The max stack size
+---Get the max stack size.
+---@param item string The item
+---@return number?
 function ItemInfo.GetMaxStack(item)
 	local itemString = ItemString.Get(item)
 	if not itemString then
@@ -784,9 +784,9 @@ function ItemInfo.GetMaxStack(item)
 	return maxStack
 end
 
---- Get the inventory slot id.
--- @tparam string item The item
--- @treturn ?number The inventory slot id
+---Get the inventory slot id.
+---@param item string The item
+---@return number?
 function ItemInfo.GetInvSlotId(item)
 	local itemString = ItemString.Get(item)
 	if not itemString then
@@ -798,9 +798,9 @@ function ItemInfo.GetInvSlotId(item)
 	return invSlotId
 end
 
---- Get the texture.
--- @tparam string item The item
--- @treturn ?number The texture
+---Get the texture.
+---@param item string The item
+---@return number?
 function ItemInfo.GetTexture(item)
 	local itemString = ItemString.Get(item)
 	if not itemString then
@@ -818,9 +818,9 @@ function ItemInfo.GetTexture(item)
 	return private.GetField(itemString, "texture")
 end
 
---- Get the vendor sell price.
--- @tparam string item The item
--- @treturn ?number The vendor sell price
+---Get the vendor sell price.
+---@param item string The item
+---@return number?
 function ItemInfo.GetVendorSell(item)
 	local itemString = ItemString.Get(item)
 	if not itemString then
@@ -836,9 +836,9 @@ function ItemInfo.GetVendorSell(item)
 	return (vendorSell or 0) > 0 and vendorSell or nil
 end
 
---- Get the class id.
--- @tparam string item The item
--- @treturn ?number The class id
+---Get the class id.
+---@param item string The item
+---@return number?
 function ItemInfo.GetClassId(item)
 	local itemString = ItemString.Get(item)
 	if not itemString then
@@ -854,9 +854,9 @@ function ItemInfo.GetClassId(item)
 	return private.GetField(itemString, "classId")
 end
 
---- Get the sub-class id.
--- @tparam string item The item
--- @treturn ?number The sub-class id
+---Get the sub-class id.
+---@param item string The item
+---@return number?
 function ItemInfo.GetSubClassId(item)
 	local itemString = ItemString.Get(item)
 	if not itemString then
@@ -873,9 +873,9 @@ function ItemInfo.GetSubClassId(item)
 end
 
 
---- Get whether or not the item is bind on pickup.
--- @tparam string item The item
--- @treturn boolean Whether or not the item is bind on pickup
+---Get whether or not the item is bind on pickup.
+---@param item string The item
+---@return boolean?
 function ItemInfo.IsSoulbound(item)
 	local itemString = ItemString.Get(item)
 	if not itemString then
@@ -890,9 +890,9 @@ function ItemInfo.IsSoulbound(item)
 	return isBOP
 end
 
---- Get whether or not the item is a crafting reagent.
--- @tparam string item The item
--- @treturn boolean Whether or not the item is a crafting reagent
+---Get whether or not the item is a crafting reagent.
+---@param item string The item
+---@return boolean?
 function ItemInfo.IsCraftingReagent(item)
 	local itemString = ItemString.Get(item)
 	if not itemString then
@@ -907,9 +907,9 @@ function ItemInfo.IsCraftingReagent(item)
 	return isCraftingReagent
 end
 
---- Get the vendor buy price.
--- @tparam string item The item
--- @treturn ?number The vendor buy price
+---Get the vendor buy price.
+---@param item string The item
+---@return number?
 function ItemInfo.GetVendorBuy(item)
 	local itemString = ItemString.Get(item)
 	if not itemString or ItemString.ParseLevel(itemString) then
@@ -918,9 +918,9 @@ function ItemInfo.GetVendorBuy(item)
 	return private.settings.vendorItems[itemString]
 end
 
---- Get whether or not the item is disenchantable.
--- @tparam string item The item
--- @treturn ?boolean Whether or not the item is disenchantable (nil means we don't know)
+---Get whether or not the item is disenchantable.
+---@param item string The item
+---@return boolean?
 function ItemInfo.IsDisenchantable(item)
 	local itemString = ItemString.Get(item)
 	if not itemString then
@@ -940,9 +940,9 @@ function ItemInfo.IsDisenchantable(item)
 	return quality >= (Enum.ItemQuality.Good or Enum.ItemQuality.Uncommon) and quality < Enum.ItemQuality.Legendary and (classId == Enum.ItemClass.Armor or classId == Enum.ItemClass.Weapon)
 end
 
---- Get whether or not the item is a commodity in WoW 8.3 (and above).
--- @tparam string item The item
--- @treturn ?number The inventory slot id
+---Get whether or not the item is a commodity in WoW 8.3 (and above).
+---@param item string The item
+---@return number?
 function ItemInfo.IsCommodity(item)
 	if TSM.IsWowClassic() then
 		return false
@@ -954,9 +954,9 @@ function ItemInfo.IsCommodity(item)
 	return stackSize > 1
 end
 
---- Get whether or not the item can have variations.
--- @tparam string item The item
--- @treturn ?boolean Whether or not the item can have variations
+---Get whether or not the item can have variations.
+---@param item string The item
+---@return boolean?
 function ItemInfo.CanHaveVariations(item)
 	local classId = ItemInfo.GetClassId(item)
 	if not classId then
@@ -975,9 +975,9 @@ function ItemInfo.CanHaveVariations(item)
 	end
 end
 
---- Fetch info for the item.
--- This function can be called ahead of time for items which we know we need to have info cached for.
--- @tparam ?string item The item
+---Fetch info for the item.
+---This function can be called ahead of time for items which we know we need to have info cached for.
+---@param item? string The item
 function ItemInfo.FetchInfo(item)
 	if item == ItemString.GetUnknown() or item == ItemString.GetPlaceholder() or ItemString.ParseLevel(item) then
 		return
@@ -1000,9 +1000,9 @@ function ItemInfo.FetchInfo(item)
 	private.processInfoTimer:RunForTime(0)
 end
 
---- Generalize an item link.
--- @tparam string itemLink The item link
--- @treturn ?string The generalized link
+---Generalize an item link.
+---@param itemLink string The item link
+---@return string?
 function ItemInfo.GeneralizeLink(itemLink)
 	local itemString = ItemString.Get(itemLink)
 	if not itemString then return end

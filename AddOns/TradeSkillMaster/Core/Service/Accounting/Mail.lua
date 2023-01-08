@@ -11,6 +11,7 @@ local String = TSM.Include("Util.String")
 local ItemString = TSM.Include("Util.ItemString")
 local Vararg = TSM.Include("Util.Vararg")
 local Container = TSM.Include("Util.Container")
+local Log = TSM.Include("Util.Log")
 local DefaultUI = TSM.Include("Service.DefaultUI")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local InventoryInfo = TSM.Include("Service.InventoryInfo")
@@ -149,6 +150,8 @@ function private.ScanCollectedMail(oFunc, attempt, index, subIndex)
 			if itemString then
 				local copper = floor((bid - ahcut) / quantity + 0.5)
 				TSM.Accounting.Transactions.InsertAuctionSale(itemString, quantity, copper, buyer, saleTime)
+			else
+				Log.Err("Failed to get itemString: %s", tostring(itemName))
 			end
 			success = true
 		end
@@ -170,6 +173,8 @@ function private.ScanCollectedMail(oFunc, attempt, index, subIndex)
 			local buyTime = (time() + (daysLeft - 30) * SECONDS_PER_DAY)
 			TSM.Accounting.Transactions.InsertAuctionBuy(itemString, quantity, copper, buyer, buyTime)
 			success = true
+		else
+			Log.Err("Failed to get itemString: %s, %s, %s", tostring(index), tostring(subIndex), tostring(link))
 		end
 	elseif codAmount > 0 then -- COD Buys (only if all attachments are same item)
 		local link = (subIndex or 1) == 1 and private.GetFirstInboxItemLink(index) or GetInboxItemLink(index, subIndex or 1)
@@ -360,9 +365,9 @@ function private.GetFirstInboxItemLink(index)
 	if not attachIndex then
 		error(format("Invalid attachIndex for index %s", tostring(index)))
 	end
-	local speciesId, level, breedQuality, maxHealth, power, speed = TooltipScanning.GetInboxBattlePetInfo(index, attachIndex)
+	local speciesId, level, breedQuality = TooltipScanning.GetInboxBattlePetInfo(index, attachIndex)
 	if speciesId and speciesId > 0 then
-		return ItemInfo.GetLink(strjoin(":", "p", speciesId, level, breedQuality, maxHealth, power, speed))
+		return ItemInfo.GetLink(strjoin(":", "p", speciesId, level, breedQuality))
 	else
 		return GetInboxItemLink(index, attachIndex)
 	end

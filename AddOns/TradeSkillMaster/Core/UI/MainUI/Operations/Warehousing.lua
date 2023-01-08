@@ -8,6 +8,7 @@ local _, TSM = ...
 local Warehousing = TSM.MainUI.Operations:NewPackage("Warehousing")
 local L = TSM.Include("Locale").GetTable()
 local UIElements = TSM.Include("UI.UIElements")
+local UIUtils = TSM.Include("UI.UIUtils")
 local private = { currentOperationName = nil }
 
 
@@ -27,7 +28,7 @@ end
 -- ============================================================================
 
 function private.GetWarehousingOperationSettings(operationName)
-	TSM.UI.AnalyticsRecordPathChange("main", "operations", "warehousing")
+	UIUtils.AnalyticsRecordPathChange("main", "operations", "warehousing")
 	private.currentOperationName = operationName
 	return UIElements.New("ScrollFrame", "settings")
 		:SetPadding(8, 8, 8, 0)

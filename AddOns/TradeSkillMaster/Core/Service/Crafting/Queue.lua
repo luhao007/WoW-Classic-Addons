@@ -13,6 +13,7 @@ local Math = TSM.Include("Util.Math")
 local Log = TSM.Include("Util.Log")
 local RecipeString = TSM.Include("Util.RecipeString")
 local ItemString = TSM.Include("Util.ItemString")
+local MatString = TSM.Include("Util.MatString")
 local AltTracking = TSM.Include("Service.AltTracking")
 local CustomPrice = TSM.Include("Service.CustomPrice")
 local private = {
@@ -196,8 +197,8 @@ function private.RestockItem(itemString)
 	if levelOptionalMat then
 		local levelOptionalMatItemId = ItemString.ToId(levelOptionalMat)
 		local found = false
-		for _, optionalMatString, slotId in TSM.Crafting.OptionalMatIterator(cheapestCraftString) do
-			if not found and (strmatch(optionalMatString, "[:,]"..levelOptionalMatItemId.."$") or strmatch(optionalMatString, "[:,]"..levelOptionalMatItemId..",")) then
+		for _, matString, slotId in TSM.Crafting.OptionalMatIterator(cheapestCraftString) do
+			if not found and MatString.ContainsItem(matString, levelOptionalMatItemId) then
 				private.optionalMatTemp[slotId] = levelOptionalMatItemId
 				found = true
 			end

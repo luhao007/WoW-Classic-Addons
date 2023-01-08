@@ -353,6 +353,14 @@ function BagTracking.GetTotalQuantity(itemString)
 	return bagQuantity + bankQuantity + reagentBankQuantity
 end
 
+function BagTracking.GetCraftingMatQuantity(itemString)
+	if TSM.IsWowClassic() then
+		return BagTracking.GetBagQuantity(itemString)
+	else
+		return BagTracking.GetTotalQuantity(itemString)
+	end
+end
+
 
 
 -- ============================================================================

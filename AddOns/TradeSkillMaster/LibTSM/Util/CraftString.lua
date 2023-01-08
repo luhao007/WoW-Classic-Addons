@@ -18,7 +18,7 @@ local CraftString = TSM.Init("Util.CraftString") ---@class Util.CraftString
 ---@param rank? number The rank of the craft
 ---@param level? number The level of the craft
 ---@param level? number The quality of the craft
----@return string @The craft string
+---@return string
 function CraftString.Get(spellId, rank, level, quality)
 	local suffix = ""
 	if rank and rank > 0 then
@@ -41,38 +41,49 @@ end
 
 ---Creates a craft string from a recipe string.
 ---@param recipeString string The recipe string
----@return string @The craft string
+---@return string
 function CraftString.FromRecipeString(recipeString)
 	local spellId = strmatch(recipeString, "^r:(%d+)")
 	local rank = tonumber(strmatch(recipeString, ":r(%d+)"))
 	local level = tonumber(strmatch(recipeString, ":l(%d+)"))
-	return CraftString.Get(spellId, rank, level)
+	local quality = tonumber(strmatch(recipeString, ":q(%d+)"))
+	return CraftString.Get(spellId, rank, level, quality)
 end
 
 ---Gets the spell ID from a craft string.
 ---@param craftString string The craft string
----@return number @The spell ID
+---@return number
 function CraftString.GetSpellId(craftString)
 	return tonumber(strmatch(craftString, "^c:(%d+)"))
 end
 
 ---Gets the rank from the craft string.
 ---@param craftString string The craft string
----@return number|nil @The rank
+---@return number?
 function CraftString.GetRank(craftString)
 	return tonumber(strmatch(craftString, ":r(%d+)"))
 end
 
 ---Gets the level from the craft string.
 ---@param craftString string The craft string
----@return number|nil @The level
+---@return number?
 function CraftString.GetLevel(craftString)
 	return tonumber(strmatch(craftString, ":l(%d+)"))
 end
 
 ---Gets the quality from the craft string.
 ---@param craftString string The craft string
----@return number|nil @The level
+---@return number|nil
 function CraftString.GetQuality(craftString)
 	return tonumber(strmatch(craftString, ":q(%d+)"))
+end
+
+---Gets a new craft string with the specified level.
+---@param craftString string The craft string
+---@param level number The new level
+function CraftString.SetLevel(craftString, level)
+	local spellId = CraftString.GetSpellId(craftString)
+	local rank = CraftString.GetRank(craftString)
+	local quality = CraftString.GetQuality(craftString)
+	return CraftString.Get(spellId, rank, level, quality)
 end

@@ -8,6 +8,7 @@ local _, TSM = ...
 local Sniper = TSM.MainUI.Operations:NewPackage("Sniper")
 local L = TSM.Include("Locale").GetTable()
 local UIElements = TSM.Include("UI.UIElements")
+local UIUtils = TSM.Include("UI.UIUtils")
 local private = {
 	currentOperationName = nil,
 }
@@ -34,7 +35,7 @@ end
 -- ============================================================================
 
 function private.GetSniperOperationSettings(operationName)
-	TSM.UI.AnalyticsRecordPathChange("main", "operations", "sniper")
+	UIUtils.AnalyticsRecordPathChange("main", "operations", "sniper")
 	private.currentOperationName = operationName
 	return UIElements.New("ScrollFrame", "settings")
 		:SetPadding(8, 8, 8, 0)

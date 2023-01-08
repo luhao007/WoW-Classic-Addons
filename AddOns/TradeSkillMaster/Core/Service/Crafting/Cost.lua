@@ -4,7 +4,7 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local Cost = TSM.Crafting:NewPackage("Cost")
 local ProfessionInfo = TSM.Include("Data.ProfessionInfo")
 local TempTable = TSM.Include("Util.TempTable")
@@ -12,6 +12,7 @@ local Math = TSM.Include("Util.Math")
 local ItemString = TSM.Include("Util.ItemString")
 local CraftString = TSM.Include("Util.CraftString")
 local RecipeString = TSM.Include("Util.RecipeString")
+local MatString = TSM.Include("Util.MatString")
 local CustomPrice = TSM.Include("Service.CustomPrice")
 local private = {
 	matsVisited = {},
@@ -313,7 +314,7 @@ function private.GetCraftingCostHelper(craftString, recipeString, optionalMats, 
 		didSetProfession = true
 	end
 	for itemString, quantity in pairs(mats) do
-		if not strmatch(itemString, "^[qof]:") then
+		if MatString.GetType(itemString) == MatString.TYPE.NORMAL then
 			hasMats = true
 			local matCost = Cost.GetMatCost(itemString)
 			if not matCost then

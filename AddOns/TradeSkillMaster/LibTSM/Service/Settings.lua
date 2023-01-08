@@ -206,9 +206,10 @@ local ACCESSIBLE_FACTIONS = TSM.IsWowClassic() and { FACTION } or {
 -- [112] updated global.craftingUIContext.professionScrollingTable
 -- [113] updated global.craftingUIContext.professionDividedContainerBottom
 -- [114] updated factionrealm.internalData.crafts
+-- [115] removed global.internalData.optionalMatTextLookup
 
 local SETTINGS_INFO = {
-	version = 114,
+	version = 115,
 	minVersion = 10,
 	global = {
 		debug = {
@@ -220,7 +221,6 @@ local SETTINGS_INFO = {
 			appMessageId = { type = "number", default = 0, lastModifiedVersion = 10 },
 			destroyingHistory = { type = "table", default = {}, lastModifiedVersion = 10 },
 			whatsNewVersion = { type = "number", default = 0, lastModifiedVersion = 94 },
-			optionalMatTextLookup = { type = "table", default = {}, lastModifiedVersion = 97 },
 		},
 		appearanceOptions = {
 			taskListBackgroundLock = { type = "boolean", default = false, lastModifiedVersion = 87 },

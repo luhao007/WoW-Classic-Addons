@@ -4,16 +4,13 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
---- Frame UI Element Class.
--- A frame is a container which supports automated layout of its children. It also supports being the base element of a UI and anchoring/parenting directly to a WoW frame. It is a subclass of the @{Container} class.
--- @classmod Frame
-
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local TempTable = TSM.Include("Util.TempTable")
 local Table = TSM.Include("Util.Table")
 local Color = TSM.Include("Util.Color")
 local Theme = TSM.Include("Util.Theme")
 local Rectangle = TSM.Include("UI.Rectangle")
+local UIElements = TSM.Include("UI.UIElements")
 local VALID_LAYOUTS = {
 	NONE = true,
 	HORIZONTAL = true,
@@ -32,9 +29,7 @@ local LAYOUT_CONTEXT = {
 		sides = { primary = { "LEFT", "RIGHT" }, secondary = { "TOP", "BOTTOM" } },
 	},
 }
-local Frame = TSM.Include("LibTSMClass").DefineClass("Frame", TSM.UI.Container)
-local UIElements = TSM.Include("UI.UIElements")
-UIElements.Register(Frame)
+local Frame = UIElements.Define("Frame", "Container") ---@class Frame: Container
 TSM.UI.Frame = Frame
 local ROUNDED_CORNER_RADIUS = 4
 

@@ -10,6 +10,7 @@ local L = TSM.Include("Locale").GetTable()
 local Sound = TSM.Include("Util.Sound")
 local Math = TSM.Include("Util.Math")
 local UIElements = TSM.Include("UI.UIElements")
+local UIUtils = TSM.Include("UI.UIUtils")
 local private = {
 	sounds = {},
 	soundkeys = {},
@@ -38,7 +39,7 @@ end
 -- ============================================================================
 
 function private.GetMailingSettingsFrame()
-	TSM.UI.AnalyticsRecordPathChange("main", "settings", "mailing")
+	UIUtils.AnalyticsRecordPathChange("main", "settings", "mailing")
 	return UIElements.New("ScrollFrame", "mailingSettings")
 		:SetPadding(8, 8, 8, 0)
 		:AddChild(TSM.MainUI.Settings.CreateExpandableSection("Mailing", "inbox", L["Inbox Settings"], "")

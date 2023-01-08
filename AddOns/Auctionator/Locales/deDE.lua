@@ -121,7 +121,8 @@ L["CONFIG_SELLING_CANCEL_SHORTCUT"] = "auf eine eigene Auktion, bricht diese ab"
 L["CONFIG_SELLING_CATEGORY"] = "Verkaufen"
 L["CONFIG_SELLING_CONFIRM_LOW_PRICE"] = "Bestätige die Erstellung von Gegenständen zu einem ungewöhnlich niedrigen Preis"
 L["CONFIG_SELLING_CONFIRM_LOW_PRICE_TOOLTIP_HEADER"] = "Bestätige den niedrigen Preis des Erstellens"
-L["CONFIG_SELLING_CONFIRM_LOW_PRICE_TOOLTIP_TEXT"] = "Ermöglicht den Bestätigungsdialog zu beseitigen, das beim Erstellen eines Gegenstands zu einem ungewöhnlich niedrigen Preis angezeigt wird."
+--[[Translation missing --]]
+L["CONFIG_SELLING_CONFIRM_LOW_PRICE_TOOLTIP_TEXT_2"] = "Adds a confirmation dialog that appears when posting an item at an unusually low price."
 L["CONFIG_SELLING_DEFAULT_QUANTITY_SUFFIX"] = "Für die maximale Menge auf 0 setzen"
 L["CONFIG_SELLING_DEFAULT_QUANTITY_TOOLTIP_HEADER"] = "Standardmenge beim Erstellen von Auktionen"
 L["CONFIG_SELLING_DEFAULT_QUANTITY_TOOLTIP_TEXT"] = "Hier kann die Standardmenge der zu verkaufenden Gegenstände angepasst werden. Bei 0 wird die maximal verfügbare Menge genommen."
@@ -537,7 +538,11 @@ L["STARTING_PRICE_PERCENTAGE_TOOLTIP_HEADER"] = "Startgebotspreis"
 L["STARTING_PRICE_PERCENTAGE_TOOLTIP_TEXT"] = "Der Prozentsatz des Startpreises wird verwendet, um den Standardpreis für alle eingestellten Auktionen festzulegen. Wenn dieser Wert zum Beispiel auf 95 gesetzt wird, dann wird der Gebotspreis für einen 10er-Stapel auf 9s50c festgelegt."
 --[[Translation missing --]]
 L["STOP"] = "Stop"
+--[[Translation missing --]]
+L["STOP_LOADING_NOW"] = "Stop loading now"
 L["TEMPORARY_LOWER_CASE"] = "temporär"
+--[[Translation missing --]]
+L["TIER"] = "Tier"
 L["TIME_LEFT"] = "Verbleibende Zeit"
 L["TIME_LEFT_H"] = "Restzeit (h)"
 L["TO_CRAFT_COLON"] = "Zum herstellen:"

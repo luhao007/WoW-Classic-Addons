@@ -12,6 +12,7 @@ local TempTable = TSM.Include("Util.TempTable")
 local Log = TSM.Include("Util.Log")
 local Settings = TSM.Include("Service.Settings")
 local UIElements = TSM.Include("UI.UIElements")
+local UIUtils = TSM.Include("UI.UIUtils")
 local private = {
 	settings = nil,
 	frame = nil,
@@ -104,7 +105,7 @@ function private.OnRegenDisabled()
 end
 
 function private.CreateMainFrame()
-	TSM.UI.AnalyticsRecordPathChange("task_list")
+	UIUtils.AnalyticsRecordPathChange("task_list")
 	local frame = UIElements.New("OverlayApplicationFrame", "base")
 		:SetParent(UIParent)
 		:SetWidth(307)
@@ -114,7 +115,7 @@ function private.CreateMainFrame()
 		:SetScript("OnHide", private.BaseFrameOnHide)
 		:SetContentFrame(UIElements.New("Frame", "content")
 			:SetLayout("VERTICAL")
-			:AddChild(TSM.UI.Views.Line.NewHorizontal("hline")
+			:AddChild(UIElements.New("HorizontalLine", "hline")
 				:SetColor("ACTIVE_BG_ALT")
 			)
 			:AddChildrenWithFunction(private.CreateTaskListElements)
@@ -278,7 +279,7 @@ function private.BaseFrameOnHide(frame)
 	assert(frame == private.frame)
 	frame:Release()
 	private.frame = nil
-	TSM.UI.AnalyticsRecordClose("task_list")
+	UIUtils.AnalyticsRecordClose("task_list")
 end
 
 function private.CloseBtnOnClick(button)
@@ -347,7 +348,7 @@ function private.OnTaskListUpdate()
 		private.frame:SetTitle(L["TSM TASK LIST"].." ("..numTasks..")")
 		local contentFrame = private.frame:GetElement("content")
 		contentFrame:ReleaseAllChildren()
-		contentFrame:AddChild(TSM.UI.Views.Line.NewHorizontal("hline")
+		contentFrame:AddChild(UIElements.New("HorizontalLine", "hline")
 			:SetColor("ACTIVE_BG_ALT")
 		)
 		contentFrame:AddChildrenWithFunction(private.CreateTaskListElements)

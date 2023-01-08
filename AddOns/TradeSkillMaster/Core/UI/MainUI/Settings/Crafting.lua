@@ -9,6 +9,7 @@ local Crafting = TSM.MainUI.Settings:NewPackage("Crafting")
 local L = TSM.Include("Locale").GetTable()
 local PlayerInfo = TSM.Include("Service.PlayerInfo")
 local UIElements = TSM.Include("UI.UIElements")
+local UIUtils = TSM.Include("UI.UIUtils")
 local private = {
 	altCharacters = {},
 	altGuilds = {},
@@ -37,7 +38,7 @@ end
 -- ============================================================================
 
 function private.GetCraftingSettingsFrame()
-	TSM.UI.AnalyticsRecordPathChange("main", "settings", "crafting")
+	UIUtils.AnalyticsRecordPathChange("main", "settings", "crafting")
 	wipe(private.altCharacters)
 	wipe(private.altGuilds)
 	for _, character in PlayerInfo.CharacterIterator(true) do

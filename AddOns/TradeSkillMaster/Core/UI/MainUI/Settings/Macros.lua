@@ -12,6 +12,7 @@ local Vararg = TSM.Include("Util.Vararg")
 local Log = TSM.Include("Util.Log")
 local Theme = TSM.Include("Util.Theme")
 local UIElements = TSM.Include("UI.UIElements")
+local UIUtils = TSM.Include("UI.UIUtils")
 local private = {}
 local MACRO_NAME = "TSMMacro"
 local MACRO_ICON = TSM.IsWowClassic() and "INV_Misc_Flower_01" or "Achievement_Faction_GoldenLotus"
@@ -47,7 +48,7 @@ end
 -- ============================================================================
 
 function private.GetMacrosSettingsFrame()
-	TSM.UI.AnalyticsRecordPathChange("main", "settings", "macros")
+	UIUtils.AnalyticsRecordPathChange("main", "settings", "macros")
 	local body = GetMacroBody(MACRO_NAME) or ""
 	local upEnabled, downEnabled, altEnabled, ctrlEnabled, shiftEnabled = false, false, false, false, false
 	for _, binding in Vararg.Iterator(GetBindingKey(BINDING_NAME)) do

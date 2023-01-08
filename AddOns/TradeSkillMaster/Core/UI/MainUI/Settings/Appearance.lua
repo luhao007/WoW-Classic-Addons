@@ -13,6 +13,7 @@ local Log = TSM.Include("Util.Log")
 local Theme = TSM.Include("Util.Theme")
 local LibDBIcon = LibStub("LibDBIcon-1.0")
 local UIElements = TSM.Include("UI.UIElements")
+local UIUtils = TSM.Include("UI.UIUtils")
 local Settings = TSM.Include("Service.Settings")
 local LibDeflate = LibStub("LibDeflate")
 local LibSerialize = LibStub("LibSerialize")
@@ -68,7 +69,7 @@ end
 -- ============================================================================
 
 function private.GetSettingsFrame()
-	TSM.UI.AnalyticsRecordPathChange("main", "settings", "appearance")
+	UIUtils.AnalyticsRecordPathChange("main", "settings", "appearance")
 	local frame = UIElements.New("ScrollFrame", "generalSettings")
 		:SetPadding(8, 8, 8, 0)
 		:AddChild(TSM.MainUI.Settings.CreateExpandableSection("Appearance", "appearance", L["General Options"], L["Some general appearance options are below."])

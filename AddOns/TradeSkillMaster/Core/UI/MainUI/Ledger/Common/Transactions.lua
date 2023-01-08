@@ -14,6 +14,7 @@ local Theme = TSM.Include("Util.Theme")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local Settings = TSM.Include("Service.Settings")
 local UIElements = TSM.Include("UI.UIElements")
+local UIUtils = TSM.Include("UI.UIUtils")
 local SECONDS_PER_DAY = 24 * 60 * 60
 local private = {
 	settings = nil,
@@ -62,13 +63,13 @@ end
 -- ============================================================================
 
 function private.DrawPurchasesPage()
-	TSM.UI.AnalyticsRecordPathChange("main", "ledger", "expenses", "purchases")
+	UIUtils.AnalyticsRecordPathChange("main", "ledger", "expenses", "purchases")
 	private.type = "buy"
 	return private.DrawTransactionPage()
 end
 
 function private.DrawSalesPage()
-	TSM.UI.AnalyticsRecordPathChange("main", "ledger", "revenue", "sales")
+	UIUtils.AnalyticsRecordPathChange("main", "ledger", "revenue", "sales")
 	private.type = "sale"
 	return private.DrawTransactionPage()
 end
@@ -157,7 +158,7 @@ function private.DrawTransactionPage()
 					:SetTitle(L["Item"])
 					:SetFont("ITEM_BODY3")
 					:SetJustifyH("LEFT")
-					:SetTextInfo("itemString", TSM.UI.GetColoredItemName)
+					:SetTextInfo("itemString", UIUtils.GetColoredItemName)
 					:SetTooltipInfo("itemString")
 					:SetSortInfo("name")
 					:DisableHiding()
@@ -215,7 +216,7 @@ function private.DrawTransactionPage()
 			:SetQuery(private.query)
 			:SetScript("OnRowClick", private.TableSelectionChanged)
 		)
-		:AddChild(TSM.UI.Views.Line.NewHorizontal("line"))
+		:AddChild(UIElements.New("HorizontalLine", "line"))
 		:AddChild(UIElements.New("Frame", "footer")
 			:SetLayout("HORIZONTAL")
 			:SetHeight(40)
@@ -226,7 +227,7 @@ function private.DrawTransactionPage()
 				:SetFont("BODY_BODY2_MEDIUM")
 				:SetText(format(private.type == "sale" and L["%s Items Sold"] or L["%s Items Bought"], Theme.GetColor("INDICATOR"):ColorText(FormatLargeNumber(numItems))))
 			)
-			:AddChild(TSM.UI.Views.Line.NewVertical("line")
+			:AddChild(UIElements.New("VerticalLine", "line")
 				:SetMargin(4, 8, 0, 0)
 			)
 			:AddChild(UIElements.New("Text", "profit")

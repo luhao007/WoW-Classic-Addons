@@ -218,9 +218,6 @@ function BistooltipAddon:openConfigDialog()
 end
 
 local function enableSpec(spec_name)
-    BistooltipAddon.db.char.class_index = 1
-    BistooltipAddon.db.char.spec_index = 1
-    BistooltipAddon.db.char.phase_index = 1
 
     if spec_name == sources.wowtbc then
         Bistooltip_bislists = Bistooltip_wowtbc_bislists;
@@ -233,6 +230,14 @@ local function enableSpec(spec_name)
         Bistooltip_classes = Bistooltip_wh_classes;
         Bistooltip_phases = Bistooltip_wh_phases;
     end
+    Bistooltip_phases_string = ""
+    for i, phase in ipairs(Bistooltip_phases) do
+        if i ~= 1 then
+            Bistooltip_phases_string = Bistooltip_phases_string .. "/"
+        end
+        Bistooltip_phases_string = Bistooltip_phases_string .. phase
+    end
+
     buildFilterSpecOptions()
 end
 
@@ -268,6 +273,9 @@ function BistooltipAddon:addMapIcon()
 end
 
 function BistooltipAddon:changeSpec(spec_name)
+    BistooltipAddon.db.char.class_index = 1
+    BistooltipAddon.db.char.spec_index = 1
+    BistooltipAddon.db.char.phase_index = 1
     enableSpec(spec_name)
 
     BistooltipAddon:initBislists()

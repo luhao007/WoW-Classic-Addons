@@ -2,6 +2,20 @@
 local _
 local addonName, platerInternal = ...
 
+platerInternal.Scripts.DefaultCastScripts = {
+	"Cast - Small Alert [Plater]",
+	"Cast - Big Alert [Plater]",
+	"Cast - Quick Flash [P]",
+	"Explosion Affix M+ [Plater]",
+	"Cast - Frontal Cone [Plater]",
+	"Cast - Ultra Important [P]",
+	"Cast - Very Important [Plater]",
+	"Cast - Glowing [P]",
+	"Cast - Circle AoE [P]",
+	"Cast - Shield Interrupt [P]",
+	"Cast - Stop Casting [P]",
+}
+
 do
 	PlaterScriptLibrary = {}
 
@@ -864,6 +878,33 @@ do
 				if (script.Name == "Add - Tag Number [P]") then
 					script.Enabled = false
 					break
+				end
+			end
+		end
+	})
+	
+	--#22 cleanup of cast_colors, cast_audiocues of string-indexed values
+	tinsert (PlaterPatchLibrary, {
+		Notes = {
+			"- Cleanup wrong indexes in cast_colors and cast_audiocues."
+		},
+		Func = function()
+			-- cleanup cast colors/sounds
+			local castColors = Plater.db.profile.cast_colors
+			local castColorsTemp = DetailsFramework.table.copy({}, castColors)
+			for n, v in pairs(castColorsTemp) do
+				if tonumber(n) then 
+					castColors[n] = nil
+					castColors[tonumber(n)] = v 
+				end
+			end
+			
+			local audioCues = Plater.db.profile.cast_audiocues
+			local audioCuesTemp = DetailsFramework.table.copy({}, audioCues)
+			for n, v in pairs(audioCuesTemp) do
+				if tonumber(n) then 
+					audioCues[n] = nil
+					audioCues[tonumber(n)] = v 
 				end
 			end
 		end

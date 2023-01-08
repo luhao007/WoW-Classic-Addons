@@ -17,6 +17,7 @@ local Theme = TSM.Include("Util.Theme")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local Settings = TSM.Include("Service.Settings")
 local UIElements = TSM.Include("UI.UIElements")
+local UIUtils = TSM.Include("UI.UIUtils")
 local private = {
 	settings = nil,
 	fsm = nil,
@@ -53,7 +54,7 @@ end
 -- ============================================================================
 
 function private.GetMyAuctionsFrame()
-	TSM.UI.AnalyticsRecordPathChange("auction", "my_auctions")
+	UIUtils.AnalyticsRecordPathChange("auction", "my_auctions")
 	private.query = private.query or TSM.MyAuctions.CreateQuery()
 	local frame = UIElements.New("Frame", "myAuctions")
 		:SetLayout("VERTICAL")
@@ -229,7 +230,7 @@ function private.GetMyAuctionsFrame()
 			:SetScript("OnDataUpdated", private.AuctionsOnDataUpdated)
 		)
 	end
-	frame:AddChild(TSM.UI.Views.Line.NewHorizontal("line"))
+	frame:AddChild(UIElements.New("HorizontalLine", "line"))
 		:AddChild(UIElements.New("Frame", "bottom")
 			:SetLayout("VERTICAL")
 			:SetHeight(68)
@@ -622,7 +623,7 @@ function private.AuctionsGetItemText(row)
 	if row:GetField("saleStatus") == 1 then
 		return Theme.GetColor("INDICATOR"):ColorText(row:GetField("itemName"))
 	else
-		return TSM.UI.GetQualityColoredText(row:GetField("itemName"), row:GetField("itemQuality"))
+		return UIUtils.GetQualityColoredText(row:GetField("itemName"), row:GetField("itemQuality"))
 	end
 end
 
@@ -675,7 +676,7 @@ function private.AuctionsGetTimeLeftText(row)
 		end
 		return color and color:ColorText(str) or str
 	else
-		return TSM.UI.GetTimeLeftString(duration)
+		return UIUtils.GetTimeLeftString(duration)
 	end
 end
 

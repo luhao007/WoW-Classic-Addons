@@ -11,6 +11,7 @@ local Table = TSM.Include("Util.Table")
 local Money = TSM.Include("Util.Money")
 local Settings = TSM.Include("Service.Settings")
 local UIElements = TSM.Include("UI.UIElements")
+local UIUtils = TSM.Include("UI.UIUtils")
 local SECONDS_PER_DAY = 24 * 60 * 60
 local private = {
 	settings = nil,
@@ -64,12 +65,12 @@ end
 -- ============================================================================
 
 function private.DrawOtherExpensesPage()
-	TSM.UI.AnalyticsRecordPathChange("main", "ledger", "expenses", "other")
+	UIUtils.AnalyticsRecordPathChange("main", "ledger", "expenses", "other")
 	return private.DrawOtherPage("expense")
 end
 
 function private.DrawOtherRevenuePage()
-	TSM.UI.AnalyticsRecordPathChange("main", "ledger", "revenue", "other")
+	UIUtils.AnalyticsRecordPathChange("main", "ledger", "revenue", "other")
 	return private.DrawOtherPage("income")
 end
 

@@ -13,6 +13,7 @@ local Event = TSM.Include("Util.Event")
 local DefaultUI = TSM.Include("Service.DefaultUI")
 local Settings = TSM.Include("Service.Settings")
 local UIElements = TSM.Include("UI.UIElements")
+local UIUtils = TSM.Include("UI.UIUtils")
 local private = {
 	settings = nil,
 	topLevelPages = {},
@@ -57,7 +58,7 @@ end
 -- ============================================================================
 
 function private.CreateMainFrame()
-	TSM.UI.AnalyticsRecordPathChange("vendoring")
+	UIUtils.AnalyticsRecordPathChange("vendoring")
 	local frame = UIElements.New("LargeApplicationFrame", "base")
 		:SetParent(UIParent)
 		:SetSettingsContext(private.settings, "frame")
@@ -80,7 +81,7 @@ end
 -- ============================================================================
 
 function private.BaseFrameOnHide()
-	TSM.UI.AnalyticsRecordClose("vendoring")
+	UIUtils.AnalyticsRecordClose("vendoring")
 	private.fsm:ProcessEvent("EV_FRAME_HIDE")
 end
 

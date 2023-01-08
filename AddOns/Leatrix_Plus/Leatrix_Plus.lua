@@ -1,5 +1,5 @@
 ﻿----------------------------------------------------------------------
--- 	Leatrix Plus 3.0.69 (19th December 2022)
+-- 	Leatrix Plus 3.0.78 (8th January 2023)
 ----------------------------------------------------------------------
 
 --	01:Functns, 02:Locks, 03:Restart, 20:Live, 30:Isolated, 40:Player
@@ -19,7 +19,7 @@
 	local void
 
 	-- Version
-	LeaPlusLC["AddonVer"] = "3.0.69"
+	LeaPlusLC["AddonVer"] = "3.0.78"
 
 	-- Get locale table
 	local void, Leatrix_Plus = ...
@@ -63,6 +63,10 @@
 	_G.BINDING_NAME_LEATRIX_PLUS_GLOBAL_TOGGLE = L["Toggle panel"]
 	_G.BINDING_NAME_LEATRIX_PLUS_GLOBAL_WEBLINK = L["Show web link"]
 	_G.BINDING_NAME_LEATRIX_PLUS_GLOBAL_RARE = L["Announce rare"]
+
+	-- Slash command taint
+	-- Enter combat, enter any addon slash command, open quest log with L, toggle tracking on a quest 4 times,
+	-- click the tracked quest in the objective tracker, taint and objective tracker no longer functions
 
 ----------------------------------------------------------------------
 --	L01: Functions
@@ -552,6 +556,7 @@
 		LeaPlusLC:LockOption("SetWeatherDensity", "SetWeatherDensityBtn", false)	-- Set weather density
 		LeaPlusLC:LockOption("ViewPortEnable", "ModViewportBtn", true)				-- Enable viewport
 		LeaPlusLC:LockOption("MuteGameSounds", "MuteGameSoundsBtn", false)			-- Mute game sounds
+		LeaPlusLC:LockOption("MuteCustomSounds", "MuteCustomSoundsBtn", false)		-- Mute custom sounds
 		LeaPlusLC:LockOption("StandAndDismount", "DismountBtn", true)				-- Dismount me
 	end
 
@@ -3026,11 +3031,19 @@
 			ColTar:SetScript("OnEvent", TargetFrameCol) -- Events are registered if target option is enabled
 
 			-- Refresh color if focus frame size changes
-			hooksecurefunc("FocusFrame_SetSmallSize", function()
-				if LeaPlusLC["ClassColTarget"] == "On" then
-					TargetFrameCol()
-				end
-			end)
+			if LeaPlusLC.NewPatch then
+				hooksecurefunc(FocusFrame, "SetSmallSize", function()
+					if LeaPlusLC["ClassColTarget"] == "On" then
+						TargetFrameCol()
+					end
+				end)
+			else
+				hooksecurefunc("FocusFrame_SetSmallSize", function()
+					if LeaPlusLC["ClassColTarget"] == "On" then
+						TargetFrameCol()
+					end
+				end)
+			end
 
 			-- Create configuration panel
 			local ClassFrame = LeaPlusLC:CreatePanel("Class colored frames", "ClassFrame")
@@ -3566,6 +3579,202 @@
 ----------------------------------------------------------------------
 
 	function LeaPlusLC:Player()
+
+		----------------------------------------------------------------------
+		-- Mute custom sounds (no reload required)
+		----------------------------------------------------------------------
+
+		do
+
+			-- Create configuration panel
+			local MuteCustomPanel = LeaPlusLC:CreatePanel("Mute custom sounds", "MuteCustomPanel")
+
+			local titleTX = LeaPlusLC:MakeTx(MuteCustomPanel, "Editor", 16, -72)
+			titleTX:SetWidth(534)
+			titleTX:SetWordWrap(false)
+			titleTX:SetJustifyH("LEFT")
+
+			-- Show help button for title
+			LeaPlusLC:CreateHelpButton("MuteGameSoundsCustomHelpButton", MuteCustomPanel, titleTX, "Enter sound file IDs separated by comma then click the Mute button.|n|nIf you wish, you can enter a brief note for each file ID but do not include numbers in your notes.|n|nFor example, you can enter 'DevAura 569679, RetAura 568744' to mute the Devotion Aura and Retribution Aura spells.|n|nUse Leatrix Sounds to find, test and play sound file IDs.")
+
+			-- Add large editbox
+			local eb = CreateFrame("Frame", nil, MuteCustomPanel, "BackdropTemplate")
+			eb:SetSize(548, 180)
+			eb:SetPoint("TOPLEFT", 10, -92)
+			eb:SetBackdrop({
+				bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
+				edgeFile = "Interface\\PVPFrame\\UI-Character-PVP-Highlight",
+				edgeSize = 16,
+				insets = { left = 8, right = 6, top = 8, bottom = 8 },
+			})
+			eb:SetBackdropBorderColor(1.0, 0.85, 0.0, 0.5)
+
+			eb.scroll = CreateFrame("ScrollFrame", nil, eb, "UIPanelScrollFrameTemplate")
+			eb.scroll:SetPoint("TOPLEFT", eb, 12, -10)
+			eb.scroll:SetPoint("BOTTOMRIGHT", eb, -30, 10)
+
+			eb.Text = CreateFrame("EditBox", nil, eb)
+			eb.Text:SetMultiLine(true)
+			eb.Text:SetWidth(494)
+			eb.Text:SetHeight(230)
+			eb.Text:SetPoint("TOPLEFT", eb.scroll)
+			eb.Text:SetPoint("BOTTOMRIGHT", eb.scroll)
+			eb.Text:SetMaxLetters(2000)
+			eb.Text:SetFontObject(GameFontNormalLarge)
+			eb.Text:SetAutoFocus(false)
+			eb.Text:SetScript("OnEscapePressed", function(self) self:ClearFocus() end)
+			eb.scroll:SetScrollChild(eb.Text)
+
+			-- Set focus on the editbox text when clicking the editbox
+			eb:SetScript("OnMouseDown", function()
+				eb.Text:SetFocus()
+				eb.Text:SetCursorPosition(eb.Text:GetMaxLetters())
+			end)
+
+			-- Function to save the custom sound list
+			local function SaveString(self, userInput)
+				local keytext = eb.Text:GetText()
+				if keytext and keytext ~= "" then
+					LeaPlusLC["MuteCustomList"] = strtrim(eb.Text:GetText())
+				else
+					LeaPlusLC["MuteCustomList"] = ""
+				end
+			end
+
+			-- Save the custom sound list when it changes and at startup
+			eb.Text:SetScript("OnTextChanged", SaveString)
+			eb.Text:SetText(LeaPlusLC["MuteCustomList"])
+			SaveString()
+
+			-- Help button hidden
+			MuteCustomPanel.h:Hide()
+
+			-- Back button handler
+			MuteCustomPanel.b:SetScript("OnClick", function()
+				MuteCustomPanel:Hide(); LeaPlusLC["PageF"]:Show(); LeaPlusLC["Page7"]:Show()
+				return
+			end)
+
+			-- Reset button hidden
+			MuteCustomPanel.r:Hide()
+
+			-- Show configuration panal when options panel button is clicked
+			LeaPlusCB["MuteCustomSoundsBtn"]:SetScript("OnClick", function()
+				if IsShiftKeyDown() and IsControlKeyDown() then
+					-- Preset profile
+					LeaPlusLC["MuteCustomList"] = "Devotion Aura 569679, Retribution Aura 568744"
+					eb.Text:SetText(LeaPlusLC["MuteCustomList"])
+				else
+					MuteCustomPanel:Show()
+					LeaPlusLC:HideFrames()
+				end
+			end)
+
+			-- Function to mute custom sound list
+			local function MuteCustomListFunc(unmute, userInput)
+				-- local mutedebug = true -- Debug
+				local counter = 0
+				local muteString = LeaPlusLC["MuteCustomList"]
+				if muteString and muteString ~= "" then
+					muteString = muteString:gsub("%s", ",")
+					muteString = muteString:gsub("[\n]", ",")
+					muteString = muteString:gsub("[^,%d]", "")
+					if mutedebug then print(muteString) end
+					local tList = {strsplit(",", muteString)}
+					if mutedebug then ChatFrame1:Clear() end
+					for i = 1, #tList do
+						if tList[i] then
+							tList[i] = tonumber(tList[i])
+							if tList[i] and tList[i] < 20000000 then
+								if mutedebug then print(tList[i]) end
+								if unmute then
+									UnmuteSoundFile(tList[i])
+								else
+									MuteSoundFile(tList[i])
+								end
+								counter = counter + 1
+							end
+						end
+					end
+					if userInput then
+						if unmute then
+							if counter == 1 then
+								LeaPlusLC:Print(L["Unmuted"] .. " " .. counter .. " " .. L["sound"] .. ".")
+							else
+								LeaPlusLC:Print(L["Unmuted"] .. " " .. counter .. " " .. L["sounds"] .. ".")
+							end
+						else
+							if counter == 1 then
+								LeaPlusLC:Print(L["Muted"] .. " " .. counter .. " " .. L["sound"] .. ".")
+							else
+								LeaPlusLC:Print(L["Muted"] .. " " .. counter .. " " .. L["sounds"] .. ".")
+							end
+						end
+					end
+				end
+			end
+
+			-- Mute custom list on startup if option is enabled
+			if LeaPlusLC["MuteCustomSounds"] == "On" then
+				MuteCustomListFunc()
+			end
+
+			-- Mute or unmute when option is clicked
+			LeaPlusCB["MuteCustomSounds"]:HookScript("OnClick", function()
+				if LeaPlusLC["MuteCustomSounds"] == "On" then
+					MuteCustomListFunc(false, false)
+				else
+					MuteCustomListFunc(true, false)
+				end
+			end)
+
+			-- Add mute button
+			local MuteCustomNowButton = LeaPlusLC:CreateButton("MuteCustomNowButton", MuteCustomPanel, "Mute", "TOPLEFT", 16, -292, 0, 25, true, "Click to mute sounds in the list.")
+			LeaPlusCB["MuteCustomNowButton"]:SetScript("OnClick", function() MuteCustomListFunc(false, true) end)
+
+			-- Add unmute button
+			local UnmuteCustomNowButton = LeaPlusLC:CreateButton("UnmuteCustomNowButton", MuteCustomPanel, "Unmute", "TOPLEFT", 16, -72, 0, 25, true, "Click to unmute sounds in the list.")
+			LeaPlusCB["UnmuteCustomNowButton"]:ClearAllPoints()
+			LeaPlusCB["UnmuteCustomNowButton"]:SetPoint("LEFT", MuteCustomNowButton, "RIGHT", 10, 0)
+			LeaPlusCB["UnmuteCustomNowButton"]:SetScript("OnClick", function() MuteCustomListFunc(true, true) end)
+
+			-- Add play sound file editbox
+			local willPlay, musicHandle
+			local MuteCustomSoundsStopButton = LeaPlusLC:CreateButton("MuteCustomSoundsStopButton", MuteCustomPanel, "Stop", "TOPRIGHT", -18, -66, 0, 25, true, "")
+			MuteCustomSoundsStopButton:SetScript("OnClick", function()
+				if musicHandle then StopSound(musicHandle) end
+			end)
+
+			local MuteCustomSoundsPlayButton = LeaPlusLC:CreateButton("MuteCustomSoundsPlayButton", MuteCustomPanel, "Play", "TOPRIGHT", -18, -66, 0, 25, true, "")
+			MuteCustomSoundsPlayButton:ClearAllPoints()
+			MuteCustomSoundsPlayButton:SetPoint("RIGHT", MuteCustomSoundsStopButton, "LEFT", -10, 0)
+
+			local MuteCustomSoundsSoundBox = LeaPlusLC:CreateEditBox("MuteCustomSoundsSoundBox", eb, 80, 8, "TOPRIGHT", -10, 20, "PlaySoundBox", "PlaySoundBox")
+			MuteCustomSoundsSoundBox:SetNumeric(true)
+			MuteCustomSoundsSoundBox:ClearAllPoints()
+			MuteCustomSoundsSoundBox:SetPoint("RIGHT", MuteCustomSoundsPlayButton, "LEFT", -10, 0)
+			MuteCustomSoundsPlayButton:SetScript("OnClick", function()
+				MuteCustomSoundsSoundBox:GetText()
+				if musicHandle then StopSound(musicHandle) end
+				willPlay, musicHandle = PlaySoundFile(MuteCustomSoundsSoundBox:GetText(), "Master")
+			end)
+
+			-- Add mousewheel support to the editbox
+			MuteCustomSoundsSoundBox:SetScript("OnMouseWheel", function(self, delta)
+				local endSound = tonumber(MuteCustomSoundsSoundBox:GetText())
+				if endSound then
+					if delta == 1 then endSound = endSound + 1 else endSound = endSound - 1 end
+					if endSound < 1 then endSound = 1 elseif endSound >= 10000000 then endSound = 10000000 end
+					MuteCustomSoundsSoundBox:SetText(endSound)
+					MuteCustomSoundsPlayButton:Click()
+				end
+			end)
+
+			local titlePlayer = LeaPlusLC:MakeTx(MuteCustomPanel, "Player", 16, -72)
+			titlePlayer:ClearAllPoints()
+			titlePlayer:SetPoint("TOPLEFT", MuteCustomSoundsSoundBox, "TOPLEFT", -4, 16)
+			LeaPlusLC:CreateHelpButton("MuteGameSoundsCustomPlayHelpButton", MuteCustomPanel, titlePlayer, "If you want to listen to a sound file, enter the sound file ID into the editbox and click the play button.|n|nYou can scroll the mousewheel over the editbox to play neighbouring sound files.")
+		end
 
 		----------------------------------------------------------------------
 		-- Manage vehicle
@@ -6300,7 +6509,7 @@
 			local ChatFilterPanel = LeaPlusLC:CreatePanel("Filter chat messages", "ChatFilterPanel")
 
 			LeaPlusLC:MakeTx(ChatFilterPanel, "Settings", 16, -72)
-			LeaPlusLC:MakeCB(ChatFilterPanel, "BlockSpellLinks", "Block spell links during combat", 16, -92, false, "If checked, messages containing spell links will be blocked while you are in combat.|n|nThis is useful for blocking spell interrupt spam.|n|nThis applies to the say, party, raid and emote channels.")
+			LeaPlusLC:MakeCB(ChatFilterPanel, "BlockSpellLinks", "Block spell links during combat", 16, -92, false, "If checked, messages containing spell links will be blocked while you are in combat.|n|nThis is useful for blocking spell interrupt spam.|n|nThis applies to the say, party, raid, emote and yell channels.")
 			LeaPlusLC:MakeCB(ChatFilterPanel, "BlockDrunkenSpam", "Block drunken spam", 16, -112, false, "If checked, drunken messages will be blocked unless they apply to your character.|n|nThis applies to the system channel.")
 			LeaPlusLC:MakeCB(ChatFilterPanel, "BlockDuelSpam", "Block duel spam", 16, -132, false, "If checked, duel victory and retreat messages will be blocked unless your character took part in the duel.|n|nThis applies to the system channel.")
 
@@ -6370,6 +6579,7 @@
 					ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID", ChatFilterFunc)
 					ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID_LEADER", ChatFilterFunc)
 					ChatFrame_AddMessageEventFilter("CHAT_MSG_EMOTE", ChatFilterFunc)
+					ChatFrame_AddMessageEventFilter("CHAT_MSG_YELL", ChatFilterFunc)
 				else
 					ChatFrame_RemoveMessageEventFilter("CHAT_MSG_SAY", ChatFilterFunc)
 					ChatFrame_RemoveMessageEventFilter("CHAT_MSG_PARTY", ChatFilterFunc)
@@ -6377,6 +6587,7 @@
 					ChatFrame_RemoveMessageEventFilter("CHAT_MSG_RAID", ChatFilterFunc)
 					ChatFrame_RemoveMessageEventFilter("CHAT_MSG_RAID_LEADER", ChatFilterFunc)
 					ChatFrame_RemoveMessageEventFilter("CHAT_MSG_EMOTE", ChatFilterFunc)
+					ChatFrame_RemoveMessageEventFilter("CHAT_MSG_YELL", ChatFilterFunc)
 				end
 				if LeaPlusLC["BlockDrunkenSpam"] == "On" or LeaPlusLC["BlockDuelSpam"] == "On" then
 					ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", ChatFilterFunc)
@@ -7594,6 +7805,9 @@
 				-- Create train all button
 				LeaPlusLC:CreateButton("TrainAllButton", ClassTrainerFrame, "Train All", "BOTTOMLEFT", 344, 54, 0, 22, false, "")
 
+				-- Give button global scope (useful for compatibility with other addons and essential for ElvUI)
+				_G.LeaPlusGlobalTrainAllButton = LeaPlusCB["TrainAllButton"]
+
 				-- Button tooltip
 				LeaPlusCB["TrainAllButton"]:SetScript("OnEnter", function(self)
 					-- Get number of available skills and total cost
@@ -7683,7 +7897,6 @@
 						_G["ClassTrainerTrainButton"]:SetPoint("BOTTOMRIGHT", _G["ClassTrainerFrame"], "BOTTOMRIGHT", -42, 78)
 						LeaPlusCB["TrainAllButton"]:ClearAllPoints()
 						LeaPlusCB["TrainAllButton"]:SetPoint("BOTTOMLEFT", _G["ClassTrainerFrame"], "BOTTOMLEFT", 344, 78)
-						_G.LeaPlusGlobalTrainAllButton = LeaPlusCB["TrainAllButton"]
 						E:GetModule("Skins"):HandleButton(_G.LeaPlusGlobalTrainAllButton)
 					end
 				end
@@ -9713,7 +9926,11 @@
 
 			-- Remove integrated movement function to avoid conflicts
 			_G.FocusFrame_SetLock = function() end
-			_G.FocusFrame_SetSmallSize = function() end
+			if LeaPlusLC.NewPatch then
+				_G.FocusFrame.SetSmallSize = function() end
+			else
+				_G.FocusFrame_SetSmallSize = function() end
+			end
 
 			-- Allow focus frame to be moved
 			FocusFrame:SetMovable(true)
@@ -13011,6 +13228,8 @@
 
 				LeaPlusLC:LoadVarChk("NoRestedEmotes", "Off")				-- Silence rested emotes
 				LeaPlusLC:LoadVarChk("MuteGameSounds", "Off")				-- Mute game sounds
+				LeaPlusLC:LoadVarChk("MuteCustomSounds", "Off")				-- Mute custom sounds
+				LeaPlusLC:LoadVarStr("MuteCustomList", "")					-- Mute custom sounds list
 
 				LeaPlusLC:LoadVarChk("NoBagAutomation", "Off")				-- Disable bag automation
 				LeaPlusLC:LoadVarChk("CharAddonList", "Off")				-- Show character addons
@@ -13040,14 +13259,18 @@
 				-- Start page
 				LeaPlusLC:LoadVarNum("LeaStartPage", 0, 0, LeaPlusLC["NumberOfPages"])
 
-				-- Disable items that conflict with Glass
-				if LeaPlusLC.Glass then
+				-- Lock conflicting options
+				do
 
 					-- Function to disable and lock an option and add a note to the tooltip
-					local function LockOption(option)
+					local function Lock(option, reason, optmodule)
 						LeaLockList[option] = LeaPlusLC[option]
 						LeaPlusLC:LockItem(LeaPlusCB[option], true)
-						LeaPlusCB[option].tiptext = LeaPlusCB[option].tiptext .. "|n|n|cff00AAFF" .. L["Cannot be used with Glass."]
+						LeaPlusCB[option].tiptext = LeaPlusCB[option].tiptext .. "|n|n|cff00AAFF" .. reason
+						if optmodule then
+							LeaPlusCB[option].tiptext = LeaPlusCB[option].tiptext .. " " .. optmodule .. " " .. L["module"]
+						end
+						LeaPlusCB[option].tiptext = LeaPlusCB[option].tiptext .. "."
 						-- Remove hover from configuration button if there is one
 						local temp = {LeaPlusCB[option]:GetChildren()}
 						if temp and temp[1] and temp[1].t and temp[1].t:GetTexture() == "Interface\\WorldMap\\Gear_64.png" then
@@ -13056,120 +13279,109 @@
 						end
 					end
 
-					LockOption("UseEasyChatResizing") -- Use easy resizing
-					LockOption("NoCombatLogTab") -- Hide the combat log
-					LockOption("NoChatButtons") -- Hide chat buttons
-					LockOption("UnclampChat") -- Unclamp chat frame
-					LockOption("MoveChatEditBoxToTop") -- Move editbox to top
-					LockOption("MoreFontSizes") --  More font sizes
-					LockOption("NoChatFade") --  Disable chat fade
-					LockOption("ClassColorsInChat") -- Use class colors in chat
-					LockOption("RecentChatWindow") -- Recent chat window
-
-				end
-
-				-- Disable items that conflict with ElvUI
-				if LeaPlusLC.ElvUI then
-					local E = LeaPlusLC.ElvUI
-					if E and E.private then
-
-						-- Function to disable and lock an option and add a note to the tooltip
-						local function LockOption(option, emodule)
-							LeaLockList[option] = LeaPlusLC[option]
-							LeaPlusLC:LockItem(LeaPlusCB[option], true)
-							if emodule == "Base" then
-								LeaPlusCB[option].tiptext = LeaPlusCB[option].tiptext .. "|n|n|cff00AAFF" .. L["Cannot be used with ElvUI."]
-							else
-								LeaPlusCB[option].tiptext = LeaPlusCB[option].tiptext .. "|n|n|cff00AAFF" .. L["Cannot be used with ElvUI"] .. " " .. L[emodule] .. " " .. L["module"] .. "."
-							end
-							-- Remove hover from configuration button if there is one
-							local temp = {LeaPlusCB[option]:GetChildren()}
-							if temp and temp[1] and temp[1].t and temp[1].t:GetTexture() == "Interface\\WorldMap\\Gear_64.png" then
-								temp[1]:SetHighlightTexture(0)
-								temp[1]:SetScript("OnEnter", nil)
-							end
-						end
-
-						-- Chat
-						if E.private.chat.enable then
-							LockOption("UseEasyChatResizing", "Chat") -- Use easy resizing
-							LockOption("NoCombatLogTab", "Chat") -- Hide the combat log
-							LockOption("NoChatButtons", "Chat") -- Hide chat buttons
-							LockOption("UnclampChat", "Chat") -- Unclamp chat frame
-							LockOption("MoreFontSizes", "Chat") --  More font sizes
-							LockOption("NoStickyChat", "Chat") -- Disable sticky chat
-							LockOption("UseArrowKeysInChat", "Chat") -- Use arrow keys in chat
-							LockOption("NoChatFade", "Chat") -- Disable chat fade
-							LockOption("MaxChatHstory", "Chat") -- Increase chat history
-							LockOption("RestoreChatMessages", "Chat") -- Restore chat messages
-						end
-
-						-- Minimap
-						if E.private.general.minimap.enable then
-							LockOption("MinimapModder", "Minimap") -- Enhance minimap
-						end
-
-						-- UnitFrames
-						if E.private.unitframe.enable then
-							LockOption("ShowRaidToggle", "UnitFrames") -- Show raid button
-						end
-
-						-- ActionBars
-						if E.private.actionbar.enable then
-							LockOption("NoGryphons", "ActionBars") -- Hide gryphons
-							LockOption("NoClassBar", "ActionBars") -- Hide stance bar
-							LockOption("HideKeybindText", "ActionBars") -- Hide keybind text
-							LockOption("HideMacroText", "ActionBars") -- Hide macro text
-						end
-
-						-- Bags
-						if E.private.bags.enable then
-							LockOption("NoBagAutomation", "Bags") -- Disable bag automation
-							LockOption("ShowBagSearchBox", "Bags") -- Show bag search box
-						end
-
-						-- Tooltip
-						if E.private.tooltip.enable then
-							LockOption("TipModEnable", "Tooltip") -- Enhance tooltip
-						end
-
-						-- Buffs: Disable Blizzard
-						if E.private.auras.disableBlizzard then
-							LockOption("ManageBuffs", "Buffs and Debuffs (Disable Blizzard)") -- Manage buffs
-						end
-
-						-- UnitFrames: Disabled Blizzard: Focus
-						if E.private.unitframe.disabledBlizzardFrames.focus then
-							LockOption("ManageFocus", "UnitFrames (Disabled Blizzard Frames Focus)") -- Manage focus
-						end
-
-						-- UnitFrames: Disabled Blizzard: Player
-						if E.private.unitframe.disabledBlizzardFrames.player then
-							LockOption("ShowPlayerChain", "UnitFrames (Disabled Blizzard Frames Player)") -- Show player chain
-							LockOption("NoHitIndicators", "UnitFrames (Disabled Blizzard Frames Player)") -- Hide portrait numbers
-						end
-
-						-- UnitFrames: Disabled Blizzard: Player and Target
-						if E.private.unitframe.disabledBlizzardFrames.player or E.private.unitframe.disabledBlizzardFrames.target then
-							LockOption("FrmEnabled", "UnitFrames (Disabled Blizzard Frames Player and Target)") -- Manage frames
-						end
-
-						-- UnitFrames: Disabled Blizzard: Player, Target and Focus
-						if E.private.unitframe.disabledBlizzardFrames.player or E.private.unitframe.disabledBlizzardFrames.target or E.private.unitframe.disabledBlizzardFrames.focus then
-							LockOption("ClassColFrames", "UnitFrames (Disabled Blizzard Frames Player, Target and Focus)") -- Class-colored frames
-						end
-
-						-- Base
-						do
-							LockOption("ManageWidget", "Base") -- Manage widget
-							LockOption("ManageTimer", "Base") -- Manage timer
-							LockOption("ManageDurability", "Base") -- Manage durability
-							LockOption("ManageVehicle", "Base") -- Manage vehicle
-						end
-
+					-- Disable items that conflict with Glass
+					if LeaPlusLC.Glass then
+						local reason = L["Cannot be used with Glass"]
+						Lock("UseEasyChatResizing", reason) -- Use easy resizing
+						Lock("NoCombatLogTab", reason) -- Hide the combat log
+						Lock("NoChatButtons", reason) -- Hide chat buttons
+						Lock("UnclampChat", reason) -- Unclamp chat frame
+						Lock("MoveChatEditBoxToTop", reason) -- Move editbox to top
+						Lock("MoreFontSizes", reason) --  More font sizes
+						Lock("NoChatFade", reason) --  Disable chat fade
+						Lock("ClassColorsInChat", reason) -- Use class colors in chat
+						Lock("RecentChatWindow", reason) -- Recent chat window
 					end
 
-					EnableAddOn("Leatrix_Plus")
+					-- Disable items that conflict with ElvUI
+					if LeaPlusLC.ElvUI then
+						local E = LeaPlusLC.ElvUI
+						if E and E.private then
+
+							local reason = L["Cannot be used with ElvUI"]
+
+							-- Chat
+							if E.private.chat.enable then
+								Lock("UseEasyChatResizing", reason, "Chat") -- Use easy resizing
+								Lock("NoCombatLogTab", reason, "Chat") -- Hide the combat log
+								Lock("NoChatButtons", reason, "Chat") -- Hide chat buttons
+								Lock("UnclampChat", reason, "Chat") -- Unclamp chat frame
+								Lock("MoreFontSizes", reason, "Chat") --  More font sizes
+								Lock("NoStickyChat", reason, "Chat") -- Disable sticky chat
+								Lock("UseArrowKeysInChat", reason, "Chat") -- Use arrow keys in chat
+								Lock("NoChatFade", reason, "Chat") -- Disable chat fade
+								Lock("MaxChatHstory", reason, "Chat") -- Increase chat history
+								Lock("RestoreChatMessages", reason, "Chat") -- Restore chat messages
+							end
+
+							-- Minimap
+							if E.private.general.minimap.enable then
+								Lock("MinimapModder", reason, "Minimap") -- Enhance minimap
+							end
+
+							-- UnitFrames
+							if E.private.unitframe.enable then
+								Lock("ShowRaidToggle", reason, "UnitFrames") -- Show raid button
+							end
+
+							-- ActionBars
+							if E.private.actionbar.enable then
+								Lock("NoGryphons", reason, "ActionBars") -- Hide gryphons
+								Lock("NoClassBar", reason, "ActionBars") -- Hide stance bar
+								Lock("HideKeybindText", reason, "ActionBars") -- Hide keybind text
+								Lock("HideMacroText", reason, "ActionBars") -- Hide macro text
+							end
+
+							-- Bags
+							if E.private.bags.enable then
+								Lock("NoBagAutomation", reason, "Bags") -- Disable bag automation
+								Lock("ShowBagSearchBox", reason, "Bags") -- Show bag search box
+							end
+
+							-- Tooltip
+							if E.private.tooltip.enable then
+								Lock("TipModEnable", reason, "Tooltip") -- Enhance tooltip
+							end
+
+							-- Buffs: Disable Blizzard
+							if E.private.auras.disableBlizzard then
+								Lock("ManageBuffs", reason, "Buffs and Debuffs (Disable Blizzard)") -- Manage buffs
+							end
+
+							-- UnitFrames: Disabled Blizzard: Focus
+							if E.private.unitframe.disabledBlizzardFrames.focus then
+								Lock("ManageFocus", reason, "UnitFrames (Disabled Blizzard Frames Focus)") -- Manage focus
+							end
+
+							-- UnitFrames: Disabled Blizzard: Player
+							if E.private.unitframe.disabledBlizzardFrames.player then
+								Lock("ShowPlayerChain", reason, "UnitFrames (Disabled Blizzard Frames Player)") -- Show player chain
+								Lock("NoHitIndicators", reason, "UnitFrames (Disabled Blizzard Frames Player)") -- Hide portrait numbers
+							end
+
+							-- UnitFrames: Disabled Blizzard: Player and Target
+							if E.private.unitframe.disabledBlizzardFrames.player or E.private.unitframe.disabledBlizzardFrames.target then
+								Lock("FrmEnabled", reason, "UnitFrames (Disabled Blizzard Frames Player and Target)") -- Manage frames
+							end
+
+							-- UnitFrames: Disabled Blizzard: Player, Target and Focus
+							if E.private.unitframe.disabledBlizzardFrames.player or E.private.unitframe.disabledBlizzardFrames.target or E.private.unitframe.disabledBlizzardFrames.focus then
+								Lock("ClassColFrames", reason, "UnitFrames (Disabled Blizzard Frames Player, Target and Focus)") -- Class-colored frames
+							end
+
+							-- Base
+							do
+								Lock("ManageWidget", reason) -- Manage widget
+								Lock("ManageTimer", reason) -- Manage timer
+								Lock("ManageDurability", reason) -- Manage durability
+								Lock("ManageVehicle", reason) -- Manage vehicle
+							end
+
+						end
+
+						EnableAddOn("Leatrix_Plus")
+					end
+
 				end
 
 				-- Run other startup items
@@ -13422,6 +13634,8 @@
 
 			LeaPlusDB["NoRestedEmotes"]			= LeaPlusLC["NoRestedEmotes"]
 			LeaPlusDB["MuteGameSounds"]			= LeaPlusLC["MuteGameSounds"]
+			LeaPlusDB["MuteCustomSounds"]		= LeaPlusLC["MuteCustomSounds"]
+			LeaPlusDB["MuteCustomList"]			= LeaPlusLC["MuteCustomList"]
 
 			LeaPlusDB["NoBagAutomation"]		= LeaPlusLC["NoBagAutomation"]
 			LeaPlusDB["CharAddonList"]			= LeaPlusLC["CharAddonList"]
@@ -15539,6 +15753,8 @@
 				LeaPlusDB["ViewPortEnable"] = "On"				-- Enable viewport
 				LeaPlusDB["NoRestedEmotes"] = "On"				-- Silence rested emotes
 				LeaPlusDB["MuteGameSounds"] = "On"				-- Mute game sounds
+				LeaPlusDB["MuteCustomSounds"] = "On"			-- Mute custom sounds
+				LeaPlusDB["MuteCustomList"] = ""				-- Mute custom sounds list
 
 				LeaPlusDB["NoBagAutomation"] = "On"				-- Disable bag automation
 				LeaPlusDB["CharAddonList"] = "On"				-- Show character addons
@@ -15624,7 +15840,10 @@
 	if not LeaPlusLC.NewPatch then
 		_G.SLASH_Leatrix_Plus1 = "/ltp"
 		_G.SLASH_Leatrix_Plus2 = "/leaplus"
+	else
+		_G.SLASH_Leatrix_Plus1 = "/ztp" -- temp
 	end
+
 	SlashCmdList["Leatrix_Plus"] = function(self)
 		-- Run slash command function
 		LeaPlusLC:SlashFunc(self)
@@ -15933,6 +16152,7 @@
 	LeaPlusLC:MakeCB(LeaPlusLC[pg], "ViewPortEnable"			,	"Enable viewport"				,	146, -172, 	true,	"If checked, you will be able to create a viewport.  A viewport adds adjustable black borders around the game world.|n|nThe borders are placed on top of the game world but under the UI so you can place UI elements over them.")
 	LeaPlusLC:MakeCB(LeaPlusLC[pg], "NoRestedEmotes"			, 	"Silence rested emotes"			,	146, -192, 	true,	"If checked, emote sounds will be silenced while your character is resting or at the Grim Guzzler.|n|nEmote sounds will be enabled at all other times.")
 	LeaPlusLC:MakeCB(LeaPlusLC[pg], "MuteGameSounds"			, 	"Mute game sounds"				,	146, -212, 	false,	"If checked, you will be able to mute a selection of game sounds.")
+	LeaPlusLC:MakeCB(LeaPlusLC[pg], "MuteCustomSounds"			, 	"Mute custom sounds"			,	146, -232, 	false,	"If checked, you will be able to mute your own choice of sounds.")
 
 	LeaPlusLC:MakeTx(LeaPlusLC[pg], "Game Options"				, 	340, -72);
 	LeaPlusLC:MakeCB(LeaPlusLC[pg], "NoBagAutomation"			, 	"Disable bag automation"		, 	340, -92, 	true,	"If checked, your bags will not be opened or closed automatically when you interact with a merchant, bank or mailbox.")
@@ -15948,6 +16168,7 @@
 	LeaPlusLC:CfgBtn("SetWeatherDensityBtn", LeaPlusCB["SetWeatherDensity"])
 	LeaPlusLC:CfgBtn("ModViewportBtn", LeaPlusCB["ViewPortEnable"])
 	LeaPlusLC:CfgBtn("MuteGameSoundsBtn", LeaPlusCB["MuteGameSounds"])
+	LeaPlusLC:CfgBtn("MuteCustomSoundsBtn", LeaPlusCB["MuteCustomSounds"])
 	LeaPlusLC:CfgBtn("DismountBtn", LeaPlusCB["StandAndDismount"])
 
 ----------------------------------------------------------------------

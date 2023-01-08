@@ -19,6 +19,7 @@ local Conversions = TSM.Include("Service.Conversions")
 local Settings = TSM.Include("Service.Settings")
 local UIElements = TSM.Include("UI.UIElements")
 local UIManager = TSM.Include("UI.UIManager")
+local UIUtils = TSM.Include("UI.UIUtils")
 local private = {
 	manager = nil,
 	settings = nil,
@@ -102,7 +103,7 @@ function private.ActionHandler(state, action)
 	Log.Info("Handling action %s", action)
 	if action == "ACTION_FRAME_SHOW" then
 		assert(not state.frame and (state.canCombine or state.canDestroy))
-		TSM.UI.AnalyticsRecordPathChange("destroying")
+		UIUtils.AnalyticsRecordPathChange("destroying")
 		state.didAutoShow = true
 		state.frame = private.CreateMainFrame(state)
 		state.frame:Show()
@@ -114,7 +115,7 @@ function private.ActionHandler(state, action)
 			return "ACTION_COMBINE_START"
 		end
 	elseif action == "ACTION_FRAME_ON_HIDE" then
-		TSM.UI.AnalyticsRecordClose("destroying")
+		UIUtils.AnalyticsRecordClose("destroying")
 		assert(state.frame)
 		if state.combineFuture then
 			state.combineFuture:Cancel()
@@ -226,7 +227,7 @@ function private.CreateMainFrame(state)
 						:SetIconSize(12)
 						:SetFont("ITEM_BODY3")
 						:SetJustifyH("LEFT")
-						:SetTextInfo("itemString", TSM.UI.GetColoredItemName)
+						:SetTextInfo("itemString", UIUtils.GetColoredItemName)
 						:SetIconInfo("itemString", ItemInfo.GetTexture)
 						:SetTooltipInfo("itemString")
 						:SetSortInfo("name")
@@ -246,7 +247,7 @@ function private.CreateMainFrame(state)
 				:SetQuery(private.query)
 				:SetScript("OnSelectionChanged", private.ItemsOnSelectionChanged)
 			)
-			:AddChild(TSM.UI.Views.Line.NewHorizontal("lineBottom"))
+			:AddChild(UIElements.New("HorizontalLine", "lineBottom"))
 			:AddChild(UIElements.New("ActionButton", "combineBtn")
 				:SetHeight(26)
 				:SetMargin(12, 12, 12, 0)
@@ -328,7 +329,7 @@ function private.ItemsOnSelectionChanged(scrollingTable)
 		:SetBackground(ItemInfo.GetTexture(itemString))
 		:SetTooltip(itemString)
 	itemFrame:GetElement("header.name")
-		:SetText(TSM.UI.GetColoredItemName(itemString) or "")
+		:SetText(UIUtils.GetColoredItemName(itemString) or "")
 
 	local info, targetItems = private.GetDestroyInfo(itemString)
 	local scrollFrame = itemFrame:GetElement("container.scroll")

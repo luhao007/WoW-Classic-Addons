@@ -1,5 +1,5 @@
 ## Interface: 30400
-## Version: #Details.DF.Wrath.10337.148
+## Version: #Details.DF.Wrath.10403.148
 ## OptionalDeps: Ace3, LibSharedMedia-3.0, LibWindow-1.1, LibDBIcon-1.0, NickTag-1.0, LibDataBroker-1.1, LibGraph-2.0
 ## SavedVariables: _detalhes_global, __details_backup
 ## SavedVariablesPerCharacter: _detalhes_database
@@ -66,6 +66,7 @@ functions\testbars.lua
 functions\editmode.lua
 functions\warcraftlogs.lua
 functions\textures.lua
+functions\journal.lua
 
 core\timemachine.lua
 

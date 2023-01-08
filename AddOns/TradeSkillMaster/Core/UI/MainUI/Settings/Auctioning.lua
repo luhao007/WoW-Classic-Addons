@@ -11,6 +11,7 @@ local Sound = TSM.Include("Util.Sound")
 local String = TSM.Include("Util.String")
 local Log = TSM.Include("Util.Log")
 local UIElements = TSM.Include("UI.UIElements")
+local UIUtils = TSM.Include("UI.UIUtils")
 local private = {
 	sounds = {},
 	soundkeys = {},
@@ -37,7 +38,7 @@ end
 -- ============================================================================
 
 function private.GetAuctioningSettingsFrame()
-	TSM.UI.AnalyticsRecordPathChange("main", "settings", "auctioning")
+	UIUtils.AnalyticsRecordPathChange("main", "settings", "auctioning")
 	return UIElements.New("ScrollFrame", "auctioningSettings")
 		:SetPadding(8, 8, 8, 0)
 		:AddChild(TSM.MainUI.Settings.CreateExpandableSection("Auctioning", "auctioning", L["General Options"], L["Some general Auctioning options are below."])

@@ -11,6 +11,7 @@ local TempTable = TSM.Include("Util.TempTable")
 local Theme = TSM.Include("Util.Theme")
 local CustomPrice = TSM.Include("Service.CustomPrice")
 local UIElements = TSM.Include("UI.UIElements")
+local UIUtils = TSM.Include("UI.UIUtils")
 local private = {
 	editOldName = nil,
 	editNewName = nil,
@@ -33,7 +34,7 @@ end
 -- ============================================================================
 
 function private.GetCustomSourcesSettingsFrame()
-	TSM.UI.AnalyticsRecordPathChange("main", "settings", "custom_sources")
+	UIUtils.AnalyticsRecordPathChange("main", "settings", "custom_sources")
 	return UIElements.New("ScrollFrame", "content")
 		:SetPadding(8, 8, 8, 0)
 		:AddChild(TSM.MainUI.Settings.CreateExpandableSection("Custom Price", "general", L["Custom Sources"], format(L["Custom sources allow you to create more advanced prices for use throughout the addon. You'll be able to use these new variables in the same way you can use the built-in price sources such as %s and %s."], Theme.GetColor("INDICATOR"):ColorText("vendorsell"), Theme.GetColor("INDICATOR"):ColorText("vendorbuy")), 60)
@@ -51,7 +52,7 @@ function private.GetCustomSourcesSettingsFrame()
 					:SetText(L["String"])
 				)
 			)
-			:AddChild(TSM.UI.Views.Line.NewHorizontal("line1")
+			:AddChild(UIElements.New("HorizontalLine", "line1")
 				:SetHeight(1)
 			)
 			:AddChildrenWithFunction(private.AddCustomPriceRows)

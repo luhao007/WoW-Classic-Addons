@@ -17,6 +17,7 @@ local Sync = TSM.Include("Service.Sync")
 local PlayerInfo = TSM.Include("Service.PlayerInfo")
 local Tooltip = TSM.Include("UI.Tooltip")
 local UIElements = TSM.Include("UI.UIElements")
+local UIUtils = TSM.Include("UI.UIUtils")
 local private = {
 	frame = nil,
 	characterList = {},
@@ -44,7 +45,7 @@ end
 -- ============================================================================
 
 function private.GetGeneralSettingsFrame()
-	TSM.UI.AnalyticsRecordPathChange("main", "settings", "general")
+	UIUtils.AnalyticsRecordPathChange("main", "settings", "general")
 	wipe(private.chatFrameList)
 	local defaultChatFrame = nil
 	for i = 1, NUM_CHAT_WINDOWS do

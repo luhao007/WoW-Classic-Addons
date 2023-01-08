@@ -76,8 +76,8 @@ local function SetCursor(tex)
 end
 local function SaveRingVersion(name, liveData)
 	local key = "RKRing#" .. name
-	if not config.undo.search(key) then
-		config.undo.push(key, RK.SetRing, RK, name, liveData == true and RK:GetRingDescription(name) or liveData or false)
+	if not config.undo:search(key) then
+		config.undo:push(key, RK.SetRing, RK, name, liveData == true and RK:GetRingDescription(name) or liveData or false)
 	end
 end
 local function CreateToggleButton(parent)
@@ -1545,7 +1545,7 @@ function api.setRingProperty(name, value)
 		ringDetail.bindingQuarantine:Hide()
 		ringDetail.binding:SetBindingText(value)
 		if OPie:GetRingInfo(currentRingName) then
-			config.undo.saveProfile()
+			config.undo:saveActiveProfile()
 			PC:SetRingBinding(currentRingName, value)
 		end
 	elseif name == "internal" then
@@ -1723,7 +1723,7 @@ end
 function api.deleteRing()
 	if currentRing then
 		ringContainer:Hide()
-		config.undo.saveProfile()
+		config.undo:saveActiveProfile()
 		api.saveRing(currentRingName, false)
 		api.deselectRing()
 	end

@@ -839,6 +839,25 @@ function Plater.OpenOptionsPanel()
 					end
 				end
 				
+				-- cleanup cast colors/sounds
+				local castColors = Plater.db.profile.cast_colors
+				local castColorsTemp = DetailsFramework.table.copy({}, castColors)
+				for n, v in pairs(castColorsTemp) do
+					if tonumber(n) then 
+						castColors[n] = nil
+						castColors[tonumber(n)] = v 
+					end
+				end
+				
+				local audioCues = Plater.db.profile.cast_audiocues
+				local audioCuesTemp = DetailsFramework.table.copy({}, audioCues)
+				for n, v in pairs(audioCuesTemp) do
+					if tonumber(n) then 
+						audioCues[n] = nil
+						audioCues[tonumber(n)] = v 
+					end
+				end
+				
 				--restore CVars of the profile
 				Plater.RestoreProfileCVars()
 				
@@ -2581,7 +2600,6 @@ Plater.CreateAuraTesting()
 --for import and export functions see ~importcolor ~exportcolor
 
 	do
-		if (true) then
 			--options
 			local scroll_width = 1050
 			local scroll_height = 442
@@ -2596,14 +2614,16 @@ Plater.CreateAuraTesting()
 			--header
 			local headerTable = {
 				{text = "Enabled", width = 50},
-				{text = "Scripts Only", width = 80},
+				--{text = "Scripts Only", width = 80},
 				{text = "Npc ID", width = 64},
 				{text = "Npc Name", width = 162},
 				{text = "Rename To", width = 140},
 				{text = "Zone Name", width = 142},
-				{text = "", width = 110},
+				{text = "Select Color", width = 110},
+				{text = "Send to Raid", width = 100},
 				{text = "", width = 270}, --filler
 			}
+
 			local headerOptions = {
 				padding = 2,
 			}
@@ -2612,14 +2632,12 @@ Plater.CreateAuraTesting()
 			colorsFrame.Header:SetPoint ("topleft", colorsFrame, "topleft", 10, headerY)
 			
 			colorsFrame.ModelFrame = CreateFrame ("PlayerModel", nil, colorsFrame, "ModelWithControlsTemplate, BackdropTemplate")
-			colorsFrame.ModelFrame:SetSize (199, 440)
+			colorsFrame.ModelFrame:SetSize (250, 440) --199
 			colorsFrame.ModelFrame:EnableMouse (true)
-			colorsFrame.ModelFrame:SetPoint ("topleft", colorsFrame.Header, "topright", -202, -scroll_line_height - 1)
+			colorsFrame.ModelFrame:SetPoint ("topleft", colorsFrame.Header, "topright", -265, -scroll_line_height - 1)
 			colorsFrame.ModelFrame:SetBackdrop ({bgFile = [[Interface\Tooltips\UI-Tooltip-Background]], tileSize = 64, tile = true})
 			colorsFrame.ModelFrame:SetBackdropColor (.4, .4, .4, 1)
-
 			colorsFrame.ModelFrame:SetScript ("OnEnter", nil)
-			--colorsFrame.ModelFrame:SetScript ("OnMouseWheel", nil)
 			colorsFrame.ModelFrame.zoomLevel = 0.1
 			colorsFrame.ModelFrame.minZoom = 0.01
 			colorsFrame.ModelFrame.maxZoom = 1
@@ -2629,36 +2647,37 @@ Plater.CreateAuraTesting()
 			colorsFrame.CheckBoxCache = {}
 			
 			--line scripts
-			local line_onenter = function (self)
+			local lineOnEnter = function (self)
 				if (self.hasHighlight) then
 					local r, g, b, a = unpack(highlightColorLastCombat)
 					self:SetBackdropColor(r, g, b, a+0.2)
 				else
-					self:SetBackdropColor (unpack (backdrop_color_on_enter))
+					self:SetBackdropColor(unpack(backdrop_color_on_enter))
 				end
 
 				if (self.npcID) then
 					colorsFrame.ModelFrame:SetCreature (self.npcID)
 				end
 			end
-			local line_onleave = function (self)
+
+			local lineOnLeave = function (self)
 				if (self.hasHighlight) then
-					self:SetBackdropColor (unpack(highlightColorLastCombat))
+					self:SetBackdropColor(unpack(highlightColorLastCombat))
 				else
-					self:SetBackdropColor (unpack (self.backdrop_color))
+					self:SetBackdropColor(unpack(self.backdrop_color))
 				end
 
 				GameTooltip:Hide()
-				colorsFrame.ModelFrame:SetCreature (1)
+				colorsFrame.ModelFrame:SetCreature(1)
 			end
 			
-			local widget_onenter = function (self)
+			local widget_onenter = function(self)
 				local line = self:GetParent()
-				line:GetScript ("OnEnter")(line)
+				line:GetScript("OnEnter")(line)
 			end
-			local widget_onleave = function (self)
+			local widget_onleave = function(self)
 				local line = self:GetParent()
-				line:GetScript ("OnLeave")(line)
+				line:GetScript("OnLeave")(line)
 			end
 			
 			local oneditfocusgained_spellid = function (self, capsule)
@@ -2753,7 +2772,7 @@ Plater.CreateAuraTesting()
 				colorsFrame.RefreshDropdowns()
 			end
 			
-			local function hex (num)
+			local function hex(num)
 				local hexstr = '0123456789abcdef'
 				local s = ''
 				while num > 0 do
@@ -2826,14 +2845,65 @@ Plater.CreateAuraTesting()
 				end
 			end
 
+			--callback from have clicked in the 'Send To Raid' button
+			local latestMenuClicked = false
+			local onSendToRaidButtonClicked = function(self, button, npcId)
+				if (npcId == latestMenuClicked and GameCooltip:IsShown()) then
+					GameCooltip:Hide()
+					latestMenuClicked = false
+					return
+				end
+
+				latestMenuClicked = npcId
+
+				GameCooltip:Preset(2)
+				GameCooltip:SetOwner(self)
+				GameCooltip:SetType("menu")
+				GameCooltip:SetFixedParameter(npcId)
+
+				local bAutoAccept = false
+
+				--send npc color to raid with accept button
+				--parameters: npcId, auto accept
+				GameCooltip:AddMenu(1, platerInternal.Comms.SendNpcInfoToGroup, bAutoAccept, "npccolor", "", "Send Color", nil, true)
+				GameCooltip:AddIcon([[Interface\BUTTONS\JumpUpArrow]], 1, 1, 14, 14)
+
+				--send npc name to raid with accept button
+				GameCooltip:AddMenu(1, platerInternal.Comms.SendNpcInfoToGroup, bAutoAccept, "npcrename", "", "Send Rename", nil, true)
+				GameCooltip:AddIcon([[Interface\BUTTONS\JumpUpArrow]], 1, 1, 14, 14)
+
+				--send a signal to set the color and rename to default
+				GameCooltip:AddMenu(1, platerInternal.Comms.SendNpcInfoToGroup, bAutoAccept, "resetnpc", "", "Send Reset", nil, true)
+				GameCooltip:AddIcon([[Interface\BUTTONS\UI-GROUPLOOT-PASS-DOWN]], 1, 1, 14, 14)
+
+				GameCooltip:AddLine("$div")
+				bAutoAccept = true
+
+				--send npc color to raid auto accept
+				GameCooltip:AddMenu(1, platerInternal.Comms.SendNpcInfoToGroup, bAutoAccept, "npccolor", "", "Send Color (auto accept)", nil, true)
+				GameCooltip:AddIcon([[Interface\BUTTONS\JumpUpArrow]], 1, 1, 14, 14)
+
+				--send npc name to raid auto accept
+				GameCooltip:AddMenu(1, platerInternal.Comms.SendNpcInfoToGroup, bAutoAccept, "npcrename", "", "Send Rename (auto accept)", nil, true)
+				GameCooltip:AddIcon([[Interface\BUTTONS\JumpUpArrow]], 1, 1, 14, 14)
+
+				--send a signal to set the color and rename to default
+				GameCooltip:AddMenu(1, platerInternal.Comms.SendNpcInfoToGroup, bAutoAccept, "resetnpc", "", "Send Reset (auto accept)", nil, true)
+				GameCooltip:AddIcon([[Interface\BUTTONS\UI-GROUPLOOT-PASS-DOWN]], 1, 1, 14, 14)
+
+				--GameCooltip:AddLine("$div")
+
+				GameCooltip:Show()
+			end
+
 			--line
 			local scroll_createline = function (self, index)
 			
 				local line = CreateFrame ("button", "$parentLine" .. index, self, BackdropTemplateMixin and "BackdropTemplate")
 				line:SetPoint ("topleft", self, "topleft", 1, -((index-1)*(scroll_line_height+1)) - 1)
 				line:SetSize (scroll_width - 3 - colorsFrame.ModelFrame:GetWidth(), scroll_line_height)
-				line:SetScript ("OnEnter", line_onenter)
-				line:SetScript ("OnLeave", line_onleave)
+				line:SetScript ("OnEnter", lineOnEnter)
+				line:SetScript ("OnLeave", lineOnLeave)
 				
 				line.RefreshColor = refresh_line_color
 				
@@ -2851,17 +2921,17 @@ Plater.CreateAuraTesting()
 				forScriptCheckBox:SetAsCheckBox()
 				
 				--npc ID
-				local npcIDEntry = DF:CreateTextEntry (line, function()end, headerTable[3].width, 20, "NpcIDEntry", nil, nil, DF:GetTemplate ("dropdown", "PLATER_DROPDOWN_OPTIONS"))
+				local npcIDEntry = DF:CreateTextEntry (line, function()end, headerTable[2].width, 20, "NpcIDEntry", nil, nil, DF:GetTemplate ("dropdown", "PLATER_DROPDOWN_OPTIONS"))
 				npcIDEntry:SetHook ("OnEditFocusGained", oneditfocusgained_spellid)			
 				npcIDEntry:SetJustifyH("left")
 				
 				--npc Name
-				local npcNameEntry = DF:CreateTextEntry(line, function()end, headerTable[4].width, 20, "NpcNameEntry", nil, nil, DF:GetTemplate ("dropdown", "PLATER_DROPDOWN_OPTIONS"))
+				local npcNameEntry = DF:CreateTextEntry(line, function()end, headerTable[3].width, 20, "NpcNameEntry", nil, nil, DF:GetTemplate ("dropdown", "PLATER_DROPDOWN_OPTIONS"))
 				npcNameEntry:SetHook("OnEditFocusGained", oneditfocusgained_spellid)
 				npcNameEntry:SetJustifyH("left")
 				
 				--rename box
-				local npcRenameEntry = DF:CreateTextEntry(line, function()end, headerTable[5].width, 20, "NpcRenameEntry", nil, nil, DF:GetTemplate ("dropdown", "PLATER_DROPDOWN_OPTIONS"))
+				local npcRenameEntry = DF:CreateTextEntry(line, function()end, headerTable[4].width, 20, "NpcRenameEntry", nil, nil, DF:GetTemplate ("dropdown", "PLATER_DROPDOWN_OPTIONS"))
 				npcRenameEntry:SetHook("OnEditFocusGained", oneditfocusgained_spellid)
 				npcRenameEntry:SetJustifyH("left")
 
@@ -2887,8 +2957,16 @@ Plater.CreateAuraTesting()
 				local zoneNameLabel = DF:CreateLabel (line, "", 10, "white", nil, "ZoneNameLabel")
 				
 				--color
-				local colorDropdown = DF:CreateDropDown (line, line_refresh_color_dropdown, 1, headerTable[7].width + 68, 20, "ColorDropdown", nil, DF:GetTemplate ("dropdown", "OPTIONS_DROPDOWN_TEMPLATE"))
+				local colorDropdown = DF:CreateDropDown (line, line_refresh_color_dropdown, 1, headerTable[6].width, 20, "ColorDropdown", nil, DF:GetTemplate ("dropdown", "OPTIONS_DROPDOWN_TEMPLATE"))
 				
+				--send to raid button
+				local sendToRaidButton = DF:CreateButton(line, onSendToRaidButtonClicked, headerTable[7].width, 20, "Click to Select", -1, nil, nil, nil, nil, nil, DF:GetTemplate ("button", "OPTIONS_BUTTON_TEMPLATE"), DF:GetTemplate ("font", "PLATER_BUTTON"))
+				line.sendToRaidButton = sendToRaidButton
+				if (GetRealmName() ~= "Azralon") then --debug among friends
+					sendToRaidButton:Disable()
+				end
+
+				--set hooks
 				enabledCheckBox:SetHook ("OnEnter", widget_onenter)
 				enabledCheckBox:SetHook ("OnLeave", widget_onleave)
 				forScriptCheckBox:SetHook ("OnEnter", widget_onenter)
@@ -2903,12 +2981,13 @@ Plater.CreateAuraTesting()
 				colorDropdown:SetHook ("OnLeave", widget_onleave)
 				
 				line:AddFrameToHeaderAlignment (enabledCheckBox)
-				line:AddFrameToHeaderAlignment (forScriptCheckBox)
+				--line:AddFrameToHeaderAlignment (forScriptCheckBox)
 				line:AddFrameToHeaderAlignment (npcIDEntry)
 				line:AddFrameToHeaderAlignment (npcNameEntry)
 				line:AddFrameToHeaderAlignment (npcRenameEntry)
 				line:AddFrameToHeaderAlignment (zoneNameLabel)
 				line:AddFrameToHeaderAlignment (colorDropdown)
+				line:AddFrameToHeaderAlignment (sendToRaidButton)
 				
 				line:AlignWithHeader (colorsFrame.Header, "left")
 				
@@ -2945,20 +3024,27 @@ Plater.CreateAuraTesting()
 					if (self.SearchCachedTable and IsSearchingFor == self.SearchCachedTable.SearchTerm) then
 						dataInOrder = self.SearchCachedTable
 					else
-					
 						local enabledTable = {}
-					
+						local npcsRenamed = Plater.db.profile.npcs_renamed
+
 						for i = 1, #data do
 							local npcID = data [i][1]
 							local npcName = data [i][2] or "UNKNOWN"
 							local zoneName = data [i][3] or "UNKNOWN"
-							local color = DB_NPCID_COLORS [npcID] and DB_NPCID_COLORS [npcID][1] and DB_NPCID_COLORS [npcID][3] or "white" --has | is enabled | color
+							local color = DB_NPCID_COLORS[npcID] and DB_NPCID_COLORS[npcID][1] and DB_NPCID_COLORS[npcID][3] or "white" --has | is enabled | color
+							local rename = npcsRenamed[npcID] and npcsRenamed[npcID]:lower()
+							local selectedColorName = DB_NPCID_COLORS[npcID] and DB_NPCID_COLORS[npcID][3]
 						
-							if (npcName:lower():find (IsSearchingFor) or zoneName:lower():find (IsSearchingFor)) then
-								if (DB_NPCID_COLORS [npcID] and DB_NPCID_COLORS [npcID][1]) then
-									enabledTable [#enabledTable+1] = {1, color, npcName, zoneName, npcID}
+							if (
+								npcName:lower():find(IsSearchingFor) or
+							 	zoneName:lower():find(IsSearchingFor) or
+							 	(rename and rename:find(IsSearchingFor)) or
+							 	(selectedColorName and selectedColorName:find(IsSearchingFor))
+							) then
+								if (DB_NPCID_COLORS[npcID] and DB_NPCID_COLORS[npcID][1]) then
+									enabledTable[#enabledTable+1] = {1, color, npcName, zoneName, npcID}
 								else
-									dataInOrder [#dataInOrder+1] = {0, color, npcName, zoneName, npcID}
+									dataInOrder[#dataInOrder+1] = {0, color, npcName, zoneName, npcID}
 								end
 							end
 						end
@@ -3050,6 +3136,9 @@ Plater.CreateAuraTesting()
 							line.NpcRenameEntry.npcID = npcID
 							line.ZoneNameLabel:SetText (zoneName)
 							line.hasHighlight = nil
+
+							line.sendToRaidButton.npcId = npcID
+							line.sendToRaidButton:SetClickFunction(onSendToRaidButtonClicked, npcID)
 							
 							colorsFrame.CheckBoxCache [npcID] = line.EnabledCheckbox
 					
@@ -3057,7 +3146,7 @@ Plater.CreateAuraTesting()
 								--causing lag in the scroll - might be an issue with dropdown:Select
 								--Select: is calling a dispatch making it to rebuild the entire color table, may be caching the color table might save performance
 								line.EnabledCheckbox:SetValue (colorOption [1])
-								line.ForScriptsCheckbox:SetValue (colorOption [2])
+								--line.ForScriptsCheckbox:SetValue (colorOption [2])
 								line.ColorDropdown:Select (colorOption [3])
 								
 								if (colorOption [1]) then
@@ -3067,7 +3156,7 @@ Plater.CreateAuraTesting()
 								end
 							else
 								line.EnabledCheckbox:SetValue (false)
-								line.ForScriptsCheckbox:SetValue (false)
+								--line.ForScriptsCheckbox:SetValue (false)
 								line.ColorDropdown:Select ("white")
 								
 								line:RefreshColor()
@@ -3079,7 +3168,7 @@ Plater.CreateAuraTesting()
 							end
 							
 							line.EnabledCheckbox:SetFixedParameter (npcID)
-							line.ForScriptsCheckbox:SetFixedParameter (npcID)
+							--line.ForScriptsCheckbox:SetFixedParameter (npcID)
 
 						else
 							line:Hide()
@@ -3089,7 +3178,7 @@ Plater.CreateAuraTesting()
 			end
 			
 			--create scroll
-			local spells_scroll = DF:CreateScrollBox (colorsFrame, "$parentColorsScroll", scroll_refresh, {}, scroll_width, scroll_height, scroll_lines, scroll_line_height)
+			local spells_scroll = DF:CreateScrollBox (colorsFrame, "$parentColorsScroll", scroll_refresh, {}, scroll_width, scroll_height, scroll_lines, scroll_line_height) --name is ColorsScroll but variable is spells_scroll
 			DF:ReskinSlider (spells_scroll)
 			spells_scroll:SetPoint ("topleft", colorsFrame, "topleft", 10, scrollY)
 			
@@ -3135,7 +3224,7 @@ Plater.CreateAuraTesting()
 				end
 
 				local aura_search_textentry = DF:CreateTextEntry (colorsFrame, function()end, 150, 20, "AuraSearchTextEntry", _, _, options_dropdown_template)
-				aura_search_textentry:SetPoint ("bottomright", colorsFrame.ModelFrame, "topright", 0, 1)
+				aura_search_textentry:SetPoint ("bottomright", colorsFrame.ModelFrame, "topright", 0, 21)
 				aura_search_textentry:SetHook ("OnChar",		colorsFrame.OnSearchBoxTextChanged)
 				aura_search_textentry:SetHook ("OnTextChanged", 	colorsFrame.OnSearchBoxTextChanged)
 				local aura_search_label = DF:CreateLabel (aura_search_textentry, "search", DF:GetTemplate ("font", "ORANGE_FONT_TEMPLATE"))
@@ -3417,6 +3506,7 @@ Plater.CreateAuraTesting()
 				local scriptsall_button = DF:CreateButton (colorsFrame, setAllAsScriptOnly, 200, 20, "Set All Enabled as 'Scripts Only'", -1, nil, nil, nil, nil, nil, DF:GetTemplate ("button", "OPTIONS_BUTTON_TEMPLATE"), DF:GetTemplate ("font", "PLATER_BUTTON"))
 				scriptsall_button:SetPoint ("left", disableall_button, "right", 0, 0)
 				scriptsall_button:SetFrameLevel (colorsFrame.Header:GetFrameLevel() + 20)
+				scriptsall_button:Hide()
 				
 				local addnpc_text = DF:CreateLabel (scriptsall_button, "Use '/plater addnpc' to add a npc in open world.")
 				addnpc_text.fontsize = 12
@@ -3580,7 +3670,7 @@ Plater.CreateAuraTesting()
 
 					end
 
-					local dropdown = DF:CreateDropDown (plateFrame.unitFrame, line_refresh_color_dropdown, 1, headerTable[6].width, 20, nil, nil, DF:GetTemplate ("dropdown", "OPTIONS_DROPDOWN_TEMPLATE"))
+					local dropdown = DF:CreateDropDown (plateFrame.unitFrame, line_refresh_color_dropdown, 1, headerTable[5].width, 20, nil, nil, DF:GetTemplate ("dropdown", "OPTIONS_DROPDOWN_TEMPLATE"))
 					dropdown:SetHeight (14)
 					dropdown.widget.arrowTexture:SetSize (22, 22)
 					dropdown.widget.arrowTexture2:Hide()
@@ -3697,8 +3787,6 @@ Plater.CreateAuraTesting()
 					end
 				end
 			end)
-		end
-	
 	end	
 	
 --------------------------------------------------------------------------------------------------------------------------------------------------------------

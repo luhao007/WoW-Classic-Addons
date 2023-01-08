@@ -9,6 +9,7 @@ local Settings = TSM.MainUI:NewPackage("Settings")
 local L = TSM.Include("Locale").GetTable()
 local Wow = TSM.Include("Util.Wow")
 local UIElements = TSM.Include("UI.UIElements")
+local UIUtils = TSM.Include("UI.UIUtils")
 local private = {
 	settingPages = {
 		top = {},
@@ -191,7 +192,7 @@ end
 -- ============================================================================
 
 function private.GetSettingsFrame()
-	TSM.UI.AnalyticsRecordPathChange("main", "settings")
+	UIUtils.AnalyticsRecordPathChange("main", "settings")
 	local defaultPage = private.settingPages.top[1]
 
 	local frame = UIElements.New("Frame", "settings")
@@ -216,7 +217,7 @@ function private.GetSettingsFrame()
 				-- make all the navigation align to the top
 			)
 		)
-		:AddChild(TSM.UI.Views.Line.NewVertical("divider"))
+		:AddChild(UIElements.New("VerticalLine", "divider"))
 		:AddChild(UIElements.New("Frame", "contentFrame")
 			:SetLayout("VERTICAL")
 			:SetBackgroundColor("PRIMARY_BG")

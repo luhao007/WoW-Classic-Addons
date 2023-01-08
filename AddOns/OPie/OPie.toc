@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: foxlit
-## Version: Yuzu 4
+## Version: Yuzu 5b
 ## SavedVariables: OneRing_Config, OPie_SavedData
 ## SavedVariablesPerCharacter: OPie_SavedDataPC
 

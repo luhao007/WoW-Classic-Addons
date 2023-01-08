@@ -9,6 +9,7 @@ local Auctioning = TSM.MainUI.Operations:NewPackage("Auctioning")
 local L = TSM.Include("Locale").GetTable()
 local String = TSM.Include("Util.String")
 local UIElements = TSM.Include("UI.UIElements")
+local UIUtils = TSM.Include("UI.UIUtils")
 local private = {
 	currentOperationName = nil,
 	currentTab = nil,
@@ -70,7 +71,7 @@ end
 -- ============================================================================
 
 function private.GetAuctioningOperationSettings(operationName)
-	TSM.UI.AnalyticsRecordPathChange("main", "operations", "auctioning")
+	UIUtils.AnalyticsRecordPathChange("main", "operations", "auctioning")
 	private.currentOperationName = operationName
 	private.currentTab = private.currentTab or L["Details"]
 	return UIElements.New("TabGroup", "tabs")
@@ -83,7 +84,7 @@ function private.GetAuctioningOperationSettings(operationName)
 end
 
 function private.GetDetailsSettings()
-	TSM.UI.AnalyticsRecordPathChange("main", "operations", "auctioning", "details")
+	UIUtils.AnalyticsRecordPathChange("main", "operations", "auctioning", "details")
 	local operation = TSM.Operations.GetSettings("Auctioning", private.currentOperationName)
 	return UIElements.New("ScrollFrame", "settings")
 		:SetPadding(8, 8, 8, 0)
@@ -117,7 +118,7 @@ function private.AddMaxStackSizeSetting(frame)
 end
 
 function private.GetPostingSettings()
-	TSM.UI.AnalyticsRecordPathChange("main", "operations", "auctioning", "posting")
+	UIUtils.AnalyticsRecordPathChange("main", "operations", "auctioning", "posting")
 	local operation = TSM.Operations.GetSettings("Auctioning", private.currentOperationName)
 	return UIElements.New("ScrollFrame", "settings")
 		:SetPadding(8, 8, 8, 0)
@@ -208,7 +209,7 @@ function private.AddStackSizeSettings(frame)
 end
 
 function private.GetCancelingSettings()
-	TSM.UI.AnalyticsRecordPathChange("main", "operations", "auctioning", "canceling")
+	UIUtils.AnalyticsRecordPathChange("main", "operations", "auctioning", "canceling")
 	return UIElements.New("ScrollFrame", "settings")
 		:SetPadding(8, 8, 8, 0)
 		:AddChild(TSM.MainUI.Operations.CreateExpandableSection("Auctioning", "priceSettings", L["Canceling Options"], L["Adjust the settings below to set how groups attached to this operation will be cancelled."])

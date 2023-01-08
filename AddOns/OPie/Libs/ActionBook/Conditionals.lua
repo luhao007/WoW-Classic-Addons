@@ -152,6 +152,7 @@ do -- instance:arena/bg/ratedbg/lfr/raid/scenario + outland/northrend/...
 		[2453]="world/torghast", -- lobby
 		[2162]="torghast", -- towers
 		[2444]="world/dragon isles/df",
+		[2516]="party/dragon isles/nokhud",
 		
 		garrison="world/draenor/garrison",
 		[1158]="garrison", [1331]="garrison", [1159]="garrison",

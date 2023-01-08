@@ -12,6 +12,7 @@ local TempTable = TSM.Include("Util.TempTable")
 local Log = TSM.Include("Util.Log")
 local Settings = TSM.Include("Service.Settings")
 local UIElements = TSM.Include("UI.UIElements")
+local UIUtils = TSM.Include("UI.UIUtils")
 local private = {
 	settings = nil,
 	fsm = nil,
@@ -62,7 +63,7 @@ end
 -- ============================================================================
 
 function private.CreateMainFrame()
-	TSM.UI.AnalyticsRecordPathChange("banking")
+	UIUtils.AnalyticsRecordPathChange("banking")
 	local frame = UIElements.New("ApplicationFrame", "base")
 		:SetParent(UIParent)
 		:SetSettingsContext(private.settings, "frame")
@@ -110,7 +111,7 @@ function private.CreateMainFrame()
 				:SetQuery(TSM.Groups.CreateQuery(), private.settings.tab)
 				:SetSearchString(private.groupSearch)
 			)
-			:AddChild(TSM.UI.Views.Line.NewHorizontal("line"))
+			:AddChild(UIElements.New("HorizontalLine", "line"))
 			:AddChild(UIElements.New("Frame", "footer")
 				:SetLayout("VERTICAL")
 				:SetHeight(170)
@@ -324,7 +325,7 @@ end
 -- ============================================================================
 
 function private.BaseFrameOnHide()
-	TSM.UI.AnalyticsRecordClose("banking")
+	UIUtils.AnalyticsRecordClose("banking")
 end
 
 function private.CloseBtnOnClick(button)

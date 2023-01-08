@@ -20,6 +20,7 @@ local TextureAtlas = TSM.Include("Util.TextureAtlas")
 local ScriptWrapper = TSM.Include("Util.ScriptWrapper")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local PlayerInfo = TSM.Include("Service.PlayerInfo")
+local UIUtils = TSM.Include("UI.UIUtils")
 local AuctionScrollingTable = TSM.Include("LibTSMClass").DefineClass("AuctionScrollingTable", TSM.UI.ScrollingTable)
 local UIElements = TSM.Include("UI.UIElements")
 UIElements.Register(AuctionScrollingTable)
@@ -742,12 +743,12 @@ function private.GetItemCellText(self, subRow)
 		local itemString = subRow:GetItemString()
 		subRow = self._firstSubRowByItem[baseItemString]
 		if not subRow then
-			return TSM.UI.GetColoredItemName(itemString or baseItemString, 0)
+			return UIUtils.GetColoredItemName(itemString or baseItemString, 0)
 		end
 	end
 	local itemLink = subRow:GetLinks()
 	-- TODO: use theme constant for indented tint pct
-	return TSM.UI.GetColoredItemName(itemLink, isIndented and -20 or 0)
+	return UIUtils.GetColoredItemName(itemLink, isIndented and -20 or 0)
 end
 
 function private.GetItemLevelCellText(self, subRow)
@@ -802,7 +803,7 @@ function private.GetTimeLeftCellText(self, subRow)
 		end
 	end
 	local timeLeft = subRow:GetListingInfo()
-	return TSM.UI.GetTimeLeftString(timeLeft)
+	return UIUtils.GetTimeLeftString(timeLeft)
 end
 
 function private.GetSellerCellText(self, subRow)

@@ -94,6 +94,80 @@ GTFO.SpellID["370042"] = {
   sound = 1;
 };
 
+GTFO.SpellID["388759"] = {
+  --desc = "Blazing Trail (Cobalt Assembly)";
+  sound = 1;
+};
+
+GTFO.SpellID["393467"] = {
+  --desc = "Stormwall (Forbidden Isles)";
+  sound = 1;
+};
+
+GTFO.SpellID["377840"] = {
+  --desc = "Temporal Shock (Eon's Fringe)";
+  sound = 2;
+};
+
+GTFO.SpellID["385355"] = {
+  --desc = "Fracturing Tremor - Pool (Basrikron)";
+  sound = 1;
+};
+
+GTFO.SpellID["378927"] = {
+  --desc = "Blizzard";
+  sound = 1;
+};
+
+GTFO.SpellID["391190"] = {
+  --desc = "Stir (Bisquius)";
+  sound = 1;
+};
+
+GTFO.SpellID["395561"] = {
+  --desc = "Restless Earth (Gravlion)";
+  sound = 1;
+};
+
+GTFO.SpellID["395562"] = {
+  --desc = "Restless Earth (Gravlion)";
+  applicationOnly = true;
+  sound = 1;
+};
+
+GTFO.SpellID["375033"] = {
+  --desc = "Quaking Spike";
+  sound = 1;
+};
+
+GTFO.SpellID["394073"] = {
+  --desc = "Furious Flames (Vadne Bleakheart)";
+  sound = 1;
+};
+
+GTFO.SpellID["369690"] = {
+  --desc = "Molten Trail (Cauldronbearer Blakor)";
+  sound = 1;
+};
+
+GTFO.SpellID["390295"] = {
+  --desc = "Arc Expulsion (Strunraan)";
+  sound = 1;
+};
+
+GTFO.SpellID["388459"] = {
+  --desc = "Glaciate (Cobalt Assembly)";
+  applicationOnly = true;
+  sound = 1;
+};
+
+GTFO.SpellID["388379"] = {
+  --desc = "Glaciate (Cobalt Assembly)";
+  applicationOnly = true;
+  sound = 1;
+};
+
+
 --- *******************
 --- * Ruby Life Pools *
 --- *******************
@@ -192,6 +266,11 @@ GTFO.SpellID["395669"] = {
   sound = 1;
 };
 
+GTFO.SpellID["376899"] = {
+  --desc = "Crackling Cloud (Balakar Khan)";
+  sound = 1;
+};
+
 --- **********************
 --- * Brackenhide Hollow *
 --- **********************
@@ -250,6 +329,16 @@ GTFO.SpellID["376149"] = {
   sound = 1;
 };
 
+GTFO.SpellID["372141"] = {
+  --desc = "Withering Away! (Wilted Oak)";
+  sound = 1;
+};
+
+GTFO.SpellID["378054"] = {
+  --desc = "Withering Away! (Treemouth)";
+  sound = 1;
+};
+
 
 --- *********************
 --- * Halls of Infusion *
@@ -264,6 +353,11 @@ GTFO.SpellID["393444"] = {
 
 GTFO.SpellID["389181"] = {
   --desc = "Power Field (Watcher Irideus)";
+  sound = 1;
+};
+
+GTFO.SpellID["375080"] = {
+  --desc = "Whirling Fury (Squallbringer Cyraz)";
   sound = 1;
 };
 
@@ -314,7 +408,12 @@ GTFO.SpellID["387932"] = {
   --desc = "Astral Whirlwind (Algeth'ar Echoknight)";
   applicationOnly = true;
   sound = 1;
-  test = true;
+};
+
+GTFO.SpellID["389007"] = {
+  --desc = "Wild Energy (Echo of Doragosa)";
+  applicationOnly = true;
+  sound = 1;
 };
 
 --- *************
@@ -346,9 +445,29 @@ GTFO.SpellID["375204"] = {
 	sound = 1;
 };
 
+GTFO.SpellID["375535"] = {
+  --desc = "Lava Wave (Magmatusk)";
+  sound = 1;
+};
+
 GTFO.SpellID["377542"] = {
 	--desc = "Burning Ground (Warlord Sargha)";
 	sound = 1;
+};
+
+GTFO.SpellID["373756"] = {
+  --desc = "Magma Wave (Chargath, Bane of Scales)";
+  sound = 1;
+};
+
+GTFO.SpellID["374854"] = {
+  --desc = "Erupted Ground (Chargath, Bane of Scales)";
+  sound = 1;
+};
+
+GTFO.SpellID["381482"] = {
+  --desc = "Forgefire (Forgemaster Gorek)";
+  sound = 1;
 };
 
 
@@ -368,6 +487,11 @@ GTFO.SpellID["371021"] = {
   test = true; -- Does this work?
 };
 
+GTFO.SpellID["374523"] = {
+  --desc = "Stinging Sap (Ley-Line Sprout)";
+  sound = 1;
+};
+
 GTFO.SpellID["391120"] = {
   --desc = "Spellfrost Breath (Scalebane Lieutenant)";
   sound = 1;
@@ -384,9 +508,27 @@ GTFO.SpellID["385267"] = {
   sound = 1;
 };
 
+GTFO.SpellID["387152"] = {
+  --desc = "Icy Devastator (Telash Greywing)";
+  sound = 4;
+  negatingDebuffSpellID = 387151; -- Icy Devastator
+  negatingIgnoreTime = 4;
+};
+
+GTFO.SpellID["387848"] = {
+  --desc = "Astral Nova (Spectral Invoker)";
+  sound = 4;
+  ignoreSelfInflicted = true;
+};
+
 --- **************************
 --- * Uldaman: Legacy of Tyr *
 --- **************************
+
+GTFO.SpellID["377825"] = {
+  --desc = "Burning Pitch";
+  sound = 1;
+};
 
 GTFO.SpellID["369337"] = {
   --desc = "Difficult Terrain (Runic Protector)";
@@ -399,6 +541,11 @@ GTFO.SpellID["382576"] = {
   sound = 1;
 };
 
+GTFO.SpellID["368996"] = {
+  --desc = "Purging Flames (Emberon)";
+  sound = 1;
+};
+
 GTFO.SpellID["376325"] = {
   --desc = "Eternity Zone (Chrono-Lord Deios)";
   sound = 1;
@@ -408,6 +555,156 @@ GTFO.SpellID["376325"] = {
 --- * Vault of the Incarnates *
 --- ***************************
 
+GTFO.SpellID["370648"] = {
+  --desc = "Lava Flow (Eranog)";
+  sound = 1;
+};
 
+GTFO.SpellID["392563"] = {
+  --desc = "Whirling Destruction (Quarry Stonebreaker)";
+  sound = 1;
+  tankSound = 0;
+};
+
+GTFO.SpellID["382458"] = {
+  --desc = "Resonant Aftermath (Terros)";
+  sound = 1;
+};
+
+GTFO.SpellID["398200"] = {
+  --desc = "Djaradin Lava";
+  sound = 1;
+};
+
+GTFO.SpellID["396544"] = {
+  --desc = "Charred Ground (Magmas)";
+  sound = 1;
+};
+
+GTFO.SpellID["371514"] = {
+  --desc = "Scorched Ground (Embar)";
+  soundFunction = function() 
+	if (GTFO_HasDebuff("player", 391599) or GTFO_HasDebuff("player", 371836)) then -- Primal Blizzard, two types
+		return 0;
+	end
+	return 1;
+  end;
+};
+
+GTFO.SpellID["372055"] = {
+  --desc = "Icy Ground (Sennarth)";
+  sound = 2;
+};
+
+GTFO.SpellID["371836"] = {
+  --desc = "Primal Blizzard (Kadros Icewrath)";
+  soundFunction = function() 
+	local stacks = GTFO_DebuffStackCount("player", 371836);
+	if (stacks == 7 or stacks == 8) then
+		return 2;
+	elseif (stacks == 9) then
+		return 1;
+	end
+  end;
+};
+
+GTFO.SpellID["371624"] = {
+  --desc = "Conductive Mark (Dathea Stormlash)";
+  spellType = "SPELL_AURA_APPLIED_DOSE"; -- Only alert when passing debuff to another player, refreshing your own
+  sound = 4;
+};
+
+GTFO.SpellID["372030"] = {
+  --desc = "Sticky Webbing (Sennarth)";
+  applicationOnly = true;
+  soundFunction = function() 
+	GTFO_AddEvent("StickyWebbing", 30);
+	local stacks = GTFO_DebuffStackCount("player", 372030);
+	if (stacks > 6) then
+		return 1;
+	else
+		return 2;
+	end
+  end;
+};
+
+GTFO.SpellID["391686"] = {
+  --desc = "Conductive Mark (Dathea)";
+  spellType = "SPELL_AURA_APPLIED_DOSE"; -- Only alert when passing debuff to another player, refreshing your own
+  sound = 4;
+};
+
+GTFO.SpellID["376851"] = {
+  --desc = "Aerial Buffet (Dathea)";
+  tankSound = 1;
+  sound = 0;
+};
+
+GTFO.SpellID["374554"] = {
+  --desc = "Magma Pool (Kurog Grimtotem)";
+  sound = 1;
+};
+
+GTFO.SpellID["390747"] = {
+  --desc = "Static Field (Broodkeeper Diurna)";
+  sound = 1;
+  test = true;
+};
+
+GTFO.SpellID["377662"] = {
+  --desc = "Static Field (Raszageth)";
+  sound = 2;
+  negatingDebuffSpellID = 377612 -- Hurricane Wing
+};
+
+GTFO.SpellID["388115"] = {
+  --desc = "Lightning Devastation (Raszageth)";
+  applicationOnly = true;
+  sound = 1;
+};
+
+GTFO.SpellID["395929"] = {
+  --desc = "Storm's Spite (Raging Storm)";
+  sound = 1;
+};
+
+GTFO.SpellID["395278"] = {
+  --desc = "Electric Surge (Primal Stormsentry)";
+  sound = 4;
+  negatingDebuffSpellID = 395273; -- Electric Surge
+  ignoreSelfInflicted = true;
+};
+
+GTFO.SpellID["391711"] = {
+  --desc = "Lethal Current (Thundering Ravager)";
+  sound = 4;
+  negatingDebuffSpellID = 391696;
+};
+
+GTFO.SpellID["375883"] = {
+  --desc = "Greatstaff's Wrath (Broodkeeper Diurna)";
+  sound = 1;
+};
+
+GTFO.SpellID["379419"] = {
+  --desc = "Empowered Greatstaff's Wrath (Broodkeeper Diurna)";
+  sound = 1;
+};
+
+GTFO.SpellID["377597"] = {
+  --desc = "Lightning Breath (Raszageth)";
+  sound = 1;
+};
+
+GTFO.SpellID["394583"] = {
+  --desc = "Scattered Charge (Raszageth)";
+  applicationOnly = true;
+  sound = 4;
+};
+
+GTFO.SpellID["392196"] = {
+  --desc = "Scattered Charge (Raszageth)";
+  sound = 4;
+};
 
 end

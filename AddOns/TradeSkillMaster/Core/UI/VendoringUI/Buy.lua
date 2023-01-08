@@ -16,6 +16,7 @@ local ItemString = TSM.Include("Util.ItemString")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local Settings = TSM.Include("Service.Settings")
 local UIElements = TSM.Include("UI.UIElements")
+local UIUtils = TSM.Include("UI.UIUtils")
 local private = {
 	settings = nil,
 	query = nil,
@@ -51,7 +52,7 @@ end
 -- ============================================================================
 
 function private.GetFrame()
-	TSM.UI.AnalyticsRecordPathChange("vendoring", "buy")
+	UIUtils.AnalyticsRecordPathChange("vendoring", "buy")
 	private.filterText = ""
 	if not private.query then
 		private.query = TSM.Vendoring.Buy.CreateMerchantQuery()
@@ -134,7 +135,7 @@ function private.GetFrame()
 			:SetQuery(private.query)
 			:SetScript("OnRowClick", private.RowOnClick)
 		)
-		:AddChild(TSM.UI.Views.Line.NewHorizontal("line"))
+		:AddChild(UIElements.New("HorizontalLine", "line"))
 		:AddChild(UIElements.New("Frame", "footer")
 			:SetLayout("HORIZONTAL")
 			:SetHeight(40)
@@ -147,7 +148,7 @@ function private.GetFrame()
 				:SetPadding(4)
 				:AddChild(TSM.UI.Views.PlayerGoldText.New("text"))
 			)
-			:AddChild(TSM.UI.Views.Line.NewVertical("line")
+			:AddChild(UIElements.New("VerticalLine", "line")
 				:SetHeight(22)
 				:SetMargin(0, 8, 0, 0)
 			)
@@ -177,7 +178,7 @@ end
 
 function private.GetItemText(row)
 	local itemString, numAvailable = row:GetFields("itemString", "numAvailable")
-	local itemName = TSM.UI.GetColoredItemName(itemString) or "?"
+	local itemName = UIUtils.GetColoredItemName(itemString) or "?"
 	if numAvailable == -1 then
 		return itemName
 	elseif numAvailable > 0 then
@@ -307,7 +308,7 @@ function private.RowOnClick(scrollingTable, row, mouseButton)
 				:AddChild(UIElements.New("Text", "name")
 					:SetHeight(36)
 					:SetFont("ITEM_BODY1")
-					:SetText(TSM.UI.GetColoredItemName(itemString))
+					:SetText(UIUtils.GetColoredItemName(itemString))
 				)
 			)
 			:AddChild(UIElements.New("Frame", "qty")

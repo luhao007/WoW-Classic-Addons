@@ -19,6 +19,7 @@ local ItemInfo = TSM.Include("Service.ItemInfo")
 local Settings = TSM.Include("Service.Settings")
 local CustomPrice = TSM.Include("Service.CustomPrice")
 local UIElements = TSM.Include("UI.UIElements")
+local UIUtils = TSM.Include("UI.UIUtils")
 local private = {
 	settings = nil,
 	craftsQuery = nil,
@@ -51,7 +52,7 @@ end
 -- ============================================================================
 
 function private.GetCraftingReportsFrame()
-	TSM.UI.AnalyticsRecordPathChange("crafting", "crafting_reports")
+	UIUtils.AnalyticsRecordPathChange("crafting", "crafting_reports")
 	if not private.craftsQuery then
 		private.craftsQuery = TSM.Crafting.CreateCraftsQuery()
 		private.craftsQuery:VirtualField("firstOperation", "string", private.FirstOperationVirtualField, "itemString")
@@ -76,7 +77,7 @@ end
 
 function private.GetTabElements(self, path)
 	if path == L["Crafts"] then
-		TSM.UI.AnalyticsRecordPathChange("crafting", "crafting_reports", "crafts")
+		UIUtils.AnalyticsRecordPathChange("crafting", "crafting_reports", "crafts")
 		private.filterText = ""
 		wipe(private.craftProfessions)
 		tinsert(private.craftProfessions, L["All Professions"])
@@ -224,7 +225,7 @@ function private.GetTabElements(self, path)
 				:SetScript("OnRowClick", private.CraftsOnRowClick)
 			)
 	elseif path == L["Materials"] then
-		TSM.UI.AnalyticsRecordPathChange("crafting", "crafting_reports", "materials")
+		UIUtils.AnalyticsRecordPathChange("crafting", "crafting_reports", "materials")
 		wipe(private.matProfessions)
 		tinsert(private.matProfessions, L["All Professions"])
 		for _, _, profession in TSM.Crafting.PlayerProfessions.Iterator() do
@@ -344,7 +345,7 @@ end
 -- ============================================================================
 
 function private.CraftsGetCraftNameText(row)
-	return TSM.UI.GetColoredItemName(row:GetField("itemString")) or row:GetField("name")
+	return UIUtils.GetColoredItemName(row:GetField("itemString")) or row:GetField("name")
 end
 
 function private.CraftsGetBagsText(bagQuantity)
@@ -385,7 +386,7 @@ function private.CraftsGetSaleRateText(saleRate)
 end
 
 function private.MatsGetNameText(itemString)
-	return TSM.UI.GetColoredItemName(itemString) or TSM.UI.GetColoredItemName(ItemString.GetUnknown())
+	return UIUtils.GetColoredItemName(itemString) or UIUtils.GetColoredItemName(ItemString.GetUnknown())
 end
 
 function private.MatsGetPriceText(matCost)
@@ -465,7 +466,7 @@ function private.MatsOnRowClick(scrollingTable, row)
 			:AddChild(UIElements.New("Text", "name")
 				:SetMargin(0, 8, 0, 0)
 				:SetFont("ITEM_BODY1")
-				:SetText(TSM.UI.GetColoredItemName(itemString))
+				:SetText(UIUtils.GetColoredItemName(itemString))
 			)
 			:AddChild(UIElements.New("Button", "resetBtn")
 				:SetWidth("AUTO")
