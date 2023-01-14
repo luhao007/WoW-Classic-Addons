@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("Thorim", "DBM-Ulduar")
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20221213024828")
+mod:SetRevision("20230106204053")
 mod:SetCreatureID(32865)
 mod:SetEncounterID(1141)
 mod:SetModelID(28977)
@@ -109,7 +109,7 @@ function mod:SPELL_CAST_SUCCESS(args)
 		warnLightningCharge:Show()
 		timerLightningCharge:Start()
 	elseif args.spellId == 62130 then
-		timerUnbalancingStrike:Start(self:IsClassic() and 20 or 25)
+		timerUnbalancingStrike:Start(self:IsClassic() and 15 or 25)
 	end
 end
 

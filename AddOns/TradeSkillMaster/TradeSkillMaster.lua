@@ -34,7 +34,7 @@ local private = {
 local LOGOUT_TIME_WARNING_THRESHOLD_MS = 20
 do
 	-- show a message if we were updated
-	if GetAddOnMetadata("TradeSkillMaster", "Version") ~= "v4.12.18" then
+	if GetAddOnMetadata("TradeSkillMaster", "Version") ~= "v4.12.20" then
 		Wow.ShowBasicMessage("TSM was just updated and may not work properly until you restart WoW.")
 	end
 end

@@ -338,6 +338,11 @@ end
 
 function List.__private:_HandleRowFrameEvent(row, event, ...)
 	if event == "OnEnter" then
+		local focus = GetMouseFocus()
+		if not focus or (focus ~= row._frame and focus ~= row._frame:GetParent()) then
+			-- Sometimes we get erronous OnEnter events - just ignore them
+			return
+		end
 		assert(select("#", ...) == 0)
 		self:_HandleRowEnter(row)
 	elseif event == "OnLeave" then

@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("YoggSaron", "DBM-Ulduar")
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20221213024828")
+mod:SetRevision("20230106204053")
 mod:SetCreatureID(33288)
 mod:SetEncounterID(1143)
 mod:SetModelID(28817)
@@ -279,10 +279,10 @@ function mod:OnSync(msg)
 		--timerMaladyCD:Cancel()
 		--timerBrainLinkCD:Cancel()
 		timerEmpower:Start()
-		if self.vb.numberOfPlayers == 1 then
+--		if self.vb.numberOfPlayers == 1 then
 			timerMadness:Cancel()
 			specWarnMadnessOutNow:Cancel()
-		end
+--		end
 		warnP3:Show()
 		warnEmpowerSoon:Schedule(40)
 		timerNextDeafeningRoar:Start(30)

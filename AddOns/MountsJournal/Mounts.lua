@@ -1,5 +1,5 @@
 local addon, L = ...
-local C_Map, MapUtil, next, wipe, random, C_PetJournal, IsSpellKnown, GetTime, IsFlyableArea, IsSubmerged, GetInstanceInfo, IsIndoors, UnitInVehicle, IsMounted, InCombatLockdown, GetSpellCooldown, UnitBuff, GetCompanionInfo, CallCompanion, GetSubZoneText, SecureCmdOptionParse = C_Map, MapUtil, next, wipe, random, C_PetJournal, IsSpellKnown, GetTime, IsFlyableArea, IsSubmerged, GetInstanceInfo, IsIndoors, UnitInVehicle, IsMounted, InCombatLockdown, GetSpellCooldown, UnitBuff, GetCompanionInfo, CallCompanion, GetSubZoneText, SecureCmdOptionParse
+local C_Map, MapUtil, next, wipe, random, C_PetJournal, IsSpellKnown, GetTime, IsFlyableArea, IsSubmerged, GetInstanceInfo, IsIndoors, UnitInVehicle, IsMounted, InCombatLockdown, GetSpellCooldown, UnitBuff, GetCompanionInfo, CallCompanion, GetSubZoneText = C_Map, MapUtil, next, wipe, random, C_PetJournal, IsSpellKnown, GetTime, IsFlyableArea, IsSubmerged, GetInstanceInfo, IsIndoors, UnitInVehicle, IsMounted, InCombatLockdown, GetSpellCooldown, UnitBuff, GetCompanionInfo, CallCompanion, GetSubZoneText
 local util = MountsJournalUtil
 local mounts = CreateFrame("Frame", "MountsJournal")
 util.setEventsMixin(mounts)
@@ -507,7 +507,7 @@ end
 mounts.PLAYER_SPECIALIZATION_CHANGED = mounts.setDB
 
 
-function mounts:getTargetMount()
+function mounts:summonTarget()
 	if self.config.copyMountTarget then
 		local i = 1
 		repeat
@@ -515,7 +515,12 @@ function mounts:getTargetMount()
 			if spellID then
 				local index = self.indexBySpellID[spellID]
 				if index then
-					return self:isUsable(spellID, self.sFlags.canUseFlying) and spellID
+					if self:isUsable(spellID, self.sFlags.canUseFlying) then
+						self:summonPet(spellID)
+						CallCompanion("MOUNT", index)
+						return true
+					end
+					break
 				end
 				i = i + 1
 			end
@@ -576,7 +581,6 @@ function mounts:setFlags()
 	            and (not modifier or flags.isSubmerged)
 	flags.waterWalk = not isFlyableLocation and modifier
 	                  or self:isWaterWalkLocation()
-	flags.targetMount = self:getTargetMount()
 end
 
 
@@ -590,7 +594,6 @@ function mounts:init()
 	SlashCmdList["MOUNTSJOURNAL"] = function(msg)
 		local flags = self.sFlags
 		if msg ~= "doNotSetFlags" then
-			if not SecureCmdOptionParse(msg) then return end
 			flags.forceModifier = nil
 			self:setFlags()
 		end
@@ -601,7 +604,7 @@ function mounts:init()
 		-- repair mounts
 		elseif not ((flags.repair and not flags.fly or flags.flyableRepair and flags.fly) and self:summon(self.usableRepairMounts))
 		-- target's mount
-		and not (flags.targetMount and (CallCompanion("MOUNT", self.indexBySpellID[flags.targetMount]) or true))
+		and not self:summonTarget()
 		-- swimming
 		and not (flags.swimming and self:summon(self.list.swimming))
 		-- fly

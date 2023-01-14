@@ -4,21 +4,26 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local Queue = TSM.Crafting:NewPackage("Queue")
 local ProfessionInfo = TSM.Include("Data.ProfessionInfo")
 local CraftString = TSM.Include("Util.CraftString")
 local Database = TSM.Include("Util.Database")
 local Math = TSM.Include("Util.Math")
 local Log = TSM.Include("Util.Log")
+local TempTable = TSM.Include("Util.TempTable")
 local RecipeString = TSM.Include("Util.RecipeString")
 local ItemString = TSM.Include("Util.ItemString")
 local MatString = TSM.Include("Util.MatString")
 local AltTracking = TSM.Include("Service.AltTracking")
 local CustomPrice = TSM.Include("Service.CustomPrice")
+local Settings = TSM.Include("Service.Settings")
 local private = {
+	settings = nil,
 	db = nil,
 	optionalMatTemp = {},
+	matsTemp = {},
+	qualityMatTemp = {},
 }
 local MAX_NUM_QUEUED = 9999
 
@@ -29,16 +34,25 @@ local MAX_NUM_QUEUED = 9999
 -- ============================================================================
 
 function Queue.OnEnable()
+	private.settings = Settings.NewView()
+		:AddKey("factionrealm", "internalData", "craftingQueue")
 	private.db = Database.NewSchema("CRAFTING_QUEUE")
 		:AddUniqueStringField("recipeString")
 		:AddStringField("craftString")
 		:AddNumberField("num")
 		:Commit()
+
+	-- Copy to a temp table first since we might otherwise be modifying the settings table as we iterate
+	local queuedRecipes = TempTable.Acquire()
+	for recipeString, numQueued in pairs(private.settings.craftingQueue) do
+		queuedRecipes[recipeString] = numQueued
+	end
 	private.db:SetQueryUpdatesPaused(true)
-	for recipeString, numQueued in pairs(TSM.db.factionrealm.internalData.craftingQueue) do
-		Queue.SetNum(recipeString, numQueued) -- sanitize / cache the number queued
+	for recipeString, numQueued in pairs(queuedRecipes) do
+		Queue.SetNum(recipeString, numQueued)
 	end
 	private.db:SetQueryUpdatesPaused(false)
+	TempTable.Release(queuedRecipes)
 end
 
 function Queue.GetDBForJoin()
@@ -53,7 +67,7 @@ function Queue.SetNum(recipeString, num)
 	assert(type(recipeString) == "string")
 	assert(strfind(recipeString, "^r:%d+"))
 	local numQueued = min(max(Math.Round(num or 0), 0), MAX_NUM_QUEUED)
-	TSM.db.factionrealm.internalData.craftingQueue[recipeString] = numQueued
+	private.settings.craftingQueue[recipeString] = numQueued > 0 and numQueued or nil
 	local query = private.db:NewQuery()
 		:Equal("recipeString", recipeString)
 	local row = query:GetFirstResult()
@@ -95,12 +109,7 @@ function Queue.Remove(recipeString, quantity)
 end
 
 function Queue.Clear()
-	local query = private.db:NewQuery()
-		:Select("recipeString")
-	for _, recipeString in query:Iterator() do
-		TSM.db.factionrealm.internalData.craftingQueue[recipeString] = nil
-	end
-	query:Release()
+	wipe(private.settings.craftingQueue)
 	private.db:Truncate()
 end
 
@@ -213,6 +222,19 @@ function private.RestockItem(itemString)
 				private.optionalMatTemp[#private.optionalMatTemp + 1] = ItemString.ToId(optionalMatItemString)
 			end
 		end
+	end
+	local quality = CraftString.GetQuality(cheapestCraftString)
+	if quality then
+		assert(not next(private.matsTemp) and not next(private.qualityMatTemp))
+		TSM.Crafting.GetMatsAsTable(cheapestCraftString, private.matsTemp)
+		if TSM.Crafting.DFCrafting.GetOptionalMats(cheapestCraftString, private.matsTemp, private.qualityMatTemp) then
+			for _, qualityMatItemString in ipairs(private.qualityMatTemp) do
+				local matString = private.qualityMatTemp[qualityMatItemString]
+				private.optionalMatTemp[MatString.GetSlotId(matString)] = ItemString.ToId(qualityMatItemString)
+			end
+		end
+		wipe(private.qualityMatTemp)
+		wipe(private.matsTemp)
 	end
 	local cheapestRecipeString = RecipeString.FromCraftString(cheapestCraftString, private.optionalMatTemp)
 	wipe(private.optionalMatTemp)

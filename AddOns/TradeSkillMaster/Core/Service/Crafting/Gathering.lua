@@ -228,7 +228,8 @@ function private.UpdateDB()
 		end
 		for _, _, itemId in RecipeString.OptionalMatIterator(recipeString) do
 			local matItemString = "i:"..itemId
-			matsNumNeed[matItemString] = (matsNumNeed[matItemString] or 0) + 1 * numQueued
+			local quantity = TSM.Crafting.GetOptionalMatQuantity(craftString, itemId)
+			matsNumNeed[matItemString] = (matsNumNeed[matItemString] or 0) + quantity * numQueued
 		end
 	end
 	query:Release()

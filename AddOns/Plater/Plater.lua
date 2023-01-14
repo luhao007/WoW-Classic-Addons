@@ -150,6 +150,7 @@ platerInternal.Data = {}
 		[189707] = true, --chaotic essence (shadowlands season 4 raid affixes) --these are the multiple spawns from the above
 		[167999] = true, --Echo of Sin (shadowlands, Castle Nathria, Sire Denathrius)
 		[176920] = true, --Domination Arrow (shadowlands, Sanctum of Domination, Sylvanas)
+		[196642] = true, --Hungry Lasher (dragonflight, Algeth'ar Academy, Overgrown Ancient)
 	}
 	
 	--setter
@@ -647,6 +648,63 @@ Plater.TargetIndicators = {
 		y = 0,
 		blend = "ADD",
 	},
+	
+	["Arrow"] = {
+        path = [[Interface\AddOns\Plater\media\arrow_single_right_64]],
+        coords = {
+            {0, 1, 0, 1}, 
+            {1, 0, 0, 1}
+        },
+        desaturated = false,
+        width = 20,
+        height = 20,
+        x = 28,
+        y = 0,
+		wscale = 1.5,
+		hscale = 2,
+		autoScale = true,
+		--scale = 1,
+        blend = "ADD",
+        color = "white",
+    },
+	
+	["Arrow Thin"] = {
+        path = [[Interface\AddOns\Plater\media\arrow_thin_right_64]],
+        coords = {
+            {0, 1, 0, 1}, 
+            {1, 0, 0, 1}
+        },
+        desaturated = false,
+        width = 20,
+        height = 20,
+        x = 28,
+        y = 0,
+		wscale = 1.5,
+		hscale = 2,
+		autoScale = true,
+		--scale = 1,
+        blend = "ADD",
+        color = "white",
+    },
+	
+	["Double Arrows"] = {
+        path = [[Interface\AddOns\Plater\media\arrow_double_right_64]],
+        coords = {
+            {0, 1, 0, 1}, 
+            {1, 0, 0, 1}
+        },
+        desaturated = false,
+        width = 20,
+        height = 20,
+        x = 28,
+        y = 0,
+		wscale = 1.5,
+		hscale = 2,
+		autoScale = true,
+		--scale = 1,
+        blend = "ADD",
+        color = "white",
+    },
 }
 
 --> which specs each class has available
@@ -908,8 +966,8 @@ local class_specs_coords = {
 	[257] = {256/512, 320/512, 128/512, 192/512}, --> priest holy
 	[258] = {(320/512) + (0.001953125 * 4), 384/512, 128/512, 192/512}, --> priest shadow
 	
-	[259] = {384/512, 448/512, 128/512, 192/512}, --> rogue assassination
-	[260] = {448/512, 512/512, 128/512, 192/512}, --> rogue combat
+	[259] = {64/512, 128/512, 384/512, 448/512}, --> rogue assassination
+	[260] = {0, 64/512, 384/512, 448/512}, --> rogue outlaw
 	[261] = {0, 64/512, 192/512, 256/512}, --> rogue sub
 	
 	[262] = {64/512, 128/512, 192/512, 256/512}, --> shaman elemental
@@ -923,6 +981,9 @@ local class_specs_coords = {
 	[71] = {448/512, 512/512, 192/512, 256/512}, --> warrior arms
 	[72] = {0, 64/512, 256/512, 320/512}, --> warrior fury
 	[73] = {64/512, 128/512, 256/512, 320/512}, --> warrior protect
+	
+	[1467] = {256/512, 320/512, 256/512, 320/512}, --> evoker devastation
+	[1468] = {320/512, 384/512, 256/512, 320/512}, --> evoker preservation
 }
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1099,6 +1160,22 @@ local class_specs_coords = {
 		[192955] = true,
 		[194806] = true,
 		[196548] = true,
+		[196548] = true,
+		[197398] = true,
+		[112668] = true,
+		[96608] = true,
+		[102019] = true,
+		[189893] = true, --187894?
+		[75966] = true, --75451?
+		[75899] = true,
+		[76518] = true,
+		[56792] = true,
+		[196559] = true,
+		[190187] = true,
+		[195138] = true,
+		[195821] = true,
+		[99922] = true,
+		[104822] = true,
 	}
 
 	--update the settings cache for scritps
@@ -1858,14 +1935,14 @@ local class_specs_coords = {
 	function Plater.RunScheduledUpdate (timerObject) --private
 		Plater.StartLogPerformanceCore("Plater-Core", "Update", "RunScheduledUpdate")
 
-		local plateFrame = timerObject.plateFrame
 		local unitGUID = timerObject.GUID
 		local unitId = timerObject.unitId
 		local forceUpdate = unitId and true or false
+		local plateFrame = C_NamePlate.GetNamePlateForUnit (unitId)
 		
 		
 		--checking the serial of the unit is the same in case this nameplate is being used on another unit
-		if (plateFrame:IsShown() and (unitGUID == plateFrame [MEMBER_GUID])) or (forceUpdate) then
+		if (plateFrame and (unitGUID == plateFrame [MEMBER_GUID])) then
 			--save user input data (usualy set from scripts) before call the unit added event
 				local unitFrame = plateFrame.unitFrame
 				if not unitFrame.PlaterOnScreen and not forceUpdate then
@@ -1883,7 +1960,7 @@ local class_specs_coords = {
 				local customBorderColor = unitFrame.customBorderColor
 			
 			--full refresh the nameplate, this will override user data from scripts
-			unitFrame:SetUnit (nil)
+			Plater.RunFunctionForEvent ("NAME_PLATE_UNIT_REMOVED", unitId or unitFrame [MEMBER_UNITID])
 			Plater.RunFunctionForEvent ("NAME_PLATE_UNIT_ADDED", unitId or unitFrame [MEMBER_UNITID])
 			
 			--restore user input data
@@ -1917,7 +1994,7 @@ local class_specs_coords = {
 
 	--run a delayed update on the namepalte, this is used when the client receives an information from the server but does not update the state immediately
 	--this usualy happens with faction and flag changes
-	function Plater.ScheduleUpdateForNameplate (plateFrame, unitId) --private
+	function Plater.ScheduleUpdateForNameplate (plateFrame) --private
 	
 		if not plateFrame.unitFrame.PlaterOnScreen and not unitId then
 			return
@@ -1925,7 +2002,7 @@ local class_specs_coords = {
 	
 		--check if there's already an update scheduled for this unit
 		if (plateFrame.HasUpdateScheduled and not plateFrame.HasUpdateScheduled._cancelled) then
-			if unitId and not plateFrame.HasUpdateScheduled.unitId then
+			if unitId and (not plateFrame.HasUpdateScheduled.unitId or plateFrame.HasUpdateScheduled.unitId ~= unitId) then
 				plateFrame.HasUpdateScheduled:Cancel()
 			else
 				return
@@ -1933,9 +2010,8 @@ local class_specs_coords = {
 		end
 		
 		plateFrame.HasUpdateScheduled = C_Timer.NewTimer (0, Plater.RunScheduledUpdate) --next frame
-		plateFrame.HasUpdateScheduled.plateFrame = plateFrame
 		plateFrame.HasUpdateScheduled.GUID = plateFrame [MEMBER_GUID]
-		plateFrame.HasUpdateScheduled.unitId = unitId
+		plateFrame.HasUpdateScheduled.unitId = plateFrame [MEMBER_UNITID]
 	
 	end
 
@@ -2536,9 +2612,9 @@ local class_specs_coords = {
 
 		--when a unit from unatackable change its state, this event triggers several times, a schedule is used to only update once
 		UNIT_FLAGS = function (_, unit)
-			if (unit == "player") then
-				return
-			end
+			--if (unit == "player") then
+			--	return
+			--end
 			
 			local plateFrame = C_NamePlate.GetNamePlateForUnit (unit, issecure())
 			if (plateFrame) then
@@ -2552,20 +2628,20 @@ local class_specs_coords = {
 				
 				if (reactionChanged or attackableChanged or not plateFrame.unitFrame.PlaterOnScreen) then
 					--print ("UNIT_FLAG", plateFrame, issecure(), unit, unit and UnitName (unit))
-					Plater.ScheduleUpdateForNameplate (plateFrame, unit)
+					Plater.ScheduleUpdateForNameplate (plateFrame)
 				end
 			end
 		end,
 		
 		UNIT_FACTION = function (_, unit)
-			if (unit == "player") then
-				return
-			end
+			--if (unit == "player") then
+			--	return
+			--end
 			
 			--fires when somebody changes faction near the player
 			local plateFrame = C_NamePlate.GetNamePlateForUnit (unit, issecure())
 			if (plateFrame) then
-				Plater.ScheduleUpdateForNameplate (plateFrame, unit)
+				Plater.ScheduleUpdateForNameplate (plateFrame)
 			end
 		end,
 
@@ -2827,7 +2903,7 @@ local class_specs_coords = {
 			Plater.RunFunctionForEvent ("ZONE_CHANGED_NEW_AREA")
 		end,
 		
-		PLAYER_ENTERING_WORLD = function()
+		PLAYER_ENTERING_WORLD = function(_, isInitialLogin, isReloadingUi)
 
 			Plater.db.profile.login_counter = Plater.db.profile.login_counter + 1
 
@@ -3405,6 +3481,12 @@ local class_specs_coords = {
 				obscuredTexture:SetVertexColor (0, 0, 0, 1)
 				plateFrame.Obscured = obscuredTexture
 
+				obscuredTexture.Mask = healthBar:CreateMaskTexture(nil, "artwork")
+				obscuredTexture.Mask:SetAllPoints(obscuredTexture)
+				obscuredTexture.Mask:SetTexture([[Interface\AddOns\Plater\masks\mask1]])
+				obscuredTexture.Mask:Hide()
+				obscuredTexture:AddMaskTexture(obscuredTexture.Mask)
+
 			--> create the extra icon frame (used for the special aura)
 				local options = {
 					icon_width = 20, 
@@ -3542,7 +3624,6 @@ local class_specs_coords = {
 
 			--> border
 				--create a border using default borders from the retail game
-				--local healthBarBorder = CreateFrame("frame", nil, plateFrame.unitFrame.healthBar, (IS_WOW_PROJECT_NOT_MAINLINE) and "PlaterNameplateFullBorderTemplate" or "NamePlateFullBorderTemplate")
 				local healthBarBorder = DF:CreateFullBorder(nil, plateFrame.unitFrame.healthBar)
 				healthBarBorder.Left:SetDrawLayer("OVERLAY", 6)
 				healthBarBorder.Right:SetDrawLayer("OVERLAY", 6)
@@ -3550,7 +3631,6 @@ local class_specs_coords = {
 				healthBarBorder.Bottom:SetDrawLayer("OVERLAY", 6)
 				plateFrame.unitFrame.healthBar.border = healthBarBorder
 				
-				--local powerBarBorder = CreateFrame("frame", nil, plateFrame.unitFrame.powerBar, (IS_WOW_PROJECT_NOT_MAINLINE) and "PlaterNameplateFullBorderTemplate" or "NamePlateFullBorderTemplate")
 				local powerBarBorder = DF:CreateFullBorder(nil, plateFrame.unitFrame.powerBar)
 				powerBarBorder.Left:SetDrawLayer("OVERLAY", 6)
 				powerBarBorder.Right:SetDrawLayer("OVERLAY", 6)
@@ -4134,6 +4214,14 @@ local class_specs_coords = {
 			NAMEPLATES_ON_SCREEN_CACHE[unitBarId] = false
 			NUM_NAMEPLATES_ON_SCREEN = NUM_NAMEPLATES_ON_SCREEN - 1
 			
+			--check if this nameplate has an update scheduled
+			if (plateFrame.HasUpdateScheduled) then
+				if (not plateFrame.HasUpdateScheduled._cancelled) then
+					plateFrame.HasUpdateScheduled:Cancel()
+				end
+				plateFrame.HasUpdateScheduled = nil
+			end
+			
 			--debug for hunter faith death
 			--if (select (2, UnitClass (unitBarId)) == "HUNTER") then
 			--	print ("nameplate removed", UnitName (unitBarId))
@@ -4691,9 +4779,10 @@ function Plater.OnInit() --private --~oninit ~init
 					castBar:SetUnit (nil)
 				end
 				
-				--update resource bar
-				Plater.UpdateResourceFrame()
 			end
+			
+			--update resource bar
+			Plater.UpdateResourceFrame()
 		end
 		
 		local on_personal_bar_update = function (self)
@@ -4726,6 +4815,7 @@ function Plater.OnInit() --private --~oninit ~init
 			end
 			
 			if Plater.db.profile.resources_settings.global_settings.show then
+				resourceFrame:SetAlpha (0)
 				resourceFrame:Hide()
 				return
 			end
@@ -5806,7 +5896,7 @@ end
 	function Plater.FullRefreshAllPlates() --private
 		for _, plateFrame in ipairs (Plater.GetAllShownPlates()) do
 			--hack to call the update without overriding user settings from scripts
-			Plater.RunScheduledUpdate ({plateFrame = plateFrame, GUID = plateFrame [MEMBER_GUID]})
+			Plater.RunScheduledUpdate ({unitId = plateFrame [MEMBER_UNITID], GUID = plateFrame [MEMBER_GUID]})
 		end
 	end
 
@@ -8113,7 +8203,7 @@ end
 			end
 
 			--don't show spec icon during combat, it occupies a valuable space (terciob july 2022)
-			if (config.indicator_spec and not InCombatLockdown() and not regenDisabled) then
+			if (config.indicator_spec and (config.indicator_spec_always or (not InCombatLockdown() and not regenDisabled))) then
 				-- use BG info if available
 				local texture, L, R, T, B = Plater.GetSpecIconForUnitFromBG(plateFrame.unitFrame [MEMBER_UNITID])
 				if texture then
@@ -9746,7 +9836,7 @@ end
 	
 	function Plater.GetSpecIcon(spec)
 		if (spec) then
-			if (spec > 600) then --hack to new spec ids on new leveling zones from level 1-10
+			if (not class_specs_coords[spec]) then -- default to holy paladin if spec not supported
 				spec = 65
 			end
 			if (useAlpha) then
@@ -10958,6 +11048,16 @@ end
 
 		elseif (scriptType == "hook") then
 			Plater.CompileHook(scriptObject)
+		end
+	end
+
+	function Plater.IsModEnabled(modName)
+		for scriptId, scriptObject in ipairs (Plater.db.profile.hook_data) do
+			if (scriptObject.Name == modName) then
+				if (scriptObject.Enabled) then
+					return true
+				end
+			end
 		end
 	end
 

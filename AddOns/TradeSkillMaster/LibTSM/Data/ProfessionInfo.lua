@@ -326,6 +326,27 @@ local MASS_MILLING_RECIPES = {
 	[210116] = "i:129032", -- Yseralline Seeds
 	[247861] = "i:129034", -- Astral Glory
 }
+local SALVAGE_SPELLIDS = {
+	[382994] = true, -- Classic Milling
+	[382991] = true, -- Outland Milling
+	[382990] = true, -- Northend Milling
+	[382988] = true, -- Pandaria Milling
+	[382989] = true, -- Cataclysm Milling
+	[382987] = true, -- Draenor Milling
+	[382986] = true, -- Legion Milling
+	[382984] = true, -- Kul Tiras and Zandalar Milling
+	[382982] = true, -- Shadowlands Milling
+	[382981] = true, -- Dragon Isles Milling
+	[382995] = true, -- Classic Prospecting
+	[382980] = true, -- Outland Prospecting
+	[382979] = true, -- Northend Prospecting
+	[382977] = true, -- Pandaria Prospecting
+	[382978] = true, -- Cataclysm Prospecting
+	[382975] = true, -- Legion Prospecting
+	[382973] = true, -- Kul Tiras and Zandalar Prospecting
+	[325248] = true, -- Shadowlands Prospecting
+	[374627] = true, -- Dragon Isles Prospecting
+}
 local ENCHANTING_RECIPIES = {
 	-- Some scraped from Wowhead (http://www.wowhead.com/items/consumables/item-enhancements-permanent?filter=86;4;0) using the following javascript:
 	-- x = listviewitems.sort((a,b) => a.id - b.id); for (i=0; i<listviewitems.length; i++) { if (!('sourcemore' in listviewitems[i]) || listviewitems[i].sourcemore[0].icon != "trade_engraving") continue; console.log("["+listviewitems[i].sourcemore[0].ti+"] = \"i:"+listviewitems[i].id+"\", -- "+listviewitems[i].name); }
@@ -1324,6 +1345,10 @@ end
 
 function ProfessionInfo.IsEngineeringTinker(spellId)
 	return ENGINEERING_TINKERS[spellId] or false
+end
+
+function ProfessionInfo.IsSalvage(spellId)
+	return SALVAGE_SPELLIDS[spellId] or false
 end
 
 function ProfessionInfo.IsMassMill(spellId)

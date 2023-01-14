@@ -16,6 +16,7 @@ local ItemString = TSM.Include("Util.ItemString")
 local Reactive = TSM.Include("Util.Reactive")
 local Future = TSM.Include("Util.Future")
 local Log = TSM.Include("Util.Log")
+local ProfessionInfo = TSM.Include("Data.ProfessionInfo")
 local Threading = TSM.Include("Service.Threading")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local CustomPrice = TSM.Include("Service.CustomPrice")
@@ -34,6 +35,9 @@ local private = {
 	pendingSpellId = nil,
 	ignoreDB = nil,
 	destroyInfoDB = nil,
+	destroySpellId = nil,
+	itemSpellId = nil,
+	destroyResultCache = {},
 	disenchantSkillLevel = nil,
 	jewelcraftSkillLevel = nil,
 	inscriptionSkillLevel = nil,
@@ -117,6 +121,19 @@ function Destroying.OnInitialize()
 	Event.Register("UNIT_SPELLCAST_FAILED_QUIET", private.SpellCastEventHandler)
 	Event.Register("UNIT_SPELLCAST_INTERRUPTED", private.SpellCastEventHandler)
 	Event.Register("UNIT_SPELLCAST_SUCCEEDED", private.SpellCastEventHandler)
+
+	if not TSM.IsWowClassic() then
+		hooksecurefunc(C_TradeSkillUI, "CraftSalvage", function(spellId, _, itemLocation)
+			if not ProfessionInfo.IsSalvage(spellId) then
+				return
+			end
+			private.destroySpellId = spellId
+			private.itemSpellId = Container.GetItemId(itemLocation.bagID, itemLocation.slotIndex)
+		end)
+
+		Event.Register("TRADE_SKILL_ITEM_CRAFTED_RESULT", private.TradeSkillCraftResultHandler)
+		Event.Register("TRADE_SKILL_LIST_UPDATE", private.TradeSkillListUpdateHandler)
+	end
 
 	private.destroyFuture:SetScript("OnCleanup", function()
 		private.destroyThreadRunning = false
@@ -308,7 +325,7 @@ function private.DestroyThread(button, row)
 				hasBagUpdateDelayed = true
 			end
 		else
-			-- the spell cast was interrupted
+			-- The spell cast was interrupted
 			return false
 		end
 	end
@@ -354,6 +371,31 @@ function private.DestroyThreadDone(result)
 	private.destroyFuture:Done(result)
 end
 
+function private.TradeSkillCraftResultHandler(event, resultTable)
+	if not private.destroySpellId or not private.itemSpellId then
+		return
+	end
+	private.destroyResultCache[ItemString.Get(resultTable.itemID)] = resultTable.quantity
+end
+
+function private.TradeSkillListUpdateHandler()
+	if not private.destroySpellId or not private.itemSpellId or not next(private.destroyResultCache) then
+		return
+	end
+
+	-- Add to the log
+	local newEntry = {
+		item = ItemString.Get(private.itemSpellId),
+		time = time(),
+		result = CopyTable(private.destroyResultCache),
+	}
+	local spellName = GetSpellInfo(private.destroySpellId)
+	private.settings.destroyingHistory[spellName] = private.settings.destroyingHistory[spellName] or {}
+	tinsert(private.settings.destroyingHistory[spellName], newEntry)
+
+	wipe(private.destroyResultCache)
+end
+
 
 
 -- ============================================================================
@@ -391,7 +433,7 @@ function private.UpdateBagDB()
 		end
 		if minQuantity and quantity % minQuantity ~= 0 then
 			if itemPrevSlotId[itemString] then
-				-- we can combine this with the previous partial stack
+				-- We can combine this with the previous partial stack
 				tinsert(private.pendingCombines, itemPrevSlotId[itemString] * TARGET_SLOT_ID_MULTIPLIER + slotId)
 				itemPrevSlotId[itemString] = nil
 			else
@@ -430,7 +472,7 @@ function private.IsDestroyable(itemString)
 		return private.canDestroyCache[itemString], private.destroyQuantityCache[itemString]
 	end
 
-	-- disenchanting
+	-- Disenchanting
 	local quality = ItemInfo.GetQuality(itemString)
 	if ItemInfo.IsDisenchantable(itemString) and quality <= private.settings.deMaxQuality then
 		local hasSourceItem = true

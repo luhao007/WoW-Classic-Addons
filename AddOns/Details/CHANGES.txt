@@ -1,10 +1,10 @@
-tag f44489911c7793612735cfdb8b173e51e4464dac Details.DF.Wrath.10403.148
+lightweight tag 899ac439a17c19a799d30a6a2a0e2faf5cc215e1 DetailsRetail.8.3.0.7348.141
 Author:	Tercio Jose <terciob19@hotmail.com>
-Date:	Fri Jan 6 19:33:23 2023 -0300
+Date:	Mon Jul 6 11:27:35 2020 -0300
 
-commit 77f8e7cab3e768b903627cb8aa05f6cbcb2dfadb
+commit 899ac439a17c19a799d30a6a2a0e2faf5cc215e1
 Author: Tercio Jose <terciob19@hotmail.com>
-Date:   Fri Jan 6 19:33:09 2023 -0300
+Date:   Mon Jul 6 11:27:35 2020 -0300
 
-    Fixed an issue with the Streamer! plugin hiding after a logon
+    Fixed an issue affecting the Auto Hide for some users
 

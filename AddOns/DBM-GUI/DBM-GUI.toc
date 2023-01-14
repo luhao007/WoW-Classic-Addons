@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: MysticalOS, QartemisT
-## Version: c5d63b5
+## Version: 8c59d2e
 ## Dependencies: DBM-Core
 ## LoadOnDemand: 1
 ## DefaultState: enabled

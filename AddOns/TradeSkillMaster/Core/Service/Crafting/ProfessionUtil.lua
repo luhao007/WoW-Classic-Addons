@@ -111,14 +111,16 @@ function ProfessionUtil.GetNumCraftableRecipeString(recipeString)
 	local num, numAll = math.huge, math.huge
 	local craftString = CraftString.FromRecipeString(recipeString)
 	for i = 1, Profession.GetNumMats(craftString) do
-		local itemString, quantity = Profession.GetMatInfo(craftString, i)
-		local totalQuantity = CustomPrice.GetItemPrice(itemString, "NumInventory") or 0
-		if not itemString or not quantity or totalQuantity == 0 then
-			return 0, 0
+		local itemString, quantity, _, isQuality = Profession.GetMatInfo(craftString, i)
+		if not isQuality then
+			local totalQuantity = CustomPrice.GetItemPrice(itemString, "NumInventory") or 0
+			if not itemString or not quantity or totalQuantity == 0 then
+				return 0, 0
+			end
+			local bagQuantity = BagTracking.GetCraftingMatQuantity(itemString)
+			num = min(num, floor(bagQuantity / quantity))
+			numAll = min(numAll, floor(totalQuantity / quantity))
 		end
-		local bagQuantity = BagTracking.GetCraftingMatQuantity(itemString)
-		num = min(num, floor(bagQuantity / quantity))
-		numAll = min(numAll, floor(totalQuantity / quantity))
 	end
 	for _, _, itemId in RecipeString.OptionalMatIterator(recipeString) do
 		local itemString = ItemString.Get(itemId)
