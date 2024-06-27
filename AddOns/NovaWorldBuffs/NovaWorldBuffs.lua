@@ -224,6 +224,10 @@ end
 
 function NWB:GetPlayerZonePosition()
 	local x, y, zone = NWB.dragonLib:GetPlayerZonePosition();
+	--Merge both tol barad zone maps for lookup purposes, they are the same zone with the same zoneID.
+	if (zone == 244) then
+		zone = 245;
+	end
 	return x, y, zone;
 end
 
@@ -954,7 +958,7 @@ ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", filterAddonChatMsg);
 ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER", filterAddonChatMsg);
 
 --Send warnings to channels selected in options
-local warningThroddle = {
+NWB.warningThroddle = {
 	["rend"] = 0,
 	["ony"] = 0,
 	["nef"] = 0,
@@ -966,10 +970,10 @@ function NWB:doWarning(type, num, secondsLeft, layer)
 	if (NWB.sharedLayerBuffs) then
 		throddleTime = 30;
 	end
-	if (warningThroddle[type] and (GetServerTime() - warningThroddle[type]) < throddleTime) then
+	if (NWB.warningThroddle[type] and (GetServerTime() - NWB.warningThroddle[type]) < throddleTime) then
 		return;
 	end
-	warningThroddle[type] = GetServerTime();
+	NWB.warningThroddle[type] = GetServerTime();
 	local layerMsg = "";
 	if ((type ~= "rend" or NWB.doLayerMsg) and layer) then
 		local count = 0;
@@ -1741,7 +1745,7 @@ NWB.lastFervorTempleExplorer = 0;
 local unitDamageFrame = CreateFrame("Frame");
 function NWB:combatLogEventUnfiltered(...)
 	local timestamp, subEvent, hideCaster, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, 
-			destName, destFlags, destRaidFlags, _, spellName = CombatLogGetCurrentEventInfo();
+			destName, destFlags, destRaidFlags, spellID, spellName = CombatLogGetCurrentEventInfo();
 	if (subEvent == "UNIT_DIED") then
 		local _, _, zone = NWB:GetPlayerZonePosition();
 		local _, _, _, _, zoneID, npcID = strsplit("-", destGUID);
@@ -2220,16 +2224,21 @@ function NWB:combatLogEventUnfiltered(...)
 		elseif (destName == UnitName("player") and spellName == L["Silithyst"]) then
 			NWB:placeSilithystMarker();
 		end
-	elseif (subEvent == "SPELL_AURA_REMOVED" and destName == UnitName("player")) then
-		NWB:untrackBuff(spellName);
-		--There is no SPELL_AURA_APPLIED event for the Traces of Silithyst buff, kinda strange.
-		--So we have to watch for the Silithyst buff you drop off at the camp instead, then do a resync right after.
-		if (destName == UnitName("player") and spellName == L["Silithyst"]) then
-			NWB:removeSilithystMarker();
-			NWB:syncBuffsWithCurrentDuration();
-			C_Timer.After(2, function()
+	elseif (subEvent == "SPELL_AURA_REMOVED") then
+		if (destName == UnitName("player")) then
+			NWB:untrackBuff(spellName);
+			--There is no SPELL_AURA_APPLIED event for the Traces of Silithyst buff, kinda strange.
+			--So we have to watch for the Silithyst buff you drop off at the camp instead, then do a resync right after.
+			if (spellName == L["Silithyst"]) then
+				NWB:removeSilithystMarker();
 				NWB:syncBuffsWithCurrentDuration();
-			end)
+				C_Timer.After(2, function()
+					NWB:syncBuffsWithCurrentDuration();
+				end)
+			end
+		end
+		if (spellID == 349863 and destName) then
+			NWB.lastUnboon[destName] = GetTime();
 		end
 	elseif (subEvent == "SPELL_DISPEL") then
 		if (not NWB.db.global.dispelsMine and not NWB.db.global.dispelsMineWBOnly
@@ -2353,12 +2362,12 @@ function NWB:doVanish()
 			NWB:print("Vanished after DMF buff, auto taking summon.");
 		end
 		--We really want to spam summon accept when we vanish.
-		C_SummonInfo.ConfirmSummon();
+		NWB:doTakeSummon();
 		local delay = 0.1;
 		local count = 1;
 		for i = 1, 10 do
 			C_Timer.After(i * delay, function()
-				C_SummonInfo.ConfirmSummon();
+				NWB:doTakeSummon();
 			end)
 		end
 		NWB:acceptSummon();
@@ -2372,7 +2381,7 @@ function NWB:doFeign()
 		if (C_SummonInfo.GetSummonConfirmTimeLeft() > 0) then
 			NWB:print("Feigned after DMF buff, auto taking summon.");
 		end
-		C_SummonInfo.ConfirmSummon();
+		NWB:doTakeSummon();
 		local delay = 0.1;
 		local count = 1;
 		for i = 1, 10 do
@@ -2384,6 +2393,15 @@ function NWB:doFeign()
 	end
 end
 
+--Adding a check for in instances and unbooning, some speedrun strats use pre summons.
+function NWB:doTakeSummon()
+	local isInstance = IsInInstance();
+	if (isInstance) then
+		return;
+	end
+	C_SummonInfo.ConfirmSummon();
+end
+
 local hideSummonTimer;
 function NWB:acceptSummon(count, delay)
 	if (not count) then
@@ -2393,10 +2411,10 @@ function NWB:acceptSummon(count, delay)
 		delay = 1;
 	end
 	hideSummonPopup = true;
-	C_SummonInfo.ConfirmSummon();
+	NWB:doTakeSummon();
 	for i = 1, count do
 		C_Timer.After(i * delay, function()
-			C_SummonInfo.ConfirmSummon();
+			NWB:doTakeSummon();
 		end)
 	end
 	if (hideSummonTimer) then
@@ -2952,6 +2970,33 @@ function NWB:printDmfPercent()
 	end
 end
 
+local playedWindows = {};
+function NWB:isTimePlayedMsgRegistered()
+	for i = 1, NUM_CHAT_WINDOWS do
+		if (_G['ChatFrame' .. i] and _G['ChatFrame' .. i]:IsEventRegistered("TIME_PLAYED_MSG")) then
+			return true;
+		end
+	end
+end
+
+function NWB:registerTimePlayedMsg()
+	for k, v in pairs(playedWindows) do
+		if (_G['ChatFrame' .. k]) then
+			_G['ChatFrame' .. k]:RegisterEvent("TIME_PLAYED_MSG");
+		end
+	end
+end
+
+function NWB:unregisterTimePlayedMsg()
+	playedWindows = {};
+	for i = 1, NUM_CHAT_WINDOWS do
+		if (_G['ChatFrame' .. i] and _G['ChatFrame' .. i]:IsEventRegistered("TIME_PLAYED_MSG")) then
+			_G['ChatFrame' .. i]:UnregisterEvent("TIME_PLAYED_MSG");
+			playedWindows[i] = true;
+		end
+	end
+end
+
 --Track our current buff durations across all chars.
 local gotPlayedData, reregisterPlayedEvent;
 local chronoRestoreUsed = 0;
@@ -2992,9 +3037,9 @@ function NWB:trackNewBuff(spellName, type, npcID)
 		NWB.currentTrackBuff = NWB.data.myChars[UnitName("player")].buffs[spellName];
 		--Hide the msg from chat.
 		if (not gotPlayedData) then
-			if (DEFAULT_CHAT_FRAME:IsEventRegistered("TIME_PLAYED_MSG")) then
+			if (NWB:isTimePlayedMsgRegistered()) then
 				reregisterPlayedEvent = true;
-				DEFAULT_CHAT_FRAME:UnregisterEvent("TIME_PLAYED_MSG");
+				NWB:unregisterTimePlayedMsg();
 			end
 			gotPlayedData = true;
 			RequestTimePlayed();
@@ -3682,7 +3727,7 @@ function NWB:timePlayedMsg(...)
 	--Reregister the chat frame event after we're done.
 	C_Timer.After(2, function()
 		if (reregisterPlayedEvent) then
-			DEFAULT_CHAT_FRAME:RegisterEvent("TIME_PLAYED_MSG");
+			NWB:registerTimePlayedMsg();
 		end
 	end)
 	NWB:syncBuffsWithCurrentDuration();
@@ -4088,9 +4133,9 @@ f:SetScript("OnEvent", function(self, event, ...)
 				--Only request played data at logon if we didn't get it already for some reason.
 				if (not gotPlayedData) then
 					gotPlayedData = true;
-					if (DEFAULT_CHAT_FRAME:IsEventRegistered("TIME_PLAYED_MSG")) then
+					if (NWB:isTimePlayedMsgRegistered()) then
 						reregisterPlayedEvent = true;
-						DEFAULT_CHAT_FRAME:UnregisterEvent("TIME_PLAYED_MSG");
+						NWB:unregisterTimePlayedMsg();
 					end
 					RequestTimePlayed();
 				end
@@ -4209,41 +4254,44 @@ f:SetScript("OnEvent", function(self, event, ...)
 		end
 	elseif (event == "UNIT_SPELLCAST_SUCCEEDED") then
 		local unit, GUID, spellID = ...;
-		if (unit == "player" and (spellID == 1856 or spellID == 1857)) then
-			NWB:doVanish();
-		end
-		if (unit == "player" and spellID == 5384) then
-			NWB:doFeign();
-		end
-		if (unit == "player" and spellID == 349858) then
-			NWB:recordStoredBuffs();
-			--Cancel this timer incase haste buffs can be used on chronoboon and it goes off before this timer ends.
-			if (storeBuffsTimer) then
-				storeBuffsTimer:Cancel();
-			end
-			NWB:syncBuffsWithCurrentDuration();
-			C_Timer.After(2, function()
+		if (unit == "player") then
+			if (spellID == 1856 or spellID == 1857) then
+				NWB:doVanish();
+			elseif (spellID == 5384) then
+				NWB:doFeign();
+			elseif (spellID == 349858) then
+				NWB:recordStoredBuffs();
+				--Cancel this timer incase haste buffs can be used on chronoboon and it goes off before this timer ends.
+				if (storeBuffsTimer) then
+					storeBuffsTimer:Cancel();
+				end
 				NWB:syncBuffsWithCurrentDuration();
-			end)
-		end
-		if (unit == "player" and spellID == 349863) then
-			if (not NWB.isClassic) then
-				if (NWB.data.myChars[UnitName("player")].storedBuffs) then
-					for k, v in pairs(NWB.data.myChars[UnitName("player")].storedBuffs) do
-						if (k == L["Sayge's Dark Fortune of Damage"]) then
-							unitDamageFrame:RegisterEvent("UNIT_DAMAGE");
-							break;
+				C_Timer.After(2, function()
+					NWB:syncBuffsWithCurrentDuration();
+				end)
+			elseif (spellID == 349863) then
+				if (not NWB.isClassic) then
+					if (NWB.data.myChars[UnitName("player")].storedBuffs) then
+						for k, v in pairs(NWB.data.myChars[UnitName("player")].storedBuffs) do
+							if (k == L["Sayge's Dark Fortune of Damage"]) then
+								unitDamageFrame:RegisterEvent("UNIT_DAMAGE");
+								break;
+							end
 						end
 					end
 				end
-			end
-			chronoRestoreUsed = GetTime();
-			NWB:dmfChronoCheck();
-			NWB:clearStoredBuffs();
-			NWB:syncBuffsWithCurrentDuration();
-			C_Timer.After(2, function()
+				chronoRestoreUsed = GetTime();
+				NWB:dmfChronoCheck();
+				NWB:clearStoredBuffs();
 				NWB:syncBuffsWithCurrentDuration();
-			end)
+				C_Timer.After(2, function()
+					NWB:syncBuffsWithCurrentDuration();
+				end)
+			--[[elseif (spellID == 349863) then
+				local me = UnitName("player");
+				NWB.lastUnboon[me] = GetTime();
+				NWB:debug("I unbooned");]]
+			end
 		end
 	elseif (event == "BAG_UPDATE_DELAYED") then
 		if (skipBagThroddle) then
@@ -6304,6 +6352,7 @@ function SlashCmdList.NWBSFCMD(msg, editBox)
 end
 
 NWB.detectedPlayers = {};
+NWB.lastUnboon = {};
 local playerHasSongflower = {};
 local f = CreateFrame("Frame");
 f:RegisterEvent("PLAYER_TARGET_CHANGED");
@@ -6315,7 +6364,7 @@ f:SetScript('OnEvent', function(self, event, ...)
 	if (event == "COMBAT_LOG_EVENT_UNFILTERED") then
 		local _, _, zone = NWB:GetPlayerZonePosition();
 		local timestamp, subEvent, hideCaster, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, 
-				destName, destFlags, destRaidFlags, _, spellName = CombatLogGetCurrentEventInfo();
+				destName, destFlags, destRaidFlags, spellID, spellName = CombatLogGetCurrentEventInfo();
 		if ((subEvent == "SPELL_AURA_APPLIED" or subEvent == "SPELL_AURA_REFRESH")) then
 			--Can't check for buffs here because often songflower won't be the first buff in combat log when someone logs in.
 			--Then the player could be NWB.detectedPlayers right before their logon songflower buff is seen, triggering a false timer.
@@ -6359,6 +6408,11 @@ f:SetScript('OnEvent', function(self, event, ...)
 					NWB:hasSongflower(destName);
 				end
 			end
+		--Doesn't show up in combat log, checking aura removed instead.
+		--[[elseif (subEvent == "SPELL__CAST_SUCCESS") then
+			if (spellID == 349863 and sourceName) then
+				NWB.lastUnboon[sourceName] = GetTime();
+			end]]
 		else
 			if (zone == 1448) then
 				if (sourceName) then
@@ -6383,6 +6437,7 @@ f:SetScript('OnEvent', function(self, event, ...)
 	elseif (event == "PLAYER_ENTERING_WORLD") then
 		--Wipe felwood songflower detected players when leaving, it costs very little to just wipe this on every zone.
 		NWB.detectedPlayers = {};
+		NWB.lastUnboon = {};
 		playerHasSongflower = {};
 	elseif (event == "CHAT_MSG_LOOT") then
 		local msg = ...;
@@ -6520,6 +6575,16 @@ function NWB:songflowerPicked(type, otherPlayer, flags)
 		return;
 	end
 	if (iskd or not NWB:compSide(flags)) then
+		return;
+	end
+	--If other player has just unbooned, an unboon shouldn't trigger a timer even if near a flower but bug happens so just incase.
+	if (otherPlayer and NWB.lastUnboon[otherPlayer] and GetTime() - NWB.lastUnboon[otherPlayer] < 1) then
+		NWB:debug("Player unbooned with sf buff at flower:", otherPlayer);
+		return;
+	end
+	local me = UnitName("player");
+	if (NWB.lastUnboon[me] and GetTime() - NWB.lastUnboon[me] < 1) then
+		NWB:debug("Player unbooned with sf buff at flower:", otherPlayer);
 		return;
 	end
 	--If other player has already been seen with a songflower buff.
@@ -12225,6 +12290,7 @@ if (NWB.isCata or NWB.isWrath) then --No tbc zones in cata at the start, try kee
 	NWB.layerMapWhitelist[207] = "Deepholm";
 	NWB.layerMapWhitelist[249] = "Uldum";
 	NWB.layerMapWhitelist[241] = "Twilight Highlands";
+	NWB.layerMapWhitelist[245] = "Tol Barad";
 end
 
 function NWB.k()

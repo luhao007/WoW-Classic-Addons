@@ -535,10 +535,16 @@ function NWB:isWintergraspBuffLayer(zoneID)
 	end]]
 end
 
+local lastSendL = 0;
 function NWB:sendL(l, type)
+	if (GetServerTime() - lastSendL < 10) then
+		--Very rare bug seen that spammed it for a few seconds, only seen it once since addon was created but it's a bad one.
+		return;
+	end
 	if (UnitInBattleground("player") or NWB:isInArena() or not IsInGuild()) then
 		return;
 	end
+	lastSendL = GetServerTime();
 	local zoneID, buffString = "", "";
 	if (next(NWB.layerBuffSpells)) then
 		local zoneIDTemp = NWB:getLayerZoneID(l);

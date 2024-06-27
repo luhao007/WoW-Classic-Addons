@@ -1,7 +1,7 @@
 ## Interface: 30400
 ## Author: Pazza (Bronzebeard), (Updated by Sylvanaar/MysticalOS/Humfras)
-## Version: 3.10.25-1-g318e1d6
-## OptionalDeps: LibStub, CallbackHandler-1.0, ChatThrottleLib, LibSharedMedia-3.0, LibChatHandler-1.0, LibChatAnims
+## Version: 3.11.1-1-g18c69d4
+## OptionalDeps: LibStub, CallbackHandler-1.0, ChatThrottleLib, LibSharedMedia-3.0, LibChatAnims
 ## SavedVariables: WIM3_Data, WIM3_Cache, WIM3_Filters, WIM3_History, WIM3_ChatFilters, WIM3_Alias
 ## DefaultState: Enabled
 
@@ -13,7 +13,7 @@
 ## X-WoWI-ID: 5342
 ## X-Email: johnlangone@gmail.com
 ## X-Category: Chat
-## X-Embeds: LibStub, CallbackHandler-1.0, ChatThrottleLib, LibSharedMedia-3.0, LibChatHandler-1.0, LibChatAnims
+## X-Embeds: LibStub, CallbackHandler-1.0, ChatThrottleLib, LibSharedMedia-3.0, LibChatAnims
 
 Libs\Includes.xml
 Sources\Namespace.lua
