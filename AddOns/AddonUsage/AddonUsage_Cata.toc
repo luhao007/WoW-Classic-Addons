@@ -1,0 +1,10 @@
+## Interface: 40400
+## Title: Addon Usage
+## Notes: Displays the memory and cpu usage of your addons
+## Author: Gello
+## Version: 3.1.15
+## X-WoWI-ID: 7362
+## X-Wago-ID: Xb6XL06p
+## X-Curse-Project-ID: 67954
+## SavedVariables: AddonUsageSettings
+AddonUsage.xml

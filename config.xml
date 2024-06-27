@@ -638,6 +638,10 @@
 				<Title>小队</Title>
 				<TitleExtra>旧世经典（怀旧服）</TitleExtra>
 			</SubAddon>
+			<SubAddon name="DBM-Party-WarWithin">
+				<Title>小队</Title>
+				<TitleExtra>地心之战</TitleExtra>
+			</SubAddon>
 			<SubAddon name="DBM-Party-WoD">
 				<Title>小队</Title>
 				<TitleExtra>德拉诺之王</TitleExtra>
