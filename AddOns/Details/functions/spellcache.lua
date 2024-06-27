@@ -1,35 +1,36 @@
---[[ Spell Cache store all spells shown on frames and make able to change spells name, icons, etc... ]]
 
 do
-
---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
---On The Fly SpellCache
-
-	local Details = 	_G._detalhes
+	local Details = 	_G.Details
 	local Loc = LibStub("AceLocale-3.0"):GetLocale ( "Details" )
 	local addonName, Details222 = ...
 	local _
-	local rawget	=	rawget
-	local rawset	=	rawset
-	local setmetatable =	setmetatable
-	local _GetSpellInfo =	GetSpellInfo
-	local _unpack	=	unpack
+	local rawget = rawget
+	local rawset = rawset
+	local setmetatable = setmetatable
+	local GetSpellInfo = GetSpellInfo
+	local unpack = unpack
+	local tinsert = table.insert
+	local tremove = tremove
+	local C_Timer = C_Timer
 
 	--is this a timewalking exp?
-	local is_classic_exp = DetailsFramework.IsClassicWow()
+	local bIsClassicWow = DetailsFramework.IsClassicWow()
 
-	--default container
-	Details.spellcache =	{}
-	local unknowSpell = {Loc ["STRING_UNKNOWSPELL"], _, "Interface\\Icons\\Ability_Druid_Eclipse"} --localize-me
+	--default spell cache container
+	Details.spellcache = {}
+	local unknowSpell = {Loc ["STRING_UNKNOWSPELL"], _, "Interface\\Icons\\Ability_Druid_Eclipse"}
 
-	local AllSpellNames
-	if (is_classic_exp) then
-		AllSpellNames = {}
-		local GetSpellInfo = GetSpellInfo
-		for i = 1, 60000 do
-			local name, _, icon = GetSpellInfo(i)
-			if name and icon and icon ~= 136235 and not AllSpellNames[name] then
-				AllSpellNames[name] = icon
+	local allSpellNames
+
+	--check if this is running in classic wow and build a cache with spell names poiting to their icons
+	if (bIsClassicWow) then
+		allSpellNames = {}
+		local maxSpellIdInClassic = 60000
+
+		for i = 1, maxSpellIdInClassic do
+			local spellName, _, spellIcon = GetSpellInfo(i)
+			if spellName and spellIcon and spellIcon ~= 136235 and not allSpellNames[spellName] then
+				allSpellNames[spellName] = spellIcon
 			end
 		end
 	end
@@ -54,59 +55,90 @@ do
 		end
 
 		if (not spellName) then
-			return spell, _, AllSpellNames [spell] or defaultSpellIcon
+			return spell, _, (allSpellNames[spell] or [[Interface\ICONS\INV_Sword_04]])
 		end
 
-		return spellName, _, AllSpellNames [spell] or spellIcon
+		return spellName, _, (allSpellNames[spell] or spellIcon)
 	end
 
-	--reset spell cache
+	--reset spell cache, called from the loaddata.lua and when the segments container get cleared
 	function Details:ClearSpellCache()
 		Details.spellcache = setmetatable({},
-				{__index = function(tabela, valor)
-					local esta_magia = rawget (tabela, valor)
-					if (esta_magia) then
-						return esta_magia
-					end
-
-					--should save only icon and name, other values are not used
-					if (valor) then --check if spell is valid before
-						local cache
-						if (is_classic_exp) then
-							cache = {GetSpellInfoClassic(valor)}
-						else
-							cache = {_GetSpellInfo(valor)}
+			{__index = function(spellCache, key)
+				if (key) then
+					do
+						--check if the spell is already in the cache, if so, return it
+						local spellInfo = rawget(spellCache, key)
+						if (spellInfo) then
+							return spellInfo
 						end
-						tabela [valor] = cache
-						return cache
-					else
-						return unknowSpell
 					end
 
-				end})
+					local spellInfo
+					if (bIsClassicWow) then
+						spellInfo = {GetSpellInfoClassic(key)}
+					else
+						spellInfo = {GetSpellInfo(key)}
+					end
 
-		--default overwrites
-		--rawset (_detalhes.spellcache, 1, {Loc ["STRING_MELEE"], 1, "Interface\\AddOns\\Details\\images\\melee.tga"})
-		--rawset (_detalhes.spellcache, 2, {Loc ["STRING_AUTOSHOT"], 1, "Interface\\AddOns\\Details\\images\\autoshot.tga"})
+					spellCache[key] = spellInfo
+					return spellInfo
+				else
+					return unknowSpell
+				end
+			end}
+		)
 
 		--built-in overwrites
 		for spellId, spellTable in pairs(Details.SpellOverwrite) do
-			local name, _, icon = _GetSpellInfo(spellId)
-			rawset (Details.spellcache, spellId, {spellTable.name or name, 1, spellTable.icon or icon})
+			local spellName, _, spellIcon = GetSpellInfo(spellId)
+			rawset(Details.spellcache, spellId, {spellTable.name or spellName, 1, spellTable.icon or spellIcon})
 		end
 
 		--user overwrites
 		-- [1] spellid [2] spellname [3] spellicon
 		for index, spellTable in ipairs(Details.savedCustomSpells) do
-			rawset (Details.spellcache, spellTable [1], {spellTable [2], 1, spellTable [3]})
+			rawset(Details.spellcache, spellTable[1], {spellTable[2], 1, spellTable[3]})
 		end
 	end
 
-	local lightOfTheMartyr_Name, _, lightOfTheMartyr_Icon = _GetSpellInfo(196917)
+	local lightOfTheMartyr_Name, _, lightOfTheMartyr_Icon = GetSpellInfo(196917)
 	lightOfTheMartyr_Name = lightOfTheMartyr_Name or "Deprecated Spell - Light of the Martyr"
 	lightOfTheMartyr_Icon = lightOfTheMartyr_Icon or ""
 
+	---@type table<number, customspellinfo>
 	local defaultSpellCustomization = {}
+
+	---@type table<number, customiteminfo>
+	local customItemList = {}
+
+	local iconSize = 14
+	local coords = {0.14, 0.86, 0.14, 0.86}
+
+	---@param itemId number
+	---@return string
+	local formatTextForItem = function(itemId)
+		local result = ""
+
+		local itemIcon = C_Item.GetItemIconByID(itemId)
+		local itemName = C_Item.GetItemNameByID(itemId)
+
+		if (itemIcon and itemName) then
+			--limit the amount of characters of the item name
+			if (GetLocale() == "zhCN" or GetLocale() == "zhTW" or GetLocale() == "koKR") then
+				if (#itemName > 56) then
+					itemName = string.sub(itemName, 1, 56)
+				end
+			else
+				if (#itemName > 20) then
+					itemName = string.sub(itemName, 1, 20)
+				end
+			end
+			result = "" .. CreateTextureMarkup(itemIcon, iconSize, iconSize, iconSize, iconSize, unpack(coords)) .. " " .. itemName .. ""
+		end
+
+		return result
+	end
 
 	if (DetailsFramework.IsClassicWow()) then
 		defaultSpellCustomization = {
@@ -133,6 +165,18 @@ do
 		}
 
 	elseif (DetailsFramework.IsWotLKWow()) then
+		defaultSpellCustomization = {
+			[1] = {name = _G["MELEE"], icon = [[Interface\ICONS\INV_Sword_04]]},
+			[2] = {name = Loc ["STRING_AUTOSHOT"], icon = [[Interface\ICONS\INV_Weapon_Bow_07]]},
+			[3] = {name = Loc ["STRING_ENVIRONMENTAL_FALLING"], icon = [[Interface\ICONS\Spell_Magic_FeatherFall]]},
+			[4] = {name = Loc ["STRING_ENVIRONMENTAL_DROWNING"], icon = [[Interface\ICONS\Ability_Suffocate]]},
+			[5] = {name = Loc ["STRING_ENVIRONMENTAL_FATIGUE"], icon = [[Interface\ICONS\Spell_Arcane_MindMastery]]},
+			[6] = {name = Loc ["STRING_ENVIRONMENTAL_FIRE"], icon = [[Interface\ICONS\INV_SummerFest_FireSpirit]]},
+			[7] = {name = Loc ["STRING_ENVIRONMENTAL_LAVA"], icon = [[Interface\ICONS\Ability_Rhyolith_Volcano]]},
+			[8] = {name = Loc ["STRING_ENVIRONMENTAL_SLIME"], icon = [[Interface\ICONS\Ability_Creature_Poison_02]]},
+		}
+
+	elseif (DetailsFramework.IsCataWow()) then
 		defaultSpellCustomization = {
 			[1] = {name = _G["MELEE"], icon = [[Interface\ICONS\INV_Sword_04]]},
 			[2] = {name = Loc ["STRING_AUTOSHOT"], icon = [[Interface\ICONS\INV_Weapon_Bow_07]]},
@@ -181,25 +225,7 @@ do
 			[277185] = {name = GetSpellInfo(277185) .. " (Trinket)"}, --[Dread Gladiator's Badge]
 			[278057] = {name = GetSpellInfo(278057) .. " (Trinket)"}, --[Vigilant's Bloodshaper]
 		}
-
-	else
-		--retail
-		local iconSize = 14 --icon size
-		local coords = {0.14, 0.86, 0.14, 0.86}
-
-		local formatTextForItem = function(itemId)
-			local result = ""
-
-			local itemIcon = C_Item.GetItemIconByID(itemId)
-			local itemName = C_Item.GetItemNameByID(itemId)
-
-			if (itemIcon and itemName) then
-				result = " (" .. CreateTextureMarkup(itemIcon, iconSize, iconSize, iconSize, iconSize, unpack(coords)) .. " " .. itemName .. ")"
-			end
-
-			return result
-		end
-
+	else --retail (dragonflight)
 		defaultSpellCustomization = {
 			[1] = {name = Loc ["STRING_MELEE"], icon = [[Interface\ICONS\INV_Sword_04]]},
 			[2] = {name = Loc ["STRING_AUTOSHOT"], icon = [[Interface\ICONS\INV_Weapon_Bow_07]]},
@@ -212,55 +238,112 @@ do
 			[98021] = {name = Loc ["STRING_SPIRIT_LINK_TOTEM"]},
 			[108271] = {name = GetSpellInfo(108271), icon = "Interface\\Addons\\Details\\images\\icon_astral_shift"},
 			[196917] = {name = lightOfTheMartyr_Name .. " (" .. Loc ["STRING_DAMAGE"] .. ")", icon = lightOfTheMartyr_Icon},
-
 			[77535] = {name = GetSpellInfo(77535), icon = "Interface\\Addons\\Details\\images\\icon_blood_shield"},
+			[395296] = {name = GetSpellInfo(395296) .. " (on your self)", icon = "Interface\\Addons\\Details\\images\\ebon_might"},
+
+			[424428] = {name = (GetSpellInfo(424428) or "none") .. " (4P)", icon = "Interface\\Addons\\Details\\images\\spells\\eruption_tier4.jpg", defaultName = GetSpellInfo(424428), breakdownCanStack = true}, --augmentation 4pc tier 10.2
+			[422779] = {name = (GetSpellInfo(422779) or "none") .. " (4P)", icon = "Interface\\Addons\\Details\\images\\spells\\burning_frenzy_tier4.jpg", defaultName = GetSpellInfo(422779)}, --feral 4pc tier 10.2
 		}
 
-		if (GetSpellInfo(394453)) then
-			local dragonflightTrinkets = {
-				[394453] = {name = GetSpellInfo(394453) .. formatTextForItem(195480), isPassive = true, itemId = 195480}, --ring: Seal of Diurna's Chosen
+		customItemList[394453] = {itemId = 195480, isPassive = true} --ring: Seal of Diurna's Chosen
+		customItemList[382135] = {itemId = 194308} --trinket: Manic Grieftorch
+		customItemList[382058] = {itemId = 194299} --trinket: Decoration of Flame (shield)
+		customItemList[382056] = {itemId = 194299} --trinket: Decoration of Flame
+		customItemList[382090] = {itemId = 194302} --trinket: Storm-Eater's Boon
+		customItemList[381967] = {itemId = 194305} --trinket: Controlled Current Technique
+		customItemList[382426] = {itemId = 194309, isPassive = true} --trinket: Spiteful Storm
+		customItemList[377455] = {itemId = 194304} --trinket: Iceblood Deathsnare
+		customItemList[377451] = {itemId = 194300} --trinket: Conjured Chillglobe
+		customItemList[382097] = {itemId = 194303} --trinket: Rumbling Ruby
+		customItemList[385903] = {itemId = 193639, isPassive = true} --trinket: Umbrelskul's Fractured Heart
+		customItemList[381475] = {itemId = 193769} --trinket: Erupting Spear Fragment
+		customItemList[388739] = {itemId = 193660, isPassive = true} --trinket: Idol of Pure Decay
+		customItemList[388855] = {itemId = 193678} --trinket: Miniature Singing Stone
+		customItemList[388755] = {itemId = 193677, isPassive = true} --trinket: Furious Ragefeather
+		customItemList[383934] = {itemId = 193736} --trinket: Water's Beating Heart
+		customItemList[214052] = {itemId = 133641, isPassive = true} --trinket: Eye of Skovald
+		customItemList[214200] = {itemId = 133646} --trinket: Mote of Sanctification
+		customItemList[387036] = {itemId = 193748} --trinket: Kyrakka's Searing Embers (heal)
+		customItemList[397376] = {itemId = 193748, isPassive = true} --trinket: Kyrakka's Searing Embers (damage)
+		customItemList[214985] = {itemId = 137486} --trinket: Windscar Whetstone
+		customItemList[384004] = {itemId = 193815} --trinket: Homeland Raid Horn
+		customItemList[377459] = {itemId = 194306} --trinket: All-Totem of the Master Fire Damage
+		customItemList[377461] = {itemId = 194306} --trinket: All-Totem of the Master Air Damage
+		customItemList[382133] = {itemId = 194306} --trinket: All-Totem of the Master Ice Damage
+		customItemList[377458] = {itemId = 194306} --trinket: All-Totem of the Master Earth Damage
+		customItemList[408815] = {itemId = 202569} --weapon: Djaruun, Pillar of the Elder Flame
+		customItemList[407961] = {itemId = 203996, isPassive = true} --trinket: Igneous Flowstone
+		customItemList[408682] = {itemId = 202610} --trinket: Dragonfire Bomb Dispenser
+		customItemList[401324] = {itemId = 202617, isPassive = true} --trinket: Elementium Pocket Anvil
+		customItemList[401306] = {itemId = 202617} --trinket: Elementium Pocket Anvil (use)
+		customItemList[402583] = {itemId = 203963} --trinket: Beacon to the Beyond
+		customItemList[384325] = {itemId = 193672, isPassive = true} --trinket: Frenzying Signoll Flare
+		customItemList[384290] = {itemId = 193672, isPassive = true} --trinket: Frenzying Signoll Flare (dot)
+		customItemList[388948] = {itemId = 193732} --trinket: Globe of Jagged Ice
+		customItemList[381760] = {itemId = 193786, isPassive = true} --trinket: Mutated Magmammoth Scale (melee)
+		customItemList[389839] = {itemId = 193757, isPassive = true} --trinket: Ruby Whelp Shell
+		customItemList[401428] = {itemId = 202615, isPassive = true} --trinket: Vessel of Searing Shadow
 
-				[382135] = {name = GetSpellInfo(382135) .. formatTextForItem(194308)}, --trinket: Manic Grieftorch
-				[382058] = {name = GetSpellInfo(382056) .. formatTextForItem(194299)}, --trinket: Decoration of Flame (shield)
-				[382056] = {name = GetSpellInfo(382056) .. formatTextForItem(194299)}, --trinket: Decoration of Flame
-				[382090] = {name = GetSpellInfo(382090) .. formatTextForItem(194302)}, --trinket: Storm-Eater's Boon
-				[381967] = {name = GetSpellInfo(381967) .. formatTextForItem(194305)}, --trinket: Controlled Current Technique
-				[382426] = {name = GetSpellInfo(382426) .. formatTextForItem(194309), isPassive = true, itemId = 194309}, --trinket: Spiteful Storm
-				[377455] = {name = GetSpellInfo(377455) .. formatTextForItem(194304)}, --trinket: Iceblood Deathsnare
-				[377451] = {name = GetSpellInfo(377451) .. formatTextForItem(194300)}, --trinket: Conjured Chillglobe
-				[382097] = {name = GetSpellInfo(382097) .. formatTextForItem(194303)}, --trinket: Rumbling Ruby
+		--10.2
+		customItemList[426672] = {itemId = 207168, isPassive = true, nameExtra = "(vers)", icon = [[Interface\AddOns\Details\images\spells\spell_druid_bearhug_blackwhite.jpg]]} --trinket: Pip's Emerald Friendship Badge urctos
+		customItemList[426674] = {itemId = 207168, isPassive = true, nameExtra = "(*vers*)", icon = 571585} --trinket: Pip's Emerald Friendship Badge urctos
+		customItemList[426676] = {itemId = 207168, isPassive = true, nameExtra = "(crit)", icon = [[Interface\AddOns\Details\images\spells\elf_face_right.jpg]]} --trinket: Pip's Emerald Friendship Badge aerwynn
+		customItemList[426677] = {itemId = 207168, isPassive = true, nameExtra = "(*crit*)", icon = 2403539} --trinket: Pip's Emerald Friendship Badge aerwynn
+		customItemList[426647] = {itemId = 207168, isPassive = true, nameExtra = "(mast)", icon = [[Interface\AddOns\Details\images\spells\lil_dragon_left.jpg]]} --trinket: Pip's Emerald Friendship Badge pip
+		customItemList[426648] = {itemId = 207168, isPassive = true, nameExtra = "(*mast*)", icon = 5342919} --trinket: Pip's Emerald Friendship Badge pip
 
-				[385903] = {name = GetSpellInfo(385903) .. formatTextForItem(193639), isPassive = true, itemId = 193639}, --trinket: Umbrelskul's Fractured Heart
-				[381475] = {name = GetSpellInfo(381475) .. formatTextForItem(193769)}, --trinket: Erupting Spear Fragment
-				[388739] = {name = GetSpellInfo(388739) .. formatTextForItem(193660), isPassive = true, itemId = 193660}, --trinket: Idol of Pure Decay
-				[388855] = {name = GetSpellInfo(388855) .. formatTextForItem(193678)}, --trinket: Miniature Singing Stone
-				[388755] = {name = GetSpellInfo(388755) .. formatTextForItem(193677), isPassive = true, itemId = 193677}, --trinket: Furious Ragefeather
-				[383934] = {name = GetSpellInfo(383934) .. formatTextForItem(193736)}, --trinket: Water's Beating Heart
-				[214052] = {name = GetSpellInfo(214052) .. formatTextForItem(133641), isPassive = true, itemId = 133641}, --trinket: Eye of Skovald
-				[214200] = {name = GetSpellInfo(214200) .. formatTextForItem(133646)}, --trinket: Mote of Sanctification
-				[387036] = {name = GetSpellInfo(387036) .. formatTextForItem(193748)}, --trinket: Kyrakka's Searing Embers (heal)
-				[397376] = {name = GetSpellInfo(397376) .. formatTextForItem(193748), isPassive = true, itemId = 193748}, --trinket: Kyrakka's Searing Embers (damage)
-				--[] = {name = GetSpellInfo() .. formatTextForItem(193757), isPassive = true}, --trinket: Ruby Whelp Shell
+		customItemList[426431] = {itemId = 210494, isPassive = true} --enchant: Incandescent Essence (ranged dps)
+		customItemList[426486] = {itemId = 210494, isPassive = true} --enchant: Incandescent Essence (ranged dps)
+		customItemList[424965] = {itemId = 207784, isPassive = true} --weapon: Thorncaller Claw
+		customItemList[425181] = {itemId = 207784, isPassive = true, nameExtra = "(*aoe*)"} --weapon: Thorncaller Claw
+		customItemList[425127] = {itemId = 207783, isPassive = true} --weapon: Cruel Dreamcarver (heal)
 
-				[214985] = {name = GetSpellInfo(214985) .. formatTextForItem(137486)}, --trinket: Windscar Whetstone
-				[384004] = {name = GetSpellInfo(384004) .. formatTextForItem(193815)}, --trinket: Homeland Raid Horn
-				--[] = {name = GetSpellInfo() .. formatTextForItem()}, --trinket: Mutated Magmammoth Scale - did no proc
+		customItemList[423611] = {itemId = 207167, isPassive = true, nameExtra = "*proc*"} --trinket: Ashes of the Embersoul (extra proc)
+		customItemList[426553] = {itemId = 208614, isPassive = true} --trinket: Augury of the Primal Flame
+		customItemList[426564] = {itemId = 208614, isPassive = true} --trinket: Augury of the Primal Flame (damage)
+		customItemList[425154] = {itemId = 207166, isPassive = true} --trinket: Cataclysmic Signet Brand
+		customItemList[427037] = {itemId = 207175, isPassive = true} --trinket: Coiled Serpent Idol
+		customItemList[421996] = {itemId = 207173, isPassive = true} --trinket: Gift of Ursine Vengeance
+		customItemList[421994] = {itemId = 207173, isPassive = true} --trinket: Gift of Ursine Vengeance (buff)
+		customItemList[422441] = {itemId = 207169, isPassive = true} --trinket: Branch of the Tormented Ancient (buff)
+		customItemList[417458] = {itemId = 207566, isPassive = true} --trinket: Accelerating Sandglass
+		customItemList[417452] = {itemId = 207566, isPassive = true} --trinket: Accelerating Sandglass (buff)
+		customItemList[214169] = {itemId = 136715, isPassive = true} --trinket: Spiked Counterweight
+		customItemList[92174] = {itemId = 133192, isPassive = true} --trinket: Porcelain Crab
+		customItemList[429262] = {itemId = 109999, isPassive = true} --trinket: Witherbark's Branch (buff)
+		customItemList[418527] = {itemId = 207581, isPassive = true} --trinket: Mirror of Fractured Tomorrows (buff)
+		customItemList[214342] = {itemId = 137312, isPassive = true} --trinket: Nightmare Egg Shell
+		customItemList[429246] = {itemId = 110004, isPassive = true} --trinket: Coagulated Genesaur Blood
+		customItemList[214350] = {itemId = 137306, isPassive = true} --trinket: Oakheart's Gnarled Root
+		customItemList[429221] = {itemId = 133201, isPassive = true} --trinket: Sea Star
+		customItemList[215270] = {itemId = 136714, isPassive = true} --trinket: Amalgam's Seventh Spine
+		customItemList[417534] = {itemId = 207579, isPassive = true} --trinket: Time-Thief's Gambit
+		customItemList[270827] = {itemId = 159610, isPassive = true} --trinket: Vessel of Skittering Shadows
+		customItemList[271671] = {itemId = 159631, isPassive = true} --trinket: Lady Waycrest's Music Box
+		customItemList[215407] = {itemId = 136716, isPassive = true} --trinket: Caged Horror
+		customItemList[213786] = {itemId = 137301, isPassive = true} --trinket: Corrupted Starlight
 
-				--/dump C_Item.GetItemNameByID(137486) --to check an item
-				--default tooltip script gets the item id
-			}
-
-			for spellId, spellCustomization in pairs(dragonflightTrinkets) do
-				defaultSpellCustomization[spellId] = spellCustomization
-			end
-		end
+		customItemList[427209] = {itemId = 208616, onUse = true, castId = 427113, defaultName = GetSpellInfo(427113)} --weapon: Dreambinder, Loom of the Great Cycle
+		customItemList[427161] = {itemId = 208615, onUse = true, castId = 422956, defaultName = GetSpellInfo(422956)} --trinket: Nymue's Unraveling Spindle
+		customItemList[425701] = {itemId = 207174, onUse = true, castId = 422750, defaultName = GetSpellInfo(422750)} --trinket: Fyrakk's Tainted Rageheart
+		customItemList[425509] = {itemId = 207169, onUse = true, castId = 422441, defaultName = GetSpellInfo(422441)} --trinket: Branch of the Tormented Ancient
+		customItemList[422146] = {itemId = 207172, onUse = true, castId = 422146, defaultName = GetSpellInfo(422146)} --trinket: Belor'relos, the Sunstone
+		customItemList[265953] = {itemId = 158319, onUse = true, castId = 265954, defaultName = GetSpellInfo(265953)} --trinket: My'das Talisman
+		customItemList[429257] = {itemId = 109999, onUse = true, castId = 429257, defaultName = GetSpellInfo(429257)} --trinket: Witherbark's Branch (no damage)
+		customItemList[427430] = {itemId = 207165, onUse = true, castId = 422146, defaultName = GetSpellInfo(422303), nameExtra = "*return*"} --trinket: Bandolier of Twisted Blades
+		customItemList[422303] = {itemId = 207165, onUse = true, castId = 422146, defaultName = GetSpellInfo(422303), nameExtra = "*throw*"} --trinket: Bandolier of Twisted Blades
+		customItemList[426898] = {itemId = 207167, onUse = true, castId = 423611, nameExtra = "*on use*", defaultName = GetSpellInfo(423611)} --trinket: Ashes of the Embersoul
+		customItemList[429271] = {itemId = 110009, onUse = true, castId = 429271, defaultName = GetSpellInfo(429271)} --trinket: Leaf of the Ancient Protectors
+		customItemList[429272] = {itemId = 110009, onUse = true, castId = 429271, nameExtra = "(*vers*)", defaultName = GetSpellInfo(429271)} --trinket: Leaf of the Ancient Protectors
+		customItemList[433522] = {itemId = 212684, isPassive = true} -- trinket: Umbrelskul's Fractured Heart dot
+		customItemList[433549] = {itemId = 212684, isPassive = true} -- trinket: Umbrelskul's Fractured Heart execute
 	end
 
 	if (LIB_OPEN_RAID_SPELL_CUSTOM_NAMES) then
 		for spellId, customTable in pairs(LIB_OPEN_RAID_SPELL_CUSTOM_NAMES) do
-			local name = customTable.name
-			if (name) then
-				defaultSpellCustomization[spellId] = name
+			local customName = customTable.name
+			if (customName) then
+				defaultSpellCustomization[spellId] = customName
 			end
 		end
 	end
@@ -269,88 +352,129 @@ do
 		return defaultSpellCustomization
 	end
 
-	function Details:UserCustomSpellUpdate (index, name, icon)
-		local t = Details.savedCustomSpells[index]
-		if (t) then
-			t [2], t [3] = name or t [2], icon or t [3]
-			return rawset (Details.spellcache, t [1], {t [2], 1, t [3]})
+	function Details:GetDefaultCustomItemList()
+		return customItemList
+	end
+
+	function Details:UserCustomSpellUpdate(index, spellName, spellIcon) --called from the options panel > rename spells
+		---@type savedspelldata
+		local savedSpellData = Details.savedCustomSpells[index]
+		if (savedSpellData) then
+			local spellId = savedSpellData[1]
+			savedSpellData[2], savedSpellData[3] = spellName or savedSpellData[2], spellIcon or savedSpellData[3]
+			rawset(Details.spellcache, spellId, {savedSpellData[2], 1, savedSpellData[3]})
+			Details.userCustomSpells[spellId] = true
+			return true
 		else
 			return false
 		end
 	end
 
-	function Details:UserCustomSpellReset (index)
-		local t = Details.savedCustomSpells[index]
-		if (t) then
-			local spellid = t [1]
-			local name, _, icon = _GetSpellInfo(spellid)
+	function Details:UserCustomSpellReset(index)
+		---@type savedspelldata
+		local savedSpellData = Details.savedCustomSpells[index]
+		if (savedSpellData) then
+			local spellId = savedSpellData [1]
+			local spellName, _, spellIcon = GetSpellInfo(spellId)
 
-			if (defaultSpellCustomization [spellid]) then
-				name = defaultSpellCustomization [spellid].name
-				icon = defaultSpellCustomization [spellid].icon or icon or [[Interface\InventoryItems\WoWUnknownItem01]]
+			if (defaultSpellCustomization[spellId]) then
+				spellName = defaultSpellCustomization[spellId].name
+				spellIcon = defaultSpellCustomization[spellId].icon or spellIcon or [[Interface\InventoryItems\WoWUnknownItem01]]
 			end
 
-			if (not name) then
-				name = "Unknown"
+			if (not spellName) then
+				spellName = "Unknown"
 			end
-			if (not icon) then
-				icon = [[Interface\InventoryItems\WoWUnknownItem01]]
+			if (not spellIcon) then
+				spellIcon = [[Interface\InventoryItems\WoWUnknownItem01]]
 			end
 
-			rawset (Details.spellcache, spellid, {name, 1, icon})
+			rawset(Details.spellcache, spellId, {spellName, 1, spellIcon})
 
-			t[2] = name
-			t[3] = icon
+			savedSpellData[2] = spellName
+			savedSpellData[3] = spellIcon
 		end
 	end
 
 	function Details:FillUserCustomSpells()
-		for spellid, spellTable in pairs(defaultSpellCustomization) do
-			local spellName, _, spellIcon = Details.GetSpellInfo(spellid)
-			Details:UserCustomSpellAdd(spellid, spellTable.name or spellName or "Unknown", spellTable.icon or spellIcon or [[Interface\InventoryItems\WoWUnknownItem01]])
+		for spellId, spellTable in pairs(defaultSpellCustomization) do
+			local spellName, _, spellIcon = Details.GetSpellInfo(spellId)
+			Details:UserCustomSpellAdd(spellId, spellTable.name or spellName or "Unknown", spellTable.icon or spellIcon or [[Interface\InventoryItems\WoWUnknownItem01]])
+		end
+
+		--itens
+		--[381760] = {name = formatTextForItem(193786), isPassive = true, itemId = 193786, nameExtra = ""|nil},
+		---@type number, customiteminfo
+		for spellId, itemInfo in pairs(customItemList) do
+			local bIsPassive = itemInfo.isPassive
+			local itemId = itemInfo.itemId
+			local nameExtra = itemInfo.nameExtra
+			local spellName, _, spellIcon = GetSpellInfo(spellId)
+
+			spellIcon = itemInfo.icon or spellIcon or [[Interface\InventoryItems\WoWUnknownItem01]]
+
+			local itemName = formatTextForItem(itemId)
+			if (itemName ~= "") then
+				if (nameExtra) then
+					itemName = itemName .. " " .. nameExtra
+				end
+				Details:UserCustomSpellAdd(spellId, itemName, spellIcon or [[Interface\InventoryItems\WoWUnknownItem01]])
+			else
+				if (not Details.UpdateIconsTimer or Details.UpdateIconsTimer:IsCancelled()) then
+					Details.UpdateIconsTimer = C_Timer.NewTimer(3, Details.FillUserCustomSpells)
+				end
+			end
 		end
 
 		for i = #Details.savedCustomSpells, 1, -1 do
-			local spelltable = Details.savedCustomSpells [i]
-			local spellid = spelltable [1]
-			if (spellid > 10) then
-				local exists = _GetSpellInfo(spellid)
-				if (not exists) then
+			---@type savedspelldata
+			local savedSpellData = Details.savedCustomSpells[i]
+			local spellId = savedSpellData[1]
+			if (spellId > 10) then
+				local doesSpellExists = GetSpellInfo(spellId)
+				if (not doesSpellExists) then
 					tremove(Details.savedCustomSpells, i)
 				end
 			end
 		end
 	end
 
-	C_Timer.After(0, function()
-		Details:FillUserCustomSpells()
-	end)
+	function Details:UserCustomSpellAdd(spellId, spellName, spellIcon, bAddedByUser)
+		if (Details.userCustomSpells[spellId]) then
+			if (not bAddedByUser) then
+				return
+			end
+		end
 
-	function Details:UserCustomSpellAdd(spellid, name, icon)
 		local isOverwrite = false
-		for index, spellTable in ipairs(Details.savedCustomSpells) do
-			if (spellTable[1] == spellid) then
-				spellTable[2] = name
-				spellTable[3] = icon
+		for index, savedSpellData in ipairs(Details.savedCustomSpells) do
+			if (savedSpellData[1] == spellId) then
+				savedSpellData[2] = spellName
+				savedSpellData[3] = spellIcon
 				isOverwrite = true
 				break
 			end
 		end
 
 		if (not isOverwrite) then
-			tinsert(Details.savedCustomSpells, {spellid, name, icon})
+			tinsert(Details.savedCustomSpells, {spellId, spellName, spellIcon})
 		end
 
-		return rawset(Details.spellcache, spellid, {name, 1, icon})
+		rawset(Details.spellcache, spellId, {spellName, 1, spellIcon})
+
+		if (bAddedByUser) then
+			Details.userCustomSpells[spellId] = true
+		end
 	end
 
-	function Details:UserCustomSpellRemove (index)
-		local t = Details.savedCustomSpells [index]
-		if (t) then
-			local spellid = t [1]
-			local name, _, icon = _GetSpellInfo(spellid)
-			if (name) then
-				rawset (Details.spellcache, spellid, {name, 1, icon})
+	function Details:UserCustomSpellRemove(index)
+		---@type savedspelldata
+		local savedSpellData = Details.savedCustomSpells[index]
+		if (savedSpellData) then
+			local spellId = savedSpellData[1]
+			local spellName, _, spellIcon = GetSpellInfo(spellId)
+			if (spellName) then
+				rawset(Details.spellcache, spellId, {spellName, 1, spellIcon})
 			end
 			return tremove(Details.savedCustomSpells, index)
 		end
@@ -359,120 +483,53 @@ do
 	end
 
 	--overwrite for API GetSpellInfo function
-
-	Details.getspellinfo = function(spellid) return _unpack(Details.spellcache[spellid]) end
+	Details.getspellinfo = function(spellId)
+		return unpack(Details.spellcache[spellId]) --won't be nil due to the __index metatable in the spellcache table
+	end
 	Details.GetSpellInfo = Details.getspellinfo
 
+	function Details.GetCustomSpellInfo(spellId)
+		local spellName, _, spellIcon = Details.GetSpellInfo(spellId)
+
+		local customInfo = defaultSpellCustomization[spellId]
+		if (customInfo) then
+			local defaultName, bCanStack = customInfo.defaultName, customInfo.breakdownCanStack
+			return spellName, _, spellIcon, defaultName, bCanStack
+		end
+
+		return spellName, _, spellIcon
+	end
+
+	function Details.GetItemSpellInfo(spellId)
+		local spellInfo = customItemList[spellId]
+		if (spellInfo) then
+			local defaultSpellName, castSpellId, itemId, bIsPassive, bOnUse, nameExtra = spellInfo.defaultName, spellInfo.castId, spellInfo.itemId, spellInfo.onUse, spellInfo.isPassive, spellInfo.nameExtra
+			return defaultSpellName, castSpellId, itemId, bIsPassive, bOnUse, nameExtra
+		end
+	end
+
 	--overwrite SpellInfo if the spell is a DoT, so Details.GetSpellInfo will return the name modified
-	function Details:SpellIsDot(spellid)
+	function Details:SetAsDotSpell(spellId)
 		--do nothing if this spell already has a customization
-		if (defaultSpellCustomization[spellid]) then
+		if (defaultSpellCustomization[spellId]) then
 			return
 		end
-		local spellName, rank, spellIcon = _GetSpellInfo(spellid)
+
+		--do nothing if the spell is already cached
+		local spellInfo = rawget(Details.spellcache, spellId)
+		if (spellInfo) then
+			return
+		end
+
+		local spellName, rank, spellIcon = Details.GetSpellInfo(spellId)
+		if (not spellName) then
+			spellName, rank, spellIcon = GetSpellInfo(spellId)
+		end
 
 		if (spellName) then
-			rawset (Details.spellcache, spellid, {spellName .. Loc ["STRING_DOT"], rank, spellIcon})
+			rawset(Details.spellcache, spellId, {spellName .. Loc ["STRING_DOT"], rank, spellIcon})
 		else
-			rawset (Details.spellcache, spellid, {"Unknown DoT Spell? " .. Loc ["STRING_DOT"], rank, [[Interface\InventoryItems\WoWUnknownItem01]]})
+			rawset(Details.spellcache, spellId, {"Unknown DoT Spell? " .. Loc ["STRING_DOT"], rank, [[Interface\InventoryItems\WoWUnknownItem01]]})
 		end
 	end
-
---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
---Cache All Spells
-
-	function Details:BuildSpellListSlow() -- this is not in use
-
-		local load_frame = _G.DetailsLoadSpellCache
-		if (load_frame and (load_frame.completed or load_frame.inprogress)) then
-			return false
-		end
-
-		local step = 1
-		local max = 160000
-
-		if (not load_frame) then
-			load_frame = CreateFrame("frame", "DetailsLoadSpellCache", UIParent)
-			load_frame:SetFrameStrata("DIALOG")
-
-			local progress_label = load_frame:CreateFontString("DetailsLoadSpellCacheProgress", "overlay", "GameFontHighlightSmall")
-			progress_label:SetText("Loading Spells: 0%")
-			function Details:BuildSpellListSlowTick()
-				progress_label:SetText("Loading Spells: " .. load_frame:GetProgress() .. "%")
-			end
-			load_frame.tick = Details:ScheduleRepeatingTimer ("BuildSpellListSlowTick", 1)
-
-			function load_frame:GetProgress()
-				return math.floor(step / max * 100)
-			end
-		end
-
-		local SpellCache = {a={}, b={}, c={}, d={}, e={}, f={}, g={}, h={}, i={}, j={}, k={}, l={}, m={}, n={}, o={}, p={}, q={}, r={}, s={}, t={}, u={}, v={}, w={}, x={}, y={}, z={}}
-		local _string_lower = string.lower
-		local _string_sub = string.sub
-		local blizzGetSpellInfo = GetSpellInfo
-
-		load_frame.inprogress = true
-
-		Details.spellcachefull = SpellCache
-
-		load_frame:SetScript("OnUpdate", function()
-			for spellid = step, step+500 do
-				local name, _, icon = blizzGetSpellInfo (spellid)
-				if (name) then
-					local LetterIndex = _string_lower (_string_sub (name, 1, 1)) --get the first letter
-					local CachedIndex = SpellCache [LetterIndex]
-					if (CachedIndex) then
-						CachedIndex [spellid] = {name, icon}
-					end
-				end
-			end
-
-			step = step + 500
-
-			if (step > max) then
-				step = max
-				_G.DetailsLoadSpellCache.completed = true
-				_G.DetailsLoadSpellCache.inprogress = false
-				Details:CancelTimer(_G.DetailsLoadSpellCache.tick)
-				DetailsLoadSpellCacheProgress:Hide()
-				load_frame:SetScript("OnUpdate", nil)
-			end
-
-		end)
-
-
-
-		return true
-	end
-
-	function Details:BuildSpellList()
-
-		local SpellCache = {a={}, b={}, c={}, d={}, e={}, f={}, g={}, h={}, i={}, j={}, k={}, l={}, m={}, n={}, o={}, p={}, q={}, r={}, s={}, t={}, u={}, v={}, w={}, x={}, y={}, z={}}
-		local _string_lower = string.lower
-		local _string_sub = string.sub
-		local blizzGetSpellInfo = GetSpellInfo
-
-		for spellid = 1, 160000 do
-			local name, rank, icon = blizzGetSpellInfo (spellid)
-			if (name) then
-				local index = _string_lower (_string_sub (name, 1, 1))
-				local CachedIndex = SpellCache [index]
-				if (CachedIndex) then
-					CachedIndex [spellid] = {name, icon, rank}
-				end
-			end
-		end
-
-		Details.spellcachefull = SpellCache
-		return true
-	end
-
-	function Details:ClearSpellList()
-		Details.spellcachefull = nil
-		collectgarbage()
-	end
-
-
-
 end

@@ -37,15 +37,15 @@ Prat:AddModuleToLoad(function()
   end
 
   local dbg = function() end
-  --[===[@debug@
+  --[==[@debug@
 --  dbg = function(...) Prat:PrintLiteral(...) end
-  --@end-debug@]===]
+  --@end-debug@]==]
 
   local module = Prat:NewModule(PRAT_MODULE, "AceEvent-3.0")
 
   local PL = module.PL
 
-  --[===[@debug@
+  --[==[@debug@
   PL:AddLocale(PRAT_MODULE, "enUS", {
     ["Filtering"] = true,
     ["A module to provide basic chat filtering."] = true,
@@ -64,7 +64,7 @@ Prat:AddModuleToLoad(function()
     ["training_desc"] = "Show the AI training UI",
     ["training_name"] = "AI Training",
   })
-  --@end-debug@]===]
+  --@end-debug@]==]
 
   -- These Localizations are auto-generated. To help with localization
   -- please go to http://www.wowace.com/projects/prat-3-0/localization/
@@ -254,14 +254,10 @@ L = {
 		["notices_name"] = "채널 알림 메시지 필터링",
 		["tradespam_desc"] = "같은 메시지가 여러번 반복되지 않게 방지합니다.",
 		["tradespam_name"] = "스팸 조절",
-		--[[Translation missing --]]
-		["training_desc"] = "Show the AI training UI",
-		--[[Translation missing --]]
-		["training_name"] = "AI Training",
-		--[[Translation missing --]]
-		["useai_desc"] = "Use a spam filter based on machine learning",
-		--[[Translation missing --]]
-		["useai_name"] = "AI Spam Filter",
+		["training_desc"] = "AI 훈련 UI 표시",
+		["training_name"] = "AI 훈련",
+		["useai_desc"] = "기계 학습 기반 스팸 필터를 사용합니다",
+		["useai_name"] = "AI 스팸 필터",
 	}
 }
 
@@ -602,20 +598,13 @@ end
     id = tonumber(id)
     local text = self.lineTable[id]
     local prob = self.classifier.getprob(tokenize(text))
-    --for i,v in ipairs(frame.visibleLines) do
-	for i = frame:GetNumVisibleLines(), 1, -1 do
-        local mi = frame.visibleLines[i].messageInfo
-
-		if mi then
-			--local mi = v.messageInfo
-			local m = mi.message
-			if m:match(("pratfilter:%d"):format(id)) then
-			  mi.message = m:gsub("|c%x-%d+%%%x-|r", CLR:Probability(FormatPercentage(prob), prob):gsub("%%", "%%%%"))
-			  break
-			end
-		else
-			print(frame.name .. ": " ..i);
-		end
+    for i,v in ipairs(frame.visibleLines) do
+      local mi = v.messageInfo
+      local m = mi.message
+      if m:match(("pratfilter:%d"):format(id)) then
+        mi.message = m:gsub("|c%x-%d+%%%x-|r", CLR:Probability(FormatPercentage(prob), prob):gsub("%%", "%%%%"))
+        break
+      end
     end
   end
 

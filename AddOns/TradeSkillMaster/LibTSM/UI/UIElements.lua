@@ -24,11 +24,12 @@ local private = {
 -- Module Functions
 -- ============================================================================
 
---- Defines and registers a UI Element subclass.
--- @tparam string elementType The name of the new element class
--- @tparam string parentElementType The name of the parent class
--- @param ... Any additional class modifiers to pass through to LibTSMClass.DefineClass()
--- @treturn class The newly-defined class
+---Defines and registers a UI element subclass.
+---@generic T
+---@param elementType `T` The name of the new element class
+---@param parentElementType string The name of the parent class
+---@param ... ClassProperties Any additional class modifiers to pass to LibTSMClass.DefineClass()
+---@return T
 function UIElements.Define(elementType, parentElementType, ...)
 	local parentClass = parentElementType and private.elementClasses[parentElementType]
 	assert(parentClass)

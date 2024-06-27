@@ -37,7 +37,7 @@ Prat:AddModuleToLoad(function()
   -- define localized strings
   local PL = module.PL
 
-  --[===[@debug@
+  --[==[@debug@
   PL:AddLocale(PRAT_MODULE, "enUS", {
     ["PlayerNames"] = true,
     ["Player name formating options."] = true,
@@ -100,7 +100,7 @@ Prat:AddModuleToLoad(function()
     bnetclienticon_name = "Show BNet Client Icon",
     bnetclienticon_desc = "Show an icon indicating which game or client the Battle.Net friend is using"
   })
-  --@end-debug@]===]
+  --@end-debug@]==]
 
   -- These Localizations are auto-generated. To help with localization
   -- please go to http://www.wowace.com/projects/prat-3-0/localization/
@@ -1125,12 +1125,8 @@ L = {
 
     self:RegisterEvent("FRIENDLIST_UPDATE", "updateFriends")
     self:RegisterEvent("GUILD_ROSTER_UPDATE", "updateGuild")
-    self:RegisterEvent("RAID_ROSTER_UPDATE", "updateRaid")
+    self:RegisterEvent("GROUP_ROSTER_UPDATE", "updateGroup")
     self:RegisterEvent("PLAYER_LEVEL_UP", "updatePlayerLevel")
-
-    if select(4, GetBuildInfo()) < 80000 and select(4, GetBuildInfo()) >= 20000 then
-      self:RegisterEvent("GROUP_ROSTER_UPDATE", "updateParty")
-    end
     self:RegisterEvent("PLAYER_TARGET_CHANGED", "updateTarget")
     self:RegisterEvent("UPDATE_MOUSEOVER_UNIT", "updateMouseOver")
     self:RegisterEvent("WHO_LIST_UPDATE", "updateWho")
@@ -1315,9 +1311,8 @@ L = {
 
   function module:updateAll()
     self:updatePlayer()
-    self:updateParty()
 
-    self:updateRaid()
+    self:updateGroup()
 
     self:updateFriends()
 
@@ -1376,7 +1371,6 @@ L = {
     end
   end
 
-  local GetNumRaidMembers = GetNumGroupMembers or GetNumRaidMembers
   function module:updateRaid()
     --  self:Debug("updateRaid -->")
     local Name, Class, SubGroup, Level, Server, rank
@@ -1385,21 +1379,28 @@ L = {
       self.Subgroups[k] = nil
     end
 
-    for i = 1, GetNumRaidMembers() do
+    for i = 1, GetNumGroupMembers() do
       _, rank, SubGroup, Level, _, Class, zone, online, isDead, role, isML = GetRaidRosterInfo(i)
       Name, Server = UnitName("raid" .. i)
       self:addName(Name, Server, Class, Level, SubGroup, "RAID")
     end
   end
 
-  local GetNumPartyMembers = GetNumSubgroupMembers or GetNumPartyMembers -- Mists of Pandaria support
   function module:updateParty()
     local Class, Unit, Name, Server, _
-    for i = 1, GetNumPartyMembers() do
+    for i = 1, GetNumSubgroupMembers() do
       Unit = "party" .. i
       _, Class = UnitClass(Unit)
       Name, Server = UnitName(Unit)
       self:addName(Name, Server, Class, UnitLevel(Unit), nil, "PARTY")
+    end
+  end
+
+  function module:updateGroup()
+    if IsInRaid() then
+      self:updateRaid()
+    elseif IsInGroup() then
+      self:updateParty()
     end
   end
 
@@ -1445,7 +1446,7 @@ L = {
         self:addName(plr, nil, class, nil, nil, "BATTLEFIELD")
       end
     end
-    self:updateRaid()
+    self:updateGroup()
   end
 
 
@@ -1603,7 +1604,7 @@ L = {
     end
 
     -- Add raid subgroup information if needed
-    if subgroup and self.db.profile.subgroup and (GetNumRaidMembers() > 0) then
+    if subgroup and self.db.profile.subgroup and (GetNumGroupMembers() > 0) then
       message.POSTPLAYERDELIM = ":"
       message.PLAYERGROUP = subgroup
     end
@@ -1640,7 +1641,11 @@ L = {
       if self.db.profile.bnetclienticon then
         local client = GetBnetClientByID(message.PRESENCE_ID)
         if client then
-          message.PLAYERCLIENTICON = ("|T%s:%d:%d:%d:%d|t"):format(BNet_GetClientTexture(client), 14)
+          if BNet_GetClientEmbeddedAtlas then
+            message.PLAYERCLIENTICON = BNet_GetClientEmbeddedAtlas(client)
+          else
+            message.PLAYERCLIENTICON = ("|T%s:%d:%d:%d:%d|t"):format(BNet_GetClientTexture(client), 14)
+          end
         end
       end
     else
@@ -1668,12 +1673,6 @@ L = {
   --
   local EVENTS_FOR_RECHECK = {
     ["CHAT_MSG_GUILD"] = module.updateGF,
-    -- ["CHAT_MSG_OFFICER"] = module.updateGuild,
-    -- ["CHAT_MSG_PARTY"] = module.updateParty,
-    -- ["CHAT_MSG_PARTY_LEADER"] = module.updateParty,
-    -- ["CHAT_MSG_RAID"] = module.updateRaid,
-    -- ["CHAT_MSG_RAID_LEADER"] = module.updateRaid,
-    -- ["CHAT_MSG_RAID_WARNING"] = module.updateRaid,
     ["CHAT_MSG_INSTANCE_CHAT"] = module.updateBG,
     ["CHAT_MSG_INSTANCE_CHAT_LEADER"] = module.updateBG,
     ["CHAT_MSG_SYSTEM"] = module.updateGF,

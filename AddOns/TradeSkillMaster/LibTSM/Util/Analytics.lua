@@ -6,6 +6,7 @@
 
 local TSM = select(2, ...) ---@type TSM
 local Analytics = TSM.Init("Util.Analytics") ---@class Util.Analytics
+local Environment = TSM.Include("Environment")
 local Debug = TSM.Include("Util.Debug")
 local Log = TSM.Include("Util.Log")
 local private = {
@@ -82,7 +83,7 @@ function private.InsertHit(hitType, ...)
 	end
 	Log.Info("%s %s", hitType, strjoin(" ", tostringall(...)))
 	hitType = private.AddQuotes(hitType)
-	local version = private.AddQuotes(TSM.GetVersion() or "???")
+	local version = private.AddQuotes(Environment.GetVersion())
 	local timeMs = Debug.GetTimeMilliseconds()
 	local jsonStr = strjoin(",", hitType, version, timeMs, private.session, private.sequenceNumber, unpack(private.argsTemp))
 	tinsert(private.events, "["..jsonStr.."]")

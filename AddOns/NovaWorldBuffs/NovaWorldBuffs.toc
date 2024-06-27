@@ -1,0 +1,26 @@
+## Interface: 30400
+## Author: Novaspark-Arugal OCE
+## Version: 2.81
+## SavedVariables: NWBdatabase
+
+## Title: Nova World Buffs
+## Notes: World buff timers and much more.
+## Title-zhCN: |cFFFFE00A<|r|cFFFFFFFF辅助|r|cFFFFE00A>|r |cFFFFFFFF世界增益|r |cFFFFE00ANovaWorldBuffs|r
+## Notes-zhCN: 与其他玩家共享世界BUFF刷新时间
+
+
+embeds.xml
+Locale\Locales.xml
+NovaWorldBuffs.lua
+Options.lua
+NWBHelp.lua
+NWBData.lua
+NWBCreatures.lua
+NWBRealms.lua
+NWBGuildFilter.lua
+Modules\WeeklyReset.lua
+Modules\Ashenvale.lua
+Modules\Stranglethorn.lua
+Modules\TolBarad.lua
+Modules\Wintergrasp.lua
+Modules\Overlay.lua

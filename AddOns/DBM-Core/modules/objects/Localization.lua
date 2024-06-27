@@ -1,4 +1,10 @@
+---@class DBMCoreNamespace
+local private = select(2, ...)
+
 local L = DBM_CORE_L
+
+---@class DBM
+local DBM = private:GetPrototype("DBM")
 
 local returnKey = {
 	__index = function(_, k)
@@ -17,6 +23,7 @@ local defaultCatLocalization = {
 		sound				= L.OPTION_CATEGORY_SOUNDS,
 		yell				= L.OPTION_CATEGORY_YELLS,
 		icon				= L.OPTION_CATEGORY_ICONS,
+		paura				= L.OPTION_CATEGORY_PAURAS,
 		nameplate			= L.OPTION_CATEGORY_NAMEPLATES,
 		misc				= MISCELLANEOUS
 	}, returnKey)
@@ -25,20 +32,19 @@ local defaultCatLocalization = {
 local defaultTimerLocalization = {
 	__index = setmetatable({
 		timer_berserk = L.GENERIC_TIMER_BERSERK,
-		timer_combat = L.GENERIC_TIMER_COMBAT
+		timer_combat = L.AUTO_TIMER_TEXTS.combat
 	}, returnKey)
 }
 
 local defaultAnnounceLocalization = {
 	__index = setmetatable({
-		warning_berserk = L.GENERIC_WARNING_BERSERK
 	}, returnKey)
 }
 
 local defaultOptionLocalization = {
 	__index = setmetatable({
 		timer_berserk = L.OPTION_TIMER_BERSERK,
-		timer_combat = L.OPTION_TIMER_COMBAT,
+		timer_combat = L.AUTO_TIMER_OPTIONS.combat,
 	}, returnKey)
 }
 
@@ -46,7 +52,16 @@ local defaultMiscLocalization = {
 	__index = {}
 }
 
-local modLocalizationPrototype = {}
+---@class ModLocalization
+---@field general table<string, string>
+---@field warnings table<string, string>
+---@field timers table<string, string>
+---@field options table<string, string>
+---@field cats table<string, string>
+---@field miscStrings table<string, string>
+local modLocalizationPrototype = private:GetPrototype("ModLocalization")
+
+local mt = {__index = modLocalizationPrototype}
 
 function modLocalizationPrototype:SetGeneralLocalization(t)
 	for i, v in pairs(t) do
@@ -96,9 +111,7 @@ function DBM:CreateModLocalization(name)
 		miscStrings = setmetatable({}, defaultMiscLocalization),
 		cats = setmetatable({}, defaultCatLocalization),
 	}
-	setmetatable(obj, {
-		__index = modLocalizationPrototype
-	})
+	setmetatable(obj, mt)
 	modLocalizations[name] = obj
 	return obj
 end

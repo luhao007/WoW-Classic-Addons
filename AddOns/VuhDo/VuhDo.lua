@@ -723,6 +723,14 @@ local function VUHDO_updateAllPanelUnits()
 				if not VUHDO_CONFIG["OMIT_FOCUS"] then tPanelUnits["focus"] = "focus"; end
 			end
 
+			if VUHDO_isModelInPanel(tPanelNum, 82) then -- VUHDO_ID_TARGET
+				tPanelUnits["target"] = "target";
+			end
+
+			if VUHDO_isModelInPanel(tPanelNum, 83) then -- VUHDO_ID_FOCUS
+				tPanelUnits["focus"] = "focus";
+			end
+
 			for _, tUnit in pairs(tPanelUnits) do
 				tinsert(VUHDO_PANEL_UNITS[tPanelNum], tUnit);
 			end

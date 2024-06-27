@@ -139,33 +139,11 @@
 						</Layers>
 					</Frame>
 
-					<CheckButton name="$parentIndicatorsRadioButton" text="VUHDO_I18N_INDICATORS" inherits="VuhDoTabRadioButtonTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="3" y="-218" />
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								VUHDO_MENU_RETURN_TARGET = nil;
-								VUHDO_MENU_RETURN_TARGET_MAIN = nil;
-								VUHDO_lnfTabRadioButtonClicked(self);
-							</OnClick>
-							<OnLoad>
-								self.tabPanel = "VuhDoNewOptionsGeneralIndicators";
-								VUHDO_lnfCheckButtonOnLoad(self);
-								VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K456);
-							</OnLoad>
-						</Scripts>
-					</CheckButton>
-
 					<CheckButton name="$parentClusterRadioButton" text="VUHDO_I18N_CLUSTERS" inherits="VuhDoTabRadioButtonTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="3" y="-253" />
+									<AbsDimension x="3" y="-218" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -182,7 +160,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="3" y="-288" />
+									<AbsDimension x="3" y="-253" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -202,7 +180,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="3" y="-328" />
+									<AbsDimension x="3" y="-293" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -218,7 +196,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="3" y="-343" />
+									<AbsDimension x="3" y="-308" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -253,8 +231,6 @@
 					<Frame name="VuhDoNewOptionsGeneralAoeAdvice" hidden="true" setAllPoints="true" inherits="VuhDoNewOptionsGeneralAoeAdviceTemplate">
 					</Frame>
 					<Frame name="VuhDoNewOptionsGeneralThreat" hidden="true" setAllPoints="true" inherits="VuhDoNewOptionsGeneralThreatTemplate">
-					</Frame>
-					<Frame name="VuhDoNewOptionsGeneralIndicators" hidden="true" setAllPoints="true" inherits="VuhDoNewOptionsGeneralIndicatorsTemplate">
 					</Frame>
 					<Frame name="VuhDoNewOptionsGeneralMisc" hidden="true" setAllPoints="true" inherits="VuhDoNewOptionsGeneralMiscTemplate">
 					</Frame>

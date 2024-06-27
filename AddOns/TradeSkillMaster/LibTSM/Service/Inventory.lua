@@ -4,16 +4,15 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
-local Inventory = TSM.Init("Service.Inventory")
+local TSM = select(2, ...) ---@type TSM
+local Inventory = TSM.Init("Service.Inventory") ---@class Service.Inventory
 local CustomPrice = TSM.Include("Service.CustomPrice")
 local AltTracking = TSM.Include("Service.AltTracking")
 local BagTracking = TSM.Include("Service.BagTracking")
 local AuctionTracking = TSM.Include("Service.AuctionTracking")
 local MailTracking = TSM.Include("Service.MailTracking")
-local Sync = TSM.Include("Service.Sync")
 local private = {
-	callbacks = {},
+	sources = {},
 }
 
 
@@ -23,10 +22,11 @@ local private = {
 -- ============================================================================
 
 Inventory:OnSettingsLoad(function()
-	BagTracking.RegisterCallback(private.QuantityChangedCallback)
-	AuctionTracking.RegisterCallback(private.QuantityChangedCallback)
-	MailTracking.RegisterCallback(private.QuantityChangedCallback)
-	Sync.RegisterMirrorCallback(private.QuantityChangedCallback)
+	tinsert(private.sources, "NumInventory")
+	BagTracking.RegisterQuantityCallback(private.QuantityChangedCallback)
+	AuctionTracking.RegisterQuantityCallback(private.QuantityChangedCallback)
+	MailTracking.RegisterQuantityCallback(private.QuantityChangedCallback)
+	AltTracking.RegisterQuantityCallback(private.QuantityChangedCallback)
 end)
 
 
@@ -35,8 +35,8 @@ end)
 -- Module Functions
 -- ============================================================================
 
-function Inventory.RegisterCallback(callback)
-	tinsert(private.callbacks, callback)
+function Inventory.RegisterDependentCustomSource(source)
+	tinsert(private.sources, source)
 end
 
 function Inventory.GetTotalQuantity(itemString)
@@ -57,9 +57,10 @@ end
 -- Private Helper Functions
 -- ============================================================================
 
-function private.QuantityChangedCallback()
-	CustomPrice.OnSourceChange("NumInventory")
-	for _, callback in ipairs(private.callbacks) do
-		callback()
+function private.QuantityChangedCallback(updatedItems)
+	for _, source in ipairs(private.sources) do
+		for itemString in pairs(updatedItems) do
+			CustomPrice.OnSourceChange(source, itemString)
+		end
 	end
 end

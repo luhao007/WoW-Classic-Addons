@@ -35,7 +35,7 @@ Prat:AddModuleToLoad(function()
 
   local PL = module.PL
 
-  --[===[@debug@
+  --[==[@debug@
   PL:AddLocale(PRAT_MODULE, "enUS", {
     ["UrlCopy"] = true,
     ["URL formating options."] = true,
@@ -50,7 +50,7 @@ Prat:AddModuleToLoad(function()
     ["Toggle"] = true,
     ["Toggle the module on and off."] = true,
   })
-  --@end-debug@]===]
+  --@end-debug@]==]
 
   -- These Localizations are auto-generated. To help with localization
   -- please go to http://www.wowace.com/projects/prat-3-0/localization/
@@ -137,7 +137,7 @@ L = {
 		["Toggle the module on and off."] = "모듈을 끄거나 켭니다.",
 		["Toggle the URL color on and off."] = "URL 색상을 끄거나 켭니다.",
 		["URL formating options."] = "URL 형식 옵션입니다.",
-		["UrlCopy"] = "Url 복사",
+		["UrlCopy"] = "URL 복사 [UrlCopy]",
 		["Use Popup"] = "팝업창 사용",
 		["Use popup window to show URL."] = "URL을 팝업창에 표시합니다.",
 	}
@@ -717,7 +717,7 @@ end
 
           editBox:SetText(StaticPopupDialogs["SHOW_URL"].urltext)
           editBox:SetFocus()
-          editBox:HighlightText(false)
+          editBox:HighlightText()
 
           local button = _G[this:GetName() .. "Button2"]
           button:ClearAllPoints()

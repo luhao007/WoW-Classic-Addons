@@ -4,9 +4,14 @@
 --Much of this is taken from my other addon NovaWorldBuffs so some things may look out of place.
 
 local addonName, NRC = ...;
+local GetAddOnMetadata = GetAddOnMetadata or C_AddOns.GetAddOnMetadata;
 local version = GetAddOnMetadata("NovaRaidCompanion", "Version") or 9999;
 local L = LibStub("AceLocale-3.0"):GetLocale("NovaRaidCompanion");
 local time, elapsed = 0, 0;
+local soulstoneDuration = 1800;
+if (not NRC.isTBc and not NRC.isClassic) then
+	soulstoneDuration = 900;
+end
 
 function NRC:OnCommReceived(commPrefix, string, distribution, sender)
 	if (commPrefix == NRC.helperCommPrefix) then
@@ -145,10 +150,12 @@ function NRC:OnWhisperCommReceived(commPrefix, string, distribution, sender)
 	if (tonumber(remoteVersion) < 1.22) then
 		return;
 	end
-	if (cmd == "glyrec") then
-		NRC:receivedGlyphs(data, sender, distribution, true);
-	elseif (cmd == "glyreq") then
-		NRC:sendGlyphs(sender)
+	if (NRC.expansionNum > 2) then
+		if (cmd == "glyrec") then
+			NRC:receivedGlyphs(data, sender, distribution, true);
+		elseif (cmd == "glyreq") then
+			NRC:sendGlyphs(sender)
+		end
 	end
 end
 
@@ -591,7 +598,7 @@ function NRC:receivedString(cmd, dataReceived, sender, distribution)
 	local found;
 	if (cmd == "spell") then
 		local guid = NRC:getGuidFromGroup(sender);
-		NRC:debug("received string", sender, dataReceived);
+		--NRC:debug("received string", sender, dataReceived);
 		if (guid) then
 			local spellID, cooldownTime, destName, destClass = strsplit("_", dataReceived, 4);
 			local destGUID = NRC:getGroupGuidFromName(destName, destClass);
@@ -615,7 +622,7 @@ function NRC:receivedString(cmd, dataReceived, sender, distribution)
 										local cooldownName, spellName, _, spellTableName = NRC:getCooldownFromSpellID(spellID);
 										--Strip realm from sender for realm check.
 										local name, realm = strsplit("-", sender, 2);
-										if (realm ~= NRC.realm) then
+										if (realm ~= NRC.realm and realm ~= GetNormalizedRealmName()) then
 											--Talents are stored without realm name for people on same realm.
 											--If not same realm then add it.
 											name = name .. "-" .. realm;
@@ -634,10 +641,11 @@ function NRC:receivedString(cmd, dataReceived, sender, distribution)
 											NRC.data.raidCooldowns[guid][cooldownName].spellID = spellID;
 											NRC.data.raidCooldowns[guid][cooldownName].destName = destName;
 											NRC.data.raidCooldowns[guid][cooldownName].destClass = destClass;
+											NRC:pushCastCache(guid, cooldownName, destName, destClass, spellID);
 											local realName = NRC:getCooldownFromSpellID(spellID);
 											if (destGUID and realName == "Soulstone" and NRC:inOurGroup(destGUID)) then
-												NRC.data.hasSoulstone[destGUID] = GetServerTime() + 1800;
-												NRC:debug("remote soulstone added", destGUID);
+												NRC:soulstoneAdded(destGUID, GetServerTime() + soulstoneDuration);
+												--NRC:debug("remote soulstone added", destGUID);
 											end
 											NRC:updateRaidCooldowns();
 											found = true;
@@ -661,8 +669,8 @@ function NRC:receivedString(cmd, dataReceived, sender, distribution)
 							endTime = GetServerTime() + cooldown;
 						end
 						--Strip realm from sender for realm check.
-						local name, realm = strsplit(sender, "-", 2);
-						if (realm ~= NRC.realm) then
+						local name, realm = strsplit("-", sender, 2);
+						if (realm ~= NRC.realm and realm ~= GetNormalizedRealmName()) then
 							--Talents are stored without realm name for people on same realm.
 							--If not same realm then add it.
 							name = name .. "-" .. realm;
@@ -679,6 +687,7 @@ function NRC:receivedString(cmd, dataReceived, sender, distribution)
 						NRC.data.raidCooldowns[guid][cooldownName].spellID = spellID;
 						NRC.data.raidCooldowns[guid][cooldownName].destName = destName;
 						NRC.data.raidCooldowns[guid][cooldownName].destClass = destClass;
+						NRC:pushCooldownCastDetect(guid, name, spellName, spellID);
 					end
 				end
 			end
@@ -746,7 +755,7 @@ function NRC:sendGroupSettingsCheck(msg, type, selfType, selfWho, delay)
 	for k, v in NRC:pairsByKeys(onlineMembers) do
 		NRC:debug("Sender: " .. k);
 		if (k == me) then
-			NRC:sendGroup(NRC:stripColors(msg), delay);
+			NRC:sendGroup(NRC:stripColors(msg), nil, delay);
 		end
 		return;
 	end
@@ -861,10 +870,12 @@ f:RegisterEvent("GROUP_LEFT");
 f:RegisterEvent("UNIT_RESISTANCES");
 f:RegisterEvent("UNIT_INVENTORY_CHANGED");
 f:RegisterEvent("CHARACTER_POINTS_CHANGED");
-f:RegisterEvent("GLYPH_ADDED");
-f:RegisterEvent("GLYPH_UPDATED");
-f:RegisterEvent("GLYPH_REMOVED");
-if (not NRC.isTBC and not NRC.isClassic) then
+if (C_EventUtils.IsEventValid("GLYPH_ADDED")) then
+	f:RegisterEvent("GLYPH_ADDED");
+	f:RegisterEvent("GLYPH_UPDATED");
+	f:RegisterEvent("GLYPH_REMOVED");
+end
+if (C_EventUtils.IsEventValid("PLAYER_TALENT_UPDATE")) then
 	f:RegisterEvent("PLAYER_TALENT_UPDATE");
 end
 --f:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGE"); --PLAYER_TALENT_UPDATE is enough to cover dual spec change.
@@ -917,9 +928,11 @@ f:SetScript('OnEvent', function(self, event, ...)
 		NRC:throddleEventByFunc("UNIT_INVENTORY_CHANGED", 3, "checkMyEnchants");
 	elseif (event == "CHARACTER_POINTS_CHANGED" or event == "PLAYER_TALENT_UPDATE") then
 		myTalentsChanged = true;
+		NRC:checkMyTalents();
 		NRC:throddleEventByFunc("CHARACTER_POINTS_CHANGED", 10, "sendTalents");
 	elseif (event == "GLYPH_ADDED" or event == "GLYPH_UPDATED" or event == "GLYPH_REMOVED") then
 		NRC:throddleEventByFunc("GLYPH_UPDATED", 5, "sendGlyphs");
+		NRC:throddleEventByFunc("CHARACTER_POINTS_CHANGED", 6, "sendTalents");
 	end
 end)
 
@@ -940,7 +953,7 @@ end
 
 function NRC:receivedRes(data, sender, distribution)
 	local name, realm = strsplit("-", sender, 2);
-	if (realm == NRC.realm) then
+	if (realm == NRC.realm or realm == GetNormalizedRealmName()) then
 		sender = name;
 	end
 	--NRC:debug("received res update from", sender);
@@ -957,6 +970,9 @@ function NRC:receivedRes(data, sender, distribution)
 end
 
 function NRC:checkMyRes(setDataOnly)
+	if (NRC.isRetail) then
+		return;
+	end
 	if (InCombatLockdown() and not setDataOnly) then
 		--Don't clog up comms during combat, wait till combat ends then update others.
 		f:RegisterEvent("PLAYER_REGEN_ENABLED");
@@ -1022,7 +1038,7 @@ end
 
 function NRC:receivedEnchants(data, sender, distribution)
 	local name, realm = strsplit("-", sender, 2);
-	if (realm == NRC.realm) then
+	if (realm == NRC.realm or realm == GetNormalizedRealmName()) then
 		sender = name;
 	end
 	--NRC:debug("received weapon enchant update from", sender);
@@ -1120,7 +1136,7 @@ end
 
 function NRC:receivedTalents(data, sender, distribution)
 	local name, realm = strsplit("-", sender, 2);
-	if (realm == NRC.realm) then
+	if (realm == NRC.realm or realm == GetNormalizedRealmName()) then
 		sender = name;
 	end
 	--NRC:debug("received talents update from", sender);
@@ -1133,10 +1149,10 @@ function NRC:receivedTalents(data, sender, distribution)
 end
 
 function NRC:checkMyTalents()
-	if (IsInGroup()) then
+	--if (IsInGroup()) then
 		local me = UnitName("player");
 		NRC.talents[me] = NRC:createTalentString();
-	end
+	--end
 end
 
 function NRC:sendGlyphs(sender)
@@ -1150,7 +1166,7 @@ function NRC:sendGlyphs(sender)
 	local data = NRC.serializer:Serialize(glyphs);
 	if (sender) then
 		local name, realm = strsplit("-", sender, 2);
-		if (realm == NRC.realm) then
+		if (realm == NRC.realm or realm == GetNormalizedRealmName()) then
 			sender = name;
 		end
 		NRC:sendComm("WHISPER", "glyrec " .. NRC.version .. " " .. data, sender);
@@ -1163,7 +1179,7 @@ end
 
 function NRC:receivedGlyphs(data, sender, distribution, isWhisper)
 	local name, realm = strsplit("-", sender, 2);
-	if (realm == NRC.realm) then
+	if (realm == NRC.realm or realm == GetNormalizedRealmName()) then
 		sender = name;
 	end
 	NRC:debug("received glyphs update from", sender);
@@ -1174,7 +1190,7 @@ function NRC:receivedGlyphs(data, sender, distribution, isWhisper)
 	end
 	NRC.glyphs[sender] = raidData;
 	if (isWhisper) then
-		local data = NRC:createGlyphDataFromString(NRC.glyphs[name]);
+		local data = NRC:createGlyphDataFromString(NRC.glyphs[sender]);
 		--This is only used for inspect, if that ever changes then always supplying NRCInspectTalentFrame will error.
 		NRC:updateGlyphFrame(data, NRCInspectTalentFrame, sender);
 	end
@@ -1260,7 +1276,7 @@ end
 --If it comes included with other data in NRC:receivedData() then it's already deserialized.
 function NRC:receivedRaidData(data, sender, distribution, alreadyDeserialized)
 	local name, realm = strsplit("-", sender, 2);
-	if (realm == NRC.realm) then
+	if (realm == NRC.realm or realm == GetNormalizedRealmName()) then
 		sender = name;
 	end
 	--NRC:debug("received raid update from", sender);

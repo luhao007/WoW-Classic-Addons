@@ -86,16 +86,22 @@ end
 --
 local tBorder;
 function VUHDO_barBorderBouquetCallback(aUnit, anIsActive, anIcon, aTimer, aCounter, aDuration, aColor, aBuffName, aBouquetName, anImpact)
+
 	for _, tButton in pairs(VUHDO_getUnitButtonsSafe(aUnit)) do
-		if aColor then
-			tBorder = VUHDO_getPlayerTargetFrame(tButton);
-			tBorder:SetFrameLevel(tButton:GetFrameLevel() + (anImpact or 0) + 2);
-			tBorder:SetBackdropBorderColor(VUHDO_backColor(aColor));
-			tBorder:Show();
-		else
-			VUHDO_getPlayerTargetFrame(tButton):Hide();
+		if VUHDO_INDICATOR_CONFIG[VUHDO_BUTTON_CACHE[tButton]]["BOUQUETS"]["BAR_BORDER"] == aBouquetName then
+			if aColor then
+				tBorder = VUHDO_getPlayerTargetFrame(tButton);
+
+				tBorder:SetFrameLevel(tButton:GetFrameLevel() + (anImpact or 0) + 2);
+				tBorder:SetBackdropBorderColor(VUHDO_backColorWithFallback(aColor));
+
+				tBorder:Show();
+			else
+				VUHDO_getPlayerTargetFrame(tButton):Hide();
+			end
 		end
 	end
+
 end
 
 

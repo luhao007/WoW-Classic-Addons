@@ -1,8 +1,11 @@
 local mod	= DBM:NewMod(616, "DBM-Party-WotLK", 14, 280)
 local L		= mod:GetLocalizedStrings()
 
+if not mod:IsClassic() then
+	mod.statTypes = "normal,heroic,timewalker"
+end
 
-mod:SetRevision("20220724021612")
+mod:SetRevision("20240428124541")
 mod:SetCreatureID(36502)
 mod:SetEncounterID(2007)
 
@@ -25,7 +28,7 @@ local specwarnPhantomBlast		= mod:NewSpecialWarningInterrupt(68982, "HasInterrup
 local timerMirroredSoul			= mod:NewTargetTimer(8, 69051, nil, nil, nil, 3)
 local timerUnleashedSouls		= mod:NewBuffActiveTimer(5, 68939, nil, nil, nil, 2)
 
-mod:AddSetIconOption("SetIconOnMirroredTarget", 69051, false, false, {8})
+mod:AddSetIconOption("SetIconOnMirroredTarget", 69051, false, 0, {8})
 
 function mod:SPELL_CAST_START(args)
 	if args.spellId == 68982 and self:CheckInterruptFilter(args.sourceGUID, false, true) then						-- Phantom Blast

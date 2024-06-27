@@ -1,6 +1,6 @@
 ﻿-- Pawn by Vger-Azjol-Nerub
 -- www.vgermods.com
--- © 2006-2023 Travis Spomer.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
+-- © 2006-2024 Travis Spomer.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
 -- See Readme.htm for more information.
 
 --
@@ -282,6 +282,7 @@ For more information on customizing Pawn, please see the help file (Readme.htm) 
 		["Crit"] = "^%+?# Critical [Ss]trike%.?$",
 		["Crit2"] = "^UNUSED$",
 		["CritPercent"] = "^Equip: Improves your chance to get a critical strike by #%%%.$",
+		["CritPercentCombined"] = "^Equip: Improves your chance to get a critical strike with all spells and attacks by #%%%.$",
 		["CritRating"] = "^Equip: Increases your critical strike rating by #%.$",
 		["CritRating2"] = "^Equip: Improves critical strike rating by #%.$",
 		["CritRating3"] = "^UNUSED$",
@@ -348,6 +349,7 @@ For more information on customizing Pawn, please see the help file (Readme.htm) 
 		["HeroicWarforged"] = "^Heroic Warforged$",
 		["Hit"] = "^Equip: Improves your chance to hit by #%%%.$",
 		["Hit2"] = "^UNUSED$",
+		["HitPercentCombined"] = "^Equip: Improves your chance to hit with all spells and attacks by #%%%.$",
 		["HitRating"] = "^Equip: Improves hit rating by #%.$",
 		["HitRating2"] = "^Equip: Increases your hit rating by #%.$",
 		["HitRating3"] = "^UNUSED$",
@@ -686,8 +688,6 @@ Shortcut: Shift+click a scale]=],
 		["ValuesDoNotShowUpgradesFor1H"] = "Don't show upgrades for 1H items",
 		["ValuesDoNotShowUpgradesFor2H"] = "Don't show upgrades for 2H items",
 		["ValuesDoNotShowUpgradesTooltip"] = "Enable this option to hide upgrades of this type of item.  For example, even though paladin tanks can use two-handed weapons, a two-handed weapon is never an \"upgrade\" for a paladin tanking set, so Pawn should not show upgrade notifications for them.  Similarly, retribution paladins can use one-handed weapons, but they are never upgrades.",
-		["ValuesFollowSpecialization"] = "Only show upgrades for my best armor type after level %d",
-		["ValuesFollowSpecializationTooltip"] = "Enable this option to hide upgrades for armor that your class does not specialize in after level %d.  For example, at level %d holy paladins learn Plate Specialization, which increases their intellect by 5%% when wearing only plate armor.  When this option is chosen Pawn will never consider cloth, leather, or mail to be upgrades for level %d+ holy paladins.",
 		["ValuesHeader"] = "Stat weights for %s",
 		["ValuesIgnoreItemType"] = "These items are unusable",
 		["ValuesIgnoreStat"] = "Items with this are unusable",

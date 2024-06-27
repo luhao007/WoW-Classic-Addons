@@ -4,10 +4,10 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local Shopping = TSM.Operations:NewPackage("Shopping")
-local private = {}
 local L = TSM.Include("Locale").GetTable()
+local Table = TSM.Include("Util.Table")
 local CustomPrice = TSM.Include("Service.CustomPrice")
 local BagTracking = TSM.Include("Service.BagTracking")
 local GuildTracking = TSM.Include("Service.GuildTracking")
@@ -15,6 +15,10 @@ local MailTracking = TSM.Include("Service.MailTracking")
 local AltTracking = TSM.Include("Service.AltTracking")
 local AuctionTracking = TSM.Include("Service.AuctionTracking")
 local Settings = TSM.Include("Service.Settings")
+local private = {
+	settings = nil,
+	connectedCharacterCache = {},
+}
 local OPERATION_INFO = {
 	restockQuantity = { type = "string", default = "0" },
 	maxPrice = { type = "string", default = "dbmarket" },
@@ -31,6 +35,8 @@ local MAX_RESTOCK_VALUE = 50000
 -- ============================================================================
 
 function Shopping.OnInitialize()
+	private.settings = Settings.NewView()
+		:AddKey("global", "coreOptions", "regionWide")
 	TSM.Operations.Register("Shopping", L["Shopping"], OPERATION_INFO, 1, private.GetOperationInfo)
 end
 
@@ -69,7 +75,7 @@ function Shopping.IsFiltered(itemString, itemBuyout)
 	return false
 end
 
-function Shopping.ValidAndGetRestockQuantity(itemString)
+function Shopping.ValidateAndGetRestockQuantity(itemString)
 	local operationSettings = private.GetOperationSettings(itemString)
 	if not operationSettings then
 		return false, nil
@@ -86,33 +92,7 @@ function Shopping.ValidAndGetRestockQuantity(itemString)
 		return false, format(L["Your restock quantity is invalid. It must be between %d and %s."], MIN_RESTOCK_VALUE, MAX_RESTOCK_VALUE)
 	end
 	if restockQuantity > 0 then
-		-- include mail and bags
-		local numHave = MailTracking.GetQuantity(itemString)
-		if operationSettings.restockSources.bank then
-			numHave = numHave + BagTracking.GetTotalQuantity(itemString)
-		else
-			numHave = numHave + BagTracking.GetBagQuantity(itemString)
-		end
-		if operationSettings.restockSources.guild then
-			numHave = numHave + GuildTracking.GetQuantity(itemString)
-		end
-		if operationSettings.restockSources.alts or operationSettings.restockSources.auctions then
-			local numAuctions = AuctionTracking.GetQuantity(itemString)
-			local numAlts = 0
-			for _, factionrealm, character in Settings.ConnectedFactionrealmAltCharacterIterator() do
-				numAlts = numAlts + AltTracking.GetBagQuantity(itemString, character, factionrealm)
-				numAlts = numAlts + AltTracking.GetBankQuantity(itemString, character, factionrealm)
-				numAlts = numAlts + AltTracking.GetReagentBankQuantity(itemString, character, factionrealm)
-				numAlts = numAlts + AltTracking.GetMailQuantity(itemString, character, factionrealm)
-				numAuctions = numAuctions + AltTracking.GetAuctionQuantity(itemString, character, factionrealm)
-			end
-			if operationSettings.restockSources.alts then
-				numHave = numHave + numAlts
-			end
-			if operationSettings.restockSources.auctions then
-				numHave = numHave + numAuctions
-			end
-		end
+		local numHave = private.GetInventoryNum(itemString, operationSettings)
 		if numHave >= restockQuantity then
 			return false, nil
 		end
@@ -146,4 +126,49 @@ function private.GetOperationSettings(itemString)
 		return
 	end
 	return operationSettings
+end
+
+function private.GetInventoryNum(itemString, operationSettings)
+	-- Check the total inventory as an optimization
+	if (CustomPrice.GetSourcePrice(itemString, "NumInventory") or 0) == 0 then
+		return 0
+	end
+
+	local numHave = MailTracking.GetQuantity(itemString)
+	if operationSettings.restockSources.bank then
+		numHave = numHave + BagTracking.GetTotalQuantity(itemString)
+	else
+		numHave = numHave + BagTracking.GetBagQuantity(itemString)
+	end
+	if operationSettings.restockSources.guild then
+		numHave = numHave + GuildTracking.GetQuantity(itemString)
+	end
+	if operationSettings.restockSources.alts or operationSettings.restockSources.auctions then
+		local numAuctions = AuctionTracking.GetQuantity(itemString)
+		local numAlts = 0
+		if private.connectedCharacterCache.time ~= GetTime() then
+			wipe(private.connectedCharacterCache)
+			for _, factionrealm, character, _, isConnected in Settings.ConnectedFactionrealmAltCharacterIterator() do
+				if isConnected or private.settings.regionWide then
+					tinsert(private.connectedCharacterCache, factionrealm)
+					tinsert(private.connectedCharacterCache, character)
+				end
+			end
+			private.connectedCharacterCache.time = GetTime()
+		end
+		for _, factionrealm, character in Table.StrideIterator(private.connectedCharacterCache, 2) do
+			numAlts = numAlts + AltTracking.GetBagQuantity(itemString, character, factionrealm)
+			numAlts = numAlts + AltTracking.GetBankQuantity(itemString, character, factionrealm)
+			numAlts = numAlts + AltTracking.GetReagentBankQuantity(itemString, character, factionrealm)
+			numAlts = numAlts + AltTracking.GetMailQuantity(itemString, character, factionrealm)
+			numAuctions = numAuctions + AltTracking.GetAuctionQuantity(itemString, character, factionrealm)
+		end
+		if operationSettings.restockSources.alts then
+			numHave = numHave + numAlts
+		end
+		if operationSettings.restockSources.auctions then
+			numHave = numHave + numAuctions
+		end
+	end
+	return numHave
 end

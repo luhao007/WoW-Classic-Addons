@@ -194,12 +194,17 @@ function NRC:createListFrame(name, width, height, x, y, desc, isSubFrame, label)
 		lineFrame.borderFrame:SetPoint("TOP", 0, borderSpacing);
 		lineFrame.borderFrame:SetPoint("BOTTOM", 0, -borderSpacing);
 		lineFrame.borderFrame:SetPoint("LEFT", -borderSpacing, 0);
-		lineFrame.borderFrame:SetPoint("RIGHT", borderSpacing, 0);
+		if (frame.isSubFrame) then
+			--If this is a tooltip subframe then the border will be different and not fit quite right, push it to the right a little more.
+			lineFrame.borderFrame:SetPoint("RIGHT", borderSpacing + 2, 0);
+		else
+			lineFrame.borderFrame:SetPoint("RIGHT", borderSpacing, 0);
+		end
 		lineFrame.borderFrame:SetBackdrop({
 			edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
 			tileEdge = true,
 			edgeSize = 16,
-			insets = {top = 2, left = 2, bottom = 2, right = 2},
+			insets = {top = 2, left = 2, bottom = 2, right = 0},
 		});
 		--lineFrame.borderFrame:Hide();
 		lineFrame.count = count;
@@ -220,7 +225,7 @@ function NRC:createListFrame(name, width, height, x, y, desc, isSubFrame, label)
 		lineFrame.fs:SetPoint("LEFT", parent.lineFrameHeight + 2, 0);
 		--lineFrame.fs:SetFont(NRC.regionFont, parent.lineFrameHeight - 8);
 		lineFrame.fs:SetJustifyH("LEFT");
-		lineFrame.fs2 = lineFrame:CreateFontString(parent:GetName().. "LineFrameFS2", "ARTWORK");
+		lineFrame.fs2 = lineFrame:CreateFontString(parent:GetName().. "LineFrameFS2", "OVERLAY"); --Overlay so it overlaps the left text.
 		lineFrame.fs2:SetPoint("RIGHT", -2, 0);
 		--lineFrame.fs2:SetFont(NRC.regionFont, parent.lineFrameHeight - 9);
 		--lineFrame.fs2:SetFont("Fonts\\FRIZQT__.TTF", parent.lineFrameHeight - 7);
@@ -347,9 +352,9 @@ function NRC:createListFrame(name, width, height, x, y, desc, isSubFrame, label)
 			v:ClearAllPoints();
 		end
 	end
+	frame.padding = 0;
 	frame.sortLineFrames = function(parent)
-		local heightOffset = 0;
-		local spacing = 0;
+		local padding = frame.padding;
 		local growDown = (frame.growthDirection == 1);
 		local lastFrame;
 		for k, v in ipairs(frame.lineFrames) do
@@ -359,13 +364,13 @@ function NRC:createListFrame(name, width, height, x, y, desc, isSubFrame, label)
 					if (k == 1) then
 						v:SetPoint("TOPLEFT");
 					else
-						v:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT");
+						v:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 0, -padding);
 					end
 				else
 					if (k == 1) then
 						v:SetPoint("BOTTOMLEFT");
 					else
-						v:SetPoint("BOTTOMLEFT", lastFrame, "TOPLEFT");
+						v:SetPoint("BOTTOMLEFT", lastFrame, "TOPLEFT", 0, padding);
 					end
 				end
 				v:SetPoint("RIGHT");
@@ -439,8 +444,11 @@ function NRC:createListFrame(name, width, height, x, y, desc, isSubFrame, label)
 	frame.displayTab.top:SetBackdropBorderColor(1, 1, 1, 0.8);
 	frame.displayTab.top:SetFrameStrata("HIGH");
 	frame.displayTab.top.fs = frame.displayTab.top:CreateFontString("$parentFS", "ARTWORK");
-	frame.displayTab.top.fs:SetPoint("CENTER", 0, 1);
+	frame.displayTab.top.fs:SetPoint("TOP", frame.displayTab.top, "TOP", 0, -2);
 	frame.displayTab.top.fs:SetFont(NRC.regionFont, 12);
+	frame.displayTab.top.fs2 = frame.displayTab.top:CreateFontString("$parentFS", "ARTWORK");
+	frame.displayTab.top.fs2:SetPoint("BOTTOMLEFT", frame.displayTab.top, "BOTTOMLEFT", 8, 4);
+	frame.displayTab.top.fs2:SetFont(NRC.regionFont, 12);
 	frame.displayTab.top:SetMovable(true);
 	frame.displayTab.top:EnableMouse(true);
 	frame.displayTab.top:SetUserPlaced(false);
@@ -453,6 +461,17 @@ function NRC:createListFrame(name, width, height, x, y, desc, isSubFrame, label)
 	frame.displayTab.top:SetScript("OnHide", function(self)
 		frame.OnHideFunc(frame);
 	end)
+	frame.displayTab.top.button = CreateFrame("Button", "$parentButton", frame.displayTab.top, "UIPanelButtonTemplate");
+	frame.displayTab.top.button:SetFrameLevel(15);
+	frame.displayTab.top.button:SetPoint("BOTTOMRIGHT", frame.displayTab.top, "BOTTOMRIGHT", -4, 4);
+	frame.displayTab.top.button:SetWidth(50);
+	frame.displayTab.top.button:SetHeight(14);
+	frame.displayTab.top.button:SetText(L["Lock"]);
+	frame.displayTab.top.button:SetScript("OnClick", function(self, arg)
+		NRC.config.lockAllFrames = true;
+		NRC:updateFrameLocks(true);
+	end)
+	frame.displayTab.top.button:SetScale(0.84);
 	frame.displayTab:Hide();
 	frame.displayTab.top:Hide();
 	--frame.displayTab.fs:SetJustifyH("LEFT");
@@ -616,12 +635,12 @@ function NRC:styleTimerBar(bar, duration, maxDuration, name, height, guid, test)
 	bar.nameString = name;
 	if (not bar.texture) then
 		bar.texture = bar:CreateTexture(nil, "ARTWORK");
-		bar.texture:SetTexture("Interface\\Icons\\spell_shadow_soulgem");
 		bar.texture:SetPoint("LEFT", bar, "RIGHT", 0, 0);
 		bar.texture:SetSize(height - 2, height - 2);
 	end
+	bar.texture:SetTexture("Interface\\Icons\\spell_shadow_soulgem");
 
-	bar.candyBarLabel:SetJustifyH("MIDDLE");
+	bar.candyBarLabel:SetJustifyH("CENTER");
 	--Custom timer text so we can update it at the same time as the rest of the raid cooldown bars
 	--And change the format a little.
 	if (not bar.customTimer) then
@@ -684,12 +703,12 @@ function NRC:styleTimerBar(bar, duration, maxDuration, name, height, guid, test)
 		bar.nameString = name;
 		if (not bar.texture) then
 			bar.texture = bar:CreateTexture(nil, "ARTWORK");
-			bar.texture:SetTexture("Interface\\Icons\\spell_shadow_soulgem");
 			bar.texture:SetPoint("LEFT", bar, "RIGHT", 0, 0);
 			bar.texture:SetSize(height - 2, height - 2);
 		end
+		bar.texture:SetTexture("Interface\\Icons\\spell_shadow_soulgem");
 		
-		bar.candyBarLabel:SetJustifyH("MIDDLE");
+		bar.candyBarLabel:SetJustifyH("CENTER");
 		--Custom timer text so we can update it at the same time as the rest of the raid cooldown bars
 		--And change the format a little.
 		if (not bar.customTimer) then
@@ -751,6 +770,12 @@ function NRC:cleanTimerBar(bar)
 	if (bar.tooltip) then
 		bar.tooltip:Hide();
 	end
+	bar.source = nil;
+	NRC.customGlow.PixelGlow_Stop(bar);
+	--if (bar.isDead) then
+		--NRC.customGlow.PixelGlow_Stop(bar);
+		bar.isDead = nil;
+	--end
 	bar:SetScript("OnEnter", nil)
 	bar:SetScript("OnLeave", nil)
 	bar.candyBarLabel:SetPoint("TOPLEFT", bar.candyBarBar, "TOPLEFT", 2, 0);
@@ -821,9 +846,12 @@ function NRC:createGridFrame(name, width, height, x, y, borderSpacing)
 	frame.descFrame.fs:SetPoint("CENTER", 0, 0);
 	frame.descFrame:Hide();
 	--Click button to be used for whatever, set onclick in the frame data func.
-	frame.button = CreateFrame("Button", name .. "Button", frame, "NRC_EJButtonTemplate");
+	frame.button = CreateFrame("Button", name .. "Button", frame, "NRC_EJButtonTemplate2");
 	frame.button:SetFrameLevel(15);
 	frame.button:Hide();
+	frame.button2 = CreateFrame("Button", name .. "Button2", frame, "NRC_EJButtonTemplate2");
+	frame.button2:SetFrameLevel(15);
+	frame.button2:Hide();
 	--Top right X close button.
 	frame.closeButton = CreateFrame("Button", name .. "Close", frame, "UIPanelCloseButton");
 	frame.closeButton:SetPoint("TOPRIGHT", 3.45, 3.2);
@@ -863,7 +891,6 @@ function NRC:createGridFrame(name, width, height, x, y, borderSpacing)
 	end
 	frame.lastUpdate = 0;
 	frame:SetScript("OnUpdate", function(self)
-		--Update throddle.
 		if (GetTime() - frame.lastUpdate > 1) then
 			frame.lastUpdate = GetTime();
 			if (frame.onUpdateFunction) then
@@ -879,6 +906,8 @@ function NRC:createGridFrame(name, width, height, x, y, borderSpacing)
 	frame.updateGridData = function(data, updateLayout)
 		--Only update the frame layout if the data size has changed (players join/leave group etc).
 		if (updateLayout) then
+			local spacingV = data.spacingV;
+			local spacingH = data.spacingH;
 			local width, height = 0, 0;
 			local lastColumn, lastRow;
 			if (data.columns and next(data.columns)) then
@@ -898,10 +927,14 @@ function NRC:createGridFrame(name, width, height, x, y, borderSpacing)
 						t:SetColorTexture(1, 1, 1, 0.5);
 						t:SetWidth(1);
 						t:ClearAllPoints();
-						t:SetPoint('TOP', frame, 'TOPLEFT', data.firstV + (data.spacingV * (k - 1)), 0);
-						t:SetPoint('BOTTOM', frame, 'BOTTOMLEFT', data.firstV + (data.spacingV * (k - 1)), 0);
+						t:SetPoint('TOP', frame, 'TOPLEFT', data.firstV + (spacingV * (k - 1)), 0);
+						t:SetPoint('BOTTOM', frame, 'BOTTOMLEFT', data.firstV + (spacingV * (k - 1)), 0);
 						t:Show();
-						width = width + data.spacingV;
+						if (v.customWidth) then
+							width = width + v.customWidth;
+						else
+							width = width + spacingV;
+						end
 					end
 				end
 			end
@@ -922,10 +955,10 @@ function NRC:createGridFrame(name, width, height, x, y, borderSpacing)
 						t:SetColorTexture(1, 1, 1, 0.5);
 						t:SetHeight(1);
 						t:ClearAllPoints();
-						t:SetPoint('LEFT', frame, 'TOPLEFT', 0, -(data.firstH + (data.spacingH * (k - 1))));
-						t:SetPoint('RIGHT', frame, 'TOPRIGHT', 0, -(data.firstH + (data.spacingH * (k - 1))));
+						t:SetPoint('LEFT', frame, 'TOPLEFT', 0, -(data.firstH + (spacingH * (k - 1))));
+						t:SetPoint('RIGHT', frame, 'TOPRIGHT', 0, -(data.firstH + (spacingH * (k - 1))));
 						t:Show();
-						height = height + data.spacingH;
+						height = height + spacingH;
 					end
 				end
 			elseif (_G[frame:GetName() .. "GridH2"]) then
@@ -974,6 +1007,11 @@ function NRC:createGridFrame(name, width, height, x, y, borderSpacing)
 					columnCount = columnCount + 1;
 				end
 				local gridName = string.char(96 + rowCount) .. columnCount;
+				if (data.columns[columnCount].customWidth) then
+					spacingV = data.columns[columnCount].customWidth;
+				else
+					spacingV = data.spacingV;
+				end
 				--Assign a grid name, a1 a2 a3 etc.
 				if (not frame.subFrames[gridName]) then
 					--The idea was to have frames cliakble to target to buff, but it taints the main frame so it can't be hidden/shown in combat.
@@ -995,12 +1033,23 @@ function NRC:createGridFrame(name, width, height, x, y, borderSpacing)
 					frame.subFrames[gridName].fs:SetJustifyH("LEFT");
 					frame.subFrames[gridName].texture = frame.subFrames[gridName]:CreateTexture(frame:GetName() .. "Texture_" .. gridName, "ARTWORK");
 					frame.subFrames[gridName].texture:SetPoint("CENTER", 0, 0);
-					frame.subFrames[gridName].texture2 = frame.subFrames[gridName]:CreateTexture(frame:GetName() .. "Texture2_" .. gridName, "ARTWORK");
+					--[[frame.subFrames[gridName].texture2 = frame.subFrames[gridName]:CreateTexture(frame:GetName() .. "Texture2_" .. gridName, "ARTWORK");
 					frame.subFrames[gridName].texture2:SetPoint("CENTER", 0, 0);
 					frame.subFrames[gridName].texture3 = frame.subFrames[gridName]:CreateTexture(frame:GetName() .. "Texture3_" .. gridName, "ARTWORK");
 					frame.subFrames[gridName].texture3:SetPoint("CENTER", 0, 0);
 					frame.subFrames[gridName].texture4 = frame.subFrames[gridName]:CreateTexture(frame:GetName() .. "Texture4_" .. gridName, "ARTWORK");
-					frame.subFrames[gridName].texture4:SetPoint("CENTER", 0, 0);
+					frame.subFrames[gridName].texture4:SetPoint("CENTER", 0, 0);]]
+					local textureCount = 4;
+					if (NRC.isClassic) then
+						textureCount = NRC.numWorldBuffs;
+						if (textureCount < 4) then
+							textureCount = 4;
+						end
+					end
+					for i = 2, textureCount do
+						frame.subFrames[gridName]["texture" .. i] = frame.subFrames[gridName]:CreateTexture(frame:GetName() .. "Texture" .. i .. "_" .. gridName, "ARTWORK");
+						frame.subFrames[gridName]["texture" .. i]:SetPoint("CENTER", 0, 0);
+					end
 					if (columnCount == 1) then
 						frame.subFrames[gridName].readyCheckTexture = frame.subFrames[gridName]:CreateTexture(frame:GetName() .. "ReadyCheckTexture_" .. gridName, "ARTWORK");
 						frame.subFrames[gridName].readyCheckTexture:SetPoint("LEFT", frame.subFrames[gridName], "LEFT", 2, 0);
@@ -1071,16 +1120,20 @@ function NRC:createGridFrame(name, width, height, x, y, borderSpacing)
 					end)
 					frame.subFrames[gridName].tooltip:Hide();
 				end
-				local x = data.firstV + (data.spacingV * (columnCount - 1)) - (data.spacingV / 2);
-				local y = -(data.firstH + (data.spacingH * (rowCount - 1)) - (data.spacingH / 2));
-				frame.subFrames[gridName]:SetWidth(data.spacingV);
-				frame.subFrames[gridName]:SetHeight(data.spacingH);
+				local x = data.firstV + (spacingV * (columnCount - 1)) - (spacingV / 2);
+				local y = -(data.firstH + (spacingH * (rowCount - 1)) - (spacingH / 2));
+				frame.subFrames[gridName]:SetWidth(spacingV);
+				frame.subFrames[gridName]:SetHeight(spacingH);
 				if (columnCount == 1) then
 					frame.subFrames[gridName]:SetWidth(data.firstV);
 					x = data.firstV / 2;
 					if (not frame.readyCheckRunnig) then
 						frame.subFrames[gridName].fs:SetPoint("LEFT", 5, 0);
 					end
+				--elseif (data.columns[columnCount].customWidth) then
+					--frame.subFrames[gridName]:SetWidth(data.columns[columnCount].customWidth);
+					--width = width + spacingV + (data.columns[columnCount].customWidth - spacingV);
+					--x = data.columns[columnCount].customWidth / 2;
 				end
 				if (rowCount == 1) then
 					frame.subFrames[gridName]:SetHeight(data.firstH);
@@ -1102,9 +1155,19 @@ function NRC:createGridFrame(name, width, height, x, y, borderSpacing)
 					end
 				end
 				frame.subFrames[gridName]:ClearAllPoints();
+				if (data.columns[columnCount].customWidth) then
+					--Get half way point of column to attach texture frames to.
+					x = (width - data.columns[columnCount].customWidth) + (data.columns[columnCount].customWidth / 2);
+				end
 				frame.subFrames[gridName]:SetPoint("CENTER", frame, "TOPLEFT", x, y);
 				--frame.subFrames[gridName].fs:SetText(string.upper(gridName));
 				frame.subFrames[gridName]:Show();
+				--[[if (data.columns[columnCount].customWidth) then
+					frame.subFrames[gridName]:SetWidth(data.columns[columnCount].customWidth);
+					width = width + spacingV + (data.columns[columnCount].customWidth - spacingV);
+				elseif (columnCount ~= 1) then
+					frame.subFrames[gridName]:SetWidth(spacingV);
+				end]]
 			end
 			if (data.adjustWidth) then
 				--Adjust width to fit columns.
@@ -1328,11 +1391,11 @@ function NRC:createSimpleScrollFrame(name, width, height, x, y, notSpecialFrames
 	frame.scrollChild.fs = frame.scrollChild:CreateFontString(name .. "FS", "ARTWORK");
 	frame.scrollChild.fs:SetPoint("TOP", 0, -0);
 	--The main display string.
-	frame.scrollChild.fs2 = frame.scrollChild:CreateFontString(name .. "FS", "ARTWORK");
+	frame.scrollChild.fs2 = frame.scrollChild:CreateFontString(name .. "FS2", "ARTWORK");
 	frame.scrollChild.fs2:SetPoint("TOPLEFT", 10, -24);
 	frame.scrollChild.fs2:SetJustifyH("LEFT");
 	--Bottom string.
-	frame.scrollChild.fs3 = frame.scrollChild:CreateFontString(name .. "FS", "ARTWORK");
+	frame.scrollChild.fs3 = frame.scrollChild:CreateFontString(name .. "FS3", "ARTWORK");
 	frame.scrollChild.fs3:SetPoint("BOTTOM", 0, -20);
 	--frame.scrollChild.fs3:SetFont(NRC.regionFont, 14);
 	--Top right X close button.
@@ -1353,7 +1416,7 @@ end
 
 --Simple frame, just using fontstrings and not seperate frames for each line, no hover over tooltips etc.
 function NRC:createSimpleInputScrollFrame(name, width, height, x, y, notSpecialFrames)
-	local frame = CreateFrame("ScrollFrame", name, UIParent, "BackdropTemplate,InputScrollFrameTemplate");
+	local frame = CreateFrame("ScrollFrame", name, UIParent, "BackdropTemplate,NRC_InputScrollFrameTemplate");
 	--[[frame:SetBackdrop({
 		bgFile = "Interface\\Buttons\\WHITE8x8",
 		insets = {top = 4, left = 4, bottom = 4, right = 4},
@@ -1452,7 +1515,11 @@ function NRC:createMainFrame(name, width, height, x, y, tabs)
 	frame.titleText3:SetPoint("TOP", 0, -30);
 	frame.titleText3:SetFontObject(QuestFont_Super_Huge);
 	--Back button.
-	frame.backButton = CreateFrame("Button", "$parentBackButton", frame, "UIPanelButtonTemplate");
+	if (NRC.isRetail) then
+		frame.backButton = CreateFrame("Button", "$parentBackButton", frame.TitleContainer, "UIPanelButtonTemplate");
+	else
+		frame.backButton = CreateFrame("Button", "$parentBackButton", frame, "UIPanelButtonTemplate");
+	end
 	frame.backButton:SetPoint("TOPLEFT", 55.5, -0.5);
 	frame.backButton:SetSize(100, 20);
 	frame.backButton:SetText("<- Back");
@@ -2022,7 +2089,7 @@ function NRC:createMainFrame(name, width, height, x, y, tabs)
 		obj.fs2:SetPoint("RIGHT", 0, 0);
 		obj.fs2:SetJustifyH("LEFT");
 		obj.borderFrame:Show();
-		obj:updateTooltip();
+		obj.updateTooltip();
 		obj:SetScript("OnClick", nil);
 		frame.updateSimpleLineFrameHyperlinkHandling(obj);
 		return obj;
@@ -2089,7 +2156,6 @@ function NRC:createMainFrame(name, width, height, x, y, tabs)
 			obj.tooltip.fs:SetJustifyH("LEFT");
 			obj.updateTooltip = function(text)
 				if (text and type(text) == "string") then
-					NRC:debug(text)
 					obj.tooltip.fs:SetText(text);
 					obj.tooltip:SetWidth(obj.tooltip.fs:GetStringWidth() + 18);
 					obj.tooltip:SetHeight(obj.tooltip.fs:GetStringHeight() + 12);
@@ -2271,7 +2337,12 @@ function NRC:createMainFrame(name, width, height, x, y, tabs)
 	frame.createTab = function(count)
 		--If a tab is ever created out of numeric order this will error.
 		if (not frame.Tabs[count]) then
-			local obj = CreateFrame("Button", frame.scrollFrame:GetName() .. "Tab" .. count, frame.scrollFrame, "TabButtonTemplate");
+			local obj
+			if (NRC.isRetail) then
+				obj = CreateFrame("Button", frame.scrollFrame:GetName() .. "Tab" .. count, frame.scrollFrame, "PanelTabButtonTemplate");
+			else
+				obj = CreateFrame("Button", frame.scrollFrame:GetName() .. "Tab" .. count, frame.scrollFrame, "TabButtonTemplate");
+			end
 			obj.count = count;
 			frame.Tabs[count] = obj;
 			PanelTemplates_TabResize(obj, 35);
@@ -2505,7 +2576,7 @@ function NRC:createTalentFrame(name, width, height, x, y, borderSpacing)
 		insets = {top = 2, left = 2, bottom = 2, right = 2},
 	});
 	frame.adjustBackground = function(frame, width, height)
-		--Most of this function was taken from Talented to fit the background art to the frrame.
+		--Most of this function was taken from Talented to fit the background art to the frame.
 		local width = frame:GetWidth();
 		local height = frame:GetHeight();
 		local texture_height = height / (256+75);
@@ -2524,11 +2595,12 @@ function NRC:createTalentFrame(name, width, height, x, y, borderSpacing)
 		frame.trees[i] = CreateFrame("Frame", "$parentTree" .. i, frame, "BackdropTemplate");
 		frame.trees[i]:SetBackdrop({
 			edgeFile = "Interface\\Addons\\NovaRaidCompanion\\Media\\UI-Tooltip-Border-FullTopRight",
+			--edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
 			tileEdge = true,
 			edgeSize = 16,
 			insets = {top = 2, left = 2, bottom = 2, right = 2},
 		});
-		frame.trees[i].topLeft = frame.trees[i]:CreateTexture(nil, "OVERLAY");
+		frame.trees[i].topLeft = frame.trees[i]:CreateTexture(nil, "BACKGROUND");
 		frame.trees[i].topLeft:SetPoint("TOPLEFT");
 		frame.trees[i].topLeft:SetSize(300, 600);
 		frame.trees[i].topRight = frame.trees[i]:CreateTexture(nil, "BACKGROUND");
@@ -2537,10 +2609,10 @@ function NRC:createTalentFrame(name, width, height, x, y, borderSpacing)
 		frame.trees[i].bottomLeft:SetPoint("TOPLEFT", frame.trees[i].topLeft, "BOTTOMLEFT");
 		frame.trees[i].bottomRight = frame.trees[i]:CreateTexture(nil, "BACKGROUND");
 		frame.trees[i].bottomRight:SetPoint("TOPLEFT", frame.trees[i].topLeft, "BOTTOMRIGHT");
-		frame.trees[i].fs = frame.trees[i]:CreateFontString("$parentFS", "ARTWORK");
+		frame.trees[i].fs = frame.trees[i]:CreateFontString("$parentFS", "OVERLAY");
 		frame.trees[i].fs:SetPoint("TOP", 0, -20);
 		frame.trees[i].fs:SetFontObject(Game11Font);
-		frame.trees[i].titleTexture = frame.trees[i]:CreateTexture(nil, nil);
+		frame.trees[i].titleTexture = frame.trees[i]:CreateTexture(nil, "OVERLAY");
 		frame.trees[i].titleTexture:SetSize(16, 16);
 		frame.trees[i].titleTexture:SetPoint("RIGHT", frame.trees[i].fs, "LEFT", -5, -1.5);
 	end
@@ -2560,9 +2632,52 @@ function NRC:createTalentFrame(name, width, height, x, y, borderSpacing)
 		--Our wrath talent frame also has a bit more height.
 		offsetY = height * 0.0828;
 	end
+	if (NRC.isClassic) then
+		offsetY = height * 0.115;
+	end
+	if (NRC.isCata) then
+		offsetY = height * 0.120;
+	end
 	frame.setClass = function(class, classID)
 		local offset = 24;
 		local talentData = NRC:getTalentData(class);
+		
+		--talentData from our local DB should be in order but incase in furutre expansions it's not for some reason becaus of exporter problems this sorts them.
+		--Funcs taken from my talent exporter addon.
+		--This was commented out after re-exported cata data in the correct order for local db.
+		--[[local rows = {};
+		for tab, tabData in ipairs(talentData) do
+			--Create tables with row/column for each talent in order.
+			if (not rows[tab]) then
+				rows[tab] = {};
+			end
+			for _, talent in ipairs(tabData.talents) do
+				if (not rows[tab][talent.info.row]) then
+					rows[tab][talent.info.row] = {};
+				end
+				rows[tab][talent.info.row][talent.info.column] = talent.info.name;
+			end
+		end
+		--Iterate the row/colum data in order for each tree and re-assign the wowTreeIndex number.
+		for tab, tabData in ipairs(rows) do
+			local count = 0;
+			for row, rowData in ipairs(tabData) do
+				for column, talentName in pairs(rowData) do
+					count = count + 1;
+					--Find the correct talent name and insert the index, should work fine as talent names are always unique (I hope).
+					for k, v in ipairs(talentData[tab].talents) do
+						if (v.info.name == talentName) then
+							v.info.wowTreeIndex = count;
+						end
+					end
+				end
+			end
+		end
+		for tab, tabData in ipairs(talentData) do
+			table.sort(tabData.talents, function(a, b) return a.info.wowTreeIndex < b.info.wowTreeIndex end);
+		end]]
+		
+		
 		frame.hideAllTalentFrames();
 		if (talentData) then
 			for tree, treeData in ipairs(talentData) do
@@ -2619,7 +2734,11 @@ function NRC:createTalentFrame(name, width, height, x, y, borderSpacing)
 							end
 						end
 						GameTooltip:AddLine("Rank " .. currentRank .. "/" .. talentFrame.maxRank, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-						if (NRC.isTBC or NRC.isClassic) then
+						--For MoP later: Patch 5.0.4 (2012-08-28): Arguments changed; talent tabs no longer exist. 
+						if (NRC.expansionNum > 2 and not talentFrame.talentRankSpellIds) then
+							--This doesn't continue on load and requires 2 mouseovers?
+							GameTooltip:SetTalent(tree, talentData.info.wowTreeIndex);
+						elseif (NRC.isTBC or NRC.isClassic) then
 							if (talentFrame.tooltip) then
 								if (talentFrame.tooltipValues and talentFrame.tooltipValues[tooltipRank]) then
 									local text = string.format(talentFrame.tooltip, unpack(talentFrame.tooltipValues[tooltipRank]));
@@ -2692,7 +2811,7 @@ function NRC:createTalentFrame(name, width, height, x, y, borderSpacing)
 			talentFrame.highlightTexture:SetTexture("Interface\\Buttons\\ButtonHilight-Square");
 			talentFrame.highlightTexture:SetBlendMode("ADD");
 			talentFrame.highlightTexture:SetAllPoints();
-			talentFrame:SetHighlightTexture(frame.highlightTexture);
+			talentFrame:SetHighlightTexture(talentFrame.highlightTexture);
 			
 			talentFrame.outerTexture = talentFrame:CreateTexture(nil, "BACKGROUND");
 			talentFrame.outerTexture:SetTexture("Interface\\Buttons\\UI-EmptySlot-White");
@@ -3380,8 +3499,11 @@ function NRC:createAutoScrollingFrame(name, width, height, x, y, lineFrameHeight
 	frame.displayTab.top:SetBackdropBorderColor(1, 1, 1, 0.8);
 	frame.displayTab.top:SetFrameStrata("HIGH");
 	frame.displayTab.top.fs = frame.displayTab.top:CreateFontString("$parentFS", "ARTWORK");
-	frame.displayTab.top.fs:SetPoint("CENTER", 0, 1);
+	frame.displayTab.top.fs:SetPoint("TOP", frame.displayTab.top, "TOP", 0, -2);
 	frame.displayTab.top.fs:SetFont(NRC.regionFont, 12);
+	frame.displayTab.top.fs2 = frame.displayTab.top:CreateFontString("$parentFS", "ARTWORK");
+	frame.displayTab.top.fs2:SetPoint("BOTTOMLEFT", frame.displayTab.top, "BOTTOMLEFT", 8, 4);
+	frame.displayTab.top.fs2:SetFont(NRC.regionFont, 12);
 	frame.displayTab.top:SetMovable(true);
 	frame.displayTab.top:EnableMouse(true);
 	frame.displayTab.top:SetUserPlaced(false);
@@ -3394,6 +3516,17 @@ function NRC:createAutoScrollingFrame(name, width, height, x, y, lineFrameHeight
 	frame.displayTab.top:SetScript("OnHide", function(self)
 		frame.OnHideFunc(frame);
 	end)
+	frame.displayTab.top.button = CreateFrame("Button", "$parentButton", frame.displayTab.top, "UIPanelButtonTemplate");
+	frame.displayTab.top.button:SetFrameLevel(15);
+	frame.displayTab.top.button:SetPoint("BOTTOMRIGHT", frame.displayTab.top, "BOTTOMRIGHT", -4, 4);
+	frame.displayTab.top.button:SetWidth(50);
+	frame.displayTab.top.button:SetHeight(14);
+	frame.displayTab.top.button:SetText(L["Lock"]);
+	frame.displayTab.top.button:SetScript("OnClick", function(self, arg)
+		NRC.config.lockAllFrames = true;
+		NRC:updateFrameLocks(true);
+	end)
+	frame.displayTab.top.button:SetScale(0.84);
 	frame.displayTab:Hide();
 	frame.displayTab.top:Hide();
 	NRC.framePool[name] = frame;
@@ -3773,9 +3906,9 @@ function NRC:createRaidDataFrame(name, width, height, x, y)
 			v:ClearAllPoints();
 		end
 	end
+	frame.padding = 0;
 	frame.sortLineFrames = function(parent)
-		local heightOffset = 0;
-		local spacing = 0;
+		local padding = frame.padding;
 		local growDown = (frame.growthDirection == 1);
 		local lastFrame;
 		for k, v in ipairs(frame.lineFrames) do
@@ -3787,7 +3920,7 @@ function NRC:createRaidDataFrame(name, width, height, x, y)
 						frame.background:SetPoint("TOPLEFT", v, "TOPLEFT", -1, 1);
 						frame.background:SetPoint("BOTTOMRIGHT", v, "BOTTOMRIGHT", 1, -1);
 					else
-						v:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 0, -3);
+						v:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 0, -padding);
 						frame.background:SetPoint("BOTTOMRIGHT", v, "BOTTOMRIGHT", 1, -1);
 					end
 				else
@@ -3796,7 +3929,7 @@ function NRC:createRaidDataFrame(name, width, height, x, y)
 						frame.background:SetPoint("BOTTOMRIGHT", v, "BOTTOMRIGHT", 0, 0);
 						frame.background:SetPoint("TOPLEFT", v, "TOPLEFT", 0, 0);
 					else
-						v:SetPoint("BOTTOMLEFT", lastFrame, "TOPLEFT", 0, 3);
+						v:SetPoint("BOTTOMLEFT", lastFrame, "TOPLEFT", 0, padding);
 						frame.background:SetPoint("TOPLEFT", v, "TOPLEFT", 0, 0);
 					end
 				end
@@ -3876,8 +4009,11 @@ function NRC:createRaidDataFrame(name, width, height, x, y)
 	frame.displayTab.top:SetBackdropBorderColor(1, 1, 1, 0.8);
 	frame.displayTab.top:SetFrameStrata("HIGH");
 	frame.displayTab.top.fs = frame.displayTab.top:CreateFontString("$parentFS", "ARTWORK");
-	frame.displayTab.top.fs:SetPoint("CENTER", 0, 1);
+	frame.displayTab.top.fs:SetPoint("TOP", frame.displayTab.top, "TOP", 0, -2);
 	frame.displayTab.top.fs:SetFont(NRC.regionFont, 12);
+	frame.displayTab.top.fs2 = frame.displayTab.top:CreateFontString("$parentFS", "ARTWORK");
+	frame.displayTab.top.fs2:SetPoint("BOTTOMLEFT", frame.displayTab.top, "BOTTOMLEFT", 8, 4);
+	frame.displayTab.top.fs2:SetFont(NRC.regionFont, 12);
 	frame.displayTab.top:SetMovable(true);
 	frame.displayTab.top:EnableMouse(true);
 	frame.displayTab.top:SetUserPlaced(false);
@@ -3890,6 +4026,17 @@ function NRC:createRaidDataFrame(name, width, height, x, y)
 	frame.displayTab.top:SetScript("OnHide", function(self)
 		frame.OnHideFunc(frame);
 	end)
+	frame.displayTab.top.button = CreateFrame("Button", "$parentButton", frame.displayTab.top, "UIPanelButtonTemplate");
+	frame.displayTab.top.button:SetFrameLevel(15);
+	frame.displayTab.top.button:SetPoint("BOTTOMRIGHT", frame.displayTab.top, "BOTTOMRIGHT", -4, 4);
+	frame.displayTab.top.button:SetWidth(50);
+	frame.displayTab.top.button:SetHeight(14);
+	frame.displayTab.top.button:SetText(L["Lock"]);
+	frame.displayTab.top.button:SetScript("OnClick", function(self, arg)
+		NRC.config.lockAllFrames = true;
+		NRC:updateFrameLocks(true);
+	end)
+	frame.displayTab.top.button:SetScale(0.84);
 	frame.displayTab:Hide();
 	frame.displayTab.top:Hide();
 	--frame.displayTab.fs:SetJustifyH("LEFT");
@@ -3913,7 +4060,7 @@ function NRC:createRaidDataFrame(name, width, height, x, y)
 end
 
 function NRC:createExportFrame(name, width, height, x, y, notSpecialFrames)
-	local frame = CreateFrame("ScrollFrame", name, UIParent, "BackdropTemplate,InputScrollFrameTemplate");
+	local frame = CreateFrame("ScrollFrame", name, UIParent, "BackdropTemplate,NRC_InputScrollFrameTemplate");
 	--_G[name .. "Close"]:Hide();
 	frame:SetBackdrop({
 		bgFile = "Interface\\Buttons\\WHITE8x8",
@@ -3925,7 +4072,7 @@ function NRC:createExportFrame(name, width, height, x, y, notSpecialFrames)
 	frame:SetBackdropColor(0, 0, 0, 0.9);
 	--frame:SetBackdropBorderColor(1, 1, 1, 0.7);
 	frame.CharCount:Hide();
-	frame.EditBox:SetFont(NRC.regionFont, 14);
+	frame.EditBox:SetFont(NRC.regionFont, 14, "");
 	frame:SetToplevel(true);
 	frame:SetMovable(true);
 	frame:EnableMouse(true);
@@ -4069,7 +4216,7 @@ function NRC:createExportFrame(name, width, height, x, y, notSpecialFrames)
 end
 
 function NRC:createTradeExportFrame(name, width, height, x, y, notSpecialFrames)
-	local frame = CreateFrame("ScrollFrame", name, UIParent, "BackdropTemplate,InputScrollFrameTemplate");
+	local frame = CreateFrame("ScrollFrame", name, UIParent, "BackdropTemplate,NRC_InputScrollFrameTemplate");
 	--_G[name .. "Close"]:Hide();
 	frame:SetBackdrop({
 		bgFile = "Interface\\Buttons\\WHITE8x8",
@@ -4081,7 +4228,7 @@ function NRC:createTradeExportFrame(name, width, height, x, y, notSpecialFrames)
 	frame:SetBackdropColor(0, 0, 0, 0.9);
 	--frame:SetBackdropBorderColor(1, 1, 1, 0.7);
 	frame.CharCount:Hide();
-	frame.EditBox:SetFont(NRC.regionFont, 14);
+	frame.EditBox:SetFont(NRC.regionFont, 14, "");
 	frame:SetToplevel(true);
 	frame:SetMovable(true);
 	frame:EnableMouse(true);

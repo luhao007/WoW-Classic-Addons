@@ -42,19 +42,18 @@ function RecipeString.Get(spellId, optionalMats, rank, level, quality)
 		assert(not rank and not level)
 		suffix = ":q"..quality
 	end
-	if not optionalMats or not next(optionalMats) then
-		return recipeString..suffix
+	if optionalMats and next(optionalMats) then
+		wipe(private.partsTemp)
+		wipe(private.partsOrderTemp)
+		for slotId, itemId in pairs(optionalMats) do
+			local part = slotId..":"..itemId
+			private.partsOrderTemp[part] = slotId
+			tinsert(private.partsTemp, part)
+		end
+		Table.SortWithValueLookup(private.partsTemp, private.partsOrderTemp)
+		suffix = ":"..table.concat(private.partsTemp, ":")..suffix
 	end
-	wipe(private.partsTemp)
-	wipe(private.partsOrderTemp)
-	for slotId, itemId in pairs(optionalMats) do
-		local part = slotId..":"..itemId
-		private.partsOrderTemp[part] = slotId
-		tinsert(private.partsTemp, part)
-	end
-	Table.SortWithValueLookup(private.partsTemp, private.partsOrderTemp)
-	recipeString = recipeString..":"..table.concat(private.partsTemp, ":")..suffix
-	return recipeString
+	return recipeString..suffix
 end
 
 ---Creates a recipe string from a craft string.
@@ -121,6 +120,15 @@ end
 ---@return boolean
 function RecipeString.HasOptionalMats(recipeString)
 	return private.GetOptionalMatStr(recipeString) ~= ""
+end
+
+---Gets all the optional mats from a recipe string.
+---@param recipeString string The recipe string
+---@param result table<number,number> The table to store the optional materials in (slotId -> itemId table)
+function RecipeString.GetOptionalMats(recipeString, result)
+	for _, slotId, itemId in RecipeString.OptionalMatIterator(recipeString) do
+		result[slotId] = itemId
+	end
 end
 
 ---Returns the optional mat's itemId for the specified slotId.

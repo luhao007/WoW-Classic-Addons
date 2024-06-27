@@ -38,7 +38,7 @@ Prat:AddModuleToLoad(function()
 
   local PL = module.PL
 
-  --[===[@debug@
+  --[==[@debug@
   PL:AddLocale(PRAT_MODULE, "enUS", {
     ["module_name"] = "CustomFilters",
     ["module_desc"] = "Module to support custom filters.",
@@ -85,7 +85,7 @@ Prat:AddModuleToLoad(function()
     chatframesink_name = "Chatframe",
     chatframesink_desc = "Output to a chat window"
   })
-  --@end-debug@]===]
+  --@end-debug@]==]
 
   -- These Localizations are auto-generated. To help with localization
   -- please go to http://www.wowace.com/projects/prat-3-0/localization/
@@ -268,7 +268,7 @@ L = {
 		["Is this pattern enabled for use?"] = "Ist das Muster zur Anwendung aktiviert?",
 		["Match Options"] = "Übereinstimmungsoptionen",
 		["module_desc"] = "Modul zur Unterstützung eigener Filter.",
-		["module_name"] = "CustomFilters",
+		["module_name"] = "Benutzerdefinierte Filter",
 		["Only output the message portion of the chat text, leave out the channel, and playername etc."] = "Gibt nur den Nachrichtenteil des Chat-Textes aus, lässt den Kanal- und Spielernamen usw. weg.",
 		["Outbound"] = "Ausgehend",
 		["Output Channel"] = "Ausgabekanal",
@@ -322,7 +322,7 @@ L = {
 		["Is this pattern enabled for use?"] = "이 패턴을 사용하기 위해 활성화 할까요?",
 		["Match Options"] = "일치 옵션",
 		["module_desc"] = "사용자 설정 필터를 지원하는 모듈입니다.",
-		["module_name"] = "사용자 설정 필터",
+		["module_name"] = "사용자 설정 필터 [CustomFilters]",
 		["Only output the message portion of the chat text, leave out the channel, and playername etc."] = "대화 문자열, 채널 나감, 플레이어 이름 등의 메시지 부분만 출력합니다.",
 		["Outbound"] = "보낸 메시지",
 		["Output Channel"] = "출력 채널",
@@ -706,6 +706,31 @@ end
     return eventTypes
   end
 
+  local function getTypesConfig()
+    local types = getTypes()
+
+    local keys = {}
+    for k in pairs(types) do
+      table.insert(keys, k)
+    end
+    table.sort(keys, function(a, b)
+      return strcmputf8i(types[a], types[b]) < 0
+    end)
+
+    local result = {}
+
+    for index, k in ipairs(keys) do
+      result[k] = {
+        type = "toggle",
+        name = types[k],
+        desc = k,
+        order = index,
+      }
+    end
+
+    return result
+  end
+
   local newmap = {}
   for i, v in ipairs(eventMap) do
     newmap[v] = v
@@ -925,9 +950,10 @@ end
       inchannels = {
         name = PL["inchannels_name"],
         desc = PL["inchannels_desc"],
-        type = "multiselect",
+        type = "group",
+        inline = true,
         order = 110,
-        values = getTypes(),
+        args = getTypesConfig(),
         get = "GetChannelPatternSubValue",
         set = "SetChannelPatternSubValue",
       },
@@ -1041,7 +1067,7 @@ end
         if channelopt == false then return end
         if channelopt == nil and not typeopt then return end
       else
-        if typeopt == false then
+        if not typeopt then
           return
         end
       end
@@ -1301,16 +1327,16 @@ end
     self.db.profile[info[#info - 2]][info[#info - 1]][info[#info]][val] = v
   end
 
-  function module:GetChannelPatternSubValue(info, val)
-    local v = self.db.profile[info[#info - 2]][info[#info - 1]][info[#info]][val]
+  function module:GetChannelPatternSubValue(info)
+    local v = self.db.profile[info[#info - 3]][info[#info - 2]][info[#info - 1]][info[#info]]
 
-    if ChatTypeGroup[val] or v ~= nil then return v end
+    if ChatTypeGroup[info[#info]] or v ~= nil then return v end
 
-    return  self.db.profile[info[#info - 2]][info[#info - 1]][info[#info]]["CHANNEL"]
+    return self.db.profile[info[#info - 3]][info[#info - 2]][info[#info - 1]]["CHANNEL"]
   end
 
-  function module:SetChannelPatternSubValue(info, val, v)
-    self.db.profile[info[#info - 2]][info[#info - 1]][info[#info]][val] = v
+  function module:SetChannelPatternSubValue(info, v)
+    self.db.profile[info[#info - 3]][info[#info - 2]][info[#info - 1]][info[#info]] = v
   end
 
   function module:SetPatternName(info, v)

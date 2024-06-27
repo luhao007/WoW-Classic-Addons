@@ -35,6 +35,7 @@ journal:on("SET_ACTIVE_CAMERA", function(self, activeCamera)
 	end
 
 	function activeCamera:ApplyFromModelSceneCameraInfo(modelSceneCameraInfo, transitionType, modificationType)
+		modelSceneCameraInfo.maxZoomDistance = modelSceneCameraInfo.maxZoomDistance + 6
 
 		local transitionalCameraInfo = self:CalculateTransitionalValues(self.modelSceneCameraInfo, modelSceneCameraInfo, modificationType)
 		self.modelSceneCameraInfo = modelSceneCameraInfo
@@ -54,7 +55,7 @@ journal:on("SET_ACTIVE_CAMERA", function(self, activeCamera)
 
 		if self.xOffset == nil then
 			self.xOffset = 0
-			self.yOffset = 0
+			self.yOffset = 80
 			self.panningXOffset = 0
 			self.panningYOffset = self.yOffset
 			self:setMaxOffsets()
@@ -260,6 +261,6 @@ journal:on("SET_ACTIVE_CAMERA", function(self, activeCamera)
 		self:SetRoll(self.modelSceneCameraInfo.roll)
 		self:SetZoomDistance(self.modelSceneCameraInfo.zoomDistance)
 		self.xOffset = 0
-		self.yOffset = 0
+		self.yOffset = 80
 	end
 end)

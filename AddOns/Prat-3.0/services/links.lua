@@ -99,9 +99,8 @@ do
     for i, reg_link in ipairs(LinkRegistry) do
       if reg_link.linkid == link:sub(1, (reg_link.linkid):len()) then
         local frame
-		
-        for name,v in pairs(HookedFrames) do
-          if v:IsMouseOver() and ((v.isDocked and v:IsShown()) or not v.isDocked) and v.name ~= "Voice" then
+        for _,v in pairs(HookedFrames) do
+          if v:IsMouseOver() and v:IsVisible() then
             frame = v
             break
           end

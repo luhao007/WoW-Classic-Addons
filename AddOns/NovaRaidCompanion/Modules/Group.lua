@@ -19,6 +19,7 @@ local pairs = pairs;
 local GetNormalizedRealmName = GetNormalizedRealmName;
 local tinsert = tinsert;
 local cachedGetNormalizedRealmName;
+local lastGroupJoin = 0;
 
 function NRC:updateGroupCache()
 	local group = {};
@@ -201,6 +202,7 @@ function NRC:groupMemberLeft(name, data)
 	--print(name, "left group")
 	--NRC.cooldownList[data.guid] = nil;
 	NRC.auraCache[data.guid] = nil;
+	NRC.chronoCache[data.guid] = nil;
 	NRC.durability[name] = nil;
 	NRC:removeRaidManaChar(name);
 	NRC:removeFromManaCache(name);
@@ -223,6 +225,9 @@ function NRC:groupMemberLeft(name, data)
 end
 
 function NRC:groupMemberOnline(name, data)
+	if (GetTime() - lastGroupJoin < 1) then
+		return;
+	end
 	--print(name, "came online")
 	NRC:updateSoulstoneDurations();
 	if (NRC.config.sreOnlineStatus) then
@@ -231,6 +236,9 @@ function NRC:groupMemberOnline(name, data)
 end
 
 function NRC:groupMemberOffline(name, data)
+	if (GetTime() - lastGroupJoin < 1) then
+		return;
+	end
 	--print(name, "went offline")
 	if (NRC.config.sreOnlineStatus) then
 		NRC:sreOnlineStatusEvent(name, data.class);
@@ -575,6 +583,9 @@ function NRC:loadInspectQueue()
 end
 
 function NRC:startInspectQueue()
+	if (NRC.isRetail) then
+		return;
+	end
 	if (not queueRunning) then
 		--NRC:debug("starting inspect queue");
 		queueRunning = true;
@@ -686,6 +697,9 @@ end
 --end
 
 function NRC:createTalentStringFromInspect(guid)
+	if (NRC.isRetail) then
+		return "1-0-0-0";
+	end
 	local talentString, talentString2;
 	local unit = NRC:getUnitFromGUID(guid);
 	local _, class = GetPlayerInfoByGUID(guid);
@@ -704,7 +718,8 @@ function NRC:createTalentStringFromInspect(guid)
 	if (not classID) then
 		return;
 	end
-	if (NRC.isWrath) then
+	--Seems all 3 clients are using the new out of order system now.
+	--if (NRC.isWrath or NRC.isTBC or NRC.isClassic) then
 		if (unit or classID) then
 			local data = {
 				classID = classID,
@@ -755,7 +770,7 @@ function NRC:createTalentStringFromInspect(guid)
 		--if (talentString and not strfind(talentString, "0%-0%-0")) then
 			return talentString, talentString2;
 		--end
-	else
+	--[[else
 		if (unit or classID) then
 			--Number of talents varies by class, but if we get a rough num for this expansion and add 20 it should cover it.
 			--We stop iteration when we reach nil (end of talent tree) anyway.
@@ -788,7 +803,7 @@ function NRC:createTalentStringFromInspect(guid)
 		--if (talentString and not strfind(talentString, "0%-0%-0")) then
 			return talentString;
 		--end
-	end
+	end]]
 end
 
 local inspectTalentsCheckBox, inspectTalentsFrame;
@@ -836,7 +851,17 @@ local function openInspectTalentsFrame()
 		if (realm and realm ~= "" and realm ~= NRC.realm) then
 			name = name .. "-" .. realm;
 		end
-		NRC:sendComm("WHISPER", "glyreq " .. NRC.version, name);
+		if (NRC.expansionNum > 2) then
+			local isEnemy;
+			local targetName = UnitName("target");
+			if (name == targetName) then
+				--Current target should always be the inspect target if hostile since they can't be raid frames to click on etc.
+				isEnemy = UnitIsEnemy("player", "target");
+			end
+			if (not isEnemy) then
+				NRC:sendComm("WHISPER", "glyreq " .. NRC.version, name);
+			end
+		end
 	end
 end
 
@@ -883,15 +908,24 @@ function NRC:hookTalentsFrame()
 		end
 	end)
 	--Move checkbox depending on which tab is shown.
-	InspectPaperDollFrame:HookScript("OnShow", function(self)
-		inspectTalentsCheckBox:SetPoint("TOPRIGHT", InspectFrame, -105, -53);
-	end)
-	InspectPVPFrame:HookScript("OnShow", function(self)
-		inspectTalentsCheckBox:SetPoint("TOPRIGHT", InspectFrame, -105, -38);
-	end)
-	InspectTalentFrame:HookScript("OnShow", function(self)
-		inspectTalentsCheckBox:SetPoint("TOPRIGHT", InspectFrame, -105, -34);
-	end)
+	if (InspectPaperDollFrame) then
+		InspectPaperDollFrame:HookScript("OnShow", function(self)
+			inspectTalentsCheckBox:SetPoint("TOPRIGHT", InspectFrame, -105, -53);
+		end)
+	else
+		NRC:debug("Missing InspectPaperDollFrame frame.");
+	end
+	if (InspectPVPFrame) then
+		--Doesn't exist in era/sod.
+		InspectPVPFrame:HookScript("OnShow", function(self)
+			inspectTalentsCheckBox:SetPoint("TOPRIGHT", InspectFrame, -105, -38);
+		end)
+	end
+	if (InspectTalentFrame) then
+		InspectTalentFrame:HookScript("OnShow", function(self)
+			inspectTalentsCheckBox:SetPoint("TOPRIGHT", InspectFrame, -105, -34);
+		end)
+	end
 end
 
 --Update checkbox if we change via addon config.
@@ -948,6 +982,7 @@ f:SetScript('OnEvent', function(self, event, ...)
 			--Sometimes we get both these events so have a cooldown to not send data twice.
 			if (GetTime() - lastSendData > 2 and GetNumGroupMembers() > 1) then
 				lastSendData = GetTime();
+				lastGroupJoin = GetTime();
 				--NRC:throddleEventByFunc(event, 5, "requestData", ...);
 				NRC:throddleEventByFunc(event, 1, "loadGroupMana", ...);
 				NRC:throddleEventByFunc(event, 2, "updateHealerCache", "GROUP_JOINED");
@@ -981,6 +1016,9 @@ f:SetScript('OnEvent', function(self, event, ...)
 	elseif (event == "GROUP_LEFT") then
 		NRC.groupCache = {};
 		NRC.unitMap = {};
+		C_Timer.After(1, function()
+			NRC:aurasScanGroup();
+		end)
 		--NRC.healerCache = {};
 		NRC:updateHealerCache();
 	end

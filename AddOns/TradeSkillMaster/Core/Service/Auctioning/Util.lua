@@ -4,8 +4,9 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local Util = TSM.Auctioning:NewPackage("Util")
+local Environment = TSM.Include("Environment")
 local TempTable = TSM.Include("Util.TempTable")
 local String = TSM.Include("Util.String")
 local Math = TSM.Include("Util.Math")
@@ -32,7 +33,7 @@ local IS_GOLD_PRICE_KEY = {
 	minPrice = true,
 	normalPrice = true,
 	maxPrice = true,
-	undercut = TSM.IsWowClassic(),
+	undercut = not Environment.IsRetail(),
 	priceReset = true,
 	aboveMax = true,
 }
@@ -61,7 +62,7 @@ function Util.GetPrice(key, operation, itemString)
 		else
 			value = CustomPrice.GetValue(operation[key], itemString, not IS_GOLD_PRICE_KEY[key])
 		end
-		if not TSM.IsWowClassic() and IS_GOLD_PRICE_KEY[key] then
+		if not Environment.HasFeature(Environment.FEATURES.AH_COPPER) and IS_GOLD_PRICE_KEY[key] then
 			value = value and Math.Ceil(value, COPPER_PER_SILVER) or nil
 		else
 			value = value and Math.Round(value) or nil
@@ -76,7 +77,7 @@ function Util.GetPrice(key, operation, itemString)
 end
 
 function Util.GetLowestAuction(subRows, itemString, operationSettings, resultTbl)
-	if not TSM.IsWowClassic() then
+	if Environment.IsRetail() then
 		local foundLowest = false
 		for _, subRow in ipairs(subRows) do
 			local _, itemBuyout = subRow:GetBuyouts()
@@ -163,9 +164,9 @@ function Util.GetPlayerAuctionCount(subRows, itemString, operationSettings, find
 		local timeLeft = subRow:GetListingInfo()
 		if not Util.IsFiltered(itemString, operationSettings, itemBuyout, quantity, timeLeft) then
 			local _, itemMinBid = subRow:GetBidInfo()
-			if itemMinBid == findBid and itemBuyout == findBuyout and (not TSM.IsWowClassic() or quantity == findStackSize) then
+			if itemMinBid == findBid and itemBuyout == findBuyout and (Environment.IsRetail() or quantity == findStackSize) then
 				local count = private.GetPlayerAuctionCount(subRow)
-				if not TSM.IsWowClassic() and count == 0 and playerQuantity > 0 then
+				if Environment.IsRetail() and count == 0 and playerQuantity > 0 then
 					-- there's another player's auction after ours, so stop counting
 					break
 				end
@@ -209,7 +210,7 @@ function Util.IsPlayerOnlySeller(subRows, itemString, operationSettings)
 		local _, itemBuyout = subRow:GetBuyouts()
 		local quantity = subRow:GetQuantities()
 		local timeLeft = subRow:GetListingInfo()
-		if isOnly and not Util.IsFiltered(itemString, operationSettings, itemBuyout, quantity, timeLeft) and private.GetPlayerAuctionCount(subRow) < (TSM.IsWowClassic() and 1 or quantity) then
+		if isOnly and not Util.IsFiltered(itemString, operationSettings, itemBuyout, quantity, timeLeft) and private.GetPlayerAuctionCount(subRow) < (Environment.IsRetail() and quantity or 1) then
 			isOnly = false
 		end
 	end
@@ -248,7 +249,7 @@ function Util.IsFiltered(itemString, operationSettings, itemBuyout, quantity, ti
 	if timeLeft <= operationSettings.ignoreLowDuration then
 		-- ignoring low duration
 		return true
-	elseif TSM.IsWowClassic() and operationSettings.matchStackSize and quantity ~= Util.GetPrice("stackSize", operationSettings, itemString) then
+	elseif Environment.HasFeature(Environment.FEATURES.AH_STACKS) and operationSettings.matchStackSize and quantity ~= Util.GetPrice("stackSize", operationSettings, itemString) then
 		-- matching stack size
 		return true
 	elseif operationSettings.priceReset == "ignore" then
@@ -309,9 +310,9 @@ end
 
 function private.GetPlayerAuctionCount(subRow)
 	local ownerStr, numOwnerItems = subRow:GetOwnerInfo()
-	if TSM.IsWowClassic() then
-		return PlayerInfo.IsPlayer(ownerStr, true, true, true) and select(2, subRow:GetQuantities()) or 0
-	else
+	if Environment.IsRetail() then
 		return numOwnerItems
+	else
+		return PlayerInfo.IsPlayer(ownerStr, true, true, true) and select(2, subRow:GetQuantities()) or 0
 	end
 end

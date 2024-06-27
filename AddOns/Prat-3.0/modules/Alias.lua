@@ -40,7 +40,7 @@ Prat:AddModuleToLoad(function()
 
   local function dbg(...) end
 
-  --[===[@debug@
+  --[==[@debug@
   local function dbg(...)
     -- Prat:PrintLiteral(...)
   end
@@ -50,7 +50,7 @@ Prat:AddModuleToLoad(function()
     ["module_desc"] = "Adds the command /alias, which can be used to alias slash commands in a similar way to the Unix alias command.",
     ["add"] = true,
     ["add an alias"] = true,
-    ['<command>[ <value>] - alias <command> to be executed as <value>, or return the value of the currently defined alias for <command> if <command> has not been assigned a value. eg: "/alias /examplehello /say hello there" - typing "/examplehello" will now cause your character to say "hello there"; "/alias examplehello" - \s "/examplehello is aliased to /say hello there" (cmd aliases: /addalias)'] = true,
+    ['<command>[ <value>] - alias <command> to be executed as <value>, or return the value of the currently defined alias for <command> if <command> has not been assigned a value. eg: "/alias /examplehello /say hello there" - typing "/examplehello" will now cause your character to say "hello there"; "/alias examplehello" - \\s "/examplehello is aliased to /say hello there" (cmd aliases: /addalias)'] = true,
     ["unalias"] = true,
     ["remove an alias"] = true,
     ['<alias> - remove the alias <alias> (cmd aliases: /delalias, /remalias)'] = true,
@@ -87,7 +87,7 @@ Prat:AddModuleToLoad(function()
     ["warnUser() called with nil argument!"] = true,
     ["warnUser() called with zero length string!"] = true,
   })
-  --@end-debug@]===]
+  --@end-debug@]==]
 
   -- These Localizations are auto-generated. To help with localization
   -- please go to http://www.wowace.com/projects/prat-3-0/localization/
@@ -106,7 +106,7 @@ L = {
 		["/%s aliased to \"/%s\""] = true,
 		["/%s aliased to: /%s"] = true,
 		["<alias> - remove the alias <alias> (cmd aliases: /delalias, /remalias)"] = true,
-		["<command>[ <value>] - alias <command> to be executed as <value>, or return the value of the currently defined alias for <command> if <command> has not been assigned a value. eg: \"/alias /examplehello /say hello there\" - typing \"/examplehello\" will now cause your character to say \"hello there\"; \"/alias examplehello\" - s \"/examplehello is aliased to /say hello there\" (cmd aliases: /addalias)"] = true,
+		["<command>[ <value>] - alias <command> to be executed as <value>, or return the value of the currently defined alias for <command> if <command> has not been assigned a value. eg: \"/alias /examplehello /say hello there\" - typing \"/examplehello\" will now cause your character to say \"hello there\"; \"/alias examplehello\" - \\s \"/examplehello is aliased to /say hello there\" (cmd aliases: /addalias)"] = "<command>[ <value>] - alias <command> to be executed as <value>, or return the value of the currently defined alias for <command> if <command> has not been assigned a value. eg: \"/alias /examplehello /say hello there\" - typing \"/examplehello\" will now cause your character to say \"hello there\"; \"/alias examplehello\" - s \"/examplehello is aliased to /say hello there\" (cmd aliases: /addalias)",
 		["<keyword> - finds all aliases matching <keyword> (cmd aliases: /findalias)"] = true,
 		["add"] = true,
 		["add an alias"] = true,
@@ -163,7 +163,7 @@ L = {
 		--[[Translation missing --]]
 		["<alias> - remove the alias <alias> (cmd aliases: /delalias, /remalias)"] = "<alias> - remove the alias <alias> (cmd aliases: /delalias, /remalias)",
 		--[[Translation missing --]]
-		["<command>[ <value>] - alias <command> to be executed as <value>, or return the value of the currently defined alias for <command> if <command> has not been assigned a value. eg: \"/alias /examplehello /say hello there\" - typing \"/examplehello\" will now cause your character to say \"hello there\"; \"/alias examplehello\" - s \"/examplehello is aliased to /say hello there\" (cmd aliases: /addalias)"] = "<command>[ <value>] - alias <command> to be executed as <value>, or return the value of the currently defined alias for <command> if <command> has not been assigned a value. eg: \"/alias /examplehello /say hello there\" - typing \"/examplehello\" will now cause your character to say \"hello there\"; \"/alias examplehello\" - s \"/examplehello is aliased to /say hello there\" (cmd aliases: /addalias)",
+		["<command>[ <value>] - alias <command> to be executed as <value>, or return the value of the currently defined alias for <command> if <command> has not been assigned a value. eg: \"/alias /examplehello /say hello there\" - typing \"/examplehello\" will now cause your character to say \"hello there\"; \"/alias examplehello\" - \\s \"/examplehello is aliased to /say hello there\" (cmd aliases: /addalias)"] = "<command>[ <value>] - alias <command> to be executed as <value>, or return the value of the currently defined alias for <command> if <command> has not been assigned a value. eg: \"/alias /examplehello /say hello there\" - typing \"/examplehello\" will now cause your character to say \"hello there\"; \"/alias examplehello\" - s \"/examplehello is aliased to /say hello there\" (cmd aliases: /addalias)",
 		--[[Translation missing --]]
 		["<keyword> - finds all aliases matching <keyword> (cmd aliases: /findalias)"] = "<keyword> - finds all aliases matching <keyword> (cmd aliases: /findalias)",
 		--[[Translation missing --]]
@@ -247,7 +247,7 @@ L = {
 		["/%s aliased to: /%s"] = "/%s linkado para: /%s",
 		["<alias> - remove the alias <alias> (cmd aliases: /delalias, /remalias)"] = "<alias> - remove o \"apelido\" <alias> (cmd aliases: /delalias, /remalias)",
 		--[[Translation missing --]]
-		["<command>[ <value>] - alias <command> to be executed as <value>, or return the value of the currently defined alias for <command> if <command> has not been assigned a value. eg: \"/alias /examplehello /say hello there\" - typing \"/examplehello\" will now cause your character to say \"hello there\"; \"/alias examplehello\" - s \"/examplehello is aliased to /say hello there\" (cmd aliases: /addalias)"] = "<command>[ <value>] - alias <command> to be executed as <value>, or return the value of the currently defined alias for <command> if <command> has not been assigned a value. eg: \"/alias /examplehello /say hello there\" - typing \"/examplehello\" will now cause your character to say \"hello there\"; \"/alias examplehello\" - s \"/examplehello is aliased to /say hello there\" (cmd aliases: /addalias)",
+		["<command>[ <value>] - alias <command> to be executed as <value>, or return the value of the currently defined alias for <command> if <command> has not been assigned a value. eg: \"/alias /examplehello /say hello there\" - typing \"/examplehello\" will now cause your character to say \"hello there\"; \"/alias examplehello\" - \\s \"/examplehello is aliased to /say hello there\" (cmd aliases: /addalias)"] = "<command>[ <value>] - alias <command> to be executed as <value>, or return the value of the currently defined alias for <command> if <command> has not been assigned a value. eg: \"/alias /examplehello /say hello there\" - typing \"/examplehello\" will now cause your character to say \"hello there\"; \"/alias examplehello\" - s \"/examplehello is aliased to /say hello there\" (cmd aliases: /addalias)",
 		--[[Translation missing --]]
 		["<keyword> - finds all aliases matching <keyword> (cmd aliases: /findalias)"] = "<keyword> - finds all aliases matching <keyword> (cmd aliases: /findalias)",
 		--[[Translation missing --]]
@@ -326,7 +326,7 @@ L = {
 		["/%s aliased to \"/%s\""] = "/%s défini comme alias de \"/%s\"",
 		["/%s aliased to: /%s"] = "/%s défini comme alias de : /%s",
 		["<alias> - remove the alias <alias> (cmd aliases: /delalias, /remalias)"] = "<alias> - Enlever l'alias <alias> (cmd des alias: /delalias, /remalias)",
-		["<command>[ <value>] - alias <command> to be executed as <value>, or return the value of the currently defined alias for <command> if <command> has not been assigned a value. eg: \"/alias /examplehello /say hello there\" - typing \"/examplehello\" will now cause your character to say \"hello there\"; \"/alias examplehello\" - s \"/examplehello is aliased to /say hello there\" (cmd aliases: /addalias)"] = "<commande>[ <valeur> ] - Créé un alias <commande> exécuté comme <valeur>. si <commande> n'a pas de valeur assigné, retourne la valeur de l'alias actuellement définit pour <commande>. Ex: \"/alias /examplebonjour /dire Bonjour à tous\" - Taper \"/exemplebonjour\" fera alors dire \"Bonjour à tous\" à votre personnage; \"/alias examplehello\" fera dire \"/examplebonjour est un alias pour /dire Bonjour à tous\" (cmd des alias : /addalias)",
+		["<command>[ <value>] - alias <command> to be executed as <value>, or return the value of the currently defined alias for <command> if <command> has not been assigned a value. eg: \"/alias /examplehello /say hello there\" - typing \"/examplehello\" will now cause your character to say \"hello there\"; \"/alias examplehello\" - \\s \"/examplehello is aliased to /say hello there\" (cmd aliases: /addalias)"] = "<commande>[ <valeur> ] - Créé un alias <commande> exécuté comme <valeur>. si <commande> n'a pas de valeur assigné, retourne la valeur de l'alias actuellement définit pour <commande>. Ex: \"/alias /examplebonjour /dire Bonjour à tous\" - Taper \"/exemplebonjour\" fera alors dire \"Bonjour à tous\" à votre personnage; \"/alias examplehello\" fera dire \"/examplebonjour est un alias pour /dire Bonjour à tous\" (cmd des alias : /addalias)",
 		["<keyword> - finds all aliases matching <keyword> (cmd aliases: /findalias)"] = "<motclé> - Trouve tout les alias avec <motclé> (cmd des alias /findalias)",
 		["add"] = "ajouter",
 		["add an alias"] = "ajouter un alias",
@@ -376,7 +376,7 @@ L = {
 		["/%s aliased to \"/%s\""] = "/%s hat nun den Alias \"/%s\"",
 		["/%s aliased to: /%s"] = "/%s hat nun den Alias: /%s",
 		["<alias> - remove the alias <alias> (cmd aliases: /delalias, /remalias)"] = "<alias> - entfernt den Alias <alias> (cmd aliases: /delalias, /remalias)",
-		["<command>[ <value>] - alias <command> to be executed as <value>, or return the value of the currently defined alias for <command> if <command> has not been assigned a value. eg: \"/alias /examplehello /say hello there\" - typing \"/examplehello\" will now cause your character to say \"hello there\"; \"/alias examplehello\" - s \"/examplehello is aliased to /say hello there\" (cmd aliases: /addalias)"] = "<befehl>[ <wert>] - alias <befehl> auszuführen als <wert>, oder den Wert des gegenwärtig definierten Alias erwidern für <befehl> falls <befehl> noch kein Wert zugewiesen worden ist; z.B: \"/alias /beispielhallo /say hallo du\" - die Eingabe von \"/beispielhallo\" wird nun deinen Charakter veranlassen, zu sagen \"hallo du\"; \"/alias beispielhallo\" - s \"/beispielhallo is aliased to /say hallo du\" (befehl alias: /addalias)",
+		["<command>[ <value>] - alias <command> to be executed as <value>, or return the value of the currently defined alias for <command> if <command> has not been assigned a value. eg: \"/alias /examplehello /say hello there\" - typing \"/examplehello\" will now cause your character to say \"hello there\"; \"/alias examplehello\" - \\s \"/examplehello is aliased to /say hello there\" (cmd aliases: /addalias)"] = "<befehl>[ <wert>] - alias <befehl> auszuführen als <wert>, oder den Wert des gegenwärtig definierten Alias erwidern für <befehl> falls <befehl> noch kein Wert zugewiesen worden ist; z.B: \"/alias /beispielhallo /say hallo du\" - die Eingabe von \"/beispielhallo\" wird nun deinen Charakter veranlassen, zu sagen \"hallo du\"; \"/alias beispielhallo\" - s \"/beispielhallo is aliased to /say hallo du\" (befehl alias: /addalias)",
 		["<keyword> - finds all aliases matching <keyword> (cmd aliases: /findalias)"] = "<keyword> - Findet alle Alias, die <keyword> (Stichwort) entsprechen (cmd aliases: /findalias)",
 		["add"] = "hinzufügen",
 		["add an alias"] = "Ein Alias hinzufügen",
@@ -426,9 +426,9 @@ L = {
 		["/%s aliased to \"/%s\""] = "/%s |1이;가; \"/%s\"|1으로;로; 대체되었습니다",
 		["/%s aliased to: /%s"] = "/%s |1이;가; 다음으로 대체되었습니다: /%s",
 		["<alias> - remove the alias <alias> (cmd aliases: /delalias, /remalias)"] = "<alias> - <alias> 대체 명령어 삭제 (명령어: /delalias, /remalias)",
-		["<command>[ <value>] - alias <command> to be executed as <value>, or return the value of the currently defined alias for <command> if <command> has not been assigned a value. eg: \"/alias /examplehello /say hello there\" - typing \"/examplehello\" will now cause your character to say \"hello there\"; \"/alias examplehello\" - s \"/examplehello is aliased to /say hello there\" (cmd aliases: /addalias)"] = "<명령어>[ <인자>] - <명령어>로 <인자>를 수행하게 대체하거나, <명령어>에 할당된 인자가 없으면 <명령어>에 설정된 대체 명령어를 출력합니다. 예제: \"/alias /꾸벅 /say 안녕하세요\" - \"/꾸벅\" 명령어로 일반 대화 \"안녕하세요\"가 수행됩니다;\"/alias 꾸벅\" - \"/꾸벅 명령어가 /say 안녕하세요 로 대체되었습니다\"가 표시됩니다 (명령어: /addalias)",
+		["<command>[ <value>] - alias <command> to be executed as <value>, or return the value of the currently defined alias for <command> if <command> has not been assigned a value. eg: \"/alias /examplehello /say hello there\" - typing \"/examplehello\" will now cause your character to say \"hello there\"; \"/alias examplehello\" - \\s \"/examplehello is aliased to /say hello there\" (cmd aliases: /addalias)"] = "<명령어>[ <인자>] - <명령어>를 <인자>로 실행되도록 대체하거나, <명령어>에 할당된 값이 없는 경우 현재 정의된 대체 명령어의 값을 반환합니다. 예: \"/alias /꾸벅 /say 안녕하세요\" - \"/꾸벅\"을 입력하면 캐릭터가 \"안녕하세요\"라고 말합니다; \"/alias 꾸벅\" - s \"/꾸벅 이 /say 안녕하세요 로 대체되었습니다\" (명령어: /addalias)",
 		["<keyword> - finds all aliases matching <keyword> (cmd aliases: /findalias)"] = "<키워드> - <키워드>가 포함된 모든 대체 명령어를 찾습니다. (명령어: /findalias)",
-		["add"] = true,
+		["add"] = "추가",
 		["add an alias"] = "대체 명령어 추가",
 		["alias \"/%s\" does not exist"] = "대체 명령어 \"/%s\"|1이;가; 없습니다",
 		["dealiasing command /%s to /%s"] = "/%s|1이;가; /%s|1으로;로; 대체 명령어가 해제됩니다",
@@ -444,7 +444,7 @@ L = {
 		["listaliases"] = true,
 		["matching aliases found: %d"] = "일치하는 대체 명령어 찾음: %d개",
 		["module_desc"] = "UNIX의 alias 명령과 비슷한 방법으로 슬래쉬 명령어를 대체하는데 사용하는 /alias 명령을 추가합니다.",
-		["module_name"] = "대체 명령어",
+		["module_name"] = "대체 명령어 [Alias]",
 		["No aliases have been defined"] = "설정된 대체 명령어가 없습니다.",
 		["noclobber"] = "덮어쓰기 금지",
 		["noclobber set - skipping new alias: /%s already expands to /%s"] = "덮어쓰기 금지 - 새로운 대체 명령어를 무시합니다 : /%s |1은;는; 이미 /%s |1으로;로; 설정되어 있습니다",
@@ -483,7 +483,7 @@ L = {
 		--[[Translation missing --]]
 		["<alias> - remove the alias <alias> (cmd aliases: /delalias, /remalias)"] = "<alias> - remove the alias <alias> (cmd aliases: /delalias, /remalias)",
 		--[[Translation missing --]]
-		["<command>[ <value>] - alias <command> to be executed as <value>, or return the value of the currently defined alias for <command> if <command> has not been assigned a value. eg: \"/alias /examplehello /say hello there\" - typing \"/examplehello\" will now cause your character to say \"hello there\"; \"/alias examplehello\" - s \"/examplehello is aliased to /say hello there\" (cmd aliases: /addalias)"] = "<command>[ <value>] - alias <command> to be executed as <value>, or return the value of the currently defined alias for <command> if <command> has not been assigned a value. eg: \"/alias /examplehello /say hello there\" - typing \"/examplehello\" will now cause your character to say \"hello there\"; \"/alias examplehello\" - s \"/examplehello is aliased to /say hello there\" (cmd aliases: /addalias)",
+		["<command>[ <value>] - alias <command> to be executed as <value>, or return the value of the currently defined alias for <command> if <command> has not been assigned a value. eg: \"/alias /examplehello /say hello there\" - typing \"/examplehello\" will now cause your character to say \"hello there\"; \"/alias examplehello\" - \\s \"/examplehello is aliased to /say hello there\" (cmd aliases: /addalias)"] = "<command>[ <value>] - alias <command> to be executed as <value>, or return the value of the currently defined alias for <command> if <command> has not been assigned a value. eg: \"/alias /examplehello /say hello there\" - typing \"/examplehello\" will now cause your character to say \"hello there\"; \"/alias examplehello\" - s \"/examplehello is aliased to /say hello there\" (cmd aliases: /addalias)",
 		--[[Translation missing --]]
 		["<keyword> - finds all aliases matching <keyword> (cmd aliases: /findalias)"] = "<keyword> - finds all aliases matching <keyword> (cmd aliases: /findalias)",
 		--[[Translation missing --]]
@@ -566,7 +566,7 @@ L = {
 		["/%s aliased to \"/%s\""] = "/%s теперь псевдоним на \"/%s\"",
 		["/%s aliased to: /%s"] = "/%s теперь псевдоним: /%s",
 		["<alias> - remove the alias <alias> (cmd aliases: /delalias, /remalias)"] = "<alias> - удалить все псевдонимы <alias> (cmd псевдонимы: /delalias, /remalias)",
-		["<command>[ <value>] - alias <command> to be executed as <value>, or return the value of the currently defined alias for <command> if <command> has not been assigned a value. eg: \"/alias /examplehello /say hello there\" - typing \"/examplehello\" will now cause your character to say \"hello there\"; \"/alias examplehello\" - s \"/examplehello is aliased to /say hello there\" (cmd aliases: /addalias)"] = "<command>[ <value>] - псевдоним <command> будет исполняться как <value>, или возвращать значение value в качестве определённого в настоящий момент значения для <command>. Например: \"/alias /examplehello /say всем привет\" - набрав \"/examplehello\" ваш персонаж скажет \"всем привет\"; \"/alias examplehello\" - \"/examplehello is aliased to /say всем привет\" (cmd aliases: /addalias)",
+		["<command>[ <value>] - alias <command> to be executed as <value>, or return the value of the currently defined alias for <command> if <command> has not been assigned a value. eg: \"/alias /examplehello /say hello there\" - typing \"/examplehello\" will now cause your character to say \"hello there\"; \"/alias examplehello\" - \\s \"/examplehello is aliased to /say hello there\" (cmd aliases: /addalias)"] = "<command>[ <value>] - псевдоним <command> будет исполняться как <value>, или возвращать значение value в качестве определённого в настоящий момент значения для <command>. Например: \"/alias /examplehello /say всем привет\" - набрав \"/examplehello\" ваш персонаж скажет \"всем привет\"; \"/alias examplehello\" - \"/examplehello is aliased to /say всем привет\" (cmd aliases: /addalias)",
 		["<keyword> - finds all aliases matching <keyword> (cmd aliases: /findalias)"] = "<keyword> - найти все псевдонимы, совпадающие с <keyword> (команда: /findalias)",
 		["add"] = "добавить",
 		["add an alias"] = "добавить псевдоним",
@@ -616,7 +616,7 @@ L = {
 		["/%s aliased to \"/%s\""] = "/%s替换为\"/%s\"",
 		["/%s aliased to: /%s"] = "/%s替换为:/%s",
 		["<alias> - remove the alias <alias> (cmd aliases: /delalias, /remalias)"] = "<alias> - 移除替换词<alias> (命令: /delalias, /remalias)",
-		["<command>[ <value>] - alias <command> to be executed as <value>, or return the value of the currently defined alias for <command> if <command> has not been assigned a value. eg: \"/alias /examplehello /say hello there\" - typing \"/examplehello\" will now cause your character to say \"hello there\"; \"/alias examplehello\" - s \"/examplehello is aliased to /say hello there\" (cmd aliases: /addalias)"] = "<命令>[<值>] - 替换词<命令>被实现为<值>，如果<命令>没有被定义一个值,就为<命令>返回当前确定了值的替换词.例: \"/alias /好 /s 你好啊\" - 键入\"/好\"就会马上让你的角色去说\"你好啊\";\"/alias 好\"是\"/好 去替换/s 你好啊\"(替换词命令:/addalias)",
+		["<command>[ <value>] - alias <command> to be executed as <value>, or return the value of the currently defined alias for <command> if <command> has not been assigned a value. eg: \"/alias /examplehello /say hello there\" - typing \"/examplehello\" will now cause your character to say \"hello there\"; \"/alias examplehello\" - \\s \"/examplehello is aliased to /say hello there\" (cmd aliases: /addalias)"] = "<命令>[<值>] - 替换词<命令>被实现为<值>，如果<命令>没有被定义一个值,就为<命令>返回当前确定了值的替换词.例: \"/alias /好 /s 你好啊\" - 键入\"/好\"就会马上让你的角色去说\"你好啊\";\"/alias 好\"是\"/好 去替换/s 你好啊\"(替换词命令:/addalias)",
 		["<keyword> - finds all aliases matching <keyword> (cmd aliases: /findalias)"] = "<关键字> - 寻找所有匹配<关键字>的替换词(命令: /findalias)",
 		["add"] = "添加",
 		["add an alias"] = "添加一个替换词",
@@ -666,7 +666,7 @@ L = {
 		["/%s aliased to \"/%s\""] = "/%s alias de \"/%s\"",
 		["/%s aliased to: /%s"] = "/%s alias de: /%s",
 		["<alias> - remove the alias <alias> (cmd aliases: /delalias, /remalias)"] = "<alias> - eliminar el <alias> (cmd alias: /delalias, /remalias",
-		["<command>[ <value>] - alias <command> to be executed as <value>, or return the value of the currently defined alias for <command> if <command> has not been assigned a value. eg: \"/alias /examplehello /say hello there\" - typing \"/examplehello\" will now cause your character to say \"hello there\"; \"/alias examplehello\" - s \"/examplehello is aliased to /say hello there\" (cmd aliases: /addalias)"] = "<comando> [<valor>] - alias <comando> a ejecutarse como <valor> o devolver el valor del alias definido actualmente para <comando> si <comando> no se ha asignado un valor. p.ej.: \"/alias /ejemplohola /decir hola allí\" - tecleando \"/ejemplohola\" hará que su carácter diga \"hola allí\"; \"/alias ejemplohola\" -s \"/ejemplohola es alias de /decir hola allí\" (cmd alias: /addalias)",
+		["<command>[ <value>] - alias <command> to be executed as <value>, or return the value of the currently defined alias for <command> if <command> has not been assigned a value. eg: \"/alias /examplehello /say hello there\" - typing \"/examplehello\" will now cause your character to say \"hello there\"; \"/alias examplehello\" - \\s \"/examplehello is aliased to /say hello there\" (cmd aliases: /addalias)"] = "<comando> [<valor>] - alias <comando> a ejecutarse como <valor> o devolver el valor del alias definido actualmente para <comando> si <comando> no se ha asignado un valor. p.ej.: \"/alias /ejemplohola /decir hola allí\" - tecleando \"/ejemplohola\" hará que su carácter diga \"hola allí\"; \"/alias ejemplohola\" -s \"/ejemplohola es alias de /decir hola allí\" (cmd alias: /addalias)",
 		["<keyword> - finds all aliases matching <keyword> (cmd aliases: /findalias)"] = "<palabra clave> - encontrar todos los alias coincidentes con <palabra clave> (cmd alias: /findalias",
 		["add"] = "Añadir",
 		["add an alias"] = "Añadir un alias",
@@ -721,7 +721,7 @@ L = {
 		["/%s aliased to \"/%s\""] = "/%s 別稱連結至 \"/%s\"",
 		["/%s aliased to: /%s"] = "/%s 別稱連結至 \"/%s\"",
 		["<alias> - remove the alias <alias> (cmd aliases: /delalias, /remalias)"] = "<alias> - 移除別稱 <alias>（別稱指令： /delalias，/remalias)",
-		["<command>[ <value>] - alias <command> to be executed as <value>, or return the value of the currently defined alias for <command> if <command> has not been assigned a value. eg: \"/alias /examplehello /say hello there\" - typing \"/examplehello\" will now cause your character to say \"hello there\"; \"/alias examplehello\" - s \"/examplehello is aliased to /say hello there\" (cmd aliases: /addalias)"] = "<command>[ <value>] - 以代稱指令 <command> 來執行指令 <value>, 或當 <command> 後方沒有指定指令時通報目前設定給<command>之指定指令。 例如 \"/alias /examplehello /說 打招呼\" - 輸入 \"/examplehello\" 將使你的角色說 \"hello there\"; \"/alias examplehello\" - s \"/examplehello is aliased to /say hello there\" (cmd aliases: /addalias)",
+		["<command>[ <value>] - alias <command> to be executed as <value>, or return the value of the currently defined alias for <command> if <command> has not been assigned a value. eg: \"/alias /examplehello /say hello there\" - typing \"/examplehello\" will now cause your character to say \"hello there\"; \"/alias examplehello\" - \\s \"/examplehello is aliased to /say hello there\" (cmd aliases: /addalias)"] = "<command>[ <value>] - 以代稱指令 <command> 來執行指令 <value>, 或當 <command> 後方沒有指定指令時通報目前設定給<command>之指定指令。 例如 \"/alias /examplehello /說 打招呼\" - 輸入 \"/examplehello\" 將使你的角色說 \"hello there\"; \"/alias examplehello\" - s \"/examplehello is aliased to /say hello there\" (cmd aliases: /addalias)",
 		["<keyword> - finds all aliases matching <keyword> (cmd aliases: /findalias)"] = "<keyword> - 搜尋所有符合<keyword>的別稱（別稱指令： /findalias）",
 		["add"] = "新增",
 		["add an alias"] = "新增別稱",

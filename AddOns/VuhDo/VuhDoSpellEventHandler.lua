@@ -5,8 +5,6 @@ local smatch = string.match;
 local InCombatLockdown = InCombatLockdown;
 local HasLFGRestrictions = VUHDO_hasLFGRestrictions;
 
-local VUHDO_updateAllHoTs;
-local VUHDO_updateAllCyclicBouquets;
 local VUHDO_initGcd;
 local VUHDO_strempty;
 
@@ -21,8 +19,6 @@ local sEmpty = { };
 
 
 function VUHDO_spellEventHandlerInitLocalOverrides()
-	VUHDO_updateAllHoTs = _G["VUHDO_updateAllHoTs"];
-	VUHDO_updateAllCyclicBouquets = _G["VUHDO_updateAllCyclicBouquets"];
 	VUHDO_initGcd = _G["VUHDO_initGcd"];
 	VUHDO_strempty = _G["VUHDO_strempty"];
 
@@ -60,29 +56,6 @@ function VUHDO_activateSpecc(aSpecNum)
 	if tProfile then VUHDO_loadProfile(tProfile); end
 	VUHDO_activateSpellForSpec(aSpecNum);
 	VUHDO_aoeUpdateTalents();
-end
-
-
-
---
-local tSpellName;
-function VUHDO_spellcastSucceeded(aUnit, aSpellId)
-
-	if "player" ~= aUnit and VUHDO_PLAYER_RAID_ID ~= aUnit then 
-		return;
-	end
-
-	if aSpellId then
-		tSpellName = GetSpellInfo(aSpellId);
-	end
-
-	if tSpellName and VUHDO_ACTIVE_HOTS[tSpellName] then
-		VUHDO_updateAllHoTs();
-		VUHDO_updateAllCyclicBouquets(true);
-	end
-
-	VUHDO_aoeUpdateAll();
-
 end
 
 

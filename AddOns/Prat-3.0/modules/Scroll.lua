@@ -40,7 +40,7 @@ Prat:AddModuleToLoad(function()
 
   local PL = module.PL
 
-  --[===[@debug@
+  --[==[@debug@
   PL:AddLocale(PRAT_MODULE, "enUS", {
     ["Scroll"] = true,
     ["Chat window scrolling options."] = true,
@@ -59,7 +59,7 @@ Prat:AddModuleToLoad(function()
     ["Top"] = "Top to bottom",
     ["Bottom"] = "Bottom to top",
   })
-  --@end-debug@]===]
+  --@end-debug@]==]
 
   -- These Localizations are auto-generated. To help with localization
   -- please go to http://www.wowace.com/projects/prat-3-0/localization/
@@ -256,7 +256,7 @@ L = {
 		["modified_speed_desc"] = "Shift를 눌렀을 때 마우스 휠로 스크롤할 줄의 숫자를 설정합니다.",
 		["mousewheel_desc"] = "각 대화창 별로 마우스 휠 지원을 끄거나 켭니다.",
 		["mousewheel_name"] = "마우스 휠 사용",
-		["Scroll"] = "스크롤",
+		["Scroll"] = "스크롤 [Scroll]",
 		["Set Ctrl+MouseWheel Speed"] = "Ctrl+마우스 휠 속도 설정",
 		["Set MouseWheel Speed"] = "마우스 휠 속도 설정",
 		["Set number of lines mousewheel will scroll when ctrl is pressed."] = "Ctrl 키를 누르고 마우스 휠을 사용할 때 스크롤할 줄의 수를 설정합니다.",

@@ -1,6 +1,6 @@
 ﻿-- Pawn by Vger-Azjol-Nerub
 -- www.vgermods.com
--- © 2006-2023 Travis Spomer.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
+-- © 2006-2024 Travis Spomer.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
 -- See Readme.htm for more information.
 
 --
@@ -265,7 +265,7 @@ PawnLocal =
 		["Armor2"] = "^裝備: %+#點護甲值。$",
 		["ArmorPenetration"] = "^裝備: 你的攻擊無視目標#點護甲值。$",
 		["ArmorPenetrationRating"] = "^裝備: 提高#點護甲穿透等級。$",
-		["ArmorPenetrationRating2"] = "^UNUSED$",
+		["ArmorPenetrationRating2"] = "^裝備: 提高#點護甲穿透。$",
 		["ArmorPenetrationShort"] = "^%+?#護甲穿透等級$",
 		["Avoidance"] = "^%+#迴避$",
 		["Axe"] = "^斧$",
@@ -284,6 +284,7 @@ PawnLocal =
 		["Crit"] = "^%+?#致命一擊$",
 		["Crit2"] = "^裝備: 提高#點致命一擊。$",
 		["CritPercent"] = "^裝備： 使你造成致命一擊的機率提高#%%。$",
+		["CritPercentCombined"] = "^裝備： 使你的所有法術和攻擊造成致命一擊的機率提高#%%。$",
 		["CritRating"] = "^裝備: 使你的致命一擊等級提高#點。$",
 		["CritRating2"] = "^UNUSED$",
 		["CritRating3"] = "^UNUSED$",
@@ -351,6 +352,7 @@ PawnLocal =
 		["HeroicWarforged"] = "^英雄難度戰鑄$",
 		["Hit"] = "^裝備： 使你擊中目標的機率提高#%%。$",
 		["Hit2"] = "^UNUSED$",
+		["HitPercentCombined"] = "^裝備： 使你的所有攻擊和法術命中的機率提高#%%。$",
 		["HitRating"] = "^裝備: 提高#點命中。$",
 		["HitRating2"] = "^裝備: 使你的命中等級提高#點。$",
 		["HitRating3"] = "^UNUSED$",
@@ -704,8 +706,6 @@ WoW中所有的物件都有個ID，通常只有寫插件的人才需要這些資
 		["ValuesDoNotShowUpgradesFor1H"] = "不要顯示單手裝備的提升",
 		["ValuesDoNotShowUpgradesFor2H"] = "不要顯示雙手裝備的提升",
 		["ValuesDoNotShowUpgradesTooltip"] = "啟用該選項來隱藏此類型裝備的提升。比如，雖然坦騎可以用雙手武器，但是對坦騎設定來說一件雙手武器從來都不是一個 \"提升\"，因此Pawn將不會為它們顯示提升訊息。同樣，懲戒騎可以使用單手武器，但它們從不是一個提升。",
-		["ValuesFollowSpecialization"] = "%d等以後只顯示最佳護甲類型",
-		["ValuesFollowSpecializationTooltip"] = "啟用該選項來隱藏%d等以後非職業專精的護甲類型。比如，神聖聖騎在%d等學到了鎧甲專精, 當只裝備鎧甲時增加智力5%%。當此選項選擇時Pawn將不會考慮布、皮及鎖甲對%d等以上神聖聖騎士的提升",
 		["ValuesHeader"] = "調整 %s 權重",
 		["ValuesIgnoreItemType"] = "帶此屬性的物品沒有用處。",
 		["ValuesIgnoreStat"] = "帶此屬性的物品沒有用處。",

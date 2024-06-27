@@ -4,8 +4,8 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
-local FontPaths = TSM.Init("Data.FontPaths")
+local TSM = select(2, ...) ---@type TSM
+local FontPaths = TSM.Init("Data.FontPaths") ---@class Data.FontPaths
 local ALPHABET_LOOKUP = {
 	enUS = "roman",
 	esES = "roman",

@@ -4,7 +4,7 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 TSM:NewPackage("Shopping")
 local Threading = TSM.Include("Service.Threading")
 local ShoppingSearchContext = TSM.Include("LibTSMClass").DefineClass("ShoppingSearchContext")

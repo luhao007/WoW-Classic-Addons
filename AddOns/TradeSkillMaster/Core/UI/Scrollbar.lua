@@ -7,7 +7,7 @@
 --- Scrollbar Functions
 -- @module Scrollbar
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local Scrollbar = TSM.UI:NewPackage("Scrollbar")
 local Math = TSM.Include("Util.Math")
 local Theme = TSM.Include("Util.Theme")

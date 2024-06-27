@@ -4,8 +4,9 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local CraftingUI = TSM.UI:NewPackage("CraftingUI")
+local Environment = TSM.Include("Environment")
 local L = TSM.Include("Locale").GetTable()
 local FSM = TSM.Include("Util.FSM")
 local Event = TSM.Include("Util.Event")
@@ -37,6 +38,11 @@ local IGNORED_PROFESSIONS = {
 	[193290] = true, -- Herbalism Skills
 	[278910] = true, -- Archaeology
 }
+do
+	if not IsAddOnLoaded("Blizzard_Professions") then
+		LoadAddOn("Blizzard_Professions")
+	end
+end
 
 
 
@@ -71,7 +77,7 @@ function CraftingUI.Toggle()
 end
 
 function CraftingUI.IsProfessionIgnored(name, skillId)
-	if TSM.IsWowClassic() then
+	if not Environment.IsRetail() then
 		if name == GetSpellInfo(5149) or name == BEAST_TRAINING_DE or name == BEAST_TRAINING_ES or name == BEAST_TRAINING_RUS then -- Beast Training
 			return true
 		elseif name == GetSpellInfo(7620) then -- Fishing
@@ -143,6 +149,9 @@ end
 
 function private.SwitchBtnOnClick(button)
 	private.settings.showDefault = button ~= private.defaultUISwitchBtn
+	if Environment.IsRetail() and private.settings.showDefault then
+		Professions.SetDefaultFilters()
+	end
 	Profession.SetScannerDisabled(private.settings.showDefault)
 	private.fsm:ProcessEvent("EV_SWITCH_BTN_CLICKED")
 end
@@ -164,7 +173,7 @@ end
 -- ============================================================================
 
 function private.FSMCreate()
-	if TSM.IsWowClassic() then
+	if not Environment.HasFeature(Environment.FEATURES.C_TRADE_SKILL_UI) then
 		Event.Register("CRAFT_SHOW", function()
 			CloseTradeSkill()
 			private.craftOpen = true
@@ -180,7 +189,7 @@ function private.FSMCreate()
 		end)
 	end
 	Event.Register("TRADE_SKILL_SHOW", function()
-		if TSM.IsWowClassic() then
+		if not Environment.HasFeature(Environment.FEATURES.C_TRADE_SKILL_UI) then
 			CloseCraft()
 		end
 		private.tradeSkillOpen = true
@@ -193,14 +202,13 @@ function private.FSMCreate()
 		end
 	end)
 	-- we'll implement UIParent's event handler directly when necessary for TRADE_SKILL_SHOW
-	if TSM.IsWowClassic() then
+	if not Environment.HasFeature(Environment.FEATURES.C_TRADE_SKILL_UI) then
 		UIParent:UnregisterEvent("CRAFT_SHOW")
 	end
 	UIParent:UnregisterEvent("TRADE_SKILL_SHOW")
 
 	local fsmContext = {
 		frame = nil,
-		craftingPage = nil,
 	}
 	local function UpdateDefaultCraftButton()
 		if CraftFrame and CraftCreateButton and private.craftOpen then
@@ -210,8 +218,6 @@ function private.FSMCreate()
 			CraftCreateButton:SetFrameLevel(2)
 			CraftCreateButton:EnableDrawLayer("BACKGROUND")
 			CraftCreateButton:EnableDrawLayer("ARTWORK")
-			CraftCreateButton:SetHighlightTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
-			CraftCreateButton:GetHighlightTexture():SetTexCoord(0, 0.625, 0, 0.6875)
 		end
 	end
 	local function DefaultFrameOnHide()
@@ -245,13 +251,13 @@ function private.FSMCreate()
 				else
 					UIParent_OnEvent(UIParent, "TRADE_SKILL_SHOW")
 				end
-				local defaultFrame = TSM.IsWowClassic() and TradeSkillFrame or ProfessionsFrame
+				local defaultFrame = Environment.IsRetail() and ProfessionsFrame or TradeSkillFrame
 				if not private.defaultUISwitchBtn then
 					private.defaultUISwitchBtn = UIElements.New("ActionButton", "switchBtn")
-						:SetSize(60, TSM.IsWowClassic() and 16 or 15)
+						:SetSize(60, Environment.IsRetail() and 15 or 16)
 						:SetFont("BODY_BODY3_MEDIUM")
-						:AddAnchor("TOPRIGHT", TSM.IsWowClassic() and -60 or -27, TSM.IsWowClassic() and -16 or -4)
-						:SetRelativeLevel(TSM.IsWowClassic() and 3 or 600)
+						:AddAnchor("TOPRIGHT", Environment.IsRetail() and -50 or -60, Environment.IsRetail() and -4 or -16)
+						:SetRelativeLevel(Environment.IsRetail() and 600 or 3)
 						:DisableClickCooldown()
 						:SetText(L["TSM4"])
 						:SetScript("OnClick", private.SwitchBtnOnClick)
@@ -274,7 +280,7 @@ function private.FSMCreate()
 				end
 			end)
 			:SetOnExit(function(context)
-				local defaultFrame = TSM.IsWowClassic() and TradeSkillFrame or ProfessionsFrame
+				local defaultFrame = Environment.IsRetail() and ProfessionsFrame or TradeSkillFrame
 				if private.craftOpen then
 					if CraftFrame then
 						ScriptWrapper.Clear(CraftFrame, "OnHide")
@@ -312,18 +318,6 @@ function private.FSMCreate()
 		:AddState(FSM.NewState("ST_FRAME_OPEN")
 			:SetOnEnter(function(context)
 				assert(not context.frame)
-				if not TSM.IsWowClassic() and not context.craftingPage then
-					-- Workaround to allow multi-crafting
-					local craftingPage = CreateFrame("Frame", nil, nil, "ProfessionsCraftingPageTemplate")
-					craftingPage:Hide()
-					craftingPage:SetParent(nil)
-					EventRegistry:UnregisterCallback("ProfessionsRecipeListMixin.Event.OnRecipeSelected", craftingPage)
-					EventRegistry:UnregisterCallback("Professions.ProfessionSelected", craftingPage)
-					EventRegistry:UnregisterCallback("Professions.ReagentClicked", craftingPage)
-					EventRegistry:UnregisterCallback("Professions.TransactionUpdated", craftingPage)
-					craftingPage:RegisterEvent("UPDATE_TRADESKILL_CAST_COMPLETE")
-					context.craftingPage = craftingPage
-				end
 				context.frame = private.CreateMainFrame()
 				context.frame:Show()
 				if Profession.GetSkillLine() then
@@ -334,9 +328,9 @@ function private.FSMCreate()
 				context.frame:Draw()
 				private.isVisible = true
 				for addonTag, func in pairs(private.apiCallbacks) do
-					local apiFuncStartTime = debugprofilestop()
+					local apiFuncStartTime = GetTimePreciseSec()
 					func(true, context.frame:_GetBaseFrame())
-					Log.Info("API function (%s) took %d ms", addonTag, floor(debugprofilestop() - apiFuncStartTime + 0.5))
+					Log.Info("API function (%s) took %0.5fs", addonTag, GetTimePreciseSec() - apiFuncStartTime)
 				end
 			end)
 			:SetOnExit(function(context)
@@ -344,13 +338,13 @@ function private.FSMCreate()
 				context.frame:Release()
 				context.frame = nil
 				private.isVisible = false
-				if TSM.IsWowClassic() then
+				if not Environment.IsRetail() then
 					UpdateDefaultCraftButton()
 				end
 				for addonTag, func in pairs(private.apiCallbacks) do
-					local apiFuncStartTime = debugprofilestop()
+					local apiFuncStartTime = GetTimePreciseSec()
 					func(false)
-					Log.Info("API function (%s) took %d ms", addonTag, floor(debugprofilestop() - apiFuncStartTime + 0.5))
+					Log.Info("API function (%s) took %0.5fs", addonTag, GetTimePreciseSec() - apiFuncStartTime)
 				end
 			end)
 			:AddTransition("ST_CLOSED")

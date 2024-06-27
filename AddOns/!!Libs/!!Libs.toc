@@ -61,13 +61,13 @@ LibAHTab\LibAHTab.xml
 LibAboutPanel\lib.xml
 LibAlts-1.0\lib.xml
 LibCandyBar-3.0\lib.xml
-LibChatAnims\LibChatAnims\LibChatAnims.xml
+LibChatAnims\LibChatAnims.xml
 LibClassicCasterino\LibClassicCasterino.lua
 LibClassicDurations\LibClassicDurations.xml
 LibClassicItemSets-1.0\LibClassicItemSets-1.0.xml
 LibClassicSpellActionCount-1.0\LibClassicSpellActionCount-1.0.lua
 LibCustomGlow-1.0\LibCustomGlow-1.0.xml
-LibDBIcon-1.0\LibDBIcon-1.0\LibDBIcon-1.0.lua
+LibDBIcon-1.0\lib.xml
 LibDialog-1.0\lib.xml
 LibDualSpec-1.0\LibDualSpec-1.0.lua
 LibDurability\LibDurability\LibDurability.xml
@@ -80,7 +80,7 @@ LibQTip-1.0\lib.xml
 LibRangeCheck-2.0\LibRangeCheck-2.0\LibRangeCheck-2.0.lua
 LibRealmInfo\LibRealmInfo.lua
 LibSerialize\lib.xml
-LibSink-2.0\LibSink-2.0\LibSink-2.0.lua
+LibSink-2.0\lib.xml
 LibSpecialization\LibSpecialization\LibSpecialization.xml
 LibSpellRange-1.0\lib.xml
 LibTranslit-1.0\LibTranslit-1.0.xml

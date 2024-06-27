@@ -4,14 +4,13 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local Accounting = TSM.MainUI.Settings:NewPackage("Accounting")
 local L = TSM.Include("Locale").GetTable()
 local Log = TSM.Include("Util.Log")
 local UIElements = TSM.Include("UI.UIElements")
 local UIUtils = TSM.Include("UI.UIUtils")
 local private = {}
-local DAYS_OLD_OPTIONS = { 0, 15, 30, 45, 60, 75, 90, 180, 360 }
 
 
 
@@ -58,7 +57,7 @@ function private.GetAccountingSettingsFrame()
 				:AddChild(UIElements.New("Spacer", "spacer"))
 			)
 		)
-		:AddChild(TSM.MainUI.Settings.CreateExpandableSection("Accounting", "accounting", L["Clear Old Data"], L["You can clear old Accounting data below to keep things running smoothly."])
+		:AddChild(TSM.MainUI.Settings.CreateExpandableSection("Accounting", "accounting", L["Clear Old Data"], L["You can clear old Accounting data for the current realm below to keep things running smoothly."])
 			:AddChild(UIElements.New("Text", "daysOldLabel")
 				:SetHeight(20)
 				:SetMargin(0, 0, 0, 4)
@@ -68,15 +67,15 @@ function private.GetAccountingSettingsFrame()
 			:AddChild(UIElements.New("Frame", "daysOld")
 				:SetLayout("HORIZONTAL")
 				:SetHeight(24)
-				:AddChild(UIElements.New("SelectionDropdown", "dropdown")
+				:AddChild(UIElements.New("Input", "input")
 					:SetMargin(0, 8, 0, 0)
-					:SetHintText(L["None Selected"])
-					:SetItems(DAYS_OLD_OPTIONS)
-					:SetScript("OnSelectionChanged", private.DaysOldDropdownOnSelectionChanged)
+					:SetHintText(L["Number of days"])
+					:SetValidateFunc("NUMBER", "0:10000")
+					:SetValue("365")
+					:SetScript("OnValidationChanged", private.InputOnValidationChanged)
 				)
 				:AddChild(UIElements.New("ActionButton", "clearBtn")
 					:SetWidth(107)
-					:SetDisabled(true)
 					:SetText(L["Clear Data"])
 					:SetScript("OnClick", private.ClearBtnOnClick)
 				)
@@ -90,15 +89,16 @@ end
 -- Local Script Handlers
 -- ============================================================================
 
-function private.DaysOldDropdownOnSelectionChanged(dropdown)
-	dropdown:GetElement("__parent.clearBtn")
-		:SetDisabled(false)
+function private.InputOnValidationChanged(input)
+	input:GetElement("__parent.clearBtn")
+		:SetDisabled(not input:IsValid())
 		:Draw()
 end
 
 function private.ClearBtnOnClick(button)
-	local days = button:GetElement("__parent.dropdown"):GetSelectedItem()
-	button:GetBaseElement():ShowConfirmationDialog(L["Clear Old Data?"], L["Are you sure you want to clear old accounting data?"], private.ClearDataConfirmed, days)
+	local days = tonumber(button:GetElement("__parent.input"):GetValue())
+	local desc = format(L["Are you sure you want to clear accounting data older than %d days for the currenet realm?"], days)
+	button:GetBaseElement():ShowConfirmationDialog(L["Clear Old Data?"], desc, private.ClearDataConfirmed, days)
 end
 
 function private.ClearDataConfirmed(days)

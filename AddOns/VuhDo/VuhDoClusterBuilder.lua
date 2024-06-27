@@ -7,7 +7,6 @@ local VUHDO_CLUSTER_BLACKLIST = { };
 local VUHDO_RAID = {};
 
 local sqrt = sqrt;
-local CheckInteractDistance = CheckInteractDistance;
 local WorldMapFrame = WorldMapFrame;
 local GetMouseFocus = GetMouseFocus;
 local pairs = pairs;
@@ -17,6 +16,7 @@ local twipe = table.wipe;
 local tsort = table.sort;
 local VUHDO_setMapToCurrentZone;
 local VUHDO_tableUniqueAdd;
+local VUHDO_checkInteractDistance;
 
 local VUHDO_COORD_DELTAS = { };
 setmetatable(VUHDO_COORD_DELTAS, VUHDO_META_NEW_ARRAY);
@@ -38,6 +38,7 @@ function VUHDO_clusterBuilderInitLocalOverrides()
 
 	VUHDO_setMapToCurrentZone = _G["VUHDO_setMapToCurrentZone"];
 	VUHDO_tableUniqueAdd = _G["VUHDO_tableUniqueAdd"];
+	VUHDO_checkInteractDistance = _G["VUHDO_checkInteractDistance"];
 end
 
 
@@ -92,7 +93,7 @@ local function VUHDO_calibrateMapScale(aUnit, aDeltaX, aDeltaY)
 	for tCnt = 1, 3 do
 		-- Check only if new distance is within bandwidth (= better result than before)
 		if tDistance > VUHDO_INTERACT_MAX_DISTANCES[tCnt] and tDistance < VUHDO_INTERACT_FAIL_MIN_DISTANCES[tCnt] then
-			if CheckInteractDistance(aUnit, tCnt) then
+			if VUHDO_checkInteractDistance(aUnit, tCnt) then
 				VUHDO_INTERACT_MAX_DISTANCES[tCnt] = tDistance;
 			else
 				VUHDO_INTERACT_FAIL_MIN_DISTANCES[tCnt] = tDistance;

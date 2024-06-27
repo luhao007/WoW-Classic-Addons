@@ -229,12 +229,14 @@ do
 			frame = CreateFrame("CheckButton", frameName)
 			frame:SetHeight(self.buttonHeight)
 			frame:SetHighlightTexture("Interface\\QuestFrame\\UI-QuestTitleHighlight", "ADD")
+			-- Below will now cover the text and currently not transparent
+			-- Can be fixed by setting text and coin to a higher level (and sublevel)
 			frame:SetCheckedTexture("Interface\\QuestFrame\\UI-QuestTitleHighlight", "ADD")
 			frame:RegisterForClicks("LeftButtonDown", "RightButtonDown")
 			frame:SetChecked(false)
 			frame:SetScript("OnClick", ButtonOnClick)
 
-			frame.label = frame:CreateFontString(frameName.."-label", "ARTWORK", "GameFontNormal")
+			frame.label = frame:CreateFontString(frameName.."-label", "OVERLAY", "GameFontNormal")
 			--frame.label:SetPoint("LEFT", frame, "LEFT")
 			--frame.label:SetHeight(self.buttonHeight)
 			frame.label:SetPoint("TOPLEFT", frame, "TOPLEFT")
@@ -243,7 +245,7 @@ do
 			frame.label:SetJustifyV("MIDDLE")
 			frame.label:SetText(frameName.."-label")
 
-			frame.coin = frame:CreateTexture(frameName.."-coin", "ARTWORK")
+			frame.coin = frame:CreateTexture(frameName.."-coin", "OVERLAY", nil, 1)
 			frame.coin:SetPoint("RIGHT", frame, "RIGHT")
 			--frame.coin:SetTexture(_G.AtlasLoot.IMAGE_PATH.."silver")--gold
 			frame.coin:SetHeight(self.buttonHeight)

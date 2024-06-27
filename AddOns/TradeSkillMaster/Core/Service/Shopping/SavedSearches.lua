@@ -4,7 +4,7 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local SavedSearches = TSM.Shopping:NewPackage("SavedSearches")
 local Log = TSM.Include("Util.Log")
 local Database = TSM.Include("Util.Database")

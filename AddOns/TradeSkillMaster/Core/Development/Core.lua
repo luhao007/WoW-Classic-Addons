@@ -4,9 +4,10 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
+local Environment = TSM.Include("Environment")
 -- only create the TSMDEV table if we're in a dev or test environment
-if not TSM.IsDevVersion() and not TSM.IsTestEnvironment() then
+if not Environment.IsDev() and not Environment.IsTest() then
 	return
 end
 TSMDEV = {} ---@class TSMDEV
@@ -18,6 +19,8 @@ TSMDEV = {} ---@class TSMDEV
 -- ============================================================================
 
 function TSMDEV.Dump(value)
+	-- TODO: Implement something for test environments
+	assert(not Environment.IsTest())
 	LoadAddOn("Blizzard_DebugTools")
 	DevTools_Dump(value)
 end

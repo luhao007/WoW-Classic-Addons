@@ -83,7 +83,15 @@ end
 ---@param level number The new level
 function CraftString.SetLevel(craftString, level)
 	local spellId = CraftString.GetSpellId(craftString)
-	local rank = CraftString.GetRank(craftString)
-	local quality = CraftString.GetQuality(craftString)
-	return CraftString.Get(spellId, rank, level, quality)
+	assert(not CraftString.GetRank(craftString) and not CraftString.GetQuality(craftString))
+	return CraftString.Get(spellId, nil, level, nil)
+end
+
+---Gets a new craft string with the specified level.
+---@param craftString string The craft string
+---@param level number The new level
+function CraftString.SetQuality(craftString, quality)
+	local spellId = CraftString.GetSpellId(craftString)
+	assert(not CraftString.GetRank(craftString) and not CraftString.GetLevel(craftString))
+	return CraftString.Get(spellId, nil, nil, quality)
 end

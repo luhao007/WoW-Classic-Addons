@@ -12,9 +12,15 @@ local MatString = TSM.Include("Util.MatString")
 local TempTable = TSM.Include("Util.TempTable")
 local Table = TSM.Include("Util.Table")
 local ProfessionInfo = TSM.Include("Data.ProfessionInfo")
+local Conversions = TSM.Include("Service.Conversions")
+local CustomPrice = TSM.Include("Service.CustomPrice")
 local private = {
 	tempTables = {{}, {}},
 	tempTableInUse = {false, false},
+}
+local DRAGON_ISLES_SALVAGE_CRAFTSTRINGS = {
+	[Conversions.METHOD.MILL] = "c:382981",
+	[Conversions.METHOD.PROSPECT] = "c:374627",
 }
 
 
@@ -23,19 +29,34 @@ local private = {
 -- Module Functions
 -- ============================================================================
 
-function DFCrafting.CanCraftQuality(targetQuality, recipeDifficulty, recipeQuality, recipeMaxQuality)
-	return Quality.GetNeededSkill(targetQuality, recipeDifficulty, recipeQuality, recipeMaxQuality) and true or false
-end
-
 function DFCrafting.GetOptionalMats(craftString, mats, optionalMats)
-	local recipeDifficulty, recipeQuality, recipeMaxQuality = TSM.Crafting.GetQualityInfo(craftString)
+	if not TSM.Crafting.IsQualityCraft(craftString) then
+		return false, nil
+	end
+	local recipeDifficulty, recipeQuality, recipeMaxQuality, inspirationAmount, inspirationChance = TSM.Crafting.GetQualityInfo(craftString)
 	if not recipeDifficulty then
-		return false
+		return false, nil
+	end
+	local hasQualityMats = false
+	for _ in private.QualityMatIterator(mats) do --luacheck: ignore 512
+		hasQualityMats = true
+		break
 	end
 	local targetQuality = CraftString.GetQuality(craftString)
-	local neededSkill, maxAddedSkill, maxQualityMatSkill = Quality.GetNeededSkill(targetQuality, recipeDifficulty, recipeQuality, recipeMaxQuality)
+	local neededSkill, maxAddedSkill, maxQualityMatSkill = Quality.GetNeededSkill(targetQuality, recipeDifficulty, recipeQuality, recipeMaxQuality, hasQualityMats, inspirationAmount)
 	if not neededSkill then
-		return false
+		return false, nil
+	end
+
+	-- Handle crafts with no quality mats
+	if not hasQualityMats then
+		if neededSkill == 0 then
+			return true, 1
+		elseif inspirationAmount >= neededSkill then
+			return true, inspirationChance
+		else
+			return false, nil
+		end
 	end
 
 	-- Cache the cost of each quality mat and calculate the total weight
@@ -46,7 +67,7 @@ function DFCrafting.GetOptionalMats(craftString, mats, optionalMats)
 		local isFirst = true
 		local hasValidCost = false
 		for matItemString in MatString.ItemIterator(matString) do
-			qualityMatCostTemp[matItemString] = TSM.Crafting.Cost.GetMatCost(matItemString)
+			qualityMatCostTemp[matItemString] = CustomPrice.GetSourcePrice(matItemString, "MatPrice")
 			hasValidCost = hasValidCost or qualityMatCostTemp[matItemString] ~= nil
 			if isFirst then
 				isFirst = false
@@ -55,13 +76,13 @@ function DFCrafting.GetOptionalMats(craftString, mats, optionalMats)
 		end
 		if not hasValidCost then
 			private.ReleaseTempTable(qualityMatCostTemp)
-			return false
+			return false, nil
 		end
 		assert(not isFirst)
 	end
 
 	-- Get all combinations of quality mats
-	local lowestQualityMatCost = math.huge
+	local lowestQualityMatCost, isLowestInspired = math.huge, true
 	for qualities in Quality.MatCombationIterator(mats) do
 		-- Calculate the weight and cost for this set of qualities
 		local currentMatCost = 0
@@ -77,8 +98,16 @@ function DFCrafting.GetOptionalMats(craftString, mats, optionalMats)
 			end
 			currentMatCost = currentMatCost + matCost * quantity
 		end
+		-- NOTE: Only rely on inspiration if we can't find a non-inspirated way to craft it
 		local bonusSkill = (weight / totalWeight) * maxQualityMatSkill
-		if bonusSkill >= neededSkill and bonusSkill <= maxAddedSkill and currentMatCost < lowestQualityMatCost then
+		local isNewLowest = false
+		if bonusSkill >= neededSkill and bonusSkill <= maxAddedSkill and (isLowestInspired or currentMatCost < lowestQualityMatCost) then
+			isNewLowest = true
+			isLowestInspired = false
+		elseif (bonusSkill + inspirationAmount) >= neededSkill and (bonusSkill + inspirationAmount) <= maxAddedSkill and isLowestInspired and currentMatCost < lowestQualityMatCost then
+			isNewLowest = true
+		end
+		if isNewLowest then
 			lowestQualityMatCost = currentMatCost
 			wipe(optionalMats)
 			for matString in private.QualityMatIterator(mats) do
@@ -91,10 +120,35 @@ function DFCrafting.GetOptionalMats(craftString, mats, optionalMats)
 	end
 	private.ReleaseTempTable(qualityMatCostTemp)
 	if lowestQualityMatCost == math.huge then
-		return false
+		return false, nil
 	end
 	Table.SortWithValueLookup(optionalMats, optionalMats)
-	return true
+	return true, isLowestInspired and inspirationChance or 1
+end
+
+function DFCrafting.GetSourceMatSkill(recipeDifficulty, sourceQuality)
+	return sourceQuality == 3 and recipeDifficulty * 0.25 or (sourceQuality == 2 and recipeDifficulty * 0.125 or 0)
+end
+
+function DFCrafting.GetExpectedSalvageResult(method, sourceQuality)
+	local craftString = DRAGON_ISLES_SALVAGE_CRAFTSTRINGS[method]
+	assert(craftString)
+	local baseRecipeDifficulty, baseRecipeQuality = TSM.Crafting.GetQualityInfo(craftString)
+	-- Show quality 1 results when Dragon Isles Milling/Prospecting is not learned
+	if not baseRecipeDifficulty or not baseRecipeQuality then
+		return 1
+	end
+
+	local quality = 1
+	local sourceMatSkill = DFCrafting.GetSourceMatSkill(baseRecipeDifficulty, sourceQuality)
+	for i = 2, 3 do
+		-- TODO: take inspiration into account
+		local neededSkill = Quality.GetNeededSkill(i, baseRecipeDifficulty, baseRecipeQuality, 3, true, 0)
+		if neededSkill and neededSkill >= sourceMatSkill then
+			quality = i
+		end
+	end
+	return quality
 end
 
 

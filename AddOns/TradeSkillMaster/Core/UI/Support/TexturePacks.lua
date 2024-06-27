@@ -4,7 +4,7 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local TexturePacks = TSM.UI:NewPackage("TexturePacks")
 local NineSlice = TSM.Include("Util.NineSlice")
 local Rectangle = TSM.Include("UI.Rectangle")

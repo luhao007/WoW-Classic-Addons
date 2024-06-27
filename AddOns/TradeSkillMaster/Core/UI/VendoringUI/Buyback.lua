@@ -4,7 +4,7 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local Buyback = TSM.UI.VendoringUI:NewPackage("Buyback")
 local L = TSM.Include("Locale").GetTable()
 local Money = TSM.Include("Util.Money")
@@ -99,7 +99,7 @@ function private.GetFrame()
 end
 
 function private.GetItemText(itemString)
-	return UIUtils.GetColoredItemName(itemString) or "?"
+	return UIUtils.GetDisplayItemName(itemString) or "?"
 end
 
 function private.GetCostPriceText(value)

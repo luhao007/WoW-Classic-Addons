@@ -9,7 +9,7 @@
 -- scrollable window. It is a subclass of the @{Container} class.
 -- @classmod ScrollFrame
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local ScriptWrapper = TSM.Include("Util.ScriptWrapper")
 local Theme = TSM.Include("Util.Theme")
 local Rectangle = TSM.Include("UI.Rectangle")

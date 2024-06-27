@@ -14,10 +14,12 @@ local sCurrentFocus = nil;
 
 --
 function VUHDO_combatLogInitLocalOverrides()
+
 	VUHDO_RAID = _G["VUHDO_RAID"];
 	VUHDO_RAID_GUIDS = _G["VUHDO_RAID_GUIDS"];
 	VUHDO_INTERNAL_TOGGLES = _G["VUHDO_INTERNAL_TOGGLES"];
 	VUHDO_updateHealth = _G["VUHDO_updateHealth"];
+
 end
 
 
@@ -27,21 +29,21 @@ local tInfo;
 local tNewHealth;
 local tDeadInfo = { ["dead"] = true };
 local function VUHDO_addUnitHealth(aUnit, aDelta)
+
 	tInfo = VUHDO_RAID[aUnit] or tDeadInfo;
 
 	if not tInfo["dead"] then
-
 		-- avoid the calculation to be disturbed by the exception data
 		if UnitHealth(aUnit) ~= 0 or tInfo["health"] ~= 0 then
 			tNewHealth = tInfo["health"] + aDelta;
-		else 
+		else
 			tNewHealth = tInfo["loghealth"] + aDelta;
 		end
 
-		if tNewHealth < 0 then 
+		if tNewHealth < 0 then
 			tNewHealth = 0;
-		elseif tNewHealth > tInfo["healthmax"] then 
-			tNewHealth = tInfo["healthmax"]; 
+		elseif tNewHealth > tInfo["healthmax"] then
+			tNewHealth = tInfo["healthmax"];
 		end
 		
 		tInfo["loghealth"] = tNewHealth;
@@ -50,6 +52,7 @@ local function VUHDO_addUnitHealth(aUnit, aDelta)
 			VUHDO_updateHealth(aUnit, 12); -- VUHDO_UPDATE_HEALTH_COMBAT_LOG
 		end
 	end
+
 end
 
 
@@ -97,6 +100,8 @@ end
 
 --
 function VUHDO_clParserSetCurrentFocus()
+
+	local tOldFocus = sCurrentFocus;
 	sCurrentFocus = nil;
 
 	for tUnit, tInfo in pairs(VUHDO_RAID) do
@@ -108,6 +113,14 @@ function VUHDO_clParserSetCurrentFocus()
 			end
 			break;
 		end
+	end
+
+	if tOldFocus then
+		VUHDO_updateBouquetsForEvent(tOldFocus, 23); -- VUHDO_UPDATE_PLAYER_FOCUS
+	end
+
+	if sCurrentFocus then
+		VUHDO_updateBouquetsForEvent(sCurrentFocus, 23); -- VUHDO_UPDATE_PLAYER_FOCUS
 	end
 
 end

@@ -27,10 +27,10 @@
 Prat:AddModuleToLoad(function()
   local function dbg(...) end
 
-  --[===[@debug@
+  --[==[@debug@
 --  function dbg(...) Prat:PrintLiteral(...) end
 
-  --@end-debug@]===]
+  --@end-debug@]==]
 
   local PRAT_MODULE = Prat:RequestModuleName("Memory")
 
@@ -54,7 +54,7 @@ Prat:AddModuleToLoad(function()
     }
   })
 
-  --[===[@debug@
+  --[==[@debug@
   PL:AddLocale(PRAT_MODULE, "enUS", {
     ["module_name"] = "Memory",
     ["module_desc"] = "Support saving the Blizzard chat settings to your profile so they can be synced across all your characters",
@@ -71,7 +71,7 @@ Prat:AddModuleToLoad(function()
     options_header_name = "Options",
     msg_loadfailed = "Could not fully restore the chat settings"
   })
-  --@end-debug@]===]
+  --@end-debug@]==]
 
   -- These Localizations are auto-generated. To help with localization
   -- please go to http://www.wowace.com/projects/prat-3-0/localization/
@@ -232,7 +232,7 @@ L = {
 		["load_desc"] = "Ladet den Chat-Rahmen/Registerkarten aus der letzten Speicherung",
 		["load_name"] = "Einstellungen laden",
 		["module_desc"] = "Unterstützt das Speichern der Blizzard-Chat Einstellungen in deinem Profil, damit sie für alle deine Charaktere synchronisiert werden können",
-		["module_info"] = "DIESES MODUL IST EXPERIMENTELL = Du kannst deine Chat-Einstellungen in deinem Konto synchronisieren",
+		["module_info"] = "|cffff8888DIESES MODUL IST EXPERIMENTELL|r Mit diesem Modul kannst du alle deine Chat-Einstellungen und deine Rahmenanordnung laden/speichern. Diese Einstellungen können auf jeden deiner Charaktere geladen werden",
 		["module_name"] = "Erinnerung",
 		["msg_loadfailed"] = "Die Chat-Einstellungen konnten nicht vollständig wiederhergestellt werden",
 		["msg_nosettings"] = "Keine gespeicherten Einstellungen",
@@ -256,9 +256,8 @@ L = {
 		["load_name"] = "불러오기 설정",
 		["module_desc"] = "블리자드 채팅 설정을 프로필에 저장하여 모든 캐릭터와 동기화 할 수 있도록 지원",
 		["module_info"] = "|cffff8888이 모듈은 실험적입니다.|r 이 모듈을 사용하면 모든 채팅 설정 및 프레임 모양을 불러오기/저장할 수 있습니다. 이 설정은 모든 캐릭터에서 불러오기 할 수 있습니다.",
-		["module_name"] = "메모리",
-		--[[Translation missing --]]
-		["msg_loadfailed"] = "Could not fully restore the chat settings",
+		["module_name"] = "메모리 [Memory]",
+		["msg_loadfailed"] = "대화 설정을 완전히 복구하지 못했습니다",
 		["msg_nosettings"] = "저장된 설정 없음",
 		["msg_settingsloaded"] = "설정 불러옴",
 		["options_header_name"] = "옵션",
@@ -541,6 +540,7 @@ end
     point, xOffset, yOffset, width, height
   end
 
+  -- Warning: This function causes taint with DF edit mode
   function module:LoadFrameSettingsForFrame(frameId)
     local db = self.db.profile.frames[frameId]
     local success = true
@@ -684,7 +684,9 @@ end
           local snum, sname = select(i, GetChannelList());
           local curnum = map[sname]
           dbg("check", snum, curnum)
-          if snum ~= curnum then
+          -- we check if the channel is joined and was joined in the past before
+          -- doing anything (avoids nil reference error on some new characters)
+          if curnum ~= nil and snum ~= nil and snum ~= curnum then
             dbg("swap", snum, curnum)
             if Prat.IsClassic then
               SwapChatChannelByLocalID(snum, curnum)
@@ -782,15 +784,18 @@ end
       self.working.cvars = true
     end
 
-    -- restore frame appearance and layout
-    if not self.working.frames then
-      for k, v in pairs(db.frames) do
-        if not self:LoadFrameSettingsForFrame(k) then
-          success = false
+    -- Disabled for retail because it causes taint errors with edit mode
+    if Prat.IsClassic then
+      -- restore frame appearance and layout
+      if not self.working.frames then
+        for k, v in pairs(db.frames) do
+          if not self:LoadFrameSettingsForFrame(k) then
+            success = false
+          end
         end
+        FCFDock_SelectWindow(GENERAL_CHAT_DOCK, ChatFrame1)
+        self.working.frames = success
       end
-      FCFDock_SelectWindow(GENERAL_CHAT_DOCK, ChatFrame1)
-      self.working.frames = success
     end
 
     -- restore chat channels

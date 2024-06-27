@@ -7,6 +7,7 @@ function VUHDO_newOptionsMoveOnShow()
 	VUHDO_CONFIG_SHOW_RAID = false;
 	VUHDO_initDynamicPanelModels();
 	VUHDO_redrawAllPanels(false);
+	VUHDO_updatePanelVisibility();
 end
 
 
@@ -21,6 +22,7 @@ function VUHDO_newOptionsMoveOnHide()
 	VUHDO_rewritePanelModels();
 	VUHDO_initDynamicPanelModels();
 	VUHDO_redrawAllPanels(false);
+	VUHDO_updatePanelVisibility();
 end
 
 

@@ -937,6 +937,14 @@ end
 
 SLASH_TOMTOM1 = "/tomtom"
 SlashCmdList["TOMTOM"] = function(msg)
+	local tokens = {}
+	for token in msg:gmatch("%S+") do table.insert(tokens, token) end
+
+	if tokens[1] and tokens[1]:lower() == "help" then
+		TomTom.slashCommandUsage()
+		return
+	end
+
 	if Settings then
 		Settings.OpenToCategory("TomTom")
 	elseif InterfaceOptionsFrame_OpenToCategory then

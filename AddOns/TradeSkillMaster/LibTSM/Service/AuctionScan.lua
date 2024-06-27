@@ -4,11 +4,9 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
---- Auction scanning functions.
--- @module AuctionScan
-
-local _, TSM = ...
-local AuctionScan = TSM.Init("Service.AuctionScan")
+local TSM = select(2, ...) ---@type TSM
+local AuctionScan = TSM.Init("Service.AuctionScan") ---@class Service.AuctionScan
+local Environment = TSM.Include("Environment")
 local ScanManager = TSM.Include("Service.AuctionScanClasses.ScanManager")
 
 
@@ -32,7 +30,7 @@ function AuctionScan.CanBid(subRow)
 		return false
 	elseif displayedBid == buyout then
 		return false
-	elseif not TSM.IsWowClassic() and subRow:IsCommodity() then
+	elseif Environment.HasFeature(Environment.FEATURES.COMMODITY_ITEMS) and subRow:IsCommodity() then
 		return false
 	elseif GetMoney() < subRow:GetRequiredBid() then
 		return false
@@ -45,13 +43,13 @@ function AuctionScan.CanBuyout(subRow, auctionScan)
 		return false
 	end
 	local buyout, itemBuyout = subRow:GetBuyouts()
-	if not TSM.IsWowClassic() then
+	if Environment.IsRetail() then
 		buyout = itemBuyout
 	end
 	local itemString = subRow:GetItemString()
 	if buyout == 0 or GetMoney() < buyout then
 		return false
-	elseif not TSM.IsWowClassic() and subRow:IsCommodity() then
+	elseif Environment.IsRetail() and subRow:IsCommodity() then
 		-- make sure it's the cheapest
 		local isCheapest = false
 		for _, query in auctionScan:QueryIterator() do

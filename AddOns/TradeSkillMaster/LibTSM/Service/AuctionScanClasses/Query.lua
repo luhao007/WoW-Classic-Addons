@@ -4,12 +4,9 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
---- AuctionQuery Class.
--- A class which is used to build a query to scan the auciton house.
--- @classmod AuctionQuery
-
-local _, TSM = ...
-local Query = TSM.Init("Service.AuctionScanClasses.Query")
+local TSM = select(2, ...) ---@type TSM
+local Query = TSM.Init("Service.AuctionScanClasses.Query") ---@class Service.AuctionScanClasses.Query
+local Environment = TSM.Include("Environment")
 local String = TSM.Include("Util.String")
 local ObjectPool = TSM.Include("Util.ObjectPool")
 local ItemString = TSM.Include("Util.ItemString")
@@ -25,15 +22,15 @@ local private = {
 }
 local ITEM_SPECIFIC = newproxy()
 local ITEM_BASE = newproxy()
-local DEFAULT_SORTS = TSM.IsWowClassic() and
+local DEFAULT_SORTS = Environment.HasFeature(Environment.FEATURES.C_AUCTION_HOUSE) and
+	{
+		{ sortOrder = Enum.AuctionHouseSortOrder.Price, reverseSort = false },
+		{ sortOrder = Enum.AuctionHouseSortOrder.Name, reverseSort = false },
+	} or
 	{ -- classic
 		"seller",
 		"quantity",
 		"unitprice",
-	} or
-	{ -- retail
-		{ sortOrder = Enum.AuctionHouseSortOrder.Price, reverseSort = false },
-		{ sortOrder = Enum.AuctionHouseSortOrder.Name, reverseSort = false },
 	}
 local EMPTY_SORTS = {}
 local INV_TYPES = {
@@ -247,7 +244,7 @@ function AuctionQuery.SetPage(self, page)
 	if page == nil then
 		self._specifiedPage = nil
 	elseif type(page) == "number" or page == "FIRST" or page == "LAST" then
-		assert(TSM.IsWowClassic())
+		assert(not Environment.IsRetail())
 		self._specifiedPage = page
 	else
 		error("Invalid page: "..tostring(page))
@@ -266,10 +263,10 @@ function AuctionQuery.SetCallback(self, callback)
 end
 
 function AuctionQuery.Browse(self, forceNoScan)
-	assert(not TSM.IsWowClassic() or not forceNoScan)
+	assert(Environment.IsRetail() or not forceNoScan)
 
 	local noScan = forceNoScan or false
-	if not TSM.IsWowClassic() then
+	if Environment.IsRetail() then
 		local numItems = 0
 		for _, itemType in pairs(self._items) do
 			if itemType == ITEM_SPECIFIC then
@@ -283,7 +280,7 @@ function AuctionQuery.Browse(self, forceNoScan)
 	end
 
 	if noScan then
-		assert(not TSM.IsWowClassic())
+		assert(Environment.IsRetail())
 		local itemKeys = TempTable.Acquire()
 		for itemString in pairs(self._items) do
 			if itemString == ItemString.GetBaseFast(itemString) then
@@ -311,7 +308,7 @@ function AuctionQuery.Browse(self, forceNoScan)
 end
 
 function AuctionQuery.GetSearchProgress(self)
-	if TSM.IsWowClassic() then
+	if not Environment.IsRetail() then
 		return 1
 	end
 	local progress, totalNum = 0, 0
@@ -349,7 +346,7 @@ function AuctionQuery.ItemSubRowIterator(self, itemString)
 end
 
 function AuctionQuery.GetCheapestSubRow(self, itemString)
-	assert(not TSM.IsWowClassic())
+	assert(Environment.IsRetail())
 	local cheapest, cheapestItemBuyout = nil, nil
 	for _, subRow in self:ItemSubRowIterator(itemString) do
 		local quantity = subRow:GetQuantities()
@@ -378,7 +375,7 @@ function AuctionQuery.RemoveResultRow(self, row)
 end
 
 function AuctionQuery.Search(self, row, useCachedData)
-	assert(not TSM.IsWowClassic())
+	assert(Environment.IsRetail())
 	assert(self._browseResults)
 	return Scanner.Search(self, self._resolveSellers, useCachedData, row, self._callback)
 end
@@ -408,7 +405,7 @@ end
 -- ============================================================================
 
 function AuctionQuery._SetSort(self)
-	if not TSM.IsWowClassic() then
+	if Environment.IsRetail() then
 		return true
 	end
 
@@ -473,17 +470,7 @@ function AuctionQuery._SendWowQuery(self)
 	-- build the query
 	local minLevel = self._minLevel ~= -math.huge and self._minLevel or nil
 	local maxLevel = self._maxLevel ~= math.huge and self._maxLevel or nil
-	if TSM.IsWowClassic() then
-		if self._specifiedPage == "LAST" then
-			self._page = max(AuctionHouseWrapper.GetNumPages() - 1, 0)
-		elseif self._specifiedPage == "FIRST" then
-			self._page = 0
-		elseif self._specifiedPage then
-			self._page = self._specifiedPage
-		end
-		local minQuality = self._minQuality == -math.huge and 0 or self._minQuality
-		return AuctionHouseWrapper.QueryAuctionItems(self._str, minLevel, maxLevel, self._page, self._usable, minQuality, nil, self._exact, self._classFiltersTemp)
-	else
+	if Environment.HasFeature(Environment.FEATURES.C_AUCTION_HOUSE) then
 		wipe(self._filtersTemp)
 		if self._uncollected then
 			tinsert(self._filtersTemp, Enum.AuctionHouseFilter.UncollectedOnly)
@@ -509,6 +496,16 @@ function AuctionQuery._SendWowQuery(self)
 		self._queryTemp.filters = self._filtersTemp
 		self._queryTemp.itemClassFilters = self._classFiltersTemp
 		return AuctionHouseWrapper.SendBrowseQuery(self._queryTemp)
+	else
+		if self._specifiedPage == "LAST" then
+			self._page = max(AuctionHouseWrapper.GetNumPages() - 1, 0)
+		elseif self._specifiedPage == "FIRST" then
+			self._page = 0
+		elseif self._specifiedPage then
+			self._page = self._specifiedPage
+		end
+		local minQuality = self._minQuality == -math.huge and 0 or self._minQuality
+		return AuctionHouseWrapper.QueryAuctionItems(self._str, minLevel, maxLevel, self._page, self._usable, minQuality, nil, self._exact, self._classFiltersTemp)
 	end
 end
 
@@ -586,7 +583,12 @@ function AuctionQuery._IsFiltered(self, row, isSubRow, itemKey)
 end
 
 function AuctionQuery._BrowseIsDone(self, isRetry)
-	if TSM.IsWowClassic() then
+	if Environment.HasFeature(Environment.FEATURES.C_AUCTION_HOUSE) then
+		if self._isBrowseDoneFunc and self._isBrowseDoneFunc(self) then
+			return true
+		end
+		return C_AuctionHouse.HasFullBrowseResults()
+	else
 		local numPages = AuctionHouseWrapper.GetNumPages()
 		if self._specifiedPage then
 			if isRetry then
@@ -600,28 +602,24 @@ function AuctionQuery._BrowseIsDone(self, isRetry)
 		else
 			return self._page >= numPages
 		end
-	else
-		if self._isBrowseDoneFunc and self._isBrowseDoneFunc(self) then
-			return true
-		end
-		return C_AuctionHouse.HasFullBrowseResults()
 	end
 end
 
 function AuctionQuery._BrowseIsPageValid(self)
-	if TSM.IsWowClassic() then
-		if self._specifiedPage then
-			return self:_BrowseIsDone()
-		else
-			return true
-		end
+	if Environment.IsRetail() then
+		return true
+	end
+	if self._specifiedPage then
+		return self:_BrowseIsDone()
 	else
 		return true
 	end
 end
 
 function AuctionQuery._BrowseRequestMore(self, isRetry)
-	if TSM.IsWowClassic() then
+	if Environment.HasFeature(Environment.FEATURES.C_AUCTION_HOUSE) then
+		return AuctionHouseWrapper.RequestMoreBrowseResults()
+	else
 		if self._specifiedPage then
 			return self:_SendWowQuery()
 		end
@@ -629,8 +627,6 @@ function AuctionQuery._BrowseRequestMore(self, isRetry)
 			self._page = self._page + 1
 		end
 		return self:_SendWowQuery()
-	else
-		return AuctionHouseWrapper.RequestMoreBrowseResults()
 	end
 end
 

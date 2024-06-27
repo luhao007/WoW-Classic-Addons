@@ -4,13 +4,11 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
----PlayerInfo Functions
--- @module PlayerInfo
-
 local TSM = select(2, ...) ---@type TSM
 local PlayerInfo = TSM.Init("Service.PlayerInfo") ---@class Service.PlayerInfo
 local String = TSM.Include("Util.String")
 local TempTable = TSM.Include("Util.TempTable")
+local Table = TSM.Include("Util.Table")
 local Wow = TSM.Include("Util.Wow")
 local Settings = TSM.Include("Service.Settings")
 local private = {
@@ -35,6 +33,7 @@ PlayerInfo:OnSettingsLoad(function()
 		:AddKey("factionrealm", "coreOptions", "ignoreGuilds")
 		:AddKey("factionrealm", "internalData", "characterGuilds")
 		:AddKey("sync", "internalData", "classKey")
+		:AddKey("global", "coreOptions", "regionWide")
 end)
 
 
@@ -47,12 +46,14 @@ end)
 ---@return table
 function PlayerInfo.GetConnectedAlts()
 	wipe(private.connectedAlts)
-	for factionrealm in TSM.db:GetConnectedRealmIterator("factionrealm") do
-		for _, character in TSM.db:FactionrealmCharacterIterator(factionrealm) do
-			local realm = strmatch(factionrealm, ".+ %- (.+)")
-			character = Ambiguate(gsub(strmatch(character, "(.*) ?"..String.Escape("-").."?").."-"..gsub(realm, String.Escape("-"), ""), " ", ""), "none")
-			if character ~= Wow.GetCharacterName() then
-				tinsert(private.connectedAlts, character)
+	for factionrealm, isConnected in TSM.db:GetConnectedRealmIterator("factionrealm") do
+		if isConnected or private.settings.regionWide then
+			for _, character in TSM.db:FactionrealmCharacterIterator(factionrealm) do
+				local realm = strmatch(factionrealm, ".+ %- (.+)")
+				character = Ambiguate(gsub(strmatch(character, "(.*) ?"..String.Escape("-").."?").."-"..gsub(realm, String.Escape("-"), ""), " ", ""), "none")
+				if character ~= Wow.GetCharacterName() then
+					tinsert(private.connectedAlts, character)
+				end
 			end
 		end
 	end
@@ -65,10 +66,11 @@ end
 ---@return fun():number, string, string @An iterator with the following fields: `index, character, factionrealm`
 function PlayerInfo.CharacterIterator(currentAccountOnly)
 	local result = TempTable.Acquire()
-	for _, _, character, factionrealm in private.settings:AccessibleValueIterator("classKey") do
-		if not currentAccountOnly or Settings.IsCurrentAccountOwner(character, factionrealm) then
-			tinsert(result, character)
-			tinsert(result, factionrealm)
+	for _, _, character, factionrealm, _, isConnected in private.settings:AccessibleValueIterator("classKey") do
+		if isConnected or private.settings.regionWide then
+			if not currentAccountOnly or Settings.IsCurrentAccountOwner(character, factionrealm) then
+				Table.InsertMultiple(result, character, factionrealm)
+			end
 		end
 	end
 	return TempTable.Iterator(result, 2)
@@ -79,12 +81,13 @@ end
 ---@return fun():number, string, string @An iterator with the following fields: `index, guildName, factionrealm`
 function PlayerInfo.GuildIterator(includeIgnored)
 	local result = TempTable.Acquire()
-	for _, guildVaults, factionrealm in private.settings:AccessibleValueIterator("guildVaults") do
-		local ignoreGuilds = private.settings:GetForScopeKey("ignoreGuilds", factionrealm)
-		for guildName in pairs(guildVaults) do
-			if includeIgnored or not ignoreGuilds[guildName] then
-				tinsert(result, guildName)
-				tinsert(result, factionrealm)
+	for _, guildVaults, factionrealm, isConnected in private.settings:AccessibleValueIterator("guildVaults") do
+		if isConnected or private.settings.regionWide then
+			local ignoreGuilds = private.settings:GetForScopeKey("ignoreGuilds", factionrealm)
+			for guildName in pairs(guildVaults) do
+				if includeIgnored or not ignoreGuilds[guildName] then
+					Table.InsertMultiple(result, guildName, factionrealm)
+				end
 			end
 		end
 	end
@@ -137,11 +140,13 @@ function private.IsPlayerHelper(target, includeAlts, includeOtherFaction, includ
 	end
 	if includeAlts then
 		local result = false
-		for _, factionrealm, character in Settings.ConnectedFactionrealmAltCharacterIterator() do
-			local factionKey, realm = strmatch(factionrealm, "(.+) %- (.+)")
-			factionKey = strlower(factionKey)
-			if not result and target == strlower(character).." - "..strlower(realm) and (includeOtherFaction or factionKey == FACTION_LOWER) and (includeOtherAccounts or Settings.IsCurrentAccountOwner(character, factionrealm)) then
-				result = true
+		for _, factionrealm, character, _, isConnected in Settings.ConnectedFactionrealmAltCharacterIterator() do
+			if isConnected or private.settings.regionWide then
+				local factionKey, realm = strmatch(factionrealm, "(.+) %- (.+)")
+				factionKey = strlower(factionKey)
+				if not result and target == strlower(character).." - "..strlower(realm) and (includeOtherFaction or factionKey == FACTION_LOWER) and (includeOtherAccounts or Settings.IsCurrentAccountOwner(character, factionrealm)) then
+					result = true
+				end
 			end
 		end
 		return result

@@ -1625,6 +1625,38 @@ NRC.foods = {
 	},
 };
 
+--"Food" buffs used in RaidStatus to show player is currently eating buff food, these must match all foods above.
+--Current expansion and 1 previous expansion.
+NRC.eating = {
+	--Classic.
+	[5004] = "Food", --2 stam 2 spirit.
+	[5005] = "Food", --4 stam 4 spirit.
+	[5006] = "Food", --6 stam 6 spirit.
+	[5007] = "Food", --8 stam 8 spirit.
+	[10256] = "Food", --12 stam 12 spirit.
+	[10257] = "Food", --14 stam 14 spirit.
+	[24800] = "Food", --20 strength.
+	[18229] = "Food", --+10 Stamina, 35.
+	[18230] = "Food", --+10 Agility, 35.
+	[18231] = "Food", --+10 Spirit, 35.
+	[18232] = "Food", --+6 Health every 5 seconds, 35.
+	[18233] = "Food", --+8 Mana every 5 seconds, 35.
+	[18234] = "Food", --+10 Stamina, 55, has level 35 equivalent.
+	[22731] = "Food", --+Intellect, 55.
+	--TBC.
+	[33258] = "Food", --30 stam 20 spirit.
+	[33269] = "Food", --44 healing 20 spirit.
+	[33264] = "Food", --23 SP 20 spirit.
+	[33260] = "Food", --40 AP 20 spirit.
+	[33262] = "Food", --20 agi 20 spirit.
+	[43763] = "Food", --20 hit 20 spirit.
+	[33255] = "Food", --20 str 20 spirit.
+	[43706] = "Drink", --20 crit 20 spirit.
+	[33266] = "Food", --20 stam 8MP5.
+	[45618] = "Food", --8 resistances.
+	[43730] = "Electrified", --Zap nearby enemies.
+};
+
 NRC.scrolls = {
 	[12174] = {
 		name = "Scroll of Agility IV",
@@ -1901,7 +1933,7 @@ NRC.trackedConsumes = {
 	[22846] = {
 		name = "Major Shadow Protection Potion",
 		icon = 134747,
-		desc = " Absorbs 2800 to 4000 shadow damage.  Lasts 2 min.",
+		desc = "Absorbs 2800 to 4000 shadow damage.  Lasts 2 min.",
 		itemID = 22846,
 		quality = 1,
 	},
@@ -1922,7 +1954,7 @@ NRC.trackedConsumes = {
 	[38908] = {
 		name = "Fel Regeneration Potion",
 		icon = 134766,
-		desc = " Restores 3200 health over 24 sec, but at a cost. All stats are reduced by 15 for 15 min.",
+		desc = "Restores 3200 health over 24 sec, but at a cost. All stats are reduced by 15 for 15 min.",
 		itemID = 31676,
 		quality = 1,
 	},
@@ -4182,17 +4214,17 @@ NRC.magePortals = {
 };
 
 NRC.healthstones = {
-	[27235] = {
+	[11732] = {
 		name = "Healthstone (0/2)",
 		icon = 135230,
 		spellName = "Healthstone",
 	},
-	[27236] = {
+	[23476] = {
 		name = "Healthstone (1/2)",
 		icon = 135230,
 		spellName = "Healthstone",
 	},
-	[27237] = {
+	[23477] = {
 		name = "Healthstone (2/2)",
 		icon = 135230,
 		spellName = "Healthstone",
@@ -4200,30 +4232,6 @@ NRC.healthstones = {
 };
 		
 NRC.dpsPotions = {
-	[28508] = {
-		name = "Destruction Potion",
-		icon = 134729,
-	},
-	[28507] = {
-		name = "Haste Potion",
-		icon = 134730,
-	},
-	[28515] = {
-		name = "Ironshield Potion",
-		icon = 134758,
-	},
-	[28506] = {
-		name = "Heroic Potion",
-		icon = 134728,
-	},
-	[28494] = {
-		name = "Insane Strength Potion",
-		icon = 134731,
-	},
-	[28492] = {
-		name = "Sneaking Potion",
-		icon = 134733,
-	},
 	[11392] = {
 		name = "Invisibility Potion",
 		icon = 134805,
@@ -4239,26 +4247,6 @@ NRC.manaPotions = {
 		name = "Major Mana Potion",
 		icon = 134856,
 	},
-	[28499] = {
-		name = "Super Mana Potion",
-		icon = 134762,
-	},
-	[22729] = {
-		name = "Major Rejuvenation Potion",
-		icon = 134827,
-	},
-	[28517] = {
-		name = "Super Rejuvenation Potion",
-		icon = 134759,
-	},
-	[28504] = {
-		name = "Major Dreamless Sleep Potion",
-		icon = 134764,
-	},
-	[38908] = {
-		name = "Fel Regeneration Potion",
-		icon = 134766,
-	},
 	[16666] = {
 		name = "Demonic Rune",
 		icon = 134417,
@@ -4273,26 +4261,6 @@ NRC.healingPotions = {
 	[17534] = {
 		name = "Major Healing Potion",
 		icon = 134834,
-	},
-	[28495] = {
-		name = "Super Healing Potion",
-		icon = 134756,
-	},
-	[22729] = {
-		name = "Major Rejuvenation Potion",
-		icon = 134827,
-	},
-	[28517] = {
-		name = "Super Rejuvenation Potion",
-		icon = 134759,
-	},
-	[28504] = {
-		name = "Major Dreamless Sleep Potion",
-		icon = 134764,
-	},
-	[38908] = {
-		name = "Fel Regeneration Potion",
-		icon = 134766,
 	},
 };
 
@@ -5330,4 +5298,8 @@ NRC.pal = {
 		maxRank = true,
 		order = 6,
 	},
+};
+
+NRC.worldBuffs = {
+
 };

@@ -12,6 +12,7 @@
 	local Translit = LibStub("LibTranslit-1.0")
 	local gump = Details.gump
 	local _ = nil
+	local detailsFramework = DetailsFramework
 	local addonName, Details222 = ...
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -45,8 +46,8 @@
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --constants
 
-	local container_habilidades	= 	Details.container_habilidades
-	local atributo_damage	=	Details.atributo_damage
+	local spellContainerClass	= 	Details.container_habilidades
+	local damageClass	=	Details.atributo_damage
 	local atributo_misc		=	Details.atributo_misc
 	local container_damage	=	Details.container_type.CONTAINER_DAMAGE_CLASS
 
@@ -77,7 +78,7 @@
 
 	local headerColor = {1, 0.9, 0.0, 1}
 
-	local info = Details.playerDetailWindow
+	local breakdownWindowFrame = Details.BreakdownWindowFrame
 	local keyName
 
 	local OBJECT_TYPE_PLAYER =	0x00000400
@@ -94,12 +95,10 @@
 
 	local OBJECT_TYPE_FRIENDLY_NPC 	=	0x00000A18
 
-	local ignoredEnemyNpcsTable = {
-		[31216] = true, --mirror image
-		[53006] = true, --spirit link totem
-		[63508] = true, --xuen
-		[73967] = true, --xuen
-	}
+	local ignoredEnemyNpcsTable = Details.IgnoredEnemyNpcsTable
+
+	--damage mixin
+	local damageClassMixin = {}
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --exported functions
@@ -110,7 +109,7 @@ function Details:CreateActorLastEventTable() --[[exported]]
 	return t
 end
 
-function atributo_damage:CreateFFTable(targetName) --[[exported]]
+function damageClass:CreateFFTable(targetName) --[[exported]]
 	local newTable = {total = 0, spells = {}}
 	self.friendlyfire[targetName] = newTable
 	return newTable
@@ -157,12 +156,20 @@ function Details.SortKeyGroup (table1, table2) --[[exported]]
 end
 
 
-function Details.SortKeySimple(table1, table2) --[[exported]] 	
+function Details.SortKeySimple(table1, table2) --[[exported]]
 	return table1[keyName] > table2[keyName]
 end
 
+---sort by real time dps
+---@param actor1 actor
+---@param actor2 actor
+---@return boolean
+function Details.SortByRealTimeDps(actor1, actor2)
+	return (actor1.last_dps_realtime or 0) > (actor2.last_dps_realtime or 0)
+end
 
-function Details:ContainerSort (container, amount, keyName2) --[[exported]] 	
+
+function Details:ContainerSort (container, amount, keyName2) --[[exported]]
 	keyName = keyName2
 	_table_sort(container,  Details.SortKeySimple)
 
@@ -177,45 +184,6 @@ function Details:ContainerSort (container, amount, keyName2) --[[exported]]
 
 		return amount
 	end
-end
-
----return true if the actor is or was in the player group
----@param self table
----@return boolean|nil
-function Details:IsGroupPlayer() --[[exported]]
-	return self.grupo
-end
-
----return true if the player is a pet or guardian
----@return boolean
-function Details:IsPetOrGuardian() --[[exported]]
-	return self.owner and true or false
-end
-
----return true if the actor is a player
----@return boolean
-function Details:IsPlayer() --[[exported]]
-	if (self.flag_original) then
-		if (bitBand(self.flag_original, OBJECT_TYPE_PLAYER) ~= 0) then
-			return true
-		end
-	end
-	return false
-end
-
----return true if the actor is an enemy of neutral npc
----@return boolean
-function Details:IsNeutralOrEnemy() --[[exported]]
-	if (self.flag_original) then
-		if (bitBand(self.flag_original, 0x00000060) ~= 0) then
-			local npcid1 = Details:GetNpcIdFromGuid(self.serial)
-			if (ignoredEnemyNpcsTable[npcid1]) then
-				return false
-			end
-			return true
-		end
-	end
-	return false
 end
 
 ---return true if the actor is a friendly npc
@@ -234,7 +202,7 @@ function Details:IsFriendlyNpc() --[[exported]]
 	return false
 end
 
-function Details:IsEnemy() --[[exported]]	
+function Details:IsEnemy() --[[exported]]
 	if (self.flag_original) then
 		if (bitBand(self.flag_original, 0x00000060) ~= 0) then
 			local npcId = Details:GetNpcIdFromGuid(self.serial)
@@ -246,8 +214,8 @@ function Details:IsEnemy() --[[exported]]
 	end
 	return false
 end
-	
-function Details:GetSpellList() --[[ exported]]
+
+function Details:GetSpellList() --[[exported]]
 	return self.spells._ActorTable
 end
 
@@ -256,13 +224,13 @@ function Details:GetTimeInCombat(petOwner) --[[exported]]
 	if (petOwner) then
 		if (Details.time_type == 1 or not petOwner.grupo) then
 			return self:Tempo()
-		elseif (Details.time_type == 2) then
+		elseif (Details.time_type == 2 or Details.use_realtimedps) then
 			return self:GetCombatTime()
 		end
 	else
 		if (Details.time_type == 1) then
 			return self:Tempo()
-		elseif (Details.time_type == 2) then
+		elseif (Details.time_type == 2 or Details.use_realtimedps) then
 			return self:GetCombatTime()
 		end
 	end
@@ -336,27 +304,50 @@ local void_zone_sort = function(t1, t2)
 end
 
 
-function Details.Sort1 (table1, table2) --[[exported]]
+function Details.Sort1(table1, table2) --[[exported]]
 	return table1[1] > table2[1]
 end
 
-function Details.Sort2 (table1, table2) --[[exported]]
+function Details.Sort2(table1, table2) --[[exported]]
 	return table1[2] > table2[2]
 end
 
-function Details.Sort3 (table1, table2) --[[exported]]
+function Details.Sort3(table1, table2) --[[exported]]
 	return table1[3] > table2[3]
 end
 
-function Details.Sort4 (table1, table2) --[[exported]]
+function Details.Sort4(table1, table2) --[[exported]]
 	return table1[4] > table2[4]
 end
 
-function Details.Sort4Reverse (table1, table2) --[[exported]]
+function Details.Sort4Reverse(table1, table2) --[[exported]]
 	if (not table2) then
 		return true
 	end
 	return table1[4] < table2[4]
+end
+
+function Details:GetTextColor(instanceObject, textSide)
+	local actorObject = self
+	textSide = textSide or "left"
+
+	local bUseClassColor = false
+	if (textSide == "left") then
+		bUseClassColor = instanceObject.row_info.textL_class_colors
+	elseif (textSide == "right") then
+		bUseClassColor = instanceObject.row_info.textR_class_colors
+	end
+
+	if (bUseClassColor) then
+		local actorClass = actorObject.classe or "UNKNOW"
+		if (actorClass == "UNKNOW") then
+			return unpack(instanceObject.row_info.fixed_text_color)
+		else
+			return unpack(Details.class_colors[actorClass])
+		end
+	else
+		return unpack(instanceObject.row_info.fixed_text_color)
+	end
 end
 
 function Details:GetBarColor(actor) --[[exported]]
@@ -413,18 +404,18 @@ function Details:GetSpellLink(spellid) --[[exported]]
 	end
 end
 
-function Details:GameTooltipSetSpellByID(spellid) --[[exported]]
-	if (spellid == 1) then
+function Details:GameTooltipSetSpellByID(spellId) --[[exported]]
+	if (spellId == 1) then
 		GameTooltip:SetSpellByID(6603)
 
-	elseif (spellid == 2) then
+	elseif (spellId == 2) then
 		GameTooltip:SetSpellByID(75)
 
-	elseif (spellid > 10) then
-		GameTooltip:SetSpellByID(spellid)
+	elseif (spellId > 10) then
+		GameTooltip:SetSpellByID(spellId)
 
 	else
-		GameTooltip:SetSpellByID(spellid)
+		GameTooltip:SetSpellByID(spellId)
 	end
 end
 
@@ -435,7 +426,7 @@ end
 	---this function is called from within an actorContainer when it needs to create a new actorObject for a new actor
 	---actorObject is a ordinary table with the actor attributes and a metatable to inherit the functions from Details object
 	---@return table
-	function atributo_damage:NovaTabela() --create new actorObject
+	function damageClass:NovaTabela() --create new actorObject
 		local alphabetical = Details:GetOrderNumber()
 
 		--constructor: creates a table with the actor attributes and then set the metatable to the actor prototype
@@ -445,6 +436,7 @@ end
 
 			--total: amount of damage done
 			total = alphabetical,
+			total_extra = 0,
 			--totalabsorbed: amount of damage done absorbed by shields
 			totalabsorbed = alphabetical,
 			--total_without_pet: amount of damage done without pet damage
@@ -468,6 +460,7 @@ end
 			--caches
 			last_value = nil,
 			last_dps = 0, --cache of the latest dps value calculated for this actor
+			last_dps_realtime = 0, --cache of the latest real time dps value calculated for this actor
 			--start_time: the time when the actor started to do damage
 			start_time = 0,
 			--end_time: the time when the actor stopped to do damage
@@ -486,10 +479,12 @@ end
 			--targets: table where key is the target name (actor name) and the value is the amount of damage done to that target
 			targets = {},
 			--spells: spell container
-			spells = container_habilidades:NovoContainer(container_damage)
+			spells = spellContainerClass:NovoContainer(container_damage)
 		}
 
-		setmetatable(newDamageActor, atributo_damage)
+		setmetatable(newDamageActor, damageClass)
+		detailsFramework:Mixin(newDamageActor, Details222.Mixins.ActorMixin)
+		detailsFramework:Mixin(newDamageActor, damageClassMixin)
 
 		return newDamageActor
 	end
@@ -498,28 +493,74 @@ end
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --special cases
 
-	-- dps (calculate dps for actors)
-	function atributo_damage:ContainerRefreshDps (container, combat_time)
+	---calculate real time dps for each actor within the passed table
+	---@param tableWithActors actor[]
+	---@return number
+	function damageClass:RefreshDpsRealTime(tableWithActors)
+		local totalRealTime = 0
+		local timeSample = Details222.CurrentDPS.GetTimeSample()
 
-		local total = 0
-
-		if (Details.time_type == 2 or not Details:CaptureGet("damage")) then
-			for _, actor in ipairs(container) do
-				if (actor.grupo) then
-					actor.last_dps = actor.total / combat_time
-				else
-					actor.last_dps = actor.total / actor:Tempo()
-				end
-				total = total + actor.last_dps
-			end
-		else
-			for _, actor in ipairs(container) do
-				actor.last_dps = actor.total / actor:Tempo()
-				total = total + actor.last_dps
+		for _, actorObject in ipairs(tableWithActors) do
+			---@cast actorObject actordamage
+			---@type details_currentdps_actorcache
+			local realTimeDPS = Details222.CurrentDPS.Cache[actorObject.serial]
+			if (realTimeDPS) then
+				realTimeDPS = realTimeDPS.totalDamage / timeSample
+				actorObject.last_dps_realtime = realTimeDPS
+				totalRealTime = totalRealTime + realTimeDPS
 			end
 		end
 
-		return total
+		return totalRealTime
+	end
+
+	--dps (calculate dps for actors)
+	---@param tableWithActors table
+	---@param combatTime combattime
+	---@return number, number
+	function damageClass:ContainerRefreshDps(tableWithActors, combatTime)
+		local total = 0
+		local totalRealTime = 0
+
+		local bIsEffectiveTime = Details.time_type == 2
+		local bOrderDpsByRealTime = Details.CurrentDps.CanSortByRealTimeDps()
+		local timeSample = Details222.CurrentDPS.GetTimeSample()
+
+		if (bIsEffectiveTime or not Details:CaptureGet("damage")) then
+			for _, actorObject in ipairs(tableWithActors) do
+				---@cast actorObject actordamage
+				if (actorObject.grupo) then
+					actorObject.last_dps = actorObject.total / combatTime
+				else
+					actorObject.last_dps = actorObject.total / actorObject:Tempo()
+				end
+
+				if (bOrderDpsByRealTime) then
+					---@type details_currentdps_actorcache
+					local realTimeDPS = Details222.CurrentDPS.Cache[actorObject.serial]
+					if (realTimeDPS) then
+						realTimeDPS = realTimeDPS.totalDamage / timeSample
+						actorObject.last_dps_realtime = realTimeDPS
+						totalRealTime = totalRealTime + realTimeDPS
+					end
+				end
+
+				total = total + actorObject.last_dps
+			end
+		else
+			for _, actorObject in ipairs(tableWithActors) do
+				actorObject.last_dps = actorObject.total / actorObject:Tempo()
+				total = total + actorObject.last_dps
+
+				if (bOrderDpsByRealTime) then
+					local realTimeDPS = Details222.CurrentDPS.Cache[actorObject.serial] or 0
+					actorObject.last_dps_realtime = realTimeDPS
+					totalRealTime = totalRealTime + realTimeDPS
+				end
+			end
+		end
+
+		return total, totalRealTime
 	end
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -697,17 +738,22 @@ end
 		bs_tooltip_table = Targets
 		bs_tooltip_table.damage_total = total
 
+		--Details:FormatCooltipForSpells()
 		GameCooltip:SetOption("StatusBarTexture", "Interface\\AddOns\\Details\\images\\bar_serenity")
 
 		local spellname, _, spellicon = select(1, _GetSpellInfo(from_spell))
-		GameCooltip:AddLine(spellname .. " " .. Loc ["STRING_CUSTOM_ATTRIBUTE_DAMAGE"], nil, nil, headerColor, nil, 10)
-		GameCooltip:AddIcon (spellicon, 1, 1, 14, 14, 0.078125, 0.921875, 0.078125, 0.921875)
-		GameCooltip:AddIcon ([[Interface\AddOns\Details\images\key_shift]], 1, 2, Details.tooltip_key_size_width, Details.tooltip_key_size_height, 0, 1, 0, 0.640625, Details.tooltip_key_overlay2)
-		Details:AddTooltipHeaderStatusbar (1, 1, 1, 0.5)
+		--GameCooltip:AddLine(spellname .. " " .. Loc ["STRING_CUSTOM_ATTRIBUTE_DAMAGE"], nil, nil, headerColor, nil, 10)
+		--GameCooltip:AddIcon (spellicon, 1, 1, 14, 14, 0.078125, 0.921875, 0.078125, 0.921875)
+		--GameCooltip:AddIcon ([[Interface\AddOns\Details\images\key_shift]], 1, 2, Details.tooltip_key_size_width, Details.tooltip_key_size_height, 0, 1, 0, 0.640625, Details.tooltip_key_overlay2)
+		--Details:AddTooltipHeaderStatusbar (1, 1, 1, 0.5)
 
 		local top = Targets[1] and Targets[1][2]
 
-		local lineHeight = Details.tooltip.line_height
+		local iconSize = Details.DefaultTooltipIconSize
+		GameCooltip:SetOption("AlignAsBlizzTooltip", false)
+		GameCooltip:SetOption("AlignAsBlizzTooltipFrameHeightOffset", -6)
+		GameCooltip:SetOption("YSpacingMod", -6)
+		Details:AddRoundedCornerToTooltip()
 
 		for index, t in ipairs(Targets) do
 			GameCooltip:AddLine(Details:GetOnlyName(t[1]), Details:ToK(t[2]) .. " (" .. format("%.1f", t[2]/total*100) .. "%)")
@@ -719,28 +765,26 @@ end
 				local specID = Details:GetSpec(t[1])
 				if (specID) then
 					local texture, l, r, t, b = Details:GetSpecIcon (specID, false)
-					GameCooltip:AddIcon (texture, 1, 1, lineHeight, lineHeight, l, r, t, b)
+					GameCooltip:AddIcon (texture, 1, 1, iconSize, iconSize, l, r, t, b)
 				else
 					local texture, l, r, t, b = Details:GetClassIcon(class)
-					GameCooltip:AddIcon ("Interface\\AddOns\\Details\\images\\classes_small_alpha", 1, 1, lineHeight, lineHeight, l, r, t, b)
+					GameCooltip:AddIcon ("Interface\\AddOns\\Details\\images\\classes_small_alpha", 1, 1,iconSize,iconSize, l, r, t, b)
 				end
 
 			elseif (t[1] == Loc ["STRING_TARGETS_OTHER1"]) then
-				GameCooltip:AddIcon ("Interface\\AddOns\\Details\\images\\classes_small_alpha", 1, 1, lineHeight, lineHeight, 0.25, 0.49609375, 0.75, 1)
+				GameCooltip:AddIcon ("Interface\\AddOns\\Details\\images\\classes_small_alpha", 1, 1,iconSize,iconSize, 0.25, 0.49609375, 0.75, 1)
 			end
 		end
 
 		GameCooltip:AddLine(" ")
 		Details:AddTooltipReportLineText()
 
-		GameCooltip:SetOption("YSpacingMod", 0)
 		GameCooltip:SetOwner(thisLine)
 		GameCooltip:Show()
-
 	end
 
 	local function RefreshBarraBySpell (tabela, barra, instancia)
-		atributo_damage:AtualizarBySpell (tabela, tabela.minha_barra, barra.colocacao, instancia)
+		damageClass:AtualizarBySpell (tabela, tabela.minha_barra, barra.colocacao, instancia)
 	end
 
 	local on_switch_DTBS_show = function(instance)
@@ -749,178 +793,201 @@ end
 	end
 
 	local DTBS_search_code = [[
-		--get the parameters passed
-		local combat, instance_container, instance = ...
+		---@type combat, table, instance
+		local combatObject, instanceContainer, instanceObject = ...
+
 		--declade the values to return
-		local total, top, amount = 0, 0, 0
-		--hold the targets
-		local Targets = {}
+		local totalDamage, topDamage, amount = 0, 0, 0
 
-		local from_spell = @SPELLID@
-		local from_spellname
-		if (from_spell) then
-			from_spellname = select(1, GetSpellInfo(from_spell))
+		---@type {key1: actorname, key2: number, key3: actor}[]
+		local damageTakenFrom = {}
+
+		local spellId = @SPELLID@
+		local spellName
+		if (spellId) then
+			spellName = select(1, GetSpellInfo(spellId))
 		end
 
-		--get a list of all damage actors
-		local AllDamageCharacters = combat:GetActorList (DETAILS_ATTRIBUTE_DAMAGE)
+		---@type actorcontainer
+		local damageContainer = combatObject:GetContainer(DETAILS_ATTRIBUTE_DAMAGE)
+		---@type actorcontainer
+		local healContainer = combatObject:GetContainer(DETAILS_ATTRIBUTE_HEAL)
 
-		local is_custom_spell = false
-		for _, spellcustom in ipairs(Details.savedCustomSpells) do
-		    if (spellcustom[1] == from_spell) then
-			is_custom_spell = true
-		    end
-		end
-
-		for index, character in ipairs(AllDamageCharacters) do
-
-		    if (is_custom_spell) then
-			for playername, ff_table in pairs(character.friendlyfire) do
-			    if (ff_table.spells [from_spell]) then
-				local damage_actor = combat (1, playername)
-				local heal_actor = combat (2, playername)
-
-				if ((damage_actor or heal_actor) and ( (damage_actor and damage_actor:IsPlayer()) or (heal_actor and heal_actor:IsPlayer()))) then
-
-				    local got
-
-				    for index, t in ipairs(Targets) do
-					if (t[1] == playername) then
-					    t[2] = t[2] + ff_table.spells [from_spell]
-					    if (t[2] > top) then
-						top = t[2]
-					    end
-					    got = true
-					    break
-					end
-				    end
-
-				    if (not got) then
-					Targets [#Targets+1] = {playername, ff_table.spells [from_spell], damage_actor or heal_actor}
-					if (ff_table.spells [from_spell] > top) then
-					    top = ff_table.spells [from_spell]
-					end
-				    end
-				end
-			    end
+		local bIsCustomSpell = false
+		for _, customSpellObject in ipairs(Details.savedCustomSpells) do
+			if (customSpellObject[1] == spellId) then
+				bIsCustomSpell = true
 			end
-		    else
+		end
 
-			for playername, ff_table in pairs(character.friendlyfire) do
-			    for spellid, amount in pairs(ff_table.spells) do
-				local spellname = select(1, GetSpellInfo(spellid))
-				if (spellname == from_spellname) then
-				    local damage_actor = combat (1, playername)
-				    local heal_actor = combat (2, playername)
-				    if ((damage_actor or heal_actor) and ( (damage_actor and damage_actor:IsPlayer()) or (heal_actor and heal_actor:IsPlayer()))) then
-					local got
-					for index, t in ipairs(Targets) do
-					    if (t[1] == playername) then
-						t[2] = t[2] + amount
-						if (t[2] > top) then
-						    top = t[2]
+		for index, actorObject in damageContainer:ListActors() do
+			---@cast actorObject actordamage
+
+			--> handle friendly fire spell damage taken
+			if (actorObject:IsPlayer()) then
+				if (bIsCustomSpell) then --if the spell has been modified, check only by its spellId, as it can't get other spells with the same name
+					for playerName, friendlyFireTable in pairs(actorObject.friendlyfire) do
+						---@cast friendlyFireTable friendlyfiretable
+						if (friendlyFireTable.spells[spellId]) then
+							---@type actordamage
+							local damageActor = damageContainer:GetActor(playerName)
+							---@type actorheal
+							local healingActor = healContainer:GetActor(playerName)
+
+							if ((damageActor and damageActor:IsPlayer()) or (healingActor and healingActor:IsPlayer())) then
+								local got
+
+								for index, damageTakenTable in ipairs(damageTakenFrom) do
+									if (damageTakenTable[1] == playerName) then
+										damageTakenTable[2] = damageTakenTable[2] + friendlyFireTable.spells[spellId]
+										if (damageTakenTable[2] > topDamage) then
+											topDamage = damageTakenTable[2]
+										end
+										got = true
+										break
+									end
+								end
+
+								if (not got) then
+									---@type {key1: actorname, key2: number, key3: actor}
+									local damageTakenTable = {playerName, friendlyFireTable.spells[spellId], damageActor or healingActor}
+									damageTakenFrom[#damageTakenFrom+1] = damageTakenTable
+									if (friendlyFireTable.spells[spellId] > topDamage) then
+										topDamage = friendlyFireTable.spells[spellId]
+									end
+								end
+							end
 						end
-						got = true
-						break
-					    end
 					end
+				else
+					for playerName, friendlyFireTable in pairs(actorObject.friendlyfire) do
+						---@cast friendlyFireTable friendlyfiretable
+						for ffSpellId, damageAmount in pairs(friendlyFireTable.spells) do
+							local ffSpellName = select(1, GetSpellInfo(ffSpellId))
+							if (ffSpellName == spellName) then
+								---@type actordamage
+								local damageActor = damageContainer:GetActor(playerName)
+								---@type actorheal
+								local healingActor = healContainer:GetActor(playerName)
 
-					if (not got) then
-					    Targets [#Targets+1] = {playername, amount, damage_actor or heal_actor}
-					    if (amount > top) then
-						top = amount
-					    end
+								if ((damageActor and damageActor:IsPlayer()) or (healingActor and healingActor:IsPlayer())) then
+									local got
+									for index, damageTakenTable in ipairs(damageTakenFrom) do
+										if (damageTakenTable[1] == playerName) then
+											damageTakenTable[2] = damageTakenTable[2] + damageAmount
+											if (damageTakenTable[2] > topDamage) then
+												topDamage = damageTakenTable[2]
+											end
+											got = true
+											break
+										end
+									end
+
+									if (not got) then
+										---@type {key1: actorname, key2: number, key3: actor}
+										local damageTakenTable = {playerName, damageAmount, damageActor or healingActor}
+										damageTakenFrom[#damageTakenFrom+1] = damageTakenTable
+										if (damageAmount > topDamage) then
+											topDamage = damageAmount
+										end
+									end
+								end
+							end
+						end
 					end
-				    end
 				end
-			    end
 			end
-		    end
 
-		    --search actors which used the spell shown in the bar
-		    local spell = character.spells._ActorTable [from_spell]
+			--> handle regular damage taken from spells
+			---@type spelltable
+			local spellTable = actorObject:GetSpell(spellId)
 
-		    if (spell) then
-			for targetname, amount in pairs(spell.targets) do
-
-			    local got = false
-
-			    local damage_actor = combat (1, targetname)
-			    local heal_actor = combat (2, targetname)
-
-			    if ( (damage_actor or heal_actor) and ( (damage_actor and damage_actor:IsPlayer()) or (heal_actor and heal_actor:IsPlayer()) ) ) then
-				for index, t in ipairs(Targets) do
-				    if (t[1] == targetname) then
-					t[2] = t[2] + amount
-					if (t[2] > top) then
-					    top = t[2]
-					end
-					got = true
-					break
-				    end
-				end
-				if (not got) then
-				    Targets [#Targets+1] = {targetname, amount, damage_actor or heal_actor}
-				    if (amount > top) then
-					top = amount
-				    end
-				end
-			    end
-			end
-		    end
-
-		    if (not is_custom_spell) then
-			for spellid, spell in pairs(character.spells._ActorTable) do
-			    if (spellid ~= from_spell) then
-				local spellname = select(1, GetSpellInfo(spellid))
-				if (spellname == from_spellname) then
-				    for targetname, amount in pairs(spell.targets) do
-
+			if (spellTable) then
+				for targetName, damageAmount in pairs(spellTable.targets) do
 					local got = false
 
-					local damage_actor = combat (1, targetname)
-					local heal_actor = combat (2, targetname)
+					---@type actordamage
+					local damageActor = damageContainer:GetActor(targetName)
+					---@type actorheal
+					local healingActor = healContainer:GetActor(targetName)
 
-					if ( (damage_actor or heal_actor) and ( (damage_actor and damage_actor:IsPlayer()) or (heal_actor and heal_actor:IsPlayer()) ) ) then
-					    for index, t in ipairs(Targets) do
-						if (t[1] == targetname) then
-						    t[2] = t[2] + amount
-						    if (t[2] > top) then
-							top = t[2]
-						    end
-						    got = true
-						    break
+					if ((damageActor and damageActor:IsPlayer()) or (healingActor and healingActor:IsPlayer())) then
+						for index, damageTakenTable in ipairs(damageTakenFrom) do
+							if (damageTakenTable[1] == targetName) then
+								damageTakenTable[2] = damageTakenTable[2] + damageAmount
+								if (damageTakenTable[2] > topDamage) then
+									topDamage = damageTakenTable[2]
+								end
+								got = true
+								break
+							end
 						end
-					    end
-					    if (not got) then
-						Targets [#Targets+1] = {targetname, amount, damage_actor or heal_actor}
-						if (amount > top) then
-						    top = amount
+
+						if (not got) then
+							---@type {key1: actorname, key2: number, key3: actor}
+							local damageTakenTable = {targetName, damageAmount, damageActor or healingActor}
+							damageTakenFrom[#damageTakenFrom+1] = damageTakenTable
+							if (damageAmount > topDamage) then
+								topDamage = damageAmount
+							end
 						end
-					    end
 					end
-				    end
 				end
-			    end
 			end
-		    end
 
+			if (not bIsCustomSpell) then
+				for thisSpellId, spellTable in pairs(actorObject.spells._ActorTable) do
+					if (thisSpellId ~= spellId) then --this is invalid
+						local spellname = select(1, GetSpellInfo(thisSpellId))
+						if (spellname == spellName) then
+							for targetName, damageAmount in pairs(spellTable.targets) do
+								local got = false
+
+								---@type actordamage
+								local damageActor = damageContainer:GetActor(targetName)
+								---@type actorheal
+								local healingActor = healContainer:GetActor(targetName)
+
+								if ((damageActor and damageActor:IsPlayer()) or (healingActor and healingActor:IsPlayer())) then
+									for index, damageTakenTable in ipairs(damageTakenFrom) do
+										if (damageTakenTable[1] == targetName) then
+											damageTakenTable[2] = damageTakenTable[2] + damageAmount
+											if (damageTakenTable[2] > topDamage) then
+												topDamage = damageTakenTable[2]
+											end
+											got = true
+											break
+										end
+									end
+
+									if (not got) then
+										---@type {key1: actorname, key2: number, key3: actor}
+										local damageTakenTable = {targetName, damageAmount, damageActor or healingActor}
+										damageTakenFrom[#damageTakenFrom+1] = damageTakenTable
+										if (damageAmount > topDamage) then
+											topDamage = damageAmount
+										end
+									end
+								end
+							end
+						end
+					end
+				end
+			end
 		end
 
-		table.sort (Targets, Details.Sort2)
+		table.sort(damageTakenFrom, Details.Sort2)
 
-		local amount = 0
-		for index, t in ipairs(Targets) do
-			instance_container:AddValue (t[3], t[2])
-			total = total + t[2]
+		for index, damageTakenTable in ipairs(damageTakenFrom) do
+			instanceContainer:AddValue(damageTakenTable[3], damageTakenTable[2]) --actorObject, amountDamage
+			totalDamage = totalDamage + damageTakenTable[2] --amountDamage
 			amount = amount + 1
 		end
 
-		return total, top, amount
+		return totalDamage, topDamage, amount
 	]]
 
-	local function ShowDTBSInWindow (spell, instance)
-
+	local function ShowDTBSInWindow (spell, instance) --for hold shift key and click, show players which took damage from this spell
 		local spellname, _, icon = _GetSpellInfo(spell [1])
 		local custom_name = spellname .. " - " .. Loc ["STRING_CUSTOM_DTBS"] .. ""
 
@@ -965,7 +1032,7 @@ end
 	local DTBS_format_name = function(player_name) return Details:GetOnlyName(player_name) end
 	local DTBS_format_amount = function(amount) return Details:ToK(amount) .. " (" .. format("%.1f", amount / bs_tooltip_table.damage_total * 100) .. "%)" end
 
-	function atributo_damage:ReportSingleDTBSLine (spell, instance, ShiftKeyDown, ControlKeyDown)
+	function damageClass:ReportSingleDTBSLine (spell, instance, ShiftKeyDown, ControlKeyDown)
 		if (ControlKeyDown) then
 			local spellname, _, spellicon = _GetSpellInfo(spell[1])
 			return Details:OpenAuraPanel (spell[1], spellname, spellicon)
@@ -981,7 +1048,7 @@ end
 		return Details:Reportar(report_table, {_no_current = true, _no_inverse = true, _custom = true})
 	end
 
-	function atributo_damage:AtualizarBySpell(tabela, whichRowLine, colocacao, instance)
+	function damageClass:AtualizarBySpell(tabela, whichRowLine, colocacao, instance)
 		tabela ["byspell"] = true --marca que esta tabela � uma tabela de frags, usado no controla na hora de montar o tooltip
 		local thisLine = instance.barras [whichRowLine] --pega a refer�ncia da barra na janela
 
@@ -1066,6 +1133,13 @@ end
 		thisLine.icone_classe:SetTexture(spellIcon)
 		thisLine.icone_classe:SetTexCoord(0.078125, 0.921875, 0.078125, 0.921875)
 		thisLine.icone_classe:SetVertexColor(1, 1, 1)
+		if(thisLine.mouse_over and not instance.baseframe.isMoving) then
+			local classIcon = thisLine:GetClassIcon()
+			thisLine.iconHighlight:SetTexture(classIcon:GetTexture())
+			thisLine.iconHighlight:SetTexCoord(classIcon:GetTexCoord())
+			thisLine.iconHighlight:SetVertexColor(classIcon:GetVertexColor())
+		end
+
 	end
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1104,9 +1178,15 @@ end
 
 			_table_sort(damage_taken_table, Details.Sort2)
 
-			Details:AddTooltipSpellHeaderText (Loc ["STRING_DAMAGE_FROM"], headerColor, #damage_taken_table, [[Interface\Addons\Details\images\icons]], 0.126953125, 0.1796875, 0, 0.0546875)
-			Details:AddTooltipHeaderStatusbar (1, 1, 1, 0.5)
-			GameCooltip:AddIcon ([[Interface\AddOns\Details\images\key_shift]], 1, 2, Details.tooltip_key_size_width, Details.tooltip_key_size_height, 0, 1, 0, 0.640625, Details.tooltip_key_overlay2)
+			local iconSize = Details.DefaultTooltipIconSize
+			GameCooltip:SetOption("AlignAsBlizzTooltip", false)
+			GameCooltip:SetOption("AlignAsBlizzTooltipFrameHeightOffset", -6)
+			GameCooltip:SetOption("YSpacingMod", -6)
+			Details:AddRoundedCornerToTooltip()
+
+			--Details:AddTooltipSpellHeaderText (Loc ["STRING_DAMAGE_FROM"], headerColor, #damage_taken_table, [[Interface\Addons\Details\images\icons]], 0.126953125, 0.1796875, 0, 0.0546875)
+			--Details:AddTooltipHeaderStatusbar (1, 1, 1, 0.5)
+			--GameCooltip:AddIcon ([[Interface\AddOns\Details\images\key_shift]], 1, 2, Details.tooltip_key_size_width, Details.tooltip_key_size_height, 0, 1, 0, 0.640625, Details.tooltip_key_overlay2)
 
 			local min = 6
 			local ismaximized = false
@@ -1117,9 +1197,9 @@ end
 			end
 
 			if (ismaximized) then
-				GameCooltip:AddIcon ([[Interface\AddOns\Details\images\key_shift]], 1, 2, Details.tooltip_key_size_width, Details.tooltip_key_size_height, 0, 1, 0, 0.640625, Details.tooltip_key_overlay2)
+				--GameCooltip:AddIcon ([[Interface\AddOns\Details\images\key_shift]], 1, 2, Details.tooltip_key_size_width, Details.tooltip_key_size_height, 0, 1, 0, 0.640625, Details.tooltip_key_overlay2)
 			else
-				GameCooltip:AddIcon ([[Interface\AddOns\Details\images\key_shift]], 1, 2, Details.tooltip_key_size_width, Details.tooltip_key_size_height, 0, 1, 0, 0.640625, Details.tooltip_key_overlay1)
+				--GameCooltip:AddIcon ([[Interface\AddOns\Details\images\key_shift]], 1, 2, Details.tooltip_key_size_width, Details.tooltip_key_size_height, 0, 1, 0, 0.640625, Details.tooltip_key_overlay1)
 			end
 
 			local top = damage_taken_table[1] and damage_taken_table[1][2]
@@ -1139,15 +1219,15 @@ end
 					end
 
 					if (classe == "UNKNOW") then
-						GameCooltip:AddIcon ("Interface\\LFGFRAME\\LFGROLE_BW", nil, nil, lineHeight, lineHeight, .25, .5, 0, 1)
+						GameCooltip:AddIcon ("Interface\\LFGFRAME\\LFGROLE_BW", nil, nil, iconSize, iconSize, .25, .5, 0, 1)
 					else
 
 						local specID = Details:GetSpec(t[1])
 						if (specID) then
 							local texture, l, r, t, b = Details:GetSpecIcon (specID, false)
-							GameCooltip:AddIcon (texture, 1, 1, lineHeight, lineHeight, l, r, t, b)
+							GameCooltip:AddIcon (texture, 1, 1, iconSize, iconSize, l, r, t, b)
 						else
-							GameCooltip:AddIcon ([[Interface\AddOns\Details\images\classes_small_alpha]], nil, nil, lineHeight, lineHeight, unpack(Details.class_coords [classe]))
+							GameCooltip:AddIcon ([[Interface\AddOns\Details\images\classes_small_alpha]], nil, nil, iconSize, iconSize, unpack(Details.class_coords [classe]))
 						end
 					end
 
@@ -1168,10 +1248,10 @@ end
 	end
 
 	local function RefreshBarraFrags (tabela, barra, instancia)
-		atributo_damage:AtualizarFrags(tabela, tabela.minha_barra, barra.colocacao, instancia)
+		damageClass:AtualizarFrags(tabela, tabela.minha_barra, barra.colocacao, instancia)
 	end
 
-	function atributo_damage:AtualizarFrags(tabela, whichRowLine, colocacao, instancia)
+	function damageClass:AtualizarFrags(tabela, whichRowLine, colocacao, instancia)
 
 		tabela ["frags"] = true --marca que esta tabela � uma tabela de frags, usado no controla na hora de montar o tooltip
 		local thisLine = instancia.barras [whichRowLine] --pega a refer�ncia da barra na janela
@@ -1253,7 +1333,11 @@ end
 		end
 
 		if (thisLine.mouse_over and not instancia.baseframe.isMoving) then --precisa atualizar o tooltip
-			--gump:UpdateTooltip(whichRowLine, thisLine, instancia)
+			--gump:UpdateTooltip(whichRowLine, thisLine, instancia)if(thisLine.mouse_over and not instancia.baseframe.isMoving) then
+			local classIcon = thisLine:GetClassIcon()
+			thisLine.iconHighlight:SetTexture(classIcon:GetTexture())
+			thisLine.iconHighlight:SetTexCoord(classIcon:GetTexCoord())
+			thisLine.iconHighlight:SetVertexColor(classIcon:GetVertexColor())
 		end
 
 	end
@@ -1406,7 +1490,7 @@ end
 		return instance:TrocaTabela(instance.segmento, 5, #Details.custom)
 	end
 
-	function atributo_damage:ReportSingleVoidZoneLine (actor, instance, ShiftKeyDown, ControlKeyDown)
+	function damageClass:ReportSingleVoidZoneLine (actor, instance, ShiftKeyDown, ControlKeyDown)
 
 		local spellid = tooltip_void_zone_temp.spellid
 
@@ -1516,9 +1600,9 @@ end
 		local GameCooltip = GameCooltip
 
 		local spellname, _, spellicon = _GetSpellInfo(actor.damage_spellid)
-		Details:AddTooltipSpellHeaderText (spellname .. " " .. Loc ["STRING_VOIDZONE_TOOLTIP"], headerColor, #tooltip_void_zone_temp, spellicon, 0.078125, 0.921875, 0.078125, 0.921875)
-		Details:AddTooltipHeaderStatusbar (1, 1, 1, 0.5)
-		GameCooltip:AddIcon ([[Interface\AddOns\Details\images\key_shift]], 1, 2, Details.tooltip_key_size_width, Details.tooltip_key_size_height, 0, 1, 0, 0.640625, Details.tooltip_key_overlay2)
+		--Details:AddTooltipSpellHeaderText (spellname .. " " .. Loc ["STRING_VOIDZONE_TOOLTIP"], headerColor, #tooltip_void_zone_temp, spellicon, 0.078125, 0.921875, 0.078125, 0.921875)
+		--Details:AddTooltipHeaderStatusbar (1, 1, 1, 0.5)
+		--GameCooltip:AddIcon ([[Interface\AddOns\Details\images\key_shift]], 1, 2, Details.tooltip_key_size_width, Details.tooltip_key_size_height, 0, 1, 0, 0.640625, Details.tooltip_key_overlay2)
 
 		--for target_name, debuff_table in pairs(container) do
 		local first = tooltip_void_zone_temp [1] and tooltip_void_zone_temp [1][3]
@@ -1529,7 +1613,13 @@ end
 		tooltip_void_zone_temp.spellid = actor.damage_spellid
 		tooltip_void_zone_temp.current_actor = actor
 
-		local lineHeight = Details.tooltip.line_height
+		local iconSize = Details.DefaultTooltipIconSize
+		GameCooltip:SetOption("AlignAsBlizzTooltip", false)
+		GameCooltip:SetOption("AlignAsBlizzTooltipFrameHeightOffset", -6)
+		GameCooltip:SetOption("YSpacingMod", -6)
+		Details:AddRoundedCornerToTooltip()
+
+		--local lineHeight = Details.tooltip.line_height
 
 		for index, t in ipairs(tooltip_void_zone_temp) do
 
@@ -1551,12 +1641,12 @@ end
 				local specID = Details:GetSpec(t[1])
 				if (specID) then
 					local texture, l, r, t, b = Details:GetSpecIcon (specID, false)
-					GameCooltip:AddIcon (texture, 1, 1, lineHeight, lineHeight, l, r, t, b)
+					GameCooltip:AddIcon (texture, 1, 1, iconSize, iconSize, l, r, t, b)
 				else
-					GameCooltip:AddIcon ([[Interface\AddOns\Details\images\classes_small_alpha]], nil, nil, lineHeight, lineHeight, unpack(Details.class_coords [classe]))
+					GameCooltip:AddIcon ([[Interface\AddOns\Details\images\classes_small_alpha]], nil, nil, iconSize, iconSize, unpack(Details.class_coords [classe]))
 				end
 			else
-				GameCooltip:AddIcon ("Interface\\LFGFRAME\\LFGROLE_BW", nil, nil, lineHeight, lineHeight, .25, .5, 0, 1)
+				GameCooltip:AddIcon ("Interface\\LFGFRAME\\LFGROLE_BW", nil, nil, iconSize, iconSize, .25, .5, 0, 1)
 			end
 
 			local _, _, _, _, _, r, g, b = Details:GetClass(t[1])
@@ -1660,18 +1750,22 @@ end
 		end
 
 		local _, _, icon = GetSpellInfo(self.damage_spellid)
-		local school_color = Details.school_colors [self.spellschool]
-		if (not school_color) then
-			school_color = Details.school_colors ["unknown"]
+		local spellSchoolColor = Details.spells_school[self.spellschool] and Details.spells_school[self.spellschool].decimals
+		if (not spellSchoolColor) then
+			spellSchoolColor = Details.spells_school[1]
 		end
 
-		Details:SetBarColors(thisLine, instancia, unpack(school_color))
+		Details:SetBarColors(thisLine, instancia, unpack(spellSchoolColor))
 
 		thisLine.icone_classe:SetTexture(icon)
 		thisLine.icone_classe:SetTexCoord(0.078125, 0.921875, 0.078125, 0.921875)
 		thisLine.icone_classe:SetVertexColor(1, 1, 1)
 
 		if (thisLine.mouse_over and not instancia.baseframe.isMoving) then
+			local classIcon = thisLine:GetClassIcon()
+			thisLine.iconHighlight:SetTexture(classIcon:GetTexture())
+			thisLine.iconHighlight:SetTexCoord(classIcon:GetTexCoord())
+			thisLine.iconHighlight:SetVertexColor(classIcon:GetVertexColor())
 			--need call a refresh function
 		end
 	end
@@ -1679,11 +1773,16 @@ end
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --main refresh function
 
-function atributo_damage:RefreshWindow(instancia, combatObject, forcar, exportar, refreshRequired)
-	local showing = combatObject[class_type] --o que esta sendo mostrado -> [1] - dano [2] - cura --pega o container com ._NameIndexTable ._ActorTable
+---@param instanceObject instance
+---@param combatObject combat
+---@param bForceUpdate boolean
+---@param bExportData boolean
+function damageClass:RefreshWindow(instanceObject, combatObject, bForceUpdate, bExportData)
+	---@type actorcontainer
+	local damageContainer = combatObject[class_type] --o que esta sendo mostrado -> [1] - dano [2] - cura --pega o container com ._NameIndexTable ._ActorTable
 
 	--not have something to show
-	if (#showing._ActorTable < 1) then
+	if (#damageContainer._ActorTable < 1) then
 		if (Details.debug and false) then
 			Details.showing_ActorTable_Timer = Details.showing_ActorTable_Timer or 0
 			if (time() > Details.showing_ActorTable_Timer) then
@@ -1693,30 +1792,30 @@ function atributo_damage:RefreshWindow(instancia, combatObject, forcar, exportar
 		end
 
 		--colocado isso recentemente para fazer as barras de dano sumirem na troca de atributo
-		return Details:EsconderBarrasNaoUsadas(instancia, showing), "", 0, 0
+		return Details:HideBarsNotInUse(instanceObject, damageContainer), "", 0, 0
 	end
 
 	--total
 	local total = 0
 	--top actor #1
-	instancia.top = 0
+	instanceObject.top = 0
 
 	local isUsingCache = false
-	local subAttribute = instancia.sub_atributo
-	local actorTableContent = showing._ActorTable
+	local subAttribute = instanceObject.sub_atributo
+	local actorTableContent = damageContainer._ActorTable
 	local amount = #actorTableContent
-	local windowMode = instancia.modo
+	local windowMode = instanceObject.modo
 
 	--pega qual a sub key que ser� usada --sub keys
-	if (exportar) then
-		if (type(exportar) == "boolean") then
+	if (bExportData) then
+		if (type(bExportData) == "boolean") then
 			if (subAttribute == 1) then --DAMAGE DONE
 				keyName = "total"
 
 			elseif (subAttribute == 2) then --DPS
 				keyName = "last_dps"
 
-			elseif (subAttribute == 3) then --TAMAGE TAKEN
+			elseif (subAttribute == 3) then --DAMAGE TAKEN
 				keyName = "damage_taken"
 				if (Details.damage_taken_everything) then
 					windowMode = modo_ALL
@@ -1738,13 +1837,13 @@ function atributo_damage:RefreshWindow(instancia, combatObject, forcar, exportar
 				keyName = "damage_taken_by_spells"
 			end
 		else
-			keyName = exportar.key
-			windowMode = exportar.modo
+			keyName = bExportData.key
+			windowMode = bExportData.modo
 		end
 
-	elseif (instancia.atributo == 5) then --custom
+	elseif (instanceObject.atributo == 5) then --custom
 		keyName = "custom"
-		total = combatObject.totals [instancia.customName]
+		total = combatObject.totals [instanceObject.customName]
 
 	else
 		if (subAttribute == 1) then --DAMAGE DONE
@@ -1753,7 +1852,7 @@ function atributo_damage:RefreshWindow(instancia, combatObject, forcar, exportar
 		elseif (subAttribute == 2) then --DPS
 			keyName = "last_dps"
 
-		elseif (subAttribute == 3) then --TAMAGE TAKEN
+		elseif (subAttribute == 3) then --DAMAGE TAKEN
 			keyName = "damage_taken"
 			if (Details.damage_taken_everything) then
 				windowMode = modo_ALL
@@ -1777,36 +1876,35 @@ function atributo_damage:RefreshWindow(instancia, combatObject, forcar, exportar
 	end
 
 	if (keyName == "frags") then
-		local frags = instancia.showing.frags
+		local frags = instanceObject.showing.frags
 		local frags_total_kills = 0
 		local index = 0
 
 		for fragName, fragAmount in pairs(frags) do
-
-			index = index + 1
-
-			local fragged_actor = showing._NameIndexTable [fragName] --get index
-			local actor_classe
+			local fragged_actor = damageContainer._NameIndexTable [fragName] --get index
 			if (fragged_actor) then
-				fragged_actor = showing._ActorTable [fragged_actor] --get object
-				actor_classe = fragged_actor.classe
-			end
+				fragged_actor = damageContainer._ActorTable [fragged_actor] --get object
+				if (fragged_actor) then
+					index = index + 1
+					local actor_classe = fragged_actor.classe
 
-			if (fragged_actor and fragged_actor.monster) then
-				actor_classe = "ENEMY"
-			elseif (not actor_classe) then
-				actor_classe = "UNGROUPPLAYER"
-			end
+					if (fragged_actor and fragged_actor.monster) then
+						actor_classe = "ENEMY"
+					elseif (not actor_classe) then
+						actor_classe = "UNGROUPPLAYER"
+					end
 
-			if (ntable [index]) then
-				ntable [index] [1] = fragName
-				ntable [index] [2] = fragAmount
-				ntable [index] [3] = actor_classe
-			else
-				ntable [index] = {fragName, fragAmount, actor_classe}
-			end
+					if (ntable [index]) then
+						ntable [index] [1] = fragName
+						ntable [index] [2] = fragAmount
+						ntable [index] [3] = actor_classe
+					else
+						ntable [index] = {fragName, fragAmount, actor_classe}
+					end
 
-			frags_total_kills = frags_total_kills + fragAmount
+					frags_total_kills = frags_total_kills + fragAmount
+				end
+			end
 		end
 
 		local tsize = #ntable
@@ -1816,15 +1914,15 @@ function atributo_damage:RefreshWindow(instancia, combatObject, forcar, exportar
 			end
 		end
 
-		instancia.top = 0
+		instanceObject.top = 0
 		if (tsize > 0) then
 			_table_sort(ntable, Details.Sort2)
-			instancia.top = ntable [1][2]
+			instanceObject.top = ntable [1][2]
 		end
 
 		total = index
 
-		if (exportar) then
+		if (bExportData) then
 			local export = {}
 			for i = 1, index do
 				export [i] = {ntable[i][1], ntable[i][2], ntable[i][3]}
@@ -1833,28 +1931,27 @@ function atributo_damage:RefreshWindow(instancia, combatObject, forcar, exportar
 		end
 
 		if (total < 1) then
-			instancia:EsconderScrollBar()
-			return Details:EndRefresh(instancia, total, combatObject, showing) --retorna a tabela que precisa ganhar o refresh
+			instanceObject:EsconderScrollBar()
+			return Details:EndRefresh(instanceObject, total, combatObject, damageContainer) --retorna a tabela que precisa ganhar o refresh
 		end
 
 		combatObject.totals.frags_total = frags_total_kills
 
-		instancia:RefreshScrollBar(total)
+		instanceObject:RefreshScrollBar(total)
 
 		local whichRowLine = 1
-		local lineContainer = instancia.barras
+		local lineContainer = instanceObject.barras
 
-		for i = instancia.barraS[1], instancia.barraS[2], 1 do
-			atributo_damage:AtualizarFrags(ntable[i], whichRowLine, i, instancia)
+		for i = instanceObject.barraS[1], instanceObject.barraS[2], 1 do
+			damageClass:AtualizarFrags(ntable[i], whichRowLine, i, instanceObject)
 			whichRowLine = whichRowLine+1
 		end
 
-		return Details:EndRefresh(instancia, total, combatObject, showing) --retorna a tabela que precisa ganhar o refresh
+		return Details:EndRefresh(instanceObject, total, combatObject, damageContainer) --retorna a tabela que precisa ganhar o refresh
 
 	elseif (keyName == "damage_taken_by_spells") then
-
 		local bs_index, total = 0, 0
-		wipe (bs_index_table)
+		Details:Destroy(bs_index_table)
 
 		local combat = combatObject
 		local AllDamageCharacters = combat:GetActorList (DETAILS_ATTRIBUTE_DAMAGE)
@@ -1937,7 +2034,7 @@ function atributo_damage:RefreshWindow(instancia, combatObject, forcar, exportar
 											this_spell [2] = this_spell [2] + on_player
 											total = total + on_player
 										else
-											error("error - no spell id for DTBS friendly fire " .. spellid)
+											--error("error - no spell id for DTBS friendly fire " .. spellid)
 										end
 									end
 								end
@@ -1955,46 +2052,43 @@ function atributo_damage:RefreshWindow(instancia, combatObject, forcar, exportar
 			end
 		end
 
-		instancia.top = 0
+		instanceObject.top = 0
 		if (tsize > 0) then
 			_table_sort(bs_table, Details.Sort2)
-			instancia.top = bs_table [1][2]
+			instanceObject.top = bs_table [1][2]
 		end
 
 		local total2 = bs_index
 
-		if (exportar) then
+		if (bExportData) then
 			local export = {}
 			for i = 1, bs_index do
 				-- spellid, total, spellschool
 				export [i] = {spellid = bs_table[i][1], damage = bs_table[i][2], spellschool = bs_table[i][3]}
 			end
-			return total, "damage", instancia.top, bs_index, export
+			return total, "damage", instanceObject.top, bs_index, export
 		end
 
 		if (bs_index < 1) then
-			instancia:EsconderScrollBar()
-			return Details:EndRefresh(instancia, bs_index, combatObject, showing) --retorna a tabela que precisa ganhar o refresh
+			instanceObject:EsconderScrollBar()
+			return Details:EndRefresh(instanceObject, bs_index, combatObject, damageContainer) --retorna a tabela que precisa ganhar o refresh
 		end
 
 		combatObject.totals.by_spell = total
 
-		instancia:RefreshScrollBar(bs_index)
+		instanceObject:RefreshScrollBar(bs_index)
 
 		local whichRowLine = 1
-		local lineContainer = instancia.barras
+		local lineContainer = instanceObject.barras
 
-		--print(bs_index, #bs_table, instancia.barraS[1], instancia.barraS[2])
-
-		for i = instancia.barraS[1], instancia.barraS[2], 1 do
-			atributo_damage:AtualizarBySpell (bs_table[i], whichRowLine, i, instancia)
+		for i = instanceObject.barraS[1], instanceObject.barraS[2], 1 do
+			damageClass:AtualizarBySpell (bs_table[i], whichRowLine, i, instanceObject)
 			whichRowLine = whichRowLine+1
 		end
 
-		return Details:EndRefresh(instancia, bs_index, combatObject, showing)
+		return Details:EndRefresh(instanceObject, bs_index, combatObject, damageContainer)
 
 	elseif (keyName == "voidzones") then
-
 		local index = 0
 		local misc_container = combatObject [4]
 		local voidzone_damage_total = 0
@@ -2004,11 +2098,11 @@ function atributo_damage:RefreshWindow(instancia, combatObject, forcar, exportar
 				index = index + 1
 
 				--pega no container de dano o actor respons�vel por aplicar o debuff
-				local twin_damage_actor = showing._NameIndexTable [actor.damage_twin] or showing._NameIndexTable ["[*] " .. actor.damage_twin]
+				local twin_damage_actor = damageContainer._NameIndexTable [actor.damage_twin] or damageContainer._NameIndexTable ["[*] " .. actor.damage_twin]
 
 				if (twin_damage_actor) then
 					local index = twin_damage_actor
-					twin_damage_actor = showing._ActorTable [twin_damage_actor]
+					twin_damage_actor = damageContainer._ActorTable [twin_damage_actor]
 
 					local spell = twin_damage_actor.spells._ActorTable [actor.damage_spellid]
 
@@ -2070,35 +2164,35 @@ function atributo_damage:RefreshWindow(instancia, combatObject, forcar, exportar
 
 		if (tsize > 0 and vtable[1]) then
 			_table_sort(vtable, void_zone_sort)
-			instancia.top = vtable [1].damage
+			instanceObject.top = vtable [1].damage
 		end
 		total = index
 
-		if (exportar) then
+		if (bExportData) then
 			for _, t in ipairs(vtable) do
 				t.report_name = Details:GetSpellLink(t.damage_spellid)
 			end
-			return voidzone_damage_total, "damage", instancia.top, total, vtable, "report_name"
+			return voidzone_damage_total, "damage", instanceObject.top, total, vtable, "report_name"
 		end
 
 		if (total < 1) then
-			instancia:EsconderScrollBar()
-			return Details:EndRefresh(instancia, total, combatObject, showing) --retorna a tabela que precisa ganhar o refresh
+			instanceObject:EsconderScrollBar()
+			return Details:EndRefresh(instanceObject, total, combatObject, damageContainer) --retorna a tabela que precisa ganhar o refresh
 		end
 
 		combatObject.totals.voidzone_damage = voidzone_damage_total
 
-		instancia:RefreshScrollBar(total)
+		instanceObject:RefreshScrollBar(total)
 
 		local whichRowLine = 1
-		local lineContainer = instancia.barras
+		local lineContainer = instanceObject.barras
 
-		for i = instancia.barraS[1], instancia.barraS[2], 1 do
-			vtable[i]:AtualizarVoidZone (whichRowLine, i, instancia)
+		for i = instanceObject.barraS[1], instanceObject.barraS[2], 1 do
+			vtable[i]:AtualizarVoidZone (whichRowLine, i, instanceObject)
 			whichRowLine = whichRowLine+1
 		end
 
-		return Details:EndRefresh(instancia, total, combatObject, showing) --retorna a tabela que precisa ganhar o refresh
+		return Details:EndRefresh(instanceObject, total, combatObject, damageContainer) --retorna a tabela que precisa ganhar o refresh
 
 	else
 	--/run Details:Dump(Details:GetCurrentCombat():GetActor(1, "Injured Steelspine 1"))
@@ -2123,41 +2217,30 @@ function atributo_damage:RefreshWindow(instancia, combatObject, forcar, exportar
 
 			--keyName = "damage_taken"
 			--result of the first actor
-			instancia.top = actorTableContent[1] and actorTableContent[1][keyName]
+			instanceObject.top = actorTableContent[1] and actorTableContent[1][keyName]
 
-		elseif (windowMode == modo_ALL) then --mostrando ALL
-
+		elseif (windowMode == DETAILS_MODE_ALL) then --mostrando ALL
 			--faz o sort da categoria e retorna o amount corrigido
-			--print(keyName)
 			if (subAttribute == 2) then
-				local combat_time = instancia.showing:GetCombatTime()
-				total = atributo_damage:ContainerRefreshDps (actorTableContent, combat_time)
+				local combat_time = instanceObject.showing:GetCombatTime()
+				total = damageClass:ContainerRefreshDps(actorTableContent, combat_time)
 			else
 				--pega o total ja aplicado na tabela do combate
-				total = combatObject.totals [class_type]
+				total = combatObject.totals[class_type]
 			end
 
-			amount = Details:ContainerSort (actorTableContent, amount, keyName)
+			amount = Details:ContainerSort(actorTableContent, amount, keyName)
 
 			--grava o total
-			instancia.top = actorTableContent[1][keyName]
+			instanceObject.top = actorTableContent[1][keyName]
 
-		elseif (windowMode == modo_GROUP) then --mostrando GROUP
-
-			--organiza as tabelas
-
-			if (Details.in_combat and instancia.segmento == 0 and not exportar) then
+		elseif (windowMode == DETAILS_MODE_GROUP) then --mostrando GROUP
+			if (Details.in_combat and instanceObject.segmento == 0 and not bExportData) then
 				isUsingCache = true
 			end
 
 			if (isUsingCache) then
-
 				actorTableContent = Details.cache_damage_group
-
-				if (subAttribute == 2) then --dps
-					local combat_time = instancia.showing:GetCombatTime()
-					atributo_damage:ContainerRefreshDps (actorTableContent, combat_time)
-				end
 
 				if (#actorTableContent < 1) then
 					if (Details.debug and false) then
@@ -2168,29 +2251,58 @@ function atributo_damage:RefreshWindow(instancia, combatObject, forcar, exportar
 						end
 					end
 
-					return Details:EsconderBarrasNaoUsadas (instancia, showing), "", 0, 0
+					return Details:HideBarsNotInUse(instanceObject, damageContainer), "", 0, 0
 				end
 
-				_table_sort(actorTableContent, Details.SortKeySimple)
+				local bOrderDpsByRealTime = Details.CurrentDps.CanSortByRealTimeDps()
 
-				if (actorTableContent[1][keyName] < 1) then
-					amount = 0
+				if (subAttribute == 2) then --dps
+					local combatTime = combatObject:GetCombatTime()
+					local realTimeTotal = 0
+					total, realTimeTotal = damageClass:ContainerRefreshDps(actorTableContent, combatTime)
+
+					if (bOrderDpsByRealTime) then
+						total = realTimeTotal
+					end
+
+				elseif (subAttribute == 1) then --damage done
+					if (bOrderDpsByRealTime) then
+						total = damageClass:RefreshDpsRealTime(actorTableContent)
+					end
+				end
+
+				if (bOrderDpsByRealTime) then
+					_table_sort(actorTableContent, Details.SortByRealTimeDps)
+
+					if (actorTableContent[1]["last_dps_realtime"] < 1) then
+						amount = 0
+					else
+						instanceObject.top = actorTableContent[1].last_dps_realtime
+						amount = #actorTableContent
+					end
 				else
-					instancia.top = actorTableContent[1][keyName]
-					amount = #actorTableContent
-				end
+					_table_sort(actorTableContent, Details.SortKeySimple)
+					if (actorTableContent[1][keyName] < 1) then
+						amount = 0
+					else
+						instanceObject.top = actorTableContent[1][keyName]
+						amount = #actorTableContent
+					end
 
-				for i = 1, amount do
-					total = total + actorTableContent[i][keyName]
+					if (subAttribute ~= 2) then --other than dps because dps already did the iteration and the total is already calculated
+						for i = 1, amount do
+							total = total + actorTableContent[i][keyName]
+						end
+					end
 				end
 			else
 				if (subAttribute == 2) then --dps
-					local combat_time = instancia.showing:GetCombatTime()
-					atributo_damage:ContainerRefreshDps (actorTableContent, combat_time)
+					local combatTime = combatObject:GetCombatTime()
+					damageClass:ContainerRefreshDps(actorTableContent, combatTime)
 				end
-
 				_table_sort(actorTableContent, Details.SortKeyGroup)
 			end
+
 			--
 			if (not isUsingCache) then
 				for index, player in ipairs(actorTableContent) do
@@ -2207,7 +2319,7 @@ function atributo_damage:RefreshWindow(instancia, combatObject, forcar, exportar
 					end
 				end
 
-				instancia.top = actorTableContent[1] and actorTableContent[1][keyName]
+				instanceObject.top = actorTableContent[1] and actorTableContent[1][keyName]
 			end
 
 		end
@@ -2215,22 +2327,22 @@ function atributo_damage:RefreshWindow(instancia, combatObject, forcar, exportar
 
 	--refaz o mapa do container
 	if (not isUsingCache) then
-		showing:remapear()
+		damageContainer:remapear()
 	end
 
-	if (exportar) then
-		return total, keyName, instancia.top, amount
+	if (bExportData) then
+		return total, keyName, instanceObject.top, amount
 	end
 
 	if (amount < 1) then --n�o h� barras para mostrar
-		if (forcar) then
-			if (instancia.modo == 2) then --group
-				for i = 1, instancia.rows_fit_in_window  do
-					Details.FadeHandler.Fader(instancia.barras [i], "in", Details.fade_speed)
+		if (bForceUpdate) then
+			if (instanceObject.modo == 2) then --group
+				for i = 1, instanceObject.rows_fit_in_window  do
+					Details.FadeHandler.Fader(instanceObject.barras [i], "in", Details.fade_speed)
 				end
 			end
 		end
-		instancia:EsconderScrollBar() --precisaria esconder a scroll bar
+		instanceObject:EsconderScrollBar() --precisaria esconder a scroll bar
 
 		if (Details.debug and false) then
 			Details.showing_ActorTable_Timer2 = Details.showing_ActorTable_Timer2 or 0
@@ -2240,26 +2352,26 @@ function atributo_damage:RefreshWindow(instancia, combatObject, forcar, exportar
 			end
 		end
 
-		return Details:EndRefresh(instancia, total, combatObject, showing) --retorna a tabela que precisa ganhar o refresh
+		return Details:EndRefresh(instanceObject, total, combatObject, damageContainer) --retorna a tabela que precisa ganhar o refresh
 	end
 
-	instancia:RefreshScrollBar(amount)
+	instanceObject:RefreshScrollBar(amount)
 
 	local whichRowLine = 1
-	local lineContainer = instancia.barras
-	local percentageType = instancia.row_info.percent_type
-	local barsShowData = instancia.row_info.textR_show_data
-	local barsBrackets = instancia:GetBarBracket()
-	local barsSeparator = instancia:GetBarSeparator()
-	local baseframe = instancia.baseframe
-	local useAnimations = Details.is_using_row_animations and (not baseframe.isStretching and not forcar and not baseframe.isResizing)
+	local lineContainer = instanceObject.barras
+	local percentageType = instanceObject.row_info.percent_type
+	local barsShowData = instanceObject.row_info.textR_show_data
+	local barsBrackets = instanceObject:GetBarBracket()
+	local barsSeparator = instanceObject:GetBarSeparator()
+	local baseframe = instanceObject.baseframe
+	local useAnimations = Details.is_using_row_animations and (not baseframe.isStretching and not bForceUpdate and not baseframe.isResizing)
 
 	if (total == 0) then
 		total = 0.00000001
 	end
 
 	local myPos
-	local following = instancia.following.enabled and subAttribute ~= 6
+	local following = instanceObject.following.enabled and subAttribute ~= 6
 
 	if (following) then
 		if (isUsingCache) then
@@ -2271,19 +2383,19 @@ function atributo_damage:RefreshWindow(instancia, combatObject, forcar, exportar
 				end
 			end
 		else
-			myPos = showing._NameIndexTable [Details.playername]
+			myPos = damageContainer._NameIndexTable [Details.playername]
 		end
 	end
 
-	local combatTime = instancia.showing:GetCombatTime()
-	UsingCustomLeftText = instancia.row_info.textL_enable_custom_text
-	UsingCustomRightText = instancia.row_info.textR_enable_custom_text
+	local combatTime = instanceObject.showing:GetCombatTime()
+	UsingCustomLeftText = instanceObject.row_info.textL_enable_custom_text
+	UsingCustomRightText = instanceObject.row_info.textR_enable_custom_text
 
 	local useTotalBar = false
-	if (instancia.total_bar.enabled) then
+	if (instanceObject.total_bar.enabled) then
 		useTotalBar = true
 
-		if (instancia.total_bar.only_in_group and (not IsInGroup() and not IsInRaid())) then
+		if (instanceObject.total_bar.only_in_group and (not IsInGroup() and not IsInRaid())) then
 			useTotalBar = false
 		end
 
@@ -2293,17 +2405,17 @@ function atributo_damage:RefreshWindow(instancia, combatObject, forcar, exportar
 	end
 
 	if (subAttribute == 2) then --dps
-		instancia.player_top_dps = actorTableContent [1].last_dps
-		instancia.player_top_dps_threshold = instancia.player_top_dps - (instancia.player_top_dps * 0.65)
+		instanceObject.player_top_dps = actorTableContent [1].last_dps
+		instanceObject.player_top_dps_threshold = instanceObject.player_top_dps - (instanceObject.player_top_dps * 0.65)
 	end
 
 	local totalBarIsShown
 
-	if (instancia.bars_sort_direction == 1) then --top to bottom
-		if (useTotalBar and instancia.barraS[1] == 1) then
+	if (instanceObject.bars_sort_direction == 1) then --top to bottom
+		if (useTotalBar and instanceObject.barraS[1] == 1) then
 			whichRowLine = 2
-			local iterLast = instancia.barraS[2]
-			if (iterLast == instancia.rows_fit_in_window) then
+			local iterLast = instanceObject.barraS[2]
+			if (iterLast == instanceObject.rows_fit_in_window) then
 				iterLast = iterLast - 1
 			end
 
@@ -2311,7 +2423,7 @@ function atributo_damage:RefreshWindow(instancia, combatObject, forcar, exportar
 			row1.minha_tabela = nil
 			row1.lineText1:SetText(Loc ["STRING_TOTAL"])
 
-			if (instancia.use_multi_fontstrings) then
+			if (instanceObject.use_multi_fontstrings) then
 				row1.lineText2:SetText("")
 				row1.lineText3:SetText(Details:ToK2(total))
 				row1.lineText4:SetText(Details:ToK(total / combatTime))
@@ -2320,59 +2432,59 @@ function atributo_damage:RefreshWindow(instancia, combatObject, forcar, exportar
 			end
 
 			row1:SetValue(100)
-			local r, g, b = unpack(instancia.total_bar.color)
+			local r, g, b = unpack(instanceObject.total_bar.color)
 			row1.textura:SetVertexColor(r, g, b)
-			row1.icone_classe:SetTexture(instancia.total_bar.icon)
+			row1.icone_classe:SetTexture(instanceObject.total_bar.icon)
 			row1.icone_classe:SetTexCoord(0.0625, 0.9375, 0.0625, 0.9375)
 
 			Details.FadeHandler.Fader(row1, "out")
 			totalBarIsShown = true
 
-			if (following and myPos and myPos > instancia.rows_fit_in_window and instancia.barraS[2] < myPos) then
-				for i = instancia.barraS[1], iterLast-1, 1 do
+			if (following and myPos and myPos+1 > instanceObject.rows_fit_in_window and instanceObject.barraS[2] < myPos+1) then
+				for i = instanceObject.barraS[1], iterLast-1, 1 do
 					if (actorTableContent[i]) then
-						actorTableContent[i]:RefreshLine(instancia, lineContainer, whichRowLine, i, total, subAttribute, forcar, keyName, combatTime, percentageType, useAnimations, barsShowData, barsBrackets, barsSeparator)
+						actorTableContent[i]:RefreshLine(instanceObject, lineContainer, whichRowLine, i, total, subAttribute, bForceUpdate, keyName, combatTime, percentageType, useAnimations, barsShowData, barsBrackets, barsSeparator)
 						whichRowLine = whichRowLine+1
 					end
 				end
-				actorTableContent[myPos]:RefreshLine(instancia, lineContainer, whichRowLine, myPos, total, subAttribute, forcar, keyName, combatTime, percentageType, useAnimations, barsShowData, barsBrackets, barsSeparator)
+				actorTableContent[myPos]:RefreshLine(instanceObject, lineContainer, whichRowLine, myPos, total, subAttribute, bForceUpdate, keyName, combatTime, percentageType, useAnimations, barsShowData, barsBrackets, barsSeparator)
 				whichRowLine = whichRowLine+1
 			else
-				for i = instancia.barraS[1], iterLast, 1 do
+				for i = instanceObject.barraS[1], iterLast, 1 do
 					if (actorTableContent[i]) then
-						actorTableContent[i]:RefreshLine(instancia, lineContainer, whichRowLine, i, total, subAttribute, forcar, keyName, combatTime, percentageType, useAnimations, barsShowData, barsBrackets, barsSeparator)
+						actorTableContent[i]:RefreshLine(instanceObject, lineContainer, whichRowLine, i, total, subAttribute, bForceUpdate, keyName, combatTime, percentageType, useAnimations, barsShowData, barsBrackets, barsSeparator)
 						whichRowLine = whichRowLine+1
 					end
 				end
 			end
 
 		else
-			if (following and myPos and myPos > instancia.rows_fit_in_window and instancia.barraS[2] < myPos) then
-				for i = instancia.barraS[1], instancia.barraS[2]-1, 1 do
+			if (following and myPos and myPos > instanceObject.rows_fit_in_window and instanceObject.barraS[2] < myPos) then
+				for i = instanceObject.barraS[1], instanceObject.barraS[2]-1, 1 do
 					if (actorTableContent[i]) then
-						actorTableContent[i]:RefreshLine(instancia, lineContainer, whichRowLine, i, total, subAttribute, forcar, keyName, combatTime, percentageType, useAnimations, barsShowData, barsBrackets, barsSeparator)
+						actorTableContent[i]:RefreshLine(instanceObject, lineContainer, whichRowLine, i, total, subAttribute, bForceUpdate, keyName, combatTime, percentageType, useAnimations, barsShowData, barsBrackets, barsSeparator)
 						whichRowLine = whichRowLine+1
 					end
 				end
 
-				actorTableContent[myPos]:RefreshLine(instancia, lineContainer, whichRowLine, myPos, total, subAttribute, forcar, keyName, combatTime, percentageType, useAnimations, barsShowData, barsBrackets, barsSeparator)
+				actorTableContent[myPos]:RefreshLine(instanceObject, lineContainer, whichRowLine, myPos, total, subAttribute, bForceUpdate, keyName, combatTime, percentageType, useAnimations, barsShowData, barsBrackets, barsSeparator)
 				whichRowLine = whichRowLine+1
 			else
-				for i = instancia.barraS[1], instancia.barraS[2], 1 do
+				for i = instanceObject.barraS[1], instanceObject.barraS[2], 1 do
 					if (actorTableContent[i]) then
 
-						actorTableContent[i]:RefreshLine(instancia, lineContainer, whichRowLine, i, total, subAttribute, forcar, keyName, combatTime, percentageType, useAnimations, barsShowData, barsBrackets, barsSeparator)
+						actorTableContent[i]:RefreshLine(instanceObject, lineContainer, whichRowLine, i, total, subAttribute, bForceUpdate, keyName, combatTime, percentageType, useAnimations, barsShowData, barsBrackets, barsSeparator)
 						whichRowLine = whichRowLine+1
 					end
 				end
 			end
 		end
 
-	elseif (instancia.bars_sort_direction == 2) then --bottom to top
-		if (useTotalBar and instancia.barraS[1] == 1) then
+	elseif (instanceObject.bars_sort_direction == 2) then --bottom to top
+		if (useTotalBar and instanceObject.barraS[1] == 1) then
 			whichRowLine = 2
-			local iter_last = instancia.barraS[2]
-			if (iter_last == instancia.rows_fit_in_window) then
+			local iter_last = instanceObject.barraS[2]
+			if (iter_last == instanceObject.rows_fit_in_window) then
 				iter_last = iter_last - 1
 			end
 
@@ -2380,7 +2492,7 @@ function atributo_damage:RefreshWindow(instancia, combatObject, forcar, exportar
 			row1.minha_tabela = nil
 			row1.lineText1:SetText(Loc ["STRING_TOTAL"])
 
-			if (instancia.use_multi_fontstrings) then
+			if (instanceObject.use_multi_fontstrings) then
 				row1.lineText2:SetText("")
 				row1.lineText3:SetText(Details:ToK2(total))
 				row1.lineText4:SetText(Details:ToK(total / combatTime))
@@ -2389,47 +2501,46 @@ function atributo_damage:RefreshWindow(instancia, combatObject, forcar, exportar
 			end
 
 			row1:SetValue(100)
-			local r, g, b = unpack(instancia.total_bar.color)
+			local r, g, b = unpack(instanceObject.total_bar.color)
 			row1.textura:SetVertexColor(r, g, b)
 
-			row1.icone_classe:SetTexture(instancia.total_bar.icon)
+			row1.icone_classe:SetTexture(instanceObject.total_bar.icon)
 			row1.icone_classe:SetTexCoord(0.0625, 0.9375, 0.0625, 0.9375)
 
 			Details.FadeHandler.Fader(row1, "out")
 			totalBarIsShown = true
 
-			if (following and myPos and myPos > instancia.rows_fit_in_window and instancia.barraS[2] < myPos) then
-				actorTableContent[myPos]:RefreshLine(instancia, lineContainer, whichRowLine, myPos, total, subAttribute, forcar, keyName, combatTime, percentageType, useAnimations, barsShowData, barsBrackets, barsSeparator)
+			if (following and myPos and myPos+1 > instanceObject.rows_fit_in_window and instanceObject.barraS[2] < myPos+1) then
+				actorTableContent[myPos]:RefreshLine(instanceObject, lineContainer, whichRowLine, myPos, total, subAttribute, bForceUpdate, keyName, combatTime, percentageType, useAnimations, barsShowData, barsBrackets, barsSeparator)
 				whichRowLine = whichRowLine+1
-				for i = iter_last-1, instancia.barraS[1], -1 do
+				for i = iter_last-1, instanceObject.barraS[1], -1 do
 					if (actorTableContent[i]) then
-						actorTableContent[i]:RefreshLine(instancia, lineContainer, whichRowLine, i, total, subAttribute, forcar, keyName, combatTime, percentageType, useAnimations, barsShowData, barsBrackets, barsSeparator)
+						actorTableContent[i]:RefreshLine(instanceObject, lineContainer, whichRowLine, i, total, subAttribute, bForceUpdate, keyName, combatTime, percentageType, useAnimations, barsShowData, barsBrackets, barsSeparator)
 						whichRowLine = whichRowLine+1
 					end
 				end
 			else
-				for i = iter_last, instancia.barraS[1], -1 do
+				for i = iter_last, instanceObject.barraS[1], -1 do
 					if (actorTableContent[i]) then
-						actorTableContent[i]:RefreshLine(instancia, lineContainer, whichRowLine, i, total, subAttribute, forcar, keyName, combatTime, percentageType, useAnimations, barsShowData, barsBrackets, barsSeparator)
+						actorTableContent[i]:RefreshLine(instanceObject, lineContainer, whichRowLine, i, total, subAttribute, bForceUpdate, keyName, combatTime, percentageType, useAnimations, barsShowData, barsBrackets, barsSeparator)
 						whichRowLine = whichRowLine+1
 					end
 				end
 			end
 		else
-			if (following and myPos and myPos > instancia.rows_fit_in_window and instancia.barraS[2] < myPos) then
-				actorTableContent[myPos]:RefreshLine(instancia, lineContainer, whichRowLine, myPos, total, subAttribute, forcar, keyName, combatTime, percentageType, useAnimations, barsShowData, barsBrackets, barsSeparator)
+			if (following and myPos and myPos > instanceObject.rows_fit_in_window and instanceObject.barraS[2] < myPos) then
+				actorTableContent[myPos]:RefreshLine(instanceObject, lineContainer, whichRowLine, myPos, total, subAttribute, bForceUpdate, keyName, combatTime, percentageType, useAnimations, barsShowData, barsBrackets, barsSeparator)
 				whichRowLine = whichRowLine+1
-				for i = instancia.barraS[2]-1, instancia.barraS[1], -1 do
+				for i = instanceObject.barraS[2]-1, instanceObject.barraS[1], -1 do
 					if (actorTableContent[i]) then
-						actorTableContent[i]:RefreshLine(instancia, lineContainer, whichRowLine, i, total, subAttribute, forcar, keyName, combatTime, percentageType, useAnimations, barsShowData, barsBrackets, barsSeparator)
+						actorTableContent[i]:RefreshLine(instanceObject, lineContainer, whichRowLine, i, total, subAttribute, bForceUpdate, keyName, combatTime, percentageType, useAnimations, barsShowData, barsBrackets, barsSeparator)
 						whichRowLine = whichRowLine+1
 					end
 				end
 			else
-				-- /run print(Details:GetInstance(1).barraS[2]) -- vai do 5 ao 1 -- qual barra come�a no 1 -- i = 5 at� 1 -- player 5 atualiza na barra 1 / player 1 atualiza na barra 5
-				for i = instancia.barraS[2], instancia.barraS[1], -1 do
+				for i = instanceObject.barraS[2], instanceObject.barraS[1], -1 do
 					if (actorTableContent[i]) then
-						actorTableContent[i]:RefreshLine(instancia, lineContainer, whichRowLine, i, total, subAttribute, forcar, keyName, combatTime, percentageType, useAnimations, barsShowData, barsBrackets, barsSeparator)
+						actorTableContent[i]:RefreshLine(instanceObject, lineContainer, whichRowLine, i, total, subAttribute, bForceUpdate, keyName, combatTime, percentageType, useAnimations, barsShowData, barsBrackets, barsSeparator)
 						whichRowLine = whichRowLine+1
 					end
 				end
@@ -2439,29 +2550,29 @@ function atributo_damage:RefreshWindow(instancia, combatObject, forcar, exportar
 	end
 
 	if (totalBarIsShown) then
-		instancia:RefreshScrollBar(amount + 1)
+		instanceObject:RefreshScrollBar(amount + 1)
 	else
-		instancia:RefreshScrollBar(amount)
+		instanceObject:RefreshScrollBar(amount)
 	end
 
 	if (useAnimations) then
-		instancia:PerformAnimations(whichRowLine - 1)
+		instanceObject:PerformAnimations(whichRowLine - 1)
 	end
 
 	--beta, hidar barras n�o usadas durante um refresh for�ado
-	if (forcar) then
-		if (instancia.modo == 2) then --group
-			for i = whichRowLine, instancia.rows_fit_in_window  do
-				Details.FadeHandler.Fader(instancia.barras [i], "in", Details.fade_speed)
+	if (bForceUpdate) then
+		if (instanceObject.modo == 2) then --group
+			for i = whichRowLine, instanceObject.rows_fit_in_window  do
+				Details.FadeHandler.Fader(instanceObject.barras [i], "in", Details.fade_speed)
 			end
 		end
 	end
 
 	Details.LastFullDamageUpdate = Details._tempo
 
-	instancia:AutoAlignInLineFontStrings()
+	instanceObject:AutoAlignInLineFontStrings()
 
-	return Details:EndRefresh(instancia, total, combatObject, showing) --retorna a tabela que precisa ganhar o refresh
+	return Details:EndRefresh(instanceObject, total, combatObject, damageContainer) --retorna a tabela que precisa ganhar o refresh
 end
 
 --[[exported]] function Details:AutoAlignInLineFontStrings()
@@ -2472,6 +2583,7 @@ end
 		local maxStringLength_StringThree = 0
 		local profileOffsetString3 = self.fontstrings_text3_anchor
 		local profileOffsetString2 = self.fontstrings_text2_anchor
+		local profileYOffset = self.row_info.text_yoffset
 
 		Details.CacheInLineMaxDistance = Details.CacheInLineMaxDistance or {}
 		Details.CacheInLineMaxDistance[self:GetId()] = Details.CacheInLineMaxDistance[self:GetId()] or {[2] = profileOffsetString2, [3] = profileOffsetString3}
@@ -2512,7 +2624,7 @@ end
 			--update the lines
 			for lineId = 1, self:GetNumLinesShown() do
 				local thisLine = self:GetLine(lineId)
-				thisLine.lineText3:SetPoint("right", thisLine.statusbar, "right", -newOffset, 0)
+				thisLine.lineText3:SetPoint("right", thisLine.statusbar, "right", -newOffset, profileYOffset)
 			end
 		end
 
@@ -2533,7 +2645,7 @@ end
 				--update the lines
 				for lineId = 1, self:GetNumLinesShown() do
 					local thisLine = self:GetLine(lineId)
-					thisLine.lineText2:SetPoint("right", thisLine.statusbar, "right", -newOffset, 0)
+					thisLine.lineText2:SetPoint("right", thisLine.statusbar, "right", -newOffset, profileYOffset)
 				end
 			end
 		end
@@ -2569,17 +2681,17 @@ end
 local eventListener = Details:CreateEventListener()
 eventListener:RegisterEvent("COMBAT_PLAYER_ENTER", function()
 	if (Details.CacheInLineMaxDistance) then
-		wipe(Details.CacheInLineMaxDistance)
+		Details:Destroy(Details.CacheInLineMaxDistance)
 
 		for i = 1, 10 do
 			C_Timer.After(i, function()
-				wipe(Details.CacheInLineMaxDistance)
+				Details:Destroy(Details.CacheInLineMaxDistance)
 			end)
 		end
 	end
 end)
 
-local actor_class_color_r, actor_class_color_g, actor_class_color_b
+local classColor_Red, classColor_Green, classColor_Blue
 
 -- ~texts
 --[[exported]] function Details:SetInLineTexts(thisLine, valueText, perSecondText, percentText)
@@ -2589,10 +2701,16 @@ local actor_class_color_r, actor_class_color_g, actor_class_color_b
 	perSecondText = perSecondText or ""
 	percentText = percentText or ""
 
---		local actorSerial = thisLine:GetActor().serial
---		local currentDps = Details.CurrentDps.GetCurrentDps(actorSerial) or perSecondText
---		perSecondText = currentDps
---	end
+	if ((Details.use_realtimedps or (Details.combat_log.evoker_show_realtimedps and Details.playerspecid == 1473)) and Details.in_combat) then --real time
+		if (thisLine:GetActor()) then
+			local actorSerial = thisLine:GetActor().serial
+			local currentDps = Details.CurrentDps.GetCurrentDps(actorSerial)
+			if (currentDps and currentDps > 0) then
+				currentDps = Details:ToK2(currentDps)
+			end
+			perSecondText = currentDps
+		end
+	end
 
 	--check if the instance is showing total, dps and percent
 	local instanceSettings = instance.row_info
@@ -2628,7 +2746,7 @@ local actor_class_color_r, actor_class_color_g, actor_class_color_b
 end
 
 -- ~atualizar ~barra ~update
-function atributo_damage:RefreshLine(instance, lineContainer, whichRowLine, rank, total, sub_atributo, forcar, keyName, combat_time, percentage_type, use_animations, bars_show_data, bars_brackets, bars_separator)
+function damageClass:RefreshLine(instanceObject, lineContainer, whichRowLine, rank, total, subAttribute, bForceRefresh, keyName, combatTime, percentageType, bUseAnimations, bars_show_data, bars_brackets, bars_separator)
 	local thisLine = lineContainer[whichRowLine]
 
 	if (not thisLine) then
@@ -2649,79 +2767,107 @@ function atributo_damage:RefreshLine(instance, lineContainer, whichRowLine, rank
 	local percentNumber
 
 	--calc the percent amount base on the percent type
-	if (percentage_type == 1) then
+	if (percentageType == 1) then
 		percentString = format("%.1f", self[keyName] / total * 100)
 
-	elseif (percentage_type == 2) then
-		percentString = format("%.1f", self[keyName] / instance.top * 100)
+	elseif (percentageType == 2) then
+		percentString = format("%.1f", self[keyName] / instanceObject.top * 100)
 	end
 
-	--calculate the actor dps
-	if ((Details.time_type == 2 and self.grupo) or not Details:CaptureGet("damage") or instance.segmento == -1) then
-		if (instance.segmento == -1 and combat_time == 0) then
-			local actor = Details.tabela_vigente(1, self.nome)
-			if (actor) then
-				local combatTime = actor:Tempo()
-				dps = damageTotal / combatTime
-				self.last_dps = dps
-			else
-				dps = damageTotal / combat_time
-				self.last_dps = dps
+	local currentCombat = instanceObject:GetCombat()
+
+	if (currentCombat:GetCombatType() == DETAILS_SEGMENTTYPE_MYTHICDUNGEON_OVERALL) then
+		if (Details.mythic_plus.mythicrun_time_type == 1) then
+			--total time in combat, activity time
+			combatTime = currentCombat:GetCombatTime()
+		elseif (Details.mythic_plus.mythicrun_time_type == 2) then
+			--elapsed time of the run
+			combatTime = currentCombat:GetRunTime()
+		end
+
+		dps = damageTotal / combatTime
+		self.last_dps = dps
+	else
+		--calculate the actor dps
+		if ((Details.time_type == 2 and self.grupo) or not Details:CaptureGet("damage") or instanceObject.segmento == -1 or Details.use_realtimedps) then
+			if (Details.use_realtimedps and Details.in_combat) then
+				local currentDps = self.last_dps_realtime
+				if (currentDps) then
+					dps = currentDps
+				end
+			end
+
+			if (not dps) then
+				if (instanceObject.segmento == -1 and combatTime == 0) then
+					local actor = currentCombat(1, self.nome)
+					if (actor) then
+						local combatTime = actor:Tempo()
+						dps = damageTotal / combatTime
+						self.last_dps = dps
+					else
+						dps = damageTotal / combatTime
+						self.last_dps = dps
+					end
+				else
+					dps = damageTotal / combatTime
+					self.last_dps = dps
+				end
 			end
 		else
-			dps = damageTotal / combat_time
-			self.last_dps = dps
-		end
-	else
-		if (not self.on_hold) then
-			dps = damageTotal/self:Tempo() --calcula o dps deste objeto
-			self.last_dps = dps --salva o dps dele
-		else
-			if (self.last_dps == 0) then --n�o calculou o dps dele ainda mas entrou em standby
-				dps = damageTotal/self:Tempo()
-				self.last_dps = dps
+			if (not self.on_hold) then
+				dps = damageTotal/self:Tempo() --calcula o dps deste objeto
+				self.last_dps = dps --salva o dps dele
 			else
-				dps = self.last_dps
+				if (self.last_dps == 0) then --n�o calculou o dps dele ainda mas entrou em standby
+					dps = damageTotal/self:Tempo()
+					self.last_dps = dps
+				else
+					dps = self.last_dps
+				end
 			end
 		end
 	end
 
 	--right text
-	if (sub_atributo == 1) then --damage done
+	if (subAttribute == 1) then --damage done
 		dps = _math_floor(dps)
-		local formated_damage = SelectedToKFunction(_, damageTotal)
-		local formated_dps = SelectedToKFunction(_, dps)
-		thisLine.ps_text = formated_dps
+		local formatedDamage = SelectedToKFunction(_, damageTotal)
+		local formatedDps = SelectedToKFunction(_, dps)
+		thisLine.ps_text = formatedDps
 
-		if (not bars_show_data [1]) then
-			formated_damage = ""
+		if (not bars_show_data[1]) then
+			formatedDamage = ""
 		end
 
-		if (not bars_show_data [2]) then
-			formated_dps = ""
+		if (not bars_show_data[2]) then
+			formatedDps = ""
 		end
 
-		if (not bars_show_data [3]) then
+		if (not bars_show_data[3]) then
 			percentString = ""
 		else
 			percentString = percentString .. "%"
 		end
 
-		local rightText = formated_damage .. bars_brackets[1] .. formated_dps .. bars_separator .. percentString .. bars_brackets[2]
+		local rightText = formatedDamage .. bars_brackets[1] .. formatedDps .. bars_separator .. percentString .. bars_brackets[2]
 
 		if (UsingCustomRightText) then
-			thisLine.lineText4:SetText(stringReplace(instance.row_info.textR_custom_text, formated_damage, formated_dps, percentString, self, instance.showing, instance, rightText))
+			thisLine.lineText4:SetText(stringReplace(instanceObject.row_info.textR_custom_text, formatedDamage, formatedDps, percentString, self, instanceObject.showing, instanceObject, rightText))
 		else
-			if (instance.use_multi_fontstrings) then
-				instance:SetInLineTexts(thisLine, formated_damage, formated_dps, percentString)
+			if (instanceObject.use_multi_fontstrings) then
+				instanceObject:SetInLineTexts(thisLine, formatedDamage, formatedDps, percentString)
 			else
 				thisLine.lineText4:SetText(rightText)
 			end
 		end
 
-		percentNumber = _math_floor((damageTotal/instance.top) * 100)
+		if (Details.CurrentDps.CanSortByRealTimeDps()) then
+			percentNumber = _math_floor((self.last_dps_realtime / instanceObject.top) * 100)
+		else
+			percentNumber = _math_floor((damageTotal/instanceObject.top) * 100)
+		end
 
-	elseif (sub_atributo == 2) then --dps
+	elseif (subAttribute == 2) then --dps
 		local raw_dps = dps
 		dps = _math_floor(dps)
 
@@ -2732,12 +2878,12 @@ function atributo_damage:RefreshLine(instance, lineContainer, whichRowLine, rank
 		local diff_from_topdps
 
 		if (rank > 1) then
-			diff_from_topdps = instance.player_top_dps - raw_dps
+			diff_from_topdps = instanceObject.player_top_dps - raw_dps
 		end
 
 		local rightText
 		if (diff_from_topdps) then
-			local threshold = diff_from_topdps / instance.player_top_dps_threshold * 100
+			local threshold = diff_from_topdps / instanceObject.player_top_dps_threshold * 100
 			if (threshold < 100) then
 				threshold = abs(threshold - 100)
 			else
@@ -2773,20 +2919,20 @@ function atributo_damage:RefreshLine(instance, lineContainer, whichRowLine, rank
 		end
 
 		if (UsingCustomRightText) then
-			thisLine.lineText4:SetText(stringReplace(instance.row_info.textR_custom_text, formated_dps, formated_damage, percentString, self, instance.showing, instance, rightText))
+			thisLine.lineText4:SetText(stringReplace(instanceObject.row_info.textR_custom_text, formated_dps, formated_damage, percentString, self, instanceObject.showing, instanceObject, rightText))
 		else
-			if (instance.use_multi_fontstrings) then
+			if (instanceObject.use_multi_fontstrings) then
 				--instance:SetInLineTexts(thisLine, formated_damage, formated_dps, porcentagem)
-				instance:SetInLineTexts(thisLine, rightText)
+				instanceObject:SetInLineTexts(thisLine, rightText)
 			else
 				thisLine.lineText4:SetText(rightText)
 			end
 		end
 
-		percentNumber = _math_floor((dps/instance.top) * 100)
+		percentNumber = _math_floor((dps/instanceObject.top) * 100)
 
-	elseif (sub_atributo == 3) then --damage taken
-		local dtps = self.damage_taken / combat_time
+	elseif (subAttribute == 3) then --damage taken
+		local dtps = self.damage_taken / combatTime
 
 		local formated_damage_taken = SelectedToKFunction(_, self.damage_taken)
 		local formated_dtps = SelectedToKFunction(_, dtps)
@@ -2806,18 +2952,18 @@ function atributo_damage:RefreshLine(instance, lineContainer, whichRowLine, rank
 
 		local rightText = formated_damage_taken .. bars_brackets[1] .. formated_dtps .. bars_separator .. percentString .. bars_brackets[2]
 		if (UsingCustomRightText) then
-			thisLine.lineText4:SetText(stringReplace(instance.row_info.textR_custom_text, formated_damage_taken, formated_dtps, percentString, self, instance.showing, instance, rightText))
+			thisLine.lineText4:SetText(stringReplace(instanceObject.row_info.textR_custom_text, formated_damage_taken, formated_dtps, percentString, self, instanceObject.showing, instanceObject, rightText))
 		else
-			if (instance.use_multi_fontstrings) then
-				instance:SetInLineTexts(thisLine, formated_damage_taken, formated_dtps, percentString)
+			if (instanceObject.use_multi_fontstrings) then
+				instanceObject:SetInLineTexts(thisLine, formated_damage_taken, formated_dtps, percentString)
 			else
 				thisLine.lineText4:SetText(rightText)
 			end
 		end
 
-		percentNumber = _math_floor((self.damage_taken/instance.top) * 100)
+		percentNumber = _math_floor((self.damage_taken/instanceObject.top) * 100)
 
-	elseif (sub_atributo == 4) then --friendly fire
+	elseif (subAttribute == 4) then --friendly fire
 		local formated_friendly_fire = SelectedToKFunction(_, self.friendlyfire_total)
 
 		if (not bars_show_data [1]) then
@@ -2831,18 +2977,18 @@ function atributo_damage:RefreshLine(instance, lineContainer, whichRowLine, rank
 
 		local rightText = formated_friendly_fire .. bars_brackets[1] .. percentString ..  bars_brackets[2]
 		if (UsingCustomRightText) then
-			thisLine.lineText4:SetText(stringReplace(instance.row_info.textR_custom_text, formated_friendly_fire, "", percentString, self, instance.showing, instance, rightText))
+			thisLine.lineText4:SetText(stringReplace(instanceObject.row_info.textR_custom_text, formated_friendly_fire, "", percentString, self, instanceObject.showing, instanceObject, rightText))
 		else
-			if (instance.use_multi_fontstrings) then
-				instance:SetInLineTexts(thisLine, "", formated_friendly_fire, percentString)
+			if (instanceObject.use_multi_fontstrings) then
+				instanceObject:SetInLineTexts(thisLine, "", formated_friendly_fire, percentString)
 			else
 				thisLine.lineText4:SetText(rightText)
 			end
 		end
-		percentNumber = _math_floor((self.friendlyfire_total/instance.top) * 100)
+		percentNumber = _math_floor((self.friendlyfire_total/instanceObject.top) * 100)
 
-	elseif (sub_atributo == 6) then --enemies
-		local dtps = self.damage_taken / combat_time
+	elseif (subAttribute == 6) then --enemies
+		local dtps = self.damage_taken / combatTime
 
 		local formatedDamageTaken = SelectedToKFunction(_, self.damage_taken)
 		local formatedDtps = SelectedToKFunction(_, dtps)
@@ -2862,35 +3008,119 @@ function atributo_damage:RefreshLine(instance, lineContainer, whichRowLine, rank
 
 		local rightText = formatedDamageTaken .. bars_brackets[1] .. formatedDtps .. bars_separator .. percentString .. bars_brackets[2]
 		if (UsingCustomRightText) then
-			thisLine.lineText4:SetText(stringReplace(instance.row_info.textR_custom_text, formatedDamageTaken, formatedDtps, percentString, self, instance.showing, instance, rightText))
+			thisLine.lineText4:SetText(stringReplace(instanceObject.row_info.textR_custom_text, formatedDamageTaken, formatedDtps, percentString, self, instanceObject.showing, instanceObject, rightText))
 		else
-			if (instance.use_multi_fontstrings) then
-				instance:SetInLineTexts(thisLine, formatedDamageTaken, formatedDtps, percentString)
+			if (instanceObject.use_multi_fontstrings) then
+				instanceObject:SetInLineTexts(thisLine, formatedDamageTaken, formatedDtps, percentString)
 			else
 				thisLine.lineText4:SetText(rightText)
 			end
 		end
 
-		percentNumber = _math_floor((self.damage_taken/instance.top) * 100)
+		percentNumber = _math_floor((self.damage_taken/instanceObject.top) * 100)
 	end
 
 	--need tooltip update?
-	if (thisLine.mouse_over and not instance.baseframe.isMoving) then
-		gump:UpdateTooltip(whichRowLine, thisLine, instance)
+	if (thisLine.mouse_over and not instanceObject.baseframe.isMoving) then
+		gump:UpdateTooltip(whichRowLine, thisLine, instanceObject)
 	end
 
 	if (self.need_refresh) then
 		self.need_refresh = false
-		forcar = true
+		bForceRefresh = true
 	end
 
-	actor_class_color_r, actor_class_color_g, actor_class_color_b = self:GetBarColor()
+	classColor_Red, classColor_Green, classColor_Blue = self:GetBarColor()
 
-	return self:RefreshLineValue(thisLine, instance, previousData, forcar, percentNumber, whichRowLine, lineContainer, use_animations)
+	return self:RefreshLineValue(thisLine, instanceObject, previousData, bForceRefresh, percentNumber, bUseAnimations, total, instanceObject.top)
 end
 
+---show an extra statusbar on the line, after the main statusbar
+---@param thisLine table
+---@param amount valueamount
+---@param extraAmount valueamount
+---@param totalAmount valueamount
+---@param topAmount valueamount
+---@param instanceObject instance
+---@param onEnterFunc function?
+---@param onLeaveFunc function?
+function Details:ShowExtraStatusbar(thisLine, amount, extraAmount, totalAmount, topAmount, instanceObject, onEnterFunc, onLeaveFunc)
+	local extraStatusbar = thisLine.extraStatusbar
+	if (extraAmount and extraAmount > 0 and instanceObject.atributo == 1 and instanceObject.sub_atributo == 1) then
+		local initialOffset = 0
+		local icon_offset_x, icon_offset_y = unpack(instanceObject.row_info.icon_offset)
 
-function Details:RefreshLineValue(thisLine, instance, previousData, isForceRefresh, percent, whichRowLine, lineContainer, useAnimations) --[[ exported]]
+		local bIsUsingBarStartAfterIcon = instanceObject.row_info.start_after_icon
+		if (bIsUsingBarStartAfterIcon) then
+			initialOffset = thisLine.icone_classe:GetWidth() + icon_offset_x
+		end
+
+		local statusBarWidth = thisLine.statusbar:GetWidth()
+		local percent = amount / topAmount
+		local fillTheGapWidth = percent * 4
+
+		local startExtraStatusbarOffset = percent * statusBarWidth
+		local extraStatusbarWidth = statusBarWidth * (extraAmount / topAmount)
+
+		extraStatusbar:ClearAllPoints()
+		extraStatusbar:SetHeight(thisLine:GetHeight())
+
+		if (bIsUsingBarStartAfterIcon) then
+			extraStatusbar:SetPoint("topleft", thisLine.icone_classe, "topright", startExtraStatusbarOffset - fillTheGapWidth, 0)
+		else
+			extraStatusbar:SetPoint("topleft", thisLine, "topleft", (statusBarWidth * percent) - fillTheGapWidth, 0)
+		end
+
+		--check if the extra bar will be bigger than the window
+		local windowWidth = instanceObject:GetSize()
+		local lineWidth = thisLine:GetWidth() * (amount/topAmount)
+		local maxExtraBarWidth = windowWidth - lineWidth - initialOffset
+
+		if (extraStatusbarWidth > maxExtraBarWidth) then
+			extraStatusbarWidth = maxExtraBarWidth
+		end
+
+		extraStatusbar:SetWidth(extraStatusbarWidth)
+		extraStatusbar:SetFrameLevel(thisLine:GetFrameLevel() + 1)
+
+		extraStatusbar.OnEnterCallback = onEnterFunc
+		extraStatusbar.OnLeaveCallback = onLeaveFunc
+
+		if (Details.combat_log.calc_evoker_damage) then
+			extraStatusbar:SetAlpha(0.2)
+			extraStatusbar.defaultAlpha = 0.2
+		else
+			extraStatusbar:SetAlpha(0.7)
+			extraStatusbar.defaultAlpha = 0.7
+		end
+		extraStatusbar:Show()
+	else
+		extraStatusbar:Hide()
+	end
+end
+
+--when the script detect the extrastatusbar need to be show, it will call this function
+local handleShowExtraStatusbar = function(thisLine, self, instance, previousData, isForceRefresh, percent, bUseAnimations, totalValue, topValue)
+	if (self.spec == 1473 and self.augmentedSpellsContainer) then
+		--prepare the extra bar to show the damage prediction to augmented evoker
+		local onEnterFunc = damageClass.PredictedAugSpellsOnEnter
+		local onLeaveFunc = damageClass.PredictedAugSpellsOnLeave
+
+		Details:ShowExtraStatusbar(thisLine, self.total, self.total_extra, totalValue, topValue, instance, onEnterFunc, onLeaveFunc)
+		thisLine.extraStatusbar.augmentedSpellsContainer = self.augmentedSpellsContainer
+
+		thisLine.extraStatusbar.actorName = self:Name()
+
+		---@cast instance instance
+		thisLine.extraStatusbar.instanceId = instance:GetId()
+	else
+		Details:ShowExtraStatusbar(thisLine, self.total, self.total_extra, totalValue, topValue, instance)
+	end
+end
+
+function Details:RefreshLineValue(thisLine, instance, previousData, isForceRefresh, percent, bUseAnimations, totalValue, topValue) --[[exported]]
+	thisLine.extraStatusbar:Hide()
+
 	if (thisLine.colocacao == 1) then
 		thisLine.animacao_ignorar = true
 
@@ -2908,7 +3138,7 @@ function Details:RefreshLineValue(thisLine, instance, previousData, isForceRefre
 	else
 		if (thisLine.hidden or thisLine.fading_in or thisLine.faded) then
 			--setando o valor  mesmo com anima��es pq o barra esta hidada com o value do �ltimo actor que ela mostrou
-			if (useAnimations) then
+			if (bUseAnimations and self.spec ~= 1473) then
 				thisLine.animacao_fim = percent
 				thisLine:SetValue(percent)
 			else
@@ -2918,11 +3148,21 @@ function Details:RefreshLineValue(thisLine, instance, previousData, isForceRefre
 
 			Details.FadeHandler.Fader(thisLine, "out")
 
+			if (self.total_extra and self.total_extra > 0) then
+				if (self.spec == 1473) then
+					if (Details.combat_log.calc_evoker_damage) then
+						handleShowExtraStatusbar(thisLine, self, instance, previousData, isForceRefresh, percent, bUseAnimations, totalValue, topValue)
+					end
+				else
+					handleShowExtraStatusbar(thisLine, self, instance, previousData, isForceRefresh, percent, bUseAnimations, totalValue, topValue)
+				end
+			end
+
 			return self:RefreshBarra(thisLine, instance)
 		else
 			--agora esta comparando se a tabela da barra � diferente da tabela na atualiza��o anterior
 			if (not previousData or previousData ~= thisLine.minha_tabela or isForceRefresh) then --aqui diz se a barra do jogador mudou de posi��o ou se ela apenas ser� atualizada
-				if (useAnimations) then
+				if (bUseAnimations and self.spec ~= 1473) then
 					thisLine.animacao_fim = percent
 				else
 					thisLine:SetValue(percent)
@@ -2931,18 +3171,48 @@ function Details:RefreshLineValue(thisLine, instance, previousData, isForceRefre
 
 				thisLine.last_value = percent --reseta o ultimo valor da barra
 
+				if (self.total_extra and self.total_extra > 0) then
+					if (self.spec == 1473) then
+						if (Details.combat_log.calc_evoker_damage) then
+							handleShowExtraStatusbar(thisLine, self, instance, previousData, isForceRefresh, percent, bUseAnimations, totalValue, topValue)
+						end
+					else
+						handleShowExtraStatusbar(thisLine, self, instance, previousData, isForceRefresh, percent, bUseAnimations, totalValue, topValue)
+					end
+				end
+
 				return self:RefreshBarra(thisLine, instance)
 
-			elseif (percent ~= thisLine.last_value) then --continua mostrando a mesma tabela ent�o compara a porcentagem
+			elseif (percent ~= thisLine.last_value) then
 				--apenas atualizar
-				if (useAnimations) then
+				if (bUseAnimations and self.spec ~= 1473) then
 					thisLine.animacao_fim = percent
 				else
 					thisLine:SetValue(percent)
 				end
 				thisLine.last_value = percent
 
+				if (self.total_extra and self.total_extra > 0) then
+					if (self.spec == 1473) then
+						if (Details.combat_log.calc_evoker_damage) then
+							handleShowExtraStatusbar(thisLine, self, instance, previousData, isForceRefresh, percent, bUseAnimations, totalValue, topValue)
+						end
+					else
+						Details:ShowExtraStatusbar(thisLine, self.total, self.total_extra, totalValue, topValue, instance)
+					end
+				end
+
 				return self:RefreshBarra(thisLine, instance)
+			else
+				if (self.total_extra and self.total_extra > 0) then
+					if (self.spec == 1473) then
+						if (Details.combat_log.calc_evoker_damage) then
+							handleShowExtraStatusbar(thisLine, self, instance, previousData, isForceRefresh, percent, bUseAnimations, totalValue, topValue)
+						end
+					else
+						handleShowExtraStatusbar(thisLine, self, instance, previousData, isForceRefresh, percent, bUseAnimations, totalValue, topValue)
+					end
+				end
 			end
 		end
 	end
@@ -2957,15 +3227,18 @@ local setLineTextSize = function(line, instance)
 end
 
 
-function Details:SetBarLeftText(bar, instance, enemy, arenaEnemy, arenaAlly, usingCustomLeftText) --[[ exported]]
+function Details:SetBarLeftText(bar, instance, enemy, arenaEnemy, arenaAlly, usingCustomLeftText) --[[exported]]
 	local barNumber = ""
 	if (instance.row_info.textL_show_number) then
 		barNumber = bar.colocacao .. ". "
 	end
 
-	--translate cyrillic alphabet to western alphabet by Vardex (https://github.com/Vardex May 22, 2019)
 	if (instance.row_info.textL_translit_text) then
-		self.displayName = Translit:Transliterate(self.displayName, "!")
+		if (not self.transliteratedName) then
+			--translate cyrillic alphabet to western alphabet by Vardex (https://github.com/Vardex May 22, 2019)
+			self.transliteratedName = Translit:Transliterate(self.displayName, "!")
+		end
+		self.displayName = self.transliteratedName or self.displayName
 	end
 
 	if (enemy) then
@@ -3038,16 +3311,26 @@ function Details:SetBarLeftText(bar, instance, enemy, arenaEnemy, arenaAlly, usi
 	setLineTextSize (bar, instance)
 end
 
---[[ exported]] function Details:SetBarColors(bar, instance, r, g, b, a)
+function Details:SetBarColors(bar, instance, r, g, b, a) --[[exported]] --~colors
 	a = a or 1
 
-	if (instance.row_info.texture_class_colors) then
-		--[[ Deprecation of right_to_left_texture in favor of StatusBar:SetReverseFill 5/2/2022 - Flamanis
-		if (instance.bars_inverted) then
-			bar.right_to_left_texture:SetVertexColor(r, g, b, a)
-		else
-			bar.textura:SetVertexColor(r, g, b, a)
-		end]]
+	local bUseClassColor = instance.row_info.texture_class_colors
+
+	if (self.customColor) then
+		bar.textura:SetVertexColor(r, g, b, a)
+
+	elseif (bUseClassColor) then
+		if (self.classe == "UNGROUPPLAYER") then
+			if (self.spec) then
+				local specId, specName, specDescription, specIcon, specRole, specClass = DetailsFramework.GetSpecializationInfoByID(self.spec)
+				if (specClass) then
+					self.classe = specClass
+				end
+			end
+		end
+		bar.textura:SetVertexColor(r, g, b, a)
+	else
+		r, g, b, a = unpack(instance.row_info.fixed_texture_color)
 		bar.textura:SetVertexColor(r, g, b, a)
 	end
 
@@ -3056,24 +3339,33 @@ end
 	end
 
 	if (instance.row_info.textL_class_colors) then
-		bar.lineText1:SetTextColor(r, g, b, a)
+		local textColor_Red, textColor_Green, textColor_Blue = self:GetTextColor(instance, "left")
+		bar.lineText1:SetTextColor(textColor_Red, textColor_Green, textColor_Blue) --the r, g, b color passed are the color used on the bar, so if the bar is not using class color, the text is painted with the fixed color for the bar
 	end
 
 	if (instance.row_info.textR_class_colors) then
-		bar.lineText2:SetTextColor(r, g, b, a)
-		bar.lineText3:SetTextColor(r, g, b, a)
-		bar.lineText4:SetTextColor(r, g, b, a)
+		local textColor_Red, textColor_Green, textColor_Blue = self:GetTextColor(instance, "right")
+		bar.lineText2:SetTextColor(textColor_Red, textColor_Green, textColor_Blue)
+		bar.lineText3:SetTextColor(textColor_Red, textColor_Green, textColor_Blue)
+		bar.lineText4:SetTextColor(textColor_Red, textColor_Green, textColor_Blue)
 	end
 
 	if (instance.row_info.backdrop.use_class_colors) then
 		--get the alpha from the border color
 		local alpha = instance.row_info.backdrop.color[4]
+		if (not bUseClassColor) then
+			r, g, b = self:GetClassColor()
+		end
 		bar.lineBorder:SetVertexColor(r, g, b, alpha)
 	end
 end
 
---@self: actor object
-function Details:SetClassIcon(texture, instance, class) --[[ exported]]
+---set the icon of the actor spec, class, pet, enemy, custom icom, spellicon, etc.
+---@param self actor
+---@param texture texture
+---@param instance instance
+---@param class string
+function Details:SetClassIcon(texture, instance, class) --[[exported]] --~icons
 	local customIcon
 	if (Details.immersion_unit_special_icons) then
 		customIcon = Details.Immersion.GetIcon(self.aID)
@@ -3100,6 +3392,29 @@ function Details:SetClassIcon(texture, instance, class) --[[ exported]]
 		texture:SetVertexColor(1, 1, 1)
 
 	elseif (class == "UNGROUPPLAYER") then
+		if (self.spec) then
+			if (instance and instance.row_info.use_spec_icons) then
+				if (self.spec and Details.class_specs_coords[self.spec]) then
+					texture:SetTexture(instance.row_info.spec_file)
+					texture:SetTexCoord(unpack(Details.class_specs_coords[self.spec]))
+					texture:SetVertexColor(1, 1, 1)
+					return
+				end
+			end
+		end
+
+		local localizedClass, englishClass
+		if (self.serial ~= "") then
+			localizedClass, englishClass = GetPlayerInfoByGUID(self.serial)
+		end
+
+		if (englishClass) then
+			texture:SetTexture(instance.row_info.icon_file or [[Interface\AddOns\Details\images\classes_small]])
+			texture:SetTexCoord(unpack(Details.class_coords[englishClass]))
+			texture:SetVertexColor(1, 1, 1)
+			return
+		end
+
 		if (self.enemy) then
 			if (Details.faction_against == "Horde") then
 				texture:SetTexture("Interface\\ICONS\\Achievement_Character_Troll_Male")
@@ -3123,8 +3438,8 @@ function Details:SetClassIcon(texture, instance, class) --[[ exported]]
 	elseif (class == "PET") then
 		texture:SetTexture(instance and instance.row_info.icon_file or [[Interface\AddOns\Details\images\classes_small]])
 		texture:SetTexCoord(0.25, 0.49609375, 0.75, 1)
-		actor_class_color_r, actor_class_color_g, actor_class_color_b = DetailsFramework:ParseColors(actor_class_color_r, actor_class_color_g, actor_class_color_b)
-		texture:SetVertexColor(actor_class_color_r, actor_class_color_g, actor_class_color_b)
+		classColor_Red, classColor_Green, classColor_Blue = DetailsFramework:ParseColors(classColor_Red, classColor_Green, classColor_Blue)
+		texture:SetVertexColor(classColor_Red, classColor_Green, classColor_Blue)
 
 	else
 		if (instance and instance.row_info.use_spec_icons) then
@@ -3146,7 +3461,7 @@ function Details:SetClassIcon(texture, instance, class) --[[ exported]]
 end
 
 
-function Details:RefreshBarra(thisLine, instance, fromResize) --[[ exported]]
+function Details:RefreshBarra(thisLine, instance, fromResize) --[[exported]]
 	local class, enemy, arenaEnemy, arenaAlly = self.classe, self.enemy, self.arena_enemy, self.arena_ally
 
 	if (not class) then
@@ -3156,24 +3471,373 @@ function Details:RefreshBarra(thisLine, instance, fromResize) --[[ exported]]
 	end
 
 	if (fromResize) then
-		actor_class_color_r, actor_class_color_g, actor_class_color_b = self:GetBarColor()
+		classColor_Red, classColor_Green, classColor_Blue = self:GetBarColor()
 	end
 
 	--icon
 	self:SetClassIcon(thisLine.icone_classe, instance, class)
 
+	if(thisLine.mouse_over) then
+		local classIcon = thisLine:GetClassIcon()
+		thisLine.iconHighlight:SetTexture(classIcon:GetTexture())
+		thisLine.iconHighlight:SetTexCoord(classIcon:GetTexCoord())
+		thisLine.iconHighlight:SetVertexColor(classIcon:GetVertexColor())
+	end
+
 	--texture color
-	self:SetBarColors(thisLine, instance, actor_class_color_r, actor_class_color_g, actor_class_color_b)
+	self:SetBarColors(thisLine, instance, classColor_Red, classColor_Green, classColor_Blue)
 
 	--left text
 	self:SetBarLeftText(thisLine, instance, enemy, arenaEnemy, arenaAlly, UsingCustomLeftText)
+end
+
+---comment
+---@param self table extraStatusbar frame
+function damageClass.PredictedAugSpellsOnEnter(self)
+	if (Details.show_aug_predicted_spell_damage) then
+		---@type spellcontainer
+		local spellContainer = self.augmentedSpellsContainer
+
+		GameCooltip:Preset(2)
+		---@type instance
+		local instanceObject = Details:GetInstance(self.instanceId)
+		---@type combat
+		local combatObject = instanceObject:GetCombat()
+
+		for spellId, spellTable in spellContainer:ListSpells() do
+			local spellName, _, spellTexture = GetSpellInfo(spellId)
+			if (spellName) then
+				GameCooltip:AddLine(spellName, Details:Format(spellTable.total))
+				GameCooltip:AddIcon(spellTexture, 1, 1, 14, 14)
+
+				local spellsAugmented = {}
+
+				--the damage sources are added into the targets table for recycling
+				---@type table<actorname, valueamount>
+				local sources = spellTable.targets
+				for sourceName, sourceAmount in pairs(sources) do
+					spellsAugmented[#spellsAugmented+1] = {sourceName, sourceAmount}
+				end
+
+				table.sort(spellsAugmented, Details.Sort2)
+
+				for i = 1, math.min(#spellsAugmented, 5) do
+					local sourceName, sourceAmount = unpack(spellsAugmented[i])
+					GameCooltip:AddLine(sourceName, Details:Format(sourceAmount), 1, "yellow", "yellow", 10)
+					local actorObject = combatObject:GetActor(1, sourceName)
+					if (actorObject) then
+						local actorIcon = Details:GetActorIcon(actorObject)
+						if (actorIcon) then
+							GameCooltip:AddIcon(actorIcon.texture, 1, 1, 14, 14, actorIcon.coords.left, actorIcon.coords.right, actorIcon.coords.top, actorIcon.coords.bottom)
+						else
+							GameCooltip:AddIcon([[Interface\COMMON\Indicator-Gray]], 1, 1, 14, 14)
+						end
+					end
+				end
+
+				GameCooltip:AddLine(" ")
+				GameCooltip:AddIcon("", 1, 1, 5, 5)
+			end
+		end
+	else
+		---@type instance
+		local instanceObject = Details:GetInstance(self.instanceId)
+		---@type combat
+		local combatObject = instanceObject:GetCombat()
+
+		local combatTime = combatObject:GetCombatTime()
+
+		---@type actorname
+		local actorName = self.actorName
+
+		---@type actorcontainer
+		local utilityContainer = combatObject:GetContainer(DETAILS_ATTRIBUTE_MISC)
+
+		---@type table<spellid, table<spellid, number, actorname, actorname, class, boolean>>
+		local buffUptimeTable = {}
+
+		local CONST_SPELLID_EBONMIGHT = 395152
+		local CONST_SPELLID_PRESCIENCE = 410089
+		local CONST_SPELLID_BLACKATTUNEMENT = 403264
+		local CONST_SPELLID_BLISTERING_SCALES = 360827
+
+		---@type actor[]
+		local augmentationEvokers = {}
+
+		--prescience and ebon might updatime on each actor
+		for _, actorObject in utilityContainer:ListActors() do
+			---@type spellcontainer
+			local receivedBuffs = actorObject.received_buffs_spells
+
+			--check if the actor is an augmentation evoker
+			if (actorObject.spec == 1473) then
+				augmentationEvokers[#augmentationEvokers+1] = actorObject
+			end
+
+			if (receivedBuffs and actorObject:IsPlayer() and actorObject:IsGroupPlayer()) then
+				for sourceNameSpellId, spellTable in receivedBuffs:ListSpells() do
+					local sourceName, spellId = strsplit("@", sourceNameSpellId)
+					if (sourceName == actorName) then
+						spellId = tonumber(spellId)
+						local spellName, _, spellIcon = Details.GetSpellInfo(spellId)
+
+						if (spellName and spellId) then
+							sourceName = detailsFramework:RemoveRealmName(sourceName)
+							local targetName = actorObject:Name()
+							targetName = detailsFramework:RemoveRealmName(targetName)
+
+							local uptime = spellTable.uptime or 0
+							local bCanShowOnTooltip = true
+							buffUptimeTable[spellId] = buffUptimeTable[spellId] or {}
+							table.insert(buffUptimeTable[spellId], {spellId, uptime, sourceName, targetName, actorObject:Class(), bCanShowOnTooltip})
+						end
+					end
+				end
+			end
+		end
+
+		for spellId, buffTable in pairs(buffUptimeTable) do
+			local totalUptime = 0
+			for i = 1, #buffTable do
+				totalUptime = totalUptime + buffTable[i][2]
+			end
+			table.sort(buffTable, Details.Sort2)
+		end
+
+		Details:FormatCooltipForSpells()
+		Details:AddTooltipSpellHeaderText(Loc ["STRING_SPELLS"], headerColor, #buffUptimeTable, Details.tooltip_spell_icon.file, unpack(Details.tooltip_spell_icon.coords))
+		Details:AddTooltipHeaderStatusbar(.1, .1, .1, 0.834)
+
+		local iconSize = 22
+		local iconBorderInfo = Details.tooltip.icon_border_texcoord
+
+		--add the total combat time into the tooltip
+		local combatTimeMinutes, combatTimeSeconds = math.floor(combatTime / 60), math.floor(combatTime % 60)
+		GameCooltip:AddLine("Combat Time", combatTimeMinutes .. "m " .. combatTimeSeconds .. "s" .. " (" .. format("%.1f", 100) .. "%)")
+		GameCooltip:AddIcon([[Interface\TARGETINGFRAME\UnitFrameIcons]], nil, nil, iconSize, iconSize, iconBorderInfo.L, iconBorderInfo.R, iconBorderInfo.T, iconBorderInfo.B)
+		Details:AddTooltipBackgroundStatusbar(false, 100, true, "darkgreen")
+
+		GameCooltip:AddLine("", "")
+		GameCooltip:AddIcon("", nil, nil, 1, 1)
+
+		local ebonMightTable = buffUptimeTable[CONST_SPELLID_EBONMIGHT][1]
+		if (ebonMightTable) then
+			local uptime = ebonMightTable[2]
+			local spellName, _, spellIcon = _GetSpellInfo(CONST_SPELLID_EBONMIGHT)
+			local uptimePercent = uptime / combatTime * 100
+			local sourceName = ebonMightTable[3]
+
+			if (uptime <= combatTime) then
+				local minutes, seconds = math.floor(uptime / 60), math.floor(uptime % 60)
+				if (minutes > 0) then
+					GameCooltip:AddLine(spellName, minutes .. "m " .. seconds .. "s" .. " (" .. format("%.1f", uptimePercent) .. "%)")
+					Details:AddTooltipBackgroundStatusbar(false, uptimePercent, true, sourceName and "darkgreen")
+				else
+					GameCooltip:AddLine(spellName, seconds .. "s" .. " (" .. format("%.1f", uptimePercent) .. "%)")
+					Details:AddTooltipBackgroundStatusbar(false, uptimePercent, true, sourceName and "darkgreen")
+				end
+
+				GameCooltip:AddIcon(spellIcon, nil, nil, iconSize, iconSize, iconBorderInfo.L, iconBorderInfo.R, iconBorderInfo.T, iconBorderInfo.B)
+			end
+		end
+
+		GameCooltip:AddLine("", "")
+		GameCooltip:AddIcon("", nil, nil, 1, 1)
+
+		for i = 1, #augmentationEvokers do --black attunement
+			local actorObject = augmentationEvokers[i]
+			if (actorObject:Name() == actorName) then
+				local buffUptimeSpellContainer = actorObject:GetSpellContainer("buff")
+				if (buffUptimeSpellContainer) then
+					local spellTable = buffUptimeSpellContainer:GetSpell(403264)
+					if (spellTable) then
+						local uptime = spellTable.uptime
+						local spellName, _, spellIcon = _GetSpellInfo(CONST_SPELLID_BLACKATTUNEMENT)
+						local uptimePercent = uptime / combatTime * 100
+
+						if (uptime <= combatTime) then
+							local minutes, seconds = math.floor(uptime / 60), math.floor(uptime % 60)
+							if (minutes > 0) then
+								GameCooltip:AddLine(spellName, minutes .. "m " .. seconds .. "s" .. " (" .. format("%.1f", uptimePercent) .. "%)")
+								Details:AddTooltipBackgroundStatusbar(false, uptimePercent, true, "darkgreen")
+							else
+								GameCooltip:AddLine(spellName, seconds .. "s" .. " (" .. format("%.1f", uptimePercent) .. "%)")
+								Details:AddTooltipBackgroundStatusbar(false, uptimePercent, true, "darkgreen")
+							end
+
+							GameCooltip:AddIcon(spellIcon, nil, nil, iconSize, iconSize, iconBorderInfo.L, iconBorderInfo.R, iconBorderInfo.T, iconBorderInfo.B)
+						end
+					end
+
+					local spellTable = buffUptimeSpellContainer:GetSpell(CONST_SPELLID_BLISTERING_SCALES)
+					if (spellTable) then
+						local uptime = spellTable.uptime
+						local spellName, _, spellIcon = _GetSpellInfo(CONST_SPELLID_BLISTERING_SCALES)
+						local uptimePercent = uptime / combatTime * 100
+
+						if (uptime <= combatTime) then
+							local minutes, seconds = math.floor(uptime / 60), math.floor(uptime % 60)
+							if (minutes > 0) then
+								GameCooltip:AddLine(spellName, minutes .. "m " .. seconds .. "s" .. " (" .. format("%.1f", uptimePercent) .. "%)")
+								Details:AddTooltipBackgroundStatusbar(false, uptimePercent, true, "darkgreen")
+							else
+								GameCooltip:AddLine(spellName, seconds .. "s" .. " (" .. format("%.1f", uptimePercent) .. "%)")
+								Details:AddTooltipBackgroundStatusbar(false, uptimePercent, true, "darkgreen")
+							end
+
+							GameCooltip:AddIcon(spellIcon, nil, nil, iconSize, iconSize, iconBorderInfo.L, iconBorderInfo.R, iconBorderInfo.T, iconBorderInfo.B)
+						end
+					end
+				end
+			end
+		end
+
+		GameCooltip:AddLine("", "")
+		GameCooltip:AddIcon("", nil, nil, 1, 1)
+
+		--add the buff uptime into the tooltip
+		local allPrescienceTargets = buffUptimeTable[CONST_SPELLID_PRESCIENCE]
+		if (allPrescienceTargets and #allPrescienceTargets > 0) then
+			for i = 1, math.min(30, #allPrescienceTargets) do
+				local uptimeTable = allPrescienceTargets[i]
+
+				local spellId = uptimeTable[1]
+				local uptime = uptimeTable[2]
+				local sourceName = uptimeTable[3]
+				local targetName = uptimeTable[4]
+				local targetClass = uptimeTable[5]
+				local bCanShow = uptimeTable[6]
+
+				local uptimePercent = uptime / combatTime * 100
+
+				if (uptime > 0 and uptimePercent < 99.5 and bCanShow) then
+					local spellName, _, spellIcon = _GetSpellInfo(spellId)
+
+					if (sourceName) then
+						targetName = detailsFramework:AddClassColorToText(targetName, targetClass)
+						targetName = detailsFramework:AddClassIconToText(targetName, targetName, targetClass)
+						spellName = spellName .. " [" .. targetName .. "]"
+					end
+
+					if (uptime <= combatTime) then
+						local minutes, seconds = math.floor(uptime / 60), math.floor(uptime % 60)
+						if (minutes > 0) then
+							GameCooltip:AddLine(spellName, minutes .. "m " .. seconds .. "s" .. " (" .. format("%.1f", uptimePercent) .. "%)")
+							Details:AddTooltipBackgroundStatusbar(false, uptimePercent, true, sourceName and "darkgreen")
+						else
+							GameCooltip:AddLine(spellName, seconds .. "s" .. " (" .. format("%.1f", uptimePercent) .. "%)")
+							Details:AddTooltipBackgroundStatusbar(false, uptimePercent, true, sourceName and "darkgreen")
+						end
+
+						GameCooltip:AddIcon(spellIcon, nil, nil, iconSize, iconSize, iconBorderInfo.L, iconBorderInfo.R, iconBorderInfo.T, iconBorderInfo.B)
+					end
+				end
+			end
+		else
+			GameCooltip:AddLine(Loc ["STRING_NO_SPELL"])
+		end
+
+		local evokerObject = combatObject:GetActor(DETAILS_ATTRIBUTE_MISC, actorName)
+
+		GameCooltip:AddLine(" ")
+		GameCooltip:AddIcon(" ", 1, 1, 10, 10)
+
+		if (evokerObject) then
+			GameCooltip:AddLine("Prescience Uptime by Amount of Applications")
+			local prescienceData = evokerObject.cleu_prescience_time
+
+			if (prescienceData) then
+				prescienceData = prescienceData.stackTime
+				local totalTimeWithPrescienceUp = 0
+
+				for amountOfPrescienceApplied, time in ipairs(prescienceData) do
+					totalTimeWithPrescienceUp = totalTimeWithPrescienceUp + time
+				end
+
+				for amountOfPrescienceApplied, time in ipairs(prescienceData) do
+					if (time > 0) then
+						local uptimePercent = time / combatTime * 100
+						local timeString = detailsFramework:IntegerToTimer(time)
+						GameCooltip:AddLine("Presciece Applied: " .. amountOfPrescienceApplied, timeString .. " (" .. format("%.1f", uptimePercent) .. "%)")
+						--5199639 prescience icon
+						GameCooltip:AddIcon([[Interface\AddOns\Details\images\spells\prescience_time]], nil, nil, iconSize, iconSize)
+						Details:AddTooltipBackgroundStatusbar(false, time/totalTimeWithPrescienceUp*100, true, "green")
+					end
+				end
+			end
+		end
+
+		--iterate among all the actors and find which one are healers, then get the amount of mana the evoker restored for that healer
+		---@type actorcontainer
+		local resourcesContainer = combatObject:GetContainer(DETAILS_ATTRIBUTE_ENERGY)
+		local manaRestoredToHealers = {}
+
+		for index, actorObject in resourcesContainer:ListActors() do
+			if (actorObject.spec == 1473) then --this is an aug evoker
+				local spellContainer = actorObject:GetSpellContainer("spell")
+				--local spellContainer = actorObject.spells
+				if (spellContainer) then
+					local sourceOfMagic = spellContainer:GetSpell(372571)
+					if (sourceOfMagic) then
+						for targetName, restoredAmount in pairs(sourceOfMagic.targets) do
+							manaRestoredToHealers[#manaRestoredToHealers+1] = {targetName, restoredAmount}
+						end
+					end
+				end
+			end
+		end
+
+		if (#manaRestoredToHealers > 0) then
+			GameCooltip:AddLine(" ")
+			GameCooltip:AddIcon(" ", 1, 1, 10, 10)
+			GameCooltip:AddLine("Mana Restored to Healers:")
+
+			table.sort(manaRestoredToHealers, Details.Sort2)
+
+			for i = 1, math.min(10, #manaRestoredToHealers) do
+				local targetName, restoredAmount = unpack(manaRestoredToHealers[i])
+				local targetActorObject = combatObject(DETAILS_ATTRIBUTE_ENERGY, targetName)
+
+				if (targetActorObject) then
+					local targetClass = targetActorObject:GetActorClass()
+					local targetName = detailsFramework:AddClassColorToText(targetName, targetClass)
+					targetName = detailsFramework:AddClassIconToText(targetName, targetName, targetClass)
+
+					GameCooltip:AddLine(targetName, Details:Format(restoredAmount))
+
+					local spellIcon = GetSpellTexture(372571)
+					GameCooltip:AddIcon(spellIcon, nil, nil, iconSize, iconSize, iconBorderInfo.L, iconBorderInfo.R, iconBorderInfo.T, iconBorderInfo.B)
+					Details:AddTooltipBackgroundStatusbar(false, 100, true, "dodgerblue")
+				end
+			end
+		end
+	end
+
+	GameCooltip:AddLine("feature under test, can't disable atm")
+	GameCooltip:AddIcon([[Interface\BUTTONS\UI-GROUPLOOT-PASS-DOWN]], nil, nil, 16, 16)
+
+	--GameCooltip:SetOption("LeftBorderSize", -5)
+	--GameCooltip:SetOption("RightBorderSize", 5)
+	--GameCooltip:SetOption("RightTextMargin", 0)
+	GameCooltip:SetOption("VerticalOffset", 0)
+	--GameCooltip:SetOption("AlignAsBlizzTooltip", true)
+	GameCooltip:SetOption("AlignAsBlizzTooltipFrameHeightOffset", 0)
+	GameCooltip:SetOption("LineHeightSizeOffset", 0)
+	GameCooltip:SetOption("VerticalPadding", 0)
+
+	GameCooltip:ShowCooltip(self, "tooltip")
+end
+
+function damageClass.PredictedAugSpellsOnLeave(self)
+	GameCooltip:Hide()
+	--extraStatusbar.defaultAlpha
 end
 
 --------------------------------------------- // TOOLTIPS // ---------------------------------------------
 
 ---------TOOLTIPS BIFURCA��O
 -- ~tooltip
-function atributo_damage:ToolTip (instance, numero, barra, keydown)
+function damageClass:ToolTip (instance, numero, barra, keydown)
 	--seria possivel aqui colocar o icone da classe dele?
 
 	if (instance.atributo == 5) then --custom
@@ -3200,7 +3864,7 @@ local barAlha = .6
 
 ---------DAMAGE DONE & DPS
 
-function atributo_damage:ToolTip_DamageDone (instancia, numero, barra, keydown)
+function damageClass:ToolTip_DamageDone (instancia, numero, barra, keydown)
 	local owner = self.owner
 	if (owner and owner.classe) then
 		r, g, b = unpack(Details.class_colors [owner.classe])
@@ -3227,6 +3891,7 @@ function atributo_damage:ToolTip_DamageDone (instancia, numero, barra, keydown)
 			if (ActorDamage == 0) then
 				ActorDamage = 0.00000001
 			end
+
 			local ActorSkillsContainer = self.spells._ActorTable
 			local ActorSkillsSortTable = {}
 
@@ -3236,8 +3901,15 @@ function atributo_damage:ToolTip_DamageDone (instancia, numero, barra, keydown)
 			local meu_tempo
 			if (Details.time_type == 1 or not self.grupo) then
 				meu_tempo = self:Tempo()
-			elseif (Details.time_type == 2) then
+			elseif (Details.time_type == 2 or Details.use_realtimedps) then
 				meu_tempo = instancia.showing:GetCombatTime()
+			end
+
+			if (not meu_tempo) then
+				meu_tempo = instancia.showing:GetCombatTime()
+				if (Details.time_type == 3) then --time type 3 is deprecated
+					Details.time_type = 2
+				end
 			end
 
 			--add actor spells
@@ -3253,7 +3925,11 @@ function atributo_damage:ToolTip_DamageDone (instancia, numero, barra, keydown)
 				local petActor = instancia.showing[class_type]:PegarCombatente (nil, petName)
 				if (petActor) then
 					for _spellid, _skill in pairs(petActor:GetActorSpells()) do
-						ActorSkillsSortTable [#ActorSkillsSortTable+1] = {_spellid, _skill.total, _skill.total/meu_tempo, petName:gsub((" <.*"), "")}
+						local formattedPetName = petName:gsub((" <.*"), "")
+						if (instancia.row_info.textL_translit_text) then
+							formattedPetName = Translit:Transliterate(formattedPetName, "!")
+						end
+						ActorSkillsSortTable [#ActorSkillsSortTable+1] = {_spellid, _skill.total, _skill.total/meu_tempo, formattedPetName}
 					end
 				end
 			end
@@ -3284,16 +3960,20 @@ function atributo_damage:ToolTip_DamageDone (instancia, numero, barra, keydown)
 			end
 
 		--MOSTRA HABILIDADES
-			Details:AddTooltipSpellHeaderText (Loc ["STRING_SPELLS"], headerColor, #ActorSkillsSortTable, Details.tooltip_spell_icon.file, unpack(Details.tooltip_spell_icon.coords))
+			--Details:AddTooltipSpellHeaderText (Loc ["STRING_SPELLS"], headerColor, #ActorSkillsSortTable, Details.tooltip_spell_icon.file, unpack(Details.tooltip_spell_icon.coords))
 
 			if (is_maximized) then
 				--highlight shift key
-				GameCooltip:AddIcon ([[Interface\AddOns\Details\images\key_shift]], 1, 2, Details.tooltip_key_size_width, Details.tooltip_key_size_height, 0, 1, 0, 0.640625, Details.tooltip_key_overlay2)
-				Details:AddTooltipHeaderStatusbar (r, g, b, 1)
+				--GameCooltip:AddIcon ([[Interface\AddOns\Details\images\key_shift]], 1, 2, Details.tooltip_key_size_width, Details.tooltip_key_size_height, 0, 1, 0, 0.640625, Details.tooltip_key_overlay2)
+				--Details:AddTooltipHeaderStatusbar (r, g, b, 1)
 			else
-				GameCooltip:AddIcon ([[Interface\AddOns\Details\images\key_shift]], 1, 2, Details.tooltip_key_size_width, Details.tooltip_key_size_height, 0, 1, 0, 0.640625, Details.tooltip_key_overlay1)
-				Details:AddTooltipHeaderStatusbar (r, g, b, barAlha)
+				--GameCooltip:AddIcon ([[Interface\AddOns\Details\images\key_shift]], 1, 2, Details.tooltip_key_size_width, Details.tooltip_key_size_height, 0, 1, 0, 0.640625, Details.tooltip_key_overlay1)
+				--Details:AddTooltipHeaderStatusbar (r, g, b, barAlha)
 			end
+
+			GameCooltip:SetOption("AlignAsBlizzTooltip", false)
+			GameCooltip:SetOption("YSpacingMod", -6)
+			local iconSize = Details.DefaultTooltipIconSize
 
 			local topAbility = ActorSkillsSortTable [1] and ActorSkillsSortTable [1][2] or 0.0001
 
@@ -3328,7 +4008,7 @@ function atributo_damage:ToolTip_DamageDone (instancia, numero, barra, keydown)
 						GameCooltip:AddLine(nome_magia, FormatTooltipNumber (_, _math_floor(totalDPS)) .."   ("..percent.."%)")
 					end
 
-					GameCooltip:AddIcon (icone_magia, nil, nil, icon_size.W + 4, icon_size.H + 4, icon_border.L, icon_border.R, icon_border.T, icon_border.B)
+					GameCooltip:AddIcon (icone_magia, nil, nil, iconSize, iconSize, icon_border.L, icon_border.R, icon_border.T, icon_border.B)
 					Details:AddTooltipBackgroundStatusbar (false, totalDamage/topAbility*100)
 				end
 			else
@@ -3351,7 +4031,7 @@ function atributo_damage:ToolTip_DamageDone (instancia, numero, barra, keydown)
 						if (spellName) then
 							GameCooltip:AddLine(spellName, FormatTooltipNumber (_, damageDone) .. " (" .. _math_floor(damageDone / self.total * 100) .. "%)")
 							Details:AddTooltipBackgroundStatusbar (false, damageDone / self.total * 100)
-							GameCooltip:AddIcon (spellIcon, 1, 1, icon_size.W, icon_size.H, 0.1, 0.9, 0.1, 0.9)
+							GameCooltip:AddIcon (spellIcon, 1, 1, iconSize, iconSize, 0.1, 0.9, 0.1, 0.9)
 						end
 					end
 				end
@@ -3384,7 +4064,7 @@ function atributo_damage:ToolTip_DamageDone (instancia, numero, barra, keydown)
 				for i = 1, math.min(max_targets, #ActorTargetsSortTable) do
 					local enemyTable = ActorTargetsSortTable[i]
 					GameCooltip:AddLine(enemyTable[1], FormatTooltipNumber(_, enemyTable[2]) .." ("..format("%.1f", enemyTable[2] / ActorDamageWithPet * 100).."%)")
-					
+
 					local portraitTexture-- = Details222.Textures.GetPortraitTextureForNpcID(enemyTable[3]) --disabled atm
 					if (portraitTexture) then
 						GameCooltip:AddIcon(portraitTexture, 1, 1, icon_size.W, icon_size.H)
@@ -3424,7 +4104,7 @@ function atributo_damage:ToolTip_DamageDone (instancia, numero, barra, keydown)
 					local timeInCombat = 0
 					if (Details.time_type == 1 or not self.grupo) then
 						timeInCombat = petActorObject:Tempo()
-					elseif (Details.time_type == 2) then
+					elseif (Details.time_type == 2 or Details.use_realtimedps) then
 						timeInCombat = petActorObject:GetCombatTime()
 					end
 
@@ -3480,6 +4160,11 @@ function atributo_damage:ToolTip_DamageDone (instancia, numero, barra, keydown)
 				local petDPS = damageTable[3]
 
 				petName = damageTable[1]:gsub(("%s%<.*"), "")
+
+				if (instance.row_info.textL_translit_text) then
+					petName = Translit:Transliterate(petName, "!")
+				end
+
 				if (instancia.sub_atributo == 1) then
 					GameCooltip:AddLine(petName, FormatTooltipNumber(_, petDamageDone) .. " (" .. math.floor(petDamageDone/self.total*100) .. "%)")
 				else
@@ -3558,7 +4243,11 @@ end
 local ENEMIES_format_name = function(player) if (player == 0) then return false end return Details:GetOnlyName(player.nome) end
 local ENEMIES_format_amount = function(amount) if (amount <= 0) then return false end return Details:ToK(amount) .. " (" .. format("%.1f", amount / tooltip_temp_table.damage_total * 100) .. "%)" end
 
-function atributo_damage:ReportEnemyDamageTaken (actor, instance, ShiftKeyDown, ControlKeyDown, fromFrags)
+function damageClass:ReportEnemyDamageTaken (actor, instance, ShiftKeyDown, ControlKeyDown, fromFrags)
+
+	--can open the breakdown window now
+	--this function is deprecated
+
 	if (ShiftKeyDown) then
 		local inimigo = actor.nome
 		local custom_name = inimigo .. " -" .. Loc ["STRING_CUSTOM_ENEMY_DT"]
@@ -3596,6 +4285,8 @@ function atributo_damage:ReportEnemyDamageTaken (actor, instance, ShiftKeyDown, 
 		return instance:TrocaTabela(instance.segmento, 5, #Details.custom)
 	end
 
+	if (true) then return end
+
 	local report_table = {"Details!: " .. actor.nome .. " - " .. Loc ["STRING_ATTRIBUTE_DAMAGE_TAKEN"]}
 
 	Details:FormatReportLines (report_table, tooltip_temp_table, ENEMIES_format_name, ENEMIES_format_amount)
@@ -3606,10 +4297,13 @@ end
 local FRAGS_format_name = function(player_name) return Details:GetOnlyName(player_name) end
 local FRAGS_format_amount = function(amount) return Details:ToK(amount) .. " (" .. format("%.1f", amount / frags_tooltip_table.damage_total * 100) .. "%)" end
 
-function atributo_damage:ReportSingleFragsLine (frag, instance, ShiftKeyDown, ControlKeyDown)
+function damageClass:ReportSingleFragsLine (frag, instance, ShiftKeyDown, ControlKeyDown)
+	if (not frags_tooltip_table) then --some cases a friendly object is getting threat as neutral, example is Druid's Efflorescense
+		return
+	end
 
 	if (ShiftKeyDown) then
-		return atributo_damage:ReportEnemyDamageTaken (frag, instance, ShiftKeyDown, ControlKeyDown, true)
+		return damageClass:ReportEnemyDamageTaken (frag, instance, ShiftKeyDown, ControlKeyDown, true)
 	end
 
 	local report_table = {"Details!: " .. frag [1] .. " - " .. Loc ["STRING_ATTRIBUTE_DAMAGE_TAKEN"]}
@@ -3619,82 +4313,89 @@ function atributo_damage:ReportSingleFragsLine (frag, instance, ShiftKeyDown, Co
 	return Details:Reportar (report_table, {_no_current = true, _no_inverse = true, _custom = true})
 end
 
-function atributo_damage:ToolTip_Enemies (instancia, numero, barra, keydown)
-
-	local owner = self.owner
-	if (owner and owner.classe) then
-		r, g, b = unpack(Details.class_colors [owner.classe])
+---@param self actor
+---@param instanceObject instance
+function damageClass:ToolTip_Enemies(instanceObject, numero, barra, keydown)
+	--check if the actor has an owner, if it does, it's a pet
+	local ownerObject = self.owner
+	if (ownerObject and ownerObject.classe) then
+		r, g, b = unpack(Details.class_colors[ownerObject.classe])
 	else
-		r, g, b = unpack(Details.class_colors [self.classe])
+		r, g, b = unpack(Details.class_colors[self.classe])
 	end
 
-	local combat = instancia:GetShowingCombat()
-	local enemy_name = self:name()
+	local combatObject = instanceObject:GetCombat()
+	local enemyName = self:Name()
+
+	Details:Destroy(tooltip_temp_table) --fix for translit bug report, 'player' is nil
 
 	--enemy damage taken
 	local i = 1
-	local damage_taken = 0
-	for _, actor in ipairs(combat[1]._ActorTable) do
-		if (actor.grupo and actor.targets [self.nome]) then
-			local t = tooltip_temp_table [i]
-			if (not t) then
-				tooltip_temp_table [i] = {}
-				t = tooltip_temp_table [i]
+	local damageTaken = 0
+	---@type actorcontainer
+	local damageContainer = combatObject:GetContainer(DETAILS_ATTRIBUTE_DAMAGE)
+
+	---@type number, actor
+	for idx, actor in damageContainer:ListActors() do
+		if (actor:IsGroupPlayer() and actor.targets[enemyName]) then
+			---@type table<actor, number>
+			local agressorsTable = tooltip_temp_table[i]
+
+			if (not agressorsTable) then
+				tooltip_temp_table[i] = {}
+				agressorsTable = tooltip_temp_table[i]
 			end
-			t [1] = actor
-			t [2] = actor.targets [enemy_name] or 0
-			damage_taken = damage_taken + t [2]
+
+			agressorsTable[1] = actor
+			agressorsTable[2] = (actor.targets[enemyName]) or 0
+			damageTaken = damageTaken + agressorsTable[2]
+
 			i = i + 1
 		end
 	end
 
 	for o = i, #tooltip_temp_table do
-		local t = tooltip_temp_table [o]
+		local t = tooltip_temp_table[o]
 		t[2] = 0
 		t[1] = 0
 	end
 
 	_table_sort(tooltip_temp_table, Details.Sort2)
 
-	-- enemy damage taken
-	Details:AddTooltipSpellHeaderText (Loc ["STRING_DAMAGE_TAKEN_FROM"], headerColor, i-1, [[Interface\Buttons\UI-MicroStream-Red]], 0.1875, 0.8125, 0.15625, 0.78125)
-	GameCooltip:AddIcon ([[Interface\AddOns\Details\images\key_shift]], 1, 2, Details.tooltip_key_size_width, Details.tooltip_key_size_height, 0, 1, 0, 0.640625, Details.tooltip_key_overlay2)
-
-	Details:AddTooltipHeaderStatusbar (1, 1, 1, 0.5)
-
 	--build the tooltip
-	local top = (tooltip_temp_table [1] and tooltip_temp_table [1][2]) or 0
-	tooltip_temp_table.damage_total = damage_taken
+	local top = (tooltip_temp_table[1] and tooltip_temp_table[1][2]) or 0
+	tooltip_temp_table.damage_total = damageTaken
 
-	local lineHeight = Details.tooltip.line_height
+	local iconSize = Details.DefaultTooltipIconSize
+	GameCooltip:SetOption("AlignAsBlizzTooltip", false)
+	GameCooltip:SetOption("YSpacingMod", -6)
 
 	for o = 1, i-1 do
+		local actorAggressor = tooltip_temp_table[o][1]
+		local damageDone = tooltip_temp_table[o][2]
+		local playerName = Details:GetOnlyName(actorAggressor:name())
 
-		local player = tooltip_temp_table [o][1]
-		local total = tooltip_temp_table [o][2]
-		local player_name = Details:GetOnlyName(player:name())
+		GameCooltip:AddLine(playerName .. " ", FormatTooltipNumber (_, damageDone) .." (" .. format("%.1f", (damageDone / damageTaken) * 100) .. "%)")
 
-		GameCooltip:AddLine(player_name .. " ", FormatTooltipNumber (_, total) .." (" .. format("%.1f", (total / damage_taken) * 100) .. "%)")
-
-		local classe = player:class()
+		local classe = actorAggressor:class()
 		if (not classe) then
 			classe = "UNKNOW"
 		end
+
 		if (classe == "UNKNOW") then
-			GameCooltip:AddIcon ("Interface\\LFGFRAME\\LFGROLE_BW", nil, nil, lineHeight, lineHeight, .25, .5, 0, 1)
+			GameCooltip:AddIcon("Interface\\LFGFRAME\\LFGROLE_BW", nil, nil, iconSize, iconSize, .25, .5, 0, 1)
 		else
-			local specID = player.spec
+			local specID = actorAggressor.spec
 			if (specID) then
-				local texture, l, r, t, b = Details:GetSpecIcon (specID, false)
-				GameCooltip:AddIcon (texture, 1, 1, lineHeight, lineHeight, l, r, t, b)
+				local texture, l, r, t, b = Details:GetSpecIcon(specID, false)
+				GameCooltip:AddIcon(texture, 1, 1, iconSize, iconSize, l, r, t, b)
 			else
-				GameCooltip:AddIcon (instancia.row_info.icon_file, nil, nil, lineHeight, lineHeight, unpack(Details.class_coords [classe]))
+				GameCooltip:AddIcon(instanceObject.row_info.icon_file, nil, nil, iconSize, iconSize, unpack(Details.class_coords [classe]))
 			end
 		end
 
-		local r, g, b = unpack(Details.class_colors [classe])
-		GameCooltip:AddStatusBar (total/top*100, 1, r, g, b, 1, false, enemies_background)
-
+		local r, g, b = unpack(Details.class_colors[classe])
+		GameCooltip:AddStatusBar(damageDone/top*100, 1, r, g, b, 1, false, enemies_background)
 	end
 
 	GameCooltip:SetOption("StatusBarTexture", "Interface\\AddOns\\Details\\images\\bar_serenity")
@@ -3703,28 +4404,26 @@ function atributo_damage:ToolTip_Enemies (instancia, numero, barra, keydown)
 	GameCooltip:AddLine(" ")
 	GameCooltip:AddLine(Loc ["STRING_ATTRIBUTE_DAMAGE_ENEMIES_DONE"], FormatTooltipNumber (_, _math_floor(self.total)))
 	local half = 0.00048828125
-	GameCooltip:AddIcon (instancia:GetSkinTexture(), 1, 1, 14, 14, 0.005859375 + half, 0.025390625 - half, 0.3623046875, 0.3818359375)
+	GameCooltip:AddIcon (instanceObject:GetSkinTexture(), 1, 1, 14, 14, 0.005859375 + half, 0.025390625 - half, 0.3623046875, 0.3818359375)
 	GameCooltip:AddStatusBar (0, 1, r, g, b, 1, false, enemies_background)
 
-	local heal_actor = instancia.showing (2, self.nome)
+	local heal_actor = instanceObject.showing (2, self.nome)
 	if (heal_actor) then
 		GameCooltip:AddLine(Loc ["STRING_ATTRIBUTE_HEAL_ENEMY"], FormatTooltipNumber (_, _math_floor(heal_actor.heal_enemy_amt)))
 	else
 		GameCooltip:AddLine(Loc ["STRING_ATTRIBUTE_HEAL_ENEMY"], 0)
 	end
-	GameCooltip:AddIcon (instancia:GetSkinTexture(), 1, 1, 14, 14, 0.037109375 + half, 0.056640625 - half, 0.3623046875, 0.3818359375)
+	GameCooltip:AddIcon (instanceObject:GetSkinTexture(), 1, 1, 14, 14, 0.037109375 + half, 0.056640625 - half, 0.3623046875, 0.3818359375)
 	GameCooltip:AddStatusBar (0, 1, r, g, b, 1, false, enemies_background)
 
 	GameCooltip:AddLine(" ")
 	Details:AddTooltipReportLineText()
 
-	GameCooltip:SetOption("YSpacingMod", 0)
-
 	return true
 end
 
 ---------DAMAGE TAKEN
-function atributo_damage:ToolTip_DamageTaken (instance, numero, barra, keydown)
+function damageClass:ToolTip_DamageTaken(instance, numero, barra, keydown)
 	--if the object has a owner, it's a pet
 	local owner = self.owner
 	if (owner and owner.classe) then
@@ -3740,13 +4439,19 @@ function atributo_damage:ToolTip_DamageTaken (instance, numero, barra, keydown)
 	local combatObject = instance:GetShowingCombat()
 	local damageContainer = combatObject:GetContainer(DETAILS_ATTRIBUTE_DAMAGE)
 
-	local damageTakenSorted = {}
+	---@type {key1:actorname, key2:valueamount, key3:class, key4:actor}
+	local damageTakenDataSorted = {}
 	local mainAttribute, subAttribute = instance:GetDisplay()
 
 	if (subAttribute == DETAILS_SUBATTRIBUTE_ENEMIES) then
 		for _, actorObject in damageContainer:ListActors() do
 			if (actorObject:IsGroupPlayer() and actorObject.targets[actorName]) then
-				damageTakenSorted [#damageTakenSorted+1] = {actorName, actorObject.targets[actorName], actorObject.classe, actorObject}
+				damageTakenDataSorted [#damageTakenDataSorted+1] = {
+					actorName,
+					actorObject.targets[actorName],
+					actorObject:Class(),
+					actorObject
+				}
 			end
 		end
 	else
@@ -3754,135 +4459,179 @@ function atributo_damage:ToolTip_DamageTaken (instance, numero, barra, keydown)
 			--get the aggressor
 			local enemyActorObject = damageContainer:GetActor(enemyName)
 			if (enemyActorObject) then
-				--local name = enemyName
+				---@type {key1:actorname, key2:valueamount, key3:class, key4:actor}
 				local damageTakenTable
 				local damageInflictedByThisEnemy = enemyActorObject.targets[actorName]
 
 				if (damageInflictedByThisEnemy) then
 					if (enemyActorObject:IsPlayer() or enemyActorObject:IsNeutralOrEnemy()) then
-						damageTakenTable = {enemyName, damageInflictedByThisEnemy, enemyActorObject.classe, enemyActorObject}
-						damageTakenSorted [#damageTakenSorted+1] = damageTakenTable
+						damageTakenTable = {enemyName, damageInflictedByThisEnemy, enemyActorObject:Class(), enemyActorObject}
+						damageTakenDataSorted[#damageTakenDataSorted+1] = damageTakenTable
 					end
 				end
 
 				--special cases - monk stagger
-				if (enemyName == actorName and self.classe == "MONK") then
-					local ff = enemyActorObject.friendlyfire [enemyName]
-					if (ff and ff.total > 0) then
-						local staggerDamage = ff.spells [124255] or 0
+				if (enemyName == actorName and self:Class() == "MONK") then
+					local friendlyFire = enemyActorObject.friendlyfire[enemyName]
+					if (friendlyFire and friendlyFire.total > 0) then
+						local staggerDamage = friendlyFire.spells[124255] or 0
 						if (staggerDamage > 0) then
 							if (damageTakenTable) then
-								damageTakenTable [2] = damageTakenTable [2] + staggerDamage
+								damageTakenTable[2] = damageTakenTable[2] + staggerDamage
 							else
-								damageTakenSorted [#damageTakenSorted+1] = {enemyName, staggerDamage, "MONK", enemyActorObject}
+								damageTakenDataSorted[#damageTakenDataSorted+1] = {enemyName, staggerDamage, "MONK", enemyActorObject}
 							end
 						end
 					end
 				end
 			end
 		end
-
 	end
 
-	local max = #damageTakenSorted
-	if (max > 10) then
-		max = 10
+	local maxDataAllowed = #damageTakenDataSorted
+	if (maxDataAllowed > 10) then
+		maxDataAllowed = 10
 	end
 
 	local bIsMaximized = false
 	if (keydown == "shift" or TooltipMaximizedMethod == 2 or TooltipMaximizedMethod == 3 or instance.sub_atributo == 6 or Details.damage_taken_everything) then
-		max = #damageTakenSorted
+		maxDataAllowed = #damageTakenDataSorted
 		bIsMaximized = true
 	end
 
 	if (subAttribute == DETAILS_SUBATTRIBUTE_ENEMIES) then
-		Details:AddTooltipSpellHeaderText (Loc ["STRING_DAMAGE_TAKEN_FROM"], headerColor, #damageTakenSorted, [[Interface\Buttons\UI-MicroStream-Red]], 0.1875, 0.8125, 0.15625, 0.78125)
+		--Details:AddTooltipSpellHeaderText(Loc ["STRING_DAMAGE_TAKEN_FROM"], headerColor, #damageTakenDataSorted, [[Interface\Buttons\UI-MicroStream-Red]], 0.1875, 0.8125, 0.15625, 0.78125)
 	else
-		Details:AddTooltipSpellHeaderText (Loc ["STRING_FROM"], headerColor, #damageTakenSorted, [[Interface\Addons\Details\images\icons]], 0.126953125, 0.1796875, 0, 0.0546875)
+		--Details:AddTooltipSpellHeaderText(Loc ["STRING_FROM"], headerColor, #damageTakenDataSorted, [[Interface\Addons\Details\images\icons]], 0.126953125, 0.1796875, 0, 0.0546875)
 	end
 
 	if (bIsMaximized) then
 		--highlight
-		GameCooltip:AddIcon ([[Interface\AddOns\Details\images\key_shift]], 1, 2, Details.tooltip_key_size_width, Details.tooltip_key_size_height, 0, 1, 0, 0.640625, Details.tooltip_key_overlay2)
-		if (subAttribute == DETAILS_SUBATTRIBUTE_ENEMIES) then
-			GameCooltip:AddStatusBar (100, 1, 0.7, g, b, 1)
-		else
-			Details:AddTooltipHeaderStatusbar (r, g, b, 1)
-		end
+		--GameCooltip:AddIcon([[Interface\AddOns\Details\images\key_shift]], 1, 2, Details.tooltip_key_size_width, Details.tooltip_key_size_height, 0, 1, 0, 0.640625, Details.tooltip_key_overlay2)
+		--if (subAttribute == DETAILS_SUBATTRIBUTE_ENEMIES) then
+		--	GameCooltip:AddStatusBar(100, 1, 0.7, g, b, 1)
+		--else
+		--	Details:AddTooltipHeaderStatusbar(r, g, b, 1)
+		--end
 	else
-		GameCooltip:AddIcon ([[Interface\AddOns\Details\images\key_shift]], 1, 2, Details.tooltip_key_size_width, Details.tooltip_key_size_height, 0, 1, 0, 0.640625, Details.tooltip_key_overlay1)
-		if (subAttribute == DETAILS_SUBATTRIBUTE_ENEMIES) then
-			GameCooltip:AddStatusBar (100, 1, 0.7, 0, 0, barAlha)
-		else
-			Details:AddTooltipHeaderStatusbar (r, g, b, barAlha)
-		end
+		--GameCooltip:AddIcon([[Interface\AddOns\Details\images\key_shift]], 1, 2, Details.tooltip_key_size_width, Details.tooltip_key_size_height, 0, 1, 0, 0.640625, Details.tooltip_key_overlay1)
+		--if (subAttribute == DETAILS_SUBATTRIBUTE_ENEMIES) then
+		--	GameCooltip:AddStatusBar(100, 1, 0.7, 0, 0, barAlha)
+		--else
+		--	Details:AddTooltipHeaderStatusbar(r, g, b, barAlha)
+		--end
 	end
 
-	local iconSize = Details.tooltip.icon_size
+	--local iconSize = Details.tooltip.icon_size
 	local iconBorderTexCoord = Details.tooltip.icon_border_texcoord
 
-	for i = 1, max do
-		local enemyActorObject = damageTakenSorted[i][4]
+	GameCooltip:SetOption("AlignAsBlizzTooltip", false)
+	GameCooltip:SetOption("AlignAsBlizzTooltipFrameHeightOffset", -6)
+	GameCooltip:SetOption("YSpacingMod", -6)
+	local iconSize = Details.DefaultTooltipIconSize
+
+	-- create a full list of incoming damage, before adding any lines to the tooltip, so we can sort them appropriately
+
+	---@class cooltip_icon
+	---@field key1 textureid
+	---@field key2 number 1 for main tooltip frame, 2 for the secondary frame
+	---@field key3 number 1 for the left side, 2 for the right size
+	---@field key4 width
+	---@field key5 height
+	---@field key6 coordleft
+	---@field key7 coordright
+	---@field key8 coordtop
+	---@field key9 coordbottom
+
+	---@type {key1:valueamount, key2:table<string, string>, key3:cooltip_icon}
+	local lines_to_add = {}
+
+	for i = 1, maxDataAllowed do
+		local enemyActorObject = damageTakenDataSorted[i][4]
 
 		--only shows damage from enemies or from the player it self
 		--the player it self can only be placed on the list by the iteration above
 		--the iteration doesnt check friendly fire for all actors, only a few cases like Monk Stagger
 
-		--bug: on the first iteration it's grabbing all actors that inflicted damage to this player
-		--here it gets all spells from the player and display them, which won't be sorted
+		if (enemyActorObject:IsNeutralOrEnemy() or enemyActorObject:Name() == self:Name()) then
+			---@type {key1:spellid, key2:valueamount, key:actorname}
+			local spellTargetDamageList = {}
 
-		if (enemyActorObject:IsNeutralOrEnemy() or enemyActorObject.nome == self.nome) then
-			local all_spells = {}
-
-			for spellid, spell in pairs(enemyActorObject.spells._ActorTable) do
-				local on_target = spell.targets [self.nome]
-				if (on_target) then
-					tinsert(all_spells, {spellid, on_target, enemyActorObject.nome})
+			for spellId, spellTable in pairs(enemyActorObject.spells._ActorTable) do
+				local damageOnTarget = spellTable.targets[self:Name()]
+				if (damageOnTarget) then
+					tinsert(spellTargetDamageList, {spellId, damageOnTarget, enemyActorObject:Name()})
 				end
 			end
 
 			--friendly fire
-			local friendlyFire = enemyActorObject.friendlyfire [self.nome]
+			local friendlyFire = enemyActorObject.friendlyfire[self:Name()]
 			if (friendlyFire) then
-				for spellid, amount in pairs(friendlyFire.spells) do
-					tinsert(all_spells, {spellid, amount, enemyActorObject.nome})
+				for spellId, valueAmount in pairs(friendlyFire.spells) do
+					table.insert(spellTargetDamageList, {spellId, valueAmount, enemyActorObject:Name()})
 				end
 			end
 
-			for _, spell in ipairs(all_spells) do
-				local spellname, _, spellicon = _GetSpellInfo(spell [1])
-				GameCooltip:AddLine(spellname .. " (|cFFFFFF00" .. spell [3] .. "|r)", FormatTooltipNumber (_, spell [2]).." (" .. format("%.1f", (spell [2] / totalDamageTaken) * 100).."%)")
-				GameCooltip:AddIcon (spellicon, 1, 1, iconSize.W, iconSize.H, iconBorderTexCoord.L, iconBorderTexCoord.R, iconBorderTexCoord.T, iconBorderTexCoord.B)
-				Details:AddTooltipBackgroundStatusbar()
-			end
+			for _, spell in ipairs(spellTargetDamageList) do
+				local spellId, valueAmount, thisActorName = unpack(spell)
 
+				local spellName, _, spellIcon = _GetSpellInfo(spellId)
+				local addTextArgs = {spellName .. " (|cFFFFFF00" .. thisActorName .. "|r)", Details:Format(valueAmount) .. " (" .. string.format("%.1f", (valueAmount / totalDamageTaken) * 100) .. "%)"}
+				---@type cooltip_icon
+				local addIconArgs = {spellIcon, 1, 1, iconSize, iconSize, iconBorderTexCoord.L, iconBorderTexCoord.R, iconBorderTexCoord.T, iconBorderTexCoord.B}
+
+				tinsert(lines_to_add, {
+					valueAmount,
+					addTextArgs,
+					addIconArgs
+				})
+			end
 		else
-			local aggressorName = Details:GetOnlyName(damageTakenSorted[i][1])
-			if (bIsMaximized and damageTakenSorted[i][1]:find(Details.playername)) then
-				GameCooltip:AddLine(aggressorName, FormatTooltipNumber (_, damageTakenSorted[i][2]).." ("..format("%.1f", (damageTakenSorted[i][2]/totalDamageTaken) * 100).."%)", nil, "yellow")
-			else
-				GameCooltip:AddLine(aggressorName, FormatTooltipNumber (_, damageTakenSorted[i][2]).." ("..format("%.1f", (damageTakenSorted[i][2]/totalDamageTaken) * 100).."%)")
-			end
-			local classe = damageTakenSorted[i][3]
+			---@type actorname, valueamount, class, actor
+			local thisAggrossorTable = damageTakenDataSorted[i]
+			local actorName = thisAggrossorTable[1]
+			local amount = thisAggrossorTable[2]
+			local class = thisAggrossorTable[3]
+			local actorObject = thisAggrossorTable[4]
 
-			if (not classe) then
-				classe = "UNKNOW"
+			---@type {key1:actorname, key2:string, key3:nil, key4:color}
+			local addLineArgs
+			---@type cooltip_icon
+			local addIconArgs
+
+			local aggressorName = Details:GetOnlyName(actorName)
+			if (bIsMaximized and actorName:find(Details.playername)) then
+				addLineArgs = {aggressorName, Details:Format(amount) .. " ("..string.format("%.1f", (amount / totalDamageTaken) * 100) .. "%)", nil, "yellow"}
+			else
+				addLineArgs = {aggressorName, Details:Format(amount) .. " ("..string.format("%.1f", (amount / totalDamageTaken) * 100) .. "%)"}
 			end
 
-			if (classe == "UNKNOW") then
-				GameCooltip:AddIcon ("Interface\\LFGFRAME\\LFGROLE_BW", nil, nil, iconSize.W, iconSize.H, .25, .5, 0, 1)
-			else
-				GameCooltip:AddIcon (instance.row_info.icon_file, nil, nil, iconSize.W, iconSize.H, unpack(Details.class_coords [classe]))
+			if (not class) then
+				class = "UNKNOW"
 			end
-			Details:AddTooltipBackgroundStatusbar()
+
+			if (class == "UNKNOW") then
+				addIconArgs = {"Interface\\LFGFRAME\\LFGROLE_BW", nil, nil, iconSize, iconSize, .25, .5, 0, 1}
+			else
+				addIconArgs= {instance.row_info.icon_file, nil, nil, iconSize, iconSize, unpack(Details.class_coords [class])}
+			end
+			tinsert(lines_to_add, {amount, addLineArgs, addIconArgs})
 		end
+	end
+
+	table.sort(lines_to_add, Details.Sort1)
+
+	for _, line in ipairs(lines_to_add) do
+		GameCooltip:AddLine(unpack(line[2]))
+		GameCooltip:AddIcon(unpack(line[3]))
+		Details:AddTooltipBackgroundStatusbar()
 	end
 
 	if (subAttribute == DETAILS_SUBATTRIBUTE_ENEMIES) then
 		GameCooltip:AddLine(" ")
 		GameCooltip:AddLine(Loc ["STRING_ATTRIBUTE_DAMAGE_DONE"], FormatTooltipNumber (_, _math_floor(self.total)))
 		local half = 0.00048828125
-		GameCooltip:AddIcon (instance:GetSkinTexture(), 1, 1, iconSize.W, iconSize.H, 0.005859375 + half, 0.025390625 - half, 0.3623046875, 0.3818359375)
+		GameCooltip:AddIcon (instance:GetSkinTexture(), 1, 1, iconSize, iconSize, 0.005859375 + half, 0.025390625 - half, 0.3623046875, 0.3818359375)
 		Details:AddTooltipBackgroundStatusbar()
 
 		local heal_actor = instance.showing (2, self.nome)
@@ -3891,7 +4640,7 @@ function atributo_damage:ToolTip_DamageTaken (instance, numero, barra, keydown)
 		else
 			GameCooltip:AddLine(Loc ["STRING_ATTRIBUTE_HEAL_DONE"], 0)
 		end
-		GameCooltip:AddIcon (instance:GetSkinTexture(), 1, 1, iconSize.W, iconSize.H, 0.037109375 + half, 0.056640625 - half, 0.3623046875, 0.3818359375)
+		GameCooltip:AddIcon (instance:GetSkinTexture(), 1, 1, iconSize, iconSize, 0.037109375 + half, 0.056640625 - half, 0.3623046875, 0.3818359375)
 		Details:AddTooltipBackgroundStatusbar()
 	end
 
@@ -3899,7 +4648,7 @@ function atributo_damage:ToolTip_DamageTaken (instance, numero, barra, keydown)
 end
 
 ---------FRIENDLY FIRE
-function atributo_damage:ToolTip_FriendlyFire (instancia, numero, barra, keydown)
+function damageClass:ToolTip_FriendlyFire (instancia, numero, barra, keydown)
 
 	local owner = self.owner
 	if (owner and owner.classe) then
@@ -4014,230 +4763,346 @@ end
 
 
 ---------DETALHES BIFURCA��O ~detalhes ~detailswindow ~bi
-function atributo_damage:MontaInfo()
-	if (info.sub_atributo == 1 or info.sub_atributo == 2 or info.sub_atributo == 6) then --damage done & dps
-		return self:MontaInfoDamageDone()
-	elseif (info.sub_atributo == 3) then --damage taken
-		return self:MontaInfoDamageTaken()
-	elseif (info.sub_atributo == 4) then --friendly fire
-		return self:MontaInfoFriendlyFire()
+function damageClass:MontaInfo()
+	if (breakdownWindowFrame.sub_atributo == 1 or breakdownWindowFrame.sub_atributo == 2 or breakdownWindowFrame.sub_atributo == 6) then --damage done & dps
+		return self:MontaInfoDamageDone() --has new code for the new destails window | left scroll and 6 blocks implemented
+	elseif (breakdownWindowFrame.sub_atributo == 3) then --damage taken
+		return self:MontaInfoDamageTaken() --has new code for the new destails window | left and right scrolls implemented
+	elseif (breakdownWindowFrame.sub_atributo == 4) then --friendly fire
+		return self:MontaInfoFriendlyFire() --has new code for the new destails window | left scroll implemeneted (need to implemente the right scroll yet)
 	end
 end
 
 ---------DETALHES bloco da direita BIFURCA��O
-function atributo_damage:MontaDetalhes (spellid, barra, instancia)
-	if (info.sub_atributo == 1 or info.sub_atributo == 2) then
-		return self:MontaDetalhesDamageDone (spellid, barra, instancia)
+function damageClass:MontaDetalhes (spellid, barra, instancia) --these functions were used to fill the 5 blocks from the old breakdown window
+	if (breakdownWindowFrame.sub_atributo == 1 or breakdownWindowFrame.sub_atributo == 2) then
+		return self:MontaDetalhesDamageDone (spellid, barra, instancia) --deprecated
 
-	elseif (info.sub_atributo == 3) then
+	elseif (breakdownWindowFrame.sub_atributo == 3) then
 		return self:MontaDetalhesDamageTaken (spellid, barra, instancia)
 
-	elseif (info.sub_atributo == 4) then
+	elseif (breakdownWindowFrame.sub_atributo == 4) then
 		return self:MontaDetalhesFriendlyFire (spellid, barra, instancia)
 
-	elseif (info.sub_atributo == 6) then
+	elseif (breakdownWindowFrame.sub_atributo == 6) then
 		if (bitBand(self.flag_original, 0x00000400) ~= 0) then --� um jogador
-			return self:MontaDetalhesDamageDone (spellid, barra, instancia)
+			return self:MontaDetalhesDamageDone (spellid, barra, instancia) --deprecated
 		end
 		return self:MontaDetalhesEnemy (spellid, barra, instancia)
 	end
 end
 
+local friendlyFireSpellSourcesHeadersAllowed = {icon = true, name = true, rank = true, amount = true, persecond = true, percent = true}
+---when hovering over the player name in the breakdown window, this function will be called to build a the list of spells used to inflict damage on that player
+---@param friendlyFireAggressorActor actordamage
+---@param targetName string
+function damageClass.BuildFriendlySpellListFromAgressor(friendlyFireAggressorActor, targetName)
+	---@type combat
+	local combatObject = Details:GetCombatFromBreakdownWindow()
+
+	---@type friendlyfiretable
+	local friendlyFireTable = friendlyFireAggressorActor.friendlyfire[targetName]
+
+	local totalDamage = friendlyFireTable.total
+	local spellsUsed = friendlyFireTable.spells
+
+	--create the table which will be returned with the data
+	---@type {topValue: number, totalValue: number, headersAllowed: table, combatTime: number}
+	local resultTable = {topValue = 0, totalValue = totalDamage, headersAllowed = friendlyFireSpellSourcesHeadersAllowed, combatTime = combatObject:GetCombatTime()}
+
+	--iterate among the spells used by the aggressorActor
+	for spellId, amountDamage in pairs(spellsUsed) do
+		--add the spell to the list
+		local spellName = GetSpellInfo(spellId)
+		resultTable[#resultTable+1] = {spellId = spellId, total = amountDamage, petName = "", spellScholl = Details.spell_school_cache[spellName] or 1}
+	end
+
+	return resultTable
+end
 
 ------ Friendly Fire
-function atributo_damage:MontaInfoFriendlyFire()
+local friendlyFireHeadersAllowed = {icon = true, name = true, rank = true, amount = true, persecond = true, percent = true}
+---build the friendly fire list, the list contains players who were damaged by this actor.
+function damageClass:MontaInfoFriendlyFire() --~friendlyfire ~friendly ~ff
+	---@type actordamage
+	local actorObject = self
+	---@type instance
+	local instance = breakdownWindowFrame.instancia
+	---@type combat
+	local combatObject = instance:GetCombat()
+	---@type string
+	local actorName = actorObject:Name()
 
-	local instancia = info.instancia
-	local combat = instancia:GetShowingCombat()
-	local barras = info.barras1
-	local barras2 = info.barras2
-	local barras3 = info.barras3
+	---@type number
+	local friendlyFireTotal = actorObject.friendlyfire_total
+	---@type table<string, friendlyfiretable>
+	local damagedPlayers = actorObject.friendlyfire --players which got hit by this actor
+	---@type actorcontainer
+	local damageContainer = combatObject:GetContainer(class_type)
 
-	local FriendlyFireTotal = self.friendlyfire_total
+	local resultTable = {}
 
-	local DamagedPlayers = {}
-	local Skills = {}
+	for targetName, friendlyFireTable in pairs(damagedPlayers) do
+		local amountOfFriendlyFire = friendlyFireTable.total
+		if (amountOfFriendlyFire > 0) then
+			---@type actordamage this is an actor who was damaged by the friendly fire of the actorObject
+			local targetActorObject = damageContainer:GetActor(targetName)
+			if (targetActorObject) then
+				---@type texturetable
+				local iconTable = Details:GetActorIcon(targetActorObject)
 
-	for target_name, ff_table in pairs(self.friendlyfire) do
+				---@type {name: string, amount: number, icon: texturetable, class: string}
+				local ffTable = {name = targetName, total = amountOfFriendlyFire, icon = iconTable, class = targetActorObject:Class()}
 
-		local actor = combat (1, target_name)
-		if (actor) then
-			tinsert(DamagedPlayers, {target_name, ff_table.total, ff_table.total / FriendlyFireTotal * 100, actor.classe})
-
-			for spellid, amount in pairs(ff_table.spells) do
-				Skills [spellid] = (Skills [spellid] or 0) + amount
+				resultTable[#resultTable+1] = ffTable
 			end
 		end
 	end
 
-	_table_sort(DamagedPlayers, Details.Sort2)
+	resultTable.totalValue = friendlyFireTotal
+	resultTable.combatTime = combatObject:GetCombatTime()
+	resultTable.headersAllowed = friendlyFireHeadersAllowed
 
-	local amt = #DamagedPlayers
-	gump:JI_AtualizaContainerBarras (amt)
+	Details222.BreakdownWindow.SendGenericData(resultTable, actorObject, combatObject, instance)
 
-	local FirstPlaceDamage = DamagedPlayers [1] and DamagedPlayers [1][2] or 0
+	if true then return end
+	do
+		local instancia = breakdownWindowFrame.instancia
+		local combat = instancia:GetShowingCombat()
+		local barras = breakdownWindowFrame.barras1
+		local barras2 = breakdownWindowFrame.barras2
+		local barras3 = breakdownWindowFrame.barras3
 
-	for index, tabela in ipairs(DamagedPlayers) do
-		local barra = barras [index]
+		local FriendlyFireTotal = self.friendlyfire_total
 
-		if (not barra) then
-			barra = gump:CriaNovaBarraInfo1 (instancia, index)
-			barra.textura:SetStatusBarColor(1, 1, 1, 1)
-			barra.on_focus = false
+		local DamagedPlayers = {}
+		local Skills = {}
+
+		for target_name, ff_table in pairs(self.friendlyfire) do
+
+			local actor = combat (1, target_name)
+			if (actor) then
+				tinsert(DamagedPlayers, {target_name, ff_table.total, ff_table.total / FriendlyFireTotal * 100, actor.classe})
+
+				for spellid, amount in pairs(ff_table.spells) do
+					Skills [spellid] = (Skills [spellid] or 0) + amount
+				end
+			end
 		end
 
-		if (not info.mostrando_mouse_over) then
-			if (tabela[1] == self.detalhes) then --tabela [1] = NOME = NOME que esta na caixa da direita
-				if (not barra.on_focus) then --se a barra n�o tiver no foco
-					barra.textura:SetStatusBarColor(129/255, 125/255, 69/255, 1)
-					barra.on_focus = true
-					if (not info.mostrando) then
-						info.mostrando = barra
+		_table_sort(DamagedPlayers, Details.Sort2)
+
+		local amt = #DamagedPlayers
+		gump:JI_AtualizaContainerBarras (amt)
+
+		local FirstPlaceDamage = DamagedPlayers [1] and DamagedPlayers [1][2] or 0
+
+		for index, tabela in ipairs(DamagedPlayers) do
+			local barra = barras [index]
+
+			if (not barra) then
+				barra = gump:CriaNovaBarraInfo1 (instancia, index)
+				barra.textura:SetStatusBarColor(1, 1, 1, 1)
+				barra.on_focus = false
+			end
+
+			if (not breakdownWindowFrame.mostrando_mouse_over) then
+				if (tabela[1] == self.detalhes) then --tabela [1] = NOME = NOME que esta na caixa da direita
+					if (not barra.on_focus) then --se a barra n�o tiver no foco
+						barra.textura:SetStatusBarColor(129/255, 125/255, 69/255, 1)
+						barra.on_focus = true
+						if (not breakdownWindowFrame.mostrando) then
+							breakdownWindowFrame.mostrando = barra
+						end
+					end
+				else
+					if (barra.on_focus) then
+						barra.textura:SetStatusBarColor(1, 1, 1, 1) --volta a cor antiga
+						barra:SetAlpha(.9) --volta a alfa antiga
+						barra.on_focus = false
 					end
 				end
+			end
+
+			if (index == 1) then
+				barra.textura:SetValue(100)
 			else
-				if (barra.on_focus) then
-					barra.textura:SetStatusBarColor(1, 1, 1, 1) --volta a cor antiga
-					barra:SetAlpha(.9) --volta a alfa antiga
-					barra.on_focus = false
-				end
+				barra.textura:SetValue(tabela[2]/FirstPlaceDamage*100)
+			end
+
+			barra.lineText1:SetText(index .. instancia.divisores.colocacao .. Details:GetOnlyName(tabela[1])) --seta o texto da esqueda
+			barra.lineText4:SetText(Details:comma_value (tabela[2]) .. " (" .. format("%.1f", tabela[3]) .."%)") --seta o texto da direita
+
+			local classe = tabela[4]
+			if (not classe) then
+				classe = "MONSTER"
+			end
+
+			barra.icone:SetTexture(breakdownWindowFrame.instancia.row_info.icon_file)
+
+			if (Details.class_coords [classe]) then
+				barra.icone:SetTexCoord(unpack(Details.class_coords [classe]))
+			else
+				barra.icone:SetTexture("")
+			end
+
+			local color = Details.class_colors [classe]
+			if (color) then
+				barra.textura:SetStatusBarColor(unpack(color))
+			else
+				barra.textura:SetStatusBarColor(1, 1, 1)
+			end
+
+			barra.minha_tabela = self
+			barra.show = tabela[1]
+			barra:Show()
+
+			if (self.detalhes and self.detalhes == barra.show) then
+				self:MontaDetalhes (self.detalhes, barra, instancia)
 			end
 		end
 
-		if (index == 1) then
-			barra.textura:SetValue(100)
-		else
-			barra.textura:SetValue(tabela[2]/FirstPlaceDamage*100)
+		local SkillTable = {}
+		for spellid, amt in pairs(Skills) do
+			local nome, _, icone = _GetSpellInfo(spellid)
+			SkillTable [#SkillTable+1] = {nome, amt, amt/FriendlyFireTotal*100, icone}
 		end
 
-		barra.lineText1:SetText(index .. instancia.divisores.colocacao .. Details:GetOnlyName(tabela[1])) --seta o texto da esqueda
-		barra.lineText4:SetText(Details:comma_value (tabela[2]) .. " (" .. format("%.1f", tabela[3]) .."%)") --seta o texto da direita
+		_table_sort(SkillTable, Details.Sort2)
 
-		local classe = tabela[4]
-		if (not classe) then
-			classe = "MONSTER"
+		amt = #SkillTable
+		if (amt < 1) then
+			return
 		end
 
-		barra.icone:SetTexture(info.instancia.row_info.icon_file)
+		gump:JI_AtualizaContainerAlvos (amt)
 
-		if (Details.class_coords [classe]) then
-			barra.icone:SetTexCoord(unpack(Details.class_coords [classe]))
-		else
-			barra.icone:SetTexture("")
+		FirstPlaceDamage = SkillTable [1] and SkillTable [1][2] or 0
+
+		for index, tabela in ipairs(SkillTable) do
+			local barra = barras2 [index]
+
+			if (not barra) then
+				barra = gump:CriaNovaBarraInfo2 (instancia, index)
+				barra.textura:SetStatusBarColor(1, 1, 1, 1)
+			end
+
+			if (index == 1) then
+				barra.textura:SetValue(100)
+			else
+				barra.textura:SetValue(tabela[2]/FirstPlaceDamage*100)
+			end
+
+			barra.lineText1:SetText(index..instancia.divisores.colocacao..tabela[1]) --seta o texto da esqueda
+			barra.lineText4:SetText(Details:comma_value (tabela[2]) .." (" ..format("%.1f", tabela[3]) .. ")") --seta o texto da direita
+			barra.icone:SetTexture(tabela[4])
+
+			barra.minha_tabela = nil --desativa o tooltip
+
+			barra:Show()
 		end
+	end
+end
 
-		local color = Details.class_colors [classe]
-		if (color) then
-			barra.textura:SetStatusBarColor(unpack(color))
-		else
-			barra.textura:SetStatusBarColor(1, 1, 1)
-		end
+local damageTakenSpellSourcesHeadersAllowed = {icon = true, name = true, rank = true, amount = true, persecond = true, percent = true}
+function damageClass.BuildDamageTakenSpellListFromAgressor(targetActor, aggressorActor)
+	--target actor name
+	local targetActorName = targetActor:Name()
 
-		barra.minha_tabela = self
-		barra.show = tabela[1]
-		barra:Show()
+	---@type combat
+	local combatObject = Details:GetCombatFromBreakdownWindow()
 
-		if (self.detalhes and self.detalhes == barra.show) then
-			self:MontaDetalhes (self.detalhes, barra, instancia)
+	--get the list of spells from the aggressorActor and check each one to see if it was casted on the targetActor
+	---@type spellcontainer
+	local spellContainer = aggressorActor:GetSpellContainer("spell")
+
+	--create the table which will be returned with the data
+	---@type {topValue: number, totalValue: number, headersAllowed: table, combatTime: number}
+	local resultTable = {topValue = 0, totalValue = 0, headersAllowed = damageTakenSpellSourcesHeadersAllowed, combatTime = combatObject:GetCombatTime()}
+
+	for spellId, spellTable in spellContainer:ListSpells() do
+		---@cast spellTable spelltable
+		for targetName, amount in pairs(spellTable.targets) do
+			if (targetName == targetActorName) then
+				--add the spell to the list
+				resultTable[#resultTable+1] = {spellId = spellId, total = amount, petName = "", spellScholl = spellTable.spellschool}
+				resultTable.totalValue = resultTable.totalValue + amount
+			end
 		end
 	end
 
-	local SkillTable = {}
-	for spellid, amt in pairs(Skills) do
-		local nome, _, icone = _GetSpellInfo(spellid)
-		SkillTable [#SkillTable+1] = {nome, amt, amt/FriendlyFireTotal*100, icone}
-	end
+	--iterate among the pets of the aggressorActor and get the spells casted by them
+	---@type table<number, actorname>
+	local petTable = aggressorActor.pets
 
-	_table_sort(SkillTable, Details.Sort2)
+	for i = 1, #petTable do
+		local petName = petTable[i]
+		local petActorObject = combatObject:GetActor(DETAILS_ATTRIBUTE_DAMAGE, petName)
+		if (petActorObject) then
+			---@type spellcontainer
+			local petSpellContainer = petActorObject:GetSpellContainer("spell")
 
-	amt = #SkillTable
-	if (amt < 1) then
-		return
-	end
-
-	gump:JI_AtualizaContainerAlvos (amt)
-
-	FirstPlaceDamage = SkillTable [1] and SkillTable [1][2] or 0
-
-	for index, tabela in ipairs(SkillTable) do
-		local barra = barras2 [index]
-
-		if (not barra) then
-			barra = gump:CriaNovaBarraInfo2 (instancia, index)
-			barra.textura:SetStatusBarColor(1, 1, 1, 1)
+			for spellId, spellTable in petSpellContainer:ListSpells() do
+				for targetName, amount in pairs(spellTable.targets) do
+					if (targetName == targetActorName) then
+						--add the spell to the list
+						resultTable[#resultTable+1] = {spellId = spellId, total = amount, petName = petName, spellScholl = spellTable.spellschool}
+						resultTable.totalValue = resultTable.totalValue + amount
+					end
+				end
+			end
 		end
-
-		if (index == 1) then
-			barra.textura:SetValue(100)
-		else
-			barra.textura:SetValue(tabela[2]/FirstPlaceDamage*100)
-		end
-
-		barra.lineText1:SetText(index..instancia.divisores.colocacao..tabela[1]) --seta o texto da esqueda
-		barra.lineText4:SetText(Details:comma_value (tabela[2]) .." (" ..format("%.1f", tabela[3]) .. ")") --seta o texto da direita
-		barra.icone:SetTexture(tabela[4])
-
-		barra.minha_tabela = nil --desativa o tooltip
-
-		barra:Show()
 	end
 
+	return resultTable
 end
 
 ------ Damage Taken
-function atributo_damage:MontaInfoDamageTaken()
+local damageTakenHeadersAllowed = {icon = true, name = true, rank = true, amount = true, persecond = true, percent = true}
+function damageClass:MontaInfoDamageTaken()
+	---@type actordamage
+	local actorObject = self
+	---@type instance
+	local instance = breakdownWindowFrame.instancia
+	---@type combat
+	local combatObject = instance:GetCombat()
+	---@type string
+	local actorName = actorObject:Name()
 
-	local damage_taken = self.damage_taken
-	local agressores = self.damage_from
-	local instancia = info.instancia
-	local tabela_do_combate = instancia.showing
-	local showing = tabela_do_combate [class_type] --o que esta sendo mostrado -> [1] - dano [2] - cura --pega o container com ._NameIndexTable ._ActorTable
-	local barras = info.barras1
-	local meus_agressores = {}
+	---@type number
+	local damageTakenTotal = actorObject.damage_taken
+	---@type table<string, boolean>
+	local damageTakenFrom = actorObject.damage_from
+	---@type actorcontainer
+	local damageContainer = combatObject:GetContainer(class_type)
 
-	local este_agressor
-	for nome, _ in pairs(agressores) do
-		este_agressor = showing._ActorTable[showing._NameIndexTable[nome]]
-		if (este_agressor) then
-			local alvos = este_agressor.targets
-			local este_alvo = alvos [self.nome]
-			if (este_alvo) then
-				meus_agressores [#meus_agressores+1] = {nome, este_alvo, este_alvo/damage_taken*100, este_agressor.classe}
+	local resultTable = {}
+
+	---@type string
+	for aggressorName in pairs(damageTakenFrom) do
+		local aggressorActor = damageContainer:GetActor(aggressorName)
+		if (aggressorActor) then
+			---@type table<string, number>
+			local targets = aggressorActor:GetTargets()
+			---@type number|nil
+			local amountOfDamage = targets[actorName]
+			if (amountOfDamage) then
+				---@type texturetable
+				local iconTable = Details:GetActorIcon(aggressorActor)
+
+				---@type {name: string, amount: number, icon: texturetable}
+				local damageTakenTable = {name = aggressorName, total = amountOfDamage, icon = iconTable, class = aggressorActor:Class()}
+
+				resultTable[#resultTable+1] = damageTakenTable
 			end
 		end
 	end
 
-	local amt = #meus_agressores
+	resultTable.totalValue = damageTakenTotal
+	resultTable.combatTime = combatObject:GetCombatTime()
+	resultTable.headersAllowed = damageTakenHeadersAllowed
 
-	if (amt < 1) then --caso houve apenas friendly fire
-		return true
-	end
-
-	--_table_sort(meus_agressores, function(a, b) return a[2] > b[2] end)
-	_table_sort(meus_agressores, Details.Sort2)
-
-	gump:JI_AtualizaContainerBarras (amt)
-
-	local max_ = meus_agressores [1] and meus_agressores [1][2] or 0
-
-	local barra
-	for index, tabela in ipairs(meus_agressores) do
-		barra = barras [index]
-		if (not barra) then
-			barra = gump:CriaNovaBarraInfo1 (instancia, index)
-		end
-
-		self:FocusLock(barra, tabela[1])
-
-		local texCoords = Details.class_coords [tabela[4]]
-		if (not texCoords) then
-			texCoords = Details.class_coords ["UNKNOW"]
-		end
-
-		local formated_value = SelectedToKFunction(_, _math_floor(tabela[2]))
-		self:UpdadeInfoBar(barra, index, tabela[1], tabela[1], tabela[2], formated_value, max_, tabela[3], "Interface\\AddOns\\Details\\images\\classes_small_alpha", true, texCoords, nil, tabela[4])
-	end
-
+	Details222.BreakdownWindow.SendGenericData(resultTable, actorObject, combatObject, instance)
 end
 
 --[[exported]] function Details:UpdadeInfoBar(row, index, spellId, name, value, formattedValue, max, percent, icon, detalhes, texCoords, spellSchool, class)
@@ -4305,7 +5170,7 @@ end
 
 	elseif (class) then
 		local color = Details.class_colors[class]
-		if (color) then
+		if (color and class ~= "UNKNOW") then
 			row.textura:SetStatusBarColor(unpack(color))
 		else
 			row.textura:SetStatusBarColor(1, 1, 1)
@@ -4318,20 +5183,20 @@ end
 		end
 	end
 
-	if (detalhes and self.detalhes and self.detalhes == spellId and info.showing == index) then
-		self:MontaDetalhes(row.show, row, info.instancia)
+	if (detalhes and self.detalhes and self.detalhes == spellId and breakdownWindowFrame.showing == index) then
+		self:MontaDetalhes(row.show, row, breakdownWindowFrame.instancia)
 	end
 end
 
 --lock into a line after clicking on it
---[[exported]] function Details:FocusLock(row, spellId)
-	if (not info.mostrando_mouse_over) then
+--[[exported]] function Details:FocusLock(row, spellId) --will be deprecated
+	if (not breakdownWindowFrame.mostrando_mouse_over) then
 		if (spellId == self.detalhes) then --tabela [1] = spellid = spellid que esta na caixa da direita
 			if (not row.on_focus) then --se a barra n�o tiver no foco
 				row.textura:SetStatusBarColor(129/255, 125/255, 69/255, 1)
 				row.on_focus = true
-				if (not info.mostrando) then
-					info.mostrando = row
+				if (not breakdownWindowFrame.mostrando) then
+					breakdownWindowFrame.mostrando = row
 				end
 			end
 		else
@@ -4344,11 +5209,11 @@ end
 	end
 end
 
-local wipeSpellCache = function()
-	table.wipe(Details222.PlayerBreakdown.DamageSpellsCache)
+local wipeSpellCache = function() --deprecated
+	Details:Destroy(Details222.PlayerBreakdown.DamageSpellsCache)
 end
 
-local addToSpellCache = function(unitGUID, spellName, spellTable)
+local addToSpellCache = function(unitGUID, spellName, spellTable) --deprecated
 	local unitSpellCache = Details222.PlayerBreakdown.DamageSpellsCache[unitGUID]
 	if (not unitSpellCache) then
 		unitSpellCache = {}
@@ -4364,7 +5229,7 @@ local addToSpellCache = function(unitGUID, spellName, spellTable)
 	table.insert(spellCache, spellTable)
 end
 
-local getSpellDetails = function(unitGUID, spellName)
+local getSpellDetails = function(unitGUID, spellName) --deprecated
 	local unitCachedSpells = Details222.PlayerBreakdown.DamageSpellsCache[unitGUID]
 	local spellsTableForSpellName = unitCachedSpells and unitCachedSpells[spellName]
 
@@ -4407,135 +5272,262 @@ local getSpellDetails = function(unitGUID, spellName)
 	end
 end
 
+
+--[=[
+	current: passando todas as spells para o breakdown, até mesmo as spells que não tem merge é enviado a spell total e a a spellTable logo em seguida
+	isso forma uma array com o dobro do tamanho e spells duplicadas
+
+	passar as spells repetidas em uma segunda array?
+
+	não passar nada e deixar o sistema aprender sozinho, como o sistema vai saber que precisa por uma arrow na linha? (para expandi-la)
+
+
+--]=]
+
 ------ Damage Done & Dps
-function atributo_damage:MontaInfoDamageDone()
+function damageClass:MontaInfoDamageDone() --I guess this fills the list of spells in the topleft scrollBar in the summary tab
+	--the goal of this function is to build a list of spells the actor used and send the data to Details! which will delivery to the summary tab actived
+	--so the script only need to build the list of spells and send it to Details!
+	---@type actor
 	local actorObject = self
-
-	local allLines = info.barras1
-	local instance = info.instancia
-
-	--damage rank
-	local combatObject = instance:GetShowingCombat()
+	---@type instance
+	local instance = breakdownWindowFrame.instancia
+	---@type combat
+	local combatObject = instance:GetCombat()
+	---@type number
 	local diff = combatObject:GetDifficulty()
+	---@type string
+	local playerName = actorObject:Name()
+
 	local attribute, subAttribute = instance:GetDisplay()
 
+	--guild ranking on a boss
 	--check if is a raid encounter and if is heroic or mythic
-	if (diff and (diff == 15 or diff == 16)) then
-		local db = Details.OpenStorage()
-		if (db) then
-			local bestRank, encounterTable = Details.storage:GetBestFromPlayer (diff, combatObject:GetBossInfo().id, "damage", self.nome, true)
-			if (bestRank) then
-				--discover which are the player position in the guild rank
-				local playerTable, onEncounter, rankPosition = Details.storage:GetPlayerGuildRank (diff, combatObject:GetBossInfo().id, "damage", self.nome, true)
-				local text1 = self.nome .. " Guild Rank on " .. (combatObject:GetBossInfo().name or "") .. ": |cFFFFFF00" .. (rankPosition or "x") .. "|r Best Dps: |cFFFFFF00" .. Details:ToK2((bestRank[1] or 0) / encounterTable.elapsed) .. "|r (" .. encounterTable.date:gsub(".*%s", "") .. ")"
-				info:SetStatusbarText (text1, 10, "gray")
+	do
+		if (diff and (diff == 15 or diff == 16)) then
+			local db = Details.OpenStorage()
+			if (db) then
+				local bestRank, encounterTable = Details.storage:GetBestFromPlayer(diff, combatObject:GetBossInfo().id, "damage", playerName, true)
+				if (bestRank) then
+					--discover which are the player position in the guild rank
+					local playerTable, onEncounter, rankPosition = Details.storage:GetPlayerGuildRank (diff, combatObject:GetBossInfo().id, "damage", playerName, true)
+					local text1 = playerName .. " Guild Rank on " .. (combatObject:GetBossInfo().name or "") .. ": |cFFFFFF00" .. (rankPosition or "x") .. "|r Best Dps: |cFFFFFF00" .. Details:ToK2((bestRank[1] or 0) / encounterTable.elapsed) .. "|r (" .. encounterTable.date:gsub(".*%s", "") .. ")"
+					breakdownWindowFrame:SetStatusbarText (text1, 10, "gray")
+				else
+					breakdownWindowFrame:SetStatusbarText()
+				end
 			else
-				info:SetStatusbarText()
+				breakdownWindowFrame:SetStatusbarText()
 			end
 		else
-			info:SetStatusbarText()
+			breakdownWindowFrame:SetStatusbarText()
 		end
-	else
-		info:SetStatusbarText()
 	end
 
+	---@type breakdownspelldatalist
+	local breakdownSpellDataList = {}
+
+	---@type number
 	local totalDamageWithoutPet = actorObject.total_without_pet
-	local actorTotalDamage = actorObject.total
-
-	local actorSpellsSorted = {}
+	---@type number
+	local actorTotal = actorObject.total
+	---@type table<number, spelltable>
 	local actorSpells = actorObject:GetSpellList()
-
-	local bShouldMergePlayerAbilities = Details.merge_player_abilities
-	local bShouldMergePetAbilities = Details.merge_pet_abilities
 
 	wipeSpellCache()
 
-	--get time type
+	--get time
 	local actorCombatTime
-	if (Details.time_type == 1 or not self.grupo) then
-		actorCombatTime = self:Tempo()
-	elseif (Details.time_type == 2) then
-		actorCombatTime = info.instancia.showing:GetCombatTime()
+	if (Details.time_type == 1 or not actorObject.grupo) then
+		actorCombatTime = actorObject:Tempo()
+	elseif (Details.time_type == 2 or Details.use_realtimedps) then
+		actorCombatTime = breakdownWindowFrame.instancia.showing:GetCombatTime()
 	end
 
+	--actor spells
+	---@type table<string, number>
+	local alreadyAdded = {}
+
+	local bShouldMergePlayerSpells = Details.breakdown_spell_tab.nest_players_spells_with_same_name
+
+	---@type number, spelltable
 	for spellId, spellTable in pairs(actorSpells) do
-		local spellName, _, spellIcon = _GetSpellInfo(spellId)
+		spellTable.ChartData = nil --~ChartData
+
+		---@type string
+		local spellName = _GetSpellInfo(spellId)
+
 		if (spellName) then
-			local spellTotal = spellTable.total
-			local spellPercent = spellTable.total / actorTotalDamage * 100
-			local nameString = spellName
+			---@type number in which index the spell with the same name was stored
+			local index = alreadyAdded[spellName]
+			if (index and bShouldMergePlayerSpells) then
+				---@type spelltableadv
+				local bkSpellData = breakdownSpellDataList[index]
 
-			--problem: will show the first ability found when hovering over the spell
-			if (bShouldMergePlayerAbilities) then
-				local bAlreadyAdded = false
-				for i = 1, #actorSpellsSorted do
-					local thisSpell = actorSpellsSorted[i]
-					if (thisSpell[4] == nameString) then
-						bAlreadyAdded = true
-						thisSpell[2] = thisSpell[2] + spellTotal
-					end
-				end
+				bkSpellData.spellTables[#bkSpellData.spellTables+1] = spellTable
 
-				if (not bAlreadyAdded) then
-					tinsert(actorSpellsSorted, {spellId, spellTotal, spellPercent, nameString, spellIcon, nil, spellTable.spellschool})
-				end
-
-				addToSpellCache(actorObject:GetGUID(), spellName, spellTable)
+				---@type bknesteddata
+				local nestedData = {spellId = spellId, spellTable = spellTable, actorName = "", value = 0}
+				bkSpellData.nestedData[#bkSpellData.nestedData+1] = nestedData
+				bkSpellData.bCanExpand = true
 			else
-				tinsert(actorSpellsSorted, {spellId, spellTotal, spellPercent, nameString, spellIcon, nil, spellTable.spellschool})
+				---@type spelltableadv
+				local bkSpellData = {
+					id = spellId,
+					spellschool = spellTable.spellschool,
+					bIsExpanded = Details222.BreakdownWindow.IsSpellExpanded(spellId),
+					bCanExpand = false,
+
+					spellTables = {spellTable},
+					nestedData = {{spellId = spellId, spellTable = spellTable, actorName = "", value = 0}},
+				}
+
+				detailsFramework:Mixin(bkSpellData, Details.SpellTableMixin)
+				breakdownSpellDataList[#breakdownSpellDataList+1] = bkSpellData
+				alreadyAdded[spellName] = #breakdownSpellDataList
 			end
 		end
 	end
 
-	--show damage percentille within item level bracket
+	--pets spells
+	local bShouldMergeSpellsWithThePet = Details.breakdown_spell_tab.nest_pet_spells_by_caster
+	local bShouldMergePetSpells = Details.breakdown_spell_tab.nest_pet_spells_by_name
 
-	--add pets
-	local actorPets = self.pets
-	--local class_color = RAID_CLASS_COLORS [self.classe] and RAID_CLASS_COLORS [self.classe].colorStr
-	local classColor = "FFCCBBBB"
-	--local class_color = "FFDDDD44"
-
+	local actorPets = actorObject:GetPets()
 	for _, petName in ipairs(actorPets) do
+		---@type actor
 		local petActor = combatObject(DETAILS_ATTRIBUTE_DAMAGE, petName)
-		if (petActor) then
-			local spells = petActor:GetSpellList()
-			for spellId, spellTable in pairs(spells) do --da foreach em cada spellid do container
-				local spellName, _, spellIcon = _GetSpellInfo(spellId)
-				--tinsert(ActorSkillsSortTable, {_spellid, _skill.total, _skill.total/ActorTotalDamage*100, nome .. " |TInterface\\AddOns\\Details\\images\\classes_small_alpha:12:12:0:0:128:128:33:64:96:128|t|c" .. class_color .. PetName:gsub((" <.*"), "") .. "|r", icone, PetActor, _skill.spellschool})
-				if (spellName) then
-					local spellTotal = spellTable.total
-					local spellPercent = spellTable.total / actorTotalDamage * 100
-					local nameString = spellName .. " (|c" .. classColor .. petName:gsub((" <.*"), "") .. "|r)"
+		if (petActor) then --PET
+			--get the amount of spells the pet used, if the pet used only one there`s no reason to nest one spell with the pet
+			local petSpellContainer = petActor:GetSpellContainer("spell")
 
-					if (bShouldMergePetAbilities) then
-						local bAlreadyAdded = false
-						for i = 1, #actorSpellsSorted do
-							local thisPetSpellTable = actorSpellsSorted[i]
-							if (thisPetSpellTable[1] == spellId) then
-								bAlreadyAdded = true
-								thisPetSpellTable[2] = thisPetSpellTable[2] + spellTotal
-							end
+			if (bShouldMergeSpellsWithThePet and petSpellContainer:HasTwoOrMoreSpells()) then
+				---@type spelltableadv
+				local bkSpellData = {
+					bIsActorHeader = true, --tag this spelltable as an actor header, when the actor is the header it will nest the spells use by this actor
+					actorName = petName,
+					npcId = petActor.aID,
+					id = 0,
+					spellschool = 0,
+					bIsExpanded = Details222.BreakdownWindow.IsSpellExpanded(petName),
+					spellTables = {}, --populated below with the spells the pet used
+					nestedData = {}, --there's none data here in the main bar as the first bar is the pet name
+					bCanExpand = true,
+					actorIcon = [[Interface\AddOns\Details\images\pets\pet_icon_1]],
+				}
+				detailsFramework:Mixin(bkSpellData, Details.SpellTableMixin)
+
+				--output
+				breakdownSpellDataList[#breakdownSpellDataList+1] = bkSpellData
+
+				--fill here the spellTables using the actor abilities
+				--all these spells belong to the current actor in the loop
+				for spellId, spellTable in petSpellContainer:ListSpells() do
+					local spellName, _, spellIcon = GetSpellInfo(spellId)
+					if (spellName) then
+						bkSpellData.spellTables[#bkSpellData.spellTables+1] = spellTable
+						---@type bknesteddata
+						local nestedData = {spellId = spellId, spellTable = spellTable, actorName = petName, value = 0, bIsActorHeader = true} --value to be defined
+						bkSpellData.nestedData[#bkSpellData.nestedData+1] = nestedData
+					end
+				end
+			else
+				local spells = petActor:GetSpellList()
+				--all these spells belong to the current pet in the loop
+				for spellId, spellTable in pairs(spells) do
+					---@cast spellId number
+					---@cast spellTable spelltable
+
+					spellTable.ChartData = nil
+					--PET
+					---@type string
+					local spellName = _GetSpellInfo(spellId)
+					if (spellName) then
+						---@type number in which index the spell with the same name was stored
+						local index = alreadyAdded[spellName]
+						if (index and bShouldMergePetSpells) then --PET
+							---@type spelltableadv
+							local bkSpellData = breakdownSpellDataList[index]
+
+							bkSpellData.spellTables[#bkSpellData.spellTables+1] = spellTable
+
+							---@type bknesteddata
+							local nestedData = {spellId = spellId, spellTable = spellTable, actorName = petName, value = 0}
+							bkSpellData.nestedData[#bkSpellData.nestedData+1] = nestedData
+							bkSpellData.bCanExpand = true
+						else --PET
+							---@type spelltableadv
+							local bkSpellData = {
+								id = spellId,
+								actorName = petName,
+								npcId = petActor.aID,
+								spellschool = spellTable.spellschool,
+								bIsExpanded = Details222.BreakdownWindow.IsSpellExpanded(spellId),
+								bCanExpand = false,
+
+								spellTables = {spellTable},
+								nestedData = {{spellId = spellId, spellTable = spellTable, actorName = petName, value = 0}},
+							}
+
+							detailsFramework:Mixin(bkSpellData, Details.SpellTableMixin)
+							breakdownSpellDataList[#breakdownSpellDataList+1] = bkSpellData
+							alreadyAdded[spellName] = #breakdownSpellDataList
 						end
-
-						if (not bAlreadyAdded) then
-							tinsert(actorSpellsSorted, {spellId, spellTotal, spellPercent, nameString, spellIcon, petActor, spellTable.spellschool})
-						end
-
-						addToSpellCache(actorObject:GetGUID(), spellName, spellTable) --all pet spells are added to later be combined and shown in the spell details
-					else
-						tinsert(actorSpellsSorted, {spellId, spellTotal, spellPercent, nameString, spellIcon, petActor, spellTable.spellschool})
 					end
 				end
 			end
 		end
 	end
 
-	_table_sort(actorSpellsSorted, Details.Sort2)
+	--copy the keys from the spelltable and add them to the spelltableadv
+	--repeated spells will be summed
+	for i = 1, #breakdownSpellDataList do
+		---@type spelltableadv
+		local bkSpellData = breakdownSpellDataList[i]
+		Details.SpellTableMixin.SumSpellTables(bkSpellData.spellTables, bkSpellData)
+		--Details:Destroy(bkSpellData, "spellTables") --temporary fix for BuildSpellTargetFromBreakdownSpellData, that function need to use bkSpellData.nestedData
+	end
 
-	gump:JI_AtualizaContainerBarras (#actorSpellsSorted + 1)
+	breakdownSpellDataList.totalValue = actorTotal
+	breakdownSpellDataList.combatTime = actorCombatTime
 
-	local max_ = actorSpellsSorted[1] and actorSpellsSorted[1][2] or 0 --dano que a primeiro magia vez
+	Details:Destroy(alreadyAdded)
 
+	--send to the breakdown window
+	Details222.BreakdownWindow.SendSpellData(breakdownSpellDataList, actorObject, combatObject, instance)
+
+	--targets
+
+	---an array of breakdowntargettable
+	---@type breakdowntargettablelist
+	local targetList = {}
+
+	local targetTotalValue = 0
+
+	local targetsTable = self:GetTargets()
+	for targetName, amount in pairs(targetsTable) do
+		---@class breakdowntargettable
+		local bkTargetData = {
+			name = targetName,
+			total = amount,
+			overheal = 0,
+		}
+		targetTotalValue = targetTotalValue + amount
+		tinsert(targetList, bkTargetData)
+	end
+
+	targetList.totalValue = targetTotalValue
+	targetList.combatTime = actorCombatTime
+
+	Details222.BreakdownWindow.SendTargetData(targetList, actorObject, combatObject, instance)
+
+	if 1 then return end
+
+	--to be deprecated and removed:
+
+	--gump:JI_AtualizaContainerBarras (#actorSpellsSorted + 1)
+
+	local max_ = breakdownSpellDataList[1] and breakdownSpellDataList[1][2] or 0 --dano que a primeiro magia vez
 	local barra
 
 	--aura bar
@@ -4549,7 +5541,7 @@ function atributo_damage:MontaInfoDamageDone()
 	end
 
 	--spell bars
-	for index, tabela in ipairs(actorSpellsSorted) do
+	for index, tabela in ipairs(breakdownSpellDataList) do
 
 		--index = index + 1 --with the aura bar
 		index = index
@@ -4562,7 +5554,7 @@ function atributo_damage:MontaInfoDamageDone()
 
 		local name = tabela[4]
 
-		if (info.sub_atributo == 2) then
+		if (breakdownWindowFrame.sub_atributo == 2) then
 			local formated_value = SelectedToKFunction(_, _math_floor(tabela[2]/actorCombatTime))
 			self:UpdadeInfoBar(barra, index, tabela[1], name, tabela[2], formated_value, max_, tabela[3], tabela[5], true, nil, tabela [7])
 		else
@@ -4579,7 +5571,7 @@ function atributo_damage:MontaInfoDamageDone()
 		local damageTakenFrom = self.damage_from
 		local combatObject = instance:GetShowingCombat()
 		local damageContainer = combatObject:GetContainer(DETAILS_ATTRIBUTE_DAMAGE)
-		local barras = info.barras2
+		local barras = breakdownWindowFrame.barras2
 		local enemyTable = {}
 		local targetName = self:Name()
 
@@ -4685,7 +5677,7 @@ function atributo_damage:MontaInfoDamageDone()
 
 		local barra
 		for index, targetTable in ipairs(allActorTargets) do
-			barra = info.barras2[index]
+			barra = breakdownWindowFrame.barras2[index]
 
 			if (not barra) then
 				barra = gump:CriaNovaBarraInfo2(instance, index)
@@ -4703,7 +5695,7 @@ function atributo_damage:MontaInfoDamageDone()
 
 			if (targetActorObject) then
 				local npcId = DetailsFramework:GetNpcIdFromGuid(targetActorObject:GetGUID())
-				local portraitTexture = Details222.Textures.GetPortraitTextureForNpcID(npcId)
+				local portraitTexture -- = Details222.Textures.GetPortraitTextureForNpcID(npcId) disabled
 				if (portraitTexture) then
 					Details222.Textures.FormatPortraitAsTexture(portraitTexture, barra.icone)
 				else
@@ -4720,7 +5712,7 @@ function atributo_damage:MontaInfoDamageDone()
 
 			barra.lineText1:SetText(index .. ". " .. Details:GetOnlyName(targetName))
 
-			if (info.sub_atributo == 2) then
+			if (breakdownWindowFrame.sub_atributo == 2) then
 				barra.lineText4:SetText(Details:comma_value ( _math_floor(targetTable[2]/actorCombatTime)) .. " (" .. format("%.1f", targetTable[3]) .. "%)")
 			else
 				barra.lineText4:SetText(SelectedToKFunction(_, targetTable[2]) .." (" .. format("%.1f", targetTable[3]) .. "%)")
@@ -4728,12 +5720,9 @@ function atributo_damage:MontaInfoDamageDone()
 
 			if (barra.mouse_over) then --atualizar o tooltip
 				if (barra.isAlvo) then
-					--GameTooltip:Hide()
-					--GameTooltip:SetOwner(barra, "ANCHOR_TOPRIGHT")
 					if (not barra.minha_tabela:MontaTooltipAlvos (barra, index, instance)) then
 						return
 					end
-					--GameTooltip:Show()
 				end
 			end
 
@@ -4749,16 +5738,12 @@ end
 
 
 ------ Detalhe Info Friendly Fire
-function atributo_damage:MontaDetalhesFriendlyFire (nome, barra)
+function damageClass:MontaDetalhesFriendlyFire (nome, barra)
 
-	for _, barra in ipairs(info.barras3) do
-		barra:Hide()
-	end
+	local barras = breakdownWindowFrame.barras3
+	local instancia = breakdownWindowFrame.instancia
 
-	local barras = info.barras3
-	local instancia = info.instancia
-
-	local tabela_do_combate = info.instancia.showing
+	local tabela_do_combate = breakdownWindowFrame.instancia.showing
 	local showing = tabela_do_combate [class_type] --o que esta sendo mostrado -> [1] - dano [2] - cura --pega o container com ._NameIndexTable ._ActorTable
 
 	local friendlyfire = self.friendlyfire
@@ -4779,15 +5764,18 @@ function atributo_damage:MontaDetalhesFriendlyFire (nome, barra)
 	_table_sort(minhas_magias, Details.Sort2)
 
 	local max_ = minhas_magias[1] and minhas_magias[1][2] or 0 --dano que a primeiro magia vez
-
+	local lastIndex = 1
 	local barra
 	for index, tabela in ipairs(minhas_magias) do
+		lastIndex = index
 		barra = barras [index]
 
 		if (not barra) then --se a barra n�o existir, criar ela ent�o
 			barra = gump:CriaNovaBarraInfo3 (instancia, index)
 			barra.textura:SetStatusBarColor(1, 1, 1, 1) --isso aqui � a parte da sele��o e descele��o
 		end
+
+		barra.show = tabela[1]
 
 		if (index == 1) then
 			barra.textura:SetValue(100)
@@ -4808,18 +5796,18 @@ function atributo_damage:MontaDetalhesFriendlyFire (nome, barra)
 		end
 	end
 
+	for i = lastIndex+1, #barras do
+		barras[i]:Hide()
+	end
+
 end
 
 -- detalhes info enemies
-function atributo_damage:MontaDetalhesEnemy (spellid, barra)
+function damageClass:MontaDetalhesEnemy (spellid, barra)
 
-	for _, barra in ipairs(info.barras3) do
-		barra:Hide()
-	end
-
-	local container = info.instancia.showing[1]
-	local barras = info.barras3
-	local instancia = info.instancia
+	local container = breakdownWindowFrame.instancia.showing[1]
+	local barras = breakdownWindowFrame.barras3
+	local instancia = breakdownWindowFrame.instancia
 
 	local other_actor = barra.other_actor
 	if (other_actor) then
@@ -4841,7 +5829,7 @@ function atributo_damage:MontaDetalhesEnemy (spellid, barra)
 
 	for target_name, amount in pairs(targets) do
 		local classe
-		local this_actor = info.instancia.showing (1, target_name)
+		local this_actor = breakdownWindowFrame.instancia.showing (1, target_name)
 		if (this_actor) then
 			classe = this_actor.classe or "UNKNOW"
 		else
@@ -4855,14 +5843,18 @@ function atributo_damage:MontaDetalhesEnemy (spellid, barra)
 
 	local max_ = target_pool [1] and target_pool [1][2] or 0
 
+	local lastIndex = 1
 	local barra
 	for index, tabela in ipairs(target_pool) do
+		lastIndex = index
 		barra = barras [index]
 
 		if (not barra) then --se a barra n�o existir, criar ela ent�o
 			barra = gump:CriaNovaBarraInfo3 (instancia, index)
 			barra.textura:SetStatusBarColor(1, 1, 1, 1) --isso aqui � a parte da sele��o e descele��o
 		end
+
+		barra.show = tabela[1]
 
 		if (index == 1) then
 			barra.textura:SetValue(100)
@@ -4901,19 +5893,20 @@ function atributo_damage:MontaDetalhesEnemy (spellid, barra)
 		end
 	end
 
+	for i = lastIndex+1, #barras do
+		barras[i]:Hide()
+	end
+
+
 end
 
 ------ Detalhe Info Damage Taken
-function atributo_damage:MontaDetalhesDamageTaken (nome, barra)
+function damageClass:MontaDetalhesDamageTaken (nome, barra)
 
-	for _, barra in ipairs(info.barras3) do
-		barra:Hide()
-	end
+	local barras = breakdownWindowFrame.barras3
+	local instancia = breakdownWindowFrame.instancia
 
-	local barras = info.barras3
-	local instancia = info.instancia
-
-	local tabela_do_combate = info.instancia.showing
+	local tabela_do_combate = breakdownWindowFrame.instancia.showing
 	local showing = tabela_do_combate [class_type] --o que esta sendo mostrado -> [1] - dano [2] - cura --pega o container com ._NameIndexTable ._ActorTable
 
 	local este_agressor = showing._ActorTable[showing._NameIndexTable[nome]]
@@ -4924,7 +5917,7 @@ function atributo_damage:MontaDetalhesDamageTaken (nome, barra)
 
 	local conteudo = este_agressor.spells._ActorTable --pairs[] com os IDs das magias
 
-	local actor = info.jogador.nome
+	local actor = breakdownWindowFrame.jogador.nome
 
 	local total = este_agressor.targets [actor] or 0
 
@@ -4945,14 +5938,18 @@ function atributo_damage:MontaDetalhesDamageTaken (nome, barra)
 
 	local max_ = minhas_magias[1] and minhas_magias[1][2] or 0 --dano que a primeiro magia vez
 
+	local lastIndex = 1
 	local barra
 	for index, tabela in ipairs(minhas_magias) do
+		lastIndex = index
 		barra = barras [index]
 
 		if (not barra) then --se a barra n�o existir, criar ela ent�o
 			barra = gump:CriaNovaBarraInfo3 (instancia, index)
 			barra.textura:SetStatusBarColor(1, 1, 1, 1) --isso aqui � a parte da sele��o e descele��o
 		end
+
+		barra.show = tabela[1]
 
 		if (index == 1) then
 			barra.textura:SetValue(100)
@@ -4973,6 +5970,10 @@ function atributo_damage:MontaDetalhesDamageTaken (nome, barra)
 		if (index == 15) then
 			break
 		end
+	end
+
+	for i = lastIndex+1, #barras do
+		barras[i]:Hide()
 	end
 
 end
@@ -4999,7 +6000,7 @@ end
 
 local MontaDetalhesBuffProcs = function(actor, row, instance)
 
-	instance = instance or info.instancia
+	instance = instance or breakdownWindowFrame.instancia
 
 	local spec = actor.spec
 	if (spec) then
@@ -5037,9 +6038,257 @@ local MontaDetalhesBuffProcs = function(actor, row, instance)
 	end
 end
 
+---called from the spell breakdown when a spellbar is hovered over
+---@param spellBar breakdownspellbar
+---@param spellBlockContainer breakdownspellblockframe
+---@param blockIndex number
+---@param summaryBlock breakdownspellblock
+---@param spellId number
+---@param combatTime number
+---@param actorName string
+---@param spellTable spelltableadv
+---@param trinketData trinketdata
+---@param combatObject combat
+function damageClass:BuildSpellDetails(spellBar, spellBlockContainer, blockIndex, summaryBlock, spellId, combatTime, actorName, spellTable, trinketData, combatObject)
+	---@type number
+	local totalHits = spellTable.counter
+
+	--damage section showing damage done sub section
+	blockIndex = blockIndex + 1
+
+	do --update the texts in the summary block
+		local blockLine1, blockLine2, blockLine3 = summaryBlock:GetLines()
+
+		local totalCasts = spellBar.amountCasts > 0 and spellBar.amountCasts or "(?)"
+		blockLine1.leftText:SetText(Loc ["STRING_CAST"] .. ": " .. totalCasts) --total amount of casts
+
+		local trinketProcs = combatObject:GetTrinketProcsForPlayer(actorName)
+
+		if (trinketData[spellId] and trinketProcs) then
+			local trinketProcData = trinketProcs[actorName]
+			if (trinketProcData) then
+				local trinketProc = trinketProcData[spellId]
+				if (trinketProc) then
+					blockLine1.leftText:SetText("Procs: " .. trinketProc.total)
+				end
+			end
+
+		elseif (Details.GetItemSpellInfo(spellId)) then
+			blockLine1.leftText:SetText("Uses: " .. totalCasts)
+		end
+
+		blockLine1.rightText:SetText(Loc ["STRING_HITS"]..": " .. totalHits) --hits and uptime
+
+		blockLine2.leftText:SetText(Loc ["STRING_DAMAGE"]..": " .. Details:Format(spellTable.total)) --total damage
+		blockLine2.rightText:SetText(Details:GetSpellSchoolFormatedName(spellTable.spellschool)) --spell school
+
+		blockLine3.leftText:SetText(Loc ["STRING_AVERAGE"] .. ": " .. Details:Format(spellBar.average)) --average damage
+		if (spellBar.perSecond and spellBar.perSecond > 0) then
+			blockLine3.rightText:SetText(Loc ["STRING_DPS"] .. ": " .. Details:CommaValue(spellBar.perSecond)) --dps
+		else
+			blockLine3.rightText:SetText(Loc ["STRING_DPS"] .. ": " .. Details:CommaValue(spellTable.total / combatTime)) --dps
+		end
+	end
+
+	local emporwerSpell = spellTable.e_total
+	if (emporwerSpell) then
+		local empowerLevelSum = spellTable.e_total --total sum of empower levels
+		local empowerAmount = spellTable.e_amt --amount of casts with empower
+		local empowerAmountPerLevel = spellTable.e_lvl --{[1] = 4; [2] = 9; [3] = 15}
+		local empowerDamagePerLevel = spellTable.e_dmg --{[1] = 54548745, [2] = 74548745}
+
+		---@type breakdownspellblock
+		local empowerBlock = spellBlockContainer:GetBlock(blockIndex)
+		blockIndex = blockIndex + 1
+
+		local level1AverageDamage = "0"
+		local level2AverageDamage = "0"
+		local level3AverageDamage = "0"
+		local level4AverageDamage = "0"
+		local level5AverageDamage = "0"
+
+		if (empowerDamagePerLevel[1]) then
+			level1AverageDamage = Details:Format(empowerDamagePerLevel[1] / empowerAmountPerLevel[1])
+		end
+		if (empowerDamagePerLevel[2]) then
+			level2AverageDamage = Details:Format(empowerDamagePerLevel[2] / empowerAmountPerLevel[2])
+		end
+		if (empowerDamagePerLevel[3]) then
+			level3AverageDamage = Details:Format(empowerDamagePerLevel[3] / empowerAmountPerLevel[3])
+		end
+		if (empowerDamagePerLevel[4]) then
+			level4AverageDamage = Details:Format(empowerDamagePerLevel[4] / empowerAmountPerLevel[4])
+		end
+		if (empowerDamagePerLevel[5]) then
+			level5AverageDamage = Details:Format(empowerDamagePerLevel[5] / empowerAmountPerLevel[5])
+		end
+
+		empowerBlock:Show()
+		empowerBlock:SetValue(100)
+
+		empowerBlock.sparkTexture:SetPoint("left", empowerBlock, "left", empowerBlock:GetWidth() + Details.breakdown_spell_tab.blockspell_spark_offset, 0)
+		empowerBlock:SetColor(0.200, 0.576, 0.498, 0.6)
+
+		local blockLine1, blockLine2, blockLine3 = empowerBlock:GetLines()
+		blockLine1.leftText:SetText("Spell Empower Average Level: " .. string.format("%.2f", empowerLevelSum / empowerAmount))
+
+		if (level1AverageDamage ~= "0") then
+			blockLine2.leftText:SetText("#1 Avg: " .. level1AverageDamage .. " (" .. (empowerAmountPerLevel[1] or 0) .. ")")
+		end
+
+		if (level2AverageDamage ~= "0") then
+			blockLine2.centerText:SetText("#2 Avg: " .. level2AverageDamage .. " (" .. (empowerAmountPerLevel[2] or 0) .. ")")
+		end
+
+		if (level3AverageDamage ~= "0") then
+			blockLine2.rightText:SetText("#3 Avg: " .. level3AverageDamage .. " (" .. (empowerAmountPerLevel[3] or 0) .. ")")
+		end
+
+		if (level4AverageDamage ~= "0") then
+			blockLine3.leftText:SetText("#4 Avg: " .. level4AverageDamage .. " (" .. (empowerAmountPerLevel[4] or 0) .. ")")
+		end
+
+		if (level5AverageDamage ~= "0") then
+			blockLine3.rightText:SetText("#5 Avg: " .. level5AverageDamage .. " (" .. (empowerAmountPerLevel[5] or 0) .. ")")
+		end
+	end
+
+	--check if there's normal hits and build the block
+	---@type number
+	local normalHitsAmt = spellTable.n_amt
+
+	if (normalHitsAmt > 0) then
+		---@type breakdownspellblock
+		local normalHitsBlock = spellBlockContainer:GetBlock(blockIndex)
+		normalHitsBlock:Show()
+		blockIndex = blockIndex + 1
+
+		local percent = normalHitsAmt / math.max(totalHits, 0.0001) * 100
+		normalHitsBlock:SetValue(percent)
+		normalHitsBlock.sparkTexture:SetPoint("left", normalHitsBlock, "left", percent / 100 * normalHitsBlock:GetWidth() + Details.breakdown_spell_tab.blockspell_spark_offset, 0)
+
+		local blockLine1, blockLine2, blockLine3 = normalHitsBlock:GetLines()
+		blockLine1.leftText:SetText(Loc ["STRING_NORMAL_HITS"])
+		blockLine1.rightText:SetText(normalHitsAmt .. " [|cFFC0C0C0" .. string.format("%.1f", normalHitsAmt / math.max(totalHits, 0.0001) * 100) .. "%|r]")
+
+		blockLine2.leftText:SetText(Loc ["STRING_MINIMUM_SHORT"] .. ": " .. Details:CommaValue(spellTable.n_min))
+		blockLine2.rightText:SetText(Loc ["STRING_MAXIMUM_SHORT"] .. ": " .. Details:CommaValue(spellTable.n_max))
+
+		local normalAverage = spellTable.n_total / math.max(normalHitsAmt, 0.0001)
+		blockLine3.leftText:SetText(Loc ["STRING_AVERAGE"] .. ": " .. Details:CommaValue(normalAverage))
+
+		local tempo = (combatTime * spellTable.n_total) / math.max(spellTable.total, 0.001)
+		local normalAveragePercent = spellBar.average / normalAverage * 100
+		local normalTempoPercent = normalAveragePercent * tempo / 100
+		blockLine3.rightText:SetText(Loc ["STRING_DPS"] .. ": " .. Details:CommaValue(spellTable.n_total / normalTempoPercent))
+	end
+
+	---@type number
+	local criticalHitsAmt = spellTable.c_amt
+	if (criticalHitsAmt > 0) then
+		---@type breakdownspellblock
+		local critHitsBlock = spellBlockContainer:GetBlock(blockIndex)
+		critHitsBlock:Show()
+		blockIndex = blockIndex + 1
+
+		local percent = Details.SpellTableMixin.GetCritPercent(spellTable)
+		critHitsBlock:SetValue(percent)
+		critHitsBlock.sparkTexture:SetPoint("left", critHitsBlock, "left", percent / 100 * critHitsBlock:GetWidth() + Details.breakdown_spell_tab.blockspell_spark_offset, 0)
+
+		local blockLine1, blockLine2, blockLine3 = critHitsBlock:GetLines()
+		blockLine1.leftText:SetText(Loc ["STRING_CRITICAL_HITS"])
+		blockLine1.rightText:SetText(criticalHitsAmt .. " [|cFFC0C0C0" .. string.format("%.1f", criticalHitsAmt / math.max(totalHits, 0.0001) * 100) .. "%|r]")
+
+		blockLine2.leftText:SetText(Loc ["STRING_MINIMUM_SHORT"] .. ": " .. Details:CommaValue(spellTable.c_min))
+		blockLine2.rightText:SetText(Loc ["STRING_MAXIMUM_SHORT"] .. ": " .. Details:CommaValue(spellTable.c_max))
+
+		local critAverage = Details.SpellTableMixin.GetCritAverage(spellTable)
+		blockLine3.leftText:SetText(Loc ["STRING_AVERAGE"] .. ": " .. Details:CommaValue(critAverage))
+
+		local tempo = (combatTime * spellTable.c_total) / math.max(spellTable.total, 0.001)
+		local critAveragePercent = spellBar.average / critAverage * 100
+		local critTempoPercent = critAveragePercent * tempo / 100
+		blockLine3.rightText:SetText(Loc ["STRING_DPS"] .. ": " .. Details:CommaValue(spellTable.c_total / critTempoPercent))
+	end
+
+	--missing hits
+	local semiDodgeAmount = spellTable.g_amt + spellTable.b_amt --glancing and blocking
+	local fullDodgeAmount = spellTable["DODGE"] or 0
+	local parryAmount = spellTable["PARRY"] or 0
+	local missedHitsAmount = spellTable["MISS"] or 0
+
+	local hitErrorsAmount = parryAmount + fullDodgeAmount + missedHitsAmount
+
+	if (semiDodgeAmount > 0 or hitErrorsAmount > 0) then
+		---@type breakdownspellblock
+		local defensesBlock = spellBlockContainer:GetBlock(blockIndex)
+		defensesBlock:Show()
+		blockIndex = blockIndex + 1
+
+		local percent = (semiDodgeAmount + hitErrorsAmount) / spellTable.counter * 100
+		defensesBlock:SetValue(percent)
+		defensesBlock.sparkTexture:SetPoint("left", defensesBlock, "left", percent / 100 * defensesBlock:GetWidth() + Details.breakdown_spell_tab.blockspell_spark_offset, 0)
+
+		local blockLine1, blockLine2, blockLine3 = defensesBlock:GetLines()
+		blockLine1.leftText:SetText(Loc ["STRING_DEFENSES"])
+		blockLine1.rightText:SetText((semiDodgeAmount + hitErrorsAmount) .. " / " .. format("%.1f", percent) .. "%")
+
+		if (missedHitsAmount > 0) then
+			blockLine2.leftText:SetText("Miss" .. ": " .. missedHitsAmount)
+		end
+		if (parryAmount > 0) then
+			blockLine2.centerText:SetText(Loc ["STRING_PARRY"] .. ": " .. parryAmount)
+		end
+		if (fullDodgeAmount > 0) then
+			blockLine2.rightText:SetText(Loc ["STRING_DODGE"] .. ": " .. fullDodgeAmount)
+		end
+		if (spellTable.b_amt > 0) then
+			blockLine3.leftText:SetText(Loc ["STRING_BLOCKED"] .. ": " .. spellTable.b_amt)
+		end
+		if (spellTable.g_amt > 0) then
+			blockLine3.rightText:SetText(Loc ["STRING_GLANCING"] .. ": " .. spellTable.g_amt)
+		end
+	end
+
+--[=[ percent
+	Loc ["STRING_GLANCING"] .. ": " .. math.floor(spellTable.g_amt / spellTable.counter * 100) .. "%"
+	Loc ["STRING_BLOCKED"] .. ": " .. math.floor(spellTable.b_amt / spellTable.counter * 100) .. "%"
+--]=]
 
 
-function atributo_damage:MontaDetalhesDamageDone (spellId, spellLine, instance)
+	if (trinketData[spellId]) then
+		---@type trinketdata
+		local trinketInfo = trinketData[spellId]
+
+		local minTime = trinketInfo.minTime
+		local maxTime = trinketInfo.maxTime
+		local average = trinketInfo.averageTime
+
+		---@type breakdownspellblock
+		local trinketBlock = spellBlockContainer:GetBlock(blockIndex)
+		trinketBlock:Show()
+		trinketBlock:SetValue(100)
+		trinketBlock.sparkTexture:SetPoint("left", trinketBlock, "left", trinketBlock:GetWidth() + Details.breakdown_spell_tab.blockspell_spark_offset, 0)
+		blockIndex = blockIndex + 1
+
+		local blockLine1, blockLine2, blockLine3 = trinketBlock:GetLines()
+		blockLine1.leftText:SetText("Trinket Info")
+
+		blockLine1.rightText:SetText("PPM: " .. string.format("%.2f", average / 60))
+		if (minTime == 9999999) then
+			blockLine2.leftText:SetText("Min Time: " .. _G["UNKNOWN"])
+		else
+			blockLine2.leftText:SetText("Min Time: " .. math.floor(minTime))
+		end
+		blockLine2.rightText:SetText("Max Time: " .. math.floor(maxTime))
+	end
+end
+
+--this build p the 6 rectangle boxes in the right side of the breakdown window summary tab
+function damageClass:MontaDetalhesDamageDone (spellId, spellLine, instance) --this should be ~deprecated with the new breakdown tab
+
+	print("MontaDetalhesDamageDone - deprecated", debugstack())
+
 	local spellTable
 	if (spellLine.other_actor) then
 		spellTable = spellLine.other_actor.spells._ActorTable [spellId]
@@ -5068,7 +6317,7 @@ function atributo_damage:MontaDetalhesDamageDone (spellId, spellLine, instance)
 		end
 	end
 
-	Details.playerDetailWindow.spell_icone:SetTexture(icone)
+	Details.BreakdownWindowFrame.spell_icone:SetTexture(icone)
 
 	local total = self.total
 
@@ -5076,8 +6325,8 @@ function atributo_damage:MontaDetalhesDamageDone (spellId, spellLine, instance)
 	if (Details.time_type == 1 or not self.grupo) then
 		meu_tempo = self:Tempo()
 
-	elseif (Details.time_type == 2) then
-		meu_tempo = info.instancia.showing:GetCombatTime()
+	elseif (Details.time_type == 2 or Details.use_realtimedps) then
+		meu_tempo = breakdownWindowFrame.instancia.showing:GetCombatTime()
 	end
 
 	local total_hits = spellTable.counter
@@ -5085,11 +6334,11 @@ function atributo_damage:MontaDetalhesDamageDone (spellId, spellLine, instance)
 	local index = 1
 	local data = data_table
 
-	table.wipe(t1)
-	table.wipe(t2)
-	table.wipe(t3)
-	table.wipe(t4)
-	table.wipe(data)
+	Details:Destroy(t1)
+	Details:Destroy(t2)
+	Details:Destroy(t3)
+	Details:Destroy(t4)
+	Details:Destroy(data)
 
 	--GERAL
 		local media = 0
@@ -5115,35 +6364,19 @@ function atributo_damage:MontaDetalhesDamageDone (spellId, spellLine, instance)
 		local hits_string = "" .. total_hits
 		local cast_string = Loc ["STRING_CAST"] .. ": "
 
-		local misc_actor = info.instancia.showing (4, self:name())
+		local misc_actor = breakdownWindowFrame.instancia.showing (4, self:name())
 		if (misc_actor) then
-
 			local uptime_spellid = spellTable.id
-			--if (uptime_spellid == 233490) then
-			--	uptime_spellid = 233496
-			--	uptime_spellid = 233490
-			--end
-
 			local debuff_uptime = misc_actor.debuff_uptime_spells and misc_actor.debuff_uptime_spells._ActorTable [uptime_spellid] and misc_actor.debuff_uptime_spells._ActorTable [uptime_spellid].uptime
 			if (debuff_uptime) then
-				hits_string = hits_string .. "  |cFFDDDD44(" .. _math_floor(debuff_uptime / info.instancia.showing:GetCombatTime() * 100) .. "% uptime)|r"
+				hits_string = hits_string .. "  |cFFDDDD44(" .. _math_floor(debuff_uptime / breakdownWindowFrame.instancia.showing:GetCombatTime() * 100) .. "% uptime)|r"
 			end
 
-			local spell_cast = misc_actor.spell_cast and misc_actor.spell_cast [spellId]
-
-			if (not spell_cast and misc_actor.spell_cast) then
-				local spellname = GetSpellInfo(spellId)
-				for casted_spellid, amount in pairs(misc_actor.spell_cast) do
-					local casted_spellname = GetSpellInfo(casted_spellid)
-					if (casted_spellname == spellname) then
-						spell_cast = amount .. " (|cFFFFFF00?|r)"
-					end
-				end
+			local amountOfCasts = breakdownWindowFrame.instancia.showing:GetSpellCastAmount(self:Name(), spellName)
+			if (amountOfCasts == 0) then
+				amountOfCasts = "(|cFFFFFF00?|r)"
 			end
-			if (not spell_cast) then
-				spell_cast = "(|cFFFFFF00?|r)"
-			end
-			cast_string = cast_string .. spell_cast
+			cast_string = cast_string .. amountOfCasts
 		end
 
 		if (spellTable.e_total) then
@@ -5162,7 +6395,7 @@ function atributo_damage:MontaDetalhesDamageDone (spellId, spellLine, instance)
 	--NORMAL
 		local normal_hits = spellTable.n_amt
 		if (normal_hits > 0) then
-			local normal_dmg = spellTable.n_dmg
+			local normal_dmg = spellTable.n_total
 			local media_normal = normal_dmg/normal_hits
 			local T = (meu_tempo*normal_dmg)/ max(spellTable.total, 0.001)
 			local P = media/media_normal*100
@@ -5185,11 +6418,11 @@ function atributo_damage:MontaDetalhesDamageDone (spellId, spellLine, instance)
 
 	--CRITICO
 		if (spellTable.c_amt > 0) then
-			local media_critico = spellTable.c_dmg/spellTable.c_amt
-			local T = (meu_tempo*spellTable.c_dmg)/spellTable.total
+			local media_critico = spellTable.c_total/spellTable.c_amt
+			local T = (meu_tempo*spellTable.c_total)/spellTable.total
 			local P = media/max(media_critico, 0.0001)*100
 			T = P*T/100
-			local crit_dps = spellTable.c_dmg/T
+			local crit_dps = spellTable.c_total/T
 			if (not crit_dps) then
 				crit_dps = 0
 			end
@@ -5296,153 +6529,155 @@ function atributo_damage:MontaDetalhesDamageDone (spellId, spellLine, instance)
 	end
 
 	--Details:BuildPlayerDetailsSpellChart()
-	--DetailsPlayerDetailSmallChart.ShowChart (Details.playerDetailWindow.grupos_detalhes [5].bg, info.instancia.showing, info.instancia.showing.cleu_events, self.nome, false, spellid, 1, 2, 3, 4, 5, 6, 7, 8, 15)
+	--DetailsPlayerDetailSmallChart.ShowChart (Details.BreakdownWindowFrame.grupos_detalhes [5].bg, info.instancia.showing, info.instancia.showing.cleu_events, self.nome, false, spellid, 1, 2, 3, 4, 5, 6, 7, 8, 15)
 
 	--spell damage chart
 	--events: 1 2 3 4 5 6 7 8 15
 	local spellTable = spellTable
 
 	local blockId = 6
-	local thatRectangle66 = Details222.BreakdownWindow.GetBlockIndex(blockId)
-	thatRectangle66 = thatRectangle66:GetFrame()
 
-	--hide all textures created
-	if (thatRectangle66.ChartTextures) then
-		for i = 1, #thatRectangle66.ChartTextures do
-			thatRectangle66.ChartTextures[i]:Hide()
-		end
-	end
+	if false then --debug the stuff for the chart damage done in the 6th spellblock
+		--GetBlockIndex doesn't exists anymore
+		local thatRectangle66 = Details222.BreakdownWindow.GetBlockIndex(blockId)
+		thatRectangle66 = thatRectangle66:GetFrame()
 
-	local chartData = Details222.TimeCapture.GetChartDataFromSpell(spellTable)
-	if (chartData and instance) then
-		local width, height = thatRectangle66:GetSize()
-		--reset which texture is the next to be used
-		thatRectangle66.nextChartTextureId = 1
-
-		local amountOfTimeStamps = 12
-
-		if (not thatRectangle66.timeStamps) then
-			thatRectangle66.timeStamps = {}
-			for i = 1, amountOfTimeStamps do
-				thatRectangle66.timeStamps[i] = thatRectangle66:CreateFontString(nil, "overlay", "GameFontNormal")
-				thatRectangle66.timeStamps[i]:SetPoint("topleft", thatRectangle66, "topleft", 2 + (i - 1) * (width / amountOfTimeStamps), -2)
-				DetailsFramework:SetFontSize(thatRectangle66.timeStamps[i], 9)
+		--hide all textures created
+		if (thatRectangle66.ChartTextures) then
+			for i = 1, #thatRectangle66.ChartTextures do
+				thatRectangle66.ChartTextures[i]:Hide()
 			end
 		end
 
-		if (not thatRectangle66.bloodLustIndicators) then
-			thatRectangle66.bloodLustIndicators = {}
-			for i = 1, 5 do
-				local thisIndicator = thatRectangle66:CreateTexture(nil, "artwork", nil, 4)
-				thisIndicator:SetColorTexture(0.0980392, 0.0980392, 0.439216)
-				thatRectangle66.bloodLustIndicators[#thatRectangle66.bloodLustIndicators+1] = thisIndicator
-			end
-		end
+		local chartData = Details222.TimeCapture.GetChartDataFromSpell(spellTable)
+		if (chartData and instance) then
+			local width, height = thatRectangle66:GetSize()
+			--reset which texture is the next to be used
+			thatRectangle66.nextChartTextureId = 1
 
-		for i = 1, #thatRectangle66.bloodLustIndicators do
-			thatRectangle66.bloodLustIndicators[i]:Hide()
-		end
+			local amountOfTimeStamps = 12
 
-		if (not thatRectangle66.ChartTextures) then
-			thatRectangle66.ChartTextures = {}
-			function thatRectangle66:GetChartTexture()
-				local thisTexture = thatRectangle66.ChartTextures[thatRectangle66.nextChartTextureId]
-				if (not thisTexture) then
-					thisTexture = thatRectangle66:CreateTexture(nil, "artwork", nil, 5)
-					thisTexture:SetColorTexture(1, 1, 1, 0.65)
-					thatRectangle66.ChartTextures[thatRectangle66.nextChartTextureId] = thisTexture
+			if (not thatRectangle66.timeStamps) then
+				thatRectangle66.timeStamps = {}
+				for i = 1, amountOfTimeStamps do
+					thatRectangle66.timeStamps[i] = thatRectangle66:CreateFontString(nil, "overlay", "GameFontNormal")
+					thatRectangle66.timeStamps[i]:SetPoint("topleft", thatRectangle66, "topleft", 2 + (i - 1) * (width / amountOfTimeStamps), -2)
+					DetailsFramework:SetFontSize(thatRectangle66.timeStamps[i], 9)
 				end
-				thatRectangle66.nextChartTextureId = thatRectangle66.nextChartTextureId + 1
-
-				return thisTexture
 			end
-		end
 
-		--elapsed combat time
-		local combatObject = instance:GetShowingCombat()
-		local combatTime = math.floor(combatObject:GetCombatTime())
-		thatRectangle66.timeStamps[1]:SetText(DetailsFramework:IntegerToTimer(0))
-		for i = 2, #thatRectangle66.timeStamps do
-			local timePerSegment = combatTime / #thatRectangle66.timeStamps
-			thatRectangle66.timeStamps[i]:SetText(DetailsFramework:IntegerToTimer(i * timePerSegment))
-		end
-		--compute the width oif each texture
-		local textureWidth = width / combatTime
-		--compute the max height of a texture can have
-		local maxValue = 0
-		local numData = 0
-
-		--need to put the data in order FIRST
-		--each damage then need to be parsed
-
-		local dataInOrder = {}
-
-		local CONST_INDEX_TIMESTAMP = 1
-		local CONST_INDEX_DAMAGEDONE = 2
-		local CONST_INDEX_EVENTDAMAGE = 3
-
-		for timeStamp, value in pairs(chartData) do
-			dataInOrder[#dataInOrder+1] = {timeStamp, value}
-			dataInOrder[#dataInOrder+1] = {timeStamp, value}
-			dataInOrder[#dataInOrder+1] = {timeStamp, value}
-			numData = numData + 1
-		end
-
-		table.sort(dataInOrder, function(t1, t2)  return t1[CONST_INDEX_TIMESTAMP] < t2[CONST_INDEX_TIMESTAMP] end)
-		local damageDoneByTime = dataInOrder
-
-		--parser the damage done
-		local currentTotalDamage = 0
-
-		for i = 1, #damageDoneByTime do
-			local damageEvent = damageDoneByTime[i]
-
-			local atTime = damageEvent[CONST_INDEX_TIMESTAMP]
-			local totalDamageUntilHere = damageEvent[CONST_INDEX_DAMAGEDONE] --raw damage
-
-			local spellDamage = totalDamageUntilHere - currentTotalDamage
-			currentTotalDamage = currentTotalDamage + spellDamage
-
-			damageEvent[CONST_INDEX_EVENTDAMAGE] = spellDamage
-
-			maxValue = math.max(spellDamage, maxValue)
-		end
-
-		--build the chart
-		for i = 1, #damageDoneByTime do
-		--for timeStamp, value in pairs(chartData) do --as it is pairs the data is scattered
-			local damageEvent = damageDoneByTime[i]
-			local timeStamp = damageEvent[CONST_INDEX_TIMESTAMP]
-			local damageDone = damageEvent[CONST_INDEX_EVENTDAMAGE]
-
-			local thisTexture = thatRectangle66:GetChartTexture()
-			thisTexture:SetWidth(textureWidth)
-
-			local texturePosition = textureWidth * timeStamp
-
-			thisTexture:SetPoint("bottomleft", thatRectangle66, "bottomleft", 1 + texturePosition, 1)
-
-			local percentFromPeak = damageDone / maxValue --normalized
-			thisTexture:SetHeight(math.min(percentFromPeak * height, height - 15))
-			thisTexture:Show()
-
-			--print("DEBUG", 7 , "Peak:", percentFromPeak, "position:", texturePosition, "damage done:", damageDone) --debug
-		end
-
-		--show bloodlust indicators, member .bloodlust is not guarantted
-		if (combatObject.bloodlust) then
-			--bloodlust not being added into the combat object, probably a bug on Parser
-			local bloodlustDuration = 40
-			for i = 1, #combatObject.bloodlust do
-				thatRectangle66.bloodLustIndicators[i]:Show()
-				thatRectangle66.bloodLustIndicators[i]:SetAlpha(0.46)
-				thatRectangle66.bloodLustIndicators[i]:SetSize(bloodlustDuration / combatTime * width, height - 2)
-				thatRectangle66.bloodLustIndicators[i]:SetPoint("bottomleft", thatRectangle66, "bottomleft", 0, 0)
+			if (not thatRectangle66.bloodLustIndicators) then
+				thatRectangle66.bloodLustIndicators = {}
+				for i = 1, 5 do
+					local thisIndicator = thatRectangle66:CreateTexture(nil, "artwork", nil, 4)
+					thisIndicator:SetColorTexture(0.0980392, 0.0980392, 0.439216)
+					thatRectangle66.bloodLustIndicators[#thatRectangle66.bloodLustIndicators+1] = thisIndicator
+				end
 			end
-		end
 
-		DetailsPlayerDetailsWindow_DetalheInfoBG_bg_end6:Hide()
-		thatRectangle66:SetShown(true)
+			for i = 1, #thatRectangle66.bloodLustIndicators do
+				thatRectangle66.bloodLustIndicators[i]:Hide()
+			end
+
+			if (not thatRectangle66.ChartTextures) then
+				thatRectangle66.ChartTextures = {}
+				function thatRectangle66:GetChartTexture()
+					local thisTexture = thatRectangle66.ChartTextures[thatRectangle66.nextChartTextureId]
+					if (not thisTexture) then
+						thisTexture = thatRectangle66:CreateTexture(nil, "artwork", nil, 5)
+						thisTexture:SetColorTexture(1, 1, 1, 0.65)
+						thatRectangle66.ChartTextures[thatRectangle66.nextChartTextureId] = thisTexture
+					end
+					thatRectangle66.nextChartTextureId = thatRectangle66.nextChartTextureId + 1
+
+					return thisTexture
+				end
+			end
+
+			--elapsed combat time
+			local combatObject = instance:GetShowingCombat()
+			local combatTime = math.floor(combatObject:GetCombatTime())
+			thatRectangle66.timeStamps[1]:SetText(DetailsFramework:IntegerToTimer(0))
+			for i = 2, #thatRectangle66.timeStamps do
+				local timePerSegment = combatTime / #thatRectangle66.timeStamps
+				thatRectangle66.timeStamps[i]:SetText(DetailsFramework:IntegerToTimer(i * timePerSegment))
+			end
+			--compute the width oif each texture
+			local textureWidth = width / combatTime
+			--compute the max height of a texture can have
+			local maxValue = 0
+			local numData = 0
+
+			--need to put the data in order FIRST
+			--each damage then need to be parsed
+
+			local dataInOrder = {}
+
+			local CONST_INDEX_TIMESTAMP = 1
+			local CONST_INDEX_DAMAGEDONE = 2
+			local CONST_INDEX_EVENTDAMAGE = 3
+
+			for timeStamp, value in pairs(chartData) do
+				dataInOrder[#dataInOrder+1] = {timeStamp, value}
+				dataInOrder[#dataInOrder+1] = {timeStamp, value}
+				dataInOrder[#dataInOrder+1] = {timeStamp, value}
+				numData = numData + 1
+			end
+
+			table.sort(dataInOrder, function(t1, t2)  return t1[CONST_INDEX_TIMESTAMP] < t2[CONST_INDEX_TIMESTAMP] end)
+			local damageDoneByTime = dataInOrder
+
+			--parser the damage done
+			local currentTotalDamage = 0
+
+			for i = 1, #damageDoneByTime do
+				local damageEvent = damageDoneByTime[i]
+
+				local atTime = damageEvent[CONST_INDEX_TIMESTAMP]
+				local totalDamageUntilHere = damageEvent[CONST_INDEX_DAMAGEDONE] --raw damage
+
+				local spellDamage = totalDamageUntilHere - currentTotalDamage
+				currentTotalDamage = currentTotalDamage + spellDamage
+
+				damageEvent[CONST_INDEX_EVENTDAMAGE] = spellDamage
+
+				maxValue = math.max(spellDamage, maxValue)
+			end
+
+			--build the chart
+			for i = 1, #damageDoneByTime do
+			--for timeStamp, value in pairs(chartData) do --as it is pairs the data is scattered
+				local damageEvent = damageDoneByTime[i]
+				local timeStamp = damageEvent[CONST_INDEX_TIMESTAMP]
+				local damageDone = damageEvent[CONST_INDEX_EVENTDAMAGE]
+
+				local thisTexture = thatRectangle66:GetChartTexture()
+				thisTexture:SetWidth(textureWidth)
+
+				local texturePosition = textureWidth * timeStamp
+
+				thisTexture:SetPoint("bottomleft", thatRectangle66, "bottomleft", 1 + texturePosition, 1)
+
+				local percentFromPeak = damageDone / maxValue --normalized
+				thisTexture:SetHeight(math.min(percentFromPeak * height, height - 15))
+				thisTexture:Show()
+			end
+
+			--show bloodlust indicators, member .bloodlust is not guarantted
+			if (combatObject.bloodlust) then
+				--bloodlust not being added into the combat object, probably a bug on Parser
+				local bloodlustDuration = 40
+				for i = 1, #combatObject.bloodlust do
+					thatRectangle66.bloodLustIndicators[i]:Show()
+					thatRectangle66.bloodLustIndicators[i]:SetAlpha(0.46)
+					thatRectangle66.bloodLustIndicators[i]:SetSize(bloodlustDuration / combatTime * width, height - 2)
+					thatRectangle66.bloodLustIndicators[i]:SetPoint("bottomleft", thatRectangle66, "bottomleft", 0, 0)
+				end
+			end
+
+			DetailsBreakdownWindow_DetalheInfoBG_bg_end6:Hide()
+			thatRectangle66:SetShown(true)
+		end
 	end
 
 	_table_sort(data, Details.Sort1)
@@ -5452,9 +6687,8 @@ function atributo_damage:MontaDetalhesDamageDone (spellId, spellLine, instance)
 	end
 
 	for i = #data+2, 5 do
-		gump:HidaDetalheInfo (i)
+		gump:HidaDetalheInfo(i)
 	end
-
 end
 
 function Details:BuildPlayerDetailsSpellChart()
@@ -5462,7 +6696,7 @@ function Details:BuildPlayerDetailsSpellChart()
 
 	if (not playerDetailSmallChart) then
 
-		playerDetailSmallChart = CreateFrame("frame", "DetailsPlayerDetailSmallChart", info,"BackdropTemplate")
+		playerDetailSmallChart = CreateFrame("frame", "DetailsPlayerDetailSmallChart", breakdownWindowFrame,"BackdropTemplate")
 		DetailsFramework:ApplyStandardBackdrop(playerDetailSmallChart)
 		playerDetailSmallChart.Lines = {}
 
@@ -5472,7 +6706,7 @@ function Details:BuildPlayerDetailsSpellChart()
 			tinsert(playerDetailSmallChart.Lines, texture)
 		end
 
-		--Details.playerDetailWindow.grupos_detalhes [index]
+		--Details.BreakdownWindowFrame.grupos_detalhes [index]
 		function playerDetailSmallChart.ShowChart (parent, combatObject, cleuData, playerName, targetName, spellId, ...)
 			local tokenIdList = {}
 			local eventList = {}
@@ -5540,9 +6774,8 @@ function Details:BuildPlayerDetailsSpellChart()
 	end
 end
 
-function atributo_damage:MontaTooltipDamageTaken (thisLine, index)
-
-	local aggressor = info.instancia.showing [1]:PegarCombatente (_, thisLine.nome_inimigo)
+function damageClass:MontaTooltipDamageTaken (thisLine, index)
+	local aggressor = breakdownWindowFrame.instancia.showing [1]:PegarCombatente (_, thisLine.nome_inimigo)
 	local container = aggressor.spells._ActorTable
 	local habilidades = {}
 
@@ -5577,7 +6810,7 @@ function atributo_damage:MontaTooltipDamageTaken (thisLine, index)
 
 end
 
-function atributo_damage:MontaTooltipAlvos (thisLine, index, instancia)
+function damageClass:MontaTooltipAlvos (thisLine, index, instancia) --~deprecated
 
 	local inimigo = thisLine.nome_inimigo
 	local habilidades = {}
@@ -5656,11 +6889,11 @@ function atributo_damage:MontaTooltipAlvos (thisLine, index, instancia)
 	local meu_tempo
 	if (Details.time_type == 1 or not self.grupo) then
 		meu_tempo = self:Tempo()
-	elseif (Details.time_type == 2) then
-		meu_tempo = info.instancia.showing:GetCombatTime()
+	elseif (Details.time_type == 2 or Details.use_realtimedps) then
+		meu_tempo = breakdownWindowFrame.instancia.showing:GetCombatTime()
 	end
 
-	local is_dps = info.instancia.sub_atributo == 2
+	local is_dps = breakdownWindowFrame.instancia.sub_atributo == 2
 
 	if (is_dps) then
 		Details:AddTooltipSpellHeaderText (Loc ["STRING_DAMAGE_DPS_IN"] .. ":", {1, 0.9, 0.0, 1}, 1, Details.tooltip_spell_icon.file, unpack(Details.tooltip_spell_icon.coords))
@@ -5698,50 +6931,56 @@ function atributo_damage:MontaTooltipAlvos (thisLine, index, instancia)
 	GameCooltip:Show()
 
 	return true
-
 end
 
---controla se o dps do jogador esta travado ou destravado
-function atributo_damage:Iniciar (iniciar)
-	if (iniciar == nil) then
-		return self.dps_started --retorna se o dps esta aberto ou fechado para este jogador
-	elseif (iniciar) then
+--controls the activity time of the actor
+function damageClass:GetOrChangeActivityStatus(activityStatus)
+	if (activityStatus == nil) then
+		--if no value passed, return the current activity status
+		return self.dps_started
+
+	elseif (activityStatus) then
 		self.dps_started = true
-		self:RegistrarNaTimeMachine() --coloca ele da timeMachine
+		Details222.TimeMachine.AddActor(self)
+
 	else
 		self.dps_started = false
-		self:DesregistrarNaTimeMachine() --retira ele da timeMachine
+		Details222.TimeMachine.RemoveActor(self)
 	end
 end
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --core functions
 
-	--limpa as tabelas tempor�rias ao resetar
-		function atributo_damage:ClearTempTables()
+	--clear cache tables when resetting data
+		function damageClass:ClearCacheTables()
 			for i = #ntable, 1, -1 do
 				ntable [i] = nil
 			end
+
 			for i = #vtable, 1, -1 do
 				vtable [i] = nil
 			end
+
 			for i = #bs_table, 1, -1 do
 				bs_table [i] = nil
 			end
 
 			if (bs_tooltip_table) then
-				wipe (bs_tooltip_table)
+				Details:Destroy(bs_tooltip_table)
 			end
+
 			if (frags_tooltip_table) then
-				wipe (frags_tooltip_table)
+				Details:Destroy(frags_tooltip_table)
 			end
-			wipe (bs_index_table)
-			wipe (tooltip_temp_table)
-			wipe (tooltip_void_zone_temp)
+
+			Details:Destroy(bs_index_table)
+			Details:Destroy(tooltip_temp_table)
+			Details:Destroy(tooltip_void_zone_temp)
 		end
 
 	--atualize a funcao de abreviacao
-		function atributo_damage:UpdateSelectedToKFunction()
+		function damageClass:UpdateSelectedToKFunction()
 			SelectedToKFunction = ToKFunctions [Details.ps_abbreviation]
 			FormatTooltipNumber = ToKFunctions [Details.tooltip.abbreviation]
 			TooltipMaximizedMethod = Details.tooltip.maximize_method
@@ -5749,255 +6988,190 @@ end
 		end
 
 	--diminui o total das tabelas do combate
-		function atributo_damage:subtract_total (combat_table)
+		function damageClass:subtract_total (combat_table)
 			combat_table.totals [class_type] = combat_table.totals [class_type] - self.total
 			if (self.grupo) then
 				combat_table.totals_grupo [class_type] = combat_table.totals_grupo [class_type] - self.total
 			end
 		end
-		function atributo_damage:add_total (combat_table)
+		function damageClass:add_total (combat_table)
 			combat_table.totals [class_type] = combat_table.totals [class_type] + self.total
 			if (self.grupo) then
 				combat_table.totals_grupo [class_type] = combat_table.totals_grupo [class_type] + self.total
 			end
 		end
 
-	--restaura a tabela de last event
-		function atributo_damage:r_last_events_table (actor)
-			if (not actor) then
-				actor = self
-			end
-			--actor.last_events_table = Details:CreateActorLastEventTable()
+	---sum the passed actor into a combat, if the combat isn't passed, it will use the overall combat
+	---the function returns the actor that was created of found in the combat passed
+	---@param actorObject actor
+	---@param bRefreshActor boolean|nil
+	---@param combatObject combat|nil
+	---@return actor
+	function damageClass:AddToCombat(actorObject, bRefreshActor, combatObject)
+		--check if there's a custom combat, if not just use the overall container
+		combatObject = combatObject or Details.tabela_overall --same as Details:GetCombat(DETAILS_SEGMENTID_OVERALL)
+
+		--check if the combatObject has an actor with the same name, if not, just create one new
+		local actorContainer = combatObject[DETAILS_ATTRIBUTE_DAMAGE] --same as combatObject:GetContainer(DETAILS_ATTRIBUTE_DAMAGE)
+		local overallActor = actorContainer._ActorTable[actorContainer._NameIndexTable[actorObject.nome]] --same as actorContainer:GetActor(actorObject:Name())
+
+		if (not overallActor) then
+			overallActor = actorContainer:GetOrCreateActor(actorObject.serial, actorObject.nome, actorObject.flag_original, true)
+			overallActor.classe = actorObject.classe
+			overallActor:SetSpecId(actorObject.spec)
+			overallActor.isTank = actorObject.isTank
+			overallActor.pvp = actorObject.pvp
+			overallActor.boss = actorObject.boss
+			overallActor.start_time = time() - 3
+			overallActor.end_time = time()
 		end
 
-	--restaura e liga o ator com a sua shadow durante a inicializa��o (startup function)
-		function atributo_damage:r_onlyrefresh_shadow (actor)
-			--criar uma shadow desse ator se ainda n�o tiver uma
-				local overall_dano = Details.tabela_overall [1]
-				local shadow = overall_dano._ActorTable [overall_dano._NameIndexTable [actor.nome]]
+		overallActor.displayName = actorObject.displayName or actorObject.nome
+		overallActor.boss_fight_component = actorObject.boss_fight_component or overallActor.boss_fight_component
+		overallActor.fight_component = actorObject.fight_component or overallActor.fight_component
+		overallActor.grupo = actorObject.grupo or overallActor.grupo
 
-				if (not shadow) then
-					shadow = overall_dano:PegarCombatente (actor.serial, actor.nome, actor.flag_original, true)
-
-					shadow.classe = actor.classe
-					shadow:SetSpecId(actor.spec)
-					shadow.grupo = actor.grupo
-					shadow.pvp = actor.pvp
-					shadow.isTank = actor.isTank
-					shadow.boss = actor.boss
-					shadow.boss_fight_component = actor.boss_fight_component
-					shadow.fight_component = actor.fight_component
-
-					shadow.start_time = time() - 3
-					shadow.end_time = time()
-				end
-
-			--restaura a meta e indexes ao ator
-			Details.refresh:r_atributo_damage (actor, shadow)
-
-			--copia o container de alvos (captura de dados)
-				for target_name, amount in pairs(actor.targets) do
-					--cria e soma o valor do total
-					if (not shadow.targets [target_name]) then
-						shadow.targets [target_name] = 0
-					end
-				end
-
-			--copia o container de habilidades (captura de dados)
-				for spellid, habilidade in pairs(actor.spells._ActorTable) do
-					--cria e soma o valor
-					local habilidade_shadow = shadow.spells:PegaHabilidade (spellid, true, nil, true)
-
-					--create the target value
-					for target_name, amount in pairs(habilidade.targets) do
-						if (not habilidade_shadow.targets [target_name]) then
-							habilidade_shadow.targets [target_name] = 0
-						end
-					end
-
-					--create the extra value
-					for spellId, amount in pairs(habilidade.extra) do
-						if (not habilidade_shadow.extra [spellId]) then
-							habilidade_shadow.extra [spellId] = 0
-						end
-					end
-
-				end
-
-			--copia o container de friendly fire (captura de dados)
-				for target_name, ff_table in pairs(actor.friendlyfire) do
-					--cria ou pega a shadow
-					local friendlyFire_shadow = shadow.friendlyfire [target_name] or shadow:CreateFFTable (target_name)
-					--some as spells
-					for spellid, amount in pairs(ff_table.spells) do
-						friendlyFire_shadow.spells [spellid] = 0
-					end
-				end
-
-			return shadow
+		--check if need to restore meta tables and indexes for this actor
+		if (bRefreshActor) then
+			--this call will reenable the metatable, __index and set the metatable on the .spells container
+			Details.refresh:r_atributo_damage(actorObject)
 		end
 
-		function atributo_damage:r_connect_shadow (actor, no_refresh, combat_object)
+		--elapsed time
+		local endTime = actorObject.end_time
+		if (not actorObject.end_time) then
+			endTime = time()
+		end
 
-			--check if there's a custom combat, if not just use the overall container
-			local host_combat = combat_object or Details.tabela_overall
+		local tempo = endTime - actorObject.start_time
+		overallActor.start_time = overallActor.start_time - tempo
 
-			--check if the host combat object has a shadow actor for this actor, if not, just create one new
-				local overall_dano = host_combat [1]
-				local shadow = overall_dano._ActorTable [overall_dano._NameIndexTable [actor.nome]]
+		--pets (add unique pet names)
+		for _, petName in ipairs(actorObject.pets) do --same as actorObject:GetPets()
+			DetailsFramework.table.addunique(overallActor.pets, petName)
+		end
 
-				if (not shadow) then
-					shadow = overall_dano:PegarCombatente (actor.serial, actor.nome, actor.flag_original, true)
+		---@cast actorObject actordamage
 
-					shadow.classe = actor.classe
-					shadow:SetSpecId(actor.spec)
-					shadow.isTank = actor.isTank
-					shadow.grupo = actor.grupo
-					shadow.pvp = actor.pvp
-					shadow.boss = actor.boss
-					shadow.boss_fight_component = actor.boss_fight_component
-					shadow.fight_component = actor.fight_component
+		--sum total damage
+		overallActor.total = overallActor.total + actorObject.total
+		overallActor.total_extra = overallActor.total_extra + actorObject.total_extra
+		overallActor.totalabsorbed = overallActor.totalabsorbed + actorObject.totalabsorbed
 
-					shadow.start_time = time() - 3
-					shadow.end_time = time()
-				end
+		--sum total damage without pet
+		overallActor.total_without_pet = overallActor.total_without_pet + actorObject.total_without_pet
 
-			shadow.displayName = actor.displayName or actor.nome
+		--sum total damage taken
+		overallActor.damage_taken = overallActor.damage_taken + actorObject.damage_taken
 
-			shadow.boss_fight_component = actor.boss_fight_component or shadow.boss_fight_component
-			shadow.fight_component = actor.fight_component or shadow.fight_component
-			shadow.grupo = actor.grupo or shadow.grupo
+		--sum friendly fire
+		overallActor.friendlyfire_total = overallActor.friendlyfire_total + actorObject.friendlyfire_total
 
-			--check if need to restore meta tables and indexes for this actor
-			if (not no_refresh) then
-				Details.refresh:r_atributo_damage (actor, shadow)
+		--sum total damage on the combatObject passed
+		combatObject.totals[1] = combatObject.totals[1] + actorObject.total
+		if (actorObject.grupo) then
+			combatObject.totals_grupo[1] = combatObject.totals_grupo[1] + actorObject.total
+		end
+
+		--copy damage taken from
+		for aggressorName, _ in pairs(actorObject.damage_from) do
+			overallActor.damage_from[aggressorName] = true
+		end
+
+		--copy targets
+		for targetName, amount in pairs(actorObject.targets) do
+			overallActor.targets[targetName] = (overallActor.targets[targetName] or 0) + amount
+		end
+
+		--copy raid targets
+		for flag, amount in pairs(actorObject.raid_targets) do
+			overallActor.raid_targets = overallActor.raid_targets or {}
+			overallActor.raid_targets[flag] = (overallActor.raid_targets[flag] or 0) + amount
+		end
+
+		---@type spellcontainer
+		local overallSpellsContainer = overallActor.spells --same as overallActor:GetSpellContainer("spell")
+
+		--copy spell table
+		for spellId, spellTable in pairs(actorObject.spells._ActorTable) do --same as overallSpellsContainer:GetRawSpellTable()
+			--var name has 'overall' but this function accepts any combat table
+			local overallSpellTable = overallSpellsContainer:GetOrCreateSpell(spellId, true)
+
+			--sum spell targets
+			for targetName, amount in pairs(spellTable.targets) do
+				overallSpellTable.targets[targetName] = (overallSpellTable.targets[targetName] or 0) + amount
 			end
 
-			--tempo decorrido (captura de dados)
-				local end_time = actor.end_time
-				if (not actor.end_time) then
-					end_time = time()
-				end
+			--refresh and add extra values
+			for extraSpellId, amount in pairs(spellTable.extra) do
+				overallSpellTable.extra[extraSpellId] = (overallSpellTable.extra[extraSpellId] or 0) + amount
+			end
 
-				local tempo = end_time - actor.start_time
-				shadow.start_time = shadow.start_time - tempo
+			overallSpellTable.spellschool = spellTable.spellschool
 
-			--pets (add unique pet names)
-				for _, petName in ipairs(actor.pets) do
-					local hasPet = false
-					for i = 1, #shadow.pets do
-						if (shadow.pets[i] == petName) then
-							hasPet = true
-							break
+			--sum all values of the spelltable which can be summed
+			for key, value in pairs(spellTable) do
+				if (type(value) == "number") then
+					if (key ~= "id" and key ~= "spellschool") then
+						if (not overallSpellTable [key]) then
+							overallSpellTable [key] = 0
+						end
+
+						if (key == "n_min" or key == "c_min") then
+							if (overallSpellTable [key] > value) then
+								overallSpellTable [key] = value
+							end
+						elseif (key == "n_max" or key == "c_max") then
+							if (overallSpellTable [key] < value) then
+								overallSpellTable [key] = value
+							end
+						else
+							overallSpellTable [key] = overallSpellTable [key] + value
 						end
 					end
 
-					if (not hasPet) then
-						shadow.pets [#shadow.pets+1] = petName
+				--empowered spells
+				elseif(key == "e_dmg" or key == "e_lvl") then
+					if (not overallSpellTable[key]) then
+						overallSpellTable[key] = {}
+					end
+					for empowermentLevel, empowermentValue in pairs(spellTable[key]) do
+						overallSpellTable[key][empowermentLevel] = empowermentValue
 					end
 				end
-
-			--total de dano (captura de dados)
-				shadow.total = shadow.total + actor.total
-				shadow.totalabsorbed = shadow.totalabsorbed + actor.totalabsorbed
-			--total de dano sem o pet (captura de dados)
-				shadow.total_without_pet = shadow.total_without_pet + actor.total_without_pet
-			--total de dano que o ator sofreu (captura de dados)
-				shadow.damage_taken = shadow.damage_taken + actor.damage_taken
-			--total do friendly fire causado
-				shadow.friendlyfire_total = shadow.friendlyfire_total + actor.friendlyfire_total
-
-			--total no combate overall (captura de dados)
-				host_combat.totals[1] = host_combat.totals[1] + actor.total
-				if (actor.grupo) then
-					host_combat.totals_grupo[1] = host_combat.totals_grupo[1] + actor.total
-				end
-
-			--copia o damage_from (captura de dados)
-				for nome, _ in pairs(actor.damage_from) do
-					shadow.damage_from [nome] = true
-				end
-
-			--copia o container de alvos (captura de dados)
-				for target_name, amount in pairs(actor.targets) do
-					shadow.targets [target_name] = (shadow.targets [target_name] or 0) + amount
-				end
-
-			--copiar o container de raid targets
-				for flag, amount in pairs(actor.raid_targets) do
-					shadow.raid_targets = shadow.raid_targets or {} --deu invalido noutro dia
-					shadow.raid_targets [flag] = (shadow.raid_targets [flag] or 0) + amount
-				end
-
-			--copia o container de habilidades (captura de dados)
-				for spellid, habilidade in pairs(actor.spells._ActorTable) do
-					--cria e soma o valor
-					local habilidade_shadow = shadow.spells:PegaHabilidade (spellid, true, nil, true)
-
-					--refresh e soma os valores dos alvos
-					for target_name, amount in pairs(habilidade.targets) do
-						habilidade_shadow.targets [target_name] = (habilidade_shadow.targets [target_name] or 0) + amount
-					end
-
-					--refresh and add extra values
-					for spellId, amount in pairs(habilidade.extra) do
-						habilidade_shadow.extra [spellId] = (habilidade_shadow.extra [spellId] or 0) + amount
-					end
-
-					--soma todos os demais valores
-					for key, value in pairs(habilidade) do
-						if (type(value) == "number") then
-							if (key ~= "id" and key ~= "spellschool") then
-								if (not habilidade_shadow [key]) then
-									habilidade_shadow [key] = 0
-								end
-
-								if (key == "n_min" or key == "c_min") then
-									if (habilidade_shadow [key] > value) then
-										habilidade_shadow [key] = value
-									end
-								elseif (key == "n_max" or key == "c_max") then
-									if (habilidade_shadow [key] < value) then
-										habilidade_shadow [key] = value
-									end
-								else
-									habilidade_shadow [key] = habilidade_shadow [key] + value
-								end
-
-							end
-						elseif(key == "e_dmg" or key == "e_lvl") then
-							if (not habilidade_shadow[key]) then
-								habilidade_shadow[key] = {}
-							end
-							for empowermentLevel, empowermentValue in pairs(habilidade[key]) do 
-								habilidade_shadow[key][empowermentLevel] = empowermentValue
-							end
-						end
-					end
-				end
-
-			--copia o container de friendly fire (captura de dados)
-				for target_name, ff_table in pairs(actor.friendlyfire) do
-					--cria ou pega a shadow
-					local friendlyFire_shadow = shadow.friendlyfire [target_name] or shadow:CreateFFTable (target_name)
-					--soma o total
-					friendlyFire_shadow.total = friendlyFire_shadow.total + ff_table.total
-					--some as spells
-					for spellid, amount in pairs(ff_table.spells) do
-						friendlyFire_shadow.spells [spellid] = (friendlyFire_shadow.spells [spellid] or 0) + amount
-					end
-				end
-
-			return shadow
+			end
 		end
 
-function atributo_damage:ColetarLixo (lastevent)
-	return Details:ColetarLixo (class_type, lastevent)
-end
+		if (actorObject.augmentedSpellsContainer) then
+			local overallAugmentedSpellsContainer = overallActor.augmentedSpellsContainer or spellContainerClass:CreateSpellContainer(Details.container_type.CONTAINER_DAMAGE_CLASS)
+			overallActor.augmentedSpellsContainer = overallAugmentedSpellsContainer
 
+			for spellId, spellTable in pairs(actorObject.augmentedSpellsContainer._ActorTable) do --same as actorObject.augmentedSpellsContainer:GetRawSpellTable()
+				local overallSpellTable = overallAugmentedSpellsContainer:GetOrCreateSpell(spellId, true)
+				overallSpellTable.total = overallSpellTable.total + spellTable.total
+				for targetName, amount in pairs(spellTable.targets) do
+					overallSpellTable.targets[targetName] = (overallSpellTable.targets[targetName] or 0) + amount
+				end
+			end
+		end
+
+		--copy the friendly fire container
+		for targetName, friendlyFireTable in pairs(actorObject.friendlyfire) do
+			--get or create the friendly fire table in the overall data
+			local friendlyFireOverall = overallActor.friendlyfire[targetName] or overallActor:CreateFFTable(targetName)
+			--sum the total
+			friendlyFireOverall.total = friendlyFireOverall.total + friendlyFireTable.total
+			--sum spells
+			for friendlyFireSpellId, amount in pairs(friendlyFireTable.spells) do
+				friendlyFireOverall.spells[friendlyFireSpellId] = (friendlyFireOverall.spells[friendlyFireSpellId] or 0) + amount
+			end
+		end
+
+		return overallActor
+	end
 
 --actor 1 is who will receive the sum from actor2
-function Details.SumDamageActors(actor1, actor2, actorContainer)
+function Details.SumDamageActors(actor1, actor2, actorContainer) --not called anywhere, can be deprecated
 	--general
 	actor1.total = actor1.total + actor2.total
 	actor1.damage_taken = actor1.damage_taken + actor2.damage_taken
@@ -6083,7 +7257,7 @@ function Details.SumDamageActors(actor1, actor2, actorContainer)
 end
 
 
-atributo_damage.__add = function(tabela1, tabela2)
+damageClass.__add = function(tabela1, tabela2)
 
 	--tempo decorrido
 		local tempo = (tabela2.end_time or time()) - tabela2.start_time
@@ -6169,7 +7343,7 @@ atributo_damage.__add = function(tabela1, tabela2)
 					if (not habilidade_tabela1[key]) then
 						habilidade_tabela1[key] = {}
 					end
-					for empowermentLevel, empowermentValue in pairs(habilidade[key]) do 
+					for empowermentLevel, empowermentValue in pairs(habilidade[key]) do
 						habilidade_tabela1[key][empowermentLevel] = habilidade_tabela1[key][empowermentValue] or 0 + empowermentValue
 					end
 				end
@@ -6192,7 +7366,7 @@ atributo_damage.__add = function(tabela1, tabela2)
 	return tabela1
 end
 
-atributo_damage.__sub = function(tabela1, tabela2)
+damageClass.__sub = function(tabela1, tabela2)
 
 	--tempo decorrido
 		local tempo = (tabela2.end_time or time()) - tabela2.start_time
@@ -6285,17 +7459,22 @@ atributo_damage.__sub = function(tabela1, tabela2)
 	return tabela1
 end
 
-function Details.refresh:r_atributo_damage (este_jogador, shadow)
-	--restaura metas do ator
-		setmetatable(este_jogador, Details.atributo_damage)
-		este_jogador.__index = Details.atributo_damage
-	--restaura as metas dos containers
-		Details.refresh:r_container_habilidades (este_jogador.spells, shadow and shadow.spells)
+function Details.refresh:r_atributo_damage(actorObject)
+	detailsFramework:Mixin(actorObject, Details222.Mixins.ActorMixin)
+	detailsFramework:Mixin(actorObject, damageClassMixin)
+
+	setmetatable(actorObject, Details.atributo_damage)
+	actorObject.__index = Details.atributo_damage
+
+	--restore metatable for the spell container
+	Details.refresh:r_container_habilidades(actorObject.spells)
+	if (actorObject.augmentedSpellsContainer) then
+		Details.refresh:r_container_habilidades(actorObject.augmentedSpellsContainer)
+	end
 end
 
 function Details.clear:c_atributo_damage (este_jogador)
 	este_jogador.__index = nil
-	este_jogador.shadow = nil
 	este_jogador.links = nil
 	este_jogador.minha_barra = nil
 

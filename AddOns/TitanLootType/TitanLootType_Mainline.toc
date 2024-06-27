@@ -1,0 +1,15 @@
+## Interface: 30400
+## Author: Titan Panel Development Team (http://www.titanpanel.org)
+## Version: 8.0.13
+## Dependencies: Titan
+## OptionalDeps: 
+## SavedVariables: 
+
+## Title: Titan Panel [|cffeda55fLootType|r] |cff00aa008.0.13|r
+## Notes: Adds group loot and instance difficulty information to Titan Panel
+## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFF泰坦面板|r |cFF69CCF0分配方式|r
+## Notes-zhCN: 泰坦面板的分配方式模块
+
+## X-Part-Of: Titan
+
+TitanLootType.lua

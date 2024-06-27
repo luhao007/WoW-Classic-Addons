@@ -67,7 +67,7 @@ local properties = {
   },
 }
 
-WeakAuras.regionPrototype.AddProperties(properties, default);
+Private.regionPrototype.AddProperties(properties, default);
 
 local function GetProperties(data)
   return properties;
@@ -94,13 +94,13 @@ local function create(parent)
   local border = CreateFrame("Frame", nil, region, "BackdropTemplate");
   region.border = border;
 
-  WeakAuras.regionPrototype.create(region);
+  Private.regionPrototype.create(region);
 
   for k, v in pairs (regionFunctions) do
     region[k] = v
   end
 
-  region.AnchorSubRegion = WeakAuras.regionPrototype.AnchorSubRegion
+  region.AnchorSubRegion = Private.regionPrototype.AnchorSubRegion
 
   -- Return complete region
   return region;
@@ -113,7 +113,7 @@ end
 
 local function CreateModel()
   local frame = CreateFrame("PlayerModel", nil, UIParent)
-  frame.SetTransformFixed = WeakAuras.IsRetail() and  Private.ModelSetTransformFixed or frame.SetTransform
+  frame.SetTransformFixed = frame.GetResizeBounds and Private.ModelSetTransformFixed or frame.SetTransform -- TODO change test to WeakAuras.IsWrathOrRetail() after 3.4.1 release
   return frame
 end
 
@@ -147,7 +147,7 @@ local function ConfigureModel(region, model, data)
     model:RegisterEvent("UNIT_MODEL_CHANGED");
 
     local unit
-    if not WeakAuras.IsRetail() then
+    if WeakAuras.IsClassicEra() then
       unit = data.model_path
     else
       unit = data.model_fileId
@@ -155,14 +155,14 @@ local function ConfigureModel(region, model, data)
 
     if (unit == "target") then
       model:RegisterEvent("PLAYER_TARGET_CHANGED");
-    elseif not WeakAuras.IsClassic() and unit == "focus" then
+    elseif not WeakAuras.IsClassicEra() and unit == "focus" then
       model:RegisterEvent("PLAYER_FOCUS_CHANGED");
     end
     model:SetScript("OnEvent", function(self, event, unitId)
       Private.StartProfileSystem("model");
       if (event ~= "UNIT_MODEL_CHANGED" or UnitIsUnit(unitId, unit)) then
         WeakAuras.SetModel(model, data.model_path, data.model_fileId, data.modelIsUnit, data.modelDisplayInfo)
-        if(data.advance and model:HasAnimation(data.sequence)) then
+        if data.advance then
           model:SetAnimation(data.sequence)
         else
           model:SetAnimation(0)
@@ -174,14 +174,14 @@ local function ConfigureModel(region, model, data)
   else
     model:UnregisterEvent("UNIT_MODEL_CHANGED");
     model:UnregisterEvent("PLAYER_TARGET_CHANGED");
-    if not WeakAuras.IsClassic() then
+    if not WeakAuras.IsClassicEra() then
       model:UnregisterEvent("PLAYER_FOCUS_CHANGED");
     end
     model:SetScript("OnEvent", nil);
   end
 
   -- Enable model animation
-  if(data.advance and model:HasAnimation(data.sequence)) then
+  if data.advance then
     model:SetAnimation(data.sequence)
   else
     model:SetAnimation(0)
@@ -200,7 +200,7 @@ local function ReleaseModel(model)
   model:Hide()
   model:UnregisterEvent("UNIT_MODEL_CHANGED");
   model:UnregisterEvent("PLAYER_TARGET_CHANGED");
-  if not WeakAuras.IsClassic() then
+  if not WeakAuras.IsClassicEra() then
     model:UnregisterEvent("PLAYER_FOCUS_CHANGED");
   end
   model:SetScript("OnEvent", nil);
@@ -210,7 +210,7 @@ end
 
 -- Modify a given region/display
 local function modify(parent, region, data)
-  WeakAuras.regionPrototype.modify(parent, region, data);
+  Private.regionPrototype.modify(parent, region, data);
   -- Localize
   local border = region.border;
 
@@ -279,27 +279,37 @@ local function modify(parent, region, data)
   end
 
   -- Rotate model
-  function region:Rotate(degrees)
-    region.rotation = degrees;
+  function region:SetAnimRotation(degrees)
+    region.animRotation = degrees
+    region:UpdateEffectiveRotation()
+  end
+
+  function region:SetRotation(degrees)
+    region.rotation = degrees
+    region:UpdateEffectiveRotation()
+  end
+
+  function region:UpdateEffectiveRotation()
+    region.effectiveRotation = region.animRotation or region.rotation
     if region.model then
       if data.api then
         region.model:SetTransformFixed(data.model_st_tx / 1000, data.model_st_ty / 1000, data.model_st_tz / 1000,
-          rad(data.model_st_rx), rad(data.model_st_ry), rad(degrees), data.model_st_us / 1000);
+          rad(data.model_st_rx), rad(data.model_st_ry), rad(region.effectiveRotation), data.model_st_us / 1000)
       else
-        region.model:SetFacing(rad(region.rotation));
+        region.model:SetFacing(rad(region.effectiveRotation))
       end
     end
   end
 
   if data.api then
-    region:Rotate(data.model_st_rz);
+    region:SetRotation(data.model_st_rz)
   else
-    region:Rotate(data.rotation);
+    region:SetRotation(data.rotation)
   end
 
   -- Get model rotation
-  function region:GetRotation()
-    return region.rotation;
+  function region:GetBaseRotation()
+    return region.rotation
   end
 
   function region:PreShow()
@@ -317,7 +327,7 @@ local function modify(parent, region, data)
     end
   end
 
-  WeakAuras.regionPrototype.modifyFinish(parent, region, data);
+  Private.regionPrototype.modifyFinish(parent, region, data);
 end
 
 -- Work around for movies and world map hiding all models
@@ -345,4 +355,4 @@ local function validate(data)
 end
 
 -- Register new region type with WeakAuras
-WeakAuras.RegisterRegionType("model", create, modify, default, GetProperties, validate);
+Private.RegisterRegionType("model", create, modify, default, GetProperties, validate);

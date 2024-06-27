@@ -4,8 +4,9 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
-local DisenchantInfo = TSM.Init("Data.DisenchantInfo")
+local TSM = select(2, ...) ---@type TSM
+local DisenchantInfo = TSM.Init("Data.DisenchantInfo") ---@class Data.DisenchantInfo
+local Environment = TSM.Include("Environment")
 local private = {}
 local DATA = nil
 
@@ -15,7 +16,7 @@ local DATA = nil
 -- Disenchant Rates Data
 -- ============================================================================
 
-if TSM.IsWowVanillaClassic() then
+if Environment.IsVanillaClassic() then
 	DATA = {
 		-- Dust
 		["i:10940"] = { -- Strange Dust
@@ -265,7 +266,7 @@ if TSM.IsWowVanillaClassic() then
 			},
 		},
 	}
-elseif TSM.IsWowWrathClassic() then
+elseif Environment.IsWrathClassic() then
 	DATA = {
 		-- Dust
 		["i:10940"] = { -- Strange Dust
@@ -643,7 +644,455 @@ elseif TSM.IsWowWrathClassic() then
 			},
 		},
 	}
-else
+elseif Environment.IsCataClassic() then
+		DATA = {
+		-- Dust
+		["i:10940"] = { -- Strange Dust
+			minLevel = 1,
+			maxLevel = 20,
+			sourceInfo = {
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 5, maxItemLevel = 15, requiredSkill = 1, matRate = 0.800, minAmount = 1, maxAmount = 2, amountOfMats = 1.200},
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 16, maxItemLevel = 20, requiredSkill = 1, matRate = 0.750, minAmount = 2, maxAmount = 3, amountOfMats = 1.850},
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 21, maxItemLevel = 25, requiredSkill = 25, matRate = 0.750, minAmount = 4, maxAmount = 6, amountOfMats = 3.750},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 5, maxItemLevel = 15, requiredSkill = 1, matRate = 0.200, minAmount = 1, maxAmount = 2, amountOfMats = 0.300},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 16, maxItemLevel = 20, requiredSkill = 1, matRate = 0.200, minAmount = 2, maxAmount = 3, amountOfMats = 0.500},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 21, maxItemLevel = 25, requiredSkill = 25, matRate = 0.150, minAmount = 4, maxAmount = 6, amountOfMats = 0.750},
+			},
+		},
+		["i:11083"] = { -- Soul Dust
+			minLevel = 21,
+			maxLevel = 30,
+			sourceInfo = {
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 26, maxItemLevel = 30, requiredSkill = 50, matRate = 0.750, minAmount = 1, maxAmount = 2, amountOfMats = 1.100},
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 31, maxItemLevel = 35, requiredSkill = 75, matRate = 0.750, minAmount = 2, maxAmount = 5, amountOfMats = 2.550},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 26, maxItemLevel = 30, requiredSkill = 50, matRate = 0.200, minAmount = 1, maxAmount = 2, amountOfMats = 0.300},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 31, maxItemLevel = 35, requiredSkill = 75, matRate = 0.200, minAmount = 2, maxAmount = 5, amountOfMats = 0.700},
+			},
+		},
+		["i:11137"] = { -- Vision Dust
+			minLevel = 31,
+			maxLevel = 40,
+			sourceInfo = {
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 36, maxItemLevel = 40, requiredSkill = 100, matRate = 0.750, minAmount = 1, maxAmount = 2, amountOfMats = 1.100},
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 41, maxItemLevel = 45, requiredSkill = 125, matRate = 0.750, minAmount = 2, maxAmount = 5, amountOfMats = 2.550},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 36, maxItemLevel = 40, requiredSkill = 100, matRate = 0.200, minAmount = 1, maxAmount = 2, amountOfMats = 0.300},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 41, maxItemLevel = 45, requiredSkill = 125, matRate = 0.200, minAmount = 2, maxAmount = 5, amountOfMats = 0.700},
+			},
+		},
+		["i:11176"] = { -- Dream Dust
+			minLevel = 41,
+			maxLevel = 50,
+			sourceInfo = {
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 46, maxItemLevel = 50, requiredSkill = 150, matRate = 0.750, minAmount = 1, maxAmount = 2, amountOfMats = 1.100},
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 51, maxItemLevel = 55, requiredSkill = 175, matRate = 0.750, minAmount = 2, maxAmount = 5, amountOfMats = 2.550},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 46, maxItemLevel = 50, requiredSkill = 150, matRate = 0.200, minAmount = 1, maxAmount = 2, amountOfMats = 0.300},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 51, maxItemLevel = 55, requiredSkill = 175, matRate = 0.220, minAmount = 2, maxAmount = 5, amountOfMats = 0.750},
+			},
+		},
+		["i:16204"] = { -- Illusion Dust
+			minLevel = 51,
+			maxLevel = 60,
+			sourceInfo = {
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 56, maxItemLevel = 60, requiredSkill = 200, matRate = 0.750, minAmount = 1, maxAmount = 2, amountOfMats = 1.100},
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 61, maxItemLevel = 65, requiredSkill = 225, matRate = 0.750, minAmount = 2, maxAmount = 5, amountOfMats = 2.550},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 56, maxItemLevel = 60, requiredSkill = 200, matRate = 0.220, minAmount = 1, maxAmount = 2, amountOfMats = 0.330},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 61, maxItemLevel = 65, requiredSkill = 225, matRate = 0.220, minAmount = 2, maxAmount = 5, amountOfMats = 0.750},
+			},
+		},
+		["i:22445"] = { -- Arcane Dust
+			minLevel = 61,
+			maxLevel = 70,
+			sourceInfo = {
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 66, maxItemLevel = 79, requiredSkill = 225, matRate = 0.750, minAmount = 1, maxAmount = 3, amountOfMats = 1.500},
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 80, maxItemLevel = 99, requiredSkill = 225, matRate = 0.750, minAmount = 2, maxAmount = 3, amountOfMats = 1.800},
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 100, maxItemLevel = 120, requiredSkill = 275, matRate = 0.750, minAmount = 2, maxAmount = 5, amountOfMats = 2.550},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 66, maxItemLevel = 79, requiredSkill = 225, matRate = 0.220, minAmount = 1, maxAmount = 3, amountOfMats = 0.440},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 80, maxItemLevel = 99, requiredSkill = 225, matRate = 0.220, minAmount = 2, maxAmount = 3, amountOfMats = 0.550},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 100, maxItemLevel = 120, requiredSkill = 275, matRate = 0.220, minAmount = 2, maxAmount = 5, amountOfMats = 0.770},
+			},
+		},
+		["i:34054"] = { -- Infinite Dust
+			minLevel = 71,
+			maxLevel = 80,
+			sourceInfo = {
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 121, maxItemLevel = 153, requiredSkill = 325, matRate = 0.750, minAmount = 2, maxAmount = 3, amountOfMats = 1.800},
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 154, maxItemLevel = 231, requiredSkill = 350, matRate = 0.750, minAmount = 4, maxAmount = 7, amountOfMats = 4.050},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 121, maxItemLevel = 153, requiredSkill = 325, matRate = 0.220, minAmount = 2, maxAmount = 3, amountOfMats = 0.550},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 154, maxItemLevel = 231, requiredSkill = 350, matRate = 0.220, minAmount = 4, maxAmount = 7, amountOfMats = 1.210},
+			},
+		},
+		["i:52555"] = { -- Hypnotic Dust
+			minLevel = 81,
+			maxLevel = 85,
+			sourceInfo = {
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 232, maxItemLevel = 277, requiredSkill = 425, matRate = 0.750, minAmount = 1, maxAmount = 2, amountOfMats = 1.125},
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 278, maxItemLevel = 294, requiredSkill = 425, matRate = 0.750, minAmount = 1, maxAmount = 3, amountOfMats = 1.350},
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 295, maxItemLevel = 305, requiredSkill = 425, matRate = 0.750, minAmount = 1, maxAmount = 4, amountOfMats = 1.600},
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 306, maxItemLevel = 312, requiredSkill = 425, matRate = 0.750, minAmount = 1, maxAmount = 5, amountOfMats = 2.050},
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 313, maxItemLevel = 999, requiredSkill = 425, matRate = 0.750, minAmount = 1, maxAmount = 6, amountOfMats = 2.400},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 232, maxItemLevel = 277, requiredSkill = 425, matRate = 0.250, minAmount = 1, maxAmount = 2, amountOfMats = 0.375},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 278, maxItemLevel = 294, requiredSkill = 425, matRate = 0.250, minAmount = 1, maxAmount = 3, amountOfMats = 0.450},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 295, maxItemLevel = 305, requiredSkill = 425, matRate = 0.250, minAmount = 1, maxAmount = 4, amountOfMats = 0.550},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 306, maxItemLevel = 312, requiredSkill = 425, matRate = 0.250, minAmount = 1, maxAmount = 5, amountOfMats = 0.770},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 313, maxItemLevel = 999, requiredSkill = 425, matRate = 0.250, minAmount = 1, maxAmount = 6, amountOfMats = 0.775},
+
+			},
+		},
+
+		-- Essences
+		["i:10938"] = { -- Lesser Magic Essence
+			minLevel = 1,
+			maxLevel = 10,
+			sourceInfo = {
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 5, maxItemLevel = 15, requiredSkill = 1, matRate = 0.200, minAmount = 1, maxAmount = 2, amountOfMats = 0.300},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 5, maxItemLevel = 15, requiredSkill = 1, matRate = 0.800, minAmount = 1, maxAmount = 2, amountOfMats = 1.200},
+			},
+		},
+		["i:10939"] = { -- Greater Magic Essence
+			minLevel = 11,
+			maxLevel = 15,
+			sourceInfo = {
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 16, maxItemLevel = 20, requiredSkill = 1, matRate = 0.200, minAmount = 1, maxAmount = 2, amountOfMats = 0.300},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 16, maxItemLevel = 20, requiredSkill = 1, matRate = 0.750, minAmount = 1, maxAmount = 2, amountOfMats = 1.100},
+			},
+		},
+		["i:10998"] = { -- Lesser Astral Essence
+			minLevel = 16,
+			maxLevel = 20,
+			sourceInfo = {
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 21, maxItemLevel = 25, requiredSkill = 25, matRate = 0.150, minAmount = 1, maxAmount = 2, amountOfMats = 0.220},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 21, maxItemLevel = 25, requiredSkill = 25, matRate = 0.750, minAmount = 1, maxAmount = 2, amountOfMats = 1.100},
+			},
+		},
+		["i:11082"] = { -- Greater Astral Essence
+			minLevel = 21,
+			maxLevel = 25,
+			sourceInfo = {
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 26, maxItemLevel = 30, requiredSkill = 50, matRate = 0.200, minAmount = 1, maxAmount = 2, amountOfMats = 0.300},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 26, maxItemLevel = 30, requiredSkill = 50, matRate = 0.750, minAmount = 1, maxAmount = 2, amountOfMats = 1.100},
+			},
+		},
+		["i:11134"] = { -- Lesser Mystic Essence
+			minLevel = 26,
+			maxLevel = 30,
+			sourceInfo = {
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 31, maxItemLevel = 35, requiredSkill = 75, matRate = 0.200, minAmount = 1, maxAmount = 2, amountOfMats = 0.300},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 31, maxItemLevel = 35, requiredSkill = 75, matRate = 0.750, minAmount = 1, maxAmount = 2, amountOfMats = 1.100},
+			},
+		},
+		["i:11135"] = { -- Greater Mystic Essence
+			minLevel = 31,
+			maxLevel = 35,
+			sourceInfo = {
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 36, maxItemLevel = 40, requiredSkill = 100, matRate = 0.200, minAmount = 1, maxAmount = 2, amountOfMats = 0.300},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 36, maxItemLevel = 40, requiredSkill = 100, matRate = 0.750, minAmount = 1, maxAmount = 2, amountOfMats = 1.100},
+			},
+		},
+		["i:11174"] = { -- Lesser Nether Essence
+			minLevel = 36,
+			maxLevel = 40,
+			sourceInfo = {
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 41, maxItemLevel = 45, requiredSkill = 125, matRate = 0.200, minAmount = 1, maxAmount = 2, amountOfMats = 0.300},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 41, maxItemLevel = 45, requiredSkill = 125, matRate = 0.750, minAmount = 1, maxAmount = 2, amountOfMats = 1.100},
+			},
+		},
+		["i:11175"] = { -- Greater Nether Essence
+			minLevel = 41,
+			maxLevel = 45,
+			sourceInfo = {
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 46, maxItemLevel = 50, requiredSkill = 150, matRate = 0.200, minAmount = 1, maxAmount = 2, amountOfMats = 0.300},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 46, maxItemLevel = 50, requiredSkill = 150, matRate = 0.750, minAmount = 1, maxAmount = 2, amountOfMats = 1.100},
+			},
+		},
+		["i:16202"] = { -- Lesser Eternal Essence
+			minLevel = 46,
+			maxLevel = 50,
+			sourceInfo = {
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 51, maxItemLevel = 55, requiredSkill = 175, matRate = 0.200, minAmount = 1, maxAmount = 2, amountOfMats = 0.300},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 51, maxItemLevel = 55, requiredSkill = 175, matRate = 0.750, minAmount = 1, maxAmount = 2, amountOfMats = 1.100},
+			},
+		},
+		["i:16203"] = { -- Greater Eternal Essence
+			minLevel = 51,
+			maxLevel = 60,
+			sourceInfo = {
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 56, maxItemLevel = 60, requiredSkill = 200, matRate = 0.200, minAmount = 1, maxAmount = 2, amountOfMats = 0.300},
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 61, maxItemLevel = 65, requiredSkill = 225, matRate = 0.200, minAmount = 2, maxAmount = 3, amountOfMats = 0.500},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 56, maxItemLevel = 60, requiredSkill = 200, matRate = 0.750, minAmount = 1, maxAmount = 2, amountOfMats = 1.100},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 61, maxItemLevel = 65, requiredSkill = 225, matRate = 0.750, minAmount = 2, maxAmount = 3, amountOfMats = 1.850},
+			},
+		},
+		["i:22447"] = { -- Lesser Planar Essence
+			minLevel = 61,
+			maxLevel = 65,
+			sourceInfo = {
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 66, maxItemLevel = 79, requiredSkill = 225, matRate = 0.220, minAmount = 1, maxAmount = 3, amountOfMats = 0.340},
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 80, maxItemLevel = 99, requiredSkill = 225, matRate = 0.220, minAmount = 2, maxAmount = 3, amountOfMats = 0.550},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 66, maxItemLevel = 79, requiredSkill = 225, matRate = 0.750, minAmount = 1, maxAmount = 3, amountOfMats = 1.175},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 80, maxItemLevel = 99, requiredSkill = 225, matRate = 0.750, minAmount = 2, maxAmount = 3, amountOfMats = 1.850},
+			},
+		},
+		["i:22446"] = { -- Greater Planar Essence
+			minLevel = 66,
+			maxLevel = 70,
+			sourceInfo = {
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 100, maxItemLevel = 120, requiredSkill = 275, matRate = 0.220, minAmount = 1, maxAmount = 2, amountOfMats = 0.330},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 100, maxItemLevel = 120, requiredSkill = 275, matRate = 0.750, minAmount = 1, maxAmount = 2, amountOfMats = 1.100},
+			},
+		},
+		["i:34056"] = { -- Lesser Cosmic Essence
+			minLevel = 71,
+			maxLevel = 75,
+			sourceInfo = {
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 121, maxItemLevel = 153, requiredSkill = 325, matRate = 0.220, minAmount = 1, maxAmount = 2, amountOfMats = 0.330},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 121, maxItemLevel = 153, requiredSkill = 325, matRate = 0.750, minAmount = 1, maxAmount = 2, amountOfMats = 1.100},
+			},
+		},
+		["i:34055"] = { -- Greater Cosmic Essence
+			minLevel = 76,
+			maxLevel = 80,
+			sourceInfo = {
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 154, maxItemLevel = 231, requiredSkill = 275, matRate = 0.220, minAmount = 1, maxAmount = 2, amountOfMats = 0.330},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 154, maxItemLevel = 231, requiredSkill = 275, matRate = 0.750, minAmount = 1, maxAmount = 2, amountOfMats = 1.100},
+			},
+		},
+		["i:52718"] = { -- Lesser Celestial Essence
+			minLevel = 81,
+			maxLevel = 85,
+			sourceInfo = {
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 232, maxItemLevel = 277, requiredSkill = 425, matRate = 0.400, minAmount = 1, maxAmount = 3, amountOfMats = 0.750},
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 278, maxItemLevel = 294, requiredSkill = 425, matRate = 0.300, minAmount = 1, maxAmount = 3, amountOfMats = 0.600},
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 295, maxItemLevel = 300, requiredSkill = 425, matRate = 0.250, minAmount = 2, maxAmount = 4, amountOfMats = 0.700},
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 301, maxItemLevel = 305, requiredSkill = 425, matRate = 0.300, minAmount = 1, maxAmount = 4, amountOfMats = 0.650},
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 306, maxItemLevel = 315, requiredSkill = 425, matRate = 0.100, minAmount = 1, maxAmount = 3, amountOfMats = 0.190},
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 316, maxItemLevel = 999, requiredSkill = 425, matRate = 0.050, minAmount = 1, maxAmount = 3, amountOfMats = 0.090},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 232, maxItemLevel = 277, requiredSkill = 425, matRate = 0.600, minAmount = 1, maxAmount = 2, amountOfMats = 0.900},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 278, maxItemLevel = 294, requiredSkill = 425, matRate = 0.700, minAmount = 1, maxAmount = 3, amountOfMats = 1.350},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 295, maxItemLevel = 300, requiredSkill = 425, matRate = 0.750, minAmount = 2, maxAmount = 4, amountOfMats = 2.250},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 301, maxItemLevel = 305, requiredSkill = 425, matRate = 0.700, minAmount = 2, maxAmount = 4, amountOfMats = 2.050},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 306, maxItemLevel = 315, requiredSkill = 425, matRate = 0.030, minAmount = 1, maxAmount = 3, amountOfMats = 0.060},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 316, maxItemLevel = 999, requiredSkill = 425, matRate = 0.020, minAmount = 1, maxAmount = 3, amountOfMats = 0.038},
+			},
+		},
+		["i:52719"] = { -- Greater Celestial Essence
+			minLevel = 81,
+			maxLevel = 85,
+			sourceInfo = {
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 306, maxItemLevel = 315, requiredSkill = 425, matRate = 0.250, minAmount = 1, maxAmount = 2, amountOfMats = 0.375},
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 316, maxItemLevel = 999, requiredSkill = 425, matRate = 0.250, minAmount = 2, maxAmount = 3, amountOfMats = 0.625},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 306, maxItemLevel = 315, requiredSkill = 425, matRate = 0.750, minAmount = 1, maxAmount = 2, amountOfMats = 1.125},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 316, maxItemLevel = 999, requiredSkill = 425, matRate = 0.750, minAmount = 2, maxAmount = 3, amountOfMats = 1.875},
+			},
+		},
+
+		-- Shards
+		["i:10978"] = { -- Small Glimmering Shard
+			minLevel = 1,
+			maxLevel = 20,
+			sourceInfo = {
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 16, maxItemLevel = 20, requiredSkill = 1, matRate = 0.050, minAmount = 1, maxAmount = 1, amountOfMats = 0.050},
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 21, maxItemLevel = 25, requiredSkill = 25, matRate = 0.100, minAmount = 1, maxAmount = 1, amountOfMats = 0.100},
+				{classId = Enum.ItemClass.Armor, quality = 3, minItemLevel = 1, maxItemLevel = 25, requiredSkill = 25, matRate = 1.000, minAmount = 1, maxAmount = 1, amountOfMats = 1.000},
+				{classId = Enum.ItemClass.Armor, quality = 4, minItemLevel = 1, maxItemLevel = 25, requiredSkill = 25, matRate = 1.000, minAmount = 1, maxAmount = 1, amountOfMats = 1.000},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 16, maxItemLevel = 20, requiredSkill = 1, matRate = 0.050, minAmount = 1, maxAmount = 1, amountOfMats = 0.050},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 21, maxItemLevel = 25, requiredSkill = 25, matRate = 0.100, minAmount = 1, maxAmount = 1, amountOfMats = 0.100},
+				{classId = Enum.ItemClass.Weapon, quality = 3, minItemLevel = 1, maxItemLevel = 25, requiredSkill = 25, matRate = 1.000, minAmount = 1, maxAmount = 1, amountOfMats = 1.000},
+				{classId = Enum.ItemClass.Weapon, quality = 4, minItemLevel = 1, maxItemLevel = 25, requiredSkill = 25, matRate = 1.000, minAmount = 1, maxAmount = 1, amountOfMats = 1.000},
+			},
+		},
+		["i:11084"] = { -- Large Glimmering Shard
+			minLevel = 21,
+			maxLevel = 25,
+			sourceInfo = {
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 26, maxItemLevel = 30, requiredSkill = 50, matRate = 0.050, minAmount = 1, maxAmount = 1, amountOfMats = 0.050},
+				{classId = Enum.ItemClass.Armor, quality = 3, minItemLevel = 26, maxItemLevel = 30, requiredSkill = 50, matRate = 1.000, minAmount = 1, maxAmount = 1, amountOfMats = 1.000},
+				{classId = Enum.ItemClass.Armor, quality = 4, minItemLevel = 26, maxItemLevel = 30, requiredSkill = 50, matRate = 1.000, minAmount = 1, maxAmount = 1, amountOfMats = 1.000},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 26, maxItemLevel = 30, requiredSkill = 50, matRate = 0.050, minAmount = 1, maxAmount = 1, amountOfMats = 0.050},
+				{classId = Enum.ItemClass.Weapon, quality = 3, minItemLevel = 26, maxItemLevel = 30, requiredSkill = 50, matRate = 1.000, minAmount = 1, maxAmount = 1, amountOfMats = 1.000},
+				{classId = Enum.ItemClass.Weapon, quality = 4, minItemLevel = 26, maxItemLevel = 30, requiredSkill = 50, matRate = 1.000, minAmount = 1, maxAmount = 1, amountOfMats = 1.000},
+			},
+		},
+		["i:11138"] = { -- Small Glowing Shard
+			minLevel = 26,
+			maxLevel = 30,
+			sourceInfo = {
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 31, maxItemLevel = 35, requiredSkill = 75, matRate = 0.050, minAmount = 1, maxAmount = 1, amountOfMats = 0.050},
+				{classId = Enum.ItemClass.Armor, quality = 3, minItemLevel = 31, maxItemLevel = 35, requiredSkill = 75, matRate = 1.000, minAmount = 1, maxAmount = 1, amountOfMats = 1.000},
+				{classId = Enum.ItemClass.Armor, quality = 4, minItemLevel = 31, maxItemLevel = 35, requiredSkill = 75, matRate = 1.000, minAmount = 1, maxAmount = 1, amountOfMats = 1.000},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 31, maxItemLevel = 35, requiredSkill = 75, matRate = 0.050, minAmount = 1, maxAmount = 1, amountOfMats = 0.050},
+				{classId = Enum.ItemClass.Weapon, quality = 3, minItemLevel = 31, maxItemLevel = 35, requiredSkill = 75, matRate = 1.000, minAmount = 1, maxAmount = 1, amountOfMats = 1.000},
+				{classId = Enum.ItemClass.Weapon, quality = 4, minItemLevel = 31, maxItemLevel = 35, requiredSkill = 75, matRate = 1.000, minAmount = 1, maxAmount = 1, amountOfMats = 1.000},
+			},
+		},
+		["i:11139"] = { -- Large Glowing Shard
+			minLevel = 31,
+			maxLevel = 35,
+			sourceInfo = {
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 36, maxItemLevel = 40, requiredSkill = 100, matRate = 0.050, minAmount = 1, maxAmount = 1, amountOfMats = 0.050},
+				{classId = Enum.ItemClass.Armor, quality = 3, minItemLevel = 36, maxItemLevel = 40, requiredSkill = 100, matRate = 1.000, minAmount = 1, maxAmount = 1, amountOfMats = 1.000},
+				{classId = Enum.ItemClass.Armor, quality = 4, minItemLevel = 36, maxItemLevel = 40, requiredSkill = 100, matRate = 1.000, minAmount = 1, maxAmount = 1, amountOfMats = 1.000},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 36, maxItemLevel = 40, requiredSkill = 100, matRate = 0.050, minAmount = 1, maxAmount = 1, amountOfMats = 0.050},
+				{classId = Enum.ItemClass.Weapon, quality = 3, minItemLevel = 36, maxItemLevel = 40, requiredSkill = 100, matRate = 1.000, minAmount = 1, maxAmount = 1, amountOfMats = 1.000},
+				{classId = Enum.ItemClass.Weapon, quality = 4, minItemLevel = 36, maxItemLevel = 40, requiredSkill = 100, matRate = 1.000, minAmount = 1, maxAmount = 1, amountOfMats = 1.000},
+			},
+		},
+		["i:11177"] = { -- Small Radiant Shard
+			minLevel = 36,
+			maxLevel = 40,
+			sourceInfo = {
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 41, maxItemLevel = 45, requiredSkill = 125, matRate = 0.050, minAmount = 1, maxAmount = 1, amountOfMats = 0.050},
+				{classId = Enum.ItemClass.Armor, quality = 3, minItemLevel = 41, maxItemLevel = 45, requiredSkill = 125, matRate = 1.000, minAmount = 1, maxAmount = 1, amountOfMats = 1.000},
+				{classId = Enum.ItemClass.Armor, quality = 4, minItemLevel = 41, maxItemLevel = 45, requiredSkill = 125, matRate = 1.000, minAmount = 2, maxAmount = 4, amountOfMats = 3.000},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 41, maxItemLevel = 45, requiredSkill = 125, matRate = 0.050, minAmount = 1, maxAmount = 1, amountOfMats = 0.050},
+				{classId = Enum.ItemClass.Weapon, quality = 3, minItemLevel = 41, maxItemLevel = 45, requiredSkill = 125, matRate = 1.000, minAmount = 1, maxAmount = 1, amountOfMats = 1.000},
+				{classId = Enum.ItemClass.Weapon, quality = 4, minItemLevel = 41, maxItemLevel = 45, requiredSkill = 125, matRate = 1.000, minAmount = 2, maxAmount = 4, amountOfMats = 3.000},
+			},
+		},
+		["i:11178"] = { -- Large Radiant Shard
+			minLevel = 41,
+			maxLevel = 45,
+			sourceInfo = {
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 46, maxItemLevel = 50, requiredSkill = 150, matRate = 0.050, minAmount = 1, maxAmount = 1, amountOfMats = 0.050},
+				{classId = Enum.ItemClass.Armor, quality = 3, minItemLevel = 46, maxItemLevel = 50, requiredSkill = 150, matRate = 1.000, minAmount = 1, maxAmount = 1, amountOfMats = 1.000},
+				{classId = Enum.ItemClass.Armor, quality = 4, minItemLevel = 46, maxItemLevel = 50, requiredSkill = 150, matRate = 1.000, minAmount = 2, maxAmount = 4, amountOfMats = 3.000},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 46, maxItemLevel = 50, requiredSkill = 150, matRate = 0.050, minAmount = 1, maxAmount = 1, amountOfMats = 0.050},
+				{classId = Enum.ItemClass.Weapon, quality = 3, minItemLevel = 46, maxItemLevel = 50, requiredSkill = 150, matRate = 1.000, minAmount = 1, maxAmount = 1, amountOfMats = 1.000},
+				{classId = Enum.ItemClass.Weapon, quality = 4, minItemLevel = 46, maxItemLevel = 50, requiredSkill = 150, matRate = 1.000, minAmount = 2, maxAmount = 4, amountOfMats = 3.000},
+			},
+		},
+		["i:14343"] = { -- Small Brilliant Shard
+			minLevel = 46,
+			maxLevel = 50,
+			sourceInfo = {
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 51, maxItemLevel = 55, requiredSkill = 175, matRate = 0.050, minAmount = 1, maxAmount = 1, amountOfMats = 0.050},
+				{classId = Enum.ItemClass.Armor, quality = 3, minItemLevel = 51, maxItemLevel = 55, requiredSkill = 175, matRate = 1.000, minAmount = 1, maxAmount = 1, amountOfMats = 1.000},
+				{classId = Enum.ItemClass.Armor, quality = 4, minItemLevel = 51, maxItemLevel = 55, requiredSkill = 175, matRate = 1.000, minAmount = 2, maxAmount = 4, amountOfMats = 3.000},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 51, maxItemLevel = 55, requiredSkill = 175, matRate = 0.030, minAmount = 1, maxAmount = 1, amountOfMats = 0.030},
+				{classId = Enum.ItemClass.Weapon, quality = 3, minItemLevel = 51, maxItemLevel = 55, requiredSkill = 175, matRate = 1.000, minAmount = 1, maxAmount = 1, amountOfMats = 1.000},
+				{classId = Enum.ItemClass.Weapon, quality = 4, minItemLevel = 51, maxItemLevel = 55, requiredSkill = 175, matRate = 1.000, minAmount = 2, maxAmount = 4, amountOfMats = 3.000},
+			},
+		},
+		["i:14344"] = { -- Large Brilliant Shard
+			minLevel = 51,
+			maxLevel = 60,
+			sourceInfo = {
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 56, maxItemLevel = 60, requiredSkill = 200, matRate = 0.050, minAmount = 1, maxAmount = 1, amountOfMats = 0.050},
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 61, maxItemLevel = 65, requiredSkill = 225, matRate = 0.050, minAmount = 1, maxAmount = 1, amountOfMats = 0.050},
+				{classId = Enum.ItemClass.Armor, quality = 3, minItemLevel = 56, maxItemLevel = 60, requiredSkill = 200, matRate = 1.000, minAmount = 1, maxAmount = 1, amountOfMats = 1.000},
+				{classId = Enum.ItemClass.Armor, quality = 3, minItemLevel = 61, maxItemLevel = 65, requiredSkill = 225, matRate = 1.000, minAmount = 1, maxAmount = 1, amountOfMats = 1.000},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 56, maxItemLevel = 60, requiredSkill = 200, matRate = 0.030, minAmount = 1, maxAmount = 1, amountOfMats = 0.030},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 61, maxItemLevel = 65, requiredSkill = 225, matRate = 0.030, minAmount = 1, maxAmount = 1, amountOfMats = 0.030},
+				{classId = Enum.ItemClass.Weapon, quality = 3, minItemLevel = 56, maxItemLevel = 60, requiredSkill = 200, matRate = 1.000, minAmount = 1, maxAmount = 1, amountOfMats = 1.000},
+				{classId = Enum.ItemClass.Weapon, quality = 3, minItemLevel = 61, maxItemLevel = 65, requiredSkill = 225, matRate = 1.000, minAmount = 1, maxAmount = 1, amountOfMats = 1.000},
+			},
+		},
+		["i:22448"] = { -- Small Prismatic Shard
+			minLevel = 61,
+			maxLevel = 65,
+			sourceInfo = {
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 66, maxItemLevel = 99, requiredSkill = 225, matRate = 0.030, minAmount = 1, maxAmount = 1, amountOfMats = 0.030},
+				{classId = Enum.ItemClass.Armor, quality = 3, minItemLevel = 66, maxItemLevel = 99, requiredSkill = 225, matRate = 1.000, minAmount = 1, maxAmount = 1, amountOfMats = 1.000},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 66, maxItemLevel = 99, requiredSkill = 225, matRate = 0.030, minAmount = 1, maxAmount = 1, amountOfMats = 0.030},
+				{classId = Enum.ItemClass.Weapon, quality = 3, minItemLevel = 66, maxItemLevel = 99, requiredSkill = 225, matRate = 1.000, minAmount = 1, maxAmount = 1, amountOfMats = 1.000},
+			},
+		},
+		["i:22449"] = { -- Large Prismatic Shard
+			minLevel = 66,
+			maxLevel = 70,
+			sourceInfo = {
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 100, maxItemLevel = 120, requiredSkill = 275, matRate = 0.030, minAmount = 1, maxAmount = 1, amountOfMats = 0.030},
+				{classId = Enum.ItemClass.Armor, quality = 3, minItemLevel = 100, maxItemLevel = 120, requiredSkill = 275, matRate = 1.000, minAmount = 1, maxAmount = 1, amountOfMats = 1.000},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 100, maxItemLevel = 120, requiredSkill = 275, matRate = 0.030, minAmount = 1, maxAmount = 1, amountOfMats = 0.030},
+				{classId = Enum.ItemClass.Weapon, quality = 3, minItemLevel = 100, maxItemLevel = 120, requiredSkill = 275, matRate = 1.000, minAmount = 1, maxAmount = 1, amountOfMats = 1.000},
+			},
+		},
+		["i:34053"] = { -- Small Dream Shard
+			minLevel = 71,
+			maxLevel = 75,
+			sourceInfo = {
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 121, maxItemLevel = 153, requiredSkill = 325, matRate = 0.030, minAmount = 1, maxAmount = 1, amountOfMats = 0.030},
+				{classId = Enum.ItemClass.Armor, quality = 3, minItemLevel = 121, maxItemLevel = 166, requiredSkill = 325, matRate = 1.000, minAmount = 1, maxAmount = 1, amountOfMats = 1.000},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 121, maxItemLevel = 153, requiredSkill = 325, matRate = 0.030, minAmount = 1, maxAmount = 1, amountOfMats = 0.030},
+				{classId = Enum.ItemClass.Weapon, quality = 3, minItemLevel = 121, maxItemLevel = 166, requiredSkill = 325, matRate = 1.000, minAmount = 1, maxAmount = 1, amountOfMats = 1.000},
+			},
+		},
+		["i:34052"] = { -- Dream Shard
+			minLevel = 76,
+			maxLevel = 80,
+			sourceInfo = {
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 154, maxItemLevel = 231, requiredSkill = 350, matRate = 0.030, minAmount = 1, maxAmount = 1, amountOfMats = 0.030},
+				{classId = Enum.ItemClass.Armor, quality = 3, minItemLevel = 167, maxItemLevel = 271, requiredSkill = 325, matRate = 1.000, minAmount = 1, maxAmount = 1, amountOfMats = 1.000},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 154, maxItemLevel = 231, requiredSkill = 350, matRate = 0.030, minAmount = 1, maxAmount = 1, amountOfMats = 0.030},
+				{classId = Enum.ItemClass.Weapon, quality = 3, minItemLevel = 167, maxItemLevel = 271, requiredSkill = 325, matRate = 1.000, minAmount = 1, maxAmount = 1, amountOfMats = 1.000},
+			},
+		},
+		["i:52720"] = { -- Small Heavenly Shard
+			minLevel = 81,
+			maxLevel = 85,
+			sourceInfo = {
+				{classId = Enum.ItemClass.Armor, quality = 3, minItemLevel = 272, maxItemLevel = 316, requiredSkill = 450, matRate = 1.000, minAmount = 1, maxAmount = 1, amountOfMats = 1.000},
+				{classId = Enum.ItemClass.Weapon, quality = 3, minItemLevel = 272, maxItemLevel = 316, requiredSkill = 450, matRate = 1.000, minAmount = 1, maxAmount = 2, amountOfMats = 1.030},
+			},
+		},
+		["i:52721"] = { -- Heavenly Shard
+			minLevel = 81,
+			maxLevel = 85,
+			sourceInfo = {
+				{classId = Enum.ItemClass.Armor, quality = 3, minItemLevel = 317, maxItemLevel = 999, requiredSkill = 450, matRate = 1.000, minAmount = 1, maxAmount = 1, amountOfMats = 1.000},
+				{classId = Enum.ItemClass.Weapon, quality = 3, minItemLevel = 317, maxItemLevel = 999, requiredSkill = 450, matRate = 1.000, minAmount = 1, maxAmount = 1, amountOfMats = 1.000},
+			},
+		},
+
+
+		-- Crystals
+		["i:20725"] = { -- Nexus Crystal
+			minLevel = 51,
+			maxLevel = 60,
+			sourceInfo = {
+				{classId = Enum.ItemClass.Armor, quality = 3, minItemLevel = 56, maxItemLevel = 60, requiredSkill = 200, matRate = 0.005, minAmount = 1, maxAmount = 1, amountOfMats = 0.005},
+				{classId = Enum.ItemClass.Armor, quality = 3, minItemLevel = 61, maxItemLevel = 99, requiredSkill = 225, matRate = 0.005, minAmount = 1, maxAmount = 1, amountOfMats = 0.005},
+				{classId = Enum.ItemClass.Armor, quality = 4, minItemLevel = 56, maxItemLevel = 60, requiredSkill = 200, matRate = 1.000, minAmount = 1, maxAmount = 1, amountOfMats = 1.000},
+				{classId = Enum.ItemClass.Armor, quality = 4, minItemLevel = 61, maxItemLevel = 89, requiredSkill = 225, matRate = 1.000, minAmount = 1, maxAmount = 2, amountOfMats = 1.666},
+				{classId = Enum.ItemClass.Armor, quality = 4, minItemLevel = 90, maxItemLevel = 94, requiredSkill = 300, matRate = 1.000, minAmount = 1, maxAmount = 2, amountOfMats = 1.666},
+				{classId = Enum.ItemClass.Weapon, quality = 3, minItemLevel = 56, maxItemLevel = 60, requiredSkill = 200, matRate = 0.005, minAmount = 1, maxAmount = 1, amountOfMats = 0.005},
+				{classId = Enum.ItemClass.Weapon, quality = 3, minItemLevel = 61, maxItemLevel = 99, requiredSkill = 225, matRate = 0.005, minAmount = 1, maxAmount = 1, amountOfMats = 0.005},
+				{classId = Enum.ItemClass.Weapon, quality = 4, minItemLevel = 56, maxItemLevel = 60, requiredSkill = 200, matRate = 1.000, minAmount = 1, maxAmount = 2, amountOfMats = 1.000},
+				{classId = Enum.ItemClass.Weapon, quality = 4, minItemLevel = 61, maxItemLevel = 89, requiredSkill = 225, matRate = 1.000, minAmount = 1, maxAmount = 2, amountOfMats = 1.666},
+				{classId = Enum.ItemClass.Weapon, quality = 4, minItemLevel = 90, maxItemLevel = 94, requiredSkill = 300, matRate = 1.000, minAmount = 1, maxAmount = 2, amountOfMats = 1.666},
+			},
+		},
+		["i:22450"] = { -- Void Crystal
+			minLevel = 61,
+			maxLevel = 70,
+			sourceInfo = {
+				{classId = Enum.ItemClass.Armor, quality = 3, minItemLevel = 100, maxItemLevel = 120, requiredSkill = 275, matRate = 0.005, minAmount = 1, maxAmount = 1, amountOfMats = 0.005},
+				{classId = Enum.ItemClass.Armor, quality = 4, minItemLevel = 95, maxItemLevel = 104, requiredSkill = 300, matRate = 1.000, minAmount = 1, maxAmount = 2, amountOfMats = 1.500},
+				{classId = Enum.ItemClass.Armor, quality = 4, minItemLevel = 105, maxItemLevel = 199, requiredSkill = 300, matRate = 1.000, minAmount = 1, maxAmount = 2, amountOfMats = 1.666},
+				{classId = Enum.ItemClass.Weapon, quality = 3, minItemLevel = 100, maxItemLevel = 120, requiredSkill = 275, matRate = 0.005, minAmount = 1, maxAmount = 1, amountOfMats = 0.005},
+				{classId = Enum.ItemClass.Weapon, quality = 4, minItemLevel = 95, maxItemLevel = 104, requiredSkill = 300, matRate = 1.000, minAmount = 1, maxAmount = 2, amountOfMats = 1.500},
+				{classId = Enum.ItemClass.Weapon, quality = 4, minItemLevel = 105, maxItemLevel = 199, requiredSkill = 300, matRate = 1.000, minAmount = 1, maxAmount = 2, amountOfMats = 1.666},
+			},
+		},
+		["i:34057"] = { -- Abyss Crystal
+			minLevel = 71,
+			maxLevel = 80,
+			sourceInfo = {
+				{classId = Enum.ItemClass.Armor, quality = 3, minItemLevel = 121, maxItemLevel = 271, requiredSkill = 325, matRate = 0.005, minAmount = 1, maxAmount = 1, amountOfMats = 0.005},
+				{classId = Enum.ItemClass.Armor, quality = 4, minItemLevel = 200, maxItemLevel = 299, requiredSkill = 375, matRate = 1.000, minAmount = 1, maxAmount = 1, amountOfMats = 1.000},
+				{classId = Enum.ItemClass.Weapon, quality = 3, minItemLevel = 121, maxItemLevel = 271, requiredSkill = 325, matRate = 0.005, minAmount = 1, maxAmount = 1, amountOfMats = 0.005},
+				{classId = Enum.ItemClass.Weapon, quality = 4, minItemLevel = 200, maxItemLevel = 299, requiredSkill = 375, matRate = 1.000, minAmount = 1, maxAmount = 1, amountOfMats = 1.000},
+			},
+		},
+		["i:52722"] = { -- Maelstrom Crystal
+			minLevel = 81,
+			maxLevel = 85,
+			sourceInfo = {
+				{classId = Enum.ItemClass.Armor, quality = 4, minItemLevel = 300, maxItemLevel = 999, requiredSkill = 475, matRate = 1.000, minAmount = 1, maxAmount = 1, amountOfMats = 1.000},
+				{classId = Enum.ItemClass.Weapon, quality = 4, minItemLevel = 300, maxItemLevel = 999, requiredSkill = 475, matRate = 1.000, minAmount = 1, maxAmount = 1, amountOfMats = 1.000},
+			},
+		},
+	}
+elseif Environment.IsRetail() then
 	DATA = {
 		-- Dust
 		["i:10940"] = { -- Strange Dust
@@ -773,6 +1222,19 @@ else
 				{classId = Enum.ItemClass.Armor, quality = 3, minItemLevel = 2, maxItemLevel = 999, matRate = 1.000, minAmount = 1, maxAmount = 2, amountOfMats = 1.400},
 				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 2, maxItemLevel = 999, matRate = 1.000, minAmount = 2, maxAmount = 4, amountOfMats = 2.500},
 				{classId = Enum.ItemClass.Weapon, quality = 3, minItemLevel = 2, maxItemLevel = 999, matRate = 1.000, minAmount = 1, maxAmount = 2, amountOfMats = 1.400},
+			},
+		},
+		["i:194123"] = { -- Chromatic Dust
+			expansion = 9,
+			minLevel = 60,
+			maxLevel = 70,
+			sourceInfo = {
+				{classId = Enum.ItemClass.Armor, quality = 2, minItemLevel = 2, maxItemLevel = 999, matRate = 1.000, minAmount = 1, maxAmount = 2, amountOfMats = 1.500},
+				{classId = Enum.ItemClass.Armor, quality = 3, minItemLevel = 2, maxItemLevel = 999, matRate = 0.500, minAmount = 2, maxAmount = 3, amountOfMats = 1.2500},
+				{classId = Enum.ItemClass.Profession, quality = 2, minItemLevel = 2, maxItemLevel = 999, matRate = 1.000, minAmount = 1, maxAmount = 2, amountOfMats = 1.500},
+				{classId = Enum.ItemClass.Profession, quality = 3, minItemLevel = 2, maxItemLevel = 999, matRate = 0.500, minAmount = 2, maxAmount = 3, amountOfMats = 1.2500},
+				{classId = Enum.ItemClass.Weapon, quality = 2, minItemLevel = 2, maxItemLevel = 999, matRate = 1.000, minAmount = 1, maxAmount = 2, amountOfMats = 1.500},
+				{classId = Enum.ItemClass.Weapon, quality = 3, minItemLevel = 2, maxItemLevel = 999, matRate = 0.350, minAmount = 4, maxAmount = 5, amountOfMats = 1.575},
 			},
 		},
 
@@ -1047,6 +1509,19 @@ else
 				{classId = Enum.ItemClass.Weapon, quality = 4, minItemLevel = 2, maxItemLevel = 999, matRate = 0.350, minAmount = 1, maxAmount = 1, amountOfMats = 0.350},
 			},
 		},
+		["i:194124"] = { -- Vibrant Shard
+			expansion = 9,
+			minLevel = 60,
+			maxLevel = 70,
+			sourceInfo = {
+				{classId = Enum.ItemClass.Armor, quality = 3, minItemLevel = 2, maxItemLevel = 999, matRate = 0.500, minAmount = 1, maxAmount = 1, amountOfMats = 0.500},
+				{classId = Enum.ItemClass.Armor, quality = 4, minItemLevel = 2, maxItemLevel = 999, matRate = 0.500, minAmount = 1, maxAmount = 2, amountOfMats = 0.750},
+				{classId = Enum.ItemClass.Profession, quality = 3, minItemLevel = 2, maxItemLevel = 999, matRate = 0.500, minAmount = 1, maxAmount = 1, amountOfMats = 0.500},
+				{classId = Enum.ItemClass.Profession, quality = 4, minItemLevel = 2, maxItemLevel = 999, matRate = 0.500, minAmount = 1, maxAmount = 2, amountOfMats = 0.750},
+				{classId = Enum.ItemClass.Weapon, quality = 3, minItemLevel = 2, maxItemLevel = 999, matRate = 0.650, minAmount = 1, maxAmount = 2, amountOfMats = 0.800},
+				{classId = Enum.ItemClass.Weapon, quality = 4, minItemLevel = 2, maxItemLevel = 999, matRate = 0.600, minAmount = 2, maxAmount = 3, amountOfMats = 1.350},
+			},
+		},
 
 		-- Crystals
 		["i:22450"] = { -- Void Crystal
@@ -1136,7 +1611,19 @@ else
 				{classId = Enum.ItemClass.Weapon, quality = 4, minItemLevel = 2, maxItemLevel = 999, matRate = 1.000, minAmount = 1, maxAmount = 1, amountOfMats = 1.000},
 			},
 		},
+		["i:200113"] = { -- Resonant Crystal
+			expansion = 9,
+			minLevel = 60,
+			maxLevel = 70,
+			sourceInfo = {
+				{classId = Enum.ItemClass.Armor, quality = 4, minItemLevel = 2, maxItemLevel = 999, matRate = 0.500, minAmount = 1, maxAmount = 1, amountOfMats = 0.500},
+				{classId = Enum.ItemClass.Profession, quality = 4, minItemLevel = 2, maxItemLevel = 999, matRate = 0.500, minAmount = 1, maxAmount = 1, amountOfMats = 0.500},
+				{classId = Enum.ItemClass.Weapon, quality = 4, minItemLevel = 2, maxItemLevel = 999, matRate = 0.400, minAmount = 1, maxAmount = 2, amountOfMats = 0.450},
+			},
+		},
 	}
+else
+	error("Invalid game version")
 end
 
 

@@ -163,19 +163,23 @@ local function generateThatsMyBisExportString(logID)
     return exportString;
 end
 
-local function generateFightClubLootExportString(logID, usingID)
+local function generateFightClubLootExportString(logID, usingID, tabs)
 	local data = NRC.db.global.instances[logID];
 	if (not data) then
 		return "Error generating export string, raid data not found.";
 	end
 	local mapToTrades = NRC.config.mapLootDisplayToTrades;
-	local raidDate = date("%m/%d/%Y", data.enteredTime);
+	local raidDate = date(getDateString(), data.enteredTime);
 	local exportString = "";
 	exportString = exportString .. "   Attendees:\n\n";
 	for k, v in pairs(data.group) do
 		exportString = exportString .. v.name .. ";";
 	end
 	exportString = exportString .. "\n\n   Loot:\n\n";
+	local seperator = ";"
+	if (tabs) then
+		seperator = "\t";
+	end
 	if (NRC.config.lootExportLegendary) then
 		local loot, bossLoot, trashLoot, lootData = NRC:getLootData(logID, nil, 5, nil, nil, nil, not NRC.config.lootExportTradeskill, mapToTrades);
 		for k, v in ipairs(lootData) do
@@ -187,9 +191,10 @@ local function generateFightClubLootExportString(logID, usingID)
 			end
 			if (usingID) then
 				local _, itemID = strsplit(":", v.itemLink);
-				exportString = exportString .. raidDate .. ";" .. itemID .. ";" .. name .. "\n";
+				exportString = exportString .. raidDate .. seperator .. itemID .. seperator .. name .. "\n";
 			else
-				exportString = exportString .. raidDate .. ";" .. v.itemLink .. ";" .. name .. "\n";
+				local itemName = strmatch(v.itemLink, ":|h%[(.+)%]|h");
+				exportString = exportString .. raidDate .. seperator .. itemName .. seperator .. name .. "\n";
 			end
 	    end
     end
@@ -204,9 +209,10 @@ local function generateFightClubLootExportString(logID, usingID)
 			end
 			if (usingID) then
 				local _, itemID = strsplit(":", v.itemLink);
-				exportString = exportString .. raidDate .. ";" .. itemID .. ";" .. name .. "\n";
+				exportString = exportString .. raidDate .. seperator .. itemID .. seperator .. name .. "\n";
 			else
-				exportString = exportString .. raidDate .. ";" .. v.itemLink .. ";" .. name .. "\n";
+				local itemName = strmatch(v.itemLink, ":|h%[(.+)%]|h");
+				exportString = exportString .. raidDate .. seperator .. itemName .. seperator .. name .. "\n";
 			end
 	    end
     end
@@ -221,9 +227,10 @@ local function generateFightClubLootExportString(logID, usingID)
 			end
 			if (usingID) then
 				local _, itemID = strsplit(":", v.itemLink);
-				exportString = exportString .. raidDate .. ";" .. itemID .. ";" .. name .. "\n";
+				exportString = exportString .. raidDate .. seperator .. itemID .. seperator .. name .. "\n";
 			else
-				exportString = exportString .. raidDate .. ";" .. v.itemLink .. ";" .. name .. "\n";
+				local itemName = strmatch(v.itemLink, ":|h%[(.+)%]|h");
+				exportString = exportString .. raidDate .. seperator .. itemName .. seperator .. name .. "\n";
 			end
 	    end
     end
@@ -238,9 +245,10 @@ local function generateFightClubLootExportString(logID, usingID)
 			end
 			if (usingID) then
 				local _, itemID = strsplit(":", v.itemLink);
-				exportString = exportString .. raidDate .. ";" .. itemID .. ";" .. name .. "\n";
+				exportString = exportString .. raidDate .. seperator .. itemID .. seperator .. name .. "\n";
 			else
-				exportString = exportString .. raidDate .. ";" .. v.itemLink .. ";" .. name .. "\n";
+				local itemName = strmatch(v.itemLink, ":|h%[(.+)%]|h");
+				exportString = exportString .. raidDate .. seperator .. itemName .. seperator .. name .. "\n";
 			end
 	    end
     end
@@ -647,6 +655,26 @@ function NRC:loadLootExportFrame(logID, refresh)
 			end
 			NRC.DDM:UIDropDownMenu_AddButton(info);
 			local info = NRC.DDM:UIDropDownMenu_CreateInfo()
+			info.text = "|cFF9CD6DE" .. L["DFT Fight Club (tabs)"];
+			info.checked = false;
+			info.value = "fightclubtabs";
+			info.func = function(self)
+				NRC.DDM:UIDropDownMenu_SetSelectedValue(dropdown, self.value)
+				NRC.config.exportType = info.value;
+				NRC:loadLootExportFrame(logID, true);
+			end
+			NRC.DDM:UIDropDownMenu_AddButton(info);
+			local info = NRC.DDM:UIDropDownMenu_CreateInfo()
+			info.text = "|cFF9CD6DE" .. L["DFT Fight Club Item IDs (tabs)"];
+			info.checked = false;
+			info.value = "fightclubidstabs";
+			info.func = function(self)
+				NRC.DDM:UIDropDownMenu_SetSelectedValue(dropdown, self.value)
+				NRC.config.exportType = info.value;
+				NRC:loadLootExportFrame(logID, true);
+			end
+			NRC.DDM:UIDropDownMenu_AddButton(info);
+			local info = NRC.DDM:UIDropDownMenu_CreateInfo()
 			info.text = "|cFF9CD6DE" .. L["That's My BIS"];
 			info.checked = false;
 			info.value = "thatsmybis";
@@ -691,7 +719,7 @@ function NRC:loadLootExportFrame(logID, refresh)
 		NRC.DDM:UIDropDownMenu_SetWidth(exportFrame.dropdownMenu2, 155);
 		exportFrame.dropdownMenu2.initialize = function(dropdown)
 			local info = NRC.DDM:UIDropDownMenu_CreateInfo()
-			info.text = "|cFF9CD6DEmm/dd/yyyy";
+			info.text = "|cFF9CD6DEmm-dd-yyyy";
 			info.checked = false;
 			info.value = "mm/dd/yyyy";
 			info.func = function(self)
@@ -701,7 +729,7 @@ function NRC:loadLootExportFrame(logID, refresh)
 			end
 			NRC.DDM:UIDropDownMenu_AddButton(info);
 			local info = NRC.DDM:UIDropDownMenu_CreateInfo()
-			info.text = "|cFF9CD6DEdd/mm/yyyy";
+			info.text = "|cFF9CD6DEdd-mm-yyyy";
 			info.checked = false;
 			info.value = "dd/mm/yyyy";
 			info.func = function(self)
@@ -711,7 +739,7 @@ function NRC:loadLootExportFrame(logID, refresh)
 			end
 			NRC.DDM:UIDropDownMenu_AddButton(info);
 			local info = NRC.DDM:UIDropDownMenu_CreateInfo()
-			info.text = "|cFF9CD6DEyyyy/mm/dd";
+			info.text = "|cFF9CD6DEyyyy-mm-dd";
 			info.checked = false;
 			info.value = "yyyy/mm/dd";
 			info.func = function(self)
@@ -721,7 +749,7 @@ function NRC:loadLootExportFrame(logID, refresh)
 			end
 			NRC.DDM:UIDropDownMenu_AddButton(info);
 			local info = NRC.DDM:UIDropDownMenu_CreateInfo()
-			info.text = "|cFF9CD6DEyyyy/dd/mm";
+			info.text = "|cFF9CD6DEyyyy-dd-mm";
 			info.checked = false;
 			info.value = "yyyy/dd/mm";
 			info.func = function(self)
@@ -747,6 +775,10 @@ function NRC:loadLootExportFrame(logID, refresh)
 		text = generateFightClubLootExportString(logID);
 	elseif (type == "fightclubids") then
 		text = generateFightClubLootExportString(logID, true);
+	elseif (type == "fightclubtabs") then
+		text = generateFightClubLootExportString(logID, nil, true);
+	elseif (type == "fightclubidstabs") then
+		text = generateFightClubLootExportString(logID, true, true);
 	elseif (type == "thatsmybis") then
 		text = generateThatsMyBisExportString(logID, true);
 	elseif (type == "customstring") then
@@ -782,7 +814,9 @@ local function generateTradesExportString(logID, raidID)
 	local finish = NRC.config.tradeExportEnd;
 	local itemsType = NRC.config.tradeExportItemsType;
 	local wowheadLink = "https://www.wowhead.com/item=";
-	if (NRC.isWrath) then
+	if (NRC.isCata) then
+		wowheadLink = "https://www.wowhead.com/cata/item=";
+	elseif (NRC.isWrath) then
 		wowheadLink = "https://www.wowhead.com/wotlk/item=";
 	elseif (NRC.isTBC) then
 		wowheadLink = "https://www.wowhead.com/tbc/item=";

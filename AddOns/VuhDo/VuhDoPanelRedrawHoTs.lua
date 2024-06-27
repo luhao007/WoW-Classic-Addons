@@ -15,11 +15,12 @@ local sBarColors;
 local sStacksRadio;
 local sIcqqonRadio;
 local sIconRadio;
-local sHotBarConfig;
-local sOrientation;
+local sHotBarConfig = { };
+local sOrientation = { };
 
 --
 function VUHDO_panelRedrawHotsInitLocalOverrides()
+
 	VUHDO_getHealthBar = _G["VUHDO_getHealthBar"];
 	VUHDO_getBarIcon = _G["VUHDO_getBarIcon"];
 	VUHDO_getBarIconTimer = _G["VUHDO_getBarIconTimer"];
@@ -34,24 +35,46 @@ function VUHDO_panelRedrawHotsInitLocalOverrides()
 	sBarsPos = sHotConfig["BARS"]["radioValue"];
 	sStacksRadio = sHotConfig["stacksRadioValue"];
 	sIconRadio = sHotConfig["iconRadioValue"];
-	sHotBarConfig = VUHDO_INDICATOR_CONFIG["CUSTOM"]["HOT_BARS"];
-	sOrientation = VUHDO_getStatusbarOrientationString("HOT_BARS");
+
+	for tPanelNum = 1, 10 do -- VUHDO_MAX_PANELS
+		sHotBarConfig[tPanelNum] = VUHDO_INDICATOR_CONFIG[tPanelNum]["CUSTOM"]["HOT_BARS"];
+		sOrientation[tPanelNum] = VUHDO_getStatusbarOrientationString("HOT_BARS", tPanelNum);
+	end
+
 end
 
 
 
 --
 local sBarScaling;
-local sHotBarWidth;
-local sHotIconSize;
+local sHotIconSize, sHotIconOffsets;
 local sHotBarWidth;
 local sHotBarHeight;
 function VUHDO_panelRedrwawHotsInitLocalVars(aPanelNum)
-	sBarScaling = VUHDO_PANEL_SETUP[aPanelNum]["SCALING"];
-	sHotIconSize = sBarScaling["barHeight"] * VUHDO_PANEL_SETUP[aPanelNum]["HOTS"]["size"] * 0.01;
-	if sHotIconSize == 0 then sHotIconSize = 0.001; end
 
-	if sHotBarConfig["vertical"] then
+	sBarScaling = VUHDO_PANEL_SETUP[aPanelNum]["SCALING"];	
+
+	sHotIconSize = sBarScaling["barHeight"] * VUHDO_PANEL_SETUP[aPanelNum]["HOTS"]["size"] * 0.01;
+
+	if sHotIconSize == 0 then
+		sHotIconSize = 0.001;
+	end
+
+	if not sHotIconOffsets then
+		sHotIconOffsets = { };
+	end
+
+	local tHotIconSizeTotal = 0;
+
+	for tCnt = 1, 7 do
+		sHotIconOffsets[tCnt] = tHotIconSizeTotal;
+
+		local tHotIconSize = math.floor((sHotIconSize * (VUHDO_PANEL_SETUP["HOTS"]["SLOTCFG"]["" .. tCnt]["scale"] or 1)) + 0.5);
+
+		tHotIconSizeTotal = tHotIconSizeTotal + tHotIconSize;
+	end	
+
+	if sHotBarConfig[aPanelNum]["vertical"] then
 		sHotBarWidth = sBarScaling["barWidth"] * sHotConfig["BARS"]["width"] * 0.01;
 		sHotBarHeight = VUHDO_getHealthBarHeight(aPanelNum);
 	else
@@ -74,7 +97,16 @@ end
 
 
 --
+local tPanelNum;
+local tOrientation;
+local tHotBarConfig;
 function VUHDO_initHotBars()
+
+	tPanelNum = VUHDO_BUTTON_CACHE[sButton];
+
+	tOrientation = sOrientation[tPanelNum];
+	tHotBarConfig = sHotBarConfig[tPanelNum];
+
 	local tHotBar;
 
 	for tCnt = 6, 8 do
@@ -88,13 +120,13 @@ function VUHDO_initHotBars()
 			tHotBar:SetHeight(sHotBarHeight);
 			tHotBar:SetValue(0);
 			tHotBar:SetVuhDoColor(sBarColors["HOT" .. tCnt]);
-			tHotBar:SetOrientation(sOrientation);
-			tHotBar:SetIsInverted(sHotBarConfig["invertGrowth"]);
+			tHotBar:SetOrientation(tOrientation);
+			tHotBar:SetIsInverted(tHotBarConfig["invertGrowth"]);
 			tHotBar:Show();
 		end
 	end
 
-	if sHotBarConfig["vertical"] then
+	if tHotBarConfig["vertical"] then
 		if sBarsPos == 1 then -- edges
 			VUHDO_getHealthBar(sButton, 9):SetPoint("LEFT", sHealthBarName, "LEFT", 0, 0);
 			VUHDO_getHealthBar(sButton, 10):SetPoint("CENTER", sHealthBarName, "CENTER",  0, 0);
@@ -163,7 +195,9 @@ local function VUHDO_initHotIcon(anIndex)
 		tCounter:Hide();
 		tHotIcon:SetTexture("Interface\\AddOns\\VuhDo\\Images\\cluster2");
 	else
-		if sIconRadio == 3 then -- Flat
+		if sIconRadio == 4 then -- Text only
+			tHotIcon:Hide();
+		elseif sIconRadio == 3 then -- Flat
 			tHotIcon:SetTexture("Interface\\AddOns\\VuhDo\\Images\\hot_flat_16_16");
 		elseif sIconRadio == 2 then -- Glossy
 			tHotIcon:SetTexture("Interface\\AddOns\\VuhDo\\Images\\icon_white_square");
@@ -215,7 +249,9 @@ end
 --
 local function VUHDO_initHotPosOffset(anIndex)
 	local tHotIcon = VUHDO_getBarIcon(sButton, anIndex);
-	local tOffset = (anIndex - (anIndex < 9 and 1 or 4)) * sHotIconSize;
+
+	local tIndex = anIndex - (anIndex < 9 and 1 or 4);
+	local tOffset = sHotIconOffsets[tIndex + 1];
 
 	tHotIcon:ClearAllPoints();
 	if sHotPos == 2 then tHotIcon:SetPoint("LEFT", sHealthBarName, "LEFT", tOffset,  0); -- li
@@ -234,8 +270,8 @@ local function VUHDO_initHotPosOffset(anIndex)
 	elseif sHotPos == 14 then tHotIcon:SetPoint("BOTTOMRIGHT", sButton:GetName(), "BOTTOMRIGHT", -tOffset,  0); -- rb
 	end
 
-	tHotIcon:SetWidth(sHotIconSize);
-	tHotIcon:SetHeight(sHotIconSize);
+	tHotIcon:SetWidth(sHotIconSize * (VUHDO_PANEL_SETUP["HOTS"]["SLOTCFG"]["" .. anIndex]["scale"] or 1));
+	tHotIcon:SetHeight(sHotIconSize * (VUHDO_PANEL_SETUP["HOTS"]["SLOTCFG"]["" .. anIndex]["scale"] or 1));
 	VUHDO_getBarIconFrame(sButton, anIndex):SetScale(1);
 end
 

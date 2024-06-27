@@ -6,6 +6,7 @@
 
 local TSM = select(2, ...) ---@type TSM
 local Auctioning = TSM.MainUI.Operations:NewPackage("Auctioning")
+local Environment = TSM.Include("Environment")
 local L = TSM.Include("Locale").GetTable()
 local String = TSM.Include("Util.String")
 local UIElements = TSM.Include("UI.UIElements")
@@ -56,7 +57,7 @@ local PRICE_VALIDATE_CONTEXT = {
 function Auctioning.OnInitialize()
 	-- Set min and max values
 	POST_CAP_VALIDATE_CONTEXT.minValue, POST_CAP_VALIDATE_CONTEXT.maxValue = TSM.Operations.Auctioning.GetMinMaxValues("postCap")
-	if TSM.IsWowClassic() then
+	if Environment.HasFeature(Environment.FEATURES.AH_STACKS) then
 		STACK_SIZE_VALIDATE_CONTEXT.minValue, STACK_SIZE_VALIDATE_CONTEXT.maxValue = TSM.Operations.Auctioning.GetMinMaxValues("stackSize")
 	end
 	KEEP_QUANTITY_VALIDATE_CONTEXT.minValue, KEEP_QUANTITY_VALIDATE_CONTEXT.maxValue = TSM.Operations.Auctioning.GetMinMaxValues("keepQuantity")
@@ -112,7 +113,7 @@ function private.GetDetailsSettings()
 end
 
 function private.AddMaxStackSizeSetting(frame)
-	if TSM.IsWowClassic() then
+	if Environment.HasFeature(Environment.FEATURES.AH_STACKS) then
 		frame:AddChild(private.CreateToggleLine("matchStackSize", L["Match stack size"]))
 	end
 end
@@ -199,7 +200,7 @@ function private.GetPostingSettings()
 end
 
 function private.AddStackSizeSettings(frame)
-	if not TSM.IsWowClassic() then
+	if not Environment.HasFeature(Environment.FEATURES.AH_STACKS) then
 		return
 	end
 	frame:AddChild(TSM.MainUI.Operations.CreateLinkedPriceInput("stackSize", L["Stack size"], STACK_SIZE_VALIDATE_CONTEXT)
@@ -233,7 +234,7 @@ function private.GetAuctioningSettings(self, button)
 end
 
 function private.AddBlacklistPlayers(frame)
-	if not TSM.IsWowClassic() then
+	if Environment.IsRetail() then
 		return
 	end
 	frame:AddChild(TSM.MainUI.Operations.CreateLinkedSettingLine("blacklist", L["Blacklisted players"])

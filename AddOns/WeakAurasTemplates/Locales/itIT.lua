@@ -1,12 +1,28 @@
 if not WeakAuras.IsLibsOK() then return end
 
-if GetLocale() ~= "itIT" then
+if (GAME_LOCALE or GetLocale()) ~= "itIT" then
   return
 end
 
 local L = WeakAuras.L
 
 -- WeakAuras/Templates
+	--[[Translation missing --]]
+	L["(Dwarf)"] = "(Dwarf)"
+	--[[Translation missing --]]
+	L["(Dwarf/Human)"] = "(Dwarf/Human)"
+	--[[Translation missing --]]
+	L["(Human)"] = "(Human)"
+	--[[Translation missing --]]
+	L["(Night Elf)"] = "(Night Elf)"
+	--[[Translation missing --]]
+	L["(Troll)"] = "(Troll)"
+	--[[Translation missing --]]
+	L["(Undead)"] = "(Undead)"
+	--[[Translation missing --]]
+	L["< 4 stacks"] = "< 4 stacks"
+	--[[Translation missing --]]
+	L["5 stacks"] = "5 stacks"
 	L["Abilities"] = "Abilità"
 	L["Add Triggers"] = "Aggiungi Inneschi"
 	L["Always Active"] = "Sempre Attivo"
@@ -61,6 +77,8 @@ local L = WeakAuras.L
 	--[[Translation missing --]]
 	L["Debuffs"] = "Debuffs"
 	--[[Translation missing --]]
+	L["dps buff"] = "dps buff"
+	--[[Translation missing --]]
 	L["General"] = "General"
 	--[[Translation missing --]]
 	L["Health"] = "Health"
@@ -85,6 +103,12 @@ local L = WeakAuras.L
 	--[[Translation missing --]]
 	L["Keeps existing triggers intact"] = "Keeps existing triggers intact"
 	--[[Translation missing --]]
+	L["Master Channeler Rune"] = "Master Channeler Rune"
+	--[[Translation missing --]]
+	L["Max 3"] = "Max 3"
+	--[[Translation missing --]]
+	L["Max 4"] = "Max 4"
+	--[[Translation missing --]]
 	L["Next"] = "Next"
 	--[[Translation missing --]]
 	L["Only show the aura if the target has the debuff."] = "Only show the aura if the target has the debuff."
@@ -108,6 +132,8 @@ local L = WeakAuras.L
 	L["Pet Behavior"] = "Pet Behavior"
 	--[[Translation missing --]]
 	L["PvP Talents"] = "PvP Talents"
+	--[[Translation missing --]]
+	L["regen buff"] = "regen buff"
 	--[[Translation missing --]]
 	L["Replace all existing triggers"] = "Replace all existing triggers"
 	--[[Translation missing --]]

@@ -4,8 +4,9 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
-local ItemFilter = TSM.Init("Service.ItemFilter")
+local TSM = select(2, ...) ---@type TSM
+local ItemFilter = TSM.Init("Service.ItemFilter") ---@class ItemFilter
+local Environment = TSM.Include("Environment")
 local LibTSMClass = TSM.Include("LibTSMClass")
 local L = TSM.Include("Locale").GetTable()
 local Filter = LibTSMClass.DefineClass("ItemFilter")
@@ -169,7 +170,7 @@ function Filter.ValidateStr(self, str)
 			end
 			numPriceParts = numPriceParts + 1
 			hasNonCraftingPart = true
-		elseif not TSM.IsWowClassic() and strlower(part) == "uncollected" then
+		elseif Environment.HasFeature(Environment.FEATURES.AH_UNCOLLECTED_FILTER) and strlower(part) == "uncollected" then
 			if uncollected then
 				return false, L["The same filter was specified multiple times."]
 			end
@@ -181,7 +182,7 @@ function Filter.ValidateStr(self, str)
 			end
 			usable = true
 			hasNonCraftingPart = true
-		elseif not TSM.IsWowClassic() and strlower(part) == "upgrades" then
+		elseif Environment.HasFeature(Environment.FEATURES.AH_UPGRADES_FILTER) and strlower(part) == "upgrades" then
 			if upgrades then
 				return false, L["The same filter was specified multiple times."]
 			end
@@ -335,7 +336,7 @@ function Filter.ParseStr(self, str)
 			end
 			numPriceParts = numPriceParts + 1
 			hasNonCraftingPart = true
-		elseif not TSM.IsWowClassic() and strlower(part) == "uncollected" then
+		elseif Environment.HasFeature(Environment.FEATURES.AH_UNCOLLECTED_FILTER) and strlower(part) == "uncollected" then
 			if self._uncollected then
 				return false, L["The same filter was specified multiple times."]
 			end
@@ -347,7 +348,7 @@ function Filter.ParseStr(self, str)
 			end
 			self._usable = true
 			hasNonCraftingPart = true
-		elseif not TSM.IsWowClassic() and strlower(part) == "upgrades" then
+		elseif Environment.HasFeature(Environment.FEATURES.AH_UPGRADES_FILTER) and strlower(part) == "upgrades" then
 			if self._upgrades then
 				return false, L["The same filter was specified multiple times."]
 			end

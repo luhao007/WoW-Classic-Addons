@@ -3,7 +3,7 @@ local util = MountsJournalUtil
 
 
 MountsJournalFrame:on("MODULES_INIT", function(journal)
-	local dd = LibStub("LibSFDropDown-1.4"):CreateButtonOriginal(journal.modelScene)
+	local dd = LibStub("LibSFDropDown-1.5"):CreateButtonOriginal(journal.modelScene)
 	dd:SetAlpha(.5)
 	dd:SetPoint("LEFT", journal.modelScene.modelControl, "RIGHT", 10, -.5)
 	journal.modelScene.animationsCombobox = dd
@@ -88,18 +88,21 @@ MountsJournalFrame:on("MODULES_INIT", function(journal)
 	dd.customAnimationPanel = CreateFrame("FRAME", nil, journal.modelScene, "MJMountCustomAnimationPanel")
 	dd.customAnimationPanel:SetPoint("BOTTOMRIGHT", dd, "TOPRIGHT", 0, 2)
 
-	journal:on("MOUNT_MODEL_UPDATE", function(journal, mountType, spellID)
-		if spellID == 30174 or spellID == 64731 then
-			dd.currentMountType = 2
-		else
-			dd.currentMountType = mountType
+	journal:on("MOUNT_MODEL_UPDATE", function(journal, mountType)
+		if mountType then
+			if mountType == 231 then
+				dd.currentMountType = 2
+			else
+				dd.currentMountType = journal.mountTypes[mountType]
+			end
+			dd:replayAnimation()
 		end
-		dd:replayAnimation()
 	end)
 
 	function dd:replayAnimation()
-		if self.selectedValue == "custom" or self.selectedValue and (self.selectedValue.type == nil or self.selectedValue.type >= self.currentMountType) then
-			if self.selectedValue.animation ~= 0 then
+		local selectedValue = self:ddGetSelectedValue()
+		if selectedValue == "custom" or selectedValue and (selectedValue.type == nil or selectedValue.type >= self.currentMountType) then
+			if selectedValue.animation ~= 0 then
 				self:SetScript("OnUpdate", self.onUpdate)
 			end
 		else
@@ -116,19 +119,20 @@ MountsJournalFrame:on("MODULES_INIT", function(journal)
 		self:SetScript("OnUpdate", nil)
 
 		C_Timer.After(0, function()
-			if self.selectedValue == "custom" then
+			local selectedValue = self:ddGetSelectedValue()
+			if selectedValue == "custom" then
 				self.customAnimationPanel:play()
 			else
-				self:playAnimation(self.selectedValue.animation, self.selectedValue.isKit, self.selectedValue.loop)
+				self:playAnimation(selectedValue.animation, selectedValue.isKit, selectedValue.loop)
 			end
 		end)
 	end
 
-	function dd:initialize(level)
+	dd:ddSetInitFunc(function(self, level)
 		local info = {}
 		local mountType = self.currentMountType or 1
 
-		local function checked(btn) return self.selectedValue == btn.value end
+		local function checked(btn) return self:ddGetSelectedValue() == btn.value end
 		local function func(btn)
 			self.customAnimationPanel:Hide()
 			self:playAnimation(btn.value.animation, btn.value.isKit, btn.value.loop)
@@ -169,7 +173,7 @@ MountsJournalFrame:on("MODULES_INIT", function(journal)
 			end,
 		})
 		self:ddAddButton(info, level)
-	end
+	end)
 
 	function dd:playAnimation(animation, isKit, loop)
 		local actor = journal.modelScene:GetActorByTag("unwrapped")
@@ -187,7 +191,7 @@ MountsJournalFrame:on("MODULES_INIT", function(journal)
 	function dd:deleteAnimation(id)
 		local animation = self.animations[id]
 		StaticPopup_Show(util.addonName.."DELETE_MOUNT_ANIMATION", NORMAL_FONT_COLOR_CODE..animation.name..FONT_COLOR_CODE_CLOSE, nil, function()
-			if self.selectedValue == animation then
+			if self:ddGetSelectedValue() == animation then
 				local value = self.animationsList[1]
 				self:playAnimation(value.animation, value.isKit, value.loop)
 				self:ddSetSelectedValue(value)

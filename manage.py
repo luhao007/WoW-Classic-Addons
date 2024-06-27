@@ -337,14 +337,14 @@ class Manager:
         for addon in addons:
             utils.remove_libraries_all(addon)
 
-    @staticmethod
-    def handle_att():
-        addon = 'AllTheThings' if utils.get_platform() == 'retail' else 'ATT-Classic'
-        utils.change_defaults(
-            f'Addons/{addon}/Settings.lua',
-            ['		["MinimapButton"] = false,',
-                '		["Auto:MiniList"] = false,']
-        )
+    # @staticmethod
+    # def handle_att():
+    #     addon = 'AllTheThings'
+    #     utils.change_defaults(
+    #         f'Addons/{addon}/Settings.lua',
+    #         ['		["MinimapButton"] = false,',
+    #             '		["Auto:MiniList"] = false,']
+    #     )
 
     @staticmethod
     def handle_atlas():
@@ -406,6 +406,8 @@ class Manager:
 
     @staticmethod
     def handle_fb():
+        if not os.path.exists('Addons/FishingBuddy/'):
+            return
         utils.change_defaults(
             'Addons/FishingBuddy/FishingBuddyMinimap.lua',
             '		FishingBuddy_Player["MinimapData"] = { hide=true };'
@@ -449,6 +451,8 @@ class Manager:
     @staticmethod
     @available_on(['retail'])
     def handle_meetingstone():
+        if not os.path.exists('Addons/MeetingStone'):
+            return
         utils.change_defaults(
             'Addons/MeetingStone/Profile.lua',
             '            minimap = { hide = true,'
@@ -457,6 +461,8 @@ class Manager:
     @staticmethod
     @available_on(['classic', 'classic_era'])
     def handle_meetinghorn():
+        if not os.path.exists('Addons/MeetingHorn'):
+            return
         utils.rm_tree('Addons/MeetingHorn/Libs/tdGUI/Libs')
         utils.remove_libs_in_file('Addons/MeetingHorn/Libs/tdGUI/Load.xml',
                                     ['Libs'])
@@ -464,6 +470,8 @@ class Manager:
     @staticmethod
     @available_on(['classic', 'classic_era'])
     def handle_merinspect():
+        if not os.path.exists('Addons/MerInspect'):
+            return
         utils.change_defaults(
             'Addons/MerInspect/Options.lua',
             ['    ShowCharacterItemSheet = false,          --玩家自己裝備列表',
@@ -472,6 +480,9 @@ class Manager:
 
     @staticmethod
     def handle_monkeyspeed():
+        if not os.path.exists('Addons/MonkeySpeed'):
+            return
+
         utils.process_file(
             'AddOns/MonkeySpeed/MonkeySpeedInit.lua',
             lambda lines: [line.replace(
@@ -492,6 +503,8 @@ class Manager:
     @staticmethod
     @available_on(['retail', 'classic'])
     def handle_oa():
+        if not os.path.exists('Addons/Overachiever'):
+            return
         utils.process_file(
             'Addons/Overachiever/Overachiever.lua',
             lambda lines: [line.replace(
@@ -608,7 +621,7 @@ class Manager:
 
     @staticmethod
     def handle_titan():
-        addon = 'TitanLocation' if utils.get_platform() == 'retail' else 'TitanClassicLocation'
+        addon = 'TitanLocation'
         utils.change_defaults(
             f'Addons/{addon}/{addon}.lua',
             ['			ShowCoordsOnMap = false,',
@@ -640,6 +653,8 @@ class Manager:
 
     @staticmethod
     def handle_ufp():
+        if not os.path.exists('Addons/UnitFramesPlus'):
+            return
         if utils.get_platform() == 'classic_era':
             utils.rm_tree('AddOns/UnitFramesPlus_MobHealth')
 

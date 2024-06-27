@@ -25,11 +25,14 @@ local VUHDO_SHIELDS = {
 
 --
 local VUHDO_PUMP_SHIELDS = {
+	[VUHDO_SPELL_ID.DIVINE_AEGIS] = 0.3,
+	[VUHDO_SPELL_ID.OVERFLOWING_LIGHT] = 0.15,
 }
 
 
 -- HoTs which we want to explicitly update on SPELL_AURA_APPLIED 
 -- This avoids any display delays on contingent auras (eg. Atonement)
+-- Note: if adding by spell ID table key must be a string e.g. ["17"] not [17]
 local VUHDO_IMMEDIATE_HOTS = {
 	[VUHDO_SPELL_ID.ATONEMENT] = true,
 }
@@ -108,11 +111,14 @@ local VUHDO_ABSORB_DEBUFFS = {
 
 
 local sMissedEvents = {
+	["SPELL_ABSORBED"] = true
+--[[
 	["SWING_MISSED"] = true,
 	["RANGE_MISSED"] = true,
 	["SPELL_MISSED"] = true,
 	["SPELL_PERIODIC_MISSED"] = true,
 	["ENVIRONMENTAL_MISSED"] = true
+]];
 };
 
 
@@ -143,13 +149,22 @@ local GetSpellInfo = GetSpellInfo;
 
 
 --
+local VUHDO_updateBouquetsForEvent;
+local VUHDO_updateShieldBar;
+local VUHDO_updateHealAbsorbBar;
 local VUHDO_PLAYER_GUID = -1;
 local sIsPumpAegis = false;
 local sShowAbsorb = false;
 function VUHDO_shieldAbsorbInitLocalOverrides()
+
+	VUHDO_updateBouquetsForEvent = _G["VUHDO_updateBouquetsForEvent"];
+	VUHDO_updateShieldBar = _G["VUHDO_updateShieldBar"];
+	VUHDO_updateHealAbsorbBar = _G["VUHDO_updateHealAbsorbBar"];
+
 	VUHDO_PLAYER_GUID = UnitGUID("player");
 	sShowAbsorb = VUHDO_PANEL_SETUP["BAR_COLORS"]["HOTS"]["showShieldAbsorb"];
 	sIsPumpAegis = VUHDO_PANEL_SETUP["BAR_COLORS"]["HOTS"]["isPumpDivineAegis"];
+
 end
 
 
@@ -191,9 +206,11 @@ local function VUHDO_updateShieldValue(aUnit, aShieldName, anAmount, aDuration, 
 
 	if aDuration then 
 		VUHDO_SHIELD_EXPIRY[aUnit][aShieldName] = GetTime() + aDuration;
-		
-		VUHDO_SHIELD_SIZE[aUnit][aShieldName] = anAmount;
-		--VUHDO_xMsg("Shield overwritten");
+
+		if not sIsPumpAegis or not VUHDO_PUMP_SHIELDS[aShieldName] then
+			VUHDO_SHIELD_SIZE[aUnit][aShieldName] = anAmount;
+			--VUHDO_xMsg("Shield overwritten");
+		end
 	elseif (aExpirationTime or 0) > VUHDO_SHIELD_EXPIRY[aUnit][aShieldName] then
 		VUHDO_SHIELD_EXPIRY[aUnit][aShieldName] = aExpirationTime;
 	elseif VUHDO_SHIELD_SIZE[aUnit][aShieldName] < anAmount then
@@ -328,23 +345,41 @@ end
 
 
 --
-local tUnit;
+local tUnit, tInfo;
 local VUHDO_DEBUFF_SHIELDS = { };
 local tDelta, tShieldName;
-function VUHDO_parseCombatLogShieldAbsorb(aMessage, aSrcGuid, aDstGuid, aShieldName, anAmount, aSpellId, anAbsorbAmount, aHealAmount, aCritical, anAbsorbSpellName, anAbsorbSpellSchool, anAbsorbSpellDamageAmount, anAbsorbSwingDamageAmount)
-	tUnit = VUHDO_RAID_GUIDS[aDstGuid];
-	if not tUnit then return; end
+local tDoUpdate;
+function VUHDO_parseCombatLogShieldAbsorb(aMessage, aSrcGuid, aDstGuid, aShieldName, anAmount, aSpellId, anAbsorbAmount, anAbsorbSpellId, aHealAmount, aCritical, anAbsorbSpellName, anAbsorbSpellSchool, anAbsorbSpellDamageAmount, anAbsorbSwingDamageAmount)
 
-	if sMissedEvents[aMessage] then
-		VUHDO_updateShields(tUnit);
+	tUnit = VUHDO_RAID_GUIDS[aDstGuid];
+
+	if not tUnit then
 		return;
 	end
+
+	-- FIXME: Wrath Classic has special handling of SPELL_ABSORBED subevents so disable for now
+	-- only trigger a shield update on subevent SPELL_ABSORBED, no longer for *_MISSED events
+	-- event optionally includes the spell payload if trigger by SPELL_DAMAGE
+	-- this moves the absorb spell ID from the 16th arg (anAmount) to the 19th arg (anAbsorbSpellId)
+--[[	if sMissedEvents[aMessage] then
+		if type(anAmount) == "number" then
+			anAbsorbSpellId = anAmount;
+		end
+
+		if VUHDO_SHIELDS[anAbsorbSpellId] then
+			VUHDO_updateShield(tUnit, anAbsorbSpellId);
+		end
+
+		return;
+	end]];
 
 	--VUHDO_Msg(aSpellId);
 
 	--[[if ("SPELL_AURA_APPLIED" == aMessage) then
 		VUHDO_xMsg(aShieldName, aSpellId);
 	end]]
+
+	tDoUpdate = true;
 
 	if VUHDO_SHIELDS[aSpellId] then
 
@@ -373,6 +408,8 @@ function VUHDO_parseCombatLogShieldAbsorb(aMessage, aSrcGuid, aDstGuid, aShieldN
 			end
 
 			VUHDO_SHIELD_LEFT_TEMP[tUnit][VUHDO_SPELL_ID.POWERWORD_SHIELD] = anAmount;
+		else
+			tDoUpdate = false;
 		end
 	elseif VUHDO_ABSORB_DEBUFFS[aSpellId] then
 
@@ -386,25 +423,39 @@ function VUHDO_parseCombatLogShieldAbsorb(aMessage, aSrcGuid, aDstGuid, aShieldN
 			or "SPELL_AURA_BROKEN_SPELL" == aMessage then
 			VUHDO_removeShield(tUnit, aShieldName);
 			VUHDO_DEBUFF_SHIELDS[tUnit] = nil;
+		else
+			tDoUpdate = false;
 		end
 	elseif ("SPELL_HEAL" == aMessage or "SPELL_PERIODIC_HEAL" == aMessage)
 		and VUHDO_DEBUFF_SHIELDS[tUnit]
 		and (tonumber(anAbsorbAmount) or 0) > 0 then
+
 		tShieldName = VUHDO_DEBUFF_SHIELDS[tUnit];
 		tDelta = VUHDO_getShieldLeftAmount(tUnit, tShieldName) - anAbsorbAmount;
 		VUHDO_updateShieldValue(tUnit, tShieldName, tDelta);
 	elseif "UNIT_DIED" == aMessage then
+
 		VUHDO_SHIELD_SIZE[tUnit] = nil;
 		VUHDO_SHIELD_LEFT[tUnit] = nil;
 		VUHDO_SHIELD_EXPIRY[tUnit] = nil;
 		VUHDO_DEBUFF_SHIELDS[tUnit] = nil;
 		VUHDO_SHIELD_LAST_SOURCE_GUID[tUnit] = nil;
-	elseif VUHDO_IMMEDIATE_HOTS[aShieldName] and VUHDO_ACTIVE_HOTS[aShieldName] and 
-		("SPELL_AURA_APPLIED" == aMessage or "SPELL_AURA_REMOVED" == aMessage or 
-		 "SPELL_AURA_REFRESH" == aMessage or "SPELL_AURA_BROKEN" == aMessage or 
-		 "SPELL_AURA_BROKEN_SPELL" == aMessage) then
-		VUHDO_updateAllHoTs();
-		VUHDO_updateAllCyclicBouquets(true);
+	elseif ((VUHDO_IMMEDIATE_HOTS[aShieldName] and VUHDO_ACTIVE_HOTS[aShieldName]) or
+		(VUHDO_IMMEDIATE_HOTS[tostring(aSpellId)] and VUHDO_ACTIVE_HOTS[tostring(aSpellId)])) and
+		("SPELL_AURA_APPLIED" == aMessage or "SPELL_AURA_REMOVED" == aMessage or
+		"SPELL_AURA_REFRESH" == aMessage or "SPELL_AURA_BROKEN" == aMessage or
+		"SPELL_AURA_BROKEN_SPELL" == aMessage) then
+
+		tinfo = VUHDO_RAID[tUnit];
+
+		if tInfo then
+			VUHDO_updateHots(tUnit, tInfo);
+
+			-- FIXME: why all?
+			VUHDO_updateAllCyclicBouquets(true);
+		else
+			tDoUpdate = false;
+		end
 	elseif "SPELL_ABSORBED" == aMessage then
 		-- SPELL_ABSORBED optionally includes the spell payload if triggered from what would be SPELL_DAMAGE
 		-- this offsets the CLEU payload by +3
@@ -420,10 +471,18 @@ function VUHDO_parseCombatLogShieldAbsorb(aMessage, aSrcGuid, aDstGuid, aShieldN
 		if VUHDO_SHIELD_LEFT[tUnit][tShieldName] then
 			tDelta = VUHDO_getShieldLeftAmount(tUnit, tShieldName) - anAmount;
 			VUHDO_updateShieldValue(tUnit, tShieldName, tDelta);
+		else
+			tDoUpdate = false;
 		end
+	else
+		tDoUpdate = false;
 	end
 
-	VUHDO_updateBouquetsForEvent(tUnit, 36); -- VUHDO_UPDATE_SHIELD
-	VUHDO_updateShieldBar(tUnit);
-	VUHDO_updateHealAbsorbBar(tUnit);
+	if tDoUpdate then
+		VUHDO_updateBouquetsForEvent(tUnit, 36); -- VUHDO_UPDATE_SHIELD
+
+		VUHDO_updateShieldBar(tUnit);
+		VUHDO_updateHealAbsorbBar(tUnit);
+	end
+
 end

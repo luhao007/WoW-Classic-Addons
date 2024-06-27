@@ -142,6 +142,10 @@ function VUHDO_isUnitInModel(aUnit, aModelId)
 	tModelType = VUHDO_getModelType(aModelId);
 
 	if 2 == tModelType then -- VUHDO_ID_TYPE_GROUP
+		if aModelId == VUHDO_ID_GROUP_OWN and aUnit == "player" then
+			return true;
+		end
+
 		return aModelId == VUHDO_RAID[aUnit]["group"];
 	elseif 1 == tModelType then -- VUHDO_ID_TYPE_CLASS
 		return aModelId == VUHDO_RAID[aUnit]["classId"];

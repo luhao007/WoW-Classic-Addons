@@ -42,7 +42,7 @@ DT.ClassSpec = {
 	PALADIN = {
 		382,	--Holy,神圣
 		383,	--Protection,防护
-		381,	--Combat,惩戒
+		381,	--Discipline,惩戒
 	},
 	PRIEST = {
 		201,	--Discipline,戒律
@@ -60,8 +60,8 @@ DT.ClassSpec = {
 		262,	--Restoration,恢复
 	},
 	WARLOCK = {
-		302,	--Curses,痛苦
-		303,	--Summoning,恶魔学识
+		302,	--Affliction,痛苦
+		303,	--Demonology,恶魔学识
 		301,	--Destruction,毁灭
 	},
 	WARRIOR = {
@@ -1136,7 +1136,7 @@ DT.TalentSpecIcon = {
 	[381] = "Interface\\Icons\\Spell_Holy_AuraOfLight",
 	[382] = "Interface\\Icons\\Spell_Holy_HolyBolt",
 	[383] = "Interface\\Icons\\Spell_Holy_DevotionAura",
-	
+
 	[398] = "Interface\\Icons\\Spell_Deathknight_BloodPresence",
 	[399] = "Interface\\Icons\\Spell_Deathknight_FrostPresence",
 	[400] = "Interface\\Icons\\Spell_Deathknight_UnholyPresence",
@@ -1411,3 +1411,7 @@ DT.PresetTalents = {
 		},
 	},
 };
+
+DT.LevelAvailablePointsTable = {  };
+for i = 1, 9 do DT.LevelAvailablePointsTable[i] = 0; end
+for i = 10, DT.MAX_LEVEL do DT.LevelAvailablePointsTable[i] = i - 9; end

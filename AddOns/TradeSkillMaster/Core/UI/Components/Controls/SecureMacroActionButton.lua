@@ -5,6 +5,7 @@
 -- ------------------------------------------------------------------------------ --
 
 local TSM = select(2, ...) ---@type TSM
+local Environment = TSM.Include("Environment")
 local UIElements = TSM.Include("UI.UIElements")
 
 
@@ -24,20 +25,20 @@ local SecureMacroActionButton = UIElements.Define("SecureMacroActionButton", "Ac
 function SecureMacroActionButton:__init(name)
 	self.__super:__init(name, true)
 	local frame = self:_GetBaseFrame()
-	frame:SetAttribute("type1", "macro")
-	frame:SetAttribute("macrotext1", "")
+	frame:SetAttribute("*type1", "macro")
+	frame:SetAttribute("*macrotext1", "")
 end
 
 function SecureMacroActionButton:Acquire()
 	self.__super:Acquire()
 	local frame = self:_GetBaseFrame()
-	frame:RegisterForClicks(not TSM.IsWowClassic() and GetCVarBool("ActionButtonUseKeyDown") and "LeftButtonDown" or "LeftButtonUp")
+	frame:RegisterForClicks(Environment.IsRetail() and GetCVarBool("ActionButtonUseKeyDown") and "LeftButtonDown" or "LeftButtonUp")
 end
 
 function SecureMacroActionButton:Release()
 	local frame = self:_GetBaseFrame()
 	frame:TSMSetScript("PreClick", nil)
-	frame:SetAttribute("macrotext1", "")
+	frame:SetAttribute("*macrotext1", "")
 	self.__super:Release()
 end
 
@@ -58,6 +59,6 @@ end
 ---@param text string The macro text
 ---@return SecureMacroActionButton @The secure macro action button object
 function SecureMacroActionButton:SetMacroText(text)
-	self:_GetBaseFrame():SetAttribute("macrotext1", text)
+	self:_GetBaseFrame():SetAttribute("*macrotext1", text)
 	return self
 end

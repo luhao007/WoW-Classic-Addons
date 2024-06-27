@@ -8,7 +8,7 @@
 -- The element used to show the queue in the Crafting UI. It is a subclass of the @{ScrollingTable} class.
 -- @classmod CraftingQueueList
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local L = TSM.Include("Locale").GetTable()
 local CraftString = TSM.Include("Util.CraftString")
 local TempTable = TSM.Include("Util.TempTable")
@@ -272,7 +272,7 @@ function private.GetItemText(self, data)
 		local craftString = CraftString.FromRecipeString(recipeString)
 		local itemString = TSM.Crafting.GetItemString(craftString)
 		local spellId = CraftString.GetSpellId(craftString)
-		return itemString and UIUtils.GetColoredCraftedItemName(itemString) or GetSpellInfo(spellId) or "?"
+		return itemString and UIUtils.GetDisplayItemName(itemString) or GetSpellInfo(spellId) or "?"
 	end
 end
 
@@ -293,7 +293,7 @@ function private.GetItemTooltip(self, data)
 	local numQueued = data:GetField("num")
 	local itemString = TSM.Crafting.GetItemString(craftString)
 	local spellId = CraftString.GetSpellId(craftString)
-	local name = itemString and UIUtils.GetColoredCraftedItemName(itemString) or GetSpellInfo(spellId) or "?"
+	local name = itemString and UIUtils.GetDisplayItemName(itemString) or GetSpellInfo(spellId) or "?"
 	local tooltipLines = TempTable.Acquire()
 	tinsert(tooltipLines, name.." (x"..numQueued..")")
 	local numResult = TSM.Crafting.GetNumResult(craftString)
@@ -305,14 +305,14 @@ function private.GetItemTooltip(self, data)
 		local numHave = BagTracking.GetCraftingMatQuantity(matItemString)
 		local numNeed = quantity * numQueued
 		local color = Theme.GetColor(numHave >= numNeed and "FEEDBACK_GREEN" or "FEEDBACK_RED")
-		tinsert(tooltipLines, color:ColorText(numHave.."/"..numNeed).." - "..(UIUtils.GetColoredCraftedItemName(matItemString) or "?"))
+		tinsert(tooltipLines, color:ColorText(numHave.."/"..numNeed).." - "..(UIUtils.GetDisplayItemName(matItemString) or "?"))
 	end
 	for _, _, itemId in RecipeString.OptionalMatIterator(recipeString) do
 		local matItemString = "i:"..itemId
 		local numHave = BagTracking.GetCraftingMatQuantity(matItemString)
 		local numNeed = TSM.Crafting.GetOptionalMatQuantity(craftString, itemId)* numQueued
 		local color = Theme.GetColor(numHave >= numNeed and "FEEDBACK_GREEN" or "FEEDBACK_RED")
-		tinsert(tooltipLines, color:ColorText(numHave.."/"..numNeed).." - "..(UIUtils.GetColoredCraftedItemName(matItemString) or "?"))
+		tinsert(tooltipLines, color:ColorText(numHave.."/"..numNeed).." - "..(UIUtils.GetDisplayItemName(matItemString) or "?"))
 	end
 	local cooldown = Profession.GetRemainingCooldown(craftString)
 	if cooldown then

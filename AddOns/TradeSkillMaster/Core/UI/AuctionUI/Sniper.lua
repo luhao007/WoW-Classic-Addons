@@ -6,6 +6,7 @@
 
 local TSM = select(2, ...) ---@type TSM
 local Sniper = TSM.UI.AuctionUI:NewPackage("Sniper")
+local Environment = TSM.Include("Environment")
 local L = TSM.Include("Locale").GetTable()
 local Delay = TSM.Include("Util.Delay")
 local Event = TSM.Include("Util.Event")
@@ -25,6 +26,7 @@ local PlayerInfo = TSM.Include("Service.PlayerInfo")
 local UIElements = TSM.Include("UI.UIElements")
 local UIUtils = TSM.Include("UI.UIUtils")
 local private = {
+	hasBidSnipping = nil,
 	settings = nil,
 	fsm = nil,
 	selectionFrame = nil,
@@ -43,6 +45,7 @@ local RETAIL_RESCAN_DELAY = 30
 -- ============================================================================
 
 function Sniper.OnInitialize()
+	private.hasBidSnipping = not Environment.HasFeature(Environment.FEATURES.C_AUCTION_HOUSE)
 	private.settings = Settings.NewView()
 		:AddKey("global", "auctionUIContext", "sniperScrollingTable")
 		:AddKey("global", "sniperOptions", "sniperSound")
@@ -86,7 +89,7 @@ function private.GetSelectionFrame()
 	local frame = UIElements.New("Frame", "selection")
 		:SetLayout("VERTICAL")
 		:SetBackgroundColor("PRIMARY_BG_ALT")
-		:AddChildIf(TSM.IsWowClassic(), UIElements.New("Text", "text")
+		:AddChildIf(private.hasBidSnipping, UIElements.New("Text", "text")
 			:SetHeight(20)
 			:SetMargin(8, 8, 12, 0)
 			:SetFont("BODY_BODY2_MEDIUM")
@@ -98,11 +101,11 @@ function private.GetSelectionFrame()
 			:SetHeight(24)
 			:SetMargin(8, 8, 12, 12)
 			:AddChild(UIElements.New("ActionButton", "buyoutScanBtn")
-				:SetMargin(0, TSM.IsWowClassic() and 8 or 0, 0, 0)
+				:SetMargin(0, private.hasBidSnipping and 8 or 0, 0, 0)
 				:SetText(L["Run Buyout Sniper"])
 				:SetScript("OnClick", private.BuyoutScanButtonOnClick)
 			)
-			:AddChildIf(TSM.IsWowClassic(), UIElements.New("ActionButton", "bidScanBtn")
+			:AddChildIf(private.hasBidSnipping, UIElements.New("ActionButton", "bidScanBtn")
 				:SetText(L["Run Bid Sniper"])
 				:SetScript("OnClick", private.BidScanButtonOnClick)
 			)
@@ -287,14 +290,14 @@ function private.FSMCreate()
 		scanPaused = false,
 		scanDone = false,
 	}
-	if TSM.IsWowClassic() then
-		Event.Register("CHAT_MSG_SYSTEM", private.FSMMessageEventHandler)
-		Event.Register("UI_ERROR_MESSAGE", private.FSMMessageEventHandler)
-	else
+	if Environment.HasFeature(Environment.FEATURES.C_AUCTION_HOUSE) then
 		Event.Register("AUCTION_HOUSE_SHOW_NOTIFICATION", private.FSMMessageEventHandler)
 		Event.Register("AUCTION_HOUSE_SHOW_FORMATTED_NOTIFICATION", private.FSMMessageEventHandler)
 		Event.Register("AUCTION_HOUSE_SHOW_ERROR", private.FSMMessageErrorEventHandler)
 		Event.Register("COMMODITY_PURCHASE_SUCCEEDED", private.FSMBuyoutSuccess)
+	else
+		Event.Register("CHAT_MSG_SYSTEM", private.FSMMessageEventHandler)
+		Event.Register("UI_ERROR_MESSAGE", private.FSMMessageEventHandler)
 	end
 	DefaultUI.RegisterAuctionHouseVisibleCallback(function() private.fsm:ProcessEvent("EV_AUCTION_HOUSE_CLOSED") end, false)
 	AuctionHouseWrapper.RegisterAuctionIdUpdateCallback(function(...)
@@ -409,7 +412,7 @@ function private.FSMCreate()
 				end
 				UpdateScanFrame(context)
 				context.searchContext:StartThread(private.FSMScanCallback, context.auctionScan)
-				if TSM.IsWowClassic() then
+				if not Environment.IsRetail() then
 					private.phaseTimer:RunForTime(PHASED_TIME)
 				end
 			end)
@@ -430,12 +433,12 @@ function private.FSMCreate()
 				if selection and selection:IsSubRow() then
 					return "ST_FINDING_AUCTION"
 				else
-					if TSM.IsWowClassic() then
-						return "ST_RESULTS"
-					else
+					if Environment.HasFeature(Environment.FEATURES.C_AUCTION_HOUSE) then
 						-- wait 30 seconds before rescanning to avoid spamming the server with API calls
 						context.scanDone = true
 						private.rescanTimer:RunForTime(RETAIL_RESCAN_DELAY)
+					else
+						return "ST_RESULTS"
 					end
 				end
 			end)
@@ -574,16 +577,16 @@ function private.FSMCreate()
 				if context.findHash == selection:GetHashes() then
 					context.findAuction = selection
 				end
-				if TSM.IsWowClassic() then
-					context.findResult = result
-					context.numFound = #result
-					context.maxQuantity = #result
-				else
+				if Environment.HasFeature(Environment.FEATURES.C_AUCTION_HOUSE) then
 					local maxCommodity = context.findAuction:IsCommodity() and context.findAuction:GetResultRow():GetMaxQuantities()
 					local numCanBuy = maxCommodity or result
 					context.findResult = numCanBuy > 0
 					context.numFound = numCanBuy
 					context.maxQuantity = maxCommodity or 1
+				else
+					context.findResult = result
+					context.numFound = #result
+					context.maxQuantity = #result
 				end
 				assert(context.numActioned == 0 and context.numConfirmed == 0)
 				return "ST_BIDDING_BUYING"
@@ -690,7 +693,13 @@ function private.FSMCreate()
 				if not context.findAuction then
 					return
 				end
-				if TSM.IsWowClassic() then
+				if Environment.HasFeature(Environment.FEATURES.C_AUCTION_HOUSE) then
+					assert(not context.searchContext:IsBidScan())
+					if context.searchContext:IsBuyoutScan() and msg == Enum.AuctionHouseNotification.AuctionWon then
+						-- bought an auction
+						return "ST_CONFIRMING_BID_BUY", true
+					end
+				else
 					local _, rawLink = context.findAuction:GetLinks()
 					if msg == LE_GAME_ERR_AUCTION_DATABASE_ERROR or msg == LE_GAME_ERR_AUCTION_HIGHER_BID or msg == LE_GAME_ERR_ITEM_NOT_FOUND or msg == LE_GAME_ERR_AUCTION_BID_OWN or msg == LE_GAME_ERR_NOT_ENOUGH_MONEY or msg == LE_GAME_ERR_ITEM_MAX_COUNT then
 						-- failed to bid/buy an auction
@@ -699,11 +708,6 @@ function private.FSMCreate()
 						-- bid on an auction
 						return "ST_CONFIRMING_BID_BUY", true
 					elseif context.searchContext:IsBuyoutScan() and msg == format(ERR_AUCTION_WON_S, ItemInfo.GetName(rawLink)) then
-						-- bought an auction
-						return "ST_CONFIRMING_BID_BUY", true
-					end
-				else
-					if (context.searchContext:IsBuyoutScan() and msg == Enum.AuctionHouseNotification.AuctionWon) or (context.searchContext:IsBidScan() and msg == Enum.AuctionHouseNotification.BidPlaced) then
 						-- bought an auction
 						return "ST_CONFIRMING_BID_BUY", true
 					end
@@ -729,7 +733,7 @@ function private.FSMCreate()
 		:AddState(FSM.NewState("ST_BID_BUY_CONFIRMATION")
 			:SetOnEnter(function(context)
 				local selection = context.scanFrame:GetElement("auctions"):GetSelection()
-				local index = TSM.IsWowClassic() and context.findResult[#context.findResult] or nil
+				local index = not Environment.IsRetail() and context.findResult[#context.findResult] or nil
 				if TSM.UI.AuctionUI.BuyUtil.ShowConfirmation(context.scanFrame, selection, context.searchContext:IsBuyoutScan(), context.numConfirmed + 1, context.numFound, context.maxQuantity, private.FSMConfirmationCallback, context.auctionScan, index, true, context.searchContext) then
 					return "ST_BIDDING_BUYING"
 				else
@@ -742,8 +746,8 @@ function private.FSMCreate()
 		)
 		:AddState(FSM.NewState("ST_PLACING_BID_BUY")
 			:SetOnEnter(function(context, quantity)
-				local index = TSM.IsWowClassic() and tremove(context.findResult, #context.findResult) or nil
-				assert(not TSM.IsWowClassic() or index)
+				local index = not Environment.IsRetail() and tremove(context.findResult, #context.findResult) or nil
+				assert(Environment.IsRetail() or index)
 				local bidBuyout = nil
 				if context.searchContext:IsBuyoutScan() then
 					bidBuyout = context.findAuction:GetBuyouts()
@@ -755,7 +759,7 @@ function private.FSMCreate()
 				local result = context.auctionScan:PlaceBidOrBuyout(index, bidBuyout, context.findAuction, quantity)
 				if result then
 					MailTracking.RecordAuctionBuyout(ItemString.ToLevel(context.findAuction:GetItemString()), quantity)
-					context.numActioned = context.numActioned + (TSM.IsWowClassic() and 1 or quantity)
+					context.numActioned = context.numActioned + (Environment.HasFeature(Environment.FEATURES.AH_STACKS) and 1 or quantity)
 					context.lastBuyQuantity = quantity
 				else
 					local _, rawLink = context.findAuction:GetLinks()
@@ -792,7 +796,7 @@ function private.FSMCreate()
 						error("Invalid scan type")
 					end
 				end
-				context.numConfirmed = context.numConfirmed + (TSM.IsWowClassic() and 1 or context.lastBuyQuantity)
+				context.numConfirmed = context.numConfirmed + (Environment.HasFeature(Environment.FEATURES.AH_STACKS) and 1 or context.lastBuyQuantity)
 				context.findAuction = context.scanFrame and context.scanFrame:GetElement("auctions"):GetSelection()
 				return "ST_BIDDING_BUYING", success and context.lastBuyQuantity or nil
 			end)

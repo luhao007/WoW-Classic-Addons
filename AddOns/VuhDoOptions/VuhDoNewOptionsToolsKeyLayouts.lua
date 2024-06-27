@@ -275,6 +275,7 @@ end
 
 --
 local tEditBox;
+local tEditText;
 local tSelectedKeyLayout;
 local tKeyLayout;
 function VUHDO_keyLayoutExportButtonShown(aEditBox)

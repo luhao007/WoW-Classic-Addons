@@ -3,10 +3,11 @@
 
 local C_Timer = _G.C_Timer
 local DetailsFramework = _G.DetailsFramework
-local tinsert = _G.tinsert
+local tinsert = tinsert
 local addonName, Details222 = ...
 
 function Details.InstallRaidInfo()
+    if not DetailsFramework.IsDragonflightWow() then return end --In Cata, EJ_SelectInstance will fail due to instance not existing. This file only contains dragonflight raids anyways. Best keep it on DF only.
 	do
 		local INSTANCE_EJID = 1200
 		local INSTANCE_MAPID = 2522
@@ -149,7 +150,7 @@ function Details.InstallRaidInfo()
 			{boss = "Sylvanas Windrunner", portrait = 4071443},
 		}
 
-		_detalhes:InstallEncounter ({
+		Details:InstallEncounter ({
 			id = INSTANCE_MAPID, --map id
 			ej_id = INSTANCE_EJID, --encounter journal id
 			name = InstanceName,
@@ -240,7 +241,7 @@ function Details.InstallRaidInfo()
 			end
 		end
 
-		_detalhes:InstallEncounter ({
+		Details:InstallEncounter ({
 			id = INSTANCE_MAPID, --map id
 			ej_id = INSTANCE_EJID, --encounter journal id
 			name = InstanceName,

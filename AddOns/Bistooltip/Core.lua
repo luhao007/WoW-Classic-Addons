@@ -18,8 +18,8 @@ local function createEquipmentWatcher()
             flag = true
             local collection = {}
             for bag = 0, NUM_BAG_SLOTS do
-                for slot = 1, GetContainerNumSlots(bag) do
-                    local itemID = GetContainerItemID(bag, slot)
+                for slot = 1, C_Container.GetContainerNumSlots(bag) do
+                    local itemID = C_Container.GetContainerItemID(bag, slot)
                     if itemID ~= nil then
                         collection[itemID] = 1
                     end
@@ -28,7 +28,7 @@ local function createEquipmentWatcher()
             for i=0,18 do
                 local itemID = GetInventoryItemID("player", i)
                 if itemID ~= nil then
-                    collection[itemID] = 1
+                    collection[itemID] = 2
                 end
             end
             Bistooltip_char_equipment = collection
@@ -40,7 +40,7 @@ end
 function BistooltipAddon:OnInitialize()
     createEquipmentWatcher()
     BistooltipAddon.AceAddonName = "Bis-Tooltip"
-    BistooltipAddon.AddonNameAndVersion = "Bis-Tooltip v7.10"
+    BistooltipAddon.AddonNameAndVersion = "Bis-Tooltip v7.42"
     BistooltipAddon:initConfig()
     BistooltipAddon:addMapIcon()
     BistooltipAddon:initBislists()

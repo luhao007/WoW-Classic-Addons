@@ -6,7 +6,6 @@
 
 local TSM = select(2, ...) ---@type TSM
 local Queue = TSM.Crafting:NewPackage("Queue")
-local ProfessionInfo = TSM.Include("Data.ProfessionInfo")
 local CraftString = TSM.Include("Util.CraftString")
 local Database = TSM.Include("Util.Database")
 local Math = TSM.Include("Util.Math")
@@ -145,8 +144,8 @@ function Queue.RestockGroups(groups)
 	for _, groupPath in ipairs(groups) do
 		if groupPath ~= TSM.CONST.ROOT_GROUP_PATH then
 			for _, itemString in TSM.Groups.ItemIterator(groupPath) do
-				local baseItemString = ItemString.GetBaseFast(itemString)
-				if TSM.Crafting.CanCraftItem(baseItemString) then
+				local levelItemString = ItemString.ToLevel(itemString)
+				if TSM.Crafting.CanCraftItem(levelItemString) then
 					local isValid, err = TSM.Operations.Crafting.IsValid(itemString)
 					if isValid then
 						private.RestockItem(itemString)
@@ -167,11 +166,21 @@ end
 -- ============================================================================
 
 function private.RestockItem(itemString)
-	local cheapestCost, cheapestCraftString = TSM.Crafting.Cost.GetLowestCostByItem(itemString)
+	assert(not next(private.optionalMatTemp) and not next(private.qualityMatTemp))
+	local cheapestCost, cheapestCraftString = TSM.Crafting.Cost.GetLowestCostByItem(itemString, private.optionalMatTemp, private.qualityMatTemp)
 	if not cheapestCraftString then
 		-- can't craft this item
+		wipe(private.qualityMatTemp)
+		wipe(private.optionalMatTemp)
 		return
 	end
+	for _, matItemString in ipairs(private.qualityMatTemp) do
+		local matString = private.qualityMatTemp[matItemString]
+		private.optionalMatTemp[MatString.GetSlotId(matString)] = ItemString.ToId(matItemString)
+	end
+	wipe(private.qualityMatTemp)
+	local recipeString = RecipeString.FromCraftString(cheapestCraftString, private.optionalMatTemp)
+	wipe(private.optionalMatTemp)
 	local itemValue = TSM.Crafting.Cost.GetCraftedItemValue(itemString)
 	local profit = itemValue and cheapestCost and (itemValue - cheapestCost) or nil
 	local hasMinProfit, minProfit = TSM.Operations.Crafting.GetMinProfit(itemString)
@@ -180,7 +189,7 @@ function private.RestockItem(itemString)
 		return
 	end
 
-	local haveQuantity = CustomPrice.GetItemPrice(itemString, "NumInventory") or 0
+	local haveQuantity = CustomPrice.GetSourcePrice(itemString, "NumInventory") or 0
 	for guild, ignored in pairs(TSM.db.global.craftingOptions.ignoreGuilds) do
 		if ignored then
 			haveQuantity = haveQuantity - AltTracking.GetGuildQuantity(itemString, guild)
@@ -200,43 +209,16 @@ function private.RestockItem(itemString)
 	if neededQuantity == 0 then
 		return
 	end
-	local itemLevel = ItemString.GetItemLevel(itemString)
-	local levelOptionalMat = itemLevel and ProfessionInfo.GetOptionalMatByItemLevel(itemLevel) or nil
-	assert(not next(private.optionalMatTemp))
-	if levelOptionalMat then
-		local levelOptionalMatItemId = ItemString.ToId(levelOptionalMat)
-		local found = false
-		for _, matString, slotId in TSM.Crafting.OptionalMatIterator(cheapestCraftString) do
-			if not found and MatString.ContainsItem(matString, levelOptionalMatItemId) then
-				private.optionalMatTemp[slotId] = levelOptionalMatItemId
-				found = true
-			end
-		end
-	end
-	local level = CraftString.GetLevel(cheapestCraftString)
-	if level then
-		local relItemLevel, isAbs = ItemString.ParseLevel(ItemString.ToLevel(itemString))
-		if not isAbs then
-			local optionalMatItemString = ProfessionInfo.GetOptionalMatByRelItemLevel(relItemLevel)
-			if relItemLevel and optionalMatItemString then
-				private.optionalMatTemp[#private.optionalMatTemp + 1] = ItemString.ToId(optionalMatItemString)
-			end
-		end
-	end
-	local quality = CraftString.GetQuality(cheapestCraftString)
-	if quality then
+	local chance = 1
+	if CraftString.GetQuality(cheapestCraftString) then
 		assert(not next(private.matsTemp) and not next(private.qualityMatTemp))
 		TSM.Crafting.GetMatsAsTable(cheapestCraftString, private.matsTemp)
-		if TSM.Crafting.DFCrafting.GetOptionalMats(cheapestCraftString, private.matsTemp, private.qualityMatTemp) then
-			for _, qualityMatItemString in ipairs(private.qualityMatTemp) do
-				local matString = private.qualityMatTemp[qualityMatItemString]
-				private.optionalMatTemp[MatString.GetSlotId(matString)] = ItemString.ToId(qualityMatItemString)
-			end
+		local canCraft, inspirationChance = TSM.Crafting.DFCrafting.GetOptionalMats(cheapestCraftString, private.matsTemp, private.qualityMatTemp)
+		if canCraft then
+			chance = inspirationChance
 		end
 		wipe(private.qualityMatTemp)
 		wipe(private.matsTemp)
 	end
-	local cheapestRecipeString = RecipeString.FromCraftString(cheapestCraftString, private.optionalMatTemp)
-	wipe(private.optionalMatTemp)
-	Queue.SetNum(cheapestRecipeString, floor(neededQuantity / TSM.Crafting.GetNumResult(cheapestCraftString)))
+	Queue.SetNum(recipeString, floor(neededQuantity / (TSM.Crafting.GetNumResult(cheapestCraftString) * chance)))
 end

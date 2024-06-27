@@ -553,10 +553,10 @@ local function findFirstEmptyBagSlot(usedBagSlots)
 	end
 	
 	for i, bagId in ipairs(bagIds) do
-		local numSlots = GetContainerNumSlots(bagId)
+		local numSlots = C_Container.GetContainerNumSlots(bagId)
 		for slotId = 1, numSlots do
 			if not usedBagSlots or not usedBagSlots[bagId] or not usedBagSlots[bagId][slotId] then
-				local _, _, _, _, _, _, itemLink = GetContainerItemInfo(bagId, slotId)
+				local itemLink = C_Container.GetContainerItemLink(bagId, slotId)
 				if not itemLink then
 					-- this prevents repeated calls to this from returning the same bag slot if desired
 					if usedBagSlots then
@@ -579,13 +579,33 @@ end
 
 -- scan a bag for the best matching item
 local function scanBagForItem(item, bagId, bestItem, bestDiff, bestLink)
-	local numSlots = GetContainerNumSlots(bagId)
+	local numSlots = C_Container.GetContainerNumSlots(bagId)
+	--local loc = ItemLocation.CreateEmpty()
+	local blizzItem
 	for slotId = 1, numSlots do
-		local _, _, _, _, _, _, itemLink = GetContainerItemInfo(bagId, slotId)
+		local itemLink = C_Container.GetContainerItemLink(bagId, slotId)
         -- we skip any stackable item, as far as we know, there is no equippable gear that can be stacked
 		if itemLink then
 			local bagItem = Amr.ParseItemLink(itemLink)
 			if bagItem ~= nil then
+
+				blizzItem = Item:CreateFromBagAndSlot(bagId, slotId)
+
+				-- seems to be of the form Item-1147-0-4000000XXXXXXXXX, so we take just the last 9 digits
+				bagItem.guid = blizzItem:GetItemGUID()
+				if bagItem.guid and strlen(bagItem.guid) > 9 then
+					bagItem.guid = strsub(bagItem.guid, -9)
+				end
+
+				-- see if this is an azerite item and read azerite power ids
+				--[[loc:SetBagAndSlot(bagId, slotId)
+				if C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItem(loc) then
+					local powers = Amr.ReadAzeritePowers(loc)
+					if powers then
+						bagItem.azerite = powers
+					end
+				end]]
+
 				local diff = countItemDifferences(item, bagItem)
 				if diff < bestDiff then
 					bestItem = { bag = bagId, slot = slotId }
@@ -749,7 +769,7 @@ function processCurrentGearOp()
 		end
 
 		PickupInventoryItem(_currentGearOp.nextSlot)
-		PickupContainerItem(invBag, invSlot)
+		C_Container.PickupContainerItem(invBag, invSlot)
 
 		-- set an action to happen on ITEM_UNLOCKED, triggered by ClearCursor
 		_itemLockAction = {
@@ -785,8 +805,8 @@ function processCurrentGearOp()
 			end
 	
 			-- move from bank to bag
-			PickupContainerItem(bestItem.bag, bestItem.slot)
-			PickupContainerItem(invBag, invSlot)
+			C_Container.PickupContainerItem(bestItem.bag, bestItem.slot)
+			C_Container.PickupContainerItem(invBag, invSlot)
 	
 			-- set an action to happen on ITEM_UNLOCKED, triggered by ClearCursor
 			_itemLockAction = {
@@ -809,7 +829,7 @@ function processCurrentGearOp()
 
 			-- an item in the player's bags or already equipped, equip it
 			if bestItem.bag then
-				PickupContainerItem(bestItem.bag, bestItem.slot)
+				C_Container.PickupContainerItem(bestItem.bag, bestItem.slot)
 			else
 				_gearOpWaiting.inventory[bestItem.slot] = true
 				PickupInventoryItem(bestItem.slot)
@@ -917,7 +937,7 @@ local function handleItemUnlocked(bagId, slotId)
 			if IsInventoryItemLocked(_itemLockAction.invSlot) then return end
 
 			if _itemLockAction.bagId then
-				local _, _, locked = GetContainerItemInfo(_itemLockAction.bagId, _itemLockAction.slotId)
+				local _, _, locked = C_Container.GetContainerItemInfo(_itemLockAction.bagId, _itemLockAction.slotId)
 				-- the bag slot we're swapping from is still locked, can't continue yet
 				if locked then return end
 			else

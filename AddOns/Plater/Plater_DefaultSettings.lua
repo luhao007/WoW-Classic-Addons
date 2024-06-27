@@ -23,6 +23,7 @@ LibSharedMedia:Register ("statusbar", "PlaterBackground", [[Interface\AddOns\Pla
 LibSharedMedia:Register ("statusbar", "PlaterTexture", [[Interface\AddOns\Plater\images\platetexture]])
 LibSharedMedia:Register ("statusbar", "PlaterHighlight", [[Interface\AddOns\Plater\images\plateselected]])
 LibSharedMedia:Register ("statusbar", "PlaterFocus", [[Interface\AddOns\Plater\images\overlay_indicator_1]])
+LibSharedMedia:Register ("statusbar", "PlaterChess", [[Interface\AddOns\Plater\images\overlay_indicator_2]])
 LibSharedMedia:Register ("statusbar", "PlaterHealth", [[Interface\AddOns\Plater\images\nameplate_health_texture]])
 LibSharedMedia:Register ("statusbar", "testbar", [[Interface\AddOns\Plater\images\testbar.tga]])
 LibSharedMedia:Register ("statusbar", "You Are Beautiful!", [[Interface\AddOns\Plater\images\regular_white]])
@@ -128,6 +129,7 @@ PLATER_DEFAULT_SETTINGS = {
 		--store audio cues for spells
 		--format: [SpellID] = filePath
 		cast_audiocues = {},
+		cast_audiocues_channel = "Master",
 
 		--store the cast colors customized by the user
 		cast_colors = {}, --[spellId] = {[1] = color, [2] = enabled, [3] = custom spell name}
@@ -140,8 +142,8 @@ PLATER_DEFAULT_SETTINGS = {
 			layer = "Artwork",
 		},
 
-		click_space = {140, 28},
-		click_space_friendly = {140, 28},
+		click_space = {140, 28}, --classic: {132, 32}, retail: {110, 45},
+		click_space_friendly = {140, 28}, --classic: {132, 32}, retail: {110, 45},
 		click_space_always_show = false,
 		hide_friendly_castbars = false,
 		hide_enemy_castbars = false,
@@ -215,7 +217,7 @@ PLATER_DEFAULT_SETTINGS = {
 				level_text_outline = "NONE",
 				level_text_shadow_color = {0, 0, 0, 1},
 				level_text_shadow_color_offset = {1, -1},
-				level_text_alpha = 0.3,
+				level_text_alpha = 0.7,
 				
 				percent_text_enabled = false,
 				percent_text_ooc = false,
@@ -286,7 +288,7 @@ PLATER_DEFAULT_SETTINGS = {
 				level_text_outline = "NONE",
 				level_text_shadow_color = {0, 0, 0, 1},
 				level_text_shadow_color_offset = {1, -1},
-				level_text_alpha = 0.3,
+				level_text_alpha = 0.7,
 				
 				percent_text_enabled = true,
 				percent_text_ooc = true,
@@ -323,6 +325,7 @@ PLATER_DEFAULT_SETTINGS = {
 				relevance_state = 4,
 				enabled = true,
 				module_enabled = true,
+				follow_blizzard_npc_option = false,
 				
 				health = {112, 12},
 				cast = {112, 10},
@@ -369,7 +372,7 @@ PLATER_DEFAULT_SETTINGS = {
 				level_text_outline = "NONE",
 				level_text_shadow_color = {0, 0, 0, 1},
 				level_text_shadow_color_offset = {1, -1},
-				level_text_alpha = 0.3,
+				level_text_alpha = 0.7,
 				
 				percent_text_enabled = false,
 				percent_text_ooc = false,
@@ -454,7 +457,7 @@ PLATER_DEFAULT_SETTINGS = {
 				level_text_outline = "NONE",
 				level_text_shadow_color = {0, 0, 0, 1},
 				level_text_shadow_color_offset = {1, -1},
-				level_text_alpha = 0.3,
+				level_text_alpha = 0.7,
 				
 				percent_text_enabled = true,
 				percent_text_ooc = true,
@@ -545,7 +548,7 @@ PLATER_DEFAULT_SETTINGS = {
 				level_text_outline = "NONE",
 				level_text_shadow_color = {0, 0, 0, 1},
 				level_text_shadow_color_offset = {1, -1},
-				level_text_alpha = 0.3,
+				level_text_alpha = 0.7,
 				
 				percent_text_enabled = true,
 				percent_text_ooc = true,
@@ -591,6 +594,7 @@ PLATER_DEFAULT_SETTINGS = {
 				scale = 0.8,
 				padding = 2,
 			},
+			druid_show_always = false,
 			resource_options = {
 				--names below are from Enum.PowerType[<resource name>]
 				["ComboPoints"] = {
@@ -635,13 +639,17 @@ PLATER_DEFAULT_SETTINGS = {
 		
 		show_healthbars_on_not_attackable = false,
 		show_healthbars_on_softinteract = true,
-		ignore_softinteract_objects = true,
+		ignore_softinteract_objects = false,
+		hide_name_on_game_objects = true,
+		show_softinteract_icons = true,
 		
 		enable_masque_support = false,
 		
 		use_name_translit = false,
 		
 		use_player_combat_state = false,
+		
+		opt_out_auto_accept_npc_colors = true,
 		
 		shadowMode = 1,
 		
@@ -690,6 +698,15 @@ PLATER_DEFAULT_SETTINGS = {
 		ui_parent_buff_special_level = 0,
 		ui_parent_cast_level = 0,
 		ui_parent_scale_tune = 0, --testing, a slider to change the unit frame scale / goal is to have a fine tune knob to adjust the overall size when using this feature
+		
+		--blizzard default nameplate fonts
+		blizzard_nameplate_font_override_enabled = false,
+		blizzard_nameplate_font = "Arial Narrow",
+		blizzard_nameplate_font_outline = "OUTLINE",
+		blizzard_nameplate_font_size = 9,
+		blizzard_nameplate_large_font = "Arial Narrow",
+		blizzard_nameplate_large_font_outline = "OUTLINE",
+		blizzard_nameplate_large_font_size = 11,
 		
 		resources = {
 			alpha = 1,
@@ -893,22 +910,6 @@ PLATER_DEFAULT_SETTINGS = {
 			crowdcontrol = {.3, .2, .2, 1},
 		},
 		
-		--store a table with spell name keys and with a value of a table with all spell IDs that has that exact name
-		aura_cache_by_name = {
-			["banner of the horde"] = {
-				61574,
-			},
-			["challenger's might"] = {
-				206150,
-			},
-			["banner of the alliance"] = {
-				61573,
-			},
-			["breath of coldheart"] = {
-				333553,
-			},
-		},
-		
 		aura_tracker = {
 			buff = {},
 			debuff = {},
@@ -931,6 +932,7 @@ PLATER_DEFAULT_SETTINGS = {
 		},
 		
 		bossmod_support_enabled = true,
+		bossmod_support_bars_enabled = false,
 		bossmod_aura_height = 32,
 		bossmod_aura_width = 32,
 		bossmod_cooldown_text_size = 16,
@@ -978,6 +980,15 @@ PLATER_DEFAULT_SETTINGS = {
 			["cities"] = true,
 		},
 		
+		auto_toggle_enemy_enabled = false,
+		auto_toggle_enemy = {
+			["party"] = true,
+			["raid"] = true,
+			["arena"] = true,
+			["world"] =  true,
+			["cities"] = false,
+		},
+		
 		stacking_nameplates_enabled = true,
 		
 		auto_toggle_stacking_enabled = false,
@@ -992,6 +1003,16 @@ PLATER_DEFAULT_SETTINGS = {
 		auto_inside_raid_dungeon = {
 			hide_enemy_player_pets = false,
 			hide_enemy_player_totems = false,
+		},
+		
+		auto_toggle_combat_enabled = false,
+		auto_toggle_combat = {
+			friendly_ic = false,
+			enemy_ic = false,
+			friendly_ooc = false,
+			enemy_ooc = false,
+			blizz_healthbar_ic = false,
+			blizz_healthbar_ooc = false,
 		},
 
 		spell_animations = true,
@@ -2962,10 +2983,12 @@ PLATER_DEFAULT_SETTINGS = {
 		
 		health_selection_overlay = "Details Flat",
 		health_selection_overlay_alpha = 0.1,
+		health_selection_overlay_color = {1, 1, 1, 1},
 		
 		health_statusbar_bgtexture = "PlaterBackground 2",
 		health_statusbar_bgcolor = {0.113725, 0.113725, 0.113725, 0.89000000},
 		
+		cast_statusbar_quickhide = false,
 		cast_statusbar_texture = "Details Flat",
 		cast_statusbar_bgtexture = "PlaterBackground 2",
 		cast_statusbar_bgcolor = {0.113725, 0.113725, 0.113725, 0.891240},

@@ -1,5 +1,5 @@
 local addon, L = ...
-local C_Map, MapUtil, next, wipe, random, C_PetJournal, IsSpellKnown, GetTime, IsFlyableArea, IsSubmerged, GetInstanceInfo, IsIndoors, UnitInVehicle, IsMounted, InCombatLockdown, GetSpellCooldown, UnitBuff, GetCompanionInfo, CallCompanion, GetSubZoneText = C_Map, MapUtil, next, wipe, random, C_PetJournal, IsSpellKnown, GetTime, IsFlyableArea, IsSubmerged, GetInstanceInfo, IsIndoors, UnitInVehicle, IsMounted, InCombatLockdown, GetSpellCooldown, UnitBuff, GetCompanionInfo, CallCompanion, GetSubZoneText
+local C_Map, MapUtil, next, wipe, random, C_PetJournal, IsSpellKnown, GetTime, IsFlyableArea, IsSubmerged, GetInstanceInfo, IsIndoors, UnitInVehicle, IsMounted, InCombatLockdown, GetSpellCooldown, UnitBuff, IsUsableSpell, GetSubZoneText, SecureCmdOptionParse = C_Map, MapUtil, next, wipe, random, C_PetJournal, IsSpellKnown, GetTime, IsFlyableArea, IsSubmerged, GetInstanceInfo, IsIndoors, UnitInVehicle, IsMounted, InCombatLockdown, GetSpellCooldown, UnitBuff, IsUsableSpell, GetSubZoneText, SecureCmdOptionParse
 local util = MountsJournalUtil
 local mounts = CreateFrame("Frame", "MountsJournal")
 util.setEventsMixin(mounts)
@@ -24,10 +24,10 @@ function mounts:ADDON_LOADED(addonName)
 		self.globalDB.filters = self.globalDB.filters or {}
 		self.globalDB.defFilters = self.globalDB.defFilters or {}
 		self.globalDB.config = self.globalDB.config or {}
-		self.globalDB.mountFavoritesList = self.globalDB.mountFavoritesList or {}
 		self.globalDB.mountAnimations = self.globalDB.mountAnimations or {}
 		self.globalDB.defProfile = self.globalDB.defProfile or {}
 		self.globalDB.mountsProfiles = self.globalDB.mountsProfiles or {}
+		self.globalDB.holidayNames = self.globalDB.holidayNames or {}
 
 		self.defProfile = self.globalDB.defProfile
 		self:checkProfile(self.defProfile)
@@ -37,7 +37,6 @@ function mounts:ADDON_LOADED(addonName)
 		end
 		self.filters = self.globalDB.filters
 		self.defFilters = self.globalDB.defFilters
-		self.mountFavoritesList = self.globalDB.mountFavoritesList
 		self.config = self.globalDB.config
 		if self.config.mountDescriptionToggle == nil then
 			self.config.mountDescriptionToggle = true
@@ -47,6 +46,9 @@ function mounts:ADDON_LOADED(addonName)
 		end
 		if self.config.openHyperlinks == nil then
 			self.config.openHyperlinks = true
+		end
+		if self.config.showWowheadLink == nil then
+			self.config.showWowheadLink = true
 		end
 		self.config.useRepairMountsDurability = self.config.useRepairMountsDurability or 41
 		self.config.useRepairFlyableDurability = self.config.useRepairFlyableDurability or 31
@@ -80,15 +82,16 @@ function mounts:ADDON_LOADED(addonName)
 		self.charDB = MountsJournalChar
 		self.charDB.macrosConfig = self.charDB.macrosConfig or {}
 		self.charDB.profileBySpecializationPVP = self.charDB.profileBySpecializationPVP or {}
-		self.charDB.petFavoritesList = self.charDB.petFavoritesList or {}
+		self.charDB.holidayProfiles = self.charDB.holidayProfiles or {}
 
 		-- Списки
-		self.indexBySpellID = {}
-		self.indexPetBySpellID = {}
 		self.sFlags = {}
+		self.priorityProfiles = {}
+		self.list = {}
+		self.empty = {}
 		self.repairMounts = {
-			61425,
-			61447,
+			280,
+			284,
 		}
 		self.usableRepairMounts = {}
 
@@ -105,10 +108,13 @@ function mounts:ADDON_LOADED(addonName)
 				end
 			end,
 			OnTooltipShow = function(tooltip)
-				tooltip:SetText(("%s (|cffff7f3f%s|r)"):format(addon, GetAddOnMetadata(addon, "Version")))
+				tooltip:SetText(("%s (|cffff7f3f%s|r)"):format(addon, C_AddOns.GetAddOnMetadata(addon, "Version")))
 				tooltip:AddLine("\n")
 				tooltip:AddLine(L["|cffff7f3fClick|r to open %s"]:format(addon), .5, .8, .5, false)
 				tooltip:AddLine(L["|cffff7f3fRight-Click|r to open Settings"], .5, .8, .5, false)
+				if InCombatLockdown() then
+					GameTooltip_AddErrorLine(GameTooltip, SPELL_FAILED_AFFECTING_COMBAT)
+				end
 			end,
 		})
 		LibStub("LibDBIcon-1.0"):Register(addon, ldb_icon, mounts.config.omb)
@@ -120,7 +126,7 @@ function mounts:ADDON_LOADED(addonName)
 		elseif locale == "esES" then
 			self.krasusLanding = "Alto de Krasus"
 		elseif locale == "esMX" then
-			self.krasusLanding = "Alto de Kraus"
+			self.krasusLanding = "Alto de Krasus"
 		elseif locale == "frFR" then
 			self.krasusLanding = "Aire de Krasus"
 		elseif locale == "itIT" then
@@ -139,25 +145,87 @@ function mounts:ADDON_LOADED(addonName)
 			self.krasusLanding = "Krasus' Landing"
 		end
 
-		-- TEMP
-		-- for i, t in ipairs(self.mountsDB) do
-		-- 	local spellID, creatureID, mType, sourceType, mountFaction, expansion = unpack(t)
-		-- 	local name, _, icon = GetSpellInfo(spellID)
-		-- 	if expansion <= 3 and not name or expansion > 3 and name then
-		-- 		fprint(spellID, expansion, GetSpellInfo(spellID))
-		-- 	end
-		-- end
-		-- local minItemID
-		-- for itemID, spellID in pairs(self.itemIDToSpellID) do
-		-- 	if not GetSpellInfo(spellID) then
-		-- 		self.itemIDToSpellID[itemID] = nil
-		-- 		if not minItemID or minItemID > itemID then minItemID = itemID end
-		-- 	end
-		-- end
-		-- fprint("min", minItemID)
-		-- for itemID, spellID in pairs(self.itemIDToSpellID) do
-		-- 	if minItemID and itemID > minItemID then fprint(itemID) end
-		-- end
+		self:convertOldData()
+	end
+end
+
+
+function mounts:convertOldData()
+	self.convertOldData = nil
+	if not self.config.journalPosX then return end
+	self.config.journalPosX = nil
+	self.config.journalPosY = nil
+	self.globalDB.mountFavoritesList = nil
+	self.globalDB.petFavoritesList = nil
+
+	if self.config.repairSelectedMount then
+		self.config.repairSelectedMount = C_MountJournal.GetMountFromSpell(self.config.repairSelectedMount)
+	end
+
+	local function spellToMount(tbl)
+		local newTbl = {}
+		for spellID, v in pairs(tbl) do
+			local mountID = C_MountJournal.GetMountFromSpell(spellID)
+			if mountID then
+				newTbl[mountID] = v
+			end
+		end
+		return newTbl
+	end
+
+	self.globalDB.mountTags = spellToMount(self.globalDB.mountTags)
+
+	local function getPetIDFromSpellID(spellID)
+		local sName = GetSpellInfo(spellID)
+		for i, petID in ipairs(self.pets.list) do
+			local _,_,_,_,_,_,_, name = C_PetJournal.GetPetInfoByPetID(petID)
+			if name == sName then
+				return petID
+			end
+		end
+	end
+
+	local petToUpdate = {}
+	self:on("PET_LIST_UPDATE.old", function(self)
+		if #self.pets.list == 0 then return end
+		self:off("PET_LIST_UPDATE.old")
+
+		for i, petForMount in ipairs(petToUpdate) do
+			for spellID, v in pairs(petForMount) do
+				local mountID = C_MountJournal.GetMountFromSpell(spellID)
+				if mountID then
+					if v == false then
+						petForMount[spellID] = 1
+					elseif v == true then
+						petForMount[spellID] = 2
+					elseif type(v) == "number" then
+						petForMount[spellID] = getPetIDFromSpellID(v)
+					end
+				else
+					petForMount[spellID] = nil
+				end
+			end
+		end
+	end)
+
+	local function profileUpdate(profile)
+		profile.fly = spellToMount(profile.fly)
+		profile.ground = spellToMount(profile.ground)
+		profile.swimming = spellToMount(profile.swimming)
+		profile.mountsWeight = spellToMount(profile.mountsWeight)
+
+		for map, v in pairs(profile.zoneMounts) do
+			v.fly = spellToMount(v.fly)
+			v.ground = spellToMount(v.ground)
+			v.swimming = spellToMount(v.swimming)
+		end
+
+		petToUpdate[#petToUpdate + 1] = profile.petForMount
+	end
+
+	profileUpdate(self.defProfile)
+	for name, profile in next, self.profiles do
+		profileUpdate(profile)
 	end
 end
 
@@ -175,12 +243,11 @@ end
 function mounts:PLAYER_LOGIN()
 	-- INIT
 	self:setModifier(self.config.modifier)
-	self:updateIndexBySpellID()
-	self:updateIndexPetBySpellID()
 	self:setUsableRepairMounts()
 	self:updateProfessionsRank()
 	self:init()
 	self.pets:setSummonEvery()
+	self.calendar:init()
 
 	-- MAP CHANGED
 	-- self:RegisterEvent("NEW_WMO_CHUNK")
@@ -195,9 +262,18 @@ function mounts:PLAYER_LOGIN()
 	self:RegisterEvent("SKILL_LINES_CHANGED")
 
 	-- MOUNT ADDED
-	self:RegisterEvent("COMPANION_UPDATE")
-	self:RegisterEvent("COMPANION_LEARNED")
+	self:RegisterEvent("NEW_MOUNT_ADDED")
+	-- self:RegisterEvent("COMPANION_UPDATE")
+	-- self:RegisterEvent("COMPANION_LEARNED")
 	-- self:RegisterEvent("COMPANION_UNLEARNED")
+
+	-- PET USABLE
+	self:RegisterEvent("PLAYER_REGEN_ENABLED")
+	self:RegisterEvent("PLAYER_REGEN_DISABLED")
+	self:RegisterUnitEvent("UNIT_SPELLCAST_START", "player")
+
+	-- CALENDAR
+	self:on("CALENDAR_UPDATE_EVENT_LIST", self.setDB)
 end
 
 
@@ -246,16 +322,16 @@ function mounts:setUsableRepairMounts()
 
 	wipe(self.usableRepairMounts)
 	for i = 1, #self.repairMounts do
-		local spellID = self.repairMounts[i]
-		local faction = util.getMountInfoBySpellID(spellID)
+		local mountID = self.repairMounts[i]
+		local _,_,_,_,_,_,_,_, mountFaction, _, isCollected = C_MountJournal.GetMountInfoByID(mountID)
 
-		if faction == 1 and playerFaction == "Horde"
-		or faction == 2 and playerFaction == "Alliance" then
-			mounts.config.repairSelectedMount = spellID
-		end
-
-		if self.indexBySpellID[spellID] then
-			self.usableRepairMounts[spellID] = true
+		if mountFaction == 0 and playerFaction == "Horde"
+		or mountFaction == 1 and playerFaction == "Alliance" then
+			mounts.config.repairSelectedMount = mountID
+			if isCollected then
+				self.usableRepairMounts[mountID] = true
+			end
+			break
 		end
 	end
 end
@@ -272,71 +348,69 @@ function mounts:PLAYER_ENTERING_WORLD()
 end
 
 
-function mounts:summonPet(spellID)
-	local petID = self.petForMount[spellID]
-	if petID == nil or InCombatLockdown() then return end
-
-	local groupType = util.getGroupType()
-	if self.config.noPetInRaid and groupType == "raid"
-	or self.config.noPetInGroup and groupType == "group" then
-		return
-	end
-
-	if type(petID) == "number" then
-		self.pets:summon(petID)
-	else
-		self.pets:summonRandomPet(not petID)
-	end
+function mounts:PLAYER_REGEN_DISABLED()
+	self:UnregisterEvent("UNIT_SPELLCAST_START")
 end
 
 
-function mounts:updateIndexBySpellID()
-	wipe(self.indexBySpellID)
-	for i = 1, GetNumCompanions("MOUNT") do
-		local creatureID, _, spellID = GetCompanionInfo("MOUNT", i)
-		self.indexBySpellID[spellID] = i
+function mounts:PLAYER_REGEN_ENABLED()
+	self:RegisterUnitEvent("UNIT_SPELLCAST_START", "player")
+end
 
-		if not util.getMountInfoBySpellID(spellID) then
-			util.addNewMount(spellID, creatureID)
+
+do
+	local function summonPet(petID)
+		if InCombatLockdown() then return end
+		if type(petID) == "number" then
+			mounts.pets:summonRandomPet(petID == 1)
+		else
+			mounts.pets:summon(petID)
 		end
 	end
-end
 
 
-function mounts:updateIndexPetBySpellID()
-	wipe(self.indexPetBySpellID)
-	for i = 1, GetNumCompanions("CRITTER") do
-		local _,_, spellID = GetCompanionInfo("CRITTER", i)
-		self.indexPetBySpellID[spellID] = i
-	end
-end
+	local timer
+	function mounts:UNIT_SPELLCAST_START(_,_, spellID)
+		local petID
+		for i = 1, #self.priorityProfiles do
+			petID = self.priorityProfiles[i].petForMount[spellID]
+			if petID then break end
+		end
 
+		if petID then
+			local groupType = util.getGroupType()
+			if self.config.noPetInRaid and groupType == "raid"
+			or self.config.noPetInGroup and groupType == "group"
+			then return end
 
-function mounts:COMPANION_LEARNED(companionType)
-	if not companionType then
-		if GetNumCompanions("MOUNT") ~= #self.indexBySpellID then
-			local t = util:copyTable(self.indexBySpellID)
-			self:updateIndexBySpellID()
-			for spellID in pairs(self.indexBySpellID) do
-				if not t[spellID] then
-					self:autoAddNewMount(spellID)
-					return
-				end
+			if timer and not timer:IsCancelled() then
+				timer:Cancel()
+				timer = nil
 			end
-			self:event("MOUNT_LEARNED")
-		end
-		if GetNumCompanions("CRITTER") ~= #self.indexPetBySpellID then
-			self:updateIndexPetBySpellID()
-			self:event("CRITTER_LEARNED")
+
+			local start, duration = GetSpellCooldown(61304)
+
+			if duration == 0 then
+				summonPet(petID)
+			else
+				timer = C_Timer.NewTicker(start + duration - GetTime(), function() summonPet(petID) end, 1)
+			end
 		end
 	end
 end
-mounts.COMPANION_UPDATE = mounts.COMPANION_LEARNED
+
+
+function mounts:NEW_MOUNT_ADDED(mountID)
+	self:autoAddNewMount(mountID)
+end
 
 
 function mounts:updateProfessionsRank()
 	local engineeringName = GetSpellInfo(4036)
 	local tailoringName = GetSpellInfo(3908)
+
+	self.engineeringRank = nil
+	self.tailoringRank = nil
 
 	for i = 1, GetNumSkillLines() do
 		local skillName, _,_, skillRank = GetSkillLineInfo(i)
@@ -351,74 +425,83 @@ mounts.SKILL_LINES_CHANGED = mounts.updateProfessionsRank
 
 
 function mounts:isCanUseFlying(mapID)
-	if self.instanceID == 530 then return true -- Outland
-	elseif self.instanceID == 571 and IsSpellKnown(54197) then -- Northrend
-		if not mapID then mapID = MapUtil.GetDisplayableMapForPlayer() end
-		if mapID ~= 126
-		and (mapID ~= 125 or GetSubZoneText() == self.krasusLanding)
-		then
-			return true
+	if self.instanceID == 571 then -- Northrend
+		if IsSpellKnown(54197) then
+			if not mapID then mapID = MapUtil.GetDisplayableMapForPlayer() end
+			if mapID ~= 126
+			and (mapID ~= 125 or GetSubZoneText() == self.krasusLanding)
+			then
+				return true
+			end
 		end
+		return false
 	end
-	return false
+	return true
 end
 
 
 do
 	local canUseMounts = {
-		[48025] = true, -- Скакун Всадника без головы
-		[71342] = true, -- "Сердцеед" X-45
-		[72286] = true, -- Непобедимый
-		[74856] = true, -- Пламенеющий гиппогриф
-		[75614] = true, -- Небесный скакун
-		[372677] = true, -- Калуакский китовый глайдер
-		[387320] = true, -- Пламенеющий гиппогриф
+		[219] = true, -- 48025 | Headless Horseman's Mount
+		[352] = true, -- 71342 | X-45 Heartbreaker
+		[363] = true, -- 72286 | Invincible
+		[371] = true, -- 74856 | Blazing Hippogryph
+		[376] = true, -- 75614 | Celestial Steed
+		[1762] = true, -- 372677 | Kalu'ak Whalebone Glider
+		[1770] = true, -- 394209 | Festering Emerald Drake
 	}
 
 	local mountsRequiringProf = {
-		[44151] = {"engineeringRank", 375},
-		[44153] = {"engineeringRank", 300},
-		[61309] = {"tailoringRank", 425},
-		[61451] = {"tailoringRank", 300},
-		[75596] = {"tailoringRank", 425},
+		[204] = {"engineeringRank", 375}, -- 44151 | Turbo-Charged Flying Machine
+		[205] = {"engineeringRank", 300}, -- 44153 | Flying Machine
+		[279] = {"tailoringRank", 425}, -- 61309 | Magnificent Flying Carpet
+		[285] = {"tailoringRank", 300}, -- 61451 | Flying Carpet
+		[375] = {"tailoringRank", 425}, -- 75596 | Frosty Flying Carpet
 	}
 
-	function mounts:isUsable(spellID, canUseFlying)
-		if not self.indexBySpellID[spellID] then return false end
-
-		local prof = mountsRequiringProf[spellID]
+	function mounts:isUsable(mountID, mType, canUseFlying)
+		local prof = mountsRequiringProf[mountID]
 		if prof and (self[prof[1]] or 0) < prof[2] then return false end
 
-		local faction, creatureID, mountType = util.getMountInfoBySpellID(spellID)
-		if mountType ~= 1 or canUseFlying or canUseMounts[spellID] then return true end
+		if not mType then
+			local _,_,_,_, mountType = C_MountJournal.GetMountInfoExtraByID(mountID)
+			mType = util.mountTypes[mountType]
+		end
+
+		if not canUseFlying then
+			canUseFlying = self:isCanUseFlying()
+		end
+
+		if mType ~= 1 or canUseFlying or canUseMounts[mountID] then return true end
 		return false
 	end
 end
 
 
-function mounts:addMountToList(list, spellID)
-	local faction, creatureID, mountType = util.getMountInfoBySpellID(spellID)
+function mounts:addMountToList(list, mountID)
+	local _,_,_,_, mountType = C_MountJournal.GetMountInfoExtraByID(mountID)
+	local mType = util.mountTypes[mountType]
 
-	if mountType == 1 then
-		mountType = "fly"
-	elseif mountType == 2 then
-		mountType = "ground"
+	if mType == 1 then
+		mType = "fly"
+	elseif mType == 2 then
+		mType = "ground"
 	else
-		mountType = "swimming"
+		mType = "swimming"
 	end
 
-	list[mountType][spellID] = true
+	list[mType][mountID] = true
 end
 
 
-function mounts:autoAddNewMount(spellID)
+function mounts:autoAddNewMount(mountID)
 	if self.defProfile.autoAddNewMount then
-		self:addMountToList(self.defProfile, spellID)
+		self:addMountToList(self.defProfile, mountID)
 	end
 
 	for _, profile in next, self.profiles do
 		if profile.autoAddNewMount then
-			self:addMountToList(profile, spellID)
+			self:addMountToList(profile, mountID)
 		end
 	end
 end
@@ -446,33 +529,61 @@ function mounts:setMountsList()
 	local mapInfo = self.mapInfo
 	local zoneMounts = self.zoneMounts
 	self.mapFlags = nil
-	self.list = nil
+	wipe(self.list)
 
-	while mapInfo and mapInfo.mapID ~= self.defMountsListID do
-		local list = zoneMounts[mapInfo.mapID]
-		if list then
-			if not self.mapFlags and list.flags.enableFlags then
-				self.mapFlags = list.flags
+	local mapInfo = self.mapInfo
+	while mapInfo do
+		for i = 1, #self.priorityProfiles do
+			local profile, list = self.priorityProfiles[i]
+
+			if mapInfo.mapID == self.defMountsListID then
+				list = profile
+			else
+				local zoneMounts = profile.zoneMountsFromProfile and self.defProfile.zoneMounts or profile.zoneMounts
+				list = zoneMounts[mapInfo.mapID]
+
+				if list and not self.mapFlags and list.flags.enableFlags then
+					self.mapFlags = list.flags
+				end
 			end
-			if not self.list then
-				while list and list.listFromID do
-					if list.listFromID == self.defMountsListID then
-						list = self.db
-					else
-						list = zoneMounts[list.listFromID]
+
+			if list then
+				if not (self.list.fly and self.list.ground and self.list.swimming) then
+					while list and list.listFromID do
+						if list.listFromID == self.defMountsListID then
+							list = profile
+						else
+							list = zoneMounts[list.listFromID]
+						end
 					end
-				end
-				if list and (next(list.fly) or next(list.ground) or next(list.swimming)) then
-					self.list = list
-				end
+					if list then
+						if not self.list.fly and next(list.fly) then
+							self.list.fly = list.fly
+							self.list.flyWeight = profile.mountsWeight
+						end
+						if not self.list.ground and next(list.ground) then
+							self.list.ground = list.ground
+							self.list.groundWeight = profile.mountsWeight
+						end
+						if not self.list.swimming and next(list.swimming) then
+							self.list.swimming = list.swimming
+							self.list.swimmingWeight = profile.mountsWeight
+						end
+					end
+				elseif self.mapFlags then return end
 			end
-			if self.list and self.mapFlags then return end
 		end
-		mapInfo = C_Map.GetMapInfo(mapInfo.parentMapID)
+
+		if mapInfo.parentMapID == 0 and mapInfo.mapID ~= self.defMountsListID then
+			mapInfo = C_Map.GetMapInfo(self.defMountsListID)
+		else
+			mapInfo = C_Map.GetMapInfo(mapInfo.parentMapID)
+		end
 	end
-	if not self.list then
-		self.list = self.db
-	end
+
+	if not self.list.fly then self.list.fly = self.empty end
+	if not self.list.ground then self.list.ground = self.empty end
+	if not self.list.swimming then self.list.swimming = self.empty end
 end
 -- mounts.NEW_WMO_CHUNK = mounts.setMountsList
 -- mounts.ZONE_CHANGED = mounts.setMountsList
@@ -490,35 +601,37 @@ function mounts:setDB()
 		self.charDB.currentProfileName = nil
 	end
 
-	local currentProfileName
+	local profileName
+	wipe(self.priorityProfiles)
+
 	if self.pvp and self.charDB.profileBySpecializationPVP.enable then
-		currentProfileName = self.charDB.profileBySpecializationPVP[1]
-	else
-		currentProfileName = self.charDB.currentProfileName
+		profileName = self.charDB.profileBySpecializationPVP[1]
+		self.priorityProfiles[1] = self.profiles[profileName] or self.defProfile
 	end
 
-	self.db = currentProfileName and self.profiles[currentProfileName] or self.defProfile
-	self.zoneMounts = self.db.zoneMountsFromProfile and self.defProfile.zoneMounts or self.db.zoneMounts
-	self.petForMount = self.db.petListFromProfile and self.defProfile.petForMount or self.db.petForMount
-	self.mountsWeight = self.db.mountsWeight
+	local holidayProfiles = self.calendar:getHolidayProfileNames()
+	for i = 1, #holidayProfiles do
+		self.priorityProfiles[#self.priorityProfiles + 1] = self.profiles[holidayProfiles[i].profileName] or self.defProfile
+	end
 
-	-- self:setMountsList()
+	profileName = self.charDB.currentProfileName
+	self.db = self.profiles[profileName] or self.defProfile
+	self.priorityProfiles[#self.priorityProfiles + 1] = self.db
 end
 mounts.PLAYER_SPECIALIZATION_CHANGED = mounts.setDB
 
 
-function mounts:summonTarget()
+function mounts:getTargetMount()
 	if self.config.copyMountTarget then
 		local i = 1
 		repeat
 			local _,_,_,_,_,_,_,_,_, spellID = UnitBuff("target", i)
 			if spellID then
-				local index = self.indexBySpellID[spellID]
-				if index then
-					if self:isUsable(spellID, self.sFlags.canUseFlying) then
-						self:summonPet(spellID)
-						CallCompanion("MOUNT", index)
-						return true
+				local mountID = C_MountJournal.GetMountFromSpell(spellID)
+				if mountID then
+					local _, spellID, _,_, isUsable = C_MountJournal.GetMountInfoByID(mountID)
+					if isUsable and IsUsableSpell(spellID) then
+						return self:isUsable(spellID, nil ,self.sFlags.canUseFlying) and mountID
 					end
 					break
 				end
@@ -531,20 +644,19 @@ end
 
 do
 	local usableIDs = {}
-	function mounts:summon(ids)
+	function mounts:summon(ids, mountsWeight)
 		local weight, canUseFlying = 0, self.sFlags.canUseFlying
-		for spellID in next, ids do
-			if self:isUsable(spellID, canUseFlying) then
-				weight = weight + (self.mountsWeight[spellID] or 100)
-				usableIDs[weight] = spellID
+		for mountID in next, ids do
+			local _, spellID, _,_, isUsable = C_MountJournal.GetMountInfoByID(mountID)
+			if isUsable and IsUsableSpell(spellID) and self:isUsable(mountID, nil, canUseFlying) then
+				weight = weight + (mountsWeight[mountID] or 100)
+				usableIDs[weight] = mountID
 			end
 		end
 		if weight > 0 then
 			for i = random(weight), weight do
 				if usableIDs[i] then
-					local spellID = usableIDs[i]
-					self:summonPet(spellID)
-					CallCompanion("MOUNT", self.indexBySpellID[spellID])
+					C_MountJournal.SummonByID(usableIDs[i])
 					break
 				end
 			end
@@ -581,6 +693,7 @@ function mounts:setFlags()
 	            and (not modifier or flags.isSubmerged)
 	flags.waterWalk = not isFlyableLocation and modifier
 	                  or self:isWaterWalkLocation()
+	flags.targetMount = self:getTargetMount()
 end
 
 
@@ -594,6 +707,7 @@ function mounts:init()
 	SlashCmdList["MOUNTSJOURNAL"] = function(msg)
 		local flags = self.sFlags
 		if msg ~= "doNotSetFlags" then
+			if not SecureCmdOptionParse(msg) then return end
 			flags.forceModifier = nil
 			self:setFlags()
 		end
@@ -602,16 +716,16 @@ function mounts:init()
 		elseif flags.isMounted then
 			Dismount()
 		-- repair mounts
-		elseif not ((flags.repair and not flags.fly or flags.flyableRepair and flags.fly) and self:summon(self.usableRepairMounts))
+		elseif not ((flags.repair and not flags.fly or flags.flyableRepair and flags.fly) and self:summon(self.usableRepairMounts, self.db.mountsWeight))
 		-- target's mount
-		and not self:summonTarget()
+		and not (flags.targetMount and (C_MountJournal.SummonByID(flags.targetMount) or true))
 		-- swimming
-		and not (flags.swimming and self:summon(self.list.swimming))
+		and not (flags.swimming and self:summon(self.list.swimming, self.list.swimmingWeight))
 		-- fly
-		and not (flags.fly and self:summon(self.list.fly))
+		and not (flags.fly and self:summon(self.list.fly, self.list.flyWeight))
 		-- ground
-		and not self:summon(self.list.ground)
-		and not self:summon(self.list.fly)
+		and not self:summon(self.list.ground, self.list.groundWeight)
+		and not self:summon(self.list.fly, self.list.flyWeight)
 		then
 			self:errorSummon()
 		end

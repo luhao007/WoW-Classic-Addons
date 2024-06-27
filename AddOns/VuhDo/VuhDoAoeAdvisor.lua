@@ -59,7 +59,7 @@ VUHDO_AOE_SPELLS = {
 		["thresh"] = 15000,
 		["cone"] = 360,
 		["checkCd"] = true,
-		["time"] = select(7, GetSpellInfo(VUHDO_SPELL_ID_COH)) or 0,
+		["time"] = select(4, GetSpellInfo(VUHDO_SPELL_ID_COH)) or 0,
 	},
 
 	-- Prayer of Healing
@@ -81,7 +81,7 @@ VUHDO_AOE_SPELLS = {
 		["thresh"] = 20000,
 		["cone"] = 360,
 		--["checkCd"] = false,
-		["time"] = select(7, GetSpellInfo(VUHDO_SPELL_ID_POH)) or 0,
+		["time"] = select(4, GetSpellInfo(VUHDO_SPELL_ID_POH)) or 0,
 	},
 
 	-- Chain Heal
@@ -104,7 +104,7 @@ VUHDO_AOE_SPELLS = {
 		["thresh"] = 15000,
 		["cone"] = 360,
 		--["checkCd"] = false,
-		["time"] = select(7, GetSpellInfo(VUHDO_SPELL_ID_CH)) or 0,
+		["time"] = select(4, GetSpellInfo(VUHDO_SPELL_ID_CH)) or 0,
 	},
 
 	-- Wild Growth
@@ -126,7 +126,7 @@ VUHDO_AOE_SPELLS = {
 		["thresh"] = 15000,
 		["cone"] = 360,
 		["checkCd"] = true,
-		["time"] = select(7, GetSpellInfo(VUHDO_SPELL_ID_WG)) or 0,
+		["time"] = select(4, GetSpellInfo(VUHDO_SPELL_ID_WG)) or 0,
 	},
 
 	-- Tranqulity
@@ -148,7 +148,7 @@ VUHDO_AOE_SPELLS = {
 		["thresh"] = 15000,
 		["cone"] = 360,
 		["checkCd"] = true,
-		["time"] = select(7, GetSpellInfo(VUHDO_SPELL_ID_TQ)) or 0,
+		["time"] = select(4, GetSpellInfo(VUHDO_SPELL_ID_TQ)) or 0,
 	},
 
 	-- Light of Dawn
@@ -170,7 +170,7 @@ VUHDO_AOE_SPELLS = {
 		["thresh"] = 8000,
 		["cone"] = 180,
 		--["checkCd"] = false,
-		["time"] = select(7, GetSpellInfo(VUHDO_SPELL_ID_LOD)) or 0,
+		["time"] = select(4, GetSpellInfo(VUHDO_SPELL_ID_LOD)) or 0,
 	},
 
 	-- Chi Burst
@@ -194,7 +194,7 @@ VUHDO_AOE_SPELLS = {
 		["isHealsPlayer"] = true,
 		--["cone"] = 15,
 		["checkCd"] = true,
-		["time"] = select(7, GetSpellInfo(VUHDO_SPELL_ID_CB)) or 0,
+		["time"] = select(4, GetSpellInfo(VUHDO_SPELL_ID_CB)) or 0,
 	},
 };
 local VUHDO_AOE_SPELLS = VUHDO_AOE_SPELLS;

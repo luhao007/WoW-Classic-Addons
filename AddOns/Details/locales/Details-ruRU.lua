@@ -844,6 +844,18 @@ L["STRING_OPTIONS_MINIMAP_ANCHOR"] = "Мини-карта"
 L["STRING_OPTIONS_MINIMAP_DESC"] = "Отобразить или скрыть значок у мини-карты."
 L["STRING_OPTIONS_MISCTITLE"] = "Прочие настройки"
 L["STRING_OPTIONS_MISCTITLE2"] = "Этот элемент управляется, несколькими вариантами."
+L["STRING_OPTIONS_MPLUS_BOSSNEWCOMBAT"] = "Новый бой при пулле босса"
+L["STRING_OPTIONS_MPLUS_BOSSNEWCOMBAT_DESC"] = "Если пулл босса начат во время боя, автоматически завершать текущий бой, и начинать новый для босса."
+L["STRING_OPTIONS_MPLUS_DPS_ANCHOR"] = "Подсчет УВС по полному сегменту"
+L["STRING_OPTIONS_MPLUS_MAKEOVERALL"] = "Создать общий сегмент"
+L["STRING_OPTIONS_MPLUS_MAKEOVERALL_DESC"] = "По завершении забега эта опция создает общий сегмент с данными по всем боям."
+L["STRING_OPTIONS_MPLUS_MERGETRASH"] = "Слияние мусора"
+L["STRING_OPTIONS_MPLUS_PANELS_ANCHOR"] = "Панели"
+L["STRING_OPTIONS_MPLUS_SHOWENDPANEL"] = "Показывать фрейм с подробностями о прохождении M+ подземелья"
+L["STRING_OPTIONS_MPLUS_TIME_INCOMBAT"] = "Время в бою"
+L["STRING_OPTIONS_MPLUS_TIME_INCOMBAT_DESC"] = "УВС по всему М+ забегу вычисляется по формуле (общий урон)/(общее время боя)."
+L["STRING_OPTIONS_MPLUS_TIME_RUNTIME"] = "Время прохождения подземелья"
+L["STRING_OPTIONS_MPLUS_TIME_RUNTIME_DESC"] = "УВС по всему М+ забегу вычисляется по формуле (общий урон)/(общее время боя)."
 L["STRING_OPTIONS_NICKNAME"] = "Псевдоним"
 L["STRING_OPTIONS_NICKNAME_DESC"] = [=[Задайте Ваш псевдоним.
 Псевдонимы отправляются участникам гильдии с Details!, используется вместо имени персонажа.]=]
@@ -1340,12 +1352,7 @@ L["STRING_OPTIONS_WINDOW_SCALE_DESC"] = [=[Отрегулируйте масшт
 
 |cFFFFFF00Текущий|r: %s]=]
 L["STRING_OPTIONS_WINDOW_SKIN_COLOR"] = "Цвет оболочки"
---[[Translation missing --]]
-L["STRING_OPTIONS_WINDOW_SKIN_COLOR_DESC"] = [=[Modifies the color of the skin applied into this window.
-
-|cFFFFFF00Important|r: the alpha chosen here is overwritten with |cFFFFFF00Auto Transparency|r values when enabled.
-
-|cFFFFFF00Important|r: selecting the skin color overwrites any color customization applied to statusbar.]=]
+L["STRING_OPTIONS_WINDOW_SKIN_COLOR_DESC"] = "Изменяет цвет скина, применяемого к этому окнe. |cFFFFFF00Важно|r: выбранный здесь альфа-канал перезаписывается значениями |cFFFFFF00Автоматическая прозрачность|r при включении. |cFFFFFF00Важно|r: выбор цвета скина перезаписывает любые настройки цвета, примененные к строке состояния.."
 L["STRING_OPTIONS_WINDOW_TITLE"] = "Общие настройки окна"
 L["STRING_OPTIONS_WINDOW_TITLE_DESC"] = "Эти параметры управляют внешним видом выбранного окна."
 L["STRING_OPTIONS_WINDOWSPEED"] = "Интервал обновления"
@@ -1464,6 +1471,7 @@ L["STRING_REPORT_SINGLE_BUFFUPTIME"] = "Время баффов для"
 L["STRING_REPORT_SINGLE_COOLDOWN"] = "использованы кулдауны от"
 L["STRING_REPORT_SINGLE_DEATH"] = "Смерть от"
 L["STRING_REPORT_SINGLE_DEBUFFUPTIME"] = "время дебаффов для"
+L["STRING_REPORT_TEXT"] = "Отчёт"
 L["STRING_REPORT_TOOLTIP"] = "Результат отчёта"
 L["STRING_REPORTFRAME_COPY"] = "Копировать и вставить"
 L["STRING_REPORTFRAME_CURRENT"] = "Текущий"

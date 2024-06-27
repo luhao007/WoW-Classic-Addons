@@ -119,11 +119,34 @@
 						</Scripts>
 					</CheckButton>
 
-					<CheckButton name="$parentMiscRadioButton" text="VUHDO_I18N_MISC" inherits="VuhDoTabRadioButtonTemplate">
+					<CheckButton name="$parentIndicatorsRadioButton" text="VUHDO_I18N_INDICATORS" inherits="VuhDoTabRadioButtonTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
 									<AbsDimension x="3" y="-318" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								VUHDO_MENU_RETURN_TARGET = nil;
+								VUHDO_MENU_RETURN_TARGET_MAIN = nil;
+								VUHDO_lnfTabRadioButtonClicked(self);
+							</OnClick>
+							<OnLoad>
+								self.tabPanel = "VuhDoNewOptionsPanelIndicators";
+								VUHDO_lnfCheckButtonOnLoad(self);
+								VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K456);
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+
+
+					<CheckButton name="$parentMiscRadioButton" text="VUHDO_I18N_MISC" inherits="VuhDoTabRadioButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="3" y="-353" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -235,6 +258,8 @@
 					<Frame name="VuhDoNewOptionsPanelHots" hidden="true" setAllPoints="true" inherits="VuhDoNewOptionsPanelHotsTemplate">
 					</Frame>
 					<Frame name="VuhDoNewOptionsPanelHotBars" hidden="true" setAllPoints="true" inherits="VuhDoNewOptionsPanelHotBarsTemplate">
+					</Frame>
+					<Frame name="VuhDoNewOptionsPanelIndicators" hidden="true" setAllPoints="true" inherits="VuhDoNewOptionsPanelIndicatorsTemplate">
 					</Frame>
 					<Frame name="VuhDoNewOptionsPanelMisc" hidden="true" setAllPoints="true" inherits="VuhDoNewOptionsPanelMiscTemplate">
 					</Frame>

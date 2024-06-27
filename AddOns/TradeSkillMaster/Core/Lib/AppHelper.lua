@@ -6,9 +6,11 @@
 
 local TSM = select(2, ...) ---@type TSM
 local AppHelper = TSM:NewPackage("AppHelper")
+local Environment = TSM.Include("Environment")
 local ClassicRealms = TSM.Include("Data.ClassicRealms")
 local Wow = TSM.Include("Util.Wow")
 local Log = TSM.Include("Util.Log")
+local AuctionHouseWrapper = TSM.Include("Service.AuctionHouseWrapper")
 local LibRealmInfo = LibStub("LibRealmInfo")
 local private = {
 	-- The addon has historically had the game version as a suffix, whereas the app data has it as a prefix, so we store both
@@ -102,22 +104,32 @@ end
 
 function AppHelper.OnInitialize()
 	local cVar = GetCVar("Portal")
-	if TSM.IsWowClassic() then
-		local currentRealmName = private.SanitizedRealmName(Wow.GetRealmName())
-		local region = ClassicRealms.GetRegion(currentRealmName) or (cVar ~= "public-test" and cVar) or "PTR"
-		if TSM.IsWowVanillaClassic() then
-			private.addonRegion = region.."-Classic"
-			private.appDataRegion = "Classic-"..region
-		elseif TSM.IsWowWrathClassic() then
-			private.addonRegion = region.."-BCC"
-			private.appDataRegion = "BCC-"..region
-		else
-			error("Invalid game version")
-		end
+	local region = nil
+	if Environment.IsRetail() then
+		region = LibRealmInfo:GetCurrentRegion() or (cVar ~= "public-test" and cVar) or "PTR"
 	else
-		private.addonRegion = LibRealmInfo:GetCurrentRegion() or (cVar ~= "public-test" and cVar) or "PTR"
-		private.appDataRegion = private.addonRegion
+		local currentRealmName = private.SanitizedRealmName(Wow.GetRealmName())
+		region = ClassicRealms.GetRegion(currentRealmName) or (cVar ~= "public-test" and cVar) or "PTR"
 	end
+	if Environment.IsRetail() then
+		private.addonRegion = region
+		private.appDataRegion = region
+	elseif Environment.IsClassicHardcore() then
+		private.addonRegion = region.."-HC"
+		private.appDataRegion = "HC-"..region
+	elseif Environment.IsClassicDiscovery() then
+		private.addonRegion = region.."-SoD"
+		private.appDataRegion = "SoD-"..region
+	elseif Environment.IsVanillaClassic() then
+		private.addonRegion = region.."-Classic"
+		private.appDataRegion = "Classic-"..region
+	elseif Environment.IsWrathClassic() or Environment.IsCataClassic() then
+		private.addonRegion = region.."-BCC"
+		private.appDataRegion = "BCC-"..region
+	else
+		error("Invalid game version")
+	end
+	AuctionHouseWrapper.SetAnalyticsRegionRealm(private.addonRegion.."-"..private.SanitizedRealmName(Wow.GetRealmName()))
 end
 
 function AppHelper.OnEnable()
@@ -170,7 +182,7 @@ end
 
 function private.IsCurrentRealm(realm)
 	local currentRealmName = private.SanitizedRealmName(Wow.GetRealmName())
-	if TSM.IsWowClassic() then
+	if not Environment.HasFeature(Environment.FEATURES.CONNECTED_FACTION_AH) then
 		currentRealmName = currentRealmName.."-"..Wow.GetFactionName()
 	end
 	return strlower(private.SanitizedRealmName(realm)) == strlower(currentRealmName)

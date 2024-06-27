@@ -1,6 +1,6 @@
 
 --do not load if this is a classic version of the game
-if (DetailsFramework.IsTBCWow() or DetailsFramework.IsWotLKWow()) then
+if (DetailsFramework.IsTBCWow() or DetailsFramework.IsWotLKWow() or DetailsFramework.IsClassicWow() or DetailsFramework.IsCataWow()) then
 	return
 end
 
@@ -16,6 +16,9 @@ local openRaidLib = LibStub:GetLibrary("LibOpenRaid-1.0")
 local DF = DetailsFramework
 local UnitGroupRolesAssigned = DF.UnitGroupRolesAssigned
 local version = "95"
+
+---@type detailsframework
+local detailsFramework = DetailsFramework
 
 --build the list of buffs to track
 local flaskList = LIB_OPEN_RAID_FLASK_BUFF
@@ -49,6 +52,18 @@ local getUnitId = function(i)
 	end
 
 	return unitId
+end
+
+local gameVersion, buildNumber, releaseData, tocNumber = GetBuildInfo()
+
+local getCleuName = function(unitId)
+	if (tocNumber >= 100200) then
+		local cleuName = Details:GetFullName(unitId)
+		return cleuName
+	else
+		local cleuName = GetCLName(unitId)
+		return cleuName
+	end
 end
 
 --create the plugin object
@@ -176,27 +191,19 @@ local CreatePluginFrames = function()
 		end
 	end
 
-	local raidCheckFrame = CreateFrame("frame", nil, UIParent, "BackdropTemplate")
+	local raidCheckFrame = CreateFrame("frame", "RaidCheckDetailsPlugin", UIParent, "BackdropTemplate")
 	raidCheckFrame:SetPoint("bottom", DetailsRaidCheck.ToolbarButton, "top", 0, 10)
 	raidCheckFrame:SetClampedToScreen(true)
 	raidCheckFrame:SetFrameStrata("TOOLTIP")
 
-	raidCheckFrame.background = raidCheckFrame:CreateTexture("DetailsAllAttributesFrameBackground111", "background")
-	raidCheckFrame.background:SetDrawLayer("background", 2)
-	raidCheckFrame.background:SetPoint("topleft", raidCheckFrame, "topleft", 4, -4)
-	raidCheckFrame.background:SetPoint("bottomright", raidCheckFrame, "bottomright", -4, 4)
+	detailsFramework:AddRoundedCornersToFrame(raidCheckFrame, Details.PlayerBreakdown.RoundedCornerPreset)
 
-	raidCheckFrame.wallpaper = raidCheckFrame:CreateTexture("DetailsAllAttributesFrameWallPaper111", "background")
-	raidCheckFrame.wallpaper:SetDrawLayer("background", 4)
-	raidCheckFrame.wallpaper:SetPoint("topleft", raidCheckFrame, "topleft", 4, -4)
-	raidCheckFrame.wallpaper:SetPoint("bottomright", raidCheckFrame, "bottomright", -4, 4)		
-
-	raidCheckFrame:SetBackdrop(Details.menu_backdrop_config.menus_backdrop)
-	raidCheckFrame:SetBackdropColor(unpack(Details.menu_backdrop_config.menus_backdropcolor))
-	raidCheckFrame:SetBackdropBorderColor(unpack(Details.menu_backdrop_config.menus_bordercolor))
+	C_Timer.After(10, function()
+		Details:RegisterFrameToColor(raidCheckFrame)
+	end)
 
 	local reportString1 = raidCheckFrame:CreateFontString(nil, "overlay", "GameFontNormal")
-	reportString1:SetPoint("bottomleft", raidCheckFrame, "bottomleft", 10, 8)
+	reportString1:SetPoint("bottomleft", raidCheckFrame, "bottomleft", 10, 5)
 	reportString1:SetText("|TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:12:12:0:1:512:512:8:70:225:307|t Report No Food/Flask  |TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:12:12:0:1:512:512:8:70:328:409|t Report No Pre-Pot  |TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:12:12:0:1:512:512:8:70:126:204|t Report No Rune  |  |cFFFFFFFFShift+Click: Options|r") 
 
 	DetailsRaidCheck:SetFontSize(reportString1, 10)
@@ -218,6 +225,7 @@ local CreatePluginFrames = function()
 	}
 	local headerOptions = {
 		padding = 2,
+		backdrop_color = {.2, .2, .2, 0.834}
 	}
 
 	DetailsRaidCheck.Header = DF:CreateHeader(raidCheckFrame, headerTable, headerOptions)
@@ -413,7 +421,7 @@ local CreatePluginFrames = function()
 
 					line.TalentsRow:ClearIcons()
 
-					if (playerTable.Talents) then
+					if (playerTable.Talents and type(playerTable.Talents) == "table") then
 						for i = 1, #playerTable.Talents do
 							local talent = playerTable.Talents[i]
 							local talentID, name, texture, selected, available = GetTalentInfoByID(talent)
@@ -480,6 +488,8 @@ local CreatePluginFrames = function()
 	mainScroll:SetPoint("topleft", raidCheckFrame, "topleft", 10, scrollY)
 	mainScroll:SetPoint("bottomright", raidCheckFrame, "bottomright", -10, 20)
 	mainScroll:Refresh()
+
+	mainScroll:SetBackdrop(nil)
 
 	--create lines
 	for i = 1, scrollLinesAmount do
@@ -631,7 +641,7 @@ local CreatePluginFrames = function()
 			local unitID = groupTypeId .. i
 			local unitName = UnitName(unitID)
 			local unitNameWithRealm = GetUnitName(unitID, true)
-			local cleuName = Details:GetCLName(unitID)
+			local cleuName = getCleuName(unitID)
 			local unitSerial = UnitGUID(unitID)
 			local _, unitClass, unitClassID = UnitClass(unitID)
 			local unitRole = UnitGroupRolesAssigned(unitID)
@@ -662,8 +672,9 @@ local CreatePluginFrames = function()
 					local mythicPlusProfile = rioProfile.mythicKeystoneProfile
 					local previousScore = mythicPlusProfile.previousScore or 0
 					local currentScore = mythicPlusProfile.currentScore or 0
-					mythicPlusScore = previousScore and previousScore > currentScore and previousScore or currentScore
-					mythicPlusScore = mythicPlusScore or currentScore
+					--mythicPlusScore = previousScore and previousScore > currentScore and previousScore or currentScore
+					--mythicPlusScore = mythicPlusScore or currentScore
+					mythicPlusScore = currentScore
 				end
 			end
 
@@ -693,7 +704,7 @@ local CreatePluginFrames = function()
 			--add the player data
 			local unitId = "player"
 			local unitName = UnitName(unitId)
-			local cleuName = Details:GetCLName(unitId)
+			local cleuName = getCleuName(unitId)
 			local unitSerial = UnitGUID(unitId)
 			local _, unitClass, unitClassID = UnitClass(unitId)
 			local unitRole = UnitGroupRolesAssigned(unitId)
@@ -840,55 +851,57 @@ local CreatePluginFrames = function()
 		local unitSerial = UnitGUID(unitId)
 
 		local function handleAuraBuff(aura)
-			local auraInfo = C_UnitAuras.GetAuraDataByAuraInstanceID(unitId, aura.auraInstanceID)
-			if (auraInfo) then
-				local buffName = auraInfo.name
-				local spellId = auraInfo.spellId
+			if (aura) then
+				local auraInfo = C_UnitAuras.GetAuraDataByAuraInstanceID(unitId, aura.auraInstanceID)
+				if (auraInfo) then
+					local buffName = auraInfo.name
+					local spellId = auraInfo.spellId
 
-				if (buffName) then
-					local flashInfo = flaskList[spellId]
-					if (flashInfo) then
-						local flaskTier = openRaidLib.GetFlaskTierFromAura(auraInfo)
-						DetailsRaidCheck.unitsWithFlaskTable[unitSerial] = {spellId, flaskTier, auraInfo.icon}
-						consumableTable.Flask = consumableTable.Flask + 1
-					end
-
-					local foodInfo = foodInfoList[spellId]
-
-					if (DetailsRaidCheck.db.food_tier1) then
-						if (foodInfo) then
-							local foodTier = openRaidLib.GetFoodTierFromAura(auraInfo)
-							DetailsRaidCheck.unitWithFoodTable[unitSerial] = {spellId, foodTier or 1, auraInfo.icon}
-							consumableTable.Food = consumableTable.Food + 1
+					if (buffName) then
+						local flashInfo = flaskList[spellId]
+						if (flashInfo) then
+							local flaskTier = openRaidLib.GetFlaskTierFromAura(auraInfo)
+							DetailsRaidCheck.unitsWithFlaskTable[unitSerial] = {spellId, flaskTier, auraInfo.icon}
+							consumableTable.Flask = consumableTable.Flask + 1
 						end
-					end
 
-					if (DetailsRaidCheck.db.food_tier2) then
-						if (foodInfo) then
-							local foodTier = openRaidLib.GetFoodTierFromAura(auraInfo)
-							if (foodTier and foodTier >= 2) then
-								DetailsRaidCheck.unitWithFoodTable[unitSerial] = {spellId, foodTier, auraInfo.icon}
+						local foodInfo = foodInfoList[spellId]
+
+						if (DetailsRaidCheck.db.food_tier1) then
+							if (foodInfo) then
+								local foodTier = openRaidLib.GetFoodTierFromAura(auraInfo)
+								DetailsRaidCheck.unitWithFoodTable[unitSerial] = {spellId, foodTier or 1, auraInfo.icon}
 								consumableTable.Food = consumableTable.Food + 1
 							end
 						end
-					end
 
-					if (DetailsRaidCheck.db.food_tier3) then
-						if (foodInfo) then
-							local foodTier = openRaidLib.GetFoodTierFromAura(auraInfo)
-							if (foodTier and foodTier >= 3) then
-								DetailsRaidCheck.unitWithFoodTable[unitSerial] = {spellId, foodTier, auraInfo.icon}
-								consumableTable.Food = consumableTable.Food + 1
+						if (DetailsRaidCheck.db.food_tier2) then
+							if (foodInfo) then
+								local foodTier = openRaidLib.GetFoodTierFromAura(auraInfo)
+								if (foodTier and foodTier >= 2) then
+									DetailsRaidCheck.unitWithFoodTable[unitSerial] = {spellId, foodTier, auraInfo.icon}
+									consumableTable.Food = consumableTable.Food + 1
+								end
 							end
 						end
-					end
 
-					if (runeIds[spellId]) then
-						DetailsRaidCheck.havefocusaug_table[unitSerial] = spellId
-					end
+						if (DetailsRaidCheck.db.food_tier3) then
+							if (foodInfo) then
+								local foodTier = openRaidLib.GetFoodTierFromAura(auraInfo)
+								if (foodTier and foodTier >= 3) then
+									DetailsRaidCheck.unitWithFoodTable[unitSerial] = {spellId, foodTier, auraInfo.icon}
+									consumableTable.Food = consumableTable.Food + 1
+								end
+							end
+						end
 
-					if (buffName == localizedFoodDrink) then
-						DetailsRaidCheck.iseating_table[unitSerial] = true
+						if (runeIds[spellId]) then
+							DetailsRaidCheck.havefocusaug_table[unitSerial] = spellId
+						end
+
+						if (buffName == localizedFoodDrink) then
+							DetailsRaidCheck.iseating_table[unitSerial] = true
+						end
 					end
 				end
 			end
@@ -944,7 +957,7 @@ local CreatePluginFrames = function()
 end
 
 local buildOptionsPanel = function()
-	local optionsFrame = DetailsRaidCheck:CreatePluginOptionsFrame("DetailsRaidCheckOptionsWindow", "Details! Raid Check Options", 1)
+	local optionsFrame = DetailsRaidCheck:CreatePluginOptionsFrame("DetailsRaidCheckOptionsWindow", "Details! Raid Check Options")
 	local optionsTable = {
 		{type = "label", get = function() return "General Settings:" end, text_template = DF:GetTemplate("font", "ORANGE_FONT_TEMPLATE")},
 		{

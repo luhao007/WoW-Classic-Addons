@@ -1,6 +1,6 @@
 ﻿-- Pawn by Vger-Azjol-Nerub
 -- www.vgermods.com
--- © 2006-2023 Travis Spomer.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
+-- © 2006-2024 Travis Spomer.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
 -- See Readme.htm for more information.
 
 --
@@ -263,7 +263,7 @@ Pour plus d'information sur la Personnalisation de Pawn, regarder le fichier d'a
 		["Armor2"] = "^UNUSED$",
 		["ArmorPenetration"] = "^Équipé : Vos attaques ignorent # points de l'armure de votre adversaire%.$",
 		["ArmorPenetrationRating"] = "^Équipé : Augmente de # le score de pénétration d'armure%.$",
-		["ArmorPenetrationRating2"] = "^UNUSED$",
+		["ArmorPenetrationRating2"] = "^Équipé : Augmente de # la pénétration d'armure%.$",
 		["ArmorPenetrationShort"] = "^%+?# au score de pénétration d'armure$",
 		["Avoidance"] = "^%+# Évitement$",
 		["Axe"] = "^Hache$",
@@ -282,6 +282,7 @@ Pour plus d'information sur la Personnalisation de Pawn, regarder le fichier d'a
 		["Crit"] = "^%+?# Score de crit%.?$",
 		["Crit2"] = "^%+?# au score de critique$",
 		["CritPercent"] = "^E?\195?\137?quipé : Augmente vos chances d'infliger un coup critique de #%%%.$",
+		["CritPercentCombined"] = "^Equipé : Augmente de # %% vos chances d’infliger un coup critique avec tous les sorts et attaques%.$",
 		["CritRating"] = "^Équipé : Augmente votre score de coup critique de #%.$",
 		["CritRating2"] = "^UNUSED$",
 		["CritRating3"] = "^Équipé : Augmente de # le score de coup critique%.$",
@@ -348,6 +349,7 @@ Pour plus d'information sur la Personnalisation de Pawn, regarder le fichier d'a
 		["HeroicWarforged"] = "^De guerre héroïque$",
 		["Hit"] = "^E?\195?\137?quipé : Augmente vos chances de toucher de #%%%.$",
 		["Hit2"] = "^UNUSED$",
+		["HitPercentCombined"] = "^Equipé : Augmente de # %% les chances de toucher avec tous les sorts et attaques%.$",
 		["HitRating"] = "^Équipé : Augmente de # le score de toucher%.$",
 		["HitRating2"] = "^Équipé : Augmente votre score de toucher de #%.$",
 		["HitRating3"] = "^UNUSED$",
@@ -674,8 +676,6 @@ Cette commande ne peut etre défaite!]=],
 		["ValuesDoNotShowUpgradesFor1H"] = "Ne pas afficher d'amélioration pour les objets a une main",
 		["ValuesDoNotShowUpgradesFor2H"] = "Ne pas afficher d'amélioration pour les objets a deux mains",
 		["ValuesDoNotShowUpgradesTooltip"] = "Cette option permet de cacher les améliorations pour ce type d'objet. Par exemple, même si les tanks paladin peuvent utiliser des armes a deux mains, une arme à deux mains n'est jamais une \"amélioration\" pour un ensemble de paladin tank, aussi Pawn ne devrait pas afficher informations d amélioration pour eux. De même, les Paladin Vindicte peuvent utiliser des armes a une main, mais ce n'est jamais une amélioration.",
-		["ValuesFollowSpecialization"] = "Ne montrer que les améliorations pour mon meilleur type d'armure au delà du niveau %d",
-		["ValuesFollowSpecializationTooltip"] = "Cette option permet de cacher les améliorations d'armure dans laquelle votre classe n est pas spécialisé après le niveau %d. Par exemple, au niveau %d les Paladin Sacré apprennent la spécialisation plaque, ce qui augmente leur intelligence de 5%% quand ils portent seulement de la plaque. Quand cette option est choisie, Pawn ne tiendra jamais compte du tissu, cuir, ou maille comme des améliorations pour des paladins sacré au dessus du niveau %d.",
 		["ValuesHeader"] = "Pondérations de statistiques pour %s",
 		["ValuesIgnoreItemType"] = "Ces objets sont inutilisables",
 		["ValuesIgnoreStat"] = "Les objets avec ceci sont inutilisables",
@@ -698,7 +698,7 @@ if VgerCore.IsClassic then
 	PawnLocal.ThousandsSeparator = "NBSP"
 	PawnLocal.DecimalSeparator = "."
 elseif VgerCore.IsWrath then
-	PawnLocal.ThousandsSeparator = "NBSP"
+	PawnLocal.ThousandsSeparator = ""
 	PawnLocal.DecimalSeparator = ","
 end
 

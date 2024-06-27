@@ -1,6 +1,6 @@
 ## Interface: 30400
-## Version: Plater-v548-Wrath
-## SavedVariables: PlaterDB
+## Version: Plater-v576a-Wrath
+## SavedVariables: PlaterDB, PlaterLanguage, PlaterLogs
 ## SavedVariablesPerCharacter: PlaterDBChr
 
 ## Title: Plater
@@ -26,11 +26,18 @@ locales\ptBR.lua
 locales\ruRU.lua
 locales\zhCN.lua
 locales\zhTW.lua
+locales\arAR.lua
 
 Plater.xml
 
+Definitions.lua
+
 Plater_DefaultSettings.lua
 
+Plater_Data.lua
+Plater_Logs.lua
+Plater_PerformanceUnits.lua
+Plater_Util.lua
 Plater.lua
 Plater_Comms.lua
 Plater_Auras.lua
@@ -49,7 +56,9 @@ Plater_ChangeLog.lua
 Plater_Docs.lua
 Plater_BossModsSupport.lua
 Plater_Animations.lua
+Plater_NpcColorPanels.lua
 Plater_CastColorPanels.lua
+Plater_Audio.lua
 Plater_Profiling.lua
 Plater_Plugins.lua
 Plater_DebugFrames.lua

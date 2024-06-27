@@ -30,8 +30,8 @@ for i = 1,#COMPANION_TYPE do
 end
 
 local COMPANION_DATA = {
-    -- [itemID] = {spellID, creatureID, creatureType}
-    [1029] = {3599,2523,1},
+	-- [itemID] = {spellID, creatureID, creatureType}
+	[1029] = {3599,2523,1},
 	[1032] = {5730,3579,1},
 	[1041] = {578,356,2},
 	[1132] = {580,358,2},
@@ -579,6 +579,35 @@ local COMPANION_DATA = {
 	[54857] = {75936,40721,1},
 	[54860] = {75973,40725,2},
 	[56806] = {78381,42078,1},
+	[59597] = {81937,43800,1},
+	[60216] = {82173,43916,1},
+	[60847] = {84263,45128,1},
+	[60954] = {90619,60954,2},
+	[60955] = {84752,45340,1},
+	[63039] = {88741,47647,2},
+	[63040] = {88742,47648,2},
+	[63041] = {88744,47646,2},
+	[63043] = {88746,47651,2},
+	[63044] = {88748,47652,2},
+	[63045] = {88749,47653,2},
+	[63355] = {89472,48107,1},
+	[64372] = {90523,48609,1},
+	[64883] = {92155,51152,2},
+	[64996] = {89472,48107,1},
+	[64998] = {92231,49487,2},
+	[64999] = {92232,49488,2},
+	[65356] = {88741,47647,2},
+	[65891] = {93326,50269,2},
+	[68823] = {96491,52172,2},
+	[68824] = {96499,52178,2},
+	[69224] = {97493,52748,2},
+	[69747] = {98204,53276,2},
+	[69821] = {98571,53225,1},
+	[69824] = {98587,53232,1},
+	[71665] = {101542,54395,2},
+	[77067] = {107842,57226,2},
+	[77069] = {107845,57228,2},
+	[78919] = {110039,58166,2},
 	[180089] = {330659,11325,1},
 	[184865] = {348459,176708,2},
 	[192455] = {372677,189739,2},
@@ -651,7 +680,7 @@ end
 
 function Companion.IsCollectedItem(itemID)
     if COMPANION_DATA[itemID] then
-        return COLLECTED_COMPANIONS[COMPANION_DATA[itemID][2]]
+        return COLLECTED_COMPANIONS[COMPANION_DATA[itemID][1]]
     end
 end
 
@@ -666,14 +695,24 @@ local EventFrame = CreateFrame("FRAME")
 EventFrame:RegisterEvent("COMPANION_LEARNED")
 EventFrame:RegisterEvent("COMPANION_UNLEARNED")
 EventFrame:RegisterEvent("COMPANION_UPDATE")
+
 local function UpdateKnownCompanions(typ)
     if GetNumCompanions(typ) <= 0 then return end
 
-    for i = 1, GetNumCompanions(typ) do
-        local creatureID = GetCompanionInfo(typ, i) -- creatureID, creatureName, spellID, icon, active
-        COLLECTED_COMPANIONS[creatureID] = true
+    if typ == "MOUNT" then
+        local mountIDs = C_MountJournal.GetMountIDs()
+        for i = 1, #mountIDs do
+            local _, spellID, _, _, _, _, _, _, _, _, isCollected, mountID = C_MountJournal.GetMountInfoByID(mountIDs[i])
+            COLLECTED_COMPANIONS[spellID] = isCollected
+        end
+    else
+        for i = 1, GetNumCompanions(typ) do
+            local _, _, creatureSpellID = GetCompanionInfo(typ, i)
+            COLLECTED_COMPANIONS[creatureSpellID] = true
+        end
     end
 end
+
 local function EventFrame_OnEvent(frame, event, arg1)
     if event == "COMPANION_UNLEARNED" then
         wipe(COLLECTED_COMPANIONS)
@@ -688,4 +727,5 @@ EventFrame:SetScript("OnEvent", EventFrame_OnEvent)
 local function OnInit()
     EventFrame_OnEvent()
 end
+
 AtlasLoot:AddInitFunc(OnInit)

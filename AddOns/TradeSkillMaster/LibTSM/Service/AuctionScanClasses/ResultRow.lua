@@ -4,8 +4,9 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
-local ResultRow = TSM.Init("Service.AuctionScanClasses.ResultRow")
+local TSM = select(2, ...) ---@type TSM
+local ResultRow = TSM.Init("Service.AuctionScanClasses.ResultRow") ---@class Service.AuctionScanClasses.ResultRow
+local Environment = TSM.Include("Environment")
 local ItemString = TSM.Include("Util.ItemString")
 local ObjectPool = TSM.Include("Util.ObjectPool")
 local TempTable = TSM.Include("Util.TempTable")
@@ -55,15 +56,15 @@ end
 
 function ResultRowWrapper._Acquire(self, query, item, minPrice, totalQuantity)
 	self._query = query
-	if TSM.IsWowClassic() then
-		assert(not minPrice and not totalQuantity)
-		tinsert(self._items, item)
-		self._baseItemString = ItemString.GetBase(item)
-	else
+	if Environment.IsRetail() then
 		item._minPrice = minPrice
 		item._totalQuantity = totalQuantity
 		tinsert(self._items, item)
 		self._baseItemString = ItemString.GetBaseFromItemKey(item)
+	else
+		assert(not minPrice and not totalQuantity)
+		tinsert(self._items, item)
+		self._baseItemString = ItemString.GetBase(item)
 	end
 	self._canHaveNonBaseItemString = nil
 	self._minPrice = nil
@@ -95,15 +96,15 @@ function ResultRowWrapper.Merge(self, item, minPrice, totalQuantity)
 		end
 	end
 	self._hasItemInfo = nil
-	if TSM.IsWowClassic() then
-		assert(not minPrice and not totalQuantity)
-		assert(self._baseItemString == ItemString.GetBase(item))
-		tinsert(self._items, item)
-		self._notFiltered = false
-	else
+	if Environment.IsRetail() then
 		assert(self._baseItemString == ItemString.GetBaseFromItemKey(item))
 		item._minPrice = minPrice
 		item._totalQuantity = totalQuantity
+		tinsert(self._items, item)
+		self._notFiltered = false
+	else
+		assert(not minPrice and not totalQuantity)
+		assert(self._baseItemString == ItemString.GetBase(item))
 		tinsert(self._items, item)
 		self._notFiltered = false
 	end
@@ -141,7 +142,7 @@ function ResultRowWrapper.PopulateBrowseData(self)
 		return false
 	end
 
-	if not TSM.IsWowClassic() then
+	if Environment.HasFeature(Environment.FEATURES.COMMODITY_ITEMS) then
 		-- cache the commodity status since it's referenced a ton
 		if self._isCommodity == nil then
 			self._isCommodity = ItemInfo.IsCommodity(self._baseItemString)
@@ -153,16 +154,16 @@ function ResultRowWrapper.PopulateBrowseData(self)
 	local missingInfo = false
 	ItemInfo.SetQueryUpdatesPaused(true)
 	for _, item in ipairs(self._items) do
-		if TSM.IsWowClassic() then
-			if not Util.HasItemInfo(ItemString.Get(item)) then
-				missingInfo = true
-			end
-		else
+		if Environment.HasFeature(Environment.FEATURES.C_AUCTION_HOUSE) then
 			if not item._itemKeyInfo then
 				item._itemKeyInfo = C_AuctionHouse.GetItemKeyInfo(item, true)
 				if not item._itemKeyInfo then
 					missingInfo = true
 				end
+			end
+		else
+			if not Util.HasItemInfo(ItemString.Get(item)) then
+				missingInfo = true
 			end
 		end
 	end
@@ -205,13 +206,13 @@ function ResultRowWrapper.IsFiltered(self, query)
 end
 
 function ResultRowWrapper.SearchReset(self)
-	assert(not TSM.IsWowClassic())
+	assert(Environment.HasFeature(Environment.FEATURES.C_AUCTION_HOUSE))
 	assert(#self._items > 0)
 	self._searchIndex = 1
 end
 
 function ResultRowWrapper.SearchNext(self)
-	assert(not TSM.IsWowClassic())
+	assert(Environment.HasFeature(Environment.FEATURES.C_AUCTION_HOUSE))
 	assert(self._searchIndex)
 	if self._searchIndex == #self._items then
 		self._searchIndex = nil
@@ -222,14 +223,14 @@ function ResultRowWrapper.SearchNext(self)
 end
 
 function ResultRowWrapper.SearchIsReady(self)
-	assert(not TSM.IsWowClassic())
+	assert(Environment.HasFeature(Environment.FEATURES.C_AUCTION_HOUSE))
 	assert(self._searchIndex)
 	-- the client needs to have the item key info cached before we can run the search
 	return C_AuctionHouse.GetItemKeyInfo(self._items[self._searchIndex], true) and true or false
 end
 
 function ResultRowWrapper.SearchSend(self)
-	assert(not TSM.IsWowClassic())
+	assert(Environment.HasFeature(Environment.FEATURES.C_AUCTION_HOUSE))
 	assert(self._searchIndex)
 	local itemKey = self._items[self._searchIndex]
 	-- send a sell query if we don't have browse results for the itemKey
@@ -248,7 +249,7 @@ function ResultRowWrapper.HasCachedSearchData(self)
 end
 
 function ResultRowWrapper.SearchCheckStatus(self)
-	assert(not TSM.IsWowClassic())
+	assert(Environment.HasFeature(Environment.FEATURES.C_AUCTION_HOUSE))
 	assert(self._searchIndex)
 	local itemKey = self._items[self._searchIndex]
 
@@ -272,27 +273,7 @@ function ResultRowWrapper.SearchCheckStatus(self)
 end
 
 function ResultRowWrapper.PopulateSubRows(self, browseId, index, itemLink)
-	if TSM.IsWowClassic() then
-		-- remove any prior results with a different browseId
-		assert(index and not self._searchIndex)
-		local subRow = ResultSubRow.Get(self)
-		subRow:_SetRawData(index, browseId, itemLink)
-		local _, hashNoSeller = subRow:GetHashes()
-		if self._minBrowseId and self._minBrowseId ~= browseId then
-			-- check if this subRow already exists with a prior browseId
-			for i, existingSubRow in ipairs(self._subRows) do
-				local _, existingHashNoSeller = existingSubRow:GetHashes()
-				local _, _, existingBrowseId = existingSubRow:GetListingInfo()
-				if hashNoSeller == existingHashNoSeller and browseId ~= existingBrowseId then
-					-- replace the existing subRow
-					existingSubRow:Release()
-					self._subRows[i] = subRow
-					return
-				end
-			end
-		end
-		tinsert(self._subRows, subRow)
-	else
+	if Environment.HasFeature(Environment.FEATURES.C_AUCTION_HOUSE) then
 		assert(self._searchIndex and not index)
 		local subRowOffset = self._searchIndex * SUB_ROW_SEARCH_INDEX_MULTIPLIER
 		local itemKey = self._items[self._searchIndex]
@@ -327,24 +308,44 @@ function ResultRowWrapper.PopulateSubRows(self, browseId, index, itemLink)
 				subRow:_SetRawData(result, browseId)
 			end
 		end
+	else
+		-- remove any prior results with a different browseId
+		assert(index and not self._searchIndex)
+		local subRow = ResultSubRow.Get(self)
+		subRow:_SetRawData(index, browseId, itemLink)
+		local _, hashNoSeller = subRow:GetHashes()
+		if self._minBrowseId and self._minBrowseId ~= browseId then
+			-- check if this subRow already exists with a prior browseId
+			for i, existingSubRow in ipairs(self._subRows) do
+				local _, existingHashNoSeller = existingSubRow:GetHashes()
+				local _, _, existingBrowseId = existingSubRow:GetListingInfo()
+				if hashNoSeller == existingHashNoSeller and browseId ~= existingBrowseId then
+					-- replace the existing subRow
+					existingSubRow:Release()
+					self._subRows[i] = subRow
+					return
+				end
+			end
+		end
+		tinsert(self._subRows, subRow)
 	end
 	self._minBrowseId = min(self._minBrowseId or math.huge, browseId)
 end
 
 function ResultRowWrapper.FilterSubRows(self, query)
-	local subRowOffset = TSM.IsWowClassic() and 0 or (self._searchIndex * SUB_ROW_SEARCH_INDEX_MULTIPLIER)
-	if TSM.IsWowClassic() then
-		for i = #self._subRows, 1, -1 do
-			if query:_IsFiltered(self._subRows[i], true) then
-				self:_RemoveSubRowByIndex(i)
-			end
-		end
-	else
+	local subRowOffset = Environment.HasFeature(Environment.FEATURES.C_AUCTION_HOUSE) and (self._searchIndex * SUB_ROW_SEARCH_INDEX_MULTIPLIER) or 0
+	if Environment.HasFeature(Environment.FEATURES.C_AUCTION_HOUSE) then
 		local itemKey = self._items[self._searchIndex]
 		for j = itemKey._numAuctions, 1, -1 do
 			local subRow = self._subRows[subRowOffset + j]
 			if query:_IsFiltered(subRow, true) then
 				self:_RemoveSubRowByIndex(j)
+			end
+		end
+	else
+		for i = #self._subRows, 1, -1 do
+			if query:_IsFiltered(self._subRows[i], true) then
+				self:_RemoveSubRowByIndex(i)
 			end
 		end
 	end
@@ -354,7 +355,7 @@ function ResultRowWrapper.FilterSubRows(self, query)
 	local hashIndexLookup = TempTable.Acquire()
 	local index = 1
 	while true do
-		numSubRows = TSM.IsWowClassic() and #self._subRows or self._items[self._searchIndex]._numAuctions
+		numSubRows = Environment.HasFeature(Environment.FEATURES.C_AUCTION_HOUSE) and self._items[self._searchIndex]._numAuctions or #self._subRows
 		if index > numSubRows then
 			break
 		end
@@ -376,21 +377,19 @@ function ResultRowWrapper.FilterSubRows(self, query)
 end
 
 function ResultRowWrapper.GetNumSubRows(self)
-	if TSM.IsWowClassic() then
-		return #self._subRows
-	else
+	if Environment.HasFeature(Environment.FEATURES.C_AUCTION_HOUSE) then
 		local result = 0
 		for _, itemKey in ipairs(self._items) do
 			result = result + (itemKey._numAuctions or 0)
 		end
 		return result
+	else
+		return #self._subRows
 	end
 end
 
 function ResultRowWrapper.SubRowIterator(self, searchOnly)
-	if TSM.IsWowClassic() then
-		return ipairs(self._subRows)
-	else
+	if Environment.HasFeature(Environment.FEATURES.C_AUCTION_HOUSE) then
 		if searchOnly then
 			local result = TempTable.Acquire()
 			assert(self._searchIndex)
@@ -403,6 +402,8 @@ function ResultRowWrapper.SubRowIterator(self, searchOnly)
 		else
 			return private.SubRowIteratorHelper, self, SUB_ROW_SEARCH_INDEX_MULTIPLIER
 		end
+	else
+		return ipairs(self._subRows)
 	end
 end
 
@@ -420,7 +421,7 @@ function ResultRowWrapper.GetBaseItemString(self)
 end
 
 function ResultRowWrapper.GetItemString(self)
-	if TSM.IsWowClassic() or not self._hasItemInfo or self._canHaveNonBaseItemString then
+	if not Environment.IsRetail() or not self._hasItemInfo or self._canHaveNonBaseItemString then
 		return nil
 	end
 	if self._canHaveNonBaseItemString == nil then
@@ -437,7 +438,7 @@ function ResultRowWrapper.GetItemString(self)
 end
 
 function ResultRowWrapper.GetItemInfo(self, itemKey)
-	if TSM.IsWowClassic() or not self._hasItemInfo then
+	if not Environment.IsRetail() or not self._hasItemInfo then
 		return nil, nil, nil, nil
 	end
 	itemKey = itemKey or (#self._items == 1 and self._items[1] or nil)
@@ -498,7 +499,7 @@ function ResultRowWrapper.GetItemInfo(self, itemKey)
 end
 
 function ResultRowWrapper.GetBuyouts(self, resultItemKey)
-	if TSM.IsWowClassic() then
+	if not Environment.IsRetail() then
 		return nil, nil, nil
 	end
 	assert(#self._items > 0)
@@ -522,17 +523,17 @@ end
 
 function ResultRowWrapper.GetQuantities(self)
 	local totalQuantity = 0
-	if TSM.IsWowClassic() then
-		for _, subRow in ipairs(self._subRows) do
-			local quantity, numAuctions = subRow:GetQuantities()
-			totalQuantity = totalQuantity + quantity * numAuctions
-		end
-	else
+	if Environment.IsRetail() then
 		for _, itemKey in ipairs(self._items) do
 			if not itemKey._totalQuantity then
 				return
 			end
 			totalQuantity = totalQuantity + itemKey._totalQuantity
+		end
+	else
+		for _, subRow in ipairs(self._subRows) do
+			local quantity, numAuctions = subRow:GetQuantities()
+			totalQuantity = totalQuantity + quantity * numAuctions
 		end
 	end
 	return totalQuantity, 1
@@ -551,9 +552,7 @@ end
 
 function ResultRowWrapper.RemoveSubRow(self, subRow)
 	local index = Table.KeyByValue(self._subRows, subRow)
-	if TSM.IsWowClassic() then
-		self:_RemoveSubRowByIndex(index)
-	else
+	if Environment.IsRetail() then
 		local searchIndex = floor(index / SUB_ROW_SEARCH_INDEX_MULTIPLIER)
 		index = index % SUB_ROW_SEARCH_INDEX_MULTIPLIER
 		assert(self._subRows[searchIndex * SUB_ROW_SEARCH_INDEX_MULTIPLIER + index] == subRow)
@@ -561,13 +560,15 @@ function ResultRowWrapper.RemoveSubRow(self, subRow)
 		self._searchIndex = searchIndex
 		self:_RemoveSubRowByIndex(index)
 		self._searchIndex = prevSearchIndex
+	else
+		self:_RemoveSubRowByIndex(index)
 	end
 	self._query:_OnSubRowRemoved(self)
 end
 
 function ResultRowWrapper.WipeSearchResults(self)
 	wipe(self._subRows)
-	if not TSM.IsWowClassic() then
+	if Environment.IsRetail() then
 		for _, itemKey in ipairs(self._items) do
 			itemKey._numAuctions = nil
 		end
@@ -579,7 +580,7 @@ function ResultRowWrapper.GetQuery(self)
 end
 
 function ResultRowWrapper.DecrementQuantity(self, amount)
-	assert(self:IsCommodity() and not TSM.IsWowClassic() and #self._items == 1)
+	assert(self:IsCommodity() and Environment.IsRetail() and #self._items == 1)
 	local index = 1
 	while amount > 0 do
 		local subRow = self._subRows[index + SUB_ROW_SEARCH_INDEX_MULTIPLIER]
@@ -615,10 +616,7 @@ end
 -- ============================================================================
 
 function ResultRowWrapper._RemoveSubRowByIndex(self, index)
-	if TSM.IsWowClassic() then
-		self._subRows[index]:Release()
-		tremove(self._subRows, index)
-	else
+	if Environment.IsRetail() then
 		local subRowOffset = self._searchIndex * SUB_ROW_SEARCH_INDEX_MULTIPLIER
 		local itemKey = self._items[self._searchIndex]
 		self._subRows[subRowOffset + index]:Release()
@@ -629,11 +627,14 @@ function ResultRowWrapper._RemoveSubRowByIndex(self, index)
 		end
 		self._subRows[subRowOffset + itemKey._numAuctions] = nil
 		itemKey._numAuctions = itemKey._numAuctions - 1
+	else
+		self._subRows[index]:Release()
+		tremove(self._subRows, index)
 	end
 end
 
 function ResultRowWrapper._GetSearchProgress(self)
-	assert(not TSM.IsWowClassic())
+	assert(Environment.IsRetail())
 	if #self._items == 0 then
 		return 0
 	end

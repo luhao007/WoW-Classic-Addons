@@ -115,7 +115,7 @@ function VUHDO_lnfStandardFontUpdateDemoText()
 		tOutlineText = tOutlineText .. "OUTLINEMONOCHROME";
 	end
 
-	tLabel:SetFont(sTable["FONT"], sTable["SCALE"] * 0.01 * 32, tOutlineText);
+	tLabel:SetFont(sTable["FONT"], sTable["SCALE"] * 0.01 * 32, tOutlineText or "");
 
 	if (sTable["COLOR"] ~= nil) then
 		tLabel:SetShadowColor(sTable["COLOR"]["R"], sTable["COLOR"]["G"], sTable["COLOR"]["B"], tShadowAlpha);

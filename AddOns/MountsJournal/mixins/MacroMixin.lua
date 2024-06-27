@@ -206,6 +206,7 @@ function macroFrame:PLAYER_LOGIN()
 
 			if self.classConfig.useTravelIfCantFly
 			and self.macro
+			and self.mounts.instanceID ~= 530
 			and not self.sFlags.canUseFlying
 			and not self.sFlags.isIndoors
 			and not self.sFlags.isSubmerged
@@ -216,7 +217,9 @@ function macroFrame:PLAYER_LOGIN()
 			                                 or IsFalling()))
 			then
 				local spellID = getFormSpellID()
-				if spellID ~= 783 and spellID ~= 33943 and spellID ~= 40120 then
+				if spellID == 783 then
+					return self:addLine(self:getDismountMacro(), "/cancelform")
+				elseif spellID ~= 33943 and spellID ~= 40120 then
 					return self:addLine(self:getDismountMacro(), "/cancelform\n/cast "..self:getSpellName(783))
 				end
 			end
@@ -349,7 +352,7 @@ do
 			                or IsSpellKnown(33943) and self:getSpellName(33943, ...)
 
 			if aquaticForm and catForm and travelForm then
-				return ("/cast [swimming]%s;[indoors]%s;[flyable]%s;%s"):format(aquaticForm, catForm, flightFrom or travelForm, travelForm)
+				return ("/cast [swimming]%s;[indoors]%s;[flyable,nocombat]%s;%s"):format(aquaticForm, catForm, flightFrom or travelForm, travelForm)
 			end
 		end,
 	}
@@ -376,6 +379,7 @@ function macroFrame:getMacro()
 
 	-- MAGIC BROOM IS USABLE
 	self.magicBroom = self.config.useMagicBroom
+	                  and not self.sFlags.targetMount
 	                  and GetItemCount(self.broomID) > 0
 	                  and not self.sFlags.isIndoors
 	                  and not self.sFlags.swimming
@@ -394,11 +398,16 @@ function macroFrame:getMacro()
 			macro = "/dismount"
 		end
 	-- CLASSMACRO
-	elseif self.macro and (self.class == "DRUID" and self.classConfig.useMacroAlways and (not self.classConfig.useMacroOnlyCanFly
-	                                                                                      or self.sFlags.canUseFlying)
-	                       or not self.magicBroom and (self.sFlags.isIndoors
-	                       	                           or GetUnitSpeed("player") > 0
-	                       	                           or IsFalling()))
+	elseif self.macro and (
+		self.class == "DRUID" and self.classConfig.useMacroAlways and (
+			not self.classConfig.useMacroOnlyCanFly or (
+				self.mounts.instanceID == 530 or self.mounts.instanceID == 571 and self.sFlags.canUseFlying
+			)
+		)
+		or not self.magicBroom and (
+			self.sFlags.isIndoors or GetUnitSpeed("player") > 0 or IsFalling()
+		)
+	)
 	then
 		macro = self.macro
 	-- MOUNT
@@ -420,7 +429,6 @@ function macroFrame:getCombatMacro()
 	else
 		macro = self:addLine(macro, "/mount")
 	end
-
 	return macro
 end
 

@@ -4,8 +4,9 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
-local Util = TSM.Init("Service.AuctionScanClasses.Util")
+local TSM = select(2, ...) ---@type TSM
+local Util = TSM.Init("Service.AuctionScanClasses.Util") ---@class Service.AuctionScanClasses.Util
+local Environment = TSM.Include("Environment")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 
 
@@ -19,7 +20,7 @@ function Util.HasItemInfo(itemString)
 	local itemLevel = ItemInfo.GetItemLevel(itemString)
 	local quality = ItemInfo.GetQuality(itemString)
 	local minLevel = ItemInfo.GetMinLevel(itemString)
-	local hasIsCommodity = TSM.IsWowClassic() or ItemInfo.IsCommodity(itemString) ~= nil
+	local hasIsCommodity = not Environment.IsRetail() or ItemInfo.IsCommodity(itemString) ~= nil
 	local hasCanHaveVariations = ItemInfo.CanHaveVariations(itemString) ~= nil
 	local result = itemName and itemLevel and quality and minLevel and hasIsCommodity and hasCanHaveVariations
 	if not result then

@@ -7,6 +7,7 @@
 local TSM = select(2, ...) ---@type TSM
 local CSV = TSM.Init("Util.CSV") ---@class Util.CSV
 local TempTable = TSM.Include("Util.TempTable")
+local String = TSM.Include("Util.String")
 local private = {}
 
 
@@ -73,14 +74,15 @@ end
 ---@param fields string[] The fields which are being decoded
 ---@return table @The CSV decoding context
 function CSV.DecodeStart(str, fields)
-	local func = gmatch(str, strrep("([^\n,]+),", #fields - 1).."([^\n,]+)(,?[^\n,]*)")
-	if strjoin(",", func()) ~= table.concat(fields, ",").."," then
+	local context = TempTable.Acquire()
+	context.numFields = #fields
+	context.result = true
+	context.index = 1
+	String.SafeSplit(str, "\n", context)
+	if context[1] ~= table.concat(fields, ",") then
+		CSV.DecodeEnd(context)
 		return
 	end
-	local context = TempTable.Acquire()
-	context.func = func
-	context.extraArgPos = #fields + 1
-	context.result = true
 	return context
 end
 
@@ -107,16 +109,17 @@ end
 -- ============================================================================
 
 function private.DecodeIteratorHelper(context)
-	return private.DecodeIteratorHelper2(context, context.func())
-end
-
-function private.DecodeIteratorHelper2(context, v1, ...)
-	if not v1 then
+	context.index = context.index + 1
+	if context.index > #context then
 		return
 	end
-	if select(context.extraArgPos, v1, ...) ~= "" then
+	return private.DecodeIteratorHelper2(context, strsplit(",", context[context.index]))
+end
+
+function private.DecodeIteratorHelper2(context, ...)
+	if select("#", ...) ~= context.numFields then
 		context.result = false
 		return
 	end
-	return v1, ...
+	return ...
 end

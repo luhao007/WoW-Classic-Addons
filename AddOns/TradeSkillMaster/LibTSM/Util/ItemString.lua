@@ -6,6 +6,7 @@
 
 local TSM = select(2, ...) ---@type TSM
 local ItemString = TSM.Init("Util.ItemString") ---@class Util.ItemString
+local Environment = TSM.Include("Environment")
 local BonusIds = TSM.Include("Data.BonusIds")
 local SmartMap = TSM.Include("Util.SmartMap")
 local private = {
@@ -52,38 +53,38 @@ end)
 -- ============================================================================
 
 ---Gets the constant unknown item string for places where the itemString is not known.
----@return string @The itemString
+---@return string
 function ItemString.GetUnknown()
 	return UNKNOWN_ITEM_STRING
 end
 
 ---Gets the constant placeholder item string.
----@return string @The itemString
+---@return string
 function ItemString.GetPlaceholder()
 	return PLACEHOLDER_ITEM_STRING
 end
 
 ---Gets the battlepet cage item string.
----@return string @The itemString
+---@return string
 function ItemString.GetPetCage()
 	return PET_CAGE_ITEM_STRING
 end
 
 ---Gets the base itemString smart map.
----@return SmartMapObject @The smart map
+---@return SmartMapObject
 function ItemString.GetBaseMap()
 	return private.baseItemStringMap
 end
 
 ---Gets the level itemString smart map.
----@return SmartMapObject @The smart map
+---@return SmartMapObject
 function ItemString.GetLevelMap()
 	return private.levelItemStringMap
 end
 
 ---Converts the parameter into an itemString.
----@param item number|string item Either an itemId, itemLink, or itemString to be converted
----@return string @The itemString
+---@param item number|string Either an itemId, itemLink, or itemString to be converted
+---@return string
 function ItemString.Get(item)
 	if not item then
 		return nil
@@ -103,7 +104,7 @@ end
 
 ---Converts the parameter into an itemId.
 ---@param item string An item to get the id of
----@return number @The itemId
+---@return number
 function ItemString.ToId(item)
 	local itemString = ItemString.Get(item)
 	if type(itemString) ~= "string" then
@@ -114,7 +115,7 @@ end
 
 ---Converts the parameter into a base itemString.
 ---@param itemString string An itemString to get the base itemString of
----@return string @The base itemString
+---@return string
 function ItemString.GetBaseFast(itemString)
 	if not itemString then
 		return nil
@@ -124,7 +125,7 @@ end
 
 ---Converts the parameter into a base itemString.
 ---@param item string An item to get the base itemString of
----@return string @The base itemString
+---@return string
 function ItemString.GetBase(item)
 	-- make sure it's a valid itemString
 	local itemString = ItemString.Get(item)
@@ -137,7 +138,7 @@ end
 
 ---Converts an itemKey from WoW into a base itemString.
 ---@param itemKey table An itemKey to get the itemString of
----@return string @The base itemString
+---@return string
 function ItemString.GetBaseFromItemKey(itemKey)
 	if itemKey.battlePetSpeciesID > 0 then
 		return "p:"..itemKey.battlePetSpeciesID
@@ -148,18 +149,16 @@ end
 
 ---Returns whether or not a non-base version of an item has been seen.
 ---@param baseItemString string A base itemString to check
----@return boolean @Whether or not a non-base version of the itemString has been seen
+---@return boolean
 function ItemString.HasNonBase(baseItemString)
 	return private.hasNonBaseItemStrings[baseItemString] or false
 end
 
 ---Converts an itemString to a level itemString
 ---@param itemString string An itemString to get the level itemString of
----@return string @The level itemString
+---@return string
 function ItemString.ToLevel(itemString)
-	if not ItemString.IsItem(itemString) then
-		return ItemString.GetBaseFast(itemString)
-	elseif ItemString.IsLevel(itemString) then
+	if ItemString.IsLevel(itemString) then
 		-- Already a level itemString
 		return itemString
 	end
@@ -167,6 +166,10 @@ function ItemString.ToLevel(itemString)
 	if itemString == baseItemString then
 		-- Already a base itemString
 		return itemString
+	end
+	if ItemString.IsPet(itemString) then
+		local petLevel = strmatch(itemString, "^p:%d+:(%d+):.+$")
+		return petLevel and baseItemString..":i"..petLevel or baseItemString
 	end
 	local level, isAbs = BonusIds.GetItemLevel(itemString)
 	if not level then
@@ -185,8 +188,12 @@ end
 ---Parse the level modifier from a (potential) level itemString
 ---@param itemString string An itemString to parse
 ---@return number @The level modifier
----@return boolean @Whether or not it's an absolute level
+---@return boolean @Whether or not it is an absolute level
 function ItemString.ParseLevel(itemString)
+	local petLevel = strmatch(itemString, "^p:[0-9]+:i([0-9]+)$")
+	if petLevel then
+		return tonumber(petLevel), true
+	end
 	local prefix, level = strmatch(itemString, "^i:[0-9]+:[0-9%-]*:([i%+%-])([0-9]+)")
 	level = level and tonumber(level) or nil
 	if not prefix or not level then
@@ -204,16 +211,21 @@ end
 
 ---Attempts to determine the itemLevel by parsing the itemString
 ---@param itemString string An itemString to get the itemLevel of
----@return number|nil @The item level or nil if it couldn't be determined
+---@return number|nil
 function ItemString.GetItemLevel(itemString)
-	-- check if this is a level itemString first
+	-- Check if this is a level itemString first
 	local itemLevel, isAbs = ItemString.ParseLevel(itemString)
 	if itemLevel then
 		return isAbs and itemLevel or nil
 	end
-	-- try to get the level from the bonusIds
-	itemLevel, isAbs = BonusIds.GetItemLevel(itemString)
-	return isAbs and itemLevel or nil
+	if ItemString.IsPet(itemString) then
+		local petLevel = strmatch(itemString, "^p:%d+:(%d+):.+$")
+		return petLevel and tonumber(petLevel) or nil
+	else
+		-- Try to get the level from the bonusIds
+		itemLevel, isAbs = BonusIds.GetItemLevel(itemString)
+		return isAbs and itemLevel or nil
+	end
 end
 
 ---Gets a list of stat modifier values which are present in an itemString
@@ -229,7 +241,7 @@ end
 
 ---Converts the parameter into a WoW itemString.
 ---@param itemString string An itemString to get the WoW itemString of
----@return number @The WoW itemString
+---@return number
 function ItemString.ToWow(itemString)
 	local itemStringLevel, isAbsItemStringLevel = ItemString.ParseLevel(itemString)
 	local itemId, rand, extraPart = nil, nil, nil
@@ -242,30 +254,30 @@ function ItemString.ToWow(itemString)
 		extraPart = extra and strmatch(itemString, "i:[0-9]+:[0-9%-]*:(.+)") or ""
 	end
 	local level = UnitLevel("player")
-	local spec = not TSM.IsWowClassic() and GetSpecialization() or nil
+	local spec = Environment.IsRetail() and GetSpecialization() or nil
 	spec = spec and GetSpecializationInfo(spec) or ""
 	return "item:"..itemId.."::::::"..(rand or "").."::"..level..":"..spec..":::"..extraPart..":::"
 end
 
 ---Returns whether or not the itemString is for an item
 ---@param itemString string The itemString to check
----@return boolean @Whether or not the itemString represents an item
+---@return boolean
 function ItemString.IsItem(itemString)
 	return strmatch(itemString, "^i:[%-:0-9%+i]+$") and true or false
 end
 
 ---Returns whether or not the itemString is a level itemString
 ---@param itemString string The itemString to check
----@return boolean @Whether or not the itemString is a level itemString
+---@return boolean
 function ItemString.IsLevel(itemString)
-	return strmatch(itemString, "^i:[0-9]+:[0-9%-]*:[i%+%-][0-9]+$") and true or false
+	return strmatch(itemString, "^i:[0-9]+:[0-9%-]*:[i%+%-][0-9]+$") or strmatch(itemString, "^p:[0-9]+:i[0-9]+$") and true or false
 end
 
 ---Returns whether or not the itemString is for a pet
 ---@param itemString string The itemString to check
----@return boolean @Whether or not the itemString represents a pet
+---@return boolean
 function ItemString.IsPet(itemString)
-	return strmatch(itemString, "^p:[%-:0-9]+$") and true or false
+	return strmatch(itemString, "^p:[%-:0-9i]+$") and true or false
 end
 
 
@@ -278,17 +290,18 @@ function private.ToItemString(item)
 	local paramType = type(item)
 	if paramType == "string" then
 		item = strtrim(item)
-		local itemId = strmatch(item, "^[ip]:([0-9]+)$")
+		local itemId = strmatch(item, "^item:(%d+)$")
+		if itemId then
+			item = "i:"..itemId
+		else
+			itemId = strmatch(item, "^[ip]:(%d+)$")
+		end
 		if itemId then
 			if tonumber(itemId) > ITEM_MAX_ID then
 				return nil
 			end
-			-- this is already an itemString
+			-- This is already an itemString
 			return item
-		end
-		itemId = strmatch(item, "item:(%d+)")
-		if itemId and tonumber(itemId) > ITEM_MAX_ID then
-			return nil
 		end
 	elseif paramType == "number" or tonumber(item) then
 		local itemId = tonumber(item)
@@ -304,7 +317,7 @@ function private.ToItemString(item)
 	-- test if it's already (likely) an item string or battle pet string
 	if strmatch(item, "^i:([0-9%-:i%+]+)$") then
 		return private.FixItemString(item)
-	elseif strmatch(item, "^p:([0-9:]+)$") then
+	elseif strmatch(item, "^p:([i0-9:]+)$") then
 		return private.FixPet(item)
 	end
 
@@ -363,11 +376,7 @@ end
 
 function private.FixPet(itemString)
 	itemString = private.RemoveExtra(itemString)
-	local result = strmatch(itemString, "^(p:%d+:%d+:%d+)$")
-	if result then
-		return result
-	end
-	return strmatch(itemString, "^(p:%d+)")
+	return strmatch(itemString, "^(p:%d+:%d+:%d+)$") or strmatch(itemString, "^(p:%d+:i%d+)$") or strmatch(itemString, "^(p:%d+)")
 end
 
 function private.FilterBonusIdsAndModifiers(itemString, importantBonusIdsOnly, itemType, itemId, rand, numBonusIds, ...)

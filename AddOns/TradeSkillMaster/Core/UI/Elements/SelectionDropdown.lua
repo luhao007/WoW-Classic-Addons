@@ -8,7 +8,7 @@
 -- A dropdown element allows the user to select from a dialog list. It is a subclass of the @{BaseDropdown} class.
 -- @classmod SelectionDropdown
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local Table = TSM.Include("Util.Table")
 local UIElements = TSM.Include("UI.UIElements")
 local SelectionDropdown = UIElements.Define("SelectionDropdown", "BaseDropdown")

@@ -4,8 +4,9 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
-local VendorTrade = TSM.Init("Data.VendorTrade")
+local TSM = select(2, ...) ---@type TSM
+local VendorTrade = TSM.Init("Data.VendorTrade") ---@class Data.VendorTrade
+local Environment = TSM.Include("Environment")
 local private = {}
 local DATA = nil
 
@@ -15,9 +16,45 @@ local DATA = nil
 -- Vendor Trade Data
 -- ============================================================================
 
-if TSM.IsWowVanillaClassic() then
+if Environment.IsVanillaClassic() then
 	DATA = {}
-elseif TSM.IsWowWrathClassic() then
+elseif Environment.IsCataClassic() then
+	DATA = {
+		["i:37101"] = {
+			["i:61978"] = 1, -- Ivory Ink
+		},
+		["i:39469"] = {
+			["i:61978"] = 1, -- Moonglow Ink
+		},
+		["i:39774"] = {
+			["i:61978"] = 1, -- Midnight Ink
+		},
+		["i:43116"] = {
+			["i:61978"] = 1, -- Lion's Ink
+		},
+		["i:43118"] = {
+			["i:61978"] = 1, -- Jadefire Ink
+		},
+		["i:43120"] = {
+			["i:61978"] = 1, -- Celestial Ink
+		},
+		["i:43122"] = {
+			["i:61978"] = 1, -- Shimmering Ink
+		},
+		["i:43124"] = {
+			["i:61978"] = 1, -- Ethereal Ink
+		},
+		["i:43126"] = {
+			["i:61978"] = 1, -- Ink of the Sea
+		},
+		["i:43127"] = {
+			["i:61978"] = 0.1, -- Snowfall Ink
+		},
+		["i:61981"] = {
+			["i:61978"] = 0.1, -- Inferno Ink
+		},
+	}
+elseif Environment.IsWrathClassic() then
 	DATA = {
 		["i:37101"] = {
 			["i:43126"] = 1, -- Ivory Ink
@@ -43,14 +80,11 @@ elseif TSM.IsWowWrathClassic() then
 		["i:43124"] = {
 			["i:43126"] = 1, -- Ethereal Ink
 		},
-		["i:43126"] = {
-			["i:43126"] = 1, -- Ink of the Sea
-		},
 		["i:43127"] = {
 			["i:43126"] = 0.1, -- Snowfall Ink
 		},
 	}
-else
+elseif Environment.IsRetail() then
 	DATA = {
 		["i:39469"] = {
 			["i:173058"] = 1, -- Moonglow Ink
@@ -116,6 +150,8 @@ else
 			["i:173058"] = 1, -- Maroon Ink
 		},
 	}
+else
+	error("Invalid game version")
 end
 
 

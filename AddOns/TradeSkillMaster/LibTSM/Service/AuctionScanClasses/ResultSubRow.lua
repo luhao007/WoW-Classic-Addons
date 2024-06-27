@@ -4,8 +4,9 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
-local ResultSubRow = TSM.Init("Service.AuctionScanClasses.ResultSubRow")
+local TSM = select(2, ...) ---@type TSM
+local ResultSubRow = TSM.Init("Service.AuctionScanClasses.ResultSubRow") ---@class Service.AuctionScanClasses.ResultSubRow
+local Environment = TSM.Include("Environment")
 local ItemString = TSM.Include("Util.ItemString")
 local ObjectPool = TSM.Include("Util.ObjectPool")
 local Math = TSM.Include("Util.Math")
@@ -67,15 +68,15 @@ end
 -- ============================================================================
 
 function ResultSubRowWrapper.Merge(self, other)
-	if TSM.IsWowClassic() then
-		self._numAuctions = self._numAuctions + other._numAuctions
-	else
+	if Environment.IsRetail() then
 		if self:IsCommodity() then
 			self._quantity = self._quantity + other._quantity
 			self._numOwnerItems = self._numOwnerItems + other._numOwnerItems
 		else
 			self._numAuctions = self._numAuctions + other._numAuctions
 		end
+	else
+		self._numAuctions = self._numAuctions + other._numAuctions
 	end
 end
 
@@ -142,23 +143,23 @@ end
 
 function ResultSubRowWrapper.GetBidInfo(self)
 	assert(self:HasRawData())
-	local itemMinBid = Math.Floor(self._minBid / self._quantity, TSM.IsWowClassic() and 1 or COPPER_PER_SILVER)
+	local itemMinBid = Math.Floor(self._minBid / self._quantity, Environment.HasFeature(Environment.FEATURES.AH_COPPER) and 1 or COPPER_PER_SILVER)
 	return self._minBid, itemMinBid, self._currentBid, self._isHighBidder, self._minIncrement
 end
 
 function ResultSubRowWrapper.GetRequiredBid(self)
 	local requiredBid = nil
-	if TSM.IsWowClassic() then
-		requiredBid = self._currentBid == 0 and self._minBid or (self._currentBid + self._minIncrement)
-	else
+	if Environment.IsRetail() then
 		requiredBid = self._minBid
+	else
+		requiredBid = self._currentBid == 0 and self._minBid or (self._currentBid + self._minIncrement)
 	end
 	return requiredBid
 end
 
 function ResultSubRowWrapper.GetDisplayedBids(self)
 	local displayedBid = self._currentBid == 0 and self._minBid or self._currentBid
-	local itemDisplayedBid = Math.Floor(displayedBid / self._quantity, TSM.IsWowClassic() and 1 or COPPER_PER_SILVER)
+	local itemDisplayedBid = Math.Floor(displayedBid / self._quantity, Environment.HasFeature(Environment.FEATURES.AH_COPPER) and 1 or COPPER_PER_SILVER)
 	return displayedBid, itemDisplayedBid
 end
 
@@ -187,10 +188,7 @@ end
 function ResultSubRowWrapper.GetHashes(self)
 	if not self._hash then
 		assert(self:HasRawData())
-		if TSM.IsWowClassic() then
-			self._hash = strjoin("~", tostringall(self._itemLink, self._minBid, self._minIncrement, self._buyout, self._currentBid, self._ownerStr, self._timeLeft, self._quantity, self._isHighBidder))
-			self._hashNoSeller = strjoin("~", tostringall(self._itemLink, self._minBid, self._minIncrement, self._buyout, self._currentBid, self._timeLeft, self._quantity, self._isHighBidder))
-		else
+		if Environment.IsRetail() then
 			local baseItemString = self:GetBaseItemString()
 			local itemMinBid = Math.Floor(self._minBid / self._quantity, COPPER_PER_SILVER)
 			local itemBuyout = floor(self._buyout / self._quantity)
@@ -211,13 +209,16 @@ function ResultSubRowWrapper.GetHashes(self)
 				self._hash = strjoin("~", tostringall(itemKeyId, itemKeySpeciesId, self._itemLink, itemMinBid, itemBuyout, self._currentBid, self._quantity, self._isHighBidder, self._ownerStr, self._auctionId))
 				self._hashNoSeller = strjoin("~", tostringall(itemKeyId, itemKeySpeciesId, self._itemLink, itemMinBid, itemBuyout, self._currentBid, self._quantity, self._isHighBidder, self._auctionId))
 			end
+		else
+			self._hash = strjoin("~", tostringall(self._itemLink, self._minBid, self._minIncrement, self._buyout, self._currentBid, self._ownerStr, self._timeLeft, self._quantity, self._isHighBidder))
+			self._hashNoSeller = strjoin("~", tostringall(self._itemLink, self._minBid, self._minIncrement, self._buyout, self._currentBid, self._timeLeft, self._quantity, self._isHighBidder))
 		end
 	end
 	return self._hash, self._hashNoSeller
 end
 
 function ResultSubRowWrapper.EqualsIndex(self, index, noSeller)
-	assert(TSM.IsWowClassic())
+	assert(not Environment.IsRetail())
 	local _, _, stackSize, _, _, _, _, minBid, minIncrement, buyout, bid, isHighBidder, _, seller, sellerFull = GetAuctionItemInfo("list", index)
 	seller = Util.FixSellerName(seller, sellerFull) or "?"
 	-- this is to get around a bug in Blizzard's code where the minIncrement value will be inconsistent for auctions where the player is the highest bidder
@@ -235,13 +236,7 @@ function ResultSubRowWrapper.EqualsIndex(self, index, noSeller)
 end
 
 function ResultSubRowWrapper.DecrementQuantity(self, amount)
-	if TSM.IsWowClassic() then
-		assert(amount == self._quantity)
-		self._numAuctions = self._numAuctions - 1
-		if self._numAuctions == 0 then
-			self._resultRow:RemoveSubRow(self)
-		end
-	else
+	if Environment.IsRetail() then
 		if self:IsCommodity() then
 			self._resultRow:DecrementQuantity(amount)
 		else
@@ -251,6 +246,12 @@ function ResultSubRowWrapper.DecrementQuantity(self, amount)
 			if self._numAuctions == 0 then
 				self._resultRow:RemoveSubRow(self)
 			end
+		end
+	else
+		assert(amount == self._quantity)
+		self._numAuctions = self._numAuctions - 1
+		if self._numAuctions == 0 then
+			self._resultRow:RemoveSubRow(self)
 		end
 	end
 end
@@ -276,24 +277,7 @@ function ResultSubRowWrapper._SetRawData(self, data, browseId, itemLink)
 	self._hashNoSeller = nil
 	self._browseId = browseId
 	if data then
-		if TSM.IsWowClassic() then
-			local _, _, stackSize, _, _, _, _, minBid, minIncrement, buyout, bid, isHighBidder, _, seller, sellerFull = GetAuctionItemInfo("list", data)
-			seller = Util.FixSellerName(seller, sellerFull)
-			-- this is to get around a bug in Blizzard's code where the minIncrement value will be inconsistent for auctions where the player is the highest bidder
-			minIncrement = isHighBidder and 0 or minIncrement
-			self._itemLink = itemLink
-			self._buyout = buyout
-			self._minBid = minBid
-			self._currentBid = bid
-			self._minIncrement = minIncrement
-			self._isHighBidder = isHighBidder
-			self._quantity = stackSize
-			self._timeLeft = GetAuctionItemTimeLeft("list", data)
-			self._ownerStr = seller or "?"
-			self._hasOwners = seller and true or false
-			self._numOwnerItems = 0
-			self._auctionId = 0
-		else
+		if Environment.IsRetail() then
 			if self._resultRow:IsCommodity() then
 				local baseItemString = self._resultRow:GetBaseItemString()
 				self._itemLink = ItemInfo.GetLink(baseItemString)
@@ -345,6 +329,23 @@ function ResultSubRowWrapper._SetRawData(self, data, browseId, itemLink)
 			self._ownerStr = table.concat(private.ownersTemp, ",")
 			wipe(private.ownersTemp)
 			self._auctionId = data.auctionID
+		else
+			local _, _, stackSize, _, _, _, _, minBid, minIncrement, buyout, bid, isHighBidder, _, seller, sellerFull = GetAuctionItemInfo("list", data)
+			seller = Util.FixSellerName(seller, sellerFull)
+			-- this is to get around a bug in Blizzard's code where the minIncrement value will be inconsistent for auctions where the player is the highest bidder
+			minIncrement = isHighBidder and 0 or minIncrement
+			self._itemLink = itemLink
+			self._buyout = buyout
+			self._minBid = minBid
+			self._currentBid = bid
+			self._minIncrement = minIncrement
+			self._isHighBidder = isHighBidder
+			self._quantity = stackSize
+			self._timeLeft = GetAuctionItemTimeLeft("list", data)
+			self._ownerStr = seller or "?"
+			self._hasOwners = seller and true or false
+			self._numOwnerItems = 0
+			self._auctionId = 0
 		end
 		assert(self._itemLink and self._quantity and self._buyout and self._minBid and self._currentBid and self._numOwnerItems and self._timeLeft and self._ownerStr and self._auctionId)
 	else

@@ -8,7 +8,7 @@
 -- The input element allows the user to enter text. It is a subclass of the @{BaseInput} class.
 -- @classmod MultiLineInput
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local Theme = TSM.Include("Util.Theme")
 local ScriptWrapper = TSM.Include("Util.ScriptWrapper")
 local UIElements = TSM.Include("UI.UIElements")

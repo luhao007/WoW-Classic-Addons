@@ -192,7 +192,6 @@ function NRC:doTrade()
 			--raid = NRC.lastRaidGroupInstanceID,
 			raidID = NRC.lastRaidID,
 		};
-		--NRC:debug(t);
 		tinsert(NRC.db.global.trades, 1, t);
 	end
 	NRC:resetCurrentTradeData();

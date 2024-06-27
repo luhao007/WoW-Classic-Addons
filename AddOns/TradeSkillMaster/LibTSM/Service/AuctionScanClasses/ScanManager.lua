@@ -4,9 +4,9 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
--- This file contains code for scanning the auction house
-local _, TSM = ...
-local ScanManager = TSM.Init("Service.AuctionScanClasses.ScanManager")
+local TSM = select(2, ...) ---@type TSM
+local ScanManager = TSM.Init("Service.AuctionScanClasses.ScanManager") ---@class Service.AuctionScanClasses.ScanManager
+local Environment = TSM.Include("Environment")
 local L = TSM.Include("Locale").GetTable()
 local TempTable = TSM.Include("Util.TempTable")
 local Log = TSM.Include("Util.Log")
@@ -205,17 +205,15 @@ end
 function AuctionScanManager.FindAuctionThreaded(self, findSubRow, noSeller)
 	assert(Threading.IsThreadContext())
 	wipe(self._findResult)
-	if TSM.IsWowClassic() then
-		return self:_FindAuctionThreadedClassic(findSubRow, noSeller)
-	else
+	if Environment.IsRetail() then
 		return self:_FindAuctionThreadedRetail(findSubRow)
+	else
+		return self:_FindAuctionThreadedClassic(findSubRow, noSeller)
 	end
 end
 
 function AuctionScanManager.PrepareForBidOrBuyout(self, index, subRow, noSeller, quantity, itemBuyout)
-	if TSM.IsWowClassic() then
-		return subRow:EqualsIndex(index, noSeller)
-	else
+	if Environment.IsRetail() then
 		local itemString = subRow:GetItemString()
 		if ItemInfo.IsCommodity(itemString) then
 			local future = AuctionHouseWrapper.StartCommoditiesPurchase(ItemString.ToId(itemString), quantity, itemBuyout)
@@ -226,13 +224,13 @@ function AuctionScanManager.PrepareForBidOrBuyout(self, index, subRow, noSeller,
 		else
 			return true
 		end
+	else
+		return subRow:EqualsIndex(index, noSeller)
 	end
 end
 
 function AuctionScanManager.PlaceBidOrBuyout(self, index, bidBuyout, subRow, quantity)
-	if TSM.IsWowClassic() then
-		return AuctionHouseWrapper.PlaceBid(index, bidBuyout)
-	else
+	if Environment.IsRetail() then
 		local itemString = subRow:GetItemString()
 		local future = nil
 		if ItemInfo.IsCommodity(itemString) then
@@ -244,6 +242,8 @@ function AuctionScanManager.PlaceBidOrBuyout(self, index, bidBuyout, subRow, qua
 			quantity = 1
 		end
 		return future
+	else
+		return AuctionHouseWrapper.PlaceBid(index, bidBuyout)
 	end
 end
 
@@ -254,10 +254,10 @@ function AuctionScanManager.GetProgress(self)
 	end
 	local currentQuery = self._queries[self._queriesScanned + 1]
 	local searchProgress = nil
-	if not self._queryDidBrowse or TSM.IsWowClassic() then
-		searchProgress = 0
-	else
+	if self._queryDidBrowse and Environment.IsRetail() then
 		searchProgress = currentQuery:GetSearchProgress() * (1 - BROWSE_PROGRESS) + BROWSE_PROGRESS
+	else
+		searchProgress = 0
 	end
 	local queryStep = 1 / numQueries
 	local progress = min((self._queriesScanned + searchProgress) * queryStep, 1)
@@ -327,7 +327,7 @@ end
 
 function AuctionScanManager._ProcessQuery(self, query)
 	local prevMaxBrowseId = 0
-	if TSM.IsWowClassic() then
+	if not Environment.IsRetail() then
 		for _, row in query:BrowseResultsIterator() do
 			prevMaxBrowseId = max(prevMaxBrowseId, row:GetMinBrowseId())
 		end
@@ -349,7 +349,7 @@ function AuctionScanManager._ProcessQuery(self, query)
 	self:_NotifyProgressUpdate()
 
 	local numNewResults = 0
-	if TSM.IsWowClassic() then
+	if not Environment.IsRetail() then
 		for _, row in query:BrowseResultsIterator() do
 			if row:GetMinBrowseId() > prevMaxBrowseId then
 				numNewResults = numNewResults + row:GetNumSubRows()

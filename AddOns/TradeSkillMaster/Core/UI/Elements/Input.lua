@@ -8,7 +8,7 @@
 -- The input element allows the user to enter text. It is a subclass of the @{BaseInput} class.
 -- @classmod Input
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local Theme = TSM.Include("Util.Theme")
 local TextureAtlas = TSM.Include("Util.TextureAtlas")
 local ScriptWrapper = TSM.Include("Util.ScriptWrapper")

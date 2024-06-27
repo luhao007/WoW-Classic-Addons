@@ -1,6 +1,6 @@
---[[
+﻿--[[
 Name: LibAlts-1.0
-Revision: 49
+Revision: 50
 Author: Sylvanaar (sylvanaar@mindspring.com)
 Description: Shared handling of alt identity between addons.
 Dependencies: LibStub

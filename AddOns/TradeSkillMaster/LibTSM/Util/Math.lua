@@ -31,9 +31,11 @@ end
 ---@param value number The number to check
 ---@return boolean @Whether or not the value is NAN
 function Math.IsNan(value)
-	assert(NAN)
+	if not NAN then
+		error("NAN not set")
+	end
 	if IS_NAN_GT_INF then
-		-- optimization if NAN > math.huge (which it is in Wow's version of lua)
+		-- Optimization if NAN > math.huge (which it is in Wow's version of lua)
 		return value > math.huge and tostring(value) == NAN_STR
 	else
 		return tostring(value) == NAN_STR

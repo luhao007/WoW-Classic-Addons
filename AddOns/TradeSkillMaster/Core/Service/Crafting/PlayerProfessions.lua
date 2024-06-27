@@ -6,6 +6,7 @@
 
 local TSM = select(2, ...) ---@type TSM
 local PlayerProfessions = TSM.Crafting:NewPackage("PlayerProfessions")
+local Environment = TSM.Include("Environment")
 local ProfessionInfo = TSM.Include("Data.ProfessionInfo")
 local Database = TSM.Include("Util.Database")
 local Event = TSM.Include("Util.Event")
@@ -14,7 +15,9 @@ local TempTable = TSM.Include("Util.TempTable")
 local CraftString = TSM.Include("Util.CraftString")
 local MatString = TSM.Include("Util.MatString")
 local Threading = TSM.Include("Service.Threading")
+local Settings = TSM.Include("Service.Settings")
 local private = {
+	settings = nil,
 	playerProfessionsThread = nil,
 	playerProfessionsThreadRunning = false,
 	db = nil,
@@ -37,6 +40,10 @@ local FIRST_AID_SKILL_FR = "Secourisme"
 -- ============================================================================
 
 function PlayerProfessions.OnInitialize()
+	private.settings = Settings.NewView()
+		:AddKey("sync", "internalData", "playerProfessions")
+		:AddKey("factionrealm", "internalData", "isCraftFavorite")
+		:AddKey("factionrealm", "internalData", "mats")
 	private.db = Database.NewSchema("PLAYER_PROFESSIONS")
 		:AddStringField("player")
 		:AddStringField("profession")
@@ -89,8 +96,8 @@ function private.StartPlayerProfessionsThread()
 end
 
 function private.UpdatePlayerProfessionInfo(name, skillId, level, maxLevel, isSecondary)
-	local professionInfo = TSM.db.sync.internalData.playerProfessions[name] or {}
-	TSM.db.sync.internalData.playerProfessions[name] = professionInfo
+	local professionInfo = private.settings.playerProfessions[name] or {}
+	private.settings.playerProfessions[name] = professionInfo
 	-- preserve whether or not we've prompted to create groups and the profession link if possible
 	local oldPrompted = professionInfo.prompted or nil
 	local oldLink = professionInfo.link or nil
@@ -104,7 +111,19 @@ function private.UpdatePlayerProfessionInfo(name, skillId, level, maxLevel, isSe
 end
 
 function private.PlayerProfessionsSkillUpdate()
-	if TSM.IsWowClassic() then
+	if Environment.IsRetail() or Environment.IsCataClassic() then
+		local professionIds = TempTable.Acquire(GetProfessions())
+		-- ignore archaeology and fishing which are in the 3rd and 4th slots respectively
+		professionIds[3] = nil
+		professionIds[4] = nil
+		for i, id in pairs(professionIds) do -- needs to be pairs since there might be holes
+			local name, _, level, maxLevel, _, _, skillId = GetProfessionInfo(id)
+			if not TSM.UI.CraftingUI.IsProfessionIgnored(name) then -- exclude ignored professions
+				private.UpdatePlayerProfessionInfo(name, skillId, level, maxLevel, i > 2)
+			end
+		end
+		TempTable.Release(professionIds)
+	else
 		local _, _, offset, numSpells = GetSpellTabInfo(1)
 		for i = offset + 1, offset + numSpells do
 			local name, subName = GetSpellBookItemName(i, BOOKTYPE_SPELL)
@@ -152,18 +171,6 @@ function private.PlayerProfessionsSkillUpdate()
 				end
 			end
 		end
-	else
-		local professionIds = TempTable.Acquire(GetProfessions())
-		-- ignore archaeology and fishing which are in the 3rd and 4th slots respectively
-		professionIds[3] = nil
-		professionIds[4] = nil
-		for i, id in pairs(professionIds) do -- needs to be pairs since there might be holes
-			local name, _, level, maxLevel, _, _, skillId = GetProfessionInfo(id)
-			if not TSM.UI.CraftingUI.IsProfessionIgnored(name) then -- exclude ignored professions
-				private.UpdatePlayerProfessionInfo(name, skillId, level, maxLevel, i > 2)
-			end
-		end
-		TempTable.Release(professionIds)
 	end
 
 	-- update our DB
@@ -181,16 +188,30 @@ end
 
 function private.PlayerProfessionsThread()
 	-- get the player's tradeskills
-	if TSM.IsWowClassic() then
-		SpellBookFrame_UpdateSkillLineTabs()
-	else
+	if Environment.IsRetail() or Environment.IsCataClassic() then
 		SpellBook_UpdateProfTab()
+	else
+		SpellBookFrame_UpdateSkillLineTabs()
 	end
 	local forgetProfession = Threading.AcquireSafeTempTable()
-	for name in pairs(TSM.db.sync.internalData.playerProfessions) do
+	for name in pairs(private.settings.playerProfessions) do
 		forgetProfession[name] = true
 	end
-	if TSM.IsWowClassic() then
+	if Environment.IsRetail() or Environment.IsCataClassic() then
+		Threading.WaitForFunction(GetProfessions)
+		local professionIds = Threading.AcquireSafeTempTable(GetProfessions())
+		-- ignore archaeology and fishing which are in the 3rd and 4th slots respectively
+		professionIds[3] = nil
+		professionIds[4] = nil
+		for i, id in pairs(professionIds) do -- needs to be pairs since there might be holes
+			local name, _, level, maxLevel, _, _, skillId = Threading.WaitForFunction(GetProfessionInfo, id)
+			if not TSM.UI.CraftingUI.IsProfessionIgnored(name) then -- exclude ignored professions
+				forgetProfession[name] = nil
+				private.UpdatePlayerProfessionInfo(name, skillId, level, maxLevel, i > 2)
+			end
+		end
+		Threading.ReleaseSafeTempTable(professionIds)
+	else
 		local _, _, offset, numSpells = GetSpellTabInfo(1)
 		for i = offset + 1, offset + numSpells do
 			local name, subName = GetSpellBookItemName(i, BOOKTYPE_SPELL)
@@ -235,23 +256,9 @@ function private.PlayerProfessionsThread()
 				end
 			end
 		end
-	else
-		Threading.WaitForFunction(GetProfessions)
-		local professionIds = Threading.AcquireSafeTempTable(GetProfessions())
-		-- ignore archaeology and fishing which are in the 3rd and 4th slots respectively
-		professionIds[3] = nil
-		professionIds[4] = nil
-		for i, id in pairs(professionIds) do -- needs to be pairs since there might be holes
-			local name, _, level, maxLevel, _, _, skillId = Threading.WaitForFunction(GetProfessionInfo, id)
-			if not TSM.UI.CraftingUI.IsProfessionIgnored(name) then -- exclude ignored professions
-				forgetProfession[name] = nil
-				private.UpdatePlayerProfessionInfo(name, skillId, level, maxLevel, i > 2)
-			end
-		end
-		Threading.ReleaseSafeTempTable(professionIds)
 	end
 	for name in pairs(forgetProfession) do
-		TSM.db.sync.internalData.playerProfessions[name] = nil
+		private.settings.playerProfessions[name] = nil
 	end
 	Threading.ReleaseSafeTempTable(forgetProfession)
 
@@ -270,12 +277,12 @@ function private.PlayerProfessionsThread()
 			-- check if the player still exists and still has this profession
 			local playerProfessions = TSM.db:Get("sync", TSM.db:GetSyncScopeKeyByCharacter(player), "internalData", "playerProfessions")
 			if not playerProfessions or not playerProfessions[TSM.Crafting.GetProfession(craftString)] then
-				tinsert(playersToRemove, player)
+				playersToRemove[player] = true
 			end
 		end
 		local stillExists = true
-		if #playersToRemove > 0 then
-			stillExists = TSM.Crafting.RemovePlayers(craftString, playersToRemove)
+		if next(playersToRemove) then
+			stillExists = TSM.Crafting.RemoveCraftPlayers(craftString, playersToRemove)
 		end
 		TempTable.Release(playersToRemove)
 		if stillExists then
@@ -293,16 +300,16 @@ function private.PlayerProfessionsThread()
 	Threading.ReleaseSafeTempTable(craftStrings)
 
 	-- clean up favorite crafts
-	for spellId, isFavorite in pairs(TSM.db.factionrealm.internalData.isCraftFavorite) do
+	for spellId, isFavorite in pairs(private.settings.isCraftFavorite) do
 		if not isFavorite or not spellIds[spellId] then
-			TSM.db.factionrealm.internalData.isCraftFavorite[spellId] = nil
+			private.settings.isCraftFavorite[spellId] = nil
 		end
 	end
 	Threading.ReleaseSafeTempTable(spellIds)
 
 	-- clean up mats which aren't used anymore
 	local toRemove = TempTable.Acquire()
-	for itemString, matInfo in pairs(TSM.db.factionrealm.internalData.mats) do
+	for itemString, matInfo in pairs(private.settings.mats) do
 		-- clear out old names
 		matInfo.name = nil
 		if not matUsed[itemString] then
@@ -311,7 +318,7 @@ function private.PlayerProfessionsThread()
 	end
 	Threading.ReleaseSafeTempTable(matUsed)
 	for _, itemString in ipairs(toRemove) do
-		TSM.db.factionrealm.internalData.mats[itemString] = nil
+		private.settings.mats[itemString] = nil
 	end
 	TempTable.Release(toRemove)
 

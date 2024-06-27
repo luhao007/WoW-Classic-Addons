@@ -399,12 +399,12 @@
 
 			<Frame name="$parentHitpointsPanel" inherits="VuhDoPanelTemplate">
 				<Size>
-					<AbsDimension x="365" y="144" />
+					<AbsDimension x="365" y="180" />
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
-							<AbsDimension x="155" y="-250" />
+							<AbsDimension x="160" y="-250" />
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -517,9 +517,26 @@
 									</Anchor>
 								</Anchors>
 								<Scripts>
-									<OnLoad>
+zo									<OnLoad>
 										VUHDO_lnfSetModel(self, "VUHDO_PANEL_SETUP.#PNUM#.LIFE_TEXT.showTotalHp");
 										VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K515);
+										VUHDO_lnfAddConstraint(self, VUHDO_LF_CONSTRAINT_DISABLE, "VUHDO_PANEL_SETUP.#PNUM#.LIFE_TEXT.show", false);
+									</OnLoad>
+								</Scripts>
+							</CheckButton>
+
+							<CheckButton name="$parentShowEffectiveCheckButton" text="VUHDO_I18N_SHOW_EFFECTIVE" inherits="VuhDoCheckButtonTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="120" y="-129" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										VUHDO_lnfSetModel(self, "VUHDO_PANEL_SETUP.#PNUM#.LIFE_TEXT.showEffectiveHp");
+										VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K595);
 										VUHDO_lnfAddConstraint(self, VUHDO_LF_CONSTRAINT_DISABLE, "VUHDO_PANEL_SETUP.#PNUM#.LIFE_TEXT.show", false);
 									</OnLoad>
 								</Scripts>

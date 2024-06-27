@@ -1,7 +1,7 @@
-local mod	= DBM:NewMod("KazzakClassic", "DBM-Azeroth")
+local mod	= DBM:NewMod("KazzakClassicVanilla", "DBM-Azeroth")
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20221129003558")
+mod:SetRevision("20240422183958")
 mod:SetCreatureID(12397)--121818 TW ID, 12397 classic ID
 --mod:SetModelID(17887)
 mod:EnableWBEngageSync()--Enable syncing engage in outdoors
@@ -32,14 +32,14 @@ function mod:OnCombatStart(delay, yellTriggered)
 end
 
 function mod:SPELL_CAST_SUCCESS(args)
-	if args.spellId == 21341 and args:IsSrcTypeHostile() then
+	if args:IsSpell(21341) and args:IsSrcTypeHostile() then
 		warningShadowBoltVolley:Show()
 		--timerShadowBoltVolleyCD:Start()
 	end
 end
 
 function mod:SPELL_AURA_APPLIED(args)
-	if args.spellId == 21056 then
+	if args:IsSpell(21056) then
 		self:SendSync("Mark", args.destName)
 		if self:AntiSpam(5, 1) then
 			if args:IsPlayer() then

@@ -1,0 +1,20 @@
+lightweight tag b284b481816b1d725f000f76fc3a4ac37ac4b700 3.4.3.7
+Author:	GitHub <noreply@github.com>
+Date:	Sat Apr 6 23:33:33 2024 -0700
+
+commit b284b481816b1d725f000f76fc3a4ac37ac4b700
+Author: GovtGeek <26489473+GovtGeek@users.noreply.github.com>
+Date:   Sat Apr 6 23:33:33 2024 -0700
+
+    Update TinyTooltip.toc
+    
+    Updated version for SoD season 3
+
+commit da526ef0ec09816abbc6ed5edecc4aca18f9d913
+Author: GovtGeek <26489473+GovtGeek@users.noreply.github.com>
+Date:   Sat Apr 6 23:33:11 2024 -0700
+
+    Update TinyTooltip_Vanilla.toc
+    
+    Updated version for SoD season 3
+

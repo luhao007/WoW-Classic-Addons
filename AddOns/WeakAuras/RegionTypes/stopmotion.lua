@@ -83,7 +83,7 @@ local properties = {
   },
 }
 
-WeakAuras.regionPrototype.AddProperties(properties, default);
+Private.regionPrototype.AddProperties(properties, default);
 
 local function create(parent)
     local frame = CreateFrame("Frame", nil, UIParent);
@@ -104,12 +104,12 @@ local function create(parent)
     frame.foreground = foreground;
     foreground:SetAllPoints(frame);
 
-    WeakAuras.regionPrototype.create(frame);
+    Private.regionPrototype.create(frame);
 
     return frame;
 end
 
-local GetAtlasInfo = WeakAuras.IsClassic() and GetAtlasInfo or C_Texture.GetAtlasInfo
+local GetAtlasInfo = WeakAuras.IsClassicEra() and GetAtlasInfo or C_Texture.GetAtlasInfo
 local function SetTextureViaAtlas(self, texture)
   if type(texture) == "string" and GetAtlasInfo(texture) then
     self:SetAtlas(texture);
@@ -158,7 +158,7 @@ local function SetFrameViaFrames(self, texture, frame)
 end
 
 local function modify(parent, region, data)
-    WeakAuras.regionPrototype.modify(parent, region, data);
+    Private.regionPrototype.modify(parent, region, data);
     region.foreground = region.foreground or {}
     region.background = region.background or {}
     local pattern = "%.x(%d+)y(%d+)f(%d+)%.[tb][gl][ap]"
@@ -452,6 +452,9 @@ local function modify(parent, region, data)
     end;
 
     region.FrameTick = onUpdate;
+    if region.FrameTick then
+      region.subRegionEvents:AddSubscriber("FrameTick", region, true)
+    end
 
     function region:Update()
       if region.state.paused then
@@ -493,4 +496,4 @@ local function validate(data)
   Private.EnforceSubregionExists(data, "subbackground")
 end
 
-WeakAuras.RegisterRegionType("stopmotion", create, modify, default, properties, validate);
+Private.RegisterRegionType("stopmotion", create, modify, default, properties, validate);

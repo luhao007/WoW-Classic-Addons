@@ -8,7 +8,7 @@
 -- A dropdown list provides selectable options in a modal shown by a dropdown element.
 -- @classmod DropdownList
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local Theme = TSM.Include("Util.Theme")
 local TextureAtlas = TSM.Include("Util.TextureAtlas")
 local UIElements = TSM.Include("UI.UIElements")

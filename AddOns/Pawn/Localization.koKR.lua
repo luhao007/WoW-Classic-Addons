@@ -1,6 +1,6 @@
 ﻿-- Pawn by Vger-Azjol-Nerub
 -- www.vgermods.com
--- © 2006-2023 Travis Spomer.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
+-- © 2006-2024 Travis Spomer.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
 -- See Readme.htm for more information.
 
 --
@@ -264,7 +264,7 @@ Pawn 사용자 설정의 더 자세한 정보는, 애드온에 포함된 help �
 		["Armor2"] = "^UNUSED$",
 		["ArmorPenetration"] = "^착용 효과: 공격 시 적의 방어도를 #만큼 무시합니다%.$",
 		["ArmorPenetrationRating"] = "^착용 효과: 방어구 관통력이 #만큼 증가합니다%.$",
-		["ArmorPenetrationRating2"] = "^UNUSED$",
+		["ArmorPenetrationRating2"] = "^착용 효과: 방어구 관통이 #만큼 증가합니다%.$",
 		["ArmorPenetrationShort"] = "^방어구 관통력 %+#$",
 		["Avoidance"] = "^광역회피 %+#$",
 		["Axe"] = "^도끼$",
@@ -283,6 +283,7 @@ Pawn 사용자 설정의 더 자세한 정보는, 애드온에 포함된 help �
 		["Crit"] = "^치명타 및 극대화 %+?#$",
 		["Crit2"] = "^UNUSED$",
 		["CritPercent"] = "^착용 효과: 치명타를 적중시킬 확률이 #%%만큼 증가합니다%.$",
+		["CritPercentCombined"] = "^착용 효과: 모든 주문과 공격의 주문 극대화 확률과 치명타 적중도가 #%%만큼 증가합니다%.$",
 		["CritRating"] = "^착용 효과: 치명타 적중도가 #만큼 증가합니다%.$",
 		["CritRating2"] = "^착용 효과: 치명타 및 주문 극대화 적중도가 #만큼 증가합니다%.$",
 		["CritRating3"] = "^착용 효과: 치명타 및 극대화 적중도가 #만큼 증가합니다%.$",
@@ -350,6 +351,7 @@ Pawn 사용자 설정의 더 자세한 정보는, 애드온에 포함된 help �
 		["HeroicWarforged"] = "^상급 전쟁벼림$",
 		["Hit"] = "^착용 효과: 무기의 적중률이 #%%만큼 증가합니다%.$",
 		["Hit2"] = "^UNUSED$",
+		["HitPercentCombined"] = "^착용 효과: 모든 주문과 공격의 적중률이 #%%만큼 증가합니다%.$",
 		["HitRating"] = "^착용 효과: 적중도가 #만큼 증가합니다%.$",
 		["HitRating2"] = "^UNUSED$",
 		["HitRating3"] = "^UNUSED$",
@@ -689,8 +691,6 @@ Pawn이 상점에 판매했거나, 파괴했거나, 다른 방법으로 더이�
 		["ValuesDoNotShowUpgradesFor1H"] = "한손 아이템의 향상 정보 보지 않기",
 		["ValuesDoNotShowUpgradesFor2H"] = "양손 아이템의 향상 정보 보지 않기",
 		["ValuesDoNotShowUpgradesTooltip"] = "이 옵션을 켜면 이 아이템 형식의 향상 정보를 숨깁니다. 예를 들어, 성기사 탱커는 양손 무기를 사용할 수 있지만, 양손 무기는 성기사 탱커 세트를 \"향상\"시키지 않습니다, 따라서 Pawn은 이에 따른 향상 정보를 표시하지 않습니다. 유사하게, 징벌 성기사는 한손 무기를 사용할 수 있지만, 능력치를 향상 시키지 않습니다.",
-		["ValuesFollowSpecialization"] = "레벨 %d 이후의 최상의 방어구 종류의 업그레이드만 표시하기",
-		["ValuesFollowSpecializationTooltip"] = "이 옵션을 켜면 레벨 %d 이후 직업 별 전문화되지 않는 방어구에 대한 향상 정보를 숨깁니다. 예를 들어, 신성 성기사는 레벨 %d에 판금 전문화를 배웁니다, 이것은 판금 방어구를 착용했을 때만 지능을 5%% 증가시킵니다. 이 옵션을 선택하면 Pawn은 레벨 %d+ 신성 성기사에게 천, 가죽, 또는 사슬 아이템을 향상 아이템으로 고려하지 않습니다.",
 		["ValuesHeader"] = "%s의 능력치 중요도",
 		["ValuesIgnoreItemType"] = "포함된 아이템 사용불가",
 		["ValuesIgnoreStat"] = "포함된 아이템 사용불가",

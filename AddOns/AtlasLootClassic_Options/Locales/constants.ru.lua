@@ -2,7 +2,7 @@
 
 if not AL then return end
 
--- These localization strings are translated on Curseforge: https://www.curseforge.com/wow/addons/atlaslootclassic/localization
+-- These localization strings are translated on Curseforge: https://www.curseforge.com/wow/addons/atlaslootclassic-cata/localization
 -- Options
 AL["Add line break before source."] = "Добавьте разрыв строки перед источником."
 AL["Add new list"] = "Добавить новый список"
@@ -38,7 +38,7 @@ AL["Remove |cffff0000%d|r items from list."] = "Удалить |cffff0000%d|r п
 AL["Replace existing items"] = "Заменить существующие предметы"
 AL["Reset frame position"] = "Сбросить положение фрейма"
 AL["Reset position of minimap button"] = "Сброс положения кнопки у мини-карты"
-AL["Reset position of the |cff33ff99\"%s\"|r window."] = "Сбросить положение |cff33ff99\"окна %s\"|r"
+AL["Reset position of the |cff33ff99\"%s\"|r window."] = "Сбросить положение окна |cff33ff99\"%s\"|r."
 AL["Reset position of the |cff33ff99\"Minimap button\"|r."] = "Сбросить положение |cff33ff99\"кнопки на мини-карте\"|r."
 AL["Scale"] = "Масштаб"
 AL["Select instance loottable on open."] = "Выберите таблицу предметов при открытии подземелья."

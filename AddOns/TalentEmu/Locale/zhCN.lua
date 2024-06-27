@@ -13,7 +13,7 @@ if GetLocale() ~= "zhCN" then return;end
 
 BINDING_NAME_ALARAIDTOOL_NEWWINDOW = "新建模拟器";
 BINDING_NAME_ALARAIDTOOL_QUERY = "查看目标天赋";
-BINDING_HEADER_ALATALENTEMU_HEADER = "<|cff00ff00alaTalentEmu|r>天赋模拟器";
+BINDING_HEADER_ALATALENTEMU_HEADER = "<|cff00ff00TalentEmu|r>天赋模拟器";
 
 l10n.Locale = "zhCN";
 
@@ -57,7 +57,7 @@ l10n.SaveButton = "|cff00ff00左键|r保存天赋设置\n|cff00ff00右键|r加�
 l10n.SendButton = "|cff00ff00左键|r发送天赋到聊天\n|cff00ff00右键|r查看最近聊天中的天赋";
 l10n.EquipmentFrameButton = "打开装备查看";
 
-l10n.TalentFrameCallButton = "打开ala天赋模拟器";
+l10n.TalentFrameCallButton = "打开天赋模拟器";
 l10n.TalentFrameCallButtonString = "模拟器";
 l10n.CurRank = "当前等级";
 l10n.NextRank = "下一等级";
@@ -126,18 +126,49 @@ l10n.DATA = {
 	[201] = "戒律",
 	[202] = "神圣",
 	[203] = "暗影",
-	[182] = "刺杀",
-	[181] = "战斗",
-	[183] = "敏锐",
-	[261] = "元素",
-	[263] = "增强",
-	[262] = "恢复",
+	-- [182] = "刺杀",
+	-- [181] = "战斗",
+	-- [183] = "敏锐",
+	-- [261] = "元素",
+	-- [263] = "增强",
+	-- [262] = "恢复",
 	[302] = "痛苦",
 	[303] = "恶魔学识",
 	[301] = "毁灭",
 	[161] = "武器",
 	[164] = "狂怒",
 	[163] = "防护",
+
+	[398] = "鲜血",
+	[399] = "冰霜",
+	[400] = "邪恶",
+	[752] = "平衡",
+	[750] = "野性战斗",
+	[748] = "恢复",
+	[811] = "野兽控制",
+	[807] = "射击",
+	[809] = "生存",
+	[799] = "奥术",
+	[851] = "火焰",
+	[823] = "冰霜",
+	[831] = "神圣",
+	[839] = "防护",
+	[855] = "惩戒",
+	[760] = "戒律",
+	[813] = "神圣",
+	[795] = "暗影",
+	[182] = "刺杀",
+	[181] = "战斗",
+	[183] = "敏锐",
+	[261] = "元素",
+	[263] = "增强",
+	[262] = "恢复",
+	[871] = "痛苦",
+	[867] = "恶魔学识",
+	[865] = "毁灭",
+	[746] = "武器",
+	[815] = "狂怒",
+	[845] = "防护",
 
 	H = "|cff00ff00治疗|r",
 	D = "|cffff0000输出|r",
@@ -217,6 +248,7 @@ l10n.MissGem = {
 };
 
 
+l10n["CANNOT APPLY : ERROR CATA."] = "无法应用天赋: 天赋数据错误（大灾变）";
 l10n["CANNOT APPLY : NEED MORE TALENT POINTS."] = "无法应用天赋: 需要更多天赋点数";
 l10n["CANNOT APPLY : TALENTS IN CONFLICT."] = "无法应用天赋: 与当前天赋冲突";
 l10n["CANNOT APPLY : UNABLE TO GENERATE TALENT MAP."] = "无法应用天赋: 创建天赋映射表发生错误";

@@ -1,6 +1,6 @@
 
 local CreateFromMixins,_G,select = CreateFromMixins,_G,select
-local ExecuteFrameScript,PlaySound = ExecuteFrameScript,PlaySound;
+local ExecuteFrameScript,PlaySound,SOUNDKIT = ExecuteFrameScript,PlaySound,SOUNDKIT;
 
 setfenv(1,LibStub("LibDropDownMenu"));
 -- start of content from UIDropDownMenuTemplates.lua
@@ -48,14 +48,14 @@ function DropDownExpandArrowMixin:OnEnter()
 	if self:IsEnabled() then
 		local listFrame = _G["LibDropDownMenu_List"..level];
 		if ( not listFrame or not listFrame:IsShown() or select(2, listFrame:GetPoint(1)) ~= self ) then
-			ToggleDropDownMenu(level, self:GetParent().value, nil, nil, nil, nil, self:GetParent().menuList, self);
+			ToggleDropDownMenu(level, self:GetParent().value, nil, nil, nil, nil, self:GetParent().menuList, self, nil, self:GetParent().menuListDisplayMode);
 		end
 	end
 end
 
 function DropDownExpandArrowMixin:OnMouseDown(button)
 	if self:IsEnabled() then
-		ToggleDropDownMenu(self:GetParent():GetParent():GetID() + 1, self:GetParent().value, nil, nil, nil, nil, self:GetParent().menuList, self);
+		ToggleDropDownMenu(self:GetParent():GetParent():GetID() + 1, self:GetParent().value, nil, nil, nil, nil, self:GetParent().menuList, self, nil, self:GetParent().menuListDisplayMode);
 	end
 end
 
@@ -97,4 +97,37 @@ end
 
 function UIDropDownCustomMenuEntryMixin:GetContextData()
 	return self.contextData;
+end
+
+ColorSwatchMixin = {}
+
+function ColorSwatchMixin:SetColor(color)
+	self.Color:SetVertexColor(color:GetRGB());
+end
+
+-- copied from SharedXML/NewFeatureLabel.lua; not present in classic
+NewFeatureLabelMixin = {};
+
+function NewFeatureLabelMixin:OnLoad()
+	self.BGLabel:SetText(self.label);
+	self.Label:SetText(self.label);
+	self.Label:SetJustifyH(self.justifyH);
+	self.BGLabel:SetJustifyH(self.justifyH);
+end
+
+function NewFeatureLabelMixin:ClearAlert()
+	-- derive
+	self:SetShown(false);
+end
+
+function NewFeatureLabelMixin:OnShow()
+	if self.animateGlow then
+		self.Fade:Play();
+	end
+end
+
+function NewFeatureLabelMixin:OnHide()
+	if self.animateGlow then
+		self.Fade:Stop();
+	end
 end

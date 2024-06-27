@@ -4,7 +4,7 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local Trade = TSM.Accounting:NewPackage("Trade")
 local L = TSM.Include("Locale").GetTable()
 local Event = TSM.Include("Util.Event")
@@ -13,7 +13,9 @@ local Money = TSM.Include("Util.Money")
 local ItemString = TSM.Include("Util.ItemString")
 local Wow = TSM.Include("Util.Wow")
 local ItemInfo = TSM.Include("Service.ItemInfo")
+local Settings = TSM.Include("Service.Settings")
 local private = {
+	settings = nil,
 	tradeInfo = nil,
 	popupContext = nil,
 }
@@ -25,6 +27,9 @@ local private = {
 -- ============================================================================
 
 function Trade.OnInitialize()
+	private.settings = Settings.NewView()
+		:AddKey("global", "accountingOptions", "trackTrades")
+		:AddKey("global", "accountingOptions", "autoTrackTrades")
 	Event.Register("TRADE_ACCEPT_UPDATE", private.OnAcceptUpdate)
 	Event.Register("UI_INFO_MESSAGE", private.OnChatMsg)
 end
@@ -62,7 +67,7 @@ function private.OnAcceptUpdate(_, player, target)
 end
 
 function private.OnChatMsg(_, msg)
-	if not TSM.db.global.accountingOptions.trackTrades then
+	if not private.settings.trackTrades then
 		return
 	end
 	if msg == LE_GAME_ERR_TRADE_COMPLETE and private.tradeInfo then
@@ -120,7 +125,7 @@ function private.OnChatMsg(_, msg)
 			error("Invalid tradeType: "..tostring(tradeType))
 		end
 
-		if TSM.db.global.accountingOptions.autoTrackTrades then
+		if private.settings.autoTrackTrades then
 			private.DoInsert(insertInfo)
 			TempTable.Release(insertInfo)
 		else

@@ -1,6 +1,6 @@
 -- AskMrRobotClassic-Serializer will serialize and communicate character data between users.
 
-local MAJOR, MINOR = "AskMrRobotClassic-Serializer", 11
+local MAJOR, MINOR = "AskMrRobotClassic-Serializer", 16
 local Amr, oldminor = LibStub:NewLibrary(MAJOR, MINOR)
 
 if not Amr then return end -- already loaded by something else

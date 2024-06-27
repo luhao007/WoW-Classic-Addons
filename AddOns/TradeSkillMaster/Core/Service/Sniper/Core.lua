@@ -4,8 +4,9 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local Sniper = TSM:NewPackage("Sniper")
+local Environment = TSM.Include("Environment")
 local Threading = TSM.Include("Service.Threading")
 local SniperSearchContext = TSM.Include("LibTSMClass").DefineClass("SniperSearchContext")
 TSM.Sniper.SniperSearchContext = SniperSearchContext
@@ -21,7 +22,7 @@ function Sniper.PopulateItemList(itemList)
 	for _ in TSM.Operations.GroupOperationIterator("Sniper", TSM.CONST.ROOT_GROUP_PATH) do
 		baseHasOperation = true
 	end
-	if baseHasOperation and TSM.IsWowClassic() then
+	if baseHasOperation and not Environment.IsRetail() then
 		return false
 	end
 

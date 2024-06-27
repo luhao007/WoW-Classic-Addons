@@ -1,5 +1,19 @@
 ## Revision History:
 
+#### v1.5 (October 12, 2023)
+------------------------------
+* Bump .toc to 30403
+
+#### v1.4 (June 21, 2023)
+------------------------------
+* Bump .toc to 30402
+* Updated localizations
+
+#### v1.3 (January 20, 2023)
+------------------------------
+* Update for Ulduar Patch 3.4.1
+* Bump .toc to 30401
+
 #### v1.2 (September 29, 2022)
 ------------------------------
 * Added a missing Zeppelin to Orgrimmar

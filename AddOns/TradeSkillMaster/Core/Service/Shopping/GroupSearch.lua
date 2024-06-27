@@ -4,7 +4,7 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local GroupSearch = TSM.Shopping:NewPackage("GroupSearch")
 local L = TSM.Include("Locale").GetTable()
 local Log = TSM.Include("Util.Log")
@@ -55,7 +55,7 @@ function private.ScanThread(auctionScan, groupList)
 	for _, groupPath in ipairs(groupList) do
 		private.groups[groupPath] = true
 		for _, itemString in TSM.Groups.ItemIterator(groupPath) do
-			local isValid, maxQuantityOrErr = TSM.Operations.Shopping.ValidAndGetRestockQuantity(itemString)
+			local isValid, maxQuantityOrErr = TSM.Operations.Shopping.ValidateAndGetRestockQuantity(itemString)
 			if isValid then
 				private.maxQuantity[itemString] = maxQuantityOrErr
 				tinsert(private.itemList, itemString)
@@ -63,6 +63,7 @@ function private.ScanThread(auctionScan, groupList)
 				Log.PrintfUser(L["Invalid custom price source for %s. %s"], ItemInfo.GetLink(itemString), maxQuantityOrErr)
 			end
 		end
+		Threading.Yield()
 	end
 	if #private.itemList == 0 then
 		return false

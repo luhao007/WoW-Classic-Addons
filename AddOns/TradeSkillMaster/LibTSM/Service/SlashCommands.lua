@@ -4,15 +4,15 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
-local SlashCommands = TSM.Init("Service.SlashCommands")
+local TSM = select(2, ...) ---@type TSM
+local SlashCommands = TSM.Init("Service.SlashCommands") ---@class Service.SlashCommands
 local Log = TSM.Include("Util.Log")
 local L = TSM.Include("Locale").GetTable()
 local private = {
 	commandInfo = {},
 	commandOrder = {},
 }
-local CALLBACK_TIME_WARNING_MS = 20
+local CALLBACK_TIME_WARNING = 0.02
 
 
 
@@ -70,11 +70,11 @@ function private.OnChatCommand(input)
 	local cmd, args = strmatch(input, "^([^ ]*) ?(.*)$")
 	cmd = strlower(cmd)
 	if private.commandInfo[cmd] then
-		local startTime = debugprofilestop()
+		local startTime = GetTimePreciseSec()
 		private.commandInfo[cmd].callback(args)
-		local timeTaken = debugprofilestop() - startTime
-		if timeTaken > CALLBACK_TIME_WARNING_MS then
-			Log.Warn("Handler for slash command (/tsm%s) took %0.2fms", input ~= "" and " "..input or input, timeTaken)
+		local timeTaken = GetTimePreciseSec() - startTime
+		if timeTaken > CALLBACK_TIME_WARNING then
+			Log.Warn("Handler for slash command (/tsm%s) took %0.5fs", input ~= "" and " "..input or input, timeTaken)
 		end
 	else
 		-- We weren't able to handle this command so print out the help

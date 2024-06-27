@@ -4,12 +4,8 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
---- ProfessionScrollingTable UI Element Class.
--- This is used to display the crafts within the currently-selected profession in the CraftingUI. It is a subclass of
--- the @{ScrollingTable} class.
--- @classmod ProfessionScrollingTable
-
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
+local Environment = TSM.Include("Environment")
 local L = TSM.Include("Locale").GetTable()
 local CraftString = TSM.Include("Util.CraftString")
 local TempTable = TSM.Include("Util.TempTable")
@@ -18,6 +14,7 @@ local Theme = TSM.Include("Util.Theme")
 local Log = TSM.Include("Util.Log")
 local ScriptWrapper = TSM.Include("Util.ScriptWrapper")
 local Event = TSM.Include("Util.Event")
+local GroupPath = TSM.Include("Util.GroupPath")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local Profession = TSM.Include("Service.Profession")
 local ProfessionScrollingTable = TSM.Include("LibTSMClass").DefineClass("ProfessionScrollingTable", TSM.UI.ScrollingTable)
@@ -53,7 +50,7 @@ function ProfessionScrollingTable.__init(self)
 	self._query = nil
 	self._isCraftString = {}
 	self._favoritesContextTable = nil
-	if TSM.IsWowClassic() then
+	if not Environment.IsRetail() then
 		Profession.RegisterStateCallback(function()
 			wipe(private.categoryInfoCache.numIndents)
 		end)
@@ -437,7 +434,7 @@ function private.GetCategoryGroupPath(categoryId)
 	end
 	local name = Profession.GetSkillLine()
 	tinsert(parts, 1, name)
-	return TSM.Groups.Path.Join(TempTable.UnpackAndRelease(parts))
+	return GroupPath.Join(TempTable.UnpackAndRelease(parts))
 end
 
 function private.GetNameCellText(self, data)
@@ -606,8 +603,8 @@ function private.RowOnClick(row, mouseButton)
 			scrollingTable:SetSelection(data)
 		else
 			scrollingTable:_ToggleCollapsed(data)
+			scrollingTable:UpdateData(true)
 		end
-		scrollingTable:UpdateData(true)
 
 		if scrollingTable._isCraftString[data] then
 			row:SetHighlightState("selectedHover")

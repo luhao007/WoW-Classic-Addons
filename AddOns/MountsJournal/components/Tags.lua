@@ -1,5 +1,5 @@
 local addon, L = ...
-local pairs, ipairs, next, select, tinsert, wipe, tconcat = pairs, ipairs, next, select, tinsert, wipe, table.concat
+local pairs, ipairs, next, select, tinsert, wipe = pairs, ipairs, next, select, tinsert, wipe
 local util, mounts, journal, tags = MountsJournalUtil, MountsJournal, MountsJournalFrame, {}
 journal.tags = tags
 journal:on("MODULES_INIT", function() tags:init() end)
@@ -51,10 +51,15 @@ function tags:init()
 	self.sortedTags = {}
 	self:setSortedTags()
 
-	self.mountOptionsMenu = LibStub("LibSFDropDown-1.4"):SetMixin({})
+	self.mountOptionsMenu = LibStub("LibSFDropDown-1.5"):SetMixin({})
 	self.mountOptionsMenu:ddHideWhenButtonHidden(journal.bgFrame)
 	self.mountOptionsMenu:ddSetInitFunc(function(...) self:mountOptionsMenu_Init(...) end)
 	self.mountOptionsMenu:ddSetDisplayMode(addon)
+
+	journal.scrollBox:RegisterCallback("OnDataRangeChanged", function()
+		if self.doNotHideMenu then return end
+		self.mountOptionsMenu:ddOnHide()
+	end)
 end
 
 
@@ -85,10 +90,10 @@ function tags:hideDropDown(mouseBtn)
 end
 
 
-function tags:dragMount(index)
+function tags:dragMount(mountID)
 	if InCombatLockdown() then return end
-	index = mounts.indexBySpellID[journal.displayedMounts[index]]
-	if index then PickupCompanion("MOUNT", index) end
+	local index = journal.indexByMountID[mountID]
+	if index then C_MountJournal.Pickup(index) end
 end
 
 
@@ -106,16 +111,16 @@ function tags:dragButtonClick(btn, mouseBtn)
 			ChatEdit_InsertLink(spellLink)
 		end
 	else
-		self:dragMount(parent.index)
+		self:dragMount(parent.mountID)
 	end
 end
 
 
 do
 	local lastMountClick = 0
-	function tags:listItemClick(btn, anchorTo, mouseBtn)
+	function tags:listItemClick(btn, mouseBtn)
 		if mouseBtn ~= "LeftButton" then
-			self:showMountDropdown(btn, anchorTo, 0, 0)
+			self:showMountDropdown(btn, btn, 0, 0)
 		elseif IsModifiedClick("CHATLINK") then
 			local id = btn.spellID
 			if MacroFrame and MacroFrame:IsShown() then
@@ -127,10 +132,10 @@ do
 			end
 		else
 			local time = GetTime()
-			if btn.spellID ~= journal.selectedSpellID then
-				journal:setSelectedMount(btn.spellID, btn.index, btn)
+			if btn.mountID ~= journal.selectedMountID then
+				journal:setSelectedMount(btn.mountID, btn.spellID)
 			elseif time - lastMountClick < .4 then
-				journal:useMount(btn.spellID)
+				journal:useMount(btn.mountID)
 			end
 			lastMountClick = time
 		end
@@ -139,8 +144,8 @@ end
 
 
 function tags:showMountDropdown(btn, anchorTo, offsetX, offsetY)
+	self.menuMountID = btn.mountID
 	self.menuSpellID = btn.spellID
-	self.menuMountIndex = btn.index
 	self.mountOptionsMenu:ddToggle(1, nil, anchorTo, offsetX, offsetY)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
 end
@@ -148,71 +153,80 @@ end
 
 function tags:mountOptionsMenu_Init(btn, level)
 	local info = {}
+	local realIndex = journal.indexByMountID[self.menuMountID]
 
 	if level == 1 then
-		local mountIndex, isCollected, active = mounts.indexBySpellID[self.menuSpellID]
-		if mountIndex then
-			local creatureID, creatureName, creatureSpellID, icon, isSummoned = GetCompanionInfo("MOUNT", mountIndex)
-			isCollected = true
-			active = isSummoned
-		end
+		local _, spellID, _, active, isUsable ,_, isFavorite, _,_,_, isCollected = C_MountJournal.GetMountInfoByID(self.menuMountID)
+		local needsFanfare = C_MountJournal.NeedsFanfare(self.menuMountID)
 		info.notCheckable = true
 
-		if active then
+		if needsFanfare then
+			info.text = UNWRAP
+		elseif active then
 			info.text = BINDING_NAME_DISMOUNT
 		else
 			info.text = MOUNT
-			info.disabled = not mounts:isUsable(self.menuSpellID, mounts:isCanUseFlying())
+			info.disabled = not (isUsable and IsUsableSpell(spellID) and mounts:isUsable(self.menuMountID))
 		end
 
 		info.func = function()
-			journal:useMount(self.menuSpellID)
+			journal:useMount(self.menuMountID)
 		end
 
 		btn:ddAddButton(info, level)
 
-		if isCollected then
-			info.text = nil
-			info.disabled = nil
-			info.customFrame = journal.weightFrame
-			info.OnLoad = function(frame)
-				local mountsWeight = journal.mountsWeight
-				frame.level = level + 1
-				frame:setValue(mountsWeight[self.menuSpellID] or 100)
-				frame.setFunc = function(value)
-					if value == 100 then value = nil end
-					if mountsWeight[self.menuSpellID] ~= value then
-						mountsWeight[self.menuSpellID] = value
-						journal.scrollFrame:update()
+		if not needsFanfare then
+			if isCollected then
+				info.text = nil
+				info.disabled = nil
+				info.customFrame = journal.weightFrame
+				info.OnLoad = function(frame)
+					local mountsWeight = journal.mountsWeight
+					frame.level = level + 1
+					frame:setValue(mountsWeight[self.menuMountID] or 100)
+					frame.setFunc = function(value)
+						if value == 100 then value = nil end
+						if mountsWeight[self.menuMountID] ~= value then
+							mountsWeight[self.menuMountID] = value
+							local btn = journal:getMountButtonByMountID(self.menuMountID)
+							if btn then
+								journal:initMountButton(btn, btn:GetElementData())
+							end
+						end
+					end
+				end
+				btn:ddAddButton(info, level)
+				info.customFrame = nil
+				info.OnLoad = nil
+			end
+
+			local canFavorite = realIndex and select(2, C_MountJournal.GetIsFavorite(realIndex))
+			info.disabled = not (isCollected and canFavorite)
+
+			if isFavorite then
+				info.text = BATTLE_PET_UNFAVORITE
+				info.func = function()
+					if realIndex then
+						C_MountJournal.SetIsFavorite(realIndex, false)
+					end
+				end
+			else
+				info.text = BATTLE_PET_FAVORITE
+				info.func = function()
+					if realIndex then
+						C_MountJournal.SetIsFavorite(realIndex, true)
 					end
 				end
 			end
 			btn:ddAddButton(info, level)
-			info.customFrame = nil
-			info.OnLoad = nil
-		end
 
-		info.disabled = nil
-		if mounts.mountFavoritesList[self.menuSpellID] then
-			info.text = BATTLE_PET_UNFAVORITE
-			info.func = function()
-				mounts.mountFavoritesList[self.menuSpellID] = nil
-				journal:sortMounts()
-			end
-		else
-			info.text = BATTLE_PET_FAVORITE
-			info.func = function()
-				mounts.mountFavoritesList[self.menuSpellID] = true
-				journal:sortMounts()
-			end
+			info.disabled = nil
+			info.keepShownOnClick = true
+			info.hasArrow = true
+			info.func = nil
+			info.text = L["tags"]
+			btn:ddAddButton(info, level)
 		end
-		btn:ddAddButton(info, level)
-
-		info.keepShownOnClick = true
-		info.hasArrow = true
-		info.func = nil
-		info.text = L["tags"]
-		btn:ddAddButton(info, level)
 
 		info.disabled = nil
 		info.hasArrow = nil
@@ -222,16 +236,18 @@ function tags:mountOptionsMenu_Init(btn, level)
 		info.func = function(_,_,_, checked)
 			if checked then
 				mounts.globalDB.hiddenMounts = mounts.globalDB.hiddenMounts or {}
-				mounts.globalDB.hiddenMounts[self.menuSpellID] = true
+				mounts.globalDB.hiddenMounts[self.menuMountID] = true
 			elseif mounts.globalDB.hiddenMounts then
-				mounts.globalDB.hiddenMounts[self.menuSpellID] = nil
+				mounts.globalDB.hiddenMounts[self.menuMountID] = nil
 				if not next(mounts.globalDB.hiddenMounts) then
 					mounts.globalDB.hiddenMounts = nil
 				end
 			end
+			self.doNotHideMenu = true
 			journal:updateMountsList()
+			self.doNotHideMenu = nil
 		end
-		info.checked = journal:isMountHidden(self.menuSpellID)
+		info.checked = journal:isMountHidden(self.menuMountID)
 		btn:ddAddButton(info, level)
 
 		info.keepShownOnClick = nil
@@ -257,12 +273,12 @@ function tags:mountOptionsMenu_Init(btn, level)
 					text = tag,
 					func = function(_,_,_, value)
 						if value then
-							self:addMountTag(self.menuSpellID, tag)
+							self:addMountTag(self.menuMountID, tag)
 						else
-							self:removeMountTag(self.menuSpellID, tag, true)
+							self:removeMountTag(self.menuMountID, tag, true)
 						end
 					end,
-					checked = function() return self:getTagInMount(self.menuSpellID, tag) end,
+					checked = function() return self:getTagInMount(self.menuMountID, tag) end,
 				}
 			end
 			btn:ddAddButton(info, level)
@@ -287,8 +303,8 @@ end
 
 function tags:deleteTag(tag)
 	StaticPopup_Show(util.addonName.."DELETE_TAG", NORMAL_FONT_COLOR_CODE..tag..FONT_COLOR_CODE_CLOSE, nil, function()
-		for spellID in pairs(self.mountTags) do
-			self:removeMountTag(spellID, tag)
+		for mountID in pairs(self.mountTags) do
+			self:removeMountTag(mountID, tag)
 		end
 		self.filter.tags[tag] = nil
 		self.defFilter.tags[tag] = nil
@@ -311,33 +327,39 @@ function tags:setOrderTag(tag, step)
 end
 
 
-function tags:getTagInMount(spellID, tag)
-	local mountTags = self.mountTags[spellID]
+function tags:getTagInMount(mountID, tag)
+	local mountTags = self.mountTags[mountID]
 	if mountTags then return mountTags[tag] end
 end
 
 
-function tags:addMountTag(spellID, tag)
-	if not self.mountTags[spellID] then
-		self.mountTags[spellID] = {}
+function tags:addMountTag(mountID, tag)
+	if not self.mountTags[mountID] then
+		self.mountTags[mountID] = {}
 	end
-	self.mountTags[spellID][tag] = true
+	self.mountTags[mountID][tag] = true
+	self.doNotHideMenu = true
 	journal:updateMountsList()
+	self.doNotHideMenu = nil
 end
 
 
-function tags:removeMountTag(spellID, tag, needUpdate)
-	local mountTags = self.mountTags[spellID]
+function tags:removeMountTag(mountID, tag, needUpdate)
+	local mountTags = self.mountTags[mountID]
 	if mountTags then
 		mountTags[tag] = nil
-		if next(mountTags) == nil then self.mountTags[spellID] = nil end
+		if next(mountTags) == nil then self.mountTags[mountID] = nil end
 	end
-	if needUpdate then journal:updateMountsList() end
+	if needUpdate then
+		self.doNotHideMenu = true
+		journal:updateMountsList()
+		self.doNotHideMenu = nil
+	end
 end
 
 
-function tags:find(spellID, text)
-	local mountTags = self.mountTags[spellID]
+function tags:find(mountID, text)
+	local mountTags = self.mountTags[mountID]
 	if mountTags then
 		local str = ""
 		for tag in next, mountTags do
@@ -353,8 +375,8 @@ function tags:find(spellID, text)
 end
 
 
-function tags:getFilterMount(spellID)
-	local mountTags = self.mountTags[spellID]
+function tags:getFilterMount(mountID)
+	local mountTags = self.mountTags[mountID]
 	if not mountTags then return self.filter.noTag end
 	local filterTags = self.filter.tags
 

@@ -4,8 +4,9 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local FilterSearch = TSM.Shopping:NewPackage("FilterSearch")
+local Environment = TSM.Include("Environment")
 local L = TSM.Include("Locale").GetTable()
 local DisenchantInfo = TSM.Include("Data.DisenchantInfo")
 local TempTable = TSM.Include("Util.TempTable")
@@ -18,8 +19,10 @@ local ItemFilter = TSM.Include("Service.ItemFilter")
 local CustomPrice = TSM.Include("Service.CustomPrice")
 local Conversions = TSM.Include("Service.Conversions")
 local ItemInfo = TSM.Include("Service.ItemInfo")
+local Settings = TSM.Include("Service.Settings")
 local FilterSearchContext = TSM.Include("LibTSMClass").DefineClass("FilterSearchContext", TSM.Shopping.ShoppingSearchContext)
 local private = {
+	settings = nil,
 	scanThreadId = nil,
 	itemFilter = nil,
 	isSpecial = false,
@@ -38,6 +41,8 @@ local private = {
 -- ============================================================================
 
 function FilterSearch.OnInitialize()
+	private.settings = Settings.NewView()
+		:AddKey("global", "shoppingOptions", "pctSource")
 	-- initialize thread
 	private.scanThreadId = Threading.New("FILTER_SEARCH", private.ScanThread)
 	private.itemFilter = ItemFilter.New()
@@ -50,7 +55,7 @@ function FilterSearch.GetGreatDealsSearchContext(filterStr)
 	if not filterStr then
 		return
 	end
-	private.marketValueSource = TSM.db.global.shoppingOptions.pctSource
+	private.marketValueSource = private.settings.pctSource
 	private.isSpecial = true
 	return private.searchContext:SetScanContext(L["Great Deals Search"], filterStr, nil, L["Market Value"])
 end
@@ -61,7 +66,7 @@ function FilterSearch.GetSearchContext(filterStr, itemInfo)
 	if not filterStr then
 		return nil, errMsg
 	end
-	private.marketValueSource = TSM.db.global.shoppingOptions.pctSource
+	private.marketValueSource = private.settings.pctSource
 	private.isSpecial = false
 	return private.searchContext:SetScanContext(filterStr, filterStr, itemInfo, L["Market Value"])
 end
@@ -84,7 +89,7 @@ end
 
 function private.ScanThread(auctionScan, filterStr)
 	wipe(private.generalMaxQuantity)
-	if not TSM.IsWowClassic() and filterStr == "" then
+	if Environment.IsRetail() and filterStr == "" then
 		auctionScan:NewQuery()
 			:SetStr("")
 		wipe(private.targetItem)
@@ -263,7 +268,7 @@ end
 function private.ValidateFilterStr(filterStr, mode)
 	assert(mode == "NORMAL" or mode == "CRAFTING" or mode == "DISENCHANT")
 	filterStr = strtrim(filterStr)
-	if mode == "NORMAL" and not TSM.IsWowClassic() and filterStr == "" then
+	if mode == "NORMAL" and Environment.IsRetail() and filterStr == "" then
 		return filterStr
 	end
 	local isValid, errMsg = true, nil
@@ -348,8 +353,8 @@ function private.GetTargetItemRate(targetItemString, itemString)
 	if DisenchantInfo.IsTargetItem(targetItemString) then
 		local classId = ItemInfo.GetClassId(itemString)
 		local quality = ItemInfo.GetQuality(itemString)
-		local itemLevel = not TSM.IsWowClassic() and ItemInfo.GetItemLevel(itemString) or ItemInfo.GetItemLevel(ItemString.GetBase(itemString))
-		local expansion = not TSM.IsWowClassic() and ItemInfo.GetExpansion(itemString) or nil
+		local itemLevel = Environment.IsRetail() and ItemInfo.GetItemLevel(itemString) or ItemInfo.GetItemLevel(ItemString.GetBase(itemString))
+		local expansion = Environment.IsRetail() and ItemInfo.GetExpansion(itemString) or nil
 		local amountOfMats = DisenchantInfo.GetTargetItemSourceInfo(targetItemString, classId, quality, itemLevel, expansion)
 		if amountOfMats then
 			return amountOfMats, 1

@@ -8,7 +8,7 @@
 -- A selection group tree allows for selecting a single group within the tree. It is a subclass of the @{GroupTree} class.
 -- @classmod SelectionGroupTree
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local Table = TSM.Include("Util.Table")
 local UIElements = TSM.Include("UI.UIElements")
 local SelectionGroupTree = TSM.Include("LibTSMClass").DefineClass("SelectionGroupTree", TSM.UI.GroupTree)

@@ -137,19 +137,22 @@ local tBar;
 local tQuota;
 local function VUHDO_targetHealthBouquetCallback(aButton, aUnit, anIsActive, anIcon, aCurrValue, aCounter, aMaxValue, aColor, aBuffName, aBouquetName)
 
-	tQuota = anIsActive and (aMaxValue or 0) > 0
-		and aCurrValue / aMaxValue or 0;
+	tQuota = anIsActive and (aMaxValue or 0) > 0 and aCurrValue / aMaxValue or 0;
 
 	if tQuota > 0 then
 		tBar = VUHDO_getHealthBar(aButton, 1);
+
 		tBar:SetValue(tQuota);
 		tBar:SetVuhDoColor(aColor);
+
 		VUHDO_getBarText(tBar):SetTextColor(VUHDO_textColor(aColor));
 		VUHDO_getLifeText(tBar):SetTextColor(VUHDO_textColor(aColor));
+
 		aButton:SetAlpha(1);
 	else
 		aButton:SetAlpha(0);
 	end
+
 end
 
 

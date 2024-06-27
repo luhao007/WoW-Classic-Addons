@@ -406,12 +406,12 @@
 
 			<Frame name="$parentSortByPanel" inherits="VuhDoPanelTemplate">
 				<Size>
-					<AbsDimension x="290" y="75" />
+					<AbsDimension x="290" y="90" />
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
-							<AbsDimension x="130" y="-150" />
+							<AbsDimension x="130" y="-138" />
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -455,6 +455,25 @@
 						</Scripts>
 					</Button>
 
+					<CheckButton name="$parentPetsLastCheckButton" text="VUHDO_I18N_PETS_LAST" inherits="VuhDoCheckButtonTemplate">
+						<Size>
+							<AbsDimension x="97" y="32" />
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="175" y="-10" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								VUHDO_lnfSetRadioModel(self, "VUHDO_PANEL_SETUP.#PNUM#.MODEL.isPetsLast");
+								VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K594);
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+
 					<CheckButton name="$parentReverseCheckButton" text="VUHDO_I18N_INV_GROWTH" inherits="VuhDoCheckButtonTemplate">
 						<Size>
 							<AbsDimension x="97" y="32" />
@@ -462,7 +481,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="175" y="-28" />
+									<AbsDimension x="175" y="-48" />
 								</Offset>
 							</Anchor>
 						</Anchors>

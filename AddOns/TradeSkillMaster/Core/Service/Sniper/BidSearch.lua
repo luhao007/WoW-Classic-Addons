@@ -4,8 +4,9 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local BidSearch = TSM.Sniper:NewPackage("BidSearch")
+local Environment = TSM.Include("Environment")
 local Threading = TSM.Include("Service.Threading")
 local private = {
 	scanThreadId = nil,
@@ -24,7 +25,7 @@ function BidSearch.OnInitialize()
 end
 
 function BidSearch.GetSearchContext()
-	assert(TSM.IsWowClassic())
+	assert(not Environment.IsRetail())
 	return private.searchContext
 end
 
@@ -35,7 +36,7 @@ end
 -- ============================================================================
 
 function private.ScanThread(auctionScan)
-	assert(TSM.IsWowClassic())
+	assert(not Environment.IsRetail())
 	local numQueries = auctionScan:GetNumQueries()
 	if numQueries == 0 then
 		auctionScan:NewQuery()

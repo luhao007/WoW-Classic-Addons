@@ -4,11 +4,8 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
---- Threading Functions
--- @module Threading
-
-local _, TSM = ...
-local Threading = TSM.Init("Service.Threading")
+local TSM = select(2, ...) ---@type TSM
+local Threading = TSM.Init("Service.Threading") ---@class Service.Threading
 local Debug = TSM.Include("Util.Debug")
 local Math = TSM.Include("Util.Math")
 local TempTable = TSM.Include("Util.TempTable")
@@ -24,12 +21,12 @@ local private = {
 }
 local MAX_TIME_USAGE_RATIO = 0.25
 local EXCESSIVE_TIME_USED_RATIO = 1.2
-local EXCESSIVE_TIME_LOG_THRESHOLD_MS = 100
-local MAX_QUANTUM_MS = 10
-local SEND_MSG_SYNC_TIMEOUT_MS = 3000
+local EXCESSIVE_TIME_LOG_THRESHOLD = 0.1
+local MAX_QUANTUM = 0.01
+local SEND_MSG_SYNC_TIMEOUT = 3
 local YIELD_VALUE_START = {}
 local YIELD_VALUE = {}
-local SCHEDULER_TIME_WARNING_THRESHOLD_MS = 100
+local SCHEDULER_TIME_WARNING_THRESHOLD = 0.1
 
 
 
@@ -306,7 +303,7 @@ end
 
 function Thread._ToLogStr(self)
 	if self._startTime then
-		self._realTimeUsed = debugprofilestop() - self._startTime
+		self._realTimeUsed = GetTimePreciseSec() - self._startTime
 		local pctStr = format("%.1f%%", Math.Round(self._cpuTimeUsed / self._realTimeUsed, 0.001) * 100)
 		return format("%s [%s,%s]", self._name, self._state, pctStr)
 	else
@@ -410,9 +407,9 @@ function Thread._GetDebugInfo(self)
 
 	local timeStr = "<Not Started>"
 	if self._startTime then
-		local wallTime = debugprofilestop() - self._startTime
+		local wallTime = GetTimePreciseSec() - self._startTime
 		local cpuTime = self._cpuTimeUsed
-		timeStr = format("Running for %.1f seconds (CPU: %dms, %.2f%%)", wallTime / 1000, cpuTime, (cpuTime / wallTime) * 100)
+		timeStr = format("Running for %.1f seconds (CPU: %dms, %.2f%%)", wallTime, cpuTime, (cpuTime / wallTime) * 100)
 	end
 
 	local createStr = "Created @"..self._createCaller
@@ -448,10 +445,10 @@ function Thread._Run(self, quantum)
 	end
 	private.runningThread = self
 	self._state = "RUNNING"
-	local startTime = debugprofilestop()
+	local startTime = GetTimePreciseSec()
 	self._endTime = startTime + quantum
 	local noErr, returnVal = coroutine.resume(self._co)
-	local elapsedTime = debugprofilestop() - startTime
+	local elapsedTime = GetTimePreciseSec() - startTime
 	private.runningThread = nil
 
 	assert(not noErr or returnVal == YIELD_VALUE)
@@ -567,9 +564,9 @@ function Thread._HandleSyncMessage(self, ...)
 	local msg = TempTable.Acquire(...)
 	tinsert(self._messages, 1, msg) -- this message should be received first
 	-- run the thread for up to 3 seconds to get it to process the sync message
-	local startTime = debugprofilestop()
+	local startTime = GetTimePreciseSec()
 	while self._messages[1] == msg do
-		if debugprofilestop() - startTime > SEND_MSG_SYNC_TIMEOUT_MS or not self:_IsAlive() then
+		if GetTimePreciseSec() - startTime > SEND_MSG_SYNC_TIMEOUT or not self:_IsAlive() then
 			-- want to error from the sending context, so just return the error
 			return format("ERROR: A sync message was not able to be delivered! (%s)", self._name)
 		end
@@ -588,14 +585,14 @@ end
 -- ============================================================================
 
 function Thread._Main(self, ...)
-	self._startTime = debugprofilestop()
+	self._startTime = GetTimePreciseSec()
 	coroutine.yield(YIELD_VALUE_START)
 	self._returnValue = TempTable.Acquire(self._func(...))
 	self:_Exit()
 end
 
 function Thread._Yield(self, force)
-	if force or self._state ~= "RUNNING" or debugprofilestop() > self._endTime then
+	if force or self._state ~= "RUNNING" or GetTimePreciseSec() > self._endTime then
 		-- only change the state if it's currently set to RUNNING
 		if self._state == "RUNNING" then
 			self._state = force and "FORCED_YIELD" or "READY"
@@ -618,7 +615,7 @@ function Thread._ReceiveMessage(self)
 	if #self._messages == 0 then
 		-- change the state if there's no messages ready
 		self._state = "WAITING_FOR_MSG"
-	elseif debugprofilestop() > self._endTime then
+	elseif GetTimePreciseSec() > self._endTime then
 		-- If we're about to yield, set the state to WAITING_FOR_MSG even if we have messages in the queue
 		-- to allow sync messages to be sent to us.
 		self._state = "WAITING_FOR_MSG"
@@ -751,7 +748,7 @@ function private.RunScheduler(_, elapsed)
 	if InCombatLockdown() then
 		return
 	end
-	local startTime = debugprofilestop()
+	local startTime = GetTimePreciseSec()
 	local numReadyThreads = 0
 	wipe(private.queue)
 
@@ -764,8 +761,8 @@ function private.RunScheduler(_, elapsed)
 		end
 	end
 
-	local remainingTime = min(elapsed * 1000 * MAX_TIME_USAGE_RATIO, MAX_QUANTUM_MS)
-	while remainingTime > 0.01 do
+	local remainingTime = min(elapsed * MAX_TIME_USAGE_RATIO, MAX_QUANTUM)
+	while remainingTime > 0.00001 do
 		local ranThread = false
 		for i = #private.queue, 1, -1 do
 			local thread = private.queue[i]
@@ -776,9 +773,9 @@ function private.RunScheduler(_, elapsed)
 				remainingTime = remainingTime - min(elapsedTime, quantum)
 				-- any thread which ran excessively long should be ignored for future loops
 				if elapsedTime > EXCESSIVE_TIME_USED_RATIO * quantum and elapsedTime > quantum + 1 then
-					if elapsedTime > EXCESSIVE_TIME_LOG_THRESHOLD_MS then
+					if elapsedTime > EXCESSIVE_TIME_LOG_THRESHOLD then
 						local line = Debug.GetStackLevelLocation(2, thread._co)
-						Log.Warn("Thread %s ran too long (%.1f/%.1f): %s", thread._name, elapsedTime, quantum, line or "?")
+						Log.Warn("Thread %s ran too long (%.4f/%.4f): %s", thread._name, elapsedTime, quantum, line or "?")
 					end
 					tremove(private.queue, i)
 				end
@@ -802,20 +799,20 @@ function private.RunScheduler(_, elapsed)
 		private.schedulerFrame:Hide()
 	end
 
-	local timeTaken = debugprofilestop() - startTime
-	if timeTaken > SCHEDULER_TIME_WARNING_THRESHOLD_MS then
-		Log.Warn("Scheduler took %.2fms", timeTaken)
+	local timeTaken = GetTimePreciseSec() - startTime
+	if timeTaken > SCHEDULER_TIME_WARNING_THRESHOLD then
+		Log.Warn("Scheduler took %.5fs", timeTaken)
 	end
 end
 
 function private.ProcessEvent(self, event, ...)
-	local startTime = debugprofilestop()
+	local startTime = GetTimePreciseSec()
 	for _, thread in pairs(private.threads) do
 		thread:_ProcessEvent(event, ...)
 	end
-	local timeTaken = debugprofilestop() - startTime
-	if timeTaken > SCHEDULER_TIME_WARNING_THRESHOLD_MS then
-		Log.Warn("Scheduler took %.2fms to process %s", timeTaken, tostring(event))
+	local timeTaken = GetTimePreciseSec() - startTime
+	if timeTaken > SCHEDULER_TIME_WARNING_THRESHOLD then
+		Log.Warn("Scheduler took %.5fs to process %s", timeTaken, tostring(event))
 	end
 end
 

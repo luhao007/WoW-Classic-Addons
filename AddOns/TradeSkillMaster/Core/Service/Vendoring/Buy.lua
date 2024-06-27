@@ -6,6 +6,7 @@
 
 local TSM = select(2, ...) ---@type TSM
 local Buy = TSM.Vendoring:NewPackage("Buy")
+local Environment = TSM.Include("Environment")
 local Database = TSM.Include("Util.Database")
 local Delay = TSM.Include("Util.Delay")
 local Event = TSM.Include("Util.Event")
@@ -63,7 +64,7 @@ function Buy.NeedsRepair()
 end
 
 function Buy.CanGuildRepair()
-	return Buy.NeedsRepair() and not TSM.IsWowClassic() and CanGuildBankRepair()
+	return Buy.NeedsRepair() and Environment.HasFeature(Environment.FEATURES.GUILD_BANK) and CanGuildBankRepair()
 end
 
 function Buy.DoGuildRepair()
@@ -175,7 +176,7 @@ function private.UpdateMerchantDB()
 					elseif costItemString then
 						firstCostItemString = firstCostItemString ~= "" and firstCostItemString or costItemString
 						texture = ItemInfo.GetTexture(costItemString)
-					elseif not TSM.IsWowVanillaClassic() and strmatch(costItemLink, "currency:") then
+					elseif not Environment.IsVanillaClassic() and strmatch(costItemLink, "currency:") then
 						texture = C_CurrencyInfo.GetCurrencyInfoFromLink(costItemLink).iconFileID
 						firstCostItemString = strmatch(costItemLink, "(currency:%d+)")
 					else
@@ -184,7 +185,7 @@ function private.UpdateMerchantDB()
 					if TSM.Vendoring.Buy.GetMaxCanAfford(i) < stackSize then
 						costNum = Theme.GetColor("FEEDBACK_RED"):ColorText(costNum)
 					end
-					local suffix = (TSM.IsWowWrathClassic() and currencyName == HONOR_POINTS) and ":14:14:00:0:64:64:0:40:0:40|t" or ":12|t"
+					local suffix = (Environment.HasFeature(Environment.FEATURES.HONOR_POINTS) and currencyName == HONOR_POINTS) and ":14:14:00:0:64:64:0:40:0:40|t" or ":12|t"
 					tinsert(costItems, costNum.." |T"..(texture or "")..suffix)
 				end
 				costItemsText = table.concat(costItems, " ")

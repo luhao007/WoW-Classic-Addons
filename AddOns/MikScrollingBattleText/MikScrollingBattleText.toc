@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Mikord
-## Version: 5.8.1
+## Version: 5.9.1
 ## OptionalDeps: LibSharedMedia-3.0
 ## SavedVariables: MSBTProfiles_SavedVars, MSBT_SavedMedia
 ## SavedVariablesPerCharacter: MSBTProfiles_SavedVarsPerChar

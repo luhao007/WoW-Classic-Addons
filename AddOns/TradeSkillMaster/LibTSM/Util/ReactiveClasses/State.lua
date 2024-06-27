@@ -114,7 +114,7 @@ function STATE_METHODS:_CallPublishersHandleData(key)
 	end
 	local data = context.data
 	while #context.dataChangeTemp > 0 do
-		local publisher = tremove(context.dataChangeTemp)
+		local publisher = tremove(context.dataChangeTemp, 1)
 		local id = context.publishers[publisher]
 		if id and id <= maxId then
 			publisher:_HandleData(data, key)

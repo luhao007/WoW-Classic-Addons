@@ -1,0 +1,9 @@
+## Interface: 40400
+## Title: Titan Panel [|cffeda55fLocation|r] |cff00aa008.0.13|r
+## Version: 8.0.13
+## Notes: Adds coordinates and location information to Titan Panel
+## Author: Titan Panel Development Team (http://www.titanpanel.org)
+## SavedVariables: 
+## OptionalDeps:  
+## Dependencies: TitanClassic
+TitanLocation.lua

@@ -5,19 +5,21 @@
 -- ------------------------------------------------------------------------------ --
 
 local TSM = select(2, ...) ---@type TSM
-local SyntaxHelpers = TSM.Init("UI.SyntaxHelpers")
+local SyntaxHelpers = TSM.Init("UI.SyntaxHelpers") ---@class UI.SyntaxHelpers
 local CustomPrice = TSM.Include("Service.CustomPrice")
 local Theme = TSM.Include("Util.Theme")
 local Money = TSM.Include("Util.Money")
+local CustomString = TSM.Include("Util.CustomString")
 local private = {
 	result = {},
 	resultLen = nil,
-	text = nil,
 	pos = nil,
 	cursor = nil,
 	newCursor = nil,
 	prevTokenLength = nil,
 	prevTokenColored = nil,
+	tokenList = CustomString.CreateTokenList(),
+	tokenListRow = nil,
 }
 local NEWLINE_CHAR = "\n"
 local INDENT_STR = "    "
@@ -29,19 +31,6 @@ local SOURCE_COLOR = "GROUP_TWO"
 local CUSTOM_SOURCE_COLOR = "GROUP_FIVE"
 local NUMBER_COLOR = "TEXT"
 local UNKNOWN_COLOR = "FEEDBACK_RED"
-local TOKENS = {
-	UNKNOWN = newproxy(),
-	NUMBER = newproxy(),
-	MONEY = newproxy(),
-	NEWLINE = newproxy(),
-	WHITESPACE = newproxy(),
-	IDENTIFIER = newproxy(),
-	COMMA = newproxy(),
-	LEFTPAREN = newproxy(),
-	RIGHTPAREN = newproxy(),
-	MATH_OPERATOR = newproxy(),
-	COLORCODE = newproxy(),
-}
 
 
 
@@ -108,20 +97,21 @@ end
 
 function private.PrepareContext(text, cursor)
 	assert(#private.result == 0)
-	assert(private.text == nil)
-	private.text = text
+	assert(private.tokenList:GetNumRows() == 0)
 	private.pos = 1
 	private.cursor = cursor
 	private.newCursor = nil
 	private.prevTokenLength = 0
 	private.prevTokenColored = false
 	private.resultLen = 0
+	CustomString.PopulateTokenList(private.tokenList, strlower(text))
+	private.tokenListRow = 1
 end
 
 function private.ClearContextAndReturnResult()
-	private.text = nil
 	local result = table.concat(private.result)
 	wipe(private.result)
+	private.tokenList:Wipe()
 	return result, private.newCursor
 end
 
@@ -133,7 +123,7 @@ function private.SetSyntaxColor()
 			break
 		end
 		private.prevTokenColored = false
-		if tokenType == TOKENS.NEWLINE or tokenType == TOKENS.WHITESPACE then
+		if tokenType == CustomString.TOKEN_TYPE.NEWLINE or tokenType == CustomString.TOKEN_TYPE.WHITESPACE then
 			private.InsertResult(tokenStr)
 		else
 			private.InsertColoredToken(tokenType, tokenStr)
@@ -155,7 +145,7 @@ function private.SetIndent()
 		private.prevTokenColored = false
 		private.prevTokenLength = 0
 		local tokenType, tokenStr = private.NextToken()
-		if not tokenType or tokenType == TOKENS.NEWLINE then
+		if not tokenType or tokenType == CustomString.TOKEN_TYPE.NEWLINE then
 			level = max(level + preIndent, 0)
 			local indentStr = strrep(INDENT_STR, level)
 			private.InsertResult(indentStr, bufferStartIndex)
@@ -173,17 +163,17 @@ function private.SetIndent()
 			hitIndentRight = false
 			preIndent = 0
 			postIndent = 0
-		elseif tokenType ~= TOKENS.WHITESPACE then
+		elseif tokenType ~= CustomString.TOKEN_TYPE.WHITESPACE then
 			hitNonWhitespace = true
 			private.prevTokenLength = #tokenStr
-			if tokenType == TOKENS.LEFTPAREN then
+			if tokenType == CustomString.TOKEN_TYPE.LEFT_PAREN then
 				if hitIndentRight then
 					postIndent = postIndent + 1
 				else
 					hitIndentRight = true
 					postIndent = postIndent + 1
 				end
-			elseif tokenType == TOKENS.RIGHTPAREN then
+			elseif tokenType == CustomString.TOKEN_TYPE.RIGHT_PAREN then
 				if hitIndentRight then
 					postIndent = postIndent - 1
 				else
@@ -222,76 +212,20 @@ function private.UpdateNewCursor()
 end
 
 function private.NextToken()
-	local char = strsub(private.text, private.pos, private.pos)
-	if char == "" then
+	if private.tokenListRow > private.tokenList:GetNumRows() then
 		return
 	end
-	if char == "\n" then
-		-- Newline
-		private.pos = private.pos + 1
-		return TOKENS.NEWLINE, char
-	elseif char == " " or char == "\t" then
-		-- Whitespace token
-		local nextPos = strfind(private.text, "[^\t ]", private.pos + 1) or (#private.text + 1)
-		local str = strsub(private.text, private.pos, nextPos - 1)
-		private.pos = nextPos
-		return TOKENS.WHITESPACE, str
-	end
-	if char == "." or tonumber(char) then
-		-- Get the full number token
-		local match = strmatch(private.text, "^[0-9%.]+", private.pos)
-		private.pos = private.pos + #match
-		if not tonumber(match) then
-			return TOKENS.UNKNOWN, match
-		end
-		local nextChar = strsub(private.text, private.pos, private.pos)
-		if nextChar == "e" or nextChar == "E" then
-			-- Check if there's an exponent next
-			local expMatch = strmatch(private.text, "^([eE]%-?[0-9]+)", private.pos)
-			if not expMatch then
-				return TOKENS.UNKNOWN, match
-			end
-			private.pos = private.pos + #expMatch
-			return TOKENS.NUMBER, match .. expMatch
-		elseif nextChar == "g" or nextChar == "s" or nextChar == "c" then
-			-- There is a currency symbol next
-			private.pos = private.pos + 1
-			return TOKENS.MONEY, match .. nextChar
-		end
-		return TOKENS.NUMBER, match
-	elseif char == "," then
-		private.pos = private.pos + 1
-		return TOKENS.COMMA, char
-	elseif char == "(" then
-		private.pos = private.pos + 1
-		return TOKENS.LEFTPAREN, char
-	elseif char == ")" then
-		private.pos = private.pos + 1
-		return TOKENS.RIGHTPAREN, char
-	elseif char == "+" or char == "-" or char == "*" or char == "/" or char == "^" or char == "%" then
-		private.pos = private.pos + 1
-		return TOKENS.MATH_OPERATOR, char
-	elseif char == "|" and strmatch(private.text, "^|c", private.pos) then
-		local str = strsub(private.text, private.pos, private.pos + 9)
-		private.pos = private.pos + 10
-		return TOKENS.COLORCODE, str
-	elseif char == "|" and strmatch(private.text, "^|r", private.pos) then
-		private.pos = private.pos + 2
-		return TOKENS.COLORCODE, "|r"
-	else
-		-- Find the end of this identifier
-		local nextPos = strfind(private.text, "[\n \t/%.%-,%(%)%+%^%*%%|]", private.pos + 1) or (#private.text + 1)
-		local str = strsub(private.text, private.pos, nextPos - 1)
-		private.pos = nextPos
-		return TOKENS.IDENTIFIER, str
-	end
+	local tokenType, tokenStr = private.tokenList:GetRow(private.tokenListRow)
+	private.tokenListRow = private.tokenListRow + 1
+	private.pos = private.pos + #tokenStr
+	return tokenType, tokenStr
 end
 
 function private.InsertColoredToken(tokenType, str)
 	local color = nil
-	if tokenType == TOKENS.NUMBER then
+	if tokenType == CustomString.TOKEN_TYPE.NUMBER or tokenType == CustomString.TOKEN_TYPE.NEGATIVE_OPERATOR then
 		color = NUMBER_COLOR
-	elseif tokenType == TOKENS.MONEY then
+	elseif tokenType == CustomString.TOKEN_TYPE.MONEY then
 		color = NUMBER_COLOR
 		local symbol = strsub(str, -1)
 		local coloredSymbol = nil
@@ -308,21 +242,23 @@ function private.InsertColoredToken(tokenType, str)
 		private.InsertResult(coloredSymbol)
 		private.prevTokenColored = true
 		return
-	elseif tokenType == TOKENS.MATH_OPERATOR then
+	elseif tokenType == CustomString.TOKEN_TYPE.MATH_OPERATOR then
 		color = MATH_COLOR
-	elseif tokenType == TOKENS.LEFTPAREN or tokenType == TOKENS.RIGHTPAREN or tokenType == TOKENS.COMMA then
+	elseif tokenType == CustomString.TOKEN_TYPE.LEFT_PAREN or tokenType == CustomString.TOKEN_TYPE.RIGHT_PAREN or tokenType == CustomString.TOKEN_TYPE.COMMA then
 		color = DIVIDER_COLOR
-	elseif tokenType == TOKENS.IDENTIFIER then
+	elseif tokenType == CustomString.TOKEN_TYPE.IDENTIFIER or tokenType == CustomString.TOKEN_TYPE.FUNCTION then
 		if CustomPrice.IsMathFunction(str) then
 			color = FUNCTION_COLOR
 		elseif CustomPrice.IsSource(str) then
 			color = SOURCE_COLOR
 		elseif CustomPrice.IsCustomSource(str) then
 			color = CUSTOM_SOURCE_COLOR
+		elseif strlower(str) == "baseitem" or strmatch(str, "^[ip]:%d+") then
+			color = CUSTOM_SOURCE_COLOR
 		else
 			color = UNKNOWN_COLOR
 		end
-	elseif tokenType == TOKENS.UNKNOWN then
+	elseif tokenType == CustomString.TOKEN_TYPE.UNKNOWN then
 		color = UNKNOWN_COLOR
 	else
 		error("Unexpected token: "..tostring(tokenType))

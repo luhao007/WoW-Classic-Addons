@@ -3,18 +3,17 @@
 --     W o w h e a d   L o o t e r     --
 --                                     --
 --                                     --
---    Patch: 3.4.0                     --
---    Updated: July 18, 2022           --
+--    Patch: 3.4.1                     --
 --    E-mail: feedback@wowhead.com     --
 --                                     --
 -----------------------------------------
 
 
 -- When this version of the addon was made.
-local WL_ADDON_UPDATED = "2022-12-09";
+local WL_ADDON_UPDATED = "2023-02-20";
 
 local WL_NAME = "|cffffff7fWowhead Looter|r";
-local WL_VERSION = 30400;
+local WL_VERSION = 30401;
 local WL_VERSION_PATCH = 0;
 local WL_ADDONNAME, WL_ADDONTABLE = ...
 
@@ -926,6 +925,8 @@ end
 function wlEvent_GOSSIP_SHOW(self)
     wlEvent_BlockChatLoot(self);
     wlClearTracker("gossipNpc");
+    -- 3.4.0 uses GetGossipOptions, 3.4.1 uses C_GossipInfo.GetOptions
+    local GetGossipOptions = C_GossipInfo and C_GossipInfo.GetOptions or GetGossipOptions;
     local gossips = { GetGossipOptions() };
 
     for i=1, #gossips, 2 do
@@ -2203,6 +2204,11 @@ function wlEvent_SHOW_LOOT_TOAST(self, typeIdentifier, itemLink, quantity, specI
             wlTableCopy(wlEvent[wlId][wlN][eventId], wlTracker.spell);
             wlEvent[wlId][wlN][eventId].dd = wlGetInstanceDifficulty();
             wlEvent[wlId][wlN][eventId].flags = 0;
+
+            local runeId = wlGetTitanRuneAura("target");
+            if runeId then
+                wlTracker.spell.rune = runeId;
+            end
         else
             wlTracker.spell.action = "Opening";
             wlTracker.spell.kind = "item";
@@ -2415,6 +2421,10 @@ function wlEvent_LOOT_OPENED(self)
             wlTracker.spell.kind = "npc";
             wlTracker.spell.id = wlUnitGUID("target");
 
+            local runeId = wlGetTitanRuneAura("target");
+            if runeId then
+                wlTracker.spell.rune = runeId;
+            end
 
         else -- pets
             return;
@@ -4946,3 +4956,28 @@ function wlGetCurrentUiMapID()
 end
 
 --**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--
+
+-- Returns the titan rune spell (aura) id for the given unit, or nil if there is no titan rune aura.
+function wlGetTitanRuneAura(unit)
+    if UnitIsPlayer(unit) then
+        return nil;
+    end
+    local runeAuras = {
+        [392430] = true,
+        [394435] = true,
+        [394437] = true,
+        [394438] = true,
+        [394441] = true,
+        [394444] = true,
+    };
+    local index = 1;
+    local name, _, _, _, _, _, _, _, _, spellId = UnitAura(unit, index);
+    while name do
+        if runeAuras[spellId] then
+            return spellId;
+        end
+        index = index + 1;
+        name, _, _, _, _, _, _, _, _, spellId = UnitAura(unit, index);
+    end
+    return nil;
+end

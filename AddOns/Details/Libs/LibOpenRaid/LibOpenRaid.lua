@@ -14,33 +14,6 @@ Code Rules:
     - Internal callbacks are the internal communication of the library, e.g. when an event triggers it send to all modules that registered that event.
     - Public callbacks are callbacks registered by an external addon.
 
-Change Log (most recent on 2022 Nov 18):
-    - added racials with cooldown type 9
-    - added buff duration in the index 6 of the cooldownInfo table returned on any cooldown event
-    - added 'durationSpellId' for cooldowns where the duration effect is another spell other than the casted cooldown spellId, add this member on cooldown table at LIB_OPEN_RAID_COOLDOWNS_INFO
-
-------- Nov 07 and older
-    - added:
-        * added openRaidLib.GetSpellFilters(spellId, defaultFilterOnly, customFiltersOnly) (see docs)
-    - passing a spellId of a non registered cooldown on LIB_OPEN_RAID_COOLDOWNS_INFO will trigger a diagnostic error if diagnostic errors are enabled.
-    - player cast doesn't check anymore for cooldowns in the player spec, now it check towards the cache LIB_OPEN_RAID_PLAYERCOOLDOWNS.
-        LIB_OPEN_RAID_PLAYERCOOLDOWNS is a cache built with cooldowns present in the player spellbook.
-
-    - things to maintain now has 1 file per expansion
-    - player conduits, covenant internally renamed to playerInfo1 and playerInfo2 to make the lib more future proof
-    - player conduits tree is now Borrowed Talents Tree, for future proof
-    - removed the talent size limitation on 7 indexes
-
-    - added:
-        * openRaidLib.GetFlaskInfoBySpellId(spellId)
-        * openRaidLib.GetFlaskTierFromAura(auraInfo)
-        * openRaidLib.GetFoodInfoBySpellId(spellId)
-        * openRaidLib.GetFoodTierFromAura(auraInfo)
-        * added dragonflight talents support
-        * added openRaidLib.RequestCooldownInfo(spellId)
-        * added openRaidLib.AddCooldownFilter(filterName, spells)
-    - ensure to register events after 'PLAYER_ENTERING_WORLD' has triggered
-
 TODO:
     - add into gear info how many tier set parts the player has
     - raid lockouts normal-heroic-mythic
@@ -49,6 +22,12 @@ BUGS:
     - after a /reload, it is not starting new tickers for spells under cooldown
 
 --]=]
+
+---@alias castername string
+---@alias castspellid string
+---@alias schedulename string
+
+LIB_OPEN_RAID_CAN_LOAD = false
 
 local versionString, revision, launchDate, gameVersion = GetBuildInfo()
 
@@ -64,20 +43,16 @@ if (WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE and not isExpansion_Dragonflight()) t
 end
 
 local major = "LibOpenRaid-1.0"
---local CONST_LIB_VERSION = 87
-local CONST_LIB_VERSION = 92 --this is a rollback version, due to some zero hour bug issues
 
-if (not LIB_OPEN_RAID_MAX_VERSION) then
-    LIB_OPEN_RAID_MAX_VERSION = CONST_LIB_VERSION
-else
-    LIB_OPEN_RAID_MAX_VERSION = math.max(LIB_OPEN_RAID_MAX_VERSION, CONST_LIB_VERSION)
+local CONST_LIB_VERSION = 127
+
+if (LIB_OPEN_RAID_MAX_VERSION) then
+    if (CONST_LIB_VERSION <= LIB_OPEN_RAID_MAX_VERSION) then
+        return
+    end
 end
 
-LIB_OPEN_RAID_CAN_LOAD = false
-
-local unpack = table.unpack or _G.unpack
-
---declae the library within the LibStub
+--declare the library within the LibStub
     local libStub = _G.LibStub
     local openRaidLib = libStub:NewLibrary(major, CONST_LIB_VERSION)
 
@@ -86,8 +61,11 @@ local unpack = table.unpack or _G.unpack
     end
 
     openRaidLib.__version = CONST_LIB_VERSION
-
     LIB_OPEN_RAID_CAN_LOAD = true
+    LIB_OPEN_RAID_MAX_VERSION = CONST_LIB_VERSION
+
+    --locals
+    local unpack = table.unpack or _G.unpack
 
     openRaidLib.__errors = {} --/dump LibStub:GetLibrary("LibOpenRaid-1.0").__errors
 
@@ -97,6 +75,11 @@ local unpack = table.unpack or _G.unpack
 
     local CONST_CVAR_TEMPCACHE = "LibOpenRaidTempCache"
     local CONST_CVAR_TEMPCACHE_DEBUG = "LibOpenRaidTempCacheDebug"
+
+    --delay to request all data from other players
+    local CONST_REQUEST_ALL_DATA_COOLDOWN = 30
+    --delay to send all data to other players
+    local CONST_SEND_ALL_DATA_COOLDOWN = 30
 
     --show failures (when the function return an error) results to chat
     local CONST_DIAGNOSTIC_ERRORS = false
@@ -136,8 +119,8 @@ local unpack = table.unpack or _G.unpack
     local CONST_SPECIALIZATION_VERSION_CLASSIC = 0
     local CONST_SPECIALIZATION_VERSION_MODERN = 1
 
-    local CONST_COOLDOWN_CHECK_INTERVAL = CONST_ONE_SECOND
-    local CONST_COOLDOWN_TIMELEFT_HAS_CHANGED = CONST_ONE_SECOND
+    local CONST_COOLDOWN_CHECK_INTERVAL = CONST_THREE_SECONDS
+    local CONST_COOLDOWN_TIMELEFT_HAS_CHANGED = CONST_THREE_SECONDS
 
     local CONST_COOLDOWN_INDEX_TIMELEFT = 1
     local CONST_COOLDOWN_INDEX_CHARGES = 2
@@ -147,6 +130,11 @@ local unpack = table.unpack or _G.unpack
     local CONST_COOLDOWN_INDEX_AURA_DURATION = 6
 
     local CONST_COOLDOWN_INFO_SIZE = 6
+
+    local CONST_USE_DEFAULT_SCHEDULE_TIME = true
+
+    -- Real throttle is 10 messages per 1 second, but we want to be safe due to fact we dont know when it actually resets
+    local CONST_COMM_BURST_BUFFER_COUNT = 9
 
     local GetContainerNumSlots = GetContainerNumSlots or C_Container.GetContainerNumSlots
     local GetContainerItemID = GetContainerItemID or C_Container.GetContainerItemID
@@ -264,7 +252,8 @@ function openRaidLib.PrintTempCacheDebug()
 end
 
 function tempCache.SaveDebugText()
-    C_CVar.SetCVar(CONST_CVAR_TEMPCACHE_DEBUG, tempCache.debugString)
+    C_CVar.SetCVar(CONST_CVAR_TEMPCACHE_DEBUG, "0")
+    --C_CVar.SetCVar(CONST_CVAR_TEMPCACHE_DEBUG, tempCache.debugString)
 end
 
 function tempCache.AddDebugText(text)
@@ -272,13 +261,14 @@ function tempCache.AddDebugText(text)
 end
 
 function tempCache.SaveCacheOnCVar(data)
-    C_CVar.SetCVar(CONST_CVAR_TEMPCACHE, data)
+    C_CVar.SetCVar(CONST_CVAR_TEMPCACHE, "0")
+    --C_CVar.SetCVar(CONST_CVAR_TEMPCACHE, data)
     tempCache.AddDebugText("CVars Saved on saveCahceOnCVar(), Size: " .. #data)
 end
 
 function tempCache.RestoreData()
     local data = C_CVar.GetCVar(CONST_CVAR_TEMPCACHE)
-    if (data and type(data) == "string" and string.len(data) > 1) then
+    if (data and type(data) == "string" and string.len(data) > 2) then
         local LibAceSerializer = LibStub:GetLibrary("AceSerializer-3.0", true)
         if (LibAceSerializer) then
             local okay, cacheInfo = LibAceSerializer:Deserialize(data)
@@ -494,7 +484,43 @@ end
         end
     end
 
-    function openRaidLib.commHandler.SendCommData(data, flags)
+    ---@class commdata : table
+    ---@field data string
+    ---@field channel string
+
+    ---@type {}[]
+    local commScheduler = {};
+
+    local commBurstBufferCount = CONST_COMM_BURST_BUFFER_COUNT;
+    local commServerTimeLastThrottleUpdate = GetServerTime();
+    
+    do
+        --if there's an old version that already registered the comm ticker, cancel it
+        if (LIB_OPEN_RAID_COMM_SCHEDULER) then
+            LIB_OPEN_RAID_COMM_SCHEDULER:Cancel();
+        end
+
+        local newTickerHandle = C_Timer.NewTicker(0.05, function()
+            local serverTime = GetServerTime();
+
+            -- Replenish the counter if last server time is not the same as the last throttle update
+            -- Clamp it to CONST_COMM_BURST_BUFFER_COUNT
+            commBurstBufferCount = math.min((serverTime ~= commServerTimeLastThrottleUpdate) and commBurstBufferCount + 1 or commBurstBufferCount, CONST_COMM_BURST_BUFFER_COUNT);
+            commServerTimeLastThrottleUpdate = serverTime;
+
+            -- while (anything in queue) and (throttle allows it)
+            while(#commScheduler > 0 and commBurstBufferCount > 0) do
+                -- FIFO queue
+                local commData = table.remove(commScheduler, 1);
+                sendData(commData.data, commData.channel);
+                commBurstBufferCount = commBurstBufferCount - 1;
+            end
+        end);
+
+        LIB_OPEN_RAID_COMM_SCHEDULER = newTickerHandle
+    end
+
+    function openRaidLib.commHandler.SendCommData(data, flags, bIgnoreQueue)
         local LibDeflate = LibStub:GetLibrary("LibDeflate")
         local dataCompressed = LibDeflate:CompressDeflate(data, {level = 9})
         local dataEncoded = LibDeflate:EncodeForWoWAddonChannel(dataCompressed)
@@ -502,34 +528,56 @@ end
         if (flags) then
             if (bit.band(flags, CONST_COMM_SENDTO_PARTY)) then --send to party
                 if (IsInGroup() and not IsInRaid()) then
-                    sendData(dataEncoded, IsInGroup(LE_PARTY_CATEGORY_INSTANCE) and "INSTANCE_CHAT" or "PARTY")
+                    ---@type commdata
+                    local commData = {data = dataEncoded, channel = IsInGroup(LE_PARTY_CATEGORY_INSTANCE) and "INSTANCE_CHAT" or "PARTY"}
+                    table.insert(commScheduler, commData)
                 end
             end
 
             if (bit.band(flags, CONST_COMM_SENDTO_RAID)) then --send to raid
                 if (IsInRaid()) then
-                    sendData(dataEncoded, IsInRaid(LE_PARTY_CATEGORY_INSTANCE) and "INSTANCE_CHAT" or "RAID")
+                    local commData = {data = dataEncoded, channel = IsInRaid(LE_PARTY_CATEGORY_INSTANCE) and "INSTANCE_CHAT" or "RAID"}
+                    table.insert(commScheduler, commData)
                 end
             end
 
             if (bit.band(flags, CONST_COMM_SENDTO_GUILD)) then --send to guild
                 if (IsInGuild()) then
-                    sendData(dataEncoded, "GUILD")
+                    --Guild has no 10 msg restriction so send it directly
+                    sendData(dataEncoded, "GUILD");
                 end
             end
         else
             if (IsInGroup() and not IsInRaid()) then --in party only
-                sendData(dataEncoded, IsInGroup(LE_PARTY_CATEGORY_INSTANCE) and "INSTANCE_CHAT" or "PARTY")
+                local commData = {data = dataEncoded, channel = IsInGroup(LE_PARTY_CATEGORY_INSTANCE) and "INSTANCE_CHAT" or "PARTY"}
+                table.insert(commScheduler, commData)
 
             elseif (IsInRaid()) then
-                sendData(dataEncoded, IsInRaid(LE_PARTY_CATEGORY_INSTANCE) and "INSTANCE_CHAT" or "RAID")
+                local commData = {data = dataEncoded, channel = IsInRaid(LE_PARTY_CATEGORY_INSTANCE) and "INSTANCE_CHAT" or "RAID"}
+                table.insert(commScheduler, commData)
             end
         end
 	end
 
-
 --------------------------------------------------------------------------------------------------------------------------------
 --~schedule ~timers
+    ---@type table<schedulename, number>
+    local defaultScheduleCooldownTimeByScheduleName = {
+        ["sendAllPlayerCooldownsFromTalentChange_Schedule"] = 2,
+        ["talentChangedCallback_Schedule"] = 20,
+        ["sendFullData_Schedule"] = 25,
+        ["sendAllPlayerCooldowns_Schedule"] = 23,
+        ["sendDurability_Schedule"] = 10,
+        ["sendAllGearInfo_Schedule"] = 20,
+        ["petStatus_Schedule"] = 8,
+        ["updatePlayerData_Schedule"] = 22,
+        ["sendTalent_Schedule"] = 20,
+        ["sendPvPTalent_Schedule"] = 14,
+        ["leaveCombat_Schedule"] = 18,
+        ["encounterEndCooldownsCheck_Schedule"] = 24,
+        --["sendKeystoneInfoToParty_Schedule"] = 2,
+        --["sendKeystoneInfoToGuild_Schedule"] = 2,
+    }
 
     openRaidLib.Schedules = {
         registeredUniqueTimers = {}
@@ -546,10 +594,15 @@ end
             openRaidLib.Schedules.CancelUniqueTimer(namespace, scheduleName)
         end
 
-        local result, errortext = xpcall(callback, geterrorhandler(), unpack(payload))
-        if (not result) then
-            sendChatMessage("openRaidLib: error on scheduler:", tickerObject.scheduleName, tickerObject.stack)
+        --check if the player is still in group
+        if (not openRaidLib.IsInGroup()) then
+            return
         end
+
+        local result, errortext = xpcall(callback, geterrorhandler(), unpack(payload))
+        --if (not result) then
+        --    sendChatMessage("openRaidLib: error on scheduler:", tickerObject.scheduleName, tickerObject.stack)
+        --end
 
         return result
     end
@@ -560,24 +613,43 @@ end
         local newTimer = C_Timer.NewTimer(time, triggerScheduledTick)
         newTimer.payload = payload
         newTimer.callback = callback
-        newTimer.stack = debugstack()
+        --newTimer.stack = debugstack()
         return newTimer
     end
 
     --create an unique schedule
     --if a schedule already exists, cancels it and make a new
     function openRaidLib.Schedules.NewUniqueTimer(time, callback, namespace, scheduleName, ...)
-        openRaidLib.Schedules.CancelUniqueTimer(namespace, scheduleName)
+        --the the schedule uses a default time, get it from the table, if the timer already exists, quit
+        if (time == CONST_USE_DEFAULT_SCHEDULE_TIME) then
+            if (openRaidLib.Schedules.IsUniqueTimerOnCooldown(namespace, scheduleName)) then
+                return
+            end
+            time = defaultScheduleCooldownTimeByScheduleName[scheduleName] or time
+        else
+            openRaidLib.Schedules.CancelUniqueTimer(namespace, scheduleName)
+        end
 
         local newTimer = openRaidLib.Schedules.NewTimer(time, callback, ...)
         newTimer.namespace = namespace
         newTimer.scheduleName = scheduleName
-        newTimer.stack = debugstack()
+        --newTimer.stack = debugstack()
         newTimer.isUnique = true
 
         local registeredUniqueTimers = openRaidLib.Schedules.registeredUniqueTimers
         registeredUniqueTimers[namespace] = registeredUniqueTimers[namespace] or {}
         registeredUniqueTimers[namespace][scheduleName] = newTimer
+    end
+
+    --does timer by schedule name exists?
+    function openRaidLib.Schedules.IsUniqueTimerOnCooldown(namespace, scheduleName)
+        local registeredUniqueTimers = openRaidLib.Schedules.registeredUniqueTimers
+        local currentSchedule = registeredUniqueTimers[namespace] and registeredUniqueTimers[namespace][scheduleName]
+
+        if (currentSchedule) then
+            return true
+        end
+        return false
     end
 
     --cancel an unique schedule
@@ -662,9 +734,22 @@ end
         local eventCallbacks = openRaidLib.publicCallback.events[event]
 
         for i = 1, #eventCallbacks do
-            local thisCallback = eventCallbacks[i]
-            local addonObject = thisCallback[1]
+            local thisCallback = eventCallbacks[i] --got a case where this was nil, which is kinda impossible? | event: CooldownUpdate
+            local addonObject = thisCallback[1] --670: attempt to index local 'thisCallback' (a nil value)
             local functionName = thisCallback[2]
+
+            --[=[
+                eventCallbacks = {
+                    1 = {}
+                }
+
+                (for index) = 2
+                (for limit) = 2
+                (for step) = 1
+                i = 2
+
+                thisCallback = nil
+            --]=]
 
             --get the function from within the addon object
             local functionToCallback = addonObject[functionName]
@@ -764,7 +849,7 @@ end
         openRaidLib.internalCallback.TriggerEvent("talentUpdate")
     end
     local delayedTalentChange = function()
-        openRaidLib.Schedules.NewUniqueTimer(0.5 + math.random(), talentChangedCallback, "TalentChangeEventGroup", "talentChangedCallback_Schedule")
+        openRaidLib.Schedules.NewUniqueTimer(math.random(4, 8), talentChangedCallback, "TalentChangeEventGroup", "talentChangedCallback_Schedule")
     end
 
     local eventFunctions = {
@@ -789,7 +874,7 @@ end
                 --the group has changed, trigger a long timer to send full data
                 --as the timer is unique, a new change to the group will replace and refresh the time
                 --using random time, players won't trigger all at the same time
-                local randomTime = 0.3 + math.random(0, 0.7)
+                local randomTime = 5 + math.random() + math.random(1, 5)
                 openRaidLib.Schedules.NewUniqueTimer(randomTime, openRaidLib.mainControl.SendFullData, "mainControl", "sendFullData_Schedule")
             end
 
@@ -1124,12 +1209,14 @@ end
 
     --send a request to all players in the group to send their data
     function openRaidLib.RequestAllData()
+        --the the player isn't in group, don't send the request
 		if (not IsInGroup()) then
 			return
 		end
 
         openRaidLib.requestAllInfoCooldown = openRaidLib.requestAllInfoCooldown or 0
 
+        --check if the player can sent another request
         if (openRaidLib.requestAllInfoCooldown > GetTime()) then
             return
         end
@@ -1137,22 +1224,30 @@ end
         openRaidLib.commHandler.SendCommData(CONST_COMM_FULLINFO_PREFIX)
         diagnosticComm("RequestAllInfo| " .. CONST_COMM_FULLINFO_PREFIX) --debug
 
-        openRaidLib.requestAllInfoCooldown = GetTime() + 5
+        openRaidLib.requestAllInfoCooldown = GetTime() + CONST_REQUEST_ALL_DATA_COOLDOWN
         return true
+    end
+
+    --this function handles the request from another player to send all data
+    function openRaidLib.commHandler.SendFullData()
+        openRaidLib.mainControl.SendFullData()
     end
 
     openRaidLib.commHandler.RegisterComm(CONST_COMM_FULLINFO_PREFIX, function(data, sourceName)
         openRaidLib.sendRequestedAllInfoCooldown = openRaidLib.sendRequestedAllInfoCooldown or 0
 
-        --some player in the group requested  all information from all players
+        --check if there's some delay before sending the data
         if (openRaidLib.sendRequestedAllInfoCooldown > GetTime()) then
+            --reschedule the function call
+            openRaidLib.Schedules.NewUniqueTimer(openRaidLib.sendRequestedAllInfoCooldown - GetTime(), openRaidLib.commHandler.SendFullData, "CommHandler", "sendFullData_Schedule")
             return
         end
 
-        openRaidLib.Schedules.NewUniqueTimer(random() + math.random(0, 3), openRaidLib.mainControl.SendFullData, "mainControl", "sendFullData_Schedule")
-        openRaidLib.sendRequestedAllInfoCooldown = GetTime() + 5
-    end)
+        openRaidLib.Schedules.NewUniqueTimer(math.random(1, 6), openRaidLib.commHandler.SendFullData, "CommHandler", "sendFullData_Schedule")
 
+        --set the delay for the next request
+        openRaidLib.sendRequestedAllInfoCooldown = GetTime() + CONST_SEND_ALL_DATA_COOLDOWN
+    end)
 
 --------------------------------------------------------------------------------------------------------------------------------
 --~player general ~info ~unit
@@ -1360,7 +1455,8 @@ end
 --talent update (when the player changes a talent and the lib needs to notify other players in the group)
 function openRaidLib.UnitInfoManager.SendTalentUpdate()
     --talents
-    local unitInfo = openRaidLib.UnitInfoManager.GetUnitInfo("player", true)
+    local playerName = UnitName("player")
+    local unitInfo = openRaidLib.UnitInfoManager.GetUnitInfo(playerName, true)
     local talentsToSend = unitInfo.talents
     local dataToSend = "" .. CONST_COMM_PLAYERINFO_TALENTS_PREFIX .. ","
     local talentsString = openRaidLib.PackTable(talentsToSend)
@@ -1372,16 +1468,25 @@ function openRaidLib.UnitInfoManager.SendTalentUpdate()
 end
 
 function openRaidLib.UnitInfoManager.OnPlayerTalentChanged()
-    --update the local player
-    local unitInfo = openRaidLib.UnitInfoManager.GetUnitInfo("player", true)
-    local unitName = UnitName("player")
-    openRaidLib.UnitInfoManager.SetUnitInfo(unitName, unitInfo, nil, nil, nil, openRaidLib.UnitInfoManager.GetPlayerTalents())
+    --this talent update could be a specialization change, so we need to pass the specId as well
+    local playerName = UnitName("player")
+    local unitInfo = openRaidLib.UnitInfoManager.GetUnitInfo(playerName, true)
+    local specId = 0
 
-    --schedule send to the group
-    openRaidLib.Schedules.NewUniqueTimer(1 + math.random(0, 1), openRaidLib.UnitInfoManager.SendTalentUpdate, "UnitInfoManager", "sendTalent_Schedule")
+    if (getSpecializationVersion() == CONST_SPECIALIZATION_VERSION_MODERN) then
+        local selectedSpecialization = GetSpecialization()
+        if (selectedSpecialization) then
+            specId = GetSpecializationInfo(selectedSpecialization) or 0
+        end
+    end
+
+    openRaidLib.UnitInfoManager.SetUnitInfo(playerName, unitInfo, specId, nil, nil, openRaidLib.UnitInfoManager.GetPlayerTalents())
 
     --trigger public callback event
     openRaidLib.publicCallback.TriggerCallback("TalentUpdate", "player", unitInfo.talents, unitInfo, openRaidLib.UnitInfoManager.GetAllUnitsInfo())
+
+    --schedule send to the group
+    openRaidLib.Schedules.NewUniqueTimer(1 + math.random(0, 1), openRaidLib.UnitInfoManager.SendTalentUpdate, "UnitInfoManager", "sendTalent_Schedule")
 end
 openRaidLib.internalCallback.RegisterCallback("talentUpdate", openRaidLib.UnitInfoManager.OnPlayerTalentChanged)
 
@@ -1400,7 +1505,8 @@ openRaidLib.commHandler.RegisterComm(CONST_COMM_PLAYERINFO_TALENTS_PREFIX, openR
 --pvp talent update (when the player changes a pvp talent and the lib needs to notify other players in the group)
 function openRaidLib.UnitInfoManager.SendPvPTalentUpdate()
     --pvp talents
-    local unitInfo = openRaidLib.UnitInfoManager.GetUnitInfo("player", true)
+    local playerName = UnitName("player")
+    local unitInfo = openRaidLib.UnitInfoManager.GetUnitInfo(playerName, true)
     local pvpTalentsToSend = unitInfo.pvpTalents
     local pvpTalentsString = openRaidLib.PackTable(pvpTalentsToSend)
 
@@ -1414,9 +1520,9 @@ end
 
 function openRaidLib.UnitInfoManager.OnPlayerPvPTalentChanged()
     --update the local player
-    local unitInfo = openRaidLib.UnitInfoManager.GetUnitInfo("player", true)
-    local unitName = UnitName("player")
-    openRaidLib.UnitInfoManager.SetUnitInfo(unitName, unitInfo, nil, nil, nil, nil, nil, openRaidLib.UnitInfoManager.GetPlayerPvPTalents())
+    local playerName = UnitName("player")
+    local unitInfo = openRaidLib.UnitInfoManager.GetUnitInfo(playerName, true)
+    openRaidLib.UnitInfoManager.SetUnitInfo(playerName, unitInfo, nil, nil, nil, nil, nil, openRaidLib.UnitInfoManager.GetPlayerPvPTalents())
 
     --schedule send to the group
     openRaidLib.Schedules.NewUniqueTimer(1 + math.random(0, 1), openRaidLib.UnitInfoManager.SendPvPTalentUpdate, "UnitInfoManager", "sendPvPTalent_Schedule")
@@ -1541,9 +1647,9 @@ openRaidLib.internalCallback.RegisterCallback("onLeaveCombat", openRaidLib.UnitI
     --send only the gear durability
     function openRaidLib.GearManager.SendDurability()
         local dataToSend = "" .. CONST_COMM_GEARINFO_DURABILITY_PREFIX .. ","
-        local playerGearDurability = openRaidLib.GearManager.GetPlayerGearDurability()
+        local averageGearDurability, lowestDurability = openRaidLib.GearManager.GetPlayerGearDurability()
 
-        dataToSend = dataToSend .. playerGearDurability
+        dataToSend = dataToSend .. averageGearDurability
 
         --send the data
         openRaidLib.commHandler.SendCommData(dataToSend)
@@ -1574,17 +1680,17 @@ openRaidLib.internalCallback.RegisterCallback("onLeaveCombat", openRaidLib.UnitI
         local specMainAttribute = openRaidLib.specAttribute[playerClass][specId] --1 int, 2 dex, 3 str
 
         if (not specId or not specMainAttribute) then
-            return {0, 0, 0, {}, {}, {}}
+            return {0, 0, 0, {}, {}, {}, 0, 0}
         end
 
         --item level
         local itemLevel = openRaidLib.GearManager.GetPlayerItemLevel()
 
         --repair status
-        local gearDurability = openRaidLib.GearManager.GetPlayerGearDurability()
+        local gearDurability, lowestItemDurability = openRaidLib.GearManager.GetPlayerGearDurability()
 
         --get weapon enchant
-        local weaponEnchant = openRaidLib.GearManager.GetPlayerWeaponEnchant()
+        local weaponEnchant, mainHandEnchantId, offHandEnchantId = openRaidLib.GearManager.GetPlayerWeaponEnchant()
 
         --enchants and gems
         local slotsWithoutGems, slotsWithoutEnchant = openRaidLib.GearManager.GetPlayerGemsAndEnchantInfo()
@@ -1600,12 +1706,14 @@ openRaidLib.internalCallback.RegisterCallback("onLeaveCombat", openRaidLib.UnitI
         playerGearInfo[#playerGearInfo+1] = slotsWithoutEnchant --[4] - undefined
         playerGearInfo[#playerGearInfo+1] = slotsWithoutGems    --[5] - undefined
         playerGearInfo[#playerGearInfo+1] = equippedGearList    --[6] - undefined
+        playerGearInfo[#playerGearInfo+1] = mainHandEnchantId   --[7]
+        playerGearInfo[#playerGearInfo+1] = offHandEnchantId    --[8]
 
         return playerGearInfo
     end
 
     --when received the gear update from another player, store it and trigger a callback
-    function openRaidLib.GearManager.AddUnitGearList(unitName, itemLevel, durability, weaponEnchant, noEnchantTable, noGemsTable, equippedGearList)
+    function openRaidLib.GearManager.AddUnitGearList(unitName, itemLevel, durability, weaponEnchant, noEnchantTable, noGemsTable, equippedGearList, mainHandEnchantId, offHandEnchantId)
         local unitGearInfo = openRaidLib.GearManager.GetUnitGear(unitName, true)
 
         unitGearInfo.ilevel = itemLevel
@@ -1613,11 +1721,23 @@ openRaidLib.internalCallback.RegisterCallback("onLeaveCombat", openRaidLib.UnitI
         unitGearInfo.weaponEnchant = weaponEnchant
         unitGearInfo.noGems = noGemsTable
         unitGearInfo.noEnchants = noEnchantTable
+        unitGearInfo.mainHandEnchantId = mainHandEnchantId
+        unitGearInfo.offHandEnchantId = offHandEnchantId
 
         --parse and replace the 'equippedGearList'
         openRaidLib.GearManager.BuildEquipmentItemLinks(equippedGearList)
 
         unitGearInfo.equippedGear = equippedGearList
+
+        local tierAmount = 0
+
+        for i = 1, #equippedGearList do
+            if (equippedGearList[i].isTier) then
+                tierAmount = tierAmount + 1
+            end
+        end
+
+        unitGearInfo.tierAmount = tierAmount
 
         openRaidLib.publicCallback.TriggerCallback("GearUpdate", openRaidLib.GetUnitID(unitName), unitGearInfo, openRaidLib.GearManager.GetAllUnitsGear())
     end
@@ -1635,17 +1755,26 @@ openRaidLib.internalCallback.RegisterCallback("onLeaveCombat", openRaidLib.UnitI
         local noGemsTableSize = data[noGemsTableIndex]
 
         local equippedGearListIndex = tonumber(noEnchantTableSize + noGemsTableSize + 6) --6 is the same has the 5 but +1 index for the gems table size
-        --local equippedGearListSize = data[noGemsTableIndex]
+
+        local equippedGearListSize = data[equippedGearListIndex]
+
+        local mainHandEnchantId, offHandEnchantId = 0, 0
+        if equippedGearListSize then
+            local mainHandEnchantIdIndex = tonumber(noEnchantTableSize + noGemsTableSize + equippedGearListSize + 7)
+            mainHandEnchantId = tonumber(data[mainHandEnchantIdIndex]) or 0
+            local offHandEnchantIdIndex = tonumber(mainHandEnchantIdIndex + 1)
+            offHandEnchantId = tonumber(data[offHandEnchantIdIndex]) or 0
+        end
 
         --unpack the enchant data as a ipairs table
         local noEnchantTableUnpacked = openRaidLib.UnpackTable(data, 4, false, false, noEnchantTableSize)
-        --unpack the enchant data as a ipairs table
+        --unpack the gems data as a ipairs table
         local noGemsTableUnpacked = openRaidLib.UnpackTable(data, noGemsTableIndex, false, false, noGemsTableSize)
         --unpack the full gear
         local equippedGearListUnpacked = equippedGearListIndex and openRaidLib.UnpackTable(data, equippedGearListIndex, false, true, 4) or {}
 
         --add to the list of gear information
-        openRaidLib.GearManager.AddUnitGearList(unitName, itemLevel, durability, weaponEnchant, noEnchantTableUnpacked, noGemsTableUnpacked, equippedGearListUnpacked)
+        openRaidLib.GearManager.AddUnitGearList(unitName, itemLevel, durability, weaponEnchant, noEnchantTableUnpacked, noGemsTableUnpacked, equippedGearListUnpacked, mainHandEnchantId, offHandEnchantId)
     end
     openRaidLib.commHandler.RegisterComm(CONST_COMM_GEARINFO_FULL_PREFIX, openRaidLib.GearManager.OnReceiveGearFullInfo)
 
@@ -1659,6 +1788,8 @@ openRaidLib.internalCallback.RegisterCallback("onLeaveCombat", openRaidLib.UnitI
         --[4] table with integers of equipSlot without enchant
         --[5] table with integers of equipSlot which has a gem slot but the slot is empty
         --[6] table with all gear from the player
+        --[7] int mainHandEnchantId
+        --[8] int offHandEnchantId
 
         local dataToSend = "" .. CONST_COMM_GEARINFO_FULL_PREFIX .. ","
         local playerGearInfo = openRaidLib.GearManager.GetPlayerFullGearInfo()
@@ -1671,7 +1802,9 @@ openRaidLib.internalCallback.RegisterCallback("onLeaveCombat", openRaidLib.UnitI
         dataToSend = dataToSend .. playerGearInfo[3] .. "," --weapon enchant
         dataToSend = dataToSend .. openRaidLib.PackTable(playerGearInfo[4]) .. "," --slots without enchant
         dataToSend = dataToSend .. openRaidLib.PackTable(playerGearInfo[5]) .. "," -- slots with empty gem sockets
-        dataToSend = dataToSend .. openRaidLib.PackTableAndSubTables(playerGearInfo[6]) --full equipped equipment
+        dataToSend = dataToSend .. openRaidLib.PackTableAndSubTables(playerGearInfo[6]) .. "," --full equipped equipment
+        dataToSend = dataToSend .. playerGearInfo[7] .. "," --main hand weapon enchant
+        dataToSend = dataToSend .. playerGearInfo[8] --off hand weapon enchant
 
         --send the data
         openRaidLib.commHandler.SendCommData(dataToSend)
@@ -1923,13 +2056,22 @@ end
         return calculatePercent(timeOffset, duration, updateTime, charges)
     end
 
-    --return the values to be use on a progress bar or cooldown frame
-    --require the cooldownInfo table
-    --values returned: isReady, timeLeft, charges, normalized percent, minValue, maxValue, currentValue
-    --values are in the GetTime() format
-    --GetPercentFromCooldownInfo
+    ---return the values to be use on a progress bar or cooldown frame
+    ---values returned: bIsReady, percent, timeLeft, charges, minValue, maxValue, currentValue, duration
+    ---@param cooldownInfo table
+    ---@return boolean bIsReady
+    ---@return number percent
+    ---@return number timeLeft
+    ---@return number charges
+    ---@return number minValue
+    ---@return number maxValue
+    ---@return number currentValue
+    ---@return number duration
     function openRaidLib.GetCooldownStatusFromCooldownInfo(cooldownInfo)
         local timeLeft, charges, timeOffset, duration, updateTime, auraDuration = openRaidLib.CooldownManager.GetCooldownInfoValues(cooldownInfo)
+        if (not timeOffset) then
+            return false, 0, 0, 0, 0, 0, 0, 0
+        end
         return calculatePercent(timeOffset, duration, updateTime, charges)
     end
 
@@ -1948,10 +2090,28 @@ end
             --get the cooldown time for this spell
             local timeLeft, charges, startTimeOffset, duration, auraDuration = openRaidLib.CooldownManager.GetPlayerCooldownStatus(spellId) --return 5 values
 
+            --check for shared cooldown time - warning: this block of code is duplicated at "openRaidLib.commHandler.RegisterComm(CONST_COMM_COOLDOWNUPDATE_PREFIX"
+            local spellData = LIB_OPEN_RAID_COOLDOWNS_INFO[spellId]
+            local sharedCooldownId = spellData and spellData.shareid
+            if (sharedCooldownId) then
+                local spellsWithSharedCooldown = LIB_OPEN_RAID_COOLDOWNS_SHARED_ID[sharedCooldownId]
+                for thisSpellId in pairs(spellsWithSharedCooldown) do
+                    --don't run for the spell that triggered the shared cooldown
+                    if (thisSpellId ~= spellId) then
+                        openRaidLib.CooldownManager.CooldownSpellUpdate(playerName, thisSpellId, timeLeft, charges, startTimeOffset, duration, auraDuration)
+
+                        local cooldownInfo = cooldownGetSpellInfo(playerName, thisSpellId)
+                        local unitCooldownTable = openRaidLib.GetUnitCooldowns(playerName)
+
+                        --trigger a public callback
+                        openRaidLib.publicCallback.TriggerCallback("CooldownUpdate", openRaidLib.GetUnitID(playerName), thisSpellId, cooldownInfo, unitCooldownTable, openRaidLib.CooldownManager.UnitData)
+                    end
+                end
+            end
+
             --update the cooldown
             openRaidLib.CooldownManager.CooldownSpellUpdate(playerName, spellId, timeLeft, charges, startTimeOffset, duration, auraDuration) --receive 7 values
             local cooldownInfo = cooldownGetSpellInfo(playerName, spellId)
-
             --trigger a public callback
             local playerCooldownTable = openRaidLib.GetUnitCooldowns(playerName)
             openRaidLib.publicCallback.TriggerCallback("CooldownUpdate", "player", spellId, cooldownInfo, playerCooldownTable, openRaidLib.CooldownManager.UnitData)
@@ -1990,7 +2150,7 @@ end
         openRaidLib.CooldownManager.UpdatePlayerCooldownsLocally()
 
         --schedule send to the group, using a large delay to send due to the player might change more talents at once
-        openRaidLib.Schedules.NewUniqueTimer(4 + math.random(0, 1), openRaidLib.CooldownManager.SendAllPlayerCooldowns, "CooldownManager", "sendAllPlayerCooldowns_Schedule")
+        openRaidLib.Schedules.NewUniqueTimer(4 + math.random(0, 1), openRaidLib.CooldownManager.SendAllPlayerCooldowns, "CooldownManager", "sendAllPlayerCooldownsFromTalentChange_Schedule")
     end
 
     --check cooldown reset after a raid encounter ends finishing ongoing timeLeft tickers
@@ -2159,6 +2319,12 @@ function openRaidLib.CooldownManager.CheckForSpellsAdeedOrRemoved()
     local playerName = UnitName("player")
     local currentCooldowns = openRaidLib.CooldownManager.UnitData[playerName]
 
+    if (not currentCooldowns) then
+        --generate the list of cooldowns for the player
+        openRaidLib.CooldownManager.UpdatePlayerCooldownsLocally()
+        currentCooldowns = openRaidLib.CooldownManager.UnitData[playerName]
+    end
+
     local _, newCooldownList = openRaidLib.CooldownManager.GetPlayerCooldownList()
     local spellsAdded, spellsRemoved = {}, {}
 
@@ -2260,6 +2426,25 @@ openRaidLib.commHandler.RegisterComm(CONST_COMM_COOLDOWNUPDATE_PREFIX, function(
         return openRaidLib.DiagnosticError("CooldownManager|comm received|auraDuration is invalid")
     end
 
+    --check for shared cooldown time
+    local spellData = LIB_OPEN_RAID_COOLDOWNS_INFO[spellId] --warning this block of code is duplicated at warning: this block of code is duplicated at "openRaidLib.CooldownManager.OnPlayerCast"
+    local sharedCooldownId = spellData and spellData.shareid
+    if (sharedCooldownId) then
+        local spellsWithSharedCooldown = LIB_OPEN_RAID_COOLDOWNS_SHARED_ID[sharedCooldownId]
+        for thisSpellId in pairs(spellsWithSharedCooldown) do
+            --don't run for the spell that triggered the shared cooldown
+            if (thisSpellId ~= spellId) then
+                openRaidLib.CooldownManager.CooldownSpellUpdate(unitName, thisSpellId, cooldownTimer, charges, startTime, duration, auraDuration)
+
+                local cooldownInfo = cooldownGetSpellInfo(unitName, thisSpellId)
+                local unitCooldownTable = openRaidLib.GetUnitCooldowns(unitName)
+
+                --trigger a public callback
+                openRaidLib.publicCallback.TriggerCallback("CooldownUpdate", openRaidLib.GetUnitID(unitName), thisSpellId, cooldownInfo, unitCooldownTable, openRaidLib.CooldownManager.UnitData)
+            end
+        end
+    end
+
     --update
     --unitName, spellId, cooldownTimer, charges, startTime, duration, auraDuration
     openRaidLib.CooldownManager.CooldownSpellUpdate(unitName, spellId, cooldownTimer, charges, startTime, duration, auraDuration)
@@ -2310,6 +2495,14 @@ end
 function openRaidLib.CooldownManager.OnReceiveUnitCooldowns(data, unitName)
     --unpack the table as a pairs table
     local unpackedTable = openRaidLib.UnpackTable(data, 1, true, true, CONST_COOLDOWN_INFO_SIZE)
+
+    --[=[ --debug for data received from Evokers
+    local _, class = UnitClass(unitName)
+    if (class == "EVOKER") then
+        print(unitName)
+        dumpt(unpackedTable)
+    end
+    --]=]
 
     --add the list of cooldowns
     openRaidLib.CooldownManager.AddUnitCooldownsList(unitName, unpackedTable)
@@ -2484,7 +2677,8 @@ openRaidLib.commHandler.RegisterComm(CONST_COMM_COOLDOWNREQUEST_PREFIX, openRaid
 
     function openRaidLib.KeystoneInfoManager.SendPlayerKeystoneInfoToParty()
         local dataToSend = getKeystoneInfoToComm()
-        openRaidLib.commHandler.SendCommData(dataToSend, CONST_COMM_SENDTO_PARTY)
+        local bIgnoreQueue = true
+        openRaidLib.commHandler.SendCommData(dataToSend, CONST_COMM_SENDTO_PARTY, bIgnoreQueue)
         diagnosticComm("SendPlayerKeystoneInfoToParty| " .. dataToSend) --debug
     end
 
@@ -2505,12 +2699,19 @@ openRaidLib.commHandler.RegisterComm(CONST_COMM_COOLDOWNREQUEST_PREFIX, openRaid
         local keystoneInfo = openRaidLib.KeystoneInfoManager.GetKeystoneInfo(UnitName("player"), true)
         openRaidLib.KeystoneInfoManager.UpdatePlayerKeystoneInfo(keystoneInfo)
 
-        if (IsInGroup() and not IsInRaid()) then
-            openRaidLib.Schedules.NewUniqueTimer(0.1, openRaidLib.KeystoneInfoManager.SendPlayerKeystoneInfoToParty, "KeystoneInfoManager", "sendKeystoneInfoToParty_Schedule")
+        local _, instanceType = GetInstanceInfo()
+        if (instanceType == "party") then
+            openRaidLib.Schedules.NewUniqueTimer(math.random(1), openRaidLib.KeystoneInfoManager.SendPlayerKeystoneInfoToParty, "KeystoneInfoManager", "sendKeystoneInfoToParty_Schedule")
+
+        elseif (instanceType == "raid" or instanceType == "pvp") then
+            openRaidLib.Schedules.NewUniqueTimer(math.random(0, 30) + math.random(1), openRaidLib.KeystoneInfoManager.SendPlayerKeystoneInfoToParty, "KeystoneInfoManager", "sendKeystoneInfoToParty_Schedule")
+
+        else
+            openRaidLib.Schedules.NewUniqueTimer(math.random(4), openRaidLib.KeystoneInfoManager.SendPlayerKeystoneInfoToParty, "KeystoneInfoManager", "sendKeystoneInfoToParty_Schedule")
         end
 
         if (IsInGuild()) then
-            openRaidLib.Schedules.NewUniqueTimer(math.random(0, 3) + math.random(), openRaidLib.KeystoneInfoManager.SendPlayerKeystoneInfoToGuild, "KeystoneInfoManager", "sendKeystoneInfoToGuild_Schedule")
+            openRaidLib.Schedules.NewUniqueTimer(math.random(0, 6) + math.random(), openRaidLib.KeystoneInfoManager.SendPlayerKeystoneInfoToGuild, "KeystoneInfoManager", "sendKeystoneInfoToGuild_Schedule")
         end
     end
     openRaidLib.commHandler.RegisterComm(CONST_COMM_KEYSTONE_DATAREQUEST_PREFIX, openRaidLib.KeystoneInfoManager.OnReceiveRequestData)
@@ -2598,45 +2799,59 @@ openRaidLib.commHandler.RegisterComm(CONST_COMM_COOLDOWNREQUEST_PREFIX, openRaid
 --------------------------------------------------------------------------------------------------------------------------------
 --data
 
---vintage cooldown tracker and interrupt tracker
-C_Timer.After(0.1, function()
-    local vintageCDTrackerFrame = CreateFrame("frame")
-    vintageCDTrackerFrame:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
+local createLocalCooldownTracker = function()
+    local cdTrackerFrame = CreateFrame("frame")
+    cdTrackerFrame:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
     local allCooldownsFromLib = LIB_OPEN_RAID_COOLDOWNS_INFO
+
+    ---@type table<castername, table<castspellid, number>>
     local recentCastedSpells =  {}
 
-    vintageCDTrackerFrame:SetScript("OnEvent", function(self, event, ...)
+    cdTrackerFrame:SetScript("OnEvent", function(self, event, ...)
         if (event == "UNIT_SPELLCAST_SUCCEEDED") then
-            local unit, castGUID, spellId = ...
+            local unitId, castGUID, spellId = ...
 
-            local unitIsThePlayer = UnitIsUnit(unit, "player")
-            if (not unitIsThePlayer) then
-                local unitName = GetUnitName(unit, true)
-                local hasLib = openRaidLib.CooldownManager.HasFullCooldownList[unitName]
-                if (unitName and not hasLib) then
-                    local unitInGroup = UnitInParty(unit) or UnitInRaid(unit)
+            --don't track spells casted by the player
+            local bUnitIsThePlayer = UnitIsUnit(unitId, "player")
+            if (not bUnitIsThePlayer) then
+                --get the caster name and check if it's a unit in the group
+                local casterName = GetUnitName(unitId, true)
+                if (casterName) then
+                    local unitInGroup = UnitInParty(unitId) or UnitInRaid(unitId)
                     if (unitInGroup) then
-                        local cooldownInfo = allCooldownsFromLib[spellId]
-                        if (cooldownInfo) then -- and not openRaidLib.GetUnitCooldown(unitName)
-                            --check for cast_success spam from channel spells
-                            local unitCastCooldown = recentCastedSpells[unitName]
+                        --check if the library has the spell in the list of cooldowns
+                        local spellData = allCooldownsFromLib[spellId]
+
+                        --check for overwrite spell ids
+
+                        if (spellData) then
+                            --check for cast_success spam from channel spells using a cooldown timer
+                            local unitCastCooldown = recentCastedSpells[casterName]
                             if (not unitCastCooldown) then
                                 unitCastCooldown = {}
-                                recentCastedSpells[unitName] = unitCastCooldown
+                                recentCastedSpells[casterName] = unitCastCooldown
                             end
 
+                            --don't register the cooldown if the spell was casted recently
                             if (not unitCastCooldown[spellId] or unitCastCooldown[spellId]+5 < GetTime()) then
                                 unitCastCooldown[spellId] = GetTime()
 
+                                --local auraName, texture, count, auraType, auraDuration, expirationTime = openRaidLib.AuraTracker.FindBuffDurationByUnitName(casterName, casterName, spellId)
+                                local auraDuration = openRaidLib.CooldownManager.GetSpellBuffDuration(spellId, unitId)
+
                                 --trigger a cooldown usage
-                                local duration = cooldownInfo.duration
-                                --time left, charges, startTimeOffset, duration
-                                openRaidLib.CooldownManager.CooldownSpellUpdate(unitName, spellId, duration, 0, 0, duration, 0)
-                                local cooldownInfo = cooldownGetSpellInfo(unitName, spellId)
-                                local unitCooldownsTable = openRaidLib.GetUnitCooldowns(unitName)
+                                local timeLeft = spellData.cooldown
+                                local duration = spellData.duration or 0
+                                local newCharges = 0
+                                local startTimeOffset = 0
+                                local buffDuration = auraDuration or spellData.duration or 0
+
+                                openRaidLib.CooldownManager.CooldownSpellUpdate(casterName, spellId, timeLeft, newCharges, startTimeOffset, duration, buffDuration)
+                                local cooldownInfo = cooldownGetSpellInfo(casterName, spellId)
+                                local unitCooldownsTable = openRaidLib.GetUnitCooldowns(casterName)
 
                                 --trigger a public callback
-                                openRaidLib.publicCallback.TriggerCallback("CooldownUpdate", openRaidLib.GetUnitID(unitName), spellId, cooldownInfo, unitCooldownsTable, openRaidLib.CooldownManager.UnitData)
+                                openRaidLib.publicCallback.TriggerCallback("CooldownUpdate", openRaidLib.GetUnitID(casterName), spellId, cooldownInfo, unitCooldownsTable, openRaidLib.CooldownManager.UnitData)
                             end
                         end
                     end
@@ -2644,19 +2859,11 @@ C_Timer.After(0.1, function()
             end
         end
     end)
+end
+
+--vintage cooldown tracker and interrupt tracker
+C_Timer.After(0.1, function()
+    createLocalCooldownTracker()
 end)
 
 tempCache.RestoreData()
-
-
---[=[
-3x ...ns/Details/Libs/LibOpenRaid/GetPlayerInformation.lua:603: attempt to index field '?' (a nil value)
-[string "@Interface/AddOns/Details/Libs/LibOpenRaid/GetPlayerInformation.lua"]:634: in function `GetPlayerCooldownStatus'
-[string "@Interface/AddOns/Details/Libs/LibOpenRaid/LibOpenRaid.lua"]:1696: in function `CleanupCooldownTickers'
-[string "@Interface/AddOns/Details/Libs/LibOpenRaid/LibOpenRaid.lua"]:1925: in function <...face/AddOns/Details/Libs/LibOpenRaid/LibOpenRaid.lua:1924>
-[string "=[C]"]: in function `xpcall'
-[string "@Interface/AddOns/Details/Libs/LibOpenRaid/LibOpenRaid.lua"]:506: in function <...face/AddOns/Details/Libs/LibOpenRaid/LibOpenRaid.lua:496>
-
-
-
-]=]

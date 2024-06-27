@@ -6,6 +6,7 @@
 
 local TSM = select(2, ...) ---@type TSM
 local AuctionUI = TSM.UI:NewPackage("AuctionUI")
+local Environment = TSM.Include("Environment")
 local L = TSM.Include("Locale").GetTable()
 local Delay = TSM.Include("Util.Delay")
 local Log = TSM.Include("Util.Log")
@@ -41,11 +42,12 @@ function AuctionUI.OnInitialize()
 	private.settings = Settings.NewView()
 		:AddKey("global", "auctionUIContext", "showDefault")
 		:AddKey("global", "auctionUIContext", "frame")
+		:AddKey("global", "coreOptions", "protectAuctionHouse")
 	UIParent:UnregisterEvent("AUCTION_HOUSE_SHOW")
 	DefaultUI.RegisterAuctionHouseVisibleCallback(private.AuctionFrameInit, true)
-	DefaultUI.RegisterAuctionHouseVisibleCallback(private.HideAuctionFrame, false)
+	DefaultUI.RegisterAuctionHouseVisibleCallback(private.AuctionFrameHidden, false)
 	ItemLinked.RegisterCallback(private.ItemLinkedCallback, true)
-	local loadTimer = Delay.CreateTimer("AUCTION_UI_LOAD_BLIZZ", function() LoadAddOn(TSM.IsWowClassic() and "Blizzard_AuctionUI" or "Blizzard_AuctionHouseUI") end)
+	local loadTimer = Delay.CreateTimer("AUCTION_UI_LOAD_BLIZZ", function() LoadAddOn(Environment.IsRetail() and "Blizzard_AuctionHouseUI" or "Blizzard_AuctionUI") end)
 	loadTimer:RunForTime(1)
 end
 
@@ -119,7 +121,7 @@ function AuctionUI.ParseBid(value)
 	if not value then
 		return nil, L["The price must contain g/s/c labels. For example '1g 2s' means 1 gold and 2 silver."]
 	end
-	if not TSM.IsWowClassic() and value % COPPER_PER_SILVER ~= 0 then
+	if not Environment.HasFeature(Environment.FEATURES.AH_COPPER) and value % COPPER_PER_SILVER ~= 0 then
 		if wasRawNumber then
 			return nil, L["The price must contain g/s/c labels. For example '1g 2s' means 1 gold and 2 silver."]
 		else
@@ -141,7 +143,7 @@ function AuctionUI.ParseBuyout(value, isCommodity)
 	if not value then
 		return nil, L["The price must contain g/s/c labels. For example '1g 2s' means 1 gold and 2 silver."]
 	end
-	if not TSM.IsWowClassic() and value % COPPER_PER_SILVER ~= 0 then
+	if not Environment.HasFeature(Environment.FEATURES.AH_COPPER) and value % COPPER_PER_SILVER ~= 0 then
 		if wasRawNumber then
 			return nil, L["The price must contain g/s/c labels. For example '1g 2s' means 1 gold and 2 silver."]
 		else
@@ -178,16 +180,25 @@ function private.AuctionFrameInit()
 		return
 	end
 	local tabTemplateName = nil
-	if TSM.IsWowClassic() then
-		private.defaultFrame = AuctionFrame
-		tabTemplateName = "AuctionTabTemplate"
-	else
+	if Environment.IsRetail() then
 		private.defaultFrame = AuctionHouseFrame
 		tabTemplateName = "AuctionHouseFrameTabTemplate"
+	else
+		private.defaultFrame = AuctionFrame
+		tabTemplateName = "AuctionTabTemplate"
 	end
 	if not private.hasShown then
 		private.hasShown = true
-		if TSM.IsWowClassic() then
+		if Environment.IsRetail() then
+			LibAHTab:CreateTab(AH_TAB_ID, CreateFrame("Frame"), Theme.GetColor("INDICATOR_ALT"):ColorText("TSM"))
+			ScriptWrapper.Set(LibAHTab:GetButton(AH_TAB_ID), "OnClick", private.TSMTabOnClick)
+			AuctionHouseFrame:HookScript("OnShow", function(self)
+				self:UnregisterEvent("AUCTION_HOUSE_AUCTION_CREATED")
+				self:UnregisterEvent("AUCTION_HOUSE_SHOW_NOTIFICATION")
+				self:UnregisterEvent("AUCTION_HOUSE_SHOW_FORMATTED_NOTIFICATION")
+				self:UnregisterEvent("AUCTION_HOUSE_SHOW_COMMODITY_WON_NOTIFICATION")
+			end)
+		else
 			local tabId = private.defaultFrame.numTabs + 1
 			local tab = CreateFrame("Button", "AuctionFrameTab"..tabId, private.defaultFrame, tabTemplateName)
 			tab:Hide()
@@ -199,27 +210,16 @@ function private.AuctionFrameInit()
 			PanelTemplates_SetNumTabs(private.defaultFrame, tabId)
 			PanelTemplates_EnableTab(private.defaultFrame, tabId)
 			ScriptWrapper.Set(tab, "OnClick", private.TSMTabOnClick)
-		else
-			LibAHTab:CreateTab(AH_TAB_ID, CreateFrame("Frame"), Theme.GetColor("INDICATOR_ALT"):ColorText("TSM"))
-			ScriptWrapper.Set(LibAHTab:GetButton(AH_TAB_ID), "OnClick", private.TSMTabOnClick)
-			AuctionHouseFrame:HookScript("OnShow", function(self)
-				self:UnregisterEvent("AUCTION_HOUSE_AUCTION_CREATED")
-				self:UnregisterEvent("AUCTION_HOUSE_SHOW_NOTIFICATION")
-				self:UnregisterEvent("AUCTION_HOUSE_SHOW_FORMATTED_NOTIFICATION")
-				self:UnregisterEvent("AUCTION_HOUSE_SHOW_COMMODITY_WON_NOTIFICATION")
-			end)
 		end
 	end
 	if private.settings.showDefault then
-		if TSM.IsWowClassic() then
+		if not Environment.IsRetail() then
 			UIParent_OnEvent(UIParent, "AUCTION_HOUSE_SHOW")
 		end
 	else
-		if not TSM.IsWowClassic() then
-			local origCloseAuctionHouse = C_AuctionHouse.CloseAuctionHouse
-			C_AuctionHouse.CloseAuctionHouse = NoOp
-			HideUIPanel(private.defaultFrame)
-			C_AuctionHouse.CloseAuctionHouse = origCloseAuctionHouse
+		if Environment.IsRetail() then
+			private.defaultFrame:SetScale(0.001)
+			LibAHTab:SetSelected(AH_TAB_ID)
 		end
 		PlaySound(SOUNDKIT.AUCTION_WINDOW_OPEN)
 		private.ShowAuctionFrame()
@@ -238,12 +238,26 @@ function private.ShowAuctionFrame()
 	end
 end
 
+function private.AuctionFrameHidden()
+	if not private.frame then
+		return
+	end
+	if Environment.IsRetail() then
+		private.defaultFrame:SetScale(1)
+		private.defaultFrame:SetDisplayMode(AuctionHouseFrameDisplayMode.Buy)
+	end
+	private.HideAuctionFrame()
+end
+
 function private.HideAuctionFrame()
 	if not private.frame then
 		return
 	end
 	private.frame:Hide()
-	assert(not private.frame)
+	-- For some reason, on retail the OnHide callback isn't called immediately
+	if not Environment.IsRetail() then
+		assert(not private.frame)
+	end
 	for _, callback in ipairs(private.updateCallbacks) do
 		callback()
 	end
@@ -256,7 +270,7 @@ function private.CreateMainFrame()
 		:SetSettingsContext(private.settings, "frame")
 		:SetMinResize(MIN_FRAME_SIZE.width, MIN_FRAME_SIZE.height)
 		:SetStrata("HIGH")
-		:SetProtected(TSM.db.global.coreOptions.protectAuctionHouse)
+		:SetProtected(not Environment.IsRetail() and private.settings.protectAuctionHouse)
 		:AddPlayerGold()
 		:AddAppStatusIcon()
 		:AddSwitchButton(private.SwitchBtnOnClick)
@@ -283,10 +297,11 @@ function private.BaseFrameOnHide(frame)
 	private.frame = nil
 	if not private.isSwitching then
 		PlaySound(SOUNDKIT.AUCTION_WINDOW_CLOSE)
-		if TSM.IsWowClassic() then
-			CloseAuctionHouse()
-		else
+		if Environment.IsRetail() then
+			private.defaultFrame:SetScale(1)
 			C_AuctionHouse.CloseAuctionHouse()
+		else
+			CloseAuctionHouse()
 		end
 	end
 	UIUtils.AnalyticsRecordClose("auction")
@@ -296,28 +311,30 @@ function private.SwitchBtnOnClick(button)
 	private.isSwitching = true
 	private.settings.showDefault = true
 	private.HideAuctionFrame()
+	if Environment.IsRetail() then
+		private.defaultFrame:SetScale(1)
+		private.defaultFrame:SetDisplayMode(AuctionHouseFrameDisplayMode.Buy)
+	end
 	UIParent_OnEvent(UIParent, "AUCTION_HOUSE_SHOW")
 	private.isSwitching = false
 end
 
 function private.TSMTabOnClick()
 	private.settings.showDefault = false
-	if TSM.IsWowClassic() then
+	if not Environment.IsRetail() then
 		ClearCursor()
 		ClickAuctionSellItemButton(AuctionsItemButton, "LeftButton")
 	end
 	ClearCursor()
-	-- Replace CloseAuctionHouse() with a no-op while hiding the AH frame so we don't stop interacting with the AH NPC
-	if TSM.IsWowClassic() then
+	if Environment.IsRetail() then
+		private.defaultFrame:SetScale(0.001)
+		LibAHTab:SetSelected(AH_TAB_ID)
+	else
+		-- Replace CloseAuctionHouse() with a no-op while hiding the AH frame so we don't stop interacting with the AH NPC
 		local origCloseAuctionHouse = CloseAuctionHouse
 		CloseAuctionHouse = NoOp
 		AuctionFrame_Hide()
 		CloseAuctionHouse = origCloseAuctionHouse
-	else
-		local origCloseAuctionHouse = C_AuctionHouse.CloseAuctionHouse
-		C_AuctionHouse.CloseAuctionHouse = NoOp
-		HideUIPanel(private.defaultFrame)
-		C_AuctionHouse.CloseAuctionHouse = origCloseAuctionHouse
 	end
 	private.ShowAuctionFrame()
 end

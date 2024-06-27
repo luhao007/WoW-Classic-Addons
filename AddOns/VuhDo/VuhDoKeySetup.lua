@@ -56,6 +56,7 @@ end
 local VUHDO_REZ_SPELLS_NAMES = {
 	[VUHDO_SPELL_ID.REDEMPTION] = true,
 	[VUHDO_SPELL_ID.ABSOLUTION] = true,
+	[VUHDO_SPELL_ID.INTERCESSION] = true,
 	[VUHDO_SPELL_ID.ANCESTRAL_SPIRIT] = true,
 	[VUHDO_SPELL_ID.ANCESTRAL_VISION] = true,
 	[VUHDO_SPELL_ID.REVIVE] = true,
@@ -65,6 +66,8 @@ local VUHDO_REZ_SPELLS_NAMES = {
 	[VUHDO_SPELL_ID.MASS_RESURRECTION] = true,
 	[VUHDO_SPELL_ID.RESUSCITATE] = true,
 	[VUHDO_SPELL_ID.REAWAKEN] = true,
+	[VUHDO_SPELL_ID.RETURN] = true,
+	[VUHDO_SPELL_ID.MASS_RETURN] = true,
 };
 
 
@@ -134,14 +137,14 @@ local function _VUHDO_setupHealButtonAttributes(aModiKey, aButtonId, anAction, a
 				tName = RAID_TARGET_ICON;
 			end
 
-			UIDropDownMenu_Initialize(VuhDoUnitButtonDropDown, 
+			UIDropDownMenu_SetInitializeFunction(VuhDoUnitButtonDropDown, 
 				function(self) 
 					if tMenu then
 						UnitPopup_ShowMenu(self, tMenu, tUnit, tName, tNumber);
 					end
-				end, 
-				"MENU"
+				end
 			);
+			UIDropDownMenu_SetDisplayMode(VuhDoUnitButtonDropDown, "MENU");
 			
 			ToggleDropDownMenu(1, nil, VuhDoUnitButtonDropDown, "cursor", 0, 0);
 		end
@@ -418,7 +421,7 @@ function VUHDO_setupSmartCast(aButton)
 	tUnit = aButton["raidid"];
 	tInfo = VUHDO_RAID[tUnit];
 
-	if not tInfo then	return false; end
+	if not tInfo then return false; end
 
 	-- Resurrect?
 	if VUHDO_CONFIG["SMARTCAST_RESURRECT"] and tInfo["dead"] then

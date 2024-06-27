@@ -89,6 +89,15 @@ NRC.cooldowns = {
 			[53201] = "Starfall", --Rank 4.
 		},
 	},
+	["Barkskin"] = {
+		class = "DRUID",
+		icon = "Interface\\Icons\\spell_nature_stoneclawtotem",
+		cooldown = 60,
+		minLevel = 44,
+		spellIDs = {
+			[22812] = "Barkskin", --Rank 1.
+		},
+	},
 	--Hunter.
 	["Misdirection"] = {
 		class = "HUNTER",
@@ -165,7 +174,7 @@ NRC.cooldowns = {
 			[2] = 60,
 		},
 		spellIDs = {
-			[498] = "Divine Shield", --Rank 1.
+			[498] = "Divine Protection", --Rank 1.
 		},
 	},
 	["Lay on Hands"] = {
@@ -219,7 +228,7 @@ NRC.cooldowns = {
 			[64205] = "Divine Sacrifice", --Rank 1.
 		},
 	},
-	["Divine Guardian"] = {
+	--[[["Divine Guardian"] = {
 		class = "PALADIN",
 		icon = "Interface\\Icons\\spell_holy_powerwordbarrier",
 		cooldown = 120,
@@ -231,7 +240,7 @@ NRC.cooldowns = {
 		spellIDs = {
 			[70940] = "Divine Guardian", --Rank 1.
 		},
-	},
+	},]]
 	["Aura Mastery"] = {
 		class = "PALADIN",
 		icon = "Interface\\Icons\\spell_holy_auramastery",
@@ -280,6 +289,12 @@ NRC.cooldowns = {
 		icon = "Interface\\Icons\\spell_shadow_shadowfiend",
 		cooldown = 300,
 		minLevel = 66,
+		cooldownAdjust = {
+			tabIndex = 3,
+			talentIndex = 10,
+			[1] = 60, --Seconds to reduce by for each talent trained.
+			[2] = 120,
+		},
 		spellIDs = {
 			[34433] = "Shadowfiend", --Rank 1.
 		},
@@ -420,6 +435,12 @@ NRC.cooldowns = {
 		icon = "Interface\\Icons\\ability_rogue_distract",
 		cooldown = 30,
 		minLevel = 22,
+		cooldownAdjust = {
+			tabIndex = 3,
+			talentIndex = 26,
+			[1] = 5,
+			[2] = 10,
+		},
 		spellIDs = {
 			[1725] = "Distract", --Rank 1.
 		},
@@ -430,11 +451,17 @@ NRC.cooldowns = {
 		cooldown = 30,
 		minLevel = 75,
 		title = "Tricks",
+		cooldownAdjust = {
+			tabIndex = 3,
+			talentIndex = 26,
+			[1] = 5,
+			[2] = 10,
+		},
 		spellIDs = {
 			[57934] = "Tricks of the Trade", --Rank 1.
 		},
 	},
-	--[[["Cloak of Shadow"] = {
+	["Cloak of Shadow"] = {
 		class = "ROGUE",
 		icon = "Interface\\Icons\\spell_shadow_nethercloak",
 		cooldown = 90,
@@ -446,9 +473,9 @@ NRC.cooldowns = {
 			[2] = 30,
 		},
 		spellIDs = {
-			[31224] = "Evasion", --Rank 1.
+			[31224] = "Cloak of Shadow", --Rank 1.
 		},
-	},]]
+	},
 	--Shaman.
 	["Earth Elemental"] = {
 		class = "SHAMAN",
@@ -504,7 +531,7 @@ NRC.cooldowns = {
 		icon = "Interface\\Icons\\spell_shadow_soulgem",
 		cooldown = 900,
 		minLevel = 18,
-		spellIDs = {
+		spellIDs = { --"Use item" spell ID of the Soulstone item in bag.
 			[20707] = "Minor Soulstone", --Rank 1.
 			[20762] = "Lesser Soulstone", --Rank 2.
 			[20763] = "Soulstone", --Rank 3.
@@ -638,7 +665,19 @@ NRC.cooldowns = {
 			[64382] = "Shattering Throw", --Rank 1.
 		},
 	},
-	
+	["Last Stand"] = {
+		class = "WARRIOR",
+		icon = "Interface\\Icons\\spell_holy_ashestoashes",
+		cooldown = 180,
+		minLevel = 20,
+		talentOnly = {
+			tabIndex = 3,
+			talentIndex = 6,
+		},
+		spellIDs = {
+			[12975] = "Last Stand", --Rank 1.
+		},
+	},
 	--Neck group buffs.
 	--These only show if someone is on cooldown.
 	--[[["Neck Buffs"] = {
@@ -810,13 +849,36 @@ NRC.cooldowns = {
 			[55233] = "Vampiric Blood", --Rank 1.
 		},
 	},
-	["Anti Magic Shield"] = {
+	["Anti Magic Shell"] = {
 		class = "DEATHKNIGHT",
 		icon = "Interface\\Icons\\spell_shadow_antimagicshell",
 		cooldown = 45,
 		minLevel = 68,
 		spellIDs = {
-			[48707] = "Anti-Magic Shield", --Rank 1.
+			[48707] = "Anti-Magic Shell", --Rank 1.
 		},
 	},
 };
+
+--Add faction specific spells.
+if (NRC.faction == "Alliance") then
+	NRC.cooldowns["Heroism"] = {
+		class = "SHAMAN",
+		icon = "Interface\\Icons\\ability_shaman_heroism",
+		cooldown = 600,
+		minLevel = 70,
+		spellIDs = {
+			[32182] = "Heroism", --Rank 1.
+		},
+	};
+else
+	NRC.cooldowns["Bloodlust"] = {
+		class = "SHAMAN",
+		icon = "Interface\\Icons\\spell_nature_bloodlust",
+		cooldown = 600,
+		minLevel = 70,
+		spellIDs = {
+			[2825] = "Bloodlust", --Rank 1.
+		},
+	};
+end

@@ -81,10 +81,10 @@ end
 local texturePicker
 
 local function ConstructTexturePicker(frame)
-  local group = AceGUI:Create("InlineGroup");
+  local group = AceGUI:Create("SimpleGroup");
   group.frame:SetParent(frame);
-  group.frame:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -17, 42);
-  group.frame:SetPoint("TOPLEFT", frame, "TOPLEFT", 17, -10);
+  group.frame:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -17, 46);
+  group.frame:SetPoint("TOPLEFT", frame, "TOPLEFT", 17, -50);
   group.frame:Hide();
   group.children = {};
   group.categories = {};
@@ -160,7 +160,7 @@ local function ConstructTexturePicker(frame)
       filter = filter:lower()
     end
     for texturePath, textureName in pairs(group.textures[uniquevalue]) do
-      if filter == nil or filter == "" or textureName:lower():match(filter) then
+      if filter == nil or filter == "" or textureName:lower():find(filter, 1, true) then
         tinsert(group.selectedGroupSorted, {texturePath, textureName})
       end
     end
@@ -187,8 +187,9 @@ local function ConstructTexturePicker(frame)
     UpdateShownWidgets()
   end
 
-  local input = CreateFrame("EditBox", nil, group.frame, "InputBoxTemplate");
-  input:SetScript("OnTextChanged", function(...)
+  local input = CreateFrame("EditBox", nil, group.frame, "SearchBoxTemplate");
+  input:SetScript("OnTextChanged", function(self, ...)
+    SearchBoxTemplate_OnTextChanged(self)
     local status = dropdown.status or dropdown.localstatus
     texturePickerGroupSelected(nil, nil, status.selected, input:GetText())
   end);
@@ -201,14 +202,9 @@ local function ConstructTexturePicker(frame)
     local status = dropdown.status or dropdown.localstatus
     texturePickerGroupSelected(nil, nil, status.selected, input:GetText())
   end);
-  input:SetWidth(170);
+  input:SetWidth(200);
   input:SetHeight(15);
-  input:SetPoint("BOTTOMRIGHT", dropdown.frame, "TOPRIGHT", -12, -25);
-
-  local inputLabel = input:CreateFontString(nil, "OVERLAY", "GameFontNormal");
-  inputLabel:SetText(L["Search"]);
-  inputLabel:SetJustifyH("RIGHT");
-  inputLabel:SetPoint("BOTTOMLEFT", input, "TOPLEFT", 0, 5);
+  input:SetPoint("TOPRIGHT", group.frame, "TOPRIGHT", -3, -10);
 
   dropdown:SetCallback("OnGroupSelected", function(widget, event, uniquevalue)
     texturePickerGroupSelected(widget, event, uniquevalue, input:GetText())
@@ -238,7 +234,7 @@ local function ConstructTexturePicker(frame)
         pickedwidget = widget;
       end
     end
-    local width, height
+    local width, height, flipbookInfo
     if(pickedwidget) then
       pickedwidget:Pick();
       if not pickedwidget.texture.IsStopMotion then
@@ -246,6 +242,12 @@ local function ConstructTexturePicker(frame)
         if atlasInfo then
           width = atlasInfo.width
           height = atlasInfo.height
+        end
+      else
+        flipbookInfo = OptionsPrivate.GetFlipbookTileSize(pickedwidget.texture.path)
+        if flipbookInfo then
+          width = flipbookInfo.tileWidth
+          height = flipbookInfo.tileHeight
         end
       end
     end
@@ -337,7 +339,7 @@ local function ConstructTexturePicker(frame)
 
   local cancel = CreateFrame("Button", nil, group.frame, "UIPanelButtonTemplate")
   cancel:SetScript("OnClick", group.CancelClose)
-  cancel:SetPoint("BOTTOMRIGHT", -27, -23)
+  cancel:SetPoint("BOTTOMRIGHT", -20, -24)
   cancel:SetSize(100, 20)
   cancel:SetText(L["Cancel"])
 

@@ -159,12 +159,12 @@ local dcstitle=CreateFrame("Frame", "DCSTitle", DejaClassicStatsPanel)
 	dcstitle:SetHeight(100)
 	dcstitle:Show()
 
-local dcstitleFS = dcstitle:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+local dcstitleFS = dcstitle:CreateFontString(nil, "OVERLAY", "GameTooltipText")
 	dcstitleFS:SetText('|cff00c0ffDejaClassicStats|r')
 	dcstitleFS:SetPoint("TOPLEFT", 0, 0)
 	dcstitleFS:SetFont("Fonts\\FRIZQT__.TTF", 20)
 
-local dcsversionFS = DejaClassicStatsPanel:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+local dcsversionFS = DejaClassicStatsPanel:CreateFontString(nil, "OVERLAY", "GameTooltipText")
 	dcsversionFS:SetText('|cff00c0ff' .. addoninfo .. '|r')
 	dcsversionFS:SetPoint("BOTTOMRIGHT", -10, 10)
 	dcsversionFS:SetFont("Fonts\\FRIZQT__.TTF", 12)
@@ -209,34 +209,34 @@ local dcsresetcheck = CreateFrame("Button", "DCSResetButton", DejaClassicStatsPa
 	----------------------
 	
 	-- --Average Item Level
-	-- local dcsILvlPanelCategoryFS = DejaClassicStatsPanel:CreateFontString("dcsILvlPanelCategoryFS", "OVERLAY", "GameFontNormal")
+	-- local dcsILvlPanelCategoryFS = DejaClassicStatsPanel:CreateFontString("dcsILvlPanelCategoryFS", "OVERLAY", "GameTooltipText")
 	-- dcsILvlPanelCategoryFS:SetText('|cffffffff' .. L["Average Item Level:"] .. '|r') --wouldn't be more efficient through format?
 	-- dcsILvlPanelCategoryFS:SetPoint("TOPLEFT", 25, -40)
-	-- dcsILvlPanelCategoryFS:SetFontObject("GameFontNormalLarge") --Use instead of SetFont("Fonts\\FRIZQT__.TTF", 15) or Russian, Korean and Chinese characters won't work.
+	-- dcsILvlPanelCategoryFS:SetFontObject("GameTooltipText") --Use instead of SetFont("Fonts\\FRIZQT__.TTF", 15) or Russian, Korean and Chinese characters won't work.
 	
 	-- --Character Stats 
-	-- local dcsStatsPanelcategoryFS = DejaClassicStatsPanel:CreateFontString("dcsStatsPanelcategoryFS", "OVERLAY", "GameFontNormal")
+	-- local dcsStatsPanelcategoryFS = DejaClassicStatsPanel:CreateFontString("dcsStatsPanelcategoryFS", "OVERLAY", "GameTooltipText")
 	-- dcsStatsPanelcategoryFS:SetText('|cffffffff' .. L["Character Stats:"] .. '|r')
 	-- dcsStatsPanelcategoryFS:SetPoint("TOPLEFT", 25, -150)
-	-- dcsStatsPanelcategoryFS:SetFontObject("GameFontNormalLarge") --Use instead of SetFont("Fonts\\FRIZQT__.TTF", 15) or Russian, Korean and Chinese characters won't work.
+	-- dcsStatsPanelcategoryFS:SetFontObject("GameTooltipText") --Use instead of SetFont("Fonts\\FRIZQT__.TTF", 15) or Russian, Korean and Chinese characters won't work.
 	
 	--Item Slots
-	local dcsItemsPanelCategoryFS = DejaClassicStatsPanel:CreateFontString("dcsItemsPanelCategoryFS", "OVERLAY", "GameFontNormal")
+	local dcsItemsPanelCategoryFS = DejaClassicStatsPanel:CreateFontString("dcsItemsPanelCategoryFS", "OVERLAY", "GameTooltipText")
 	dcsItemsPanelCategoryFS:SetText('|cffffffff' .. L["Item Slots:"] .. '|r')
 	dcsItemsPanelCategoryFS:SetPoint("TOPLEFT", 25, -40)
-	dcsItemsPanelCategoryFS:SetFontObject("GameFontNormalLarge") --Use instead of SetFont("Fonts\\FRIZQT__.TTF", 15) or Russian, Korean and Chinese characters won't work.
+	dcsItemsPanelCategoryFS:SetFontObject("GameTooltipText") --Use instead of SetFont("Fonts\\FRIZQT__.TTF", 15) or Russian, Korean and Chinese characters won't work.
 	
 	-- --Miscellaneous
-	local dcsMiscPanelCategoryFS = DejaClassicStatsPanel:CreateFontString("dcsMiscPanelCategoryFS", "OVERLAY", "GameFontNormal")
+	local dcsMiscPanelCategoryFS = DejaClassicStatsPanel:CreateFontString("dcsMiscPanelCategoryFS", "OVERLAY", "GameTooltipText")
 	dcsMiscPanelCategoryFS:SetText('|cffffffff' .. L["Miscellaneous:"] .. '|r')
 	dcsMiscPanelCategoryFS:SetPoint("LEFT", 25, -125)
-	dcsMiscPanelCategoryFS:SetFontObject("GameFontNormalLarge") --Use instead of SetFont("Fonts\\FRIZQT__.TTF", 15) or Russian, Korean and Chinese characters won't work.
+	dcsMiscPanelCategoryFS:SetFontObject("GameTooltipText") --Use instead of SetFont("Fonts\\FRIZQT__.TTF", 15) or Russian, Korean and Chinese characters won't work.
 
 	--Show/Hide Headers
-	local dcsItemsPanelHeadersFS = DejaClassicStatsPanel:CreateFontString("dcsItemsPanelHeadersFS", "OVERLAY", "GameFontNormal")
+	local dcsItemsPanelHeadersFS = DejaClassicStatsPanel:CreateFontString("dcsItemsPanelHeadersFS", "OVERLAY", "GameTooltipText")
 	dcsItemsPanelHeadersFS:SetText('|cffffffff' .. L["Categories:"] .. '|r')
 	dcsItemsPanelHeadersFS:SetPoint("TOPLEFT", DejaClassicStatsPanel, "TOP", -25, -40)
-	dcsItemsPanelHeadersFS:SetFontObject("GameFontNormalLarge") --Use instead of SetFont("Fonts\\FRIZQT__.TTF", 15) or Russian, Korean and Chinese characters won't work.
+	dcsItemsPanelHeadersFS:SetFontObject("GameTooltipText") --Use instead of SetFont("Fonts\\FRIZQT__.TTF", 15) or Russian, Korean and Chinese characters won't work.
 	
 ----------------
 -- Local Vars --
@@ -474,7 +474,7 @@ local DCSPrimaryStatsHeader = CreateFrame("Frame", "DCSPrimaryStatsHeader", Deja
 	-- DCSPrimaryStatsHeader:SetFrameStrata("BACKGROUND")
 	-- DCSPrimaryStatsHeader:Hide()
 
-local DCSPrimaryStatsFS = DCSPrimaryStatsHeader:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+local DCSPrimaryStatsFS = DCSPrimaryStatsHeader:CreateFontString(nil, "OVERLAY", "GameTooltipText")
 	DCSPrimaryStatsFS:SetText(L["Primary"])
 	DCSPrimaryStatsFS:SetTextColor(1, 1, 1)
 	DCSPrimaryStatsFS:SetPoint("CENTER", 0, 0)
@@ -496,7 +496,7 @@ local t=DCSPrimaryStatsHeader:CreateTexture(nil,"ARTWORK")
 -- 	-- DCSOffenseStatsHeader:SetFrameStrata("BACKGROUND")
 -- 	-- DCSOffenseStatsHeader:Hide()
 
--- local DCSOffenseStatsFS = DCSOffenseStatsHeader:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+-- local DCSOffenseStatsFS = DCSOffenseStatsHeader:CreateFontString(nil, "OVERLAY", "GameTooltipText")
 -- 	DCSOffenseStatsFS:SetText(L["Offense"])
 -- 	DCSOffenseStatsFS:SetTextColor(1, 1, 1)
 -- 	DCSOffenseStatsFS:SetPoint("CENTER", 0, 0) --This is -2 to center the header "Offense" better.
@@ -518,7 +518,7 @@ local DCSMeleeEnhancementsStatsHeader = CreateFrame("Frame", "DCSMeleeEnhancemen
 	-- DCSMeleeEnhancementsStatsHeader:SetFrameStrata("BACKGROUND")
 	-- DCSMeleeEnhancementsStatsHeader:Hide()
 
-local DCSMeleeEnhancementsStatsFS = DCSMeleeEnhancementsStatsHeader:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+local DCSMeleeEnhancementsStatsFS = DCSMeleeEnhancementsStatsHeader:CreateFontString(nil, "OVERLAY", "GameTooltipText")
 	DCSMeleeEnhancementsStatsFS:SetText(L["Melee"])
 	DCSMeleeEnhancementsStatsFS:SetTextColor(1, 1, 1)
 	DCSMeleeEnhancementsStatsFS:SetPoint("CENTER", 0, 0)
@@ -540,7 +540,7 @@ local DCSRangedStatsHeader = CreateFrame("Frame", "DCSRangedStatsHeader", DejaCl
 	-- DCSRangedStatsHeader:SetFrameStrata("BACKGROUND")
 	-- DCSRangedStatsHeader:Hide()
 
-local DCSRangedStatsFS = DCSRangedStatsHeader:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+local DCSRangedStatsFS = DCSRangedStatsHeader:CreateFontString(nil, "OVERLAY", "GameTooltipText")
 	DCSRangedStatsFS:SetText(L["Ranged"])
 	DCSRangedStatsFS:SetTextColor(1, 1, 1)
 	DCSRangedStatsFS:SetPoint("CENTER", 0, 0)
@@ -562,7 +562,7 @@ local DCSSpellEnhancementsStatsHeader = CreateFrame("Frame", "DCSSpellEnhancemen
 	-- DCSSpellEnhancementsStatsHeader:SetFrameStrata("BACKGROUND")
 	-- DCSSpellEnhancementsStatsHeader:Hide()
 
-local DCSSpellEnhancementsStatsFS = DCSSpellEnhancementsStatsHeader:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+local DCSSpellEnhancementsStatsFS = DCSSpellEnhancementsStatsHeader:CreateFontString(nil, "OVERLAY", "GameTooltipText")
 	DCSSpellEnhancementsStatsFS:SetText(L["Spell"])
 	DCSSpellEnhancementsStatsFS:SetTextColor(1, 1, 1)
 	DCSSpellEnhancementsStatsFS:SetPoint("CENTER", 0, 0)
@@ -584,7 +584,7 @@ local DCSDefenseStatsHeader = CreateFrame("Frame", "DCSDefenseStatsHeader", Deja
 	-- DCSDefenseStatsHeader:SetFrameStrata("BACKGROUND")
 	-- DCSDefenseStatsHeader:Hide()
 
-local DCSDefenseStatsFS = DCSDefenseStatsHeader:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+local DCSDefenseStatsFS = DCSDefenseStatsHeader:CreateFontString(nil, "OVERLAY", "GameTooltipText")
 	DCSDefenseStatsFS:SetText(L["Defense"])
 	DCSDefenseStatsFS:SetTextColor(1, 1, 1)
 	DCSDefenseStatsFS:SetPoint("CENTER", 0, 0) --This is -2 to center the header "Offense" better.
@@ -602,7 +602,6 @@ local t=DCSDefenseStatsHeader:CreateTexture(nil,"ARTWORK")
 ---------------------
 local function DCS_SetBlizzPrimaryStats(statindex)
 	local DCSstatindex = statindex
-	local DCStext = _G["PlayerStatFrameLeft"..DCSstatindex];
 	local DCSstatFrame = _G["PlayerStatFrameLeft"..DCSstatindex];
 	local DCSstat;
 	local DCSeffectiveStat;
@@ -610,7 +609,7 @@ local function DCS_SetBlizzPrimaryStats(statindex)
 	local DCSnegBuff;
 	local DCSstatName = getglobal("SPELL_STAT"..DCSstatindex.."_NAME");
 	local DCSstat, DCSeffectiveStat, DCSposBuff, DCSnegBuff = UnitStat("player", DCSstatindex);
-	local t = DCStext:CreateFontString(DCStext, "OVERLAY", "GameTooltipText")
+	local t = DCSstatFrame:CreateFontString(DCSstatFrame:GetName(), "OVERLAY", "GameTooltipText")
 	-- Set the tooltip text
 	local tooltipText = HIGHLIGHT_FONT_COLOR_CODE..DCSstatName.." ";
 
@@ -1020,15 +1019,15 @@ local function RangedCrit()
 end
 -- Bonus Melee Hit Chance Modifier
 local function HitModifier()
-	local hitRating = GetCombatRatingBonus(CR_HIT_MELEE)
+	local ratingBonus = GetCombatRatingBonus(CR_HIT_MELEE)
 	local hit = GetCombatRating(CR_HIT_MELEE)
 
-	local TooltipLine1 = L["Hit Chance: "]..(format( "%.2f%%", hitRating)).."\n ("..hit.." Rating adds "..(format( "%.2f%%", hitRating) ).." Hit)"
-	local TooltipLine2 = "\n"..( format(CR_HIT_MELEE_TOOLTIP, UnitLevel("player"), hitRating, hit, GetArmorPenetration()) );
-	-- local TooltipLine3 = L["Total Hit: "]..(format( "%.2f%%", hitRating) )
+	local TooltipLine1 = L["Hit Chance: "]..(format( "%.2f%%", ratingBonus)).."\n ("..hit.." Rating adds "..(format( "%.2f%%", ratingBonus) ).." Hit)"
+	local TooltipLine2 = "\n"..( format(CR_HIT_MELEE_TOOLTIP, UnitLevel("player"), ratingBonus, GetCombatRating(CR_ARMOR_PENETRATION), GetArmorPenetration()) );
+	-- local TooltipLine3 = L["Total Hit: "]..(format( "%.2f%%", ratingBonus) )
 	local total = ""
 
-	return "", "("..hit..") "..(format( "%.2f%%", hitRating) ), TooltipLine1, TooltipLine2, TooltipLine3, total
+	return "", "("..hit..") "..(format( "%.2f%%", ratingBonus) ), TooltipLine1, TooltipLine2, TooltipLine3, total
 end
 local function MeleeHaste()
 	local hasteRating = GetCombatRatingBonus(CR_HASTE_MELEE)
@@ -1046,19 +1045,19 @@ end
 -- Bonus Ranged Hit Chance Modifier
 local function RangedHitModifier()
 	hasBiznicks = addon.hasBiznicks
-	local hitRating = GetCombatRatingBonus(CR_HIT_RANGED)
+	local ratingBonus = GetCombatRatingBonus(CR_HIT_RANGED)
 	local hit = GetCombatRating(CR_HIT_RANGED)
 	if hit == nil then hit = 0 end
 	if hasBiznicks then 
 		hit = hit + 3
 	end
 
-	local TooltipLine1 = L["Hit Chance: "]..(format( "%.2f%%", hitRating)).."\n ("..hit.." Rating adds "..(format( "%.2f%%", hitRating) ).." Hit)"
-	local TooltipLine2 = "\n"..( format(CR_HIT_RANGED_TOOLTIP, UnitLevel("player"), hitRating, hit, GetArmorPenetration()) );
-	-- local TooltipLine3 = L["Total Hit: "]..(format( "%.2f%%", hitRating) )
+	local TooltipLine1 = L["Hit Chance: "]..(format( "%.2f%%", ratingBonus)).."\n ("..hit.." Rating adds "..(format( "%.2f%%", ratingBonus) ).." Hit)"
+	local TooltipLine2 = "\n"..( format(CR_HIT_RANGED_TOOLTIP, UnitLevel("player"), ratingBonus, GetCombatRating(CR_ARMOR_PENETRATION), GetArmorPenetration()) );
+	-- local TooltipLine3 = L["Total Hit: "]..(format( "%.2f%%", ratingBonus) )
 	local total = ""
 
-	return "", "("..hit..") "..(format( "%.2f%%", hitRating) ), TooltipLine1, TooltipLine2, TooltipLine3, total
+	return "", "("..hit..") "..(format( "%.2f%%", ratingBonus) ), TooltipLine1, TooltipLine2, TooltipLine3, total
 end
 local function RangedHaste()
 	local hasteRating = GetCombatRatingBonus(CR_HASTE_RANGED)
@@ -1321,15 +1320,16 @@ local function SpellCrit()
 end
 -- Bonus Spell Hit Chance Modifier
 local function SpellHitModifier()
-	local hitRating = GetCombatRatingBonus(CR_HIT_SPELL)
+	local ratingBonus = GetCombatRatingBonus(CR_HIT_SPELL)
 	local hit = GetCombatRating(CR_HIT_SPELL)
+	local spellPenetration = GetSpellPenetration();
 
-	local TooltipLine1 = L["Hit Chance: "]..(format( "%.2f%%", hitRating)).."\n ("..hit.." Rating adds "..(format( "%.2f%%", hitRating) ).." Hit)"
-	local TooltipLine2 = "\n"..( format(CR_HIT_SPELL_TOOLTIP, UnitLevel("player"), hitRating, GetArmorPenetration()) );
-	-- local TooltipLine3 = L["Total Hit: "]..(format( "%.2f%%", hitRating) )
+	local TooltipLine1 = L["Hit Chance: "]..(format( "%.2f%%", ratingBonus)).."\n ("..hit.." Rating adds "..(format( "%.2f%%", ratingBonus) ).." Hit)"
+	local TooltipLine2 = "\n"..( format(CR_HIT_SPELL_TOOLTIP, UnitLevel("player"), ratingBonus, spellPenetration, spellPenetration) );
+	-- local TooltipLine3 = L["Total Hit: "]..(format( "%.2f%%", ratingBonus) )
 	local total = ""
 
-	return "", "("..hit..") "..(format( "%.2f%%", hitRating) ), TooltipLine1, TooltipLine2, TooltipLine3, total
+	return "", "("..hit..") "..(format( "%.2f%%", ratingBonus) ), TooltipLine1, TooltipLine2, TooltipLine3, total
 end
 -- SpellPenetration Modifier
 -- local function SpellPenetration()
@@ -1834,12 +1834,12 @@ gdbprivate.gdbdefaults.gdbdefaults.DCS_MASTER_STAT_LIST = {
 		DejaClassicStatsFrame.statFrame:SetPoint("TOPLEFT", DCS_STAT_DATA[StatKey].relativeTo, "BOTTOMLEFT", (15 + XoffSet), ( (-14 * (YoffSet - 1)) -2) )
 		DejaClassicStatsFrame.statFrame:SetSize(160, 16)
 
-		DejaClassicStatsFrame.stat = DejaClassicStatsFrame.statFrame:CreateFontString(StatKey.."NameFS", "GameFontNormal")
+		DejaClassicStatsFrame.stat = DejaClassicStatsFrame.statFrame:CreateFontString(StatKey.."NameFS", "OVERLAY", "GameTooltipText")
 		DejaClassicStatsFrame.stat:SetPoint("LEFT", DejaClassicStatsFrame.statFrame, "LEFT")
 		if (namespace.locale == "zhCN") or (namespace.locale == "zhTW") or (namespace.locale == "koKR") then
-			DejaClassicStatsFrame.stat:SetFontObject("GameFontNormalLarge")
+			DejaClassicStatsFrame.stat:SetFontObject("GameTooltipText")
 		else
-			DejaClassicStatsFrame.stat:SetFontObject("GameFontNormal")
+			DejaClassicStatsFrame.stat:SetFontObject("GameTooltipText")
 		end	
 		DejaClassicStatsFrame.stat:SetJustifyH("LEFT")
 		DejaClassicStatsFrame.stat:SetShadowOffset(1, -1) 
@@ -1847,12 +1847,12 @@ gdbprivate.gdbdefaults.gdbdefaults.DCS_MASTER_STAT_LIST = {
 		DejaClassicStatsFrame.stat:SetTextColor(1, 0.8, 0.1)
 		DejaClassicStatsFrame.stat:SetText("")
 
-		DejaClassicStatsFrame.value = DejaClassicStatsFrame.statFrame:CreateFontString(StatKey.."ValueFS", "GameFontNormal")
+		DejaClassicStatsFrame.value = DejaClassicStatsFrame.statFrame:CreateFontString(StatKey.."ValueFS", "OVERLAY", "GameTooltipText")
 		DejaClassicStatsFrame.value:SetPoint("RIGHT", DejaClassicStatsFrame.statFrame, "RIGHT")
 		if (namespace.locale == "zhCN") or (namespace.locale == "zhTW") or (namespace.locale == "koKR") then
-			DejaClassicStatsFrame.value:SetFontObject("GameFontNormalLarge")
+			DejaClassicStatsFrame.value:SetFontObject("GameTooltipText")
 		else
-			DejaClassicStatsFrame.value:SetFontObject("GameFontNormal")
+			DejaClassicStatsFrame.value:SetFontObject("GameTooltipText")
 		end
 		DejaClassicStatsFrame.value:SetJustifyH("RIGHT")
 		DejaClassicStatsFrame.value:SetShadowOffset(1, -1) 

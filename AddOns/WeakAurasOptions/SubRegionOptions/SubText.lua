@@ -415,11 +415,28 @@ local function createOptions(parentData, data, index, subIndex)
       return true
     end
 
-    for index, subRegion in ipairs(parentData.subRegions) do
+    for _, subRegion in ipairs(parentData.subRegions) do
       if subRegion.type == "subtext" and OptionsPrivate.Private.ContainsCustomPlaceHolder(subRegion.text_text) then
         return false
       end
     end
+
+    if type(parentData.conditions) == "table" then
+      for _, condition in ipairs(parentData.conditions) do
+        if type(condition.changes) == "table" then
+          for _, change in ipairs(condition.changes) do
+            if type(change.property) == "string"
+            and change.property:match("sub%.%d+%.text_text")
+            and type(change.value) == "string"
+            and OptionsPrivate.Private.ContainsCustomPlaceHolder(change.value)
+            then
+              return false
+            end
+          end
+        end
+      end
+    end
+
     return true
   end
 
@@ -470,30 +487,42 @@ local function createOptions(parentData, data, index, subIndex)
     options["text_text_format_" .. key] = option
   end
 
-  if parentData.controlledChildren then
-    local list = {}
-    for child in OptionsPrivate.Private.TraverseLeafs(parentData) do
-      if child.subRegions then
-        local childSubRegion = child.subRegions[index]
-        if childSubRegion then
-          tinsert(list, childSubRegion)
+  local list = {}
+  for child in OptionsPrivate.Private.TraverseLeafsOrAura(parentData) do
+    if child.subRegions then
+      local childSubRegion = child.subRegions[index]
+      if childSubRegion then
+        tinsert(list, child)
+      end
+    end
+  end
+
+  for listIndex, child in ipairs(list) do
+    local childSubRegion = child.subRegions[index]
+    local get = function(key)
+      return childSubRegion["text_text_format_" .. key]
+    end
+    local texts = {}
+    if type(childSubRegion.text_text) == "string" and childSubRegion.text_text ~= "" then
+      -- found text of subregion
+      tinsert(texts, childSubRegion.text_text)
+    end
+
+    for _, condition in ipairs(child.conditions) do
+      if type(condition.changes) == "table" then
+        for _, change in ipairs(condition.changes) do
+          if change.property == "sub."..index..".text_text"
+            and type(change.value) == "string"
+            and change.value ~= ""
+          then
+            -- found a condition editing text of that subregion
+            tinsert(texts, change.value)
+          end
         end
       end
     end
 
-    for listIndex, childSubRegion in ipairs(list) do
-      local get = function(key)
-        return childSubRegion["text_text_format_" .. key]
-      end
-      local input = childSubRegion["text_text"]
-      OptionsPrivate.AddTextFormatOption(input, true, get, addOption, hidden, setHidden, false, listIndex, #list)
-    end
-  else
-    local get = function(key)
-      return data["text_text_format_" .. key]
-    end
-    local input = data["text_text"]
-    OptionsPrivate.AddTextFormatOption(input, true, get, addOption, hidden, setHidden, false)
+    OptionsPrivate.AddTextFormatOption(texts, true, get, addOption, hidden, setHidden, false, listIndex, #list)
   end
 
   addOption("footer", {

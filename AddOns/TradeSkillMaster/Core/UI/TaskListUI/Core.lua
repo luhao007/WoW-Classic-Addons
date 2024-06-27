@@ -4,7 +4,7 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local TaskListUI = TSM.UI:NewPackage("TaskListUI")
 local L = TSM.Include("Locale").GetTable()
 local Event = TSM.Include("Util.Event")
@@ -77,7 +77,7 @@ end
 
 function TaskListUI.UpdateFrame()
 	local mouseOver = private.frame:_GetBaseFrame():IsMouseOver() and true or false
-	private.frame:SetBackgroundColor((mouseOver or TSM.db.global.appearanceOptions.taskListBackgroundLock) and "FRAME_BG%50" or nil, true)
+	private.frame:SetRoundedBackgroundColor((mouseOver or TSM.db.global.appearanceOptions.taskListBackgroundLock) and "FRAME_BG%50" or nil)
 	private.frame:SetBorderColor((mouseOver or TSM.db.global.appearanceOptions.taskListBackgroundLock) and "ACTIVE_BG%50" or nil, 2)
 	private.frame:Draw()
 end

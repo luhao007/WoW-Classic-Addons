@@ -1,0 +1,9 @@
+## Interface: 40400
+## Title: Titan Panel [|cffeda55fXP|r] |cff00aa008.0.13|r
+## Version: 8.0.13
+## Notes: Adds information to Titan Panel about XP earned and time to level
+## Author: Titan Panel Development Team (http://www.titanpanel.org)
+## SavedVariables: 
+## OptionalDeps:  
+## Dependencies: TitanClassic
+TitanXP.lua

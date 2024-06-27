@@ -87,6 +87,7 @@ function VUHDO_spellTraceUpdateEditBox(anEditBox)
 			["isMine"] = VUHDO_CONFIG["SPELL_TRACE"]["isMine"],
 			["isOthers"] = VUHDO_CONFIG["SPELL_TRACE"]["isOthers"],
 			["duration"] = VUHDO_CONFIG["SPELL_TRACE"]["duration"],
+			["isIncoming"] = VUHDO_CONFIG["SPELL_TRACE"]["isIncoming"],
 		};
 
 		tModel = "VUHDO_SPELL_TRACE_TEMP_MODEL";
@@ -102,6 +103,10 @@ function VUHDO_spellTraceUpdateEditBox(anEditBox)
 
 	tCheckButton = _G[tPanelName .. "OthersCheckButton"];
 	VUHDO_lnfSetModel(tCheckButton, tModel .. ".isOthers");
+	VUHDO_lnfCheckButtonInitFromModel(tCheckButton);
+
+	tCheckButton = _G[tPanelName .. "IncomingCheckButton"];
+	VUHDO_lnfSetModel(tCheckButton, tModel .. ".isIncoming");
 	VUHDO_lnfCheckButtonInitFromModel(tCheckButton);
 
 	tDurationFrame = _G[tPanelName .. "DurationFrame"];
@@ -150,6 +155,9 @@ function VUHDO_saveSpellTraceOnClick(aButton)
 
 	tCheckButton = _G[tPanelName .. "OthersCheckButton"];
 	VUHDO_CONFIG["SPELL_TRACE"]["STORED_SETTINGS"][tValue].isOthers = VUHDO_forceBooleanValue(tCheckButton:GetChecked());
+
+	tCheckButton = _G[tPanelName .. "IncomingCheckButton"];
+	VUHDO_CONFIG["SPELL_TRACE"]["STORED_SETTINGS"][tValue].isIncoming = VUHDO_forceBooleanValue(tCheckButton:GetChecked());
 
 	tSlider = _G[tPanelName .. "DurationFrameSliderSlider"];
 	VUHDO_CONFIG["SPELL_TRACE"]["STORED_SETTINGS"][tValue].duration = tSlider:GetValue() or VUHDO_CONFIG["SPELL_TRACE"].duration;

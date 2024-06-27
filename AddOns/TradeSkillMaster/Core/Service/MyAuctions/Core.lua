@@ -4,8 +4,9 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local MyAuctions = TSM:NewPackage("MyAuctions")
+local Environment = TSM.Include("Environment")
 local L = TSM.Include("Locale").GetTable()
 local Database = TSM.Include("Util.Database")
 local Event = TSM.Include("Util.Event")
@@ -44,7 +45,7 @@ function MyAuctions.OnInitialize()
 		end
 	end
 	DefaultUI.RegisterAuctionHouseVisibleCallback(private.AuctionHouseClosed, false)
-	if TSM.IsWowClassic() then
+	if not Environment.HasFeature(Environment.FEATURES.C_AUCTION_HOUSE) then
 		Event.Register("CHAT_MSG_SYSTEM", private.ChatMsgSystemEventHandler)
 		Event.Register("UI_ERROR_MESSAGE", private.UIErrorMessageEventHandler)
 	end
@@ -55,12 +56,12 @@ function MyAuctions.CreateQuery()
 	local query = AuctionTracking.CreateQuery()
 		:LeftJoin(private.pendingDB, "index")
 		:VirtualField("group", "string", TSM.Groups.GetPathByItem, "itemString", "")
-	if TSM.IsWowClassic() then
-		query:OrderBy("index", false)
-	else
+	if Environment.HasFeature(Environment.FEATURES.C_AUCTION_HOUSE) then
 		query:OrderBy("saleStatus", false)
 		query:OrderBy("itemName", true)
 		query:OrderBy("auctionId", true)
+	else
+		query:OrderBy("index", false)
 	end
 	return query
 end
@@ -95,24 +96,24 @@ function MyAuctions.CancelAuction(auctionId)
 end
 
 function MyAuctions.CanCancel(index)
-	if TSM.IsWowClassic() then
+	if Environment.IsRetail() then
+		return not private.pendingFuture
+	else
 		local numPending = private.pendingDB:NewQuery()
 			:Equal("isPending", true)
 			:LessThanOrEqual("index", index)
 			:CountAndRelease()
 		return numPending == 0
-	else
-		return not private.pendingFuture
 	end
 end
 
 function MyAuctions.GetNumPending()
-	if TSM.IsWowClassic() then
+	if Environment.IsRetail() then
+		return private.pendingFuture and 1 or 0
+	else
 		return private.pendingDB:NewQuery()
 			:Equal("isPending", true)
 			:CountAndRelease()
-	else
-		return private.pendingFuture and 1 or 0
 	end
 end
 

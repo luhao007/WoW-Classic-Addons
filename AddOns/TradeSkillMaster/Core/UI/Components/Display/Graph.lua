@@ -532,14 +532,9 @@ function Graph:_SetSliceColor(slice, color, y1, y2, plotHeight)
 	slice:SetVertexColor(r, g, b, a)
 	local barMaxAlpha = Math.Scale(min(y1, y2), 0, plotHeight, 0, MAX_FILL_ALPHA * a)
 	local topMaxAlpha = Math.Scale(max(y1, y2), 0, plotHeight, 0, MAX_FILL_ALPHA * a)
-	if TSM.IsWowClassic() then
-		slice.fillTop:SetGradientAlpha("VERTICAL", r, g, b, barMaxAlpha, r, g, b, topMaxAlpha)
-		slice.fillBar:SetGradientAlpha("VERTICAL", r, g, b, 0, r, g, b, barMaxAlpha)
-	else
-		-- TODO: Create the ColorMixin objects from our color object
-		slice.fillTop:SetGradient("VERTICAL", CreateColor(r, g, b, barMaxAlpha), CreateColor(r, g, b, topMaxAlpha))
-		slice.fillBar:SetGradient("VERTICAL", CreateColor(r, g, b, 0), CreateColor(r, g, b, barMaxAlpha))
-	end
+	-- TODO: Create the ColorMixin objects from our color object
+	slice.fillTop:SetGradient("VERTICAL", CreateColor(r, g, b, barMaxAlpha), CreateColor(r, g, b, topMaxAlpha))
+	slice.fillBar:SetGradient("VERTICAL", CreateColor(r, g, b, 0), CreateColor(r, g, b, barMaxAlpha))
 end
 
 function Graph:_GetCursorClosestPoint()

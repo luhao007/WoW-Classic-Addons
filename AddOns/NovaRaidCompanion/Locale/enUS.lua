@@ -341,6 +341,9 @@ L["raidCooldownInnervateDesc"] = "Show Innervate raid cooldowns?";
 L["raidCooldownTranquilityTitle"] = "Tranquility";
 L["raidCooldownTranquilityDesc"] = "Show Tranquility raid cooldowns?";
 
+L["raidCooldownBarkskinTitle"] = "Barkskin";
+L["raidCooldownBarkskinDesc"] = "Show Barkskin raid cooldowns?";
+
 L["raidCooldownMisdirectionTitle"] = "Misdirection";
 L["raidCooldownMisdirectionDesc"] = "Show Misdirection raid cooldowns?";
 
@@ -422,6 +425,9 @@ L["raidCooldownRecklessnessDesc"] = "Show Recklessness raid cooldowns?";
 L["raidCooldownShieldWallTitle"] = "Shield Wall";
 L["raidCooldownShieldWallDesc"] = "Show Shield Wall raid cooldowns?";
 
+L["raidCooldownLastStandTitle"] = "Last Stand";
+L["raidCooldownLastStandDesc"] = "Show Last Stand raid cooldowns?";
+
 L["raidCooldownsSoulstonesTitle"] = "Active Soulstones";
 L["raidCooldownsSoulstonesDesc"] = "Show extra frames to show who has a soulstone active on them?";
 
@@ -488,6 +494,9 @@ L["raidCooldownNeckStatsDesc"] = "Show party members cooldown for |cFF0070DD[Emb
 
 L["raidCooldownsNecksRaidOnlyTitle"] = "Necks In Raid Only";
 L["raidCooldownsNecksRaidOnlyDesc"] = "Only show neck buff cooldowns when you're in a raid group and hide while in a party?";
+
+L["raidCooldownsShowDeadTitle"] = "Show Dead";
+L["raidCooldownsShowDeadDesc"] = "Show players that are dead in with a red bar and skull, also counts thier cooldown as not being ready.";
 
 L["Eating"] = "Eating"; --This can't be longer than 6 characters to fit in the raid status column.
 L["Food"] = "Food";
@@ -697,8 +706,8 @@ L["raidCooldownsSortOrderDesc"] = "How would you like the cooldowns bars to be s
 L["autoCombatLogTitle"] = "Auto Combat Log";
 L["autoCombatLogDesc"]= "Turn on combat logging whenever you enter a raid so it can used for sites like warcraft logs.";
 
-L["cauldronMsgTitle"] = "Feast/Cauldron Msg";
-L["cauldronMsgDesc"] = "Put a msg in /say when you drop a cauldron in raid?";
+L["cauldronMsgTitle"] = "Feast/Repair /say";
+L["cauldronMsgDesc"] = "Put a msg in /say when you drop a feast/repair bot/cauldron in raid?";
 
 L["sreMainTextDesc"] = "Scroll down to add Custom Spells."
 L["sreCustomSpellsHeaderDesc"] = "Custom Spells To Display";
@@ -902,6 +911,9 @@ L["raidCooldownsWidthDesc"] = "How wide do you want each bar to be?";
 L["raidCooldownsHeightTitle"] = "Height";
 L["raidCooldownsHeightDesc"] = "How high do you want each bar to be?";
 
+L["raidCooldownsPaddingTitle"] = "Padding";
+L["raidCooldownsPaddingDesc"] = "How much space between each bar do you want?";
+
 L["raidManaFontSizeTitle"] = "Font Size";
 L["raidManaFontSizeDesc"] = "How big do you want the font to be?";
 
@@ -910,6 +922,9 @@ L["raidManaWidthDesc"] = "How wide do you want each bar to be?";
 
 L["raidManaHeightTitle"] = "Height";
 L["raidManaHeightDesc"] = "How high do you want each bar to be?";
+
+L["raidManaPaddingTitle"] = "Padding";
+L["raidManaPaddingDesc"] = "How much space between each bar do you want?";
 
 L["raidCooldownsFontOutlineTitle"] = "Font Outline";
 L["raidCooldownsFontOutlineDesc"] = "Do you want raid cooldowns font to have an outline?";
@@ -1006,8 +1021,8 @@ L["raidCooldownIceboundFortitudeDesc"] = "Show Icebound Fortitude raid cooldowns
 L["raidCooldownAntiMagicZoneTitle"] = "Anti-Magic Zone";
 L["raidCooldownAntiMagicZoneDesc"] = "Show Anti-Magic Zone raid cooldowns?";
 
-L["raidCooldownAntiMagicShieldTitle"] = "Anti-Magic Shield";
-L["raidCooldownAntiMagicShieldDesc"] = "Show Anti-Magic Shield raid cooldowns?";
+L["raidCooldownAntiMagicShellTitle"] = "Anti-Magic Shell";
+L["raidCooldownAntiMagicShellDesc"] = "Show Anti-Magic Shell raid cooldowns?";
 
 L["raidCooldownSurvivalInstinctsTitle"] = "Survival Instincts";
 L["raidCooldownSurvivalInstinctsDesc"] = "Show Survival Instincts raid cooldowns?";
@@ -1097,8 +1112,8 @@ L["customExportStringFrameText"] = "Loot String:";
 L["customExportStringFrameHeaderTooltip"] = "Header is the first line in the string.\nSome spreadsheets use this to tell them\nwhich order to put things.\nYou can leave this empty if you like.";
 L["customExportStringFrameStringTooltip"] = "The format for how each loot line will look.\nUse the tokens below to build your string.";
 
-L["releaseWarningTitle"] = "Release Warning";
-L["releaseWarningDesc"] = "Show a warning when you die during a raid boss encounter to not release until the encounter ends, so that your cooldowns will reset.";
+L["releaseWarningTitle"] = "Boss Release";
+L["releaseWarningDesc"] = "Show a warning when you die during a raid boss encounter to not release until the encounter ends, so that your cooldowns will reset. Also blocks the release button from being clicked until the boss fight ends.";
 
 L["showTrainsetTitle"] = "Trainset Warning";
 L["showTrainsetDesc"] = "Show a /say msg when someone drops a trainset in your raid, also prints to yourself when not in a raid.";
@@ -1185,3 +1200,27 @@ L["raidCooldownStarfallDesc"] = "Show Starfall raid cooldowns?";
 
 L["raidCooldownFireElementalTitle"] = "Fire Elemental";
 L["raidCooldownFireElementalDesc"] = "Show Fire Elemental raid cooldowns?";
+
+L["feastLeaderMsgTitle"] = "Feast Leader Msg";
+L["feastLeaderMsgDesc"] = "If you are the raid leader or assist this will announce in raid chat or warning when anyone drops a feast.";
+
+L["feastLeaderChannelTitle"] = "Feast Leader Channel";
+L["feastLeaderChannelDesc"] = "Which channel to post the feast leader message?";
+
+L["repairLeaderMsgTitle"] = "Repair Leader Msg";
+L["repairLeaderMsgDesc"] = "If you are the raid leader or assist this will announce in raid chat or warning when anyone drops a repair bot.";
+
+L["repairLeaderChannelTitle"] = "Repair Leader Channel";
+L["repairLeaderChannelDesc"] = "Which channel to post the repair bot leader message?";
+
+L["Buff Durations"] = "Buff Durations";
+L["buffDurationsTooltip"] = "Show a buff duration \"swipe\" effect?";
+
+L["raidStatusLowDurationTimeTitle"] = "Low Buff Duration";
+L["raidStatusLowDurationTimeDesc"] = "When buffs are below this duration in seconds the buff will glow yellow to warn you of low duration.";
+
+L["raidCooldownUniversalDesc"] = "Show %s raid cooldowns?";
+L["raidCooldownUniversalCastDetectDesc"] = "Show %s raid cooldowns? (This cooldown only shows up when a player is seen to have cast it atleast once)";
+
+L["raidStatusWorldBuffsTitle"]= "World Buffs";
+L["raidStatusWorldBuffsDesc"]= "Display a World Buffs column on the Raid Status tracker? This can be much wider than other columns to fit world buffs.";

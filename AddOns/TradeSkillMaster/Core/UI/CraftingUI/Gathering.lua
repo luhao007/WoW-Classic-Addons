@@ -4,8 +4,9 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local Gathering = TSM.UI.CraftingUI:NewPackage("Gathering")
+local Environment = TSM.Include("Environment")
 local L = TSM.Include("Locale").GetTable()
 local TempTable = TSM.Include("Util.TempTable")
 local Table = TSM.Include("Util.Table")
@@ -42,13 +43,13 @@ local SOURCE_TEXT_LIST = {
 	L["AH (Disenchanting)"],
 	L["AH (Crafting)"],
 }
-if TSM.IsWowVanillaClassic() then
+if not Environment.HasFeature(Environment.FEATURES.GUILD_BANK) then
 	Table.RemoveByValue(SOURCE_LIST, "guildBank")
 	Table.RemoveByValue(SOURCE_LIST, "altGuildBank")
 	Table.RemoveByValue(SOURCE_TEXT_LIST, L["Guild Bank"])
 	Table.RemoveByValue(SOURCE_TEXT_LIST, L["Alt Guild Bank"])
 end
-if not TSM.IsWowClassic() then
+if Environment.IsRetail() then
 	Table.RemoveByValue(SOURCE_LIST, "bank")
 	Table.RemoveByValue(SOURCE_TEXT_LIST, L["Bank"])
 end
@@ -155,7 +156,7 @@ function private.GetGatheringFrame()
 						:SetFont("ITEM_BODY3")
 						:SetJustifyH("LEFT")
 						:SetIconSize(12)
-						:SetTextInfo("itemString", UIUtils.GetColoredItemName)
+						:SetTextInfo("itemString", UIUtils.GetDisplayItemName)
 						:SetIconInfo("itemString", ItemInfo.GetTexture)
 						:SetTooltipInfo("itemString")
 						:SetSortInfo("name")
@@ -234,12 +235,12 @@ function private.CreateSourceRows(frame)
 end
 
 function private.UpdateSourceRows(setupFrame)
-	if TSM.IsWowVanillaClassic() then
+	if not Environment.HasFeature(Environment.FEATURES.GUILD_BANK) then
 		Table.RemoveByValue(private.settings.sources, "guildBank")
 		Table.RemoveByValue(private.settings.sources, "altGuildBank")
 	end
-	if not TSM.IsWowClassic() then
-		Table.RemoveByValue(TSM.db.profile.gatheringOptions.sources, "bank")
+	if Environment.IsRetail() then
+		Table.RemoveByValue(private.settings.sources, "bank")
 	end
 	local texts = TempTable.Acquire()
 	local sources = TempTable.Acquire()

@@ -16,6 +16,8 @@ L.OTabPlugins	= "Core Plugins"
 L.OTabOptions	= GAMEOPTIONS_MENU
 L.OTabAbout		= "À propos"
 
+L.FOLLOWER				= "Sujet"--i.e. the new dungeon type in 10.2.5. I haven't found a translated string yet
+
 L.TabCategory_OTHER			= "Autres modules"
 
 L.BossModLoaded 			= "Statistiques %s"
@@ -30,7 +32,7 @@ L.MoveMe 					= "Déplacez-moi"
 L.Button_OK 				= "OK"
 L.Button_Cancel 			= "Annuler"
 L.Button_LoadMod 			= "Charger le module"
-L.Mod_Enabled				= "Activer ce module"
+L.Mod_Enabled				= "Activer: %s"
 L.Mod_Reset					= "Charger les options par défaut"
 L.Reset 					= "Réinit."
 L.Import					= "Importer"
@@ -59,6 +61,7 @@ L.Area_ProfilesSetup		= "Guide d'utilisation des profiles DBM"
 L.Core_GUI 					= "Core & Interface"
 L.General 					= "Options générales de DBM core"
 L.EnableMiniMapIcon			= "Afficher l'icône de la minicarte"
+L.EnableCompartmentIcon		= "Afficher le bouton de compartiment"
 L.UseSoundChannel			= "Configurer le canal audio utilisé par DBM pour jouer les sons d'alerte"
 L.UseMasterChannel			= "Canal audio Principal"
 L.UseDialogChannel			= "Canal audio Discussion"
@@ -84,10 +87,9 @@ L.Editbox_WindowWidth		= "Largeur de la fenêtre"
 L.Editbox_WindowHeight		= "Hauteur de la fenêtre"
 
 L.UIGroupingOptions			= "Options d'interface partagées (requiet de recharger l'interface pour tout module qui serait déjà chargé)"
-L.GroupOptionsBySpell		= "Options de modules regroupées par capacité (pour les modules compatibles)"
 L.GroupOptionsExcludeIcon	= "Exclure l'option \"Définir l'icône sur\" du regroupement par capacité (elles seront regroupées dans la catégorie \"Icônes\" comme avant)"
 L.AutoExpandSpellGroups		= "Déplier automatiquement les options liées à la même capacité"
---L.ShowSpellDescWhenExpanded	= "Continue showing spell description when groups are expanded"--Might not be used
+L.ShowSpellDescWhenExpanded	= "Continuer à afficher la description du sort lorsque les groupes sont déployés."--Might not be used
 L.NoDescription				= "Cette capacité n'a aucune description"
 
 -- Panel: Extra Features
@@ -180,6 +182,10 @@ L.ThickOutline				= "Epais"
 L.MonochromeOutline			= "Monochrome simple"
 L.MonochromeThickOutline	= "Monochrome épais"
 L.RaidWarnSound				= "Jouer un son sur les alertes raid"
+L.SAOne						= "Son global 1 (personnel)"
+L.SATwo 					= "Son global 2 (tout le monde)"
+L.SAThree 					= "Son global 3 (action de haute priorité)"
+L.SAFour 					= "Son global 4 (fuite de haute priorité)"
 
 -- Tab: Spec Warn Frame
 L.Panel_SpecWarnFrame		= "Alertes spéciales"
@@ -226,7 +232,6 @@ L.WorldBuffAlert			= "Afficher une alerte et un décompte lorsqu'un évênement 
 
 L.Area_BugAlerts			= "Options des rapports de bugs"
 L.BadTimerAlert				= "Afficher un message quand DBM détecte un décompte erroné avec au moins 1 seconde de différence"
-L.BadIDAlert				= "Afficher un message quand DBM détecte une capacité ou entrée de journal erronée"
 
 -- Panel: Spoken Alerts Frame
 L.Panel_SpokenAlerts		= "Alertes vocales"
@@ -409,31 +414,41 @@ L.FilterInterrupts2			= "Si le lanceur n'est pas la cible/focus actuelle (Toujou
 L.FilterInterrupts3			= "Si le lanceur n'est pas la cible/focus actuelle (Toujours) ou interruption en recharge (Boss &amp; Trash)"
 L.FilterInterruptNoteName	= "Filtrer les alertes des sorts interruptibles (avec compte) si l'alerte ne contient pas votre nom dans la note personnalisée"
 L.FilterDispels				= "Filtrer les alertes de dissipations si votre sort de dissipation est en recharge"
+L.FilterCrowdControl		= "Filtrer les annonces pour les interruptions basées sur le contrôle de foule si votre CC est en temps de recharge."
 L.FilterTrashWarnings		= "Filtrer toutes les annonces liées aux trash dans les donjons normaux &amp; héroïques"
 
-L.Area_PullTimer			= "Options du filtre des décomptes de pull, pause, combat, & personnalisé"
+L.Area_PullTimer			= "Options du filtre des décomptes de pull, pause, & personnalisé"
 L.DontShowPTNoID			= "Bloquer les décomptes de pull envoyés depuis une zone différente de la vôtre (ne bloquera jamais les décomptes BigWigs envoyés sans ID de zone)"
 L.DontShowPT				= "Ne pas afficher la barre de pull/pause"
 L.DontShowPTText			= "Ne pas afficher le texte d'alerte du décompte de pull/pause"
-L.DontShowPTCountdownText	= "Ne pas afficher le texte du décompte de pull"
-L.DontPlayPTCountdown		= "Ne jouer aucun son de décompte de pull/pause/combat/perso"
-L.PT_Threshold				= "Pas de son du décompte de pull/pause/combat/perso au delà de : %d"
+L.DontPlayPTCountdown		= "Ne jouer aucun son de décompte de pull/pause/perso"
+L.PT_Threshold				= "Pas de son du décompte de pull/pause/perso au delà de : %d"
 
 -- Panel: Blizzard Features
-L.Panel_HideBlizzard		= "Désactivation Blizzard"
-L.Area_HideBlizzard			= "Options de désactivation Blizzard"
-L.HideBossEmoteFrame		= "Désactiver le cadre des vies des boss pendant les combats de boss"
-L.HideWatchFrame			= "Désactiver le cadre de suivi des objectifs pendant les combats de boss"
-L.HideGarrisonUpdates		= "Désactiver les notifications de fief pendant les combats de boss"
-L.HideGuildChallengeUpdates	= "Désactiver les notifications de défis de guilde pendant les combats de boss"
-L.HideQuestTooltips			= "Désactiver les objectifs de quête dans les info-bulles pendant les combats de boss"
-L.HideTooltips				= "Désactiver le cadre d'information pendant les combats de boss"
-L.DisableSFX				= "Désactiver le canal audio des effets sonores pendant les combats de boss (Note: cette option rétabliera le canal audio Sons à la fin des combat même si ce dernier était désactivé avant le combat)"
-L.DisableCinematics			= "Désactiver les cinématiques en jeu"
-L.OnlyFight					= "Seulement pendant le combat, après que chaque cinématique ait été jouée une fois"
-L.AfterFirst				= "Après que la cinématique ait été jouée une fois"
-L.CombatOnly				= "Désactiver en combat (tous)"
-L.RaidCombat				= "Désactiver en combat (boss seulement)"
+L.Panel_HideBlizzard				= "Bloquer les fonctionnalités de Blizzard."
+--Toast
+L.Area_HideToast 					= "Désactiver les notifications Blizzard"
+L.HideGarrisonUpdates 				= "Cacher les notifications de suivi pendant les combats de boss"
+L.HideGuildChallengeUpdates 		= "Cacher les notifications de défi de guilde pendant les combats de boss"
+L.HideBossKill 						= "Cacher les notifications de mort de boss" --NYI
+L.HideVaultUnlock					= "Cacher les notifications de déblocage du coffre" --NYI
+--Cut Scenes
+L.Area_Cinematics 					= "Bloquer les cinématiques en jeu"
+L.DuringFight 						= "Bloquer les cinématiques en combat pendant les rencontres de boss" -- utilise une vérification explicite de IsEncounterInProgress
+L.InstanceAnywhere 					= "Bloquer les cinématiques non liées au combat n'importe où à l'intérieur d'une instance de donjon ou de raid"
+L.NonInstanceAnywhere 				= "DANGER : Bloquer les cinématiques en extérieur dans le monde ouvert (NON recommandé)"
+L.OnlyAfterSeen 					= "Ne bloquer les cinématiques qu'après les avoir vues au moins une fois (Vivement recommandé pour vivre l'histoire telle qu'elle a été conçue au moins une fois)"
+-- Son
+L.Area_Sound 						= "Bloquer les sons en jeu"
+L.DisableSFX 						= "Désactiver le canal des effets sonores pendant les combats de boss"
+L.DisableAmbiance 					= "Désactiver le canal de l'ambiance sonore pendant les combats de boss"
+L.DisableMusic 						= "Désactiver le canal de la musique pendant les combats de boss (Remarque : Si activé, la musique de boss personnalisée ne sera pas jouée si elle est activée dans les sons d'événement)"
+-- Autres
+L.Area_HideBlizzard 				= "Désactiver et cacher d'autres irritants Blizzard"
+L.HideBossEmoteFrame 				= "Cacher le cadre des émotes de boss de raid pendant les combats de boss"
+L.HideWatchFrame 					= "Cacher le cadre de suivi (objectifs) pendant les combats de boss s'il n'y a pas d'exploits en cours de suivi et si ce n'est pas dans une Mythique +"
+L.HideQuestTooltips 				= "Cacher les objectifs de quête des info-bulles pendant les combats de boss" --Currently hidden (NYI)
+L.HideTooltips 						= "Cacher complètement les info-bulles pendant les combats de boss"
 
 -- Panel: Privacy
 L.Tab_Privacy 				= "Messages privés"

@@ -1,0 +1,39 @@
+## Interface: 30400
+## Author: MysticalOS
+## Version: 10.2.49
+## RequiredDeps: DBM-Core
+## LoadOnDemand: 1
+## SavedVariables: DBMDragonIsles_AllSavedVars
+## SavedVariablesPerCharacter: DBMDragonIsles_SavedStats
+
+## Title: |cffffe00a<|r|cffff7d0aDBM Mod|r|cffffe00a>|r |cff10ff10World Bosses (Dragonflight)|r
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFF69CCF0户外|r |cFF22B14C巨龙时代|r
+
+## X-DBM-Mod: 1
+## X-DBM-Mod-Type: WORLDBOSS
+## X-DBM-Mod-Category: DRAGONFLIGHT
+## X-DBM-StatTypes: normal
+## X-DBM-Mod-Name: World Bosses (Dragonflight)
+## X-DBM-Mod-Name-esES: Jefes de Mundo (Dragonflight)
+## X-DBM-Mod-Name-esMX: Jefes de Mundo (Dragonflight)
+## X-DBM-Mod-Name-ruRU: Мировые боссы (Драконы)
+## X-DBM-Mod-Name-koKR: 필드 보스 (용군단)
+## X-DBM-Mod-Name-zhTW: 世界首領 (巨龍崛起)
+## X-DBM-Mod-Name-zhCN: 世界首领 (巨龙时代)
+## X-DBM-Mod-World-Boss: 1
+## X-DBM-Mod-Sort: 210
+## X-DBM-Mod-MapID: 2574, 2444, 2512, 2454, 2548
+## X-DBM-Mod-LoadCID: 193534, 193535, 193532, 193533, 199855, 199853, 209574
+## X-DBM-Mod-MinCoreRevision: 17286
+## X-DBM-Mod-MinExpansion: 9
+## X-Part-Of: DBM-Core
+
+localization.en.lua
+localization.ru.lua
+localization.kr.lua
+Strunraan.lua
+Liskanoth.lua
+Bazual.lua
+Basrikron.lua
+ZaqaliElders.lua
+Aurostor.lua

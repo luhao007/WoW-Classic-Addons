@@ -7,7 +7,7 @@
 --- FrameStack Functions
 -- @module FrameStack
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local FrameStack = TSM.UI:NewPackage("FrameStack")
 local Math = TSM.Include("Util.Math")
 local Theme = TSM.Include("Util.Theme")

@@ -22,6 +22,9 @@ local specDropdown = nil
 local phaseDropDown = nil
 
 local checkmarks = {}
+local boemarks = {}
+
+local isHorde = UnitFactionGroup("player") == "Horde"
 
 local function createItemFrame(item_id, size, with_checkmark)
     if item_id < 0 then
@@ -43,6 +46,16 @@ local function createItemFrame(item_id, size, with_checkmark)
                 checkMark:SetPoint("CENTER", 6, -8)
                 checkMark:SetTexture("Interface\\AddOns\\Bistooltip\\checkmark-16.tga")
                 table.insert(checkmarks, checkMark)
+            end
+
+            local _, _, _, _, _, _, _, _, _, _, _, _, _, bindType = GetItemInfo(item_id)
+            if(bindType==LE_ITEM_BIND_ON_EQUIP) then
+                local boeMark = item_frame.frame:CreateTexture(nil, "OVERLAY")
+                boeMark:SetWidth(12)
+                boeMark:SetHeight(12)
+                boeMark:SetPoint("TOPLEFT",2,-5)
+                boeMark:SetTexture("Interface\\Icons\\INV_Misc_Coin_01")
+                table.insert(boemarks, boeMark)
             end
 
             item_frame:SetCallback("OnClick", function(button)
@@ -130,11 +143,16 @@ end
 local function drawItemSlot(slot)
     local f = AceGUI:Create("Label")
     f:SetText(slot.slot_name)
-    f:SetFont("Fonts\\FRIZQT__.TTF", 14)
+    f:SetFont("Fonts\\FRIZQT__.TTF", 14, "")
     spec_frame:AddChild(f)
     spec_frame:AddChild(createEnhancementsFrame(slot.enhs))
     for i, item_id in ipairs(slot) do
-        if item_id~=nil and Bistooltip_char_equipment[item_id] == 1 then
+        if isHorde == true then
+            if Bistooltip_horde_to_ali[item_id] ~= nil then
+                item_id = Bistooltip_horde_to_ali[item_id]
+            end
+        end
+        if item_id ~= nil and Bistooltip_char_equipment[item_id] ~= nil then
             spec_frame:AddChild(createItemFrame(item_id, 40, true))
         else
             spec_frame:AddChild(createItemFrame(item_id, 40))
@@ -145,7 +163,7 @@ end
 local function drawTableHeader(frame)
     local f = AceGUI:Create("Label")
     f:SetText("Slot")
-    f:SetFont("Fonts\\FRIZQT__.TTF", 14)
+    f:SetFont("Fonts\\FRIZQT__.TTF", 14, "")
     local color = 0.6
     f:SetColor(color, color, color)
     frame:AddChild(f)
@@ -164,7 +182,23 @@ local function saveData()
     BistooltipAddon.db.char.phase_index = phase_index
 end
 
+local function clearCheckMarks()
+    for key, value in ipairs(checkmarks) do
+        value:SetTexture(nil)
+    end
+    checkmarks = {}
+end
+
+local function clearBoeMarks()
+    for key, value in ipairs(boemarks) do
+        value:SetTexture(nil)
+    end
+    boemarks = {}
+end
+
 local function drawSpecData()
+    clearCheckMarks()
+    clearBoeMarks()
     saveData()
     items = {}
     spells = {}
@@ -174,10 +208,6 @@ local function drawSpecData()
         return
     end
     local slots = Bistooltip_bislists[class][spec][phase]
-    for key,value in ipairs(checkmarks) do
-       value:SetTexture(nil)
-    end
-    checkmarks = {}
     for i, slot in ipairs(slots) do
         drawItemSlot(slot)
     end
@@ -336,8 +366,18 @@ function BistooltipAddon:createMainFrame()
     end
     main_frame = AceGUI:Create("Frame")
     main_frame:SetWidth(450)
-    main_frame.frame:SetMinResize(420,300)
+    main_frame.frame:SetResizeBounds(450, 300)
+
+    --main_frame.frame:SetScript("OnKeyDown", function(self, key)
+    --    if key == "ESCAPE" then
+    --        BistooltipAddon:closeMainFrame()
+    --    end
+    --end)
+    --main_frame.frame:SetPropagateKeyboardInput(false)
+
     main_frame:SetCallback("OnClose", function(widget)
+        clearCheckMarks()
+        clearBoeMarks()
         spec_frame = nil
         items = {}
         spells = {}
@@ -361,7 +401,6 @@ function BistooltipAddon:closeMainFrame()
         return
     end
 end
-
 
 function BistooltipAddon:initBislists()
     buildClassDict()

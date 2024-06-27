@@ -7,9 +7,10 @@
 --- Public TSM API functions
 -- @module TSM_API
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local Money = TSM.Include("Util.Money")
 local ItemString = TSM.Include("Util.ItemString")
+local GroupPath = TSM.Include("Util.GroupPath")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local CustomPrice = TSM.Include("Service.CustomPrice")
 local AltTracking = TSM.Include("Service.AltTracking")
@@ -91,7 +92,7 @@ end
 function TSM_API.FormatGroupPath(path)
 	private.CheckCallMethod(path)
 	private.ValidateGroupPath(path)
-	return TSM.Groups.Path.Format(path)
+	return GroupPath.Format(path)
 end
 
 --- Splits a TSM group path into its parent path and group name components.
@@ -102,8 +103,8 @@ end
 function TSM_API.SplitGroupPath(path)
 	private.CheckCallMethod(path)
 	private.ValidateGroupPath(path)
-	local parentPath, groupName = TSM.Groups.Path.Split(path)
-	if parentPath == TSM.CONST.ROOT_GROUP_PATH then
+	local parentPath, groupName = GroupPath.Split(path)
+	if GroupPath.IsRoot(parentPath) then
 		parentPath = nil
 	end
 	return parentPath, groupName
@@ -117,7 +118,7 @@ function TSM_API.GetGroupPathByItem(itemString)
 	private.CheckCallMethod(itemString)
 	itemString = private.ValidateTSMItemString(itemString)
 	local path = TSM.Groups.GetPathByItem(itemString)
-	return path ~= TSM.CONST.ROOT_GROUP_PATH and path or nil
+	return not GroupPath.IsRoot(path) and path or nil
 end
 
 --- Gets all the items within a group.
@@ -149,7 +150,7 @@ end
 -- @treturn table The passed table, populated with group paths
 function TSM_API.GetProfiles(result)
 	private.CheckCallMethod(result)
-	for _, profileName in TSM.db:ProfileIterator() do
+	for _, profileName in TSM.db:ScopeKeyIterator("profile") do
 		tinsert(result, profileName)
 	end
 	return result
@@ -435,14 +436,16 @@ function TSM_API.GetPlayerTotals(itemString)
 	numPlayer = numPlayer + BagTracking.GetReagentBankQuantity(itemString)
 	numPlayer = numPlayer + MailTracking.GetQuantity(itemString)
 	numAuctions = numAuctions + AuctionTracking.GetQuantity(itemString)
-	for _, factionrealm, character in Settings.ConnectedFactionrealmAltCharacterIterator() do
-		numAlts = numAlts + AltTracking.GetBagQuantity(itemString, character, factionrealm)
-		numAlts = numAlts + AltTracking.GetBankQuantity(itemString, character, factionrealm)
-		numAlts = numAlts + AltTracking.GetReagentBankQuantity(itemString, character, factionrealm)
-		numAlts = numAlts + AltTracking.GetMailQuantity(itemString, character, factionrealm)
-		local auctionQuantity = AltTracking.GetAuctionQuantity(itemString, character, factionrealm)
-		numAltAuctions = numAltAuctions + auctionQuantity
-		numAuctions = numAuctions + auctionQuantity
+	for _, factionrealm, character, _, isConnected in Settings.ConnectedFactionrealmAltCharacterIterator() do
+		if isConnected or TSM.db.global.coreOptions.regionWide then
+			numAlts = numAlts + AltTracking.GetBagQuantity(itemString, character, factionrealm)
+			numAlts = numAlts + AltTracking.GetBankQuantity(itemString, character, factionrealm)
+			numAlts = numAlts + AltTracking.GetReagentBankQuantity(itemString, character, factionrealm)
+			numAlts = numAlts + AltTracking.GetMailQuantity(itemString, character, factionrealm)
+			local auctionQuantity = AltTracking.GetAuctionQuantity(itemString, character, factionrealm)
+			numAltAuctions = numAltAuctions + auctionQuantity
+			numAuctions = numAuctions + auctionQuantity
+		end
 	end
 	return numPlayer, numAlts, numAuctions, numAltAuctions
 end

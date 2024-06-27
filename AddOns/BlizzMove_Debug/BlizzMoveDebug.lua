@@ -4,23 +4,27 @@ local LibStub = _G.LibStub;
 local CreateFrame = _G.CreateFrame;
 local UIParent = _G.UIParent;
 local pairs = _G.pairs;
-local type = _G.type;
-local C_Console__GetAllCommands = _G.C_Console.GetAllCommands;
+local C_Console__GetAllCommands = _G.ConsoleGetAllCommands or _G.C_Console.GetAllCommands;
 local string__format = _G.string.format;
+local string__gmatch = _G.string.gmatch;
 local GetCVarInfo = _G.GetCVarInfo;
-local IsAddOnLoaded = _G.IsAddOnLoaded;
-local GetNumAddOns = _G.GetNumAddOns;
-local GetAddOnInfo = _G.GetAddOnInfo;
-local GetAddOnMetadata = _G.GetAddOnMetadata;
+local IsAddOnLoaded = _G.IsAddOnLoaded or _G.C_AddOns.IsAddOnLoaded;
+local GetNumAddOns = _G.GetNumAddOns or _G.C_AddOns.GetNumAddOns;
+local GetAddOnInfo = _G.GetAddOnInfo or _G.C_AddOns.GetAddOnInfo;
+local GetAddOnMetadata = _G.GetAddOnMetadata or _G.C_AddOns.GetAddOnMetadata;
+local GetFrameMetatable = _G.GetFrameMetatable or function() return getmetatable(CreateFrame('FRAME')) end
+local LoadAddOn = _G.LoadAddOn or _G.C_AddOns.LoadAddOn;
 
+--- @type BlizzMove
 local BlizzMove = LibStub('AceAddon-3.0'):GetAddon('BlizzMove');
 if not BlizzMove then return ; end
 
---- @class BlizzMove_Debug
+--- @class BlizzMove_Debug: AceModule
 local Module = BlizzMove:NewModule('Debug')
 --- @type BlizzMoveAPI
 local BlizzMoveAPI = BlizzMoveAPI;
 
+--- @type JsonLua-1.0
 local json = LibStub('JsonLua-1.0');
 
 Module.frameConfig = {
@@ -32,16 +36,35 @@ Module.frameConfig = {
     width = 750,
     height = 400,
 }
-Module.bannedCharacterPattern = '[^a-zA-Z0-9 !@#$%^&*()_+\-=,.:;?~`{}[<>]';
+Module.bannedCharacterPattern = '[^a-zA-Z0-9 !@#$%^&*()_+\\-=,.:;?~`{}[<>]';
 
 local function encode_string(val)
     return '"' .. val:gsub(Module.bannedCharacterPattern, function(c) return string__format('"..strchar(%d).."', c:byte()); end) .. '"';
 end
 
+local function callFrameMethod(frame, method)
+    local functionRef = frame[method] or GetFrameMetatable().__index[method] or nop;
+    local ok, result = pcall(functionRef, frame);
+
+    return ok and result or false
+end
+
 local function getFrameName(frame, fallback)
-    return frame.GetDebugName and frame:GetDebugName()
-            or frame.GetName and frame:GetName()
+    return callFrameMethod(frame, 'GetDebugName')
+            or callFrameMethod(frame, 'GetName')
             or fallback or 'noName';
+end
+
+local function getFrameByName(frameName)
+    local frameTable = _G;
+
+    for keyName in string__gmatch(frameName, "([^.]+)") do
+        if not frameTable[keyName] then return nil; end
+
+        frameTable = frameTable[keyName];
+    end
+
+    return frameTable;
 end
 
 function Module:FindBadAnchorConnections(frame)
@@ -55,8 +78,8 @@ function Module:FindBadAnchorConnections(frame)
                 table.insert(badAnchorConnections, {
                     name = getFrameName(child),
                     targetName = getFrameName(parent),
-                    source = child.GetSourceLocation and child:GetSourceLocation() or 'Unknown',
-                    targetSource = parent.GetSourceLocation and parent:GetSourceLocation() or 'Unknown',
+                    source = callFrameMethod(child, 'GetSourceLocation') or 'Unknown',
+                    targetSource = callFrameMethod(parent, 'GetSourceLocation') or 'Unknown',
                 });
             end
         end
@@ -84,13 +107,13 @@ function Module:BuildAnchorTree()
 
     local frame = EnumerateFrames();
     while frame do
-        local isForbidden = frame.IsForbidden and frame:IsForbidden();
-        local isRestricted = not isForbidden and frame.IsAnchoringRestricted and frame:IsAnchoringRestricted();
-        local numPoints = not isRestricted and frame.GetNumPoints and frame:GetNumPoints() or 0;
+        local isForbidden = callFrameMethod(frame, 'IsForbidden');
+        local isRestricted = not isForbidden and callFrameMethod(frame, 'IsAnchoringRestricted');
+        local numPoints = not isRestricted and callFrameMethod(frame, 'GetNumPoints') or 0;
         for i = 1, numPoints do
             local relativeTo = select(2, frame:GetPoint(i));
             if not relativeTo then
-                relativeTo = frame.GetParent and frame:GetParent() or UIParent;
+                relativeTo = callFrameMethod(frame, 'GetParent') or UIParent;
             end
             tree[relativeTo] = tree[relativeTo] or {};
             tree[relativeTo][frame] = true;
@@ -180,68 +203,132 @@ function Module:ExtractSavedVars()
     return BlizzMove.DB;
 end
 
--- list extracted from the listfile @ https://github.com/wowdev/wow-listfile/blob/master/community-listfile.csv
-local blizzardAddons = { "blizzard_tutorials", "blizzard_tutorialmanager", "blizzard_auctionhouseshared", "blizzard_majorfactions", "blizzard_expansionlandingpage", "blizzard_generictraitui", "blizzard_apidocumentationgenerated", "blizzard_sharedmapdataproviders_wrath", "blizzard_combatlog_wrath", "blizzard_settingsdebug", "blizzard_raidui_wrath", "blizzard_compactraidframes_wrath", "blizzard_testingmode", "blizzard_debugloader", "blizzard_professionsspecializations", "blizzard_testdataseteditor", "blizzard_testframe", "blizzard_testdataset", "blizzard_classtalentui", "blizzard_undosystem", "blizzard_classtalentdebug", "blizzard_profspecsimporter", "blizzard_nameplates_wrath", "blizzard_guildbankui_wrath", "blizzard_tradeskillui_wrath", "blizzard_worldmap_wrath", "blizzard_inspectui_wrath", "blizzard_auctionui_wrath", "blizzard_craftui_wrath", "blizzard_storeui_wrath", "blizzard_talentui_wrath", "blizzard_professionscustomerorders", "blizzard_professionscrafterorders", "blizzard_professionsdebug", "blizzard_loginerrorhelpers", "blizzard_lookingforgroupui", "blizzard_professionstemplates", "blizzard_professions", "blizzard_clickbindingui", "blizzard_olditemupgradeui", "blizzard_behavioralmessaging", "blizzard_guildbankui_tbc", "blizzard_talenttestui", "blizzard_sharedtalentui", "blizzard_selectorui", "blizzard_talenttestdata", "blizzard_talenttestapi", "blizzard_sharedmapdataproviders_vanilla", "blizzard_battlefieldmap_vanilla", "blizzard_mapcanvas_vanilla", "blizzard_gmchatui_tbc", "blizzard_talentui_tbc", "blizzard_commentator_vanilla", "blizzard_tradeskillui_tbc", "blizzard_commentator_tbc", "blizzard_craftui_vanilla", "blizzard_inspectui_tbc", "blizzard_battlefieldmap_tbc", "blizzard_gmsurveyui_vanilla", "blizzard_raidui_tbc", "blizzard_tradeskillui_vanilla", "blizzard_auctionui_tbc", "blizzard_nameplates_vanilla", "blizzard_gmchatui_vanilla", "blizzard_storeui_vanilla", "blizzard_storeui_tbc", "blizzard_channels_vanilla", "blizzard_raidui_vanilla", "blizzard_worldmap_vanilla", "blizzard_craftui_tbc", "blizzard_nameplates_tbc", "blizzard_combatlog_tbc", "blizzard_sharedmapdataproviders_tbc", "blizzard_mapcanvas_tbc", "blizzard_communities_vanilla", "blizzard_channels_tbc", "blizzard_combatlog_vanilla", "blizzard_auctionui_vanilla", "blizzard_inspectui_vanilla", "blizzard_worldmap_tbc", "blizzard_communities_tbc", "blizzard_talentui_vanilla", "blizzard_settings", "blizzard_mainlinesettings", "blizzard_toolsui", "blizzard_uiframemanager", "blizzard_playerchoice", "blizzard_oldplayerchoiceui", "blizzard_autoxml", "blizzard_scrollboxdebug", "blizzard_moneyreceipt", "blizzard_eventtrace", "blizzard_consoleextensions", "blizzard_covenantrenown", "blizzard_ardenwealdgardening", "blizzard_componenttests", "blizzard_covenanttoasts", "blizzard_torghastlevelpicker", "blizzard_frameeffects", "blizzard_newplayerexperienceguide", "blizzard_weeklyrewards", "blizzard_subscriptioninterstitialui", "blizzard_hybridminimap", "blizzard_ptrfeedbackglue", "blizzard_landingsoulbinds", "blizzard_covenantcallings", "blizzard_scriptedanimationstest", "blizzard_charactercreate", "blizzard_charactercustomize", "blizzard_animadiversionui", "blizzard_scriptedanimations", "blizzard_covenantsanctum", "blizzard_charcustomize", "blizzard_newplayerexperience", "blizzard_soulbindsdebug", "blizzard_covenantpreviewui", "blizzard_runeforgeui", "blizzard_chromietimeui", "blizzard_playerchoiceui", "blizzard_soulbinds", "blizzard_questnavigation", "blizzard_iteminteractionui", "blizzard_cachedlogin", "blizzard_kiosk", "blizzard_utility", "blizzard_auctionhouseui", "blizzard_mawbuffs", "blizzard_prototypedialog", "blizzard_pvpmatch", "blizzard_azeriteessenceui", "blizzard_animcreate", "blizzard_questnextquestlog", "blizzard_craftui", "blizzard_azeriterespecui", "blizzard_islandsqueueui", "blizzard_warfrontspartyposeui", "blizzard_islandspartyposeui", "blizzard_scrappingmachineui", "blizzard_battlefieldmap", "blizzard_guildrecruitmentui", "blizzard_partyposeui", "blizzard_worldmap", "blizzard_azeritetempui", "blizzard_uiwidgets", "blizzard_ptrfeedback", "blizzard_communities", "blizzard_azeriteui", "blizzard_warboardui", "blizzard_channels", "blizzard_alliedracesui", "blizzard_console", "blizzard_commentator", "blizzard_warfrontui", "blizzard_deprecated", "blizzard_contribution", "blizzard_apidocumentation", "blizzard_securetransferui", "blizzard_classtrial", "blizzard_boosttutorial", "blizzard_flightmap", "blizzard_sharedmapdataproviders", "blizzard_mapcanvas", "blizzard_orderhallui", "blizzard_obliterumui", "blizzard_nameplates", "blizzard_tutorialtemplates", "blizzard_kioskmodeui", "blizzard_pvphonorsystemui", "blizzard_garrisontemplates", "blizzard_adventuremap", "blizzard_talkingheadui", "blizzard_wowtokenui", "blizzard_deathrecap", "blizzard_socialui", "blizzard_collections", "blizzard_tutorial", "blizzard_artifactui", "blizzard_objectivetracker", "blizzard_authchallengeui", "blizzard_garrisonui", "blizzard_storeui", "blizzard_tradeskillui", "blizzard_reforgingui", "blizzard_petjournal", "blizzard_lookingforguildui", "blizzard_inspectui", "blizzard_gmsurveyui", "blizzard_tokenui", "blizzard_debugtools", "blizzard_raidui", "blizzard_petbattleui", "blizzard_combatlog", "blizzard_voidstorageui", "blizzard_itemupgradeui", "blizzard_blackmarketui", "blizzard_timemanager", "blizzard_guildui", "blizzard_questchoice", "blizzard_auctionui", "blizzard_gmchatui", "blizzard_movepad", "blizzard_cufprofiles", "blizzard_itemsocketingui", "blizzard_clientsavedvariables", "blizzard_guildcontrolui", "blizzard_bindingui", "blizzard_glyphui", "blizzard_arenaui", "blizzard_compactraidframes", "blizzard_challengesui", "blizzard_trainerui", "blizzard_battlefieldminimap", "blizzard_talentui", "blizzard_archaeologyui", "blizzard_pvpui", "blizzard_macroui", "blizzard_itemalterationui", "blizzard_guildbankui", "blizzard_encounterjournal", "blizzard_combattext", "blizzard_calendar", "blizzard_barbershopui", "blizzard_achievementui" };
+local strataLevels = {
+    WORLD = 1,
+    BACKGROUND = 2,
+    LOW = 3,
+    MEDIUM = 4,
+    HIGH = 5,
+    DIALOG = 6,
+    FULLSCREEN = 7,
+    FULLSCREEN_DIALOG = 8,
+    TOOLTIP = 9,
+};
+-- list extracted from the listfile @ https://github.com/wowdev/wow-listfile/releases/latest/download/community-listfile-withcapitals.csv
+local blizzardAddons = { "Blizzard_APIDocumentation", "Blizzard_APIDocumentationGenerated", "Blizzard_APIDocumentationObject", "Blizzard_APIExplorer", "Blizzard_AccountSaveDebug", "Blizzard_AccountSaveUI", "Blizzard_AchievementUI", "Blizzard_ActionBar", "Blizzard_ActionBarController", "Blizzard_ActionStatus", "Blizzard_AddOnList", "Blizzard_AdventureMap", "Blizzard_AlliedRacesUI", "Blizzard_AnimCreate", "Blizzard_AnimaDiversionUI", "Blizzard_ArchaeologyUI", "Blizzard_ArdenwealdGardening", "Blizzard_ArenaUI", "Blizzard_ArrowCalloutFrame", "Blizzard_ArtifactUI", "Blizzard_AuctionHouseShared", "Blizzard_AuctionHouseUI", "Blizzard_AuctionUI", "Blizzard_AuthChallengeUI", "Blizzard_AutoComplete", "Blizzard_AutoXML", "Blizzard_AzeriteEssenceUI", "Blizzard_AzeriteRespecUI", "Blizzard_AzeriteUI", "Blizzard_BNet", "Blizzard_BarbershopUI", "Blizzard_BattlefieldMap", "Blizzard_BehavioralMessaging", "Blizzard_BindingUI", "Blizzard_BlackMarketUI", "Blizzard_BoostTutorial", "Blizzard_BuffFrame", "Blizzard_CUFProfiles", "Blizzard_CachedLogin", "Blizzard_Calendar", "Blizzard_CastingBar", "Blizzard_ChallengesUI", "Blizzard_Channels", "Blizzard_CharacterCreate", "Blizzard_CharacterCustomize", "Blizzard_CharacterFrame", "Blizzard_ChatFrame", "Blizzard_ChatFrameBase", "Blizzard_ChatFrameUtil", "Blizzard_ChromieTimeUI", "Blizzard_ClassTalentDebug", "Blizzard_ClassTalentUI", "Blizzard_ClassTrial", "Blizzard_ClickBindingUI", "Blizzard_ClientSavedVariables", "Blizzard_Collections", "Blizzard_CombatLog", "Blizzard_CombatText", "Blizzard_Commentator", "Blizzard_Communities", "Blizzard_CompactRaidFrames", "Blizzard_Console", "Blizzard_ConsoleExtensions", "Blizzard_ConsoleScriptCollection", "Blizzard_ContentTracking", "Blizzard_Contribution", "Blizzard_CovenantCallings", "Blizzard_CovenantPreviewUI", "Blizzard_CovenantRenown", "Blizzard_CovenantSanctum", "Blizzard_CovenantToasts", "Blizzard_CraftUI", "Blizzard_CursorBrowser", "Blizzard_DeathRecap", "Blizzard_DebugInspectionTool", "Blizzard_DebugLoader", "Blizzard_DebugTools", "Blizzard_DeclensionFrame", "Blizzard_DeclensionFrameGlue", "Blizzard_DelvesCompanionConfiguration", "Blizzard_DelvesDifficultyPicker", "Blizzard_Deprecated", "Blizzard_DeprecatedCurrencyScript", "Blizzard_DeprecatedGuildScript", "Blizzard_DeprecatedItemScript", "Blizzard_DeprecatedPvpScript", "Blizzard_DeprecatedSoundScript", "Blizzard_DeprecatedSpellScript", "Blizzard_Deprecated_ArenaUI", "Blizzard_Dispatcher", "Blizzard_DurabilityFrame", "Blizzard_EditMode", "Blizzard_EncounterJournal", "Blizzard_EngravingUI", "Blizzard_EventTrace", "Blizzard_ExpansionLandingPage", "Blizzard_ExpansionTrial", "Blizzard_FlightMap", "Blizzard_FontStyles_Frame", "Blizzard_FontStyles_Glue", "Blizzard_FontStyles_Shared", "Blizzard_Fonts_Frame", "Blizzard_Fonts_Glue", "Blizzard_Fonts_Shared", "Blizzard_FrameEffects", "Blizzard_FrameXML", "Blizzard_FrameXMLBase", "Blizzard_FrameXMLUtil", "Blizzard_FramerateFrame", "Blizzard_FriendsFrame", "Blizzard_GMChatUI", "Blizzard_GameMenu", "Blizzard_GameTooltip", "Blizzard_GarrisonBase", "Blizzard_GarrisonTemplates", "Blizzard_GarrisonUI", "Blizzard_GenericTraitUI", "Blizzard_GlobalFXModelScenes", "Blizzard_GlueDialogs", "Blizzard_GlueParent", "Blizzard_GlueSavedVariables", "Blizzard_GlueStubs", "Blizzard_GlueXML", "Blizzard_GlueXMLBase", "Blizzard_GlyphUI", "Blizzard_GroupFinder", "Blizzard_GuildBankUI", "Blizzard_GuildControlUI", "Blizzard_HelpFrame", "Blizzard_HunterStableDebug", "Blizzard_HybridMinimap", "Blizzard_IME", "Blizzard_ImageEditor", "Blizzard_ImmersiveInteractionUI", "Blizzard_InspectUI", "Blizzard_IslandsPartyPoseUI", "Blizzard_IslandsQueueUI", "Blizzard_ItemAlterationUI", "Blizzard_ItemBeltFrame", "Blizzard_ItemButton", "Blizzard_ItemInteractionUI", "Blizzard_ItemSocketingUI", "Blizzard_ItemUpgradeDebug", "Blizzard_ItemUpgradeUI", "Blizzard_Kiosk", "Blizzard_LandingSoulbinds", "Blizzard_LevelUpDisplay", "Blizzard_LoadLocale", "Blizzard_LoginErrorHelpers", "Blizzard_LookingForGroupUI", "Blizzard_LuaDebugWindow", "Blizzard_MacroUI", "Blizzard_MailFrame", "Blizzard_MainMenuBarBagButtons", "Blizzard_MainlineSettings", "Blizzard_MajorFactions", "Blizzard_MapCanvas", "Blizzard_MatchCelebrationPartyPoseUI", "Blizzard_MawBuffs", "Blizzard_Minimap", "Blizzard_MirrorTimer", "Blizzard_MoneyFrame", "Blizzard_MoneyReceipt", "Blizzard_MovePad", "Blizzard_NamePlates", "Blizzard_NewPlayerExperience", "Blizzard_NewPlayerExperienceGuide", "Blizzard_ObjectAPI", "Blizzard_ObjectiveTracker", "Blizzard_ObliterumUI", "Blizzard_Options_Frame", "Blizzard_Options_Frame_Legacy", "Blizzard_Options_Glue", "Blizzard_Options_GlueAudio", "Blizzard_OrderHallUI", "Blizzard_OverrideActionBar", "Blizzard_POIButton", "Blizzard_PTRFeedback", "Blizzard_PTRFeedbackGlue", "Blizzard_PVPMatch", "Blizzard_PVPUI", "Blizzard_PagedContent", "Blizzard_PagedContentDebug", "Blizzard_PartyPoseUI", "Blizzard_PerksActivitiesDebug", "Blizzard_PerksProgram", "Blizzard_PerksProgramDebug", "Blizzard_PerksProgramDevTool", "Blizzard_PetBattleUI", "Blizzard_PetJournal", "Blizzard_PingUI", "Blizzard_PlayerChoice", "Blizzard_PlayerSpells", "Blizzard_PlunderstormBasics", "Blizzard_PrintHandler", "Blizzard_PrivateAurasUI", "Blizzard_ProfSpecsImporter", "Blizzard_Professions", "Blizzard_ProfessionsBook", "Blizzard_ProfessionsCustomerOrders", "Blizzard_ProfessionsDebug", "Blizzard_ProfessionsTemplates", "Blizzard_PrototypeDialog", "Blizzard_QuestNavigation", "Blizzard_QuestNextQuestLog", "Blizzard_QueueStatusFrame", "Blizzard_QuickJoin", "Blizzard_QuickKeybind", "Blizzard_RPCLogging", "Blizzard_RadialWheel", "Blizzard_RaidFrame", "Blizzard_RaidUI", "Blizzard_ReadyCheck", "Blizzard_RecruitAFriend", "Blizzard_ReforgingUI", "Blizzard_RenownDebug", "Blizzard_ReportFrame", "Blizzard_ReportFrameGlue", "Blizzard_ReportFrameShared", "Blizzard_RuneforgeUI", "Blizzard_ScrappingMachineUI", "Blizzard_ScriptedAnimationsTest", "Blizzard_ScrollBoxDebug", "Blizzard_SecureCapsule", "Blizzard_SecureTransferUI", "Blizzard_SelectorUI", "Blizzard_Settings", "Blizzard_SettingsDebug", "Blizzard_SettingsDefinitions_Frame", "Blizzard_SettingsDefinitions_Shared", "Blizzard_Settings_Shared", "Blizzard_SharedMapDataProviders", "Blizzard_SharedTalentUI", "Blizzard_SharedWidgetFrames", "Blizzard_SharedXML", "Blizzard_SharedXMLBase", "Blizzard_SharedXMLGame", "Blizzard_SocialToast", "Blizzard_Soulbinds", "Blizzard_SoulbindsDebug", "Blizzard_SpectateFrame", "Blizzard_StableUI", "Blizzard_StaticPopup", "Blizzard_StaticPopup_Frame", "Blizzard_StoreUI", "Blizzard_SubscriptionInterstitialUI", "Blizzard_Subtitles", "Blizzard_TalentTestAPI", "Blizzard_TalentTestData", "Blizzard_TalentTestUI", "Blizzard_TalentUI", "Blizzard_TestDataset", "Blizzard_TestDatasetEditor", "Blizzard_TestFrame", "Blizzard_TestWithPublicAddons", "Blizzard_TestingMode", "Blizzard_TextStatusBar", "Blizzard_TimeEvents", "Blizzard_TimeManager", "Blizzard_TimerunningCharacterCreate", "Blizzard_TimerunningUtil", "Blizzard_TokenUI", "Blizzard_ToolsUI", "Blizzard_TorghastLevelPicker", "Blizzard_TradeSkillUI", "Blizzard_TrainerUI", "Blizzard_TransformTree", "Blizzard_TutorialManager", "Blizzard_Tutorials", "Blizzard_UIErrorsFrame", "Blizzard_UIFrameManager", "Blizzard_UIMenu", "Blizzard_UIModelSceneEditor", "Blizzard_UIPanelTemplates", "Blizzard_UIPanels_Game", "Blizzard_UIParent", "Blizzard_UIParentDebug", "Blizzard_UIParentPanelManager", "Blizzard_UIWidgets", "Blizzard_UndoSystem", "Blizzard_UnitFrame", "Blizzard_UnitFrameUtil", "Blizzard_UnitPopup", "Blizzard_UnitPopupShared", "Blizzard_Utility", "Blizzard_VexData", "Blizzard_VexToolUI", "Blizzard_VexViewerUI", "Blizzard_VideoOptions_Shared", "Blizzard_VoiceToggleButton", "Blizzard_VoidStorageUI", "Blizzard_WarboardUI", "Blizzard_WarfrontsPartyPoseUI", "Blizzard_WeeklyRewards", "Blizzard_WeeklyRewardsUtil", "Blizzard_WorldMap", "Blizzard_WowTokenUI", "Blizzard_ZoneAbility" };
 -- manual list of Toplevel frames that we don't handle on purpose
 local ignoredFrames = {
     AuctionHouseMultisellProgressFrame = true, -- popup frame
+    AuctionProgressFrame = true, -- popup frame
+    AudioOptionsFrame = true, -- broken frame
+    BarbersChoiceConfirmFrame = true, -- popup frame
+    BarberShopBannerFrame = true, -- graphic at the top of the screen in classic
     BarberShopFrame = true, -- fullscreen frame
     BattlefieldMapFrame = true, -- movable by default
+    BonusRollFrame = true, -- not a window
+    ChatMenu = true, -- popup menu
+    ClassTrialThanksForPlayingDialog = true, -- popup frame
+    CoinPickupFrame = true, -- popup frame
     CombatText = true, -- seems to be scrolling combat text - don't move it
+    ComboFrame = true, -- not sure what it is
+    CommentatorEventAlertsFrame = true, -- unsure what it is, might be commentator-mode only
     CommunitiesAvatarPickerDialog = true, -- fullscreen popup frame
     CommunitiesTicketManagerDialog = true, -- popup frame, not sure if we want to move it
     CompactRaidFrameManager = true, -- does not behave like a window
+    ContainerFrameContainer = true, -- not a window
+    DeadlyDebuffFrame = true, -- not a window
+    EventToastManagerFrame = true, -- not a window
     EventTrace = true, -- movable by default
+    ExpansionTrialCheckPointDialog = true, -- popup frame
+    ExpansionTrialThanksForPlayingDialog = true, -- popup frame
     GMChatFrame = true, -- movable by default
     GMChatStatusFrame = true, -- popup frame
+    GroupLootFrame1 = true, -- popup frame
+    GroupLootFrame2 = true, -- popup frame
+    GroupLootFrame3 = true, -- popup frame
+    GroupLootFrame4 = true, -- popup frame
     GuideFrame = true, -- not sure what it is
+    IconIntroTracker = true, -- has no visuals
     KioskSessionFinishedDialog = true, -- popup frame
+    KioskSessionStartedDialog = true, -- popup frame
+    LevelUpDisplay = true, -- not a window
+    LossOfControlFrame = true, -- not a window
     MawBuffsBelowMinimapFrame = true, -- does not behave like a window
+    MirrorTimer1 = true, -- not a window
+    MirrorTimer2 = true, -- not a window
+    MirrorTimer3 = true, -- not a window
     MovePadFrame = true, -- movable by default
+    MultiBarLeft = true, -- not a window
     NamePlateDriverFrame = true, -- has no visuals
     OrderHallCommandBar = true, -- the bar at the top of the screen
+    OverrideActionBar = true, -- the vehicle UI
+    PerksProgramFrame = true, -- fullscreen frame
     PlayerChoiceFrame = true, -- causes various issues when opening in combat
     PlayerChoiceTimeRemaining = true, -- presumed to have the same issues as PlayerChoiceFrame
+    PlayerInteractionFrameManager = true, -- has no visuals
+    PrivateRaidBossEmoteFrameAnchor = true, -- has no visuals
+    PVPReadyDialog = true, -- popup frame
+    RaidBossEmoteFrame = true, -- not a window
+    RaidWarningFrame = true, -- not a window
+    ReportFrame = true, -- popup frame
+    SideDressUpFrame = true, -- has no header or anything else to move, draging rotates the model
+    StackSplitFrame = true, -- popup frame
+    StaticPopup1 = true, -- popup frame
+    StaticPopup2 = true, -- popup frame
+    StaticPopup3 = true, -- popup frame
+    StaticPopup4 = true, -- popup frame
     StopwatchFrame = true, -- movable by default
+    StreamingIcon = true, -- not a window
     TableAttributeDisplay = true, -- movable by default
+    TicketStatusFrame = true, -- not a window
+    TutorialFrameParent = true, -- not a window
+    TutorialKeyboardMouseFrame_Frame = true, -- popup frame
     UIFrameManager = true, -- has no visuals
     UIWidgetManager = true, -- has no visuals
     UIWidgetTopCenterContainerFrame = true, -- not sure what it is
     VoiceChatChannelActivatedNotification = true, -- popup frame, not sure if we want to move it
     VoiceChatPromptActivateChannel = true, -- popup frame, not sure if we want to move it
+    WorldMapFrame = true, -- fullscreen on classic
 };
 function Module:DumpTopLevelFrames()
     local registeredFrames = {};
 
     for _, addon in pairs(blizzardAddons) do
-        LoadAddOn(addon);
+        pcall(LoadAddOn, addon);
     end
     for _, addon in pairs(BlizzMoveAPI:GetRegisteredAddOns()) do
         LoadAddOn(addon);
         for _, frameName in pairs(BlizzMoveAPI:GetRegisteredFrames(addon)) do
-            local frame = BlizzMove:GetFrameFromName(frameName);
-            registeredFrames[frame] = true;
+            local frame = BlizzMove:GetFrameFromName(addon, frameName);
+            if frame then
+                registeredFrames[frame] = true;
+            end
         end
     end
 
     local data = {};
     local frame = EnumerateFrames();
     while frame do
-        local name = getFrameName(frame);
+        local name = getFrameName(frame, 'NoName');
         if (
-            name
+            name and name ~= 'NoName'
+            and getFrameByName(name) == frame
+            and name:sub(-7) ~= 'Tooltip'
             and not ignoredFrames[name]
             and not registeredFrames[frame]
             and not BlizzMove.FrameData[frame]
-            and frame.IsToplevel and frame:IsToplevel()
-            and frame.GetParent and (frame:GetParent() == UIParent or frame:GetParent() == nil)
+            and not callFrameMethod(frame, 'IsMovable')
+            and callFrameMethod(frame, 'IsToplevel')
+            and callFrameMethod(frame, 'GetObjectType') == 'Frame'
+            and (callFrameMethod(frame, 'GetParent') == UIParent or callFrameMethod(frame, 'GetParent') == nil)
+            and (strataLevels[callFrameMethod(frame, 'GetFrameStrata')] or 1) >= strataLevels.MEDIUM
         ) then
-            local source = frame.GetSourceLocation and frame:GetSourceLocation() or 'Unknown';
-            -- source starts with Interface/AddOns/Blizzard_
-            if source:match('Interface/AddOns/Blizzard_(.*)') then
+            local source = callFrameMethod(frame, 'GetSourceLocation') or 'Unknown';
+            -- source starts with Interface/AddOns/Blizzard_, or is outside Interface/AddOns/
+            if source:match('Interface/AddOns/Blizzard_(.*)') or (source:match('Interface/.*') and not source:match('Interface/AddOns/.*')) then
                 table.insert(data, {
                     name = name,
-                    source = source
+                    source = source,
                 });
             end
         end
@@ -306,33 +393,6 @@ function Module:GetMainFrame(text)
         eb:SetFontObject('ChatFontNormal');
         eb:SetScript('OnEscapePressed', function() f:Hide() end);
         sf:SetScrollChild(eb);
-
-        -- resizing
-        f:SetResizable(true);
-        --f:SetMinResize(150, 100);
-        local rb = CreateFrame('Button', f);
-        rb:SetPoint('BOTTOMRIGHT', -6, 7);
-        rb:SetSize(16, 16);
-
-        rb:SetNormalTexture('Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Up');
-        rb:SetHighlightTexture('Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Highlight');
-        rb:SetPushedTexture('Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Down');
-
-        rb:SetScript('OnMouseDown', function(frame, button)
-            if button == 'LeftButton' then
-                f:StartSizing('BOTTOMRIGHT');
-                frame:GetHighlightTexture():Hide(); -- more noticeable
-            end
-        end);
-        rb:SetScript('OnMouseUp', function(frame, button)
-            f:StopMovingOrSizing();
-            frame:GetHighlightTexture():Show();
-            eb:SetWidth(sf:GetWidth());
-
-            -- save size between sessions
-            self.frameConfig.width = f:GetWidth();
-            self.frameConfig.height = f:GetHeight();
-        end);
 
         _G.BlizzMoveCopyFrame = f;
     end

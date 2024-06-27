@@ -25,6 +25,10 @@ local curses = {
 		name = "Curse of the Elements",
 		icon = 136130,
 	},
+	[1490] = { --Cata reverts back to rank 1 only.
+		name = "Curse of the Elements",
+		icon = 136130,
+	},
 	[27226] = { --Removed in wrath.
 		name = "Curse of Recklessness",
 		icon = 136225,
@@ -51,7 +55,9 @@ local curses = {
 	},
 };
 
+--Spell ID's.
 local soulstoneIDs = {
+	--Cata uses same ID as rank 1.
 	[20707] = "Minor Soulstone", --Rank 1.
 	[20762] = "Lesser Soulstone", --Rank 2.
 	[20763] = "Soulstone", --Rank 3.
@@ -61,6 +67,7 @@ local soulstoneIDs = {
 	[47883] = "Master Soulstone", --Rank 6.
 };
 
+--Spellid => icon
 local healthstoneSpellIDs = {
 	--Items.
 	--[[[5512] = 100,
@@ -81,12 +88,16 @@ local function unitSpellcastChanellStart(...)
 	local unit, castGUID, spellID = ...;
 	if (unit == "player") then
 		if (healthstoneSpellIDs[spellID]) then
-			if (NRC.config.healthstoneMsg and (NRC.isTBC or NRC.isWrath)) then
+			if (NRC.config.healthstoneMsg and NRC.expansionNum > 1) then
 				if (IsInInstance()) then
-					local _, _, _, _, chosen = GetTalentInfo(2, 1);
-					if (chosen) then
-						local hp = healthstoneSpellIDs[spellID] * tonumber(string.format("%.1f", "1." .. chosen));
-						SendChatMessage(chosen .. "/2 " .. L["Healthstones"] .. " (" .. hp .. " hp).", "SAY");
+					if (NRC.expansionNum > 3) then
+						SendChatMessage(L["Healthstones"] .. ".", "SAY");
+					else
+						local _, _, _, _, chosen = GetTalentInfo(2, 1);
+						if (chosen) then
+							local hp = healthstoneSpellIDs[spellID] * tonumber(string.format("%.1f", "1." .. chosen));
+							SendChatMessage(chosen .. "/2 " .. L["Healthstones"] .. " (" .. hp .. " hp).", "SAY");
+						end
 					end
 				end
 			end
@@ -118,18 +129,15 @@ local function combatLogEventUnfiltered(...)
 	--local raid = NRC.raid;
 	if (subEvent == "SPELL_CAST_SUCCESS") then
 		if (sourceGUID == UnitGUID("player") and IsInInstance()) then
-			if (soulstoneIDs[spellID] and (NRC.isTBC or NRC.isWrath)) then
+			--if (soulstoneIDs[spellID] and (NRC.isTBC or NRC.isWrath)) then
+			if (soulstoneIDs[spellID]) then
 				--local msg = soulstoneIDs[spellID] .. " cast on " .. destName .. ".";
 				local msg = L["Soulstone"] .. " " .. L["cast on"] .. " " .. destName .. ".";
 				if (NRC.config.soulstoneMsgSay) then
 					SendChatMessage(msg, "SAY");
 				end
 				if (NRC.config.soulstoneMsgGroup) then
-					if (IsInRaid()) then
-						SendChatMessage(msg, "RAID");
-					elseif (IsInGroup()) then
-						SendChatMessage(msg, "PARTY");
-					end
+					NRC:sendGroup(msg);
 				end
 			end
 			--if (curses[spellID]) then
@@ -207,11 +215,7 @@ local function combatLogEventUnfiltered(...)
 					else
 						msg = L["Summoning"] .. " {rt1}" .. UnitName("target") .. "{rt1}, " .. L["click!"];
 				    end
-				    if (IsInRaid()) then
-						SendChatMessage(msg, "RAID");
-					elseif (IsInGroup()) then
-						SendChatMessage(msg, "PARTY");
-					end
+				    NRC:sendGroup(msg);
 				end
 			end
 		end

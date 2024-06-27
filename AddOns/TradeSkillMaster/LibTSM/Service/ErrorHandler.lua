@@ -4,10 +4,9 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
--- TSM's error handler
-
 local TSM = select(2, ...) ---@type TSM
 local ErrorHandler = TSM.Init("Service.ErrorHandler")
+local Environment = TSM.Include("Environment")
 local Log = TSM.Include("Util.Log")
 local String = TSM.Include("Util.String")
 local Event = TSM.Include("Util.Event")
@@ -165,7 +164,7 @@ function private.ErrorHandler(msg, thread)
 		return false
 	end
 
-	if not TSM.IsDevVersion() and not isManual then
+	if not Environment.IsDev() and not isManual then
 		-- log the error (use a format string in case there are '%' characters in the msg)
 		Log.Err("%s", msg)
 	end
@@ -183,11 +182,11 @@ function private.ErrorHandler(msg, thread)
 		msg = #stackInfo > 0 and gsub(msg, String.Escape(stackInfo[1].file)..":"..stackInfo[1].line..": ", "") or msg,
 		stackInfo = stackInfo,
 		time = time(),
-		debugTime = floor(debugprofilestop()),
+		debugTime = floor(GetTimePreciseSec() * 1000),
 		client = format("%s (%s)", clientVersion, clientBuild),
 		locale = GetLocale(),
 		inCombat = tostring(InCombatLockdown() and true or false),
-		version = TSM.GetVersion(),
+		version = Environment.GetVersion(),
 	}
 
 	-- temp table info
@@ -281,7 +280,7 @@ function private.ErrorHandler(msg, thread)
 	private.errorFrame.isManual = isManual
 	private.errorFrame:Show()
 	print(PRINT_PREFIX..L["Looks like TradeSkillMaster has encountered an error. Please help the author fix this error by following the instructions shown."])
-	if TSM.IsTestEnvironment() then
+	if Environment.IsTest() then
 		print(private.errorFrame.errorStr)
 	end
 
@@ -308,7 +307,7 @@ function private.GetStackInfo(msg, thread)
 				if frame.rawLocals then
 					local className, objKey = strmatch(frame.rawLocals, "\n +str = \"([A-Za-z_0-9]+):([0-9A-F]+)\"\n")
 					if className then
-						if TSM.IsDevVersion() then
+						if Environment.IsDev() then
 							prevFrame.localsStr = prevFrame.localsStr.."\n"..LibTSMClass.GetDebugInfo(className..":"..objKey, 5, private.LocalTableLookupFunc)
 						end
 						prevFrame.func = className.."."..frame.func
@@ -554,7 +553,7 @@ function private.AddonBlockedHandler(event, addonName, addonFunc)
 	-- just log it - it might not be TSM that cause the taint
 	Log.Err("[%s] AddOn '%s' tried to call the protected function '%s'.", event, addonName or "<name>", addonFunc or "<func>")
 
-	if TSM.IsDevVersion() then
+	if Environment.IsDev() then
 		local status, ret = pcall(private.ErrorHandler, "BLOCKED")
 		if not status and not private.hitInternalError then
 			private.hitInternalError = true
@@ -609,7 +608,7 @@ function private.CreateErrorFrame()
 	frame:SetBackdropColor(0, 0, 0, 1)
 	frame:SetBackdropBorderColor(0.3, 0.3, 0.3, 1)
 	frame:SetScript("OnShow", function(self)
-		self.showingError = self.isManual or TSM.IsDevVersion()
+		self.showingError = self.isManual or Environment.IsDev()
 		self.details = STEPS_TEXT
 		if self.showingError then
 			-- this is a dev version so show the error (only)
@@ -625,7 +624,7 @@ function private.CreateErrorFrame()
 	frame:SetScript("OnHide", function()
 		local details = private.errorFrame.showingError and private.errorFrame.details or private.errorFrame.editBox:GetText()
 		local changedDetails = details ~= STEPS_TEXT
-		if (not TSM.IsDevVersion() and not private.errorFrame.isManual and (changedDetails or private.num == 1)) or IsShiftKeyDown() then
+		if (not Environment.IsDev() and not private.errorFrame.isManual and (changedDetails or private.num == 1)) or IsShiftKeyDown() then
 			tinsert(private.errorReports, {
 				errorInfo = private.errorFrame.errorInfo,
 				details = private.SanitizeString(details),
@@ -643,9 +642,7 @@ function private.CreateErrorFrame()
 	title:SetTextColor(1, 1, 1, 1)
 	title:SetJustifyH("CENTER")
 	title:SetJustifyV("MIDDLE")
-	local status, versionText = pcall(TSM.GetVersion)
-	versionText = status and versionText or "?"
-	title:SetText("TSM Error Window ("..versionText..")")
+	title:SetText("TSM Error Window ("..Environment.GetVersion()..")")
 
 	local hLine = frame:CreateTexture(nil, "ARTWORK")
 	hLine:SetHeight(2)

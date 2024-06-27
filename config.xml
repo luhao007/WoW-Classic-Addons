@@ -646,6 +646,26 @@
 				<Title>小队</Title>
 				<TitleExtra>巫妖王之怒</TitleExtra>
 			</SubAddon>
+			<SubAddon name="DBM-Raids-Dragonflight">
+				<Title>团队</Title>
+				<TitleExtra>巨龙时代</TitleExtra>
+			</SubAddon>
+			<SubAddon name="DBM-Raids-BC">
+				<Title>团队</Title>
+				<TitleExtra>燃烧的远征</TitleExtra>
+			</SubAddon>
+			<SubAddon name="DBM-Raids-Vanilla">
+				<Title>团队</Title>
+				<TitleExtra>经典旧世</TitleExtra>
+			</SubAddon>
+			<SubAddon name="DBM-Raids-WarWithin">
+				<Title>团队</Title>
+				<TitleExtra>地心之战</TitleExtra>
+			</SubAddon>
+			<SubAddon name="DBM-Raids-WoTLK">
+				<Title>团队</Title>
+				<TitleExtra>巫妖王之怒</TitleExtra>
+			</SubAddon>
 			<SubAddon name="DBM-PvP">
 				<Title>PvP</Title>
 			</SubAddon>
@@ -1521,6 +1541,10 @@
 				<Title>团本锁定</Title>
 				<Notes>泰坦面板的团本锁定模块</Notes>
 			</SubAddon>
+			<SubAddon name="TitanRegen">
+				<Title>恢复</Title>
+				<Notes>泰坦面板的恢复模块</Notes>
+			</SubAddon>
 			<SubAddon name="TitanRepair">
 				<Title>修理</Title>
 				<Notes>泰坦面板的修理模块</Notes>
@@ -1551,56 +1575,6 @@
 		<Title>泰坦面板</Title>
 		<Notes>在屏幕顶端/底端增加一个可视化侧边栏</Notes>
 		<Category>界面</Category>
-		<SubAddons>
-			<SubAddon name="TitanClassicAmmo">
-				<Title>弹药</Title>
-				<Notes>泰坦面板的弹药模块</Notes>
-			</SubAddon>
-			<SubAddon name="TitanClassicBag">
-				<Title>背包</Title>
-				<Notes>泰坦面板的背包模块</Notes>
-			</SubAddon>
-			<SubAddon name="TitanClassicClock">
-				<Title>时钟</Title>
-				<Notes>泰坦面板的时钟模块</Notes>
-			</SubAddon>
-			<SubAddon name="TitanClassicGold">
-				<Title>金币</Title>
-				<Notes>泰坦面板的金币模块</Notes>
-			</SubAddon>
-			<SubAddon name="TitanClassicLocation">
-				<Title>位置</Title>
-				<Notes>泰坦面板的位置模块</Notes>
-			</SubAddon>
-			<SubAddon name="TitanClassicLootType">
-				<Title>分配方式</Title>
-				<Notes>泰坦面板的分配方式模块</Notes>
-			</SubAddon>
-			<SubAddon name="TitanClassicPerformance">
-				<Title>性能</Title>
-				<Notes>泰坦面板的性能模块</Notes>
-			</SubAddon>
-			<SubAddon name="TitanClassicReagentTracker">
-				<Title>施法材料</Title>
-				<Notes>泰坦面板的施法材料模块</Notes>
-			</SubAddon>
-			<SubAddon name="TitanClassicRegen">
-				<Title>恢复</Title>
-				<Notes>泰坦面板的恢复模块</Notes>
-			</SubAddon>
-			<SubAddon name="TitanClassicRepair">
-				<Title>修理</Title>
-				<Notes>泰坦面板的修理模块</Notes>
-			</SubAddon>
-			<SubAddon name="TitanClassicVolume">
-				<Title>音量</Title>
-				<Notes>泰坦面板的音量模块</Notes>
-			</SubAddon>
-			<SubAddon name="TitanClassicXP">
-				<Title>经验</Title>
-				<Notes>泰坦面板的经验模块</Notes>
-			</SubAddon>
-		</SubAddons>
 	</Addon>
 	<Addon name="TomCats">
 		<Title>旅行指南</Title>

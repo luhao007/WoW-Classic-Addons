@@ -348,7 +348,7 @@ function NRC:sreCooldownResetEvent(spellID, spellName, icon, sourceName, sourceC
 end
 
 function NRC:sreOnlineStatusEvent(sourceName, sourceClass, isOnline)
-	if (NRC:isPvp()) then
+	if (NRC:isPvp() or NRC.isRetail) then
 		return;
 	end
 	local _, _, _, classHex = GetClassColor(sourceClass);
@@ -950,10 +950,9 @@ function NRC:sreUpdateFrameLocksLayout()
 					insets = {top = 3, left = 3, bottom = 3, right = 3},
 				});
 				frame.displayTab.top:SetBackdropColor(0, 0, 0, 0.8);
-				local text = "|cFFDEDE42NRC Scrolling Events|r\n"
-						.. "|cFF9CD6DE" .. L["Drag Me"] .. "|r";
 				frame.displayTab:SetAlpha(0.3);
-				frame.displayTab.top.fs:SetText(text);
+				frame.displayTab.top.fs:SetText("|cFFDEDE42NRC Scrolling Events|r");
+				frame.displayTab.top.fs2:SetText("|cFF9CD6DE" .. L["Drag Me"] .. "|r");
 				frame.displayTab.top:SetSize(120, 30);
 				--raidCooldowns:EnableMouse(true);
 				frame.displayTab:Show();

@@ -4,8 +4,9 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local Banking = TSM:NewPackage("Banking")
+local Environment = TSM.Include("Environment")
 local TempTable = TSM.Include("Util.TempTable")
 local String = TSM.Include("Util.String")
 local Log = TSM.Include("Util.Log")
@@ -34,7 +35,7 @@ function Banking.OnInitialize()
 	private.moveThread = Threading.New("BANKING_MOVE", private.MoveThread)
 
 	DefaultUI.RegisterBankVisibleCallback(private.BankVisibilityChanged)
-	if not TSM.IsWowVanillaClassic() then
+	if Environment.HasFeature(Environment.FEATURES.GUILD_BANK) then
 		DefaultUI.RegisterGuildBankVisibleCallback(private.GuildBankVisibilityChanged)
 	end
 end

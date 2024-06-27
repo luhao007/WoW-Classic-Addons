@@ -392,7 +392,7 @@ function DatabaseTable:HasUniqueRow(uniqueField, uniqueValue)
 	return self:_GetUniqueRow(uniqueField, uniqueValue) and true or false
 end
 
----Gets a row by it's UUID.
+---Gets a row's field by the row's UUID.
 ---@param uuid number The UUID of the row
 ---@param field string The field
 ---@return any @The value of the field
@@ -526,16 +526,16 @@ function DatabaseTable:BulkInsertNewRow(...)
 	end
 end
 
----An optimized version of BulkInsertNewRow() for 6 fields with minimal error checking.
-function DatabaseTable:BulkInsertNewRowFast6(v1, v2, v3, v4, v5, v6, ...)
+---An optimized version of BulkInsertNewRow() for 7 fields with minimal error checking.
+function DatabaseTable:BulkInsertNewRowFast7(v1, v2, v3, v4, v5, v6, v7, extraValue)
 	local uuid = private.GetNextUUID()
 	local rowIndex = #self._data + 1
 	local uuidIndex = #self._uuids + 1
 	if not self._bulkInsertContext then
 		error("Bulk insert hasn't been started")
-	elseif self._bulkInsertContext.fastNum ~= 6 then
+	elseif self._bulkInsertContext.fastNum ~= 7 then
 		error("Invalid usage of fast insert")
-	elseif v6 == nil or ... ~= nil then
+	elseif v6 == nil or extraValue ~= nil then
 		error("Wrong number of values")
 	elseif not self._bulkInsertContext.firstDataIndex then
 		self._bulkInsertContext.firstDataIndex = rowIndex
@@ -551,6 +551,7 @@ function DatabaseTable:BulkInsertNewRowFast6(v1, v2, v3, v4, v5, v6, ...)
 	self._data[rowIndex + 3] = v4
 	self._data[rowIndex + 4] = v5
 	self._data[rowIndex + 5] = v6
+	self._data[rowIndex + 6] = v7
 
 	if self._bulkInsertContext.fastUnique == 1 then
 		-- the first field is always a unique (and the only unique)
@@ -564,16 +565,16 @@ function DatabaseTable:BulkInsertNewRowFast6(v1, v2, v3, v4, v5, v6, ...)
 	end
 end
 
----An optimized version of BulkInsertNewRow() for 8 fields with minimal error checking.
-function DatabaseTable:BulkInsertNewRowFast8(v1, v2, v3, v4, v5, v6, v7, v8, ...)
+---An optimized version of BulkInsertNewRow() for 9 fields with minimal error checking.
+function DatabaseTable:BulkInsertNewRowFast9(v1, v2, v3, v4, v5, v6, v7, v8, v9, extraValue)
 	local uuid = private.GetNextUUID()
 	local rowIndex = #self._data + 1
 	local uuidIndex = #self._uuids + 1
 	if not self._bulkInsertContext then
 		error("Bulk insert hasn't been started")
-	elseif self._bulkInsertContext.fastNum ~= 8 then
+	elseif self._bulkInsertContext.fastNum ~= 9 then
 		error("Invalid usage of fast insert")
-	elseif v8 == nil or ... ~= nil then
+	elseif v8 == nil or extraValue ~= nil then
 		error("Wrong number of values")
 	elseif not self._bulkInsertContext.firstDataIndex then
 		self._bulkInsertContext.firstDataIndex = rowIndex
@@ -591,6 +592,7 @@ function DatabaseTable:BulkInsertNewRowFast8(v1, v2, v3, v4, v5, v6, v7, v8, ...
 	self._data[rowIndex + 5] = v6
 	self._data[rowIndex + 6] = v7
 	self._data[rowIndex + 7] = v8
+	self._data[rowIndex + 8] = v9
 
 	if self._bulkInsertContext.fastUnique == 1 then
 		-- the first field is always a unique (and the only unique)
@@ -604,16 +606,16 @@ function DatabaseTable:BulkInsertNewRowFast8(v1, v2, v3, v4, v5, v6, v7, v8, ...
 	end
 end
 
----An optimized version of BulkInsertNewRow() for 12 fields with minimal error checking.
-function DatabaseTable:BulkInsertNewRowFast12(v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, ...)
+---An optimized version of BulkInsertNewRow() for 13 fields with minimal error checking.
+function DatabaseTable:BulkInsertNewRowFast13(v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, extraValue)
 	local uuid = private.GetNextUUID()
 	local rowIndex = #self._data + 1
 	local uuidIndex = #self._uuids + 1
 	if not self._bulkInsertContext then
 		error("Bulk insert hasn't been started")
-	elseif self._bulkInsertContext.fastNum ~= 12 then
+	elseif self._bulkInsertContext.fastNum ~= 13 then
 		error("Invalid usage of fast insert")
-	elseif v11 == nil or ... ~= nil then
+	elseif v12 == nil or extraValue ~= nil then
 		error("Wrong number of values")
 	elseif not self._bulkInsertContext.firstDataIndex then
 		self._bulkInsertContext.firstDataIndex = rowIndex
@@ -635,6 +637,7 @@ function DatabaseTable:BulkInsertNewRowFast12(v1, v2, v3, v4, v5, v6, v7, v8, v9
 	self._data[rowIndex + 9] = v10
 	self._data[rowIndex + 10] = v11
 	self._data[rowIndex + 11] = v12
+	self._data[rowIndex + 12] = v13
 
 	if self._bulkInsertContext.fastUnique == 1 then
 		-- the first field is always a unique (and the only unique)
@@ -649,7 +652,7 @@ function DatabaseTable:BulkInsertNewRowFast12(v1, v2, v3, v4, v5, v6, v7, v8, v9
 end
 
 ---An optimized version of BulkInsertNewRow() for 15 fields with minimal error checking.
-function DatabaseTable:BulkInsertNewRowFast15(v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, ...)
+function DatabaseTable:BulkInsertNewRowFast15(v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, extraValue)
 	local uuid = private.GetNextUUID()
 	local rowIndex = #self._data + 1
 	local uuidIndex = #self._uuids + 1
@@ -657,7 +660,7 @@ function DatabaseTable:BulkInsertNewRowFast15(v1, v2, v3, v4, v5, v6, v7, v8, v9
 		error("Bulk insert hasn't been started")
 	elseif self._bulkInsertContext.fastNum ~= 15 then
 		error("Invalid usage of fast insert")
-	elseif v15 == nil or ... ~= nil then
+	elseif v15 == nil or extraValue ~= nil then
 		error("Wrong number of values")
 	elseif not self._bulkInsertContext.firstDataIndex then
 		self._bulkInsertContext.firstDataIndex = rowIndex
@@ -733,9 +736,8 @@ function DatabaseTable:BulkInsertEnd()
 						indexList[i] = uuid
 					end
 				end
-				if partitionUUIDIndex and Table.IsSortedWithValueLookup(indexList, indexValues, nil, partitionUUIDIndex) and Table.IsSortedWithValueLookup(indexList, indexValues, partitionUUIDIndex + 1, nil) then
-					-- values on either side of the partition are already sorted,
-					-- so we can just merge the two portions instead of sorting the entire index list
+				if partitionUUIDIndex and Table.IsSortedWithValueLookup(indexList, indexValues, nil, partitionUUIDIndex) then
+					-- Values up to the partition are already sorted, so just sort the new values and then merge the two portions instead of sorting the entire list
 					local part1 = TempTable.Acquire()
 					local part2 = TempTable.Acquire()
 					for i = 1, #indexList do
@@ -745,12 +747,13 @@ function DatabaseTable:BulkInsertEnd()
 							tinsert(part2, indexList[i])
 						end
 					end
+					Table.SortWithValueLookup(part2, indexValues)
 					wipe(indexList)
 					Table.MergeSortedWithValueLookup(part1, part2, indexList, indexValues)
 					TempTable.Release(part1)
 					TempTable.Release(part2)
 					assert(Table.IsSortedWithValueLookup(indexList, indexValues))
-				elseif not Table.IsSortedWithValueLookup(indexList, indexValues) then
+				else
 					Table.SortWithValueLookup(indexList, indexValues)
 				end
 				TempTable.Release(indexValues)
@@ -892,8 +895,8 @@ function DatabaseTable:_IsUnique(field)
 	return self._uniques[field] and true or false
 end
 
-function DatabaseTable:_GetIndexAndUniqueList()
-	return self._indexOrUniqueFields
+function DatabaseTable:_IndexOrUniqueFieldIterator()
+	return ipairs(self._indexOrUniqueFields)
 end
 
 function DatabaseTable:_GetAllRowsByIndex(indexField)
@@ -921,13 +924,20 @@ function DatabaseTable:_GetListFields(result)
 end
 
 function DatabaseTable:_IndexListBinarySearch(indexField, indexValue, matchLowest, low, high)
+	-- Optimize index value code path for simple indexes
+	local indexFieldOffset = not self._smartMapReaderLookup[indexField] and self._fieldOffsetLookup[indexField] or nil
 	local indexList = self._indexLists[indexField]
 	low = low or 1
 	high = high or #indexList
 	local firstMatchLow, firstMatchHigh = nil, nil
 	while low <= high do
 		local mid = floor((low + high) / 2)
-		local rowValue = self:_GetRowIndexValue(indexList[mid], indexField)
+		local rowValue = nil
+		if indexFieldOffset then
+			rowValue = Util.ToIndexValue(self._data[self._uuidToDataOffsetLookup[indexList[mid]] + indexFieldOffset - 1])
+		else
+			rowValue = self:_GetRowIndexValue(indexList[mid], indexField)
+		end
 		if rowValue == indexValue then
 			-- cache the first low and high values which contain a match to make future searches faster
 			firstMatchLow = firstMatchLow or low

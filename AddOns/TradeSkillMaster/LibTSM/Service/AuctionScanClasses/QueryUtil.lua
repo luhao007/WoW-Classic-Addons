@@ -4,8 +4,9 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
-local QueryUtil = TSM.Init("Service.AuctionScanClasses.QueryUtil")
+local TSM = select(2, ...) ---@type TSM
+local QueryUtil = TSM.Init("Service.AuctionScanClasses.QueryUtil") ---@class Service.AuctionScanClasses.QueryUtil
+local Environment = TSM.Include("Environment")
 local TempTable = TSM.Include("Util.TempTable")
 local Log = TSM.Include("Util.Log")
 local ItemString = TSM.Include("Util.ItemString")
@@ -52,11 +53,7 @@ function QueryUtil.GenerateThreaded(itemList, callback, context)
 	end
 
 	-- add all the items
-	if TSM.IsWowClassic() then
-		for _, itemString in ipairs(itemList) do
-			private.GenerateQuery(callback, context, itemString, private.GetItemQueryInfo(itemString))
-		end
-	else
+	if Environment.IsRetail() then
 		-- sort the item list so all base items are grouped together but keep relative ordering between base items the same
 		wipe(private.itemListSortValue)
 		for i, itemString in ipairs(itemList) do
@@ -88,6 +85,10 @@ function QueryUtil.GenerateThreaded(itemList, callback, context)
 			wipe(currentItems)
 		end
 		TempTable.Release(currentItems)
+	else
+		for _, itemString in ipairs(itemList) do
+			private.GenerateQuery(callback, context, itemString, private.GetItemQueryInfo(itemString))
+		end
 	end
 end
 
@@ -104,7 +105,7 @@ function private.GetItemQueryInfo(itemString)
 	local classId = ItemInfo.GetClassId(itemString) or 0
 	local subClassId = ItemInfo.GetSubClassId(itemString) or 0
 	-- Ignoring level because level can now vary
-	if itemString == ItemString.GetBase(itemString) and (classId == Enum.ItemClass.Weapon or classId == Enum.ItemClass.Armor or (classId == Enum.ItemClass.Gem and subClassId == Enum.ItemGemSubclass.Artifactrelic)) then
+	if itemString == ItemString.GetBase(itemString) and (classId == Enum.ItemClass.Weapon or classId == Enum.ItemClass.Armor or classId == Enum.ItemClass.Profession or (classId == Enum.ItemClass.Gem and subClassId == Enum.ItemGemSubclass.Artifactrelic)) then
 		level = nil
 	end
 	return name, level, level, quality, classId, subClassId

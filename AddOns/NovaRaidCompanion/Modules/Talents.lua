@@ -133,7 +133,7 @@ function NRC:updateTalentFrame(name, talentString, frame, talentString2, showOff
 			end
 		end
 	end
-	if (showOffspec) then
+	if (showOffspec or NRC.isClassic) then
 		--Not displaying glyphs for offspec yet, maybe in later version.
 		--The data sync will need to rewritten to include offspec glyphs and keep track of which is the active spec since it can't be inspected.
 		frame.glyphs:Hide();
@@ -426,48 +426,54 @@ function NRC:createTalentStringFromTable(data)
 end
 
 function NRC:createTalentString()
-	local _, _, classID = UnitClass("player");
-	local talentString = tostring(classID);
-	if (NRC.isWrath) then
-		local data = {
-			classID = classID,
-		};
-		for tab = 1, GetNumTalentTabs() do
-			data[tab] = {};
-			for i = 1, GetNumTalents(tab) do
-				local name, _, row, column, rank = GetTalentInfo(tab, i);
-				if (name) then
-					data[tab][i] = {
-						rank = rank,
-						row = row,
-						column = column,
-					};
-				else
-					break;
-				end
-			end
-		end
-		talentString = NRC:createTalentStringFromTable(data);
+	if (NRC.isRetail) then
+		local talentString = "0-0-0";
+		return talentString;
 	else
-		for tab = 1, GetNumTalentTabs() do
-			local found;
-			local treeString = "";
-			for i = 1, GetNumTalents(tab) do
-				local name, _, _, _, rank = GetTalentInfo(tab, i);
-				treeString = treeString .. rank;
-				if (rank and rank > 0) then
-					found = true;
+		local _, _, classID = UnitClass("player");
+		local talentString = tostring(classID);
+		--Seems all 3 clients are using the new out of order system now.
+		--if (NRC.isWrath or NRC.isTBC or NRC.isClassic) then
+			local data = {
+				classID = classID,
+			};
+			for tab = 1, GetNumTalentTabs() do
+				data[tab] = {};
+				for i = 1, GetNumTalents(tab) do
+					local name, _, row, column, rank = GetTalentInfo(tab, i);
+					if (name) then
+						data[tab][i] = {
+							rank = rank,
+							row = row,
+							column = column,
+						};
+					else
+						break;
+					end
 				end
 			end
-			treeString = strmatch(treeString, "^(%d-)0*$");
-			if (found) then
-				talentString = talentString .. "-" .. treeString;
-			else
-				talentString = talentString .. "-0";
+			talentString = NRC:createTalentStringFromTable(data);
+		--[[else
+			for tab = 1, GetNumTalentTabs() do
+				local found;
+				local treeString = "";
+				for i = 1, GetNumTalents(tab) do
+					local name, _, _, _, rank = GetTalentInfo(tab, i);
+					treeString = treeString .. rank;
+					if (rank and rank > 0) then
+						found = true;
+					end
+				end
+				treeString = strmatch(treeString, "^(%d-)0*$");
+				if (found) then
+					talentString = talentString .. "-" .. treeString;
+				else
+					talentString = talentString .. "-0";
+				end
 			end
-		end
+		end]]
+		return talentString;
 	end
-	return talentString;
 end
 
 function NRC:hasTalent(name, tabIndex, talentIndex, count)
@@ -530,6 +536,9 @@ end
 
 --First 3 major, second 3 minor.
 function NRC:createGlyphString(f)
+	if (NRC.isRetail or not GetNumGlyphSockets) then
+		return "";
+	end
 	local _, _, classID = UnitClass("player");
 	local glyphString, glyphString2 = classID, classID;
 	local activeSpec = GetActiveTalentGroup();

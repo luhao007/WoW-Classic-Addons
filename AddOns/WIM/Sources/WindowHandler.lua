@@ -934,10 +934,18 @@ local function instantiateWindow(obj)
 
     obj.AddEventMessage = function(self, r, g, b, event, ...)
         nextColor.r, nextColor.g, nextColor.b = r, g, b;
-	local str = applyMessageFormatting(self.widgets.chat_display, event, ...);
-	self:AddMessage(str, r, g, b);
-	self.msgWaiting = true;
-	self.lastActivity = _G.GetTime();
+
+		-- -- second pass of filters, mainly to allow questie to process links.
+		-- WIM.NEXT_CHAT_FILTER_FRAME = self.widgets.chat_display
+		-- local _, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15 = honorChatFrameEventFilter(event, ...)
+		-- local str = applyMessageFormatting(self.widgets.chat_display, event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15);
+		-- WIM.NEXT_CHAT_FILTER_FRAME = nil
+
+		local str = applyMessageFormatting(self.widgets.chat_display, event, ...);
+
+		self:AddMessage(str, r, g, b);
+		self.msgWaiting = true;
+		self.lastActivity = _G.GetTime();
         if(self.tabStrip) then
                 self.tabStrip:UpdateTabs();
         end
@@ -950,27 +958,19 @@ local function instantiateWindow(obj)
                 local chat_type = self.chatType == "battleground" and "INSTANCE_CHAT" or string.upper(self.chatType);
                 local color = _G.ChatTypeInfo[chat_type]; -- Drii: ticket 344
                 icon:SetTexCoord(0,1,0,1);
-				if (isModernApi) then -- WoW 10
-					icon:SetGradient("VERTICAL",
-						{ r = color.r, g = color.g, b = color.b, a = 1},
-						{ r = color.r, g = color.g, b = color.b, a = 1 }
-					);
-				else
-                	icon:SetGradient("VERTICAL", color.r, color.g, color.b, color.r, color.g, color.b);
-				end
+				icon:SetGradient("VERTICAL",
+					{ r = color.r, g = color.g, b = color.b, a = 1},
+					{ r = color.r, g = color.g, b = color.b, a = 1 }
+				);
                 if(GetSelectedSkin().message_window.widgets.from.use_class_color) then
                                 self.widgets.from:SetTextColor(color.r, color.g, color.b);
                 end
         else
                 local classTag = obj.class;
-				if (isModernApi) then -- WoW 10
-					icon:SetGradient("VERTICAL",
-						{ r = 1, g = 1, b = 1, a = 1 },
-						{ r = 1, g = 1, b = 1, a = 1 }
-					);
-				else
-					icon:SetGradient("VERTICAL", 1, 1, 1, 1, 1, 1);
-				end
+				icon:SetGradient("VERTICAL",
+					{ r = 1, g = 1, b = 1, a = 1 },
+					{ r = 1, g = 1, b = 1, a = 1 }
+				);
 
 				if (self.bn and self.bn.client and (not obj.class or obj.class == "")) then
 					local client = GameClients[self.bn.client];
@@ -1020,7 +1020,7 @@ local function instantiateWindow(obj)
         end
     end
 
-    obj.SendWho = function(self)
+    obj.SendWho = function(self,wCallback, invokeFriendListWho)
         if(self.type ~= "whisper") then
                 return;
         end
@@ -1122,6 +1122,41 @@ local function instantiateWindow(obj)
 						end
 					end
         		end
+        		if( invokeFriendListWho ) then
+					local function eventHandlerWho(self, event, ...)
+					    if event == "WHO_LIST_UPDATE" then
+					        local numResults = _G.C_FriendList.GetNumWhoResults();
+					        for i = 1, numResults do
+					            local info = _G.C_FriendList.GetWhoInfo(i);
+					            if( info.fullName == self.thUser ) then
+									self.WCallback({
+										Name = info.fullName or "",
+										Online = true,
+										Guild = info.fullGuildName or "",
+										Class = info.classStr or "",
+										Level = info.level or "",
+										Race = info.raceStr or "",
+										Zone = info.area or "",
+									});
+						            if wCallback then
+						                wCallback();
+						            end
+						            _G.C_FriendList.SetWhoToUi(false);
+						            -- close who frame
+						            _G.FriendsFrameCloseButton:Click();
+					            end
+					        end
+					        self:UnregisterEvent("WHO_LIST_UPDATE");
+					    end
+					end
+					_G.C_FriendList.SetWhoToUi(true);
+					local wFrame = CreateFrame("Frame");
+					wFrame:RegisterEvent("WHO_LIST_UPDATE");
+				    wFrame:SetScript("OnEvent", eventHandlerWho);
+				    wFrame.thUser = self.theUser;
+				    wFrame.WCallback = self.WhoCallback;
+				    _G.C_FriendList.SendWho("n-"..self.theUser);
+				end
         end
     end
 
@@ -1954,6 +1989,11 @@ RegisterWidgetTrigger("chat_display", "whisper,chat,w2w", "OnHyperlinkClick", fu
 		return
     end
 
+	if t == 'player' then
+		_G.ChatFrame_OnHyperlinkShow(_G.DEFAULT_CHAT_FRAME, link, text, button);
+		return;
+	end
+
 	_G.ChatFrame_OnHyperlinkShow(self, link, text, button);
 	-- if link == "garrmission:weakauras" then
 	-- 		_G.SetItemRef(link, text, button, self);
@@ -2204,5 +2244,7 @@ local function toggleWindows (type)
 		_G.DEFAULT_CHAT_FRAME:AddMessage("|cff69ccf0"..L["Usage"]..":|r  ".."/wim toggle {all | whisper | chat}");
 	end
 end
+
+WIM.ToggleWindows = toggleWindows;
 
 WIM.RegisterSlashCommand("toggle", toggleWindows, L["Hide or show {all, whisper, chat} windows."]);

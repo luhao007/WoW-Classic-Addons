@@ -83,7 +83,7 @@ local eventsLocales = {
         ["enUS"] = true,
         ["frFR"] = "Fête des Brasseurs",
         ["esES"] = "Fiesta de la Cerveza",
-        ["zhTW"] = nil,
+        ["zhTW"] = "啤酒節",
         ["zhCN"] = "美酒节",
     },
     ["Harvest Festival"] = {
@@ -97,6 +97,18 @@ local eventsLocales = {
         ["esES"] = "Festival de la Cosecha",
         ["zhTW"] = "收穫節",
         ["zhCN"] = "收获节",
+    },
+    ["Pilgrim's Bounty"] = {
+        ["ptBR"] = "Festa da Fartura",
+        ["ruRU"] = "Пиршество странников",
+        ["deDE"] = "Pilgerfreudenfest",
+        ["koKR"] = "순례자의 감사절",
+        ["esMX"] = "Generosidad del Peregrino",
+        ["enUS"] = true,
+        ["frFR"] = "Les Bienfaits du pèlerin",
+        ["esES"] = "Generosidad del Peregrino",
+        ["zhTW"] = "旅人豐年祭",
+        ["zhCN"] = "感恩节",
     },
     ["Hallow's End"] = {
         ["ptBR"] = "Noturnália",
@@ -157,6 +169,18 @@ local eventsLocales = {
         ["esES"] = "Invasión",
         ["zhTW"] = "入侵",
         ["zhCN"] = "天灾入侵",
+    },
+    ["Nightmare Incursions"] = {
+        ["ptBR"] = "Incursões Pesadelares",
+        ["ruRU"] = "Кошмарные вторжения",
+        ["deDE"] = "Alptraumeinfälle",
+        ["koKR"] = "악몽 침공지",
+        ["esMX"] = "Incursiones de la Pesadilla",
+        ["enUS"] = true,
+        ["frFR"] = "Incursions de cauchemar",
+        ["esES"] = "Incursiones de la Pesadilla",
+        ["zhTW"] = "梦魇进犯",
+        ["zhCN"] = "梦魇进犯",
     },
 }
 

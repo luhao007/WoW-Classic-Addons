@@ -52,7 +52,7 @@ function Details:OpenNewsWindow(textToShow, dumpValues, keeptext)
 			--show news
 			newsFrame:Text (textToShow or Loc["STRING_VERSION_LOG"])
 			--show textures
-			if (_detalhes.build_counter == 8154) then
+			if (Details.build_counter == 8154) then
 				newsFrame.imageFrame:Show()
 				newsFrame.imageFrame.texture:SetTexture([[interface/addons/details/images/news_images]])
 				newsFrame.imageFrame.texture:SetSize(279, 452)
@@ -70,7 +70,7 @@ function Details:CreateOrOpenNewsWindow()
 
 	if (not frame) then
 		frame = DetailsFramework:CreateSimplePanel(UIParent, 480, 560, "Details! Damage Meter " .. Details.version, "DetailsNewsWindow", panel_options, db)
-		tinsert(UISpecialFrames, "DetailsNewsWindow")
+		table.insert(UISpecialFrames, "DetailsNewsWindow")
 		frame:SetPoint("left", UIParent, "left", 10, 0)
 		frame:SetFrameStrata("FULLSCREEN")
 		frame:SetMovable(true)

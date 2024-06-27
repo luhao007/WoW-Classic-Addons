@@ -20,6 +20,7 @@ local BACKGROUND_POINTS = {
 		{ "CENTER" },
 	},
 }
+local ITEM_HIGHLIGHT_TEXTURE = 130718
 
 
 -- ============================================================================
@@ -32,6 +33,7 @@ Button:_ExtendStateSchema()
 	:UpdateFieldDefault("font", "BODY_BODY1")
 	:AddOptionalStringField("background", nil)
 	:AddStringField("highlightColor", "TRANSPARENT")
+	:AddOptionalNumberField("highlightTexture", nil)
 	:AddBooleanField("enabled", true)
 	:AddOptionalStringField("iconTexturePack", nil)
 	:AddOptionalStringField("iconPosition", nil)
@@ -51,12 +53,12 @@ function Button:__init()
 
 	frame.backgroundTexture = UIElements.CreateTexture(self, frame, "BACKGROUND")
 
-	-- create the highlight
+	-- Create the highlight
 	frame.highlight = UIElements.CreateTexture(self, frame, "HIGHLIGHT")
 	frame.highlight:SetAllPoints()
 	frame:SetHighlightTexture(frame.highlight)
 
-	-- create the icon
+	-- Create the icon
 	frame.icon = UIElements.CreateTexture(self, frame, "ARTWORK")
 end
 
@@ -109,8 +111,11 @@ function Button:Acquire()
 		:CallMethod(frame.backgroundTexture, "TSMSetPoints")
 
 	-- Set the highlight texture
+	-- Only one of highlightColor / highlightTexture is in use at a time
 	self._state:PublisherForKeyChange("highlightColor")
 		:CallMethod(frame.highlight, "TSMSubscribeColorTexture")
+	self._state:PublisherForKeyChange("highlightTexture")
+		:CallMethod(frame.highlight, "TSMSetTextureAndCoord")
 
 	-- Set the text color
 	self._state:PublisherForKeyChange("textAndIconColor")
@@ -151,24 +156,36 @@ end
 ---Sets the background of the button.
 ---@param background? string|ThemeColorKey|number Either a texture pack string, itemString, WoW file id, theme color key, or nil
 ---@param highlightEnabled boolean Whether or not the highlight is enabled
----@return Button @The button object
-function Button:SetBackground(background, highlightEnabled)
+---@param highlightTexture number The fileId of the WoW texture
+---@return Button
+function Button:SetBackground(background, highlightEnabled, highlightTexture)
 	assert(background == nil or type(background) == "string" or type(background) == "number")
 	assert(highlightEnabled == nil or type(highlightEnabled) == "boolean")
 	if not highlightEnabled then
 		self._state.highlightColor = "TRANSPARENT"
 	end
 	self._state.background = background ~= nil and tostring(background) or nil
-	if highlightEnabled then
+	self._state.highlightTexture = highlightTexture or nil
+	if highlightEnabled and not highlightTexture then
 		assert(Theme.IsValidColor(background))
 		self._state.highlightColor = background.."+HOVER"
 	end
 	return self
 end
 
+---Sets the background of the button and enables a WoW-style item highlight.
+---@param background? number|string A WoW file id, itemString, or nil
+---@return Button
+function Button:SetBackgroundWithItemHighlight(background)
+	assert(background == nil or type(background) == "number" or type(background) == "string")
+	self._state.background = background and tostring(background) or nil
+	self._state.highlightTexture = background and ITEM_HIGHLIGHT_TEXTURE or nil
+	return self
+end
+
 ---Sets the background and size of the button based on a texture pack string.
 ---@param texturePack string A texture pack string to set the background to and base the size on
----@return Button @The button object
+---@return Button
 function Button:SetBackgroundAndSize(texturePack)
 	self:SetBackground(texturePack)
 	self:SetSize(TextureAtlas.GetSize(texturePack))
@@ -178,7 +195,7 @@ end
 ---Sets the icon that shows within the button.
 ---@param texturePack? string A texture pack string to set the icon and its size to
 ---@param position? string The positin of the icon
----@return Button @The button object
+---@return Button
 function Button:SetIcon(texturePack, position)
 	if texturePack or position then
 		assert(TextureAtlas.IsValid(texturePack))
@@ -194,7 +211,7 @@ end
 
 ---Set whether or not the button is disabled.
 ---@param disabled boolean Whether or not the button should be disabled
----@return Button @The button object
+---@return Button
 function Button:SetDisabled(disabled)
 	self._state.enabled = not disabled and true or false
 	return self
@@ -202,7 +219,7 @@ end
 
 ---Registers the button for drag events.
 ---@param button string The mouse button to register for drag events from
----@return Button @The button object
+---@return Button
 function Button:RegisterForDrag(button)
 	self:_GetBaseFrame():RegisterForDrag(button)
 	return self
@@ -214,7 +231,7 @@ function Button:Click()
 end
 
 ---Enable right-click events for the button.
----@return Button @The button object
+---@return Button
 function Button:EnableRightClick()
 	self:_GetBaseFrame():RegisterForClicks("LeftButtonUp", "RightButtonUp")
 	return self
@@ -225,7 +242,7 @@ end
 ---@param right number How much the right side of the hit rectangle is inset
 ---@param top number How much the top side of the hit rectangle is inset
 ---@param bottom number How much the bottom side of the hit rectangle is inset
----@return Button @The button object
+---@return Button
 function Button:SetHitRectInsets(left, right, top, bottom)
 	self:_GetBaseFrame():SetHitRectInsets(left, right, top, bottom)
 	return self

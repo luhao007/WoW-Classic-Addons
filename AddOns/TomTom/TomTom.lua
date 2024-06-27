@@ -18,6 +18,9 @@ addon.WOW_MAINLINE = (WOW_PROJECT_ID == WOW_PROJECT_MAINLINE)
 addon.WOW_CLASSIC = (WOW_PROJECT_ID == WOW_PROJECT_CLASSIC)
 addon.WOW_BURNING_CRUSADE_CLASSIC = (WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC)
 
+local buildVersion = select(4, GetBuildInfo())
+addon.WAR_WITHIN = (buildVersion >= 110000)
+
 -- Local definitions
 local GetCurrentCursorPosition
 local WorldMap_OnUpdate
@@ -150,9 +153,11 @@ function TomTom:Initialize(event, addon)
     self.tooltip:SetFrameStrata("DIALOG")
 
     self.dropdown = ldd:NewMenu(UIParent, "TomTomDropdown")
+    self.dropdown:SetFrameStrata("HIGH")
     self:InitializeDropdown(self.dropdown)
 
     self.worlddropdown = ldd:NewMenu(WorldMapFrame, "TomTomWorldMapDropdown")
+    self.worlddropdown:SetFrameStrata("HIGH")
     self:InitializeDropdown(self.worlddropdown)
 
     -- Both the waypoints and waypointprofile tables are going to contain subtables for each
@@ -206,7 +211,7 @@ function TomTom:Initialize(event, addon)
 end
 
 function TomTom:Enable(addon)
-    if self.WOW_MAINLINE then
+    if self.WOW_MAINLINE and not self.WAR_WITHIN then
         self:EnableDisablePOIIntegration()
     end
 
@@ -235,20 +240,34 @@ function TomTom:GetKeyArgs(m, x, y, title)
 	return key
 end
 
+-- Thanks to the user who suggested using the C_Map API to fix some of the
+-- previous weirdness that was here
+function TomTom:GetCurrentPlayerPosition()
+    local playerMapID = C_Map and C_Map.GetBestMapForUnit("player") or nil
+    local x, y, mapID = hbd:GetPlayerZonePosition()
+
+    -- If HBD and the WoW API agree on the player map, return the position!
+    if x and y and x > 0 and y > 0 and mapID and (playerMapID and mapID == playerMapID) then
+        return mapID, x, y
+    end
+
+    -- If the WoW API and the HBD map results are different, we fall back to the
+    -- WoW API if we have it
+    if C_Map and playerMapID then
+        local pos = C_Map.GetPlayerMapPosition(playerMapID, "player")
+        if pos then
+            return playerMapID, pos:GetXY()
+        end
+    end
+end
+
 -- Returns the player's current coordinates without flipping the map or
 -- causing any other weirdness. This can and will cause the coordinates to be
 -- weird if you zoom the map out to your parent, but there is no way to
 -- recover this without changing/setting the map zoom. Deal with it =)
 function TomTom:GetCurrentCoords()
-	local x, y = hbd:GetPlayerZonePosition()
-	if x and y and x > 0 and y > 0 then
-		return x, y
-	end
-end
-
-function TomTom:GetCurrentPlayerPosition()
-    local x, y, mapID = hbd:GetPlayerZonePosition()
-    return mapID, x, y
+    local map, x, y = self:GetCurrentPlayerPosition()
+    return x, y
 end
 
 function TomTom:ReloadOptions()
@@ -503,13 +522,13 @@ function addon:CreateWorldMapClickHandler()
 
         local modKey = TomTom.db.profile.worldmap.create_modifier
         if modKey and verifyFuncs[modKey] and verifyFuncs[modKey](alt, ctrl, shift) then
-            if self.SetPassThroughButtons then
+            if self.SetPassThroughButtons and not InCombatLockdown() then
                 self:SetPassThroughButtons("LeftButton", "MiddleButton", "Button4", "Button5")
             end
 
             self:Show()
         else
-            if self.SetPassThroughButtons then
+            if self.SetPassThroughButtons and not InCombatLockdown() then
                 self:SetPassThroughButtons("LeftButton", "RightButton", "MiddleButton", "Button4", "Button5")
             end
 
@@ -1170,8 +1189,9 @@ function TomTom:DebugListAllWaypoints()
 end
 
 local function usage()
-    ChatFrame1:AddMessage(L["|cffffff78TomTom |r/way /tway /tomtomway /cway /wayb /wayback/tomtom |cffffff78Usage:|r"])
+    ChatFrame1:AddMessage(L["|cffffff78TomTom |r/way /tway /tomtomway /cway /wayb /wayback /ttpase /tomtom |cffffff78Usage:|r"])
     ChatFrame1:AddMessage(L["|cffffff78/tomtom |r - Open the TomTom options panel"])
+    ChatFrame1:AddMessage(L["|cffffff78/ttpaste |r - Open a window to paste and execute multiple TomTom commands"])
     ChatFrame1:AddMessage(L["|cffffff78/cway |r - Activate the closest waypoint"])
     ChatFrame1:AddMessage(L["|cffffff78/wayb [desc] |r - Save the current position with optional description"])
     ChatFrame1:AddMessage(L["|cffffff78/way /tway /tomtomway |r - Commands to set a waypoint: one should work."])
@@ -1186,6 +1206,8 @@ local function usage()
     ChatFrame1:AddMessage(L["|cffffff78/way arrow|r - Prints status of the Crazy Arrow"])
     ChatFrame1:AddMessage(L["|cffffff78/way block|r - Prints status of the Coordinate Block"])
 end
+
+TomTom.slashCommandUsage = usage
 
 TomTom.CZWFromMapID = {}
 local overrides = {

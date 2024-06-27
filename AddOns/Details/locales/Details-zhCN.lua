@@ -776,13 +776,24 @@ L["STRING_OPTIONS_MINIMAP_ANCHOR"] = "小地图:"
 L["STRING_OPTIONS_MINIMAP_DESC"] = "显示或隐藏小地图图标。"
 L["STRING_OPTIONS_MISCTITLE"] = "杂项设置"
 L["STRING_OPTIONS_MISCTITLE2"] = "这些控制几个选项。"
+L["STRING_OPTIONS_MPLUS_BOSSNEWCOMBAT"] = "首领战启用新的战斗记录"
+L["STRING_OPTIONS_MPLUS_BOSSNEWCOMBAT_DESC"] = "如果在战斗中开启了首领战，会关闭当前战斗，并为首领战启用新的战斗记录。"
+L["STRING_OPTIONS_MPLUS_DPS_ANCHOR"] = "整场战斗统计DPS"
+L["STRING_OPTIONS_MPLUS_MAKEOVERALL"] = "整场战斗记录"
+L["STRING_OPTIONS_MPLUS_MAKEOVERALL_DESC"] = "副本完成后，此选项会创建新的战斗记录，包含这次副本的所有战斗数据。"
+L["STRING_OPTIONS_MPLUS_MERGETRASH"] = "合并小怪"
+L["STRING_OPTIONS_MPLUS_PANELS_ANCHOR"] = "窗口"
+L["STRING_OPTIONS_MPLUS_SHOWENDPANEL"] = "显示M+结束窗口"
+L["STRING_OPTIONS_MPLUS_TIME_INCOMBAT"] = "战斗时间"
+L["STRING_OPTIONS_MPLUS_TIME_INCOMBAT_DESC"] = "M+ 完成的整场战斗记录将使用“总伤害” / “总战斗时间” 来计算DPS。"
+L["STRING_OPTIONS_MPLUS_TIME_RUNTIME"] = "地下城完成时间"
+L["STRING_OPTIONS_MPLUS_TIME_RUNTIME_DESC"] = "M+ 完成的整场战斗记录将使用“总伤害” / “完成时间”来计算DPS。"
 L["STRING_OPTIONS_NICKNAME"] = "昵称"
 L["STRING_OPTIONS_NICKNAME_DESC"] = [=[为您设置一个昵称。
 昵称发送给公会成员和 Details!使用它代替你的名字。]=]
 L["STRING_OPTIONS_OPEN_ROWTEXT_EDITOR"] = "行文字编辑器"
 L["STRING_OPTIONS_OPEN_TEXT_EDITOR"] = "打开文本编辑器"
---[[Translation missing --]]
-L["STRING_OPTIONS_OPENBROKER"] = "Open Broker Text Editor"
+L["STRING_OPTIONS_OPENBROKER"] = "打开Broker文本编辑"
 L["STRING_OPTIONS_OVERALL_ALL"] = "所有片段"
 L["STRING_OPTIONS_OVERALL_ALL_DESC"] = "所有片段会被添加到总体数据。"
 L["STRING_OPTIONS_OVERALL_ANCHOR"] = "总体数据:"
@@ -1227,21 +1238,14 @@ L["STRING_OPTIONS_WINDOW"] = "选项面板"
 L["STRING_OPTIONS_WINDOW_ANCHOR_ANCHORS"] = "锚点:"
 L["STRING_OPTIONS_WINDOW_IGNOREMASSTOGGLE"] = "忽略品质切换"
 L["STRING_OPTIONS_WINDOW_IGNOREMASSTOGGLE_DESC"] = "启用后，隐藏，显示或切换所有窗口时，此窗口不受影响"
---[[Translation missing --]]
-L["STRING_OPTIONS_WINDOW_ROWAREA_COLOR"] = "\"Row's Area Color\""
---[[Translation missing --]]
-L["STRING_OPTIONS_WINDOW_ROWAREA_COLOR_DESC"] = "Set the background color of the area when the rows are shown."
+L["STRING_OPTIONS_WINDOW_ROWAREA_COLOR"] = "“行的区域颜色”"
+L["STRING_OPTIONS_WINDOW_ROWAREA_COLOR_DESC"] = "设置显示行时区域的背景颜色。"
 L["STRING_OPTIONS_WINDOW_SCALE"] = "尺度"
 L["STRING_OPTIONS_WINDOW_SCALE_DESC"] = [=[调整窗口的比例
 |cFFFFFF00贴士|r：右键单击以键入值
 |cFFFFFF00当前|r：%s]=]
 L["STRING_OPTIONS_WINDOW_SKIN_COLOR"] = "皮肤颜色"
---[[Translation missing --]]
-L["STRING_OPTIONS_WINDOW_SKIN_COLOR_DESC"] = [=[Modifies the color of the skin applied into this window.
-
-|cFFFFFF00Important|r: the alpha chosen here is overwritten with |cFFFFFF00Auto Transparency|r values when enabled.
-
-|cFFFFFF00Important|r: selecting the skin color overwrites any color customization applied to statusbar.]=]
+L["STRING_OPTIONS_WINDOW_SKIN_COLOR_DESC"] = "修改应用于此窗口的皮肤颜色。 |cFFFFFF00重要|r：启用后，此处选择的 alpha 将被 |cFFFFFF00自动透明度 |r 值覆盖。 |cFFFFFF00重要|r：选择肤色会覆盖应用于状态栏的任何颜色自定义。"
 L["STRING_OPTIONS_WINDOW_TITLE"] = "窗口设置"
 L["STRING_OPTIONS_WINDOW_TITLE_DESC"] = "这些选项控制选择窗口的窗口外观。"
 L["STRING_OPTIONS_WINDOWSPEED"] = "更新间隔"
@@ -1353,6 +1357,7 @@ L["STRING_REPORT_SINGLE_BUFFUPTIME"] = "BUFF的正常运行时间"
 L["STRING_REPORT_SINGLE_COOLDOWN"] = "使用冷却时间"
 L["STRING_REPORT_SINGLE_DEATH"] = "死于"
 L["STRING_REPORT_SINGLE_DEBUFFUPTIME"] = "DEBUFF的正常运行时间"
+L["STRING_REPORT_TEXT"] = "报告"
 L["STRING_REPORT_TOOLTIP"] = "报告结果"
 L["STRING_REPORTFRAME_COPY"] = "复制和粘贴"
 L["STRING_REPORTFRAME_CURRENT"] = "当前"

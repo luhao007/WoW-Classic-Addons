@@ -4,7 +4,7 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local Resale = TSM.MainUI.Ledger.Revenue:NewPackage("Resale")
 local L = TSM.Include("Locale").GetTable()
 local Table = TSM.Include("Util.Table")
@@ -21,7 +21,6 @@ local private = {
 	characters = {},
 	characterFilter = {},
 	typeFilter = {},
-	rarityList = {},
 	rarityFilter = {},
 	groupFilter = {},
 	searchFilter = "",
@@ -29,13 +28,15 @@ local private = {
 }
 local TYPE_LIST = { L["Auction"], COD, TRADE, L["Vendor"] }
 local TYPE_KEYS = { "Auction", "COD", "Trade", "Vendor" }
+local RARITY_LIST = {}
+local RARITY_KEYS = { 0, 1, 2, 3, 4, 5 }
 do
 	for _, key in ipairs(TYPE_KEYS) do
 		private.typeFilter[key] = true
 	end
-	for i = 1, 4 do
-		tinsert(private.rarityList, _G[format("ITEM_QUALITY%d_DESC", i)])
-		private.rarityFilter[i] = true
+	for _, key in ipairs(RARITY_KEYS) do
+		tinsert(RARITY_LIST, _G[format("ITEM_QUALITY%d_DESC", key)])
+		private.rarityFilter[key] = true
 	end
 end
 local TIME_LIST = { L["All Time"], L["Last 3 Days"], L["Last 7 Days"], L["Last 14 Days"], L["Last 30 Days"], L["Last 60 Days"] }
@@ -113,7 +114,7 @@ function private.DrawResalePage()
 			)
 			:AddChild(UIElements.New("MultiselectionDropdown", "rarity")
 				:SetMargin(0, 8, 0, 0)
-				:SetItems(private.rarityList)
+				:SetItems(RARITY_LIST, RARITY_KEYS)
 				:SetSettingInfo(private, "rarityFilter")
 				:SetSelectionText(L["No Rarities"], L["%d Rarities"], L["All Rarities"])
 				:SetScript("OnSelectionChanged", private.FilterChangedCommon)
@@ -139,7 +140,7 @@ function private.DrawResalePage()
 					:SetTitle(L["Item"])
 					:SetFont("ITEM_BODY3")
 					:SetJustifyH("LEFT")
-					:SetTextInfo("itemString", UIUtils.GetColoredItemName)
+					:SetTextInfo("itemString", UIUtils.GetDisplayItemName)
 					:SetSortInfo("name")
 					:SetTooltipInfo("itemString")
 					:DisableHiding()
@@ -286,7 +287,7 @@ function private.UpdateQuery()
 	local characterFilter = Table.Count(private.characterFilter) ~= #private.characters and private.characterFilter or nil
 	local minTime = private.timeFrameFilter ~= 0 and (time() - private.timeFrameFilter) or nil
 	TSM.Accounting.Transactions.UpdateSummaryData(groupFilter, searchFilter, typeFilter, characterFilter, minTime)
-	if Table.Count(private.rarityFilter) ~= #private.rarityList then
+	if Table.Count(private.rarityFilter) ~= #RARITY_LIST then
 		private.summaryQuery:InTable("quality", private.rarityFilter)
 	end
 end

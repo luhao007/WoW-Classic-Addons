@@ -8,13 +8,14 @@
 -- A group tree is an abstract element which displays TSM groups. It is a subclass of the @{ScrollingTable} class.
 -- @classmod GroupTree
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local L = TSM.Include("Locale").GetTable()
 local TempTable = TSM.Include("Util.TempTable")
 local String = TSM.Include("Util.String")
 local ScriptWrapper = TSM.Include("Util.ScriptWrapper")
 local Theme = TSM.Include("Util.Theme")
 local TextureAtlas = TSM.Include("Util.TextureAtlas")
+local GroupPath = TSM.Include("Util.GroupPath")
 local UIElements = TSM.Include("UI.UIElements")
 local GroupTree = UIElements.Define("GroupTree", "ScrollingTable", "ABSTRACT")
 TSM.UI.GroupTree = GroupTree
@@ -217,10 +218,10 @@ function GroupTree._UpdateData(self)
 			if shouldKeep[groupPath] then
 				shouldKeep[TSM.CONST.ROOT_GROUP_PATH] = true
 				-- add all parent groups to the keep table as well
-				local checkPath = TSM.Groups.Path.GetParent(groupPath)
+				local checkPath = GroupPath.GetParent(groupPath)
 				while checkPath and checkPath ~= TSM.CONST.ROOT_GROUP_PATH do
 					shouldKeep[checkPath] = true
-					checkPath = TSM.Groups.Path.GetParent(checkPath)
+					checkPath = GroupPath.GetParent(checkPath)
 				end
 			end
 		end
@@ -242,7 +243,7 @@ function GroupTree._UpdateData(self)
 	for i, groupPath in ipairs(groups) do
 		pathExists[groupPath] = true
 		local nextGroupPath = groups[i + 1]
-		self._hasChildrenLookup[groupPath] = nextGroupPath and TSM.Groups.Path.IsChild(nextGroupPath, groupPath) or nil
+		self._hasChildrenLookup[groupPath] = nextGroupPath and GroupPath.IsChild(nextGroupPath, groupPath) or nil
 	end
 	for groupPath in pairs(self._contextTable.collapsed) do
 		if groupPath == TSM.CONST.ROOT_GROUP_PATH or not pathExists[groupPath] or not self._hasChildrenLookup[groupPath] then
@@ -254,7 +255,7 @@ function GroupTree._UpdateData(self)
 	for _, groupPath in ipairs(groups) do
 		tinsert(self._allData, groupPath)
 		if self._searchStr ~= "" or not self:_IsGroupHidden(groupPath) then
-			local groupName = groupPath == TSM.CONST.ROOT_GROUP_PATH and L["Base Group"] or TSM.Groups.Path.GetName(groupPath)
+			local groupName = groupPath == TSM.CONST.ROOT_GROUP_PATH and L["Base Group"] or GroupPath.GetName(groupPath)
 			if strmatch(strlower(groupName), self._searchStr) and (self._searchStr == "" or groupPath ~= TSM.CONST.ROOT_GROUP_PATH) then
 				tinsert(self._data, groupPath)
 			end
@@ -269,12 +270,12 @@ function GroupTree._IsGroupHidden(self, data)
 	elseif self._contextTable.collapsed[TSM.CONST.ROOT_GROUP_PATH] then
 		return true
 	end
-	local parent = TSM.Groups.Path.GetParent(data)
+	local parent = GroupPath.GetParent(data)
 	while parent and parent ~= TSM.CONST.ROOT_GROUP_PATH do
 		if self._contextTable.collapsed[parent] then
 			return true
 		end
-		parent = TSM.Groups.Path.GetParent(parent)
+		parent = GroupPath.GetParent(parent)
 	end
 	return false
 end
@@ -301,7 +302,7 @@ end
 -- ============================================================================
 
 function private.GetGroupText(self, data)
-	local groupName = data == TSM.CONST.ROOT_GROUP_PATH and L["Base Group"] or TSM.Groups.Path.GetName(data)
+	local groupName = data == TSM.CONST.ROOT_GROUP_PATH and L["Base Group"] or GroupPath.GetName(data)
 	if data ~= TSM.CONST.ROOT_GROUP_PATH then
 		groupName = Theme.GetGroupColor(select('#', strsplit(TSM.CONST.GROUP_SEP, data))):ColorText(groupName)
 	end
@@ -334,7 +335,7 @@ function private.GetTooltip(self, data)
 	if self._searchStr == "" then
 		return nil
 	end
-	return TSM.Groups.Path.Format(data), true
+	return GroupPath.Format(data), true
 end
 
 function private.QueryUpdateCallback(_, _, self)

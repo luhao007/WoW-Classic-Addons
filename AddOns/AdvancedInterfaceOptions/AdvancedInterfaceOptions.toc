@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Stanzilla, Semlar
-## Version: 1.8.4
+## Version: 1.9.0
 ## LoadOnDemand: 0
 ## SavedVariables: AdvancedInterfaceOptionsSaved
 ## DefaultState: Enabled
@@ -17,6 +17,7 @@
 ## X-Wago-ID: ZQ6aPNW7
 
 semlib\semlib.xml
+utils.lua
 cvars.lua
 basicOptions.lua
 browser.lua

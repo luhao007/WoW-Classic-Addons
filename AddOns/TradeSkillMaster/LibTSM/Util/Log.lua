@@ -6,6 +6,7 @@
 
 local TSM = select(2, ...) ---@type TSM
 local Log = TSM.Init("Util.Log") ---@class Util.Log
+local Environment = TSM.Include("Environment")
 local Debug = TSM.Include("Util.Debug")
 local Theme = TSM.Include("Util.Theme")
 local private = {
@@ -16,7 +17,7 @@ local private = {
 	writeIndex = 1,
 	len = 0,
 	temp = {},
-	logToChat = TSM.IsTestEnvironment() or false,
+	logToChat = nil,
 	currentThreadNameFunc = nil,
 	stackLevel = 3,
 	chatFrame = nil,
@@ -38,6 +39,16 @@ local CHAT_LOG_COLOR_KEYS = {
 
 
 -- ============================================================================
+-- Module Loading
+-- ============================================================================
+
+Log:OnModuleLoad(function()
+	private.logToChat = Environment.IsTest()
+end)
+
+
+
+-- ============================================================================
 -- Module Functions
 -- ============================================================================
 
@@ -50,10 +61,10 @@ end
 ---Enables or disables printing log messages to chat.
 ---@param enabled boolean
 function Log.SetLoggingToChatEnabled(enabled)
-	if TSM.IsTestEnvironment() then
+	if Environment.IsTest() then
 		-- always enable in test environments
 		enabled = true
-	elseif not TSM.IsDevVersion() then
+	elseif not Environment.IsDev() then
 		-- always disable in non-dev environments
 		enabled = false
 	end

@@ -6,6 +6,7 @@
 
 local TSM = select(2, ...) ---@type TSM
 local State = TSM.Init("Service.ProfessionHelpers.State") ---@class Service.ProfessionHelpers.State
+local Environment = TSM.Include("Environment")
 local Event = TSM.Include("Util.Event")
 local Delay = TSM.Include("Util.Delay")
 local FSM = TSM.Include("Util.FSM")
@@ -47,16 +48,16 @@ function State.IsClosed()
 end
 
 function State.IsClassicCrafting()
-	return TSM.IsWowVanillaClassic() and private.craftOpen
+	return Environment.IsVanillaClassic() and private.craftOpen
 end
 
 function State.SetClassicCraftingOpen(open)
-	assert(TSM.IsWowClassic())
+	assert(not Environment.IsRetail())
 	private.craftOpen = open
 end
 
 function State.IsDataStable()
-	return TSM.IsWowClassic() or (C_TradeSkillUI.IsTradeSkillReady() and not C_TradeSkillUI.IsDataSourceChanging())
+	return not Environment.HasFeature(Environment.FEATURES.C_TRADE_SKILL_UI) or (C_TradeSkillUI.IsTradeSkillReady() and not C_TradeSkillUI.IsDataSourceChanging())
 end
 
 function State.GetCurrentProfession()
@@ -68,28 +69,25 @@ function State.GetSkillLine()
 end
 
 function State.IsNPC()
-	return not TSM.IsWowClassic() and C_TradeSkillUI.IsNPCCrafting()
+	return Environment.HasFeature(Environment.FEATURES.C_TRADE_SKILL_UI) and C_TradeSkillUI.IsNPCCrafting()
 end
 
 function State.IsLinked()
-	if TSM.IsWowVanillaClassic() then
+	if Environment.IsVanillaClassic() then
 		return nil, nil
-	elseif TSM.IsWowWrathClassic() then
-		return IsTradeSkillLinked()
-	else
+	elseif Environment.HasFeature(Environment.FEATURES.C_TRADE_SKILL_UI) then
 		return C_TradeSkillUI.IsTradeSkillLinked()
+	else
+		return IsTradeSkillLinked()
 	end
 end
 
 function State.IsGuild()
-	return not TSM.IsWowClassic() and C_TradeSkillUI.IsTradeSkillGuild()
+	return Environment.HasFeature(Environment.FEATURES.C_TRADE_SKILL_UI) and C_TradeSkillUI.IsTradeSkillGuild()
 end
 
 function State.GetLink()
-	if TSM.IsWowClassic() then
-		return nil
-	end
-	return C_TradeSkillUI.GetTradeSkillListLink()
+	return Environment.HasFeature(Environment.FEATURES.C_TRADE_SKILL_UI) and C_TradeSkillUI.GetTradeSkillListLink() or nil
 end
 
 
@@ -103,7 +101,7 @@ function private.CreateFSM()
 		private.readyTimer:RunForFrames(WAIT_FRAME_DELAY)
 		private.fsm:ProcessEvent("EV_FRAME_DELAY")
 	end)
-	if TSM.IsWowClassic() and not IsAddOnLoaded("Blizzard_CraftUI") then
+	if not Environment.HasFeature(Environment.FEATURES.C_TRADE_SKILL_UI) and not IsAddOnLoaded("Blizzard_CraftUI") then
 		LoadAddOn("Blizzard_CraftUI")
 	end
 	Event.Register("TRADE_SKILL_SHOW", function()
@@ -114,11 +112,21 @@ function private.CreateFSM()
 	end)
 	Event.Register("TRADE_SKILL_CLOSE", function()
 		private.tradeSkillOpen = false
-		if TSM.IsWowClassic() and not private.craftOpen then
+		if not Environment.HasFeature(Environment.FEATURES.C_TRADE_SKILL_UI) and not private.craftOpen then
 			private.fsm:ProcessEvent("EV_TRADE_SKILL_CLOSE")
 		end
 	end)
-	if TSM.IsWowClassic() then
+	if Environment.HasFeature(Environment.FEATURES.C_TRADE_SKILL_UI) then
+		Event.Register("GARRISON_TRADESKILL_NPC_CLOSED", function()
+			private.fsm:ProcessEvent("EV_TRADE_SKILL_CLOSE")
+		end)
+		Event.Register("TRADE_SKILL_DATA_SOURCE_CHANGED", function()
+			private.fsm:ProcessEvent("EV_TRADE_SKILL_DATA_SOURCE_CHANGED")
+		end)
+		Event.Register("TRADE_SKILL_DATA_SOURCE_CHANGING", function()
+			private.fsm:ProcessEvent("EV_TRADE_SKILL_DATA_SOURCE_CHANGING")
+		end)
+	else
 		Event.Register("CRAFT_SHOW", function()
 			private.craftOpen = true
 			private.fsm:ProcessEvent("EV_TRADE_SKILL_SHOW")
@@ -133,16 +141,6 @@ function private.CreateFSM()
 		end)
 		Event.Register("CRAFT_UPDATE", function()
 			private.fsm:ProcessEvent("EV_TRADE_SKILL_DATA_SOURCE_CHANGED")
-		end)
-	else
-		Event.Register("GARRISON_TRADESKILL_NPC_CLOSED", function()
-			private.fsm:ProcessEvent("EV_TRADE_SKILL_CLOSE")
-		end)
-		Event.Register("TRADE_SKILL_DATA_SOURCE_CHANGED", function()
-			private.fsm:ProcessEvent("EV_TRADE_SKILL_DATA_SOURCE_CHANGED")
-		end)
-		Event.Register("TRADE_SKILL_DATA_SOURCE_CHANGING", function()
-			private.fsm:ProcessEvent("EV_TRADE_SKILL_DATA_SOURCE_CHANGING")
 		end)
 	end
 	private.fsm = FSM.New("PROFESSION_STATE")
@@ -223,11 +221,11 @@ function private.RunCallbacks()
 end
 
 function private.GetSkillLine()
-	if TSM.IsWowClassic() then
-		local name = State.IsClassicCrafting() and GetCraftSkillLine(1) or GetTradeSkillLine()
-		return name
-	else
+	if Environment.HasFeature(Environment.FEATURES.C_TRADE_SKILL_UI) then
 		local info = C_TradeSkillUI.GetBaseProfessionInfo()
 		return info.parentProfessionName or info.professionName, info.profession
+	else
+		local name = State.IsClassicCrafting() and GetCraftSkillLine(1) or GetTradeSkillLine()
+		return name
 	end
 end

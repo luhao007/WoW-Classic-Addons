@@ -18,7 +18,7 @@ local _isBankOpen = false
 --
 local function scanBag(bagId, matchItem, usedItems)
 
-	local numSlots = GetContainerNumSlots(bagId)
+	local numSlots = C_Container.GetContainerNumSlots(bagId)
     
     if not usedItems[bagId] then
         usedItems[bagId] = {}
@@ -30,7 +30,7 @@ local function scanBag(bagId, matchItem, usedItems)
 
     for slotId = 1, numSlots do
         if not usedItems[bagId][slotId] then
-            local _, itemCount, _, _, _, _, itemLink = GetContainerItemInfo(bagId, slotId)
+            local itemLink = C_Container.GetContainerItemLink(bagId, slotId)
             if itemLink ~= nil then
                 local itemData = Amr.Serializer.ParseItemLink(itemLink)
                 if itemData ~= nil then                    
@@ -127,9 +127,9 @@ local function onItemClick(widget)
     local matchItem = findMatchingBagItem(item, {})
     if matchItem then
         if action == "scrap" then
-            UseContainerItem(matchItem.bagId, matchItem.slotId)
+            C_Container.UseContainerItem(matchItem.bagId, matchItem.slotId)
         elseif action == "sell" then
-            UseContainerItem(matchItem.bagId, matchItem.slotId)
+            C_Container.UseContainerItem(matchItem.bagId, matchItem.slotId)
         end
 
         -- note for disenchant, the macro has handled the action, this will simply remove the item from the list
@@ -171,7 +171,7 @@ finishBankWithdraw = function()
     if _isBankOpen and _bankUsedBagSlots then
         for bagId,v in pairs(_bankUsedBagSlots) do
             for slotId,v in pairs(v) do
-                local _, _, _, _, _, _, itemLink = GetContainerItemInfo(bagId, slotId)
+                local itemLink = C_Container.GetContainerItemLink(bagId, slotId)
                 if not itemLink then
                     done = false
                     break
@@ -238,7 +238,7 @@ doBankWithdraw = function()
             -- move it to the player's bags if there is space
             local bagId, slotId = Amr.FindFirstEmptyBagSlot(_bankUsedBagSlots)
             if bagId then
-                UseContainerItem(matchItem.bagId, matchItem.slotId)
+                C_Container.UseContainerItem(matchItem.bagId, matchItem.slotId)
             else
                 -- no more empty bag slots
                 break
@@ -496,7 +496,8 @@ local function renderItem(item, itemLink, scroll)
     lblItem:SetFont(Amr.CreateFont("Regular", 13, Amr.Colors.White))		
     lblItem:SetHoverBackgroundColor(Amr.Colors.Black, 0.3)
     lblItem:SetTextPadding(0, 0, 0, 5)
-    lblItem:SetCallback("PreClick", onItemPreClick)
+    lblItem:SetPreClick(onItemPreClick)
+    --lblItem:SetCallback("OnPreClick", onItemPreClick)
     lblItem:SetCallback("OnClick", onItemClick)
     lblItem:SetUserData("itemData", item)
 

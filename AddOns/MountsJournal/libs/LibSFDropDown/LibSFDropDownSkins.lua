@@ -1,4 +1,4 @@
-local lsfdd = LibStub("LibSFDropDown-1.4")
+local lsfdd = LibStub("LibSFDropDown-1.5")
 local cur_ver, ver = lsfdd._sv, 2
 if cur_ver and cur_ver >= ver then return end
 lsfdd._sv = ver

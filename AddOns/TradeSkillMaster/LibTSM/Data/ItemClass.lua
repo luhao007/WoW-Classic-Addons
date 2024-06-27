@@ -4,8 +4,9 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
-local ItemClass = TSM.Init("Data.ItemClass")
+local TSM = select(2, ...) ---@type TSM
+local ItemClass = TSM.Init("Data.ItemClass") ---@class Data.ItemClass
+local Environment = TSM.Include("Environment")
 local STATIC_DATA = {
 	classes = {},
 	subClasses = {},
@@ -22,7 +23,7 @@ local STATIC_DATA = {
 
 do
 	local ITEM_CLASS_IDS = nil
-	if not TSM.IsWowClassic() then
+	if Environment.IsRetail() then
 		ITEM_CLASS_IDS = {
 			Enum.ItemClass.Weapon,
 			Enum.ItemClass.Armor,
@@ -33,11 +34,12 @@ do
 			Enum.ItemClass.Glyph,
 			Enum.ItemClass.Tradegoods,
 			Enum.ItemClass.Recipe,
+			Enum.ItemClass.Profession,
 			Enum.ItemClass.Battlepet,
 			Enum.ItemClass.Questitem,
 			Enum.ItemClass.Miscellaneous,
 		}
-	elseif TSM.IsWowWrathClassic() then
+	elseif Environment.IsWrathClassic() or Environment.IsCataClassic() then
 		ITEM_CLASS_IDS = {
 			Enum.ItemClass.Weapon,
 			Enum.ItemClass.Armor,
@@ -52,7 +54,7 @@ do
 			Enum.ItemClass.Miscellaneous,
 			Enum.ItemClass.Questitem,
 		}
-	else
+	elseif Environment.IsVanillaClassic() then
 		ITEM_CLASS_IDS = {
 			Enum.ItemClass.Weapon,
 			Enum.ItemClass.Armor,
@@ -65,6 +67,8 @@ do
 			Enum.ItemClass.Reagent,
 			Enum.ItemClass.Miscellaneous,
 		}
+	else
+		error("Invalid game version")
 	end
 
 	for _, classId in ipairs(ITEM_CLASS_IDS) do
@@ -74,10 +78,10 @@ do
 			STATIC_DATA.classLookup[class] = {}
 			STATIC_DATA.classLookup[class]._index = classId
 			local subClasses = nil
-			if TSM.IsWowClassic() then
-				subClasses = {GetAuctionItemSubClasses(classId)}
-			else
+			if Environment.HasFeature(Environment.FEATURES.C_AUCTION_HOUSE) then
 				subClasses = C_AuctionHouse.GetAuctionItemSubClasses(classId)
+			else
+				subClasses = {GetAuctionItemSubClasses(classId)}
 			end
 			for _, subClassId in pairs(subClasses) do
 				local subClassName = GetItemSubClassInfo(classId, subClassId)

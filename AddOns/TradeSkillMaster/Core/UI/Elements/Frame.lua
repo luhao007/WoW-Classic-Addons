@@ -11,6 +11,11 @@ local Color = TSM.Include("Util.Color")
 local Theme = TSM.Include("Util.Theme")
 local Rectangle = TSM.Include("UI.Rectangle")
 local UIElements = TSM.Include("UI.UIElements")
+---@alias FrameLayout
+---|'"NONE"'
+---|'"HORIZONTAL"'
+---|'"VERTICAL"'
+---|'"FLOW"'
 local VALID_LAYOUTS = {
 	NONE = true,
 	HORIZONTAL = true,
@@ -39,7 +44,7 @@ local ROUNDED_CORNER_RADIUS = 4
 -- Public Class Methods
 -- ============================================================================
 
-function Frame.__init(self)
+function Frame:__init()
 	local frame = UIElements.CreateFrame(self, "Frame")
 
 	self.__super:__init(frame)
@@ -60,7 +65,7 @@ function Frame.__init(self)
 	self._scale = 1
 end
 
-function Frame.Release(self)
+function Frame:Release()
 	self._layout = "NONE"
 	self._backgroundColor = nil
 	self._roundedCorners = false
@@ -80,36 +85,50 @@ function Frame.Release(self)
 	self.__super:Release()
 end
 
---- Sets the background of the frame.
--- @tparam Frame self The frame object
--- @tparam ?string|Color|nil color The background color as a theme color key, Color object, or nil
--- @tparam[opt=false] boolean roundedCorners Whether or not the corners should be rounded
--- @treturn Frame The frame object
-function Frame.SetBackgroundColor(self, color, roundedCorners)
+---Sets the background of the frame.
+---@generic T: Frame
+---@param self T
+---@param color string|Color|nil The background color as a theme color key, Color object, or nil
+---@return T
+function Frame:SetBackgroundColor(color)
 	assert(color == nil or Color.IsInstance(color) or Theme.IsValidColor(color))
 	self._backgroundColor = color
-	self._roundedCorners = roundedCorners
+	self._roundedCorners = false
 	return self
 end
 
---- Sets the border color of the frame.
--- @tparam Frame self The frame object
--- @tparam ?string|nil color The border color as a theme color key or nil
--- @tparam[opt=1] ?number borderSize The border size
--- @treturn Frame The frame object
-function Frame.SetBorderColor(self, color, borderSize)
+---Sets the background color for the frame with rounded corners.
+---@generic T: Frame
+---@param self T
+---@param color any
+---@return T
+function Frame:SetRoundedBackgroundColor(color)
+	assert(color == nil or Color.IsInstance(color) or Theme.IsValidColor(color))
+	self._backgroundColor = color
+	self._roundedCorners = true
+	return self
+end
+
+---Sets the border color of the frame.
+---@generic T: Frame
+---@param self T
+---@param color? string The border color as a theme color key or nil
+---@param borderSize? number The border size (defaults to 1)
+---@return T
+function Frame:SetBorderColor(color, borderSize)
 	assert(color == nil or Color.IsInstance(color) or Theme.IsValidColor(color))
 	self._borderColor = color
 	self._borderSize = borderSize or 1
 	return self
 end
 
---- Sets the width of the frame.
--- @tparam Frame self The frame object
--- @tparam ?number|string width The width of the frame, "EXPAND" to set the width to expand to be
--- as large as possible, or nil to have an undefined width
--- @treturn Frame The frame object
-function Frame.SetWidth(self, width)
+---Sets the width of the frame
+---@generic T: Frame
+---@param self T
+---@param width? number|"EXPAND" The width of the frame, "EXPAND" to set the width to expand to be
+---as large as possible, or nil to have an undefined width
+---@return T
+function Frame:SetWidth(width)
 	if width == "EXPAND" then
 		self._expandWidth = true
 	else
@@ -118,116 +137,128 @@ function Frame.SetWidth(self, width)
 	return self
 end
 
---- Sets the parent frame.
--- @tparam Frame self The frame object
--- @tparam frame parent The WoW frame to parent to
--- @treturn Frame The frame object
-function Frame.SetParent(self, parent)
+---Sets the parent frame.
+---@generic T: Frame
+---@param self T
+---@param parent frame The WoW frame to parent to
+---@return T
+function Frame:SetParent(parent)
 	self:_GetBaseFrame():SetParent(parent)
 	return self
 end
 
---- Sets the level of the frame.
--- @tparam Frame self The frame object
--- @tparam number level The frame level
--- @treturn Frame The frame object
-function Frame.SetFrameLevel(self, level)
+---Sets the level of the frame.
+---@generic T: Frame
+---@param self T
+---@param level number The frame level
+---@return Frame
+function Frame:SetFrameLevel(level)
 	self:_GetBaseFrame():SetFrameLevel(level)
 	return self
 end
 
---- Sets the strata of the frame.
--- @tparam Frame self The frame object
--- @tparam string strata The frame strata
--- @treturn Frame The frame object
-function Frame.SetStrata(self, strata)
+---Sets the strata of the frame.
+---@generic T: Frame
+---@param self T
+---@param strata string The frame strata
+---@return T
+function Frame:SetStrata(strata)
 	self._strata = strata
 	return self
 end
 
---- Sets the scale of the frame.
--- @tparam Frame self The frame object
--- @tparam string scale The frame scale
--- @treturn Frame The frame object
-function Frame.SetScale(self, scale)
+---Sets the scale of the frame.
+---@generic T: Frame
+---@param self T
+---@param scale string The frame scale
+---@return T
+function Frame:SetScale(scale)
 	self._scale = scale
 	return self
 end
 
---- Sets the layout of the frame.
--- @tparam Frame self The frame object
--- @tparam string layout The frame layout (`NONE`, `HORIZONTAL`, `VERTICAL`, or `FLOW`)
--- @treturn Frame The frame object
-function Frame.SetLayout(self, layout)
+---Sets the layout of the frame.
+---@generic T: Frame
+---@param self T
+---@param layout FrameLayout The frame layout
+---@return T
+function Frame:SetLayout(layout)
 	assert(VALID_LAYOUTS[layout], format("Invalid layout (%s)", tostring(layout)))
 	self._layout = layout
 	return self
 end
 
---- Sets whether mouse interaction is enabled.
--- @tparam Frame self The frame object
--- @tparam boolean enabled Whether mouse interaction is enabled
--- @treturn Frame The frame object
-function Frame.SetMouseEnabled(self, enabled)
+---Sets whether mouse interaction is enabled.
+---@generic T: Frame
+---@param self T
+---@param enabled boolean Whether mouse interaction is enabled
+---@return T
+function Frame:SetMouseEnabled(enabled)
 	self:_GetBaseFrame():EnableMouse(enabled)
 	return self
 end
 
---- Sets whether mouse wheel interaction is enabled.
--- @tparam Frame self The frame object
--- @tparam boolean enabled Whether mouse wheel interaction is enabled
--- @treturn Frame The frame object
-function Frame.SetMouseWheelEnabled(self, enabled)
+---Sets whether mouse wheel interaction is enabled.
+---@generic T: Frame
+---@param self T
+---@param enabled boolean Whether mouse wheel interaction is enabled
+---@return T
+function Frame:SetMouseWheelEnabled(enabled)
 	self:_GetBaseFrame():EnableMouseWheel(enabled)
 	return self
 end
 
---- Allows dragging of the frame.
--- @tparam Frame self The frame object
--- @tparam string button The button to support dragging with
--- @treturn Frame The frame object
-function Frame.RegisterForDrag(self, button)
+---Allows dragging of the frame.
+---@generic T: Frame
+---@param self T
+---@param button string The button to support dragging with
+---@return T
+function Frame:RegisterForDrag(button)
 	self:SetMouseEnabled(button and true or false)
 	self:_GetBaseFrame():RegisterForDrag(button)
 	return self
 end
 
---- Gets whether the mouse is currently over the frame.
--- @tparam Frame self The frame object
--- @treturn boolean Whether or not the mouse is over the frame
-function Frame.IsMouseOver(self)
+---Gets whether the mouse is currently over the frame.
+---@return boolean
+function Frame:IsMouseOver()
 	return self:_GetBaseFrame():IsMouseOver()
 end
 
---- Sets the hit rectangle insets.
--- @tparam Frame self The frame object
--- @tparam number left The left hit rectangle inset
--- @tparam number right The right hit rectangle inset
--- @tparam number top The top hit rectangle inset
--- @tparam number bottom The bottom hit rectangle inset
--- @treturn Frame The frame object
-function Frame.SetHitRectInsets(self, left, right, top, bottom)
+---Sets the hit rectangle insets.
+---@generic T: Frame
+---@param self T
+---@param left number The left hit rectangle inset
+---@param right number The right hit rectangle inset
+---@param top number The top hit rectangle inset
+---@param bottom number The bottom hit rectangle inset
+---@return T
+function Frame:SetHitRectInsets(left, right, top, bottom)
 	self:_GetBaseFrame():SetHitRectInsets(left, right, top, bottom)
 	return self
 end
 
---- Makes the element movable and starts moving it.
--- @tparam Frame self The element object
-function Frame.StartMoving(self)
+---Makes the element movable and starts moving it.
+---@generic T: Frame
+---@param self T
+---@return T
+function Frame:StartMoving()
 	self:_GetBaseFrame():SetMovable(true)
 	self:_GetBaseFrame():StartMoving()
 	return self
 end
 
---- Stops moving the element, and makes it unmovable.
--- @tparam Frame self The element object
-function Frame.StopMovingOrSizing(self)
+---Stops moving the element, and makes it unmovable.
+---@generic T: Frame
+---@param self T
+---@return T
+function Frame:StopMovingOrSizing()
 	self:_GetBaseFrame():StopMovingOrSizing()
 	self:_GetBaseFrame():SetMovable(false)
 	return self
 end
 
-function Frame.Draw(self)
+function Frame:Draw()
 	local layout = self._layout
 	self.__super.__super:Draw()
 	local frame = self:_GetBaseFrame()
@@ -370,7 +401,7 @@ end
 -- Private Class Methods
 -- ============================================================================
 
-function Frame._GetMinimumDimension(self, dimension)
+function Frame:_GetMinimumDimension(dimension)
 	assert(dimension == "WIDTH" or dimension == "HEIGHT")
 	local styleResult = nil
 	if dimension == "WIDTH" then

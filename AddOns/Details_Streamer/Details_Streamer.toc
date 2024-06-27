@@ -7,6 +7,7 @@
 ## Title-zhCN: |cFFFFE00A<|r|cFFC79C6E战斗|r|cFFFFE00A>|r |cFFFFFFFF伤害统计|r |cFF69CCF0插件|r |cFF22B14C施法序列|r
 ## Notes-zhCN: 在屏幕上显示你的施法队列，帮助你的观众了解你的手法
 
+## X-Wago-ID: VBNB9MGx
 ## X-Part-Of: Details
 
 #@no-lib-strip@

@@ -37,7 +37,7 @@ Prat:AddModuleToLoad(function()
 
   local PL = module.PL
 
-  --[===[@debug@
+  --[==[@debug@
   PL:AddLocale(PRAT_MODULE, "enUS", {
     module_desc = "Adds chat related keybindings",
     ["Prat Keybindings"] = true,
@@ -58,7 +58,7 @@ Prat:AddModuleToLoad(function()
     ["Smart Group Channel"] = true,
     ["Next Chat Tab"] = true
   })
-  --@end-debug@]===]
+  --@end-debug@]==]
 
   -- These Localizations are auto-generated. To help with localization
   -- please go to http://www.wowace.com/projects/prat-3-0/localization/
@@ -132,7 +132,7 @@ L = {
 		["Copy Selected Chat Frame"] = "Ausgewähltes Chatfenster kopieren",
 		["Guild Channel"] = "Gildenkanal",
 		["Instance Channel"] = "Instanzkanal",
-		["module_desc"] = "Fügt chatbezogene Tastenkombinationen hinzu",
+		["module_desc"] = "Fügt chatbezogene Tastenbelegungen hinzu",
 		["Next Chat Tab"] = "Nächster Chatreiter",
 		["Officer Channel"] = "Offizierskanal",
 		["Party Channel"] = "Gruppenkanal",

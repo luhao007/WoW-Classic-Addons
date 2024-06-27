@@ -1,6 +1,6 @@
 ﻿-- Pawn by Vger-Azjol-Nerub
 -- www.vgermods.com
--- © 2006-2023 Travis Spomer.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
+-- © 2006-2024 Travis Spomer.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
 -- See Readme.htm for more information.
 
 --
@@ -286,7 +286,7 @@ Para más información sobre como personalizar Pawn, por favor lee el archivo (R
 		["AllStats"] = "^%+?# todas las estadísticas$",
 		["Ap"] = "^%+?# [Pp]oder de ataque$",
 		["Ap2"] = "^Equipar: Aumenta # p%. el poder de ataque%.$",
-		["Ap3"] = "^UNUSED$",
+		["Ap3"] = "^Equipar: Aumenta el poder de ataque # p%.$",
 		["ArcaneResist"] = "^%+?# resistencia a Arcano$",
 		["ArcaneSpellDamage"] = "^%+# daño con hechizos Arcano$",
 		["ArcaneSpellDamage2"] = "^Equipar: Aumenta hasta # p%. el daño que infligen los hechizos y efectos Arcanos%.$",
@@ -295,7 +295,7 @@ Para más información sobre como personalizar Pawn, por favor lee el archivo (R
 		["Armor2"] = "^UNUSED$",
 		["ArmorPenetration"] = "^Equipar: Tus ataques ignoran # p%. de la armadura de tu oponente%.$",
 		["ArmorPenetrationRating"] = "^Equipar: Aumenta el índice de penetración de armadura # p%.$",
-		["ArmorPenetrationRating2"] = "^UNUSED$",
+		["ArmorPenetrationRating2"] = "^Equipar: Aumenta # p%. la penetración de armadura%.$",
 		["ArmorPenetrationShort"] = "^%+?# índice de penetración de armadura$",
 		["Avoidance"] = "^%+# eludir$",
 		["Axe"] = "^Hacha$",
@@ -314,6 +314,7 @@ Para más información sobre como personalizar Pawn, por favor lee el archivo (R
 		["Crit"] = "^%+?# golpe crítico%.?$",
 		["Crit2"] = "^UNUSED$",
 		["CritPercent"] = "^Equipar: Mejora un #%% tu probabilidad de conseguir un golpe crítico%.$",
+		["CritPercentCombined"] = "^Equipar: Mejora un #%% tu probabilidad de obtener un golpe crítico con todos tus hechizos y ataques%.$",
 		["CritRating"] = "^Equipar: Aumenta tu índice de golpe crítico e?n? ?# p%.$",
 		["CritRating2"] = "^Equipar: Mejora el índice de golpe crítico en # p%.$",
 		["CritRating3"] = "^Equipar: Aumenta # p%. el golpe crítico%.$",
@@ -380,6 +381,7 @@ Para más información sobre como personalizar Pawn, por favor lee el archivo (R
 		["HeroicWarforged"] = "^Heroico Forjas de la guerra$",
 		["Hit"] = "^Equipar: Mejora tu probabilidad de golpear un #%%%.$",
 		["Hit2"] = "^UNUSED$",
+		["HitPercentCombined"] = "^Equipar: Mejora un #%% tu probabilidad de golpear con todos tus hechizos y ataques%.$",
 		["HitRating"] = "^Equipar: Aumenta # p%. el golpe%.$",
 		["HitRating2"] = "^Equipar: Aumenta tu índice de golpe e?n? ?# p%.$",
 		["HitRating3"] = "^Equipar: Mejora el índice de golpe e?n? ?# p%.$",
@@ -729,8 +731,6 @@ Atajo: Shift+click en una escala]=],
 		["ValuesDoNotShowUpgradesFor1H"] = "No mostrar mejoras para objectos de Una Mano",
 		["ValuesDoNotShowUpgradesFor2H"] = "No mostrar mejoras para objetos de Dos Manos",
 		["ValuesDoNotShowUpgradesTooltip"] = "Habilita ésta opción para no mostrar las mejoras de este tipo de objeto.  Por ejemplo, aunque los tanques paladín pueden usar armas de dos manos, un arma de dos manos nunca en una \"mejora\" para un set de paladín tanque, de forma que Pawn no debería mostrar notificaciones de mejora para esas armas.  De forma similar, los paladines reprensión pueden usar armas de una mano, pero éstas nunca son mejoras.",
-		["ValuesFollowSpecialization"] = "Sólo mostrar mejoras para mi especialización de armadura tras el nivel %d",
-		["ValuesFollowSpecializationTooltip"] = "Habilita ésta opción para no mostrar mejoras para armaduras que no se corresponden con la especialización de tu clase tras el nivel %d.  Por ejemplo. al nivel %d los paladines sagrados aprenden Especialización en Placas, que incrementa su intelecto un 5%% cuando equipan sólo armaduras de placas.  Cuando se elige ésta opción Pawn nunca considerará tela, cuero o malla como mejoras para paladines sagrados de nivel %d o más.",
 		["ValuesHeader"] = "Valores de escala para %s",
 		["ValuesIgnoreItemType"] = "Los objetos con éste atributo son inutilizables",
 		["ValuesIgnoreStat"] = "Los objetos con éste atributo son inutilizables",
@@ -851,6 +851,8 @@ if GetLocale() == "esES" then
 		{
 			["Ap2"] = "^Equipar: %+# p%. de poder de ataque%.$",
 			["ArcaneResist"] = "^%+?# Arcano Resistencia$",
+			["CritPercentCombined"] = "^Equipar: Mejora tu probabilidad de conseguir un golpe crítico con todos los hechizos y ataques un #%%%.$",
+			["HitPercentCombined"] = "^Equipar: Mejora un #%% tu probabilidad de golpear con todos los hechizos y ataques%.$",
 			["FireResist"] = "^%+?# Fuego Resistencia$",
 			["FrostResist"] = "^%+?# Escarcha Resistencia$",
 			["NatureResist"] = "^%+?# Naturaleza Resistencia$",
@@ -922,6 +924,7 @@ if GetLocale() == "esES" then
 
 		local TooltipParsing_BurningCrusade =
 		{
+			["ArmorPenetrationRating2"] = "^Equipar: Aumenta la penetración de armadura # p%.$",
 			["SpellDamage2"] = "^Equipar: Aumenta el daño y la sanación de los hechizos mágicos y los efectos hasta en # p%.$",
 			["ArcaneSpellDamage"] = "^%+?# daño con hechizos Arcano$",
 			["FireSpellDamage"] = "^%+?# daño con hechizos de Fuego$",

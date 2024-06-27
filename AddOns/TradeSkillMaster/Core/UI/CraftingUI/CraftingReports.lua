@@ -4,7 +4,7 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local CraftingReports = TSM.UI.CraftingUI:NewPackage("CraftingReports")
 local L = TSM.Include("Locale").GetTable()
 local CraftString = TSM.Include("Util.CraftString")
@@ -15,6 +15,7 @@ local Money = TSM.Include("Util.Money")
 local String = TSM.Include("Util.String")
 local ItemString = TSM.Include("Util.ItemString")
 local Theme = TSM.Include("Util.Theme")
+local GroupPath = TSM.Include("Util.GroupPath")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local Settings = TSM.Include("Service.Settings")
 local CustomPrice = TSM.Include("Service.CustomPrice")
@@ -56,6 +57,7 @@ function private.GetCraftingReportsFrame()
 	if not private.craftsQuery then
 		private.craftsQuery = TSM.Crafting.CreateCraftsQuery()
 		private.craftsQuery:VirtualField("firstOperation", "string", private.FirstOperationVirtualField, "itemString")
+		private.craftsQuery:VirtualField("itemName", "string", ItemInfo.GetName, "itemString", "?")
 	end
 	private.craftsQuery:ResetFilters()
 	private.craftsQuery:ResetOrderBy()
@@ -345,7 +347,7 @@ end
 -- ============================================================================
 
 function private.CraftsGetCraftNameText(row)
-	return UIUtils.GetColoredItemName(row:GetField("itemString")) or row:GetField("name")
+	return UIUtils.GetDisplayItemName(row:GetField("itemString")) or row:GetField("name")
 end
 
 function private.CraftsGetBagsText(bagQuantity)
@@ -386,7 +388,7 @@ function private.CraftsGetSaleRateText(saleRate)
 end
 
 function private.MatsGetNameText(itemString)
-	return UIUtils.GetColoredItemName(itemString) or UIUtils.GetColoredItemName(ItemString.GetUnknown())
+	return UIUtils.GetDisplayItemName(itemString) or UIUtils.GetDisplayItemName(ItemString.GetUnknown())
 end
 
 function private.MatsGetPriceText(matCost)
@@ -455,7 +457,7 @@ function private.MatsOnRowClick(scrollingTable, row)
 			:SetHeight(36)
 			:SetPadding(6)
 			:SetMargin(0, 0, 0, 10)
-			:SetBackgroundColor("PRIMARY_BG_ALT", true)
+			:SetRoundedBackgroundColor("PRIMARY_BG_ALT")
 			:SetContext(itemString)
 			:AddChild(UIElements.New("Button", "icon")
 				:SetWidth(24)
@@ -466,7 +468,7 @@ function private.MatsOnRowClick(scrollingTable, row)
 			:AddChild(UIElements.New("Text", "name")
 				:SetMargin(0, 8, 0, 0)
 				:SetFont("ITEM_BODY1")
-				:SetText(UIUtils.GetColoredItemName(itemString))
+				:SetText(UIUtils.GetDisplayItemName(itemString))
 			)
 			:AddChild(UIElements.New("Button", "resetBtn")
 				:SetWidth("AUTO")
@@ -584,7 +586,7 @@ function private.CraftsMenuClickHandler(scrollingTable, index1, index2)
 		local numCreated, numAdded = 0, 0
 		for _, row in private.craftsQuery:Iterator() do
 			local itemString = row:GetField("itemString")
-			local groupPath = TSM.Groups.Path.Join(L["Crafted Items"], row:GetField("profession"))
+			local groupPath = GroupPath.Join(L["Crafted Items"], row:GetField("profession"))
 			if not TSM.Groups.Exists(groupPath) then
 				TSM.Groups.Create(groupPath)
 				numCreated = numCreated + 1

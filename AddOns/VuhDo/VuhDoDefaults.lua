@@ -117,12 +117,59 @@ local VUHDO_DEFAULT_MODELS = {
 
 
 local VUHDO_DEFAULT_RANGE_SPELLS = {
-	["PALADIN"] = VUHDO_SPELL_ID.FLASH_OF_LIGHT,
-	["SHAMAN"] = VUHDO_SPELL_ID.HEALING_WAVE,
-	["DRUID"] = VUHDO_SPELL_ID.REJUVENATION,
-	["PRIEST"] = VUHDO_SPELL_ID.HEAL,
-	["MONK"] = VUHDO_SPELL_ID.DETOX,
-}
+	["WARRIOR"] = {
+		["HELPFUL"] = { }, -- FIXME: anything?
+		["HARMFUL"] = { VUHDO_SPELL_ID.TAUNT },
+	},
+	["ROGUE"] = {
+		["HELPFUL"] = { VUHDO_SPELL_ID.SHADOWSTEP },
+		["HARMFUL"] = { VUHDO_SPELL_ID.SHADOWSTEP },
+	},
+	["HUNTER"] = {
+		["HELPFUL"] = { }, -- FIXME: anything?
+		["HARMFUL"] = { 193455, 19434, 132031 }, -- VUHDO_SPELL_ID.COBRA_SHOT, VUHDO_SPELL_ID.AIMED_SHOT, VUHDO_SPELL_ID.STEADY_SHOT
+	},
+	["PALADIN"] = {
+		["HELPFUL"] = { VUHDO_SPELL_ID.FLASH_OF_LIGHT },
+		["HARMFUL"] = { VUHDO_SPELL_ID.HAND_OF_RECKONING },
+	},
+	["MAGE"] = {
+		["HELPFUL"] = { VUHDO_SPELL_ID.ARCANE_INTELLECT },
+		["HARMFUL"] = { 116, 30451, 133 }, -- VUHDO_SPELL_ID.FROSTBOLT, VUHDO_SPELL_ID.ARCANE_BLAST, VUHDO_SPELL_ID.FIREBALL
+	},
+	["WARLOCK"] = {
+		["HELPFUL"] = { VUHDO_SPELL_ID.SOULSTONE },
+		["HARMFUL"] = { VUHDO_SPELL_ID.SHADOW_BOLT },
+	},
+	["SHAMAN"] = {
+		["HELPFUL"] = { VUHDO_SPELL_ID.HEALING_WAVE },
+		["HARMFUL"] = { VUHDO_SPELL_ID.LIGHTNING_BOLT },
+	},
+	["DRUID"] = {
+		["HELPFUL"] = { VUHDO_SPELL_ID.REJUVENATION },
+		["HARMFUL"] = { VUHDO_SPELL_ID.MOONFIRE },
+	},
+	["PRIEST"] = {
+		["HELPFUL"] = { VUHDO_SPELL_ID.FLASH_HEAL },
+		["HARMFUL"] = { VUHDO_SPELL_ID.SMITE },
+	},
+	["DEATHKNIGHT"] = {
+		["HELPFUL"] = { 47541 }, -- VUHDO_SPELL_ID.DEATH_COIL
+		["HARMFUL"] = { 47541, 49576 }, -- VUHDO_SPELL_ID.DEATH_COIL, VUHDO_SPELL_ID.DEATH_GRIP
+	},
+	["MONK"] = {
+		["HELPFUL"] = { VUHDO_SPELL_ID.DETOX },
+		["HARMFUL"] = { VUHDO_SPELL_ID.PROVOKE },
+	},
+	["DEMONHUNTER"] = {
+		["HELPFUL"] = { }, -- FIXME: anything?
+		["HARMFUL"] = { VUHDO_SPELL_ID.THROW_GLAIVE },
+	},
+	["EVOKER"] = {
+		["HELPFUL"] = { VUHDO_SPELL_ID.LIVING_FLAME },
+		["HARMFUL"] = { VUHDO_SPELL_ID.LIVING_FLAME },
+	},
+};
 
 
 
@@ -228,6 +275,22 @@ local VUHDO_CLASS_DEFAULT_SPELL_ASSIGNMENT = {
 		["shift2"] = { "shift-", "2", VUHDO_SPELL_ID.REVIVAL },
 	},
 
+	["EVOKER"] = {
+		["1"] = { "", "1", VUHDO_SPELL_ID.LIVING_FLAME },
+		["2"] = { "", "2", VUHDO_SPELL_ID.EMERALD_BLOSSOM },
+		["3"] = { "", "3", "menu"},
+		["4"] = { "", "4", VUHDO_SPELL_ID.ECHO },
+		["5"] = { "", "5", VUHDO_SPELL_ID.DREAM_BREATH },
+
+		["alt1"] = { "alt-", "1", "target" },
+		["alt2"] = { "alt-", "2", "focus" },
+
+		["ctrl1"] = { "ctrl-", "1", VUHDO_SPELL_ID.NATURALIZE },
+		["ctrl2"] = { "ctrl-", "2", VUHDO_SPELL_ID.CAUTERIZING_FLAME },
+
+		["shift1"] = { "shift-", "1", VUHDO_SPELL_ID.ZEPHYR },
+		["shift2"] = { "shift-", "2", VUHDO_SPELL_ID.DREAM_FLIGHT },
+	},
 };
 
 
@@ -390,27 +453,32 @@ end
 
 --
 local function VUHDO_makeFullColorWoOpacity(...)
+
 	local tColor = VUHDO_makeFullColor(...);
 	
 	tColor["useOpacity"] = false;
 	
 	return tColor;
+
 end
 
 
 
 --
 local function VUHDO_makeHotColor(...)
-	local tColor = VUHDO_makeFullColor(...);
 	
+	local tColor = VUHDO_makeFullColor(...);
+
+	tColor["useOpacity"] = tColor["O"] and true or false;
+
 	tColor["isFullDuration"] = false;
 	tColor["isClock"] = false;
 	tColor["countdownMode"] = 1;
-	tColor["useOpacity"] = false;
 	tColor["isFadeOut"] = false;
 	tColor["isFlashWhenLow"] = false;
 	
 	return tColor;
+
 end
 
 
@@ -494,6 +562,7 @@ local function VUHDO_spellTraceAddDefaultSettings(aSpellName)
 			["isMine"] = VUHDO_CONFIG["SPELL_TRACE"]["isMine"],
 			["isOthers"] = VUHDO_CONFIG["SPELL_TRACE"]["isOthers"],
 			["duration"] = VUHDO_CONFIG["SPELL_TRACE"]["duration"],
+			["isIncoming"] = VUHDO_CONFIG["SPELL_TRACE"]["isIncoming"],
 		}
 	end
 
@@ -648,6 +717,11 @@ local VUHDO_DEFAULT_CONFIG = {
 		["showTrailOfLight"] = false,
 		["SELECTED"] = "",
 		["STORED"] = { },
+		["isIncoming"] = false,
+		["showIncomingFriendly"] = false,
+		["showIncomingEnemy"] = false,
+		["showIncomingAll"] = false,
+		["showIncomingBossOnly"] = false,
 	},
 
 	["THREAT"] = {
@@ -690,8 +764,14 @@ local VUHDO_DEFAULT_CONFIG = {
 	["UPDATE_HOTS_MS"] = 250,
 	["SCAN_RANGE"] = "2", -- 0=all, 2=100 yards, 3=40 yards
 
-	["RANGE_SPELL"] = "",
-	["RANGE_PESSIMISTIC"] = true,
+	["RANGE_SPELL"] = {
+		["HELPFUL"] = "",
+		["HARMFUL"] = "",
+	},
+	["RANGE_PESSIMISTIC"] = {
+		["HELPFUL"] = true,
+		["HARMFUL"] = true,
+	},
 
 	["IS_SHOW_GCD"] = false,
 	["IS_SCAN_TALENTS"] = true,
@@ -796,6 +876,7 @@ local VUHDO_DEFAULT_SPELL_TRACE_STORED_SETTINGS = {
 	["isMine"] = true,
 	["isOthers"] = false,
 	["duration"] = 2,
+	["isIncoming"] = false,
 };
 
 
@@ -832,17 +913,12 @@ end
 --
 function VUHDO_loadDefaultConfig()
 	local tClass;
-	 _, tClass = UnitClass("player");
+	_, tClass = UnitClass("player");
 
 	if (VUHDO_CONFIG == nil) then
 		VUHDO_CONFIG = VUHDO_decompressOrCopy(VUHDO_DEFAULT_CONFIG);
-
-		if (VUHDO_DEFAULT_RANGE_SPELLS[tClass] ~= nil) then
-			VUHDO_CONFIG["RANGE_SPELL"] = VUHDO_DEFAULT_RANGE_SPELLS[tClass];
-			VUHDO_CONFIG["RANGE_PESSIMISTIC"] = false;
-		end
 	end
-
+	
 	VUHDO_CONFIG["BLIZZ_UI_HIDE_PLAYER"] = VUHDO_convertToTristate(VUHDO_CONFIG["BLIZZ_UI_HIDE_PLAYER"], 3, 2);
 	VUHDO_CONFIG["BLIZZ_UI_HIDE_PARTY"] = VUHDO_convertToTristate(VUHDO_CONFIG["BLIZZ_UI_HIDE_PARTY"], 3, 2);
 	VUHDO_CONFIG["BLIZZ_UI_HIDE_TARGET"] = VUHDO_convertToTristate(VUHDO_CONFIG["BLIZZ_UI_HIDE_TARGET"], 3, 2);
@@ -857,6 +933,27 @@ function VUHDO_loadDefaultConfig()
 	if ((VUHDO_CONFIG["VERSION"] or 1) < 4) then
 		VUHDO_CONFIG["IS_SHARE"] = true;
 		VUHDO_CONFIG["VERSION"] = 4;
+	end
+
+	if (VUHDO_DEFAULT_RANGE_SPELLS[tClass] ~= nil) then
+		for tUnitReaction, tRangeSpells in pairs(VUHDO_DEFAULT_RANGE_SPELLS[tClass]) do
+			local tIsGuessRange = true;
+
+			if VUHDO_strempty(VUHDO_CONFIG["RANGE_SPELL"][tUnitReaction]) then
+				for _, tRangeSpell in pairs(tRangeSpells) do
+					if type(tRangeSpell) == "number" then
+						tRangeSpell = IsPlayerSpell(tRangeSpell) and GetSpellInfo(tRangeSpell) or "!";
+					end
+
+					if tRangeSpell ~= "!" then
+						VUHDO_CONFIG["RANGE_SPELL"][tUnitReaction] = tRangeSpell;
+						tIsGuessRange = false;
+					end
+				end
+
+				VUHDO_CONFIG["RANGE_PESSIMISTIC"][tUnitReaction] = tIsGuessRange;
+			end
+		end
 	end
 
 	-- 3.4.0 - Wrath of the Lich King Classic - phase 1
@@ -1078,7 +1175,7 @@ local VUHDO_DEFAULT_PANEL_SETUP = {
 		[5] = true,
 		[6] = true,
 		[7] = true,
-		[8] = true
+		[8] = true,
 	},
 
 	["HOTS"] = {
@@ -1155,7 +1252,7 @@ local VUHDO_DEFAULT_PANEL_SETUP = {
 			["R"] = 0,	["G"] = 1,	["B"] = 0,	["O"] = 1,
 			["useText"] = true, ["useBackground"] = true, ["useOpacity"] = true,
 			["modeText"] = 2, -- 1=enemy, 2=solid, 3=class color, 4=gradient
-			["modeBack"] = 1
+			["modeBack"] = 1,
 		},
 
 		["IRRELEVANT"] =  {
@@ -1335,6 +1432,7 @@ local VUHDO_DEFAULT_PER_PANEL_SETUP = {
 		["ordering"] = VUHDO_ORDERING_STRICT,
 		["sort"] = VUHDO_SORT_RAID_UNITID,
 		["isReverse"] = false,
+		["isPetsLast"] = false,
 	},
 --[[
 	["POSITION"] = {
@@ -1380,7 +1478,7 @@ local VUHDO_DEFAULT_PER_PANEL_SETUP = {
 		["showTot"] = false,
 		["totSpacing"] = 3,
 		["totWidth"] = 30,
-		["targetOrientation"] = 1;
+		["targetOrientation"] = 1,
 
 		["isTarClassColText"] = true,
 		["isTarClassColBack"] = false,
@@ -1400,7 +1498,8 @@ local VUHDO_DEFAULT_PER_PANEL_SETUP = {
 		["position"] = VUHDO_LT_POS_ABOVE,
 		["verbose"] = false,
 		["hideIrrelevant"] = false,
-		["showTotalHp"] = false;
+		["showTotalHp"] = false,
+		["showEffectiveHp"] = false,
 	},
 
 	["ID_TEXT"] = {
@@ -1471,6 +1570,14 @@ local VUHDO_DEFAULT_PER_PANEL_SETUP = {
 		},
 	},
 
+	["PRIVATE_AURA"] = {
+		["show"] = true,
+		["scale"] = 0.8,
+		["point"] = "LEFT",
+		["xAdjust"] = 5,
+		["yAdjust"] = 0,
+	},
+
 	["RAID_ICON"] = {
 		["show"] = true,
 		["scale"] = 1,
@@ -1523,9 +1630,7 @@ function VUHDO_loadDefaultPanelSetup()
 				tAktPanel["PANEL_COLOR"]["TEXT"]["textSize"] = 12;
 			end
 		end
-	end
 
-	for tPanelNum = 1, 10 do -- VUHDO_MAX_PANELS
 		if not VUHDO_PANEL_SETUP[tPanelNum]["POSITION"] and tPanelNum == 1 then
 			VUHDO_PANEL_SETUP[tPanelNum]["POSITION"] = {
 				["x"] = 130,
@@ -1633,6 +1738,7 @@ VUHDO_DEFAULT_USER_CLASS_COLORS = {
 	[VUHDO_ID_DEATH_KNIGHT]  = VUHDO_makeFullColor(0.77, 0.12, 0.23, 1,   0.87, 0.22, 0.33, 1),
 	[VUHDO_ID_MONKS]         = VUHDO_makeFullColor(0,    1,    0.59, 1,   0,    1,    0.69, 1),
 	[VUHDO_ID_DEMON_HUNTERS] = VUHDO_makeFullColor(0.54, 0.09, 0.69, 1,   0.64, 0.19, 0.79, 1),
+	[VUHDO_ID_EVOKERS]       = VUHDO_makeFullColor(0.10, 0.48, 0.40, 1,   0.20, 0.58, 0.50, 1),
 	[VUHDO_ID_PETS]          = VUHDO_makeFullColor(0.4,  0.6,  0.4,  1,   0.5,  0.9,  0.5,  1),
 	["petClassColor"] = false,
 }

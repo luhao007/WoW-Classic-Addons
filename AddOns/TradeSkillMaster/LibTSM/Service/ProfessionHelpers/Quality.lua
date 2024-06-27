@@ -18,6 +18,20 @@ local private = {
 }
 local NUM_QUALITY_MAT_QUALITIES = 3
 local MAX_QUALITY_MAT_DIFFICULTY_RATIO = 0.25
+local SKILL_PER_TARGET_QUALITY = {
+	[3] = {
+		0,
+		0.5,
+		1.0,
+	},
+	[5] = {
+		0,
+		0.2,
+		0.5,
+		0.8,
+		1.0,
+	},
+}
 
 
 
@@ -25,29 +39,32 @@ local MAX_QUALITY_MAT_DIFFICULTY_RATIO = 0.25
 -- Module Functions
 -- ============================================================================
 
-function Quality.GetNeededSkill(targetQuality, recipeDifficulty, recipeQuality, recipeMaxQuality)
+function Quality.GetNeededSkill(targetQuality, recipeDifficulty, recipeQuality, recipeMaxQuality, hasQualityMats, inspirationAmount)
 	if recipeMaxQuality == 1 then
 		-- This recipe has quality mats, but doesn't produce a quality item
 		return 0, math.huge, 0
 	end
 	-- Calculate how much skill we need to add in order to craft the target item
-	local difficultyPerQuality = recipeDifficulty / (recipeMaxQuality - 1)
 	local neededSkill, maxAddedSkill = 0, 0
 	local minQuality = floor(recipeQuality)
+	local skillPerTargetQuality = SKILL_PER_TARGET_QUALITY[recipeMaxQuality]
 	if targetQuality < minQuality then
 		-- We can't craft this low of a quality anymore
 		return nil, nil
-	elseif targetQuality == recipeMaxQuality then
-		neededSkill = difficultyPerQuality * (targetQuality - recipeQuality)
-		maxAddedSkill = math.huge
 	else
-		neededSkill = max(difficultyPerQuality * (targetQuality - recipeQuality), 0)
-		maxAddedSkill = difficultyPerQuality * (targetQuality + 1 - recipeQuality)
+		local currentLowerBound = skillPerTargetQuality[minQuality] * recipeDifficulty
+		local currentUpperBound = skillPerTargetQuality[min(ceil(recipeQuality), recipeMaxQuality)] * recipeDifficulty
+		local currentQualityRatio = recipeQuality - minQuality
+		local currentSkill = currentLowerBound + currentQualityRatio * (currentUpperBound - currentLowerBound)
+		local targetLowerBound = skillPerTargetQuality[targetQuality] * recipeDifficulty
+		local targetUpperBound = skillPerTargetQuality[min(targetQuality + 1, recipeMaxQuality)] * recipeDifficulty
+		neededSkill = max(targetLowerBound - currentSkill, 0)
+		maxAddedSkill = targetQuality == recipeMaxQuality and math.huge or (targetUpperBound - currentSkill)
 	end
 	assert(neededSkill >= 0 and maxAddedSkill > 0)
-	local maxQualityMatSkill = recipeDifficulty * MAX_QUALITY_MAT_DIFFICULTY_RATIO
-	if neededSkill > maxQualityMatSkill then
-		-- We can't get this much skill with just quality reagents
+	local maxQualityMatSkill = hasQualityMats and recipeDifficulty * MAX_QUALITY_MAT_DIFFICULTY_RATIO or 0
+	if neededSkill > maxQualityMatSkill + (inspirationAmount or 0) then
+		-- We can't get this much skill with just quality reagents and inspiration
 		-- TODO: We potentically could with finishing / optional(?) mats
 		return nil, nil
 	end

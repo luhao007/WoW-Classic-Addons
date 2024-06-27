@@ -1,5 +1,66 @@
 # OmniCC Changelog
 
+## 10.2.7
+
+* Update TOCs
+* Preliminary War Within support
+
+## 10.2.6
+
+* Update TOCs
+
+## 10.2.5
+
+* Updated Russian translation (thanks to [Hollicsh](https://github.com/Hollicsh))
+
+## 10.2.4
+
+* Updated Portuguese translation (thanks to [anon1231823](https://github.com/anon1231823))
+
+## 10.2.3
+
+* Update TOCs for 1.15.1
+
+## 10.2.2
+
+### Thank you to [anon1231823](https://github.com/anon1231823) for these contributions
+
+* Update TOCs for 10.2.5
+* Updated French, Portuguese, and Spanish translations
+
+## 10.2.1
+
+* Update TOCs for 1.15.0
+
+## 10.2.0
+
+* Update TOCs for 10.2.0
+
+## 10.1.2
+
+* Update TOCs for 10.1.7 and 1.14.4
+* Add Multi Action Burs to the default Action Bars rule
+
+## 10.1.1
+
+* Update TOCs for 3.4.3
+
+## 10.1.0
+
+* Update TOCs for 10.1.0
+
+## 10.0.5
+
+* Update TOCs for 10.0.7
+
+## 10.0.4
+
+* Update TOCs for 10.0.5
+
+## 10.0.3
+
+* Update TOCs for 3.4.1
+
 ## 10.0.2
 
 * Update TOCs for 10.0.2

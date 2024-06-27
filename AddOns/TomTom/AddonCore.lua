@@ -20,7 +20,7 @@ _G[addonName] = addon
 
 -- Globals used in this library
 local CreateFrame = CreateFrame
-local GetAddOnMetadata = GetAddOnMetadata
+local GetAddOnMetadata = C_AddOns and C_AddOns.GetAddOnMetadata or GetAddOnMetadata
 local GetBuildInfo = GetBuildInfo
 local geterrorhandler = geterrorhandler
 local GetLocale = GetLocale

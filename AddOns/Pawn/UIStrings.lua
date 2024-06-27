@@ -1,6 +1,6 @@
 ﻿-- Pawn by Vger-Azjol-Nerub
 -- www.vgermods.com
--- © 2006-2023 Travis Spomer.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
+-- © 2006-2024 Travis Spomer.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
 -- See Readme.htm for more information.
 
 --
@@ -254,9 +254,6 @@ PawnUIFrame_ClearValueButton_Tooltip = L.ValuesRemoveTooltip
 PawnUIFrame_IgnoreStatCheck_Tooltip = L.ValuesIgnoreStatTooltip
 
 PawnUIFrame_NoUpgradesCheck_Tooltip = L.ValuesDoNotShowUpgradesTooltip
-
-PawnUIFrame_FollowSpecializationCheck_Text = format(L.ValuesFollowSpecialization, PawnArmorSpecializationLevel)
-PawnUIFrame_FollowSpecializationCheck_Tooltip = format(L.ValuesFollowSpecializationTooltip, PawnArmorSpecializationLevel, PawnArmorSpecializationLevel, PawnArmorSpecializationLevel)
 
 PawnUIFrame_NormalizeValuesCheck_Text = L.ValuesNormalize
 PawnUIFrame_NormalizeValuesCheck_Tooltip = L.ValuesNormalizeTooltip

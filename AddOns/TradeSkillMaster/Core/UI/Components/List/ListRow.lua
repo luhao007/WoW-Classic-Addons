@@ -191,9 +191,9 @@ function ListRow:GetDataIndex()
 	return self._dataIndex
 end
 
----Disables highlighting of the row.
-function ListRow:DisableHighlight()
-	self._state.highlightDisabled = true
+---Sets whether or not highlighting is enabled.
+function ListRow:SetHighlightEnabled(enabled)
+	self._state.highlightDisabled = not enabled
 end
 
 ---Adds a text element to the row.

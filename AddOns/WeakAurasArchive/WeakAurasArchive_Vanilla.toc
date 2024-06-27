@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: The WeakAuras Team
-## Version: 5.3.4
+## Version: 5.11.3
 ## Dependencies: WeakAuras
 ## LoadOnDemand: 1
 ## SavedVariables: WeakAurasArchive
@@ -10,4 +10,3 @@
 
 ## X-Part-Of: WeakAuras
 
-WeakAurasArchive.lua

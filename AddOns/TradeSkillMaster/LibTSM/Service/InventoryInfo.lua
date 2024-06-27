@@ -4,14 +4,15 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
-local InventoryInfo = TSM.Init("Service.InventoryInfo")
+local TSM = select(2, ...) ---@type TSM
+local InventoryInfo = TSM.Init("Service.InventoryInfo") ---@class Service.InventoryInfo
+local Environment = TSM.Include("Environment")
 local Container = TSM.Include("Util.Container")
-local ItemInfo = TSM.Include("Service.ItemInfo")
-local TooltipScanning = TSM.Include("Service.TooltipScanning")
 local Event = TSM.Include("Util.Event")
 local SlotId = TSM.Include("Util.SlotId")
 local Table = TSM.Include("Util.Table")
+local ItemInfo = TSM.Include("Service.ItemInfo")
+local TooltipScanning = TSM.Include("Service.TooltipScanning")
 local private = {
 	slotIdLocked = {},
 	slotIdSoulboundCached = {},
@@ -30,7 +31,7 @@ InventoryInfo:OnModuleLoad(function()
 	Event.Register("ITEM_UNLOCKED", private.ItemUnlockedHandler)
 	Event.Register("BAG_UPDATE", private.BagUpdateHandler)
 	Event.Register("PLAYERBANKSLOTS_CHANGED", private.BankSlotChangedHandler)
-	if not TSM.IsWowClassic() then
+	if Environment.HasFeature(Environment.FEATURES.REAGENT_BANK) then
 		Event.Register("PLAYERREAGENTBANKSLOTS_CHANGED", private.ReagentBankSlotChangedHandler)
 	end
 end)

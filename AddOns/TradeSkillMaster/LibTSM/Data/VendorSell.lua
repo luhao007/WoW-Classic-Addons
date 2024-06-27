@@ -4,8 +4,9 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
-local VendorSell = TSM.Init("Data.VendorSell")
+local TSM = select(2, ...) ---@type TSM
+local VendorSell = TSM.Init("Data.VendorSell") ---@class Data.VendorSell
+local Environment = TSM.Include("Environment")
 
 
 
@@ -15,70 +16,7 @@ local VendorSell = TSM.Init("Data.VendorSell")
 
 -- Scraped from Wowhead using the following javascript and then manually pruned to remove limited quantity items and fill in missing prices:
 -- x = listviewitems.sort((a,b) => a.id - b.id); for (i=0; i<x.length; i++) console.log("[\"i:"+x[i].id+"\"] = "+x[i].cost[0]+", -- "+x[i].name);
-local VENDOR_SELL_PRICES = TSM.IsWowClassic() and {
-		-- https://classic.wowhead.com/items/side:3?filter=92:87:186:86;1:11:1:12;0:0:0:0
-		["i:159"] = 25, -- Refreshing Spring Water
-		["i:1179"] = 125, -- Ice Cold Milk
-		["i:2320"] = 10, -- Coarse Thread
-		["i:2321"] = 100, -- Fine Thread
-		["i:2324"] = 25, -- Bleach
-		["i:2325"] = 1000, -- Black Dye
-		["i:2596"] = 120, -- Skin of Dwarven Stout
-		["i:2604"] = 50, -- Red Dye
-		["i:2605"] = 100, -- Green Dye
-		["i:2665"] = 20, -- Stormwind Seasoning Herbs
-		["i:2678"] = 10, -- Mild Spices
-		["i:2692"] = 40, -- Hot Spices
-		["i:2880"] = 100, -- Weak Flux
-		["i:2894"] = 50, -- Rhapsody Malt
-		["i:3371"] = 20, -- Empty Vial
-		["i:3372"] = 200, -- Leaded Vial
-		["i:3466"] = 2000, -- Strong Flux
-		["i:3713"] = 160, -- Soothing Spices
-		["i:3857"] = 500, -- Coal
-		["i:4289"] = 50, -- Salt
-		["i:4291"] = 500, -- Silken Thread
-		["i:4340"] = 350, -- Gray Dye
-		["i:4341"] = 500, -- Yellow Dye
-		["i:4342"] = 2500, -- Purple Dye
-		["i:4399"] = 200, -- Wooden Stock
-		["i:4400"] = 2000, -- Heavy Stock
-		["i:4470"] = 38, -- Simple Wood
-		["i:4536"] = 25, -- Shiny Red Apple
-		["i:5140"] = 25, -- Flash Powder
-		["i:6217"] = 124, -- Copper Rod
-		["i:6260"] = 50, -- Blue Dye
-		["i:6261"] = 1000, -- Orange Dye
-		["i:6530"] = 100, -- Nightcrawlers
-		["i:8343"] = 2000, -- Heavy Silken Thread
-		["i:8925"] = 2500, -- Crystal Vial
-		["i:10290"] = 2500, -- Pink Dye
-		["i:10647"] = 2000, -- Engineer's Ink
-		["i:10648"] = 500, -- Blank Parchment
-		["i:11291"] = 4500, -- Star Wood
-		["i:14341"] = 5000, -- Rune Thread
-		["i:16583"] = 10000, -- Demonic Figurine
-		["i:17020"] = 1000, -- Arcane Powder
-		["i:17021"] = 700, -- Wild Berries
-		["i:17026"] = 1000, -- Wild Thornroot
-		["i:17028"] = 700, -- Holy Candle
-		["i:17029"] = 1000, -- Sacred Candle
-		["i:17030"] = 2000, -- Ankh
-		["i:17031"] = 1000, -- Rune of Teleportation
-		["i:17032"] = 2000, -- Rune of Portals
-		["i:17033"] = 2000, -- Symbol of Divinity
-		["i:17034"] = 200, -- Maple Seed
-		["i:17035"] = 400, -- Stranglethorn Seed
-		["i:17036"] = 800, -- Ashwood Seed
-		["i:17037"] = 1400, -- Hornbeam Seed
-		["i:17038"] = 2000, -- Ironwood Seed
-		["i:17194"] = 10, -- Holiday Spices
-		["i:17196"] = 50, -- Holiday Spirits
-		["i:17202"] = 10, -- Snowball
-		["i:18256"] = 30000, -- Imbued Vial
-		["i:18567"] = 150000, -- Elemental Flux
-		["i:21177"] = 3000, -- Symbol of Kings
-	} or {
+local VENDOR_SELL_PRICES = Environment.IsRetail() and {
 		-- https://www.wowhead.com/items/side:3/live-only:on?filter=92:87:186:86;1:11:1:12;0:0:0:0
 		["i:159"] = 25, -- Refreshing Spring Water
 		["i:1179"] = 125, -- Ice Cold Milk
@@ -220,7 +158,69 @@ local VENDOR_SELL_PRICES = TSM.IsWowClassic() and {
 		["i:183952"] = 50000, -- Machinist's Oil
 		["i:183953"] = 50000, -- Sealing Wax
 		["i:183954"] = 50000, -- Malleable Wire
-
+	} or {
+		-- https://classic.wowhead.com/items/side:3?filter=92:87:186:86;1:11:1:12;0:0:0:0
+		["i:159"] = 25, -- Refreshing Spring Water
+		["i:1179"] = 125, -- Ice Cold Milk
+		["i:2320"] = 10, -- Coarse Thread
+		["i:2321"] = 100, -- Fine Thread
+		["i:2324"] = 25, -- Bleach
+		["i:2325"] = 1000, -- Black Dye
+		["i:2596"] = 120, -- Skin of Dwarven Stout
+		["i:2604"] = 50, -- Red Dye
+		["i:2605"] = 100, -- Green Dye
+		["i:2665"] = 20, -- Stormwind Seasoning Herbs
+		["i:2678"] = 10, -- Mild Spices
+		["i:2692"] = 40, -- Hot Spices
+		["i:2880"] = 100, -- Weak Flux
+		["i:2894"] = 50, -- Rhapsody Malt
+		["i:3371"] = 20, -- Empty Vial
+		["i:3372"] = 200, -- Leaded Vial
+		["i:3466"] = 2000, -- Strong Flux
+		["i:3713"] = 160, -- Soothing Spices
+		["i:3857"] = 500, -- Coal
+		["i:4289"] = 50, -- Salt
+		["i:4291"] = 500, -- Silken Thread
+		["i:4340"] = 350, -- Gray Dye
+		["i:4341"] = 500, -- Yellow Dye
+		["i:4342"] = 2500, -- Purple Dye
+		["i:4399"] = 200, -- Wooden Stock
+		["i:4400"] = 2000, -- Heavy Stock
+		["i:4470"] = 38, -- Simple Wood
+		["i:4536"] = 25, -- Shiny Red Apple
+		["i:5140"] = 25, -- Flash Powder
+		["i:6217"] = 124, -- Copper Rod
+		["i:6260"] = 50, -- Blue Dye
+		["i:6261"] = 1000, -- Orange Dye
+		["i:6530"] = 100, -- Nightcrawlers
+		["i:8343"] = 2000, -- Heavy Silken Thread
+		["i:8925"] = 2500, -- Crystal Vial
+		["i:10290"] = 2500, -- Pink Dye
+		["i:10647"] = 2000, -- Engineer's Ink
+		["i:10648"] = 500, -- Blank Parchment
+		["i:11291"] = 4500, -- Star Wood
+		["i:14341"] = 5000, -- Rune Thread
+		["i:16583"] = 10000, -- Demonic Figurine
+		["i:17020"] = 1000, -- Arcane Powder
+		["i:17021"] = 700, -- Wild Berries
+		["i:17026"] = 1000, -- Wild Thornroot
+		["i:17028"] = 700, -- Holy Candle
+		["i:17029"] = 1000, -- Sacred Candle
+		["i:17030"] = 2000, -- Ankh
+		["i:17031"] = 1000, -- Rune of Teleportation
+		["i:17032"] = 2000, -- Rune of Portals
+		["i:17033"] = 2000, -- Symbol of Divinity
+		["i:17034"] = 200, -- Maple Seed
+		["i:17035"] = 400, -- Stranglethorn Seed
+		["i:17036"] = 800, -- Ashwood Seed
+		["i:17037"] = 1400, -- Hornbeam Seed
+		["i:17038"] = 2000, -- Ironwood Seed
+		["i:17194"] = 10, -- Holiday Spices
+		["i:17196"] = 50, -- Holiday Spirits
+		["i:17202"] = 10, -- Snowball
+		["i:18256"] = 30000, -- Imbued Vial
+		["i:18567"] = 150000, -- Elemental Flux
+		["i:21177"] = 3000, -- Symbol of Kings
 	}
 
 

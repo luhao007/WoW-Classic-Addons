@@ -1,5 +1,5 @@
 
-local _detalhes = _G._detalhes
+local _detalhes = _G.Details
 local Loc = LibStub("AceLocale-3.0"):GetLocale ( "Details" )
 local _
 local addonName, Details222 = ...
@@ -96,7 +96,7 @@ local addonName, Details222 = ...
 		right_corner_anchor_bottom = {96, 0},
 		
 		attribute_icon_anchor = {34, -6},
-		attribute_icon_size = {24, 24},
+		attribute_icon_size = 24,
 		
 		micro_frames = {left = "DETAILS_STATUSBAR_PLUGIN_THREAT"},
 		
@@ -1056,7 +1056,8 @@ local addonName, Details222 = ...
 			
 		end
 
-		table.wipe(instance1.snap); table.wipe(instance2.snap)
+		Details:Destroy(instance1.snap)
+		Details:Destroy(instance2.snap)
 		instance1.snap [3] = 2; instance2.snap [1] = 1;
 		instance1.horizontalSnap = true; instance2.horizontalSnap = true
 		
@@ -2522,6 +2523,7 @@ local addonName, Details222 = ...
 		
 	})	
 
+
 		_detalhes:InstallSkin ("Safe Skin Legion Beta", {
 		file = [[Interface\AddOns\Details\images\skins\classic_skin_v1.blp]],
 		author = "Details!", 
@@ -2805,3 +2807,5 @@ local addonName, Details222 = ...
 		}
 		
 	})
+
+

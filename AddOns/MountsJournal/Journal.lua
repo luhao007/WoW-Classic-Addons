@@ -1,13 +1,13 @@
 local addon, L = ...
-local C_Timer, GetSpellInfo, wipe, tinsert, next, pairs, ipairs, select, type, sort = C_Timer, GetSpellInfo, wipe, tinsert, next, pairs, ipairs, select, type, sort
+local C_MountJournal, C_PetJournal, IsUsableSpell, wipe, tinsert, next, pairs, ipairs, select, type, sort, math = C_MountJournal, C_PetJournal, IsUsableSpell, wipe, tinsert, next, pairs, ipairs, select, type, sort, math
 local util, mounts, config = MountsJournalUtil, MountsJournal, MountsJournalConfig
 local journal = CreateFrame("FRAME", "MountsJournalFrame")
 journal.mountTypes = util.mountTypes
 util.setEventsMixin(journal)
 
 
-local COLLECTION_ACHIEVEMENT_CATEGORY = 15246
-local MOUNT_ACHIEVEMENT_CATEGORY = 15248
+-- local COLLECTION_ACHIEVEMENT_CATEGORY = 15246
+-- local MOUNT_ACHIEVEMENT_CATEGORY = 15248
 local NIGHT_FAE_BLUE_COLOR = CreateColor(.5020, .7098, .9922)
 
 
@@ -19,17 +19,18 @@ journal.colors = {
 	mount2 = CreateColor(.42, .302, .224),
 	mount3 = CreateColor(.031, .333, .388),
 }
-journal.displayedMounts = {}
 
 
-journal:SetScript("OnEvent", function(self, event, ...) self[event](self, ...) end)
+local metaMounts = {__index = {[0] = 0}}
+journal.indexByMountID = setmetatable({}, metaMounts)
 
 
 function journal:init()
 	self.init = nil
 
-	local lsfdd = LibStub("LibSFDropDown-1.4")
+	local lsfdd = LibStub("LibSFDropDown-1.5")
 	local texPath = "Interface/AddOns/MountsJournal/textures/"
+	self.mountIDs = C_MountJournal.GetMountIDs()
 
 	-- FILTERS INIT
 	local filtersMeta = {__index = function(self, key)
@@ -68,55 +69,26 @@ function journal:init()
 
 	-- BACKGROUND FRAME
 	self.bgFrame = CreateFrame("FRAME", "MountsJournalBackground", self.CollectionsJournal, "MJMountJournalFrameTemplate")
-	local scale = self.bgFrame:GetEffectiveScale()
-	local x, y = mounts.config.journalPosX, mounts.config.journalPosY
-	if x then
-		x = x / scale
-	else
-		x = (UIParent:GetWidth() - self.bgFrame:GetWidth()) / 2
-	end
-	if y then
-		y = y / scale
-	else
-		y = (self.bgFrame:GetHeight() - UIParent:GetHeight()) / 2
-	end
-	self.bgFrame:SetPoint("TOPLEFT", x, y)
+	self.bgFrame:SetPoint("TOPLEFT", self.CollectionsJournal, "TOPLEFT", 0, 0)
 	self.bgFrame.TitleText:SetText(MOUNTS)
 	SetPortraitToTexture(self.bgFrame.portrait, 303868)
 
 	self.bgFrame:SetScript("OnShow", function(bgFrame)
-		self:RegisterEvent("PLAYER_ENTERING_WORLD")
 		self:RegisterEvent("COMPANION_UPDATE")
+		self:RegisterEvent("MOUNT_JOURNAL_USABILITY_CHANGED")
 		self:RegisterEvent("PLAYER_REGEN_DISABLED")
 		self:RegisterEvent("PLAYER_REGEN_ENABLED")
 
-		self:RegisterEvent("ZONE_CHANGED")
-		self:RegisterEvent("ZONE_CHANGED_INDOORS")
-		self:RegisterEvent("ZONE_CHANGED_NEW_AREA")
-
+		self.leftInset:EnableKeyboard(not InCombatLockdown())
 		self:updateMountsList()
 		self:updateMountDisplay()
-
-		if InCombatLockdown() then
-			bgFrame.summon1.icon:SetDesaturated(true)
-			bgFrame.summon2.icon:SetDesaturated(true)
-		else
-			bgFrame.summon1.icon:SetDesaturated(false)
-			bgFrame.summon2.icon:SetDesaturated(false)
-			bgFrame.summon1.secure:Show()
-			bgFrame.summon2.secure:Show()
-		end
 	end)
 
 	self.bgFrame:SetScript("OnHide", function()
-		self:UnregisterEvent("PLAYER_ENTERING_WORLD")
 		self:UnregisterEvent("COMPANION_UPDATE")
+		self:UnregisterEvent("MOUNT_JOURNAL_USABILITY_CHANGED")
 		self:UnregisterEvent("PLAYER_REGEN_DISABLED")
 		self:UnregisterEvent("PLAYER_REGEN_ENABLED")
-
-		self:UnregisterEvent("ZONE_CHANGED")
-		self:UnregisterEvent("ZONE_CHANGED_INDOORS")
-		self:UnregisterEvent("ZONE_CHANGED_NEW_AREA")
 
 		self.mountDisplay:Show()
 		self.navBarBtn:SetChecked(false)
@@ -124,23 +96,15 @@ function journal:init()
 		self.worldMap:Hide()
 	end)
 
-	self.bgFrame:SetClampedToScreen(true)
 	self.bgFrame:RegisterForDrag("LeftButton")
-	self.bgFrame:SetScript("OnDragStart", self.bgFrame.StartMoving)
-	self.bgFrame:SetScript("OnDragStop", function(self)
-		local scale = self:GetEffectiveScale()
-		mounts.config.journalPosX = self:GetLeft() * scale
-		mounts.config.journalPosY = (self:GetTop() - UIParent:GetHeight()) * scale
-		self:StopMovingOrSizing()
-	end)
-	self.bgFrame.closeButton:SetScript("OnKeyDown", function(self, key)
-		if key == GetBindingKey("TOGGLEGAMEMENU") then
-			self:Click()
-			self:SetPropagateKeyboardInput(false)
-		else
-			self:SetPropagateKeyboardInput(true)
-		end
-	end)
+	for _, e in ipairs({"OnMouseDown", "OnMouseUp", "OnDragStart", "OnDragStop"}) do
+		self.bgFrame:SetScript(e, function(_, ...)
+			local func = self.CollectionsJournal:GetScript(e)
+			if func then
+				func(self.CollectionsJournal, ...)
+			end
+		end)
+	end
 
 	self.mountCount = self.bgFrame.mountCount
 	self.achiev = self.bgFrame.achiev
@@ -160,19 +124,84 @@ function journal:init()
 	self.modelScene = self.mountDisplay.modelScene
 	self.multipleMountBtn = self.modelScene.multipleMountBtn
 	self.mountListUpdateAnim = self.leftInset.updateAnimFrame.anim
-	self.scrollFrame = self.bgFrame.scrollFrame
+	self.scrollBox = self.bgFrame.scrollBox
 	self.summonButton = self.bgFrame.summonButton
 	self.weightFrame = self.bgFrame.mountsWeight
+
+	-- USE MountsJournal BUTTON
+	self.useMountsJournalButton:SetParent(self.CollectionsJournal)
+	self.useMountsJournalButton:SetFrameLevel(self.bgFrame:GetFrameLevel() + 10)
+	self.useMountsJournalButton:SetScript("OnShow", nil)
+	self.useMountsJournalButton:SetScript("OnHide", nil)
+	self.useMountsJournalButton:SetProtected(true)
+
+	-- SECURE FRAMES
+	local sMountJournal = CreateFrame("FRAME", nil, self.MountJournal, "SecureHandlerShowHideTemplate")
+	sMountJournal:SetFrameRef("useMountsJournalButton", self.useMountsJournalButton)
+	sMountJournal:SetFrameRef("bgFrame", self.bgFrame)
+	sMountJournal:SetAttribute("useDefaultJournal", mounts.config.useDefaultJournal)
+	sMountJournal:SetAttribute("isShow", true)
+	sMountJournal:SetAttribute("_onshow", [[
+		self:SetAttribute("isShow", true)
+		self:RunAttribute("update")
+	]])
+	sMountJournal:SetAttribute("_onhide", [[
+		self:SetAttribute("isShow", false)
+		self:RunAttribute("update")
+	]])
+	sMountJournal:SetAttribute("update", [[
+		local useMountsJournalButton = self:GetFrameRef("useMountsJournalButton")
+		local bgFrame = self:GetFrameRef("bgFrame")
+		if self:GetAttribute("isShow") then
+			useMountsJournalButton:Show()
+			if not self:GetAttribute("useDefaultJournal") then
+				bgFrame:Show()
+			else
+				bgFrame:Hide()
+			end
+		else
+			useMountsJournalButton:Hide()
+			bgFrame:Hide()
+		end
+	]])
+
+	local sMountsJournalButton = CreateFrame("BUTTON", nil, self.useMountsJournalButton, "SecureHandlerClickTemplate")
+	sMountsJournalButton:SetAllPoints()
+	sMountsJournalButton:SetHitRectInsets(self.useMountsJournalButton:GetHitRectInsets())
+	sMountsJournalButton:SetScript("OnEnter", function()
+		self.useMountsJournalButton.highlight:Show()
+	end)
+	sMountsJournalButton:SetScript("OnLeave", function()
+		self.useMountsJournalButton.highlight:Hide()
+	end)
+	sMountsJournalButton:SetScript("OnMouseDown", function()
+		self.useMountsJournalButton:GetPushedTexture():Show()
+	end)
+	sMountsJournalButton:SetScript("OnMouseUp", function()
+		self.useMountsJournalButton:GetPushedTexture():Hide()
+	end)
+	sMountsJournalButton:SetFrameRef("s", sMountJournal)
+	sMountsJournalButton:SetAttribute("_onclick", [[
+		self:GetParent():CallMethod("Click")
+		local frame = self:GetFrameRef("s")
+		frame:SetAttribute("useDefaultJournal", not frame:GetAttribute("useDefaultJournal"))
+		frame:RunAttribute("update")
+	]])
+
+	-- CLOSE BUTTON
+	self.bgFrame.closeButton:SetAttribute("type", "click")
+	self.bgFrame.closeButton:SetAttribute("clickbutton", self.CollectionsJournal.CloseButton)
 
 	-- MOUNT COUNT
 	self.mountCount.collectedLabel:SetText(L["Collected:"])
 	self:updateCountMounts()
+	self:RegisterEvent("NEW_MOUNT_ADDED")
 
 	-- HINT
 	self.bgFrame.hint:SetScript("OnEnter", function(hint)
 		hint.highlight:Show()
-		GameTooltip:SetOwner(self.scrollFrame, "ANCHOR_NONE")
-		GameTooltip:SetPoint("TOPLEFT", self.scrollFrame, "TOPRIGHT", 0, -5)
+		GameTooltip:SetOwner(self.scrollBox, "ANCHOR_NONE")
+		GameTooltip:SetPoint("TOPLEFT", self.scrollBox, "TOPRIGHT", 0, -5)
 		GameTooltip:SetText(L["ButtonsSelectedTooltipDescription"]:format(addon), nil, nil, nil, nil, true)
 		GameTooltip:Show()
 	end)
@@ -181,6 +210,7 @@ function journal:init()
 	local summon1 = self.bgFrame.summon1
 	summon1:SetNormalTexture(303868)
 	summon1.icon = summon1:GetNormalTexture()
+	summon1:SetAttribute("clickbutton", _G[config.secureButtonNameMount])
 	summon1:SetScript("OnDragStart", function()
 		if InCombatLockdown() then return end
 		if not GetMacroInfo(config.macroName) then
@@ -189,20 +219,17 @@ function journal:init()
 		PickupMacro(config.macroName)
 	end)
 	summon1:SetScript("OnEnter", function(btn)
-		btn.highlight:Show()
 		GameTooltip:SetOwner(btn, "ANCHOR_RIGHT")
-		GameTooltip_SetTitle(GameTooltip, addon.." \""..SUMMON.." 1\"")
+		GameTooltip_SetTitle(GameTooltip, addon.." \""..SUMMONS.." 1\"")
 		GameTooltip:AddLine(L["Normal mount summon"])
 		GameTooltip_AddColoredLine(GameTooltip, "\nMacro: /click "..config.secureButtonNameMount, NIGHT_FAE_BLUE_COLOR, false)
-		if InCombatLockdown() then
-			GameTooltip_AddErrorLine(GameTooltip, SPELL_FAILED_AFFECTING_COMBAT)
-		end
 		GameTooltip:Show()
 	end)
 
 	local summon2 = self.bgFrame.summon2
 	summon2:SetNormalTexture(237534)
 	summon2.icon = summon2:GetNormalTexture()
+	summon2:SetAttribute("clickbutton", _G[config.secureButtonNameSecondMount])
 	summon2:SetScript("OnDragStart", function()
 		if InCombatLockdown() then return end
 		if not GetMacroInfo(config.secondMacroName) then
@@ -211,25 +238,12 @@ function journal:init()
 		PickupMacro(config.secondMacroName)
 	end)
 	summon2:SetScript("OnEnter", function(btn)
-		btn.highlight:Show()
 		GameTooltip:SetOwner(btn, "ANCHOR_RIGHT")
-		GameTooltip_SetTitle(GameTooltip, addon.." \""..SUMMON.." 2\"")
+		GameTooltip_SetTitle(GameTooltip, addon.." \""..SUMMONS.." 2\"")
 		GameTooltip_AddNormalLine(GameTooltip, L["SecondMountTooltipDescription"]:gsub("\n\n", "\n"))
 		GameTooltip_AddColoredLine(GameTooltip, "\nMacro: /click "..config.secureButtonNameSecondMount, NIGHT_FAE_BLUE_COLOR, false)
-		if InCombatLockdown() then
-			GameTooltip_AddErrorLine(GameTooltip, SPELL_FAILED_AFFECTING_COMBAT)
-		end
 		GameTooltip:Show()
 	end)
-	summon1.icon:SetDesaturated(true)
-	summon1.icon:SetDesaturated(false)
-
-	if InCombatLockdown() then
-		summon1.icon:SetDesaturated(true)
-		summon2.icon:SetDesaturated(true)
-	else
-		self:createSecureButtons()
-	end
 
 	-- NAVBAR BUTTON
 	self.navBarBtn:HookScript("OnClick", function(btn)
@@ -300,45 +314,9 @@ function journal:init()
 	end)
 
 	-- SCROLL FRAME
-	self.scrollFrame.scrollBar.doNotHide = true
-	HybridScrollFrame_CreateButtons(self.scrollFrame, "MJMountListPanelTemplate", 1, 0)
-
-	local function mouseDown(btn, mouse) self.tags:hideDropDown(mouse) end
-	local function typeClick(btn) self:mountToggle(btn) end
-	local function dragClick(btn, mouse) self.tags:dragButtonClick(btn, mouse) end
-	local function btnClick(btn, mouse) self.tags:listItemClick(btn:GetParent(), btn, mouse) end
-	local function drag(btn) self.tags:dragMount(btn:GetParent().index) end
-	local function grid3Click(btn, mouse) self.tags:listItemClick(btn, btn, mouse) end
-	local function grid3Drag(btn) self.tags:dragMount(btn.index) end
-
-	for _, child in ipairs(self.scrollFrame.buttons) do
-		child.defaultList.dragButton:SetScript("OnMouseDown", mouseDown)
-		child.defaultList.dragButton:SetScript("OnClick", dragClick)
-		child.defaultList.dragButton:SetScript("OnDragStart", drag)
-		child.defaultList.btn:SetScript("OnMouseDown", mouseDown)
-		child.defaultList.btn:SetScript("OnClick", btnClick)
-		child.defaultList.fly:SetScript("OnClick", typeClick)
-		child.defaultList.ground:SetScript("OnClick", typeClick)
-		child.defaultList.swimming:SetScript("OnClick", typeClick)
-		for i, btn in ipairs(child.grid3List.mounts) do
-			btn:SetScript("OnMouseDown", mouseDown)
-			btn:SetScript("OnClick", grid3Click)
-			btn:SetScript("OnDragStart", grid3Drag)
-			btn.fly:SetScript("OnClick", typeClick)
-			btn.ground:SetScript("OnClick", typeClick)
-			btn.swimming:SetScript("OnClick", typeClick)
-		end
-	end
-
-	self.default_UpdateMountList = function(...) self:defaultUpdateMountList(...) end
-	self.grid3_UpdateMountList = function(...) self:grid3UpdateMountList(...) end
+	self.view = CreateScrollBoxListLinearView()
 	self:setScrollGridMounts(mounts.config.gridToggle)
-
-	-- MOUNT LEARNED
-	self:on("MOUNT_LEARNED", function()
-		self:updateCountMounts()
-		self:sortMounts()
-	end)
+	ScrollUtil.InitScrollBoxListWithScrollBar(self.scrollBox, self.bgFrame.scrollBar, self.view)
 
 	-- FILTERS BAR
 	self.filtersBar.clear:SetScript("OnClick", function() self:clearBtnFilters() end)
@@ -456,6 +434,11 @@ function journal:init()
 		local parent = self:GetParent()
 		parent:GetScript("OnEnter")(parent)
 	end
+	local mountListUpdate = function()
+		self.tags.doNotHideMenu = true
+		self:updateMountsList()
+		self.tags.doNotHideMenu = nil
+	end
 	self.weightFrame:setOnChanged(function(frame, value)
 		frame.setFunc(value)
 		frame.slider.isModified = true
@@ -467,22 +450,19 @@ function journal:init()
 	end)
 	self.weightFrame.slider:HookScript("OnEnter", weightControl_OnEnter)
 	self.weightFrame.slider:HookScript("OnMouseUp", function(slider)
-		journal:updateMountsList()
+		mountListUpdate()
 		slider.isModified = nil
 	end)
 	self.weightFrame.slider:HookScript("OnHide", function(slider)
 		if slider.isModified then
-			journal:updateMountsList()
+			self:updateMountsList()
 			slider.isModified = nil
 		end
 	end)
-	self.weightFrame.slider:HookScript("OnMouseWheel", function()
-		journal:updateMountsList()
-	end)
+	self.weightFrame.slider:HookScript("OnMouseWheel", mountListUpdate)
 	self.weightFrame.edit:HookScript("OnEnter", weightControl_OnEnter)
-	self.weightFrame.edit:HookScript("OnEnterPressed", function()
-		journal:updateMountsList()
-	end)
+	self.weightFrame.edit:HookScript("OnEnterPressed", mountListUpdate)
+	self.weightFrame.edit:HookScript("OnMouseWheel", mountListUpdate)
 
 	-- FILTERS BUTTONS
 	local function filterClick(btn)
@@ -562,102 +542,6 @@ function journal:init()
 	-- SHOWN PANEL
 	self.shownPanel.text:SetText(L["Shown:"])
 	self.shownPanel.clear:SetScript("OnClick", function() self:resetToDefaultFilters() end)
-
-	-- MODEL SCENE
-	function self.modelScene:CreateOrTransitionActorFromScene(oldTagToActor, actorID)
-		local actorInfo = C_ModelInfo.GetModelSceneActorInfoByID(11)
-		actorInfo.modelActorID = actorID
-		actorInfo.scriptTag = "unwrapped"
-		actorInfo.yaw = 0
-		actorInfo.pitch = 0
-		actorInfo.roll = 0
-		actorInfo.normalizeScaleAggressiveness = nil
-		actorInfo.modelActorDisplayID = 6
-		actorInfo.useCenterForOriginX = false
-		actorInfo.useCenterForOriginY = false
-		actorInfo.useCenterForOriginZ = true
-		actorInfo.position.x = 0
-		actorInfo.position.y = 0
-		actorInfo.position.z = 0
-
-		local existingActor = oldTagToActor[actorInfo.scriptTag]
-		if existingActor then
-			self:InitializeActor(existingActor, actorInfo)
-			return existingActor
-		end
-
-		return self:AcquireAndInitializeActor(actorInfo)
-	end
-
-	function self.modelScene:CreateCameraFromScene(modelSceneCameraID)
-		local modelSceneCameraInfo = C_ModelInfo.GetModelSceneCameraInfoByID(7)
-		modelSceneCameraInfo.cameraType = "OrbitCamera"
-		modelSceneCameraInfo.modelSceneCameraID = modelSceneCameraID
-		modelSceneCameraInfo.yaw = 2.6179938316345
-		modelSceneCameraInfo.pitch = 0
-		modelSceneCameraInfo.roll = 0
-		modelSceneCameraInfo.zoomedYawOffset = .17453292012215
-		modelSceneCameraInfo.zoomedPitchOffset = 0
-		modelSceneCameraInfo.zoomedRollOffset = 0
-		modelSceneCameraInfo.minZoomDistance = 8
-		modelSceneCameraInfo.flags = 1
-		modelSceneCameraInfo.scriptTag = "primary"
-		modelSceneCameraInfo.zoomDistance = 14
-		modelSceneCameraInfo.maxZoomDistance = 24
-		modelSceneCameraInfo.zoomedTargetOffset.x = 0
-		modelSceneCameraInfo.zoomedTargetOffset.y = 0
-		modelSceneCameraInfo.zoomedTargetOffset.z = -1.5
-		modelSceneCameraInfo.target.x = 0
-		modelSceneCameraInfo.target.y = 0
-		modelSceneCameraInfo.target.z = 1
-		if modelSceneCameraInfo then
-			local camera = CameraRegistry:CreateCameraByType(modelSceneCameraInfo.cameraType)
-			if camera then
-				if modelSceneCameraInfo.scriptTag then
-					self.tagToCamera[modelSceneCameraInfo.scriptTag] = camera
-				end
-				self:AddCamera(camera);
-				camera:ApplyFromModelSceneCameraInfo(modelSceneCameraInfo, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_DISCARD)
-				return camera
-			end
-		end
-	end
-
-	function self.modelScene:CreateOrTransitionCameraFromScene(oldTagToCamera, cameraTransitionType, cameraModificationType, modelSceneCameraID)
-		local modelSceneCameraInfo = C_ModelInfo.GetModelSceneCameraInfoByID(7)
-		modelSceneCameraInfo.cameraType = "OrbitCamera"
-		modelSceneCameraInfo.modelSceneCameraID = modelSceneCameraID
-		modelSceneCameraInfo.yaw = 2.6179938316345
-		modelSceneCameraInfo.pitch = 0
-		modelSceneCameraInfo.roll = 0
-		modelSceneCameraInfo.zoomedYawOffset = .17453292012215
-		modelSceneCameraInfo.zoomedPitchOffset = 0
-		modelSceneCameraInfo.zoomedRollOffset = 0
-		modelSceneCameraInfo.minZoomDistance = 8
-		modelSceneCameraInfo.flags = 1
-		modelSceneCameraInfo.scriptTag = "primary"
-		modelSceneCameraInfo.zoomDistance = 14
-		modelSceneCameraInfo.maxZoomDistance = 24
-		modelSceneCameraInfo.zoomedTargetOffset.x = 0
-		modelSceneCameraInfo.zoomedTargetOffset.y = 0
-		modelSceneCameraInfo.zoomedTargetOffset.z = -1.5
-		modelSceneCameraInfo.target.x = 0
-		modelSceneCameraInfo.target.y = 0
-		modelSceneCameraInfo.target.z = 1
-
-		if modelSceneCameraInfo then
-			local existingCamera = oldTagToCamera[modelSceneCameraInfo.scriptTag]
-			if existingCamera and existingCamera:GetCameraType() == modelSceneCameraInfo.cameraType then
-				self.tagToCamera[modelSceneCameraInfo.scriptTag] = existingCamera;
-
-				self:AddCamera(existingCamera)
-				existingCamera:ApplyFromModelSceneCameraInfo(modelSceneCameraInfo, cameraTransitionType, cameraModificationType)
-				return existingCamera
-			end
-
-			return self:CreateCameraFromScene(modelSceneCameraID)
-		end
-	end
 
 	-- MODEL SCENE CAMERA
 	hooksecurefunc(self.modelScene, "SetActiveCamera", function(self)
@@ -797,7 +681,7 @@ function journal:init()
 	modelControl.rotateLeftButton.icon:SetTexCoord(.01562500, .26562500, .28906250, .41406250)
 	modelControl.rotateRightButton.icon:SetTexCoord(.57812500, .82812500, .28906250, .41406250)
 	modelControl.rotateUpButton.icon:SetTexCoord(.01562500, .26562500, .28906250, .41406250)
-	modelControl.rotateUpButton.icon:SetRotation(-math.pi / 1.6, .5, .43)
+	modelControl.rotateUpButton.icon:SetRotation(-math.pi / 1.6, CreateVector2D(.5, .43))
 	modelControl.rotateDownButton.icon:SetTexCoord(.57812500, .82812500, .41406250, .28906250)
 	modelControl.rotateDownButton.icon:SetRotation(-math.pi / 1.6)
 
@@ -839,8 +723,8 @@ function journal:init()
 
 	-- SUMMON BUTTON
 	self.summonButton:SetScript("OnClick", function()
-		if self.selectedSpellID then
-			self:useMount(self.selectedSpellID)
+		if self.selectedMountID then
+			self:useMount(self.selectedMountID)
 		end
 	end)
 
@@ -862,94 +746,252 @@ function journal:init()
 	self.bgFrame.btnConfig:SetText(L["Settings"])
 	self.bgFrame.btnConfig:SetScript("OnClick", function() config:openConfig() end)
 
+	-- FANFARE
+	hooksecurefunc(C_MountJournal, "ClearFanfare", function(mountID)
+		self:sortMounts()
+		if self.selectedMountID == mountID then
+			self:updateMountDisplay()
+			if self.modelScene:GetActorByTag("wrapped"):GetAlpha() == 1 then
+				self.modelScene:StartUnwrapAnimation()
+			end
+		end
+	end)
+
+	-- SET/UNSET FAVORITE
+	hooksecurefunc(C_MountJournal, "SetIsFavorite", function()
+		self:sortMounts()
+	end)
+
 	-- MODULES INIT
 	self:event("MODULES_INIT"):off("MODULES_INIT")
 
 	-- INIT
-	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 	self:RegisterEvent("COMPANION_UPDATE")
-	self:RegisterEvent("PLAYER_REGEN_DISABLED")
-	self:RegisterEvent("PLAYER_REGEN_ENABLED")
-
-	self:RegisterEvent("ZONE_CHANGED")
-	self:RegisterEvent("ZONE_CHANGED_INDOORS")
-	self:RegisterEvent("ZONE_CHANGED_NEW_AREA")
+	self:RegisterEvent("MOUNT_JOURNAL_USABILITY_CHANGED")
 
 	self:setArrowSelectMount(mounts.config.arrowButtonsBrowse)
+	self:setMJFiltersBackup()
+	self:hideFrames()
 	self:setEditMountsList()
 	self:updateBtnFilters()
 	self:sortMounts()
-	self:selectMount(1)
-	if not self.selectedSpellID then
+	self:selectMountByIndex(1)
+	if not self.selectedMountID then
 		self:updateMountDisplay()
 	end
 end
 
 
-function journal:createSecureButtons()
-	self.createSecureButtons = nil
+journal:SetScript("OnEvent", function(self, event, ...) self[event](self, ...) end)
+journal:RegisterEvent("ADDON_LOADED")
 
-	self.bgFrame.summon1.secure = CreateFrame("BUTTON", nil, self.bgFrame.summon1, "MJSecureMacroButtonTemplate")
-	local secure1 = self.bgFrame.summon1.secure
-	secure1.parent = self.bgFrame.summon1
-	secure1:SetAllPoints()
-	secure1:SetAttribute("clickbutton", _G[config.secureButtonNameMount])
 
-	self.bgFrame.summon2.secure = CreateFrame("BUTTON", nil, self.bgFrame.summon2, "MJSecureMacroButtonTemplate")
-	local secure2 = self.bgFrame.summon2.secure
-	secure2.parent = self.bgFrame.summon2
-	secure2:SetAllPoints()
-	secure2:SetAttribute("clickbutton", _G[config.secureButtonNameSecondMount])
+function journal:ADDON_LOADED(addonName)
+	if addonName == "Blizzard_Collections" and select(2, IsAddOnLoaded(addon))
+	or addonName == addon and select(2, IsAddOnLoaded("Blizzard_Collections")) then
+		self:UnregisterEvent("ADDON_LOADED")
+		self.ADDON_LOADED = nil
+
+		self.mjFiltersBackup = {sources = {}, types = {}}
+		self.frameState = {}
+		self.CollectionsJournal = CollectionsJournal
+		self.MountJournal = MountJournal
+
+		self.useMountsJournalButton = CreateFrame("CheckButton", nil, self.MountJournal, "MJUseMountsJournalButtonTemplate")
+		self.useMountsJournalButton:SetPoint("BOTTOMLEFT", self.CollectionsJournal, "BOTTOMLEFT", 281, 2)
+		self.useMountsJournalButton.Text:SetFontObject("GameFontNormal")
+		self.useMountsJournalButton.Text:SetText(addon)
+		self.useMountsJournalButton:SetChecked(not mounts.config.useDefaultJournal)
+
+		self.useMountsJournalButton:SetScript("OnEnter", function(btn)
+			if not btn:IsEnabled() then
+				GameTooltip:SetOwner(btn, "ANCHOR_RIGHT")
+				GameTooltip_SetTitle(GameTooltip, addon)
+				GameTooltip_AddErrorLine(GameTooltip, SPELL_FAILED_AFFECTING_COMBAT)
+				GameTooltip:Show()
+			end
+		end)
+
+		self.useMountsJournalButton:SetScript("OnEnable", function(btn)
+			btn.Text:SetVertexColor(NORMAL_FONT_COLOR:GetRGB())
+		end)
+
+		self.useMountsJournalButton:HookScript("OnClick", function(btn)
+			local checked = btn:GetChecked()
+			mounts.config.useDefaultJournal = not checked
+			if checked then
+				if self.init then
+					self:init()
+				else
+					self:setMJFiltersBackup()
+					self:hideFrames()
+				end
+			else
+				self:restoreMJFilters()
+				self:restoreFrames()
+			end
+		end)
+
+		self.useMountsJournalButton:SetScript("OnShow", function(btn)
+			if InCombatLockdown() then
+				btn:Disable()
+			else
+				btn:Enable()
+				if not mounts.config.useDefaultJournal then
+					self:init()
+				end
+			end
+			self:RegisterEvent("PLAYER_REGEN_DISABLED")
+			self:RegisterEvent("PLAYER_REGEN_ENABLED")
+		end)
+
+		self.useMountsJournalButton:SetScript("OnHide", function()
+			self:UnregisterEvent("PLAYER_REGEN_DISABLED")
+			self:UnregisterEvent("PLAYER_REGEN_ENABLED")
+		end)
+	end
+end
+
+
+function journal:setMJFiltersBackup()
+	local backup = self.mjFiltersBackup
+	if backup.isBackuped then return end
+	backup.collected = C_MountJournal.GetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_COLLECTED)
+	backup.notCollected = C_MountJournal.GetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_NOT_COLLECTED)
+	backup.unusable = C_MountJournal.GetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_UNUSABLE)
+	for i = 1, C_PetJournal.GetNumPetSources() do
+		if C_MountJournal.IsValidSourceFilter(i) then
+			backup.sources[i] = C_MountJournal.IsSourceChecked(i)
+		end
+	end
+	for i = 1, Enum.MountTypeMeta.NumValues do
+		if not C_MountJournal.IsValidTypeFilter(i) then break end
+		backup.types[i] = C_MountJournal.IsTypeChecked(i)
+	end
+	backup.isBackuped = true
+	self:RegisterEvent("MOUNT_JOURNAL_SEARCH_UPDATED")
+	self:RegisterEvent("PLAYER_LEAVING_WORLD")
+	self:updateIndexByMountID()
+end
+
+
+function journal:restoreMJFilters()
+	local backup = self.mjFiltersBackup
+	if not backup.isBackuped then return end
+	self:UnregisterEvent("MOUNT_JOURNAL_SEARCH_UPDATED")
+	self:UnregisterEvent("PLAYER_LEAVING_WORLD")
+	C_MountJournal.SetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_COLLECTED, backup.collected)
+	C_MountJournal.SetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_NOT_COLLECTED, backup.notCollected)
+	C_MountJournal.SetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_UNUSABLE, backup.unusable)
+	for i = 1, C_PetJournal.GetNumPetSources() do
+		if C_MountJournal.IsValidSourceFilter(i) then
+			C_MountJournal.SetSourceFilter(i, backup.sources[i])
+		end
+	end
+	for i = 1, Enum.MountTypeMeta.NumValues do
+		if not C_MountJournal.IsValidTypeFilter(i) then break end
+		C_MountJournal.SetTypeFilter(i, backup.types[i])
+	end
+	backup.isBackuped = false
+end
+journal.PLAYER_LEAVING_WORLD = journal.restoreMJFilters
+
+
+do
+	local function SetShown(self, shown)
+		journal.frameState[self] = shown
+		journal.Hide(self)
+	end
+
+	local function Show(self)
+		journal.frameState[self] = true
+		journal.Hide(self)
+	end
+
+	local function Hide(self)
+		journal.frameState[self] = false
+	end
+
+	function journal:hideFrames()
+		for _, frame in ipairs({self.MountJournal:GetChildren()}) do
+			if not frame:IsProtected() then
+				self.frameState[frame] = frame:IsShown()
+				frame:Hide()
+				hooksecurefunc(frame, "SetShown", SetShown)
+				hooksecurefunc(frame, "Show", Show)
+				hooksecurefunc(frame, "Hide", Hide)
+			end
+		end
+	end
+end
+
+
+function journal:restoreFrames()
+	for frame, shown in pairs(self.frameState) do
+		self.frameState[frame] = nil
+		frame.SetShown = nil
+		frame.Show = nil
+		frame.Hide = nil
+		frame:SetShown(shown)
+	end
 end
 
 
 function journal:PLAYER_REGEN_DISABLED()
-	self.bgFrame.summon1.icon:SetDesaturated(true)
-	self.bgFrame.summon2.icon:SetDesaturated(true)
-	self.bgFrame.summon1.secure:Hide()
-	self.bgFrame.summon2.secure:Hide()
+	if self.init then
+		self.useMountsJournalButton:Disable()
+	else
+		self.leftInset:EnableKeyboard(false)
+		self:updateMountsList()
+	end
 end
 
 
 function journal:PLAYER_REGEN_ENABLED()
-	if self.createSecureButtons then
-		self:createSecureButtons()
+	if self.init then
+		self.useMountsJournalButton:Enable()
+		if not mounts.config.useDefaultJournal then
+			self:init()
+		end
 	else
-		self.bgFrame.summon1.icon:SetDesaturated(false)
-		self.bgFrame.summon2.icon:SetDesaturated(false)
-		self.bgFrame.summon1.secure:Show()
-		self.bgFrame.summon2.secure:Show()
+		self.leftInset:EnableKeyboard(true)
+		self:updateMountsList()
 	end
 end
 
 
 function journal:COMPANION_UPDATE(companionType)
 	if companionType == "MOUNT" then
-		self.scrollFrame:update()
+		self:updateScrollMountList()
 		self:updateMountDisplay()
 	end
 end
 
 
 function journal:setScrollGridMounts(grid)
-	local scrollFrame = self.scrollFrame
-	local offset = math.floor((scrollFrame.offset or 0) + .1)
+	local index = self.view:CalculateDataIndices(self.scrollBox)
+	local template
 
 	if grid then
-		offset = math.ceil((offset + 1) / 3) - 1
-		scrollFrame.update = self.grid3_UpdateMountList
+		template = "MJMountGrid3ListButtons"
+		self.initMountButton = self.grid3InitMountButton
+		self.view:SetPadding(0,0,2,0,0)
+		index = math.ceil(index / 3)
 	else
-		offset = offset * 3
-		scrollFrame.update = self.default_UpdateMountList
+		template = "MJMountDefaultListButton"
+		self.initMountButton = self.defaultInitMountButton
+		self.view:SetPadding(0,0,41,25,0)
+		index = (index - 1) * 3 + 1
 	end
 
-	for _, btn in ipairs(scrollFrame.buttons) do
-		btn.defaultList:SetShown(not grid)
-		btn.grid3List:SetShown(grid)
-	end
+	self.view:SetElementInitializer(template, function(...)
+		self:initMountButton(...)
+	end)
 
-	scrollFrame:update()
-	scrollFrame.scrollBar:SetValue(offset * scrollFrame.buttonHeight)
+	if self.dataProvider then
+		self:updateMountsList()
+		self.scrollBox:ScrollToElementDataIndex(index, ScrollBoxConstants.AlignBegin)
+	end
 end
 
 
@@ -961,13 +1003,13 @@ do
 	end
 
 	function journal:updateMountToggleButton(btn)
-		if btn.spellID then
+		if btn.mountID then
 			btn.fly:Enable()
 			btn.ground:Enable()
 			btn.swimming:Enable()
-			setColor(self, btn.fly, self.list and self.list.fly[btn.spellID])
-			setColor(self, btn.ground, self.list and self.list.ground[btn.spellID])
-			setColor(self, btn.swimming, self.list and self.list.swimming[btn.spellID])
+			setColor(self, btn.fly, self.list and self.list.fly[btn.mountID])
+			setColor(self, btn.ground, self.list and self.list.ground[btn.mountID])
+			setColor(self, btn.swimming, self.list and self.list.swimming[btn.mountID])
 		else
 			btn.fly:Disable()
 			btn.ground:Disable()
@@ -986,190 +1028,127 @@ local function getColorWeight(weight)
 end
 
 
-function journal:defaultUpdateMountList(scrollFrame)
-	local offset = HybridScrollFrame_GetOffset(scrollFrame)
-	local numDisplayedMounts = #self.displayedMounts
-	local canUseFlying = mounts:isCanUseFlying()
+function journal:defaultInitMountButton(btn, data)
+	local creatureName, spellID, icon, active, isUsable, sourceType, isFavorite, isFactionSpecific, faction, isFiltered, isCollected = C_MountJournal.GetMountInfoByID(data.mountID)
+	local needsFanfare = C_MountJournal.NeedsFanfare(data.mountID)
 
-	for i = 1, #scrollFrame.buttons do
-		local index = offset + i
-		local dlist = scrollFrame.buttons[i].defaultList
+	btn.spellID = spellID
+	btn.mountID = data.mountID
 
-		if index <= numDisplayedMounts then
-			local spellID = self.displayedMounts[index]
-			local faction = util.getMountInfoBySpellID(spellID)
-			local name, _, icon = GetSpellInfo(spellID)
-			local mountIndex, isCollected, active = mounts.indexBySpellID[spellID]
-			if mountIndex then
-				local creatureID, creatureName, creatureSpellID, icon, isSummoned = GetCompanionInfo("MOUNT", mountIndex)
-				isCollected = true
-				active = isSummoned
-			end
+	btn.dragButton.icon:SetTexture(needsFanfare and COLLECTIONS_FANFARE_ICON or icon)
+	btn.dragButton.icon:SetVertexColor(1, 1, 1)
+	btn.dragButton.hidden:SetShown(self:isMountHidden(data.mountID))
+	btn.dragButton.favorite:SetShown(isFavorite)
+	btn.dragButton.activeTexture:SetShown(active)
 
-			dlist.index = index
-			dlist.spellID = spellID
-
-			dlist.dragButton.icon:SetTexture(icon)
-			dlist.dragButton.icon:SetVertexColor(1, 1, 1)
-			dlist.dragButton.hidden:SetShown(self:isMountHidden(spellID))
-			dlist.dragButton.favorite:SetShown(mounts.mountFavoritesList[spellID])
-			dlist.dragButton.activeTexture:SetShown(active)
-
-			local mountWeight = self.mountsWeight[spellID]
-			if mountWeight then
-				dlist.dragButton.mountWeight:SetText(getColorWeight(mountWeight))
-				dlist.dragButton.mountWeight:Show()
-				dlist.dragButton.mountWeightBG:Show()
-			else
-				dlist.dragButton.mountWeight:Hide()
-				dlist.dragButton.mountWeightBG:Hide()
-			end
-
-			dlist.btn:Enable()
-			dlist.btn.name:SetText(name)
-			dlist.btn.background:SetVertexColor(1, 1, 1)
-			dlist.btn.selectedTexture:SetShown(spellID == self.selectedSpellID)
-
-			if faction < 3 then
-				dlist.btn.factionIcon:SetAtlas(faction == 1 and "MountJournalIcons-Horde" or "MountJournalIcons-Alliance")
-				dlist.btn.factionIcon:Show()
-			else
-				dlist.btn.factionIcon:Hide()
-			end
-
-			if mounts:isUsable(spellID, canUseFlying) then
-				dlist.dragButton:Enable()
-				dlist.dragButton.icon:SetDesaturated()
-				dlist.dragButton.icon:SetAlpha(1)
-				dlist.btn.name:SetFontObject("GameFontNormal")
-			elseif isCollected then
-				dlist.dragButton:Enable()
-				dlist.dragButton.icon:SetDesaturated(true)
-				dlist.dragButton.icon:SetVertexColor(.58823529411765, .19607843137255, .19607843137255)
-				dlist.dragButton.icon:SetAlpha(.75)
-				dlist.btn.name:SetFontObject("GameFontNormal")
-				dlist.btn.background:SetVertexColor(1, 0, 0)
-			else
-				dlist.dragButton:Disable()
-				dlist.dragButton.icon:SetDesaturated(true)
-				dlist.dragButton.icon:SetAlpha(.25)
-				dlist.btn.name:SetFontObject("GameFontDisable")
-			end
-
-			if dlist.showingTooltip then
-				GameTooltip:SetHyperlink("spell:"..spellID)
-			end
-		else
-			dlist.index = nil
-			dlist.spellID = nil
-
-			dlist.dragButton:Disable()
-			dlist.dragButton.icon:SetTexture("Interface/PetBattles/MountJournalEmptyIcon")
-			dlist.dragButton.icon:SetVertexColor(1, 1, 1)
-			dlist.dragButton.icon:SetAlpha(.5)
-			dlist.dragButton.icon:SetDesaturated(true)
-			dlist.dragButton.hidden:Hide()
-			dlist.dragButton.favorite:Hide()
-			dlist.dragButton.activeTexture:Hide()
-			dlist.dragButton.mountWeight:Hide()
-			dlist.dragButton.mountWeightBG:Hide()
-
-			dlist.btn:Disable()
-			dlist.btn.name:SetText("")
-			dlist.btn.factionIcon:Hide()
-			dlist.btn.background:SetVertexColor(1, 1, 1)
-			dlist.btn.selectedTexture:Hide()
-		end
-
-		self:updateMountToggleButton(dlist)
+	local mountWeight = self.mountsWeight[data.mountID]
+	if mountWeight then
+		btn.dragButton.mountWeight:SetText(getColorWeight(mountWeight))
+		btn.dragButton.mountWeight:Show()
+		btn.dragButton.mountWeightBG:Show()
+	else
+		btn.dragButton.mountWeight:Hide()
+		btn.dragButton.mountWeightBG:Hide()
 	end
 
-	HybridScrollFrame_Update(scrollFrame, scrollFrame.buttonHeight * numDisplayedMounts, scrollFrame:GetHeight())
+	btn:Enable()
+	btn.name:SetText(creatureName)
+	btn.new:SetShown(needsFanfare)
+	btn.newGlow:SetShown(needsFanfare)
+	btn.background:SetVertexColor(1, 1, 1)
+	btn.selectedTexture:SetShown(data.mountID == self.selectedMountID)
+
+	local yOffset = 1
+	if isForDragonriding then
+		yOffset = btn.name:GetNumLines() == 1 and 5 or 6
+	end
+	btn.name:SetPoint("LEFT", 6, yOffset)
+
+	if isFactionSpecific then
+		btn.factionIcon:SetAtlas(faction == 0 and "MountJournalIcons-Horde" or "MountJournalIcons-Alliance")
+		btn.factionIcon:Show()
+	else
+		btn.factionIcon:Hide()
+	end
+
+	if isUsable and IsUsableSpell(spellID) and mounts:isUsable(data.mountID) or needsFanfare then
+		btn.dragButton:Enable()
+		btn.dragButton.icon:SetDesaturated()
+		btn.dragButton.icon:SetAlpha(1)
+		btn.name:SetFontObject("GameFontNormal")
+	elseif isCollected then
+		btn.dragButton:Enable()
+		btn.dragButton.icon:SetDesaturated(true)
+		btn.dragButton.icon:SetVertexColor(.58823529411765, .19607843137255, .19607843137255)
+		btn.dragButton.icon:SetAlpha(.75)
+		btn.name:SetFontObject("GameFontNormal")
+		btn.background:SetVertexColor(1, 0, 0)
+	else
+		btn.dragButton:Disable()
+		btn.dragButton.icon:SetDesaturated(true)
+		btn.dragButton.icon:SetAlpha(.25)
+		btn.name:SetFontObject("GameFontDisable")
+	end
+
+	self:updateMountToggleButton(btn)
 end
 
 
-function journal:grid3UpdateMountList(scrollFrame)
-	local offset = HybridScrollFrame_GetOffset(scrollFrame)
-	local numDisplayedMounts = #self.displayedMounts
+function journal:grid3InitMountButton(btn, data)
 	local canUseFlying = mounts:isCanUseFlying()
 
-	for i = 1, #scrollFrame.buttons do
-		local grid3Buttons = scrollFrame.buttons[i].grid3List.mounts
-		for j = 1, 3 do
-			local index = (offset + i - 1) * 3 + j
-			local g3btn = grid3Buttons[j]
+	for i = 1, #btn.mounts do
+		local g3btn = btn.mounts[i]
 
-			if index <= numDisplayedMounts then
-				local spellID = self.displayedMounts[index]
-				local name, _, icon = GetSpellInfo(spellID)
-				local mountIndex, isCollected, active = mounts.indexBySpellID[spellID]
-				if mountIndex then
-					local creatureID, creatureName, creatureSpellID, icon, isSummoned = GetCompanionInfo("MOUNT", mountIndex)
-					isCollected = true
-					active = isSummoned
-				end
+		if data[i] then
+			local mountID = data[i].mountID
+			local creatureName, spellID, icon, active, isUsable, sourceType, isFavorite, isFactionSpecific, faction, isFiltered, isCollected = C_MountJournal.GetMountInfoByID(mountID)
+			local needsFanfare = C_MountJournal.NeedsFanfare(mountID)
 
-				g3btn.index = index
-				g3btn.spellID = spellID
-				g3btn.active = active
-				g3btn.icon:SetTexture(icon)
-				g3btn.icon:SetVertexColor(1, 1, 1)
-				g3btn:Enable()
-				g3btn.selectedTexture:SetShown(spellID == self.selectedSpellID)
-				g3btn.hidden:SetShown(self:isMountHidden(spellID))
-				g3btn.favorite:SetShown(mounts.mountFavoritesList[spellID])
+			g3btn.spellID = spellID
+			g3btn.mountID = mountID
+			g3btn.active = active
+			g3btn.icon:SetTexture(needsFanfare and COLLECTIONS_FANFARE_ICON or icon)
+			g3btn.icon:SetVertexColor(1, 1, 1)
+			g3btn:Enable()
+			g3btn.selectedTexture:SetShown(mountID == self.selectedMountID)
+			g3btn.hidden:SetShown(self:isMountHidden(mountID))
+			g3btn.favorite:SetShown(isFavorite)
 
-				local mountWeight = self.mountsWeight[spellID]
-				if mountWeight then
-					g3btn.mountWeight:SetText(getColorWeight(mountWeight))
-					g3btn.mountWeight:Show()
-					g3btn.mountWeightBG:Show()
-				else
-					g3btn.mountWeight:Hide()
-					g3btn.mountWeightBG:Hide()
-				end
-
-				if mounts:isUsable(spellID, canUseFlying) then
-					g3btn.icon:SetDesaturated()
-					g3btn.icon:SetAlpha(1)
-				elseif isCollected then
-					g3btn.icon:SetDesaturated(true)
-					g3btn.icon:SetVertexColor(.58823529411765, .19607843137255, .19607843137255)
-					g3btn.icon:SetAlpha(.75)
-				else
-					g3btn.icon:SetDesaturated(true)
-					g3btn.icon:SetAlpha(.5)
-				end
-
-				if g3btn.showingTooltip then
-					GameTooltip:SetHyperlink("spell:"..spellID)
-				end
+			local mountWeight = self.mountsWeight[mountID]
+			if mountWeight then
+				g3btn.mountWeight:SetText(getColorWeight(mountWeight))
+				g3btn.mountWeight:Show()
+				g3btn.mountWeightBG:Show()
 			else
-				g3btn.icon:SetTexture("Interface/PetBattles/MountJournalEmptyIcon")
-				g3btn.icon:SetDesaturated(true)
-				g3btn.icon:SetVertexColor(.4, .4, .4)
-				g3btn.icon:SetAlpha(.5)
-				g3btn.index = nil
-				g3btn.spellID = nil
-				g3btn.selected = false
-				g3btn:Disable()
-				g3btn.selectedTexture:Hide()
-				g3btn.hidden:Hide()
-				g3btn.favorite:Hide()
 				g3btn.mountWeight:Hide()
 				g3btn.mountWeightBG:Hide()
 			end
 
-			self:updateMountToggleButton(g3btn)
-		end
-	end
+			if isUsable and IsUsableSpell(spellID) and mounts:isUsable(mountID, nil, canUseFlying) or needsFanfare then
+				g3btn.icon:SetDesaturated()
+				g3btn.icon:SetAlpha(1)
+			elseif isCollected then
+				g3btn.icon:SetDesaturated(true)
+				g3btn.icon:SetVertexColor(.58823529411765, .19607843137255, .19607843137255)
+				g3btn.icon:SetAlpha(.75)
+			else
+				g3btn.icon:SetDesaturated(true)
+				g3btn.icon:SetAlpha(.5)
+			end
 
-	HybridScrollFrame_Update(scrollFrame, scrollFrame.buttonHeight * math.ceil(numDisplayedMounts / 3), scrollFrame:GetHeight())
+			g3btn:Show()
+		else
+			g3btn:Hide()
+		end
+
+		self:updateMountToggleButton(g3btn)
+	end
 end
 
 
 function journal:setArrowSelectMount(enabled)
-	if not self.scrollFrame then return end
+	if not self.leftInset then return end
 	if enabled then
 		local time, pressed, delta, index
 		local onUpdate = function(scroll, elapsed)
@@ -1177,15 +1156,20 @@ function journal:setArrowSelectMount(enabled)
 			if time <= 0 then
 				time = .1
 				index = index + delta
-				if index < 1 or index > #self.displayedMounts then
-					scroll:SetScript("OnUpdate", nil)
-					return
+
+				if index < 1 then
+					index = self.shownNumMouns + index - math.fmod(self.shownNumMouns, delta)
+					if self.shownNumMouns - index > 2 then index = index + 3 end
+				elseif index > self.shownNumMouns then
+					index = index - self.shownNumMouns + math.fmod(self.shownNumMouns, delta)
+					if index > 3 then index = index - 3 end
 				end
-				self:selectMount(index)
+
+				self:selectMountByIndex(index)
 			end
 		end
 
-		self.scrollFrame:SetScript("OnKeyDown", function(scroll, key)
+		self.leftInset:SetScript("OnKeyDown", function(scroll, key)
 			if key == "UP" or key == "DOWN" or key == "LEFT" or key == "RIGHT" then
 				scroll:SetPropagateKeyboardInput(false)
 
@@ -1195,25 +1179,26 @@ function journal:setArrowSelectMount(enabled)
 				end
 
 				index = nil
-				for i = 1, #self.displayedMounts do
-					if self.selectedSpellID == self.displayedMounts[i] then
-						index = i
-						break
+				if self.selectedMountID then
+					local data = self:getMountDataByMountID(self.selectedMountID)
+					if data then
+						index = data.index + delta
 					end
 				end
 
 				if not index then
-					if mounts.config.gridToggle then
-						index = scroll.buttons[1].grid3List.mounts[1].index
-					else
-						index = scroll.buttons[1].defaultList.index
-					end
-					if not index then return end
-				else
-					index = index + delta
-					if index < 1 or index > #self.displayedMounts then return end
+					index = delta > 0 and 1 or self.shownNumMouns
 				end
-				self:selectMount(index)
+
+				if index < 1 then
+					index = self.shownNumMouns + index - math.fmod(self.shownNumMouns, delta)
+					if self.shownNumMouns - index > 2 then index = index + 3 end
+				elseif index > self.shownNumMouns then
+					index = index - self.shownNumMouns + math.fmod(self.shownNumMouns, delta)
+					if index > 3 then index = index - 3 end
+				end
+
+				self:selectMountByIndex(index)
 
 				pressed = key
 				time = .5
@@ -1223,20 +1208,20 @@ function journal:setArrowSelectMount(enabled)
 			end
 		end)
 
-		self.scrollFrame:SetScript("OnKeyUp", function(scroll, key)
+		self.leftInset:SetScript("OnKeyUp", function(scroll, key)
 			if pressed == key then
 				scroll:SetScript("OnUpdate", nil)
 			end
 		end)
 
-		self.scrollFrame:SetScript("OnHide", function(scroll)
+		self.leftInset:SetScript("OnHide", function(scroll)
 			scroll:SetScript("OnUpdate", nil)
 		end)
 	else
-		self.scrollFrame:SetScript("OnKeyDown", nil)
-		self.scrollFrame:SetScript("OnKeyUp", nil)
-		self.scrollFrame:SetScript("OnHide", nil)
-		self.scrollFrame:SetScript("OnUpdate", nil)
+		self.leftInset:SetScript("OnKeyDown", nil)
+		self.leftInset:SetScript("OnKeyUp", nil)
+		self.leftInset:SetScript("OnHide", nil)
+		self.leftInset:SetScript("OnUpdate", nil)
 	end
 end
 
@@ -1268,79 +1253,149 @@ function journal:setEditMountsList()
 end
 
 
+function journal:setCountMounts()
+	if mounts.filters.hideOnChar then
+		self.mountCount.count:SetText(#self.mountIDs)
+		self.mountCount.collected:SetText(self.mountCount.collected.numWithHidden)
+	else
+		self.mountCount.count:SetText(self.mountCount.count.num)
+		self.mountCount.collected:SetText(self.mountCount.collected.num)
+	end
+end
+
+
 function journal:updateCountMounts()
-	self.mountCount.count:SetText(#mounts.mountsDB)
-	self.mountCount.collected:SetText(GetNumCompanions("MOUNT"))
+	local count, collected, collectedWithHidden = 0, 0, 0
+	for i = 1, #self.mountIDs do
+		local _,_,_,_,_,_,_,_,_, hideOnChar, isCollected = C_MountJournal.GetMountInfoByID(self.mountIDs[i])
+		if not hideOnChar then
+			count = count + 1
+			if isCollected then
+				collected = collected + 1
+			end
+		end
+		if isCollected then
+			collectedWithHidden = collectedWithHidden + 1
+		end
+	end
+	self.mountCount.count.num = count
+	self.mountCount.collected.num = collected
+	self.mountCount.collected.numWithHidden = collectedWithHidden
+	self:setCountMounts()
 end
 
 
 function journal:sortMounts()
-	local fSort, mCache = mounts.filters.sorting, {}
+	local fSort, db = mounts.filters.sorting, mounts.mountsDB
+	local numNeedingFanfare = C_MountJournal.GetNumMountsNeedingFanfare()
 
-	local function setMCache(info)
-		mCache[info] = GetSpellInfo(info[1])
-	end
+	local mCache = setmetatable({}, {__index = function(t, mountID)
+		local name, _,_,_,_,_, isFavorite, _,_,_, isCollected = C_MountJournal.GetMountInfoByID(mountID)
+		t[mountID] = {name, isFavorite, isCollected}
+		if numNeedingFanfare > 0 and C_MountJournal.NeedsFanfare(mountID) then
+			t[mountID][4] = true
+			numNeedingFanfare = numNeedingFanfare - 1
+		end
+		if fSort.by == "type" then
+			local _,_,_,_, mountType = C_MountJournal.GetMountInfoExtraByID(mountID)
+			t[mountID][5] = self.mountTypes[mountType]
+		end
+		return t[mountID]
+	end})
 
-	sort(mounts.mountsDB, function(a, b)
+	sort(self.mountIDs, function(a, b)
 		if a == b then return false end
+		local ma = mCache[a]
+		local mb = mCache[b]
+
+		-- FANFARE
+		local needFanfareA = ma[4]
+		local needFanfareB = mb[4]
+
+		if needFanfareA and not needFanfareB then return true
+		elseif not needFanfareA and needFanfareB then return false end
 
 		-- FAVORITES
 		if fSort.favoritesFirst then
-			local isFavoriteA = mounts.mountFavoritesList[a[1]]
-			local isFavoriteB = mounts.mountFavoritesList[b[1]]
+			local isFavoriteA = ma[2]
+			local isFavoriteB = mb[2]
 
 			if isFavoriteA and not isFavoriteB then return true
 			elseif not isFavoriteA and isFavoriteB then return false end
 		end
 
 		-- COLLECTED
-		local isCollectedA = mounts.indexBySpellID[a[1]]
-		local isCollectedB = mounts.indexBySpellID[b[1]]
+		local isCollectedA = ma[3]
+		local isCollectedB = mb[3]
 
 		if isCollectedA and not isCollectedB then return true
 		elseif not isCollectedA and isCollectedB then return false end
 
 		-- TYPE
 		if fSort.by == "type" then
-			local typeA = a[3]
-			local typeB = b[3]
+			local typeA = ma[5]
+			local typeB = mb[5]
 
 			if typeA < typeB then return not fSort.reverse
 			elseif typeA > typeB then return fSort.reverse end
 		-- EXPANSION
 		elseif fSort.by == "expansion" then
-			local expansionA = a[6]
-			local expansionB = b[6]
+			local expA = db[a][1]
+			local expB = db[b][1]
 
-			if expansionA < expansionB then return not fSort.reverse
-			elseif expansionA > expansionB then return fSort.reverse end
+			if expA < expB then return not fSort.reverse
+			elseif expA > expB then return fSort.reverse end
 		end
 
 		-- NAME
-		if not mCache[a] then setMCache(a) end
-		if not mCache[b] then setMCache(b) end
-		local nameA = mCache[a]
-		local nameB = mCache[b]
+		local nameA = ma[1]
+		local nameB = mb[1]
 		local reverse = fSort.by == "name" and fSort.reverse
 
 		if nameA < nameB then return not reverse
 		elseif nameA > nameB then return reverse end
 
-		return a[1] < b[1]
+		return a < b
 	end)
 
 	self:updateMountsList()
 end
 
 
+function journal:updateIndexByMountID()
+	if not self.mjFiltersBackup.isBackuped then return end
+	if C_MountJournal.GetNumDisplayedMounts() ~= self.mountCount.count.num then
+		self:UnregisterEvent("MOUNT_JOURNAL_SEARCH_UPDATED")
+		C_MountJournal.SetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_COLLECTED, true)
+		C_MountJournal.SetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_NOT_COLLECTED, true)
+		C_MountJournal.SetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_UNUSABLE, true)
+		C_MountJournal.SetAllTypeFilters(true)
+		C_MountJournal.SetAllSourceFilters(true)
+		C_MountJournal.SetSearch("")
+		self:RegisterEvent("MOUNT_JOURNAL_SEARCH_UPDATED")
+	end
+
+	wipe(self.indexByMountID)
+	for i = 1, C_MountJournal.GetNumDisplayedMounts() do
+		local mountID = C_MountJournal.GetDisplayedMountID(i)
+		self.indexByMountID[mountID] = i
+	end
+end
+journal.MOUNT_JOURNAL_SEARCH_UPDATED = journal.updateIndexByMountID
+
+
+function journal:NEW_MOUNT_ADDED()
+	self:updateCountMounts()
+	self:updateIndexByMountID()
+	self:sortMounts()
+end
+
+
 -- isUsable FLAG CHANGED
-function journal:PLAYER_ENTERING_WORLD()
+function journal:MOUNT_JOURNAL_USABILITY_CHANGED()
 	self:updateMountsList()
 	self:updateMountDisplay()
 end
-journal.ZONE_CHANGED = journal.PLAYER_ENTERING_WORLD
-journal.ZONE_CHANGED_INDOORS = journal.PLAYER_ENTERING_WORLD
-journal.ZONE_CHANGED_NEW_AREA = journal.PLAYER_ENTERING_WORLD
 
 
 function journal:createMountList(mapID)
@@ -1380,15 +1435,15 @@ function journal:mountToggle(btn)
 		self:createMountList(self.listMapID)
 	end
 	local tbl = self.list[btn.type]
-	local spellID = btn:GetParent().spellID
+	local mountID = btn:GetParent().mountID
 
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
-	if tbl[spellID] then
-		tbl[spellID] = nil
+	if tbl[mountID] then
+		tbl[mountID] = nil
 		btn.icon:SetVertexColor(self.colors.gray:GetRGB())
 		self:getRemoveMountList(self.listMapID)
 	else
-		tbl[spellID] = true
+		tbl[mountID] = true
 		btn.icon:SetVertexColor(self.colors.gold:GetRGB())
 	end
 
@@ -1542,186 +1597,189 @@ function journal:updateMapSettings()
 end
 
 
-do
-	local function transitionToModelSceneID(self, modelSceneID, cameraTransitionType, cameraModificationType, forceEvenIfSame)
-		local modelSceneType, cameraIDs, actorIDs = 0, {1}, {1}
+function journal:updateMountDisplay(forceSceneChange)
+	local info = self.mountDisplay.info
+	if self.selectedMountID then
+		local creatureName, spellID, icon, active, isUsable = C_MountJournal.GetMountInfoByID(self.selectedMountID)
+		local needsFanfare = C_MountJournal.NeedsFanfare(self.selectedMountID)
+		if isUsable then isUsable = IsUsableSpell(spellID) and mounts:isUsable(self.selectedMountID) end
 
-		if self.modelSceneID ~= modelSceneID or forceEvenIfSame then
-			self.modelSceneID = modelSceneID
-			self.cameraTransitionType = cameraTransitionType
-			self.cameraModificationType = cameraModificationType
-			self.forceEvenIfSame = forceEvenIfSame
+		if self.mountDisplay.lastMountID ~= self.selectedMountID or forceSceneChange then
+			local creatureDisplayID, descriptionText, sourceText, isSelfMount, mountType, modelSceneID, animID, spellVisualKitID, disablePlayerMountPreview = C_MountJournal.GetMountInfoExtraByID(self.selectedMountID)
 
-			local actorsToRelease = {}
-			for actor in self:EnumerateActiveActors() do
-				actorsToRelease[actor] = true
-			end
+			info.link:SetShown(mounts.config.showWowheadLink)
+			info.link:SetText("wotlk.wowhead.com/spell="..spellID)
+			info.name:SetText(creatureName)
 
-			local oldTagToActor = self.tagToActor
-			self.tagToActor = {}
+			self.modelScene:TransitionToModelSceneID(modelSceneID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_MAINTAIN, forceSceneChange)
+			self.modelScene:PrepareForFanfare(needsFanfare)
 
-			for actorIndex, actorID in ipairs(actorIDs) do
-				local actor = self:CreateOrTransitionActorFromScene(oldTagToActor, actorID)
-				if actor then
-					actorsToRelease[actor] = nil
+			local mountActor = self.modelScene:GetActorByTag("unwrapped")
+			if mountActor then
+				mountActor:SetModelByCreatureDisplayID(creatureDisplayID, true)
+
+				-- mount self idle animation
+				if isSelfMount then
+					mountActor:SetAnimationBlendOperation(Enum.ModelBlendOperation.None)
+					mountActor:SetAnimation(618)
+				else
+					mountActor:SetAnimationBlendOperation(Enum.ModelBlendOperation.Anim)
+					mountActor:SetAnimation(0)
 				end
 			end
 
-			for actor in pairs(actorsToRelease) do
-				self.actorPool:Release(actor)
-			end
-
-			local oldTagToCamera = self.tagToCamera
-			self.tagToCamera = {}
-
-			self.cameras = {}
-
-			local needsNewCamera = true
-			for cameraIndex, cameraID in ipairs(cameraIDs) do
-				local camera = self:CreateOrTransitionCameraFromScene(oldTagToCamera, cameraTransitionType, cameraModificationType, cameraID)
-				if camera == self.activeCamera then
-					needsNewCamera = false
-				end
-			end
-
-			if needsNewCamera then
-				self:SetActiveCamera(self.cameras[1])
-			end
-			-- HACK: This should come from game data, instead we're caching them incase we Reset()
-			self.lightDirX, self.lightDirY, self.lightDirZ = self:GetLightDirection()
+			self:event("MOUNT_MODEL_UPDATE", mountType)
 		end
 
-		C_ModelInfo.AddActiveModelScene(self, self.modelSceneID)
-	end
-
-
-	function journal:updateMountDisplay(forceSceneChange)
-		local info = self.mountDisplay.info
-		if self.selectedSpellID then
-			local creatureName, _, icon = GetSpellInfo(self.selectedSpellID)
-			local canUseFlying = mounts:isCanUseFlying()
-			local isUsable = mounts:isUsable(self.selectedSpellID, canUseFlying)
-			local mountIndex, active = mounts.indexBySpellID[self.selectedSpellID]
-			if mountIndex then
-				local creatureID, creatureName, creatureSpellID, icon, isSummoned = GetCompanionInfo("MOUNT", mountIndex)
-				active = isSummoned
-			end
-
-			if self.mountDisplay.lastSpellID ~= self.selectedSpellID or forceSceneChange then
-				self.mountDisplay.lastSpellID = self.selectedSpellID
-				local faction, creatureID, mountType = util.getMountInfoBySpellID(self.selectedSpellID)
-
-				info.name:SetText(creatureName)
-				transitionToModelSceneID(self.modelScene, 4, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_MAINTAIN, forceSceneChange)
-
-				local mountActor = self.modelScene:GetActorByTag("unwrapped")
-				if mountActor then
-					mountActor:SetModelByCreatureDisplayID(creatureID)
-
-					-- mount self idle animation
-					if isSelfMount then
-						mountActor:SetAnimationBlendOperation(LE_MODEL_BLEND_OPERATION_NONE)
-						mountActor:SetAnimation(618)
-					else
-						mountActor:SetAnimationBlendOperation(LE_MODEL_BLEND_OPERATION_ANIM)
-						mountActor:SetAnimation(0)
-					end
-				end
-
-				self:event("MOUNT_MODEL_UPDATE", mountType, self.selectedSpellID)
-			end
-
-			info.icon:SetTexture(icon)
-			info:Show()
-			self.modelScene:Show()
-			self.mountDisplay.yesMountsTex:Show()
-			self.mountDisplay.noMountsTex:Hide()
-			self.mountDisplay.noMounts:Hide()
-
-			if active then
-				self.summonButton:SetText(BINDING_NAME_DISMOUNT)
-				self.summonButton:SetEnabled(isUsable)
-			else
-				self.summonButton:SetText(MOUNT)
-				self.summonButton:SetEnabled(isUsable)
-			end
+		if needsFanfare then
+			info.icon:SetTexture(COLLECTIONS_FANFARE_ICON)
+			info.new:Show()
+			info.newGlow:Show()
 		else
-			info:Hide()
-			self.modelScene:Hide()
-			self.mountDisplay.yesMountsTex:Hide()
-			self.mountDisplay.noMountsTex:Show()
-			self.mountDisplay.noMounts:Show()
-			self.summonButton:Disable()
+			info.icon:SetTexture(icon)
+			info.new:Hide()
+			info.newGlow:Hide()
 		end
+
+		info:Show()
+		self.modelScene:Show()
+		self.mountDisplay.modelSceneSettingsButton:Show()
+		self.mountDisplay.yesMountsTex:Show()
+		self.mountDisplay.noMountsTex:Hide()
+		self.mountDisplay.noMounts:Hide()
+
+		if needsFanfare then
+			self.summonButton:SetText(UNWRAP)
+			self.summonButton:Enable()
+		elseif active then
+			self.summonButton:SetText(BINDING_NAME_DISMOUNT)
+			self.summonButton:SetEnabled(isUsable)
+		else
+			self.summonButton:SetText(MOUNT)
+			self.summonButton:SetEnabled(isUsable)
+		end
+	else
+		info:Hide()
+		self.modelScene:Hide()
+		self.mountDisplay.modelSceneSettingsButton:Hide()
+		self.mountDisplay.yesMountsTex:Hide()
+		self.mountDisplay.noMountsTex:Show()
+		self.mountDisplay.noMounts:Show()
+		self.summonButton:Disable()
 	end
 end
 
 
-function journal:useMount(spellID)
-	local index = mounts.indexBySpellID[spellID]
-	if not index then return end
-	local creatureID, creatureName, spellID, icon, active = GetCompanionInfo("MOUNT", index)
+function journal:useMount(mountID)
+	local _,_,_, active = C_MountJournal.GetMountInfoByID(mountID)
 	if active then
-		DismissCompanion("MOUNT")
-	elseif mounts:isUsable(spellID, mounts:isCanUseFlying()) then
-		mounts:summonPet(spellID)
-		CallCompanion("MOUNT", index)
+		C_MountJournal.Dismiss()
+	elseif C_MountJournal.NeedsFanfare(mountID) then
+		self.modelScene:StartUnwrapAnimation(function()
+			C_MountJournal.ClearFanfare(mountID)
+		end)
+	else
+		C_MountJournal.SummonByID(mountID)
 	end
 end
 
 
-do
-	local function getMountButtonBySpellID(spellID)
-		local buttons = journal.scrollFrame.buttons
-		for i = 1, #buttons do
-			local button = buttons[i]
-			if mounts.config.gridToggle then
-				for j = 1, 3 do
-					local grid3Button = button.grid3List.mounts[j]
-					if grid3Button.spellID == spellID then
-						return grid3Button
-					end
-				end
-			else
-				if button.defaultList.spellID == spellID then
-					return button
-				end
+local function getGridTogglePredicate(predicate)
+	if mounts.config.gridToggle then
+		return function(btn, data)
+			data = data or btn
+			for i = 1, #data do
+				if predicate(btn[i] or btn, data[i]) then return true end
 			end
 		end
-	end
-
-
-	function journal:setSelectedMount(spellID, index, button)
-		self.selectedSpellID = spellID
-		self.scrollFrame:update()
-		self:updateMountDisplay()
-
-		if not button then
-			button = getMountButtonBySpellID(spellID)
-		end
-		if not button or (self.scrollFrame:GetBottom() or 0) >= (button:GetTop() or 0) then
-			if not index then
-				for i = 1, #self.displayedMounts do
-					if spellID == self.displayedMounts[i] then
-						index = i
-						break
-					end
-				end
-			end
-			if index then
-				if mounts.config.gridToggle then index = math.ceil(index / 3) end
-				HybridScrollFrame_ScrollToIndex(self.scrollFrame, index, function() return self.scrollFrame.buttonHeight end)
-			end
-		end
-
-		self:event("MOUNT_SELECT")
+	else
+		return predicate
 	end
 end
 
 
-function journal:selectMount(index)
-	local spellID = self.displayedMounts[index]
-	if spellID then self:setSelectedMount(spellID, index) end
+function journal:getMountDataByMountID(mountID)
+	local mountData
+	local predicate = getGridTogglePredicate(function(data)
+		if data.mountID == mountID then
+			mountData = data
+			return true
+		end
+	end)
+	local dataIndex = self.scrollBox:FindByPredicate(predicate)
+	return mountData, dataIndex
+end
+
+
+function journal:getMountDataByMountIndex(index)
+	local mountData
+	local predicate = getGridTogglePredicate(function(data)
+		if data.index == index then
+			mountData = data
+			return true
+		end
+	end)
+	local dataIndex = self.scrollBox:FindByPredicate(predicate)
+	return mountData, dataIndex
+end
+
+
+function journal:getMountButtonByMountID(mountID)
+	local predicate = getGridTogglePredicate(function(btn, data)
+		return data.mountID == mountID
+	end)
+	return self.scrollBox:FindFrameByPredicate(predicate)
+end
+
+
+function journal:setSelectedMount(mountID, spellID, dataIndex)
+	local scrollTo = not spellID
+	if not spellID then
+		local _
+		_, spellID = C_MountJournal.GetMountInfoByID(mountID)
+	end
+	local oldSelectedID = self.selectedMountID
+	self.selectedMountID = mountID
+	self.selectedSpellID = spellID
+	self:updateMountDisplay()
+
+	if oldSelectedID ~= mountID then
+		local btn = self:getMountButtonByMountID(oldSelectedID)
+		if btn then
+			self:initMountButton(btn, btn:GetElementData())
+		end
+	end
+
+	local btn = self:getMountButtonByMountID(mountID)
+	if btn then
+		self:initMountButton(btn, btn:GetElementData())
+	end
+
+	if scrollTo then
+		if not dataIndex then
+			local _
+			_, dataIndex = self:getMountDataByMountID(mountID)
+		end
+
+		if dataIndex then
+			local scrollOffset = self.scrollBox:GetDerivedScrollOffset()
+			local indexOffset = self.scrollBox:GetExtentUntil(dataIndex)
+
+			if indexOffset < scrollOffset then
+				self.scrollBox:ScrollToElementDataIndex(dataIndex, ScrollBoxConstants.AlignBegin)
+			elseif indexOffset + self.scrollBox:GetElementExtent(dataIndex) > scrollOffset + self.scrollBox:GetVisibleExtent() then
+				self.scrollBox:ScrollToElementDataIndex(dataIndex, ScrollBoxConstants.AlignEnd)
+			end
+		end
+	end
+
+	self:event("MOUNT_SELECT")
+end
+
+
+function journal:selectMountByIndex(index)
+	local data, dataIndex = self:getMountDataByMountIndex(index)
+	if data then self:setSelectedMount(data.mountID, nil, dataIndex) end
 end
 
 
@@ -1755,6 +1813,28 @@ function journal:filterDropDown_Initialize(btn, level, value)
 		info.checked = mounts.filters.unusable
 		btn:ddAddButton(info, level)
 
+		info.text = L["hidden for character"]
+		info.func = function(_,_,_, value)
+			mounts.filters.hideOnChar = value
+			btn:ddRefresh(level)
+			self:setCountMounts()
+			self:updateMountsList()
+		end
+		info.checked = mounts.filters.hideOnChar
+		btn:ddAddButton(info, level)
+
+		info.indent = 16
+		info.disabled = function() return not mounts.filters.hideOnChar end
+		info.text = L["only hidden"]
+		info.func = function(_,_,_, value)
+			mounts.filters.onlyHideOnChar = value
+			self:updateMountsList()
+		end
+		info.checked = mounts.filters.onlyHideOnChar
+		btn:ddAddButton(info, level)
+
+		info.indent = nil
+		info.disabled = nil
 		info.text = L["Hidden by player"]
 		info.func = function(_,_,_, value)
 			mounts.filters.hiddenByPlayer = value
@@ -2206,6 +2286,8 @@ function journal:saveDefaultFilters()
 	defFilters.collected = filters.collected
 	defFilters.notCollected = filters.notCollected
 	defFilters.unusable = filters.unusable
+	defFilters.hideOnChar = filters.hideOnChar
+	defFilters.onlyHideOnChar = filters.onlyHideOnChar
 	defFilters.hiddenByPlayer = filters.hiddenByPlayer
 	defFilters.onlyHiddenByPlayer = filters.onlyHiddenByPlayer
 	defFilters.mountsWeight.sign = filters.mountsWeight.sign
@@ -2242,6 +2324,8 @@ function journal:restoreDefaultFilters()
 	defFilters.collected = true
 	defFilters.notCollected = true
 	defFilters.unusable = true
+	defFilters.hideOnChar = false
+	defFilters.onlyHideOnChar = false
 	defFilters.hiddenByPlayer = false
 	defFilters.onlyHiddenByPlayer = false
 	defFilters.mountsWeight.sign = nil
@@ -2268,6 +2352,8 @@ function journal:isDefaultFilters()
 	if defFilters.collected ~= filters.collected
 	or defFilters.notCollected ~= filters.notCollected
 	or defFilters.unusable ~= filters.unusable
+	or not defFilters.hideOnChar ~= not filters.hideOnChar
+	or not defFilters.onlyHideOnChar ~= not filters.onlyHideOnChar
 	or not defFilters.hiddenByPlayer ~= not filters.hiddenByPlayer
 	or not defFilters.onlyHiddenByPlayer ~= not filters.onlyHiddenByPlayer
 	or defFilters.mountsWeight.sign ~= filters.mountsWeight.sign
@@ -2288,7 +2374,7 @@ function journal:isDefaultFilters()
 	for i = 1, #filters.factions do
 		if defFilters.factions[i] ~= filters.factions[i] then return end
 	end
-	for i = 2, #filters.pet do
+	for i = 1, #filters.pet do
 		if defFilters.pet[i] ~= filters.pet[i] then return end
 	end
 	for i = 1, #filters.expansions do
@@ -2327,6 +2413,8 @@ function journal:resetToDefaultFilters()
 	filters.collected = defFilters.collected
 	filters.notCollected = defFilters.notCollected
 	filters.unusable = defFilters.unusable
+	filters.hideOnChar = defFilters.hideOnChar
+	filters.onlyHideOnChar = defFilters.onlyHideOnChar
 	filters.hiddenByPlayer = defFilters.hiddenByPlayer
 	filters.onlyHiddenByPlayer = defFilters.onlyHiddenByPlayer
 	filters.mountsWeight.sign = defFilters.mountsWeight.sign
@@ -2360,6 +2448,7 @@ function journal:resetToDefaultFilters()
 	self.searchBox:SetText("")
 	self:updateBtnFilters()
 	self:updateMountsList()
+	self:setCountMounts()
 end
 
 
@@ -2455,17 +2544,17 @@ function journal:updateBtnFilters()
 end
 
 
-function journal:isMountHidden(spellID)
-	return mounts.globalDB.hiddenMounts and mounts.globalDB.hiddenMounts[spellID]
+function journal:isMountHidden(mountID)
+	return mounts.globalDB.hiddenMounts and mounts.globalDB.hiddenMounts[mountID]
 end
 
 
-function journal:getFilterWeight(spellID)
+function journal:getFilterWeight(mountID)
 	local filter = mounts.filters.mountsWeight
 	if not filter.sign then
 		return true
 	else
-		local mountWeight = self.mountsWeight[spellID] or 100
+		local mountWeight = self.mountsWeight[mountID] or 100
 		if filter.sign == ">" then
 			return mountWeight > filter.weight
 		elseif filter.sign == "<" then
@@ -2477,8 +2566,12 @@ function journal:getFilterWeight(spellID)
 end
 
 
-function journal:setShownCountMounts()
-	self.shownPanel.count:SetText(#self.displayedMounts)
+function journal:setShownCountMounts(numMounts)
+	if numMounts then
+		self.shownPanel.count:SetText(numMounts)
+		self.shownNumMouns = numMounts
+	end
+
 	if self:isDefaultFilters() then
 		self.shownPanel:Hide()
 		self.leftInset:SetPoint("TOPLEFT", self.filtersPanel, "BOTTOMLEFT", 0, -2)
@@ -2486,70 +2579,95 @@ function journal:setShownCountMounts()
 		self.shownPanel:Show()
 		self.leftInset:SetPoint("TOPLEFT", self.shownPanel, "BOTTOMLEFT", 0, -2)
 	end
-	self.leftInset:GetHeight()
+	-- self.leftInset:GetHeight()
+end
+
+
+function journal:updateScrollMountList()
+	self.scrollBox:SetDataProvider(self.dataProvider, ScrollBoxConstants.RetainScrollPosition)
 end
 
 
 function journal:updateMountsList()
-	local filters, list, indexBySpellID, mountsDB, tags, GetSpellInfo, unpack = mounts.filters, self.list, mounts.indexBySpellID, mounts.mountsDB, self.tags, GetSpellInfo, unpack
+	local filters, list, mountTypes, mountsDB, tags, GetMountInfoByID, GetMountInfoExtraByID = mounts.filters, self.list, self.mountTypes, mounts.mountsDB, self.tags, C_MountJournal.GetMountInfoByID, C_MountJournal.GetMountInfoExtraByID
 	local sources, selected, factions, pet, types, expansions = filters.sources, filters.selected, filters.factions, filters.pet, filters.types, filters.expansions
 	local canUseFlying = mounts:isCanUseFlying()
 	local text = util.cleanText(self.searchBox:GetText())
-	wipe(self.displayedMounts)
+	local numMounts, data = 0
+	self.dataProvider = CreateDataProvider()
 
-	for i = 1, #mountsDB do
-		local spellID, _, mountType, sourceType, mountFaction, expansion = unpack(mountsDB[i])
-		local name = GetSpellInfo(spellID)
-		local isCollected = indexBySpellID[spellID]
-		local isMountHidden = self:isMountHidden(spellID)
+	for i = 1, #self.mountIDs do
+		local mountID = self.mountIDs[i]
+		local name, spellID, _,_, isUsable, sourceType, _,_, mountFaction, shouldHideOnChar, isCollected = GetMountInfoByID(mountID)
+		local _,_, sourceText, _, mountType = GetMountInfoExtraByID(mountID)
+		local mType = mountTypes[mountType]
 		local petID = self.petForMount[spellID]
+		local isMountHidden = self:isMountHidden(mountID)
+		local mountDB = mountsDB[mountID]
 
+		-- HIDDEN FOR CHARACTER
+		if (not shouldHideOnChar or filters.hideOnChar)
+		and (not (filters.hideOnChar and filters.onlyHideOnChar) or shouldHideOnChar)
 		-- HIDDEN BY PLAYER
-		if (not isMountHidden or filters.hiddenByPlayer)
+		and (not isMountHidden or filters.hiddenByPlayer)
 		and (not (filters.hiddenByPlayer and filters.onlyHiddenByPlayer) or isMountHidden)
 		-- COLLECTED
 		and (isCollected and filters.collected or not isCollected and filters.notCollected)
 		-- UNUSABLE
-		and (filters.unusable or not isCollected or mounts:isUsable(spellID, canUseFlying))
+		and (filters.unusable or not isCollected or isUsable and IsUsableSpell(spellID) and mounts:isUsable(mountID, mType, canUseFlying))
 		-- EXPANSIONS
-		and expansions[expansion]
+		and expansions[mountDB[1]]
 		-- SOURCES
-		and sources[sourceType]
+		and sources[mountDB[2]]
 		-- SEARCH
 		and (#text == 0
 			or name:lower():find(text, 1, true)
-			or tags:find(spellID, text))
+			or tags:find(mountID, text))
 		-- TYPE
-		and types[mountType]
+		and types[mType]
 		-- FACTION
-		and factions[mountFaction]
+		and factions[(mountFaction or 2) + 1]
 		-- SELECTED
-		and (list and (selected[1] and list.fly[spellID]
-		            or selected[2] and list.ground[spellID]
-		            or selected[3] and list.swimming[spellID])
-		  or selected[4] and not (list and (list.fly[spellID]
-		                                 or list.ground[spellID]
-		                                 or list.swimming[spellID])))
+		and (list and (selected[1] and list.fly[mountID]
+		            or selected[2] and list.ground[mountID]
+		            or selected[3] and list.swimming[mountID])
+		  or selected[4] and not (list and (list.fly[mountID]
+		                                 or list.ground[mountID]
+		                                 or list.swimming[mountID])))
 		-- PET
-		and pet[petID ~= nil and (type(petID) == "number" and 3 or petID and 2 or 1) or 4]
+		and pet[petID and (type(petID) == "number" and petID or 3) or 4]
 		-- MOUNTS WEIGHT
-		and self:getFilterWeight(spellID)
+		and self:getFilterWeight(mountID)
 		-- TAGS
-		and tags:getFilterMount(spellID) then
-			self.displayedMounts[#self.displayedMounts + 1] = spellID
+		and tags:getFilterMount(mountID) then
+			numMounts = numMounts + 1
+			if mounts.config.gridToggle then
+				if data and #data < 3 then
+					data[#data + 1] = {index = numMounts, mountID = mountID}
+				else
+					data = {{index = numMounts, mountID = mountID}}
+					self.dataProvider:Insert(data)
+				end
+			else
+				self.dataProvider:Insert({index = numMounts, mountID = mountID})
+			end
 		end
 	end
 
-	self:setShownCountMounts()
-	self.scrollFrame:update()
+	self:updateScrollMountList()
+	self:setShownCountMounts(numMounts)
 end
 
 
 function journal:showToggle()
-	if self.init then
-		self:init()
+	if InCombatLockdown() then return end
+	if not IsAddOnLoaded("Blizzard_Collections") then
+		LoadAddOn("Blizzard_Collections")
+	end
+	if CollectionsJournal:IsShown() then
+		HideUIPanel(CollectionsJournal)
 	else
-		self.bgFrame:SetShown(not self.bgFrame:IsShown())
+		ShowUIPanel(CollectionsJournal)
 	end
 end
 

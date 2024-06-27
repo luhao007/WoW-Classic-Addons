@@ -1,5 +1,5 @@
 ## Interface: 30400
-## Version: 2.7.15
+## Version: 2.8.11
 ## SavedVariables: PawnCommon
 ## SavedVariablesPerCharacter: PawnOptions, PawnMrRobotScaleProviderOptions, PawnClassicScaleProviderOptions
 
@@ -29,6 +29,7 @@ GemsClassic.lua
 GemsBurningCrusade.lua
 GemsWrath.lua
 ScaleTemplates.lua
+ItemIDs.lua
 Pawn.lua
 PawnUI.lua
 PawnUI.xml

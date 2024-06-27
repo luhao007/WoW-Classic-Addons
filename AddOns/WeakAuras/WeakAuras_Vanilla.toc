@@ -1,7 +1,7 @@
 ## Interface: 30400
 ## Author: The WeakAuras Team
-## Version: 5.3.4
-## OptionalDeps: Ace3, LibCompress, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, Masque, GTFO, LibButtonGlow-1.0, LibSpellRange-1.0, LibRangeCheck-2.0, LibDBIcon-1.0, LibClassicDurations, LibClassicCasterino, LibGetFrame-1.0, !LibUIDropDownMenu
+## Version: 5.11.3
+## OptionalDeps: Ace3, LibCompress, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, Masque, GTFO, LibButtonGlow-1.0, LibSpellRange-1.0, LibRangeCheck-3.0, LibDBIcon-1.0, LibGetFrame-1.0, !LibUIDropDownMenu, !!AddonLocale, BigWigs, DBM-Core
 ## LoadOnDemand: 0
 ## SavedVariables: WeakAurasSaved
 ## DefaultState: Enabled
@@ -21,13 +21,15 @@
 # External code + initialization
 embeds.xml
 
-# Client flavor specific libs
 Init.lua
 locales.xml
 ArchiveTypes\Repository.lua
 DefaultOptions.lua
 
 # Core files
+SubscribableObject.lua
+Features.lua
+Atlas_Vanilla.lua
 Types_Vanilla.lua
 Types.lua
 Prototypes.lua
@@ -43,6 +45,7 @@ AnchorToWeakAuras.lua
 # Trigger systems
 BuffTrigger2.lua
 GenericTrigger.lua
+BossMods.lua
 
 # Helper Systems
 AuraWarnings.lua
@@ -51,6 +54,7 @@ AuraEnvironmentWrappedSystems.lua
 DebugLog.lua
 
 # Region support
+RegionTypes\SmoothStatusBarMixin.lua
 RegionTypes\RegionPrototype.lua
 RegionTypes\ProgressTexture.lua
 RegionTypes\Texture.lua

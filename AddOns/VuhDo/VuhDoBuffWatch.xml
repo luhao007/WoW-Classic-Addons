@@ -233,7 +233,7 @@
 	</Frame>
 
 	<Frame name="VuhDoBuffWatchMainFrameTemplate" virtual="true" toplevel="true" frameStrata="MEDIUM"
-			movable="true" parent="UIParent" enableMouse="true" inherit="BackdropTemplate" mixin="BackdropTemplateMixin">
+			movable="true" parent="UIParent" enableMouse="true" inherits="BackdropTemplate" mixin="BackdropTemplateMixin">
 		<KeyValues>
 			<KeyValue key="backdropInfo" value="BACKDROP_VUHDO_BUFF_WATCH_MAIN_FRAME_16_16_5555" type="global" />
 		</KeyValues>

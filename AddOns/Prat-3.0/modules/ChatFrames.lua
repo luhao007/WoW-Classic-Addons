@@ -17,8 +17,8 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program; if not, write to:
 --
--- Free Software Foundation, Inc., 
--- 51 Franklin Street, Fifth Floor, 
+-- Free Software Foundation, Inc.,
+-- 51 Franklin Street, Fifth Floor,
 -- Boston, MA  02110-1301, USA.
 --
 --
@@ -42,7 +42,7 @@ Prat:AddModuleToLoad(function()
 
   local PL = mod.PL
 
-  --[===[@debug@
+  --[==[@debug@
   PL:AddLocale(PRAT_MODULE, "enUS", {
     ["Frames"] = true,
     ["Chat window frame parameter options"] = true,
@@ -58,12 +58,12 @@ Prat:AddModuleToLoad(function()
     ["maxchatheight_desc"] = "Sets the maximum height for all chat windows.",
     ["mainchatonload_name"] = "Force Main Chat Frame On Load",
     ["mainchatonload_desc"] = "Automatically select the first chat frame and make it active on load.",
-    ["framealpha_name"] = "Set Chatframe Alpha",
-    ["framealpha_desc"] = "Conrols the transparency of the chatframe when you hover over it with your mouse.",
-    ["rememberframepositions_name"] = "Remember Positions",
-    ["rememberframepositions_desc"] = "Remember the chatframe positions, and restore them on load"
+    ["framealphastatic_name"] = "Static Chatframe Alpha",
+    ["framealphastatic_desc"] = "Set the transparency of the chatframe to always match the configured transparency",
+    ["defaultframealpha_name"] = "Default alpha on mouseover",
+    ["defaultframealpha_desc"] = "Sets minimum alpha for the chat on mouseover when the static chatframe alpha setting is disabled AND the default alpha is greater than the custom alpha set to the chat window.",
   })
-  --@end-debug@]===]
+  --@end-debug@]==]
 
   -- These Localizations are auto-generated. To help with localization
   -- please go to http://www.wowace.com/projects/prat-3-0/localization/
@@ -76,8 +76,12 @@ do
 L = {
 	["Frames"] = {
 		["Chat window frame parameter options"] = true,
+		["defaultframealpha_desc"] = "Sets minimum alpha for the chat on mouseover when the static chatframe alpha setting is disabled AND the default alpha is greater than the custom alpha set to the chat window.",
+		["defaultframealpha_name"] = "Default alpha on mouseover",
 		["framealpha_desc"] = "Conrols the transparency of the chatframe when you hover over it with your mouse.",
 		["framealpha_name"] = "Set Chatframe Alpha",
+		["framealphastatic_desc"] = "Set the transparency of the chatframe to always match the configured transparency",
+		["framealphastatic_name"] = "Static Chatframe Alpha",
 		["Frames"] = true,
 		["mainchatonload_desc"] = "Automatically select the first chat frame and make it active on load.",
 		["mainchatonload_name"] = "Force Main Chat Frame On Load",
@@ -103,9 +107,17 @@ L = {
 		--[[Translation missing --]]
 		["Chat window frame parameter options"] = "Chat window frame parameter options",
 		--[[Translation missing --]]
+		["defaultframealpha_desc"] = "Sets minimum alpha for the chat on mouseover when the static chatframe alpha setting is disabled AND the default alpha is greater than the custom alpha set to the chat window.",
+		--[[Translation missing --]]
+		["defaultframealpha_name"] = "Default alpha on mouseover",
+		--[[Translation missing --]]
 		["framealpha_desc"] = "Conrols the transparency of the chatframe when you hover over it with your mouse.",
 		--[[Translation missing --]]
 		["framealpha_name"] = "Set Chatframe Alpha",
+		--[[Translation missing --]]
+		["framealphastatic_desc"] = "Set the transparency of the chatframe to always match the configured transparency",
+		--[[Translation missing --]]
+		["framealphastatic_name"] = "Static Chatframe Alpha",
 		--[[Translation missing --]]
 		["Frames"] = "Frames",
 		--[[Translation missing --]]
@@ -146,9 +158,17 @@ L = {
 		--[[Translation missing --]]
 		["Chat window frame parameter options"] = "Chat window frame parameter options",
 		--[[Translation missing --]]
+		["defaultframealpha_desc"] = "Sets minimum alpha for the chat on mouseover when the static chatframe alpha setting is disabled AND the default alpha is greater than the custom alpha set to the chat window.",
+		--[[Translation missing --]]
+		["defaultframealpha_name"] = "Default alpha on mouseover",
+		--[[Translation missing --]]
 		["framealpha_desc"] = "Conrols the transparency of the chatframe when you hover over it with your mouse.",
 		--[[Translation missing --]]
 		["framealpha_name"] = "Set Chatframe Alpha",
+		--[[Translation missing --]]
+		["framealphastatic_desc"] = "Set the transparency of the chatframe to always match the configured transparency",
+		--[[Translation missing --]]
+		["framealphastatic_name"] = "Static Chatframe Alpha",
 		--[[Translation missing --]]
 		["Frames"] = "Frames",
 		--[[Translation missing --]]
@@ -187,8 +207,16 @@ PL:AddLocale(PRAT_MODULE, "ptBR", L)
 L = {
 	["Frames"] = {
 		["Chat window frame parameter options"] = "Options de la fenêtre de discussion",
+		--[[Translation missing --]]
+		["defaultframealpha_desc"] = "Sets minimum alpha for the chat on mouseover when the static chatframe alpha setting is disabled AND the default alpha is greater than the custom alpha set to the chat window.",
+		--[[Translation missing --]]
+		["defaultframealpha_name"] = "Default alpha on mouseover",
 		["framealpha_desc"] = "Définit la transparence de la fenêtre de discussion quand la souris passe par dessus.",
 		["framealpha_name"] = "Transparence",
+		--[[Translation missing --]]
+		["framealphastatic_desc"] = "Set the transparency of the chatframe to always match the configured transparency",
+		--[[Translation missing --]]
+		["framealphastatic_name"] = "Static Chatframe Alpha",
 		["Frames"] = "Fenêtre",
 		["mainchatonload_desc"] = "Sélectionne automatiquement la première fenêtre de discussion et la rend active lors du chargement.",
 		--[[Translation missing --]]
@@ -217,8 +245,12 @@ PL:AddLocale(PRAT_MODULE, "frFR", L)
 L = {
 	["Frames"] = {
 		["Chat window frame parameter options"] = "Optionen für Parameter des Chatfenster-Rahmens",
+		["defaultframealpha_desc"] = "Legt die minimale Transparenz für den Chat fest, wenn du mit der Maus darüber fährst und die statische Chatfrahmen-Transparenzeinstellung deaktiviert ist UND die Standard Transparenz größer ist als die benutzerdefinierte Transparenz, die für das Chatfenster festgelegt ist.",
+		["defaultframealpha_name"] = "Standard Transparenz beim darüber fahren mit der Maus",
 		["framealpha_desc"] = "Steuert die Transparenz des Chatfensters, wenn du die Maus darüberlegst.",
 		["framealpha_name"] = "Transparenz für Chatfenster einstellen",
+		["framealphastatic_desc"] = "Stelle die Transparenz des Chatrahmens so ein, dass sie immer der konfigurierten Transparenz entspricht",
+		["framealphastatic_name"] = "Statische Chatrahmen Transparenz",
 		["Frames"] = "Fenster",
 		["mainchatonload_desc"] = "Automatisch das erste Chatfenster auswählen und beim Laden aktivieren.",
 		["mainchatonload_name"] = "Haupt-Chatfenster beim Laden erzwingen",
@@ -242,9 +274,17 @@ PL:AddLocale(PRAT_MODULE, "deDE", L)
 L = {
 	["Frames"] = {
 		["Chat window frame parameter options"] = "대화창 프레임 한도 옵션",
+		--[[Translation missing --]]
+		["defaultframealpha_desc"] = "Sets minimum alpha for the chat on mouseover when the static chatframe alpha setting is disabled AND the default alpha is greater than the custom alpha set to the chat window.",
+		--[[Translation missing --]]
+		["defaultframealpha_name"] = "Default alpha on mouseover",
 		["framealpha_desc"] = "마우스를 올렸을 때 대화창의 투명도를 조절합니다.",
 		["framealpha_name"] = "대화창 투명도 설정",
-		["Frames"] = "대화창",
+		--[[Translation missing --]]
+		["framealphastatic_desc"] = "Set the transparency of the chatframe to always match the configured transparency",
+		--[[Translation missing --]]
+		["framealphastatic_name"] = "Static Chatframe Alpha",
+		["Frames"] = "대화창 [Frames]",
 		["mainchatonload_desc"] = "첫번째 대화창을 자동으로 선택하고 로드 시에 활성화 시킵니다.",
 		["mainchatonload_name"] = "로드 시 주 대화창 강제 설정",
 		["maxchatheight_desc"] = "모든 대화창의 최대 높이를 설정합니다.",
@@ -269,9 +309,17 @@ L = {
 		--[[Translation missing --]]
 		["Chat window frame parameter options"] = "Chat window frame parameter options",
 		--[[Translation missing --]]
+		["defaultframealpha_desc"] = "Sets minimum alpha for the chat on mouseover when the static chatframe alpha setting is disabled AND the default alpha is greater than the custom alpha set to the chat window.",
+		--[[Translation missing --]]
+		["defaultframealpha_name"] = "Default alpha on mouseover",
+		--[[Translation missing --]]
 		["framealpha_desc"] = "Conrols the transparency of the chatframe when you hover over it with your mouse.",
 		--[[Translation missing --]]
 		["framealpha_name"] = "Set Chatframe Alpha",
+		--[[Translation missing --]]
+		["framealphastatic_desc"] = "Set the transparency of the chatframe to always match the configured transparency",
+		--[[Translation missing --]]
+		["framealphastatic_name"] = "Static Chatframe Alpha",
 		--[[Translation missing --]]
 		["Frames"] = "Frames",
 		--[[Translation missing --]]
@@ -310,8 +358,16 @@ PL:AddLocale(PRAT_MODULE, "esMX", L)
 L = {
 	["Frames"] = {
 		["Chat window frame parameter options"] = "Параметры окна чата",
+		--[[Translation missing --]]
+		["defaultframealpha_desc"] = "Sets minimum alpha for the chat on mouseover when the static chatframe alpha setting is disabled AND the default alpha is greater than the custom alpha set to the chat window.",
+		--[[Translation missing --]]
+		["defaultframealpha_name"] = "Default alpha on mouseover",
 		["framealpha_desc"] = "Настройка прозрачности окна чата при наведении на него курсора мыши.",
 		["framealpha_name"] = "Прозрачность окна чата",
+		--[[Translation missing --]]
+		["framealphastatic_desc"] = "Set the transparency of the chatframe to always match the configured transparency",
+		--[[Translation missing --]]
+		["framealphastatic_name"] = "Static Chatframe Alpha",
 		["Frames"] = "Фреймы",
 		["mainchatonload_desc"] = "Автоматически выбирает первое окно чата, и делает его активным при загрузке.",
 		["mainchatonload_name"] = "Задействовать главное окно чата при загрузке",
@@ -335,8 +391,16 @@ PL:AddLocale(PRAT_MODULE, "ruRU", L)
 L = {
 	["Frames"] = {
 		["Chat window frame parameter options"] = "聊天窗口参数选项",
+		--[[Translation missing --]]
+		["defaultframealpha_desc"] = "Sets minimum alpha for the chat on mouseover when the static chatframe alpha setting is disabled AND the default alpha is greater than the custom alpha set to the chat window.",
+		--[[Translation missing --]]
+		["defaultframealpha_name"] = "Default alpha on mouseover",
 		["framealpha_desc"] = "控制鼠标移过时聊天框架的透明度.",
 		["framealpha_name"] = "设定聊天框架透明度",
+		--[[Translation missing --]]
+		["framealphastatic_desc"] = "Set the transparency of the chatframe to always match the configured transparency",
+		--[[Translation missing --]]
+		["framealphastatic_name"] = "Static Chatframe Alpha",
 		["Frames"] = "框架",
 		["mainchatonload_desc"] = "加载时自动选择并激活第1个聊天框架.",
 		["mainchatonload_name"] = "加载时焦点于主聊天框架.",
@@ -362,9 +426,17 @@ L = {
 		--[[Translation missing --]]
 		["Chat window frame parameter options"] = "Chat window frame parameter options",
 		--[[Translation missing --]]
+		["defaultframealpha_desc"] = "Sets minimum alpha for the chat on mouseover when the static chatframe alpha setting is disabled AND the default alpha is greater than the custom alpha set to the chat window.",
+		--[[Translation missing --]]
+		["defaultframealpha_name"] = "Default alpha on mouseover",
+		--[[Translation missing --]]
 		["framealpha_desc"] = "Conrols the transparency of the chatframe when you hover over it with your mouse.",
 		--[[Translation missing --]]
 		["framealpha_name"] = "Set Chatframe Alpha",
+		--[[Translation missing --]]
+		["framealphastatic_desc"] = "Set the transparency of the chatframe to always match the configured transparency",
+		--[[Translation missing --]]
+		["framealphastatic_name"] = "Static Chatframe Alpha",
 		--[[Translation missing --]]
 		["Frames"] = "Frames",
 		--[[Translation missing --]]
@@ -403,8 +475,16 @@ L = {
 	["Frames"] = {
 		["Chat window frame parameter options"] = "聊天視窗框架參數選項",
 		--[[Translation missing --]]
+		["defaultframealpha_desc"] = "Sets minimum alpha for the chat on mouseover when the static chatframe alpha setting is disabled AND the default alpha is greater than the custom alpha set to the chat window.",
+		--[[Translation missing --]]
+		["defaultframealpha_name"] = "Default alpha on mouseover",
+		--[[Translation missing --]]
 		["framealpha_desc"] = "Conrols the transparency of the chatframe when you hover over it with your mouse.",
 		["framealpha_name"] = "設定聊天欄透明度",
+		--[[Translation missing --]]
+		["framealphastatic_desc"] = "Set the transparency of the chatframe to always match the configured transparency",
+		--[[Translation missing --]]
+		["framealphastatic_name"] = "Static Chatframe Alpha",
 		["Frames"] = "框架",
 		--[[Translation missing --]]
 		["mainchatonload_desc"] = "Automatically select the first chat frame and make it active on load.",
@@ -453,9 +533,9 @@ end
       maxchatheight = 600,
       maxchatheightdefault = 600,
       mainchatonload = true,
-      framealpha = DEFAULT_CHATFRAME_ALPHA,
       removeclamp = true,
-      rememberframepositions = false,
+      framealphastatic = false,
+      defaultframealpha = 0.25,
       framemetrics = {
         ['*'] = {
           width = 430,
@@ -490,22 +570,21 @@ end
           name = PL["removeclamp_name"],
           desc = PL["removeclamp_desc"],
         },
-        framealpha = {
-          order = 115,
-          name = PL["framealpha_name"],
-          desc = PL["framealpha_desc"],
-          type = "range",
-          min = 0.0,
-          max = 1.0,
-          step = .01,
-          order = 190,
-        },
-        rememberframepositions = {
+        framealphastatic = {
           type = "toggle",
-          order = 120,
-          name = PL.rememberframepositions_name,
-          desc = PL.rememberframepositions_desc,
-        }
+          order = 130,
+          name = PL.framealphastatic_name,
+          desc = PL.framealphastatic_desc,
+        },
+        defaultframealpha = {
+          name = PL["defaultframealpha_name"],
+          desc = PL["defaultframealpha_desc"],
+          type = "range",
+          order = 140,
+          min = 0.0,
+          max = 1,
+          step = 0.01,
+        },
       }
     })
   end
@@ -524,14 +603,16 @@ end
     self:SecureHook("FCF_UnDockFrame")
     self:SecureHook("FloatingChatFrame_UpdateBackgroundAnchors")
 
+    self:SecureHook("FCF_SetWindowAlpha")
+    self:SecureHook("FCF_SetWindowColor")
 
-    if (self.db.profile.rememberframepositions) then
-      self:RawHook('SetChatWindowSavedPosition', true)
-      self:RawHook('GetChatWindowSavedPosition', true)
-      self:RawHook('SetChatWindowSavedDimensions', true)
-      self:RawHook('GetChatWindowSavedDimensions', true)
-
-      self:UpdateFrameMetrics()
+    if not Prat.IsClassic then
+      local prevClamp = ChatFrame1.SetClampRectInsets
+      self:SecureHook(ChatFrame1, "SetClampRectInsets", function(frame, ...)
+        if self.db.profile.on and self.db.profile.removeclamp then
+          prevClamp(frame, 0, 0, 0, 0)
+        end
+      end)
     end
   end
 
@@ -539,16 +620,6 @@ end
   function mod:OnModuleDisable()
     CHAT_FRAME_BUTTON_FRAME_MIN_ALPHA = 0.2
     self:ConfigureAllChatFrames(false)
-
-    if (self.db.profile.rememberframepositions) then
-
-      self:Unhook('SetChatWindowSavedPosition')
-      self:Unhook('GetChatWindowSavedPosition')
-      self:Unhook('SetChatWindowSavedDimensions')
-      self:Unhook('GetChatWindowSavedDimensions')
-
-      self:UpdateFrameMetrics()
-    end
   end
 
   function mod:GetDescription()
@@ -598,8 +669,60 @@ end
     for _, v in pairs(Prat.Frames) do
       self:SetParameters(v, enabled)
     end
+  end
 
-    DEFAULT_CHATFRAME_ALPHA = self.db.profile.framealpha
+
+  function mod:RecreateBackgroundTextures(frame)
+    if frame.PratTextures then
+      return
+    end
+    frame.PratTextures = {}
+    for _, name in ipairs(CHAT_FRAME_TEXTURES) do
+      local texture = _G[frame:GetName() .. name]
+      local layer, sublevel = texture:GetDrawLayer()
+
+      local newTexture = texture:GetParent():CreateTexture(nil, layer, nil, sublevel)
+      for i = 1, texture:GetNumPoints() do
+        newTexture:SetPoint(texture:GetPoint(i))
+      end
+
+      newTexture:SetTexture(texture:GetTexture())
+      newTexture:SetTexCoord(texture:GetTexCoord())
+
+      newTexture:SetSize(texture:GetSize())
+
+      table.insert(frame.PratTextures, newTexture)
+      texture:Hide()
+    end
+  end
+
+  function mod:HidePratTextures(frame)
+    if frame.PratTextures then
+      for _, name in ipairs(CHAT_FRAME_TEXTURES) do
+        local texture = _G[frame:GetName() .. name]
+        texture:Show()
+      end
+      for _, texture in ipairs(frame.PratTextures) do
+        texture:Hide()
+      end
+    end
+  end
+
+  function mod:RestorePratTextures(frame)
+    if not frame.PratTextures then
+      self:RecreateBackgroundTextures(frame)
+    end
+
+    for _, name in ipairs(CHAT_FRAME_TEXTURES) do
+      local texture = _G[frame:GetName() .. name]
+      texture:Hide()
+    end
+    local _, _, r, g, b, a = FCF_GetChatWindowInfo(frame:GetID())
+    for _, texture in ipairs(frame.PratTextures) do
+      texture:Show()
+      texture:SetVertexColor(r, g, b)
+      texture:SetAlpha(a)
+    end
   end
 
   -- get the defaults for chat frame1 max/min width/height for use when disabling the module
@@ -607,8 +730,13 @@ end
     local cf = _G["ChatFrame1"]
     local prof = self.db.profile
 
-    local minwidthdefault, minheightdefault = cf:GetMinResize()
-    local maxwidthdefault, maxheightdefault = cf:GetMaxResize()
+    local minwidthdefault, minheightdefault, maxwidthdefault, maxheightdefault
+    if cf.GetResizeBounds then
+      minwidthdefault, minheightdefault, maxwidthdefault, maxheightdefault = cf:GetResizeBounds()
+    else
+      minwidthdefault, minheightdefault = cf:GetMinResize()
+      maxwidthdefault, maxheightdefault = cf:GetMaxResize()
+    end
 
     prof.minchatwidthdefault = minwidthdefault
     prof.maxchatwidthdefault = maxwidthdefault
@@ -618,39 +746,74 @@ end
     prof.initialized = true
   end
 
+  function mod:FCF_SetWindowColor(frame, r, g, b)
+    if frame.PratTextures then
+      for _, texture in ipairs(frame.PratTextures) do
+        texture:SetVertexColor(r, g, b)
+      end
+    end
+  end
+
+  function mod:FCF_SetWindowAlpha(frame, a)
+    local _, _, r, g, b, a = FCF_GetChatWindowInfo(frame:GetID())
+    if frame.PratTextures then
+      for _, texture in ipairs(frame.PratTextures) do
+        texture:SetAlpha(a)
+      end
+    end
+  end
   -- set the max/min width/height for a chatframe
   function mod:SetParameters(cf, enabled)
     local prof = self.db.profile
+
+    local minWidth, minHeight, maxWidth, maxHeight
     if enabled then
-      cf:SetMinResize(prof.minchatwidth, prof.minchatheight)
-      cf:SetMaxResize(prof.maxchatwidth, prof.maxchatheight)
+      if prof.framealphastatic then
+        self:RestorePratTextures(cf)
+      else
+        self:HidePratTextures(cf)
+      end
+
+      DEFAULT_CHATFRAME_ALPHA = prof.defaultframealpha
+
+      minWidth, minHeight = prof.minchatwidth, prof.minchatheight
+      maxWidth, maxHeight = prof.maxchatwidth, prof.maxchatheight
 
       if prof.removeclamp then
+        if not Prat.IsClassic then
+          cf:SetClampedToScreen(false)
+        end
         cf:SetClampRectInsets(0, 0, 0, 0)
+        if not Prat.IsClassic then
+          EventRegistry:RegisterCallback("EditMode.Enter", function()
+            cf:SetClampedToScreen(true)
+            EventRegistry:UnregisterCallback("EditMode.Enter", cf)
+          end, cf)
+        end
+      end
+
+      if not Prat.IsClassic then
+        cf.ScrollBar:SetAlpha(0)
       end
     else
-      cf:SetMinResize(prof.minchatwidthdefault, prof.minchatheightdefault)
-      cf:SetMaxResize(prof.maxchatwidthdefault, prof.maxchatheightdefault)
+      self:HidePratTextures(cf)
+      DEFAULT_CHATFRAME_ALPHA = 0.25
+
+      minWidth, minHeight = prof.minchatwidthdefault, prof.minchatheightdefault
+      maxWidth, maxHeight = prof.maxchatwidthdefault, prof.maxchatheightdefault
+    end
+
+    if cf.SetResizeBounds then
+      cf:SetResizeBounds(minWidth, minHeight, maxWidth, maxHeight)
+    else
+      cf:SetMinResize(minWidth, minHeight)
+      cf:SetMaxResize(maxWidth, maxHeight)
     end
   end
 
 
   function mod:OnValueChanged()
     self:ConfigureAllChatFrames(true)
-
-    if (self.db.profile.rememberframepositions and not self:IsHooked('SetChatWindowSavedPosition')) then
-      self:RawHook('SetChatWindowSavedPosition', true)
-      self:RawHook('GetChatWindowSavedPosition', true)
-      self:RawHook('SetChatWindowSavedDimensions', true)
-      self:RawHook('GetChatWindowSavedDimensions', true)
-      self:UpdateFrameMetrics()
-    elseif (not self.db.profile.rememberframepositions and self:IsHooked('SetChatWindowSavedPosition')) then
-      self:Unhook('SetChatWindowSavedPosition')
-      self:Unhook('GetChatWindowSavedPosition')
-      self:Unhook('SetChatWindowSavedDimensions')
-      self:Unhook('GetChatWindowSavedDimensions')
-      self:UpdateFrameMetrics()
-    end
   end
 
   -- Frame position saving feature credit to Chatter
@@ -679,15 +842,6 @@ end
       data.width, data.height = self.hooks.GetChatWindowSavedDimensions(id)
     end
     return data.width, data.height
-  end
-
-  function mod:UpdateFrameMetrics()
-    for i = 1, NUM_CHAT_WINDOWS do
-      local frame = _G["ChatFrame" .. i]
-      if frame and type(frame.GetID) == "function" then
-        FloatingChatFrame_Update(frame:GetID())
-      end
-    end
   end
 
 

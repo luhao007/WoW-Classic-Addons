@@ -1,0 +1,9 @@
+## Interface: 40400
+## Title: Titan Panel [|cffeda55fLootType|r] |cff00aa008.0.13|r
+## Version: 8.0.13
+## Notes: Adds group loot and instance difficulty information to Titan Panel
+## Author: Titan Panel Development Team (http://www.titanpanel.org)
+## SavedVariables: TitanClassicLootTypeSaved
+## OptionalDeps:  
+## Dependencies: TitanClassic
+TitanClassicLootType.xml

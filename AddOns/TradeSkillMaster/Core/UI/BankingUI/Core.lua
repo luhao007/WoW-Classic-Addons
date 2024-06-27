@@ -4,8 +4,9 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local BankingUI = TSM.UI:NewPackage("BankingUI")
+local Environment = TSM.Include("Environment")
 local L = TSM.Include("Locale").GetTable()
 local FSM = TSM.Include("Util.FSM")
 local TempTable = TSM.Include("Util.TempTable")
@@ -159,7 +160,7 @@ function private.GetSettingsContextKey()
 end
 
 function private.UpdateCurrentModule(frame)
-	if not TSM.IsWowClassic() then
+	if Environment.HasFeature(Environment.FEATURES.REAGENT_BANK) then
 		ReagentBankFrame_OnShow(ReagentBankFrame)
 	end
 	-- update nav buttons
@@ -212,7 +213,7 @@ function private.UpdateCurrentModule(frame)
 			:SetHeight(24)
 			:SetMargin(0, 0, 8, 0)
 			:SetFont("BODY_BODY2_MEDIUM")
-			:SetDisabled(TSM.IsWowClassic())
+			:SetDisabled(not Environment.HasFeature(Environment.FEATURES.REAGENT_BANK))
 			:SetText(L["Deposit reagents"])
 			:SetScript("OnClick", private.WarehousingDepositReagentsBtnOnClick)
 		)
@@ -423,7 +424,7 @@ function private.FSMCreate()
 			footerButtonsFrame:GetElement("restockBagsBtn")
 				:SetDisabled(context.progress)
 			footerButtonsFrame:GetElement("depositReagentsBtn")
-				:SetDisabled(context.progress or TSM.IsWowClassic())
+				:SetDisabled(context.progress or not Environment.HasFeature(Environment.FEATURES.REAGENT_BANK))
 			footerButtonsFrame:GetElement("row4.emptyBagsBtn")
 				:SetDisabled(context.progress)
 			footerButtonsFrame:GetElement("row4.restoreBagsBtn")

@@ -133,15 +133,15 @@ local function VUHDO_animateDebuffIcon(aButton, anIconInfo, aNow, anIconIndex, a
 			VUHDO_LibCustomGlow.PixelGlow_Start(
 				aButton, 
 				tCuDeStoConfig["barGlowColor"] and { 
-					tCuDeStoConfig["barGlowColor"]["R"], 
-					tCuDeStoConfig["barGlowColor"]["G"], 
-					tCuDeStoConfig["barGlowColor"]["B"], 
-					tCuDeStoConfig["barGlowColor"]["O"] 
+					tCuDeStoConfig["barGlowColor"]["R"],
+					tCuDeStoConfig["barGlowColor"]["G"],
+					tCuDeStoConfig["barGlowColor"]["B"],
+					tCuDeStoConfig["barGlowColor"]["O"]
 				} or { 
-					VUHDO_PANEL_SETUP.BAR_COLORS["DEBUFF_BAR_GLOW"]["R"], 
-					VUHDO_PANEL_SETUP.BAR_COLORS["DEBUFF_BAR_GLOW"]["R"], 
-					VUHDO_PANEL_SETUP.BAR_COLORS["DEBUFF_BAR_GLOW"]["B"], 
-					VUHDO_PANEL_SETUP.BAR_COLORS["DEBUFF_BAR_GLOW"]["O"] 
+					VUHDO_PANEL_SETUP.BAR_COLORS["DEBUFF_BAR_GLOW"]["R"],
+					VUHDO_PANEL_SETUP.BAR_COLORS["DEBUFF_BAR_GLOW"]["G"],
+					VUHDO_PANEL_SETUP.BAR_COLORS["DEBUFF_BAR_GLOW"]["B"],
+					VUHDO_PANEL_SETUP.BAR_COLORS["DEBUFF_BAR_GLOW"]["O"]
 				}, 
 				14,                             -- number of particles
 				0.3,                            -- frequency
@@ -158,15 +158,15 @@ local function VUHDO_animateDebuffIcon(aButton, anIconInfo, aNow, anIconIndex, a
 			VUHDO_LibCustomGlow.PixelGlow_Start(
 				VUHDO_getBarIconFrame(aButton, anIconIndex), 
 				tCuDeStoConfig["iconGlowColor"] and { 
-					tCuDeStoConfig["iconGlowColor"]["R"], 
-					tCuDeStoConfig["iconGlowColor"]["G"], 
-					tCuDeStoConfig["iconGlowColor"]["B"], 
-					tCuDeStoConfig["iconGlowColor"]["O"] 
+					tCuDeStoConfig["iconGlowColor"]["R"],
+					tCuDeStoConfig["iconGlowColor"]["G"],
+					tCuDeStoConfig["iconGlowColor"]["B"],
+					tCuDeStoConfig["iconGlowColor"]["O"]
 				} or { 
-					VUHDO_PANEL_SETUP.BAR_COLORS["DEBUFF_ICON_GLOW"]["R"], 
-					VUHDO_PANEL_SETUP.BAR_COLORS["DEBUFF_ICON_GLOW"]["R"], 
-					VUHDO_PANEL_SETUP.BAR_COLORS["DEBUFF_ICON_GLOW"]["B"], 
-					VUHDO_PANEL_SETUP.BAR_COLORS["DEBUFF_ICON_GLOW"]["O"] 
+					VUHDO_PANEL_SETUP.BAR_COLORS["DEBUFF_ICON_GLOW"]["R"],
+					VUHDO_PANEL_SETUP.BAR_COLORS["DEBUFF_ICON_GLOW"]["G"],
+					VUHDO_PANEL_SETUP.BAR_COLORS["DEBUFF_ICON_GLOW"]["B"],
+					VUHDO_PANEL_SETUP.BAR_COLORS["DEBUFF_ICON_GLOW"]["O"]
 				}, 
 				8,                                           -- number of particles
 				0.3,                                         -- frequency

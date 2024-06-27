@@ -22,7 +22,7 @@ local private = {
 	stream = nil,
 	publisherEvent = {},
 }
-local CALLBACK_TIME_WARNING_THRESHOLD_MS = 20
+local CALLBACK_TIME_WARNING_THRESHOLD = 0.02
 
 
 
@@ -128,11 +128,11 @@ function private.ProcessEvent(context)
 		end
 	end
 	for _, callback in ipairs(private.temp) do
-		local startTime = debugprofilestop()
+		local startTime = GetTimePreciseSec()
 		callback(unpack(context))
-		local timeTaken = debugprofilestop() - startTime
-		if timeTaken > CALLBACK_TIME_WARNING_THRESHOLD_MS then
-			Log.Warn("Event (%s) callback took %.2fms", event, timeTaken)
+		local timeTaken = GetTimePreciseSec() - startTime
+		if timeTaken > CALLBACK_TIME_WARNING_THRESHOLD then
+			Log.Warn("Event (%s) callback took %.5fs", event, timeTaken)
 		end
 	end
 	private.stream:Send(context)

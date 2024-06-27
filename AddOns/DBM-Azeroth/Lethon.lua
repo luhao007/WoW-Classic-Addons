@@ -1,7 +1,7 @@
-local mod	= DBM:NewMod("Lethon", "DBM-Azeroth")
+local mod	= DBM:NewMod("LethonVanilla", "DBM-Azeroth")
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20221129003558")
+mod:SetRevision("20240422183958")
 mod:SetCreatureID(14888)--121821 TW ID, 14888 classic ID
 --mod:SetModelID(17887)
 mod:EnableWBEngageSync()--Enable syncing engage in outdoors
@@ -11,9 +11,9 @@ mod:RegisterCombat("combat_yell", L.Pull)
 
 mod:RegisterEventsInCombat(
 --	"SPELL_CAST_START 24818 243468",
-	"SPELL_CAST_SUCCESS 24814 24813"
---	"SPELL_AURA_APPLIED 243401",
---	"SPELL_AURA_APPLIED_DOSE 243401"
+	"SPELL_CAST_SUCCESS 24814 24813",
+	"SPELL_AURA_APPLIED 24818",
+	"SPELL_AURA_APPLIED_DOSE 24818"
 )
 
 --TODO, maybe taunt special warnings for classic version when it matters more.
@@ -49,8 +49,7 @@ end
 --]]
 
 function mod:SPELL_CAST_SUCCESS(args)
-	--if args.spellId == 24814 or args.spellId == 24813 then
-	if args.spellId == 24814 then
+	if args:IsSpell(24814, 24813) then
 		specWarnSleepingFog:Show()
 		specWarnSleepingFog:Play("watchstep")
 		timerSleepingFogCD:Start()
@@ -60,7 +59,7 @@ function mod:SPELL_CAST_SUCCESS(args)
 end
 
 function mod:SPELL_AURA_APPLIED(args)
-	if args.spellId == 24818 then
+	if args:IsSpell(24818) then
 		if self:IsTanking(nil, nil, args.destName, nil, args.sourceGUID) then--Basically, HAS to be bosses current target
 			warnNoxiousBreath:Show(args.destName, args.amount or 1)
 		end

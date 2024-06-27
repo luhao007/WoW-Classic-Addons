@@ -203,7 +203,10 @@ function VUHDO_newOptionsToolsResetLanguageClicked()
 				VUHDO_INDICATOR_CONFIG = nil;
 				VUHDO_CONFIG["CUSTOM_DEBUFF"] = nil;
 				VUHDO_PANEL_SETUP["HOTS"] = nil;
-				VUHDO_CONFIG["RANGE_SPELL"] = nil;
+				VUHDO_CONFIG["RANGE_SPELL"] = {
+					["HELPFUL"] = "",
+					["HARMFUL"] = "",
+				};
 				VUHDO_SPELL_ASSIGNMENTS = nil;
 				VUHDO_HOSTILE_SPELL_ASSIGNMENTS = nil;
 				VUHDO_SPELL_CONFIG = nil;

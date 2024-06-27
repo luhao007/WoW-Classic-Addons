@@ -170,8 +170,10 @@ function Element:IsVisible()
 end
 
 ---Sets the width of the element.
+---@generic T: Element
+---@param self T
 ---@param width? number The width of the element, or nil to have an undefined width
----@return Element @The element object
+---@return T
 function Element:SetWidth(width)
 	assert(width == nil or type(width) == "number")
 	self._width = width
@@ -179,8 +181,10 @@ function Element:SetWidth(width)
 end
 
 ---Sets the height of the element.
+---@generic T: Element
+---@param self T
 ---@param height? number The height of the element, or nil to have an undefined height
----@return Element @The element object
+---@return T
 function Element:SetHeight(height)
 	assert(height == nil or type(height) == "number")
 	self._height = height
@@ -188,9 +192,11 @@ function Element:SetHeight(height)
 end
 
 ---Sets the width and height of the element.
+---@generic T: Element
+---@param self T
 ---@param width? number The width of the element, or nil to have an undefined width
 ---@param height? number The height of the element, or nil to have an undefined height
----@return Element @The element object
+---@return T
 function Element:SetSize(width, height)
 	self:SetWidth(width)
 	self:SetHeight(height)
@@ -198,11 +204,13 @@ function Element:SetSize(width, height)
 end
 
 ---Sets the padding of the element.
+---@generic T: Element
+---@param self T
 ---@param left number The left padding value if all arguments are passed or the value of all sides if a single argument is passed
 ---@param right? number The right padding value if all arguments are passed
 ---@param top? number The top padding value if all arguments are passed
 ---@param bottom? number The bottom padding value if all arguments are passed
----@return Element @The element object
+---@return T
 function Element:SetPadding(left, right, top, bottom)
 	if not right and not top and not bottom then
 		right = left
@@ -224,7 +232,7 @@ end
 ---@param right? number The right margin value if all arguments are passed
 ---@param top? number The top margin value if all arguments are passed
 ---@param bottom? number The bottom margin value if all arguments are passed
----@return T @The element object
+---@return T
 function Element:SetMargin(left, right, top, bottom)
 	if not right and not top and not bottom then
 		right = left
@@ -240,23 +248,29 @@ function Element:SetMargin(left, right, top, bottom)
 end
 
 ---Sets the relative level of this element with regards to its parent.
+---@generic T: Element
+---@param self T
 ---@param level number The relative level of this element
----@return Element @The element object
+---@return T
 function Element:SetRelativeLevel(level)
 	self._relativeLevel = level
 	return self
 end
 
 ---Wipes the element's anchors.
----@return Element @The element object
+---@generic T: Element
+---@param self T
+---@return T
 function Element:WipeAnchors()
 	wipe(self._anchors)
 	return self
 end
 
 ---Adds an anchor to the element.
+---@generic T: Element
+---@param self T
 ---@param ... any The anchor arguments (following WoW's SetPoint() arguments)
----@return Element @The element object
+---@return T
 function Element:AddAnchor(...)
 	local numArgs = select("#", ...)
 	local point, relFrame, relPoint, x, y = nil, nil, nil, nil, nil
@@ -287,7 +301,7 @@ function Element:AddAnchor(...)
 end
 
 ---Gets the top-most element in the tree.
----@return Element @The top-most element object
+---@return Element
 function Element:GetBaseElement()
 	if not self._baseElementCache then
 		local element = self
@@ -303,13 +317,13 @@ function Element:GetBaseElement()
 end
 
 ---Gets the parent element's base frame.
----@return Element @The parent element's base frame
+---@return Element
 function Element:GetParent()
 	return self:GetParentElement():_GetBaseFrame()
 end
 
 ---Gets the parent element.
----@return Element @The parent element object
+---@return Element
 function Element:GetParentElement()
 	return self._parent
 end
@@ -318,7 +332,7 @@ end
 ---
 ---The path consists of element ids separated by `.`. `__parent` may also be used to indicate the parent element.
 ---@param path string The relative path to the element
----@return Element @The desired element
+---@return Element
 function Element:GetElement(path)
 	return private.GetElementHelper(self, path)
 end
@@ -344,8 +358,10 @@ function Element:ReleaseAllChildren()
 end
 
 ---Sets the tooltip of the element.
----@param tooltip any The value passed to @{Tooltip.Show} when the user hovers over the element, or nil to clear it
----@return Element @The element object
+---@generic T: Element
+---@param self T
+---@param tooltip any The value passed to `Tooltip.Show()` when the user hovers over the element, or nil to clear it
+---@return T
 function Element:SetTooltip(tooltip)
 	self._tooltip = tooltip
 	if tooltip then
@@ -361,34 +377,40 @@ function Element:SetTooltip(tooltip)
 end
 
 ---Shows a tooltip on the element.
----@param tooltip any The value passed to @{Tooltip.Show} when the user hovers over the element
+---@generic T: Element
+---@param self T
+---@param tooltip any The value passed to `Tooltip.Show()` when the user hovers over the element
 ---@param noWrapping? boolean Disables wrapping of text lines
 ---@param xOffset? number An extra x offset to apply to the anchor of the tooltip
----@return Element @The element object
+---@return T
 function Element:ShowTooltip(tooltip, noWrapping, xOffset)
 	Tooltip.Show(self:_GetBaseFrame(), tooltip, noWrapping, xOffset)
 	return self
 end
 
 ---Sets the context value of the element.
+---@generic T: Element
+---@param self T
 ---@param context any The context value
----@return Element @The element object
+---@return T
 function Element:SetContext(context)
 	self._context = context
 	return self
 end
 
 ---Gets the context value from the element.
----@return any @The context value
+---@return any
 function Element:GetContext()
 	return self._context
 end
 
 ---Registers a script handler.
+---@generic T: Element
+---@param self T
 ---@param script string The script to register for
 ---@param handler function The script handler which will be called with the element object followed by any arguments to
 ---the script
----@return Element @The element object
+---@return T
 function Element:SetScript(script, handler)
 	self._scripts[script] = handler
 	if handler then
@@ -400,8 +422,10 @@ function Element:SetScript(script, handler)
 end
 
 ---Sets a script to propagate to the parent element.
+---@generic T: Element
+---@param self T
 ---@param script string The script to propagate
----@return Element @The element object
+---@return T
 function Element:PropagateScript(script)
 	self._scripts[script] = "__PROPAGATE"
 	ScriptWrapper.SetPropagate(self:_GetBaseFrame(), script, self)
@@ -409,8 +433,10 @@ function Element:PropagateScript(script)
 end
 
 ---Takes ownership of a cancellable publisher.
+---@generic T: Element
+---@param self T
 ---@param publisher ReactivePublisher The cancellable publisher to own
----@return Element @The element object
+---@return T
 function Element:AddCancellable(publisher)
 	publisher:StoreIn(self._cancellables)
 	return self

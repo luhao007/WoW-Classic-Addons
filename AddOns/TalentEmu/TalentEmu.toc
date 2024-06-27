@@ -1,18 +1,15 @@
 ## Interface: 30400
-## Author: |cff00ff00ALA|r @ |cffff0000163UI|r
-## Version: 304r.221124
+## Author: |cff00ff00ALA|r
+## Version: 304r.240627
 ## Dependencies: 
 ## LoadOnDemand: 0
 ## SavedVariables: TalentEmuSV
 ## SavedVariablesPerCharacter: 
 ## DefaultState: enabled
 
-## Title: ala's Talent Emu
-## Notes: ala's Talent Emu
+## Title: Talent Emu Cata
+## Notes: Talent Emu
 ## Title-zhCN: |cFFFFE00A<|r|cFFC79C6E战斗|r|cFFFFE00A>|r |cFFFFFFFF天赋模拟器|r |cFFFFE00ATalentEmu|r
-## Notes-zhCN: 天赋模拟器，可以模拟天赋、导出代码、导入代码、观察其他玩家天赋、应用模拟器天赋等。
 
-## X-Vendor: NetEase
-## X-163UI-Version: 20200521143713
 
 TalentEmu.xml

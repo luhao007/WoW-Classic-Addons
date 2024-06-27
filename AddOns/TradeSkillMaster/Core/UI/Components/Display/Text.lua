@@ -82,7 +82,7 @@ end
 
 ---Sets the width of the text.
 ---@param width? number|"AUTO" The width of the text, "AUTO" to set the width based on the length of the text, or nil to have an undefined width
----@return Text @The text object
+---@return Text
 function Text:SetWidth(width)
 	if width == "AUTO" then
 		self._state.autoWidth = true
@@ -95,7 +95,7 @@ end
 
 ---Sets the font.
 ---@param font string The font key
----@return Text @The text object
+---@return Text
 function Text:SetFont(font)
 	assert(Theme.GetFont(font))
 	self._state.font = font
@@ -104,7 +104,7 @@ end
 
 ---Sets the color of the text.
 ---@param color string The text color as a theme color key
----@return Text @The text object
+---@return Text
 function Text:SetTextColor(color)
 	assert(type(color) == "string" and Theme.IsValidColor(color))
 	self._state.color = color
@@ -113,7 +113,7 @@ end
 
 ---Sets the horizontal justification of the text.
 ---@param justifyH '"LEFT"'|'"CENTER"'|'"RIGHT"' The horizontal justification
----@return Text @The text object
+---@return Text
 function Text:SetJustifyH(justifyH)
 	assert(justifyH == "LEFT" or justifyH == "CENTER" or justifyH == "RIGHT")
 	self._state.justifyH = justifyH
@@ -122,7 +122,7 @@ end
 
 ---Sets the vertical justification of the text.
 ---@param justifyV '"TOP"'|'"MIDDLE"'|'"BOTTOM"' The vertical justification
----@return Text @The text object
+---@return Text
 function Text:SetJustifyV(justifyV)
 	assert(justifyV == "TOP" or justifyV == "MIDDLE" or justifyV == "BOTTOM")
 	self._state.justifyV = justifyV
@@ -131,7 +131,7 @@ end
 
 ---Set the text.
 ---@param text string|number The text
----@return Text @The text object
+---@return Text
 function Text:SetText(text)
 	if type(text) == "number" then
 		text = tostring(text)
@@ -151,7 +151,7 @@ end
 
 ---Set formatted text.
 ---@param ... string The format string and parameters
----@return Text @The text object
+---@return Text
 function Text:SetFormattedText(...)
 	self:SetText(format(...))
 	return self

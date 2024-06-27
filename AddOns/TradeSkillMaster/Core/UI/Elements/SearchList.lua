@@ -8,7 +8,7 @@
 -- A search list contains a list of recent or favorite searches. It is a subclass of the @{ScrollingTable} class.
 -- @classmod SearchList
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local SearchList = TSM.Include("LibTSMClass").DefineClass("SearchList", TSM.UI.ScrollingTable)
 local UIElements = TSM.Include("UI.UIElements")
 UIElements.Register(SearchList)

@@ -26,6 +26,7 @@ local private = {
 
 function PlayerGoldText.OnInitialize()
 	private.settings = Settings.NewView()
+		:AddKey("global", "coreOptions", "regionWide")
 		:AddKey("global", "appearanceOptions", "showTotalMoney")
 		:AddKey("sync", "internalData", "money")
 end
@@ -55,8 +56,8 @@ end
 function private.GetText()
 	local amount = private.settings.money
 	if private.settings.showTotalMoney then
-		for _, money, character, factionrealm in private.settings:AccessibleValueIterator("money") do
-			if money > 0 and not Wow.IsPlayer(character, factionrealm) then
+		for _, money, character, factionrealm, _, isConnected in private.settings:AccessibleValueIterator("money") do
+			if (isConnected or private.settings.regionWide) and money > 0 and not Wow.IsPlayer(character, factionrealm) then
 				amount = amount + money
 			end
 		end
@@ -74,8 +75,8 @@ function private.TooltipFunc()
 		tinsert(tooltipLines, private.GetTooltipLine(format("  "..L["%s Sold Auctions"], numSold), soldGold))
 		tinsert(tooltipLines, private.GetTooltipLine(format("  "..L["%s Posted Auctions"], numPosted), postedGold))
 	end
-	for _, money, character, factionrealm in private.settings:AccessibleValueIterator("money") do
-		if money > 0 and not Wow.IsPlayer(character, factionrealm) then
+	for _, money, character, factionrealm, _, isConnected in private.settings:AccessibleValueIterator("money") do
+		if (isConnected or private.settings.regionWide) and money > 0 and not Wow.IsPlayer(character, factionrealm) then
 			character = Wow.FormatCharacterName(character, factionrealm)
 			tinsert(tooltipLines, private.GetTooltipLine(character, money))
 			total = total + money

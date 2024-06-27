@@ -65,7 +65,7 @@ local menuBackdrop = {
 	edgeFile = "Interface/ChatFrame/ChatFrameBackground",
 	tile = true, edgeSize = 1 * scale, tileSize = 5 * scale,
 }
-local lsfdd = LibStub("LibSFDropDown-1.4")
+local lsfdd = LibStub("LibSFDropDown-1.5")
 lsfdd:CreateMenuStyle(addon, function(parent)
 	local f = CreateFrame("FRAME", nil, parent, "BackdropTemplate")
 	f:SetBackdrop(menuBackdrop)
@@ -77,6 +77,24 @@ end)
 
 MountsJournalUtil = {}
 MountsJournalUtil.addonName = ("%s_ADDON_"):format(addon:upper())
+
+
+-- 1 FLY, 2 GROUND, 3 SWIMMING
+MountsJournalUtil.mountTypes = setmetatable({
+	[242] = 1,
+	[248] = 1,
+	[432] = 1,
+	[230] = 2,
+	[241] = 2,
+	[231] = 3,
+}, {
+	__index = function(self, key)
+		if type(key) == "number" then
+			self[key] = 1
+			return self[key]
+		end
+	end
+})
 
 
 MountsJournalUtil.filterButtonBackdrop = {

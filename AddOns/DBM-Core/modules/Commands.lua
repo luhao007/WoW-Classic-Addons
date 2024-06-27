@@ -1,8 +1,9 @@
-local _, private = ...
-
-local isRetail = WOW_PROJECT_ID == (WOW_PROJECT_MAINLINE or 1)
+---@class DBMCoreNamespace
+local private = select(2, ...)
 
 local L = DBM_CORE_L
+
+local test = private:GetPrototype("DBMTest")
 
 local LibStub = _G["LibStub"]
 local LibLatency, LibDurability
@@ -11,31 +12,57 @@ if LibStub then
 end
 
 local function Pull(timer)
-	local LFGTankException = isRetail and IsPartyLFG() and UnitGroupRolesAssigned("player") == "TANK"--Tanks in LFG need to be able to send pull timer even if someone refuses to pass lead. LFG locks roles so no one can abuse this.
-	if (DBM:GetRaidRank() == 0 and IsInGroup() and not LFGTankException) or select(2, IsInInstance()) == "pvp" or IsEncounterInProgress() then
+	--Apparently BW wants to accept all pull timers regardless of length, and not support break timers that can be used by all users
+	--Sadly, this means DBM has to also be as limiting because if boss mods are not on same page it creates conflicts within multi mod groups
+	local LFGTankException = IsPartyLFG and IsPartyLFG() and UnitGroupRolesAssigned("player") == "TANK"--Tanks in LFG need to be able to send pull timer even if someone refuses to pass lead. LFG locks roles so no one can abuse this.
+	if (DBM:GetRaidRank() == 0 and IsInGroup() and not LFGTankException) or select(2, IsInInstance()) == "pvp" then
 		return DBM:AddMsg(L.ERROR_NO_PERMISSION)
 	end
-	if timer > 0 and timer < 3 then
-		return DBM:AddMsg(L.TIME_TOO_SHORT)
+	if IsEncounterInProgress() then
+		return DBM:AddMsg(L.ERROR_NO_PERMISSION_COMBAT)
 	end
-	local targetName = (UnitExists("target") and UnitIsEnemy("player", "target")) and UnitName("target") or nil--Filter non enemies in case player isn't targetting bos but another player/pet
-	if targetName then
-		private.sendSync("PT", timer .. "\t" .. DBM:GetCurrentArea() .. "\t" .. targetName)
+	if timer > 0 and timer < 3 then
+		return DBM:AddMsg(L.PULL_TIME_TOO_SHORT)
+	end
+	--if timer > 60 then
+	--	return DBM:AddMsg(L.PULL_TIME_TOO_LONG)
+	--end
+	if private.newShit then
+		--Send blizzard countdown timer that all users see (including modless)
+		C_PartyInfo.DoCountdown(timer)
+		DBM:Debug("Sending Blizzard Countdown Timer")
 	else
-		private.sendSync("PT", timer .. "\t" .. DBM:GetCurrentArea())
+		private.sendSync(private.DBMSyncProtocol, "PT", timer .. "\t" .. DBM:GetCurrentArea())
+		DBM:Debug("Sending DBM Pull Timer")
 	end
 end
 
 local function Break(timer)
-	if IsInGroup() and (DBM:GetRaidRank() == 0 or (isRetail and IsPartyLFG())) or IsEncounterInProgress() or select(2, IsInInstance()) == "pvp" then--No break timers if not assistant or if it's dungeon/raid finder/BG
-		DBM:AddMsg(L.ERROR_NO_PERMISSION)
-		return
+	--Apparently BW wants to accept all pull timers regardless of length, and not support break timers that can be used by all users
+	--Sadly, this means DBM has to also be as limiting because if boss mods are not on same page it creates conflicts within multi mod groups
+	local LFGTankException = IsPartyLFG and IsPartyLFG() and UnitGroupRolesAssigned("player") == "TANK"--Tanks in LFG need to be able to send pull timer even if someone refuses to pass lead. LFG locks roles so no one can abuse this.
+	if (DBM:GetRaidRank() == 0 and IsInGroup() and not LFGTankException) or select(2, IsInInstance()) == "pvp" then
+		return DBM:AddMsg(L.ERROR_NO_PERMISSION)
+	end
+	if IsEncounterInProgress() then
+		return DBM:AddMsg(L.ERROR_NO_PERMISSION_COMBAT)
 	end
 	if timer > 60 then
-		DBM:AddMsg(L.BREAK_USAGE)
-		return
+		return DBM:AddMsg(L.BREAK_USAGE)
 	end
-	private.sendSync("BT", timer * 60)
+	timer = timer * 60
+	--Make sure 1 minute break timer is sent as a break timer and not a pull timer
+	--if timer == 60 then
+	--	timer = 61
+	--end
+	--if private.newShit then
+	--	--Send blizzard countdown timer that all users see (including modless)
+	--	C_PartyInfo.DoCountdown(timer)
+	--	DBM:Debug("Sending Blizzard Countdown Timer")
+	--else
+		private.sendSync(private.DBMSyncProtocol, "BT", timer)
+		DBM:Debug("Sending DBM Break Timer")
+	--end
 end
 
 local ShowLag, ShowDurability
@@ -146,6 +173,10 @@ end
 local trackedHudMarkers = {}
 SLASH_DEADLYBOSSMODS1 = "/dbm"
 SlashCmdList["DEADLYBOSSMODS"] = function(msg)
+	if not DBM:IsEnabled() then
+		DBM:ForceDisableSpam()
+		return
+	end
 	local cmd = msg:lower()
 	if cmd == "ver" or cmd == "version" then
 		DBM:ShowVersions(false)
@@ -162,7 +193,7 @@ SlashCmdList["DEADLYBOSSMODS"] = function(msg)
 			DBM:AddMsg(v)
 		end
 	elseif cmd:sub(1, 13) == "timer endloop" then
-		DBM:CreatePizzaTimer(time, "", nil, nil, nil, true)
+		DBM:CreatePizzaTimer(0, "", nil, nil, nil, true)
 	elseif cmd:sub(1, 5) == "timer" then
 		local time, text = msg:match("^%w+ ([%d:]+) (.+)$")
 		if not time and not text then
@@ -196,7 +227,7 @@ SlashCmdList["DEADLYBOSSMODS"] = function(msg)
 	elseif cmd:sub(1, 15) == "broadcast timer" then--Standard Timer
 		local difficultyIndex = DBM:GetCurrentDifficulty()
 		local permission = true
-		if DBM:GetRaidRank() == 0 or difficultyIndex == 7 or difficultyIndex == 17 then
+		if DBM:GetRaidRank() == 0 or difficultyIndex == 7 or difficultyIndex == 17 or IsTrialAccount() then
 			DBM:AddMsg(L.ERROR_NO_PERMISSION)
 			permission = false
 		end
@@ -216,7 +247,7 @@ SlashCmdList["DEADLYBOSSMODS"] = function(msg)
 	elseif cmd:sub(1, 16) == "broadcast ltimer" then
 		local difficultyIndex = DBM:GetCurrentDifficulty()
 		local permission = true
-		if DBM:GetRaidRank() == 0 or difficultyIndex == 7 or difficultyIndex == 17 then
+		if DBM:GetRaidRank() == 0 or difficultyIndex == 7 or difficultyIndex == 17 or IsTrialAccount() then
 			DBM:AddMsg(L.ERROR_NO_PERMISSION)
 			permission = false
 		end
@@ -261,6 +292,7 @@ SlashCmdList["DEADLYBOSSMODS"] = function(msg)
 			return
 		end
 		local hudType, target, duration = string.split(" ", cmd:sub(4):trim())
+		local _, targetOG, _ = string.split(" ", msg:sub(4):trim())
 		if hudType == "" then
 			for _, v in ipairs(L.HUD_USAGE) do
 				DBM:AddMsg(v)
@@ -283,10 +315,10 @@ SlashCmdList["DEADLYBOSSMODS"] = function(msg)
 			local uId
 			if target == "target" and UnitExists("target") then
 				uId = "target"
-			elseif isRetail and target == "focus" and UnitExists("focus") then
+			elseif private.isRetail and target == "focus" and UnitExists("focus") then
 				uId = "focus"
 			else -- Try to use it as player name
-				uId = DBM:GetRaidUnitId(target)
+				uId = DBM:GetRaidUnitId(targetOG)
 			end
 			if not uId then
 				DBM:AddMsg(L.HUD_INVALID_TARGET)
@@ -301,8 +333,8 @@ SlashCmdList["DEADLYBOSSMODS"] = function(msg)
 				local playerName = UnitName("player")
 				local _, targetClass = UnitClass(uId)
 				local color2 = RAID_CLASS_COLORS[targetClass]
-				local m1 = DBM.HudMap:RegisterRangeMarkerOnPartyMember(12345, "party", playerName, 0.1, hudDuration, 0, 1, 0, 1, nil, false):Appear()
-				local m2 = DBM.HudMap:RegisterRangeMarkerOnPartyMember(12345, "party", targetName, 0.75, hudDuration, color2.r, color2.g, color2.b, 1, nil, false):Appear()
+				local m1 = DBM.HudMap:RegisterRangeMarkerOnPartyMember(12345, "party", playerName, 0.1, hudDuration, 0, 1, 0, 1, nil):Appear()
+				local m2 = DBM.HudMap:RegisterRangeMarkerOnPartyMember(12345, "party", targetName, 0.75, hudDuration, color2.r, color2.g, color2.b, 1, nil):Appear()
 				tinsert(trackedHudMarkers, playerName)
 				tinsert(trackedHudMarkers, targetName)
 				m2:EdgeTo(m1, nil, hudDuration, 0, 1, 0, 1)
@@ -310,23 +342,23 @@ SlashCmdList["DEADLYBOSSMODS"] = function(msg)
 			elseif hudType == "dot" then
 				local _, targetClass = UnitClass(uId)
 				local color2 = RAID_CLASS_COLORS[targetClass]
-				DBM.HudMap:RegisterRangeMarkerOnPartyMember(12345, "party", targetName, 0.75, hudDuration, color2.r, color2.g, color2.b, 1, nil, false):Appear()
+				DBM.HudMap:RegisterRangeMarkerOnPartyMember(12345, "party", targetName, 0.75, hudDuration, color2.r, color2.g, color2.b, 1, nil):Appear()
 				tinsert(trackedHudMarkers, targetName)
 				DBM:AddMsg(L.HUD_SUCCESS:format(DBM:strFromTime(hudDuration)))
 			elseif hudType == "green" then
-				DBM.HudMap:RegisterRangeMarkerOnPartyMember(12345, "highlight", targetName, 3.5, hudDuration, 0, 1, 0, 0.5, nil, false):Pulse(0.5, 0.5)
+				DBM.HudMap:RegisterRangeMarkerOnPartyMember(12345, "highlight", targetName, 3.5, hudDuration, 0, 1, 0, 0.5, nil):Pulse(0.5, 0.5)
 				tinsert(trackedHudMarkers, targetName)
 				DBM:AddMsg(L.HUD_SUCCESS:format(DBM:strFromTime(hudDuration)))
 			elseif hudType == "red" then
-				DBM.HudMap:RegisterRangeMarkerOnPartyMember(12345, "highlight", targetName, 3.5, hudDuration, 1, 0, 0, 0.5, nil, false):Pulse(0.5, 0.5)
+				DBM.HudMap:RegisterRangeMarkerOnPartyMember(12345, "highlight", targetName, 3.5, hudDuration, 1, 0, 0, 0.5, nil):Pulse(0.5, 0.5)
 				tinsert(trackedHudMarkers, targetName)
 				DBM:AddMsg(L.HUD_SUCCESS:format(DBM:strFromTime(hudDuration)))
 			elseif hudType == "yellow" then
-				DBM.HudMap:RegisterRangeMarkerOnPartyMember(12345, "highlight", targetName, 3.5, hudDuration, 1, 1, 0, 0.5, nil, false):Pulse(0.5, 0.5)
+				DBM.HudMap:RegisterRangeMarkerOnPartyMember(12345, "highlight", targetName, 3.5, hudDuration, 1, 1, 0, 0.5, nil):Pulse(0.5, 0.5)
 				tinsert(trackedHudMarkers, targetName)
 				DBM:AddMsg(L.HUD_SUCCESS:format(DBM:strFromTime(hudDuration)))
 			elseif hudType == "blue" then
-				DBM.HudMap:RegisterRangeMarkerOnPartyMember(12345, "highlight", targetName, 3.5, hudDuration, 0, 0, 1, 0.5, nil, false):Pulse(0.5, 0.5)
+				DBM.HudMap:RegisterRangeMarkerOnPartyMember(12345, "highlight", targetName, 3.5, hudDuration, 0, 0, 1, 0.5, nil):Pulse(0.5, 0.5)
 				tinsert(trackedHudMarkers, targetName)
 				DBM:AddMsg(L.HUD_SUCCESS:format(DBM:strFromTime(hudDuration)))
 			elseif hudType == "icon" then
@@ -335,7 +367,7 @@ SlashCmdList["DEADLYBOSSMODS"] = function(msg)
 					DBM:AddMsg(L.HUD_INVALID_ICON)
 					return
 				end
-				DBM.HudMap:RegisterRangeMarkerOnPartyMember(12345, DBM:IconNumToString(icon):lower(), targetName, 3.5, hudDuration, 1, 1, 1, 0.5, nil, false):Pulse(0.5, 0.5)
+				DBM.HudMap:RegisterRangeMarkerOnPartyMember(12345, DBM:IconNumToString(icon):lower(), targetName, 3.5, hudDuration, 1, 1, 1, 0.5, nil):Pulse(0.5, 0.5)
 				tinsert(trackedHudMarkers, targetName)
 				DBM:AddMsg(L.HUD_SUCCESS:format(DBM:strFromTime(hudDuration)))
 			else
@@ -348,6 +380,7 @@ SlashCmdList["DEADLYBOSSMODS"] = function(msg)
 			return
 		end
 		local x, y, z = string.split(" ", cmd:sub(6):trim())
+		local xOG, _, _ = string.split(" ", msg:sub(6):trim())
 		local xNum, yNum, zNum = tonumber(x or ""), tonumber(y or ""), tonumber(z or "")
 		if xNum and yNum then
 			DBM.Arrow:ShowRunTo(xNum, yNum, 0)
@@ -363,14 +396,14 @@ SlashCmdList["DEADLYBOSSMODS"] = function(msg)
 			elseif subCmd == "target" then
 				DBM.Arrow:ShowRunTo("target")
 				return
-			elseif isRetail and subCmd == "focus" then
+			elseif private.isRetail and subCmd == "focus" then
 				DBM.Arrow:ShowRunTo("focus")
 				return
 			elseif subCmd == "map" then
 				DBM.Arrow:ShowRunTo(yNum, zNum, 0, nil, true)
 				return
-			elseif DBM:GetRaidUnitId(subCmd) then
-				DBM.Arrow:ShowRunTo(subCmd)
+			elseif DBM:GetRaidUnitId(xOG:trim()) then
+				DBM.Arrow:ShowRunTo(xOG:trim())
 				return
 			end
 		end
@@ -385,20 +418,28 @@ SlashCmdList["DEADLYBOSSMODS"] = function(msg)
 		end
 		DBM.Options.DebugLevel = level
 		DBM:AddMsg("Debug Level is " .. level)
+	elseif cmd:sub(1, 10) == "debugsound" then
+		DBM.Options.DebugSound = not DBM.Options.DebugSound
+		DBM:AddMsg("Debug Sound is " .. (DBM.Options.DebugSound and "ON" or "OFF"))
 	elseif cmd:sub(1, 5) == "debug" then
 		DBM.Options.DebugMode = not DBM.Options.DebugMode
 		DBM:AddMsg("Debug Message is " .. (DBM.Options.DebugMode and "ON" or "OFF"))
-		private:GetModule("DevTools"):OnDebugToggle()
+		private:GetModule("DevToolsModule"):OnDebugToggle()
 	elseif cmd:sub(1, 4) == "test" then
-		DBM:DemoMode()
+		local args = msg:sub(5):trim()
+		if args == "" then
+			DBM:DemoMode()
+		else
+			test:HandleCommand(string.split(" ", args))
+		end
 	elseif cmd:sub(1, 8) == "whereiam" or cmd:sub(1, 8) == "whereami" then
 		local x, y, _, map = UnitPosition("player")
-		local mapID = C_Map.GetBestMapForUnit("player") or "nil"
+		local mapID = C_Map.GetBestMapForUnit("player") or -1
 		if DBM:HasMapRestrictions() then
 			DBM:AddMsg(("Location Information\nYou are at zone %u (%s).\nLocal Map ID %u (%s)"):format(map, GetRealZoneText(map), mapID, GetZoneText()))
 		else
 			local pos = C_Map.GetPlayerMapPosition(mapID, "player")
-			DBM:AddMsg(("Location Information\nYou are at zone %u (%s): x=%f, y=%f.\nLocal Map ID %u (%s): x=%f, y=%f"):format(map, GetRealZoneText(map), x, y, mapID, GetZoneText(), pos.x, pos.y))
+			DBM:AddMsg(("Location Information\nYou are at zone %u (%s): x=%f, y=%f.\nLocal Map ID %u (%s): x=%f, y=%f"):format(map, GetRealZoneText(map), x, y, mapID, GetZoneText(), pos and pos.x or 0, pos and pos.y or 0))
 		end
 	elseif cmd:sub(1, 7) == "request" then
 		DBM:Unschedule(DBM.RequestTimers)

@@ -1,6 +1,6 @@
 ﻿-- Pawn by Vger-Azjol-Nerub
 -- www.vgermods.com
--- © 2006-2023 Travis Spomer.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
+-- © 2006-2024 Travis Spomer.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
 -- See Readme.htm for more information.
 
 --
@@ -264,7 +264,7 @@ Para mais informações sobre personalizar o Pawn, favor veja o arquivo de ajuda
 		["Armor2"] = "^%+?# de Armadura$",
 		["ArmorPenetration"] = "^Equipado: Seus ataques ignoram # da Armadura do adversário%.$",
 		["ArmorPenetrationRating"] = "^Equipado: Aumenta em # a taxa de penetração em armadura%.$",
-		["ArmorPenetrationRating2"] = "^UNUSED$",
+		["ArmorPenetrationRating2"] = "^Equipado: Aumenta em # a penetração em armaduras%.$",
 		["ArmorPenetrationShort"] = "^%+?# Taxa de Penetração em Armadura$",
 		["Avoidance"] = "^%+# Evasiva$",
 		["Axe"] = "^Machado$",
@@ -283,6 +283,7 @@ Para mais informações sobre personalizar o Pawn, favor veja o arquivo de ajuda
 		["Crit"] = "^%+?# Acerto Crítico%.?$",
 		["Crit2"] = "^%+?# de Acerto Crítico%.?$",
 		["CritPercent"] = "^Equipado: Aumenta em #%% a chance de realizar acertos críticos%.$",
+		["CritPercentCombined"] = "^Aumenta em #%% sua chance de obter acerto crítico com todos os feitiços e ataques%.$",
 		["CritRating"] = "^Equipado: Aumenta em # a taxa de acerto crítico%.$",
 		["CritRating2"] = "^UNUSED$",
 		["CritRating3"] = "^UNUSED$",
@@ -349,6 +350,7 @@ Para mais informações sobre personalizar o Pawn, favor veja o arquivo de ajuda
 		["HeroicWarforged"] = "^Forjado para a Guerra Heroico$",
 		["Hit"] = "^Equipado: Aumenta em #%% a chance de acerto%.$",
 		["Hit2"] = "^UNUSED$",
+		["HitPercentCombined"] = "^Equipado: Melhora em #%% sua chance de acerto com todos os feitiços e ataques%.$",
 		["HitRating"] = "^Equipado: Aumenta em # a taxa de acerto%.$",
 		["HitRating2"] = "^Equipado: Aumenta em # a sua taxa de acerto%.$",
 		["HitRating3"] = "^UNUSED$",
@@ -689,8 +691,6 @@ Atalho: Shift+clique em uma escala]=],
 		["ValuesDoNotShowUpgradesFor1H"] = "Não mostrar melhorias para armas de uma mão",
 		["ValuesDoNotShowUpgradesFor2H"] = "Não mostrar melhorias para armas de duas mãos",
 		["ValuesDoNotShowUpgradesTooltip"] = "Ative essa opção para esconder melhorias deste tipo de item. Por exemplo, mesmo que paladinos tanques possam usar armas de duas mãos, uma arma desse tipo nunca é uma \"melhoria\" para um conjunto de tanque, então o Pawn não deve mostrar notificações de melhoria para eles. Da mesma forma, paladinos de retribuição podem usar armas de uma mão, mas elas nunca serão melhorias.",
-		["ValuesFollowSpecialization"] = "Mostrar melhorias para o meu melhor tipo de armadura somente após o nível %d",
-		["ValuesFollowSpecializationTooltip"] = "Ative essa opção para esconder melhorias para armaduras que a sua classe não pode se especializar no nível %d. Por exemplo, no nível %d paladinos sagrados aprendem Especialização em Armadura de Placas, a qual aumenta o seu intelecto em 5%% enquanto usarem apenas armadura de placas. Quando essa opção é escolhida o Pawn nunca vai considerar tecido, couro ou malha para serem melhorias para paladinos sagrados de nível %d ou mais.",
 		["ValuesHeader"] = "Valores de atributos para %s",
 		["ValuesIgnoreItemType"] = "Items com isso não são usáveis",
 		["ValuesIgnoreStat"] = "Items com isso não são usáveis",

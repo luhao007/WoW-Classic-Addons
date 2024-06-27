@@ -2,7 +2,7 @@
 
 if not AL then return end
 
--- These localization strings are translated on Curseforge: https://www.curseforge.com/wow/addons/atlaslootclassic/localization
+-- These localization strings are translated on Curseforge: https://www.curseforge.com/wow/addons/atlaslootclassic-cata/localization
 -- Crafting
 AL["Apprentice"] = "初級"
 AL["Artisan"] = "專家級"
@@ -23,6 +23,7 @@ AL["Oil"] = "油"
 AL["Pet"] = "寵物"
 AL["Pets"] = "寵物"
 AL["Protection Potions"] = "保護藥水"
+AL["Raw Gems"] = "原石"
 AL["Resistance"] = "抗性"
 AL["Ring"] = "戒指"
 AL["Secondary Professions"] = "第二專業"

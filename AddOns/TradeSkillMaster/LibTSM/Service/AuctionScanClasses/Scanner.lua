@@ -5,7 +5,8 @@
 -- ------------------------------------------------------------------------------ --
 
 local TSM = select(2, ...) ---@type TSM
-local Scanner = TSM.Init("Service.AuctionScanClasses.Scanner")
+local Scanner = TSM.Init("Service.AuctionScanClasses.Scanner") ---@class Service.AuctionScanClasses.Scanner
+local Environment = TSM.Include("Environment")
 local Delay = TSM.Include("Util.Delay")
 local FSM = TSM.Include("Util.FSM")
 local Future = TSM.Include("Util.Future")
@@ -51,18 +52,18 @@ Scanner:OnModuleLoad(function()
 		private.fsm:ProcessEvent("EV_CANCEL")
 	end)
 
-	if TSM.IsWowClassic() then
-		Event.Register("AUCTION_ITEM_LIST_UPDATE", function()
-			private.fsm:SetLoggingEnabled(false)
-			private.fsm:ProcessEvent("EV_BROWSE_RESULTS_UPDATED")
-			private.fsm:SetLoggingEnabled(true)
-		end)
-	else
+	if Environment.HasFeature(Environment.FEATURES.C_AUCTION_HOUSE) then
 		Event.Register("COMMODITY_SEARCH_RESULTS_UPDATED", function()
 			private.fsm:ProcessEvent("EV_SEARCH_RESULTS_UPDATED")
 		end)
 		Event.Register("ITEM_SEARCH_RESULTS_UPDATED", function()
 			private.fsm:ProcessEvent("EV_SEARCH_RESULTS_UPDATED")
+		end)
+	else
+		Event.Register("AUCTION_ITEM_LIST_UPDATE", function()
+			private.fsm:SetLoggingEnabled(false)
+			private.fsm:ProcessEvent("EV_BROWSE_RESULTS_UPDATED")
+			private.fsm:SetLoggingEnabled(true)
 		end)
 	end
 
@@ -95,7 +96,7 @@ Scanner:OnModuleLoad(function()
 				return "ST_BROWSE_SORT"
 			end)
 			:AddEvent("EV_START_BROWSE_NO_SCAN", function(_, query, itemKeys, browseResults, callback)
-				assert(not TSM.IsWowClassic())
+				assert(Environment.HasFeature(Environment.FEATURES.C_AUCTION_HOUSE))
 				assert(not private.query)
 				private.query = query
 				private.browseResults = browseResults
@@ -109,7 +110,7 @@ Scanner:OnModuleLoad(function()
 				return "ST_BROWSE_CHECKING"
 			end)
 			:AddEvent("EV_START_SEARCH", function(_, query, resolveSellers, useCachedData, searchRow, callback)
-				assert(not TSM.IsWowClassic())
+				assert(Environment.HasFeature(Environment.FEATURES.C_AUCTION_HOUSE))
 				assert(not private.query)
 				private.query = query
 				private.resolveSellers = resolveSellers
@@ -142,14 +143,14 @@ Scanner:OnModuleLoad(function()
 			:AddTransition("ST_BROWSE_CHECKING")
 			:AddTransition("ST_CANCELING")
 			:AddEvent("EV_FUTURE_SUCCESS", function()
-				if TSM.IsWowClassic() then
-					private.browseIndex = 1
-					wipe(private.browsePendingIndexes)
-				else
+				if Environment.HasFeature(Environment.FEATURES.C_AUCTION_HOUSE) then
 					for _, result in ipairs(C_AuctionHouse.GetBrowseResults()) do
 						local baseItemString = ItemString.GetBaseFromItemKey(result.itemKey)
 						private.ProcessBrowseResult(baseItemString, result.itemKey, result.minPrice, result.totalQuantity)
 					end
+				else
+					private.browseIndex = 1
+					wipe(private.browsePendingIndexes)
 				end
 				return "ST_BROWSE_CHECKING"
 			end)
@@ -198,15 +199,15 @@ Scanner:OnModuleLoad(function()
 			:AddTransition("ST_BROWSE_CHECKING")
 			:AddTransition("ST_CANCELING")
 			:AddEvent("EV_FUTURE_SUCCESS", function(_, ...)
-				if TSM.IsWowClassic() then
-					private.browseIndex = 1
-					wipe(private.browsePendingIndexes)
-				else
+				if Environment.HasFeature(Environment.FEATURES.C_AUCTION_HOUSE) then
 					local newResults = ...
 					for _, result in ipairs(newResults) do
 						local baseItemString = ItemString.GetBaseFromItemKey(result.itemKey)
 						private.ProcessBrowseResult(baseItemString, result.itemKey, result.minPrice, result.totalQuantity)
 					end
+				else
+					private.browseIndex = 1
+					wipe(private.browsePendingIndexes)
 				end
 				return "ST_BROWSE_CHECKING"
 			end)
@@ -224,7 +225,7 @@ Scanner:OnModuleLoad(function()
 		)
 		:AddState(FSM.NewState("ST_SEARCH_GET_KEY")
 			:SetOnEnter(function()
-				assert(not TSM.IsWowClassic())
+				assert(Environment.HasFeature(Environment.FEATURES.C_AUCTION_HOUSE))
 				if not private.searchRow:SearchIsReady() then
 					private.retryTimer:RunForTime(0.1)
 					return
@@ -240,7 +241,7 @@ Scanner:OnModuleLoad(function()
 		)
 		:AddState(FSM.NewState("ST_SEARCH_SEND")
 			:SetOnEnter(function()
-				assert(not TSM.IsWowClassic())
+				assert(Environment.HasFeature(Environment.FEATURES.C_AUCTION_HOUSE))
 				if not DefaultUI.IsAuctionHouseVisible() then
 					return "ST_CANCELING"
 				end
@@ -268,7 +269,7 @@ Scanner:OnModuleLoad(function()
 		)
 		:AddState(FSM.NewState("ST_SEARCH_REQUEST_MORE")
 			:SetOnEnter(function()
-				assert(not TSM.IsWowClassic())
+				assert(Environment.HasFeature(Environment.FEATURES.C_AUCTION_HOUSE))
 				local baseItemString = private.searchRow:GetBaseItemString()
 				-- get if the item is a commodity or not
 				local isCommodity = ItemInfo.IsCommodity(baseItemString)
@@ -295,7 +296,7 @@ Scanner:OnModuleLoad(function()
 		)
 		:AddState(FSM.NewState("ST_SEARCH_CHECKING")
 			:SetOnEnter(function()
-				assert(not TSM.IsWowClassic())
+				assert(Environment.HasFeature(Environment.FEATURES.C_AUCTION_HOUSE))
 				private.retryTimer:Cancel()
 				private.searchRow:PopulateSubRows(private.browseId)
 
@@ -306,8 +307,8 @@ Scanner:OnModuleLoad(function()
 						missingInfo = true
 					elseif private.resolveSellers and not subRow:HasOwners() and not private.query:_IsFiltered(subRow, true) then
 						-- Waiting for owner info
-						-- Currently can't rely on owner info in 9.2.7, so limit the retries for it
-						if TSM.IsWowClassic() or private.retryCount <= 10 then
+						-- Currently can't rely on owner info as of 9.2.7, so limit the retries for it
+						if not Environment.IsRetail() or private.retryCount <= 10 then
 							missingInfo = true
 						end
 					end
@@ -347,7 +348,7 @@ Scanner:OnModuleLoad(function()
 		)
 		:AddState(FSM.NewState("ST_SEARCH_DONE")
 			:SetOnEnter(function(_, result)
-				assert(not TSM.IsWowClassic())
+				assert(Environment.HasFeature(Environment.FEATURES.C_AUCTION_HOUSE))
 				private.HandleRequestDone(result)
 				return "ST_INIT"
 			end)
@@ -376,14 +377,14 @@ function Scanner.Browse(query, resolveSellers, results, callback)
 end
 
 function Scanner.BrowseNoScan(query, itemKeys, results, callback)
-	assert(not TSM.IsWowClassic())
+	assert(Environment.HasFeature(Environment.FEATURES.C_AUCTION_HOUSE))
 	private.requestFuture:Start()
 	private.fsm:ProcessEvent("EV_START_BROWSE_NO_SCAN", query, itemKeys, results, callback)
 	return private.requestFuture
 end
 
 function Scanner.Search(query, resolveSellers, useCachedData, browseRow, callback)
-	assert(not TSM.IsWowClassic())
+	assert(Environment.HasFeature(Environment.FEATURES.C_AUCTION_HOUSE))
 	private.requestFuture:Start()
 	private.fsm:ProcessEvent("EV_START_SEARCH", query, resolveSellers, useCachedData, browseRow, callback)
 	return private.requestFuture
@@ -446,7 +447,7 @@ function private.HandleRequestDone(result)
 end
 
 function private.CheckBrowseResults()
-	if TSM.IsWowClassic() then
+	if not Environment.HasFeature(Environment.FEATURES.C_AUCTION_HOUSE) then
 		-- process as many auctions as we can
 		local numAuctions = AuctionHouseWrapper.GetNumAuctions()
 		for i = #private.browsePendingIndexes, 1, -1 do
@@ -488,12 +489,10 @@ function private.CheckBrowseResults()
 			private.browseResults[baseItemString] = nil
 			numRemoved = numRemoved + 1
 		end
-		if TSM.IsWowClassic() then
-			if row:FilterSubRows(private.query) then
-				-- no more subRows, so filter the entire row
-				private.browseResults[baseItemString] = nil
-				numRemoved = numRemoved + 1
-			end
+		if not Environment.HasFeature(Environment.FEATURES.C_AUCTION_HOUSE) and row:FilterSubRows(private.query) then
+			-- no more subRows, so filter the entire row
+			private.browseResults[baseItemString] = nil
+			numRemoved = numRemoved + 1
 		end
 	end
 	if numRemoved > 0 then

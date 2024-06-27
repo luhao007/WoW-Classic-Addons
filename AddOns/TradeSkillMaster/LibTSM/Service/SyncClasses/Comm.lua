@@ -5,20 +5,21 @@
 -- ------------------------------------------------------------------------------ --
 
 local TSM = select(2, ...) ---@type TSM
-local Comm = TSM.Init("Service.SyncClasses.Comm")
+local Comm = TSM.Init("Service.SyncClasses.Comm") ---@class Service.SyncClasses.Comm
 local Delay = TSM.Include("Util.Delay")
 local Table = TSM.Include("Util.Table")
-local TempTable = TSM.Include("Util.TempTable")
 local Log = TSM.Include("Util.Log")
 local Settings = TSM.Include("Service.Settings")
 local Constants = TSM.Include("Service.SyncClasses.Constants")
 local private = {
+	disconnectFunc = nil,
 	handler = {},
 	queuedPacket = {},
 	queuedSourceCharacter = {},
 	queueTimer = nil,
+	versionStr = Constants.VERSION.."_"..GetLocale(),
 }
--- load libraries
+-- Load libraries
 LibStub("AceComm-3.0"):Embed(Comm)
 local LibSerialize = LibStub("LibSerialize")
 local LibDeflate = LibStub("LibDeflate")
@@ -40,6 +41,10 @@ end)
 -- Module Functions
 -- ============================================================================
 
+function Comm.SetDisconnectFunction(func)
+	private.disconnectFunc = func
+end
+
 function Comm.RegisterHandler(dataType, handler)
 	assert(Table.KeyByValue(Constants.DATA_TYPES, dataType) ~= nil)
 	assert(not private.handler[dataType])
@@ -48,19 +53,13 @@ end
 
 function Comm.SendData(dataType, targetCharacter, data)
 	assert(type(dataType) == "string" and #dataType == 1)
-	local packet = TempTable.Acquire()
-	packet.dt = dataType
-	packet.sa = Settings.GetCurrentSyncAccountKey()
-	packet.v = Constants.VERSION
-	packet.d = data
-	local serialized = LibSerialize:Serialize(packet)
-	TempTable.Release(packet)
+	local serialized = LibSerialize:Serialize(private.versionStr, dataType, Settings.GetCurrentSyncAccountKey(), data)
 	local compressed = LibDeflate:EncodeForWoWAddonChannel(LibDeflate:CompressDeflate(serialized))
 	assert(LibDeflate:DecompressDeflate(LibDeflate:DecodeForWoWAddonChannel(compressed)) == serialized)
 
-	-- give heartbeats and rpc preambles a higher priority
+	-- Give heartbeats and rpc preambles a higher priority
 	local priority = (dataType == Constants.DATA_TYPES.HEARTBEAT or dataType == Constants.DATA_TYPES.RPC_PREAMBLE) and "ALERT" or nil
-	-- send the message
+	-- Send the message
 	Comm:SendCommMessage("TSMSyncData", compressed, "WHISPER", targetCharacter, priority)
 	return #compressed
 end
@@ -72,7 +71,7 @@ end
 -- ============================================================================
 
 function private.OnCommReceived(_, packet, _, sourceCharacter)
-	-- delay the processing to make sure it happens within a debuggable context (this function is called via pcall)
+	-- Delay the processing to make sure it happens within a debuggable context (this function is called via pcall)
 	tinsert(private.queuedPacket, packet)
 	tinsert(private.queuedSourceCharacter, sourceCharacter)
 	private.queueTimer:RunForFrames(0)
@@ -88,7 +87,7 @@ function private.ProcessReceiveQueue()
 end
 
 function private.ProcessReceivedPacket(msg, sourceCharacter)
-	-- remove realm name from source player
+	-- Remove realm name from source player
 	sourceCharacter = strsplit("-", sourceCharacter)
 	sourceCharacter = strtrim(sourceCharacter)
 	local sourceCharacterAccountKey = Settings.GetCharacterSyncAccountKey(sourceCharacter)
@@ -98,24 +97,25 @@ function private.ProcessReceivedPacket(msg, sourceCharacter)
 		return
 	end
 
-	-- decode and decompress
+	-- In combat, so drop the connection
+	if InCombatLockdown() then
+		return private.disconnectFunc(sourceCharacter)
+	end
+
+	-- Decode and decompress
 	msg = LibDeflate:DecompressDeflate(LibDeflate:DecodeForWoWAddonChannel(msg))
 	if not msg then
 		Log.Err("Invalid packet")
 		return
 	end
-	local success, packet = LibSerialize:Deserialize(msg)
+	local success, versionStr, dataType, sourceAccount, data = LibSerialize:Deserialize(msg)
 	if not success then
 		Log.Err("Invalid packet")
 		return
 	end
 
-	-- validate the packet
-	local dataType = packet.dt
-	local sourceAccount = packet.sa
-	local version = packet.v
-	local data = packet.d
-	if type(dataType) ~= "string" or #dataType > 1 or not sourceAccount or version ~= Constants.VERSION then
+	-- Validate the packet
+	if versionStr ~= private.versionStr or type(dataType) ~= "string" or #dataType ~= 1 or not sourceAccount then
 		Log.Info("Invalid message received")
 		return
 	elseif sourceAccount == Settings.GetCurrentSyncAccountKey() then
@@ -130,7 +130,7 @@ function private.ProcessReceivedPacket(msg, sourceCharacter)
 	end
 
 	if private.handler[dataType] then
-		private.handler[dataType](dataType, sourceAccount, sourceCharacter, data)
+		private.handler[dataType](sourceAccount, sourceCharacter, data)
 	else
 		Log.Info("Received unhandled message of type: "..strbyte(dataType))
 	end

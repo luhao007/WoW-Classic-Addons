@@ -60,6 +60,7 @@ VUHDO_I18N_COMMAND_LIST = VUHDO_I18N_COMMAND_LIST .. "§|cffffe566opt|r[ions] - 
 VUHDO_I18N_COMMAND_LIST = VUHDO_I18N_COMMAND_LIST .. "§|cffffe566res|r[et] - 패널 위치 초기화";
 VUHDO_I18N_COMMAND_LIST = VUHDO_I18N_COMMAND_LIST .. "§|cffffe566lock|r - 패널 위치 잠금 토글";
 VUHDO_I18N_COMMAND_LIST = VUHDO_I18N_COMMAND_LIST .. "§|cffffe566mm, map, minimap|r - 미니맵 아이콘 토글";
+VUHDO_I18N_COMMAND_LIST = VUHDO_I18N_COMMAND_LIST .. "|n|cffffe566compart|r[ment] - Toggle AddOn Compartment Icon";
 VUHDO_I18N_COMMAND_LIST = VUHDO_I18N_COMMAND_LIST .. "§|cffffe566show, hide, toggle|r - 패널 켜기/끄기 전환";
 VUHDO_I18N_COMMAND_LIST = VUHDO_I18N_COMMAND_LIST .. "§|cffffe566load|r - [Profile],[Key Layout]";
 VUHDO_I18N_COMMAND_LIST = VUHDO_I18N_COMMAND_LIST .. "§[broad]|cffffe566cast, mt|r[s] - 메인 탱커 알림";
@@ -503,3 +504,40 @@ VUHDO_I18N_DEF_STATUS_HEAL_ABSORB = "Statusbar: Heal Absorb";
 -- 3.135
 VUHDO_I18N_TRINKET_1 = "Trinket 1";
 VUHDO_I18N_TRINKET_2 = "Trinket 2";
+
+-- 3.139
+VUHDO_I18N_EVOKERS = "Evokers";
+
+-- 3.143
+VUHDO_I18N_BUFFC_EARTH_SHIELD = "Earth Shield (Self)";
+
+-- 3.150
+VUHDO_I18N_ADDON_COMPARTMENT_ICON = "AddOn Compartment Icon is now ";
+
+-- 3.152
+VUHDO_I18N_SPELL_TRACE_SINGLE = "Icon: Spell Trace (Single)";
+
+-- 3.154
+VUHDO_I18N_SPELL_TRACE_INCOMING = "Icon: Spell Trace (Incoming)";
+VUHDO_I18N_SPELL_TRACE_HEAL = "Icon: Spell Trace (Heal)";
+
+-- 3.157
+VUHDO_I18N_TEXT_PROVIDER_OVERHEAL = "Overheal: <#nk>";
+VUHDO_I18N_TEXT_PROVIDER_OVERHEAL_PLUS = "Overheal: +<#n>k";
+VUHDO_I18N_TEXT_PROVIDER_INCOMING_HEAL = "Incoming Heal: <#nk>";
+VUHDO_I18N_TEXT_PROVIDER_SHIELD_ABSORB = "Shield absorb total: <#nk>";
+VUHDO_I18N_TEXT_PROVIDER_HEAL_ABSORB = "Heal absorb total: <#nk>";
+VUHDO_I18N_TEXT_PROVIDER_THREAT = "Threat: <#n>%";
+VUHDO_I18N_TEXT_PROVIDER_CHI = "Chi: <#n>";
+VUHDO_I18N_TEXT_PROVIDER_HOLY_POWER = "Holy Power: <#n>";
+VUHDO_I18N_TEXT_PROVIDER_COMBO_POINTS = "Combo Points: <#n>";
+VUHDO_I18N_TEXT_PROVIDER_SOUL_SHARDS = "Soul Shards: <#n>";
+VUHDO_I18N_TEXT_PROVIDER_RUNES = "Runes: <#n>";
+VUHDO_I18N_TEXT_PROVIDER_ARCANE_CHARGES = "Arcane Charges: <#n>";
+VUHDO_I18N_TEXT_PROVIDER_MANA_PERCENT = "Mana: <#n>%";
+VUHDO_I18N_TEXT_PROVIDER_MANA_PERCENT_TENTH = "Mana: <#n/10%>";
+VUHDO_I18N_TEXT_PROVIDER_MANA_UNIT_OF = "Mana: <#n>/<#n>";
+VUHDO_I18N_TEXT_PROVIDER_MANA_KILO_OF = "Mana: <#nk>/<#nk>";
+VUHDO_I18N_TEXT_PROVIDER_MANA = "Mana: <#n>";
+VUHDO_I18N_TEXT_PROVIDER_MANA_KILO = "Mana: <#nk>";
+VUHDO_I18N_BOUQUET_STATUS_HEALTH_IF_ACTIVE = "Statusbar: Health % if active";

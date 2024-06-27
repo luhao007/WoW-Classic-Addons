@@ -4,7 +4,7 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local Transactions = TSM.MainUI.Ledger.Common:NewPackage("Transactions")
 local L = TSM.Include("Locale").GetTable()
 local Money = TSM.Include("Util.Money")
@@ -24,20 +24,21 @@ local private = {
 	typeFilter = {},
 	searchFilter = "",
 	groupFilter = {},
-	rarityList = {},
 	rarityFilter = {},
 	timeFrameFilter = 30 * SECONDS_PER_DAY,
 	type = nil
 }
 local TYPE_LIST = { L["Auction"], COD, TRADE, L["Vendor"] }
 local TYPE_KEYS = { "Auction", "COD", "Trade", "Vendor" }
+local RARITY_LIST = {}
+local RARITY_KEYS = { 0, 1, 2, 3, 4, 5 }
 do
 	for _, key in ipairs(TYPE_KEYS) do
 		private.typeFilter[key] = true
 	end
-	for i = 1, 4 do
-		tinsert(private.rarityList, _G[format("ITEM_QUALITY%d_DESC", i)])
-		private.rarityFilter[i] = true
+	for _, key in ipairs(RARITY_KEYS) do
+		tinsert(RARITY_LIST, _G[format("ITEM_QUALITY%d_DESC", key)])
+		private.rarityFilter[key] = true
 	end
 end
 local TIME_LIST = { L["All Time"], L["Last 3 Days"], L["Last 7 Days"], L["Last 14 Days"], L["Last 30 Days"], L["Last 60 Days"] }
@@ -132,7 +133,7 @@ function private.DrawTransactionPage()
 			)
 			:AddChild(UIElements.New("MultiselectionDropdown", "rarity")
 				:SetMargin(0, 8, 0, 0)
-				:SetItems(private.rarityList)
+				:SetItems(RARITY_LIST, RARITY_KEYS)
 				:SetSettingInfo(private, "rarityFilter")
 				:SetSelectionText(L["No Rarities"], L["%d Rarities"], L["All Rarities"])
 				:SetScript("OnSelectionChanged", private.DropdownCommonOnSelectionChanged)
@@ -158,7 +159,7 @@ function private.DrawTransactionPage()
 					:SetTitle(L["Item"])
 					:SetFont("ITEM_BODY3")
 					:SetJustifyH("LEFT")
-					:SetTextInfo("itemString", UIUtils.GetColoredItemName)
+					:SetTextInfo("itemString", UIUtils.GetDisplayItemName)
 					:SetTooltipInfo("itemString")
 					:SetSortInfo("name")
 					:DisableHiding()
@@ -307,7 +308,7 @@ function private.UpdateQuery()
 	if Table.Count(private.typeFilter) ~= #TYPE_KEYS then
 		private.query:InTable("source", private.typeFilter)
 	end
-	if Table.Count(private.rarityFilter) ~= #private.rarityList then
+	if Table.Count(private.rarityFilter) ~= #RARITY_LIST then
 		private.query:InTable("quality", private.rarityFilter)
 	end
 	if Table.Count(private.characterFilter) ~= #private.characters then

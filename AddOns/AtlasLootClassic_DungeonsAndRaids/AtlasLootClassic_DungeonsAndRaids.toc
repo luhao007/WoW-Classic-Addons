@@ -1,11 +1,11 @@
 ## Interface: 30400
-## Author: Lag
-## Version: v3.0.7
+## Author: Snowflame0
+## Version: v4.0.1-beta2
 ## Dependencies: AtlasLootClassic
 ## LoadOnDemand: 1
 
-## Title: AtlasLootClassic |cFF0099FF[Dungeons and Raids]|r
-## Notes: AtlasLoot loot tables from Dungeons and Raids
+## Title: AtlasLootClassic |cFFFF5733Cata|r |cFF0099FF[Dungeons and Raids]|r
+## Notes: AtlasLoot Dungeons and Raids loot tables
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本掉落|r |cFF69CCF0地下城和团队|r
 ## Notes-zhCN: AtlasLoot 地下城和团队副本掉落列表
 
@@ -18,4 +18,6 @@ Locales\Locales.xml
 
 data.lua
 data-tbc.lua
+data-wrath.lua
+data-cata.lua
 droprate.lua

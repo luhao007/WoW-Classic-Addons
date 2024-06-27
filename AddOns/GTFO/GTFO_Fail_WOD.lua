@@ -401,6 +401,16 @@ GTFO.SpellID["162057"] = {
 	sound = 3;
 };
 
+GTFO.SpellID["160963"] = {
+  --desc = "Blackrock Mortar (Grom'kar Boomer)";
+  sound = 3;
+};
+
+GTFO.SpellID["161289"] = {
+  --desc = "Falling Off the Grimrail";
+  sound = 3;
+};
+
 -- **************
 -- * Iron Docks *
 -- **************
@@ -515,7 +525,7 @@ GTFO.SpellID["165093"] = {
 	tankSound = 0;
 };
 
-GTFO.SpellID["164294"] = {
+GTFO.SpellID["174921"] = {
 	--desc = "Noxious Eruption (Twisted Abomination)";
 	sound = 3;
 };

@@ -8,7 +8,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
-							<AbsDimension x="200" y="-250" />
+							<AbsDimension x="20" y="-290" />
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -112,16 +112,25 @@
 
 			<Frame name="$parentRangePanel" inherits="VuhDoPanelTemplate">
 				<Size>
-					<AbsDimension x="343" y="215" />
+					<AbsDimension x="343" y="260" />
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
-							<AbsDimension x="70" y="-20" />
+							<AbsDimension x="20" y="-20" />
 						</Offset>
 					</Anchor>
 				</Anchors>
 				<Frames>
+
+					<Frame name="$parentTitleLabel" inherits="VuhDoLabelFrameTemplate">
+						<Layers>
+							<Layer>
+								<FontString name="$parentLabel" text="VUHDO_I18N_RANGE" inherits="VuDoDefaultTitleFontTemplate">
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
 
 					<Frame name="$parentRefreshSlider" inherits="VuhDoHSliderTemplate">
 						<Size>
@@ -130,7 +139,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="123" y="-31" />
+									<AbsDimension x="135" y="-12" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -143,38 +152,186 @@
 						</Scripts>
 					</Frame>
 
-					<CheckButton name="$parentFixRadioButton" text="VUHDO_I18N_40_YARDS" inherits="VuhDoRadioButtonTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="13" y="-31" />
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								VUHDO_lnfSetRadioModel(self, "VUHDO_CONFIG.RANGE_PESSIMISTIC", true);
-								VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K066);
-							</OnLoad>
-						</Scripts>
-					</CheckButton>
-
-					<EditBox name="$parentSpellNameEditBox" inherits="VuhDoEditBoxTemplate">
+					<Frame name="$parentHelpfulRadioGroup">
 						<Size>
-							<AbsDimension x="193" y="32" />
+							<AbsDimension x="200" y="50" />
 						</Size>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="123" y="-69" />
+									<AbsDimension x="15" y="-50" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Frames>
+
+							<Frame name="$parentHelpfulLabel" inherits="VuhDoLabelFrameTemplate">
+								<Size>
+									<AbsDimension x="75" y="38" />
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="0" y="5" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Layers>
+									<Layer>
+										<FontString name="$parentLabel" text="VUHDO_I18N_FIENDLY" justifyH="LEFT" inherits="VuDoDefaultFontTemplate">
+										</FontString>
+									</Layer>
+								</Layers>
+							</Frame>
+
+							<CheckButton name="$parentBySpellRadioButton" text="VUHOD_I18N_BY_SPELL" inherits="VuhDoRadioButtonTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="40" y="5" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										VUHDO_lnfSetRadioModel(self, "VUHDO_CONFIG.RANGE_PESSIMISTIC.HELPFUL", false);
+										VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K068);
+									</OnLoad>
+								</Scripts>
+							</CheckButton>
+
+							<CheckButton name="$parentFixRadioButton" text="VUHDO_I18N_40_YARDS" inherits="VuhDoRadioButtonTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="150" y="5" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										VUHDO_lnfSetRadioModel(self, "VUHDO_CONFIG.RANGE_PESSIMISTIC.HELPFUL", true);
+										VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K066);
+									</OnLoad>
+								</Scripts>
+							</CheckButton>
+
+						</Frames>
+					</Frame>
+
+					<EditBox name="$parentHelpfulSpellNameEditBox" inherits="VuhDoEditBoxTemplate">
+						<Size>
+							<AbsDimension x="245" y="32" />
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="18" y="-75" />
 								</Offset>
 							</Anchor>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								VUHDO_lnfSetModel(self, "VUHDO_CONFIG.RANGE_SPELL");
+								VUHDO_lnfSetModel(self, "VUHDO_CONFIG.RANGE_SPELL.HELPFUL");
 								VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K067);
-								VUHDO_lnfAddConstraint(self, VUHDO_LF_CONSTRAINT_DISABLE, "VUHDO_CONFIG.RANGE_PESSIMISTIC", true);
+								VUHDO_lnfAddConstraint(self, VUHDO_LF_CONSTRAINT_DISABLE, "VUHDO_CONFIG.RANGE_PESSIMISTIC.HELPFUL", true);
+							</OnLoad>
+							<OnTextChanged>
+								VUHDO_lnfEditBoxUpdateModel(self);
+								VUHDO_newOptionsSpellEditBoxCheckSpell(self);
+							</OnTextChanged>
+							<OnShow>
+								VUHDO_lnfPatchFont(self, "Hint");
+								VUHDO_lnfPatchFont(self, "");
+								VUHDO_lnfEditBoxInitFromModel(self);
+								VUHDO_newOptionsSpellEditBoxCheckSpell(self);
+							</OnShow>
+						</Scripts>
+					</EditBox>
+					
+					<Frame name="$parentHarmfulRadioGroup">
+						<Size>
+							<AbsDimension x="200" y="50" />
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-110" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Frames>
+
+							<Frame name="$parentHarmfulLabel" inherits="VuhDoLabelFrameTemplate">
+								<Size>
+									<AbsDimension x="75" y="38" />
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="0" y="5" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Layers>
+									<Layer>
+										<FontString name="$parentLabel" text="VUHDO_I18N_ENEMY" justifyH="LEFT" inherits="VuDoDefaultFontTemplate">
+										</FontString>
+									</Layer>
+								</Layers>
+							</Frame>
+
+							<CheckButton name="$parentBySpellRadioButton" text="VUHOD_I18N_BY_SPELL" inherits="VuhDoRadioButtonTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="40" y="5" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										VUHDO_lnfSetRadioModel(self, "VUHDO_CONFIG.RANGE_PESSIMISTIC.HARMFUL", false);
+										VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K068);
+									</OnLoad>
+								</Scripts>
+							</CheckButton>
+
+							<CheckButton name="$parentFixRadioButton" text="VUHDO_I18N_40_YARDS" inherits="VuhDoRadioButtonTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="150" y="5" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										VUHDO_lnfSetRadioModel(self, "VUHDO_CONFIG.RANGE_PESSIMISTIC.HARMFUL", true);
+										VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K066);
+									</OnLoad>
+								</Scripts>
+							</CheckButton>
+
+						</Frames>
+					</Frame>
+
+					<EditBox name="$parentHarmfulSpellNameEditBox" inherits="VuhDoEditBoxTemplate">
+						<Size>
+							<AbsDimension x="245" y="32" />
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="18" y="-135" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								VUHDO_lnfSetModel(self, "VUHDO_CONFIG.RANGE_SPELL.HARMFUL");
+								VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K067);
+								VUHDO_lnfAddConstraint(self, VUHDO_LF_CONSTRAINT_DISABLE, "VUHDO_CONFIG.RANGE_PESSIMISTIC.HARMFUL", true);
 							</OnLoad>
 							<OnTextChanged>
 								VUHDO_lnfEditBoxUpdateModel(self);
@@ -189,31 +346,6 @@
 						</Scripts>
 					</EditBox>
 
-					<CheckButton name="$parentBySpellRadioButton" text="VUHOD_I18N_BY_SPELL" inherits="VuhDoRadioButtonTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="13" y="-69" />
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								VUHDO_lnfSetRadioModel(self, "VUHDO_CONFIG.RANGE_PESSIMISTIC", false);
-								VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K068);
-							</OnLoad>
-						</Scripts>
-					</CheckButton>
-
-					<Frame name="$parentTitleLabel" inherits="VuhDoLabelFrameTemplate">
-						<Layers>
-							<Layer>
-								<FontString name="$parentLabel" text="VUHDO_I18N_RANGE" inherits="VuDoDefaultTitleFontTemplate">
-								</FontString>
-							</Layer>
-						</Layers>
-					</Frame>
-
 					<Frame name="$parentOorLabel" inherits="VuhDoLabelFrameTemplate">
 						<Size>
 							<AbsDimension x="75" y="18" />
@@ -221,7 +353,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="13" y="-115" />
+									<AbsDimension x="13" y="-162" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -237,7 +369,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="13" y="-135" />
+									<AbsDimension x="13" y="-182" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -253,7 +385,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="123" y="-135" />
+									<AbsDimension x="123" y="-182" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -270,7 +402,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="233" y="-135" />
+									<AbsDimension x="233" y="-182" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -287,7 +419,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="233" y="-173" />
+									<AbsDimension x="233" y="-220" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -307,14 +439,14 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="13" y="-168" />
+									<AbsDimension x="13" y="-215" />
 								</Offset>
 							</Anchor>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
 								VUHDO_lnfSetModel(self, "VUHDO_CONFIG.DIRECTION.scale");
-								VUHDO_lnfSliderOnLoad(self, VUHDO_I18N_SCALE, 24, 100, " %", 2);
+								VUHDO_lnfSliderOnLoad(self, VUHDO_I18N_SCALE, 24, 100, " %", 1);
 								VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K493);
 								VUHDO_lnfAddConstraint(self, VUHDO_LF_CONSTRAINT_DISABLE, "VUHDO_CONFIG.DIRECTION.enable", false);
 							</OnLoad>
@@ -331,7 +463,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
-							<AbsDimension x="40" y="-245" />
+							<AbsDimension x="395" y="-100" />
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -371,7 +503,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
-							<AbsDimension x="40" y="-325" />
+							<AbsDimension x="395" y="-20" />
 						</Offset>
 					</Anchor>
 				</Anchors>

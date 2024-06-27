@@ -1,7 +1,7 @@
-local mod	= DBM:NewMod("Azuregos", "DBM-Azeroth")
+local mod	= DBM:NewMod("AzuregosVanilla", "DBM-Azeroth")
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20221129003558")
+mod:SetRevision("20240422183958")
 mod:SetCreatureID(6109)--121820 TW ID, 6109 classic ID
 --mod:SetModelID(17887)
 mod:EnableWBEngageSync()--Enable syncing engage in outdoors
@@ -34,19 +34,19 @@ function mod:OnCombatStart(delay, yellTriggered)
 end
 
 function mod:SPELL_CAST_START(args)
-	if args.spellId == 21099 and self:AntiSpam(3, 2) then
+	if args:IsSpell(21099) and self:AntiSpam(3, 2) then
 		warningFrostBreath:Show()
 		--timerFrostBreathCD:Start()
 	end
 end
 
 function mod:SPELL_CAST_SUCCESS(args)
-	if args.spellId == 22067 then
+	if args:IsSpell(22067) then
 		specWarnReflection:Show()
 		specWarnReflection:Play("stilldanger")
 		--pull:176.7, 31.3, 23.1, 20.8, 30.6, 26.2, 25.5, 15.7, 33.1, 30.1
 		--timerReflectionCD:Start()
-	elseif args.spellId == 21147 and self:AntiSpam(5, 1) then
+	elseif args:IsSpell(21147) and self:AntiSpam(5, 1) then
 		specWarnArcaneVacuum:Show()
 		specWarnArcaneVacuum:Play("teleyou")
 		--timerArcaneVacuumCD:Start()

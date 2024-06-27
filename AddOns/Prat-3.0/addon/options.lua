@@ -39,15 +39,12 @@ local Prat = select(2, ...)
 local setmetatable = setmetatable
 local tinsert = tinsert
 
--- Isolate the environment
-setfenv(1, select(2, ...))
-
 --[[ END STANDARD HEADER ]] --
 
 local PL = Prat.Localizations
 
 
---[===[@debug@
+--[==[@debug@
 PL:AddLocale(nil, "enUS", {
   prat = "Prat",
   ["display_name"] = "Display Settings",
@@ -67,7 +64,7 @@ PL:AddLocale(nil, "enUS", {
   load_disabledonrestart = "Disabled (reload)",
   load_enabledonrestart = "Enabled (reload)",
 })
---@end-debug@]===]
+--@end-debug@]==]
 
 -- These Localizations are auto-generated. To help with localization
 -- please go to http://www.wowace.com/projects/prat-3-0/localization/
@@ -170,7 +167,7 @@ L = {
 	["modulecontrol_desc"] = "Prat 모듈의 로드와 활성화를 제어합니다.",
 	["modulecontrol_name"] = "모듈 제어",
 	["prat"] = "Prat",
-	["reload_required"] = "이 설정은 애드온을 %s 해야 변경된 사항이 적용됩니다.",
+	["reload_required"] = "이 옵션 변경은 UI를 %s 해야 적용됩니다.",
 	["unloaded_desc"] = "모듈을 불러오지 못함, 설명을 보려면 불러오세요."
 }
 
@@ -407,7 +404,7 @@ local AceConfig = LibStub("AceConfig-3.0")
 
 local moduleControlArgs = {}
 
-Options = {
+Prat.Options = {
   type = "group",
   childGroups = "tab",
   get = "GetValue",
@@ -456,31 +453,31 @@ Options = {
 }
 
 --[[ WitchHunt: [Ammo] ]] --
-tinsert(EnableTasks, function(self)
+tinsert(Prat.EnableTasks, function(self)
 
   local acreg = LibStub("AceConfigRegistry-3.0")
-  acreg:RegisterOptionsTable(PL.prat, Options)
-  acreg:RegisterOptionsTable(PL.prat .. ": " .. Options.args.display.name, Options.args.display)
-  acreg:RegisterOptionsTable(PL.prat .. ": " .. Options.args.formatting.name, Options.args.formatting)
-  acreg:RegisterOptionsTable(PL.prat .. ": " .. Options.args.extras.name, Options.args.extras)
-  acreg:RegisterOptionsTable(PL.prat .. ": " .. Options.args.modulecontrol.name, Options.args.modulecontrol)
-  acreg:RegisterOptionsTable("Prat: " .. Options.args.profiles.name, Options.args.profiles)
+  acreg:RegisterOptionsTable(PL.prat, Prat.Options)
+  acreg:RegisterOptionsTable(PL.prat .. ": " .. Prat.Options.args.display.name, Prat.Options.args.display)
+  acreg:RegisterOptionsTable(PL.prat .. ": " .. Prat.Options.args.formatting.name, Prat.Options.args.formatting)
+  acreg:RegisterOptionsTable(PL.prat .. ": " .. Prat.Options.args.extras.name, Prat.Options.args.extras)
+  acreg:RegisterOptionsTable(PL.prat .. ": " .. Prat.Options.args.modulecontrol.name, Prat.Options.args.modulecontrol)
+  acreg:RegisterOptionsTable("Prat: " .. Prat.Options.args.profiles.name, Prat.Options.args.profiles)
 
   local acdia = LibStub("AceConfigDialog-3.0")
   acdia:AddToBlizOptions(PL.prat, PL.prat)
-  acdia:AddToBlizOptions(PL.prat .. ": " .. Options.args.display.name, Options.args.display.name, PL.prat)
-  acdia:AddToBlizOptions(PL.prat .. ": " .. Options.args.formatting.name, Options.args.formatting.name, PL.prat)
-  acdia:AddToBlizOptions(PL.prat .. ": " .. Options.args.extras.name, Options.args.extras.name, PL.prat)
-  acdia:AddToBlizOptions(PL.prat .. ": " .. Options.args.modulecontrol.name, Options.args.modulecontrol.name, PL.prat)
-  acdia:AddToBlizOptions(PL.prat .. ": " .. Options.args.profiles.name, Options.args.profiles.name, PL.prat)
+  acdia:AddToBlizOptions(PL.prat .. ": " .. Prat.Options.args.display.name, Prat.Options.args.display.name, PL.prat)
+  acdia:AddToBlizOptions(PL.prat .. ": " .. Prat.Options.args.formatting.name, Prat.Options.args.formatting.name, PL.prat)
+  acdia:AddToBlizOptions(PL.prat .. ": " .. Prat.Options.args.extras.name, Prat.Options.args.extras.name, PL.prat)
+  acdia:AddToBlizOptions(PL.prat .. ": " .. Prat.Options.args.modulecontrol.name, Prat.Options.args.modulecontrol.name, PL.prat)
+  acdia:AddToBlizOptions(PL.prat .. ": " .. Prat.Options.args.profiles.name, Prat.Options.args.profiles.name, PL.prat)
 
-  self:RegisterChatCommand(PL.prat, function() ToggleOptionsWindow() end)
+  self:RegisterChatCommand(PL.prat, function() Prat.ToggleOptionsWindow() end)
 end)
 
 
 do
   local function getModuleFromShortName(shortname)
-    for k, v in Addon:IterateModules() do
+    for k, v in Prat.Addon:IterateModules() do
       if v.moduleName == shortname then
         return v
       end
@@ -491,7 +488,7 @@ do
   local function PrintReloadMessage()
     local tm = _G.GetTime()
     if tm - lastReloadMessage > 60 then
-      Prat:Print(PL.reload_required:format(GetReloadUILink()))
+      Prat:Print(PL.reload_required:format(Prat.GetReloadUILink()))
       lastReloadMessage = tm
     end
   end
@@ -542,7 +539,7 @@ do
 
   do
     local function blue(text)
-      return CLR:Colorize("a0a0ff", text)
+      return Prat.CLR:Colorize("a0a0ff", text)
     end
 
     local function getModuleDesc(info)
@@ -576,46 +573,46 @@ do
       set = setValue
     }
 
-    function CreateModuleControlOption(name)
+    function Prat.CreateModuleControlOption(name)
       moduleControlArgs[name] = moduleControlOption
     end
   end
 end
 
-FrameList = {}
-HookedFrameList = {}
+Prat.FrameList = {}
+Prat.HookedFrameList = {}
 
 
 local function updateFrameNames()
-  for k, v in pairs(HookedFrames) do
+  for k, v in pairs(Prat.HookedFrames) do
     if (v.isDocked == 1) or v:IsShown() then
-      HookedFrameList[k] = (v.name)
+      Prat.HookedFrameList[k] = (v.name)
     else
-      HookedFrameList[k] = nil
+      Prat.HookedFrameList[k] = nil
     end
   end
-  for k, v in pairs(Frames) do
+  for k, v in pairs(Prat.Frames) do
     if (v.isDocked == 1) or v:IsShown() then
-      FrameList[k] = (v.name)
+      Prat.FrameList[k] = (v.name)
     else
-      FrameList[k] = nil
+      Prat.FrameList[k] = nil
     end
   end
 
-  UpdateOptions()
+  Prat.UpdateOptions()
 end
 
-function UpdateOptions()
+function Prat.UpdateOptions()
   LibStub("AceConfigRegistry-3.0"):NotifyChange(PL.prat)
 end
 
-tinsert(EnableTasks, function(self)
+tinsert(Prat.EnableTasks, function(self)
   self:SecureHook("FCF_SetWindowName", updateFrameNames)
 
   _G.FCF_SetWindowName(_G.ChatFrame1, (_G.GetChatWindowInfo(1)), 1)
 end)
 
-function ToggleOptionsWindow()
+function Prat.ToggleOptionsWindow()
   local acd = LibStub("AceConfigDialog-3.0")
   if acd.OpenFrames[PL.prat] then
     acd:Close(PL.prat)

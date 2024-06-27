@@ -111,18 +111,40 @@ local TalentConfig = {
 	[201] = "戒律",
 	[202] = "神圣",
 	[203] = "暗影",
-	[182] = "刺杀",
-	[181] = "战斗",
-	[183] = "敏锐",
-	[261] = "元素",
-	[263] = "增强",
-	[262] = "恢复",
 	[302] = "痛苦",
 	[303] = "恶魔学识",
 	[301] = "毁灭",
 	[161] = "武器",
 	[164] = "狂怒",
 	[163] = "防护",
+
+    [752] = "平衡",
+    [750] = "野性战斗",
+    [748] = "恢复",
+    [811] = "野兽控制",
+    [807] = "射击",
+    [809] = "生存",
+    [799] = "奥术",
+    [851] = "火焰",
+    [823] = "冰霜",
+    [831] = "神圣",
+    [839] = "防护",
+    [855] = "惩戒",
+    [760] = "戒律",
+    [813] = "神圣",
+    [795] = "暗影",
+    [182] = "刺杀",
+    [181] = "战斗",
+    [183] = "敏锐",
+    [261] = "元素",
+    [263] = "增强",
+    [262] = "恢复",
+    [871] = "痛苦",
+    [867] = "恶魔学识",
+    [865] = "毁灭",
+    [746] = "武器",
+    [815] = "狂怒",
+    [845] = "防护",
 
 	H = "|cff00ff00治疗|r",
 	D = "|cffff0000输出|r",
@@ -158,24 +180,25 @@ local needSlot = {1,2,3,5,6,7,8,9,10,11,12,13,14,15,16,17,18};
 19 = 战袍
 ]]
 
+local WhiteEquipColourLevel = 150;
+local GreenEquipColourLevel = 220;
+local BlueEquipColourLevel = 230;
+local VioletEquipColourLevel = 240;
 
-    --为了好看 所以进行了优化
-    --150一下 是绿色
-    --200一下 是蓝色
-    --213一下 是紫色
-    --213以上 是橙色
+--为了好看 所以进行了颜色优化
+--更新到WLK P2 奥杜尔
 local function GetEquipAverageLevelColour(level)
     
-    if level < 100 then
+    if level < WhiteEquipColourLevel then --白
         return whiteColour;
-    elseif level < 150 then
+    elseif level < GreenEquipColourLevel then --绿
         return greenColour;
-    elseif level < 200 then
+    elseif level < BlueEquipColourLevel then -- 蓝
         return blueColour;
-    elseif level < 213 then
+    elseif level < VioletEquipColourLevel then -- 紫
         return violetColour;
     else
-        return orangeColour;
+        return orangeColour; -- 橙
     end
 
     return whiteColour;
@@ -339,15 +362,15 @@ local function GetTalent(name, code)
 
     if showDetailTalent then
         if showLevel then
-            talentStr = string.format(L["天赋字符串1全部"], name,level,TalentConfig[curTal],TalentConfig[class],strT);
+            talentStr = string.format(L["天赋字符串1全部"], name,level,TalentConfig[curTal] or "Null",TalentConfig[class] or "Null",strT);
         else
-            talentStr = string.format(L["天赋字符串2无级"], name,TalentConfig[curTal],TalentConfig[class],strT);
+            talentStr = string.format(L["天赋字符串2无级"], name,TalentConfig[curTal] or "Null",TalentConfig[class] or "Null",strT);
         end
     else
         if showLevel then
-            talentStr = string.format(L["天赋字符串3无点"], name,level,TalentConfig[curTal],TalentConfig[class]);
+            talentStr = string.format(L["天赋字符串3无点"], name,level,TalentConfig[curTal] or "Null",TalentConfig[class] or "Null");
         else
-            talentStr = string.format(L["天赋字符串4无级无点"], name,TalentConfig[curTal],TalentConfig[class]);
+            talentStr = string.format(L["天赋字符串4无级无点"], name,TalentConfig[curTal] or "Null",TalentConfig[class] or "Null");
         end
     end
 
@@ -531,8 +554,6 @@ local frame = CreateFrame("Frame")
 frame:RegisterEvent("CHAT_MSG_WHISPER");
 --frame:RegisterEvent("CHAT_MSG_CHANNEL");
 frame:SetScript("OnEvent",CHAT_MSG);
-
-
 
 
 local function CHAT_MSG_SendSelfInfo(self,event,...)
@@ -1089,6 +1110,23 @@ function Main:ClearNotifyInfo()
 end
 
 
+function Main:ChangeWhiteEquipColourLevel(set)
+    WhiteEquipColourLevel = set;
+end
+
+function Main:ChangeGreenEquipColourLevel(set)
+    GreenEquipColourLevel = set;
+end
+
+function Main:ChangeBlueEquipColourLevel(set)
+    BlueEquipColourLevel = set;
+end
+
+function Main:ChangeVioletEquipColourLevel(set)
+    VioletEquipColourLevel = set;
+end
+
+
 function Main:Init()
 
     GS = __private.GS;
@@ -1116,6 +1154,11 @@ function Main:Init()
 
     joinGroupNotify = cfg.JoinGroupNotify
     leaderNotify = cfg.LeaderNotify
+
+    WhiteEquipColourLevel = cfg.WhiteEquipColourLevel;
+    GreenEquipColourLevel = cfg.GreenEquipColourLevel;
+    BlueEquipColourLevel = cfg.BlueEquipColourLevel;
+    VioletEquipColourLevel = cfg.VioletEquipColourLevel;
 
     self:InitSendSelfInfoEvent(cfg);
 

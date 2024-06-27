@@ -1,7 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 
-
 <Include file="..\frames\popup.xml"/>
 <Include file="..\frames\pratcc.xml"/>
 
@@ -20,6 +19,7 @@
 <Script file="Clear.lua"/>
 <Script file="CopyChat.lua"/>
 <Script file="CustomFilters.lua"/>
+<Script file="DebugModules.lua"/>
 <Script file="Editbox.lua"/>
 <Script file="Fading.lua"/>
 <Script file="Font.lua"/>
@@ -28,9 +28,11 @@
 <Script file="History.lua"/>
 <Script file="HoverTips.lua" />
 <Script file="Invites.lua"/>
+<Script file="LinkInfoIcons.lua"/>
 <Script file="Keybindings.lua"/>
 <Script file="Mentions.lua" />
 <Script file="Memory.lua" />
+<Script file="NewcomersChat.lua" />
 <Script file="Paragraph.lua"/>
 <Script file="PlayerNames.lua"/>
 <Script file="PopupMessage.lua"/>

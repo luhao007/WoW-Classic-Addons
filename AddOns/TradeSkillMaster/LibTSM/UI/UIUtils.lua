@@ -6,6 +6,7 @@
 
 local TSM = select(2, ...) ---@type TSM
 local UIUtils = TSM.Init("UI.UIUtils") ---@class UI.UIUtils
+local Environment = TSM.Include("Environment")
 local Analytics = TSM.Include("Util.Analytics")
 local Theme = TSM.Include("Util.Theme")
 local Wow = TSM.Include("Util.Wow")
@@ -22,7 +23,7 @@ do
 		Theme.GetColor("FEEDBACK_YELLOW"),
 		Theme.GetColor("FEEDBACK_GREEN"),
 	}
-	local strs = TSM.IsWowClassic() and { "30m", "2h", "8h", "24h" } or { "1h", "2h", "24h", "48h" }
+	local strs = Environment.IsRetail() and { "1h", "2h", "24h", "48h" } or { "30m", "2h", "8h", "24h" }
 	assert(#colors == #strs)
 	for i = 1, #colors do
 		TIME_LEFT_STRINGS[i] = colors[i]:ColorText(strs[i])
@@ -35,21 +36,10 @@ end
 -- Module Functions
 -- ============================================================================
 
----Colors an item name based on its quality.
----@param item string The item to retrieve the name and quality of
+---Gets an item name formatted for display.
+---@param item string The item to display
 ---@param tintPct? number The tintPct to apply to the quality color
----@return string
-function UIUtils.GetColoredItemName(item, tintPct)
-	local name = ItemInfo.GetName(item)
-	local quality = ItemInfo.GetQuality(item)
-	return UIUtils.GetQualityColoredText(name, quality, nil, tintPct)
-end
-
----Colors an item name based on its quality and add the crafted quality texture.
----@param item string The item to retrieve the name and quality of
----@param tintPct? number The tintPct to apply to the quality color
----@return string
-function UIUtils.GetColoredCraftedItemName(item, tintPct)
+function UIUtils.GetDisplayItemName(item, tintPct)
 	local name = ItemInfo.GetName(item)
 	local quality = ItemInfo.GetQuality(item)
 	local craftedQuality = ItemInfo.GetCraftedQuality(item)

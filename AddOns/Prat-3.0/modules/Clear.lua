@@ -40,7 +40,7 @@ Prat:AddModuleToLoad(function()
 
   local PL = module.PL
 
-  --[===[@debug@
+  --[==[@debug@
   PL:AddLocale(PRAT_MODULE, "enUS", {
     ["Clear"] = true,
     ["Adds clear text slash commands (/clear)(/cls)(/clearall)(/clsall)."] = true,
@@ -48,7 +48,7 @@ Prat:AddModuleToLoad(function()
     ["Clearall"] = true,
     ["Clears all chat frames."] = true,
   })
-  --@end-debug@]===]
+  --@end-debug@]==]
 
   -- These Localizations are auto-generated. To help with localization
   -- please go to http://www.wowace.com/projects/prat-3-0/localization/
@@ -141,7 +141,7 @@ PL:AddLocale(PRAT_MODULE, "deDE", L)
 L = {
 	["Clear"] = {
 		["Adds clear text slash commands (/clear)(/cls)(/clearall)(/clsall)."] = "지우기 명령어 /clear, /cls, /clearall, /clsall 을 추가합니다.",
-		["Clear"] = "지우기",
+		["Clear"] = "지우기 [Clear]",
 		["Clearall"] = "모두 지우기",
 		["Clears all chat frames."] = "모든 대화창의 내용을 지웁니다.",
 		["Clears the current chat frame."] = "현재 대화창의 내용을 지웁니다.",

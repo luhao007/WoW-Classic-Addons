@@ -8,7 +8,7 @@
 -- An alpha animated frame is a frame which allows for animating its alpha. It is a subclass of the @{Frame} class.
 -- @classmod AlphaAnimatedFrame
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local AlphaAnimatedFrame = TSM.Include("LibTSMClass").DefineClass("AlphaAnimatedFrame", TSM.UI.Frame)
 local UIElements = TSM.Include("UI.UIElements")
 UIElements.Register(AlphaAnimatedFrame)

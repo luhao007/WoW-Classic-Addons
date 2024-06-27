@@ -742,11 +742,6 @@ GTFO.SpellID["201273"] = {
   sound = 3;
 };
 
-GTFO.SpellID["201400"] = {
-  --desc = "Dread Inferno (Dreadfire Imp)";
-  sound = 3;
-};
-
 GTFO.SpellID["200111"] = {
   --desc = "Apocalyptic Fire (Shade of Xavius)";
   sound = 3;
@@ -832,6 +827,12 @@ GTFO.SpellID["192708"] = {
 -- * Neltharion's Lair *
 -- *********************
 
+GTFO.SpellID["188169"] = {
+  --desc = "Razor Shards (Rokmora)";
+  sound = 3;
+  tankSound = 0;
+};
+
 GTFO.SpellID["202089"] = {
   --desc = "Scorch (Burning Geode)";
   sound = 3;
@@ -852,6 +853,19 @@ GTFO.SpellID["226406"] = {
   sound = 3;
   tankSound = 0;
 };
+
+GTFO.SpellID["183100"] = {
+  --desc = "Avalanche (Mightstone Breaker)";
+  sound = 3;
+};
+
+GTFO.SpellID["226296"] = {
+  --desc = "Piercing Shards (Vileshard Hulk)";
+  applicationOnly = true;
+  sound = 3;
+  tankSound = 0;
+};
+
 
 -- *************
 -- * The Nexus *
@@ -1014,6 +1028,14 @@ GTFO.SpellID["219498"] = {
   sound = 3;
 };
 
+GTFO.SpellID["224333"] = {
+  --desc = "Fel Detonation (Felbound Enforcer)";
+  applicationOnly = true;
+  sound = 3;
+  tankSound = 0;
+  test = true;
+};
+
 GTFO.SpellID["209378"] = {
   --desc = "Whirling Blades (Imacu'tya)";
   applicationOnly = true;
@@ -1043,14 +1065,13 @@ GTFO.SpellID["224333"] = {
 GTFO.SpellID["209630"] = {
   --desc = "Piercing Gale (Advisor Melandrus)";
   sound = 3;
-  test = true;
 };
 
 GTFO.SpellID["209628"] = {
   --desc = "Piercing Gale (Advisor Melandrus)";
   sound = 3;
-  test = true;
 };
+
 
 
 -- ************************

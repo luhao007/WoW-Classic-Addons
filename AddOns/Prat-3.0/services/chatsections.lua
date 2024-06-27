@@ -319,10 +319,10 @@ function SplitChatMessage(frame, event, ...)
 
     s.GUID = arg12
 
-    --[===[@debug@
     s.ARGS = {
       ...
     }
+    --[==[@debug@
 
     if CHAT_PLAYER_GUIDS then
       if s.GUID and s.GUID:len() > 0 and s.GUID ~= "0000000000000000" and s.GUID ~= "0x0300000000000000" then
@@ -333,7 +333,7 @@ function SplitChatMessage(frame, event, ...)
     end
 
     s.FRAME = frame and frame:GetName()
-    --@end-debug@]===]
+    --@end-debug@]==]
 
     --        if NEW_CHATFILTERS then
     local kill, newarg1, newarg2, newarg3, newarg4, newarg5, newarg6, newarg7, newarg8, newarg9, newarg10, newarg11, newarg12, newarg13, newarg14 =
@@ -537,14 +537,12 @@ function SplitChatMessage(frame, event, ...)
       if arg6 == "GM" or arg6 == "DEV" then
         -- Add Blizzard Icon if this was sent by a GM/DEV
 	      s.FLAG = "|TInterface\\ChatFrame\\UI-ChatIcon-Blizz:12:20:0:0:32:16:4:28:0:16|t "
-      elseif arg6 == "GUIDE" then
-        if _G.IsActivePlayerNewcomer() then
-          -- Add guide text if player is a newcomer and this was sent by a mentor
-          s.FLAG = _G.NPEV2_CHAT_USER_TAG_GUIDE .. " "
-        end
+      elseif arg6 == "GUIDE" and _G.ChatFrame_GetMentorChannelStatus(_G.Enum.PlayerMentorshipStatus.Mentor, _G.C_ChatInfo.GetChannelRulesetForChannelID(arg7)) == _G.Enum.PlayerMentorshipStatus.Mentor then
+      -- Add guide text if the sender is a guide in the newcomer chat
+        s.FLAG = _G.NPEV2_CHAT_USER_TAG_GUIDE .. " "
       elseif arg6 == "NEWCOMER" then
-        if _G.IsActivePlayerMentor() then
-          -- Add murloc icon if player is a mentor and this was sent by a new player
+        if _G.ChatFrame_GetMentorChannelStatus(_G.Enum.PlayerMentorshipStatus.Newcomer, _G.C_ChatInfo.GetChannelRulesetForChannelID(arg7)) == _G.Enum.PlayerMentorshipStatus.Newcomer then
+          -- Add murloc icon for messages from new players in the newcomer chat
           s.FLAG = _G.NPEV2_CHAT_USER_TAG_NEWCOMER
         end
       else
@@ -672,27 +670,6 @@ function SplitChatMessage(frame, event, ...)
     if type == "SYSTEM" or strsub(type, 1, 11) == "ACHIEVEMENT" or strsub(type, 1, 11) == "TARGETICONS" or strsub(type, 1, 18) == "GUILD_ACHIEVEMENT" then
       if strsub(type, 1, 11) == "ACHIEVEMENT" or strsub(type, 1, 18) == "GUILD_ACHIEVEMENT" then
         s.MESSAGE = s.MESSAGE:format("")
-      end
-
-      if (strsub(type, 1, 18) == "GUILD_ACHIEVEMENT") then
-        if (_G.C_Social.IsSocialEnabled()) then
-          local achieveID = _G.GetAchievementInfoFromHyperlink(arg1);
-          if (achieveID) then
-            local isGuildAchievement = select(12, _G.GetAchievementInfo(achieveID));
-            if (isGuildAchievement) then
-              s.MESSAGE = s.MESSAGE .. " " .. _G.Social_GetShareAchievementLink(achieveID, true);
-            end
-          end
-        end
-      end
-
-      if (strsub(type, 1, 11) == "ACHIEVEMENT") then
-        if (arg12 == _G.UnitGUID("player") and _G.C_Social.IsSocialEnabled()) then
-          local achieveID = _G.GetAchievementInfoFromHyperlink(arg1);
-          if (achieveID) then
-            s.MESSAGE = s.MESSAGE .. " " .. _G.Social_GetShareAchievementLink(achieveID, true);
-          end
-        end
       end
 
       local pl, p, rest = string.match(s.MESSAGE, "|Hplayer:(.-)|h%[(.-)%]|h(.+)")

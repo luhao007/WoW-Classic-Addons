@@ -9,7 +9,7 @@
 -- It is a subclass of the @{ApplicationFrame} class.
 -- @classmod LargeApplicationFrame
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local UIElements = TSM.Include("UI.UIElements")
 local LargeApplicationFrame = UIElements.Define("LargeApplicationFrame", "ApplicationFrame")
 local private = {}

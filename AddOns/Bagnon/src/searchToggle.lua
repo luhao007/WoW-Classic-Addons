@@ -1,14 +1,11 @@
 ﻿--[[
-	searchToggle.lua
-		A searcn toggle widget
+	A search toggle button.
+	All Rights Reserved
 --]]
 
 local ADDON, Addon = ...
 local L = LibStub('AceLocale-3.0'):GetLocale(ADDON)
 local Toggle = Addon.Tipped:NewClass('SearchToggle', 'CheckButton', ADDON .. 'MenuButtonTemplate')
-
-
---[[ Construct ]]--
 
 function Toggle:New(parent)
 	local b = self:Super(Toggle):New(parent)
@@ -22,9 +19,6 @@ function Toggle:New(parent)
 	return b
 end
 
-
---[[ Events ]]--
-
 function Toggle:OnShow()
 	self:RegisterSignal('SEARCH_TOGGLED', 'OnToggle')
 	self:OnToggle()
@@ -34,12 +28,11 @@ function Toggle:OnToggle()
 	self:SetChecked(Addon.canSearch)
 end
 
+function Toggle:OnEnter()
+	self:ShowTooltip(SEARCH)
+end
+
 function Toggle:OnClick()
 	Addon.canSearch = self:GetChecked()
 	Addon:SendSignal('SEARCH_TOGGLED', self:GetChecked() and self:GetFrameID())
-end
-
-function Toggle:OnEnter()
-	GameTooltip:SetOwner(self:GetTipAnchor())
-	GameTooltip:SetText((self:GetChecked() and L.TipHideSearch or L.TipShowSearch):format(L.Click))
 end

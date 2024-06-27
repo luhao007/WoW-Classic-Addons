@@ -243,6 +243,7 @@ DF.CooldownsBySpec = {
 			[231895] = 1, --Crusade (talent)
 			[205191] = 2, --Eye for an Eye (talent)
 			[184662] = 2, --Shield of Vengeance
+			[403876] = 2, --Divine Protection
 			[642] = 2, --Divine Shield
 			[1022] = 3, --Blessing of Protection
 			[6940] = 3, --Blessing of Sacrifice
@@ -623,7 +624,7 @@ if (IS_WOW_PROJECT_NOT_MAINLINE) then
 	DF.CooldownsBySpec[258][19242] = 5 --desperate prayer Rank 6
 	DF.CooldownsBySpec[258][19243] = 5 --desperate prayer Rank 7
 	DF.CooldownsBySpec[258][25437] = 5 --desperate prayer Rank 8
-	DF.CooldownsBySpec[258][15286] = 5 --vampiric embrace is a debuff in classic, not a buff
+	DF.CooldownsBySpec[258][15286] = not IS_WOW_PROJECT_CLASSIC_WRATH and 5 or nil --vampiric embrace is a debuff in classic, not a buff; a 30min buff in wotlk (don't track it...)
 
 	--ROGUE - 259
 	DF.CooldownsBySpec[259][1857] = 2 --vanish Rank 2
@@ -944,6 +945,7 @@ DF.CrowdControlSpells = {
 	[122] = "MAGE", --Frost Nova
 	[157997] = "MAGE", --Ice Nova
 	[31661] = "MAGE", --Dragon's Breath
+	[157981] = "MAGE", --Blast Wave
 	
 	[205364] = "PRIEST", --Mind Control (talent)
 	[605] = "PRIEST", --Mind Control
@@ -956,6 +958,7 @@ DF.CrowdControlSpells = {
 	[15487] = "PRIEST", --Silence
 	
 	[2094] = "ROGUE", --Blind
+	[427773] = "ROGUE", --Blind (AoE)
 	[1833] = "ROGUE", --Cheap Shot
 	[408] = "ROGUE", --Kidney Shot
 	[1766] = "ROGUE", --Kick
@@ -968,6 +971,7 @@ DF.CrowdControlSpells = {
 	[105421] = "PALADIN", --Blinding Light (talent)
 	[31935] = "PALADIN", --Avengers Shield
 	[217824] = "PALADIN", --Shield of Virtue
+	[10326] = "PALADIN", --Turn Evil
 	
 	[221562] = "DEATHKNIGHT", --Asphyxiate
 	[108194] = "DEATHKNIGHT", --Asphyxiate (talent)
@@ -1001,6 +1005,7 @@ DF.CrowdControlSpells = {
 	[24394] = "HUNTER", --Intimidation
 	[117405] = "HUNTER", --Binding Shot (trigger)
 	[117526] = "HUNTER", --Binding Shot (triggered)
+	[1513] = "HUNTER", --Scare Beast
 	
 	[119381] = "MONK", --Leg Sweep
 	[115078] = "MONK", --Paralysis
@@ -1033,6 +1038,7 @@ DF.CrowdControlSpells = {
 	[331866] = "COVENANT|VENTHYR", --Agent of Chaos (Nadia soulbind)
 	
 	[372245] = "EVOKER", --Terror of the Skies
+	[360806] = "EVOKER", --Sleep Walk
 }
 
 -- additionals for classic
@@ -1409,8 +1415,8 @@ elseif (DF.IsWotLKWow()) then
 	}
 	DF.FeastIDs = {}
 	DF.RuneIDs = {}
-
-elseif (DF.IsClassicWow()) then
+--~Cata temp
+elseif (DF.IsClassicWow() or DF.IsCataWow()) then
 	DF.PotionIDs = {}
 	DF.FeastIDs = {}
 	DF.RuneIDs = {}

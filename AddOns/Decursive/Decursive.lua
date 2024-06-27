@@ -1,7 +1,7 @@
 --[[
     This file is part of Decursive.
 
-    Decursive (v 2.7.8.13) add-on for World of Warcraft UI
+    Decursive (v 2.7.17) add-on for World of Warcraft UI
     Copyright (C) 2006-2019 John Wellesz (Decursive AT 2072productions.com) ( http://www.2072productions.com/to/decursive.php )
 
     Decursive is free software: you can redistribute it and/or modify
@@ -24,7 +24,7 @@
     Decursive is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY.
 
-    This file was last updated on 2020-08-28T10:13:24Z
+    This file was last updated on 2024-02-19T03:51:57Z
 --]]
 -------------------------------------------------------------------------------
 
@@ -407,6 +407,9 @@ do
     local UnitIsCharmed     = _G.UnitIsCharmed;
     local UnitCanAttack     = _G.UnitCanAttack;
     local GetTime           = _G.GetTime;
+    local GetSpellDescription  = _G.GetSpellDescription;
+    local IsSpellDataCached    = _G.C_Spell.IsSpellDataCached
+    local RequestLoadSpellData = _G.C_Spell.RequestLoadSpellData
 
     local UnTrustedUnitIDs = {
         ['mouseover'] = true,
@@ -445,7 +448,26 @@ do
     local DcrC = T._C; -- for faster access
 
 
+    local function checkSpellIDForBleed()
+        -- it appears that sometime SpellID can be nil...
+        if not SpellID or D.Status.t_CheckBleedDebuffsActiveIDs[SpellID] ~= nil
+            or not D.db.global.BleedAutoDetection then
+            return
+        end
 
+        if not IsSpellDataCached(SpellID) then
+            RequestLoadSpellData(SpellID);
+
+        elseif D.Status.P_BleedEffectsKeywords_noCase ~= false then
+            if D:hasDescBleedEffectkeyword(GetSpellDescription(SpellID)) then
+                D.Status.t_CheckBleedDebuffsActiveIDs[SpellID] = true;
+                D.db.global.t_BleedEffectsIDCheck[SpellID] = true;
+            else
+                D.Status.t_CheckBleedDebuffsActiveIDs[SpellID] = false;
+            end
+
+        end
+    end
 
     -- This is the core debuff scanning function of Decursive
     -- This function does more than just reporting Debuffs. it also detects charmed units
@@ -466,7 +488,7 @@ do
 
 
         -- test if the unit is mind controlled once
-        -- The unit is not mouseover or target and it's attackable ---> it's charmed! (A new game's mechanic as been introduced where a player can become hostile but remain in controll...)
+        -- The unit is not mouseover or target and it's attackable ---> it's charmed! (A new game's mechanic as been introduced where a player can become hostile but remain in control...)
         if not UnTrustedUnitIDs[Unit] and UnitCanAttack("player", Unit) then
             IsCharmed = true;
         else
@@ -493,9 +515,17 @@ do
             end
 
 
-            -- test for a type (Magic Curse Disease or Poison)
+            -- test for a type
             if TypeName and TypeName ~= "" then
                 Type = DC.NameToTypes[TypeName];
+            elseif self.Status.CuringSpells[DC.BLEED] then
+                checkSpellIDForBleed();
+                if D.Status.t_CheckBleedDebuffsActiveIDs[SpellID] then
+                    Type = DC.NameToTypes["Bleed"]
+                    TypeName = DC.TypeNames[DC.BLEED];
+                else
+                    Type = false;
+                end
             else
                 Type = false;
             end
@@ -572,9 +602,6 @@ do
     local _;
     local CureOrder;
     local sorting = function (a, b)
-
-        CureOrder = D.classprofile.CureOrder;
-
         return CureOrder[a.Type] * 10000 - a.Applications < CureOrder[b.Type] * 10000 - b.Applications;
     end
 
@@ -618,6 +645,8 @@ do
             return DC.EMPTY_TABLE, false;
         end
 
+        CureOrder = D:GetCureOrderTable();
+
         if not ManagedDebuffUnitCache[Unit] then
             ManagedDebuffUnitCache[Unit] = {};
         end
@@ -636,7 +665,7 @@ do
 
             continue_ = true;
 
-            -- test if we have to ignore this debuf  {{{ --
+            -- test if we have to ignore this debuff  {{{ --
 
             if UnitFilteringTest(Unit, self.Status.UnitFilteringTypes[Debuff.Type]) then
                 continue_ = false; -- == skip this debuff
@@ -683,16 +712,8 @@ do
                 -- If we are still here it means that this Debuff is something not to be ignored...
 
 
-                -- We have a match for this type and we decided (checked) to
-                -- cure it NOTE: self.classprofile.CureOrder[DEBUFF_TYPE] is set
-                -- to FALSE when the type is unchecked and to < 0 when there is
-                -- no spell available for the type or when the spell is gone
-                -- (it happens for warlocks or when using the same profile with
-                -- several characters)
-                --if (self.classprofile.CureOrder[Debuff.Type] and self.classprofile.CureOrder[Debuff.Type] > 0) then
-                if self:GetCureTypeStatus(Debuff.Type) then
-
-
+                -- We have an active curing spell for that type and we want to use it
+                if Spells[Debuff.Type] and CureOrder[Debuff.Type] then
                     -- self:Debug("we can cure it");
 
                     -- if we do have a spell to cure
@@ -702,7 +723,7 @@ do
 
                         ManagedDebuffs[#ManagedDebuffs + 1] = Debuff;
 
-                        -- the live-list only reports the first debuf found and set JustOne to true
+                        -- the live-list only reports the first debuff found and set JustOne to true
                         if JustOne then
                             break;
                         end
@@ -753,6 +774,7 @@ do
 
         --[==[@debug@
         --local start = debugprofilestop();
+        D:Debug("Scanning everybody...", self.Status.delayedDebuffReportDisabled, self.db.global.MFScanEverybodyReport)
         --@end-debug@]==]
 
         while UnitArray[i] do
@@ -761,8 +783,9 @@ do
 
             if MUF and not NoScanStatuses[MUF.UnitStatus] then
                 IsMUFDebuffed = MUF.Debuffs[1] and true or band(MUF.UnitStatus, DC.CHARMED_STATUS) == DC.CHARMED_STATUS;
+                local MUFDebuffName = MUF.Debuffs[1] and MUF.Debuffs[1].Name
 
-                Debuffs, IsCharmed = self:UnitCurableDebuffs(Unit, true);
+                Debuffs, IsCharmed = self:UnitCurableDebuffs(Unit, true); -- leaks memory in 10.2.5
 
                 if CheckStealth then
                     self.Stealthed_Units[Unit] = self:CheckUnitStealth(Unit); -- update stealth status
@@ -771,14 +794,27 @@ do
                 IsDebuffed = (Debuffs[1] and true) or IsCharmed;
                 -- If MUF disagrees
                 if (IsDebuffed ~= IsMUFDebuffed) and not D:DelayedCallExixts("Dcr_Update" .. Unit) then
-                    --[==[@debug@
+                    -- add counters here independently of the option so that I can monitor things using the reports sent to me.
+                    -- a counter saved in the db, and a local session counter
+
                     if IsDebuffed then
-                        self:AddDebugText("delayed debuff found by scaneveryone");
-                        --D:ScheduleDelayedCall("Dcr_lateanalysis" .. Unit, self.MicroUnitF.LateAnalysis, 1, self.MicroUnitF, "ScanEveryone", Debuffs, MUF, MUF.UnitStatus);
+                        self.Status.delayedDebuffOccurences = self.Status.delayedDebuffOccurences + 1;
+                        self.db.global.delayedDebuffOccurences = self.db.global.delayedDebuffOccurences + 1;
                     else
-                        self:AddDebugText("delayed UNdebuff found by scaneveryone on", Unit, IsDebuffed, IsMUFDebuffed);
+                        self.Status.delayedUnDebuffOccurences = self.Status.delayedUnDebuffOccurences + 1;
+                        self.db.global.delayedUnDebuffOccurences = self.db.global.delayedUnDebuffOccurences + 1;
                     end
-                    --@end-debug@]==]
+
+                    if (not self.Status.delayedDebuffReportDisabled) and self.db.global.MFScanEverybodyReport then
+                        if IsDebuffed then
+                            self:AddDebugText("delayed debuff found by scaneveryone", Unit, Debuffs[1].Name);
+                            --D:ScheduleDelayedCall("Dcr_lateanalysis" .. Unit, self.MicroUnitF.LateAnalysis, 1, self.MicroUnitF, "ScanEveryone", Debuffs, MUF, MUF.UnitStatus);
+                        else
+                            self:AddDebugText("delayed UNdebuff found by scaneveryone on", Unit, MUFDebuffName, IsDebuffed, IsMUFDebuffed, MUF.UnitStatus);
+                        end
+                    else
+                        self:Debug("delayed buff found but no-report is set")
+                    end
 
                     self.MicroUnitF:UpdateMUFUnit(Unit, true);
 
@@ -790,6 +826,8 @@ do
 
             i = i + 1;
         end
+        self.Status.delayedDebuffReportDisabled = false; -- set to true after a reconfiguration, reset only here.
+
         --[==[@debug@
         --D:Debug("|cFF777777Scanning everybody...", i - 1, "units scanned in ", debugprofilestop() - start, "miliseconds|r");
         --@end-debug@]==]
@@ -823,27 +861,42 @@ end
 --local UnitBuffsCache    = {};
 
 do
-    local G_UnitBuff = _G.UnitBuff;
-
+    local G_UnitBuff = _G.UnitBuff; -- In 10.2.5 UnitBuff and acolytes were deprecated and are falling back to calling C_UnitAuras functions which create a new table each time and thus leak garbage each time they return debuff info... (if only we could provide those functions with a table to use...)
+    local GetAuraDataBySpellName = C_UnitAuras and C_UnitAuras.GetAuraDataBySpellName or nil;
     local buffName;
 
 
     local function UnitBuff(unit, BuffNameToCheck)
-        for i = 1, 40 do
-            buffName = G_UnitBuff(unit, i)
-            if not buffName then
-                return
-            else
-                if BuffNameToCheck == buffName then
-                    return G_UnitBuff(unit, i)
+            --[==[@debug@
+            --D:Debug("UnitBuff", unit, BuffNameToCheck)
+            --@end-debug@]==]
+        if GetAuraDataBySpellName and GetAuraDataBySpellName(unit, BuffNameToCheck) then
+            --[==[@debug@
+            D:Debug("used C_UnitAuras")
+            --@end-debug@]==]
+            return true
+        elseif not GetAuraDataBySpellName then
+            --[==[@debug@
+            D:Debug("used old buff scan method")
+            --@end-debug@]==]
+
+            for i = 1, 40 do
+                buffName = G_UnitBuff(unit, i)
+                if not buffName then
+                    return
+                else
+                    if BuffNameToCheck == buffName then
+                        return G_UnitBuff(unit, i)
+                    end
                 end
             end
         end
+
+        return false
     end
 
     -- this function returns true if one of the debuff(s) passed to it is found on the specified unit
     function D:CheckUnitForBuffs(unit, BuffNamesToCheck) --{{{
-
 
         if type(BuffNamesToCheck) == "string" then
 
@@ -860,7 +913,6 @@ do
         end
 
         return false;
-
     end --}}}
 end
 
@@ -877,6 +929,6 @@ end
 
 
 
-T._LoadedFiles["Decursive.lua"] = "2.7.8.13";
+T._LoadedFiles["Decursive.lua"] = "2.7.17";
 
 -- Sin

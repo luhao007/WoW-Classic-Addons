@@ -51,6 +51,8 @@
     end
 
     function Details222.Textures.SavePortraitTextureForUnitID(unitId)
+        if true then return end --portrait saving disabled atm
+
         local npcId = detailsFramework:GetNpcIdFromGuid(UnitGUID(unitId) or "")
         if (npcId and not Details222.Textures.GetPortraitTextureForNpcID(npcId)) then
             local texture = getTextureForPortraitPool()
@@ -72,7 +74,7 @@
                 local texture = portraitPool.inUse[i]
                 releaseTextureForPortraitPool(texture)
             end
-            table.wipe(portraitPool.npcIdToTexture)
+            Details:Destroy(portraitPool.npcIdToTexture)
     end)
 
     eventListener:RegisterEvent("COMBAT_ENCOUNTER_START", function()

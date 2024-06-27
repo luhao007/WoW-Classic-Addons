@@ -4,11 +4,8 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
---- Drag Functions
--- @module DragContext
-
-local _, TSM = ...
-local DragContext = TSM.Init("UI.DragContext")
+local TSM = select(2, ...) ---@type TSM
+local DragContext = TSM.Init("UI.DragContext") ---@class UI.DragContext
 local private = {
 	context = nil,
 }

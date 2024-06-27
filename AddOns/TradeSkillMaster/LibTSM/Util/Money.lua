@@ -6,6 +6,7 @@
 
 local TSM = select(2, ...) ---@type TSM
 local Money = TSM.Init("Util.Money") ---@class Util.Money
+local Environment = TSM.Include("Environment")
 local Math = TSM.Include("Util.Math")
 local String = TSM.Include("Util.String")
 local private = {
@@ -61,9 +62,9 @@ function Money.ToString(value, color, ...)
 		elseif opt == "OPT_DISABLE" then
 			disabled = true
 		elseif opt == "OPT_RETAIL_ROUND" then
-			roundCopper = not TSM.IsWowClassic()
+			roundCopper = Environment.IsRetail()
 		elseif opt == "OPT_83_NO_COPPER" then
-			noCopper = not TSM.IsWowClassic()
+			noCopper = Environment.IsRetail()
 		else
 			error("Invalid option: "..tostring(opt))
 		end

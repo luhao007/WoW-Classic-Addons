@@ -27,10 +27,10 @@
 Prat:AddModuleToLoad(function()
   local function dbg(...) end
 
-  --[===[@debug@
+  --[==[@debug@
   function dbg(...) Prat:PrintLiteral(...) end
 
-  --@end-debug@]===]
+  --@end-debug@]==]
 
   local PRAT_MODULE = Prat:RequestModuleName("Achievements")
 
@@ -43,14 +43,14 @@ Prat:AddModuleToLoad(function()
   -- define localized strings
   local PL = module.PL
 
-  --[===[@debug@
+  --[==[@debug@
   PL:AddLocale(PRAT_MODULE, "enUS", {
     ["module_name"] = "Achievements",
-    ["module_desc"] = "Achievment related customizations",
+    ["module_desc"] = "Achievement related customizations",
     ["grats_link"] = "say grats",
     ["completed"] = "Completed %s",
     ["showCompletedDate_name"] = "Show completed date",
-    ["showCompletedDate_desc"] = "Show the date you completed the acheievment next to the link",
+    ["showCompletedDate_desc"] = "Show the date you completed the achievement next to the link",
     ["showGratsLink_name"] = "Show grats link",
     ["showGratsLink_desc"] = "Show a clickable link which sends a grats message",
     ["dontShowAchievements_name"] = "Don't show achievements",
@@ -65,7 +65,7 @@ Prat:AddModuleToLoad(function()
     ["grats_have_3"] = "Wow %s that's great",
     ["grats_have_4"] = "Welcome to the club %s",
     ["grats_have_5"] = "I can still rememeber getting that one %s",
-    ["grats_have_6"] = "That one is a rite of passge %s",
+    ["grats_have_6"] = "That one is a rite of passage %s",
     ["grats_have_7"] = "I worked on that for ages %s, grats!",
     ["grats_have_8"] = "I remember doing that, %s, grats!",
     ["grats_have_9"] = "Nicely done %s",
@@ -77,11 +77,11 @@ Prat:AddModuleToLoad(function()
     ["grats_donthave_5"] = "I'm jealous %s, grats!",
     ["grats_donthave_6"] = "I have been working on that for ages %s",
     ["grats_donthave_7"] = "Still need that one %s, grats!",
-    ["grats_donthave_8"] = "WTB your achievment %s",
+    ["grats_donthave_8"] = "WTB your achievement %s",
     ["grats_donthave_9"] = "Looking forward to that one myself %s, good job!",
     ["grats_donthave_10"] = "I can't wait to get that one %s",
   })
-  --@end-debug@]===]
+  --@end-debug@]==]
 
   -- These Localizations are auto-generated. To help with localization
   -- please go to http://www.wowace.com/projects/prat-3-0/localization/
@@ -110,7 +110,7 @@ L = {
 		["grats_donthave_5"] = "I'm jealous %s, grats!",
 		["grats_donthave_6"] = "I have been working on that for ages %s",
 		["grats_donthave_7"] = "Still need that one %s, grats!",
-		["grats_donthave_8"] = "WTB your achievment %s",
+		["grats_donthave_8"] = "WTB your achievement %s",
 		["grats_donthave_9"] = "Looking forward to that one myself %s, good job!",
 		["grats_have_1"] = "Grats %s",
 		["grats_have_10"] = "Good work %s, now we both have it",
@@ -118,14 +118,14 @@ L = {
 		["grats_have_3"] = "Wow %s that's great",
 		["grats_have_4"] = "Welcome to the club %s",
 		["grats_have_5"] = "I can still rememeber getting that one %s",
-		["grats_have_6"] = "That one is a rite of passge %s",
+		["grats_have_6"] = "That one is a rite of passage %s",
 		["grats_have_7"] = "I worked on that for ages %s, grats!",
 		["grats_have_8"] = "I remember doing that, %s, grats!",
 		["grats_have_9"] = "Nicely done %s",
 		["grats_link"] = "say grats",
-		["module_desc"] = "Achievment related customizations",
+		["module_desc"] = "Achievement related customizations",
 		["module_name"] = "Achievements",
-		["showCompletedDate_desc"] = "Show the date you completed the acheievment next to the link",
+		["showCompletedDate_desc"] = "Show the date you completed the achievement next to the link",
 		["showCompletedDate_name"] = "Show completed date",
 		["showGratsLink_desc"] = "Show a clickable link which sends a grats message",
 		["showGratsLink_name"] = "Show grats link",
@@ -171,7 +171,7 @@ L = {
 		--[[Translation missing --]]
 		["grats_donthave_7"] = "Still need that one %s, grats!",
 		--[[Translation missing --]]
-		["grats_donthave_8"] = "WTB your achievment %s",
+		["grats_donthave_8"] = "WTB your achievement %s",
 		--[[Translation missing --]]
 		["grats_donthave_9"] = "Looking forward to that one myself %s, good job!",
 		--[[Translation missing --]]
@@ -187,7 +187,7 @@ L = {
 		--[[Translation missing --]]
 		["grats_have_5"] = "I can still rememeber getting that one %s",
 		--[[Translation missing --]]
-		["grats_have_6"] = "That one is a rite of passge %s",
+		["grats_have_6"] = "That one is a rite of passage %s",
 		--[[Translation missing --]]
 		["grats_have_7"] = "I worked on that for ages %s, grats!",
 		--[[Translation missing --]]
@@ -197,11 +197,11 @@ L = {
 		--[[Translation missing --]]
 		["grats_link"] = "say grats",
 		--[[Translation missing --]]
-		["module_desc"] = "Achievment related customizations",
+		["module_desc"] = "Achievement related customizations",
 		--[[Translation missing --]]
 		["module_name"] = "Achievements",
 		--[[Translation missing --]]
-		["showCompletedDate_desc"] = "Show the date you completed the acheievment next to the link",
+		["showCompletedDate_desc"] = "Show the date you completed the achievement next to the link",
 		--[[Translation missing --]]
 		["showCompletedDate_name"] = "Show completed date",
 		--[[Translation missing --]]
@@ -245,7 +245,7 @@ L = {
 		--[[Translation missing --]]
 		["grats_donthave_7"] = "Still need that one %s, grats!",
 		--[[Translation missing --]]
-		["grats_donthave_8"] = "WTB your achievment %s",
+		["grats_donthave_8"] = "WTB your achievement %s",
 		--[[Translation missing --]]
 		["grats_donthave_9"] = "Looking forward to that one myself %s, good job!",
 		--[[Translation missing --]]
@@ -261,7 +261,7 @@ L = {
 		--[[Translation missing --]]
 		["grats_have_5"] = "I can still rememeber getting that one %s",
 		--[[Translation missing --]]
-		["grats_have_6"] = "That one is a rite of passge %s",
+		["grats_have_6"] = "That one is a rite of passage %s",
 		--[[Translation missing --]]
 		["grats_have_7"] = "I worked on that for ages %s, grats!",
 		--[[Translation missing --]]
@@ -271,11 +271,11 @@ L = {
 		--[[Translation missing --]]
 		["grats_link"] = "say grats",
 		--[[Translation missing --]]
-		["module_desc"] = "Achievment related customizations",
+		["module_desc"] = "Achievement related customizations",
 		--[[Translation missing --]]
 		["module_name"] = "Achievements",
 		--[[Translation missing --]]
-		["showCompletedDate_desc"] = "Show the date you completed the acheievment next to the link",
+		["showCompletedDate_desc"] = "Show the date you completed the achievement next to the link",
 		--[[Translation missing --]]
 		["showCompletedDate_name"] = "Show completed date",
 		--[[Translation missing --]]
@@ -324,11 +324,11 @@ L = {
 		["grats_have_9"] = "Bien joué %s",
 		["grats_link"] = "dire gg",
 		--[[Translation missing --]]
-		["module_desc"] = "Achievment related customizations",
+		["module_desc"] = "Achievement related customizations",
 		--[[Translation missing --]]
 		["module_name"] = "Achievements",
 		--[[Translation missing --]]
-		["showCompletedDate_desc"] = "Show the date you completed the acheievment next to the link",
+		["showCompletedDate_desc"] = "Show the date you completed the achievement next to the link",
 		--[[Translation missing --]]
 		["showCompletedDate_name"] = "Show completed date",
 		["showGratsLink_desc"] = "Montrer un lien clicable qui envoie des messages de félicitations",
@@ -366,14 +366,14 @@ L = {
 		["grats_have_3"] = "Wow %s, der ist großartig",
 		["grats_have_4"] = "Willkommen im Club %s",
 		["grats_have_5"] = "Ich kann mich immer noch daran erinnern, diesen %s bekommen zu haben",
-		["grats_have_6"] = "Dieser ist ein Übergangsritus %s",
+		["grats_have_6"] = "Das ist ein Übergangsritus %s",
 		["grats_have_7"] = "Ich habe ewig daran gearbeitet %s, grats!",
 		["grats_have_8"] = "Ich erinnere mich, als ich den gemacht habe, %s, grats!",
 		["grats_have_9"] = "Schön gemacht %s",
 		["grats_link"] = "sag grats",
 		["module_desc"] = "Erfolgsbezogene Anpassungen",
 		["module_name"] = "Erfolge",
-		["showCompletedDate_desc"] = "Zeigt das Datum, an dem du den Erfolg abgeschlossen hast, neben dem Link an",
+		["showCompletedDate_desc"] = "Zeigt neben dem Link das Datum an, an dem du diesen Erfolg abgeschlossen hast",
 		["showCompletedDate_name"] = "Abschließungsdatum anzeigen",
 		["showGratsLink_desc"] = "Zeigt einen anklickbaren Link an, der eine Grats-Nachricht sendet",
 		["showGratsLink_name"] = "Grats Link anzeigen",
@@ -416,7 +416,7 @@ L = {
 		["grats_have_9"] = "%s님 잘하셨어요.",
 		["grats_link"] = "축하한다고 말함",
 		["module_desc"] = "업적 관련 사용자 설정",
-		["module_name"] = "업적",
+		["module_name"] = "업적 [Achievements]",
 		["showCompletedDate_desc"] = "링크 옆에 업적을 완료 한 날짜 표시",
 		["showCompletedDate_name"] = "완료 날짜 표시",
 		["showGratsLink_desc"] = "축하 메시지를 보내는 클릭 가능한 링크 표시",
@@ -462,7 +462,7 @@ L = {
 		--[[Translation missing --]]
 		["grats_donthave_7"] = "Still need that one %s, grats!",
 		--[[Translation missing --]]
-		["grats_donthave_8"] = "WTB your achievment %s",
+		["grats_donthave_8"] = "WTB your achievement %s",
 		--[[Translation missing --]]
 		["grats_donthave_9"] = "Looking forward to that one myself %s, good job!",
 		--[[Translation missing --]]
@@ -478,7 +478,7 @@ L = {
 		--[[Translation missing --]]
 		["grats_have_5"] = "I can still rememeber getting that one %s",
 		--[[Translation missing --]]
-		["grats_have_6"] = "That one is a rite of passge %s",
+		["grats_have_6"] = "That one is a rite of passage %s",
 		--[[Translation missing --]]
 		["grats_have_7"] = "I worked on that for ages %s, grats!",
 		--[[Translation missing --]]
@@ -488,11 +488,11 @@ L = {
 		--[[Translation missing --]]
 		["grats_link"] = "say grats",
 		--[[Translation missing --]]
-		["module_desc"] = "Achievment related customizations",
+		["module_desc"] = "Achievement related customizations",
 		--[[Translation missing --]]
 		["module_name"] = "Achievements",
 		--[[Translation missing --]]
-		["showCompletedDate_desc"] = "Show the date you completed the acheievment next to the link",
+		["showCompletedDate_desc"] = "Show the date you completed the achievement next to the link",
 		--[[Translation missing --]]
 		["showCompletedDate_name"] = "Show completed date",
 		--[[Translation missing --]]
@@ -617,7 +617,7 @@ L = {
 		--[[Translation missing --]]
 		["grats_donthave_7"] = "Still need that one %s, grats!",
 		--[[Translation missing --]]
-		["grats_donthave_8"] = "WTB your achievment %s",
+		["grats_donthave_8"] = "WTB your achievement %s",
 		--[[Translation missing --]]
 		["grats_donthave_9"] = "Looking forward to that one myself %s, good job!",
 		--[[Translation missing --]]
@@ -633,7 +633,7 @@ L = {
 		--[[Translation missing --]]
 		["grats_have_5"] = "I can still rememeber getting that one %s",
 		--[[Translation missing --]]
-		["grats_have_6"] = "That one is a rite of passge %s",
+		["grats_have_6"] = "That one is a rite of passage %s",
 		--[[Translation missing --]]
 		["grats_have_7"] = "I worked on that for ages %s, grats!",
 		--[[Translation missing --]]
@@ -688,7 +688,7 @@ L = {
 		--[[Translation missing --]]
 		["grats_donthave_7"] = "Still need that one %s, grats!",
 		--[[Translation missing --]]
-		["grats_donthave_8"] = "WTB your achievment %s",
+		["grats_donthave_8"] = "WTB your achievement %s",
 		--[[Translation missing --]]
 		["grats_donthave_9"] = "Looking forward to that one myself %s, good job!",
 		--[[Translation missing --]]
@@ -704,7 +704,7 @@ L = {
 		--[[Translation missing --]]
 		["grats_have_5"] = "I can still rememeber getting that one %s",
 		--[[Translation missing --]]
-		["grats_have_6"] = "That one is a rite of passge %s",
+		["grats_have_6"] = "That one is a rite of passage %s",
 		--[[Translation missing --]]
 		["grats_have_7"] = "I worked on that for ages %s, grats!",
 		--[[Translation missing --]]
@@ -714,11 +714,11 @@ L = {
 		--[[Translation missing --]]
 		["grats_link"] = "say grats",
 		--[[Translation missing --]]
-		["module_desc"] = "Achievment related customizations",
+		["module_desc"] = "Achievement related customizations",
 		--[[Translation missing --]]
 		["module_name"] = "Achievements",
 		--[[Translation missing --]]
-		["showCompletedDate_desc"] = "Show the date you completed the acheievment next to the link",
+		["showCompletedDate_desc"] = "Show the date you completed the achievement next to the link",
 		--[[Translation missing --]]
 		["showCompletedDate_name"] = "Show completed date",
 		--[[Translation missing --]]

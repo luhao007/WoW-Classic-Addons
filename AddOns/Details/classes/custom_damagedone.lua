@@ -10,7 +10,7 @@
 
 --customized display script
 
-local _detalhes = 		_G._detalhes
+local _detalhes = 		_G.Details
 local _
 local addonName, Details222 = ...
 
@@ -38,7 +38,6 @@ local IsInGroup = IsInGroup -- api local
 local GetNumGroupMembers = GetNumGroupMembers -- api local
 local _GetNumPartyMembers = GetNumPartyMembers or GetNumSubgroupMembers -- api local
 local _GetNumRaidMembers = GetNumRaidMembers or GetNumGroupMembers -- api local
-local _GetUnitName = GetUnitName -- api local
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --constants

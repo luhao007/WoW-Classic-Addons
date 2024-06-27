@@ -4,8 +4,9 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local Auctioning = TSM.UI.AuctionUI:NewPackage("Auctioning")
+local Environment = TSM.Include("Environment")
 local L = TSM.Include("Locale").GetTable()
 local FSM = TSM.Include("Util.FSM")
 local Container = TSM.Include("Util.Container")
@@ -193,7 +194,7 @@ function private.GetAuctioningSelectionFrame()
 							:SetFont("ITEM_BODY3")
 							:SetJustifyH("LEFT")
 							:SetIconSize(12)
-							:SetTextInfo("autoBaseItemString", UIUtils.GetColoredItemName)
+							:SetTextInfo("autoBaseItemString", UIUtils.GetDisplayItemName)
 							:SetIconInfo("itemTexture")
 							:SetTooltipInfo("autoBaseItemString")
 							:SetSortInfo("name")
@@ -289,7 +290,7 @@ function private.GetAuctioningScanFrame()
 				:SetHeight(76)
 				:SetMargin(0, 8, 0, 0)
 				:SetPadding(0, 0, 4, 0)
-				:SetBackgroundColor("PRIMARY_BG_ALT", true)
+				:SetRoundedBackgroundColor("PRIMARY_BG_ALT")
 				:AddChild(UIElements.New("Button", "backBtn")
 					:SetMargin(0, 0, 2, 0)
 					:SetSize(28, 28)
@@ -317,7 +318,7 @@ function private.GetAuctioningScanFrame()
 			:AddChild(UIElements.New("Frame", "content")
 				:SetLayout("HORIZONTAL")
 				:SetPadding(8, 8, 4, 4)
-				:SetBackgroundColor("PRIMARY_BG_ALT", true)
+				:SetRoundedBackgroundColor("PRIMARY_BG_ALT")
 				:AddChild(UIElements.New("Frame", "item")
 					:SetLayout("VERTICAL")
 					:AddChild(UIElements.New("Frame", "content")
@@ -422,7 +423,7 @@ function private.GetAuctioningScanFrame()
 								:AddChild(UIElements.New("Text", "desc")
 									:SetWidth("AUTO")
 									:SetFont("BODY_BODY3_MEDIUM")
-									:SetText((TSM.IsWowClassic() and L["Stack / Quantity"] or L["Quantity"])..":")
+									:SetText((Environment.HasFeature(Environment.FEATURES.AH_STACKS) and L["Stack / Quantity"] or L["Quantity"])..":")
 								)
 								:AddChild(UIElements.New("Text", "text")
 									:SetMargin(4, 0, 0, 0)
@@ -514,7 +515,7 @@ function private.ScanNavCallback(_, path)
 						:SetFont("ITEM_BODY3")
 						:SetJustifyH("LEFT")
 						:SetIconSize(12)
-						:SetTextInfo("itemString", UIUtils.GetColoredItemName)
+						:SetTextInfo("itemString", UIUtils.GetDisplayItemName)
 						:SetIconInfo("itemString", ItemInfo.GetTexture)
 						:SetTooltipInfo("itemString")
 						:SetSortInfo("name")
@@ -786,17 +787,17 @@ function private.ExitScanButtonOnLeave(button)
 end
 
 function private.ExitScanFrameOnEnter(frame)
-	frame:SetBackgroundColor("PRIMARY_BG_ALT+HOVER", true)
+	frame:SetRoundedBackgroundColor("PRIMARY_BG_ALT+HOVER")
 		:Draw()
 end
 
 function private.ExitScanFrameOnLeave(frame)
-	frame:SetBackgroundColor("PRIMARY_BG_ALT", true)
+	frame:SetRoundedBackgroundColor("PRIMARY_BG_ALT")
 		:Draw()
 end
 
 function private.ExitScanButtonOnClick()
-	if TSM.IsWowClassic() then
+	if not Environment.HasFeature(Environment.FEATURES.C_AUCTION_HOUSE) then
 		ClearCursor()
 		ClickAuctionSellItemButton(AuctionsItemButton, "LeftButton")
 		ClearCursor()
@@ -852,7 +853,10 @@ function private.FSMCreate()
 		local stackSize = currentRow:GetField("stackSize")
 		local depositCost = 0
 		if postBag and postSlot then
-			if TSM.IsWowClassic() then
+			if Environment.HasFeature(Environment.FEATURES.C_AUCTION_HOUSE) then
+				local isCommodity = ItemInfo.IsCommodity(itemString)
+				depositCost = max(floor(0.15 * (ItemInfo.GetVendorSell(itemString) or 0) * (isCommodity and stackSize or 1) * (postTime == 3 and 4 or postTime)), 100) * (isCommodity and 1 or stackSize)
+			else
 				ClearCursor()
 				Container.PickupItem(postBag, postSlot)
 				ClickAuctionSellItemButton(AuctionsItemButton, "LeftButton")
@@ -863,9 +867,6 @@ function private.FSMCreate()
 				ClearCursor()
 				ClickAuctionSellItemButton(AuctionsItemButton, "LeftButton")
 				ClearCursor()
-			else
-				local isCommodity = ItemInfo.IsCommodity(itemString)
-				depositCost = max(floor(0.15 * (ItemInfo.GetVendorSell(itemString) or 0) * (isCommodity and stackSize or 1) * (postTime == 3 and 4 or postTime)), 100) * (isCommodity and 1 or stackSize)
 			end
 		end
 
@@ -917,7 +918,7 @@ function private.FSMCreate()
 				:SetTooltip(itemString)
 				:Draw()
 			itemContent:GetElement("text")
-				:SetText(UIUtils.GetColoredItemName(itemString))
+				:SetText(UIUtils.GetDisplayItemName(itemString))
 				:SetTooltip(itemString)
 				:Draw()
 			header:GetElement("content.item.operation.text")
@@ -930,15 +931,13 @@ function private.FSMCreate()
 				:SetText(Money.ToString(currentRow:GetField(ItemInfo.IsCommodity(itemString) and "itemBuyout" or "buyout"), nil, "OPT_83_NO_COPPER"))
 				:Draw()
 			detailsHeader2:GetElement("quantity.text")
-				:SetText(TSM.IsWowClassic() and format(L["%d of %d"], rowStacksRemaining, currentRow:GetField("stackSize")) or currentRow:GetField("stackSize"))
+				:SetText(Environment.HasFeature(Environment.FEATURES.AH_STACKS) and format(L["%d of %d"], rowStacksRemaining, currentRow:GetField("stackSize")) or currentRow:GetField("stackSize"))
 				:Draw()
 			local duration = nil
 			if context.scanType == "POST" then
 				duration = TSM.CONST.AUCTION_DURATIONS[currentRow:GetField("postTime")]
 			elseif context.scanType == "CANCEL" then
-				if TSM.IsWowClassic() then
-					duration = _G["AUCTION_TIME_LEFT"..currentRow:GetField("duration")]
-				else
+				if Environment.HasFeature(Environment.FEATURES.C_AUCTION_HOUSE) then
 					duration = currentRow:GetField("duration") - time()
 					if duration < SECONDS_PER_MIN then
 						duration = duration.."s"
@@ -949,6 +948,8 @@ function private.FSMCreate()
 					else
 						duration = floor(duration / SECONDS_PER_DAY).."d"
 					end
+				else
+					duration = _G["AUCTION_TIME_LEFT"..currentRow:GetField("duration")]
 				end
 			else
 				error("Invalid scanType: "..tostring(context.scanType))
@@ -1086,7 +1087,7 @@ function private.FSMCreate()
 			:SetSize(328, 328)
 			:SetPadding(12)
 			:AddAnchor("CENTER")
-			:SetBackgroundColor("FRAME_BG", true)
+			:SetRoundedBackgroundColor("FRAME_BG")
 			:SetMouseEnabled(true)
 			:AddChild(UIElements.New("Frame", "header")
 				:SetLayout("HORIZONTAL")
@@ -1110,7 +1111,7 @@ function private.FSMCreate()
 				:SetLayout("HORIZONTAL")
 				:SetPadding(6)
 				:SetMargin(0, 0, 0, 16)
-				:SetBackgroundColor("PRIMARY_BG_ALT", true)
+				:SetRoundedBackgroundColor("PRIMARY_BG_ALT")
 				:AddChild(UIElements.New("Button", "icon")
 					:SetSize(36, 36)
 					:SetMargin(0, 8, 0, 0)
@@ -1120,7 +1121,7 @@ function private.FSMCreate()
 				:AddChild(UIElements.New("Text", "name")
 					:SetHeight(36)
 					:SetFont("ITEM_BODY1")
-					:SetText(UIUtils.GetColoredItemName(itemString))
+					:SetText(UIUtils.GetDisplayItemName(itemString))
 				)
 			)
 			-- TODO: implement editing stack sizes
@@ -1185,15 +1186,15 @@ function private.FSMCreate()
 					:SetFont("BODY_BODY2_MEDIUM")
 					:SetJustifyH("RIGHT")
 					:SetText(L["Per Item"])
-					:SetScript("OnClick", TSM.IsWowClassic() and private.PerItemOnClick)
+					:SetScript("OnClick", Environment.HasFeature(Environment.FEATURES.AH_STACKS) and private.PerItemOnClick)
 				)
-				:AddChildIf(TSM.IsWowClassic(), UIElements.New("Button", "stack")
+				:AddChildIf(Environment.HasFeature(Environment.FEATURES.AH_STACKS), UIElements.New("Button", "stack")
 					:SetWidth("AUTO")
 					:SetTextColor("TEXT")
 					:SetFont("BODY_BODY2_MEDIUM")
 					:SetJustifyH("RIGHT")
 					:SetText(L["Per Stack"])
-					:SetScript("OnClick", TSM.IsWowClassic() and private.PerStackOnClick)
+					:SetScript("OnClick", Environment.HasFeature(Environment.FEATURES.AH_STACKS) and private.PerStackOnClick)
 				)
 			)
 			:AddChild(UIElements.New("Frame", "bid")
@@ -1264,7 +1265,7 @@ function private.FSMCreate()
 		if buyout > 0 then
 			bid = min(bid, buyout)
 		end
-		if not TSM.IsWowClassic() and isCommodity and bid ~= buyout then
+		if Environment.IsRetail() and isCommodity and bid ~= buyout then
 			Log.PrintUser(L["Did not change prices due to an invalid bid or buyout value."])
 		else
 			local duration = Table.KeyByValue(TSM.CONST.AUCTION_DURATIONS, button:GetElement("__parent.duration.toggle"):GetValue())
@@ -1338,7 +1339,7 @@ function private.FSMCreate()
 					error("Invalid scan type: "..tostring(context.scanType))
 				end
 				context.auctionScan = AuctionScan.GetManager()
-					:SetResolveSellers(TSM.IsWowClassic())
+					:SetResolveSellers(not Environment.IsRetail())
 					:SetScript("OnProgressUpdate", private.FSMAuctionScanOnProgressUpdate)
 				private.auctionScan = context.auctionScan
 				fsmPrivate.UpdateScanFrame(context)
@@ -1667,7 +1668,7 @@ function private.BidBuyoutInputOnValueChanged(input)
 	local buyoutInput = frame:GetElement("buyout.input")
 	local bid = TSM.UI.AuctionUI.ParseBid(bidInput:GetValue())
 	local buyout = TSM.UI.AuctionUI.ParseBuyout(buyoutInput:GetValue(), isCommodity)
-	if input == buyoutInput and not TSM.IsWowClassic() and isCommodity then
+	if input == buyoutInput and Environment.IsRetail() and isCommodity then
 		-- update the bid to match
 		bidInput:SetValue(Money.ToString(buyout, nil, "OPT_83_NO_COPPER", "OPT_DISABLE"))
 			:Draw()

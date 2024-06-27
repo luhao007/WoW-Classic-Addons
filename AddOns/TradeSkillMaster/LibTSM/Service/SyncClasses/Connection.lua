@@ -9,6 +9,7 @@ local Connection = TSM.Init("Service.SyncClasses.Connection")
 local L = TSM.Include("Locale").GetTable()
 local Delay = TSM.Include("Util.Delay")
 local Log = TSM.Include("Util.Log")
+local Table = TSM.Include("Util.Table")
 local TempTable = TSM.Include("Util.TempTable")
 local Event = TSM.Include("Util.Event")
 local Settings = TSM.Include("Service.Settings")
@@ -52,10 +53,11 @@ Connection:OnSettingsLoad(function()
 	for _ in Settings.SyncAccountIterator() do
 		private.isActive = true
 	end
+	Comm.SetDisconnectFunction(private.DisconnectCharacter)
 	Comm.RegisterHandler(Constants.DATA_TYPES.WHOAMI_ACCOUNT, private.WhoAmIAccountHandler)
 	Comm.RegisterHandler(Constants.DATA_TYPES.WHOAMI_ACK, private.WhoAmIAckHandler)
-	Comm.RegisterHandler(Constants.DATA_TYPES.CONNECTION_REQUEST, private.ConnectionHandler)
-	Comm.RegisterHandler(Constants.DATA_TYPES.CONNECTION_REQUEST_ACK, private.ConnectionHandler)
+	Comm.RegisterHandler(Constants.DATA_TYPES.CONNECTION_REQUEST, private.ConnectionRequestAndAckHandler)
+	Comm.RegisterHandler(Constants.DATA_TYPES.CONNECTION_REQUEST_ACK, private.ConnectionRequestAndAckHandler)
 	Comm.RegisterHandler(Constants.DATA_TYPES.DISCONNECT, private.DisconnectHandler)
 	Comm.RegisterHandler(Constants.DATA_TYPES.HEARTBEAT, private.HeartbeatHandler)
 
@@ -64,7 +66,7 @@ end)
 
 Connection:OnModuleUnload(function()
 	for _, player in pairs(private.connectedCharacter) do
-		Comm.SendData(Constants.DATA_TYPES.DISCONNECT, player)
+		private.DisconnectCharacter(player)
 	end
 end)
 
@@ -79,12 +81,7 @@ function Connection.RegisterConnectionChangedCallback(handler)
 end
 
 function Connection.IsCharacterConnected(targetCharacter)
-	for _, player in pairs(private.connectedCharacter) do
-		if player == targetCharacter then
-			return true
-		end
-	end
-	return false
+	return Table.KeyByValue(private.connectedCharacter, targetCharacter) ~= nil
 end
 
 function Connection.ConnectedAccountIterator()
@@ -143,8 +140,7 @@ end
 
 function Connection.Remove(account)
 	if private.threadRunning[account] then
-		Threading.Kill(private.threadId[account])
-		private.ConnectionThreadDone(account)
+		private.KillConnectionThread(account)
 	end
 	Settings.RemoveSyncAccount(account)
 end
@@ -159,8 +155,7 @@ end
 -- Message Handlers
 -- ============================================================================
 
-function private.WhoAmIAckHandler(dataType, sourceAccount, sourceCharacter, data)
-	assert(dataType == Constants.DATA_TYPES.WHOAMI_ACK)
+function private.WhoAmIAckHandler(sourceAccount, sourceCharacter, data)
 	if not private.newCharacter or strlower(private.newCharacter) ~= strlower(sourceCharacter) then
 		-- we aren't trying to connect with a new account
 		return
@@ -170,8 +165,7 @@ function private.WhoAmIAckHandler(dataType, sourceAccount, sourceCharacter, data
 	private.CheckNewAccountStatus()
 end
 
-function private.WhoAmIAccountHandler(dataType, sourceAccount, sourceCharacter, data)
-	assert(dataType == Constants.DATA_TYPES.WHOAMI_ACCOUNT)
+function private.WhoAmIAccountHandler(sourceAccount, sourceCharacter, data)
 	if not private.newCharacter then
 		-- we aren't trying to connect with a new account
 		return
@@ -186,27 +180,24 @@ function private.WhoAmIAccountHandler(dataType, sourceAccount, sourceCharacter, 
 	private.CheckNewAccountStatus()
 end
 
-function private.ConnectionHandler(dataType, sourceAccount, sourceCharacter, data)
+function private.ConnectionRequestAndAckHandler(sourceAccount, sourceCharacter, data)
 	if not private.threadRunning[sourceAccount] then
 		return
 	end
 	private.connectionRequestReceived[sourceAccount] = true
 end
 
-function private.DisconnectHandler(dataType, sourceAccount, sourceCharacter, data)
-	assert(dataType == Constants.DATA_TYPES.DISCONNECT)
+function private.DisconnectHandler(sourceAccount, sourceCharacter, data)
 	if not private.threadRunning[sourceAccount] then
 		return
 	end
 
 	-- kill the thread and prevent it from running again for 2 seconds
-	Threading.Kill(private.threadId[sourceAccount])
-	private.ConnectionThreadDone(sourceAccount)
+	private.KillConnectionThread(sourceAccount)
 	private.suppressThreadTime[sourceAccount] = time() + 2
 end
 
-function private.HeartbeatHandler(dataType, sourceAccount, sourceCharacter)
-	assert(dataType == Constants.DATA_TYPES.HEARTBEAT)
+function private.HeartbeatHandler(sourceAccount, sourceCharacter)
 	if not Connection.IsCharacterConnected(sourceCharacter) then
 		-- we're not connected to this player
 		return
@@ -449,4 +440,18 @@ function private.ChatMsgSystemEventHandler(_, msg)
 			end
 		end
 	end
+end
+
+function private.DisconnectCharacter(character)
+	local account = Table.KeyByValue(private.connectedCharacter, character)
+	if not account or not private.threadRunning[account] then
+		return
+	end
+	Comm.SendData(Constants.DATA_TYPES.DISCONNECT, character)
+	private.KillConnectionThread(account)
+end
+
+function private.KillConnectionThread(account)
+	Threading.Kill(private.threadId[account])
+	private.ConnectionThreadDone(account)
 end

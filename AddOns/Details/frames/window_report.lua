@@ -1,7 +1,7 @@
 
 local Loc = LibStub("AceLocale-3.0"):GetLocale("Details")
 
-local Details = _G._detalhes
+local Details = _G.Details
 local gump = Details.gump
 local _
 
@@ -121,7 +121,7 @@ local _
 			Details.copypasteframe = CreateFrame("frame", "DetailsCopyPasteFrame2", UIParent, "BackdropTemplate")
 			Details.copypasteframe:SetFrameStrata("TOOLTIP")
 			Details.copypasteframe:SetPoint("CENTER", UIParent, "CENTER", 0, 50)
-			tinsert(UISpecialFrames, "DetailsCopyPasteFrame2")
+			table.insert(UISpecialFrames, "DetailsCopyPasteFrame2")
 			Details.copypasteframe:SetSize(400, 400)
 			Details.copypasteframe:Hide()
 
@@ -200,7 +200,8 @@ local _
 		Details.janela_report.slider.amt:Show()
 
 		if (options) then
-			Details.janela_report.enviar:SetScript("OnClick", function() self:monta_relatorio(param2, options._custom) end)
+			local bIsCustom = true
+			Details.janela_report.enviar:SetScript("OnClick", function() self:monta_relatorio(param2, bIsCustom) end)
 		else
 			Details.janela_report.enviar:SetScript("OnClick", function() self:monta_relatorio(param2) end)
 		end
@@ -663,9 +664,9 @@ local createDropdown = function(thisFrame)
 
 		window:SetWidth(342/2 + 5)
 		window:SetHeight(195)
-		window:SetBackdrop({edgeFile = [[Interface\Buttons\WHITE8X8]], edgeSize = 1})
-		window:SetBackdropColor(1, 1, 1, 1)
-		window:SetBackdropBorderColor(0, 0, 0, 1)
+		--window:SetBackdrop({edgeFile = [[Interface\Buttons\WHITE8X8]], edgeSize = 1})
+		--window:SetBackdropColor(1, 1, 1, 1)
+		--window:SetBackdropBorderColor(0, 0, 0, 1)
 
 		if (not window.widgets) then
 			window.widgets = {}
@@ -674,22 +675,12 @@ local createDropdown = function(thisFrame)
 			titlebar:SetPoint("topleft", window, "topleft", 2, -3)
 			titlebar:SetPoint("topright", window, "topright", -2, -3)
 			titlebar:SetHeight(20)
-			titlebar:SetBackdrop({edgeFile = [[Interface\Buttons\WHITE8X8]], edgeSize = 1, bgFile = [[Interface\AddOns\Details\images\background]], tileSize = 64, tile = true})
-			titlebar:SetBackdropColor(.5, .5, .5, 1)
-			titlebar:SetBackdropBorderColor(0, 0, 0, 1)
+			--titlebar:SetBackdrop({edgeFile = [[Interface\Buttons\WHITE8X8]], edgeSize = 1, bgFile = [[Interface\AddOns\Details\images\background]], tileSize = 64, tile = true})
+			--titlebar:SetBackdropColor(.5, .5, .5, 1)
+			--titlebar:SetBackdropBorderColor(0, 0, 0, 1)
 
-			local bg1 = window:CreateTexture(nil, "background")
-			bg1:SetTexture([[Interface\AddOns\Details\images\background]], true)
-			bg1:SetAlpha(0.7)
-			bg1:SetVertexColor(0.27, 0.27, 0.27)
-			bg1:SetVertTile(true)
-			bg1:SetHorizTile(true)
-			bg1:SetAllPoints()
-
-			tinsert(window.all_widgets, bg1)
-			tinsert(window.widgets, bg1)
-			tinsert(window.all_widgets, titlebar)
-			tinsert(window.widgets, titlebar)
+			table.insert(window.all_widgets, titlebar)
+			table.insert(window.widgets, titlebar)
 		end
 
 		window.title:ClearAllPoints()
@@ -747,7 +738,7 @@ local createDropdown = function(thisFrame)
 	function gump:CriaJanelaReport()
 		--window
 		local window = CreateFrame("Frame", "DetailsReportWindow", UIParent, "BackdropTemplate")
-		tinsert(UISpecialFrames, "DetailsReportWindow")
+		table.insert(UISpecialFrames, "DetailsReportWindow")
 		window:SetPoint("CENTER", UIParent, "CENTER")
 		window:SetFrameStrata("DIALOG")
 		window.skins = {}
@@ -761,6 +752,8 @@ local createDropdown = function(thisFrame)
 
 		Details.janela_report = window
 		Details:InstallRPSkin("defaultSkin", defaultSkin)
+
+		DetailsFramework:AddRoundedCornersToFrame(window, Details.PlayerBreakdown.RoundedCornerPreset)
 
 		--recently reported:
 		window.recently_report_buttons = {}
@@ -831,7 +824,7 @@ local createDropdown = function(thisFrame)
 			button.icon = icon
 			button.text = text
 			button:SetScript("OnClick", recentlyButtonOnClick)
-			tinsert(window.recently_report_buttons, button)
+			table.insert(window.recently_report_buttons, button)
 		end
 
 		historyBlockBackground:Hide()
@@ -842,11 +835,12 @@ local createDropdown = function(thisFrame)
 
 		local flashTexture = window:CreateTexture(nil, "background")
 		flashTexture:SetColorTexture(1, 1, 1)
-		flashTexture:SetAllPoints()
+		flashTexture:SetPoint("topleft", window, "topleft", -2, 2)
+		flashTexture:SetPoint("bottomright", window, "bottomright", 2, -2)
 
 		local onShowAnimation = DetailsFramework:CreateAnimationHub(flashTexture, function() flashTexture:Show() end, function() flashTexture:Hide() end)
-		DetailsFramework:CreateAnimation(onShowAnimation, "ALPHA", 1, .2, 0, .10)
-		DetailsFramework:CreateAnimation(onShowAnimation, "ALPHA", 2, .2, .10, 0)
+		DetailsFramework:CreateAnimation(onShowAnimation, "ALPHA", 1, .4, 0, .90)
+		DetailsFramework:CreateAnimation(onShowAnimation, "ALPHA", 2, .4, .90, 0)
 
 		window:SetScript("OnShow", function(self)
 			local dropdown = window.select.MyObject
@@ -885,6 +879,8 @@ local createDropdown = function(thisFrame)
 			end
 
 			window:RefreshRecentlyReported()
+
+			window:SetColor(unpack(Details.frame_background_color))
 		end)
 
 		window:SetScript("OnHide", function(self)

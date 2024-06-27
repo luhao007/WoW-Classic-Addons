@@ -6,6 +6,7 @@
 
 local TSM = select(2, ...) ---@type TSM
 local Settings = TSM.Init("Service.Settings") ---@class Service.Settings
+local Environment = TSM.Include("Environment")
 local L = TSM.Include("Locale").GetTable()
 local TempTable = TSM.Include("Util.TempTable")
 local Table = TSM.Include("Util.Table")
@@ -78,11 +79,17 @@ local DEFAULT_DB = {
 	},
 	_lastModifiedVersion = {},
 }
-local ACCESSIBLE_FACTIONS = TSM.IsWowClassic() and { FACTION } or {
+local ACCESSIBLE_FACTIONS = Environment.HasFeature(Environment.FEATURES.CONNECTED_FACTION_AH) and {
 	"Horde",
 	"Alliance",
 	"Neutral"
-}
+} or { FACTION }
+local SCOPE_TYPE_LOOKUP = {}
+do
+	for scopeType, scopeTypeShort in pairs(SCOPE_TYPES) do
+		SCOPE_TYPE_LOOKUP[scopeTypeShort] = scopeType
+	end
+end
 
 -- Changelog:
 -- [6] added 'global.locale' key
@@ -207,9 +214,14 @@ local ACCESSIBLE_FACTIONS = TSM.IsWowClassic() and { FACTION } or {
 -- [113] updated global.craftingUIContext.professionDividedContainerBottom
 -- [114] updated factionrealm.internalData.crafts
 -- [115] removed global.internalData.optionalMatTextLookup
+-- [116] updated global.internalData.destroyingHistory
+-- [117] added global.storyBoardUIContext, updated global.craftingUIContext.{craftsScrollingTable,matsScrollingTable,gatheringScrollingTable}
+-- [118] updated factionrealm.internalData.crafts
+-- [119] added global.coreOptions.regionWide
+-- [120] updated factionrealm.internalData.crafts
 
 local SETTINGS_INFO = {
-	version = 115,
+	version = 120,
 	minVersion = 10,
 	global = {
 		debug = {
@@ -219,7 +231,7 @@ local SETTINGS_INFO = {
 			lastCharacter = { type = "string", default = "???", lastModifiedVersion = 90 },
 			vendorItems = { type = "table", default = {}, lastModifiedVersion = 10 },
 			appMessageId = { type = "number", default = 0, lastModifiedVersion = 10 },
-			destroyingHistory = { type = "table", default = {}, lastModifiedVersion = 10 },
+			destroyingHistory = { type = "table", default = {}, lastModifiedVersion = 116 },
 			whatsNewVersion = { type = "number", default = 0, lastModifiedVersion = 94 },
 		},
 		appearanceOptions = {
@@ -235,11 +247,11 @@ local SETTINGS_INFO = {
 			auctioningSelectionVerticalDividedContainer = { type = "table", default = { leftWidth = 220 }, lastModifiedVersion = 66 },
 			auctioningBagScrollingTable = { type = "table", default = { colWidth = { selected = 16, item = 246, operation = 206 }, colHidden = {} }, lastModifiedVersion = 55 },
 			auctioningLogScrollingTable = { type = "table", default = { colWidth = { index = 14, item = 190, buyout = 110, operation = 108, seller = 90, info = 234 }, colHidden = {} }, lastModifiedVersion = 55 },
-			auctioningAuctionScrollingTable = { type = "table", default = { colWidth = { item = 226, ilvl = 32, qty = not TSM.IsWowClassic() and 40 or nil, posts = TSM.IsWowClassic() and 40 or nil, stack = TSM.IsWowClassic() and 40 or nil, timeLeft = 26, seller = TSM.IsWowClassic() and 88 or 136, itemBid = 115, bid = 115, itemBuyout = 115, buyout = 115, bidPct = 40, pct = 40 }, colHidden = { bid = true, buyout = true, bidPct = true } }, lastModifiedVersion = 103 },
-			myAuctionsScrollingTable = { type = "table", default = { colWidth = { item = 248, stackSize = 30, timeLeft = 40, highbidder = TSM.IsWowClassic() and 110 or nil, group = TSM.IsWowClassic() and 110 or 228, currentBid = 100, buyout = 100 }, colHidden = {} }, lastModifiedVersion = 103 },
+			auctioningAuctionScrollingTable = { type = "table", default = { colWidth = { item = 226, ilvl = 32, qty = Environment.IsRetail() and 40 or nil, posts = not Environment.IsRetail() and 40 or nil, stack = not Environment.IsRetail() and 40 or nil, timeLeft = 26, seller = Environment.IsRetail() and 136 or 88, itemBid = 115, bid = 115, itemBuyout = 115, buyout = 115, bidPct = 40, pct = 40 }, colHidden = { bid = true, buyout = true, bidPct = true } }, lastModifiedVersion = 103 },
+			myAuctionsScrollingTable = { type = "table", default = { colWidth = { item = 248, stackSize = 30, timeLeft = 40, highbidder = not Environment.IsRetail() and 110 or nil, group = Environment.IsRetail() and 228 or 110, currentBid = 100, buyout = 100 }, colHidden = {} }, lastModifiedVersion = 103 },
 			shoppingSelectionDividedContainer = { type = "table", default = { leftWidth = 272 }, lastModifiedVersion = 55 },
-			shoppingAuctionScrollingTable = { type = "table", default = { colWidth = { item = 226, ilvl = 32, qty = not TSM.IsWowClassic() and 40 or nil, posts = TSM.IsWowClassic() and 40 or nil, stack = TSM.IsWowClassic() and 40 or nil, timeLeft = 26, seller = TSM.IsWowClassic() and 88 or 136, itemBid = 115, bid = 115, itemBuyout = 115, buyout = 115, bidPct = 40, pct = 40 }, colHidden = { bid = true, buyout = true, bidPct = true } }, lastModifiedVersion = 103 },
-			sniperScrollingTable = { type = "table", default = { colWidth = { icon = 24, item = 230, ilvl = 32, qty = not TSM.IsWowClassic() and 40 or nil, posts = TSM.IsWowClassic() and 40 or nil, stack = TSM.IsWowClassic() and 40 or nil, seller = TSM.IsWowClassic() and 86 or 134, itemBid = 115, bid = 115, itemBuyout = 115, buyout = 115, bidPct = 40, pct = 40 }, colHidden = { bid = true, buyout = true, bidPct = true } }, lastModifiedVersion = 103 },
+			shoppingAuctionScrollingTable = { type = "table", default = { colWidth = { item = 226, ilvl = 32, qty = Environment.IsRetail() and 40 or nil, posts = not Environment.IsRetail() and 40 or nil, stack = not Environment.IsRetail() and 40 or nil, timeLeft = 26, seller = Environment.IsRetail() and 136 or 88, itemBid = 115, bid = 115, itemBuyout = 115, buyout = 115, bidPct = 40, pct = 40 }, colHidden = { bid = true, buyout = true, bidPct = true } }, lastModifiedVersion = 103 },
+			sniperScrollingTable = { type = "table", default = { colWidth = { icon = 24, item = 230, ilvl = 32, qty = Environment.IsRetail() and 40 or nil, posts = not Environment.IsRetail() and 40 or nil, stack = not Environment.IsRetail() and 40 or nil, seller = Environment.IsRetail() and 134 or 86, itemBid = 115, bid = 115, itemBuyout = 115, buyout = 115, bidPct = 40, pct = 40 }, colHidden = { bid = true, buyout = true, bidPct = true } }, lastModifiedVersion = 103 },
 			shoppingSearchesTabGroup = { type = "table", default = { pathIndex = 1 }, lastModifiedVersion = 55 },
 			auctioningTabGroup = { type = "table", default = { pathIndex = 1 }, lastModifiedVersion = 93 },
 		},
@@ -251,17 +263,20 @@ local SETTINGS_INFO = {
 		craftingUIContext = {
 			frame = { type = "table", default = { width = 820, height = 587, centerX = -200, centerY = 0, scale = 1, page = 1 }, lastModifiedVersion = 55 },
 			showDefault = { type = "boolean", default = false, lastModifiedVersion = 55 },
-			craftsScrollingTable = { type = "table", default = { colWidth = { queued = 30, craftName = 218, operation = 80, bags = 28, ah = 24, craftingCost = 100, itemValue = 100, profit = 100, profitPct = 50, saleRate = 32 }, colHidden = { profitPct = true } }, lastModifiedVersion = 86 },
-			matsScrollingTable = { type = "table", default = { colWidth = { name = 242, price = 100, professions = 310, num = 100 }, colHidden = {} }, lastModifiedVersion = 55 },
+			craftsScrollingTable = { type = "table", default = { colWidth = { queued = 30, craftName = 222, operation = 80, bags = 28, ah = 24, craftingCost = 100, itemValue = 100, profit = 100, profitPct = 50, saleRate = 32 }, colHidden = { profitPct = true } }, lastModifiedVersion = 117 },
+			matsScrollingTable = { type = "table", default = { colWidth = { name = 246, price = 100, professions = 310, num = 100 }, colHidden = {} }, lastModifiedVersion = 117 },
 			gatheringDividedContainer = { type = "table", default = { leftWidth = 284 }, lastModifiedVersion = 55 },
-			gatheringScrollingTable = { type = "table", default = { colWidth = { name = 206, sources = 160, have = 50, need = 50 }, colHidden = {} }, lastModifiedVersion = 55 },
+			gatheringScrollingTable = { type = "table", default = { colWidth = { name = 210, sources = 160, have = 50, need = 50 }, colHidden = {} }, lastModifiedVersion = 117 },
 			professionScrollingTable = { type = "table", default = { colWidth = { name = 310, qty = 54, craftingCost = 100, itemValue = 100, profit = 100, profitPct = 50, saleRate = 42 }, colHidden = { craftingCost = true, itemValue = true, profitPct = true }, collapsed = {} }, lastModifiedVersion = 112 },
 			professionDividedContainer = { type = "table", default = { leftWidth = 556 }, lastModifiedVersion = 111 },
-			professionDividedContainerBottom = { type = "table", default = { leftWidth = TSM.IsWowClassic() and 390 or 348 }, lastModifiedVersion = 113 },
+			professionDividedContainerBottom = { type = "table", default = { leftWidth = Environment.IsRetail() and 348 or 390 }, lastModifiedVersion = 113 },
 		},
 		destroyingUIContext = {
 			frame = { type = "table", default = { width = 296, height = 442, centerX = 0, centerY = 0, scale = 1 }, lastModifiedVersion = 55 },
 			itemsScrollingTable = { type = "table", default = { colWidth = { item = 214, num = 30 }, colHidden = {} }, lastModifiedVersion = 55 },
+		},
+		storyBoardUIContext = {
+			frame = { type = "table", default = { width = 800, height = 600, centerX = 0, centerY = 0, scale = 1 }, lastModifiedVersion = 117 },
 		},
 		mailingUIContext = {
 			frame = { type = "table", default = { width = 620, height = 516, centerX = -200, centerY = 0, scale = 1, page = 1 }, lastModifiedVersion = 55 },
@@ -303,6 +318,7 @@ local SETTINGS_INFO = {
 			minimapIcon = { type = "table", default = { hide = true, minimapPos = 220, radius = 80 }, lastModifiedVersion = 10 },
 			destroyValueSource = { type = "string", default = "dbmarket", lastModifiedVersion = 10 },
 			groupPriceSource = { type = "string", default = "dbmarket", lastModifiedVersion = 41 },
+			regionWide = { type = "boolean", default = false, lastModifiedVersion = 119 },
 		},
 		accountingOptions = {
 			trackTrades = { type = "boolean", default = true, lastModifiedVersion = 10 },
@@ -402,7 +418,7 @@ local SETTINGS_INFO = {
 			mailDisenchantablesChar = { type = "string", default = "", lastModifiedVersion = 49 },
 			mailExcessGoldChar = { type = "string", default = "", lastModifiedVersion = 49 },
 			mailExcessGoldLimit = { type = "number", default = 10000000000, lastModifiedVersion = 49 },
-			crafts = { type = "table", default = {}, lastModifiedVersion = 114 },
+			crafts = { type = "table", default = {}, lastModifiedVersion = 120 },
 			craftingQueue = { type = "table", default = {}, lastModifiedVersion = 101 },
 			mats = { type = "table", default = {}, lastModifiedVersion = 10 },
 			guildGoldLog = { type = "table", default = {}, lastModifiedVersion = 25 },
@@ -413,7 +429,7 @@ local SETTINGS_INFO = {
 			ignoreGuilds = { type = "table", default = {}, lastModifiedVersion = 10 },
 		},
 		auctioningOptions = {
-			whitelist = TSM.IsWowClassic() and { type = "table", default = {}, lastModifiedVersion = 10 } or nil,
+			whitelist = not Environment.IsRetail() and { type = "table", default = {}, lastModifiedVersion = 10 } or nil,
 		},
 		gatheringContext = {
 			crafter = { type = "string", default = "", lastModifiedVersion = 32 },
@@ -677,7 +693,7 @@ Settings:OnSettingsLoad(function()
 			end
 		end
 	end
-	if prevVersion < 105 and not TSM.IsWowClassic() then
+	if prevVersion < 105 and Environment.IsRetail() then
 		for _, key, value in upgradeObj:RemovedSettingIterator("factionrealm", nil, "userData", "craftingCooldownIgnore") do
 			if prevVersion < 99 then
 				local IGNORED_COOLDOWN_SEP = "\001"
@@ -711,23 +727,17 @@ Settings:OnSettingsLoad(function()
 			db:Set("global", upgradeObj:GetScopeKey(key), "tooltipOptions", "moduleTooltips", value)
 		end
 	end
-	if prevVersion < 114 then
-		if TSM.IsWowClassic() then
-			if prevVersion >= 105 then
-				for _, key, value in upgradeObj:RemovedSettingIterator("factionrealm", nil, "internalData", "crafts") do
-					db:Set("factionrealm", upgradeObj:GetScopeKey(key), "internalData", "crafts", value)
-				end
-			end
-		else
-			if prevVersion < 105 then
-				for _, key, value in upgradeObj:RemovedSettingIterator("factionrealm", nil, "internalData", "crafts") do
-					if prevVersion < 99 then
-						local newValue = {}
-						for spellId, data in pairs(value) do
-							newValue["c:"..spellId] = data
-						end
-						value = newValue
+	if prevVersion < 120 then
+		if Environment.IsRetail() then
+			for _, key, value in upgradeObj:RemovedSettingIterator("factionrealm", nil, "internalData", "crafts") do
+				if prevVersion < 99 then
+					local newValue = {}
+					for spellId, data in pairs(value) do
+						newValue["c:"..spellId] = data
 					end
+					value = newValue
+				end
+				if prevVersion < 114 then
 					for _, craft in pairs(value) do
 						if craft.mats then
 							for itemString in pairs(craft.mats) do
@@ -737,21 +747,18 @@ Settings:OnSettingsLoad(function()
 							end
 						end
 					end
-					db:Set("factionrealm", upgradeObj:GetScopeKey(key), "internalData", "crafts", value)
 				end
-			else
-				for _, key, value in upgradeObj:RemovedSettingIterator("factionrealm", nil, "internalData", "crafts") do
+				if prevVersion < 118 then
 					for _, craft in pairs(value) do
-						if craft.mats then
-							for itemString in pairs(craft.mats) do
-								if strmatch(itemString, "^o:") then
-									craft.mats[itemString] = 1
-								end
+						for _, info in pairs(craft.players) do
+							if type(info) == "table" and info.baseRecipeDifficulty then
+								info.inspirationAmount = 0
+								info.inspirationChance = 0
 							end
 						end
 					end
-					db:Set("factionrealm", upgradeObj:GetScopeKey(key), "internalData", "crafts", value)
 				end
+				db:Set("factionrealm", upgradeObj:GetScopeKey(key), "internalData", "crafts", value)
 			end
 		end
 	end
@@ -823,19 +830,18 @@ end
 
 function Settings.AccessibleCharacterIterator()
 	local result = TempTable.Acquire()
-	for realm in private.db:GetConnectedRealmIterator("realm") do
+	for realm, isConnected in private.db:GetConnectedRealmIterator("realm") do
 		for _, faction in ipairs(ACCESSIBLE_FACTIONS) do
 			local factionrealm = strjoin(SCOPE_KEY_SEP, faction, realm)
 			for scopeKey in pairs(private.context[private.db].db._syncOwner) do
 				local character = strmatch(scopeKey, "^(.+)"..String.Escape(SCOPE_KEY_SEP..factionrealm))
 				if character then
-					tinsert(result, factionrealm)
-					tinsert(result, character)
+					Table.InsertMultiple(result, factionrealm, character, isConnected)
 				end
 			end
 		end
 	end
-	return TempTable.Iterator(result, 2)
+	return TempTable.Iterator(result, 3)
 end
 
 function Settings.CharacterByFactionrealmIterator(factionrealm)
@@ -856,17 +862,15 @@ end
 
 function Settings.ConnectedFactionrealmAltCharacterIterator()
 	local result = TempTable.Acquire()
-	for factionrealm in private.db:GetConnectedRealmIterator("factionrealm") do
+	for factionrealm, isConnected in private.db:GetConnectedRealmIterator("factionrealm") do
 		for scopeKey in pairs(private.context[private.db].db._syncOwner) do
 			local character = strmatch(scopeKey, "^(.+)"..String.Escape(SCOPE_KEY_SEP..factionrealm))
 			if character and (factionrealm ~= SCOPE_KEYS.factionrealm or character ~= PLAYER) then
-				tinsert(result, factionrealm)
-				tinsert(result, character)
-				tinsert(result, character..SCOPE_KEY_SEP..factionrealm)
+				Table.InsertMultiple(result, factionrealm, character, character..SCOPE_KEY_SEP..factionrealm, isConnected)
 			end
 		end
 	end
-	return TempTable.Iterator(result, 3)
+	return TempTable.Iterator(result, 4)
 end
 
 function Settings.SyncAccountIterator()
@@ -921,8 +925,7 @@ function Settings.SyncSettingIterator()
 	local result = TempTable.Acquire()
 	for namespace, settings in pairs(private.context[private.db].settingsInfo.sync) do
 		for settingKey in pairs(settings) do
-			tinsert(result, namespace)
-			tinsert(result, settingKey)
+			Table.InsertMultiple(result, namespace, settingKey)
 		end
 	end
 	return TempTable.Iterator(result, 2)
@@ -1024,16 +1027,16 @@ function private.Constructor(name, rawSettingsInfo)
 		isValid = false
 	elseif not private.ValidateDB(db, minVersion) then
 		-- corrupted DB
-		assert(not TSM.IsDevVersion(), "DB is not valid!")
+		assert(not Environment.IsDev(), "DB is not valid!")
 		isValid = false
 	elseif db._version == version and db._hash ~= hash then
 		-- the hash didn't match
-		assert(not TSM.IsDevVersion(), "Invalid settings hash! Did you forget to increase the version?")
+		assert(not Environment.IsDev(), "Invalid settings hash! Did you forget to increase the version?")
 		isValid = false
 	elseif db._syncOwner and db._syncOwner[SCOPE_KEYS.sync] and db._syncOwner[SCOPE_KEYS.sync] ~= db._syncAccountKey[SCOPE_KEYS.factionrealm] then
 		-- we aren't the owner of this character, so wipe the DB and show a manual error
 		Settings.ShowSyncSVCopyError()
-		assert(not TSM.IsDevVersion(), "Settings are corrupted due to manual copying of saved variables file")
+		assert(not Environment.IsDev(), "Settings are corrupted due to manual copying of saved variables file")
 		isValid = false
 	end
 	if not isValid then
@@ -1112,7 +1115,7 @@ function private.Constructor(name, rawSettingsInfo)
 			if strsub(key, 1, 1) ~= "_" then
 				local scopeTypeShort, namespace, settingKey = strmatch(key, "^(.+)"..KEY_SEP..".+"..KEY_SEP.."(.+)"..KEY_SEP.."(.+)$")
 				local settingLastModifiedVersion = scopeTypeShort and db._lastModifiedVersion[strjoin(KEY_SEP, scopeTypeShort, namespace, settingKey)]
-				local scopeType = scopeTypeShort and private.ScopeReverseLookup(scopeTypeShort)
+				local scopeType = scopeTypeShort and SCOPE_TYPE_LOOKUP[scopeTypeShort]
 				local info = settingKey and settingsInfo[scopeType] and settingsInfo[scopeType][namespace] and settingsInfo[scopeType][namespace][settingKey]
 				if not info then
 					-- this setting was removed so remove it from the db
@@ -1226,7 +1229,7 @@ private.SettingsDBUpgradeObjMT = {
 			local parts = TempTable.Acquire(strsplit(KEY_SEP, key))
 			if #parts == 4 then
 				scopeType, scopeKey, namespace, settingKey = TempTable.UnpackAndRelease(parts)
-				scopeType = private.ScopeReverseLookup(scopeType)
+				scopeType = SCOPE_TYPE_LOOKUP[scopeType]
 			else
 				error("Unknown key: "..tostring(key))
 			end
@@ -1257,6 +1260,11 @@ private.SettingsDBUpgradeObjMT = {
 -- ============================================================================
 
 private.SettingsDBMethods = {
+	HasKey = function(self, scope, namespace, key)
+		local context = private.context[self]
+		return context.settingsInfo[scope][namespace][key] ~= nil
+	end,
+
 	Get = function(self, scope, scopeKey, namespace, key)
 		assert(SCOPE_TYPES[scope] and type(namespace) == "string" and type(key) == "string", "Invalid parameters!")
 		local context = private.context[self]
@@ -1302,16 +1310,8 @@ private.SettingsDBMethods = {
 		return private.context[self].currentScopeKeys.profile
 	end,
 
-	GetScopeKeys = function(self, scope)
-		return CopyTable(private.context[self].db._scopeKeys[scope])
-	end,
-
-	GetProfiles = function(self)
-		return self:GetScopeKeys("profile")
-	end,
-
-	ProfileIterator = function(self)
-		return ipairs(private.context[self].db._scopeKeys.profile)
+	ScopeKeyIterator = function(self, scope)
+		return ipairs(private.context[self].db._scopeKeys[scope])
 	end,
 
 	SetProfile = function(self, profileName, noCallback)
@@ -1542,7 +1542,7 @@ local VIEW_METHODS = {} ---@class SettingsView
 function VIEW_METHODS:AddKey(scopeType, namespace, key)
 	assert(scopeType and namespace and key)
 	local viewInfo = private.views[self]
-	assert(viewInfo and not viewInfo.scopeLookup[key])
+	assert(viewInfo and not viewInfo.scopeLookup[key] and viewInfo.settingsDB:HasKey(scopeType, namespace, key))
 	viewInfo.scopeLookup[key] = scopeType
 	viewInfo.namespaceLookup[key] = namespace
 	return self
@@ -1586,38 +1586,44 @@ end
 function VIEW_METHODS:AccessibleValueIterator(key)
 	local viewInfo = private.views[self]
 	local scopeType = viewInfo.scopeLookup[key]
+	local namespace = viewInfo.namespaceLookup[key]
 	local result = TempTable.Acquire()
-	for realm in viewInfo.settingsDB:GetConnectedRealmIterator("realm") do
-		for _, faction in ipairs(ACCESSIBLE_FACTIONS) do
-			local factionrealm = strjoin(SCOPE_KEY_SEP, faction, realm)
-			if scopeType == "sync" then
-				for scopeKey in pairs(private.context[viewInfo.settingsDB].db._syncOwner) do
-					local character = strmatch(scopeKey, "^(.+)"..String.Escape(SCOPE_KEY_SEP..factionrealm))
-					if character then
-						local value = viewInfo.settingsDB:Get(viewInfo.scopeLookup[key], scopeKey, viewInfo.namespaceLookup[key], key)
-						if value ~= nil then
-							tinsert(result, value)
-							tinsert(result, character)
-							tinsert(result, factionrealm)
-							tinsert(result, scopeKey)
+	for realm, isConnected in viewInfo.settingsDB:GetConnectedRealmIterator("realm") do
+		if scopeType == "realm" then
+			local value = viewInfo.settingsDB:Get(scopeType, realm, namespace, key)
+			if value ~= nil then
+				Table.InsertMultiple(result, value, realm, isConnected)
+			end
+		else
+			for _, faction in ipairs(ACCESSIBLE_FACTIONS) do
+				local factionrealm = strjoin(SCOPE_KEY_SEP, faction, realm)
+				if scopeType == "sync" then
+					for scopeKey in pairs(private.context[viewInfo.settingsDB].db._syncOwner) do
+						local character = strmatch(scopeKey, "^(.+)"..String.Escape(SCOPE_KEY_SEP..factionrealm))
+						if character then
+							local value = viewInfo.settingsDB:Get(scopeType, scopeKey, namespace, key)
+							if value ~= nil then
+								Table.InsertMultiple(result, value, character, factionrealm, scopeKey, isConnected)
+							end
 						end
 					end
+				elseif scopeType == "factionrealm" then
+					local value = viewInfo.settingsDB:Get(scopeType, factionrealm, namespace, key)
+					if value ~= nil then
+						Table.InsertMultiple(result, value, factionrealm, isConnected)
+					end
+				else
+					error("Invalid scopeType: "..tostring(scopeType))
 				end
-			elseif scopeType == "factionrealm" then
-				local value = viewInfo.settingsDB:Get(viewInfo.scopeLookup[key], factionrealm, viewInfo.namespaceLookup[key], key)
-				if value ~= nil then
-					tinsert(result, value)
-					tinsert(result, factionrealm)
-				end
-			else
-				error("Invalid scopeType: "..tostring(scopeType))
 			end
 		end
 	end
 	if scopeType == "sync" then
-		return TempTable.Iterator(result, 4)
+		return TempTable.Iterator(result, 5)
 	elseif scopeType == "factionrealm" then
-		return TempTable.Iterator(result, 2)
+		return TempTable.Iterator(result, 3)
+	elseif scopeType == "realm" then
+		return TempTable.Iterator(result, 3)
 	else
 		error("Invalid scopeType: "..tostring(scopeType))
 	end
@@ -1634,9 +1640,14 @@ function VIEW_METHODS:GetForScopeKey(key, ...)
 	if scopeType == "sync" then
 		assert(select("#", ...) == 2)
 		scopeKey = viewInfo.settingsDB:GetSyncScopeKeyByCharacter(...)
-	else
+	elseif scopeType == "factionrealm" then
 		assert(select("#", ...) == 1)
 		scopeKey = ...
+	elseif scopeType == "realm" then
+		assert(select("#", ...) == 1)
+		scopeKey = ...
+	else
+		error("Invalid scopeType: "..tostring(scopeType))
 	end
 	return viewInfo.settingsDB:Get(viewInfo.scopeLookup[key], scopeKey, viewInfo.namespaceLookup[key], key)
 end
@@ -1712,7 +1723,7 @@ function private.SetDBKeyValue(db, key, value)
 	if not settingKey then
 		return
 	end
-	scopeType = private.ScopeReverseLookup(scopeType)
+	scopeType = SCOPE_TYPE_LOOKUP[scopeType]
 	for view, viewInfo in pairs(private.views) do
 		if viewInfo.scopeLookup[settingKey] == scopeType and viewInfo.namespaceLookup[settingKey] == namespace then
 			if viewInfo.callbacks[settingKey] then
@@ -1730,14 +1741,6 @@ function private.CopyData(data)
 		return CopyTable(data)
 	elseif VALID_TYPES[type(data)] or type(data) == nil then
 		return data
-	end
-end
-
-function private.ScopeReverseLookup(scopeTypeShort)
-	for key, value in pairs(SCOPE_TYPES) do
-		if value == scopeTypeShort then
-			return key
-		end
 	end
 end
 
@@ -1771,7 +1774,7 @@ function private.SetScopeDefaults(db, settingsInfo, searchPattern)
 	end
 
 	local scopeTypeShort = strsub(searchPattern, 1, 1)
-	local scopeType = private.ScopeReverseLookup(scopeTypeShort)
+	local scopeType = SCOPE_TYPE_LOOKUP[scopeTypeShort]
 	assert(scopeType, "Couldn't find scopeType: "..tostring(scopeTypeShort))
 	local scopeKeys = nil
 	if scopeTypeShort == SCOPE_TYPES.global then
@@ -1798,13 +1801,20 @@ end
 function private.ConnectedRealmIterator(self, prevScopeKey)
 	if not private.cachedConnectedRealms then
 		local connectedRealms = {}
-		if not TSM.IsWowClassic() then
+		if Environment.HasFeature(Environment.FEATURES.REGION_WIDE_TRADING) then
+			for _, realm in self:ScopeKeyIterator("realm") do
+				if realm ~= REALM then
+					tinsert(connectedRealms, realm)
+				end
+			end
 			local realmId, _, _, _, _, _, _, _, connectedRealmIds = LibRealmInfo:GetRealmInfo(REALM)
 			if connectedRealmIds then
 				for _, id in ipairs(connectedRealmIds) do
 					if id ~= realmId then
 						local _, connectedRealmName = LibRealmInfo:GetRealmInfoByID(id)
-						tinsert(connectedRealms, connectedRealmName)
+						if connectedRealmName then
+							connectedRealms[connectedRealmName] = true
+						end
 					end
 				end
 			end
@@ -1829,7 +1839,7 @@ function private.ConnectedRealmIterator(self, prevScopeKey)
 		if scopeKey == prevScopeKey then
 			foundPrev = true
 		elseif foundPrev and tContains(private.context[self].db._scopeKeys[scope], scopeKey) then
-			return scopeKey
+			return scopeKey, realm == SCOPE_KEYS.realm or private.cachedConnectedRealms[realm] or false
 		end
 	end
 end

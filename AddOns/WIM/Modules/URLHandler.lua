@@ -21,39 +21,29 @@ local URL = CreateModule("URLHandler", true);
 
 armoryLinks = {
     {
-        title = "WoW Armory",
-        --https://worldofwarcraft.com/en-us/character/stormrage/Omegall
-        url = "https://worldofwarcraft.com/{armeu/armus}/character/{realm-}/{user}"
-    },
-    {
-				title = "Wowhead Profiler",
-				url = "http://www.wowhead.com/profile={eu/us}.{realm-}.{user}",
+		title = "Wowhead Profiler",
+		url = "http://www.wowhead.com/profile={eu/us}.{realm-}.{user}",
     },
     {
         title = "WoWProgress",
         url = "http://www.wowprogress.com/character/{eu/us}/{realm}/{user}"
-    },
-    {
-        title = "AskMrRobot",
-        --url = "http://www.askmrrobot.com/wow/player/{eu/us}/{realm}/{user}"
-				url = "https://www.askmrrobot.com/optimizer#{eu/us}/{realm}/{user}"
-    },
-    {
-        title = "Warcraftlogs",
-        url = "https://www.warcraftlogs.com/character/{eu/us}/{realm}/{user}"
     },
 		{
         title = "Raider io",
         url = "https://raider.io/characters/{eu/us}/{realm}/{user}"
     },
     {
-        title = "WoWTrack",
-        url = "https://wowtrack.org/characters/{eu/us}/{realm}/{user}"
+        title = "Warcraft Logs",
+        url = "https://www.warcraftlogs.com/character/{eu/us}/{realm}/{user}"
     },
-		{
-				title = "Character Name",
-				url = "{user}"
-		}
+    {
+        title = "Warcraft Logs Vanilla",
+        url = "https://vanilla.warcraftlogs.com/character/{eu/us}/{realm}/{user}"
+    },
+	{
+		title = "Warcraft Logs Season of Mastery",
+		url = "https://sod.warcraftlogs.com/character/{eu/us}/{realm}/{user}"
+	}
 };
 
 -- patterns created by Sylvanaar & used in Prat
@@ -143,7 +133,7 @@ local function convertURLtoLinks(text)
 	theMsg = decodeURI(theMsg)
 	theMsg = encodeColors(theMsg);
 	repeat
-		theMsg, results = string.gsub(theMsg, "(|H[^|]+|h[^|]+|h)", function(theLink)
+		theMsg, results = string.gsub(theMsg, "(|H[^|]+|h.-|h)", function(theLink)
 			table.insert(LinkRepository, theLink);
 			return "\001\004"..#LinkRepository;
 		end, 1);
@@ -258,7 +248,8 @@ local function MENU_ARMORY_CLICKED(self)
     local link = self.value;
     link = link:gsub("{eu/www}", eu_www);
 	realm = string.gsub(realm, "'", "")
-    link = link:gsub("{realm}", realm);
+    --link = link:gsub("{realm}", realm);
+    link = link:gsub("{realm}", (string.gsub(realm,"  ","-")));
     link = link:gsub("{realm%-}", (string.gsub(realm," ","-")));
     link = link:gsub("{user}", user);
     link = link:gsub("{eu/us}", eu_us);

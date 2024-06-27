@@ -19,7 +19,7 @@ local sIsAnyAutoFireConfigured;
 local _;
 
 CreateFrame("Button", "VDSTB", nil, "SecureActionButtonTemplate"):SetAttribute("type", "stop"); -- Calls SpellStopTargeting
-local sStopTargetText = "/click VDSTB\n";
+local sStopTargetText = "/click VDSTB LeftButton\n";
 
 
 function VUHDO_macroFactoryInitLocalOverrides()
@@ -100,12 +100,15 @@ local function VUHDO_getFireText(anAction)
 	if VUHDO_isFireSomething(anAction) then
 		if not sFireText then
 			sFireText = "";
+
+			-- FIXME: Patch 10.0.0 is causing game stutters when console commands are run
 			if VUHDO_IS_SFX_ENABLED then
-				sFireText = sFireText .. "/console Sound_EnableSFX 0\n";
+				--sFireText = sFireText .. "/console Sound_EnableSFX 0\n";
 			end
 
+			-- FIXME: Patch 10.0.0 is causing game stutters when console commands are run
 			if VUHDO_IS_SOUND_ERRORSPEECH_ENABLED then
-				sFireText = sFireText .. "/console Sound_EnableErrorSpeech 0\n";
+				--sFireText = sFireText .. "/console Sound_EnableErrorSpeech 0\n";
 			end
 
 			tModi = VUHDO_SPELL_CONFIG["IS_FIRE_OUT_FIGHT"] and " " or " [combat] ";
@@ -128,12 +131,14 @@ local function VUHDO_getFireText(anAction)
 			sFireText = sFireText .. VUHDO_getInstantFireText(2);
 
 			-- Ton wieder an
+			-- FIXME: Patch 10.0.0 is causing game stutters when console commands are run
 			if VUHDO_IS_SOUND_ERRORSPEECH_ENABLED then
-				sFireText = sFireText .. "/console Sound_EnableErrorSpeech 1\n";
+				--sFireText = sFireText .. "/console Sound_EnableErrorSpeech 1\n";
 			end
 
+			-- FIXME: Patch 10.0.0 is causing game stutters when console commands are run
 			if VUHDO_IS_SFX_ENABLED then
-				sFireText = sFireText .. "/console Sound_EnableSFX 1\n";
+				--sFireText = sFireText .. "/console Sound_EnableSFX 1\n";
 			end
 
 			sFireText = sFireText .. "/run UIErrorsFrame:Clear()\n";
@@ -298,7 +303,7 @@ end
 
 --
 function VUHDO_buildExtraActionButtonMacroText(aTarget)
-	return "/tar [@" .. aTarget .. "]\n/click ExtraActionButton1\n/targetlasttarget";
+	return "/tar [@" .. aTarget .. "]\n/click ExtraActionButton1 LeftButton\n/targetlasttarget";
 end
 
 
@@ -312,6 +317,7 @@ end
 
 local VUHDO_PROHIBIT_HELP = {
 	[VUHDO_SPELL_ID.REBIRTH] = true,
+	[VUHDO_SPELL_ID.INTERCESSION] = true,
 	[VUHDO_SPELL_ID.REDEMPTION] = true,
 	[VUHDO_SPELL_ID.ABSOLUTION] = true,
 	[VUHDO_SPELL_ID.ANCESTRAL_SPIRIT] = true,
@@ -323,6 +329,8 @@ local VUHDO_PROHIBIT_HELP = {
 	[VUHDO_SPELL_ID.RESUSCITATE] = true,
 	[VUHDO_SPELL_ID.REAWAKEN] = true,
 	[VUHDO_SPELL_ID.RAISE_ALLY] = true,
+	[VUHDO_SPELL_ID.RETURN] = true,
+	[VUHDO_SPELL_ID.MASS_RETURN] = true,
 }
 
 
@@ -333,15 +341,18 @@ local function VUHDO_getAutoBattleRezText(anIsKeyboard)
 
 	if ("DRUID" == VUHDO_PLAYER_CLASS or "PALADIN" == VUHDO_PLAYER_CLASS) and VUHDO_SPELL_CONFIG["autoBattleRez"] then
 		tRezText = "/use [dead,combat,@" .. (anIsKeyboard and "mouseover" or "vuhdo");
+		
 		if VUHDO_SPELL_CONFIG["smartCastModi"] ~= "all" then
 			tRezText = tRezText .. ",mod:" .. VUHDO_SPELL_CONFIG["smartCastModi"];
 		end
+
 		tRezText = tRezText .. "] " .. VUHDO_SPELL_ID.REBIRTH .. "\n";
 	else
 		tRezText = "";
 	end
 
 	return tRezText;
+
 end
 
 
@@ -383,7 +394,7 @@ local function VUHDO_generateRaidMacroTemplate(anAction, anIsKeyboard, aTarget, 
 		tText = tText .. tCastText .. "[" .. tModiSpell .. "@mouseover] " .. anAction .. "\n";
 		tText = tText .. tSpellPost;
 	else
-		if aPet and VUHDO_SPELL_ID.REBIRTH ~= anAction then
+		if aPet and VUHDO_SPELL_ID.REBIRTH ~= anAction and VUHDO_SPELL_ID.INTERCESSION ~= anAction then
 			tVehicleCond = "[nodead,help,@vdpet]";
 		else
 			tVehicleCond = "";

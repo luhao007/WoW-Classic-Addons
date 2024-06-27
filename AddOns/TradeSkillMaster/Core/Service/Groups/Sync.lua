@@ -4,7 +4,7 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local GroupsSync = TSM.Groups:NewPackage("Sync")
 local L = TSM.Include("Locale").GetTable()
 local TempTable = TSM.Include("Util.TempTable")
@@ -84,7 +84,7 @@ function private.RPCCreateProfile(profileName, playerName, data)
 	return true, profileName, UnitName("player")
 end
 
-function private.RPCCreateProfileResultHandler(success, ...)
+function private.RPCCreateProfileResultHandler(_, _, success, ...)
 	if success == nil then
 		Log.PrintUser(L["Failed to send profile."].." "..L["Ensure both characters are online and try again."])
 		return

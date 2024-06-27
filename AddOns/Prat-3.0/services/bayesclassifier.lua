@@ -44,9 +44,9 @@ setfenv(1, select(2, ...))
 
 --[[ END STANDARD HEADER ]] --
 local dbg = function() end
---[===[@debug@
+--[==[@debug@
 --dbg = function(...) PrintLiteral(nil, ...) end
---@end-debug@]===]
+--@end-debug@]==]
 
 
 

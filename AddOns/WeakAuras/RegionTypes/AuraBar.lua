@@ -42,19 +42,19 @@ local default = {
   zoom = 0
 };
 
-WeakAuras.regionPrototype.AddAdjustedDurationToDefault(default);
-WeakAuras.regionPrototype.AddAlphaToDefault(default);
+Private.regionPrototype.AddAdjustedDurationToDefault(default);
+Private.regionPrototype.AddAlphaToDefault(default);
 
 local screenWidth, screenHeight = math.ceil(GetScreenWidth() / 20) * 20, math.ceil(GetScreenHeight() / 20) * 20;
 
 local properties = {
   barColor = {
-    display = L["Bar Color"],
+    display = L["Bar Color/Gradient Start"],
     setter = "Color",
     type = "color",
   },
   barColor2 = {
-    display = L["Gradient Color"],
+    display = L["Gradient End"],
     setter = "SetBarColor2",
     type = "color",
   },
@@ -152,7 +152,7 @@ local properties = {
   },
 };
 
-WeakAuras.regionPrototype.AddProperties(properties, default);
+Private.regionPrototype.AddProperties(properties, default);
 
 local function GetProperties(data)
   local overlayInfo = Private.GetOverlayInfo(data);
@@ -297,10 +297,22 @@ local barPrototype = {
     -- Create statusbar illusion
     if (self.horizontal) then
       local xProgress = self:GetRealSize() * progress;
-      self.fgMask:SetWidth(xProgress > 0.0001 and (xProgress + 0.1) or 0.0001);
+      local show = xProgress > 0.0001
+      self.fgMask:SetWidth(show and (xProgress + 0.1) or 0.1);
+      if show then
+        self.fg:Show()
+      else
+        self.fg:Hide()
+      end
     else
       local yProgress = select(2, self:GetRealSize()) * progress;
-      self.fgMask:SetHeight(yProgress > 0.0001 and (yProgress + 0.1) or 0.0001);
+      local show = yProgress > 0.0001
+      self.fgMask:SetHeight(show and (yProgress + 0.1) or 0.1);
+      if show then
+        self.fg:Show()
+      else
+        self.fg:Hide()
+      end
     end
 
     local sparkHidden = self.spark.sparkHidden;
@@ -951,7 +963,7 @@ local funcs = {
     end
 
     iconPath = iconPath or self.displayIcon or "Interface\\Icons\\INV_Misc_QuestionMark"
-    WeakAuras.SetTextureOrAtlas(self.icon, iconPath)
+    Private.SetTextureOrAtlas(self.icon, iconPath)
   end,
   SetOverlayColor = function(self, id, r, g, b, a)
     self.bar:SetAdditionalBarColor(id, { r, g, b, a});
@@ -1051,6 +1063,7 @@ local funcs = {
 local function create(parent)
   -- Create overall region (containing everything else)
   local region = CreateFrame("Frame", nil, parent);
+  --- @cast region table|Frame
   region.regionType = "aurabar"
   region:SetMovable(true);
   region:SetResizable(true);
@@ -1061,7 +1074,8 @@ local function create(parent)
   end
 
   local bar = CreateFrame("Frame", nil, region);
-  Mixin(bar, SmoothStatusBarMixin);
+  --- @cast bar table|Frame
+  Mixin(bar, Private.SmoothStatusBarMixin);
 
   -- Now create a bunch of textures
   local bg = region:CreateTexture(nil, "ARTWORK");
@@ -1117,7 +1131,7 @@ local function create(parent)
     end
   end
 
-  WeakAuras.regionPrototype.create(region);
+  Private.regionPrototype.create(region);
 
   for k, f in pairs(funcs) do
     region[k] = f
@@ -1141,7 +1155,7 @@ local function modify(parent, region, data)
   region.text = nil
   region.stacks = nil
 
-  WeakAuras.regionPrototype.modify(parent, region, data);
+  Private.regionPrototype.modify(parent, region, data);
   -- Localize
   local bar, iconFrame, icon = region.bar, region.iconFrame, region.icon;
 
@@ -1190,7 +1204,7 @@ local function modify(parent, region, data)
   bar:SetStatusBarTexture(texturePath);
   bar:SetBackgroundColor(data.backgroundColor[1], data.backgroundColor[2], data.backgroundColor[3], data.backgroundColor[4]);
   -- Update spark settings
-  WeakAuras.SetTextureOrAtlas(bar.spark, data.sparkTexture);
+  Private.SetTextureOrAtlas(bar.spark, data.sparkTexture);
   bar.spark:SetVertexColor(data.sparkColor[1], data.sparkColor[2], data.sparkColor[3], data.sparkColor[4]);
   bar.spark:SetWidth(data.sparkWidth);
   bar.spark:SetHeight(data.sparkHeight);
@@ -1296,6 +1310,7 @@ local function modify(parent, region, data)
     return region.currentMin or 0, region.currentMax or 0
   end
 
+  region.TimerTick = nil
   function region:Update()
     local state = region.state
     region:UpdateMinMax()
@@ -1307,7 +1322,7 @@ local function modify(parent, region, data)
         end
         if region.TimerTick then
           region.TimerTick = nil
-          region:UpdateRegionHasTimerTick()
+          region.subRegionEvents:RemoveSubscriber("TimerTick", self)
         end
         expirationTime = GetTime() + (state.remaining or 0)
       else
@@ -1316,7 +1331,7 @@ local function modify(parent, region, data)
         end
         if not region.TimerTick then
           region.TimerTick = TimerTick
-          region:UpdateRegionHasTimerTick()
+          region.subRegionEvents:AddSubscriber("TimerTick", self, true)
         end
         expirationTime = state.expirationTime and state.expirationTime > 0 and state.expirationTime or math.huge;
       end
@@ -1333,7 +1348,7 @@ local function modify(parent, region, data)
       region:SetValue(value - region.currentMin, region.currentMax - region.currentMin);
       if region.TimerTick then
         region.TimerTick = nil
-        region:UpdateRegionHasTimerTick()
+        region.subRegionEvents:RemoveSubscriber("TimerTick", region)
       end
     else
       if region.paused then
@@ -1342,7 +1357,7 @@ local function modify(parent, region, data)
       region:SetTime(0, math.huge)
       if region.TimerTick then
         region.TimerTick = nil
-        region:UpdateRegionHasTimerTick()
+        region.subRegionEvents:RemoveSubscriber("TimerTick", region)
       end
     end
 
@@ -1404,7 +1419,7 @@ local function modify(parent, region, data)
   --- Update internal bar alignment
   region.bar:Update();
 
-  WeakAuras.regionPrototype.modifyFinish(parent, region, data);
+  Private.regionPrototype.modifyFinish(parent, region, data);
 end
 
 local function validate(data)
@@ -1421,4 +1436,4 @@ local function validate(data)
 end
 
 -- Register new region type with WeakAuras
-WeakAuras.RegisterRegionType("aurabar", create, modify, default, GetProperties, validate);
+Private.RegisterRegionType("aurabar", create, modify, default, GetProperties, validate);

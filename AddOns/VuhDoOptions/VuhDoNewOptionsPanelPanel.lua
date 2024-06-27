@@ -18,6 +18,31 @@ end
 
 
 --
+local function VUHDO_refreshAllModelsForPanel(aPanel, aRefreshModels)
+
+	if not aPanel or not aRefreshModels then
+		return;
+	end
+
+	local tSubPanels = { aPanel:GetChildren() };
+
+	for _, tSubPanel in pairs(tSubPanels) do
+		if (tSubPanel:IsObjectType("Frame")) then
+			local tModel = tSubPanel:GetAttribute("model");
+
+			if (tModel ~= nil) then
+				aRefreshModels[tModel] = true;
+			end
+
+			VUHDO_refreshAllModelsForPanel(tSubPanel, aRefreshModels);
+		end
+	end
+
+end
+
+
+
+--
 local tActivePanel;
 local tRefreshModels;
 local tContentPane;
@@ -44,28 +69,7 @@ function VUHDO_newOptionsApplyToAllOnClick()
 		return;
 	end
 
-	tSubPanels = { tActivePanel:GetChildren() };
-
-	for _, tAktSub in pairs(tSubPanels)	do
-		if (tAktSub:IsObjectType("Frame")) then
-			tSubComps =  { tAktSub:GetChildren() };
-			for _, tAktComp in pairs(tSubComps) do
-				tModel = tAktComp:GetAttribute("model");
-				if (tModel ~= nil) then
-					tRefreshModels[tModel] = true;
-				end
-
-				tSubSubComps = { tAktComp:GetChildren() };
-				for _, tAktSubComp in pairs(tSubSubComps) do
-					tSubModel = tAktSubComp:GetAttribute("model");
-					if (tSubModel ~= nil) then
-						tRefreshModels[tSubModel] = true;
-					end
-				end
-
-			end
-		end
-	end
+	VUHDO_refreshAllModelsForPanel(tActivePanel, tRefreshModels);
 
 	if (tActivePanel:GetName() == "VuhDoNewOptionsPanelTooltip") then
 		tRefreshModels["VUHDO_PANEL_SETUP.#PNUM#.TOOLTIP.x"] = true;

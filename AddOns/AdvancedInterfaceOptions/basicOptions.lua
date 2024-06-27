@@ -8,12 +8,10 @@ local SetCVar = function(...) -- Suppress errors trying to set read-only cvars
 	return status
 end
 
+local GetCVarInfo = addon.GetCVarInfo
+
 local function IsClassic()
     return WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
-end
-
-local function IsBCC()
-  return WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC
 end
 
 local function IsRetail()

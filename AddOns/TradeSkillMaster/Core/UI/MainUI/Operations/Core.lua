@@ -6,12 +6,14 @@
 
 local TSM = select(2, ...) ---@type TSM
 local Operations = TSM.MainUI:NewPackage("Operations")
+local Environment = TSM.Include("Environment")
 local L = TSM.Include("Locale").GetTable()
 local Log = TSM.Include("Util.Log")
 local Theme = TSM.Include("Util.Theme")
 local TextureAtlas = TSM.Include("Util.TextureAtlas")
 local Money = TSM.Include("Util.Money")
 local TempTable = TSM.Include("Util.TempTable")
+local GroupPath = TSM.Include("Util.GroupPath")
 local Settings = TSM.Include("Service.Settings")
 local CustomPrice = TSM.Include("Service.CustomPrice")
 local UIElements = TSM.Include("UI.UIElements")
@@ -24,6 +26,7 @@ local private = {
 	currentModule = nil,
 	currentOperationName = nil,
 	playerList = {},
+	factionrealmList = {},
 	linkMenuEntries = {},
 }
 local DEFAULT_PRICE_INPUT_VALIDATE_CONTEXT = {}
@@ -53,8 +56,10 @@ end
 
 function Operations.GetOperationManagementElements(moduleName, operationName)
 	local operation = TSM.Operations.GetSettings(private.currentModule, private.currentOperationName)
+	wipe(private.factionrealmList)
 	wipe(private.playerList)
-	for factionrealm in TSM.db:GetConnectedRealmIterator("factionrealm") do
+	for _, factionrealm in TSM.db:ScopeKeyIterator("factionrealm") do
+		tinsert(private.factionrealmList, factionrealm)
 		for _, character in TSM.db:FactionrealmCharacterIterator(factionrealm) do
 			tinsert(private.playerList, character.." - "..factionrealm)
 		end
@@ -68,7 +73,7 @@ function Operations.GetOperationManagementElements(moduleName, operationName)
 				:SetMargin(0, 0, 0, 12)
 				:AddChild(UIElements.New("MultiselectionDropdown", "dropdown")
 					:SetHeight(24)
-					:SetItems(TSM.db:GetScopeKeys("factionrealm"), TSM.db:GetScopeKeys("factionrealm"))
+					:SetItems(private.factionrealmList, private.factionrealmList)
 					:SetSelectionText(L["No Faction-Realms"], L["%d Faction-Realms"], L["All Faction-Realms"])
 					:SetSettingInfo(operation, "ignoreFactionrealm")
 					:SetScript("OnSelectionChanged", TSM.Groups.RebuildDB)
@@ -360,7 +365,7 @@ function private.GetSummaryContent()
 			:SetLayout("HORIZONTAL")
 			:SetHeight(48)
 			:SetMargin(8, 8, 0, 16)
-			:SetBackgroundColor("PRIMARY_BG_ALT", true)
+			:SetRoundedBackgroundColor("PRIMARY_BG_ALT")
 			:AddChild(UIElements.New("Frame", "groups")
 				:SetLayout("VERTICAL")
 				:SetPadding(8, 8, 2, 2)
@@ -518,7 +523,7 @@ function private.AddOperationGroups(frame)
 end
 
 function private.CreateGroupOperationLine(groupPath)
-	local groupName = groupPath == TSM.CONST.ROOT_GROUP_PATH and L["Base Group"] or TSM.Groups.Path.GetName(groupPath)
+	local groupName = groupPath == TSM.CONST.ROOT_GROUP_PATH and L["Base Group"] or GroupPath.GetName(groupPath)
 	local level = select('#', strsplit(TSM.CONST.GROUP_SEP, groupPath))
 	return UIElements.New("Frame", "group")
 		:SetLayout("HORIZONTAL")
@@ -705,10 +710,10 @@ function private.GroupSelectionChanged(groupSelector)
 			if numOperations == TSM.Operations.GetMaxNumber(private.currentModule) then
 				-- replace the last operation since we're already at the max number of operations
 				TSM.Groups.RemoveOperation(groupPath, private.currentModule, numOperations, true)
-				Log.PrintfUser(L["%s previously had the max number of operations, so removed %s."], Log.ColorUserAccentText(TSM.Groups.Path.Format(groupPath)), Log.ColorUserAccentText(lastOperationName))
+				Log.PrintfUser(L["%s previously had the max number of operations, so removed %s."], Log.ColorUserAccentText(GroupPath.Format(groupPath)), Log.ColorUserAccentText(lastOperationName))
 			end
 			TSM.Groups.AppendOperation(groupPath, private.currentModule, private.currentOperationName, true)
-			Log.PrintfUser(L["Added %s to %s."], Log.ColorUserAccentText(private.currentOperationName), Log.ColorUserAccentText(groupPath == TSM.CONST.ROOT_GROUP_PATH and L["Base Group"] or TSM.Groups.Path.Format(groupPath)))
+			Log.PrintfUser(L["Added %s to %s."], Log.ColorUserAccentText(private.currentOperationName), Log.ColorUserAccentText(groupPath == TSM.CONST.ROOT_GROUP_PATH and L["Base Group"] or GroupPath.Format(groupPath)))
 			parentElement:AddChild(private.CreateGroupOperationLine(groupPath))
 		end
 	end
@@ -909,7 +914,7 @@ function private.DefaultValidateFunction(_, value, badSources)
 end
 
 function private.UndercutValidateFunction(_, value, badSources)
-	if not TSM.IsWowClassic() then
+	if Environment.IsRetail() then
 		if Money.FromString(Money.ToString(value) or value) == 0 then
 			return true
 		elseif (Money.FromString(Money.ToString(value) or value) or math.huge) < COPPER_PER_SILVER then

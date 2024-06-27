@@ -13,7 +13,7 @@ local private = {
 	frameNumber = 0,
 	frame = nil,
 }
-local CALLBACK_TIME_WARNING_THRESHOLD_MS = 20
+local CALLBACK_TIME_WARNING_THRESHOLD = 0.05
 local MIN_TIME_DURATION = 0.0001
 local MIN_FRAMES = 1
 
@@ -96,11 +96,11 @@ function DelayTimer:_CheckIfDone()
 		self._endTime = nil
 		self._endFrame = nil
 		private.activeTimers[self] = nil
-		local startTime = debugprofilestop()
+		local startTime = GetTimePreciseSec()
 		self._callback()
-		local timeTaken = debugprofilestop() - startTime
-		if timeTaken > CALLBACK_TIME_WARNING_THRESHOLD_MS then
-			Log.Warn("Delay callback (%s) took %0.2fms", self._name, timeTaken)
+		local timeTaken = GetTimePreciseSec() - startTime
+		if timeTaken > CALLBACK_TIME_WARNING_THRESHOLD then
+			Log.Warn("Delay callback (%s) took %0.5fs", self._name, timeTaken)
 		end
 		return true
 	end

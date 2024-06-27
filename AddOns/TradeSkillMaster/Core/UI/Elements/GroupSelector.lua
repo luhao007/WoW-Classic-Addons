@@ -9,12 +9,13 @@
 -- filtering. It is a subclass of the @{Element} class.
 -- @classmod GroupSelector
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local L = TSM.Include("Locale").GetTable()
 local Table = TSM.Include("Util.Table")
 local Analytics = TSM.Include("Util.Analytics")
 local Theme = TSM.Include("Util.Theme")
 local TextureAtlas = TSM.Include("Util.TextureAtlas")
+local GroupPath = TSM.Include("Util.GroupPath")
 local Rectangle = TSM.Include("UI.Rectangle")
 local ScriptWrapper = TSM.Include("Util.ScriptWrapper")
 local UIElements = TSM.Include("UI.UIElements")
@@ -184,7 +185,7 @@ function GroupSelector.Draw(self)
 	local frame = self:_GetBaseFrame()
 
 	local numGroups = Table.Count(self._groupTreeContext.selected)
-	frame.text:SetText(numGroups == 0 and self._hintText or (self._singleSelection and TSM.Groups.Path.Format(next(self._groupTreeContext.selected)) or format(self._selectedText, numGroups)))
+	frame.text:SetText(numGroups == 0 and self._hintText or (self._singleSelection and GroupPath.Format(next(self._groupTreeContext.selected)) or format(self._selectedText, numGroups)))
 
 	TextureAtlas.SetTextureAndSize(frame.icon, numGroups == 0 and "iconPack.18x18/Add/Default" or "iconPack.18x18/Close/Default")
 
@@ -217,12 +218,12 @@ end
 -- ============================================================================
 
 function private.OnClick(self)
-	self:GetBaseElement():ShowDialogFrame(UIElements.New("Frame", "frame", "DIALOG")
+	self:GetBaseElement():ShowDialogFrame(UIElements.New("Frame", "frame")
 		:SetLayout("VERTICAL")
 		:SetSize(464, 500)
 		:SetPadding(8)
 		:AddAnchor("CENTER")
-		:SetBackgroundColor("FRAME_BG", true)
+		:SetRoundedBackgroundColor("FRAME_BG")
 		:SetMouseEnabled(true)
 		:AddChild(UIElements.New("Frame", "header")
 			:SetLayout("HORIZONTAL")

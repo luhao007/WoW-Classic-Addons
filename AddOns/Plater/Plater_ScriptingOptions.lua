@@ -1,5 +1,5 @@
 
-
+local addonId, platerInternal = ...
 local Plater = _G.Plater
 local GameCooltip = GameCooltip2
 local DF = DetailsFramework
@@ -9,6 +9,8 @@ local tremove = _G.tremove
 local CreateFrame = _G.CreateFrame
 local tinsert = _G.tinsert
 
+--localization
+local LOC = DF.Language.GetLanguageTable(addonId)
 
 --tab indexes
 local PLATER_OPTIONS_SCRIPTING_TAB = 6
@@ -188,7 +190,7 @@ function Plater.CreateScriptingOptionsPanel(parent, mainFrame)
                 listBox.scrollBox:Refresh()
             end
 
-            local reapplyDefaultButton = DF:CreateButton(listBox, reApplyDefaultValues, 80, 20, "Re-Apply Default Values", nil, nil, nil, nil, nil, nil, DF:GetTemplate("button", "OPTIONS_BUTTON_TEMPLATE"), DF:GetTemplate("font", "ORANGE_FONT_TEMPLATE"))
+            local reapplyDefaultButton = DF:CreateButton(listBox, reApplyDefaultValues, 80, 20, LOC["OPTIONS_SCRIPTING_REAPPLY"], nil, nil, nil, nil, nil, nil, DF:GetTemplate("button", "OPTIONS_BUTTON_TEMPLATE"), DF:GetTemplate("font", "ORANGE_FONT_TEMPLATE"))
             reapplyDefaultButton:SetPoint("topright", listBox.scrollBox, "bottomright", 0, -4)
 
             local titleText = DF:CreateLabel(listBox, "", DF:GetTemplate("font", "ORANGE_FONT_TEMPLATE"))
@@ -435,7 +437,13 @@ function Plater.CreateScriptingOptionsPanel(parent, mainFrame)
                 local scriptObject = mainFrame.GetCurrentScriptObject() --can be hook or script
                 if (scriptObject) then
                     local scriptOptions = scriptObject.Options
+                    local option = scriptOptions[optionIndex]
+                    
                     tremove(scriptOptions, optionIndex)
+                    
+                    local optionsValues = scriptObject.OptionsValues
+                    optionsValues[option.Key] = nil
+                    
                     mainFrame.ScriptOptionsScrollBox:Refresh()
                 end
             end
@@ -707,6 +715,17 @@ function Plater.CreateScriptingOptionsPanel(parent, mainFrame)
                 if (scriptObject) then
                     local scriptOptions = scriptObject.Options
                     local currentOption = scriptOptions[mainFrame.optionSelected]
+                    
+                    if key == "Key" then --ensure moving options...
+                        local curKeyValue = currentOption[key]
+                        local optionsValues = scriptObject.OptionsValues
+                        if curKeyValue ~= value then
+                            if value ~= nil and value ~= "" then
+                                optionsValues[value] = optionsValues[curKeyValue]
+                            end
+                            optionsValues[curKeyValue] = nil
+                        end
+                    end
 
                     if (value ~= nil) then
                         currentOption[key] = value
@@ -1013,6 +1032,13 @@ function Plater.CreateScriptingOptionsPanel(parent, mainFrame)
                 local scriptObject = mainFrame.GetCurrentScriptObject()
                 if (scriptObject) then
                     Plater.RecompileScript(scriptObject)
+
+                    if (platerInternal.HOOK_MOD_OPTION_CHANGED.ScriptAmount > 0) then
+                        for i = 1, platerInternal.HOOK_MOD_OPTION_CHANGED.ScriptAmount do
+                            local hookInfo = platerInternal.HOOK_MOD_OPTION_CHANGED[i]
+                            Plater.ScriptMetaFunctions.ScriptRunNoAttach(hookInfo, "Mod Option Changed")
+                        end
+                    end
                 end
             end
 
@@ -1076,7 +1102,7 @@ function Plater.CreateScriptingOptionsPanel(parent, mainFrame)
 
                     elseif (thisOption.Type == 3) then --text
                         newOption.type = "textentry"
-                        newOption.width = 300
+                        newOption.width = 200
 
                     elseif (thisOption.Type == 4) then --toggle
                         newOption.type = "toggle"
@@ -1104,10 +1130,11 @@ function Plater.CreateScriptingOptionsPanel(parent, mainFrame)
 
                     end
 
-                    tinsert(menu, newOption)
+                    if thisOption.Type ~= 7 then --lists are rendered separately
+                        tinsert(menu, newOption)
+                    end
                 end
 
-                menu.always_boxfirst = true
                 DF:BuildMenuVolatile(mainFrame.ScriptOptionsPanelUser, menu, 5, -5, options_frame_widget_options_height + options_frame_shared_height, false, options_text_template, options_dropdown_template, options_switch_template, true, options_slider_template, options_button_template, globaCallBack)
 
                 mainFrame.ScriptOptionsPanelUser.ResetListFrames()

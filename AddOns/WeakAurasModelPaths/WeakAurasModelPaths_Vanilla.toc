@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: The WeakAuras Team
-## Version: 5.3.4
+## Version: 5.11.3
 ## Dependencies: WeakAuras, WeakAurasOptions
 ## LoadOnDemand: 1
 ## DefaultState: Enabled
@@ -12,4 +12,4 @@
 ## X-Category: Interface Enhancements
 ## X-Part-Of: WeakAuras
 
-ModelPathsClassic.lua
+ModelPathsClassicEra.lua

@@ -9,7 +9,7 @@
 -- class.
 -- @classmod ScrollingTable
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local ObjectPool = TSM.Include("Util.ObjectPool")
 local Table = TSM.Include("Util.Table")
 local Math = TSM.Include("Util.Math")

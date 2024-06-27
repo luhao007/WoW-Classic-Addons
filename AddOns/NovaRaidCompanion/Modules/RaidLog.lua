@@ -23,7 +23,7 @@ local GetPlayerInfoByGUID = GetPlayerInfoByGUID;
 local GetServerTime = GetServerTime;
 local CombatLogGetCurrentEventInfo = CombatLogGetCurrentEventInfo;
 local UnitName = UnitName;
-
+	
 local lastLooted = {};
 function NRC:chatMsgLoot(...)
 	if (not NRC.raid) then
@@ -83,9 +83,15 @@ function NRC:chatMsgLoot(...)
 			--We don't need to exclude quest items because we don't track white items and we don't want to exlude mags head etc.
 			return;
 		end
+		--Some addons change the payload of the chat loot event, extract the itemLink and reform it.
+		local color, item = strmatch(itemLink, "|c(%w+)|H(.+)|h|r");
+		if (color and item) then
+			itemLink = "|c" .. color .. "|H" .. item .. "|h|r";
+		end
     end
     if (itemLink and name) then
-    	local _, itemID = strsplit(":", itemLink);
+    	--local _, itemID = strsplit(":", itemLink);
+    	local itemID = strmatch(itemLink, "item:(%d+)");
     	if (itemID) then
     		if (tonumber(itemID) == 29434) then --Badge of Justice.
     			badges[name] = tonumber(itemID);
@@ -135,7 +141,7 @@ function NRC:addLoot(name, itemLink, amount, itemRarity)
 		end
 		--Attach an id if looted within 5mins of boss, just to improve some accuracy with item source.
 		--Probably change this to just epics and green+ patterns later.
-		if (lastEncounterEnd.time and GetServerTime - lastEncounterEnd.time < 300) then
+		if (lastEncounterEnd.time and GetServerTime() - lastEncounterEnd.time < 300 and itemRarity and itemRarity > 2) then
 			t.lastEncounterID = lastEncounterEnd.encounterID;
 		end
 		tinsert(NRC.raid.loot, t);
@@ -174,13 +180,7 @@ function SlashCmdList.NRCBADGESCMD(msg, editBox)
 			msg = string.lower(msg);
 			text = text .. ".";
 			if (msg == "raid" or msg == "party" or msg == "group") then
-				if (IsInRaid()) then
-					SendChatMessage("[NRC] " .. NRC:stripColors(text), "RAID");
-				elseif (IsInGroup()) then
-					SendChatMessage("[NRC] " .. NRC:stripColors(text), "PARTY");
-				else
-					NRC:print(text);
-				end
+				NRC:sendGroup("[NRC] " .. NRC:stripColors(text), true)
 			elseif (msg == "guild") then
 				if (IsInGuild()) then
 					SendChatMessage("[NRC] " .. NRC:stripColors(text), "GUILD");
@@ -217,7 +217,8 @@ local function removeKtWeapons()
 		--Iterate backwards when removing elements.
 		for i = #data.loot, 1, -1 do
 			if (loot[i].itemLink) then
-				local _, itemID = strsplit(":", loot[i].itemLink);
+				--local _, itemID = strsplit(":", loot[i].itemLink);
+				local itemID = strmatch(loot[i].itemLink, "item:(%d+)");
 				if (itemID) then
 					itemID = tonumber(itemID);
 				end
@@ -333,7 +334,7 @@ function NRC:encounterEndRD(encounterID, encounterName, difficultyID, groupSize,
 			encounter.endGetTime = GetTime(),
 			tinsert(NRC.raid.encounters, encounter);
 			encounter = nil;
-			local lastEncounterEnd = {
+			lastEncounterEnd = {
 				encounterID = encounterID,
 				time = GetServerTime()
 			};
@@ -345,7 +346,12 @@ function NRC:encounterEndRD(encounterID, encounterName, difficultyID, groupSize,
 		end
 	end
 	NRC:debug("Encounter end", encounterID, encounterName, difficultyID, groupSize, success);
+	--Why does this fail to get data sometimes.
 	C_Timer.After(3, function()
+		NRC:recordLockoutData();
+	end)
+	--Retry as a backup.
+	C_Timer.After(10, function()
 		NRC:recordLockoutData();
 	end)
 	if (success == 1) then
@@ -524,7 +530,7 @@ local function combatLogEventUnfiltered(...)
 					end
 					overkillCache[destName] = nil;
 				else
-					NRC:debug(destName, "died without dmg recorded")
+					--NRC:debug(destName, "died without dmg recorded")
 				end
 				local _, class = GetPlayerInfoByGUID(destGUID);
 				if (class == "PRIEST" and deathCache[destGUID] and GetTime() - deathCache[destGUID] < 17) then
@@ -537,11 +543,11 @@ local function combatLogEventUnfiltered(...)
 					--But what if only the second death sends an event? Then it would fail if we're only checking dmg within the last few seconds.
 				elseif (class == "HUNTER" and feignCache[destGUID] and GetTime() - feignCache[destGUID] < 1) then
 					--If a hunter feigned death within the last second.
-					NRC:debug(destName, "hunter feigned, not recording death");
+					--NRC:debug(destName, "hunter feigned, not recording death");
 					overkillCache[destName] = nil;
 				elseif (class == "HUNTER" and feignCache[destGUID] and GetTime() - lastDmgTime > 3) then
 					--If dmg taken too long ago before death.
-					NRC:debug(destName, "hunter dmg taken too long ago, not recording death");
+					--NRC:debug(destName, "hunter dmg taken too long ago, not recording death");
 					overkillCache[destName] = nil;
 				--elseif (GetTime() - lastDmgTime < 3) then
 				else
@@ -552,6 +558,7 @@ local function combatLogEventUnfiltered(...)
 						local _, destClass  = GetPlayerInfoByGUID(destGUID);
 						NRC:sreDeathEvent(destName, destClass)
 					end
+					--NRC:pushDeath(destGUID);
 				end
 				deathCache[destGUID] = GetTime();
 				--NRC:addToGroupData(nil, destGUID, true);
@@ -916,7 +923,8 @@ local function getLootData(logID, minQuality, exactQuality, showKtWeapons, encou
 	if (data.loot) then
 		for k, v in ipairs(data.loot) do
 			if (v.itemLink) then
-				local _, itemID = strsplit(":", v.itemLink);
+				--local _, itemID = strsplit(":", v.itemLink);
+				local itemID = strmatch(v.itemLink, "item:(%d+)");
 				if (itemID) then
 					itemID = tonumber(itemID);
 				end
@@ -936,7 +944,7 @@ local function getLootData(logID, minQuality, exactQuality, showKtWeapons, encou
 							end
 						end
 					elseif (minQuality) then
-						if (not encounterID or NRC:isLootFromEncounter(itemID, encounterID)) then
+						if (not encounterID) then
 							if (v.itemRarity and v.itemRarity >= minQuality) then
 								count = count + 1;
 								local t = NRC:tableCopy(v);
@@ -948,17 +956,43 @@ local function getLootData(logID, minQuality, exactQuality, showKtWeapons, encou
 									trashCount = trashCount + 1;
 								end
 							end
+						elseif (NRC:isLootFromEncounter(itemID, encounterID)) then
+							if (v.itemRarity and v.itemRarity >= minQuality) then
+								if (v.lastEncounterID and v.lastEncounterID == encounterID) then
+									count = count + 1;
+									local t = NRC:tableCopy(v);
+									t.lootID = k;
+									tinsert(lootData, t);
+									if (NRC:getBossFromLoot(itemID, instanceID)) then
+										bossCount = bossCount + 1;
+									else
+										trashCount = trashCount + 1;
+									end
+								end
+							end
 						end
 					else
-						if (not encounterID or NRC:isLootFromEncounter(itemID, encounterID)) then
+						if (not encounterID) then
 							count = count + 1;
 							local t = v;
-								t.lootID = NRC:tableCopy(k);
-								tinsert(lootData, t);
+							t.lootID = NRC:tableCopy(k);
+							tinsert(lootData, t);
 							if (NRC:getBossFromLoot(itemID, instanceID)) then
 								bossCount = bossCount + 1;
 							else
 								trashCount = trashCount + 1;
+							end
+						elseif (NRC:isLootFromEncounter(itemID, encounterID)) then
+							if (v.lastEncounterID and v.lastEncounterID == encounterID) then
+								count = count + 1;
+								local t = v;
+								t.lootID = NRC:tableCopy(k);
+								tinsert(lootData, t);
+								if (NRC:getBossFromLoot(itemID, instanceID)) then
+									bossCount = bossCount + 1;
+								else
+									trashCount = trashCount + 1;
+								end
 							end
 						end
 					end
@@ -1445,7 +1479,16 @@ end
 
 function NRC:setRaidLogFrameHeader()
 	local header = "Nova Raid Companion";
+	if (not raidLogFrame.TitleText) then
+		--This needs to be created in retail.
+		raidLogFrame.TitleText = raidLogFrame.TitleContainer:CreateFontString("$parentFS", "OVERLAY");
+		raidLogFrame.TitleText:SetPoint("TOP", -10, -5);
+		--raidLogFrame.TitleText:SetPoint("LEFT", 60, 0);
+		--raidLogFrame.TitleText:SetPoint("RIGHT", 0, -60);
+		raidLogFrame.TitleText:SetFontObject(GameFontNormal);
+	end
 	raidLogFrame.TitleText:SetText(header);
+	
 end
 
 function NRC:openRaidLogFrame()
@@ -1463,7 +1506,7 @@ function NRC:openRaidLogFrame()
 		raidLogFrame:Show();
 		raidLogFrame.scrollFrame:SetVerticalScroll(0);
 		--So interface options and this frame will open on top of each other.
-		if (InterfaceOptionsFrame:IsShown()) then
+		if (InterfaceOptionsFrame and InterfaceOptionsFrame:IsShown()) then
 			raidLogFrame:SetFrameStrata("DIALOG");
 		else
 			raidLogFrame:SetFrameStrata("MEDIUM");
@@ -2465,7 +2508,8 @@ function NRC:loadRenameLootFrame(logID, lootID, lineFrameCount, displayNum, fram
 			local lootText = "";
 			local v = currentLootData[lineFrameCount];
 			if (v.itemLink) then
-				local _, itemID = strsplit(":", v.itemLink);
+				--local _, itemID = strsplit(":", v.itemLink);
+				local itemID = strmatch(v.itemLink, "item:(%d+)");
 				local boss;
 				if (itemID) then
 					boss = NRC:getBossFromLoot(tonumber(itemID), data.instanceID, logID, v.time or v.timer);
@@ -2642,7 +2686,8 @@ function NRC:loadRaidLogLoot(logID)
 			local encounterText = "";
 			local lootText = "";
 			if (v.itemLink) then
-				local _, itemID = strsplit(":", v.itemLink);
+				--local _, itemID = strsplit(":", v.itemLink);
+				local itemID = strmatch(v.itemLink, "item:(%d+)");
 				local boss;
 				if (itemID) then
 					boss = NRC:getBossFromLoot(tonumber(itemID), data.instanceID, logID, v.time or v.timer);
@@ -2714,7 +2759,8 @@ function NRC:loadRaidLogLoot(logID)
 			local encounterText = "";
 			local lootText = "";
 			if (v.itemLink) then
-				local _, itemID = strsplit(":", v.itemLink);
+				--local _, itemID = strsplit(":", v.itemLink);
+				local itemID = strmatch(v.itemLink, "item:(%d+)");
 				local boss;
 				if (itemID) then
 					boss = NRC:getBossFromLoot(tonumber(itemID), data.instanceID, logID, v.time or v.timer);
@@ -2786,7 +2832,8 @@ function NRC:loadRaidLogLoot(logID)
 			local encounterText = "";
 			local lootText = "";
 			if (v.itemLink) then
-				local _, itemID = strsplit(":", v.itemLink);
+				--local _, itemID = strsplit(":", v.itemLink);
+				local itemID = strmatch(v.itemLink, "item:(%d+)");
 				local boss;
 				if (itemID) then
 					boss = NRC:getBossFromLoot(tonumber(itemID), data.instanceID, logID, v.time or v.timer);
@@ -2858,7 +2905,8 @@ function NRC:loadRaidLogLoot(logID)
 			local encounterText = "";
 			local lootText = "";
 			if (v.itemLink) then
-				local _, itemID = strsplit(":", v.itemLink);
+				--local _, itemID = strsplit(":", v.itemLink);
+				local itemID = strmatch(v.itemLink, "item:(%d+)");
 				local boss;
 				if (itemID) then
 					boss = NRC:getBossFromLoot(tonumber(itemID), data.instanceID, logID, v.time or v.timer);
@@ -2981,7 +3029,8 @@ function NRC:loadRaidBossLoot(logID, encounterID, encounterName, attemptID)
 		local encounterText = "";
 		local lootText = "";
 		if (v.itemLink) then
-			local _, itemID = strsplit(":", v.itemLink);
+			--local _, itemID = strsplit(":", v.itemLink);
+			local itemID = strmatch(v.itemLink, "item:(%d+)");
 			local boss;
 			if (itemID) then
 				boss = NRC:getBossFromLoot(tonumber(itemID), data.instanceID, logID, v.time or v.timer);
@@ -3095,7 +3144,7 @@ local function openTrackedItemsList()
 		trackedItemsFrame.scrollChild.fs2:SetSpacing(1);
 		--trackedItemsFrame.scrollChild.fs2:SetPoint("TOPLEFT", 10, -24);
 		trackedItemsFrame.scrollChild.fs:SetText("|cFFFFFF00" .. L["Tracked Items"] .. "|r");
-		--trackedItemsFrame.EditBox:SetFont(NRC.regionFont, 13);
+		--trackedItemsFrame.EditBox:SetFont(NRC.regionFont, 13, ");
 		--trackedItemsFrame.EditBox:SetWidth(trackedItemsFrame:GetWidth() - 10);
 	end
 	local d = {};
@@ -3107,13 +3156,15 @@ local function openTrackedItemsList()
 	table.sort(d, function(a, b)
 		return a.name < b.name
 	    	or a.name == b.name and a.spellID < b.spellID;
+	    --return a.name < b.name;
 	end)
+	--NRC:debug(d)
 	local text = "";
 	--Non-foods first.
 	for k, v in ipairs(d) do
 		if (not NRC.foods[v.spellID] and not NRC.scrolls[v.spellID]
 				and not NRC.interrupts[v.spellID] and not NRC.racials[v.spellID]) then
-			local item, icon
+			local item, icon;
 			if (v.itemID) then
 				local itemName, itemLink, itemQuality = GetItemInfo(v.itemID);
 				if (itemLink and itemLink ~= "") then
@@ -3170,10 +3221,10 @@ local function openTrackedItemsList()
 			text = text .. icon .. " " .. item .. "\n";
 		end
 	end
-	--Interrups.
+	--Interrupts.
 	for k, v in ipairs(d) do
 		if (NRC.interrupts[v.spellID]) then
-			local item, icon
+			local item, icon;
 			if (v.itemID) then
 				local itemName, itemLink, itemQuality = GetItemInfo(v.itemID);
 				if (itemLink and itemLink ~= "") then
@@ -3230,7 +3281,7 @@ local function openTrackedItemsList()
 	--Racials.
 	for k, v in ipairs(d) do
 		if (NRC.racials[v.spellID]) then
-			local item, icon
+			local item, icon;
 			if (v.itemID) then
 				local itemName, itemLink, itemQuality = GetItemInfo(v.itemID);
 				if (itemLink and itemLink ~= "") then
@@ -3287,7 +3338,7 @@ local function openTrackedItemsList()
 	--Scrolls.
 	for k, v in ipairs(d) do
 		if (NRC.scrolls[v.spellID]) then
-			local item, icon
+			local item, icon;
 			if (v.itemID) then
 				local itemName, itemLink, itemQuality = GetItemInfo(v.itemID);
 				if (itemLink and itemLink ~= "") then
@@ -3347,7 +3398,7 @@ local function openTrackedItemsList()
 	--Foods at the end for neatness.
 	for k, v in ipairs(d) do
 		if (NRC.foods[v.spellID]) then
-			local item, icon
+			local item, icon;
 			if (v.itemID) then
 				local itemName, itemLink, itemQuality = GetItemInfo(v.itemID);
 				if (itemLink and itemLink ~= "") then
@@ -4745,6 +4796,7 @@ function NRC:loadRaidLogModelFrame(encounterID, encounterName)
 	if (data) then
 		setBottomText(data, raidLogFrame.logID);
 	end
+	raidLogFrame.modelFrame.creature:ClearModel();
 	local id, name, description, displayInfo, iconImage, uiModelSceneID = getEncounterData(encounterID);
 	if (displayInfo) then
 		raidLogFrame.modelFrame.fs:SetText("|cFFFFFF00" .. name);
@@ -5189,9 +5241,11 @@ f:RegisterEvent("PLAYER_TARGET_CHANGED");
 f:RegisterEvent("UPDATE_MOUSEOVER_UNIT");
 f:RegisterEvent("NAME_PLATE_UNIT_ADDED");
 f:RegisterEvent("PLAYER_CAMPING");
+f:RegisterEvent("PLAYER_LOGOUT");
 f:RegisterEvent("GROUP_JOINED");
 f:RegisterEvent("GROUP_LEFT");
 f:RegisterEvent("CHAT_MSG_COMBAT_FACTION_CHANGE");
+f:RegisterEvent("UPDATE_INSTANCE_INFO");
 f:SetScript('OnEvent', function(self, event, ...)
 	if (event == "NAME_PLATE_UNIT_ADDED") then
 		NRC:parseGUIDRD("nameplate1", nil, "nameplate");
@@ -5199,6 +5253,10 @@ f:SetScript('OnEvent', function(self, event, ...)
 		lastEnteringWorld = GetTime();
 		local isLogon, isReload = ...;
 		NRC:playerEnteringWorldRD(...);
+		--Noticed on rare occasions it won't record lockouts properly, adding a couple more checks.
+		C_Timer.After(1, function()
+			NRC:recordLockoutData();
+		end)
 		C_Timer.After(10, function()
 			NRC:recordLockoutData();
 		end)
@@ -5214,6 +5272,9 @@ f:SetScript('OnEvent', function(self, event, ...)
 		if (NRC.inInstance) then
 			NRC.raid.leftTime = GetServerTime();
 		end
+		NRC:recordLockoutData();
+	elseif (event == "PLAYER_LOGOUT") then
+		NRC:recordLockoutData();
 	elseif (event == "GROUP_JOINED") then
 		if (NRC.raid) then
 			--Rejoined group while inside raid.
@@ -5226,6 +5287,10 @@ f:SetScript('OnEvent', function(self, event, ...)
 		NRC.lastRaidID = nil;
 	elseif (event == "CHAT_MSG_COMBAT_FACTION_CHANGE") then
 		NRC:chatMsgCombatFactionChange(...);
+	elseif (event == "UPDATE_INSTANCE_INFO" ) then
+		C_Timer.After(1, function()
+			NRC:recordLockoutData();
+		end)
 	end
 end)
 
@@ -5341,9 +5406,9 @@ NRC.lastInstanceName = "(Unknown Instance)";
 function NRC:enteredInstanceRD(isReload, isLogon)
 	doGUID = true;
 	local instance, instanceType = IsInInstance();
-	if (instanceType ~= "raid") then
+	--if (instanceType ~= "raid") then
 		--return;
-	end
+	--end
 	local type;
 	if (NRC.isTBC) then
 		if (NRC:isInArena()) then
@@ -5354,11 +5419,15 @@ function NRC:enteredInstanceRD(isReload, isLogon)
 			return;
 		end
 	end
+	local instanceName, instanceType, difficultyID, difficultyName, maxPlayers, dynamicDifficulty,
+				isDynamic, instanceID, instanceGroupSize, LfgDungeonID = GetInstanceInfo();
+	if (NRC.zones[instanceID] and NRC.zones[instanceID].type == "raid") then
+		--Override if we have the instance set as a raid in db, used for sod raids.
+		instanceType = "raid";
+	end
 	--if (instance == true and (instanceType == "raid" or NRC.config.logDungeons) and type ~= "arena" and type ~= "bg") then
 	if (instance == true and ((instanceType == "raid" and NRC.config.logRaids) or (instanceType == "party" and NRC.config.logDungeons))
 			and type ~= "arena" and type ~= "bg") then
-		local instanceName, instanceType, difficultyID, difficultyName, maxPlayers, dynamicDifficulty,
-				isDynamic, instanceID, instanceGroupSize, LfgDungeonID = GetInstanceInfo();
 		if (NRC.inInstance and NRC.lastInstanceName ~= instanceName) then
 			--If we zone from one instance into another instance and the instance name if different (UBRS to BWL etc).
 			--Close out the old instance data before starting a new.
@@ -5428,7 +5497,7 @@ function NRC:enteredInstanceRD(isReload, isLogon)
 	end
 	if (instanceType == "raid" and NRC.config.autoCombatLog) then
 		C_Timer.After(1, function()
-			NRC:startCombatLogging();
+			NRC:startCombatLogging(true);
 		end)
 	end
 end
@@ -5437,6 +5506,7 @@ function NRC:leftInstanceRD()
 	if (NRC.inInstance and NRC.raid) then
 		NRC.raid.leftTime = GetServerTime();
 	end
+	NRC:recordLockoutData();
 	NRC.raid = nil;
 	NRC.inInstance = nil;
 	NRC.lastNpcID = 999999999;
@@ -5790,17 +5860,11 @@ function NRC:recordLockoutData()
 end
 
 function NRC:resetOldLockouts()
-	for realm, realmData in pairs(NRC.db.global) do
-		if (type(realmData) == "table") then
-			if (realmData.myChars) then
-				for char, charData in pairs(realmData.myChars) do
-					if (charData.savedInstances) then
-						for k, v in pairs(charData.savedInstances) do
-							if (v.resetTime and v.resetTime < GetServerTime()) then
-								NRC.db.global[realm].myChars[char].savedInstances[k] = nil;
-							end
-						end
-					end
+	for char, charData in pairs(NRC.data.myChars) do
+		if (charData.savedInstances) then
+			for k, v in pairs(charData.savedInstances) do
+				if (v.resetTime and v.resetTime < GetServerTime()) then
+					NRC.data.myChars[char].savedInstances[k] = nil;
 				end
 			end
 		end
@@ -5890,6 +5954,7 @@ f:SetScript('OnEvent', function(self, event, ...)
 		local encounterID, encounterName, difficultyID, groupSize, success = ...;
 		NRC:encounterEndRD(encounterID, encounterName, difficultyID, groupSize, success);
 		NRC:throddleEventByFunc(event, 2, "recordGroupInfo", ...);
+		RequestRaidInfo();
 	elseif (event == "GROUP_ROSTER_UPDATE") then
 		NRC:recordGroupInfo();
 	elseif (event == "CHAT_MSG_LOOT") then

@@ -120,11 +120,11 @@ function widgets:slider(parent, config)
     frame:SetScript("OnValueChanged", function(self, value)
         local step = self:GetValueStep() or 1
         if (step < 0.1) then
-            value = format("%.2f", value)
+            value = tonumber(format("%.2f", value))
         elseif (step < 1) then
-            value = format("%.1f", value)
+            value = tonumber(format("%.1f", value))
         else
-            value = floor(value+0.2)
+            value = tonumber(floor(value+0.2))
         end
         if (self:GetValue() ~= value) then
             SetVariable(self.keystring, value)
@@ -155,6 +155,7 @@ function widgets:colorpick(parent, config)
     else
         r, g, b, a = unpack(GetVariable(config.keystring))
     end
+
     local frame = CreateFrame("Button", nil, parent)
     frame.keystring = config.keystring
     frame.colortype = config.colortype
@@ -368,7 +369,7 @@ CreateAnchorButton(saframe, "BOTTOM")
 saframe:SetScript("OnShow", function() grid:Show() end)
 saframe:SetScript("OnHide", function() grid:Hide() end)
 
-local caframe = CreateFrame("Frame", nil, UIParent, BackdropTemplateMixin and "ThinBorderTemplate,BackdropTemplate" or "ThinBorderTemplate")
+local caframe = CreateFrame("Frame", nil, UIParent, "ThinBorderTemplate,BackdropTemplate" or "ThinBorderTemplate")
 caframe:Hide()
 caframe:SetFrameStrata("DIALOG")
 caframe:SetBackdrop({
@@ -443,7 +444,7 @@ function widgets:anchorbutton(parent, config)
 end
 
 function widgets:element(parent, config)
-    local frame = CreateFrame("Frame", nil, parent, BackdropTemplateMixin and "BackdropTemplate" or nil)
+    local frame = CreateFrame("Frame", nil, parent, "BackdropTemplate")
     frame:SetSize(560, 30)
     frame:SetBackdrop({
         bgFile   = "Interface\\Tooltips\\UI-Tooltip-Background",
@@ -535,7 +536,6 @@ local options = {
         { keystring = "general.anchor",             type = "anchor", dropdata = {"default","cursorRight","cursor","static"} },
         { keystring = "item.coloredItemBorder",     type = "checkbox" },
         { keystring = "item.showItemIcon",          type = "checkbox" },
-        { keystring = "item.showStackCount",          type = "checkbox" },
         { keystring = "quest.coloredQuestBorder",   type = "checkbox" },
         { keystring = "general.alwaysShowIdInfo",   type = "checkbox" },
         { keystring = "general.SavedVariablesPerCharacter",   type = "checkbox" },
@@ -565,7 +565,7 @@ local options = {
         { keystring = "unit.player.elements.guildIndex",  type = "element", color = true, wildcard = true, filter = true, },
         { keystring = "unit.player.elements.guildRank",   type = "element", color = true, wildcard = true, filter = true, },
         { keystring = "unit.player.elements.guildRealm",  type = "element", color = true, wildcard = true, filter = true, },
-        { keystring = "unit.player.elements.levelValue",  type = "element", color = true, wildcard = true, filter = true, },
+		{ keystring = "unit.player.elements.levelValue",  type = "element", color = true, wildcard = true, filter = true, },
         { keystring = "unit.player.elements.factionName", type = "element", color = true, wildcard = true, filter = true, },
         { keystring = "unit.player.elements.gender",      type = "element", color = true, wildcard = true, filter = true, },
         { keystring = "unit.player.elements.raceName",    type = "element", color = true, wildcard = true, filter = true, },
@@ -823,14 +823,13 @@ end
 ----------------
 
 local diytable, diyPlayerTable = {}, {}
-
 local frame = CreateFrame("Frame", nil, framePCScrollFrame)
 tinsert(addon.tooltips, frame)
 frame:Show()
 frame:SetFrameStrata("DIALOG")
 frame:SetClampedToScreen(true)
 frame:EnableMouse(true)
---frame:SetMovable(true)
+frame:SetMovable(true)
 frame:SetSize(300, 100)
 frame:SetPoint("BOTTOM", framePCScrollFrame, "TOP", 64, 0)
 frame:RegisterForDrag("LeftButton")
@@ -948,7 +947,7 @@ local function CreateLine(parent, lineNumber)
         local line = CreateFrame("Frame", nil, parent)
         line:SetSize(300, 24)
         line.line = lineNumber
-        line.border = CreateFrame("Frame", nil, line, BackdropTemplateMixin and "BackdropTemplate")
+        line.border = CreateFrame("Frame", nil, line, "BackdropTemplate")
         line.border:SetAllPoints()
         line.border:SetBackdrop({edgeFile = "Interface\\Buttons\\WHITE8X8", edgeSize = 1})
         line.border:SetBackdropBorderColor(1, 0.9, 0.1)

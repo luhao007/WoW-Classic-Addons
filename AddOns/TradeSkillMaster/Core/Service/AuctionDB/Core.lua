@@ -72,7 +72,6 @@ function AuctionDB.OnEnable()
 				private.realmData[field] = loadedData
 			end
 		end
-		private.realmUpdateTime = max(private.realmUpdateTime or 0, updateTime)
 		Log.Info("Loaded region commodity (%s)", SecondsToTime(time() - updateTime).." ago")
 	end
 	if regionStat then

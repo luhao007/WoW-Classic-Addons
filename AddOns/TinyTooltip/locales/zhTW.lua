@@ -28,12 +28,11 @@ addon.L = {
     ["general.alwaysShowIdInfo"]            = "始終顯示id信息(關閉後按住alt/shift顯示)",
     ["general.skinMoreFrames"]              = "樣式應用于更多框架 |cffcccc33(重載生效)|r",
     ["general.SavedVariablesPerCharacter"]  = "為每個角色保存獨立配置",
-
+    
     ["item.coloredItemBorder"]              = "物品邊框染色",
     ["item.showItemIcon"]                   = "顯示物品圖標",
-    ["item.showStackCount"]                 = "显示物品堆叠",
     ["quest.coloredQuestBorder"]            = "任務邊框染色",
-
+    
     ["unit.player.anchor.position"]         = "框架錨點",
     ["unit.player.anchor.returnInCombat"]   = "戰鬥時固定",
     ["unit.player.anchor.hiddenInCombat"]   = "戰鬥時隱藏",
@@ -70,7 +69,7 @@ addon.L = {
     ["unit.player.elements.role"]           = "角色",
     ["unit.player.elements.moveSpeed"]      = "移動速度",
     ["unit.player.elements.zone"]           = "地區",
-
+    
     ["unit.npc.anchor.position"]            = "框架錨點",
     ["unit.npc.anchor.returnInCombat"]      = "戰鬥時固定",
     ["unit.npc.anchor.hiddenInCombat"]      = "戰鬥時隱藏",
@@ -94,11 +93,11 @@ addon.L = {
     ["unit.npc.elements.creature"]          = "類型",
     ["unit.npc.elements.reactionName"]      = "聲望",
     ["unit.npc.elements.moveSpeed"]         = "移動速度",
-
+    
     ["spell.background"]                    = "背景顔色",
     ["spell.borderColor"]                   = "邊框顔色",
     ["spell.showIcon"]                      = "法術圖標",
-
+    
     ["dropdown.inherit"]        = "|cffffee00繼承全局|r",
     ["dropdown.default"]        = "|cffaaaaaa系統默認|r",
     ["dropdown.angular"]        = "直角邊框",
@@ -140,15 +139,15 @@ addon.L = {
     ["dropdown.not ininstance"]     = "|cffff3333非|r副本時",
     ["dropdown.not samerealm"]      = "|cffff3333非|r同伺服",
     ["dropdown.not samecrossrealm"]  = "|cffff3333非|r同跨伺服",
-
+    
     ["headerFont"]        = "標頭字體",
     ["headerFontSize"]    = "標頭字體大小",
     ["headerFontFlag"]    = "標頭字體描邊",
     ["bodyFont"]          = "内容字體",
     ["bodyFontSize"]      = "内容字體大小",
     ["bodyFontFlag"]      = "内容字體描邊",
-
+    
     ["Anchor"]   = "錨點器",
-
+    
     ["TargetBy"] = "被關注",
 }

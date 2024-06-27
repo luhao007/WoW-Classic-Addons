@@ -79,7 +79,7 @@ end
 
 --Accepts spellID or name.
 function NRC:hasBuff(unit, buff)
-	for i = 1, MAX_TARGET_BUFFS do
+	for i = 1, 50 do
 		local name, _, _, _, _, expirationTime, _, _, _, spellID = UnitBuff(unit, i);
 		if (name and (buff == name or buff == spellID)) then
 			return true;
@@ -834,7 +834,8 @@ function NRC:getThreeDayReset()
 		return;
 	end
 	--Get current epoch.
-	local utc = time(date("*t"));
+	--local utc = time(date("*t"));
+	local utc = GetServerTime();
 	local secondsSinceFirstReset = utc - staticPastResetTime;
 	--Divide seconds elapsed since our static timestamp in the past by the cycle time (3 days).
 	--Get the floor of secondsSinceFirstReset / cycle time
@@ -883,7 +884,7 @@ function NRC:getTooltipScanner()
 	if (not tooltipScanner) then
 		tooltipScanner = CreateFrame("GameTooltip", "NRCTooltipScanner", nil, "GameTooltipTemplate");
 	end
-	tooltipScanner:SetOwner(UIParent, "ANCHOR_NONE");
+	tooltipScanner:SetOwner(WorldFrame, "ANCHOR_NONE");
 	return tooltipScanner;
 end
 
@@ -916,24 +917,6 @@ function NRC:getTradableTimeFromBagSlot(bag, slot) --/run NRC:getTradableTimeFro
 	end
 end
 
-function NRC:sendGroup(msg, delay)
-	if (delay) then
-		C_Timer.After(delay, function()
-			if (IsInRaid()) then
-			SendChatMessage(msg, "RAID");
-		elseif (IsInGroup()) then
-			SendChatMessage(msg, "PARTY");
-		end
-		end)
-	else
-		if (IsInRaid()) then
-			SendChatMessage(msg, "RAID");
-		elseif (IsInGroup()) then
-			SendChatMessage(msg, "PARTY");
-		end
-	end
-end
-
 function NRC:addDiffcultyText(name, difficultyName, difficultyID, extraSpace, color)
 	--Check name first, if no name then there's an ID before the version we started recording names.
 	--If we only have ID it won't be localized.
@@ -957,4 +940,40 @@ function NRC:addDiffcultyText(name, difficultyName, difficultyID, extraSpace, co
 		end]]
 	end
 	return name;
+end
+
+function NRC:sendGroup(msg, elsePrint, delay)
+	if (delay) then
+		C_Timer.After(delay, function()
+			if (IsInRaid()) then
+				SendChatMessage(NRC:stripColors(msg), "RAID");
+			elseif (LE_PARTY_CATEGORY_INSTANCE and IsInGroup(LE_PARTY_CATEGORY_INSTANCE)) then
+        		SendChatMessage(NRC:stripColors(msg), "INSTANCE_CHAT");
+			elseif (IsInGroup()) then
+				SendChatMessage(NRC:stripColors(msg), "PARTY");
+			elseif (elsePrint) then
+				NRC:print(msg);
+			end
+		end)
+	else
+		if (IsInRaid()) then
+			SendChatMessage(NRC:stripColors(msg), "RAID");
+		elseif (LE_PARTY_CATEGORY_INSTANCE and IsInGroup(LE_PARTY_CATEGORY_INSTANCE)) then
+        	SendChatMessage(NRC:stripColors(msg), "INSTANCE_CHAT");
+		elseif (IsInGroup()) then
+			SendChatMessage(NRC:stripColors(msg), "PARTY");
+		elseif (elsePrint) then
+			NRC:print(msg);
+		end
+	end
+end
+
+function NRC:sendGroupComm(msg)
+	if (IsInRaid()) then
+		NRC:sendComm("RAID", msg);
+	elseif (IsInGroup(LE_PARTY_CATEGORY_INSTANCE)) then
+        NRC:sendComm("INSTANCE_CHAT", msg);
+	elseif (IsInGroup()) then
+		NRC:sendComm("PARTY", msg);
+	end
 end

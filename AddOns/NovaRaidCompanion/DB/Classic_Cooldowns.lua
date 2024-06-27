@@ -15,7 +15,7 @@ NRC.cooldowns = {
 	["Rebirth"] = {
 		class = "DRUID",
 		icon = "Interface\\Icons\\spell_nature_reincarnation",
-		cooldown = 1200,
+		cooldown = 1800,
 		minLevel = 20,
 		spellIDs = {
 			[20484] = "Rebirth", --Rank 1.
@@ -23,7 +23,6 @@ NRC.cooldowns = {
 			[20742] = "Rebirth", --Rank 3.
 			[20747] = "Rebirth", --Rank 4.
 			[20748] = "Rebirth", --Rank 5.
-			[26994] = "Rebirth", --Rank 6.
 		},
 	},
 	["Innervate"] = {
@@ -45,19 +44,10 @@ NRC.cooldowns = {
 			[8918] = "Tranquility", --Rank 2.
 			[9862] = "Tranquility", --Rank 3.
 			[9863] = "Tranquility", --Rank 4.
-			[26983] = "Tranquility", --Rank 15.
 		},
 	},
 	--Hunter.
-	["Misdirection"] = {
-		class = "HUNTER",
-		icon = "Interface\\Icons\\ability_hunter_misdirection",
-		cooldown = 120,
-		minLevel = 70,
-		spellIDs = {
-			[34477] = "Misdirection", --Rank 1.
-		},
-	},
+	--No misdirection in classic.
 	--Mage.
 	["Evocation"] = {
 		class = "MAGE",
@@ -73,17 +63,12 @@ NRC.cooldowns = {
 		icon = "Interface\\Icons\\spell_frost_frost",
 		cooldown = 300,
 		minLevel = 30,
-		spellIDs = {
-			[45438] = "Ice Block", --Rank 1.
+		talentOnly = {
+			tabIndex = 3,
+			talentIndex = 14,
 		},
-	},
-	["Invisibility"] = {
-		class = "MAGE",
-		icon = "Interface\\Icons\\ability_mage_invisibility",
-		cooldown = 300,
-		minLevel = 68,
 		spellIDs = {
-			[66] = "Invisibility", --Rank 1.
+			[11958] = "Ice Block", --Rank 1.
 		},
 	},
 	--Paladin.
@@ -101,12 +86,6 @@ NRC.cooldowns = {
 		icon = "Interface\\Icons\\spell_holy_divineintervention",
 		cooldown = 300,
 		minLevel = 34,
-		cooldownAdjust = {
-			tabIndex = 2,
-			talentIndex = 16,
-			[1] = 60, --Seconds to reduce by for each talent trained.
-			[2] = 120,
-		},
 		spellIDs = {
 			[642] = "Divine Shield", --Rank 1.
 			[1020] = "Divine Shield", --Rank 2.
@@ -127,7 +106,6 @@ NRC.cooldowns = {
 			[633] = "Lay on Hands", --Rank 1.
 			[2800] = "Lay on Hands", --Rank 2.
 			[10310] = "Lay on Hands", --Rank 3.
-			[27154] = "Lay on Hands", --Rank 4.
 		},
 	},
 	["Blessing of Protection"] = {
@@ -139,7 +117,7 @@ NRC.cooldowns = {
 		cooldownAdjust = {
 			tabIndex = 2,
 			talentIndex = 4,
-			[1] = 60, --Seconds to reduce by for each talent trained.
+			[1] = 60,
 			[2] = 120,
 		},
 		spellIDs = {
@@ -152,19 +130,10 @@ NRC.cooldowns = {
 	["Fear Ward"] = {
 		class = "PRIEST",
 		icon = "Interface\\Icons\\spell_holy_excorcism",
-		cooldown = 180,
+		cooldown = 30,
 		minLevel = 20,
 		spellIDs = {
 			[6346] = "Fear Ward", --Rank 1.
-		},
-	},
-	["Shadowfiend"] = {
-		class = "PRIEST",
-		icon = "Interface\\Icons\\spell_shadow_shadowfiend",
-		cooldown = 300,
-		minLevel = 66,
-		spellIDs = {
-			[34433] = "Shadowfiend", --Rank 1.
 		},
 	},
 	["Psychic Scream"] = {
@@ -172,6 +141,12 @@ NRC.cooldowns = {
 		icon = "Interface\\Icons\\spell_shadow_psychicscream",
 		cooldown = 30,
 		minLevel = 14,
+		cooldownAdjust = {
+			tabIndex = 3,
+			talentIndex = 6,
+			[1] = 2,
+			[2] = 4,
+		},
 		spellIDs = {
 			[8122] = "Psychic Scream", --Rank 1.
 			[8124] = "Psychic Scream", --Rank 2.
@@ -186,35 +161,21 @@ NRC.cooldowns = {
 		minLevel = 39,
 		talentOnly = {
 			tabIndex = 1,
-			talentIndex = 19,
+			talentIndex = 15,
 		},
 		spellIDs = {
 			[10060] = "Power Infusion", --Rank 1.
-		},
-	},
-	["Pain Suppression"] = {
-		class = "PRIEST",
-		icon = "Interface\\Icons\\spell_holy_painsupression",
-		cooldown = 120,
-		minLevel = 49,
-		name = "Pain Sup",
-		talentOnly = {
-			tabIndex = 1,
-			talentIndex = 22,
-		},
-		spellIDs = {
-			[33206] = "Pain Suppression", --Rank 1.
 		},
 	},
 	--Rogue (need to add talent reduction checks later).
 	["Blind"] = {
 		class = "ROGUE",
 		icon = "Interface\\Icons\\spell_shadow_mindsteal",
-		cooldown = 180,
+		cooldown = 300,
 		minLevel = 34,
 		cooldownAdjust = {
 			tabIndex = 3,
-			talentIndex = 10,
+			talentIndex = 4,
 			[1] = 45,
 			[2] = 90,
 		},
@@ -229,14 +190,13 @@ NRC.cooldowns = {
 		minLevel = 22,
 		cooldownAdjust = {
 			tabIndex = 3,
-			talentIndex = 10,
+			talentIndex = 4,
 			[1] = 45,
 			[2] = 90,
 		},
 		spellIDs = {
 			[1856] = "Vanish", --Rank 1.
 			[1857] = "Vanish", --Rank 2.
-			[26889] = "Vanish", --Rank 3.
 		},
 	},
 	["Evasion"] = {
@@ -252,7 +212,6 @@ NRC.cooldowns = {
 		},
 		spellIDs = {
 			[5277] = "Evasion", --Rank 1.
-			[26669] = "Evasion", --Rank 2.
 		},
 	},
 	["Distract"] = {
@@ -265,15 +224,6 @@ NRC.cooldowns = {
 		},
 	},
 	--Shaman.
-	["Earth Elemental"] = {
-		class = "SHAMAN",
-		icon = "Interface\\Icons\\spell_nature_earthelemental_totem",
-		cooldown = 1200,
-		minLevel = 66,
-		spellIDs = {
-			[2062] = "Earth Elemental Totem", --Rank 1.
-		},
-	},
 	["Reincarnation"] = {
 		--This can't be tracked via combat log.
 		--We just use rank 1 spellID for our own tracking purposes.
@@ -295,13 +245,15 @@ NRC.cooldowns = {
 		class = "SHAMAN",
 		icon = "Interface\\Icons\\spell_frost_summonwaterelemental",
 		cooldown = 300,
-		minLevel = 39,
+		minLevel = 40,
 		talentOnly = {
 			tabIndex = 3,
-			talentIndex = 16,
+			talentIndex = 15,
 		},
 		spellIDs = {
 			[16190] = "Mana Tide", --Rank 1.
+			[17354] = "Mana Tide", --Rank 2.
+			[17359] = "Mana Tide", --Rank 3.
 		},
 	},
 	--Warlock.
@@ -316,16 +268,6 @@ NRC.cooldowns = {
 			[20763] = "Soulstone", --Rank 3.
 			[20764] = "Greater Soulstone", --Rank 4.
 			[20765] = "Major Soulstone", --Rank 5.
-			[27239] = "Master Soulstone", --Rank 6.
-		},
-	},
-	["Soulshatter"] = {
-		class = "WARLOCK",
-		icon = "Interface\\Icons\\spell_arcane_arcane01",
-		cooldown = 300,
-		minLevel = 66,
-		spellIDs = {
-			[29858] = "Soulshatter", --Rank 1.
 		},
 	},
 	["Death Coil"] = {
@@ -337,23 +279,13 @@ NRC.cooldowns = {
 			[6789] = "Death Coil", --Rank 1.
 			[17925] = "Death Coil", --Rank 2.
 			[17926] = "Death Coil", --Rank 3.
-			[27223] = "Death Coil", --Rank 4.
 		},
 	},
-	--[[["Ritual of Souls"] = {
-		class = "WARLOCK",
-		icon = "Interface\\Icons\\spell_shadow_shadesofdarkness",
-		cooldown = 300,
-		minLevel = 68,
-		spellIDs = {
-			[29893] = "Ritual of Souls", --Rank 1.
-		},
-	},]]
 	--Warrior.
 	["Challenging Shout"] = {
 		class = "WARRIOR",
 		icon = "Interface\\Icons\\ability_bullrush",
-		cooldown = 300,
+		cooldown = 600,
 		minLevel = 26,
 		spellIDs = {
 			[1161] = "Challenging Shout", --Rank 1.
@@ -379,7 +311,6 @@ NRC.cooldowns = {
 			[7402] = "Mocking Blow", --Rank 3.
 			[20559] = "Mocking Blow", --Rank 4.
 			[20560] = "Mocking Blow", --Rank 5.
-			[25266] = "Mocking Blow", --Rank 6.
 		},
 	},
 	["Recklessness"] = {
@@ -387,13 +318,6 @@ NRC.cooldowns = {
 		icon = "Interface\\Icons\\ability_criticalstrike",
 		cooldown = 1800,
 		minLevel = 50,
-		cooldownAdjust = {
-			tabIndex = 1,
-			talentIndex = 18,
-			[1] = 240,
-			[2] = 420,
-			[3] = 600,
-		},
 		spellIDs = {
 			[1719] = "Recklessness", --Rank 1.
 		},
@@ -403,106 +327,11 @@ NRC.cooldowns = {
 		icon = "Interface\\Icons\\ability_warrior_shieldwall",
 		cooldown = 1800,
 		minLevel = 28,
-		cooldownAdjust = {
-			tabIndex = 1,
-			talentIndex = 18,
-			[1] = 240,
-			[2] = 420,
-			[3] = 600,
-		},
 		spellIDs = {
 			[871] = "Shield Wall", --Rank 1.
 		},
 	},
-	
-	--Neck group buffs.
-	--These only show if someone is on cooldown.
-	--[[["Neck Buffs"] = {
-		class = "ALL",
-		icon = "Interface\\Icons\\inv_jewelry_necklace_28",
-		cooldown = 3600,
-		minLevel = 70,
-		spellIDs = {
-			[31033] = "Eye of the Night", --34 SP.
-			[31035] = "Chain of the Twilight Owl", --2% crit.
-			[31025] = "Braided Eternium Chain", --28 crit rating.
-			[31023] = "Thick Felsteel Necklace", --20 stam.
-			[31024] = "Living Ruby Pendant", --6 HPS.
-			[31026] = "Embrace of the Dawn", --10 stats.
-			--[0] = "Pendant of Frozen Flame", --900-2700 fire absorb.
-			--[0] = "Pendant of Thawing", --900-2700 frost absorb.
-			--[0] = "Pendant of Shadow's End", --900-2700 shadow absorb.
-			--[0] = "Pendant of the Null Rune", --900-2700 arcane absorb.
-			--[0] = "Pendant of Withering", --900-2700 nature absorb.
-		},
-		color = "FF9CD6DE"
-	},]]
-	["NeckSP"] = {
-		class = "ALL",
-		icon = "Interface\\Icons\\inv_jewelry_necklace_28",
-		cooldown = 3600,
-		minLevel = 70,
-		spellIDs = {
-			[31033] = "Eye of the Night", --34 SP.
-		},
-		color = "FF9CD6DE",
-		title = "Neck (34 SP)",
-	},
-	["NeckCrit"] = {
-		class = "ALL",
-		icon = "Interface\\Icons\\inv_jewelry_necklace_ahnqiraj_02",
-		cooldown = 3600,
-		minLevel = 70,
-		spellIDs = {
-			[31035] = "Chain of the Twilight Owl", --2% crit.
-		},
-		color = "FF9CD6DE",
-		title = "Neck (2% Crit)",
-	},
-	["NeckCritRating"] = {
-		class = "ALL",
-		icon = "Interface\\Icons\\inv_jewelry_necklace_07",
-		cooldown = 3600,
-		minLevel = 70,
-		spellIDs = {
-			[31025] = "Braided Eternium Chain", --28 crit rating.
-		},
-		color = "FF9CD6DE",
-		title = "Neck (28 Crit)",
-	},
-	["NeckStam"] = {
-		class = "ALL",
-		icon = "Interface\\Icons\\inv_jewelry_necklace_17",
-		cooldown = 3600,
-		minLevel = 70,
-		spellIDs = {
-			[31023] = "Thick Felsteel Necklace", --20 stam.
-		},
-		color = "FF9CD6DE",
-		title = "Neck (20 Stam)",
-	},
-	["NeckHP5"] = {
-		class = "ALL",
-		icon = "Interface\\Icons\\inv_jewelry_necklace_15",
-		cooldown = 3600,
-		minLevel = 70,
-		spellIDs = {
-			[31024] = "Living Ruby Pendant", --6 HPS.
-		},
-		color = "FF9CD6DE",
-		title = "Neck (6 HP5)",
-	},
-	["NeckStats"] = {
-		class = "ALL",
-		icon = "Interface\\Icons\\inv_jewelry_necklace_29naxxramas",
-		cooldown = 3600,
-		minLevel = 70,
-		spellIDs = {
-			[31026] = "Embrace of the Dawn", --10 stats.
-		},
-		color = "FF9CD6DE",
-		title = "Neck (10 Stats)",
-	},
+
 	--Used for testing.
 	--[[["Fel Armor"] = {
 		class = "WARLOCK",
@@ -524,4 +353,150 @@ NRC.cooldowns = {
 		},
 		--onlyLoadWhenUsed = true,
 	},]]
+};
+
+---SoD cast detect spells, mostly just runes that can't be inspected.
+--No min level or class detection required for castDetect but minLevel still needs to exist as 1 to not caus errors.
+
+if (not NRC.isSOD) then
+	return;
+end
+
+--Add spells for SoD that we want to always show even if we don't know if they have the rune (becaus they should have).
+NRC.cooldowns["Dispersion"] = {
+	class = "PRIEST",
+	icon = "Interface\\Icons\\spell_shadow_dispersion",
+	cooldown = 120,
+	minLevel = 1,
+	isBook = true,
+	spellIDs = {
+		[425294] = "Dispersion", --Rune.
+	},
+};
+NRC.cooldowns["Shadowfiend"] = {
+	class = "PRIEST",
+	icon = "Interface\\Icons\\spell_shadow_shadowfiend",
+	cooldown = 300,
+	minLevel = 21, --Min level to enter SM.
+	isRune = true,
+	spellIDs = {
+		[401977] = "Shadowfiend", --Rune.
+	},
+};
+	
+--Add spells for SoD where maybe it doesn't matter if they have the rune and we only show the cooldown if we've seen them cast it.
+NRC.castDetectCooldowns = {
+	--Priest.
+	["Pain Suppression"] = {
+		class = "PRIEST",
+		icon = "Interface\\Icons\\spell_holy_painsupression",
+		cooldown = 120,
+		minLevel = 1,
+		name = "Pain Sup",
+		isRune = true,
+		spellIDs = {
+			[402004] = "Pain Suppression", --Rune.
+		},
+	},
+	--Druid.
+	["Berserk"] = {
+		class = "DRUID",
+		icon = "Interface\\Icons\\ability_druid_berserk",
+		cooldown = 180,
+		minLevel = 1,
+		isRune = true,
+		spellIDs = {
+			[417141] = "Berserk", --Rune.
+		},
+	},
+	["Survival Instincts"] = {
+		class = "DRUID",
+		icon = "Interface\\Icons\\ability_mount_whitedirewolf",
+		cooldown = 180,
+		minLevel = 1,
+		name = "Surv Ins",
+		isRune = true,
+		spellIDs = {
+			[408024] = "Survival Instincts", --Rune.
+		},
+	},
+	--Mage.
+	["Icy Veins"] = {
+		class = "MAGE",
+		icon = "Interface\\Icons\\spell_frost_coldhearted",
+		cooldown =180,
+		minLevel = 1,
+		isRune = true,
+		spellIDs = {
+			[425121] = "Icy Veins", --Rune.
+		},
+	},
+	["Arcane Surge"] = {
+		class = "MAGE",
+		icon = "Interface\\Icons\\spell_arcane_arcanetorrent",
+		cooldown = 120,
+		minLevel = 1,
+		isRune = true,
+		spellIDs = {
+			[425124] = "Arcane Surge", --Rune.
+		},
+	},
+	--Paladin.
+	["Divine Sacrifice"] = {
+		class = "PALADIN",
+		icon = "Interface\\Icons\\spell_holy_powerwordbarrier",
+		cooldown = 120,
+		minLevel = 1,
+		name = "Div Sac",
+		isRune = true,
+		spellIDs = {
+			[407804] = "Divine Sacrifice", --Rune.
+		},
+	},
+	--Priest.
+	["Power Word: Barrier"] = {
+		class = "PRIEST",
+		icon = "Interface\\Icons\\spell_holy_powerwordbarrier",
+		cooldown = 180,
+		minLevel = 1,
+		name = "PW: Barrier",
+		isRune = true,
+		spellIDs = {
+			[425207] = "Power Word: Barrier", --Rune.
+		},
+	},
+	--Rogue.
+	["Shadowstep"] = {
+		class = "ROGUE",
+		icon = "Interface\\Icons\\ability_rogue_shadowstep",
+		cooldown = 30,
+		minLevel = 1,
+		isRune = true,
+		spellIDs = {
+			[400029] = "Shadowstep", --Rune.
+		},
+	},
+	--Shaman.
+	["Shamanistic Rage"] = {
+		class = "SHAMAN",
+		icon = "Interface\\Icons\\spell_nature_shamanrage",
+		cooldown = 60,
+		minLevel = 1,
+		isRune = true,
+		name = "Sham Rage",
+		spellIDs = {
+			[425336] = "Shamanistic Rage", --Rune.
+		},
+	},
+	--Warrior.
+	["Rallying Cry"] = {
+		class = "WARRIOR",
+		icon = "Interface\\Icons\\ability_warrior_rallyingcry",
+		cooldown = 180,
+		minLevel = 1,
+		isRune = true,
+		spellIDs = {
+			[426490] = "Rallying Cry", --Rune.
+		},
+	},
 };

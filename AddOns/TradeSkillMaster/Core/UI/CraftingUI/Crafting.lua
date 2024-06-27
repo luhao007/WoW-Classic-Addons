@@ -6,6 +6,7 @@
 
 local TSM = select(2, ...) ---@type TSM
 local Crafting = TSM.UI.CraftingUI:NewPackage("Crafting")
+local Environment = TSM.Include("Environment")
 local L = TSM.Include("Locale").GetTable()
 local CraftString = TSM.Include("Util.CraftString")
 local Delay = TSM.Include("Util.Delay")
@@ -68,7 +69,7 @@ function private.GetCraftingFrame()
 	UIUtils.AnalyticsRecordPathChange("crafting", "crafting")
 	private.filterText = ""
 	local frame = UIElements.New("DividedContainer", "crafting")
-		:SetMinWidth(200, TSM.IsWowClassic() and 147 or 189)
+		:SetMinWidth(200, Environment.IsRetail() and 189 or 147)
 		:SetVertical()
 		:HideDivider()
 		:SetSettingsContext(private.settings, "professionDividedContainerBottom")
@@ -101,7 +102,7 @@ function private.GetCraftingFrame()
 					:AddChild(UIElements.New("Frame", "buttons")
 						:SetLayout("HORIZONTAL")
 						:SetSize(48, 24)
-						:SetBackgroundColor("PRIMARY_BG_ALT", true)
+						:SetRoundedBackgroundColor("PRIMARY_BG_ALT")
 						:AddChild(UIElements.New("Button", "groupsBtn")
 							:SetMargin(4, 10, 0, 0)
 							:SetBackgroundAndSize("iconPack.14x14/Groups")
@@ -189,7 +190,8 @@ function private.GetCraftingFrame()
 		)
 		:SetBottomChild(UIElements.New("CraftDetails", "details")
 			:SetCraftableQuantityFunction(TSM.Crafting.ProfessionUtil.GetNumCraftableRecipeString)
-			:SetCraftingCostFunction(TSM.Crafting.Cost.GetCostsByRecipeString)
+			:SetDFCraftingMatsFunction(TSM.Crafting.DFCrafting.GetOptionalMats)
+			:SetCostsFunctions(TSM.Crafting.Cost.GetCostsByRecipeString, TSM.Crafting.Cost.GetCostsByCraftString)
 			:SetScript("OnQueueButtonClick", private.QueueBtnOnClick)
 			:SetScript("OnCraftButtonMouseDown", private.CraftBtnOnMouseDown)
 			:SetScript("OnCraftButtonClick", private.CraftBtnOnClick)
@@ -289,7 +291,7 @@ function private.ProfessionDropdownOnSelectionChanged(dropdown)
 	end
 	-- TODO: support showing of other player's professions?
 	assert(player == UnitName("player"))
-	Profession.Open(TSM.IsWowClassic() and profession or tonumber(skillId))
+	Profession.Open(not Environment.IsRetail() and profession or tonumber(skillId))
 end
 
 function private.FilterInputOnValueChanged(input)
@@ -312,12 +314,12 @@ function private.RecipeListOnSelectionChanged(list)
 end
 
 function private.RestockShowDialog(groupTree)
-	groupTree:GetBaseElement():ShowDialogFrame(UIElements.New("Frame", "frame", "DIALOG")
+	groupTree:GetBaseElement():ShowDialogFrame(UIElements.New("Frame", "frame")
 		:SetLayout("VERTICAL")
 		:SetSize(540, 420)
 		:SetPadding(8)
 		:AddAnchor("CENTER")
-		:SetBackgroundColor("FRAME_BG", true)
+		:SetRoundedBackgroundColor("FRAME_BG")
 		:SetMouseEnabled(true)
 		:AddChild(UIElements.New("Frame", "header")
 			:SetLayout("HORIZONTAL")
@@ -485,12 +487,12 @@ function private.QueueBtnOnClick(_, recipeString, quantity)
 	private.fsm:ProcessEvent("EV_QUEUE_BUTTON_CLICKED", recipeString, quantity)
 end
 
-function private.CraftBtnOnMouseDown(_, recipeString, quantity, isVellum)
-	private.fsm:ProcessEvent("EV_CRAFT_BUTTON_MOUSE_DOWN", recipeString, isVellum and math.huge or quantity)
+function private.CraftBtnOnMouseDown(_, recipeString, quantity, isVellum, salvageItemLocation)
+	private.fsm:ProcessEvent("EV_CRAFT_BUTTON_MOUSE_DOWN", recipeString, isVellum and math.huge or quantity, salvageItemLocation)
 end
 
-function private.CraftBtnOnClick(_, recipeString, quantity, isVellum)
-	private.fsm:ProcessEvent("EV_CRAFT_BUTTON_CLICKED", recipeString, isVellum and math.huge or quantity)
+function private.CraftBtnOnClick(_, recipeString, quantity, isVellum, salvageItemLocation)
+	private.fsm:ProcessEvent("EV_CRAFT_BUTTON_CLICKED", recipeString, isVellum and math.huge or quantity, salvageItemLocation)
 end
 
 function private.QueueTooltipFunc()
@@ -605,7 +607,7 @@ function private.FSMCreate()
 	}
 
 	Profession.RegisterStateCallback(function()
-		if Profession.GetCurrentProfession() and TSM.IsWowVanillaClassic() and CraftCreateButton then
+		if Profession.GetCurrentProfession() and Environment.IsVanillaClassic() and CraftCreateButton then
 			if Profession.IsClassicCrafting() then
 				CraftCreateButton:Show()
 			else
@@ -622,10 +624,9 @@ function private.FSMCreate()
 		success = nil,
 		isDone = nil,
 	}
-	local function BagTrackingCallback()
+	BagTracking.RegisterQuantityCallback(function()
 		private.fsm:ProcessEvent("EV_BAG_UPDATE_DELAYED")
-	end
-	BagTracking.RegisterCallback(BagTrackingCallback)
+	end)
 	fsmPrivate.craftTimer = Delay.CreateTimer("CRAFTING_CRAFT", function()
 		private.fsm:ProcessEvent("EV_SPELLCAST_COMPLETE", fsmPrivate.success, fsmPrivate.isDone)
 		fsmPrivate.success = nil
@@ -655,7 +656,7 @@ function private.FSMCreate()
 		wipe(private.professions)
 		wipe(private.professionsKeys)
 		if currentProfession and not isCurrentProfessionPlayer then
-			assert(not TSM.IsWowVanillaClassic())
+			assert(not Environment.IsVanillaClassic())
 			local playerName = nil
 			local linked, linkedName = Profession.IsLinked()
 			if linked then
@@ -743,7 +744,8 @@ function private.FSMCreate()
 			local details = context.frame:GetElement("details")
 			local craftString = context.recipeString and CraftString.FromRecipeString(context.recipeString)
 			local craftingQuantity = craftString and craftString == context.selectedCraftString and context.craftingQuantity or 1
-			details:SetState(context.recipeString and context.craftingType or "", craftingQuantity)
+			local craftingType = context.recipeString and context.craftingType
+			details:SetState(craftingType or "", craftingType and craftingQuantity or nil)
 			details:Draw()
 		end
 
@@ -760,9 +762,9 @@ function private.FSMCreate()
 			:SetPressed(context.recipeString and context.craftingType == "queue")
 			:Draw()
 	end
-	function fsmPrivate.StartCraft(context, recipeString, quantity)
+	function fsmPrivate.StartCraft(context, recipeString, quantity, salvageItemLocation)
 		local craftString = CraftString.FromRecipeString(recipeString)
-		local numCrafted = TSM.Crafting.ProfessionUtil.Craft(craftString, recipeString, quantity, context.craftingType ~= "craft", fsmPrivate.CraftCallback)
+		local numCrafted = TSM.Crafting.ProfessionUtil.Craft(craftString, recipeString, quantity, context.craftingType ~= "craft", salvageItemLocation, fsmPrivate.CraftCallback)
 		Log.Info("Crafting %d (requested %s) of %s", numCrafted, quantity == math.huge and "all" or quantity, recipeString)
 		if numCrafted == 0 then
 			return
@@ -881,7 +883,7 @@ function private.FSMCreate()
 						:End()
 				end
 				if private.haveSkillUp then
-					context.recipeQuery:NotEqual("difficulty", TSM.IsWowClassic() and "trivial" or Enum.TradeskillRelativeDifficulty.Trivial)
+					context.recipeQuery:NotEqual("difficulty", Environment.IsRetail() and Enum.TradeskillRelativeDifficulty.Trivial or "trivial")
 				end
 				if private.haveMaterials then
 					context.recipeQuery:Custom(private.HaveMaterialsFilterHelper)
@@ -921,14 +923,14 @@ function private.FSMCreate()
 			:AddEvent("EV_SKILL_UPDATE", function(context)
 				fsmPrivate.UpdateSkills(context)
 			end)
-			:AddEvent("EV_CRAFT_BUTTON_MOUSE_DOWN", function(context, recipeString, quantity)
+			:AddEvent("EV_CRAFT_BUTTON_MOUSE_DOWN", function(context, recipeString, quantity, salvageItemLocation)
 				context.craftingType = quantity == math.huge and "all" or "craft"
 				local craftString = CraftString.FromRecipeString(recipeString)
-				TSM.Crafting.ProfessionUtil.PrepareToCraft(craftString, recipeString, quantity, RecipeString.GetLevel(recipeString))
+				TSM.Crafting.ProfessionUtil.PrepareToCraft(craftString, recipeString, quantity, RecipeString.GetLevel(recipeString), salvageItemLocation)
 			end)
-			:AddEvent("EV_CRAFT_BUTTON_CLICKED", function(context, recipeString, quantity)
+			:AddEvent("EV_CRAFT_BUTTON_CLICKED", function(context, recipeString, quantity, salvageItemLocation)
 				context.craftingType = quantity == math.huge and "all" or "craft"
-				fsmPrivate.StartCraft(context, recipeString, quantity)
+				fsmPrivate.StartCraft(context, recipeString, quantity, salvageItemLocation)
 			end)
 			:AddEvent("EV_CRAFT_NEXT_BUTTON_CLICKED", function(context, craftString, recipeString, quantity)
 				if context.recipeString then

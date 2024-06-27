@@ -114,12 +114,31 @@ local _lastBankSlotId = nil
 local _bankOpen = false
 
 local function scanBag(bagId, isBank, bagTable, bagItemsWithCount)
-	local numSlots = GetContainerNumSlots(bagId)
+
+	local numSlots = C_Container.GetContainerNumSlots(bagId)
+	--local loc = ItemLocation.CreateEmpty()
+	local item
 	for slotId = 1, numSlots do
-		local _, itemCount, _, _, _, _, itemLink = GetContainerItemInfo(bagId, slotId)
-		if itemLink ~= nil then
-			local itemData = Amr.Serializer.ParseItemLink(itemLink)
+		local itemInfo = C_Container.GetContainerItemInfo(bagId, slotId)
+		if itemInfo then
+			local itemData = Amr.Serializer.ParseItemLink(itemInfo.hyperlink)
 			if itemData ~= nil then
+				item = Item:CreateFromBagAndSlot(bagId, slotId)
+
+				-- seems to be of the form Item-1147-0-4000000XXXXXXXXX, so we take just the last 9 digits
+				itemData.guid = item:GetItemGUID()
+				if itemData.guid and strlen(itemData.guid) > 9 then
+					itemData.guid = strsub(itemData.guid, -9)
+				end
+
+				-- see if this is an azerite item and read azerite power ids
+				--[[loc:SetBagAndSlot(bagId, slotId)
+				if C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItem(loc) then
+					local powers = Amr.ReadAzeritePowers(loc)
+					if powers then
+						itemData.azerite = powers
+					end
+				end]]
 
 				if isBank then
 					_lastBankBagId = bagId
@@ -131,9 +150,9 @@ local function scanBag(bagId, isBank, bagTable, bagItemsWithCount)
 				-- all items and counts, used for e.g. shopping list and reagents, etc.
                 if bagItemsWithCount then
                 	if bagItemsWithCount[itemData.id] then
-                		bagItemsWithCount[itemData.id] = bagItemsWithCount[itemData.id] + itemCount
+                		bagItemsWithCount[itemData.id] = bagItemsWithCount[itemData.id] + itemInfo.stackCount
                 	else
-                		bagItemsWithCount[itemData.id] = itemCount
+                		bagItemsWithCount[itemData.id] = itemInfo.stackCount
                 	end
                 end
             end
@@ -185,7 +204,7 @@ local function scanBank()
 	
 	-- see if the scan completed before the window closed, otherwise we don't overwrite with partial data
 	if _bankOpen and _lastBankBagId then
-		local itemLink = GetContainerItemLink(_lastBankBagId, _lastBankSlotId)
+		local itemLink = C_Container.GetContainerItemLink(_lastBankBagId, _lastBankSlotId)
 		if itemLink then --still open
             Amr.db.char.BankItems = bankItems
             Amr.db.char.BankItemsAndCounts = itemsAndCounts
@@ -211,7 +230,7 @@ local function onBankUpdated(bagID)
 
 		-- see if the scan completed before the window closed, otherwise we don't overwrite with partial data
 		if _bankOpen and _lastBankBagId == bagID then
-			local itemLink = GetContainerItemLink(_lastBankBagId, _lastBankSlotId)
+			local itemLink = C_Container.GetContainerItemLink(_lastBankBagId, _lastBankSlotId)
 			if itemLink then
 				Amr.db.char.BankItems[bagID] = bagItems
 				Amr.db.char.BankItemsAndCounts[bagID] = bagItemsAndCounts

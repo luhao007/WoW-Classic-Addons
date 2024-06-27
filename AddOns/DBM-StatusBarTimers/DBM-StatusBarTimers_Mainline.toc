@@ -1,0 +1,16 @@
+## Interface: 30400
+## Author: MysticalOS, QartemisT
+## Version: 10.2.49
+## LoadOnDemand: 0
+## SavedVariables: DBT_AllPersistentOptions
+## DefaultState: enabled
+
+## Title: |cffffe00a<|r|cffff7d0aDBM Core|r|cffffe00a>|r |cff69ccf0Status Bar Timers|r
+## Notes: DBM - status bar timer library
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFF69CCF0状态条计时器|r
+## Notes-zhCN: DBM 状态条计时器函数库
+
+## X-Website: https://deadlybossmods.com
+## X-Part-Of: DBM-Core
+
+DBT.lua

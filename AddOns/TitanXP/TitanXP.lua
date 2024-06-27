@@ -1,0 +1,766 @@
+---@diagnostic disable: duplicate-set-field
+--[[
+-- **************************************************************************
+-- * TitanXP.lua
+-- *
+-- * By: The Titan Panel Development Team
+-- **************************************************************************
+--]]
+
+-- ******************************** Constants *******************************
+
+local TITAN_XP_ID = "XP";
+local TITAN_XP_BUTTON = "TitanPanel" .. TITAN_XP_ID .. "Button"
+local _G = getfenv(0);
+local TITAN_XP_FREQUENCY = 1;
+local updateTable = { TITAN_XP_ID, TITAN_PANEL_UPDATE_ALL };
+
+-- ******************************** Variables *******************************
+
+local lastMobXP, lastXP, XPGain = 0, 0, 0
+local L = LibStub("AceLocale-3.0"):GetLocale(TITAN_ID, true)
+
+local AceTimer = LibStub("AceTimer-3.0")
+local XPTimer = {}
+---@diagnostic disable-next-line: missing-fields
+XPTimer.timer = nil -- set & cancelled as needed
+XPTimer.delay = 30 -- seconds
+XPTimer.running = false
+XPTimer.last = 0
+
+local trace = false
+local trace_update = false
+
+--****** overload the 'time played' text to Chat - if XP requested the API call
+local requesting
+local xp_frame = {}
+
+-- Save orignal output to Chat
+local orig_ChatFrame_DisplayTimePlayed = ChatFrame_DisplayTimePlayed
+-- Override the output to Chat
+ChatFrame_DisplayTimePlayed = function(...)
+	if requesting then
+		-- XP requested time played, do not spam Chat
+		requesting = false
+	else
+		-- XP did not request time played so output
+		orig_ChatFrame_DisplayTimePlayed(...)
+	end
+end
+--****** overload
+
+-- ******************************** Functions *******************************
+--[[
+-- **************************************************************************
+-- NAME : SetIcon()
+-- DESC : Define icon based on faction
+-- **************************************************************************
+--]]
+local function SetIcon()
+	local icon = TitanPanelXPButtonIcon;
+	local factionGroup, factionName = UnitFactionGroup("player");
+
+	if (factionGroup == "Alliance") then
+		icon:SetTexture("Interface\\TargetingFrame\\UI-PVP-Alliance");
+		icon:SetTexCoord(0.046875, 0.609375, 0.03125, 0.59375);
+	elseif (factionGroup == "Horde") then
+		icon:SetTexture("Interface\\TargetingFrame\\UI-PVP-Horde");
+		icon:SetTexCoord(0.046875, 0.609375, 0.015625, 0.578125);
+	else
+		icon:SetTexture("Interface\\TargetingFrame\\UI-PVP-FFA");
+		icon:SetTexCoord(0.046875, 0.609375, 0.03125, 0.59375);
+	end
+end
+
+--[[
+Add commas or period in the value given as needed
+--]]
+local function comma_value(amount)
+	local formatted = amount
+	local k
+	local sep = (TitanGetVar(TITAN_XP_ID, "UseSeperatorComma") and "UseComma" or "UsePeriod")
+	while true do
+		if sep == "UseComma" then formatted, k = string.gsub(formatted, "^(-?%d+)(%d%d%d)", '%1,%2') end
+		if sep == "UsePeriod" then formatted, k = string.gsub(formatted, "^(-?%d+)(%d%d%d)", '%1.%2') end
+		if (k == 0) then
+			break
+		end
+	end
+	return formatted
+end
+
+--[[
+-- **************************************************************************
+-- NAME : ResetSession()
+-- DESC : Reset session and accumulated variables
+-- **************************************************************************
+--]]
+local function ResetSession(self)
+	self.initXP = UnitXP("player")
+	self.accumXP = 0
+	self.sessionXP = 0
+	self.startSessionTime = time() -- clock time
+	lastXP = self.initXP;
+end
+
+-- Wrapper for menu to use
+local function ResetThisSession()
+	ResetSession(_G[TITAN_XP_BUTTON])
+end
+
+--[[ 2024 Apr
+Change to a repeating timer instead of OnUpdate to reduce cycles
+The timer, started OnShow, will update session time here
+The prior scheme used OnUpdate which is related to FPS. 
+XP does not need that level of precision.
+--]]
+local function XPTimeUpdate(plugin)
+	local elapsed = GetTime() - XPTimer.last
+	XPTimer.last = GetTime()
+	plugin.totalTime = plugin.totalTime + elapsed
+	plugin.levelTime = plugin.levelTime + elapsed
+
+	TitanPanelButton_UpdateButton(TITAN_XP_ID)
+
+	if trace then
+		local txt = "XP Text"
+			.. " " .. tostring(format("%0.2f", elapsed)) .. ""
+			TitanPluginDebug(TITAN_XP_ID, txt)
+	end
+end
+
+--[[
+-- **************************************************************************
+-- NAME : RefreshPlayed()
+-- DESC : Get total time played
+-- Do not send RequestTimePlayed output to Chat if XP requested the info.
+-- This is done by overriding the routine RequestTimePlayed() uses
+-- ChatFrame_DisplayTimePlayed.
+-- **************************************************************************
+--]]
+local function RefreshPlayed()
+	xp_frame:RequestTimePlayed()
+end
+
+--[[
+-- **************************************************************************
+-- NAME : OnShow()
+-- DESC : Display the icon in the bar
+-- **************************************************************************
+--]]
+local function OnShow(self)
+	local txt = ""
+
+	if self.sessionTime then
+		-- No action
+	else
+		-- initial login / PEW
+		self.sessionTime = time();
+		txt = txt .. "Sess reset"
+	end
+	if self.initXP then
+		-- No action
+	else -- initial login / PEW
+		ResetSession(self)
+		txt = txt .. " | Init"
+	end
+	self:RegisterEvent("TIME_PLAYED_MSG");
+	self:RegisterEvent("PLAYER_XP_UPDATE");
+	self:RegisterEvent("PLAYER_LEVEL_UP");
+	self:RegisterEvent("CHAT_MSG_COMBAT_XP_GAIN");
+
+	RefreshPlayed()
+
+	SetIcon();
+	txt = txt .. " | Events"
+
+	if XPTimer.running then
+		-- Do not create a new one
+	else
+		XPTimer.timer = AceTimer:ScheduleRepeatingTimer(XPTimeUpdate, XPTimer.delay, self)
+		XPTimer.running = true
+		XPTimer.last = GetTime() -- No need for millisecond precision
+	end
+
+	if trace then
+		local dbg = "XP _OnShow"
+			.. " " .. tostring(txt) .. ""
+		TitanPluginDebug(TITAN_XP_ID, dbg)
+	end
+end
+
+local function OnHide(self)
+	self:UnregisterEvent("TIME_PLAYED_MSG");
+	self:UnregisterEvent("PLAYER_XP_UPDATE");
+	self:UnregisterEvent("PLAYER_LEVEL_UP");
+	self:UnregisterEvent("CHAT_MSG_COMBAT_XP_GAIN");
+
+	AceTimer:CancelTimer(XPTimer.timer)
+	XPTimer.running = false
+	XPTimer.timer = nil
+end
+
+--[[
+-- **************************************************************************
+-- NAME : OnEvent(self, event, a1, a2, ...)
+-- DESC : Parse events registered to addon and act on them.
+-- VARS : https://warcraft.wiki.gg/wiki/UIHANDLER_OnEvent
+-- **************************************************************************
+--]]
+local function OnEvent(self, event, a1, a2, ...)
+	local txt = ""
+	if trace then
+		txt = "_OnEvent"
+			.. " " .. tostring(event) .. ""
+		--		.." "..tostring(a1)..""
+		--		.." "..tostring(a2)..""
+		TitanPluginDebug(TITAN_XP_ID, txt)
+	end
+
+	if (event == "PLAYER_ENTERING_WORLD") then
+		if a1 == true then
+			-- Initial login so start session
+			ResetSession(self)
+		end
+	elseif (event == "TIME_PLAYED_MSG") then
+		-- Remember play time
+		self.totalTime = a1;
+		self.levelTime = a2;
+
+		TitanPanelButton_UpdateButton(TITAN_XP_ID)
+	elseif (event == "PLAYER_XP_UPDATE") then
+		if self.initXP then
+			-- has been initialized
+		else
+			ResetSession(self)
+		end
+
+		XPGain = UnitXP("player") - lastXP;
+		lastXP = UnitXP("player");
+		if XPGain < 0 then
+			XPGain = 0
+		else
+			-- Assume it is valid
+		end
+		self.sessionXP = UnitXP("player") - self.initXP + self.accumXP;
+		TitanPanelButton_UpdateButton(TITAN_XP_ID)
+		if trace then
+			txt = "XP Ev "
+				.. " unit " .. tostring(format("%0.1f", UnitXP("player"))) .. ""
+				.. " init " .. tostring(format("%0.1f", self.initXP)) .. ""
+				.. " acc " .. tostring(format("%0.1f", self.accumXP)) .. ""
+			TitanPluginDebug(TITAN_XP_ID, txt)
+		end
+	elseif (event == "PLAYER_LEVEL_UP") then
+		self.levelTime = 0;
+		self.accumXP = self.accumXP + UnitXPMax("player") - self.initXP;
+		self.initXP = 0;
+		TitanPanelButton_UpdateButton(TITAN_XP_ID)
+	elseif (event == "CHAT_MSG_COMBAT_XP_GAIN") then
+		local _, _, _, killXP = string.find(a1, "^" .. L["TITAN_XP_GAIN_PATTERN"])
+		if killXP then
+			lastMobXP = tonumber(killXP)
+			if lastMobXP < 0 then -- sanity check
+				lastMobXP = 0
+			else
+				-- Assume valid
+			end
+			TitanPanelButton_UpdateButton(TITAN_XP_ID)
+		end
+	end
+end
+
+--[[
+-- **************************************************************************
+-- NAME : OnUpdate(elapsed)
+-- DESC : Update button data
+-- VARS : elapsed = <research>
+-- **************************************************************************
+--]]
+--[[
+local function OnUpdate(self, elapsed)
+	TITAN_XP_FREQUENCY = TITAN_XP_FREQUENCY - elapsed;
+	if (TITAN_XP_FREQUENCY <= 0) then
+		TITAN_XP_FREQUENCY = 1;
+		TitanPanelPluginHandle_OnUpdate(updateTable)
+	end
+	if (self.totalTime) then
+		self.totalTime = self.totalTime + elapsed;
+		self.levelTime = self.levelTime + elapsed;
+	end
+end
+--]]
+
+--[[
+-- **************************************************************************
+-- NAME : ShowXPPerHourLevel()
+-- DESC : Display per hour to level data in bar if set
+-- **************************************************************************
+--]]
+local function ShowXPPerHourLevel()
+	TitanSetVar(TITAN_XP_ID, "DisplayType", "ShowXPPerHourLevel");
+	TitanPanelButton_UpdateButton(TITAN_XP_ID);
+	TitanSetVar(TITAN_XP_ID, "ShowSimpleRested", false);
+	TitanSetVar(TITAN_XP_ID, "ShowSimpleToLevel", false);
+	TitanSetVar(TITAN_XP_ID, "ShowSimpleNumOfKills", false);
+	TitanSetVar(TITAN_XP_ID, "ShowSimpleNumOfGains", false);
+end
+
+--[[
+-- **************************************************************************
+-- NAME : GetButtonText(id)
+-- DESC : Calculate time based logic for button text
+-- VARS : id = button ID
+-- NOTE : Because the panel gets loaded before XP we need to check whether
+--        the variables have been initialized and take action if they haven't
+-- **************************************************************************
+--]]
+local function GetButtonText(id)
+	local txt = ""
+	local button, id = TitanUtils_GetButton(id) -- sanity check, also get plugin frame
+	if button and (TitanPanelXPButton.startSessionTime == nil) then
+		if trace then
+			txt = "XP "
+				.. " " .. tostring("start not set - too early") .. ""
+			TitanPluginDebug(TITAN_XP_ID, txt)
+		end
+		return "XP", ""
+	elseif button then
+		local totalXP = UnitXPMax("player");
+		local currentXP = UnitXP("player");
+		local toLevelXP = totalXP - currentXP;
+		local sessionXP = button and button.sessionXP;
+		local xpPerHour, xpPerHourText, timeToLevel, timeToLevelText;
+		local sessionTime = time() - button.startSessionTime;
+		local levelTime = button.levelTime;
+		local numofkills, numofgains;
+		if lastMobXP ~= 0 then
+			numofkills = math.ceil(toLevelXP / lastMobXP)
+		else
+			numofkills = _G["UNKNOWN"]
+		end
+		if XPGain ~= 0 then
+			numofgains = math.ceil(toLevelXP / XPGain)
+		else
+			numofgains = _G["UNKNOWN"]
+		end
+		if trace_update then
+			txt = "XP / Hr"
+				.. " sxp" .. tostring(format("%0.1f", sessionXP)) .. ""
+				.. " st" .. tostring(format("%0.1f", button.startSessionTime)) .. ""
+			TitanPluginDebug(TITAN_XP_ID, txt)
+		end
+
+		if (levelTime) then
+			if (TitanGetVar(TITAN_XP_ID, "DisplayType") == "ShowXPPerHourSession") then
+				if sessionXP <= 0 then
+					xpPerHour = 0
+				else
+					xpPerHour = sessionXP / sessionTime * 3600
+				end
+				--			timeToLevel = TitanUtils_Ternary((sessionXP == 0), -1, toLevelXP / sessionXP * sessionTime);
+				timeToLevel = (sessionXP == 0) and -1 or toLevelXP / sessionXP * sessionTime;
+
+				xpPerHourText = comma_value(math.floor(xpPerHour + 0.5));
+				timeToLevelText = TitanUtils_GetEstTimeText(timeToLevel);
+
+				if trace_update then
+					txt = "XP / Hr"
+						.. " hr: " .. tostring(format("%0.1f", xpPerHour)) .. ""
+						.. " '" .. tostring(xpPerHourText) .. "'"
+						.. " lvl: " .. tostring(format("%0.1f", timeToLevel)) .. ""
+						.. " '" .. tostring(timeToLevelText) .. "'"
+					TitanPluginDebug(TITAN_XP_ID, txt)
+				end
+				return L["TITAN_XP_BUTTON_LABEL_XPHR_SESSION"], TitanUtils_GetHighlightText(xpPerHourText),
+					L["TITAN_XP_BUTTON_LABEL_TOLEVEL_TIME_LEVEL"], TitanUtils_GetHighlightText(timeToLevelText);
+			elseif (TitanGetVar(TITAN_XP_ID, "DisplayType") == "ShowXPPerHourLevel") then
+				xpPerHour = currentXP / levelTime * 3600;
+				--			timeToLevel = TitanUtils_Ternary((currentXP == 0), -1, toLevelXP / currentXP * levelTime);
+				timeToLevel = (currentXP == 0) and -1 or toLevelXP / currentXP * levelTime;
+
+				xpPerHourText = comma_value(math.floor(xpPerHour + 0.5));
+				timeToLevelText = TitanUtils_GetEstTimeText(timeToLevel);
+
+				return L["TITAN_XP_BUTTON_LABEL_XPHR_LEVEL"], TitanUtils_GetHighlightText(xpPerHourText),
+					L["TITAN_XP_BUTTON_LABEL_TOLEVEL_TIME_LEVEL"], TitanUtils_GetHighlightText(timeToLevelText);
+			elseif (TitanGetVar(TITAN_XP_ID, "DisplayType") == "ShowSessionTime") then
+				return L["TITAN_XP_BUTTON_LABEL_SESSION_TIME"],
+					TitanUtils_GetHighlightText(TitanUtils_GetAbbrTimeText(sessionTime));
+			elseif (TitanGetVar(TITAN_XP_ID, "DisplayType") == "ShowXPSimple") then
+				local toLevelXPText = "";
+				local rest = "";
+				local labelrested = "";
+				local labeltolevel = "";
+				local labelnumofkills = "";
+				local labelnumofgains = "";
+				local percent = floor(10000 * (currentXP / totalXP) + 0.5) / 100;
+				if TitanGetVar(TITAN_XP_ID, "ShowSimpleToLevel") then
+					toLevelXPText = TitanUtils_GetColoredText(
+						format(L["TITAN_XP_FORMAT"], comma_value(math.floor(toLevelXP + 0.5))), _G["GREEN_FONT_COLOR"]);
+					labeltolevel = L["TITAN_XP_XPTOLEVELUP"];
+				end
+				if TitanGetVar(TITAN_XP_ID, "ShowSimpleRested") then
+					rest = TitanUtils_GetColoredText(comma_value(GetXPExhaustion() == nil and "0" or GetXPExhaustion()),
+						{ r = 0.44, g = 0.69, b = 0.94 });
+					labelrested = L["TITAN_XP_TOTAL_RESTED"];
+				end
+				if TitanGetVar(TITAN_XP_ID, "ShowSimpleNumOfKills") then
+					numofkills = TitanUtils_GetColoredText(comma_value(numofkills), { r = 0.24, g = 0.7, b = 0.44 })
+					labelnumofkills = L["TITAN_XP_KILLS_LABEL_SHORT"];
+				else
+					numofkills = ""
+				end
+				if TitanGetVar(TITAN_XP_ID, "ShowSimpleNumOfGains") then
+					numofgains = TitanUtils_GetColoredText(comma_value(numofgains), { r = 1, g = 0.49, b = 0.04 })
+					labelnumofgains = L["TITAN_XP_XPGAINS_LABEL_SHORT"];
+				else
+					numofgains = ""
+				end
+
+				if TitanGetVar(TITAN_XP_ID, "ShowSimpleNumOfGains") then
+					return L["TITAN_XP_LEVEL_COMPLETE"], TitanUtils_GetHighlightText(percent .. "%"),
+						labelrested, rest,
+						labeltolevel, toLevelXPText,
+						labelnumofgains, numofgains
+				else
+					return L["TITAN_XP_LEVEL_COMPLETE"], TitanUtils_GetHighlightText(percent .. "%"),
+						labelrested, rest,
+						labeltolevel, toLevelXPText,
+						labelnumofkills, numofkills
+				end
+			end
+		else
+			if trace_update then
+				TitanPluginDebug(TITAN_XP_ID, "pending")
+			end
+			return "(" .. L["TITAN_XP_UPDATE_PENDING"] .. ")";
+		end
+	else
+		-- Invalid button - frame not created?
+	end
+end
+
+--[[
+-- **************************************************************************
+-- NAME : GetTooltipText()
+-- DESC : Display tooltip text
+-- **************************************************************************
+--]]
+local function GetTooltipText()
+	local res = ""
+	local button, id = TitanUtils_GetButton(TITAN_XP_ID) -- sanity check, also get plugin frame
+
+	if button then
+		local totalTime = button.totalTime;
+		local sessionTime = time() - button.startSessionTime;
+		local levelTime = button.levelTime;
+		-- failsafe to ensure that an error wont be returned
+		if levelTime then
+			local totalXP = UnitXPMax("player");
+			local currentXP = UnitXP("player");
+			local toLevelXP = totalXP - currentXP;
+			local currentXPPercent = currentXP / totalXP * 100;
+			local toLevelXPPercent = toLevelXP / totalXP * 100;
+			local xpPerHourThisLevel = currentXP / levelTime * 3600;
+			local xpPerHourThisSession = button.sessionXP / sessionTime * 3600;
+			local estTimeToLevelThisLevel = TitanUtils_Ternary((currentXP == 0), -1,
+				toLevelXP / (max(currentXP, 1)) * levelTime);
+			local estTimeToLevelThisSession = 0;
+			if button.sessionXP > 0 then
+				estTimeToLevelThisSession = TitanUtils_Ternary((button.sessionXP == 0), -1,
+					toLevelXP / button.sessionXP * sessionTime);
+			end
+			local numofkills, numofgains;
+			if lastMobXP ~= 0 then
+				numofkills = math.ceil(toLevelXP / lastMobXP)
+			else
+				numofkills = _G["UNKNOWN"]
+			end
+			if XPGain ~= 0 then
+				numofgains = math.ceil(toLevelXP / XPGain)
+			else
+				numofgains = _G["UNKNOWN"]
+			end
+			res = "" ..
+				L["TITAN_XP_TOOLTIP_TOTAL_TIME"] ..
+				"\t" .. TitanUtils_GetHighlightText(TitanUtils_GetAbbrTimeText(totalTime)) .. "\n" ..
+				L["TITAN_XP_TOOLTIP_LEVEL_TIME"] ..
+				"\t" .. TitanUtils_GetHighlightText(TitanUtils_GetAbbrTimeText(levelTime)) .. "\n" ..
+				L["TITAN_XP_TOOLTIP_SESSION_TIME"] ..
+				"\t" .. TitanUtils_GetHighlightText(TitanUtils_GetAbbrTimeText(sessionTime)) .. "\n" ..
+				"\n" ..
+				L["TITAN_XP_TOOLTIP_TOTAL_XP"] .. "\t" .. TitanUtils_GetHighlightText(comma_value(totalXP)) .. "\n" ..
+				L["TITAN_XP_TOTAL_RESTED"] ..
+				"\t" ..
+				TitanUtils_GetHighlightText(comma_value(GetXPExhaustion() == nil and "0" or GetXPExhaustion())) .. "\n" ..
+				L["TITAN_XP_TOOLTIP_LEVEL_XP"] ..
+				"\t" ..
+				TitanUtils_GetHighlightText(comma_value(currentXP) .. " " ..
+					format(L["TITAN_XP_PERCENT_FORMAT"], currentXPPercent)) .. "\n" ..
+				L["TITAN_XP_TOOLTIP_TOLEVEL_XP"] ..
+				"\t" ..
+				TitanUtils_GetHighlightText(comma_value(toLevelXP) .. " " ..
+					format(L["TITAN_XP_PERCENT_FORMAT"], toLevelXPPercent)) .. "\n" ..
+				L["TITAN_XP_TOOLTIP_SESSION_XP"] ..
+				"\t" .. TitanUtils_GetHighlightText(comma_value(button.sessionXP)) .. "\n" ..
+				format(L["TITAN_XP_KILLS_LABEL"], comma_value(lastMobXP)) ..
+				"\t" .. TitanUtils_GetHighlightText(comma_value(numofkills)) .. "\n" ..
+				format(L["TITAN_XP_XPGAINS_LABEL"], comma_value(XPGain)) ..
+				"\t" .. TitanUtils_GetHighlightText(comma_value(numofgains)) .. "\n" ..
+				"\n" ..
+				L["TITAN_XP_TOOLTIP_XPHR_LEVEL"] ..
+				"\t" ..
+				TitanUtils_GetHighlightText(format(L["TITAN_XP_FORMAT"], comma_value(math.floor(xpPerHourThisLevel + 0.5)))) ..
+				"\n" ..
+				L["TITAN_XP_TOOLTIP_XPHR_SESSION"] ..
+				"\t" ..
+				TitanUtils_GetHighlightText(format(L["TITAN_XP_FORMAT"], comma_value(math.floor(xpPerHourThisSession + 0.5)))) ..
+				"\n" ..
+				L["TITAN_XP_TOOLTIP_TOLEVEL_LEVEL"] ..
+				"\t" .. TitanUtils_GetHighlightText(TitanUtils_GetAbbrTimeText(estTimeToLevelThisLevel)) .. "\n" ..
+				L["TITAN_XP_TOOLTIP_TOLEVEL_SESSION"] ..
+				"\t" .. TitanUtils_GetHighlightText(TitanUtils_GetAbbrTimeText(estTimeToLevelThisSession));
+		else
+		end
+	else
+		-- No button - not created?
+	end
+	return res
+end
+
+local function Seperator(chosen)
+	if chosen == "UseSeperatorComma" then
+		TitanSetVar(TITAN_XP_ID, "UseSeperatorComma", true);
+		TitanSetVar(TITAN_XP_ID, "UseSeperatorPeriod", false);
+	end
+	if chosen == "UseSeperatorPeriod" then
+		TitanSetVar(TITAN_XP_ID, "UseSeperatorComma", false);
+		TitanSetVar(TITAN_XP_ID, "UseSeperatorPeriod", true);
+	end
+	TitanPanelButton_UpdateButton(TITAN_XP_ID);
+end
+
+--[[
+-- **************************************************************************
+-- NAME : ShowXPPerHourSession()
+-- DESC : Display per hour in session data in bar if set
+-- **************************************************************************
+--]]
+local function ShowXPPerHourSession()
+	TitanSetVar(TITAN_XP_ID, "DisplayType", "ShowXPPerHourSession");
+	TitanPanelButton_UpdateButton(TITAN_XP_ID);
+	TitanSetVar(TITAN_XP_ID, "ShowSimpleRested", false);
+	TitanSetVar(TITAN_XP_ID, "ShowSimpleToLevel", false);
+	TitanSetVar(TITAN_XP_ID, "ShowSimpleNumOfKills", false);
+	TitanSetVar(TITAN_XP_ID, "ShowSimpleNumOfGains", false);
+end
+
+--[[
+-- **************************************************************************
+-- NAME : ShowSessionTime()
+-- DESC : Display session time in bar if set
+-- **************************************************************************
+--]]
+local function ShowSessionTime()
+	TitanSetVar(TITAN_XP_ID, "DisplayType", "ShowSessionTime");
+	TitanPanelButton_UpdateButton(TITAN_XP_ID);
+	TitanSetVar(TITAN_XP_ID, "ShowSimpleRested", false);
+	TitanSetVar(TITAN_XP_ID, "ShowSimpleToLevel", false);
+	TitanSetVar(TITAN_XP_ID, "ShowSimpleNumOfKills", false);
+	TitanSetVar(TITAN_XP_ID, "ShowSimpleNumOfGains", false);
+end
+
+--[[
+-- **************************************************************************
+-- NAME : ShowXPSimple()
+-- DESC : Display simple XP data (% level, rest, xp to level) in bar if set
+-- **************************************************************************
+--]]
+local function ShowXPSimple()
+	TitanSetVar(TITAN_XP_ID, "DisplayType", "ShowXPSimple");
+	TitanPanelButton_UpdateButton(TITAN_XP_ID);
+end
+
+--[[
+-- **************************************************************************
+-- NAME : TitanPanelRightClickMenu_PrepareXPMenu()
+-- DESC : Display rightclick menu options
+-- **************************************************************************
+--]]
+local function CreateMenu()
+	local info = {};
+	if TitanPanelRightClickMenu_GetDropdownLevel() == 2 then
+		TitanPanelRightClickMenu_AddTitle(L["TITAN_XP_MENU_SIMPLE_BUTTON_TITLE"], 2);
+
+		info = {};
+		info.text = L["TITAN_XP_MENU_SIMPLE_BUTTON_RESTED"];
+		info.func = function() TitanPanelRightClickMenu_ToggleVar({ TITAN_XP_ID, "ShowSimpleRested" }) end
+		info.checked = TitanUtils_Ternary(TitanGetVar(TITAN_XP_ID, "ShowSimpleRested"), 1, nil);
+		info.keepShownOnClick = 1;
+		TitanPanelRightClickMenu_AddButton(info, TitanPanelRightClickMenu_GetDropdownLevel());
+
+		info = {};
+		info.text = L["TITAN_XP_MENU_SIMPLE_BUTTON_TOLEVELUP"];
+		info.func = function() TitanPanelRightClickMenu_ToggleVar({ TITAN_XP_ID, "ShowSimpleToLevel" }) end
+		info.checked = TitanUtils_Ternary(TitanGetVar(TITAN_XP_ID, "ShowSimpleToLevel"), 1, nil);
+		info.keepShownOnClick = 1;
+		TitanPanelRightClickMenu_AddButton(info, TitanPanelRightClickMenu_GetDropdownLevel());
+
+		info = {};
+		info.text = L["TITAN_XP_MENU_SIMPLE_BUTTON_KILLS"];
+		info.func = function()
+			TitanSetVar(TITAN_XP_ID, "ShowSimpleNumOfKills", true)
+			TitanSetVar(TITAN_XP_ID, "ShowSimpleNumOfGains", false)
+		end
+		info.checked = TitanUtils_Ternary(TitanGetVar(TITAN_XP_ID, "ShowSimpleNumOfKills"), 1, nil);
+		TitanPanelRightClickMenu_AddButton(info, TitanPanelRightClickMenu_GetDropdownLevel());
+
+		info = {};
+		info.text = L["TITAN_XP_MENU_SIMPLE_BUTTON_XPGAIN"];
+		info.func = function()
+			TitanSetVar(TITAN_XP_ID, "ShowSimpleNumOfGains", true)
+			TitanSetVar(TITAN_XP_ID, "ShowSimpleNumOfKills", false)
+		end
+		info.checked = TitanUtils_Ternary(TitanGetVar(TITAN_XP_ID, "ShowSimpleNumOfGains"), 1, nil);
+		TitanPanelRightClickMenu_AddButton(info, TitanPanelRightClickMenu_GetDropdownLevel());
+		return
+	elseif TitanPanelRightClickMenu_GetDropdownLevel() == 1 then
+		TitanPanelRightClickMenu_AddTitle(TitanPlugins[TITAN_XP_ID].menuText);
+		info = {};
+		info.text = L["TITAN_XP_MENU_SHOW_XPHR_THIS_SESSION"];
+		info.func = ShowXPPerHourSession;
+		info.checked = TitanUtils_Ternary("ShowXPPerHourSession" == TitanGetVar(TITAN_XP_ID, "DisplayType"), 1, nil);
+		TitanPanelRightClickMenu_AddButton(info, TitanPanelRightClickMenu_GetDropdownLevel());
+
+		info = {};
+		info.text = L["TITAN_XP_MENU_SHOW_XPHR_THIS_LEVEL"];
+		info.func = ShowXPPerHourLevel;
+		info.checked = TitanUtils_Ternary("ShowXPPerHourLevel" == TitanGetVar(TITAN_XP_ID, "DisplayType"), 1, nil);
+		TitanPanelRightClickMenu_AddButton(info, TitanPanelRightClickMenu_GetDropdownLevel());
+
+		info = {};
+		info.text = L["TITAN_XP_MENU_SHOW_SESSION_TIME"];
+		info.func = ShowSessionTime;
+		info.checked = TitanUtils_Ternary("ShowSessionTime" == TitanGetVar(TITAN_XP_ID, "DisplayType"), 1, nil);
+		TitanPanelRightClickMenu_AddButton(info, TitanPanelRightClickMenu_GetDropdownLevel());
+
+		info = {};
+		info.text = L["TITAN_XP_MENU_SHOW_RESTED_TOLEVELUP"];
+		info.func = ShowXPSimple;
+		info.hasArrow = 1;
+		info.checked = TitanUtils_Ternary("ShowXPSimple" == TitanGetVar(TITAN_XP_ID, "DisplayType"), 1, nil);
+		TitanPanelRightClickMenu_AddButton(info, TitanPanelRightClickMenu_GetDropdownLevel());
+
+		TitanPanelRightClickMenu_AddSpacer();
+		TitanPanelRightClickMenu_AddCommand(L["TITAN_XP_MENU_RESET_SESSION"], TITAN_XP_ID, ResetThisSession);
+		TitanPanelRightClickMenu_AddCommand(L["TITAN_XP_MENU_REFRESH_PLAYED"], TITAN_XP_ID, RefreshPlayed);
+	end
+
+	TitanPanelRightClickMenu_AddSpacer();
+
+	info = {};
+	info.text = L["TITAN_PANEL_USE_COMMA"];
+	info.checked = TitanGetVar(TITAN_XP_ID, "UseSeperatorComma");
+	info.func = function()
+		Seperator("UseSeperatorComma")
+	end
+	TitanPanelRightClickMenu_AddButton(info, TitanPanelRightClickMenu_GetDropdownLevel());
+
+	info = {};
+	info.text = L["TITAN_PANEL_USE_PERIOD"];
+	info.checked = TitanGetVar(TITAN_XP_ID, "UseSeperatorPeriod");
+	info.func = function()
+		Seperator("UseSeperatorPeriod")
+	end
+	TitanPanelRightClickMenu_AddButton(info, TitanPanelRightClickMenu_GetDropdownLevel());
+
+	TitanPanelRightClickMenu_AddControlVars(TITAN_XP_ID)
+end
+
+--[[
+-- **************************************************************************
+-- NAME : OnLoad()
+-- DESC : Registers the plugin upon it loading
+-- **************************************************************************
+--]]
+local function OnLoad(self)
+	local notes = ""
+		.. "Adds information to Titan Panel about XP earned and time to level.\n"
+		.."- Updates XP per hour statistics every "..XPTimer.delay.." sec.\n"
+	self.registry = {
+		id = TITAN_XP_ID,
+		category = "Built-ins",
+		version = TITAN_VERSION,
+		menuText = L["TITAN_XP_MENU_TEXT"],
+		menuTextFunction = CreateMenu,
+		buttonTextFunction = GetButtonText,
+		tooltipTitle = L["TITAN_XP_TOOLTIP"],
+		tooltipTextFunction = GetTooltipText,
+		iconWidth = 16,
+		notes = notes,
+		controlVariables = {
+			ShowIcon = true,
+			ShowLabelText = true,
+			ShowColoredText = false,
+			DisplayOnRightSide = true
+		},
+		savedVariables = {
+			DisplayType = "ShowXPPerHourSession",
+			ShowIcon = 1,
+			ShowLabelText = 1,
+			ShowSimpleRested = false,
+			ShowSimpleToLevel = false,
+			ShowSimpleNumOfKills = false,
+			ShowSimpleNumOfGains = false,
+			UseSeperatorComma = true,
+			UseSeperatorPeriod = false,
+			DisplayOnRightSide = false,
+		}
+	};
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+end
+
+-- ====== Create needed frames
+local function Create_Frames()
+	if _G[TITAN_XP_BUTTON] then
+		-- if already created
+	else
+		-- general container frame
+		local f = CreateFrame("Frame", nil, UIParent)
+		--	f:Hide()
+
+		-- Titan plugin button
+		local window = CreateFrame("Button", TITAN_XP_BUTTON, f, "TitanPanelComboTemplate")
+		xp_frame = window
+		window:SetFrameStrata("FULLSCREEN")
+		-- Using SetScript("OnLoad",   does not work
+		OnLoad(window);
+		--	TitanPanelButton_OnLoad(window); -- Titan XML template calls this...
+
+		window:SetScript("OnShow", function(self)
+			OnShow(self)
+			TitanPanelButton_OnShow(self)
+		end)
+		window:SetScript("OnHide", function(self)
+			OnHide(self)
+		end)
+		window:SetScript("OnEvent", function(self, event, ...)
+			OnEvent(self, event, ...)
+		end)
+		--		window:SetScript("OnUpdate", function(self, elapsed)
+		--			OnUpdate(self, elapsed)
+		--		end)
+
+		-- Do not output Chat messages when using RequestTimePlayed
+		function window:RequestTimePlayed()
+			requesting = true
+			RequestTimePlayed()
+		end
+	end
+end
+
+
+if TITAN_ID then -- it exists
+	Create_Frames() -- do the work
+end

@@ -148,6 +148,7 @@ local function filterFunc(_, event, msg, player, l, cs, t, flag, channelId, ...)
   local newMsg = "";
   local remaining = msg;
   local done;
+  local anyLinkFound = false
   repeat
     local start, finish, characterName, displayName = remaining:find("%[WeakAuras: ([^%s]+) %- (.*)%]");
     if(characterName and displayName) then
@@ -156,13 +157,16 @@ local function filterFunc(_, event, msg, player, l, cs, t, flag, channelId, ...)
       newMsg = newMsg..remaining:sub(1, start-1);
       newMsg = newMsg.."|Hgarrmission:weakauras|h|cFF8800FF["..characterName.." |r|cFF8800FF- "..displayName.."]|h|r";
       remaining = remaining:sub(finish + 1);
+      anyLinkFound = true
     else
+      newMsg = newMsg .. remaining
       done = true;
     end
   until(done)
-  if newMsg ~= "" then
+  if anyLinkFound then
     local trimmedPlayer = Ambiguate(player, "none")
-    if event == "CHAT_MSG_WHISPER" and not UnitInRaid(trimmedPlayer) and not UnitInParty(trimmedPlayer) then -- XXX: Need a guild check
+    local guid = select(5, ...)
+    if event == "CHAT_MSG_WHISPER" and not UnitInRaid(trimmedPlayer) and not UnitInParty(trimmedPlayer) and not (IsGuildMember and IsGuildMember(guid)) then
       local _, num = BNGetNumFriends()
       for i=1, num do
         if C_BattleNet then -- introduced in 8.2.5 PTR
@@ -453,14 +457,14 @@ end
 
 local delayedImport = CreateFrame("Frame")
 
-local function ImportNow(data, children, target, sender, callbackFunc)
+local function ImportNow(data, children, target, linkedAuras, sender, callbackFunc)
   if InCombatLockdown() then
     WeakAuras.prettyPrint(L["Importing will start after combat ends."])
 
     delayedImport:RegisterEvent("PLAYER_REGEN_ENABLED")
     delayedImport:SetScript("OnEvent", function()
       delayedImport:UnregisterEvent("PLAYER_REGEN_ENABLED")
-      ImportNow(data, children, target, sender, callbackFunc)
+      ImportNow(data, children, target, linkedAuras, sender, callbackFunc)
     end)
     return
   end
@@ -469,11 +473,11 @@ local function ImportNow(data, children, target, sender, callbackFunc)
     if not WeakAuras.IsOptionsOpen() then
       WeakAuras.OpenOptions()
     end
-    Private.OpenUpdate(data, children, target, sender, callbackFunc)
+    Private.OpenUpdate(data, children, target, linkedAuras, sender, callbackFunc)
   end
 end
 
-function WeakAuras.Import(inData, target, callbackFunc)
+function WeakAuras.Import(inData, target, callbackFunc, linkedAuras)
   local data, children, version
   if type(inData) == 'string' then
     -- encoded data
@@ -499,6 +503,18 @@ function WeakAuras.Import(inData, target, callbackFunc)
     return nil, "Invalid import data."
   end
 
+  local highestVersion = data.internalVersion or 0
+  if children then
+    for _, child in ipairs(children) do
+      highestVersion = max(highestVersion, child.internalVersion or 0)
+    end
+  end
+  if highestVersion > WeakAuras.InternalVersion() then
+    -- Do not run PreAdd but still show Import Window
+    tooltipLoading = nil;
+    return ImportNow(data, children, target, linkedAuras, nil, callbackFunc)
+  end
+
   if version < 2000 then
     if children then
       data.controlledChildren = {}
@@ -509,7 +525,6 @@ function WeakAuras.Import(inData, target, callbackFunc)
     end
   end
 
-  local status, msg = true, ""
   if type(target) ~= 'nil' then
     local uid = type(target) == 'table' and target.uid or target
     local targetData = Private.GetDataByUID(uid)
@@ -530,7 +545,7 @@ function WeakAuras.Import(inData, target, callbackFunc)
   end
 
   tooltipLoading = nil;
-  return ImportNow(data, children, target, nil, callbackFunc)
+  return ImportNow(data, children, target, linkedAuras, nil, callbackFunc)
 end
 
 local function crossRealmSendCommMessage(prefix, text, target, queueName, callbackFn, callbackArg)
@@ -659,7 +674,7 @@ Comm:RegisterComm("WeakAuras", function(prefix, message, distribution, sender)
       end
 
       ItemRefTooltip:Hide()
-      ImportNow(data, children, nil, sender)
+      ImportNow(data, children, nil, nil, sender)
     elseif(received.m == "dR") then
       if(Private.linked and Private.linked[received.d] and Private.linked[received.d] > GetTime() - linkValidityDuration) then
         TransmitDisplay(received.d, sender);

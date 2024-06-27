@@ -1,15 +1,18 @@
 ## Interface: 30400
-## Author: Gello - Updated for Classic by Rottenbeer
+## Author: Gello - Updated for Classic by Rottenbeer,Roadblock
+## Version: 4.00
 ## OptionalDeps: Masque
 ## SavedVariables: ItemRackSettings, ItemRackItems, ItemRackEvents
 ## SavedVariablesPerCharacter: ItemRackUser
 
-## Title: ItemRack
+## Title: ItemRack - Classic
 ## Title-zhCN: |cFFFFE00A<|r|cFFFFF468功能|r|cFFFFE00A>|r |cFFFFFFFF一键换装|r |cFFFFE00AItemRack|r
 
 ## X-Curse-Project-ID: 340903
 
 # Libraries
+Libs\Libs.xml
+
 ItemRack.lua
 ItemRack.xml
 ItemRackButtons.lua

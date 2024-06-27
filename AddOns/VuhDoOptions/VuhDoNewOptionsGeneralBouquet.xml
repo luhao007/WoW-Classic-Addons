@@ -875,7 +875,48 @@
 									</OnTextChanged>
 								</Scripts>
 							</EditBox>
-	
+
+							<Frame name="$parentSpellTraceEditLabel" inherits="VuhDoLabelFrameTemplate">
+								<Size>
+									<AbsDimension x="120" y="18" />
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="26" y="-222" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Layers>
+									<Layer>
+										<FontString name="$parentLabel" text="VUHDO_I18N_SPELL_TRACE_EDIT_BOX" justifyH="LEFT" inherits="VuDoDefaultFontTemplate">
+										</FontString>
+									</Layer>
+								</Layers>
+							</Frame>
+
+							<EditBox name="$parentSpellTraceEditBox" inherits="VuhDoEditBoxTemplate">
+								<Size>
+									<AbsDimension x="170" y="32" />
+								</Size>
+								<Anchors>
+									<Anchor point="BOTTOM">
+										<Offset>
+											<AbsDimension x="0" y="7" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										VUHDO_lnfSetModel(self, nil);
+										VUHDO_lnfSetTooltip(self, VUHDO_I18N_SPELL_TRACE_EDIT_BOX);
+									</OnLoad>
+									<OnTextChanged>
+										VUHDO_lnfEditBoxUpdateModel(self);
+									</OnTextChanged>
+								</Scripts>
+							</EditBox>
+
 						</Frames>
 					</Frame>
 
@@ -1008,7 +1049,7 @@
 								<Anchors>
 									<Anchor point="TOPLEFT">
 										<Offset>
-											<AbsDimension x="81" y="-218" />
+											<AbsDimension x="81" y="-219" />
 										</Offset>
 									</Anchor>
 								</Anchors>

@@ -7,16 +7,19 @@ classConfig.parent = addon
 
 
 classConfig:SetScript("OnShow", function(self)
-	self:SetScript("OnShow", nil)
+	self:SetScript("OnShow", function()
+		self:SetPoint("TOPLEFT", -12, 8)
+	end)
+	self:SetPoint("TOPLEFT", -12, 8)
 	self.macrosConfig = mounts.config.macrosConfig
 	self.charMacrosConfig = mounts.charDB.macrosConfig
 
 	-- VERSION
 	local ver = self:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
-	ver:SetPoint("TOPRIGHT", -16, 16)
+	ver:SetPoint("TOPLEFT", 40, 20)
 	ver:SetTextColor(.5, .5, .5, 1)
 	ver:SetJustifyH("RIGHT")
-	ver:SetText(GetAddOnMetadata(addon, "Version"))
+	ver:SetText(C_AddOns.GetAddOnMetadata(addon, "Version"))
 
 	-- TITLE
 	local title = self:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
@@ -128,6 +131,7 @@ classConfig:SetScript("OnShow", function(self)
 	self.moveFallMF = moveFallMF
 	self.macroEditBox = moveFallMF.editFrame
 	moveFallMF:SetPoint("LEFT", 9, 0)
+	moveFallMF:SetPoint("RIGHT", self.rightPanelScroll, -5, 0)
 	moveFallMF.label:SetText(L["HELP_MACRO_MOVE_FALL"])
 	moveFallMF.enable:HookScript("OnClick", function(btn)
 		self.currentMacrosConfig.macroEnable = btn:GetChecked()
@@ -154,6 +158,7 @@ classConfig:SetScript("OnShow", function(self)
 	self.combatMF = combatMF
 	self.combatMacroEditBox = combatMF.editFrame
 	combatMF:SetPoint("TOPLEFT", moveFallMF.background, "BOTTOMLEFT", 0, -50)
+	combatMF:SetPoint("RIGHT", self.rightPanelScroll, -5, 0)
 	combatMF.label:SetText(L["HELP_MACRO_COMBAT"])
 	combatMF.enable:HookScript("OnClick", function(btn)
 		self.currentMacrosConfig.combatMacroEnable = btn:GetChecked()
@@ -178,6 +183,13 @@ classConfig:SetScript("OnShow", function(self)
 	self:updateDefMacros()
 	firstClassFrame:Click()
 	self:RegisterEvent("LEARNED_SPELL_IN_TAB")
+
+	-- COMMIT
+	self.OnCommit = function(self)
+		self:macroSave()
+		self:combatMacroSave()
+		util.refreshMacro()
+	end
 end)
 
 
@@ -377,11 +389,9 @@ function classConfig:combatMacroSave()
 end
 
 
-classConfig.okay = function(self)
-	self:macroSave()
-	self:combatMacroSave()
-	util.refreshMacro()
-end
-
-
-InterfaceOptions_AddCategory(classConfig)
+local category = Settings.GetCategory(addon)
+local subcategory, layout = Settings.RegisterCanvasLayoutSubcategory(category, classConfig, L["Class settings"])
+subcategory.ID = L["Class settings"]
+-- layout:AddAnchorPoint("TOPLEFT", -12, 8)
+-- layout:AddAnchorPoint("BOTTOMRIGHT", 0, 0)
+Settings.RegisterAddOnCategory(subcategory)

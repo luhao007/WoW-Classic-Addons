@@ -525,3 +525,26 @@ NRC.cooldowns = {
 		--onlyLoadWhenUsed = true,
 	},]]
 };
+
+--Add faction specific spells.
+if (NRC.faction == "Alliance") then
+	NRC.cooldowns["Heroism"] = {
+		class = "SHAMAN",
+		icon = "Interface\\Icons\\ability_shaman_heroism",
+		cooldown = 600,
+		minLevel = 70,
+		spellIDs = {
+			[32182] = "Heroism", --Rank 1.
+		},
+	};
+else
+	NRC.cooldowns["Bloodlust"] = {
+		class = "SHAMAN",
+		icon = "Interface\\Icons\\spell_nature_bloodlust",
+		cooldown = 600,
+		minLevel = 70,
+		spellIDs = {
+			[2825] = "Bloodlust", --Rank 1.
+		},
+	};
+end

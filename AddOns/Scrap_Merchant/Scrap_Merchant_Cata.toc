@@ -1,0 +1,12 @@
+## Title: |TInterface/Addons/Scrap/art/scrap-small:16:16|t Scrap |cffffffffMerchant|r
+## Notes: Load on demand merchant modifications.|n|cffbbbbbbBy João Cardoso|r|n|n|TInterface/Addons/Scrap/art/patreon:12:12|t |cff82c5ffpatreon.com/jaliborc|r|n|TInterface/Addons/Scrap/art/paypal:12:12|t |cff82c5ffpaypal.me/jaliborc|r|n|TInterface/Addons/Scrap/art/discord:12:12:0:-2|t |cff82c5ffbit.ly/discord-jaliborc|r|n|n
+## Author: Jaliborc (João Cardoso)
+## X-License: All Rights Reserved
+## X-Category: Bags & Inventory
+
+## Version: 10.2.11
+## Interface: 40400
+## Dependencies: Scrap
+## LoadOnDemand: 1
+
+..\Scrap\addons\merchant\merchant.xml

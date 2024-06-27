@@ -43,7 +43,7 @@ Prat:AddModuleToLoad(function()
 
 
 
-  --[===[@debug@
+  --[==[@debug@
   PL:AddLocale(PRAT_MODULE, "enUS", {
     ["ChannelNames"] = true,
     ["Original Buttons"] = true,
@@ -68,7 +68,7 @@ Prat:AddModuleToLoad(function()
     buttonframe_desc = "Toggles the button frame menu on and off.",
     buttonframe_name = "Show Button Frame",
   })
-  --@end-debug@]===]
+  --@end-debug@]==]
 
   -- These Localizations are auto-generated. To help with localization
   -- please go to http://www.wowace.com/projects/prat-3-0/localization/
@@ -606,7 +606,7 @@ end
       self:ButtonFrame(i, self.db.profile.buttonframe)
     end
     self:ChatMenu(self.db.profile.chatmenu)
-    QuickJoinToastButton:Hide()
+    if QuickJoinToastButton then QuickJoinToastButton:Hide() end
 
     -- set OnUpdateInterval, if they are profiling, update less
     --    if GetCVar("scriptProfile") == "1" then
@@ -662,7 +662,7 @@ end
     end
     self:ChatMenu(self.db.profile.chatmenu)
 
-    QuickJoinToastButton:Hide()
+    if QuickJoinToastButton then QuickJoinToastButton:Hide() end
   end
 
   function module:ChatFrame_OnUpdateHook(this, elapsed)

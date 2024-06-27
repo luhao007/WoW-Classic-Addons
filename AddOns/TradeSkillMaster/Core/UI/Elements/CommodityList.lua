@@ -8,7 +8,7 @@
 -- The element used to show the details of a selected commodity in shopping. It is a subclass of the @{ScrollingTable} class.
 -- @classmod CommodityList
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local L = TSM.Include("Locale").GetTable()
 local Money = TSM.Include("Util.Money")
 local Math = TSM.Include("Util.Math")

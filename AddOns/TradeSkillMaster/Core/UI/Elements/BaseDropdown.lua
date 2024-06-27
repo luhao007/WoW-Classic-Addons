@@ -9,7 +9,7 @@
 -- @{MultiselectionDropdown} classes. It is a subclass of the @{Text} class.
 -- @classmod BaseDropdown
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local Rectangle = TSM.Include("UI.Rectangle")
 local Color = TSM.Include("Util.Color")
 local Theme = TSM.Include("Util.Theme")
@@ -158,7 +158,7 @@ function BaseDropdown.SetOpen(self, open)
 			:SetContext(self)
 			:AddAnchor("TOPLEFT", self:_GetBaseFrame(), "BOTTOMLEFT", 0, -4)
 			:SetPadding(0, 0, 4, 4)
-			:SetBackgroundColor("ACTIVE_BG", true)
+			:SetRoundedBackgroundColor("ACTIVE_BG")
 			:SetSize(max(width, self:_GetDimension("WIDTH")), height)
 			:SetScript("OnHide", private.DialogOnHide)
 		self:_AddDialogChildren(dialogFrame)

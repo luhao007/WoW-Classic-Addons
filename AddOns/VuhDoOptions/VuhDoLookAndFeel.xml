@@ -351,12 +351,7 @@
 	<DisabledTexture file="Interface\AddOns\VuhDoOptions\Images\button_pressed_128_32">
 		<TexCoords left="0" right="1" top="0" bottom="1" />
 	</DisabledTexture>
-	<DisabledFont inherits="VuDoDefaultFontTemplate">
-		<FontHeight>
-			<AbsValue val="9" />
-		</FontHeight>
-		<Color r="0.6" g="0.2" b="0.2" />
-	</DisabledFont>
+	<DisabledFont style="VuDoButtonFont" />
 	<ButtonText name="$parentText" justifyV="TOP" justifyH="LEFT" maxLines="2">
 		<Anchors>
 			<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
@@ -369,18 +364,8 @@
 			<AbsValue val="8" />
 		</FontHeight>
 	</ButtonText>
-	<NormalFont style="VuDoButtonFont">
-		<FontHeight>
-			<AbsValue val="9" />
-		</FontHeight>
-		<Color r="0.4" g="0.4" b="1" />
-	</NormalFont>
-	<HighlightFont style="VuDoButtonFontLight">
-		<FontHeight>
-			<AbsValue val="9" />
-		</FontHeight>
-		<Color r="0.6" g="0.6" b="1" />
-	</HighlightFont>
+	<NormalFont style="VuDoButtonFont" />
+	<HighlightFont style="VuDoButtonFontLight" />
 	<Scripts>
 		<OnShow>VUHDO_lnfPatchFont(self, "Text");</OnShow>
 		<OnEnter>VUHDO_lnfShowTooltip(self)</OnEnter>
@@ -399,12 +384,7 @@
 	<DisabledTexture file="Interface\AddOns\VuhDoOptions\Images\button_pressed_128_32">
 		<TexCoords left="0" right="1" top="0" bottom="1" />
 	</DisabledTexture>
-	<DisabledFont inherits="VuDoDefaultFontTemplate">
-		<FontHeight>
-			<AbsValue val="9" />
-		</FontHeight>
-		<Color r="0.6" g="0.2" b="0.2" />
-	</DisabledFont>
+	<DisabledFont style="VuDoButtonFont" />
 	<ButtonText name="$parentText" justifyV="TOP" justifyH="LEFT" maxLines="2">
 		<Anchors>
 			<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
@@ -417,18 +397,8 @@
 			<AbsValue val="8" />
 		</FontHeight>
 	</ButtonText>
-	<NormalFont style="VuDoButtonFontDark">
-		<FontHeight>
-			<AbsValue val="9" />
-		</FontHeight>
-		<Color r="0.4" g="0.4" b="1" />
-	</NormalFont>
-	<HighlightFont style="VuDoButtonFont">
-		<FontHeight>
-			<AbsValue val="9" />
-		</FontHeight>
-		<Color r="0.6" g="0.6" b="1" />
-	</HighlightFont>
+	<NormalFont style="VuDoButtonFontDark" />
+	<HighlightFont style="VuDoButtonFont" />
 	<Scripts>
 		<OnShow>VUHDO_lnfPatchFont(self, "Text");</OnShow>
 		<OnEnter>VUHDO_lnfShowTooltip(self)</OnEnter>
@@ -1294,25 +1264,45 @@
 				</Size>
 			</ThumbTexture>
 			<Scripts>
-				<OnShow>VUHDO_lnfPatchFont(self, "Title"); VUHDO_lnfPatchFont(self, "Value"); VUHDO_lnfSliderInitFromModel(self)</OnShow>
+				<OnShow>
+					VUHDO_lnfPatchFont(self, "Title");
+					VUHDO_lnfPatchFont(self, "Value");
+					VUHDO_lnfSliderInitFromModel(self);
+				</OnShow>
 				<OnValueChanged>
-				  if not self._onsetting then
-				    self._onsetting = true;
-				    self:SetValue(self:GetValue());
-				    value = self:GetValue()
-				    self._onsetting = false;
-				  else return; end
+					if not self._onsetting then
+						self._onsetting = true;
+
+						self:SetValue(self:GetValue());
+						value = self:GetValue()
+
+						self._onsetting = false;
+					else
+						return;
+					end
+						
 					VUHDO_lnfSliderUpdateModel(self);
 					VUHDO_lnfSliderOnValueChanged(self:GetParent());
-  			</OnValueChanged>
-				<OnEnter>VUHDO_lnfShowTooltip(self:GetParent())</OnEnter>
-				<OnLeave>VUHDO_lnfHideTooltip(self:GetParent())</OnLeave>
+				</OnValueChanged>
+				<OnMouseWheel>
+					self:SetValue(self:GetValue() + (delta * self:GetValueStep()));
+				</OnMouseWheel>
+				<OnEnter>
+					VUHDO_lnfShowTooltip(self:GetParent());
+				</OnEnter>
+				<OnLeave>
+					VUHDO_lnfHideTooltip(self:GetParent());
+				</OnLeave>
 			</Scripts>
 		</Slider>
 	</Frames>
 	<Scripts>
-		<OnEnter>VUHDO_lnfShowTooltip(self)</OnEnter>
-		<OnLeave>VUHDO_lnfHideTooltip(self)</OnLeave>
+		<OnEnter>
+			VUHDO_lnfShowTooltip(self);
+		</OnEnter>
+		<OnLeave>
+			VUHDO_lnfHideTooltip(self);
+		</OnLeave>
 	</Scripts>
 </Frame>
 
@@ -1355,24 +1345,44 @@
 			</ThumbTexture>
 			<Scripts>
 				<OnValueChanged>
-				  if not self._onsetting then
-				    self._onsetting = true;
-				    self:SetValue(self:GetValue());
-				    value = self:GetValue()
-				    self._onsetting = false;
-				  else return; end
+					if not self._onsetting then
+						self._onsetting = true;
+
+						self:SetValue(self:GetValue());
+						value = self:GetValue()
+
+						self._onsetting = false;
+					else
+						return;
+					end
+
 					VUHDO_lnfSliderUpdateModel(self);
 					VUHDO_lnfSliderOnValueChanged(self:GetParent());
 				</OnValueChanged>
-				<OnShow>VUHDO_lnfPatchFont(self, "Title"); VUHDO_lnfPatchFont(self, "Value"); VUHDO_lnfSliderInitFromModel(self)</OnShow>
-				<OnEnter>VUHDO_lnfShowTooltip(self:GetParent())</OnEnter>
-				<OnLeave>VUHDO_lnfHideTooltip(self:GetParent())</OnLeave>
+				<OnMouseWheel>
+					self:SetValue(self:GetValue() + (delta * self:GetValueStep()));
+				</OnMouseWheel>
+				<OnShow>
+					VUHDO_lnfPatchFont(self, "Title");
+					VUHDO_lnfPatchFont(self, "Value");
+					VUHDO_lnfSliderInitFromModel(self);
+				</OnShow>
+				<OnEnter>
+					VUHDO_lnfShowTooltip(self:GetParent());
+				</OnEnter>
+				<OnLeave>
+					VUHDO_lnfHideTooltip(self:GetParent());
+				</OnLeave>
 			</Scripts>
 		</Slider>
 	</Frames>
 	<Scripts>
-		<OnEnter>VUHDO_lnfShowTooltip(self)</OnEnter>
-		<OnLeave>VUHDO_lnfHideTooltip(self)</OnLeave>
+		<OnEnter>
+			VUHDO_lnfShowTooltip(self);
+		</OnEnter>
+		<OnLeave>
+			VUHDO_lnfHideTooltip(self);
+		</OnLeave>
 	</Scripts>
 </Frame>
 
@@ -2219,7 +2229,7 @@
 	</Frames>
 	<Scripts>
 		<OnLoad inherit="prepend">
-			ScrollFrame_OnLoad(self);
+			UIPanelScrollFrame_OnLoad(self);
 		</OnLoad>
 		<OnScrollRangeChanged>
 			ScrollFrame_OnScrollRangeChanged(self, xrange, yrange);
@@ -2269,7 +2279,7 @@
 	</Frames>
 	<Scripts>
 		<OnLoad inherit="prepend">
-			ScrollFrame_OnLoad(self);
+			UIPanelScrollFrame_OnLoad(self);
 		</OnLoad>
 		<OnScrollRangeChanged>
 			ScrollFrame_OnScrollRangeChanged(self, xrange, yrange);

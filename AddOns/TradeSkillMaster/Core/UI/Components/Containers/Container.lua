@@ -50,17 +50,21 @@ function Container:ReleaseAllChildren()
 end
 
 ---Adds a child element.
+---@generic T: Container
+---@param self T
 ---@param child Element The child element
----@return Container
+---@return T
 function Container:AddChild(child)
 	self:_AddChildHelper(child, true)
 	return self
 end
 
 ---Add a child element when the required condition is true.
+---@generic T: Container
+---@param self T
 ---@param condition boolean The required condition
 ---@param child Element The child element
----@return Container
+---@return T
 function Container:AddChildIf(condition, child)
 	if not condition then
 		child:Release()
@@ -71,26 +75,32 @@ function Container:AddChildIf(condition, child)
 end
 
 ---Add a child element before another one.
+---@generic T: Container
+---@param self T
 ---@param beforeId string The id of the child element to add this one before
 ---@param child Element The child element
----@return Container
+---@return T
 function Container:AddChildBeforeById(beforeId, child)
 	self:_AddChildHelper(child, true, beforeId)
 	return self
 end
 
 ---Add child elements using a function.
+---@generic T: Container
+---@param self T
 ---@param func fun(container: Container, ...: any) The function to call which will add children
 ---@param ... any Additional arguments to pass to the function
----@return Container
+---@return T
 function Container:AddChildrenWithFunction(func, ...)
 	func(self, ...)
 	return self
 end
 
 ---Add a child element which has explicit layout performed by the application code.
+---@generic T: Container
+---@param self T
 ---@param child Element The child element
----@return Container
+---@return T
 function Container:AddChildNoLayout(child)
 	self:_AddChildHelper(child, false)
 	return self

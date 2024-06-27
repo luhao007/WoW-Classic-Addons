@@ -40,7 +40,7 @@ Prat:AddModuleToLoad(function()
 
   local PL = module.PL
 
-  --[===[@debug@
+  --[==[@debug@
   PL:AddLocale(PRAT_MODULE, "enUS", {
     ["ChannelNames"] = true,
     ["Channel name abbreviation options."] = true,
@@ -70,7 +70,7 @@ Prat:AddModuleToLoad(function()
     ["chanlink_desc"] = "Make the channel a clickable link which opens chat to that channel.",
     ["<string>"] = true,
   })
-  --@end-debug@]===]
+  --@end-debug@]==]
 
   -- These Localizations are auto-generated. To help with localization
   -- please go to http://www.wowace.com/projects/prat-3-0/localization/

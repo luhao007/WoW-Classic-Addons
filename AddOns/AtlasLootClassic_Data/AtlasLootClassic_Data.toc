@@ -1,11 +1,11 @@
 ## Interface: 30400
-## Author: Lag
-## Version: v3.0.7
+## Author: Snowflame0
+## Version: v4.0.1-beta2
 ## Dependencies: AtlasLootClassic
 ## LoadOnDemand: 1
 
-## Title: AtlasLootClassic |cFFFF0000[Data]|r
-## Notes: AtlasLoot data module
+## Title: AtlasLootClassic |cFFFF5733Cata|r |cFFFF0000[Data]|r
+## Notes: AtlasLoot Data module
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本掉落|r |cFF69CCF0数据|r
 ## Notes-zhCN: AtlasLoot 物品数据
 
@@ -20,3 +20,4 @@ items.lua
 source.lua
 source-tbc.lua
 source-wrath.lua
+source-cata.lua

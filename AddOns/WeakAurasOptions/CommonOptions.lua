@@ -374,8 +374,17 @@ end
 
 local function CreateHiddenAll(subOption)
   return function(data, info)
+    local mainOptions = OptionsPrivate.EnsureOptions(data, subOption)
+    for i=1,#info do
+      mainOptions = mainOptions.args[info[i]];
+    end
+
     if(#data.controlledChildren == 0) then
-      return true;
+      if mainOptions.hiddenAllIfAnyHidden then
+        return false
+      else
+        return true
+      end
     end
 
     for child in  OptionsPrivate.Private.TraverseLeafs(data) do
@@ -387,13 +396,24 @@ local function CreateHiddenAll(subOption)
         childOptionTable[i] = childOption;
       end
       if (childOption) then
-        if (not hiddenChild(childOptionTable, info)) then
-          return false;
+        local childHidden = hiddenChild(childOptionTable, info)
+        if mainOptions.hiddenAllIfAnyHidden then
+          if childHidden then
+            return true
+          end
+        else
+          if not childHidden then
+            return false
+          end
         end
       end
     end
 
-    return true;
+    if mainOptions.hiddenAllIfAnyHidden then
+      return false
+    else
+      return true
+    end
   end
 end
 
@@ -721,6 +741,11 @@ local function replaceNameDescFuncs(intable, data, subOption)
                       if(type(display) == "number") then
                         display = math.floor(display * 100) / 100;
                       else
+                        local nullBytePos = display:find("\0", nil, true)
+                        if nullBytePos then
+                          display = display:sub(1, nullBytePos - 1)
+                        end
+
                         if #display > 50 then
                           display = display:sub(1, 50) .. "..."
                         end
@@ -1073,6 +1098,10 @@ local function PositionOptions(id, data, _, hideWidthHeight, disableSelfPoint, g
       values = (data.regionType == "group" or data.regionType == "dynamicgroup")
                 and OptionsPrivate.Private.anchor_frame_types_group
                 or OptionsPrivate.Private.anchor_frame_types,
+      sorting = OptionsPrivate.Private.SortOrderForValues(
+                (data.regionType == "group" or data.regionType == "dynamicgroup")
+                and OptionsPrivate.Private.anchor_frame_types_group
+                or OptionsPrivate.Private.anchor_frame_types),
     },
     anchorFrameParent = {
       type = "toggle",
@@ -1084,7 +1113,7 @@ local function PositionOptions(id, data, _, hideWidthHeight, disableSelfPoint, g
         return data.anchorFrameParent or data.anchorFrameParent == nil;
       end,
       hidden = function()
-        return not IsGroupByFrame() and (data.anchorFrameType == "SCREEN" or data.anchorFrameType == "MOUSE" or IsParentDynamicGroup());
+        return not IsGroupByFrame() and (data.anchorFrameType == "SCREEN" or data.anchorFrameType == "UIPARENT" or data.anchorFrameType == "MOUSE" or IsParentDynamicGroup());
       end,
     },
     anchorFrameSpaceOne = {
@@ -1094,7 +1123,7 @@ local function PositionOptions(id, data, _, hideWidthHeight, disableSelfPoint, g
       order = 72,
       image = function() return "", 0, 0 end,
       hidden = function()
-        return IsParentDynamicGroup() or not (data.anchorFrameType == "SCREEN" or data.anchorFrameType == "MOUSE")
+        return IsParentDynamicGroup() or not (data.anchorFrameType == "SCREEN" or data.anchorFrameType == "UIPARENT" or data.anchorFrameType == "MOUSE" or IsGroupByFrame())
       end,
     },
     -- Input field to select frame to anchor on
@@ -1104,7 +1133,7 @@ local function PositionOptions(id, data, _, hideWidthHeight, disableSelfPoint, g
       name = L["Frame"],
       order = 73,
       hidden = function()
-        if (IsParentDynamicGroup()) then
+        if (IsParentDynamicGroup() or IsGroupByFrame()) then
           return true;
         end
         return not (data.anchorFrameType == "SELECTFRAME")
@@ -1117,7 +1146,7 @@ local function PositionOptions(id, data, _, hideWidthHeight, disableSelfPoint, g
       name = L["Choose"],
       order = 74,
       hidden = function()
-        if (IsParentDynamicGroup()) then
+        if (IsParentDynamicGroup() or IsGroupByFrame()) then
           return true;
         end
         return not (data.anchorFrameType == "SELECTFRAME")
@@ -1140,7 +1169,7 @@ local function PositionOptions(id, data, _, hideWidthHeight, disableSelfPoint, g
       type = "select",
       width = WeakAuras.normalWidth,
       name = function()
-        if (data.anchorFrameType == "SCREEN") then
+        if (data.anchorFrameType == "SCREEN" or data.anchorFrameType == "UIPARENT") then
           return L["To Screen's"]
         elseif (data.anchorFrameType == "PRD") then
           return L["To Personal Ressource Display's"];
@@ -1251,14 +1280,14 @@ local function PositionOptions(id, data, _, hideWidthHeight, disableSelfPoint, g
       order = 82,
       image = function() return "", 0, 0 end,
       hidden = function()
-        return not (data.anchorFrameType ~= "SCREEN" or IsParentDynamicGroup());
+        return not (data.anchorFrameType ~= "SCREEN" or data.anchorFrameType ~= "UIPARENT" or IsParentDynamicGroup());
       end
     },
   };
 
   OptionsPrivate.commonOptions.AddCodeOption(positionOptions, data, L["Custom Anchor"], "custom_anchor",
                       "https://github.com/WeakAuras/WeakAuras2/wiki/Custom-Code-Blocks#custom-anchor-function",
-                      71.5, function() return not(data.anchorFrameType == "CUSTOM" and not IsParentDynamicGroup()) end,
+                      71.5, function() return not(data.anchorFrameType == "CUSTOM" and not IsParentDynamicGroup() and not IsGroupByFrame()) end,
                       {"customAnchor"}, false, { setOnParent = group })
   return positionOptions;
 end
@@ -1602,3 +1631,4 @@ OptionsPrivate.commonOptions.AddCodeOption = AddCodeOption
 
 OptionsPrivate.commonOptions.AddCommonTriggerOptions = AddCommonTriggerOptions
 OptionsPrivate.commonOptions.AddTriggerGetterSetter = AddTriggerGetterSetter
+

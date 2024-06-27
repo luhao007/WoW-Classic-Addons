@@ -435,6 +435,7 @@ data["WailingCaverns"] = {
 	},
 }
 
+--[[
 data["TheDeadmines"] = {
 	MapID = 1581,
 	InstanceID = 36,
@@ -739,19 +740,19 @@ data["ShadowfangKeep"] = {
 				{ 2,  23171 }, -- The Axe of Severing
 			},
 		},
-		AtlasLoot:GameVersion_GE(AtlasLoot.WRATH_VERSION_NUM, { -- SFKApothecaryH
+		AtlasLoot:GameVersion_GE(AtlasLoot.CATA_VERSION_NUM, { -- SFKApothecaryH
 			name = AL["Apothecary Hummel <Crown Chemical Co.>"],
 			npcID = 36296,
-			Level = 83,
+			Level = 87,
 			DisplayIDs = {{31167}},
 			AtlasMapBossID = 3,
 			ExtraList = true,
 			[NORMAL_DIFF] = {
-				{ 1,  51804 }, -- Winking Eye of Love
-				{ 2,  51805 }, -- Heartbreak Charm
-				{ 3,  51806 }, -- Shard of Pirouetting Happiness
-				{ 4,  51807 }, -- Sweet Perfume Broach
-				{ 5,  51808 }, -- Choker of the Pure Heart
+				{ 1,  68175 }, -- Winking Eye of Love
+				{ 2,  68176 }, -- Heartbreak Charm
+				{ 3,  68172 }, -- Shard of Pirouetting Happiness
+				{ 4,  68174 }, -- Sweet Perfume Broach
+				{ 5,  68173 }, -- Choker of the Pure Heart
 				{ 7,  49641 }, -- Faded Lovely Greeting Card
 				{ 8,  49715 }, -- Forever-Lovely Rose
 				{ 9,  50250 }, -- X-45 Heartbreaker
@@ -778,6 +779,7 @@ data["ShadowfangKeep"] = {
 		},
 	},
 }
+--]]
 
 data["BlackfathomDeeps"] = {
 	MapID = 719,
@@ -903,29 +905,42 @@ data["TheStockade"] = {
 	AtlasMapFile_AL = "TheStockade",
 	ContentType = DUNGEON_CONTENT,
 	LoadDifficulty = NORMAL_DIFF,
-	LevelRange = GetForVersion({15, 24, 32}, {15, 23, 29}),
+	LevelRange = {15, 22, 30},
 	items = {
-		{ -- SWStKamDeepfury
-			name = AL["Kam Deepfury"],
-			npcID = 1666,
-			Level = GetForVersion(27, 25),
-			DisplayIDs = {{825}},
-			AtlasMapBossID = 2,
+		{ -- SWStRandolphMoloch
+			name = AL["Randolph Moloch"],
+			npcID = 46383,
+			Level = 25,
+			DisplayIDs = {{35068}},
+			AtlasMapBossID = 1,
 			[NORMAL_DIFF] = {
-				{ 1,  2280 }, -- Kam's Walking Stick
+				{ 1,  63345 }, -- Noble's Robe
+				{ 2,  63344 }, -- Standard Issue Prisoner Shoes
+				{ 3,  63346 }, -- Wicked Dagger
 			},
 		},
-		{ -- SWStBruegalIronknuckle
-			name = AL["Bruegal Ironknuckle"],
-			npcID = 1720,
-			Level = GetForVersion(26, 25),
-			DisplayIDs = {{2142}},
-			AtlasMapBossID = 6,
-			specialType = "rare",
+		{ -- SWStLordOverheat
+			name = AL["Lord Overheat"],
+			npcID = 46264,
+			Level = 25,
+			DisplayIDs = {{1204}},
+			AtlasMapBossID = 3,
 			[NORMAL_DIFF] = {
-				{ 1,  3228 }, -- Jimmied Handcuffs
-				{ 2,  2941 }, -- Prison Shank
-				{ 3,  2942 }, -- Iron Knuckles
+				{ 1,  1929 }, -- Silk-Threaded Trousers
+				{ 2,  5967 }, -- Girdle of Nobility
+				{ 3,  4676 }, -- skeletal-gauntlets
+			},
+		},
+		{ -- SWStHogger
+			name = AL["Hogger"],
+			npcID = 46254,
+			Level = 25,
+			DisplayIDs = {{501}},
+			AtlasMapBossID = 2,
+			[NORMAL_DIFF] = {
+				{ 1,  2168 }, -- Corpse Rompers
+				{ 2,  1934 }, -- Hogger's Trousers
+				{ 3,  1959 }, -- Cold Iron Pick
 			},
 		},
 		{ -- SWStTrash
@@ -1305,19 +1320,20 @@ data["ScarletMonasteryGraveyard"] = {
 				{ 3, 23168 }, -- Scorn's Focal Dagger
 			},
 		},
-		AtlasLoot:GameVersion_GE(AtlasLoot.WRATH_VERSION_NUM, { -- SMHeadlessHorseman
+		AtlasLoot:GameVersion_GE(AtlasLoot.CATA_VERSION_NUM, { -- SMHeadlessHorseman
 			name = AL["Headless Horseman"],
 			npcID = 23682,
-			Level = 83,
+			Level = 87,
 			DisplayIDs = {{22351}},
 			AtlasMapBossID = nil,
 			ExtraList = true,
 			[NORMAL_DIFF] = {
-				{ 1, 49121 }, -- Ring of Ghoulish Glee
-				{ 2, 49123 }, -- The Horseman's Seal
-				{ 3, 49124 }, -- Wicked Witch's Band
-				{ 5, 49126 }, -- The Horseman's Horrific Helm
-				{ 6, 49128 }, -- The Horseman's Baleful Blade
+				{ 1, 71327 }, -- Band of Ghoulish Glee
+				{ 2, 71328 }, -- The Horseman's Signet
+				{ 3, 71329 }, -- Wicked Witch's Ring
+				{ 4, 71330 }, -- Seal of the Petrified Pumpkin
+				{ 5, 71326 }, -- The Horseman's Horrific Helmet
+				{ 6, 71325 }, -- The Horseman's Sinister Saber
 				{ 8, 33292 }, -- Hallowed Helm
 				{ 10, 34068 }, -- Weighted Jack-o'-Lantern
 				{ 12, 33277 }, -- Tome of Thomas Thomson
@@ -2288,63 +2304,6 @@ data["TheTempleOfAtal'Hakkar"] = {
 	LoadDifficulty = NORMAL_DIFF,
 	LevelRange = GetForVersion({45, 50, 60},{35, 47, 50}),
 	items = {
-		{ -- STBalconyMinibosses
-			name = AL["Balcony Minibosses"],
-			npcID = {5716, 5712, 5717, 5714, 5715, 5713},
-			Level = GetForVersion({51, 52}, {459,50}),
-			DisplayIDs = {{6701},{6699},{6707},{6700},{6702},{6698}},
-			AtlasMapBossID = "C",
-			[NORMAL_DIFF] = {
-				{ 1,  10783 }, -- Atal'ai Spaulders
-				{ 2,  10784 }, -- Atal'ai Breastplate
-				{ 3,  10787 }, -- Atal'ai Gloves
-				{ 5,  10788 }, -- Atal'ai Girdle
-				{ 6,  10785 }, -- Atal'ai Leggings
-				{ 7,  10786 }, -- Atal'ai Boots
-				{ 9,  20606 }, -- Amber Voodoo Feather
-				{ 10, 20607 }, -- Blue Voodoo Feather
-				{ 11, 20608 }, -- Green Voodoo Feather
-			},
-		},
-		{ -- STAtalalarion
-			name = AL["Atal'alarion"],
-			npcID = 8580,
-			Level = GetForVersion(50,49),
-			DisplayIDs = {{7873}},
-			AtlasMapBossID = 1,
-			[NORMAL_DIFF] = {
-				{ 1,  10800 }, -- Darkwater Bracers
-				{ 2,  10798 }, -- Atal'alarion's Tusk Ring
-				{ 3,  10799 }, -- Headspike
-			},
-		},
-		{ -- STSpawnOfHakkar
-			name = AL["Spawn of Hakkar"],
-			npcID = 5708,
-			Level = GetForVersion(51,49),
-			DisplayIDs = {{4065}},
-			AtlasMapBossID = 2,
-			[NORMAL_DIFF] = {
-				{ 1,  10801 }, -- Slitherscale Boots
-				{ 3,  10802 }, -- Wingveil Cloak
-			},
-		},
-		{ -- STAvatarofHakkar
-			name = AL["Avatar of Hakkar"],
-			npcID = 8443,
-			DisplayIDs = {{8053}},
-			AtlasMapBossID = 3,
-			Level = 48,
-			[NORMAL_DIFF] = {
-				{ 1,  12462 }, -- Embrace of the Wind Serpent
-				{ 3,  10843 }, -- Featherskin Cape
-				{ 4,  10845 }, -- Warrior's Embrace
-				{ 5,  10842 }, -- Windscale Sarong
-				{ 6,  10846 }, -- Bloodshot Greaves
-				{ 7,  10838 }, -- Might of Hakkar
-				{ 8,  10844 }, -- Spire of Hakkar
-			},
-		},
 		{ -- STJammalan
 			name = AL["Jammal'an the Prophet"],
 			npcID = 5710,
@@ -2979,27 +2938,28 @@ data["BlackrockDepths"] = {
 				{ 4,  22317 }, -- Lefty's Brass Knuckle
 			},
 		},
-		{ -- BRRDCorenDirebrew
+		AtlasLoot:GameVersion_GE(AtlasLoot.CATA_VERSION_NUM, { -- BRRDCorenDirebrew
 			name = AL["Coren Direbrew"],
 			npcID = 23872,
 			DisplayIDs = {{21824}},
 			AtlasMapBossID = 15,
-			Level = 73,
+			Level = 87,
 			ExtraList = true,
 			[NORMAL_DIFF] = {
-				{ 1,  37128 }, -- Balebrew Charm
-				{ 2,  37127 }, -- Brightbrew Charm
-				{ 3,  38287 }, -- Empty Mug of Direbrew
-				{ 4,  38290 }, -- Dark Iron Smoking Pipe
-				{ 5,  38288 }, -- Direbrew Hops
-				{ 6,  38289 }, -- Coren's Lucky Coin
-				{ 8,  37597 }, -- Direbrew's Shanker
+				{ 1,  71333 }, -- Bitterer Balebrew Charm
+				{ 2,  71334 }, -- Bubblier Brightbrew Charm
+				{ 3,  71335 }, -- Coren's Chilled Chromium Coaster
+				{ 4,  71337 }, -- Mithril Stopwatch
+				{ 5,  71336 }, -- Petrified Pickled Egg
+				{ 6,  71338 }, -- Brawler's Trophy
+				{ 8,  71331 }, -- Direbrew's Bloodied Shanker
+				{ 9,  71332 }, -- Tremendous Tankard O' Terror
 				{ 16,  33977 }, -- Swift Brewfest Ram
 				{ 17,  37828 }, -- Great Brewfest Kodo
 				{ 19,  37863 }, -- Direbrew's Remote
 				{ 21,  38280 }, -- Direbrew's Dire Brew
 			},
-		},
+        }),
 	},
 }
 
@@ -5525,6 +5485,7 @@ data["Onyxia"] = {
 	},
 }
 
+--[[
 data["Zul'Gurub"] = {
 	MapID = 1977,
 	InstanceID = 309,
@@ -5905,6 +5866,7 @@ data["Zul'Gurub"] = {
 		},
 	},
 }
+--]]
 
 data["BlackwingLair"] = {
 	MapID = 2677,

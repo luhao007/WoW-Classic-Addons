@@ -4,8 +4,9 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local Garrison = TSM.Accounting:NewPackage("Garrison")
+local Environment = TSM.Include("Environment")
 local Event = TSM.Include("Util.Event")
 local private = {}
 local GOLD_TRAIT_ID = 256 -- traitId for the treasure hunter trait which increases gold from missions
@@ -17,7 +18,7 @@ local GOLD_TRAIT_ID = 256 -- traitId for the treasure hunter trait which increas
 -- ============================================================================
 
 function Garrison.OnInitialize()
-	if not TSM.IsWowClassic() then
+	if Environment.HasFeature(Environment.FEATURES.GARRISON) then
 		Event.Register("GARRISON_MISSION_COMPLETE_RESPONSE", private.MissionComplete)
 	end
 end

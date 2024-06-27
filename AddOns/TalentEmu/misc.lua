@@ -12,7 +12,7 @@ local DT = __private.DT;
 	local next = next;
 	local select = select;
 	local GetPlayerInfoByGUID = GetPlayerInfoByGUID;
-	local GetTalentInfo =GetTalentInfo;
+	local GetTalentInfo = GetTalentInfo;
 	local GetAddOnInfo, IsAddOnLoaded = GetAddOnInfo, IsAddOnLoaded;
 	local IsShiftKeyDown = IsShiftKeyDown;
 	local CreateFrame = CreateFrame;
@@ -172,8 +172,10 @@ MT.BuildEnv('MISC');
 		end
 	end
 	local function _StorePlayerData()
-		if CT.BUILD == "WRATH" then
+		if VT.__support_glyph then
 			VT.VAR[CT.SELFGUID] = VT.__emulib.EncodePlayerTalentDataV2() .. VT.__emulib.EncodePlayerGlyphDataV2() .. VT.__emulib.EncodePlayerEquipmentDataV2();
+		elseif VT.__support_engraving then
+			VT.VAR[CT.SELFGUID] = VT.__emulib.EncodePlayerTalentDataV2() .. VT.__emulib.EncodePlayerEquipmentDataV2() .. VT.__emulib.EncodePlayerEngravingDataV2();
 		else
 			VT.VAR[CT.SELFGUID] = VT.__emulib.EncodePlayerTalentDataV2() .. VT.__emulib.EncodePlayerEquipmentDataV2();
 		end
@@ -187,7 +189,7 @@ MT.BuildEnv('MISC');
 	MT.RegisterOnInit('MISC', function(LoggedIn)
 	end);
 	MT.RegisterOnLogin('MISC', function(LoggedIn)
-		if CT.BUILD == "WRATH" then
+		if CT.TOCVERSION >= 30000 then
 			local Map = VT.__emulib.GetTalentMap(CT.SELFCLASS);
 			VT.MAP[CT.SELFCLASS] = { VMap = Map.VMap, RMap = Map.RMap, };
 		end
@@ -208,7 +210,6 @@ MT.BuildEnv('MISC');
 		end
 		MT._TimerStart(_PerdiocGenerateTitle, 0.5);
 		--
-		_StorePlayerData();
 		local Driver = CreateFrame('FRAME', nil, UIParent);
 		Driver:RegisterEvent("CONFIRM_TALENT_WIPE");
 		--	Fires when the user selects the "Yes, I do." confirmation prompt after speaking to a class trainer and choosing to unlearn their talents.
@@ -226,14 +227,19 @@ MT.BuildEnv('MISC');
 		Driver:RegisterEvent("PLAYER_EQUIPMENT_CHANGED");
 		Driver:RegisterUnitEvent("UNIT_INVENTORY_CHANGED", 'player');
 		-- Driver:RegisterEvent("PLAYER_LOGOUT");
-		if CT.BUILD == "WRATH" then
+		if VT.__support_glyph then
 			Driver:RegisterEvent("GLYPH_ADDED");
 			Driver:RegisterEvent("GLYPH_REMOVED");
 			Driver:RegisterEvent("GLYPH_UPDATED");
 		end
+		if VT.__support_engraving then
+			Driver:RegisterEvent("RUNE_UPDATED");
+		end
 		Driver:SetScript("OnEvent", function(Driver, event)
 			MT._TimerStart(_StorePlayerData, 0.1, 1);
 		end);
+		--
+		_StorePlayerData();
 	end);
 
 -->

@@ -1,4 +1,4 @@
-[![Coverage Status](https://coveralls.io/repos/bitbucket/tradeskillmasteraddon/libtsmclass/badge.svg?branch=master)](https://coveralls.io/bitbucket/tradeskillmasteraddon/libtsmclass?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/TradeSkillMaster/LibTSMClass/badge.svg?branch=main)](https://coveralls.io/github/TradeSkillMaster/LibTSMClass?branch=main)
 
 # LibTSMClass
 

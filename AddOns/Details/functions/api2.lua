@@ -11,17 +11,19 @@ local addonName, Details222 = ...
 
 --local helpers
 local getCombatObject = function(segmentNumber)
+	---@type combat
 	local combatObject
-	
+
 	--select which segment to use, use low level variables for performance
 	if (segmentNumber == -1) then
-		combatObject = _detalhes.tabela_overall
+		combatObject = Details.tabela_overall
 	elseif (segmentNumber == 0) then
-		combatObject = _detalhes.tabela_vigente
+		combatObject = Details.tabela_vigente
 	else
-		combatObject = _detalhes.tabela_historico.tabelas [segmentNumber]
+		local segmentsTable = Details:GetCombatSegments()
+		combatObject = segmentsTable[segmentNumber]
 	end
-	
+
 	return combatObject
 end
 
@@ -31,32 +33,24 @@ local getActorObjectFromCombat = function(combatObject, containerID, actorName)
 end
 
 local getUnitName = function(unitId)
-	local unitName, serverName = UnitName (unitId)
-	if (unitName) then
-		if (serverName and serverName ~= "") then
-			return unitName .. "-" .. serverName
-		else
-			return unitName
-		end
-	else
-		return unitId
-	end
+	local unitName = Details:GetFullName(unitId) or unitId
+	return unitName
 end
 
 --return the spell object and the spellId
 local getSpellObject = function(playerObject, spellId, isLiteral)
 	local parameterType = type(spellId)
-	
+
 	if (parameterType == "number" and isLiteral) then
 		--is the id of a spell and literal, directly get the spell object
 		return playerObject.spells._ActorTable [spellId], spellId
-		
+
 	else
 		local passedSpellName
 		if (parameterType == "string") then
 			--passed a spell name, make the spell be in lower case
 			passedSpellName = spellId:lower()
-			
+
 		elseif (parameterType == "number") then
 			--passed a number but with literal off, transform the spellId into a spell name
 			local spellName = GetSpellInfo(spellid)
@@ -64,7 +58,7 @@ local getSpellObject = function(playerObject, spellId, isLiteral)
 				passedSpellName = spellName:lower()
 			end
 		end
-		
+
 		if (passedSpellName) then
 			for thisSpellId, spellObject in pairs(playerObject.spells._ActorTable) do
 				local spellName = Details.GetSpellInfo(thisSpellId)
@@ -96,7 +90,7 @@ Details.API_Description = {
 --[=[
 	Details.SegmentInfo (segment)
 --=]=]
-tinsert(Details.API_Description.namespaces[1].api, {
+table.insert(Details.API_Description.namespaces[1].api, {
 	name = "SegmentInfo",
 	desc = "Return a table containing information about the segment.",
 	parameters = {
@@ -120,24 +114,24 @@ tinsert(Details.API_Description.namespaces[1].api, {
 function Details.SegmentInfo (segment)
 	segment = segment or 0
 	local combatObject = getCombatObject (segment)
-	
+
 	local segmentInfo = {
-		
+
 	}
-	
+
 	if (not combatObject) then
 		return segmentInfo
 	end
-	
-	
-	
+
+
+
 	return segmentInfo
 end
 
 --[=[
 	Details.SegmentElapsedTime (segment)
 --=]=]
-tinsert(Details.API_Description.namespaces[1].api, {
+table.insert(Details.API_Description.namespaces[1].api, {
 	name = "SegmentElapsedTime",
 	desc = "Return the total elapsed time of a segment.",
 	parameters = {
@@ -161,18 +155,18 @@ tinsert(Details.API_Description.namespaces[1].api, {
 function Details.SegmentElapsedTime (segment)
 	segment = segment or 0
 	local combatObject = getCombatObject (segment)
-	
+
 	if (not combatObject) then
 		return 0
 	end
-	
+
 	return combatObject:GetCombatTime()
 end
 
 --[=[
 	Details.SegmentDamagingUnits (segment)
 --=]=]
-tinsert(Details.API_Description.namespaces[1].api, {
+table.insert(Details.API_Description.namespaces[1].api, {
 	name = "SegmentDamagingUnits",
 	desc = "Return a numeric (ipairs) table with name of units that inflicted damage on the segment.",
 	parameters = {
@@ -216,34 +210,34 @@ function Details.SegmentDamagingUnits (includePlayerUnits, includeEnemyUnits, in
 	if (type(includePlayerUnits) ~= "boolean") then
 		includePlayerUnits = true
 	end
-	
+
 	local combatObject = getCombatObject (segment)
-	
+
 	local units = {}
 	local nextIndex = 1
-	
+
 	if (not combatObject) then
 		return units
 	end
-	
+
 	local damageContainer = combatObject:GetContainer (DETAILS_ATTRIBUTE_DAMAGE)
 	for i = 1, #damageContainer._ActorTable do
 		local playerObject = damageContainer._ActorTable [i]
-		
+
 		if (includePlayerUnits and playerObject.grupo) then
 			units [nextIndex] = playerObject:GetName()
 			nextIndex = nextIndex + 1
-		
+
 		elseif (includeEnemyUnits and playerObject:IsEnemy()) then
 			units [nextIndex] = playerObject:GetName()
 			nextIndex = nextIndex + 1
-			
+
 		elseif (includeFriendlyPetUnits and playerObject:IsPetOrGuardian()) then
 			units [nextIndex] = playerObject:GetName()
 			nextIndex = nextIndex + 1
 		end
 	end
-	
+
 	return units
 end
 
@@ -251,7 +245,7 @@ end
 --[=[
 	Details.SegmentHealingUnits (segment)
 --=]=]
-tinsert(Details.API_Description.namespaces[1].api, {
+table.insert(Details.API_Description.namespaces[1].api, {
 	name = "SegmentHealingUnits",
 	desc = "Return a numeric (ipairs) table with name of units that inflicted healing on the segment.",
 	parameters = {
@@ -295,34 +289,34 @@ function Details.SegmentHealingUnits (includePlayerUnits, includeEnemyUnits, inc
 	if (type(includePlayerUnits) ~= "boolean") then
 		includePlayerUnits = true
 	end
-	
+
 	local combatObject = getCombatObject (segment)
-	
+
 	local units = {}
 	local nextIndex = 1
-	
+
 	if (not combatObject) then
 		return units
 	end
-	
+
 	local damageContainer = combatObject:GetContainer (DETAILS_ATTRIBUTE_HEAL)
 	for i = 1, #damageContainer._ActorTable do
 		local playerObject = damageContainer._ActorTable [i]
-		
+
 		if (includePlayerUnits and playerObject.grupo) then
 			units [nextIndex] = playerObject:GetName()
 			nextIndex = nextIndex + 1
-		
+
 		elseif (includeEnemyUnits and playerObject:IsEnemy()) then
 			units [nextIndex] = playerObject:GetName()
 			nextIndex = nextIndex + 1
-			
+
 		elseif (includeFriendlyPetUnits and playerObject:IsPetOrGuardian()) then
 			units [nextIndex] = playerObject:GetName()
 			nextIndex = nextIndex + 1
 		end
 	end
-	
+
 	return units
 end
 
@@ -330,7 +324,7 @@ end
 	Details.SegmentTotalDamage (segment)
 --=]=]
 
-tinsert(Details.API_Description.namespaces[1].api, {
+table.insert(Details.API_Description.namespaces[1].api, {
 	name = "SegmentTotalDamage",
 	desc = "Query the total damage done in the segment and only by players in the group.",
 	parameters = {
@@ -354,11 +348,11 @@ tinsert(Details.API_Description.namespaces[1].api, {
 function Details.SegmentTotalDamage (segment)
 	segment = segment or 0
 	local combatObject = getCombatObject (segment)
-	
+
 	if (not combatObject) then
 		return 0
 	end
-	
+
 	return floor(combatObject.totals_grupo [1])
 end
 
@@ -367,7 +361,7 @@ end
 	Details.SegmentTotalHealing (segment)
 --=]=]
 
-tinsert(Details.API_Description.namespaces[1].api, {
+table.insert(Details.API_Description.namespaces[1].api, {
 	name = "SegmentTotalHealing",
 	desc = "Query the total healing done in the segment and only by players in the group.",
 	parameters = {
@@ -391,11 +385,11 @@ tinsert(Details.API_Description.namespaces[1].api, {
 function Details.SegmentTotalHealing (segment)
 	segment = segment or 0
 	local combatObject = getCombatObject (segment)
-	
+
 	if (not combatObject) then
 		return 0
 	end
-	
+
 	return floor(combatObject.totals_grupo [2])
 end
 
@@ -403,7 +397,7 @@ end
 	Details.SegmentPhases (segment)
 --=]=]
 
-tinsert(Details.API_Description.namespaces[1].api, {
+table.insert(Details.API_Description.namespaces[1].api, {
 	name = "SegmentPhases",
 	desc = "Return a numeric (ipairs) table with phase numbers available on the segment.",
 	parameters = {
@@ -427,20 +421,20 @@ tinsert(Details.API_Description.namespaces[1].api, {
 function Details.SegmentPhases (segment)
 	segment = segment or 0
 	local combatObject = getCombatObject (segment)
-	
+
 	local phases = {}
-	
+
 	if (not combatObject) then
 		return phases
-	end	
-	
+	end
+
 	local phaseData = combatObject.PhaseData
-	
+
 	for phaseChangeId, phaseTable in ipairs(phaseData) do
 		local phaseNumber = phaseTable [1]
 		DetailsFramework.table.addunique (phases, phaseNumber)
 	end
-	
+
 	return phases
 end
 
@@ -450,7 +444,7 @@ end
 	Details.UnitInfo (unitId, segment)
 --=]=]
 
-tinsert(Details.API_Description.namespaces[1].api, {
+table.insert(Details.API_Description.namespaces[1].api, {
 	name = "UnitInfo",
 	desc = "Query basic information about the unit, like class and spec.",
 	parameters = {
@@ -481,7 +475,7 @@ tinsert(Details.API_Description.namespaces[1].api, {
 function Details.UnitInfo (unitId, segment)
 	segment = segment or 0
 	local combatObject = getCombatObject (segment)
-	
+
 	local unitInfo = {
 		class = "UNKNOW", --old typo in details
 		spec = 0,
@@ -494,18 +488,18 @@ function Details.UnitInfo (unitId, segment)
 		isArenaEnemy = false,
 		arenaTeam = false,
 	}
-	
+
 	if (not combatObject) then
 		return unitInfo
 	end
-	
+
 	local unitName = getUnitName (unitId)
-	
+
 	local playerObject = getActorObjectFromCombat (combatObject, 1, unitName)
 	if (not playerObject) then
 		return unitInfo
 	end
-	
+
 	local specCache = Details.cached_specs
 	local unitSerial = UnitGUID(unitId)
 	local _, class = UnitClass(unitId)
@@ -535,7 +529,7 @@ end
 	Details.UnitTexture (unitId, segment)
 --=]=]
 
-tinsert(Details.API_Description.namespaces[1].api, {
+table.insert(Details.API_Description.namespaces[1].api, {
 	name = "UnitTexture",
 	desc = "Query the icon and texcoords for the class and spec icon.",
 	parameters = {
@@ -566,7 +560,7 @@ tinsert(Details.API_Description.namespaces[1].api, {
 function Details.UnitTexture (unitId, segment)
 	segment = segment or 0
 	local combatObject = getCombatObject (segment)
-	
+
 	local textureInfo = {
 		classTexture = [[Interface\LFGFRAME\LFGROLE_BW]],
 		classLeft = 0.25,
@@ -579,32 +573,32 @@ function Details.UnitTexture (unitId, segment)
 		specTop = 0,
 		specBottom = 1,
 	}
-	
+
 	if (not combatObject) then
 		return textureInfo
 	end
-	
+
 	local unitName = getUnitName (unitId)
-	
+
 	local playerObject = getActorObjectFromCombat (combatObject, 1, unitName)
 	if (not playerObject) then
 		return textureInfo
 	end
-	
+
 	local texture, left, right, top, bottom = playerObject:GetClassIcon()
 	textureInfo.classTexture = texture
 	textureInfo.classLeft = left
 	textureInfo.classRight = right
 	textureInfo.classTop = top
 	textureInfo.classBottom = bottom
-	
+
 	local texture, left, right, top, bottom = Details:GetSpecIcon (playerObject.spec)
 	textureInfo.specTexture = texture
 	textureInfo.specLeft = left
 	textureInfo.specRight = right
 	textureInfo.specTop = top
 	textureInfo.specBottom = bottom
-	
+
 	return textureInfo
 end
 
@@ -614,7 +608,7 @@ end
 --[=[
 	Details.UnitDamage (unitId, segment)
 --=]=]
-tinsert(Details.API_Description.namespaces[1].api, {
+table.insert(Details.API_Description.namespaces[1].api, {
 	name = "UnitDamage",
 	desc = "Query the damage of a unit.",
 	parameters = {
@@ -644,18 +638,20 @@ tinsert(Details.API_Description.namespaces[1].api, {
 function Details.UnitDamage (unitId, segment)
 	segment = segment or 0
 	local combatObject = getCombatObject (segment)
-	
+
 	if (not combatObject) then
 		return 0
 	end
-	
+
 	local unitName = getUnitName (unitId)
-	
 	local playerObject = getActorObjectFromCombat (combatObject, 1, unitName)
+
 	if (not playerObject) then
 		return 0
 	end
-	
+
+	--/dump Details.UnitDamage("player")
+
 	return floor(playerObject.total or 0)
 end
 
@@ -663,7 +659,7 @@ end
 --[=[
 	Details.UnitDamageByPhase (unitId, phaseNumber, segment)
 --=]=]
-tinsert(Details.API_Description.namespaces[1].api, {
+table.insert(Details.API_Description.namespaces[1].api, {
 	name = "UnitDamageByPhase",
 	desc = "Query the damage of a unit but only for a specific phase of a boss encounter.",
 	parameters = {
@@ -699,22 +695,22 @@ tinsert(Details.API_Description.namespaces[1].api, {
 function Details.UnitDamageByPhase (unitId, phaseNumber, segment)
 	segment = segment or 0
 	local combatObject = getCombatObject (segment)
-	
+
 	if (not combatObject) then
 		return 0
 	end
-	
+
 	if (not phaseNumber) then
 		return 0
 	end
-	
+
 	local unitName = getUnitName (unitId)
-	
+
 	local damagePhaseData = combatObject.PhaseData.damage [phaseNumber]
 	if (not damagePhaseData) then
 		return 0
 	end
-	
+
 	local phaseDamage = damagePhaseData [unitName] or 0
 	return floor(phaseDamage)
 end
@@ -722,7 +718,7 @@ end
 --[=[
 	Details.UnitDamageInfo (unitId, segment)
 --=]=]
-tinsert(Details.API_Description.namespaces[1].api, {
+table.insert(Details.API_Description.namespaces[1].api, {
 	name = "UnitDamageInfo",
 	desc = "Return a table with damage information.",
 	parameters = {
@@ -752,13 +748,13 @@ tinsert(Details.API_Description.namespaces[1].api, {
 function Details.UnitDamageInfo (unitId, segment)
 	segment = segment or 0
 	local combatObject = getCombatObject (segment)
-	
+
 	if (not combatObject) then
 		return 0
 	end
-	
+
 	local unitName = getUnitName (unitId)
-	
+
 	local damageInfo = {
 		total = 0,
 		totalWithoutPet = 0,
@@ -767,19 +763,19 @@ function Details.UnitDamageInfo (unitId, segment)
 		friendlyFire = 0,
 		activityTime = 0,
 	}
-	
+
 	local playerObject = getActorObjectFromCombat (combatObject, 1, unitName)
 	if (not playerObject) then
 		return damageInfo
 	end
-	
+
 	damageInfo.total = floor(playerObject.total)
 	damageInfo.totalWithoutPet = floor(playerObject.total_without_pet)
 	damageInfo.damageAbsorbed = floor(playerObject.totalabsorbed)
 	damageInfo.damageTaken = floor(playerObject.damage_taken)
 	damageInfo.friendlyFire = playerObject.friendlyfire_total
 	damageInfo.activityTime = playerObject:Tempo()
-	
+
 	return damageInfo
 end
 
@@ -789,7 +785,7 @@ end
 --[=[
 	Details.UnitDamageBySpell (unitId, spellId, segment)
 --=]=]
-tinsert(Details.API_Description.namespaces[1].api, {
+table.insert(Details.API_Description.namespaces[1].api, {
 	name = "UnitDamageBySpell",
 	desc = "Query the total damage done of a spell casted by the unit.",
 	parameters = {
@@ -838,14 +834,14 @@ function Details.UnitDamageBySpell (unitId, spellId, isLiteral, segment)
 	if (not combatObject) then
 		return 0
 	end
-	
+
 	local unitName = getUnitName (unitId)
 
 	local playerObject = getActorObjectFromCombat (combatObject, 1, unitName)
 	if (not playerObject) then
 		return 0
 	end
-	
+
 	local spellObject, spellId = getSpellObject (playerObject, spellId, isLiteral)
 
 	if (spellObject) then
@@ -859,7 +855,7 @@ end
 --[=[
 	Details.UnitDamageSpellInfo (unitId, spellId, segment)
 --=]=]
-tinsert(Details.API_Description.namespaces[1].api, {
+table.insert(Details.API_Description.namespaces[1].api, {
 	name = "UnitDamageSpellInfo",
 	desc = "Return a table with the spell damage information.",
 	parameters = {
@@ -903,15 +899,15 @@ function Details.UnitDamageSpellInfo (unitId, spellId, isLiteral, segment)
 		isLiteral = true
 	end
 	segment = segment or 0
-	
+
 	local combatObject = getCombatObject (segment)
-	
+
 	if (not combatObject) then
 		return 0
 	end
-	
+
 	local unitName = getUnitName (unitId)
-	
+
 	local spellInfo = {
 		total = 0,
 		spellId = 0,
@@ -927,35 +923,20 @@ function Details.UnitDamageSpellInfo (unitId, spellId, isLiteral, segment)
 		criticalHits = 0,
 		criticalDamage = 0,
 	}
-	
-	local playerObject = getActorObjectFromCombat (combatObject, 1, unitName)
+
+	local playerObject = getActorObjectFromCombat(combatObject, 1, unitName)
 	if (not playerObject) then
 		return spellInfo
 	end
-	
-	local spellObject, spellId = getSpellObject (playerObject, spellId, isLiteral)
+
+	local spellObject, spellId = getSpellObject(playerObject, spellId, isLiteral)
 	if (not spellObject) then
 		return spellInfo
 	end
 
-	local miscPlayerObject = getActorObjectFromCombat (combatObject, 4, unitName)
-	if (miscPlayerObject) then
-		local spellName = GetSpellInfo(spellId)
-		local castedAmount = miscPlayerObject.spell_cast and miscPlayerObject.spell_cast [spellId]
-		
-		if (castedAmount) then
-			spellInfo.casted = castedAmount
-		else
-			for castedSpellId, castedAmount in pairs(miscPlayerObject.spell_cast) do
-				local castedSpellName = GetSpellInfo(castedSpellId)
-				if (castedSpellName == spellName) then
-					spellInfo.casted = castedAmount
-					break
-				end
-			end
-		end
-	end
-	
+	local spellName = GetSpellInfo(spellId)
+	spellInfo.casted = combatObject:GetSpellCastAmount(unitName, spellName)
+
 	if (spellObject) then
 		spellInfo.total = spellObject.total
 		spellInfo.count = spellObject.counter
@@ -964,20 +945,20 @@ function Details.UnitDamageSpellInfo (unitId, spellId, isLiteral, segment)
 		spellInfo.regularMin = spellObject.n_min
 		spellInfo.regularMax = spellObject.n_max
 		spellInfo.regularHits = spellObject.n_amt
-		spellInfo.regularDamage = spellObject.n_dmg
+		spellInfo.regularDamage = spellObject.n_total
 		spellInfo.criticalMin = spellObject.c_min
 		spellInfo.criticalMax = spellObject.c_max
 		spellInfo.criticalHits = spellObject.c_amt
-		spellInfo.criticalDamage = spellObject.c_dmg
+		spellInfo.criticalDamage = spellObject.c_total
 	end
-	
+
 	return spellInfo
 end
 
 --[=[
 	Details.UnitDamageSpellOnUnit (unitId, spellId, segment)
 --=]=]
-tinsert(Details.API_Description.namespaces[1].api, {
+table.insert(Details.API_Description.namespaces[1].api, {
 	name = "UnitDamageSpellOnUnit",
 	desc = "Query the damage done of a spell into a specific target.",
 	parameters = {
@@ -1027,19 +1008,19 @@ function Details.UnitDamageSpellOnUnit (unitId, spellId, targetUnitId, isLiteral
 		isLiteral = true
 	end
 	segment = segment or 0
-	
+
 	local combatObject = getCombatObject (segment)
-	
+
 	if (not combatObject) then
 		return 0
 	end
-	
+
 	local unitName = getUnitName (unitId)
 	local playerObject = getActorObjectFromCombat (combatObject, 1, unitName)
 	if (not playerObject) then
 		return 0
 	end
-	
+
 	local spellObject, spellId = getSpellObject (playerObject, spellId, isLiteral)
 	if (spellObject) then
 		local targetName = getUnitName (targetUnitId)
@@ -1052,7 +1033,7 @@ end
 --[=[
 	Details.UnitDamageTaken (unitId, segment)
 --=]=]
-tinsert(Details.API_Description.namespaces[1].api, {
+table.insert(Details.API_Description.namespaces[1].api, {
 	name = "UnitDamageTaken",
 	desc = "Query the unit damage taken.",
 	parameters = {
@@ -1086,21 +1067,21 @@ function Details.UnitDamageTaken (unitId, segment)
 	if (not combatObject) then
 		return 0
 	end
-	
+
 	local unitName = getUnitName (unitId)
 
 	local playerObject = getActorObjectFromCombat (combatObject, 1, unitName)
 	if (not playerObject) then
 		return 0
 	end
-	
+
 	return floor(playerObject.damage_taken)
 end
 
 --[=[
 	Details.UnitDamageOnUnit (unitId, targetUnitId, segment)
 --=]=]
-tinsert(Details.API_Description.namespaces[1].api, {
+table.insert(Details.API_Description.namespaces[1].api, {
 	name = "UnitDamageOnUnit",
 	desc = "Query the unit damage done on another unit.",
 	parameters = {
@@ -1136,18 +1117,18 @@ tinsert(Details.API_Description.namespaces[1].api, {
 function Details.UnitDamageOnUnit (unitId, targetUnitId, segment)
 	segment = segment or 0
 	local combatObject = getCombatObject (segment)
-	
+
 	if (not combatObject) then
 		return 0
 	end
-	
+
 	local unitName = getUnitName (unitId)
-	
+
 	local playerObject = getActorObjectFromCombat (combatObject, 1, unitName)
 	if (not playerObject) then
 		return 0
 	end
-	
+
 	local targetName = getUnitName (targetUnitId)
 	return playerObject.targets [targetName] or 0
 end
@@ -1155,7 +1136,7 @@ end
 --[=[
 	Details.UnitDamageTakenFromSpell (unitId, spellId, segment)
 --=]=]
-tinsert(Details.API_Description.namespaces[1].api, {
+table.insert(Details.API_Description.namespaces[1].api, {
 	name = "UnitDamageTakenFromSpell",
 	desc = "Query the unit damage taken from a spell.",
 	parameters = {
@@ -1193,16 +1174,16 @@ function Details.UnitDamageTakenFromSpell (unitId, spellId, isLiteral, segment)
 	if (type(isLiteral) ~= "boolean") then
 		isLiteral = true
 	end
-	
+
 	local combatObject = getCombatObject (segment)
-	
+
 	if (not combatObject) then
 		return 0
 	end
-	
+
 	local unitName = getUnitName (unitId)
 	local damageContainer = combatObject:GetContainer (DETAILS_ATTRIBUTE_DAMAGE)
-	
+
 	local totalDamageTaken = 0
 	if (isLiteral and type(spellId) == "number") then
 		for i = 1, #damageContainer._ActorTable do
@@ -1231,7 +1212,7 @@ end
 --[=[
 	Details.UnitDamagingSpells (unitId, segment)
 --=]=]
-tinsert(Details.API_Description.namespaces[1].api, {
+table.insert(Details.API_Description.namespaces[1].api, {
 	name = "UnitDamagingSpells",
 	desc = "Return a numeric (ipairs) table with spells IDs used by the unit to apply damage.",
 	parameters = {
@@ -1265,27 +1246,27 @@ function Details.UnitDamagingSpells (unitId, segment)
 	if (not combatObject) then
 		return {}
 	end
-	
+
 	local unitName = getUnitName (unitId)
 
 	local playerObject = getActorObjectFromCombat (combatObject, 1, unitName)
 	if (not playerObject) then
 		return {}
 	end
-	
+
 	local unitSpells = playerObject.spells._ActorTable
 	local resultTable = {}
 	for spellId, spellObject in pairs(unitSpells) do
 		resultTable [#resultTable + 1] = spellId
 	end
-	
+
 	return resultTable
 end
 
 --[=[
 	Details.UnitDamagingTargets (unitId, segment)
 --=]=]
-tinsert(Details.API_Description.namespaces[1].api, {
+table.insert(Details.API_Description.namespaces[1].api, {
 	name = "UnitDamagingTargets",
 	desc = "Return a numeric (ipairs) table with names of targets the unit inflicted damage. You may query the amount of damage with Details.UnitDamageOnUnit( unitId, targetName ).",
 	parameters = {
@@ -1315,23 +1296,23 @@ tinsert(Details.API_Description.namespaces[1].api, {
 function Details.UnitDamagingTargets (unitId, segment)
 	segment = segment or 0
 	local combatObject = getCombatObject (segment)
-	
+
 	if (not combatObject) then
 		return 0
 	end
-	
+
 	local unitName = getUnitName (unitId)
 	local offensiveTargetNames = {}
-	
+
 	local playerObject = getActorObjectFromCombat (combatObject, 1, unitName)
 	if (not playerObject) then
 		return offensiveTargetNames
 	end
-	
+
 	for targetName, _ in pairs(playerObject.targets) do
 		offensiveTargetNames [#offensiveTargetNames + 1] = targetName
 	end
-	
+
 	return offensiveTargetNames
 end
 
@@ -1339,7 +1320,7 @@ end
 --[=[
 	Details.UnitDamagingPets (unitId, segment)
 --=]=]
-tinsert(Details.API_Description.namespaces[1].api, {
+table.insert(Details.API_Description.namespaces[1].api, {
 	name = "UnitDamagingPets",
 	desc = "Return a numeric (ipairs) table with all pet names the unit used to apply damage. Individual pet information can be queried with Details.UnitDamage( petName ).",
 	parameters = {
@@ -1369,23 +1350,23 @@ tinsert(Details.API_Description.namespaces[1].api, {
 function Details.UnitDamagingPets (unitId, segment)
 	segment = segment or 0
 	local combatObject = getCombatObject (segment)
-	
+
 	if (not combatObject) then
 		return 0
 	end
-	
+
 	local unitName = getUnitName (unitId)
 	local petNames = {}
-	
+
 	local playerObject = getActorObjectFromCombat (combatObject, 1, unitName)
 	if (not playerObject) then
 		return petNames
 	end
-	
+
 	for i = 1, #playerObject.pets do
 		petNames [#petNames + 1] = playerObject.pets [i]
 	end
-	
+
 	return petNames
 end
 
@@ -1397,7 +1378,7 @@ end
 --[=[
 	Details.UnitHealing (unitId, segment)
 --=]=]
-tinsert(Details.API_Description.namespaces[1].api, {
+table.insert(Details.API_Description.namespaces[1].api, {
 	name = "UnitHealing",
 	desc = "Query the healing done of a unit.",
 	parameters = {
@@ -1427,18 +1408,18 @@ tinsert(Details.API_Description.namespaces[1].api, {
 function Details.UnitHealing (unitId, segment)
 	segment = segment or 0
 	local combatObject = getCombatObject (segment)
-	
+
 	if (not combatObject) then
 		return 0
 	end
-	
+
 	local unitName = getUnitName (unitId)
-	
+
 	local playerObject = getActorObjectFromCombat (combatObject, 2, unitName)
 	if (not playerObject) then
 		return 0
 	end
-	
+
 	return floor(playerObject.total or 0)
 end
 
@@ -1446,7 +1427,7 @@ end
 --[=[
 	Details.UnitHealingInfo (unitId, segment)
 --=]=]
-tinsert(Details.API_Description.namespaces[1].api, {
+table.insert(Details.API_Description.namespaces[1].api, {
 	name = "UnitHealingInfo",
 	desc = "Return a table with healing information.",
 	parameters = {
@@ -1476,13 +1457,13 @@ tinsert(Details.API_Description.namespaces[1].api, {
 function Details.UnitHealingInfo (unitId, segment)
 	segment = segment or 0
 	local combatObject = getCombatObject (segment)
-	
+
 	if (not combatObject) then
 		return 0
 	end
-	
+
 	local unitName = getUnitName (unitId)
-	
+
 	local healingInfo = {
 		total = 0,
 		totalWithoutPet = 0,
@@ -1494,12 +1475,12 @@ function Details.UnitHealingInfo (unitId, segment)
 		healingTaken = 0,
 		activityTime = 0,
 	}
-	
+
 	local playerObject = getActorObjectFromCombat (combatObject, 2, unitName)
 	if (not playerObject) then
 		return healingInfo
 	end
-	
+
 	healingInfo.total = floor(playerObject.total)
 	healingInfo.totalWithoutPet = floor(playerObject.total_without_pet)
 	healingInfo.totalOverhealWithoutPet = floor(playerObject.totalover_without_pet)
@@ -1518,7 +1499,7 @@ end
 --[=[
 	Details.UnitHealingBySpell (unitId, spellId, segment)
 --=]=]
-tinsert(Details.API_Description.namespaces[1].api, {
+table.insert(Details.API_Description.namespaces[1].api, {
 	name = "UnitHealingBySpell",
 	desc = "Query the total healing done of a spell casted by the unit.",
 	parameters = {
@@ -1567,16 +1548,16 @@ function Details.UnitHealingBySpell (unitId, spellId, isLiteral, segment)
 	if (not combatObject) then
 		return 0
 	end
-	
+
 	local unitName = getUnitName (unitId)
 
 	local playerObject = getActorObjectFromCombat (combatObject, 2, unitName)
 	if (not playerObject) then
 		return 0
 	end
-	
+
 	local spellObject, spellId = getSpellObject (playerObject, spellId, isLiteral)
-	
+
 	if (spellObject) then
 		return spellObject.total
 	else
@@ -1590,7 +1571,7 @@ end
 --[=[
 	Details.UnitHealingSpellInfo (unitId, spellId, segment)
 --=]=]
-tinsert(Details.API_Description.namespaces[1].api, {
+table.insert(Details.API_Description.namespaces[1].api, {
 	name = "UnitHealingSpellInfo",
 	desc = "Return a table with the spell healing information.",
 	parameters = {
@@ -1634,13 +1615,13 @@ function Details.UnitHealingSpellInfo (unitId, spellId, isLiteral, segment)
 		isLiteral = true
 	end
 	segment = segment or 0
-	
+
 	local combatObject = getCombatObject (segment)
-	
+
 	if (not combatObject) then
 		return 0
 	end
-	
+
 	local unitName = getUnitName (unitId)
 
 	local spellInfo = {
@@ -1658,35 +1639,20 @@ function Details.UnitHealingSpellInfo (unitId, spellId, isLiteral, segment)
 		criticalHits = 0,
 		criticalHealing = 0,
 	}
-	
+
 	local playerObject = getActorObjectFromCombat (combatObject, 2, unitName)
 	if (not playerObject) then
 		return spellInfo
 	end
-	
+
 	local spellObject, spellId = getSpellObject (playerObject, spellId, isLiteral)
 	if (not spellObject) then
 		return spellInfo
 	end
 
-	local miscPlayerObject = getActorObjectFromCombat (combatObject, 4, unitName)
-	if (miscPlayerObject) then
-		local spellName = GetSpellInfo(spellId)
-		local castedAmount = miscPlayerObject.spell_cast and miscPlayerObject.spell_cast [spellId]
-		
-		if (castedAmount) then
-			spellInfo.casted = castedAmount
-		else
-			for castedSpellId, castedAmount in pairs(miscPlayerObject.spell_cast) do
-				local castedSpellName = GetSpellInfo(castedSpellId)
-				if (castedSpellName == spellName) then
-					spellInfo.casted = castedAmount
-					break
-				end
-			end
-		end
-	end
-	
+	local spellName = GetSpellInfo(spellId)
+	spellInfo.casted = combatObject:GetSpellCastAmount(unitName, spellName)
+
 	if (spellObject) then
 		spellInfo.total = spellObject.total
 		spellInfo.count = spellObject.counter
@@ -1695,13 +1661,13 @@ function Details.UnitHealingSpellInfo (unitId, spellId, isLiteral, segment)
 		spellInfo.regularMin = spellObject.n_min
 		spellInfo.regularMax = spellObject.n_max
 		spellInfo.regularHits = spellObject.n_amt
-		spellInfo.regularHealing = spellObject.n_dmg
+		spellInfo.regularHealing = spellObject.n_total
 		spellInfo.criticalMin = spellObject.c_min
 		spellInfo.criticalMax = spellObject.c_max
 		spellInfo.criticalHits = spellObject.c_amt
-		spellInfo.criticalHealing = spellObject.c_dmg
+		spellInfo.criticalHealing = spellObject.c_total
 	end
-	
+
 	return spellInfo
 end
 
@@ -1709,7 +1675,7 @@ end
 --[=[
 	Details.UnitHealingSpellOnUnit (unitId, spellId, segment)
 --=]=]
-tinsert(Details.API_Description.namespaces[1].api, {
+table.insert(Details.API_Description.namespaces[1].api, {
 	name = "UnitHealingSpellOnUnit",
 	desc = "Query the healing done of a spell into a specific target.",
 	parameters = {
@@ -1759,19 +1725,19 @@ function Details.UnitHealingSpellOnUnit (unitId, spellId, targetUnitId, isLitera
 		isLiteral = true
 	end
 	segment = segment or 0
-	
+
 	local combatObject = getCombatObject (segment)
-	
+
 	if (not combatObject) then
 		return 0
 	end
-	
+
 	local unitName = getUnitName (unitId)
 	local playerObject = getActorObjectFromCombat (combatObject, 2, unitName)
 	if (not playerObject) then
 		return 0
 	end
-	
+
 	local spellObject, spellId = getSpellObject (playerObject, spellId, isLiteral)
 	if (spellObject) then
 		local targetName = getUnitName (targetUnitId)
@@ -1786,7 +1752,7 @@ end
 --[=[
 	Details.UnitHealingTaken (unitId, segment)
 --=]=]
-tinsert(Details.API_Description.namespaces[1].api, {
+table.insert(Details.API_Description.namespaces[1].api, {
 	name = "UnitHealingTaken",
 	desc = "Query the unit healing taken.",
 	parameters = {
@@ -1820,14 +1786,14 @@ function Details.UnitHealingTaken (unitId, segment)
 	if (not combatObject) then
 		return 0
 	end
-	
+
 	local unitName = getUnitName (unitId)
 
 	local playerObject = getActorObjectFromCombat (combatObject, 2, unitName)
 	if (not playerObject) then
 		return 0
 	end
-	
+
 	return floor(playerObject.healing_taken)
 end
 
@@ -1836,7 +1802,7 @@ end
 --[=[
 	Details.UnitHealingOnUnit (unitId, targetUnitId, segment)
 --=]=]
-tinsert(Details.API_Description.namespaces[1].api, {
+table.insert(Details.API_Description.namespaces[1].api, {
 	name = "UnitHealingOnUnit",
 	desc = "Query the unit healing done on another unit.",
 	parameters = {
@@ -1872,18 +1838,18 @@ tinsert(Details.API_Description.namespaces[1].api, {
 function Details.UnitHealingOnUnit (unitId, targetUnitId, segment)
 	segment = segment or 0
 	local combatObject = getCombatObject (segment)
-	
+
 	if (not combatObject) then
 		return 0
 	end
-	
+
 	local unitName = getUnitName (unitId)
-	
+
 	local playerObject = getActorObjectFromCombat (combatObject, 2, unitName)
 	if (not playerObject) then
 		return 0
 	end
-	
+
 	local targetName = getUnitName (targetUnitId)
 	return playerObject.targets [targetName] or 0
 end
@@ -1894,7 +1860,7 @@ end
 --[=[
 	Details.UnitHealingTakenFromSpell (unitId, spellId, segment)
 --=]=]
-tinsert(Details.API_Description.namespaces[1].api, {
+table.insert(Details.API_Description.namespaces[1].api, {
 	name = "UnitHealingTakenFromSpell",
 	desc = "Query the unit healing taken from a spell.",
 	parameters = {
@@ -1932,16 +1898,16 @@ function Details.UnitHealingTakenFromSpell (unitId, spellId, isLiteral, segment)
 	if (type(isLiteral) ~= "boolean") then
 		isLiteral = true
 	end
-	
+
 	local combatObject = getCombatObject (segment)
-	
+
 	if (not combatObject) then
 		return 0
 	end
-	
+
 	local unitName = getUnitName (unitId)
 	local healingContainer = combatObject:GetContainer (DETAILS_ATTRIBUTE_HEAL)
-	
+
 	local totalHealingTaken = 0
 	if (isLiteral and type(spellId) == "number") then
 		for i = 1, #healingContainer._ActorTable do
@@ -1971,7 +1937,7 @@ end
 --[=[
 	Details.UnitHealingSpells (unitId, segment)
 --=]=]
-tinsert(Details.API_Description.namespaces[1].api, {
+table.insert(Details.API_Description.namespaces[1].api, {
 	name = "UnitHealingSpells",
 	desc = "Return a numeric (ipairs) table with spells IDs used by the unit to apply healing.",
 	parameters = {
@@ -2005,20 +1971,20 @@ function Details.UnitHealingSpells (unitId, segment)
 	if (not combatObject) then
 		return {}
 	end
-	
+
 	local unitName = getUnitName (unitId)
 
 	local playerObject = getActorObjectFromCombat (combatObject, 2, unitName)
 	if (not playerObject) then
 		return {}
 	end
-	
+
 	local unitSpells = playerObject.spells._ActorTable
 	local resultTable = {}
 	for spellId, spellObject in pairs(unitSpells) do
 		resultTable [#resultTable + 1] = spellId
 	end
-	
+
 	return resultTable
 end
 
@@ -2026,7 +1992,7 @@ end
 --[=[
 	Details.UnitHealingTargets (unitId, segment)
 --=]=]
-tinsert(Details.API_Description.namespaces[1].api, {
+table.insert(Details.API_Description.namespaces[1].api, {
 	name = "UnitHealingTargets",
 	desc = "Return a numeric (ipairs) table with names of targets the unit applied heal. You may query the amount of damage with Details.UnitHealingOnUnit( unitId, targetName ).",
 	parameters = {
@@ -2056,23 +2022,23 @@ tinsert(Details.API_Description.namespaces[1].api, {
 function Details.UnitHealingTargets (unitId, segment)
 	segment = segment or 0
 	local combatObject = getCombatObject (segment)
-	
+
 	if (not combatObject) then
 		return 0
 	end
-	
+
 	local unitName = getUnitName (unitId)
 	local healingTargetNames = {}
-	
+
 	local playerObject = getActorObjectFromCombat (combatObject, 2, unitName)
 	if (not playerObject) then
 		return healingTargetNames
 	end
-	
+
 	for targetName, _ in pairs(playerObject.targets) do
 		healingTargetNames [#healingTargetNames + 1] = targetName
 	end
-	
+
 	return healingTargetNames
 end
 
@@ -2081,7 +2047,7 @@ end
 --[=[
 	Details.UnitHealingPets (unitId, segment)
 --=]=]
-tinsert(Details.API_Description.namespaces[1].api, {
+table.insert(Details.API_Description.namespaces[1].api, {
 	name = "UnitHealingPets",
 	desc = "Return a numeric (ipairs) table with all pet names the unit used to apply healing. Individual pet information can be queried with Details.UnitHealing( petName ).",
 	parameters = {
@@ -2111,24 +2077,24 @@ tinsert(Details.API_Description.namespaces[1].api, {
 function Details.UnitHealingPets (unitId, segment)
 	segment = segment or 0
 	local combatObject = getCombatObject (segment)
-	
+
 	if (not combatObject) then
 		return 0
 	end
-	
+
 	local unitName = getUnitName (unitId)
 	local petNames = {}
-	
+
 	local playerObject = getActorObjectFromCombat (combatObject, 2, unitName)
 	if (not playerObject) then
 		return petNames
 	end
-	
+
 	for i = 1, #playerObject.pets do
 		petNames [#petNames + 1] = playerObject.pets [i]
 	end
-	
+
 	return petNames
 end
 
---stop auto complete: doo ende endp elsez 
+--stop auto complete: doo ende endp elsez

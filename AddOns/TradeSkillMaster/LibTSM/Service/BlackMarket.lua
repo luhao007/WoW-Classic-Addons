@@ -4,10 +4,9 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
--- This file contains all the code for TSM's standalone features
-
-local _, TSM = ...
-local BlackMarket = TSM.Init("Service.BlackMarket")
+local TSM = select(2, ...) ---@type TSM
+local BlackMarket = TSM.Init("Service.BlackMarket") ---@class Service.BlackMarket
+local Environment = TSM.Include("Environment")
 local Event = TSM.Include("Util.Event")
 local TempTable = TSM.Include("Util.TempTable")
 local ItemString = TSM.Include("Util.ItemString")
@@ -24,7 +23,7 @@ local private = {
 
 BlackMarket:OnModuleLoad(function()
 	-- setup BMAH scanning
-	if not TSM.IsWowClassic() then
+	if Environment.HasFeature(Environment.FEATURES.BLACK_MARKET_AH) then
 		Event.Register("BLACK_MARKET_ITEM_UPDATE", private.ScanBMAH)
 	end
 end)

@@ -189,9 +189,9 @@ VUHDO_I18N_TT.K060 = "자신이 제거할 수 있는 디버프만 표시되도�
 VUHDO_I18N_TT.K062 = "과 치유를 선택하면 체력바가 밝아집니다.";
 VUHDO_I18N_TT.K063 = "또한 자신이 직접 받는 치유를 보여줍니다. 이것은 일부 플레이어에 의해 오도된 것으로 느껴집니다.";
 VUHDO_I18N_TT.K065 = "플레이어가 거리내에 있을때 얼만큼의 주기로 거리 정보를 업데이트 할 것인지 선택합니다. 정보: 낮은 값을 입력한다면 시스템의 성능을 저하시킬 수 있습니다.";
-VUHDO_I18N_TT.K066 = "대다수가 가지고 있는 \"전형적인\" 주문으로 거리를 체크합니다. 거리 체크에 사용할만한 스킬을 가지고 있지 않다면 이 옵션을 사용하십시오."; -- 임의 수정, 이거 맞나...
+VUHDO_I18N_TT.K066 = "Check this to use the range of a \"typical\" spell. Also select this if you dont have any relevant spells.";
 VUHDO_I18N_TT.K067 = "입력한 주문을 통하여 거리를 체크합니다.";
-VUHDO_I18N_TT.K068 = "오른쪽에 입력된 주문을 통하여 거리를 체크합니다.";
+VUHDO_I18N_TT.K068 = "Select this to have the spell range checked due to the range of the spell below.";
 VUHDO_I18N_TT.K070 = "HoT 아이콘 크기의 바 높이를 백분율로 선택합니다";  -- 임의 수정
 VUHDO_I18N_TT.K071 = "상태 표시 줄의 오른쪽에 HoT 아이콘을 표시하려면 선택하십시오.";
 VUHDO_I18N_TT.K072 = "상태 표시 줄의 왼쪽에 HoT 아이콘을 표시하려면 선택하십시오.";
@@ -643,6 +643,17 @@ VUHDO_I18N_TT.K581 = "Check to show player nickname on bars.";
 VUHDO_I18N_TT.K582 = "Select the unit to target.";
 VUHDO_I18N_TT.K583 = "Check to make all HoT icons fade out when the HoT is expiring.";
 VUHDO_I18N_TT.K584 = "Check to make all HoT icons flash when the HoT is expiring.";
+VUHDO_I18N_TT.K585 = "Select a color for Evokers";
+VUHDO_I18N_TT.K586 = "Enable to show text only with no icon.";
+VUHDO_I18N_TT.K587 = "Show incoming spell casts only. Spells must be tracked by spell ID not name.";
+VUHDO_I18N_TT.K588 = "Show incoming spell casts from friendly units.";
+VUHDO_I18N_TT.K589 = "Show incoming spell casts from enemy units.";
+VUHDO_I18N_TT.K590 = "Show all incoming spell casts.";
+VUHDO_I18N_TT.K591 = "Filter to show only incoming spell casts from boss/NPC units.";
+VUHDO_I18N_TT.K592 = "Check this to show private aura icons on the health bar.";
+VUHDO_I18N_TT.K593 = "Select a size for your private aura icons.";
+VUHDO_I18N_TT.K594 = "Check to sort pet units last.";
+VUHDO_I18N_TT.K595 = "Show effective HP (health including shields) of player.";
 
 -- TBCC game version specific strings (tooltip IDs begin at K900)
 
@@ -1178,6 +1189,23 @@ VUHDO_I18N_MOUSEOVER_TARGET_HARM = "Mouseover's target unit (hostile only)";
 VUHDO_I18N_MOUSEOVER_TARGET_TARGET_HARM = "Mouseover's target's target unit (hostile only)";
 
 VUHDO_I18N_CLOCK = "Clock";
+
+VUHDO_I18N_TEXT_ONLY = "Text only";
+
+VUHDO_I18N_SHOW_FRIENDLY = "Show\nFriendly";
+VUHDO_I18N_SHOW_ENEMY = "Show\nEnemy";
+VUHDO_I18N_SHOW_ALL = "Show All";
+VUHDO_I18N_BOSS_ONLY = "Boss Only";
+
+VUHDO_I18N_X = "X";
+VUHDO_I18N_Y = "Y";
+
+VUHDO_I18N_PRIVATE_AURAS = "Private Auras";
+
+VUHDO_I18N_PETS_LAST = "Pets last";
+
+VUHDO_I18N_SHOW_EFFECTIVE = "Show\nEffective";
+VUHDO_I18N_DEBUFF_IGNORE_IMPORTED = "Debuff ignore list successfully imported.";
 
 -- TBCC game version specific strings
 

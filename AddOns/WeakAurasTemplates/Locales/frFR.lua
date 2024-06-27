@@ -1,12 +1,27 @@
 if not WeakAuras.IsLibsOK() then return end
 
-if GetLocale() ~= "frFR" then
+if (GAME_LOCALE or GetLocale()) ~= "frFR" then
   return
 end
 
 local L = WeakAuras.L
 
 -- WeakAuras/Templates
+	--[[Translation missing --]]
+	L["(Dwarf)"] = "(Dwarf)"
+	--[[Translation missing --]]
+	L["(Dwarf/Human)"] = "(Dwarf/Human)"
+	--[[Translation missing --]]
+	L["(Human)"] = "(Human)"
+	--[[Translation missing --]]
+	L["(Night Elf)"] = "(Night Elf)"
+	--[[Translation missing --]]
+	L["(Troll)"] = "(Troll)"
+	--[[Translation missing --]]
+	L["(Undead)"] = "(Undead)"
+	L["< 4 stacks"] = "< à 4 stacks"
+	--[[Translation missing --]]
+	L["5 stacks"] = "5 stacks"
 	L["Abilities"] = "Capacités"
 	L["Add Triggers"] = "Ajouter des déclencheurs"
 	L["Always Active"] = "Toujours actif"
@@ -49,6 +64,8 @@ local L = WeakAuras.L
 	L["Create Auras"] = "Créer Auras"
 	L["debuff"] = "affaiblissement"
 	L["Debuffs"] = "Affaiblissements"
+	--[[Translation missing --]]
+	L["dps buff"] = "dps buff"
 	L["General"] = "Général"
 	L["Health"] = "Vie"
 	--[[Translation missing --]]
@@ -62,6 +79,12 @@ local L = WeakAuras.L
 	L["Highlight while spell is active."] = "Mettez en surbrillance quand le sort est actif."
 	L["Hold CTRL to create multiple auras at once"] = "Maintenir CTRL pour créer plusieurs auras simultanément"
 	L["Keeps existing triggers intact"] = "Garder intact les déclencheurs existants"
+	--[[Translation missing --]]
+	L["Master Channeler Rune"] = "Master Channeler Rune"
+	--[[Translation missing --]]
+	L["Max 3"] = "Max 3"
+	--[[Translation missing --]]
+	L["Max 4"] = "Max 4"
 	L["Next"] = "Suivant"
 	L["Only show the aura if the target has the debuff."] = "Montre l'aura que si la cible a l'affaiblissement."
 	L["Only show the aura when the item is on cooldown."] = "Afficher uniquement l'aura quand l'objet est en recharge."
@@ -74,6 +97,8 @@ local L = WeakAuras.L
 	L["Pet alive"] = "Familier vivant"
 	L["Pet Behavior"] = "Comportement du familier"
 	L["PvP Talents"] = "Talents JcJ"
+	--[[Translation missing --]]
+	L["regen buff"] = "regen buff"
 	L["Replace all existing triggers"] = "Remplacer tous les déclencheurs existant"
 	L["Replace Triggers"] = "Remplacer les déclencheurs"
 	L["Resources"] = "Ressources"
@@ -82,8 +107,7 @@ local L = WeakAuras.L
 	L["Rogue cooldown"] = "Rogue cooldown"
 	L["Runes"] = "Runes"
 	L["Shapeshift Form"] = "Forme de Changeforme"
-	--[[Translation missing --]]
-	L["Show Always, Glow on Missing"] = "Show Always, Glow on Missing"
+	L["Show Always, Glow on Missing"] = "Toujours afficher, lorsque la brillance est manquante"
 	L["Show Charges and Check Usable"] = "Afficher les Charges et Vérifier si Utilisable"
 	L["Show Charges with Proc Tracking"] = "Afficher les Charges avec le Suivi des Procs"
 	L["Show Charges with Range Tracking"] = "Afficher les Charges avec Vérification de la Portée"

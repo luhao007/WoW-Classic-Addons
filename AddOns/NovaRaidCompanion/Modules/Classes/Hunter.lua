@@ -21,14 +21,16 @@ local aoeSpells = {
 	[27026] = "Explosive Trap (Rank 4)",
 	[49064] = "Explosive Trap (Rank 5)",
 	[49065] = "Explosive Trap (Rank 6)",
+	[13813] = "Explosive Trap", --Cata.
 	--[13812] = "Immolation Trap (Rank 1)", --Immolation trap takes a charge when it hits but does no initial dmg it seems, maybe the dot spell application has threat?
 	[13241] = "Goblin Sapper Charge",
 	[30486] = "Super Sapper Charge",
 	[56488] = "Global Thermal Sapper Charge";
 	[56350] = "Saronite Bomb";
+	--No new bombs in cata?
 };
-if (not NRC.isClassic and not NRC.isTBC) then
-	aoeSpells[42243] = "Volley (Rank 1)";
+if (NRC.isWrath) then
+	aoeSpells[42243] = "Volley (Rank 1)"; --Volley removed in cata.
 	aoeSpells[42244] = "Volley (Rank 2)";
 	aoeSpells[42245] = "Volley (Rank 3)";
 	aoeSpells[42234] = "Volley (Rank 4)";
@@ -237,7 +239,7 @@ local function tallyMisdirection(name)
 				if (NRC.config.mdSendMyThreatGroup) then
 					if (IsInGroup()) then
 						local msg = "[NRC] " .. string.format(L["otherTransferedThreatMD"], name, NRC:commaValue(total), target or "unknown");
-						NRC:sendGroup(msg, 0.2);
+						NRC:sendGroup(msg, nil, 0.2);
 					else
 						sentMe = true;
 						NRC:print(string.format(L["meTransferedThreatMD"], "|cFF00C800" .. NRC:commaValue(total) .. "|r", target or "unknown"));
@@ -265,7 +267,6 @@ local function tallyMisdirection(name)
 					--This can be merged in to only group check after testing new new settings check.
 					if (IsInGroup()) then
 						local msg = "[NRC] " .. string.format(L["otherTransferedThreatMD"], name, NRC:commaValue(total), target or "unknown");
-						--NRC:sendGroup(msg);
 						NRC:sendGroupSettingsCheck(msg, "mdSendOthersThreatGroup", "mdSendMyThreatGroup", name);
 					else
 						sentMe = true;
@@ -312,11 +313,7 @@ end
 		end
 		local msg = string.format(L["spellCastOn"], spellLink or spellName, target) .. ".";
 		if (NRC.config.mdSendMyCastGroup) then
-			if (IsInRaid()) then
-				SendChatMessage(msg, "RAID");
-			elseif (IsInGroup()) then
-				SendChatMessage(msg, "PARTY");
-			end
+			NRC:sendGroup(msg);
 		end
 		local inInstance = IsInInstance();
 		if (inInstance and NRC.config.mdSendMyCastGroup) then
@@ -544,7 +541,7 @@ local function combatLogEventUnfiltered(...)
 			--If misdirection was still up and has now faded then do the calc.
 			--This will only fire here if md times out or we're using an aoeSpell like sapper and not checking the 3 hit count.
 			if (spellID == 34477) then
-				if (NRC.isWrath) then
+				if (NRC.expansionNum > 2) then
 					--If it fades without being used run the calc but leave enough time incase it faded from proper use.
 					C_Timer.After(6, function()
 						if (hits[sourceName]) then
@@ -630,13 +627,7 @@ function NRC:parseMdCommand(msg)
 			text = "(" .. NRC:commaValue(last.total) .. ") " .. last.name .. " last MD: " .. last.text;
 		end
 		if (text) then
-			if (IsInRaid()) then
-				SendChatMessage(NRC:stripColors(text), "RAID");
-			elseif (IsInGroup()) then
-				SendChatMessage(NRC:stripColors(text), "PARTY");
-			else
-				NRC:print(text)
-			end
+			NRC:sendGroup(text, true);
 		else
 			if (msg and msg ~= "") then
 				print("No last misdirection data found for player " .. msg .. ".");
@@ -684,7 +675,7 @@ end
 
 local lastAmmoWarning = 0;
 function NRC:checkAmmo()
-	if (NRC.config.lowAmmoCheck) then
+	if (NRC.config.lowAmmoCheck and UnitLevel("player") > 30) then
 		local ammoCount, ammoID = NRC:getAmmoCount();
 		if (ammoCount and ammoCount < NRC.config.lowAmmoCheckThreshold) then
 			if (GetTime() - lastAmmoWarning > 900) then
@@ -702,13 +693,15 @@ function NRC:checkAmmo()
 	end
 end
 
-local f = CreateFrame("Frame");
-f:RegisterEvent("BAG_UPDATE");
-f:RegisterEvent("PLAYER_ENTERING_WORLD");
-f:SetScript('OnEvent', function(self, event, ...)
-	if (event == "BAG_UPDATE" or event == "PLAYER_ENTERING_WORLD") then
-		if (NRC.config.lowAmmoCheck) then
-			NRC:throddleEventByFunc(event, 15, "checkAmmo", ...);
+if (NRC.expansionNum < 4) then
+	local f = CreateFrame("Frame");
+	f:RegisterEvent("BAG_UPDATE");
+	f:RegisterEvent("PLAYER_ENTERING_WORLD");
+	f:SetScript('OnEvent', function(self, event, ...)
+		if (event == "BAG_UPDATE" or event == "PLAYER_ENTERING_WORLD") then
+			if (NRC.config.lowAmmoCheck) then
+				NRC:throddleEventByFunc(event, 15, "checkAmmo", ...);
+			end
 		end
-	end
-end)
+	end)
+end

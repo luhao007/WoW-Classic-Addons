@@ -5,7 +5,7 @@
 -- ------------------------------------------------------------------------------ --
 
 local TSM = select(2, ...) ---@type TSM
-local RPC = TSM.Init("Service.SyncClasses.RPC")
+local RPC = TSM.Init("Service.SyncClasses.RPC") ---@class Service.SyncClasses.RPC
 local Delay = TSM.Include("Util.Delay")
 local TempTable = TSM.Include("Util.TempTable")
 local Log = TSM.Include("Util.Log")
@@ -19,7 +19,7 @@ local private = {
 	pendingTimer = nil,
 }
 local RPC_EXTRA_TIMEOUT = 15
-local CALLBACK_TIME_WARNING_THRESHOLD_MS = 20
+local CALLBACK_TIME_WARNING_THRESHOLD = 0.02
 
 
 
@@ -64,6 +64,7 @@ function RPC.Call(name, targetPlayer, handler, ...)
 
 	local context = TempTable.Acquire()
 	context.name = name
+	context.targetPlayer = targetPlayer
 	context.handler = handler
 	context.timeoutTime = time() + RPC_EXTRA_TIMEOUT + private.EstimateTransferTime(numBytes)
 	private.pendingRPC[private.rpcSeqNum] = context
@@ -72,24 +73,13 @@ function RPC.Call(name, targetPlayer, handler, ...)
 	return true, (context.timeoutTime - time()) * 2 / 3
 end
 
-function RPC.Cancel(name, handler)
-	for seq, info in pairs(private.pendingRPC) do
-		if info.name == name and info.handler == handler then
-			TempTable.Release(info)
-			private.pendingRPC[seq] = nil
-			return
-		end
-	end
-end
-
 
 
 -- ============================================================================
 -- Message Handlers
 -- ============================================================================
 
-function private.HandleCall(dataType, _, sourcePlayer, data)
-	assert(dataType == Constants.DATA_TYPES.RPC_CALL)
+function private.HandleCall(_, sourcePlayer, data)
 	if type(data) ~= "table" or type(data.name) ~= "string" or type(data.seq) ~= "number" or type(data.args) ~= "table" then
 		return
 	end
@@ -98,18 +88,18 @@ function private.HandleCall(dataType, _, sourcePlayer, data)
 	end
 	local responseData = TempTable.Acquire()
 
-	local funcStartTime = debugprofilestop()
+	local funcStartTime = GetTimePreciseSec()
 	responseData.result = TempTable.Acquire(private.rpcFunctions[data.name](unpack(data.args)))
-	local funcTimeTaken = debugprofilestop() - funcStartTime
-	if funcTimeTaken > CALLBACK_TIME_WARNING_THRESHOLD_MS then
-		Log.Warn("RPC (%s) took %0.2fms", tostring(data.name), funcTimeTaken)
+	local funcTimeTaken = GetTimePreciseSec() - funcStartTime
+	if funcTimeTaken > CALLBACK_TIME_WARNING_THRESHOLD then
+		Log.Warn("RPC (%s) took %0.5fs", tostring(data.name), funcTimeTaken)
 	end
 	responseData.seq = data.seq
-	local sendStartTime = debugprofilestop()
+	local sendStartTime = GetTimePreciseSec()
 	local numBytes = Comm.SendData(Constants.DATA_TYPES.RPC_RETURN, sourcePlayer, responseData)
-	local sendTimeTaken = debugprofilestop() - sendStartTime
-	if sendTimeTaken > CALLBACK_TIME_WARNING_THRESHOLD_MS then
-		Log.Warn("Sending RPC result (%s) took %0.2fms (%d bytes)", tostring(data.name), sendTimeTaken, numBytes)
+	local sendTimeTaken = GetTimePreciseSec() - sendStartTime
+	if sendTimeTaken > CALLBACK_TIME_WARNING_THRESHOLD then
+		Log.Warn("Sending RPC result (%s) took %0.5fs (%d bytes)", tostring(data.name), sendTimeTaken, numBytes)
 	end
 	TempTable.Release(responseData.result)
 	TempTable.Release(responseData)
@@ -125,25 +115,26 @@ function private.HandleCall(dataType, _, sourcePlayer, data)
 	end
 end
 
-function private.HandleReturn(dataType, _, _, data)
-	assert(dataType == Constants.DATA_TYPES.RPC_RETURN)
+function private.HandleReturn(_, character, data)
 	if type(data.seq) ~= "number" or type(data.result) ~= "table" then
 		return
-	elseif not private.pendingRPC[data.seq] then
+	end
+	local context = private.pendingRPC[data.seq]
+	if not context then
 		return
 	end
-	local startTime = debugprofilestop()
-	private.pendingRPC[data.seq].handler(unpack(data.result))
-	local timeTaken = debugprofilestop() - startTime
-	if timeTaken > CALLBACK_TIME_WARNING_THRESHOLD_MS then
-		Log.Warn("RPC (%s) result handler took %0.2fms", tostring(private.pendingRPC[data.seq].name), timeTaken)
+	assert(character == context.targetPlayer)
+	local startTime = GetTimePreciseSec()
+	context.handler(true, context.targetPlayer, unpack(data.result))
+	local timeTaken = GetTimePreciseSec() - startTime
+	if timeTaken > CALLBACK_TIME_WARNING_THRESHOLD then
+		Log.Warn("RPC (%s) result handler took %0.5fs", tostring(context.name), timeTaken)
 	end
-	TempTable.Release(private.pendingRPC[data.seq])
+	TempTable.Release(context)
 	private.pendingRPC[data.seq] = nil
 end
 
-function private.HandlePreamble(dataType, _, _, data)
-	assert(dataType == Constants.DATA_TYPES.RPC_PREAMBLE)
+function private.HandlePreamble(_, _, data)
 	if type(data.seq) ~= "number" or type(data.transferTime) ~= "number" then
 		return
 	elseif not private.pendingRPC[data.seq] then
@@ -174,10 +165,10 @@ function private.HandlePendingRPC()
 		end
 	end
 	for _, seq in ipairs(timedOut) do
-		local info = private.pendingRPC[seq]
-		Log.Warn("RPC timed out (%s)", info.name)
-		info.handler()
-		TempTable.Release(info)
+		local context = private.pendingRPC[seq]
+		Log.Warn("RPC timed out (%s)", context.name)
+		context.handler(false, context.targetPlayer)
+		TempTable.Release(context)
 		private.pendingRPC[seq] = nil
 	end
 	TempTable.Release(timedOut)

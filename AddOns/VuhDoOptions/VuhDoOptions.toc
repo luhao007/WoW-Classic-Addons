@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Iza@Gilneas, humfras, Ivaria@Hyjal
-## Version: 3.145-wotlkc
+## Version: 3.164-wotlkc
 ## Dependencies: VuhDo
 ## LoadOnDemand: 0
 ## SavedVariables: VUHDO_OPTIONS_SETTINGS
@@ -31,7 +31,6 @@ VuhDoNewOptionsGeneralScan.xml
 VuhDoNewOptionsGeneralThreat.xml
 VuhDoNewOptionsGeneralMisc.xml
 VuhDoNewOptionsGeneralCluster.xml
-VuhDoNewOptionsGeneralIndicators.xml
 VuhDoNewOptionsGeneralSpellTrace.xml
 VuhDoNewOptionsGeneral.xml
 VuhDoNewOptionsSpellMouse.xml
@@ -50,6 +49,7 @@ VuhDoNewOptionsPanelText.xml
 VuhDoNewOptionsPanelMisc.xml
 VuhDoNewOptionsPanelHotBars.xml
 VuhDoNewOptionsPanelHots.xml
+VuhDoNewOptionsPanelIndicators.xml
 VuhDoNewOptionsPanelPanel.xml
 VuhDoNewOptionsColorsClasses.xml
 VuhDoNewOptionsColorsHots.xml

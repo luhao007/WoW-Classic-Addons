@@ -4,8 +4,9 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local BuyoutSearch = TSM.Sniper:NewPackage("BuyoutSearch")
+local Environment = TSM.Include("Environment")
 local L = TSM.Include("Locale").GetTable()
 local Log = TSM.Include("Util.Log")
 local Threading = TSM.Include("Service.Threading")
@@ -40,11 +41,7 @@ end
 function private.ScanThread(auctionScan)
 	local numQueries = auctionScan:GetNumQueries()
 	if numQueries == 0 then
-		if TSM.IsWowClassic() then
-			auctionScan:NewQuery()
-				:AddCustomFilter(private.QueryFilter)
-				:SetPage("LAST")
-		else
+		if Environment.IsRetail() then
 			wipe(private.itemList)
 			if not TSM.Sniper.PopulateItemList(private.itemList) then
 				-- scan the entire AH
@@ -60,6 +57,10 @@ function private.ScanThread(auctionScan)
 					query:AddCustomFilter(private.QueryFilter)
 				end
 			end
+		else
+			auctionScan:NewQuery()
+				:AddCustomFilter(private.QueryFilter)
+				:SetPage("LAST")
 		end
 	end
 	-- don't care if the scan fails for sniper since it's rerun constantly

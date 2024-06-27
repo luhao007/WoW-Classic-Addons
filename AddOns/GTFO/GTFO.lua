@@ -24,13 +24,14 @@ GTFO = {
 		IgnoreOptions = { };
 		TrivialDamagePercent = 2; -- Minimum % of HP lost required for an alert to be trivial
 		SoundOverrides = { "", "", "", "" }; -- Override table for GTFO sounds
+		IgnoreSpellList = { };
 	};
-	Version = "5.0"; -- Version number (text format)
+	Version = "5.5.3"; -- Version number (text format)
 	VersionNumber = 0; -- Numeric version number for checking out-of-date clients (placeholder until client is detected)
-	RetailVersionNumber = 50000; -- Numeric version number for checking out-of-date clients (retail)
-	ClassicVersionNumber = 50000; -- Numeric version number for checking out-of-date clients (Vanilla classic)
+	RetailVersionNumber = 50503; -- Numeric version number for checking out-of-date clients (retail)
+	ClassicVersionNumber = 50503; -- Numeric version number for checking out-of-date clients (Vanilla classic)
 	BurningCrusadeVersionNumber = 50000; -- Numeric version number for checking out-of-date clients (TBC classic)
-	WrathVersionNumber = 50000; -- Numeric version number for checking out-of-date clients (Wrath classic)
+	WrathVersionNumber = 50503; -- Numeric version number for checking out-of-date clients (Wrath classic)
 	DataLogging = nil; -- Indicate whether or not the addon needs to run the datalogging function (for hooking)
 	DataCode = "4"; -- Saved Variable versioning, change this value to force a reset to default
 	CanTank = nil; -- The active character is capable of tanking
@@ -77,6 +78,7 @@ GTFO = {
 	ClassicMode = nil; -- WoW Classic client detection
 	BurningCrusadeMode = nil; -- WoW TBC client detection
 	WrathMode = nil; -- WoW Wrath client detection
+	NewSettingsUIMode = nil; -- New WoW UI Settings system
 	SoundChannels = { 
 		{ Code = "Master", Name = _G.MASTER_VOLUME },
 		{ Code = "SFX", Name = _G.SOUND_VOLUME, CVar = "Sound_EnableSFX" },
@@ -101,15 +103,21 @@ end
 if (buildNumber <= 20000) then
 	GTFO.ClassicMode = true;
 	GTFO.VersionNumber = GTFO.ClassicVersionNumber;
+	if (buildNumber >= 11404) then
+		-- Enabled for 1.14 (Hardcore)
+		GTFO.NewSettingsUIMode = true;
+	end
 elseif (buildNumber <= 30000) then
 	GTFO.BurningCrusadeMode = true;
 	GTFO.VersionNumber = GTFO.BurningCrusadeVersionNumber;
 elseif (buildNumber <= 40000) then
 	GTFO.WrathMode = true;
 	GTFO.VersionNumber = GTFO.WrathVersionNumber;
+	GTFO.NewSettingsUIMode = true;
 else
 	GTFO.RetailMode = true;
 	GTFO.VersionNumber = GTFO.RetailVersionNumber;
+	GTFO.NewSettingsUIMode = true;
 end
 
 StaticPopupDialogs["GTFO_POPUP_MESSAGE"] = {
@@ -142,9 +150,14 @@ function GTFO_DebugPrint(str)
 	end
 end
 
-function GTFO_ScanPrint(str)
+function GTFO_ScanPrint(str, bNew)
 	if (GTFO.Settings.ScanMode) then
-		DEFAULT_CHAT_FRAME:AddMessage("[GTFO] "..tostring(str), 0.5, 0.5, 0.85);
+		if (bNew) then
+			DEFAULT_CHAT_FRAME:AddMessage("[GTFO:New] "..tostring(str), 0.5, 0.5, 0.85);
+		else
+			DEFAULT_CHAT_FRAME:AddMessage("[GTFO:Scan] "..tostring(str), 0.5, 0.65, 0.65);
+		end
+
 	end
 end
 
@@ -186,6 +199,7 @@ function GTFO_OnEvent(self, event, ...)
 			SoundChannel = GTFOData.SoundChannel or GTFO.DefaultSettings.SoundChannel;
 			IgnoreOptions = { };
 			SoundOverrides = { "", "", "", "" };
+			IgnoreSpellList = { };
 		};
 		
 		-- Load spell ignore options (player set)
@@ -210,6 +224,12 @@ function GTFO_OnEvent(self, event, ...)
 		if (GTFOData.SoundOverrides) then
 			for key, option in pairs(GTFOData.SoundOverrides) do
 				GTFO.Settings.SoundOverrides[key] = GTFOData.SoundOverrides[key] or "";
+			end
+		end
+		
+		if (GTFOData.IgnoreSpellList) then
+			for i, spellId in pairs(GTFOData.IgnoreSpellList) do
+				tinsert(GTFO.Settings.IgnoreSpellList, spellId);
 			end
 		end
 
@@ -389,7 +409,7 @@ function GTFO_OnEvent(self, event, ...)
 							end
 
 							if (GTFO.FFSpellID[SpellID].test) then
-								GTFO_ScanPrint("TEST ALERT: Spell ID #"..SpellID);
+								GTFO_ScanPrint("TEST ALERT: Spell ID #"..SpellID, true);
 							end
 							alertID = GTFO_GetAlertID(GTFO.FFSpellID[SpellID]);
 							GTFO_PlaySound(alertID);
@@ -405,8 +425,7 @@ function GTFO_OnEvent(self, event, ...)
 			local damage = tonumber(misc2) or 0
 			local damagePercent = tonumber((damage * 100) / UnitHealthMax("player"))
 			-- Environmental detection
-			GTFO_ScanPrint(SpellType.." - "..environment);
-			local alertID;
+			local alertID = 0;
 			if (environment == "DROWNING") then
 				alertID = 1;
 			elseif (environment == "FATIGUE") then
@@ -417,30 +436,42 @@ function GTFO_OnEvent(self, event, ...)
 				end
 				alertID = 1;
 			elseif (environment == "LAVA") then
+				if (GTFO.Settings.IgnoreOptions and GTFO.Settings.IgnoreOptions["Lava"]) then
+					-- Lava being ignored
+					--GTFO_DebugPrint("Won't alert LAVA - Manually ignored");
+					return;
+				end
 				alertID = 2;
 				if (GTFO_HasDebuff("player", 81118) or GTFO_HasDebuff("player", 94073) or GTFO_HasDebuff("player", 94074) or GTFO_HasDebuff("player", 94075) or GTFO_HasDebuff("player", 97151)) then
 					-- Magma debuff exception
 					--GTFO_DebugPrint("Won't alert LAVA - Magma debuff found");
-					return;
-				end
-				if (not GTFO.Settings.TrivialMode and damagePercent < tonumber(GTFO.Settings.TrivialDamagePercent)) then
+					alertID = 0;
+				elseif (not GTFO.Settings.TrivialMode and damagePercent < tonumber(GTFO.Settings.TrivialDamagePercent)) then
 					-- Trivial
 					--GTFO_DebugPrint("Won't alert LAVA - Trivial");
-					return;
+					alertID = 0;
 				end
 			elseif (environment ~= "FALLING") then
+				if (GTFO.Settings.IgnoreOptions and GTFO.Settings.IgnoreOptions["Lava"]) then
+					-- Lava being ignored
+					--GTFO_DebugPrint("Won't alert LAVA - Manually ignored");
+					return;
+				end
 				alertID = 2;
 				if (not GTFO.Settings.TrivialMode and damagePercent < tonumber(GTFO.Settings.TrivialDamagePercent)) then
 					-- Trivial
 					--GTFO_DebugPrint("Won't alert "..tostring(environment).." - Trivial");
-					return;
+					alertID = 0;
 				end
 			else
 				return;
 			end
+			GTFO_ScanPrint(SpellType.." - "..environment, (alertID == 0));
+			if (alertID == 0) then
+				return;
+			end
 			GTFO_PlaySound(alertID);
 			GTFO_RecordStats(alertID, 0, GTFOLocal.Recount_Environmental, tonumber(damage), nil, SpellType);
-			return;
 		elseif (SpellType=="SPELL_PERIODIC_DAMAGE" or SpellType=="SPELL_DAMAGE" or SpellType=="SPELL_MISSED" or SpellType=="SPELL_PERIODIC_MISSED" or SpellType=="SPELL_ENERGIZE" or SpellType=="SPELL_INSTAKILL" or ((SpellType=="SPELL_AURA_APPLIED" or SpellType=="SPELL_AURA_APPLIED_DOSE" or SpellType=="SPELL_AURA_REFRESH") and misc4=="DEBUFF")) then
 			-- Spell detection
 			local SpellID = tonumber(misc1);
@@ -462,22 +493,22 @@ function GTFO_OnEvent(self, event, ...)
 						
 			if (GTFO.Settings.ScanMode and not GTFO.IgnoreScan[SpellID]) then
 				if (vehicle) then
-					GTFO_ScanPrint("V: "..SpellType.." - "..SpellID.." - "..GetSpellLink(SpellID).." - "..SpellSourceName.." ("..GTFO_GetMobId(sourceGUID)..") >"..tostring(destName));
-					GTFO_SpellScan(SpellID, SpellSourceName);
+					GTFO_ScanPrint("V: "..SpellType.." - "..SpellID.." - "..GetSpellLink(SpellID).." - "..SpellSourceName.." ("..GTFO_GetMobId(sourceGUID)..") >"..tostring(destName), GTFO_SpellScan(SpellID, SpellSourceName));
 				elseif (SpellType~="SPELL_ENERGIZE" or (SpellType=="SPELL_ENERGIZE" and sourceGUID ~= UnitGUID("player"))) then
 					if (GTFO.ClassicMode) then
-						GTFO_ScanPrint(SpellType.." - "..SpellID.." - "..SpellName.." - "..SpellSourceName.." ("..GTFO_GetMobId(sourceGUID)..") >"..tostring(destName).." for "..tostring(misc4));
+						GTFO_ScanPrint(SpellType.." - "..SpellID.." - "..SpellName.." - "..SpellSourceName.." ("..GTFO_GetMobId(sourceGUID)..") >"..tostring(destName).." for "..tostring(misc4), GTFO_SpellScanName(SpellName, SpellSourceName, tostring(misc4)));
 					else
-						GTFO_ScanPrint(SpellType.." - "..SpellID.." - "..GetSpellLink(SpellID).." - "..SpellSourceName.." ("..GTFO_GetMobId(sourceGUID)..") >"..tostring(destName).." for "..tostring(misc4));
-					end
-					if (GTFO.ClassicMode) then
-						GTFO_SpellScanName(SpellName, SpellSourceName, tostring(misc4));
-					else
-						GTFO_SpellScan(SpellID, SpellSourceName, tostring(misc4));
+						GTFO_ScanPrint(SpellType.." - "..SpellID.." - "..GetSpellLink(SpellID).." - "..SpellSourceName.." ("..GTFO_GetMobId(sourceGUID)..") >"..tostring(destName).." for "..tostring(misc4), GTFO_SpellScan(SpellID, SpellSourceName, tostring(misc4)));
 					end
 				end
 			end
 			if (GTFO.SpellID[SpellID]) then
+				if (tContains(GTFO.Settings.IgnoreSpellList, tonumber(SpellID))) then
+					-- Spell is on the custom ignore list
+					--GTFO_DebugPrint("Won't alert "..SpellName.." ("..SpellID..") - Player custom ignore option: "..GTFO.SpellID[SpellID].category);
+					return;						
+				end
+			
 				if (GTFO.SpellID[SpellID].category) then
 					if (GTFO.Settings.IgnoreOptions and GTFO.Settings.IgnoreOptions[GTFO.SpellID[SpellID].category]) then
 						-- Spell is being ignored completely
@@ -610,7 +641,7 @@ function GTFO_OnEvent(self, event, ...)
 				end
 				alertID = GTFO_GetAlertID(GTFO.SpellID[SpellID]);
 				if (GTFO.SpellID[SpellID].test) then
-					GTFO_ScanPrint("TEST ALERT: Spell ID #"..SpellID);
+					GTFO_ScanPrint("TEST ALERT: Spell ID #"..SpellID, true);
 				end
 				GTFO_PlaySound(alertID);
 				if (SpellType == "SPELL_PERIODIC_DAMAGE" or SpellType == "SPELL_DAMAGE" or SpellType == "SPELL_ENERGIZE") then
@@ -837,6 +868,8 @@ function GTFO_Command(arg1)
 		GTFO_Command_Vibrate();
 	elseif (Command == "HELP" or Command == "") then
 		GTFO_Command_Help();
+	elseif (Command == "IGNORE") then
+		GTFO_Command_IgnoreSpell(Description);
 	else
 		GTFO_Command_Help();
 	end
@@ -873,6 +906,53 @@ function GTFO_Command_Test(iSound)
 		end
 	end
 end
+
+function GTFO_Command_IgnoreSpell(iSpellId)
+	if (GTFO.ClassicMode) then
+		-- Classic doesn't use Spell IDs, so it's not supported
+		GTFO_ErrorPrint(GTFOLocal.UI_NotSupported_Classic);		
+		return;
+	end
+	
+	local sCommand = tostring(iSpellId):lower();
+	local spellId = tonumber(iSpellId) or 0;
+	if (sCommand == "" or sCommand == "nil") then
+		if (#GTFO.Settings.IgnoreSpellList > 0) then
+			GTFO_ChatPrint(GTFOLocal.UI_IgnoreSpell_List);
+			for i, IgnoredSpellId in pairs(GTFO.Settings.IgnoreSpellList) do
+				GTFO_ChatPrint("  "..IgnoredSpellId..": "..GetSpellLink(IgnoredSpellId));
+			end
+		else
+			GTFO_ChatPrint(GTFOLocal.UI_IgnoreSpell_None);
+		end
+		GTFO_ChatPrint(GTFOLocal.UI_IgnoreSpell_Help);
+	elseif (spellId > 0) then
+		local spellLink = GetSpellLink(spellId);
+		if (tContains(GTFO.Settings.IgnoreSpellList, spellId)) then
+			-- Remove spell ID
+			for i, IgnoredSpellId in pairs(GTFO.Settings.IgnoreSpellList) do
+				if (IgnoredSpellId == spellId) then
+					tremove(GTFO.Settings.IgnoreSpellList, i);
+					GTFO_ChatPrint(string.format(GTFOLocal.UI_IgnoreSpell_Remove,spellId,(spellLink or "")));
+					GTFO_SaveSettings();
+					return;
+				end
+			end
+		else
+			-- Add spell ID
+			if (not spellLink) then
+				GTFO_ErrorPrint(string.format(GTFOLocal.UI_IgnoreSpell_InvalidSpellId, spellId));	
+				return;
+			end
+			tinsert(GTFO.Settings.IgnoreSpellList, spellId);
+			GTFO_ChatPrint(string.format(GTFOLocal.UI_IgnoreSpell_Add,spellId,spellLink));
+			GTFO_SaveSettings();
+		end
+	else
+		GTFO_ErrorPrint("Invalid command.")
+	end
+end
+
 
 function GTFO_Command_SetCustomSound(iSound, sSound)
 	GTFO.Settings.SoundOverrides[iSound] = tostring(sSound or "");
@@ -1074,7 +1154,7 @@ end
 
 -- Create Addon Menu options and interface
 function GTFO_RenderOptions()
-	if (GTFO.DragonflightMode) then
+	if (GTFO.NewSettingsUIMode) then
 		-- TODO: Rebuild configuration menus in new Dragonflight format
 		-- Modern version (Dragonflight)
 		local ConfigurationPanel = CreateFrame("FRAME","GTFO_MainFrame");
@@ -1627,6 +1707,7 @@ function GTFO_Command_Help()
 	DEFAULT_CHAT_FRAME:AddMessage("|cFFEEEE00/gtfo test2|r -- "..GTFOLocal.Help_TestLow, 0.25, 1.0, 0.75);
 	DEFAULT_CHAT_FRAME:AddMessage("|cFFEEEE00/gtfo test3|r -- "..GTFOLocal.Help_TestFail, 0.25, 1.0, 0.75);
 	DEFAULT_CHAT_FRAME:AddMessage("|cFFEEEE00/gtfo test4|r -- "..GTFOLocal.Help_TestFriendlyFire, 0.25, 1.0, 0.75);
+	DEFAULT_CHAT_FRAME:AddMessage("|cFFEEEE00/gtfo ignore|r -- "..GTFOLocal.Help_IgnoreSpell, 0.25, 1.0, 0.75);
 end
 
 function GTFO_Option_HighTest()
@@ -1814,7 +1895,7 @@ function GTFO_Option_SetVolume()
 	getglobal("GTFO_VolumeSlider"):SetValue(GTFO.Settings.Volume);
 	GTFO_GetSounds();
 	GTFO_Option_SetVolumeText(GTFO.Settings.Volume);
-	if (GTFO.DragonflightMode) then
+	if (GTFO.NewSettingsUIMode) then
 		GTFO_SaveSettings();
 	end
 end
@@ -1847,7 +1928,7 @@ function GTFO_Option_SetTrivialDamage()
 	getglobal("GTFO_TrivialDamageSlider"):SetValue(GTFO.Settings.TrivialDamagePercent);
 	GTFO_GetSounds();
 	GTFO_Option_SetTrivialDamageText(GTFO.Settings.TrivialDamagePercent);
-	if (GTFO.DragonflightMode) then
+	if (GTFO.NewSettingsUIMode) then
 		GTFO_SaveSettings();
 	end
 end
@@ -1860,7 +1941,7 @@ function GTFO_Option_SetChannel()
 	GTFO.Settings.SoundChannel = GTFO.SoundChannels[channelId].Code;
 	getglobal("GTFO_ChannelIdSlider"):SetValue(channelId);
 	GTFO_Option_SetChannelIdText(channelId);
-	if (GTFO.DragonflightMode) then
+	if (GTFO.NewSettingsUIMode) then
 		GTFO_SaveSettings();
 	end
 end
@@ -2037,7 +2118,7 @@ end
 -- Save settings to persistant storage, refresh UI options
 function GTFO_SaveSettings()
 	--GTFO_DebugPrint("Saving settings");
-	if (not GTFO.DragonflightMode) then
+	if (not GTFO.NewSettingsUIMode) then
 		GTFO_Option_SetVolume();
 	end
 
@@ -2066,10 +2147,13 @@ function GTFO_SaveSettings()
 		end
 	end
 	GTFOData.SoundOverrides = { "", "", "", "" };
-	getglobal("GTFO_HighResetButton"):Hide();
-	getglobal("GTFO_LowResetButton"):Hide();
-	getglobal("GTFO_FailResetButton"):Hide();
-	getglobal("GTFO_FriendlyFireResetButton"):Hide();
+	GTFOData.IgnoreSpellList = { };
+	if (GTFO.UIRendered) then
+		getglobal("GTFO_HighResetButton"):Hide();
+		getglobal("GTFO_LowResetButton"):Hide();
+		getglobal("GTFO_FailResetButton"):Hide();
+		getglobal("GTFO_FriendlyFireResetButton"):Hide();
+	end
 
 	if (GTFO.Settings.SoundOverrides) then
 		for key, option in pairs(GTFO.Settings.SoundOverrides) do
@@ -2091,10 +2175,16 @@ function GTFO_SaveSettings()
 		end
 	end
 
-	if (not GTFO.DragonflightMode) then
+	if (not GTFO.NewSettingsUIMode) then
 		GTFO.Settings.OriginalVolume = GTFO.Settings.Volume;
 		GTFO.Settings.OriginalTrivialDamagePercent = GTFO.Settings.TrivialDamagePercent;
 		GTFO.Settings.OriginalChannelId = GTFO_GetCurrentSoundChannelId(GTFO.Settings.SoundChannel);
+	end
+	
+	if (not GTFO.ClassicMode and #GTFO.Settings.IgnoreSpellList > 0) then
+		for i, spellId in pairs(GTFO.Settings.IgnoreSpellList) do
+			tinsert(GTFOData.IgnoreSpellList, spellId);
+		end
 	end
 	
 	if (GTFO.UIRendered) then
@@ -2142,6 +2232,7 @@ function GTFO_SetDefaults()
 	end
 	GTFO.Settings.IgnoreOptions = GTFO.DefaultSettings.IgnoreOptions;
 	GTFO.Settings.SoundOverrides = GTFO.DefaultSettings.SoundOverrides;
+	GTFO.Settings.IgnoreSpellList = GTFO.DefaultSettings.IgnoreSpellList;
 	GTFO_SaveSettings();
 end
 
@@ -2213,6 +2304,24 @@ function GTFO_GetDebuffSpellIndex(target, iSpellID)
 	return nil;
 end
 
+function GTFO_BuffTime(target, iSpellID)
+	local index = GTFO_GetBuffSpellIndex(target, iSpellID);
+	if (index) then
+		return tonumber(select(6, UnitBuff(target, index)) - GetTime()) or 0;
+	else
+		return 0;
+	end
+end
+
+function GTFO_DebuffTime(target, iSpellID)
+	local index = GTFO_GetDebuffSpellIndex(target, iSpellID);
+	if (index) then
+		return tonumber(select(6, UnitDebuff(target, index)) - GetTime()) or 0;
+	else
+		return 0;
+	end
+end
+
 function GTFO_GetAlertID(alert)
 	if (alert.soundFunction) then
 		return alert:soundFunction();
@@ -2244,7 +2353,7 @@ function GTFO_GetAlertID(alert)
 			alertLevel = alert.soundLFR;
 		end
 	elseif (alert.soundHeroic or alert.soundMythic or alert.soundChallenge or (tankAlert and (alert.tankSoundHeroic or alert.tankSoundMythic or alert.tankSoundChallenge))) then
-		local isHeroic, isChallenge, _, isMythic = select(3, GetDifficultyInfo(select(3, GetInstanceInfo())));
+		local isHeroic, isChallenge, isHeroicRaid, isMythic = select(3, GetDifficultyInfo(select(3, GetInstanceInfo())));
 		if (isChallenge == true) then
 			-- Mythic+/Challenge Mode
 			local useAlert = true;
@@ -2266,7 +2375,7 @@ function GTFO_GetAlertID(alert)
 			elseif (alert.soundMythic or alert.soundHeroic) then
 				alertLevel = alert.soundMythic or alert.soundHeroic;
 			end
-		elseif (isHeroic == true) then
+		elseif (isHeroic == true or isHeroicRaid == true) then
 			-- Heroic Mode
 			if (tankAlert and alert.tankSoundHeroic) then
 				alertLevel = alert.tankSoundHeroic;
@@ -2349,6 +2458,18 @@ function GTFO_AddEvent(eventName, eventTime, eventCode, eventRepeat)
 		end
 end
 
+function GTFO_RemoveEvent(eventName)
+	if (#GTFO.Events > 0) then
+		for index, event in pairs(GTFO.Events) do
+			if (event.Name == eventName) then
+				--GTFO_DebugPrint("Removed event: "..tostring(eventName));
+				tremove(GTFO.Events, index);
+				return;
+			end
+		end
+	end
+end
+
 function GTFO_FindEvent(eventName)
 	if (#GTFO.Events > 0) then
 		for index, currentEvent in pairs(GTFO.Events) do
@@ -2429,11 +2550,14 @@ function GTFO_SpellScan(spellId, spellOrigin, spellDamage)
 				IsDebuff = (spellDamage == "DEBUFF");
 				Damage = damage;
 			};
+			return true;
 		elseif (GTFO.Scans[spellId]) then
 			GTFO.Scans[spellId].Times = GTFO.Scans[spellId].Times + 1;
 			GTFO.Scans[spellId].Damage = GTFO.Scans[spellId].Damage + damage;
+			return true;
 		end
 	end
+	return false;
 end
 
 function GTFO_SpellScanName(spellName, spellOrigin, spellDamage)

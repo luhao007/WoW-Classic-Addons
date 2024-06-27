@@ -7,7 +7,7 @@
 
 			<Frame name="$parentMainPanel" inherits="VuhDoPanelTemplate">
 				<Size>
-					<AbsDimension x="125" y="92" />
+					<AbsDimension x="138" y="92" />
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">
@@ -54,9 +54,105 @@
 				</Frames>
 			</Frame>
 
+			<Frame name="$parentIncomingPanel" inherits="VuhDoPanelTemplate">
+				<Size>
+					<AbsDimension x="230" y="146" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="20" y="-113" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+
+					<Frame name="$parentTitleLabel" inherits="VuhDoLabelFrameTemplate">
+						<Layers>
+							<Layer>
+								<FontString name="$parentLabel" text="VUHDO_I18N_INCOMING" inherits="VuDoDefaultTitleFontTemplate">
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+
+
+					<CheckButton name="$parentShowIncomingFriendlyCheckButton" text="VUHDO_I18N_SHOW_FRIENDLY" inherits="VuhDoCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="13" y="-33" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								VUHDO_lnfSetModel(self, "VUHDO_CONFIG.SPELL_TRACE.showIncomingFriendly");
+								VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K588);
+								VUHDO_lnfAddConstraint(self, VUHDO_LF_CONSTRAINT_DISABLE, "VUHDO_CONFIG.SHOW_SPELL_TRACE", false);
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+
+					<CheckButton name="$parentShowIncomingEnemyCheckButton" text="VUHDO_I18N_SHOW_ENEMY" inherits="VuhDoCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="13" y="-67" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								VUHDO_lnfSetModel(self, "VUHDO_CONFIG.SPELL_TRACE.showIncomingEnemy");
+								VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K589);
+								VUHDO_lnfAddConstraint(self, VUHDO_LF_CONSTRAINT_DISABLE, "VUHDO_CONFIG.SHOW_SPELL_TRACE", false);
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+
+					<CheckButton name="$parentShowIncomingAllCheckButton" text="VUHDO_I18N_SHOW_ALL" inherits="VuhDoCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="13" y="-101" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								VUHDO_lnfSetModel(self, "VUHDO_CONFIG.SPELL_TRACE.showIncomingAll");
+								VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K590);
+								VUHDO_lnfAddConstraint(self, VUHDO_LF_CONSTRAINT_DISABLE, "VUHDO_CONFIG.SHOW_SPELL_TRACE", false);
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+
+					<CheckButton name="$parentShowIncomingBossOnlyCheckButton" text="VUHDO_I18N_BOSS_ONLY" inherits="VuhDoCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="118" y="-101" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								VUHDO_lnfSetModel(self, "VUHDO_CONFIG.SPELL_TRACE.showIncomingBossOnly");
+								VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K591);
+								VUHDO_lnfAddConstraint(self, VUHDO_LF_CONSTRAINT_DISABLE, "VUHDO_CONFIG.SHOW_SPELL_TRACE", false);
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+
+
+				</Frames>
+			</Frame>
+
+
 			<Frame name="$parentStorePanel" inherits="VuhDoPanelTemplate">
 				<Size>
-					<AbsDimension x="235" y="213" />
+					<AbsDimension x="235" y="250" />
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">
@@ -225,6 +321,21 @@
 							</OnLoad>
 						</Scripts>
 					</CheckButton>
+					
+					<CheckButton name="$parentIncomingCheckButton" text="VUHDO_I18N_INCOMING" inherits="VuhDoCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="13" y="-173" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K587);
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
 
 					<Button name="$parentSaveButton" text="VUHDO_I18N_SAVE" inherits="VuhDoButtonTemplate">
 						<Size>
@@ -233,7 +344,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="13" y="-173" />
+									<AbsDimension x="13" y="-208" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -251,7 +362,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="125" y="-173" />
+									<AbsDimension x="125" y="-208" />
 								</Offset>
 							</Anchor>
 						</Anchors>

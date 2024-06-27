@@ -6,6 +6,7 @@
 
 local TSM = select(2, ...) ---@type TSM
 local Theme = TSM.Init("Util.Theme") ---@class Util.Theme
+local Environment = TSM.Include("Environment")
 local FontPaths = TSM.Include("Data.FontPaths")
 local Color = TSM.Include("Util.Color")
 local Table = TSM.Include("Util.Table")
@@ -22,14 +23,12 @@ local private = {
 	publisherKey = {},
 	publishKeysTemp = {},
 }
-local THEME_COLOR_KEYS = {
-	PRIMARY_BG = true,
-	PRIMARY_BG_ALT = true,
-	FRAME_BG = true,
-	ACTIVE_BG = true,
-	ACTIVE_BG_ALT = true,
-}
 ---@alias ThemeColorKey
+---|'"PRIMARY_BG"'
+---|'"PRIMARY_BG_ALT"'
+---|'"FRAME_BG"'
+---|'"ACTIVE_BG"'
+---|'"ACTIVE_BG_ALT"'
 ---|'"INDICATOR"'
 ---|'"INDICATOR_ALT"'
 ---|'"INDICATOR_DISABLED"'
@@ -51,6 +50,13 @@ local THEME_COLOR_KEYS = {
 ---|'"TRANSPARENT"'
 ---|'"BLIZZARD_YELLOW"'
 ---|'"BLIZZARD_GM"'
+local THEME_COLOR_KEYS = {
+	PRIMARY_BG = true,
+	PRIMARY_BG_ALT = true,
+	FRAME_BG = true,
+	ACTIVE_BG = true,
+	ACTIVE_BG_ALT = true,
+}
 local STATIC_COLORS = {
 	INDICATOR = Color.NewFromHex("#ffd839"),
 	INDICATOR_ALT = Color.NewFromHex("#79a2ff"),
@@ -94,19 +100,19 @@ local GROUP_COLOR_KEYS = {
 ---|'"header"'
 ---|'"subheader"'
 ---|'"nodifficulty"'
-local PROFESSION_DIFFICULTY_COLORS = TSM.IsWowClassic() and {
-		optimal = Color.NewFromHex("#ff8040"),
-		medium = Color.NewFromHex("#ffff00"),
-		easy = Color.NewFromHex("#40c040"),
-		trivial = Color.NewFromHex("#808080"),
-		header = Color.NewFromHex("#ffd100"),
-		subheader = Color.NewFromHex("#ffd100"),
-		nodifficulty = Color.NewFromHex("#f5f5f5"),
-	} or {
+local PROFESSION_DIFFICULTY_COLORS = Environment.IsRetail() and {
 		[Enum.TradeskillRelativeDifficulty.Optimal] = Color.NewFromHex("#ff8040"),
 		[Enum.TradeskillRelativeDifficulty.Medium] = Color.NewFromHex("#ffff00"),
 		[Enum.TradeskillRelativeDifficulty.Easy] = Color.NewFromHex("#40c040"),
 		[Enum.TradeskillRelativeDifficulty.Trivial] = Color.NewFromHex("#808080"),
+		header = Color.NewFromHex("#ffd100"),
+		subheader = Color.NewFromHex("#ffd100"),
+		nodifficulty = Color.NewFromHex("#f5f5f5"),
+	} or {
+		optimal = Color.NewFromHex("#ff8040"),
+		medium = Color.NewFromHex("#ffff00"),
+		easy = Color.NewFromHex("#40c040"),
+		trivial = Color.NewFromHex("#808080"),
 		header = Color.NewFromHex("#ffd100"),
 		subheader = Color.NewFromHex("#ffd100"),
 		nodifficulty = Color.NewFromHex("#f5f5f5"),
@@ -122,6 +128,13 @@ local TSM_ITEM_QUALITY_COLORS = {
 	[6] = Color.NewFromHex("#e6cc80"),
 	[7] = Color.NewFromHex("#00ccff"),
 	[8] = Color.NewFromHex("#00ccff"),
+}
+local CRAFTED_QUALITY_COLORS = {
+	[1] = Color.NewFromHex("#904a3c"),
+	[2] = Color.NewFromHex("#7d7e85"),
+	[3] = Color.NewFromHex("#8f782e"),
+	[4] = Color.NewFromHex("#4b9694"),
+	[5] = Color.NewFromHex("#e2b932"),
 }
 local AUCTION_PCT_COLORS = {
 	{ -- blue
@@ -187,6 +200,7 @@ Theme:OnModuleLoad(function()
 		ITEM_BODY2 = FontObject.New(FontPaths.GetItem(), 14, 20),
 		ITEM_BODY3 = FontObject.New(FontPaths.GetItem(), 12, 20),
 		TABLE_TABLE1 = FontObject.New(FontPaths.GetTable(), 12, 20),
+		TABLE_TABLE1_OUTLINE = FontObject.New(FontPaths.GetTable(), 12, 20, "OUTLINE"),
 	}
 
 	-- load the fonts
@@ -361,6 +375,13 @@ function Theme.GetAuctionPercentColor(pct)
 		end
 	end
 	return Theme.GetColor(AUCTION_PCT_COLORS.default)
+end
+
+---Gets the color for a crafted quality.
+---@param quality number The crafted quality
+---@return ColorValue
+function Theme.GetCraftedQualityColor(quality)
+	return CRAFTED_QUALITY_COLORS[quality]
 end
 
 ---Gets the font object from the current active font set.

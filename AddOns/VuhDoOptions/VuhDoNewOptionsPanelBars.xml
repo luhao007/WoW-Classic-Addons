@@ -135,44 +135,6 @@
 						</Scripts>
 					</Frame>
 
-					<Frame name="$parentIndicatorLabel" inherits="VuhDoLabelFrameTemplate">
-						<Size>
-							<AbsDimension x="120" y="18" />
-						</Size>
-						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="13" y="-70" />
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Layers>
-							<Layer>
-								<FontString name="$parentLabel" text="VUHDO_I18N_CUSTOM_HEALTH_BAR_BOUQUET" justifyH="LEFT" inherits="VuDoDefaultFontTemplate">
-								</FontString>
-							</Layer>
-						</Layers>
-					</Frame>
-
-					<Button name="$parentIndicatorCombo" inherits="VuhDoScrollComboBoxTemplate">
-						<Size>
-							<AbsDimension x="200" y="32" />
-						</Size>
-						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="13" y="-100" />
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								VUHDO_setComboModel(self, "VUHDO_INDICATOR_CONFIG.BOUQUETS.HEALTH_BAR_PANEL.#PNUM#", VUHDO_BOUQUET_SLOTS_COMBO_MODEL);
-								VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K483);
-							</OnLoad>
-						</Scripts>
-					</Button>
-
 					<Frame name="$parentSideLeftWidthSlider" inherits="VuhDoHSliderTemplate">
 						<Size>
 							<AbsDimension x="200" y="50" />
@@ -311,7 +273,7 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								VUHDO_lnfSetRadioModel(self, "VUHDO_INDICATOR_CONFIG.BOUQUETS.HEALTH_BAR", VUHDO_I18N_DEF_BOUQUET_BAR_HEALTH);
+								VUHDO_lnfSetRadioModel(self, "VUHDO_INDICATOR_CONFIG.#PNUM#.BOUQUETS.HEALTH_BAR", VUHDO_I18N_DEF_BOUQUET_BAR_HEALTH);
 								VUHDO_lnfSetTooltip(self, nil);
 							</OnLoad>
 						</Scripts>
@@ -327,7 +289,7 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								VUHDO_lnfSetRadioModel(self, "VUHDO_INDICATOR_CONFIG.BOUQUETS.HEALTH_BAR", VUHDO_I18N_DEF_BOUQUET_BAR_HEALTH_CLASS_COLOR);
+								VUHDO_lnfSetRadioModel(self, "VUHDO_INDICATOR_CONFIG.#PNUM#.BOUQUETS.HEALTH_BAR", VUHDO_I18N_DEF_BOUQUET_BAR_HEALTH_CLASS_COLOR);
 								VUHDO_lnfSetTooltip(self, nil);
 							</OnLoad>
 						</Scripts>
@@ -343,7 +305,7 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								VUHDO_lnfSetRadioModel(self, "VUHDO_INDICATOR_CONFIG.BOUQUETS.HEALTH_BAR", VUHDO_I18N_DEF_BOUQUET_BAR_HEALTH_SOLID);
+								VUHDO_lnfSetRadioModel(self, "VUHDO_INDICATOR_CONFIG.#PNUM#.BOUQUETS.HEALTH_BAR", VUHDO_I18N_DEF_BOUQUET_BAR_HEALTH_SOLID);
 								VUHDO_lnfSetTooltip(self, nil);
 							</OnLoad>
 						</Scripts>

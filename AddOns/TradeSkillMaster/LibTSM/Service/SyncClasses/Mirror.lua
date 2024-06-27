@@ -119,8 +119,7 @@ end
 -- Message Handlers
 -- ============================================================================
 
-function private.CharacterHashesBroadcastHandler(dataType, sourceAccount, sourcePlayer, data)
-	assert(dataType == Constants.DATA_TYPES.CHARACTER_HASHES_BROADCAST)
+function private.CharacterHashesBroadcastHandler(sourceAccount, sourcePlayer, data)
 	if not Connection.IsCharacterConnected(sourcePlayer) then
 		-- we're not connected to this player
 		Log.Warn("Got CHARACTER_HASHES_BROADCAST for player which isn't connected")
@@ -156,8 +155,7 @@ function private.CharacterHashesBroadcastHandler(dataType, sourceAccount, source
 	end
 end
 
-function private.CharacterSettingHashesRequestHandler(dataType, sourceAccount, sourcePlayer, data)
-	assert(dataType == Constants.DATA_TYPES.CHARACTER_SETTING_HASHES_REQUEST)
+function private.CharacterSettingHashesRequestHandler(sourceAccount, sourcePlayer, data)
 	if not Connection.IsCharacterConnected(sourcePlayer) then
 		-- we're not connected to this player
 		Log.Warn("Got CHARACTER_HASHES_BROADCAST for player which isn't connected")
@@ -177,8 +175,7 @@ function private.CharacterSettingHashesRequestHandler(dataType, sourceAccount, s
 	TempTable.Release(responseData)
 end
 
-function private.CharacterSettingHashesResponseHandler(dataType, sourceAccount, sourcePlayer, data)
-	assert(dataType == Constants.DATA_TYPES.CHARACTER_SETTING_HASHES_RESPONSE)
+function private.CharacterSettingHashesResponseHandler(sourceAccount, sourcePlayer, data)
 	if not Connection.IsCharacterConnected(sourcePlayer) then
 		-- we're not connected to this player
 		Log.Warn("Got CHARACTER_HASHES_BROADCAST for player which isn't connected")
@@ -197,8 +194,7 @@ function private.CharacterSettingHashesResponseHandler(dataType, sourceAccount, 
 	end
 end
 
-function private.CharacterSettingDataRequestHandler(dataType, sourceAccount, sourcePlayer, data)
-	assert(dataType == Constants.DATA_TYPES.CHARACTER_SETTING_DATA_REQUEST)
+function private.CharacterSettingDataRequestHandler(sourceAccount, sourcePlayer, data)
 	local character, namespace, settingKey = strsplit(".", data)
 	if not Connection.IsCharacterConnected(sourcePlayer) then
 		-- we're not connected to this player
@@ -219,8 +215,7 @@ function private.CharacterSettingDataRequestHandler(dataType, sourceAccount, sou
 	TempTable.Release(responseData)
 end
 
-function private.CharacterSettingDataResponseHandler(dataType, sourceAccount, sourcePlayer, data)
-	assert(dataType == Constants.DATA_TYPES.CHARACTER_SETTING_DATA_RESPONSE)
+function private.CharacterSettingDataResponseHandler(sourceAccount, sourcePlayer, data)
 	if not Connection.IsCharacterConnected(sourcePlayer) then
 		-- we're not connected to this player
 		Log.Warn("Got CHARACTER_HASHES_BROADCAST for player which isn't connected")
@@ -238,7 +233,7 @@ function private.CharacterSettingDataResponseHandler(dataType, sourceAccount, so
 		Settings.Set("sync", Settings.GetSyncScopeKeyByCharacter(data.character), data.namespace, data.settingKey, data.data)
 	end
 	for _, callback in ipairs(private.callbacks) do
-		callback()
+		callback(data.settingKey)
 	end
 end
 

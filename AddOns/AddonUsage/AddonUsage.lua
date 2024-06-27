@@ -42,6 +42,7 @@ BINDING_NAME_ADDONUSAGE_TOGGLE = "Toggle Addon Usage"
 function addon:Toggle()
 	addon:SetShown(not addon:IsVisible())
 end
+AddonUsageToggleWindow = addon.Toggle
 
 function addon:OnEvent(event,...)
 	if addon[event] then
@@ -110,7 +111,7 @@ function addon:PLAYER_LOGIN()
 	C_Timer.After(0.25,addon.ResetUsage)
 
 	addon.CPUCheckButton:SetChecked(profilingCPU)
-	addon.CPUCheckButton.text:SetText("CPU Usage")
+	addon.CPUCheckButton.Text:SetText("CPU Usage")
 
 	addon:RegisterEvent("ADDON_LOADED")
 
@@ -335,11 +336,7 @@ end
 function addon:UpdateMinResize()
 	-- 200 is the width of the window outside the cpu and memory columns
 	local minWidth = addon.Totals:GetWidth() + 200
-	if select(4,GetBuildInfo())>=100000 then
-		addon:SetResizeBounds(minWidth,200)
-	else
-		addon:SetMinResize(minWidth,200) -- this 200 is the height and no relationship to width
-	end
+	addon:SetResizeBounds(minWidth,200)
 	if addon:GetWidth()<minWidth then
 		addon:SetWidth(minWidth)
 		addon:SetUserPlaced(true)

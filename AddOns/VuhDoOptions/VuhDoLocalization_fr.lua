@@ -187,9 +187,9 @@ VUHDO_I18N_TT.K060 = "Montrer uniquement les debufs qui peuvent \195\170tre enle
 VUHDO_I18N_TT.K062 = "L'\"Overheal\" illuminera la barre de vie si s\195\169lectionn\195\169.";
 VUHDO_I18N_TT.K063 = "Voir aussi les soins en cours fait par vous m\195\170me. Ceci est per\195\167u comme d\195\169concertant par certains joueurs.";
 VUHDO_I18N_TT.K065 = "Fixer le taux de rafraichissement si le joueur est \195\160 port\195\169e. Info: Une valeur basse peut r\195\169duire les performances du syst\195\168me.";
-VUHDO_I18N_TT.K066 = "V\195\169rifier la port\195\169e \195\160 l'aide d'un sort standard. S\195\169lectionner cette option si vous n'avez pas de sort b\195\169n\195\169fique.";
+VUHDO_I18N_TT.K066 = "Check this to use the range of a \"typical\" spell. Also select this if you dont have any relevant spells.";
 VUHDO_I18N_TT.K067 = "Indiquer le nom du sort permettant de v\195\169rifier la port\195\169e.";
-VUHDO_I18N_TT.K068 = "Utiliser le sort sp\195\169cifi\195\169 afin de v\195\169rifier la port\195\169e.";
+VUHDO_I18N_TT.K068 = "Select this to have the spell range checked due to the range of the spell below.";
 VUHDO_I18N_TT.K070 = "Pourcentage de la hauteur d'une barre pour la taille des HoT.";
 VUHDO_I18N_TT.K071 = "Afficher les HoTs \195\160 DROITE, \195\160 l'INTERIEUR de la barre de vie.";
 VUHDO_I18N_TT.K072 = "Afficher les HoTs \195\160 GAUCHE, \195\160 l'INTERIEUR de la barre de vie.";
@@ -649,6 +649,17 @@ VUHDO_I18N_TT.K581 = "Check to show player nickname on bars.";
 VUHDO_I18N_TT.K582 = "Select the unit to target.";
 VUHDO_I18N_TT.K583 = "Check to make all HoT icons fade out when the HoT is expiring.";
 VUHDO_I18N_TT.K584 = "Check to make all HoT icons flash when the HoT is expiring.";
+VUHDO_I18N_TT.K585 = "Select a color for Evokers";
+VUHDO_I18N_TT.K586 = "Enable to show text only with no icon.";
+VUHDO_I18N_TT.K587 = "Show incoming spell casts only. Spells must be tracked by spell ID not name.";
+VUHDO_I18N_TT.K588 = "Show incoming spell casts from friendly units.";
+VUHDO_I18N_TT.K589 = "Show incoming spell casts from enemy units.";
+VUHDO_I18N_TT.K590 = "Show all incoming spell casts.";
+VUHDO_I18N_TT.K591 = "Filter to show only incoming spell casts from boss/NPC units.";
+VUHDO_I18N_TT.K592 = "Check this to show private aura icons on the health bar.";
+VUHDO_I18N_TT.K593 = "Select a size for your private aura icons.";
+VUHDO_I18N_TT.K594 = "Check to sort pet units last.";
+VUHDO_I18N_TT.K595 = "Show effective HP (health including shields) of player.";
 
 -- TBCC game version specific strings (tooltip IDs begin at K900)
 
@@ -1188,6 +1199,23 @@ VUHDO_I18N_MOUSEOVER_TARGET_HARM = "Mouseover's target unit (hostile only)";
 VUHDO_I18N_MOUSEOVER_TARGET_TARGET_HARM = "Mouseover's target's target unit (hostile only)";
 
 VUHDO_I18N_CLOCK = "Clock";
+
+VUHDO_I18N_TEXT_ONLY = "Text only";
+
+VUHDO_I18N_SHOW_FRIENDLY = "Show\nFriendly";
+VUHDO_I18N_SHOW_ENEMY = "Show\nEnemy";
+VUHDO_I18N_SHOW_ALL = "Show All";
+VUHDO_I18N_BOSS_ONLY = "Boss Only";
+
+VUHDO_I18N_X = "X";
+VUHDO_I18N_Y = "Y";
+
+VUHDO_I18N_PRIVATE_AURAS = "Private Auras";
+
+VUHDO_I18N_PETS_LAST = "Pets last";
+
+VUHDO_I18N_SHOW_EFFECTIVE = "Show\nEffective";
+VUHDO_I18N_DEBUFF_IGNORE_IMPORTED = "Debuff ignore list successfully imported.";
 
 -- TBCC game version specific strings
 

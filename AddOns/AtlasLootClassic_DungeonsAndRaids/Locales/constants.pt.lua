@@ -2,7 +2,7 @@
 
 if not AL then return end
 
--- These localization strings are translated on Curseforge: https://www.curseforge.com/wow/addons/atlaslootclassic/localization
+-- These localization strings are translated on Curseforge: https://www.curseforge.com/wow/addons/atlaslootclassic-cata/localization
 -- DungeonsAndRaids
 AL["%s killed last"] = "%s matou por último"
 AL["20 Raids"] = "Raides de 20"
@@ -23,7 +23,7 @@ AL["Arcanist Doan"] = "Arcanista Doan"
 AL["Archaedas"] = "Arkhaedas"
 AL["Archivist Galford"] = "Arquivista Galford"
 AL["Archmage Arugal"] = "Arquimago Arugal"
-AL["Armory"] = "Arsenal"
+AL["Armory"] = "Armaria"
 AL["Arugal's Voidwalker"] = "Emissário do Caos de Arugal"
 AL["Atal'alarion"] = "Atal'alarion"
 AL["Atiesh"] = "Atiesh"
@@ -343,7 +343,6 @@ AL["Ysondre"] = "Ysondra"
 AL["Zerillis"] = "Zerillis"
 AL["Zevrim Thornhoof"] = "Zevrim Cascardo"
 
-if AtlasLoot:GameVersion_LT(AtlasLoot.BC_VERSION_NUM) then return end
 -- DungeonsAndRaidsTBC
 AL["10 Raids"] = "Raides de 10"
 AL["25 Raids"] = "Raides de 25"
@@ -485,7 +484,6 @@ AL["Yor <Void Hound of Shaffar>"] = "Yor <Cão do Caos de Shaffar>"
 AL["Zereketh the Unbound"] = "Zereketh, o Desatado"
 AL["Zul'jin"] = "Zul'jin"
 
-if AtlasLoot:GameVersion_LT(AtlasLoot.WRATH_VERSION_NUM) then return end
 -- DungeonsAndRaidsWrath
 AL["Algalon the Observer"] = "Algalon, o Observador"
 AL["Amanitar"] = "Amanitar"
@@ -587,3 +585,5 @@ AL["Xevozz"] = "Xevozz"
 AL["XT-002 Deconstructor"] = "Desconstrutor XT-002"
 AL["Yogg-Saron"] = "Yogg-Saron"
 AL["Zuramat the Obliterator"] = "Zuramat, o Obliterador"
+
+-- DungeonsAndRaidsCata

@@ -185,7 +185,7 @@ end
 local function RecurseDiff(ours, theirs, ignoredForDiffChecking)
   local diff, seen, same = {}, {}, true
   for key, ourVal in pairs(ours) do
-    if type(ignoredForDiffChecking) ~= table or ignoredForDiffChecking[key] ~= true then
+    if not (type(ignoredForDiffChecking) == "table" and ignoredForDiffChecking[key] == true) then
       seen[key] = true
       local theirVal = theirs[key]
       if type(ourVal) == "table" and type(theirVal) == "table" then
@@ -207,7 +207,7 @@ local function RecurseDiff(ours, theirs, ignoredForDiffChecking)
     end
   end
   for key, theirVal in pairs(theirs) do
-    if not seen[key] and (type(ignoredForDiffChecking) ~= table or ignoredForDiffChecking[key] ~= true) then
+    if not seen[key] and not (type(ignoredForDiffChecking) == "table" and ignoredForDiffChecking[key] == true) then
       diff[key] = theirVal
       same = false
     end
@@ -230,10 +230,10 @@ local function RecurseSerial(lines, depth, chunk)
   end
 end
 
-local function DebugPrintDiff(diff)
+local function DebugPrintDiff(diff, id, uid)
   local lines = {
     "==========================",
-    "Diff detected: ",
+    string.format("Diff detected for %q (%s):", id, uid),
     "{",
   }
   RecurseSerial(lines, 1, diff)
@@ -252,7 +252,7 @@ local function Diff(ours, theirs)
   local diff = RecurseDiff(ours, theirs, ignoredForDiffChecking)
   if diff then
     if debug then
-      DebugPrintDiff(diff, ours.id, theirs.id)
+      DebugPrintDiff(diff, theirs.id, theirs.uid)
     end
     return diff
   end
@@ -298,6 +298,7 @@ local function BuildUidMap(data, children, type)
   ---                              import, otherwise nil
   --- @field matchedUid uid? for "update", the matched uid. Is from a different domain!
   --- @field diff any  for "update", the diff and the categories of that diff between the aura and its match
+  --- @field categories table the categories
   --- @field index number helpers that transport data between phase 1 and 2
   --- @field total number helpers that transport data between phase 1 and 2
   --- @field parentIsDynamicGroup boolean helpers that transport data between phase 1 and 2
@@ -314,10 +315,11 @@ local function BuildUidMap(data, children, type)
     --- @type table<uid, UidMapData>
     map = {
     },
-    type = type -- Either old or new, only used for error checking
+    type = type, -- Either old or new, only used for error checking
+    root = data.uid,
+    totalCount = #children + 1,
+    idToUid = {}
   }
-  uidMap.root = data.uid
-  uidMap.totalCount = #children + 1
 
   -- Build helper map from id to uid
   local idToUid = {}
@@ -528,7 +530,9 @@ local function BuildUidMap(data, children, type)
     end
 
     if self.map[uid].anchorFrameFrame then
-      local target = self:GetIdFor(self.map[uid].anchorFrameFrame)
+      data.anchorFrameFrame = nil
+      local anchorUid = self.map[uid].anchorFrameFrame
+      local target = self:Contains(anchorUid) and self:GetIdFor(anchorUid)
       if target then
         data.anchorFrameFrame = "WeakAuras:" .. target
       end
@@ -1003,7 +1007,17 @@ local function SetCategories(globalCategories, categories)
   end
 end
 
-
+local function OnlyMetaDataCategory(categories)
+  local metaData = false
+  for category in pairs(categories) do
+    if category == "metadata" then
+      metaData = true
+    else
+      return false
+    end
+  end
+  return metaData
+end
 
 local function GetCategories(diff, isRoot)
   local categories = {}
@@ -1013,6 +1027,7 @@ local function GetCategories(diff, isRoot)
       categories[category] = true
     end
   end
+
   return categories
 end
 
@@ -1054,11 +1069,22 @@ local function BuildDiffsHelper(uid, newUidMap, oldUidMap, matchInfo)
       oldUidMap:SetDiff(matchedUid, diff, categories)
       SetCategories(matchInfo.activeCategories, categories)
 
-      matchInfo.diffs[uid] = true
-      if isGroup then
-        matchInfo.modifiedGroupCount = matchInfo.modifiedGroupCount + 1
+      matchInfo.categories[uid] = categories
+
+      if OnlyMetaDataCategory(categories) then
+        matchInfo.onlyMetaDataModified[uid] = true
+        if isGroup then
+          matchInfo.modifiedMetaDataGroupCount = matchInfo.modifiedMetaDataGroupCount + 1
+        else
+          matchInfo.modifiedMetaDataCount = matchInfo.modifiedMetaDataCount + 1
+        end
       else
-        matchInfo.modifiedCount = matchInfo.modifiedCount + 1
+        matchInfo.modified[uid] = true
+        if isGroup then
+          matchInfo.modifiedGroupCount = matchInfo.modifiedGroupCount + 1
+        else
+          matchInfo.modifiedCount = matchInfo.modifiedCount + 1
+        end
       end
     else
       matchInfo.unmodified[uid] = true
@@ -1152,6 +1178,8 @@ end
 local function hasChanges(matchInfo)
   return matchInfo.modifiedCount > 0
          or matchInfo.modifiedGroupCount > 0
+         or matchInfo.modifiedMetaDataCount > 0
+         or matchInfo.modifiedMetaDataGroupCount > 0
          or matchInfo.addedCount > 0
          or matchInfo.addedGroupCount > 0
          or matchInfo.deletedCount > 0
@@ -1163,13 +1191,17 @@ local function BuildDiffs(newUidMap, oldUidMap)
   local matchInfo = {
     modifiedCount = 0,
     modifiedGroupCount = 0,
+    modifiedMetaDataCount = 0,
+    modifiedMetaDataGroupCount = 0,
     unmodifiedCount = 0,
     unmodifiedGroupCount = 0,
     addedCount = 0,
     addedGroupCount = 0,
     deletedCount = 0,
     deletedGroupCount = 0,
-    diffs = {}, -- Contains diffs for new uids
+    modified = {}, -- Contains uids that were modified
+    onlyMetaDataModified = {}, -- Contains uids that are only metadata modified
+    categories = {}, -- Contains categories for uids
     unmodified = {}, -- Contains new uids that had a empty diff
     added = {}, -- Contains new uids that were added
     deleted = {}, -- Contains old uids that were removed
@@ -1240,7 +1272,21 @@ local function MatchInfo(data, children, target)
   return matchInfo
 end
 
-local function AddAuraList(container, uidMap, list, expandText)
+local function CategoriesToDisplayText(categories)
+  local categoriesDisplayTexts = {}
+  for _, category in ipairs(OptionsPrivate.Private.update_categories) do
+    if categories[category.name] then
+      tinsert(categoriesDisplayTexts, category.label)
+    end
+  end
+  if #categoriesDisplayTexts > 0 then
+    return table.concat(categoriesDisplayTexts, ", ")
+  else
+    return nil
+  end
+end
+
+local function AddAuraList(container, uidMap, list, categories, expandText)
   local expand = AceGUI:Create("WeakAurasExpand")
   local collapsed = true
   local image = collapsed and "Interface\\AddOns\\WeakAuras\\Media\\Textures\\expand"
@@ -1259,7 +1305,16 @@ local function AddAuraList(container, uidMap, list, expandText)
 
   local sortedNames = {}
   for uid in pairs(list) do
-    tinsert(sortedNames, uidMap:GetIdFor(uid))
+    if categories[uid] then
+      local categoriesText = CategoriesToDisplayText(categories[uid])
+      if categoriesText then
+        tinsert(sortedNames, L["%s (%s)"]:format(uidMap:GetIdFor(uid), categoriesText))
+      else
+        tinsert(sortedNames, uidMap:GetIdFor(uid))
+      end
+    else
+      tinsert(sortedNames, uidMap:GetIdFor(uid))
+    end
   end
   table.sort(sortedNames)
 
@@ -1289,7 +1344,7 @@ local function AddAuraList(container, uidMap, list, expandText)
 end
 
 local methods = {
-  Open = function(self, data, children, target, sender, callbackFunc)
+  Open = function(self, data, children, target, linkedAuras, sender, callbackFunc)
     if(self.optionsWindow.window == "importexport") then
       self.optionsWindow.importexport:Close();
     elseif(self.optionsWindow.window == "texture") then
@@ -1306,6 +1361,7 @@ local methods = {
       data = data,
       children = children or {},
       target = target,
+      linkedAuras = linkedAuras,
       sender = sender
     }
     self.userChoices = {
@@ -1315,6 +1371,30 @@ local methods = {
 
     self:ReleaseChildren()
     self:AddBasicInformationWidgets(data, sender)
+
+    do
+      local highestVersion = data.internalVersion or 0
+      if children then
+        for _, child in ipairs(children) do
+          highestVersion = max(highestVersion, child.internalVersion or 0)
+        end
+      end
+
+      if (highestVersion > WeakAuras.InternalVersion()) then
+        local highestVersionWarning = AceGUI:Create("Label")
+        highestVersionWarning:SetFontObject(GameFontHighlight)
+        highestVersionWarning:SetFullWidth(true)
+        highestVersionWarning:SetText(L["This aura was created with a newer version of WeakAuras.\nUpgrade your version of WeakAuras or wait for next release before installing this aura."])
+        highestVersionWarning:SetColor(1, 0, 0)
+        self:AddChild(highestVersionWarning)
+        self.importButton:Hide()
+        self.viewCodeButton:Hide()
+        self:DoLayout()
+        return
+      else
+        self.importButton:Show()
+      end
+    end
 
     local matchInfoResult = AceGUI:Create("Label")
     matchInfoResult:SetFontObject(GameFontHighlight)
@@ -1341,13 +1421,22 @@ local methods = {
           local matchInfoText = L["This is a modified version of your group: |cff9900FF%s|r"]:format(oldRootId)
           matchInfoResult:SetText(matchInfoText)
           if matchInfo.addedCount ~= 0 then
-            AddAuraList(self, matchInfo.newUidMap, matchInfo.added, L["%d |4aura:auras; added"]:format(matchInfo.addedCount))
+            AddAuraList(self, matchInfo.newUidMap, matchInfo.added, {},
+                        L["%d |4aura:auras; added"]:format(matchInfo.addedCount))
           end
-          if matchInfo.modifiedCount ~= 0 then
-            AddAuraList(self, matchInfo.oldUidMap, matchInfo.diffs, L["%d |4aura:auras; modified"]:format(matchInfo.modifiedCount))
+          local modifiedCount = matchInfo.modifiedCount + matchInfo.modifiedGroupCount
+          if modifiedCount ~= 0  then
+            AddAuraList(self, matchInfo.oldUidMap, matchInfo.modified, matchInfo.categories,
+                        L["%d |4aura:auras; modified"]:format(modifiedCount))
+          end
+          local onlyMetaDataModifiedCount = matchInfo.modifiedMetaDataCount + matchInfo.modifiedMetaDataGroupCount
+          if onlyMetaDataModifiedCount ~= 0 then
+            AddAuraList(self, matchInfo.oldUidMap, matchInfo.onlyMetaDataModified, {},
+                        L["%d |4aura:auras; with meta data modified"]:format(onlyMetaDataModifiedCount))
           end
           if matchInfo.deletedCount ~= 0 then
-            AddAuraList(self, matchInfo.oldUidMap, matchInfo.deleted, L["%d |4aura:auras; deleted"]:format(matchInfo.deletedCount))
+            AddAuraList(self, matchInfo.oldUidMap, matchInfo.deleted, {},
+                        L["%d |4aura:auras; deleted"]:format(matchInfo.deletedCount))
           end
         else
           matchInfoResult:SetText(L["This is a modified version of your aura, |cff9900FF%s.|r"]:format(oldRootId))
@@ -1430,22 +1519,22 @@ local methods = {
       self:AddChild(scamCheckText)
     end
 
-    local highestVersion = data.internalVersion or 0
-    if children then
-      for _, child in ipairs(children) do
-        highestVersion = max(highestVersion, child.internalVersion or 0)
+    if linkedAuras and next(linkedAuras) then
+      self:AddChild(AceGUI:Create("WeakAurasSpacer"))
+
+      local linkedAurasText = AceGUI:Create("Label")
+      linkedAurasText:SetFontObject(GameFontHighlight)
+      linkedAurasText:SetFullWidth(true)
+
+      local auraIdText = table.concat(self.pendingData.linkedAuras, ", ")
+      if #self.pendingData.linkedAuras == 1 then
+        linkedAurasText:SetText(L["This aura is marked as an update to an aura '%s', but cannot be used to update that aura. This usually happens if an aura is moved out of a group."]:format(auraIdText))
+      else
+        linkedAurasText:SetText(L["This aura is marked as an update to auras '%s', but cannot be used to update them. This usually happens if an aura is moved out of a group."]:format(auraIdText))
       end
+      linkedAurasText:SetColor(1, 0, 0)
+      self:AddChild(linkedAurasText)
     end
-
-    if (highestVersion > WeakAuras.InternalVersion()) then
-      local highestVersionWarning = AceGUI:Create("Label")
-      highestVersionWarning:SetFontObject(GameFontHighlight)
-      highestVersionWarning:SetFullWidth(true)
-      highestVersionWarning:SetText(L["This aura was created with a newer version of WeakAuras.\nIt might not work correctly with your version!"])
-      highestVersionWarning:SetColor(1, 0, 0)
-      self:AddChild(highestVersionWarning)
-    end
-
 
     local currentBuild = floor(WeakAuras.BuildInfo / 10000)
     local importBuild = data.tocversion and floor(data.tocversion / 10000)
@@ -1638,6 +1727,7 @@ local methods = {
             oldData.sortHybridTable = newData.sortHybridTable
             oldData.uid = uid
             oldData.id = matchInfo.newUidMap:GetIdFor(uid)
+            oldData.anchorFrameFrame = newData.anchorFrameFrame
             return oldData
           else
             return matchInfo.newUidMap:GetPhase2Data(uid)
@@ -1906,6 +1996,7 @@ local methods = {
         button:SetGroupOrder(nil, nil)
       end
       button.callbacks.UpdateExpandButton()
+      button:UpdateParentWarning()
       WeakAuras.UpdateGroupOrders(data)
       WeakAuras.UpdateThumbnail(data)
       WeakAuras.ClearAndUpdateOptions(data.id)
@@ -1967,6 +2058,7 @@ local methods = {
         button:SetGroupOrder(nil, nil)
       end
       button.callbacks.UpdateExpandButton()
+      button:UpdateParentWarning()
       WeakAuras.UpdateGroupOrders(data)
       WeakAuras.UpdateThumbnail(data)
       WeakAuras.ClearAndUpdateOptions(data.id)
@@ -2072,7 +2164,7 @@ local updateFrame
 local function ConstructUpdateFrame(frame)
   local group = AceGUI:Create("ScrollFrame");
   group.frame:SetParent(frame);
-  group.frame:SetPoint("TOPLEFT", frame, "TOPLEFT", 16, -16);
+  group.frame:SetPoint("TOPLEFT", frame, "TOPLEFT", 16, -63);
   group.frame:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -16, 46);
   group.frame:Hide();
   group:SetLayout("flow");

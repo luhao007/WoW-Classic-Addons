@@ -1,19 +1,20 @@
 ﻿-- Pawn by Vger-Azjol-Nerub
 -- www.vgermods.com
--- © 2006-2023 Travis Spomer.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
+-- © 2006-2024 Travis Spomer.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
 -- See Readme.htm for more information.
 
 --
 -- Main non-UI code
 ------------------------------------------------------------
 
-PawnVersion = 2.0715
+PawnVersion = 2.0811
 
 -- Pawn requires this version of VgerCore:
 local PawnVgerCoreVersionRequired = 1.17
 
 -- Floating point math
 local PawnEpsilon = 0.0000000001
+local PawnInfinity = 1.79769313E308
 
 -- Set to true once initialization completes
 local PawnIsInitialized
@@ -249,6 +250,9 @@ function PawnInitialize()
 				PawnUpdateTooltip("GameTooltip", "SetHyperlink", ItemLink)
 			end)
 	end
+	if GameTooltip.SetTradeSkillItem then
+		hooksecurefunc(GameTooltip, "SetTradeSkillItem", function(self, ...) PawnUpdateTooltip("GameTooltip", "SetTradeSkillItem", ...) end)
+	end
 	hooksecurefunc(GameTooltip, "SetTradeTargetItem", function(self, ...) PawnUpdateTooltip("GameTooltip", "SetTradeTargetItem", ...) end)
 	if GameTooltip.SetVoidItem then
 		hooksecurefunc(GameTooltip, "SetVoidItem", function(self, ...) PawnUpdateTooltip("GameTooltip", "SetVoidItem", ...) end)
@@ -263,8 +267,8 @@ function PawnInitialize()
 	if GameTooltip.SetWeeklyReward then
 		hooksecurefunc(GameTooltip, "SetWeeklyReward", function(self, ...) PawnUpdateTooltip("GameTooltip", "SetWeeklyReward", ...) end)
 	end
-	if C_ItemInteraction and C_ItemInteraction.SetItemConversionOutputTooltip then
-		hooksecurefunc(C_ItemInteraction, "SetItemConversionOutputTooltip", function(self, ...) PawnUpdateTooltip("GameTooltip", "__ItemInteraction_SetItemConversionOutputTooltip_ignored", ...) end)
+	if GameTooltip.SetItemInteractionItem then
+		hooksecurefunc(GameTooltip, "SetItemInteractionItem", function(self, ...) PawnUpdateTooltip("GameTooltip", "SetItemInteractionItem", ...) end)
 	end
 	hooksecurefunc(GameTooltip, "Hide",
 		function(self, ...)
@@ -322,7 +326,11 @@ function PawnInitialize()
 	GroupLootFrame4:HookScript("OnShow", PawnUI_GroupLootFrame_OnShow)
 
 	-- The loot history window
-	hooksecurefunc("LootHistoryFrame_UpdateItemFrame", PawnUI_LootHistoryFrame_UpdateItemFrame)
+	-- (This was reimplemented as GroupLootHistoryFrame + LootHistoryElementMixin in 10.1.0. It's more challenging to
+	-- override than it was before, and given that I haven't even used the loot history window in like a decade... probably nbd.)
+	if LootHistoryFrame then
+		hooksecurefunc("LootHistoryFrame_UpdateItemFrame", PawnUI_LootHistoryFrame_UpdateItemFrame)
+	end
 
 	-- The loot won window
 	hooksecurefunc("LootWonAlertFrame_SetUp", PawnUI_LootWonAlertFrame_SetUp)
@@ -355,6 +363,7 @@ function PawnInitialize()
 
 	-- Dragonflight replaces SetCompareItem with ProcessInfo. (ProcessInfo is now used internally by lots of
 	-- methods, but only in Dragonflight.)
+
 	if ShoppingTooltip1.ProcessInfo then
 		hooksecurefunc(ShoppingTooltip1, "ProcessInfo", function(self)
 			local _, ItemLink = TooltipUtil.GetDisplayedItem(ShoppingTooltip1)
@@ -811,7 +820,6 @@ end
 function PawnGetEmptyScale()
 	return
 	{
-		["UpgradesFollowSpecialization"] = (PawnArmorSpecializationLevel ~= nil),
 		["PerCharacterOptions"] = { },
 		["Values"] = { },
 	}
@@ -834,7 +842,6 @@ function PawnGetDefaultScale(ClassID, SpecID, NoStats)
 	{
 		["ClassID"] = ClassID,
 		["SpecID"] = SpecID,
-		["UpgradesFollowSpecialization"] = (PawnArmorSpecializationLevel ~= nil),
 		["PerCharacterOptions"] = { },
 		["Values"] = ScaleValues,
 	}
@@ -3052,7 +3059,7 @@ local SpecNameToIDMap =
 	[10] = { BREWMASTER = 1, MISTWEAVER = 2, WINDWALKER = 3 },
 	[11] = { BALANCE = 1, FERAL = 2, GUARDIAN = 3, RESTORATION = 4 },
 	[12] = { HAVOC = 1, VENGEANCE = 2 },
-	[13] = { DEVASTATION = 1, PRESERVATION = 2}
+	[13] = { DEVASTATION = 1, PRESERVATION = 2, AUGMENTATION = 3 },
 }
 local ClassIDToEnglishNameMap =
 {
@@ -3072,7 +3079,7 @@ local SpecIDToEnglishNameMap =
 	[10] = { [1] = "Brewmaster", [2] = "Mistweaver", [3] = "Windwalker" },
 	[11] = { [1] = "Balance", [2] = "Feral", [3] = "Guardian", [4] = "Restoration" },
 	[12] = { [1] = "Havoc", [2] = "Vengeance" },
-	[13] = { [1] = "Devastation", [2] = "Preservation" },
+	[13] = { [1] = "Devastation", [2] = "Preservation", [3] = "Augmentation" },
 }
 
 -- Returns a class ID number (1-12) from the string passed in, or nil if the string isn't a class name.
@@ -3123,8 +3130,8 @@ function PawnCorrectScaleErrors(ScaleName)
 		ThisScaleOptions.Values = ThisScale
 	end
 
-	-- Pawn 1.5.5 adds an option to follow armor specialization when upgrading.
-	if ThisScaleOptions.UpgradesFollowSpecialization == nil then ThisScaleOptions.UpgradesFollowSpecialization = (PawnArmorSpecializationLevel ~= nil) end
+	-- Pawn 1.5.5 had an option to follow armor specialization when upgrading but it's since been removed.
+	ThisScaleOptions.UpgradesFollowSpecialization = nil
 
 	-- Pawn 1.3 adds per-character options to each scale.
 	if ThisScaleOptions.PerCharacterOptions == nil then ThisScaleOptions.PerCharacterOptions = {} end
@@ -3522,7 +3529,7 @@ function PawnIsItemAnUpgrade(Item, DoNotRescan)
 			if PawnIsScaleVisible(ScaleName) and not
 				(Scale.DoNotShow1HUpgrades and (InvType == "INVTYPE_WEAPON" or InvType == "INVTYPE_WEAPONMAINHAND" or InvType == "INVTYPE_WEAPONOFFHAND" or InvType == "INVTYPE_SHIELD" or InvType == "INVTYPE_HOLDABLE")) and not
 				(Scale.DoNotShow2HUpgrades and InvType == "INVTYPE_2HWEAPON") and
-				((PawnArmorSpecializationLevel == nil) or (not Scale.UpgradesFollowSpecialization) or PawnIsArmorBestTypeForPlayer(Item))
+				(PawnIsArmorBestTypeForPlayer(Item))
 			then
 				-- Find the best item for that slot.  Or, if a second-best item is available, compare versus that.
 				local CharacterOptions = Scale.PerCharacterOptions[PawnPlayerFullName]
@@ -3585,8 +3592,20 @@ function PawnIsItemAnUpgrade(Item, DoNotRescan)
 							if Item1 then Value1 = Item1.Level end
 							if Item2 then Value2 = Item2.Level end
 						else
-							if Item1 then _, Value1 = PawnGetSingleValueFromItem(Item1, ScaleName) end
-							if Item2 then _, Value2 = PawnGetSingleValueFromItem(Item2, ScaleName) end
+							if Item1 then
+								if PawnNeverShowUpgradesFor[Item1.ID] then
+									Value1 = PawnInfinity
+								else
+									_, Value1 = PawnGetSingleValueFromItem(Item1, ScaleName)
+								end
+							end
+							if Item2 then
+								if PawnNeverShowUpgradesFor[Item2.ID] then
+									Value2 = PawnInfinity
+								else
+									_, Value2 = PawnGetSingleValueFromItem(Item2, ScaleName)
+								end
+							end
 						end
 
 						if Value1 and Value2 then
@@ -3807,6 +3826,7 @@ function PawnFindBestItems(ScaleName, InventoryOnly)
 		if not InvType or InvType == "" or InvType == "INVTYPE_TRINKET" or InvType == "INVTYPE_BAG" or InvType == "INVTYPE_QUIVER" or InvType == "INVTYPE_TABARD" or InvType == "INVTYPE_BODY" then return end
 		local _, Value = PawnGetSingleValueFromItem(Item, ScaleName)
 		if Value <= 0 then return end
+		if PawnNeverShowUpgradesFor[Item.ID] then return end
 		local UnenchantedItemLink = PawnUnenchantItemLink(Item.Link, true)
 		VgerCore.Assert(UnenchantedItemLink ~= nil, "PawnFindBestItems's CheckItem lambda failed to get an item link for item " .. tostring(Item.ID))
 
@@ -4211,7 +4231,7 @@ function PawnIsArmorBestTypeForPlayer(Item)
 			return true
 		end
 	end
-	VgerCore.Fail("PawnIsArmorBestTypeForPlayer didn't know how to handle this item.")
+	VgerCore.Fail("Tell Vger that PawnIsArmorBestTypeForPlayer needs to be updated for " .. tostring(Class) .. ".")
 end
 
 -- Appends the strings in a table together with commas and a conjunction ("or ") as appropriate.  The conjunction can be nil, but if it isn't, it should end in a space.
@@ -5383,36 +5403,11 @@ function PawnSetShowUpgradesForWeapons(ScaleName, WeaponSet, ShowUpgrades)
 	PawnResetTooltips()
 end
 
--- Gets whether only the current player's best armor type is shown for upgrades after level 50.
 function PawnGetUpgradesFollowSpecialization(ScaleName)
-	if not PawnIsInitialized then VgerCore.Fail("Can't get armor upgrade settings until Pawn is initialized") return end
-
-	local Scale = PawnCommon.Scales[ScaleName]
-	if (not ScaleName) or (ScaleName == "") or not Scale then
-		VgerCore.Fail("ScaleName must be the name of an existing scale, and is case-sensitive.")
-		return nil
-	end
-
-	return Scale.UpgradesFollowSpecialization
+	return true
 end
 
--- Sets whether only the current player's best armor type is shown for upgrades after level 50.
 function PawnSetUpgradesFollowSpecialization(ScaleName, FollowSpecialization)
-	if not PawnIsInitialized then VgerCore.Fail("Can't change armor upgrade settings until Pawn is initialized") return end
-
-	local Scale = PawnCommon.Scales[ScaleName]
-	if (not ScaleName) or (ScaleName == "") or not Scale then
-		VgerCore.Fail("ScaleName must be the name of an existing scale, and is case-sensitive.")
-		return nil
-	end
-
-	if FollowSpecialization then
-		Scale.UpgradesFollowSpecialization = true
-	else
-		Scale.UpgradesFollowSpecialization = false
-	end
-	PawnInvalidateBestItemsForScale(ScaleName)
-	PawnResetTooltips()
 end
 
 -- Sets whether the upgrade tracking feature is enabled for this character.
@@ -5760,18 +5755,40 @@ function PawnIsItemIDAnUpgrade(ItemID)
 	return PawnIsItemAnUpgrade(Item)
 end
 
--- This is largely the same as getting the item data for a link and then calling PawnIsItemAnUpgrade on it,
--- but this one also works with relics, can support minimum level requirements, and so on.  It's intended as the
--- easiest way to answer the question "should this item have a green arrow?".
+-- Returns a wrapper function that allows an inner function to spend a certain amount of time executing
+-- over a specific period. Once the time budget is exceeded, it returns nil until the full period has elapsed
+-- and the budget resets.
+-- Parameters:
+-- 	Func: The function to call. This function can take arguments.
+-- 	Budget: The maximum amount of time to spend, in seconds.
+-- 	Period: How often the budget resets, in seconds.
 -- Returns:
---   true: This item is indeed an upgrade for something.
---   false: This item is not an upgrade.
---   nil: We're not sure yet.
-function PawnShouldItemLinkHaveUpgradeArrow(ItemLink, CheckLevel, EvenOnClassic)
-	-- TEMPORARY HACK: If EvenOnClassic=true wasn't passed in and this is a Classic version, just return false.
-	-- This intentionally breaks integration with bag addons for now to resolve performance issues.
-	if (not EvenOnClassic) and (not VgerCore.IsMainline) then return false end
+-- 	A new function wrapping Func that starts immediately returning nil instead of executing whenever over its time budget.
+-- Example:
+-- 	ThrottledHello = BudgetThrottle(function() print("Hello") end, 1 / 60, 1)
+-- 	ThrottledHello() stops printing Hello once it has used 1/60th of each second, capping it at spending 1 fps.
+local function BudgetThrottle(Func, Budget, Period)
+	local PeriodEndsAt = 0
+	local RemainingBudget = 0
+	local Throttled = function(...)
+		local Now = GetTimePreciseSec()
+		if Now >= PeriodEndsAt then
+			-- Period expired, so reset the budget..
+			PeriodEndsAt = Now + Period
+			RemainingBudget = Budget
+		elseif RemainingBudget <= 0 then
+			-- We ran ot of budget, so keep skipping the function until we get our next allowance.
+			return nil
+		end
+		local AllReturns = {Func(...)}
+		local Elapsed = GetTimePreciseSec() - Now
+		RemainingBudget = RemainingBudget - Elapsed
+		return unpack(AllReturns)
+	end
+	return Throttled
+end
 
+function PawnShouldItemLinkHaveUpgradeArrowUnbudgeted(ItemLink, CheckLevel)
 	if not PawnIsInitialized then VgerCore.Fail("Can't check to see if items are upgrades until Pawn is initialized") return end
 
 	--if PawnOptions.DebugBagArrows then VgerCore.Message("Checking upgrade information for " .. tostring(ItemLink)) end
@@ -5804,6 +5821,16 @@ function PawnShouldItemLinkHaveUpgradeArrow(ItemLink, CheckLevel, EvenOnClassic)
 	end
 end
 
+-- This is largely the same as getting the item data for a link and then calling PawnIsItemAnUpgrade on it,
+-- but this one also works with relics, can support minimum level requirements, and so on.  It's intended as the
+-- easiest way to answer the question "should this item have a green arrow?".
+-- Calculations are budgeted at 2 FPS out of 60, resetting every 1/4 of a second.
+-- Returns:
+--   true: This item is indeed an upgrade for something.
+--   false: This item is not an upgrade.
+--   nil: We're not sure yet.
+PawnShouldItemLinkHaveUpgradeArrow = BudgetThrottle(PawnShouldItemLinkHaveUpgradeArrowUnbudgeted, 2 / 60 / 4, 1 / 4)
+
 -- Clears the best item level data for this character only.
 function PawnClearBestItemLevelData()
 	PawnOptions.ItemLevels = nil
@@ -5816,7 +5843,7 @@ end
 -- Shows or hides the Pawn UI.
 function PawnUIShow()
 	if not PawnIsInitialized or not PawnUIFrame then
-		VgerCore.Fail("Pawn UI is not loaded!")
+		VgerCore.Fail("There was an error loading Pawn and its UI is not ready. /console scriptErrors 1 can help you see why.")
 		return
 	end
 	if PawnUIFrame:IsShown() then

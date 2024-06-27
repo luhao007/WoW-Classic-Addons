@@ -376,6 +376,7 @@ local function createAbilityTrigger(triggers, position, item, genericShowOn)
       spellName = item.spell,
       use_genericShowOn = true,
       genericShowOn = genericShowOn,
+      use_exact_spellName = item.exactSpellId
     }
   };
   if genericShowOn == "showOnReady" then
@@ -458,6 +459,7 @@ end
 local function createThumbnail(parent)
   -- Preview frame
   local borderframe = CreateFrame("Frame", nil, parent);
+  --- @cast borderframe table|Frame
   borderframe:SetWidth(32);
   borderframe:SetHeight(32);
 
@@ -469,6 +471,7 @@ local function createThumbnail(parent)
 
   -- Main region
   local region = CreateFrame("Frame", nil, borderframe);
+  --- @cast region table|Frame
   borderframe.region = region;
 
   -- Preview children
@@ -1228,7 +1231,7 @@ function WeakAuras.CreateTemplateView(Private, frame)
   local newView = AceGUI:Create("InlineGroup");
   newView.frame:SetParent(frame);
   newView.frame:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -17, 42);
-  newView.frame:SetPoint("TOPLEFT", frame, "TOPLEFT", 17, -10);
+  newView.frame:SetPoint("TOPLEFT", frame, "TOPLEFT", 17, -50);
   newView.frame:Hide();
   newView:SetLayout("fill");
 

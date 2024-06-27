@@ -40,7 +40,7 @@ Prat:AddModuleToLoad(function()
 
   local PL = module.PL
 
-  --[===[@debug@
+  --[==[@debug@
   PL:AddLocale(PRAT_MODULE, "enUS", {
     ["CopyChat"] = true,
     ["Copy text from the active chat window."] = true,
@@ -66,8 +66,10 @@ Prat:AddModuleToLoad(function()
     TOPRIGHT = "Top, Right",
     BOTTOMRIGHT = "Bottom, Right",
     BOTTOMLEFT = "Bottom, Left",
+    activealpha = "Alpha when mouseover",
+    inactivealpha = "Alpha when mouseout",
   })
-  --@end-debug@]===]
+  --@end-debug@]==]
 
   -- These Localizations are auto-generated. To help with localization
   -- please go to http://www.wowace.com/projects/prat-3-0/localization/
@@ -81,6 +83,7 @@ do
 L = {
 	["CopyChat"] = {
 		[" Text"] = true,
+		["activealpha"] = "Alpha when mouseover",
 		["BBCode"] = true,
 		["BOTTOMLEFT"] = "Bottom, Left",
 		["BOTTOMRIGHT"] = "Bottom, Right",
@@ -96,6 +99,7 @@ L = {
 		["copytimestamps_desc"] = "Copy the chat line when you click on the timestamp",
 		["copytimestamps_name"] = "Timestamps Copy",
 		["HTML"] = true,
+		["inactivealpha"] = "Alpha when mouseout",
 		["Message From : %s"] = true,
 		["Plain"] = true,
 		["Should the copied text be plain, or formatted so you can see the colors."] = true,
@@ -113,8 +117,9 @@ PL:AddLocale(PRAT_MODULE, "enUS", L)
 
 L = {
 	["CopyChat"] = {
+		[" Text"] = "Testo",
 		--[[Translation missing --]]
-		[" Text"] = " Text",
+		["activealpha"] = "Alpha when mouseover",
 		--[[Translation missing --]]
 		["BBCode"] = "BBCode",
 		--[[Translation missing --]]
@@ -145,6 +150,8 @@ L = {
 		["copytimestamps_name"] = "Timestamps Copy",
 		--[[Translation missing --]]
 		["HTML"] = "HTML",
+		--[[Translation missing --]]
+		["inactivealpha"] = "Alpha when mouseout",
 		--[[Translation missing --]]
 		["Message From : %s"] = "Message From : %s",
 		--[[Translation missing --]]
@@ -172,6 +179,8 @@ L = {
 	["CopyChat"] = {
 		[" Text"] = "Texto",
 		--[[Translation missing --]]
+		["activealpha"] = "Alpha when mouseover",
+		--[[Translation missing --]]
 		["BBCode"] = "BBCode",
 		--[[Translation missing --]]
 		["BOTTOMLEFT"] = "Bottom, Left",
@@ -201,6 +210,8 @@ L = {
 		["copytimestamps_name"] = "Timestamps Copy",
 		--[[Translation missing --]]
 		["HTML"] = "HTML",
+		--[[Translation missing --]]
+		["inactivealpha"] = "Alpha when mouseout",
 		--[[Translation missing --]]
 		["Message From : %s"] = "Message From : %s",
 		--[[Translation missing --]]
@@ -225,6 +236,8 @@ PL:AddLocale(PRAT_MODULE, "ptBR", L)
 L = {
 	["CopyChat"] = {
 		[" Text"] = "Texte",
+		--[[Translation missing --]]
+		["activealpha"] = "Alpha when mouseover",
 		["BBCode"] = true,
 		--[[Translation missing --]]
 		["BOTTOMLEFT"] = "Bottom, Left",
@@ -247,6 +260,8 @@ L = {
 		--[[Translation missing --]]
 		["copytimestamps_name"] = "Timestamps Copy",
 		["HTML"] = true,
+		--[[Translation missing --]]
+		["inactivealpha"] = "Alpha when mouseout",
 		["Message From : %s"] = "Message de : %s",
 		["Plain"] = "Texte seul",
 		["Should the copied text be plain, or formatted so you can see the colors."] = "Le texte copié doit-il être seul, ou formaté de tel manière à voir les couleurs.",
@@ -268,6 +283,7 @@ PL:AddLocale(PRAT_MODULE, "frFR",L)
 L = {
 	["CopyChat"] = {
 		[" Text"] = "Text",
+		["activealpha"] = "Transparenz, wenn mit der Maus darüber gefahren wird",
 		["BBCode"] = true,
 		["BOTTOMLEFT"] = "Unten, links",
 		["BOTTOMRIGHT"] = "Unten, rechts",
@@ -283,6 +299,7 @@ L = {
 		["copytimestamps_desc"] = "Kopiert die Chat-Zeile, wenn du auf den Zeitstempel klickst",
 		["copytimestamps_name"] = "Zeitstempel kopieren",
 		["HTML"] = true,
+		["inactivealpha"] = "Transparenz, wenn mit der Maus nicht darüber gefahren wird",
 		["Message From : %s"] = "Nachricht von : %s",
 		["Plain"] = "Einfach",
 		["Should the copied text be plain, or formatted so you can see the colors."] = "Soll der kopierte Text einfach oder formattiert mit farbiger Darstellung kopiert werden?",
@@ -300,23 +317,25 @@ PL:AddLocale(PRAT_MODULE, "deDE", L)
 L = {
 	["CopyChat"] = {
 		[" Text"] = " 텍스트",
+		--[[Translation missing --]]
+		["activealpha"] = "Alpha when mouseover",
 		["BBCode"] = true,
 		["BOTTOMLEFT"] = "하단, 좌측",
 		["BOTTOMRIGHT"] = "하단, 우측",
 		["buttonpos_desc"] = "복사 버튼을 표시할 대화창의 위치",
 		["buttonpos_name"] = "버튼 위치",
-		["ChatFrame"] = "대화창",
+		["ChatFrame"] = "대화창 [Frames]",
 		["Copy all of the text in the selected chat frame into an edit box"] = "선택된 대화창의 모든 내용을 대화 입력창으로 복사합니다",
 		["Copy Text"] = "텍스트 복사",
 		["Copy Text Format"] = "복사 내용 서식",
 		["Copy text from the active chat window."] = "활성 대화창에서 내용을 복사합니다.",
 		["Copy To Editbox"] = "대화 입력창에 복사",
 		["CopyChat"] = "대화 복사 [CopyChat]",
-		--[[Translation missing --]]
-		["copytimestamps_desc"] = "Copy the chat line when you click on the timestamp",
-		--[[Translation missing --]]
-		["copytimestamps_name"] = "Timestamps Copy",
+		["copytimestamps_desc"] = "대화 시각을 클릭하면 그 대화줄을 복사합니다.",
+		["copytimestamps_name"] = "대화 시각 복사",
 		["HTML"] = true,
+		--[[Translation missing --]]
+		["inactivealpha"] = "Alpha when mouseout",
 		["Message From : %s"] = "%s|1으로;로;부터 메시지",
 		["Plain"] = "보통",
 		["Should the copied text be plain, or formatted so you can see the colors."] = "복사된 내용을 보통으로 표시하거나, 또는 색상을 보기 위해 형식화 합니다.",
@@ -334,6 +353,8 @@ L = {
 	["CopyChat"] = {
 		--[[Translation missing --]]
 		[" Text"] = " Text",
+		--[[Translation missing --]]
+		["activealpha"] = "Alpha when mouseover",
 		--[[Translation missing --]]
 		["BBCode"] = "BBCode",
 		--[[Translation missing --]]
@@ -365,6 +386,8 @@ L = {
 		--[[Translation missing --]]
 		["HTML"] = "HTML",
 		--[[Translation missing --]]
+		["inactivealpha"] = "Alpha when mouseout",
+		--[[Translation missing --]]
 		["Message From : %s"] = "Message From : %s",
 		--[[Translation missing --]]
 		["Plain"] = "Plain",
@@ -388,6 +411,8 @@ PL:AddLocale(PRAT_MODULE, "esMX",L)
 L = {
 	["CopyChat"] = {
 		[" Text"] = " Текст",
+		--[[Translation missing --]]
+		["activealpha"] = "Alpha when mouseover",
 		["BBCode"] = true,
 		["BOTTOMLEFT"] = "Снизу, Слева",
 		["BOTTOMRIGHT"] = "Снизу, Справа",
@@ -403,6 +428,8 @@ L = {
 		["copytimestamps_desc"] = "Скопируйте строку чата при нажатии на метку времени",
 		["copytimestamps_name"] = "Копирование временны́х меток",
 		["HTML"] = true,
+		--[[Translation missing --]]
+		["inactivealpha"] = "Alpha when mouseout",
 		["Message From : %s"] = "Сообщение от : %s",
 		["Plain"] = "Обычный текст",
 		["Should the copied text be plain, or formatted so you can see the colors."] = "Копировать информацию как обычный текст или же форматированный, с сохранением цветов и т.п.",
@@ -419,6 +446,8 @@ PL:AddLocale(PRAT_MODULE, "ruRU",L)
 L = {
 	["CopyChat"] = {
 		[" Text"] = "文本",
+		--[[Translation missing --]]
+		["activealpha"] = "Alpha when mouseover",
 		["BBCode"] = "BB代码",
 		["BOTTOMLEFT"] = "左下",
 		["BOTTOMRIGHT"] = "右下",
@@ -436,6 +465,8 @@ L = {
 		--[[Translation missing --]]
 		["copytimestamps_name"] = "Timestamps Copy",
 		["HTML"] = "超文本标记语言",
+		--[[Translation missing --]]
+		["inactivealpha"] = "Alpha when mouseout",
 		["Message From : %s"] = "信息来自: %s",
 		["Plain"] = "简洁",
 		["Should the copied text be plain, or formatted so you can see the colors."] = "如果用简洁或排版复制的文本,你可以看到颜色",
@@ -452,6 +483,8 @@ PL:AddLocale(PRAT_MODULE, "zhCN",L)
 L = {
 	["CopyChat"] = {
 		[" Text"] = "Texto",
+		--[[Translation missing --]]
+		["activealpha"] = "Alpha when mouseover",
 		["BBCode"] = true,
 		--[[Translation missing --]]
 		["BOTTOMLEFT"] = "Bottom, Left",
@@ -474,6 +507,8 @@ L = {
 		--[[Translation missing --]]
 		["copytimestamps_name"] = "Timestamps Copy",
 		["HTML"] = true,
+		--[[Translation missing --]]
+		["inactivealpha"] = "Alpha when mouseout",
 		["Message From : %s"] = "Mensaje de : %s",
 		["Plain"] = "Liso",
 		["Should the copied text be plain, or formatted so you can see the colors."] = "El texto copiado debería ser llano, o con formato para que pueda ver los colores. ",
@@ -492,6 +527,8 @@ PL:AddLocale(PRAT_MODULE, "esES",L)
 L = {
 	["CopyChat"] = {
 		[" Text"] = "文字",
+		--[[Translation missing --]]
+		["activealpha"] = "Alpha when mouseover",
 		["BBCode"] = true,
 		["BOTTOMLEFT"] = "下, 左",
 		["BOTTOMRIGHT"] = "下, 右",
@@ -511,6 +548,8 @@ L = {
 		--[[Translation missing --]]
 		["copytimestamps_name"] = "Timestamps Copy",
 		["HTML"] = true,
+		--[[Translation missing --]]
+		["inactivealpha"] = "Alpha when mouseout",
 		["Message From : %s"] = "來自 %s 的訊息",
 		--[[Translation missing --]]
 		["Plain"] = "Plain",
@@ -535,7 +574,9 @@ end
       showbutton = { ["*"] = true },
       buttonpos = "TOPLEFT",
       copyformat = "plain",
-      copytimestamps = true
+      copytimestamps = true,
+      activealpha = 0.9,
+      inactivealpha = 0.2,
     }
   })
 
@@ -587,7 +628,23 @@ end
         desc = PL.copytimestamps_desc,
         type = "toggle",
         order = 200,
-      }
+      },
+      activealpha = {
+        name = PL["activealpha"],
+        type = "range",
+        order = 210,
+        min = 0,
+        max = 1.0,
+        step = 0.1,
+      },
+      inactivealpha = {
+        name = PL["inactivealpha"],
+        type = "range",
+        order = 220,
+        min = 0,
+        max = 1.0,
+        step = 0.1,
+      },
     }
   })
 
@@ -661,6 +718,11 @@ end
     end)
   end
 
+  local function CleanText(text)
+    text = text:gsub("|K.-|k", "<BNET REMOVED>")
+    return StripHyperlinks(text, false, true)
+  end
+
   --[[------------------------------------------------
       Core Functions
   ------------------------------------------------]] --
@@ -670,9 +732,8 @@ end
       for lineIndex, visibleLine in ipairs(frame.visibleLines) do
         if visibleLine:IsMouseOver() then
           local info = visibleLine.messageInfo
-          if info.message then
-            local text = info.message:gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", ""):gsub("|H.-|h", ""):gsub("|h", "")
-            text = text:gsub("|K.-|k", ""):gsub("|T.-|t", ""):gsub("|A.-|a", "")
+          if info and info.message then
+            local text = CleanText(info.message)
 
             local editBox = ChatEdit_ChooseBoxForSend(frame);
 
@@ -741,13 +802,6 @@ end
     self:ScrapeChatFrame(SELECTED_CHAT_FRAME)
   end
 
-  local function stripChatText(text)
-    local stripped = text:gsub("|K[^|]-|k", "<BNET REMOVED>")
-    stripped = stripped:gsub("|T.-|t", "")
-
-    return stripped
-  end
-
   function module:DoCopyChatScroll(frame)
     local scrapelines = {}
     local str
@@ -759,7 +813,7 @@ end
       msg = msg and msg.message
 
       if msg then
-       scrapelines[#scrapelines+1] = stripChatText(msg)
+       scrapelines[#scrapelines+1] = CleanText(msg)
       end
     end
 
@@ -778,12 +832,11 @@ end
     local lines = {}
     local str
 
-    for i = frame:GetNumVisibleLines(), 1, -1 do
-      local msg = frame.visibleLines[i].messageInfo
-      msg = msg and msg.message
+    for i = 1, frame:GetNumMessages() do
+      local msg = frame:GetMessageInfo(i)
 
       if msg then
-        lines[#lines+1] = stripChatText(msg)
+        lines[#lines+1] = CleanText(msg)
       end
     end
 
@@ -847,9 +900,9 @@ end
       module.copyformat = nil
     end
 
-    local function reminderOnEnter(self, motion) self:SetAlpha(0.9) end
+    local function reminderOnEnter(self, motion) self:SetAlpha(module.db.profile.activealpha) end
 
-    local function reminderOnLeave(self, motion) self:SetAlpha(0.2) end
+    local function reminderOnLeave(self, motion) self:SetAlpha(module.db.profile.inactivealpha) end
 
     function module:MakeReminder(id)
       local cf = _G["ChatFrame" .. id]
@@ -857,7 +910,7 @@ end
       local b = _G[name]
       if not b then
         b = CreateFrame("Button", name, cf)
-        b:SetFrameStrata("LOW")
+        b:SetFrameStrata("MEDIUM")
         b:SetWidth(24)
         b:SetHeight(24)
         b:SetNormalTexture("Interface\\Addons\\Prat-3.0\\textures\\prat-chatcopy2")
@@ -867,7 +920,7 @@ end
         b:SetScript("OnClick", reminderOnClick)
         b:SetScript("OnEnter", reminderOnEnter)
         b:SetScript("OnLeave", reminderOnLeave)
-        b:SetAlpha(0.2)
+        b:SetAlpha(module.db.profile.inactivealpha)
         b:RegisterForClicks("AnyUp")
         b:Hide()
       end

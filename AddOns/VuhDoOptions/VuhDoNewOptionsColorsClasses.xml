@@ -45,7 +45,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="13" y="-40" />
+									<AbsDimension x="13" y="-35" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -62,7 +62,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="13" y="-78" />
+									<AbsDimension x="13" y="-73" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -79,7 +79,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="13" y="-116" />
+									<AbsDimension x="13" y="-111" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -96,7 +96,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="13" y="-154" />
+									<AbsDimension x="13" y="-149" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -113,7 +113,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="119" y="-40" />
+									<AbsDimension x="119" y="-35" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -130,7 +130,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="119" y="-78" />
+									<AbsDimension x="119" y="-73" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -147,7 +147,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="119" y="-116" />
+									<AbsDimension x="119" y="-111" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -164,7 +164,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="119" y="-154" />
+									<AbsDimension x="119" y="-149" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -181,7 +181,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="13" y="-192" />
+									<AbsDimension x="13" y="-187" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -198,7 +198,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="119" y="-192" />
+									<AbsDimension x="119" y="-187" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -215,7 +215,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="13" y="-230" />
+									<AbsDimension x="13" y="-225" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -232,7 +232,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="119" y="-230" />
+									<AbsDimension x="119" y="-225" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -245,11 +245,29 @@
 						</Scripts>
 					</Frame>
 
+					<Frame name="$parentEvokersTexture" inherits="VuhDoColorSwatchTexture">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="13" y="-263" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								VUHDO_lnfSetModel(self, "VUHDO_USER_CLASS_COLORS.##32");
+								VUHDO_lnfInitColorSwatch(self, VUHDO_I18N_EVOKERS, VUHDO_I18N_EVOKERS);
+								VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K585);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+
+
 					<Frame name="$parentPetsTexture" inherits="VuhDoColorSwatchTexture">
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="13" y="-268" />
+									<AbsDimension x="119" y="-263" />
 								</Offset>
 							</Anchor>
 						</Anchors>

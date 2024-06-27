@@ -40,6 +40,7 @@ local sLastDebuffIcon;
 local sShowPanels;
 
 function VUHDO_panelRefreshInitLocalOverrides()
+
 	VUHDO_CONFIG = _G["VUHDO_CONFIG"];
 	VUHDO_PANEL_SETUP = _G["VUHDO_PANEL_SETUP"];
 	VUHDO_RAID = _G["VUHDO_RAID"];
@@ -118,12 +119,14 @@ local function VUHDO_refreshPositionAllHealButtons(aPanel, aPanelNum)
 
 			if tButton["raidid"] ~= tUnit then
 				VUHDO_setupAllHealButtonAttributes(tButton, tUnit, false, 70 == tModelId, false, false); -- VUHDO_ID_VEHICLES
+
 				for tCnt = 40, sLastDebuffIcon do
 					tDebuffFrame = VUHDO_getBarIconFrame(tButton, tCnt);
 					if tDebuffFrame then
 						VUHDO_setupAllHealButtonAttributes(tDebuffFrame, tUnit, false, 70 == tModelId, false, true); -- VUHDO_ID_VEHICLES
 					end
 				end
+				
 				VUHDO_setupAllTargetButtonAttributes(VUHDO_getTargetButton(tButton), tUnit);
 				VUHDO_setupAllTotButtonAttributes(VUHDO_getTotButton(tButton), tUnit);
 			end
@@ -231,3 +234,71 @@ function VUHDO_refreshUI()
 
 	VUHDO_IS_RELOADING = false;
 end
+
+
+
+--
+local tPrivateAura;
+local tPrivateAuraAnchor;
+local tPanelSetup;
+local tBarScaling;
+local tPrivateAuraSetup;
+local tWidth, tHeight;
+function VUHDO_refreshPrivateAuras(aPanelNum, aButton, aUnit)
+
+	if not C_UnitAuras or not aPanelNum or not aButton or not aUnit then
+		return;
+	end
+
+	tPanelSetup = VUHDO_PANEL_SETUP[aPanelNum];
+	tBarScaling = tPanelSetup["SCALING"];
+	tPrivateAuraSetup = tPanelSetup["PRIVATE_AURA"];
+
+	if not tPrivateAuraSetup["show"] then
+		return;
+	end
+
+	for tAuraIndex = 1, VUHDO_MAX_PRIVATE_AURAS do
+		tPrivateAura = VUHDO_getBarPrivateAura(aButton, tAuraIndex);
+
+		if not tPrivateAura then
+			return;
+		end
+
+		if tPrivateAura["anchorId"] then
+			C_UnitAuras.RemovePrivateAuraAnchor(tPrivateAura["anchorId"]);
+
+			tPrivateAura["anchorId"] = nil;
+		end
+
+		tPrivateAuraAnchor = {
+			unitToken = aUnit,
+			auraIndex = tAuraIndex,
+			parent = tPrivateAura,
+			showCountdownFrame = true,
+			showCountdownNumbers = true,
+			iconInfo = {
+				iconWidth = tBarScaling["barHeight"],
+				iconHeight = tBarScaling["barHeight"],
+				iconAnchor = {
+					point = "CENTER",
+					relativeTo = tPrivateAura,
+					relativePoint = "CENTER",
+					offsetX = 0,
+					offsetY = 0,
+				},
+			},
+			durationAnchor = {
+				point = "TOP",
+				relativeTo = tPrivateAura,
+				relativePoint = "BOTTOM",
+				offsetX = 0,
+				offsetY = 0,
+			},
+		};
+
+		tPrivateAura["anchorId"] = C_UnitAuras.AddPrivateAuraAnchor(tPrivateAuraAnchor);
+	end
+
+end
+	

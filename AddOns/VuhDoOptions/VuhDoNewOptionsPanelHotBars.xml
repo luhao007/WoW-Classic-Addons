@@ -476,7 +476,7 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								VUHDO_lnfSetModel(self, "VUHDO_INDICATOR_CONFIG.CUSTOM.HOT_BARS.invertGrowth");
+								VUHDO_lnfSetModel(self, "VUHDO_INDICATOR_CONFIG.#PNUM#.CUSTOM.HOT_BARS.invertGrowth");
 								VUHDO_lnfSetTooltip(self, nil);
 							</OnLoad>
 						</Scripts>
@@ -492,7 +492,7 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								VUHDO_lnfSetModel(self, "VUHDO_INDICATOR_CONFIG.CUSTOM.HOT_BARS.vertical");
+								VUHDO_lnfSetModel(self, "VUHDO_INDICATOR_CONFIG.#PNUM#.CUSTOM.HOT_BARS.vertical");
 								VUHDO_lnfSetTooltip(self, nil);
 							</OnLoad>
 						</Scripts>
@@ -508,7 +508,7 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								VUHDO_lnfSetModel(self, "VUHDO_INDICATOR_CONFIG.CUSTOM.HOT_BARS.turnAxis");
+								VUHDO_lnfSetModel(self, "VUHDO_INDICATOR_CONFIG.#PNUM#.CUSTOM.HOT_BARS.turnAxis");
 								VUHDO_lnfSetTooltip(self, nil);
 							</OnLoad>
 						</Scripts>

@@ -1,6 +1,6 @@
 ﻿-- Pawn by Vger-Azjol-Nerub
 -- www.vgermods.com
--- © 2006-2023 Travis Spomer.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
+-- © 2006-2024 Travis Spomer.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
 -- See Readme.htm for more information.
 
 --
@@ -277,6 +277,7 @@ Weitere Informationen zur Anpassung von Pawn findet ihr in der Hilfedatei (Readm
 		["Crit"] = "^%+?# [Kk]ritischer Trefferwert%.?$",
 		["Crit2"] = "^UNUSED$",
 		["CritPercent"] = "^Anlegen: Erhöht Eure Chance, einen kritischen Treffer zu erzielen, um #%%%.$",
+		["CritPercentCombined"] = "^Anlegen: Erhöht Eure kritische Trefferchance aller Eurer Angriffe und Zauber um #%%%.$",
 		["CritRating"] = "^Anlegen: Erhöht Eure kritische Trefferwertung um #%.$",
 		["CritRating2"] = "^Anlegen: Erhöht die kritische Trefferwertung um #%.$",
 		["CritRating3"] = "^UNUSED$",
@@ -343,6 +344,7 @@ Weitere Informationen zur Anpassung von Pawn findet ihr in der Hilfedatei (Readm
 		["HeroicWarforged"] = "^Heroisch, Kriegsgeschmiedet$",
 		["Hit"] = "^Anlegen: Verbessert Eure Trefferchance um #%%%.$",
 		["Hit2"] = "^UNUSED$",
+		["HitPercentCombined"] = "^Anlegen: Erhöht Eure Trefferchance mit allen Angriffen und Zaubern um #%%%.$",
 		["HitRating"] = "^Anlegen: Erhöht die Trefferwertung um #%.$",
 		["HitRating2"] = "^Anlegen: Erhöht Eure Trefferwertung um #%.$",
 		["HitRating3"] = "^UNUSED$",
@@ -670,8 +672,6 @@ Abkürzung: Umschalt+Klick auf ein Bewertungsprofil]=],
 		["ValuesDoNotShowUpgradesFor1H"] = "Verbesserungen für Einhand Gegenstände ausblenden",
 		["ValuesDoNotShowUpgradesFor2H"] = "Verbesserungen für Zweihand Gegenstände ausblenden",
 		["ValuesDoNotShowUpgradesTooltip"] = "Aktiviere diese Option, um Verbesserungen für diese Typen von Gegenstände auszublenden. Obwohl Tank-Paladine beispielsweise Zweihandwaffen verwenden können, sind diese niemals eine Verbesserung, so dass Pawn keine Verbesserung anzeigen sollte. Ebenso können Vergelter-Paladine Einhandwaffen verwenden, aber sie sind niemals eine Verbesserung.",
-		["ValuesFollowSpecialization"] = "Zeige nur Verbesserungen für meinen besten Rüstungstyp erst nach Stufe %d",
-		["ValuesFollowSpecializationTooltip"] = "Aktiviere diese Option, um Verbesserungen für Rüstungen auszublenden, auf die sich deine Klasse nach Stufe %d nicht spezialisiert hat. Auf Stufe %d lernen beispielsweise heilige Paladine die Plattenspezialisierung, die den Intellekt um 5%% erhöht, wenn du nur Plattenrüstung trägst. Wenn diese Option ausgewählt ist, berücksichtigt Pawn niemals Stoff, Leder oder Kette als Verbesserungen für heilige Paladine der Stufe %d+.",
 		["ValuesHeader"] = "Werte Gewichtung für %s",
 		["ValuesIgnoreItemType"] = "Diese Gegenstände sind unbrauchbar",
 		["ValuesIgnoreStat"] = "Gegenstände mit diesem sind unbrauchbar",

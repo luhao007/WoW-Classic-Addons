@@ -42,15 +42,19 @@ function String.SafeSplit(str, sep, resultTbl)
 		tinsert(resultTbl, str)
 		return resultTbl
 	end
+	local resultLength = #resultTbl
 	while true do
 		local e = strfind(str, sep, s, true)
 		if not e then
-			tinsert(resultTbl, strsub(str, s))
+			resultTbl[resultLength+1] = strsub(str, s)
+			resultLength = resultLength + 1
 			break
 		end
-		tinsert(resultTbl, strsub(str, s, e - 1))
+		resultTbl[resultLength+1] = strsub(str, s, e - 1)
+		resultLength = resultLength + 1
 		s = e + sepLength
 	end
+	assert(#resultTbl == resultLength)
 	return resultTbl
 end
 

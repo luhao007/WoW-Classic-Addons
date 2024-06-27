@@ -13,7 +13,9 @@ local checkWeapons;
 local CombatLogGetCurrentEventInfo = CombatLogGetCurrentEventInfo;
 local Unitname = UnitName;
 local UnitGUID = UnitGUID;
-local staticPupupFrame = NRC:createStaticPopupAttachment("NRCStaticPopupFrame", 320, 38, 0, 0);
+local staticPopupFrame = NRC:createStaticPopupAttachment("NRCStaticPopupFrame", 320, 38, 0, 0);
+--staticPopupFrame:SetFrameStrata("DIALOG");
+--staticPopupFrame:SetFrameLevel(999);
 
 function NRC:encounterStart(...)
 	local encounterID, encounterName, difficultyID, groupSize = ...;
@@ -32,7 +34,7 @@ function NRC:encounterStart(...)
 			return;
 		end
 		--Alar costume check.
-		NRC:debug("checking bt attune");
+		--NRC:debug("checking bt attune");
 		local hasQuest = C_QuestLog.IsOnQuest(10946);
 		local isComplete = C_QuestLog.IsQuestFlaggedCompleted(10946);
 		if (hasQuest and not NRC:hasBuff("player", 39527) and not isComplete) then
@@ -60,7 +62,7 @@ function NRC:checkAttuneQuest(encounterID)
 	end
 	local delay = 15;
 	if (encounterID == 626) then
-		NRC:debug("checking bt attune");
+		--NRC:debug("checking bt attune");
 		local delay = 20;
 		C_Timer.After(delay, function()
 			local hasQuest = C_QuestLog.IsOnQuest(10944);
@@ -72,7 +74,7 @@ function NRC:checkAttuneQuest(encounterID)
 			end
 		end)
 	elseif (encounterID == 650) then
-		NRC:debug("checking ssc attune");
+		--NRC:debug("checking ssc attune");
 		local hasQuest = C_QuestLog.IsOnQuest(10901);
 		local isComplete = C_QuestLog.IsQuestFlaggedCompleted(10901);
 		if (hasQuest and not isComplete) then
@@ -84,7 +86,7 @@ function NRC:checkAttuneQuest(encounterID)
 			end)
 		end
 	elseif (encounterID == 662) then
-		NRC:debug("checking ssc attune");
+		--NRC:debug("checking ssc attune");
 		local hasQuest = C_QuestLog.IsOnQuest(10901);
 		local isComplete = C_QuestLog.IsQuestFlaggedCompleted(10901);
 		if (hasQuest and not isComplete) then
@@ -96,7 +98,7 @@ function NRC:checkAttuneQuest(encounterID)
 			end)
 		end
 	elseif (encounterID == 628) then
-		NRC:debug("checking hyjal attune");
+		--NRC:debug("checking hyjal attune");
 		local hasQuest = C_QuestLog.IsOnQuest(10445);
 		local isComplete = C_QuestLog.IsQuestFlaggedCompleted(10445);
 		if (hasQuest and not isComplete) then
@@ -108,7 +110,7 @@ function NRC:checkAttuneQuest(encounterID)
 			end)
 		end
 	elseif (encounterID == 733) then
-		NRC:debug("checking hyjal attune");
+		--NRC:debug("checking hyjal attune");
 		local hasQuest = C_QuestLog.IsOnQuest(10445);
 		local isComplete = C_QuestLog.IsQuestFlaggedCompleted(10445);
 		if (hasQuest and not isComplete) then
@@ -120,7 +122,7 @@ function NRC:checkAttuneQuest(encounterID)
 			end)
 		end
 	elseif (encounterID == 618) then
-		NRC:debug("checking bt attune");
+		--NRC:debug("checking bt attune");
 		local hasQuest = C_QuestLog.IsOnQuest(10947);
 		local isComplete = C_QuestLog.IsQuestFlaggedCompleted(10947);
 		if (hasQuest and not isComplete) then
@@ -242,6 +244,9 @@ end]]
 
 local checkWeaponsCD, lastWeaponWarning = 0, 0;
 function NRC:checkWeaponsEquipped()
+	if (NRC.isRetail) then
+		return;
+	end
 	if (not NRC.config.ktNoWeaponsWarning or UnitLevel("player") ~= 70) then
 		return;
 	end
@@ -301,17 +306,52 @@ local cauldrons = {
 	[41497] = 32851,
 	[41494] = 133779,
 	[41495] = 32850,
+};
+local feasts = {
 	--Feasts.
 	[57301] = 132184,
 	[57426] = 237303,
+};
+local repairBots = {
 	--Repair bots.
 	[22700] = 132836,
 	[44389] = 133859,
 	[54711] = 133872,
 	[67826] = 294476,
+};
+local mailboxes = {
 	--Mailbox.
 	[54710] = 133871,
 };
+
+local portals = {
+	--Portals.
+	[54710] = 133871,
+};
+
+if (NRC.isSOD) then
+	cauldrons[429961] = 133662;
+end
+
+local trackAnnounce = {};
+for k, v in pairs(cauldrons) do
+	trackAnnounce[k] = v;
+end
+for k, v in pairs(feasts) do
+	trackAnnounce[k] = v;
+end
+for k, v in pairs(repairBots) do
+	trackAnnounce[k] = v;
+end
+for k, v in pairs(mailboxes) do
+	trackAnnounce[k] = v;
+end
+for k, v in pairs(portals) do
+	trackAnnounce[k] = v;
+end
+--These are no longer used below.
+cauldrons = nil;
+mailboxes = nil;
 
 local lastGeyser = 0;
 local function combatLogEventUnfiltered(...)
@@ -328,18 +368,32 @@ local function combatLogEventUnfiltered(...)
 		end
 	end]]
 	if (subEvent == "SPELL_CAST_SUCCESS") then
+		--spellID = 54710
 		if (sourceGUID == UnitGUID("player")) then
-			if (cauldrons[spellID]) then
+			if (trackAnnounce[spellID]) then
+				local mapID = C_Map.GetBestMapForUnit("player");
+				if (mapID == 125 or mapID == 126) then
+					--Not in dal.
+					return;
+				end
 				local inInstance = IsInInstance();
 				if (inInstance) then
-					--Trim the msg a bit for english clients, no need to show it's a major all cauldrons are.
+					--Trim the msg a bit for english clients, no need to show it's a major, all cauldrons are.
 					spellName = string.gsub(spellName, "Major ", "");
+					if (spellID == 429961) then
+						spellName = L["Sleeping Bag"];
+					end
+					local msg = spellName .. " placed on the ground.";
+					if (spellName == "Wormhole") then
+						msg = spellName .. " Portal placed on the ground.";
+					end
 					if (NRC.config.cauldronMsg) then
-						SendChatMessage(spellName .. " placed on the ground.", "SAY");
+						SendChatMessage(msg, "SAY");
 					end
 					if (NRC.config.sreShowCauldrons) then
-						local text = "|cFFFFAE42" .. spellName .. " .. put down.";
-						NRC:sreSendEvent(text, cauldrons[spellID], sourceName);
+						--NRC:debug(spellName, 1, "put down");
+						local msg = "|cFFFFAE42" .. spellName .. " put down.";
+						NRC:sreSendEvent(msg, trackAnnounce[spellID], sourceName);
 					end
 				end
 			end
@@ -350,6 +404,48 @@ local function combatLogEventUnfiltered(...)
 				SendChatMessage(spellName .. " placed on the ground by " .. sourceName .. ".", "SAY");
 			else
 				NRC:print(spellName .. " placed on the ground by " .. sourceName .. ".");
+			end
+		end
+		if (feasts[spellID]) then
+			local mapID = C_Map.GetBestMapForUnit("player");
+			if (mapID == 125 or mapID == 126) then
+				--Not in dal.
+				return;
+			end
+			if (UnitIsGroupLeader("player") or UnitIsGroupAssistant("player")) then
+				local msg = "{rt1}" .. spellName .. " placed on the ground by " .. sourceName .. ".";
+				if (NRC.config.feastLeaderMsg) then
+					SendChatMessage(msg, NRC.config.feastLeaderChannel);
+				end
+			end
+		end
+		if (repairBots[spellID]) then
+			local mapID = C_Map.GetBestMapForUnit("player");
+			if (mapID == 125 or mapID == 126) then
+				--Not in dal.
+				return;
+			end
+			if (UnitIsGroupLeader("player") or UnitIsGroupAssistant("player")) then
+				local msg = "{rt1}" .. spellName .. " placed on the ground by " .. sourceName .. ".";
+				if (NRC.config.repairLeaderMsg) then
+					SendChatMessage(msg, NRC.config.repairLeaderChannel);
+				end
+			end
+		end
+		if (portals[spellID]) then
+			local mapID = C_Map.GetBestMapForUnit("player");
+			if (mapID == 125 or mapID == 126) then
+				--Not in dal.
+				return;
+			end
+			if (UnitIsGroupLeader("player") or UnitIsGroupAssistant("player")) then
+				local msg = "{rt1}" .. spellName .. " cast by " .. sourceName .. ".";
+				if (spellName == "Wormhole") then
+					msg = "{rt1}" .. spellName .. " Portal Generator cast by " .. sourceName .. ".";
+				end
+				if (NRC.config.repairLeaderMsg) then
+					SendChatMessage(msg, NRC.config.repairLeaderChannel);
+				end
 			end
 		end
 	elseif (subEvent == "SPELL_CREATE") then
@@ -369,11 +465,7 @@ local function combatLogEventUnfiltered(...)
 				else
 					msg = L["Summoning"] .. " {rt1}" .. UnitName("target") .. "{rt1}, " .. L["click!"];
 			    end
-			    if (IsInRaid()) then
-					SendChatMessage(msg, "RAID");
-				elseif (IsInGroup()) then
-					SendChatMessage(msg, "PARTY");
-				end
+			    NRC:sendGroup(msg);
 			end
 		end
 	elseif (subEvent == "SPELL_DISPEL") then
@@ -616,12 +708,14 @@ local function GameTooltipSetItem(tooltip, ...)
 	end
 end
 
-GameTooltip:GetItem()
-GameTooltip:HookScript("OnTooltipSetItem", GameTooltipSetItem);
+if (not NRC.isRetail) then
+	GameTooltip:GetItem()
+	GameTooltip:HookScript("OnTooltipSetItem", GameTooltipSetItem);
+end
 
-function NRC:startCombatLogging()
+function NRC:startCombatLogging(isRaid)
 	local instance, instanceType = IsInInstance();
-	if (instance and instanceType == "raid") then
+	if (instance and (instanceType == "raid" or isRaid)) then
 		if (not LoggingCombat()) then
 			LoggingCombat(true);
 			print("|cFFFFFF00" .. COMBATLOGENABLED);
@@ -747,75 +841,89 @@ function NRC:startMiddleIcon(icon, shownTime, text, bottomText) --/run NRC:start
 end
 
 local isShown;
-hooksecurefunc("StaticPopup_Show", function(...)
-	for i = 1, STATICPOPUP_NUMDIALOGS do
-		local frame = _G["StaticPopup" .. i];
-		if (frame.which == "DEATH" and frame:IsShown()) then
-			C_Timer.After(0.1, function()
-				if (NRC.config.releaseWarning and NRC.raid and next(NRC.encounter)) then
-					--Some other addons or weakauras may hide the button, if it's hidden then we don't need this feature.
-					isShown = frame.button1:IsShown();
-					if (isShown) then
-						staticPupupFrame:ClearAllPoints();
-						staticPupupFrame:SetPoint("TOPLEFT", frame, "BOTTOMLEFT", 8, 20);
-						staticPupupFrame:SetPoint("TOPRIGHT", frame, "BOTTOMRIGHT", -8, 20);
-						staticPupupFrame:Show();
-						if (next(NRC.encounter)) then
-							staticPupupFrame.fs2:SetText("|cFFFF0A0AEncounter in progress don't release.");
-							staticPupupFrame.fs:SetText("");
-						else
-							staticPupupFrame.fs2:SetText("|cFF00C800Encounter has ended.");
-							staticPupupFrame.fs:SetText("|cFFFF6900NRC|r");
+if (not NRC.isClassic) then
+	hooksecurefunc("StaticPopup_Show", function(...)
+		for i = 1, STATICPOPUP_NUMDIALOGS do
+			local frame = _G["StaticPopup" .. i];
+			if (frame.which == "DEATH" and frame:IsShown()) then
+				C_Timer.After(0.1, function()
+					if (NRC.config.releaseWarning and NRC.raid and next(NRC.encounter)) then
+						--Some other addons or weakauras may hide the button, if it's hidden then we don't need this feature.
+						isShown = frame.button1:IsShown();
+						if (isShown) then
+							staticPopupFrame:ClearAllPoints();
+							staticPopupFrame:SetPoint("TOPLEFT", frame, "BOTTOMLEFT", 8, 20);
+							staticPopupFrame:SetPoint("TOPRIGHT", frame, "BOTTOMRIGHT", -8, 20);
+							staticPopupFrame:Show();
+							if (next(NRC.encounter)) then
+								staticPopupFrame.fs2:SetText("|cFFFF0A0AEncounter in progress don't release.");
+								staticPopupFrame.fs:SetText("");
+							else
+								staticPopupFrame.fs2:SetText("|cFF00C800Encounter has ended.");
+								staticPopupFrame.fs:SetText("|cFFFF6900NRC|r");
+							end
 						end
 					end
-				end
-			end)
-		end
-	end
-end)
-
-hooksecurefunc("StaticPopup_Hide", function(...)
-	local shown;
-	for i = 1, STATICPOPUP_NUMDIALOGS do
-		local frame = _G["StaticPopup" .. i];
-		if (frame.which == "DEATH" and frame:IsShown()) then
-			shown = true;
-		end
-	end
-	if (not shown) then
-		staticPupupFrame:Hide();
-		staticPupupFrame:ClearAllPoints();
-		staticPupupFrame.fs:SetText("");
-		staticPupupFrame.fs2:SetText("");
-	end
-end)
-
---Add a timer to the ressurectiom popup.
-hooksecurefunc("StaticPopup_OnUpdate", function(self, event)
-    if (self.which == "RESURRECT_NO_SICKNESS") then
-		local timeLeft = self.timeleft;
-		if (timeLeft > 0) then
-			local t = self.text:GetText();
-			if (strmatch(t, " %(%d+%)$")) then
-				--If not first update and our string is already attached then we need to remove old timer and attach new.
-				t = gsub(t, " %(%d+%)$", "");
-			end
-			self.text:SetText(t .. " (" .. ceil(timeLeft) .. ")");
-		end
-	elseif (self.which == "DEATH") then
-		if (NRC.config.releaseWarning and NRC.raid and isShown) then
-			if (isShown) then
-				if (next(NRC.encounter)) then
-					staticPupupFrame.fs2:SetText("|cFFFF0A0AEncounter in progress don't release.");
-					staticPupupFrame.fs:SetText("");
-				else
-					staticPupupFrame.fs2:SetText("|cFF00C800Encounter has ended.");
-					staticPupupFrame.fs:SetText("|cFFFF6900NRC|r");
-				end
+				end)
 			end
 		end
-	end
-end)
+	end)
+	
+	hooksecurefunc("StaticPopup_Hide", function(...)
+		local shown;
+		for i = 1, STATICPOPUP_NUMDIALOGS do
+			local frame = _G["StaticPopup" .. i];
+			if (frame.which == "DEATH" and frame:IsShown()) then
+				shown = true;
+			end
+		end
+		if (not shown) then
+			staticPopupFrame:Hide();
+			staticPopupFrame:ClearAllPoints();
+			staticPopupFrame.fs:SetText("");
+			staticPopupFrame.fs2:SetText("");
+		end
+	end)
+	
+	--Add a timer to the ressurectiom popup.
+	hooksecurefunc("StaticPopup_OnUpdate", function(self, event)
+	    if (self.which == "RESURRECT_NO_SICKNESS") then
+			local timeLeft = self.timeleft;
+			if (timeLeft > 0) then
+				local t = self.text:GetText();
+				if (strmatch(t, " %(%d+%)$")) then
+					--If not first update and our string is already attached then we need to remove old timer and attach new.
+					t = gsub(t, " %(%d+%)$", "");
+				end
+				self.text:SetText(t .. " (" .. ceil(timeLeft) .. ")");
+			end
+		elseif (self.which == "DEATH") then
+			if (NRC.config.releaseWarning and NRC.raid and isShown) then
+				if (isShown) then
+					if (next(NRC.encounter)) then
+						if (IsShiftKeyDown()) then
+							self.button1:Enable();
+							staticPopupFrame.fs2:SetText("|cFFFF0A0AEncounter in progress |cFF00C800(Shift held down)|r.");
+						else
+							self.button1:Disable();
+							staticPopupFrame.fs2:SetText("|cFFFF0A0AEncounter in progress (Hold shift to release).");
+							if (not _G[self:GetName() .. "Text"]:GetText() or _G[self:GetName() .. "Text"]:GetText() == "") then
+								--If for some reason this fires outside an instance the text will be blank.
+								--Something on Blizzards end wipes the text if the button is disabled, doesn't happen inside raids when there's no timer.
+								_G[self:GetName() .. "Text"]:SetText(DEATH_RELEASE_NOTIMER);
+							end
+						end
+						staticPopupFrame.fs:SetText("");
+					else
+						staticPopupFrame.fs2:SetText("|cFF00C800Encounter has ended.");
+						staticPopupFrame.fs:SetText("|cFFFF6900NRC|r");
+						self.button1:Enable();
+					end
+				end
+			end
+		end
+	end)
+end
 
 function NRC:getMetaGem()
 	local metaGemName, metaGemLink, metaGemTexture, metaGemActive;

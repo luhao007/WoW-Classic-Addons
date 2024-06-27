@@ -6,7 +6,11 @@ aboutConfig.parent = addon
 
 
 aboutConfig:SetScript("OnShow", function(self)
-	self:SetScript("OnShow", nil)
+	self:SetScript("OnShow", function(self)
+		self:SetPoint("TOPLEFT", -12, 8)
+		self.model:PlayAnimKit(1371)
+	end)
+	self:SetPoint("TOPLEFT", -12, 8)
 
 	self.model = CreateFrame("PlayerModel", nil, self)
 	self.model:SetSize(220, 220)
@@ -28,7 +32,7 @@ aboutConfig:SetScript("OnShow", function(self)
 
 	local authorName = self:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
 	authorName:SetPoint("LEFT", author, "RIGHT", 4, 0)
-	authorName:SetText(GetAddOnMetadata(addon, "Author"))
+	authorName:SetText(C_AddOns.GetAddOnMetadata(addon, "Author"))
 
 	-- VERSION
 	local versionText = self:CreateFontString(nil, "ARTWORK", "GameFontNormal")
@@ -37,7 +41,7 @@ aboutConfig:SetScript("OnShow", function(self)
 
 	local version = self:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
 	version:SetPoint("LEFT", versionText, "RIGHT", 4, 0)
-	version:SetText(GetAddOnMetadata(addon, "Version"))
+	version:SetText(C_AddOns.GetAddOnMetadata(addon, "Version"))
 
 	-- HELP TRANSLATION
 	local helpText = self:CreateFontString(nil, "ARTWORK", "GameFontNormal")
@@ -70,7 +74,7 @@ aboutConfig:SetScript("OnShow", function(self)
 	translators:SetText(L["Localization Translators:"])
 
 	local langs, last = {
-		{"deDE", "SlayerEGT, Asraael, Flammenengel92, isatis2109, fredundaunted"},
+		{"deDE", "SlayerEGT, Asraael, Flammenengel92, isatis2109, scienetic, fredundaunted"},
 		{"esMX", "Pedrorco"},
 		{"frFR", "6urvan, Asraael, okaboo, Braincell1980, macumbafeh"},
 		{"ptBR", "LutzPS"},
@@ -100,4 +104,9 @@ aboutConfig:SetScript("OnShow", function(self)
 end)
 
 
-InterfaceOptions_AddCategory(aboutConfig)
+local category = Settings.GetCategory(addon)
+local subcategory, layout = Settings.RegisterCanvasLayoutSubcategory(category, aboutConfig,  L["About"])
+subcategory.ID = L["About"]
+-- layout:AddAnchorPoint("TOPLEFT", -12, 8)
+-- layout:AddAnchorPoint("BOTTOMRIGHT", 0, 0)
+Settings.RegisterAddOnCategory(subcategory)

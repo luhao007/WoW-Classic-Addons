@@ -19,6 +19,7 @@ VUHDO_SPELLS = {
 	[VUHDO_SPELL_ID.BUFF_STAY_OF_EXECUTION] = { ["isHot"] = true, },
 	[VUHDO_SPELL_ID.ETERNAL_FLAME] = { ["isHot"] = true, },
 	[VUHDO_SPELL_ID.GLIMMER_OF_LIGHT] = { ["isHot"] = true, },
+	[VUHDO_SPELL_ID.OVERFLOWING_LIGHT] = { ["isHot"] = true },
 
 	-- Priest
 	[VUHDO_SPELL_ID.RENEW] = { ["isHot"] = true },
@@ -29,6 +30,9 @@ VUHDO_SPELLS = {
 	[VUHDO_SPELL_ID.ECHO_OF_LIGHT] = { ["isHot"] = true },
 	[VUHDO_SPELL_ID.SERENDIPITY] = { ["isHot"] = true, ["nodefault"] = true	},
 	[VUHDO_SPELL_ID.ATONEMENT] = { ["isHot"] = true },
+	[VUHDO_SPELL_ID.SPIRIT_SHELL] = { ["isHot"] = true },
+	[VUHDO_SPELL_ID.DIVINE_AEGIS] = { ["isHot"] = true },
+	[VUHDO_SPELL_ID.LUMINOUS_BARRIER] = { ["isHot"] = true },
 
 	-- Shaman
 	[VUHDO_SPELL_ID.RIPTIDE] = { ["isHot"] = true	},
@@ -45,6 +49,7 @@ VUHDO_SPELLS = {
 	[VUHDO_SPELL_ID.GENESIS] = { ["isHot"] = true },
 	[VUHDO_SPELL_ID.GERMINATION] = { ["isHot"] = true },
 	[VUHDO_SPELL_ID.SPRING_BLOSSOMS] = { ["isHot"] = true },
+	[VUHDO_SPELL_ID.ADAPTIVE_SWARM] = { ["isHot"] = true },
 
 	-- Hunter
 	[VUHDO_SPELL_ID.MEND_PET] = { ["isHot"] = true },
@@ -61,6 +66,19 @@ VUHDO_SPELLS = {
 
 	-- 6.2 Healer Legendary Ring
 	[VUHDO_SPELL_ID.BUFF_ETHERALUS] = { ["isHot"] = true },
+
+	-- Evoker
+	[VUHDO_SPELL_ID.DREAM_BREATH] = { ["isHot"] = true },
+	[VUHDO_SPELL_ID.DREAM_FLIGHT] = { ["isHot"] = true },
+	[VUHDO_SPELL_ID.ECHO] = { ["isHot"] = true },
+	[VUHDO_SPELL_ID.LIFEBIND] = { ["isHot"] = true },
+	[VUHDO_SPELL_ID.REVERSION] = { ["isHot"] = true },
+	[VUHDO_SPELL_ID.REWIND] = { ["isHot"] = true },
+	[VUHDO_SPELL_ID.TIME_DILATION] = { ["isHot"] = true },
+
+	-- Ward of Faceless Ire trinket
+	[VUHDO_SPELL_ID.WRITHING_WARD] = { ["isHot"] = true },
+
 };
 local VUHDO_SPELLS = VUHDO_SPELLS;
 
@@ -72,7 +90,7 @@ function VUHDO_initFromSpellbook()
 	twipe(VUHDO_PLAYER_HOTS);
 
 	for tSpellName, someParams in pairs(VUHDO_SPELLS) do
-		if someParams["isHot"] and VUHDO_isSpellKnown(tSpellName) then
+		if someParams["isHot"] and (VUHDO_isSpellKnown(tSpellName) or VUHDO_isTalentKnown(tSpellName)) then
 			VUHDO_PLAYER_HOTS[#VUHDO_PLAYER_HOTS + 1] = tSpellName;
 		end
 	end
@@ -119,8 +137,9 @@ function VUHDO_initFromSpellbook()
 			if tHotCfg["" .. tCnt]["others"] then VUHDO_ACTIVE_HOTS_OTHERS[tHotName] = true; end
 		end
 	end
-	VUHDO_setKnowsSwiftmend(VUHDO_isSpellKnown(VUHDO_SPELL_ID.SWIFTMEND));
 
-	-- toggle whether we should track Holy Priest "Trail of Light"
+	VUHDO_initTalentSpellCaches();
+
+	VUHDO_setKnowsSwiftmend(VUHDO_isSpellKnown(VUHDO_SPELL_ID.SWIFTMEND));
 	VUHDO_setKnowsTrailOfLight(VUHDO_isTalentKnown(VUHDO_SPELL_ID.TRAIL_OF_LIGHT));
 end

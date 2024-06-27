@@ -4,9 +4,10 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local Appearance = TSM.MainUI.Settings:NewPackage("Appearance")
 local L = TSM.Include("Locale").GetTable()
+local Environment = TSM.Include("Environment")
 local Color = TSM.Include("Util.Color")
 local Math = TSM.Include("Util.Math")
 local Log = TSM.Include("Util.Log")
@@ -161,7 +162,7 @@ function private.CreateThemes(frame)
 			:SetSize(198, 140)
 			:SetPadding(0, 0, 12, 8)
 			:SetMargin(0, 12, 0, 8)
-			:SetBackgroundColor(Theme.GetColor("FRAME_BG"..":"..key), true)
+			:SetRoundedBackgroundColor(Theme.GetColor("FRAME_BG"..":"..key))
 			:SetBorderColor(Theme.GetColor("ACTIVE_BG_ALT"..":"..key))
 			:SetContext(key)
 			:AddChild(UIElements.New("Frame", "top")
@@ -171,24 +172,24 @@ function private.CreateThemes(frame)
 				:AddChild(UIElements.New("Frame", "left")
 					:SetSize(36, 36)
 					:SetMargin(0, 12, 0, 0)
-					:SetBackgroundColor(Theme.GetColor("ACTIVE_BG_ALT"..":"..key), true)
+					:SetRoundedBackgroundColor(Theme.GetColor("ACTIVE_BG_ALT"..":"..key))
 				)
 				:AddChild(UIElements.New("Frame", "right")
 					:SetLayout("VERTICAL")
 					:AddChild(UIElements.New("Frame", "line1")
 						:SetHeight(12)
 						:SetMargin(0, 0, 0, 12)
-						:SetBackgroundColor(Theme.GetColor("ACTIVE_BG"..":"..key), true)
+						:SetRoundedBackgroundColor(Theme.GetColor("ACTIVE_BG"..":"..key))
 					)
 					:AddChild(UIElements.New("Frame", "line2")
 						:SetHeight(12)
-						:SetBackgroundColor(Theme.GetColor("PRIMARY_BG_ALT"..":"..key), true)
+						:SetRoundedBackgroundColor(Theme.GetColor("PRIMARY_BG_ALT"..":"..key))
 					)
 				)
 			)
 			:AddChild(UIElements.New("Frame", "line3")
 				:SetMargin(8, 8, 0, 12)
-				:SetBackgroundColor(Theme.GetColor("PRIMARY_BG"..":"..key), true)
+				:SetRoundedBackgroundColor(Theme.GetColor("PRIMARY_BG"..":"..key))
 			)
 			:AddChild(UIElements.New("Texture", "divider")
 				:SetHeight(1)
@@ -226,12 +227,12 @@ function private.CreateCustomColors(frame)
 				:SetLayout("HORIZONTAL")
 				:SetSize(200, 50)
 				:SetMargin(0, 12, 0, 8)
-				:SetBackgroundColor(Color.GetFullBlack(), true)
+				:SetRoundedBackgroundColor(Color.GetFullBlack())
 				:SetBorderColor("ACTIVE_BG_ALT")
 				:AddChild(UIElements.New("Frame", "color")
 					:SetWidth(50, 50)
 					:SetMouseEnabled(true)
-					:SetBackgroundColor(colorThemeKey, true)
+					:SetRoundedBackgroundColor(colorThemeKey)
 					:SetBorderColor("ACTIVE_BG_ALT")
 					-- draw a line along the right to hide the rounded corners at the bottom of the header frame
 					:AddChildNoLayout(UIElements.New("Texture", "mask")
@@ -317,7 +318,7 @@ function private.ExportThemeBtnOnClick(button)
 		:SetSize(540, 250)
 		:SetPadding(12)
 		:AddAnchor("CENTER")
-		:SetBackgroundColor("FRAME_BG", true)
+		:SetRoundedBackgroundColor("FRAME_BG")
 		:SetMouseEnabled(true)
 		:AddChild(UIElements.New("Frame", "header")
 			:SetLayout("HORIZONTAL")
@@ -371,7 +372,7 @@ function private.ImportThemeBtnOnClick(button)
 		:SetSize(540, 250)
 		:SetPadding(12)
 		:AddAnchor("CENTER")
-		:SetBackgroundColor("FRAME_BG", true)
+		:SetRoundedBackgroundColor("FRAME_BG")
 		:SetMouseEnabled(true)
 		:AddChild(UIElements.New("Frame", "header")
 			:SetLayout("HORIZONTAL")
@@ -516,14 +517,22 @@ end
 function private.ColorOnMouseUp(frame)
 	private.currentThemeKey = frame:GetContext()
 	local r, g, b = Theme.GetColor(TSM.UI.Util.GetCustomColorThemeKey(private.currentThemeKey)):GetFractionalRGBA()
-	ColorPickerFrame:SetColorRGB(r, g, b)
+	if Environment.IsRetail() then
+		ColorPickerFrame.Content.ColorPicker:SetColorRGB(r, g, b)
+	else
+		ColorPickerFrame:SetColorRGB(r, g, b)
+	end
 	ColorPickerFrame.hasOpacity = false
 	ColorPickerFrame.previousValues = ColorPickerFrame.previousValues or {}
 	wipe(ColorPickerFrame.previousValues)
 	ColorPickerFrame.previousValues.r = r
 	ColorPickerFrame.previousValues.g = g
 	ColorPickerFrame.previousValues.b = b
-	ColorPickerFrame.func = private.ColorPickerCallback
+	if Environment.IsWrathClassic() then
+		ColorPickerFrame.func = private.ColorPickerCallback
+	else
+		ColorPickerFrame.swatchFunc = private.ColorPickerCallback
+	end
 	ColorPickerFrame.cancelFunc = private.ColorPickerCancelCallback
 	ColorPickerFrame:ClearAllPoints()
 	local baseFrame = frame:GetBaseElement():_GetBaseFrame()

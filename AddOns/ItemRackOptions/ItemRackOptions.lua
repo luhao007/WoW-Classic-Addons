@@ -28,6 +28,12 @@ ItemRack.CheckButtonLabels = {
 	["ItemRackOptEventEditStanceNotInPVPText"] = "Except in PVP instances",
 }
 
+ItemRack.SetnameBlacklist = {
+	[_G.CUSTOM] = true, -- used for minimap/panel button display
+	["~CombatQueue"] = true, -- used for internal events
+	["~Unequip"] = true, -- used for internal events
+}
+
 function ItemRackOpt.InvOnEnter(self)
 	local id = self:GetID()
 	if ItemRack.IsTimerActive("SlotMarquee") then
@@ -356,15 +362,25 @@ function ItemRackOpt.PopulateInitialIcons()
 	ItemRackOpt.PopulateInvIcons()
 	table.insert(ItemRackOpt.Icons,"Interface\\Icons\\INV_Banner_02")
 	table.insert(ItemRackOpt.Icons,"Interface\\Icons\\INV_Banner_03")
-	RefreshPlayerSpellIconInfo()
-	local numMacros = #GetMacroIcons(MACRO_ICON_FILENAMES)
-	local texture
-	for i=1,numMacros do
-		texture = GetSpellorMacroIconInfo(i)
-		if(type(texture) == "number") then
-			table.insert(ItemRackOpt.Icons,texture)
-		else
-			table.insert(ItemRackOpt.Icons,"Interface\\Icons\\"..texture)
+	if RefreshPlayerSpellIconInfo then
+		RefreshPlayerSpellIconInfo()
+		local numMacros = #GetMacroIcons(MACRO_ICON_FILENAMES)
+		local texture
+		for i=1,numMacros do
+			texture = GetSpellorMacroIconInfo(i)
+			if(type(texture) == "number") then
+				table.insert(ItemRackOpt.Icons,texture)
+			else
+				table.insert(ItemRackOpt.Icons,"Interface\\Icons\\"..texture)
+			end
+		end
+	elseif IconDataProviderMixin then
+		local iconProvider = CreateAndInitFromMixin(IconDataProviderMixin, IconDataProviderExtraType.Spell)
+		if iconProvider then
+			for i=1, iconProvider:GetNumIcons() do
+				table.insert(ItemRackOpt.Icons, iconProvider:GetIconByIndex(i))
+			end
+			iconProvider:Release()
 		end
 	end
 end
@@ -420,6 +436,7 @@ function ItemRackOpt.SaveSet()
 	-- set.equip[18] = nil
 	ItemRackOpt.ReconcileSetBindings()
 	ItemRackOpt.ValidateSetButtons()
+	ItemRack.UpdateCurrentSet()
 	ItemRack:FireItemRackEvent("ITEMRACK_SET_SAVED", setname)
 end
 
@@ -436,7 +453,7 @@ function ItemRackOpt.ValidateSetButtons()
 	ItemRackOptShowCloak:Disable()
 
 	local setname = ItemRackOptSetsName:GetText()
-	if string.len(setname)>0 then
+	if string.len(setname)>0 and not ItemRack.SetnameBlacklist[setname] then
 		for i=0,19 do
 			if ItemRackOpt.Inv[i].selected then
 				ItemRackOptSetsSaveButton:Enable()
@@ -513,6 +530,7 @@ function ItemRackOpt.DeleteSet()
 	ItemRackOpt.PopulateSetList()
 	ItemRack.CleanupEvents()
 	ItemRackOpt.PopulateEventList()
+	ItemRack.UpdateCurrentSet()
 	ItemRack:FireItemRackEvent("ITEMRACK_SET_DELETED", setname)
 end
 
@@ -833,6 +851,7 @@ function ItemRackOpt.OptListCheckButtonOnClick(self,override)
 	elseif opt.variable=="LargeNumbers" then
 		ItemRack.ReflectCooldownFont()
 	elseif opt.variable=="ShowMinimap" then
+		opt.optset["minimap"]["hide"] = check ~= "ON" and true or false
 		ItemRack.ShowMinimap()
 	elseif opt.variable=="EnableQueues" or opt.variable=="EnablePerSetQueues" then
 		ItemRack.UpdateCombatQueue()
@@ -1191,7 +1210,8 @@ function ItemRackOpt.SortListScrollFrameUpdate()
 			end
 			_G["ItemRackOptSortList"..i.."Name"]:SetText(name)
 			_G["ItemRackOptSortList"..i.."Icon"]:SetTexture(texture)
-			_G["ItemRackOptSortList"..i.."Name"]:SetTextColor(GetItemQualityColor(quality or 1))
+			local r,g,b = GetItemQualityColor(quality or 1)
+			_G["ItemRackOptSortList"..i.."Name"]:SetTextColor(r,g,b,1)
 			item:Show()
 			if idx==ItemRackOpt.SortSelected then
 				ItemRackOpt.LockHighlight(item)

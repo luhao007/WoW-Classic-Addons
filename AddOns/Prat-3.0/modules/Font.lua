@@ -40,7 +40,7 @@ Prat:AddModuleToLoad(function()
 
   local PL = module.PL
 
-  --[===[@debug@
+  --[==[@debug@
   PL:AddLocale(PRAT_MODULE, "enUS", {
     ["Font"] = true,
     ["Chat window font options."] = true,
@@ -65,8 +65,10 @@ Prat:AddModuleToLoad(function()
     ["monochrome_desc"] = "Toggles monochrome coloring of the font.",
     ["shadowcolor_name"] = "Set Shadow Color",
     ["shadowcolor_desc"] = "Set the color of the shadow effect.",
+    ["whisper_tabs"] = "Whisper Tabs",
+    ["pet_battle_tab"] = "Pet Battle Tab",
   })
-  --@end-debug@]===]
+  --@end-debug@]==]
 
   -- These Localizations are auto-generated. To help with localization
   -- please go to http://www.wowace.com/projects/prat-3-0/localization/
@@ -88,6 +90,7 @@ L = {
 		["Outline"] = true,
 		["outlinemode_desc"] = "Sets mode for the outline around the font.",
 		["outlinemode_name"] = "Set Outline Mode",
+		["pet_battle_tab"] = "Pet Battle Tab",
 		["rememberfont_desc"] = "Remember your font choice and restore it at startup.",
 		["rememberfont_name"] = "Remember Font",
 		["Set ChatFrame%d Font Size"] = true,
@@ -101,6 +104,7 @@ L = {
 		["shadowcolor_name"] = "Set Shadow Color",
 		["Thick Outline"] = true,
 		["Toggle setting options separately for each chat window."] = true,
+		["whisper_tabs"] = "Whisper Tabs",
 		["Workaround a Blizzard bug which changes the font size when you open a system menu."] = true,
 	}
 }
@@ -130,6 +134,8 @@ L = {
 		--[[Translation missing --]]
 		["outlinemode_name"] = "Set Outline Mode",
 		--[[Translation missing --]]
+		["pet_battle_tab"] = "Pet Battle Tab",
+		--[[Translation missing --]]
 		["rememberfont_desc"] = "Remember your font choice and restore it at startup.",
 		--[[Translation missing --]]
 		["rememberfont_name"] = "Remember Font",
@@ -155,6 +161,8 @@ L = {
 		["Thick Outline"] = "Thick Outline",
 		--[[Translation missing --]]
 		["Toggle setting options separately for each chat window."] = "Toggle setting options separately for each chat window.",
+		--[[Translation missing --]]
+		["whisper_tabs"] = "Whisper Tabs",
 		--[[Translation missing --]]
 		["Workaround a Blizzard bug which changes the font size when you open a system menu."] = "Workaround a Blizzard bug which changes the font size when you open a system menu.",
 	}
@@ -185,6 +193,8 @@ L = {
 		--[[Translation missing --]]
 		["outlinemode_name"] = "Set Outline Mode",
 		--[[Translation missing --]]
+		["pet_battle_tab"] = "Pet Battle Tab",
+		--[[Translation missing --]]
 		["rememberfont_desc"] = "Remember your font choice and restore it at startup.",
 		--[[Translation missing --]]
 		["rememberfont_name"] = "Remember Font",
@@ -211,6 +221,8 @@ L = {
 		--[[Translation missing --]]
 		["Toggle setting options separately for each chat window."] = "Toggle setting options separately for each chat window.",
 		--[[Translation missing --]]
+		["whisper_tabs"] = "Whisper Tabs",
+		--[[Translation missing --]]
 		["Workaround a Blizzard bug which changes the font size when you open a system menu."] = "Workaround a Blizzard bug which changes the font size when you open a system menu.",
 	}
 }
@@ -229,6 +241,8 @@ L = {
 		["Outline"] = "Contour",
 		["outlinemode_desc"] = "Définit le contour autour de la police.",
 		["outlinemode_name"] = "Contour de la police",
+		--[[Translation missing --]]
+		["pet_battle_tab"] = "Pet Battle Tab",
 		["rememberfont_desc"] = "Se souvenir de la police du texte et la restaurer au chargement.",
 		["rememberfont_name"] = "Mémoriser la police",
 		["Set ChatFrame%d Font Size"] = "Définit la taille de la police de la fenêtre de discussion %d",
@@ -242,6 +256,8 @@ L = {
 		["shadowcolor_name"] = "Couleur de l'ombre",
 		["Thick Outline"] = "Contour épais",
 		["Toggle setting options separately for each chat window."] = "Activer/Désactiver les options séparées pour chaque fenêtre.",
+		--[[Translation missing --]]
+		["whisper_tabs"] = "Whisper Tabs",
 		["Workaround a Blizzard bug which changes the font size when you open a system menu."] = "Contourner un bug de Blizzard qui change la taille de la police quand on ouvre un menu système.",
 	}
 }
@@ -262,6 +278,7 @@ L = {
 		["Outline"] = "Umrandung",
 		["outlinemode_desc"] = "Stellt Modus für die Umrandung des Schrifttyps ein.",
 		["outlinemode_name"] = "Umrandungsmodus einstellen",
+		["pet_battle_tab"] = "Registerkarte „Haustierkampf“",
 		["rememberfont_desc"] = "Deine Wahl des Schrifttyps merken und beim Starten wiederherstellen.",
 		["rememberfont_name"] = "Schrifttyp merken",
 		["Set ChatFrame%d Font Size"] = "Schriftgröße im Chatfenster %d einstellen",
@@ -275,6 +292,7 @@ L = {
 		["shadowcolor_name"] = "Schattenfarbe einstellen",
 		["Thick Outline"] = "Dicke Umrandung",
 		["Toggle setting options separately for each chat window."] = "Optionen einzeln für jedes Chatfenster einstellen umschalten.",
+		["whisper_tabs"] = "Flüster-Tabs",
 		["Workaround a Blizzard bug which changes the font size when you open a system menu."] = "Einen Bug von Blizzard umgehen, welcher die Schriftgröße ändert sobald du ein Systemmenü öffnest.",
 	}
 }
@@ -293,6 +311,8 @@ L = {
 		["Outline"] = "외곽선",
 		["outlinemode_desc"] = "글꼴의 외곽선을 설정합니다.",
 		["outlinemode_name"] = "외곽선 설정",
+		--[[Translation missing --]]
+		["pet_battle_tab"] = "Pet Battle Tab",
 		["rememberfont_desc"] = "선택한 글꼴을 기억하고 시작할 때 적용합니다.",
 		["rememberfont_name"] = "글꼴 기억",
 		["Set ChatFrame%d Font Size"] = "대화창%d의 글꼴 크기를 설정합니다.",
@@ -306,6 +326,8 @@ L = {
 		["shadowcolor_name"] = "그림자 색상 설정",
 		["Thick Outline"] = "굵은 외곽선",
 		["Toggle setting options separately for each chat window."] = "각 대화창 별로 옵션 설정을 끄고 켭니다.",
+		--[[Translation missing --]]
+		["whisper_tabs"] = "Whisper Tabs",
 		["Workaround a Blizzard bug which changes the font size when you open a system menu."] = "시스템 메뉴를 열 때 글꼴 크기를 변경하는 블리자드 버그를 회피합니다.",
 	}
 }
@@ -333,6 +355,8 @@ L = {
 		--[[Translation missing --]]
 		["outlinemode_name"] = "Set Outline Mode",
 		--[[Translation missing --]]
+		["pet_battle_tab"] = "Pet Battle Tab",
+		--[[Translation missing --]]
 		["rememberfont_desc"] = "Remember your font choice and restore it at startup.",
 		--[[Translation missing --]]
 		["rememberfont_name"] = "Remember Font",
@@ -359,6 +383,8 @@ L = {
 		--[[Translation missing --]]
 		["Toggle setting options separately for each chat window."] = "Toggle setting options separately for each chat window.",
 		--[[Translation missing --]]
+		["whisper_tabs"] = "Whisper Tabs",
+		--[[Translation missing --]]
 		["Workaround a Blizzard bug which changes the font size when you open a system menu."] = "Workaround a Blizzard bug which changes the font size when you open a system menu.",
 	}
 }
@@ -376,6 +402,8 @@ L = {
 		["Outline"] = "Обычная обводка",
 		["outlinemode_desc"] = "Выбор типа обводки вокруг символов.",
 		["outlinemode_name"] = "Обводка",
+		--[[Translation missing --]]
+		["pet_battle_tab"] = "Pet Battle Tab",
 		["rememberfont_desc"] = "Запомнить выбранный шрифт и использовать его при следующей загрузке.",
 		["rememberfont_name"] = "Запомнить шрифт",
 		["Set ChatFrame%d Font Size"] = "Размер шрифта окна %d",
@@ -389,6 +417,8 @@ L = {
 		["shadowcolor_name"] = "Цвет тени",
 		["Thick Outline"] = "Жирная обводка",
 		["Toggle setting options separately for each chat window."] = "Вкл/Выкл настройки разделения для всех окон чата.",
+		--[[Translation missing --]]
+		["whisper_tabs"] = "Whisper Tabs",
 		["Workaround a Blizzard bug which changes the font size when you open a system menu."] = "Метод обхода ошибки Blizzard, изменяющей размер шрифта при открытии системного меню.",
 	}
 }
@@ -406,6 +436,8 @@ L = {
 		["Outline"] = "轮廓",
 		["outlinemode_desc"] = "字体轮廓样式设置",
 		["outlinemode_name"] = "轮廓样式",
+		--[[Translation missing --]]
+		["pet_battle_tab"] = "Pet Battle Tab",
 		["rememberfont_desc"] = "记住您的字体选择并在启动时恢复",
 		["rememberfont_name"] = "记住字体",
 		["Set ChatFrame%d Font Size"] = "聊天框%d字体尺寸",
@@ -419,6 +451,8 @@ L = {
 		["shadowcolor_name"] = "阴影色彩",
 		["Thick Outline"] = "厚轮廓",
 		["Toggle setting options separately for each chat window."] = "每个聊天窗口的个别选项设置",
+		--[[Translation missing --]]
+		["whisper_tabs"] = "Whisper Tabs",
 		["Workaround a Blizzard bug which changes the font size when you open a system menu."] = "当你打开系统菜单时改变暴雪错误提示字体尺寸",
 	}
 }
@@ -436,6 +470,8 @@ L = {
 		["Outline"] = "Contorno",
 		["outlinemode_desc"] = "Estable el modo para el contorno alrededor de la fuente.",
 		["outlinemode_name"] = "Establecer Modo de Cotorno",
+		--[[Translation missing --]]
+		["pet_battle_tab"] = "Pet Battle Tab",
 		["rememberfont_desc"] = "Recordar la elección de la fuente y restaurarla al reiniciar.",
 		["rememberfont_name"] = "Recordar Fuente",
 		["Set ChatFrame%d Font Size"] = "Establecer Tamaño Fuente de Chat %d",
@@ -449,6 +485,8 @@ L = {
 		["shadowcolor_name"] = "Establecer Color de la Sombra",
 		["Thick Outline"] = "Contorno Grueso",
 		["Toggle setting options separately for each chat window."] = "Cambiar opciones de configuración por separado para cada ventana de chat.",
+		--[[Translation missing --]]
+		["whisper_tabs"] = "Whisper Tabs",
 		["Workaround a Blizzard bug which changes the font size when you open a system menu."] = "Solución a un error de Blizzard que cambia el tamaño de la fuente cuando se abre un menú de sistema.",
 	}
 }
@@ -466,6 +504,8 @@ L = {
 		["Outline"] = "輪廓",
 		["outlinemode_desc"] = "設定字體是否加粗輪廓",
 		["outlinemode_name"] = "設定輪廓模式",
+		--[[Translation missing --]]
+		["pet_battle_tab"] = "Pet Battle Tab",
 		["rememberfont_desc"] = "記住字型設定",
 		["rememberfont_name"] = "記憶字型",
 		["Set ChatFrame%d Font Size"] = "設定聊天視窗 %d 之字型大小",
@@ -479,6 +519,8 @@ L = {
 		["shadowcolor_name"] = "設定陰影色彩",
 		["Thick Outline"] = "粗邊",
 		["Toggle setting options separately for each chat window."] = "切換設定選項分開地每個聊天視窗。",
+		--[[Translation missing --]]
+		["whisper_tabs"] = "Whisper Tabs",
 		["Workaround a Blizzard bug which changes the font size when you open a system menu."] = "開啟系統選單時變更Blizzard錯誤訊息的字型大小。",
 	}
 }
@@ -519,6 +561,31 @@ end
     step = 1,
     hidden = function(info) return Prat.FrameList[info[#info]] == nil end,
   }
+  local whisperTabsOption =
+  {
+    name = PL["whisper_tabs"],
+    desc = PL["Set text font size."],
+    type = "range",
+    get = "GetSubValue",
+    set = "SetSubValue",
+    min = 4,
+    max = 100,
+    step = 1,
+    hidden = function(info) return GetCVar("whisperTabs") ==  "inline" end,
+  }
+  local petBattleTabOption =
+  {
+    name = PL["pet_battle_tab"],
+    desc = PL["Set text font size."],
+    type = "range",
+    get = "GetSubValue",
+    set = "SetSubValue",
+    min = 4,
+    max = 100,
+    step = 1,
+    hidden = Prat.IsClassic,
+    order = 900,
+  }
 
 
   Prat:SetModuleOptions(module, {
@@ -548,6 +615,11 @@ end
           ChatFrame5 = frameOption,
           ChatFrame6 = frameOption,
           ChatFrame7 = frameOption,
+          ChatFrame8 = frameOption,
+          ChatFrame9 = frameOption,
+          ChatFrame10 = frameOption,
+          WhisperTabs = whisperTabsOption,
+          PetBattleTab = petBattleTabOption,
         }
       },
       outlinemode = {
@@ -651,6 +723,14 @@ end
     self:OnValueChanged(info, b)
   end
 
+  local function IsWhisperFrame(frame)
+    return frame.chatType == "WHISPER" or frame.chatType == "BN_WHISPER"
+  end
+
+  local function IsPetBattleFrame(frame)
+    return frame.chatType == "PET_BATTLE_COMBAT_LOG"
+  end
+
 
   --[[------------------------------------------------
     Core Functions
@@ -665,7 +745,13 @@ end
 
     -- aPLy font size settings
     for k, v in pairs(Prat.Frames) do
-      self:SetFontSize(v, db.size[k])
+      if IsWhisperFrame(v) then
+        self:SetFontSize(v, db.size.WhisperTabs)
+      elseif IsPetBattleFrame(v) then
+        self:SetFontSize(v, db.size.PetBattleTab)
+      else
+        self:SetFontSize(v, db.size[k])
+      end
     end
     -- aPLy font flag settings
     if not db.monochrome then
@@ -723,7 +809,13 @@ end
       fontSize = fcfself.value;
     end
     if self.db and self.db.profile.on then
-      self.db.profile.size[chatFrame:GetName()] = fontSize
+      if IsWhisperFrame(chatFrame) then
+        self.db.profile.size.WhisperTabs = fontSize
+      elseif IsPetBattleFrame(chatFrame) then
+        self.db.profile.size.PetBattleTab = fontSize
+      else
+        self.db.profile.size[chatFrame:GetName()] = fontSize
+      end
     end
   end
 

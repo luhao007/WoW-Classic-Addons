@@ -1,7 +1,6 @@
 local addon = ...
 local util = MountsJournalUtil
 local binding = CreateFrame("Frame", addon.."Binding")
-binding.mode = 1
 binding:Hide()
 
 
@@ -39,7 +38,7 @@ end
 
 
 function binding:setButtonText(button)
-	local key1 = GetBindingKey(button.command, self.mode)
+	local key1 = GetBindingKey(button.command)
 
 	if key1 then
 		button:SetText(GetBindingText(key1))
@@ -85,8 +84,11 @@ end
 
 
 function binding:OnKeyDown(keyPressed)
-	if GetBindingFromClick(keyPressed) == "SCREENSHOT" then
+	local action = GetBindingFromClick(keyPressed)
+	if action == "SCREENSHOT" then
 		Screenshot()
+	elseif keyPressed == "ESCAPE" and action == "TOGGLEGAMEMENU" then
+		self:setSelected()
 	elseif self.selected then
 		keyPressed = GetConvertedKeyOrButton(keyPressed)
 
@@ -101,19 +103,20 @@ function binding:OnKeyDown(keyPressed)
 	end
 end
 binding:SetScript("OnKeyDown", binding.OnKeyDown)
+binding:SetScript("OnGamePadButtonDown", binding.OnKeyDown)
 
 
 function binding:setBinding(key, selectedBinding)
 	if not InCombatLockdown() then
-		local oldAction = GetBindingAction(key, self.mode)
+		local oldAction = GetBindingAction(key)
 		if oldAction ~= "" and oldAction ~= selectedBinding then
 			self.unboundMessage:SetText(KEY_UNBOUND_ERROR:format(GetBindingName(oldAction)))
 			self.unboundMessage:Show()
 		end
 
-		local oldKey = GetBindingKey(selectedBinding, self.mode)
-		if SetBinding(key, selectedBinding, self.mode) and oldKey then
-			SetBinding(oldKey, nil, self.mode)
+		local oldKey = GetBindingKey(selectedBinding)
+		if SetBinding(key, selectedBinding) and oldKey then
+			SetBinding(oldKey, nil)
 		end
 	end
 end

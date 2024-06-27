@@ -4,11 +4,8 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
---- ApplicationFrame UI Element Class.
--- An application frame is the base frame of all of the TSM UIs. It is a subclass of the @{Frame} class.
--- @classmod ApplicationFrame
-
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
+local Environment = TSM.Include("Environment")
 local L = TSM.Include("Locale").GetTable()
 local Math = TSM.Include("Util.Math")
 local TempTable = TSM.Include("Util.TempTable")
@@ -120,12 +117,7 @@ function ApplicationFrame.Release(self)
 	self._contentFrame = nil
 	self._contextTable = nil
 	self._defaultContextTable = nil
-	if TSM.IsWowClassic() then
-		self:_GetBaseFrame():SetMinResize(0, 0)
-		self:_GetBaseFrame():SetMaxResize(0, 0)
-	else
-		self:_GetBaseFrame():SetResizeBounds(0, 0, 0, 0)
-	end
+	self:_GetBaseFrame():SetResizeBounds(0, 0, 0, 0)
 	self._isScaling = nil
 	self._protected = nil
 	self._minWidth = 0
@@ -307,7 +299,7 @@ function ApplicationFrame.ShowConfirmationDialog(self, title, subTitle, callback
 		:SetSize(328, 158)
 		:SetPadding(12, 12, 8, 12)
 		:AddAnchor("CENTER")
-		:SetBackgroundColor("FRAME_BG", true)
+		:SetRoundedBackgroundColor("FRAME_BG")
 		:SetMouseEnabled(true)
 		:AddChild(UIElements.New("Frame", "header")
 			:SetLayout("HORIZONTAL")
@@ -506,19 +498,9 @@ function private.ResizeButtonOnMouseDown(self, mouseButton)
 	if self._isScaling then
 		local minWidth = width * MIN_SCALE / self._contextTable.scale
 		local minHeight = height * MIN_SCALE / self._contextTable.scale
-		if TSM.IsWowClassic() then
-			frame:SetMinResize(minWidth, minHeight)
-			frame:SetMaxResize(width * 10, height * 10)
-		else
-			frame:SetResizeBounds(minWidth, minHeight, width * 10, height * 10)
-		end
+		frame:SetResizeBounds(minWidth, minHeight, width * 10, height * 10)
 	else
-		if TSM.IsWowClassic() then
-			frame:SetMinResize(self._minWidth, self._minHeight)
-			frame:SetMaxResize(width * 10, height * 10)
-		else
-			frame:SetResizeBounds(self._minWidth, self._minHeight, width * 10, height * 10)
-		end
+		frame:SetResizeBounds(self._minWidth, self._minHeight, width * 10, height * 10)
 	end
 	self:_SetResizing(true)
 	frame:StartSizing("BOTTOMRIGHT")
@@ -660,7 +642,7 @@ end
 function private.GetAppStatusTooltip()
 	local tooltipLines = TempTable.Acquire()
 	local regionRealmName = TSM.AppHelper.GetRegion().."-"..GetRealmName()
-	if TSM.IsWowClassic() then
+	if not Environment.HasFeature(Environment.FEATURES.CONNECTED_FACTION_AH) then
 		regionRealmName = regionRealmName.."-"..UnitFactionGroup("player")
 	end
 	tinsert(tooltipLines, format(L["TSM Desktop App Status (%s)"], regionRealmName))

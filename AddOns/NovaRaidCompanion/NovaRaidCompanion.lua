@@ -8,32 +8,48 @@
 --local NRC = addon.a;
 local addonName, NRC = ...;
 _G["NRC"] = NRC;
+local GetAddOnMetadata = GetAddOnMetadata or C_AddOns.GetAddOnMetadata;
 NRC.expansionNum = 1;
 local _, _, _, tocVersion = GetBuildInfo();
 if (WOW_PROJECT_ID == WOW_PROJECT_CLASSIC) then
 	NRC.isClassic = true;
-elseif (tocVersion > 30000 and tocVersion < 40000) then
-	NRC.isWrath = true;
-	NRC.expansionNum = 3;
-	if (GetRealmName() ~= "Classic Beta PvE" and GetServerTime() < 1664200800) then --Mon Sep 26 2022 14:00:00 GMT+0000;
-		NRC.isPrepatch = true;
-	end
 elseif (WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC) then
 	NRC.isTBC = true;
+	NRC.expansionNum = 2;
+elseif (WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC) then
+	NRC.isWrath = true;
 	NRC.expansionNum = 3;
---elseif (WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC) then
---	NRC.isWrath = true;
---	NRC.expansionNum = 3;
+elseif (WOW_PROJECT_ID == WOW_PROJECT_CATACLYSM_CLASSIC) then
+	if (GetRealmName() ~= "Classic Beta PvE" and GetServerTime() < 1716127200) then --Sun May 19 2024 14:00:00 GMT;
+		NRC.isCataPrepatch = true;
+	end
+	NRC.isCata = true;
+	NRC.expansionNum = 4;
+elseif (WOW_PROJECT_ID == WOW_PROJECT_MISTS_CLASSIC) then
+	NRC.isMOP = true; --Later expansion project id's will likely need updating once Blizzard decides on the names.
+	NRC.expansionNum = 5;
+elseif (WOW_PROJECT_ID == WOW_PROJECT_WARLORDS_CLASSIC) then
+	NRC.isWOD = true;
+	NRC.expansionNum = 6;
+elseif (WOW_PROJECT_ID == WOW_PROJECT_LEGION_CLASSIC) then
+	NRC.isLegion = true;
+	NRC.expansionNum = 7;
 elseif (WOW_PROJECT_ID == WOW_PROJECT_MAINLINE) then
 	NRC.isRetail = true;
-	NRC.expansionNum = 3;
+	NRC.expansionNum = 10;
+end
+if (NRC.isClassic and C_Engraving and C_Engraving.IsEngravingEnabled()) then
+	NRC.isSOD = true;
+	local sodPhases = {[25]=1,[40]=2,[50]=3,[60]=4};
+	NRC.sodPhase = sodPhases[(GetEffectivePlayerMaxLevel())];
 end
 NRC.comms = LibStub("AceComm-3.0");
 NRC.comms:Embed(NRC);
 NRC.LSM = LibStub("LibSharedMedia-3.0");
 --NRC.dragonLib = LibStub("HereBeDragons-2.0");
 --NRC.dragonLibPins = LibStub("HereBeDragons-Pins-2.0");
-NRC.candyBar = LibStub("LibCandyBar-3.0");
+NRC.candyBar = LibStub("LibCandyBar-3.0-NRC");
+NRC.customGlow = LibStub("LibCustomGlow-1.0");
 NRC.LibRealmInfo = LibStub("LibRealmInfo");
 NRC.DDM = LibStub("LibUIDropDownMenu-4.0");
 NRC.commPrefix = "NRC";
@@ -91,8 +107,10 @@ local function init()
 	--NRC:raidCooldownsTicker();
 	NRC:loadTargetSpawnTimeFrames();
 	NRC:loadRaidManaFrame();
+	NRC:updateRaidCooldownsShowDead();
 	NRC:checkNewVersion();
 	NRC:resetOldLockouts();
+	NRC:updateRaidStatusLowDurationTime();
 end
 local f = CreateFrame("Frame");
 f:RegisterEvent("ADDON_LOADED");
@@ -181,11 +199,10 @@ function SlashCmdList.NRCCMD(msg, editBox)
 	elseif (msg == "lock") then
 		if (NRC.config.lockAllFrames) then
 			NRC:print("Frames are already locked.");
-		else
-			NRC:print("Locking all frames.");
+			return;
 		end
 		NRC.config.lockAllFrames = true;
-		NRC:updateFrameLocks();
+		NRC:updateFrameLocks(true);
 	elseif (msg == "unlock") then
 		if (not NRC.config.lockAllFrames) then
 			NRC:print("Frames are already unlocked.");
@@ -315,13 +332,18 @@ function NRC:updateMinimapButton(tooltip, frame)
 	for k, v in pairs(NRC.data) do
 		if (type(v) == "table") then
 			if (k == "myChars") then
-				for char, charData in pairs(v) do
+				for char, charData in NRC:pairsByKeys(v) do
 					if (IsShiftKeyDown() or char == me) then
 						local found2;
 						local _, _, _, classColorHex = GetClassColor(charData.englishClass);
 						local text = "|c" .. classColorHex .. char .. "|r";
 						if (charData.savedInstances) then
-							for instance, instanceData in pairs(charData.savedInstances) do
+							local instances = {};
+							for k, v in pairs(charData.savedInstances) do
+								tinsert(instances, v);
+							end
+							table.sort(instances, function(a, b) return a.name < b.name end);
+							for instance, instanceData in ipairs(instances) do
 								if (instanceData.locked and instanceData.resetTime and instanceData.resetTime > GetServerTime()) then
 									local timeString = "(" .. NRC:getTimeString(instanceData.resetTime - GetServerTime(), true, "short") .. ")";
 									local instanceName = instanceData.name;
@@ -382,7 +404,7 @@ function NRC:updateMinimapButton(tooltip, frame)
 				weeklyDateString = " (" .. date("%A %H:%M", weeklyReset) .. ")";
 			end
 		end
-		tooltip:AddLine("|cFF00C8003day reset (ZA):|r |cFF9CD6DE" .. NRC:getTimeString(threeDayReset - GetServerTime(), true, "medium")
+		tooltip:AddLine("|cFF00C8003 day reset:|r |cFF9CD6DE" .. NRC:getTimeString(threeDayReset - GetServerTime(), true, "medium")
 				.. threeDateString .. "|r");
 		tooltip:AddLine("|cFF00C800Weekly reset:|r |cFF9CD6DE" .. NRC:getTimeString(weeklyReset - GetServerTime(), true, "medium")
 				.. weeklyDateString .. "|r");

@@ -112,7 +112,7 @@
 
 			<Frame name="$parentIconsPanel" inherits="VuhDoPanelTemplate">
 				<Size>
-					<AbsDimension x="236" y="248" />
+					<AbsDimension x="236" y="280" />
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">
@@ -147,7 +147,7 @@
 						</Scripts>
 					</CheckButton>
 
-					<CheckButton name="$parentBossOnlyCheckButton" text="Boss only" inherits="VuhDoCheckButtonTemplate">
+					<CheckButton name="$parentBossOnlyCheckButton" text="VUHDO_I18N_BOSS_ONLY" inherits="VuhDoCheckButtonTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -242,7 +242,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="13" y="-190" />
+									<AbsDimension x="13" y="-228" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -258,7 +258,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="40" y="-208" />
+									<AbsDimension x="40" y="-246" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -328,6 +328,44 @@
 						</Scripts>
 					</Button>
 
+					<Button name="$parentExportButton" text="VUHDO_I18N_EXPORT" inherits="VuhDoButtonTemplate">
+						<Size>
+							<AbsDimension x="100" y="32" />
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="13" y="-193" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								VUHDO_lnfAddConstraint(self, VUHDO_LF_CONSTRAINT_DISABLE, "VUHDO_PANEL_SETUP.BAR_COLORS.useDebuffIcon", false);
+							</OnLoad>
+							<OnClick>VUHDO_exportDebuffIgnoreClicked(self)</OnClick>
+						</Scripts>
+					</Button>
+
+					<Button name="$parentImportButton" text="VUHDO_I18N_IMPORT" inherits="VuhDoButtonTemplate">
+						<Size>
+							<AbsDimension x="100" y="32" />
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="125" y="-193" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								VUHDO_lnfAddConstraint(self, VUHDO_LF_CONSTRAINT_DISABLE, "VUHDO_PANEL_SETUP.BAR_COLORS.useDebuffIcon", false);
+							</OnLoad>
+							<OnClick>VUHDO_importDebuffIgnoreClicked(self)</OnClick>
+						</Scripts>
+					</Button>
+
 				</Frames>
 
 			</Frame>
@@ -373,7 +411,201 @@
 				</Frames>
 			</Frame>
 
+			<Frame name="$parentExportFrame" inherits="VuhDoFrameTemplate" frameStrata="TOOLTIP">
+				<Size>
+					<AbsDimension x="580" y="350"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="35" y="-25" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<Frame name="$parentRootPane" setallpoints="true" inherits="VuhDoPanelTemplate">
+						<Frames>
+
+							<Frame name="$parentTitleLabel" inherits="VuhDoLabelFrameTemplate">
+								<Layers>
+									<Layer>
+										<FontString name="$parentLabel" text="VUHDO_I18N_EXPORT" inherits="VuDoDefaultTitleFontTemplate">
+										</FontString>
+									</Layer>
+								</Layers>
+							</Frame>
+
+							<ScrollFrame name="$parentStringScrollFrame" inherits="VuhDoScrollPanelTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="13" y="-30" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Size>
+									<AbsDimension x="550" y="250" />
+								</Size>
+								<ScrollChild>
+									<EditBox name="$parentStringEditBox" inherits="VuhDoEditBoxMultiLineTemplate">
+										<Size>
+											<AbsDimension x="540" y="200" />
+										</Size>
+										<Scripts>
+											<OnShow>
+												VUHDO_debuffIgnoreExportButtonShown(self);
+											</OnShow>
+										</Scripts>
+									</EditBox>
+								</ScrollChild>
+							</ScrollFrame>
+
+							<Button name="$parentOkayButton" inherits="VuhDoOkayButtonTemplate">
+								<Anchors>
+									<Anchor point="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="13" y="15"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										self:GetParent():GetParent():Hide();
+									</OnClick>
+								</Scripts>
+							</Button>
+
+							<Button name="$parentCancelButton" inherits="VuhDoCancelButtonTemplate">
+								<Anchors>
+									<Anchor point="BOTTOMRIGHT">
+										<Offset>
+											<AbsDimension x="-13" y="15"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										self:GetParent():GetParent():Hide();
+									</OnClick>
+								</Scripts>
+							</Button>
+
+						</Frames>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						self:SetScript("OnKeyDown", function(anInstance, aKey)
+							if (aKey == "ESCAPE") then
+								self:Hide();
+							end
+						end);
+					</OnLoad>
+					<OnShow>
+						_G[self:GetName() .. "RootPane"]:Show();
+						_G[self:GetName() .. "RootPaneTitleLabelLabel"]:SetText(VUHDO_I18N_EXPORT);
+					</OnShow>
+				</Scripts>
+			</Frame>
+
+			 <Frame name="$parentImportFrame" inherits="VuhDoFrameTemplate" frameStrata="TOOLTIP">
+				<Size>
+					<AbsDimension x="580" y="350"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="35" y="-25" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<Frame name="$parentRootPane" setallpoints="true" inherits="VuhDoPanelTemplate">
+						<Frames>
+
+							<Frame name="$parentTitleLabel" inherits="VuhDoLabelFrameTemplate">
+								<Layers>
+									<Layer>
+										<FontString name="$parentLabel" text="VUHDO_I18N_EXPORT" inherits="VuDoDefaultTitleFontTemplate">
+										</FontString>
+									</Layer>
+								</Layers>
+							</Frame>
+
+							<ScrollFrame name="$parentStringScrollFrame" inherits="VuhDoScrollPanelTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="13" y="-30" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Size>
+									<AbsDimension x="550" y="250" />
+								</Size>
+								<ScrollChild>
+									<EditBox name="$parentStringEditBox" inherits="VuhDoEditBoxMultiLineTemplate">
+										<Size>
+											<AbsDimension x="540" y="200" />
+										</Size>
+									</EditBox>
+								</ScrollChild>
+							</ScrollFrame>
+
+							<Button name="$parentOkayButton" inherits="VuhDoOkayButtonTemplate">
+								<Anchors>
+									<Anchor point="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="13" y="15"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										VUHDO_importDebuffIgnoreOkayClicked(self);
+									</OnClick>
+								</Scripts>
+							</Button>
+
+							<Button name="$parentCancelButton" inherits="VuhDoCancelButtonTemplate">
+								<Anchors>
+									<Anchor point="BOTTOMRIGHT">
+										<Offset>
+											<AbsDimension x="-13" y="15"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										self:GetParent():GetParent():Hide();
+									</OnClick>
+								</Scripts>
+							</Button>
+
+						</Frames>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						self:SetScript("OnKeyDown", function(anInstance, aKey)
+							if (aKey == "ESCAPE") then
+								self:Hide();
+							end
+						end);
+					</OnLoad>
+					<OnShow>
+						_G[self:GetName() .. "RootPane"]:Show();
+						_G[self:GetName() .. "RootPaneTitleLabelLabel"]:SetText(VUHDO_I18N_IMPORT);
+					</OnShow>
+				</Scripts>
+			</Frame>
 
 		</Frames>
+		<Scripts>
+			<OnShow>
+				_G[self:GetName() .. "ExportFrame"]:Hide();
+				_G[self:GetName() .. "ImportFrame"]:Hide();
+			</OnShow>
+		</Scripts>
 	</Frame>
 </Ui>

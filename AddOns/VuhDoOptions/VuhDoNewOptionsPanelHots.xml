@@ -170,7 +170,7 @@
 
 			<Frame name="$parentHotsPanel" inherits="VuhDoPanelTemplate">
 				<Size>
-					<AbsDimension x="240" y="395" />
+					<AbsDimension x="240" y="433" />
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">
@@ -259,6 +259,22 @@
 										<OnLoad>
 											VUHDO_lnfSetRadioModel(self, "VUHDO_PANEL_SETUP.HOTS.iconRadioValue", 3);
 											VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K331);
+										</OnLoad>
+									</Scripts>
+								</CheckButton>
+
+								<CheckButton name="$parentTextOnlyRadioButton" text="VUHDO_I18N_TEXT_ONLY" inherits="VuhDoRadioButtonTemplate">
+									<Anchors>
+										<Anchor point="TOPLEFT">
+											<Offset>
+												<AbsDimension x="0" y="-114" />
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<Scripts>
+										<OnLoad>
+												VUHDO_lnfSetRadioModel(self, "VUHDO_PANEL_SETUP.HOTS.iconRadioValue", 4);
+												VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K586);
 										</OnLoad>
 									</Scripts>
 								</CheckButton>
@@ -817,34 +833,17 @@
 						</Scripts>
 					</Frame>
 
-					<Button name="$parentMoreButton" text="VUHDO_I18N_MORE_BUTTON" inherits="VuhDoButtonTemplate">
+					<Button name="$parentMoreButton" text="VUHDO_I18N_SCALE" inherits="VuhDoButtonTemplate">
 						<Size>
 							<AbsDimension x="55" y="32" />
 						</Size>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="140" y="-178" />
+									<AbsDimension x="140" y="-7" />
 								</Offset>
 							</Anchor>
 						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture name="$parentTexture" file="interface\AddOns\VuhDoOptions\Images\blue_lt_square_16_16">
-									<TexCoords left="0" right="1" top="0" bottom="1" />
-									<Anchors>
-										<Anchor point="RIGHT" relativePoint="CENTER">
-											<Offset>
-												<AbsDimension x="0" y="0" />
-											</Offset>
-										</Anchor>
-									</Anchors>
-									<Size>
-										<AbsDimension x="100" y="55" />
-									</Size>
-								</Texture>
-							</Layer>
-						</Layers>
 						<Scripts>
 							<OnClick>
 								VUHDO_optionsHotsToggleMorePanel(self:GetParent());

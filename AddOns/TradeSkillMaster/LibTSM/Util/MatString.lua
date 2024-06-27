@@ -7,24 +7,28 @@
 local TSM = select(2, ...) ---@type TSM
 local MatString = TSM.Init("Util.MatString") ---@class Util.MatString
 local String = TSM.Include("Util.String")
-MatString.TYPE = {
-	NORMAL = newproxy(),
-	OPTIONAL = newproxy(),
-	QUALITY = newproxy(),
-	FINISHING = newproxy(),
-}
+local EnumType = TSM.Include("Util.EnumType")
+MatString.TYPE = EnumType.New("MAT_STRING_TYPE", {
+	NORMAL = EnumType.CreateValue(),
+	OPTIONAL = EnumType.CreateValue(),
+	QUALITY = EnumType.CreateValue(),
+	FINISHING = EnumType.CreateValue(),
+	REQUIRED = EnumType.CreateValue(),
+})
 local private = {}
 local TYPE_TO_PREFIX_LOOKUP = {
 	[MatString.TYPE.NORMAL] = "i",
 	[MatString.TYPE.OPTIONAL] = "o",
 	[MatString.TYPE.QUALITY] = "q",
 	[MatString.TYPE.FINISHING] = "f",
+	[MatString.TYPE.REQUIRED] = "r",
 }
 local PREFIX_TO_TYPE_LOOKUP = {
 	["i"] = MatString.TYPE.NORMAL,
 	["o"] = MatString.TYPE.OPTIONAL,
 	["q"] = MatString.TYPE.QUALITY,
 	["f"] = MatString.TYPE.FINISHING,
+	["r"] = MatString.TYPE.REQUIRED,
 }
 local QUALITY_MAT_STRING_ITEM_ID_PATTERNS = {
 	"^q:%d+:(%d+),%d+,%d+$",
@@ -99,6 +103,12 @@ end
 
 function MatString.GetQualityItem(matString, quality)
 	return "i:"..strmatch(matString, QUALITY_MAT_STRING_ITEM_ID_PATTERNS[quality])
+end
+
+function MatString.GetRequiredItem(matString, index)
+	local matList = select(3, strsplit(":", matString))
+	local itemId = select(index, strsplit(",", matList))
+	return "i:"..itemId
 end
 
 

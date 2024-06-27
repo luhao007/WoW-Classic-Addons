@@ -170,7 +170,7 @@ end
 ---@param func function A function which takes a row and returns the value of the virtual field
 ---@param argField? string The field to pass into the function (otherwise passes the entire row)
 ---@param defaultValue? any The default value to use if the function returns nil
----@return DatabaseQuery @The database query object
+---@return DatabaseQuery
 function DatabaseQuery:VirtualField(field, fieldType, func, argField, defaultValue)
 	if self:_GetFieldType(field) or self._virtualFieldFunc[field] then
 		error("Field already exists: "..tostring(field))
@@ -193,6 +193,7 @@ end
 ---@param field string The name of the new virtual field
 ---@param map SmartMapObject The smart map
 ---@param inputFieldName string The field to use as the input to the smart map
+---@return DatabaseQuery
 function DatabaseQuery:VirtualSmartMapField(field, map, inputFieldName)
 	if self:_GetFieldType(field) or self._virtualFieldFunc[field] then
 		error("Field already exists: "..tostring(field))
@@ -209,7 +210,7 @@ end
 ---@param field string The name of the field
 ---@param value any The value to compare to
 ---@param otherField? string The name of the other field to compare with
----@return DatabaseQuery @The database query object
+---@return DatabaseQuery
 function DatabaseQuery:Equal(field, value, otherField)
 	self:_ValidateComparisonValue(field, value, otherField)
 	self:_NewClause()
@@ -221,7 +222,7 @@ end
 ---@param field string The name of the field
 ---@param value any The value to compare to
 ---@param otherField? string The name of the other field to compare with
----@return DatabaseQuery @The database query object
+---@return DatabaseQuery
 function DatabaseQuery:NotEqual(field, value, otherField)
 	self:_ValidateComparisonValue(field, value, otherField)
 	self:_NewClause()
@@ -233,7 +234,7 @@ end
 ---@param field string The name of the field
 ---@param value any The value to compare to
 ---@param otherField? string The name of the other field to compare with
----@return DatabaseQuery @The database query object
+---@return DatabaseQuery
 function DatabaseQuery:LessThan(field, value, otherField)
 	self:_ValidateComparisonValue(field, value, otherField)
 	self:_NewClause()
@@ -245,7 +246,7 @@ end
 ---@param field string The name of the field
 ---@param value any The value to compare to
 ---@param otherField? string The name of the other field to compare with
----@return DatabaseQuery @The database query object
+---@return DatabaseQuery
 function DatabaseQuery:LessThanOrEqual(field, value, otherField)
 	self:_ValidateComparisonValue(field, value, otherField)
 	self:_NewClause()
@@ -257,7 +258,7 @@ end
 ---@param field string The name of the field
 ---@param value any The value to compare to
 ---@param otherField? string The name of the other field to compare with
----@return DatabaseQuery @The database query object
+---@return DatabaseQuery
 function DatabaseQuery:GreaterThan(field, value, otherField)
 	self:_ValidateComparisonValue(field, value, otherField)
 	self:_NewClause()
@@ -269,7 +270,7 @@ end
 ---@param field string The name of the field
 ---@param value any The value to compare to
 ---@param otherField? string The name of the other field to compare with
----@return DatabaseQuery @The database query object
+---@return DatabaseQuery
 function DatabaseQuery:GreaterThanOrEqual(field, value, otherField)
 	self:_ValidateComparisonValue(field, value, otherField)
 	self:_NewClause()
@@ -280,7 +281,7 @@ end
 ---Where a string field matches a pattern.
 ---@param field string The name of the field
 ---@param value string The pattern to match
----@return DatabaseQuery @The database query object
+---@return DatabaseQuery
 function DatabaseQuery:Matches(field, value)
 	assert(value ~= Constants.BOUND_QUERY_PARAM, "This method does not support bound values")
 	assert(self:_GetFieldType(field) == "string" and type(value) == "string")
@@ -292,7 +293,7 @@ end
 ---Where a string field contains a substring.
 ---@param field string The name of the field
 ---@param value string The substring to match
----@return DatabaseQuery @The database query object
+---@return DatabaseQuery
 function DatabaseQuery:Contains(field, value)
 	assert(value ~= Constants.BOUND_QUERY_PARAM, "This method does not support bound values")
 	assert(self:_GetFieldType(field) == "string" and type(value) == "string")
@@ -304,7 +305,7 @@ end
 ---Where a string field starts with a substring.
 ---@param field string The name of the field
 ---@param value string The substring to match
----@return DatabaseQuery @The database query object
+---@return DatabaseQuery
 function DatabaseQuery:StartsWith(field, value)
 	assert(value ~= Constants.BOUND_QUERY_PARAM, "This method does not support bound values")
 	assert(self:_GetFieldType(field) == "string" and type(value) == "string")
@@ -315,7 +316,7 @@ end
 
 ---Where a foreign field (obtained via a left join) is nil.
 ---@param field string The name of the field
----@return DatabaseQuery @The database query object
+---@return DatabaseQuery
 function DatabaseQuery:IsNil(field)
 	assert(not self:_GetListFieldType(field), "Cannot use this method on list fields")
 	assert(self:_GetJoinType(field) == "LEFT", "Must be a left join")
@@ -326,7 +327,7 @@ end
 
 ---Where a foreign field (obtained via a left join) is not nil.
 ---@param field string The name of the field
----@return DatabaseQuery @The database query object
+---@return DatabaseQuery
 function DatabaseQuery:IsNotNil(field)
 	assert(not self:_GetListFieldType(field), "Cannot use this method on list fields")
 	assert(self:_GetJoinType(field) == "LEFT", "Must be a left join")
@@ -339,7 +340,7 @@ end
 ---@param func fun(row: DatabaseQueryResultRow, arg: any): boolean The function which gets passed the row being evaulated and
 ---returns whether or not the query results should include it
 ---@param arg any An argument to pass to the function
----@return DatabaseQuery @The database query object
+---@return DatabaseQuery
 function DatabaseQuery:Custom(func, arg)
 	assert(type(func) == "function")
 	self:_NewClause()
@@ -350,7 +351,7 @@ end
 ---Where a field exists as a key within a table.
 ---@param field string The name of the field
 ---@param value table The table to check against
----@return DatabaseQuery @The database query object
+---@return DatabaseQuery
 function DatabaseQuery:InTable(field, value)
 	assert(value ~= Constants.BOUND_QUERY_PARAM and value ~= Constants.OTHER_FIELD_QUERY_PARAM, "This method does not support indirect values")
 	assert(not self:_GetListFieldType(field), "Cannot use this method on list fields")
@@ -363,7 +364,7 @@ end
 ---Where a field does not exists as a key within a table.
 ---@param field string The name of the field
 ---@param value table The table to check against
----@return DatabaseQuery @The database query object
+---@return DatabaseQuery
 function DatabaseQuery:NotInTable(field, value)
 	assert(value ~= Constants.BOUND_QUERY_PARAM and value ~= Constants.OTHER_FIELD_QUERY_PARAM, "This method does not support indirect values")
 	assert(not self:_GetListFieldType(field), "Cannot use this method on list fields")
@@ -376,7 +377,7 @@ end
 ---Where a list field contains a value.
 ---@param field string The name of the list field
 ---@param value table The table to check against
----@return DatabaseQuery @The database query object
+---@return DatabaseQuery
 function DatabaseQuery:ListContains(field, value)
 	assert(value ~= Constants.BOUND_QUERY_PARAM and value ~= Constants.OTHER_FIELD_QUERY_PARAM, "This method does not support indirect values")
 	assert(type(value) == self:_GetListFieldType(field))
@@ -388,7 +389,7 @@ end
 ---Starts a nested AND clause.
 ---
 ---All of the clauses following this (until the matching `:End()`) must be true for the AND clause to be true.
----@return DatabaseQuery @The database query object
+---@return DatabaseQuery
 function DatabaseQuery:And()
 	self._currentClause = self:_NewClause()
 		:And()
@@ -398,7 +399,7 @@ end
 ---Starts a nested OR clause.
 ---
 ---At least one of the clauses following this (until the matching `:End()`) must be true for the OR clause to be true.
----@return DatabaseQuery @The database query object
+---@return DatabaseQuery
 function DatabaseQuery:Or()
 	self._currentClause = self:_NewClause()
 		:Or()
@@ -406,7 +407,7 @@ function DatabaseQuery:Or()
 end
 
 ---Ends a nested AND/OR clause.
----@return DatabaseQuery @The database query object
+---@return DatabaseQuery
 function DatabaseQuery:End()
 	assert(self._currentClause ~= self._rootClause, "No current clause to end")
 	self._currentClause = self._currentClause:_GetParent()
@@ -418,7 +419,7 @@ end
 ---@param db DatabaseTable The database table to join with
 ---@param field string The field to join on
 ---@param foreignField? string The foreign field to join on (defaults to `field`)
----@return DatabaseQuery @The database query object
+---@return DatabaseQuery
 function DatabaseQuery:LeftJoin(db, field, foreignField)
 	self:_JoinHelper("LEFT", db, field, foreignField or field)
 	return self
@@ -428,7 +429,7 @@ end
 ---@param db DatabaseTable The database table to join with
 ---@param field string The field to join on
 ---@param foreignField? string The foreign field to join on (defaults to `field`)
----@return DatabaseQuery @The database query object
+---@return DatabaseQuery
 function DatabaseQuery:InnerJoin(db, field, foreignField)
 	self:_JoinHelper("INNER", db, field, foreignField or field)
 	return self
@@ -438,7 +439,7 @@ end
 ---@param db DatabaseTable The database to join with
 ---@param field string The name of the field in the other table to join on
 ---@param sumField string The name of the field in the other table to sum
----@return DatabaseQuery @The database query object
+---@return DatabaseQuery
 function DatabaseQuery:AggregateJoinSummed(db, field, sumField)
 	local query = db:NewQuery()
 		:Equal(field, Constants.BOUND_QUERY_PARAM)
@@ -452,7 +453,7 @@ end
 ---descending as this method is called additional times (meaning the first OrderBy will have highest priority).
 ---@param field string The name of the field to order by
 ---@param ascending boolean Whether to order in ascending order (descending otherwise)
----@return DatabaseQuery @The database query object
+---@return DatabaseQuery
 function DatabaseQuery:OrderBy(field, ascending)
 	assert(ascending == true or ascending == false)
 	local fieldType = self:_GetFieldType(field)
@@ -471,7 +472,7 @@ end
 ---
 ---This method can be used to ensure that only the first row for each distinct value of the field is returned.
 ---@param field string The field to ensure is distinct in the results
----@return DatabaseQuery @The database query object
+---@return DatabaseQuery
 function DatabaseQuery:Distinct(field)
 	assert(self:_GetFieldType(field), format("Field %s doesn't exist within local DB", tostring(field)))
 	assert(not self:_GetListFieldType(field), "Cannot use this method on list fields")
@@ -482,7 +483,7 @@ end
 
 ---Select specific fields in the result.
 ---@param ... string The fields to select
----@return DatabaseQuery @The database query object
+---@return DatabaseQuery
 function DatabaseQuery:Select(...)
 	assert(#self._select == 0)
 	local numFields = select("#", ...)
@@ -501,7 +502,7 @@ end
 ---
 ---The number of arguments should match the number of Constants.BOUND_QUERY_PARAM values in the query's clauses.
 ---@param ... any The bound parameter values
----@return DatabaseQuery @The database query object
+---@return DatabaseQuery
 function DatabaseQuery:BindParams(...)
 	local numFields = select("#", ...)
 	assert(self._rootClause:_BindParams(...) == numFields, "Invalid number of bound parameters")
@@ -514,7 +515,7 @@ end
 ---This callback gets called whenever any rows in the underlying database change.
 ---@param func fun(db: DatabaseQuery, changedUUID: number|nil, context: any) The callback function
 ---@param context? any A context argument which is passed as the third argument to the callback function
----@return DatabaseQuery @The database query object
+---@return DatabaseQuery
 function DatabaseQuery:SetUpdateCallback(func, context)
 	self._updateCallback = func
 	self._updateCallbackContext = context
@@ -523,7 +524,7 @@ end
 
 ---Pauses or unpauses callbacks for query updates.
 ---@param paused boolean Whether or not updates should be paused
----@return DatabaseQuery @The database query object
+---@return DatabaseQuery
 function DatabaseQuery:SetUpdatesPaused(paused)
 	self._updatesPaused = self._updatesPaused + (paused and 1 or -1)
 	assert(self._updatesPaused >= 0)
@@ -536,7 +537,7 @@ end
 ---Results iterator.
 ---
 ---Note that the iterator must run to completion (don't use `break` or `return` to escape it early).
----@param canAbort boolean Allow the iterator to be aborted if the underlying data is updated which must
+---@param canAbort? boolean Allow the iterator to be aborted if the underlying data is updated which must
 ---be handled by the caller by calling `IsIteratorAborted()` at the end of each iteration loop
 ---@return fun(): number, DatabaseRow @An iterator with fields: `index`, row
 function DatabaseQuery:Iterator(canAbort)
@@ -607,12 +608,7 @@ function DatabaseQuery:UUIDDiffPrepare(oldUUIDs)
 		while #context.remove > 0 and context.remove[#context.remove] == startIndex - 1 do
 			startIndex = tremove(context.remove)
 		end
-		tinsert(context.result, "REMOVE")
-		tinsert(context.result, startIndex)
-		tinsert(context.result, endIndex - startIndex + 1)
-		for i = startIndex, endIndex do
-			tinsert(context.result, oldUUIDs[i])
-		end
+		Table.InsertMultiple(context.result, "REMOVE", startIndex, endIndex - startIndex + 1, unpack(oldUUIDs, startIndex, endIndex))
 	end
 
 	-- Add the insert actions
@@ -627,12 +623,7 @@ function DatabaseQuery:UUIDDiffPrepare(oldUUIDs)
 				break
 			end
 		end
-		tinsert(context.result, "INSERT")
-		tinsert(context.result, startIndex)
-		tinsert(context.result, endIndex - startIndex + 1)
-		for j = startIndex, endIndex do
-			tinsert(context.result, self._result[j])
-		end
+		Table.InsertMultiple(context.result, "INSERT", startIndex, endIndex - startIndex + 1, unpack(self._result, startIndex, endIndex))
 		i = i + endIndex - startIndex + 1
 	end
 	wipe(context.insert)
@@ -653,6 +644,7 @@ end
 ---as a list, and in the latter case, the first field must be unique in the results, and will be used as the key for the
 ---table with the second field being the value.
 ---@param tbl table The table to store the result in
+---@return DatabaseQuery
 function DatabaseQuery:AsTable(tbl)
 	self:_Execute()
 	if #self._select == 1 then
@@ -901,23 +893,6 @@ function DatabaseQuery:Hash(fields)
 	return result
 end
 
----Calculates the hash of the query results, grouping by a field.
----@param fields table The fields from each row to hash
----@param groupField string The field to group by
----@param result table The result table
-function DatabaseQuery:GroupedHash(fields, groupField, result)
-	self:_Execute()
-	for i = 1, #self._result do
-		local uuid = self._result[i]
-		local groupValue = self:_GetResultRowData(uuid, groupField)
-		local rowHash = nil
-		for j = 1, #fields do
-			rowHash = Math.CalculateHash(self:_GetResultRowData(uuid, fields[j]), rowHash)
-		end
-		result[groupValue] = Math.CalculateHash(rowHash, result[groupValue])
-	end
-end
-
 ---Calculates the hash of the query results and release.
 ---
 ---Note that either `fields` must be specified or the query must have a select colum with at most 2 fields.
@@ -939,7 +914,7 @@ function DatabaseQuery:DeleteAndRelease()
 end
 
 ---Resets the database query.
----@return DatabaseQuery @The database query object
+---@return DatabaseQuery
 function DatabaseQuery:Reset()
 	self:ResetDistinct()
 	self:ResetSelect()
@@ -953,7 +928,7 @@ function DatabaseQuery:Reset()
 end
 
 ---Resets any virtual fields added to the database query.
----@return DatabaseQuery @The database query object
+---@return DatabaseQuery
 function DatabaseQuery:ResetVirtualFields()
 	for _, func in pairs(self._virtualFieldFunc) do
 		if private.smartMapReaderContext[func] then
@@ -969,7 +944,7 @@ function DatabaseQuery:ResetVirtualFields()
 end
 
 ---Resets any filtering clauses of the database query.
----@return DatabaseQuery @The database query object
+---@return DatabaseQuery
 function DatabaseQuery:ResetFilters()
 	self._rootClause:_Release()
 	self._rootClause = QueryClause.Get()
@@ -980,7 +955,7 @@ function DatabaseQuery:ResetFilters()
 end
 
 ---Resets any ordering clauses of the database query.
----@return DatabaseQuery @The database query object
+---@return DatabaseQuery
 function DatabaseQuery:ResetOrderBy()
 	wipe(self._orderBy)
 	wipe(self._orderByAscending)
@@ -989,7 +964,7 @@ function DatabaseQuery:ResetOrderBy()
 end
 
 ---Resets any joins of the database query.
----@return DatabaseQuery @The database query object
+---@return DatabaseQuery
 function DatabaseQuery:ResetJoins()
 	for _, db in ipairs(self._joinDBs) do
 		db:_RemoveQuery(self)
@@ -1009,7 +984,7 @@ function DatabaseQuery:ResetJoins()
 end
 
 ---Resets any distinct clauses of the database query.
----@return DatabaseQuery @The database query object
+---@return DatabaseQuery
 function DatabaseQuery:ResetDistinct()
 	self._distinct = nil
 	self._resultIsStale = true
@@ -1017,7 +992,7 @@ function DatabaseQuery:ResetDistinct()
 end
 
 ---Resets any select clauses of the database query.
----@return DatabaseQuery @The database query object
+---@return DatabaseQuery
 function DatabaseQuery:ResetSelect()
 	wipe(self._select)
 	self._resultIsStale = true
@@ -1043,7 +1018,7 @@ end
 ---Updates the last order by clause.
 ---@param field string The name of the field to order by
 ---@param ascending boolean Whether to order in ascending order (descending otherwise)
----@return DatabaseQuery @The database query object
+---@return DatabaseQuery
 function DatabaseQuery:UpdateLastOrderBy(field, ascending)
 	assert(#self._orderBy > 0)
 	tremove(self._orderBy)
@@ -1415,8 +1390,8 @@ function DatabaseQuery:_GetQueryIndexInfo()
 	-- try to find the index with the least result rows
 	local indexField, indexFirstIndex, indexLastIndex, indexIsStrict = nil, nil, nil, false
 	local bestIndexDiff = math.huge
-	for _, field in ipairs(self._db:_GetIndexAndUniqueList()) do
-		local valueMin, valueMax = self:_IndexValueHelper(field)
+	for _, field in self._db:_IndexOrUniqueFieldIterator() do
+		local valueMin, valueMax = self._rootClause:_GetIndexValue(field)
 		if valueMin == nil and valueMax == nil then
 			-- continue
 		elseif self._db:_IsUnique(field) and valueMin == valueMax then
@@ -1425,8 +1400,17 @@ function DatabaseQuery:_GetQueryIndexInfo()
 		elseif self._db:_IsIndex(field) then
 			-- check how many rows this index results in
 			local indexList = self._db:_GetAllRowsByIndex(field)
-			local firstIndex = valueMin and self._db:_IndexListBinarySearch(field, valueMin, true) or min(1, #indexList)
-			local lastIndex = valueMax and self._db:_IndexListBinarySearch(field, valueMax, false) or #indexList
+			local firstIndex, lastIndex = nil, nil
+			if valueMin and valueMax and valueMin == valueMax then
+				firstIndex, lastIndex = self._db:_GetIndexListMatchingIndexRange(field, valueMin)
+				if not firstIndex then
+					-- there are no results within this index, so this is as good as it gets
+					return "EMPTY", field
+				end
+			else
+				firstIndex = valueMin and self._db:_IndexListBinarySearch(field, valueMin, true) or min(1, #indexList)
+				lastIndex = valueMax and self._db:_IndexListBinarySearch(field, valueMax, false) or #indexList
+			end
 			local indexDiff = lastIndex - firstIndex
 			if indexDiff < 0 then
 				-- there are no results within this index, so this is as good as it gets
@@ -1532,30 +1516,6 @@ function DatabaseQuery:_CreateResultRow(uuid)
 	row:_SetUUID(uuid)
 	self._resultRowLookup[uuid] = row
 	return row
-end
-
-function DatabaseQuery:_IndexValueHelper(...)
-	local num = select("#", ...)
-	local valueMin, valueMax = nil, nil
-	for i = 1, num do
-		local fieldPart = select(i, ...)
-		local partValueMin, partValueMax = self._rootClause:_GetIndexValue(fieldPart)
-		if partValueMin == nil and partValueMax == nil then
-			return
-		end
-		if num > 1 and (partValueMin == nil or partValueMax == nil) then
-			-- only use multi-field indexes if there's both a min and max value
-			return
-		end
-		if i > 1 then
-			valueMin = valueMin .. Constants.DB_INDEX_VALUE_SEP .. partValueMin
-			valueMax = valueMax .. Constants.DB_INDEX_VALUE_SEP .. partValueMax
-		else
-			valueMin = partValueMin
-			valueMax = partValueMax
-		end
-	end
-	return valueMin, valueMax
 end
 
 function DatabaseQuery:_PassThroughReleaseHelper(...)
@@ -1826,8 +1786,6 @@ function private.UUIDDiffIterator(context, index)
 	index = index + 3
 	assert(action == "INSERT" or action == "REMOVE")
 	assert(startIndex > 0 and num > 0 and num <= #context.result - index + 1)
-	for i = index, index + num - 1 do
-		tinsert(context.uuids, context.result[i])
-	end
+	Table.InsertMultiple(context.uuids, unpack(context.result, index, index + num - 1))
 	return index + num, action, startIndex, context.uuids
 end

@@ -1,14 +1,22 @@
 
-local UnitGroupRolesAssigned = _G.DetailsFramework.UnitGroupRolesAssigned
-local wipe = _G.wipe
-local C_Timer = _G.C_Timer
-local CreateFrame = _G.CreateFrame
+--[=[
+	Details startup file
+	The function Details:StartMeUp() is called when the addon is fully loaded with saved variables and profiles
+--]=]
+
 local Loc = _G.LibStub("AceLocale-3.0"):GetLocale("Details")
 local _
 local tocName, Details222 = ...
 
 --start funtion
-function Details:StartMeUp() --I'll never stop!
+function Details:StartMeUp()
+	if (Details.AndIWillNeverStop) then
+		return
+	end
+	Details.AndIWillNeverStop = true
+
+	--note: this runs after profile loaded
+
 	--set default time for arena and bg to be the Details! load time in case the client loads mid event
 	Details.lastArenaStartTime = GetTime()
 	Details.lastBattlegroundStartTime = GetTime()
@@ -19,120 +27,130 @@ function Details:StartMeUp() --I'll never stop!
 		return Details.AddOnStartTime or GetTime()
 	end
 
+	C_Timer.After(3, function()
+		--load custom spells on login
+		Details:FillUserCustomSpells()
+	end)
+
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --row single click, this determines what happen when the user click on a bar
 
 	--single click row function replace
 		--damage, dps, damage taken, friendly fire
-			self.row_singleclick_overwrite[1] = {true, true, true, true, self.atributo_damage.ReportSingleFragsLine, self.atributo_damage.ReportEnemyDamageTaken, self.atributo_damage.ReportSingleVoidZoneLine, self.atributo_damage.ReportSingleDTBSLine}
+			Details.row_singleclick_overwrite[1] = {true, true, true, true, Details.atributo_damage.ReportSingleFragsLine, Details.atributo_damage.ReportEnemyDamageTaken, Details.atributo_damage.ReportSingleVoidZoneLine, Details.atributo_damage.ReportSingleDTBSLine}
 		--healing, hps, overheal, healing taken
-			self.row_singleclick_overwrite[2] = {true, true, true, true, false, self.atributo_heal.ReportSingleDamagePreventedLine}
+			Details.row_singleclick_overwrite[2] = {true, true, true, true, false, Details.atributo_heal.ReportSingleDamagePreventedLine}
 		--mana, rage, energy, runepower
-			self.row_singleclick_overwrite[3] = {true, true, true, true}
+			Details.row_singleclick_overwrite[3] = {true, true, true, true} --missing other resources and alternate power
 		--cc breaks, ress, interrupts, dispells, deaths
-			self.row_singleclick_overwrite[4] = {true, true, true, true, self.atributo_misc.ReportSingleDeadLine, self.atributo_misc.ReportSingleCooldownLine, self.atributo_misc.ReportSingleBuffUptimeLine, self.atributo_misc.ReportSingleDebuffUptimeLine}
+			Details.row_singleclick_overwrite[4] = {true, true, true, true, Details.atributo_misc.ReportSingleDeadLine, Details.atributo_misc.ReportSingleCooldownLine, Details.atributo_misc.ReportSingleBuffUptimeLine, Details.atributo_misc.ReportSingleDebuffUptimeLine}
 
-		function self:ReplaceRowSingleClickFunction(attribute, subAttribute, func)
+		function Details:ReplaceRowSingleClickFunction(attribute, subAttribute, func)
 			assert(type(attribute) == "number" and attribute >= 1 and attribute <= 4, "ReplaceRowSingleClickFunction expects a attribute index on #1 argument.")
 			assert(type(subAttribute) == "number" and subAttribute >= 1 and subAttribute <= 10, "ReplaceRowSingleClickFunction expects a sub attribute index on #2 argument.")
 			assert(type(func) == "function", "ReplaceRowSingleClickFunction expects a function on #3 argument.")
 
-			self.row_singleclick_overwrite[attribute][subAttribute] = func
+				Details.row_singleclick_overwrite[attribute][subAttribute] = func
 			return true
 		end
 
-		self.click_to_report_color = {1, 0.8, 0, 1}
+		Details.click_to_report_color = {1, 0.8, 0, 1}
 
 		--death tooltip function, exposed for 3rd party customization
 		--called when the mouse hover over a player line when displaying deaths
 		--the function called receives 4 parameters: instanceObject, lineFrame, combatObject, deathTable
 		--@instance: the details! object of the window showing the deaths
 		--@lineFrame: the frame to setpoint your frame
-		--@combatObject: the combat it self
+		--@combatObject: the combat itself
 		--@deathTable: a table containing all the information about the player's death
 		Details.ShowDeathTooltipFunction = Details.ShowDeathTooltip
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --initialize
 
+	--make an encounter journal cache
+	C_Timer.After(1, Details222.EJCache.CreateEncounterJournalDump)
+
 	--plugin container
-	self:CreatePluginWindowContainer()
-	self:InitializeForge() --to install into the container plugin
-	self:InitializeRaidHistoryWindow()
-	--self:InitializeOptionsWindow()
+	Details:CreatePluginWindowContainer()
+	Details:InitializeForge() --to install into the container plugin
+	Details:InitializeRaidHistoryWindow()
+	--Details:InitializeOptionsWindow()
 
 	C_Timer.After(2, function()
-		self:InitializeAuraCreationWindow()
+		Details:InitializeAuraCreationWindow()
 	end)
 
-	self:InitializeCustomDisplayWindow()
-	self:InitializeAPIWindow()
-	self:InitializeRunCodeWindow()
-	self:InitializePlaterIntegrationWindow()
-	self:InitializeMacrosWindow()
+	Details:InitializeCustomDisplayWindow()
+	Details:InitializeAPIWindow()
+	Details:InitializeRunCodeWindow()
+	Details:InitializePlaterIntegrationWindow()
+	Details:InitializeMacrosWindow()
 
-	if (self.ocd_tracker.show_options) then
-		self:InitializeCDTrackerWindow()
+	Details222.CreateAllDisplaysFrame()
+
+	if (Details.ocd_tracker.show_options) then
+		Details:InitializeCDTrackerWindow()
 	end
-
+	--/run Details.ocd_tracker.show_options = true; ReloadUI()
 	--custom window
-	self.custom = self.custom or {}
+	Details.custom = Details.custom or {}
 
 	--micro button alert
 	--"MainMenuBarMicroButton" has been removed on 9.0
-	self.MicroButtonAlert = CreateFrame("frame", "DetailsMicroButtonAlert", UIParent)
-	self.MicroButtonAlert.Text = self.MicroButtonAlert:CreateFontString(nil, "overlay", "GameFontNormal")
-	self.MicroButtonAlert.Text:SetPoint("center")
-	self.MicroButtonAlert:Hide()
+	Details.MicroButtonAlert = CreateFrame("frame", "DetailsMicroButtonAlert", UIParent)
+	Details.MicroButtonAlert.Text = Details.MicroButtonAlert:CreateFontString(nil, "overlay", "GameFontNormal")
+	Details.MicroButtonAlert.Text:SetPoint("center")
+	Details.MicroButtonAlert:Hide()
 
 	--actor details window
-	self.playerDetailWindow = self.gump:CriaJanelaInfo()
-	Details.FadeHandler.Fader(self.playerDetailWindow, 1)
+	Details.BreakdownWindowFrame = Details:CreateBreakdownWindow()
+	Details.FadeHandler.Fader(Details.BreakdownWindowFrame, 1)
 
 	--copy and paste window
-	self:CreateCopyPasteWindow()
-	self.CreateCopyPasteWindow = nil
+	Details:CreateCopyPasteWindow()
+	Details.CreateCopyPasteWindow = nil
 
 	--start instances
-	if (self:GetNumInstancesAmount() == 0) then
-		self:CriarInstancia()
+	if (Details:GetNumInstancesAmount() == 0) then
+		Details:CreateInstance()
 	end
-	self:GetLowerInstanceNumber()
+	Details:GetLowerInstanceNumber()
 
 	--start time machine
-	self.timeMachine:Ligar()
+	Details222.TimeMachine.Start()
 
 	--update abbreviation shortcut
-	self.atributo_damage:UpdateSelectedToKFunction()
-	self.atributo_heal:UpdateSelectedToKFunction()
-	self.atributo_energy:UpdateSelectedToKFunction()
-	self.atributo_misc:UpdateSelectedToKFunction()
-	self.atributo_custom:UpdateSelectedToKFunction()
+	Details.atributo_damage:UpdateSelectedToKFunction()
+	Details.atributo_heal:UpdateSelectedToKFunction()
+	Details.atributo_energy:UpdateSelectedToKFunction()
+	Details.atributo_misc:UpdateSelectedToKFunction()
+	Details.atributo_custom:UpdateSelectedToKFunction()
 
 	--start instances updater
-	self:CheckSwitchOnLogon()
+	Details:CheckSwitchOnLogon()
 
-	function Details:ScheduledWindowUpdate(forced)
-		if (not forced and Details.in_combat) then
+	function Details:ScheduledWindowUpdate(bIsForced)
+		if (not bIsForced and Details.in_combat) then
 			return
 		end
 		Details.scheduled_window_update = nil
 		Details:RefreshMainWindow(-1, true)
 	end
-	
-	function Details:ScheduleWindowUpdate(time, forced)
+
+	function Details:ScheduleWindowUpdate(time, bIsForced)
 		if (Details.scheduled_window_update) then
 			Details.Schedules.Cancel(Details.scheduled_window_update)
 			Details.scheduled_window_update = nil
 		end
-		Details.scheduled_window_update = Details.Schedules.NewTimer(time or 1, Details.ScheduledWindowUpdate, Details, forced)
+		Details.scheduled_window_update = Details.Schedules.NewTimer(time or 1, Details.ScheduledWindowUpdate, Details, bIsForced)
 	end
 
-	self:RefreshMainWindow(-1, true)
+	Details:RefreshMainWindow(-1, true)
 	Details:RefreshUpdater()
 
-	for id = 1, Details:GetNumInstances() do
-		local instance = Details:GetInstance(id)
+	for instanceId = 1, Details:GetNumInstances() do
+		local instance = Details:GetInstance(instanceId)
 		if (instance:IsEnabled()) then
 			Details.Schedules.NewTimer(1, Details.RefreshBars, Details, instance)
 			Details.Schedules.NewTimer(1, Details.InstanceReset, Details, instance)
@@ -140,7 +158,7 @@ function Details:StartMeUp() --I'll never stop!
 		end
 	end
 
-	function self:RefreshAfterStartup()
+	function Details:RefreshAfterStartup()
 		--repair nicknames as nicknames aren't saved within the actor when leaving the game
 		if (not Details.ignore_nicktag) then
 			local currentCombat = Details:GetCurrentCombat()
@@ -156,7 +174,7 @@ function Details:StartMeUp() --I'll never stop!
 
 		local refreshAllInstances = -1
 		local forceRefresh = true
-		self:RefreshMainWindow(refreshAllInstances, forceRefresh)
+		Details:RefreshMainWindow(refreshAllInstances, forceRefresh)
 		local lowerInstance = Details:GetLowerInstanceNumber()
 
 		for id = 1, Details:GetNumInstances() do
@@ -177,41 +195,43 @@ function Details:StartMeUp() --I'll never stop!
 			end
 		end
 
-		--refresh lower instance plugin icons and skin
+		--after plugins are loaded and they have registered their icons, reorganize them after the start
 		Details.ToolBar:ReorganizeIcons()
 
 		--refresh skin for other windows
 		if (lowerInstance) then
-			for id = lowerInstance+1, Details:GetNumInstances() do
-				local instance = Details:GetInstance(id)
+			for instanceId = lowerInstance+1, Details:GetNumInstances() do
+				local instance = Details:GetInstance(instanceId)
 				if (instance and instance.baseframe and instance.ativa) then
 					instance:ChangeSkin()
 				end
 			end
 		end
 
-		self.RefreshAfterStartup = nil
+		Details.RefreshAfterStartup = nil
 
+		--the wallpaper could have been loaded by another addon
+		--need to refresh wallpaper a few frames or seconds after the game starts
 		function Details:CheckWallpaperAfterStartup()
 			if (not Details.profile_loaded) then
 				Details.Schedules.NewTimer(5, Details.CheckWallpaperAfterStartup, Details)
 			end
 
-			for id = 1, self.instances_amount do
-				local instance = self:GetInstance(id)
+			for id = 1, Details.instances_amount do
+				local instance = Details:GetInstance(id)
 				if (instance and instance:IsEnabled()) then
 					if (not instance.wallpaper.enabled) then
 						instance:InstanceWallpaper(false)
 					end
 
 					instance.do_not_snap = true
-					self.move_janela_func(instance.baseframe, true, instance, true)
-					self.move_janela_func(instance.baseframe, false, instance, true)
+					Details.move_janela_func(instance.baseframe, true, instance, true)
+					Details.move_janela_func(instance.baseframe, false, instance, true)
 					instance.do_not_snap = false
 				end
 			end
 
-			self.CheckWallpaperAfterStartup = nil
+			Details.CheckWallpaperAfterStartup = nil
 			Details.profile_loaded = nil
 		end
 		Details.Schedules.NewTimer(5, Details.CheckWallpaperAfterStartup, Details)
@@ -220,59 +240,61 @@ function Details:StartMeUp() --I'll never stop!
 	Details.Schedules.NewTimer(5, Details.RefreshAfterStartup, Details)
 
 	--start garbage collector
-	self.ultima_coleta = 0
-	self.intervalo_coleta = 720
-	self.intervalo_memoria = 180
-	self.garbagecollect = Details.Schedules.NewTicker(self.intervalo_coleta, Details.RestartInternalGarbageCollector, Details)
-	self.next_memory_check = _G.time() + self.intervalo_memoria
+	Details222.GarbageCollector.lastCollectTime = 0
+	Details222.GarbageCollector.intervalTime = 300
+	Details222.GarbageCollector.collectorTimer = Details.Schedules.NewTicker(Details222.GarbageCollector.intervalTime, Details222.GarbageCollector.RestartInternalGarbageCollector)
 
 	--player role
-	self.last_assigned_role = UnitGroupRolesAssigned and UnitGroupRolesAssigned("player")
+	local UnitGroupRolesAssigned = _G.DetailsFramework.UnitGroupRolesAssigned
+	Details.last_assigned_role = UnitGroupRolesAssigned and UnitGroupRolesAssigned("player")
 
 	--load parser capture options
-		self:CaptureRefresh()
+		Details:CaptureRefresh()
 
 	--register parser events
-		self.listener:RegisterEvent("PLAYER_REGEN_DISABLED")
-		self.listener:RegisterEvent("PLAYER_REGEN_ENABLED")
-		self.listener:RegisterEvent("UNIT_PET")
+		Details.listener:RegisterEvent("PLAYER_REGEN_DISABLED")
+		Details.listener:RegisterEvent("PLAYER_REGEN_ENABLED")
+		Details.listener:RegisterEvent("UNIT_PET")
 
-		self.listener:RegisterEvent("GROUP_ROSTER_UPDATE")
-		self.listener:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT")
+		Details.listener:RegisterEvent("GROUP_ROSTER_UPDATE")
+		Details.listener:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT")
 
-		self.listener:RegisterEvent("ZONE_CHANGED_NEW_AREA")
-		self.listener:RegisterEvent("PLAYER_ENTERING_WORLD")
+		Details.listener:RegisterEvent("ZONE_CHANGED_NEW_AREA")
+		Details.listener:RegisterEvent("PLAYER_ENTERING_WORLD")
 
-		self.listener:RegisterEvent("ENCOUNTER_START")
-		self.listener:RegisterEvent("ENCOUNTER_END")
+		Details.listener:RegisterEvent("ENCOUNTER_START")
+		Details.listener:RegisterEvent("ENCOUNTER_END")
 
-		self.listener:RegisterEvent("START_TIMER")
-		self.listener:RegisterEvent("UNIT_NAME_UPDATE")
+		Details.listener:RegisterEvent("START_TIMER")
+		Details.listener:RegisterEvent("UNIT_NAME_UPDATE")
 
-		self.listener:RegisterEvent("PLAYER_ROLES_ASSIGNED")
-		self.listener:RegisterEvent("ROLE_CHANGED_INFORM")
+		Details.listener:RegisterEvent("PLAYER_ROLES_ASSIGNED")
+		Details.listener:RegisterEvent("ROLE_CHANGED_INFORM")
 
-		self.listener:RegisterEvent("UNIT_FACTION")
+		Details.listener:RegisterEvent("UNIT_FACTION")
 
-		self.listener:RegisterEvent("PLAYER_TARGET_CHANGED")
+		Details.listener:RegisterEvent("PLAYER_TARGET_CHANGED")
 
 		if (not DetailsFramework.IsTimewalkWoW()) then
-			self.listener:RegisterEvent("PET_BATTLE_OPENING_START")
-			self.listener:RegisterEvent("PET_BATTLE_CLOSE")
-			self.listener:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
-			self.listener:RegisterEvent("PLAYER_TALENT_UPDATE")
-			self.listener:RegisterEvent("CHALLENGE_MODE_START")
-			self.listener:RegisterEvent("CHALLENGE_MODE_COMPLETED")
+			Details.listener:RegisterEvent("PET_BATTLE_OPENING_START")
+			Details.listener:RegisterEvent("PET_BATTLE_CLOSE")
+			Details.listener:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
+			Details.listener:RegisterEvent("PLAYER_TALENT_UPDATE")
+			Details.listener:RegisterEvent("CHALLENGE_MODE_START")
+			--Details.listener:RegisterEvent("CHALLENGE_MODE_END") --doesn't exists ingame (only at cleu)
+			Details.listener:RegisterEvent("CHALLENGE_MODE_COMPLETED")
+			Details.listener:RegisterEvent("WORLD_STATE_TIMER_START")
+
 		end
 
-		self.parser_frame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+		Details.parser_frame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 
 	--update is in group
-	self.details_users = {}
-	self.in_group = IsInGroup() or IsInRaid()
+	Details.details_users = {}
+	Details.in_group = IsInGroup() or IsInRaid()
 
 	--done
-	self.initializing = nil
+	Details.initializing = nil
 
 	--scan pets
 	Details:SchedulePetUpdate(1)
@@ -283,13 +305,13 @@ function Details:StartMeUp() --I'll never stop!
 	--send instance open signal
 	for id, instancia in Details:ListInstances() do
 		if (instancia.ativa) then
-			self:SendEvent("DETAILS_INSTANCE_OPEN", nil, instancia)
+			Details:SendEvent("DETAILS_INSTANCE_OPEN", nil, instancia)
 		end
 	end
 
 	--send details startup done signal
-	function self:AnnounceStartup()
-		self:SendEvent("DETAILS_STARTED", "SEND_TO_ALL")
+	function Details:AnnounceStartup()
+		Details:SendEvent("DETAILS_STARTED", "SEND_TO_ALL")
 
 		if (Details.in_group) then
 			Details:SendEvent("GROUP_ONENTER")
@@ -302,7 +324,7 @@ function Details:StartMeUp() --I'll never stop!
 		Details.AnnounceStartup = nil
 	end
 
-	Details.Schedules.NewTimer(5, Details.AnnounceStartup, Details)
+	Details.Schedules.NewTimer(4, Details.AnnounceStartup, Details)
 
 	if (Details.failed_to_load) then
 		Details.failed_to_load:Cancel()
@@ -310,7 +332,7 @@ function Details:StartMeUp() --I'll never stop!
 	end
 
 	--announce alpha version
-	function self:AnnounceVersion()
+	function Details:AnnounceVersion()
 		for index, instancia in Details:ListInstances() do
 			if (instancia.ativa) then
 				Details.FadeHandler.Fader(instancia._version, "in", 0.1)
@@ -325,15 +347,34 @@ function Details:StartMeUp() --I'll never stop!
 	DetailsTooltipAnchor:Restore()
 
 	--check is this is the first run ever
-	if (self.is_first_run) then
-		if (#self.custom == 0) then
+	if (Details.is_first_run) then
+		if (#Details.custom == 0) then
 			Details:AddDefaultCustomDisplays()
 		end
 		Details:FillUserCustomSpells()
 	end
 
 	--check is this is the first run of this version
-	if (self.is_version_first_run) then
+	if (Details.is_version_first_run) then
+		local breakdownData = Details.breakdown_spell_tab
+		if (breakdownData) then
+			local spellContainerHeaders = breakdownData.spellcontainer_headers
+			if (spellContainerHeaders) then
+				if (spellContainerHeaders.overheal) then
+					spellContainerHeaders.overheal.enabled = true
+					spellContainerHeaders.overheal.width = 70
+				end
+			end
+
+			local targetContainerHeaders = breakdownData.targetcontainer_headers
+			if (targetContainerHeaders) then
+				if (targetContainerHeaders.overheal) then
+					targetContainerHeaders.overheal.enabled = true
+					targetContainerHeaders.overheal.width = 70
+				end
+			end
+		end
+
 		local lowerInstanceId = Details:GetLowerInstanceNumber()
 		if (lowerInstanceId) then
 			lowerInstanceId = Details:GetInstance(lowerInstanceId)
@@ -382,7 +423,7 @@ function Details:StartMeUp() --I'll never stop!
 
 			--version
 			Details.FadeHandler.Fader(instance._version, 0)
-			instance._version:SetText("Details! " .. Details.userversion .. " (core " .. self.realversion .. ")")
+			instance._version:SetText("Details! " .. Details.userversion .. " (core " .. Details.realversion .. ")")
 			instance._version:SetTextColor(1, 1, 1, .35)
 			instance._version:SetPoint("bottomleft", instance.baseframe, "bottomleft", 5, 1)
 
@@ -405,7 +446,6 @@ function Details:StartMeUp() --I'll never stop!
 		--Details:OpenCustomDisplayWindow()
 		--Details:OpenWelcomeWindow()
 	end
-	
 	Details.Schedules.NewTimer(2, Details.OpenOptionsWindowAtStart, Details)
 	--Details:OpenCustomDisplayWindow()
 
@@ -425,7 +465,7 @@ function Details:StartMeUp() --I'll never stop!
 	Details:StartAnnouncers()
 
 	--open welcome
-	if (self.is_first_run) then
+	if (Details.is_first_run) then
 		C_Timer.After(1, function() --wait details full load the rest of the systems before executing the welcome window
 			Details:OpenWelcomeWindow()
 		end)
@@ -435,16 +475,18 @@ function Details:StartMeUp() --I'll never stop!
 	Details:LoadFramesForBroadcastTools()
 	Details:BrokerTick()
 
-	--build trinket data
+	---return the table where the trinket data is stored
+	---@return table<spellid, trinketdata>
 	function Details:GetTrinketData()
 		return Details.trinket_data
 	end
 
-	local customSpellList = Details:GetDefaultCustomSpellsList()
+	local customSpellList = Details:GetDefaultCustomItemList()
 	local trinketData = Details:GetTrinketData()
 	for spellId, trinketTable in pairs(customSpellList) do
 		if (trinketTable.isPassive) then
 			if (not trinketData[spellId]) then
+				---@type trinketdata
 				local thisTrinketData = {
 					itemName = C_Item.GetItemNameByID(trinketTable.itemId),
 					spellName = GetSpellInfo(spellId) or "spell not found",
@@ -459,6 +501,9 @@ function Details:StartMeUp() --I'll never stop!
 				}
 				trinketData[spellId] = thisTrinketData
 			end
+
+		elseif (trinketTable.onUse and trinketTable.castId) then
+			Details222.OnUseItem.Trinkets[trinketTable.castId] = spellId
 		end
 	end
 
@@ -476,8 +521,8 @@ function Details:StartMeUp() --I'll never stop!
 	--dailly reset of the cache for talents and specs
 	local today = date("%d")
 	if (Details.last_day ~= today) then
-		wipe(Details.cached_specs)
-		wipe(Details.cached_talents)
+		Details:Destroy(Details.cached_specs)
+		Details:Destroy(Details.cached_talents)
 	end
 
 	--get the player spec
@@ -486,7 +531,7 @@ function Details:StartMeUp() --I'll never stop!
 	--embed windows on the chat window
 	Details.chat_embed:CheckChatEmbed(true)
 
-	if (Details.player_details_window.skin ~= "ElvUI") then
+	if (Details.player_details_window.skin ~= "ElvUI") then --obsolete
 		local setDefaultSkinOnPlayerBreakdownWindow = function()
 			Details:ApplyPDWSkin("ElvUI")
 		end
@@ -505,6 +550,8 @@ function Details:StartMeUp() --I'll never stop!
 	Details.standard_skin = false
 	--enforce to show 6 abilities on the tooltip
 	--_detalhes.tooltip.tooltip_max_abilities = 6 freeeeeedooommmmm
+	--no no, enforece 8, 8 is much better, 8 is more lines, we like 8
+	Details.tooltip.tooltip_max_abilities = 8
 
 	Details.InstallRaidInfo()
 
@@ -517,7 +564,7 @@ function Details:StartMeUp() --I'll never stop!
 	if (not DetailsFramework.IsClassicWow()) then
 		--i'm not in classc wow
 	else
-		print("|CFFFFFF00[Details!]: you're using Details! for RETAIL on Classic WOW, please get the classic version (Details! Damage Meter Classic WoW), if you need help see our Discord (/details discord).")
+		--print("|CFFFFFF00[Details!]: you're using Details! for RETAIL on Classic WOW, please get the classic version (Details! Damage Meter Classic WoW), if you need help see our Discord (/details discord).")
 	end
 
 	Details:InstallHook("HOOK_DEATH", Details.Coach.Client.SendMyDeath)
@@ -534,12 +581,12 @@ function Details:StartMeUp() --I'll never stop!
 
 	if (GetExpansionLevel() == 9) then
 		if (not Details.data_wipes_exp["10"]) then
-			wipe(Details.encounter_spell_pool or {})
-			wipe(Details.boss_mods_timers or {})
-			wipe(Details.spell_school_cache or {})
-			wipe(Details.spell_pool or {})
-			wipe(Details.npcid_pool or {})
-			wipe(Details.current_exp_raid_encounters or {})
+			Details:Destroy(Details.encounter_spell_pool or {})
+			Details:Destroy(Details.boss_mods_timers or {})
+			Details:Destroy(Details.spell_school_cache or {})
+			Details:Destroy(Details.spell_pool or {})
+			Details:Destroy(Details.npcid_pool or {})
+			Details:Destroy(Details.current_exp_raid_encounters or {})
 			Details.data_wipes_exp["10"] = true
 		end
 	end
@@ -547,10 +594,14 @@ function Details:StartMeUp() --I'll never stop!
 	Details.boss_mods_timers.encounter_timers_dbm = Details.boss_mods_timers.encounter_timers_dbm or {}
 	Details.boss_mods_timers.encounter_timers_bw = Details.boss_mods_timers.encounter_timers_bw or {}
 
-	--clear overall data on new session
-	if (Details.overall_clear_logout) then
-		Details.tabela_overall = Details.combate:NovaTabela()
+	if (Details.time_type == 3 or not Details.time_type) then
+		Details.time_type = 2
 	end
+
+	--clear overall data on new session
+	--if (Details.overall_clear_logout) then --this is suppose to be in the load data file
+	--	Details.tabela_overall = Details.combate:NovaTabela()
+	--end
 
 	if (not DetailsFramework.IsTimewalkWoW()) then
 		--wipe overall on torghast - REMOVE ON 10.0
@@ -559,7 +610,7 @@ function Details:StartMeUp() --I'll never stop!
 		torghastTracker:SetScript("OnEvent", function(self, event, level, towerType)
 			if (level == 1) then
 				if (Details.overall_clear_newtorghast) then
-					Details.historico:resetar_overall()
+					Details.historico:ResetOverallData()
 					Details:Msg("overall data are now reset.") --localize-me
 				end
 			end
@@ -575,20 +626,25 @@ function Details:StartMeUp() --I'll never stop!
 
 	--to ignore this, use /run _G["UpdateAddOnMemoryUsage"] = Details.UpdateAddOnMemoryUsage_Original or add to any script that run on login
 	--also the slash command "/details stopperfcheck" stop it as well
+	Details.check_stuttering = false
 	if (Details.check_stuttering) then
 		_G["UpdateAddOnMemoryUsage"] = Details.UpdateAddOnMemoryUsage_Custom
 	end
 
-	pcall(Details222.EJCache.MakeCache)
+	Details.InitializeSpellBreakdownTab()
 
 	pcall(Details222.ClassCache.MakeCache)
+
+	Details:BuildSpecsNameCache()
+
+	Details222.Cache.DoMaintenance()
 
 	function Details:InstallOkey()
 		return true
 	end
 
 	if (DetailsFramework:IsNearlyEqual(Details.class_coords.ROGUE[4], 0.25)) then
-		DetailsFramework.table.copy(Details.class_coords, _detalhes.default_profile.class_coords)
+		DetailsFramework.table.copy(Details.class_coords, Details.default_profile.class_coords)
 	end
 
 	--shutdown the old OnDeathMenu

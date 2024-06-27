@@ -4,7 +4,7 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local Ledger = TSM.MainUI:NewPackage("Ledger")
 local L = TSM.Include("Locale").GetTable()
 local TempTable = TSM.Include("Util.TempTable")
@@ -243,14 +243,14 @@ function private.GetItemDetail()
 				)
 				:AddChild(UIElements.New("Text", "itemName")
 					:SetFont("ITEM_BODY1")
-					:SetText(UIUtils.GetColoredItemName(private.contextItemString))
+					:SetText(UIUtils.GetDisplayItemName(private.contextItemString))
 				)
 			)
 			:AddChild(UIElements.New("Frame", "content")
 				:SetLayout("VERTICAL")
 				:SetMargin(0, 0, 8, 0)
 				:SetPadding(12, 12, 8, 10)
-				:SetBackgroundColor("PRIMARY_BG_ALT", true)
+				:SetRoundedBackgroundColor("PRIMARY_BG_ALT")
 				:SetBorderColor("ACTIVE_BG")
 				:AddChild(UIElements.New("Frame", "heading")
 					:SetLayout("HORIZONTAL")
@@ -477,7 +477,7 @@ function private.ItemDetailScrollingTableOnRowClick(scrollingTable, row, button)
 	end
 	local subtitle = nil
 	local recordType, itemString, quantity, otherPlayer, price = row:GetFields("type", "itemString", "quantity", "otherPlayer", "price")
-	local name = UIUtils.GetColoredItemName(itemString) or "?"
+	local name = UIUtils.GetDisplayItemName(itemString) or "?"
 	local amount = Money.ToString(price * quantity, nil, "OPT_RETAIL_ROUND")
 	if recordType == "sale" then
 		subtitle = format(L["Sold %d of %s to %s for %s"], quantity, name, otherPlayer, amount)

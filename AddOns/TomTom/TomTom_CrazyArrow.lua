@@ -11,6 +11,10 @@ local L = TomTomLocals
 local ldb = LibStub("LibDataBroker-1.1")
 local ldd = LibStub('LibDropDown')
 
+local IMAGE_ARROW = "Interface\\Addons\\TomTom\\Images\\Arrow-1024"
+local IMAGE_ARROW_UP = "Interface\\AddOns\\TomTom\\Images\\Arrow-UP-1024"
+local IMAGE_STATIC_ARROW = "Interface\\Addons\\TomTom\\Images\\StaticArrow"
+
 local function ColorGradient(perc, ...)
 	local num = select("#", ...)
 	local hexes = type(select(1, ...)) == "string"
@@ -93,7 +97,7 @@ wayframe:RegisterEvent("PLAYER_ENTERING_WORLD")
 wayframe:SetScript("OnEvent", OnEvent)
 
 wayframe.arrow = wayframe:CreateTexture(nil, "OVERLAY")
-wayframe.arrow:SetTexture("Interface\\Addons\\TomTom\\Images\\Arrow")
+wayframe.arrow:SetTexture(IMAGE_ARROW)
 wayframe.arrow:SetAllPoints()
 
 local active_point, arrive_distance, showDownArrow, point_title
@@ -163,7 +167,7 @@ local function OnUpdate(self, elapsed)
 		if not showDownArrow then
 			arrow:SetHeight(70)
 			arrow:SetWidth(53)
-			arrow:SetTexture("Interface\\AddOns\\TomTom\\Images\\Arrow-UP")
+			arrow:SetTexture(IMAGE_ARROW_UP)
 			arrow:SetVertexColor(unpack(TomTom.db.profile.arrow.goodcolor))
 			showDownArrow = true
 		end
@@ -186,7 +190,7 @@ local function OnUpdate(self, elapsed)
 		if showDownArrow then
 			arrow:SetHeight(56)
 			arrow:SetWidth(42)
-			arrow:SetTexture("Interface\\AddOns\\TomTom\\Images\\Arrow")
+			arrow:SetTexture(IMAGE_ARROW)
 			showDownArrow = false
 		end
 
@@ -468,8 +472,8 @@ local function wayframe_OnEvent(self, event, arg1, ...)
 			-- Create a data feed for coordinates
 			local feed_crazy = ldb:NewDataObject("TomTom_CrazyArrow", {
 				type = "data source",
-				icon = "Interface\\Addons\\TomTom\\Images\\Arrow",
-				staticIcon = "Interface\\Addons\\TomTom\\Images\\StaticArrow",
+				icon = IMAGE_ARROW,
+				staticIcon = IMAGE_STATIC_ARROW,
 				text = "Crazy",
 				iconR = 0.2,
 				iconG = 1.0,

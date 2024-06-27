@@ -201,6 +201,8 @@ function addon:GetRGBColor(hex)
         local g = tonumber(strsub(hex,3,4),16) or 255
         local b = tonumber(strsub(hex,5,6),16) or 255
         return r/255, g/255, b/255
+	else
+		return 1, 1, 1
     end
 end
 
@@ -832,7 +834,9 @@ LibEvent:attachTrigger("tooltip.style.init", function(self, tip)
     tip.style.mask:SetPoint("TOPLEFT", 3, -3)
     tip.style.mask:SetPoint("BOTTOMRIGHT", tip.style, "TOPRIGHT", -3, -32)
     tip.style.mask:SetBlendMode("ADD")
-    tip.style.mask:SetGradientAlpha("VERTICAL", 0, 0, 0, 0, 0.9, 0.9, 0.9, 0.4)
+--    tip.style.mask:SetGradientAlpha("VERTICAL", 0, 0, 0, 0, 0.9, 0.9, 0.9, 0.4)
+	tip.style.mask:SetGradient("VERTICAL", CreateColor(0, 0, 0, 0), CreateColor(0.9, 0.9, 0.9, 0.4))
+
     tip.style.mask:Hide()
     tip:HookScript("OnShow", function(self) LibEvent:trigger("tooltip:show", self) end)
     tip:HookScript("OnHide", function(self) LibEvent:trigger("tooltip:hide", self) end)

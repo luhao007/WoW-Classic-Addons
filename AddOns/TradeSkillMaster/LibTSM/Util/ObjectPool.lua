@@ -6,12 +6,23 @@
 
 local TSM = select(2, ...) ---@type TSM
 local ObjectPool = TSM.Init("Util.ObjectPool") ---@class Util.ObjectPool
+local Environment = TSM.Include("Environment")
 local Debug = TSM.Include("Util.Debug")
 local private = {
-	debugLeaks = TSM.IsTestEnvironment() or false,
+	debugLeaks = nil,
 	instances = {}, ---@type table<string, Pool>
 }
 local DEBUG_STATS_MIN_COUNT = 1
+
+
+
+-- ============================================================================
+-- Module Loading
+-- ============================================================================
+
+ObjectPool:OnModuleLoad(function()
+	private.debugLeaks = Environment.IsTest()
+end)
 
 
 

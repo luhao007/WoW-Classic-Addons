@@ -13,6 +13,8 @@ local SmartMap = TSM.Include("Util.SmartMap")
 local String = TSM.Include("Util.String")
 local Log = TSM.Include("Util.Log")
 local ItemString = TSM.Include("Util.ItemString")
+local GroupPath = TSM.Include("Util.GroupPath")
+local Settings = TSM.Include("Service.Settings")
 local private = {
 	db = nil,
 	itemDB = nil,
@@ -20,6 +22,7 @@ local private = {
 	itemStringMapReader = nil,
 	baseItemStringItemIteratorQuery = nil,
 	groupListCache = {},
+	settings = nil,
 }
 
 
@@ -29,6 +32,9 @@ local private = {
 -- ============================================================================
 
 function Groups.OnInitialize()
+	private.settings = Settings.NewView()
+		:AddKey("profile", "userData", "groups")
+		:AddKey("profile", "userData", "items")
 	private.db = Database.NewSchema("GROUPS")
 		:AddStringField("groupPath")
 		:AddStringField("orderStr")
@@ -58,44 +64,44 @@ end
 function Groups.RebuildDatabase()
 	wipe(private.groupListCache)
 
-	-- clear ignoreRandomEnchants and ignoreItemVariations
-	for _, info in pairs(TSM.db.profile.userData.groups) do
+	-- Clear ignoreRandomEnchants and ignoreItemVariations
+	for _, info in pairs(private.settings.groups) do
 		info.ignoreItemVariations = nil
 		info.ignoreRandomEnchants = nil
 	end
 
-	for groupPath, groupInfo in pairs(TSM.db.profile.userData.groups) do
-		if type(groupPath) == "string" and not strmatch(groupPath, TSM.CONST.GROUP_SEP..TSM.CONST.GROUP_SEP) then
-			-- check the contents of groupInfo
+	for groupPath, groupInfo in pairs(private.settings.groups) do
+		if type(groupPath) == "string" and GroupPath.IsValid(groupPath) then
+			-- Check the contents of groupInfo
 			for _, moduleName in TSM.Operations.ModuleIterator() do
 				groupInfo[moduleName] = groupInfo[moduleName] or {}
-				if groupPath == TSM.CONST.ROOT_GROUP_PATH then
-					-- root group should have override flag set
+				if GroupPath.IsRoot(groupPath) then
+					-- Root group should have override flag set
 					groupInfo[moduleName].override = true
 				end
 			end
 			for key in pairs(groupInfo) do
 				if TSM.Operations.ModuleExists(key) then
-					-- this is a set of module operations
+					-- This is a set of module operations
 					local operations = groupInfo[key]
 					while #operations > TSM.Operations.GetMaxNumber(key) do
-						-- remove extra operations
+						-- Remove extra operations
 						tremove(operations)
 					end
 					for key2 in pairs(operations) do
 						if key2 == "override" then
-							-- ensure the override field is either true or nil
+							-- Ensure the override field is either true or nil
 							operations.override = operations.override and true or nil
 						elseif type(key2) ~= "number" or key2 <= 0 or key2 > #operations then
-							-- this is an invalid key
+							-- This is an invalid key
 							Log.Err("Removing invalid operations key (%s, %s): %s", groupPath, key, tostring(key2))
 							operations[key2] = nil
 						end
 					end
 					for i = #operations, 1, -1 do
 						if type(operations[i]) ~= "string" or operations[i] == "" or not TSM.Operations.Exists(key, operations[i]) then
-							-- remove operations which no longer exist
-							-- we used to have a bunch of placeholder "" operations, so don't log for those
+							-- Remove operations which no longer exist
+							-- We used to have a bunch of placeholder "" operations, so don't log for those
 							if operations[i] ~= "" then
 								Log.Err("Removing invalid operation from group (%s): %s, %s", groupPath, key, tostring(operations[i]))
 							end
@@ -103,41 +109,41 @@ function Groups.RebuildDatabase()
 						end
 					end
 				else
-					-- invalid key
+					-- Invalid key
 					Log.Err("Removing invalid groupInfo key (%s): %s", groupPath, tostring(key))
 					groupInfo[key] = nil
 				end
 			end
 		else
-			-- remove invalid group paths
+			-- Remove invalid group paths
 			Log.Err("Removing invalid group path: %s", tostring(groupPath))
-			TSM.db.profile.userData.groups[groupPath] = nil
+			private.settings.groups[groupPath] = nil
 		end
 	end
 
-	if not TSM.db.profile.userData.groups[TSM.CONST.ROOT_GROUP_PATH] then
-		-- set the override flag for all top-level groups and then create it
-		for groupPath, moduleOperations in pairs(TSM.db.profile.userData.groups) do
-			if not strfind(groupPath, TSM.CONST.GROUP_SEP) then
+	if not private.settings.groups[GroupPath.GetRoot()] then
+		-- Set the override flag for all top-level groups and then create it
+		for groupPath, moduleOperations in pairs(private.settings.groups) do
+			if GroupPath.IsTopLevel(groupPath) then
 				for _, moduleName in TSM.Operations.ModuleIterator() do
 					moduleOperations[moduleName].override = true
 				end
 			end
 		end
-		-- create the root group manually with default operations
-		TSM.db.profile.userData.groups[TSM.CONST.ROOT_GROUP_PATH] = {}
+		-- Create the root group manually with default operations
+		private.settings.groups[GroupPath.GetRoot()] = {}
 		for _, moduleName in TSM.Operations.ModuleIterator() do
 			assert(TSM.Operations.Exists(moduleName, "#Default"))
-			TSM.db.profile.userData.groups[TSM.CONST.ROOT_GROUP_PATH][moduleName] = { "#Default", override = true }
+			private.settings.groups[GroupPath.GetRoot()][moduleName] = { "#Default", override = true }
 		end
 	end
 
 	for _, groupPath in Groups.GroupIterator() do
-		local parentPath = TSM.Groups.Path.GetParent(groupPath)
-		if not TSM.db.profile.userData.groups[parentPath] then
-			-- the parent group doesn't exist, so remove this group
+		local parentPath = GroupPath.GetParent(groupPath)
+		if not private.settings.groups[parentPath] then
+			-- The parent group doesn't exist, so remove this group
 			Log.Err("Removing group with non-existent parent: %s", tostring(groupPath))
-			TSM.db.profile.userData.groups[groupPath] = nil
+			private.settings.groups[groupPath] = nil
 		else
 			for _, moduleName in TSM.Operations.ModuleIterator() do
 				if not Groups.HasOperationOverride(groupPath, moduleName) then
@@ -147,37 +153,37 @@ function Groups.RebuildDatabase()
 		end
 	end
 
-	-- fix up any invalid items
+	-- Fix up any invalid items
 	local newPaths = TempTable.Acquire()
-	for itemString, groupPath in pairs(TSM.db.profile.userData.items) do
+	for itemString, groupPath in pairs(private.settings.items) do
 		local newItemString = ItemString.Get(itemString)
 		if not newItemString then
-			-- this itemstring is invalid
+			-- This itemstring is invalid
 			Log.Err("Itemstring (%s) is invalid", tostring(itemString))
-			TSM.db.profile.userData.items[itemString] = nil
-		elseif groupPath == TSM.CONST.ROOT_GROUP_PATH or not TSM.db.profile.userData.groups[groupPath] then
-			-- this group doesn't exist
+			private.settings.items[itemString] = nil
+		elseif GroupPath.IsRoot(groupPath) or not private.settings.groups[groupPath] then
+			-- This group doesn't exist
 			Log.Err("Group (%s) doesn't exist, so removing item (%s)", groupPath, itemString)
-			TSM.db.profile.userData.items[itemString] = nil
+			private.settings.items[itemString] = nil
 		elseif newItemString ~= itemString then
-			-- remove this invalid itemstring from this group
+			-- Remove this invalid itemstring from this group
 			Log.Err("Itemstring changed (%s -> %s), so removing it from group (%s)", itemString, newItemString, groupPath)
-			TSM.db.profile.userData.items[itemString] = nil
-			-- add this new item to this group if it's not already in one
-			if not TSM.db.profile.userData.items[newItemString] then
+			private.settings.items[itemString] = nil
+			-- Add this new item to this group if it's not already in one
+			if not private.settings.items[newItemString] then
 				newPaths[newItemString] = groupPath
 				Log.Err("Adding to group instead (%s)", groupPath)
 			end
 		end
 	end
 	for itemString, groupPath in pairs(newPaths) do
-		TSM.db.profile.userData.items[itemString] = groupPath
+		private.settings.items[itemString] = groupPath
 	end
 	TempTable.Release(newPaths)
 
-	-- populate our database
+	-- Populate our database
 	private.itemDB:TruncateAndBulkInsertStart()
-	for itemString, groupPath in pairs(TSM.db.profile.userData.items) do
+	for itemString, groupPath in pairs(private.settings.items) do
 		private.itemDB:BulkInsertNewRow(itemString, groupPath)
 	end
 	private.itemDB:BulkInsertEnd()
@@ -214,36 +220,35 @@ function Groups.RebuildDB()
 end
 
 function Groups.Move(groupPath, newGroupPath)
-	assert(not TSM.db.profile.userData.groups[newGroupPath], "Target group already exists")
-	assert(groupPath ~= TSM.CONST.ROOT_GROUP_PATH, "Can't move root group")
-	assert(TSM.db.profile.userData.groups[groupPath], "Group doesn't exist")
-	local newParentPath = TSM.Groups.Path.GetParent(newGroupPath)
-	assert(newParentPath and TSM.db.profile.userData.groups[newParentPath], "Parent of target is invalid")
+	assert(private.settings.groups[groupPath] and not private.settings.groups[newGroupPath])
+	assert(not GroupPath.IsRoot(groupPath))
+	local newParentPath = GroupPath.GetParent(newGroupPath)
+	assert(newParentPath and private.settings.groups[newParentPath], "Parent of target is invalid")
 
 	local changes = TempTable.Acquire()
 	private.itemDB:SetQueryUpdatesPaused(true)
 
 	-- get a list of group path changes for this group and all its subgroups
 	local gsubEscapedNewGroupPath = gsub(newGroupPath, "%%", "%%%%")
-	for path in pairs(TSM.db.profile.userData.groups) do
-		if path == groupPath or TSM.Groups.Path.IsChild(path, groupPath) then
+	for path in pairs(private.settings.groups) do
+		if path == groupPath or GroupPath.IsChild(path, groupPath) then
 			changes[path] = gsub(path, "^"..String.Escape(groupPath), gsubEscapedNewGroupPath)
 		end
 	end
 
 	for oldPath, newPath in pairs(changes) do
 		-- move the group
-		assert(TSM.db.profile.userData.groups[oldPath] and not TSM.db.profile.userData.groups[newPath])
-		TSM.db.profile.userData.groups[newPath] = TSM.db.profile.userData.groups[oldPath]
-		TSM.db.profile.userData.groups[oldPath] = nil
+		assert(private.settings.groups[oldPath] and not private.settings.groups[newPath])
+		private.settings.groups[newPath] = private.settings.groups[oldPath]
+		private.settings.groups[oldPath] = nil
 
 		-- move the items
 		local query = private.itemDB:NewQuery()
 			:Equal("groupPath", oldPath)
 		for _, row in query:Iterator() do
 			local itemString = row:GetField("itemString")
-			assert(TSM.db.profile.userData.items[itemString])
-			TSM.db.profile.userData.items[itemString] = newPath
+			assert(private.settings.items[itemString])
+			private.settings.items[itemString] = newPath
 			row:SetField("groupPath", newPath)
 				:Update()
 		end
@@ -264,32 +269,28 @@ function Groups.Move(groupPath, newGroupPath)
 end
 
 function Groups.Delete(groupPath)
-	assert(groupPath ~= TSM.CONST.ROOT_GROUP_PATH and TSM.db.profile.userData.groups[groupPath])
-	local parentPath = TSM.Groups.Path.GetParent(groupPath)
+	assert(not GroupPath.IsRoot(groupPath) and private.settings.groups[groupPath])
+	local parentPath = GroupPath.GetParent(groupPath)
 	assert(parentPath)
-	if parentPath == TSM.CONST.ROOT_GROUP_PATH then
+	if GroupPath.IsRoot(parentPath) then
 		parentPath = nil
 	end
 
-	-- delete this group and all subgroups
-	for path in pairs(TSM.db.profile.userData.groups) do
-		if path == groupPath or TSM.Groups.Path.IsChild(path, groupPath) then
+	-- Delete this group and all subgroups
+	for path in pairs(private.settings.groups) do
+		if path == groupPath or GroupPath.IsChild(path, groupPath) then
 			-- delete this group
-			TSM.db.profile.userData.groups[path] = nil
+			private.settings.groups[path] = nil
 		end
 	end
-	-- remove all items from our DB
+	-- Remove all items from our DB
 	private.itemDB:SetQueryUpdatesPaused(true)
-	local query = private.itemDB:NewQuery()
-		:Or()
-			:Equal("groupPath", groupPath)
-			:StartsWith("groupPath", groupPath..TSM.CONST.GROUP_SEP)
-		:End()
+	local query = Groups.CreateItemsQuery(groupPath, true)
 	local updateMapItems = TempTable.Acquire()
 	for _, row in query:Iterator() do
 		local itemString = row:GetField("itemString")
-		assert(TSM.db.profile.userData.items[itemString])
-		TSM.db.profile.userData.items[itemString] = nil
+		assert(private.settings.items[itemString])
+		private.settings.items[itemString] = nil
 		private.itemDB:DeleteRow(row)
 		updateMapItems[itemString] = true
 	end
@@ -308,7 +309,7 @@ function Groups.Delete(groupPath)
 end
 
 function Groups.Exists(groupPath)
-	return TSM.db.profile.userData.groups[groupPath] and true or false
+	return private.settings.groups[groupPath] and true or false
 end
 
 function Groups.SetItemGroup(itemString, groupPath)
@@ -327,18 +328,18 @@ end
 
 function Groups.BulkCreateFromImport(groupName, items, groups, groupOperations, moveExistingItems)
 	-- create all the groups
-	assert(not TSM.db.profile.userData.groups[groupName])
+	assert(not private.settings.groups[groupName])
 	for relGroupPath in pairs(groups) do
-		local groupPath = relGroupPath == "" and groupName or TSM.Groups.Path.Join(groupName, relGroupPath)
-		if not TSM.db.profile.userData.groups[groupPath] then
+		local groupPath = relGroupPath == "" and groupName or GroupPath.Join(groupName, relGroupPath)
+		if not private.settings.groups[groupPath] then
 			private.CreateGroup(groupPath)
 		end
 	end
 	for relGroupPath, moduleOperations in pairs(groupOperations) do
-		local groupPath = relGroupPath == "" and groupName or TSM.Groups.Path.Join(groupName, relGroupPath)
+		local groupPath = relGroupPath == "" and groupName or GroupPath.Join(groupName, relGroupPath)
 		for moduleName, operations in pairs(moduleOperations) do
 			if operations.override then
-				TSM.db.profile.userData.groups[groupPath][moduleName] = operations
+				private.settings.groups[groupPath][moduleName] = operations
 				private.UpdateChildGroupOperations(groupPath, moduleName)
 			end
 		end
@@ -349,7 +350,7 @@ function Groups.BulkCreateFromImport(groupName, items, groups, groupOperations, 
 	local insertItems = TempTable.Acquire()
 	local numItems = 0
 	for itemString, relGroupPath in pairs(items) do
-		local groupPath = relGroupPath == "" and groupName or TSM.Groups.Path.Join(groupName, relGroupPath)
+		local groupPath = relGroupPath == "" and groupName or GroupPath.Join(groupName, relGroupPath)
 		if not Groups.IsItemInGroup(itemString) then
 			insertItems[itemString] = groupPath
 			numItems = numItems + 1
@@ -359,13 +360,14 @@ function Groups.BulkCreateFromImport(groupName, items, groups, groupOperations, 
 		end
 	end
 	private.itemDB:TruncateAndBulkInsertStart()
+	for itemString, groupPath in pairs(private.settings.items) do
+		groupPath = moveItems[itemString] or groupPath
+		private.SetItemGroup(itemString, groupPath, true, true)
+	end
 	for itemString, groupPath in pairs(insertItems) do
 		private.SetItemGroup(itemString, groupPath, true, true)
 	end
 	private.itemDB:BulkInsertEnd()
-	for itemString, groupPath in pairs(moveItems) do
-		private.SetItemGroup(itemString, groupPath, false, true)
-	end
 	TempTable.Release(moveItems)
 	TempTable.Release(insertItems)
 	private.itemStringMap:Invalidate()
@@ -378,8 +380,8 @@ end
 function Groups.GetPathByItem(itemString)
 	itemString = Groups.TranslateItemString(itemString)
 	assert(itemString)
-	local groupPath = private.itemDB:GetUniqueRowField("itemString", itemString, "groupPath") or TSM.CONST.ROOT_GROUP_PATH
-	assert(TSM.db.profile.userData.groups[groupPath])
+	local groupPath = private.itemDB:GetUniqueRowField("itemString", itemString, "groupPath") or GroupPath.GetRoot()
+	assert(private.settings.groups[groupPath])
 	return groupPath
 end
 
@@ -393,17 +395,15 @@ function Groups.ItemByBaseItemStringIterator(baseItemString)
 end
 
 function Groups.CreateItemsQuery(groupPathFilter, includeSubGroups)
-	assert(groupPathFilter ~= TSM.CONST.ROOT_GROUP_PATH)
-	local query = private.itemDB:NewQuery()
+	assert(not GroupPath.IsRoot(groupPathFilter))
 	if includeSubGroups then
-		query:Or()
-				:Equal("groupPath", groupPathFilter)
-				:StartsWith("groupPath", groupPathFilter..TSM.CONST.GROUP_SEP)
-			:End()
+		return private.itemDB:NewQuery()
+			:StartsWith("groupPath", groupPathFilter)
+			:Custom(private.ItemInGroupQueryFilter, groupPathFilter)
 	else
-		query:Equal("groupPath", groupPathFilter)
+		return private.itemDB:NewQuery()
+			:Equal("groupPath", groupPathFilter)
 	end
-	return query
 end
 
 function Groups.ItemIterator(groupPathFilter, includeSubGroups)
@@ -419,7 +419,7 @@ function Groups.ItemIterator(groupPathFilter, includeSubGroups)
 end
 
 function Groups.GetNumItems(groupPathFilter)
-	assert(groupPathFilter ~= TSM.CONST.ROOT_GROUP_PATH)
+	assert(not GroupPath.IsRoot(groupPathFilter))
 	return private.itemDB:NewQuery()
 		:Equal("groupPath", groupPathFilter)
 		:CountAndRelease()
@@ -427,34 +427,30 @@ end
 
 function Groups.GroupIterator()
 	if #private.groupListCache == 0 then
-		for groupPath in pairs(TSM.db.profile.userData.groups) do
-			if groupPath ~= TSM.CONST.ROOT_GROUP_PATH then
+		for groupPath in pairs(private.settings.groups) do
+			if not GroupPath.IsRoot(groupPath) then
 				tinsert(private.groupListCache, groupPath)
 			end
 		end
-		Groups.SortGroupList(private.groupListCache)
+		GroupPath.SortPaths(private.groupListCache)
 	end
 	return ipairs(private.groupListCache)
 end
 
-function Groups.SortGroupList(list)
-	Table.Sort(list, private.GroupSortFunction)
-end
-
 function Groups.SetOperationOverride(groupPath, moduleName, override, skipRebuild)
-	assert(TSM.db.profile.userData.groups[groupPath])
-	assert(groupPath ~= TSM.CONST.ROOT_GROUP_PATH)
-	if override == (TSM.db.profile.userData.groups[groupPath][moduleName].override and true or false) then
+	assert(private.settings.groups[groupPath])
+	assert(not GroupPath.IsRoot(groupPath))
+	if override == (private.settings.groups[groupPath][moduleName].override and true or false) then
 		return
 	end
 
 	if not override then
-		TSM.db.profile.userData.groups[groupPath][moduleName].override = nil
+		private.settings.groups[groupPath][moduleName].override = nil
 		private.InheritParentOperations(groupPath, moduleName)
 		private.UpdateChildGroupOperations(groupPath, moduleName)
 	else
-		wipe(TSM.db.profile.userData.groups[groupPath][moduleName])
-		TSM.db.profile.userData.groups[groupPath][moduleName].override = true
+		wipe(private.settings.groups[groupPath][moduleName])
+		private.settings.groups[groupPath][moduleName].override = true
 		private.UpdateChildGroupOperations(groupPath, moduleName)
 	end
 	if not skipRebuild then
@@ -463,16 +459,16 @@ function Groups.SetOperationOverride(groupPath, moduleName, override, skipRebuil
 end
 
 function Groups.HasOperationOverride(groupPath, moduleName)
-	return TSM.db.profile.userData.groups[groupPath][moduleName].override
+	return private.settings.groups[groupPath][moduleName].override
 end
 
 function Groups.OperationIterator(groupPath, moduleName)
-	return ipairs(TSM.db.profile.userData.groups[groupPath][moduleName])
+	return ipairs(private.settings.groups[groupPath][moduleName])
 end
 
 function Groups.AppendOperation(groupPath, moduleName, operationName, skipRebuild)
 	assert(TSM.Operations.Exists(moduleName, operationName))
-	local groupOperations = TSM.db.profile.userData.groups[groupPath][moduleName]
+	local groupOperations = private.settings.groups[groupPath][moduleName]
 	assert(groupOperations.override and #groupOperations < TSM.Operations.GetMaxNumber(moduleName))
 	tinsert(groupOperations, operationName)
 	private.UpdateChildGroupOperations(groupPath, moduleName)
@@ -482,7 +478,7 @@ function Groups.AppendOperation(groupPath, moduleName, operationName, skipRebuil
 end
 
 function Groups.RemoveOperation(groupPath, moduleName, operationIndex, skipRebuild)
-	local groupOperations = TSM.db.profile.userData.groups[groupPath][moduleName]
+	local groupOperations = private.settings.groups[groupPath][moduleName]
 	assert(groupOperations.override and groupOperations[operationIndex])
 	tremove(groupOperations, operationIndex)
 	private.UpdateChildGroupOperations(groupPath, moduleName)
@@ -492,7 +488,7 @@ function Groups.RemoveOperation(groupPath, moduleName, operationIndex, skipRebui
 end
 
 function Groups.RemoveOperationByName(groupPath, moduleName, operationName)
-	local groupOperations = TSM.db.profile.userData.groups[groupPath][moduleName]
+	local groupOperations = private.settings.groups[groupPath][moduleName]
 	assert(groupOperations.override)
 	assert(Table.RemoveByValue(groupOperations, operationName) > 0)
 	private.UpdateChildGroupOperations(groupPath, moduleName)
@@ -500,22 +496,22 @@ function Groups.RemoveOperationByName(groupPath, moduleName, operationName)
 end
 
 function Groups.RemoveOperationFromAllGroups(moduleName, operationName)
-	-- just blindly remove from all groups - no need to check for override
-	Table.RemoveByValue(TSM.db.profile.userData.groups[TSM.CONST.ROOT_GROUP_PATH][moduleName], operationName)
+	-- Just blindly remove from all groups - no need to check for override
+	Table.RemoveByValue(private.settings.groups[GroupPath.GetRoot()][moduleName], operationName)
 	for _, groupPath in Groups.GroupIterator() do
-		Table.RemoveByValue(TSM.db.profile.userData.groups[groupPath][moduleName], operationName)
+		Table.RemoveByValue(private.settings.groups[groupPath][moduleName], operationName)
 	end
 end
 
 function Groups.SwapOperation(groupPath, moduleName, fromIndex, toIndex)
-	local groupOperations = TSM.db.profile.userData.groups[groupPath][moduleName]
+	local groupOperations = private.settings.groups[groupPath][moduleName]
 	groupOperations[fromIndex], groupOperations[toIndex] = groupOperations[toIndex], groupOperations[fromIndex]
 	private.UpdateChildGroupOperations(groupPath, moduleName)
 end
 
 function Groups.OperationRenamed(moduleName, oldName, newName)
-	-- just blindly rename in all groups - no need to check for override
-	for _, info in pairs(TSM.db.profile.userData.groups) do
+	-- Just blindly rename in all groups - no need to check for override
+	for _, info in pairs(private.settings.groups) do
 		for i = 1, #info[moduleName] do
 			if info[moduleName][i] == oldName then
 				info[moduleName][i] = newName
@@ -532,9 +528,8 @@ end
 
 function private.RebuildDB()
 	private.db:TruncateAndBulkInsertStart()
-	for groupPath in pairs(TSM.db.profile.userData.groups) do
-		local orderStr = gsub(groupPath, TSM.CONST.GROUP_SEP, "\001")
-		orderStr = strlower(orderStr)
+	for groupPath in pairs(private.settings.groups) do
+		local orderStr = GroupPath.GetSortableString(groupPath)
 		local hasAuctioningOperation = TSM.Operations.GroupHasAnyOperation("Auctioning", groupPath)
 		local hasCraftingOperation = TSM.Operations.GroupHasAnyOperation("Crafting", groupPath)
 		local hasMailingOperation = TSM.Operations.GroupHasAnyOperation("Mailing", groupPath)
@@ -549,47 +544,43 @@ function private.RebuildDB()
 end
 
 function private.CreateGroup(groupPath)
-	assert(not TSM.db.profile.userData.groups[groupPath])
-	local parentPath = TSM.Groups.Path.GetParent(groupPath)
+	assert(not private.settings.groups[groupPath])
+	local parentPath = GroupPath.GetParent(groupPath)
 	assert(parentPath)
-	if parentPath ~= TSM.CONST.ROOT_GROUP_PATH and not TSM.db.profile.userData.groups[parentPath] then
-		-- recursively create the parent group first
+	if not GroupPath.IsRoot(parentPath) and not private.settings.groups[parentPath] then
+		-- Recursively create the parent group first
 		private.CreateGroup(parentPath)
 	end
-	TSM.db.profile.userData.groups[groupPath] = {}
+	private.settings.groups[groupPath] = {}
 	for _, moduleName in TSM.Operations.ModuleIterator() do
-		TSM.db.profile.userData.groups[groupPath][moduleName] = {}
-		-- assign all parent operations to this group
-		for _, operationName in ipairs(TSM.db.profile.userData.groups[parentPath][moduleName]) do
-			tinsert(TSM.db.profile.userData.groups[groupPath][moduleName], operationName)
+		private.settings.groups[groupPath][moduleName] = {}
+		-- Assign all parent operations to this group
+		for _, operationName in ipairs(private.settings.groups[parentPath][moduleName]) do
+			tinsert(private.settings.groups[groupPath][moduleName], operationName)
 		end
 	end
 end
 
-function private.GroupSortFunction(a, b)
-	return strlower(gsub(a, TSM.CONST.GROUP_SEP, "\001")) < strlower(gsub(b, TSM.CONST.GROUP_SEP, "\001"))
-end
-
 function private.InheritParentOperations(groupPath, moduleName)
-	local parentGroupPath = TSM.Groups.Path.GetParent(groupPath)
-	local override = TSM.db.profile.userData.groups[groupPath][moduleName].override
-	wipe(TSM.db.profile.userData.groups[groupPath][moduleName])
-	TSM.db.profile.userData.groups[groupPath][moduleName].override = override
-	for _, operationName in ipairs(TSM.db.profile.userData.groups[parentGroupPath][moduleName]) do
-		tinsert(TSM.db.profile.userData.groups[groupPath][moduleName], operationName)
+	local parentGroupPath = GroupPath.GetParent(groupPath)
+	local override = private.settings.groups[groupPath][moduleName].override
+	wipe(private.settings.groups[groupPath][moduleName])
+	private.settings.groups[groupPath][moduleName].override = override
+	for _, operationName in ipairs(private.settings.groups[parentGroupPath][moduleName]) do
+		tinsert(private.settings.groups[groupPath][moduleName], operationName)
 	end
 end
 
 function private.UpdateChildGroupOperations(groupPath, moduleName)
 	for _, childGroupPath in Groups.GroupIterator() do
-		if TSM.Groups.Path.IsChild(childGroupPath, groupPath) and not Groups.HasOperationOverride(childGroupPath, moduleName) then
+		if GroupPath.IsChild(childGroupPath, groupPath) and not Groups.HasOperationOverride(childGroupPath, moduleName) then
 			private.InheritParentOperations(childGroupPath, moduleName)
 		end
 	end
 end
 
 function private.SetItemGroup(itemString, groupPath, bulkInsert, noMapUpdate)
-	assert(not groupPath or (groupPath ~= TSM.CONST.ROOT_GROUP_PATH and TSM.db.profile.userData.groups[groupPath]))
+	assert(not groupPath or (not GroupPath.IsRoot(groupPath) and private.settings.groups[groupPath]))
 
 	local row = private.itemDB:GetUniqueRow("itemString", itemString)
 	local updateMap = false
@@ -618,7 +609,7 @@ function private.SetItemGroup(itemString, groupPath, bulkInsert, noMapUpdate)
 		-- we just added a new item to a group, so update the map
 		updateMap = not noMapUpdate
 	end
-	TSM.db.profile.userData.items[itemString] = groupPath
+	private.settings.items[itemString] = groupPath
 	if updateMap then
 		assert(not bulkInsert)
 		private.itemStringMap:SetCallbacksPaused(true)
@@ -640,6 +631,11 @@ function private.SetItemGroup(itemString, groupPath, bulkInsert, noMapUpdate)
 		end
 		private.itemStringMap:SetCallbacksPaused(false)
 	end
+end
+
+function private.ItemInGroupQueryFilter(row, groupPathFilter)
+	local groupPath = row:GetField("groupPath")
+	return groupPath == groupPathFilter or GroupPath.IsChild(groupPath, groupPathFilter)
 end
 
 

@@ -1,14 +1,11 @@
 ﻿-- Pawn by Vger-Azjol-Nerub
 -- www.vgermods.com
--- © 2006-2023 Travis Spomer.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
+-- © 2006-2024 Travis Spomer.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
 -- See Readme.htm for more information.
 --
 -- Scale templates
 ------------------------------------------------------------
 
-
--- Test code for getting spec IDs matched up:
---/script local Index; for Index = 1, GetNumSpecializations() do local ID, Name = GetSpecializationInfo(Index) VgerCore.Message("(" .. Index .. ") Spec ID " .. ID .. " is " .. Name) end
 
 -- Returns the template from PawnScaleTemplates for a given class ID and spec ID.
 function PawnFindScaleTemplate(ClassID, SpecID)
@@ -280,6 +277,14 @@ PawnScaleTemplates =
 
 {
 	["ClassID"] = 13, -- Evoker
+	["SpecID"] = 3, -- Augmentation
+	["Role"] = "DAMAGER",
+	["PrimaryStat"] = "Intellect",
+	["UnusableStats"] = {}
+},
+
+{
+	["ClassID"] = 13, -- Evoker
 	["SpecID"] = 1, -- Devastation
 	["Role"] = "DAMAGER",
 	["PrimaryStat"] = "Intellect",
@@ -461,7 +466,7 @@ PawnScaleTemplates =
 	["Role"] = "DAMAGER",
 	["PrimaryStat"] = "Agility",
 	["HideUpgrades"] = 2, -- Hide 2H upgrades
-	["UnusableStats"] = { "IsShield", "IsFrill" }
+	["UnusableStats"] = { "IsDagger", "IsShield", "IsFrill" }
 },
 
 {

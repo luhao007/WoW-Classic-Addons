@@ -4,8 +4,9 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local BuyUtil = TSM.UI.AuctionUI:NewPackage("BuyUtil")
+local Environment = TSM.Include("Environment")
 local L = TSM.Include("Locale").GetTable()
 local Delay = TSM.Include("Util.Delay")
 local Money = TSM.Include("Util.Money")
@@ -14,9 +15,11 @@ local Math = TSM.Include("Util.Math")
 local Theme = TSM.Include("Util.Theme")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local CustomPrice = TSM.Include("Service.CustomPrice")
+local Settings = TSM.Include("Service.Settings")
 local UIElements = TSM.Include("UI.UIElements")
 local UIUtils = TSM.Include("UI.UIUtils")
 local private = {
+	settings = nil,
 	commodityQuoteTimer = nil,
 	totalBuyout = nil,
 	isBuy = nil,
@@ -51,6 +54,9 @@ local private = {
 -- ============================================================================
 
 function BuyUtil.OnInitialize()
+	private.settings = Settings.NewView()
+		:AddKey("global", "shoppingOptions", "buyoutConfirm")
+		:AddKey("global", "shoppingOptions", "buyoutAlertSource")
 	private.commodityQuoteTimer = Delay.CreateTimer("COMMODITY_QUOTE_TIMER", private.OnQuoteTick)
 end
 
@@ -63,14 +69,14 @@ function BuyUtil.ShowConfirmation(baseFrame, subRow, isBuy, auctionNum, numFound
 	local quantity = subRow:GetQuantities()
 	local itemString = subRow:GetItemString()
 	local _, _, _, isHighBidder = subRow:GetBidInfo()
-	local isCommodity = not TSM.IsWowClassic() and subRow:IsCommodity()
+	local isCommodity = Environment.IsRetail() and subRow:IsCommodity()
 	local shouldConfirm = false
 	if isCommodity then
 		shouldConfirm = true
 	elseif isBuy and isHighBidder then
 		shouldConfirm = true
-	elseif TSM.db.global.shoppingOptions.buyoutConfirm then
-		shouldConfirm = ceil(buyout / quantity) >= (CustomPrice.GetValue(TSM.db.global.shoppingOptions.buyoutAlertSource, itemString) or 0)
+	elseif private.settings.buyoutConfirm then
+		shouldConfirm = ceil(buyout / quantity) >= (CustomPrice.GetValue(private.settings.buyoutAlertSource, itemString) or 0)
 	end
 	if not shouldConfirm then
 		return false
@@ -99,7 +105,7 @@ function BuyUtil.ShowConfirmation(baseFrame, subRow, isBuy, auctionNum, numFound
 	assert(not isCommodity or isBuy)
 
 	private.marketTreshold = gatheringResultsFunction and (private.marketValueFunc(private.subRow) or 0) or math.huge
-	private.alertThreshold = TSM.db.global.shoppingOptions.buyoutConfirm and (CustomPrice.GetValue(TSM.db.global.shoppingOptions.buyoutAlertSource, itemString) or 0) or math.huge
+	private.alertThreshold = private.settings.buyoutConfirm and (CustomPrice.GetValue(private.settings.buyoutAlertSource, itemString) or 0) or math.huge
 
 	private.displayItemBuyout = nil
 	private.displayTotalBuyout = nil
@@ -108,7 +114,7 @@ function BuyUtil.ShowConfirmation(baseFrame, subRow, isBuy, auctionNum, numFound
 		private.displayItemBuyout = Math.Ceil(private.displayTotalBuyout / private.defaultQuantity, COPPER_PER_SILVER)
 	else
 		private.displayItemBuyout = ceil(buyout / quantity)
-		private.displayTotalBuyout = TSM.IsWowClassic() and buyout or ceil(buyout / quantity)
+		private.displayTotalBuyout = Environment.HasFeature(Environment.FEATURES.AH_STACKS) and buyout or ceil(buyout / quantity)
 	end
 
 
@@ -138,7 +144,7 @@ function private.GetBuyUtilFrame()
 		:AddAnchor("CENTER")
 		:SetContext(private.callback)
 		:SetMouseEnabled(true)
-		:SetBackgroundColor("FRAME_BG", true)
+		:SetRoundedBackgroundColor("FRAME_BG")
 		:SetScript("OnHide", private.DialogOnHide)
 		:AddChild(UIElements.New("ViewContainer", "view")
 			:SetNavCallback(private.GetViewContentFrame)
@@ -189,7 +195,7 @@ function private.GetDetailsFrame()
 					:SetLayout("HORIZONTAL")
 					:SetPadding(6)
 					:SetMargin(0, 0, 0, 16)
-					:SetBackgroundColor("PRIMARY_BG_ALT", true)
+					:SetRoundedBackgroundColor("PRIMARY_BG_ALT")
 					:AddChild(UIElements.New("Button", "icon")
 						:SetSize(36, 36)
 						:SetMargin(0, 8, 0, 0)
@@ -199,7 +205,7 @@ function private.GetDetailsFrame()
 					:AddChild(UIElements.New("Text", "name")
 						:SetHeight(36)
 						:SetFont("ITEM_BODY1")
-						:SetText(UIUtils.GetColoredItemName(private.itemString))
+						:SetText(UIUtils.GetDisplayItemName(private.itemString))
 					)
 				)
 				:AddChildIf(private.isCommodity, UIElements.New("Frame", "quantity")
@@ -288,7 +294,7 @@ function private.GetDetailsFrame()
 				:SetWidth(266)
 				:SetMargin(12, 0, 0, 0)
 				:SetPadding(4, 4, 8, 8)
-				:SetBackgroundColor("PRIMARY_BG_ALT", true)
+				:SetRoundedBackgroundColor("PRIMARY_BG_ALT")
 				:AddChild(UIElements.New("CommodityList", "items")
 					:SetBackgroundColor("PRIMARY_BG_ALT")
 					:SetData(private.subRow:GetResultRow())
@@ -333,7 +339,7 @@ function private.GetConfirmFrame()
 			:SetLayout("HORIZONTAL")
 			:SetPadding(6)
 			:SetMargin(0, 0, 0, 16)
-			:SetBackgroundColor("PRIMARY_BG_ALT", true)
+			:SetRoundedBackgroundColor("PRIMARY_BG_ALT")
 			:AddChild(UIElements.New("Button", "icon")
 				:SetSize(36, 36)
 				:SetMargin(0, 8, 0, 0)
@@ -343,7 +349,7 @@ function private.GetConfirmFrame()
 			:AddChild(UIElements.New("Text", "name")
 				:SetHeight(36)
 				:SetFont("ITEM_BODY1")
-				:SetText(UIUtils.GetColoredItemName(private.itemString))
+				:SetText(UIUtils.GetDisplayItemName(private.itemString))
 			)
 		)
 		:AddChild(UIElements.New("Frame", "quantity")
@@ -557,10 +563,10 @@ end
 
 function private.BuyoutBtnOnClick(button)
 	local inputQuantity = nil
-	if not TSM.IsWowClassic() and private.subRow:IsCommodity() then
+	if Environment.IsRetail() and private.subRow:IsCommodity() then
 		local input = private.dialogFrame:GetElement("view.frame.content.left.quantity.input")
 		inputQuantity = tonumber(input:GetValue())
-		if not private.prepareSuccess and not TSM.IsWowClassic() then
+		if not private.prepareSuccess then
 			-- this is a prepare click
 			private.Prepare(inputQuantity)
 			return
@@ -568,7 +574,7 @@ function private.BuyoutBtnOnClick(button)
 		assert(private.prepareQuantity == inputQuantity)
 	end
 
-	if not TSM.IsWowClassic() and private.subRow:IsCommodity() then
+	if Environment.IsRetail() and private.subRow:IsCommodity() then
 		local itemString = private.subRow:GetItemString()
 		local _, maxCost = private.CommodityResultsByQuantity(itemString, inputQuantity)
 		if maxCost >= private.marketTreshold or maxCost >= private.alertThreshold then
@@ -604,7 +610,7 @@ end
 function private.UpdateConfirmButton()
 	local confirmBtn = private.dialogFrame:GetElement("view.frame.content.left.confirmBtn")
 	local text, disabled, requireManualClick = nil, false, false
-	if not TSM.IsWowClassic() and private.subRow:IsCommodity() then
+	if Environment.IsRetail() and private.subRow:IsCommodity() then
 		local input = confirmBtn:GetElement("__parent.quantity.input")
 		local inputQuantity = tonumber(input:GetValue())
 		local minQuantity = 1
@@ -664,7 +670,7 @@ function private.Prepare(quantity)
 	end
 	private.prepareQuantity = quantity
 	private.prepareSuccess = false
-	local totalBuyout = not TSM.IsWowClassic() and private.subRow:IsCommodity() and private.CommodityResultsByQuantity(private.subRow:GetItemString(), quantity) or (select(2, private.subRow:GetBuyouts()))
+	local totalBuyout = Environment.IsRetail() and private.subRow:IsCommodity() and private.CommodityResultsByQuantity(private.subRow:GetItemString(), quantity) or (select(2, private.subRow:GetBuyouts()))
 	private.totalBuyout = totalBuyout
 	local itemBuyout = quantity > 0 and Math.Ceil(totalBuyout / quantity, COPPER_PER_SILVER)
 	local result, future = private.auctionScan:PrepareForBidOrBuyout(private.index, private.subRow, private.noSeller, quantity, itemBuyout)

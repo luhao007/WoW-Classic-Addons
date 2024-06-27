@@ -10,12 +10,12 @@
 
 ## X-Part-Of: Details
 
-#@no-lib-strip@
-embeds.xml
-#@end-no-lib-strip@
-
 enUS.lua
 ptBR.lua
-frames.lua
 
 Details_EncounterDetails.lua
+frames_chart.lua
+frames_emote.lua
+frames_phases.lua
+frames_summary.lua
+frames.lua

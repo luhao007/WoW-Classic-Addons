@@ -4,7 +4,7 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local Tooltip = TSM:NewPackage("Tooltip")
 local ItemString = TSM.Include("Util.ItemString")
 local ObjectPool = TSM.Include("Util.ObjectPool")

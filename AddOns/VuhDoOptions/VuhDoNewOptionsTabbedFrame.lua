@@ -56,7 +56,7 @@ local function VUHDO_countTableDiffs(aTable, anotherTable)
 		if ("table" == tType) then
 			tCount = tCount + VUHDO_countTableDiffs(tValue, anotherTable[tKey]);
 		elseif ("number" == tType) then
-			if (format("%0.4f", aTable[tKey]) ~= format("%0.4f", anotherTable[tKey])) then
+			if (format("%0.4f", aTable[tKey]) ~= (anotherTable[tKey] and format("%0.4f", anotherTable[tKey]) or nil)) then
 				tCount = tCount + 1;
 			end
 		else
@@ -82,6 +82,12 @@ end
 
 --
 function VUHDO_tabbedPanelOkayClicked(aButton)
+	if InCombatLockdown() then
+		VUHDO_Msg("Options cannot be saved in combat!", 1, 0.4, 0.4);
+
+		return;
+	end
+
 	VUHDO_B_CONFIG = nil;
 	VUHDO_B_INDICATOR_CONFIG = nil;
 	VUHDO_B_PANEL_SETUP = nil;
@@ -121,8 +127,13 @@ end
 
 --
 function VUHDO_tabbedPanelCancelClicked()
-	VUHDO_newOptionsRestoreVars();
-	VUHDO_initKeyboardMacros();
+	if InCombatLockdown() then
+		VuhDoNewOptionsTabbedFrame:Hide();
+	else
+		VUHDO_newOptionsRestoreVars();
+		VUHDO_initKeyboardMacros();
+	end
+
 	VUHDO_MAY_DEBUFF_ANIM = true;
 end
 

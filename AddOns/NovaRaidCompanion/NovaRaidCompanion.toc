@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Novaspark-Arugal OCE
-## Version: 1.25
+## Version: 1.37
 ## SavedVariables: NRCdatabase
 
 ## Title: Nova Raid Companion
@@ -22,6 +22,9 @@ DB\TBC_Cooldowns.lua
 DB\Wrath_DB.lua
 DB\Wrath_TalentData.lua
 DB\Wrath_Cooldowns.lua
+DB\Cata_DB.lua
+DB\Cata_TalentData.lua
+DB\Cata_Cooldowns.lua
 DB\zDB_Tools.lua
 Modules\Tools.lua
 Modules\Frames.lua

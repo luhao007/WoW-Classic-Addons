@@ -68,7 +68,6 @@ local table = table;
 local strsub = strsub;
 local GetTime = GetTime;
 local GetSpellCooldown = GetSpellCooldown;
-local GetSpellBookItemName = GetSpellBookItemName;
 local GetSpellInfo = GetSpellInfo;
 local InCombatLockdown = InCombatLockdown;
 local GetWeaponEnchantInfo = GetWeaponEnchantInfo;
@@ -147,7 +146,7 @@ end
 
 
 local function VUHDO_getWeaponEnchantMacroText(anEnchantName, aTargetType)
-	return format("/use [@none] %s\n/use %d\n/click StaticPopup1Button1",
+	return format("/use [@none] %s\n/use %d\n/click StaticPopup1Button1 LeftButton",
 		anEnchantName, VUHDO_BUFF_TARGET_ENCHANT == aTargetType and 16 or 17);
 end
 
@@ -196,7 +195,8 @@ end
 
 --
 function VUHDO_buffSelectDropdownOnLoad()
-	UIDropDownMenu_Initialize(VuhDoBuffSelectDropdown, VUHDO_buffSelectDropdown_Initialize, "MENU", 1);
+	UIDropDownMenu_SetInitializeFunction(VuhDoBuffSelectDropdown, VUHDO_buffSelectDropdown_Initialize);
+	UIDropDownMenu_SetDisplayMode(VuhDoBuffSelectDropdown, "MENU");
 end
 
 
@@ -392,8 +392,8 @@ function VUHDO_initBuffsFromSpellBook()
 	for _, tCateg in pairs(VUHDO_getPlayerClassBuffs()) do
 		for _, tCategSpells in pairs(tCateg) do
 			tParentSpellName = tCategSpells[1];
-			_, tSpellId = GetSpellBookItemInfo(tParentSpellName);
-			if tSpellId then
+
+			if VUHDO_isSpellKnown(tParentSpellName) then
 				tChildSpellName, _, tIcon, _, _, _, tSpellId = GetSpellInfo(tParentSpellName);
 				VUHDO_BUFFS[tChildSpellName] = {
 					["icon"] = tIcon,

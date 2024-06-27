@@ -1,5 +1,6 @@
-## v4.12.20 Changes
+## v4.13.26 Changes
 
-* [Retail] Fixed issue with Gathering not collecting the right quantity of quality materials
+* [Retail] Updated Bonus IDs
+* [Retail] Updated for 10.2.7
 
 [Known Issues](https://support.tradeskillmaster.com/en_US/known_issues)

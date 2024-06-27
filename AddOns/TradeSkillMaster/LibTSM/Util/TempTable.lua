@@ -6,9 +6,10 @@
 
 local TSM = select(2, ...) ---@type TSM
 local TempTable = TSM.Init("Util.TempTable") ---@class Util.TempTable
+local Environment = TSM.Include("Environment")
 local Debug = TSM.Include("Util.Debug")
 local private = {
-	debugLeaks = TSM.IsTestEnvironment() or false,
+	debugLeaks = nil,
 	freeTempTables = {},
 	tempTableState = {},
 }
@@ -21,6 +22,16 @@ local RELEASED_TEMP_TABLE_MT = {
 		error("Attempt to access temp table after release")
 	end,
 }
+
+
+
+-- ============================================================================
+-- Module Loading
+-- ============================================================================
+
+TempTable:OnModuleLoad(function()
+	private.debugLeaks = Environment.IsTest()
+end)
 
 
 

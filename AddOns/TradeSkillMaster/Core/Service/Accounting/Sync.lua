@@ -11,6 +11,7 @@ local Delay = TSM.Include("Util.Delay")
 local Log = TSM.Include("Util.Log")
 local TempTable = TSM.Include("Util.TempTable")
 local Theme = TSM.Include("Util.Theme")
+local Wow = TSM.Include("Util.Wow")
 local Sync = TSM.Include("Service.Sync")
 local private = {
 	accountLookup = {},
@@ -19,6 +20,11 @@ local private = {
 	dataTemp = {},
 	changeTimer = nil,
 	hashesRetryTimer = nil
+}
+local STATUS = {
+	UPDATING = newproxy(),
+	RETRY = newproxy(),
+	SYNCED = newproxy(),
 }
 local CHANGE_NOTIFICATION_DELAY = 5
 local RETRY_DELAY = 5
@@ -43,9 +49,9 @@ function AccountingSync.GetStatus(account)
 	local status = private.accountStatus[account]
 	if not status then
 		return Theme.GetColor("FEEDBACK_RED"):ColorText(L["Not Connected"])
-	elseif status == "GET_PLAYER_HASH" or status == "GET_PLAYER_CHUNKS" or status == "GET_PLAYER_DATA" or status == "RETRY" then
+	elseif status == STATUS.UPDATING or status == STATUS.RETRY then
 		return Theme.GetColor("FEEDBACK_YELLOW"):ColorText(L["Updating"])
-	elseif status == "SYNCED" then
+	elseif status == STATUS.SYNCED then
 		return Theme.GetColor("FEEDBACK_GREEN"):ColorText(L["Up to date"])
 	else
 		error("Invalid status: "..tostring(status))
@@ -64,41 +70,31 @@ end
 
 function private.GetPlayerHash(player)
 	local account = private.accountLookup[player]
-	private.accountStatus[account] = "GET_PLAYER_HASH"
+	private.accountStatus[account] = STATUS.UPDATING
 	TSM.Accounting.Transactions.PrepareSyncHashes(player)
 	Sync.CallRPC("ACCOUNTING_GET_PLAYER_HASH", player, private.RPCGetPlayerHashResultHandler)
 end
 
 function private.RPCGetPlayerHash()
-	local player = UnitName("player")
-	return player, TSM.Accounting.Transactions.GetSyncHash(player)
+	return TSM.Accounting.Transactions.GetSyncHash(Wow.GetCharacterName())
 end
 
-function private.RPCGetPlayerHashResultHandler(player, hash)
-	local account = player and private.accountLookup[player]
+function private.RPCGetPlayerHashResultHandler(success, player, hash)
+	local account = private.HandleRPCResult("GET_PLAYER_HASH", success, player)
 	if not account then
-		-- request timed out, so try again
-		Log.Warn("Getting player hash timed out")
-		private.QueueRetriesByStatus("GET_PLAYER_HASH")
 		return
 	elseif not hash then
-		-- the hash isn't ready yet, so try again
-		Log.Warn("Sync player hash not ready yet")
-		private.QueueRetryByPlayer(player)
+		-- The hash isn't ready yet, so try again
+		Log.Warn("Sync player hash not ready yet (%s)", player)
+		private.RestartForAccount(account)
 		return
 	end
-	if private.accountStatus[account] == "RETRY" then
-		-- There is a race condition where if we tried to issue GET_PLAYER_HASH for two players and one times out,
-		-- we would also queue a retry for the other one, so handle that here.
-		private.accountStatus[account] = "GET_PLAYER_HASH"
-	end
-	assert(private.accountStatus[account] == "GET_PLAYER_HASH")
 
 	local currentHash = TSM.Accounting.Transactions.GetSyncHash(player)
 	if not currentHash then
-		-- don't have our hash yet, so try again
-		Log.Warn("Current player hash not ready yet")
-		private.QueueRetryByPlayer(player)
+		-- Don't have our hash yet, so try again
+		Log.Warn("Current player hash not ready yet (%s)", player)
+		private.RestartForAccount(account)
 		return
 	end
 
@@ -107,51 +103,46 @@ function private.RPCGetPlayerHashResultHandler(player, hash)
 		private.GetPlayerChunks(player)
 	else
 		Log.Info("Transactions data for %s already up to date (%s, %s)", player, hash, currentHash)
-		private.accountStatus[account] = "SYNCED"
+		private.accountStatus[account] = STATUS.SYNCED
 	end
 end
 
 function private.GetPlayerChunks(player)
 	local account = private.accountLookup[player]
-	private.accountStatus[account] = "GET_PLAYER_CHUNKS"
+	private.accountStatus[account] = STATUS.UPDATING
 	Sync.CallRPC("ACCOUNTING_GET_PLAYER_CHUNKS", player, private.RPCGetPlayerChunksResultHandler)
 end
 
 function private.RPCGetPlayerChunks()
-	local player = UnitName("player")
-	return player, TSM.Accounting.Transactions.GetSyncHashByDay(player)
+	return TSM.Accounting.Transactions.GetSyncHashByDay(Wow.GetCharacterName())
 end
 
-function private.RPCGetPlayerChunksResultHandler(player, chunks)
-	local account = player and private.accountLookup[player]
+function private.RPCGetPlayerChunksResultHandler(success, player, chunks)
+	local account = private.HandleRPCResult("GET_PLAYER_CHUNKS", success, player)
 	if not account then
-		-- request timed out, so try again from the start
-		Log.Warn("Getting chunks timed out")
-		private.QueueRetriesByStatus("GET_PLAYER_CHUNKS")
 		return
 	elseif not chunks then
-		-- the hashes have been invalidated, so try again from the start
-		Log.Warn("Sync player chunks not ready yet")
-		private.QueueRetryByPlayer(player)
+		-- The hashes have been invalidated, so try again from the start
+		Log.Warn("Sync player chunks not ready yet (%s)", player)
+		private.RestartForAccount(account)
 		return
 	end
-	assert(private.accountStatus[account] == "GET_PLAYER_CHUNKS")
 
 	local currentChunks = TSM.Accounting.Transactions.GetSyncHashByDay(player)
 	if not currentChunks then
-		-- our hashes have been invalidated, so try again from the start
-		Log.Warn("Local hashes are invalid")
-		private.QueueRetryByPlayer(player)
+		-- Our hashes have been invalidated, so try again from the start
+		Log.Warn("Local hashes are invalid (%s)", player)
+		private.RestartForAccount(account)
 		return
 	end
 	for day in pairs(currentChunks) do
 		if not chunks[day] then
-			-- remove day which no longer exists
+			-- Remove day which no longer exists
 			TSM.Accounting.Transactions.RemovePlayerDay(player, day)
 		end
 	end
 
-	-- queue up all the pending chunks
+	-- Queue up all the pending chunks
 	private.pendingChunks[player] = private.pendingChunks[player] or TempTable.Acquire()
 	wipe(private.pendingChunks[player])
 	for day, hash in pairs(chunks) do
@@ -166,58 +157,53 @@ function private.RPCGetPlayerChunksResultHandler(player, chunks)
 		private.GetPlayerData(player, requestDay)
 	else
 		Log.Info("All chunks are up to date (%s)", player)
-		private.accountStatus[account] = "SYNCED"
+		private.accountStatus[account] = STATUS.SYNCED
 	end
 end
 
 function private.GetPlayerData(player, requestDay)
 	local account = private.accountLookup[player]
-	private.accountStatus[account] = "GET_PLAYER_DATA"
-	Sync.CallRPC("ACCOUNTING_GET_PLAYER_DATA", player, private.RPCGetDataResultHandler, requestDay)
+	private.accountStatus[account] = STATUS.UPDATING
+	Sync.CallRPC("ACCOUNTING_GET_PLAYER_DATA", player, private.RPCGetPlayerDataResultHandler, requestDay)
 end
 
 function private.RPCGetData(day)
-	local player = UnitName("player")
 	wipe(private.dataTemp)
-	TSM.Accounting.Transactions.GetSyncData(player, day, private.dataTemp)
-	return player, day, private.dataTemp
+	TSM.Accounting.Transactions.GetSyncData(Wow.GetCharacterName(), day, private.dataTemp)
+	return day, private.dataTemp
 end
 
-function private.RPCGetDataResultHandler(player, day, data)
-	local account = player and private.accountLookup[player]
+function private.RPCGetPlayerDataResultHandler(success, player, day, data)
+	local account = private.HandleRPCResult("GET_PLAYER_DATA", success, player)
 	if not account then
-		-- request timed out, so try again from the start
-		Log.Warn("Getting transactions data timed out")
-		private.QueueRetriesByStatus("GET_PLAYER_DATA")
 		return
 	elseif #data % 9 ~= 0 then
-		-- invalid data - just silently give up
-		Log.Warn("Got invalid transactions data")
+		-- Invalid data - just silently give up
+		Log.Err("Got invalid transactions data")
 		return
 	end
-	assert(private.accountStatus[account] == "GET_PLAYER_DATA")
 
 	Log.Info("Received transactions data (%s, %s, %s)", player, day, #data)
 	TSM.Accounting.Transactions.HandleSyncedData(player, day, data)
 
 	local requestDay = private.GetNextPendingChunk(player)
 	if requestDay then
-		-- request the next chunk
+		-- Request the next chunk
 		Log.Info("Requesting transactions data (%s, %s)", player, requestDay)
 		private.GetPlayerData(player, requestDay)
 	else
-		-- request chunks again to check for other chunks we need to sync
+		-- Request chunks again to check for other chunks we need to sync
 		private.GetPlayerChunks(player)
 	end
 end
 
 function private.RPCChangeNotification(player)
-	if private.accountStatus[private.accountLookup[player]] == "SYNCED" then
-		-- request the player hash
+	if private.accountStatus[private.accountLookup[player]] == STATUS.SYNCED then
+		-- Request the player hash
 		Log.Info("Got change notification - requesting player hash")
 		private.GetPlayerHash(player)
 	else
-		Log.Info("Got change notification - dropping (%s)", tostring(private.accountStatus[private.accountLookup[player]]))
+		Log.Info("Got change notification - dropping (%s)", player)
 	end
 end
 
@@ -257,24 +243,9 @@ function private.GetNextPendingChunk(player)
 	return result
 end
 
-function private.QueueRetriesByStatus(statusFilter)
-	for player, account in pairs(private.accountLookup) do
-		if private.accountStatus[account] == statusFilter then
-			private.QueueRetryByPlayer(player)
-		end
-	end
-end
-
-function private.QueueRetryByPlayer(player)
-	local account = private.accountLookup[player]
-	Log.Info("Retrying (%s, %s, %s)", player, account, private.accountStatus[account])
-	private.accountStatus[account] = "RETRY"
-	private.hashesRetryTimer:RunForTime(RETRY_DELAY)
-end
-
 function private.RetryGetPlayerHashRPC()
 	for player, account in pairs(private.accountLookup) do
-		if private.accountStatus[account] == "RETRY" then
+		if private.accountStatus[account] == STATUS.RETRY then
 			private.GetPlayerHash(player)
 		end
 	end
@@ -282,10 +253,33 @@ end
 
 function private.NotifyChange()
 	for player, account in pairs(private.accountLookup) do
-		if private.accountStatus[account] == "SYNCED" then
-			-- notify the other account that our data has changed and request the other account's latest hash ourselves
+		if private.accountStatus[account] == STATUS.SYNCED then
+			-- Notify the other account that our data has changed and request the other account's latest hash ourselves
 			private.GetPlayerHash(player)
 			Sync.CallRPC("ACCOUNTING_CHANGE_NOTIFICATION", player, private.RPCChangeNotificationResultHandler, UnitName("player"))
 		end
 	end
+end
+
+function private.HandleRPCResult(tag, success, player)
+	local account = private.accountLookup[player]
+	if not account then
+		if success then
+			Log.Warn("Got RPC (%s) response but player (%s) is no longer connected", tag, player)
+		else
+			Log.Info("RPC (%s) failed and player (%s) is no longer connected", tag, player)
+		end
+		return nil
+	elseif not success then
+		-- Request timed out, so try again from the start
+		Log.Warn("RPC (%s) timed out (%s)", tag, player)
+		private.RestartForAccount(account)
+		return nil
+	end
+	return account
+end
+
+function private.RestartForAccount(account)
+	private.accountStatus[account] = STATUS.RETRY
+	private.hashesRetryTimer:RunForTime(RETRY_DELAY)
 end

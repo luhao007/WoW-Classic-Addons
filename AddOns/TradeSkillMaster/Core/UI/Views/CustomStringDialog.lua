@@ -30,7 +30,7 @@ function CustomStringDialog.New(value, title, validateFunc, badSources, callback
 		:SetPadding(12)
 		:AddAnchor("CENTER")
 		:SetMouseEnabled(true)
-		:SetBackgroundColor("FRAME_BG", true)
+		:SetRoundedBackgroundColor("FRAME_BG")
 		:SetContext(context)
 		:AddChild(UIElements.New("Frame", "header")
 			:SetLayout("HORIZONTAL")

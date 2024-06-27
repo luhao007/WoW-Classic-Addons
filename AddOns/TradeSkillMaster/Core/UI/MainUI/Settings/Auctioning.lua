@@ -4,15 +4,18 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local Auctioning = TSM.MainUI.Settings:NewPackage("Auctioning")
+local Environment = TSM.Include("Environment")
 local L = TSM.Include("Locale").GetTable()
 local Sound = TSM.Include("Util.Sound")
 local String = TSM.Include("Util.String")
 local Log = TSM.Include("Util.Log")
+local Settings = TSM.Include("Service.Settings")
 local UIElements = TSM.Include("UI.UIElements")
 local UIUtils = TSM.Include("UI.UIUtils")
 local private = {
+	settings = nil,
 	sounds = {},
 	soundkeys = {},
 }
@@ -24,6 +27,17 @@ local private = {
 -- ============================================================================
 
 function Auctioning.OnInitialize()
+	private.settings = Settings.NewView()
+		:AddKey("global", "auctioningOptions", "cancelWithBid")
+		:AddKey("global", "auctioningOptions", "disableInvalidMsg")
+		:AddKey("global", "auctioningOptions", "scanCompleteSound")
+		:AddKey("global", "auctioningOptions", "confirmCompleteSound")
+		:AddKey("global", "auctioningOptions", "matchWhitelist")
+		:AddKey("global", "coreOptions", "auctionSaleSound")
+		:AddKey("global", "coreOptions", "regionWide")
+	if not Environment.IsRetail() then
+		private.settings:AddKey("factionrealm", "auctioningOptions", "whitelist")
+	end
 	TSM.MainUI.Settings.RegisterSettingPage(L["Auctioning"], "middle", private.GetAuctioningSettingsFrame)
 	for key, name in Sound.Iterator() do
 		tinsert(private.sounds, name)
@@ -50,7 +64,7 @@ function private.GetAuctioningSettingsFrame()
 					:SetWidth("AUTO")
 					:SetFont("BODY_BODY2_MEDIUM")
 					:SetText(L["Cancel auctions with bids"])
-					:SetSettingInfo(TSM.db.global.auctioningOptions, "cancelWithBid")
+					:SetSettingInfo(private.settings, "cancelWithBid")
 				)
 				:AddChild(UIElements.New("Spacer", "spacer"))
 			)
@@ -61,7 +75,7 @@ function private.GetAuctioningSettingsFrame()
 					:SetWidth("AUTO")
 					:SetFont("BODY_BODY2_MEDIUM")
 					:SetText(L["Disable invalid price warnings"])
-					:SetSettingInfo(TSM.db.global.auctioningOptions, "disableInvalidMsg")
+					:SetSettingInfo(private.settings, "disableInvalidMsg")
 				)
 				:AddChild(UIElements.New("Spacer", "spacer"))
 			)
@@ -88,12 +102,12 @@ function private.GetAuctioningSettingsFrame()
 				:AddChild(UIElements.New("SelectionDropdown", "scanComplete")
 					:SetMargin(0, 12, 0, 0)
 					:SetItems(private.sounds, private.soundkeys)
-					:SetSettingInfo(TSM.db.global.auctioningOptions, "scanCompleteSound")
+					:SetSettingInfo(private.settings, "scanCompleteSound")
 					:SetScript("OnSelectionChanged", private.SoundOnSelectionChanged)
 				)
 				:AddChild(UIElements.New("SelectionDropdown", "confirmComplete")
 					:SetItems(private.sounds, private.soundkeys)
-					:SetSettingInfo(TSM.db.global.auctioningOptions, "confirmCompleteSound")
+					:SetSettingInfo(private.settings, "confirmCompleteSound")
 					:SetScript("OnSelectionChanged", private.SoundOnSelectionChanged)
 				)
 			)
@@ -106,7 +120,7 @@ function private.GetAuctioningSettingsFrame()
 			:AddChild(UIElements.New("SelectionDropdown", "saleDropdown")
 				:SetHeight(24)
 				:SetItems(private.sounds, private.soundkeys)
-				:SetSettingInfo(TSM.db.global.coreOptions, "auctionSaleSound")
+				:SetSettingInfo(private.settings, "auctionSaleSound")
 				:SetScript("OnSelectionChanged", private.SoundOnSelectionChanged)
 			)
 		)
@@ -114,7 +128,7 @@ function private.GetAuctioningSettingsFrame()
 end
 
 function private.AddWhitelistSettings(frame)
-	if not TSM.IsWowClassic() then
+	if Environment.IsRetail() then
 		return
 	end
 	frame:AddChild(TSM.MainUI.Settings.CreateExpandableSection("Auctioning", "whitelist", L["Whitelist"], L["TSM will not undercut any players you add to your whitelist."])
@@ -127,7 +141,7 @@ function private.AddWhitelistSettings(frame)
 		:AddChild(UIElements.New("ToggleYesNo", "matchToggle")
 			:SetHeight(24)
 			:SetMargin(0, 0, 0, 12)
-			:SetSettingInfo(TSM.db.global.auctioningOptions, "matchWhitelist")
+			:SetSettingInfo(private.settings, "matchWhitelist")
 		)
 		:AddChild(UIElements.New("Text", "addLabel")
 			:SetHeight(20)
@@ -151,7 +165,7 @@ function private.AddWhitelistSettings(frame)
 end
 
 function private.AddWhitelistRows(containerFrame)
-	for player in pairs(TSM.db.factionrealm.auctioningOptions.whitelist) do
+	for player in pairs(private.settings.whitelist) do
 		private.AddWhitelistRow(containerFrame, player)
 	end
 end
@@ -193,17 +207,19 @@ function private.NewPlayerOnEnterPressed(input)
 	if newPlayer == "" or strfind(newPlayer, ",") or newPlayer ~= String.Escape(newPlayer) then
 		Log.PrintfUser(L["Invalid player name."])
 		return
-	elseif TSM.db.factionrealm.auctioningOptions.whitelist[newPlayer] then
-		Log.PrintfUser(L["The player \"%s\" is already on your whitelist."], TSM.db.factionrealm.auctioningOptions.whitelist[newPlayer])
+	elseif private.settings.whitelist[newPlayer] then
+		Log.PrintfUser(L["The player \"%s\" is already on your whitelist."], private.settings.whitelist[newPlayer])
 		return
 	end
 
 	local isAlt = false
-	for factionrealm in TSM.db:GetConnectedRealmIterator("factionrealm") do
-		for _, character in TSM.db:FactionrealmCharacterIterator(factionrealm) do
-			if strlower(newPlayer) == strlower(character) then
-				Log.PrintfUser(L["You do not need to add \"%s\", alts are whitelisted automatically."], newPlayer)
-				isAlt = true
+	for factionrealm, isConnected in TSM.db:GetConnectedRealmIterator("factionrealm") do
+		if isConnected or private.settings.regionWide then
+			for _, character in TSM.db:FactionrealmCharacterIterator(factionrealm) do
+				if strlower(newPlayer) == strlower(character) then
+					Log.PrintfUser(L["You do not need to add \"%s\", alts are whitelisted automatically."], newPlayer)
+					isAlt = true
+				end
 			end
 		end
 	end
@@ -212,7 +228,7 @@ function private.NewPlayerOnEnterPressed(input)
 		return
 	end
 
-	TSM.db.factionrealm.auctioningOptions.whitelist[newPlayer] = newPlayer
+	private.settings.whitelist[newPlayer] = newPlayer
 
 	-- add a new row to the UI
 	local frame = input:GetElement("__parent.whitelistFrame")
@@ -222,7 +238,7 @@ end
 
 function private.RemoveWhitelistOnClick(self)
 	local player = self:GetContext()
-	TSM.db.factionrealm.auctioningOptions.whitelist[player] = nil
+	private.settings.whitelist[player] = nil
 
 	-- remove this row
 	local row = self:GetParentElement()

@@ -4,11 +4,9 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
---- UI tooltip functions.
--- @module Tooltip
-
 local TSM = select(2, ...) ---@type TSM
-local Tooltip = TSM.Init("UI.Tooltip")
+local Tooltip = TSM.Init("UI.Tooltip") ---@class UI.Tooltip
+local Environment = TSM.Include("Environment")
 local ItemString = TSM.Include("Util.ItemString")
 local RecipeString = TSM.Include("Util.RecipeString")
 local CraftString = TSM.Include("Util.CraftString")
@@ -69,16 +67,11 @@ function Tooltip.Show(parent, data, noWrapping, xOffset)
 	elseif type(data) == "string" and data == "honor" then
 		GameTooltip:SetText(HONOR_POINTS, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b)
 		GameTooltip:AddLine(TOOLTIP_HONOR_POINTS, nil, nil, nil, 1)
-	elseif not TSM.IsWowClassic() and type(data) == "string" and strfind(data, "^currency:") then
+	elseif Environment.IsRetail() and type(data) == "string" and strfind(data, "^currency:") then
 		GameTooltip:SetCurrencyByID(strmatch(data, "currency:(%d+)"))
 	elseif type(data) == "string" and strfind(data, "^r:") then
 		local spellId = RecipeString.GetSpellId(data)
-		if TSM.IsWowClassic() then
-			local index = Profession.GetIndexByCraftString(CraftString.Get(spellId))
-			if index then
-				GameTooltip:SetTradeSkillItem(index)
-			end
-		else
+		if Environment.HasFeature(Environment.FEATURES.C_TRADE_SKILL_UI) then
 			-- Release the previous tables
 			for _, tbl in ipairs(private.optionalMatTable) do
 				wipe(tbl)
@@ -94,12 +87,17 @@ function Tooltip.Show(parent, data, noWrapping, xOffset)
 				tinsert(private.optionalMatTable, info)
 			end
 			GameTooltip:SetRecipeResultItem(spellId, private.optionalMatTable, nil, level)
+		else
+			local index = Profession.GetIndexByCraftString(CraftString.Get(spellId))
+			if index then
+				GameTooltip:SetTradeSkillItem(index)
+			end
 		end
 	elseif type(data) == "string" and (strfind(data, "^\124c.+\124Hitem:") or ItemString.IsItem(data)) then
 		GameTooltip:SetHyperlink(ItemInfo.GetLink(data))
 		showCompare = true
 	elseif type(data) == "string" and (strfind(data, "^\124c.+\124Hbattlepet:") or ItemString.IsPet(data)) then
-		if TSM.IsWowClassic() then
+		if not Environment.HasFeature(Environment.FEATURES.BATTLE_PETS) then
 			return
 		end
 		if strmatch(data, "p:") then
@@ -138,7 +136,7 @@ function Tooltip.Hide()
 	GameTooltip:ClearAllPoints()
 	GameTooltip:SetPoint("CENTER")
 	GameTooltip:Hide()
-	if not TSM.IsWowClassic() then
+	if Environment.HasFeature(Environment.FEATURES.BATTLE_PETS) then
 		BattlePetTooltip:ClearAllPoints()
 		BattlePetTooltip:SetPoint("CENTER")
 		BattlePetTooltip:Hide()

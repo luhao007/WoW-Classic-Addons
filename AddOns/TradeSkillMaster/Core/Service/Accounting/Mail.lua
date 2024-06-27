@@ -6,6 +6,7 @@
 
 local TSM = select(2, ...) ---@type TSM
 local Mail = TSM.Accounting:NewPackage("Mail")
+local Environment = TSM.Include("Environment")
 local Delay = TSM.Include("Util.Delay")
 local String = TSM.Include("Util.String")
 local ItemString = TSM.Include("Util.ItemString")
@@ -83,7 +84,14 @@ end
 
 function private.CanLootMailIndex(index, copper)
 	local currentMoney = GetMoney()
-	local moneyCap = TSM.IsWowClassic() and 2147483647 or MAXIMUM_BID_PRICE
+	local moneyCap = nil
+	if Environment.IsRetail() then
+		moneyCap = MAXIMUM_BID_PRICE
+	elseif Environment.IsWrathClassic() or Environment.IsCataClassic() then
+		moneyCap = 9999999999
+	else
+		moneyCap = 2147483647
+	end
 	assert(currentMoney <= moneyCap)
 	-- check if this would put them over the gold cap
 	if currentMoney + copper > moneyCap then return end
@@ -157,7 +165,7 @@ function private.ScanCollectedMail(oFunc, attempt, index, subIndex)
 		end
 	elseif invoiceType == "buyer" and buyer and buyer ~= "" then -- AH Buys
 		local copper = floor(bid / quantity + 0.5)
-		if not TSM.IsWowClassic() then
+		if Environment.IsRetail() then
 			if subIndex then
 				quantity = select(4, GetInboxItem(index, subIndex))
 			else
@@ -248,9 +256,7 @@ function private.ScanCollectedMail(oFunc, attempt, index, subIndex)
 		local expiredTime = (time() + (daysLeft - 30) * SECONDS_PER_DAY)
 		local link = (subIndex or 1) == 1 and private.GetFirstInboxItemLink(index) or GetInboxItemLink(index, subIndex or 1)
 		local _, _, _, count = GetInboxItem(index, subIndex or 1)
-		if TSM.IsWowClassic() then
-			quantity = count or 0
-		else
+		if Environment.IsRetail() then
 			if subIndex then
 				quantity = select(4, GetInboxItem(index, subIndex))
 			else
@@ -259,6 +265,8 @@ function private.ScanCollectedMail(oFunc, attempt, index, subIndex)
 					quantity = quantity + (select(4, GetInboxItem(index, i)) or 0)
 				end
 			end
+		else
+			quantity = count or 0
 		end
 		local itemString = ItemString.Get(link)
 		if private.CanLootMailIndex(index, 0) and itemString and quantity then
@@ -269,9 +277,7 @@ function private.ScanCollectedMail(oFunc, attempt, index, subIndex)
 		local cancelledTime = (time() + (daysLeft - 30) * SECONDS_PER_DAY)
 		local link = (subIndex or 1) == 1 and private.GetFirstInboxItemLink(index) or GetInboxItemLink(index, subIndex or 1)
 		local _, _, _, count = GetInboxItem(index, subIndex or 1)
-		if TSM.IsWowClassic() then
-			quantity = count or 0
-		else
+		if Environment.IsRetail() then
 			if subIndex then
 				quantity = select(4, GetInboxItem(index, subIndex))
 			else
@@ -280,6 +286,8 @@ function private.ScanCollectedMail(oFunc, attempt, index, subIndex)
 					quantity = quantity + (select(4, GetInboxItem(index, i)) or 0)
 				end
 			end
+		else
+			quantity = count or 0
 		end
 		local itemString = ItemString.Get(link)
 		if private.CanLootMailIndex(index, 0) and itemString and quantity then

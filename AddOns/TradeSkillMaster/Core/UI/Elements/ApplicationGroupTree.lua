@@ -10,8 +10,9 @@
 -- @{GroupTree} class.
 -- @classmod ApplicationGroupTree
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local TempTable = TSM.Include("Util.TempTable")
+local GroupPath = TSM.Include("Util.GroupPath")
 local UIElements = TSM.Include("UI.UIElements")
 local ApplicationGroupTree = TSM.Include("LibTSMClass").DefineClass("ApplicationGroupTree", TSM.UI.GroupTree)
 UIElements.Register(ApplicationGroupTree)
@@ -178,7 +179,7 @@ function ApplicationGroupTree._HandleRowClick(self, data, mouseButton)
 	self:_SetSelected(data, not self:_IsSelected(data))
 	-- also set the selection for all child groups to the same as this group
 	for _, groupPath in ipairs(self._allData) do
-		if TSM.Groups.Path.IsChild(groupPath, data) and data ~= TSM.CONST.ROOT_GROUP_PATH then
+		if GroupPath.IsChild(groupPath, data) and data ~= TSM.CONST.ROOT_GROUP_PATH then
 			self:_SetSelected(groupPath, self:_IsSelected(data))
 		end
 	end

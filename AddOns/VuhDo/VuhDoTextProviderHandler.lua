@@ -16,7 +16,6 @@ end
 VUHDO_TEXT_PROVIDER_COMBO_MODEL = { };
 local VUHDO_REGISTERED_PROVIDERS = { };
 setmetatable(VUHDO_REGISTERED_PROVIDERS, VUHDO_META_NEW_ARRAY);
-local VUHDO_TEXT_INDICATOR_PANEL_NUMS = { };
 local VUHDO_INTERESTED_PROVIDERS = { };
 setmetatable(VUHDO_INTERESTED_PROVIDERS, VUHDO_META_NEW_ARRAY);
 
@@ -50,7 +49,7 @@ function VUHDO_updateAllTextIndicatorsForEvent(aUnit, anEventType)
 				tText = VUHDO_TEXT_PROVIDERS[tProviderName]["validator"](tInfo, tValue, tMaxValue);
 
 				for tIndicatorName, tFunction in pairs(tAllIndicators) do
-					tFunction(aUnit, VUHDO_TEXT_INDICATOR_PANEL_NUMS[tIndicatorName], tProviderName, tText, tValue);
+					tFunction(aUnit, tProviderName, tText, tValue, tIndicatorName);
 				end
 
 			end
@@ -60,7 +59,7 @@ function VUHDO_updateAllTextIndicatorsForEvent(aUnit, anEventType)
 		for tProviderName, tAllIndicators in pairs(VUHDO_REGISTERED_PROVIDERS) do
 			if VUHDO_isTextProviderInterestedInEvent(tProviderName, anEventType) then
 				for tIndicatorName, tFunction in pairs(tAllIndicators) do
-					tFunction(aUnit, VUHDO_TEXT_INDICATOR_PANEL_NUMS[tIndicatorName], tProviderName, "", 0);
+					tFunction(aUnit, tProviderName, "", 0, tIndicatorName);
 				end
 			end
 		end
@@ -85,19 +84,31 @@ end
 
 
 --
-local function VUHDO_registerIndicatorForProvider(aProviderName, anIndicatorId, aPanelNum, aFunction)
+local function VUHDO_registerIndicatorForProvider(aProviderName, anIndicatorName, aFunction)
 
-	if VUHDO_strempty(aProviderName)
-		or (aPanelNum > 0 and not VUHDO_isPanelPopulated(aPanelNum)) then
-		return;
-	end
-
-	VUHDO_REGISTERED_PROVIDERS[aProviderName][anIndicatorId] = aFunction;
-	VUHDO_TEXT_INDICATOR_PANEL_NUMS[anIndicatorId] = aPanelNum;
+	VUHDO_REGISTERED_PROVIDERS[aProviderName][anIndicatorName] = aFunction;
 
 	for tUnit, _ in pairs(VUHDO_RAID) do
 		VUHDO_updateAllTextIndicatorsForEvent(tUnit, 1); -- VUHDO_UPDATE_ALL
 	end
+
+end
+
+
+
+--
+local function VUHDO_registerIndicatorForProviderUnique(aProviderName, anIndicatorName, aFunction, anAlreadyRegistered)
+
+	if not anAlreadyRegistered then
+		return;
+	end
+
+	if not VUHDO_strempty(aProviderName) and not VUHDO_strempty(anIndicatorName) and not anAlreadyRegistered[aProviderName .. anIndicatorName] then
+		VUHDO_registerIndicatorForProvider(aProviderName, anIndicatorName, aFunction);
+
+		anAlreadyRegistered[aProviderName .. anIndicatorName] = true;
+	end
+
 end
 
 
@@ -133,17 +144,23 @@ local VUHDO_TEXT_INDICATOR_CALLBACKS = {
 
 
 --
+local tAlreadyRegistered = { };
 function VUHDO_registerAllTextIndicators()
+
 	table.wipe(VUHDO_REGISTERED_PROVIDERS);
-	table.wipe(VUHDO_TEXT_INDICATOR_PANEL_NUMS);
 	table.wipe(VUHDO_INTERESTED_PROVIDERS);
 
-	for tIndicatorName, tIndicatorConfig in pairs(VUHDO_INDICATOR_CONFIG["TEXT_INDICATORS"]) do
-		for tIndex, tProviderName in pairs(tIndicatorConfig["TEXT_PROVIDER"]) do
-			VUHDO_registerIndicatorForProvider(tProviderName, tIndicatorName .. tIndex, tIndex,
-				_G[VUHDO_TEXT_INDICATOR_CALLBACKS[tIndicatorName]]);
+	table.wipe(tAlreadyRegistered);
+
+	for tPanelNum = 1, 10 do -- VUHDO_MAX_PANELS
+		if VUHDO_PANEL_MODELS[tPanelNum] then
+			for tIndicatorName, tIndicatorConfig in pairs(VUHDO_INDICATOR_CONFIG[tPanelNum]["TEXT_INDICATORS"]) do
+				VUHDO_registerIndicatorForProviderUnique(tIndicatorConfig["TEXT_PROVIDER"], tIndicatorName, 
+					_G[VUHDO_TEXT_INDICATOR_CALLBACKS[tIndicatorName]], tAlreadyRegistered);
+			end
 		end
 	end
 
 	VUHDO_initTextProviderComboModel();
+
 end

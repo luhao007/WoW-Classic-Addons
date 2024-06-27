@@ -6,9 +6,10 @@
 
 local TSM = select(2, ...) ---@type TSM
 local Debug = TSM.Init("Util.Debug") ---@class Util.Debug
+local Environment = TSM.Include("Environment")
 local private = {
-	startSystemTimeMs = floor(GetTime() * 1000),
-	startTimeMs = time() * 1000 + (floor(GetTime() * 1000) % 1000),
+	startSystemTimeMs = floor(GetTimePreciseSec() * 1000),
+	startTimeMs = time() * 1000 + (floor(GetTimePreciseSec() * 1000) % 1000),
 }
 local ADDON_NAME_SHORTEN_PATTERN = {
 	-- shorten "TradeSkillMaster" to "TSM"
@@ -30,7 +31,7 @@ local IGNORED_STACK_LEVEL_MATCHERS = {
 ---The time returned could be up to a second off absolutely, but relative times are guarenteed to be accurate.
 ---@return number @The current time in milliseconds since epoch
 function Debug.GetTimeMilliseconds()
-	local systemTimeMs = floor(GetTime() * 1000)
+	local systemTimeMs = floor(GetTimePreciseSec() * 1000)
 	return private.startTimeMs + (systemTimeMs - private.startSystemTimeMs)
 end
 
@@ -52,7 +53,7 @@ function Debug.GetStackLevelLocation(targetLevel, thread)
 		if not stackLine or stackLine == "" then
 			return
 		end
-		if TSM.IsTestEnvironment() then
+		if Environment.IsTest() then
 			stackLine = strmatch(stackLine, "^%.*([^:]+\"]:%d+):")
 		else
 			local numSubs = nil

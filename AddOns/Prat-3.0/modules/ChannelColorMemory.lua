@@ -37,13 +37,13 @@ Prat:AddModuleToLoad(function()
 
   local PL = module.PL
 
-  --[===[@debug@
+  --[==[@debug@
   PL:AddLocale(PRAT_MODULE, "enUS", {
     ["ChannelColorMemory"] = true,
     ["Remembers the colors of each channel name."] = true,
     ["(%w+)%s?(.*)"] = "([^%s]+)%s?(.*)",
   })
-  --@end-debug@]===]
+  --@end-debug@]==]
 
   -- These Localizations are auto-generated. To help with localization
   -- please go to http://www.wowace.com/projects/prat-3-0/localization/
@@ -94,7 +94,7 @@ L = {
 L = {
 	["ChannelColorMemory"] = {
 		["(%w+)%s?(.*)"] = "(%S+)%s?(.*)",
-		["ChannelColorMemory"] = "채널 색상 기억",
+		["ChannelColorMemory"] = "채널 색상 기억 [ChannelColorMemory]",
 		["Remembers the colors of each channel name."] = "각 채널 이름의 색상을 기억합니다.",
 	}
 }
@@ -319,7 +319,10 @@ L = {
         ChangeChatColor("CHANNEL" .. number, 1.0, 0.75, 0.75);
       else
         color = ChatTypeInfo["CHANNEL" .. number];
-        self.db.profile.colors[cname:lower()] = { r = color.r, g = color.g, b = color.b };
+        -- The color may not exist if the number is 0
+        if (color) then
+          self.db.profile.colors[cname:lower()] = { r = color.r, g = color.g, b = color.b };
+        end
       end
     end
   end

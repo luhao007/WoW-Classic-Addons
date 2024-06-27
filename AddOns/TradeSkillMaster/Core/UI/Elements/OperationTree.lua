@@ -9,7 +9,7 @@
 -- them. Only one module is allowed to be expanded at a time. It is a subclass of the @{ScrollingTable} class.
 -- @classmod OperationTree
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local OperationTree = TSM.Include("LibTSMClass").DefineClass("OperationTree", TSM.UI.ScrollingTable)
 local L = TSM.Include("Locale").GetTable()
 local Theme = TSM.Include("Util.Theme")

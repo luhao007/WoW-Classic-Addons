@@ -5,7 +5,8 @@
 -- ------------------------------------------------------------------------------ --
 
 local TSM = select(2, ...) ---@type TSM
-local GuildTracking = TSM.Init("Service.GuildTracking")
+local GuildTracking = TSM.Init("Service.GuildTracking") ---@class Service.GuildTracking
+local Environment = TSM.Include("Environment")
 local Database = TSM.Include("Util.Database")
 local Delay = TSM.Include("Util.Delay")
 local Event = TSM.Include("Util.Event")
@@ -64,7 +65,7 @@ GuildTracking:OnSettingsLoad(function()
 		:Equal("baseItemString", Database.BoundQueryParam())
 	private.scanTimer = Delay.CreateTimer("GUILD_TRACKING_SCAN", private.GuildBankChangedDelayed)
 	private.petScanTimer = Delay.CreateTimer("GUILD_TRACKING_PET_SCAN", private.ScanPetsDeferred)
-	if not TSM.IsWowVanillaClassic() then
+	if Environment.HasFeature(Environment.FEATURES.GUILD_BANK) then
 		DefaultUI.RegisterGuildBankVisibleCallback(private.GuildBankFrameVisible, true)
 		Event.Register("GUILDBANKBAGSLOTS_CHANGED", private.GuildBankBagSlotsChangedHandler)
 		private.guildNameTitle = Delay.CreateTimer("GUILD_TRACKING_GUILD_NAME", private.GetGuildName)

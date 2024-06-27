@@ -8,7 +8,7 @@
 -- A popup frame which shows when clicking on a "more" button.
 -- @classmod PopupFrame
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local NineSlice = TSM.Include("Util.NineSlice")
 local Theme = TSM.Include("Util.Theme")
 local PopupFrame = TSM.Include("LibTSMClass").DefineClass("PopupFrame", TSM.UI.Frame)

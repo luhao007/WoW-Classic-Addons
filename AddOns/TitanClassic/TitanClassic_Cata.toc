@@ -1,0 +1,58 @@
+## Interface: 40400
+## Title: Titan Panel [|cffeda55f_Core_|r] |cff00aa008.0.13|r
+## Author: Titan Panel Dev Team
+## Version: 8.0.13
+## SavedVariables: TitanAll, TitanSettings, TitanSkins, ServerTimeOffsets, ServerHourFormat
+## OptionalDeps: Ace3, AceGUI-3.0-SharedMediaWidgets, LibSharedMedia-3.0, LibQTip-1.0, !LibUIDropDownMenu
+## Notes: Adds display bars to show and control information/launcher plugins.
+## X-Embeds: Ace3, AceGUI-3.0-SharedMediaWidgets, LibSharedMedia-3.0, LibQTip-1.0, !LibUIDropDownMenu
+## X-Credits: TitanMod, Dark Imakuni, Adsertor, Titan Panel Development Team
+## X-Category: Interface Enhancements
+## X-Website: http://www.titanpanel.org
+## X-Email: honorgog@gmail.com
+## X-Localizations: enUS, ptBR, zhCN, deDE, esES, frFR, itIT, koKR, esMX, ruRU, zhTW
+## X-License: All rights reserved (See license.txt)
+## X-WoWI-ID: 24955
+
+TitanGame.lua
+
+..\Titan\libs\Ace\LibStub\LibStub.lua
+..\Titan\libs\Ace\CallbackHandler-1.0\CallbackHandler-1.0.xml
+..\Titan\libs\Ace\AceAddon-3.0\AceAddon-3.0.xml
+..\Titan\libs\Ace\AceHook-3.0\AceHook-3.0.xml
+..\Titan\libs\Ace\AceTimer-3.0\AceTimer-3.0.xml
+..\Titan\libs\Ace\AceGUI-3.0\AceGUI-3.0.xml
+..\Titan\libs\Ace\AceConfig-3.0\AceConfig-3.0.xml
+..\Titan\libs\Ace\AceLocale-3.0\AceLocale-3.0.xml
+..\Titan\libs\Ace\LibSharedMedia-3.0\lib.xml
+..\Titan\libs\Ace\AceGUI-3.0-SharedMediaWidgets\widget.xml
+..\Titan\libs\Ace\LibQTip-1.0\lib.xml
+
+..\Titan\libs\Ace\!LibUIDropDownMenu\LibUIDropDownMenu\LibUIDropDownMenu.xml
+
+..\Titan\libs\LibDataBroker-1.1.lua
+
+..\Titan\locale\Localization.lua
+..\Titan\locale\Localization.BR.lua
+..\Titan\locale\Localization.CN.lua
+..\Titan\locale\Localization.DE.lua
+..\Titan\locale\Localization.ES.lua
+..\Titan\locale\Localization.FR.lua
+..\Titan\locale\Localization.IT.lua
+..\Titan\locale\Localization.KR.lua
+..\Titan\locale\Localization.MX.lua
+..\Titan\locale\Localization.RU.lua
+..\Titan\locale\Localization.TW.lua
+
+..\Titan\TitanGlobal.lua
+..\Titan\TitanUtils.lua
+..\Titan\TitanHistory.lua
+..\Titan\TitanVariables.lua
+..\Titan\TitanTemplate.xml
+..\Titan\TitanTemplate.lua
+..\Titan\TitanMovable.lua
+..\Titan\TitanConfig.lua
+..\Titan\TitanAutoHide.lua
+..\Titan\Titan.xml
+..\Titan\Titan.lua
+..\Titan\TitanLDB.lua

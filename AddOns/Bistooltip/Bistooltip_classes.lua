@@ -20,6 +20,7 @@ Bistooltip_spec_icons["Death knight"]["classIcon"] = 135771;
 Bistooltip_spec_icons["Death knight"]["Blood tank"] = 135770;
 Bistooltip_spec_icons["Death knight"]["Frost"] = 135773;
 Bistooltip_spec_icons["Death knight"]["Unholy"] = 135775;
+Bistooltip_spec_icons["Death knight"]["Blood dps"] = 135770;
 Bistooltip_spec_icons["Druid"] = {};
 Bistooltip_spec_icons["Druid"]["classIcon"] = 625999;
 Bistooltip_spec_icons["Druid"]["Balance"] = 136096;

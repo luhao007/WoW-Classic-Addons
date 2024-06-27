@@ -2,29 +2,23 @@ hooksecurefunc("HandleModifiedItemClick", function(link)
 	local mounts = MountsJournal
 	local config = mounts.config
 
-	if config.openHyperlinks and not InCombatLockdown() and IsModifiedClick("DRESSUP") and not IsModifiedClick("CHATLINK") then
+	if config.openHyperlinks and not config.useDefaultJournal and not InCombatLockdown() and IsModifiedClick("DRESSUP") and not IsModifiedClick("CHATLINK") then
 		local _,_,_, linkType, linkID = (":|H"):split(link)
 
-		local spellID
+		local mountID
 		if linkType == "item" then
-			linkID = mounts.itemIDToSpellID[tonumber(linkID)]
-			spellID = MountsJournalUtil.getMountInfoBySpellID(linkID) and linkID
+			mountID = C_MountJournal.GetMountFromItem(tonumber(linkID))
 		elseif linkType == "spell" then
-			linkID = tonumber(linkID)
-			spellID = MountsJournalUtil.getMountInfoBySpellID(linkID) and linkID
+			mountID = C_MountJournal.GetMountFromSpell(tonumber(linkID))
 		end
 
-		if spellID then
+		if mountID then
 			HideUIPanel(DressUpFrame)
-			local journal = MountsJournalFrame
-			if journal.init then
-				journal:init()
-			else
-				journal.bgFrame:Show()
+			if not IsAddOnLoaded("Blizzard_Collections") then
+				LoadAddOn("Blizzard_Collections")
 			end
-			journal:setSelectedMount(spellID)
+			ShowUIPanel(CollectionsJournal)
+			MountsJournalFrame:setSelectedMount(mountID)
 		end
 	end
 end)
-
-function DressUpMountLink() return false end

@@ -9,7 +9,7 @@
 -- @{ScrollingTable} class.
 -- @classmod QueryScrollingTable
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local QueryScrollingTable = TSM.Include("LibTSMClass").DefineClass("QueryScrollingTable", TSM.UI.ScrollingTable)
 local TempTable = TSM.Include("Util.TempTable")
 local Table = TSM.Include("Util.Table")

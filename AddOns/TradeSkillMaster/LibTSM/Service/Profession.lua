@@ -6,6 +6,7 @@
 
 local TSM = select(2, ...) ---@type TSM
 local Profession = TSM.Init("Service.Profession") ---@class Service.Profession
+local Environment = TSM.Include("Environment")
 local State = TSM.Include("Service.ProfessionHelpers.State")
 local Scanner = TSM.Include("Service.ProfessionHelpers.Scanner")
 local ProfessionInfo = TSM.Include("Data.ProfessionInfo")
@@ -13,9 +14,9 @@ local ItemString = TSM.Include("Util.ItemString")
 local CraftString = TSM.Include("Util.CraftString")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local private = {
-	classicSpellIdLookup = {},
 	categoryInfoTemp = {},
 }
+local EMPTY_TABLE = {}
 
 
 
@@ -73,7 +74,10 @@ end
 ---Opens a profession.
 ---@param profession string|Enum.Profession The name of the profession (classic) or the profession enum value (retail)
 function Profession.Open(profession)
-	if TSM.IsWowClassic() then
+	if Environment.HasFeature(Environment.FEATURES.C_TRADE_SKILL_UI) then
+		assert(type(profession) == "number")
+		C_TradeSkillUI.OpenTradeSkill(profession)
+	else
 		assert(type(profession) == "string")
 		if profession == ProfessionInfo.GetName("Mining") then
 			-- mining needs to be opened as smelting
@@ -84,16 +88,16 @@ function Profession.Open(profession)
 			profession = mappedName
 		end
 		CastSpellByName(profession)
-	else
-		assert(type(profession) == "number")
-		C_TradeSkillUI.OpenTradeSkill(profession)
 	end
 end
 
 ---Close the open profession.
 ---@param closeBoth boolean Whether to close both the craft and tradeskill on classic
 function Profession.CloseTradeSkill(closeBoth)
-	if TSM.IsWowClassic() then
+	if Environment.HasFeature(Environment.FEATURES.C_TRADE_SKILL_UI) then
+		C_TradeSkillUI.CloseTradeSkill()
+		C_Garrison.CloseGarrisonTradeskillNPC()
+	else
 		if closeBoth then
 			CloseCraft()
 			CloseTradeSkill()
@@ -104,44 +108,32 @@ function Profession.CloseTradeSkill(closeBoth)
 				CloseTradeSkill()
 			end
 		end
-	else
-		C_TradeSkillUI.CloseTradeSkill()
-		C_Garrison.CloseGarrisonTradeskillNPC()
 	end
 end
 
 ---Returns whether or not the open profession is an NPC profession.
 ---@return boolean
 function Profession.IsNPC()
-	return not TSM.IsWowClassic() and C_TradeSkillUI.IsNPCCrafting()
+	return State.IsNPC()
 end
 
 ---Returns whether or not the open profession is linked.
 ---@return boolean
 ---@return string? @The character who it's linked from (if available)
 function Profession.IsLinked()
-	if TSM.IsWowVanillaClassic() then
-		return nil, nil
-	elseif TSM.IsWowWrathClassic() then
-		return IsTradeSkillLinked()
-	else
-		return C_TradeSkillUI.IsTradeSkillLinked()
-	end
+	return State.IsLinked()
 end
 
 ---Returns whether or not the open profession is a guild profession.
 ---@return boolean
 function Profession.IsGuild()
-	return not TSM.IsWowClassic() and C_TradeSkillUI.IsTradeSkillGuild()
+	return State.IsGuild()
 end
 
 ---Returns a link for the current profession.
 ---@return string?
 function Profession.GetLink()
-	if TSM.IsWowClassic() then
-		return nil
-	end
-	return C_TradeSkillUI.GetTradeSkillListLink()
+	return State.GetLink()
 end
 
 ---Gets whether or not a recipe has a cooldown.
@@ -149,11 +141,11 @@ end
 ---@return boolean
 function Profession.HasCooldown(craftString)
 	local spellId = CraftString.GetSpellId(craftString)
-	if TSM.IsWowClassic() then
-		spellId = private.classicSpellIdLookup[spellId] or spellId
-		return GetTradeSkillCooldown(spellId) and true or false
-	else
+	if Environment.HasFeature(Environment.FEATURES.C_TRADE_SKILL_UI) then
 		return select(2, C_TradeSkillUI.GetRecipeCooldown(spellId)) and true or false
+	else
+		spellId = Scanner.GetClassicSpellId(spellId) or spellId
+		return GetTradeSkillCooldown(spellId) and true or false
 	end
 end
 
@@ -163,15 +155,15 @@ end
 function Profession.GetRemainingCooldown(craftString)
 	local spellId = CraftString.GetSpellId(craftString)
 	local cooldown = nil
-	if TSM.IsWowClassic() then
-		spellId = private.classicSpellIdLookup[spellId] or spellId
-		cooldown = GetTradeSkillCooldown(spellId)
-	else
+	if Environment.HasFeature(Environment.FEATURES.C_TRADE_SKILL_UI) then
 		local cooldownTime, _, charges, maxCharges = C_TradeSkillUI.GetRecipeCooldown(spellId)
 		if maxCharges and charges and maxCharges > 0 and (charges > 0 or not cooldownTime) then
 			return nil
 		end
 		cooldown = cooldownTime
+	else
+		spellId = Scanner.GetClassicSpellId(spellId) or spellId
+		cooldown = GetTradeSkillCooldown(spellId)
 	end
 	return cooldown and floor(cooldown) or nil
 end
@@ -184,11 +176,25 @@ function Profession.GetCraftedQuantityRange(craftString)
 	return Scanner.GetCraftedQuantityRange(craftString)
 end
 
+---Gets the item GUIDs for the specified list of mats.
+---@param mats number[] The list of mats as itemIds
+---@return CraftingTargetItem[]
+function Profession.GetTargetItems(mats)
+	return C_TradeSkillUI.GetCraftingTargetItems(mats)
+end
+
 ---Gets the result of a recipe.
 ---@param craftString string The craft string for the recipe
 ---@return string|string[]?
 function Profession.GetResultItem(craftString)
 	return Scanner.GetResultItem(craftString)
+end
+
+---Gets the vellum item string to use with a recipe.
+---@param craftString string The craft string for the recipe
+---@return string
+function Profession.GetVellumItemString(craftString)
+	return Scanner.GetVellumItemString(craftString)
 end
 
 ---Gets the number of different result items of a recipe.
@@ -216,7 +222,7 @@ function Profession.GetResultInfo(craftString)
 		-- Result of craft is not an item
 		local spellId = CraftString.GetSpellId(craftString)
 		local indirectSpellId = nil
-		if TSM.IsWowWrathClassic() then
+		if Environment.IsWrathClassic() or Environment.IsCataClassic() then
 			indirectSpellId = strmatch(resultItem, "enchant:(%d+)")
 			indirectSpellId = indirectSpellId and tonumber(indirectSpellId)
 			if not indirectSpellId then
@@ -229,16 +235,16 @@ function Profession.GetResultInfo(craftString)
 		if type(itemString) == "table" then
 			itemString = itemString[CraftString.GetQuality(craftString) or 1]
 		end
-		if itemString and (not TSM.IsWowClassic() or TSM.IsWowWrathClassic()) then
+		if itemString and (Environment.IsRetail() or Environment.IsWrathClassic() or Environment.IsCataClassic()) then
 			return itemString, ItemInfo.GetTexture(itemString), ItemInfo.GetName(itemString)
 		elseif ProfessionInfo.IsEngineeringTinker(spellId) then
 			local name, _, icon = GetSpellInfo(spellId)
 			return nil, icon, name
-		elseif TSM.IsWowWrathClassic() then
+		elseif Environment.IsWrathClassic() or Environment.IsCataClassic() then
 			local name, _, icon = GetSpellInfo(indirectSpellId)
 			return nil, icon, name
 		else
-			local name, _, icon = GetSpellInfo(Profession.IsClassicCrafting() and GetCraftInfo(TSM.IsWowClassic() and private.classicSpellIdLookup[spellId] or spellId) or spellId)
+			local name, _, icon = GetSpellInfo(Profession.IsClassicCrafting() and GetCraftInfo(not Environment.IsRetail() and Scanner.GetClassicSpellId(spellId) or spellId) or spellId)
 			return nil, icon, name
 		end
 	elseif strfind(resultItem, "item:") then
@@ -256,28 +262,52 @@ function Profession.IsEnchant(craftString)
 	return Scanner.IsEnchant(craftString)
 end
 
+---Returns whether or not a recipe is an salvage.
+---@param craftString string The craft string for the recipe
+---@return boolean
+function Profession.IsSalvage(craftString)
+	return Environment.HasFeature(Environment.FEATURES.C_TRADE_SKILL_UI) and Scanner.GetRecipeTypeByCraftString(craftString) == Enum.TradeskillRecipeType.Salvage
+end
+
+---Returns whether or not a recipe is a tinker.
+---@param craftString string The craft string for the recipe
+---@return boolean
+function Profession.IsTinker(craftString)
+	return ProfessionInfo.IsEngineeringTinker(CraftString.GetSpellId(craftString))
+end
+
 ---Gets the needed tools string for a recipe.
 ---@param craftString string The craft string for the recipe
 ---@return string
 function Profession.NeededTools(craftString)
 	local spellId = CraftString.GetSpellId(craftString)
-	if TSM.IsWowClassic() then
-		local toolsStr, hasTools = nil, nil
-		spellId = private.classicSpellIdLookup[spellId] or spellId
-		if Profession.IsClassicCrafting() then
-			toolsStr, hasTools = GetCraftSpellFocus(spellId)
-		else
-			toolsStr, hasTools = GetTradeSkillTools(spellId)
-		end
-		return not hasTools and toolsStr or nil
-	else
+	if Environment.HasFeature(Environment.FEATURES.C_TRADE_SKILL_UI) then
 		for _, requirement in ipairs(C_TradeSkillUI.GetRecipeRequirements(spellId)) do
 			if requirement.type == Enum.RecipeRequirementType.Totem and not requirement.met then
 				return requirement.name
 			end
 		end
 		return nil
+	else
+		local toolsStr, hasTools = nil, nil
+		spellId = Scanner.GetClassicSpellId(spellId) or spellId
+		if Profession.IsClassicCrafting() then
+			toolsStr, hasTools = GetCraftSpellFocus(spellId)
+		else
+			toolsStr, hasTools = GetTradeSkillTools(spellId)
+		end
+		return not hasTools and toolsStr or nil
 	end
+end
+
+---Gets the description for a recipe.
+---@param craftString string The craft string for the recipe
+---@return string
+function Profession.GetRecipeDescription(craftString)
+	if not craftString or not Environment.HasFeature(Environment.FEATURES.C_TRADE_SKILL_UI) then
+		return ""
+	end
+	return C_TradeSkillUI.GetRecipeDescription(CraftString.GetSpellId(craftString), EMPTY_TABLE)
 end
 
 ---Gets the link for a recipe.
@@ -285,15 +315,15 @@ end
 ---@return string
 function Profession.GetRecipeLink(craftString)
 	local spellId = CraftString.GetSpellId(craftString)
-	if TSM.IsWowClassic() then
-		spellId = private.classicSpellIdLookup[spellId] or spellId
+	if Environment.HasFeature(Environment.FEATURES.C_TRADE_SKILL_UI) then
+		return C_TradeSkillUI.GetRecipeLink(spellId)
+	else
+		spellId = Scanner.GetClassicSpellId(spellId) or spellId
 		if Profession.IsClassicCrafting() then
 			return GetCraftRecipeLink(spellId)
 		else
 			return GetTradeSkillRecipeLink(spellId)
 		end
-	else
-		return C_TradeSkillUI.GetRecipeLink(spellId)
 	end
 end
 
@@ -305,7 +335,7 @@ end
 ---@return number? @The current skill level for the category (on retail)
 ---@return number? @The max skill level for the category (on retail)
 function Profession.CategoryInfo(categoryId)
-	if TSM.IsWowClassic() then
+	if not Environment.HasFeature(Environment.FEATURES.C_TRADE_SKILL_UI) then
 		local name = Profession.IsClassicCrafting() and GetCraftDisplaySkillLine() or (categoryId and GetTradeSkillInfo(categoryId) or nil)
 		return name, 0, nil, nil, nil
 	end
@@ -349,6 +379,9 @@ end
 ---@param craftString string The craft string for the recipe
 ---@return number? baseDifficulty
 ---@return number? quality
+---@return boolean? hasQualityMats
+---@return number? inspirationAmount
+---@return number? inspirationChance
 function Profession.GetRecipeQualityInfo(craftString)
 	return Scanner.GetRecipeQualityInfo(craftString)
 end
@@ -461,16 +494,17 @@ end
 ---Gets the mat string for a specified slot id.
 ---@param craftString string
 ---@param slotId number
----@return string The mat string
+---@return string
 function Profession.GetOptionalMatString(craftString, slotId)
 	return Scanner.GetOptionalMatString(craftString, slotId)
 end
 
----Returns whether or not there are any optional mats for a craft string.
+---Gets the number of optional mats of a given type.
 ---@param craftString string The craft string
----@return boolean
-function Profession.HasOptionalMats(craftString)
-	return Scanner.HasOptionalMats(craftString)
+---@param matType table The mat type
+---@return number
+function Profession.GetNumOptionalMats(craftString, matType)
+	return Scanner.GetNumOptionalMats(craftString, matType)
 end
 
 ---Gets the quantity for a mat by item id within the current profession.

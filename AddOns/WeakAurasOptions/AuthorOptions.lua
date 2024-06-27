@@ -975,6 +975,65 @@ typeControlAdders = {
       step = 1
     }
   end,
+  media = function(options, args, data, order, prefix, i)
+    local option = options[i]
+    args[prefix .. "mediaType"] = {
+      type = "select",
+      width = WeakAuras.normalWidth,
+      name = name(option, "mediaType", L["Media Type"]),
+      desc = desc(option, "mediaType"),
+      values = OptionsPrivate.Private.shared_media_types,
+      order = order(),
+      get = get(option, "mediaType"),
+      set = function(_, value)
+        for _, optionData in pairs(option.references) do
+          local childOption = optionData.options[optionData.index]
+          local childData = optionData.data
+          childOption.mediaType = value
+          childOption.default = OptionsPrivate.Private.author_option_media_defaults[value]
+          WeakAuras.Add(childData)
+        end
+        WeakAuras.ClearAndUpdateOptions(data.id, true)
+      end
+    }
+    args[prefix .. "default"] = {
+      type = "select",
+      width = WeakAuras.doubleWidth,
+      name = name(option, "default", L["Default"]),
+      desc = desc(option, "default"),
+      values = function()
+        if option.mediaType == "sound" then
+          return OptionsPrivate.Private.sound_file_types
+        else
+          return AceGUIWidgetLSMlists[option.mediaType]
+        end
+      end,
+      sorting = function()
+        if option.mediaType == "sound" then
+          return OptionsPrivate.Private.SortOrderForValues(OptionsPrivate.Private.sound_file_types)
+        else
+          return nil
+        end
+      end,
+      dialogControl = OptionsPrivate.Private.author_option_media_controls[option.mediaType],
+      itemControl = OptionsPrivate.Private.author_option_media_itemControls[option.mediaType],
+      order = order(),
+      get = get(option, "default"),
+      set = function(_, value)
+        if option.mediaType == "sound" then
+          -- do this outside the deref loop, so we don't play the sound a million times
+          PlaySoundFile(value, "Master")
+        end
+        for _, optionData in pairs(option.references) do
+          local childOption = optionData.options[optionData.index]
+          local childData = optionData.data
+          childOption.default = value
+          WeakAuras.Add(childData)
+        end
+        WeakAuras.ClearAndUpdateOptions(data.id, true)
+      end
+    }
+  end,
   multiselect = function(options, args, data, order, prefix, i)
     local option = options[i]
     local values = getValues(option)
@@ -1194,10 +1253,21 @@ typeControlAdders = {
       name = WeakAuras.newFeatureString .. name(option, "noMerge", L["Prevent Merging"]),
       desc = desc(option, "noMerge", L["If checked, then this group will not merge with other group when selecting multiple auras."]),
       order = order(),
-      width = WeakAuras.doubleWidth,
+      width = option.groupType =="simple" and WeakAuras.doubleWidth or WeakAuras.normalWidth,
       get = get(option, "noMerge"),
       set = set(data, option, "noMerge"),
     }
+    if option.groupType ~="simple" then
+      args[prefix .. "sortAlphabetically"] = {
+        type = "toggle",
+        name = WeakAuras.newFeatureString .. name(option, "sortAlphabetically", L["Sort"]),
+        desc = desc(option, "sortAlphabetically", L["If checked, then the combo box in the User settings will be sorted."]),
+        order = order(),
+        width = WeakAuras.normalWidth,
+        get = get(option, "sortAlphabetically"),
+        set = set(data, option, "sortAlphabetically"),
+      }
+    end
     if option.groupType ~="simple" then
       args[prefix .. "limitType"] = {
         type = "select",
@@ -1731,6 +1801,8 @@ function addAuthorModeOption(options, args, data, order, prefix, i)
           local dereferencedParent = parent.references[id].options[parent.references[id].index]
           if dereferencedParent.nameSource == optionData.index then
             dereferencedParent.nameSource = 0
+          elseif dereferencedParent.nameSource > optionData.index then
+            dereferencedParent.nameSource = dereferencedParent.nameSource - 1
           end
         end
         WeakAuras.Add(childData)
@@ -2060,6 +2132,7 @@ local function addUserModeOption(options, args, data, order, prefix, i)
             end
             WeakAuras.ClearAndUpdateOptions(data.id, true)
           end,
+          sorting = option.sortAlphabetically and OptionsPrivate.Private.SortOrderForValues(values) or nil
         }
         args[prefix .. "resetEntry"] = {
           type = "execute",
@@ -2283,6 +2356,38 @@ local function addUserModeOption(options, args, data, order, prefix, i)
         end
         WeakAuras.ClearAndUpdateOptions(data.id, true)
       end
+    elseif optionType == "media" then
+      userOption.type = "select"
+      userOption.dialogControl = OptionsPrivate.Private.author_option_media_controls[option.mediaType]
+      userOption.itemControl = OptionsPrivate.Private.author_option_media_itemControls[option.mediaType]
+      userOption.values = function()
+        if option.mediaType == "sound" then
+          return OptionsPrivate.Private.sound_file_types
+        else
+          return AceGUIWidgetLSMlists[option.mediaType]
+        end
+      end
+
+      userOption.sorting = function()
+        if option.mediaType == "sound" then
+          return OptionsPrivate.Private.SortOrderForValues(OptionsPrivate.Private.sound_file_types)
+        else
+          return nil
+        end
+      end
+
+      userOption.set = function(_, value)
+        if option.mediaType == "sound" then
+          PlaySoundFile(value, "Master")
+        end
+        for _, optionData in pairs(option.references) do
+          local childData = optionData.data
+          local childConfig = optionData.config
+          childConfig[option.key] = value
+          WeakAuras.Add(childData)
+        end
+        WeakAuras.ClearAndUpdateOptions(data.id, true)
+      end
     end
   elseif optionClass == "noninteractive" then
     if optionType == "header" then
@@ -2361,6 +2466,7 @@ local significantFieldsForMerge = {
   groupType = true,
   limitType = true,
   size = true,
+  mediaType = true,
 }
 
 -- these fields are special cases, generally reserved for when the UI displays something based on the merged options
@@ -2474,10 +2580,12 @@ local function valuesAreEqual(t1, t2)
   if ty1 ~= ty2 then
     return false
   end
+  if ty1 == "number" then
+    return abs(t1 - t2) < 1e-9
+  end
   if ty1 ~= "table" then
     return false
   end
-
   for k1, v1 in pairs(t1) do
     local v2 = t2[k1]
     if v2 == nil or not valuesAreEqual(v1, v2) then

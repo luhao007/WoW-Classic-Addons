@@ -4,8 +4,9 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local Auctioning = TSM.Tooltip:NewPackage("Auctioning")
+local Environment = TSM.Include("Environment")
 local L = TSM.Include("Locale").GetTable()
 local ItemString = TSM.Include("Util.ItemString")
 local ItemInfo = TSM.Include("Service.ItemInfo")
@@ -36,7 +37,7 @@ function private.PopulatePostQuantityLine(tooltip, itemString)
 	local postCap, stackSize = nil, nil
 	if itemString == ItemString.GetPlaceholder() then
 		postCap = 5
-		stackSize = TSM.IsWowClassic() and 200
+		stackSize = Environment.HasFeature(Environment.FEATURES.AH_STACKS) and 200 or nil
 	elseif ItemInfo.IsSoulbound(itemString) then
 		return
 	else
@@ -47,9 +48,9 @@ function private.PopulatePostQuantityLine(tooltip, itemString)
 		end
 
 		postCap = TSM.Auctioning.Util.GetPrice("postCap", operation, itemString)
-		stackSize = TSM.IsWowClassic() and TSM.Auctioning.Util.GetPrice("stackSize", operation, itemString)
+		stackSize = Environment.HasFeature(Environment.FEATURES.AH_STACKS) and TSM.Auctioning.Util.GetPrice("stackSize", operation, itemString) or nil
 	end
-	if TSM.IsWowClassic() then
+	if Environment.HasFeature(Environment.FEATURES.AH_STACKS) then
 		tooltip:AddTextLine(L["Post Quantity"], postCap and stackSize and postCap.."x"..stackSize or "---")
 	else
 		tooltip:AddTextLine(L["Post Quantity"], postCap or "---")

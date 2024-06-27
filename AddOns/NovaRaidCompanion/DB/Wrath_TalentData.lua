@@ -8796,7 +8796,7 @@ talents.deathknight = {
 				info = {
 					isExceptional = 1,
 					talentRankSpellIds = {
-						8699, -- [1]
+						49016, -- [1]
 					},
 					name = "Unholy Frenzy",
 					wowTreeIndex = 13,

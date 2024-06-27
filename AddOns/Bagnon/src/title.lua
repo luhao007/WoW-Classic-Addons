@@ -1,6 +1,5 @@
 --[[
-	title.lua
-		A title frame widget
+	A title frame widget that can search on double-click
 --]]
 
 
@@ -16,19 +15,15 @@ function Title:New(parent, title)
 	b.title = title
 
 	b:SetScript('OnHide', b.OnMouseUp)
-	b:SetScript('OnMouseDown', b.OnMouseDown)
 	b:SetScript('OnMouseUp', b.OnMouseUp)
+	b:SetScript('OnMouseDown', b.OnMouseDown)
 	b:SetScript('OnDoubleClick', b.OnDoubleClick)
 	b:SetScript('OnEnter', b.OnEnter)
 	b:SetScript('OnLeave', b.OnLeave)
 	b:SetScript('OnClick', b.OnClick)
-
 	b:RegisterSignal('SEARCH_TOGGLED', 'UpdateVisible')
 	b:RegisterFrameSignal('OWNER_CHANGED', 'Update')
 	b:RegisterForClicks('anyUp')
-
-	b:SetHighlightFontObject('GameFontHighlightLeft')
-	b:SetNormalFontObject('GameFontNormalLeft')
 	b:SetToplevel(true)
 	b:Update()
 
@@ -37,6 +32,10 @@ end
 
 
 --[[ Interaction ]]--
+
+function Title:OnEnter()
+	self:ShowTooltip(self:GetText(), format('|L %s   |L|L %s', L.Drag, SEARCH), '|R ' .. OPTIONS)
+end
 
 function Title:OnMouseDown()
 	local parent = self:GetParent()
@@ -58,25 +57,16 @@ end
 
 function Title:OnClick(button)
 	if button == 'RightButton' and LoadAddOn(ADDON .. '_Config') then
-		Addon.FrameOptions.frameID = self:GetFrameID()
+		Addon.FrameOptions.frame = self:GetFrameID()
 		Addon.FrameOptions:Open()
 	end
-end
-
-function Title:OnEnter()
-	GameTooltip:SetOwner(self:GetTipAnchor())
-	GameTooltip:SetText(self:GetText())
-	GameTooltip:AddLine(L.TipMove:format(L.Drag), 1,1,1)
-	GameTooltip:AddLine(L.TipShowSearch:format(L.DoubleClick), 1,1,1)
-	GameTooltip:AddLine(L.TipConfigure:format(L.RightClick), 1,1,1)
-	GameTooltip:Show()
 end
 
 
 --[[ API ]]--
 
 function Title:Update()
-	self:SetFormattedText(self.title, self:GetOwnerInfo().name)
+	self:SetFormattedText(self.title, self:GetOwner().name or ' ')
 	self:GetFontString():SetAllPoints(self)
 end
 
@@ -87,3 +77,7 @@ end
 function Title:IsFrameMovable()
 	return not Addon.sets.locked
 end
+
+function Title:GetTipAnchor()
+	return self, 'ANCHOR_TOPLEFT'
+  end

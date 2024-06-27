@@ -55,7 +55,7 @@ end
 ItemDB.mt = {
 	__newindex = function(t, k, v)
 		t.__atlaslootdata.contentCount = t.__atlaslootdata.contentCount + 1
-		-- v = CleanNilBossEntrys(v)
+		v = CleanNilBossEntrys(v) -- debug, re-added to test clearing invalid bosses in vanilla
 		setmetatable(v, ItemDB.contentMt)
 		contentList[t.__atlaslootdata.addonName][t.__atlaslootdata.contentCount] = k
 		contentList[t.__atlaslootdata.addonName][k] = t.__atlaslootdata.contentCount
@@ -70,7 +70,11 @@ ItemDB.mt = {
 }
 
 local function GetContentPhaseFromTable(tab)
-	if ALPrivate.IS_BC then
+	if ALPrivate.IS_CATA then
+		return tab.ContentPhaseCata
+	elseif ALPrivate.IS_WOTLK then
+		return tab.ContentPhaseWrath
+	elseif ALPrivate.IS_BC then
 		return tab.ContentPhaseBC
 	elseif ALPrivate.IS_CLASSIC then
 		return tab.ContentPhase

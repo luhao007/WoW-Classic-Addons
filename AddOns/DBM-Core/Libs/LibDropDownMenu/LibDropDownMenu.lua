@@ -1,5 +1,5 @@
 
-local MAJOR, MINOR = "LibDropDownMenu", tonumber((gsub("r26","r",""))) or 9999;
+local MAJOR, MINOR = "LibDropDownMenu", tonumber((gsub("r41","r",""))) or 9999;
 local lib = LibStub:NewLibrary(MAJOR, MINOR);
 
 if not lib then return end
@@ -72,6 +72,8 @@ UIDROPDOWNMENU_MENU_VALUE = nil;
 UIDROPDOWNMENU_SHOW_TIME = 2;
 -- Default dropdown text height
 UIDROPDOWNMENU_DEFAULT_TEXT_HEIGHT = nil;
+-- Default dropdown width padding
+UIDROPDOWNMENU_DEFAULT_WIDTH_PADDING = 25;
 -- List of open menus
 OPEN_DROPDOWNMENUS = {};
 
@@ -144,6 +146,9 @@ function UIDropDownMenu_Initialize(frame, initFunction, displayMode, level, menu
 	local dropDownList = _G["LibDropDownMenu_List"..level];
 	dropDownList.dropdown = frame;
 	dropDownList.shouldRefresh = true;
+	if dropDownList.SetWindow and frame.GetWindow then -- classic compatibilty; SetWindow and GetWindow not present in classic
+		dropDownList:SetWindow(frame:GetWindow());
+	end
 
 	UIDropDownMenu_SetDisplayMode(frame, displayMode);
 end
@@ -252,7 +257,7 @@ function UIDropDownMenuButton_OnEnter(self)
 		local level =  self:GetParent():GetID() + 1;
 		local listFrame = _G["LibDropDownMenu_List"..level];
 		if ( not listFrame or not listFrame:IsShown() or select(2, listFrame:GetPoint(1)) ~= self ) then
-			ToggleDropDownMenu(self:GetParent():GetID() + 1, self.value, nil, nil, nil, nil, self.menuList, self);
+			ToggleDropDownMenu(self:GetParent():GetID() + 1, self.value, nil, nil, nil, nil, self.menuList, self, nil, self.menuListDisplayMode);
 		end
 	else
 		CloseDropDownMenus(self:GetParent():GetID() + 1);
@@ -288,6 +293,8 @@ function UIDropDownMenuButton_OnEnter(self)
 	end
 
 	GetValueOrCallFunction(self, "funcOnEnter", self);
+	--self.NewFeature:Hide(); -- why should it disappear on mouse over? (found in retail code)
+	self.NewFeature:SetShown(self.showNewLabel);
 end
 
 function UIDropDownMenuButton_OnLeave(self)
@@ -333,7 +340,7 @@ function UIDropDownMenuButtonIcon_OnEnter(self)
 	local shouldShowIconTooltip = UIDropDownMenuButton_ShouldShowIconTooltip(button);
 
 	if shouldShowIconTooltip then
-		
+
 		local tooltip = GetAppropriateTooltip();
 		tooltip:SetOwner(button, "ANCHOR_RIGHT");
 		if button.iconTooltipTitle then
@@ -372,6 +379,7 @@ info.isTitle = [nil, true]  --  If it's a title the button is disabled and the f
 info.disabled = [nil, true]  --  Disable the button and show an invisible button that still traps the mouseover event so menu doesn't time out
 info.tooltipWhileDisabled = [nil, 1] -- Show the tooltip, even when the button is disabled.
 info.hasArrow = [nil, true]  --  Show the expand arrow for multilevel menus
+info.arrowXOffset = [nil, NUMBER] -- Number of pixels to shift the button's icon to the left or right (positive numbers shift right, negative numbers shift left).
 info.hasColorSwatch = [nil, true]  --  Show color swatch or not, for color selection
 info.r = [1 - 255]  --  Red color value of the color swatch
 info.g = [1 - 255]  --  Green color value of the color swatch
@@ -397,6 +405,7 @@ info.arg1 = [ANYTHING] -- This is the first argument used by info.func
 info.arg2 = [ANYTHING] -- This is the second argument used by info.func
 info.fontObject = [FONT] -- font object replacement for Normal and Highlight
 info.menuList = [TABLE] -- This contains an array of info tables to be displayed as a child menu
+info.menuListDisplayMode = [nil, "MENU"] -- If menuList is set, show the sub drop down with an override display mode.
 info.noClickSound = [nil, 1]  --  Set to 1 to suppress the sound when clicking the button. The sound only plays if .func is set.
 info.padding = [nil, NUMBER] -- Number of pixels to pad the text on the right side
 info.topPadding = [nil, NUMBER] -- Extra spacing between buttons.
@@ -411,6 +420,7 @@ info.iconTooltipBackdropStyle = [nil, TABLE] -- Optional Backdrop style of the t
 info.mouseOverIcon = [TEXTURE] -- An override icon when a button is moused over.
 info.ignoreAsMenuSelection [nil, true] -- Never set the menu text/icon to this, even when this button is checked
 info.registerForRightClick [nil, true] -- Register dropdown buttons for right clicks
+info.registerForAnyClick [nil, true] -- Register dropdown buttons for any clicks
 ]]
 
 function UIDropDownMenu_CreateInfo()
@@ -521,7 +531,9 @@ function UIDropDownMenu_AddButton(info, level)
 	invisibleButton:Hide();
 	button:Enable();
 
-	if ( info.registerForRightClick ) then
+	if ( info.registerForAnyClick ) then
+		button:RegisterForClicks("AnyUp");
+	elseif ( info.registerForRightClick ) then
 		button:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 	else
 		button:RegisterForClicks("LeftButtonUp");
@@ -632,9 +644,11 @@ function UIDropDownMenu_AddButton(info, level)
 	button.arg1 = info.arg1;
 	button.arg2 = info.arg2;
 	button.hasArrow = info.hasArrow;
+	button.arrowXOffset = info.arrowXOffset;
 	button.hasColorSwatch = info.hasColorSwatch;
 	button.notCheckable = info.notCheckable;
 	button.menuList = info.menuList;
+	button.menuListDisplayMode = info.menuListDisplayMode;
 	button.tooltipWhileDisabled = info.tooltipWhileDisabled;
 	button.noTooltipWhileEnabled = info.noTooltipWhileEnabled;
 	button.tooltipOnButton = info.tooltipOnButton;
@@ -647,6 +661,7 @@ function UIDropDownMenu_AddButton(info, level)
 	button.iconXOffset = info.iconXOffset;
 	button.mouseOverIcon = info.mouseOverIcon;
 	button.ignoreAsMenuSelection = info.ignoreAsMenuSelection;
+	button.showNewLabel = info.showNewLabel;
 
 	if ( info.value ~= nil) then
 		button.value = info.value;
@@ -657,6 +672,7 @@ function UIDropDownMenu_AddButton(info, level)
 	end
 
 	local expandArrow = _G[listFrameName.."Button"..index.."ExpandArrow"];
+	expandArrow:SetPoint("RIGHT", info.arrowXOffset or 0, 0);
 	expandArrow:SetShown(info.hasArrow);
 	expandArrow:SetEnabled(not info.disabled);
 
@@ -775,6 +791,8 @@ function UIDropDownMenu_AddButton(info, level)
 		_G[listFrameName.."Button"..index.."UnCheck"]:Hide();
 	end
 	button.checked = info.checked;
+	Update_DropDownMenuButton(button:GetName());
+	button.NewFeature:SetShown(button.showNewLabel);
 
 	-- If has a colorswatch, show it and vertex color it
 	local colorSwatch = _G[listFrameName.."Button"..index.."ColorSwatch"];
@@ -875,6 +893,10 @@ function UIDropDownMenu_GetButtonWidth(button)
 	if ( button.hasArrow or button.hasColorSwatch ) then
 		width = width + 10;
 	end
+	if (button.showNewLabel) then
+		Update_DropDownMenuButton(buttonName);
+		width = width + button.NewFeature.Label:GetUnboundedStringWidth();
+	end
 	if ( button.notCheckable ) then
 		width = width - 30;
 	end
@@ -946,6 +968,11 @@ function UIDropDownMenu_Refresh(frame, useValue, dropdownLevel)
 				uncheckImage:Show();
 			end
 		end
+
+		local normalText = _G[button:GetName().."NormalText"];
+		Update_DropDownMenuButton(button:GetName());
+		button.NewFeature:SetShown(button.showNewLabel);
+		button.NewFeature:SetPoint("LEFT", normalText, "RIGHT", 20, 0);
 
 		if ( button:IsShown() ) then
 			local width = UIDropDownMenu_GetButtonWidth(button);
@@ -1101,7 +1128,7 @@ function HideDropDownMenu(level)
 	listFrame:Hide();
 end
 
-function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yOffset, menuList, button, autoHideDelay)
+function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yOffset, menuList, button, autoHideDelay, overrideDisplayMode)
 	if ( not level ) then
 		level = 1;
 	end
@@ -1234,7 +1261,8 @@ function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yO
 			_G[listFrameName.."MenuBackdrop"]:Hide();
 		else
 			-- Change list box appearance depending on display mode
-			if ( dropDownFrame and dropDownFrame.displayMode == "MENU" ) then
+			local displayMode = overrideDisplayMode or (dropDownFrame and dropDownFrame.displayMode) or nil;
+			if ( displayMode == "MENU" ) then
 				_G[listFrameName.."Backdrop"]:Hide();
 				_G[listFrameName.."MenuBackdrop"]:Show();
 			else
@@ -1405,7 +1433,6 @@ function UIDropDownMenu_OnHide(self)
 	if (id == 1) then
 		UIDROPDOWNMENU_OPEN_MENU = nil;
 	end
-
 	UIDropDownMenu_ClearCustomFrames(self);
 	if EventRegistry and EventRegistry.TriggerEvent then
 		EventRegistry:TriggerEvent("UIDropDownMenu.Hide");
@@ -1422,19 +1449,29 @@ function UIDropDownMenu_ClearCustomFrames(self)
 	end
 end
 
+function UIDropDownMenu_MatchTextWidth(frame, minWidth, maxWidth)
+	local frameName = frame:GetName();
+	local newWidth = GetChild(frame, frameName, "Text"):GetUnboundedStringWidth() + UIDROPDOWNMENU_DEFAULT_WIDTH_PADDING;
+
+	if minWidth or maxWidth then
+		newWidth = Clamp(newWidth, minWidth or newWidth, maxWidth or newWidth);
+	end
+
+	UIDropDownMenu_SetWidth(frame, newWidth);
+end
+
 function UIDropDownMenu_SetWidth(frame, width, padding)
 	local frameName = frame:GetName();
 	GetChild(frame, frameName, "Middle"):SetWidth(width);
-	local defaultPadding = 25;
 	if ( padding ) then
 		frame:SetWidth(width + padding);
 	else
-		frame:SetWidth(width + defaultPadding + defaultPadding);
+		frame:SetWidth(width + UIDROPDOWNMENU_DEFAULT_WIDTH_PADDING + UIDROPDOWNMENU_DEFAULT_WIDTH_PADDING);
 	end
 	if ( padding ) then
 		GetChild(frame, frameName, "Text"):SetWidth(width);
 	else
-		GetChild(frame, frameName, "Text"):SetWidth(width - defaultPadding);
+		GetChild(frame, frameName, "Text"):SetWidth(width - UIDROPDOWNMENU_DEFAULT_WIDTH_PADDING);
 	end
 	frame.noResize = 1;
 end
@@ -1478,18 +1515,18 @@ function UIDropDownMenu_ClearAll(frame)
 	end
 end
 
-function UIDropDownMenu_JustifyText(frame, justification, customXOffset)
+function UIDropDownMenu_JustifyText(frame, justification, customXOffset, customYOffset)
 	local frameName = frame:GetName();
 	local text = GetChild(frame, frameName, "Text");
 	text:ClearAllPoints();
 	if ( justification == "LEFT" ) then
-		text:SetPoint("LEFT", GetChild(frame, frameName, "Left"), "LEFT", customXOffset or 27, 2);
+		text:SetPoint("LEFT", GetChild(frame, frameName, "Left"), "LEFT", customXOffset or 27, customYOffset or 2);
 		text:SetJustifyH("LEFT");
 	elseif ( justification == "RIGHT" ) then
-		text:SetPoint("RIGHT", GetChild(frame, frameName, "Right"), "RIGHT", customXOffset or -43, 2);
+		text:SetPoint("RIGHT", GetChild(frame, frameName, "Right"), "RIGHT", customXOffset or -43, customYOffset or 2);
 		text:SetJustifyH("RIGHT");
 	elseif ( justification == "CENTER" ) then
-		text:SetPoint("CENTER", GetChild(frame, frameName, "Middle"), "CENTER", customXOffset or -5, 2);
+		text:SetPoint("CENTER", GetChild(frame, frameName, "Middle"), "CENTER", customXOffset or -5, customYOffset or 2);
 		text:SetJustifyH("CENTER");
 	end
 end
@@ -1524,7 +1561,11 @@ function UIDropDownMenuButton_OpenColorPicker(self, button)
 		button = self;
 	end
 	UIDROPDOWNMENU_MENU_VALUE = button.value;
-	OpenColorPicker(button);
+	if ColorPickerFrame.SetupColorPickerAndShow then
+		ColorPickerFrame:SetupColorPickerAndShow(button);
+	else
+		OpenColorPicker(button); -- classic
+	end
 end
 
 function UIDropDownMenu_DisableButton(level, id)
@@ -1639,7 +1680,7 @@ function UIDropDownMenu_GetValue(id)
 	end
 end
 
-function OpenColorPicker(info)
+function OpenColorPicker(info) -- deprecated in retail
 	ColorPickerFrame.func = info.swatchFunc;
 	ColorPickerFrame.hasOpacity = info.hasOpacity;
 	ColorPickerFrame.opacityFunc = info.opacityFunc;

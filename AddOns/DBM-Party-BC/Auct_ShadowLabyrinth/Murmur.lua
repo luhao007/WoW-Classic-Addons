@@ -1,13 +1,17 @@
 local mod = DBM:NewMod(547, "DBM-Party-BC", 10, 253)
 local L = mod:GetLocalizedStrings()
 
-mod:SetRevision("20221129003558")
+mod:SetRevision("20240428124541")
 mod:SetCreatureID(18708)
 mod:SetEncounterID(1910)
-mod:SetModelID(18839)
-mod:SetModelScale(0.05)
-mod:SetModelOffset(10, -2, 0)
 mod:SetUsedIcons(8)
+
+if not mod:IsRetail() then
+	mod:SetModelID(18839)
+	mod:SetModelScale(0.05)
+	mod:SetModelOffset(10, -2, 0)
+end
+
 mod:RegisterCombat("combat")
 
 mod:RegisterEventsInCombat(
@@ -24,7 +28,7 @@ local specWarnTouch		= mod:NewSpecialWarningMoveAway(33711, nil, nil, nil, 1, 2)
 local timerBoomCast     = mod:NewCastTimer(5, 33923, nil, nil, nil, 2)
 local timerTouch        = mod:NewTargetTimer(14, 33711, nil, nil, nil, 3)
 
-mod:AddSetIconOption("SetIconOnTouchTarget", 33711, true, false, {8})
+mod:AddSetIconOption("SetIconOnTouchTarget", 33711, true, 0, {8})
 
 function mod:SPELL_CAST_START(args)
 	if args.spellId == 33923 or args.spellId == 38796 then
@@ -38,7 +42,7 @@ function mod:SPELL_AURA_APPLIED(args)
 	if args.spellId == 33711 then
 		timerTouch:Start(args.destName)
 		if self.Options.SetIconOnTouchTarget then
-			self:SetIcon(args.destName, 8, 14)
+			self:SetIcon(args.destName, 8)
 		end
 		if args:IsPlayer() then
             specWarnTouch:Show()

@@ -4,12 +4,8 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
---- SniperScrollingTable UI Element Class.
--- A special shopping scrolling table used for sniper which has an extra icon column on the left. It is a subclass of
--- the @{AuctionScrollingTable} class.
--- @classmod SniperScrollingTable
-
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
+local Environment = TSM.Include("Environment")
 local SniperScrollingTable = TSM.Include("LibTSMClass").DefineClass("SniperScrollingTable", TSM.UI.AuctionScrollingTable)
 local UIElements = TSM.Include("UI.UIElements")
 UIElements.Register(SniperScrollingTable)
@@ -43,7 +39,7 @@ function SniperScrollingTable.Acquire(self)
 			:Commit()
 		:RemoveColumn("timeLeft")
 		:Commit()
-	if TSM.IsWowClassic() then
+	if not Environment.IsRetail() then
 		self._sortCol = "icon"
 		self._sortAscending = true
 	end

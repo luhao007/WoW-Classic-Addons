@@ -14,7 +14,7 @@ local private = {
 	propagateWrappers = {},
 	nestedLevel = 0,
 }
-local SCRIPT_CALLBACK_TIME_WARNING_THRESHOLD_MS = 20
+local SCRIPT_CALLBACK_TIME_WARNING_THRESHOLD = 0.02
 
 
 
@@ -82,11 +82,11 @@ function private.ScriptHandlerCommon(script, frame, ...)
 	local key = private.GetFrameScriptKey(frame, script)
 	local obj = private.objLookup[key]
 	private.nestedLevel = private.nestedLevel + 1
-	local startTime = debugprofilestop()
+	local startTime = GetTimePreciseSec()
 	private.handlers[key](obj, ...)
-	local timeTaken = debugprofilestop() - startTime
+	local timeTaken = GetTimePreciseSec() - startTime
 	private.nestedLevel = private.nestedLevel - 1
-	if private.nestedLevel == 0 and timeTaken > SCRIPT_CALLBACK_TIME_WARNING_THRESHOLD_MS then
-		Log.Warn("Script handler (%s) for frame (%s) took %0.2fms", script, tostring(obj), timeTaken)
+	if private.nestedLevel == 0 and timeTaken > SCRIPT_CALLBACK_TIME_WARNING_THRESHOLD then
+		Log.Warn("Script handler (%s) for frame (%s) took %0.5fs", script, tostring(obj), timeTaken)
 	end
 end

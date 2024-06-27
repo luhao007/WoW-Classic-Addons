@@ -1,4 +1,8 @@
-local _, private = ...
+---@class DBMCoreNamespace
+local private = select(2, ...)
+
+---@class DBM
+local DBM = DBM
 
 local L = DBM_CORE_L
 
@@ -7,6 +11,7 @@ local SendAddonMessage = C_ChatInfo.SendAddonMessage
 local frame, fontstring, editBox, button3
 
 local function CreateOurFrame()
+	---@class DBMNotesEditorFrame: Frame, BackdropTemplate
 	frame = CreateFrame("Frame", "DBMNotesEditor", UIParent, "BackdropTemplate")
 	frame:SetFrameStrata("FULLSCREEN_DIALOG") -- yes, this isn't a fullscreen dialog, but I want it to be in front of other DIALOG frames (like DBM GUI which might open this frame...)
 	frame:SetWidth(430)
@@ -50,7 +55,7 @@ local function CreateOurFrame()
 	editBox:SetHeight(32)
 	editBox:SetWidth(250)
 	editBox:SetPoint("TOP", fontstring, "BOTTOM", 0, -4)
-	editBox:SetFontObject("GameFontHighlight")
+	editBox:SetFontObject(GameFontHighlight)
 	editBox:SetTextInsets(0, 0, 0, 1)
 	editBox:SetFocus()
 	editBox:SetText("")
@@ -63,8 +68,8 @@ local function CreateOurFrame()
 	button:SetHeight(24)
 	button:SetWidth(75)
 	button:SetPoint("BOTTOM", 80, 13)
-	button:SetNormalFontObject("GameFontNormal")
-	button:SetHighlightFontObject("GameFontHighlight")
+	button:SetNormalFontObject(GameFontNormal)
+	button:SetHighlightFontObject(GameFontHighlight)
 	button:SetNormalTexture(button:CreateTexture(nil, nil, "UIPanelButtonUpTexture"))
 	button:SetPushedTexture(button:CreateTexture(nil, nil, "UIPanelButtonDownTexture"))
 	button:SetHighlightTexture(button:CreateTexture(nil, nil, "UIPanelButtonHighlightTexture"))
@@ -80,8 +85,8 @@ local function CreateOurFrame()
 	button2:SetHeight(24)
 	button2:SetWidth(75)
 	button2:SetPoint("BOTTOM", 0, 13)
-	button2:SetNormalFontObject("GameFontNormal")
-	button2:SetHighlightFontObject("GameFontHighlight")
+	button2:SetNormalFontObject(GameFontNormal)
+	button2:SetHighlightFontObject(GameFontHighlight)
 	button2:SetNormalTexture(button2:CreateTexture(nil, nil, "UIPanelButtonUpTexture"))
 	button2:SetPushedTexture(button2:CreateTexture(nil, nil, "UIPanelButtonDownTexture"))
 	button2:SetHighlightTexture(button2:CreateTexture(nil, nil, "UIPanelButtonHighlightTexture"))
@@ -96,8 +101,8 @@ local function CreateOurFrame()
 	button3:SetHeight(24)
 	button3:SetWidth(75)
 	button3:SetPoint("BOTTOM", -80, 13)
-	button3:SetNormalFontObject("GameFontNormal")
-	button3:SetHighlightFontObject("GameFontHighlight")
+	button3:SetNormalFontObject(GameFontNormal)
+	button3:SetHighlightFontObject(GameFontHighlight)
 	button3:SetNormalTexture(button3:CreateTexture(nil, nil, "UIPanelButtonUpTexture"))
 	button3:SetPushedTexture(button3:CreateTexture(nil, nil, "UIPanelButtonDownTexture"))
 	button3:SetHighlightTexture(button3:CreateTexture(nil, nil, "UIPanelButtonHighlightTexture"))
@@ -109,12 +114,14 @@ local function CreateOurFrame()
 		elseif IsInGroup(2) and IsInInstance() then--For BGs, LFR and LFG (we also check IsInInstance() so if you're in queue but fighting something outside like a world boss, it'll sync in "RAID" instead)
 			DBM:AddMsg(L.NOTESHAREERRORGROUPFINDER)
 		else
+			local playerName, _, playerRealm = DBM:GetMyPlayerInfo()
+			local fullname = playerName.."-"..playerRealm
 			local msg = frame.mod.id.."\t"..frame.modvar.."\t"..syncText.."\t"..frame.abilityName
 			if IsInRaid() then
-				SendAddonMessage(private.DBMPrefix, "NS\t" .. msg, "RAID")
+				SendAddonMessage(private.DBMPrefix, fullname .. "\t" .. private.DBMSyncProtocol .. "\tNS\t" .. msg, "RAID")
 				DBM:AddMsg(L.NOTESHARED)
 			elseif IsInGroup(1) then
-				SendAddonMessage(private.DBMPrefix, "NS\t" .. msg, "PARTY")
+				SendAddonMessage(private.DBMPrefix, fullname .. "\t" .. private.DBMSyncProtocol .. "\tNS\t" .. msg, "PARTY")
 				DBM:AddMsg(L.NOTESHARED)
 			else--Solo
 				DBM:AddMsg(L.NOTESHAREERRORSOLO)

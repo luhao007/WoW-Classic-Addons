@@ -8,7 +8,7 @@
 -- A dropdown element allows the user to select from a dialog list. It is a subclass of the @{BaseDropdown} class.
 -- @classmod MultiselectionDropdown
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local L = TSM.Include("Locale").GetTable()
 local Table = TSM.Include("Util.Table")
 local Theme = TSM.Include("Util.Theme")

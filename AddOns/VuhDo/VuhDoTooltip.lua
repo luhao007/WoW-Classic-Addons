@@ -67,7 +67,7 @@ local function VUHDO_setTooltipLine(aText, anIsLeft, aLineNum, aColor, aTextSize
 	if aColor then tLabel:SetTextColor(VUHDO_textColor(aColor)); end
 
 	if (aTextSize or 0) ~= 0 then
-		tLabel:SetFont(GameFontNormal:GetFont(), aTextSize);
+		tLabel:SetFont(GameFontNormal:GetFont(), aTextSize, "");
 	end
 
 	if anIsLeft then
@@ -278,7 +278,8 @@ function VUHDO_updateTooltip()
 	tClassNameLoc, tClassName = UnitClass(tUnit);
 	tClassColor = VUHDO_getClassColorByModelId(VUHDO_CLASS_IDS[tClassName] or "*");
 	if not tClassColor then
-		tClassColor = VUHDO_PANEL_SETUP[VUHDO_TT_PANEL_NUM]["PANEL_COLOR"]["TEXT"];
+		-- FIXME: bar text color is not per panel
+		tClassColor = VUHDO_PANEL_SETUP["PANEL_COLOR"]["TEXT"];
 	end
 
 	VUHDO_addTooltipLineLeft(tInfo["fullName"] or UnitName(tUnit), tClassColor, 10);

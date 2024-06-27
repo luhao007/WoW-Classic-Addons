@@ -1,10 +1,15 @@
 local mod = DBM:NewMod(563, "DBM-Party-BC", 13, 258)
 local L = mod:GetLocalizedStrings()
 
-mod:SetRevision("20221129003558")
+mod:SetRevision("20240616044034")
+
 mod:SetCreatureID(19219)
 mod:SetEncounterID(1932)
-mod:SetModelID(19162)
+
+if not mod:IsRetail() then
+	mod:SetModelID(19162)
+end
+
 mod:RegisterCombat("combat")
 
 mod:RegisterEventsInCombat(
@@ -13,8 +18,8 @@ mod:RegisterEventsInCombat(
 )
 
 local warnPolarity          = mod:NewCastAnnounce(39096, 4)
-local warnMagicShield       = mod:NewSpellAnnounce(35158, 3)
-local warnDamageShield      = mod:NewSpellAnnounce(35159, 3)
+local warnMagicShield       = mod:NewTargetNoFilterAnnounce(35158, 3)
+local warnDamageShield      = mod:NewTargetNoFilterAnnounce(35159, 3)
 
 local timerMagicShield      = mod:NewBuffActiveTimer(10, 35158, nil, nil, nil, 5)
 local timerDamageShield     = mod:NewBuffActiveTimer(10, 35159, nil, nil, nil, 5)
@@ -22,7 +27,7 @@ local timerDamageShield     = mod:NewBuffActiveTimer(10, 35159, nil, nil, nil, 5
 local enrageTimer			= mod:NewBerserkTimer(180)
 
 function mod:OnCombatStart(delay)
-	if self:IsHeroic() then
+	if not self:IsDifficulty("normal5") then
         enrageTimer:Start(-delay)
     end
 end

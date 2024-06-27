@@ -283,28 +283,28 @@ NRC.encounters = {
 --name, description, bgImage, loreImage, buttonImage1, buttonImage2, dungeonAreaMapID.
 NRC.instanceTextures = {
 	--Classic dungs.
-	[227] = {"Blackfathom Deeps", "Once dedicated to the night elves' goddess Elune, Blackfathom Deeps was thought to have been destroyed during the Sundering, lost beneath the ocean. Millennia later, members of the Twilight's Hammer cult were drawn to the temple by whispers and foul dreams. After sacrificing untold numbers of innocents, the cult was rewarded with a new task: to protect one of the Old Gods' most cherished creatures, a pet that is still in need of nurturing before he can unleash his dark powers on the world.", 608156, 608234, 608195, 136325, 221},
-	[228] = {"Blackrock Depths", "The smoldering Blackrock Depths are home to the Dark Iron dwarves and their emperor, Dagran Thaurissan. Like his predecessors, he serves under the iron rule of Ragnaros the Firelord, a merciless being summoned into the world centuries ago. The presence of chaotic elementals has attracted Twilight's Hammer cultists to the mountain domain. Along with Ragnaros' servants, they have pushed the dwarves toward increasingly destructive ends that could soon spell doom for all of Azeroth.", 608157, 608235, 608196, 136326, 242},
-	[63] = {"Deadmines", "It is said the Deadmines' gold deposits once accounted for a third of Stormwind's treasure reserves. Amid the chaos of the First War, the mines were abandoned and later thought to be haunted, leaving them relatively untouched until the Defias Brotherhood--a group of former laborers turned brigands--claimed the labyrinth as a base of operations for its subversive activities against Stormwind.", 522336, 526404, 522352, 136332, 291},
-	[230] = {"Dire Maul", "Built thousands of years ago to house the kaldorei's arcane secrets, the formerly great city of Eldre'Thalas now lies in ruin, writhing with warped, twisted forces. Competing covens once fought for control of Dire Maul's corrupted energy, but they have since settled into uneasy truces, choosing to exploit the power within their own territories rather than continue to battle over the entire complex.", 608161, 608239, 608200, 136333, 240},
-	[231] = {"Gnomeregan", "Built deep within the mountains of Dun Morogh, the wondrous city of Gnomeregan was a testament to the gnomes' intelligence and industry. But when the capital was invaded by troggs, the gnomish high tinker was betrayed by his advisor Sicco Thermaplugg. As a result, Gnomeregan was irradiated, and most of its inhabitants slain. The surviving gnomes fled, vowing to return someday and retake their home.", 608163, 608241, 608202, 136336, 226},
+	[48] = {"Blackfathom Deeps", "Once dedicated to the night elves' goddess Elune, Blackfathom Deeps was thought to have been destroyed during the Sundering, lost beneath the ocean. Millennia later, members of the Twilight's Hammer cult were drawn to the temple by whispers and foul dreams. After sacrificing untold numbers of innocents, the cult was rewarded with a new task: to protect one of the Old Gods' most cherished creatures, a pet that is still in need of nurturing before he can unleash his dark powers on the world.", 608156, 608234, 608195, 136325, 221},
+	[230] = {"Blackrock Depths", "The smoldering Blackrock Depths are home to the Dark Iron dwarves and their emperor, Dagran Thaurissan. Like his predecessors, he serves under the iron rule of Ragnaros the Firelord, a merciless being summoned into the world centuries ago. The presence of chaotic elementals has attracted Twilight's Hammer cultists to the mountain domain. Along with Ragnaros' servants, they have pushed the dwarves toward increasingly destructive ends that could soon spell doom for all of Azeroth.", 608157, 608235, 608196, 136326, 242},
+	[36] = {"Deadmines", "It is said the Deadmines' gold deposits once accounted for a third of Stormwind's treasure reserves. Amid the chaos of the First War, the mines were abandoned and later thought to be haunted, leaving them relatively untouched until the Defias Brotherhood--a group of former laborers turned brigands--claimed the labyrinth as a base of operations for its subversive activities against Stormwind.", 522336, 526404, 522352, 136332, 291},
+	[429] = {"Dire Maul", "Built thousands of years ago to house the kaldorei's arcane secrets, the formerly great city of Eldre'Thalas now lies in ruin, writhing with warped, twisted forces. Competing covens once fought for control of Dire Maul's corrupted energy, but they have since settled into uneasy truces, choosing to exploit the power within their own territories rather than continue to battle over the entire complex.", 608161, 608239, 608200, 136333, 240},
+	[90] = {"Gnomeregan", "Built deep within the mountains of Dun Morogh, the wondrous city of Gnomeregan was a testament to the gnomes' intelligence and industry. But when the capital was invaded by troggs, the gnomish high tinker was betrayed by his advisor Sicco Thermaplugg. As a result, Gnomeregan was irradiated, and most of its inhabitants slain. The surviving gnomes fled, vowing to return someday and retake their home.", 608163, 608241, 608202, 136336, 226},
 	[229] = {"Lower Blackrock Spire", "This imposing fortress, carved into the fiery core of Blackrock Mountain, represented the might of the Dark Iron clan for centuries. More recently, the black dragon Nefarian and his spawn seized the keep's upper spire and ignited a brutal war against the dwarves. The draconic armies have since allied with Warchief Rend Blackhand and his false Horde. This combined force lords over the spire, conducting horrific experiments to bolster its ranks while plotting the meddlesome Dark Irons' downfall.", 608158, 608236, 608197, 136327, 252},
-	[232] = {"Maraudon", "According to legend, Zaetar, son of Cenarius, and the earth elemental princess Theradras begot the barbaric centaur race. Shortly after the centaur's creation, the ruthless creatures murdered their father. The grief-stricken Theradras is said to have trapped her lover's spirit within Maraudon, corrupting the region. Now, vicious centaur ghosts and twisted elemental minions roam every corner of the sprawling caves.", 608170, 608248, 608209, 136345, 280},
+	[349] = {"Maraudon", "According to legend, Zaetar, son of Cenarius, and the earth elemental princess Theradras begot the barbaric centaur race. Shortly after the centaur's creation, the ruthless creatures murdered their father. The grief-stricken Theradras is said to have trapped her lover's spirit within Maraudon, corrupting the region. Now, vicious centaur ghosts and twisted elemental minions roam every corner of the sprawling caves.", 608170, 608248, 608209, 136345, 280},
 	[389] = {"Ragefire Chasm", "Ragefire Chasm extends deep below the city of Orgrimmar. Barbaric troggs and devious Searing Blade cultists once plagued the volcanic caves, but now a new threat has emerged: dark shaman. Although Warchief Garrosh Hellscream recently called on a number of shaman to use the elements as weapons against the Alliance, the chasm's current inhabitants appear to be renegades. Reports have surfaced that these shadowy figures are amassing a blistering army that could wreak havoc if unleashed upon Orgrimmar.", 608172, 608250, 608211, 136350, 213},
-	[233] = {"Razorfen Downs", "Legends state that where the demigod Agamaggan fell, his blood gave rise to great masses of thorny vines. Recently, scouts have reported seeing undead milling about the region, engendering fears that the dreaded Scourge may be moving to conquer Kalimdor.", 608173, 608251, 608212, 136352, 300},
-	[234] = {"Razorfen Kraul", "Legends state that where the demigod Agamaggan fell, his blood gave rise to great masses of thorny vines. Many quilboar have taken up residence in the largest cluster of giant thorns, the Razorfen, which they revere as Agamaggan's resting place.", 608174, 608252, 608213, 136353, 301},
-	[311] = {"Scarlet Halls", "The Crusade's fiercest warriors, those who have held their ground and fought to defend the monastery throughout these dark times, are rapidly preparing an army within the Scarlet Halls. These soldiers are bound by their hatred of the unliving, and they are willing to sacrifice everything for their order's righteous cause.", 643259, 643265, 643262, 643268, 431},
-	[316] = {"Scarlet Monastery", "The Crusade's fanatical leaders direct their followers from the Scarlet Cathedral, at the heart of the monastery grounds. This heavily guarded location functions as the order's headquarters, and some of the most zealous and intolerant crusaders roam the halls of this once-hallowed place.", 608175, 608253, 608214, 136354, 435},
-	[246] = {"Scholomance", "Individuals seeking to master the powers of undeath know well of Scholomance, the infamous school of necromancy located in the dark and foreboding crypts beneath Caer Darrow. In recent years, several of the instructors have changed, but the institution remains under the control of Darkmaster Gandling, a particularly sadistic and insidious practitioner of necromantic magic.", 608176, 608254, 608215, 136355, 476},
-	[64] = {"Shadowfang Keep", "Looming over Pyrewood Village from the southern bluffs of Silverpine Forest, Shadowfang Keep casts a shadow as dark as its legacy. Sinister forces occupy these ruins, formerly the dwelling of the mad archmage Arugal's worgen. The restless shade of Baron Silverlaine lingers, while Lord Godfrey and his cabal of erstwhile Gilnean noblemen plot against their enemies both living and undead.", 522342, 526410, 522358, 136357, 310},
-	[236] = {"Stratholme", "Stratholme was once the jewel of northern Lordaeron, but today it is remembered for its harrowing fall to ruin. It was here that Prince Arthas turned his back on the noble paladin Uther Lightbringer, slaughtering countless residents believed to be infected with the horrific plague of undeath. Ever since, cursed Stratholme has been marred by death, betrayal, and hopelessness.", 608177, 608255, 608216, 136359, 317},
-	[238] = {"The Stockade", "Stormwind Stockade is a closely guarded prison built beneath the canals of Stormwind City. Warden Thelwater keeps watch over the stockade and the highly dangerous criminals who call it home. Recently, the inmates revolted, overthrowing their guards and plunging the prison into a state of pandemonium.", 608184, 608262, 608223, 136358, 225},
-	[237] = {"The Temple of Atal'hakkar", "Thousands of years ago, the Gurubashi empire was plunged into a civil war by a powerful sect of priests, the Atal'ai, who sought to summon to Azeroth an avatar of their god of blood, Hakkar the Soulflayer. The Gurubashi people exiled the Atal'ai to the Swamp of Sorrows, where the priests built the Temple of Atal'Hakkar. Ysera, Aspect of the green dragonflight, sank the temple beneath the swamp and assigned wardens to ensure that the summoning rituals never be performed again.", 608178, 608256, 608217, 136360, 220},
-	[239] = {"Uldaman", "Uldaman is an ancient titan vault buried deep within the earth. It is said the titans sealed away a failed experiment there and then moved on to a new project, related to the genesis of the dwarves. Tales of a fabled treasure containing great knowledge have enticed would-be treasure hunters to dig deeper into the secrets of Uldaman, a task made perilous by the presence of stone defenders, savage troggs, Dark Iron invaders, and other dangers lurking in the lost city.", 608186, 608264, 608225, 136363, 230},
-	[240] = {"Wailing Caverns", "Years ago, the famed druid Naralex and his followers descended into the shadowy Wailing Caverns, named for the mournful cry one hears when steam bursts from the cave system's fissures. Naralex planned to use the underground springs to restore lushness to the arid Barrens. But upon entering the Emerald Dream, he saw his vision of regrowth turn into a waking nightmare, one that has plagued the caverns ever since.", 608190, 608313, 608229, 136364, 279},
-	[241] = {"Zul'Farrak", "Zul'Farrak was once the shining jewel of Tanaris, ferociously protected by the cunning Sandfury tribe. Despite the trolls' tenacity, this isolated group was forced to surrender much of its territory throughout history. Now, it appears that Zul'Farrak's inhabitants are creating a horrific army of undead trolls to conquer the surrounding region. Other disturbing rumors tell of an ancient creature sleeping within the city--one that, if awakened, will rain death and destruction across Tanaris.", 608191, 608267, 608230, 136368, 219},
+	[129] = {"Razorfen Downs", "Legends state that where the demigod Agamaggan fell, his blood gave rise to great masses of thorny vines. Recently, scouts have reported seeing undead milling about the region, engendering fears that the dreaded Scourge may be moving to conquer Kalimdor.", 608173, 608251, 608212, 136352, 300},
+	[47] = {"Razorfen Kraul", "Legends state that where the demigod Agamaggan fell, his blood gave rise to great masses of thorny vines. Many quilboar have taken up residence in the largest cluster of giant thorns, the Razorfen, which they revere as Agamaggan's resting place.", 608174, 608252, 608213, 136353, 301},
+	[1001] = {"Scarlet Halls", "The Crusade's fiercest warriors, those who have held their ground and fought to defend the monastery throughout these dark times, are rapidly preparing an army within the Scarlet Halls. These soldiers are bound by their hatred of the unliving, and they are willing to sacrifice everything for their order's righteous cause.", 643259, 643265, 643262, 643268, 431},
+	[1004] = {"Scarlet Monastery", "The Crusade's fanatical leaders direct their followers from the Scarlet Cathedral, at the heart of the monastery grounds. This heavily guarded location functions as the order's headquarters, and some of the most zealous and intolerant crusaders roam the halls of this once-hallowed place.", 608175, 608253, 608214, 136354, 435},
+	[1007] = {"Scholomance", "Individuals seeking to master the powers of undeath know well of Scholomance, the infamous school of necromancy located in the dark and foreboding crypts beneath Caer Darrow. In recent years, several of the instructors have changed, but the institution remains under the control of Darkmaster Gandling, a particularly sadistic and insidious practitioner of necromantic magic.", 608176, 608254, 608215, 136355, 476},
+	[33] = {"Shadowfang Keep", "Looming over Pyrewood Village from the southern bluffs of Silverpine Forest, Shadowfang Keep casts a shadow as dark as its legacy. Sinister forces occupy these ruins, formerly the dwelling of the mad archmage Arugal's worgen. The restless shade of Baron Silverlaine lingers, while Lord Godfrey and his cabal of erstwhile Gilnean noblemen plot against their enemies both living and undead.", 522342, 526410, 522358, 136357, 310},
+	[329] = {"Stratholme", "Stratholme was once the jewel of northern Lordaeron, but today it is remembered for its harrowing fall to ruin. It was here that Prince Arthas turned his back on the noble paladin Uther Lightbringer, slaughtering countless residents believed to be infected with the horrific plague of undeath. Ever since, cursed Stratholme has been marred by death, betrayal, and hopelessness.", 608177, 608255, 608216, 136359, 317},
+	[34] = {"The Stockade", "Stormwind Stockade is a closely guarded prison built beneath the canals of Stormwind City. Warden Thelwater keeps watch over the stockade and the highly dangerous criminals who call it home. Recently, the inmates revolted, overthrowing their guards and plunging the prison into a state of pandemonium.", 608184, 608262, 608223, 136358, 225},
+	[109] = {"The Temple of Atal'hakkar", "Thousands of years ago, the Gurubashi empire was plunged into a civil war by a powerful sect of priests, the Atal'ai, who sought to summon to Azeroth an avatar of their god of blood, Hakkar the Soulflayer. The Gurubashi people exiled the Atal'ai to the Swamp of Sorrows, where the priests built the Temple of Atal'Hakkar. Ysera, Aspect of the green dragonflight, sank the temple beneath the swamp and assigned wardens to ensure that the summoning rituals never be performed again.", 608178, 608256, 608217, 136360, 220},
+	[70] = {"Uldaman", "Uldaman is an ancient titan vault buried deep within the earth. It is said the titans sealed away a failed experiment there and then moved on to a new project, related to the genesis of the dwarves. Tales of a fabled treasure containing great knowledge have enticed would-be treasure hunters to dig deeper into the secrets of Uldaman, a task made perilous by the presence of stone defenders, savage troggs, Dark Iron invaders, and other dangers lurking in the lost city.", 608186, 608264, 608225, 136363, 230},
+	[43] = {"Wailing Caverns", "Years ago, the famed druid Naralex and his followers descended into the shadowy Wailing Caverns, named for the mournful cry one hears when steam bursts from the cave system's fissures. Naralex planned to use the underground springs to restore lushness to the arid Barrens. But upon entering the Emerald Dream, he saw his vision of regrowth turn into a waking nightmare, one that has plagued the caverns ever since.", 608190, 608313, 608229, 136364, 279},
+	[209] = {"Zul'Farrak", "Zul'Farrak was once the shining jewel of Tanaris, ferociously protected by the cunning Sandfury tribe. Despite the trolls' tenacity, this isolated group was forced to surrender much of its territory throughout history. Now, it appears that Zul'Farrak's inhabitants are creating a horrific army of undead trolls to conquer the surrounding region. Other disturbing rumors tell of an ancient creature sleeping within the city--one that, if awakened, will rain death and destruction across Tanaris.", 608191, 608267, 608230, 136368, 219},
 	--Classic raids.
-	[7249] = {"Onyxia's Lair", "", 1396463, 1396508, 1396589, 329121, 0},
+	[249] = {"Onyxia's Lair", "", 1396463, 1396508, 1396589, 329121, 0},
 	[409] = {"Molten Core", "", 1396460, 1396505, 1396586, 136346, 0, 1},
 	[469] = {"Blackwing Lair", "", 1396454, 1396499, 1396580, 136329, 0, 2},
 	[309] = {"Zul'Gurub", "Zul'Gurub was the capital of the Gurubashi jungle trolls, a tribe that once controlled the vast jungles of the south. It was here that Jin'do the Hexxer summoned the savage loa Hakkar the Soulflayer into Azeroth. Of late, these efforts have begun anew amid an alliance between the Gurubashi and Zandalar trolls that seeks to establish a unified troll empire.", 522348, 526416, 522364, 136369, 337, 3},
@@ -461,11 +461,13 @@ NRC.flasks = {
 		name = "Flask of Supreme Power",
 		icon = 134821,
 		desc = "+70 Spell Power",
+		maxRank = true,
 	},
 	[17626] = {
 		name = "Flask of the Titans",
 		icon = 134842,
 		desc = "+400 HP",
+		maxRank = true,
 	},
 	[17627] = {
 		name = "Flask of Distilled Wisdom",
@@ -477,22 +479,377 @@ NRC.flasks = {
 		name = "Flask of Chromatic Resistance",
 		icon = 134828,
 		desc = "+25 All Resistances",
+		maxRank = true,
 	},
 };
 
 NRC.battleElixirs = {
-	
+	[2374] = {
+		name = "Elixir of Minor Agility",
+		icon = 134873,
+		desc = "+4 Agility",
+	},
+	[2367] = {
+		name = "Elixir of Lion's Strength",
+		icon = 134838,
+		desc = "+4 Strength",
+	},
+	[8212] = {
+		name = "Elixir of Giant Growth",
+		icon = 136101,
+		desc = "+8 Strength",
+		maxRankSodPhases = {1}, --8.
+	},
+	[3166] = {
+		name = "Elixir of Wisdom",
+		icon = 134721,
+		desc = "+6 Intellect",
+		maxRankSodPhases = {1}, --10.
+	},
+	[7844] = {
+		name = "Elixir of Firepower",
+		icon = 134813,
+		desc = "Increase spell fire damage by up to 10",
+		maxRankSodPhases = {1}, --18.
+	},
+	[3160] = {
+		name = "Elixir of Lesser Agility",
+		icon = 134873,
+		desc = "+8 Agility",
+		maxRankSodPhases = {1}, --18.
+	},
+	[3164] = {
+		name = "Elixir of Ogre's Strength",
+		icon = 134838,
+		desc = "+8 Strength",
+		maxRankSodPhases = {1}, --20.
+	},
+	[11328] = {
+		name = "Elixir of Agility",
+		icon = 134873,
+		desc = "+15 Agility",
+	},
+	[17708] = {
+		name = "Elixir of Frost Power",
+		icon = 134714,
+		desc = "Increase spell frost damage by up to 15",
+		maxRankSodPhases = {2}, --28.
+	},
+	[11390] = {
+		name = "Arcane Elixir",
+		icon = 134810,
+		desc = "Increase spell damage by up to 20",
+		maxRankSodPhases = {2}, --37.
+	},
+	[11396] = {
+		name = "Elixir of Greater Intellect",
+		icon = 134721,
+		desc = "+25 Intellect",
+		maxRankSodPhases = {2}, --37.
+	},
+	[11405] = {
+		name = "Elixir of Giants",
+		icon = 134841,
+		desc = "+25 Strength",
+		maxRankSodPhases = {2}, --38.
+	},
+	[11334] = {
+		name = "Elixir of Greater Agility",
+		icon = 134873,
+		desc = "+25 Agility",
+		maxRankSodPhases = {2}, --38.
+	},
+	[11406] = {
+		name = "Elixir of Demonslaying",
+		icon = 135957,
+		desc = "Increase attack power by 265 against demons",
+		maxRank = true,
+	},
+	[26276] = {
+		name = "Elixir of Greater Firepower",
+		icon = 134840,
+		desc = "Increase spell fire damage by up to 40",
+		maxRank = true,
+	},
+	[11474] = {
+		name = "Elixir of Shadow Power",
+		icon = 134826,
+		desc = "Increase spell shadow damage by up to 40",
+		maxRank = true,
+	},
+	[24363] = {
+		name = "Mageblood Potion",
+		icon = 134825,
+		desc = "+12 MP5",
+		maxRank = true,
+	},
+	[17535] = {
+		name = "Elixir of the Sages",
+		icon = 134809,
+		desc = "+18 Intellect, +18 Spirit",
+		maxRank = true,
+	},
+	[10693] = {
+		name = "Gizzard Gum",
+		icon = 135818,
+		desc = "+25 Spirit",
+		maxRank = true,
+	},
+	[17537] = {
+		name = "Elixir of Brute Force",
+		icon = 134820,
+		desc = "+18 Strength, +18 Stamina",
+		maxRank = true,
+	},
+	[10669] = {
+		name = "Ground Scorpok Assay",
+		icon = 136036,
+		desc = "+25 Agility",
+		maxRank = true,
+	},
+	[10667] = {
+		name = "R.O.I.D.S",
+		icon = 136101,
+		desc = "+25 Strength",
+		maxRank = true,
+	},
+	[17038] = {
+		name = "Winterfall Firewater",
+		icon = 134872,
+		desc = "Increase melee attack power by 35",
+		maxRank = true,
+	},
+	[17538] = {
+		name = "Elixir of the Mongoose",
+		icon = 134812,
+		desc = "+25 Agility and 2% Crit",
+		maxRank = true,
+	},
+	[17539] = {
+		name = "Greater Arcane Elixir",
+		icon = 134805,
+		desc = "Increase spell damage by up to 35",
+		maxRank = true,
+	},
 };
 
 NRC.guardianElixirs = {
-	
+	[3219] = {
+		name = "Weak Troll's Blood Potion",
+		icon = 134859,
+		desc = "Regenerate 2 health every 5 seconds",
+	},
+	[3222] = {
+		name = "Strong Troll's Blood Potion",
+		icon = 134859,
+		desc = "Regenerate 6 health every 5 seconds",
+		maxRankSodPhases = {1}, --15.
+	},
+	[673] = {
+		name = "Elixir of Minor Defense",
+		icon = 134845,
+		desc = "+50 Armor",
+	},
+	[2378] = {
+		name = "Elixir of Minor Fortitude",
+		icon = 134824,
+		desc = "+27 Health",
+	},
+	[3220] = {
+		name = "Elixir of Defense",
+		icon = 134866,
+		desc = "+150 Armor",
+		maxRankSodPhases = {1}, --16.
+	},
+	[3693] = {
+		name = "Elixir of Fortitude",
+		icon = 134824,
+		desc = "+120 Health",
+		maxRankSodPhases = {1}, --25.
+	},
+	[3223] = {
+		name = "Mighty Troll's Blood Potion",
+		icon = 134859,
+		desc = "Regenerate 12 health every 5 seconds",
+		maxRankSodPhases = {2, 3}, --26.
+	},
+	[11349] = {
+		name = "Elixir of Greater Defense",
+		icon = 134866,
+		desc = "+250 Armor",
+		maxRankSodPhases = {2}, --29.
+	},
+	[11348] = {
+		name = "Elixir of Superior Defense",
+		icon = 134866,
+		desc = "+450 Armor",
+		maxRank = true,
+	},
+	[10668] = {
+		name = "Lung Juice Cocktail",
+		icon = 136075,
+		desc = "+25 Stamina",
+		maxRank = true,
+	},
+	[10692] = {
+		name = "Cerebral Cortex Compound",
+		icon = 135988,
+		desc = "+25 Intellect",
+		maxRank = true,
+	},
+	[24361] = {
+		name = "Major Troll's Blood Potion",
+		icon = 134859,
+		desc = "Regenerate 20 health every 5 seconds",
+		maxRank = true,
+	},
+};
+
+NRC.zanza = {
+
 };
 
 NRC.foods = {
-	
+	--minlevel numbers are off.  "Food" may list minlevel 35, but one of the used by food items may have a minlevel 20.
+	--"Well Fed" doesn't have any minlevel.
+	[19705] = {
+		name = "Well Fed",
+		icon = 136000,
+		desc = "+2 Spirit, +2 Stamina",
+	},
+	[19706] = {
+		name = "Well Fed",
+		icon = 136000,
+		desc = "+4 Spirit, +4 Stamina",
+	},
+	[19708] = {
+		name = "Well Fed",
+		icon = 136000,
+		desc = "+6 Spirit, +6 Stamina",
+	},
+	[19709] = {
+		name = "Well Fed",
+		icon = 136000,
+		desc = "+8 Spirit, +8 Stamina",
+		maxRankSodPhases = {1}, --20.
+	},
+	[19710] = {
+		name = "Well Fed",
+		icon = 136000,
+		desc = "+12 Spirit, +12 Stamina",
+	},
+	[19711] = {
+		name = "Well Fed",
+		icon = 136000,
+		desc = "+14 Spirit, +14 Stamina",
+	},
+	[24799] = {
+		name = "Well Fed",
+		icon = 136000,
+		desc = "+20 Strength",
+	},
+	[24870] = {
+		name = "Well Fed",
+		icon = 136000,
+		desc = "+25 percent Spirit of level, +25 percent Stamina of level",
+	},
+	[25694] = {
+		name = "Well Fed",
+		icon = 136000,
+		desc = "+3 MP5",
+	},
+	[25941] = {
+		name = "Well Fed",
+		icon = 136000,
+		desc = "+6 MP5",
+	},
+	[18191] = {
+		name = "Increased Stamina",
+		icon = 136000,
+		desc = "+10 Stamina",
+		maxRankSodPhases = {2}, --35.
+	},
+	[18192] = {
+		name = "Increased Agility",
+		icon = 136000,
+		desc = "+10 Agility",
+		maxRankSodPhases = {2}, --35.
+	},
+	[18193] = {
+		name = "Increased Spirit",
+		icon = 136000,
+		desc = "+10 Spirit",
+		maxRankSodPhases = {2}, --35.
+	},
+	[18222] = {
+		name = "Health Regeneration",
+		icon = 136000,
+		desc = "Regenerate 6 Health every 5 seconds",
+		maxRankSodPhases = {2}, --35.
+	},
+	[18194] = {
+		name = "Mana Regeneration",
+		icon = 136000,
+		desc = "Regenerate 8 Mana every 5 seconds",
+		maxRankSodPhases = {2}, --35.
+	},
+	[22730] = {
+		name = "Increased Intellect",
+		icon = 136000,
+		desc = "+10 Intellect",
+		maxRankSodPhases = {2}, --55.
+	},--
+};
+
+--"Food" buffs used in RaidStatus to show player is currently eating buff food, these must match all foods above.
+--Current expansion and 1 previous expansion.
+NRC.eating = {
+	[5004] = "Food", --2 stam 2 spirit.
+	[5005] = "Food", --4 stam 4 spirit.
+	[5006] = "Food", --6 stam 6 spirit.
+	[5007] = "Food", --8 stam 8 spirit.
+	[10256] = "Food", --12 stam 12 spirit.
+	[10257] = "Food", --14 stam 14 spirit.
+	[24800] = "Food", --20 strength.
+	[18229] = "Food", --+10 Stamina, 35.
+	[18230] = "Food", --+10 Agility, 35.
+	[18231] = "Food", --+10 Spirit, 35.
+	[18232] = "Food", --+6 Health every 5 seconds, 35.
+	[18233] = "Food", --+8 Mana every 5 seconds, 35.
+	[18234] = "Food", --+10 Stamina, 55, has level 35 equivalent.
+	[22731] = "Food", --+Intellect, 55.
 };
 
 NRC.scrolls = {
+	[8115] = {
+		name = "Scroll of Agility",
+		icon = 135879,
+		desc = "+5 Agility",
+		order = 19,
+		itemID = 10309,
+		itemIcon = 134938,
+		quality = 1,
+	},
+	[8116] = {
+		name = "Scroll of Agility II",
+		icon = 135879,
+		desc = "+9 Agility",
+		order = 13,
+		itemID = 10309,
+		itemIcon = 134938,
+		quality = 1,
+		maxRankSodPhases = {1}, --25.
+	},
+	[8117] = {
+		name = "Scroll of Agility III",
+		icon = 135879,
+		desc = "+13 Agility",
+		order = 7,
+		itemID = 10309,
+		itemIcon = 134938,
+		quality = 1,
+		maxRankSodPhases = {2, 3}, --40.
+	},
 	[12174] = {
 		name = "Scroll of Agility IV",
 		icon = 135879,
@@ -501,6 +858,36 @@ NRC.scrolls = {
 		itemID = 10309,
 		itemIcon = 134938,
 		quality = 1,
+		maxRank = true,
+	},
+	[8118] = {
+		name = "Scroll of Strength",
+		icon = 136101,
+		desc = "+5 Strength",
+		order = 20,
+		itemID = 10310,
+		itemIcon = 134938,
+		quality = 1,
+	},
+	[8119] = {
+		name = "Scroll of Strength II",
+		icon = 136101,
+		desc = "+9 Strength",
+		order = 14,
+		itemID = 10310,
+		itemIcon = 134938,
+		quality = 1,
+		maxRankSodPhases = {1}, --25.
+	},
+	[8120] = {
+		name = "Scroll of Strength III",
+		icon = 136101,
+		desc = "+13 Strength",
+		order = 8,
+		itemID = 10310,
+		itemIcon = 134938,
+		quality = 1,
+		maxRankSodPhases = {2, 3}, --40.
 	},
 	[12179] = {
 		name = "Scroll of Strength IV",
@@ -510,6 +897,36 @@ NRC.scrolls = {
 		itemID = 10310,
 		itemIcon = 134938,
 		quality = 1,
+		maxRank = true,
+	},
+	[8091] = {
+		name = "Scroll of Protection",
+		icon = 132341,
+		desc = "+60 Armor",
+		order = 21,
+		itemID = 10305,
+		itemIcon = 134943,
+		quality = 1,
+	},
+	[8094] = {
+		name = "Scroll of Protection II",
+		icon = 132341,
+		desc = "+120 Armor",
+		order = 15,
+		itemID = 10305,
+		itemIcon = 134943,
+		quality = 1,
+		maxRankSodPhases = {1}, --15.
+	},
+	[8095] = {
+		name = "Scroll of Protection III",
+		icon = 132341,
+		desc = "+180 Armor",
+		order = 9,
+		itemID = 10305,
+		itemIcon = 134943,
+		quality = 1,
+		maxRankSodPhases = {2}, --30.
 	},
 	[12175] = {
 		name = "Scroll of Protection IV",
@@ -519,6 +936,36 @@ NRC.scrolls = {
 		itemID = 10305,
 		itemIcon = 134943,
 		quality = 1,
+		maxRank = true,
+	},
+	[8096] = {
+		name = "Scroll of Intellect",
+		icon = 135932,
+		desc = "+4 Intellect",
+		order = 22,
+		itemID = 10308,
+		itemIcon = 134937,
+		quality = 1,
+	},
+	[8097] = {
+		name = "Scroll of Intellect II",
+		icon = 135932,
+		desc = "+8 Intellect",
+		order = 16,
+		itemID = 10308,
+		itemIcon = 134937,
+		quality = 1,
+		maxRankSodPhases = {1}, --20.
+	},
+	[8098] = {
+		name = "Scroll of Intellect III",
+		icon = 135932,
+		desc = "+12 Intellect",
+		order = 10,
+		itemID = 10308,
+		itemIcon = 134937,
+		quality = 1,
+		maxRankSodPhases = {2}, --35.
 	},
 	[12176] = {
 		name = "Scroll of Intellect IV",
@@ -528,6 +975,36 @@ NRC.scrolls = {
 		itemID = 10308,
 		itemIcon = 134937,
 		quality = 1,
+		maxRank = true,
+	},
+	[8112] = {
+		name = "Scroll of Spirit",
+		icon = 136126,
+		desc = "+3 Spirit",
+		order = 23,
+		itemID = 10306,
+		itemIcon = 134937,
+		quality = 1,
+	},
+	[8113] = {
+		name = "Scroll of Spirit II",
+		icon = 136126,
+		desc = "+7 Spirit",
+		order = 17,
+		itemID = 10306,
+		itemIcon = 134937,
+		quality = 1,
+		maxRankSodPhases = {1}, --15.
+	},
+	[8114] = {
+		name = "Scroll of Spirit III",
+		icon = 136126,
+		desc = "+11 Spirit",
+		order = 11,
+		itemID = 10306,
+		itemIcon = 134937,
+		quality = 1,
+		maxRankSodPhases = {2}, --30.
 	},
 	[12177] = {
 		name = "Scroll of Spirit IV",
@@ -537,6 +1014,36 @@ NRC.scrolls = {
 		itemID = 10306,
 		itemIcon = 134937,
 		quality = 1,
+		maxRank = true,
+	},
+	[8099] = {
+		name = "Scroll of Stamina",
+		icon = 136112,
+		desc = "+4 Stamina",
+		order = 24,
+		itemID = 10307,
+		itemIcon = 134943,
+		quality = 1,
+	},
+	[8100] = {
+		name = "Scroll of Stamina II",
+		icon = 136112,
+		desc = "+8 Stamina",
+		order = 18,
+		itemID = 10307,
+		itemIcon = 134943,
+		quality = 1,
+		maxRankSodPhases = {1}, --20.
+	},
+	[8101] = {
+		name = "Scroll of Stamina III",
+		icon = 136112,
+		desc = "+12 Stamina",
+		order = 12,
+		itemID = 10307,
+		itemIcon = 134943,
+		quality = 1,
+		maxRankSodPhases = {2}, --35.
 	},
 	[12178] = {
 		name = "Scroll of Stamina IV",
@@ -546,20 +1053,280 @@ NRC.scrolls = {
 		itemID = 10307,
 		itemIcon = 134943,
 		quality = 1,
+		maxRank = true,
 	},
 };
 
 --Spell cast IDs not item IDs.
 NRC.trackedConsumes = {
-
-}
+	[22792] = {
+		name = "Thornling Seed",
+		icon = 132877,
+		desc = "Plants a Thornling which attracts nearby enemies.",
+		itemID = 18297,
+		quality = 1,
+	},
+	--Engi.
+	[44389] = {
+		name = "Field Repair Bot 110G",
+		icon = 133859,
+		desc = "Unfolds into a Field Repair Bot that sells reagents and can repair damaged items.  After 10 minutes its internal motor fails.",
+		itemID = 34113,
+		quality = 1,
+	},
+	--Potions.
+	[17530] = {
+		name = "Superior Mana Potion",
+		icon = 134854,
+		desc = "Restores 900 to 1500 mana.",
+		itemID = 13443,
+		quality = 1,
+	},
+	[4042] = {
+		name = "Superior Healing Potion",
+		icon = 134833,
+		desc = "Restores 700 to 900 health.",
+		itemID = 3928,
+		quality = 1,
+	},
+	[17531] = {
+		name = "Major Mana Potion",
+		icon = 134856,
+		desc = "Restores 1350 to 2250 mana.",
+		itemID = 13444,
+		quality = 1,
+	},
+	[17534] = {
+		name = "Major Healing Potion",
+		icon = 134834,
+		desc = "Restores 1050 to 1750 health.",
+		itemID = 13446,
+		quality = 1,
+	},
+	[17549] = {
+		name = "Greater Arcane Protection Potion",
+		icon = 134863,
+		desc = "Absorbs 1950 to 3250 arcane damage. Last 1 hour.",
+		itemID = 13461,
+		quality = 1,
+	},
+	[17543] = {
+		name = "Greater Fire Protection Potion",
+		icon = 134804,
+		desc = "Absorbs 1950 to 3250 fire damage. Last 1 hour.",
+		itemID = 13457,
+		quality = 1,
+	},
+	[17544] = {
+		name = "Greater Frost Protection Potion",
+		icon = 134800,
+		desc = "Absorbs 1950 to 3250 frost damage. Last 1 hour.",
+		itemID = 13456,
+		quality = 1,
+	},
+	[17545] = {
+		name = "Greater Holy Protection Potion",
+		icon = 134720,
+		desc = "Absorbs 1950 to 3250 holy damage. Last 1 hour.",
+		itemID = 13460,
+		quality = 1,
+	},
+	[17546] = {
+		name = "Greater Nature Protection Potion",
+		icon = 134802,
+		desc = "Absorbs 1950 to 3250 nature damage. Last 1 hour.",
+		itemID = 13458,
+		quality = 1,
+	},
+	[17548] = {
+		name = "Greater Shadow Protection Potion",
+		icon = 134803,
+		desc = "Absorbs 1950 to 3250 shadow damage.  Last 1 hour.",
+		itemID = 13459,
+		quality = 1,
+	},
+	[24360] = {
+		name = "Greater Dreamless Sleep Potion",
+		icon = 134863,
+		desc = "Puts the imbiber in a dreamless sleep for 12 sec. During that time the imbiber heals 2100 health and 2100 mana.",
+		itemID = 20002,
+		quality = 1,
+	},
+	[7233] = {
+		name = "Fire Protection Potion",
+		icon = 134787,
+		desc = "Absorbs 975 to 1625 fire damage. Last 1 hour.",
+		itemID = 6049,
+		quality = 1,
+	},
+	[7239] = {
+		name = "Frost Protection Potion",
+		icon = 134754,
+		desc = "Absorbs 1350 to 2250 frost damage. Last 1 hour.",
+		itemID = 6050,
+		quality = 1,
+	},
+	[7245] = {
+		name = "Holy Protection Potion",
+		icon = 134720,
+		desc = "Absorbs 300 to 500 holy damage. Last 1 hour.",
+		itemID = 6051,
+		quality = 1,
+	},
+	[7254] = {
+		name = "Nature Protection Potion",
+		icon = 134717,
+		desc = "Absorbs 1350 to 2250 nature damage. Last 1 hour.",
+		itemID = 6052,
+		quality = 1,
+	},
+	[7242] = {
+		name = "Shadow Protection Potion",
+		icon = 134824,
+		desc = "Absorbs 675 to 1125 shadow damage.  Last 1 hour.",
+		itemID = 6048,
+		quality = 1,
+	},
+	[15822] = {
+		name = "Dreamless Sleep Potion",
+		icon = 134863,
+		desc = "Puts the imbiber in a dreamless sleep for 12 sec. During that time the imbiber heals 1200 health and 1200 mana.",
+		itemID = 12190,
+		quality = 1,
+	},
+	[11392] = {
+		name = "Invisibility Potion",
+		icon = 134805,
+		desc = "Gives the imbiber invisibility for 18 sec. (10 Min Cooldown)",
+		itemID = 9172,
+		quality = 1,
+	},
+	[3680] = {
+		name = "Lesser Invisibility Potion",
+		icon = 134798,
+		desc = "Gives the imbiber lesser invisibility for 15 sec. (10 Min Cooldown)",
+		itemID = 3823,
+		quality = 1,
+	},
+	[16666] = {
+		name = "Demonic Rune",
+		icon = 134417,
+		desc = "Restores 900 to 1500 mana at the cost of 600 to 1000 life.",
+		itemID = 12662,
+		quality = 2,
+	},
+	[27869] = {
+		name = "Dark Rune",
+		icon = 136192,
+		desc = "Restores 900 to 1500 mana at the cost of 600 to 1000 life.",
+		itemID = 20520,
+		quality = 2,
+	},
+	[11371] = {
+		name = "Gift of Arthas",
+		icon = 134808,
+		desc = "+10 Shadow Resistnce, attacker has a 30% chance of being inflicted with disease that increases their damage taken by 8 for 3 min.",
+		itemID = 9088,
+		quality = 1,
+	},
+	[6615] = {
+		name = "Free Action Potion",
+		icon = 134715,
+		desc = "Makes you immune to Stun and Movement Impairing effects for the next 30 sec.",
+		itemID = 5634,
+		quality = 1,
+	},
+	[3169] = {
+		name = "Limited Invulnerability Potion",
+		icon = 134842,
+		desc = "Imbiber is immune to physical attacks for the next 6 sec.",
+		itemID = 3387,
+		quality = 1,
+	},
+	[11359] = {
+		name = "Restorative Potion",
+		icon = 134712,
+		desc = "Removes 1 magic, curse, poison or disease effect on you every 5 seconds for 30 seconds.",
+		itemID = 9030,
+		quality = 1,
+	},
+	[17528] = {
+		name = "Mighty Rage Potion",
+		icon = 134821,
+		desc = "Increases Rage by 45 to 70.",
+		itemID = 13442,
+		quality = 1,
+	},
+	[17540] = {
+		name = "Greater Stoneshield Potion",
+		icon = 134849,
+		desc = "Increases armor by 2000 for 2 min.",
+		itemID = 13455,
+		quality = 1,
+	},
+	[24364] = {
+		name = "Living Action Potion",
+		icon = 134718,
+		desc = "Makes you immune to Stun and Movement Impairing effects for the next 5 sec.  Also removes existing Stun and Movement Impairing effects.",
+		itemID = 20008,
+		quality = 1,
+	},
+};
 
 NRC.racials = {
-	
-}
+	[20572] = {
+		name = "Blood Fury",
+		icon = 135726,
+		desc = "Increases attack power. Lasts 15 sec.",
+	},
+	[20549] = {
+		name = "War Stomp",
+		icon = 132368,
+		desc = "Stuns up to 5 enemies within 8 yds for 2 sec.",
+	},
+	[20554] = {
+		name = "Berserking",
+		icon = 135727,
+		desc = "Increases your attack and casting speed by 20% for 10 sec.",
+	},
+	[7744] = {
+		name = "Will of the Forsaken",
+		icon = 136187,
+		desc = "Removes any Charm, Fear and Sleep effect. This effect shares a 45 sec cooldown with other similar effects.",
+	},
+	[20594] = {
+		name = "Stoneform",
+		icon = 136225,
+		desc = "Removes all poison, disease and bleed effects and increases your armor by 10% for 8 sec.",
+	},
+	[20589] = {
+		name = "Escape Artist",
+		icon = 132309,
+		desc = "Escape the effects of any immobilization or movement speed reduction effect.",
+	},
+	[20600] = {
+		name = "Perception",
+		icon = 136090,
+		desc = "Dramatically increases stealth detection for 20 sec.",
+	},
+	[20580] = {
+		name = "Shadowmeld",
+		icon = 132089,
+		desc = "Activate to slip into the shadows, reducing the chance for enemies to detect your presence. Lasts until cancelled or upon moving.",
+	},
+	[20577] = {
+		name = "Cannibalize",
+		icon = 132278,
+		desc = "When activated, regenerates 7% of total health every 2 sec for 10 sec.",
+	},
+	[2481] = {
+		name = "Find Treasure",
+		icon = 135725,
+		desc = "Allows the dwarf to sense nearby treasure, making it appear on the minimap.",
+	},
+};
 
 NRC.interrupts = {
-	--Id = threat.
 	[1766] = {
 		name = "Kick",
 		icon = 132219,
@@ -671,9 +1438,9 @@ end
 for k, v in pairs(NRC.trackedConsumes) do
 	NRC.trackedItems[k] = v;
 end
---for k, v in pairs(NRC.foods) do
---	NRC.trackedItems[k] = v;
---end
+for k, v in pairs(NRC.foods) do
+	NRC.trackedItems[k] = v;
+end
 
 --Loot data here is taken from AtlasLoot with permission of the dev Lag123.
 --HP data from wowhead but I also record when bosses are targeted incase any data is wrong or Blizzard change things.
@@ -844,11 +1611,25 @@ NRC.magePortals = {
 };
 
 NRC.healthstones = {
-	
+	[27235] = {
+		name = "Healthstone (0/2)",
+		icon = 135230,
+		spellName = "Healthstone",
+	},
+	[27236] = {
+		name = "Healthstone (1/2)",
+		icon = 135230,
+		spellName = "Healthstone",
+	},
+	[27237] = {
+		name = "Healthstone (2/2)",
+		icon = 135230,
+		spellName = "Healthstone",
+	},
 };
 		
 NRC.dpsPotions = {
-	
+	--Probably add lip/fap etc here?
 };
 
 NRC.manaPotions = {
@@ -984,16 +1765,6 @@ NRC.tempEnchants = {
 		name = "Deadly Poison V",
 		icon = 132290,
 		desc = "Each strike has a 30% chance of poisoning the enemy for 136 Nature damage over 12 sec.  Stacks up to 5 times on a single target.",
-	},
-	[2642] = {
-		name = "Deadly Poison VI",
-		icon = 132290,
-		desc = "Each strike has a 30% chance of poisoning the enemy for 144 Nature damage over 12 sec. Stacks up to 5 times on a single target.",
-	},
-	[2643] = {
-		name = "Deadly Poison VII",
-		icon = 132290,
-		desc = "Each strike has a 30% chance of poisoning the enemy for 180 Nature damage over 12 sec. Stacks up to 5 times on a single target.",
 		maxRank = true,
 	},
 	[1643] = {
@@ -1012,33 +1783,11 @@ NRC.tempEnchants = {
 		desc = "Increase the critical strike rating on a melee weapon by 28 for 1 hour.",
 		maxRank = true,
 	},
-	[2712] = {
-		name = "Fel Sharpening Stone",
-		icon = 135253,
-		desc = "Increase sharp weapon damage by 12 for 1 hour.",
-	},
-	[2954] = {
-		name = "Fel Weightstone",
-		icon = 135260,
-		desc = "Increase blunt weapon damage by 12 for 1 hour.",
-	},
 	[26] = {
 		name = "Frost Oil",
 		icon = 134800,
 		desc = "10% chance of casting Frostbolt at the opponent when it hits.",
 	},
-	--[[[2791] = {
-		name = "Greater Rune of Warding",
-		icon = 134423,
-		desc = "Enchant chest armor so it has a 25% chance per hit of giving you 400 points of physical damage absorption. 90 sec cooldown.",
-		maxRank = true,
-	},
-	[2720] = {
-		name = "Greater Ward of Shielding",
-		icon = 134426,
-		desc = "Applies the Greater Ward of Shielding to your shield.  This ward absorbs up to 4000 points of damage before it fails.",
-		maxRank = true,
-	},]]
 	[14] = {
 		name = "Heavy Sharpening Stone",
 		icon = 135250,
@@ -1078,11 +1827,6 @@ NRC.tempEnchants = {
 		name = "Instant Poison VI",
 		icon = 132273,
 		desc = "Each strike has a 20% chance of poisoning the enemy which instantly inflicts 112 to 148 Nature damage.",
-	},
-	[2641] = {
-		name = "Instant Poison VII",
-		icon = 132273,
-		desc = "Each strike has a 20% chance of poisoning the enemy which instantly inflicts 146 to 194 Nature damage.",
 		maxRank = true,
 	},
 	[2625] = {
@@ -1198,11 +1942,6 @@ NRC.tempEnchants = {
 		name = "Wound Poison IV",
 		icon = 134197,
 		desc = "Each strike has a 30% chance of poisoning the enemy, causing 53 Nature damage and reducing all healing effects used on them by 10% for 15 sec.",
-	},
-	[2644] = {
-		name = "Wound Poison V",
-		icon = 134197,
-		desc = "Each strike has a 30% chance of poisoning the enemy, causing 65 Nature damage and reducing all healing effects used on them by 10% for 15 sec",
 		maxRank = true,
 	},
 	--Shaman self weapon enchants.
@@ -1235,11 +1974,6 @@ NRC.tempEnchants = {
 		name = "Flametongue Weapon 6",
 		icon = 135814,
 		desc = "Each hit causes 40 to 124 additional Fire damage, based on the speed of the weapon.",
-	},
-	[2634] = {
-		name = "Flametongue Weapon 7",
-		icon = 135814,
-		desc = "Each hit causes 46 to 140 additional Fire damage, based on the speed of the weapon.",
 		maxRank = true,
 	},
 	[2] = {
@@ -1266,11 +2000,6 @@ NRC.tempEnchants = {
 		name = "Frostbrand Weapon 5",
 		icon = 135847,
 		desc = "Each hit has a chance of causing 215 additional Frost damage and slowing the target's movement speed by 25% for 8 sec.",
-	},
-	[2635] = {
-		name = "Frostbrand Weapon 6",
-		icon = 135847,
-		desc = "Each hit has a chance of causing 246 additional Frost damage and slowing the target's movement speed by 25% for 8 sec.",
 		maxRank = true,
 	},
 	[29] = {
@@ -1307,16 +2036,6 @@ NRC.tempEnchants = {
 		name = "Rockbiter Weapon 7",
 		icon = 136086,
 		desc = "Increase weapon damage per second by 40.",
-	},
-	[2632] = {
-		name = "Rockbiter Weapon 8",
-		icon = 136086,
-		desc = "Increase weapon damage per second by 49.",
-	},
-	[2633] = {
-		name = "Rockbiter Weapon 9",
-		icon = 136086,
-		desc = "Increase weapon damage per second by 62.",
 		maxRank = true,
 	},
 	[283] = {
@@ -1338,11 +2057,6 @@ NRC.tempEnchants = {
 		name = "Windfury Weapon 4",
 		icon = 136018,
 		desc = "Each hit has a 20% chance of dealing additional damage equal to two extra attacks with 433 extra attack power.",
-	},
-	[2636] = {
-		name = "Windfury Weapon 5",
-		icon = 136018,
-		desc = "Each hit has a 20% chance of dealing additional damage equal to two extra attacks with 475 extra attack power.",
 		maxRank = true,
 	},
 };
@@ -1356,9 +2070,7 @@ NRC.healingSpecs = {
 
 ---These buff tables below are wiped after being loaded locally in RaidStatus.
 ---They are just loaded here first for expansion seperation reasons.
-
---The maxRank settings here need fixing for classic if I ever get around to making this addon work properly classic era.
-
+--
 NRC.int = {
 	[1459] = {
 		name = "Arcane Intellect",
@@ -1371,49 +2083,33 @@ NRC.int = {
 		icon = 135932,
 		desc = "+7 Int",
 		rank = 2,
+		maxRankSodPhases = {1}, --14.
 	},
 	[1461] = {
 		name = "Arcane Intellect",
 		icon = 135932,
 		desc = "+15 Int",
 		rank = 3,
+		maxRankSodPhases = {2}, --28.
 	},
 	[10156] = {
 		name = "Arcane Intellect",
 		icon = 135932,
 		desc = "+22 Int",
 		rank = 4,
+		maxRankSodPhases = {3}, --42.
 	},
 	[10157] = {
 		name = "Arcane Intellect",
 		icon = 135932,
 		desc = "+31 Int",
 		rank = 5,
-	},
-	[27126] = {
-		name = "Arcane Intellect",
-		icon = 135932,
-		desc = "+40 Int",
-		rank = 6,
 		maxRank = true,
 	},
 	[23028] = {
 		name = "Arcane Brilliance",
 		icon = 135869,
 		desc = "+31 Int",
-		rank = 1,
-	},
-	[27127] = {
-		name = "Arcane Brilliance",
-		icon = 135869,
-		desc = "+40 Int",
-		rank = 2,
-		maxRank = true,
-	},
-	[46302] = { --Sunwell zone buff doesn't stack with int, but is overwritten by fort..
-		name = "K'iru's Song of Victory",
-		icon = 135981,
-		desc = "+40 Int",
 		rank = 1,
 		maxRank = true,
 	},
@@ -1437,30 +2133,27 @@ NRC.fort = {
 		icon = 135987,
 		desc = "+20 Stam",
 		rank = 3,
+		maxRankSodPhases = {1}, --24.
 	},
 	[2791] = {
 		name = "Power Word: Fortitude",
 		icon = 135987,
 		desc = "+32 Stam",
 		rank = 4,
+		maxRankSodPhases = {2}, --36.
 	},
 	[10937] = {
 		name = "Power Word: Fortitude",
 		icon = 135987,
 		desc = "+43 Stam",
 		rank = 5,
+		maxRankSodPhases = {3}, --48.
 	},
 	[10938] = {
 		name = "Power Word: Fortitude",
 		icon = 135987,
 		desc = "+54 Stam",
 		rank = 6,
-	},
-	[25389] = {
-		name = "Power Word: Fortitude",
-		icon = 135987,
-		desc = "+79 Stam",
-		rank = 7,
 		maxRank = true,
 	},
 	[21562] = {
@@ -1468,18 +2161,13 @@ NRC.fort = {
 		icon = 135941,
 		desc = "+43 Stam",
 		rank = 1,
+		maxRankSodPhases = {3}, --48.
 	},
 	[21564] = {
 		name = "Prayer of Fortitude",
 		icon = 135941,
 		desc = "+54 Stam",
 		rank = 2,
-	},
-	[25392] = {
-		name = "Prayer of Fortitude",
-		icon = 135941,
-		desc = "+79 Stam",
-		rank = 3,
 		maxRank = true,
 	},
 };
@@ -1490,30 +2178,27 @@ NRC.spirit = {
 		icon = 135898,
 		desc = "+17 Spirit",
 		rank = 1,
+		--Level 30 to get this as a talent.
 	},
 	[14818] = {
 		name = "Divine Spirit",
 		icon = 135898,
 		desc = "+17 Spirit",
 		rank = 2,
+		maxRankSodPhases = {2}, --40.
 	},
 	[14819] = {
 		name = "Divine Spirit",
 		icon = 135898,
 		desc = "+33 Spirit",
 		rank = 3,
+		maxRankSodPhases = {3}, --50.
 	},
 	[27841] = {
 		name = "Divine Spirit",
 		icon = 135898,
 		desc = "+40 Spirit",
 		rank = 4,
-	},
-	[25312] = {
-		name = "Divine Spirit",
-		icon = 135898,
-		desc = "+50 Spirit",
-		rank = 5,
 		maxRank = true,
 	},
 	[27681] = {
@@ -1521,12 +2206,6 @@ NRC.spirit = {
 		icon = 135946,
 		desc = "+40 Spirit",
 		rank = 1,
-	},
-	[32999] = {
-		name = "Prayer of Spirit",
-		icon = 135946,
-		desc = "+50 Spirit",
-		rank = 2,
 		maxRank = true,
 	},
 };
@@ -1537,24 +2216,20 @@ NRC.shadow = {
 		icon = 136121,
 		desc = "+30 Shadow Resistance",
 		rank = 1,
+		maxRankSodPhases = {2}, --30.
 	},
 	[10957] = {
 		name = "Shadow Protection",
 		icon = 136121,
 		desc = "+45 Shadow Resistance",
 		rank = 2,
+		maxRankSodPhases = {3}, --42.
 	},
 	[10958] = {
 		name = "Shadow Protection",
 		icon = 136121,
 		desc = "+60 Shadow Resistance",
 		rank = 3,
-	},
-	[25433] = {
-		name = "Shadow Protection",
-		icon = 136121,
-		desc = "+70 Shadow Resistance",
-		rank = 4,
 		maxRank = true,
 	},
 	[27683] = {
@@ -1562,12 +2237,6 @@ NRC.shadow = {
 		icon = 135945,
 		desc = "+60 Shadow Resistance",
 		rank = 1,
-	},
-	[39374] = {
-		name = "Prayer of Shadow Protection",
-		icon = 135945,
-		desc = "+70 Shadow Resistance",
-		rank = 2,
 		maxRank = true,
 	},
 };
@@ -1591,6 +2260,7 @@ NRC.motw = {
 		icon = 136078,
 		desc = "+4 Stats, +105 Armor",
 		rank = 3,
+		maxRankSodPhases = {1}, --20.
 	},
 	[5234] = {
 		name = "Mark of the Wild",
@@ -1603,24 +2273,20 @@ NRC.motw = {
 		icon = 136078,
 		desc = "+8 Stats, +195 Armor, +10 Resistances",
 		rank = 5,
+		maxRankSodPhases = {2}, --40.
 	},
 	[9884] = {
 		name = "Mark of the Wild",
 		icon = 136078,
 		desc = "+10 Stats, +240 Armor, +15 Resistances",
 		rank = 6,
+		maxRankSodPhases = {3}, --50.
 	},
 	[9885] = {
 		name = "Mark of the Wild",
 		icon = 136078,
 		desc = "+12 Stats, +285 Armor, +20 Resistances",
 		rank = 7,
-	},
-	[26990] = {
-		name = "Mark of the Wild",
-		icon = 136078,
-		desc = "+14 Stats, +350 Armor, +25 Resistances",
-		rank = 8,
 		maxRank = true,
 	},
 	[21849] = {
@@ -1628,18 +2294,13 @@ NRC.motw = {
 		icon = 136038,
 		desc = "+10 Stats, +240 Armor, +15 Resistances",
 		rank = 1,
+		maxRankSodPhases = {3}, --50.
 	},
 	[21850] = {
 		name = "Gift of the Wild",
 		icon = 136038,
 		desc = "+12 Stats, +285 Armor, +20 Resistances",
 		rank = 2,
-	},
-	[26991] = {
-		name = "Gift of the Wild",
-		icon = 136038,
-		desc = "+14 Stats, +350 Armor, +25 Resistances",
-		rank = 3,
 		maxRank = true,
 	},
 };
@@ -1696,6 +2357,7 @@ NRC.pal = {
 		desc = "+55 Attack Power",
 		rank = 3,
 		order = 3,
+		maxRankSodPhases = {1}, --22.
 	},
 	[19836] = {
 		name = "Blessing of Might",
@@ -1703,6 +2365,7 @@ NRC.pal = {
 		desc = "+85 Attack Power",
 		rank = 4,
 		order = 3,
+		maxRankSodPhases = {2}, --32.
 	},
 	[19837] = {
 		name = "Blessing of Might",
@@ -1710,6 +2373,7 @@ NRC.pal = {
 		desc = "+115 Attack Power",
 		rank = 5,
 		order = 3,
+		maxRankSodPhases = {3}, --42.
 	},
 	[19838] = {
 		name = "Blessing of Might",
@@ -1724,14 +2388,7 @@ NRC.pal = {
 		desc = "+185 Attack Power",
 		rank = 7,
 		order = 3,
-	},
-	[27140] = {
-		name = "Blessing of Might",
-		icon = 135906,
-		desc = "+220 Attack Power",
-		rank = 8,
 		maxRank = true,
-		order = 3,
 	},
 	[25782] = {
 		name = "Greater Blessing of Might",
@@ -1746,14 +2403,7 @@ NRC.pal = {
 		desc = "+185 Attack Power",
 		rank = 2,
 		order = 3,
-	},
-	[27141] = {
-		name = "Greater Blessing of Might",
-		icon = 135908,
-		desc = "+220 Attack Power",
-		rank = 3,
 		maxRank = true,
-		order = 3,
 	},
 	--Wisdom.
 	[19742] = {
@@ -1769,6 +2419,7 @@ NRC.pal = {
 		desc = "+15 MP5",
 		rank = 2,
 		order = 4,
+		maxRankSodPhases = {1}, --24.
 	},
 	[19852] = {
 		name = "Blessing of Wisdom",
@@ -1776,6 +2427,7 @@ NRC.pal = {
 		desc = "+20 MP5",
 		rank = 3,
 		order = 4,
+		maxRankSodPhases = {2}, --34.
 	},
 	[19853] = {
 		name = "Blessing of Wisdom",
@@ -1783,6 +2435,7 @@ NRC.pal = {
 		desc = "+25 MP5",
 		rank = 4,
 		order = 4,
+		maxRankSodPhases = {3}, --44.
 	},
 	[19854] = {
 		name = "Blessing of Wisdom",
@@ -1797,14 +2450,7 @@ NRC.pal = {
 		desc = "+33 MP5",
 		rank = 6,
 		order = 4,
-	},
-	[27142] = {
-		name = "Blessing of Wisdom",
-		icon = 135970,
-		desc = "+41 MP5",
-		rank = 7,
 		maxRank = true,
-		order = 4,
 	},
 	[25894] = {
 		name = "Greater Blessing of Wisdom",
@@ -1819,14 +2465,7 @@ NRC.pal = {
 		desc = "+33 MP5",
 		rank = 2,
 		order = 4,
-	},
-	[27143] = {
-		name = "Greater Blessing of Wisdom",
-		icon = 135912,
-		desc = "+41 MP5",
-		rank = 3,
 		maxRank = true,
-		order = 4,
 	},
 	--Light.
 	[19977] = {
@@ -1835,6 +2474,7 @@ NRC.pal = {
 		desc = "+210 Holy Light, +60 Flash of Light",
 		rank = 1,
 		order = 5,
+		maxRankSodPhases = {2}, --40.
 	},
 	[19977] = {
 		name = "Blessing of Light",
@@ -1842,6 +2482,7 @@ NRC.pal = {
 		desc = "+300 Holy Light, +85 Flash of Light",
 		rank = 2,
 		order = 5,
+		maxRankSodPhases = {3}, --50.
 	},
 	[19977] = {
 		name = "Blessing of Light",
@@ -1849,14 +2490,7 @@ NRC.pal = {
 		desc = "+400 Holy Light, +115 Flash of Light",
 		rank = 3,
 		order = 5,
-	},
-	[19977] = {
-		name = "Blessing of Light",
-		icon = 135943,
-		desc = "+580 Holy Light, +185 Flash of Light",
-		rank = 4,
 		maxRank = true,
-		order = 5,
 	},
 	[25890] = {
 		name = "Greater Blessing of Light",
@@ -1864,14 +2498,7 @@ NRC.pal = {
 		desc = "+400 Holy Light, +115 Flash of Light",
 		rank = 1,
 		order = 5,
-	},
-	[27145] = {
-		name = "Greater Blessing of Light",
-		icon = 135909,
-		desc = "+580 Holy Light, +185 Flash of Light",
-		rank = 2,
 		maxRank = true,
-		order = 5,
 	},
 	--Sanctuary.
 	[20911] = {
@@ -1880,6 +2507,7 @@ NRC.pal = {
 		desc = "-10 Damage Taken, +14 Shield Block Damage",
 		rank = 1,
 		order = 6,
+		--Level 30 talent.
 	},
 	[20912] = {
 		name = "Blessing of Sanctuary",
@@ -1887,6 +2515,7 @@ NRC.pal = {
 		desc = "-14 Damage Taken, +21 Shield Block Damage",
 		rank = 2,
 		order = 6,
+		maxRankSodPhases = {2}, --40.
 	},
 	[20913] = {
 		name = "Blessing of Sanctuary",
@@ -1894,6 +2523,7 @@ NRC.pal = {
 		desc = "-19 Damage Taken, +28 Shield Block Damage",
 		rank = 3,
 		order = 6,
+		maxRankSodPhases = {3}, --30.
 	},
 	[20914] = {
 		name = "Blessing of Sanctuary",
@@ -1901,14 +2531,7 @@ NRC.pal = {
 		desc = "-24 Damage Taken, +35 Shield Block Damage",
 		rank = 4,
 		order = 6,
-	},
-	[27168] = {
-		name = "Blessing of Sanctuary",
-		icon = 136051,
-		desc = "-80 Damage Taken, +46 Shield Block Damage",
-		rank = 5,
 		maxRank = true,
-		order = 6,
 	},
 	[25899] = {
 		name = "Greater Blessing of Sanctuary",
@@ -1916,15 +2539,199 @@ NRC.pal = {
 		desc = "-24 Damage Taken, +35 Shield Block Damage",
 		rank = 1,
 		order = 6,
-	},
-	[27169] = {
-		name = "Greater Blessing of Sanctuary",
-		icon = 135911,
-		desc = "-80 Damage Taken, +46 Shield Block Damage",
-		rank = 2,
 		maxRank = true,
-		order = 6,
 	},
+};
+
+NRC.worldBuffs = {
+	--[16609] = "rend",
+	--[22888] = "ony",
+	--[24425] = "zan",
+	--New spell ID's after hotfix 23/4/21.
+	[355366] = {
+		name = "Warchief's Blessing",
+		icon = 135759,
+		desc = "+300 Health, 15% Melee Haste, +10 MP5",
+		order = 1,
+		maxRank = true,
+	},
+	[355363] = {
+		name = "Rallying Cry of the Dragonslayer",
+		icon = 134153,
+		desc = "+10% Crit Spells, +5% Crit Melee/Ranged, +140 AP",
+		order = 2,
+		maxRank = true,
+	},
+	[355365] = {
+		name = "Spirit of Zandalar",
+		icon = 132107,
+		desc = "+10% Movement Speed, +15% Stats",
+		order = 3,
+		maxRank = true,
+	},
+	[23768] = {
+		name = "Sayge's Dark Fortune of Damage",
+		icon = 134334,
+		desc = "+10% Damage",
+		order = 4,
+		maxRank = true,
+	},
+	[23769] = {
+		name = "Sayge's Dark Fortune of Resistance",
+		icon = 134334,
+		desc = "+25 Resitances",
+		order = 4,
+		maxRank = true,
+	},
+	[23767] = {
+		name = "Sayge's Dark Fortune of Armor",
+		icon = 134334,
+		desc = "+10% Armor",
+		order = 4,
+		maxRank = true,
+	},
+	[23766] = {
+		name = "Sayge's Dark Fortune of Intelligence",
+		icon = 134334,
+		desc = "+10% Intelligence",
+		order = 4,
+		maxRank = true,
+	},
+	[23738] = {
+		name = "Sayge's Dark Fortune of Spirit",
+		icon = 134334,
+		desc = "+10% Spirit",
+		order = 4,
+		maxRank = true,
+	},
+	[23737] = {
+		name = "Sayge's Dark Fortune of Stamina",
+		icon = 134334,
+		desc = "+10% Stamina",
+		order = 4,
+		maxRank = true,
+	},
+	[23735] = {
+		name = "Sayge's Dark Fortune of Strength",
+		icon = 134334,
+		desc = "+10% Strength",
+		order = 4,
+		maxRank = true,
+	},
+	[23736] = {
+		name = "Sayge's Dark Fortune of Agility",
+		icon = 134334,
+		desc = "+10% Agility",
+		order = 4,
+		maxRank = true,
+	},
+	[22818] = {
+		name = "Mol'dar's Moxie",
+		icon = 136054,
+		desc = "+15% Stamina",
+		order = 5,
+		maxRank = true,
+	},
+	[22817] = {
+		name = "Fengus' Ferocity",
+		icon = 136109,
+		desc = "+200 AP",
+		order = 6,
+		maxRank = true,
+	},
+	[22820] = {
+		name = "Slip'kik's Savvy",
+		icon = 135930,
+		desc = "+3% Spell Crit",
+		order = 7,
+		maxRank = true,
+	},
+	[15366] = {
+		name = "Songflower Serenade",
+		icon = 135934,
+		desc = "+5% Crit, +15 Stats",
+		order = 8,
+		maxRank = true,
+	},
+	--We don't need these on the world buffs frame I think?
+	--[[[8733] = "blackfathom", --Blessing of Blackfathom
+	[29235] = "festivalFortitude", --Fire Festival Fortitude
+	[29846] = "festivalFury", --Fire Festival Fury
+	[29338] = "festivalFury", --Fire Festival Fury 2 diff types? aoe and single version possibly?
+	[29175] = "ribbonDance", --Fire Festival Fortitude
+	[29534] = "silithyst", --Traces of Silithyst]]
+	--SoD.
+	[430947] = {
+		name = "Boon of Blackfathom",
+		icon = 236403,
+		desc = "+3% Spell Crit, +2% Melee/Ranged Crit, +25 SP, +20% Movement speed",
+		order = 9,
+		maxRank = true,
+	},
+	[430352] = {
+		name = "Ashenvale Rallying Cry",
+		icon = 136005,
+		desc = "+5% Damage",
+		order = 10,
+		maxRank = true,
+	},
+	[438536] = {
+		name = "Spark of Inspiration",
+		icon = 236424,
+		desc = "+4% Spell Crit, +42 SP, +10% Melee/Ranged Attack Speed",
+		order = 11,
+		maxRank = true,
+	},--Why is there 2 the same? Horde and Alliance perhaps?
+	[438537] = {
+		name = "Spark of Inspiration",
+		icon = 236424,
+		desc = "+4% Spell Crit, +42 SP, +10% Melee/Ranged Attack Speed",
+		order = 12,
+		maxRank = true,
+	},
+	[446695] = {
+		name = "Fervor of the Temple Explorer",
+		icon = 236368,
+		desc = "+5% Crit, +65 SP, +8% Stats",
+		order = 13,
+		maxRank = true,
+	},
+	[446698] = {
+		name = "Fervor of the Temple Explorer",
+		icon = 236368,
+		desc = "+5% Crit, +65 SP, +8% Stats",
+		order = 13,
+		maxRank = true,
+	},
+	--For testing.
+	--[[[10957] = {
+		name = "Shadow Protection",
+		icon = 136121,
+		desc = "+45 Shadow Resistance",
+		order = 30,
+		maxRank = true,
+	},
+	[10937] = {
+		name = "Power Word: Fortitude",
+		icon = 135987,
+		desc = "+43 Stam",
+		order = 21,
+		maxRank = true,
+	},
+	[10951] = {
+		name = "Inner Fire",
+		icon = 135926,
+		desc = "Test 1",
+		order = 32,
+		maxRank = true,
+	},
+	[15473] = {
+		name = "Shadowform",
+		icon = 136200,
+		desc = "+43 Stam",
+		order = 33,
+		maxRank = true,
+	},]]
 };
 
 --for k, v in pairs(NRC.critterCreatures2) do
@@ -1934,1582 +2741,74 @@ NRC.pal = {
 --end
 
 
---[[NRC.encounters = {
-	-------------
-	---Classic---
-	-------------
+--SoD specific stuff.
+if (NRC.isSOD) then
+	--mapped to enounterID - JournalEncounterCreature.ID, name, description, displayInfo, iconImage, uiModelSceneID, expansion, zoneID.
+	--displayInfo (3d model scene, wowhead link button), iconImage (EJ display image with transparent background, only made for EJ bosses)
+	--BFD raid.
+	NRC.encounters[2694] = {"30", "Baron Aquanis", "", 110, 607552, 9, 1, 48};
+	NRC.encounters[2697] = {"3155", "Ghamoo - Ra", "", 14661, 607613, 9, 1, 48}; -- Albino Snapjaw displayInfo
+	NRC.encounters[2699] = {"3803", "Lady Sarevess", "", 4979, 607682, 9, 1, 48};
+	NRC.encounters[2704] = {"1052", "Gelihast", "", 1773, 607609, 9, 1, 48};
+	NRC.encounters[2710] = {"12822", "Lorgus Jett", "", 12822, 607701, 9, 1, 48};
+	NRC.encounters[2825] = {"4939", "Twilight Lord Kelris", "", 4939, 607800, 9, 1, 48};
+	NRC.encounters[2891] = {"1012", "Aku'mai", "", 2837, 607532, 9, 1, 48};
 	
-	--MC.
-	[663] = {
-		[1] = 3733,
-		[2] = "Lucifron",
-		[3] = "",
-		[4] = 13031,
-		[5] = 1378993,
-		[6] = 9,
-	},
-	[664] = {
-		[1] = 3734,
-		[2] = "Magmadar",
-		[3] = "",
-		[4] = 10193,
-		[5] = 1378995,
-		[6] = 9,
-	},
-	[665] = {
-		[1] = 3735,
-		[2] = "Gehennas",
-		[3] = "",
-		[4] = 13030,
-		[5] = 1378976,
-		[6] = 9,
-	},
-	[666] = {
-		[1] = 3736,
-		[2] = "Garr",
-		[3] = "",
-		[4] = 12110,
-		[5] = 1378975,
-		[6] = 9,
-	},
-	[667] = {
-		[1] = 3737,
-		[2] = "Shazzrah",
-		[3] = "",
-		[4] = 13032,
-		[5] = 1379013,
-		[6] = 9,
-	},
-	[668] = {
-		[1] = 3738,
-		[2] = "Baron Geddon",
-		[3] = "",
-		[4] = 12129,
-		[5] = 1378966,
-		[6] = 9,
-	},
-	[669] = {
-		[1] = 3740,
-		[2] = "Sulfuron Harbinger",
-		[3] = "",
-		[4] = 13030,
-		[5] = 1379015,
-		[6] = 9,
-	},
-	[670] = {
-		[1] = 3741,
-		[2] = "Golemagg the Incinerator",
-		[3] = "",
-		[4] = 11986,
-		[5] = 1378978,
-		[6] = 9,
-	},
-	[671] = {
-		[1] = 3742,
-		[2] = "Majordomo Executus",
-		[3] = "",
-		[4] = 12029,
-		[5] = 1378998,
-		[6] = 9,
-	},
-	[672] = {
-		[1] = 3745,
-		[2] = "Ragnaros",
-		[3] = "",
-		[4] = 11121,
-		[5] = 522261,
-		[6] = 225,
-	},
-	--BWL.
-	[610] = {
-		[1] = 3746,
-		[2] = "Razorgore the Untamed",
-		[3] = "",
-		[4] = 10115,
-		[5] = 1379008,
-		[6] = 9,
-	},
-	[611] = {
-		[1] = 3747,
-		[2] = "Vaelastrasz the Corrupt",
-		[3] = "",
-		[4] = 13992,
-		[5] = 1379022,
-		[6] = 9,
-	},
-	[612] = {
-		[1] = 3748,
-		[2] = "Broodlord Lashlayer",
-		[3] = "",
-		[4] = 14308,
-		[5] = 1378968,
-		[6] = 9,
-	},
-	[613] = {
-		[1] = 3749,
-		[2] = "Firemaw",
-		[3] = "",
-		[4] = 6377,
-		[5] = 1378973,
-		[6] = 9,
-	},
-	[614] = {
-		[1] = 3750,
-		[2] = "Ebonroc",
-		[3] = "",
-		[4] = 6377,
-		[5] = 1378971,
-		[6] = 9,
-	},
-	[615] = {
-		[1] = 3751,
-		[2] = "Flamegor",
-		[3] = "",
-		[4] = 6377,
-		[5] = 1378974,
-		[6] = 9,
-	},
-	[616] = {
-		[1] = 3752,
-		[2] = "Chromaggus",
-		[3] = "",
-		[4] = 14367,
-		[5] = 1378969,
-		[6] = 9,
-	},
-	[617] = {
-		[1] = 3753,
-		[2] = "Nefarian",
-		[3] = "",
-		[4] = 11380,
-		[5] = 1379001,
-		[6] = 9,
-	},
-	--AQ20.
-	[718] = {
-		[1] = 3754,
-		[2] = "Kurinnaxx",
-		[3] = "",
-		[4] = 15742,
-		[5] = 1385749,
-		[6] = 9,
-	},
-	[719] = {
-		[1] = 3755,
-		[2] = "General Rajaxx",
-		[3] = "",
-		[4] = 15376,
-		[5] = 1385734,
-		[6] = 9,
-	},
-	[720] = {
-		[1] = 3756,
-		[2] = "Moam",
-		[3] = "",
-		[4] = 15392,
-		[5] = 1385755,
-		[6] = 9,
-	},
-	[721] = {
-		[1] = 3757,
-		[2] = "Buru the Gorger",
-		[3] = "",
-		[4] = 15654,
-		[5] = 1385723,
-		[6] = 9,
-	},
-	[722] = {
-		[1] = 3758,
-		[2] = "Ayamiss the Hunter",
-		[3] = "",
-		[4] = 15431,
-		[5] = 1385718,
-		[6] = 9,
-	},
-	[723] = {
-		[1] = 3760,
-		[2] = "Ossirian the Unscarred",
-		[3] = "",
-		[4] = 15432,
-		[5] = 1385759,
-		[6] = 9,
-	},
-	--AQ40.
-	[709] = {
-		[1] = 3761,
-		[2] = "The Prophet Skeram",
-		[3] = "",
-		[4] = 15345,
-		[5] = 1385769,
-		[6] = 9,
-	},
-	[710] = {
-		[1] = 3770,
-		[2] = "Lord Kri",
-		[3] = "",
-		[4] = 15656,
-		[5] = 1390436,
-		[6] = 9,
-	},
-	[711] = {
-		[1] = 3762,
-		[2] = "Battleguard Sartura",
-		[3] = "",
-		[4] = 15583,
-		[5] = 1385720,
-		[6] = 9,
-	},
-	[712] = {
-		[1] = 3766,
-		[2] = "Fankriss the Unyielding",
-		[3] = "",
-		[4] = 15743,
-		[5] = 1385728,
-		[6] = 9,
-	},
-	[713] = {
-		[1] = 3771,
-		[2] = "Viscidus",
-		[3] = "",
-		[4] = 15686,
-		[5] = 1385771,
-		[6] = 9,
-	},
-	[714] = {
-		[1] = 3767,
-		[2] = "Princess Huhuran",
-		[3] = "",
-		[4] = 15739,
-		[5] = 1385761,
-		[6] = 9,
-	},
-	[715] = {
-		[1] = 3772,
-		[2] = "Emperor Vek'lor",
-		[3] = "",
-		[4] = 15778,
-		[5] = 1390437,
-		[6] = 66,
-	},
-	[716] = {
-		[1] = 3774,
-		[2] = "Ouro",
-		[3] = "",
-		[4] = 15509,
-		[5] = 1385760,
-		[6] = 87,
-	},
-	[717] = {
-		[1] = 3775,
-		[2] = "C'Thun",
-		[3] = "",
-		[4] = 15556,
-		[5] = 1385726,
-		[6] = 9,
-	},
-	--ZG (Could be diff encounterIDs on retail? Needs testing on classic).
-	[1178] = {
-		[1] = 601,
-		[2] = "High Priest Venoxis",
-		[3] = "",
-		[4] = 37788,
-		[5] = 522236,
-		[6] = 9,
-	},
-	[1179] = {
-		[1] = 602,
-		[2] = "Bloodlord Mandokir",
-		[3] = "",
-		[4] = 37816,
-		[5] = 522209,
-		[6] = 9,
-	},
-	[788] = {
-		[1] = 603,
-		[2] = "Gri'lek",
-		[3] = "",
-		[4] = 8390,
-		[5] = 522230,
-		[6] = 9,
-	},
-	[788] = {
-		[1] = 604,
-		[2] = "Hazza'rah",
-		[3] = "",
-		[4] = 37832,
-		[5] = 522233,
-		[6] = 9,
-	},
-	[788] = {
-		[1] = 605,
-		[2] = "Renataki",
-		[3] = "",
-		[4] = 37830,
-		[5] = 522263,
-		[6] = 9,
-	},
-	[788] = {
-		[1] = 606,
-		[2] = "Wushoolay",
-		[3] = "",
-		[4] = 37831,
-		[5] = 522279,
-		[6] = 9,
-	},
-	[1180] = {
-		[1] = 607,
-		[2] = "High Priestess Kilnara",
-		[3] = "",
-		[4] = 37805,
-		[5] = 522238,
-		[6] = 9,
-	},
-	[1181] = {
-		[1] = 616,
-		[2] = "Zanzil",
-		[3] = "",
-		[4] = 37813,
-		[5] = 522280,
-		[6] = 9,
-	},
-	[1182] = {
-		[1] = 617,
-		[2] = "Jin'do the Godbreaker",
-		[3] = "",
-		[4] = 37789,
-		[5] = 522243,
-		[6] = 9,
-	},
-	--Naxx (Should be diff encounterIDs on retail (wrath)? Needs testing on classic).
-	[1107] = {
-		[1] = 3853,
-		[2] = "Anub'Rekhan",
-		[3] = "",
-		[4] = 15931,
-		[5] = 1378964,
-		[6] = 9,
-	},
-	[1110] = {
-		[1] = 3854,
-		[2] = "Grand Widow Faerlina",
-		[3] = "",
-		[4] = 15940,
-		[5] = 1378980,
-		[6] = 9,
-	},
-	[1116] = {
-		[1] = 3855,
-		[2] = "Maexxna",
-		[3] = "",
-		[4] = 15928,
-		[5] = 1378994,
-		[6] = 9,
-	},
-	[1117] = {
-		[1] = 3856,
-		[2] = "Noth the Plaguebringer",
-		[3] = "",
-		[4] = 16590,
-		[5] = 1379004,
-		[6] = 9,
-	},
-	[1112] = {
-		[1] = 3857,
-		[2] = "Heigan the Unclean",
-		[3] = "",
-		[4] = 16309,
-		[5] = 1378984,
-		[6] = 9,
-	},
-	[1115] = {
-		[1] = 3858,
-		[2] = "Loatheb",
-		[3] = "",
-		[4] = 16110,
-		[5] = 1378991,
-		[6] = 9,
-	},
-	[1113] = {
-		[1] = 3860,
-		[2] = "Instructor Razuvious",
-		[3] = "",
-		[4] = 16582,
-		[5] = 1378988,
-		[6] = 9,
-	},
-	[1109] = {
-		[1] = 3861,
-		[2] = "Gothik the Harvester",
-		[3] = "",
-		[4] = 16279,
-		[5] = 1378979,
-		[6] = 9,
-	},
-	[1121] = {
-		[1] = 3863,
-		[2] = "Baron Rivendare",
-		[3] = "",
-		[4] = 10729,
-		[5] = 1385732,
-		[6] = 9,
-	},
-	[1118] = {
-		[1] = 3866,
-		[2] = "Patchwerk",
-		[3] = "",
-		[4] = 16174,
-		[5] = 1379005,
-		[6] = 9,
-	},
-	[1111] = {
-		[1] = 3867,
-		[2] = "Grobbulus",
-		[3] = "",
-		[4] = 16035,
-		[5] = 1378981,
-		[6] = 9,
-	},
-	[1108] = {
-		[1] = 3868,
-		[2] = "Gluth",
-		[3] = "",
-		[4] = 16064,
-		[5] = 1378977,
-		[6] = 9,
-	},
-	[1120] = {
-		[1] = 3869,
-		[2] = "Thaddius",
-		[3] = "",
-		[4] = 16137,
-		[5] = 1379019,
-		[6] = 64,
-	},
-	[1119] = {
-		[1] = 3870,
-		[2] = "Sapphiron",
-		[3] = "",
-		[4] = 16033,
-		[5] = 1379010,
-		[6] = 9,
-	},
-	[1114] = {
-		[1] = 3871,
-		[2] = "Kel'Thuzad",
-		[3] = "",
-		[4] = 15945,
-		[5] = 1378989,
-		[6] = 9,
-	},]]
+	--Gnomeregan raid.
+	NRC.encounters[2925] = {"900", "Grubbis", "", 6533, 607628, 9, 1, 90};
+	NRC.encounters[2928] = {"1236", "Viscous Fallout", "", 36529, 607808, 9, 1, 90};
+	NRC.encounters[2899] = {"989", "Crowd Pummeler 9-60", "", 36560, 607572, 9, 1, 90};
+	NRC.encounters[2927] = {"991", "Electrocutioner 6000", "", 36558, 607594, 9, 1, 90};
+	NRC.encounters[2935] = {"2671", "Mechanical Menagerie", "", 117368, nil, 9, 1, 90};
+	NRC.encounters[2940] = {"992", "Mekgineer Thermaplugg", "", 36563, 607714, 9, 1, 90};
 	
-	---------
-	---TBC---
-	---------
+	--Sunken Temple raid.
+	NRC.encounters[2952] = {"0", "Atal’alrion", "", 7873, 1064178, 9, 1, 109}; --Mushlump close enough I guess...
+	NRC.encounters[2953] = {"3771", "Festering Rot Slime", "", 15686, 1385771, 9, 1, 109};
+	NRC.encounters[2957] = {"1027", "Jammal'an and Ogom", "", 6708, 607665, 9, 1, 109};
+	--NRC.encounters[0] = {"0", "Ogom the Wretched", "", 6709, 607541, 9, 1, 109}; --Merged in to Jammal encounter?
+	NRC.encounters[2954] = {"0", "The Atal'ai Defenders", "", 6709, 607541, 9, 1, 109}; --Antu'sul from ZF close enough texture?
+	NRC.encounters[2959] = {"1032", "Shade of Eranikus", "", 7806, 607768, 9, 1, 109};
+	NRC.encounters[2956] = {"1026", "Avatar of Hakkar", "", 8053, 607548, 9, 1, 109};
+	NRC.encounters[2955] = {"1028", "Dreamscythe and Weaver", "", 7553, 608311, 9, 1, 109};
+	NRC.encounters[2958] = {"1028", "Morphaz and Hazzas", "", 7533, 608311, 9, 1, 109};
+    
+    --Change Sod dungs to a raid.
+    NRC.zones[48].type = "raid"; --BRD.
+	NRC.zones[90].type = "raid"; --Gnomeregan.
+	NRC.zones[109].type = "raid"; --Sunken Temple.
 	
-	--Kara.
-	--[[[0] = { --Use Rokad the Ravager data for this.
-		[1] = 3778, --On second thought just ignore these mini-bosses.
-		[2] = "Servant's Quarters",
-		[3] = "",
-		[4] = 16054,
-		[5] = 1385766,
-		[6] = 9,
-	},]]
-	--[[[652] = {
-		[1] = 3780,
-		[2] = "Attumen the Huntsman",
-		[3] = "",
-		[4] = 16416,
-		[5] = 1378965,
-		[6] = 9,
-	},
-	[653] = {
-		[1] = 3781,
-		[2] = "Moroes",
-		[3] = "",
-		[4] = 16540,
-		[5] = 1378999,
-		[6] = 9,
-	},
-	[654] = {
-		[1] = 3782,
-		[2] = "Maiden of Virtue",
-		[3] = "",
-		[4] = 16198,
-		[5] = 1378997,
-		[6] = 67,
-	},
-	[655] = {
-		[1] = 3783,
-		[2] = "The Big Bad Wolf",
-		[3] = "",
-		[4] = 17053,
-		[5] = 1385758,
-		[6] = 9,
-	},
-	[656] = {
-		[1] = 3787,
-		[2] = "The Curator",
-		[3] = "",
-		[4] = 16958,
-		[5] = 1379020,
-		[6] = 9,
-	},
-	[658] = {
-		[1] = 3789,
-		[2] = "Shade of Aran",
-		[3] = "",
-		[4] = 16621,
-		[5] = 1379012,
-		[6] = 9,
-	},
-	[657] = {
-		[1] = 3790,
-		[2] = "Terestian Illhoof",
-		[3] = "",
-		[4] = 11343,
-		[5] = 1379017,
-		[6] = 9,
-	},
-	[659] = {
-		[1] = 3791,
-		[2] = "Netherspite",
-		[3] = "",
-		[4] = 15363,
-		[5] = 1379002,
-		[6] = 9,
-	},
-	[660] = {
-		[1] = 3792,
-		[2] = "Echo of Medivh",
-		[3] = "",
-		[4] = 18720,
-		[5] = 1385725,
-		[6] = 9,
-	},
-	[661] = {
-		[1] = 3793,
-		[2] = "Prince Malchezaar",
-		[3] = "",
-		[4] = 19274,
-		[5] = 1379006,
-		[6] = 9,
-	},
-	--Gruul's lair.
-	[649] = {
-		[1] = 3794,
-		[2] = "High King Maulgar",
-		[3] = "",
-		[4] = 18649,
-		[5] = 1378985,
-		[6] = 9,
-	},
-	[650] = {
-		[1] = 3799,
-		[2] = "Gruul the Dragonkiller",
-		[3] = "",
-		[4] = 18698,
-		[5] = 1378982,
-		[6] = 9,
-	},
-	--Magtheridon's lair.
-	[651] = {
-		[1] = 3801,
-		[2] = "Magtheridon",
-		[3] = "",
-		[4] = 18527,
-		[5] = 1378996,
-		[6] = 9,
-	},
-	--SSC.
-	[623] = {
-		[1] = 3802,
-		[2] = "Hydross the Unstable",
-		[3] = "",
-		[4] = 20162,
-		[5] = 1385741,
-		[6] = 9,
-	},
-	[624] = {
-		[1] = 3803,
-		[2] = "The Lurker Below",
-		[3] = "",
-		[4] = 20216,
-		[5] = 1385768,
-		[6] = 88,
-	},
-	[625] = {
-		[1] = 3805,
-		[2] = "Leotheras the Blind",
-		[3] = "",
-		[4] = 20514,
-		[5] = 1385751,
-		[6] = 9,
-	},
-	[626] = {
-		[1] = 3809,
-		[2] = "Fathom-Lord Karathress",
-		[3] = "",
-		[4] = 20662,
-		[5] = 1385729,
-		[6] = 9,
-	},
-	[627] = {
-		[1] = 3810,
-		[2] = "Morogrim Tidewalker",
-		[3] = "",
-		[4] = 20739,
-		[5] = 1385756,
-		[6] = 9,
-	},
-	[628] = {
-		[1] = 3811,
-		[2] = "Lady Vashj",
-		[3] = "",
-		[4] = 20748,
-		[5] = 1385750,
-		[6] = 9,
-	},
-	--The eye.
-	[730] = {
-		[1] = 3812,
-		[2] = "Al'ar",
-		[3] = "",
-		[4] = 18945,
-		[5] = 1385712,
-		[6] = 9,
-	},
-	[731] = {
-		[1] = 3813,
-		[2] = "Void Reaver",
-		[3] = "",
-		[4] = 18951,
-		[5] = 1385772,
-		[6] = 9,
-	},
-	[732] = {
-		[1] = 3814,
-		[2] = "High Astromancer Solarian",
-		[3] = "",
-		[4] = 18239,
-		[5] = 1385739,
-		[6] = 9,
-	},
-	[733] = {
-		[1] = 3818,
-		[2] = "Kael'thas Sunstrider",
-		[3] = "",
-		[4] = 20023,
-		[5] = 607669,
-		[6] = 9,
-	},
-	--Hyjal.
-	[618] = {
-		[1] = 3820,
-		[2] = "Rage Winterchill",
-		[3] = "",
-		[4] = 17444,
-		[5] = 1385762,
-		[6] = 9,
-	},
-	[619] = {
-		[1] = 3821,
-		[2] = "Anetheron",
-		[3] = "",
-		[4] = 21069,
-		[5] = 1385714,
-		[6] = 9,
-	},
-	[620] = {
-		[1] = 3822,
-		[2] = "Kaz'rogal",
-		[3] = "",
-		[4] = 17886,
-		[5] = 1385745,
-		[6] = 9,
-	},
-	[621] = {
-		[1] = 3823,
-		[2] = "Azgalor",
-		[3] = "",
-		[4] = 18526,
-		[5] = 1385719,
-		[6] = 9,
-	},
-	[622] = {
-		[1] = 3824,
-		[2] = "Archimonde",
-		[3] = "",
-		[4] = 20939,
-		[5] = 1385716,
-		[6] = 9,
-	},
-	--Black temple.
-	[601] = {
-		[1] = 3825,
-		[2] = "High Warlord Naj'entus",
-		[3] = "",
-		[4] = 21174,
-		[5] = 1378986,
-		[6] = 9,
-	},
-	[602] = {
-		[1] = 3826,
-		[2] = "Supremus",
-		[3] = "",
-		[4] = 21145,
-		[5] = 1379016,
-		[6] = 9,
-	},
-	[603] = {
-		[1] = 3827,
-		[2] = "Shade of Akama",
-		[3] = "",
-		[4] = 21357,
-		[5] = 1379011,
-		[6] = 9,
-	},
-	[604] = {
-		[1] = 3848,
-		[2] = "Teron Gorefiend",
-		[3] = "",
-		[4] = 21262,
-		[5] = 1379018,
-		[6] = 9,
-	},
-	[605] = {
-		[1] = 3829,
-		[2] = "Gurtogg Bloodboil",
-		[3] = "",
-		[4] = 21443,
-		[5] = 1378983,
-		[6] = 9,
-	},
-	[606] = {
-		[1] = 3832,
-		[2] = "Essence of Suffering",
-		[3] = "",
-		[4] = 21483,
-		[5] = 1385764,
-		[6] = 9,
-	},
-	[607] = {
-		[1] = 3833,
-		[2] = "Mother Shahraz",
-		[3] = "",
-		[4] = 21252,
-		[5] = 1379000,
-		[6] = 9,
-	},
-	[608] = {
-		[1] = 3834,
-		[2] = "Gathios the Shatterer",
-		[3] = "",
-		[4] = 21416,
-		[5] = 1385743,
-		[6] = 9,
-	},
-	[609] = {
-		[1] = 3838,
-		[2] = "Illidan Stormrage",
-		[3] = "",
-		[4] = 21135,
-		[5] = 1378987,
-		[6] = 9,
-	},
-	--Sunwell.
-	[724] = {
-		[1] = 3839,
-		[2] = "Kalecgos",
-		[3] = "",
-		[4] = 23345,
-		[5] = 1385744,
-		[6] = 9,
-	},
-	[725] = {
-		[1] = 3841,
-		[2] = "Brutallus",
-		[3] = "",
-		[4] = 22711,
-		[5] = 1385722,
-		[6] = 9,
-	},
-	[726] = {
-		[1] = 3842,
-		[2] = "Felmyst",
-		[3] = "",
-		[4] = 22838,
-		[5] = 1385730,
-		[6] = 9,
-	},
-	[727] = {
-		[1] = 3844,
-		[2] = "Grand Warlock Alythess",
-		[3] = "",
-		[4] = 23334,
-		[5] = 1390438,
-		[6] = 9,
-	},
-	[728] = {
-		[1] = 3845,
-		[2] = "M'uru",
-		[3] = "",
-		[4] = 23404,
-		[5] = 1385757,
-		[6] = 9,
-	},
-	[729] = {
-		[1] = 3847,
-		[2] = "Kil'jaeden",
-		[3] = "",
-		[4] = 23200,
-		[5] = 1385746,
-		[6] = 89,
-	},
-	--Zul'aman (These encounterIDs may need updating they seem too high, they could be different in tbc than retail).
-	[1189] = {
-		[1] = 618,
-		[2] = "Akil'zon",
-		[3] = "",
-		[4] = 21630,
-		[5] = 522190,
-		[6] = 9,
-	},
-	[1190] = {
-		[1] = 619,
-		[2] = "Nalorakk",
-		[3] = "",
-		[4] = 21631,
-		[5] = 522254,
-		[6] = 9,
-	},
-	[1191] = {
-		[1] = 620,
-		[2] = "Jan'alai",
-		[3] = "",
-		[4] = 21633,
-		[5] = 522242,
-		[6] = 9,
-	},
-	[1192] = {
-		[1] = 621,
-		[2] = "Halazzi",
-		[3] = "",
-		[4] = 21632,
-		[5] = 522231,
-		[6] = 9,
-	},
-	[1193] = {
-		[1] = 622,
-		[2] = "Hex Lord Malacrass",
-		[3] = "",
-		[4] = 22332,
-		[5] = 522235,
-		[6] = 9,
-	},
-	[1194] = {
-		[1] = 623,
-		[2] = "Daakara",
-		[3] = "",
-		[4] = 38118,
-		[5] = 522217,
-		[6] = 9,
-	},]]
-	
-	-----------
-	---Wrath---
-	-----------
-	
-	--Vault of Archavon.
-	--[[[1126] = {
-		[1] = 3849,
-		[2] = "Archavon the Stone Watcher",
-		[3] = "",
-		[4] = 26967,
-		[5] = 1385715,
-		[6] = 64,
-	},
-	[1127] = {
-		[1] = 3850,
-		[2] = "Emalon the Storm Watcher",
-		[3] = "",
-		[4] = 27108,
-		[5] = 1385727,
-		[6] = 64,
-	},
-	[1128] = {
-		[1] = 3851,
-		[2] = "Koralon the Flame Watcher",
-		[3] = "",
-		[4] = 29524,
-		[5] = 1385748,
-		[6] = 64,
-	},
-	[1129] = {
-		[1] = 3852,
-		[2] = "Toravon the Ice Watcher",
-		[3] = "",
-		[4] = 31089,
-		[5] = 1385767,
-		[6] = 65,
-	},
-	--Naxx.
-	[1107] = {
-		[1] = 3853,
-		[2] = "Anub'Rekhan",
-		[3] = "",
-		[4] = 15931,
-		[5] = 1378964,
-		[6] = 9,
-	},
-	[1110] = {
-		[1] = 3854,
-		[2] = "Grand Widow Faerlina",
-		[3] = "",
-		[4] = 15940,
-		[5] = 1378980,
-		[6] = 9,
-	},
-	[1116] = {
-		[1] = 3855,
-		[2] = "Maexxna",
-		[3] = "",
-		[4] = 15928,
-		[5] = 1378994,
-		[6] = 9,
-	},
-	[1117] = {
-		[1] = 3856,
-		[2] = "Noth the Plaguebringer",
-		[3] = "",
-		[4] = 16590,
-		[5] = 1379004,
-		[6] = 9,
-	},
-	[1112] = {
-		[1] = 3857,
-		[2] = "Heigan the Unclean",
-		[3] = "",
-		[4] = 16309,
-		[5] = 1378984,
-		[6] = 9,
-	},
-	[1115] = {
-		[1] = 3858,
-		[2] = "Loatheb",
-		[3] = "",
-		[4] = 16110,
-		[5] = 1378991,
-		[6] = 9,
-	},
-	[1113] = {
-		[1] = 3860,
-		[2] = "Instructor Razuvious",
-		[3] = "",
-		[4] = 16582,
-		[5] = 1378988,
-		[6] = 9,
-	},
-	[1109] = {
-		[1] = 3861,
-		[2] = "Gothik the Harvester",
-		[3] = "",
-		[4] = 16279,
-		[5] = 1378979,
-		[6] = 9,
-	},
-	[1121] = {
-		[1] = 3863,
-		[2] = "Baron Rivendare",
-		[3] = "",
-		[4] = 10729,
-		[5] = 1385732,
-		[6] = 9,
-	},
-	[1118] = {
-		[1] = 3866,
-		[2] = "Patchwerk",
-		[3] = "",
-		[4] = 16174,
-		[5] = 1379005,
-		[6] = 9,
-	},
-	[1111] = {
-		[1] = 3867,
-		[2] = "Grobbulus",
-		[3] = "",
-		[4] = 16035,
-		[5] = 1378981,
-		[6] = 9,
-	},
-	[1108] = {
-		[1] = 3868,
-		[2] = "Gluth",
-		[3] = "",
-		[4] = 16064,
-		[5] = 1378977,
-		[6] = 9,
-	},
-	[1120] = {
-		[1] = 3869,
-		[2] = "Thaddius",
-		[3] = "",
-		[4] = 16137,
-		[5] = 1379019,
-		[6] = 64,
-	},
-	[1119] = {
-		[1] = 3870,
-		[2] = "Sapphiron",
-		[3] = "",
-		[4] = 16033,
-		[5] = 1379010,
-		[6] = 9,
-	},
-	[1114] = {
-		[1] = 3871,
-		[2] = "Kel'Thuzad",
-		[3] = "",
-		[4] = 15945,
-		[5] = 1378989,
-		[6] = 9,
-	},
-	--Obsidian sanctum.
-	[1090] = {
-		[1] = 3875,
-		[2] = "Sartharion",
-		[3] = "",
-		[4] = 27035,
-		[5] = 1385765,
-		[6] = 9,
-	},
-	--Eye of eternity.
-	[1094] = {
-		[1] = 3876,
-		[2] = "Malygos",
-		[3] = "",
-		[4] = 26752,
-		[5] = 1385753,
-		[6] = 9,
-	},
-	--Ulduar.
-	[1132] = {
-		[1] = 3928,
-		[2] = "Flame Leviathan",
-		[3] = "",
-		[4] = 28875,
-		[5] = 1385731,
-		[6] = 9,
-	},
-	[1136] = {
-		[1] = 3929,
-		[2] = "Ignis the Furnace Master",
-		[3] = "",
-		[4] = 29185,
-		[5] = 1385742,
-		[6] = 64,
-	},
-	[1139] = {
-		[1] = 3930,
-		[2] = "Razorscale",
-		[3] = "",
-		[4] = 28787,
-		[5] = 1385763,
-		[6] = 9,
-	},
-	[1142] = {
-		[1] = 3931,
-		[2] = "XT-002 Deconstructor",
-		[3] = "",
-		[4] = 28611,
-		[5] = 1385773,
-		[6] = 9,
-	},
-	[1140] = {
-		[1] = 3933,
-		[2] = "Steelbreaker",
-		[3] = "",
-		[4] = 28344,
-		[5] = 1390439,
-		[6] = 65,
-	},
-	[1137] = {
-		[1] = 3935,
-		[2] = "Kologarn",
-		[3] = "",
-		[4] = 28638,
-		[5] = 1385747,
-		[6] = 90,
-	},
-	[1131] = {
-		[1] = 3936,
-		[2] = "Auriaya",
-		[3] = "",
-		[4] = 28651,
-		[5] = 1385717,
-		[6] = 67,
-	},
-	[1135] = {
-		[1] = 3937,
-		[2] = "Hodir",
-		[3] = "",
-		[4] = 28743,
-		[5] = 1385740,
-		[6] = 65,
-	},
-	[1141] = {
-		[1] = 3939,
-		[2] = "Thorim",
-		[3] = "",
-		[4] = 28977,
-		[5] = 1385770,
-		[6] = 65,
-	},
-	[1133] = {
-		[1] = 3941,
-		[2] = "Freya",
-		[3] = "",
-		[4] = 28777,
-		[5] = 1385733,
-		[6] = 67,
-	},
-	[1138] = {
-		[1] = 3944,
-		[2] = "Mimiron",
-		[3] = "",
-		[4] = 28578,
-		[5] = 1385754,
-		[6] = 9,
-	},
-	[1134] = {
-		[1] = 3945,
-		[2] = "General Vezax",
-		[3] = "",
-		[4] = 28548,
-		[5] = 1385735,
-		[6] = 9,
-	},
-	[1143] = {
-		[1] = 3946,
-		[2] = "Yogg-Saron",
-		[3] = "",
-		[4] = 28817,
-		[5] = 1385774,
-		[6] = 9,
-	},
-	[1130] = {
-		[1] = 3947,
-		[2] = "Algalon the Observer",
-		[3] = "",
-		[4] = 28641,
-		[5] = 1385713,
-		[6] = 9,
-	},
-	--Trial of the crusader.
-	[1088] = {
-		[1] = 3878,
-		[2] = "Gormok the Impaler",
-		[3] = "",
-		[4] = 29614,
-		[5] = 1390440,
-		[6] = 9,
-	},
-	[1087] = {
-		[1] = 3881,
-		[2] = "Lord Jaraxxus",
-		[3] = "",
-		[4] = 29615,
-		[5] = 1385752,
-		[6] = 9,
-	},
-	[1086] = {
-		[1] = 3907,
-		[2] = "Birana Stormhoof",
-		[3] = "",
-		[4] = 29781,
-		[5] = 1390441,
-		[6] = 9,
-	},
-	[1089] = {
-		[1] = 3911,
-		[2] = "Fjola Lightbane",
-		[3] = "",
-		[4] = 29240,
-		[5] = 1390443,
-		[6] = 9,
-	},
-	[1085] = {
-		[1] = 3912,
-		[2] = "Anub'arak",
-		[3] = "",
-		[4] = 29268,
-		[5] = 607542,
-		[6] = 9,
-	},
-	--Onyxia.
-	[1084] = {
-		[1] = 3948,
-		[2] = "Onyxia",
-		[3] = "",
-		[4] = 8570,
-		[5] = 1379025,
-		[6] = 9,
-	},
-	--ICC.
-	[1101] = {
-		[1] = 3913,
-		[2] = "Lord Marrowgar",
-		[3] = "",
-		[4] = 31119,
-		[5] = 1378992,
-		[6] = 9,
-	},
-	[1100] = {
-		[1] = 3914,
-		[2] = "Lady Deathwhisper",
-		[3] = "",
-		[4] = 30893,
-		[5] = 1378990,
-		[6] = 9,
-	},
-	[1099] = {
-		[1] = 3915,
-		[2] = "High Overlord Saurfang",
-		[3] = "",
-		[4] = 30416,
-		[5] = 1385737,
-		[6] = 9,
-	},
-	[1096] = {
-		[1] = 3917,
-		[2] = "Deathbringer Saurfang",
-		[3] = "",
-		[4] = 30790,
-		[5] = 1378970,
-		[6] = 9,
-	},
-	[1097] = {
-		[1] = 3918,
-		[2] = "Festergut",
-		[3] = "",
-		[4] = 31006,
-		[5] = 1378972,
-		[6] = 66,
-	},
-	[1104] = {
-		[1] = 3919,
-		[2] = "Rotface",
-		[3] = "",
-		[4] = 31005,
-		[5] = 1379009,
-		[6] = 66,
-	},
-	[1102] = {
-		[1] = 3920,
-		[2] = "Professor Putricide",
-		[3] = "",
-		[4] = 30881,
-		[5] = 1379007,
-		[6] = 9,
-	},
-	[1095] = {
-		[1] = 3922,
-		[2] = "Prince Valanar",
-		[3] = "",
-		[4] = 30858,
-		[5] = 1385721,
-		[6] = 9,
-	},
-	[1103] = {
-		[1] = 3924,
-		[2] = "Blood-Queen Lana'thel",
-		[3] = "",
-		[4] = 31165,
-		[5] = 1378967,
-		[6] = 9,
-	},
-	[1098] = {
-		[1] = 3925,
-		[2] = "Valithria Dreamwalker",
-		[3] = "",
-		[4] = 30318,
-		[5] = 1379023,
-		[6] = 9,
-	},
-	[1105] = {
-		[1] = 3926,
-		[2] = "Sindragosa",
-		[3] = "",
-		[4] = 30362,
-		[5] = 1379014,
-		[6] = 9,
-	},
-	[1106] = {
-		[1] = 3927,
-		[2] = "The Lich King",
-		[3] = "",
-		[4] = 30721,
-		[5] = 607688,
-		[6] = 9,
-	},
-	--Ruby sanctum.
-	[1150] = {
-		[1] = 3949,
-		[2] = "Halion",
-		[3] = "",
-		[4] = 31952,
-		[5] = 1385738,
-		[6] = 9,
-	},]]
-	
-	----------
-	---Cata---
-	----------
-	
-	--Baradin hold.
-	--[[[1033] = {
-		[1] = 463,
-		[2] = "Argaloth",
-		[3] = "",
-		[4] = 35426,
-		[5] = 522198,
-		[6] = 9,
-	},
-	[1250] = {
-		[1] = 464,
-		[2] = "Occu'thar",
-		[3] = "",
-		[4] = 37876,
-		[5] = 523207,
-		[6] = 9,
-	},
-	[1332] = {
-		[1] = 896,
-		[2] = "Alizabal",
-		[3] = "",
-		[4] = 21252,
-		[5] = 571742,
-		[6] = 9,
-	},	
-	--Blackwing descent.
-	[1027] = {
-		[1] = 591,
-		[2] = "Magmatron", --Omnotron defense system.
-		[3] = "",
-		[4] = 32685,
-		[5] = 522250,
-		[6] = 9,
-	},
-	[1024] = {
-		[1] = 593,
-		[2] = "Magmaw",
-		[3] = "",
-		[4] = 37993,
-		[5] = 522251,
-		[6] = 9,
-	},
-	[1022] = {
-		[1] = 594,
-		[2] = "Atramedes",
-		[3] = "",
-		[4] = 34547,
-		[5] = 522202,
-		[6] = 9,
-	},
-	[1023] = {
-		[1] = 595,
-		[2] = "Chimaeron",
-		[3] = "",
-		[4] = 33308,
-		[5] = 522211,
-		[6] = 9,
-	},
-	[1025] = {
-		[1] = 596,
-		[2] = "Maloriak",
-		[3] = "",
-		[4] = 33186,
-		[5] = 522252,
-		[6] = 9,
-	},
-	[1026] = {
-		[1] = 600,
-		[2] = "Nefarian",
-		[3] = "",
-		[4] = 32716,
-		[5] = 522255,
-		[6] = 9,
-	},
-	--The bastion of twilight.
-	[1030] = {
-		[1] = 559,
-		[2] = "Halfus Wyrmbreaker",
-		[3] = "",
-		[4] = 34816,
-		[5] = 522232,
-		[6] = 66,
-	},
-	[1032] = {
-		[1] = 561,
-		[2] = "Theralion",
-		[3] = "",
-		[4] = 34813,
-		[5] = 522274,
-		[6] = 9,
-	},
-	[1028] = {
-		[1] = 565,
-		[2] = "Feludius",
-		[3] = "Ascendant Councillor of Water",
-		[4] = 34822,
-		[5] = 522224,
-		[6] = 9,
-	},
-	[1029] = {
-		[1] = 587,
-		[2] = "Cho'gall",
-		[3] = "",
-		[4] = 34576,
-		[5] = 522212,
-		[6] = 9,
-	},
-	--Throne of the four winds.
-	[1035] = {
-		[1] = 556,
-		[2] = "Anshal",
-		[3] = "Lord of the West Wind",
-		[4] = 35233,
-		[5] = 522196,
-		[6] = 9,
-	},
-	[1034] = {
-		[1] = 558,
-		[2] = "Al'akir",
-		[3] = "",
-		[4] = 35248,
-		[5] = 522191,
-		[6] = 9,
-	},
-	--Firelands.
-	[1197] = {
-		[1] = 624,
-		[2] = "Beth'tilac",
-		[3] = "",
-		[4] = 38227,
-		[5] = 522208,
-		[6] = 9,
-	},
-	[1204] = {
-		[1] = 625,
-		[2] = "Lord Rhyolith",
-		[3] = "",
-		[4] = 38414,
-		[5] = 522248,
-		[6] = 9,
-	},
-	[1206] = {
-		[1] = 626,
-		[2] = "Alysrazor",
-		[3] = "",
-		[4] = 38446,
-		[5] = 522193,
-		[6] = 9,
-	},
-	[1205] = {
-		[1] = 627,
-		[2] = "Shannox",
-		[3] = "",
-		[4] = 38448,
-		[5] = 522268,
-		[6] = 9,
-	},
-	[1200] = {
-		[1] = 770,
-		[2] = "Baleroc",
-		[3] = "",
-		[4] = 38621,
-		[5] = 522204,
-		[6] = 9,
-	},
-	[1185] = {
-		[1] = 628,
-		[2] = "Majordomo Staghelm",
-		[3] = "",
-		[4] = 37953,
-		[5] = 522223,
-		[6] = 9,
-	},
-	[1203] = {
-		[1] = 629,
-		[2] = "Ragnaros",
-		[3] = "",
-		[4] = 37875,
-		[5] = 522261,
-		[6] = 280,
-	},
-	--Dragon soul.
-	[1292] = {
-		[1] = 881,
-		[2] = "Morchok",
-		[3] = "",
-		[4] = 39094,
-		[5] = 536058,
-		[6] = 9,
-	},
-	[1294] = {
-		[1] = 867,
-		[2] = "Warlord Zon'ozz",
-		[3] = "",
-		[4] = 39138,
-		[5] = 536061,
-		[6] = 9,
-	},
-	[1295] = {
-		[1] = 876,
-		[2] = "Yor'sahj the Unsleeping",
-		[3] = "",
-		[4] = 39101,
-		[5] = 536062,
-		[6] = 9,
-	},
-	[1296] = {
-		[1] = 856,
-		[2] = "Hagara the Stormbinder",
-		[3] = "",
-		[4] = 39318,
-		[5] = 536057,
-		[6] = 9,
-	},
-	[1297] = {
-		[1] = 875,
-		[2] = "Ultraxion",
-		[3] = "",
-		[4] = 39099,
-		[5] = 571750,
-		[6] = 9,
-	},
-	[1298] = {
-		[1] = 877,
-		[2] = "Warmaster Blackhorn",
-		[3] = "",
-		[4] = 39399,
-		[5] = 571752,
-		[6] = 9,
-	},
-	[1291] = {
-		[1] = 855,
-		[2] = "Deathwing",
-		[3] = "",
-		[4] = 35268,
-		[5] = 536056,
-		[6] = 9,
-	},
-	[1299] = {
-		[1] = 905,
-		[2] = "Deathwing",
-		[3] = "",
-		[4] = 40087,
-		[5] = 536055,
-		[6] = 9,
-	},]]
---};
+	--Add hunter kings buff to paladin table.
+	NRC.pal[409583] = {
+		name = "Heart of the Lion",
+		icon = 132185,
+		desc = "+10% Stats",
+		maxRank = true,
+		order = 2,
+	};
+	--Certain things like GetEffectivePlayerMaxLevel() are 60 at addon load time and are updated at logon so we need to delay certain db updates that require the phase.
+	--Things had to be changed a little in Raidstatus.lua to work with this.
+	function NRC:loadDelayedDatabaseUpdate()
+		--Recheck the phase after PEW.
+		if (NRC.isClassic and C_Engraving and C_Engraving.IsEngravingEnabled()) then
+			local sodPhases = {[25]=1,[40]=2,[50]=3,[60]=4};
+			NRC.sodPhase = sodPhases[(GetEffectivePlayerMaxLevel())];
+		end
+		--Add maxRank to tables for SoD phases.
+		local tables = {NRC.flasks, NRC.battleElixirs, NRC.guardianElixirs, NRC.foods, NRC.scrolls, NRC.dpsPotions, NRC.healthPotions, NRC.manaPotions, NRC.tempEnchants, NRC.int, NRC.fort, NRC.spirit, NRC.shadow, NRC.motw, NRC.pal};
+		local phase = NRC.sodPhase;
+		for k, v in pairs(tables) do
+			for _, data in pairs(v) do
+				if (data.maxRankSodPhases) then
+					for _, maxRankSodPhase in pairs(data.maxRankSodPhases) do
+						if (maxRankSodPhase == phase) then
+							data.maxRank = true;
+							--print(data.name, data.rank)
+						end
+					end
+				end
+			end
+		end
+		NRC:logonUpdateRaidStatusDatabase();
+	end
+end

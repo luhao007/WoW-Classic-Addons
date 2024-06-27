@@ -1,0 +1,16 @@
+## Interface: 30400
+## Author: Jaliborc (João Cardoso)
+## Version: 10.2.11
+## OptionalDeps: BagBrother, WoWUnit
+## SavedVariables: Scrap_Sets
+## SavedVariablesPerCharacter: Scrap_CharSets
+
+## Title: Scrap
+## Notes: Sells all your junk at the merchant.|n|cffbbbbbbBy João Cardoso|r|n|n|TInterface/Addons/Scrap/art/patreon:12:12|t |cff82c5ffpatreon.com/jaliborc|r|n|TInterface/Addons/Scrap/art/paypal:12:12|t |cff82c5ffpaypal.me/jaliborc|r|n|TInterface/Addons/Scrap/art/discord:12:12:0:-2|t |cff82c5ffbit.ly/discord-jaliborc|r
+## Title-zhCN: |cFFFFE00A<|r|cFFFFF468功能|r|cFFFFE00A>|r |cFFFFFFFF垃圾管理|r |cFFFFE00AScrap|r
+## Notes-zhCN: 自动出售灰色物品
+
+## X-License: All Rights Reserved
+## X-Category: Bags & Inventory
+
+addons\main\main.xml

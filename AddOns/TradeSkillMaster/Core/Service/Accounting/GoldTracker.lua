@@ -6,6 +6,7 @@
 
 local TSM = select(2, ...) ---@type TSM
 local GoldTracker = TSM.Accounting:NewPackage("GoldTracker")
+local Environment = TSM.Include("Environment")
 local Event = TSM.Include("Util.Event")
 local Delay = TSM.Include("Util.Delay")
 local CSV = TSM.Include("Util.CSV")
@@ -41,7 +42,7 @@ local ERRONEOUS_ZERO_THRESHOLD = 5 * 1000 * COPPER_PER_GOLD
 
 function GoldTracker.OnInitialize()
 	private.playerGoldRetryTimer = Delay.CreateTimer("PLAYER_GOLD_RETRY", private.PlayerLogGold)
-	if not TSM.IsWowVanillaClassic() then
+	if Environment.HasFeature(Environment.FEATURES.GUILD_BANK) then
 		DefaultUI.RegisterGuildBankVisibleCallback(private.GuildLogGold, true)
 		Event.Register("GUILDBANK_UPDATE_MONEY", private.GuildLogGold)
 	end
@@ -54,39 +55,44 @@ function GoldTracker.OnInitialize()
 		:AddKey("factionrealm", "internalData", "guildGoldLog")
 		:AddKey("factionrealm", "internalData", "guildGoldLogLastUpdate")
 		:AddKey("factionrealm", "internalData", "characterGuilds")
+		:AddKey("global", "coreOptions", "regionWide")
 
 	-- Get a list of known guilds and load character gold log data
 	local validGuilds = TempTable.Acquire()
-	for _, factionrealm, character in Settings.AccessibleCharacterIterator() do
-		local guild = private.settings:GetForScopeKey("characterGuilds", factionrealm)[character]
-		if guild then
-			validGuilds[guild] = true
-		end
-		local data = private.settings:GetForScopeKey("goldLog", character, factionrealm)
-		if data then
-			local lastUpdate = private.settings:GetForScopeKey("goldLogLastUpdate", character, factionrealm) or 0
-			local characterKey = Wow.FormatCharacterName(character, factionrealm, true)
-			private.LoadCharacterGoldLog(characterKey, data, lastUpdate)
+	for _, factionrealm, character, isConnected in Settings.AccessibleCharacterIterator() do
+		if isConnected or private.settings.regionWide then
+			local guild = private.settings:GetForScopeKey("characterGuilds", factionrealm)[character]
+			if guild then
+				validGuilds[guild] = true
+			end
+			local data = private.settings:GetForScopeKey("goldLog", character, factionrealm)
+			if data then
+				local lastUpdate = private.settings:GetForScopeKey("goldLogLastUpdate", character, factionrealm) or 0
+				local characterKey = Wow.FormatCharacterName(character, factionrealm, true)
+				private.LoadCharacterGoldLog(characterKey, data, lastUpdate)
+			end
 		end
 	end
 
 	-- Load guild gold log data
-	for _, guildData, factionrealm in private.settings:AccessibleValueIterator("guildGoldLog") do
-		for guild, data in pairs(guildData) do
-			local entries = {}
-			local decodeContext = CSV.DecodeStart(data, CSV_KEYS)
-			if decodeContext then
-				for minute, copper in CSV.DecodeIterator(decodeContext) do
-					tinsert(entries, { minute = tonumber(minute), copper = tonumber(copper) })
+	for _, guildData, factionrealm, isConnected in private.settings:AccessibleValueIterator("guildGoldLog") do
+		if isConnected or private.settings.regionWide then
+			for guild, data in pairs(guildData) do
+				local entries = {}
+				local decodeContext = CSV.DecodeStart(data, CSV_KEYS)
+				if decodeContext then
+					for minute, copper in CSV.DecodeIterator(decodeContext) do
+						tinsert(entries, { minute = tonumber(minute), copper = tonumber(copper) })
+					end
+					CSV.DecodeEnd(decodeContext)
 				end
-				CSV.DecodeEnd(decodeContext)
-			end
-			private.guildGoldLog[guild] = entries
-			local lastEntryTime = #entries > 0 and entries[#entries].minute * SECONDS_PER_MIN or math.huge
-			local lastUpdate = private.settings:GetForScopeKey("guildGoldLogLastUpdate", factionrealm)
-			if not validGuilds[guild] and max(lastEntryTime, lastUpdate and lastUpdate[guild] or 0) < time() - 30 * SECONDS_PER_DAY then
-				-- this guild may not be valid and the last entry is over 30 days old, so truncate the data
-				private.truncateGoldLog[guild] = lastEntryTime
+				private.guildGoldLog[guild] = entries
+				local lastEntryTime = #entries > 0 and entries[#entries].minute * SECONDS_PER_MIN or math.huge
+				local lastUpdate = private.settings:GetForScopeKey("guildGoldLogLastUpdate", factionrealm)
+				if not validGuilds[guild] and max(lastEntryTime, lastUpdate and lastUpdate[guild] or 0) < time() - 30 * SECONDS_PER_DAY then
+					-- this guild may not be valid and the last entry is over 30 days old, so truncate the data
+					private.truncateGoldLog[guild] = lastEntryTime
+				end
 			end
 		end
 	end
@@ -197,7 +203,7 @@ function private.LoadCharacterGoldLog(characterKey, data, lastUpdate)
 end
 
 function private.UpdateGoldLog(goldLog, copper)
-	copper = Math.Round(copper, COPPER_PER_GOLD * (TSM.IsWowClassic() and 1 or 1000))
+	copper = Math.Round(copper, COPPER_PER_GOLD * ((Environment.IsRetail() and 1000) or (Environment.IsVanillaClassic() and 1) or 100))
 	local currentMinute = floor(time() / SECONDS_PER_MIN)
 	local prevRecord = goldLog[#goldLog]
 

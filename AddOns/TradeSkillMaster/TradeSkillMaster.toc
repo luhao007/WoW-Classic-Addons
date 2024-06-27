@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: TradeSkillMaster Team
-## Version: v4.12.20
+## Version: v4.13.26
 ## OptionalDeps: ArkInventory, Auc-Advanced, Auctionator, TheUndermineJournal, BootyBayGazette, AuctionDB
 ## SavedVariables: TradeSkillMasterDB, TSMItemInfoDB
 
@@ -8,15 +8,20 @@
 ## Notes: Auction house and gold making addon.
 ## Title-zhCN: |cFFFFE00A<|r|cFF0070DE专业|r|cFFFFE00A>|r |cFFFFFFFF专业助手|r |cFFFFE00ATradeSkillMaster|r
 
-## X-Embeds: AccurateTime, Ace3, LibDataBroker-1.1, LibDBIcon-1.0, LibRealmInfo, LibDeflate, LibSerialize
+## X-Embeds: Ace3, LibDataBroker-1.1, LibDBIcon-1.0, LibRealmInfo, LibDeflate, LibSerialize, LibAHTab
 
 # External libraries
 # 1st-party libraries
-External\AccurateTime\AccurateTime.lua
 External\LibTSMClass\LibTSMClass.lua
 
 # Our core init file
 LibTSM\Core.lua
+
+# Initial LibTSM utility files
+LibTSM\Util\EnumType.lua
+
+# Environment file
+LibTSM\Environment.lua
 
 # Locale file
 Locale\Core.lua
@@ -63,6 +68,9 @@ LibTSM\Util\Money.lua
 LibTSM\Util\CSV.lua
 LibTSM\Util\JSON.lua
 LibTSM\Util\ObjectPool.lua
+LibTSM\Util\StringBuilder.lua
+LibTSM\Util\NamedTupleListType.lua
+LibTSM\Util\TreeType.lua
 LibTSM\Util\ReactiveClasses\Publisher.lua
 LibTSM\Util\ReactiveClasses\State.lua
 LibTSM\Util\ReactiveClasses\StateSchema.lua
@@ -93,11 +101,18 @@ LibTSM\Util\FSMClasses\State.lua
 LibTSM\Util\FSMClasses\Machine.lua
 LibTSM\Util\FSM.lua
 LibTSM\Util\Event.lua
+LibTSM\Util\CustomStringClasses\Types.lua
+LibTSM\Util\CustomStringClasses\Tokenizer.lua
+LibTSM\Util\CustomStringClasses\Optimizer.lua
+LibTSM\Util\CustomStringClasses\AST.lua
+LibTSM\Util\CustomStringClasses\CodeGen.lua
+LibTSM\Util\CustomStringClasses\String.lua
+LibTSM\Util\CustomString.lua
+LibTSM\Util\GroupPath.lua
 
 # LibTSM service files
 LibTSM\Service\ErrorHandler.lua
 LibTSM\Service\DefaultUI.lua
-LibTSM\Service\TooltipScanning.lua
 LibTSM\Service\Threading.lua
 LibTSM\Service\SlashCommands.lua
 LibTSM\Service\Settings.lua
@@ -105,6 +120,7 @@ LibTSM\Service\PlayerInfo.lua
 LibTSM\Service\ItemInfo.lua
 LibTSM\Service\ItemLinked.lua
 LibTSM\Service\ItemFilter.lua
+LibTSM\Service\TooltipScanning.lua
 LibTSM\Service\Conversions.lua
 LibTSM\Service\CustomPrice.lua
 LibTSM\Service\AuctionHouseWrapper.lua
@@ -190,11 +206,13 @@ Core\UI\Components\Controls\RangeInput.lua
 Core\UI\Components\Controls\Toggle.lua
 Core\UI\Components\Controls\ToggleYesNo.lua
 Core\UI\Components\Controls\SyntaxInput.lua
+Core\UI\Components\Controls\ItemButton.lua
 
 Core\UI\Components\List\ListRow.lua
 Core\UI\Components\List\List.lua
 Core\UI\Components\List\ItemList.lua
 Core\UI\Components\List\CraftingMatList.lua
+Core\UI\Components\List\SelectionList.lua
 
 Core\UI\Components\Containers\Container.lua
 Core\UI\Components\Containers\ViewContainer.lua
@@ -230,7 +248,6 @@ Core\UI\Elements\SelectionGroupTree.lua
 Core\UI\Elements\CraftingQueueList.lua
 Core\UI\Elements\SearchList.lua
 Core\UI\Elements\DropdownList.lua
-Core\UI\Elements\SelectionList.lua
 Core\UI\Elements\CommodityList.lua
 Core\UI\Elements\OperationTree.lua
 Core\UI\Elements\QueryScrollingTable.lua
@@ -241,7 +258,10 @@ Core\UI\Elements\SniperScrollingTable.lua
 Core\UI\Elements\ProfessionScrollingTable.lua
 
 Core\UI\Components\Crafting\CraftDetails.lua
-Core\UI\Components\Crafting\OptionalMatsDialog.lua
+Core\UI\Components\Crafting\CraftTierButton.lua
+Core\UI\Components\Crafting\ItemSelector.lua
+Core\UI\Components\Crafting\CraftTierDialog.lua
+Core\UI\Components\Crafting\OptionalMatsRow.lua
 
 Core\UI\Support\TexturePacks.lua
 
@@ -315,6 +335,7 @@ Core\UI\TaskListUI\Core.lua
 Core\UI\BankingUI\Core.lua
 
 Core\UI\Debug\DBViewer.lua
+Core\UI\Debug\StoryBoard.lua
 
 # Service files (depend on main addon file being loaded)
 Core\Service\Operations\Core.lua
@@ -326,7 +347,6 @@ Core\Service\Operations\Sniper.lua
 Core\Service\Operations\Vendoring.lua
 Core\Service\Operations\Warehousing.lua
 Core\Service\Groups\Core.lua
-Core\Service\Groups\Path.lua
 Core\Service\Groups\Sync.lua
 Core\Service\Groups\ImportExport.lua
 Core\Service\Accounting\Core.lua

@@ -66,14 +66,18 @@ function Plater.Auras.GhostAuras.ApplyAppearance(auraIconFrame, spellName, spell
 
     if (ghostAurasSettings.width ~= 0) then
         auraIconFrame:SetWidth(ghostAurasSettings.width)
+		auraIconFrame.Icon:SetWidth (ghostAurasSettings.width-2)
     else
         auraIconFrame:SetWidth(profile.aura_width)
+		auraIconFrame.Icon:SetWidth (profile.aura_width-2)
     end
 
     if (ghostAurasSettings.height ~= 0) then
         auraIconFrame:SetHeight(ghostAurasSettings.height)
+		auraIconFrame.Icon:SetHeight(ghostAurasSettings.height-2)
     else
         auraIconFrame:SetHeight(profile.aura_height)
+		auraIconFrame.Icon:SetHeight(profile.aura_height-2)
     end
 
     auraIconFrame:SetAlpha(ghostAurasSettings.alpha)
@@ -193,17 +197,13 @@ function Plater.Auras.BuildGhostAurasOptionsTab(frame)
 
     ghostAuraFrame:SetScript("OnShow", function()
         Plater.Auras.GhostAuras.SetSpec()
+        DF:LoadSpellCache(Plater.SpellHashTable, Plater.SpellIndexTable, Plater.SpellSameNameTable)
     end)
-    --Plater.Auras.GhostAuras.SetSpec() --debug, will update then the plater options is opened instead when the tab is opened
+    ghostAuraFrame:SetScript("OnHide", function()
+        DF:UnloadSpellCache()
+    end)
 
-    --add a ghost aura
-    function ghostAuraFrame.LoadGameSpells()
-        if (not next (Plater.SpellHashTable)) then
-            --load all spells in the game
-            DF:LoadAllSpells(Plater.SpellHashTable, Plater.SpellIndexTable)
-            return true
-        end
-    end
+    --Plater.Auras.GhostAuras.SetSpec() --debug, will update then the plater options is opened instead when the tab is opened
 
     local newAuraLabel = DF:CreateLabel(ghostAuraFrame, "Add Ghost Aura", DF:GetTemplate("font", "ORANGE_FONT_TEMPLATE"))
     DF:SetFontSize(newAuraLabel, 12)
@@ -213,7 +213,6 @@ function Plater.Auras.BuildGhostAurasOptionsTab(frame)
     newAuraEntry:SetJustifyH("left")
 
     newAuraEntry:SetHook("OnEditFocusGained", function(self)
-        ghostAuraFrame.LoadGameSpells()
         newAuraEntry.SpellAutoCompleteList = Plater.SpellIndexTable
         newAuraEntry:SetAsAutoComplete("SpellAutoCompleteList", nil, true)
     end)

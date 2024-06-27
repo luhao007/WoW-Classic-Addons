@@ -5,7 +5,8 @@ local VUHDO_MENU_UNIT = nil;
 
 --
 function VUHDO_playerTargetDropdownOnLoad()
-	UIDropDownMenu_Initialize(VuhDoPlayerTargetDropDown, VUHDO_playerTargetDropDown_Initialize, "MENU", 1);
+	UIDropDownMenu_SetInitializeFunction(VuhDoPlayerTargetDropDown, VUHDO_playerTargetDropDown_Initialize);
+	UIDropDownMenu_SetDisplayMode(VuhDoPlayerTargetDropDown, "MENU");
 end
 
 
@@ -243,7 +244,8 @@ end
 
 --
 function VUHDO_minimapDropdownOnLoad()
-	UIDropDownMenu_Initialize(VuhDoMinimapDropDown, VUHDO_miniMapDropDown_Initialize, "MENU", 1);
+	UIDropDownMenu_SetInitializeFunction(VuhDoMinimapDropDown, VUHDO_miniMapDropDown_Initialize);
+	UIDropDownMenu_SetDisplayMode(VuhDoMinimapDropDown, "MENU");
 end
 
 

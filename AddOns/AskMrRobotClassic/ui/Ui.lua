@@ -85,7 +85,7 @@ function Amr.CreateFont(style, size, color, a)
 	local alpha = a or 1
 	local id = string.format("%s_%d_%f_%f_%f_%f", style, size, color.R, color.G, color.B, alpha)
 	local font = CreateFont(id)
-	font:SetFont(getFontPath(style), size)
+	font:SetFont(getFontPath(style), size, "")
 	font:SetTextColor(color.R, color.G, color.B, alpha)
 	return font
 end

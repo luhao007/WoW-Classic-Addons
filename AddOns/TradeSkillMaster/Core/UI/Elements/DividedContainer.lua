@@ -8,7 +8,7 @@
 -- A divided container is a container with two children with a divider between them. It is a subclass of the @{Frame} class.
 -- @classmod DividedContainer
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local UIElements = TSM.Include("UI.UIElements")
 local DividedContainer = TSM.Include("LibTSMClass").DefineClass("DividedContainer", TSM.UI.Frame)
 UIElements.Register(DividedContainer)

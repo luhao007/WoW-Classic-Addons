@@ -4,7 +4,7 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local VendorSearch = TSM.Shopping:NewPackage("VendorSearch")
 local L = TSM.Include("Locale").GetTable()
 local Log = TSM.Include("Util.Log")
@@ -39,7 +39,7 @@ end
 -- ============================================================================
 
 function private.ScanThread(auctionScan)
-	if (TSM.AuctionDB.GetAppDataUpdateTimes() or 0) < time() - 60 * 60 * 12 then
+	if TSM.AuctionDB.GetAppDataUpdateTimes() < time() - 60 * 60 * 12 then
 		Log.PrintUser(L["No recent AuctionDB scan data found."])
 		return false
 	end

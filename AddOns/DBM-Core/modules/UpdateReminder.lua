@@ -1,15 +1,19 @@
 local L = DBM_CORE_L
 
+---@class DBM
+local DBM = DBM
+
 local frame, fontstring, fontstringFooter, editBox, urlText
 
 local function CreateOurFrame()
+	---@class DBMUpdateFrame: Frame, BackdropTemplate
 	frame = CreateFrame("Frame", "DBMUpdateReminder", UIParent, "BackdropTemplate")
 	frame:SetFrameStrata("FULLSCREEN_DIALOG") -- yes, this isn't a fullscreen dialog, but I want it to be in front of other DIALOG frames (like DBM GUI which might open this frame...)
 	frame:SetWidth(430)
-	frame:SetHeight(140)
+	frame:SetHeight(100)
 	frame:SetPoint("TOP", 0, -230)
 	frame.backdropInfo = {
-		bgFile		= "Interface\\DialogFrame\\UI-DialogBox-Background", -- 131071
+		bgFile		= "Interface\\DialogFrame\\UI-DialogBox-Background-Dark", -- ????
 		edgeFile	= "Interface\\DialogFrame\\UI-DialogBox-Border", -- 131072
 		tile		= true,
 		tileSize	= 32,
@@ -46,12 +50,15 @@ local function CreateOurFrame()
 	editBox:SetHeight(32)
 	editBox:SetWidth(250)
 	editBox:SetPoint("TOP", fontstring, "BOTTOM", 0, -4)
-	editBox:SetFontObject("GameFontHighlight")
+	editBox:SetFontObject(GameFontHighlight)
 	editBox:SetTextInsets(0, 0, 0, 1)
 	editBox:SetFocus()
 	editBox:SetScript("OnTextChanged", function(self)
 		editBox:SetText(urlText)
 		editBox:HighlightText()
+	end)
+	editBox:SetScript("OnEscapePressed", function()
+		frame:Hide()
 	end)
 	fontstringFooter = frame:CreateFontString(nil, "ARTWORK", "GameFontNormal")
 	fontstringFooter:SetWidth(410)
@@ -61,8 +68,8 @@ local function CreateOurFrame()
 	button:SetHeight(24)
 	button:SetWidth(75)
 	button:SetPoint("BOTTOM", 0, 13)
-	button:SetNormalFontObject("GameFontNormal")
-	button:SetHighlightFontObject("GameFontHighlight")
+	button:SetNormalFontObject(GameFontNormal)
+	button:SetHighlightFontObject(GameFontHighlight)
 	button:SetNormalTexture(button:CreateTexture(nil, nil, "UIPanelButtonUpTexture"))
 	button:SetPushedTexture(button:CreateTexture(nil, nil, "UIPanelButtonDownTexture"))
 	button:SetHighlightTexture(button:CreateTexture(nil, nil, "UIPanelButtonHighlightTexture"))
@@ -70,16 +77,25 @@ local function CreateOurFrame()
 	button:SetScript("OnClick", function()
 		frame:Hide()
 	end)
-
 end
 
-function DBM:ShowUpdateReminder(newVersion, newRevision, text, url)
+local function setFrameWidth(extraWidth)
+	extraWidth = extraWidth or 0
+	frame:SetWidth(430 + extraWidth)
+	fontstringFooter:SetWidth(410 + extraWidth)
+	editBox:SetWidth(250 + extraWidth)
+	fontstring:SetWidth(400 + extraWidth)
+end
+
+function DBM:ShowUpdateReminder(newVersion, newRevision, text, url, extraWidth, textJustify)
 	urlText = url or "https://github.com/DeadlyBossMods/DeadlyBossMods/wiki"
 	if not frame then
 		CreateOurFrame()
 	end
+	setFrameWidth(extraWidth)
 	editBox:SetText(url or "https://github.com/DeadlyBossMods/DeadlyBossMods/wiki")
 	editBox:HighlightText()
+	editBox:SetFocus()
 	frame:Show()
 	if newVersion then
 		fontstring:SetText(L.UPDATEREMINDER_HEADER:format(newVersion, newRevision))
@@ -88,4 +104,11 @@ function DBM:ShowUpdateReminder(newVersion, newRevision, text, url)
 		fontstring:SetText(text)
 		fontstringFooter:SetText(L.UPDATEREMINDER_FOOTER_GENERIC)
 	end
+	if textJustify == "LEFT" then
+		fontstring:SetPoint("TOP", 10, -16)
+	else
+		fontstring:SetPoint("TOP", 0, -16)
+	end
+	fontstring:SetJustifyH(textJustify or "CENTER")
+	frame:SetHeight(110 + fontstring:GetHeight())
 end

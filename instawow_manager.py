@@ -5,12 +5,12 @@ import typing
 from pathlib import Path
 
 import instawow.cli
-import instawow.db
 import sqlalchemy
 from attrs import asdict, evolve
-from instawow.common import Flavour, Strategy
+from instawow.wow_installations import Flavour
+from instawow.common import Strategy
 from instawow.db import prepare_database
-from instawow.config import (Config, GlobalConfig, config_converter,
+from instawow.config import (ProfileConfig, GlobalConfig, config_converter,
                              setup_logging)
 from instawow.manager import Manager, contextualise, DB_REVISION
 from instawow.models import Pkg, pkg_converter
@@ -41,11 +41,11 @@ class InstawowManager:
                 values['access_tokens']['cfcore'] = token
         global_config = config_converter.structure(values, GlobalConfig)
         global_config.write()
-        config = Config(global_config = global_config, addon_dir=addon_dir, game_flavour=Flavour(game_flavour), profile=self.profile)
+        config = ProfileConfig(global_config = global_config, addon_dir=addon_dir, game_flavour=Flavour(game_flavour), profile=self.profile)
         config.write()
 
         setup_logging(config.logging_dir, log_to_stderr=False, debug=False, intercept_logging_module_calls=False)
-        instawow.cli._apply_patches()
+        # instawow.cli._apply_patches()
 
         self.conn = prepare_database(config.db_uri, DB_REVISION).connect()
         self.manager = Manager(config, self.conn)

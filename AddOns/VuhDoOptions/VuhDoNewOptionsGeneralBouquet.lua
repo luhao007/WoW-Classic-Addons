@@ -33,6 +33,39 @@ end
 
 
 
+local tCopy;
+local function VUHDO_deepCopyColorWithFlags(aColorTable)
+
+	tCopy = VUHDO_deepCopyTable(aColorTable);
+
+	if tCopy.useText == nil then
+		tCopy.useText = true;
+	end
+
+	if tCopy.useBackground == nil then
+		tCopy.useBackground = true;
+	end
+
+	if tCopy.useOpacity == nil then
+		tCopy.useOpacity = true;
+	end
+
+	tCopy.R = tCopy.R or 1;
+	tCopy.G = tCopy.G or 1;
+	tCopy.B = tCopy.B or 1;
+	tCopy.O = tCopy.O or 1;
+
+	tCopy.TR = tCopy.TR or 1;
+	tCopy.TG = tCopy.TG or 1;
+	tCopy.TB = tCopy.TB or 1;
+	tCopy.TO = tCopy.TO or 1;
+
+	return tCopy;
+
+end
+
+
+
 --
 function VUHDO_bouquetsUpdateDefaultColors()
 	VUHDO_BOUQUET_BUFFS_SPECIAL["AGGRO"]["defaultColor"] = VUHDO_deepCopyColor({ ["R"] = 1, ["G"] = 0, ["B"] = 0 });
@@ -186,7 +219,9 @@ local function VUHDO_initBouquetItem(aParent, anItemPanel, aBouquetName, aBuffIn
 	else
 		tTexture = nil;
 	end
+
 	_G[anItemPanel:GetName() .. "DemoTextureBar"]:SetVertexColor(1, 1, 1, 1);
+
 	if ((tTexture or "") ~= "") then
 		_G[anItemPanel:GetName() .. "DemoTextureBar"]:SetTexture(tTexture);
 		_G[anItemPanel:GetName() .. "DemoTextureIcon"]:Hide();
@@ -195,18 +230,24 @@ local function VUHDO_initBouquetItem(aParent, anItemPanel, aBouquetName, aBuffIn
 		_G[anItemPanel:GetName() .. "DemoTextureBar"]:SetTexture("Interface\\AddOns\\VuhDo\\Images\\bar15");
 		_G[anItemPanel:GetName() .. "DemoTextureIcon"]:SetVertexColor(1, 1, 1);
 		_G[anItemPanel:GetName() .. "DemoTextureIcon"]:SetTexture(VUHDO_CUSTOM_ICONS[aBuffInfo["icon"]][2] or "Interface\\AddOns\\VuhDo\\Images\\white_square_16_16");
-		if (aBuffInfo["color"].useBackground) then
-			_G[anItemPanel:GetName() .. "DemoTextureIcon"]:SetVertexColor(aBuffInfo["color"].R, aBuffInfo["color"].G, aBuffInfo["color"].B, aBuffInfo["color"].O);
+
+		local tColor = VUHDO_deepCopyColorWithFlags(aBuffInfo["color"]);
+
+		if (tColor.useBackground) then
+			_G[anItemPanel:GetName() .. "DemoTextureIcon"]:SetVertexColor(tColor.R, tColor.G, tColor.B, tColor.O);
 		else
-			_G[anItemPanel:GetName() .. "DemoTextureIcon"]:SetVertexColor(1, 1, 1, aBuffInfo["color"].O);
+			_G[anItemPanel:GetName() .. "DemoTextureIcon"]:SetVertexColor(1, 1, 1, tColor.O);
 		end
+
 		_G[anItemPanel:GetName() .. "DemoTextureIcon"]:Show();
-		if (aBuffInfo["color"].useText) then
-			_G[anItemPanel:GetName() .. "DemoTextureLabel"]:SetTextColor(aBuffInfo["color"].TR, aBuffInfo["color"].TG, aBuffInfo["color"].TB, aBuffInfo["color"].TO);
+
+		if (tColor.useText) then
+			_G[anItemPanel:GetName() .. "DemoTextureLabel"]:SetTextColor(tColor.TR, tColor.TG, tColor.TB, tColor.TO);
 		else
 			_G[anItemPanel:GetName() .. "DemoTextureLabel"]:SetTextColor(1, 1, 1, 0.3);
 		end
 	end
+
 	_G[anItemPanel:GetName() .. "DemoTextureLabel"]:SetText("" .. aBuffIndex);
 
 	anItemPanel:Show();
@@ -306,11 +347,19 @@ function VUHDO_rebuildBouquetContextEditors(anIndex)
 	_G[tPanel:GetName() .. "BuffOrIndicatorFrameMineOthersFrame"]:Hide();
 	_G[tPanel:GetName() .. "BuffOrIndicatorFramePercentFrame"]:Hide();
 	_G[tPanel:GetName() .. "BuffOrIndicatorFrameCustomFlagEditBox"]:Hide();
+	_G[tPanel:GetName() .. "BuffOrIndicatorFrameSpellTraceEditLabel"]:Hide();
+	_G[tPanel:GetName() .. "BuffOrIndicatorFrameSpellTraceEditBox"]:Hide();
 
 	tBuffName = VUHDO_lnfGetValueFrom(tModel .. ".name");
 
 	if (VUHDO_BOUQUET_BUFFS_SPECIAL[tBuffName] ~= nil
 		and VUHDO_BOUQUET_BUFFS_SPECIAL[tBuffName]["custom_type"] == VUHDO_BOUQUET_CUSTOM_TYPE_STATUSBAR) then
+		if (tCurrentItem ~= nil) then
+			-- VUHDO_BOUQUET_CUSTOM_TYPE_STATUSBAR validators don't provide color checkboxes (e.g. 'useBackground')
+			-- implicitly force these color flags to 'true' to ensure application of the specified color(s)
+			tCurrentItem["color"]["useBackground"] = true;
+			tCurrentItem["color"]["useText"] = true;
+		end
 
 		tInnerPanel = _G[tPanel:GetName() .. "StatusbarFrame"];
 
@@ -334,7 +383,7 @@ function VUHDO_rebuildBouquetContextEditors(anIndex)
 		VUHDO_lnfSetModel(tSwatch, tModel .. ".color");
 		VUHDO_lnfColorSwatchInitFromModel(tSwatch);
 
-		if (tCurrentItem["custom"]["radio"] == 3) then
+		if (tCurrentItem ~= nil and tCurrentItem["custom"]["radio"] == 3) then
 
 			if (tCurrentItem["custom"]["grad_low"] == nil) then
 				tCurrentItem["custom"]["grad_low"] = {
@@ -442,9 +491,18 @@ function VUHDO_rebuildBouquetContextEditors(anIndex)
 				tSubPanel = _G[tInnerPanel:GetName() .. "CustomFlagEditBox"];
 				VUHDO_lnfSetModel(tSubPanel, tModel .. ".custom.function");
 				tSubPanel:Show();
+			elseif (VUHDO_BOUQUET_BUFFS_SPECIAL[tBuffName]["custom_type"] == VUHDO_BOUQUET_CUSTOM_TYPE_SPELL_TRACE) then
+				_G[tInnerPanel:GetName() .. "SpellTraceEditLabel"]:Show();
+
+				tSubPanel = _G[tInnerPanel:GetName() .. "SpellTraceEditBox"];
+
+				VUHDO_lnfSetModel(tSubPanel, tModel .. ".custom.spellTrace");
+				tSubPanel:Show();
 			else
 				_G[tInnerPanel:GetName() .. "PercentFrame"]:Hide();
 				_G[tInnerPanel:GetName() .. "CustomFlagEditBox"]:Hide();
+				_G[tInnerPanel:GetName() .. "SpellTraceEditLabel"]:Hide();
+				_G[tInnerPanel:GetName() .. "SpellTraceEditBox"]:Hide();
 			end
 
 			if (VUHDO_BOUQUET_BUFFS_SPECIAL[tBuffName]["no_color"]) then
@@ -501,8 +559,8 @@ local function VUHDO_setSelectedBouquetItem(anIndex)
 		tCurrentItemPanel = nil;
 	end
 
-	VUHDO_rebuildBouquetContextEditors(anIndex);
 	VUHDO_CURR_SELECTED_ITEM_INDEX = anIndex;
+	VUHDO_rebuildBouquetContextEditors(anIndex);
 end
 
 
@@ -947,6 +1005,7 @@ function VUHDO_bouquetItemRemoveClicked()
 
 	tremove(tBouquet, VUHDO_CURR_SELECTED_ITEM_INDEX);
 	if (#tBouquet == 0) then
+		VUHDO_CURR_SELECTED_ITEM_INDEX = 0;
 		VUHDO_rebuildBouquetContextEditors(0);
 	end
 	VUHDO_rebuildAllBouquetItems(nil, #tBouquet);

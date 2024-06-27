@@ -1,0 +1,14 @@
+## Interface: 30400
+## Author: Tuller & Jaliborc
+## Dependencies: Bagnon
+## LoadOnDemand: 1
+
+## Title: |TInterface/Addons/BagBrother/Art/Bagnon-Small:16:16|t Bagnon |cffffffffConfig|r
+## Notes: Load on demand configuration menus.|n|cffbbbbbbBy JoÃ£o Cardoso|r|n|n|TInterface/Addons/BagBrother/Art/Patreon:12:12|t |cff82c5ffpatreon.com/jaliborc|r|n|TInterface/Addons/BagBrother/Art/Paypal:12:12|t |cff82c5ffpaypal.me/jaliborc|r|n|TInterface/Addons/BagBrother/Art/Discord:12:12:0:-2|t |cff82c5ffbit.ly/discord-jaliborc|r|n|n
+## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFF背包整合|r |cFF0055FF设置|r
+## Notes-zhCN: Bagnon设置模块
+
+## X-Part-Of: Bagnon
+
+..\Bagnon\src\config.lua
+..\BagBrother\config\config.xml

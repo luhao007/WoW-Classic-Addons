@@ -1,6 +1,6 @@
 ﻿-- Pawn by Vger-Azjol-Nerub
 -- www.vgermods.com
--- © 2006-2023 Travis Spomer.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
+-- © 2006-2024 Travis Spomer.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
 -- See Readme.htm for more information.
 
 --
@@ -278,6 +278,7 @@ For more information on customizing Pawn, please see the help file (Readme.htm) 
 		["Crit"] = "^%+?# к критическому удару$",
 		["Crit2"] = "^%+?# к показателю критического удара$",
 		["CritPercent"] = "^Если на персонаже: Увеличение вероятности нанесения критического урона на #%%%.$",
+		["CritPercentCombined"] = "^Если на персонаже: Повышает вероятность критического эффекта атак и заклинаний на #%%%.$",
 		["CritRating"] = "^Если на персонаже: Увеличение вероятности нанесения критического урона на # ед%.$",
 		["CritRating2"] = "^Если на персонаже: Повышает рейтинг критического удара на #%.$",
 		["CritRating3"] = "^UNUSED$",
@@ -344,6 +345,7 @@ For more information on customizing Pawn, please see the help file (Readme.htm) 
 		["HeroicWarforged"] = "^Предмет закален в бою %(героич%.%)$",
 		["Hit"] = "^Если на персонаже: Вероятность нанесения удара увеличена на #%%%.$",
 		["Hit2"] = "^UNUSED$",
+		["HitPercentCombined"] = "^Если на персонаже: Повышает вероятность попадания атак и заклинаний на #%%%.$",
 		["HitRating"] = "^Если на персонаже: Повышает рейтинг меткости на #%.$",
 		["HitRating2"] = "^Если на персонаже: Увеличение рейтинга меткости на # ед%.$",
 		["HitRating3"] = "^UNUSED$",
@@ -684,8 +686,6 @@ Shortcut: Shift+click a scale]=],
 		["ValuesDoNotShowUpgradesFor1H"] = "Не отображать улучшения для одноручного оружия",
 		["ValuesDoNotShowUpgradesFor2H"] = "Не отображать улучшения для двуручного оружия",
 		["ValuesDoNotShowUpgradesTooltip"] = "Enable this option to hide upgrades of this type of item.  For example, even though paladin tanks can use two-handed weapons, a two-handed weapon is never an \"upgrade\" for a paladin tanking set, so Pawn should not show upgrade notifications for them.  Similarly, retribution paladins can use one-handed weapons, but they are never upgrades.",
-		["ValuesFollowSpecialization"] = "Отображать улучшения для специализации по броне после %d уровня",
-		["ValuesFollowSpecializationTooltip"] = "Enable this option to hide upgrades for armor that your class does not specialize in after level %d.  For example, at level %d holy paladins learn Plate Specialization, which increases their intellect by 5%% when wearing only plate armor.  When this option is chosen Pawn will never consider cloth, leather, or mail to be upgrades for level %d+ holy paladins.",
 		["ValuesHeader"] = "Значения шкалы для %s",
 		["ValuesIgnoreItemType"] = "Не используемое",
 		["ValuesIgnoreStat"] = "Не используемое",

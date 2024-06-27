@@ -4,7 +4,7 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local Contacts = TSM.UI.Util:NewPackage("Contacts")
 local L = TSM.Include("Locale").GetTable()
 local String = TSM.Include("Util.String")
@@ -29,7 +29,7 @@ function Contacts.ShowDialog(button, input, callback)
 		:SetLayout("VERTICAL")
 		:SetSize(152, 90)
 		:AddAnchor("TOP", button:_GetBaseFrame(), "BOTTOM", 0, -6)
-		:SetBackgroundColor("FRAME_BG", true)
+		:SetRoundedBackgroundColor("FRAME_BG")
 		:SetBorderColor("ACTIVE_BG")
 		:SetContext(input)
 		:AddChild(UIElements.New("ViewContainer", "contacts")
@@ -134,11 +134,13 @@ function private.GenerateListElements(category)
 			tinsert(private.listElements, character)
 		end
 	elseif category == L["Alts"] then
-		for factionrealm in TSM.db:GetConnectedRealmIterator("realm") do
-			for _, character in TSM.db:FactionrealmCharacterIterator(factionrealm) do
-				character = Ambiguate(gsub(strmatch(character, "(.*) "..String.Escape("-")).."-"..gsub(factionrealm, String.Escape("-"), ""), " ", ""), "none")
-				if character ~= UnitName("player") then
-					tinsert(private.listElements, character)
+		for factionrealm, isConnected in TSM.db:GetConnectedRealmIterator("realm") do
+			if isConnected or TSM.db.global.coreOptions.regionWide then
+				for _, character in TSM.db:FactionrealmCharacterIterator(factionrealm) do
+					character = Ambiguate(gsub(strmatch(character, "(.*) "..String.Escape("-")).."-"..gsub(factionrealm, String.Escape("-"), ""), " ", ""), "none")
+					if character ~= UnitName("player") then
+						tinsert(private.listElements, character)
+					end
 				end
 			end
 		end

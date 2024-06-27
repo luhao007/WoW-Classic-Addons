@@ -1,6 +1,10 @@
 
 local _
 local addonName, platerInternal = ...
+local tinsert = tinsert
+local tremove = tremove
+local Plater = Plater
+local wipe = wipe
 
 platerInternal.Scripts.DefaultCastScripts = {
 	"Cast - Small Alert [Plater]",
@@ -26,6 +30,29 @@ do
 --]=]
 
 --new scripts v10.0.2
+
+--Cast - On Going Cast [P] backup
+--nF12UnUnq0)f)KmqSHS89a0h8MGS1TnxaK7Iw0uTIwIYwn0Kcuu760h03ENHKYroro2zZUanowMsCUCoZqodvqVGfb(ImvQGNddVrF)IhZO4q)FL(yGFSqDHGjKb(FIWkOgPW)90x7RVoi4QXdDh2BYu3r9gpz8Obtds6mCqGkW)gYgAG)LcvEzO1sZJeC4kxrLjKi69ZIJVLNF)Dmc8K7t3qwrZV3aRphzu5sAE0(wrHqyhC9c8VMSfaJ7(Y(hLH3MKKtbGCDkp4MoOaxjjrOXdwwXQBC3hO1u7TawEXMLuPnYT1AbfgLokq)ZMaADivtGNWS2rp(EGATyHctK7a6Ok3FRwHYWbVWXgtn4T54Lmc)HkUJ(CydbNQ5Nf)pf5QYW1IVwgMqWHQ10YWLSu(dP8vLHIOOczUnO521ZcT8mkn(ja3DqnM(HVTiLjA8b0ZLH(A7RWW0HrpGPYqYgrbhWTibWUKWZZiskp6X6mPmmIaIUM8fAftS8ytkFglBnPES)7kr0y04cGnJFn2q2(oytDqVlRm85GbDHLVFZ772q2UJpt2RG2E(6qv1UA4OH9goEKNR30jdhm2dRKnrxPZf3GasPSEsZ23BnnT(2a6(lTv0TQcjnalH4RerFHkZXiiu7a(dIDK4y0PgFe4RHVVczRFEKmnduRVLA9Na)nsx12ZD6OXJqBcsFHEpvhO2cKX(Oq7xZZ(R7(7a)HaJD7pPNle9WAdGsJbGNQiXczNz)RKWqea1kwOXoj6HvsyfsCncXHOEgcrl3GAzKYqjfKjYW9uECAerzinQsKgbPGKlP6NMbrvHCdnUBz4VNttkyGKIDAIQSMW5uMwAyZpJbkhB4tmbJ(aIGaOkDdTleQG6bjf8itLnNCkl5SYWcEQAESDaSGDdfgt5FzbzjdhAcQ67Ax(lLH2p7gHMP7TF8IpRxITWK(o)cgLiNXy3bOrL70(yY7tvArDAPezmAIQ1zgrHFQ)ix87BWAlfkLyJmD169S4ZE8ZT6tJyIictN4arwjPu(zygTaIS)uzOzr453rK5u9s6CNAHRUWUJK0vDFAhZPa8pb5l6wT4oV0TVgi1(rxJwdUgqIUbXXtIZ4WwxCvs35Cesxwi1368KhAFCDVTqDCLFbjGA)g7GvZoepQAq8sTjBpbTT1kF7bIRKInAvD2dMTpv9xiSAxhMNEOSM733aNmnSgAhooaloQHqJ8BcrguQXPLKMrjQwhNhNd7xE0Pr)uvWPlC07DY3R2MSUOUxwBYQ6xEN1ysU6i8npR9yQnpP9OLTpg66A7vnNNimBTUUGPsZyPuPg5UD7FYC17)1C17OCTxDMs5WXq7bnRlNxoVElN97Lmh)0PtkphQ5HngJHYQRPsA1CMFbRHdc8NcNvd6jdNlPh0mFk8UxdHU596)JVTwTf(qZOMxcBZDOanL7AEnu7Vp2XR9ZTIoja3cFGqK3pIquNorsQ(CiqP2egjF9UJVvg(11PrW9pqPz1pEh8ygD)d8aiAL5mla4E9(JMk6npdEMkCQZVqdk7ZD4PmSHpEmiytvRtPdSEVuL(9aT1FpfnnvvDps0stEsvQd7VlkGGucYGMpn8rxw2qGP2COHThvXeC2n3pxS0Pr2amUAbdSA)qmgEdvCwyL2jj)pNgtTY3(T18914NE6dtrNdOgUQGG5Rw2mm8Mz6R9Fw2(K6Q(Qaup)7eHE7qObREnu54q7(799B3)bQw3OBDnV2yW)9
+
+--for abilities that channel and while channeling throws something at players or do damage over time
+PlaterScriptLibrary ["Cast - On Going Cast [P]"] = {
+	Revision = 2,
+	ScriptType = "script",
+	String = "nFvBVnkoq4)l5tePgeqETv6(q2w1DZDxFrICRUvxpwCatcxDSrgt307d8B)g)cjql5LUDxPRPHyWZm(5zg7zgcCdMh4ZYePmAom8w19ZFodlh6)B4Nd8JzIlzegpW)ZisbwlL8Fp11(QRdcUE8qNHUto3zK74jJhn48GKEdheic8VfTgh4FftKxgAS0SigfUsfyEckc)W0447O5pCpbbp5H01OL48h0W6RrAvUcNh10kcje2cxVa)BqBaW40u2)Sm8UKKCmaKBsPb32tkW1CuK04blQy1Tog6UPs63cgPfRxG5nP6Ufwi9shfOFPnGw3G1eyhMRZKVheR48Z7a6GDaDu1YFNsLYWbVYzPn2G32sVGGOpwXD5AoSfNt18tJ)NICrz4k23kdtqYHIv4YWfKu6JP0LLHSOOcEUXP5y7zGwEgghVdW2dQyZhKAwg6RN)7XNT1N)bj6hDa0dyQmeTMvqbCZsaSZr08mehtJEUotkdJqGORqpHRyIHhRtPtjzRq199niIAnmI8(zZ4dXg0M3bBQTo7IkdRyjAZ7Gcn9hsuQngWNjnsO1qW9Lv76HJg6oC8iphVZNmCW4(Ymztuz6CKhqaPegyRy77nNMsFJdT5wBbEJOGJdKNm9fSONW8CPheYDa)b(ouCSCr1RrGVc((cjB9ZJ4PzGA9nuR)e4VrQS2EoNpA8iPnbPVuDMQhKBbIyFKPwx9Z(R7)7a)HaJD6pX1b8EYCdGsJbGNkqXmEVP)lhrKiaYvmxHDu0Jl5WoK4AeIcE9mjenCdYLHkd5yqMin3tPXPriHM0svIuiifKCbw90mWRY4RXX2LH)rooPGasY2QPuLvikftusdh(jeq5ynFIrsVpGiWbksxJTbxfKpiPGgPZSzLJjjNvgwqtfZIndGnSRXWym9P5Ofe5qTtvDx3YFTm08z7iPzSV7Jx(v1wS56W3fxsWi(uc5EanICRUhtEFSqjQvhblJGteDotlk8t9h5i)(gS2cMqWwZtxUQHfFXJFPv3nIWIqevGdezjhJPNjJOfGN9xkd1BcV4EephR2sNBvZDzdNossxAV7eZPa8pdXl8gL4wVEzpeivRJkhVcCTGevbIJheNsHJUYDj2ZOsiDvbxDR1UvO7X19UcXXv(vKaY9RTJmB2(4rvbIxRnAZjOTjX7B3rCnNTwPQvdy29u1FoZODDyE6UYAlFtdCY0WyOT4ypS4OgsAKFNXYGunwD44mms05484c48YZwTUovjCSHwV3kVBTdz2sDVQ2Kv5V8oR1GCvl8TpRPJ32N00Ay3JHoBtTQz0eM(O1nferAgjfZvi3XU)jZvV)xZvVJYv36mftH2mDHI1LZkNvVKtZAjZKF61lLMd58KfgJH0QRWCC1C6FbRjhe4Fo0Rw)aFOVexOy(5od96dvZD7)ZVSwTn(qXO23cBIDsbAl21(EOU)ySJx3xAfvqaUf(aUiVFgUOE9I4yvFiqQ2eckF1223kd)2Q0i4(hX4S6T3bpMGB2WdGOL6EwaWD46J6m6TpJSNk5uxCPcuMNBrtjYc(Y2GGdvDoLkWQZsv67cAR(EkAQZQ6CeVLI8OQqNS(oRaCsjsg0E3WhDBzloMAZjnSPvfTZz7CFQyHvRSbyC1ggy3((ym8gQYzHDANK8FkngBKV7BR47H4NA69trR9OMCxbsgV6yIWWBMPU2)fr7tQQ6bbOA(3jc92Iqnw9AjZX(o97(J70)EYw36Y6OFTXG)7d",
+	Enabled = true,
+	OverrideTriggers = "merge",
+}
+
+--place a red background texture around the PlateFrame when the unit is casting a spell and has a Buff or Debuff up
+--this is useful in cases where the buff the unit has avoid the spell cast to be interrupted
+PlaterScriptLibrary ["Aura While Casting [P]"] = {
+	Revision = 1,
+	ScriptType = "script",
+	String = "9wv3UPnmu43LEfrAfiek)uPDbG0uPx0HMzRxGWlUjhiw11gz702Tl8Z(oobiue0bttftIpX2NVZ35VeAiDkLOwz5kPbfTuIvL8mOn4c07cBI)ArjS0u8rYebZcAkje3bp4VwbuIjrZxHQfHAJRExu3wDBhrVR1AX(4m(Vx7(rrE4r0gKRzU47Z4cWfpIzSC5sx8SjZPKRqfJ60QzFkPDjD6sjt5AMKXUCWV1mHNhDOKB4lZe4L1fBZqyKSNGvE65IvlCXi(5soU5lzG0fNXmfRLaAlJJlmmFbEQAwnF5sqhGBktDXglt7buHNePvHkMvGqGUCBkzrUmXhOqfnGyXNkTX401cFrJCaLb5Ztzpi8ILbNINcC36IlhxEjxAaVLsuPiHZanuTR7wa5YT(bA2ROe3y34Dn9BXCSFCeel2RCUeZXucMpc7rj9WPoDXmeEdDTWOpk3BJ61VHNcdzjpUuRYLP12AIG3gaA9Xf33ijujmHlUOCQaCx8N3Xu1NuTXb0M7lSKk7UauF49J(53G0k)nOOUvUdaRhVNsf8O6axpsdO8u4vBUgQj5c01V4HTh)IGZd(RjGDGqmrXLwtTGDZzPhYt)ByTHyZMnwIV3yblbAmin9RstJY3K04jM5rtX9W5ZdorK9fo7YUkPQcLTvzKm1lhPkB)qZ)uA)edf)al7GxhPekDTqml1CZv92NDsc9Oti5CGyX70XDwmy)eqbd22ZUzG9UH))6D3R)QS(P(39yzw)jKALihC0wRZPOaeg4Dq4ecL7LxWhXist)3iTu6F(",
+	Enabled = true,
+	OverrideTriggers = "merge",
+}
+
 PlaterScriptLibrary ["Add - Explode on Die [P]"] = {
 	Revision = 1,
 	ScriptType = "script",
@@ -35,9 +62,9 @@ PlaterScriptLibrary ["Add - Explode on Die [P]"] = {
 }
 
 PlaterScriptLibrary ["Add - Health Markers [P]"] = {
-	Revision = 1,
+	Revision = 2,
 	ScriptType = "script",
-	String = "nJ16Ujoou43L(lyuHfOaDPsZknxu3s3PuKc7S)OTPXKyaRXyh5yM2URM8SVhBNRqcnHHUABAZfBFU99D8X21UR9mBlUVKWzbWRt0Fp7fFS9Kb2wtqRX2w3Q7o0PRT1xr0nqlFWZl0zns8nSii0HWK8qh5kCOZkmIkxf6mhjGwGwf41egm4x4BcDqZ5BKqN8Ga1hekrsWQxHgPKfG8(yHlMjBBB9h4xIDmWUJD5m4otIflqU47bh4wwW9tPiOL7jRrlXb3Bg9Ju0Cm126Z4axBlBP9KEPX0W4yAofX(MYQmCCunPtKvRN50AkR5ol1CDJn3xXcjXfrdD(cyXqNpXPCrSH1WU63E67NPV3xDxg5raecsl5Ii5QJ)5AeX4FJJvuOJU92khUFQd3Z26g0ZAhFhbqu)viGzUHWaSQnmKlfixLnS)ykg2(8rLf0FqPG658SnRNJfBJcgfjvPOzz2iYlLnlGQ)Py2H5ywT5wqO0QtMgh6sqMKuGdMknAjLfpFpSOzS5jWmbqeXKqH9YtThcHLnsJPlaaKC3Vd1mukEs3oWpGPqEEk9BuNTLg0SKQaXkWvq8bXutPGh9IQ80k05QOcn3exe6UPpyBn4vDttbQhtsLST6BOmRUJoF4OZ1G3Grd63xzWZbdIPyHcKBnJlwUcfanpu7TUqknkUm4(RcgzoORNwHzrJAdJa19EYqJRqSLQ6FGbGh65NGPadaJMS2NlKig8zGpMsbkSBFG52WCnfMBeGPlo1OXXErVam4Am8oM99zO5u1Rg4u)vZWRdDmxTArybWuvvYKN27f40EJfV9F67brqeE3iXcGIWqb(RvxGFniVFDagmN(gbuZzal8RWZHdhDw)oJgcF29SJx4twaAirI2gUZeMn1mflJVfDv8WV4kIhUrZxF43cZbOOx2z86apj6Jq0EhVqTawvTS7uZIUHoVp05Fu0JNaTKZwqjlxj3nAUZmt5bZ4h05hNQK5sk4el3qP4IerpJAljMPMemH75ryldDMrwcZI2rY0w(rrXr6BPyusS9jbojJnxcB1OtT3UDxFejUWO3z4NLBe4gmcfcNt4go9KkR(lSWs9AaXkQlOg9F1sfwK)2iArE6VJLxHvSyJMn3h2(kjQVzir8eHFgOiJooaSWmBRkztLx)BBpKY1B6jA)XAP1iyrt6UlPXhN47o(ZpSR60fOYQSsllTLdO8XVS187uZzwbnPVFbq7oDkxNluRjronzl6Qf1G)8rean2Y784LRN4l)moLFvDIDQzNl8(Ten9QiuHkKXLLntR2kCNcTvUyu5AYRgMVYJSSklR4p1OgExuk3tep1gFEFPtb)l1aQJIlVY3uoSLRgNqXlKNu8CEv1O4U1E27IYpGV708TanJGHOsGQ6rAWicwExrzTTYK1EWOsMIGgeoJhCCu7RG2gArb4cvnw1q68MHYLNtOoYj(z9AjnmB8)IPiraw3sq29J2gouZcYY25pADZJsMP(ap71y6r8Fc2KHcRp4KC62MhNKOsbMKtH(MGjcmSRIku8EVLyvDc7Av)qTy4113V2ZrnuN0ZR0CQXbQ6Xm1oxQ46q18ekh6jwQecMRXKZ4KhX25co5t3)NEg3oM)Bo2)l",
+	String = "nJvBpnooq4)l8P2vqV2sFHI0EsllId4wkiLE79bGqCtCBTW1jYXDb2tB(TFZy7K00MaT8YPtPTjX2ZmpZZ4zSDDB5oY1jmsXcfXWJd1Vp6PiQ7WUUo)j9P0EB568DcFb115lbbjEZjY7PY4epMqfM4PMrt8MrjC1SeVXej0c0QKoNjGb)u4IepY4WfkOZW4y8fgNPyu8rOroBciFev6tfQgUodjZbdDP2WjEGPpZpua)kuu5eIp9gadxkIV5kobA5g2CYuA8ngGEhNmMYDDoMg7764QCh2o3N6z9PuNzyZuJnMte3Jirq3oZPfCzZTFU5AznhWcmFIku(1qEOm14A6g)0w)7(6F7G)Qsr13PsfijpX7BaWs8SYVn4Z3iIbFNLcKepD7nqa3jhWTDDUG8Og4RjaHhnJabNlycG3A0Qkm(fCC5eCJ(dwLfSJyB8cXI5JPGBCIK4Jn4EeI8UfISLeiZJY2W(BkY2RqK1yUtyCEwCzdIRACmbe6Tgkngopk2)zIIMXwmawGlZJwTl6yVHqvMNA0Hc9EvO)pGYgOrh2Qzt4JRdjiavUrxUoAgZrHoItSVKfbIHPuWT22Ip7L4DQTwZfP1HU(QBDD6(Iy0uJ6USPIUoDmXlNwd63BqFn51Dq3oD0WO1b9A3Upg9Gh70SDtDzXbaU7IaQpaikNkXGWEJcLtNrIHM7P9gFixGKwP85luAHd01dZOc7OwiyqPXhmH5zeXuSejya4Mo)fmfyay0S5rHsfraVghr5Cie3ca8KfcFtb0AXu(KDnA8Sa7dq0FofEMk(XiYyo(OHU1Vvp58epZ1E7XeXqooozlqJEjnV3uXB8xrbGhyJh1YSaOikSgW54fGRUfX1RWGf03ai01bO7dG79oy)UdGWfg22)9Z9ztanKjrdtSZ4M11rkXsyZEv(Wp8uwaTw9xE4xc5iCYtRnETJN59wgT97NRwsufxz(kZ6YjEFoX7FWWtGKmnumHZMotTU3CTjt6wZ4728x7IYCchaX0fCoTmr0zCRiXimjyyyqatmnXBeBkKfvIX0zOwrBBf9cy3mkz4cOUWXuFYtLkhMoBLRJvoOUYc(9A7DemlMQZCxxwD()kMCirsEKeNp6FvgVM)uEmlJR)QKMLbvibAZMEPXZQDDerEOrVJOpQwiP1emoa4DcnZX2zJv)HouLEnRuf1cuJ(7wPch2pnIwgs)dQ6ukoRQw9su6gN48HXePjMVfQyjD8k4ct2)MmBQ66XRIqEOE3B2T0RLwZGLve46SgVByK)zhF76QtxWCzLvzzYvaaIXVTs9MCZzwXpRVFdy7MnRwNtW1iz7MDQcCrw4BeHbSXkOliSA9KEfTeOI2uqS2AifCVFpttVidvQcfHQQY02AfUwH)nUyu1Akylm)gpYQQSml8HABb6St5EGfGBe7ZvMc(34a2gfxDLVRcHTawBhoDIANYZ5XQrPDRr2NSZpG3Bw)JGnT0GTeiwpstgwA5tLnRDVLM1(QzLLkcAy4LqW7JAFb22ewqcxI1yXH08dJLREobE2z6J61sQzoOYHxrGnEOBjE59h3aob2e20gf)ReQ)UmZuFaTN1y6r8Fc3SuiC7jNSZvx)9zsuLet2XA)q4ejf2vXgu8(zlXIDc7lvFdxm88ThxpZrFWtEgu5CQZIX6XcCNlB46qB5jMETNGAJyWcnMDMRIm2AxWjXA9)0ZC308xp5(Vp",
 	Enabled = true,
 	OverrideTriggers = "merge",
 }
@@ -201,9 +228,9 @@ PlaterScriptLibrary ["Cast - Circular Swipe"] = {
 	}--
 
 	PlaterScriptLibrary ["Cast - Very Important"] = {
-		Revision = 14,
+		Revision = 15,
 		ScriptType = "script",
-		String = "9M16YPnsw43f(Za1yW6Uax18dSXo27gJtf54mPIJIAKAaTwOMvsyB2Pg9Mn18inVc7506oizWbxXKGLA16CR)oFNt32u08wtd2YixMFiC5y(93UEj1CSMPX)MUo7PIMg3r8wbJlyAmMSGAACd)bXwWJUYM5dF7hrdMsSP3p0X5g)W7)Ghbg5E3fKz0W7te03N4r8FW0yen020WmYCSuHovROtPmDAacADySfj2AI7m43(Gitu(tZPW3rZPXw2KWOyRWisquVnTrPxNn6rMq9kBJYvSXTKDQzEok8uRjCj1Zl2YhMASfliDGRgb3mnDkgjtXnZbalk262a3zZqPmH9m6PWqZDb)Qf80w92m(CqoLstl2knVyRCGl2Q7EX(cps48tYum)Ud0r1kukOMRjpda9EszZ4s2tXwEmFay5gMUumf1AS1sa3rDAcLfclhx76drPEIP(c)9gTkGJolII96xXDITkMYRXX8xTycnaesaXM)2NIENEH3vXmoJ5XcYSbEUn(pj(3Y8VvWVJ2W0sFTxJDzN8kjHt(7xcLNSac2z)MGB6nd30pq42GAYBnMtEGMJ243DYBAELOW24nHEQzt5Z1dMoIpwa9xsi6cxqqYHq08kXrG8jlrRGpDeVgsJIC9Nbxb2CuaZdUAEjinOGiqg1aw5YUgWQuLi1BlyvuSMCrHkPIHGtujzKBNzMFfJF4ILEUrRCYxo3yvg4ulMXbz8t4gV02gF)Qg)u(kAHzhBTG9yrWVI1Fra9)UI6BVo36ve2W8lnL3aZxUXQ7YVq5D5dmhuuPjoFX8cngJyqyBywD9C2)QdFO5LQBZu6WI2MN8cvH(AkI9veK001L00mN2vvgxZB6jYn(KQCSC)5qzyh68FwLJYS3GUfCiKajGTcBDOkNbpiutXqjHAf9tUorZ3s0rmO3eGZb7rzkYUGCtRzRckPOm4Exm1MhNF(MPtbMQCyw)kGZFiWDPi6VhBLkF0d1FjkMkE4CQ7S5rhUlw2vsDq5kg4xYnWFixLhcxxYfBSwk8KTYKtZipSK4bv0yfbxOVnmKdBBbc)01O4p7OQK0pDnk)tpQ2m9)GC6)Z4LnpLeSv1NbhiPVujsFLu1VkKIkCcjOc3)Pzk)tHavqUj9drypHXYndU4sA1BckooLDpUXPTDfjCINUHLLuvsxruxBGSQG8abfzfEfgLsD0lSz1MdZfQ2vFnMpONiM9J0GqK6d4yHFacxIJdQKezAAW3ZHre6JgH2bUlHxtoD)iY6YcGFGUGSUuFn5KDMOPO1xlXzuLf0LqGdEPg0SfGAbYinLb64oFgl3h(rdRNaxQlQOI98dxQiRPYP9H3tcMoVZZXYd6lQkWBKdhVVGiVRiyC9(695TQGxpqKRAKNvwsJBrW4AYA8IlGPQjQZdZszbMUXw3rdwhBD1ILSGiIpm2xtIaFZ0qDNHCCr)7q097oKGhybe)zq0ctCaLa7b6u2IjeN)5V)lw3H)VaIhgFHS3lHQxEjvWGDm8i3aClmGeihz5sV1Uyd1Huykeytf0PtP2yHoxFSuhVYxowPx6bre(INoXuxQNdudeBHB6kF7KS12HuVPWotw57gDLt6fqXXf42vO(pElzIhEzcoGFxN4)vSvYNSj0dQcpS4iE(TyRKGvp8yGgv6zTZfFV0Sgq2QvLFpaXp1DwVSg9Q)PPTNu)dtl8wYsRXMpLy)WmExxjNFbARTR9vsDg(0gN1oXPSahmU2UCetONGAN981DwVXl3QvIe0vR1kYNk3s5xLUNJ25(uXOVKJyqJoReN1fSadEmmdmuteDdc46NuzIWsWhWuO(oaYtTkYRwiv3UU(H0amzG5WB4lGw2vajb3cFmnaAd9bqXoKgqtxqc6JhR9HB)5TcGVDOlITCNa6Atl6STm3dqjQV27aoGZz3WHA0EPyjWV(Mf0621oGcrlohxe95OvWsiVf9vyD1P4UFi5Ny3e6C38n(uuZnxAEmBKbCceyExrG52mXMZ1CYzCLEfspx4bF9RL4Xp7YRo)UZV(8X3EXhhE953)PR6o0EUlqYUG6h1DOhG76(op2tF7BOZbs4K3rJ(mUPQ2D(vfHsdEjFFiWOs4OTMKVSH5W)boMIGWXQIsykn8FrDHJLu1(ZsHP69OtGKZt9GvMR5W)2TgoAuR96TgfqE69K10G2TU5UZ)47h(f0w03R39dmxS(t7w2umC1k1trxlDK9smqfvy9MN)3oDv5dKaG6ahjSDnugfN7zNDRHlDDO1Nmua54WOs)5gMVAsc2BoZZP6zfxAwHjhAdD3zKCexZpeX2vWJ55)xIgs769SJQKxM(jlDSIhVXNMwkMZEQUxdGvh9MQOTwrkuuXG7Zk2(SKKYemL4qVYF7m)snG0UPfieqp89F4YHicxS(Qyv(lcCCEcCNAnKBwf9gyjs7RLGMSWoINeKgDb03y(bAYzCREWs1a0lxcztpQs5LYfdQXQRCi1VWuYpO3xyo5NM6ry42lKw63czXdONl(VWBslt)UukTWYMBNgcCRw6uaet0E5ywk0K3iIvil5a6FIH8L(u8V1eeOpoG6XiLW8jGuoTCAKOAhpnSe3PQea01HiIxHtg(aFT915K1aD6DdSFdxFIx(QlhmTtmW(j0IaXVTBO3(jYCe2lkZIzL2kR4BzpML7dti58am)))",
+		String = "9M162Pnss43f(ZkoBGO7s4Zz(by8TzJX5mYjZoN4qudQb0AHAwjrSzNZO3S9Sps7RWwvRBTWIlEWBmjGOv3v)vv9vxAXyLX3p2HTkXNfgdxoI)973SIoEK5yNrKL0Xo3XVDQRYyNptcwd3sESZFJUPyHW43mLfcVhMqJMrMsFOVN3DHXp8XacmYd(ljZPXpKn7VnjGe(4yNH04PJDgNmEKA1EAS9EQwSNoGS2eN6ssDN4ph(meKA2CEAbfEpzbn1Dkjoj1noHeL0TggvFDymGmHgiIrTAySUGZb4fOKZXr8kAqqQBiOlPUSO8bUzi8Lz5tXjBk(fqhGtQ79r(ZNJszc7zuhHHw4dAul4UT62GX5Kuk994S13HZw)eD2gn4SVmGeVO0oY)2zVPEpZQnfe1TKNbIEx1IzCn7Pu3awiWQ8JZ9gZqqK6UciDuVDrXIbpYT(HGjQRsnDj1D46io7SYk21gUzezkF0bVofkC9Yj0OCtchALYh0oRkTBByColGfvGbE4n(pv(7A831X3tefD(AEn4BA2sYmN81lq0Z8UaoT3dDZAh0nRtKU17WXTolipspRaq8VDI0nf5xY3K7AumLFTzY074Jfr)lzz5IxsW8dXiEestGPuwHOGpDKVgtts8dNdxbyojIfaxTqGsdBqciJMiRozcVbYQ6BezLdFrYQIsdXIY1cfJbLOwWixifWFBW3F5Qa)K1E0s0BiG9jNk2RepcE1xcE76GFg3Jwb7u3LSVxz83g9xgr)NRPHt3uIED53s4xjFe(A7R6U2UkVRDIXGk6nKZFidmt9lkIxgmwF46vbu0p14sJgYuY3XxMN8sdzBtDfBDzvtllvtZXZ6yOHU9DDhTDENA5y9yjNAg2(E)J1LSSPBLUfKpMajITg7EOEodUrOHIHQYnk6N89sw8crNWG2tGCoyBkZWSlyUPnS1rcBubDVJYwS5CgMDnR)Fp19UzZG8yNaB)5CjGAO1(sXutdxq9NVi50vrbL53QuMCLvlhIBofLuWiIQyt1sZd8Aoi2(udI7vBh3s0v7znOCAhlq(h(oQ8J2QQQ(dFh1(HBv13Z57aAvrQ)Z5vohqIQJQENysFvHK(6fB)NIHy9YnCR8)dYbW6ykoLjKO)ejSNWyLWGVBzT6nb3nEk7UCWz2qfPDHRS6sw6kwM90mK16jRRPZRXOl0tV8w1BW9DWFkvOEx9naFylsyt)onkgtmb5yH)GeUeppCtYK5yh(boCsqD0jEAK)kyzA5hgrZstgube9AwQ2MAzhlXu302mtpm0KTurIdEPj0SfWAHKrM69SWt(msZg(ZeROaxAPOBG98dxQRzAWt7dRtfMoVZZrA9SvmK5nYHJBlRW7kcg3Y2YM3QcEDpf(wJ5z1un5icg3uZKxCbGQPILcpl8iWryABXZpIQGLMbpZfxZW5QY3vvDBB0CPwyi7K6(zA0Mu3BwUIfLqcHX(sMf7RJDmoOlc9QFd8gFZJe9ilIeohSUyGgSjWzMgWwoH49F)p)BwN()Risa6pGO9RHQDbzv8Gty8Doa8RaqgfLSAvWgFSb8ykmfcCie6Sz0PyHr)qS0iVszjlTB(ZUiEVpqJz(0apOMj2e3S1HtZc)LIPbZGtYSo0p5gV8lGsDlXJ3qd)(9Kjb4Lz8g(3AN(ZPUzVkMqxOQD)QNh0pL6MzS6IpZOHc3tQu8DZdlazBux(DHiKz(Z7w0NwZ3nVDJMVzEHEbK2aMhqM(4CExAzpWdeRsnUKCLHpTrfTFmGf5H2vjrlMCxzJ2h5Y92S1IB1ktcwgnIIYPYrk)Q8ZWivQtvJUpfXHMCUqsPlzroCBybzObl6wPIBEsIz6eOpncLoDgYw6hss49odKga1ESNwYWRhSoYhP9xXDpXvRYFMO2(nNIhQ3pbuofdDnvR2CYFOWwkU0pb2WRPKGKfszm(2zRTACOz1IBTtrTd0uCk7mrAkRBllFqz8)dxZVRGeP8)R8h7WvS1lkCALFEVdY)c8gKdXOEoKgto0PJFymnctRX84T6hrfzczYgEn2bsDBRcD)GfamT061t3Sh0ceEW33QuvVmiiHT6GPMAmbx7xkZJi9cUFshiWgNZHdSBy3fSLqL13mJwNotJOG1IxTkH(CYAWfYpC2ASJQzySlP8z1oHUWV8iVvDBvkTa2umOEcyyUQYWCFHylRAC258n9gSqBLg8LViur(8RV5IpFXTxm6(l)L(3EXdF6Mo9NUWhkxUKgM0PFaW76Cva7PV(vu5ajC2v0KFfpoTu7)QUSWGxZpbkmQkoARjLUnmB8VJJPll)Edf1I4jl53RAy(hcMPM1OZGy5bbGN5wo9xQv)HdBDuRAye5Ppq2qJKAD3NV4x(q)FdXI1rT2pY8XojKAnLIMRw5AkQA5JCuIb6nc838eks5ELpsIGmn4iXsnKgQ6rx3(W7W1(EuPDuxOGYXPrc)ktlwpjJ7TGf4v)xjqywXzpUn6HJi5mUDFtKBxJpwg)FncePM1S3vlUm)vr4O0Es)UlxXc2tnTmGw9U30n6fEKMQaCmESJXLKNjygXJEt4lJ8fALuAxoiKq3)dF86(idxP5kJ1(HAEFzaC7gbYDRtEdqI6XIeEj6dypjyA0LWjakFu28mU1FKInq0flHSTgvR8IyXGgqDTF7G9mLYhr)EMt5Zb)DO5oiMk8PCH9a6EM)b(L8Y0xLNslweUT3HHB9kVkIy2UlAZYPM8grCJzz)0mpXW8LHu8xzem0VpIgWicC(mskpTCz)Dsh2f3UUea21PiIxHsg)i33(6uYgOoDVdo5i0GEqP3LtMoih44eQqVYhM6DCISKHTxzwnR8wzvEl7XuSpm5Shc04)3p",
 		Enabled = true,
 		OverrideTriggers = "merge",
 	}--
@@ -898,7 +925,7 @@ do
 					castColors[tonumber(n)] = v 
 				end
 			end
-			
+
 			local audioCues = Plater.db.profile.cast_audiocues
 			local audioCuesTemp = DetailsFramework.table.copy({}, audioCues)
 			for n, v in pairs(audioCuesTemp) do
@@ -910,7 +937,341 @@ do
 		end
 	})
 
-end
+	--#23 script trigger updates
+	tinsert (PlaterPatchLibrary, {
+		Notes = {
+			"- Patching scripts for Ruby Life Pools Season 1 Dragonflight."
+		},
+		Func = function()
+			--fixes for ruby life pools
+			Plater.AddTriggerToScript(372735, "cast", "Cast - Very Important [Plater]")
+			Plater.AddTriggerToScript(384194, "cast", "Cast - Big Alert [Plater]")
+			Plater.AddTriggerToScript(373017, "cast", "Cast - Very Important [Plater]")
+			Plater.AddTriggerToScript(372107, "cast", "Cast - Ultra Important [P]")
+			Plater.AddTriggerToScript(392488, "cast", "Cast - Very Important [Plater]")
+			Plater.AddTriggerToScript(391050, "cast", "Cast - Shield Interrupt [P]")
+			Plater.AddTriggerToScript(392451, "cast", "Cast - Big Alert [Plater]")
+			Plater.AddTriggerToScript(392924, "cast", "Cast - Big Alert [Plater]")
+		end
+	})
+
+	--#24 script trigger updates
+	tinsert (PlaterPatchLibrary, {
+		Notes = {
+			"- Patching scripts for Temple of the Jade Serpent Season 1 Dragonflight."
+		},
+		Func = function()
+			Plater.AddTriggerToScript(200388, "npc", "Add - Explode on Die [P]") --little sha add which explodes on death
+			Plater.AddTriggerToScript(397889, "cast", "Cast - Big Alert [Plater]") --tidal burtal
+		end
+	})
+
+
+	--#25 script trigger updates
+	tinsert (PlaterPatchLibrary, {
+		Notes = {
+			"- Patching scripts triggers for season of Dragonflight Mythic+."
+		},
+		Func = function()
+			Plater.AddTriggerToScript(388923, "cast", "Cast - Ultra Important [P]") --Burst Forth
+			Plater.AddTriggerToScript(377912, "cast", "Cast - Circle AoE [P]") --Expel Intruders
+			Plater.AddTriggerToScript(377912, "cast", "Cast - On Going Cast [P]") --Arcane Rain
+			Plater.AddTriggerToScript(209495, "cast", "Cast - Frontal Cone [Plater]") --Charged Smash
+			Plater.AddTriggerToScript(209033, "cast", "Cast - Quick Flash [P]") --Fortification
+			Plater.AddTriggerToScript(209413, "cast", "Cast - Big Alert [Plater]") --Suppress
+			Plater.AddTriggerToScript(207980, "cast", "Cast - Big Alert [Plater]") --Disintegration Beam
+		end,
+		NotEssential = false,
+	})
+
+
+	--#26 test for the non-essential patches
+	tinsert (PlaterPatchLibrary, {
+		NotEssential = true,
+
+		Notes = {
+			"- test patch."
+		},
+		Func = function()
+		end,
+	})
+
+	--#27 triggers for 10.1 season 2 dragonflight m+ dungeons
+	tinsert (PlaterPatchLibrary, {
+		NotEssential = true,
+
+		Notes = {
+			"- Added support for season 2 mythic dungeons."
+		},
+		Func = function()
+			local addTriggers = {
+				["Add - Explode on Die [P]"] = {189299, 131402, npc = true},
+				["Add - Important [P]"] = {190381, 92538, 192464, npc = true},
+				["Add - Warning [P]"] = {129758, 190426, 186696, 101075, 100818, 98081, 52019, npc = true},
+				["Aura - Buff Alert [Plater]"] = {377738, 378149},
+				["Cast - Big Alert [Plater]"] = {257397, 257736, 382787, 374699, 377402, 369602, 369465, 369400, 381593, 265091, 265433, 382791, 376780},
+				["Cast - Circle AoE [P]"] = {258672, 258777, 257756, 257784, 256405, 256589, 393793, 388046, 375079, 390290, 369811, 369703, 226287, 410999, 372561},
+				["Cast - Frontal Cone [Plater]"] = {257426, 255952, 257870, 413147, 383107, 377559, 388060, 376170, 384524, 375351, 390111, 369791, 369573, 369563, 369335, 369061, 375727, 265016, 265019, 260793, 260292, 272457, 272609, 269843, 183465, 226296, 188169, 183088, 410873, 411012, 88308, 382708, 375251, 375439, 372311, 373742, 372201, 374533, 377204},
+				["Cast - Glowing [P]"] = {384353, 265376, 193941, 411002},
+				["Cast - Quick Flash [P]"] = {385029, 374563, 377341, 369675, 369365, 369411, 278961, 202108, 88186},
+				["Cast - Small Alert [Plater]"] = {281420, 274383, 259092, 367521, 374544, 385039, 382474, 369823, 377500, 260879, 186269, 378818, 371875, 372225},
+				["Cast - Ultra Important [P]"] = {376934, 384899, 373960, 374724, 385551, 259732, 373424, 373084, 87618},
+				["Cast - Very Important [Plater]"] = {257732, 256060, 257899, 384633, 374339, 395694, 391634, 372701, 369328, 265487, 413044, 183526, 88194, 87762, 413385, 411001, 378282, 384161},
+			}
+
+			for scriptName, triggerList in pairs(addTriggers) do
+				if (triggerList.npc) then
+					for _, npcId in ipairs(triggerList) do
+						Plater.AddTriggerToScript(npcId, "npc", scriptName)
+					end
+				else
+					for _, spellId in ipairs(triggerList) do
+						Plater.AddTriggerToScript(spellId, "cast", scriptName)
+					end
+				end
+			end
+		end,
+	})
+
+	--#28 modify the castbar color option of "Cast - Ultra Important [P]" from red to yellow
+	tinsert(PlaterPatchLibrary, {
+		Notes = {
+			"- Modifying the default cast bar color of 'Cast - Ultra Important [P]' to yellow."
+		},
+		Func = function()
+			local scriptData = Plater.db.profile.script_data
+			for i = 1, #scriptData do
+				local script = scriptData[i]
+				if (script.Name == "Cast - Ultra Important [P]") then
+					for _, scriptOptions in ipairs(script.Options) do
+						if (scriptOptions.Key == "castBarColor") then
+							local color = scriptOptions.Value
+							if (type(color) == "boolean") then
+								scriptOptions.Value = {}
+								color = scriptOptions.Value
+							end
+							color[1] = 1 --red
+							color[2] = 0.431372 --green
+							color[3] = 0 --blue
+							color[4] = 1 --alpha
+						end
+					end
+					break
+				end
+			end
+		end
+	})
+	
+	--#29 ensure auto-function for "hide blizzard healthbars" is setup properly
+	tinsert (PlaterPatchLibrary, {
+		NotEssential = false,
+
+		Notes = {
+			"- Setup auto-toggle for 'Hide Blizzard Healthbars'."
+		},
+		Func = function()
+			if GetCVarBool ("nameplateShowOnlyNames") or Plater.db.profile.saved_cvars.nameplateShowOnlyNames == "1" then
+				Plater.db.profile.auto_toggle_combat.blizz_healthbar_ic = true
+				Plater.db.profile.auto_toggle_combat.blizz_healthbar_ooc = true
+			end
+		end,
+	})
+	
+	--#30 cleanup of renamed npcs string-indexed values
+	tinsert (PlaterPatchLibrary, {
+		NotEssential = false,
+		
+		Notes = {
+			"- Cleanup wrong indexes in npcs_renamed."
+		},
+		Func = function()
+			local renamedNPCs = Plater.db.profile.npcs_renamed
+			local renamedNPCsTemp = DetailsFramework.table.copy({}, renamedNPCs)
+			
+			for npcId, renamedName in pairs(renamedNPCsTemp) do
+				if tonumber(npcId) then 
+					renamedNPCs[tonumber(npcId)] = renamedNPCs[npcId] or renamedName -- ensure not to overwrite already existing (changed) after import
+					renamedNPCs[npcId] = nil
+				end
+			end
+		end
+	})
+	
+	--#31 adjust level text and bar sizes for hardcore
+	tinsert (PlaterPatchLibrary, {
+		NotEssential = true,
+		
+		Notes = {
+			"- Adjust level text and bar sizes for hardcore realms."
+		},
+		Func = function()
+			if (C_GameRules and C_GameRules.IsHardcoreActive and C_GameRules.IsHardcoreActive()) then
+				Plater.db.profile.plate_config.enemyplayer.level_text_alpha = 1
+				Plater.db.profile.plate_config.enemynpc.level_text_alpha = 1
+				Plater.db.profile.plate_config.friendlyplayer.level_text_alpha = 1
+				Plater.db.profile.plate_config.friendlynpc.level_text_alpha = 1
+				
+				if (not Plater.db.profile.first_run3) then
+					Plater.db.profile.plate_config.enemynpc.health[1] = 90
+					Plater.db.profile.plate_config.enemynpc.health[2] = 10
+					Plater.db.profile.plate_config.enemynpc.health_incombat[1] = 100
+					Plater.db.profile.plate_config.enemynpc.health_incombat[2] = 12
+				end
+			end
+		end
+	})
+	
+	--#32 Cleanup Ghost Auras indexes to be numbers again and remove trash.
+	tinsert (PlaterPatchLibrary, {
+		NotEssential = false,
+		
+		Notes = {
+			"- Cleanup and repair Ghost Auras data."
+		},
+		Func = function()
+			--cleanup is needed for proper number indexing. will remove crap as well.
+			
+			local ghostAuras = Plater.db.profile.ghost_auras.auras
+			local ghostAurasTemp = DetailsFramework.table.copy({}, ghostAuras)
+			local ghostAurasDefault = PLATER_DEFAULT_SETTINGS.profile.ghost_auras.auras
+			
+			for class, specs in pairs(ghostAurasTemp) do
+				for specID, specData in pairs(specs) do
+					ghostAuras[class][specID] = nil
+					if ghostAurasDefault[class][tonumber(specID)] then
+						ghostAuras[class][tonumber(specID)] = ghostAuras[class][tonumber(specID)] or {}
+						for spellId, enabled in pairs(specData) do
+							if tonumber(spellId) then
+								ghostAuras[class][tonumber(specID)][tonumber(spellId)] = enabled 
+							end
+						end
+					end
+				end
+			end
+		end
+	})
+	
+	--#33 Reset range check values if necessary....
+	tinsert (PlaterPatchLibrary, {
+		NotEssential = false,
+		
+		Notes = {
+			"- Reset range check distance settings if necessary."
+		},
+		Func = function()
+			--range check spells
+			local LibRangeCheck = LibStub:GetLibrary ("LibRangeCheck-3.0")
+			LibRangeCheck.RegisterCallback(PlaterPatchLibrary, LibRangeCheck.CHECKERS_CHANGED, function() 
+				local harmCheckers = {}
+				for range, func in LibRangeCheck:GetHarmCheckers(true) do
+					harmCheckers[range] = func
+				end
+				local friendCheckers = {}
+				for range, func in LibRangeCheck:GetFriendCheckers(true) do
+					friendCheckers[range] = func
+				end
+				if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
+					for specID, _ in pairs (Plater.SpecList [select (2, UnitClass ("player"))]) do
+						if harmCheckers then
+							if (PlaterDBChr.spellRangeCheckRangeEnemy [specID] == nil or not harmCheckers[PlaterDBChr.spellRangeCheckRangeEnemy [specID]]) then
+								PlaterDBChr.spellRangeCheckRangeEnemy [specID] = Plater.DefaultSpellRangeList [specID]
+							end
+						end
+						if friendCheckers then
+							if (PlaterDBChr.spellRangeCheckRangeFriendly [specID] == nil or not friendCheckers[PlaterDBChr.spellRangeCheckRangeFriendly [specID]]) then
+								PlaterDBChr.spellRangeCheckRangeFriendly [specID] = Plater.DefaultSpellRangeListF [specID]
+							end
+						end
+					end
+				else
+					local playerClass = select (3, UnitClass ("player"))
+					if harmCheckers then
+						if (PlaterDBChr.spellRangeCheckRangeEnemy [playerClass] == nil or not harmCheckers[PlaterDBChr.spellRangeCheckRangeEnemy [playerClass]]) then
+							PlaterDBChr.spellRangeCheckRangeEnemy [playerClass] = Plater.DefaultSpellRangeList [playerClass]
+						end
+					end
+					if friendCheckers then
+						if (PlaterDBChr.spellRangeCheckRangeFriendly [playerClass] == nil or not friendCheckers[PlaterDBChr.spellRangeCheckRangeFriendly [playerClass]]) then
+							PlaterDBChr.spellRangeCheckRangeFriendly [playerClass] = Plater.DefaultSpellRangeListF [playerClass]
+						end
+					end
+				end
+				Plater.GetSpellForRangeCheck()
+			end)
+		end
+	})
+
+	--#34 triggers for 10.2 season 3 dragonflight m+ dungeons
+	tinsert (PlaterPatchLibrary, {
+		NotEssential = true,
+
+		Notes = {
+			"- Added support for season 3 mythic dungeons."
+		},
+		Func = function()
+			local addTriggers = {
+				["Add - Explode on Die [P]"] = {135052, npc = true},
+				["Add - Health Percent Text"] = {125977, npc = true},
+				["Add - Important [P]"] = {131009, 127315, 133361, 136330, 214117, 212483, 101008, npc = true},
+				["Add - Warning [P]"] = {npc = true},
+				["Aura - Big Stack Counter"] = {260512},
+				["Aura - Buff Alert [Plater]"] = {},
+				["Cast - Big Alert [Plater]"] = {225573, 278444, 164887, 168082, 76813, 227913, 265368},
+				["Fixate by Unit Buff [P]"] = {426662, 426663},
+				["Cast - Circle AoE [P]"] = {256882, 172578, 412063},
+				["Cast - Frontal Cone [Plater]"] = {201226, 204667, 198379, 200768, 253239, 250258, 255567, 194956, 427510, 426645, 412505, 412129, 419351, 401482, 404916, 200345, 200261, 198641, 265372, 271174, 264694, 264923},
+				["Cast - Glowing [P]"] = {169445},
+				["Cast - Quick Flash [P]"] = {255824, 252781, 250096, 200248, 197797, 264520, 418202, 201839, 412012, 411958},
+				["Cast - Small Alert [Plater]"] = {200658, 266036, 265407, 164965, 429176, 428526, 418200, 407124, 200630, 415437, 264050, 267824},
+				["Cast - Stop Casting [P]"] = {200291, 268202},
+				["Cast - Ultra Important [P]"] = {255041, 428926, 76634, 200050, 197546, 198079, 199193, 266181},
+				["Cast - Very Important [Plater]"] = {259572, 255371, 427460, 429172, 426500, 413607, 412922, 417481, 201399, 411994, 415770, 260907, 260703, 260741, 265876, 263959, 266225},
+			}
+
+			for scriptName, triggerList in pairs(addTriggers) do
+				if (triggerList.npc) then
+					for _, npcId in ipairs(triggerList) do
+						Plater.AddTriggerToScript(npcId, "npc", scriptName)
+					end
+				else
+					for _, spellId in ipairs(triggerList) do
+						Plater.AddTriggerToScript(spellId, "cast", scriptName)
+					end
+				end
+			end
+		end,
+	})
+	
+	--#35 triggers for 10.2 season 3 dragonflight m+ dungeons, part 2
+	tinsert (PlaterPatchLibrary, {
+		NotEssential = true,
+
+		Notes = {
+			"- Added support for season 3 mythic dungeons."
+		},
+		Func = function()
+			local addTriggers = {
+				["Cast - Ultra Important [P]"] = {253544},
+				["Cast - Very Important [Plater]"] = {253517},
+			}
+
+			for scriptName, triggerList in pairs(addTriggers) do
+				if (triggerList.npc) then
+					for _, npcId in ipairs(triggerList) do
+						Plater.AddTriggerToScript(npcId, "npc", scriptName)
+					end
+				else
+					for _, spellId in ipairs(triggerList) do
+						Plater.AddTriggerToScript(spellId, "cast", scriptName)
+					end
+				end
+			end
+		end,
+	})
+
+	--to tag an update as non-essential, add "NotEssential = true," to the table
+	--/run Plater.db.profile.patch_version = 30
+end --end of patch library
 
 local listOfTriggersToDeprecateOnExpansion = {
 	[9] = { --9 = dragonflight (this probably can be removed on patch 10.2 - expansion mid tier)

@@ -218,6 +218,16 @@ GTFO.SpellID["62466"] = {
 	sound = 1;
 };
 
+GTFO.SpellID["62576"] = {
+	--desc = "Blizzard (Thorim 10)";
+	sound = 1;
+};
+
+GTFO.SpellID["62602"] = {
+	--desc = "Blizzard (Thorim 25)";
+	sound = 1;
+};
+
 GTFO.SpellID["62451"] = {
 	--desc = "Unstable Energy (Freya 10)";
 	sound = 1;
@@ -251,6 +261,7 @@ GTFO.SpellID["67640"] = {
 GTFO.SpellID["66320"] = {
 	--desc = "Fire Bomb (Northrend Beasts 10 Normal)";
 	sound = 1;
+	applicationOnly = true;
 };
 
 GTFO.SpellID["67473"] = {
@@ -262,6 +273,7 @@ GTFO.SpellID["67473"] = {
 GTFO.SpellID["67472"] = {
 	--desc = "Fire Bomb (Northrend Beasts 25 Normal)";
 	sound = 1;
+	applicationOnly = true;
 };
 
 GTFO.SpellID["67475"] = {
@@ -870,11 +882,13 @@ GTFO.SpellID["70305"] = {
 GTFO.SpellID["54251"] = {
 	--desc = "Lava Burn (Lavanthor - VH)";
 	sound = 2;
+	applicationOnly = true;
 };
 
 GTFO.SpellID["59470"] = {
 	--desc = "Lava Burn (Lavanthor - VH)";
 	sound = 1;
+	applicationOnly = true;
 };
 
 GTFO.SpellID["71045"] = {
@@ -1249,5 +1263,23 @@ GTFO.SpellID["59323"] = {
 	--desc = "Whirlwind (Skadi the Ruthless - Utgarde Pinnacle)";
 	sound = 1;
 };
+
+-- WotLK Classic
+
+GTFO.SpellID["398140"] = {
+	--desc = "Icy Path (Defense Protocol Alpha - Heroic+)";
+	sound = 1;
+	ignoreApplication = true;
+};
+
+GTFO.SpellID["392731"] = {
+	--desc = "Glaciate (UP/UK - Heroic+)";
+	sound = 1;
+}
+
+GTFO.SpellID["412964"] = {
+	--desc = "Glaciate (UP/UK - Heroic+)";
+	sound = 1;
+}
 
 end

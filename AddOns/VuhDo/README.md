@@ -1,4 +1,4 @@
-Get [VuhDo release v3.140](https://www.curseforge.com/wow/addons/vuhdo/download/4025264) now with support for Shadowlands Season 4 patch 9.2.7!
+Get [VuhDo release v3.162](https://www.curseforge.com/wow/addons/vuhdo/download/5199842) now with support for Dragonflight 10.2.6!
 
 To get started read the updated [guide over at Icy-Veins](https://www.icy-veins.com/forums/topic/11805-vuhdo-a-comprehensive-guide/).
 

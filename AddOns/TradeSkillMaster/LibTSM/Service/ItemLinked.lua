@@ -4,16 +4,13 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
---- ItemLinked Functions.
--- @module ItemLinked
-
-local _, TSM = ...
-local ItemLinked = TSM.Init("Service.ItemLinked")
+local TSM = select(2, ...) ---@type TSM
+local ItemLinked = TSM.Init("Service.ItemLinked") ---@class Service.ItemLinked
 local Table = TSM.Include("Util.Table")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local private = {
 	callbacks = {},
-	priorityLookup = {}
+	priorityLookup = {},
 }
 
 

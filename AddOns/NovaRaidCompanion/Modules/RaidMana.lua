@@ -155,10 +155,9 @@ function NRC:updateRaidManaFramesLayout()
 		raidManaFrame.fs2:ClearAllPoints();
 		raidManaFrame.fs2:SetPoint("TOP", raidManaFrame, "BOTTOM", 0, -2);
 	end
-	local text = "|cFFDEDE42Healer Mana|r\n"
-				.. "|cFF9CD6DE" .. L["Drag Me"] .. "|r";
 	raidManaFrame.displayTab:SetAlpha(0.3);
-	raidManaFrame.displayTab.top.fs:SetText(text);
+	raidManaFrame.displayTab.top.fs:SetText("|cFFDEDE42Healer Mana|r");
+	raidManaFrame.displayTab.top.fs2:SetText("|cFF9CD6DE" .. L["Drag Me"] .. "|r");
 	raidManaFrame.displayTab.top:SetSize(100, 30);
 	updateInterval = NRC.db.global.raidManaUpdateInterval;
 	raidManaFrame:SetScript("OnUpdate", function(self)
@@ -183,6 +182,7 @@ function NRC:updateRaidManaFramesLayout()
 	showRes = NRC.config.raidManaResurrection;
 	raidManaFrame.lineFrameWidth = db.raidManaWidth;
 	raidManaFrame.lineFrameHeight = db.raidManaHeight;
+	raidManaFrame.padding = db.raidManaPadding;
 	raidManaFrame.lineFrameFont = db.raidManaFont;
 	raidManaFrame.lineFrameFontNumbers = db.raidManaFontNumbers;
 	raidManaFrame.lineFrameFontSize = db.raidManaFontSize;

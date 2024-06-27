@@ -320,7 +320,7 @@ local function tallyTricks(name)
 			if (NRC.config.tricksSendMyThreatGroup) then
 				if (IsInGroup()) then
 					local msg = "[NRC] " .. string.format(L["otherTransferedThreatTricks"], name, NRC:commaValue(total), target or "unknown");
-					NRC:sendGroup(msg, 0.2);
+					NRC:sendGroup(msg, nil, 0.2);
 				else
 					sentMe = true;
 					NRC:print(string.format(L["meTransferedThreatTricks"], "|cFF00C800" .. NRC:commaValue(total) .. "|r", target or "unknown"));
@@ -348,7 +348,6 @@ local function tallyTricks(name)
 				--This can be merged in to only group check after testing new new settings check.
 				if (IsInGroup()) then
 					local msg = "[NRC] " .. string.format(L["otherTransferedThreatTricks"], name, NRC:commaValue(total), target or "unknown");
-					--NRC:sendGroup(msg);
 					NRC:sendGroupSettingsCheck(msg, "tricksSendOthersThreatGroup", "tricksSendMyThreatGroup", name);
 				else
 					sentMe = true;
@@ -440,7 +439,7 @@ local function tallyDamage(name)
 			--Send my tricks damage given to group.
 			if (IsInGroup()) then
 				local msg = "[NRC] " .. string.format(L["otherTransferedDamageMyTricks"], name, NRC:commaValue(total));
-				NRC:sendGroup(msg, 0.5);
+				NRC:sendGroup(msg, nil, 0.5);
 			else
 				local targetString = target;
 				if (data.targetClass) then
@@ -466,7 +465,6 @@ local function tallyDamage(name)
 		if (NRC.config.tricksSendDamageGroupOther and not sourceMe) then
 			if (IsInGroup()) then
 				local msg = "[NRC] " .. string.format(L["otherTransferedDamageOtherTricks"], target, NRC:commaValue(total), source);
-				--NRC:sendGroup(msg, 1);
 				C_Timer.After(0.5, function()
 					NRC:sendGroupSettingsCheck(msg, "tricksSendDamageGroupOther", "tricksSendDamageGroup", source);
 				end)
@@ -864,13 +862,7 @@ function NRC:parseTricksCommand(msg)
 			text = "(" .. NRC:commaValue(last.total) .. ") " .. last.name .. " last tricks: " .. last.text;
 		end
 		if (text) then
-			if (IsInRaid()) then
-				SendChatMessage(NRC:stripColors(text), "RAID");
-			elseif (IsInGroup()) then
-				SendChatMessage(NRC:stripColors(text), "PARTY");
-			else
-				NRC:print(text)
-			end
+			NRC:sendGroup(text);
 		else
 			if (msg and msg ~= "") then
 				print("No last tricks data found for player " .. msg .. ".");

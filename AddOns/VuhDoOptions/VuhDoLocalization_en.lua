@@ -185,9 +185,9 @@ VUHDO_I18N_TT.K060 = "Check this to have only debuffs shown which are removable 
 VUHDO_I18N_TT.K062 = "Overheal will lighten up the health bar if selected.";
 VUHDO_I18N_TT.K063 = "Check to also show incoming heal done by yourself. This is felt to be misleading by some players.";
 VUHDO_I18N_TT.K065 = "Select the refresh rate for checking if players are in range. Info: Low values may reduce system performance.";
-VUHDO_I18N_TT.K066 = "Check this to do check the range of a \"typical\" spell. Also select this if you dont have any beneficial spells.";
+VUHDO_I18N_TT.K066 = "Check this to use the range of a \"typical\" spell. Also select this if you dont have any relevant spells.";
 VUHDO_I18N_TT.K067 = "Enter spell name whose range will be taken for range checking.";
-VUHDO_I18N_TT.K068 = "Select this to have the spell range checked due to the range of the spell to the right.";
+VUHDO_I18N_TT.K068 = "Select this to have the spell range checked due to the range of the spell below.";
 VUHDO_I18N_TT.K070 = "Select a percentage of bar height for HoT icon size";
 VUHDO_I18N_TT.K071 = "Select to show HoT icon on the RIGHT side INSIDE of the health bar";
 VUHDO_I18N_TT.K072 = "Select to show HoT icon on the LEFT side INSIDE of the health bar";
@@ -639,6 +639,17 @@ VUHDO_I18N_TT.K581 = "Check to show player nickname on bars.";
 VUHDO_I18N_TT.K582 = "Select the unit to target.";
 VUHDO_I18N_TT.K583 = "Check to make all HoT icons fade out when the HoT is expiring.";
 VUHDO_I18N_TT.K584 = "Check to make all HoT icons flash when the HoT is expiring.";
+VUHDO_I18N_TT.K585 = "Select a color for Evokers";
+VUHDO_I18N_TT.K586 = "Enable to show text only with no icon.";
+VUHDO_I18N_TT.K587 = "Show incoming spell casts only. Spells must be tracked by spell ID not name.";
+VUHDO_I18N_TT.K588 = "Show incoming spell casts from friendly units.";
+VUHDO_I18N_TT.K589 = "Show incoming spell casts from enemy units.";
+VUHDO_I18N_TT.K590 = "Show all incoming spell casts.";
+VUHDO_I18N_TT.K591 = "Filter to show only incoming spell casts from boss/NPC units.";
+VUHDO_I18N_TT.K592 = "Check this to show private aura icons on the health bar.";
+VUHDO_I18N_TT.K593 = "Select a size for your private aura icons.";
+VUHDO_I18N_TT.K594 = "Check to sort pet units last.";
+VUHDO_I18N_TT.K595 = "Show effective HP (health including shields) of player.";
 
 -- TBCC game version specific strings (tooltip IDs begin at K900)
 
@@ -1172,6 +1183,23 @@ VUHDO_I18N_MOUSEOVER_TARGET_HARM = "Mouseover's target unit (hostile only)";
 VUHDO_I18N_MOUSEOVER_TARGET_TARGET_HARM = "Mouseover's target's target unit (hostile only)";
 
 VUHDO_I18N_CLOCK = "Clock";
+
+VUHDO_I18N_TEXT_ONLY = "Text only";
+
+VUHDO_I18N_SHOW_FRIENDLY = "Show\nFriendly";
+VUHDO_I18N_SHOW_ENEMY = "Show\nEnemy";
+VUHDO_I18N_SHOW_ALL = "Show All";
+VUHDO_I18N_BOSS_ONLY = "Boss Only";
+
+VUHDO_I18N_X = "X";
+VUHDO_I18N_Y = "Y";
+
+VUHDO_I18N_PRIVATE_AURAS = "Private Auras";
+
+VUHDO_I18N_PETS_LAST = "Pets last";
+
+VUHDO_I18N_SHOW_EFFECTIVE = "Show\nEffective";
+VUHDO_I18N_DEBUFF_IGNORE_IMPORTED = "Debuff ignore list successfully imported.";
 
 -- TBCC game version specific strings
 

@@ -17,11 +17,9 @@ function MJSetPetMixin:onLoad()
 		local description
 		if self.id ~= nil then
 			if type(self.id) == "number" then
-				description = self.name
-			elseif self.id then
-				description = L["Summon Random Battle Pet"]
+				description = self.id == 1 and PET_JOURNAL_SUMMON_RANDOM_FAVORITE_PET or L["Summon Random Battle Pet"]
 			else
-				description = PET_JOURNAL_SUMMON_RANDOM_FAVORITE_PET
+				description = self.name
 			end
 		else
 			description = L["No Battle Pet"]
@@ -43,9 +41,11 @@ function MJSetPetMixin:onShow()
 	self:SetScript("OnShow", nil)
 	C_Timer.After(0, function()
 		self:SetScript("OnShow", self.refresh)
+		self:updatePetForMount()
 		self:refresh()
 		self:on("MOUNT_SELECT", self.refresh)
 		self:on("UPDATE_PROFILE", self.refresh)
+		self:RegisterEvent("PET_JOURNAL_LIST_UPDATE")
 	end)
 end
 
@@ -64,21 +64,56 @@ function MJSetPetMixin:refresh()
 	local petID = self.journal.petForMount[spellID]
 	self.id = petID
 
-	if petID == nil then
+	if not petID then
 		self.infoFrame:Hide()
 	elseif type(petID) == "number" then
-		local name, _, icon = GetSpellInfo(petID)
-
-		self.name = name
-		self.infoFrame.icon:SetTexture(icon)
-		self.infoFrame.favorite:SetShown(self.mounts.charDB.petFavoritesList[petID])
+		self.infoFrame.icon:SetTexture(petRandomIcon)
+		self.infoFrame.favorite:SetShown(petID == 1)
 		self.infoFrame:Show()
 	else
-		self.infoFrame.icon:SetTexture(petRandomIcon)
-		self.infoFrame.favorite:SetShown(not petID)
-		self.infoFrame:Show()
+		local _,_,_,_,_,_, favorite, name, icon = C_PetJournal.GetPetInfoByPetID(petID)
+
+		if icon then
+			self.name = name
+			self.infoFrame.icon:SetTexture(icon)
+			self.infoFrame.favorite:SetShown(favorite)
+			self.infoFrame:Show()
+		else
+			self.journal.petForMount[spellID] = nil
+			self.infoFrame:Hide()
+			self.id = nil
+		end
 	end
 end
+
+
+function MJSetPetMixin:updatePetForMount()
+	local _, owned = C_PetJournal.GetNumPets()
+	if not self.owned or self.owned > owned then
+		local petForMount, needUpdate = self.mounts.defProfile.petForMount
+
+		for spellID, petID in pairs(petForMount) do
+			if type(petID) == "string" and not C_PetJournal.GetPetInfoByPetID(petID) then
+				needUpdate = true
+				petForMount[spellID] = nil
+			end
+		end
+		for _, profile in pairs(self.mounts.profiles) do
+			for spellID, petID in pairs(profile.petForMount) do
+				if type(petID) == "string" and not C_PetJournal.GetPetInfoByPetID(petID) then
+					needUpdate = true
+					profile.petForMount[spellID] = nil
+				end
+			end
+		end
+
+		if needUpdate then
+			self.journal:updateMountsList()
+		end
+	end
+	self.owned = owned
+end
+MJSetPetMixin.PET_JOURNAL_LIST_UPDATE = MJSetPetMixin.updatePetForMount
 
 
 MJCompanionsPanelMixin = util.createFromEventsMixin()
@@ -107,22 +142,28 @@ function MJCompanionsPanelMixin:onLoad()
 	self.noPet.name:SetWidth(180)
 	self.noPet.name:SetText(L["No Battle Pet"])
 
-	self.petList = {}
-	self.petFiltredList = {}
+	self.petList = MountsJournal.pets.list
 
 	self.searchBox:SetScript("OnTextChanged", function(searchBox)
 		SearchBoxTemplate_OnTextChanged(searchBox)
 		self:updateFilters()
 	end)
 
-	self.listScroll.update = function() self:refresh() end
-	self.listScroll.scrollBar.doNotHide = true
-	HybridScrollFrame_CreateButtons(self.listScroll, "MJPetListButton")
+	self.view = CreateScrollBoxListLinearView()
+	self.view:SetElementInitializer("MJPetListButton", function(...)
+		self:initButton(...)
+	end)
+	self.scrollBox = self.petListFrame.scrollBox
+	ScrollUtil.InitScrollBoxListWithScrollBar(self.scrollBox, self.petListFrame.scrollBar, self.view)
 
-	self.companionOptionsMenu = LibStub("LibSFDropDown-1.4"):SetMixin({})
+	self.companionOptionsMenu = LibStub("LibSFDropDown-1.5"):SetMixin({})
 	self.companionOptionsMenu:ddHideWhenButtonHidden(self)
 	self.companionOptionsMenu:ddSetInitFunc(function(...) self:companionOptionsMenu_Init(...) end)
 	self.companionOptionsMenu:ddSetDisplayMode(addon)
+
+	self.scrollBox:RegisterCallback("OnDataRangeChanged", function()
+		self.companionOptionsMenu:ddOnHide()
+	end)
 
 	self:on("MOUNT_SELECT", self.Hide)
 end
@@ -132,65 +173,73 @@ function MJCompanionsPanelMixin:onShow()
 	self:SetScript("OnShow", nil)
 	C_Timer.After(0, function()
 		self:SetScript("OnShow", function(self)
-			self:refresh()
+			if self.needSort then
+				self:petListSort()
+			else
+				self:updateScrollPetList()
+			end
 			self:scrollToSelectedPet()
-			self:on("UPDATE_PROFILE", self.refresh)
+			self:on("UPDATE_PROFILE", self.updateScrollPetList)
 		end)
 		self:petListUpdate()
 		self:scrollToSelectedPet()
-		self:on("UPDATE_PROFILE", self.refresh)
-		self:on("CRITTER_LEARNED", self.petListUpdate)
+		self:on("UPDATE_PROFILE", self.updateScrollPetList)
+		self:on("PET_LIST_UPDATE", self.petListUpdate)
 	end)
 end
 
 
 function MJCompanionsPanelMixin:onHide()
-	self:off("UPDATE_PROFILE", self.refresh)
+	self:off("UPDATE_PROFILE", self.updateScrollPetList)
 	self:Hide()
 end
 
 
 function MJCompanionsPanelMixin:showCompanionOptionsMenu(btn)
-	if type(btn.id) ~= "number" then
+	if not btn.id or type(btn.id) == "number" then
 		self.companionOptionsMenu:ddCloseMenus()
-		return
-	end
-
-	local index = self.mounts.indexPetBySpellID[btn.id]
-	if index then
-		self.companionOptionsMenu:ddToggle(1, btn.id, btn, 37, 0)
 	else
-		self.companionOptionsMenu:ddCloseMenus()
+		self.companionOptionsMenu:ddToggle(1, btn.id, btn, 37, 0)
 	end
 end
 
 
-function MJCompanionsPanelMixin:companionOptionsMenu_Init(btn, level, petSpellID)
-	local index = self.mounts.indexPetBySpellID[petSpellID]
-	local creatureID, creatureName, creatureSpellID, icon, active = GetCompanionInfo("CRITTER", index)
+function MJCompanionsPanelMixin:companionOptionsMenu_Init(btn, level, petID)
+	local _,_,_,_,_,_, isFavorite = C_PetJournal.GetPetInfoByPetID(petID)
+	local isRevoked = C_PetJournal.PetIsRevoked(petID)
+	local isLockedForConvert = C_PetJournal.PetIsLockedForConvert(petID)
+	local active = C_PetJournal.IsCurrentlySummoned(petID)
 	local info = {}
 	info.notCheckable = true
 
-	info.text = active and PET_DISMISS or SUMMON
-	info.func = function() CallCompanion("CRITTER", index) end
-	btn:ddAddButton(info, level)
+	if not (isRevoked or isLockedForConvert) then
+		info.disabled = not C_PetJournal.PetIsSummonable(petID)
+		if active then
+			info.text = PET_DISMISS
+			info.func = function() C_PetJournal.DismissSummonedPet(petID) end
+		else
+			info.text = BATTLE_PET_SUMMON
+			info.func = function() C_PetJournal.SummonPetByGUID(petID) end
+		end
+		btn:ddAddButton(info, level)
 
-	if self.mounts.charDB.petFavoritesList[petSpellID] then
-		info.text = BATTLE_PET_UNFAVORITE
-		info.func = function()
-			self.mounts.charDB.petFavoritesList[petSpellID] = nil
-			self:petListSort()
-			self:GetParent():refresh()
+		info.disabled = nil
+
+		if isFavorite then
+			info.text = BATTLE_PET_UNFAVORITE
+			info.func = function()
+				C_PetJournal.SetFavorite(petID, 0)
+				self:GetParent():refresh()
+			end
+		else
+			info.text = BATTLE_PET_FAVORITE
+			info.func = function()
+				C_PetJournal.SetFavorite(petID, 1)
+				self:GetParent():refresh()
+			end
 		end
-	else
-		info.text = BATTLE_PET_FAVORITE
-		info.func = function()
-			self.mounts.charDB.petFavoritesList[petSpellID] = true
-			self:petListSort()
-			self:GetParent():refresh()
-		end
+		btn:ddAddButton(info, level)
 	end
-	btn:ddAddButton(info, level)
 
 	info.func = nil
 	info.text = CANCEL
@@ -199,26 +248,10 @@ end
 
 
 function MJCompanionsPanelMixin:scrollToSelectedPet()
-	local selectedPetSpellID = self.journal.petForMount[self.journal.selectedSpellID]
-	if type(selectedPetSpellID) ~= "number" then return end
-	local scrollFrame = self.listScroll
-
-	for i = 1, #self.petFiltredList do
-		local critterIndex = self.petFiltredList[i]
-		local creatureID, name, creatureSpellID = GetCompanionInfo("CRITTER", critterIndex)
-		if selectedPetSpellID == creatureSpellID then
-			local curHeight = scrollFrame.scrollBar:GetValue()
-			local maxHeight = i * scrollFrame.buttonHeight
-			local minHeight = maxHeight - math.floor(scrollFrame:GetHeight() + .5)
-
-			if curHeight < minHeight then
-				scrollFrame.scrollBar:SetValue(minHeight)
-			elseif curHeight >= maxHeight then
-				scrollFrame.scrollBar:SetValue(maxHeight - scrollFrame.buttonHeight)
-			end
-			break
-		end
-	end
+	local selectedPetID = self.journal.petForMount[self.journal.selectedSpellID]
+	self.scrollBox:ScrollToElementDataByPredicate(function(data)
+		return data.petID == selectedPetID
+	end)
 end
 
 
@@ -231,84 +264,70 @@ function MJCompanionsPanelMixin:selectButtonClick(id)
 end
 
 
-function MJCompanionsPanelMixin:refresh()
-	local scrollFrame = self.listScroll
-	local offset = HybridScrollFrame_GetOffset(scrollFrame)
-	local numPets = #self.petFiltredList
-	local selectedPetSpellID = self.journal.petForMount[self.journal.selectedSpellID]
+function MJCompanionsPanelMixin:initButton(btn, data)
+	local selectedPetID = self.journal.petForMount[self.journal.selectedSpellID]
+	local _, customName, level, _,_,_, favorite, name, icon, _, creatureID = C_PetJournal.GetPetInfoByPetID(data.petID)
 
-	for i, btn in ipairs(scrollFrame.buttons) do
-		local index = i + offset
-
-		if index <= numPets then
-			local critterIndex = self.petFiltredList[index]
-			local creatureID, name, creatureSpellID, icon, isSummoned = GetCompanionInfo("CRITTER", critterIndex)
-
-			btn.id = creatureSpellID
-			btn.creatureID = creatureID
-			btn.selectedTexture:SetShown(creatureSpellID == selectedPetSpellID)
-			btn.name:SetText(name)
-			btn.infoFrame.icon:SetTexture(icon)
-			btn.infoFrame.favorite:SetShown(self.mounts.charDB.petFavoritesList[creatureSpellID])
-
-			if btn.showingTooltip then
-				btn:GetScript("OnEnter")(btn)
-			end
-
-			btn:Show()
-		else
-			btn:Hide()
-		end
-	end
-
-	HybridScrollFrame_Update(scrollFrame, scrollFrame.buttonHeight * numPets, scrollFrame:GetHeight())
+	btn.id = data.petID
+	btn.creatureID = creatureID
+	btn.selectedTexture:SetShown(data.petID == selectedPetID)
+	btn.name:SetText(name)
+	btn.infoFrame.icon:SetTexture(icon)
+	btn.infoFrame.favorite:SetShown(favorite)
 end
 
 
 function MJCompanionsPanelMixin:petListUpdate()
-	wipe(self.petList)
-	for i = 1, GetNumCompanions("CRITTER") do
-		self.petList[#self.petList + 1] = i
+	self.needSort = true
+	if self:IsVisible() then
+		self:petListSort()
 	end
-
-	self:petListSort()
 end
 
 
 function MJCompanionsPanelMixin:petListSort()
+	local GetPetInfoByPetID = C_PetJournal.GetPetInfoByPetID
 	sort(self.petList, function(p1, p2)
-		local _, name1, creatureSpellID1 = GetCompanionInfo("CRITTER", p1)
-		local _, name2, creatureSpellID2 = GetCompanionInfo("CRITTER", p2)
+		if p1 == p2 then return false end
+		local _,_,_,_,_,_, favorite1, name1 = GetPetInfoByPetID(p1)
+		local _,_,_,_,_,_, favorite2, name2 = GetPetInfoByPetID(p2)
 
-		local favorite1 = self.mounts.charDB.petFavoritesList[creatureSpellID1]
-		local favorite2 = self.mounts.charDB.petFavoritesList[creatureSpellID2]
 		if favorite1 and not favorite2 then return true
 		elseif not favorite1 and favorite2 then return false end
 
 		if name1 < name2 then return true
 		elseif name1 > name2 then return false end
 
-		return creatureSpellID1 < creatureSpellID2
+		return p1 < p2
 	end)
 
+	self.needSort = false
 	self:updateFilters()
+end
+
+
+function MJCompanionsPanelMixin:updateScrollPetList()
+	self.scrollBox:SetDataProvider(self.dataProvider, ScrollBoxConstants.RetainScrollPosition)
 end
 
 
 function MJCompanionsPanelMixin:updateFilters()
 	local text = self.util.cleanText(self.searchBox:GetText())
+	local GetPetInfoByPetID = C_PetJournal.GetPetInfoByPetID
+	local numPets = 0
+	self.dataProvider = CreateDataProvider()
 
-	wipe(self.petFiltredList)
 	for i = 1, #self.petList do
-		local petIndex = self.petList[i]
-		local _, name = GetCompanionInfo("CRITTER", petIndex)
+		local petID = self.petList[i]
+		local _,_,_,_,_,_,_, name = GetPetInfoByPetID(petID)
 
 		if #text == 0
 		or name:lower():find(text, 1, true)
 		then
-			self.petFiltredList[#self.petFiltredList + 1] = petIndex
+			numPets = numPets + 1
+			self.dataProvider:Insert({index = numPets, petID = petID})
 		end
 	end
 
-	self:refresh()
+	self:updateScrollPetList()
 end

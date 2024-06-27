@@ -4,8 +4,8 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
-local Builder = TSM.Init("Service.ItemTooltipClasses.Builder")
+local TSM = select(2, ...) ---@type TSM
+local Builder = TSM.Init("Service.ItemTooltipClasses.Builder") ---@class Service.ItemTooltipClasses.Builder
 local L = TSM.Include("Locale").GetTable()
 local TempTable = TSM.Include("Util.TempTable")
 local Math = TSM.Include("Util.Math")

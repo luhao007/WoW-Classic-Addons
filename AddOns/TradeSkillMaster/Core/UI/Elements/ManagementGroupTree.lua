@@ -9,7 +9,7 @@
 -- be selected. It is a subclass of the @{GroupTree} class.
 -- @classmod ManagementGroupTree
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local L = TSM.Include("Locale").GetTable()
 local Analytics = TSM.Include("Util.Analytics")
 local String = TSM.Include("Util.String")
@@ -17,6 +17,7 @@ local Theme = TSM.Include("Util.Theme")
 local TextureAtlas = TSM.Include("Util.TextureAtlas")
 local Log = TSM.Include("Util.Log")
 local ScriptWrapper = TSM.Include("Util.ScriptWrapper")
+local GroupPath = TSM.Include("Util.GroupPath")
 local ManagementGroupTree = TSM.Include("LibTSMClass").DefineClass("ManagementGroupTree", TSM.UI.GroupTree)
 local DragContext = TSM.Include("UI.DragContext")
 local UIElements = TSM.Include("UI.UIElements")
@@ -48,7 +49,7 @@ function ManagementGroupTree.Acquire(self)
 		:SetLayout("VERTICAL")
 		:SetHeight(20)
 		:SetStrata("TOOLTIP")
-		:SetBackgroundColor("PRIMARY_BG_ALT", true)
+		:SetRoundedBackgroundColor("PRIMARY_BG_ALT")
 		:SetBorderColor("INDICATOR")
 		:SetContext(self)
 		:AddChild(UIElements.New("Text", "text")
@@ -104,11 +105,11 @@ function ManagementGroupTree.SetSelectedGroup(self, groupPath, redraw)
 	end
 	if redraw then
 		-- make sure this group is visible (its parent is expanded)
-		local parent = TSM.Groups.Path.GetParent(groupPath)
+		local parent = GroupPath.GetParent(groupPath)
 		self._contextTable.collapsed[TSM.CONST.ROOT_GROUP_PATH] = nil
 		while parent and parent ~= TSM.CONST.ROOT_GROUP_PATH do
 			self._contextTable.collapsed[parent] = nil
-			parent = TSM.Groups.Path.GetParent(parent)
+			parent = GroupPath.GetParent(parent)
 		end
 		self:UpdateData(true)
 		self:_ScrollToData(self._selectedGroup)
@@ -202,7 +203,7 @@ end
 
 function private.OnActionIconClick(self, data, iconIndex)
 	if iconIndex == 1 then
-		local newGroupPath = TSM.Groups.Path.Join(data, L["New Group"])
+		local newGroupPath = GroupPath.Join(data, L["New Group"])
 		if TSM.Groups.Exists(newGroupPath) then
 			local num = 1
 			while TSM.Groups.Exists(newGroupPath.." "..num) do
@@ -218,7 +219,7 @@ function private.OnActionIconClick(self, data, iconIndex)
 		end
 	elseif iconIndex == 2 then
 		local groupColor = Theme.GetGroupColor(select('#', strsplit(TSM.CONST.GROUP_SEP, data)))
-		self:GetBaseElement():ShowConfirmationDialog(L["Delete Group?"], format(L["Deleting this group (%s) will also remove any sub-groups attached to this group."], groupColor:ColorText(TSM.Groups.Path.GetName(data))), private.DeleteConfirmed, self, data)
+		self:GetBaseElement():ShowConfirmationDialog(L["Delete Group?"], format(L["Deleting this group (%s) will also remove any sub-groups attached to this group."], groupColor:ColorText(GroupPath.GetName(data))), private.DeleteConfirmed, self, data)
 	else
 		error("Invalid index: "..tostring(iconIndex))
 	end
@@ -270,7 +271,7 @@ function private.RowOnDragStart(row)
 	self._moveFrame:SetHeight(self._rowHeight)
 	local moveFrameText = self._moveFrame:GetElement("text")
 	moveFrameText:SetTextColor(Theme.GetGroupColorKey(level))
-	moveFrameText:SetText(TSM.Groups.Path.GetName(groupPath))
+	moveFrameText:SetText(GroupPath.GetName(groupPath))
 	moveFrameText:SetWidth(1000)
 	moveFrameText:Draw()
 	self._moveFrame:SetWidth(moveFrameText:GetStringWidth() + MOVE_FRAME_PADDING * 2)
@@ -289,10 +290,10 @@ function private.RowOnDragStop(row)
 	local destPath = self:GetMouseOverPath()
 	local oldPath = self._dragGroupPath
 	self._dragGroupPath = nil
-	if not destPath or destPath == oldPath or TSM.Groups.Path.IsChild(destPath, oldPath) then
+	if not destPath or destPath == oldPath or GroupPath.IsChild(destPath, oldPath) then
 		return
 	end
-	local newPath = TSM.Groups.Path.Join(destPath, TSM.Groups.Path.GetName(oldPath))
+	local newPath = GroupPath.Join(destPath, GroupPath.GetName(oldPath))
 	if oldPath == newPath then
 		return
 	elseif TSM.Groups.Exists(newPath) then

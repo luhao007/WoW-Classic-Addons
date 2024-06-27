@@ -6,6 +6,7 @@
 
 local TSM = select(2, ...) ---@type TSM
 local Inbox = TSM.UI.MailingUI:NewPackage("Inbox")
+local Environment = TSM.Include("Environment")
 local L = TSM.Include("Locale").GetTable()
 local Delay = TSM.Include("Util.Delay")
 local Event = TSM.Include("Util.Event")
@@ -33,7 +34,7 @@ local private = {
 	updateCounterTimer = nil,
 }
 local PLAYER_NAME = UnitName("player")
-local MAIL_REFRESH_TIME = TSM.IsWowClassic() and 60 or 15
+local MAIL_REFRESH_TIME = Environment.IsRetail() and 15 or 60
 
 
 
@@ -204,72 +205,7 @@ function private.GetInboxMailsFrame()
 			)
 		)
 		:AddChild(UIElements.New("HorizontalLine", "line"))
-	if TSM.IsWowClassic() then
-		frame:AddChild(UIElements.New("Frame", "bottom")
-			:SetLayout("VERTICAL")
-			:SetHeight(74)
-			:SetPadding(8)
-			:SetBackgroundColor("PRIMARY_BG_ALT")
-			:AddChild(UIElements.New("ActionButton", "openAllMail")
-				:SetHeight(26)
-				:SetText(L["Open Mail"])
-				:SetScript("OnClick", private.OpenBtnOnClick)
-				:SetModifierText(L["Open All Mail"], "SHIFT")
-				:SetModifierText(L["Open Mail Without Money"], "CTRL")
-				:SetModifierText(L["Open All Mail Without Money"], "SHIFT", "CTRL")
-				:SetTooltip(L["Hold SHIFT to continue after the inbox refreshes and CTRL to not open mail with money attached."])
-			)
-			:AddChild(UIElements.New("Frame", "buttons")
-				:SetLayout("HORIZONTAL")
-				:SetHeight(24)
-				:SetMargin(0, 0, 8, 0)
-				:AddChild(UIElements.New("ActionButton", "openAllSales")
-					:SetMargin(0, 8, 0, 0)
-					:SetFont("BODY_BODY2")
-					:SetText(L["Sold"])
-					:SetContext("SALE")
-					:SetScript("OnClick", private.OpenBtnOnClick)
-					:SetModifierText(L["All Sold"], "SHIFT")
-					:SetTooltip(L["Hold SHIFT to continue after the inbox refreshes"])
-				)
-				:AddChild(UIElements.New("ActionButton", "openAllBuys")
-					:SetMargin(0, 8, 0, 0)
-					:SetFont("BODY_BODY2")
-					:SetText(L["Bought"])
-					:SetContext("BUY")
-					:SetScript("OnClick", private.OpenBtnOnClick)
-					:SetModifierText(L["All Bought"], "SHIFT")
-					:SetTooltip(L["Hold SHIFT to continue after the inbox refreshes"])
-				)
-				:AddChild(UIElements.New("ActionButton", "openAllCancels")
-					:SetMargin(0, 8, 0, 0)
-					:SetFont("BODY_BODY2")
-					:SetText(L["Cancelled"])
-					:SetContext("CANCEL")
-					:SetScript("OnClick", private.OpenBtnOnClick)
-					:SetModifierText(L["All Cancelled"], "SHIFT")
-					:SetTooltip(L["Hold SHIFT to continue after the inbox refreshes"])
-				)
-				:AddChild(UIElements.New("ActionButton", "openAllExpires")
-					:SetMargin(0, 8, 0, 0)
-					:SetFont("BODY_BODY2")
-					:SetText(L["Expired"])
-					:SetContext("EXPIRE")
-					:SetScript("OnClick", private.OpenBtnOnClick)
-					:SetModifierText(L["All Expired"], "SHIFT")
-					:SetTooltip(L["Hold SHIFT to continue after the inbox refreshes"])
-				)
-				:AddChild(UIElements.New("ActionButton", "openAllOthers")
-					:SetFont("BODY_BODY2")
-					:SetText(L["Other"])
-					:SetContext("OTHER")
-					:SetScript("OnClick", private.OpenBtnOnClick)
-					:SetModifierText(L["All Other"], "SHIFT")
-					:SetTooltip(L["Hold SHIFT to continue after the inbox refreshes"])
-				)
-			)
-		)
-	else
+	if Environment.IsRetail() then
 		frame:AddChild(UIElements.New("Frame", "bottom")
 			:SetLayout("VERTICAL")
 			:SetHeight(74)
@@ -331,6 +267,71 @@ function private.GetInboxMailsFrame()
 					:SetScript("OnClick", private.OpenBtnOnClick)
 					:SetModifierText(L["Other"], "SHIFT")
 					:SetTooltip(L["Hold SHIFT to not continue after the inbox refreshes"])
+				)
+			)
+		)
+	else
+		frame:AddChild(UIElements.New("Frame", "bottom")
+			:SetLayout("VERTICAL")
+			:SetHeight(74)
+			:SetPadding(8)
+			:SetBackgroundColor("PRIMARY_BG_ALT")
+			:AddChild(UIElements.New("ActionButton", "openAllMail")
+				:SetHeight(26)
+				:SetText(L["Open Mail"])
+				:SetScript("OnClick", private.OpenBtnOnClick)
+				:SetModifierText(L["Open All Mail"], "SHIFT")
+				:SetModifierText(L["Open Mail Without Money"], "CTRL")
+				:SetModifierText(L["Open All Mail Without Money"], "SHIFT", "CTRL")
+				:SetTooltip(L["Hold SHIFT to continue after the inbox refreshes and CTRL to not open mail with money attached."])
+			)
+			:AddChild(UIElements.New("Frame", "buttons")
+				:SetLayout("HORIZONTAL")
+				:SetHeight(24)
+				:SetMargin(0, 0, 8, 0)
+				:AddChild(UIElements.New("ActionButton", "openAllSales")
+					:SetMargin(0, 8, 0, 0)
+					:SetFont("BODY_BODY2")
+					:SetText(L["Sold"])
+					:SetContext("SALE")
+					:SetScript("OnClick", private.OpenBtnOnClick)
+					:SetModifierText(L["All Sold"], "SHIFT")
+					:SetTooltip(L["Hold SHIFT to continue after the inbox refreshes"])
+				)
+				:AddChild(UIElements.New("ActionButton", "openAllBuys")
+					:SetMargin(0, 8, 0, 0)
+					:SetFont("BODY_BODY2")
+					:SetText(L["Bought"])
+					:SetContext("BUY")
+					:SetScript("OnClick", private.OpenBtnOnClick)
+					:SetModifierText(L["All Bought"], "SHIFT")
+					:SetTooltip(L["Hold SHIFT to continue after the inbox refreshes"])
+				)
+				:AddChild(UIElements.New("ActionButton", "openAllCancels")
+					:SetMargin(0, 8, 0, 0)
+					:SetFont("BODY_BODY2")
+					:SetText(L["Cancelled"])
+					:SetContext("CANCEL")
+					:SetScript("OnClick", private.OpenBtnOnClick)
+					:SetModifierText(L["All Cancelled"], "SHIFT")
+					:SetTooltip(L["Hold SHIFT to continue after the inbox refreshes"])
+				)
+				:AddChild(UIElements.New("ActionButton", "openAllExpires")
+					:SetMargin(0, 8, 0, 0)
+					:SetFont("BODY_BODY2")
+					:SetText(L["Expired"])
+					:SetContext("EXPIRE")
+					:SetScript("OnClick", private.OpenBtnOnClick)
+					:SetModifierText(L["All Expired"], "SHIFT")
+					:SetTooltip(L["Hold SHIFT to continue after the inbox refreshes"])
+				)
+				:AddChild(UIElements.New("ActionButton", "openAllOthers")
+					:SetFont("BODY_BODY2")
+					:SetText(L["Other"])
+					:SetContext("OTHER")
+					:SetScript("OnClick", private.OpenBtnOnClick)
+					:SetModifierText(L["All Other"], "SHIFT")
+					:SetTooltip(L["Hold SHIFT to continue after the inbox refreshes"])
 				)
 			)
 		)
@@ -729,7 +730,7 @@ function private.FormatInboxItem(row)
 		return L["Gold"]..": "..Money.ToString(row:GetField("itemLink"), Theme.GetColor("FEEDBACK_GREEN"):GetTextColorPrefix())
 	end
 
-	local coloredItem = UIUtils.GetColoredItemName(row:GetField("itemLink")) or ""
+	local coloredItem = UIUtils.GetDisplayItemName(row:GetField("itemLink")) or ""
 	local quantity = row:GetField("quantity")
 
 	local item = ""
@@ -779,10 +780,10 @@ function private.OpenBtnOnClick(button)
 	local filterType = button:GetContext()
 	button:SetPressed(true)
 	local openAll = nil
-	if TSM.IsWowClassic() then
-		openAll = IsShiftKeyDown()
-	else
+	if Environment.IsRetail() then
 		openAll = not IsShiftKeyDown()
+	else
+		openAll = IsShiftKeyDown()
 	end
 	private.fsm:ProcessEvent("EV_BUTTON_CLICKED", openAll, not filterType and IsControlKeyDown(), private.filterText, filterType)
 end
@@ -837,7 +838,7 @@ function private.FormatItem(row)
 	local same = true
 	local qty = 0
 	for _, itemsRow in private.itemsQuery:Iterator() do
-		local coloredItem = UIUtils.GetColoredItemName(itemsRow:GetField("itemLink")) or ""
+		local coloredItem = UIUtils.GetDisplayItemName(itemsRow:GetField("itemLink")) or ""
 		local quantity = itemsRow:GetField("quantity")
 
 		if not item then
@@ -896,8 +897,10 @@ function private.FormatDaysLeft(timeLeft)
 			timeLeft = hoursLeft.." "..L["Hrs"]
 		elseif hoursLeft == 1 then
 			timeLeft = hoursLeft.." "..L["Hr"]
-		else
+		elseif hoursLeft > 0 then
 			timeLeft = floor(hoursLeft / 60).." "..L["Min"]
+		else
+			timeLeft = ""
 		end
 	end
 	return color:ColorText(timeLeft)

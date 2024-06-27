@@ -3,7 +3,8 @@ local util = MountsJournalUtil
 
 
 MountsJournalFrame:on("MODULES_INIT", function(journal)
-	local dd = LibStub("LibSFDropDown-1.4"):CreateStretchButtonOriginal(journal.bgFrame, 130, 22)
+	local lsfdd = LibStub("LibSFDropDown-1.5")
+	local dd = lsfdd:CreateStretchButtonOriginal(journal.bgFrame, 130, 22)
 	dd:SetPoint("LEFT", journal.summonButton, "RIGHT", 4, 0)
 	dd:SetScript("OnEnter", function(self)
 		GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT", 0, 0)
@@ -15,6 +16,7 @@ MountsJournalFrame:on("MODULES_INIT", function(journal)
 	util.setEventsMixin(dd)
 	journal.bgFrame.profilesMenu = dd
 
+	-- POPUP
 	StaticPopupDialogs[util.addonName.."NEW_PROFILE"] = {
 		text = addon..": "..L["New profile"],
 		button1 = ACCEPT,
@@ -84,6 +86,7 @@ MountsJournalFrame:on("MODULES_INIT", function(journal)
 		OnAccept = function(_, cb) cb() end,
 	}
 
+	-- METHODS
 	function dd:createProfile(copy)
 		local currentProfile = copy and self.journal.db or nil
 		StaticPopup_Show(util.addonName.."NEW_PROFILE", nil, nil, currentProfile)
@@ -114,10 +117,10 @@ MountsJournalFrame:on("MODULES_INIT", function(journal)
 				self.journal:createMountList(self.journal.listMapID)
 			end
 
-			for i = 1, GetNumCompanions("MOUNT") do
-				local creatureID, creatureName, spellID, icon, isSummoned = GetCompanionInfo("MOUNT", i)
-				if not onlyFavorites or self.mounts.mountFavoritesList[spellID] then
-					self.mounts:addMountToList(self.journal.list, spellID)
+			for _, mountID in ipairs(self.journal.mountIDs) do
+				local _,_,_,_,_,_, isFavorite, _,_,_, isCollected = C_MountJournal.GetMountInfoByID(mountID)
+				if isCollected and (not onlyFavorites or isFavorite) then
+					self.mounts:addMountToList(self.journal.list, mountID)
 				end
 			end
 			self:event("UPDATE_PROFILE")
@@ -143,6 +146,28 @@ MountsJournalFrame:on("MODULES_INIT", function(journal)
 	dd.profileNames = {}
 	dd:SetText(dd.charDB.currentProfileName or DEFAULT)
 
+	-- CALENDAR FRAME
+	local calendar = dd.mounts.calendar
+	local calendarFrame = journal.bgFrame.calendarFrame
+
+	local function reloadMenu(level, value)
+		dd:ddCloseMenus(level)
+		local menu = lsfdd:GetMenu(level)
+		dd:ddToggle(level, value, menu.anchorFrame)
+	end
+
+	calendarFrame.prevMonthButton:SetScript("OnClick", function()
+		PlaySound(SOUNDKIT.IG_ABILITY_PAGE_TURN)
+		calendar:setPreviousMonth()
+		reloadMenu(calendarFrame.level, calendarFrame.value)
+	end)
+	calendarFrame.nextMonthButton:SetScript("OnClick", function()
+		PlaySound(SOUNDKIT.IG_ABILITY_PAGE_TURN)
+		calendar:setNextMonth()
+		reloadMenu(calendarFrame.level, calendarFrame.value)
+	end)
+
+	-- DROPDOWN
 	dd:ddSetDisplayMode(addon)
 	dd:ddSetInitFunc(function(self, level, value)
 		local info = {}
@@ -201,6 +226,13 @@ MountsJournalFrame:on("MODULES_INIT", function(journal)
 				self.charDB.profileBySpecializationPVP.enable = checked
 				self.mounts:setDB()
 			end
+			self:ddAddButton(info, level)
+
+			info.checked = nil
+			info.func = nil
+			info.notCheckable = true
+			info.text = CALENDAR_FILTER_WEEKLY_HOLIDAYS
+			info.value = "holidays"
 			self:ddAddButton(info, level)
 
 		elseif value == "settings" then -- PROFILE SETTINGS
@@ -301,6 +333,109 @@ MountsJournalFrame:on("MODULES_INIT", function(journal)
 				})
 			end
 			self:ddAddButton(info, level)
+
+		elseif value == "holidays" then -- HOLIDAYS
+			info.customFrame = calendarFrame
+			info.OnLoad = function(frame)
+				frame.level = level
+				frame.value = value
+				local year, monthName = calendar:getSelectedDate()
+				frame.yearText:SetText(year)
+				frame.monthText:SetText(monthName)
+			end
+			self:ddAddButton(info, level)
+
+			info.customFrame = nil
+			info.OnLoad = nil
+			info.list = {}
+
+			local list, selected = calendar:getHolidayList()
+
+			for i = 1, #list do
+				local e = list[i]
+
+				if not e.profile then
+					selected = false
+				elseif selected == false then
+					selected = true
+					info.list[#info.list + 1] = {
+						keepShownOnClick = true,
+						disabled = true,
+						notCheckable = true,
+						iconOnly = true,
+						icon = "Interface/Common/UI-TooltipDivider-Transparent",
+						iconInfo = {
+							tSizeX = 0,
+							tSizeY = 8,
+						},
+					}
+				end
+
+				local eInfo = {
+					isNotRadio = true,
+					hasArrow = true,
+					keepShownOnClick = true,
+					text = function()
+						local e = list[i]
+						local name = e.name or "NO DATA NAME"
+						if e.isActive then name = name.." (|cff00cc00"..L["HOLIDAY_ACTIVE"].."|r)" end
+						return e.profile and "["..e.profile.order.."] "..name or name
+					end,
+					value = e,
+					func = function(btn, _,_, checked)
+						local e = btn.value
+						calendar:setEventProfileEnabled(e.eventID, checked, e.name)
+						reloadMenu(calendarFrame.level, calendarFrame.value)
+					end,
+					checked = function(btn)
+						btn.value = list[i]
+						return list[i].profile and list[i].profile.enabled
+					end
+				}
+				if e.profile then
+					eInfo.order = function(btn, step)
+						calendar:setEventProfileOrder(btn.value.eventID, step)
+						calendar:sortHolidays(list)
+						reloadMenu(level + 1, list[i])
+					end
+				end
+				info.list[#info.list + 1] = eInfo
+			end
+			self:ddAddButton(info, level)
+
+		elseif type(value) == "table" then -- PROFILE BY HOLIDAY
+			info.notCheckable = true
+			info.isTitle = true
+			info.text = value.name
+			self:ddAddButton(info, level)
+
+			self:ddAddSeparator(level)
+
+			info.list = {
+				{
+					keepShownOnClick = true,
+					arg1 = value,
+					text = DEFAULT,
+					checked = not (value.profile and value.profile.profileName),
+					func = function(_, e)
+						calendar:setEventProfileName(e.eventID)
+						reloadMenu(calendarFrame.level, calendarFrame.value)
+					end,
+				}
+			}
+			for _, profileName in ipairs(self.profileNames) do
+				tinsert(info.list, {
+					keepShownOnClick = true,
+					arg1 = value,
+					text = profileName,
+					checked = value.profile and value.profile.profileName == profileName,
+					func = function(btn, e)
+						calendar:setEventProfileName(e.eventID, btn.text, e.name)
+						reloadMenu(calendarFrame.level, calendarFrame.value)
+					end,
+				})
+			end
+			self:ddAddButton(info, level)
 		end
 	end)
 
@@ -309,6 +444,7 @@ MountsJournalFrame:on("MODULES_INIT", function(journal)
 		wipe(self.profileNames)
 		for k in pairs(self.profiles) do tinsert(self.profileNames, k) end
 		sort(self.profileNames)
+		calendar:setCurrentDate()
 		self:ddToggle(1, nil, self, 112, 17)
 	end)
 end)

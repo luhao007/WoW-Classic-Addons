@@ -96,7 +96,7 @@ local DT = {  }; __private.DT = DT;		--	data
 	CT.BNTAG = select(2, BNGetInfo());
 	CT.SELFREALM = GetRealmName();
 	CT.SELFGUID = UnitGUID('player');
-	CT.SELFLCLASS, CT.SELFCLASS = UnitClass('player');
+	CT.SELFLCLASS, CT.SELFCLASS, CT.SELFCLASSINDEX = UnitClass('player');
 	CT.SELFNAME = UnitName('player');
 	CT.SELFFULLNAME = CT.SELFNAME .. "-" .. CT.SELFREALM;
 	CT.SELFFACTION = UnitFactionGroup('player');
@@ -107,6 +107,10 @@ local DT = {  }; __private.DT = DT;		--	data
 		CT.BUILD = "BCC";
 	elseif CT.TOCVERSION < 40000 then
 		CT.BUILD = "WRATH";
+	elseif CT.TOCVERSION < 50000 then
+		CT.BUILD = "CATA"
+	elseif CT.TOCVERSION < 60000 then
+		CT.BUILD = "PANDARIA"
 	else
 	end
 	CT.ADDONVERSION = GetAddOnMetadata(__addon, "version");
@@ -342,8 +346,9 @@ MT.BuildEnv('INIT');
 	VT.__is_loggedin = IsLoggedIn();
 	VT.__is_inbattleground = UnitInBattleground('player');
 	VT.__player_map = GetBestMapForUnit('player');
-	VT.__support_gem = CT.TOCVERSION >= 20000;
-	VT.__support_glyph = CT.TOCVERSION >= 30000;
+	VT.__support_gem = VT.__emulib.CT.SUPPORT_GEM;
+	VT.__support_glyph = VT.__emulib.CT.SUPPORT_GLYPH;
+	VT.__support_engraving = VT.__emulib.CT.SUPPORT_ENGRAVING;
 
 	if CT.BNTAG == "\97\108\101\120\35\53\49\54\55\50\50" or CT.BNTAG == "ALEX#125620" or CT.BNTAG == "Sanjeev#1289" then
 		MT.Debug = MT.DebugDev;

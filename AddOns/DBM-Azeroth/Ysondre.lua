@@ -1,7 +1,7 @@
-local mod	= DBM:NewMod("Ysondre", "DBM-Azeroth")
+local mod	= DBM:NewMod("YsondreVanilla", "DBM-Azeroth")
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20221129003558")
+mod:SetRevision("20240422183958")
 mod:SetCreatureID(14887)--121912 TW ID, 14887 classic ID
 --mod:SetModelID(17887)
 mod:EnableWBEngageSync()--Enable syncing engage in outdoors
@@ -44,8 +44,7 @@ end
 --]]
 
 function mod:SPELL_CAST_SUCCESS(args)
-	--if args.spellId == 24814 or args.spellId == 24813 then
-	if args.spellId == 24814 then
+	if args:IsSpell(24814, 24813) then
 		specWarnSleepingFog:Show()
 		specWarnSleepingFog:Play("watchstep")
 		timerSleepingFogCD:Start()
@@ -55,7 +54,7 @@ function mod:SPELL_CAST_SUCCESS(args)
 end
 
 function mod:SPELL_AURA_APPLIED(args)
-	if args.spellId == 24818 then
+	if args:IsSpell(24818) then
 		if self:IsTanking(nil, nil, args.destName, nil, args.sourceGUID) then--Basically, HAS to be bosses current target
 			warnNoxiousBreath:Show(args.destName, args.amount or 1)
 		end
@@ -63,7 +62,6 @@ function mod:SPELL_AURA_APPLIED(args)
 end
 mod.SPELL_AURA_APPLIED_DOSE = mod.SPELL_AURA_APPLIED
 
---Probably won't work in classic, unit_spellcast events disabled there for all but "player"
 function mod:UNIT_SPELLCAST_SUCCEEDED(uId, _, spellId)
 	if spellId == 24819 and self:AntiSpam(5, 2) then--Lightning Wave
 		warningLightningWave:Show()

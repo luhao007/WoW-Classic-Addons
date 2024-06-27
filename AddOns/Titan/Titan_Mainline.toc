@@ -1,0 +1,44 @@
+## Interface: 30400
+## Author: Titan Panel Dev Team
+## Version: 8.0.13
+## SavedVariables: TitanAll, TitanSettings, TitanSkins, ServerTimeOffsets, ServerHourFormat
+
+## Title: Titan Panel [|cffeda55f_Core_|r] |cff00aa008.0.13|r
+## Notes: Adds display bars to show and control information/launcher plugins.
+## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFF泰坦面板|r |cFFFFE00ATitan|r
+## Notes-zhCN: 在屏幕顶端/底端增加一个可视化侧边栏
+
+## X-Credits: TitanMod, Dark Imakuni, Adsertor, Titan Dev Team
+## X-Category: Interface Enhancements
+## X-Website: http://www.titanpanel.org
+## X-Email: honorgog@gmail.com
+## X-Localizations: enUS, ptBR, zhCN, deDE, esES, frFR, itIT, koKR, ruRU, zhTW
+## X-License: All rights reserved (See license.txt)
+## X-WoWI-ID: 8092
+
+TitanGame.lua
+
+locale\Localization.lua
+locale\Localization.BR.lua
+locale\Localization.CN.lua
+locale\Localization.DE.lua
+locale\Localization.ES.lua
+locale\Localization.FR.lua
+locale\Localization.IT.lua
+locale\Localization.KR.lua
+locale\Localization.MX.lua
+locale\Localization.RU.lua
+locale\Localization.TW.lua
+
+TitanGlobal.lua
+TitanUtils.lua
+TitanHistory.lua
+TitanVariables.lua
+TitanTemplate.xml
+TitanTemplate.lua
+TitanMovable.lua
+TitanConfig.lua
+TitanAutoHide.lua
+Titan.xml
+Titan.lua
+TitanLDB.lua

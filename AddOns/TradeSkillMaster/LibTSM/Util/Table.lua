@@ -11,13 +11,8 @@ local private = {
 	sortValueLookup = nil,
 	sortValueReverse = false,
 	sortValueUnstable = false,
-	iterContext = { arg = {}, index = {}, helperFunc = {}, cleanupFunc = {} },
 	diffTemp = {},
 }
-setmetatable(private.iterContext.arg, { __mode = "k" })
-setmetatable(private.iterContext.index, { __mode = "k" })
-setmetatable(private.iterContext.helperFunc, { __mode = "k" })
-setmetatable(private.iterContext.cleanupFunc, { __mode = "k" })
 local READ_ONLY_TABLE_MT = {
 	__index = function(_, key) error(format("Key (%s) does not exist in read-only table", tostring(key)), 2) end,
 	__newindex = function(_, key) error(format("Writing (%s) to read-only table", tostring(key)), 2) end,
@@ -231,16 +226,6 @@ function Table.SetReadOnly(tbl)
 	setmetatable(tbl, READ_ONLY_TABLE_MT)
 end
 
----Appends all values passed in to the end of the table.
----@param tbl table The table to insert the data into
----@param ... any The values to insert
-function Table.Append(tbl, ...)
-	local len = #tbl
-	for i = 1, select("#", ...) do
-		tbl[len + i] = select(i, ...)
-	end
-end
-
 ---Performs a binary search on a sorted table and returns the index of the search value.
 ---@generic V: number|string
 ---@param tbl V[] The table to search
@@ -407,7 +392,7 @@ function Table.InsertFill(tbl, startIndex, numValues, fillValue)
 	Table.RotateRight(tbl, numValues, startIndex)
 end
 
----Reverses a table.
+---Reverses a table in place.
 ---@param tbl table The table to reverse
 function Table.Reverse(tbl)
 	private.ReverseTable(tbl, 1, #tbl)
@@ -487,6 +472,57 @@ function Table.GetDiffOrdered(old, new, inserted, removed)
 	return true
 end
 
+---Gets the keys which were changed between two tables.
+---@param old table<string, any> The old table
+---@param new table<string, any> The new table
+---@param result table<string, true> A result table to store the keys which were changed (with a value of true)
+function Table.GetChangedKeys(old, new, result)
+	for key, value in pairs(old) do
+		if new[key] ~= value then
+			result[key] = true
+		end
+	end
+	for key in pairs(new) do
+		if not old[key] then
+			result[key] = true
+		end
+	end
+end
+
+---Iterates over a table with a stride.
+---
+---**NOTE:** This iterator must be run to completion and not be interrupted (i.e. with a `break` or `return`).
+---@param tbl table The table to iterate over.
+---@param numFields number The number of fields to unpack with each iteration
+---@return fun(): number, ... @An iterator with fields: `index, {numFields...}`
+function Table.StrideIterator(tbl, numFields)
+	assert(numFields >= 1 and #tbl % numFields == 0)
+	tbl.__iterNumFields = numFields
+	return private.StrideIteratorHelper, tbl, 1 - numFields
+end
+
+---Inserts multiple values into the table.
+---@param tbl table The table to insert into
+---@param ... any Values to insert
+function Table.InsertMultiple(tbl, ...)
+	local numExisting = #tbl
+	for i = 1, select("#", ...) do
+		tbl[numExisting + i] = select(i, ...)
+	end
+end
+
+function Table.RemoveRange(tbl, startIndex, endIndex)
+	local numToRemove = endIndex - startIndex + 1
+	local newLen = #tbl - numToRemove
+	assert(numToRemove > 0)
+	for i = startIndex, newLen do
+		tbl[i] = tbl[i + numToRemove]
+	end
+	while #tbl > newLen do
+		tremove(tbl)
+	end
+end
+
 
 
 -- ============================================================================
@@ -534,4 +570,18 @@ function private.DiffHandleValue(value)
 	end
 	private.diffTemp[value] = true
 	return true
+end
+
+function private.StrideIteratorHelper(tbl, index)
+	local numFields = tbl.__iterNumFields
+	index = index + numFields
+	if index > #tbl then
+		tbl.__iterNumFields = nil
+		return
+	end
+	if numFields == 1 then
+		return index, tbl[index]
+	else
+		return index, unpack(tbl, index, index + numFields - 1)
+	end
 end

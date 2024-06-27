@@ -30,11 +30,18 @@ local sManaBarHeight;
 local sSideBarLeftWidth;
 local sSideBarRightWidth;
 local sRaidIconSetup;
+local sPrivateAuraSetup;
+local sPrivateAuraHeight;
+local sPrivateAuraStep;
+local sPrivateAuraXOffset;
+local sPrivateAuraYOffset;
 local sOverhealTextSetup;
-local sIsManaBouquet;
+local sIsManaBouquet = { };
 local sPanelSetup;
 local sShadowAlpha;
 local sOutlineText;
+local sIndicatorConfig;
+local sSwiftmendIndicatorSetup;
 
 local VUHDO_getFont;
 local VUHDO_getHealthBar;
@@ -43,7 +50,10 @@ local VUHDO_getHealthBar;
 function VUHDO_panelRedrawInitLocalOverrides()
 	VUHDO_CONFIG = _G["VUHDO_CONFIG"];
 	VUHDO_INDICATOR_CONFIG = _G["VUHDO_INDICATOR_CONFIG"];
-	sIsManaBouquet = VUHDO_INDICATOR_CONFIG["BOUQUETS"]["MANA_BAR"] ~= "";
+
+	for tPanelNum = 1, 10 do -- VUHDO_MAX_PANELS
+		sIsManaBouquet[tPanelNum] = VUHDO_INDICATOR_CONFIG[tPanelNum]["BOUQUETS"]["MANA_BAR"] ~= "";
+	end
 
 	VUHDO_getFont = _G["VUHDO_getFont"];
 	VUHDO_getHealthBar = _G["VUHDO_getHealthBar"];
@@ -64,6 +74,7 @@ local tBar;
 
 --
 function VUHDO_initLocalVars(aPanelNum)
+
 	--VUHDO_panelRedrwawHeadersInitLocalVars(aPanelNum);
 	VUHDO_panelRedrwawHotsInitLocalVars(aPanelNum);
 	VUHDO_panelRedrwawCustomDebuffsInitLocalVars(aPanelNum);
@@ -94,6 +105,28 @@ function VUHDO_initLocalVars(aPanelNum)
 	if (sManaBarHeight == 0) then
 		sManaBarHeight = 0.001;
 	end
+
+	sIndicatorConfig = VUHDO_INDICATOR_CONFIG[aPanelNum];
+	sSwiftmendIndicatorSetup = sIndicatorConfig["CUSTOM"]["SWIFTMEND_INDICATOR"];
+
+	if sSwiftmendIndicatorSetup["anchor"] == nil then
+		sSwiftmendIndicatorSetup["anchor"] = "TOPLEFT";
+	end
+
+	if sSwiftmendIndicatorSetup["xAdjust"] == nil or sSwiftmendIndicatorSetup["yAdjust"] == nil then
+		sSwiftmendIndicatorSetup["xAdjust"] = 5.5;
+		sSwiftmendIndicatorSetup["yAdjust"] = -14;
+	end
+
+	sPrivateAuraSetup = sPanelSetup["PRIVATE_AURA"];
+	sPrivateAuraHeight = sBarScaling["barHeight"];
+
+	local tSign = ("TOPLEFT" == sPrivateAuraSetup["point"] or "LEFT" == sPrivateAuraSetup["point"] or "BOTTOMLEFT" == sPrivateAuraSetup["point"]) and 1 or -1;
+	sPrivateAuraStep = tSign * sPrivateAuraHeight;
+
+	sPrivateAuraXOffset = sPrivateAuraSetup["xAdjust"] * sBarScaling["barWidth"] * 0.01;
+	sPrivateAuraYOffset = -sPrivateAuraSetup["yAdjust"] * sPrivateAuraHeight * 0.01;
+	
 end
 local VUHDO_initLocalVars = VUHDO_initLocalVars;
 
@@ -107,6 +140,14 @@ function VUHDO_isPanelVisible(aPanelNum)
 
 	if VUHDO_isModelInPanel(aPanelNum, 42) -- VUHDO_ID_PRIVATE_TANKS
 		and (not VUHDO_CONFIG["OMIT_TARGET"] or not VUHDO_CONFIG["OMIT_FOCUS"]) then
+		return true;
+	end
+
+	if VUHDO_isModelInPanel(aPanelNum, 82) then -- VUHDO_ID_TARGET
+		return true;
+	end
+
+	if VUHDO_isModelInPanel(aPanelNum, 83) then -- VUHDO_ID_FOCUS
 		return true;
 	end
 
@@ -153,23 +194,26 @@ end
 --
 local tBackdrop, tBorderCol;
 local tWidth, tGap;
+local tPanelNum;
 local function VUHDO_initPlayerTargetBorder(aButton, aBorderFrame, anIsNoIndicator)
 
-	if VUHDO_INDICATOR_CONFIG["BOUQUETS"]["BAR_BORDER"] == "" then
+	tPanelNum = VUHDO_BUTTON_CACHE[aButton];
+
+	if VUHDO_INDICATOR_CONFIG[tPanelNum]["BOUQUETS"]["BAR_BORDER"] == "" then
 		aBorderFrame:Hide();
 		aBorderFrame:ClearAllPoints();
 		return;
 	end
 
-	tWidth = VUHDO_INDICATOR_CONFIG["CUSTOM"]["BAR_BORDER"]["WIDTH"];
-	tGap = tWidth + VUHDO_INDICATOR_CONFIG["CUSTOM"]["BAR_BORDER"]["ADJUST"];
+	tWidth = VUHDO_INDICATOR_CONFIG[tPanelNum]["CUSTOM"]["BAR_BORDER"]["WIDTH"];
+	tGap = tWidth + VUHDO_INDICATOR_CONFIG[tPanelNum]["CUSTOM"]["BAR_BORDER"]["ADJUST"];
 	aBorderFrame:SetPoint("TOPLEFT", aButton:GetName(), "TOPLEFT", -tGap, tGap);
 	aBorderFrame:SetPoint("BOTTOMRIGHT", aButton:GetName(), "BOTTOMRIGHT", tGap, -tGap);
 	
 	if not tBackdrop then
 		tBackdrop = aBorderFrame:GetBackdrop();
 		tBackdrop["edgeSize"] = tWidth;
-		tBackdrop["edgeFile"] = VUHDO_INDICATOR_CONFIG["CUSTOM"]["BAR_BORDER"]["FILE"];
+		tBackdrop["edgeFile"] = VUHDO_INDICATOR_CONFIG[tPanelNum]["CUSTOM"]["BAR_BORDER"]["FILE"];
 		tBackdrop["insets"]["left"] = 0;
 		tBackdrop["insets"]["right"] = 0;
 		tBackdrop["insets"]["top"] = 0;
@@ -184,6 +228,7 @@ local function VUHDO_initPlayerTargetBorder(aButton, aBorderFrame, anIsNoIndicat
 	aBorderFrame:SetBackdropBorderColor(0, 0, 0, 1);
 
 	aBorderFrame:SetShown(anIsNoIndicator);
+
 end
 
 
@@ -191,11 +236,15 @@ end
 --
 local tBackdropCluster;
 local tClusterFrame;
+local tPanelNum;
 local function VUHDO_initClusterBorder(aButton)
+
+	tPanelNum = VUHDO_BUTTON_CACHE[aButton];
+
 	tClusterFrame = VUHDO_getClusterBorderFrame(aButton);
 	tClusterFrame:Hide();
 
-	if VUHDO_INDICATOR_CONFIG["BOUQUETS"]["CLUSTER_BORDER"] == "" then
+	if VUHDO_INDICATOR_CONFIG[tPanelNum]["BOUQUETS"]["CLUSTER_BORDER"] == "" then
 		tClusterFrame:ClearAllPoints();
 		return;
 	end
@@ -205,8 +254,8 @@ local function VUHDO_initClusterBorder(aButton)
 	
 	if not tBackdropCluster then
 		tBackdropCluster = tClusterFrame:GetBackdrop();
-		tBackdropCluster["edgeSize"] = VUHDO_INDICATOR_CONFIG["CUSTOM"]["CLUSTER_BORDER"]["WIDTH"];
-		tBackdropCluster["edgeFile"] = VUHDO_INDICATOR_CONFIG["CUSTOM"]["CLUSTER_BORDER"]["FILE"];
+		tBackdropCluster["edgeSize"] = VUHDO_INDICATOR_CONFIG[tPanelNum]["CUSTOM"]["CLUSTER_BORDER"]["WIDTH"];
+		tBackdropCluster["edgeFile"] = VUHDO_INDICATOR_CONFIG[tPanelNum]["CUSTOM"]["CLUSTER_BORDER"]["FILE"];
 		tBackdropCluster["insets"]["left"] = 0;
 		tBackdropCluster["insets"]["right"] = 0;
 		tBackdropCluster["insets"]["top"] = 0;
@@ -219,6 +268,7 @@ local function VUHDO_initClusterBorder(aButton)
 	tClusterFrame.backdropBorderColor = CreateColor(0, 0, 0);
 	tClusterFrame.backdropBorderColorAlpha = 0;
 	tClusterFrame:SetBackdropBorderColor(0, 0, 0, 0);
+
 end
 
 
@@ -342,20 +392,31 @@ end
 
 
 --
+local tUnit;
 local tInfo;
 local tManaHeight;
+local tPanelNum;
+local tIsManaBouquet;
 local function VUHDO_initManaBar(aButton, aManaBar, aWidth, anIsForceBar)
-	aManaBar:SetPoint("BOTTOMLEFT", aButton:GetName(),  "BOTTOMLEFT", 0, 0);
-	VUHDO_setLlcStatusBarTexture(aManaBar, VUHDO_INDICATOR_CONFIG["CUSTOM"]["MANA_BAR"]["TEXTURE"]);
 
-	tInfo = VUHDO_RAID[aButton["raidid"]];
-	tManaHeight = (anIsForceBar or not tInfo or sIsManaBouquet) and sManaBarHeight or 0;
+	tPanelNum = VUHDO_BUTTON_CACHE[aButton];
+	tIsManaBouquet = sIsManaBouquet[tPanelNum];
+
+	aManaBar:SetPoint("BOTTOMLEFT", aButton:GetName(),  "BOTTOMLEFT", 0, 0);
+	VUHDO_setLlcStatusBarTexture(aManaBar, VUHDO_INDICATOR_CONFIG[tPanelNum]["CUSTOM"]["MANA_BAR"]["TEXTURE"]);
+
+	tUnit = aButton["raidid"];
+	tInfo = VUHDO_RAID[tUnit];
+
+	tManaHeight = (anIsForceBar or not tInfo or tIsManaBouquet) and sManaBarHeight or 0;
 
 	aManaBar:SetWidth(aWidth);
 	aButton["regularHeight"] = sBarScaling["barHeight"];
-	if sIsManaBouquet then
+
+	if tIsManaBouquet then
 		aManaBar:Show();
 		aManaBar:SetHeight(tManaHeight);
+
 		if (VUHDO_getHealthBar(aButton, 1):GetHeight() == 0) then
 			VUHDO_getHealthBar(aButton, 1):SetHeight(sBarHeight);
 		end
@@ -366,19 +427,24 @@ local function VUHDO_initManaBar(aButton, aManaBar, aWidth, anIsForceBar)
 
 	if not anIsForceBar then
 		VUHDO_customizeIconText(aManaBar, 32, VUHDO_getHealthBarText(aButton, 2),
-			VUHDO_INDICATOR_CONFIG["TEXT_INDICATORS"]["MANA_BAR"]["TEXT"]);
+			VUHDO_INDICATOR_CONFIG[tPanelNum]["TEXT_INDICATORS"]["MANA_BAR"]["TEXT"]);
 	end
+
 end
 
 
 
 --
 local function VUHDO_initBackgroundBar(aBgBar)
-	VUHDO_setLlcStatusBarTexture(aBgBar, VUHDO_INDICATOR_CONFIG["CUSTOM"]["BACKGROUND_BAR"]["TEXTURE"]);
+
+	VUHDO_setLlcStatusBarTexture(aBgBar, sIndicatorConfig["CUSTOM"]["BACKGROUND_BAR"]["TEXTURE"]);
+
 	aBgBar:SetHeight(sBarScaling["barHeight"]);
 	aBgBar:SetValue(1);
 	aBgBar:SetStatusBarColor(0, 0, 0, 0);
+
 	aBgBar:Show();
+
 end
 
 
@@ -397,19 +463,23 @@ end
 --
 local tThreatBar;
 local function VUHDO_initThreatBar()
+
 	tThreatBar = VUHDO_getHealthBar(sButton, 7);
 
-	if VUHDO_INDICATOR_CONFIG["BOUQUETS"]["THREAT_BAR"] == "" then
+	if sIndicatorConfig["BOUQUETS"]["THREAT_BAR"] == "" then
 		tThreatBar:Hide();
 	else
 		tThreatBar:Show();
-		VUHDO_setLlcStatusBarTexture(tThreatBar, VUHDO_INDICATOR_CONFIG["CUSTOM"]["THREAT_BAR"]["TEXTURE"]);
+
+		VUHDO_setLlcStatusBarTexture(tThreatBar, sIndicatorConfig["CUSTOM"]["THREAT_BAR"]["TEXTURE"]);
+
 		tThreatBar:SetStatusBarColor(0, 0, 0, 0);
-		tThreatBar:SetHeight(VUHDO_INDICATOR_CONFIG["CUSTOM"]["THREAT_BAR"]["HEIGHT"]);
+		tThreatBar:SetHeight(sIndicatorConfig["CUSTOM"]["THREAT_BAR"]["HEIGHT"]);
 	end
 
 	VUHDO_customizeIconText(tThreatBar, 32, VUHDO_getHealthBarText(sButton, 7),
-		VUHDO_INDICATOR_CONFIG["TEXT_INDICATORS"]["THREAT_BAR"]["TEXT"]);
+		sIndicatorConfig["TEXT_INDICATORS"]["THREAT_BAR"]["TEXT"]);
+
 end
 
 
@@ -426,10 +496,10 @@ local function VUHDO_initBarTexts(aButton, aHealthBar, aWidth)
 
 	tNameText:SetWidth(aWidth);
 	tNameText:SetHeight(sMainFontHeight);
-	tNameText:SetFont(sMainFont, sMainFontHeight, sOutlineText);
+	tNameText:SetFont(sMainFont, sMainFontHeight, sOutlineText or "");
 	tNameText:SetShadowColor(0, 0, 0, sShadowAlpha);
 
-	tLifeText:SetFont(sMainFont, sLifeFontHeight, sOutlineText);
+	tLifeText:SetFont(sMainFont, sLifeFontHeight, sOutlineText or "");
 	tLifeText:SetShadowColor(0, 0, 0, sShadowAlpha);
 	tLifeText:SetText("");
 
@@ -478,7 +548,7 @@ local function VUHDO_initBarTexts(aButton, aHealthBar, aWidth)
 
 	local tAnchorObject;
 	if strfind(sTextAnchors[1], "BOTTOM", 1, true) and strfind(sTextAnchors[2], "TOP", 1, true) -- über Button
-		and VUHDO_INDICATOR_CONFIG["BOUQUETS"]["THREAT_BAR"] ~= "" then
+		and sIndicatorConfig["BOUQUETS"]["THREAT_BAR"] ~= "" then
 		tAnchorObject = VUHDO_getHealthBar(aButton, 7) or aButton; -- Target und Tot hat keinen Threat bar
 	elseif strfind(sTextAnchors[2], "BOTTOM", 1, true) and strfind(sTextAnchors[1], "TOP", 1, true) then
 		tAnchorObject = aButton;
@@ -503,7 +573,7 @@ local function VUHDO_initOverhealText(aHealthBar, aWidth)
 	tOvhText:SetHeight(sMainFontHeight);
 	tOvhColor = VUHDO_PANEL_SETUP["BAR_COLORS"]["OVERHEAL_TEXT"];
 	tOvhText:SetTextColor(tOvhColor["TR"], tOvhColor["TG"], tOvhColor["TB"], tOvhColor["TO"]);
-	tOvhText:SetFont(sMainFont, sMainFontHeight);
+	tOvhText:SetFont(sMainFont, sMainFontHeight, "");
 	tOvhText:SetJustifyH("CENTER");
 	tOvhText:SetText("");
 
@@ -525,18 +595,56 @@ local tAggroBar;
 local function VUHDO_initAggroBar()
 	tAggroBar = VUHDO_getHealthBar(sButton, 4);
 
-	if VUHDO_INDICATOR_CONFIG["BOUQUETS"]["AGGRO_BAR"] == "" then
+	if sIndicatorConfig["BOUQUETS"]["AGGRO_BAR"] == "" then
 		tAggroBar:ClearAllPoints();
 		tAggroBar:Hide();
 		return;
 	end
 
-	VUHDO_setLlcStatusBarTexture(tAggroBar, VUHDO_INDICATOR_CONFIG["CUSTOM"]["AGGRO_BAR"]["TEXTURE"]);
+	VUHDO_setLlcStatusBarTexture(tAggroBar, sIndicatorConfig["CUSTOM"]["AGGRO_BAR"]["TEXTURE"]);
 	tAggroBar:SetPoint("BOTTOM", sHealthBar:GetName(), "TOP", 0, 0);
 	tAggroBar:SetWidth(sBarScaling["barWidth"]);
 	tAggroBar:SetHeight(sBarScaling["rowSpacing"]);
 	tAggroBar:Show();
 	tAggroBar:SetValue(0);
+end
+
+
+
+--
+local tPrivateAura;
+local tX;
+local function VUHDO_initPrivateAura(aHealthBar, aButton, anAuraIndex)
+
+	tPrivateAura = VUHDO_getBarPrivateAura(aButton, anAuraIndex);
+
+	if not tPrivateAura then
+		return;
+	end
+
+	tPrivateAura:Hide();
+	tPrivateAura:ClearAllPoints();
+	tPrivateAura:SetFrameStrata(aHealthBar:GetFrameStrata());
+	tPrivateAura:SetFrameLevel(aHealthBar:GetFrameLevel() + 2);
+
+	tX = sPrivateAuraXOffset + (sPrivateAuraStep * (anAuraIndex - 1));
+	tPrivateAura:SetPoint(sPrivateAuraSetup["point"], aHealthBar:GetName(), sPrivateAuraSetup["point"], tX, sPrivateAuraYOffset);
+
+	tPrivateAura:SetWidth(sPrivateAuraHeight);
+	tPrivateAura:SetHeight(sPrivateAuraHeight);
+	tPrivateAura:SetScale(sPrivateAuraSetup["scale"] * 0.7);
+
+end
+
+
+
+--
+local function VUHDO_initPrivateAuras(aHealthBar, aButton)
+
+	for tAuraIndex = 1, VUHDO_MAX_PRIVATE_AURAS do
+		VUHDO_initPrivateAura(aHealthBar, aButton, tAuraIndex);
+	end
+
 end
 
 
@@ -563,10 +671,15 @@ local function VUHDO_initSwiftmendIndicator()
 	tIcon:ClearAllPoints();
 	tIcon:Hide();
 
-	if VUHDO_INDICATOR_CONFIG["BOUQUETS"]["SWIFTMEND_INDICATOR"] == "" then return; end
+	if sIndicatorConfig["BOUQUETS"]["SWIFTMEND_INDICATOR"] == "" then
+		return;
+	end
 
-	tIcon:SetPoint("CENTER",  sHealthBar:GetName(), "TOPLEFT",  sBarScaling["barWidth"] / 5.5, -sBarScaling["barHeight"]  / 14);
-	tHeight = sBarScaling["barHeight"] * 0.5 * VUHDO_INDICATOR_CONFIG["CUSTOM"]["SWIFTMEND_INDICATOR"]["SCALE"];
+	local tX = sSwiftmendIndicatorSetup["xAdjust"] * sBarScaling["barWidth"] * 0.01;
+	local tY = -sSwiftmendIndicatorSetup["yAdjust"] * sBarScaling["barHeight"] * 0.01;
+	tIcon:SetPoint(sSwiftmendIndicatorSetup["anchor"], sHealthBar:GetName(), sSwiftmendIndicatorSetup["anchor"], tX, tY);
+
+	tHeight = sBarScaling["barHeight"] * 0.5 * sSwiftmendIndicatorSetup["SCALE"];
 	tIcon:SetWidth(tHeight);
 	tIcon:SetHeight(tHeight);
 end
@@ -602,7 +715,7 @@ local function VUHDO_initTargetBar()
 		VUHDO_initBarTexts(tTgButton, tTgHealthBar, sBarScaling["targetWidth"]);
 		VUHDO_initOverhealText(tTgHealthBar, sBarScaling["targetWidth"]);
 
-		if VUHDO_INDICATOR_CONFIG["BOUQUETS"]["BACKGROUND_BAR"] ~= "" then
+		if sIndicatorConfig["BOUQUETS"]["BACKGROUND_BAR"] ~= "" then
 			VUHDO_getHealthBar(tTgButton, 3):SetStatusBarColor(0, 0, 0, 0.4);
 		else
 			VUHDO_getHealthBar(tTgButton, 3):SetStatusBarColor(0, 0, 0, 0);
@@ -653,7 +766,7 @@ local function VUHDO_initTotBar()
 		VUHDO_initBarTexts(tTgButton, tTgHealthBar, sBarScaling["totWidth"]);
 		VUHDO_initOverhealText(tTgHealthBar, sBarScaling["totWidth"]);
 
-		if VUHDO_INDICATOR_CONFIG["BOUQUETS"]["BACKGROUND_BAR"] ~= "" then
+		if sIndicatorConfig["BOUQUETS"]["BACKGROUND_BAR"] ~= "" then
 			VUHDO_getHealthBar(tTotButton, 3):SetStatusBarColor(0, 0, 0, 0.4);
 		else
 			VUHDO_getHealthBar(tTotButton, 3):SetStatusBarColor(0, 0, 0, 0);
@@ -684,11 +797,11 @@ end
 
 --
 local function VUHDO_initHighlightBar()
-	if VUHDO_INDICATOR_CONFIG["BOUQUETS"]["MOUSEOVER_HIGHLIGHT"] == "" then
+	if sIndicatorConfig["BOUQUETS"]["MOUSEOVER_HIGHLIGHT"] == "" then
 		VUHDO_getHealthBar(sButton, 8):Hide();
 	else
 		tBar = VUHDO_getHealthBar(sButton, 8);
-		VUHDO_setLlcStatusBarTexture(tBar, VUHDO_INDICATOR_CONFIG["CUSTOM"]["MOUSEOVER_HIGHLIGHT"]["TEXTURE"]);
+		VUHDO_setLlcStatusBarTexture(tBar, sIndicatorConfig["CUSTOM"]["MOUSEOVER_HIGHLIGHT"]["TEXTURE"]);
 		tBar:SetAlpha(0);
 		tBar:Show();
 	end
@@ -700,18 +813,18 @@ end
 local function VUHDO_initSideBarLeft()
 	tBar = VUHDO_getHealthBar(sButton, 17);
 
-	if VUHDO_INDICATOR_CONFIG["BOUQUETS"]["SIDE_LEFT"] == "" then
+	if sIndicatorConfig["BOUQUETS"]["SIDE_LEFT"] == "" then
 		tBar:ClearAllPoints();
 		tBar:Hide();
 	else
 		tBar:SetPoint("RIGHT", sHealthBar:GetName(), "LEFT", 0, 0);
 		tBar:SetWidth(sSideBarLeftWidth);
 		tBar:SetHeight(sBarHeight);
-		VUHDO_setLlcStatusBarTexture(tBar, VUHDO_INDICATOR_CONFIG["CUSTOM"]["SIDE_LEFT"]["TEXTURE"]);
+		VUHDO_setLlcStatusBarTexture(tBar, sIndicatorConfig["CUSTOM"]["SIDE_LEFT"]["TEXTURE"]);
 		tBar:Show();
 	end
 	VUHDO_customizeIconText(tBar, 32, VUHDO_getHealthBarText(sButton, 17),
-		VUHDO_INDICATOR_CONFIG["TEXT_INDICATORS"]["SIDE_LEFT"]["TEXT"]);
+		sIndicatorConfig["TEXT_INDICATORS"]["SIDE_LEFT"]["TEXT"]);
 
 end
 
@@ -721,19 +834,19 @@ end
 local function VUHDO_initSideBarRight()
 	tBar = VUHDO_getHealthBar(sButton, 18);
 
-	if VUHDO_INDICATOR_CONFIG["BOUQUETS"]["SIDE_RIGHT"] == "" then
+	if sIndicatorConfig["BOUQUETS"]["SIDE_RIGHT"] == "" then
 		tBar:ClearAllPoints();
 		tBar:Hide();
 	else
 		tBar:SetPoint("LEFT", sHealthBar:GetName(), "RIGHT", 0, 0);
 		tBar:SetWidth(sSideBarRightWidth);
 		tBar:SetHeight(sBarHeight);
-		VUHDO_setLlcStatusBarTexture(tBar, VUHDO_INDICATOR_CONFIG["CUSTOM"]["SIDE_RIGHT"]["TEXTURE"]);
+		VUHDO_setLlcStatusBarTexture(tBar, sIndicatorConfig["CUSTOM"]["SIDE_RIGHT"]["TEXTURE"]);
 		tBar:Show();
 	end
 
 	VUHDO_customizeIconText(tBar, 32, VUHDO_getHealthBarText(sButton, 18),
-		VUHDO_INDICATOR_CONFIG["TEXT_INDICATORS"]["SIDE_RIGHT"]["TEXT"]);
+		sIndicatorConfig["TEXT_INDICATORS"]["SIDE_RIGHT"]["TEXT"]);
 end
 
 
@@ -751,14 +864,16 @@ local VUHDO_initButtonStatics = VUHDO_initButtonStatics;
 
 
 --
-function VUHDO_getStatusbarOrientationString(anIndicatorName)
-	if VUHDO_INDICATOR_CONFIG["CUSTOM"][anIndicatorName]["vertical"] then
-		return VUHDO_INDICATOR_CONFIG["CUSTOM"][anIndicatorName]["turnAxis"]
+function VUHDO_getStatusbarOrientationString(anIndicatorName, aPanelNum)
+
+	if VUHDO_INDICATOR_CONFIG[aPanelNum]["CUSTOM"][anIndicatorName]["vertical"] then
+		return VUHDO_INDICATOR_CONFIG[aPanelNum]["CUSTOM"][anIndicatorName]["turnAxis"]
 			and "VERTICAL_INV" or "VERTICAL";
 	else
-		return VUHDO_INDICATOR_CONFIG["CUSTOM"][anIndicatorName]["turnAxis"]
+		return VUHDO_INDICATOR_CONFIG[aPanelNum]["CUSTOM"][anIndicatorName]["turnAxis"]
 			and "HORIZONTAL_INV" or "HORIZONTAL";
 	end
+
 end
 
 
@@ -769,6 +884,7 @@ local tOrientation;
 local tClickPar;
 local tFrame;
 function VUHDO_initHealButton(aButton, aPanelNum)
+
 	tClickPar = VUHDO_CONFIG["ON_MOUSE_UP"] and "AnyUp" or "AnyDown";
 	aButton:RegisterForClicks(tClickPar);
 	for tCnt = 40, 44 do
@@ -784,24 +900,24 @@ function VUHDO_initHealButton(aButton, aPanelNum)
 	end
 
 	-- Invert Growth
-	tIsInverted = VUHDO_INDICATOR_CONFIG["CUSTOM"]["HEALTH_BAR"]["invertGrowth"];
+	tIsInverted = VUHDO_INDICATOR_CONFIG[aPanelNum]["CUSTOM"]["HEALTH_BAR"]["invertGrowth"];
 	VUHDO_getHealthBar(aButton, 1):SetIsInverted(tIsInverted);
 	VUHDO_getHealthBar(aButton, 5):SetIsInverted(tIsInverted);
 	VUHDO_getHealthBar(aButton, 6):SetIsInverted(tIsInverted);
 	VUHDO_getHealthBar(aButton, 14):SetIsInverted(tIsInverted);
 	VUHDO_getHealthBar(aButton, 19):SetIsInverted(tIsInverted);
 
-	tIsInverted = VUHDO_INDICATOR_CONFIG["CUSTOM"]["MANA_BAR"]["invertGrowth"];
+	tIsInverted = VUHDO_INDICATOR_CONFIG[aPanelNum]["CUSTOM"]["MANA_BAR"]["invertGrowth"];
 	VUHDO_getHealthBar(aButton, 2):SetIsInverted(tIsInverted);
 	VUHDO_getHealthBar(aButton, 13):SetIsInverted(tIsInverted);
 	VUHDO_getHealthBar(aButton, 16):SetIsInverted(tIsInverted);
 
-	VUHDO_getHealthBar(aButton, 7):SetIsInverted(VUHDO_INDICATOR_CONFIG["CUSTOM"]["THREAT_BAR"]["invertGrowth"]);
-	VUHDO_getHealthBar(aButton, 17):SetIsInverted(VUHDO_INDICATOR_CONFIG["CUSTOM"]["SIDE_LEFT"]["invertGrowth"])
-	VUHDO_getHealthBar(aButton, 18):SetIsInverted(VUHDO_INDICATOR_CONFIG["CUSTOM"]["SIDE_RIGHT"]["invertGrowth"]);
+	VUHDO_getHealthBar(aButton, 7):SetIsInverted(VUHDO_INDICATOR_CONFIG[aPanelNum]["CUSTOM"]["THREAT_BAR"]["invertGrowth"]);
+	VUHDO_getHealthBar(aButton, 17):SetIsInverted(VUHDO_INDICATOR_CONFIG[aPanelNum]["CUSTOM"]["SIDE_LEFT"]["invertGrowth"])
+	VUHDO_getHealthBar(aButton, 18):SetIsInverted(VUHDO_INDICATOR_CONFIG[aPanelNum]["CUSTOM"]["SIDE_RIGHT"]["invertGrowth"]);
 
 	-- Orient Health
-	tOrientation = VUHDO_getStatusbarOrientationString("HEALTH_BAR");
+	tOrientation = VUHDO_getStatusbarOrientationString("HEALTH_BAR", aPanelNum);
 	VUHDO_getHealthBar(aButton, 1):SetOrientation(tOrientation);
 	VUHDO_getHealthBar(aButton, 5):SetOrientation(tOrientation);
 	VUHDO_getHealthBar(aButton, 6):SetOrientation(tOrientation);
@@ -809,19 +925,19 @@ function VUHDO_initHealButton(aButton, aPanelNum)
 	VUHDO_getHealthBar(aButton, 19):SetOrientation(tOrientation);
 
 	-- Orient Mana
-	tOrientation = VUHDO_getStatusbarOrientationString("MANA_BAR");
+	tOrientation = VUHDO_getStatusbarOrientationString("MANA_BAR", aPanelNum);
 	VUHDO_getHealthBar(aButton, 2):SetOrientation(tOrientation);
 	VUHDO_getHealthBar(aButton, 13):SetOrientation(tOrientation);
 	VUHDO_getHealthBar(aButton, 16):SetOrientation(tOrientation);
 
 	-- Orient Threat
-	VUHDO_getHealthBar(aButton, 7):SetOrientation(VUHDO_getStatusbarOrientationString("THREAT_BAR"));
+	VUHDO_getHealthBar(aButton, 7):SetOrientation(VUHDO_getStatusbarOrientationString("THREAT_BAR", aPanelNum));
 
 	-- Orient side bar left
-	VUHDO_getHealthBar(aButton, 17):SetOrientation(VUHDO_getStatusbarOrientationString("SIDE_LEFT"));
+	VUHDO_getHealthBar(aButton, 17):SetOrientation(VUHDO_getStatusbarOrientationString("SIDE_LEFT", aPanelNum));
 
 	-- Orient side bar right
-	VUHDO_getHealthBar(aButton, 18):SetOrientation(VUHDO_getStatusbarOrientationString("SIDE_RIGHT"));
+	VUHDO_getHealthBar(aButton, 18):SetOrientation(VUHDO_getStatusbarOrientationString("SIDE_RIGHT", aPanelNum));
 
 	VUHDO_initButtonStatics(aButton, aPanelNum);
 
@@ -844,6 +960,7 @@ function VUHDO_initHealButton(aButton, aPanelNum)
 	VUHDO_initHotBars();
 	VUHDO_initAllHotIcons();
 	VUHDO_initCustomDebuffs();
+	VUHDO_initPrivateAuras(sHealthBar, sButton);
 	VUHDO_initRaidIcon(sHealthBar, VUHDO_getBarRoleIcon(sButton, 50), sBarScaling["barWidth"]);
 	VUHDO_initSwiftmendIndicator();
 	VUHDO_initFlashBar();

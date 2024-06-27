@@ -6,9 +6,26 @@
 
 local TSM = select(2, ...) ---@type TSM
 local Container = TSM.Init("Util.Container") ---@class Util.Container
+local Environment = TSM.Include("Environment")
 local SlotId = TSM.Include("Util.SlotId")
-local private = {}
-local NUM_REAL_BAG_SLOTS = not TSM.IsWowClassic() and NUM_BAG_SLOTS + NUM_REAGENTBAG_SLOTS or NUM_BAG_SLOTS
+local private = {
+	numBagSlots = nil,
+	bankBags = nil,
+}
+
+
+
+-- ============================================================================
+-- Module Loading
+-- ============================================================================
+
+Container:OnModuleLoad(function()
+	private.numBagSlots = NUM_BAG_SLOTS + (Environment.HasFeature(Environment.FEATURES.REAGENT_BAG) and NUM_REAGENTBAG_SLOTS or 0)
+	private.bankBags = {}
+	for bag = private.numBagSlots + 1, private.numBagSlots + NUM_BANKBAGSLOTS do
+		tinsert(private.bankBags, bag)
+	end
+end)
 
 
 
@@ -29,13 +46,9 @@ function Container.GetBagItemFamily(bag)
 	if bag == BACKPACK_CONTAINER then
 		return 0
 	end
-	local inventoryId = nil
-	if TSM.IsWowClassic() then
-		inventoryId = ContainerIDToInventoryID(bag)
-	else
-		inventoryId = C_Container.ContainerIDToInventoryID(bag)
-	end
-	return GetItemFamily(GetInventoryItemLink("player", inventoryId)) or 0
+	local inventoryId = C_Container.ContainerIDToInventoryID(bag)
+	local inventoryLink = GetInventoryItemLink("player", inventoryId)
+	return inventoryLink and GetItemFamily(inventoryLink) or 0
 end
 
 ---Gets a list of empty slotIds and their sort values.
@@ -59,36 +72,34 @@ end
 ---Returns the total number of bag slots.
 ---@return number
 function Container.GetNumBags()
-	return NUM_REAL_BAG_SLOTS
+	return private.numBagSlots
 end
 
----Returns the indexes for the fist and last bank bag slots.
----@return number @The index of the first bank bag
----@return number @The index of the last bank bag
-function Container.GetBankBagIndexes()
-	return NUM_REAL_BAG_SLOTS + 1, NUM_REAL_BAG_SLOTS + NUM_BANKBAGSLOTS
+---Returns whether or not the specified bag is a bank bag.
+---@param bag number The bag to check
+---@return boolean
+function Container.IsBankBag(bag)
+	return bag >= (private.numBagSlots + 1) and bag <= (private.numBagSlots + NUM_BANKBAGSLOTS)
+end
+
+---Iterates over the bank bags.
+---@return fun(): number, number
+function Container.BankBagIterator()
+	return ipairs(private.bankBags)
 end
 
 ---Returns the total number of slots in the bag specified by the index.
 ---@param bag number The index of the bag
 ---@return number
 function Container.GetNumSlots(bag)
-	if TSM.IsWowClassic() then
-		return GetContainerNumSlots(bag)
-	else
-		return C_Container.GetContainerNumSlots(bag)
-	end
+	return C_Container.GetContainerNumSlots(bag)
 end
 
 ---Returns the number of free slots in a bag.
 ---@param bag number The index of the bag
 ---@return number
 function Container.GetNumFreeSlots(bag)
-	if TSM.IsWowClassic() then
-		return GetContainerNumFreeSlots(bag)
-	else
-		return C_Container.GetContainerNumFreeSlots(bag)
-	end
+	return C_Container.GetContainerNumFreeSlots(bag)
 end
 
 ---Returns the item ID in a container slot.
@@ -96,11 +107,7 @@ end
 ---@param slot number The index of the slot whitin the bag
 ---@return number
 function Container.GetItemId(bag, slot)
-	if TSM.IsWowClassic() then
-		return GetContainerItemID(bag, slot)
-	else
-		return C_Container.GetContainerItemID(bag, slot)
-	end
+	return C_Container.GetContainerItemID(bag, slot)
 end
 
 ---Returns info for an item in a container slot.
@@ -118,15 +125,11 @@ end
 ---@return number itemId The unique identifier for the item in the bag slot
 ---@return boolean isBound Whether the item is bound of the character
 function Container.GetItemInfo(bag, slot)
-	if TSM.IsWowClassic() then
-		return GetContainerItemInfo(bag, slot)
-	else
-		local info = C_Container.GetContainerItemInfo(bag, slot)
-		if not info then
-			return
-		end
-		return info.iconFileID, info.stackCount, info.isLocked, info.quality, info.isReadable, info.hasLoot, info.hyperlink, info.isFiltered, info.hasNoValue, info.itemID, info.isBound
+	local info = C_Container.GetContainerItemInfo(bag, slot)
+	if not info then
+		return
 	end
+	return info.iconFileID, info.stackCount, info.isLocked, info.quality, info.isReadable, info.hasLoot, info.hyperlink, info.isFiltered, info.hasNoValue, info.itemID, info.isBound
 end
 
 ---Returns a link of the object located in the specified slot of a specified bag.
@@ -134,33 +137,21 @@ end
 ---@param slot number The index of the slot whitin the bag
 ---@return string
 function Container.GetItemLink(bag, slot)
-	if TSM.IsWowClassic() then
-		return GetContainerItemLink(bag, slot)
-	else
-		return C_Container.GetContainerItemLink(bag, slot)
-	end
+	return C_Container.GetContainerItemLink(bag, slot)
 end
 
 ---Uses an item from given bag slot.
 ---@param bag number The index of the bag
 ---@param slot number The index of the slot whitin the bag
 function Container.UseItem(bag, slot)
-	if TSM.IsWowClassic() then
-		return UseContainerItem(bag, slot)
-	else
-		return C_Container.UseContainerItem(bag, slot)
-	end
+	C_Container.UseContainerItem(bag, slot)
 end
 
 ---Pick up an item from given bag slot.
 ---@param bag number The index of the bag
 ---@param slot number The index of the slot whitin the bag
 function Container.PickupItem(bag, slot)
-	if TSM.IsWowClassic() then
-		return PickupContainerItem(bag, slot)
-	else
-		return C_Container.PickupContainerItem(bag, slot)
-	end
+	C_Container.PickupContainerItem(bag, slot)
 end
 
 ---Places part of a stack of items from a container onto the cursor.
@@ -168,11 +159,13 @@ end
 ---@param slot number The index of the slot whitin the bag
 ---@param count number The quantity to split
 function Container.SplitItem(bag, slot, count)
-	if TSM.IsWowClassic() then
-		return SplitContainerItem(bag, slot, count)
-	else
-		return C_Container.SplitContainerItem(bag, slot, count)
-	end
+	C_Container.SplitContainerItem(bag, slot, count)
+end
+
+---Register a secure hook function for when a container item is used.
+---@param func function
+function Container.SecureHookUseItem(func)
+	hooksecurefunc(C_Container, "UseContainerItem", func)
 end
 
 
@@ -183,7 +176,7 @@ end
 
 function private.BagSlotIterator(_, slotId)
 	local bag, slot = SlotId.Split(slotId)
-	while bag <= NUM_REAL_BAG_SLOTS do
+	while bag <= private.numBagSlots do
 		slot = slot + 1
 		if slot <= Container.GetNumSlots(bag) then
 			return SlotId.Join(bag, slot)

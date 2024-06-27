@@ -4,8 +4,8 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
-local ExtraTip = TSM.Init("Service.ItemTooltipClasses.ExtraTip")
+local TSM = select(2, ...) ---@type TSM
+local ExtraTip = TSM.Init("Service.ItemTooltipClasses.ExtraTip") ---@class Service.ItemTooltipClasses.ExtraTip
 local private = {
 	numExtraTips = 0,
 }

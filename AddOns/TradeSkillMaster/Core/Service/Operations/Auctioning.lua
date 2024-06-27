@@ -4,12 +4,13 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local Auctioning = TSM.Operations:NewPackage("Auctioning")
-local private = {}
+local Environment = TSM.Include("Environment")
 local L = TSM.Include("Locale").GetTable()
 local TempTable = TSM.Include("Util.TempTable")
 local Money = TSM.Include("Util.Money")
+local private = {}
 local OPERATION_INFO = {
 	-- general
 	ignoreLowDuration = { type = "number", default = 0 },
@@ -35,9 +36,11 @@ local OPERATION_VALUE_LIMITS = {
 	keepQuantity = { min = 0, max = 50000 },
 	maxExpires = { min = 0, max = 50000 },
 }
-if TSM.IsWowClassic() then
+if not Environment.IsRetail() then
 	OPERATION_INFO.blacklist = { type = "string", default = "" }
 	OPERATION_INFO.undercut.default = "1c"
+end
+if Environment.HasFeature(Environment.FEATURES.AH_STACKS) then
 	OPERATION_INFO.matchStackSize = { type = "boolean", default = false }
 	OPERATION_INFO.stackSize = { type = "string", default = "1" }
 	OPERATION_INFO.stackSizeIsCap = { type = "boolean", default = false }
@@ -81,13 +84,11 @@ end
 -- ============================================================================
 
 function private.OperationSanitize(operation)
-	if not TSM.IsWowClassic() then
-		if operation.stackSize then
-			operation.postCap = tonumber(operation.postCap) * tonumber(operation.stackSize)
-		end
-		if (type(operation.undercut) == "number" and operation.undercut or Money.FromString(operation.undercut) or math.huge) < COPPER_PER_SILVER then
-			operation.undercut = "0c"
-		end
+	if not Environment.HasFeature(Environment.FEATURES.AH_STACKS) and operation.stackSize then
+		operation.postCap = tonumber(operation.postCap) * tonumber(operation.stackSize)
+	end
+	if Environment.IsRetail() and (type(operation.undercut) == "number" and operation.undercut or Money.FromString(operation.undercut) or math.huge) < COPPER_PER_SILVER then
+		operation.undercut = "0c"
 	end
 end
 
@@ -105,7 +106,7 @@ function private.SanitizeDuration(value)
 end
 
 function private.SanitizeUndercut(value)
-	if not TSM.IsWowClassic() and (Money.FromString(Money.ToString(value) or value) or math.huge) < COPPER_PER_SILVER then
+	if Environment.IsRetail() and (Money.FromString(Money.ToString(value) or value) or math.huge) < COPPER_PER_SILVER then
 		return "0c"
 	end
 	return value
@@ -128,7 +129,7 @@ function private.GetOperationInfo(operationSettings)
 	if operationSettings.postCap == 0 then
 		tinsert(parts, L["No posting."])
 	else
-		if TSM.IsWowClassic() then
+		if Environment.HasFeature(Environment.FEATURES.AH_STACKS) then
 			tinsert(parts, format(L["Posting %d stack(s) of %d for %s hours."], operationSettings.postCap, operationSettings.stackSize, strmatch(TSM.CONST.AUCTION_DURATIONS[operationSettings.duration], "%d+")))
 		else
 			tinsert(parts, format(L["Posting %d items for %s hours."], operationSettings.postCap, strmatch(TSM.CONST.AUCTION_DURATIONS[operationSettings.duration], "%d+")))

@@ -4,12 +4,9 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
---- My Auctions Scrolling Table Class.
--- A scrolling table containing the player's auctions. It is a subclass of the @{QueryScrollingTable} class.
--- @classmod MyAuctionsScrollingTable
-
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local MyAuctionsScrollingTable = TSM.Include("LibTSMClass").DefineClass("MyAuctionsScrollingTable", TSM.UI.QueryScrollingTable)
+local Environment = TSM.Include("Environment")
 local TempTable = TSM.Include("Util.TempTable")
 local UIElements = TSM.Include("UI.UIElements")
 UIElements.Register(MyAuctionsScrollingTable)
@@ -42,7 +39,7 @@ function MyAuctionsScrollingTable.SetSelection(self, selection, redraw)
 	self.__super:SetSelection(selection, redraw)
 	if self._selection then
 		local selectedRow = self:GetSelection()
-		local sortField = TSM.IsWowClassic() and "index" or self._tableInfo:_GetSortFieldById(self._sortCol)
+		local sortField = Environment.IsRetail() and self._tableInfo:_GetSortFieldById(self._sortCol) or "index"
 		self._selectionSortValue = selectedRow:GetField(sortField)
 		if type(self._selectionSortValue) == "string" then
 			self._selectionSortValue = strlower(self._selectionSortValue)
@@ -83,7 +80,7 @@ end
 
 function MyAuctionsScrollingTable._UpdateSortFromQuery(self)
 	if self._tableInfo:_IsSortEnabled() then
-		assert(not TSM.IsWowClassic())
+		assert(Environment.IsRetail())
 		local sortField, sortAscending = self._query:GetOrderBy(2)
 		if sortField then
 			self._sortCol = self._tableInfo:_GetIdBySortField(sortField)
@@ -131,8 +128,8 @@ function MyAuctionsScrollingTable._UpdateData(self)
 	if prevSelection and not self._selection then
 		local newSelection = nil
 		-- try to select the next row based on the sorting
-		local sortField = TSM.IsWowClassic() and "index" or self._tableInfo:_GetSortFieldById(self._sortCol)
-		local sortAscending = not TSM.IsWowClassic() and self._sortAscending
+		local sortField = Environment.IsRetail() and self._tableInfo:_GetSortFieldById(self._sortCol) or "index"
+		local sortAscending = Environment.IsRetail() and self._sortAscending
 		for _, uuid in ipairs(self._data) do
 			local row = self._query:GetResultRowByUUID(uuid)
 			local sortValue = row:GetField(sortField)
@@ -144,7 +141,7 @@ function MyAuctionsScrollingTable._UpdateData(self)
 					newSelection = uuid
 					break
 				end
-			elseif not TSM.IsWowClassic() and sortValue == self._selectionSortValue and row:GetField("auctionId") > self._selectionAuctionId then
+			elseif Environment.IsRetail() and sortValue == self._selectionSortValue and row:GetField("auctionId") > self._selectionAuctionId then
 				if not self._selectionValidator or self:_selectionValidator(row) then
 					newSelection = uuid
 					break
@@ -173,7 +170,7 @@ function MyAuctionsScrollingTable._ToggleSort(self, id)
 		self._sortAscending = true
 	end
 
-	assert(not TSM.IsWowClassic())
+	assert(Environment.IsRetail())
 	self._query:ResetOrderBy()
 		:OrderBy("saleStatus", false)
 		:OrderBy(sortField, self._sortAscending)

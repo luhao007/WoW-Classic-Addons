@@ -7,6 +7,7 @@
 ## Title-zhCN: |cFFFFE00A<|r|cFFC79C6E战斗|r|cFFFFE00A>|r |cFFFFFFFF伤害统计|r |cFF69CCF0插件|r |cFF22B14C仇恨助手|r
 ## Notes-zhCN: 显示你的队员的仇恨
 
+## X-Wago-ID: Rn6VJW6d
 ## X-Part-Of: Details
 
 #@no-lib-strip@

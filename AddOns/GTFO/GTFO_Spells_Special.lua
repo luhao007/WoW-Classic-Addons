@@ -11,14 +11,14 @@ GTFO.SpellID["68947"] = {
 	--desc = "Irresistible Cologne (Love is in the Air)";
 	sound = 1;
 	tankSound = 0;
-	trivialPercent = 7;
+	trivialPercent = 5;
 	ignoreApplication = true;
 };
 
 GTFO.SpellID["68934"] = {
 	--desc = "Concentrated Irresistible Cologne Spill (Love is in the Air)";
 	sound = 1;
-	trivialPercent = 7;
+	trivialPercent = 5;
 	ignoreApplication = true;
 };
 
@@ -26,7 +26,7 @@ GTFO.SpellID["68948"] = {
 	--desc = "Irresistible Cologne Spray (Love is in the Air)";
 	sound = 1;
 	tankSound = 0;
-	trivialPercent = 7;
+	trivialPercent = 5;
 	ignoreApplication = true;
 };
 
@@ -34,14 +34,14 @@ GTFO.SpellID["68641"] = {
 	--desc = "Alluring Perfume (Love is in the Air)";
 	sound = 1;
 	tankSound = 0;
-	trivialPercent = 7;
+	trivialPercent = 5;
 	ignoreApplication = true;
 };
 
 GTFO.SpellID["68927"] = {
 	--desc = "Concentrated Alluring Perfume Spill (Love is in the Air)";
 	sound = 1;
-	trivialPercent = 7;
+	trivialPercent = 5;
 	ignoreApplication = true;
 };
 
@@ -49,7 +49,7 @@ GTFO.SpellID["68607"] = {
 	--desc = "Alluring Perfume Spray (Love is in the Air)";
 	sound = 1;
 	tankSound = 0;
-	trivialPercent = 7;
+	trivialPercent = 5;
 	ignoreApplication = true;
 };
 
@@ -287,7 +287,24 @@ GTFO.SpellID["236338"] = {
 
 GTFO.SpellID["244954"] = {
   --desc = "Wailing Wall (Death Metal Knight - Darkmoon Faire)";
+  alwaysAlert = true;
   sound = 3;
+};
+
+GTFO.SpellID["414842"] = {
+  --desc = "Pumpkin Breath (Headless Horseman - Dragonflight)";
+  sound = 3;
+};
+
+GTFO.SpellID["418132"] = {
+  --desc = "Insidious Cackle (Headless Horseman - Dragonflight)";
+  sound = 4;
+  applicationOnly = true;
+};
+
+GTFO.SpellID["415329"] = {
+  --desc = "Hot Head (Headless Horseman - Dragonflight)";
+  sound = 1;
 };
 
 end

@@ -9,7 +9,7 @@
 -- subclass of the @{QueryScrollingTable} class.
 -- @classmod SelectionScrollingTable
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local Table = TSM.Include("Util.Table")
 local TempTable = TSM.Include("Util.TempTable")
 local UIElements = TSM.Include("UI.UIElements")

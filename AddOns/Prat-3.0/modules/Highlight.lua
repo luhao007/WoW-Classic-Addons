@@ -27,10 +27,10 @@
 Prat:AddModuleToLoad(function()
   local function dbg(...) end
 
-  --[===[@debug@
+  --[==[@debug@
   function dbg(...) Prat:PrintLiteral(...) end
 
-  --@end-debug@]===]
+  --@end-debug@]==]
 
   local PRAT_MODULE = Prat:RequestModuleName("Highlight")
 
@@ -52,7 +52,7 @@ Prat:AddModuleToLoad(function()
     }
   })
 
-  --[===[@debug@
+  --[==[@debug@
   PL:AddLocale(PRAT_MODULE, "enUS", {
     ["module_name"] = "Highlight",
     ["module_desc"] = "Highlight your own name, and various other text",
@@ -61,7 +61,7 @@ Prat:AddModuleToLoad(function()
     ["guild_name"] = "Highlight Guilds",
     ["guild_desc"] = "Highlight things which looks like guild names"
   })
-  --@end-debug@]===]
+  --@end-debug@]==]
 
   -- These Localizations are auto-generated. To help with localization
   -- please go to http://www.wowace.com/projects/prat-3-0/localization/
@@ -170,7 +170,7 @@ L = {
 		["guild_desc"] = "길드명처럼 보일 수 있게 강조",
 		["guild_name"] = "길드 강조",
 		["module_desc"] = "사용자 이름 및  기타 텍스트 강조하기",
-		["module_name"] = "강조하기",
+		["module_name"] = "강조 [Highlight]",
 		["player_desc"] = "자신의 이름을 특별한 색으로 강조",
 		["player_name"] = "자신 강조",
 	}

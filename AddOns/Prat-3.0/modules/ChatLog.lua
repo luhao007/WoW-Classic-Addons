@@ -40,7 +40,7 @@ Prat:AddModuleToLoad(function()
 
   local PL = module.PL
 
-  --[===[@debug@
+  --[==[@debug@
   PL:AddLocale(PRAT_MODULE, "enUS", {
     ["ChatLog"] = true,
     ["A module to automaticaly enable chat and combat logging."] = true,
@@ -57,7 +57,7 @@ Prat:AddModuleToLoad(function()
     ["quiet_name"] = "Suppress Feedback Messages",
     ["quiet_desc"] = "Dont display any messages when this mod is enabled, or when it changes the log settings.",
   })
-  --@end-debug@]===]
+  --@end-debug@]==]
 
   -- These Localizations are auto-generated. To help with localization
   -- please go to http://www.wowace.com/projects/prat-3-0/localization/

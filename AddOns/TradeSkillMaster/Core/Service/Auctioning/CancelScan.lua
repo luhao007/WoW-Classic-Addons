@@ -4,8 +4,9 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local CancelScan = TSM.Auctioning:NewPackage("CancelScan")
+local Environment = TSM.Include("Environment")
 local L = TSM.Include("Locale").GetTable()
 local Database = TSM.Include("Util.Database")
 local TempTable = TSM.Include("Util.TempTable")
@@ -81,7 +82,7 @@ function CancelScan.DoProcess()
 	end
 	local auctionId, itemString, currentBid, buyout = query:GetFirstResultAndRelease()
 	if auctionId then
-		local usedAuctionIndex = TSM.IsWowClassic() and (itemString..buyout..currentBid..auctionId) or auctionId
+		local usedAuctionIndex = Environment.IsRetail() and auctionId or (itemString..buyout..currentBid..auctionId)
 		private.usedAuctionIndex[usedAuctionIndex] = true
 		local result = AuctionHouseWrapper.CancelAuction(auctionId)
 		local isRowDone = cancelRow:GetField("numProcessed") + 1 == cancelRow:GetField("numStacks")
@@ -310,14 +311,14 @@ end
 
 function private.GenerateCancel(auctionsDBRow, itemString, operationName, operationSettings, subRows)
 	local auctionId, stackSize, currentBid, buyout, highBidder, duration = auctionsDBRow:GetFields("auctionId", "stackSize", "currentBid", "buyout", "highBidder", "duration")
-	local itemBuyout = TSM.IsWowClassic() and floor(buyout / stackSize) or buyout
-	local itemBid = TSM.IsWowClassic() and floor(currentBid / stackSize) or currentBid
-	if TSM.IsWowClassic() and operationSettings.matchStackSize and stackSize ~= TSM.Auctioning.Util.GetPrice("stackSize", operationSettings, itemString) then
+	local itemBuyout = Environment.HasFeature(Environment.FEATURES.AH_STACKS) and floor(buyout / stackSize) or buyout
+	local itemBid = Environment.HasFeature(Environment.FEATURES.AH_STACKS) and floor(currentBid / stackSize) or currentBid
+	if Environment.HasFeature(Environment.FEATURES.AH_STACKS) and operationSettings.matchStackSize and stackSize ~= TSM.Auctioning.Util.GetPrice("stackSize", operationSettings, itemString) then
 		return false
 	elseif not TSM.db.global.auctioningOptions.cancelWithBid and highBidder ~= "" then
 		-- Don't cancel an auction if it has a bid and we're set to not cancel those
 		return true, "cancelBid", itemBuyout, nil, auctionId
-	elseif not TSM.IsWowClassic() and C_AuctionHouse.GetCancelCost(auctionId) > GetMoney() then
+	elseif not Environment.HasFeature(Environment.FEATURES.AH_STACKS) and C_AuctionHouse.GetCancelCost(auctionId) > GetMoney() then
 		return true, "cancelNoMoney", itemBuyout, nil, auctionId
 	end
 
@@ -351,7 +352,7 @@ function private.GenerateCancel(auctionsDBRow, itemString, operationName, operat
 	local shouldCancel, logReason = false, nil
 	local playerLowestItemBuyout, playerLowestAuctionId = TSM.Auctioning.Util.GetPlayerLowestBuyout(subRows, itemString, operationSettings)
 	local secondLowestBuyout = TSM.Auctioning.Util.GetNextLowestItemBuyout(subRows, itemString, lowestAuction, operationSettings)
-	local nonPlayerLowestAuctionId = not TSM.IsWowClassic() and playerLowestItemBuyout and TSM.Auctioning.Util.GetLowestNonPlayerAuctionId(subRows, itemString, operationSettings, playerLowestItemBuyout)
+	local nonPlayerLowestAuctionId = Environment.IsRetail() and playerLowestItemBuyout and TSM.Auctioning.Util.GetLowestNonPlayerAuctionId(subRows, itemString, operationSettings, playerLowestItemBuyout)
 	if itemBuyout < minPrice and not lowestAuction.isBlacklist then
 		-- this auction is below the min price
 		if operationSettings.cancelRepost and resetPrice and itemBuyout < (resetPrice - cancelRepostThreshold) then
@@ -364,7 +365,7 @@ function private.GenerateCancel(auctionsDBRow, itemString, operationName, operat
 	elseif lowestAuction.buyout < minPrice and not lowestAuction.isBlacklist then
 		-- lowest buyout is below min price, so do nothing
 		logReason = "cancelBelowMin"
-	elseif operationSettings.cancelUndercut and playerLowestItemBuyout and ((itemBuyout - undercut) > playerLowestItemBuyout or (not TSM.IsWowClassic() and (itemBuyout - undercut) == playerLowestItemBuyout and auctionId ~= playerLowestAuctionId and auctionId < (nonPlayerLowestAuctionId or 0))) then
+	elseif operationSettings.cancelUndercut and playerLowestItemBuyout and ((itemBuyout - undercut) > playerLowestItemBuyout or (Environment.IsRetail() and (itemBuyout - undercut) == playerLowestItemBuyout and auctionId ~= playerLowestAuctionId and auctionId < (nonPlayerLowestAuctionId or 0))) then
 		-- we've undercut this auction
 		shouldCancel = true
 		logReason = "cancelPlayerUndercut"
@@ -439,7 +440,7 @@ function private.AddToQueue(itemString, operationName, itemBid, itemBuyout, stac
 end
 
 function private.ProcessQueryHelper(row, cancelRow)
-	if TSM.IsWowClassic() then
+	if Environment.HasFeature(Environment.FEATURES.AH_STACKS) then
 		local auctionId, itemString, stackSize, currentBid, buyout = row:GetFields("auctionId", "autoBaseItemString", "stackSize", "currentBid", "buyout")
 		local itemBid = floor(currentBid / stackSize)
 		local itemBuyout = floor(buyout / stackSize)

@@ -4,13 +4,14 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM = select(2, ...) ---@type TSM
 local Crafting = TSM.Tooltip:NewPackage("Crafting")
 local L = TSM.Include("Locale").GetTable()
 local ItemString = TSM.Include("Util.ItemString")
 local MatString = TSM.Include("Util.MatString")
 local Theme = TSM.Include("Util.Theme")
 local TempTable = TSM.Include("Util.TempTable")
+local CustomPrice = TSM.Include("Service.CustomPrice")
 local private = {}
 
 
@@ -36,14 +37,14 @@ end
 -- ============================================================================
 
 function private.PopulateCostLine(tooltip, itemString)
-	local baseItemString = itemString and ItemString.GetBaseFast(itemString)
-	assert(baseItemString)
+	local levelItemString = itemString and ItemString.ToLevel(itemString)
+	assert(levelItemString)
 	local cost, profit = nil, nil
 	if itemString == ItemString.GetPlaceholder() then
 		-- example tooltip
 		cost = 55
 		profit = 20
-	elseif not TSM.Crafting.CanCraftItem(baseItemString) then
+	elseif not TSM.Crafting.CanCraftItem(levelItemString) then
 		return
 	else
 		cost = TSM.Crafting.Cost.GetLowestCostByItem(itemString)
@@ -57,15 +58,15 @@ function private.PopulateCostLine(tooltip, itemString)
 end
 
 function private.PopulateDetailedMatsLines(tooltip, itemString)
-	local baseItemString = itemString and ItemString.GetBaseFast(itemString)
-	assert(baseItemString)
-	if baseItemString == ItemString.GetPlaceholder() then
+	local levelItemString = itemString and ItemString.ToLevel(itemString)
+	assert(levelItemString)
+	if levelItemString == ItemString.GetPlaceholder() then
 		-- example tooltip
 		tooltip:StartSection()
 		tooltip:AddSubItemValueLine(ItemString.GetPlaceholder(), 11, 5)
 		tooltip:EndSection()
 		return
-	elseif not TSM.Crafting.CanCraftItem(baseItemString) then
+	elseif not TSM.Crafting.CanCraftItem(levelItemString) then
 		return
 	end
 
@@ -95,12 +96,12 @@ function private.PopulateDetailedMatsLines(tooltip, itemString)
 	tooltip:StartSection()
 	local numResult = TSM.Crafting.GetNumResult(craftString)
 	for _, matItemString, matQuantity in TSM.Crafting.MatIterator(craftString) do
-		tooltip:AddSubItemValueLine(matItemString, TSM.Crafting.Cost.GetMatCost(matItemString), matQuantity / numResult)
+		tooltip:AddSubItemValueLine(matItemString, CustomPrice.GetSourcePrice(matItemString, "MatPrice"), matQuantity / numResult)
 	end
 	for _, matItemString in ipairs(optionalMats) do
 		if hasOptionalMat[matItemString] then
 			local matQuantity = TSM.Crafting.GetOptionalMatQuantity(craftString, ItemString.ToId(matItemString))
-			tooltip:AddSubItemValueLine(matItemString, TSM.Crafting.Cost.GetMatCost(matItemString), matQuantity / numResult)
+			tooltip:AddSubItemValueLine(matItemString, CustomPrice.GetSourcePrice(matItemString, "MatPrice"), matQuantity / numResult)
 		end
 	end
 	TempTable.Release(hasOptionalMat)
@@ -115,7 +116,7 @@ function private.PopulateMatPriceLine(tooltip, itemString)
 		-- example tooltip
 		matCost = 17
 	else
-		matCost = TSM.Crafting.Cost.GetMatCost(itemString)
+		matCost = CustomPrice.GetSourcePrice(itemString, "MatPrice")
 	end
 	if matCost then
 		tooltip:AddItemValueLine(L["Material Cost"], matCost)
