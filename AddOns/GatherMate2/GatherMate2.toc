@@ -1,9 +1,9 @@
 ## Interface: 30400
 ## Author: kagaro, xinhuan, nevcairiel
-## Version: 1.47.3-classic
+## Version: 1.47.5-classic
 ## OptionalDeps: Ace3, LibDataBroker-1.1, HereBeDragons
 ## LoadManagers: AddonLoader
-## SavedVariables: GatherMate2DB, GatherMate2HerbDB, GatherMate2MineDB, GatherMate2FishDB, GatherMate2GasDB, GatherMate2TreasureDB
+## SavedVariables: GatherMate2DB, GatherMate2HerbDB, GatherMate2MineDB, GatherMate2FishDB, GatherMate2GasDB, GatherMate2TreasureDB, GatherMate2ArchaeologyDB
 
 ## Title: GatherMate2
 ## Notes: Collects Herbs, Mines, Gas Clouds, Archaeology, Treasure and Fishing locations and adds them to the worldmap and minimap
