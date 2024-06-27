@@ -1533,6 +1533,10 @@
 				<Title>分配方式</Title>
 				<Notes>泰坦面板的分配方式模块</Notes>
 			</SubAddon>
+			<SubAddon name="TitanSpeed">
+				<Title>移动速度</Title>
+				<Notes>泰坦面板的移动速度模块</Notes>
+			</SubAddon>
 			<SubAddon name="TitanPerformance">
 				<Title>性能</Title>
 				<Notes>泰坦面板的性能模块</Notes>

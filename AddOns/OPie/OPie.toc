@@ -1,6 +1,7 @@
 ## Interface: 30400
 ## Author: foxlit
-## Version: Yuzu 5b
+## Version: Zeta 6
+## OptionalDeps: TaintLess
 ## SavedVariables: OneRing_Config, OPie_SavedData
 ## SavedVariablesPerCharacter: OPie_SavedDataPC
 
@@ -16,10 +17,10 @@ Libs\Evie.lua
 Libs\Niji.lua
 Libs\Mirage.lua
 Libs\TaintLess.xml
-Libs\Ten.lua
-Libs\TenSettings.lua
+Libs\exui\exui.xml
 Libs\ActionBook\ActionBook.xml
-Libs\ActionBook\ActionBookUI.xml
+Libs\TenSettings.lua
+Libs\NotGameTooltip.lua
 Locale.lua
 OPieCore.lua
 OPieUI.lua

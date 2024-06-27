@@ -46,7 +46,7 @@ if MODERN or CF_WRATH then -- OPieTracker
 		local n = GetNumTrackingTypes()
 		if n ~= #collectionData then
 			for i=1,n do
-				local token = "OPieBundleTracker" .. i
+				local token = "OPbTR" .. i
 				collectionData[i], collectionData[token] = token, trackerActions[i]
 				ORI:SetDisplayOptions(token, nil, nil, generateColor(i,n))
 			end

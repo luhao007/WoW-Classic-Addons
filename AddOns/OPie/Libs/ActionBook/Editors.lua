@@ -1,203 +1,42 @@
 local _, T = ...
+if T.SkipLocalActionBook then return end
 
-local AB = assert(T.ActionBook:compatible(2, 23), "A compatible version of ActionBook is required.")
+local AB = T.ActionBook:compatible(2, 36)
+assert(AB and 1, "Incompatible library bundle")
+local L = T.ActionBook.L
 local MODERN = select(4,GetBuildInfo()) >= 8e4
-local L = AB:locale()
-local CreateEdge = T.CreateEdge
-
-local multilineInput do
-	local function onNavigate(self, _x,y, _w,h)
-		local scroller = self.scroll
-		local occH, occP, y = scroller:GetHeight(), scroller:GetVerticalScroll(), -y
-		if occP > y then
-			occP = y -- too far
-		elseif (occP + occH) < (y+h) then
-			occP = y+h-occH -- not far enough
-		else
-			return
-		end
-		scroller:SetVerticalScroll(occP)
-		local _, mx = scroller.ScrollBar:GetMinMaxValues()
-		scroller.ScrollBar:SetMinMaxValues(0, occP < mx and mx or occP)
-		scroller.ScrollBar:SetValue(occP)
-	end
-	local function onClick(self)
-		self.input:SetFocus()
-	end
-	function multilineInput(name, parent, width)
-		local scroller = CreateFrame("ScrollFrame", name .. "Scroll", parent, "UIPanelScrollFrameTemplate")
-		local input = CreateFrame("Editbox", name, scroller)
-		input:SetWidth(width)
-		input:SetMultiLine(true)
-		input:SetAutoFocus(false)
-		input:SetTextInsets(2,4,2,2)
-		input:SetFontObject(GameFontHighlight)
-		input:SetScript("OnCursorChanged", onNavigate)
-		scroller:EnableMouse(1)
-		scroller:SetScript("OnMouseDown", onClick)
-		scroller:SetScrollChild(input)
-		input.scroll, scroller.input = scroller, input
-		return input, scroller
-	end
-end
-
-do -- .macrotext
-	local bg = CreateFrame("Frame")
-	CreateEdge(bg, {edgeFile="Interface/Tooltips/UI-Tooltip-Border", bgFile="Interface/DialogFrame/UI-DialogBox-Background-Dark", tile=true, edgeSize=16, tileSize=16, insets={left=4,right=4,bottom=4,top=4}}, 0xb2000000, 0xb2b2b2)
-	bg:Hide()
-	local eb, scroll = multilineInput("ABE_MacroInput", bg, 511)
-	eb:SetScript("OnEscapePressed", eb.ClearFocus)
-	eb:SetScript("OnEditFocusLost", function()
-		local p = bg:GetParent()
-		p = p and p.SaveAction and p:SaveAction()
-	end)
-	scroll:SetPoint("TOPLEFT", 5, -4)
-	scroll:SetPoint("BOTTOMRIGHT", -26, 4)
-	eb:SetHyperlinksEnabled(true)
-	eb:SetScript("OnHyperlinkClick", function(self, link, text, button)
-		local pos = string.find(self:GetText(), text, 1, 1)-1
-		self:HighlightText(pos, pos + #text)
-		if button == "RightButton" and link:match("^rk%d+:") then
-			local replace = IsAltKeyDown() and text:match("|h(.-)|h") or ("{{" .. link:match("^rk%d+:(.+)") .. "}}")
-			self:Insert(replace)
-			self:HighlightText(pos, pos + #replace)
-		else
-			self:SetCursorPosition(pos + #text)
-		end
-		self:SetFocus()
-	end)
-	local function removeEditorLinks(text)
-		return (text:gsub("|c%x+|Hrk%d+:([%a:%d/]+)|h.-|h|r", "{{%1}}"))
-	end
-	local function GetHighlightText(editBox)
-		local text, curPos = editBox:GetText(), editBox:GetCursorPosition()
-		editBox:Insert("")
-		local text2, selStart = editBox:GetText(), editBox:GetCursorPosition()
-		local selEnd = selStart + #text - #text2
-		if text ~= text2 then
-			editBox:SetText(text)
-			editBox:SetCursorPosition(curPos)
-			editBox:HighlightText(selStart, selEnd)
-		end
-		return text:sub(selStart+1, selEnd), selStart
-	end
-	local function ReplaceSelection(editBox, newSelText)
-		editBox:Insert(newSelText)
-		local cur = editBox:GetCursorPosition()
-		editBox:HighlightText(cur-#newSelText, cur)
-	end
-	eb:SetScript("OnKeyDown", function(self, key)
-		if (key == "C" or key == "X") and IsControlKeyDown() then
-			local stext = GetHighlightText(self)
-			if stext:match("[^|]|H.+|h.*|h") then
-				ReplaceSelection(self, removeEditorLinks(stext))
-				if key == "C" then
-					self._rsText = stext
-				end
-			end
-		end
-	end)
-	eb:SetScript("OnUpdate", function(self)
-		if self._rsText then
-			ReplaceSelection(self, self._rsText)
-			self._rsText = nil
-		end
-	end)
-	
-	local decodeSpellLink do
-		local names, tag = {}, 0
-		function decodeSpellLink(token, sid)
-			local forceRank, tname = token == "spellr"
-			for id in sid:gmatch("%d+") do
-				local name, sr = GetSpellInfo(tonumber(id)), GetSpellSubtext(tonumber(id))
-				if sr and sr ~= "" and (forceRank or MODERN) then name = name .. " (" .. sr .. ")" end
-				if name and names[name] ~= tag then
-					names[name], tname = tag, (tname and (tname .. " / ") or "") .. name
-				end
-			end
-			tag = tag + 1
-			return tname and ("|cff71d5ff|Hrk" .. token .. ":" .. sid .. "|h" .. tname .. "|h|r")
-		end
-	end
-	local tagCounter = 0
-	local function tagReplace()
-		tagCounter = tagCounter + 1
-		return "|Hrk" .. tagCounter .. ":"
-	end
-	function bg:SetAction(owner, action)
-		bg:SetParent(nil)
-		bg:ClearAllPoints()
-		bg:SetAllPoints(owner)
-		bg:SetParent(owner)
-		bg:Show()
-		tagCounter = 0
-		eb:SetText((
-			(action[1] == "macrotext" and type(action[2]) == "string" and action[2] or "")
-			:gsub("{{(spellr?):([%d/]+)}}", decodeSpellLink)
-			:gsub("{{mount:ground}}", "|cff71d5ff|Hrkmount:ground|h" .. L"Ground Mount" .. "|h|r")
-			:gsub("{{mount:air}}", "|cff71d5ff|Hrkmount:air|h" .. L"Flying Mount" .. "|h|r")
-			:gsub("{{mount:dragon}}", "|cff71d5ff|Hrkmount:dragon|h" .. L"Dragonriding Mount" .. "|h|r")
-			:gsub("|Hrk", tagReplace)
-		))
-	end
-	function bg:GetAction(into)
-		into[1], into[2] = "macrotext", removeEditorLinks(eb:GetText())
-	end
-	function bg:Release(owner)
-		if bg:IsOwned(owner) then
-			bg:SetParent(nil)
-			bg:ClearAllPoints()
-			bg:Hide()
-		end
-	end
-	function bg:IsOwned(owner)
-		return bg:GetParent() == owner
-	end
-	local function isCursorOnEmptyLine(box)
-		box:Insert("") -- Clobber selection
-		local text, cp = box:GetText() or "", box:GetCursorPosition()
-		local isEmptyLine = text == ""
-		if text ~= "" then
-			isEmptyLine = (cp == 0 or text:match("^\n", cp)) and (text:match("^%s*\n", cp+1) or cp == #text)
-		end
-		return isEmptyLine
-	end
-	bg.editBox, bg.scrollFrame = bg, eb
-	hooksecurefunc("ChatEdit_InsertLink", function(link)
-		if GetCurrentKeyBoardFocus() == eb then
-			if link:match("item:") then
-				eb:Insert((isCursorOnEmptyLine(eb) and (GetItemSpell(link) and SLASH_USE1 or SLASH_EQUIP1) or "") .. " " .. GetItemInfo(link))
-			elseif link:match("spell:") and not IsPassiveSpell(tonumber(link:match("spell:(%d+)"))) then
-				eb:Insert((isCursorOnEmptyLine(eb) and SLASH_CAST1 or "") .. " " .. decodeSpellLink(link:match("(spell):(%d+)")):gsub("|Hrk", tagReplace))
-			else
-				eb:Insert(link:match("|h%[?(.-[^%]])%]?|h"))
-			end
-		end
-	end)
-	AB:RegisterEditorPanel("macrotext", bg)
-end
 
 local RegisterSimpleOptionsPanel do
-	local f, e = CreateFrame("Frame")
+	local optionsForHandle, curHandle, curHandleID = {}
+	local f, fButtons = CreateFrame("Frame"), {}
 	f:Hide()
-	f.Options = {}
 	local function callSave()
 		local p = f:GetParent()
-		if p and p.SaveAction then
+		if p and type(p.OnActionChanged) == "function" then
+			p:OnActionChanged(curHandle)
+		elseif p and type(p.SaveAction) == "function" then -- DEPRECATED [2303]
 			p:SaveAction()
 		end
 	end
+	local function updateCheckButtonHitRect(self)
+		local b = self:GetParent()
+		b:SetHitRectInsets(0, -self:GetStringWidth()-5, 4, 4)
+	end
 	for i=1,3 do
-		e = T.TenSettings:CreateOptionsCheckButton(nil, f)
+		local e = CreateFrame("CheckButton", nil, f, MODERN and "UICheckButtonTemplate" or "InterfaceOptionsCheckButtonTemplate")
+		if MODERN then
+			e:SetSize(24, 24)
+			e.Text:SetPoint("LEFT", e, "RIGHT", 2, 1)
+			e.Text:SetFontObject(GameFontHighlightLeft)
+		end
+		hooksecurefunc(e.Text, "SetText", updateCheckButtonHitRect)
 		e:SetMotionScriptsWhileDisabled(1)
 		e:SetScript("OnClick", callSave)
-		e:SetPoint("TOPLEFT", 256, 23-21*i)
-		f.Options[i] = e
+		fButtons[i] = e
 	end
 
-	local optionsForHandle, curHandle, curHandleID = {}
 	local function IsOwned(self, host)
-		return curHandle == optionsForHandle[self] and f:GetParent() == host
+		return curHandle == self and f:GetParent() == host
 	end
 	local function Release(self, host)
 		if IsOwned(self, host) then
@@ -208,35 +47,53 @@ local RegisterSimpleOptionsPanel do
 		end
 	end
 	local function SetAction(self, host, actionTable)
-		local opts = optionsForHandle[self]
+		local opts, op = optionsForHandle[self], f:GetParent()
 		assert(actionTable[1] == opts[0], "Invalid editor")
+		if curHandle and op and (op ~= host or self ~= curHandle) and type(op.OnEditorRelease) == "function" then
+			securecall(op.OnEditorRelease, op, curHandle)
+		end
 		f:SetParent(nil)
 		f:ClearAllPoints()
 		f:SetAllPoints(host)
 		f:SetParent(host)
-		curHandle, curHandleID = opts, actionTable[2]
-		local getState = opts.getOptionState
+		curHandle, curHandleID = self, actionTable[2]
+		local ofsX = host.optionsColumnOffset
+		ofsX = type(ofsX) == "number" and ofsX or 2
+		local getState, fvm = opts.getOptionState, opts.flagValues
+		local f3 = type(actionTable[3]) == "number" and actionTable[3] or 0
 		for i=1,#opts do
-			local w, oi, isChecked = f.Options[i], opts[i], false
+			local w, oi, isChecked = fButtons[i], opts[i], false
 			w.Text:SetText(opts[oi])
+			w:SetPoint("TOPLEFT", ofsX, 23-21*i)
+			local flagMask = fvm and fvm[opts[i]]
 			if getState then
 				isChecked = getState(actionTable, oi)
+			elseif flagMask then
+				isChecked = bit.band(f3, flagMask) == flagMask
 			elseif actionTable[opts[i]] ~= nil then
 				isChecked = not not actionTable[oi]
 			end
 			w:SetChecked(isChecked)
 			w:Show()
 		end
-		for i=#opts+1,#f.Options do
-			f.Options[i]:Hide()
+		for i=#opts+1,#fButtons do
+			fButtons[i]:Hide()
 		end
 		f:Show()
 	end
 	local function GetAction(self, into)
 		local opts = optionsForHandle[self]
 		into[1], into[2] = opts[0], curHandleID
-		for i=1,#opts do
-			into[opts[i]] = f.Options[i]:GetChecked() or nil
+		if opts.flagValues then
+			local v, fv = 0, opts.flagValues
+			for i=1, #opts do
+				v = v + (fButtons[i]:GetChecked() and fv[opts[i]] or 0)
+			end
+			into[3] = v > 0 and v or nil
+		else
+			for i=1,#opts do
+				into[opts[i]] = fButtons[i]:GetChecked() or nil
+			end
 		end
 		if opts.saveState then
 			opts.saveState(into)
@@ -249,36 +106,36 @@ local RegisterSimpleOptionsPanel do
 	end
 end
 
+local forceShowFlag = {forceShow=1}
 RegisterSimpleOptionsPanel("item", {"byName", "forceShow", "onlyEquipped",
 	byName=L"Also use items with the same name",
 	forceShow=L"Show a placeholder when unavailable",
-	onlyEquipped=L"Only show when equipped"
+	onlyEquipped=L"Only show when equipped",
+	flagValues={byName=2, forceShow=1, onlyEquipped=4},
 })
 RegisterSimpleOptionsPanel("macro", {"forceShow",
 	forceShow=L"Show a placeholder when unavailable",
+	flagValues=forceShowFlag,
 })
 if MODERN then
 	RegisterSimpleOptionsPanel("extrabutton", {"forceShow",
 		forceShow=L"Show a placeholder when unavailable",
+		flagValues=forceShowFlag,
 	})
 	RegisterSimpleOptionsPanel("toy", {"forceShow",
 		forceShow=L"Show a placeholder when unavailable",
+		flagValues=forceShowFlag,
 	})
 else
 	RegisterSimpleOptionsPanel("spell", {"upRank",
 		upRank=L"Use the highest known rank",
 		getOptionState=function(actionTable, _optKey)
-			return actionTable[3] ~= "lock-rank"
+			return actionTable[3] ~= 16
 		end,
 		saveState=function(intoTable)
-			intoTable[3], intoTable.upRank = not intoTable.upRank and "lock-rank" or nil
+			intoTable[3], intoTable.upRank = not intoTable.upRank and 16 or nil
 		end,
 	})
 end
 
-
---[[ These functions are not covered by the usual API warranty; do not rely on
-     them to exist or behave the way they do now in the future.
-     Writing directly to this table is also terrible.
---]]
-T.ActionBook._CreateSimpleEditorPanel = RegisterSimpleOptionsPanel
+AB.HUM.CreateSimpleEditorPanel = RegisterSimpleOptionsPanel

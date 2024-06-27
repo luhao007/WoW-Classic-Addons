@@ -1,15 +1,21 @@
-local _, T = ...
+local COMPAT, _, T = select(4,GetBuildInfo()), ...
 if T.SkipLocalActionBook then return end
-local MODERN = select(4,GetBuildInfo()) >= 8e4
-local MODERN_CONTAINERS = MODERN or C_Container and C_Container.GetContainerNumSlots
-local CF_WRATH = not MODERN and select(4,GetBuildInfo()) >= 3e4
-local AB = assert(T.ActionBook:compatible(2, 21), "A compatible version of ActionBook is required")
-local RW = assert(T.ActionBook:compatible("Rewire", 1, 10), "A compatible version of Rewire is required")
-local L = AB:locale()
+local MODERN, CF_WRATH, CF_CATA, CI_ERA = COMPAT > 10e4, COMPAT < 10e4 and COMPAT >= 3e4, COMPAT < 10e4 and COMPAT >= 4e4, COMPAT < 2e4
+local AB = T.ActionBook:compatible(2,21)
+local RW = T.ActionBook:compatible("Rewire", 1,27)
+assert(AB and RW and 1, "Incompatible library bundle")
+local L = T.ActionBook.L
 local mark = {}
 
 local function icmp(a,b)
-	return strcmputf8i(a,b) < 1
+	return strcmputf8i(a,b) < 0
+end
+local function isItemInteresting(tf, testIdx, bag, slot, iid)
+	if testIdx == 2 then
+		local r = tf(bag, slot)
+		return r and (r.hasLoot or r.isReadable)
+	end
+	return tf(iid)
 end
 
 do -- spellbook
@@ -25,6 +31,16 @@ do -- spellbook
 				if (not ik) == (not knownFilter) then
 					procSpellBookEntry(add, at, knownFilter, sourceKnown, true, ik and "SPELL" or "FUTURESPELL", asid)
 				end
+			end
+		end
+	end
+	local function procRuneBookEntry(add, _ok, st, sid)
+		if st == "SPELL" and sid then
+			local n1 = GetSpellInfo(sid)
+			local n2, _, _, _, _, _, sid2 = GetSpellInfo(n1 or "")
+			if n2 ~= n1 and sid2 and not IsPassiveSpell(sid2) and not mark[sid2] then
+				mark[sid2] = 1
+				add("spell", sid2)
 			end
 		end
 	end
@@ -83,8 +99,11 @@ do -- spellbook
 			SetCVar("showAllSpellRanks", "1")
 		end
 		for i=1,GetNumSpellTabs()+12 do
-			local _, _, ofs, c, _, otherSpecID = GetSpellTabInfo(i)
+			local _, ico, ofs, c, _, otherSpecID = GetSpellTabInfo(i)
 			local isNotOffspec = otherSpecID == 0
+			for j=ofs+1, knownFilter and CI_ERA and ico == 134419 and ofs+c or 0 do
+				procRuneBookEntry(add, pcall(GetSpellBookItemInfo, j, "spell"))
+			end
 			for j=ofs+1,(isNotOffspec or not knownFilter) and (ofs+c) or 0 do
 				procSpellBookEntry(add, "spell", knownFilter, isNotOffspec, pcall(GetSpellBookItemInfo, j, "spell"))
 			end
@@ -132,33 +151,39 @@ do -- spellbook
 end
 AB:AugmentCategory(L"Items", function(_, add)
 	wipe(mark)
-	local ns = MODERN_CONTAINERS and C_Container.GetContainerNumSlots or GetContainerNumSlots
-	local giid = MODERN_CONTAINERS and C_Container.GetContainerItemID or GetContainerItemID
-	for t=0,1 do
-		t = t == 0 and GetItemSpell or IsEquippableItem
+	local ns, giid = C_Container.GetContainerNumSlots, C_Container.GetContainerItemID
+	for t=0,2 do
+		local tf = t == 0 and GetItemSpell or t == 1 and IsEquippableItem or C_Container.GetContainerItemInfo
 		for bag=0,4 do
 			for slot=1, ns(bag) do
 				local iid = giid(bag, slot)
-				if iid and not mark[iid] and t(iid) then
+				if iid and not mark[iid] and isItemInteresting(tf, t, bag, slot, iid) then
 					add("item", iid)
 					mark[iid] = 1
 				end
 			end
 		end
-		for slot=INVSLOT_FIRST_EQUIPPED, INVSLOT_LAST_EQUIPPED do
+		for slot=INVSLOT_FIRST_EQUIPPED, t < 2 and INVSLOT_LAST_EQUIPPED or -10 do
 			local iid = GetInventoryItemID("player", slot)
-			if iid and not mark[iid] and t(iid) then
+			if iid and not mark[iid] and tf(iid) then
 				add("item", iid)
 				mark[iid] = 1
 			end
 		end
 	end
 end)
-if MODERN then -- Battle pets
+if MODERN or CF_WRATH then -- Battle pets/Companions
 	local running, sourceFilters, typeFilters, flagFilters, search = false, {}, {}, {[LE_PET_JOURNAL_FILTER_COLLECTED]=1, [LE_PET_JOURNAL_FILTER_NOT_COLLECTED]=1}, ""
 	hooksecurefunc(C_PetJournal, "SetSearchFilter", function(filter) search = filter end)
 	hooksecurefunc(C_PetJournal, "ClearSearchFilter", function() if not running then search = "" end end)
-	AB:AugmentCategory(L"Battle pets", function(_, add)
+	local function FilterPetInfo(...)
+		local petID, spID = ...
+		if spID and not select(15, ...) then -- can't battle
+			return petID, spID
+		end
+		return petID
+	end
+	AB:AugmentCategory(not MODERN and COMPANIONS or L"Battle pets", function(_, add)
 		assert(not running, "Battle pets enumerator is not reentrant")
 		running = true
 		for i=1, C_PetJournal.GetNumPetSources() do
@@ -182,9 +207,11 @@ if MODERN then -- Battle pets
 		local sortParameter = C_PetJournal.GetPetSortParameter()
 		C_PetJournal.SetPetSortParameter(LE_SORT_BY_LEVEL)
 		
-		add("battlepet", "fave")
+		if MODERN then
+			add("battlepet", "fave")
+		end
 		for i=1,C_PetJournal.GetNumPets() do
-			add("battlepet", (C_PetJournal.GetPetInfoByIndex(i)))
+			add("battlepet", FilterPetInfo(C_PetJournal.GetPetInfoByIndex(i)))
 		end
 		
 		for k, v in pairs(flagFilters) do
@@ -201,15 +228,8 @@ if MODERN then -- Battle pets
 		
 		running = false
 	end)
-elseif CF_WRATH then
-	AB:AugmentCategory(COMPANIONS, function(_, add)
-		for i=1, GetNumCompanions("CRITTER") do
-			local _, _, sid = GetCompanionInfo("CRITTER", i)
-			add("spell", sid)
-		end
-	end)
 end
-if MODERN then -- Mounts
+if MODERN or CF_WRATH then -- Mounts
 	AB:AugmentCategory(L"Mounts", function(_, add)
 		if GetSpellInfo(150544) then add("spell", 150544) end
 		local myFactionId = UnitFactionGroup("player") == "Horde" and 0 or 1
@@ -217,28 +237,18 @@ if MODERN then -- Mounts
 		for i=1, #idm do
 			local mid = idm[i]
 			local name, sid, _3, _4, _5, _6, _7, factionLocked, factionId, hide, have = C_MountJournal.GetMountInfoByID(mid)
-			if have and not hide
-			   and (not factionLocked or factionId == myFactionId)
-			   and RW:IsSpellCastable(sid)
-			   then
+			if have and not hide and (not factionLocked or factionId == myFactionId) and RW:IsSpellCastable(sid, 2) then
 				i2[#i2+1], i2n[mid] = mid, name
 			end
 		end
-		table.sort(i2, function(a,b) return i2n[a] < i2n[b] end)
+		table.sort(i2, function(a,b) return icmp(i2n[a], i2n[b]) end)
 		for i=1,#i2 do
 			add("mount", i2[i])
 		end
 	end)
-elseif CF_WRATH then
-	AB:AugmentCategory(L"Mounts", function(_, add)
-		for i=1, GetNumCompanions("MOUNT") do
-			local _, _, sid = GetCompanionInfo("MOUNT", i)
-			add("spell", sid)
-		end
-	end)
 end
 AB:AugmentCategory(L"Macros", function(_, add)
-	add("macrotext", "")
+	add("imptext", "")
 	local n, ni = {}, 1
 	for name in RW:GetNamedMacros() do
 		n[ni], ni = name, ni + 1
@@ -248,7 +258,7 @@ AB:AugmentCategory(L"Macros", function(_, add)
 		add("macro", n[i])
 	end
 end)
-if MODERN then -- equipmentset
+if COMPAT >= 3e4 then -- equipmentset
 	AB:AugmentCategory(L"Equipment sets", function(_, add)
 		for _,id in pairs(C_EquipmentSet.GetEquipmentSetIDs()) do
 			add("equipmentset", (C_EquipmentSet.GetEquipmentSetInfo(id)))
@@ -256,14 +266,14 @@ if MODERN then -- equipmentset
 	end)
 end
 AB:AugmentCategory(L"Raid markers", function(_, add)
-	for k=0, MODERN and 1 or 0 do
+	for k=0, (MODERN or CF_CATA) and 1 or 0 do
 		k = k == 0 and "raidmark" or "worldmark"
-		for i=0,8 do
+		for i=0, k == "worldmark" and CF_CATA and 5 or 8 do
 			add(k, i)
 		end
 	end
 end)
-if MODERN then -- toys
+if MODERN or CF_WRATH then -- toys
 	local tx, fs, fx, tfs = C_ToyBox, {}, {}
 	hooksecurefunc(C_ToyBox, "SetFilterString", function(s) tfs = s end) -- No corresponding Get
 	local function doAddToys(add)
@@ -308,9 +318,21 @@ end
 do -- misc
 	if MODERN then
 		AB:AddActionToCategory(L"Miscellaneous", "extrabutton", 1)
+		AB:AddActionToCategory(L"Miscellaneous", "zoneability", 0)
 	end
-	AB:AddActionToCategory(L"Miscellaneous", "macrotext", "")
+	AB:AddActionToCategory(L"Miscellaneous", "imptext", "")
 end
 do -- aliases
 	AB:AddCategoryAlias("Miscellaneous", L"Miscellaneous")
+end
+do
+	local panels = {"character", "reputation", "currency", "spellbook", "talents", "achievements", "quests", "groupfinder", "collections", "adventureguide", "guild", "map", "social", "calendar", "macro", "options", "gamemenu"}
+	AB:AugmentCategory(L"UI panels", function(_, add)
+		for i=1,#panels do
+			i = panels[i]
+			if select(2, AB:GetActionListDescription("uipanel", i)) then
+				add("uipanel", i)
+			end
+		end
+	end)
 end

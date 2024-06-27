@@ -56,5 +56,5 @@ function easy_mt:__newindex(e, f)
 end
 
 frame:SetScript("OnEvent", Raise)
-easy_mt.__call, easy_mt.__index, Evie.raw = Raise, Evie, Evie
+easy_mt.__call, easy_mt.__index, Evie.raw, Evie.After = Raise, Evie, Evie, C_Timer.After
 T.Evie, Evie.RegisterEvent, Evie.UnregisterEvent = easy, Register, Unregister

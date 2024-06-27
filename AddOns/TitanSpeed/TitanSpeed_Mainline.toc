@@ -1,0 +1,6 @@
+## Interface: 90002
+## Title: Titan - Speed
+## Notes: Titan Panel plugin that shows your movement speed.
+## Dependencies: Titan
+## Version: 9.0.1
+TitanSpeed.lua
