@@ -248,8 +248,6 @@ local LINKED_STATS = {
     ["ITEM_MOD_MANA"] = "ITEM_MOD_MANA_SHORT",
 
     ["ITEM_MOD_HEALTH_REGEN"] = "ITEM_MOD_HEALTH_REGEN_SHORT",
-    ["ITEM_MOD_HEALTH_REGENERATION"] = "ITEM_MOD_HEALTH_REGEN_SHORT",
-    ["ITEM_MOD_HEALTH_REGEN"] = "ITEM_MOD_HEALTH_REGEN_SHORT",
 
     ["ITEM_MOD_HIT_RATING"] = "ITEM_MOD_HIT_RATING_SHORT",
     ["ITEM_MOD_HIT_MELEE_RATING"] = "ITEM_MOD_HIT_MELEE_RATING_SHORT",
@@ -272,13 +270,16 @@ local LINKED_STATS = {
     ["ITEM_MOD_SPELL_DAMAGE_DONE"] = "ITEM_MOD_SPELL_DAMAGE_DONE_SHORT",
     ["ITEM_MOD_SPELL_HEALING_DONE"] = "ITEM_MOD_SPELL_HEALING_DONE_SHORT",
 
-    --["ITEM_MOD_DEFENSE_SKILL_RATING"] = "ITEM_MOD_DEFENSE_SKILL_RATING_SHORT",
+    ["ITEM_MOD_EXPERTISE_RATING_SHORT"] = "ITEM_MOD_EXPERTISE_RATING_SHORT",
+    ["ITEM_MOD_MASTERY_RATING_SHORT"] = "ITEM_MOD_MASTERY_RATING_SHORT",
+
+    --["ITEM_MOD_DEFENSE_SKILL_RATING"] = "ITEM_MOD_DEFENSE_SKILL_RATING_SHORT", -- removed with cata
     ["ITEM_MOD_DODGE_RATING"] = "ITEM_MOD_DODGE_RATING_SHORT",
     ["ITEM_MOD_PARRY_RATING"] = "ITEM_MOD_PARRY_RATING_SHORT",
     ["ITEM_MOD_EXTRA_ARMOR"] = "ITEM_MOD_EXTRA_ARMOR_SHORT",
 
-    --["ITEM_MOD_ARMOR_PENETRATION_RATING"] = "ITEM_MOD_ARMOR_PENETRATION_RATING_SHORT",
-    ["ITEM_MOD_SPELL_PENETRATION"] = "ITEM_MOD_SPELL_PENETRATION_SHORT",
+    --["ITEM_MOD_ARMOR_PENETRATION_RATING"] = "ITEM_MOD_ARMOR_PENETRATION_RATING_SHORT", -- removed with cata
+    ["ITEM_MOD_SPELL_PENETRATION"] = "ITEM_MOD_SPELL_PENETRATION_SHORT", -- still in cata?
 
     ["ITEM_MOD_MANA_REGENERATION"] = "ITEM_MOD_MANA_REGENERATION_SHORT",
     ["ITEM_MOD_HEALTH_REGENERATION"] = "ITEM_MOD_HEALTH_REGENERATION_SHORT",
@@ -314,21 +315,24 @@ local STAT_LIST = {
         "ITEM_MOD_SPELL_POWER_SHORT", -- Spell Power
         "ITEM_MOD_SPELL_HEALING_DONE_SHORT", -- Increases healing done by magical spells and effects by up to %s.
         "ITEM_MOD_SPELL_DAMAGE_DONE_SHORT", -- Increases damage done by magical spells and effects by up to %s.
-        "",
+
         "ITEM_MOD_ATTACK_POWER_SHORT", -- Attack Power
         "ITEM_MOD_MELEE_ATTACK_POWER_SHORT", -- Melee Attack Power
         "ITEM_MOD_RANGED_ATTACK_POWER_SHORT", -- Ranged Attack Power
         "ITEM_MOD_FERAL_ATTACK_POWER_SHORT", -- Attack Power In Forms
-        "",
+
         "ITEM_MOD_HIT_RATING_SHORT", -- Hit
         "ITEM_MOD_HIT_MELEE_RATING_SHORT", -- Hit (Melee)
         "ITEM_MOD_HIT_RANGED_RATING_SHORT", -- Hit (Ranged)
         "ITEM_MOD_HIT_SPELL_RATING_SHORT", -- Hit (Spell)
-        "",
+
         "ITEM_MOD_CRIT_RATING_SHORT", -- Critical Strike
         "ITEM_MOD_CRIT_MELEE_RATING_SHORT", -- Critical Strike (Melee)
         "ITEM_MOD_CRIT_RANGED_RATING_SHORT", -- Critical Strike (Ranged)
         "ITEM_MOD_CRIT_SPELL_RATING_SHORT", -- Critical Strike (Spell)
+
+        "ITEM_MOD_EXPERTISE_RATING_SHORT", -- Expertise
+        "ITEM_MOD_MASTERY_RATING_SHORT", -- Mastery
     },
     {
         name = AL["Special"],
@@ -336,13 +340,13 @@ local STAT_LIST = {
         "ITEM_MOD_DODGE_RATING_SHORT", -- Dodge
         "ITEM_MOD_PARRY_RATING_SHORT", -- Parry
         "ITEM_MOD_EXTRA_ARMOR_SHORT", -- Bonus Armor
-        "",
+
         --"ITEM_MOD_ARMOR_PENETRATION_RATING_SHORT", -- Armor Penetration
         "ITEM_MOD_SPELL_PENETRATION_SHORT", -- Spell Penetration
-        "",
+
         "ITEM_MOD_MANA_REGENERATION_SHORT", -- Mana Regeneration
         "ITEM_MOD_HEALTH_REGENERATION_SHORT", -- Health Regeneration
-        "",
+
         "ITEM_MOD_RESILIENCE_RATING_SHORT", -- PvP Resilience
     }
 }
@@ -351,19 +355,36 @@ local CLASS_FILTER
 -- defaults
 -- "WARRIOR", "PALADIN", "HUNTER", "ROGUE", "PRIEST", "SHAMAN", "MAGE", "WARLOCK", "DRUID"
 AtlasLoot.AtlasLootDBDefaults.profile.ClassFilter = {
-	["WARRIOR"] = {
+    ["WARRIOR"] = {
         ["*"] = true,
+        ["ITEM_MOD_AGILITY_SHORT"] = false,
         ["ITEM_MOD_INTELLECT_SHORT"] = false,
+        ["ITEM_MOD_SPIRIT_SHORT"] = false,
+        ["ITEM_MOD_MANA_SHORT"] = false,
     },
     ["PALADIN"] = {
         ["*"] = true,
     },
     ["HUNTER"] = {
         ["*"] = true,
+        ["ITEM_MOD_STRENGTH_SHORT"] = false,
+        ["ITEM_MOD_INTELLECT_SHORT"] = false,
+        ["ITEM_MOD_SPIRIT_SHORT"] = false,
+        ["ITEM_MOD_EXPERTISE_RATING_SHORT"] = false,
+        ["ITEM_MOD_MANA_SHORT"] = false,
+        ["ITEM_MOD_DEFENSE_SKILL_RATING_SHORT"] = false,
+        ["ITEM_MOD_PARRY_RATING_SHORT"] = false,
+        ["ITEM_MOD_DODGE_RATING_SHORT"] = false,
     },
     ["ROGUE"] = {
         ["*"] = true,
+        ["ITEM_MOD_STRENGTH_SHORT"] = false,
         ["ITEM_MOD_INTELLECT_SHORT"] = false,
+        ["ITEM_MOD_SPIRIT_SHORT"] = false,
+        ["ITEM_MOD_MANA_SHORT"] = false,
+        ["ITEM_MOD_DEFENSE_SKILL_RATING_SHORT"] = false,
+        ["ITEM_MOD_PARRY_RATING_SHORT"] = false,
+        ["ITEM_MOD_DODGE_RATING_SHORT"] = false,
     },
     ["PRIEST"] = {
         ["*"] = true,
@@ -377,17 +398,22 @@ AtlasLoot.AtlasLootDBDefaults.profile.ClassFilter = {
         ["ITEM_MOD_HIT_RANGED_RATING_SHORT"] = false,
         ["ITEM_MOD_CRIT_MELEE_RATING_SHORT"] = false,
         ["ITEM_MOD_CRIT_RANGED_RATING_SHORT"] = false,
-        --["ITEM_MOD_DEFENSE_SKILL_RATING_SHORT"] = false,
+        ["ITEM_MOD_EXPERTISE_RATING_SHORT"] = false,
+        ["ITEM_MOD_DEFENSE_SKILL_RATING_SHORT"] = false,
         ["ITEM_MOD_PARRY_RATING_SHORT"] = false,
         ["ITEM_MOD_DODGE_RATING_SHORT"] = false,
     },
     ["SHAMAN"] = {
         ["*"] = true,
+        ["ITEM_MOD_DEFENSE_SKILL_RATING_SHORT"] = false,
+        ["ITEM_MOD_PARRY_RATING_SHORT"] = false,
+        ["ITEM_MOD_DODGE_RATING_SHORT"] = false,
     },
     ["MAGE"] = {
         ["*"] = true,
         ["ITEM_MOD_STRENGTH_SHORT"] = false,
         ["ITEM_MOD_AGILITY_SHORT"] = false,
+        ["ITEM_MOD_SPIRIT_SHORT"] = false,
         ["ITEM_MOD_ATTACK_POWER_SHORT"] = false,
         ["ITEM_MOD_MELEE_ATTACK_POWER_SHORT"] = false,
         ["ITEM_MOD_RANGED_ATTACK_POWER_SHORT"] = false,
@@ -396,7 +422,8 @@ AtlasLoot.AtlasLootDBDefaults.profile.ClassFilter = {
         ["ITEM_MOD_HIT_RANGED_RATING_SHORT"] = false,
         ["ITEM_MOD_CRIT_MELEE_RATING_SHORT"] = false,
         ["ITEM_MOD_CRIT_RANGED_RATING_SHORT"] = false,
-        --["ITEM_MOD_DEFENSE_SKILL_RATING_SHORT"] = false,
+        ["ITEM_MOD_EXPERTISE_RATING_SHORT"] = false,
+        ["ITEM_MOD_DEFENSE_SKILL_RATING_SHORT"] = false,
         ["ITEM_MOD_PARRY_RATING_SHORT"] = false,
         ["ITEM_MOD_DODGE_RATING_SHORT"] = false,
     },
@@ -404,6 +431,7 @@ AtlasLoot.AtlasLootDBDefaults.profile.ClassFilter = {
         ["*"] = true,
         ["ITEM_MOD_STRENGTH_SHORT"] = false,
         ["ITEM_MOD_AGILITY_SHORT"] = false,
+        ["ITEM_MOD_SPIRIT_SHORT"] = false,
         ["ITEM_MOD_ATTACK_POWER_SHORT"] = false,
         ["ITEM_MOD_MELEE_ATTACK_POWER_SHORT"] = false,
         ["ITEM_MOD_RANGED_ATTACK_POWER_SHORT"] = false,
@@ -412,7 +440,8 @@ AtlasLoot.AtlasLootDBDefaults.profile.ClassFilter = {
         ["ITEM_MOD_HIT_RANGED_RATING_SHORT"] = false,
         ["ITEM_MOD_CRIT_MELEE_RATING_SHORT"] = false,
         ["ITEM_MOD_CRIT_RANGED_RATING_SHORT"] = false,
-        --["ITEM_MOD_DEFENSE_SKILL_RATING_SHORT"] = false,
+        ["ITEM_MOD_EXPERTISE_RATING_SHORT"] = false,
+        ["ITEM_MOD_DEFENSE_SKILL_RATING_SHORT"] = false,
         ["ITEM_MOD_PARRY_RATING_SHORT"] = false,
         ["ITEM_MOD_DODGE_RATING_SHORT"] = false,
     },
@@ -421,7 +450,10 @@ AtlasLoot.AtlasLootDBDefaults.profile.ClassFilter = {
     },
     ["DEATHKNIGHT"] = {
         ["*"] = true,
+        ["ITEM_MOD_AGILITY_SHORT"] = false,
         ["ITEM_MOD_INTELLECT_SHORT"] = false,
+        ["ITEM_MOD_SPIRIT_SHORT"] = false,
+        ["ITEM_MOD_MANA_SHORT"] = false,
     },
 }
 

@@ -1,6 +1,12 @@
-## Interface: 90002
+## Interface: 30400
+## Version: 9.0.1
+## Dependencies: TitanClassic
+
 ## Title: Titan - Speed
 ## Notes: Titan Panel plugin that shows your movement speed.
-## Dependencies: TitanClassic
-## Version: 9.0.1
+## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFF泰坦面板|r |cFF69CCF0移动速度|r
+## Notes-zhCN: 泰坦面板的移动速度模块
+
+## X-Part-Of: Titan
+
 TitanSpeed.lua

@@ -28,6 +28,8 @@ AL["Brightly Colored Egg"] = "Huevo de colores vivos"
 AL["Capitals"] = "Capitales"
 --[[Translation missing --]]
 --[[ AL["Card Game Tabards"] = "Card Game Tabards"--]] 
+--[[Translation missing --]]
+--[[ AL["Cata"] = "Cata"--]] 
 AL["Childrens Week"] = "Semana de los Niños"
 AL["Crimson Templar"] = "Templario Carmesí"
 --[[Translation missing --]]

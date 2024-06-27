@@ -448,6 +448,7 @@ localize(L.HEADER_NAMES, {
 	[-1000373] = "New Character",
 	[-1000380] = "Bounty",
 	[-1000872] = "Plunderstorm",
+	[-1000904] = "Source IDs",
 });
 localize(L.HEADER_DESCRIPTIONS, {
 	[-1000015] = "Warlocks can teach their demons new tricks. Some of the higher level grimoires can only be purchased from the Demon Trainer in your faction's capital cities.",
@@ -606,6 +607,7 @@ localize(L.HEADER_ICONS, {
 	[-1000373] = "1530081",
 	[-1000380] = "Interface/Icons/ability_hunter_markedfordeath",
 	[-1000872] = "133168",
+	[-1000904] = "Interface/Icons/Inv_misc_questionmark",
 });
 localize(L.HEADER_EVENTS, {
 	[-1000200] = 201,
@@ -679,7 +681,6 @@ _.Modules.Events.SetEventInformation(141, {
 	_.Modules.Events.CreateSchedule({["hour"]=10,["minute"]=0,["month"]=12,["monthDay"]=16,["weekday"]=3,["year"]=2025},{["hour"]=6,["minute"]=0,["month"]=1,["monthDay"]=2,["weekday"]=6,["year"]=2026})
 });
 _.Modules.Events.SetEventInformation(479, {
-	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=4,["monthDay"]=7,["weekday"]=1,["year"]=2024},{["hour"]=0,["minute"]=0,["month"]=4,["monthDay"]=14,["weekday"]=1,["year"]=2024},{["remappedID"]=375}),
 	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=5,["monthDay"]=5,["weekday"]=1,["year"]=2024},{["hour"]=0,["minute"]=0,["month"]=5,["monthDay"]=12,["weekday"]=1,["year"]=2024},{["remappedID"]=376}),
 	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=6,["monthDay"]=2,["weekday"]=1,["year"]=2024},{["hour"]=0,["minute"]=0,["month"]=6,["monthDay"]=9,["weekday"]=1,["year"]=2024},{["remappedID"]=374}),
 	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=7,["monthDay"]=7,["weekday"]=1,["year"]=2024},{["hour"]=0,["minute"]=0,["month"]=7,["monthDay"]=14,["weekday"]=1,["year"]=2024},{["remappedID"]=375}),
@@ -689,7 +690,8 @@ _.Modules.Events.SetEventInformation(479, {
 	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=11,["monthDay"]=3,["weekday"]=1,["year"]=2024},{["hour"]=0,["minute"]=0,["month"]=11,["monthDay"]=10,["weekday"]=1,["year"]=2024},{["remappedID"]=376}),
 	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=12,["monthDay"]=1,["weekday"]=1,["year"]=2024},{["hour"]=0,["minute"]=0,["month"]=12,["monthDay"]=8,["weekday"]=1,["year"]=2024},{["remappedID"]=374}),
 	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=1,["monthDay"]=5,["weekday"]=1,["year"]=2025},{["hour"]=0,["minute"]=0,["month"]=1,["monthDay"]=12,["weekday"]=1,["year"]=2025},{["remappedID"]=375}),
-	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=2,["monthDay"]=2,["weekday"]=1,["year"]=2025},{["hour"]=0,["minute"]=0,["month"]=2,["monthDay"]=9,["weekday"]=1,["year"]=2025},{["remappedID"]=376})
+	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=2,["monthDay"]=2,["weekday"]=1,["year"]=2025},{["hour"]=0,["minute"]=0,["month"]=2,["monthDay"]=9,["weekday"]=1,["year"]=2025},{["remappedID"]=376}),
+	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=3,["monthDay"]=2,["weekday"]=1,["year"]=2025},{["hour"]=0,["minute"]=0,["month"]=3,["monthDay"]=9,["weekday"]=1,["year"]=2025},{["remappedID"]=374})
 });
 _.Modules.Events.SetEventInformation(201, {
 	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=5,["monthDay"]=1,["weekday"]=2,["year"]=2023},{["hour"]=23,["minute"]=59,["month"]=5,["monthDay"]=7,["weekday"]=1,["year"]=2023}),
@@ -1911,6 +1913,7 @@ _.ObjectNames = {
 	[187973] = "Horde Bonfire",
 	[187974] = "Horde Bonfire",
 	[187975] = "Horde Bonfire",
+	[188192] = "Ice Chest",
 	[189989] = "Dark Iron Mole Machine Wreckage",
 	[189990] = "Dark Iron Mole Machine Wreckage",
 	[190483] = "Document Chest",
@@ -3204,6 +3207,7 @@ _.ObjectModels = {
 	[187973] = 200079,
 	[187974] = 200079,
 	[187975] = 200079,
+	[188192] = 200953,
 	[189989] = 203234,
 	[189990] = 203234,
 	[190483] = 196976,
@@ -4099,6 +4103,7 @@ localize(_.ObjectNames, {
 	[187973] = "Freudenfeuer der Horde",
 	[187974] = "Freudenfeuer der Horde",
 	[187975] = "Freudenfeuer der Horde",
+	[188192] = "Eiskiste",
 	[189989] = "Zerstörte Maulwurfmaschine der Dunkeleisenzwerge",
 	[189990] = "Zerstörte Maulwurfmaschine der Dunkeleisenzwerge",
 	[190483] = "Dokumententruhe",
@@ -4976,6 +4981,7 @@ localize(_.ObjectNames, {
 	[187973] = "Fogata de la Horda",
 	[187974] = "Fogata de la Horda",
 	[187975] = "Fogata de la Horda",
+	[188192] = "Cofre de hielo",
 	[189989] = "Restos de la máquina topo Hierro Negro",
 	[189990] = "Restos de la máquina topo Hierro Negro",
 	[190483] = "Cofre de documentos",
@@ -5885,6 +5891,7 @@ localize(_.ObjectNames, {
 	[187973] = "Feu de joie de la Horde",
 	[187974] = "Feu de joie de la Horde",
 	[187975] = "Feu de joie de la Horde",
+	[188192] = "Coffre de glace",
 	[189989] = "Débris de la taupe mécanique sombrefer",
 	[189990] = "Débris de la taupe mécanique sombrefer",
 	[190483] = "Coffre de documents",
@@ -6442,6 +6449,7 @@ localize(_.ObjectNames, {
 	[187973] = "Falò dell'Orda",
 	[187974] = "Falò dell'Orda",
 	[187975] = "Falò dell'Orda",
+	[188192] = "Cassa di Ghiaccio",
 	[189989] = "Relitto della Trivella dei Ferroscuro",
 	[189990] = "Relitto della Trivella dei Ferroscuro",
 	[207724] = "Pezzi del Relitto",
@@ -7397,6 +7405,7 @@ localize(_.ObjectNames, {
 	[187973] = "호드 화톳불",
 	[187974] = "호드 화톳불",
 	[187975] = "호드 화톳불",
+	[188192] = "얼음 궤짝",
 	[189989] = "검은무쇠 굴착기 잔해",
 	[189990] = "검은무쇠 굴착기 잔해",
 	[190483] = "문서함",
@@ -8222,6 +8231,7 @@ localize(_.ObjectNames, {
 	[187973] = "Fogueira da Horda",
 	[187974] = "Fogueira da Horda",
 	[187975] = "Fogueira da Horda",
+	[188192] = "Baú de Gelo",
 	[189989] = "Destroços da Máquina Toupeira dos Ferro Negro",
 	[189990] = "Destroços da Máquina Toupeira dos Ferro Negro",
 	[190483] = "Baú de Documentos",
@@ -9145,6 +9155,7 @@ localize(_.ObjectNames, {
 	[187973] = "Большой костер Орды",
 	[187974] = "Большой костер Орды",
 	[187975] = "Большой костер Орды",
+	[188192] = "Ледник",
 	[189989] = "Обломки буровой установки клана Черного Железа",
 	[189990] = "Обломки буровой установки клана Черного Железа",
 	[190483] = "Ящик с документами",

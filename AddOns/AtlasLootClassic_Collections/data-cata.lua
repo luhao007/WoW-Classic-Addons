@@ -453,7 +453,6 @@ data["CompanionsCata"] = {
     }}
 }
 
-
 data["TabardsCata"] = {
     name = ALIL["Tabard"],
     ContentType = COLLECTIONS_CONTENT,
@@ -471,18 +470,17 @@ data["TabardsCata"] = {
             {5, 65908}, -- Tabard of the Wildhammer Clan
         },
         [HORDE_DIFF] = {
-            {1, 65909}, -- Tabard of the Dragonmaw Clan
-            {2, 65910}, -- Tabard of the Earthen Ring
-            {3, 65911}, -- Tabard of the Guardians of Hyjal
-            {4, 65912}, -- Tabard of Therazane
-            {5, 65913}, -- Tabard of the Ramkahen
+            {1, 65904}, -- Tabard of the Ramkahen
+            {2, 65905}, -- Tabard of the Earthen Ring
+            {3, 65906}, -- Tabard of the Guardians of Hyjal
+            {4, 65907}, -- Tabard of Therazane
+            {5, 65909}, -- Tabard of the Dragonmaw Clan
         }
     }, {
         name = AL["PvP"],
         CoinTexture = "PvP",
         [NORMAL_DIFF] = {
-            {1, 63379}, -- Baradin's Wardens Tabard (Alliance)
-            {2, 63378}, -- Hellscream's Reach Tabard (Horde)
+            { 1, [ATLASLOOT_IT_ALLIANCE] = { 63379 }, [ATLASLOOT_IT_HORDE] = { 63378 } }, -- Baradin's Wardens Tabard / Hellscream's Reach Tabard
         }
     }, {
         name = AL["Achievements"],
@@ -502,7 +500,6 @@ data["TabardsCata"] = {
         }
     }}
 }
-
 
 data["LegendarysCata"] = {
     name = AL["Legendaries"],
@@ -541,5 +538,50 @@ data["HeirloomCata"] = {
     }, {
         name = AL["Misc"],
         [NORMAL_ITTYPE] = {}
+    }}
+}
+
+data["MidsummerFestivalCata"] = {
+    name = AL["Midsummer Festival"],
+    ContentType = WORLD_EVENT_CONTENT,
+    LoadDifficulty = NORMAL_DIFF,
+    TableType = NORMAL_ITTYPE,
+    gameVersion = AtlasLoot.CATA_VERSION_NUM,
+    CorrespondingFields = private.MIDSUMMER_FESTIVAL,
+    items = {{
+        name = AL["Midsummer Festival"],
+        [NORMAL_DIFF] = {
+        {1, 23083}, -- Captured Flame
+        {2, 34686}, -- Brazier of Dancing Flames
+        {4, 23324}, -- Mantle of the Fire Festival
+        {5, 23323}, -- Crown of the Fire Festival
+        {6, 34683}, -- Sandals of Summer
+        {7, 34685}, -- Vestment of Summer
+        {9, 23247}, -- Burning Blossom
+        {10, 34599}, -- Juggling Torch
+        {11, 34684}, -- Handful of Summer Petals
+        {12, 23246}, -- Fiery Festival Brew
+        {16, 23215}, -- Bag of Smorc Ingredients
+        {17, 23211}, -- Toasted Smorc
+        {18, 23435}, -- Elderberry Pie
+        {19, 23327}, -- Fire-toasted Bun
+        {20, 23326} -- Midsummer Sausage
+        }
+    }, {
+        name = C_Map_GetAreaInfo(3717) .. " - " .. AL["Ahune"],
+        [NORMAL_DIFF] = {
+            { 1, 54536 }, -- Satchel of Chilled Goods
+            { 2, 69771 }, -- Frostscythe of Lord Ahune
+            { 4, 69768 }, -- Shroud of Winter's Chill
+            { 5, 69766 }, -- The Frost Lord's War Cloak
+            { 6, 69770 }, -- Icebound Cloak
+            { 7, 69769 }, -- Cloak of the Frigid Winds
+            { 8, 69767 }, -- The Frost Lord's Battle Shroud
+            { 10, 35723 }, -- Shards of Ahune
+            { 16, 35498 }, -- Formula: Enchant Weapon - Deathfrost
+            { 18, 34955 }, -- Scorched Stone
+            { 19, 53641 }, -- Ice Chip
+            { 21, 35557 }, -- Huge Snowball
+        }
     }}
 }

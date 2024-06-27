@@ -1,45 +1,20 @@
-# [v4.0.1-beta2](https://github.com/snowflame0/AtlasLootClassic_Cata/tree/v4.0.1-beta2) (2024-06-10)
+# [v4.0.1-beta4](https://github.com/snowflame0/AtlasLootClassic_Cata/tree/v4.0.1-beta4) (2024-06-21)
 
-[Full Changelog](https://github.com/snowflame0/AtlasLootClassic_Cata/compare/v4.0.1-beta1...v4.0.1-beta2)
+[Full Changelog](https://github.com/snowflame0/AtlasLootClassic_Cata/compare/v4.0.1-beta3...v4.0.1-beta4)
 
 ## Highlights
 
- Add few missing locale strings 
+ Fix spine of deathwing achievement link 
 
 ## Commits
 
-Kyrbia (1):
+Marcos Lopez (1):
 
-- fix wrong set id
+- Fix: Do not add star icons from favourite lists that are not active
 
-Snowflame (8):
+Snowflame (3):
 
-- Add few missing locale strings
-- Fix space/tabs again
-- Fix tier mismatched items and set IDs
-- Fix deathbloom venom location
-- Trim trailing whitespace
-- Fixed glyphs crafting cost
-- Add icons to Arch races
-- Fix: add staves to hunter filter
-
-gitenarra (4):
-
-- fix jewel trinkets
-- add arch keystones
-- remove doubles, add world bosses drop
-- fix BH dk's and war's sets
-
-iZcr3am (3):
-
-- Update data-wrath.lua
-- Update data-cata.lua
-- Update data-cata.lua
-
-scareclaw-kashtira (4):
-
-- Added conquest points as currency Added all s9 items to VendorPrice.lua
-- Added profession items to sources-cata.lua
-- Added alchemy mount to Companion.lua
-- Added captured lightning to vortrex pinnacle
+- Fix spine of deathwing achievement link
+- Add satchel where weapon comes from
+- Add midsummer festival new items, fix some profession item sources
 

@@ -70,6 +70,7 @@ local function DefineToggleFilter(name, filterGroup, filter)
 	api.Filters[name] = filter;
 	-- Set implementation
 	api.Set[name] = function(active)
+		-- app.PrintDebug("FILTER",name,"->",active)
 		filterGroup[name] = active and api.Filters[name] or nil;
 	end
 	-- Get implementation
@@ -111,7 +112,8 @@ RawCharacterFilters.InGame = api.Filters.InGame
 -- Unobtainable
 DefineToggleFilter("Unobtainable", AccountFilters,
 function(item)
-	return not item.u or SettingsUnobtainable[item.u];
+	local u = item.u
+	return not u or SettingsUnobtainable[u];
 end);
 
 -- PvP

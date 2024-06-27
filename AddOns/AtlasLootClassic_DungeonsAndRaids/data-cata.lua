@@ -1188,7 +1188,6 @@ data["GrimBatol"] = {
 
 data["Deadmines"] = {
     MapID = 1581,
-    --EncounterJournalID = 36,
     InstanceID = 36,
     ContentType = DUNGEON_CONTENT,
     LevelRange = {85, 85, 85},
@@ -3328,7 +3327,7 @@ data["DragonSoul"] = {
                 { 18, 77995 },	-- Will of Unbinding
                 { 19, 77994 },	-- Wrath of Unchaining
                 { 20, 77998 },	-- Resolve of Undying
-                { 22, "ac6113" },
+                { 22, "ac6115" },
                 { 23, "ac6133" },
             },
         },

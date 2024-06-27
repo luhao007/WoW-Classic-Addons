@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(2608, "DBM-Raids-WarWithin", 1, 1273)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240615031857")
+mod:SetRevision("20240623022857")
 mod:SetCreatureID(223779, 223781)--Anub'arash, Skeinspinner Takazj
 mod:SetEncounterID(2921)
 --mod:SetUsedIcons(1, 2, 3)
@@ -95,7 +95,7 @@ local timerStingingSwarmCD					= mod:NewAITimer(49, 438677, nil, nil, nil, 3, ni
 mod:AddTimerLine(takazj)
 local warnVoidStep							= mod:NewCountAnnounce(450483, 2)
 
-local specWarnWebVortex						= mod:NewSpecialWarningCount(441626, nil, nil, nil, 2, 2)
+local specWarnWebVortex						= mod:NewSpecialWarningCount(441626, nil, nil, nil, 2, 12)
 local specWarnEntropicDesolation			= mod:NewSpecialWarningCount(450129, nil, nil, nil, 2, 2)
 local specWarnStrandsofReality				= mod:NewSpecialWarningDodgeCount(441782, nil, nil, nil, 2, 2)
 local specWarnCataclysmicEntropy			= mod:NewSpecialWarningCount(438355, nil, nil, nil, 2, 2)

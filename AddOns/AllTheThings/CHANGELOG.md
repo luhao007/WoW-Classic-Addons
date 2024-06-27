@@ -1,110 +1,145 @@
 # AllTheThings
 
-## [DF-3.12.6](https://github.com/DFortun81/AllTheThings/tree/DF-3.12.6) (2024-06-09)
-[Full Changelog](https://github.com/DFortun81/AllTheThings/compare/DF-3.12.5...DF-3.12.6) [Previous Releases](https://github.com/DFortun81/AllTheThings/releases)
+## [DF-3.12.8](https://github.com/DFortun81/AllTheThings/tree/DF-3.12.8) (2024-06-23)
+[Full Changelog](https://github.com/DFortun81/AllTheThings/compare/DF-3.12.7...DF-3.12.8) [Previous Releases](https://github.com/DFortun81/AllTheThings/releases)
 
-- every sunday is att ririsudesu  
-- Weapons and achievement correction  
-- Cobalt Guardian's Cloak does not require a mail class to learn  
-- Alchemy and Herbalism are now Added and Loaded into Beta  
-- Reported as normal drop also  
-- Added MoP HQT.  
-- Some Unsorted upkeep  
-- Generate Missing (Diff against Beta)  
-- Sort new recipes!  
-- Some Data Entry Fixes  
-- Harvest: 11.0.0.55000  
-- Harvest: 10.2.7.54988  
-- Harvest: 4.4.0.55006  
-- Harvest: 4.4.0.54986  
-- Harvest: 3.4.3.54987  
-- Harvest: 1.15.2.55002  
-- World Bosses are now in Beta  
-- Load Priory, Dawnbreaker, Rookery, Stonevault onto beta  
-- Loading in Ara-Kara, Cinderbrew, City of Threads and Darkflame Cleft onto the Beta  
+- Parsed for releases  
+- TWW zone quest achievements, and some fishing too  
+- Cleaned up 'Shan'ze Ritual Stone' daily tracking quest (maybe improve this type of HQT + Item drop tracking in future)  
+- Retail: Future Warband Collected additions now clear cached tooltips  
+- Added mapID 843 to Kun-Lai Summit (fixes #1657)  
+- TWW dungeon difficulty achievements  
+- Retail: Fixed icon used in Source Lines for unavailable on current character indication (was previously using a texture which was roughly identical to the 'requires pre-requisites' texture)  
+- Added Sturdy Expedition Shovel as cost for Disturbed Dirt  
+- Retail: Compressed tooltips when Contains data is linked to multiple maps  
+- TWW achievements  
+- Added 1546 mapID for Mogu'shan Palace (fixes #1662)  
+- Added Ice Chest for Ahune  
+- Sojourner of The Ringing Deeps + some adjustments to sourced data for other Sojourner achievements  
+- Sojourner of Azj-Kahet  
+- Timelined Brann achievements as we're supposed to get a new companion for delves season 2  
+- tagged some recipes with uncollectiable and added if features for wod (lol)  
+- Re-organized Bloody Coins and respective Achievements to proper standards with 'cost'  
+- More Torch Tossing  
+- Classic: Transmog now collects properly when loading into the game as expected  
+    Class: OnSettingsRefreshed event is way less spammy  
+- Retail: Plotting waypoints will now take into account the source quests of that Thing if it is not itself a Quest (i.e. some Achievements etc. may have their requirement linked by source quest instead of other data)  
+    Retail: Plotting waypoints now uses the same nested logic for search results when no coordinates are plotted from the initial group  
+- Some more Isle of Dorn adjustments. Added Quests and Vendor for Council of Dornogal  
+- Delve achievements  
+- Azj-Kahet skyriding and expansion metas  
+- Hallowfall skyriding plus some coordinated already found for the rest of the zones  
+- Fixed TWW World Drops.  
+- pvp note  
+- Updated Heritage and Lore questlines + timelined all of them.  
+    Updated few Heritage HQTs.  
+- Classic: Simplified QUEST\_LOG\_UPDATE event  
+- TWW: Enchanting first craft questIDs  
+- Classic: Removed early QUEST\_LOG\_UPDATE registration  
+- TWW: added Alchemy missing first craft questIDs and Agonizing Potion now Grotesque Vial  
+- Some Sorting and new things in Isle of Dorn/Dornogal  
+- --- Lyrendal Profession Books added  
+- Changed to Heritage. Seems like all other language are correct?  
+- Removed some enchanting rewards from teaching quest in Dornogal  
+- Added some profession trainer information  
+- Fixes to Mining  
+- Weekly Profession Knowledge from Inscription added  
+- Fixing Broken Midsummer and Void Scale DM! They are not dynamic yet thus must be added manually to work.  
+- A Fix of CI:s and Noblegarden.... xD Many questIDs...  
+- BT/SB/DB battlepet coords and descriptions.  
+- Charred Fishing Pole is actually collectible so change the flag to reflect this.  Should now display collected instead of Incomplete  
+- Add Aid the Anglers turn-in  
+- - Removed scenario completion header because auto unfolding the difficulty is more important (and it should be clear you get scenario weapons either at the end, or from a bonus box, without really needing a header for it)  
+    - Extra location for Mushan Hewer  
+- Added Midsummer HQT.  
+    Sorted items by alphabet.  
+- Unsorted clean for midsummer  
+- Midsummer update (someone fix my locale pls I am dumdum)  
+- Appearances once again show their VisualID when enabled  
+- Retail: Refreshing data for Future Warband Collected now clears cached tooltips beforehand  
+- Added lockCriteria between 'My Wings Are Yours' - 'Forged by Trial' / 'No Ordinary Steward' - 'An Earned Bond'  
+- Classic: Fixed a Lua error when opening a Taxi map and ATT has no current mapID assigned  
+- Removed WIP indicator from Timerunning filter option  
+- Added a function to allow toggling ATT's Registered Event debugging (/run AllTheThings.DebugEvents()) [Warning it will spam you out of sanity!]  
 - Merge branch 'master' of https://github.com/DFortun81/AllTheThings  
-- Norushen's Tower Shield (mythic SoO)  
-- Loading in Azj-Kahet onto beta  
-- This Should load Hallowfall into Beta  
-- Merge branch 'master' of https://github.com/DFortun81/AllTheThings  
-- The Ringing Deeps should now load on the Beta  
-- Death Lotus Repeater for Mythic SoO confirmed via Discord  
-- Fixed some non-existent timeline constants  
-- New achievementDB & Wago files for TWW Beta  
-- Dornogal and Isle of Dorn should now load on the Beta  
-- 3 NYI items sourced  
-- updated the bronze caches a bit  
-- Some additional weapon sources  
-- Fixed another Lua error on load  
-- Fixed some in-line global calls for custom headers (needs re-parse)  
-- Transformed old custom headers into the new style: Most Dragonflight headers but also remaining PvP BFA and some misc ones  
-- GetSpellName's wrapper now prevents bad data from bricking everything.  
-- Added GetSpellLink to the WOW API Wrapper file.  
-- Fixed a retail API bug.  
-- Moved GetItemCount to the WoW API Wrapper file.  
-- Added Item APIs to the WoW API Wrapper.  
-- Moved GetSpellName/GetSpellIcon to the WOW API Wrapper file.  
-- Moved all GetFactionInfoByID to the new WoW API Wrappers file.  
-- Added temporary helper functions for GetFactionName and GetFactionBonusReputation.  
-- locales now loads without issue on Beta.  
-- Added temporary functions for GetSpellName and GetSpellIcon.  
-- Rebuilt all DBs for all game flavors to show the new WOWAPI helper functions doing the lord's work.  
-- Added a function for GetCategoryName being used within the contrib folder. (It returns a versioned string that switches GetCategoryInfo with the namespaced version)  
-    In the future, this function might return something else, but for now this is good enough.  
-- Added a function for GetAchievementName being used within the contrib folder. (It returns a versioned string that switches GetAchievementInfo with the namespaced version)  
-    In the future, this function might return something else, but for now this is good enough.  
-- Fixed a scuffed sharedData function in the draenor garrison mission file.  
-- Added a function for GetItemSubClassInfo being used within the contrib folder. (It returns a versioned string that switches GetItemSubClassInfo with the namespaced version)  
-    In the future, this function might return something else, but for now this is good enough.  
-- Added a function for GetItemClassInfo being used within the contrib folder. (It returns a versioned string that switches GetItemClassInfo with the namespaced version)  
-    In the future, this function might return something else, but for now this is good enough.  
-- Added a function for GetSpellName being used within the contrib folder. (It returns a versioned string that switches GetSpellInfo/GetSpellName with the namespaced version)  
-    In the future, this function might return something else, but for now this is good enough.  
-- Added a function for GetSpellCooldown being used within the contrib folder. (It returns a versioned string that switches GetSpellCooldown with the namespaced version)  
-    In the future, this function might return something else, but for now this is good enough.  
-- Added a function for GetItemCount being used within the contrib folder. (It returns a versioned string that switches GetItemCount with the namespaced version)  
-    In the future, this function might return something else, but for now this is good enough.  
-- Moved the Brazier OnInit function to the function templates file.  
-- Added back some valid commits that were lost in the great purge.  
-- Revert "Don't need this preprocessor since parser is a bit smarter now"  
-- Extra weapon sources  
-- Some headers in pvp converted  
-- BFA S1/2 Ensemble clean up  
-- TWW Achcats  
-- Great Vault Cleaning  
-- Fixed 'Polyformic Acid Science' criterias  
-    Fixed Bronze prices on some Mounts  
-- Pandamix DH starter kit  
-- 8.1 QIs  
-- Darkhide Shield additional drop location  
-- Remix: Another Round of Noodles  
-- Don't need this preprocessor since parser is a bit smarter now  
-- Parser no longer exports empty top level Categories  
-    Parser no longer attempts to automate Achievements listed under a Difficulty (typically these are specific to a boss or encounter, and automating them can cause mutliple criteria to spread to other difficulties)  
-- Retail: Fixed an issue (probably) where mapIDs with no data were being reported as mapID 0  
-- Unsorted weapon located :)  
-- TWW: more data before beta  
-- TWW: a little bit of cleanup in zone HQTs  
-- Fixed the 'real' difficulties of T14/ToT raids in Remix (someone pls parse and test thanks :smirk:)  
-- Retail: Factions are 'Things'  
-- Couple additional weapon sources  
-- Mini Mana Bomb (Horde) and Theramore Tabard (Alliance)  
-    No longer level 35 requirements  
-- Added a new function to allow a Filter to be added externally  
-    Added some other unused Filter code that is potentially usable for some situations in the future  
-- Dinomancer's Spire fix  
-- Added the Delves custom header.  
-- Added Delves main category.  
-- Weapons. Maybe possibly finally cleaned up the mess that was T14 LFR/N due to things dropping on wrong difficulty for a while.  
-- Sorted all NYI Unknown Sources from SL and DF.  
-- TWW: Azj-Kahet re-run on warrior  
-- Weapons  
-- TWW: new character again, more quests! (Isle of Dorn main story)  
-- Removed temp itemDB  
-    Fixed some weird Difficulty issues due to multi-difficulty logic causing unexpected shifts in data values when parsing  
-    SImplified some Item merging logic which was being duplicated  
-    Recipes now automatically have their ModID/BonusID cleaned (in case they are listed inside Instances)  
-- Reported as HC drop  
-- Added Green Snugglefin Murloc Romper set to Shop.  
-    More unknown sources sorting.  
-- wpn is hc only  
+- Sholazar Basin: Battle Pet descriptions  
+- Cleaned up Quest event registrations  
+- Cleaned up a lot of Event Registration to not manually assign to the underlying event table  
+- Parser captures final Ensemble data for DebugDB after cleaning  
+- Retail: Cleaned up a bit of Settings loading/refresh sequence  
+- Additional location for icon of hope  
+- Refreshing Settings now includes a refresh of the active information types (certain settings have been converted into information types without also becoming an information type setting, but changing the setting didn't actually trigger any refresh of the information type it controlled)  
+- Minor improvement to GetDisplayID flow  
+- WotLK Dalaran: Helper for JC dailies  
+- Retail: Various headers given constants and ignored in minilist hierarchies (should help reduce nesting for remix minilist in instances, more adjustments likely)  
+    Retail: Adjusted the mapping assignments of Remix Scenario content to make it a bit more concise when inside any given scenario  
+- DMF and Trial of Style headers defined earlier since they are used external to their own file  
+    Fixed various empty value headers due to bad Globals which caused merging data into the wrong places  
+    Added a warning back for headers which are defined with no value  
+- to do removed  
+- TWW: new build, quick lookaround  
+- Fixed an issue & Lua error with Mounts that don't have a name  
+- This Is Not A Title  
+- Added TWW Tailoring  
+- Fixed the Eternal Aspirant's Cape itemID  
+    Note: Copying/Pasting at 4:30am is bad  
+- - Fixed the Unburied Aspirant's Cloak Ensemble (Blue SL S3/S4 PvP Ensemble)  
+    - Added a description to it and the epic version.  Thinking what breaks it is if you own 1 of the cloaks, but need more data.  
+- Fix for disappearing scenario weapons + a TODO  
+- updated parser configs  
+- Generating Missing Files  
+- Harvest: 11.0.0.55185  
+- HQTs for ensemble  
+- Parser no longer attempts to incorporate Criteria data when it is listed under a Difficulty (this should fix some MoP raid achieves being copied into every version of a boss)  
+    Parser no longer includes random 'f' values with Types that have no use for a FilterID (only Items utilize FilterIDs for filtering purposes)  
+- Fixed the ONE random achievement listed in the wrong difficulty in every MoP raid except SoO  
+- Retail: Future Warband Collected should get cleared now for learned Items for any inventory scan (previously was only when opening the Bank on the character who has the Item)  
+- Missing quest  
+- Generate missing files  
+- Sort Recipes  
+- Harvest: 11.0.0.55120  
+- Harvest: 10.2.7.55165  
+- Harvest: 10.2.7.55142  
+- Harvest: 4.4.0.55141  
+- Harvest: 4.4.0.55056  
+- Harvest: 3.4.3.55221  
+- Harvest: 3.4.3.55161  
+- Harvest: 3.4.3.55136  
+- Harvest: 3.4.3.55115  
+- Harvest: 3.4.3.55095  
+- Harvest: 3.4.3.55085  
+- Harvest: 1.15.3.55112  
+- Harvest: 1.15.2.55140  
+- Added TWW Leatherworking  
+- Reinstate some HQTs for Darkal  
+- TWW: clear up from backlog before new build  
+- TWW: login realms decide to die or new build incoming  
+- Moved GLYPH\_OF\_LAY\_ON\_HANDS\_AND\_FLASH\_OF\_LIGHT from minor to northrend research.  
+- fixed spelling from a tome note and put it on the item itself for easier visiblity.  
+- updated scenario theramore items so its more clear that you can just buy the toys.  
+- Update Scenario.lua  
+    I was mistaken  
+- Fixed the spelling of "raiting" to "rating"  
+- TWW: another beta session  
+- Blizzard with it's SL cloak trolling.  You get Eternal Gladiator's Elite cloaks, but not Sinful Elite cloaks.  Every commit is something new.  Thanks Blizzard  
+- Fixed the Elite cloaks.  
+- Blizzard trolling with the SL Cloak Ensembles at this point.  Giving Elite mogs out and most can't use?  
+- TWW: Skinning  
+- Added Glyph of the Long Word / Glyph of Protector of the Innocent.  
+- Fixed the SL Cloak Ensemble again.  
+    Re-added removed items.  
+- More Upgrade logic consolidation  
+    Fixed an issue with Upgrades where repeated lookups of the same item would cause it to think it upgrades into itself  
+- Fixed `iupgrade` shortcut to use the expected bonusID shift  
+-  Upgrade logic revisions for performance and stability  
+    * Consolidated some upgrade logic  
+    * Localized some heavily-used functions  
+    * Now caching upgrade results based on requested modItemID  
+    * Optimized some bits of logic  
+    * Added a lookup for BonusID upgrades which are allowed to further nest within an upgrade hierarchy (i.e. Awakened upgrade tracks can now show 3 unlocks since they traverse N/H/M appearances)  
+- GetSourceID now has a 'quick' option which ignores doing slot-based checking for available appearances  
+    Adjusted some InstanceHelper prints  
+    S3 Amirdrassil items are no longer considered upgradable in the Main list  
+- - Fixed the SL Cloak Ensemble to show the correct cloaks it awards (These were awarded to Lucetia on 06/17/24.  SS in discord)  
+- manuscripts are.. manuscripts  
+- TWW: typo and itemID fix  

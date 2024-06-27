@@ -218,6 +218,10 @@ app.errors = function(msg)
 	runner2.Run(throw, msg.."3")
 	runner2.Run(throw, msg.."4")
 
+	-- repeated test on consistent runner
+	app.UpdateRunner.Run(throw, "update"..msg.."5")
+	app.UpdateRunner.Run(throw, "update"..msg.."6")
+
 end
 
 function ATTarrayappend()
@@ -415,5 +419,40 @@ function ATTcoroutines(count)
 
 	app:StartATTCoroutine("ccb",ccb)
 	-- app.PrintMemoryUsage()
+
+end
+
+function ATTmetatest()
+
+
+	local C_TransmogCollection_GetAllAppearanceSources,C_TransmogCollection_GetSourceInfo
+		= C_TransmogCollection.GetAllAppearanceSources,C_TransmogCollection.GetSourceInfo
+	local VisualIDSourceIDsCache = setmetatable({}, { __index = function(t, visualID)
+		local sourceIDs = C_TransmogCollection_GetAllAppearanceSources(visualID)
+		t[visualID] = sourceIDs
+		return sourceIDs
+	end})
+
+
+	local temp, knownSource
+	app.PrintDebug("API",app.MaxSourceID)
+	-- 0.600820 @ 222939
+	for i=1,app.MaxSourceID do
+		knownSource = C_TransmogCollection_GetSourceInfo(i);
+		if knownSource then
+			temp = C_TransmogCollection_GetAllAppearanceSources(knownSource.visualID)
+		end
+	end
+	app.PrintDebugPrior("---")
+
+	app.PrintDebug("meta-cache",app.MaxSourceID)
+	-- 0.381800 @ 222939
+	for i=1,app.MaxSourceID do
+		knownSource = C_TransmogCollection_GetSourceInfo(i);
+		if knownSource then
+			temp = VisualIDSourceIDsCache[knownSource.visualID]
+		end
+	end
+	app.PrintDebugPrior("---")
 
 end

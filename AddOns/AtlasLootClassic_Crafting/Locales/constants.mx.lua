@@ -7,6 +7,8 @@ if not AL then return end
 AL["Apprentice"] = "Aprendiz"
 AL["Artisan"] = "Artesano"
 AL["Axes"] = "Hachas"
+--[[Translation missing --]]
+--[[ AL["Cards"] = "Cards"--]] 
 AL["Cauldrons"] = "Calderas"
 AL["Class Professions"] = "Profesiones de clase"
 AL["Drums"] = "Tambores"
@@ -22,7 +24,13 @@ AL["Flares"] = "Bengalas"
 AL["Flasks"] = "Frascos"
 --[[Translation missing --]]
 --[[ AL["Glyphs"] = "Glyphs"--]] 
+--[[Translation missing --]]
+--[[ AL["Grand Master"] = "Grand Master"--]] 
 AL["Healing/Mana Potions"] = "Pociones de sanación/maná"
+--[[Translation missing --]]
+--[[ AL["Illustrious Grand Master"] = "Illustrious Grand Master"--]] 
+--[[Translation missing --]]
+--[[ AL["Ink"] = "Ink"--]] 
 AL["Journeyman"] = "Oficial"
 AL["Maces"] = "Mazas"
 AL["Master"] = "Maestro"

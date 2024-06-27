@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Snowflame0
-## Version: v4.0.1-beta2
+## Version: v4.0.1-beta4
 ## OptionalDeps: Ace3, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, LibDBIcon-1.0, LibDataBroker-1.1
 ## LoadOnDemand: 0
 ## SavedVariables: AtlasLootClassicDB
