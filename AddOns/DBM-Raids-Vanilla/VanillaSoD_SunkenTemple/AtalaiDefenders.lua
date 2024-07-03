@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("AtalaiDefendersSoD", "DBM-Raids-Vanilla", 8)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240601045051")
+mod:SetRevision("20240615124047")
 mod:SetCreatureID(221640, 218868, 221639, 221637, 221638, 223586)--Zul'Lor, Mijan, Zolo, Gasher, Loro, Hukku
 mod:SetEncounterID(2954)
 mod:SetBossHPInfoToHighest()
@@ -42,7 +42,7 @@ local specWarnCorruptedSlam			= mod:NewSpecialWarningDodge(446372, nil, nil, nil
 --local timerChargeCD				= mod:NewAITimer(8, 446369, nil, nil, nil, 3)--8-17.8 so disabled for now
 
 --Mijan
-local warnThorns					= mod:NewSpellAnnounce(438294, 2)
+local warnThorns					= mod:NewTargetNoFilterAnnounce(438294, 2)
 local warnHealingWard				= mod:NewSpellAnnounce(438335, 3)
 
 local specWarnAtalaiSerpentTotem	= mod:NewSpecialWarningSwitch(445912, "Dps", nil, nil, nil, 2)

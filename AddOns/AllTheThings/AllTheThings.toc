@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Crieve-Sargeras
-## Version: DF-3.12.8
+## Version: DF-3.12.9a
 ## SavedVariables: ATTCharacterData, ATTAccountWideData, AllTheThingsSavedVariables, AllTheThingsSettings, AllTheThingsAD, AllTheThingsProfiles, AllTheThingsAuctionData, AllTheThingsDebugData, AllTheThingsArtifactsItems, AllTheThingsHarvestItems
 ## SavedVariablesPerCharacter: AllTheThingsSettingsPerCharacter
 
@@ -103,6 +103,7 @@ src\Classes\Spell.lua
 src\Classes\CharacterUnlock.lua
 
 # Item Sub-Classes
+src\Classes\Heirloom.lua
 src\Classes\Toys.lua
 
 # Expansion specific source files

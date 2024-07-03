@@ -38,7 +38,9 @@ PALLYPOWER_DEFAULT_VALUES = {
 			HideTimerText = false,
 			LockBuffBars = false,
 			showPlayerButtons = true,
-			showClassButtons = true
+			showClassButtons = true,
+			offsetX = 0,
+			offsetY = 0
 		},
 		enabled = true,
 		layout = "Layout 2",
@@ -287,7 +289,8 @@ PallyPower.AuraIcons = PallyPower.isWrath and {
 
 -- XML Aliases
 do
-	local version = string.trim(GetAddOnMetadata("PallyPower", "Version"))
+	PallyPower.GetAddOnMetadata = _G.GetAddOnMetadata or C_AddOns.GetAddOnMetadata
+	local version = string.trim(PallyPower.GetAddOnMetadata("PallyPower", "Version"))
 	if version == ("@project-".."version@") then -- split string so it doesn't get replaced by packager
 		version = "Development version"
 	end
@@ -333,6 +336,7 @@ PallyPower.Spells = PallyPower.isWrath and {
 	[5] = GetSpellInfo(19977),	-- Blessing of Light
 	[6] = GetSpellInfo(20911),	-- Blessing of Sanctuary
 	[7] = GetSpellInfo(6940),	-- Blessing of Sacrifice
+	[8] = GetSpellInfo(425600), -- Horn or Lordaeron
 }
 
 PallyPower.GSpells = PallyPower.isWrath and {
@@ -365,6 +369,7 @@ PallyPower.NormalBuffs = PallyPower.isWrath and {
 	[5] = {{59, 27144}, {50, 19979}, {40, 19978}, {30, 19977}},
 	[6] = {{60, 27168}, {50, 20914}, {40, 20913}, {30, 20912}, {20, 20911}},
 	[7] = {{60, 27148}, {52, 27147}, {44, 20729}, {36, 6940}},
+	[8] = {{0, 425600}},
 }
 
 PallyPower.GreaterBuffs = PallyPower.isWrath and {

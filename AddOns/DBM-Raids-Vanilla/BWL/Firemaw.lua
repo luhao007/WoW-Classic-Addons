@@ -12,7 +12,7 @@ end
 local mod	= DBM:NewMod("Firemaw", "DBM-Raids-Vanilla", catID)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20230814031337")
+mod:SetRevision("20240615124047")
 mod:SetCreatureID(11983)
 mod:SetEncounterID(613)
 if not mod:IsClassic() then
@@ -52,7 +52,7 @@ function mod:SPELL_AURA_APPLIED_DOSE(args)
 	if args:IsSpell(23341) and args:IsPlayer() then
 		local amount = args.amount or 1
 		if (amount >= 4) and (amount % 2 == 0) then--Starting at 4, every even amount warn stack
-			warnFlameBuffet:Show(amount)
+			warnFlameBuffet:Show(args.destName, amount)
 		end
 	end
 end

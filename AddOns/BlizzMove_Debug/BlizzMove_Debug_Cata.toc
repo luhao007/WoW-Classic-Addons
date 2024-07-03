@@ -1,12 +1,16 @@
-## Interface: 40400
-## Title: BlizzMove - Debugging plugin
-## Notes: This Load-On-Demand plugin allows for retrieving debugging information.
+## Interface: 30400
 ## Author: Numy - github.com/Kiatra/BlizzMove/
-## IconTexture: 982414
-## Version: v3.5.31
-## X-License: GNU General Public License version 3 (GPLv3)
+## Version: v3.5.32
 ## RequiredDeps: BlizzMove
 ## LoadOnDemand: 1
+
+## Title: BlizzMove - Debugging plugin
+## Notes: This Load-On-Demand plugin allows for retrieving debugging information.
+## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFF窗口移动|r |cFF69CCF0错误调试|r
+## Notes-zhCN: 获取报错信息以用于调试
+
+## X-License: GNU General Public License version 3 (GPLv3)
+## X-Part-Of: BlizzMove
 
 # Libraries
 Libs\json.lua

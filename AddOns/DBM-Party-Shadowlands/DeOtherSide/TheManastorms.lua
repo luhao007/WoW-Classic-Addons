@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(2409, "DBM-Party-Shadowlands", 7, 1188)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240426175442")
+mod:SetRevision("20240629024545")
 mod:SetCreatureID(164555, 164556)
 mod:SetEncounterID(2394)
 mod:SetBossHPInfoToHighest()
@@ -33,7 +33,7 @@ mod:RegisterEventsInCombat(
 --General
 --local specWarnGTFO					= mod:NewSpecialWarningGTFO(257274, nil, nil, nil, 1, 8)
 
-local timerPhaseCD						= mod:NewPhaseTimer(30)
+local timerPhaseCD						= mod:NewStageTimer(30)
 --Stage One: Millhouse's Magics
 mod:AddTimerLine(DBM:EJ_GetSectionInfo(22026))
 local warnSummonPowerCrystal			= mod:NewSpellAnnounce(320787, 3)

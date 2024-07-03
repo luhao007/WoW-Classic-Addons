@@ -186,9 +186,6 @@ end
     }
   })
 
-  -- basic code from Chatter
-
-  local strmatch = string.match
   local linkTypes = {
     item = true,
     enchant = true,
@@ -217,19 +214,19 @@ end
 
   local showingTooltip = false
   function module:OnHyperlinkEnter(f, link, text)
-    local t = strmatch(link, "^(.-):")
-    if linkTypes[t] then
-      if t == "battlepet" then
-        showingTooltip = BattlePetTooltip
-        GameTooltip:SetOwner(UIParent, "ANCHOR_CURSOR")
-        BattlePetToolTip_ShowLink(text)
-      else
-        showingTooltip = GameTooltip
-        ShowUIPanel(GameTooltip)
-        GameTooltip:SetOwner(UIParent, "ANCHOR_CURSOR")
-        GameTooltip:SetHyperlink(link)
-        GameTooltip:Show()
-      end
+    local linkType = link:match("^([^:]+):")
+    -- Prevent NPC tooltips leaving health bars behind or remaining behind
+    -- battle pet tooltips
+    GameTooltip:Hide()
+    if linkType == "battlepet" then
+      showingTooltip = BattlePetTooltip
+      GameTooltip:SetOwner(UIParent, "ANCHOR_CURSOR")
+      BattlePetToolTip_ShowLink(text)
+    elseif linkTypes[linkType] then
+      showingTooltip = GameTooltip
+      GameTooltip:SetOwner(UIParent, "ANCHOR_CURSOR")
+      GameTooltip:SetHyperlink(link)
+      GameTooltip:Show()
     end
   end
 

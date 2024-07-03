@@ -7,7 +7,7 @@ else
 	mod.statTypes = "normal25"
 end
 
-mod:SetRevision("20240128172705")
+mod:SetRevision("20240629024628")
 mod:SetCreatureID(23420)
 mod:SetEncounterID(606, 2478)
 mod:SetModelID(21483)
@@ -50,7 +50,7 @@ local specWarnSpite		= mod:NewSpecialWarningYou(41376, nil, nil, nil, 1, 2)
 local specWarnShock		= mod:NewSpecialWarningInterrupt(41426, isRetail and "HasInterrupt" or false, nil, 3, 1, 2)--In Classic warning spams like fuck, opt in, not opt out
 
 --Phase 1
-local timerPhaseChange	= mod:NewPhaseTimer(41)
+local timerPhaseChange	= mod:NewStageTimer(41)
 local timerFrenzy		= mod:NewBuffActiveTimer(8, 41305, nil, "Tank|Healer", 2, 5, nil, DBM_COMMON_L.TANK_ICON)
 local timerNextFrenzy	= mod:NewNextTimer(40, 41305, nil, "Tank|Healer", 2, 5, nil, DBM_COMMON_L.TANK_ICON)
 --Phase 2

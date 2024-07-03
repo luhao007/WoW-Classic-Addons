@@ -708,19 +708,25 @@ nodes[1418] = { -- Badlands
 	}, -- Uldaman (Secondary Entrance)
 }
 nodes[1413] = { -- Barrens
-	[49139348] = {
-		name = L["Razorfen Downs"],
-		type = "Dungeon",
-	}, -- Razorfen Downs
-	[41898950] = {
-		name = L["Razorfen Kraul"],
-		type = "Dungeon",
-	}, -- Razorfen Kraul
-	[45973634] = { -- I've placed it at the cave entrance
-		name = L["Wailing Caverns"],
-		type = "Dungeon",
-	}, -- Wailing Caverns
+ [38956927] = {
+  name = L["Wailing Caverns"],
+  type = "Dungeon",
+ }, -- Wailing Caverns
 }
+
+nodes[199] = { -- SouthernBarrens
+ [40909450] = {
+  name = L["Razorfen Kraul"],
+  type = "Dungeon",
+ }, -- Razorfen Kraul
+}
+nodes[1441] = { -- ThousandNeedles
+ [47402360] = {
+  name = L["Razorfen Downs"],
+  type = "Dungeon",
+ }, -- Razorfen Downs
+}
+
 nodes[1451] = { -- Silithus
 	[29099320] = {
 		name = L["Ruins of Ahn'Qiraj"] .. '\n' .. L["Temple of Ahn'Qiraj"],

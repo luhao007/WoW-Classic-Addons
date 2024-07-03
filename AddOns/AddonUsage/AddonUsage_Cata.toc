@@ -1,10 +1,15 @@
-## Interface: 40400
-## Title: Addon Usage
-## Notes: Displays the memory and cpu usage of your addons
+## Interface: 30400
 ## Author: Gello
 ## Version: 3.1.15
+## SavedVariables: AddonUsageSettings
+
+## Title: Addon Usage
+## Notes: Displays the memory and cpu usage of your addons
+## Title-zhCN: |cFFFFE00A<|r|cFFFFF468功能|r|cFFFFE00A>|r |cFFFFFFFF插件性能|r |cFFFFE00AAddonUsage|r
+## Notes-zhCN: 显示各个插件使用的CPU和内存的情况
+
 ## X-WoWI-ID: 7362
 ## X-Wago-ID: Xb6XL06p
 ## X-Curse-Project-ID: 67954
-## SavedVariables: AddonUsageSettings
+
 AddonUsage.xml

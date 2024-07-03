@@ -1,8 +1,14 @@
 # TomTom
 
-## [v3.6.2-release](https://github.com/jnwhiteh/TomTom/tree/v3.6.2-release) (2024-05-08)
-[Full Changelog](https://github.com/jnwhiteh/TomTom/commits/v3.6.2-release) [Previous Releases](https://github.com/jnwhiteh/TomTom/releases)
+## [v3.6.4-release](https://github.com/jnwhiteh/TomTom/tree/v3.6.4-release) (2024-07-01)
+[Full Changelog](https://github.com/jnwhiteh/TomTom/commits/v3.6.4-release) [Previous Releases](https://github.com/jnwhiteh/TomTom/releases)
 
+- Better defaults for distance units  
+     - Default to yards in the US  
+     - Default to km/m elsewhere  
+     - Provide options for yards/meters only  
+- Declare UnitGUID global  
+- Add units for waypoint arrow (metric, imperial)  
 - Update TOC for 10.2.7  
 - Update TOC for Cataclysm Classic  
 - Support 11.0 by removing some broken functionality  
@@ -692,6 +698,3 @@
 - * Parent world map icons to the WorldMapDetailFrame  
 - Added in TTA. May need tweaking for cosmetic value.  
 - * Fix for minimap/world textures  
-- * Fix for the crazy arrow  
-- * Fix for the crazy arrow  
-- .toc update  

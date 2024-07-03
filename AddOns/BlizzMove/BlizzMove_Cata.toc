@@ -1,14 +1,17 @@
-## Interface: 40400
+## Interface: 30400
+## Author: Kiatra, zaCade, Numy - github.com/Kiatra/BlizzMove/
+## Version: v3.5.32
+## OptionalDeps: Ace3
+## SavedVariables: BlizzMoveDB
+
 ## Title: BlizzMove
 ## Notes: Makes blizzard frames movable
-## Author: Kiatra, zaCade, Numy - github.com/Kiatra/BlizzMove/
-## IconTexture: 982414
+## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFF窗口移动|r |cFFFFE00ABlizzMove|r
+## Notes-zhCN: 移动内置的各种窗口
+
 ## X-WoWI-ID: 23875
 ## X-Curse-Project-ID: 17809
-## Version: v3.5.31
-## OptionalDeps: Ace3
 ## X-Embeds: Ace3
-## SavedVariables: BlizzMoveDB
 
 # Libraries
 Libs\Libs.xml

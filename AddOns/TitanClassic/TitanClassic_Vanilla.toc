@@ -20,22 +20,6 @@
 
 TitanGame.lua
 
-..\Titan\libs\Ace\LibStub\LibStub.lua
-..\Titan\libs\Ace\CallbackHandler-1.0\CallbackHandler-1.0.xml
-..\Titan\libs\Ace\AceAddon-3.0\AceAddon-3.0.xml
-..\Titan\libs\Ace\AceHook-3.0\AceHook-3.0.xml
-..\Titan\libs\Ace\AceTimer-3.0\AceTimer-3.0.xml
-..\Titan\libs\Ace\AceGUI-3.0\AceGUI-3.0.xml
-..\Titan\libs\Ace\AceConfig-3.0\AceConfig-3.0.xml
-..\Titan\libs\Ace\AceLocale-3.0\AceLocale-3.0.xml
-..\Titan\libs\Ace\LibSharedMedia-3.0\lib.xml
-..\Titan\libs\Ace\AceGUI-3.0-SharedMediaWidgets\widget.xml
-..\Titan\libs\Ace\LibQTip-1.0\lib.xml
-
-..\Titan\libs\Ace\!LibUIDropDownMenu\LibUIDropDownMenu\LibUIDropDownMenu.xml
-
-..\Titan\libs\LibDataBroker-1.1.lua
-
 ..\Titan\locale\Localization.lua
 ..\Titan\locale\Localization.BR.lua
 ..\Titan\locale\Localization.CN.lua

@@ -119,7 +119,9 @@ function addon:InitializeSession()
         Report = {},
         UnsupportedComm = {},
         PlayersNotified = {},
-        announceTo = "self"
+        PlayerGroupsNotified = {},
+        announceTo = "self",
+        PlayerLevelCache = {}
     }
 
     if IsInRaid() then
@@ -306,6 +308,11 @@ function addon:UpgradeProfile()
     elseif self.db.profile.dbVersion ~= addon.Version and addon.Version ~=
         'v0.0.0' then
         self:PrintMessage(self.L["Utilities"].Upgrade)
+        if not self.db.profile.isLatestVersion then
+            -- Re-enable automatically disabled version
+            self.db.profile.enabled = true
+        end
+        self.db.profile.isLatestVersion = true
         self:ClearCache()
     end
 
@@ -329,7 +336,10 @@ function addon:BuildOptionsPanel()
 
     local optionsTable = {
         type = "group",
-        name = fmt("%s - %s", self.L[addonName], addon.Version),
+        name = function()
+            return fmt("%s - %s%s", self.L[addonName], addon.Version,
+                self.db.profile.isLatestVersion and '' or (' - ' .. self.L["Utilities"]["Outdated"]))
+        end,
         get = GetProfileOption,
         set = SetProfileOption,
         args = {
@@ -361,6 +371,16 @@ function addon:BuildOptionsPanel()
                 type = "toggle",
                 width = optionsWidth,
                 order = 1.1,
+                set = function(_, value)
+                    self.db.profile.enable = value
+
+                    if value then
+                        self:Broadcast("JOIN", fmt("%s,%d", self.playerName, addon.release.int))
+                    end
+                end,
+                disabled = function()
+                    return not self.db.profile.isLatestVersion
+                end
             },
             whisper = {
                 name = _G.WHISPER,
@@ -429,7 +449,7 @@ function addon:BuildOptionsPanel()
                 order = 3.2,
                 func = function()
                     self.cluster.lead = self.playerName
-                    self:SetLead(self.playerName)
+                    self:BroadcastLead(self.playerName)
                 end,
                 disabled = function()
                     return self.playerName == self.cluster.lead

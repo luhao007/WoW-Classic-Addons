@@ -1,7 +1,7 @@
 ## Interface: 30400
 ## Author: mitch0
-## Version: v5.0.4
-## OptionalDeps: LibStub, CallbackHandler-1.0, LibRangeCheck-2.0, Ace3, LibSharedMedia-3.0, LibDualSpec-1.0
+## Version: v6.1.2
+## OptionalDeps: LibStub, CallbackHandler-1.0, LibRangeCheck-3.0, Ace3, LibSharedMedia-3.0, LibDualSpec-1.0
 ## LoadManagers: AddonLoader
 ## SavedVariables: RangeDisplayDB3
 
@@ -17,9 +17,12 @@
 ## X-Credits: sayclub (koKR), lcncg (zhCN, zhTW), Carylon (deDE), Pixel (frFR), Argonavt (ruRU), Swix (ruRU), StingerSoft (ruRU)
 ## X-Localizations: enUS, enGB, deDE, zhCN, zhTW, koKR, ruRU, frFR, esES
 ## X-CompatibleLocales: enUS, enGB, deDE, frFR, esES, zhCN, zhTW, koKR, ruRU
+## X-WoWI-ID: 7297
+## X-Curse-Project-ID: 14570
 
 #@no-lib-strip@
 libs\LibStub-1.0\LibStub.lua
+libs\LibRangeCheck-3.0\LibRangeCheck-3.0.lua
 #@end-no-lib-strip@
 
 localizations.lua

@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("LoathebVanilla", "DBM-Raids-Vanilla", 1)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240430005517")
+mod:SetRevision("20240615124047")
 mod:SetCreatureID(16011)
 mod:SetEncounterID(1115)
 mod:SetModelID(16110)
@@ -32,7 +32,7 @@ mod:RegisterEventsInCombat(
 --TODO, the 5xxxx spellIds are not from classic
 local warnSporeNow			= mod:NewCountAnnounce(29234, 2, "134530")
 local warnSporeSoon			= mod:NewSoonAnnounce(29234, 1, "134530")
-local warnDoomNow			= mod:NewSpellAnnounce(29204, 3)
+local warnDoomNow			= mod:NewCountAnnounce(29204, 3)
 local warnRemoveCurse		= mod:NewSpellAnnounce(30281, 3)
 local warnHealSoon			= mod:NewAnnounce("WarningHealSoon", 4, 29184)
 local warnHealNow			= mod:NewAnnounce("WarningHealNow", 1, 29184, false)

@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Iceoven
-## Version: aa4904a
+## Version: ccab35a
 ## RequiredDeps: DBM-Core
 ## DefaultState: enabled
 

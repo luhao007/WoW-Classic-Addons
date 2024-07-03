@@ -1,4 +1,5 @@
 local AceGUI = LibStub("AceGUI-3.0")
+local L = LibStub("AceLocale-3.0"):GetLocale("Bistooltip", false)
 
 local class = nil
 local spec = nil
@@ -142,8 +143,9 @@ end
 
 local function drawItemSlot(slot)
     local f = AceGUI:Create("Label")
-    f:SetText(slot.slot_name)
-    f:SetFont("Fonts\\FRIZQT__.TTF", 14, "")
+    -- f:SetText(slot.slot_name)
+    -- f:SetFont("Fonts\\FRIZQT__.TTF", 14, "")
+    f:SetText(L[slot.slot_name])
     spec_frame:AddChild(f)
     spec_frame:AddChild(createEnhancementsFrame(slot.enhs))
     for i, item_id in ipairs(slot) do
@@ -162,8 +164,9 @@ end
 
 local function drawTableHeader(frame)
     local f = AceGUI:Create("Label")
-    f:SetText("Slot")
-    f:SetFont("Fonts\\FRIZQT__.TTF", 14, "")
+    -- f:SetText("Slot")
+    -- f:SetFont("Fonts\\FRIZQT__.TTF", 14, "")
+    f:SetText(L["slot"])
     local color = 0.6
     f:SetColor(color, color, color)
     frame:AddChild(f)
@@ -216,7 +219,8 @@ end
 local function buildClassDict()
     class_options = {}
     for ci, class in ipairs(Bistooltip_classes) do
-        local option_name = "|T" .. Bistooltip_spec_icons[class.name].classIcon .. ":14|t " .. class.name
+        -- local option_name = "|T" .. Bistooltip_spec_icons[class.name].classIcon .. ":14|t " .. class.name
+        local option_name = "|T" .. Bistooltip_spec_icons[class.name].classIcon .. ":14|t " .. L[class.name]
         table.insert(class_options, option_name)
         class_options_to_class[option_name] = { name = class.name, i = ci }
     end
@@ -226,7 +230,8 @@ local function buildSpecsDict(class_i)
     spec_options = {}
     spec_options_to_spec = {}
     for si, spec in ipairs(Bistooltip_classes[class_i].specs) do
-        local option_name = "|T" .. Bistooltip_spec_icons[class][spec] .. ":14|t " .. spec
+        -- local option_name = "|T" .. Bistooltip_spec_icons[class][spec] .. ":14|t " .. spec
+        local option_name = "|T" .. Bistooltip_spec_icons[class][spec] .. ":14|t " .. L[spec]
         table.insert(spec_options, option_name)
         spec_options_to_spec[option_name] = spec
     end

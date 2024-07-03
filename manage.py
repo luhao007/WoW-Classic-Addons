@@ -516,6 +516,8 @@ class Manager:
     @staticmethod
     def handle_prat():
         utils.rm_tree('AddOns/Prat-3.0_Libraries')
+        utils.remove_libs_in_file('Addons/Prat-3.0/Libs.xml',
+                                    ['Libs'])
 
     @staticmethod
     @available_on(['classic', 'classic_era'])
@@ -592,6 +594,15 @@ class Manager:
             'AddOns/RareScanner/Core/Libs/RSConstants.lua',
             ['				hide = true']
         )
+        utils.remove_libraries(
+            ['AceAddon-3.0', 'AceConfig-3.0',
+                'AceConsole-3.0', 'AceDB-3.0', 'AceDBOptions-3.0',
+                'AceGUI-3.0', 'AceGUI-3.0-SharedMediaWidgets',
+                'AceLocale-3.0', 'AceSerializer-3.0', 'CallbackHandler-1.0', 'HereBeDragons',
+                'LibDBIcon-1.0', 'LibDialog-1.0-9.0.1.1', 'LibSharedMedia-3.0', 'LibStub', 'LibTime-1.0'],
+            'AddOns/RareScanner/ExternalLibs',
+            'AddOns/RareScanner/ExternalLibs/Libs.xml'
+        )
 
     @staticmethod
     @available_on(['classic'])
@@ -627,6 +638,15 @@ class Manager:
             ['			ShowCoordsOnMap = false,',
                 '			ShowCursorOnMap = false,']
         )
+        utils.rm_tree('Addons/Titan/Libs')
+        utils.remove_libs_in_file('Addons/Titan/Titan_Mainline.toc',
+                                    ['Libs'])
+        utils.remove_libs_in_file('Addons/TitanClassic/TitanClassic_Cata.toc',
+                                    ['Libs'])
+        utils.remove_libs_in_file('Addons/TitanClassic/TitanClassic_Vanilla.toc',
+                                    ['Libs'])
+        utils.remove_libs_in_file('Addons/TitanClassic/TitanClassic_Wrath.toc',
+                                    ['Libs'])
 
     @staticmethod
     def handle_tomtom():

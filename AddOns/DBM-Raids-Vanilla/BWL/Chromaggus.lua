@@ -12,7 +12,7 @@ end
 local mod	= DBM:NewMod("Chromaggus", "DBM-Raids-Vanilla", catID)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240511084932")
+mod:SetRevision("20240615135519")
 mod:SetCreatureID(14020)
 mod:SetEncounterID(616)
 mod:SetModelID(14367)
@@ -36,7 +36,7 @@ local warnBlack			= mod:NewSpellAnnounce(23154, 2, nil, false)
 local warnFrenzy		= mod:NewSpellAnnounce(23128, 3, nil, "Tank|RemoveEnrage|Healer", 4)
 local warnPhase2Soon	= mod:NewPrePhaseAnnounce(2, 1)
 local warnPhase2		= mod:NewPhaseAnnounce(2)
-local warnMutation		= mod:NewCountAnnounce(23174, 4)
+local warnMutation		= mod:NewCountAnnounce(23174, 4) ---@type Announce -- string as count in :Show() is unusual but valid
 local warnVuln			= mod:NewAnnounce("WarnVulnerable", 1, nil, false)
 
 local specWarnBronze	= mod:NewSpecialWarningYou(23170, nil, nil, nil, 1, 8)

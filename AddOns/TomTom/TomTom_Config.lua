@@ -308,9 +308,24 @@ local function createconfig()
 						width = "double",
 						arg = "arrow.showdistance",
 					},
+					distanceUnits = {
+						order = 3,
+						type = "select",
+						name = L["Distance unit to use"],
+						desc = L["Configures which unit (yards, metrics, auto) to show distances in"],
+						width = "double",
+						values = {
+							["auto"] = "Automatic (yards for US, metric elsewhere)",
+							["yards"] = "Show the distance in yards",
+							["meters"] = "Show the distance in meters",
+							["humanyards"] = "Show distance in miles and yards",
+							["humanmeters"] = "Show distance in km and meters",
+						},
+						arg = "arrow.distanceUnits",
+					},
 					scale = {
 						type = "range",
-						order = 3,
+						order = 4,
 						name = L["Scale"],
 						desc = L["This setting allows you to change the scale of the waypoint arrow, making it larger or smaller"],
 						min = 0, max = 3, step = 0.05,
@@ -318,7 +333,7 @@ local function createconfig()
 					},
 					alpha = {
 						type = "range",
-						order = 4,
+						order = 5,
 						name = L["Alpha"],
 						desc = L["This setting allows you to change the opacity of the waypoint arrow, making it transparent or opaque"],
 						min = 0.1, max = 1.0, step = 0.05,
@@ -326,7 +341,7 @@ local function createconfig()
 					},
 					title_width = {
 						type = "range",
-						order = 5,
+						order = 6,
 						name = L["Title Width"],
 						desc = L["This setting allows you to specify the maximum width of the title text.  Any titles that are longer than this width (in game pixels) will be wrapped to the next line."],
 						min = 0, max = 500, step = 1,
@@ -334,7 +349,7 @@ local function createconfig()
 					},
 					title_height = {
 						type = "range",
-						order = 6,
+						order = 7,
 						name = L["Title Height"],
 						desc = L["This setting allows you to specify the maximum height of the title text.  Any titles that are longer than this height (in game pixels) will be truncated."],
 						min = 0, max = 300, step = 1,
@@ -342,7 +357,7 @@ local function createconfig()
 					},
 					title_scale = {
 						type = "range",
-						order = 7,
+						order = 8,
 						name = L["Title Scale"],
 						desc = L["This setting allows you to specify the scale of the title text."],
 						min = 0, max = 3, step = 0.05,
@@ -350,14 +365,14 @@ local function createconfig()
 					},
 					title_alpha = {
 						type = "range",
-						order = 8,
+						order = 9,
 						name = L["Title Alpha"],
 						desc = L["This setting allows you to change the opacity of the title text, making it transparent or opaque"],
 						min = 0, max = 1.0, step = 0.05,
 						arg = "arrow.title_alpha",
 					},
 					reset_position = {
-						order = 9,
+						order = 10,
 						type = "execute",
 						name = L["Reset Position"],
 						desc = L["Resets the position of the waypoint arrow if its been dragged off screen"],

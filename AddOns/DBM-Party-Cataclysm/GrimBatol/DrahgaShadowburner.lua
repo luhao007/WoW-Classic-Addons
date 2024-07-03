@@ -8,7 +8,7 @@ else
 	mod.statTypes = "normal,heroic"
 end
 
-mod:SetRevision("20240615053842")
+mod:SetRevision("20240617194658")
 mod:SetCreatureID(40319)
 mod:SetEncounterID(1048)
 mod:SetHotfixNoticeRev(20240614000000)
@@ -72,7 +72,7 @@ function mod:SPELL_AURA_APPLIED(args)
 	if args.spellId == 75328 then--Twilight Shift (Valiona running away)
 		timerDevouringCD:Cancel()
 		timerDevouring:Cancel()
-		if self:IsCata() then
+		if not self:IsCata() then
 			timerTwilightBuffetCD:Stop()
 		end
 	elseif args.spellId == 75317 and args:IsPlayer() then

@@ -11,7 +11,7 @@ from chardet.universaldetector import UniversalDetector
 
 logger = logging.getLogger('process')
 
-TOCS = ['.toc'] + [f'{s}{p}.toc' for s in ('-', '_') for p in ('Classic', 'BCC', 'WOTLKC', 'Mainline', 'TBC', 'Vanilla', 'Wrath')]
+TOCS = ['.toc'] + [f'{s}{p}.toc' for s in ('-', '_') for p in ('Classic', 'BCC', 'WOTLKC', 'Mainline', 'TBC', 'Vanilla', 'Wrath', 'Cata')]
 
 def process_file(path: str | Path, func: Callable):
     """Helper function to process the files.

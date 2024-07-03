@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(2404, "DBM-Party-Shadowlands", 2, 1183)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20221230022007")
+mod:SetRevision("20240629024545")
 mod:SetCreatureID(164267)
 mod:SetEncounterID(2386)
 
@@ -33,7 +33,7 @@ local specWarnPlagueCrash			= mod:NewSpecialWarningDodge(322473, nil, nil, nil, 
 local timerMalignantGrowthCD		= mod:NewCDTimer(20.6, 322304, nil, nil, nil, 1, nil, DBM_COMMON_L.TANK_ICON .. DBM_COMMON_L.DAMAGE_ICON)
 local timerInfectiousRainCD			= mod:NewCDTimer(26.7, 322232, nil, nil, nil, 3)
 --local timerPlagueCrashCD			= mod:NewCDTimer(17, 322475, nil, nil, nil, 3)
-local timerSinkPhase				= mod:NewPhaseTimer(27)
+local timerSinkPhase				= mod:NewStageTimer(27)
 --Tentacle Add
 local timerTouchofSlimeCD			= mod:NewCDTimer(6, 322236, nil, nil, nil, 5, nil, DBM_COMMON_L.TANK_ICON)
 

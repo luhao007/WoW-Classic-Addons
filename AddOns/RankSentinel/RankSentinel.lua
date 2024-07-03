@@ -4,14 +4,17 @@ local addon = LibStub("AceAddon-3.0"):NewAddon(RankSentinel, addonName,
     "AceEvent-3.0", "AceComm-3.0")
 
 local fmt, after, unpack = string.format, C_Timer.After, unpack
-local UnitInBattleground, CombatLogGetCurrentEventInfo, SendChatMessage = UnitInBattleground,
-    CombatLogGetCurrentEventInfo, SendChatMessage
-local HasFullControl, UnitIsPossessed, UnitIsCharmed, UnitIsEnemy = HasFullControl, UnitIsPossessed, UnitIsCharmed,
-    UnitIsEnemy
-local UnitPowerType, UnitPower, UnitPowerMax, UnitLevel = UnitPowerType, UnitPower, UnitPowerMax, UnitLevel
+local UnitInBattleground, CombatLogGetCurrentEventInfo = UnitInBattleground,
+    CombatLogGetCurrentEventInfo
+local HasFullControl, UnitIsPossessed, UnitIsCharmed, UnitIsEnemy, UnitLevel = HasFullControl, UnitIsPossessed,
+    UnitIsCharmed,
+    UnitIsEnemy, UnitLevel
 
 addon.Version = GetAddOnMetadata(addonName, "Version")
 addon.MaxLevel = _G.GetMaxPlayerLevel()
+
+addon.playerGUID = UnitGUID("player")
+addon.playerName = UnitName("player")
 
 if string.match(addon.Version, 'project') then addon.Version = 'v9.9.9' end
 
@@ -30,16 +33,14 @@ function addon:OnInitialize()
             isMaxRank = {},
             petOwnerCache = {},
             dbVersion = 'v0.0.0',
-            notificationFlavor = "default"
+            notificationFlavor = "default",
+            isLatestVersion = true
         }
     }
 
     self.db = LibStub("AceDB-3.0"):New("RankSentinelDB", defaults)
 
     self:SetNotificationFlavor(self.db.profile.notificationFlavor)
-
-    self.playerGUID = UnitGUID("player")
-    self.playerName = UnitName("player")
 
     SLASH_RankSentinel1 = "/" .. string.lower(addonName)
     SLASH_RankSentinel2 = "/sentinel"
@@ -50,6 +51,18 @@ function addon:OnInitialize()
 end
 
 function addon:OnEnable()
+    self:UpgradeProfile()
+    self:InitializeSession()
+    self:BuildOptionsPanel()
+
+    self:RegisterComm(self._commPrefix)
+
+    if not self.db.profile.isLatestVersion then
+        self:PrintMessage(self.L["Utilities"]["Outdated"])
+        self.db.profile.enabled = false
+        return
+    end
+
     if not addon.cleuParser then -- re-use if someone did /disable /enable
         addon.cleuParser = CreateFrame("Frame")
         addon.cleuParser.OnEvent = function(frame, event, ...)
@@ -75,14 +88,9 @@ function addon:OnEnable()
     self:RegisterEvent("GROUP_JOINED")
     self:RegisterEvent("GROUP_ROSTER_UPDATE")
 
-    self:RegisterComm(self._commPrefix)
     self:ResetLead()
 
     self:PrintMessage("Loaded %s", self.Version)
-
-    self:UpgradeProfile()
-    self:InitializeSession()
-    self:BuildOptionsPanel()
 
     self.db.profile.dbVersion = self.Version
 
@@ -116,16 +124,26 @@ function addon:COMBAT_LOG_EVENT_UNFILTERED(event, ...)
         return
     end
 
-    -- Ignore ranks when mana < 25%
-    if UnitPowerType(sourceName) == Enum.PowerType.Mana and
-        UnitPower(sourceName) / UnitPowerMax(sourceName) < 0.25 then return end
+    local uid = self:GetUID(sourceGUID)
+
+    -- Only notify once per ability group
+    local abilityGroupIndex = fmt("%s-%d", uid, addon.AbilityData[spellID].AbilityGroup)
+    if self.session.PlayerGroupsNotified[abilityGroupIndex] ~= nil and not self.db.profile.debug then
+        return
+    end
 
     local targetLevel = destName and UnitLevel(destName) or 0
     local isMax, nextRankLevel = self:IsMaxRank(spellID, castLevel, targetLevel)
     if isMax or not nextRankLevel or nextRankLevel <= 0 then return end
 
-    local playerSpellIndex = fmt("%s-%s-%s", self:GetUID(sourceGUID), castLevel,
-        spellID)
+    if not self.session.PlayerLevelCache[uid] then
+        self.session.PlayerLevelCache[uid] = castLevel
+    elseif castLevel > self.session.PlayerLevelCache[uid] then
+        -- If downrank, don't notify on a new level up this session
+        return
+    end
+
+    local playerSpellIndex = fmt("%s-%s-%s", uid, castLevel, spellID)
     if self.db.profile.announcedSpells[playerSpellIndex] ~= nil and not self.db.profile.debug then
         return
     end
@@ -146,6 +164,8 @@ function addon:COMBAT_LOG_EVENT_UNFILTERED(event, ...)
     self:QueueNotification(notification, target, ability)
 
     self:RecordNotification(self.playerName, playerSpellIndex)
+
+    self.session.PlayerGroupsNotified[abilityGroupIndex] = true
 end
 
 function addon:ChatCommand(cmd)
@@ -173,9 +193,12 @@ function addon:ChatCommand(cmd)
         self.db.profile.enable = not self.db.profile.enable
         self:PrintMessage("%s = %s", self.L["Enable"],
             tostring(self.db.profile.enable))
+        if self.db.profile.enable then
+            self:Broadcast("JOIN", fmt("%s,%d", self.playerName, addon.release.int))
+        end
     elseif msg == "lead" then
         self.cluster.lead = self.playerName
-        self:SetLead(self.playerName)
+        self:BroadcastLead(self.playerName)
         self:PrintLead()
     elseif msg == "ignore" then
         if UnitExists("target") then
@@ -251,7 +274,7 @@ end
 function addon:IsMaxRank(spellID, casterLevel, targetLevel)
     -- UnitLevel(destName) returns 0 for non-party members
     -- Ignore casts with larger than 10 level differences
-    if targetLevel >= 1 and targetLevel < casterLevel - 10 then return true end
+    if targetLevel >= 1 and targetLevel < casterLevel - 8 then return true end
 
     local lookup_key = fmt('%s-%s', spellID, casterLevel)
 

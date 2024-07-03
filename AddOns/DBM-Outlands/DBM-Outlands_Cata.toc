@@ -1,16 +1,14 @@
-## Interface: 40400
-## X-Min-Interface: 40400
-## Version: r3
-## Title:|cffffe00a<|r|cffff7d0aDBM Mod|r|cffffe00a>|r |cff10ff10World Bosses (BC)|r
-## Title-koKR:|cffffe00a<|r|cffff7d0aDBM Mod|r|cffffe00a>|r |cff10ff10필드 보스 (불성)|r
-## Title-deDE:|cffffe00a<|r|cffff7d0aDBM Mod|r|cffffe00a>|r |cff10ff10Scherbenwelt|r
-## Title-zhTW:|cffffe00a<|r|cffff7d0aDBM Mod|r|cffffe00a>|r |cff10ff10外域|r
-## Title-ruRU:|cffffe00a<|r|cffff7d0aDBM Мод|r|cffffe00a>|r |cff10ff10Мировые боссы (BC)|r
-## LoadOnDemand: 1
+## Interface: 30400
+## Version: r4
 ## RequiredDeps: DBM-Core
+## LoadOnDemand: 1
 ## SavedVariables: DBMOutlands_AllSavedVars
 ## SavedVariablesPerCharacter: DBMOutlands_SavedStats
-## IconTexture: Interface\AddOns\DBM-Core\textures\dbm_airhorn
+
+## Title: |cffffe00a<|r|cffff7d0aDBM Mod|r|cffffe00a>|r |cff10ff10World Bosses (BC)|r
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFF69CCF0户外|r |cFF22B14C外域|r
+
+## X-Min-Interface: 40400
 ## X-DBM-Mod: 1
 ## X-DBM-Mod-Type: WORLDBOSS
 ## X-DBM-Mod-Category: BC
@@ -24,6 +22,7 @@
 ## X-DBM-Mod-LoadCID: 17711,18728
 ## X-DBM-Mod-MinCoreRevision: 20210721040757
 ## X-DBM-Mod-MinExpansion: 1
+## X-Part-Of: DBM-Core
 
 localization.en.lua
 localization.de.lua

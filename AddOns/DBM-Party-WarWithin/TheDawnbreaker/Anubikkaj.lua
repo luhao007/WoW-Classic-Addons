@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(2581, "DBM-Party-WarWithin", 5, 1270)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240507050307")
+mod:SetRevision("20240616102700")
 mod:SetCreatureID(211089)
 mod:SetEncounterID(2838)
 --mod:SetHotfixNoticeRev(20220322000000)
@@ -62,11 +62,19 @@ function mod:OnCombatStart(delay)
 	end
 	self:EnablePrivateAuraSound(426865, "targetyou", 2)--Dark Orb
 	self:EnablePrivateAuraSound(450855, "targetyou", 2, 426865)--Register Additional ID
+	--Boss patrols around right through all the trash. While it's not wise to pull boss with trash, it often happens.
+	local trashMod = DBM:GetModByName("TheDawnbreakerTrash")
+	if trashMod then
+		trashMod.isTrashModBossFightAllowed = true
+	end
 end
 
---function mod:OnCombatEnd()
-
---end
+function mod:OnCombatEnd()
+	local trashMod = DBM:GetModByName("TheDawnbreakerTrash")
+	if trashMod then
+		trashMod.isTrashModBossFightAllowed = false
+	end
+end
 
 function mod:SPELL_CAST_START(args)
 	local spellId = args.spellId

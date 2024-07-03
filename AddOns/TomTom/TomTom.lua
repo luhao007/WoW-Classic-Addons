@@ -84,7 +84,8 @@ function TomTom:Initialize(event, addon)
 				closestusecontinent = false,
                 enablePing = false,
                 pingChannel = "SFX",
-				hideDuringPetBattles = true,
+                hideDuringPetBattles = true,
+                distanceUnits = "auto",
             },
             minimap = {
                 enable = true,

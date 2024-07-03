@@ -8,8 +8,7 @@ L["[|cffffd200Enable|r/|cffffd200Disable|r] The Auto Buff Button or [|cffffd200E
 L["[|cffffd200Enable|r/|cffffd200Disable|r] The Drag Handle Button."] = "[|cffffd200Activar|r / |cffffd200Desactivar|r] El botón de arrastre de la manija."
 L["[|cffffd200Enable|r/|cffffd200Disable|r] The Player(s) or Class Buttons."] = "[|cffffd200Enable|r / |cffffd200Disable|r] El jugador (s) o los botones de clase."
 L["[|cffffd200Enable|r/|cffffd200Disable|r] The Seal Button, Enable/Disable Righteous Fury or select the Seal you want to track."] = "[|cffffd200Enable|r / |cffffd200Disable|r] El botón Sello, Activar / Desactivar Furia recta o selecciona el Sello que deseas rastrear."
---[[Translation missing --]]
-L["[Enable/Disable] Class Buttons"] = "[Enable/Disable] Class Buttons"
+L["[Enable/Disable] Class Buttons"] = "[Habilitar/Deshabilitar] Botones de clase"
 L["[Enable/Disable] PallyPower"] = "[Activar / Desactivar] PallyPower"
 L["[Enable/Disable] PallyPower in Party"] = "[Activar / Desactivar] PallyPower en grupo"
 L["[Enable/Disable] PallyPower while Solo"] = "[Activar / Desactivar] PallyPower mientras está Solo"
@@ -124,8 +123,7 @@ L["PP_REFRESH_TOOLTIP"] = [=[Actualiza todas las bendiciones
 tareas, talentos y
 Símbolo de reyes entre sí,
 Party y Raid Paladins.]=]
---[[Translation missing --]]
-L["Preset"] = "Preset"
+L["Preset"] = "Preestablecido"
 --[[Translation missing --]]
 L["PRESET_TOOLTIP"] = [=[|cffffffff[Left-Click]|r Load the last saved Preset.
 
@@ -189,8 +187,7 @@ L["Vertical Down | Left"] = "Vertical hacia abajo | Izquierda"
 L["Vertical Down | Right"] = "Vertical hacia abajo | Derecha"
 L["Vertical Up | Left"] = "Vertical arriba | izquierda"
 L["Vertical Up | Right"] = "Vertical Arriba | Derecha"
---[[Translation missing --]]
-L["Visibility Settings"] = "Visibility Settings"
+L["Visibility Settings"] = "Configuración de visibilidad"
 L["Wait for Players"] = "Esperar jugadores"
 L["What to buff with PallyPower"] = "Qué mejorar con PallyPower"
 --[[Translation missing --]]

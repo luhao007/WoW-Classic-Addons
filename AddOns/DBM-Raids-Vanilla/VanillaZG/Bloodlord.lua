@@ -9,7 +9,7 @@ end
 local mod = DBM:NewMod("Bloodlord", "DBM-Raids-Vanilla", catID)
 local L = mod:GetLocalizedStrings()
 
-mod:SetRevision("20230814031337")
+mod:SetRevision("20240615124047")
 mod:SetCreatureID(11382, 14988)
 mod:SetEncounterID(787)
 mod:SetHotfixNoticeRev(20200418000000)--2020, 04, 18
@@ -22,7 +22,7 @@ mod:RegisterEventsInCombat(
 )
 
 --TODO, actual timer for abilities. Tank swap for mortal?
-local warnFrenzy	= mod:NewSpellAnnounce(24318, 3, nil, "Tank|Healer", 2)
+local warnFrenzy	= mod:NewTargetNoFilterAnnounce(24318, 3, nil, "Tank|Healer", 2)
 local warnGaze		= mod:NewTargetNoFilterAnnounce(24314, 4)
 local warnMortal	= mod:NewTargetNoFilterAnnounce(16856, 2, nil, "Tank|Healer", 2)
 

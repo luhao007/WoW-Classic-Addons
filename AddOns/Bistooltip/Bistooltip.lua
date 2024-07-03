@@ -1,5 +1,6 @@
 local LibExtraTip = LibStub:GetLibrary("LibExtraTip-1");
 local eventFrame = CreateFrame("Frame", nil, UIParent)
+local L = LibStub("AceLocale-3.0"):GetLocale("Bistooltip", false)
 Bistooltip_phases_string = ""
 
 local function specHighlighted(class_name, spec_name)
@@ -46,9 +47,11 @@ local function printSpecLine(tooltip, slot, class_name, spec_name)
     if BistooltipAddon.db.char.filter_class_names then
         prefix = ""
     end
-    local left_text = prefix .. "|T" .. Bistooltip_spec_icons[class_name][spec_name] .. ":14|t " .. spec_name
+    -- local left_text = prefix .. "|T" .. Bistooltip_spec_icons[class_name][spec_name] .. ":14|t " .. spec_name
+    local left_text = prefix .. "|T" .. Bistooltip_spec_icons[class_name][spec_name] .. ":14|t " .. L[spec_name]
     if (slot_name == "Off hand" or slot_name == "Weapon" or slot_name == "Weapon 1h" or slot_name == "Weapon 2h") then
-        left_text = left_text .. " (" .. slot_name .. ")"
+        -- left_text = left_text .. " (" .. slot_name .. ")"
+        left_text = left_text .. " (" .. L[slot_name] .. ")"
     end
     local color_r = 1
     local color_g = 0.8
@@ -66,7 +69,8 @@ local function printSpecLine(tooltip, slot, class_name, spec_name)
 end
 
 local function printClassName(tooltip, class_name)
-    LibExtraTip:AddLine(tooltip, class_name, 1, 0.8, 0, false)
+    -- LibExtraTip:AddLine(tooltip, class_name, 1, 0.8, 0, false)
+    LibExtraTip:AddLine(tooltip, L[class_name], 1, 0.8, 0, false)
 end
 
 local function OnGameTooltipSetItem(tooltip)
@@ -89,7 +93,8 @@ local function OnGameTooltipSetItem(tooltip)
     local specs_count = #item
     item = getFilteredItem(item)
     if (#item > 0) then
-        LibExtraTip:AddDoubleLine(tooltip, "Spec name", Bistooltip_phases_string, 1, 1, 0, 1, 1, 0, false)
+        -- LibExtraTip:AddDoubleLine(tooltip, "Spec name", Bistooltip_phases_string, 1, 1, 0, 1, 1, 0, false)
+        LibExtraTip:AddDoubleLine(tooltip, L["Spec name"], Bistooltip_phases_string, 1, 1, 0, 1, 1, 0, false)
     else
         return
     end
@@ -111,16 +116,19 @@ local function OnGameTooltipSetItem(tooltip)
     if #item > 0 and Bistooltip_char_equipment[itemId] ~= nil then
         LibExtraTip:AddLine(tooltip, " ", 1, 1, 0, false)
         if Bistooltip_char_equipment[itemId] == 2 then
-            LibExtraTip:AddLine(tooltip, "You have this item equipped", 0.074, 0.964, 0.129, false)
+            -- LibExtraTip:AddLine(tooltip, "You have this item equipped", 0.074, 0.964, 0.129, false)
+            LibExtraTip:AddLine(tooltip, L["You have this item equipped"], 0.074, 0.964, 0.129, false)
         else
-            LibExtraTip:AddLine(tooltip, "You have this item in your inventory", 0.074, 0.964, 0.129, false)
+            -- LibExtraTip:AddLine(tooltip, "You have this item in your inventory", 0.074, 0.964, 0.129, false)
+            LibExtraTip:AddLine(tooltip, L["You have this item"], 0.074, 0.964, 0.129, false)
         end
     end
     if not (#item == specs_count) then
         if (#item > 0) then
             LibExtraTip:AddLine(tooltip, " ", 1, 1, 0, false)
         end
-        LibExtraTip:AddLine(tooltip, "Hold ALT to disable spec filtering", 0.6, 0.6, 0.6, false)
+        -- LibExtraTip:AddLine(tooltip, "Hold ALT to disable spec filtering", 0.6, 0.6, 0.6, false)
+        LibExtraTip:AddLine(tooltip, L["Hold ALT to disable spec filtering"], 0.6, 0.6, 0.6, false)
     end
 end
 

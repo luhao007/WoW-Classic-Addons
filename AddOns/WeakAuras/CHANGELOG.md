@@ -1,20 +1,42 @@
-# [5.11.3](https://github.com/WeakAuras/WeakAuras2/tree/5.11.3) (2024-03-06)
+# [5.12.8](https://github.com/WeakAuras/WeakAuras2/tree/5.12.8) (2024-04-09)
 
-[Full Changelog](https://github.com/WeakAuras/WeakAuras2/compare/5.11.2...5.11.3)
+[Full Changelog](https://github.com/WeakAuras/WeakAuras2/compare/5.12.7...5.12.8)
 
 ## Highlights
 
- - Small release to remove a left over debug print. Previously in 5.11.0:
-- Add a Flat Framelevels option that allows groups and direct children to share the same base frame level
-- Frame levels are now incrementally applied to auras in groups and sub-groups
-- Add Parent Zone support to the Player Location trigger
-- Add Case Insensitive option to the Chat trigger
-- Add Feature Flag system that lets us test future features in secret 👀
-- Various updates and bug fixes 
+ - More Cataclysm updates
+- Bug fixes 
 
 ## Commits
 
-mrbuds (1):
+InfusOnWoW (4):
 
-- Remove debug print in TestForLongString
+- Adjust atlas_update.lua for Private type declaration changes
+- update-atlas-files.sh: Add +x mode back
+- Options Window: Shift Selection don't select hidden buttons
+- Conditions: Fix tick_placement property not being reversible
+
+Stanzilla (2):
+
+- Refactor of ModelPaths update script (#4990)
+- Type and comment updates
+
+dependabot[bot] (3):
+
+- Bump tsickert/discord-webhook from 5.5.0 to 6.0.0
+- Bump cbrgm/mastodon-github-action from 2.0.5 to 2.0.6
+- Bump Stanzilla/cat from 2.0.1 to 2.0.2
+
+emptyrivers (3):
+
+- improve AddMany data flow
+- fix some more type annotations
+- LuaLS but it actually works now (#4982)
+
+mrbuds (4):
+
+- Cataclysm: use EncounterJournal for encounter ids and zone ids
+- Add Sunken Temple encounterIds
+- Fix nil error in migration 73
+- add some types (#4995)
 

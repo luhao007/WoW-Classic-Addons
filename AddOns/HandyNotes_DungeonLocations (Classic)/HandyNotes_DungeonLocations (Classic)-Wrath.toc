@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Cali
-## Version: 1.08a
+## Version: 1.08b
 ## RequiredDeps: HandyNotes
 ## SavedVariables: HandyNotes_DungeonLocationsClassicDB
 

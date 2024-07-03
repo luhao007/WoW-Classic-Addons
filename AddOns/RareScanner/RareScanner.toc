@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: maqjav, Maciza-Tyrande
-## Version: 3.4.0.3
+## Version: 3.4.3.5
 ## OptionalDeps: Ace3
 ## SavedVariables: RareScannerDB
 
@@ -11,7 +11,7 @@
 
 ## X-Category: Achievements, Map, Miscellaneous
 ## X-Credits: maqjav, Maciza-Tyrande
-## X-Date: Oct. 12, 2022
+## X-Date: Feb. 24, 2024
 ## X-Email: maqjav@gmail.com
 ## X-License: All Rights Reserved
 ## X-Localizations: enUS, enGB, deDE, esES, esMX, frFR, ruRU, itIT, ptBR, koKR, zhCN, zhTW
@@ -24,4 +24,4 @@ Guide\Guide.lua
 Core\Plugins\NavPlugin\RSNavigationTemplate.xml
 RareScanner.lua
 Core\Plugins.xml
-Config.lua
+Options\Options.xml

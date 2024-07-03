@@ -1,6 +1,10 @@
 # RankSentinel
 
-## [v2.3.2](https://github.com/valkyrnstudios/RankSentinel/tree/v2.3.2) (2022-12-19)
-[Full Changelog](https://github.com/valkyrnstudios/RankSentinel/compare/v2.3.1...v2.3.2) [Previous Releases](https://github.com/valkyrnstudios/RankSentinel/releases)
+## [v2.5.0](https://github.com/valkyrnstudios/RankSentinel/tree/v2.5.0) (2023-12-11)
+[Full Changelog](https://github.com/valkyrnstudios/RankSentinel/compare/v2.4.0...v2.5.0) [Previous Releases](https://github.com/valkyrnstudios/RankSentinel/releases)
 
-- Optimize InGroupWith calls  
+- Update abilitydata  
+- Enable Classic builds  
+- Update libs  
+- Bump toc  
+- Avoid LEAD checks if self is lead  

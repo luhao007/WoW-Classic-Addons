@@ -1,9 +1,15 @@
-## Interface: 40400
-## Title: Titan Panel [|cffeda55fGold|r] |cff00aa008.0.13|r
-## Version: 8.0.13
-## Notes: Keeps track of all gold held by a player's toons on a per server/faction basis.
+## Interface: 30400
 ## Author: Titan Panel Development Team (http://www.titanpanel.org)
-## SavedVariables: GoldSave
-## OptionalDeps:  
+## Version: 8.0.13
 ## Dependencies: TitanClassic
+## OptionalDeps: 
+## SavedVariables: GoldSave
+
+## Title: Titan Panel [|cffeda55fGold|r] |cff00aa008.0.13|r
+## Notes: Keeps track of all gold held by a player's toons on a per server/faction basis.
+## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFF泰坦面板|r |cFF69CCF0金币|r
+## Notes-zhCN: 泰坦面板的金币模块
+
+## X-Part-Of: Titan
+
 TitanGold.lua

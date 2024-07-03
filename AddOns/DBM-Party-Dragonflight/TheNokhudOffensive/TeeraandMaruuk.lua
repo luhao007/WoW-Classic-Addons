@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(2478, "DBM-Party-Dragonflight", 3, 1198)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240616044034")
+mod:SetRevision("20240621023045")
 mod:SetCreatureID(186339, 186338)
 mod:SetEncounterID(2581)
 mod:SetBossHPInfoToHighest()
@@ -79,7 +79,7 @@ local function scanBosses(self, delay)
 				timerRepelCD:Start(49-delay, 1, bossGUID)
 			else--Maruuk
 				timerFrightfulRoarCD:Start(4.5-delay, 1, bossGUID)
-				timerBrutalizeCD:Start(13.5-delay, 1, bossGUID)
+				timerBrutalizeCD:Start(12.5-delay, 1, bossGUID)
 				timerEarthSplitterCD:Start(51-delay, 1, bossGUID)
 			end
 		end

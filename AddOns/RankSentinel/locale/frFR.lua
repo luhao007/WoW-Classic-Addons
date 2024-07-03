@@ -48,7 +48,9 @@ L["Utilities"] = {
     ["Error"] = "Vous devez cibler un joueur",
     ["Ignored"] = "Ignor\195\169: %s",
     ["Unignored"] = "d\195\169-ignor\195\169: %s"
-  }
+  },
+  ["Outdated"] = "Version obsolète, fonctionnalité désactivée",
+  ["NewVersion"] = "Nouvelle version disponible, veuillez mettre à jour pour réactiver"
 }
 
 L["ChatCommand"] = {

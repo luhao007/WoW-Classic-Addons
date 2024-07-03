@@ -69,7 +69,7 @@ Prat.Version = "Prat |cff8080ff3.0|r (|cff8080ff" .. "DEBUG" .. "|r)"
 --@end-debug@]==]
 
 --@non-debug@
-Prat.Version = "Prat |cff8080ff3.0|r (|cff8080ff".."3.9.47".."|r)"
+Prat.Version = "Prat |cff8080ff3.0|r (|cff8080ff".."3.9.54".."|r)"
 --@end-non-debug@
 
 
@@ -83,7 +83,7 @@ setmetatable(Prat, am)
 
 
 Prat.Prat3 = true
-Prat.IsClassic = (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_CLASSIC) or (_G.WOW_PROJECT_ID  == _G.WOW_PROJECT_BURNING_CRUSADE_CLASSIC) or (_G.WOW_PROJECT_ID  == _G.WOW_PROJECT_WRATH_CLASSIC)
+Prat.IsClassic = (_G.WOW_PROJECT_ID ~= _G.WOW_PROJECT_MAINLINE)
 Prat.IsRetail =  (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_MAINLINE)
 
 
@@ -181,7 +181,8 @@ local defaults = {
 }
 local SOUND
 function addon:OnInitialize()
-  if _G.IsAddOnLoaded("Prat") == 1 then
+	local IsAddOnLoaded = _G.C_AddOns.IsAddOnLoaded or _G.IsAddOnLoaded
+  if IsAddOnLoaded("Prat") == 1 then
     Prat:Print(("Prat 2.0 was detected, and disabled. Please %s your UI."):format(GetReloadUILink()))
   end
 

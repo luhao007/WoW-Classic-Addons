@@ -12,7 +12,7 @@ end
 local mod	= DBM:NewMod("Razorgore", "DBM-Raids-Vanilla", catID)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20230814031337")
+mod:SetRevision("20240615135519")
 mod:SetCreatureID(12435, 99999)--Bogus detection to prevent invalid kill detection if razorgore happens to die in phase 1
 mod:SetEncounterID(610)--BOSS_KILL is valid, but ENCOUNTER_END is not
 mod:DisableEEKillDetection()--So disable only EE
@@ -35,7 +35,7 @@ mod:RegisterEventsInCombat(
 local warnPhase2			= mod:NewPhaseAnnounce(2)
 local warnFireballVolley	= mod:NewCastAnnounce(22425, 3)
 local warnConflagration		= mod:NewTargetAnnounce(23023, 2)
-local warnEggsLeft			= mod:NewCountAnnounce(19873, 1)
+local warnEggsLeft			= mod:NewCountAnnounce(19873, 1) ---@type Announce -- string as count in :Show() is unusual but valid
 
 local specWarnFireballVolley= mod:NewSpecialWarningMoveTo(22425, false, nil, nil, 2, 2)
 

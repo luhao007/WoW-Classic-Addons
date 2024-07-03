@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: SabreValkyrn
-## Version: v2.3.2
+## Version: v2.5.0
 ## SavedVariables: RankSentinelDB
 
 ## Title: RankSentinel

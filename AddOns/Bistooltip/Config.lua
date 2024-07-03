@@ -1,5 +1,6 @@
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 local AceGUI = LibStub("AceGUI-3.0")
+local L = LibStub("AceLocale-3.0"):GetLocale("Bistooltip", false)
 local LDB = LibStub("LibDataBroker-1.1", true)
 local LDBIcon = LDB and LibStub("LibDBIcon-1.0", true)
 local icon_loaded = false
@@ -11,8 +12,8 @@ local sources = {
 }
 
 Bistooltip_source_to_url = {
-    ["wh"] = "wowhead.com/wotlk",
-    ["wowtbc"] = "wowtbc.gg/wotlk"
+    ["wh"] = "wowhead.com/wotlk/P1-P2",
+    ["wowtbc"] = "wowhead.com/wotlk/P3-P5"
 }
 
 local db_defaults = {
@@ -32,9 +33,12 @@ local configTable = {
     type = "group",
     args = {
         minimap_icon = {
-            name = "Show minimap icon",
+            -- name = "Show minimap icon",
+            -- order = 0,
+            -- desc = "Shows/hides minimap icon",
+            name = L["Show minimap icon"],
             order = 0,
-            desc = "Shows/hides minimap icon",
+            desc = L["Shows hides"],
             type = "toggle",
             set = function(info, val)
                 BistooltipAddon.db.char.minimap_icon = val
@@ -53,9 +57,12 @@ local configTable = {
             end
         },
         filter_class_names = {
-            name = "Hide class names",
+            -- name = "Hide class names",
+            -- order = 1,
+            -- desc = "Removes class name separators from item tooltips",
+            name = L["Hide class names"],
             order = 1,
-            desc = "Removes class name separators from item tooltips",
+            desc = L["Removes class from tooltips"],
             type = "toggle",
             set = function(info, val)
                 BistooltipAddon.db.char.filter_class_names = val
@@ -65,9 +72,12 @@ local configTable = {
             end
         },
         tooltip_with_ctrl = {
-            name = "Show item tooltips with Ctrl",
+            -- name = "Show item tooltips with Ctrl",
+            -- order = 2,
+            -- desc = "Show item tooltips only when holding Ctrl key",
+            name = L["Show with Ctrl"],
             order = 2,
-            desc = "Show item tooltips only when holding Ctrl key",
+            desc = L["Show holding Ctrl"],
             type = "toggle",
             width = "double",
             set = function(info, val)
@@ -78,9 +88,12 @@ local configTable = {
             end
         },
         data_source = {
-            name = "Data source",
+            -- name = "Data source",
+            -- order = 3,
+            -- desc = "Changes bis data source",
+            name = L["Data source"],
             order = 3,
-            desc = "Changes bis data source",
+            desc = L["Changes source"],
             type = "select",
             style = "dropdown",
             width = "double",
@@ -94,9 +107,12 @@ local configTable = {
             end
         },
         filter_specs = {
-            name = "Hide specs",
+            -- name = "Hide specs",
+            -- order = 4,
+            -- desc = "Removes unselected specs from item tooltips",
+            name = L["Hide specs"],
             order = 4,
-            desc = "Removes unselected specs from item tooltips",
+            desc = L["Removes specs from tooltips"],
             type = "multiselect",
             values = nil,
             set = function(info, key, val)
@@ -123,9 +139,12 @@ local configTable = {
             end
         },
         highlight_spec = {
-            name = "Highlight spec",
+            -- name = "Highlight spec",
+            -- order = 5,
+            -- desc = "Highlights selected spec in item tooltips",
+            name = L["Highlight spec"],
             order = 5,
-            desc = "Highlights selected spec in item tooltips",
+            desc = L["Highlights spec in tooltips"],
             type = "multiselect",
             values = nil,
             set = function(info, key, val)
@@ -157,7 +176,8 @@ local function buildFilterSpecOptions()
     local filter_specs_options = {}
     for ci, class in ipairs(Bistooltip_classes) do
         for si, spec in ipairs(Bistooltip_classes[ci].specs) do
-            local option_val = "|T" .. Bistooltip_spec_icons[class.name][spec] .. ":16|t " .. class.name .. " " .. spec
+            -- local option_val = "|T" .. Bistooltip_spec_icons[class.name][spec] .. ":16|t " .. class.name .. " " .. spec
+            local option_val = "|T" .. Bistooltip_spec_icons[class.name][spec] .. ":16|t " .. L[class.name] .. " " .. L[spec]
             local option_key = ci .. ":" .. si
             filter_specs_options[option_key] = option_val
         end
@@ -179,18 +199,19 @@ local function openSourceSelectDialog()
     frame:SetTitle(BistooltipAddon.AddonNameAndVersion)
 
     local labelEmpty = AceGUI:Create("Label")
-    labelEmpty:SetFont("Fonts\\FRIZQT__.TTF", 14, "")
+    -- labelEmpty:SetFont("Fonts\\FRIZQT__.TTF", 14, "")
     labelEmpty:SetText(" ")
     frame:AddChild(labelEmpty)
 
     local label = AceGUI:Create("Label")
-    label:SetText("Please select a bis data source to be used for this addon:")
-    label:SetFont("Fonts\\FRIZQT__.TTF", 14, "")
+    -- label:SetText("Please select a bis data source to be used for this addon:")
+    -- label:SetFont("Fonts\\FRIZQT__.TTF", 14, "")
+    label:SetText(L["Please select"])
     label:SetRelativeWidth(1)
     frame:AddChild(label)
 
     local labelEmpty2 = AceGUI:Create("Label")
-    labelEmpty2:SetFont("Fonts\\FRIZQT__.TTF", 14, "")
+    -- labelEmpty2:SetFont("Fonts\\FRIZQT__.TTF", 14, "")
     labelEmpty2:SetText(" ")
     frame:AddChild(labelEmpty2)
 
@@ -281,8 +302,12 @@ function BistooltipAddon:addMapIcon()
                 end,
                 OnTooltipShow = function(tt)
                     tt:AddLine(BistooltipAddon.AddonNameAndVersion)
-                    tt:AddLine("|cffffff00Left click|r to open the BiS lists window")
-                    tt:AddLine("|cffffff00Right click|r to open addon configuration window")
+                    -- tt:AddLine("|cffffff00Left click|r to open the BiS lists window")
+                    -- tt:AddLine("|cffffff00Right click|r to open addon configuration window")
+                    local left_click = "|cffffff00" .. L["Left click"] .. "|r " .. L["Open lists"]
+                    local right_click = "|cffffff00" .. L["Right click"] .. "|r " .. L["Open configuration"]
+                    tt:AddLine(left_click)
+                    tt:AddLine(right_click)
                 end,
             })
             if LDBIcon then

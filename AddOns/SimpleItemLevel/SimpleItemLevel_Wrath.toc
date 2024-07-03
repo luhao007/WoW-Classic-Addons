@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Kemayo
-## Version: v28
+## Version: v35.1
 ## OptionalDeps: LibAppropriateItems-1.0
 ## SavedVariables: SimpleItemLevelDB
 

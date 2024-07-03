@@ -3,6 +3,9 @@ local _, addon = ...
 local fmt, smatch, strsplit, tsort, tinsert = string.format, string.match, strsplit, table.sort, table.insert
 local UnitInBattleground = UnitInBattleground
 
+addon.release = nil
+addon.cluster = { lead = addon.playerName }
+
 function addon:OnCommReceived(prefix, message, _, sender)
     if prefix ~= addon._commPrefix or sender == self.playerName then return end
 
@@ -17,13 +20,23 @@ function addon:OnCommReceived(prefix, message, _, sender)
     if command == 'NOTIFY' then
         self:RecordNotification(sender, data)
     elseif command == 'LEAD' then
-        self.cluster.lead = data
+        local name, intVersion = strsplit(",", data)
+        self.cluster.lead = name
+
+        if name == self.playerName then return end
+
+        self:CheckRelease(intVersion, name)
 
         if self.db.profile.debug or addon.Version == 'v9.9.9' then
-            self:PrintMessage("Lead taken by " .. data)
+            self:PrintMessage("Lead taken by " .. name)
         end
     elseif command == 'JOIN' then
-        self:SendCommMessage(addon._commPrefix, 'LEAD|' .. self.cluster.lead,
+        local name, intVersion = strsplit(",", data)
+
+        self:CheckRelease(intVersion, name)
+
+        self:SendCommMessage(addon._commPrefix,
+            fmt('LEAD|%s,%d', self.cluster.lead, addon.release.int),
             "WHISPER", sender)
     elseif command == 'SYNC' then
         if self.db.profile.announcedSpells[data] ~= true then
@@ -66,13 +79,13 @@ end
 
 function addon:ResetLead() self.cluster = { lead = self.playerName } end
 
-function addon:SetLead(playerName)
-    -- TODO add lead version
-    if not self.db.profile.enable or not self.db.profile.whisper or playerName ==
-        nil or UnitInBattleground("player") ~= nil or
-        not smatch(addon.Version, 'v%d.%d.%d') then return end
+function addon:BroadcastLead(playerName)
+    if not self.db.profile.enable or not self.db.profile.whisper or not playerName or UnitInBattleground("player") ~= nil
+        or not self.db.profile.isLatestVersion then
+        return
+    end
 
-    self:Broadcast("LEAD", playerName)
+    self:Broadcast('LEAD', fmt('%s,%d', playerName, addon.release.int))
 end
 
 function addon:SyncBroadcast(array, index)
@@ -110,16 +123,29 @@ function addon:SyncBroadcast(array, index)
     end
 end
 
---TODO optimize, don't flip lead every transition
-function addon:PLAYER_ENTERING_WORLD() self:SetLead(self.playerName) end
+function addon:PLAYER_ENTERING_WORLD(_, isInitialLogin, isReloadingUi)
+    if not isInitialLogin and not isReloadingUi then return end
+
+    local major, minor, patch = smatch(addon.Version, "v(%d+)%.(%d+)%.(%d+)")
+
+    addon.release = {
+        major = major,
+        minor = minor,
+        patch = patch,
+        int = tonumber(fmt('%d%d%d', major, minor, patch))
+    }
+
+    self:BroadcastLead(self.playerName)
+end
 
 function addon:GROUP_LEFT()
-    self:SetLead(self.playerName)
+    self:BroadcastLead(self.playerName)
     self:InitializeSession()
 end
 
 function addon:GROUP_JOINED()
-    self:Broadcast("JOIN", self.playerName)
+    --TODO delay, happens too early
+    self:Broadcast("JOIN", fmt("%s,%d", self.playerName, addon.release.int))
     self:InitializeSession()
 end
 
@@ -130,6 +156,26 @@ function addon:GROUP_ROSTER_UPDATE()
         end
 
         self.cluster.lead = self.playerName
-        self:SetLead(self.playerName)
+        self:BroadcastLead(self.playerName)
+    end
+end
+
+function addon:CheckRelease(theirIntRelease, name)
+    theirIntRelease = tonumber(theirIntRelease)
+    if self.db.profile.debug or addon.Version == 'v9.9.9' then
+        self:PrintMessage("%s:theirIntRelease = %s", name, theirIntRelease or 'nil')
+    end
+
+    -- Treat Development announcements as equal to current
+    if theirIntRelease == 999 or addon.Version == 'v9.9.9' or not theirIntRelease then
+        return
+    end
+
+    -- Failed to parse version or older version
+    if addon.release.int == 0 or theirIntRelease == 0 then return end
+
+    if addon.release.int < theirIntRelease then
+        self:PrintMessage(self.L["Utilities"]["NewVersion"])
+        return true
     end
 end

@@ -6,7 +6,7 @@ Description: A library to convert a post-formatted string back to its original a
 License: MIT
 ]]
 local _, ADDONSELF = ...
--- local MAJOR, MINOR = "ScrollingTable", tonumber("1667117187") or 40300;
+-- local MAJOR, MINOR = "ScrollingTable", tonumber("1708862308") or 40300;
 -- local lib, oldminor = LibStub:NewLibrary(MAJOR, MINOR);
 -- if not lib then
 -- 	return; -- Already loaded and no upgrade necessary.
@@ -275,6 +275,6 @@ function LibDeformat.Test()
     test("Hello, friend", "Cost: $%d", nil)
     print("LibDeformat-3.0: Tests completed.")
 end
---@end-debug@]===]
+--@end-debug@]==]]===]
 
 setmetatable(LibDeformat, { __call = function(self, ...) return self.Deformat(...) end })

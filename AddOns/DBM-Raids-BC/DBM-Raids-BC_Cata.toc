@@ -1,14 +1,15 @@
-## Interface: 40400
-## X-Min-Interface: 40400
-## Title:|cffffe00a<|r|cffff7d0aDBM Mod|r|cffffe00a>|r |cffff6010Raids (BC)|r
-## Title-koKR:|cffffe00a<|r|cffff7d0aDBM Mod|r|cffffe00a>|r |cffff6010공격대 (불성)|r
-## Title-ruRU:|cffffe00a<|r|cffff7d0aDBM Мод|r|cffffe00a>|r |cffff6010Рейды (BC)|r
+## Interface: 30400
 ## Author: MysticalOS
-## LoadOnDemand: 1
+## Version: r4
 ## RequiredDeps: DBM-Core
+## LoadOnDemand: 1
 ## SavedVariables: DBMRaidsBC_AllSavedVars
 ## SavedVariablesPerCharacter: DBMRaidsBC_SavedStats
-## IconTexture: Interface\AddOns\DBM-Core\textures\dbm_airhorn
+
+## Title: |cffffe00a<|r|cffff7d0aDBM Mod|r|cffffe00a>|r |cffff6010Raids (BC)|r
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFF69CCF0团队|r |cFF22B14C燃烧的远征|r
+
+## X-Min-Interface: 40400
 ## X-DBM-Mod: 1
 ## X-DBM-Mod-Type: RAID
 ## X-DBM-Mod-Category: BC
@@ -21,7 +22,7 @@
 ## X-DBM-Mod-MapID: 580, 564, 534, 550, 548, 544, 565, 532, 568
 ## X-DBM-Mod-MinCoreRevision: 20230521000000
 ## X-DBM-Mod-MinExpansion: 1
-## Version: r3
+## X-Part-Of: DBM-Core
 
 localization.en.lua
 localization.tw.lua

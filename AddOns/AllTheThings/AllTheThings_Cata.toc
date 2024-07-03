@@ -1,18 +1,18 @@
-## Title: AllTheThings |cfd9b9b9b(Cataclysm)|r
-## IconTexture: Interface/Addons/AllTheThings/assets/logo_32x32
-## Name: AllTheThings
-## Notes: Addon for Tracking Collections & Account Completion
+## Interface: 30400
 ## Author: Crieve-Sargeras
-## Version: DF-3.12.8
-## Interface: 40400
+## Version: DF-3.12.9a
+## SavedVariables: ATTCharacterData, ATTAccountWideData, AllTheThingsSavedVariables, AllTheThingsAD, AllTheThingsSettings, AllTheThingsAuctionData, AllTheThingsDebugData, ATTClassicSettings, ATTClassicAuctionData, AllTheThingsHarvestItems
+## SavedVariablesPerCharacter: AllTheThingsSettingsPerCharacter, ATTClassicSettingsPerCharacter
+
+## Title: AllTheThings |cfd9b9b9b(Cataclysm)|r
+## Notes: Addon for Tracking Collections & Account Completion
+## Title-zhCN: |cFFFFE00A<|r|cFFA9D271收藏|r|cFFFFE00A>|r |cFFFFFFFF收集控助手|r |cFFFFE00AAllTheThings|r
+## Notes-zhCN: 追踪账号完成度，提示诸如任务、飞行点、配方等各个分类的收集和完成情况
+
 ## X-Interface: 40400
 ## X-Wago-ID: yQKyY5K7
 ## X-Curse-Project-ID: 267285
-## SavedVariables: ATTCharacterData, ATTAccountWideData, AllTheThingsSavedVariables, AllTheThingsAD, AllTheThingsSettings, AllTheThingsAuctionData, AllTheThingsDebugData, ATTClassicSettings, ATTClassicAuctionData, AllTheThingsHarvestItems
-## SavedVariablesPerCharacter: AllTheThingsSettingsPerCharacter, ATTClassicSettingsPerCharacter
-## AddonCompartmentFunc: AllTheThings_MinimapButtonOnClick
-## AddonCompartmentFuncOnEnter: AllTheThings_MinimapButtonOnEnter
-## AddonCompartmentFuncOnLeave: AllTheThings_MinimapButtonOnLeave
+
 lib\LibStub\LibStub.lua
 lib\CallbackHandler-1.0\CallbackHandler-1.0.lua
 lib\LibDataBroker-1.1\LibDataBroker-1.1.lua
@@ -99,11 +99,9 @@ src\Classes\Races.lua
 src\Classes\Title.lua
 src\Classes\Transmog.lua
 # src\Classes\CharacterUnlock.lua
-
 # Item Sub-Classes
 src\Classes\Toys.lua
 #src\Classes\Ensembles.lua
-
 # Expansion specific source files
 src\Expansions\Warlords.lua
 src\Expansions\Legion.lua

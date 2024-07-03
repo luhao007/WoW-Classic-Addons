@@ -439,8 +439,7 @@ L = {
 		["Alt"] = "Alternative",
 		["alt"] = "alternative",
 		["alt name exists: %s -> %s; not overwriting as set in preferences"] = "Alternativname existiert: %s -> %s; nicht wie in den Einstellungen festgelegt überschreiben",
-		--[[Translation missing --]]
-		["alt of ([^%s%p%d%c%z]+)"] = "[Aa]lt of %f[%aÀ-ÿ]([%aÀ-ÿ]+)%f[^%a-ÿ]",
+		["alt of ([^%s%p%d%c%z]+)"] = "[Aa]lt von %f[%a\\192-\\255]([%a\\192-\\255]+)%f[^%a\\128-\\255]",
 		["AltNames"] = "Alternative Namen",
 		["Alts:"] = "Alternativen:",
 		["autoguildalts_desc"] = "Führe den Import aus dem Gildenplan automatisch aus",
