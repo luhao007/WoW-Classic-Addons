@@ -1737,22 +1737,22 @@
 		<Category>辅助</Category>
 		<SubAddons>
 			<SubAddon name="WclPlayerScore-WotLK_DB1">
-				<Title>数据1</Title>
+				<Title>一区数据1</Title>
 			</SubAddon>
 			<SubAddon name="WclPlayerScore-WotLK_DB2">
-				<Title>数据1</Title>
+				<Title>一区数据2</Title>
 			</SubAddon>
 			<SubAddon name="WclPlayerScore-WotLK_DB3">
-				<Title>数据1</Title>
+				<Title>五区数据1</Title>
 			</SubAddon>
 			<SubAddon name="WclPlayerScore-WotLK_DB4">
-				<Title>数据1</Title>
+				<Title>五区数据2</Title>
 			</SubAddon>
 			<SubAddon name="WclPlayerScore-WotLK_DB5">
-				<Title>数据1</Title>
+				<Title>小服数据</Title>
 			</SubAddon>
 			<SubAddon name="WclPlayerScore-WotLK_DB6">
-				<Title>数据1</Title>
+				<Title>外服数据</Title>
 			</SubAddon>
 		</SubAddons>
 	</Addon>
