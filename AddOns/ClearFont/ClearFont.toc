@@ -1,0 +1,16 @@
+## Interface: 30400
+## Author: Kirkburn
+## Version: v4.01a
+## LoadOnDemand: 0
+## DefaultState: Enabled
+
+## Title: ClearFont |r|cFF0099FFby Ice|r
+## Notes: Modify Game Fonts and Size, Color, Shadow Of Them.(For FontShow ZhTW Mode)
+## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFF游戏字体|r |cFFFFE00AClearFont|r
+## Notes-zhCN: 修改游戏字体以及大小、颜色、阴影等特效（在FontShow台服用户端下使用）
+
+## X-Mush-Project-Name: ClearFont
+## X-Mush-Packaged-Version: 17
+## X-Mush-UpdateVer: 17
+
+ClearFont.lua

@@ -5,6 +5,7 @@ local settings -- will become savedvar
 local profilingCPU = nil -- becomes true if cpu profiling is enabled
 local updateInfo = true -- also becomes true in ADDON_LOADED, to know whether to look for new addons in GatherUsage
 local addonInfo = {} -- unordered table of all addons and their usage, indexed by addonIndex
+_addonInfo = addonInfo
 -- [addonIndex] = {
 --		name = string, the folder name of the addon
 --		title = string, the display name of the addon (color codes stripped out)
@@ -34,6 +35,8 @@ local sortOrder -- will be the sort order (1=name, 2=mem, 3=cpu; negative for re
 
 local updateTimer = 0 -- elapsed timer for continuous update (play/pause)
 local updateFrequency = 1 -- seconds between updates during continuous updates
+
+local TWW_CLIENT = select(4,GetBuildInfo())>=110000
 
 -- Bindings.xml globals
 BINDING_HEADER_ADDONUSAGE = "Addon Usage"
@@ -128,13 +131,37 @@ function addon:ResetUsage()
 	addon:Update()
 end
 
+function addon:GetNumAddOns()
+	if TWW_CLIENT then
+		return C_AddOns.GetNumAddOns()
+	else
+		return GetNumAddOns()
+	end
+end
+
+function addon:IsAddOnLoaded(index)
+	if TWW_CLIENT then
+		return C_AddOns.IsAddOnLoaded(index)
+	else
+		return IsAddOnLoaded(index)
+	end
+end
+
+function addon:GetAddOnInfo(index)
+	if TWW_CLIENT then
+		return C_AddOns.GetAddOnInfo(index)
+	else
+		return GetAddOnInfo(index)
+	end
+end
+
 -- fills addonInfo, addonIndexes and totals from the currently loaded addons and their usage
 function addon:GatherUsage()
 	-- look for any new addons loaded (first run or any load on demand after first run)
 	if updateInfo then
-		for i=1,GetNumAddOns() do
-			if not addonInfo[i] and IsAddOnLoaded(i) then
-				local name,title = GetAddOnInfo(i)
+		for i=1,addon:GetNumAddOns() do
+			if not addonInfo[i] and addon:IsAddOnLoaded(i) then
+				local name,title = addon:GetAddOnInfo(i)
 				title = title:gsub("\124c%x%x%x%x%x%x%x%x",""):gsub("\124r",""):gsub("[<>]","") -- strip color codes from titles
 				addonInfo[i] = {name=name,title=title}
 				addonIndexes[name] = i
