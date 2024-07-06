@@ -92,6 +92,21 @@ local phases = {
     KEZAN_SASSY_OUTSIDE_HQ = 1020,
     KEZAN_GALLYWIX_AT_HQ = 1021,
     KEZAN_GALLYWIX_ON_BOAT = 1022,
+    AGTOR_GRABBIT_OUTSIDE_ATTACK = 1023,
+    AGTOR_GRABBIT_DURING_ATTACK = 1024,
+    MOLOTOV_AT_RUINS = 1025,
+    MOLOTOV_AT_HARBOR = 1026,
+    SORATA_AT_EXCHANGE = 1027,
+    SORATA_AT_HARBOR = 1028,
+    SCARLET_ENCLAVE_ENTRACE = 1029,
+    SCARLET_ENCLAVE = 1030,
+    SIRA_KESS_AT_GARDEN = 1031,
+    SIRA_KESS_AT_NAR_SHOLA_TERRACE = 1032,
+    WAVESPEAKER_AT_RUINS = 1033,
+    HAR_KOA_AT_ALTAR = 1034,
+    HAR_KOA_AT_ZIM_TORGA = 1035,
+    EARTHEN_GUIDE_BFD = 1036,
+    EARTHEN_GUIDE_SHORE = 1037,
 }
 Phasing.phases = phases
 
@@ -143,11 +158,11 @@ function Phasing.IsSpawnVisible(phase)
     end
 
     if phase == phases.VASHJIR_LEGIONS_REST then
-        return complete[25966] or complete[25755] or ((not complete[25958]) and (not complete[25747]))
+        return complete[25966] or complete[25755] or ((not complete[25958]) and (not complete[25747]) and (not questLog[25958]) and (not questLog[25747])) or false
     end
 
     if phase == phases.VASHJIR_NORTHERN_GARDEN then
-        return (not complete[25966]) and (not complete[25755]) and (complete[25958] or complete[25747]) or false
+        return (not complete[25966]) and (not complete[25755]) and ((complete[25958] or complete[25747] or questLog[25958] or questLog[25747]) and true) or false
     end
 
     if phase == phases.VASHJIR_NAR_SHOLA_TERRACE_WEST then
@@ -174,6 +189,18 @@ function Phasing.IsSpawnVisible(phase)
 
     if phase == phases.VASHJIR_ERANUK_AT_PROMONTORY_POINT then
         return complete[25988] or false
+    end
+
+    if phase == phases.SIRA_KESS_AT_GARDEN then
+        return ((not complete[25658]) and (not questLog[25658])) or false
+    end
+
+    if phase == phases.SIRA_KESS_AT_NAR_SHOLA_TERRACE then
+        return (complete[25658] or questLog[25658]) and true or false
+    end
+
+    if phase == phases.WAVESPEAKER_AT_RUINS then
+        return ((questLog[25957] and questLog[25957].isComplete == 1) or (questLog[25760] and questLog[25760].isComplete == 1)) or false
     end
 
     if phase >= phases.DRAGONMAW_PORT_CHAPTER_1 and phase <= phases.DRAGONMAW_PORT_CHAPTER_3 then
@@ -270,6 +297,54 @@ function Phasing.IsSpawnVisible(phase)
 
     if phase == phases.KEZAN_GALLYWIX_ON_BOAT then
         return complete[14120] or false
+    end
+
+    if phase == phases.AGTOR_GRABBIT_OUTSIDE_ATTACK then
+        return complete[14155] or (not complete[14135]) or (questLog[14155] and questLog[14155].isComplete == 1) or false
+    end
+
+    if phase == phases.AGTOR_GRABBIT_DURING_ATTACK then
+        return questLog[14155] and questLog[14155].isComplete ~= 1 and true or false
+    end
+
+    if phase == phases.MOLOTOV_AT_RUINS then
+        return (not complete[24453])
+    end
+
+    if phase == phases.MOLOTOV_AT_HARBOR then
+        return complete[24453] or false
+    end
+
+    if phase == phases.SORATA_AT_EXCHANGE then
+        return (not complete[14340])
+    end
+
+    if phase == phases.SORATA_AT_HARBOR then
+        return complete[14340] or false
+    end
+
+    if phase == phases.SCARLET_ENCLAVE_ENTRACE then
+        return (not complete[27460])
+    end
+
+    if phase == phases.SCARLET_ENCLAVE then
+        return complete[27460] or false
+    end
+
+    if phase == phases.HAR_KOA_AT_ALTAR then
+        return (not complete[12684])
+    end
+
+    if phase == phases.HAR_KOA_AT_ZIM_TORGA then
+        return complete[12684] or false
+    end
+
+    if phase == phases.EARTHEN_GUIDE_BFD then
+        return (not complete[11891]) and (not questLog[11891])
+    end
+
+    if phase == phases.EARTHEN_GUIDE_SHORE then
+        return (complete[11891] or questLog[11891] and true) or false
     end
 
     return false

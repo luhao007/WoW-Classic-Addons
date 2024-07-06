@@ -247,6 +247,8 @@ tinsert(eventQuests, {"Darkmoon Faire", 7932}) -- 12 Tickets - Lesser Darkmoon P
 tinsert(eventQuests, {"Darkmoon Faire", 7930}) -- 5 Tickets - Darkmoon Flower
 tinsert(eventQuests, {"Darkmoon Faire", 7931}) -- 5 Tickets - Minor Darkmoon Prize
 tinsert(eventQuests, {"Darkmoon Faire", 7936}) -- 50 Tickets - Last Year's Mutton
+tinsert(eventQuests, {"Darkmoon Faire", 7905}) -- The Darkmoon Faire
+tinsert(eventQuests, {"Darkmoon Faire", 7926}) -- The Darkmoon Faire
 -- New SoD quests
 tinsert(eventQuests, {"Darkmoon Faire", 79588}) -- Small Furry Paws
 tinsert(eventQuests, {"Darkmoon Faire", 79589}) -- Torn Bear Pelts
@@ -451,8 +453,8 @@ tinsert(eventQuests, {"Midsummer", 11581}) -- Desecrate this Fire!
 tinsert(eventQuests, {"Midsummer", 11583}) -- Honor the Flame
 tinsert(eventQuests, {"Midsummer", 11584}) -- Honor the Flame
 tinsert(eventQuests, {"Midsummer", 11657}) -- Torch Catching
-tinsert(eventQuests, {"Midsummer", 11691}) -- Summon Ahune
-tinsert(eventQuests, {"Midsummer", 11696}) -- Ahune is Here!
+tinsert(eventQuests, {"Midsummer", 11691, nil, nil, QuestieCorrections.CATA_HIDE}) -- Summon Ahune
+tinsert(eventQuests, {"Midsummer", 11696, nil, nil, QuestieCorrections.CATA_HIDE}) -- Ahune is Here!
 tinsert(eventQuests, {"Midsummer", 11731}) -- Torch Tossing
 tinsert(eventQuests, {"Midsummer", 11732}) -- Desecrate this Fire!
 tinsert(eventQuests, {"Midsummer", 11734}) -- Desecrate this Fire!
@@ -469,7 +471,7 @@ tinsert(eventQuests, {"Midsummer", 11744}) -- Desecrate this Fire!
 tinsert(eventQuests, {"Midsummer", 11745}) -- Desecrate this Fire!
 tinsert(eventQuests, {"Midsummer", 11746}) -- Desecrate this Fire!
 tinsert(eventQuests, {"Midsummer", 11747}) -- Desecrate this Fire!
-tinsert(eventQuests, {"Midsummer", 11748}) -- Desecrate this Fire!
+tinsert(eventQuests, {"Midsummer", 11748, nil, nil, QuestieCorrections.CATA_HIDE}) -- Desecrate this Fire!
 tinsert(eventQuests, {"Midsummer", 11749}) -- Desecrate this Fire!
 tinsert(eventQuests, {"Midsummer", 11750}) -- Desecrate this Fire!
 tinsert(eventQuests, {"Midsummer", 11751}) -- Desecrate this Fire!
@@ -506,7 +508,7 @@ tinsert(eventQuests, {"Midsummer", 11781}) -- Desecrate this Fire!
 tinsert(eventQuests, {"Midsummer", 11782}) -- Desecrate this Fire!
 tinsert(eventQuests, {"Midsummer", 11783}) -- Desecrate this Fire!
 tinsert(eventQuests, {"Midsummer", 11784}) -- Desecrate this Fire!
-tinsert(eventQuests, {"Midsummer", 11785}) -- Desecrate this Fire!
+tinsert(eventQuests, {"Midsummer", 11785, nil, nil, QuestieCorrections.CATA_HIDE}) -- Desecrate this Fire!
 tinsert(eventQuests, {"Midsummer", 11786}) -- Desecrate this Fire!
 tinsert(eventQuests, {"Midsummer", 11787}) -- Desecrate this Fire!
 tinsert(eventQuests, {"Midsummer", 11799}) -- Desecrate this Fire!
@@ -529,7 +531,7 @@ tinsert(eventQuests, {"Midsummer", 11815}) -- Honor the Flame
 tinsert(eventQuests, {"Midsummer", 11816}) -- Honor the Flame
 tinsert(eventQuests, {"Midsummer", 11817}) -- Honor the Flame
 tinsert(eventQuests, {"Midsummer", 11818}) -- Honor the Flame
-tinsert(eventQuests, {"Midsummer", 11819}) -- Honor the Flame
+tinsert(eventQuests, {"Midsummer", 11819, nil, nil, QuestieCorrections.CATA_HIDE}) -- Honor the Flame
 tinsert(eventQuests, {"Midsummer", 11820}) -- Honor the Flame
 tinsert(eventQuests, {"Midsummer", 11821}) -- Honor the Flame
 tinsert(eventQuests, {"Midsummer", 11822}) -- Honor the Flame
@@ -571,7 +573,7 @@ tinsert(eventQuests, {"Midsummer", 11857}) -- Honor the Flame
 tinsert(eventQuests, {"Midsummer", 11858}) -- Honor the Flame
 tinsert(eventQuests, {"Midsummer", 11859}) -- Honor the Flame
 tinsert(eventQuests, {"Midsummer", 11860}) -- Honor the Flame
-tinsert(eventQuests, {"Midsummer", 11861}) -- Honor the Flame
+tinsert(eventQuests, {"Midsummer", 11861, nil, nil, QuestieCorrections.CATA_HIDE}) -- Honor the Flame
 tinsert(eventQuests, {"Midsummer", 11862}) -- Honor the Flame
 tinsert(eventQuests, {"Midsummer", 11863}) -- Honor the Flame
 tinsert(eventQuests, {"Midsummer", 11882}) -- Playing with Fire
@@ -592,8 +594,8 @@ tinsert(eventQuests, {"Midsummer", 11948}) -- Striking Back (level 43)
 tinsert(eventQuests, {"Midsummer", 11952}) -- Striking Back (level 51)
 tinsert(eventQuests, {"Midsummer", 11953}) -- Striking Back (level 60)
 tinsert(eventQuests, {"Midsummer", 11954}) -- Striking Back (level 67)
-tinsert(eventQuests, {"Midsummer", 11955}) -- Ahune, the Frost Lord
-tinsert(eventQuests, {"Midsummer", 11972}) -- Shards of Ahune
+tinsert(eventQuests, {"Midsummer", 11955, nil, nil, QuestieCorrections.CATA_HIDE}) -- Ahune, the Frost Lord
+tinsert(eventQuests, {"Midsummer", 11972, nil, nil, QuestieCorrections.CATA_HIDE}) -- Shards of Ahune
 tinsert(eventQuests, {"Midsummer", 11964}) -- Incense for the Summer Scorchlings
 tinsert(eventQuests, {"Midsummer", 11966}) -- Incense for the Festival Scorchlings
 tinsert(eventQuests, {"Midsummer", 11970}) -- The Master of Summer Lore

@@ -335,6 +335,18 @@ function SeasonOfDiscovery:LoadObjects()
                 [zoneIDs.STRANGLETHORN_VALE] = {{40.75,85.72}},
             },
         },
+        [442405] = { -- Abandoned Cache
+            [objectKeys.zoneID] = zoneIDs.BLASTED_LANDS,
+            [objectKeys.spawns] = {
+                [zoneIDs.BLASTED_LANDS] = {{45.3,16.4}},
+            },
+        },
+        [442685] = { -- Old Chest
+            [objectKeys.zoneID] = zoneIDs.FERALAS,
+            [objectKeys.spawns] = {
+                [zoneIDs.FERALAS] = {{79.2,49.4}},
+            },
+        },
 
         -- fake ID - no clue yet what the correct ones are
         [450000] = {
@@ -475,6 +487,13 @@ function SeasonOfDiscovery:LoadObjects()
             [objectKeys.zoneID] = zoneIDs.TANARIS,
             [objectKeys.spawns] = {
                 [zoneIDs.TANARIS] = {{58.0,36.0}},
+            },
+        },
+        [450020] = {
+            [objectKeys.name] = "Iodax Spawn",
+            [objectKeys.zoneID] = zoneIDs.SEARING_GORGE,
+            [objectKeys.spawns] = {
+                [zoneIDs.SEARING_GORGE] = {{65.0,45.0}},
             },
         },
     }
