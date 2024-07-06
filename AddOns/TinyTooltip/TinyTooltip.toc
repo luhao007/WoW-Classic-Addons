@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: M, GovtGeek
-## Version: 3.4.3.7
+## Version: 4.4.0.2
 ## SavedVariables: BigTipDB
 ## SavedVariablesPerCharacter: TinyTooltipCharacterDB
 

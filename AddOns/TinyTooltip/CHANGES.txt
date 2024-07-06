@@ -1,20 +1,30 @@
-lightweight tag b284b481816b1d725f000f76fc3a4ac37ac4b700 3.4.3.7
+lightweight tag 9506d6fa406cbcfb8d4eec3180ca1287fb634639 4.4.0.2
 Author:	GitHub <noreply@github.com>
-Date:	Sat Apr 6 23:33:33 2024 -0700
+Date:	Fri May 31 09:21:40 2024 -0700
 
-commit b284b481816b1d725f000f76fc3a4ac37ac4b700
+commit 9506d6fa406cbcfb8d4eec3180ca1287fb634639
 Author: GovtGeek <26489473+GovtGeek@users.noreply.github.com>
-Date:   Sat Apr 6 23:33:33 2024 -0700
+Date:   Fri May 31 09:21:40 2024 -0700
 
     Update TinyTooltip.toc
     
-    Updated version for SoD season 3
+    Updated version
 
-commit da526ef0ec09816abbc6ed5edecc4aca18f9d913
-Author: GovtGeek <26489473+GovtGeek@users.noreply.github.com>
-Date:   Sat Apr 6 23:33:11 2024 -0700
+commit f5f89cc383fe0c7996f538f787261493889f3956
+Author: govtgeek <26489473+GovtGeek@users.noreply.github.com>
+Date:   Fri May 31 09:17:55 2024 -0700
 
-    Update TinyTooltip_Vanilla.toc
-    
-    Updated version for SoD season 3
+    Consolidated TOC files and updated version
+
+commit f5f89cc383fe0c7996f538f787261493889f3956
+Author: govtgeek <26489473+GovtGeek@users.noreply.github.com>
+Date:   Fri May 31 09:17:55 2024 -0700
+
+    Consolidated TOC files and updated version
+
+commit 9fbedc26745383825a8cb727a1aafb81684b9238
+Author: govtgeek <26489473+GovtGeek@users.noreply.github.com>
+Date:   Fri May 31 09:08:39 2024 -0700
+
+    Updated ColorPicker call to work with overhauled picker
 

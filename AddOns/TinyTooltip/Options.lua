@@ -207,7 +207,11 @@ function widgets:colorpick(parent, config)
         }
         ColorPickerFrame.tipframe = self
         if (not self.hasopacity) then OpacitySliderFrame:SetValue(info.opacity) end
-        OpenColorPicker(info)
+        if ColorPickerFrame then
+            ColorPickerFrame:SetupColorPickerAndShow(info)
+        else
+            OpenColorPicker(info)
+        end
     end)
     return frame
 end

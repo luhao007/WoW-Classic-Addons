@@ -12,10 +12,10 @@ L["Notification"] = {
     ["default"] = {
         ["Prefix"] = {
             ["Self"] = '|TInterface\\TargetingFrame\\UI-RaidTargetingIcon_7.blp:0|t',
-            ["Whisper"] = fmt("{rt7} %s detected", addonName)
+            ["Whisper"] = fmt("{rt7} %s 检测到", addonName)
         },
-        ["Base"] = "%s (Rank %d) was used%s, there's a newer rank at level %d.",
-        ["Suffix"] = "Your action bars may be outdated.",
+        ["Base"] = "%s (等级 %d) 被使用%s, 更高级的法术可以在等级%d学会。",
+        ["Suffix"] = "您可能需要更新您的动作条。",
         ["By"] = " by %s"
     },
     ["troll"] = {
