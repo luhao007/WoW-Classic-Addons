@@ -69,6 +69,7 @@ LibClassicSpellActionCount-1.0\LibClassicSpellActionCount-1.0.lua
 LibCustomGlow-1.0\LibCustomGlow-1.0.xml
 LibDBIcon-1.0\lib.xml
 LibDialog-1.0\lib.xml
+LibDropDownMenu\LibDropDownMenu.xml
 LibDualSpec-1.0\LibDualSpec-1.0.lua
 LibDurability\LibDurability\LibDurability.xml
 LibGetEnchant-1.0\LibGetEnchant-1.0.xml

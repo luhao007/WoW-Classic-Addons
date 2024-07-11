@@ -11,9 +11,6 @@
 ## X-Curse-Project-ID: 298617
 
 #@no-lib-strip@
-libs\LibStub\LibStub.lua
-libs\CallbackHandler-1.0\CallbackHandler-1.0.lua
 #@end-no-lib-strip@
 
 LibDropDownMenu.xml
-
