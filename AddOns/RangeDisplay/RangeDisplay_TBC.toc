@@ -20,7 +20,6 @@
 
 #@no-lib-strip@
 libs\LibStub-1.0\LibStub.lua
-libs\LibRangeCheck-3.0\LibRangeCheck-3.0.lua
 #@end-no-lib-strip@
 
 localizations.lua

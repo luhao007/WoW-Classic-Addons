@@ -21,7 +21,6 @@
 #@no-lib-strip@
 libs\LibStub-1.0\LibStub.lua
 libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
-libs\LibRangeCheck-3.0\LibRangeCheck-3.0.lua
 libs\Ace3\AceAddon-3.0\AceAddon-3.0.xml
 libs\Ace3\AceEvent-3.0\AceEvent-3.0.xml
 libs\Ace3\AceDB-3.0\AceDB-3.0.xml

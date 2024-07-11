@@ -77,7 +77,7 @@ LibGraph-2.0\LibGraph-2.0\LibGraph-2.0.lua
 LibItemUpgradeInfo-1.0\LibItemUpgradeInfo-1.0.xml
 LibLatency\LibLatency\LibLatency.xml
 LibQTip-1.0\lib.xml
-LibRangeCheck-2.0\LibRangeCheck-2.0\LibRangeCheck-2.0.lua
+LibRangeCheck-3.0\LibRangeCheck-3.0.lua
 LibRealmInfo\LibRealmInfo.lua
 LibSerialize\lib.xml
 LibSink-2.0\lib.xml

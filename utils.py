@@ -73,6 +73,7 @@ def get_libraries_list():
     paths = [root, root / 'Ace3', root / 'Ace3' / 'AceConfig-3.0', root / 'LibBabble']
     libs = sum([[lib for lib in os.listdir(path) if os.path.isdir(path / lib)] for path in paths], [])
     libs += ['HereBeDragons-2.0']       # Alternative name
+    libs += ['LibUIDropDownMenu']       # We got an "!" mark in the lib name
     return libs
 
 
