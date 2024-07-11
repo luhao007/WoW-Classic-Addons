@@ -1,5 +1,5 @@
 ## Interface: 30400
-## Version: r135
+## Version: r137
 ## RequiredDeps: DBM-Core
 ## LoadOnDemand: 1
 ## SavedVariables: DBMPartyWarWithin_AllSavedVars
@@ -17,6 +17,7 @@
 ## X-DBM-Mod-Name-koKR: 던전 (내부 전쟁)
 ## X-DBM-Mod-Name-ruRU: Подземелья (Война Внутри)
 ## X-DBM-Mod-Name-zhCN: 队伍首领 (地心之战)
+## X-DBM-Mod-Name-zhTW: 隊伍首領 (地心之戰)
 ## X-DBM-Mod-Sort: 115
 ## X-DBM-Mod-MapID: 2651, 2649, 2648, 2652, 2662, 2660, 2661, 2669
 ## X-DBM-Mod-MinCoreRevision: 20230716000000
