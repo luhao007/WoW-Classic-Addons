@@ -1,5 +1,4 @@
 <Ui xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
     <!-- Ace3 frame work end -->
 
-    <Script file="Libs\Krowi_WorldMapButtons\Krowi_WorldMapButtons-1.4.lua"/>
 </Ui>

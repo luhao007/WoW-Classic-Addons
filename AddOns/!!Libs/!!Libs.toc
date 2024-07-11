@@ -57,6 +57,7 @@ LibBabble\LibBabble-Race-3.0\lib.xml
 LibBabble\LibBabble-SubZone-3.0\lib.xml
 
 # Other Libs
+Krowi_WorldMapButtons\Krowi_WorldMapButtons-1.4.xml
 LibAHTab\LibAHTab.xml
 LibAboutPanel\lib.xml
 LibAlts-1.0\lib.xml

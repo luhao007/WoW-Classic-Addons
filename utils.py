@@ -138,6 +138,8 @@ def change_defaults(path: str, defaults: str | list[str]):
 
 
 def lib_to_toc(lib: str):
+    if lib == 'Krowi_WorldMapButtons':
+        return 'Krowi_WorldMapButtons\\Krowi_WorldMapButtons-1.4.xml\n'
     root = Path('Addons/!!Libs')
     subdir = os.listdir(root / lib)
     for script in ['lib.xml', 'load.xml', f'{lib}.xml', f'{lib}.lua', 'Core.lua']:
