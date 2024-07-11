@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: The WeakAuras Team
-## Version: 5.12.8
+## Version: 5.15.0
 ## Dependencies: WeakAuras
 ## LoadOnDemand: 1
 ## SavedVariables: WeakAurasOptionsSaved
@@ -13,6 +13,7 @@
 ## X-Category: Interface Enhancements
 ## X-Part-Of: WeakAuras
 
+embeds.xml
 locales.xml
 
 ForAllIndentsAndPurposes.lua
@@ -95,5 +96,7 @@ AceGUI-Widgets\AceGUIWidget-WeakAurasSpacer.lua
 AceGUI-Widgets\AceGuiWidget-WeakAurasProgressBar.lua
 AceGUI-Widgets\AceGUIWidget-WeakAurasSpinBox.lua
 AceGUI-Widgets\AceGUIWidget-WeakAurasScrollArea.lua
+AceGUI-Widgets\AceGUIWidget-WeakAurasInput.lua
 AceGUI-Widgets\AceGUIWidget-WeakAurasInputFocus.lua
 AceGUI-Widgets\AceGuiWidget-WeakAurasMediaSound.lua
+AceGUI-Widgets\WeakAurasStatusbarAtlasWidget.lua

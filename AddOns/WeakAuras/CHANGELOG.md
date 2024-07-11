@@ -1,42 +1,59 @@
-# [5.12.8](https://github.com/WeakAuras/WeakAuras2/tree/5.12.8) (2024-04-09)
+# [5.15.0](https://github.com/WeakAuras/WeakAuras2/tree/5.15.0) (2024-07-09)
 
-[Full Changelog](https://github.com/WeakAuras/WeakAuras2/compare/5.12.7...5.12.8)
+[Full Changelog](https://github.com/WeakAuras/WeakAuras2/compare/5.14.1...5.15.0)
 
 ## Highlights
 
- - More Cataclysm updates
-- Bug fixes 
+ - Add support for CustomNames addon
+- Add auto complete and text replacement widgets for code editors
+- UI Improvements
+- TWW updates 
 
 ## Commits
 
-InfusOnWoW (4):
+Dsune0 (2):
 
-- Adjust atlas_update.lua for Private type declaration changes
-- update-atlas-files.sh: Add +x mode back
-- Options Window: Shift Selection don't select hidden buttons
-- Conditions: Fix tick_placement property not being reversible
+- Hide Resize button when minimized
+- Change Profiling frame resize/toggle behaviour
 
-Stanzilla (2):
+InfusOnWoW (10):
 
-- Refactor of ModelPaths update script (#4990)
-- Type and comment updates
+- Add missing Instances Types: Delves, Story Raid, Quest Party(?)
+- TWW+Model SubElement: Replace "Clips by Progress" by "Anchor to FG"
+- Progress Source: Only use additinalProgress (aka overlays) in auto mode
+- Add Dynamic Text Codes window
+- TWW: Workaround ColorMixin not being found in custom code
+- Fix Item Cooldown trigger if GetItemCooldown returns a nil duration
+- TWW: Fix  WeakAuras.CheckTalentForUnit
+- Snippets: Prevent stack overflows on TWW on e.g. renaming
+- Fix regression in icon determination for the options
+- TWW: Fix WeakAuras.CheckTalentForUnit to be compatible with TWW
 
-dependabot[bot] (3):
+Stanzilla (3):
 
-- Bump tsickert/discord-webhook from 5.5.0 to 6.0.0
-- Bump cbrgm/mastodon-github-action from 2.0.5 to 2.0.6
-- Bump Stanzilla/cat from 2.0.1 to 2.0.2
+- Update TOC for Vanilla Patch 1.15.3
+- Update WeakAurasModelPaths from wago.tools
+- Update WeakAurasModelPaths from wago.tools
 
-emptyrivers (3):
+dependabot[bot] (2):
 
-- improve AddMany data flow
-- fix some more type annotations
-- LuaLS but it actually works now (#4982)
+- Bump cbrgm/mastodon-github-action from 2.1.4 to 2.1.5
+- Bump cbrgm/mastodon-github-action from 2.1.3 to 2.1.4
 
-mrbuds (4):
+mrbuds (14):
 
-- Cataclysm: use EncounterJournal for encounter ids and zone ids
-- Add Sunken Temple encounterIds
-- Fix nil error in migration 73
-- add some types (#4995)
+- Fix spellcache for cataclysm
+- Fix Update frame error
+- Re-add CallbackHandler-1.0 required by AceCom
+- Fix error when opening doing an aura update
+- Dont't construct unnecessary frames when opening /wa
+- Remove non-unified BigWigs & DBM triggers for TWW
+- Item Slot triggers: add Relic slot for Cataclysm
+- Lib cleanup & move to WeakAurasOptions/Libs
+- Enable LibAPIAutoComplete for TextEditor and Events
+- Add support for LibCustomNames
+- Remove AceEvent-3.0
+- watchUnitChange optimisation
+- watchUnitChange check for new arena units
+- fix frame_monitor_callback error
 

@@ -355,7 +355,7 @@ local cachedVersion
 
 ---@return number, number, number
 function QuestieLib:GetAddonVersionInfo()
-    return 10, 3, 1
+    return 10, 3, 2
 end
 --    if (not cachedVersion) then
 --        cachedVersion = GetAddOnMetadata("Questie", "Version")
