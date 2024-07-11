@@ -1347,28 +1347,14 @@ end
 
 local methods = {
   Open = function(self, data, children, target, linkedAuras, sender, callbackFunc)
-    local optionsWindow =  self.optionsWindow
-    local optionsWindowTitle = self.optionsWindow.window
-    if(optionsWindowTitle == "importexport") then
-      local importexport = OptionsPrivate.ImportExport(optionsWindow, true)
-      if importexport then
-        importexport:Close();
-      end
-    elseif(optionsWindowTitle == "texture") then
-      local texturepicker = OptionsPrivate.TexturePicker(optionsWindow, true)
-      if texturepicker then
-        texturepicker:CancelClose();
-      end
-    elseif(optionsWindowTitle == "icon") then
-      local iconpicker = OptionsPrivate.IconPicker(optionsWindow, true)
-      if iconpicker then
-        iconpicker:CancelClose();
-      end
-    elseif(optionsWindowTitle == "model") then
-      local modelpicker = OptionsPrivate.ModelPicker(optionsWindow, true)
-      if modelpicker then
-        modelpicker:CancelClose();
-      end
+    if(self.optionsWindow.window == "importexport") then
+      self.optionsWindow.importexport:Close();
+    elseif(self.optionsWindow.window == "texture") then
+      self.optionsWindow.texturePicker:CancelClose();
+    elseif(self.optionsWindow.window == "icon") then
+      self.optionsWindow.iconPicker:CancelClose();
+    elseif(self.optionsWindow.window == "model") then
+      self.optionsWindow.modelPicker:CancelClose();
     end
     self.optionsWindow.window = "update"
     self.optionsWindow:UpdateFrameVisible()
@@ -1559,7 +1545,7 @@ local methods = {
       local flavorWarning = AceGUI:Create("Label")
       flavorWarning:SetFontObject(GameFontHighlight)
       flavorWarning:SetFullWidth(true)
-      flavorWarning:SetText(L["This aura was created with a different version (%s) of World of Warcraft.\nIt might not work correctly!"]:format(OptionsPrivate.Private.TocToExpansion[importBuild] or L["Unknown"]))
+      flavorWarning:SetText(L["This aura was created with a different version (%s) of World of Warcraft.\nIt might not work correctly!"]:format(OptionsPrivate.Private.TocToExpansion[importBuild]))
       flavorWarning:SetColor(1, 0, 0)
       self:AddChild(flavorWarning)
     end
@@ -2224,7 +2210,7 @@ local function ConstructUpdateFrame(frame)
   return group
 end
 
-function OptionsPrivate.UpdateFrame(frame, noConstruct)
-  updateFrame = updateFrame or (not noConstruct and ConstructUpdateFrame(frame))
+function OptionsPrivate.UpdateFrame(frame)
+  updateFrame = updateFrame or ConstructUpdateFrame(frame)
   return updateFrame
 end

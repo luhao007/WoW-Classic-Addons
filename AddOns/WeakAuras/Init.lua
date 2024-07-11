@@ -9,6 +9,8 @@ WeakAuras = {}
 WeakAuras.L = {}
 Private.frames = {}
 
+local GetAddOnMetadata = C_AddOns and C_AddOns.GetAddOnMetadata or GetAddOnMetadata
+
 --- @alias uid string
 --- @alias auraId string
 
@@ -170,9 +172,8 @@ Private.frames = {}
 --- @field subeventSuffix string?
 --- @field type triggerTypes
 --- @field unit string?
---- @field use_alwaystrue boolean|nil
---- @field use_ignoreoverride boolean|nil
 --- @field use_showOn boolean|nil
+--- @field use_alwaystrue boolean|nil
 
 ---@class prototypeDataArgs
 ---@field name string
@@ -192,12 +193,11 @@ Private.frames = {}
 ---@field timedrequired boolean?
 ---@field GetNameAndIcon (fun(trigger: triggerData): string?, string?)|nil
 ---@field iconFunc (fun(trigger: triggerData): string?)|nil
----@field loadFunc (fun(trigger: triggerData): nil)|nil
 ---@field nameFunc (fun(trigger: triggerData): string?)|nil
----@field events (fun(trigger: triggerData): table)|nil
----@field internal_events (fun(trigger: triggerData): table)|nil
+---@field events (fun(tigger: triggerData): table)|nil
+---@field internal_events (fun(tigger: triggerData): table)|nil
 ---@field name string
----@field statesParameter "unit"|"one"|"all"|nil
+---@field statesParamater "unit"|"one"|"all"|nil
 ---@field progressType "timed"|"static"|"none"
 
 --- @class triggerUntriggerData
@@ -375,11 +375,11 @@ Private.frames = {}
 WeakAuras.normalWidth = 1.3
 WeakAuras.halfWidth = WeakAuras.normalWidth / 2
 WeakAuras.doubleWidth = WeakAuras.normalWidth * 2
-local versionStringFromToc = C_AddOns.GetAddOnMetadata("WeakAuras", "Version")
-local versionString = "5.15.0"
-local buildTime = "20240709234545"
+local versionStringFromToc = GetAddOnMetadata("WeakAuras", "Version")
+local versionString = "5.12.9"
+local buildTime = "20240501005255"
 
-local flavorFromToc = C_AddOns.GetAddOnMetadata("WeakAuras", "X-Flavor")
+local flavorFromToc = GetAddOnMetadata("WeakAuras", "X-Flavor")
 local flavorFromTocToNumber = {
   Vanilla = 1,
   TBC = 2,
@@ -405,7 +405,7 @@ WeakAuras.buildType = "pr"
 --@end-experimental@]=====]
 
 --[==[@debug@
-if versionStringFromToc == "5.15.0" then
+if versionStringFromToc == "5.12.9" then
   versionStringFromToc = "Dev"
   buildTime = "Dev"
   WeakAuras.buildType = "dev"
@@ -425,6 +425,11 @@ end
 WeakAuras.IsClassic = WeakAuras.IsClassicEra
 
 ---@return boolean result
+function WeakAuras.IsWrathClassic()
+  return flavor == 3
+end
+
+---@return boolean result
 function WeakAuras.IsCataClassic()
   return flavor == 4
 end
@@ -435,8 +440,18 @@ function WeakAuras.IsRetail()
 end
 
 ---@return boolean result
-function WeakAuras.IsClassicOrCata()
-  return WeakAuras.IsClassicEra() or WeakAuras.IsCataClassic()
+function WeakAuras.IsClassicEraOrWrath()
+  return WeakAuras.IsClassicEra() or WeakAuras.IsWrathClassic()
+end
+
+---@return boolean result
+function WeakAuras.IsWrathOrCataOrRetail()
+  return WeakAuras.IsRetail() or WeakAuras.IsWrathClassic() or WeakAuras.IsCataClassic()
+end
+
+---@return boolean result
+function WeakAuras.IsWrathOrCata()
+  return WeakAuras.IsWrathClassic() or WeakAuras.IsCataClassic()
 end
 
 ---@return boolean result
@@ -445,8 +460,8 @@ function WeakAuras.IsCataOrRetail()
 end
 
 ---@return boolean result
-function WeakAuras.IsTWW()
-  return WeakAuras.BuildInfo >= 110000
+function WeakAuras.IsClassicEraOrWrathOrCata()
+  return WeakAuras.IsClassicEra() or WeakAuras.IsWrathClassic() or WeakAuras.IsCataClassic()
 end
 
 ---@param ... string
@@ -455,8 +470,8 @@ WeakAuras.prettyPrint = function(...)
 end
 
 -- Force enable WeakAurasCompanion and Archive because some addon managers interfere with it
-C_AddOns.EnableAddOn("WeakAurasCompanion")
-C_AddOns.EnableAddOn("WeakAurasArchive")
+EnableAddOn("WeakAurasCompanion")
+EnableAddOn("WeakAurasArchive")
 
 local libsAreOk = true
 do
@@ -466,6 +481,11 @@ do
   }
   local LibStubLibs = {
     "CallbackHandler-1.0",
+    "AceConfig-3.0",
+    "AceConsole-3.0",
+    "AceGUI-3.0",
+    "AceEvent-3.0",
+    "AceGUISharedMediaWidgets-1.0",
     "AceTimer-3.0",
     "AceSerializer-3.0",
     "AceComm-3.0",
@@ -477,6 +497,7 @@ do
     "LibDBIcon-1.0",
     "LibGetFrame-1.0",
     "LibSerialize",
+    "LibUIDropDownMenu-4.0"
   }
   if WeakAuras.IsRetail() then
     tinsert(LibStubLibs, "LibSpecialization")
@@ -534,7 +555,7 @@ function WeakAuras.IsLibsOK()
   return libsAreOk
 end
 
-if not libsAreOk then
+if not WeakAuras.IsLibsOK() then
   C_Timer.After(1, function()
     WeakAuras.prettyPrint("WeakAuras is missing necessary libraries. Please reinstall a proper package.")
   end)

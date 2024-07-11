@@ -26,8 +26,6 @@ local defaultFontSize = WeakAuras.defaultFontSize
 
 local default = {
   progressSource = {-1, "" },
-  adjustedMax = "",
-  adjustedMin = "",
   foregroundTexture = "Interface\\Addons\\WeakAuras\\PowerAurasMedia\\Auras\\Aura3",
   backgroundTexture = "Interface\\Addons\\WeakAuras\\PowerAurasMedia\\Auras\\Aura3",
   desaturateBackground = false,

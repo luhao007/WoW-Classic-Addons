@@ -255,7 +255,7 @@ local funcs = {
       if self.parentRegionType ~= "aurabar" then
         self.parent:AnchorSubRegion(self, "area", "region")
       end
-    else -- noop function in case of unsupported glow
+    else -- noop function in case of unsuported glow
       self.glowStart = function() end
       self.glowStop = function() end
     end
@@ -421,7 +421,7 @@ function Private.getDefaultGlow(regionType)
       glowYOffset = 0,
       glow_anchor = "bar"
     }
-  else
+  elseif regionType == "icon" then
     return {
       ["type"] = "subglow",
       glow = false,
@@ -441,14 +441,9 @@ function Private.getDefaultGlow(regionType)
   end
 end
 
-local supportedRegion = {
-  icon = true,
-  aurabar = true,
-  texture = true,
-  progresstexture = true
-}
 local function supports(regionType)
-  return supportedRegion[regionType]
+  return regionType == "icon"
+         or regionType == "aurabar"
 end
 
 local function addDefaultsForNewAura(data)

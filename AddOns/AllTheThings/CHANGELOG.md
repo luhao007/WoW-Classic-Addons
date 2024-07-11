@@ -1,41 +1,140 @@
 # AllTheThings
 
-## [DF-3.12.9a](https://github.com/DFortun81/AllTheThings/tree/DF-3.12.9a) (2024-07-03)
-[Full Changelog](https://github.com/DFortun81/AllTheThings/compare/DF-3.12.9...DF-3.12.9a) [Previous Releases](https://github.com/DFortun81/AllTheThings/releases)
+## [DF-3.12.10](https://github.com/DFortun81/AllTheThings/tree/DF-3.12.10) (2024-07-07)
+[Full Changelog](https://github.com/DFortun81/AllTheThings/compare/DF-3.12.9a...DF-3.12.10) [Previous Releases](https://github.com/DFortun81/AllTheThings/releases)
 
-- Retail Errors and Parsed for Hotfix Release  
-- Retail: Moved the Timerunning filter being applied for popouts so it updates in the window when the setting is adjusted  
-- No longer bricking SOD.  
-- Many small NYI changes and fixes.  
-- Cleared last expansion header in NYI.  
-- Arokka Feather turnin quest correction  
-- Crescent-Tail Skullfish fish is back again.  
-- Crafted items/TBC fish descriptions  
-- Update Eversong Woods.lua  
-- To Serve Krag'wa Breadcrump!  
-- Fixed a bad TWW rep constant  
-- Retail: Timerunning Filter is now applied to popouts to help reduce confusion between different ATT window types  
-- Many updates to TWW  
-- Worldsoul is the new ata  
-- Weekly Holiday added in Dornogal  
-- Fixed Tusks of Mannoroth.  
-- Merge branch 'master' of https://github.com/DFortun81/AllTheThings  
-- Expanded a bit on Delves  
-- DRAGON\_SUPPLIES  
-- dot dot  
-- Wrong ID  
-- Some Quest Gear and WQ Gear  
-- some cleanup for zskera vault key. While still rewarded by those quests, they are sold by 4 vendors since 10.2.  
-- stuffed bear is a toy in 11.0  
-- Extracted Heirloom classes into separate file (pending handling re-design & improvement)  
-    Retail: Heirloom collection logic is now slightly more efficient  
-- Classic: No more Runner Events!  
-- Retail: Once again uses Callback for map-change detection (also removed arbitrary micro-delay)  
-- Added a couple of objectives to Vashj'ir.  
-- Poseidus is technically a world boss. Let's move him.  
-- Fixed OnReady lag caused by improper use of coroutines.  
-- I don't trust Callback or DelayedCallback, reverting this change. Also that quarter of a second delay isn't great.  
-- Classic: Heirlooms now use the transmog API should that be available.  
-- Update Isle of Thunder.lua  
-- Some more sorting of Unsorted  
-- Minor Title formatting/name cache  
+- Baby Shark, doo-doo, doo-doo, doo-doo  
+- SOD: Added the Malleable Protection rune for Paladins.  
+- More Pandaland  
+- SOD: Added Rune of Demolition for Warriors and a number of zone drop weapons to Scarlet Monastery.  
+- SOD: Added the Sheathe of Light and Hammer of the Righteous rune quests for level 44 paladins.  
+- SOD: Added a reitemized version of the Skullplate Bracers to Uldaman.  
+- SOD: Added the Dark Riders from Phase 2.  
+- Bunch of achraw function use instead of manually slapping on bubbledown  
+- Theater Troupe achievements  
+- TWW safari and a couple more missed family battler achievements  
+- TWW pet battle achievements now have their criteria  
+- Investigated Sojourner achievements which didn't pass scrutiny yet  
+- TWW: Objects for Smelling History achievement added  
+- TWW exploration achievements have received their correct criteria  
+- Bookworm achievement updated  
+- Classic Era: Wildhammer Clan Exalted is now required. @Blackbear on the ATT Discord.  
+- SOD: Added Mage Comprehension Tier 3 scrolls.  
+- SOD: Added reitemized itemIDs from Blackrock Depths.  
+- SOD: Added reitemized itemIDs from Uldaman.  
+- SOD: Added reitemized itemIDs from Scarlet Monastery.  
+- SOD: Added reitemized itemIDs for Razorfen Downs.  
+- SOD: Added reitemized itemIDs for Zul'Farrak.  
+- SOD: Added reitemized itemIDs from Maraudon.  
+- SOD: Added Zalgo the Explorer for Sunken Temple set loot.  
+- SOD: Added Sunken Temple Class Quests where the only thing different was the id. Thanks, Blizzard.  
+- SOD: Added the Skeletal Wind Serpent pet from Sunken Temple.  
+- SOD: Organized Sunken Temple's loot.  
+- SOD: Removed some more unnecessary assignments.  
+- SOD: Removed more unnecessary assignments.  
+- More Krasarang  
+- SOD: Added all of the new Darkmoon Decks & Cards.  
+- SOD: Fixed a bug with the Emerald Wardens tooltip.  
+- SOD: Now that there's an ItemDB for Season of Discovery specifically, we no longer need to manually assign this stuff. (thank god!)  
+- Classic: Opening /attunsorted now triggers unsorted to be fully cached. (but not until the window is shown)  
+- SOD: Added a new ItemDB harvested from 1.15.2.  
+- Pandaland QuestItems  
+- SOD: Added the Darkmoon Wild Deck.  
+- SOD: Adjusted Common Boss Drops in Sunken Temple's raid.  
+- SOD: Updated Sunken Temple boss strategies.  
+- SOD: Now using the appropriate difficulty headers.  
+- SOD: Added boilerplate logic for the Sunken Temple raid. (still missing quests and items need to be sorted + documented in the ItemDB)  
+- Removed Gouging Pick from Retail.  
+- SOD: Updated Gnomer and Blackfathom raids to use the new bubble down timeline event function.  
+- Fixed a bug with the bubble down timeline event function where it was showing content added in later expansions if the timeline epoch was before its added patch value.  
+- Added the applyTimelineEvent function helper. This function takes an epoch and merges it into the timeline.  
+- SOD: Added all Hinterlands Missions for the Nightmare Incursions.  
+- SOD: Added all of the Feralas Missions for the Nightmare Incursions.  
+- SOD: Added boilerplate logic for Feralas and Hinterlands Missions. (the sheer audacity of duplicate quest data... literally 0 imagination, Blizzard.)  
+- SOD: Added all of the Ashenvale Missions for the Nightmare Incursions.  
+- SOD: Added the Fight the Nightmare Incursions daily quest.  
+- Fixed IsHardcoreActive for TWW beta. Thanks, Blizzard.  
+- Unautomated missing lynx achievement so coords can be added  
+- SOD: Added placeholder for Zalgo the Explorer in STV. (I'm done for tonight!)  
+- SL is not DF.  
+- Fixed Burning Steppes quest.  
+    Removed weapon that does not drop in Vale of Eternal Blossoms  
+    Many small fixes to NYI.  
+- SOD: Added the Sunken Temple crafting quest chain.  
+- SOD: Added Rix Xizzix in STV.  
+- SOD: Added Duskwood Emerald Warden quests.  
+- Kun-Lai QIs  
+- SOD: Added all of the Emerald Wardens Quartermaster loot.  
+- Swapped the names for conquest/honor from conquestpoints/honorpoints per Braghe's suggestion.  
+- Added an honorpoints helper function.  
+- Now using that placeholder.  
+- Now ignoring conquest points containing 0 values.  
+- Added a conquestpoints function for CONQUEST points to simplify costs for PVP Items.  
+- TWW Glad D-E (tired of stashing, I'm taking forever!)  
+- SOD: Added boilerplate logic for Nightmare Incursions.  
+- SOD: Added the Blood Moon PvP Event to STV.  
+- SOD: Added boilerplate logic for the Blood Moon event in STV.  
+- SOD: Clear the Forest! / Repelling Invaders was changed to a daily quest with Phase 3.  
+- SOD: Adjusted the language on some of the phase locales.  
+- Adjusted Adventurers Wanted: Blackrock Depths to be a breadcrumb quest.  
+- SOD: Added DataPatch value to the build config since its a bleeding edge flavor and not a historical one.  
+- SOD: Added Phase 3 & 4 Warior Runes.  
+- SOD: Added Phase 3 & 4 Warlock Runes.  
+- SOD: Added Phase 3 & 4 Shaman Runes.  
+- SOD: Added Phase 3 & 4 Rogue Runes.  
+- SOD: Added Phase 3 & 4 Priest Runes.  
+- SOD: Added Phase 3 & 4 Paladin Runes.  
+- SOD: Added Phase 4 Mage Runes.  
+- SOD: Added Phase 4 Hunter Runes.  
+- SOD: Added missing phase 3 Hunter runes.  
+- SOD: Added more world drop recipes.  
+- SOD: Added World Drop recipes for a number of classes.  
+- Merge branch 'master' into pr/1675  
+    # Conflicts:  
+    #	db/Cata/Categories.lua  
+- SOD: Fixed phase 3 assignments for rune engravings.  
+- prep for s3 too while i was at it  
+- prepartion for revival catalyst s2 once DF is over (all uncommented)  
+- SOD: Marked the phase 2 rune engraving recipes as SOD P2.  
+- SOD and Era now have distinct database modules.  
+- Parser can now export an if-statement that surrounds the database export.  
+- prepatch comes before remix end, so putting remix end patch a little bit further behind until we know the date  
+- SOD: Fixed filterID for trinkets.  
+- The inst shortcut no longer makes a common boss drop header if it doesn't have a body.  
+- Renamed/Moved tier set constants.  
+- SOD: Supply Expediter is also BOA.  
+- SOD: Added Phase 3 Waylaid Supplies.  
+- SOD: Added Phase 2 & 3 Azeroth Commerce Authority vendor items. Started working on Supply Shipments for P3.  
+- SOD: Added missing Alchemy recipes to the profession section.  
+- SOD: Added missing Engineering recipes to the profession section.  
+- SL catalyst is back under expansion features to be in line with DF catalyst  
+- Removed discovered Elite items for DF season 4 from NYI (previously never made available from DF season 1)  
+- catalyst gear is removed upon launch  
+- pvp recipe note more specific  
+- common seasonal title dont need to be added as they are under pvp>arena as uncollectible.  
+    following the standard of previous seasons  
+- added s4 elite off slots  
+- restored creation catalyst console  
+- Aberrus LFR map fix  
+- #1674 Fixed  
+- More tabs.  
+- Fixed tabs.  
+- added devouring cold mod4 id since I have it collected  
+- Dread Wastes QIs  
+    Also moved Klaxxi Achievements to faction header  
+- Retail: Fixed an issue where anything needing an Upgrade collectible would bypass Filters  
+- restored the 2 most accessable source for pet items & created pet battles world quest (rewards>wq is wierd when we use xx>rewards everywhere else)  
+- Fix minor errors in Black Rook Hold note  
+- Maps are completed up to 10.2.5.  
+- Added all missing Maps into NYI. It will still report when someone finds an actual existing missing place from the mini list.  
+- Reverse Classes/Deaths.lua only meant to make it work on beta.  
+- Mostly Renown Activities  
+- Some more TWW Addition and Fixes  
+- Add notes for other Wyrmhole options  
+- Gouging Pick  
+- Urga: Changed AQ20 class skill books to be no longer collectable past 4.0.1.  
+    Urga: Changed AQ20 class skill books to be no longer collectable past 4.0.1.  
+- Update Engineering.lua  
+    Urga: Changed "Springy Arachnoweave" to be removed in patch 4.0.1.  
+- Update Burning Steppes.lua  
+    - Included a max level for the quest "Adventurers Wanted: Blackrock Depths (Horde)".  

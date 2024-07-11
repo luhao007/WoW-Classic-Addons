@@ -40,20 +40,11 @@ local function ConstructImportExport(frame)
 
   function group.Open(self, mode, id)
     if(frame.window == "texture") then
-      local texturepicker = OptionsPrivate.TexturePicker(frame, true)
-      if texturepicker then
-        texturepicker:CancelClose();
-      end
+      frame.texturePicker:CancelClose();
     elseif(frame.window == "icon") then
-      local iconpicker = OptionsPrivate.IconPicker(frame, true)
-      if iconpicker then
-        iconpicker:CancelClose();
-      end
+      frame.iconPicker:CancelClose();
     elseif(frame.window == "model") then
-      local modelpicker = OptionsPrivate.ModelPicker(frame, true)
-      if modelpicker then
-        modelpicker:CancelClose();
-      end
+      frame.modelPicker:CancelClose();
     end
     frame.window = "importexport";
     frame:UpdateFrameVisible()
@@ -64,7 +55,7 @@ local function ConstructImportExport(frame)
         if(mode == "export") then
           displayStr = OptionsPrivate.Private.DisplayToString(id, true);
         elseif(mode == "table") then
-          displayStr = OptionsPrivate.Private.DataToString(id, true);
+          displayStr = OptionsPrivate.Private.DataToString(id);
         end
         --input.editBox:SetMaxBytes(nil); Dragonflight doesn't accept nil
         input.editBox:SetScript("OnEscapePressed", function()
@@ -109,7 +100,7 @@ local function ConstructImportExport(frame)
   return group
 end
 
-function OptionsPrivate.ImportExport(frame, noConstruct)
-  importexport = importexport or (not noConstruct and ConstructImportExport(frame))
+function OptionsPrivate.ImportExport(frame)
+  importexport = importexport or ConstructImportExport(frame)
   return importexport
 end

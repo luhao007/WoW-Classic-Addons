@@ -14,7 +14,6 @@ local disabledAll = OptionsPrivate.commonOptions.CreateDisabledAll("action")
 local hiddenAll = OptionsPrivate.commonOptions.CreateHiddenAll("action")
 local getAll = OptionsPrivate.commonOptions.CreateGetAll("action")
 local setAll = OptionsPrivate.commonOptions.CreateSetAll("action", getAll)
-local dynamicTextInputs = {}
 
 local RestrictedChannelCheck = function(data)
   return data.message_type == "SAY" or data.message_type == "YELL" or data.message_type == "SMARTRAID"
@@ -151,38 +150,14 @@ function OptionsPrivate.GetActionOptions(data)
       },
       start_message_dest = {
         type = "input",
-        width = WeakAuras.normalWidth - 0.15,
+        width = WeakAuras.normalWidth,
         name = L["Send To"],
         order = 3.1,
         disabled = function() return not data.actions.start.do_message end,
         hidden = function() return data.actions.start.message_type ~= "WHISPER" end,
-        control = "WeakAurasInput",
-        callbacks = {
-          OnEditFocusGained = function(self)
-            local widget = dynamicTextInputs["start_message_dest"]
-            OptionsPrivate.ToggleTextReplacements(data, true, widget)
-          end,
-          OnShow = function(self)
-            dynamicTextInputs["start_message_dest"] = self
-          end,
-        }
-      },
-      start_message_dest_text_replacements_button = {
-        type = "execute",
-        width = 0.15,
-        name = L["Dynamic Text Replacements"],
-        desc = L["There are several special codes available to make this text dynamic. Click to view a list with all dynamic text codes."],
-        order = 3.11,
-        disabled = function() return not data.actions.start.do_message end,
-        hidden = function() return data.actions.start.message_type ~= "WHISPER" end,
-        func = function()
-          local widget = dynamicTextInputs["start_message_dest"]
-          OptionsPrivate.ToggleTextReplacements(data, nil, widget)
+        desc = function()
+          return L["Dynamic text tooltip"] .. OptionsPrivate.Private.GetAdditionalProperties(data)
         end,
-        imageWidth = 24,
-        imageHeight = 24,
-        control = "WeakAurasIcon",
-        image = "Interface\\AddOns\\WeakAuras\\Media\\Textures\\sidebar",
       },
       start_message_dest_isunit = {
         type = "toggle",
@@ -205,36 +180,13 @@ function OptionsPrivate.GetActionOptions(data)
       },
       start_message = {
         type = "input",
-        width = WeakAuras.doubleWidth - 0.15,
+        width = WeakAuras.doubleWidth,
         name = L["Message"],
         order = 4,
         disabled = function() return not data.actions.start.do_message end,
-        control = "WeakAurasInput",
-        callbacks = {
-          OnEditFocusGained = function(self)
-            local widget = dynamicTextInputs["start_message"]
-            OptionsPrivate.ToggleTextReplacements(data, true, widget)
-          end,
-          OnShow = function(self)
-            dynamicTextInputs["start_message"] = self
-          end,
-        }
-      },
-      start_message_text_replacements_button = {
-        type = "execute",
-        width = 0.15,
-        name = L["Dynamic Text Replacements"],
-        desc = L["There are several special codes available to make this text dynamic. Click to view a list with all dynamic text codes."],
-        order = 4.1,
-        disabled = function() return not data.actions.start.do_message end,
-        func = function()
-          local widget = dynamicTextInputs["start_message"]
-          OptionsPrivate.ToggleTextReplacements(data, nil, widget)
+        desc = function()
+          return L["Dynamic text tooltip"] .. OptionsPrivate.Private.GetAdditionalProperties(data)
         end,
-        imageWidth = 24,
-        imageHeight = 24,
-        control = "WeakAurasIcon",
-        image = "Interface\\AddOns\\WeakAuras\\Media\\Textures\\sidebar",
       },
       -- texteditor added later
       start_do_sound = {
@@ -635,7 +587,7 @@ function OptionsPrivate.GetActionOptions(data)
       },
       finish_message_color = {
         type = "color",
-        width = WeakAuras.normalWidth - 0.15,
+        width = WeakAuras.normalWidth,
         name = L["Color"],
         order = 23,
         hasAlpha = false,
@@ -654,38 +606,11 @@ function OptionsPrivate.GetActionOptions(data)
       },
       finish_message_dest = {
         type = "input",
-        width = WeakAuras.normalWidth - 0.15,
+        width = WeakAuras.normalWidth,
         name = L["Send To"],
         order = 23.1,
         disabled = function() return not data.actions.finish.do_message end,
-        hidden = function() return data.actions.finish.message_type ~= "WHISPER" end,
-        control = "WeakAurasInput",
-        callbacks = {
-          OnEditFocusGained = function(self)
-            local widget = dynamicTextInputs["finish_message_dest"]
-            OptionsPrivate.ToggleTextReplacements(data, true, widget)
-          end,
-          OnShow = function(self)
-            dynamicTextInputs["finish_message_dest"] = self
-          end,
-        }
-      },
-      finish_message_dest_text_replacements_button = {
-        type = "execute",
-        width = 0.15,
-        name = L["Dynamic Text Replacements"],
-        desc = L["There are several special codes available to make this text dynamic. Click to view a list with all dynamic text codes."],
-        order = 23.11,
-        disabled = function() return not data.actions.finish.do_message end,
-        hidden = function() return data.actions.finish.message_type ~= "WHISPER" end,
-        func = function()
-          local widget = dynamicTextInputs["finish_message_dest"]
-          OptionsPrivate.ToggleTextReplacements(data, nil, widget)
-        end,
-        imageWidth = 24,
-        imageHeight = 24,
-        control = "WeakAurasIcon",
-        image = "Interface\\AddOns\\WeakAuras\\Media\\Textures\\sidebar",
+        hidden = function() return data.actions.finish.message_type ~= "WHISPER" end
       },
       finish_message_dest_isunit = {
         type = "toggle",
@@ -708,36 +633,13 @@ function OptionsPrivate.GetActionOptions(data)
       },
       finish_message = {
         type = "input",
-        width = WeakAuras.doubleWidth - 0.15,
+        width = WeakAuras.doubleWidth,
         name = L["Message"],
         order = 24,
         disabled = function() return not data.actions.finish.do_message end,
-        control = "WeakAurasInput",
-        callbacks = {
-          OnEditFocusGained = function(self)
-            local widget = dynamicTextInputs["finish_message"]
-            OptionsPrivate.ToggleTextReplacements(data, true, widget)
-          end,
-          OnShow = function(self)
-            dynamicTextInputs["finish_message"] = self
-          end,
-        }
-      },
-      finish_message_text_replacements_button = {
-        type = "execute",
-        width = 0.15,
-        name = L["Dynamic Text Replacements"],
-        desc = L["There are several special codes available to make this text dynamic. Click to view a list with all dynamic text codes."],
-        order = 24.1,
-        disabled = function() return not data.actions.finish.do_message end,
-        func = function()
-          local widget = dynamicTextInputs["finish_message"]
-          OptionsPrivate.ToggleTextReplacements(data, nil, widget)
+        desc = function()
+          return L["Dynamic text tooltip"] .. OptionsPrivate.Private.GetAdditionalProperties(data)
         end,
-        imageWidth = 24,
-        imageHeight = 24,
-        control = "WeakAurasIcon",
-        image = "Interface\\AddOns\\WeakAuras\\Media\\Textures\\sidebar",
       },
       -- texteditor added below
       finish_do_sound = {
@@ -786,31 +688,6 @@ function OptionsPrivate.GetActionOptions(data)
         width = WeakAuras.doubleWidth,
         name = L["Stop Sound"],
         order = 29.1,
-      },
-      finish_do_sound_fade = {
-        type = "toggle",
-        width = WeakAuras.normalWidth,
-        name = L["Fadeout Sound"],
-        order = 29.2,
-        disabled = function() return not data.actions.finish.stop_sound end,
-      },
-      finish_stop_sound_fade = {
-        type = "range",
-        control = "WeakAurasSpinBox",
-        width = WeakAuras.normalWidth,
-        name = L["Fadeout Time (seconds)"],
-        order = 29.3,
-        hidden = function() return not data.actions.finish.do_sound_fade end,
-        disabled = function() return not data.actions.finish.stop_sound end,
-        min = 0,
-        softMax = 10,
-        bigStep = 1,
-      },
-      finish_stop_sound_fade_space = {
-        type = "description",
-        width = WeakAuras.doubleWidth,
-        order = 29.4,
-        name = "",
       },
       finish_do_glow = {
         type = "toggle",

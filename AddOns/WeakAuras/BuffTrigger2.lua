@@ -65,7 +65,7 @@ local triggerInfos = {}
 
 local watched_trigger_events = Private.watched_trigger_events
 
-local UnitGroupRolesAssigned = WeakAuras.IsCataOrRetail() and UnitGroupRolesAssigned or function() return "DAMAGER" end
+local UnitGroupRolesAssigned = WeakAuras.IsWrathOrCataOrRetail() and UnitGroupRolesAssigned or function() return "DAMAGER" end
 
 -- Active scan functions used to quickly check which apply to a aura instance
 -- keyed on unit, debuffType, spellname, with a scan object value
@@ -662,24 +662,6 @@ local function FindBestMatchDataForUnit(time, id, triggernum, triggerInfo, unit)
     end
   end
   return bestMatch, matchCount, stackCount, nextCheck
-end
-
---- Deprecated in 10.1.5
-local GetTexCoordsForRole = function(role)
-  local textureHeight, textureWidth = 256, 256
-  local roleHeight, roleWidth = 67, 67
-
-  if ( role == "GUIDE" ) then
-    return GetTexCoordsByGrid(1, 1, textureWidth, textureHeight, roleWidth, roleHeight)
-  elseif ( role == "TANK" ) then
-    return GetTexCoordsByGrid(1, 2, textureWidth, textureHeight, roleWidth, roleHeight)
-  elseif ( role == "HEALER" ) then
-    return GetTexCoordsByGrid(2, 1, textureWidth, textureHeight, roleWidth, roleHeight)
-  elseif ( role == "DAMAGER" ) then
-    return GetTexCoordsByGrid(2, 2, textureWidth, textureHeight, roleWidth, roleHeight)
-  else
-    error("Unknown role: "..tostring(role))
-  end
 end
 
 local roleIcons = {
@@ -2302,7 +2284,7 @@ local function EventHandler(frame, event, arg1, arg2, ...)
       -- With newApi we have TOOLTIP_DATA_UPDATE to update the tooltips
       if not newAPI then
         C_Timer.After(3, function()
-          for unit, matchDataPerUnit in pairs(matchData) do
+          for unit, matchtDataPerUnit in pairs(matchData) do
             EventHandler(frame, "UNIT_AURA", unit)
           end
         end)
@@ -2338,7 +2320,7 @@ local function EventHandler(frame, event, arg1, arg2, ...)
   Private.StopProfileSystem("bufftrigger2")
 end
 
-if WeakAuras.IsCataOrRetail() then
+if WeakAuras.IsRetail() then
   Private.LibSpecWrapper.Register(function(unit)
     Private.StartProfileSystem("bufftrigger2")
 
@@ -2360,7 +2342,7 @@ Buff2Frame:RegisterEvent("UNIT_PET")
 Buff2Frame:RegisterEvent("RAID_TARGET_UPDATE")
 Buff2Frame:RegisterEvent("PLAYER_SOFT_ENEMY_CHANGED")
 Buff2Frame:RegisterEvent("PLAYER_SOFT_FRIEND_CHANGED")
-if WeakAuras.IsCataOrRetail() then
+if WeakAuras.IsWrathOrCataOrRetail() then
   Buff2Frame:RegisterEvent("PLAYER_FOCUS_CHANGED")
   Buff2Frame:RegisterEvent("ARENA_OPPONENT_UPDATE")
   Buff2Frame:RegisterEvent("UNIT_ENTERED_VEHICLE")
@@ -2398,7 +2380,7 @@ local PerUnitFrames = {
     -- We check whether we are already registered for the given pet mode,
     -- and unregister as needed by tracking the number of calls to Register with different
     -- petModes
-    -- All of the dancing is to not register for UNIT_IN_RANGE_UPDATE for pets unless explicitly asked for
+    -- All of the dancing is to not register for UNIT_IN_RANGE_UPDATE for pets unless explictly asked for
     local unitTypePetMode = GetOrCreateSubTable(self.unitTypePetMode, event, unitType)
     --- @type any
     local mode = false
@@ -2795,11 +2777,11 @@ local function createScanFunc(trigger)
     return nil
   end
 
-  local preamble = {""}
+  local preamble = ""
 
-  local ret = {[=[
+  local ret = [=[
     return function(time, matchData)
-  ]=]}
+  ]=]
 
   if use_total then
     local ret2 = [=[
@@ -2807,7 +2789,7 @@ local function createScanFunc(trigger)
         return false
       end
     ]=]
-    table.insert(ret, ret2:format(trigger.totalOperator or ">=", tonumber(trigger.total) or 0))
+    ret = ret .. ret2:format(trigger.totalOperator or ">=", tonumber(trigger.total) or 0)
   end
 
   if useStacks then
@@ -2816,49 +2798,49 @@ local function createScanFunc(trigger)
         return false
       end
     ]=]
-    table.insert(ret, ret2:format(trigger.stacksOperator or ">=", tonumber(trigger.stacks) or 0))
+    ret = ret .. ret2:format(trigger.stacksOperator or ">=", tonumber(trigger.stacks) or 0)
   end
 
   if use_stealable then
-    table.insert(ret, [=[
+    ret = ret .. [=[
       if not matchData.isStealable then
         return false
       end
-    ]=])
+    ]=]
   elseif use_stealable == false then
-    table.insert(ret, [=[
+    ret = ret .. [=[
       if matchData.isStealable then
         return false
       end
-    ]=])
+    ]=]
   end
 
   if use_isBossDebuff then
-    table.insert(ret, [=[
+    ret = ret .. [=[
       if not matchData.isBossDebuff then
         return false
       end
-    ]=])
+    ]=]
   elseif use_isBossDebuff == false then
-    table.insert(ret, [=[
+    ret = ret .. [=[
       if matchData.isBossDebuff then
         return false
       end
-    ]=])
+    ]=]
   end
 
   if use_castByPlayer then
-    table.insert(ret, [=[
+    ret = ret .. [=[
       if not matchData.isCastByPlayer then
         return false
       end
-    ]=])
+    ]=]
   elseif use_castByPlayer == false then
-    table.insert(ret, [=[
+    ret = ret .. [=[
       if matchData.isCastByPlayer then
         return false
       end
-    ]=])
+    ]=]
   end
 
   if use_debuffClass then
@@ -2868,21 +2850,21 @@ local function createScanFunc(trigger)
         return false
       end
     ]=]
-    table.insert(ret, ret2:format(trigger.debuffClass and type(trigger.debuffClass) == "table" and Private.SerializeTable(trigger.debuffClass) or "{}"))
+    ret = ret .. ret2:format(trigger.debuffClass and type(trigger.debuffClass) == "table" and Private.SerializeTable(trigger.debuffClass) or "{}")
   end
 
   if trigger.ownOnly then
-    table.insert(ret, [=[
+    ret = ret .. [=[
       if matchData.unitCaster ~= 'player' and matchData.unitCaster ~= 'pet' and matchData.unitCaster ~= 'vehicle' then
         return false
       end
-    ]=])
+    ]=]
   elseif trigger.ownOnly == false then
-    table.insert(ret, [=[
+    ret = ret .. [=[
       if matchData.unitCaster == 'player' or matchData.unitCaster == 'pet' or matchData.unitCaster == 'vehicle' then
         return false
       end
-    ]=])
+    ]=]
   end
 
   if use_tooltip and trigger.tooltip_operator and trigger.tooltip then
@@ -2892,21 +2874,21 @@ local function createScanFunc(trigger)
         return false
       end
       ]=]
-      table.insert(ret, ret2:format(Private.QuotedString(trigger.tooltip)))
+      ret = ret .. ret2:format(Private.QuotedString(trigger.tooltip))
     elseif trigger.tooltip_operator == "find('%s')" then
       local ret2 = [=[
       if not matchData.tooltip or not matchData.tooltip:find(%s, 1, true) then
         return false
       end
       ]=]
-      table.insert(ret, ret2:format(Private.QuotedString(trigger.tooltip)))
+      ret = ret .. ret2:format(Private.QuotedString(trigger.tooltip))
     elseif trigger.tooltip_operator == "match('%s')" then
       local ret2 = [=[
       if not matchData.tooltip or not matchData.tooltip:match(%s) then
         return false
       end
       ]=]
-      table.insert(ret, ret2:format(Private.QuotedString(trigger.tooltip)))
+      ret = ret .. ret2:format(Private.QuotedString(trigger.tooltip))
     end
   end
 
@@ -2917,7 +2899,7 @@ local function createScanFunc(trigger)
         return false
       end
     ]=]
-    table.insert(ret, ret2:format(property, property, trigger.tooltipValue_operator, trigger.tooltipValue))
+    ret = ret .. ret2:format(property, property, trigger.tooltipValue_operator, trigger.tooltipValue)
   end
 
   if trigger.useNamePattern and trigger.namePattern_operator and trigger.namePattern_name then
@@ -2927,21 +2909,21 @@ local function createScanFunc(trigger)
         return false
       end
       ]=]
-      table.insert(ret, ret2:format(Private.QuotedString(trigger.namePattern_name)))
+      ret = ret .. ret2:format(Private.QuotedString(trigger.namePattern_name))
     elseif trigger.namePattern_operator == "find('%s')" then
       local ret2 = [=[
       if not matchData.name:find(%s, 1, true) then
         return false
       end
       ]=]
-      table.insert(ret, ret2:format(Private.QuotedString(trigger.namePattern_name)))
+      ret = ret .. ret2:format(Private.QuotedString(trigger.namePattern_name))
     elseif trigger.namePattern_operator == "match('%s')" then
       local ret2 = [=[
       if not matchData.name:match(%s) then
         return false
       end
       ]=]
-      table.insert(ret, ret2:format(Private.QuotedString(trigger.namePattern_name)))
+      ret = ret .. ret2:format(Private.QuotedString(trigger.namePattern_name))
     end
   end
 
@@ -2949,44 +2931,44 @@ local function createScanFunc(trigger)
     local names = {}
     for index, spellName in ipairs(trigger.ignoreAuraNames) do
       local spellId = WeakAuras.SafeToNumber(spellName)
-      local name = spellId and Private.ExecEnv.GetSpellName(spellId) or spellName
+      local name = GetSpellInfo(spellId) or spellName
       tinsert(names, name)
     end
 
-    table.insert(preamble, "local ignoreNames = {\n")
+    preamble = preamble .. "local ignoreNames = {\n"
     for index, name in ipairs(names) do
-      table.insert(preamble, string.format("  [%q] = true,\n", name))
+      preamble = preamble .. string.format("  [%q] = true,\n", name)
     end
-    table.insert(preamble, "}\n")
-    table.insert(ret, [=[
+    preamble = preamble .. "}\n"
+    ret = ret .. [=[
       if ignoreNames[matchData.name] then
         return false
       end
-    ]=])
+    ]=]
   end
 
   if use_ignore_spellId then
-    table.insert(preamble, "local ignoreSpellId = {\n")
+    preamble = preamble .. "local ignoreSpellId = {\n"
     for index, spellId in ipairs(trigger.ignoreAuraSpellids) do
       local spell = WeakAuras.SafeToNumber(spellId)
       if spell then
-        table.insert(preamble, string.format("  [%s]  = true,\n", spell))
+        preamble = preamble .. string.format("  [%s]  = true,\n", spell)
       end
     end
-    table.insert(preamble, "}\n")
-    table.insert(ret, [=[
+    preamble = preamble .. "}\n"
+    ret = ret .. [=[
       if ignoreSpellId[matchData.spellId] then
         return false
       end
-    ]=])
+    ]=]
   end
 
-  table.insert(ret, [=[
+  ret = ret .. [=[
       return true
     end
-  ]=])
+  ]=]
 
-  local func, err = loadstring(table.concat(preamble) .. table.concat(ret))
+  local func, err = loadstring(preamble .. ret)
 
   if func then
     return func()
@@ -3092,7 +3074,7 @@ function BuffTrigger.Add(data)
         names = {}
         for index, spellName in ipairs(trigger.auranames) do
           local spellId = WeakAuras.SafeToNumber(spellName)
-          names[index] = spellId and Private.ExecEnv.GetSpellName(spellId) or spellName
+          names[index] = GetSpellInfo(spellId) or spellName
         end
       end
 
@@ -3144,10 +3126,10 @@ function BuffTrigger.Add(data)
 
       local groupTrigger = trigger.unit == "group" or trigger.unit == "raid" or trigger.unit == "party"
       local effectiveIgnoreSelf = (groupTrigger or trigger.unit == "nameplate") and trigger.ignoreSelf
-      local effectiveGroupRole = WeakAuras.IsCataOrRetail() and (groupTrigger and trigger.useGroupRole and trigger.group_role) or nil
-      local effectiveRaidRole = WeakAuras.IsClassicOrCata() and (groupTrigger and trigger.useRaidRole and trigger.raid_role) or nil
+      local effectiveGroupRole = WeakAuras.IsWrathOrCataOrRetail() and (groupTrigger and trigger.useGroupRole and trigger.group_role) or nil
+      local effectiveRaidRole = WeakAuras.IsClassicEraOrWrathOrCata() and (groupTrigger and trigger.useRaidRole and trigger.raid_role) or nil
       local effectiveClass = groupTrigger and trigger.useClass and trigger.class
-      local effectiveSpecId = WeakAuras.IsCataOrRetail() and (groupTrigger and trigger.useActualSpec and trigger.actualSpec) or nil
+      local effectiveSpecId = WeakAuras.IsRetail() and (groupTrigger and trigger.useActualSpec and trigger.actualSpec) or nil
       local effectiveArenaSpec = WeakAuras.IsRetail() and (trigger.unit == "arena" and trigger.useArenaSpec and trigger.arena_spec) or nil
       local effectiveHostility = trigger.unit == "nameplate" and trigger.useHostility and trigger.hostility
       local effectiveIgnoreDead = groupTrigger and trigger.ignoreDead
@@ -3204,7 +3186,7 @@ function BuffTrigger.Add(data)
         compareFunc = trigger.combineMode == "showHighest" and highestExpirationTime or lowestExpirationTime,
         unitExists = showIfInvalidUnit,
         fetchTooltip = not IsSingleMissing(trigger) and trigger.unit ~= "multi" and trigger.fetchTooltip,
-        fetchRole = WeakAuras.IsCataOrRetail() and trigger.unit ~= "multi" and trigger.fetchRole,
+        fetchRole = WeakAuras.IsRetail() and trigger.unit ~= "multi" and trigger.fetchRole,
         fetchRaidMark = trigger.unit ~= "multi" and trigger.fetchRaidMark,
         groupTrigger = IsGroupTrigger(trigger),
         ignoreSelf = effectiveIgnoreSelf,
@@ -3298,12 +3280,12 @@ function BuffTrigger.GetNameAndIconSimple(data, triggernum)
     for index, spellName in ipairs(trigger.auranames) do
       local spellId = WeakAuras.SafeToNumber(spellName)
       if spellId then
-        name, _, icon = Private.ExecEnv.GetSpellInfo(spellName)
+        name, _, icon = GetSpellInfo(spellName)
         if name and icon then
           return name, icon
         end
       elseif not tonumber(spellName) then
-        name, _, icon = Private.ExecEnv.GetSpellInfo(spellName)
+        name, _, icon = GetSpellInfo(spellName)
         if (name and icon) then
           return name, icon
         end
@@ -3315,7 +3297,7 @@ function BuffTrigger.GetNameAndIconSimple(data, triggernum)
     for index, spellIdString in ipairs(trigger.auraspellids) do
       local spellId = spellIdString ~= "" and tonumber(spellIdString)
       if spellId then
-        name, _, icon = Private.ExecEnv.GetSpellInfo(spellIdString)
+        name, _, icon = GetSpellInfo(spellIdString)
         if name and icon then
           return name, icon
         end
@@ -3347,63 +3329,60 @@ end
 --- Returns the tooltip text for additional properties.
 --- @param data table
 --- @param triggernum number
---- @return table @additional properties
+--- @return string @additional properties
 function BuffTrigger.GetAdditionalProperties(data, triggernum)
   local trigger = data.triggers[triggernum].trigger
-  local props = {}
 
-  props["spellId"] = L["Spell ID"]
-  props["debuffClass"] = L["Debuff Class"]
-  props["debuffClassIcon"] = L["Debuff Class Icon"]
-  props["unitCaster"] = L["Caster Unit"]
-  props["casterName"] = L["Caster Name"]
-
+  local ret =  "|cFFFFCC00%".. triggernum .. ".spellId|r - " .. L["Spell ID"] .. "\n"
+  ret = ret .. "|cFFFFCC00%".. triggernum .. ".debuffClass|r - " .. L["Debuff Class"] .. "\n"
+  ret = ret .. "|cFFFFCC00%".. triggernum .. ".debuffClassIcon|r - " .. L["Debuff Class Icon"] .. "\n"
+  ret = ret .. "|cFFFFCC00%".. triggernum .. ".unitCaster|r - " .. L["Caster Unit"] .. "\n"
+  ret = ret .. "|cFFFFCC00%".. triggernum .. ".casterName|r - " .. L["Caster Name"] .. "\n"
   if trigger.unit ~= "multi" then
-    props["unit"] = L["Unit"]
+    ret = ret .. "|cFFFFCC00%".. triggernum .. ".unit|r - " .. L["Unit"] .. "\n"
   end
-
-  props["unitName"] = L["Unit Name"]
-  props["matchCount"] = L["Match Count"]
-  props["matchCountPerUnit"] = L["Match Count per Unit"]
-  props["unitCount"] = L["Units Affected"]
-  props["totalStacks"] = L["Total stacks over all matches"]
+  ret = ret .. "|cFFFFCC00%".. triggernum .. ".unitName|r - " .. L["Unit Name"] .. "\n"
+  ret = ret .. "|cFFFFCC00%".. triggernum .. ".matchCount|r - " .. L["Match Count"] .. "\n"
+  ret = ret .. "|cFFFFCC00%".. triggernum .. ".matchCountPerUnit|r - " .. L["Match Count per Unit"] .. "\n"
+  ret = ret .. "|cFFFFCC00%".. triggernum .. ".unitCount|r - " .. L["Units Affected"] .. "\n"
+  ret = ret .. "|cFFFFCC00%".. triggernum .. ".totalStacks|r - " .. L["Total stacks over all matches"] .. "\n"
 
   if trigger.unit ~= "multi" then
-    props["maxUnitCount"] = L["Total Units"]
+    ret = ret .. "|cFFFFCC00%".. triggernum .. ".maxUnitCount|r - " .. L["Total Units"] .. "\n"
   end
 
   if not IsSingleMissing(trigger) and trigger.unit ~= "multi" and trigger.fetchTooltip then
-    props["tooltip"] = L["Tooltip"]
-    props["tooltip1"] = L["First Value of Tooltip Text"]
-    props["tooltip2"] = L["Second Value of Tooltip Text"]
-    props["tooltip3"] = L["Third Value of Tooltip Text"]
-    props["tooltip4"] = L["Fourth Value of Tooltip Text"]
+    ret = ret .. "|cFFFFCC00%".. triggernum .. ".tooltip|r - " .. L["Tooltip"] .. "\n"
+    ret = ret .. "|cFFFFCC00%".. triggernum .. ".tooltip1|r - " .. L["First Value of Tooltip Text"] .. "\n"
+    ret = ret .. "|cFFFFCC00%".. triggernum .. ".tooltip2|r - " .. L["Second Value of Tooltip Text"] .. "\n"
+    ret = ret .. "|cFFFFCC00%".. triggernum .. ".tooltip3|r - " .. L["Third Value of Tooltip Text"] .. "\n"
+    ret = ret .. "|cFFFFCC00%".. triggernum .. ".tooltip4|r - " .. L["Fourth Value of Tooltip Text"] .. "\n"
   end
 
   if trigger.unit ~= "multi" then
-    props["stackGainTime"] = L["Since Stack Gain"]
-    props["stackLostTime"] = L["Since Stack Lost"]
-    props["initialTime"] = L["Since Apply"]
-    props["refreshTime"] = L["Since Apply/Refresh"]
+    ret = ret .. "|cFFFFCC00%".. triggernum .. ".stackGainTime|r - " .. L["Since Stack Gain"] .. "\n"
+    ret = ret .. "|cFFFFCC00%".. triggernum .. ".stackLostTime|r - " .. L["Since Stack Lost"] .. "\n"
+    ret = ret .. "|cFFFFCC00%".. triggernum .. ".initialTime|r - " .. L["Since Apply"] .. "\n"
+    ret = ret .. "|cFFFFCC00%".. triggernum .. ".refreshTime|r - " .. L["Since Apply/Refresh"] .. "\n"
   end
 
   if WeakAuras.IsRetail() and trigger.unit ~= "multi" and trigger.fetchRole then
-    props["role"] = L["Assigned Role"]
-    props["roleIcon"] = L["Assigned Role Icon"]
+    ret = ret .. "|cFFFFCC00%".. triggernum .. ".role|r - " .. L["Assigned Role"] .. "\n"
+    ret = ret .. "|cFFFFCC00%".. triggernum .. ".roleIcon|r - " .. L["Assigned Role Icon"] .. "\n"
   end
 
   if trigger.unit ~= "multi" and trigger.fetchRaidMark then
-    props["raidMark"] = L["Raid Mark"]
+    ret = ret .. "|cFFFFCC00%".. triggernum .. ".raidMark|r - " .. L["Raid Mark"] .. "\n"
   end
 
   if (trigger.unit == "group" or trigger.unit == "raid" or trigger.unit == "party") and trigger.useAffected then
-    props["affected"] = L["Names of affected Players"]
-    props["unaffected"] = L["Names of unaffected Players"]
-    props["affectedUnits"] = L["Units of affected Players in a table format"]
-    props["unaffectedUnits"] = L["Units of unaffected Players in a table format"]
+    ret = ret .. "|cFFFFCC00%".. triggernum .. ".affected|r - " .. L["Names of affected Players"] .. "\n"
+    ret = ret .. "|cFFFFCC00%".. triggernum .. ".unaffected|r - " .. L["Names of unaffected Players"] .. "\n"
+    ret = ret .. "|cFFFFCC00%".. triggernum .. ".affectedUnits|r - " .. L["Units of affected Players in a table format"] .. "\n"
+    ret = ret .. "|cFFFFCC00%".. triggernum .. ".unaffectedUnits|r - " .. L["Units of unaffected Players in a table format"] .. "\n"
   end
 
-  return props
+  return ret
 end
 
 function BuffTrigger.GetProgressSources(data, triggernum, values)
@@ -3906,7 +3885,7 @@ end
 
 local function UpdateMatchDataMulti(time, base, key, event, sourceGUID, sourceName, destGUID, destName, spellId, spellName, amount)
   local updated = false
-  local icon = spellId and Private.ExecEnv.GetSpellIcon(spellId)
+  local icon = spellId and select(3, GetSpellInfo(spellId))
   ScheduleMultiCleanUp(destGUID, time + 60)
   if not base[key] or not base[key][sourceGUID] then
     updated = true
@@ -4353,7 +4332,7 @@ function BuffTrigger.GetTriggerDescription(data, triggernum, namestable)
       local icon
       local spellId = WeakAuras.SafeToNumber(name)
       if spellId then
-        icon = Private.ExecEnv.GetSpellIcon(spellId)
+        icon = select(3, GetSpellInfo(spellId))
       else
         icon = WeakAuras.spellCache.GetIcon(name)
       end
@@ -4380,7 +4359,7 @@ function BuffTrigger.GetTriggerDescription(data, triggernum, namestable)
         end
       end
 
-      local icon = Private.ExecEnv.GetSpellIcon(spellId) or "Interface\\Icons\\INV_Misc_QuestionMark"
+      local icon = select(3, GetSpellInfo(spellId)) or "Interface\\Icons\\INV_Misc_QuestionMark"
       tinsert(namestable, {left, spellId, icon})
     end
   end

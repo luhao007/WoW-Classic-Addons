@@ -12,18 +12,6 @@ local LibSerialize = LibStub("LibSerialize")
 local LibDeflate = LibStub:GetLibrary("LibDeflate")
 
 local UnitAura = UnitAura
-if UnitAura == nil then
-  --- Deprecated in 10.2.5
-  UnitAura = function(unitToken, index, filter)
-		local auraData = C_UnitAuras.GetAuraDataByIndex(unitToken, index, filter)
-		if not auraData then
-			return nil;
-		end
-
-		return AuraUtil.UnpackAuraData(auraData)
-	end
-end
-
 -- Unit Aura functions that return info about the first Aura matching the spellName or spellID given on the unit.
 local WA_GetUnitAura = function(unit, spell, filter)
   if filter and not filter:upper():find("FUL") then
@@ -68,7 +56,7 @@ end
 -- Wrapping a unit's name in its class colour is very common in custom Auras
 local WA_ClassColorName = function(unit)
   if unit and UnitExists(unit) then
-    local name = WeakAuras.UnitName(unit)
+    local name = UnitName(unit)
     local _, class = UnitClass(unit)
     if not class then
       return name
@@ -524,8 +512,7 @@ local overridden = {
 }
 
 local env_getglobal_custom
--- WORKAROUND ColorMixin not being found in our environemnt #5071
-local exec_env_custom = setmetatable({ColorMixin = ColorMixin},
+local exec_env_custom = setmetatable({},
 {
   __index = function(t, k)
     if k == "_G" then

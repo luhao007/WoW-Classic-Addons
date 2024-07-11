@@ -79,7 +79,6 @@ local function GetCustomTriggerOptions(data, triggernum)
       type = "input",
       multiline = true,
       control = "WeakAuras-MultiLineEditBoxWithEnter",
-      LAAC = { disableFunctions = true, disableSystems = true },
       width = WeakAuras.doubleWidth,
       name = L["Event(s)"],
       desc = L["Custom trigger status tooltip"],
@@ -97,7 +96,6 @@ local function GetCustomTriggerOptions(data, triggernum)
       type = "input",
       multiline = true,
       control = "WeakAuras-MultiLineEditBoxWithEnter",
-      LAAC = { disableFunctions = true, disableSystems = true },
       name = L["Event(s)"],
       desc = L["Custom trigger event tooltip"],
       width = WeakAuras.doubleWidth,
@@ -469,7 +467,7 @@ local function GetGenericTriggerOptions(data, triggernum)
   {
     subeventPrefix = {
       type = "select",
-      name = L["Subevent"],
+      name = L["Message Prefix"],
       width = WeakAuras.normalWidth,
       order = 8,
       values = OptionsPrivate.Private.subevent_prefix_types,
@@ -486,7 +484,7 @@ local function GetGenericTriggerOptions(data, triggernum)
     subeventSuffix = {
       type = "select",
       width = WeakAuras.normalWidth,
-      name = L["Subevent Suffix"],
+      name = L["Message Suffix"],
       order = 9,
       values = OptionsPrivate.Private.subevent_suffix_types,
       sorting = OptionsPrivate.Private.SortOrderForValues(OptionsPrivate.Private.subevent_suffix_types),

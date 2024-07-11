@@ -18,8 +18,6 @@ local default = {
   desaturate = false,
   iconSource = -1,
   progressSource = {-1, "" },
-  adjustedMax = "",
-  adjustedMin = "",
   inverse = false,
   width = 64,
   height = 64,
@@ -397,10 +395,9 @@ local function modify(parent, region, data)
       end);
       region.tooltipFrame:SetScript("OnLeave", Private.HideTooltip);
     end
-    region.tooltipFrame:EnableMouseMotion(true);
-    region.tooltipFrame:SetMouseClickEnabled(false);
+    region.tooltipFrame:EnableMouse(true);
   elseif region.tooltipFrame then
-    region.tooltipFrame:EnableMouseMotion(false);
+    region.tooltipFrame:EnableMouse(false);
   end
 
   function region:SetInverse(inverse)

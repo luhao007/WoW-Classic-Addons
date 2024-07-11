@@ -46,13 +46,7 @@ function OptionsPrivate.StartFrameChooser(data, path)
     else
       SetCursor("CAST_CURSOR");
 
-      local focus
-      if GetMouseFocus then
-        focus = GetMouseFocus()
-      elseif GetMouseFoci then
-        local foci = GetMouseFoci()
-        focus = foci[1] or nil
-      end
+      local focus = GetMouseFocus();
       local focusName;
 
       if(focus) then

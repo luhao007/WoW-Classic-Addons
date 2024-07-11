@@ -306,7 +306,6 @@ local function createOptions(id, data)
 end
 
 local function createThumbnail()
-  ---@class frame: FrameScriptObject
   local frame = CreateFrame("Frame", nil, UIParent)
   local icon = frame:CreateTexture();
   icon:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark");

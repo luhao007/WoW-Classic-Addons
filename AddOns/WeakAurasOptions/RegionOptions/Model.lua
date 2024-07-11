@@ -225,14 +225,13 @@ local function createOptions(id, data)
   };
 end
 
--- Duplicated because Private does not exist when we want to create the first thumbnail
+-- Duplicated because Private does not exist when we want to create the first thumnail
 local function ModelSetTransformFixed(self, tx, ty, tz, rx, ry, rz, s)
   -- In Dragonflight the api changed, this converts to the new api
   self:SetTransform(CreateVector3D(tx, ty, tz), CreateVector3D(rx, ry, rz), -s)
 end
 
 local function createThumbnail()
-    ---@class frame
   local borderframe = CreateFrame("Frame", nil, UIParent);
   borderframe:SetWidth(32);
   borderframe:SetHeight(32);
@@ -242,7 +241,6 @@ local function createThumbnail()
   border:SetTexture("Interface\\BUTTONS\\UI-Quickslot2.blp");
   border:SetTexCoord(0.2, 0.8, 0.2, 0.8);
 
-  ---@class Model
   local model = CreateFrame("PlayerModel", nil, borderframe);
   borderframe.model = model;
   model.SetTransformFixed = ModelSetTransformFixed
