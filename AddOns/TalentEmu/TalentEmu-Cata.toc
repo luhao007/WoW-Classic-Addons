@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: |cff00ff00ALA|r
-## Version: 404r.240705
+## Version: 404r.240710
 ## Dependencies: 
 ## LoadOnDemand: 0
 ## SavedVariables: TalentEmuSV

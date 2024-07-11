@@ -2,7 +2,7 @@
 	alex/ALA 
 --]]--
 
-local __version = 240705.0;
+local __version = 240706.0;
 
 local _G = _G;
 _G.__ala_meta__ = _G.__ala_meta__ or {  };
@@ -16,6 +16,7 @@ local ISRETAIL = __ala_meta__.TOC_VERSION >= 90000;
 local ISCLASSIC = __ala_meta__.TOC_VERSION < 20000;
 local ISBCC = __ala_meta__.TOC_VERSION >= 20000 and __ala_meta__.TOC_VERSION < 30000;
 local ISWLK = __ala_meta__.TOC_VERSION >= 30000 and __ala_meta__.TOC_VERSION < 90000;
+
 local DEVELOPER;
 if ISRETAIL then
 	DEVELOPER = {
@@ -322,6 +323,11 @@ else
 end
 
 
+if ISRETAIL then
+	return;
+end
+
+
 local UnitGUID, UnitIsPlayer = UnitGUID, UnitIsPlayer;
 local GameTooltip = GameTooltip;
 local _Wrap = nil;
@@ -414,7 +420,9 @@ local function _LF_OnUpdate_DelayAgent(self)
 	_LF_CheckTip(GameTooltip);
 end
 local function _LF_Hook_OnTooltipSetUnit(tip)
-	_DelayAgent:SetScript("OnUpdate", _LF_OnUpdate_DelayAgent);
+	if tip == GameTooltip then
+		_DelayAgent:SetScript("OnUpdate", _LF_OnUpdate_DelayAgent);
+	end
 end
 local function _LF_Hook_SetScript(tip, script, method)
 	if script == "OnTooltipSetUnit" and hooked[GameTooltip:GetScript("OnTooltipSetUnit")] == nil then
@@ -429,8 +437,12 @@ _DelayAgent:SetScript(
 		if __ala_meta__["__initcoder"] == nil then
 			__ala_meta__["__initcoder"] = true;
 			hooksecurefunc(GameTooltip, "SetScript", _LF_Hook_SetScript);
-			GameTooltip:HookScript("OnTooltipSetUnit", _LF_Hook_OnTooltipSetUnit);
-			hooked[GameTooltip:GetScript("OnTooltipSetUnit") or "none"] = true;
+			if TooltipDataProcessor ~= nil then
+				TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Unit, _LF_Hook_OnTooltipSetUnit);
+			else
+				GameTooltip:HookScript("OnTooltipSetUnit", _LF_Hook_OnTooltipSetUnit);
+				hooked[GameTooltip:GetScript("OnTooltipSetUnit") or "none"] = true;
+			end
 			if _showWrap then
 				_LF_Create_Wrap(GameTooltip);
 				if GameTooltip.SetBackdrop ~= nil then
