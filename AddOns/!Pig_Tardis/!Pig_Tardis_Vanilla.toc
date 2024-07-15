@@ -1,0 +1,21 @@
+## Interface: 30400
+## Author: geligasi
+## Version: 1.26
+## RequiredDeps: !Pig
+## SavedVariables: PIGT
+## SavedVariablesPerCharacter: PIGT_Per
+
+## Title: !Pig_Tardis
+## Notes: Invite enhancement. Group info, Layer info, Convenient shout function (support automatic invitation reply)
+## Title-zhCN: |cFFFFE00A<|r|cFFFFF468功能|r|cFFFFE00A>|r |cFFFFFFFFPig工具箱|r |cFF69CCF0时空之门|r
+## Notes-zhCN: |cffFF8C00!Pig组队增强功能，可查找队伍/车队/位面信息，喊话功能（支持自动邀请/回复）|r|n|cff00FF00祝你游戏愉快-来自|cffFF00FF[猪猪加油]|r的祝福|r
+
+## X-Part-Of: !Pig
+
+Default.lua
+Options.lua
+UI.lua
+Chedui_Vanilla.lua
+Houche.lua
+Plane.lua
+Yell.lua

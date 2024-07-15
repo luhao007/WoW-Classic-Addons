@@ -13,6 +13,14 @@
 	<Addon name="!Pig">
 		<Title>Pig工具箱</Title>
 		<Category>功能</Category>
+		<SubAddons>
+			<SubAddon name="!Pig_Tardis">
+				<Title>时空之门</Title>
+			</SubAddon>
+			<SubAddon name="!Pig_GDKP">
+				<Title>金团助手</Title>
+			</SubAddon>
+		</SubAddons>
 	</Addon>
 	<Addon name="+Wowhead_Looter">
 		<Title>Wowhead数据采集</Title>
