@@ -479,6 +479,17 @@ class Manager:
         )
 
     @staticmethod
+    @available_on(['classic', 'classic_era'])
+    def handle_merinspect():
+        if not os.path.exists('Addons/MerInspect-classic-era'):
+            return
+        utils.change_defaults(
+            'Addons/MerInspect-classic-era/Options.lua',
+            ['    ShowCharacterItemSheet = false,          --玩家自己裝備列表',
+                '    ShowCharacterItemStats = false,          --玩家自己屬性統計']
+        )
+
+    @staticmethod
     def handle_monkeyspeed():
         if not os.path.exists('Addons/MonkeySpeed'):
             return

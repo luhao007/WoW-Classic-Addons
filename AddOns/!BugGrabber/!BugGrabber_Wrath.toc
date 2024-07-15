@@ -1,0 +1,16 @@
+## Interface: 30400
+## Author: Funkydude
+## Version: 2.7.19
+## SavedVariables: BugGrabberDB
+
+## Title: BugGrabber
+## Notes: Grabs bugs for the bug sack.
+## Title-zhCN: |cFFFFE00A<|r|cFFC41F3B基础库|r|cFFFFE00A>|r |cFFFFFFFF报错收集|r |cFFFFE00A!BugGrabber|r
+## Notes-zhCN: Grabs bugs for the bug sack.
+
+## X-Credits: Rabbit, Rowne, Ramble, kergoth, ckknight, Fritti
+## X-License: All Rights Reserved
+## X-Category: Development Tools
+
+BugGrabber.lua
+locales.lua
