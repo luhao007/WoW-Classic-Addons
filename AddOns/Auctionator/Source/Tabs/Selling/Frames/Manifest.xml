@@ -1,6 +1,0 @@
-<!-- Tabs directory manifest -->
-<Ui xmlns="http://www.blizzard.com/wow/ui/">
-  <Include file="Bag.xml" />
-  <Include file="ItemIconDropDown.xml" />
-  <Include file="Popout.xml" />
-</Ui>
