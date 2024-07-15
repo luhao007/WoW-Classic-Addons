@@ -1,0 +1,34 @@
+﻿## Interface: 100207
+## Title: !Pig
+## Title-zhCN: !Pig
+## Title-zhTW: !Pig
+## Notes: A toolbox. Integrating many small features can greatly reduce the number of plug-ins you have
+## Notes-zhCN: |cffFF8C00一个工具箱。整合很多小功能，可以极大减少你的插件数量。|r|n|cff00FF00祝你游戏愉快-来自|cffFF00FF[猪猪加油]|r的祝福|r
+## Notes-zhTW: |cffFF8C00一個工具箱。整合很多小功能，可以極大減少你的插件數量。|r|n|cff00FF00祝你遊戲愉快-來自|cffFF00FF[豬豬加油]|r的祝福|r
+## IconTexture: interface/icons/ability_seal.blp
+## AddonCompartmentFunc: PIGCompartmentClick
+## AddonCompartmentFuncOnEnter: PIGCompartmentEnter
+## AddonCompartmentFuncOnLeave: PIGCompartmentLeave
+## Author: geligasi
+## Version: 7.10
+## SavedVariables: PIGA
+## SavedVariablesPerCharacter: PIGA_Per
+Localization\Localization.xml
+Error.lua
+Libs\Libs.xml
+Config\Default.lua
+OptionsUI.lua
+Common\Common.xml
+Business\Business.xml
+Chat\Chat.xml
+ActionBar\ActionBar.xml
+BagBank\BagBank.xml
+FramePlus\FramePlus.xml
+UnitFrame\UnitFrame.xml
+CombatPlus\CombatPlus.xml
+Map\Map.xml
+CVars\CVars.xml
+Config\Config.lua
+About.lua
+Debug.lua
+!Pig.lua

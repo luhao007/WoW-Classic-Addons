@@ -1,0 +1,10 @@
+<Ui>
+	<Script file="Options.lua" />
+	<Script file="ChatFrame.lua" />
+	<Script file="QuickChat.lua" />
+	<Script file="QuickChat_Jiuwei.lua" />
+	<Script file="QuickChat_Roll.lua" />
+	<Script file="QuickChat_Jilu.lua" />
+	<Script file="QuickChat_Keyword.lua" />
+	<Script file="AddMessage.lua" />
+</Ui>

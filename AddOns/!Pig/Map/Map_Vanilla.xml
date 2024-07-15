@@ -1,0 +1,6 @@
+<Ui>
+	<Script file="Data.lua" />
+	<Script file="MiniMap.lua" />
+	<Script file="WorldMap_Vanilla.lua" />
+	<Script file="Options.lua" />
+</Ui>

@@ -1,0 +1,6 @@
+<Ui>
+	<Script file="Options.lua" />
+	<Script file="QuestsEnd.lua"/>
+	<Script file="FastFocus.lua"/>
+	<Script file="FastLoot.lua" />
+</Ui>

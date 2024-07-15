@@ -10,6 +10,10 @@
 		<Title>报错收集</Title>
 		<Category>基础库</Category>
 	</Addon>
+	<Addon name="!Pig">
+		<Title>Pig工具箱</Title>
+		<Category>功能</Category>
+	</Addon>
 	<Addon name="+Wowhead_Looter">
 		<Title>Wowhead数据采集</Title>
 		<Notes>收集各种游戏内数据并上传Wowhead</Notes>

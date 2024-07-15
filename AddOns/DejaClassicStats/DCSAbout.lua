@@ -17,7 +17,7 @@ local L = namespace.L 				--localization
 		-- DCSAboutDCSFrame.mask:SetTexture("Interface\\QUESTFRAME\\UI-QUESTLOG-EMPTY-TOPLEFT", "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
 		-- DCSAboutDCSFrame.mask:SetSize(370, 562)
 		-- DCSAboutDCSFrame.mask:SetPoint("TOPLEFT", DCSAboutDCSFrame, "TOPLEFT", 2, -2)
-		
+
 		DCSAboutDCSFrame.texture = DCSAboutDCSFrame:CreateTexture(nil,"ARTWORK")
 		DCSAboutDCSFrame.texture:SetPoint("TOPLEFT", DCSAboutDCSFrame, "TOPLEFT", 2, 0)
 		DCSAboutDCSFrame.texture:SetTexture("Interface\\QUESTFRAME\\QuestBG")
@@ -32,7 +32,7 @@ local L = namespace.L 				--localization
 		DejaClassicStatsPanel:SetScript("OnHide", function(self) -- So that the frame hides when switching to a different panel or closing the InterfaceOptionsFrame
 			DCSAboutDCSFrame:Hide()
 		end)
-		
+
 	-------------------------
 	--About DCS Seal Frame --
 	-------------------------
@@ -47,7 +47,7 @@ local L = namespace.L 				--localization
 	-- 	DCSAboutDCSFrameSeal.mask:SetTexture("Interface\\QUESTFRAME\\UI-QUESTLOG-EMPTY-TOPLEFT", "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
 	-- 	DCSAboutDCSFrameSeal.mask:SetSize(110, 110)
 	-- 	DCSAboutDCSFrameSeal.mask:SetPoint("CENTER", DCSAboutDCSFrameSeal, "CENTER", 0, 0)
-		
+
 	-- 	DCSAboutDCSFrameSeal.texture = DCSAboutDCSFrameSeal:CreateTexture(nil,"ARTWORK")
 	-- 	DCSAboutDCSFrameSeal.texture:SetPoint("TOPLEFT", DCSAboutDCSFrameSeal, "TOPLEFT", -127, 1045)
 	-- 	DCSAboutDCSFrameSeal.texture:SetTexture("Interface\\QUESTFRAME\\QuestBackgroundHordeAlliance")
@@ -64,15 +64,15 @@ local L = namespace.L 				--localization
 		DCSAboutDCSButton:SetWidth(118)
 		DCSAboutDCSButton:SetHeight(30)
 		_G[DCSAboutDCSButton:GetName() .. "Text"]:SetText(L["About DCS"])
-		
+
 		DCSAboutDCSButton:SetScript("OnClick", function(self, button, down)
 			if DCSAboutDCSFrame:IsShown() then
 				DCSAboutDCSFrame:Hide()
 			else
 				DCSAboutDCSFrame:Show()
-				local difference = DCSAboutDCSFrame:GetRight() - DCSAboutDCSFrame:GetLeft() - 50 --probably can be moved outside of function. since won't be often used, let remain 
+				local difference = DCSAboutDCSFrame:GetRight() - DCSAboutDCSFrame:GetLeft() - 50 --probably can be moved outside of function. since won't be often used, let remain
 				--DCSAboutDCS_FS:SetWidth(DCSAboutDCSFrame:GetRight() - DCSAboutDCSFrame:GetLeft() - 50)
-				DCSAboutDCS_FS:SetWidth(difference) --somehow feels wrong to set a width of fontstring repeatedly to the same number. 
+				DCSAboutDCS_FS:SetWidth(difference) --somehow feels wrong to set a width of fontstring repeatedly to the same number.
 				--DCSAboutDCS_ThanksFS:SetWidth(DCSAboutDCSFrame:GetRight() - DCSAboutDCSFrame:GetLeft() - 50)
 				DCSAboutDCS_ThanksFS:SetWidth(difference)
 			end
@@ -81,19 +81,19 @@ local L = namespace.L 				--localization
 	----------
 	-- Text --
 	----------
-	
+
 	-- Title
 	local DCSAboutDCS_TitleFS = DCSAboutDCSFrame:CreateFontString("DCSAboutDCS_TitleFS", "OVERLAY", "GameFontNormal")
 		DCSAboutDCS_TitleFS:SetText('|cff00c0ffDejaClassicStats|r')
 		DCSAboutDCS_TitleFS:SetFont("Fonts\\FRIZQT__.TTF", 25)
 		DCSAboutDCS_TitleFS:Hide()
-	
+
 	-- Body
 	local DCSAboutDCS_FS = DCSAboutDCSFrame:CreateFontString("DCSAboutDCS_FS", "OVERLAY", "GameFontNormal")
 		DCSAboutDCS_FS:SetText(
-			"|cff0094c4Author:|r Dejoblue" .. "|n" .. 
-			"|cff0094c4Admins:|r Dejoblue, Kakjens" .. "|n" .. 
-			"|cff0094c4Contributers:|r Dejoblue, Kakjens, loudsoul" .. "|n" .. 
+			"|cff0094c4Author:|r Dejoblue" .. "|n" ..
+			"|cff0094c4Admins:|r Dejoblue, Kakjens" .. "|n" ..
+			"|cff0094c4Contributers:|r Dejoblue, Kakjens, loudsoul" .. "|n" ..
 			"|n" ..																					--(Spacer)
 			"|cff0094c4Localization Translators:|r" .. "|n" ..
 			"|cff0094c4    French:|r Brainc3ll, Furfx, Lightuky, Medaleux, sv002, Darkcraft92, Ymvej, Druidzor, napnapnapnapnap" .. "|n" .. 						--(French)
@@ -107,9 +107,9 @@ local L = namespace.L 				--localization
 			"|cff0094c4    Traditional Chinese:|r BNS333, BNSSNB, killsophia, konraddo, y123ao6" .. "|n" ..					--(Traditional Chinese)
 			"|n" ..																					--(Spacer)
 			"|cff0094c4Special Thanks:|r" .. "|n" ..
-			"|cff0094c4    Communities:|r Blizzard, Curse, Classic Warcraft, WoWInterface, ElvUI, and Reddit's /r/wow" .. "|n" .. 
-			"|cff0094c4    Testers:|r wazerFPS, and vorfare." .. "|n" .. 
-			"|cff0094c4    Individuals:|r Penguiin, Baudzila, 10leej, wizardanim, sykz42, Phanx, Ro, Choonster, Zork, Lombra, myrroddin, Darth_Predator, sirann, and YOU" 
+			"|cff0094c4    Communities:|r Blizzard, Curse, Classic Warcraft, WoWInterface, ElvUI, and Reddit's /r/wow" .. "|n" ..
+			"|cff0094c4    Testers:|r wazerFPS, and vorfare." .. "|n" ..
+			"|cff0094c4    Individuals:|r Penguiin, Baudzila, 10leej, wizardanim, sykz42, Phanx, Ro, Choonster, Zork, Lombra, myrroddin, Darth_Predator, sirann, and YOU"
 		);
 		DCSAboutDCS_FS:SetFont("Fonts\\FRIZQT__.TTF", 13)
 		DCSAboutDCS_FS:SetTextColor(0, 0, 0, 1)
@@ -126,7 +126,7 @@ local L = namespace.L 				--localization
 		DCSAboutDCS_ThanksFS:SetJustifyH("CENTER")
 		DCSAboutDCS_ThanksFS:Hide()
 
-		DCSAboutDCSFrame:SetScript("OnShow", function(self) -- So that the frame shows when switching to DejaClassicStatsPanel		
+		DCSAboutDCSFrame:SetScript("OnShow", function(self) -- So that the frame shows when switching to DejaClassicStatsPanel
 			if DCSAboutDCSFrame:IsVisible() then
 				DCSAboutDCS_TitleFS:SetPoint("TOP", DCSAboutDCSFrame, "TOP", 0, -26)
 				DCSAboutDCS_FS:SetPoint("TOP", DCSAboutDCSFrame, "TOP", 0, -65)
@@ -136,9 +136,9 @@ local L = namespace.L 				--localization
 				DCSAboutDCS_ThanksFS:Show()
 			end
 		end)
-		
+
 		-- Debuggin OnShow for quick editing.
-		-- DejaClassicStatsPanel:SetScript("OnShow", function(self) -- So that the frame shows when switching to DejaClassicStatsPanel		
-		-- 	DCSAboutDCSFrame:Show()	
+		-- DejaClassicStatsPanel:SetScript("OnShow", function(self) -- So that the frame shows when switching to DejaClassicStatsPanel
+		-- 	DCSAboutDCSFrame:Show()
 		-- end)
 

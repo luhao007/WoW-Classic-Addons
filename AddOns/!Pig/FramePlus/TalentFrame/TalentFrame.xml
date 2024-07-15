@@ -1,0 +1,4 @@
+<Ui>
+	<Script file="TalentFrame_Vanilla.lua" />
+	<Script file="TalentFrame_Wrath.lua" />
+</Ui>

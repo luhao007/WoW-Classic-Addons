@@ -1,0 +1,14 @@
+<Ui>
+	<Script file="Options.lua" />
+	<Script file="LootFrame.lua" />
+	<Script file="BuffTime.lua" />
+	<Script file="Tracking.lua" />
+	<Script file="QuestFrame.lua" />
+	<Script file="SkillFrame.lua" />
+	<Script file="MerchantFrame.lua" />
+	<Script file="FriendsFrame.lua" />
+	<Include file="TalentFrame\TalentFrame.xml" />
+	<Script file="CharacterFrame.lua" />
+	<Script file="WowUIMove.lua" />
+	<Script file="Tooltip.lua" />
+</Ui>

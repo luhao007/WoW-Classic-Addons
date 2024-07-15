@@ -1,0 +1,4 @@
+<Bindings>
+  <Binding name="CLICK PIGTrinket_13:LeftButton" category="BINDING_HEADER_PIG"></Binding>
+  <Binding name="CLICK PIGTrinket_14:LeftButton" category="BINDING_HEADER_PIG"></Binding>
+</Bindings>
