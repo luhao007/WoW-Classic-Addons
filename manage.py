@@ -381,17 +381,6 @@ class Manager:
         utils.process_file('Addons/BtWQuests/BtWQuests.lua', process)
 
     @staticmethod
-    def handle_dcs():
-        addon = 'Character' if utils.get_platform() == 'retail' else 'Classic'
-        utils.change_defaults(
-            f'AddOns/Deja{addon}Stats/DCSDuraRepair.lua',
-            ['	ShowDuraSetChecked = false,',
-                '	ShowItemRepairSetChecked = false,',
-                '	ShowItemLevelSetChecked = false,',
-                '	ShowEnchantSetChecked = false,']
-        )
-
-    @staticmethod
     def handle_details():
         utils.change_defaults(
             'Addons/Details/functions/profiles.lua',
@@ -585,16 +574,6 @@ class Manager:
                 'LibDBIcon-1.0', 'LibDialog-1.0-9.0.1.1', 'LibSharedMedia-3.0', 'LibStub', 'LibTime-1.0'],
             'AddOns/RareScanner/ExternalLibs',
             'AddOns/RareScanner/ExternalLibs/Libs.xml'
-        )
-
-    @staticmethod
-    @available_on(['classic'])
-    def handle_sil():
-        utils.change_defaults(
-            'AddOns/SimpleItemLevel/addon.lua',
-            ['    character = false,',
-             '    bags = false,',
-             '    upgrades = false,',]
         )
 
     @staticmethod
