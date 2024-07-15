@@ -414,24 +414,6 @@ class Manager:
         )
 
     @staticmethod
-    @available_on(['classic', 'classic_era'])
-    def handle_fizzle():
-        def process(lines):
-            ret = []
-            for line in lines:
-                if line == '       DisplayWhenFull = true,':
-                    # Change default settings to not dixplay the '100%'.
-                    ret.append('       DisplayWhenFull = false,')
-                else:
-                    # Only show 'Fizzle' in the options, not the meta name.
-                    ret.append(line.replace(
-                                'GetAddOnMetadata("Fizzle", "Title")',
-                                '"Fizzle"'
-                                ))
-            return ret
-        utils.process_file('AddOns/Fizzle/Core.lua', process)
-
-    @staticmethod
     @available_on(['classic_era'])
     def handle_goodleader():
         utils.rm_tree('Addons/GoodLeader/Libs/tdGUI/Libs')
