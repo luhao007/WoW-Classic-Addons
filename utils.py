@@ -74,7 +74,7 @@ def get_libraries_list():
     libs = sum([[lib for lib in os.listdir(path) if os.path.isdir(path / lib)] for path in paths], [])
     libs += ['HereBeDragons-2.0']       # Alternative name
     libs += ['LibUIDropDownMenu']       # We got an "!" mark in the lib name
-    libs += ['!BugGrabber']             # embedded
+    libs += ['LibTranslit']             # Alternative name
     return libs
 
 

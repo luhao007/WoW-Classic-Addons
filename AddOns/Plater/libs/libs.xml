@@ -3,5 +3,4 @@
 	<Script file="indent.lua"/>
 
 
-	<Include file="DF\load.xml"/>
 </Ui>
