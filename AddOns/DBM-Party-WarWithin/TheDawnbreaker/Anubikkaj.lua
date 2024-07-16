@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(2581, "DBM-Party-WarWithin", 5, 1270)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240706044516")
+mod:SetRevision("20240714045506")
 mod:SetCreatureID(211089)
 mod:SetEncounterID(2838)
 mod:SetHotfixNoticeRev(20240706000000)
@@ -131,7 +131,7 @@ function mod:SPELL_CAST_START(args)
 		updateAllTimers(self, 7)
 	elseif spellId == 426860 then
 		self.vb.orbCount = self.vb.orbCount + 1
-		specWarnDarkOrb:Show()
+		specWarnDarkOrb:Show(self.vb.orbCount)
 		specWarnDarkOrb:Play("watchorb")
 		timerDarkOrbCD:Start(nil, self.vb.orbCount+1)
 		updateAllTimers(self, 9)

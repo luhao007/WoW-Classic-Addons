@@ -1,5 +1,5 @@
 ## Interface: 30400
-## Version: r137
+## Version: r139
 ## RequiredDeps: DBM-Core
 ## LoadOnDemand: 1
 ## SavedVariables: DBMPartyLegion_AllSavedVars

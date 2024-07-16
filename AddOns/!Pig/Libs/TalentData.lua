@@ -5857,7 +5857,14 @@ function TalentData.GetTianfuIcon(guancha,zhiye)
 	local index = GetActiveTalentGroup(guancha,false)
 	local numTabs = GetNumTalentTabs(guancha)
 	for ti=1,numTabs do
-		local id, name, description, icon, pointsSpent, background, previewPointsSpent, isUnlocked = GetTalentTabInfo(ti,guancha,false,index);
+		local pointsSpent_itemlist = 0
+		if tocversion<20000 then
+			local _, name, _, icon, pointsSpent, background, previewPointsSpent = GetTalentTabInfo(ti,guancha,false,index);
+			pointsSpent_itemlist=pointsSpent
+		else
+			local name, icon, pointsSpent, background, previewPointsSpent = GetTalentTabInfo(ti,guancha,false,index);
+			pointsSpent_itemlist=pointsSpent
+		end
 		if pointsSpent>zuidazhi[3] then
 			zuidazhi={name, icon or tianfuTabIcon[zhiye][ti] or 132222, pointsSpent}
 		end

@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(1687, "DBM-Party-Legion", 5, 767)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240426175442")
+mod:SetRevision("20240714045506")
 mod:SetCreatureID(91007)
 mod:SetEncounterID(1793)
 mod.sendMainBossGUID = true
@@ -55,7 +55,7 @@ function mod:SPELL_CAST_START(args)
 	if spellId == 200732 then
 		self.vb.crashCount = self.vb.crashCount + 1
 		if self:IsTanking("player", "boss1", nil, true) then
-			specWarnMoltenCrash:Show(self.vb.crashCount)
+			specWarnMoltenCrash:Show()
 			specWarnMoltenCrash:Play("defensive")
 		end
 		timerMoltenCrashCD:Start(nil, self.vb.crashCount+1)

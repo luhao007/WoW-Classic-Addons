@@ -173,7 +173,7 @@ function NWB:checkStranglethornTimer()
 			end
 		end
 	end
-	if (realTimeLeft <= 1800 and realTimeLeft >= 1799 and GetTime() - lastSendGuild30 > 900) then
+	--[[if (realTimeLeft <= 1800 and realTimeLeft >= 1799 and GetTime() - lastSendGuild30 > 900) then
 		lastSendGuild30 = GetTime();
 		local msg = string.format(L["stranglethornStartSoon"], "30 " .. L["minutes"]) .. ".";
 		--Just tie it to guild10 settings.
@@ -192,7 +192,7 @@ function NWB:checkStranglethornTimer()
 			local colorTable = {r = self.db.global.middleColorR, g = self.db.global.middleColorG, b = self.db.global.middleColorB, id = 41, sticky = 0};
 			RaidNotice_AddMessage(RaidWarningFrame, NWB:stripColors(msg), colorTable, 5);
 		end
-	end
+	end]]
 end
 
 local mapMarkerTypes;
@@ -404,9 +404,11 @@ local function coinsLooted(amount)
 		coinCount = 0;
 	end
 	coinCount = coinCount + amount;
-	C_Timer.After(0.1, function()
-		NWB:print("|cFFFFFFFF" .. L["Total coins this event"] .. ":|r " .. coinCount, nil, "[NWB]");
-	end);
+	if (NWB.db.global.printStvCoins) then
+		C_Timer.After(0.1, function()
+			NWB:print("|cFFFFFFFF" .. L["Total coins this event"] .. ":|r " .. coinCount, nil, "[NWB]");
+		end);
+	end
 	lastCoin = GetTime();
 end
 
@@ -421,7 +423,7 @@ local function chatMsgLoot(...)
     	local itemLink, amount = strmatch(msg, string.gsub(LOOT_ITEM_CREATED_SELF, "%%s", "(.+)"));
     end
     if (itemLink) then --Copper Blood Coin and Copper Massacre Coin.
-    	if (string.match(itemLink, "item:213168") or string.match(itemLink, "item:221364")) then
+    	if (string.match(itemLink, "item:213168") or string.match(itemLink, "item:221364") or string.match(itemLink, "item:228323")) then
     		if (amount) then
 	    		amount = tonumber(amount);
 	    	end
@@ -530,7 +532,7 @@ function NWB:parseStvData(data)
 end
 
 function NWB:sendStvPos(distribution, zoneID, x, y)
-	if (not NWB.stvRunning) then
+	--[[if (not NWB.stvRunning) then
 		return;
 	end
 	if (zoneID and x and y) then
@@ -571,11 +573,11 @@ function NWB:sendStvPos(distribution, zoneID, x, y)
 				lastGroupMsg[zoneID] = GetServerTime();
 			end
 		end
-	end
+	end]]
 end
 
 function NWB:receivedStvPos(distribution, zoneID, x, y)
-	if (not NWB.stvRunning) then
+	--[[if (not NWB.stvRunning) then
 		return;
 	end
 	if (zoneID and x and y) then
@@ -603,7 +605,7 @@ function NWB:receivedStvPos(distribution, zoneID, x, y)
 		if (validateStv(zoneID)) then
 			NWB:updateStvBoss(zoneID, x, y);
 		end
-	end
+	end]]
 end
 
 --If we get randomly layered during the event or we have data and the map isn't showing just refresh the marker when we get a zoneID from inside the zone.
@@ -681,12 +683,13 @@ local function parseGUID(unit)
 end
 
 if (NWB.isSOD) then
+	--This boss stuff has been disabled in p4.
 	local f = CreateFrame("Frame");
 	f:RegisterEvent("CHAT_MSG_LOOT");
-	f:RegisterEvent("UNIT_TARGET");
-	f:RegisterEvent("PLAYER_TARGET_CHANGED");
-	f:RegisterEvent("UPDATE_MOUSEOVER_UNIT");
-	f:RegisterEvent("NAME_PLATE_UNIT_ADDED");
+	--f:RegisterEvent("UNIT_TARGET");
+	--f:RegisterEvent("PLAYER_TARGET_CHANGED");
+	--f:RegisterEvent("UPDATE_MOUSEOVER_UNIT");
+	--f:RegisterEvent("NAME_PLATE_UNIT_ADDED");
 	f:SetScript('OnEvent', function(self, event, ...)
 		if (event == "CHAT_MSG_LOOT") then
 			chatMsgLoot(...)

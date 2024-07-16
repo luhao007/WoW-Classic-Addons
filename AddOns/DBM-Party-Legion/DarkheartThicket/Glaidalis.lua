@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(1654, "DBM-Party-Legion", 2, 762)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240616044034")
+mod:SetRevision("20240714045506")
 mod:SetCreatureID(96512)
 mod:SetEncounterID(1836)
 mod:SetUsedIcons(8, 7)
@@ -112,7 +112,7 @@ function mod:SPELL_CAST_START(args)
 	if spellId == 198379 then
 		self.vb.rampageCount = self.vb.rampageCount + 1
 		if self:IsTanking("player", "boss1", nil, true) then
-			specWarnRampage:Show(self.vb.rampageCount)
+			specWarnRampage:Show()
 			specWarnRampage:Play("defensive")
 		end
 		timerRampageCD:Start(nil, self.vb.rampageCount+1)

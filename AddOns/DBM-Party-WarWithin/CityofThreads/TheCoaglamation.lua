@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(2600, "DBM-Party-WarWithin", 8, 1274)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240703060633")
+mod:SetRevision("20240714045506")
 mod:SetCreatureID(216320)
 mod:SetEncounterID(2905)
 mod:SetHotfixNoticeRev(20240702000000)
@@ -61,7 +61,7 @@ function mod:SPELL_CAST_START(args)
 	local spellId = args.spellId
 	if spellId == 441289 or spellId == 447146 then
 		self.vb.viscousCount = self.vb.viscousCount + 1
-		specWarnViscousDarkness:Show()
+		specWarnViscousDarkness:Show(self.vb.viscousCount)
 		specWarnViscousDarkness:Play("helpsoak")
 		if spellId == 441289  then--First Cast
 			timerViscousDarknessCD:Start(21.8, self.vb.viscousCount+1)--Subject to same 2-3 second swing due to energy code

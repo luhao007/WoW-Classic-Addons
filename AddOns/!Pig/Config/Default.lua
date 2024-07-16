@@ -254,6 +254,7 @@ addonTable.Default = {
 		["wupinRanse"]=true,
 	},
 	["FramePlus"] = {
+		["Roll"] = true,
 		["Loot"] = true,
 		["Friends"] = true,
 		["Merchant"] = true,

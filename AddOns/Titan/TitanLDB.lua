@@ -897,7 +897,6 @@ function LDBToTitan:TitanLDBCreateObject(sender, name, obj)
 		{
 			self = nil,
 			button = nil,
-			isChild = nil,
 			name = tostring(name),
 			issue = ret_val,
 			notes = "",
@@ -944,7 +943,6 @@ LDBToTitan:SetScript("OnEvent", function(self, event, ...)
 				{
 					self = nil,
 					button = nil,
-					isChild = nil,
 					name = tostring(name),
 					issue = ret_val,
 					notes = "",

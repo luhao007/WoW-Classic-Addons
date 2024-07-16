@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(2570, "DBM-Party-WarWithin", 2, 1267)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240622200108")
+mod:SetRevision("20240714045506")
 mod:SetCreatureID(207939)
 mod:SetEncounterID(2835)
 mod:SetHotfixNoticeRev(20240608000000)
@@ -78,7 +78,7 @@ function mod:SPELL_CAST_START(args)
 	elseif spellId == 423051 or spellId == 446657 then--regular, empowered
 		--16.7, 35.2, 36.4, 35.2, 34.0
 		self.vb.burningCount = self.vb.burningCount + 1
-		specWarnBurningLight:Show(args.sourceName)
+		specWarnBurningLight:Show(args.sourceName, self.vb.burningCount)
 		specWarnBurningLight:Play("kickcast")
 		timerBurningLightCD:Start(nil, self.vb.burningCount+1)
 	elseif spellId == 446368 then

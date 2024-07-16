@@ -699,3 +699,5 @@ L["currentRaidLockouts"] = "Current Raid Lockouts";
 L["none"] = "None.";
 
 L["Temple of Atal'Hakkar"] = "阿塔哈卡神庙";
+
+L["Might of Stormwind"] = "暴风城的力量";

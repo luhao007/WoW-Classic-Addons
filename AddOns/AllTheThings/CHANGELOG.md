@@ -1,140 +1,118 @@
 # AllTheThings
 
-## [DF-3.12.10](https://github.com/DFortun81/AllTheThings/tree/DF-3.12.10) (2024-07-07)
-[Full Changelog](https://github.com/DFortun81/AllTheThings/compare/DF-3.12.9a...DF-3.12.10) [Previous Releases](https://github.com/DFortun81/AllTheThings/releases)
+## [DF-3.12.11](https://github.com/DFortun81/AllTheThings/tree/DF-3.12.11) (2024-07-14)
+[Full Changelog](https://github.com/DFortun81/AllTheThings/compare/DF-3.12.10...DF-3.12.11) [Previous Releases](https://github.com/DFortun81/AllTheThings/releases)
 
-- Baby Shark, doo-doo, doo-doo, doo-doo  
-- SOD: Added the Malleable Protection rune for Paladins.  
-- More Pandaland  
-- SOD: Added Rune of Demolition for Warriors and a number of zone drop weapons to Scarlet Monastery.  
-- SOD: Added the Sheathe of Light and Hammer of the Righteous rune quests for level 44 paladins.  
-- SOD: Added a reitemized version of the Skullplate Bracers to Uldaman.  
-- SOD: Added the Dark Riders from Phase 2.  
-- Bunch of achraw function use instead of manually slapping on bubbledown  
-- Theater Troupe achievements  
-- TWW safari and a couple more missed family battler achievements  
-- TWW pet battle achievements now have their criteria  
-- Investigated Sojourner achievements which didn't pass scrutiny yet  
-- TWW: Objects for Smelling History achievement added  
-- TWW exploration achievements have received their correct criteria  
-- Bookworm achievement updated  
-- Classic Era: Wildhammer Clan Exalted is now required. @Blackbear on the ATT Discord.  
-- SOD: Added Mage Comprehension Tier 3 scrolls.  
-- SOD: Added reitemized itemIDs from Blackrock Depths.  
-- SOD: Added reitemized itemIDs from Uldaman.  
-- SOD: Added reitemized itemIDs from Scarlet Monastery.  
-- SOD: Added reitemized itemIDs for Razorfen Downs.  
-- SOD: Added reitemized itemIDs for Zul'Farrak.  
-- SOD: Added reitemized itemIDs from Maraudon.  
-- SOD: Added Zalgo the Explorer for Sunken Temple set loot.  
-- SOD: Added Sunken Temple Class Quests where the only thing different was the id. Thanks, Blizzard.  
-- SOD: Added the Skeletal Wind Serpent pet from Sunken Temple.  
-- SOD: Organized Sunken Temple's loot.  
-- SOD: Removed some more unnecessary assignments.  
-- SOD: Removed more unnecessary assignments.  
-- More Krasarang  
-- SOD: Added all of the new Darkmoon Decks & Cards.  
-- SOD: Fixed a bug with the Emerald Wardens tooltip.  
-- SOD: Now that there's an ItemDB for Season of Discovery specifically, we no longer need to manually assign this stuff. (thank god!)  
-- Classic: Opening /attunsorted now triggers unsorted to be fully cached. (but not until the window is shown)  
-- SOD: Added a new ItemDB harvested from 1.15.2.  
-- Pandaland QuestItems  
-- SOD: Added the Darkmoon Wild Deck.  
-- SOD: Adjusted Common Boss Drops in Sunken Temple's raid.  
-- SOD: Updated Sunken Temple boss strategies.  
-- SOD: Now using the appropriate difficulty headers.  
-- SOD: Added boilerplate logic for the Sunken Temple raid. (still missing quests and items need to be sorted + documented in the ItemDB)  
-- Removed Gouging Pick from Retail.  
-- SOD: Updated Gnomer and Blackfathom raids to use the new bubble down timeline event function.  
-- Fixed a bug with the bubble down timeline event function where it was showing content added in later expansions if the timeline epoch was before its added patch value.  
-- Added the applyTimelineEvent function helper. This function takes an epoch and merges it into the timeline.  
-- SOD: Added all Hinterlands Missions for the Nightmare Incursions.  
-- SOD: Added all of the Feralas Missions for the Nightmare Incursions.  
-- SOD: Added boilerplate logic for Feralas and Hinterlands Missions. (the sheer audacity of duplicate quest data... literally 0 imagination, Blizzard.)  
-- SOD: Added all of the Ashenvale Missions for the Nightmare Incursions.  
-- SOD: Added the Fight the Nightmare Incursions daily quest.  
-- Fixed IsHardcoreActive for TWW beta. Thanks, Blizzard.  
-- Unautomated missing lynx achievement so coords can be added  
-- SOD: Added placeholder for Zalgo the Explorer in STV. (I'm done for tonight!)  
-- SL is not DF.  
-- Fixed Burning Steppes quest.  
-    Removed weapon that does not drop in Vale of Eternal Blossoms  
-    Many small fixes to NYI.  
-- SOD: Added the Sunken Temple crafting quest chain.  
-- SOD: Added Rix Xizzix in STV.  
-- SOD: Added Duskwood Emerald Warden quests.  
-- Kun-Lai QIs  
-- SOD: Added all of the Emerald Wardens Quartermaster loot.  
-- Swapped the names for conquest/honor from conquestpoints/honorpoints per Braghe's suggestion.  
-- Added an honorpoints helper function.  
-- Now using that placeholder.  
-- Now ignoring conquest points containing 0 values.  
-- Added a conquestpoints function for CONQUEST points to simplify costs for PVP Items.  
-- TWW Glad D-E (tired of stashing, I'm taking forever!)  
-- SOD: Added boilerplate logic for Nightmare Incursions.  
-- SOD: Added the Blood Moon PvP Event to STV.  
-- SOD: Added boilerplate logic for the Blood Moon event in STV.  
-- SOD: Clear the Forest! / Repelling Invaders was changed to a daily quest with Phase 3.  
-- SOD: Adjusted the language on some of the phase locales.  
-- Adjusted Adventurers Wanted: Blackrock Depths to be a breadcrumb quest.  
-- SOD: Added DataPatch value to the build config since its a bleeding edge flavor and not a historical one.  
-- SOD: Added Phase 3 & 4 Warior Runes.  
-- SOD: Added Phase 3 & 4 Warlock Runes.  
-- SOD: Added Phase 3 & 4 Shaman Runes.  
-- SOD: Added Phase 3 & 4 Rogue Runes.  
-- SOD: Added Phase 3 & 4 Priest Runes.  
-- SOD: Added Phase 3 & 4 Paladin Runes.  
-- SOD: Added Phase 4 Mage Runes.  
-- SOD: Added Phase 4 Hunter Runes.  
-- SOD: Added missing phase 3 Hunter runes.  
-- SOD: Added more world drop recipes.  
-- SOD: Added World Drop recipes for a number of classes.  
-- Merge branch 'master' into pr/1675  
-    # Conflicts:  
-    #	db/Cata/Categories.lua  
-- SOD: Fixed phase 3 assignments for rune engravings.  
-- prep for s3 too while i was at it  
-- prepartion for revival catalyst s2 once DF is over (all uncommented)  
-- SOD: Marked the phase 2 rune engraving recipes as SOD P2.  
-- SOD and Era now have distinct database modules.  
-- Parser can now export an if-statement that surrounds the database export.  
-- prepatch comes before remix end, so putting remix end patch a little bit further behind until we know the date  
-- SOD: Fixed filterID for trinkets.  
-- The inst shortcut no longer makes a common boss drop header if it doesn't have a body.  
-- Renamed/Moved tier set constants.  
-- SOD: Supply Expediter is also BOA.  
-- SOD: Added Phase 3 Waylaid Supplies.  
-- SOD: Added Phase 2 & 3 Azeroth Commerce Authority vendor items. Started working on Supply Shipments for P3.  
-- SOD: Added missing Alchemy recipes to the profession section.  
-- SOD: Added missing Engineering recipes to the profession section.  
-- SL catalyst is back under expansion features to be in line with DF catalyst  
-- Removed discovered Elite items for DF season 4 from NYI (previously never made available from DF season 1)  
-- catalyst gear is removed upon launch  
-- pvp recipe note more specific  
-- common seasonal title dont need to be added as they are under pvp>arena as uncollectible.  
-    following the standard of previous seasons  
-- added s4 elite off slots  
-- restored creation catalyst console  
-- Aberrus LFR map fix  
-- #1674 Fixed  
-- More tabs.  
-- Fixed tabs.  
-- added devouring cold mod4 id since I have it collected  
-- Dread Wastes QIs  
-    Also moved Klaxxi Achievements to faction header  
-- Retail: Fixed an issue where anything needing an Upgrade collectible would bypass Filters  
-- restored the 2 most accessable source for pet items & created pet battles world quest (rewards>wq is wierd when we use xx>rewards everywhere else)  
-- Fix minor errors in Black Rook Hold note  
-- Maps are completed up to 10.2.5.  
-- Added all missing Maps into NYI. It will still report when someone finds an actual existing missing place from the mini list.  
-- Reverse Classes/Deaths.lua only meant to make it work on beta.  
-- Mostly Renown Activities  
-- Some more TWW Addition and Fixes  
-- Add notes for other Wyrmhole options  
-- Gouging Pick  
-- Urga: Changed AQ20 class skill books to be no longer collectable past 4.0.1.  
-    Urga: Changed AQ20 class skill books to be no longer collectable past 4.0.1.  
-- Update Engineering.lua  
-    Urga: Changed "Springy Arachnoweave" to be removed in patch 4.0.1.  
-- Update Burning Steppes.lua  
-    - Included a max level for the quest "Adventurers Wanted: Blackrock Depths (Horde)".  
+- prase  
+- Crafted Items/WotLK fish  
+- CATA: Add objective data for Tanaris  
+- CATA: Add objective for "Ze Gnomecorder" in Stonetalon Mountains  
+- CATA: Add objective data for Southern Barrens  
+- CATA: Add objective data for Northern Barrens  
+- CATA: Add objective data for Mulgore  
+- Codestyle: Tabs fix  
+- Update Isle of Thunder.lua  
+- Merge pull request #1679 from funjoker/pr3  
+    Massimport quest data for Mount Hyjal  
+- Add rest massparsable objectives for Mount Hyjal  
+- Mostly converted the SourceLocations tooltip data into an Information Type. Various classes now show their source locations. (TODO: Allow this to be configurable?)  
+- Lots of Remix automation now actually works, hurrah  
+- Added all TWW explorations into Unsorted.  
+- Some more (semi-)automated achievements  
+- Delve achievements now with a lot more automation ^^  
+- Flightpaths connected to Khaz Algar Flight Master achievement  
+- Parsed retail to verify I didn't in fact break that version  
+- Worldsoul Memory is now automated. Also resolved why the AchievementDB harvester seemed like it wasn't harvesting. That is one awkward increase in IDs!  
+- TWW: Some data and clear up some backlogs  
+- Missing object assignments.  
+- CATA: Added max level data for Warchief's Command quests. (Thanks, @funjoker!)  
+- CATA: Added max level data for Hero's Call quests. (Thanks, @funjoker!)  
+- Updated missing first crafts  
+- Removed an unneeded TODO, added quest name to remove a TODO, made bat for parsing beta with debug output  
+- I did not mean to remove this yesterday.  
+- SOD: Adjusted the schedule for the Darkmoon Faire.  
+    Classic: Right clicking a map in /attmaps now shows all the stuff linked to that map via a symlink.  
+    Classic: Added /attfindquests  
+- SOD: Harvested new ItemDB.  
+- SOD/Era: Updated Interface version to 11503.  
+- Couple new TWW cheevos and some sorting  
+- Merge branch 'master' of https://github.com/DFortun81/AllTheThings  
+- Hallow's End prep  
+- Fixed TWW Engineering.  
+- Itsy Bitsy Spider achievement de-automated so it can receive coords  
+- Update Difficulty.lua to fix Remix Scenarios icons (#1680)  
+- Sorted all remaining quests of DF from Unsorted.  
+    Sorted few misc and quest items from DF.  
+- TWW: Engineering  
+- Sorted last TWW achievement  
+- Fix NPCID for Warm Welcome [H] quest  
+- Reparsed Cata DB including funjoker's automation  
+- Merge pull request #1678 from funjoker/pr2  
+    Massimport objective data for Fellwood and Feralas  
+- Merge pull request #1677 from funjoker/master  
+    Massimport objective data for Kalimdor zones  
+- Dragonblight: Zone drop descriptions  
+- Adjust Noodle Time's bonus objective to be daily  
+- Adjust notes on time-sensitive battle pet spawns  
+- Cleared some SL Unsorted.  
+- SL QIs I forgot  
+- Massimport quest data for Mount Hyjal  
+- Massimport quest data for Feralas  
+- Massimport quest data for Fellwood  
+- Apply requested changes  
+- Numbers difficult  
+- Blizzard with the patch numbers, smh. Release candidate hype tho? :D  
+- Very important sorterino  
+- Generating Missing Files  
+- Blizzard are not following the patch plan they announced.. tf is 11.0.2 /cry  
+- Some cleaning of unsorted  
+- -- Sort Recipes  
+- Harvest: 11.0.2.55399  
+- Harvest: 11.0.0.55478  
+- Harvest: 11.0.0.55419  
+- Harvest: 10.2.7.55461  
+- Harvest: 4.4.0.55460  
+- Harvest: 3.4.3.55417  
+- Harvest: 3.4.3.55392  
+- Harvest: 1.15.3.55515  
+- Harvest: 1.15.3.55391  
+- Harvest: 1.15.3.55348  
+- Unsorted sorting :333  
+- A lot of more of TWW  
+- SOD: Added the Blood Surge rune quest chain for Warriors  
+- SOD: Added the Gladiator Stance rune quest chain for Warriors.  
+- SOD: Added the mage quest 'A Lesson in Literacy'.  
+- SOD: Added the Shadowtooth Emissary and associated Wild Gods quest chain.  
+- SOD: Added the Efflorescence rune for Druids.  
+- SOM/SOD: Added Tabard of Mastery.  
+- SOD: Added the Rune of the Coterie quest chain for Rogues.  
+- SOD: Added the Cozy Sleeping Bag quest chain.  
+- SOD: Added timelines for the new SOD specific crafting items.  
+- SOD: Added the reitemized Crimson Silk Robe recipe.  
+- SOD: Added the reitemized Crimson Silk Shoulders recipe.  
+- SOD: Added the new reitemized Black Mageweave Leggings recipe.  
+- CATA: Crafted goggles too.  
+- CATA: Engineering Goggles have class requirements still.  
+- Springy Arachnoweave was removed in 4.0.1  
+- CATA: Book of Origination (H) was never implemented.  
+- CATA: Apparently WoW Devs assigned a sourceID for the Depleted items in Blade's Edge...  
+    Fixed a retail bug in Cataclysm.  
+- CATA: Reharvested ItemDB.  
+- Rituals of the New Moon (45854) was never available in the game.  
+- CATA: Fixed Loremaster of Outland (H), Loremaster of Eastern Kingdoms (H), Loremaster of Kalimdor (H), and A Bunch of Lunch (H).  
+- Adjusted timeline for Archaic Longspear.  
+- CATA: Added Gone Fishin' (H)  
+- CATA: Updated timeline and phases for Mount Hyjal.  
+- Adjusted Mechanar quests to show A'dal. (You can actually turn in and pickup quests for this from him!)  
+- CATA: Mount Hyjal first pass - format & structure. Marked rares that were rare tames as such.  
+- Massimport quest data for Dustwallow Marsh  
+- Massimport quest data for Durotar  
+- Massimport quest data for Desolace  
+- Massimport quest data for Darkshore  
+- Massimport quest data for Azshara  
+- Massimport quest data for Ashenvale  
+- Update Isle of Thunder.lua  
+- SOD: Added the new reitemized Black Mageweave Vest recipe.  
+- SOD: Added the new reitemized Boots of the Enchanter recipe.  
+- SOD: Added the Sacred Shield rune for Paladin.  
+- SOD: Henrig Lonebrow's Journal, there's two of them.  

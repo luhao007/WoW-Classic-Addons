@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("RTKTrash", "DBM-Party-Legion", 11)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20221016002954")
+mod:SetRevision("20240714045506")
 --mod:SetModelID(47785)
 
 mod.isTrashMod = true
@@ -109,7 +109,7 @@ function mod:SPELL_AURA_REMOVED(args)
 	if not self.Options.Enabled then return end
 	local spellId = args.spellId
 	if spellId == 229489 then
-		specWarnRoyalty:Show(args.destName)
+		specWarnRoyalty:Show()
 		specWarnRoyalty:Play("targetchange")
 	end
 end

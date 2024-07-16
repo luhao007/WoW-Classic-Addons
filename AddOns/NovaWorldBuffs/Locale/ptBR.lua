@@ -1038,3 +1038,12 @@ L["cappingSupportDesc"] = "Inicia uma barra de temporizador para Vale Gris/Selva
 
 L["Tol Barad"] = "Tol Barad";
 L["eventIsRunning"] = "%s está ativo"; 
+
+L["Blackrock"] = "Blackrock";
+L["blackrockEventRunning"] = "Blackrock running: %s";
+L["blackrockEventStartsIn"] = "Blackrock starts in %s";
+L["blackrockStartSoon"] = "Blackrock event starts in %s"; --Guild chat msg.
+L["Blackrock PvP Event"] = "Blackrock PvP Event";
+L["Total honor this event"] = "Total honor this event";
+
+L["Might of Stormwind"] = "Poder de Ventobravo";

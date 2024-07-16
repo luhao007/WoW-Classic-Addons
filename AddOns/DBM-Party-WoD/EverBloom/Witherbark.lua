@@ -9,7 +9,7 @@ if (wowToc >= 100200) then
 	mod.sendMainBossGUID = true
 end
 
-mod:SetRevision("20240601044955")
+mod:SetRevision("20240714045506")
 mod:SetCreatureID(81522)
 mod:SetEncounterID(1746)
 mod:SetHotfixNoticeRev(20231020000000)
@@ -42,7 +42,6 @@ local warnBrittleBarkOver			= mod:NewEndAnnounce(164275, 2)
 local warnUncheckedGrowth			= mod:NewTargetAnnounce(164294, 2)
 local warnUncheckedGrowthSpawn		= mod:NewSpellAnnounce(164556, 3)--Add Spawn
 
-local specWarnLivingLeaves			= mod:NewSpecialWarningMove(169495, nil, nil, nil, 1, 8)
 local specWarnUncheckedGrowthYou	= mod:NewSpecialWarningYou(164294, nil, nil, nil, 1, 2)--The add fixate is on you
 local specWarnUncheckedGrowth		= mod:NewSpecialWarningGTFO(164294, nil, nil, nil, 1, 8)--GTFO
 local specWarnUncheckedGrowthAdd	= mod:NewSpecialWarningSwitch(164556, false, nil, nil, 1, 2)--Spawn
@@ -130,10 +129,7 @@ function mod:SPELL_AURA_REMOVED(args)
 end
 
 function mod:SPELL_PERIODIC_DAMAGE(_, _, _, _, destGUID, destName, _, _, spellId, spellName)
-	if spellId == 169495 and destGUID == UnitGUID("player") and self:AntiSpam(2, 2) then--Deprecated?
-		specWarnLivingLeaves:Show(spellName)
-		specWarnLivingLeaves:Play("watchfeet")
-	elseif spellId == 164294 and destGUID == UnitGUID("player") and self:AntiSpam(2, 2) then
+	if (spellId == 169495 or spellId == 164294) and destGUID == UnitGUID("player") and self:AntiSpam(2, 2) then--Deprecated?
 		specWarnUncheckedGrowth:Show(spellName)
 		specWarnUncheckedGrowth:Play("watchfeet")
 	end

@@ -839,6 +839,17 @@ NWB.companionCreatures = {
 	[54491] = "Darkmoon Monkey",
 	[58163] = "Soul of the Aspects",
 	[54745] = "Sand Scarab",
+	
+	--SoD.
+	[222416] = "Skeletal Wind Serpent",
+	[229202] = "Altruist Ward",
+	[205382] = "Mokwa",
+	[208812] = "Jorul",
+	[208124] = "Raluk",
+	[209928] = "Mowgh",
+	[214589] = "Cozy Sleeping Bag",
+	[187832] = "Skeletal Hitching Post",
+	[6491] = "Spirit Healer",
 }
 
 if (NWB.isWrath) then

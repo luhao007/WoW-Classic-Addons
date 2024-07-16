@@ -230,12 +230,12 @@ end);
 fuFrame.GetItem = PIGButton(fuFrame,{"LEFT",fuFrame.NPCID,"RIGHT",200,0},{110,24},"获取物品信息")
 fuFrame.GetItem:SetScript("OnClick", function (self)
 	local itemName,itemLink = GetItemInfo(self.E:GetNumber())
-	print(string.gsub(itemLink,"|","||"))
-	local itemLink=Fun.GetItemLinkJJ(itemLink)
-	--local itemLink=Fun.yasuo_NumberString(itemLink)
-	print(itemLink)
-	local itemLink=Fun.HY_ItemLinkJJ(itemLink)
-	print(itemLink)
+	print(GetItemInfo(self.E:GetNumber()))
+	-- print(string.gsub(itemLink,"|","||"))
+	-- local itemLink=Fun.GetItemLinkJJ(itemLink)
+	-- print(itemLink)
+	-- local itemLink=Fun.HY_ItemLinkJJ(itemLink)
+	-- print(itemLink)
 end);
 fuFrame.GetItem.E = CreateFrame("EditBox", nil, fuFrame.GetItem, "InputBoxInstructionsTemplate");
 fuFrame.GetItem.E:SetSize(80,24);

@@ -15,10 +15,26 @@ Green - 'header' - Titan or plugin
 Highlight - notes. tips. and details
 --]]
 Titan_Global.recent_changes = ""
-.. TitanUtils_GetGoldText("8.0.13 : 2024/05/xx\n")
+.. TitanUtils_GetGoldText("8.0.14 : 2024/07/xx\n")
 .. TitanUtils_GetGreenText("Titan : \n")
 .. TitanUtils_GetHighlightText(""
-.. "- Update Retail version to 10.2.7.\n")
+.. "- AutoHide : Fix tooltip error; shows Enabled / Disabled.\n"
+.. "- Deprecated Titan Child template plugin code removed.\n"
+.. "- Cleanup Titan tool tip code.\n"
+.. "- Refactor Titan code to move color codes to Titan globals.\n"
+.. "- Add debug to Titan startup code.\n"
+)
+.. TitanUtils_GetGreenText("Clock, Location, Performance, Repair, Volume, XP : \n")
+.. TitanUtils_GetHighlightText(""
+.. "- Refactor code for IDE, mostly comments; some code.\n"
+.. "- Refactor code for Titan color code changes.\n"
+)
+.. "\n\n"
+.. TitanUtils_GetGoldText("8.0.13 : 2024/06/18\n")
+.. TitanUtils_GetGreenText("Titan : \n")
+.. TitanUtils_GetHighlightText(""
+.. "- Update Retail version to 10.2.7.\n"
+.. "- Unknown LDB will not print error to Chat. Remains in Config > Attempted.\n")
 .. TitanUtils_GetGreenText("Repair : \n")
 .. TitanUtils_GetHighlightText(""
 .. "- Change to not error in Beta (The War Within).\n")
@@ -72,12 +88,6 @@ Titan_Global.recent_changes = ""
         .. "- Better handling of routines different between retail and Classic API.\n"
         ..
         "- Deprecated the Titan 'child' template, it has not been used in years. Template and param will be deleted in a future release.\n"
-    )
-    .. "\n\n"
-    .. TitanUtils_GetGoldText("8.0.10 : 2024/03/14\n")
-    .. TitanUtils_GetGreenText("Titan : \n")
-    .. TitanUtils_GetHighlightText(""
-        .. "- TOC update only : Classic Era to 1.15.2.\n"
     )
     .. "\n\n"
 

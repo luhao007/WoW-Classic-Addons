@@ -1,6 +1,7 @@
 <Ui>
 	<Script file="Options.lua" />
 	<Script file="LootFrame.lua" />
+	<Script file="RollFrame.lua" />
 	<Script file="BuffTime.lua" />
 	<Script file="Tracking.lua" />
 	<Script file="QuestFrame.lua" />

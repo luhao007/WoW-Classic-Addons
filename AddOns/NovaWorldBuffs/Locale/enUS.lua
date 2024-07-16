@@ -970,10 +970,10 @@ L["dmfOfflineStatusTooltip"] = "DMF Cooldown 8+ Hours Offline In Rested Area Sta
 L["chronoboonReleased"] = "You have chronoboon released a Darkmoon Faire buff, a new 4 hour cooldown has started.";
 
 L["Stranglethorn"] = "Stranglethorn"; --One word shorter version of Strangethorn Vale to fit better.
-L["ashenvaleEventRunning"] = "Ashenvale is running: %s";
+L["ashenvaleEventRunning"] = "Ashenvale running: %s";
 L["ashenvaleEventStartsIn"] = "Ashenvale starts in %s";
 L["ashenvaleStartSoon"] = "Ashenvale event starts in %s"; --Guild chat msg.
-L["stranglethornEventRunning"] = "Stranglethorn is running: %s";
+L["stranglethornEventRunning"] = "Stranglethorn running: %s";
 L["stranglethornEventStartsIn"] = "Stranglethorn starts in %s";
 L["stranglethornStartSoon"] = "Stranglethorn event starts in %s"; --Guild chat msg.
 L["Spark of Inspiration"] = "Spark of Inspiration"; --Phase 2 SoD world buff.
@@ -1014,3 +1014,24 @@ L["cappingSupportDesc"] = "Start a timer bar for Ashenvale/STV if capping is ins
 
 L["Tol Barad"] = "Tol Barad";
 L["eventIsRunning"] = "%s is running";
+
+L["Blackrock"] = "Blackrock";
+L["blackrockEventRunning"] = "Blackrock running: %s";
+L["blackrockEventStartsIn"] = "Blackrock starts in %s";
+L["blackrockStartSoon"] = "Blackrock event starts in %s"; --Guild chat msg.
+L["Blackrock PvP Event"] = "Blackrock PvP Event";
+L["Total honor this event"] = "Total honor this event";
+
+L["Might of Stormwind"] = "Might of Stormwind";
+
+L["printStvCoinsTitle"] = "Print STV Coins";
+L["printStvCoinsDesc"] = "Print to chat a counter of how many STV coins earned during the event.";
+
+L["printBlackrockHonorTitle"] = "Print Blackrock Honor";
+L["printBlackrockHonorDesc"] = "Print to chat a counter of how much Blackrock Eruption honor earned during the event.";
+
+L["chatOnlyInCityTitle"] = "Only In City";
+L["chatOnlyInCityDesc"] = "Only print timer and buff drop chat msgs when you are in the main city where the buffs drop (Stranglethorn Vale included for Zandalar buff).";
+
+L["middleOnlyInCityTitle"] = "Only In City";
+L["middleOnlyInCityDesc"] = "Only show middle of the screen timer and buff drop msgs when you are in the main city where the buffs drop (Stranglethorn Vale included for Zandalar buff).";

@@ -995,3 +995,5 @@ L["cappingSupportDesc"] = "如果安裝了佔領功能，是否為梣谷/荊棘�
 
 L["Tol Barad"] = "托爾巴拉德";
 L["eventIsRunning"] = "%s 正在進行中";
+
+L["Might of Stormwind"] = "暴風城之力";

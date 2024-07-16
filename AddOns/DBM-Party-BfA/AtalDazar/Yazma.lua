@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(2030, "DBM-Party-BfA", 1, 968)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240422020135")
+mod:SetRevision("20240714045506")
 mod:SetCreatureID(122968)
 mod:SetEncounterID(2087)
 mod:SetHotfixNoticeRev(20231023000000)
@@ -81,7 +81,7 @@ end
 function mod:WrackingPainTarget(targetname)
 	if not targetname then return end
 	if targetname == UnitName("player") then
-		specWarnWrackingPainYou:Show(targetname)
+		specWarnWrackingPainYou:Show()
 		specWarnWrackingPainYou:Play("targetyou")
 	else
 		warnWrackingPain:Show(targetname)

@@ -606,8 +606,8 @@ localize(L.HEADER_NAMES, {
 	[-1000948] = GetSpellInfo(181765),
 	[-1000955] = "Lore",
 	[-1000967] = "Crafting Orders",
-	[-1000972] = "|cffFF0000Ogom the Mangler seems just to spawn when you are doing the Daily 'Assault on the Iron Siegeworks'. This Quest wasn't active since the start of Legion and the buyable Quest 'Missive: Assault on the Iron Siegeworks' does not work either.|r",
-	[-1000973] = "|cFFFFFFFFStep 1:|r Conspicious Note",
+	[-1000976] = "|cffFF0000Ogom the Mangler seems just to spawn when you are doing the Daily 'Assault on the Iron Siegeworks'. This Quest wasn't active since the start of Legion and the buyable Quest 'Missive: Assault on the Iron Siegeworks' does not work either.|r",
+	[-1000977] = "|cFFFFFFFFStep 1:|r Conspicious Note",
 });
 localize(L.HEADER_DESCRIPTIONS, {
 	[-1000018] = "These items can be obtained by doing Emissary Quests or gaining a paragon box.",
@@ -3273,6 +3273,8 @@ _.ObjectNames = {
 	[205332] = "Wanted Poster",
 	[205350] = "Horde Communication Panel",
 	[205476] = "Book of Lost Souls",
+	[205477] = "Moonsteel Ingots",
+	[205479] = "Moontouched Wood",
 	[205540] = "Decrepit Skeleton",
 	[205874] = "Sand-Covered Hieroglyphs",
 	[205875] = "Crusader's Flare",
@@ -8139,6 +8141,8 @@ _.ObjectModels = {
 	[205332] = 191094,
 	[205350] = 197760,
 	[205476] = 375546,
+	[205477] = 199870,
+	[205479] = 198198,
 	[205540] = 200066,
 	[205874] = 199989,
 	[205875] = 200995,
@@ -11283,8 +11287,8 @@ localize(L.HEADER_NAMES, {
 	[-1000938] = "Schnüffelsuchen",
 	[-1000944] = "Tauschhandels",
 	[-1000945] = "Angriffe von Fyrakk",
-	[-1000972] = "|cffFF0000Ogom der Mangler scheint gerade dann zu erscheinen, wenn Sie den täglichen „Angriff auf das Eiserne Belagerungswerk“ durchführen. Diese Quest war seit Beginn von Legion nicht mehr aktiv und die käufliche Quest „Missive: Angriff auf das Eiserne Belagerungswerk“ funktioniert auch nicht.|r",
-	[-1000973] = "|cFFFFFFFFSchritt 1:|r Auffällige Notiz",
+	[-1000976] = "|cffFF0000Ogom der Mangler scheint gerade dann zu erscheinen, wenn Sie den täglichen „Angriff auf das Eiserne Belagerungswerk“ durchführen. Diese Quest war seit Beginn von Legion nicht mehr aktiv und die käufliche Quest „Missive: Angriff auf das Eiserne Belagerungswerk“ funktioniert auch nicht.|r",
+	[-1000977] = "|cFFFFFFFFSchritt 1:|r Auffällige Notiz",
 });
 localize(L.HEADER_DESCRIPTIONS, {
 	[-1000025] = "Es muss möglicherweise ein bestimmter Feiertag aktiv sein, um hier genannte Dinge abschließen zu können.",
@@ -11936,6 +11940,8 @@ localize(_.ObjectNames, {
 	[205332] = "Steckbrief",
 	[205350] = "Kommunikationskonsole der Horde",
 	[205476] = "Buch der verlorenen Seelen",
+	[205477] = "Mondstahlbarren",
+	[205479] = "Mondbestrahltes Holz",
 	[205540] = "Verfallenes Skelett",
 	[205874] = "Sandbedeckte Hieroglyphen",
 	[205875] = "Leuchtsignal des Kreuzzüglers",
@@ -15042,8 +15048,8 @@ localize(L.HEADER_NAMES, {
 	[-1000938] = "Olfatobúsqueda",
 	[-1000944] = "Comercio",
 	[-1000945] = "Asaltos de Fyrakk",
-	[-1000972] = "|cffFF0000Ogom the Mangler parece aparecer cuando estás realizando el 'Asalto a los Sitios de Hierro' diario. Esta misión no estuvo activa desde el inicio de Legion y la misión comprable 'Misiva: Asalto a los Sitios de Hierro' tampoco funciona.|r",
-	[-1000973] = "|cFFFFFFFFStep 1:|r Nota llamativa",
+	[-1000976] = "|cffFF0000Ogom the Mangler parece aparecer cuando estás realizando el 'Asalto a los Sitios de Hierro' diario. Esta misión no estuvo activa desde el inicio de Legion y la misión comprable 'Misiva: Asalto a los Sitios de Hierro' tampoco funciona.|r",
+	[-1000977] = "|cFFFFFFFFStep 1:|r Nota llamativa",
 });
 localize(L.HEADER_DESCRIPTIONS, {
 	[-1000162] = "Los elementos de esta lista son apariencias compartidas del elemento anterior. En el modo de apariencia única, esta lista puede ayudarlo a comprender por qué o no un elemento específico se marcaría como recopilado.",
@@ -15691,6 +15697,8 @@ localize(_.ObjectNames, {
 	[205332] = "Cartel de Se busca",
 	[205350] = "Panel de comunicación de la Horda",
 	[205476] = "Libro de las Almas Perdidas",
+	[205477] = "Lingotes de acero lunar",
+	[205479] = "Madera Lunadón",
 	[205540] = "Esqueleto decrépito",
 	[205874] = "Jeroglíficos cubiertos de arena",
 	[205875] = "Bengala de cruzado",
@@ -18763,8 +18771,8 @@ localize(L.HEADER_NAMES, {
 	[-1000938] = "Recherches olfactives",
 	[-1000944] = "Marchandage",
 	[-1000945] = "Assauts de Fyrakk",
-	[-1000972] = "|cffFF0000Ogom le Mangler semble apparaître lorsque vous effectuez l'« Assaut quotidien sur les usines de siège de fer ». Cette quête n'était plus active depuis le début de Legion et la quête achetable « Missive : Assaut sur les usines de siège de fer » ne fonctionne pas non plus.|r",
-	[-1000973] = "|cFFFFFFFFÉtape 1:|r Note mise en évidence",
+	[-1000976] = "|cffFF0000Ogom le Mangler semble apparaître lorsque vous effectuez l'« Assaut quotidien sur les usines de siège de fer ». Cette quête n'était plus active depuis le début de Legion et la quête achetable « Missive : Assaut sur les usines de siège de fer » ne fonctionne pas non plus.|r",
+	[-1000977] = "|cFFFFFFFFÉtape 1:|r Note mise en évidence",
 });
 localize(L.HEADER_DESCRIPTIONS, {
 	[-1000018] = "Ces objets peuvent être obtenus en effectuant des quêtes d’émissaire ou en l’obtaenant via un coffre de parangon.",
@@ -19429,6 +19437,8 @@ localize(_.ObjectNames, {
 	[205332] = "Avis de recherche",
 	[205350] = "Panneau de communication de la Horde",
 	[205476] = "Livre des âmes perdues",
+	[205477] = "Lingots d'acier lunaire",
+	[205479] = "Bois frôlelune",
 	[205540] = "Squelette décrépit",
 	[205874] = "Hiéroglyphes couverts de sable",
 	[205875] = "Fusée du croisé",
@@ -22488,8 +22498,8 @@ localize(L.HEADER_NAMES, {
 	[-1000938] = "Il Fiutatutto",
 	[-1000944] = "Baratto",
 	[-1000945] = "Assalti di Fyrakk",
-	[-1000972] = "|cffFF0000Ogom the Mangler sembra apparire solo quando stai eseguendo l'\"Assalto alle officine d'assedio di ferro\" giornaliero. Questa missione non era attiva dall'inizio di Legion e neanche la missione acquistabile \"Missiva: Assalto alle officine d'assedio di ferro\" funziona.|r",
-	[-1000973] = "|cFFFFFFFFStep 1:|r Nota Vistosa",
+	[-1000976] = "|cffFF0000Ogom the Mangler sembra apparire solo quando stai eseguendo l'\"Assalto alle officine d'assedio di ferro\" giornaliero. Questa missione non era attiva dall'inizio di Legion e neanche la missione acquistabile \"Missiva: Assalto alle officine d'assedio di ferro\" funziona.|r",
+	[-1000977] = "|cFFFFFFFFStep 1:|r Nota Vistosa",
 });
 localize(L.HEADER_DESCRIPTIONS, {
 	[-1000162] = "Gli elementi in questo elenco sono aspetti condivisi per l'elemento precedente. Nella modalità Aspetto unico, questo elenco può aiutarti a capire perché o perché un oggetto specifico verrebbe contrassegnato come Raccolto.",
@@ -23015,6 +23025,8 @@ localize(_.ObjectNames, {
 	[205332] = "Manifesto dei Ricercati",
 	[205350] = "Pannello di Comunicazione dell'Orda",
 	[205476] = "Libro delle Anime Perdute",
+	[205477] = "Lingotti d'Acciaio Lunare",
+	[205479] = "Legno di Luna Lucente",
 	[205540] = "Scheletro Decrepito",
 	[205874] = "Geroglifici Coperti dalla Sabbia",
 	[205875] = "Bengala del Crociato",
@@ -25953,8 +25965,8 @@ localize(L.HEADER_NAMES, {
 	[-1000937] = "지스케라 금고",
 	[-1000938] = "냄새 추적",
 	[-1000945] = "피락의 습격",
-	[-1000972] = "|cffFF0000약탈자 오곰은 일일 '철 공성 작업장 공격'을 수행할 때 생성되는 것 같습니다. 이 퀘스트는 Legion이 시작된 이후 활성화되지 않았으며 구매 가능한 퀘스트 'Missive: Iron Siegeworks 공격'도 작동하지 않습니다.|r",
-	[-1000973] = "|cFFFFFFFFStep 1:|r 눈에 띄는 쪽지",
+	[-1000976] = "|cffFF0000약탈자 오곰은 일일 '철 공성 작업장 공격'을 수행할 때 생성되는 것 같습니다. 이 퀘스트는 Legion이 시작된 이후 활성화되지 않았으며 구매 가능한 퀘스트 'Missive: Iron Siegeworks 공격'도 작동하지 않습니다.|r",
+	[-1000977] = "|cFFFFFFFFStep 1:|r 눈에 띄는 쪽지",
 });
 localize(L.HEADER_DESCRIPTIONS, {
 	[-1000162] = "이 목록의 항목은 위 항목의 공유 모양입니다. 고유 외형 모드에서 이 목록은 특정 항목이 수집됨으로 표시되는 이유와 이유를 이해하는 데 도움이 될 수 있습니다.",
@@ -26589,6 +26601,8 @@ localize(_.ObjectNames, {
 	[205332] = "현상 수배 전단",
 	[205350] = "호드 통신 단말기",
 	[205476] = "잃어버린 영혼의 서",
+	[205477] = "달빛강철 주괴",
+	[205479] = "달빛 깃든 나무",
 	[205540] = "오래된 해골",
 	[205874] = "모래투성이 성각문양",
 	[205875] = "성전사의 신호탄",
@@ -29370,8 +29384,8 @@ localize(L.HEADER_NAMES, {
 	[-1000938] = "Busca farejante",
 	[-1000944] = "Pechincha",
 	[-1000945] = "Ofensivas de Fyrakk",
-	[-1000972] = "|cffFF0000Ogom, o Mangler, parece surgir apenas quando você está fazendo o 'Assalto ao Cerco de Ferro' diário. Esta missão não estava ativa desde o início de Legion e a missão comprável 'Missiva: Assault on the Iron Siegeworks' também não funciona.|r",
-	[-1000973] = "|cFFFFFFFFStep 1:|r Bilhete Suspeito",
+	[-1000976] = "|cffFF0000Ogom, o Mangler, parece surgir apenas quando você está fazendo o 'Assalto ao Cerco de Ferro' diário. Esta missão não estava ativa desde o início de Legion e a missão comprável 'Missiva: Assault on the Iron Siegeworks' também não funciona.|r",
+	[-1000977] = "|cFFFFFFFFStep 1:|r Bilhete Suspeito",
 });
 localize(L.HEADER_DESCRIPTIONS, {
 	[-1000162] = "Os itens nesta lista são aparências compartilhadas do item acima. No Modo de Aparência Única, esta lista pode ajudá-lo a entender por que ou não um item específico seria marcado como Coletado.",
@@ -30002,6 +30016,8 @@ localize(_.ObjectNames, {
 	[205332] = "Cartaz de Procura-se",
 	[205350] = "Painel de Comunicação da Horda",
 	[205476] = "Livro das Almas Perdidas",
+	[205477] = "Lingotes de Lunaço",
+	[205479] = "Lunalenha",
 	[205540] = "Esqueleto Decrépito",
 	[205874] = "Hieróglifos Cobertos de Areia",
 	[205875] = "Clarão do Cruzado",
@@ -33120,8 +33136,8 @@ localize(L.HEADER_NAMES, {
 	[-1000938] = "Нюхорысканье",
 	[-1000944] = "Обмен",
 	[-1000945] = "Налеты Фиракка",
-	[-1000972] = "|cffFF0000Огом Уничтожитель появляется только при выполнении ежедневного задания 'Штурм осадного лагеря Железной Орды'. Данное задание не было доступно со старта Легиона, а приобретаемое в гарнизоне задание 'Донесение: Штурм осадного лагеря Железной Орды' тоже не помогает.|r",
-	[-1000973] = "|cFFFFFFFFШаг 1:|r Примечательная записка",
+	[-1000976] = "|cffFF0000Огом Уничтожитель появляется только при выполнении ежедневного задания 'Штурм осадного лагеря Железной Орды'. Данное задание не было доступно со старта Легиона, а приобретаемое в гарнизоне задание 'Донесение: Штурм осадного лагеря Железной Орды' тоже не помогает.|r",
+	[-1000977] = "|cFFFFFFFFШаг 1:|r Примечательная записка",
 });
 localize(L.HEADER_DESCRIPTIONS, {
 	[-1000018] = "Эти предметы можно получить в награду Заданий эмиссаров или из припасов.",
@@ -33790,6 +33806,8 @@ localize(_.ObjectNames, {
 	[205332] = "Плакат \"Разыскивается\"",
 	[205350] = "Пульт связи Орды",
 	[205476] = "Книга Потерянных Душ",
+	[205477] = "Слитки лунной стали",
+	[205479] = "Осененное луной дерево",
 	[205540] = "Дряхлый скелет",
 	[205874] = "Покрытые песком иероглифы",
 	[205875] = "Сигнальная ракета рыцаря",
@@ -36989,8 +37007,8 @@ localize(L.HEADER_NAMES, {
 	[-1000938] = "嗅味探寻",
 	[-1000944] = "以物易物",
 	[-1000945] = "菲莱克突袭",
-	[-1000972] = "|cffFF0000绞肉机奥戈姆似乎只是在你做每日突袭钢铁军工厂的时候刷新的。这个任务从军团开始后就没有激活过，可购买的任务密报：突袭钢铁军工厂也不能用了。|r",
-	[-1000973] = "|cFFFFFFFF步骤1:|r 不起眼的纸条",
+	[-1000976] = "|cffFF0000绞肉机奥戈姆似乎只是在你做每日突袭钢铁军工厂的时候刷新的。这个任务从军团开始后就没有激活过，可购买的任务密报：突袭钢铁军工厂也不能用了。|r",
+	[-1000977] = "|cFFFFFFFF步骤1:|r 不起眼的纸条",
 });
 localize(L.HEADER_DESCRIPTIONS, {
 	[-1000018] = "这些物品可以通过做使者任务或获得巅峰宝箱来获得。",
@@ -37621,6 +37639,8 @@ localize(_.ObjectNames, {
 	[205332] = "通缉布告",
 	[205350] = "部落通讯台",
 	[205476] = "迷失灵魂之书",
+	[205477] = "月钢锭",
+	[205479] = "月触之木",
 	[205540] = "破损的骨骼",
 	[205874] = "沙土覆盖的符文",
 	[205875] = "十字军的信号弹",

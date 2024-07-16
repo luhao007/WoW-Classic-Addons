@@ -15,6 +15,9 @@ local wipe = table.wipe
 
 local Loc = LibStub("AceLocale-3.0"):GetLocale("Details")
 
+---@type petcontainer
+local petContainer = Details222.PetContainer
+
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --API
 
@@ -23,7 +26,7 @@ function Details:ResetSegmentOverallData()
 	return segmentClass:ResetOverallData()
 end
 
---reset segments and overall data
+--erase all combat data stored
 function Details:ResetSegmentData()
 	return segmentClass:ResetAllCombatData()
 end
@@ -316,13 +319,117 @@ function Details:CanAddCombatToOverall(combatObject)
 	return false
 end
 
+---get the amount of wipes for a guilda in a specific boss and difficulty
+---@param guildName string
+---@param encounterId number
+---@param difficultyId number
+---@return number
+function Details:GetWipeCounter(guildName, encounterId, difficultyId)
+	local guildWipes = Details.boss_wipe_counter[guildName]
+	if (guildWipes) then
+		local bossWipes = guildWipes[encounterId]
+		if (bossWipes) then
+			local difficultyWipes = bossWipes[difficultyId]
+			if (difficultyWipes) then
+				return difficultyWipes
+			end
+		end
+	end
+	return 0
+end
+
+---return the amount of segments in the segments table that are from the same boss as the combat passed as argument
+---@param currentCombat combat
+---@return number
+local getAmountOfSegmentsInThisBoss = function(currentCombat)
+	local segmentsTable = Details:GetCombatSegments()
+	local amountOfSegmentsInUse = #segmentsTable
+	local amountOfSegmentsInThisBoss = 0
+
+	---@type bossinfo
+	local thisCombatBossInfo = currentCombat:GetBossInfo()
+
+	if (thisCombatBossInfo) then
+		local currentBossName = thisCombatBossInfo.name
+		for i = 1, amountOfSegmentsInUse do
+			---@type combat
+			local thisCombatObject = segmentsTable[i]
+			---@type bossinfo
+			local bossInfo = thisCombatObject:GetBossInfo()
+			if (bossInfo and bossInfo ~= thisCombatBossInfo) then
+				if (bossInfo.name == currentBossName) then
+					amountOfSegmentsInThisBoss = amountOfSegmentsInThisBoss + 1
+				end
+			end
+		end
+	end
+
+	return amountOfSegmentsInThisBoss
+end
+
 ---count boss tries and set the value in the combat object
 ---@param combatToBeAdded combat
 local setBossTryCounter = function(combatToBeAdded, segmentsTable, amountSegmentsInUse)
-	---@type string
-	local bossName = combatToBeAdded.is_boss and combatToBeAdded.is_boss.name
+	---@type bossinfo
+	local bossInfo = combatToBeAdded:GetBossInfo()
+	local bossName = bossInfo and bossInfo.name
+	local encounterId = bossInfo and bossInfo.id
+	local bossDifficultyId = bossInfo and bossInfo.diff
 
-	if (bossName) then
+	if (bossName and encounterId and bossDifficultyId) then
+		--account global
+		---@type table<guildname, table<encounterid, table<encounterdifficulty, number>>>
+		local bossTriesDatabase = Details.boss_wipe_counter
+
+		--to store a wipe 70% of the raid must be from the same guild
+		--get the player guild name
+		local playerGuildName = GetGuildInfo("player")
+		if (playerGuildName) then
+			local amountOfPlayersInGroup = GetNumGroupMembers()
+			local amountOfPlayersFromGuild = 0
+
+			local cachedRaidUnitIds = Details222.UnitIdCache.Raid
+			for i = 1, amountOfPlayersInGroup do
+				local unitId = cachedRaidUnitIds[i]
+				--get the guild name of the unit
+				local unitGuildName = GetGuildInfo(unitId)
+				if (unitGuildName and unitGuildName == playerGuildName) then
+					amountOfPlayersFromGuild = amountOfPlayersFromGuild + 1
+				end
+			end
+
+			--check the 70%
+			if (amountOfPlayersFromGuild / amountOfPlayersInGroup >= 0.7) then
+				--check the elapsed time of the encounter is bigger than the min allowed
+				if (Details.boss_wipe_min_time <= combatToBeAdded:GetCombatTime()) then
+					--check if there is a table for the guild name in the database
+					local guildWipes = bossTriesDatabase[playerGuildName]
+					if (not guildWipes) then
+						guildWipes = {}
+						bossTriesDatabase[playerGuildName] = guildWipes
+					end
+
+					--check if there is a table for the bossId in the guild table
+					local bossWipes = guildWipes[encounterId]
+					if (not bossWipes) then
+						bossWipes = {}
+						guildWipes[encounterId] = bossWipes
+					end
+
+					--check if there's a difficulty table inside the boss wipes table
+					local difficultyWipes = bossWipes[bossDifficultyId]
+					if (not difficultyWipes) then
+						difficultyWipes = 0
+						bossWipes[bossDifficultyId] = difficultyWipes
+					end
+
+					--increment the wipe counter
+					bossWipes[bossDifficultyId] = difficultyWipes + 1
+					Details:Msg("(testing) wipes on this boss with this guild in this difficulty:", bossWipes[bossDifficultyId])
+				end
+			end
+		end
+
 		local tryNumber = Details.encounter_counter[bossName]
 		if (not tryNumber) then
 			---@type combat
@@ -363,6 +470,9 @@ function Details222.Combat.AddCombat(combatToBeAdded)
 	---@type table<combat, boolean> store references of combat objects removed
 	local removedCombats = {}
 
+	---@type bossinfo
+	local combatToAddBossInfo = combatToBeAdded:GetBossInfo()
+
 	--check if there's a destroyed segment within the segment container
 	if (amountSegmentsInUse > 0) then
 		for i = 1, amountSegmentsInUse do
@@ -389,7 +499,10 @@ function Details222.Combat.AddCombat(combatToBeAdded)
 		end
 	end
 
-	setBossTryCounter(combatToBeAdded, segmentsTable, amountSegmentsInUse)
+	local bRunOkay, errorText = pcall(setBossTryCounter, combatToBeAdded, segmentsTable, amountSegmentsInUse)
+	if (not bRunOkay) then
+		Details:Msg("error > failed to set boss try counter > ", errorText)
+	end
 
 	--shutdown actors from the previous combat from the time machine
 	---@type combat
@@ -461,6 +574,72 @@ function Details222.Combat.AddCombat(combatToBeAdded)
 			bSegmentDestroyed = true
 			--add the combat reference to removed combats table
 			removedCombats[combatObjectRemoved] = true
+		end
+	end
+
+	--is the wipe counter saved in the details database?
+	if (IsInRaid() and Details.zone_type == "raid") then --filter only for raids
+		local bRunOkay2, result = pcall(getAmountOfSegmentsInThisBoss, combatToBeAdded)
+		if (not bRunOkay2) then
+			Details:Msg("bRunOkay2 Error > failed to get amount of segments in this boss > ", result)
+		else
+			local segmentRemoveResult = ""
+			if (type(result) ~= "number") then
+				Details:Msg("result of bRunOkay2 isn't a number | result: ", result, type(result))
+			end
+
+			local bRunOkay3, errorText3 = pcall(function()
+				local amountOfSegmentsInThisBoss = result
+
+				if (not Details.segments_amount_boss_wipes) then
+					Details:Msg("Details.segments_amount_boss_wipes isn't a number, issue with profile? ", type(Details.segments_amount_boss_wipes))
+					Details:Msg("on default profile:", Details.default_profile.segments_amount_boss_wipes)
+				end
+
+				if (amountOfSegmentsInThisBoss > Details.segments_amount_boss_wipes) then
+					---@type combat[]
+					local allSegmentsWithThisBoss = {}
+					for i = 1, amountSegmentsInUse do
+						---@type combat
+						local thisCombatObject = segmentsTable[i]
+						local thisCombatBossInfo = thisCombatObject:GetBossInfo()
+						if (thisCombatBossInfo and thisCombatBossInfo.name == combatToAddBossInfo.name and thisCombatBossInfo.diff == combatToAddBossInfo.diff) then
+							table.insert(allSegmentsWithThisBoss, thisCombatObject)
+						end
+					end
+
+					segmentRemoveResult = segmentRemoveResult .. #allSegmentsWithThisBoss .. " added|"
+
+					--make sure the the len of the table is the same or more of the amount of segments in this boss
+					if (#allSegmentsWithThisBoss >= amountOfSegmentsInThisBoss) then
+						--sort the table by elapsed time
+						table.sort(allSegmentsWithThisBoss, function(a, b) return a:GetBossHealth() < b:GetBossHealth() end)
+
+						--remove the last segment
+						---@type combat
+						local combatToBeRemoved = allSegmentsWithThisBoss[#allSegmentsWithThisBoss]
+						---@type boolean, combat
+						local bSegmentRemoved, combatObjectRemoved = Details:RemoveSegmentByCombatObject(combatToBeRemoved)
+						---@cast combatObjectRemoved combat
+						if (bSegmentRemoved and combatObjectRemoved and combatObjectRemoved == combatToBeRemoved) then
+							--at this point the combat has been removed but not wipped from memory
+							segmentRemoveResult = segmentRemoveResult .. "segment removed|" .. combatObjectRemoved:GetBossHealth() .."|"
+							Details:DestroyCombat(combatObjectRemoved)
+							bSegmentDestroyed = true
+							--add the combat reference to removed combats table
+							removedCombats[combatObjectRemoved] = true
+						end
+					end
+				end
+			end)
+
+			if (not bRunOkay3) then
+				Details:Msg("bRunOkay3 Error > ", errorText3)
+			else
+				if (segmentRemoveResult ~= "") then
+					Details:Msg("(testing)", segmentRemoveResult)
+				end
+			end
 		end
 	end
 
@@ -890,7 +1069,8 @@ function segmentClass:ResetAllCombatData()
 	Details:Destroy(Details.cache_damage_group)
 	Details:Destroy(Details.cache_healing_group)
 
-	Details222.Pets.PetContainerCleanup()
+	petContainer.DoMaintenance()
+
 	Details:ResetSpecCache(true)
 
 	--stop combat ticker
@@ -941,9 +1121,8 @@ function segmentClass:ResetAllCombatData()
 		Details.tabela_vigente = combatClass:NovaTabela(nil, Details.tabela_overall)
 
 		--create new container to store pets
-		Details.tabela_pets = Details.container_pets:NovoContainer()
-		Details:UpdatePetCache()
-		Details.container_pets:BuscarPets()
+		petContainer.Reset()
+		petContainer.PetScan("ResetAllCombatData")
 	end
 
 	---@type instance[]

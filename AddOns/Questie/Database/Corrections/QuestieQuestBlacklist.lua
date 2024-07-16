@@ -1522,6 +1522,9 @@ function QuestieQuestBlacklist:Load()
         [260] = QuestieCorrections.CATA_HIDE, -- Removed with cata
         [266] = QuestieCorrections.CATA_HIDE, -- Removed with cata
         [272] = QuestieCorrections.CATA_HIDE, -- Removed with cata
+        [287] = QuestieCorrections.CATA_HIDE, -- Removed with cata
+        [310] = QuestieCorrections.CATA_HIDE, -- Removed with cata
+        [317] = QuestieCorrections.CATA_HIDE, -- Removed with cata
         [326] = QuestieCorrections.CATA_HIDE, -- Removed with cata
         [327] = QuestieCorrections.CATA_HIDE, -- Removed with cata
         [335] = QuestieCorrections.CATA_HIDE, -- Removed with cata
@@ -1556,6 +1559,7 @@ function QuestieQuestBlacklist:Load()
         [383] = QuestieCorrections.CATA_HIDE, -- Removed with cata
         [390] = QuestieCorrections.CATA_HIDE, -- Removed with cata
         [398] = QuestieCorrections.CATA_HIDE, -- Removed with cata
+        [400] = QuestieCorrections.CATA_HIDE, -- Removed with cata
         [404] = QuestieCorrections.CATA_HIDE, -- Removed with cata
         [405] = QuestieCorrections.CATA_HIDE, -- Removed with cata
         [406] = QuestieCorrections.CATA_HIDE, -- Removed with cata
@@ -1564,6 +1568,7 @@ function QuestieQuestBlacklist:Load()
         [409] = QuestieCorrections.CATA_HIDE, -- Removed with cata
         [410] = QuestieCorrections.CATA_HIDE, -- Removed with cata
         [411] = QuestieCorrections.CATA_HIDE, -- Removed with cata
+        [415] = QuestieCorrections.CATA_HIDE, -- Removed with cata
         [426] = QuestieCorrections.CATA_HIDE, -- Removed with cata
         [427] = QuestieCorrections.CATA_HIDE, -- Removed with cata
         [431] = QuestieCorrections.CATA_HIDE, -- Removed with cata
@@ -1937,6 +1942,7 @@ function QuestieQuestBlacklist:Load()
         [5516] = QuestieCorrections.CATA_HIDE, -- Removed with cata
         [5520] = QuestieCorrections.CATA_HIDE, -- Removed with cata
         [5523] = QuestieCorrections.CATA_HIDE, -- Removed with cata
+        [5541] = QuestieCorrections.CATA_HIDE, -- Removed with cata
         [5664] = QuestieCorrections.CATA_HIDE, -- Removed with cata
         [5665] = QuestieCorrections.CATA_HIDE, -- Removed with cata
         [5666] = QuestieCorrections.CATA_HIDE, -- Removed with cata
@@ -2613,8 +2619,6 @@ function QuestieQuestBlacklist:Load()
         [26951] = QuestieCorrections.CATA_HIDE, -- Seems to not be available
         [27052] = QuestieCorrections.CATA_HIDE, -- Not in the game
         [27081] = QuestieCorrections.CATA_HIDE, -- Not in the game
-        [27608] = QuestieCorrections.CATA_HIDE, -- Duplicate of 27500
-        [27609] = QuestieCorrections.CATA_HIDE, -- Duplicate of 27501
         [27861] = QuestieCorrections.CATA_HIDE, -- Duplicate of 27863
         [27862] = QuestieCorrections.CATA_HIDE, -- Duplicate of 27863
         [28003] = QuestieCorrections.CATA_HIDE, -- Not in the game
@@ -3018,6 +3022,10 @@ function QuestieQuestBlacklist:Load()
         [2950] = QuestieCorrections.SOD_HIDE, -- Nogg's Ring Redo
         [3446] = QuestieCorrections.SOD_HIDE, -- Into the Depths
         [4146] = QuestieCorrections.SOD_HIDE, -- Zapper Fuel
+        [78287] = true, -- Let Me Make You An Offer (not longer in the game)
+        [78288] = true, -- Let Me Make You An Offer (not longer in the game)
+        [78297] = true, -- You've Got Yourself A Deal (not longer in the game)
+        [78304] = true, -- You've Got Yourself A Deal (not longer in the game)
         [78611] = true, -- A Waylaid Shipment (no longer available in P2)
         [79100] = true, -- A Waylaid Shipment (no longer available in P2)
         [79482] = true, -- Stolen Winter Veil Treats

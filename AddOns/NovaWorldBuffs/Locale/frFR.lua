@@ -1028,3 +1028,12 @@ L["cappingSupportDesc"] = "Commence une barre de minuteur pour Ashenvale/Strangl
 
 L["Tol Barad"] = "Tol Barad";
 L["eventIsRunning"] = "%s est active";
+
+L["Blackrock"] = "Blackrock";
+L["blackrockEventRunning"] = "Blackrock running: %s";
+L["blackrockEventStartsIn"] = "Blackrock starts in %s";
+L["blackrockStartSoon"] = "Blackrock event starts in %s"; --Guild chat msg.
+L["Blackrock PvP Event"] = "Blackrock PvP Event";
+L["Total honor this event"] = "Total honor this event";
+
+L["Might of Stormwind"] = "Puissance de Hurlevent";

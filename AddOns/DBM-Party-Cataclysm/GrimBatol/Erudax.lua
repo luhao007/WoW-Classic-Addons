@@ -8,7 +8,7 @@ else
 	mod.statTypes = "normal,heroic"
 end
 
-mod:SetRevision("20240615062352")
+mod:SetRevision("20240714045506")
 mod:SetCreatureID(40484)
 mod:SetEncounterID(1049)
 mod:SetHotfixNoticeRev(20240614000000)
@@ -84,7 +84,7 @@ end
 function mod:SPELL_CAST_START(args)
 	if args:IsSpellID(75763, 79467) then
 		if self.Options.SpecWarn75763interrupt and self:CheckInterruptFilter(args.sourceGUID, false, true) then
-			specWarnMending:Show()
+			specWarnMending:Show(args.sourceName)
 			specWarnMending:Play("kickcast")
 		elseif self:AntiSpam(2, 1) then
 			warnUmbralMending:Show()
@@ -102,7 +102,7 @@ function mod:SPELL_CAST_START(args)
 		timerVoidSurgeCD:Start(50, self.vb.feebleCount+1)
 	elseif args.spellId == 450100 then
 		self.vb.crushCount = self.vb.crushCount + 1
-		specWarnCrush:Show(self.vb.crushCount)
+		specWarnCrush:Show()
 		specWarnCrush:Play("defensive")
 		timerCrushCD:Start(50, self.vb.crushCount+1)
 	end

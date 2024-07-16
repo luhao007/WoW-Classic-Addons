@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Arta
-## Version: r137
+## Version: r139
 ## RequiredDeps: DBM-Core
 ## LoadOnDemand: 1
 ## SavedVariables: DBMPartyWotLK_AllSavedVars

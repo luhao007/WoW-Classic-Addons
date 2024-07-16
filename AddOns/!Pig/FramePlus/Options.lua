@@ -31,7 +31,7 @@ local FramePlusF,FramePlustabbut =PIGOptionsList_R(RTabFrame,L["FRAMEP_TABNAME1"
 FramePlusF:Show()
 FramePlustabbut:Selected()
 ----------------------
-FramePlusF.BuffTime = PIGCheckbutton_R(FramePlusF,{"精确BUFF时间","精确显示自身BUFF/DEBUFF时间"})
+FramePlusF.BuffTime = PIGCheckbutton_R(FramePlusF,{"优化BUFF时间显示","精确显示自身BUFF/DEBUFF时间"})
 FramePlusF.BuffTime:SetScript("OnClick", function (self)
 	if self:GetChecked() then
 		PIGA["FramePlus"]["BuffTime"]=true;
@@ -72,13 +72,23 @@ FramePlusF.Friends:SetScript("OnClick", function (self)
 		Pig_Options_RLtishi_UI:Show()
 	end
 end)
-FramePlusF.Loot = PIGCheckbutton_R(FramePlusF,{LOOT..UIOPTIONS_MENU.."扩展",LOOT..UIOPTIONS_MENU.."物品显示在一页，并且可以根据品质通报"})
+FramePlusF.Loot = PIGCheckbutton_R(FramePlusF,{SLASH_TEXTTOSPEECH_LOOT..UIOPTIONS_MENU.."扩展",SLASH_TEXTTOSPEECH_LOOT..UIOPTIONS_MENU.."物品显示在一页，并且可以通报"})
 FramePlusF.Loot:SetScript("OnClick", function (self)
 	if self:GetChecked() then
 		PIGA["FramePlus"]["Loot"]=true;
 		FramePlusfun.Loot()
 	else
 		PIGA["FramePlus"]["Loot"]=false
+		Pig_Options_RLtishi_UI:Show()
+	end
+end)
+FramePlusF.Roll = PIGCheckbutton_R(FramePlusF,{LOOT_ROLL..UIOPTIONS_MENU.."扩展","合并"..LOOT_ROLL.."物品到一起，并且可以移动"})
+FramePlusF.Roll:SetScript("OnClick", function (self)
+	if self:GetChecked() then
+		PIGA["FramePlus"]["Roll"]=true;
+		FramePlusfun.Roll()
+	else
+		PIGA["FramePlus"]["Roll"]=false
 		Pig_Options_RLtishi_UI:Show()
 	end
 end)
@@ -172,6 +182,7 @@ end);
 --
 FramePlusF:HookScript("OnShow", function(self)
 	self.Loot:SetChecked(PIGA["FramePlus"]["Loot"])
+	self.Roll:SetChecked(PIGA["FramePlus"]["Roll"])
 	self.BuffTime:SetChecked(PIGA["FramePlus"]["BuffTime"])
 	self.Skill_QKbut:SetChecked(PIGA["FramePlus"]["Skill_QKbut"])
 	self.Merchant:SetChecked(PIGA["FramePlus"]["Merchant"])
@@ -304,6 +315,7 @@ end)
 addonTable.FramePlus = function()
 	FramePlusfun.BuffTime()
 	FramePlusfun.Loot()
+	FramePlusfun.Roll()
 	FramePlusfun.Merchant()
 	FramePlusfun.Friends()
 	FramePlusfun.Quest()

@@ -8,7 +8,7 @@ else
 	mod.statTypes = "normal,heroic"
 end
 
-mod:SetRevision("20240617194658")
+mod:SetRevision("20240714045506")
 mod:SetCreatureID(40319)
 mod:SetEncounterID(1048)
 mod:SetHotfixNoticeRev(20240614000000)
@@ -29,7 +29,7 @@ mod:RegisterEventsInCombat(
 --local warnShredding			= mod:NewSpellAnnounce(75271, 3)
 local warnFlamingFixate	 		= mod:NewTargetNoFilterAnnounce(82850, 4)
 
-local specWarnAdds				= mod:NewSpecialWarningSwitch(90949, "Dps", nil, nil, 1, 2)
+local specWarnAdds				= mod:NewSpecialWarningSwitchCount(90949, "Dps", nil, nil, 1, 2)
 local specWarnFlamingFixate		= mod:NewSpecialWarningRun(82850, nil, nil, nil, 4, 2)
 local specWarnDevouring 		= mod:NewSpecialWarningDodgeCount(90950, nil, nil, nil, 2, 2)
 local specWarnSeepingTwilight	= mod:NewSpecialWarningGTFO(75317, nil, nil, nil, 2, 8)

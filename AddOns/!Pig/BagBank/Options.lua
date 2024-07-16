@@ -77,32 +77,36 @@ BagBankF.SetListline = PIGLine(BagBankF,"TOP",-66)
 BagBankF.SetListF = PIGFrame(BagBankF)
 BagBankF.SetListF:SetPoint("TOPLEFT",BagBankF.SetListline,"BOTTOMLEFT",0,0);
 BagBankF.SetListF:SetPoint("BOTTOMRIGHT",BagBankF,"BOTTOMRIGHT",0,30);
-
+function BagBankfun.GetSortBagsRightToLeft()
+	if GetSortBagsRightToLeft then
+		return GetSortBagsRightToLeft()
+	else
+		return PIGA['BagBank']["SortBag_Config"]
+	end
+end
+function BagBankfun.SetSortBagsRightToLeft(enabled)
+	if SetSortBagsRightToLeft then
+		SetSortBagsRightToLeft(enabled)
+	else
+		PIGA['BagBank']["SortBag_Config"] = enabled
+	end
+end
 local BAG_SetList = {
 	{"交易时打开背包","jiaoyiOpen",false},
 	{"拍卖时打开背包","AHOpen",false},
 	{"显示装备等级","wupinLV",true},
 	{"根据品质染色装备边框","wupinRanse",true},
 	{"垃圾物品提示","JunkShow",true},
-	{"战利品放入左边包",GetInsertItemsLeftToRight(),false},	
+	{"战利品放入左边包",GetInsertItemsLeftToRight,false},
+	{"反向整理",BagBankfun.GetSortBagsRightToLeft,false},
 }
-if tocversion<50000 then
-	table.insert(BAG_SetList,{"反向整理","SortBag_Config",false})
-else
-	table.insert(BAG_SetList,{"反向整理",GetSortBagsRightToLeft(),false})
-end
-
 for i=1,#BAG_SetList do
 	local tishi = BAG_SetList[i][4] or BAG_SetList[i][1]
 	local BagBankSet = PIGCheckbutton_R(BagBankF.SetListF,{BAG_SetList[i][1],tishi},nil,nil,nil,nil,"BAG_SetList"..i)
 	BagBankSet:SetScript("OnClick", function (self)
 		if self:GetChecked() then
 			if BAG_SetList[i][1]=="反向整理" then
-				if tocversion<50000 then
-					PIGA["BagBank"]["SortBag_Config"]=false
-				else
-					SetSortBagsRightToLeft(false)
-				end
+				BagBankfun.SetSortBagsRightToLeft(false)
 			elseif BAG_SetList[i][1]=="战利品放入左边包" then
 				SetInsertItemsLeftToRight(true)
 			else
@@ -111,11 +115,7 @@ for i=1,#BAG_SetList do
 			end		
 		else
 			if BAG_SetList[i][1]=="反向整理" then
-				if tocversion<50000 then
-					PIGA["BagBank"]["SortBag_Config"]=true
-				else
-					SetSortBagsRightToLeft(true)
-				end
+				BagBankfun.SetSortBagsRightToLeft(true)
 			elseif BAG_SetList[i][1]=="战利品放入左边包" then
 				SetInsertItemsLeftToRight(false)
 			else
@@ -216,13 +216,7 @@ BagBankF:HookScript("OnShow", function(self)
 	self.BagKongyu:SetChecked(PIGA["BagBank"]["BagKongyu"])
 	for i=1,#BAG_SetList do
 		if BAG_SetList[i][1]=="反向整理" then
-			if tocversion<50000 then
-				_G["BAG_SetList"..i]:SetChecked(not PIGA["BagBank"][BAG_SetList[i][2]])
-			else
-				_G["BAG_SetList"..i]:SetChecked(not GetSortBagsRightToLeft())
-			end
-		elseif BAG_SetList[i][1]=="战利品放入左边包" then
-			_G["BAG_SetList"..i]:SetChecked(GetInsertItemsLeftToRight())
+			_G["BAG_SetList"..i]:SetChecked(not BagBankfun.GetSortBagsRightToLeft())
 		else
 			_G["BAG_SetList"..i]:SetChecked(PIGA["BagBank"][BAG_SetList[i][2]])
 		end

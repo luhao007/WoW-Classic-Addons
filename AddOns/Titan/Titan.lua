@@ -1,6 +1,6 @@
 ---@diagnostic disable: duplicate-set-field
 --[===[ File
-Contains the basic routines of Titan. 
+Contains the basic routines of Titan.
 All the event handler routines, initialization routines, Titan menu routines, and select plugin handler routines.
 --]===]
 
@@ -191,19 +191,6 @@ function TitanSetPanelFont(fontname, fontsize)
 			if buttonText then
 				buttonText:SetFont(newfont, fontsize);
 			end
-			-- account for plugins with child buttons
-			local childbuttons = { button:GetChildren() };
-			for _, child in ipairs(childbuttons) do
-				if child then
-					local bname = _G[child:GetName()]
-					if bname then
-						local childbuttonText = _G[child:GetName() .. TITAN_PANEL_TEXT];
-						if childbuttonText then
-							childbuttonText:SetFont(newfont, fontsize);
-						end
-					end
-				end
-			end
 		end
 	end
 	TitanPanel_RefreshPanelButtons();
@@ -252,6 +239,12 @@ print("PEW"
 	if Titan__InitializedPEW then
 		-- Currently no additional steps needed
 	else
+		if Titan_Global.debug.titan_startup then
+			local dbg_msg = "PEW:"
+				.. " Init settings"
+			TitanDebug(dbg_msg, "normal")
+		end
+
 		-- Get Profile and Saved Vars
 		TitanVariables_InitTitanSettings();
 		if TitanAllGetVar("Silenced") then
@@ -269,13 +262,29 @@ print("PEW"
 
 		-- Set the two anchors in their default positions
 		-- until the Titan bars are drawn
+		if Titan_Global.debug.titan_startup then
+			local dbg_msg = "PEW:"
+				.. " Create anchors for other addons"
+			TitanDebug(dbg_msg, "normal")
+		end
 		TitanPanelTopAnchor:ClearAllPoints();
 		TitanPanelTopAnchor:SetPoint("TOPLEFT", "UIParent", "TOPLEFT", 0, 0);
 		TitanPanelBottomAnchor:ClearAllPoints();
 		TitanPanelBottomAnchor:SetPoint("BOTTOMLEFT", "UIParent", "BOTTOMLEFT", 0, 0);
 
 		-- Ensure the bars are created before the plugins are registered.
+		if Titan_Global.debug.titan_startup then
+			local dbg_msg = "PEW:"
+				.. " Create frames for Titan bars"
+			TitanDebug(dbg_msg, "normal")
+		end
 		for idx, v in pairs(TitanBarData) do
+			if Titan_Global.debug.titan_startup then
+				local dbg_msg = "..."
+					.. tostring(v.name)
+				TitanDebug(dbg_msg, "normal")
+			end
+
 			TitanPanelButton_CreateBar(idx)
 		end
 		--		Titan_AutoHide_Create_Frames()
@@ -315,19 +324,40 @@ print("PEW"
 		end
 --]]
 		-- Should be safe to register for events that could show / hide Bars
+		if Titan_Global.debug.titan_startup then
+			local dbg_msg = "PEW:"
+				.. " Register for events Titan needs"
+			TitanDebug(dbg_msg, "normal")
+		end
 		RegisterForEvents()
 	end
 	local _ = nil
 	TitanSettings.Player, _, _ = TitanUtils_GetPlayer()
+
 	-- Some addons wait to create their LDB component or a Titan addon could
 	-- create additional buttons as needed.
 	-- So we need to sync their variables and set them up
+	if Titan_Global.debug.titan_startup then
+		local dbg_msg = "PEW:"
+			.. " Register any plugins found"
+		TitanDebug(dbg_msg, "normal")
+	end
 	TitanUtils_RegisterPluginList()
 
+	if Titan_Global.debug.titan_startup then
+		local dbg_msg = "PEW:"
+			.. " Synch plugin saved vars"
+		TitanDebug(dbg_msg, "normal")
+	end
 	TitanVariables_UseSettings(nil, TITAN_PROFILE_INIT)
 
 	-- all addons are loaded so update the config (options)
 	-- some could have registered late...
+	if Titan_Global.debug.titan_startup then
+		local dbg_msg = "PEW:"
+			.. " Init config data (right click menu)"
+		TitanDebug(dbg_msg, "normal")
+	end
 	TitanUpdateConfig("init")
 
 	-- Init panel font
@@ -356,6 +386,11 @@ print("PEW"
 	end
 
 	-- Also sync LDB object text with their created Titan plugin
+	if Titan_Global.debug.titan_startup then
+		local dbg_msg = "PEW:"
+			.. " Register any LDB (Titan) plugins"
+		TitanDebug(dbg_msg, "normal")
+	end
 	TitanLDBRefreshButton()
 end
 
@@ -383,7 +418,11 @@ end
 function TitanPanelBarButton:ADDON_LOADED(addon)
 	if addon == TITAN_ID then
 		_G[TITAN_PANEL_CONTROL]:RegisterEvent("PLAYER_ENTERING_WORLD")
-		TitanVariables_InitTitanSettings() -- Min table setup to start.
+
+		if Titan_Global.debug.titan_startup then
+			TitanDebug("Titan ADDON_LOADED")
+		end
+	--		TitanVariables_InitTitanSettings() -- Min table setup to start.
 		-- Unregister event - saves a few event calls.
 		self:UnregisterEvent("ADDON_LOADED");
 		self.ADDON_LOADED = nil
@@ -401,6 +440,9 @@ print("PLAYER_ENTERING_WORLD"
 .." "..tostring(arg2)..""
 )
 --]]
+	if Titan_Global.debug.titan_startup then
+		TitanDebug("Titan PLAYER_ENTERING_WORLD pcall setup routine")
+	end
 	call_success, -- needed for pcall
 	ret_val =  -- actual return values
 		pcall(TitanPanel_PlayerEnteringWorld, arg2)
@@ -1254,7 +1296,7 @@ local function CheckBarBounds(self, width)
 end
 
 ---local Start the grap of a Short Titan bar if Shift and left mouse are held.
----@param self table 
+---@param self table
 local function OnMoveStart(self)
 	if IsShiftKeyDown() then
 		if self:IsMovable() then
@@ -1268,7 +1310,7 @@ local function OnMoveStart(self)
 end
 
 ---local When a Short Titan bar drag is stopped.
----@param self table 
+---@param self table
 local function OnMovingStop(self)
 	self:StopMovingOrSizing()
 	self.isMoving = nil
@@ -1313,7 +1355,7 @@ print("wheel"
 	end
 end
 
----Titan Force all plugins created from LDB addons, visible or not, to be on the right side of the Titan bar. 
+---Titan Force all plugins created from LDB addons, visible or not, to be on the right side of the Titan bar.
 --- Any visible plugin will be forced to the right side on the same bar it is currently on.
 function TitanPanelBarButton_ForceLDBLaunchersRight()
 	local plugin = {}
@@ -1345,7 +1387,7 @@ function TitanPanelBarButton_ForceLDBLaunchersRight()
 	end
 end
 
----local Helper to create the 'anchor' frames used by other addons that need to adjust so Titan can be visible. 
+---local Helper to create the 'anchor' frames used by other addons that need to adjust so Titan can be visible.
 ---The anchor frames are adjusted depending on which Titan bars the user selects to show.
 --- - TitanPanelTopAnchor - the frame at the bottom of the top bar(s) shown.
 --- - TitanPanelBottomAnchor - the frame at the top of the bottom bar(s) shown.
@@ -1356,9 +1398,9 @@ local function TitanAnchors()
 	anchor_bot = anchor_bot >= TITAN_WOW_SCREEN_BOT and anchor_bot or TITAN_WOW_SCREEN_BOT
 
 	local top_point, top_rel_to, top_rel_point, top_x, top_y = TitanPanelTopAnchor:GetPoint(TitanPanelTopAnchor
-	:GetNumPoints())
+		:GetNumPoints())
 	local bot_point, bot_rel_to, bot_rel_point, bot_x, bot_y = TitanPanelBottomAnchor:GetPoint(TitanPanelBottomAnchor
-	:GetNumPoints())
+		:GetNumPoints())
 	top_y = floor(tonumber(top_y) + 0.5)
 	bot_y = floor(tonumber(bot_y) + 0.5)
 	--[[
@@ -1697,8 +1739,8 @@ function TitanPanel_ReOrder(index)
 end
 
 ---Titan Remove a plugin then show all the shown all user selected plugins on the Titan bar(s).
---- This cancels all timers of name "TitanPanel"..id as a safeguard to destroy any active plugin timers 
---- based on a fixed naming convention : TitanPanel..id, eg. "TitanPanelClock" this prevents "rogue" 
+--- This cancels all timers of name "TitanPanel"..id as a safeguard to destroy any active plugin timers
+--- based on a fixed naming convention : TitanPanel..id, eg. "TitanPanelClock" this prevents "rogue"
 --- timers being left behind by lack of an OnHide check
 ---@param id string Unique ID of the plugin
 function TitanPanel_RemoveButton(id)
@@ -1748,8 +1790,8 @@ function TitanPanel_RefreshPanelButtons()
 	end
 end
 
----Titan Justify the plugins on each Titan bar. 
---- Used when : 
+---Titan Justify the plugins on each Titan bar.
+--- Used when :
 ---- Init / show of a Titan bar
 ----the user changes the 'center' option on a Titan bar
 function TitanPanelButton_Justify()
@@ -1782,7 +1824,7 @@ function TitanPanelButton_Justify()
 		y_offset = TitanBarData[idx].plugin_y_offset
 		x_offset = TitanBarData[idx].plugin_x_offset
 		firstLeftButton = TitanUtils_GetButton(TitanPanelSettings.Buttons
-		[TitanUtils_GetFirstButtonOnBar(bar, TITAN_LEFT)])
+			[TitanUtils_GetFirstButtonOnBar(bar, TITAN_LEFT)])
 		align = TitanBarDataVars[idx].align --TitanPanelGetVar(bar.."_Align")
 		leftWidth = 0;
 		rightWidth = 0;
@@ -1851,7 +1893,7 @@ local function BuildMainMenu(frame)
 	-----------------
 	-- Plugin Categories
 	-- Both arrays are in TitanGlobal
----@diagnostic disable-next-line: param-type-mismatch
+	---@diagnostic disable-next-line: param-type-mismatch
 	for index, id in pairs(L["TITAN_PANEL_MENU_CATEGORIES"]) do
 		info = {};
 		info.notCheckable = true
@@ -2237,11 +2279,11 @@ local function BuildPluginCategoryMenu(frame)
 					if which_bar == nil then
 						-- Plugin not shown
 					else
---						if internal_bar == TitanBarData[frame].name then
---							info.text = info.text .. TitanUtils_GetGreenText(" (" .. which_bar .. ")")
---						else
-							info.text = info.text .. TitanUtils_GetGoldText(" (" .. which_bar .. ")")
---						end
+						--						if internal_bar == TitanBarData[frame].name then
+						--							info.text = info.text .. TitanUtils_GetGreenText(" (" .. which_bar .. ")")
+						--						else
+						info.text = info.text .. TitanUtils_GetGoldText(" (" .. which_bar .. ")")
+						--						end
 					end
 
 					if plugin.controlVariables then
@@ -2344,7 +2386,7 @@ print("_prep R click"
 	end
 end
 
----Titan Determine if the given plugin is on any Titan bar. 
+---Titan Determine if the given plugin is on any Titan bar.
 ---@param id string Unique ID of the plugin
 ---@return boolean shown True on a Titan bar even if hidden or on auto hide
 function TitanPanel_IsPluginShown(id)
@@ -2355,7 +2397,7 @@ function TitanPanel_IsPluginShown(id)
 	end
 end
 
----Titan Determine if the given plugin is / would be on right or left of a Titan bar. 
+---Titan Determine if the given plugin is / would be on right or left of a Titan bar.
 ---@param id string Unique ID of the plugin
 ---@return string R_L  TITAN_RIGHT("Right") or TITAN_Left("Left")
 function TitanPanel_GetPluginSide(id)
@@ -2365,17 +2407,6 @@ function TitanPanel_GetPluginSide(id)
 		return TITAN_LEFT;
 	end
 end
-
---[[
-print("OnMoveStart"
-.." "..tostring(self:GetName())..""
-.." "..tostring(IsShiftKeyDown())..""
-.." "..tostring(IsAltKeyDown())..""
-.."\n"
-.." x "..tostring(format("%0.1f", self:GetLeft()))..""
-.." y "..tostring(format("%0.1f", self:GetTop()))..""
-)
---]]
 
 ---Titan Set the scale, texture (graphic), and transparancy of all the Titan bars based on the user selection.
 ---@param reason string Debug note on where the call initiated
@@ -2396,7 +2427,6 @@ end
 -- Routines to handle creation of Titan bars
 --
 
-
 ---Titan Create a Titan bar that can show plugins.
 ---@param frame_str string Unique ID of the plugin
 function TitanPanelButton_CreateBar(frame_str)
@@ -2411,25 +2441,7 @@ function TitanPanelButton_CreateBar(frame_str)
 	a_bar:SetScript("OnLeave", function(self) TitanPanelBarButton_OnLeave(self) end)
 	a_bar:SetFrameStrata("DIALOG")
 
-	--	local x, y, w = TitanVariables_GetBarPos(frame_str)
-	--	local tscale = TitanPanelGetVar("Scale")
-	--[[
-print("_Create bar"
-.." "..tostring(bar_data.name)..""
-.."\n "
-.." "..tostring(bar_data.name)..""
-.." "..tostring(bar_data.show.pt)..""
-.." "..tostring(bar_data.show.rel_fr)..""
-.." "..tostring(bar_data.show.rel_pt)..""
-.."\n "
-.." "..tostring(bar_data.name)..""
-.." "..tostring(format("%0.1f", x))..""
-.." "..tostring(format("%0.1f", y))..""
-.." "..tostring(format("%0.1f", w))..""
-)
---]]
 	if bar_data.user_move then
-		--		a_bar:SetPoint(bar_data.show.pt, bar_data.show.rel_fr, bar_data.show.rel_pt, x, y)
 		a_bar:SetMovable(true)
 		a_bar:SetResizable(true)
 		a_bar:EnableMouse(true)
@@ -2437,11 +2449,8 @@ print("_Create bar"
 		a_bar:SetScript("OnDragStart", OnMoveStart)
 		a_bar:SetScript("OnDragStop", OnMovingStop)
 		a_bar:SetScript("OnMouseWheel", OnMouseWheel)
-		--		a_bar:SetSize(w / tscale, TITAN_PANEL_BAR_HEIGHT)
 	else
 		-- Static full width bar
-		--		a_bar:SetPoint(bar_data.show.pt, bar_data.show.rel_fr, bar_data.show.rel_pt, x, y)
-		--		a_bar:SetPoint(bar_data.show.pt, bar_data.show.rel_fr, bar_data.show.rel_pt, x, y - TITAN_PANEL_BAR_HEIGHT)
 	end
 
 	-- ======
@@ -2457,32 +2466,16 @@ print("_Create bar"
 
 	-- ======
 	-- Frame for right clicks
-	-- Use one bar to rule them all
-	-- Use the plugin naming scheme
+	-- Use the plugin naming scheme for one frame to rule them all 
 	-- 2024 Feb : Change to match plugin right click menu scheme so one routine can be used.
 	local f = CreateFrame("Frame", this_bar .. TITAN_PANEL_CLICK_MENU_SUFFIX, UIParent, "UIDropDownMenuTemplate")
-	--[[
-	local tool_tip = Titan_Panel.plugin.PRE.."Bar"..Titan_Panel.plugin.POST
-	if _G[tool_tip] then
-		-- already created
-	else
-		f = CreateFrame("Frame", tool_tip, UIParent, "UIDropDownMenuTemplate")
-	end
---]]
+
 	-- ======
 	-- Hider for auto hide feature
 	local hide_bar_name = TITAN_PANEL_HIDE_PREFIX .. bar_data.name
 	if bar_data.hider then
-	--[[
-print("_Create hide bar"
-.." "..tostring(bar_data.name)..""
-.." "..tostring(hide_bar_name)..""
-)
---]]
-
 		local hide_bar = CreateFrame("Button", hide_bar_name, UIParent, "TitanPanelBarButtonHiderTemplate")
 		hide_bar:SetFrameStrata("DIALOG")
-		--		hide_bar:SetPoint(bar_data.show.pt, bar_data.show.rel_fr, bar_data.show.rel_pt, x, -y)
 
 		-- Set script handlers for display
 		hide_bar:RegisterForClicks("LeftButtonUp", "RightButtonUp");
@@ -2493,7 +2486,7 @@ print("_Create hide bar"
 		hide_bar:SetFrameStrata("BACKGROUND")
 		hide_bar:SetSize(screen.x, TITAN_PANEL_BAR_HEIGHT)
 	else
-		-- Not allowed for this bar
+		-- Hider not allowed for this bar
 	end
 end
 

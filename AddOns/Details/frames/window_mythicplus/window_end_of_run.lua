@@ -18,12 +18,38 @@ local C_Timer = C_Timer
 local GameTooltip = GameTooltip
 local SOUNDKIT = SOUNDKIT
 
+local GetItemInfo = GetItemInfo or C_Item.GetItemInfo
+local GetItemIcon = GetItemIcon or C_Item.GetItemIcon
+local GetDetailedItemLevelInfo = GetDetailedItemLevelInfo or C_Item.GetDetailedItemLevelInfo --C_Item.GetDetailedItemLevelInfo does not return a table
+
 local Loc = _G.LibStub("AceLocale-3.0"):GetLocale("Details")
 
 local mythicDungeonCharts = Details222.MythicPlus.Charts.Listener
 local mythicDungeonFrames = Details222.MythicPlus.Frames
 
 local CONST_DEBUG_MODE = false
+local LOOT_DEBUG_MODE = false
+
+function Details222.Debug.SetMythicPlusDebugState(bState)
+	if (bState == nil) then
+		bState = not CONST_DEBUG_MODE
+	end
+	CONST_DEBUG_MODE = bState
+	Details:Msg("mythic+ debug mode:", tostring(CONST_DEBUG_MODE))
+end
+
+---@return boolean CONST_DEBUG_MODE, boolean LOOT_DEBUG_MODE
+function Details222.Debug.GetMythicPlusDebugState()
+	return CONST_DEBUG_MODE, LOOT_DEBUG_MODE
+end
+
+function Details222.Debug.SetMythicPlusLootDebugState(bState)
+	if (bState == nil) then
+		bState = not LOOT_DEBUG_MODE
+	end
+	LOOT_DEBUG_MODE = bState
+	Details:Msg("mythic+ loot debug mode:", tostring(LOOT_DEBUG_MODE))
+end
 
 --debug
 _G.MythicDungeonFrames = mythicDungeonFrames
@@ -103,6 +129,12 @@ function lootFrame.UpdateUnitLoot(unitBanner)
 	---@type details_loot_cache[]
 	local lootCandidates = {}
 
+	if (LOOT_DEBUG_MODE) then
+		if (UnitIsUnit("player", unitId)) then
+			Details:Msg("Loot UpdateUnitLoot:", unitName, GetTime())
+		end
+	end
+
 	if (lootCache) then
 		local lootCacheSize = #lootCache
 		if (lootCacheSize > 0) then
@@ -113,6 +145,13 @@ function lootFrame.UpdateUnitLoot(unitBanner)
 				if (timeNow - lootInfo.time < 10) then
 					lootCandidates[lootIndex] = lootInfo
 					lootIndex = lootIndex + 1
+				end
+				table.remove(lootCache, i)
+
+				if (LOOT_DEBUG_MODE) then
+					if (UnitIsUnit("player", unitId)) then
+						Details:Msg("Loot ENTRY REMOVED:", unitName, GetTime())
+					end
 				end
 			end
 		end
@@ -125,7 +164,7 @@ function lootFrame.UpdateUnitLoot(unitBanner)
 		local itemQuality = lootInfo.itemQuality
 		local itemID = lootInfo.itemID
 
-		local lootSquare = unitBanner:GetLootSquare()
+		local lootSquare = unitBanner:GetLootSquare() --internally controls the loot square index
 		lootSquare.itemLink = itemLink --will error if this the thrid lootSquare (creates only 2 per banner)
 
 		local rarityColor = --[[GLOBAL]]ITEM_QUALITY_COLORS[itemQuality]
@@ -137,6 +176,12 @@ function lootFrame.UpdateUnitLoot(unitBanner)
 		mythicDungeonFrames.ReadyFrame.StopTextDotAnimation()
 
 		lootSquare:Show()
+
+		if (LOOT_DEBUG_MODE) then
+			if (UnitIsUnit("player", unitId)) then
+				Details:Msg("Loot DISPLAYED:", unitName, GetTime())
+			end
+		end
 	end
 end
 
@@ -173,9 +218,13 @@ lootFrame:SetScript("OnEvent", function(self, event, ...)
 					effectiveILvl = effectiveILvl,
 					itemQuality = itemQuality, --this is a number
 					itemID = itemID,
-					time = time()
+					time = GetTime()
 				}
 				table.insert(lootFrame.LootCache[unitName], lootCacheTable)
+
+				if (LOOT_DEBUG_MODE) then
+					Details:Msg("Loot ADDED:", unitName, itemLink, effectiveILvl, itemQuality, baseItemLevel)
+				end
 
 				--check if the end of mythic plus frame is opened and call a function to update the loot frame of the player
 				if (mythicDungeonFrames.ReadyFrame and mythicDungeonFrames.ReadyFrame:IsVisible()) then
@@ -185,6 +234,10 @@ lootFrame:SetScript("OnEvent", function(self, event, ...)
 							lootFrame.UpdateUnitLoot(unitBanner)
 						end
 					end)
+				end
+			else
+				if (LOOT_DEBUG_MODE) then
+					Details:Msg("Loot SKIPPED:", unitName, itemLink, effectiveILvl, itemQuality, baseItemLevel)
 				end
 			end
 		end
@@ -233,6 +286,11 @@ local createLootSquare = function(playerBanner, name, parent, lootIndex)
 end
 
 local createPlayerBanner = function(parent, name)
+	if (not C_AddOns.IsAddOnLoaded("Blizzard_ChallengesUI")) then
+		C_AddOns.LoadAddOn("Blizzard_ChallengesUI")
+	end
+
+	--this template is from Blizzard_ChallengesUI.xml
     local template = "ChallengeModeBannerPartyMemberTemplate"
 
 	---@type playerbanner
@@ -344,6 +402,10 @@ local createPlayerBanner = function(parent, name)
 	--load this addon, required to have access to the garrison templates
 	if (not C_AddOns.IsAddOnLoaded("Blizzard_GarrisonTemplates")) then
 		C_AddOns.LoadAddOn("Blizzard_GarrisonTemplates")
+	end
+
+	if (not C_AddOns.IsAddOnLoaded("Blizzard_ChallengesUI")) then
+		C_AddOns.LoadAddOn("Blizzard_ChallengesUI")
 	end
 
 	--animation for the key leveling up
@@ -981,6 +1043,8 @@ function mythicDungeonFrames.ShowEndOfMythicPlusPanel()
 		readyFrame.KeystoneUpgradeLabel = keystoneUpgradeLabel
 		readyFrame.RantingLabel = rantingLabel
 	end --end of creating of the readyFrame
+
+	--< end of mythic+ end of run frame creation >--
 
 	--mythic+ finished, showing the readyFrame for the user
 	local readyFrame = mythicDungeonFrames.ReadyFrame

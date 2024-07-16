@@ -939,9 +939,8 @@ end
 ---Titan Ensure TitanSettings (one of the saved vars in the toc) exists and set the Titan version.
 --- Called when Titan is loaded (ADDON_LOADED event)
 function TitanVariables_InitTitanSettings()
-	local trace = false
 	local player = TitanUtils_GetPlayer()
-	if trace then
+	if Titan_Global.debug.titan_startup then
 		TitanDebug("_Init begin " .. tostring(player))
 	end
 
@@ -949,7 +948,7 @@ function TitanVariables_InitTitanSettings()
 		-- all is good
 	else
 		TitanSettings = {}
-		if trace then
+		if Titan_Global.debug.titan_startup then
 			TitanDebug("TitanSettings {}")
 		end
 	end
@@ -959,7 +958,7 @@ function TitanVariables_InitTitanSettings()
 		-- all is good
 	else
 		TitanSettings.Players = {} -- empty saved vars. New install or wipe
-		if trace then
+		if Titan_Global.debug.titan_startup then
 			TitanDebug("TitanSettings.Players {}")
 		end
 	end
@@ -969,9 +968,16 @@ function TitanVariables_InitTitanSettings()
 	else
 		TitanAll = {}
 	end
-	TitanVariables_SyncRegisterSavedVariables(TITAN_ALL_SAVED_VARIABLES, TitanAll)
 
-	if trace then
+	if Titan_Global.debug.titan_startup then
+		TitanDebug("Sync Titan Panel saved variables with TitanAll  ")
+	end
+	TitanVariables_SyncRegisterSavedVariables(TITAN_ALL_SAVED_VARIABLES, TitanAll)
+	if Titan_Global.debug.titan_startup then
+		TitanDebug("Sync Done  ")
+	end
+
+	if Titan_Global.debug.titan_startup then
 		TitanDebug("_Init end " .. tostring(player))
 	end
 
@@ -1061,18 +1067,16 @@ end
 
 ---local Set the Titan bar settings of the given profile from saved variables
 ---@param to_profile string
----@param trace boolean?
 --- If no profile found, use Titan defaults
-local function Set_bar_vars(to_profile, trace)
-	local tracer = (trace or false)
+local function Set_bar_vars(to_profile)
 	if TitanSettings.Players[to_profile].BarVars then
 		-- All good
-		if tracer then
+		if Titan_Global.debug.titan_startup then
 			print("Set_bar_vars found"
 			)
 		end
 	else
-		if tracer then
+		if Titan_Global.debug.titan_startup then
 			print("Set_bar_vars init"
 			)
 		end
@@ -1084,7 +1088,7 @@ local function Set_bar_vars(to_profile, trace)
 		local panel = TitanSettings.Players[to_profile].Panel
 
 		local tex = panel["TexturePath"]:gsub("TitanClassic", "Titan")
-		if tracer then
+		if Titan_Global.debug.titan_startup then
 			print("tex path '" .. tex .. "'")
 		end
 
@@ -1125,14 +1129,12 @@ local function Init_player_settings(from_profile, to_profile, action)
  From: saved variables of that profile
  To: Player or Global profile
 	--]]
-	local trace = false
-
 	local old_player = {}
 	local old_panel = {}
 	local old_plugins = {}
 	local reset = (action == TITAN_PROFILE_RESET)
 
-	if trace then
+	if Titan_Global.debug.titan_startup then
 		print("Init_player_settings"
 			.. " from: " .. tostring(from_profile) .. ""
 			.. " to: " .. tostring(to_profile) .. ""
@@ -1146,7 +1148,7 @@ local function Init_player_settings(from_profile, to_profile, action)
 		-- all is good
 	else
 		-- Create the bare player tables so profile(s) can be added
-		if trace then
+		if Titan_Global.debug.titan_startup then
 			TitanDebug("TitanSettings.Players[] {}")
 		end
 		TitanSettings.Players[to_profile] = {}
@@ -1183,7 +1185,7 @@ local function Init_player_settings(from_profile, to_profile, action)
 	-- ======
 
 	-- ====== New Mar 2023 : TitanSettings.Players[player].BarData to hold Short bar data
-	Set_bar_vars(to_profile, trace)
+	Set_bar_vars(to_profile)
 	-- ======
 	if action == TITAN_PROFILE_RESET then
 		-- default is global profile OFF
@@ -1208,7 +1210,7 @@ local function Init_player_settings(from_profile, to_profile, action)
 			Set_bar_vars(from_profile)
 			TitanSettings.Players[to_profile]["BarVars"] = deepcopy(old_player["BarVars"])
 
-			if trace then
+			if Titan_Global.debug.titan_startup then
 				-- Apply the new bar positions
 				for idx, v in pairs(TitanBarData) do
 					print("BarVars "

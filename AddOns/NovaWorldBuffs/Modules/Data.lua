@@ -36,6 +36,7 @@ local GetGuildInfo = GetGuildInfo;
 local GetGuildRosterInfo = GetGuildRosterInfo;
 local GetRaidRosterInfo = GetRaidRosterInfo;
 local connectedRealms = {};
+local noWorldBuffTimers = NWB.noWorldBuffTimers;
 if (GetAutoCompleteRealms and next(GetAutoCompleteRealms())) then
 	NWB.isConnectedRealm = true;
 	for k, v in pairs(GetAutoCompleteRealms()) do
@@ -82,7 +83,7 @@ function NWB:OnCommReceived(commPrefix, string, distribution, sender)
 	end]]
 	--Now checking connected realms in all versions of the game instead, connected realms are coming with cata.
 	if (realm) then
-		NWB:debug("Realm data received:", realm);
+		--NWB:debug("Realm data received:", realm);
 		--Realm name is only supplied by ace if not our realm.
 		if (realm ~= GetRealmName() and not connectedRealms[realm]) then
 			--Ignore data from other realms.
@@ -737,26 +738,28 @@ function NWB:createData(distribution, noLogs, type, isRequestData)
 		--	data.ashenvaleTime = NWB.data.ashenvaleTime;
 		--end
 	else
-		if (NWB.data.rendTimer > (GetServerTime() - NWB.db.global.rendRespawnTime)) then
-			data['rendTimer'] = NWB.data.rendTimer;
-			--data['rendTimerWho'] = NWB.data.rendTimerWho;
-			data['rendYell'] = NWB.data.rendYell or 0;
-			--data['rendYell2'] = NWB.data.rendYell2 or 0;
-			--data['rendSource'] = NWB.data.rendSource;
-		end
-		if (NWB.data.onyTimer > (GetServerTime() - NWB.db.global.onyRespawnTime)) then
-			data['onyTimer'] = NWB.data.onyTimer;
-			--data['onyTimerWho'] = NWB.data.onyTimerWho;
-			data['onyYell'] = NWB.data.onyYell or 0;
-			--data['onyYell2'] = NWB.data.onyYell2 or 0;
-			--data['onySource'] = NWB.data.onySource;
-		end
-		if (NWB.data.nefTimer > (GetServerTime() - NWB.db.global.nefRespawnTime)) then
-			data['nefTimer'] = NWB.data.nefTimer;
-			--data['nefTimerWho'] = NWB.data.nefTimerWho;
-			data['nefYell'] = NWB.data.nefYell or 0;
-			--data['nefYell2'] = NWB.data.nefYell2 or 0;
-			--data['nefSource'] = NWB.data.nefSource;
+		if (not noWorldBuffTimers) then
+			if (NWB.data.rendTimer > (GetServerTime() - NWB.db.global.rendRespawnTime)) then
+				data['rendTimer'] = NWB.data.rendTimer;
+				--data['rendTimerWho'] = NWB.data.rendTimerWho;
+				data['rendYell'] = NWB.data.rendYell or 0;
+				--data['rendYell2'] = NWB.data.rendYell2 or 0;
+				--data['rendSource'] = NWB.data.rendSource;
+			end
+			if (NWB.data.onyTimer > (GetServerTime() - NWB.db.global.onyRespawnTime)) then
+				data['onyTimer'] = NWB.data.onyTimer;
+				--data['onyTimerWho'] = NWB.data.onyTimerWho;
+				data['onyYell'] = NWB.data.onyYell or 0;
+				--data['onyYell2'] = NWB.data.onyYell2 or 0;
+				--data['onySource'] = NWB.data.onySource;
+			end
+			if (NWB.data.nefTimer > (GetServerTime() - NWB.db.global.nefRespawnTime)) then
+				data['nefTimer'] = NWB.data.nefTimer;
+				--data['nefTimerWho'] = NWB.data.nefTimerWho;
+				data['nefYell'] = NWB.data.nefYell or 0;
+				--data['nefYell2'] = NWB.data.nefYell2 or 0;
+				--data['nefSource'] = NWB.data.nefSource;
+			end
 		end
 		if ((NWB.data.onyNpcDied > NWB.data.onyTimer) and
 				(NWB.data.onyNpcDied > (GetServerTime() - NWB.db.global.onyRespawnTime))) then
@@ -838,7 +841,7 @@ function NWB:createData(distribution, noLogs, type, isRequestData)
 		end
 		if (enableLogging and NWB.isClassic and not noLogs and includeTimerLog and (not logLayeredServersOnly or NWB.isLayered)) then
 			local timerLog = NWB:createTimerLogData(distribution);
-			if (next(timerLog)) then
+			if (timerLog) then
 				data.timerLog = timerLog;
 			end
 		end
@@ -898,64 +901,66 @@ function NWB:createDataLayered(distribution, noLayerMap, noLogs, type, forceLaye
 			--Reset foundTimer with each loop so we don't send layermap data for layers with no timers later in the loop.
 			foundTimer = nil;
 			if (not type or type == "timers") then
-				if (NWB.data.layers[layer].rendTimer > (GetServerTime() - NWB.db.global.rendRespawnTime)) then
-					--Only create layers table if we have valid timers so we don't waste addon bandwidth with useless data.
-					--This was always done on non-layered realms but wasn't working right on layered realms, now it is.
-					--The data table is checked for empty when sending comms.
-					if (not data.layers) then
-						data.layers = {};
+				if (not noWorldBuffTimers) then
+					if (NWB.data.layers[layer].rendTimer > (GetServerTime() - NWB.db.global.rendRespawnTime)) then
+						--Only create layers table if we have valid timers so we don't waste addon bandwidth with useless data.
+						--This was always done on non-layered realms but wasn't working right on layered realms, now it is.
+						--The data table is checked for empty when sending comms.
+						if (not data.layers) then
+							data.layers = {};
+						end
+						if (not data.layers[layer]) then
+							data.layers[layer] = {};
+						end
+						data.layers[layer]['rendTimer'] = NWB.data.layers[layer].rendTimer;
+						--data.layers[layer]['rendTimerWho'] = NWB.data.layers[layer].rendTimerWho;
+						data.layers[layer]['rendYell'] = NWB.data.layers[layer].rendYell;
+						--data.layers[layer]['rendYell2'] = NWB.data.layers[layer].rendYell2;
+						--data.layers[layer]['rendSource'] = NWB.data.layers[layer].rendSource;
+						--if (NWB.data.layers[layer].GUID and not NWB.cnRealms[NWB.realm] and not NWB.twRealms[NWB.realm]
+						--		and not NWB.krRealms[NWB.realm]) then
+						--	data.layers[layer]['GUID'] = NWB.data.layers[layer].GUID;
+						--end
+						foundTimer = true;
 					end
-					if (not data.layers[layer]) then
-						data.layers[layer] = {};
+					if (NWB.data.layers[layer].onyTimer > (GetServerTime() - NWB.db.global.onyRespawnTime)) then
+						if (not data.layers) then
+							data.layers = {};
+						end
+						if (not data.layers[layer]) then
+							data.layers[layer] = {};
+						end
+						--NWB:validateCloseTimestamps(layer, "onyTimer");
+						--NWB:validateCloseTimestamps(layer, "onyYell");
+						data.layers[layer]['onyTimer'] = NWB.data.layers[layer].onyTimer;
+						--data.layers[layer]['onyTimerWho'] = NWB.data.layers[layer].onyTimerWho;
+						data.layers[layer]['onyYell'] = NWB.data.layers[layer].onyYell;
+						--data.layers[layer]['onyYell2'] = NWB.data.layers[layer].onyYell2;
+						--data.layers[layer]['onySource'] = NWB.data.layers[layer].onySource;
+						--if (NWB.data.layers[layer].GUID and not NWB.cnRealms[NWB.realm] and not NWB.twRealms[NWB.realm]
+						--		and not NWB.krRealms[NWB.realm]) then
+						--	data.layers[layer]['GUID'] = NWB.data.layers[layer].GUID;
+						--end
+						foundTimer = true;
 					end
-					data.layers[layer]['rendTimer'] = NWB.data.layers[layer].rendTimer;
-					--data.layers[layer]['rendTimerWho'] = NWB.data.layers[layer].rendTimerWho;
-					data.layers[layer]['rendYell'] = NWB.data.layers[layer].rendYell;
-					--data.layers[layer]['rendYell2'] = NWB.data.layers[layer].rendYell2;
-					--data.layers[layer]['rendSource'] = NWB.data.layers[layer].rendSource;
-					--if (NWB.data.layers[layer].GUID and not NWB.cnRealms[NWB.realm] and not NWB.twRealms[NWB.realm]
-					--		and not NWB.krRealms[NWB.realm]) then
-					--	data.layers[layer]['GUID'] = NWB.data.layers[layer].GUID;
-					--end
-					foundTimer = true;
-				end
-				if (NWB.data.layers[layer].onyTimer > (GetServerTime() - NWB.db.global.onyRespawnTime)) then
-					if (not data.layers) then
-						data.layers = {};
+					if (NWB.data.layers[layer].nefTimer > (GetServerTime() - NWB.db.global.nefRespawnTime)) then
+						if (not data.layers) then
+							data.layers = {};
+						end
+						if (not data.layers[layer]) then
+							data.layers[layer] = {};
+						end
+						data.layers[layer]['nefTimer'] = NWB.data.layers[layer].nefTimer;
+						--data.layers[layer]['nefTimerWho'] = NWB.data.layers[layer].nefTimerWho;
+						data.layers[layer]['nefYell'] = NWB.data.layers[layer].nefYell;
+						--data.layers[layer]['nefYell2'] = NWB.data.layers[layer].nefYell2;
+						--data.layers[layer]['nefSource'] = NWB.data.layers[layer].nefSource;
+						--if (NWB.data.layers[layer].GUID and not NWB.cnRealms[NWB.realm] and not NWB.twRealms[NWB.realm]
+						--		and not NWB.krRealms[NWB.realm]) then
+						--	data.layers[layer]['GUID'] = NWB.data.layers[layer].GUID;
+						--end
+						foundTimer = true;
 					end
-					if (not data.layers[layer]) then
-						data.layers[layer] = {};
-					end
-					--NWB:validateCloseTimestamps(layer, "onyTimer");
-					--NWB:validateCloseTimestamps(layer, "onyYell");
-					data.layers[layer]['onyTimer'] = NWB.data.layers[layer].onyTimer;
-					--data.layers[layer]['onyTimerWho'] = NWB.data.layers[layer].onyTimerWho;
-					data.layers[layer]['onyYell'] = NWB.data.layers[layer].onyYell;
-					--data.layers[layer]['onyYell2'] = NWB.data.layers[layer].onyYell2;
-					--data.layers[layer]['onySource'] = NWB.data.layers[layer].onySource;
-					--if (NWB.data.layers[layer].GUID and not NWB.cnRealms[NWB.realm] and not NWB.twRealms[NWB.realm]
-					--		and not NWB.krRealms[NWB.realm]) then
-					--	data.layers[layer]['GUID'] = NWB.data.layers[layer].GUID;
-					--end
-					foundTimer = true;
-				end
-				if (NWB.data.layers[layer].nefTimer > (GetServerTime() - NWB.db.global.nefRespawnTime)) then
-					if (not data.layers) then
-						data.layers = {};
-					end
-					if (not data.layers[layer]) then
-						data.layers[layer] = {};
-					end
-					data.layers[layer]['nefTimer'] = NWB.data.layers[layer].nefTimer;
-					--data.layers[layer]['nefTimerWho'] = NWB.data.layers[layer].nefTimerWho;
-					data.layers[layer]['nefYell'] = NWB.data.layers[layer].nefYell;
-					--data.layers[layer]['nefYell2'] = NWB.data.layers[layer].nefYell2;
-					--data.layers[layer]['nefSource'] = NWB.data.layers[layer].nefSource;
-					--if (NWB.data.layers[layer].GUID and not NWB.cnRealms[NWB.realm] and not NWB.twRealms[NWB.realm]
-					--		and not NWB.krRealms[NWB.realm]) then
-					--	data.layers[layer]['GUID'] = NWB.data.layers[layer].GUID;
-					--end
-					foundTimer = true;
 				end
 				if ((NWB.data.layers[layer].onyNpcDied > NWB.data.layers[layer].onyTimer) and
 						(NWB.data.layers[layer].onyNpcDied > (GetServerTime() - NWB.db.global.onyRespawnTime))) then
@@ -1164,7 +1169,7 @@ function NWB:createDataLayered(distribution, noLayerMap, noLogs, type, forceLaye
 		end
 		if (enableLogging and NWB.isClassic and not noLogs and includeTimerLog and (not logLayeredServersOnly or NWB.isLayered)) then
 			local timerLog = NWB:createTimerLogData(distribution);
-			if (next(timerLog)) then
+			if (timerLog) then
 				data.timerLog = timerLog;
 			end
 		end
@@ -1177,6 +1182,9 @@ function NWB:createDataLayered(distribution, noLayerMap, noLogs, type, forceLaye
 end
 
 function NWB:createTimerLogData(distribution, entries)
+	if (noWorldBuffTimers) then
+		return;
+	end
 	local data = {};
 	if (not NWB.isClassic) then
 		--No logs once TBC launches.
@@ -1242,7 +1250,9 @@ function NWB:createTimerLogData(distribution, entries)
 			end
 		end
 	end
-	return data;
+	if (next(data)) then
+		return data;
+	end
 end
 
 --For some reason timestamps sometimes get synced from 1 layer to another.
@@ -2081,7 +2091,7 @@ function NWB:yellTicker()
 	end
 	if (NWB.isLayered) then
 		--Longer yell delay on high pop servers, no need for as many.
-		--Increased to 10 minutes on layered realms.
+		--Increased to 20 minutes on layered realms.
 		yellDelay = 1200;
 	end
 	C_Timer.After(yellDelay, function()

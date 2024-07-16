@@ -831,3 +831,5 @@ L["terokkarMiddle10Title"] = "테로카르 10분";
 L["terokkarMiddle10Desc"] = "10분 전 화면 중앙에 경보를 표시합니다.";
 
 L["Temple of Atal'Hakkar"] = "아탈학카르 신전";
+
+L["Might of Stormwind"] = "스톰윈드의 힘";

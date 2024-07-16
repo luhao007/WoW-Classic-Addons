@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("z2680", "DBM-Delves-WarWithin")
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240625003454")
+mod:SetRevision("20240710060415")
 
 mod:RegisterCombat("scenario", 2680)
 
@@ -24,7 +24,7 @@ local specWarnBurningCart					= mod:NewSpecialWarningDodge(448412, nil, nil, nil
 
 local timerCurseOfAgonyCD					= mod:NewCDTimer(26.7, 448443, nil, nil, nil, 3, nil, DBM_COMMON_L.CURSE_ICON)
 local timerRunicShacklesCD					= mod:NewCDTimer(35.2, 448444, nil, nil, nil, 3, nil, DBM_COMMON_L.CURSE_ICON)--Poor Sample size
-local timerWebBoltCD						= mod:NewCDTimer(6, 448443, nil, false, nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)
+local timerWebBoltCD						= mod:NewCDTimer(6, 449568, nil, false, nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)
 local timerBurningCartCD					= mod:NewCDTimer(35.2, 448412, nil, nil, nil, 3, nil, DBM_COMMON_L.DEADLY_ICON)
 
 --Antispam IDs for this mod: 1 run away, 2 dodge, 3 dispel, 4 incoming damage, 5 you/role, 6 misc, 7 off interrupt

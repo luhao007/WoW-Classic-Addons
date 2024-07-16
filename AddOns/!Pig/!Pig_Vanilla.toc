@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: geligasi
-## Version: 7.10
+## Version: 7.12
 ## SavedVariables: PIGA
 ## SavedVariablesPerCharacter: PIGA_Per
 

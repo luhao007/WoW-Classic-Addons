@@ -3,11 +3,12 @@ local _, _, _, tocversion = GetBuildInfo()
 local L=addonTable.locale
 local Create=addonTable.Create
 local PIGButton=Create.PIGButton
----BUFF/DEBUFF框架精确时间========
+--------------
 local FramePlusfun=addonTable.FramePlusfun
 function FramePlusfun.Loot()
 	if not PIGA["FramePlus"]["Loot"] then return end
-	if _G["LootButton5"] then return end
+	if LootFrame.piglootbut then return end
+	LootFrame.piglootbut={}
 	local pindaoList = {{L["CHAT_QUKBUTNAME"][5],{1, 0.498, 0},"RAID"},{L["CHAT_QUKBUTNAME"][3],{0.6667, 0.6667, 1},"PARTY"},{L["CHAT_QUKBUTNAME"][4],{0.25, 1, 0.25},"GUILD"}}
 	if tocversion<50000 then
 		table.insert(pindaoList,3,{L["CHAT_QUKBUTNAME"][1],{1, 1, 1},"SAY"})
@@ -47,8 +48,29 @@ function FramePlusfun.Loot()
 			But:SetPoint("TOPLEFT",LootFrame,"TOPLEFT",9,-(68+(i-1)*41));
 			LootFrame.piglootbut[i]=But
 		end
-		LootFrame.piglootbut={}
-		hooksecurefunc("LootFrame_Show", function(self)
+		local function Update_ButUI()
+			LootFrameUpButton:Hide()
+			LootFrameUpButton:ClearAllPoints();
+			LootFrameUpButton:SetPoint("RIGHT",LootFrame,"LEFT",0,0);
+			LootFrameDownButton:Hide()
+			LootFrameDownButton:ClearAllPoints();
+			LootFrameDownButton:SetPoint("TOP",LootFrameUpButton,"BOTTOM",0,0);
+			LootFramePrev:Hide()
+			LootFramePrev:ClearAllPoints();
+			LootFramePrev:SetPoint("RIGHT",LootFrameUpButton,"LEFT",0,0);
+			LootFrameNext:Hide()
+			LootFrameNext:ClearAllPoints();
+			LootFrameNext:SetPoint("RIGHT",LootFrameDownButton,"LEFT",0,0);
+		end
+		local function Update_ItemsList()
+			for i=4,self.numLootItems do
+				if not _G["LootButton"..i] then AddlootBut(i) end
+				_G["LootButton"..i]:Show()
+				LootFrame_UpdateButton(i)
+			end
+		end
+		local function Update_Items(self)
+			Update_ButUI()
 			local lootName = UnitName("target") or UNKNOWNOBJECT
 			self.lootName=lootName
 			local regions = {LootFrame:GetRegions()}
@@ -61,14 +83,9 @@ function FramePlusfun.Loot()
 			for _,v in pairs(LootFrame.piglootbut) do
 				v:Hide()
 			end
-			--self.numLootItems=12
 			if self.numLootItems>4 then
 				self:SetHeight(self.numLootItems*41+74)
-				for i=5,self.numLootItems do
-					if not _G["LootButton"..i] then AddlootBut(i) end
-					_G["LootButton"..i]:Show()
-					LootFrame_UpdateButton(i)
-				end
+				Update_ItemsList()
 				if ( GetCVar("lootUnderMouse") == "1" and self.numLootItems>6 ) then
 					local _,_,_,xpos,ypos=self:GetPoint()
 					local pignypos = ypos
@@ -84,20 +101,13 @@ function FramePlusfun.Loot()
 			else
 				self:SetHeight(240)
 			end
+		end
+		hooksecurefunc("LootFrame_Show", function(self)
+			Update_Items(self)
 		end)
 		hooksecurefunc("LootFrame_Update", function(self)
-			LootFrameUpButton:Hide()
-			LootFrameUpButton:ClearAllPoints();
-			LootFrameUpButton:SetPoint("RIGHT",LootFrame,"LEFT",0,0);
-			LootFrameDownButton:Hide()
-			LootFrameDownButton:ClearAllPoints();
-			LootFrameDownButton:SetPoint("TOP",LootFrameUpButton,"BOTTOM",0,0);
-			LootFramePrev:Hide()
-			LootFramePrev:ClearAllPoints();
-			LootFramePrev:SetPoint("RIGHT",LootFrameUpButton,"LEFT",0,0);
-			LootFrameNext:Hide()
-			LootFrameNext:ClearAllPoints();
-			LootFrameNext:SetPoint("RIGHT",LootFrameDownButton,"LEFT",0,0);
+			Update_ButUI()
+			Update_ItemsList()
 		end)
 	else
 		hooksecurefunc(LootFrame, "Open", function(self)

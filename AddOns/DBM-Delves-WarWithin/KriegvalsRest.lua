@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("z2681", "DBM-Delves-WarWithin")
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240623022932")
+mod:SetRevision("20240710060415")
 
 mod:RegisterCombat("scenario", 2681)
 
@@ -24,7 +24,7 @@ local specWarnRagingTantrumDispel			= mod:NewSpecialWarningDispel(449339, "Remov
 
 local timerFlamestormCD						= mod:NewCDTimer(18.2, 449242, nil, nil, nil, 3)
 local timerGroundSlamCD						= mod:NewCDTimer(27.9, 449295, nil, nil, nil, 3)
-local timerRagingTantrumCD					= mod:NewCDTimer(35.1, 449295, nil, nil, nil, 5, nil, DBM_COMMON_L.ENRAGE_ICON)
+local timerRagingTantrumCD					= mod:NewCDTimer(35.1, 449339, nil, nil, nil, 5, nil, DBM_COMMON_L.ENRAGE_ICON)
 
 --Antispam IDs for this mod: 1 run away, 2 dodge, 3 dispel, 4 incoming damage, 5 you/role, 6 misc, 7 off interrupt
 
