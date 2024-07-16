@@ -7,7 +7,6 @@ local segmentos = Details.segmentos
 
 ---@type detailsframework
 local gump = Details.gump
-local DF = gump
 local _
 
 ---@type detailsframework
@@ -16,6 +15,7 @@ local detailsFramework = DetailsFramework
 --lua locals
 local ceil = math.ceil
 local floor = math.floor
+local _math_max = math.max
 local ipairs = ipairs
 local pairs = pairs
 local abs = _G.abs
@@ -40,7 +40,7 @@ _ = nil
 --constants
 local baseframe_strata = "LOW"
 local defaultBackdropSt = {
-	bgFile = [[Interface\AddOns\Details\images\background]], tile = true, tileSize = 12,
+	bgFile = [[Interface\AddOns\Details\images\background]], tile = true, tileSize = 16,
 	insets = {left = 0, right = 0, top = 0, bottom = 0}}
 
 local CONST_ROWFRAME_ALPHA = 0.975036
@@ -59,10 +59,6 @@ function Details:ScheduleUpdate(instancia)
 		instancia.showing[instancia.atributo].need_refresh = true
 	end
 end
-
-local GetSpellLink = GetSpellLink or C_Spell.GetSpellLink --api local
-local GetSpellInfo = Details222.GetSpellInfo --api local
-local _GetSpellInfo = Details.getspellinfo --details api
 
 --skins TCoords
 	local DEFAULT_SKIN = [[Interface\AddOns\Details\images\skins\classic_skin]]
@@ -94,12 +90,9 @@ local _GetSpellInfo = Details.getspellinfo --details api
 		tile=true,
 		insets = {top=0, right=0, left=0, bottom=0}
 	}
-
 	local menus_backdropcolor = {.2, .2, .2, 0.85}
 	local menus_backdropcolor_sec = {.2, .2, .2, 0.90}
 	local menus_bordercolor = {0, 0, 0, .25}
-
-	local authorInfo = detailsFramework.AuthorInfo
 
 	--menus are ignoring the value set on the profile
 	Details.menu_backdrop_config = {
@@ -166,7 +159,6 @@ function Details:RefreshScrollBar(x) --x = amount of bars being refreshed
 end
 
 --self é a janela das barras
---this function was used in the past when the scroll bar was still a thing
 local function move_barras(self, elapsed)
 	self._move_func.time = self._move_func.time+elapsed
 	if (self._move_func.time > 0.01) then
@@ -180,7 +172,7 @@ local function move_barras(self, elapsed)
 			self._move_func.instancia.bgdisplay_loc = self._move_func.instancia.bgdisplay_loc + self._move_func.inc --inc � -1 ou 1 e ir� crescer ou diminuir a janela
 
 			for index = 1, self._move_func.instancia.rows_fit_in_window do
-				self._move_func.instancia.barras[index]:SetWidth(self:GetWidth()+self._move_func.instancia.bgdisplay_loc-3)
+				self._move_func.instancia.barras [index]:SetWidth(self:GetWidth()+self._move_func.instancia.bgdisplay_loc-3)
 			end
 
 			self._move_func.instancia.bgdisplay:SetPoint("bottomright", self, "bottomright", self._move_func.instancia.bgdisplay_loc, 0)
@@ -188,15 +180,14 @@ local function move_barras(self, elapsed)
 
 			--verifica o tamanho do text
 			for i  = 1, #self._move_func.instancia.barras do
-				local esta_barra = self._move_func.instancia.barras[i]
-				Details:name_space(esta_barra)
+				local esta_barra = self._move_func.instancia.barras [i]
+				Details:name_space (esta_barra)
 			end
 		end
 	end
 end
 
 --self � a inst�ncia
---another function for the scroll bar, it is deprecated now
 function Details:MoveBarrasTo(destino)
 	local janela = self.baseframe
 
@@ -216,8 +207,8 @@ function Details:MoveBarrasTo(destino)
 end
 
 --almost deprecated
---scrollbar isn't in use for years
 function Details:MostrarScrollBar(sem_animacao)
+
 	if (self.rolagem) then
 		return
 	end
@@ -234,7 +225,7 @@ function Details:MostrarScrollBar(sem_animacao)
 	local mover_para = self.largura_scroll*-1
 
 	if (not sem_animacao and Details.animate_scroll) then
-		self:MoveBarrasTo(mover_para)
+		self:MoveBarrasTo (mover_para)
 	else
 		--set size of rows
 		for index = 1, self.rows_fit_in_window do
@@ -268,10 +259,12 @@ function Details:MostrarScrollBar(sem_animacao)
 	if (main.isLocked) then
 		main.lock_button:SetPoint("bottomright", main, "bottomright", self.largura_scroll*-1, 0)
 	end
+
 end
 
 --almost deprecated
-function Details:EsconderScrollBar(sem_animacao, force)
+function Details:EsconderScrollBar (sem_animacao, force)
+
 	if (not self.rolagem) then
 		return
 	end
@@ -286,10 +279,10 @@ function Details:EsconderScrollBar(sem_animacao, force)
 	local main = self.baseframe
 
 	if (not sem_animacao and Details.animate_scroll) then
-		self:MoveBarrasTo(self.row_info.space.right + 3) -->
+		self:MoveBarrasTo (self.row_info.space.right + 3) -->
 	else
 		for index = 1, self.rows_fit_in_window do
-			self.barras[index]:SetWidth(self.baseframe:GetWidth() - 5) ---5 space between row end and window right border
+			self.barras [index]:SetWidth(self.baseframe:GetWidth() - 5) ---5 space between row end and window right border
 		end
 		self.bgdisplay:SetPoint("bottomright", self.baseframe, "bottomright", 0, 0) -- voltar o background na poci��o inicial
 		self.bar_mod = 0 -- zera o bar mod, uma vez que as barras v�o estar na pocis�o inicial
@@ -309,14 +302,12 @@ function Details:EsconderScrollBar(sem_animacao, force)
 	end
 end
 
---when the mouse leaves a instance window
 local function OnLeaveMainWindow(instancia, self)
 	instancia.is_interacting = false
 	instancia:SetMenuAlpha(nil, nil, nil, nil, true)
 	instancia:SetAutoHideMenu(nil, nil, true)
 	instancia:RefreshAttributeTextSize()
 
-	--alone mode has been deprecated for 9 years
 	if (instancia.modo ~= Details._detalhes_props["MODO_ALONE"] and not instancia.baseframe.isLocked) then
 		--resizes, lock and ungroup buttons
 		if (not Details.disable_lock_ungroup_buttons) then
@@ -329,7 +320,6 @@ local function OnLeaveMainWindow(instancia, self)
 		--stretch button
 		Details.FadeHandler.Fader(instancia.baseframe.button_stretch, "ALPHA", 0)
 
-	--alone mode has been deprecated for 9 years
 	elseif (instancia.modo ~= Details._detalhes_props["MODO_ALONE"] and instancia.baseframe.isLocked) then
 		--resizes, lock and ungroup buttons
 		if (not Details.disable_lock_ungroup_buttons) then
@@ -340,10 +330,8 @@ local function OnLeaveMainWindow(instancia, self)
 		Details.FadeHandler.Fader(instancia.baseframe.button_stretch, "ALPHA", 0)
 	end
 end
-
 Details.OnLeaveMainWindow = OnLeaveMainWindow
 
---when the mouse cursor enters a instance window
 local function OnEnterMainWindow(instancia, self)
 	instancia.is_interacting = true
 	instancia:SetMenuAlpha(nil, nil, nil, nil, true)
@@ -401,13 +389,11 @@ end
 
 Details.OnEnterMainWindow = OnEnterMainWindow
 
---functions to calculate the snapping feature
-
-local function VPL(instance, esta_instancia)
+local function VPL (instancia, esta_instancia)
 	--conferir esquerda
-	if (instance.ponto4.x-0.5 < esta_instancia.ponto1.x) then --a janela esta a esquerda
-		if (instance.ponto4.x+20 > esta_instancia.ponto1.x) then --a janela esta a menos de 20 pixels de dist�ncia
-			if (instance.ponto4.y < esta_instancia.ponto1.y + 100 and instance.ponto4.y > esta_instancia.ponto1.y - 100) then --a janela esta a +20 ou -20 pixels de dist�ncia na vertical
+	if (instancia.ponto4.x-0.5 < esta_instancia.ponto1.x) then --a janela esta a esquerda
+		if (instancia.ponto4.x+20 > esta_instancia.ponto1.x) then --a janela esta a menos de 20 pixels de dist�ncia
+			if (instancia.ponto4.y < esta_instancia.ponto1.y + 100 and instancia.ponto4.y > esta_instancia.ponto1.y - 100) then --a janela esta a +20 ou -20 pixels de dist�ncia na vertical
 				return 1
 			end
 		end
@@ -415,11 +401,11 @@ local function VPL(instance, esta_instancia)
 	return nil
 end
 
-local function VPB(instance, esta_instancia)
+local function VPB (instancia, esta_instancia)
 	--conferir baixo
-	if (instance.ponto1.y+(20 * instance.window_scale) < esta_instancia.ponto2.y - (16 * esta_instancia.window_scale)) then --a janela esta em baixo
-		if (instance.ponto1.x > esta_instancia.ponto2.x-100 and instance.ponto1.x < esta_instancia.ponto2.x+100) then --a janela esta a 20 pixels de dist�ncia para a esquerda ou para a direita
-			if (instance.ponto1.y+(20 * instance.window_scale) > esta_instancia.ponto2.y - (36 * esta_instancia.window_scale)) then --esta a 20 pixels de dist�ncia
+	if (instancia.ponto1.y+(20 * instancia.window_scale) < esta_instancia.ponto2.y - (16 * esta_instancia.window_scale)) then --a janela esta em baixo
+		if (instancia.ponto1.x > esta_instancia.ponto2.x-100 and instancia.ponto1.x < esta_instancia.ponto2.x+100) then --a janela esta a 20 pixels de dist�ncia para a esquerda ou para a direita
+			if (instancia.ponto1.y+(20 * instancia.window_scale) > esta_instancia.ponto2.y - (36 * esta_instancia.window_scale)) then --esta a 20 pixels de dist�ncia
 				return 2
 			end
 		end
@@ -427,11 +413,11 @@ local function VPB(instance, esta_instancia)
 	return nil
 end
 
-local function VPR(instance, esta_instancia)
+local function VPR (instancia, esta_instancia)
 	--conferir lateral direita
-	if (instance.ponto2.x+0.5 > esta_instancia.ponto3.x) then --a janela esta a direita
-		if (instance.ponto2.x-20 < esta_instancia.ponto3.x) then --a janela esta a menos de 20 pixels de dist�ncia
-			if (instance.ponto2.y < esta_instancia.ponto3.y + 100 and instance.ponto2.y > esta_instancia.ponto3.y - 100) then --a janela esta a +20 ou -20 pixels de dist�ncia na vertical
+	if (instancia.ponto2.x+0.5 > esta_instancia.ponto3.x) then --a janela esta a direita
+		if (instancia.ponto2.x-20 < esta_instancia.ponto3.x) then --a janela esta a menos de 20 pixels de dist�ncia
+			if (instancia.ponto2.y < esta_instancia.ponto3.y + 100 and instancia.ponto2.y > esta_instancia.ponto3.y - 100) then --a janela esta a +20 ou -20 pixels de dist�ncia na vertical
 				return 3
 			end
 		end
@@ -439,11 +425,11 @@ local function VPR(instance, esta_instancia)
 	return nil
 end
 
-local function VPT(instance, esta_instancia)
+local function VPT (instancia, esta_instancia)
 	--conferir cima
-	if (instance.ponto3.y - (16 * instance.window_scale) > esta_instancia.ponto4.y + (20 * esta_instancia.window_scale)) then --a janela esta em cima
-		if (instance.ponto3.x > esta_instancia.ponto4.x-100 and instance.ponto3.x < esta_instancia.ponto4.x+100) then --a janela esta a 20 pixels de dist�ncia para a esquerda ou para a direita
-			if (esta_instancia.ponto4.y+(40 * esta_instancia.window_scale) > instance.ponto3.y - (16 * instance.window_scale)) then
+	if (instancia.ponto3.y - (16 * instancia.window_scale) > esta_instancia.ponto4.y + (20 * esta_instancia.window_scale)) then --a janela esta em cima
+		if (instancia.ponto3.x > esta_instancia.ponto4.x-100 and instancia.ponto3.x < esta_instancia.ponto4.x+100) then --a janela esta a 20 pixels de dist�ncia para a esquerda ou para a direita
+			if (esta_instancia.ponto4.y+(40 * esta_instancia.window_scale) > instancia.ponto3.y - (16 * instancia.window_scale)) then
 				return 4
 			end
 		end
@@ -451,25 +437,11 @@ local function VPT(instance, esta_instancia)
 	return nil
 end
 
-Details.VPT = VPT
-Details.VPR = VPR
-Details.VPB = VPB
-Details.VPL = VPL
+Details.VPT, Details.VPR, Details.VPB, Details.VPL = VPT, VPR, VPB, VPL
 
-local colorRedTable = {1, 0.2, 0.2}
-local colorGreenTable = {0.2, 1, 0.2}
-local pixelsPerArrow = 50
-local commentador = C_Commentator or {FollowUnit = function()end, FollowPlayer = function()end}
-
-local tempo_movendo
-local precisa_ativar
-local instancia_alvo
-local tempo_fades
-local nao_anexados
-local flash_bounce
-local start_draw_lines
-local instance_ids_shown
-local need_show_group_guide
+local color_red = {1, 0.2, 0.2}
+local color_green = {0.2, 1, 0.2}
+local pixels_per_arrow = 50
 
 local show_instance_ids = function()
 	for id, instance in Details:ListInstances() do
@@ -552,16 +524,16 @@ local update_line = function(self, target_frame)
 	self.instance:AtualizaPontos()
 	target_frame.instance:AtualizaPontos()
 
-	local color = colorRedTable
+	local color = color_red
 	local _R, _T, _L, _B = VPL (self.instance, target_frame.instance), VPB (self.instance, target_frame.instance), VPR (self.instance, target_frame.instance), VPT (self.instance, target_frame.instance)
 	if (_R or _T or _L or _B) then
-		color = colorGreenTable
+		color = color_green
 	end
 
-	for i = 0, (distance/pixelsPerArrow) do
-		local x = distance - (i * pixelsPerArrow)
+	for i = 0, (distance/pixels_per_arrow) do
+		local x = distance - (i * pixels_per_arrow)
 		x = x * cos(angle)
-		local y = distance - (i * pixelsPerArrow)
+		local y = distance - (i * pixels_per_arrow)
 		y = y * sin(angle)
 
 		local ball = guide_balls [i]
@@ -582,7 +554,10 @@ local update_line = function(self, target_frame)
 
 end
 
+local tempo_movendo, precisa_ativar, instancia_alvo, tempo_fades, nao_anexados, flash_bounce, start_draw_lines, instance_ids_shown, need_show_group_guide
+
 local movement_onupdate = function(self, elapsed)
+
 		if (start_draw_lines and start_draw_lines > 0.95) then
 			update_line (self, instancia_alvo.baseframe)
 		elseif (start_draw_lines) then
@@ -737,7 +712,7 @@ local movement_onupdate = function(self, elapsed)
 	end
 
 local function move_janela(baseframe, iniciando, instancia, just_updating)
-	instancia_alvo = Details:GetAllInstances() [instancia.meu_id-1]
+	instancia_alvo = Details.tabela_instancias [instancia.meu_id-1]
 	if (Details.disable_window_groups) then
 		instancia_alvo = nil
 	end
@@ -946,7 +921,7 @@ local function move_janela(baseframe, iniciando, instancia, just_updating)
 				end
 			end
 
-			for _, esta_instancia in ipairs(Details:GetAllInstances()) do
+			for _, esta_instancia in ipairs(Details.tabela_instancias) do
 				if (not esta_instancia:IsAtiva() and esta_instancia.iniciada) then
 					esta_instancia:ResetaGump()
 
@@ -970,7 +945,7 @@ local function move_janela(baseframe, iniciando, instancia, just_updating)
 		end
 
 		--salva pos de todas as janelas
-		for _, ins in ipairs(Details:GetAllInstances()) do
+		for _, ins in ipairs(Details.tabela_instancias) do
 			if (ins:IsEnabled()) then
 				ins:SaveMainWindowPosition()
 				ins:RestoreMainWindowPosition()
@@ -1133,7 +1108,7 @@ local function instancias_horizontais (instancia, largura, esquerda, direita)
 	if (esquerda) then
 		for lado, esta_instancia in pairs(instancia.snap) do
 			if (lado == 1) then --movendo para esquerda
-				local instancia = Details:GetAllInstances() [esta_instancia]
+				local instancia = Details.tabela_instancias [esta_instancia]
 				instancia.baseframe:SetWidth(largura)
 				instancia.auto_resize = true
 				instancia:ReajustaGump()
@@ -1147,7 +1122,7 @@ local function instancias_horizontais (instancia, largura, esquerda, direita)
 	if (direita) then
 		for lado, esta_instancia in pairs(instancia.snap) do
 			if (lado == 3) then --movendo para esquerda
-				local instancia = Details:GetAllInstances() [esta_instancia]
+				local instancia = Details.tabela_instancias [esta_instancia]
 				instancia.baseframe:SetWidth(largura)
 				instancia.auto_resize = true
 				instancia:ReajustaGump()
@@ -1163,7 +1138,7 @@ local function instancias_verticais (instancia, altura, esquerda, direita)
 	if (esquerda) then
 		for lado, esta_instancia in pairs(instancia.snap) do
 			if (lado == 1) then --movendo para esquerda
-				local instancia = Details:GetAllInstances() [esta_instancia]
+				local instancia = Details.tabela_instancias [esta_instancia]
 				if (instancia:IsEnabled()) then
 					instancia.baseframe:SetHeight(altura)
 					instancia.auto_resize = true
@@ -1179,7 +1154,7 @@ local function instancias_verticais (instancia, altura, esquerda, direita)
 	if (direita) then
 		for lado, esta_instancia in pairs(instancia.snap) do
 			if (lado == 3) then --movendo para esquerda
-				local instancia = Details:GetAllInstances() [esta_instancia]
+				local instancia = Details.tabela_instancias [esta_instancia]
 				if (instancia:IsEnabled()) then
 					instancia.baseframe:SetHeight(altura)
 					instancia.auto_resize = true
@@ -1204,17 +1179,11 @@ end
 function Details:InstanciasVerticais(instance)
 	instance = self or instance
 
-	--instances that are above the current instance
 	local on_top = {}
-
-	--instances that are below the current instance
 	local on_bottom = {}
-
-	--id of the current instance
 	local id = instance:GetId()
 
 	--lower instances
-	--this is getting the instance of ID - 1, this is the reason why details windows always snap with the previous window
 	local this_instance = Details:GetInstance(id-1)
 	if (this_instance) then
 		--top side
@@ -1271,36 +1240,36 @@ function Details:InstanciasVerticais(instance)
 	end
 
 	--calc top clamp
-	local topClampPixels = 0
-	local bottomClampPixels = 0
+	local top_clamp = 0
+	local bottom_clamp = 0
 
 	if (instance.toolbar_side == 1) then
-		topClampPixels = topClampPixels + 20
+		top_clamp = top_clamp + 20
 	elseif (instance.toolbar_side == 2) then
-		bottomClampPixels = bottomClampPixels + 20
+		bottom_clamp = bottom_clamp + 20
 	end
 	if (instance.show_statusbar) then
-		bottomClampPixels = bottomClampPixels + 14
+		bottom_clamp = bottom_clamp + 14
 	end
 
-	for cid, thisInstance in ipairs(on_top) do
-		if (thisInstance.show_statusbar) then
-			topClampPixels = topClampPixels + 14
+	for cid, this_instance in ipairs(on_top) do
+		if (this_instance.show_statusbar) then
+			top_clamp = top_clamp + 14
 		end
-		topClampPixels = topClampPixels + 20
-		topClampPixels = topClampPixels + thisInstance.baseframe:GetHeight()
+		top_clamp = top_clamp + 20
+		top_clamp = top_clamp + this_instance.baseframe:GetHeight()
 	end
 
-	for cid, thisInstance in ipairs(on_bottom) do
-		if (thisInstance.show_statusbar) then
-			bottomClampPixels = bottomClampPixels + 14
+	for cid, this_instance in ipairs(on_bottom) do
+		if (this_instance.show_statusbar) then
+			bottom_clamp = bottom_clamp + 14
 		end
-		bottomClampPixels = bottomClampPixels + 20
-		bottomClampPixels = bottomClampPixels + thisInstance.baseframe:GetHeight()
-		table.insert(on_top, thisInstance)
+		bottom_clamp = bottom_clamp + 20
+		bottom_clamp = bottom_clamp + this_instance.baseframe:GetHeight()
+		table.insert(on_top, this_instance)
 	end
 
-	return on_top, bottomClampPixels, topClampPixels
+	return on_top, bottom_clamp, top_clamp
 end
 
 --[[
@@ -1323,11 +1292,11 @@ function Details:InstanciasHorizontais(instancia)
 
 	local checking = instancia
 
-	local check_index_anterior = Details:GetAllInstances() [instancia.meu_id-1]
+	local check_index_anterior = Details.tabela_instancias [instancia.meu_id-1]
 	if (check_index_anterior and check_index_anterior:IsEnabled()) then --possiu uma inst�ncia antes de mim
 		if (check_index_anterior.snap[3] and check_index_anterior.snap[3] == instancia.meu_id) then --o index negativo vai para a esquerda
 			for i = instancia.meu_id-1, 1, -1 do
-				local esta_instancia = Details:GetAllInstances() [i]
+				local esta_instancia = Details.tabela_instancias [i]
 				if (esta_instancia.snap[3]) then
 					if (esta_instancia.snap[3] == checking.meu_id) then
 						linha_horizontal [#linha_horizontal+1] = esta_instancia
@@ -1341,7 +1310,7 @@ function Details:InstanciasHorizontais(instancia)
 
 		elseif (check_index_anterior.snap[1] and check_index_anterior.snap[1] == instancia.meu_id) then --o index negativo vai para a direita
 			for i = instancia.meu_id-1, 1, -1 do
-				local esta_instancia = Details:GetAllInstances() [i]
+				local esta_instancia = Details.tabela_instancias [i]
 				if (esta_instancia.snap[1]) then
 					if (esta_instancia.snap[1] == checking.meu_id) then
 						linha_horizontal [#linha_horizontal+1] = esta_instancia
@@ -1357,11 +1326,11 @@ function Details:InstanciasHorizontais(instancia)
 
 	checking = instancia
 
-	local check_index_posterior = Details:GetAllInstances() [instancia.meu_id+1]
+	local check_index_posterior = Details.tabela_instancias [instancia.meu_id+1]
 	if (check_index_posterior and check_index_posterior:IsEnabled()) then
 		if (check_index_posterior.snap[3] and check_index_posterior.snap[3] == instancia.meu_id) then --o index posterior vai para a esquerda
-			for i = instancia.meu_id+1, #Details:GetAllInstances() do
-				local esta_instancia = Details:GetAllInstances() [i]
+			for i = instancia.meu_id+1, #Details.tabela_instancias do
+				local esta_instancia = Details.tabela_instancias [i]
 				if (esta_instancia.snap[3]) then
 					if (esta_instancia.snap[3] == checking.meu_id) then
 						linha_horizontal [#linha_horizontal+1] = esta_instancia
@@ -1374,8 +1343,8 @@ function Details:InstanciasHorizontais(instancia)
 			end
 
 		elseif (check_index_posterior.snap[1] and check_index_posterior.snap[1] == instancia.meu_id) then --o index posterior vai para a direita
-			for i = instancia.meu_id+1, #Details:GetAllInstances() do
-				local esta_instancia = Details:GetAllInstances() [i]
+			for i = instancia.meu_id+1, #Details.tabela_instancias do
+				local esta_instancia = Details.tabela_instancias [i]
 				if (esta_instancia.snap[1]) then
 					if (esta_instancia.snap[1] == checking.meu_id) then
 						linha_horizontal [#linha_horizontal+1] = esta_instancia
@@ -1545,7 +1514,7 @@ local resizeScriptsOnMouseUp = function(self, button)
 		Details:SendEvent("DETAILS_INSTANCE_ENDRESIZE", nil, self._instance)
 
 		if (self._instance.eh_tudo) then
-			for _, esta_instancia in ipairs(Details:GetAllInstances()) do
+			for _, esta_instancia in ipairs(Details.tabela_instancias) do
 				if (esta_instancia:IsAtiva() and esta_instancia.modo ~= Details._detalhes_props["MODO_ALONE"]) then
 					esta_instancia.baseframe:ClearAllPoints()
 					esta_instancia:SaveMainWindowPosition()
@@ -1553,7 +1522,7 @@ local resizeScriptsOnMouseUp = function(self, button)
 				end
 			end
 
-			for _, esta_instancia in ipairs(Details:GetAllInstances()) do
+			for _, esta_instancia in ipairs(Details.tabela_instancias) do
 				if (esta_instancia:IsAtiva() and esta_instancia ~= self._instance and esta_instancia.modo ~= Details._detalhes_props["MODO_ALONE"]) then
 					esta_instancia.baseframe:SetWidth(largura)
 					esta_instancia.baseframe:SetHeight(altura)
@@ -1571,7 +1540,7 @@ local resizeScriptsOnMouseUp = function(self, button)
 
 		self._instance:BaseFrameSnap()
 
-		for _, esta_instancia in ipairs(Details:GetAllInstances()) do
+		for _, esta_instancia in ipairs(Details.tabela_instancias) do
 			if (esta_instancia:IsAtiva()) then
 				esta_instancia:SaveMainWindowPosition()
 				esta_instancia:RestoreMainWindowPosition()
@@ -1992,8 +1961,7 @@ local lineScript_Onmouseup = function(self, button)
 
 	if (self.mouse_down and (self.mouse_down+0.4 > GetTime() and (x == self.x and y == self.y)) or (x == self.x and y == self.y)) then
 		if (self.button == "LeftButton" or self.button == "MiddleButton") then
-            --Temporary disabling of Resource breakdowns since not implemented
-			if (instanceObject.atributo == 5 or instanceObject.atributo == 3 or bIsShiftDown) then
+			if (instanceObject.atributo == 5 or bIsShiftDown) then
 				--report
 				if (instanceObject.atributo == 5 and bIsShiftDown) then
 					local custom = instanceObject:GetCustomObject()
@@ -2208,20 +2176,19 @@ local iconFrame_OnEnter = function(self)
 			end
 
 			local combat = instance:GetShowingCombat()
-			local diff, diffEngName = combat:GetDifficulty()
+			local diff = combat:GetDifficulty()
 			local attribute, subattribute = instance:GetDisplay()
 
 			--check if is a raid encounter and if is heroic or mythic
-			if (diff and (diff == 15 or diff == 16) and (attribute == 1 or attribute == 2)) then --might give errors
+			if (diff and (diff == 15 or diff == 16) and (attribute == 1 or attribute == 2)) then
 				local db = Details.OpenStorage()
 				if (db) then
-					---@type details_storage_unitresult, details_encounterkillinfo
-					local bestRank, encounterTable = Details222.storage.GetBestFromPlayer(diffEngName, combat:GetBossInfo().id, attribute == 1 and "DAMAGER" or "HEALER", name, true)
+					local bestRank, encounterTable = Details.storage:GetBestFromPlayer(diff, combat:GetBossInfo().id, attribute == 1 and "damage" or "healing", name, true)
 					if (bestRank) then
 						--discover which are the player position in the guild rank
-						local rankPosition = Details222.storage.GetUnitGuildRank(diffEngName, combat:GetBossInfo().id, attribute == 1 and "DAMAGER" or "HEALER", name, true)
+						local playerTable, onEncounter, rankPosition = Details.storage:GetPlayerGuildRank(diff, combat:GetBossInfo().id, attribute == 1 and "damage" or "healing", name, true)
 
-						GameCooltip:AddLine("Best Score:", Details:ToK2((bestRank.total or 0) / encounterTable.elapsed) .. " [|cFFFFFF00Rank: " .. (rankPosition or "#") .. "|r]", 1, "white")
+						GameCooltip:AddLine("Best Score:", Details:ToK2((bestRank[1] or 0) / encounterTable.elapsed) .. " [|cFFFFFF00Rank: " .. (rankPosition or "#") .. "|r]", 1, "white")
 						Details:AddTooltipBackgroundStatusbar()
 
 						GameCooltip:AddLine("|TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:14:12:0:1:512:512:8:70:224:306|t Open Rank", "|TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:14:12:0:1:512:512:8:70:328:409|t Refresh Talents", 1, "white", "white")
@@ -2450,13 +2417,13 @@ local icon_frame_on_click_up = function(self, button)
 		if (instance) then
 			local attribute, subattribute = instance:GetDisplay()
 			local combat = instance:GetShowingCombat()
-			local diff, diffName = combat:GetDifficulty()
+			local diff = combat:GetDifficulty()
 			local bossInfo = combat:GetBossInfo()
 
 			if ((attribute == 1 or attribute == 2) and bossInfo) then --if bossInfo is nil, means the combat isn't a boss
 				local db = Details.OpenStorage()
 				if (db and bossInfo.id) then
-					local haveData = Details222.storage.HaveDataForEncounter (diffName, bossInfo.id, true) --attempt to index local 'bossInfo' (a nil value)
+					local haveData = Details.storage:HaveDataForEncounter (diff, bossInfo.id, true) --attempt to index local 'bossInfo' (a nil value)
 					if (haveData) then
 						Details:OpenRaidHistoryWindow (bossInfo.zone, bossInfo.id, diff, attribute == 1 and "damage" or "healing", true, 1, false, 2)
 					end
@@ -2573,20 +2540,21 @@ local setLineScripts = function(line, instance, index)
 	line.SetValue = setBarValue
 end
 
-function Details:ReportSingleLine(instance, windowLine)
+function Details:ReportSingleLine (instancia, barra)
+
 	local reportar
-	local displayId = instance:GetDisplay()
-	if (displayId == 5) then --custom
+	if (instancia.atributo == 5) then --custom
+
 		--dump cooltip
 		local GameCooltip = GameCooltip
 		if (GameCooltipFrame1:IsShown()) then
-			local actor_name = windowLine.lineText1:GetText() or ""
+			local actor_name = barra.lineText1:GetText() or ""
 			actor_name = actor_name:gsub((".*%."), "")
 
-			if (instance.segmento == -1) then --overall
-				reportar = {"Details!: "  .. Loc["STRING_OVERALL"] .. " " .. instance.customName .. ": " .. actor_name .. " " .. Loc["STRING_CUSTOM_REPORT"]}
+			if (instancia.segmento == -1) then --overall
+				reportar = {"Details!: "  .. Loc["STRING_OVERALL"] .. " " .. instancia.customName .. ": " .. actor_name .. " " .. Loc["STRING_CUSTOM_REPORT"]}
 			else
-				reportar = {"Details!: " .. instance.customName .. ": " .. actor_name .. " " .. Loc["STRING_CUSTOM_REPORT"]}
+				reportar = {"Details!: " .. instancia.customName .. ": " .. actor_name .. " " .. Loc["STRING_CUSTOM_REPORT"]}
 			end
 
 			local amt = GameCooltip.Indexes
@@ -2595,22 +2563,23 @@ function Details:ReportSingleLine(instance, windowLine)
 				reportar [#reportar+1] = (i-1) .. ". " .. left_text .. " ... " .. right_text
 			end
 		else
-			reportar = {"Details!: " .. instance.customName .. ": " .. Loc["STRING_CUSTOM_REPORT"]}
-			reportar [#reportar+1] = windowLine.lineText1:GetText() .. " " .. windowLine.lineText4:GetText()
+			reportar = {"Details!: " .. instancia.customName .. ": " .. Loc["STRING_CUSTOM_REPORT"]}
+			reportar [#reportar+1] = barra.lineText1:GetText() .. " " .. barra.lineText4:GetText()
 
 			--reportar [#reportar+1] = (i-1) .. ". " .. left_text .. " ... " .. right_text
 		end
 
 	else
-		reportar = {"Details!: " .. Loc["STRING_REPORT"] .. " " .. Details.sub_atributos [displayId].lista [instance.sub_atributo]}
-		reportar [#reportar+1] = windowLine.lineText1:GetText() .. " " .. windowLine.lineText4:GetText()
+		reportar = {"Details!: " .. Loc["STRING_REPORT"] .. " " .. Details.sub_atributos [instancia.atributo].lista [instancia.sub_atributo]}
+		reportar [#reportar+1] = barra.lineText1:GetText() .. " " .. barra.lineText4:GetText()
 	end
 
-	return Details:Reportar(reportar, {_no_current = true, _no_inverse = true, _custom = true})
+
+	return Details:Reportar (reportar, {_no_current = true, _no_inverse = true, _custom = true})
 end
 
 -- ~stretch
-local function button_stretch_scripts(baseframe, backgrounddisplay, instancia)
+local function button_stretch_scripts (baseframe, backgrounddisplay, instancia)
 	local button = baseframe.button_stretch
 
 	button:SetScript("OnEnter", function(self)
@@ -2619,7 +2588,6 @@ local function button_stretch_scripts(baseframe, backgrounddisplay, instancia)
 			Details.FadeHandler.Fader(self, "ALPHA", 1)
 		end
 	end)
-
 	button:SetScript("OnLeave", function(self)
 		self.mouse_over = false
 		Details.FadeHandler.Fader(self, "ALPHA", 0)
@@ -2653,17 +2621,16 @@ local function button_stretch_scripts(baseframe, backgrounddisplay, instancia)
 		if (instancia.stretch_button_side == 1) then
 			baseframe:StartSizing("top")
 			baseframe.stretch_direction = "top"
-
 		elseif (instancia.stretch_button_side == 2) then
 			baseframe:StartSizing("bottom")
 			baseframe.stretch_direction = "bottom"
 		end
 
-		---@type instance[]
 		local linha_horizontal = {}
+
 		local checking = instancia
 		for i = instancia.meu_id-1, 1, -1 do
-			local esta_instancia = Details:GetAllInstances() [i]
+			local esta_instancia = Details.tabela_instancias [i]
 			if ((esta_instancia.snap[1] and esta_instancia.snap[1] == checking.meu_id) or (esta_instancia.snap[3] and esta_instancia.snap[3] == checking.meu_id)) then
 				linha_horizontal [#linha_horizontal+1] = esta_instancia
 				checking = esta_instancia
@@ -2673,8 +2640,8 @@ local function button_stretch_scripts(baseframe, backgrounddisplay, instancia)
 		end
 
 		checking = instancia
-		for i = instancia.meu_id+1, #Details:GetAllInstances() do
-			local esta_instancia = Details:GetAllInstances() [i]
+		for i = instancia.meu_id+1, #Details.tabela_instancias do
+			local esta_instancia = Details.tabela_instancias [i]
 			if ((esta_instancia.snap[1] and esta_instancia.snap[1] == checking.meu_id) or (esta_instancia.snap[3] and esta_instancia.snap[3] == checking.meu_id)) then
 				linha_horizontal [#linha_horizontal+1] = esta_instancia
 				checking = esta_instancia
@@ -2714,9 +2681,11 @@ local function button_stretch_scripts(baseframe, backgrounddisplay, instancia)
 			Details:SetWindowUpdateSpeed(0.3, true)
 			Details.stretch_changed_update_speed = true
 		end
+
 	end)
 
 	button:SetScript("OnMouseUp", function(self, button)
+
 		if (button ~= "LeftButton") then
 			return
 		end
@@ -2743,35 +2712,35 @@ local function button_stretch_scripts(baseframe, backgrounddisplay, instancia)
 			baseframe.stretch_direction = nil
 
 			if (instancia.stretchToo and #instancia.stretchToo > 0) then
-				for _, thisInstance in ipairs(instancia.stretchToo) do
-					thisInstance.baseframe:StopMovingOrSizing()
-					thisInstance.baseframe.isResizing = false
-					thisInstance:RestoreMainWindowPosition (thisInstance.baseframe._place)
-					thisInstance:ReajustaGump()
-					thisInstance.baseframe.isStretching = false
-					if (thisInstance.need_rolagem) then
-						thisInstance:MostrarScrollBar(true)
+				for _, esta_instancia in ipairs(instancia.stretchToo) do
+					esta_instancia.baseframe:StopMovingOrSizing()
+					esta_instancia.baseframe.isResizing = false
+					esta_instancia:RestoreMainWindowPosition (esta_instancia.baseframe._place)
+					esta_instancia:ReajustaGump()
+					esta_instancia.baseframe.isStretching = false
+					if (esta_instancia.need_rolagem) then
+						esta_instancia:MostrarScrollBar(true)
 					end
-					Details:SendEvent("DETAILS_INSTANCE_SIZECHANGED", nil, thisInstance)
+					Details:SendEvent("DETAILS_INSTANCE_SIZECHANGED", nil, esta_instancia)
 
-					local _r, _g, _b, _a = thisInstance.baseframe:GetBackdropColor()
-					gump:GradientEffect(thisInstance.baseframe, "frame", _r, _g, _b, _a, instancia.bg_r, instancia.bg_g, instancia.bg_b, instancia.bg_alpha, 0.5)
+					local _r, _g, _b, _a = esta_instancia.baseframe:GetBackdropColor()
+					gump:GradientEffect(esta_instancia.baseframe, "frame", _r, _g, _b, _a, instancia.bg_r, instancia.bg_g, instancia.bg_b, instancia.bg_alpha, 0.5)
 
-					if (thisInstance.wallpaper.enabled) then
-						_r, _g, _b = thisInstance.baseframe.wallpaper:GetVertexColor()
-						_a = thisInstance.baseframe.wallpaper:GetAlpha()
-						gump:GradientEffect(thisInstance.baseframe.wallpaper, "texture", _r, _g, _b, _a, _r, _g, _b, thisInstance.wallpaper.alpha, 1.0)
+					if (esta_instancia.wallpaper.enabled) then
+						_r, _g, _b = esta_instancia.baseframe.wallpaper:GetVertexColor()
+						_a = esta_instancia.baseframe.wallpaper:GetAlpha()
+						gump:GradientEffect(esta_instancia.baseframe.wallpaper, "texture", _r, _g, _b, _a, _r, _g, _b, esta_instancia.wallpaper.alpha, 1.0)
 					end
 
-					thisInstance.baseframe:SetFrameStrata(thisInstance.strata)
-					thisInstance.rowframe:SetFrameStrata(thisInstance.strata)
-					thisInstance:StretchButtonAlwaysOnTop()
+					esta_instancia.baseframe:SetFrameStrata(esta_instancia.strata)
+					esta_instancia.rowframe:SetFrameStrata(esta_instancia.strata)
+					esta_instancia:StretchButtonAlwaysOnTop()
 
-					Details:SendEvent("DETAILS_INSTANCE_ENDSTRETCH", nil, thisInstance.baseframe)
+					Details:SendEvent("DETAILS_INSTANCE_ENDSTRETCH", nil, esta_instancia.baseframe)
 
-					thisInstance:RefreshBars()
-					thisInstance:InstanceReset()
-					thisInstance:ReajustaGump()
+					esta_instancia:RefreshBars()
+					esta_instancia:InstanceReset()
+					esta_instancia:ReajustaGump()
 				end
 				instancia.stretchToo = nil
 			end
@@ -2797,11 +2766,10 @@ local function button_stretch_scripts(baseframe, backgrounddisplay, instancia)
 			Details.stretch_changed_update_speed = nil
 		end
 	end)
-	baseframe.row_tilesize = defaultBackdropSt.tileSize
 end
 
-local function button_down_scripts (mainFrame, backgrounddisplay, instancia, scrollbar)
-	mainFrame.button_down:SetScript("OnMouseDown", function(self)
+local function button_down_scripts (main_frame, backgrounddisplay, instancia, scrollbar)
+	main_frame.button_down:SetScript("OnMouseDown", function(self)
 		if (not scrollbar:IsEnabled()) then
 			return
 		end
@@ -2813,7 +2781,6 @@ local function button_down_scripts (mainFrame, backgrounddisplay, instancia, scr
 
 		self.precionado = true
 		self.last_up = -0.3
-
 		self:SetScript("OnUpdate", function(self, elapsed)
 			self.last_up = self.last_up + elapsed
 			if (self.last_up > 0.03) then
@@ -2828,14 +2795,16 @@ local function button_down_scripts (mainFrame, backgrounddisplay, instancia, scr
 		end)
 	end)
 
-	mainFrame.button_down:SetScript("OnMouseUp", function(self)
+	main_frame.button_down:SetScript("OnMouseUp", function(self)
 		self.precionado = false
 		self:SetScript("OnUpdate", nil)
 	end)
 end
 
-local function button_up_scripts(mainFrame, backgrounddisplay, instancia, scrollbar)
-	mainFrame.button_up:SetScript("OnMouseDown", function(self)
+local function button_up_scripts (main_frame, backgrounddisplay, instancia, scrollbar)
+
+	main_frame.button_up:SetScript("OnMouseDown", function(self)
+
 		if (not scrollbar:IsEnabled()) then
 			return
 		end
@@ -2861,20 +2830,21 @@ local function button_up_scripts(mainFrame, backgrounddisplay, instancia, scroll
 		end)
 	end)
 
-	mainFrame.button_up:SetScript("OnMouseUp", function(self)
+	main_frame.button_up:SetScript("OnMouseUp", function(self)
 		self.precionado = false
 		self:SetScript("OnUpdate", nil)
 	end)
 
-	mainFrame.button_up:SetScript("OnEnable", function(self)
+	main_frame.button_up:SetScript("OnEnable", function(self)
 		local current = scrollbar:GetValue()
 		if (current == 0) then
-			mainFrame.button_up:Disable()
+			main_frame.button_up:Disable()
 		end
 	end)
 end
 
-function DetailsKeyBindScrollUp() --[[GLOBAL]]
+function DetailsKeyBindScrollUp()
+
 	local last_key_pressed = Details.KeyBindScrollUpLastPressed or GetTime()-0.3
 
 	local to_top = false
@@ -2884,8 +2854,9 @@ function DetailsKeyBindScrollUp() --[[GLOBAL]]
 
 	Details.KeyBindScrollUpLastPressed = GetTime()
 
-	for index, instance in ipairs(Details:GetAllInstances()) do
+	for index, instance in ipairs(Details.tabela_instancias) do
 		if (instance:IsEnabled()) then
+
 			local scrollbar = instance.scroll
 
 			local A = instance.barraS[1]
@@ -2902,13 +2873,15 @@ function DetailsKeyBindScrollUp() --[[GLOBAL]]
 				scrollbar.ultimo = 0
 				instance.baseframe.button_up:Disable()
 			end
+
 		end
 	end
 end
 
-function DetailsKeyBindScrollDown() --[[GLOBAL]]
-	for index, instance in ipairs(Details:GetAllInstances()) do
+function DetailsKeyBindScrollDown()
+	for index, instance in ipairs(Details.tabela_instancias) do
 		if (instance:IsEnabled()) then
+
 			local scrollbar = instance.scroll
 
 			local B = instance.barraS[2]
@@ -2920,67 +2893,68 @@ function DetailsKeyBindScrollDown() --[[GLOBAL]]
 				scrollbar.ultimo = maxValue
 				instance.baseframe.button_down:Disable()
 			end
+
 		end
 	end
 end
 
-local function iterate_scroll_scripts(backgrounddisplay, backgroundframe, baseframe, scrollbar, instancia)
-	baseframe:SetScript("OnMouseWheel", function(self, delta)
-		if (delta > 0) then --rolou pra cima
-			local A = instancia.barraS[1]
-			if (A) then
-				if (A > 1) then
-					scrollbar:SetValue(scrollbar:GetValue() - instancia.row_height * Details.scroll_speed)
-				else
-					scrollbar:SetValue(0)
-					scrollbar.ultimo = 0
-					baseframe.button_up:Disable()
+local function iterate_scroll_scripts (backgrounddisplay, backgroundframe, baseframe, scrollbar, instancia)
+
+	baseframe:SetScript("OnMouseWheel",
+		function(self, delta)
+			if (delta > 0) then --rolou pra cima
+				local A = instancia.barraS[1]
+				if (A) then
+					if (A > 1) then
+						scrollbar:SetValue(scrollbar:GetValue() - instancia.row_height * Details.scroll_speed)
+					else
+						scrollbar:SetValue(0)
+						scrollbar.ultimo = 0
+						baseframe.button_up:Disable()
+					end
+				end
+			elseif (delta < 0) then --rolou pra baixo
+				local B = instancia.barraS[2]
+				if (B) then
+					if (B < (instancia.rows_showing or 0)) then
+						scrollbar:SetValue(scrollbar:GetValue() + instancia.row_height * Details.scroll_speed)
+					else
+						local _, maxValue = scrollbar:GetMinMaxValues()
+						scrollbar:SetValue(maxValue)
+						scrollbar.ultimo = maxValue
+						baseframe.button_down:Disable()
+					end
 				end
 			end
 
-		elseif (delta < 0) then --rolou pra baixo
-			local B = instancia.barraS[2]
-			if (B) then
-				if (B < (instancia.rows_showing or 0)) then
-					scrollbar:SetValue(scrollbar:GetValue() + instancia.row_height * Details.scroll_speed)
-				else
-					local _, maxValue = scrollbar:GetMinMaxValues()
-					scrollbar:SetValue(maxValue)
-					scrollbar.ultimo = maxValue
-					baseframe.button_down:Disable()
-				end
-			end
-		end
-	end)
+		end)
 
 	scrollbar:SetScript("OnValueChanged", function(self)
 		local ultimo = self.ultimo
-		local currentScrollValue = self:GetValue()
-		if (ultimo == currentScrollValue) then --nothing changed
+		local meu_valor = self:GetValue()
+		if (ultimo == meu_valor) then --n�o mudou
 			return
 		end
 
 		--shortcut
 		local minValue, maxValue = scrollbar:GetMinMaxValues()
-		if (minValue == currentScrollValue) then
+		if (minValue == meu_valor) then
 			instancia.barraS[1] = 1
 			instancia.barraS[2] = instancia.rows_fit_in_window
 			instancia:RefreshMainWindow(instancia, true)
-			self.ultimo = currentScrollValue
+			self.ultimo = meu_valor
 			baseframe.button_up:Disable()
-			return
-
-		elseif (maxValue == currentScrollValue) then
+				return
+		elseif (maxValue == meu_valor) then
 			local min = (instancia.rows_showing or 0) -instancia.rows_fit_in_window
 			min = min+1
 			if (min < 1) then
 				min = 1
 			end
-
 			instancia.barraS[1] = min
 			instancia.barraS[2] = (instancia.rows_showing or 0)
 			instancia:RefreshMainWindow(instancia, true)
-			self.ultimo = currentScrollValue
+			self.ultimo = meu_valor
 			baseframe.button_down:Disable()
 			return
 		end
@@ -2988,19 +2962,20 @@ local function iterate_scroll_scripts(backgrounddisplay, backgroundframe, basefr
 		if (not baseframe.button_up:IsEnabled()) then
 			baseframe.button_up:Enable()
 		end
-
 		if (not baseframe.button_down:IsEnabled()) then
 			baseframe.button_down:Enable()
 		end
 
-		if (currentScrollValue > ultimo) then --scroll down
+		if (meu_valor > ultimo) then --scroll down
+
 			local B = instancia.barraS[2]
 			if (B < (instancia.rows_showing or 0)) then --se o valor maximo n�o for o m�ximo de barras a serem mostradas
-				if (true) then --testing by pass row check - test completed, it is working!
-					local diff = currentScrollValue - ultimo --pega a diferen�a de H
+				local precisa_passar = ((B+1) * instancia.row_height) - (instancia.row_height*instancia.rows_fit_in_window)
+				--if (meu_valor > precisa_passar) then --o valor atual passou o valor que precisa passar pra locomover
+				if (true) then --testing by pass row check
+					local diff = meu_valor - ultimo --pega a diferen�a de H
 					diff = diff / instancia.row_height --calcula quantas barras ele pulou
 					diff = ceil(diff) --arredonda para cima
-
 					if (instancia.barraS[2]+diff > (instancia.rows_showing or 0) and ultimo > 0) then
 						instancia.barraS[1] = (instancia.rows_showing or 0) - (instancia.rows_fit_in_window-1)
 						instancia.barraS[2] = (instancia.rows_showing or 0)
@@ -3011,16 +2986,16 @@ local function iterate_scroll_scripts(backgrounddisplay, backgroundframe, basefr
 					instancia:RefreshMainWindow(instancia, true)
 				end
 			end
-
 		else --scroll up
 			local A = instancia.barraS[1]
 			if (A > 1) then
+				local precisa_passar = (A-1) * instancia.row_height
+				--if (meu_valor < precisa_passar) then
 				if (true) then --testing by pass row check
-					--calcula quantas barras passou - test completed, it is working!
-					local diff = ultimo - currentScrollValue
+					--calcula quantas barras passou
+					local diff = ultimo - meu_valor
 					diff = diff / instancia.row_height
 					diff = ceil(diff)
-
 					if (instancia.barraS[1]-diff < 1) then
 						instancia.barraS[2] = instancia.rows_fit_in_window
 						instancia.barraS[1] = 1
@@ -3033,8 +3008,7 @@ local function iterate_scroll_scripts(backgrounddisplay, backgroundframe, basefr
 				end
 			end
 		end
-
-		self.ultimo = currentScrollValue
+		self.ultimo = meu_valor
 	end)
 end
 
@@ -3042,13 +3016,18 @@ function Details:HaveInstanceAlert()
 	return self.alert:IsShown()
 end
 
-function Details:InstanceAlertTime(instance)
+function Details:InstanceAlertTime (instance)
 	instance.alert:Hide()
 	instance.alert.rotate:Stop()
 	instance.alert_time = nil
 end
 
-function Details:InstanceAlert(msg, icon, timeInSeconds, clickfunc, doflash, forceAlert)
+local hide_click_func = function()
+	--empty
+end
+
+function Details:InstanceAlert (msg, icon, timeInSeconds, clickfunc, doflash, forceAlert)
+
 	if (not forceAlert and Details.streamer_config.no_alerts) then
 		--return
 	end
@@ -3130,7 +3109,7 @@ function Details:InstanceAlert(msg, icon, timeInSeconds, clickfunc, doflash, for
 	self.alert:Play()
 end
 
-local onClickAlertButton = function(self, button)
+local alert_on_click = function(self, button)
 	if (self.func) then
 		local okey, errortext = pcall(self.func, unpack(self.func_param))
 		if (not okey) then
@@ -3141,87 +3120,86 @@ local onClickAlertButton = function(self, button)
 end
 
 local function CreateAlertFrame(baseframe, instancia)
-	local frameLayerUpper = CreateFrame("scrollframe", "DetailsAlertFrameScroll" .. instancia.meu_id, baseframe)
-	frameLayerUpper:SetPoint("bottom", baseframe, "bottom")
-	frameLayerUpper:SetPoint("left", baseframe, "left", 3, 0)
-	frameLayerUpper:SetPoint("right", baseframe, "right", -3, 0)
-	frameLayerUpper:SetHeight(13)
-	frameLayerUpper:SetFrameStrata("TOOLTIP")
+	local frame_upper = CreateFrame("scrollframe", "DetailsAlertFrameScroll" .. instancia.meu_id, baseframe)
+	frame_upper:SetPoint("bottom", baseframe, "bottom")
+	frame_upper:SetPoint("left", baseframe, "left", 3, 0)
+	frame_upper:SetPoint("right", baseframe, "right", -3, 0)
+	frame_upper:SetHeight(13)
+	frame_upper:SetFrameStrata("TOOLTIP")
 
-	local frameLayerLower = CreateFrame("frame", "DetailsAlertFrameScrollChild" .. instancia.meu_id, frameLayerUpper)
-	frameLayerLower:SetHeight(25)
-	frameLayerLower:SetPoint("left", frameLayerUpper, "left")
-	frameLayerLower:SetPoint("right", frameLayerUpper, "right")
-	frameLayerUpper:SetScrollChild(frameLayerLower)
+	local frame_lower = CreateFrame("frame", "DetailsAlertFrameScrollChild" .. instancia.meu_id, frame_upper)
+	frame_lower:SetHeight(25)
+	frame_lower:SetPoint("left", frame_upper, "left")
+	frame_lower:SetPoint("right", frame_upper, "right")
+	frame_upper:SetScrollChild(frame_lower)
 
-	local alertBackgroundFrame = CreateFrame("frame", "DetailsAlertFrame" .. instancia.meu_id, frameLayerLower,"BackdropTemplate")
-	alertBackgroundFrame:SetPoint("bottom", baseframe, "bottom")
-	alertBackgroundFrame:SetPoint("left", baseframe, "left", 3, 0)
-	alertBackgroundFrame:SetPoint("right", baseframe, "right", -3, 0)
-	alertBackgroundFrame:SetHeight(12)
-	alertBackgroundFrame:SetBackdrop({bgFile = [[Interface\AddOns\Details\images\background]], tile = true, tileSize = 16,
+	local alert_bg = CreateFrame("frame", "DetailsAlertFrame" .. instancia.meu_id, frame_lower,"BackdropTemplate")
+	alert_bg:SetPoint("bottom", baseframe, "bottom")
+	alert_bg:SetPoint("left", baseframe, "left", 3, 0)
+	alert_bg:SetPoint("right", baseframe, "right", -3, 0)
+	alert_bg:SetHeight(12)
+	alert_bg:SetBackdrop({bgFile = [[Interface\AddOns\Details\images\background]], tile = true, tileSize = 16,
 	insets = {left = 0, right = 0, top = 0, bottom = 0}})
-	alertBackgroundFrame:SetBackdropColor(.1, .1, .1, 1)
-	alertBackgroundFrame:SetFrameStrata("FULLSCREEN")
-	alertBackgroundFrame:SetFrameLevel(baseframe:GetFrameLevel() + 6)
-	alertBackgroundFrame:Hide()
+	alert_bg:SetBackdropColor(.1, .1, .1, 1)
+	alert_bg:SetFrameStrata("FULLSCREEN")
+	alert_bg:SetFrameLevel(baseframe:GetFrameLevel() + 6)
+	alert_bg:Hide()
 
-	local toptexture = alertBackgroundFrame:CreateTexture(nil, "background")
+	local toptexture = alert_bg:CreateTexture(nil, "background")
 	toptexture:SetTexture([[Interface\Challenges\challenges-main]])
 	--toptexture:SetTexCoord(0.1921484375, 0.523671875, 0.234375, 0.160859375)
 	toptexture:SetTexCoord(0.231171875, 0.4846484375, 0.0703125, 0.072265625)
-	toptexture:SetPoint("left", alertBackgroundFrame, "left")
-	toptexture:SetPoint("right", alertBackgroundFrame, "right")
-	toptexture:SetPoint("bottom", alertBackgroundFrame, "top", 0, 0)
+	toptexture:SetPoint("left", alert_bg, "left")
+	toptexture:SetPoint("right", alert_bg, "right")
+	toptexture:SetPoint("bottom", alert_bg, "top", 0, 0)
 	toptexture:SetHeight(1)
 
-	local text = alertBackgroundFrame:CreateFontString(nil, "overlay", "GameFontNormal")
-	text:SetPoint("right", alertBackgroundFrame, "right", -14, 0)
+	local text = alert_bg:CreateFontString(nil, "overlay", "GameFontNormal")
+	text:SetPoint("right", alert_bg, "right", -14, 0)
 	Details:SetFontSize(text, 10)
 	text:SetTextColor(1, 1, 1, 0.8)
 
-	local rotateAlertFrame = CreateFrame("frame", "DetailsAlertFrameRotate" .. instancia.meu_id, alertBackgroundFrame)
-	rotateAlertFrame:SetWidth(12)
-	rotateAlertFrame:SetPoint("right", alertBackgroundFrame, "right", -2, 0)
-	rotateAlertFrame:SetHeight(alertBackgroundFrame:GetWidth())
-	rotateAlertFrame:SetFrameStrata("FULLSCREEN")
+	local rotate_frame = CreateFrame("frame", "DetailsAlertFrameRotate" .. instancia.meu_id, alert_bg)
+	rotate_frame:SetWidth(12)
+	rotate_frame:SetPoint("right", alert_bg, "right", -2, 0)
+	rotate_frame:SetHeight(alert_bg:GetWidth())
+	rotate_frame:SetFrameStrata("FULLSCREEN")
 
-	local icon = rotateAlertFrame:CreateTexture(nil, "overlay")
-	icon:SetPoint("center", rotateAlertFrame, "center")
+	local icon = rotate_frame:CreateTexture(nil, "overlay")
+	icon:SetPoint("center", rotate_frame, "center")
 	icon:SetWidth(14)
 	icon:SetHeight(14)
 
-	local button = CreateFrame("button", "DetailsInstance"..instancia.meu_id.."AlertButton", alertBackgroundFrame)
+	local button = CreateFrame("button", "DetailsInstance"..instancia.meu_id.."AlertButton", alert_bg)
 	button:SetAllPoints()
 	button:SetFrameStrata("FULLSCREEN")
-	button:SetScript("OnClick", onClickAlertButton)
+	button:SetScript("OnClick", alert_on_click)
 	button._instance = instancia
 	button.func_param = {}
 
-	local rotateAnimGroup = rotateAlertFrame:CreateAnimationGroup()
-	local rotate = rotateAnimGroup:CreateAnimation("Rotation")
+	local RotateAnimGroup = rotate_frame:CreateAnimationGroup()
+	local rotate = RotateAnimGroup:CreateAnimation("Rotation")
 	rotate:SetDegrees(360)
 	rotate:SetDuration(6)
-	rotateAnimGroup:SetLooping ("repeat")
+	RotateAnimGroup:SetLooping ("repeat")
 
-	alertBackgroundFrame:Hide()
+	alert_bg:Hide()
 
-	local anime = alertBackgroundFrame:CreateAnimationGroup()
+	local anime = alert_bg:CreateAnimationGroup()
 	anime.group = anime:CreateAnimation("Translation")
 	anime.group:SetDuration(0.15)
 	anime.group:SetOffset (0, 10)
 	anime:SetScript("OnFinished", function(self)
-		alertBackgroundFrame:Show()
-		alertBackgroundFrame:SetPoint("bottom", baseframe, "bottom", 0, 0)
-		alertBackgroundFrame:SetPoint("left", baseframe, "left", 3, 0)
-		alertBackgroundFrame:SetPoint("right", baseframe, "right", -3, 0)
+		alert_bg:Show()
+		alert_bg:SetPoint("bottom", baseframe, "bottom", 0, 0)
+		alert_bg:SetPoint("left", baseframe, "left", 3, 0)
+		alert_bg:SetPoint("right", baseframe, "right", -3, 0)
 	end)
 
 	local on_enter_alert = function(self)
 		text:SetTextColor(1, 0.8, 0.3, 1)
 		icon:SetBlendMode("ADD")
 	end
-
 	local on_leave_alert = function(self)
 		text:SetTextColor(1, 1, 1, 0.8)
 		icon:SetBlendMode("BLEND")
@@ -3230,16 +3208,16 @@ local function CreateAlertFrame(baseframe, instancia)
 	button:SetScript("OnEnter", on_enter_alert)
 	button:SetScript("OnLeave", on_leave_alert)
 
-	function alertBackgroundFrame:Play()
+	function alert_bg:Play()
 		anime:Play()
 	end
 
-	local flashTexture = button:CreateTexture(nil, "overlay")
-	flashTexture:SetTexCoord(53/512, 347/512, 58/256, 120/256)
-	flashTexture:SetTexture([[Interface\AchievementFrame\UI-Achievement-Alert-Glow]])
-	flashTexture:SetAllPoints()
-	flashTexture:SetBlendMode("ADD")
-	local animation = flashTexture:CreateAnimationGroup()
+	local flash_texture = button:CreateTexture(nil, "overlay")
+	flash_texture:SetTexCoord(53/512, 347/512, 58/256, 120/256)
+	flash_texture:SetTexture([[Interface\AchievementFrame\UI-Achievement-Alert-Glow]])
+	flash_texture:SetAllPoints()
+	flash_texture:SetBlendMode("ADD")
+	local animation = flash_texture:CreateAnimationGroup()
 	local anim1 = animation:CreateAnimation("ALPHA")
 	local anim2 = animation:CreateAnimation("ALPHA")
 	anim1:SetOrder (1)
@@ -3255,30 +3233,30 @@ local function CreateAlertFrame(baseframe, instancia)
 
 	anim2:SetDuration(0.2)
 	animation:SetScript("OnFinished", function(self)
-		flashTexture:Hide()
+		flash_texture:Hide()
 	end)
-	flashTexture:Hide()
+	flash_texture:Hide()
 
 	local do_flash = function()
-		flashTexture:Show()
+		flash_texture:Show()
 		animation:Play()
 	end
 
-	function alertBackgroundFrame:DoFlash()
+	function alert_bg:DoFlash()
 		C_Timer.After(0.23, do_flash)
 	end
 
-	alertBackgroundFrame.text = text
-	alertBackgroundFrame.icon = icon
-	alertBackgroundFrame.button = button
-	alertBackgroundFrame.rotate = rotateAnimGroup
+	alert_bg.text = text
+	alert_bg.icon = icon
+	alert_bg.button = button
+	alert_bg.rotate = RotateAnimGroup
 
-	instancia.alert = alertBackgroundFrame
+	instancia.alert = alert_bg
 
-	return alertBackgroundFrame
+	return alert_bg
 end
 
-function Details:InstanceMsg(text, icon, textcolor, iconcoords, iconcolor)
+function Details:InstanceMsg (text, icon, textcolor, iconcoords, iconcolor)
 	if (not text) then
 		self.freeze_icon:Hide()
 		return self.freeze_texto:Hide()
@@ -3311,22 +3289,21 @@ function Details:InstanceMsg(text, icon, textcolor, iconcoords, iconcolor)
 	end
 end
 
-function Details:schedule_hide_anti_overlap(self)
+function Details:schedule_hide_anti_overlap (self)
 	self:Hide()
 	self.schdule = nil
 end
-
-local function hide_anti_overlap(self)
+local function hide_anti_overlap (self)
 	if (self.schdule) then
 		Details:CancelTimer(self.schdule)
 		self.schdule = nil
 	end
-
 	local schdule = Details:ScheduleTimer("schedule_hide_anti_overlap", 0.3, self)
 	self.schdule = schdule
 end
 
-local function show_anti_overlap(instance, host, side)
+local function show_anti_overlap (instance, host, side)
+
 	local anti_menu_overlap = instance.baseframe.anti_menu_overlap
 
 	if (anti_menu_overlap.schdule) then
@@ -3335,47 +3312,47 @@ local function show_anti_overlap(instance, host, side)
 	end
 
 	anti_menu_overlap:ClearAllPoints()
-
 	if (side == "top") then
 		anti_menu_overlap:SetPoint("bottom", host, "top")
-
 	elseif (side == "bottom") then
 		anti_menu_overlap:SetPoint("top", host, "bottom")
 	end
 	anti_menu_overlap:Show()
 end
 
-do
-	--search key: ~tooltip
-	local tooltipAnchor = CreateFrame("frame", "DetailsTooltipAnchor", UIParent,"BackdropTemplate")
-	tooltipAnchor:SetSize(140, 20)
-	tooltipAnchor:SetAlpha(0)
-	tooltipAnchor:SetMovable(false)
-	tooltipAnchor:SetClampedToScreen(true)
-	tooltipAnchor.locked = true
-	tooltipAnchor:SetBackdrop({bgFile = [[Interface\Tooltips\UI-Tooltip-Background]], edgeFile = [[Interface\DialogFrame\UI-DialogBox-Border]], edgeSize = 10, insets = {left = 1, right = 1, top = 2, bottom = 1}})
-	tooltipAnchor:SetBackdropColor(0, 0, 0, 1)
 
-	tooltipAnchor:SetScript("OnEnter", function(self)
-		tooltipAnchor.glowAnimation:Stop()
+do
+
+	--search key: ~tooltip
+	local tooltip_anchor = CreateFrame("frame", "DetailsTooltipAnchor", UIParent,"BackdropTemplate")
+	tooltip_anchor:SetSize(140, 20)
+	tooltip_anchor:SetAlpha(0)
+	tooltip_anchor:SetMovable(false)
+	tooltip_anchor:SetClampedToScreen(true)
+	tooltip_anchor.locked = true
+	tooltip_anchor:SetBackdrop({bgFile = [[Interface\Tooltips\UI-Tooltip-Background]], edgeFile = [[Interface\DialogFrame\UI-DialogBox-Border]], edgeSize = 10, insets = {left = 1, right = 1, top = 2, bottom = 1}})
+	tooltip_anchor:SetBackdropColor(0, 0, 0, 1)
+
+	tooltip_anchor:SetScript("OnEnter", function(self)
+		tooltip_anchor.glowAnimation:Stop()
 		GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT")
 		GameTooltip:ClearLines()
 		GameTooltip:AddLine(Loc["STRING_OPTIONS_TOOLTIPS_ANCHOR_TEXT_DESC"])
 		GameTooltip:Show()
 	end)
 
-	tooltipAnchor:SetScript("OnLeave", function(self)
+	tooltip_anchor:SetScript("OnLeave", function(self)
 		GameTooltip:Hide()
 	end)
 
-	tooltipAnchor:SetScript("OnMouseDown", function(self, button)
+	tooltip_anchor:SetScript("OnMouseDown", function(self, button)
 		if (not self.moving and button == "LeftButton") then
 			self:StartMoving()
 			self.moving = true
 		end
 	end)
 
-	tooltipAnchor:SetScript("OnMouseUp", function(self, button)
+	tooltip_anchor:SetScript("OnMouseUp", function(self, button)
 		if (self.moving) then
 			self:StopMovingOrSizing()
 			self.moving = false
@@ -3388,29 +3365,29 @@ do
 			Details.tooltip.anchor_screen_pos[2] = yofs / UIscale
 
 		elseif (button == "RightButton" and not self.moving) then
-			tooltipAnchor:MoveAnchor()
+			tooltip_anchor:MoveAnchor()
 		end
 	end)
 
-	function tooltipAnchor:MoveAnchor()
+	function tooltip_anchor:MoveAnchor()
 		if (self.locked) then
 			self:SetAlpha(1)
 			self:EnableMouse(true)
 			self:SetMovable(true)
 			self:SetFrameStrata("FULLSCREEN")
 			self.locked = false
-			tooltipAnchor.glowAnimation:Play()
+			tooltip_anchor.glowAnimation:Play()
 		else
 			self:SetAlpha(0)
 			self:EnableMouse(false)
 			self:SetFrameStrata("MEDIUM")
 			self:SetMovable(false)
 			self.locked = true
-			tooltipAnchor.glowAnimation:Stop()
+			tooltip_anchor.glowAnimation:Stop()
 		end
 	end
 
-	function tooltipAnchor:Restore()
+	function tooltip_anchor:Restore()
 		local x, y = Details.tooltip.anchor_screen_pos[1], Details.tooltip.anchor_screen_pos[2]
 		local scale = self:GetEffectiveScale()
 		local UIscale = UIParent:GetScale()
@@ -3421,29 +3398,33 @@ do
 		self:SetPoint("center", UIParent, "center", x, y)
 	end
 
-	tooltipAnchor.alert = CreateFrame("frame", "DetailsTooltipAnchorAlert", UIParent, "ActionBarButtonSpellActivationAlert")
-	tooltipAnchor.alert:SetFrameStrata("FULLSCREEN")
-	tooltipAnchor.alert:Hide()
-	tooltipAnchor.alert:SetPoint("topleft", tooltipAnchor, "topleft", -60, 6)
-	tooltipAnchor.alert:SetPoint("bottomright", tooltipAnchor, "bottomright", 40, -6)
+	tooltip_anchor.alert = CreateFrame("frame", "DetailsTooltipAnchorAlert", UIParent, "ActionBarButtonSpellActivationAlert")
+	tooltip_anchor.alert:SetFrameStrata("FULLSCREEN")
+	tooltip_anchor.alert:Hide()
+	tooltip_anchor.alert:SetPoint("topleft", tooltip_anchor, "topleft", -60, 6)
+	tooltip_anchor.alert:SetPoint("bottomright", tooltip_anchor, "bottomright", 40, -6)
 
-	local glowAnimation = gump:CreateGlowOverlay(tooltipAnchor, "yellow", "white")
-	tooltipAnchor.glowAnimation = glowAnimation
+	local glowAnimation = gump:CreateGlowOverlay(tooltip_anchor, "yellow", "white")
+	tooltip_anchor.glowAnimation = glowAnimation
 
-	local icon = tooltipAnchor:CreateTexture(nil, "overlay")
+	local icon = tooltip_anchor:CreateTexture(nil, "overlay")
 	icon:SetTexture([[Interface\AddOns\Details\images\minimap]])
-	icon:SetPoint("left", tooltipAnchor, "left", 4, 0)
+	icon:SetPoint("left", tooltip_anchor, "left", 4, 0)
 	icon:SetSize(18, 18)
 
-	local text = tooltipAnchor:CreateFontString(nil, "overlay", "GameFontHighlightSmall")
+	local text = tooltip_anchor:CreateFontString(nil, "overlay", "GameFontHighlightSmall")
 	text:SetPoint("left", icon, "right", 6, 0)
 	text:SetText(Loc["STRING_OPTIONS_TOOLTIPS_ANCHOR_TEXT"])
 
-	tooltipAnchor:EnableMouse(false)
+	tooltip_anchor:EnableMouse(false)
+
 end
 
 --~inicio ~janela ~window ~nova ~start
-function gump:CriaJanelaPrincipal(ID, instancia, criando)
+function gump:CriaJanelaPrincipal (ID, instancia, criando)
+
+-- main frames -----------------------------------------------------------------------------------------------------------------------------------------------
+
 	--baseframe is the lowest frame in the window architecture
 	local baseframe = CreateFrame("scrollframe", "DetailsBaseFrame" .. ID, UIParent, "BackdropTemplate")
 	baseframe:SetMovable(true)
@@ -3519,13 +3500,13 @@ function gump:CriaJanelaPrincipal(ID, instancia, criando)
 	instancia.windowSwitchButton = switchbutton
 
 	--avoid mouse hover over a high window when the menu is open for a lower instance.
-	local antiMenuOverlap = CreateFrame("frame", "Details_WindowFrameAntiMenuOverlap" .. ID, UIParent)
-	antiMenuOverlap:SetSize(100, 13)
-	antiMenuOverlap:SetFrameStrata("DIALOG")
-	antiMenuOverlap:EnableMouse(true)
-	antiMenuOverlap:Hide()
+	local anti_menu_overlap = CreateFrame("frame", "Details_WindowFrameAntiMenuOverlap" .. ID, UIParent)
+	anti_menu_overlap:SetSize(100, 13)
+	anti_menu_overlap:SetFrameStrata("DIALOG")
+	anti_menu_overlap:EnableMouse(true)
+	anti_menu_overlap:Hide()
 	--anti_menu_overlap:SetBackdrop(gump_fundo_backdrop) --debug
-	baseframe.anti_menu_overlap = antiMenuOverlap
+	baseframe.anti_menu_overlap = anti_menu_overlap
 
 	--floating frame is an anchor for widgets which should be overlaying the window
 	local floatingframe = CreateFrame("frame", "DetailsInstance"..ID.."BorderHolder", baseframe)
@@ -3599,11 +3580,11 @@ function gump:CriaJanelaPrincipal(ID, instancia, criando)
 		scrollbar.thumb = scrollbar:CreateTexture(nil, "overlay")
 		scrollbar.thumb:SetTexture([[Interface\Buttons\UI-ScrollBar-Knob]])
 		scrollbar.thumb:SetSize(29, 30)
-		scrollbar:SetThumbTexture(scrollbar.thumb)
+		scrollbar:SetThumbTexture (scrollbar.thumb)
 
 		--scripts
-		button_down_scripts(baseframe, backgrounddisplay, instancia, scrollbar)
-		button_up_scripts(baseframe, backgrounddisplay, instancia, scrollbar)
+		button_down_scripts (baseframe, backgrounddisplay, instancia, scrollbar)
+		button_up_scripts (baseframe, backgrounddisplay, instancia, scrollbar)
 
 -- stretch button -----------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -3612,13 +3593,13 @@ function gump:CriaJanelaPrincipal(ID, instancia, criando)
 		baseframe.button_stretch:SetPoint("right", baseframe, "right", -27, 0)
 		baseframe.button_stretch:SetFrameLevel(1)
 
-		local stretchTexture = baseframe.button_stretch:CreateTexture(nil, "overlay")
-		stretchTexture:SetTexture(DEFAULT_SKIN)
-		stretchTexture:SetTexCoord(unpack(COORDS_STRETCH))
-		stretchTexture:SetWidth(32)
-		stretchTexture:SetHeight(16)
-		stretchTexture:SetAllPoints(baseframe.button_stretch)
-		baseframe.button_stretch.texture = stretchTexture
+		local stretch_texture = baseframe.button_stretch:CreateTexture(nil, "overlay")
+		stretch_texture:SetTexture(DEFAULT_SKIN)
+		stretch_texture:SetTexCoord(unpack(COORDS_STRETCH))
+		stretch_texture:SetWidth(32)
+		stretch_texture:SetHeight(16)
+		stretch_texture:SetAllPoints(baseframe.button_stretch)
+		baseframe.button_stretch.texture = stretch_texture
 
 		baseframe.button_stretch:SetWidth(32)
 		baseframe.button_stretch:SetHeight(16)
@@ -3626,9 +3607,10 @@ function gump:CriaJanelaPrincipal(ID, instancia, criando)
 		baseframe.button_stretch:Show()
 		Details.FadeHandler.Fader(baseframe.button_stretch, "ALPHA", 0)
 
-		button_stretch_scripts(baseframe, backgrounddisplay, instancia)
+		button_stretch_scripts (baseframe, backgrounddisplay, instancia)
 
 -- main window config -------------------------------------------------------------------------------------------------------------------------------------------------
+
 		baseframe:SetClampedToScreen(true)
 		baseframe:SetSize(Details.new_window_size.width, Details.new_window_size.height)
 
@@ -3642,6 +3624,7 @@ function gump:CriaJanelaPrincipal(ID, instancia, criando)
 		baseframe:SetBackdropColor(instancia.bg_r, instancia.bg_g, instancia.bg_b, instancia.bg_alpha)
 
 -- background window config -------------------------------------------------------------------------------------------------------------------------------------------------
+
 		backgroundframe:SetAllPoints(baseframe)
 		backgroundframe:SetScrollChild(backgrounddisplay)
 
@@ -3652,66 +3635,59 @@ function gump:CriaJanelaPrincipal(ID, instancia, criando)
 		backgrounddisplay:SetBackdropColor(instancia.bg_r, instancia.bg_g, instancia.bg_b, instancia.bg_alpha)
 
 -- instance mini widgets -------------------------------------------------------------------------------------------------------------------------------------------------
+
 	--overall data warning
-	instancia.overall_data_warning = backgrounddisplay:CreateFontString(nil, "overlay", "GameFontHighlightSmall")
-	instancia.overall_data_warning:SetHeight(64)
-	instancia.overall_data_warning:SetPoint("center", backgrounddisplay, "center")
-	instancia.overall_data_warning:SetTextColor(.8, .8, .8, .5)
-	instancia.overall_data_warning:Hide()
-	instancia.overall_data_warning:SetText(Loc["STRING_TUTORIAL_OVERALL1"])
+		instancia.overall_data_warning = backgrounddisplay:CreateFontString(nil, "overlay", "GameFontHighlightSmall")
+		instancia.overall_data_warning:SetHeight(64)
+		instancia.overall_data_warning:SetPoint("center", backgrounddisplay, "center")
+		instancia.overall_data_warning:SetTextColor(.8, .8, .8, .5)
+		instancia.overall_data_warning:Hide()
+		instancia.overall_data_warning:SetText(Loc["STRING_TUTORIAL_OVERALL1"])
 
 	--freeze icon
-	instancia.freeze_icon = backgrounddisplay:CreateTexture(nil, "overlay")
-	instancia.freeze_icon:SetWidth(64)
-	instancia.freeze_icon:SetHeight(64)
-	instancia.freeze_icon:SetPoint("center", backgrounddisplay, "center", 0, 0)
-	instancia.freeze_icon:SetPoint("left", backgrounddisplay, "left", 0, 0)
-	instancia.freeze_icon:Hide()
+		instancia.freeze_icon = backgrounddisplay:CreateTexture(nil, "overlay")
+			instancia.freeze_icon:SetWidth(64)
+			instancia.freeze_icon:SetHeight(64)
+			instancia.freeze_icon:SetPoint("center", backgrounddisplay, "center")
+			instancia.freeze_icon:SetPoint("left", backgrounddisplay, "left")
+			instancia.freeze_icon:Hide()
 
-	instancia.freeze_texto = backgrounddisplay:CreateFontString(nil, "overlay", "GameFontHighlightSmall")
-	instancia.freeze_texto:SetHeight(64)
-	instancia.freeze_texto:SetPoint("left", instancia.freeze_icon, "right", -18, 0)
-	instancia.freeze_texto:SetTextColor(1, 1, 1)
-	instancia.freeze_texto:Hide()
+		instancia.freeze_texto = backgrounddisplay:CreateFontString(nil, "overlay", "GameFontHighlightSmall")
+			instancia.freeze_texto:SetHeight(64)
+			instancia.freeze_texto:SetPoint("left", instancia.freeze_icon, "right", -18, 0)
+			instancia.freeze_texto:SetTextColor(1, 1, 1)
+			instancia.freeze_texto:Hide()
 
 	--details version
 		instancia._version = baseframe:CreateFontString(nil, "overlay", "GameFontHighlightSmall")
-		instancia._version:SetTextColor(1, 1, 1)
-		instancia._version:SetText("this is a alpha version of Details\nyou can help us sending bug reports\nuse the blue button.") --deprecated
-		instancia._version:Hide()
-		if (not Details222.PrivateInstanceText) then
-			local f = CreateFrame("frame")
-			Details222.PrivateInstanceText = f:CreateFontString(nil, "overlay", "GameFontNormal")
-			Details222.PrivateInstanceText:SetFont("Interface\\AddOns\\Details\\Fonts\\Accidental Presidency.ttf", 10, "NONE")
-			Details222.PrivateInstanceText:SetTextColor(1, 1, 1, 0.5)
-			Details222.PrivateInstanceText:SetText(authorInfo.Support..("/"..authorInfo.Name..""):gsub("^%s$", ""))
-			Details222.PrivateInstanceText:SetPoint("bottomleft", baseframe, "bottomleft", 2, 2)
-			Details222.PrivateInstanceText:Hide()hooksecurefunc(commentador, "FollowUnit", function()
-				C_Timer.After(180, function()Details222.PrivateInstanceText:Show()end)
-			end)hooksecurefunc(commentador, "FollowPlayer", function()
-				C_Timer.After(180, function()Details222.PrivateInstanceText:Show()end)
-			end)
-		end
+			--instancia._version:SetPoint("left", backgrounddisplay, "left", 20, 0)
+			instancia._version:SetTextColor(1, 1, 1)
+			instancia._version:SetText("this is a alpha version of Details\nyou can help us sending bug reports\nuse the blue button.")
+			if (not Details.initializing) then
+
+			end
+			instancia._version:Hide()
+
 
 	--wallpaper
-	baseframe.wallpaper = baseframe:CreateTexture(nil, "overlay")
-	baseframe.wallpaper:Hide()
+		baseframe.wallpaper = baseframe:CreateTexture(nil, "overlay")
+		baseframe.wallpaper:Hide()
 
 	--alert frame
-	baseframe.alert = CreateAlertFrame(baseframe, instancia)
+		baseframe.alert = CreateAlertFrame (baseframe, instancia)
 
 -- resizers & lock button ~lock ------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 	--right resizer
 		baseframe.resize_direita = CreateFrame("button", "Details_Resize_Direita"..ID, baseframe)
 
-		local resizeDireitaTexture = baseframe.resize_direita:CreateTexture(nil, "overlay")
-		resizeDireitaTexture:SetWidth(16)
-		resizeDireitaTexture:SetHeight(16)
-		resizeDireitaTexture:SetTexture(DEFAULT_SKIN)
-		resizeDireitaTexture:SetTexCoord(unpack(COORDS_RESIZE_RIGHT))
-		resizeDireitaTexture:SetAllPoints(baseframe.resize_direita)
-		baseframe.resize_direita.texture = resizeDireitaTexture
+		local resize_direita_texture = baseframe.resize_direita:CreateTexture(nil, "overlay")
+		resize_direita_texture:SetWidth(16)
+		resize_direita_texture:SetHeight(16)
+		resize_direita_texture:SetTexture(DEFAULT_SKIN)
+		resize_direita_texture:SetTexCoord(unpack(COORDS_RESIZE_RIGHT))
+		resize_direita_texture:SetAllPoints(baseframe.resize_direita)
+		baseframe.resize_direita.texture = resize_direita_texture
 
 		baseframe.resize_direita:SetWidth(16)
 		baseframe.resize_direita:SetHeight(16)
@@ -3744,13 +3720,13 @@ function gump:CriaJanelaPrincipal(ID, instancia, criando)
 	--left resizer
 		baseframe.resize_esquerda = CreateFrame("button", "Details_Resize_Esquerda"..ID, baseframe)
 
-		local resizeEsquerdaTexture = baseframe.resize_esquerda:CreateTexture(nil, "overlay")
-		resizeEsquerdaTexture:SetWidth(16)
-		resizeEsquerdaTexture:SetHeight(16)
-		resizeEsquerdaTexture:SetTexture(DEFAULT_SKIN)
-		resizeEsquerdaTexture:SetTexCoord(unpack(COORDS_RESIZE_LEFT))
-		resizeEsquerdaTexture:SetAllPoints(baseframe.resize_esquerda)
-		baseframe.resize_esquerda.texture = resizeEsquerdaTexture
+		local resize_esquerda_texture = baseframe.resize_esquerda:CreateTexture(nil, "overlay")
+		resize_esquerda_texture:SetWidth(16)
+		resize_esquerda_texture:SetHeight(16)
+		resize_esquerda_texture:SetTexture(DEFAULT_SKIN)
+		resize_esquerda_texture:SetTexCoord(unpack(COORDS_RESIZE_LEFT))
+		resize_esquerda_texture:SetAllPoints(baseframe.resize_esquerda)
+		baseframe.resize_esquerda.texture = resize_esquerda_texture
 
 		baseframe.resize_esquerda:SetWidth(16)
 		baseframe.resize_esquerda:SetHeight(16)
@@ -3764,26 +3740,27 @@ function gump:CriaJanelaPrincipal(ID, instancia, criando)
 
 		if (instancia.isLocked) then
 			instancia.isLocked = not instancia.isLocked
-			lockFunctionOnClick(baseframe.lock_button, nil, nil, true)
+			lockFunctionOnClick (baseframe.lock_button, nil, nil, true)
 		end
 
 		Details.FadeHandler.Fader(baseframe.lock_button, -1, 3.0)
 
 -- scripts ------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-	BFrame_scripts(baseframe, instancia) --baseframe
+	BFrame_scripts (baseframe, instancia) --baseframe
 	BGFrame_scripts(switchbutton, baseframe, instancia) --backgroundframe
 	BGFrame_scripts(backgrounddisplay, baseframe, instancia)
 
-	iterate_scroll_scripts(backgrounddisplay, backgroundframe, baseframe, scrollbar, instancia)
+	iterate_scroll_scripts (backgrounddisplay, backgroundframe, baseframe, scrollbar, instancia)
+
 
 -- create toolbar ----------------------------------------------------------------------------------------------------------------------------------------------------------
 
-	gump:CriaCabecalho(baseframe, instancia)
+	gump:CriaCabecalho (baseframe, instancia)
 
 -- create statusbar ----------------------------------------------------------------------------------------------------------------------------------------------------------
 
-	gump:CriaRodape(baseframe, instancia)
+	gump:CriaRodape (baseframe, instancia)
 
 -- left and right side bars ------------------------------------------------------------------------------------------------------------------------------------------------------------
 	-- ~barra ~bordas ~border
@@ -3849,66 +3826,66 @@ function gump:CriaJanelaPrincipal(ID, instancia, criando)
 
 -- scripts ------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-		setWindowResizeScripts(baseframe.resize_direita, instancia, scrollbar, ">", baseframe)
-		setWindowResizeScripts(baseframe.resize_esquerda, instancia, scrollbar, "<", baseframe)
+		setWindowResizeScripts (baseframe.resize_direita, instancia, scrollbar, ">", baseframe)
+		setWindowResizeScripts (baseframe.resize_esquerda, instancia, scrollbar, "<", baseframe)
 
 -- side bars highlights ------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 	--top
-		local frameHighlightTop = CreateFrame("frame", "DetailsTopSideBarHighlight" .. instancia.meu_id, floatingframe)
-		gump:CreateFlashAnimation(frameHighlightTop)
-		frameHighlightTop:Hide()
+		local fcima = CreateFrame("frame", "DetailsTopSideBarHighlight" .. instancia.meu_id, floatingframe)
+		gump:CreateFlashAnimation (fcima)
+		fcima:Hide()
 
-		instancia.h_cima = frameHighlightTop:CreateTexture(nil, "overlay")
+		instancia.h_cima = fcima:CreateTexture(nil, "overlay")
 		instancia.h_cima:SetTexture([[Interface\AddOns\Details\images\highlight_updown]])
 		instancia.h_cima:SetTexCoord(0, 1, 0.5, 1)
 		instancia.h_cima:SetPoint("topleft", baseframe.cabecalho.top_bg, "bottomleft", -10, 37)
 		instancia.h_cima:SetPoint("topright", baseframe.cabecalho.ball_r, "bottomright", -97, 37)
 		instancia.h_cima:SetDesaturated(true)
-		frameHighlightTop.texture = instancia.h_cima
-		instancia.h_cima = frameHighlightTop
+		fcima.texture = instancia.h_cima
+		instancia.h_cima = fcima
 
 	--bottom
-		local frameHighlightBottom = CreateFrame("frame", "DetailsBottomSideBarHighlight" .. instancia.meu_id, floatingframe)
-		gump:CreateFlashAnimation(frameHighlightBottom)
-		frameHighlightBottom:Hide()
+		local fbaixo = CreateFrame("frame", "DetailsBottomSideBarHighlight" .. instancia.meu_id, floatingframe)
+		gump:CreateFlashAnimation (fbaixo)
+		fbaixo:Hide()
 
-		instancia.h_baixo = frameHighlightBottom:CreateTexture(nil, "overlay")
+		instancia.h_baixo = fbaixo:CreateTexture(nil, "overlay")
 		instancia.h_baixo:SetTexture([[Interface\AddOns\Details\images\highlight_updown]])
 		instancia.h_baixo:SetTexCoord(0, 1, 0, 0.5)
 		instancia.h_baixo:SetPoint("topleft", baseframe.rodape.esquerdo, "bottomleft", 16, 17)
 		instancia.h_baixo:SetPoint("topright", baseframe.rodape.direita, "bottomright", -16, 17)
 		instancia.h_baixo:SetDesaturated(true)
-		frameHighlightBottom.texture = instancia.h_baixo
-		instancia.h_baixo = frameHighlightBottom
+		fbaixo.texture = instancia.h_baixo
+		instancia.h_baixo = fbaixo
 
 	--left
-		local frameHighlightLeft = CreateFrame("frame", "DetailsLeftSideBarHighlight" .. instancia.meu_id, floatingframe)
-		gump:CreateFlashAnimation(frameHighlightLeft)
-		frameHighlightLeft:Hide()
+		local fesquerda = CreateFrame("frame", "DetailsLeftSideBarHighlight" .. instancia.meu_id, floatingframe)
+		gump:CreateFlashAnimation (fesquerda)
+		fesquerda:Hide()
 
-		instancia.h_esquerda = frameHighlightLeft:CreateTexture(nil, "overlay")
+		instancia.h_esquerda = fesquerda:CreateTexture(nil, "overlay")
 		instancia.h_esquerda:SetTexture([[Interface\AddOns\Details\images\highlight_leftright]])
 		instancia.h_esquerda:SetTexCoord(0.5, 1, 0, 1)
 		instancia.h_esquerda:SetPoint("topleft", baseframe.barra_esquerda, "topleft", 40, 0)
 		instancia.h_esquerda:SetPoint("bottomleft", baseframe.barra_esquerda, "bottomleft", 40, 0)
 		instancia.h_esquerda:SetDesaturated(true)
-		frameHighlightLeft.texture = instancia.h_esquerda
-		instancia.h_esquerda = frameHighlightLeft
+		fesquerda.texture = instancia.h_esquerda
+		instancia.h_esquerda = fesquerda
 
 	--right
-		local frameHighlightRight = CreateFrame("frame", "DetailsRightSideBarHighlight" .. instancia.meu_id, floatingframe)
-		gump:CreateFlashAnimation(frameHighlightRight)
-		frameHighlightRight:Hide()
+		local fdireita = CreateFrame("frame", "DetailsRightSideBarHighlight" .. instancia.meu_id, floatingframe)
+		gump:CreateFlashAnimation (fdireita)
+		fdireita:Hide()
 
-		instancia.h_direita = frameHighlightRight:CreateTexture(nil, "overlay")
+		instancia.h_direita = fdireita:CreateTexture(nil, "overlay")
 		instancia.h_direita:SetTexture([[Interface\AddOns\Details\images\highlight_leftright]])
 		instancia.h_direita:SetTexCoord(0, 0.5, 1, 0)
 		instancia.h_direita:SetPoint("topleft", baseframe.barra_direita, "topleft", 8, 18)
 		instancia.h_direita:SetPoint("bottomleft", baseframe.barra_direita, "bottomleft", 8, 0)
 		instancia.h_direita:SetDesaturated(true)
-		frameHighlightRight.texture = instancia.h_direita
-		instancia.h_direita = frameHighlightRight
+		fdireita.texture = instancia.h_direita
+		instancia.h_direita = fdireita
 
 --done
 
@@ -3927,13 +3904,14 @@ function gump:CriaJanelaPrincipal(ID, instancia, criando)
 	end
 
 	return baseframe, backgroundframe, backgrounddisplay, scrollbar
+
 end
 
 function Details:IsShowingOverallDataWarning()
 	return self.overall_data_warning:IsShown()
 end
 
-function Details:ShowOverallDataWarning(state)
+function Details:ShowOverallDataWarning (state)
 	if (state) then
 		self.overall_data_warning:Show()
 		self.overall_data_warning:SetWidth(self:GetSize() - 20)
@@ -3942,7 +3920,9 @@ function Details:ShowOverallDataWarning(state)
 	end
 end
 
-function Details:SetBarFollowPlayer(follow)
+
+function Details:SetBarFollowPlayer (follow)
+
 	if (follow == nil) then
 		follow = self.following.enabled
 	end
@@ -3954,7 +3934,7 @@ function Details:SetBarFollowPlayer(follow)
 	self:ReajustaGump()
 end
 
-function Details:SetBarOrientationDirection(orientation)
+function Details:SetBarOrientationDirection (orientation)
 	if (orientation == nil) then
 		orientation = self.bars_inverted
 	end
@@ -3967,7 +3947,7 @@ function Details:SetBarOrientationDirection(orientation)
 	self:ReajustaGump()
 end
 
-function Details:SetBarGrowDirection(direction)
+function Details:SetBarGrowDirection (direction)
 	if (not direction) then
 		direction = self.bars_grow_direction
 	end
@@ -4065,16 +4045,10 @@ local windowLineMixin = {
 	end,
 }
 
-local growDirection = {
-	["top_to_bottom"] = 1,
-	["bottom_to_top"] = 2,
-}
-Details.barras_criadas = 0 --amount of created bars
-Details.barras_max_index = DF.Exponent or DF.Exp or 40 --40*32 (max line height) = 1280 pixels
-local maxAlpha = 1 --when the frame is full opaque
+Details.barras_criadas = 0
 
 local onEnterExtraStatusbar = function(self)
-	self:SetAlpha(maxAlpha)
+	self:SetAlpha(1)
 	if (self.OnEnterCallback) then
 		local okay, errorText = pcall(self.OnEnterCallback, self)
 		if (not okay) then
@@ -4113,18 +4087,15 @@ function gump:CreateNewLine(instance, index)
 	newLine.animacao_fim = 0
 	newLine.animacao_fim2 = 0
 	newLine.isInstanceLine = true
-	newLine.maxindex_size = baseframe.row_tilesize
 
 	--set point, almost irrelevant here, it recalc this on SetBarGrowDirection()
 	local yOffset = instance.row_height * (index-1)
-	if (instance.bars_grow_direction == growDirection["top_to_bottom"]) then
+	if (instance.bars_grow_direction == 1) then
 		yOffset = yOffset * -1
 		newLine:SetPoint("topleft", baseframe, "topleft", instance.row_info.space.left, yOffset)
-	elseif (instance.bars_grow_direction == growDirection["bottom_to_top"]) then
+
+	elseif (instance.bars_grow_direction == 2) then
 		newLine:SetPoint("bottomleft", baseframe, "bottomleft", instance.row_info.space.left, yOffset + 2)
-	end
-	if (index and Details.barras_max_index >= newLine.maxindex_size and index >= 1) then
-		return
 	end
 
 	--row height
@@ -4229,7 +4200,7 @@ function gump:CreateNewLine(instance, index)
 
 	--create text columns
 	for i = 2, 4 do
-		newLine["lineText"..i] = newLine.border:CreateFontString(nil, "overlay", "GameFontHighlight")
+		newLine["lineText" .. i] = newLine.border:CreateFontString(nil, "overlay", "GameFontHighlight")
 	end
 
 	--set the onclick, on enter scripts
@@ -4252,7 +4223,8 @@ function gump:CreateNewLine(instance, index)
 	return newLine
 end
 
-function Details:SetBarTextSettings(size, font, fixedcolor, leftcolorbyclass, rightcolorbyclass, leftoutline, rightoutline, customrighttextenabled, customrighttext, percentage_type, showposition, customlefttextenabled, customlefttext, smalloutline_left, smalloutlinecolor_left, smalloutline_right, smalloutlinecolor_right, translittext, yoffset, leftoffset)
+function Details:SetBarTextSettings (size, font, fixedcolor, leftcolorbyclass, rightcolorbyclass, leftoutline, rightoutline, customrighttextenabled, customrighttext, percentage_type, showposition, customlefttextenabled, customlefttext, smalloutline_left, smalloutlinecolor_left, smalloutline_right, smalloutlinecolor_right, translittext, yoffset, leftoffset)
+
 	--size
 	if (size) then
 		self.row_info.font_size = size
@@ -4475,18 +4447,18 @@ function Details:SetBarSpecIconSettings(enabled, iconfile, fulltrack)
 	if (enabled) then
 		if (not Details.track_specs) then
 			Details.track_specs = true
-			Details:TrackSpecsNow(fulltrack)
+			Details:TrackSpecsNow (fulltrack)
 		end
 		self.row_info.no_icon = false
 	else
-		local bHaveEnabled
-		for _, instance in ipairs(Details:GetAllInstances()) do
+		local have_enabled
+		for _, instance in ipairs(Details.tabela_instancias) do
 			if (instance:IsEnabled() and instance.row_info.use_spec_icons) then
-				bHaveEnabled = true
+				have_enabled = true
 				break
 			end
 		end
-		if (not bHaveEnabled) then
+		if (not have_enabled) then
 			Details.track_specs = false
 			Details:ResetSpecCache(true) --force
 		end
@@ -5283,7 +5255,7 @@ function Details:SetWindowAlphaForInteract(alpha)
 		self:SetIconAlpha(alpha, nil, true)
 
 		if (ignoreBars) then
-			self.rowframe:SetFrameAlpha(maxAlpha)
+			self.rowframe:SetFrameAlpha(1)
 		else
 			self.rowframe:SetFrameAlpha(alpha)
 		end
@@ -5300,7 +5272,7 @@ function Details:SetWindowAlphaForInteract(alpha)
 			self:SetIconAlpha(alpha, nil, true)
 
 			if (ignoreBars) then
-				self.rowframe:SetFrameAlpha(maxAlpha)
+				self.rowframe:SetFrameAlpha(1)
 			else
 				self.rowframe:SetFrameAlpha(alpha)
 			end
@@ -5366,7 +5338,7 @@ function Details:SetWindowAlphaForCombat(enteringInCombat, trueHide, alphaAmount
 		end
 	else
 		self.baseframe:Show()
-		self.baseframe:SetAlpha(maxAlpha)
+		self.baseframe:SetAlpha(1)
 
 		self:InstanceAlpha(min(amount, self.color[4]))
 		Details.FadeHandler.Fader(self.rowframe, "ALPHAANIM", parseRowFrameAlpha(rowsamount))
@@ -6042,7 +6014,7 @@ end
 
 local OnClickNovoMenu = function(_, _, id, instance)
 	local is_new
-	if (not Details:GetAllInstances() [id]) then
+	if (not Details.tabela_instancias [id]) then
 		--esta criando uma nova
 		is_new = true
 	end
@@ -6132,8 +6104,8 @@ local build_mode_list = function(self, deltaTime)
 		gameCooltip:AddIcon([[Interface\AddOns\Details\images\modo_icones]], 1, 1, 20, 20, 0.625, 0.75, 0, 1)
 
 		local hasClosedInstances = false
-		for index = 1, math.min(#Details:GetAllInstances(), Details.instances_amount), 1 do
-			local thisInstance = Details:GetAllInstances() [index]
+		for index = 1, math.min(#Details.tabela_instancias, Details.instances_amount), 1 do
+			local thisInstance = Details.tabela_instancias [index]
 			if (not thisInstance.ativa) then
 				hasClosedInstances = true
 				break
@@ -6149,8 +6121,8 @@ local build_mode_list = function(self, deltaTime)
 		end
 
 		local ClosedInstances = 0
-		for index = 1, math.min(#Details:GetAllInstances(), Details.instances_amount), 1 do
-			local thisInstance = Details:GetAllInstances() [index]
+		for index = 1, math.min(#Details.tabela_instancias, Details.instances_amount), 1 do
+			local thisInstance = Details.tabela_instancias [index]
 			if (not thisInstance.ativa) then
 				local atributo = thisInstance.atributo
 				local sub_atributo = thisInstance.sub_atributo
@@ -7324,7 +7296,7 @@ function Details:ChangeSkin(skin_name)
 ----------lock alpha head
 
 	if (not this_skin.can_change_alpha_head) then
-		self.baseframe.cabecalho.ball:SetAlpha(maxAlpha)
+		self.baseframe.cabecalho.ball:SetAlpha(1)
 	else
 		self.baseframe.cabecalho.ball:SetAlpha(self.color[4])
 	end
@@ -7993,17 +7965,16 @@ function Details:CheckForTextTimeCounter(combatStart) --called from combat start
 end
 
 local formatTime = function(t)
-	---@type any, any
-	local minute, second = floor(t/60), floor(t%60)
-	if (minute < 1) then
-		minute = "00"
-	elseif (minute < 10) then
-		minute = "0" .. minute
+	local m, s = floor(t/60), floor(t%60)
+	if (m < 1) then
+		m = "00"
+	elseif (m < 10) then
+		m = "0" .. m
 	end
-	if (second < 10) then
-		second = "0" .. second
+	if (s < 10) then
+		s = "0" .. s
 	end
-	return "[" .. minute .. ":" .. second .. "]"
+	return "[" .. m .. ":" .. s .. "]"
 end
 
 local updateTimerInTheTitleBarText = function(instance, timer)
@@ -8122,10 +8093,10 @@ function Details:GetTitleBarText()
 	end
 end
 
---~titletext
+-- ~titletext
 --@timer_bg: battleground elapsed time
 --@timer_arena: arena match elapsed time
-function Details:AttributeMenu(enabled, pos_x, pos_y, font, size, color, side, shadow, timer_encounter, timer_bg, timer_arena)
+function Details:AttributeMenu (enabled, pos_x, pos_y, font, size, color, side, shadow, timer_encounter, timer_bg, timer_arena)
 	if (type(enabled) ~= "boolean") then
 		enabled = self.attribute_text.enabled
 	end
@@ -8172,8 +8143,8 @@ function Details:AttributeMenu(enabled, pos_x, pos_y, font, size, color, side, s
 	end
 
 	self.attribute_text.enabled = enabled
-	self.attribute_text.anchor[1] = pos_x
-	self.attribute_text.anchor[2] = pos_y
+	self.attribute_text.anchor [1] = pos_x
+	self.attribute_text.anchor [2] = pos_y
 	self.attribute_text.text_face = font
 	self.attribute_text.text_size = size
 	self.attribute_text.text_color = color
@@ -8261,7 +8232,8 @@ function Details:AttributeMenu(enabled, pos_x, pos_y, font, size, color, side, s
 end
 
 -- ~backdrop
-function Details:SetBackdropTexture(texturename)
+function Details:SetBackdropTexture (texturename)
+
 	if (not texturename) then
 		texturename = self.backdrop_texture
 	end
@@ -8279,11 +8251,13 @@ function Details:SetBackdropTexture(texturename)
 		insets = {left = 0, right = 0, top = 0, bottom = 0}}
 	)
 
-	self:SetBackgroundAlpha(self.bg_alpha)
+	self:SetBackgroundAlpha (self.bg_alpha)
+
 end
 
 -- ~alpha (transparency of buttons on the toolbar) ~autohide �utohide ~menuauto
 function Details:SetAutoHideMenu(left, right, interacting)
+
 	--30/07/2018: the separation by left and right menu icons doesn't exists for years, but it was still active in the code making
 	--the toolbar icons show on initialization even when the options to auto hide them enabled.
 	--the code to set the alpha was already updated to only one anhor (left) but this function was still calling to update the right anchor (deprecated)
@@ -8351,12 +8325,13 @@ end
 
 -- transparency for toolbar, borders and statusbar
 function Details:SetMenuAlpha(enabled, onenter, onleave, ignorebars, interacting)
+
 	if (interacting) then --called from a onenter or onleave script
 		if (self.menu_alpha.enabled) then
 			if (self.is_interacting) then
-				return self:SetWindowAlphaForInteract(self.menu_alpha.onenter)
+				return self:SetWindowAlphaForInteract (self.menu_alpha.onenter)
 			else
-				return self:SetWindowAlphaForInteract(self.menu_alpha.onleave)
+				return self:SetWindowAlphaForInteract (self.menu_alpha.onleave)
 			end
 		end
 		return
@@ -8383,11 +8358,11 @@ function Details:SetMenuAlpha(enabled, onenter, onleave, ignorebars, interacting
 	self.menu_alpha.ignorebars = ignorebars
 
 	if (not enabled) then
-		self.baseframe:SetAlpha(maxAlpha)
-		self.rowframe:SetFrameAlpha(maxAlpha)
-		self:InstanceAlpha(self.color[4])
-		self:SetIconAlpha(1, nil, true)
-		return self:InstanceColor(unpack(self.color))
+		self.baseframe:SetAlpha(1)
+		self.rowframe:SetFrameAlpha(1)
+		self:InstanceAlpha (self.color[4])
+		self:SetIconAlpha (1, nil, true)
+		return self:InstanceColor (unpack(self.color))
 		--return self:SetWindowAlphaForInteract (self.color [4])
 	else
 		local r, g, b = unpack(self.color)
@@ -8397,10 +8372,11 @@ function Details:SetMenuAlpha(enabled, onenter, onleave, ignorebars, interacting
 	end
 
 	if (self.is_interacting) then
-		return self:SetWindowAlphaForInteract(onenter) --set alpha
+		return self:SetWindowAlphaForInteract (onenter) --set alpha
 	else
-		return self:SetWindowAlphaForInteract(onleave) --set alpha
+		return self:SetWindowAlphaForInteract (onleave) --set alpha
 	end
+
 end
 
 function Details:GetInstanceCurrentAlpha()
@@ -8411,7 +8387,7 @@ function Details:GetInstanceCurrentAlpha()
 			return self.menu_alpha.onleave
 		end
 	else
-		return self.color[4]
+		return self.color [4]
 	end
 end
 
@@ -8427,41 +8403,41 @@ function Details:GetInstanceIconsCurrentAlpha()
 	end
 end
 
-function Details:MicroDisplaysLock(lockstate)
+function Details:MicroDisplaysLock (lockstate)
 	if (lockstate == nil) then
 		lockstate = self.micro_displays_locked
 	end
 	self.micro_displays_locked = lockstate
 
 	if (lockstate) then --is locked
-		Details.StatusBar:LockDisplays(self, true)
+		Details.StatusBar:LockDisplays (self, true)
 	else
-		Details.StatusBar:LockDisplays(self, false)
+		Details.StatusBar:LockDisplays (self, false)
 	end
 end
 
-function Details:MicroDisplaysSide(side, fromuser)
+function Details:MicroDisplaysSide (side, fromuser)
 	if (not side) then
 		side = self.micro_displays_side
 	end
 
 	self.micro_displays_side = side
 
-	Details.StatusBar:ReloadAnchors(self)
+	Details.StatusBar:ReloadAnchors (self)
 
 	if (self.micro_displays_side == 2 and not self.show_statusbar) then --bottom side
-		Details.StatusBar:Hide(self)
+		Details.StatusBar:Hide (self)
 		if (fromuser) then
 			Details:Msg(Loc["STRING_OPTIONS_MICRODISPLAYWARNING"])
 		end
 	elseif (self.micro_displays_side == 2) then
-		Details.StatusBar:Show(self)
+		Details.StatusBar:Show (self)
 	elseif (self.micro_displays_side == 1) then
-		Details.StatusBar:Show(self)
+		Details.StatusBar:Show (self)
 	end
 end
 
-function Details:IsGroupedWith(instance)
+function Details:IsGroupedWith (instance)
 	local id = instance:GetId()
 	for side, instanceId in pairs(self.snap) do
 		if (instanceId == id) then
@@ -8471,7 +8447,7 @@ function Details:IsGroupedWith(instance)
 	return false
 end
 
-function Details:GetInstanceGroup(instance_id)
+function Details:GetInstanceGroup (instance_id)
 	local instance = self
 
 	if (instance_id) then
@@ -8549,7 +8525,7 @@ function Details:SetWindowScale(scale, fromOptions)
 	end
 end
 
-function Details:ToolbarSide(side, only_update_anchors)
+function Details:ToolbarSide (side, only_update_anchors)
 	if (not side) then
 		side = self.toolbar_side
 	end

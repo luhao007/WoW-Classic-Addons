@@ -1,21 +1,16 @@
 
 local Details = _G.Details
+local DF = _G.DetailsFramework
 local addonName, Details222 = ...
 local _
 
-Details222.Debug.MythicPlusChartWindowDebug = false
+local debugmode = false
 local verbosemode = false
-
 
 local CreateFrame = CreateFrame
 local UIParent = UIParent
 
----@type detailsframework
-local detailsFramework = DetailsFramework
-
 local mythicDungeonCharts = Details222.MythicPlus.Charts.Listener
-
-local UISpecialFrames = UISpecialFrames
 
 -- /run _G.DetailsMythicDungeonChartHandler.ShowEndOfMythicPlusPanel()
 -- /run _G.DetailsMythicDungeonChartHandler.ShowChart()
@@ -30,7 +25,7 @@ function mythicDungeonCharts.ShowChart()
 		dungeonChartFrame:SetFrameStrata("DIALOG")
 		dungeonChartFrame:EnableMouse(true)
 		dungeonChartFrame:SetMovable(true)
-		detailsFramework:ApplyStandardBackdrop(dungeonChartFrame)
+		DetailsFramework:ApplyStandardBackdrop(dungeonChartFrame)
 
 		--minimized frame
 		mythicDungeonCharts.FrameMinimized = CreateFrame("frame", "DetailsMythicDungeonChartFrameminimized", UIParent, "BackdropTemplate")
@@ -42,7 +37,7 @@ function mythicDungeonCharts.ShowChart()
 		fMinimized:EnableMouse(true)
 		fMinimized:SetMovable(true)
 		fMinimized:Hide()
-		detailsFramework:ApplyStandardBackdrop(fMinimized)
+		DetailsFramework:ApplyStandardBackdrop(fMinimized)
 
 		dungeonChartFrame.IsMinimized = false
 
@@ -56,7 +51,7 @@ function mythicDungeonCharts.ShowChart()
 			titlebar:SetBackdropBorderColor(0, 0, 0, 1)
 
 			--title
-			local titleLabel = detailsFramework:NewLabel(titlebar, titlebar, nil, "titulo", "Plugins", "GameFontHighlightLeft", 12, {227/255, 186/255, 4/255})
+			local titleLabel = Details.gump:NewLabel(titlebar, titlebar, nil, "titulo", "Plugins", "GameFontHighlightLeft", 12, {227/255, 186/255, 4/255})
 			titleLabel:SetPoint("center", titlebar , "center")
 			titleLabel:SetPoint("top", titlebar , "top", 0, -5)
 			dungeonChartFrame.TitleText = titleLabel
@@ -71,7 +66,7 @@ function mythicDungeonCharts.ShowChart()
 			titlebarMinimized:SetBackdropBorderColor(0, 0, 0, 1)
 
 			--title
-			local titleLabelMinimized = detailsFramework:NewLabel(titlebarMinimized, titlebarMinimized, nil, "titulo", "Dungeon Run Chart", "GameFontHighlightLeft", 10, {227/255, 186/255, 4/255})
+			local titleLabelMinimized = Details.gump:NewLabel(titlebarMinimized, titlebarMinimized, nil, "titulo", "Dungeon Run Chart", "GameFontHighlightLeft", 10, {227/255, 186/255, 4/255})
 			titleLabelMinimized:SetPoint("left", titlebarMinimized , "left", 4, 0)
 			--titleLabelMinimized:SetPoint("top", titlebarMinimized , "top", 0, -5)
 			dungeonChartFrame.TitleTextMinimized = titleLabelMinimized
@@ -90,7 +85,7 @@ function mythicDungeonCharts.ShowChart()
 		LibWindow.MakeDraggable(fMinimized)
 		LibWindow.SavePosition(fMinimized)
 
-		dungeonChartFrame.ChartFrame = detailsFramework:CreateChartPanel(dungeonChartFrame, 1200, 600, "DetailsMythicDungeonChartGraphicFrame")
+		dungeonChartFrame.ChartFrame = Details:GetFramework():CreateChartPanel(dungeonChartFrame, 1200, 600, "DetailsMythicDungeonChartGraphicFrame")
 		dungeonChartFrame.ChartFrame:SetPoint("topleft", dungeonChartFrame, "topleft", 5, -20)
 
 		dungeonChartFrame.ChartFrame.FrameInUse = {}
@@ -205,16 +200,12 @@ function mythicDungeonCharts.ShowChart()
 		local on_switch_enable = function(_, _, state)
 			Details.mythic_plus.show_damage_graphic = state
 		end
-		local enabledSwitch, enabledLabel = detailsFramework:CreateSwitch(dungeonChartFrame, on_switch_enable, Details.mythic_plus.show_damage_graphic, _, _, _, _, _, _, _, _, _, "Enabled", detailsFramework:GetTemplate("switch", "OPTIONS_CHECKBOX_BRIGHT_TEMPLATE"), "GameFontHighlightLeft")
+		local enabledSwitch, enabledLabel = Details.gump:CreateSwitch(dungeonChartFrame, on_switch_enable, Details.mythic_plus.show_damage_graphic, _, _, _, _, _, _, _, _, _, "Enabled", Details.gump:GetTemplate("switch", "OPTIONS_CHECKBOX_BRIGHT_TEMPLATE"), "GameFontHighlightLeft")
 		enabledSwitch:SetAsCheckBox()
 		enabledSwitch.tooltip = "Show this chart at the end of a mythic dungeon run.\n\nIf disabled, you can reactivate it again at the options panel > streamer settings."
-
-		if (enabledLabel) then
-			enabledLabel:SetPoint("right", minimizeButton, "left", -22, 0)
-			enabledSwitch:SetSize(16, 16)
-			detailsFramework:SetFontColor(enabledLabel, "gray")
-		end
-
+		enabledLabel:SetPoint("right", minimizeButton, "left", -22, 0)
+		enabledSwitch:SetSize(16, 16)
+		Details.gump:SetFontColor(enabledLabel, "gray")
 		enabledSwitch.checked_texture:SetVertexColor(.75, .75, .75)
 
 		local leftDivisorLine = dungeonChartFrame.BossWidgetsFrame:CreateTexture(nil, "overlay")
@@ -242,19 +233,19 @@ function mythicDungeonCharts.ShowChart()
 					newBossWidget:SetBackdropColor(0, 0, 0, 0.1)
 					newBossWidget:SetBackdropBorderColor(0, 0, 0, 0)
 
-					local bossAvatar = detailsFramework:CreateImage(newBossWidget, "", 64, 32, "border")
+					local bossAvatar = Details:GetFramework():CreateImage(newBossWidget, "", 64, 32, "border")
 					bossAvatar:SetPoint("bottomleft", newBossWidget, "bottomleft", 0, 0)
 					newBossWidget.AvatarTexture = bossAvatar
 
-					local verticalLine = detailsFramework:CreateImage(newBossWidget, "", 1, dungeonChartFrame.ChartFrame.Graphic:GetHeight(), "overlay")
+					local verticalLine = Details:GetFramework():CreateImage(newBossWidget, "", 1, dungeonChartFrame.ChartFrame.Graphic:GetHeight(), "overlay")
 					verticalLine:SetColorTexture(1, 1, 1, 0.3)
 					verticalLine:SetPoint("bottomleft", newBossWidget, "bottomright", 0, 0)
 
-					local timeText = detailsFramework:CreateLabel(newBossWidget)
+					local timeText = Details:GetFramework():CreateLabel(newBossWidget)
 					timeText:SetPoint("bottomright", newBossWidget, "bottomright", 0, 0)
 					newBossWidget.TimeText = timeText
 
-					local timeBackground = detailsFramework:CreateImage(newBossWidget, "", 30, 12, "artwork")
+					local timeBackground = Details:GetFramework():CreateImage(newBossWidget, "", 30, 12, "artwork")
 					timeBackground:SetColorTexture(0, 0, 0, 0.5)
 					timeBackground:SetPoint("topleft", timeText, "topleft", -2, 2)
 					timeBackground:SetPoint("bottomright", timeText, "bottomright", 2, 0)
@@ -269,7 +260,7 @@ function mythicDungeonCharts.ShowChart()
 
 				bossWidget:SetPoint("bottomright", dungeonChartFrame.ChartFrame.Graphic, "bottomleft", xPosition, 0)
 
-				bossWidget.TimeText:SetText(detailsFramework:IntegerToTimer(bossTable[1]))
+				bossWidget.TimeText:SetText(Details:GetFramework():IntegerToTimer(bossTable[1]))
 
 				if (bossTable[2].bossimage) then
 					bossWidget.AvatarTexture:SetTexture(bossTable[2].bossimage)
@@ -284,12 +275,12 @@ function mythicDungeonCharts.ShowChart()
 	mythicDungeonCharts.Frame.ChartFrame:Reset()
 
 	if (not mythicDungeonCharts.ChartTable) then
-		if (Details222.Debug.MythicPlusChartWindowDebug) then
+		if (debugmode) then
 			--development
 			if (Details.mythic_plus.last_mythicrun_chart) then
 				--load the last mythic dungeon run chart
 				local t = {}
-				detailsFramework.table.copy(t, Details.mythic_plus.last_mythicrun_chart)
+				Details:GetFramework().table.copy(t, Details.mythic_plus.last_mythicrun_chart)
 				mythicDungeonCharts.ChartTable = t
 				mythicDungeonCharts:Debug("no valid data, saved data loaded")
 
@@ -369,7 +360,7 @@ function mythicDungeonCharts.ShowChart()
 	local phrase = "Details!: Average Dps for "
 
 	mythicDungeonCharts.Frame.ChartFrame:SetTitle("")
-	detailsFramework:SetFontSize(mythicDungeonCharts.Frame.ChartFrame.chart_title, 14)
+	Details:GetFramework():SetFontSize(mythicDungeonCharts.Frame.ChartFrame.chart_title, 14)
 
 	mythicDungeonCharts.Frame.TitleText:SetText(mythicDungeonCharts.ChartTable.DungeonName and phrase .. mythicDungeonCharts.ChartTable.DungeonName or phrase)
 
@@ -594,6 +585,6 @@ mythicDungeonCharts.ClassColors = {
 	["EVOKER3"] = { r = 0.0, g = 0.6 , b = 0.19, colorStr = "FF274B3C" },
 };
 
-if (Details222.Debug.MythicPlusChartWindowDebug) then
+if (debugmode) then
 	--C_Timer.After(1, mythicDungeonCharts.ShowChart)
 end

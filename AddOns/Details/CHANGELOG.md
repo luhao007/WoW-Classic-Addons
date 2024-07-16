@@ -1,6 +1,6 @@
 # Details! Damage Meter
 
-## [Details.12810.158](https://github.com/Tercioo/Details-Damage-Meter/tree/Details.12810.158) (2024-07-16)
-[Full Changelog](https://github.com/Tercioo/Details-Damage-Meter/compare/Details.12809.158...Details.12810.158) 
+## [Details.20240607.12801.156](https://github.com/Tercioo/Details-Damage-Meter/tree/Details.20240607.12801.156) (2024-06-07)
+[Full Changelog](https://github.com/Tercioo/Details-Damage-Meter/compare/Details.20240607.12800.156...Details.20240607.12801.156) 
 
-- Fix for function call on the new trash boss segments cleanup  
+- Fixed an issue with Cataclysm classic not having the "ENCOUNTER\_LOOT\_RECEIVED" event.  

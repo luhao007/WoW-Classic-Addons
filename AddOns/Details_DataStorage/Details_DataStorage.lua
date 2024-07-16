@@ -1,16 +1,12 @@
 
-DETAILS_STORAGE_VERSION = 7
+DETAILS_STORAGE_VERSION = 6
 
 function Details:CreateStorageDB()
 	DetailsDataStorage = {
 		VERSION = DETAILS_STORAGE_VERSION,
-		normal = {}, --raid difficulties
-		heroic = {}, --raid difficulties
-		mythic = {}, --raid difficulties
-		--[14] = {}, --normal mode (raid)
-		--[15] = {}, --heroic mode (raid)
-		--[16] = {}, --mythic mode (raid)
-		["totalkills"] = {},
+		[14] = {}, --normal mode (raid)
+		[15] = {}, --heroic mode (raid)
+		[16] = {}, --mythic mode (raid)
 		["mythic_plus"] = {}, --(dungeons)
 		["saved_encounters"] = {}, --(a segment)
 	}
@@ -25,10 +21,15 @@ f:SetScript("OnEvent", function(self, event, addonName)
 	if (addonName == "Details_DataStorage") then
 		DetailsDataStorage = DetailsDataStorage or Details:CreateStorageDB()
 		DetailsDataStorage.Data = {}
-
+print("loaded...")
 		if (DetailsDataStorage.VERSION < DETAILS_STORAGE_VERSION) then
-			table.wipe(DetailsDataStorage)
-			DetailsDataStorage = Details:CreateStorageDB()
+			print("is outdated")
+			--> do revisions
+			if (DetailsDataStorage.VERSION < 6) then
+				print("outdated two, data wiped!")
+				table.wipe(DetailsDataStorage)
+				DetailsDataStorage = Details:CreateStorageDB()
+			end
 		end
 
 		if (Details and Details.debug) then

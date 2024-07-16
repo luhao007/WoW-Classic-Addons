@@ -87,6 +87,9 @@ local classTypeUtility = Details.atributos.misc
 	end
 
 	function Details:RestoreMetatables() --called from Details222.LoadSavedVariables.CombatSegments() --restore actor containers indexes e metatables
+		--pet table
+		setmetatable(Details.tabela_pets, Details.container_pets)
+
 		--segment container
 		setmetatable(Details.tabela_historico, Details.historico)
 
@@ -715,7 +718,7 @@ local classTypeUtility = Details.atributos.misc
 		end
 
 		--cleanup backlisted pets within the handler of actor containers
-		Details222.PetContainer.DoMaintenance()
+		Details222.Pets.PetContainerCleanup()
 		Details:ClearCCPetsBlackList()
 
 		--cleanup spec cache

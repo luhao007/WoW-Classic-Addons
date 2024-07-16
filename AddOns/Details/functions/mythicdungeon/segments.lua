@@ -205,7 +205,7 @@ function DetailsMythicPlusFrame.MergeSegmentsOnEnd() --~merge
     Details222.MythicPlus.LogStep("MergeSegmentsOnEnd started | creating the overall segment at the end of the run.")
 
     --create a new combat to be the overall for the mythic run
-    Details222.StartCombat()
+    Details:StartCombat()
 
     --get the current combat just created and the table with all past segments
     local newCombat = Details:GetCurrentCombat()
@@ -455,7 +455,7 @@ function DetailsMythicPlusFrame.MergeRemainingTrashAfterAllBossesDone()
 
         if (not Details:GetCurrentCombat()) then
             --assuming there's no segment from the dungeon run
-            Details222.StartCombat()
+            Details:StartCombat()
             Details:EndCombat()
         end
 

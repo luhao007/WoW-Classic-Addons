@@ -1,6 +1,4 @@
 local AB, _, T = assert(OPie.ActionBook:compatible(2,14), "Requires a compatible version of ActionBook"), ...
-if T.TenEnv then T.TenEnv() end
-
 local ORI, EV, L, PC, XU, config = OPie.UI, T.Evie, T.L, T.OPieCore, T.exUI, T.config
 local COMPAT = select(4,GetBuildInfo())
 local MODERN, CF_WRATH = COMPAT >= 10e4, COMPAT < 10e4 and COMPAT >= 3e4
@@ -69,7 +67,7 @@ if MODERN then
 			return true, false, disItems[iid]
 		end
 		local inc, isQuest, startQuestId, isQuestActive = include[iid], getContainerItemQuestInfo(bag, slot)
-		isQuest = iid and ((isQuest and C_Item.GetItemSpell(iid)) or (inc == true) or (startQuestId and not isQuestActive and not C_QuestLog.IsQuestFlaggedCompleted(startQuestId)))
+		isQuest = iid and ((isQuest and GetItemSpell(iid)) or (inc == true) or (startQuestId and not isQuestActive and not C_QuestLog.IsQuestFlaggedCompleted(startQuestId)))
 		local tinc, rcat = inc and not isQuest and type(inc), nil
 		if tinc == "function" then
 			isQuest, startQuestId, isQuestActive, rcat = inc(iid)
@@ -85,7 +83,7 @@ if MODERN then
 			end
 		end
 		if inc == nil and not isQuest then
-			local isn, isid = C_Item.GetItemSpell(iid)
+			local isn, isid = GetItemSpell(iid)
 			if isid and includeSpell[isn] and IsUsableSpell(isid) then
 				isQuest, startQuestId, rcat = true, false, includeSpell[isn]
 			end
@@ -111,8 +109,8 @@ else
 			return false
 		elseif include[iid] then
 			isQuest = true
-		elseif not (C_Item.GetItemSpell(iid) and not exclude[iid]) then
-		elseif select(12, C_Item.GetItemInfo(iid)) == QUEST_ITEM then
+		elseif not (GetItemSpell(iid) and not exclude[iid]) then
+		elseif select(12, GetItemInfo(iid)) == QUEST_ITEM then
 			isQuest = true
 		elseif skipTypeCheck then
 			include[iid], isQuest = true, true
@@ -344,11 +342,11 @@ local edFrame = CreateFrame("Frame") do
 		if not (iid and w) then
 			return w and w:Hide()
 		end
-		local n, _, _iq, _, _, _, _, _, _, ico = C_Item.GetItemInfo(iid or 0)
+		local n, _, _iq, _, _, _, _, _, _, ico = GetItemInfo(iid or 0)
 		if n then
 			w.pendingItemID = nil
 		else
-			w.pendingItemID, n, _, _, _, _, ico = iid, "item:" .. iid, C_Item.GetItemInfoInstant(iid or 0)
+			w.pendingItemID, n, _, _, _, _, ico = iid, "item:" .. iid, GetItemInfoInstant(iid or 0)
 		end
 		w.Text:SetText(n)
 		w.Icon:SetTexture(ico)
@@ -399,7 +397,7 @@ local edFrame = CreateFrame("Frame") do
 		local allDone = 1
 		for i=1, numRowsPV do
 			local pid = rows[i].pendingItemID
-			local n = pid and C_Item.GetItemInfo(pid)
+			local n = pid and GetItemInfo(pid)
 			allDone = allDone and (n or not pid)
 			if n then
 				rows[i].pendingItemID = nil
@@ -495,7 +493,7 @@ T.AddSlashSuffix(function(msg)
 	else
 		local flag, _, link
 		flag, args = args:match("^(%-?)(.*)$")
-		_, link = C_Item.GetItemInfo(args:match("|H(item:%d+)") or args)
+		_, link = GetItemInfo(args:match("|H(item:%d+)") or args)
 		local iid = link and link:match("item:(%d+)")
 		if iid then
 			excludeItemID(tonumber(iid) * (flag == "-" and -1 or 1))

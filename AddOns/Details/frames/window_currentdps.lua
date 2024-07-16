@@ -759,10 +759,7 @@ function Details:CreateCurrentDpsFrame(parent, name)
 						local dpsBarFrame = DetailsArenaDpsBars.splitBar
 
 						--a percenntagem na barra esta sendo setada corretamente, porem a animação não esta funcrtionando ainda
-						local percentValue = 0
-						if (totalDamage > 0) then
-							percentValue = teamGreenDps / totalDamage
-						end
+						local percentValue = teamGreenDps / totalDamage
 						percentValue = Saturate(percentValue)
 
 						--print(percentValue)

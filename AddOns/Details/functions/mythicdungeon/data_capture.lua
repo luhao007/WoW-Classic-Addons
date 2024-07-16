@@ -32,6 +32,7 @@ local mythicDungeonCharts = Details222.MythicPlus.Charts.Listener
 
 --debug
 _G.DetailsMythicDungeonChartHandler = mythicDungeonCharts
+--DetailsMythicDungeonChartHandler.ChartTable.Players["playername"].ChartData = {max_value = 0}
 
 function mythicDungeonCharts:Debug(...)
 	if (debugmode or verbosemode) then
@@ -220,7 +221,7 @@ function mythicDungeonCharts:OnStartMythicDungeon()
 	mythicDungeonCharts.ChartTable.Ticker = C_Timer.NewTicker(1, tickerCallback)
 
 	--save the chart for development
-	if (Details222.Debug.MythicPlusChartWindowDebug) then
+	if (debugmode) then
 		Details.mythic_plus.last_mythicrun_chart = mythicDungeonCharts.ChartTable
 	end
 

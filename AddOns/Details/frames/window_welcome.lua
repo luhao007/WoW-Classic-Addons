@@ -1,5 +1,3 @@
-
-local addonName, Details222 = ...
 local _detalhes = 		_G.Details
 local Loc = LibStub("AceLocale-3.0"):GetLocale ( "Details" )
 local SharedMedia = LibStub:GetLibrary("LibSharedMedia-3.0")
@@ -14,7 +12,7 @@ function _detalhes:OpenWelcomeWindow()
 	if (not window) then
 
 		--on first run, sincronize with guild
-		Details222.storage:DBGuildSync()
+		_detalhes.storage:DBGuildSync()
 
 		local index = 1
 		local pages = {}
@@ -1063,7 +1061,7 @@ local window_openned_at = time()
 
 			_detalhes.zone_type = "pvp"
 
-			Details222.StartCombat()
+			_detalhes:EntrarEmCombate()
 
 			_detalhes:StartTestBarUpdate()
 

@@ -16,7 +16,6 @@
 	local IsInRaid = IsInRaid
 	local IsInGroup = IsInGroup
 	local stringReplace = Details.string.replace
-    local GetSpellLink = GetSpellLink or C_Spell.GetSpellLink --api local
 
 	local Loc = LibStub("AceLocale-3.0"):GetLocale("Details")
 

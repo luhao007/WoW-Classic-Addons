@@ -161,7 +161,7 @@ end
                         isReady, normalizedPercent, timeLeft, charges, minValue, maxValue, currentValue = openRaidLib.GetCooldownStatusFromCooldownInfo(cooldownInfo)
                     end)
                     if (not bRunOkay) then
-                        local spellName = Details222.GetSpellInfo(spellId)
+                        local spellName = GetSpellInfo(spellId)
                         --print("error on cooldown update:", unitName, spellName, errorText)
                         return
                     end

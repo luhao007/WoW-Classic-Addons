@@ -388,10 +388,11 @@ class Manager:
                 'onclick_what_todo = 1, text_type = 1, text_format = 3},'),
         )
 
-        utils.change_defaults(
-            'Addons/Details_Streamer/Details_Streamer.lua',
-            '					minimap = {hide = true, radius = 160, minimapPos = 160},',
-        )
+        if os.path.exists('Addons/Details_Streamer'):
+            utils.change_defaults(
+                'Addons/Details_Streamer/Details_Streamer.lua',
+                '					minimap = {hide = true, radius = 160, minimapPos = 160},',
+            )
 
     @staticmethod
     def handle_fb():

@@ -3,15 +3,13 @@ do
 	local _detalhes = 		_G.Details
 	local addonName, Details222 = ...
 
-	local GetSpellInfo = Details222.GetSpellInfo
-
 	--import potion list from the framework
 	_detalhes.PotionList = {}
 	for spellID, _ in pairs(DetailsFramework.PotionIDs) do
 		_detalhes.PotionList [spellID] = true
 	end
 
-	if (DetailsFramework.IsDragonflight() or DetailsFramework.IsWarWow()) then
+	if (DetailsFramework.IsDragonflight()) then
 		--/details generatespelllist
 		_detalhes.SpecSpellList = { --~spec
 			--Evoker Augmentation

@@ -136,18 +136,17 @@ function Details222.LoadSavedVariables.CombatSegments()
 		Details.tabela_historico = Details.historico:CreateNewSegmentDatabase()
 		Details.tabela_overall = Details.combate:NovaTabela()
 		Details.tabela_vigente = Details.combate:NovaTabela(_, Details.tabela_overall)
-		Details222.PetContainer.Reset()
+		Details.tabela_pets = Details.container_pets:NovoContainer()
+		Details:UpdatePetCache()
 
-		if (currentCharacterData.saved_pet_cache) then
-			Details:Destroy(currentCharacterData.saved_pet_cache) --saved pet data
-			currentCharacterData.saved_pet_cache = nil
+		if (currentCharacterData.tabela_pets) then
+			Details:Destroy(currentCharacterData.tabela_pets) --saved pet data
+			currentCharacterData.tabela_pets = nil
 		end
-
 		if (currentCharacterData.tabela_overall) then --saved overall data
 			Details:Destroy(currentCharacterData.tabela_overall)
 			currentCharacterData.tabela_overall = nil
 		end
-
 		if (currentCharacterData.tabela_historico) then
 			Details:Destroy(currentCharacterData.tabela_historico)
 			currentCharacterData.tabela_historico = nil
@@ -157,12 +156,12 @@ function Details222.LoadSavedVariables.CombatSegments()
 	else
 		--pet owners cache saved on logout
 		do
-			Details222.PetContainer.Reset()
-			if (currentCharacterData.saved_pet_cache) then
+			Details.tabela_pets = Details.container_pets:NovoContainer()
+			if (currentCharacterData.tabela_pets) then
 				--pet ownership table only exists if the player logoff inside a raid or dungeon
-				Details222.PetContainer.SetPetData(currentCharacterData.saved_pet_cache)
-				Details:Destroy(currentCharacterData.saved_pet_cache)
-				currentCharacterData.saved_pet_cache = nil
+				Details.tabela_pets.pets = Details.CopyTable(currentCharacterData.tabela_pets)
+				Details:Destroy(currentCharacterData.tabela_pets)
+				currentCharacterData.tabela_pets = nil
 			end
 		end
 
@@ -195,6 +194,7 @@ function Details222.LoadSavedVariables.CombatSegments()
 			actorContainer.need_refresh = true
 		end
 
+		Details:UpdatePetCache()
 		Details:RestoreMetatables()
 	end
 end
