@@ -414,12 +414,12 @@ local function updateCentralElements(self, si, _, tok, usable, state, icon, capt
 			tipFunc, tipArg = text and GameTooltip.AddLine, text
 		end
 		if tipFunc then
-			if not checkTipThrottle(mainFrame, tipFunc, tipArg, time) then
-				SetDefaultAnchor(GameTooltip, mainFrame)
+			if not checkTipThrottle(proxyFrame, tipFunc, tipArg, time) then
+				SetDefaultAnchor(GameTooltip, proxyFrame)
 				tipFunc(GameTooltip, tipArg)
 				GameTooltip:Show()
 			end
-		elseif GameTooltip:IsOwned(mainFrame) then
+		elseif GameTooltip:IsOwned(proxyFrame) then
 			GameTooltip:Hide()
 		end
 	end
@@ -663,6 +663,7 @@ function iapi:Show(_, _, fastOpen)
 	mainFrame.oldSlice, mainFrame.angle, mainFrame.omState, mainFrame.oldIsGlowing, mainFrame.rotPeriod, lastConAngle, mainFrame.oldEA = -1
 	GhostIndication:Reset()
 	SwitchIndicatorFactory(configCache.IndicatorFactory)
+	centerPointer:SetShown(configCache.InteractionMode ~= 3)
 
 	local astep = count == 0 and 0 or -360/count
 	for i=1, count do
@@ -696,7 +697,7 @@ end
 function iapi:Hide()
 	SetupTransitionAnimation("out", OnUpdate_ZoomOut)
 	GhostIndication:Deactivate()
-	if GameTooltip:IsOwned(mainFrame) then
+	if GameTooltip:IsOwned(proxyFrame) then
 		GameTooltip:Hide()
 	end
 	wipeTokenCache()

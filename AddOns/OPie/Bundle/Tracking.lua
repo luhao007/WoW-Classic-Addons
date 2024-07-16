@@ -1,4 +1,6 @@
 local AB, _, T = assert(OPie.ActionBook:compatible(2,14), "Requires a compatible version of ActionBook"), ...
+if T.TenEnv then T.TenEnv() end
+
 local ORI, EV, L = OPie.UI, T.Evie, T.L
 local COMPAT = select(4,GetBuildInfo())
 local MODERN, CF_WRATH = COMPAT >= 10e4, COMPAT < 10e4 and COMPAT >= 3e4

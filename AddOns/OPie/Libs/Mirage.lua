@@ -1,4 +1,6 @@
 local _, T = ...
+if T.TenEnv then T.TenEnv() end
+
 local gx do
 	local b = ([[Interface\AddOns\%s\gfx\]]):format((...))
 	gx = {

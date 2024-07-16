@@ -6,10 +6,12 @@ local frame = TS:CreateOptionsPanel(L"Ring Bindings", "OPie")
 	frame.desc:SetText(L"Customize OPie key bindings below. Hover over a binding button for additional information and options."
 		.. (MODERN and "\n" .. L"Profiles activate automatically when you switch character specializations." or ""))
 local OBC_Profile = CreateFrame("Frame", "OBC_Profile", frame, "UIDropDownMenuTemplate")
-	OBC_Profile:SetPoint("TOPLEFT", 0, -80) UIDropDownMenu_SetWidth(OBC_Profile, 200)
+	OBC_Profile:SetPoint("TOPLEFT", 0, -80)
+	UIDropDownMenu_SetWidth(OBC_Profile, 200)
 	OBC_Profile.initialize, OBC_Profile.text = OPC_Profile.initialize, OPC_Profile.text
-local bindSet = CreateFrame("Frame", "OPC_BindingSet", frame, "UIDropDownMenuTemplate")
-	bindSet:SetPoint("LEFT", OBC_Profile, "RIGHT")	UIDropDownMenu_SetWidth(bindSet, 250)
+local bindSet = CreateFrame("Frame", "OBC_BindingSet", frame, "UIDropDownMenuTemplate")
+	bindSet:SetPoint("LEFT", OBC_Profile, "RIGHT", 44, 0)
+	UIDropDownMenu_SetWidth(bindSet, 250)
 local bindLines, bindLines2, bindZone, bindZoneOrigin = {}, {}, CreateFrame("Frame", nil, frame) do
 	bindZone:SetClipsChildren(true)
 	bindZone:SetHitRectInsets(0, -22, 0, 0)

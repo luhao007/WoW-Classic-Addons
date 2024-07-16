@@ -104,12 +104,12 @@ R:AddDefaultRing("DruidFeral", {
 do -- Hunter Pets
 	local m = "#showtooltip [@pet,exists,nodead,nopet:%d] {{spell:%d}}\n/cast [@pet,exists,nopet:%1$d,nodead] {{spell:2641}}\n/cast [@pet,noexists,nomod] {{spell:%2$d}}; [@pet,dead][@pet,noexists] {{spell:982}}; [@pet,help,nomod] {{spell:136}}; [@pet] {{spell:2641}}"
 	R:AddDefaultRing("HunterPets", {
-		{id=m:format(1,883), show="[known:883,havepet:1]", _u="1"},
-		{id=m:format(2,83242), show="[known:83242,havepet:2]", _u="2"},
-		{id=m:format(3,83243), show="[known:83243,havepet:3]", _u="3"},
-		{id=m:format(4,83244), show="[known:83244,havepet:4]", _u="4"},
-		{id=m:format(5,83245), show="[known:83245,havepet:5]", _u="5"},
-		name=L"Pets", limit="HUNTER", _u="OPCHP", internal=true, v=1
+		{id=m:format(1,883), show="[havepet:1,known:883]", _u="1"},
+		{id=m:format(2,83242), show="[havepet:2,known:83242]", _u="2"},
+		{id=m:format(3,83243), show="[havepet:3,known:83243]", _u="3"},
+		{id=m:format(4,83244), show="[havepet:4,known:83244]", _u="4"},
+		{id=m:format(5,83245), show="[havepet:5,known:83245]", _u="5"},
+		name=L"Pets", limit="HUNTER", _u="OPCHP", internal=true, v=3
 	})
 end
 R:AddDefaultRing("HunterAspects", {

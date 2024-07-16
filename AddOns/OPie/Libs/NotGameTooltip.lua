@@ -7,6 +7,8 @@ until _G[tn] == nil
 -- External addons: please treat this as you would treat _G.GameTooltip
 local tip = CreateFrame("GameTooltip", tn, UIParent, "GameTooltipTemplate")
 tip.LIKE_GLOBAL_GAMETOOLTIP = true
+tip.shoppingTooltips = tip.shoppingTooltips or GameTooltip.shoppingTooltips -- Classic.
+tip:SetScript("OnUpdate", GameTooltip_OnUpdate)
 T.NotGameTooltip = tip
 
 do -- Avoid showing both at the same time

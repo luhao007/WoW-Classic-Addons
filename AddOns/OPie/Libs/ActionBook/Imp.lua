@@ -1,5 +1,6 @@
-local MAJ, REV, COMPAT, _, T = 1, 7, select(4,GetBuildInfo()), ...
+local MAJ, REV, COMPAT, _, T = 1, 9, select(4,GetBuildInfo()), ...
 if T.SkipLocalActionBook then return end
+if T.TenEnv then T.TenEnv() end
 
 local EV, AB, RW = T.Evie, T.ActionBook:compatible(2,34), T.ActionBook:compatible("Rewire", 1,27)
 assert(EV and AB and RW and 1, "Incompatible library bundle")
@@ -8,6 +9,62 @@ local IM, L, XU = {}, T.ActionBook.L, T.exUI
 
 local function assert(condition, text, level, ...)
 	return condition or error(tostring(text):format(...), 1 + (level or 1))((0)[0])
+end
+
+local GetModernTalentSpells do
+	local GMTS_next, GMTS_node
+	local function GMTS_entry(s, activeEID, entryID)
+		local entry = C_Traits.GetEntryInfo(s.cid, entryID)
+		local def = entry and entry.definitionID and C_Traits.GetDefinitionInfo(entry.definitionID)
+		local sid = def and def.spellID
+		if sid then
+			return sid, activeEID == entryID, def.overrideName
+		elseif entry.subTreeID then
+			local sn, nodes = #s, C_Traits.GetTreeNodes(entry.subTreeID)
+			if nodes and nodes[1] then
+				s[sn+1], s[sn+2], s[sn+3], s[sn+4] = nodes, 1, s.cid, GMTS_node
+			end
+		end
+		return GMTS_next(s)
+	end
+	function GMTS_node(s, confID, nodeID)
+		local node = C_Traits.GetNodeInfo(confID, nodeID)
+		local entryIDs = node and node.entryIDs
+		if entryIDs and entryIDs[1] then
+			local sn, activeEID = #s, node.activeEntry and node.activeEntry.entryID
+			s[sn+1], s[sn+2], s[sn+3], s[sn+4] = node.entryIDs, 1, activeEID, GMTS_entry
+		end
+		return GMTS_next(s)
+	end
+	function GMTS_next(s)
+		if not s then return end
+		local sn = s and #s
+		local a, i, c, fn = s[sn-3], s[sn-2], s[sn-1], s[sn]
+		if a and a[i+1] == nil then
+			s[sn-3], s[sn-2], s[sn-1], s[sn] = nil
+		elseif i then
+			s[sn-2] = i + 1
+		end
+		if fn then
+			return fn(s, c, a[i])
+		end
+	end
+	function GetModernTalentSpells()
+		local s
+		if MODERN then
+			local cid = C_ClassTalents.GetActiveConfigID()
+			if not cid then
+				local spec = GetSpecializationInfo(GetSpecialization())
+				local cc = C_ClassTalents.GetConfigIDsBySpecID(spec)
+				cid = cc and cc[1]
+			end
+			local conf = cid and C_Traits.GetConfigInfo(cid)
+			local tree = conf and conf.treeIDs and conf.treeIDs[1]
+			local nodes = tree and C_Traits.GetTreeNodes(tree)
+			s = nodes and {nodes, 1, cid, GMTS_node, cid=cid}
+		end
+		return GMTS_next, s
+	end
 end
 
 local commandType, addCommandType = {["#show"]=0, ["#showtooltip"]=0, ["#imp"]=-1} do
@@ -60,7 +117,7 @@ local toMacroText, quantizeMacro, formatMacro, formatToken, setMountPreference d
 		end
 		local function procLine(commandPrefix, nlc, command, args)
 			if critFail or (nlc ~= "" and nlc ~= "\n") then return end
-			local ctype = commandType[command:lower()]
+			local ctype = commandType[command:lower()] or command:match("^/!%S") and commandType["/cast"]
 			if ctype == -1 then
 				return procImpOptions(args)
 			elseif not ctype then
@@ -117,9 +174,29 @@ local toMacroText, quantizeMacro, formatMacro, formatToken, setMountPreference d
 			end
 		end
 	end
+	local function parseVarPrefix(value, _ctype)
+		local varPrefixEnd = 1
+		repeat
+			local col, ep = value:match("^%s*%%[a-zA-Z\128-\255][a-zA-Z0-9_\128-\255]*(%S?)%s*()", varPrefixEnd)
+			if not ep or col ~= ":" and ep <= #value then
+				break
+			else
+				varPrefixEnd = ep
+			end
+		until ep > #value
+		return varPrefixEnd == 1 and "" or value:sub(1, varPrefixEnd-1)
+	end
+	local function restoreVarPrefix(varPrefix, emitText)
+		if varPrefix == "" then
+			return emitText
+		elseif emitText then
+			return varPrefix .. emitText
+		end
+		return (varPrefix:gsub("%:%s*$", ""))
+	end
 	local function replaceSpellID(ctype, sidlist, prefix, tk)
-		local noEscapes, sr, ar = not CAST_ESCAPE_COMMAND_TYPES[ctype]
-		for id, sn in sidlist:gmatch("%d+") do
+		local noEscapes, sn, sr, ar = not CAST_ESCAPE_COMMAND_TYPES[ctype]
+		for id in sidlist:gmatch("%d+") do
 			id = id + 0
 			sn, sr = GetSpellInfo(id), GetSpellSubtext(id)
 			ar = GetSpellSubtext(sn)
@@ -211,13 +288,14 @@ local toMacroText, quantizeMacro, formatMacro, formatToken, setMountPreference d
 		pingTextMap[v:lower()], pingTextMap[k] = k, k
 	end
 	toMacroText = genParser(function(ctype, value)
-		local prefix, tkey, tval = value:match("^%s*(!?){{(%a+):([%a%d/]+)}}%s*$")
+		local varPrefix = parseVarPrefix(value, ctype)
+		local prefix, tkey, tval = value:match("^%s*(!?){{(%a+):([%a%d/]+)}}%s*$", #varPrefix+1)
 		if tkey == "spell" or tkey == "spellr" then
-			return replaceSpellID(ctype, tval, prefix, tkey)
+			return restoreVarPrefix(varPrefix, replaceSpellID(ctype, tval, prefix, tkey))
 		elseif tkey == "mount" then
-			return replaceMountTag(ctype, tval, prefix)
+			return restoreVarPrefix(varPrefix, replaceMountTag(ctype, tval, prefix))
 		elseif tkey == "ping" and ctype == 4 then
-			return pingTokenMap[tval] or value
+			return restoreVarPrefix(varPrefix, pingTokenMap[tval] or value)
 		elseif value:match('^%s*!?|Hiptok|h|h%s*$') then
 			return '-'
 		end
@@ -226,19 +304,20 @@ local toMacroText, quantizeMacro, formatMacro, formatToken, setMountPreference d
 	local toImpText, prepareQuantizer do
 		local spells, specialTokens, OTHER_SPELL_IDS = {}, {}, {150544, 243819}
 		local abMountTokens = {["Ground Mount"]="{{mount:ground}}", ["Flying Mount"]="{{mount:air}}", ["Dragonriding Mount"]=MODERN and "{{mount:dragon}}" or nil}
-		toImpText = genParser(function(ctype, value, ctx, args, cpos)
-			if type(ctx) == "number" and ctx > 0 then
-				return nil, ctx-1
+		toImpText = genParser(function(ctype, value, skipCount, args, cpos)
+			if type(skipCount) == "number" and skipCount > 0 then
+				return nil, skipCount-1
 			end
 			local commaList, noEscapes = COMMA_LIST_COMMAND_TYPES[ctype], not CAST_ESCAPE_COMMAND_TYPES[ctype]
-			local cc, pre, name, tws = 0, value:match("^(%s*!?)(.-)(%s*)$")
+			local varPrefix = parseVarPrefix(value, ctype)
+			local cc, pre, name, tws = 0, value:match("^(%s*!?)(.-)(%s*)$", #varPrefix+1)
 			repeat
 				local lowname = name:lower()
 				local sid, peek, cnpos = spells[lowname]
 				if ctype == 4 then
 					name = pingTextMap[lowname]
 					if name then
-						return pre .. "{{ping:" .. name.. "}}" .. tws
+						return restoreVarPrefix(varPrefix, pre .. "{{ping:" .. name.. "}}" .. tws)
 					end
 				elseif sid and noEscapes and RW:IsCastEscape(lowname, true) then
 					-- Don't tokenize escapes in contexts they wont't work in
@@ -247,14 +326,14 @@ local toMacroText, quantizeMacro, formatMacro, formatToken, setMountPreference d
 						local rname = name:gsub("%s*%([^)]+%)$", "")
 						local sid2 = rname ~= name and spells[rname:lower()]
 						if sid2 then
-							return (pre .. "{{spellr:" .. sid .. "}}" .. tws), cc
+							return restoreVarPrefix(varPrefix, (pre .. "{{spellr:" .. sid .. "}}" .. tws)), cc
 						end
 					end
-					return (pre .. "{{spell:" .. sid .. "}}" .. tws), cc
+					return restoreVarPrefix(varPrefix, (pre .. "{{spell:" .. sid .. "}}" .. tws)), cc
 				elseif specialTokens[lowname] then
-					return pre .. specialTokens[lowname] .. tws, cc
+					return restoreVarPrefix(varPrefix, pre .. specialTokens[lowname] .. tws), cc
 				elseif name:match("^{{.*}}$") then
-					return pre .. name .. tws, cc
+					return restoreVarPrefix(varPrefix, pre .. name .. tws), cc
 				end
 				if commaList and args then
 					peek, cnpos = args:match("^([^,]+),?()", cpos)
@@ -278,31 +357,14 @@ local toMacroText, quantizeMacro, formatMacro, formatToken, setMountPreference d
 				specialTokens[k:lower()], specialTokens[L(k):lower()] = tok, tok
 			end
 		end
-		local function addModernSpells()
-			local cid = C_ClassTalents.GetActiveConfigID()
-			if not cid then
-				local spec = GetSpecializationInfo(GetSpecialization())
-				local cc = C_ClassTalents.GetConfigIDsBySpecID(spec)
-				cid = cc and cc[1]
-			end
-			local conf = cid and C_Traits.GetConfigInfo(cid)
-			local tree = conf and conf.treeIDs and conf.treeIDs[1]
-			local nodes = tree and C_Traits.GetTreeNodes(tree)
-			for i=1,nodes and #nodes or 0 do
-				local node = C_Traits.GetNodeInfo(cid, nodes[i])
-				for i=1,#node.entryIDs do
-					local entry = C_Traits.GetEntryInfo(cid, node.entryIDs[i])
-					local def = C_Traits.GetDefinitionInfo(entry.definitionID)
-					local sid = def and def.spellID and not IsPassiveSpell(def.spellID) and def.spellID
-					if sid then
-						local name, name2 = GetSpellInfo(sid), def.overrideName
-						if name then
-							spells[name:lower()] = sid
-						end
-						if name2 and name2 ~= name then
-							spells[name2:lower()] = sid
-						end
-					end
+		local function addModernTalents()
+			for sid, _active, overrideName in GetModernTalentSpells() do
+				local name = GetSpellInfo(sid)
+				if name then
+					spells[name:lower()] = sid
+				end
+				if overrideName and overrideName ~= name then
+					spells[overrideName:lower()] = sid
 				end
 			end
 		end
@@ -352,7 +414,7 @@ local toMacroText, quantizeMacro, formatMacro, formatToken, setMountPreference d
 			end
 			if MODERN then
 				addMountSpells()
-				addModernSpells()
+				addModernTalents()
 			elseif CF_WRATH then
 				addMountSpells()
 				for i=1,GetNumCompanions("CRITTER") do
@@ -416,10 +478,11 @@ local toMacroText, quantizeMacro, formatMacro, formatToken, setMountPreference d
 				return '{{' .. token .. ':' .. targ .. '}}'
 			end
 		end
-		local toUIText = genParser(function(_ctype, value)
-			local prefix, token, targ, suf = value:match("^(%s*!?){{(%a+):([%a%d/]+)}}(%s*)$")
+		local toUIText = genParser(function(ctype, value)
+			local varPrefix = parseVarPrefix(value, ctype)
+			local prefix, token, targ, suf = value:match("^(%s*!?){{(%a+):([%a%d/]+)}}(%s*)$", #varPrefix+1)
 			local v = token and formatTokenInner(token, targ)
-			return v and (prefix .. v .. suf) or value
+			return v and restoreVarPrefix(varPrefix, prefix .. v .. suf) or value
 		end)
 		local linkTag = 0
 		local function tagLinks(p)
@@ -442,6 +505,25 @@ local toMacroText, quantizeMacro, formatMacro, formatToken, setMountPreference d
 end
 local encodeMacro, decodeMacro do
 	local skipCacheRefresh
+	local phash_ChatTypeInfoList, importLooseSlashCommands = setmetatable({}, {__index=hash_ChatTypeInfoList}) do
+		local imported = {}
+		-- Bootleg ChatFrame_ImportListToHash(SlashCmdList, hash_SlashCmdList); calling the FrameXML version directly
+		-- would defeat its iterator isolation, and SlashCmdList has late-added secure entries which would notice.
+		function importLooseSlashCommands()
+			for k in pairs(SlashCmdList) do
+				if not imported[k] then
+					local p, i, cmd = "SLASH_" .. k, 1
+					repeat
+						cmd, i = _G[p .. i], i + 1
+						if type(cmd) == "string" then
+							phash_ChatTypeInfoList[cmd:upper()] = k
+						end
+					until not cmd
+					imported[k] = true
+				end
+			end
+		end
+	end
 	local function encodeSlash(nl, command, lead)
 		if nl ~= "\n" and nl ~= "" then
 			return
@@ -451,10 +533,11 @@ local encodeMacro, decodeMacro do
 		local cu = command:upper()
 		if not (skipCacheRefresh or next(SlashCmdList) == nil) then
 			skipCacheRefresh = true
-			ChatFrame_ImportListToHash(SlashCmdList, hash_SlashCmdList)
+			importLooseSlashCommands()
 		end
-		if type(hash_ChatTypeInfoList[cu]) == "string" and not hash_ChatTypeInfoList[cu]:match("!") then
-			return nl .. "!" .. hash_ChatTypeInfoList[cu] .. "!" .. command
+		local ctk = phash_ChatTypeInfoList[cu]
+		if type(ctk) == "string" and not ctk:match("!") then
+			return nl .. "!" .. ctk .. "!" .. command
 		elseif type(hash_EmoteTokenList[cu]) == "string" and not hash_EmoteTokenList[cu]:match("!") then
 			return nl .. "!" .. hash_EmoteTokenList[cu] .. "!" .. command
 		end
@@ -468,9 +551,9 @@ local encodeMacro, decodeMacro do
 		local cu = command:upper()
 		if not (skipCacheRefresh or next(SlashCmdList) == nil) then
 			skipCacheRefresh = true
-			ChatFrame_ImportListToHash(SlashCmdList, hash_SlashCmdList)
+			importLooseSlashCommands()
 		end
-		if hash_ChatTypeInfoList[cu] == key or hash_EmoteTokenList[cu] == key then
+		if phash_ChatTypeInfoList[cu] == key or hash_EmoteTokenList[cu] == key then
 		elseif _G["SLASH_" .. key .. 1] then
 			return nl .. _G["SLASH_" .. key .. 1]
 		else
@@ -601,15 +684,14 @@ do -- Editor UI
 		return (link:gsub("(|*)|H.-|h", stripUIEscapeCheck):gsub("(|*)|[hr]", stripUIEscapeCheck):gsub("(|*)|c%x%x%x%x%x%x%x%x", stripUIEscapeCheck))
 	end
 	hooksecurefunc("ChatEdit_InsertLink", function(link)
-		local kbf = GetCurrentKeyBoardFocus()
-		if kbf ~= eb then return end
+		if not eb:HasFocus() then return end
 		local isItemLink = link:match("%f[|]|Hitem:")
 		local sid = not isItemLink and link:match("%f[|]|Hspell:(%d+)") or link:match("%f[|]|Htrade:[^:]+:(%d+)") or (CI_ERA and select(7,GetSpellInfo(link)))
 		local isCastableLink = sid and not IsPassiveSpell(sid+0)
 		local prefix, atext, skipPrefixSpace
 		if isItemLink or isCastableLink then
-			kbf:Insert("") -- Inserting the link will clobber selection; do it now to i.a. converge cursor position
-			local cursor, text = kbf:GetCursorPosition(), kbf:GetText()
+			eb:Insert("") -- Inserting the link will clobber selection; do it now to i.a. converge cursor position
+			local cursor, text = eb:GetCursorPosition(), eb:GetText()
 			local isOnEmptyLineStart, lineCommand, lineStart do
 				local lep, sp, wep, ap = 0
 				while 1 do
@@ -639,12 +721,12 @@ do -- Editor UI
 				end
 			end
 			if isItemLink then
-				prefix = isOnEmptyLineStart and (GetItemSpell(link) and SLASH_USE1 or SLASH_EQUIP1)
-				atext = GetItemInfo(link)
+				prefix = isOnEmptyLineStart and (C_Item.GetItemSpell(link) and SLASH_USE1 or SLASH_EQUIP1)
+				atext = C_Item.GetItemNameByID(link)
 			else
 				prefix = isOnEmptyLineStart and SLASH_CAST1
 				if canTokenize then
-					atext = newImpToken(kbf, "spell", tostring(sid))
+					atext = newImpToken(eb, "spell", tostring(sid))
 					prefix = prefix or (atext and tokPrefix)
 					atext = atext and atext .. (tokSuffix or "")
 					skipPrefixSpace = tokNoPreSpace
@@ -652,7 +734,7 @@ do -- Editor UI
 			end
 		end
 		prefix = skipPrefixSpace and (prefix or "") or (prefix and prefix .. " " or " ")
-		kbf:Insert(prefix .. (atext or link:match("|h%[?(.-[^%]])%]?|h") or stripUIEscapes(link)))
+		eb:Insert(prefix .. (atext or link:match("|h%[?(.-[^%]])%]?|h") or stripUIEscapes(link)))
 	end)
 
 	function eb:SetAction(owner, action)
@@ -727,6 +809,12 @@ function IM:SetMountPreference(groundSpellID, flyingSpellID, dragonSpellID)
 	       'Syntax: groundSpellID, flyingSpellID, dragonSpellID = IM:SetMountPreference(groundSpellID|false|nil, flyingSpellID|false|nil, dragonSpellID|false|nil)', 2)
 	return setMountPreference(groundSpellID, flyingSpellID, dragonSpellID)
 end
+
+-- HIDDEN, UNSUPPORTED METHODS: May vanish at any time.
+local hum = {}
+setmetatable(IM, {__index=hum})
+hum.HUM = hum
+hum.GetModernTalentSpells = GetModernTalentSpells
 
 AB:RegisterModule("Imp", {
 	compatible=function(_, maj, rev)

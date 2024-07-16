@@ -111,7 +111,7 @@ function int.SyncToBar(d, fullSync)
 				w:SetText(text)
 				w:SetChecked(selected)
 				w:SetID(eid)
-				w:GetFontString():GetLeft() -- TODO: (8.1.5) Without this, it sometimes gets lost.
+				w:GetFontString():GetLeft() -- BUG[8.1.5] Without this, it sometimes gets lost.
 			end
 			w:SetEnabled(isDone)
 		end
