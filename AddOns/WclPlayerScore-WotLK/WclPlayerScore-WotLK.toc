@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: 插件作者：zwj@oldgun ，TBC数据提取：SaberNio，WotLK数据提取：caca，鸣谢：deepapa@NGA
-## Version: v2.1.3
+## Version: v2.1.4
 ## SavedVariables: wclps_settings
 ## DefaultState: enabled
 

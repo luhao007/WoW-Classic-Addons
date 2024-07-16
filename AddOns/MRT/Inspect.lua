@@ -95,7 +95,7 @@ if ExRT.isClassic then
 end
 
 local inspectScantip 
-if not ExRT.is10 then
+if ExRT.isClassic then
 	inspectScantip = CreateFrame("GameTooltip", "ExRTInspectScanningTooltip", nil, "GameTooltipTemplate")
 	inspectScantip:SetOwner(UIParent, "ANCHOR_NONE")
 end
@@ -201,7 +201,7 @@ local function InspectNext()
 	end
 	local nowTime = GetTime()
 	for name,timeAdded in pairs(module.db.inspectQuery) do
-		if name and UnitName(name) and (not ExRT.isClassic or CheckInteractDistance(name,1)) and CanInspect(name) and (not lastCheckNext[name] or nowTime - lastCheckNext[name] > 30) and (ExRT.isClassic or (select(4,UnitPosition'player') == select(4,UnitPosition(name)))) then
+		if name and UnitName(name) and (not ExRT.isClassic or (not InCombatLockdown() and CheckInteractDistance(name,1))) and CanInspect(name) and (not lastCheckNext[name] or nowTime - lastCheckNext[name] > 30) and (ExRT.isClassic or (select(4,UnitPosition'player') == select(4,UnitPosition(name)))) then
 			lastCheckNext[name] = nowTime
 			if ExRT.isLK then
 				MuteSoundFile(SOUNDKIT.IG_CHARACTER_INFO_OPEN)
@@ -285,14 +285,8 @@ do
 		for i=1,#module.db.itemsSlotTable do
 			local itemSlotID = module.db.itemsSlotTable[i]
 			local itemLink, tooltipData
-			if ExRT.is10 then
+			if not ExRT.isClassic then
 				tooltipData = C_TooltipInfo.GetInventoryItem(inspectedName, itemSlotID)
-				if tooltipData then
-					TooltipUtil.SurfaceArgs(tooltipData)
-					for _, line in ipairs(tooltipData.lines) do
-					    TooltipUtil.SurfaceArgs(line)
-					end
-				end
 				itemLink = GetInventoryItemLink(inspectedName, itemSlotID)
 			else
 				inspectScantip:SetInventoryItem(inspectedName, itemSlotID)
@@ -358,14 +352,14 @@ do
 				end
 
 				local linesNum
-				if ExRT.is10 then
+				if not ExRT.isClassic then
 					linesNum = tooltipData and tooltipData.lines and #tooltipData.lines or 0
 				else
 					linesNum = inspectScantip:NumLines()
 				end
 				for j=2, linesNum do
 					local tooltipLine, text
-					if ExRT.is10 then
+					if not ExRT.isClassic then
 						tooltipLine = tooltipData.lines[j]
 						text = tooltipLine.leftText
 					else
@@ -380,7 +374,7 @@ do
 								local findData = findText:match(stateData[k])
 								if findData then
 									local cR,cG,cB
-									if ExRT.is10 then
+									if not ExRT.isClassic then
 										cR,cG,cB = tooltipLine.leftColor:GetRGB()
 									else
 										cR,cG,cB = tooltipLine:GetTextColor()
@@ -432,14 +426,14 @@ do
 							for k=1,#EssencePowers do
 								if text:find(EssencePowers[k].name.."$") == 1 then
 									local isMajor
-									if ExRT.is10 then
+									if not ExRT.isClassic then
 										isMajor = tooltipData.lines[j-1].leftText == " "
 									else
 										isMajor = _G["ExRTInspectScanningTooltipTextLeft"..(j-1)]:GetText() == " "	
 									end
 									local tier = 4
 									local r,g,b
-									if ExRT.is10 then
+									if not ExRT.isClassic then
 										r,g,b = tooltipLine.leftColor.r, tooltipLine.leftColor.g, tooltipLine.leftColor.b
 									else
 										r,g,b = tooltipLine:GetTextColor()
@@ -581,7 +575,7 @@ do
 				end
 			end
 
-			if not ExRT.is10 then
+			if ExRT.isClassic then
 				inspectScantip:ClearLines()
 			end
 		end
@@ -802,7 +796,7 @@ do
 		lastInspectTime[arg] = currTime
 		local _,_,_,race,_,name,realm = GetPlayerInfoByGUID(arg)
 		if name then
-			if ExRT.is10 then for i=#name,1,-1 do if name:sub(i,i) ~= string.char(0) then name = name:sub(1,i) break end end end	--TEMP fix
+			--if ExRT.is10 then for i=#name,1,-1 do if name:sub(i,i) ~= string.char(0) then name = name:sub(1,i) break end end end	--TEMP fix
 			if realm and realm ~= "" then name = name.."-"..realm end
 			local inspectedName = name
 			if UnitName("target") == DelUnitNameServer(name) then 
@@ -879,7 +873,7 @@ do
 				end
 			end
 
-			if ExRT.is10 then
+			if not ExRT.isClassic then
 				local activeConfig = Constants.TraitConsts.INSPECT_TRAIT_CONFIG_ID--C_ClassTalents.GetActiveConfigID()
 				local config = C_Traits.GetConfigInfo(activeConfig)
 				if config and config.treeIDs then
@@ -945,6 +939,7 @@ do
 					end
 					
 	
+					local entries = {}
 					local c = 0
 					for i=1,#nodes do
 						local nodeID = nodes[i]
@@ -979,6 +974,7 @@ do
 											else
 												data[-c] = nil
 											end
+											entries[entryID] = true
 	
 											cooldownsModule.db.session_gGUIDs[name] = {spellID,"talent"}
 					
@@ -1003,6 +999,7 @@ do
 						data[i] = nil
 						data[-i] = nil
 					end
+					cooldownsModule:SetTalentEntries(name,entries)
 	
 					for i=1,4 do
 						local talentID = C_SpecializationInfo_GetInspectSelectedPvpTalent(inspectedName, i)
@@ -1549,27 +1546,7 @@ function module.main:ENCOUNTER_START()
 
 
 	local tal = ""
-	if ExRT.is10 then
-		--[[
-		local configID = C_ClassTalents.GetActiveConfigID()
-		local configInfo = C_Traits.GetConfigInfo(configID)
-		local treeID = configInfo.treeIDs[1]
-		if not ((ClassTalentFrame) and (ClassTalentFrame.TalentsTab) and (ClassTalentFrame.TalentsTab.GetLoadoutExportString)) then
-			LoadAddOn("Blizzard_ClassTalentUI")
-		end
-
-		local exportStream = ExportUtil.MakeExportDataStream()
-		local currentSpecID = PlayerUtil.GetCurrentSpecID()
-		local treeInfo = C_Traits.GetTreeInfo(configID,treeID)
-		local treeHash = C_Traits.GetTreeHash(treeInfo.ID)
-		local serializationVersion = C_Traits.GetLoadoutSerializationVersion()
-	
-		ClassTalentFrame.TalentsTab:WriteLoadoutHeader(exportStream, serializationVersion, currentSpecID, treeHash)
-		ClassTalentFrame.TalentsTab:WriteLoadoutContent(exportStream, configID, treeInfo.ID)
-
-		tal = exportStream:GetExportString()
-		]]
-
+	if not ExRT.isClassic then
 		local activeConfig = C_ClassTalents.GetActiveConfigID()
 		if activeConfig then
 			local config = C_Traits.GetConfigInfo(activeConfig)
@@ -1607,7 +1584,7 @@ function module.main:ENCOUNTER_START()
 			
 			if encoded then
 				tal = encoded:gsub("%^","##")
-				ExRT.F.SendExMsg("inspect","R\tY"..tal)	
+				ExRT.F.SendExMsgExt({prefixNum = ExRT.F.GetOwnPartyNum()+1},"inspect","R\tY"..tal)	
 			end
 			tal = ""
 		end
@@ -1626,7 +1603,7 @@ function module.main:ENCOUNTER_START()
 		end
 	end
 	if tal ~= "" then
-		str = str .. (str ~= "" and "^" or "") .. (ExRT.is10 and "Y" or "T") .. tal
+		str = str .. (str ~= "" and "^" or "") .. (not ExRT.isClassic and "Y" or "T") .. tal
 	end
 
 	if isAzeriteItemEnabled then
@@ -1662,7 +1639,7 @@ function module.main:ENCOUNTER_START()
 	end
 
 	if str ~= "" then
-		ExRT.F.SendExMsg("inspect","R\t"..str)
+		ExRT.F.SendExMsgExt({prefixNum = ExRT.F.GetOwnPartyNum()+1},"inspect","R\t"..str)
 	end
 end
 
@@ -1777,7 +1754,7 @@ function module:addonMessage(sender, prefix, subPrefix, ...)
 						end
 					end
 				elseif key == "T" then
-					if not ExRT.is10 then
+					if ExRT.isClassic then
 						if cooldownsModule:IsEnabled() then
 							cooldownsModule:ClearSessionDataReason(sender,"talent")
 						end
@@ -1808,7 +1785,7 @@ function module:addonMessage(sender, prefix, subPrefix, ...)
 						end
 					end
 				elseif key == "Y" then
-					if not ExRT.is10 then
+					if ExRT.isClassic then
 						return
 					end
 					local str2 = main:sub(2):gsub("##","^")

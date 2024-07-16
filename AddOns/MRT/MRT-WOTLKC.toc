@@ -1,7 +1,6 @@
 ## Interface: 30400
 ## Author: ykiigor
-## Version: 4720
-## OptionalDeps: ExRT
+## Version: 4840
 ## SavedVariables: VMRT
 
 ## Title: Method Raid Tools
@@ -27,6 +26,7 @@ Note.lua
 ExCD2.lua
 Inspect.lua
 VisNote.lua
+Reminder.lua
 BossWatcher.lua
 InspectViewer.lua
 RaidCheck.lua
@@ -34,6 +34,8 @@ InviteTool.lua
 RaidGroups.lua
 MarksBar.lua
 Marks.lua
+MarksSimple.lua
+Interrupts.lua
 BattleRes.lua
 Timers.lua
 RaidAttendance.lua

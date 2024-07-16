@@ -1,6 +1,93 @@
 local GlobalAddonName, ExRT = ...
 
 ExRT.Options.Changelog = [=[
+v.4840
+* New module: Reminder
+* Minor fixes
+
+v.4840-LK
+* New module: Reminder
+* Minor fixes
+
+v.4840-Classic
+* New module: Reminder
+* Minor fixes
+
+v.4825
+* Fixes
+
+v.4825-LK
+* Fixes
+
+v.4825-Classic
+* Fixes
+
+v.4820
+* New module: Interrupts
+* New module: Automarking
+* Raid cooldowns: added separate dispel spell for evoker healer
+* Raid Check: added DF rune
+* Fixes
+
+v.4820-LK
+* New module: Interrupts
+* New module: Automarking
+* toc update
+
+v.4820-Classic
+* New module: Interrupts
+* New module: Automarking
+* Saving log: added SoD raids
+* toc update
+
+v.4810
+* Minor fixes
+
+v.4800
+* 10.2 update
+* Note: added option "Personal note in separate window"
+* Note: added ability to show any draft in separate window (as many as you want), until reload
+
+v.4785
+* Raid cooldowns: added option for key mod for clicks (whispers)
+* Major fixes
+
+v.4785-LK
+* Raid cooldowns: added option for key mod for clicks (whispers)
+* Major fixes
+
+v.4781
+* Fixes
+
+v.4780
+* Marks Bar: added ping buttons
+* Raid cooldowns: added option for spell target
+* Fixes
+
+v.4780-LK
+* Visual Note: Added ICC room maps
+
+v.4770
+* Fixed /rt pull timer for DBM
+* Raid cooldowns: added autoswap profiles for specs
+
+v.4770-LK
+* Minor fixes
+
+v.4770-Classic
+* Fixes
+
+v.4760
+* 10.1.5 Update
+* Minor updates
+* Marks: added support for multiple names
+
+v.4760-LK
+* toc update
+
+v.4740
+* 10.1 Update
+
 v.4720
 * Added temporary fix for sending long notes (beware: sending takes some time)
 * Loot History: added support for group loot
