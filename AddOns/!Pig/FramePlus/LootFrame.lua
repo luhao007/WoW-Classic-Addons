@@ -48,29 +48,7 @@ function FramePlusfun.Loot()
 			But:SetPoint("TOPLEFT",LootFrame,"TOPLEFT",9,-(68+(i-1)*41));
 			LootFrame.piglootbut[i]=But
 		end
-		local function Update_ButUI()
-			LootFrameUpButton:Hide()
-			LootFrameUpButton:ClearAllPoints();
-			LootFrameUpButton:SetPoint("RIGHT",LootFrame,"LEFT",0,0);
-			LootFrameDownButton:Hide()
-			LootFrameDownButton:ClearAllPoints();
-			LootFrameDownButton:SetPoint("TOP",LootFrameUpButton,"BOTTOM",0,0);
-			LootFramePrev:Hide()
-			LootFramePrev:ClearAllPoints();
-			LootFramePrev:SetPoint("RIGHT",LootFrameUpButton,"LEFT",0,0);
-			LootFrameNext:Hide()
-			LootFrameNext:ClearAllPoints();
-			LootFrameNext:SetPoint("RIGHT",LootFrameDownButton,"LEFT",0,0);
-		end
-		local function Update_ItemsList()
-			for i=4,self.numLootItems do
-				if not _G["LootButton"..i] then AddlootBut(i) end
-				_G["LootButton"..i]:Show()
-				LootFrame_UpdateButton(i)
-			end
-		end
-		local function Update_Items(self)
-			Update_ButUI()
+		hooksecurefunc("LootFrame_Show", function(self)
 			local lootName = UnitName("target") or UNKNOWNOBJECT
 			self.lootName=lootName
 			local regions = {LootFrame:GetRegions()}
@@ -83,9 +61,14 @@ function FramePlusfun.Loot()
 			for _,v in pairs(LootFrame.piglootbut) do
 				v:Hide()
 			end
+			--self.numLootItems=12
 			if self.numLootItems>4 then
 				self:SetHeight(self.numLootItems*41+74)
-				Update_ItemsList()
+				for i=5,self.numLootItems do
+					if not _G["LootButton"..i] then AddlootBut(i) end
+					_G["LootButton"..i]:Show()
+					LootFrame_UpdateButton(i)
+				end
 				if ( GetCVar("lootUnderMouse") == "1" and self.numLootItems>6 ) then
 					local _,_,_,xpos,ypos=self:GetPoint()
 					local pignypos = ypos
@@ -101,13 +84,20 @@ function FramePlusfun.Loot()
 			else
 				self:SetHeight(240)
 			end
-		end
-		hooksecurefunc("LootFrame_Show", function(self)
-			Update_Items(self)
 		end)
 		hooksecurefunc("LootFrame_Update", function(self)
-			Update_ButUI()
-			Update_ItemsList()
+			LootFrameUpButton:Hide()
+			LootFrameUpButton:ClearAllPoints();
+			LootFrameUpButton:SetPoint("RIGHT",LootFrame,"LEFT",0,0);
+			LootFrameDownButton:Hide()
+			LootFrameDownButton:ClearAllPoints();
+			LootFrameDownButton:SetPoint("TOP",LootFrameUpButton,"BOTTOM",0,0);
+			LootFramePrev:Hide()
+			LootFramePrev:ClearAllPoints();
+			LootFramePrev:SetPoint("RIGHT",LootFrameUpButton,"LEFT",0,0);
+			LootFrameNext:Hide()
+			LootFrameNext:ClearAllPoints();
+			LootFrameNext:SetPoint("RIGHT",LootFrameDownButton,"LEFT",0,0);
 		end)
 	else
 		hooksecurefunc(LootFrame, "Open", function(self)
