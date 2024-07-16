@@ -11,6 +11,7 @@ local IS_WOW_PROJECT_NOT_MAINLINE = WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE
 local IS_WOW_PROJECT_CLASSIC_ERA = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
 local IS_WOW_PROJECT_CLASSIC_TBC = WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC
 local IS_WOW_PROJECT_CLASSIC_WRATH = IS_WOW_PROJECT_NOT_MAINLINE and ClassicExpansionAtLeast and LE_EXPANSION_WRATH_OF_THE_LICH_KING and ClassicExpansionAtLeast(LE_EXPANSION_WRATH_OF_THE_LICH_KING)
+--local IS_WOW_PROJECT_CLASSIC_CATACLYSM = IS_WOW_PROJECT_NOT_MAINLINE and ClassicExpansionAtLeast and LE_EXPANSION_CATACLYSM and ClassicExpansionAtLeast(LE_EXPANSION_CATACLYSM)
 
 local PixelUtil = PixelUtil or DFPixelUtil
 
@@ -87,6 +88,7 @@ local UNITREACTION_NEUTRAL = 4
 local UNITREACTION_FRIENDLY = 5
 
 local lower = string.lower
+local GetSpellInfo = GetSpellInfo or function(spellID) if not spellID then return nil end local si = C_Spell.GetSpellInfo(spellID) if si then return si.name, nil, si.iconID, si.castTime, si.minRange, si.maxRange, si.spellID, si.originalIconID end end
 
 --db upvalues
 local DB_CAPTURED_SPELLS
@@ -157,6 +159,8 @@ local bIsOptionsPanelFullyLoaded = false
 
 -- ~options �ptions
 function Plater.OpenOptionsPanel(pageNumber, bIgnoreLazyLoad)
+	platerInternal.OpenOptionspanelAfterCombat = nil
+	
 	--localization
 	local L = DF.Language.GetLanguageTable(addonId)
 
@@ -180,6 +184,12 @@ function Plater.OpenOptionsPanel(pageNumber, bIgnoreLazyLoad)
 
 		return true
 	end
+	
+	if (InCombatLockdown()) then
+		Plater:Msg ("Optionspanel not loaded and cannot open during combat. It will open automatically after combat ends.")
+		platerInternal.OpenOptionspanelAfterCombat = {pageNumber, bIgnoreLazyLoad}
+		return
+	end
 
 	if (pageNumber) then
 		C_Timer.After(0, function()
@@ -195,11 +205,12 @@ function Plater.OpenOptionsPanel(pageNumber, bIgnoreLazyLoad)
 	
 	--build the main frame
 	local f = DF:CreateSimplePanel (UIParent, optionsWidth, optionsHeight, "Plater |cFFFF8822[|r|cFFFFFFFFNameplates|r|cFFFF8822]|r: professional addon for hardcore gamers", "PlaterOptionsPanelFrame", {UseScaleBar = true}, Plater.db.profile.OptionsPanelDB)
-	f.Title:SetAlpha (.75)
-	f:SetFrameStrata ("DIALOG")
-	DF:ApplyStandardBackdrop (f)
+	f.Title:SetAlpha(.75)
+	f:SetFrameStrata("DIALOG")
+	f:SetToplevel(true)
+	DF:ApplyStandardBackdrop(f)
 	f:ClearAllPoints()
-	PixelUtil.SetPoint (f, "center", UIParent, "center", 2, 2, 1, 1)
+	PixelUtil.SetPoint(f, "center", UIParent, "center", 2, 2, 1, 1)
 
 	--over the top frame
 	local OTTFrame = CreateFrame("frame", "PlaterNameplatesOverTheTopFrame", f)
@@ -1612,7 +1623,7 @@ function Plater.CreateGoToTabFrame(parent, text, index)
 	local labelgoToTab = DF:CreateLabel(goToTab, text, 10, "orange")
 	labelgoToTab.width = 220
 	labelgoToTab.height = 50
-	labelgoToTab.valign = "center"
+	labelgoToTab.valign = "middle"
 	labelgoToTab.align = "center"
 	labelgoToTab:SetPoint("center", goToTab, "center", 0, 0)
 
@@ -1759,6 +1770,9 @@ local debuff_options = {
 		end,
 		name = "OPTIONS_ENABLED",
 		desc = "OPTIONS_ENABLED",
+		childrenids = {"auras_general_tooltip", "auras_general_alpha", "auras_general_iconspacing", "auras_general_icon_row_spacing", "auras_general_stack_similar_aura", "auras_general_stack_auratime"},
+		children_follow_enabled = true,
+		--children_follow_reverse = true, --if the children should be enabled when the toogle is disabled, for cases like "do this automatically" if not, set manually
 	},
 	
 	{
@@ -1771,6 +1785,7 @@ local debuff_options = {
 		end,
 		name = "OPTIONS_SHOWTOOLTIP",
 		desc = "OPTIONS_SHOWTOOLTIP_DESC",
+		id = "auras_general_tooltip",
 	},
 	
 	{
@@ -1787,6 +1802,7 @@ local debuff_options = {
 		thumbscale = 1.8,
 		name = "OPTIONS_ALPHA",
 		desc = "OPTIONS_ALPHA",
+		id = "auras_general_alpha",
 	},
 	
 	{
@@ -1803,6 +1819,7 @@ local debuff_options = {
 		thumbscale = 1.8,
 		name = "OPTIONS_ICONSPACING",
 		desc = "OPTIONS_ICONSPACING",
+		id = "auras_general_iconspacing",
 	},
 	
 	{
@@ -1819,6 +1836,7 @@ local debuff_options = {
 		thumbscale = 1.8,
 		name = "OPTIONS_ICONROWSPACING",
 		desc = "OPTIONS_ICONROWSPACING",
+		id = "auras_general_icon_row_spacing",
 	},
 	
 	{
@@ -1831,6 +1849,7 @@ local debuff_options = {
 		end,
 		name = "OPTIONS_STACK_SIMILAR_AURAS",
 		desc = "OPTIONS_STACK_SIMILAR_AURAS_DESC",
+		id = "auras_general_stack_similar_aura",
 	},
 	{
 		type = "toggle",
@@ -1842,6 +1861,7 @@ local debuff_options = {
 		end,
 		name = "OPTIONS_STACK_AURATIME",
 		desc = "OPTIONS_STACK_AURATIME_DESC",
+		id = "auras_general_stack_auratime",
 	},
 	
 	{type = "blank"},
@@ -1891,6 +1911,21 @@ local debuff_options = {
 		name = "OPTIONS_HEIGHT",
 		desc = "OPTIONS_AURA_DEBUFF_HEIGHT",
 	},
+	{
+		type = "range",
+		get = function() return Plater.db.profile.aura_border_thickness end,
+		set = function (self, fixedparam, value) 
+			Plater.db.profile.aura_border_thickness = value
+			Plater.RefreshDBUpvalues()
+			Plater.RefreshAuras()
+			Plater.UpdateAllPlates()
+		end,
+		min = 1,
+		max = 5,
+		step = 1,
+		name = "OPTIONS_BORDER_THICKNESS",
+		desc = "OPTIONS_BORDER_THICKNESS",
+	},
 	
 	{type = "blank"},
 	{type = "label", get = function() return "Aura Size (Frame 2):" end, text_template = DF:GetTemplate ("font", "ORANGE_FONT_TEMPLATE")},
@@ -1924,6 +1959,21 @@ local debuff_options = {
 		step = 1,
 		name = "OPTIONS_HEIGHT",
 		desc = "OPTIONS_AURA_HEIGHT",
+	},
+	{
+		type = "range",
+		get = function() return Plater.db.profile.aura_border_thickness2 end,
+		set = function (self, fixedparam, value) 
+			Plater.db.profile.aura_border_thickness2 = value
+			Plater.RefreshDBUpvalues()
+			Plater.RefreshAuras()
+			Plater.UpdateAllPlates()
+		end,
+		min = 1,
+		max = 5,
+		step = 1,
+		name = "OPTIONS_BORDER_THICKNESS",
+		desc = "OPTIONS_BORDER_THICKNESS",
 	},
 	
 	{type = "blank"},
@@ -2408,6 +2458,22 @@ local debuff_options = {
 		name = "Defensive CD Border Color",
 		desc = "Defensive CD Border Color",
 	},
+	--border color is default
+	{
+		type = "color",
+		boxfirst = true,
+		get = function()
+			local color = Plater.db.profile.aura_border_colors.default
+			return {color[1], color[2], color[3], color[4]}
+		end,
+		set = function (self, r, g, b, a) 
+			local color = Plater.db.profile.aura_border_colors.default
+			color[1], color[2], color[3], color[4] = r, g, b, a
+			Plater.UpdateAllPlates()
+		end,
+		name = "Default Border Color",
+		desc = "Default Border Color",
+	},
 	
 	{
 		type = "toggle",
@@ -2647,6 +2713,20 @@ local debuff_options = {
 	},
 }
 
+if IS_WOW_PROJECT_CLASSIC_ERA then
+	tinsert(debuff_options, 5, {
+		type = "toggle",
+		boxfirst = true,
+		get = function() return Plater.db.profile.auras_experimental_update_classic_era end,
+		set = function (self, fixedparam, value) 
+			Plater.db.profile.auras_experimental_update_classic_era = value
+			Plater.RefreshAuraCache()
+		end,
+		name = "Enable experimental aura updates",
+		desc = "Enable experimental aura updates for classic era.\nMight help in tracking enemy buffs that are applied while the nameplate is visible.",
+	})
+end
+
 _G.C_Timer.After(0.850, function() --~delay
 	debuff_options.always_boxfirst = true
 	debuff_options.language_addonId = addonId
@@ -2654,15 +2734,15 @@ _G.C_Timer.After(0.850, function() --~delay
 	debuff_options.align_as_pairs = true
 	debuff_options.align_as_pairs_string_space = 181
 	debuff_options.widget_width = 150
-	debuff_options.slider_buttons_to_left = true
 
-    local canvasFrame = DF:CreateCanvasScrollBox(auraOptionsFrame)
+    local canvasFrame = DF:CreateCanvasScrollBox(auraOptionsFrame, nil, "PlaterOptionsPanelCanvasAuraSettings")
     canvasFrame:SetPoint("topleft", auraOptionsFrame, "topleft", 0, platerInternal.optionsYStart)
     canvasFrame:SetPoint("bottomright", auraOptionsFrame, "bottomright", -26, 25)
 	auraOptionsFrame.canvasFrame = canvasFrame
 
 	debuff_options.use_scrollframe = true
 
+	--when passing a canvas frame for BuildMenu, it automatically get its childscroll and use as parent for the widgets
 	DF:BuildMenu(canvasFrame, debuff_options, startX, 0, heightSize, false, options_text_template, options_dropdown_template, options_switch_template, true, options_slider_template, options_button_template, globalCallback)
 
 	--DF:DebugVisibility(canvasFrame:GetScrollChild())
@@ -4420,6 +4500,21 @@ do
 			name = "OPTIONS_HEIGHT",
 			desc = "OPTIONS_AURA_HEIGHT",
 		},
+		{
+			type = "range",
+			get = function() return Plater.db.profile.aura_border_thickness_personal end,
+			set = function (self, fixedparam, value) 
+				Plater.db.profile.aura_border_thickness_personal = value
+				Plater.RefreshDBUpvalues()
+				Plater.RefreshAuras()
+				Plater.UpdateAllPlates()
+			end,
+			min = 1,
+			max = 5,
+			step = 1,
+			name = "OPTIONS_BORDER_THICKNESS",
+			desc = "OPTIONS_BORDER_THICKNESS",
+		},
 		
 		--y offset
 		{
@@ -4450,6 +4545,7 @@ do
 			desc = "When using a fixed position and want to go back to Blizzard default." .. CVarDesc,
 			name = "Reset to Automatic Position" .. CVarIcon,
 			nocombat = true,
+			width = 140,
 		},
 		
 		{
@@ -4520,7 +4616,7 @@ do
 			desc = "With a fixed position, personal bar won't move.\n\nTo revert this, click the button above." .. CVarDesc,
 		},
 		
-		{type = "blank"},
+		--{type = "blank"},
 		{type = "label", get = function() return "Blizzard Cast Bar:" end, text_template = DF:GetTemplate ("font", "ORANGE_FONT_TEMPLATE")},
 		
 		--hide castbar from blizzard
@@ -6807,6 +6903,17 @@ local relevance_options = {
 			name = "OPTIONS_EXECUTERANGE_HIGH_HEALTH",
 			desc = "OPTIONS_EXECUTERANGE_HIGH_HEALTH_DESC",
 			hidden = IS_WOW_PROJECT_NOT_MAINLINE,
+		},
+		
+		{
+			type = "toggle",
+			get = function() return Plater.db.profile.health_cutoff_extra_glow end,
+			set = function (self, fixedparam, value) 
+				Plater.db.profile.health_cutoff_extra_glow = value
+				Plater.UpdateAllPlates()
+			end,
+			name = "Add Extra Glow to Execute Range",
+			desc = "Add Extra Glow to Execute Range",
 		},
 
 		{
@@ -11454,7 +11561,7 @@ end
 				Plater.RefreshAutoToggle()
 			end,
 			name = L["OPTIONS_ENABLED"],
-			desc = "When enabled, Plater will enable or disable stacking nameplates based on the settings below.\n\n" .. ImportantText .. "only toggle on if 'Stacking Nameplates' is enabled in the General Settings tab.",
+			desc = "When enabled, Plater will enable or disable nameplates and healthbars based on the settings below, when the player enters or leaves combat.",
 		},
 		{
 			type = "toggle",
@@ -13303,16 +13410,6 @@ end
 			name = "Show Shield Prediction",
 			desc = "Show an extra bar for shields (e.g. Power Word: Shield from priests) absorption.",
 		},
-		{
-			type = "toggle",
-			get = function() return Plater.db.profile.health_cutoff_extra_glow end,
-			set = function (self, fixedparam, value) 
-				Plater.db.profile.health_cutoff_extra_glow = value
-				Plater.UpdateAllPlates()
-			end,
-			name = "Add Extra Glow to Execute Range",
-			desc = "Add Extra Glow to Execute Range",
-		},
 		
 		{
 			type = "toggle",
@@ -13355,6 +13452,16 @@ end
 			end,
 			name = "Opt-Out of automatically accepting NPC Colors",
 			desc = "Will not automatically accepd npc colors sent by raid-leaders but prompt instead.",
+		},
+		{
+			type = "toggle",
+			get = function() return Plater.db.profile.auto_translate_npc_names end,
+			set = function (self, fixedparam, value) 
+				Plater.db.profile.auto_translate_npc_names = value
+				Plater.TranslateNPCCache()
+			end,
+			name = "Automatically translate NPC names on the NPC Colors tab.",
+			desc = "Will automatically translate the names to the current game locale.",
 		},
 	
 		{type = "blank"},

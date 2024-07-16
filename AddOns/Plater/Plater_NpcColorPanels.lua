@@ -541,6 +541,8 @@ function Plater.CreateNpcColorOptionsFrame(colorsFrame)
     spells_scroll:SetPoint("topleft", colorsFrame, "topleft", 10, scrollY)
     colorsFrame.SpellsScroll = spells_scroll
 
+    ---244.999 PlaterOptionsPanelContainerColorManagementColorsScrollScrollBarScrollUpButton
+
     colorsFrame.ModelFrame:SetFrameLevel(spells_scroll:GetFrameLevel() + 20)
 
     spells_scroll:SetScript("OnShow", function(self)
@@ -864,12 +866,16 @@ function Plater.CreateNpcColorOptionsFrame(colorsFrame)
 
     --disable all button
         local disableAllColors = function()
-            for npcId, colorTable in pairs(Plater.db.profile.npc_colors) do
-                colorTable[1] = false
-                colorTable[2] = false
-            end
-            colorsFrame.RefreshScroll()
+            DF:ShowPromptPanel("Confirm disable all colors?", function()
+                for npcId, colorTable in pairs(Plater.db.profile.npc_colors) do
+                    colorTable[1] = false
+                    colorTable[2] = false
+                end
+                colorsFrame.RefreshScroll()
+            end,
+            function()end, true, 400, "PLATER_DISABLE_ALL_COLORS")
         end
+
         local disableall_button = DF:CreateButton(colorsFrame, disableAllColors, 140, 20, "Disable All Colors", -1, nil, nil, nil, nil, nil, DF:GetTemplate("button", "OPTIONS_BUTTON_TEMPLATE"), DF:GetTemplate("font", "PLATER_BUTTON"))
         disableall_button:SetPoint("bottomleft", spells_scroll, "bottomleft", 1, 0)
         disableall_button:SetFrameLevel(colorsFrame.Header:GetFrameLevel() + 20)

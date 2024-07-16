@@ -1,6 +1,6 @@
 ## Interface: 30400
-## Version: Plater-v581b-Cata
-## SavedVariables: PlaterDB, PlaterLanguage, PlaterLogs
+## Version: Plater-v582-Cata
+## SavedVariables: PlaterDB, PlaterLanguage, PlaterLogs, PlaterBackup
 ## SavedVariablesPerCharacter: PlaterDBChr
 
 ## Title: Plater

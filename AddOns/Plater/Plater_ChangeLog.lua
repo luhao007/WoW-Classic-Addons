@@ -8,6 +8,53 @@ function Plater.GetChangelogTable()
 	if (not Plater.ChangeLogTable) then
 		Plater.ChangeLogTable = {
 
+			{1719181362, "Backend Change", "June 24th, 2024", "First load of the options menu will only take place out of combat now and be triggered automatically when combat ends.", "cont1nuity"},
+			{1719181362, "Bug Fix", "June 20th, 2024", "Fixing an issue with out of order health updates.", "cont1nuity"},
+			{1719181362, "Backend Change", "June 17th, 2024", "Updates and preparations for scripts for TWW.", "Terciob"},
+			{1719181362, "Backend Change", "June 16th, 2024", "Adding memory profiling.", "cont1nuity"},
+			{1719181362, "New Feature", "June 15th, 2024", "Adding aura border thickness options.", "cont1nuity"},
+			{1719181362, "Backend Change", "June 14th, 2024", "Some improvements for TWW handling (still a mess with default nameplates, though).", "cont1nuity"},
+			{1719181362, "Backend Change", "June 14th, 2024", "More profiling for mods/scripts.", "cont1nuity"},
+			{1719181362, "Backend Change", "June 14th, 2024", "Some slight improvements to health text handling.", "cont1nuity"},
+			{1719181362, "Backend Change", "June 12th, 2024", "Improvements to pixel perfect aura borders.", "cont1nuity"},
+			
+			{1717955490, "Bug Fix", "June 9th, 2024", "Fixing pixel perfect aura borders and Masque support.", "cont1nuity"},
+			{1717955490, "New Feature", "June 9th, 2024", "Addind default aura border color option.", "cont1nuity"},
+			{1717955490, "Bug Fix", "June 8th, 2024", "Fixing pixel perfect aura borders and Masque support.", "cont1nuity"},
+			{1717955490, "Bug Fix", "June 6th, 2024", "Workaround to support TWW beta.", "cont1nuity"},
+			{1717955490, "Backend Change", "June 6th, 2024", "Better pixel perfect implementation all around on borders.", "cont1nuity"},
+			{1717955490, "New Feature", "June 4th, 2024", "Adding unit names to the unit script trigger lists and their zones and 3d model to tooltip (if available).", "cont1nuity"},
+			{1717955490, "Backend Change", "June 4th, 2024", "Patch for S4 scripts.", "Terciob"},
+			{1717955490, "Backend Change", "June 1st, 2024", "Backend changes on performance units.", "Terciob"},
+			{1717955490, "Bug Fix", "May 28th, 2024", "Fixing default mod code for 'Mod Option Changed' hook.", "cont1nuity"},
+			{1717955490, "Backend Change", "May 27th, 2024", "Maintenance on plugin handling.", "Terciob"},
+			
+			{1716759062, "Bug Fix", "May 22nd, 2024", "Fixing Questie support.", "cont1nuity"},
+			{1716759062, "Bug Fix", "May 17th, 2024", "Fixing glow color override.", "cont1nuity"},
+			{1716759062, "Bug Fix", "May 17th, 2024", "Fixing aura border color priority.", "cont1nuity"},
+			{1716759062, "Bug Fix", "May 9th, 2024", "Fixing Priest execute for Cata.", "cont1nuity"},
+			{1716759062, "Bug Fix", "May 8th, 2024", "Updating for 10.2.7.", "cont1nuity"},
+			{1716759062, "Backend Change", "May 8th, 2024", "Maintenance on libraries.", "Terciob"},
+			
+			{1715123551, "Bug Fix", "May 8th, 2024", "Updating for 10.2.7.", "cont1nuity"},
+			{1715123551, "Bug Fix", "May 6th, 2024", "Fixing SoD tank recognition for druid 'Dire Bear Form'.", "cont1nuity"},
+			{1715123551, "Bug Fix", "April 26th, 2024", "Fixing SoD tank recognition for druid 'Dire Bear Form'.", "cont1nuity"},
+			
+			{1713856200, "Bug Fix", "April 23rd, 2024", "Sending NPC information to other players would not work if the name contained a ','.", "cont1nuity"},
+			{1713856200, "Bug Fix", "April 23rd, 2024", "Fixing options alignment issue with Cata.", "cont1nuity"},
+			{1713856200, "Backend Change", "April 22nd, 2024", "Base support for TWW.", "cont1nuity"},
+			{1713856200, "Backend Change", "April 19nd, 2024", "Backend changes to options layout.", "Terciob"},
+			{1713856200, "Bug Fix", "April 9th, 2024", "Ensuring Gladiator Stance is not considered tanking in SoD.", "cont1nuity"},
+			
+			{1709675079, "Backend Change", "April 7th, 2024", "Adding option to automatically translate NPC names on the 'NPC Colors and Names' tab.", "cont1nuity"},
+			{1709675079, "Backend Change", "March 31st, 2024", "Adding tank states for Rogues on SoD.", "Thunderz"},
+			{1709675079, "Backend Change", "March 14th, 2024", "Maintenance on libraries.", "cont1nuity"},
+			{1709675079, "Backend Change", "March 14th, 2024", "Adding support for Cataclysm classic.", "cont1nuity"},
+			{1709675079, "Backend Change", "March 8th, 2024", "Reworking aura updates for classic era.", "cont1nuity"},
+			{1709675079, "Bug Fix", "March 8th, 2024", "Fixing an issue with aura updates in classic era.", "cont1nuity"},
+			{1709675079, "Bug Fix", "March 5th, 2024", "Fixing an issue with Ghost Auras on performance units.", "cont1nuity"},
+			{1709675079, "Backend Change", "February 27th, 2024", "Maintenance on libraries.", "Terciob"},
+			
 			{1708341442, "Bug Fix", "February 19th, 2024", "Fixing interrupt animation being enabled to break following cast bars.", "cont1nuity"},
 			{1708341442, "Bug Fix", "February 19th, 2024", "Fixing consolidated auras sometimes not showing properly when sorting for longest duration.", "cont1nuity"},
 			{1708341442, "Bug Fix", "February 8th, 2024", "Fixing DK rune visuals not updating properly when on cooldown (for real this time).", "cont1nuity"},
