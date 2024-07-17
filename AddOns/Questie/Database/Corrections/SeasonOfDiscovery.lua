@@ -834,7 +834,7 @@ local questsToBlacklistBySoDPhase = {
         [9419] = true,
         [9416] = true,
     },
-    [17] = { -- Never appearing in Season of Discovery
+    [9] = { -- Never appearing in Season of Discovery
         [1203] = true, -- Jarl Needs a Blade - Replaced by 81570
         [1878] = true, -- Water Pouch Bounty - Replaced by 82209
         [2758] = true, -- The Origins of Smithing - Replaced by 80241
@@ -945,6 +945,24 @@ local questsToBlacklistBySoDPhase = {
         [8742] = true, -- Shifting Sands questline - The Might of Kalimdor
         [8743] = true, -- Shifting Sands questline - Bang a Gong!
         [8745] = true, -- Shifting Sands questline - Treasure of the Timeless One
+
+        -- Old T0.5 exchange quests
+        [8905] = true, -- An Earnest Proposition
+        [8906] = true, -- An Earnest Proposition
+        [8907] = true, -- An Earnest Proposition
+        [8908] = true, -- An Earnest Proposition
+        [8909] = true, -- An Earnest Proposition
+        [8910] = true, -- An Earnest Proposition
+        [8911] = true, -- An Earnest Proposition
+        [8912] = true, -- An Earnest Proposition
+        [8913] = true, -- An Earnest Proposition
+        [8914] = true, -- An Earnest Proposition
+        [8915] = true, -- An Earnest Proposition
+        [8916] = true, -- An Earnest Proposition
+        [8917] = true, -- An Earnest Proposition
+        [8918] = true, -- An Earnest Proposition
+        [8919] = true, -- An Earnest Proposition
+        [8920] = true, -- An Earnest Proposition
 
         -- Darkmoon Faire quests
         [7902] = true,

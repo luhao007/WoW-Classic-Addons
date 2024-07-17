@@ -1,11 +1,11 @@
 ## Interface: 30400
 ## Author: Titan Panel Development Team (http://www.titanpanel.org)
-## Version: 8.0.14
+## Version: 8.0.15
 ## Dependencies: TitanClassic
 ## OptionalDeps: 
 ## SavedVariables: 
 
-## Title: Titan Panel [|cffeda55fVolume|r] |cff00aa008.0.14|r
+## Title: Titan Panel [|cffeda55fVolume|r] |cff00aa008.0.15|r
 ## Notes: Adds a volume control icon on your Titan Bar
 ## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFF泰坦面板|r |cFF69CCF0音量|r
 ## Notes-zhCN: 泰坦面板的音量模块

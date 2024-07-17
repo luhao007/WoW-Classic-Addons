@@ -1523,6 +1523,7 @@ function QuestieQuestBlacklist:Load()
         [266] = QuestieCorrections.CATA_HIDE, -- Removed with cata
         [272] = QuestieCorrections.CATA_HIDE, -- Removed with cata
         [287] = QuestieCorrections.CATA_HIDE, -- Removed with cata
+        [298] = QuestieCorrections.CATA_HIDE, -- Removed with cata
         [310] = QuestieCorrections.CATA_HIDE, -- Removed with cata
         [317] = QuestieCorrections.CATA_HIDE, -- Removed with cata
         [326] = QuestieCorrections.CATA_HIDE, -- Removed with cata
@@ -1574,6 +1575,7 @@ function QuestieQuestBlacklist:Load()
         [431] = QuestieCorrections.CATA_HIDE, -- Removed with cata
         [445] = QuestieCorrections.CATA_HIDE, -- Removed with cata
         [462] = QuestieCorrections.CATA_HIDE, -- Removed with cata
+        [467] = QuestieCorrections.CATA_HIDE, -- Removed with cata
         [490] = QuestieCorrections.CATA_HIDE, -- Removed with cata
         [492] = QuestieCorrections.CATA_HIDE, -- Removed with cata
         [494] = QuestieCorrections.CATA_HIDE, -- Removed with cata
@@ -1646,6 +1648,7 @@ function QuestieQuestBlacklist:Load()
         [595] = QuestieCorrections.CATA_HIDE, -- Replaced by 26609
         [612] = QuestieCorrections.CATA_HIDE, -- Removed with cata
         [624] = QuestieCorrections.CATA_HIDE, -- Removed with cata
+        [637] = QuestieCorrections.CATA_HIDE, -- Removed with cata
         [698] = QuestieCorrections.CATA_HIDE, -- Removed with cata
         [699] = QuestieCorrections.CATA_HIDE, -- Removed with cata
         [740] = QuestieCorrections.CATA_HIDE, -- Removed with cata
@@ -2652,6 +2655,7 @@ function QuestieQuestBlacklist:Load()
         [29259] = QuestieCorrections.CATA_HIDE, -- Not in the game
         [29260] = QuestieCorrections.CATA_HIDE, -- Not in the game
         [29266] = QuestieCorrections.CATA_HIDE, -- Not in the game
+        [29386] = QuestieCorrections.CATA_HIDE, -- Not in the game
         [29432] = QuestieCorrections.CATA_HIDE, -- Not in the game
         [29447] = QuestieCorrections.CATA_HIDE, -- Not in the game
         [29448] = QuestieCorrections.CATA_HIDE, -- Not in the game
@@ -3878,3 +3882,4 @@ function QuestieQuestBlacklist.LoadAutoBlacklistWotlk()
     }
 end
 
+return QuestieQuestBlacklist

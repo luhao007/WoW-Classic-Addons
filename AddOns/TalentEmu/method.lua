@@ -1639,6 +1639,8 @@ MT.BuildEnv('METHOD');
 		for class, Level2Points in next, DT.LevelAvailablePointsTableClass do
 			DT.PointsRequiredLevelTable[class] = BuildPoints2Level(Level2Points);
 		end
+	else
+		DT.LevelAvailablePointsTableClass = {  };
 	end
 	function MT.GetPointsReqLevel(class, points)
 		-- return max(10, 9 + numPoints);

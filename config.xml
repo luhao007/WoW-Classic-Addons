@@ -462,6 +462,10 @@
 		<Notes>在世界地图中显示额外的地图信息（如适合等级，钓鱼等级等）</Notes>
 		<Category>界面</Category>
 	</Addon>
+	<Addon name="DamageEx">
+		<Title>伤害增强</Title>
+		<Category>界面</Category>
+	</Addon>
 	<Addon name="DBM-Core">
 		<Title>副本助手</Title>
 		<Title-en>DBM</Title-en>

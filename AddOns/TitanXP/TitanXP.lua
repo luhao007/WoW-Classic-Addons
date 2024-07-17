@@ -58,7 +58,7 @@ ChatFrame_DisplayTimePlayed = function(...)
 		orig_ChatFrame_DisplayTimePlayed(...)
 	end
 end
---****** overload
+--****** Override
 
 -- ******************************** Functions *******************************
 
@@ -84,26 +84,37 @@ end
 ---@return string
 local function comma_value(amount)
 	local formatted = ""
-	local sep = (TitanGetVar(TITAN_XP_ID, "UseSeperatorComma") and "," or ".")
-	local i, j, minus, int, fraction = tostring(amount):find('([-]?)(%d+)([.]?%d*)')
 
-	-- reverse the int-string and append a comma to all blocks of 3 digits
-	int = int:reverse():gsub("(%d%d%d)", "%1"..sep)
+	if type(amount) == "number" then
+		local sep = (TitanGetVar(TITAN_XP_ID, "UseSeperatorComma") and "," or ".")
+		local i, j, minus, int, fraction = tostring(amount):find('([-]?)(%d+)([.]?%d*)')
 
-	-- reverse the int-string back remove an optional comma and put the 
-	-- optional minus and fractional part back
-	formatted = minus .. int:reverse():gsub("^"..sep, "") .. fraction
+		-- reverse the int-string and append a comma to all blocks of 3 digits
+		int = int:reverse():gsub("(%d%d%d)", "%1"..sep)
+
+		-- reverse the int-string back remove an optional comma and put the 
+		-- optional minus and fractional part back
+		formatted = minus .. int:reverse():gsub("^"..sep, "") .. fraction
+	else
+		formatted = "0" -- 'silent' error
+	end
 	return formatted
 end
 
 ---local Reset session and accumulated variables
 ---@param self Button
 local function ResetSession(self)
-	txp.initXP = UnitXP("player")
 	txp.accumXP = 0
 	txp.sessionXP = 0
 	txp.startSessionTime = time() -- clock time
-	txp.lastXP = txp.initXP;
+
+	local xp = UnitXP("player")
+	if xp == nil then
+		txp.initXP = 0
+	else
+		txp.initXP = xp
+	end
+	txp.lastXP = txp.initXP
 end
 
 ---local Wrapper for menu to use
@@ -137,6 +148,7 @@ end
 ---local Get total time played
 -- Do not send RequestTimePlayed output to Chat if XP requested the info.
 -- Override ChatFrame_DisplayTimePlayed used by RequestTimePlayed().
+-- TIME_PLAYED_MSG used to send response.
 local function RefreshPlayed()
 	txp.frame:RequestTimePlayed()
 end
@@ -146,25 +158,12 @@ end
 local function OnShow(self)
 	local txt = ""
 
-	if txp.sessionTime then
-		-- No action
-	else
-		-- initial login / PEW
-		txp.sessionTime = time();
-		txt = txt .. "Sess reset"
-	end
-	if txp.initXP then
-		-- No action
-	else -- initial login / PEW
-		ResetSession(self)
-		txt = txt .. " | Init"
-	end
 	self:RegisterEvent("TIME_PLAYED_MSG");
 	self:RegisterEvent("PLAYER_XP_UPDATE");
 	self:RegisterEvent("PLAYER_LEVEL_UP");
 	self:RegisterEvent("CHAT_MSG_COMBAT_XP_GAIN");
 
-	RefreshPlayed()
+	RefreshPlayed() -- TIME_PLAYED_MSG
 
 	SetIcon();
 	txt = txt .. " | Events"
@@ -223,12 +222,7 @@ local function OnEvent(self, event, a1, a2, ...)
 
 		TitanPanelButton_UpdateButton(TITAN_XP_ID)
 	elseif (event == "PLAYER_XP_UPDATE") then
-		if txp.initXP then
-			-- has been initialized
-		else
-			ResetSession(self)
-		end
-
+		-- XP data init on plugin load and PEW (first time)
 		txp.XPGain = UnitXP("player") - txp.lastXP;
 		txp.lastXP = UnitXP("player");
 		if txp.XPGain < 0 then
@@ -663,7 +657,9 @@ local function OnLoad(self)
 			DisplayOnRightSide = false,
 		}
 	};
-	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("PLAYER_ENTERING_WORLD")
+
+	ResetSession(self)
 end
 
 ---local Create needed frames

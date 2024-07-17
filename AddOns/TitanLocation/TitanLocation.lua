@@ -112,7 +112,19 @@ end
 ---local Function to throttle down unnecessary updates
 local function CheckForPositionUpdate()
 	local mapID = C_Map.GetBestMapForUnit("player")
-	local tempx, tempy = GetPlayerMapPosition();
+	local tempx, tempy = GetPlayerMapPosition()
+
+	-- If unknown then use 0,0
+	if tempx == nil then
+		place.px = 0
+		tempx = 0
+	end
+	if tempy == nil then
+		place.py = 0
+		tempy = 0
+	end
+
+	-- If the same then do not update the text to save a few cycles.
 	if tempx ~= place.px or tempy ~= place.py then
 		place.px = tempx
 		place.py = tempy
@@ -410,28 +422,25 @@ local function GetButtonText(id)
 		-- Zone text, if requested
 		if TitanGetVar(TITAN_LOCATION_ID, "ShowZoneText") then
 			zone_text = TitanUtils_ToString(place.zoneText)
+				.." "..TitanUtils_ToString(place.subZoneText)
+			-- overwrite with subZone text, if requested
+			if TitanGetVar(TITAN_LOCATION_ID, "ShowSubZoneText") then
+				if place.subZoneText == "" then
+					-- Show the zone instead
+				else
+					zone_text = TitanUtils_ToString(place.subZoneText)
+				end
+			else
+				-- leave alone
+			end
 		else
 			zone_text = ""
-		end
-
-		-- subZone text, if requested
-		if TitanGetVar(TITAN_LOCATION_ID, "ShowSubZoneText") then
-			subzone_text = TitanUtils_ToString(place.subZoneText)
-		else
-			subzone_text = ""
-		end
-
-		-- seperator, if needed
-		if (zone_text:len() > 0) and (subzone_text:len() > 0) then
-			zone_text = zone_text .. " "
-		else
-			-- no seperator needed
 		end
 
 		-- Coordinates text, if requested
 		if TitanGetVar(TITAN_LOCATION_ID, "ShowCoordsText") then
 			if place.px == 0 and place.py == 0 then
-				xy_text = L["TITAN_LOCATION_NO_COORDS"]
+				xy_text = ""
 			else
 				xy_text = format(TitanGetVar(TITAN_LOCATION_ID, "CoordsFormat"), 100 * place.px, 100 * place.py)
 			end
@@ -440,9 +449,8 @@ local function GetButtonText(id)
 		end
 
 		-- seperator, if needed
-		if ((zone_text:len() > 0) or (subzone_text:len() > 0))
-		and (xy_text:len() > 0) then
-			subzone_text = subzone_text .. " "
+		if ((zone_text:len() > 0) or (xy_text:len() > 0)) then
+			zone_text = zone_text .. " "
 		else
 			-- no seperator needed
 		end
@@ -450,7 +458,7 @@ local function GetButtonText(id)
 		locationRichText = "? id"
 	end
 	-- Color per type of zone (friendly, contested, hostile)
-	locationRichText = zone_text..subzone_text..xy_text
+	locationRichText = zone_text..xy_text
 	if (TitanGetVar(TITAN_LOCATION_ID, "ShowColoredText")) then
 		if (place.isArena) then
 			locationRichText = TitanUtils_GetRedText(locationRichText);
@@ -612,7 +620,7 @@ local function CreateMenu()
 			info.checked = TitanGetVar(TITAN_LOCATION_ID, "ShowZoneText");
 			TitanPanelRightClickMenu_AddButton(info, TitanPanelRightClickMenu_GetDropdownLevel());
 
-			if TITAN_ID == "TitanClassic" then
+--			if TITAN_ID == "TitanClassic" then
 				info = {};
 				info.text = L["TITAN_LOCATION_MENU_SHOW_SUBZONE_ON_PANEL_TEXT"];
 				info.func = function()
@@ -621,9 +629,9 @@ local function CreateMenu()
 				end
 				info.checked = TitanGetVar(TITAN_LOCATION_ID, "ShowSubZoneText");
 				TitanPanelRightClickMenu_AddButton(info, TitanPanelRightClickMenu_GetDropdownLevel());
-			else
+--			else
 				-- no work needed
-			end
+--			end
 
 			info = {};
 			info.text = L["TITAN_LOCATION_MENU_SHOW_COORDS_ON_PANEL_TEXT"];
@@ -765,7 +773,9 @@ end
 ---@param self Button
 local function OnLoad(self)
 	local notes = ""
-		.. "Adds coordinates and location information to Titan Panel.\n"
+	.. "Adds coordinates and location information to Titan Panel.\n"
+	.. "Option Show Zone Text shows zone text - or not.\n"
+	.. "- Show ONLY Subzone Text removes zone text from plugin.\n"
 	--		.."- xxx.\n"
 	self.registry = {
 		id = TITAN_LOCATION_ID,
@@ -788,7 +798,7 @@ local function OnLoad(self)
 		},
 		savedVariables = {
 			ShowZoneText = 1,
-			ShowSubZoneText = true,
+			ShowSubZoneText = false,
 			ShowCoordsText = true,
 			ShowCoordsOnMap = false,
 			ShowCursorOnMap = false,

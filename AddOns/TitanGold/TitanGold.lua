@@ -59,6 +59,7 @@ end
 ---@param amount number
 ---@return string
 local function comma_value(amount)
+--[===[
 	local formatted = tostring(amount)
 	local k
 	local sep = (TitanGetVar(TITAN_GOLD_ID, "UseSeperatorComma") and "UseComma" or "UsePeriod")
@@ -70,6 +71,25 @@ local function comma_value(amount)
 		end
 	end
 	return formatted
+--]===]
+	-- Jul 2024 Use same code as XP
+	local formatted = ""
+
+	if type(amount) == "number" then
+		local sep = (TitanGetVar(TITAN_GOLD_ID, "UseSeperatorComma") and "," or ".")
+		local i, j, minus, int, fraction = tostring(amount):find('([-]?)(%d+)([.]?%d*)')
+
+		-- reverse the int-string and append a comma to all blocks of 3 digits
+		int = int:reverse():gsub("(%d%d%d)", "%1"..sep)
+
+		-- reverse the int-string back remove an optional comma and put the 
+		-- optional minus and fractional part back
+		formatted = minus .. int:reverse():gsub("^"..sep, "") .. fraction
+	else
+		formatted = "0" -- 'silent' error
+	end
+	return formatted
+
 end
 
 ---local Take the total cash and make it into a nice, colorful string of g s c (gold silver copper)

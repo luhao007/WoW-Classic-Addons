@@ -146,7 +146,7 @@ OUT:  None
 --]]
 local function Titan_AutoHide_OnClick(self, button)
 	if (button == "LeftButton") then
-		Titan_AutoHide_ToggleAutoHide(self.bar_name);
+		Titan_AutoHide_ToggleAutoHide(self.registry.short_name);
 	end
 end
 

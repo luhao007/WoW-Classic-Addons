@@ -15,9 +15,21 @@ Green - 'header' - Titan or plugin
 Highlight - notes. tips. and details
 --]]
 Titan_Global.recent_changes = ""
-.. TitanUtils_GetGoldText("8.0.14 : 2024/07/xx\n")
+.. TitanUtils_GetGoldText("8.0.15 : 2024/07/14\n")
+.. TitanUtils_GetGreenText("Location : \n")
+.. TitanUtils_GetHighlightText(""
+.. "- Fix error shown when in instances.\n"
+.. "- Options same in all versions: Show Zone Text shows text or not; Show ONLY subzone removes zone text.\n"
+)
+.. TitanUtils_GetGreenText("Auto Hide (full bars) : \n")
+.. TitanUtils_GetHighlightText(""
+.. "- Fix error on clicking 'pin' to toggle auto hide.\n"
+)
+.. "\n\n"
+.. TitanUtils_GetGoldText("8.0.14 : 2024/07/12\n")
 .. TitanUtils_GetGreenText("Titan : \n")
 .. TitanUtils_GetHighlightText(""
+.. "- Updated Classic Era version to 1.15.3."
 .. "- AutoHide : Fix tooltip error; shows Enabled / Disabled.\n"
 .. "- Deprecated Titan Child template plugin code removed.\n"
 .. "- Cleanup Titan tool tip code.\n"
@@ -63,33 +75,6 @@ Titan_Global.recent_changes = ""
 .. TitanUtils_GetHighlightText(""
 .. "- TOC update for Cataclysm.\n")
 .. "\n\n"
-.. TitanUtils_GetGoldText("8.0.11 : 2024/04/10\n")
-.. TitanUtils_GetGreenText("Ammo : \n")
-.. TitanUtils_GetHighlightText(""
-.. "- Fix to remove plugin error text when wand (non-ammo) weapon is equipped in Classic (Wrath or Era) .\n")
-.. TitanUtils_GetGreenText("Volume : \n")
-.. TitanUtils_GetHighlightText(""
-.. "- Double click (left) will mute / unmute. Note: tooltip will flash, not sure how to prevent that.\n"
-.. "- Icon should reflect volume % : = 0 | <= 33% | <= 66% | <= 100% .\n"
-)
-.. TitanUtils_GetGreenText("XP : \n")
-    .. TitanUtils_GetHighlightText(""
-        .. "- Do not output time played - can spam Chat.\n"
-        .. "- /played   Use this command instead to see same output.\n"
-    )
-    .. TitanUtils_GetGreenText("Config : \n")
-    .. TitanUtils_GetHighlightText(""
-        .. "- Plugins : Add to Notes <version> <category - Titan menu> <if LDB>.\n"
-        .. "- Skins : Add text to use Bars / Bars - All to change skins.\n"
-    )
-    .. TitanUtils_GetGreenText("Titan : \n")
-    .. TitanUtils_GetHighlightText(""
-        .. "- Changed annotations and comments for better documentation.\n"
-        .. "- Better handling of routines different between retail and Classic API.\n"
-        ..
-        "- Deprecated the Titan 'child' template, it has not been used in years. Template and param will be deleted in a future release.\n"
-    )
-    .. "\n\n"
 
 --[[ Var Notes
 Use for important notes in the Titan Config About
