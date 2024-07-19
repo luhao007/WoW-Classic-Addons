@@ -1,8 +1,13 @@
 local mod	= DBM:NewMod("KazzakClassicVanilla", "DBM-Azeroth")
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240422183958")
-mod:SetCreatureID(12397)--121818 TW ID, 12397 classic ID
+mod:SetRevision("20240719123709")
+if DBM:IsSeasonal("SeasonOfDiscovery") then
+	mod:SetCreatureID(230302)
+else
+	mod:SetCreatureID(12397)--121818 TW ID, 12397 classic ID
+end
+mod:SetEncounterID(3026)--Sod Encounter ID
 --mod:SetModelID(17887)
 mod:EnableWBEngageSync()--Enable syncing engage in outdoors
 

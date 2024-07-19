@@ -1,12 +1,12 @@
 ## Interface: 30400
 ## Author: Aero/Logon/Muehe/TheCrux(BreakBB)/Drejjmit/Dyaxler/Schaka/Zoey/Everyone else
-## Version: 10.3.5
+## Version: 10.3.7
 ## RequiredDeps: 
 ## OptionalDeps: Ace3, CallbackHandler-1.0, HereBeDragons, LibDataBroker-1.1, LibDBIcon-1.0, LibSharedMedia-3.0, LibStub, LibUIDropDownMenu
 ## SavedVariables: QuestieConfig
 ## SavedVariablesPerCharacter: QuestieConfigCharacter
 
-## Title: Questie|cFF00FF00 v10.3.5|r
+## Title: Questie|cFF00FF00 v10.3.7|r
 ## Notes: A standalone Classic QuestHelper
 ## Title-zhCN: |cFFFFE00A<|r|cFF00FF96任务|r|cFFFFE00A>|r |cFFFFFFFF任务助手|r |cFFFFE00AQuestie|r
 ## Notes-zhCN: 在地图和小地图上提供任务指引，在怪物身上提示任务进度
@@ -105,6 +105,7 @@ Localization\Translations\Translations.xml
 
 Localization\lookups\lookupQuestCategories.lua
 Localization\lookups\lookupZones.lua
+Localization\lookups\lookupOverrides.lua
 Localization\lookups\Cata\lookupZones.lua
 Localization\lookups\Cata\lookupItems\lookupItems.xml
 Localization\lookups\Cata\lookupNpcs\lookupNpcs.xml

@@ -31,24 +31,7 @@ function BagBankfun.qiyongzidongzhengli()
 		end
 		Start()
 	end
-
-	function _G.GetSortBagsRightToLeft(enabled)
-		return PIGA['BagBank']["SortBag_Config"]
-	end
-
-	function _G.SetSortBagsRightToLeft(enabled)
-		--_G.SortBagsRightToLeft = enabled and 1 or nil
-		if enabled==nil then
-			PIGA['BagBank']["SortBag_Config"] = true
-		else
-			if enabled then
-				PIGA['BagBank']["SortBag_Config"] = true
-			else
-				PIGA['BagBank']["SortBag_Config"] = false
-			end
-		end
-	end
-
+	
 	local function set(...)
 		local t = {}
 		local n = select('#', ...)
@@ -367,7 +350,7 @@ function BagBankfun.qiyongzidongzhengli()
 		local counts
 
 		local function insert(t, v)
-			if PIGA['BagBank']["SortBag_Config"] then
+			if BagBankfun.GetSortBagsRightToLeft() then
 				tinsert(t, v)
 			else
 				tinsert(t, 1, v)
@@ -377,7 +360,7 @@ function BagBankfun.qiyongzidongzhengli()
 		local function assign(slot, item)
 			if counts[item] > 0 then
 				local count
-				if PIGA['BagBank']["SortBag_Config"] and mod(counts[item], itemStacks[item]) ~= 0 then
+				if BagBankfun.GetSortBagsRightToLeft() and mod(counts[item], itemStacks[item]) ~= 0 then
 					count = mod(counts[item], itemStacks[item])
 				else
 					count = min(counts[item], itemStacks[item])
@@ -528,7 +511,7 @@ function BagBankfun.qiyongzidongzhengli()
 			tinsert(sortKey, -quality)
 			tinsert(sortKey, itemName)
 			tinsert(sortKey, itemID)
-			tinsert(sortKey, (PIGA['BagBank']["SortBag_Config"] and 1 or -1) * charges)
+			tinsert(sortKey, (BagBankfun.GetSortBagsRightToLeft() and 1 or -1) * charges)
 			tinsert(sortKey, suffixID)
 			tinsert(sortKey, enchantID)
 			tinsert(sortKey, uniqueID)

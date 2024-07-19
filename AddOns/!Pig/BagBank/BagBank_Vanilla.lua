@@ -239,7 +239,7 @@ local function zhegnheBANK()
 	Bank_Item_ranse()
 end
 -------
-local function add_Itemslot_ZLV_ranse(famrr)		
+local function add_Itemslot_ZLV_ranse(famrr)
 	if not famrr.ZLV then
 		famrr.ZLV = PIGFontString(famrr,{"TOPLEFT", famrr, "TOPLEFT", -1, -1},nil,"OUTLINE",15)
 		famrr.ZLV:SetDrawLayer("OVERLAY", 7)
@@ -340,8 +340,8 @@ function BagBankfun.Zhenghe(Rneirong,tabbut)
 			BagBankfun.SortBags()
 		end);
 
-		BAGheji.shezhi = CreateFrame("Button",nil,BAGheji, "TruncatedButtonTemplate"); 
-		BAGheji.shezhi:SetNormalTexture("interface/gossipframe/bindergossipicon.blp"); 
+		BAGheji.shezhi = CreateFrame("Button",nil,BAGheji, "TruncatedButtonTemplate");
+		BAGheji.shezhi:SetNormalTexture("interface/gossipframe/bindergossipicon.blp");
 		BAGheji.shezhi:SetHighlightTexture(130718);
 		BAGheji.shezhi:SetSize(wwc-4,hhc-4);
 		BAGheji.shezhi:SetPoint("TOPLEFT",BAGheji,"TOPLEFT",250,-39);
@@ -377,7 +377,7 @@ function BagBankfun.Zhenghe(Rneirong,tabbut)
 			fameXX.BGpig:SetPoint("TOPLEFT",fameXX,"TOPLEFT",0,0);
 			fameXX:SetScript("OnEnter", function (self)
 				local fujikj = self:GetParent()
-				local hh = {fujikj:GetChildren()} 
+				local hh = {fujikj:GetChildren()}
 				for _,v in pairs(hh) do
 					local Vname = v:GetName()
 					if Vname then
@@ -390,7 +390,7 @@ function BagBankfun.Zhenghe(Rneirong,tabbut)
 			end);
 			fameXX:SetScript("OnLeave", function (self)
 				local fujikj = self:GetParent()
-				local hh = {fujikj:GetChildren()} 
+				local hh = {fujikj:GetChildren()}
 				for _,v in pairs(hh) do
 					local Vname = v:GetName()
 					if Vname then
@@ -457,7 +457,7 @@ function BagBankfun.Zhenghe(Rneirong,tabbut)
 				for gg=1,#regions do
 					regions[gg]:Hide()
 					--regions[gg]:SetTexCoord(0.05,0.8,0,0.74);
-				end	
+				end
 				if (not backpack) then
 					backpack = GetBackpackFrame();
 				end
@@ -471,7 +471,7 @@ function BagBankfun.Zhenghe(Rneirong,tabbut)
 			if ( not UIParent:IsShown() ) then
 				return;
 			end
-			if ( IsBagOpen(0) ) then	
+			if ( IsBagOpen(0) ) then
 				CloseAllBags()
 			else
 				if IsBagOpen(-2) then  _G["ContainerFrame"..IsBagOpen(-2)]:Hide() end
@@ -548,7 +548,7 @@ function BagBankfun.Zhenghe(Rneirong,tabbut)
 						OpenAllBags()
 					end
 				end
-			end		
+			end
 			if event=="BAG_UPDATE_DELAYED" then
 				if self:IsShown() then
 					CloseAllBags()

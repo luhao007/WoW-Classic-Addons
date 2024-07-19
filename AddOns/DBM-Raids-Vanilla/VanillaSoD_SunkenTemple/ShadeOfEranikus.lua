@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("ShadeofEranikusSoD", "DBM-Raids-Vanilla", 8)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240518124039")
+mod:SetRevision("20240714050835")
 mod:SetCreatureID(218571)
 mod:SetEncounterID(2959)
 mod:SetUsedIcons(8, 7)
@@ -86,7 +86,7 @@ function mod:SPELL_CAST_START(args)
 		timerLethargicPoisonCD:Start()
 	elseif args:IsSpell(445498) then
 		self.vb.roarCount = self.vb.roarCount + 1
-		specWarnBellowingRoar:Show(self.vb.roarCount)
+		specWarnBellowingRoar:Show(args.sourceName, self.vb.roarCount)
 		specWarnBellowingRoar:Play("kickcast")
 		timerBellowingRoarCD:Start(nil, self.vb.roarCount+1)
 	elseif args:IsSpell(437398) then

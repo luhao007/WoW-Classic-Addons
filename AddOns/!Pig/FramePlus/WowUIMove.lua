@@ -6,14 +6,17 @@ local FramePlusfun=addonTable.FramePlusfun
 local UINameList={
 	{CharacterFrame,},
 	{SpellBookFrame,},
+	{GossipFrame,},
+	{QuestFrame,},
 	{QuestLogFrame,},
+	{BankFrame,},
 	{FriendsFrame,},
 	{LFGParentFrame,},
 	{PVEFrame,},
 	{ChannelFrame,},--聊天频道
 	{AddonList,},
 	{ContainerFrameCombinedBags,},
-	{LootFrame,},
+	--{LootFrame,},
 	{WorldMapFrame,},--世界地图
 	{WorldMapTitleButton,WorldMapFrame},--世界地图mini模式
 }
@@ -24,8 +27,8 @@ local UINameList_AddOn={
 	{"CommunitiesFrame","Blizzard_Communities",},--公会与社区
 	{"CollectionsJournal","Blizzard_Collections",},--藏品
 	{"EncounterJournal","Blizzard_EncounterJournal",},--冒险手册
-	{"PlayerTalentFrame","Blizzard_TalentUI",},--天赋UI 
-	{"ClassTalentFrame","Blizzard_ClassTalentUI",},--天赋UI 
+	{"PlayerTalentFrame","Blizzard_TalentUI",},--天赋UI
+	{"ClassTalentFrame","Blizzard_ClassTalentUI",},--天赋UI
 	{"TradeSkillFrame","Blizzard_TradeSkillUI",},--专业面板
 	{"CraftFrame","Blizzard_CraftUI",},--附魔
 	{"ProfessionsFrame","Blizzard_Professions",},--专业面板
@@ -52,7 +55,7 @@ local function Moving(Frame,MovingUI)
 	       		PIGA["WowUI"][MovingUI:GetName()]["Point"]={point, relativeTo, relativePoint, offsetX, offsetY}
 	       	end
 	    end)
-	    local function PIG_SetPoint(self)    
+	    local function PIG_SetPoint(self)
 		   	local point, relativeTo, relativePoint, offsetX, offsetY=unpack(PIGA["WowUI"][self:GetName()]["Point"])
 			self:ClearAllPoints();
 			self:SetPoint(point, relativeTo, relativePoint, offsetX, offsetY);

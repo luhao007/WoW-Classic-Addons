@@ -9,7 +9,7 @@ end
 local mod	= DBM:NewMod("Hakkar", "DBM-Raids-Vanilla", catID)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20230814031337")
+mod:SetRevision("20240714050835")
 mod:SetCreatureID(14834)
 mod:SetEncounterID(793)
 mod:SetHotfixNoticeRev(20200419000000)--2020, 04, 19
@@ -159,7 +159,7 @@ function mod:SPELL_AURA_APPLIED(args)
 		timerAspectOfJeklik:Start(args.destName)
 	elseif args:IsSpell(24689) and args:IsDestTypeHostile() then
 		if self.Options.SpecWarn24689dispel then
-			specWarnAspectOfThekal:Show()
+			specWarnAspectOfThekal:Show(args.destName)
 			specWarnAspectOfThekal:Play("enrage")
 		else
 			warnAspectOfThekal:Show()
