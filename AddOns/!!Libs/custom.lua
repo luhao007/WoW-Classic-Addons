@@ -1,3 +1,10 @@
+-- 添加材质
+
+local media = LibStub("LibSharedMedia-3.0")
+
+media:Register("statusbar", "Sublime Light", "Interface\\AddOns\\!Libs\\Sublime Light")
+
+
 -- 显示装等
 
 -- local GetInventoryItemID,GetItemInfo = GetInventoryItemID,GetItemInfo

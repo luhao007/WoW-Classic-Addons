@@ -26,7 +26,6 @@ function BusinessInfo.AutoSell()
 	BusinessInfo.ADDScroll(fujiF,"卖出","Sell",17,PIGA["AutoSellBuy"]["Sell_List"],{false,"AutoSellBuy","Sell_List"})
 	local function shoumailaji()
 		if ( MerchantFrame:IsVisible() and MerchantFrame.selectedTab == 1 ) then
-			fujiF.shoumaiG = 0;
 			fujiF.shoumaiShuliang = 0;
 			local dataX = PIGA["AutoSellBuy"]["Sell_List"]
 			for bag = 0, NUM_BAG_FRAMES do
@@ -38,9 +37,8 @@ function BusinessInfo.AutoSell()
 									local shifouzaipaichumuluYN=true
 									if shifouzaipaichumuluYN then
 										local sellPrice= select(11, GetItemInfo(itemID))
-										fujiF.shoumaiG = sellPrice*itemCount+fujiF.shoumaiG;
 										UseContainerItem(bag, slot);
-										if PIGA["AutoSellBuy"]["Sell_Tishi"] then print("|cFF7FFFAA出售|r: " ..itemLink) end
+										fujiF.shoumaiData[bag..slot]={itemLink,sellPrice*itemCount}
 										fujiF.shoumaiShuliang = fujiF.shoumaiShuliang+1
 									end
 								end
@@ -48,9 +46,8 @@ function BusinessInfo.AutoSell()
 								for i=1,#dataX do
 									if itemID==dataX[i][1] then
 										local sellPrice= select(11, GetItemInfo(itemID))
-										fujiF.shoumaiG = sellPrice*itemCount+fujiF.shoumaiG;
 										UseContainerItem(bag, slot);
-										if PIGA["AutoSellBuy"]["Sell_Tishi"] then print("|cFF7FFFAA出售|r: " ..itemLink) end
+										fujiF.shoumaiData[bag..slot]={itemLink,sellPrice*itemCount}
 										fujiF.shoumaiShuliang = fujiF.shoumaiShuliang+1
 									end
 								end
@@ -58,13 +55,17 @@ function BusinessInfo.AutoSell()
 					end
 				end
 			end
-			if fujiF.shoumaiG > 0 then
-				if PIGA["AutoSellBuy"]["Sell_Tishi"] then
-					PIG_print("|cFF7FFFAA本次售卖获得:|r " .. GetCoinTextureString(fujiF.shoumaiG));
-				end
+			if fujiF.shoumaiShuliang>0 then
+				C_Timer.After(0.6,shoumailaji)
+				return
 			end
-			if fujiF.shoumaiShuliang>=12 then 
-				C_Timer.After(1,shoumailaji) 
+			if PIGA["AutoSellBuy"]["Sell_Tishi"] then
+				local fujiF_shoumaiData_G = 0
+				for k,v in pairs(fujiF.shoumaiData) do
+					print("|cFF7FFFAA出售|r: " ..v[1])
+					fujiF_shoumaiData_G=fujiF_shoumaiData_G+v[2]
+				end
+				PIG_print("|cFF7FFFAA本次售卖获得:|r " .. GetCoinTextureString(fujiF_shoumaiData_G));
 			end
 		end
 	end
@@ -72,6 +73,7 @@ function BusinessInfo.AutoSell()
 	local function Sell_Open()
 		MerchantFrame:HookScript("OnShow",function (self,event)
 			if fujiF.Sell_Open:GetChecked() then
+				fujiF.shoumaiData = {};
 				shoumailaji()
 			end
 		end);

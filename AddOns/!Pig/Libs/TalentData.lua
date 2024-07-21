@@ -5857,16 +5857,20 @@ function TalentData.GetTianfuIcon(guancha,zhiye)
 	local index = GetActiveTalentGroup(guancha,false)
 	local numTabs = GetNumTalentTabs(guancha)
 	for ti=1,numTabs do
-		local pointsSpent_itemlist = 0
+		local itemlistTalentmax = {}
 		if tocversion<20000 then
 			local _, name, _, icon, pointsSpent, background, previewPointsSpent = GetTalentTabInfo(ti,guancha,false,index);
-			pointsSpent_itemlist=pointsSpent
+			itemlistTalentmax.pointsSpent=pointsSpent or 0
+			itemlistTalentmax.name=name
+			itemlistTalentmax.icon=icon
 		else
 			local name, icon, pointsSpent, background, previewPointsSpent = GetTalentTabInfo(ti,guancha,false,index);
-			pointsSpent_itemlist=pointsSpent
+			itemlistTalentmax.pointsSpent=pointsSpent or 0
+			itemlistTalentmax.name=name
+			itemlistTalentmax.icon=icon
 		end
-		if pointsSpent_itemlist>zuidazhi[3] then
-			zuidazhi={name, icon or tianfuTabIcon[zhiye][ti] or 132222, pointsSpent_itemlist}
+		if itemlistTalentmax.pointsSpent>zuidazhi[3] then
+			zuidazhi={itemlistTalentmax.name, itemlistTalentmax.icon or tianfuTabIcon[zhiye][ti] or 132222, itemlistTalentmax.pointsSpent}
 		end
 	end
 	return zuidazhi

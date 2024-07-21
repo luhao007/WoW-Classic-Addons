@@ -116,16 +116,17 @@ function FramePlusfun.Merchant()
 		MerchantItem12:Show();
 		MerchantItem11:ClearAllPoints();
 		MerchantItem11:SetPoint("TOPLEFT",MerchantFrame,"TOPLEFT",www+6,-69);
+		for i=1,12 do
+			_G["MerchantItem"..i]:Show()
+		end
+		for i=13,20 do
+			_G["MerchantItem"..i]:Show()
+		end
 		if ElvUI then
-			for i=1,12 do
-				_G["MerchantItem"..i]:Show()
-			end
 			for i=13,20 do
-				_G["MerchantItem"..i]:Show()
 				if PIGiconqiege.TexCoords then
 					_G['MerchantItem'..i..'ItemButtonIconTexture']:SetTexCoord(unpack(PIGiconqiege.TexCoords))
 				end
-			
 				local button = _G['MerchantItem'..i..'ItemButton']
 				local name = _G['MerchantItem'..i..'Name']
 				if button.link then

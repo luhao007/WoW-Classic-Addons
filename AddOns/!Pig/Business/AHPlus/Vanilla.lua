@@ -658,7 +658,7 @@ function BusinessInfo.AHPlus_Vanilla()
 			self:Disable()
 		end
 	end)
-	local baocunnum = 50
+	local baocunnum = 40
 	local function DEL_OLDdata()
 		for k,v in pairs(PIGA["AHPlus"]["DataList"][Pig_OptionsUI.Realm]) do
 			local itemDataL = v[2]

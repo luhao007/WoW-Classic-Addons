@@ -204,7 +204,6 @@ local function ADD_chatbut(fuF,pdtype,name,chatID,Color,pdname)
 					for i=1,#pindaomulu do
 						if pindaomulu[i]==chatID then
 							if chatID==GENERAL then
-								ChatFrame_RemoveChannel(DEFAULT_CHAT_FRAME, TRADE);
 								ChatFrame_RemoveChannel(DEFAULT_CHAT_FRAME, FUWUPINDAONAME);
 								ChatFrame_RemoveChannel(DEFAULT_CHAT_FRAME, "本地防务");
 								ChatFrame_RemoveChannel(DEFAULT_CHAT_FRAME, "世界防务");
@@ -219,7 +218,6 @@ local function ADD_chatbut(fuF,pdtype,name,chatID,Color,pdname)
 					end
 					ChatFrame_AddChannel(DEFAULT_CHAT_FRAME, chatID)
 					if chatID==GENERAL then
-						ChatFrame_AddChannel(DEFAULT_CHAT_FRAME, TRADE)
 						ChatFrame_AddChannel(DEFAULT_CHAT_FRAME, FUWUPINDAONAME);
 						ChatFrame_AddChannel(DEFAULT_CHAT_FRAME, "本地防务");
 						ChatFrame_AddChannel(DEFAULT_CHAT_FRAME, "世界防务");
@@ -318,6 +316,7 @@ function QuickChatfun.Open()
 			PIGA["Chat"]["QuickChat_ButList"][L["CHAT_QUKBUTNAME"][i]]=true
 		end
 	end
+	PIGA["Chat"]["QuickChat_ButList"]["P"]=false
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL", TihuanBQfun)
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_SAY", TihuanBQfun)
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_YELL", TihuanBQfun)

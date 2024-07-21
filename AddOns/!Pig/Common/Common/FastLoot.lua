@@ -1,4 +1,4 @@
-local _, addonTable= ...;
+local addonName, addonTable= ...;
 local _, _, _, tocversion = GetBuildInfo()
 -------------------
 local CommonInfo=addonTable.CommonInfo
@@ -35,7 +35,7 @@ local CommonInfo=addonTable.CommonInfo
 -- LootF:SetScript("OnEvent", shiqujinxing)
 -------------------
 ---模式2
-PIG_AutoLoot = {};
+local PIG_AutoLoot = {};
 local Settings = {};
 local internal = {
     _frame = CreateFrame("frame");
@@ -44,7 +44,7 @@ local internal = {
     isHidden = false,
     TSM = false,
     ElvUI = false,
-    isClassic = (WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE),
+    isClassic = true,
     audioChannel = "master",
 };
 local GetContainerNumFreeSlots=C_Container and C_Container.GetContainerNumFreeSlots or GetContainerNumFreeSlots
@@ -58,7 +58,6 @@ function PIG_AutoLoot:ProcessLootItem(itemLink, itemQuantity)
             end
         end
     end
-
     local inventoryItemCount = GetItemCount(itemLink);
     if inventoryItemCount > 0 then
         local itemStackSize = select(8, GetItemInfo(itemLink));
@@ -69,7 +68,6 @@ function PIG_AutoLoot:ProcessLootItem(itemLink, itemQuantity)
             end
         end
     end
-
     return false;
 end
 
@@ -92,7 +90,6 @@ function PIG_AutoLoot:LootItems(numItems)
         self:ShowLootFrame(true);
         self:PlayInventoryFullSound();
     end
-
     if IsFishingLoot() and Settings.global and not Settings.global.fishingSoundDisabled then
         PlaySound(SOUNDKIT.FISHING_REEL_IN, internal.audioChannel);
     end
@@ -105,12 +102,10 @@ function PIG_AutoLoot:OnLootReady(autoLoot)
 	end
     if not internal.isLooting then
         internal.isLooting = true;
-
         local numItems = GetNumLootItems();
         if numItems == 0 then
             return;
         end
-
         if autoLoot or (autoLoot == nil and GetCVarBool("autoLootDefault") ~= IsModifiedClick("AUTOLOOTTOGGLE")) then
             self:LootItems(numItems);
         else
@@ -128,8 +123,6 @@ function PIG_AutoLoot:OnLootClosed()
     internal.isHidden = false;
     internal.isItemLocked = false;
     self:ShowLootFrame(false);
-
-    -- Workaround for TSM Destroy issue
     if internal.TSM and TSMDestroyBtn and TSMDestroyBtn:IsVisible() then
         C_Timer.NewTicker(0, function() SlashCmdList.TSM("destroy") end, 2);
     end
@@ -168,10 +161,8 @@ end
 
 local function AddMessage(...) _G.DEFAULT_CHAT_FRAME:AddMessage(strjoin(" ", tostringall(...))) end;
 
-
 function PIG_AutoLoot:Anchor(frame)
     internal.isHidden = false;
-
     frame:SetFrameStrata("HIGH");
     if internal.ElvUI then
         frame:SetParent(ElvLootFrameHolder);
@@ -219,68 +210,48 @@ function PIG_AutoLoot:ShowLootFrame(show)
         end
     end
 end
-
--- SLASH_SPEEDYAUTOLOOT1, SLASH_SPEEDYAUTOLOOT2  = "/sal", "/speedyautoloot";
--- function SlashCmdList.SPEEDYAUTOLOOT(...)
---     PIG_AutoLoot:Help(...);
--- end
-
-function PIG_AutoLoot:OnAddonLoaded(name)
-    if name == addonName then
-        SpeedyAutoLootDB = SpeedyAutoLootDB or {};
-        Settings = SpeedyAutoLootDB;
-        Settings.global = Settings.global or {};
-
-        if Settings.global.alwaysEnableAutoLoot then
-            SetCVar("autoLootDefault",1);
-        end
-
-        C_Timer.After(1, function()
-            internal.ElvUI = (ElvUI and ElvUI[1].private.general.loot);
-            self:ShowLootFrame(false);
-        end)
-    elseif name == "TradeSkillMaster" then
-        internal.TSM = true;
-    end
-end
-
 function PIG_AutoLoot:RegisterEvent(event, func)
     internal._frame[event] = func;
     internal._frame:RegisterEvent(event);
 end
-
-function PIG_AutoLoot:OnInit()
-    internal._frame:SetToplevel(true);
-    internal._frame:Hide();
-    self:RegisterEvent("ADDON_LOADED", self.OnAddonLoaded);
-    self:RegisterEvent("LOOT_READY", self.OnLootReady);
-    self:RegisterEvent("LOOT_OPENED", self.OnLootReady);
-    self:RegisterEvent("LOOT_CLOSED", self.OnLootClosed);
-    self:RegisterEvent("UI_ERROR_MESSAGE", self.OnErrorMessage);
-
-    if internal.isClassic then
-        self:RegisterEvent("LOOT_BIND_CONFIRM", self.OnBindConfirm);
-    end
-
-    internal._frame:SetScript("OnEvent", function(_,event,...) internal._frame[event](self, ...) end);
+function PIG_AutoLoot:UnregisterEvent(event)
+    internal._frame[event] = function() end;
+    internal._frame:UnregisterEvent(event);
 end
+function PIG_AutoLoot:OnInit()
+    if PIGA["Common"]["AutoLoot"] and PIGA["Common"]["FastLoot"] then
+        self:RegisterEvent("LOOT_READY", self.OnLootReady);
+        self:RegisterEvent("LOOT_OPENED", self.OnLootReady);
+        self:RegisterEvent("LOOT_CLOSED", self.OnLootClosed);
+        self:RegisterEvent("UI_ERROR_MESSAGE", self.OnErrorMessage);
+        if internal.isClassic then
+            self:RegisterEvent("LOOT_BIND_CONFIRM", self.OnBindConfirm);
+        end
+    else
+        LootFrame:SetParent(UIParent);
+        self:UnregisterEvent("LOOT_READY");
+        self:UnregisterEvent("LOOT_OPENED");
+        self:UnregisterEvent("LOOT_CLOSED");
+        self:UnregisterEvent("UI_ERROR_MESSAGE");
+        if internal.isClassic then
+            self:UnregisterEvent("LOOT_BIND_CONFIRM");
+        end
+    end
+end
+internal._frame:SetToplevel(true);
+internal._frame:Hide();
+internal._frame:SetScript("OnEvent", function(_,event,...)
+    internal._frame[event](PIG_AutoLoot, ...) 
+end);
 --------------------
 CommonInfo.Commonfun.FastLoot = function()
-    if tocversion<80000 then 
-        if PIGA["Common"]["FastLoot"] then
-            if IsInGroup() then 
-                local lootmethod= GetLootMethod();
-                if lootmethod~="master" then 
-                    PIG_AutoLoot:OnInit();
-                end
-            else
-                PIG_AutoLoot:OnInit();
-            end
-            
+    if tocversion<50000 then
+        PIG_AutoLoot:OnInit();
+        --if PIGA["Common"]["AutoLoot"] and PIGA["Common"]["FastLoot"] then
             --SetCVar("autoLootRate", "0")
             --LootF:RegisterEvent("LOOT_READY")
-        else
+        --else
             --LootF:UnregisterEvent("LOOT_READY");
-        end
+        --end
     end
 end

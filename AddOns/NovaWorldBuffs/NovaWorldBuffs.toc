@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Novaspark-Arugal OCE
-## Version: 2.84
+## Version: 2.85
 ## SavedVariables: NWBdatabase
 
 ## Title: Nova World Buffs

@@ -6,8 +6,23 @@ local PIGButton=Create.PIGButton
 --------------
 local FramePlusfun=addonTable.FramePlusfun
 function FramePlusfun.Loot()
+
 	if not PIGA["FramePlus"]["Loot"] then return end
 	if LootFrame.piglootbut then return end
+	--修复队长分配错误
+	local old_MasterLooterFrame_Show=MasterLooterFrame_Show
+	MasterLooterFrame_Show=function(selectedLootButton)
+		local itemFrame = MasterLooterFrame.Item;
+		itemFrame.ItemName:SetText(LootFrame.selectedItemName);
+		itemFrame.Icon:SetTexture(LootFrame.selectedTexture);
+		local colorInfo = ITEM_QUALITY_COLORS[LootFrame.selectedQuality];
+		itemFrame.ItemName:SetVertexColor(colorInfo.r, colorInfo.g, colorInfo.b);
+		MasterLooterFrame:Show();
+		MasterLooterFrame_UpdatePlayers();
+		MasterLooterFrame:ClearAllPoints();
+		MasterLooterFrame:SetPoint("TOPLEFT", selectedLootButton, "BOTTOMLEFT", 0, 0);
+		CloseDropDownMenus();
+	end
 	LootFrame.piglootbut={}
 	local pindaoList = {{L["CHAT_QUKBUTNAME"][5],{1, 0.498, 0},"RAID"},{L["CHAT_QUKBUTNAME"][3],{0.6667, 0.6667, 1},"PARTY"},{L["CHAT_QUKBUTNAME"][7],{1, 0.498, 0},"INSTANCE_CHAT"},{L["CHAT_QUKBUTNAME"][4],{0.25, 1, 0.25},"GUILD"}}
 	for i=1,#pindaoList do
@@ -45,7 +60,7 @@ function FramePlusfun.Loot()
 			But:SetPoint("TOPLEFT",LootFrame,"TOPLEFT",9,-(68+(i-1)*41));
 			LootFrame.piglootbut[i]=But
 		end
-		local function Update_ButUI()
+		local function PIG_Update_UI()
 			LootFrameUpButton:Hide()
 			LootFrameUpButton:ClearAllPoints();
 			LootFrameUpButton:SetPoint("RIGHT",LootFrame,"LEFT",0,0);
@@ -59,15 +74,15 @@ function FramePlusfun.Loot()
 			LootFrameNext:ClearAllPoints();
 			LootFrameNext:SetPoint("RIGHT",LootFrameDownButton,"LEFT",0,0);
 		end
-		local function LootFrame_UpdateButtonALL(self)
+		local function PIG_UpdateButton(self)
 			for i=4,self.numLootItems do
 				if not _G["LootButton"..i] then AddlootBut(i) end
-				_G["LootButton"..i]:Show()
 				LootFrame_UpdateButton(i)
+				_G["LootButton"..i]:Show()
 			end
 		end
-		local function Update_Items(self)
-			Update_ButUI()
+		local function PIG_Update_ItemList(self)
+			PIG_Update_UI()
 			local lootName = UnitName("target") or UNKNOWNOBJECT
 			self.lootName=lootName
 			local regions = {LootFrame:GetRegions()}
@@ -82,7 +97,6 @@ function FramePlusfun.Loot()
 			end
 			if self.numLootItems>3 then
 				self:SetHeight(self.numLootItems*41+74)
-				LootFrame_UpdateButtonALL(self)
 				if ( GetCVar("lootUnderMouse") == "1" and self.numLootItems>6 ) then
 					local _,_,_,xpos,ypos=self:GetPoint()
 					local pignypos = ypos
@@ -95,21 +109,27 @@ function FramePlusfun.Loot()
 					end
 					self:SetPoint("TOPLEFT", nil, "BOTTOMLEFT", xpos, pignypos);
 				end
+				PIG_UpdateButton(self)
 			else
 				self:SetHeight(240)
 			end
 		end
+
+		-- MotaLoot:RegisterEvent("LOOT_OPENED")
+		-- MotaLoot:RegisterEvent("LOOT_SLOT_CLEARED")
+		-- MotaLoot:RegisterEvent("OPEN_MASTER_LOOT_LIST")
+		-- MotaLoot:RegisterEvent("UPDATE_MASTER_LOOT_LIST")
+		-- LootFrame:HookScript("OnEvent", function(self, event) 
+		-- 	if event == "LOOT_SLOT_CHANGED" then
+		-- 		LootFrame_UpdateButtonALL(self)
+		-- 	end
+		-- end)
 		hooksecurefunc("LootFrame_Show", function(self)
-			Update_Items(self)
+			PIG_Update_ItemList(self)
 		end)
 		hooksecurefunc("LootFrame_Update", function()
-			Update_ButUI()
-			LootFrame_UpdateButtonALL(LootFrame)
-		end)
-		LootFrame:HookScript("OnEvent", function(self, event) 
-			if ( event == "LOOT_SLOT_CHANGED" ) then
-				LootFrame_UpdateButtonALL(self)
-			end
+			PIG_Update_UI()
+			PIG_UpdateButton(LootFrame)
 		end)
 	else
 		hooksecurefunc(LootFrame, "Open", function(self)

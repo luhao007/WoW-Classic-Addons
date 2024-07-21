@@ -164,9 +164,9 @@ function NWB:checkStranglethornTimer()
 			local msg = string.format(L["stranglethornStartSoon"], "15 " .. L["minutes"]) .. ".";
 			if (IsInGuild()) then
 				if (isUS) then
-					NWB:sendGuildMsg(msg, "guild10", nil, "[NWB]", 2.69);
+					NWB:sendGuildMsg(msg, "guild10", nil, nil, "[NWB]", 2.69);
 				else
-					NWB:sendGuildMsg(msg, "guild10", nil, "[NWB]", 2.67);
+					NWB:sendGuildMsg(msg, "guild10", nil, nil, "[NWB]", 2.67);
 				end
 			else
 				NWB:print(msg, nil, "[NWB]");
@@ -180,9 +180,9 @@ function NWB:checkStranglethornTimer()
 		if (NWB.db.global.guild10) then
 			if (IsInGuild()) then
 				if (isUS) then
-					NWB:sendGuildMsg(msg, "guild10", nil, "[NWB]", 2.69);
+					NWB:sendGuildMsg(msg, "guild10", nil, nil, "[NWB]", 2.69);
 				else
-					NWB:sendGuildMsg(msg, "guild10", nil, "[NWB]", 2.68);
+					NWB:sendGuildMsg(msg, "guild10", nil, nil, "[NWB]", 2.68);
 				end
 			else
 				NWB:print(msg, nil, "[NWB]");

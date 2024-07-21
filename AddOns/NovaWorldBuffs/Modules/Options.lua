@@ -1095,6 +1095,14 @@ NWB.options = {
 			get = "getFlashNpcKilled",
 			set = "setFlashNpcKilled",
 		},
+		flashOnlyInCity = {
+			type = "toggle",
+			name = L["flashOnlyInCityTitle"],
+			desc = L["flashOnlyInCityDesc"],
+			order = 365,
+			get = "getFlashOnlyInCity",
+			set = "setFlashOnlyInCity",
+		},
 		dispelsHeader = {
 			type = "header",
 			name = NWB.prefixColor .. L["dispelsHeaderDesc"],
@@ -1797,10 +1805,10 @@ NWB.optionDefaults = {
 		guildNpcWalking = 1,
 		handInMsg = false,
 		flashNpcWalking = true,
-		rendRespawnTime = 10800,
-		onyRespawnTime = 21600,
-		nefRespawnTime = 28800,
-		zanRespawnTime = 28800,
+		--rendRespawnTime = 10800,
+		--onyRespawnTime = 21600,
+		--nefRespawnTime = 28800,
+		--zanRespawnTime = 28800,
 		syncVicinity = true,
 		lastVersionMsg = 0,
 		showTimeStamp = true,
@@ -1864,6 +1872,7 @@ NWB.optionDefaults = {
 		flashFirstYell = true,
 		flashFirstYellZan = true,
 		flashNpcKilled = true,
+		flashOnlyInCity = true,
 		dispelsMine = true,
 		dispelsMineWBOnly = true,
 		dispelsAll = false,
@@ -2232,34 +2241,23 @@ local function loadNewVersionFrame()
 		frame:Hide();
 		newVersionFrame = frame;
 	end
-	linesVersion = 2.84;
+	linesVersion = 2.85;
 	local lines = {
+		--" ",
+		"|cFFFF6900[Era]|r",
+		"- Re-enabled buff timers on Era realms with Blizzard reversing the decision to remove them.",
+		"- Removed nef hand in cooldown timer on Era realms, it's been broken and without a cooldown since SoD release and wasn't fixed when they re-added timers to era today so I'm guessing it won't get fixed any time soon (or maybe they don't realize it's been broken?).",
+		"- Added option to disable minimized client flashes for buff drops when not in a capital city (or other place a buff can drop), enabled by default.",
+		"- Started re-writing a lot of the addon so if Blizzard changes buff timers in the future it can be easily changed in the addon just by modifying a settings file, everything should still be working properly but please let me know if any new bugs pop up.",
 		" ",
-		"|cFF00FF00Version 2.84|r",
-		"|cFFFF6900[Era and SoD]|r",
-		"- Added options to only show buff drop msgs for chat window and middle of the screen while you're in a city the buff can drop in, you won't see msgs out in the world with these enabled.",
-		"- Removed the \"buff has dropped\" guild msg, now there's no cooldown it can be kinda spammy getting 2 msgs for every drop. The msg saying it will drop in x seconds is still there so you can relog, but there is no need for both msgs anymore.",
-		"- Added 3 minute cooldown between buff drop warning msgs.",
-		" ",
-		"|cFFFF6900[SoD only]|r",
-		"- Added kill count to the honor tracker for Blackrock Erruption pvp event.",
-		"- Disabled blackrock event timer guild msgs, this wasn't meant to enabled as the event is up 50% of the time there's no need for warnings when it spawns, can just look at the timer on minimap button tooltip to see the timer.",
-		"- Fixed missing icon for Spark of Inspiration buff in /buffs window.",
-		"- Adjusted Blackrock Eruption timer for NA realms.",
+		"|cFFFF6900[SoD Only]|r",
+		"- Removed Rend guild chat msgs on SoD realms since there are so many handins with no cooldown atm, might take a week or so for enough people to update before they completely disappear from guild chat.",
+		"- All buff drop msgs/sounds now have a 10 minute cooldown on a per buff type basis.",
+		"- Fixed EU Blackrock pvp event spawn timer.",
 		" ",
 		" ",
-		"|cFF00FF00Version 2.83|r",
-		"|cFFFF6900[Era and SoD]|r",
-		"- Added new alliance rend buff Might of Stormwind to the /buffs tracking frame.",
-		"- Disabled timers for rend/ony/nef on classic, Blizzard has changed the handin cooldown to 1 minute (it may take a while for people to update before you stop seeing guild timer msgs).",
-		" ",
-		"|cFFFF6900[SoD only]|r",
-		"- Removed ashenvale starts soon guild warnings (it's old content now but the timer is still on minimap button/worldmap to view if you want).",
-		"- Removed STV 30 minutes guild warning, 15 minute warning is still active, the new coins will give honor so maybe still useful to see spawn.",
-		"- Added new Slaughter Coins to coin counter during STV event.",
-		"- Added Blackrock Mountain pvp event timers to minimap button tooltip and world map, let me know if these timers are wrong for your region.",
-		"- Added honor tracker during the Blackrock Mountain event in the same way coins are tracked for STV.",
-		"- Added config options to disable STV coins and Blackrock honor tracker chat msgs.",
+		"|cFFFFFF00|cFFFF6900Reminder:|r There's an old feature that |cFF00FF00Guild Masters|r can use if they wanted to disable guild chat msgs from this addon for the entire guild, just put any of the following #hashtags anywhere in your public guild note (can add multiple at the same time).|r\n|cFF9CD6DE#nwb1 = Disable ALL msgs at once.\n#nwb2 = Disable timers msgs.\n#nwb3 = Disable buff dropped msgs.\n#nwb4 = Disable !wb command.\n#nwb5 = Disable Songflowers msgs.\n#nwb6 = Disable all timer data from outside the guild.\n#nwb7 = Disable NPC was killed msgs.\n#nwb8 = Disable NPC has started walking msgs.|r",
+		"This list can always be found on the curseforge NWB page.",
 	};
 	--[[if (NWB.realm == "Arugal" or NWB.realm == "Remulos" or NWB.realm == "Yojamba") then
 		lines = {
@@ -2506,6 +2504,15 @@ end
 
 function NWB:getFlashNpcKilled(info)
 	return self.db.global.flashNpcKilled;
+end
+
+--Flash in city only.
+function NWB:setFlashOnlyInCity(info, value)
+	self.db.global.flashOnlyInCity = value;
+end
+
+function NWB:getFlashOnlyInCity(info)
+	return self.db.global.flashOnlyInCity;
 end
 
 --Minimap button

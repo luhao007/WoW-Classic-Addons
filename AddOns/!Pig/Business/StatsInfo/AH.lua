@@ -288,21 +288,53 @@ function BusinessInfo.AH()
 	fujiF.PListR.TOP=PIGFrame(fujiF.PListR)
 	fujiF.PListR.TOP:PIGSetBackdrop(0)
 	fujiF.PListR.TOP:SetPoint("TOPLEFT",fujiF.PListR,"TOPLEFT",0,0);
-	fujiF.PListR.TOP:SetPoint("BOTTOMRIGHT",fujiF.PListR,"BOTTOMRIGHT",0,223);
-
-	-- fujiF.PListR.BOTTOM=PIGFrame(fujiF.PListR)
-	-- fujiF.PListR.BOTTOM:PIGSetBackdrop(0)
-	-- fujiF.PListR.BOTTOM:SetPoint("TOPLEFT",fujiF.PListR.TOP,"TOPLEFT",0,0);
-	-- fujiF.PListR.BOTTOM:SetPoint("BOTTOMRIGHT",fujiF.PListR,"BOTTOMRIGHT",0,0);
-	-- local HeightX,WidthX = 200,6
-	-- for i=1,100 do
-	-- 	local zhuzhuangX = CreateFrame("Frame", nil, fujiF.PListR.BOTTOM,"BackdropTemplate");
-	-- 	zhuzhuangX:SetSize(WidthX,HeightX);
-	-- 	zhuzhuangX:SetPoint("BOTTOMLEFT", fujiF.PListR.BOTTOM, "BOTTOMLEFT",WidthX*(i-1), 0);
-	-- 	zhuzhuangX:SetBackdrop({bgFile = "interface/characterframe/ui-party-background.blp"});
-	-- 	zhuzhuangX:SetBackdropColor(1, 1, 1, 1);
-	-- end
-
+	fujiF.PListR.TOP:SetPoint("BOTTOMRIGHT",fujiF.PListR,"BOTTOMRIGHT",0,260);
+	--趋势
+	fujiF.PListR.BOTTOM=PIGFrame(fujiF.PListR)
+	fujiF.PListR.BOTTOM:PIGSetBackdrop(0)
+	fujiF.PListR.BOTTOM:SetPoint("TOPLEFT",fujiF.PListR.TOP,"BOTTOMLEFT",0,0);
+	fujiF.PListR.BOTTOM:SetPoint("BOTTOMRIGHT",fujiF.PListR,"BOTTOMRIGHT",0,0);
+	local HeightX,WidthX = fujiF.PListR.BOTTOM:GetHeight()-60,7.9
+	fujiF.PListR.BOTTOM.qushiBUT={}
+	for i=1,40 do
+		local zhuzhuangX=PIGFrame(fujiF,{"BOTTOMLEFT", fujiF.PListR.BOTTOM, "BOTTOMLEFT",WidthX*(i-1), 0},{WidthX,HeightX})
+		if i==1 then
+			zhuzhuangX:SetPoint("BOTTOMLEFT", fujiF.PListR.BOTTOM, "BOTTOMLEFT",0, 0);
+		else
+			zhuzhuangX:SetPoint("BOTTOMLEFT", fujiF.PListR.BOTTOM, "BOTTOMLEFT",(WidthX)*(i-1), 0);
+		end
+		zhuzhuangX:PIGSetBackdrop(0.9,1,{0.2, 0.8, 0.8})
+		zhuzhuangX:Hide()
+		fujiF.PListR.BOTTOM.qushiBUT[i]=zhuzhuangX
+	end
+	function fujiF.qushitu(Data)
+		for i=1,40 do
+			fujiF.PListR.BOTTOM.qushiBUT[i]:Hide()
+		end
+		local PIG_qushidata_V = {["maxG"]=1,["endnum"]=1,["minVV"]=0.04}
+		if #Data>40 then PIG_qushidata_V.endnum=(#Data-40) end
+		for i=#Data,PIG_qushidata_V.endnum,-1 do
+			local jiageVV =Data[i]
+			if jiageVV then
+				if jiageVV[1]>PIG_qushidata_V.maxG then
+					PIG_qushidata_V.maxG=jiageVV[1]
+				end
+			end
+		end
+		for i=#Data,1,-1 do
+			local jiageVV = Data[i]
+			if jiageVV then
+				fujiF.PListR.BOTTOM.qushiBUT[i]:Show()
+				local PIG_qushizuidabaifenbi = jiageVV[1]/PIG_qushidata_V.maxG
+				if PIG_qushizuidabaifenbi<PIG_qushidata_V.minVV then
+					fujiF.PListR.BOTTOM.qushiBUT[i]:SetHeight(PIG_qushidata_V.minVV*HeightX)
+				else
+					fujiF.PListR.BOTTOM.qushiBUT[i]:SetHeight(PIG_qushizuidabaifenbi*HeightX)
+				end
+				
+			end
+		end
+	end
 	local biaotiListLS = {{"缓存单价",-170},{"缓存时间",-36}}
 	for i=1,#biaotiListLS do
 		local biaotiname = PIGFontString(fujiF.PListR.TOP,nil,biaotiListLS[i][1],"OUTLINE")
@@ -359,6 +391,7 @@ function BusinessInfo.AH()
 				fujix.time:SetText(jiluTime)
 			end
 		end
+		fujiF.qushitu(itemDataL)
 	end
 	--
 	fujiF:HookScript("OnShow", function(self)

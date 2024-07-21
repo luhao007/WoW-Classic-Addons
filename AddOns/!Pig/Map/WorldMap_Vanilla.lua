@@ -71,47 +71,33 @@ end
 ----
 function Mapfun.WorldMap_Wind()
 	if not PIGA["Map"]["WorldMapWind"] then return end
-	-- if tocversion<30000 then
-	-- 	local Width,Height=800,618;--1004 689
-	-- 	WorldMapFrame:SetSize(Width,Height);
-	-- 	WorldMapFrame:SetFrameStrata("HIGH")
-	-- 	WorldMapFrame.BorderFrame:SetFrameStrata("LOW")
-	-- 	WorldMapFrame.BorderFrame:SetScale(0.78)
-	-- 	WorldMapFrame.BorderFrame:SetPoint("TOPLEFT", WorldMapFrame, "TOPLEFT", 0, -14)
-	-- 	WorldMapFrame.BorderFrame:SetPoint("BOTTOMRIGHT", WorldMapFrame, "BOTTOMRIGHT", 0, 0)
-	-- 	WorldMapFrame.BlackoutFrame:SetFrameStrata("LOW")
-	-- 	WorldMapFrame.BlackoutFrame:Hide()
-	-- 	WorldMapFrameCloseButton:ClearAllPoints();
-	-- 	WorldMapFrameCloseButton:SetPoint("TOPRIGHT", WorldMapFrame, "TOPRIGHT", 4, -12)
-	-- 	WorldMapFrameCloseButton:SetScale(0.86)
-	-- 	WorldMapMagnifyingGlassButton:ClearAllPoints();
-	-- 	WorldMapMagnifyingGlassButton:SetPoint("TOPLEFT", WorldMapFrame, "TOPLEFT", 10, -70)
-	-- 	WorldMapZoneMinimapDropDown:SetScale(0.86)
-	-- 	WorldMapContinentDropDown:SetScale(0.86)
-	-- 	WorldMapZoneDropDown:SetScale(0.86)
-	-- 	WorldMapZoomOutButton:SetScale(0.86)
-	-- 	WorldMapContinentDropDown:SetPoint("TOP", WorldMapFrame, "TOP", -40, -50)
-	-- elseif tocversion<30403 then
-	-- 	UIPanelWindows["WorldMapFrame"] = nil
-	-- 	table.insert(UISpecialFrames, "WorldMapFrame")
-	-- 	WorldMapFrame.IsMaximized = function() return false end
-	-- 	WorldMapFrame.HandleUserActionToggleSelf = function()
-	-- 		if WorldMapFrame:IsShown() then WorldMapFrame:Hide() else WorldMapFrame:Show() end
-	-- 	end
-	-- else
 	if tocversion<40000 then
 		---SetCVar("miniWorldMap", 0)
+		UIPanelWindows["WorldMapFrame"] = nil
+		WorldMapFrame:SetIgnoreParentScale(false)
+		--WorldMapFrame:SetScale(0.9)
+		WorldMapFrame.ScrollContainer.GetCursorPosition = function(f)
+		    local x,y = MapCanvasScrollControllerMixin.GetCursorPosition(f);
+		    --local s = WorldMapFrame:GetScale();
+		    local s = WorldMapFrame:GetScale() * UIParent:GetScale()
+		    return x/s, y/s;
+		end
+		hooksecurefunc(WorldMapFrame.BlackoutFrame, "Show", function()
+			WorldMapFrame.BlackoutFrame:Hide()
+		end)
 		hooksecurefunc(WorldMapFrame, "SynchronizeDisplayState", function(self)
 			if self:IsMaximized() then
- 				WorldMapFrame.BlackoutFrame:SetAlpha(0.01)
-				WorldMapFrame.BlackoutFrame:EnableMouse(false)
-				WorldMapFrame:SetScale(0.9)
+				if self.QuestLog:IsShown() then
+					local point, relativeTo, relativePoint, offsetX, offsetY=unpack(PIGA["WowUI"]["WorldMapFrame"]["Point"])
+					self:ClearAllPoints();
+					self:SetPoint(point, relativeTo, relativePoint, offsetX, offsetY);
+				end
 			else
 				if WorldMapTrackQuest then
 					WorldMapTrackQuest:SetPoint("BOTTOMLEFT", WorldMapFrame, "BOTTOMLEFT", 10, 99994);
 				end
-				WorldMapFrame:SetScale(1)
 			end
+			self:OnFrameSizeChanged();
 		end)
 	else
 

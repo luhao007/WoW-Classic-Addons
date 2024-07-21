@@ -26,34 +26,35 @@ local GetRuneData=Fun.GetRuneData
 
 -------------
 local ListWWWHHH = {206,425,18,36,6}--3Gembut/4buweiW/5宝石+附魔+符文数
---获取物品属性列表
-local Plisttip = CreateFrame("GameTooltip", "Plisttip_UI", UIParent, "GameTooltipTemplate")
-local function PIGGetItemStats(unit,Slot,stats)
-	Plisttip:ClearLines();
-	Plisttip:SetOwner(UIParent, "ANCHOR_NONE")
-	if unit=="yc" or unit=="lx" then
-		Plisttip:SetHyperlink(Slot)
-	else
-		--local link = GetInventoryItemLink(unit,Slot) or select(2, Plisttip:GetItem())
-	    Plisttip:SetInventoryItem(unit, Slot)
+local function CZ_ItemListinfo(fujikk,Slot,fujiname)
+	fujikk:SetBackdropBorderColor(0.5, 0.5, 0.5,0.5)--部位边框
+	fujikk.t:SetTextColor(0.5, 0.5, 0.5,0.8);--部位名
+	fujikk.itemlink.cunzai=nil
+	fujikk.itemlink:SetWidth(0.1);--link宽
+	fujikk.itemlink.lv:SetText(" ")--物品等级
+	fujikk.itemlink.t:SetText(" ")--物品link
+	for Gemid=1,ListWWWHHH[5] do
+		local Gemui = _G[fujiname.."_"..Slot.."_"..Gemid]
+		Gemui:SetWidth(0.01)
+		Gemui:SetAlpha(0)
+		Gemui:SetBackdropBorderColor(0, 0, 0, 1);
 	end
-    local hangname = Plisttip:GetName()
-    local txtNum = Plisttip:NumLines()
-    if txtNum then
-    	local quality=1
-    	if unit=="yc" or unit=="lx" then
-			quality = C_Item.GetItemQualityByID(Slot)
-    	else
-	    	quality = GetInventoryItemQuality(unit, Slot)
-	    end
-    	for g = 2, txtNum do
-	    	local text = _G[hangname.."TextLeft" .. g]:GetText() or ""
-	    	--local r, g, b = _G[hangname.."TextLeft" .. g]:GetTextColor()
-	    	tinsert(stats, {text,quality,Slot})
-	    end
-	end
+	fujikk.itemlink:SetScript("OnEnter",nil);
+	fujikk.itemlink:SetScript("OnDoubleClick",nil)
 end
---获取宝石槽位信息
+local function CZ_taozhuanginfo(self,fujiname)
+	for tid=1,4 do
+		local taoui = _G[fujiname.."_".."tao_"..tid]
+		taoui:SetTextColor(0.5, 0.5, 0.5, 1);
+		if tid==1 then
+			taoui:SetText(string.format(BOSS_BANNER_LOOT_SET,NONE))
+		else
+			taoui:SetText("")
+		end
+	end
+	self:SetHeight(ListWWWHHH[2])
+end
+--获取宝石槽位信息add
 local function PIGGetGemList(Link)
 	local baoshiinfo = {}
     local statsg = GetItemStats(Link)
@@ -217,51 +218,6 @@ local function ShowEnchantInfo(EnchantBut,ItemID)
 		end
 	end
 end
----add
-local function CZ_ItemListinfo(fujikk,Slot,fujiname)
-	fujikk:SetBackdropBorderColor(0.5, 0.5, 0.5,0.5)--部位边框
-	fujikk.t:SetTextColor(0.5, 0.5, 0.5,0.8);--部位名
-	fujikk.itemlink.cunzai=nil
-	fujikk.itemlink:SetWidth(0.1);--link宽
-	fujikk.itemlink.lv:SetText(" ")--物品等级
-	fujikk.itemlink.t:SetText(" ")--物品link
-	for Gemid=1,ListWWWHHH[5] do
-		local Gemui = _G[fujiname.."_"..Slot.."_"..Gemid]
-		Gemui:SetWidth(0.01)
-		Gemui:SetAlpha(0)
-		Gemui:SetBackdropBorderColor(0, 0, 0, 1);
-	end
-	fujikk.itemlink:SetScript("OnEnter",nil);
-	fujikk.itemlink:SetScript("OnDoubleClick",nil)
-end
-local function CZ_taozhuanginfo(self,fujiname)
-	for tid=1,4 do
-		local taoui = _G[fujiname.."_".."tao_"..tid]
-		taoui:SetTextColor(0.5, 0.5, 0.5, 1);
-		if tid==1 then
-			taoui:SetText(string.format(BOSS_BANNER_LOOT_SET,NONE))
-		else
-			taoui:SetText("")
-		end
-	end
-	self:SetHeight(ListWWWHHH[2])
-end
----套装
-local function GettaozhuangInfo(dainfo,taoname,dangqian,zongshu,quality)
-	local cunzaitaoz = true
-	for ivv=1,#dainfo do
-		if taoname==dainfo[ivv][1] then
-			cunzaitaoz = false
-			dainfo[ivv][2]=dainfo[ivv][2]+1
-			dainfo[ivv][3]=zongshu
-			break
-		end
-	end
-	if cunzaitaoz then
-		table.insert(dainfo,{taoname,1,zongshu,quality})
-	end
-	return dainfo
-end
 --显示符文
 local function Show_fuwenBut(fuwenIcon,fwshuju)
 	if fwshuju then				
@@ -295,6 +251,81 @@ local function GetNewWidthhang(Parent,fujikk)
 		Parent.ALLWWWW=fujikk.DataInfo.hangWWWW
 	end
 	return Parent.ALLWWWW
+end
+--获取物品套装
+local function GettaozhuangInfo(dainfo,taoname,dangqian,zongshu,quality)
+	local cunzaitaoz = true
+	for ivv=1,#dainfo do
+		if taoname==dainfo[ivv][1] then
+			cunzaitaoz = false
+			dainfo[ivv][2]=dainfo[ivv][2]+1
+			dainfo[ivv][3]=zongshu
+			break
+		end
+	end
+	if cunzaitaoz then
+		table.insert(dainfo,{taoname,1,zongshu,quality})
+	end
+	return dainfo
+end
+local function PIGGetTaozhuang(statsg)
+	local taozhuainfo = {}
+	for iv=1,#statsg do
+		local newText=statsg[iv][1]:gsub("（","(");
+		local newText=newText:gsub("）",")");
+		local kaishi,jieshu,taoname,dangqian,zongshu = newText:find("(.+)%((%d)/(%d)%)")
+		if taoname and dangqian and zongshu then
+			if zongshu=="0" then
+				return taozhuainfo
+			else
+				taozhuainfo = GettaozhuangInfo(taozhuainfo,taoname,dangqian,zongshu,statsg[iv][2])
+			end
+		end
+	end
+	return taozhuainfo
+end
+local Plisttip = CreateFrame("GameTooltip", "Plisttip_UI", UIParent, "GameTooltipTemplate")
+local function PIGGetItemStats(Data)
+	local allstats={}
+	for k,v in pairs(Data) do
+		Plisttip:ClearLines();
+		Plisttip:SetOwner(UIParent, "ANCHOR_NONE")
+		Plisttip:SetHyperlink(v)
+	    local hangname = Plisttip:GetName()
+	    local txtNum = Plisttip:NumLines()
+	    if txtNum then
+			local quality = C_Item.GetItemQualityByID(v) or 1
+	    	for g = 2, txtNum do
+		    	local text = _G[hangname.."TextLeft" .. g]:GetText() or ""
+		    	--local r, g, b = _G[hangname.."TextLeft" .. g]:GetTextColor()
+		    	tinsert(allstats, {text,quality,Slot})
+		    end
+		end
+	end
+	return PIGGetTaozhuang(allstats)
+end
+
+local function ShowItemTaozhuang(Parent,Data)
+	local taozhuang = PIGGetItemStats(Data)
+	local taozhuangNum = #taozhuang
+	if taozhuangNum<1 then
+		return C_Timer.After(0.1,function()
+			ShowItemTaozhuang(Parent,Data)
+		end)
+	end
+	for tid=1,taozhuangNum do
+		local taoui = _G[Parent:GetName().."_".."tao_"..tid]
+		taoui:SetText(string.format(BOSS_BANNER_LOOT_SET,taozhuang[tid][1].."("..taozhuang[tid][2].."/"..taozhuang[tid][3]..")"))
+		local r, g, b =GetItemQualityColor(taozhuang[tid][4] or 0)
+		taoui:SetTextColor(r, g, b,1);
+		local taoui_width = taoui:GetStringWidth()+4
+		if taoui_width>Parent.ALLWWWW then
+			Parent.ALLWWWW=taoui_width
+		end
+	end
+	if taozhuangNum>1 then
+		Parent:SetHeight(ListWWWHHH[2]+(taozhuangNum-1)*(ListWWWHHH[3]-3))
+	end
 end
 local function ShowItemList(Parent,unit,Data,taozhuang,fuwen)
 	local Parentname = Parent:GetName()
@@ -525,73 +556,43 @@ local function ShowItemList(Parent,unit,Data,taozhuang,fuwen)
 	if biaotiwidth>Parent.ALLWWWW then
 		Parent.ALLWWWW=biaotiwidth
 	end
-	local taozhuangNum = #taozhuang
-	for tid=1,taozhuangNum do
-		local taoui = _G[Parentname.."_".."tao_"..tid]
-		taoui:SetText(string.format(BOSS_BANNER_LOOT_SET,taozhuang[tid][1].."("..taozhuang[tid][2].."/"..taozhuang[tid][3]..")"))
-		local r, g, b =GetItemQualityColor(taozhuang[tid][4] or 0)
-		taoui:SetTextColor(r, g, b,1);
-		local taoui_width = taoui:GetStringWidth()+4
-		if taoui_width>Parent.ALLWWWW then
-			Parent.ALLWWWW=taoui_width
-		end
-	end
-	if taozhuangNum>1 then
-		Parent:SetHeight(ListWWWHHH[2]+(taozhuangNum-1)*(ListWWWHHH[3]-3))
-	end
 	Parent:SetWidth(Parent.ALLWWWW)
 end
 --获取装备信息
-local function PIGGetTaozhuang(statsg)
-	local taozhuainfo = {}
-	for iv=1,#statsg do
-		local newText=statsg[iv][1]:gsub("（","(");
-		local newText=newText:gsub("）",")");
-		local kaishi,jieshu,taoname,dangqian,zongshu = newText:find("(.+)%((%d)/(%d)%)")
-		if taoname and dangqian and zongshu then
-			if zongshu=="0" then
-				return taozhuainfo
-			else
-				taozhuainfo = GettaozhuangInfo(taozhuainfo,taoname,dangqian,zongshu,statsg[iv][2])
-			end
-		end
-	end
-	return taozhuainfo
-end
-local function Getwupinmulu(Parent,unit,ycdata)
+local function GetItemMuluData(Parent,unit,ycdata)
 	local ItemData={}
-	local allstats={}
 	if unit=="yc" or unit=="lx" then
 		for k,v in pairs(ycdata) do
 			local _,itemLink= GetItemInfo(v)
 			ItemData[k]=itemLink
-			PIGGetItemStats(unit,itemLink,allstats)--保存装备属性信息
 		end
 	else
-		for i = 1, #InvSlot["ID"] do
-			local itemLink=GetInventoryItemLink(unit, InvSlot["ID"][i])
-			ItemData[InvSlot["ID"][i]]=itemLink
-			PIGGetItemStats(unit,InvSlot["ID"][i],allstats)--保存装备属性信息
+		for Slot = 1, 19 do
+			local itemLink=GetInventoryItemLink(unit, Slot)
+			
+			ItemData[Slot]=itemLink
 		end
 	end
-	local taozhuanginfo= PIGGetTaozhuang(allstats)
+	for k,v in pairs(ItemData) do
+		local _,itemLink = GetItemInfo(v) 
+		if not itemLink and Parent.zhixinghuoqucishu<10 then
+			Parent.zhixinghuoqucishu=Parent.zhixinghuoqucishu+1
+			return C_Timer.After(0.1,function()
+				GetItemMuluData(Parent,unit,ycdata)
+			end)
+		end
+	end
 	---
-	if #taozhuanginfo==0 and Parent.zhixinghuoqucishu<4 then
-		Parent.zhixinghuoqucishu=Parent.zhixinghuoqucishu+1
-		C_Timer.After(0.1,function()
-			Getwupinmulu(Parent,unit,ycdata)
-		end)
-	else
-		local fuweninfo={}
-		if unit=="player" then
-			fuweninfo=GetRuneData()
-		elseif unit=="lx" then
-			if PIGA["StatsInfo"]["Items"][Parent.cName] and PIGA["StatsInfo"]["Items"][Parent.cName]["R"] then
-				fuweninfo=PIGA["StatsInfo"]["Items"][Parent.cName]["R"]
-			end
+	local fuweninfo={}
+	if unit=="player" then
+		fuweninfo=GetRuneData()
+	elseif unit=="lx" then
+		if PIGA["StatsInfo"]["Items"][Parent.cName] and PIGA["StatsInfo"]["Items"][Parent.cName]["R"] then
+			fuweninfo=PIGA["StatsInfo"]["Items"][Parent.cName]["R"]
 		end
-		ShowItemList(Parent,unit,ItemData,taozhuanginfo,fuweninfo)
 	end
+	ShowItemList(Parent,unit,ItemData,fuweninfo)
+	ShowItemTaozhuang(Parent,ItemData)
 end
 ------
 local function add_ItemList(fujik,miaodian,ziji)
@@ -728,10 +729,9 @@ local function add_ItemList(fujik,miaodian,ziji)
 				end
 			end
 		else
-			local guacha=false
-			if unit==InspectFrame then
-				unit=InspectFrame.unit
-				guacha=true
+			local IS_guacha=false
+			if unit~="player" and self:GetParent():GetName()=="InspectFrame" then
+				IS_guacha=true
 			end
 			local cName=GetUnitName(unit, true)
 			local Level=UnitLevel(unit)
@@ -741,9 +741,9 @@ local function add_ItemList(fujik,miaodian,ziji)
 			self.zhiyeID=classId
 			self.zhiye=classFilename
 			if tocversion<50000 then
-				jichuxinxi.Talent=TalentData.GetTianfuIcon(guacha,classFilename)
+				jichuxinxi.Talent=TalentData.GetTianfuIcon(IS_guacha,classFilename)
 				jichuxinxi.OpenTF=function()
-					if guacha then
+					if IS_guacha then
 						PlaySound(SOUNDKIT.IG_CHAT_EMOTE_BUTTON);
 						if self.TalentF:IsVisible() then
 							self.TalentF:Hide()
@@ -753,24 +753,24 @@ local function add_ItemList(fujik,miaodian,ziji)
 						end
 					else
 						if tocversion<20000 then
-							PlayerTalentFrame_LoadUI()
-							if PlayerTalentFrame:IsVisible() then
-								PlayerTalentFrame:Hide()
+							PlayerTalentFrame_LoadUI();
+							if ( PlayerTalentFrame:IsShown() ) then
+								HideUIPanel(PlayerTalentFrame);
 							else
-								PlayerTalentFrame:Show()
+								ShowUIPanel(PlayerTalentFrame);
 							end
 						else
-							TalentFrame_LoadUI()
-							if PlayerTalentFrame:IsVisible() then
-								PlayerTalentFrame:Hide()
+							TalentFrame_LoadUI();
+							if ( PlayerTalentFrame:IsShown() ) then
+								HideUIPanel(PlayerTalentFrame);
 							else
-								PlayerTalentFrame:Show()
+								ShowUIPanel(PlayerTalentFrame);
 							end
 						end
 					end
 				end
 			else
-				if guacha then
+				if IS_guacha then
 					local specID = GetInspectSpecialization(unit)
 					local id, name, description, icon = GetSpecializationInfoByID(specID)
 					jichuxinxi.Talent={name, icon or 132222, 1}
@@ -780,7 +780,7 @@ local function add_ItemList(fujik,miaodian,ziji)
 					jichuxinxi.Talent={name, icon or 132222, 1}
 				end
 				jichuxinxi.OpenTF=function()
-					if guacha then
+					if IS_guacha then
 						if InCombatLockdown() then
 							PlaySound(SOUNDKIT.IG_CHAT_EMOTE_BUTTON);
 							PIGinfotip:TryDisplayMessage("请专心战斗", YELLOW_FONT_COLOR:GetRGB());
@@ -813,22 +813,8 @@ local function add_ItemList(fujik,miaodian,ziji)
 		end)
 	end
 	function ZBLsit:Update_ItemList(unit,zbData)
-		if unit=="yc" or unit=="lx" then
-			if self.Getwupinmulu then self.Getwupinmulu:Cancel() end
-			self.Getwupinmulu=C_Timer.NewTimer(0.1,function()
-				self.zhixinghuoqucishu=0
-				Getwupinmulu(self,unit,zbData)
-			end)
-		else
-			if unit==InspectFrame then
-				unit=InspectFrame.unit
-			end
-			if self.Getwupinmulu then self.Getwupinmulu:Cancel() end
-			self.Getwupinmulu=C_Timer.NewTimer(0.1,function()
-				self.zhixinghuoqucishu=0
-				Getwupinmulu(self,unit)
-			end)
-		end
+		self.zhixinghuoqucishu=0
+		GetItemMuluData(self,unit,zbData)
 	end
 	return ZBLsit
 end

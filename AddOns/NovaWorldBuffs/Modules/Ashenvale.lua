@@ -139,9 +139,9 @@ end
 			local msg = string.format(L["ashenvaleStartSoon"], "15 " .. L["minutes"]) .. ".";
 			if (IsInGuild()) then
 				if (isUS) then
-					NWB:sendGuildMsg(msg, "guild10", nil, "[NWB]", 2.69);
+					NWB:sendGuildMsg(msg, "guild10", nil, nil, "[NWB]", 2.69);
 				else
-					NWB:sendGuildMsg(msg, "guild10", nil, "[NWB]", 2.67);
+					NWB:sendGuildMsg(msg, "guild10", nil, nil, "[NWB]", 2.67);
 				end
 			else
 				NWB:print(msg, nil, "[NWB]");
@@ -743,7 +743,7 @@ function NWB:ashenvaleEventStartsSoon(alliancePercent, hordePercent, timestamp)
 			--end
 			if (NWB.db.global.guild10) then
 				if (not NWB.data.lastAshenvaleGuildMsg or GetServerTime() - NWB.data.lastAshenvaleGuildMsg > lastStartSoonDelay) then
-					NWB:sendGuildMsg(msg, "guild10", nil, "[NWB]", 2.60);
+					NWB:sendGuildMsg(msg, "guild10", nil, nil, "[NWB]", 2.60);
 					NWB.data.lastAshenvaleGuildMsg = GetServerTime();
 				end
 			end

@@ -1035,3 +1035,6 @@ L["chatOnlyInCityDesc"] = "Only print timer and buff drop chat msgs when you are
 
 L["middleOnlyInCityTitle"] = "Only In City";
 L["middleOnlyInCityDesc"] = "Only show middle of the screen timer and buff drop msgs when you are in the main city where the buffs drop (Stranglethorn Vale included for Zandalar buff).";
+
+L["flashOnlyInCityTitle"] = "Only In City";
+L["flashOnlyInCityDesc"] = "Only flash while minimized when you are in the main city where the buffs drop (Stranglethorn Vale included for Zandalar buff).";

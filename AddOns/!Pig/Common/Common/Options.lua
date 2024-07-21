@@ -238,8 +238,10 @@ end);
 function CommonInfo.Commonfun.AutoLoot()
 	if PIGA["Common"]["AutoLoot"] then
 		SetCVar("autoLootDefault", "1")
+		if fujiF.AutoLoot.FastLoot then fujiF.AutoLoot.FastLoot:Enable() end
 	else
 		SetCVar("autoLootDefault", "0")
+		if fujiF.AutoLoot.FastLoot then fujiF.AutoLoot.FastLoot:Disable() end
 	end
 end
 fujiF.AutoLoot =PIGCheckbutton_R(fujiF,{ENABLE..AUTO_LOOT_DEFAULT_TEXT,ENABLE..AUTO_LOOT_DEFAULT_TEXT},true)
@@ -250,17 +252,17 @@ fujiF.AutoLoot:SetScript("OnClick", function (self)
 		PIGA["Common"]["AutoLoot"]=false;
 	end
 	CommonInfo.Commonfun.AutoLoot()
+	CommonInfo.Commonfun.FastLoot()
 end);
 if tocversion<50000 then
 	fujiF.AutoLoot.FastLoot = PIGCheckbutton(fujiF.AutoLoot,{"LEFT",fujiF.AutoLoot.Text,"RIGHT",20,0},{"加快拾取速度","在开启自动拾取时加快你的拾取速度(在队长分配不起作用)"})
 	fujiF.AutoLoot.FastLoot:SetScript("OnClick", function (self)
 		if self:GetChecked() then
 			PIGA["Common"]["FastLoot"]=true;
-			CommonInfo.Interactionfun.FastLoot()
 		else
 			PIGA["Common"]["FastLoot"]=false;
-			Pig_Options_RLtishi_UI:Show()
 		end
+		CommonInfo.Commonfun.FastLoot()
 	end)
 end
 ---性能优化---

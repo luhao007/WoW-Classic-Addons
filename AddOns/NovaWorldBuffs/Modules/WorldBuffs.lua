@@ -3,10 +3,125 @@
 -------------------
 
 --Just starting to bring things over to this module, next step will be changing everything to spellIDs now they've been added to era.
+--This is only half done and a huge mess atm.
 
 local addonName, addon = ...;
 local NWB = addon.a;
 local L = LibStub("AceLocale-3.0"):GetLocale("NovaWorldBuffs");
+local rendDropMsg, onyDropMsg, nefDropMsg = 0, 0, 0;
+NWB.firstYells = {rend = 0, ony = 0, nef = 0, zan = 0}; --Npc yells, shared guild cooldown.
+NWB.buffDrops = {rend = 0, ony = 0, nef = 0, zan = 0}; --Full duration buff applications, personal cooldown.
+NWB.lastSets = {rend = 0, ony = 0, nef = 0, zan = 0}; --Buff drops actual being set in the addon, if it meets all checks after buff applications.
+
+--Adding a central place to control whether an event should fire, things are changing a lot recently in classic with buff cooldowns etc and this just make it easier to change things in one place.
+function NWB:checkEventStatus(event, type, subEvent, channel)
+	if (event == subEvent) then
+		--Just incase I'm writing code half asleep one day...
+		NWB:debug("ERROR: NWB:checkEventStatus() events could cause an endless loop. (" .. event .. ")");
+		return;
+	end
+	local doAction;
+	--All events attached to a buff type.
+	--[[if (type == "rend") then
+		--No matching atm.
+	elseif (type == "ony") then
+		--No matching atm.
+	elseif (type == "nef") then
+		--No matching atm.
+	elseif (type == "zan") then
+		--No matching atm.
+	end]]
+	--Other specific events.
+	if (event == "sendGuildMsg") then
+		--Blanket match all guild chat events attached to a buff type.
+		if (type == "rend") then
+			if (NWB.isSOD) then --No rend msgs in sod it's been too spammy since the cooldown was removed.
+				return;
+			else
+				return true;
+			end
+		elseif (type == "ony") then
+			return true;
+		elseif (type == "nef") then
+			return true;
+		elseif (type == "zan") then
+			return true;
+		end
+		--Some of these guild msgs basically match the event types below that would send a guild msg.
+		--This is so the sender can ignore those events ineeded even if the player that saw the event isn;t up to date with the addon version.
+		--type here can also be used to pass a an extra arg for the "sendGuildMsg" event.
+		if (subEvent == "timer1" or subEvent == "timer10") then
+			return NWB:checkEventStatus("guildTimerMsg", type);
+		elseif (subEvent == "guildCommand") then
+			if (type == "!wb") then
+				return true;
+			elseif (type == "!dmf") then
+				return true;
+			else
+				return true;
+			end
+		elseif (subEvent == "songflower") then
+			return NWB:checkEventStatus(subEvent, type);
+		elseif (subEvent == "guildNpcWalking") then
+			return NWB:checkEventStatus(subEvent, type);
+		elseif (subEvent == "firstYell") then
+			return NWB:checkEventStatus(subEvent, type);
+		else
+			return true;
+		end
+	elseif (event == "firstYell") then
+		--When a buff is handed in and the NPC does it's first yell warning of a drop inc.
+		if (NWB.isSOD and channel == "guild" and type == "rend") then
+			--Disable rend guild msgs in SoD.
+			return;
+		end
+		if (GetServerTime() - NWB.firstYells[type] > NWB.buffDropSpamCooldown) then
+			NWB.firstYells[type] = GetServerTime();
+			return true;
+		else
+			return;
+		end
+	elseif (event == "buffDropMsg") then
+		--When a buff actually drops.
+		if (NWB.isSOD and channel == "guild" and type == "rend") then
+			--Disable rend guild msgs in SoD.
+			return;
+		end
+		if (GetServerTime() - NWB.buffDrops[type] > NWB.buffDropSpamCooldown) then
+			--NWB.buffDrops[type] = GetServerTime(); --Set in the drop func below.
+			return true;
+		else
+			return;
+		end
+	elseif (event == "guildTimerMsg") then
+		--Guild chat msg of x minutes left on cooldown.
+		return true;
+	elseif (event == "guildNpcWalking") then
+		--Guild chat msg of x minutes left on cooldown.
+		return true;
+	elseif (event == "npcRespawnMsg") then
+		return true;
+	elseif (event == "songFlower") then
+		return true;
+	elseif (event == "startFlash") then
+		if (NWB.isSOD and type == "rend") then --No rend flashes outside city in sod, there's also seperate setting in the flash func for all flashes in city only..
+			if (NWB.isCapitalCityAction("rend")) then
+				return true;
+			else
+				return;
+			end
+		end
+		return true;
+	elseif (event == "playSound") then
+		if (NWB.isSOD and type == "rend" and subEvent == "soundsFirstYell") then
+			return;
+		end
+		--These are checked in thier parent functions atm, like yell/buff drop etc.
+		return true;
+	else
+		return true;
+	end
+end
 
 NWB.lastHeraldYell = 0;
 local buffDrops = {};
@@ -354,10 +469,9 @@ local function combatLogEventUnfiltered(...)
 			if (expirationTime >= (3599.5 - buffLag) and (zone == 1454 or (zone == 1413 and NWB.faction == "Alliance") or not NWB.isLayered) and unitType == "Creature"
 					and ((GetServerTime() - NWB.data.rendYell2) < yellTwoOffset or (GetServerTime() - NWB.data.rendYell) < yellOneOffset)) then
 				NWB:trackNewBuff(spellName, "rend", npcID);
-				if (not buffDrops["rend"] or GetServerTime() - buffDrops["rend"] > NWB.buffDropSpamCooldown) then
+				if (not NWB.buffDrops["rend"] or GetServerTime() - NWB.buffDrops["rend"] > NWB.buffDropSpamCooldown) then
 					NWB:playSound("soundsRendDrop", "rend");
 				end
-				buffDrops["rend"] = GetServerTime();
 				if (NWB.db.global.cityGotBuffSummon) then
 					if (not InCombatLockdown() and C_SummonInfo.GetSummonConfirmTimeLeft() > 0) then
 						NWB.hideSummonPopup = true;
@@ -388,6 +502,7 @@ local function combatLogEventUnfiltered(...)
 				--NWB:debug("rend hand in delay", GetTime() - lastRendHandIn);
 				--NWB:debug("rend herald found delay", GetServerTime() - NWB.lastHeraldAlert);
 				--NWB:debug("rend herald yell delay", GetServerTime() - NWB.lastHeraldYell);
+				NWB.buffDrops["rend"] = GetServerTime();
 			else
 				NWB:syncBuffsWithCurrentDuration();
 			end
@@ -399,10 +514,9 @@ local function combatLogEventUnfiltered(...)
 				NWB:trackNewBuff(spellName, "zan", npcID);
 				--Not sure why this triggers 4 times on PTR, needs more testing once it's on live server but for now we do a 1 second cooldown.
 				NWB.lastZanBuffGained = GetServerTime();
-				--if (not buffDrops["zan"] or GetServerTime() - buffDrops["zan"] > NWB.buffDropSpamCooldown) then
+				--if (not NWB.buffDrops["zan"] or GetServerTime() - NWB.buffDrops["zan"] > NWB.buffDropSpamCooldown) then
 					NWB:playSound("soundsZanDrop", "zan");
 				--end
-				--buffDrops["zan"] = GetServerTime();
 				NWB:buffDroppedTaxiNode("zg");
 				if (NWB.db.global.zgGotBuffSummon) then
 					if (not InCombatLockdown() and C_SummonInfo.GetSummonConfirmTimeLeft() > 0) then
@@ -411,6 +525,7 @@ local function combatLogEventUnfiltered(...)
 					end
 					NWB:acceptSummon();
 				end
+				--NWB.buffDrops["zan"] = GetServerTime();
 			else
 				NWB:syncBuffsWithCurrentDuration();
 			end
@@ -438,11 +553,9 @@ local function combatLogEventUnfiltered(...)
 				end
 				NWB:trackNewBuff(spellName, "nef", npcID);
 				--Share cd with ony, same buff.
-				if (not buffDrops["ony"] or GetServerTime() - buffDrops["ony"] > NWB.buffDropSpamCooldown) then
+				if (not NWB.buffDrops["ony"] or GetServerTime() - NWB.buffDrops["ony"] > NWB.buffDropSpamCooldown) then
 					NWB:playSound("soundsNefDrop", "nef");
 				end
-				buffDrops["ony"] = GetServerTime();
-				--buffDrops["nef"] = GetServerTime();
 				if (NWB.db.global.cityGotBuffSummon) then
 					if (not InCombatLockdown() and C_SummonInfo.GetSummonConfirmTimeLeft() > 0) then
 						NWB.hideSummonPopup = true;
@@ -451,6 +564,8 @@ local function combatLogEventUnfiltered(...)
 					NWB:acceptSummon();
 				end
 				--NWB:debug("nef hand in delay", GetTime() - lastNefHandIn);
+				NWB.buffDrops["ony"] = GetServerTime();
+				--NWB.buffDrops["nef"] = GetServerTime();
 			else
 				NWB:syncBuffsWithCurrentDuration()
 			end
@@ -478,10 +593,9 @@ local function combatLogEventUnfiltered(...)
 					end
 				end
 				NWB:trackNewBuff(spellName, "ony", npcID);
-				if (not buffDrops["ony"] or GetServerTime() - buffDrops["ony"] > NWB.buffDropSpamCooldown) then
+				if (not NWB.buffDrops["ony"] or GetServerTime() - NWB.buffDrops["ony"] > NWB.buffDropSpamCooldown) then
 					NWB:playSound("soundsOnyDrop", "ony");
 				end
-				buffDrops["ony"] = GetServerTime();
 				if (NWB.db.global.cityGotBuffSummon) then
 					if (not InCombatLockdown() and C_SummonInfo.GetSummonConfirmTimeLeft() > 0) then
 						NWB.hideSummonPopup = true;
@@ -490,6 +604,7 @@ local function combatLogEventUnfiltered(...)
 					NWB:acceptSummon();
 				end
 				--NWB:debug("ony hand in delay", GetTime() - lastOnyHandIn);
+				NWB.buffDrops["ony"] = GetServerTime();
 			else
 				NWB:syncBuffsWithCurrentDuration();
 			end
@@ -847,7 +962,7 @@ local function combatLogEventUnfiltered(...)
 	end
 end
 
-local rendLastSet, onyLastSet, nefLastSet, zanLastSet = 0, 0, 0, 0;
+--local rendLastSet, onyLastSet, nefLastSet, zanLastSet = 0, 0, 0, 0;
 function NWB:setRendBuff(source, sender, zoneID, GUID, isAllianceAndLayered)
 	--Check if this addon has already set a timer a few seconds before another addon's comm.
 	if (source ~= "self" and (GetServerTime() - NWB.data.rendTimer) < 10) then
@@ -935,7 +1050,7 @@ function NWB:setRendBuff(source, sender, zoneID, GUID, isAllianceAndLayered)
 	local count = 0;
 	--Once per drop one guild member will say in chat it dropped.
 	--Throddle the drop msg for when we get multiple sources at the same drop time.
-	if ((GetServerTime() - rendLastSet) > 60) then
+	if ((GetServerTime() - NWB.lastSets.rend) > 60) then
 		if (NWB.db.global.guildBuffDropped == 1 and (NWB.faction == "Horde" or NWB.db.global.allianceEnableRend)) then
 			if (zoneID) then
 				for k, v in NWB:pairsByKeys(NWB.data.layers) do
@@ -945,7 +1060,7 @@ function NWB:setRendBuff(source, sender, zoneID, GUID, isAllianceAndLayered)
 					end
 				end
 			end
-			--NWB:sendGuildMsg(L["rendBuffDropped"] .. layerMsg, "guildBuffDropped");
+			--NWB:sendGuildMsg(L["rendBuffDropped"] .. layerMsg, "guildBuffDropped", "rend");
 		end
 		if (NWB.isLayered and count > 0) then
 			if (not NWB.noGuildBuffDroppedMsgs) then
@@ -960,7 +1075,7 @@ function NWB:setRendBuff(source, sender, zoneID, GUID, isAllianceAndLayered)
 			end
 		end
 	end
-	rendLastSet = GetServerTime();
+	NWB.lastSets.rend = GetServerTime();
 	--NWB:debug("set rend buff", source);
 	--NWB.data.myChars[UnitName("player")].rendCount = NWB.data.myChars[UnitName("player")].rendCount + 1;
 	--NWB:debug("zoneid drop", zoneID, count, GUID);
@@ -987,12 +1102,12 @@ function NWB:setZanBuff(source, sender, zoneID, GUID)
 	NWB:sendData("GUILD");
 	--Once per drop one guild member will say in chat it dropped.
 	--Throddle the drop msg for when we get multiple sources at the same drop time.
-	if ((GetServerTime() - zanLastSet) > 120) then
+	if ((GetServerTime() - NWB.lastSets.zan) > 120) then
 		if (NWB.db.global.guildBuffDropped == 1) then
-			NWB:sendGuildMsg(L["zanBuffDropped"], "guildBuffDropped");
+			NWB:sendGuildMsg(L["zanBuffDropped"], "guildBuffDropped", "zan");
 		end
 	end
-	zanLastSet = GetServerTime();
+	NWB.lastSets.zan = GetServerTime();
 	NWB:debug("set zan buff", source);]]
 	--NWB.data.myChars[UnitName("player")].zanCount = NWB.data.myChars[UnitName("player")].zanCount + 1;
 	--NWB:debug("zoneid drop", zoneID, GUID);
@@ -1000,7 +1115,7 @@ end
 
 function NWB:setOnyBuff(source, sender, zoneID, GUID, isSapped)
 	--Ony and nef share a last set cooldown to prevent any bugs with both being set at once.
-	if ((GetServerTime() - nefLastSet) < 20) then
+	if ((GetServerTime() - NWB.lastSets.nef) < 20) then
 		return;
 	end
 	local _, _, zone = NWB:GetPlayerZonePosition();
@@ -1054,7 +1169,7 @@ function NWB:setOnyBuff(source, sender, zoneID, GUID, isSapped)
 		NWB:timerLog("onyTimer", GetServerTime());
 	end
 	local count = 0;
-	if ((GetServerTime() - onyLastSet) > 60) then
+	if ((GetServerTime() - NWB.lastSets.ony) > 60) then
 		local count = 0;
 		if (NWB.db.global.guildBuffDropped == 1) then
 			if (zoneID) then
@@ -1065,7 +1180,7 @@ function NWB:setOnyBuff(source, sender, zoneID, GUID, isSapped)
 					end
 				end
 			end
-			--NWB:sendGuildMsg(L["onyxiaBuffDropped"] .. layerMsg, "guildBuffDropped");
+			--NWB:sendGuildMsg(L["onyxiaBuffDropped"] .. layerMsg, "guildBuffDropped", "ony");
 		end
 		if (NWB.isLayered and count > 0 and not isSapped) then
 			if (not NWB.noGuildBuffDroppedMsgs) then
@@ -1080,7 +1195,7 @@ function NWB:setOnyBuff(source, sender, zoneID, GUID, isSapped)
 			end
 		end
 	end
-	onyLastSet = GetServerTime();
+	NWB.lastSets.ony = GetServerTime();
 	--NWB:debug("set ony buff", source);
 	--NWB.data.myChars[UnitName("player")].onyCount = NWB.data.myChars[UnitName("player")].onyCount + 1;
 	--NWB:debug("zoneid drop", zoneID, count, GUID);
@@ -1091,7 +1206,7 @@ end
 
 function NWB:setNefBuff(source, sender, zoneID, GUID)
 	--Ony and nef share a last set cooldown to prevent any bugs with both being set at once.
-	if ((GetServerTime() - onyLastSet) < 20) then
+	if ((GetServerTime() - NWB.lastSets.ony) < 20) then
 		return;
 	end
 	if (source ~= "self" and (GetServerTime() - NWB.data.nefTimer) < 10) then
@@ -1145,7 +1260,7 @@ function NWB:setNefBuff(source, sender, zoneID, GUID)
 		NWB:timerLog("nefTimer", GetServerTime());
 	end
 	local count = 0;
-	if ((GetServerTime() - nefLastSet) > 60) then
+	if ((GetServerTime() - NWB.lastSets.nef) > 60) then
 		local count = 0;
 		if (NWB.db.global.guildBuffDropped == 1) then
 			if (zoneID) then
@@ -1156,7 +1271,7 @@ function NWB:setNefBuff(source, sender, zoneID, GUID)
 					end
 				end
 			end
-			--NWB:sendGuildMsg(L["nefarianBuffDropped"] .. layerMsg, "guildBuffDropped");
+			--NWB:sendGuildMsg(L["nefarianBuffDropped"] .. layerMsg, "guildBuffDropped", "nef");
 		end
 		if (NWB.isLayered and count > 0) then
 			if (not NWB.noGuildBuffDroppedMsgs) then
@@ -1171,7 +1286,7 @@ function NWB:setNefBuff(source, sender, zoneID, GUID)
 			end
 		end
 	end
-	nefLastSet = GetServerTime();
+	NWB.lastSets.nef = GetServerTime();
 	--NWB:debug("set nef buff", source);
 	--NWB.data.myChars[UnitName("player")].nefCount = NWB.data.myChars[UnitName("player")].nefCount + 1;
 	--NWB:debug("zoneid drop", zoneID, count, GUID);
@@ -1204,20 +1319,20 @@ function NWB:doFirstYell(type, layer, source, distribution, arg)
 			if (source == "self") then
 				NWB.data.rendYell = GetServerTime();
 			end
-			if ((GetServerTime() - rendFirstYell) > NWB.buffDropSpamCooldown) then
+			if (NWB:checkEventStatus("firstYell", type)) then
 				if (NWB.db.global.guildNpcDialogue == 1 and (NWB.faction == "Horde" or NWB.db.global.allianceEnableRend)) then
-					NWB:sendGuildMsg(L["rendFirstYellMsg"] .. layerMsg, "guildNpcDialogue");
+					NWB:sendGuildMsg(L["rendFirstYellMsg"] .. layerMsg, "guildNpcDialogue", "rend");
 				end
-				rendFirstYell = GetServerTime();
 				if (NWB.faction == "Horde" or NWB.db.global.allianceEnableRend) then
-					NWB:startFlash("flashFirstYell");
+					NWB:startFlash("flashFirstYell", type);
 					if (NWB.db.global.middleBuffWarning and (not NWB.db.global.chatOnlyInCity or NWB:isCapitalCityAction(type))) then
 						NWB:middleScreenMsg("rendFirstYell", L["rendFirstYellMsg"] .. layerMsg, nil, 5);
 					end
 				end
 				NWB:playSound("soundsFirstYell", "rend");
+				NWB:sendBigWigs(6, "[NWB] " .. L["rend"], type);
 			end
-			NWB:sendBigWigs(6, "[NWB] " .. L["rend"]);
+			rendFirstYell = GetServerTime();
 		end
 	elseif (type == "ony") then
 		if ((GetServerTime() - onyFirstYell) > 40) then
@@ -1225,18 +1340,18 @@ function NWB:doFirstYell(type, layer, source, distribution, arg)
 			if (source == "self") then
 				NWB.data.onyYell = GetServerTime();
 			end
-			if ((GetServerTime() - onyFirstYell) > NWB.buffDropSpamCooldown) then
-				if (NWB.db.global.guildNpcDialogue == 1) then
-					NWB:sendGuildMsg(L["onyxiaFirstYellMsg"] .. layerMsg, "guildNpcDialogue");
+			if (NWB:checkEventStatus("firstYell", type)) then
+				if (NWB.db.global.guildNpcDialogue == 1 and NWB:checkEventStatus("firstYell", type, "guild")) then
+					NWB:sendGuildMsg(L["onyxiaFirstYellMsg"] .. layerMsg, "guildNpcDialogue", "ony");
 				end
-				onyFirstYell = GetServerTime();
-				NWB:startFlash("flashFirstYell");
+				NWB:startFlash("flashFirstYell", type);
 				if (NWB.db.global.middleBuffWarning and (not NWB.db.global.chatOnlyInCity or NWB:isCapitalCityAction(type))) then
 					NWB:middleScreenMsg("onyFirstYell", L["onyxiaFirstYellMsg"] .. layerMsg, nil, 5);
 				end
 				NWB:playSound("soundsFirstYell", "ony");
+				NWB:sendBigWigs(14, "[NWB] " .. L["Rallying Cry of the Dragonslayer"], type);
 			end
-			NWB:sendBigWigs(14, "[NWB] " .. L["Rallying Cry of the Dragonslayer"]);
+			onyFirstYell = GetServerTime();
 		end
 	elseif (type == "nef") then
 		if ((GetServerTime() - nefFirstYell) > 40) then
@@ -1244,18 +1359,18 @@ function NWB:doFirstYell(type, layer, source, distribution, arg)
 			if (source == "self") then
 				NWB.data.nefYell = GetServerTime();
 			end
-			if ((GetServerTime() - nefFirstYell) > NWB.buffDropSpamCooldown) then
-				if (NWB.db.global.guildNpcDialogue == 1) then
-					NWB:sendGuildMsg(L["nefarianFirstYellMsg"] .. layerMsg, "guildNpcDialogue");
+			if (NWB:checkEventStatus("firstYell", type)) then
+				if (NWB.db.global.guildNpcDialogue == 1 and NWB:checkEventStatus("firstYell", type, "guild")) then
+					NWB:sendGuildMsg(L["nefarianFirstYellMsg"] .. layerMsg, "guildNpcDialogue", "nef");
 				end
-				nefFirstYell = GetServerTime();
-				NWB:startFlash("flashFirstYell");
+				NWB:startFlash("flashFirstYell", type);
 				if (NWB.db.global.middleBuffWarning and (not NWB.db.global.chatOnlyInCity or NWB:isCapitalCityAction(type))) then
 					NWB:middleScreenMsg("nefFirstYell", L["nefarianFirstYellMsg"] .. layerMsg, nil, 5);
 				end
 				NWB:playSound("soundsFirstYell", "nef");
+				NWB:sendBigWigs(15, "[NWB] " .. L["Rallying Cry of the Dragonslayer"], type);
 			end
-			NWB:sendBigWigs(15, "[NWB] " .. L["Rallying Cry of the Dragonslayer"]);
+			nefFirstYell = GetServerTime();
 		end
 	elseif (type == "zan") then
 		--They reused the same NPC and drop msg as ZF buff in SoD for the Sunken Temple buff.
@@ -1287,34 +1402,40 @@ function NWB:doFirstYell(type, layer, source, distribution, arg)
 			if (source == "self") then
 				NWB.data.zanYell = GetServerTime();
 			end
-			if (NWB.db.global.chatZan) then
-				NWB:print(msg, nil, nil, true);
-			end
-			if (NWB.db.global.guildZanDialogue == 1) then
-				if (IsInGuild()) then
-					NWB:sendGuildMsg(msg .. layerMsg, "guildZanDialogue");
-				elseif (not NWB.db.global.chatZan) then
-					--Fall back to a chat msg if guild msg is enabled but we have no guild, and chat msg wasn't already sent.
+			if (NWB:checkEventStatus("firstYell")) then
+				if (NWB.db.global.chatZan) then
 					NWB:print(msg, nil, nil, true);
 				end
+				if (NWB.db.global.guildZanDialogue == 1) then
+					if (IsInGuild()) then
+						if (NWB:checkEventStatus("firstYell", type, "guild")) then
+							NWB:sendGuildMsg(msg .. layerMsg, "guildZanDialogue", "zan");
+						end
+					elseif (not NWB.db.global.chatZan) then
+						--Fall back to a chat msg if guild msg is enabled but we have no guild, and chat msg wasn't already sent.
+						NWB:print(msg, nil, nil, true);
+					end
+				end
+				NWB:startFlash("flashFirstYellZan", type);
+				if (NWB.db.global.middleBuffWarning and (not NWB.db.global.chatOnlyInCity or NWB:isCapitalCityAction(type))) then
+					NWB:middleScreenMsg("zanFirstYell", msg .. layerMsg, nil, 5);
+				end
+				NWB:playSound("soundsFirstYell", "zan");
+				if (distribution == "RAID" or distribution == "PARTY") then
+					NWB:sendYell("GUILD", "zan");
+				end
+				NWB:sendBigWigs(timerDelay, "[NWB] " .. L["Spirit of Zandalar"], type);
 			end
 			zanFirstYell = GetServerTime();
-			NWB:startFlash("flashFirstYellZan");
-			if (NWB.db.global.middleBuffWarning and (not NWB.db.global.chatOnlyInCity or NWB:isCapitalCityAction(type))) then
-				NWB:middleScreenMsg("zanFirstYell", msg .. layerMsg, nil, 5);
-			end
-			NWB:playSound("soundsFirstYell", "zan");
-			if (distribution == "RAID" or distribution == "PARTY") then
-				NWB:sendYell("GUILD", "zan");
-			end
-			NWB:sendBigWigs(timerDelay, "[NWB] " .. L["Spirit of Zandalar"]);
 		end
 	end
 end
 
 --Post drop msg to guild chat, shared by all different addon comms so no overlap.
-local rendDropMsg, onyDropMsg, nefDropMsg = 0, 0, 0;
 function NWB:doBuffDropMsg(type, layer)
+	if (not NWB:checkEventStatus("buffDropMsg", type, "guild")) then
+		return;
+	end
 	local layerMsg = "";
 	if (NWB.isLayered and tonumber(layer) and NWB.doLayerMsg) then
 		layerMsg = " (" .. L["Layer"] .. " " .. layer .. ")";
@@ -1322,21 +1443,21 @@ function NWB:doBuffDropMsg(type, layer)
 	if (type == "rend") then
 		if ((GetServerTime() - rendDropMsg) > NWB.buffDropSpamCooldown) then
 			if (NWB.db.global.guildBuffDropped == 1) then
-				NWB:sendGuildMsg(L["rendBuffDropped"] .. layerMsg, "guildBuffDropped");
+				NWB:sendGuildMsg(L["rendBuffDropped"] .. layerMsg, "guildBuffDropped", "rend");
 			end
 			rendDropMsg = GetServerTime();
 		end
 	elseif (type == "ony") then
 		if ((GetServerTime() - onyDropMsg) > NWB.buffDropSpamCooldown) then
 			if (NWB.db.global.guildBuffDropped == 1) then
-				NWB:sendGuildMsg(L["onyxiaBuffDropped"] .. layerMsg, "guildBuffDropped");
+				NWB:sendGuildMsg(L["onyxiaBuffDropped"] .. layerMsg, "guildBuffDropped", "ony");
 			end
 			onyDropMsg = GetServerTime();
 		end
 	elseif (type == "nef") then
 		if ((GetServerTime() - nefDropMsg) > NWB.buffDropSpamCooldown) then
 			if (NWB.db.global.guildBuffDropped == 1) then
-				NWB:sendGuildMsg(L["nefarianBuffDropped"] .. layerMsg, "guildBuffDropped");
+				NWB:sendGuildMsg(L["nefarianBuffDropped"] .. layerMsg, "guildBuffDropped", "nef");
 			end
 			nefDropMsg = GetServerTime();
 		end
@@ -1345,6 +1466,9 @@ end
 
 local onyNpcKill, nefNpcKill = 0, 0;
 function NWB:doNpcKilledMsg(type, layer)
+	if (not NWB:checkEventStatus("npcKilledMsg", type)) then
+		return;
+	end
 	local layerMsg = "";
 	if (NWB.isLayered and tonumber(layer)) then
 		layerMsg = " (" .. L["Layer"] .. " " .. layer .. ")";
@@ -1358,7 +1482,7 @@ function NWB:doNpcKilledMsg(type, layer)
 				msg = L["onyxiaNpcKilledAlliance"] .. layerMsg;
 			end
 			if (NWB.db.global.guildNpcKilled == 1) then
-				NWB:sendGuildMsg(msg, "guildNpcKilled");
+				NWB:sendGuildMsg(msg, "guildNpcKilled", "ony");
 			end
 			if (NWB.db.global.middleNpcKilled) then
 				NWB:middleScreenMsg("onynNpcKilled", msg, nil, 5);
@@ -1367,7 +1491,7 @@ function NWB:doNpcKilledMsg(type, layer)
 				NWB:print(msg, nil, nil, true);
 			end
 			NWB:playSound("soundsNpcKilled", "timer");
-			NWB:startFlash("flashNpcKilled");
+			NWB:startFlash("flashNpcKilled", type);
 			onyNpcKill = GetServerTime();
 			NWB.receivedNpcDiedCooldown["onyNpcDied"] = GetServerTime();
 		end
@@ -1380,7 +1504,7 @@ function NWB:doNpcKilledMsg(type, layer)
 				msg = L["nefarianNpcKilledAlliance"] .. layerMsg;
 			end
 			if (NWB.db.global.guildNpcKilled == 1) then
-				NWB:sendGuildMsg(msg, "guildNpcKilled");
+				NWB:sendGuildMsg(msg, "guildNpcKilled", "nef");
 			end
 			if (NWB.db.global.middleNpcKilled) then
 				NWB:middleScreenMsg("onynNpcKilled", msg, nil, 5);
@@ -1389,7 +1513,7 @@ function NWB:doNpcKilledMsg(type, layer)
 				NWB:print(msg, nil, nil, true);
 			end
 			NWB:playSound("soundsNpcKilled", "timer");
-			NWB:startFlash("flashNpcKilled");
+			NWB:startFlash("flashNpcKilled", type);
 			nefNpcKill = GetServerTime();
 			NWB.receivedNpcDiedCooldown["nefNpcDied"] = GetServerTime();
 		end
@@ -1398,6 +1522,9 @@ end
 
 local onyNpcRespawn, nefNpcRespawn = 0, 0;
 function NWB:doNpcRespawnMsg(type, layerID)
+	if (not NWB:checkEventStatus("npcRespawnMsg", type)) then
+		return;
+	end
 	local layerMsg = "";
 	if (NWB.isLayered and tonumber(layerID)) then
 		local layer = NWB:GetLayerNum(layerID);
@@ -1461,7 +1588,7 @@ function NWB:doHandIn(id, layer, sender)
 			return;
 		end
 		if (type == "rend" or type == "ony" or type == "nef") then
-			local time = (NWB.data[type .. "Timer"] + NWB.db.global[type .. "RespawnTime"]) - GetServerTime();
+			local time = (NWB.data[type .. "Timer"] + NWB[type .. "CooldownTime"]) - GetServerTime();
 			if (time > 0) then
 				onCooldown = true;
 			end

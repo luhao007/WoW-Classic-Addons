@@ -252,6 +252,20 @@ RegisterAddonMessagePrefix(pig_PREFIX)
 ---------------
 local function Update_ShowItem_List(zbData,laiyuan)
 	for k,v in pairs(zbData) do
+		local _,itemLink = GetItemInfo(v) 
+		if not itemLink and yuanchengCFrame.changshicishunum<10 then
+			yuanchengCFrame.changshicishunum=yuanchengCFrame.changshicishunum+1
+			return C_Timer.After(0.1,function()
+				Update_ShowItem_List(zbData,laiyuan)
+			end)
+		end
+	end
+	local NewzbData = {}
+	for k,v in pairs(zbData) do
+		local _,itemLink = GetItemInfo(v) 
+		NewzbData[k]=itemLink
+	end
+	for k,v in pairs(NewzbData) do
 		local invFff = _G["yuanchengCFrame_item_"..k]
 		local itemName,itemLink,itemQuality,itemLevel,itemMinLevel,itemType,itemSubType,itemStackCount,itemEquipLoc,itemTexture= GetItemInfo(v)
 		SetItemButtonTexture(invFff, itemTexture);
@@ -278,7 +292,7 @@ local function Update_ShowItem_List(zbData,laiyuan)
 			end
 		end
 	end
-	yuanchengCFrame.ZBLsit:Update_ItemList(laiyuan,zbData)
+	yuanchengCFrame.ZBLsit:Update_ItemList(laiyuan,NewzbData)
 end
 local function Update_ShowItem(itemstxt,laiyuan)
 	local zbData = {}
@@ -286,25 +300,11 @@ local function Update_ShowItem(itemstxt,laiyuan)
 	for k,v in pairs(itemstxt) do
 		zbData[k]=v
 	end
-	local linshihuoquList = {}
-	local huancunwan = 0
 	for k,v in pairs(zbData) do
-		huancunwan=huancunwan+1
+		GetItemInfo(v)
 	end
-	for k,v in pairs(zbData) do
-		local itemID = GetItemInfoInstant(v)
-		if itemID and itemID>0 then
-			local item = Item:CreateFromItemID(itemID)
-			linshihuoquList[item] = true
-			item:ContinueOnItemLoad(function()
-				linshihuoquList[item] = nil
-				huancunwan=huancunwan-1
-				if huancunwan==0 then
-					Update_ShowItem_List(zbData,laiyuan)
-				end
-			end)
-		end
-	end
+	yuanchengCFrame.changshicishunum=0
+	Update_ShowItem_List(zbData,laiyuan)
 end
 Fun.Update_ShowItem=Update_ShowItem
 local function Update_ShowPlayer(Player,lyfrome)

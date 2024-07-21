@@ -40,20 +40,12 @@ local function ItemSell_Tooltip(self, data1, data2,laiyuan)
 		--end
 	end
 end
-local old_GameTooltip_OnTooltipAddMoney=GameTooltip_OnTooltipAddMoney
 function FramePlusfun.Tooltip_ItemSell()
 	--处理系统卖价
+	local old_GameTooltip_OnTooltipAddMoney=GameTooltip_OnTooltipAddMoney
 	if PIGA["Tooltip"]["ItemSell"] then
 		GameTooltip_OnTooltipAddMoney=function(self, cost, maxcost)
-			-- if( not maxcost ) then
-			-- 	self:AddLine(SELL_PRICE..":|cffFFFFFF"..GetMoneyString(cost).."|r","")
-			-- 	--SetTooltipMoney(self, cost, nil, string.format("%s:", SELL_PRICE));
-			-- else
-			-- 	GameTooltip_AddColoredLine(self, ("%s:"):format(SELL_PRICE), HIGHLIGHT_FONT_COLOR);
-			-- 	local indent = string.rep(" ",4)
-			-- 	SetTooltipMoney(self, cost, nil, string.format("%s%s:", indent, MINIMUM));
-			-- 	SetTooltipMoney(self, maxcost, nil, string.format("%s%s:", indent, MAXIMUM));
-			-- end
+			--禁用系统的卖家显示
 		end
 	else
 		GameTooltip_OnTooltipAddMoney=old_GameTooltip_OnTooltipAddMoney
@@ -185,7 +177,6 @@ function FramePlusfun.Tooltip()
 				end
 			end)
 			GameTooltip:HookScript("OnTooltipSetItem", function(self)
-				if not PIGA["Tooltip"]["ItemLevel"] and not PIGA["Tooltip"]["IDinfo"] then return end
 				local _, link = self:GetItem()
 				if link then
 					Tooltip_ItemLV(self,link)

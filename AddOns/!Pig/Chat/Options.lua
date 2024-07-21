@@ -336,10 +336,14 @@ end);
 local function JoinPIG(pindaoName)
 	local channel,channelName= GetChannelName(pindaoName)
 	if not channelName then
-		JoinTemporaryChannel(pindaoName, nil, DEFAULT_CHAT_FRAME:GetID(), 1);
-		--JoinPermanentChannel(pindaoName, nil, DEFAULT_CHAT_FRAME:GetID(), 1);
-		ChatFrame_AddChannel(DEFAULT_CHAT_FRAME, pindaoName)--订购一个聊天框以显示先前加入的聊天频道
+		if channelName=="PIG" then
+			JoinTemporaryChannel(pindaoName, nil, DEFAULT_CHAT_FRAME:GetID(), 1);
+		else
+			JoinPermanentChannel(pindaoName, nil, DEFAULT_CHAT_FRAME:GetID(), 1);
+			ChatFrame_AddChannel(DEFAULT_CHAT_FRAME, pindaoName)--订购一个聊天框以显示先前加入的聊天频道
+		end
 	end
+	ChatFrame_RemoveChannel(DEFAULT_CHAT_FRAME, "PIG");
 end
 local function JoinPIG_D_1(pindaoName,jihuo)
 	local chabuts=ChannelFrame.ChannelList.buttons

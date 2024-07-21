@@ -152,7 +152,7 @@ end
 		if (NWB.db.global.guildTerok10) then
 			local msg = string.format(battlefieldName .. " " .. strlower(gsub(L["startsIn"], " %%s", "")) ..  " 10 " .. L["minutes"]) .. ".";
 			if (IsInGuild()) then
-				NWB:sendGuildMsg(msg, "guildTerok10", nil, "[NWB]", 2.79);
+				NWB:sendGuildMsg(msg, "guildTerok10", nil, nil, "[NWB]", 2.79);
 			else
 				NWB:print(msg, nil, "[NWB]");
 			end

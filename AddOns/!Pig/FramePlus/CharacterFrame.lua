@@ -105,9 +105,9 @@ local function Update_Data_ALL(laiyuan)--刷新数据
 			laiyuan.ZBLsit:Update_Player("player")
 			laiyuan.ZBLsit:Update_ItemList("player")
 		else
-			laiyuan.ZBLsit:Update_Player(InspectFrame)
+			laiyuan.ZBLsit:Update_Player(InspectFrame.unit)
 			laiyuan.ZBLsit_C:Update_Player("player")
-			laiyuan.ZBLsit:Update_ItemList(InspectFrame)
+			laiyuan.ZBLsit:Update_ItemList(InspectFrame.unit)
 			laiyuan.ZBLsit_C:Update_ItemList("player")
 		end
 	end

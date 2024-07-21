@@ -19,14 +19,13 @@ if (region == 1 and string.match(NWB.realm, "(AU)")) then
 elseif (region == 1) then
 	--US.
 	isUS = true;
-	--calcStart = 1707264000; --Date and time (GMT):Wednesday, February 7, 2024 12:00:00 AM; --OCE and US different.
-	calcStart = 1707260400;
+	calcStart = 1707260400; --Date and time (GMT):Wednesday, February 7, 2024 11:00:00 PM; --OCE and US different.
 elseif (region == 2) then
 	--Korea.
 	calcStart = 1707256800; --Date and time (GMT): Tuesday, February 6, 2024 10:00:00 PM --KR starts 1h before OCE/US.
 elseif (region == 3) then
 	--EU.
-	calcStart = 1707220800; --Date and time (GMT): Tuesday, February 6, 2024 12:00:00 PM
+	calcStart = 1707217200; --Date and time (GMT): Tuesday, February 6, 2024 11:00:00 AM
 elseif (region == 4) then
 	--Taiwan.
 	calcStart = 1707260400; --TW same as OCE/US.
@@ -36,7 +35,7 @@ elseif (region == 5) then
 end
 --calcStart = calcStart - 3600; --Blackrock runs at midnight and 2h cycle instead of 3.
 --Trying to fix some issues with the timer not being exact, why is GetServerTime() not accurate?
-calcStart = calcStart + 30;
+--calcStart = calcStart + 30;
 
 local function getTimeLeft()
 	local timeLeft, type;
@@ -159,9 +158,9 @@ end
 			local msg = string.format(L["blackrockStartSoon"], "15 " .. L["minutes"]) .. ".";
 			if (IsInGuild()) then
 				if (isUS) then
-					NWB:sendGuildMsg(msg, "guild10", nil, "[NWB]", 2.69);
+					NWB:sendGuildMsg(msg, "guild10", nil, nil, "[NWB]", 2.69);
 				else
-					NWB:sendGuildMsg(msg, "guild10", nil, "[NWB]", 2.67);
+					NWB:sendGuildMsg(msg, "guild10", nil, nil, "[NWB]", 2.67);
 				end
 			else
 				NWB:print(msg, nil, "[NWB]");
@@ -175,9 +174,9 @@ end
 		if (NWB.db.global.guild10) then
 			if (IsInGuild()) then
 				if (isUS) then
-					NWB:sendGuildMsg(msg, "guild10", nil, "[NWB]", 2.69);
+					NWB:sendGuildMsg(msg, "guild10", nil, nil, "[NWB]", 2.69);
 				else
-					NWB:sendGuildMsg(msg, "guild10", nil, "[NWB]", 2.68);
+					NWB:sendGuildMsg(msg, "guild10", nil, nil, "[NWB]", 2.68);
 				end
 			else
 				NWB:print(msg, nil, "[NWB]");

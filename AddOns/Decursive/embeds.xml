@@ -16,6 +16,8 @@
 
 
 
+    <Include file="Libs\BugGrabber\load.xml" />
+
 
     <Script>
         DecursiveInEmbeddedMode = true;
@@ -30,7 +32,7 @@
 
 
     <Script>
-        DecursiveEmbedsxmlCheck = "2.7.19";
+        DecursiveEmbedsxmlCheck = "2.7.20";
     </Script>
 
 </Ui>
