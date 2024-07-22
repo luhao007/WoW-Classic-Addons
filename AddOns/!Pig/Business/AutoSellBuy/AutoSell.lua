@@ -65,7 +65,9 @@ function BusinessInfo.AutoSell()
 					print("|cFF7FFFAA出售|r: " ..v[1])
 					fujiF_shoumaiData_G=fujiF_shoumaiData_G+v[2]
 				end
-				PIG_print("|cFF7FFFAA本次售卖获得:|r " .. GetCoinTextureString(fujiF_shoumaiData_G));
+				if fujiF_shoumaiData_G>0 then
+					PIG_print("|cFF7FFFAA本次售卖获得:|r " .. GetCoinTextureString(fujiF_shoumaiData_G));
+				end
 			end
 		end
 	end

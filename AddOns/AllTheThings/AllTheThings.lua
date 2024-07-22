@@ -1090,7 +1090,7 @@ local function CreateObject(t, rootOnly)
 		if g then
 			local gNew = {};
 			for i,o in ipairs(g) do
-				gNew[i] = CreateObject(o, rootOnly);
+				gNew[i] = CreateObject(o)
 			end
 			t.g = gNew;
 		end
@@ -1103,7 +1103,7 @@ local function RawCloneData(data, clone)
 	clone = clone or {};
 	for key,value in pairs(data) do
 		if clone[key] == nil then
-			clone[key] = value;
+			clone[key] = value
 		end
 	end
 	-- maybe better solution at another time?
@@ -1502,7 +1502,7 @@ local GetFixedItemSpecInfo, GetSpecsString, GetGroupItemIDWithModID, GetItemIDAn
 do
 local select, tremove, unpack =
 	  select, tremove, unpack;
-local FinalizeModID, PruneFinalized, FillFinalized
+local FinalizeModID, PruneFinalized, FillFinalized, SelectMod
 -- Checks if any of the provided arguments can be found within the first array object
 local function ContainsAnyValue(arr, ...)
 	local value;
@@ -1547,7 +1547,7 @@ local ResolveFunctions = {
 		local vals = select("#", ...);
 		local Search = SearchForObject
 		for i=1,vals do
-			val = select(i, ...);
+			val = select(i, ...) + (SelectMod or 0)
 			if field == "modItemID" then
 				-- this is really dumb but direct raw values don't 'always' properly match generated values...
 				-- but splitting the value apart and putting it back together searches accurately
@@ -1560,6 +1560,7 @@ local ResolveFunctions = {
 				app.print("Failed to select ", field, val);
 			end
 		end
+		SelectMod = nil
 	end,
 	-- Instruction to select the parent object of the group that owns the symbolic link
 	["selectparent"] = function(finalized, searchResults, o, cmd, level)
@@ -1871,11 +1872,19 @@ local ResolveFunctions = {
 	end,
 	-- Instruction to apply a specific modID to any Items within the finalized search results
 	["modID"] = function(finalized, searchResults, o, cmd, modID)
-		FinalizeModID = modID;
+		FinalizeModID = modID
 	end,
 	-- Instruction to apply the modID from the Source object to any Items within the finalized search results
 	["myModID"] = function(finalized, searchResults, o)
-		FinalizeModID = o.modID;
+		FinalizeModID = o.modID
+	end,
+	-- Instruction to apply a specific modID to any Items within the finalized search results
+	["usemodID"] = function(finalized, searchResults, o, cmd, modID)
+		SelectMod = GetGroupItemIDWithModID(nil, nil, modID)
+	end,
+	-- Instruction to apply the modID from the Source object to any Items within the finalized search results
+	["usemyModID"] = function(finalized, searchResults, o)
+		SelectMod = GetGroupItemIDWithModID(nil, nil, o.modID)
 	end,
 	-- Instruction to use the modID from the Source object to filter matching modID on any Items within the finalized search results
 	["whereMyModID"] = function(finalized, searchResults, o)
@@ -1888,8 +1897,22 @@ local ResolveFunctions = {
 		end
 	end,
 	-- Instruction to perform an immediate 'FillGroups' against the objects in the finalized set prior to returning the results
-	["groupfill"] = function(finalized, searchResults, o)
-		FillFinalized = true
+	-- or to fill the groups currently within the searchResults at this step
+	["groupfill"] = function(finalized, searchResults, o, cmd, onCurrent)
+		if onCurrent then
+			if #searchResults == 0 then return end
+			local orig = RawCloneData(searchResults);
+			wipe(searchResults);
+			local Fill = app.FillGroups
+			local result
+			for k=1,#orig do
+				result = CreateObject(orig[k])
+				Fill(result)
+				searchResults[#searchResults + 1] = result
+			end
+		else
+			FillFinalized = true
+		end
 	end,
 };
 
@@ -2189,6 +2212,15 @@ ResolveFunctions.sub = function(finalized, searchResults, o, cmd, sub, ...)
 	end
 	app.print("Could not find subroutine", sub);
 end;
+local NonSelectCommands = {
+	finalize = true,
+	achievement_criteria = true,
+	sub = true,
+	myModID = true,
+	modID = true,
+	usemyModID = true,
+	usemodID = true,
+}
 local HandleCommands = app.Debugging and function(finalized, searchResults, o, oSym)
 	local cmd, cmdFunc
 	local debug = true
@@ -2198,7 +2230,7 @@ local HandleCommands = app.Debugging and function(finalized, searchResults, o, o
 		-- app.PrintDebug("sym: '",cmd,"' for",o.hash,"with:",unpack(sym))
 		if cmdFunc then
 			cmdFunc(finalized, searchResults, o, unpack(sym));
-			if debug and #searchResults == 0 and cmd ~= "finalize" and cmd ~= "achievement_criteria" and cmd ~= "sub" then
+			if debug and #searchResults == 0 and not NonSelectCommands[cmd] then
 				app.PrintDebug(Colorize("Symlink command with no results for: "..app:SearchLink(o), app.Colors.ChatLinkError),"@",_,unpack(sym))
 				app.PrintTable(oSym)
 				debug = false
@@ -2206,7 +2238,7 @@ local HandleCommands = app.Debugging and function(finalized, searchResults, o, o
 		else
 			app.print("Unknown symlink command",cmd);
 		end
-		-- app.PrintDebug("Finalized",#finalized,"Results",#searchResults,"after '",cmd,"' for",o.hash,"with:",unpack(sym))
+		-- app.PrintDebug("Finalized",#finalized,"Results",#searchResults,"from",o.hash,"with:",unpack(sym))
 	end
 end or function(finalized, searchResults, o, oSym)
 	local cmd, cmdFunc
@@ -2467,18 +2499,23 @@ end
 local GetRawField = app.GetRawField
 local SourceSearcher = setmetatable({
 	itemID = function(field, id)
-		local results = GetRawField(field, id)
-		local costResults = GetRawField("itemIDAsCost", id)
-		if results or costResults then return ArrayAppend({}, results, costResults) end
+		local results = SearchForObject(field, id, "field", true)
+		-- Original logic did not include cost matches, then I added cost matches when revising the logic
+		-- I'm not sure on why that should be the case... so removing for now
+		-- local costResults = GetRawField("itemIDAsCost", id)
+		-- if results or costResults then return ArrayAppend({}, results, costResults) end
+		if results then return results end
 		local baseItemID = GetItemIDAndModID(id)
-		results = GetRawField(field, baseItemID)
-		costResults = GetRawField("itemIDAsCost", baseItemID)
-		if results or costResults then return ArrayAppend({}, results, costResults) end
+		results = SearchForObject(field, baseItemID, "field", true)
+		-- costResults = GetRawField("itemIDAsCost", baseItemID)
+		-- if results or costResults then return ArrayAppend({}, results, costResults) end
+		return results
 	end,
 	currencyID = function(field, id)
-		local results = GetRawField(field, id)
-		local costResults = GetRawField("currencyIDAsCost", id)
-		if results or costResults then return ArrayAppend({}, results, costResults) end
+		local results = SearchForObject(field, id, "field", true)
+		-- local costResults = GetRawField("currencyIDAsCost", id)
+		-- if results or costResults then return ArrayAppend({}, results, costResults) end
+		return results
 	end
 },{
 	__index = function(t, field)
@@ -3431,6 +3468,7 @@ local function DetermineSymlinkGroups(group)
 		return groups;
 	end
 end
+-- TODO: this will go away and be controlled by the Custom header definition itself soon
 local NPCExpandHeaders = {
 	[app.HeaderConstants.COMMON_BOSS_DROPS] = true,
 	[app.HeaderConstants.COMMON_VENDOR_ITEMS] = true,
@@ -3441,6 +3479,12 @@ local NPCExpandHeaders = {
 	-- [app.HeaderConstants.PVP_ELITE] = true,
 	[app.HeaderConstants.REWARDS] = true,
 	[app.HeaderConstants.ZONE_DROPS] = true,
+	-- Tier slots
+	[app.HeaderConstants.HEAD] = true,
+	[app.HeaderConstants.SHOULDER] = true,
+	[app.HeaderConstants.CHEST] = true,
+	[app.HeaderConstants.HANDS] = true,
+	[app.HeaderConstants.LEGS] = true,
 };
 -- Pulls in Common drop content for specific NPCs if any exists
 -- (so we don't need to always symlink every NPC which is included in common boss drops somewhere)
@@ -6352,6 +6396,8 @@ local AlternateDataTypes = {
 	["_G"] = function(id)
 		return { name = _G[id] };
 	end,
+	-- TODO: add Campaign lookups
+	-- https://wowpedia.fandom.com/wiki/Category:API_namespaces/C_CampaignInfo
 };
 -- Returns the 'name' and 'icon' values to use for a given id/type automatic name lookup
 local function GetAutomaticHeaderData(id, type)
@@ -6575,12 +6621,12 @@ local function SetGroupVisibility(parent, group)
 	end
 	-- Cost
 	if not visible and ((group.costTotal or 0) > 0) then
-		visible = not group.saved;
+		visible = true
 		-- app.PrintDebug("SGV.cost",group.hash,visible,group.costTotal)
 	end
 	-- Upgrade
 	if not visible and ((group.upgradeTotal or 0) > 0) then
-		visible = not group.saved;
+		visible = true
 		-- if debug then print("SGV.hasUpgrade",group.hash,visible) end
 	end
 	-- Trackable
@@ -6620,12 +6666,12 @@ local function SetThingVisibility(parent, group)
 	end
 	-- Cost
 	if not visible and ((group.costTotal or 0) > 0) then
-		visible = not group.saved;
+		visible = true
 		-- app.PrintDebug("STV.cost",group.hash,visible,group.costTotal)
 	end
 	-- Upgrade
 	if not visible and ((group.upgradeTotal or 0) > 0) then
-		visible = not group.saved;
+		visible = true
 		-- if debug then print("STV.hasUpgrade",group.hash,visible) end
 	end
 	-- Trackable
@@ -8370,6 +8416,13 @@ RowOnEnter = function (self)
 					for i,encounter in ipairs(encounterCache) do
 						if encounter.g and GetRelativeValue(encounter.parent, "difficultyID") == difficultyID then
 							app.SearchForRelativeItems(encounter, itemList);
+						end
+					end
+					local item
+					for i=#itemList,1,-1 do
+						item = itemList[i]
+						if item.u and item.u < 3 then
+							tremove(itemList, i)
 						end
 					end
 					local specHits = {};
@@ -10491,6 +10544,7 @@ customWindowUpdates.CurrentInstance = function(self, force, got)
 			-- [app.HeaderConstants.ZONE_DROPS] = true,
 		};
 		-- Headers possible in a hierarchy that should just be ignored
+		-- TODO: this will go away and be controlled by the Custom header definition itself soon
 		local ignoredHeaders = {
 			[app.HeaderConstants.GARRISONS] = true,
 			[app.HeaderConstants.DUNGEONS] = true,
@@ -10654,7 +10708,7 @@ customWindowUpdates.CurrentInstance = function(self, force, got)
 
 					-- If relative to a difficultyID, then merge it into one.
 					if difficultyID then group = app.CreateDifficulty(difficultyID, { g = { group } }); end
-					-- app.PrintDebug("Merge as Mapped",group.hash)
+					-- app.PrintDebug("Merge as Mapped",group.hash,group.__type)
 					MergeObject(groups, group);
 				end
 

@@ -33,14 +33,12 @@ local UnitClass, UnitDamage, UnitAttackSpeed, UnitRangedDamage = UnitClass, Unit
 local math_abs, bit_band, unpack = math.abs, bit.band, unpack
 local COMBATLOG_FILTER_ME = COMBATLOG_FILTER_ME
 
-local GetSpellName = C_Spell and C_Spell.GetSpellName or GetSpellInfo
-
 local playerclass
-local autoshotname = GetSpellName(75)
-local slam = GetSpellName(1464)
+local autoshotname = GetSpellInfo(75)
+local slam = GetSpellInfo(1464)
 
 local resetautoshotspells = {
-	--[GetSpellName(19434)] = true, -- Aimed Shot
+	--[GetSpellInfo(19434)] = true, -- Aimed Shot
 }
 
 local swingbar, swingbar_width, swingstatusbar, remainingtext, durationtext
@@ -175,29 +173,29 @@ end
 function Swing:UNIT_SPELLCAST_SUCCEEDED(event, unit, guid, spell)
 	if unit ~= "player" then return end
 	if swingmode == 0 then
-		if GetSpellName(spell) == slam and slamstart then
+		if GetSpellInfo(spell) == slam and slamstart then
 			starttime = starttime + GetTime() - slamstart
 			slamstart = nil
 		end
 	elseif swingmode == 1 then
-		if GetSpellName(spell) == autoshotname then
+		if GetSpellInfo(spell) == autoshotname then
 			self:Shoot()
 		end
 	end
-	if resetautoshotspells[GetSpellName(spell)] then
+	if resetautoshotspells[GetSpellInfo(spell)] then
 		swingmode = 1
 		self:Shoot()
 	end
 end
 
 function Swing:UNIT_SPELLCAST_START(event, unit, guid, spell)
-	if unit == "player" and GetSpellName(spell) == slam then
+	if unit == "player" and GetSpellInfo(spell) == slam then
 		slamstart = GetTime()
 	end
 end
 
 function Swing:UNIT_SPELLCAST_INTERRUPTED(event, unit, guid, spell)
-	if unit == "player" and GetSpellName(spell) == slam and slamstart then
+	if unit == "player" and GetSpellInfo(spell) == slam and slamstart then
 		slamstart = nil
 	end
 end

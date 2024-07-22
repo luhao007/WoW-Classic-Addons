@@ -220,7 +220,7 @@ function BusinessInfo.AH()
 			elseif fujiF.ItemSelect==2 then
 				if fujiF.PList.BOTTOM.SearchName and fujiF.PList.BOTTOM.SearchName~="" and fujiF.PList.BOTTOM.SearchName~=" " then
 					local msglenS = strlen(fujiF.PList.BOTTOM.SearchName)
-					--if msglenS>3 then
+					--if msglenS>3 then--输入字符数大于
 						for k,v in pairs(itemData) do
 							if k:match(fujiF.PList.BOTTOM.SearchName) then
 								local itemLinkJJ = Fun.HY_ItemLinkJJ(v[1])

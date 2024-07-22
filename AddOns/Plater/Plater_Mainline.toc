@@ -1,5 +1,5 @@
 ## Interface: 30400
-## Version: Plater-v582-Retail
+## Version: Plater-v583-Retail
 ## SavedVariables: PlaterDB, PlaterLanguage, PlaterLogs, PlaterBackup
 ## SavedVariablesPerCharacter: PlaterDBChr
 
@@ -61,9 +61,17 @@ Plater_BossModsSupport.lua
 Plater_Animations.lua
 Plater_NpcColorPanels.lua
 Plater_CastColorPanels.lua
+Plater_SpellList.lua
 Plater_Audio.lua
 Plater_Profiling.lua
 Plater_Plugins.lua
 Plater_DebugFrames.lua
 Plater_API.lua
+
+options/Plater_O_Search.lua
+options/Plater_O_CastBar.lua
+options/Plater_O_Advanced.lua
+
+Plater_LoadFinished.lua
+
 #Plater_SpellPrediction.lua

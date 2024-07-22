@@ -2,7 +2,16 @@
 
 local media = LibStub("LibSharedMedia-3.0")
 
-media:Register("statusbar", "Sublime Light", "Interface\\AddOns\\!Libs\\Sublime Light")
+media:Register("statusbar", "Atlas", "Interface\\AddOns\\!!Libs\\textures\\Atlas")
+media:Register("statusbar", "Delicate", "Interface\\AddOns\\!!Libs\\textures\\Delicate")
+media:Register("statusbar", "Dirty Fog", "Interface\\AddOns\\!!Libs\\textures\\Dirty Fog")
+media:Register("statusbar", "eXpresso", "Interface\\AddOns\\!!Libs\\textures\\eXpresso")
+media:Register("statusbar", "Petrol", "Interface\\AddOns\\!!Libs\\textures\\Petrol")
+media:Register("statusbar", "Portrait", "Interface\\AddOns\\!!Libs\\textures\\Portrait")
+media:Register("statusbar", "Relay", "Interface\\AddOns\\!!Libs\\textures\\Relay")
+media:Register("statusbar", "Sublime Light", "Interface\\AddOns\\!!Libs\\textures\\Sublime Light")
+media:Register("statusbar", "Ultra Voilet", "Interface\\AddOns\\!!Libs\\textures\\Ultra Voilet")
+
 
 
 -- 显示装等

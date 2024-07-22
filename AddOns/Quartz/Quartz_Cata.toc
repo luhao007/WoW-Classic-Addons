@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Nevcairiel, Nymbia
-## Version: 3.7.11
+## Version: 3.7.10
 ## OptionalDeps: Ace3, LibDualSpec-1.0, LibWindow-1.1, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, SharedMedia
 ## SavedVariables: Quartz3DB
 

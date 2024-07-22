@@ -241,6 +241,8 @@ class Manager:
         libs -= luas
         toc.contents.append('# Other Libs\n')
         for lib in sorted(libs):
+            if lib == 'textures':
+                continue
             toc.contents.append(utils.lib_to_toc(lib))
 
         if luas:

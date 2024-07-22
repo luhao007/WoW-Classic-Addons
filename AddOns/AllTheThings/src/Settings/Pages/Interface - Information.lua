@@ -200,9 +200,14 @@ local function ProcessForCompletedBy(t, reference, tooltipInfo)
 		-- Completed By for Quests
 		local id = reference.questID;
 		if id then
-			for _,character in pairs(ATTCharacterData) do
-				if character.Quests and character.Quests[id] then
-					tinsert(knownBy, character);
+			-- Account-Wide Quests
+			if app.AccountWideQuestsDB[id] then
+				tinsert(knownBy, {text=ITEM_UPGRADE_DISCOUNT_TOOLTIP_ACCOUNT_WIDE});
+			else
+				for _,character in pairs(ATTCharacterData) do
+					if character.Quests and character.Quests[id] then
+						tinsert(knownBy, character);
+					end
 				end
 			end
 			BuildKnownByInfoForKind(tooltipInfo, L.COMPLETED_BY);
@@ -777,7 +782,7 @@ local InformationTypes = {
 
 	CreateInformationType("c", { text = L.CLASSES, priority = 8000, ShouldDisplayInExternalTooltips = false,
 		Process = function(t, reference, tooltipInfo)
-			local c = reference.c;-- or GetRelativeValue(reference, "c");	-- TODO: Investigate if we want this.
+			local c = reference.c or reference.c_disp
 			if c then
 				local classes_tbl = {};
 				for i,cl in ipairs(c) do
@@ -801,7 +806,7 @@ local InformationTypes = {
 	}),
 	CreateInformationType("r", { text = RACES, priority = 8000, ShouldDisplayInExternalTooltips = false,
 		Process = function(t, reference, tooltipInfo)
-			local r = reference.r;-- or GetRelativeValue(reference, "r");	-- TODO: Investigate if we want this.
+			local r = reference.r or reference.r_disp
 			if r and r > 0 then
 				local usecolors = app.Settings:GetTooltipSetting("UseMoreColors");
 				if r == 2 then
@@ -821,7 +826,7 @@ local InformationTypes = {
 					});
 				end
 			else
-				r = reference.races;-- or GetRelativeValue(reference, "races");	-- TODO: Investigate if we want this.
+				r = reference.races or reference.races_disp
 				if r then
 					local races_tbl = {}
 					-- temp ref with .raceID of only a single race so we can simply use TryColorizeName

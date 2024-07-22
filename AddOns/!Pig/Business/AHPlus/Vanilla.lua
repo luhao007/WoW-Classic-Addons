@@ -670,6 +670,7 @@ function BusinessInfo.AHPlus_Vanilla()
 			end
 		end
 	end
+
 	HistoryBut:HookScript("OnClick", function(self, button)
 		self:Disable()
 		self.F:Show();
@@ -683,6 +684,13 @@ function BusinessInfo.AHPlus_Vanilla()
 		HistoryBut.F.itemNUM=0
 		qingkongtiaojian()
 		-- AuctionFrameBrowse_Search()--获取总数
+		local dangqianTime = date("%H",GetServerTime())
+		local dangqianTime = tonumber(dangqianTime)
+		if dangqianTime>18 and dangqianTime<23 then
+			HistoryBut.ScanCD=BusinessInfo.AHPlusData.ScanCD+0.001
+		else
+			HistoryBut.ScanCD=BusinessInfo.AHPlusData.ScanCD
+		end
 		C_Timer.After(0.64,HistoryBut.GetAHdata)
 	end)
 	HistoryBut:HookScript("OnHide",function(self)
@@ -763,9 +771,6 @@ function BusinessInfo.AHPlus_Vanilla()
 		HistoryBut.F.jindu.tex:SetWidth(chushikuandu*1)
 		HistoryBut.F.jindu.edg.t:SetText("价格缓存完毕");
 		HistoryBut.F.jindu.edg.tname:SetText("");
-		-- listF.tishi:SetText(BROWSE_NO_RESULTS);
-		-- SetSelectedAuctionItem("list", 0);
-		-- AuctionFrameBrowse_Search()
 		HistoryBut.F.close:Show();
 	end
 	local function huancunData_H(piciID)
@@ -788,7 +793,7 @@ function BusinessInfo.AHPlus_Vanilla()
 	end
 	local function huancunData()
 		for i=1,HistoryBut.F.totalAuctions do
-			C_Timer.After(i*BusinessInfo.AHPlusData.ScanCD,function()
+			C_Timer.After(i*HistoryBut.ScanCD,function()
 				huancunData_H(i)
 			end)		
 		end
@@ -860,10 +865,41 @@ function BusinessInfo.AHPlus_Vanilla()
 			gengxinlist(listF.Scroll)
 		end
 	end)
+	local CVarName={
+		["UnitNameNPC"]="0",
+		["nameplateShowOnlyNames"]="1",
+		["nameplateShowFriends"]="0",
+		["UnitNameFriendlyPlayerName"]="0",
+		["UnitNameFriendlyPetName"]="0",
+		["UnitNameFriendlyGuardianName"]="0",
+		["UnitNameFriendlyTotemName"]="0",
+		["UnitNameFriendlyMinionName"]="0",
+	}
+	local OLD_CVarName={}
+	local function Save_SettCVar()
+		for k,v in pairs(CVarName) do
+			local OLDcannn = GetCVar(k)
+			if OLDcannn then
+				OLD_CVarName[k]=OLDcannn
+			end
+		end
+		for k,v in pairs(CVarName) do
+			SetCVar(k, v)
+		end
+	end
+	local function Huifu_SettCVar()
+		for k,v in pairs(OLD_CVarName) do
+			SetCVar(k, v)
+		end
+	end
 	AuctionFrame:HookScript("OnShow",function(self)
+		Save_SettCVar()
 		--AuctionFrameBrowse.exact:SetChecked(PIGA["AHPlus"]["exactMatch"])
 		PIG_AuctionFrame_OnClickSortColumn("list")
 	end)
+	AuctionFrame:HookScript("OnHide", function(self)
+		Huifu_SettCVar()
+	end);
 
 	--关注------------------------
 	local collW,collY = 24,24
