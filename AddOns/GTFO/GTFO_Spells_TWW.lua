@@ -126,10 +126,28 @@ GTFO.SpellID["438601"] = {
 --- * Darkflame Cleft *
 --- *******************
 
+GTFO.SpellID["426265"] = {
+  --desc = "Ceaseless Flame (Sootsnout)";
+  sound = 1;
+};
+
+GTFO.SpellID["426295"] = {
+  --desc = "Flaming Tether (Sootsnout)";
+  applicationOnly = true;
+  negatingDebuffSpellID = 426295; -- Flaming Tether
+  sound = 1;
+  test = true;
+};
+
+GTFO.SpellID["421638"] = {
+  --desc = "Wicklighter Barrage (Blazikon)";
+  sound = 1;
+  test = true; -- Verification
+};
+
 GTFO.SpellID["421067"] = {
   --desc = "Molten Wax (The Candle King)";
   sound = 1;
-  test = true; -- Verification
 };
 
 GTFO.SpellID["422806"] = {
@@ -218,18 +236,14 @@ GTFO.SpellID["457465"] = {
   test = true; -- Verification
 };
 
---- ********************
---- * Earthcrawl Mines *
---- ********************
+--- ***************
+--- * TWW Devles  *
+--- ***************
 
 GTFO.SpellID["448346"] = {
   --desc = "Caustic Webbing (Web General Ab'enar)";
   sound = 1;
 };
-
---- *******************
---- * Kriegval's Rest *
---- *******************
 
 GTFO.SpellID["414144"] = {
   --desc = "Smothering Shadows";
@@ -262,10 +276,10 @@ GTFO.SpellID["449266"] = {
   sound = 1;
 };
 
-
---- ****************
---- * Fungal Folly *
---- ****************
+GTFO.SpellID["450344"] = {
+  --desc = "Candlethrower (Burning Candle)";
+  sound = 1;
+};
 
 GTFO.SpellID["415404"] = {
   --desc = "Fungalstorm (Spinshroom)";
@@ -276,10 +290,6 @@ GTFO.SpellID["415495"] = {
   --desc = "Gloopy Fungus (Spinshroom)";
   sound = 1;
 };
-
---- ******************
---- * The Waterworks *
---- ******************
 
 GTFO.SpellID["443852"] = {
   --desc = "Suffocating Fumes";
@@ -302,11 +312,6 @@ GTFO.SpellID["450133"] = {
   sound = 1;
 };
 
-
---- *****************
---- * The Dread Pit *
---- *****************
-
 GTFO.SpellID["450636"] = {
   --desc = "Leeching Swarm (Nerubian Lord)";
   sound = 1;
@@ -316,10 +321,6 @@ GTFO.SpellID["448650"] = {
   --desc = "Burrowing Tremors (Under-Lord Vik'tis)";
   sound = 1;
 };
-
---- *************
---- * Underkeep *
---- *************
 
 GTFO.SpellID["440299"] = {
   --desc = "Poisoned (Poison Device)";
@@ -336,34 +337,43 @@ GTFO.SpellID["447205"] = {
   sound = 1;
 };
 
---- *********************
---- * Skittering Breach *
---- *********************
+GTFO.SpellID["457804"] = {
+  --desc = "Ritual Burn (Faceless Devotee)";
+  sound = 2;
+};
 
+GTFO.SpellID["440805"] = {
+  --desc = "Darkrift Smash (Nerl'athekk the Skulking - Pool)";
+  sound = 1;
+};
 
---- *********************
---- * Nightfall Sanctum *
---- *********************
+GTFO.SpellID["434053"] = {
+  --desc = "Darkfire Barrage (Dark Bombardier)";
+  sound = 1;
+};
 
+GTFO.SpellID["443839"] = {
+  --desc = "Desolate Surge (Speaker Halven)";
+  sound = 1;
+  test = true; -- Verification
+};
 
---- ****************
---- * The Sinkhole *
---- ****************
+GTFO.SpellID["443841"] = {
+  --desc = "Desolate Surge (Speaker Halven)";
+  sound = 1;
+  test = true; -- Verification
+};
 
+GTFO.SpellID["436269"] = {
+  --desc = "Darkfire (Speaker Davenruth)";
+  sound = 1;
+};
 
---- **********************
---- * Myconmancer Cavern *
---- **********************
-
-
---- ********************
---- * The Spiral Weave *
---- ********************
-
-
---- ********************
---- * Tak-Rethan Abyss *
---- ********************
+GTFO.SpellID["454725"] = {
+  --desc = "Bog Trap (Bogpiper)";
+  sound = 1;
+  test = true; -- A bit broken at the moment, it's basically a slow death
+};
 
 GTFO.SpellID["452750"] = {
   --desc = "Necrotic Bubble (Air Bubble)";
@@ -374,16 +384,6 @@ GTFO.SpellID["455931"] = {
   --desc = "Defiling Breath (Kobyss Necromancer)";
   sound = 1;
 };
-
-
---- **********************
---- * Mystery 13th Delve *
---- **********************
-
-
---- ***************
---- * Delve Rares *
---- ***************
 
 GTFO.SpellID["445781"] = {
   --desc = "Lava Blast (Stolen Loader)";

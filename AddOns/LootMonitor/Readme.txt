@@ -14,6 +14,7 @@
 13. 支持LDB。
 14. 支持TBC副本。
 15. 更新TOC文件。
+16. 取消对正式服支持
 
 Readme:
 1. Slash Command /lm or /lootmonitor to open/close LootMonitor Window.
@@ -31,3 +32,4 @@ Readme:
 13. Support LDB.
 14. Support BCC Raid Instance.
 15. Update TOC file.
+16. Remove Retail toc files.

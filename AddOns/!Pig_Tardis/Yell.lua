@@ -395,9 +395,9 @@ function TardisInfo.Yell(Activate)
 	---转换团队/小队
 	fujiF.topF.zhiyeXZ.zhuanhuanPR=PIGButton(fujiF.topF.zhiyeXZ,{"LEFT",fujiF.topF.zhiyeXZ.daoruMoren,"RIGHT", 30,0},{120,20},"转换团队/小队")
 	fujiF.topF.zhiyeXZ.zhuanhuanPR:SetScript("OnClick", function (self)
-		if IsInRaid("LE_PARTY_CATEGORY_HOME") then
+		if IsInRaid(LE_PARTY_CATEGORY_HOME) then
 			ConvertToParty() 
-		elseif IsInGroup("LE_PARTY_CATEGORY_HOME") then
+		elseif IsInGroup(LE_PARTY_CATEGORY_HOME) then
 			ConvertToRaid()
 		end
 	end)
@@ -457,7 +457,7 @@ function TardisInfo.Yell(Activate)
 			end
 			_G["zhize_F_"..xulie].dangqianAll_V:SetText(fujiF.Datas_DQ.Xulie[xulie])
 		end
-		fujiF.topF.zhiyeXZ.playerNumV:SetText(GetNumGroupMembers("LE_PARTY_CATEGORY_HOME"))
+		fujiF.topF.zhiyeXZ.playerNumV:SetText(GetNumGroupMembers(LE_PARTY_CATEGORY_HOME))
 		fujiF.topF.zhiyeXZ.playerNumV_max:SetText(fujiF.Datas_MB.All)
 	end
 
@@ -622,7 +622,7 @@ function TardisInfo.Yell(Activate)
 	--更新人数显示
 	function fujiF.topF.autoHF.ShowPlayersList()
 		if not fujiF.topF.autoHF:IsVisible() then return end
-		fujiF.topF.autoHF.playerNumV:SetText(GetNumGroupMembers("LE_PARTY_CATEGORY_HOME"))
+		fujiF.topF.autoHF.playerNumV:SetText(GetNumGroupMembers(LE_PARTY_CATEGORY_HOME))
 		fujiF.topF.autoHF.playerNumV_max:SetText(fujiF.Datas_MB.All)
 	end
 	----
@@ -1037,8 +1037,8 @@ function TardisInfo.Yell(Activate)
 	--判断是否是队长/团长/助理
 	function fujiF.Is_GroupLeader(laiyuan)
 		if IsInGroup() then
-			local isLeader = UnitIsGroupLeader("player", "LE_PARTY_CATEGORY_HOME");
-			local isTrue = UnitIsGroupAssistant("player", "LE_PARTY_CATEGORY_HOME");
+			local isLeader = UnitIsGroupLeader("player", LE_PARTY_CATEGORY_HOME);
+			local isTrue = UnitIsGroupAssistant("player", LE_PARTY_CATEGORY_HOME);
 			if not isLeader and not isTrue then
 				if laiyuan~="event" then
 					OFF_autoInvite("你不是队长/团长/助理,自动邀请已关闭")
@@ -1069,7 +1069,7 @@ function TardisInfo.Yell(Activate)
 	fujiF.GetRaidMubiao()
 	--获取当前人员/人数
 	function fujiF.GetNumRaidPlayers()
-		local numGroupMembers = GetNumGroupMembers("LE_PARTY_CATEGORY_HOME")
+		local numGroupMembers = GetNumGroupMembers(LE_PARTY_CATEGORY_HOME)
 		if PIGA["Tardis"]["Yell"]["InvMode"]==1 then
 
 		elseif PIGA["Tardis"]["Yell"]["InvMode"]==2 then
@@ -1111,7 +1111,7 @@ function TardisInfo.Yell(Activate)
 		end	
 	end
 	function fujiF.Is_RaidNumOK(laiyuan)
-		local numGroupMembers = GetNumGroupMembers("LE_PARTY_CATEGORY_HOME")
+		local numGroupMembers = GetNumGroupMembers(LE_PARTY_CATEGORY_HOME)
 		local mubiaornshu = 40
 		if PIGA["Tardis"]["Yell"]["InvMode"]==1 then
 			mubiaornshu = PIGA["Tardis"]["Yell"]["MaxPlayerNum"]
@@ -1182,8 +1182,8 @@ function TardisInfo.Yell(Activate)
 	local zhiyeweizhiKey={{"T","坦","熊","防骑","FQ"},{"N","奶","治疗"},{"DPS", "dps","伤害","输出","KBZ", "kbz", "狂暴","惩戒","电萨","鸟德","鸟D"}}
 	--执行邀请
 	local function PIG_Invite_Fun(Pname)
-		local numGroupMembers = GetNumGroupMembers("LE_PARTY_CATEGORY_HOME")
-		if numGroupMembers==5 and not IsInRaid("LE_PARTY_CATEGORY_HOME") then
+		local numGroupMembers = GetNumGroupMembers(LE_PARTY_CATEGORY_HOME)
+		if numGroupMembers==5 and not IsInRaid(LE_PARTY_CATEGORY_HOME) then
 			ConvertToRaid()
 		end
 		InviteUnit(Pname)

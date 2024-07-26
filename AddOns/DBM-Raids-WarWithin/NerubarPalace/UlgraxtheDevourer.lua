@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(2607, "DBM-Raids-WarWithin", 1, 1273)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240629060414")
+mod:SetRevision("20240717004514")
 mod:SetCreatureID(215657)--VERIFY
 mod:SetEncounterID(2902)
 --mod:SetUsedIcons(1, 2, 3)
@@ -17,6 +17,7 @@ mod:RegisterEventsInCombat(
 	"SPELL_AURA_REMOVED 458129 435138",
 --	"SPELL_PERIODIC_DAMAGE",
 --	"SPELL_PERIODIC_MISSED",
+	"CHAT_MSG_RAID_BOSS_WHISPER",
 	"UNIT_SPELLCAST_SUCCEEDED boss1"
 )
 
@@ -54,15 +55,15 @@ local timerBrutalCrushCD						= mod:NewCDCountTimer(13.0, 434697, nil, "Tank|Hea
 local timerPhaseChange							= mod:NewStageCountTimer(10, 438012, nil, nil, nil, 6)
 --Feeding Frenzy
 mod:AddTimerLine(DBM:EJ_GetSectionInfo(28845))
-local warnJuggernautCharge						= mod:NewCountAnnounce(436200, 4, nil, nil, nil, nil, nil, 2)--Charges 2+ of the set
+local warnJuggernautCharge						= mod:NewCountAnnounce(436200, 4, nil, nil, 100, nil, nil, 2)--Charges 2+ of the set
 
 local specWarnChitteringSwarm					= mod:NewSpecialWarningSwitch(445052, nil, nil, nil, 1, 2)--BW using -28848 instead?
-local specWarnJuggernautCharge					= mod:NewSpecialWarningDodgeCount(436200, nil, nil, nil, 2, 2)--Activation
+local specWarnJuggernautCharge					= mod:NewSpecialWarningDodgeCount(436200, nil, 100, nil, 2, 2)--Activation
 local specWarnSwallowingDarkness				= mod:NewSpecialWarningDodgeCount(443842, nil, nil, nil, 2, 2)
 local specWarnHulkingCrash						= mod:NewSpecialWarningDodge(445123, nil, nil, nil, 2, 2)
 
 local timerChitteringSwarmCD					= mod:NewCDTimer(49, 445052, nil, nil, nil, 1)
-local timerJuggernautChargeCD					= mod:NewCDCountTimer(49, 436200, nil, nil, nil, 3)
+local timerJuggernautChargeCD					= mod:NewCDCountTimer(49, 436200, 100, nil, nil, 3)
 local timerSwallowingDarknessCD					= mod:NewCDTimer(49, 443842, nil, nil, nil, 3)
 local timerHungeringBellowsCD					= mod:NewCDCountTimer(9, 438012, nil, nil, nil, 2)
 --local timerHulkingCrashCD						= mod:NewCDCountTimer(18, 445123, nil, nil, nil, 3)
@@ -197,6 +198,7 @@ function mod:SPELL_AURA_APPLIED(args)
 	elseif spellId == 434705 then
 		if not args:IsPlayer() then
 			local uID = DBM:GetUnitIdFromGUID(args.destGUID)
+			---@diagnostic disable-next-line: param-type-mismatch
 			if self:IsTanking(uID, "boss1") then--Filter non tank spec numpties in front of boss for some reason
 				if not DBM:UnitDebuff("player", spellId) then--Double check player didn't also get hit
 					specWarnTenderized:Show(args.destName)
@@ -205,12 +207,12 @@ function mod:SPELL_AURA_APPLIED(args)
 			end
 		end
 	elseif spellId == 458129 then
-		if args:IsPlayer() then
+		if args:IsPlayer() and self:AntiSpam(3, 1) then
 			specWarnBrutalLashingsTarget:Show()
 			specWarnBrutalLashingsTarget:Play("gathershare")
 			yellBrutalLashings:Yell()
 			yellBrutalLashingsFades:Countdown(spellId)
-		else
+		elseif self:AntiSpam(3, 2) then
 			specWarnBrutalLashings:Show(self.vb.lashingsCount)
 			specWarnBrutalLashings:Play("helpsoak")
 		end
@@ -238,6 +240,24 @@ function mod:SPELL_PERIODIC_DAMAGE(_, _, _, _, destGUID, _, _, _, spellId, spell
 end
 mod.SPELL_PERIODIC_MISSED = mod.SPELL_PERIODIC_DAMAGE
 --]]
+
+function mod:CHAT_MSG_RAID_BOSS_WHISPER(msg)
+	if msg:find("spell:434776") and self:AntiSpam(3, 1) then
+		specWarnBrutalLashingsTarget:Show()
+		specWarnBrutalLashingsTarget:Play("gathershare")
+		yellBrutalLashings:Yell()
+		yellBrutalLashingsFades:Countdown(8)
+	end
+end
+
+function mod:OnTranscriptorSync(msg, targetName)
+	if msg:find("spell:434776") and self:AntiSpam(3, 2) then
+		if targetName ~= UnitName("player") then
+			specWarnBrutalLashingsTarget:Show()
+			specWarnBrutalLashingsTarget:Play("helpsoak")
+		end
+	end
+end
 
 function mod:UNIT_SPELLCAST_SUCCEEDED(uId, _, spellId)
 	--<168.89 20:49:18> [UNIT_SPELLCAST_SUCCEEDED] Ulgrax the Devourer(11.0%-100.0%){Target:Meeresdk} -Phase Transition None- [[boss1:Cast-3-2085-2657-32566-4

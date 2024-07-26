@@ -76,9 +76,10 @@ LibDualSpec-1.0\LibDualSpec-1.0.lua
 LibDurability\LibDurability\LibDurability.xml
 LibGetEnchant-1.0\LibGetEnchant-1.0.xml
 LibGetFrame-1.0\LibGetFrame-1.0.xml
-LibGraph-2.0\LibGraph-2.0\LibGraph-2.0.lua
+LibGraph-2.0\LibGraph-2.0.lua
 LibItemUpgradeInfo-1.0\LibItemUpgradeInfo-1.0.xml
 LibLatency\LibLatency\LibLatency.xml
+LibOpenRaid\lib.xml
 LibQTip-1.0\lib.xml
 LibRangeCheck-3.0\LibRangeCheck-3.0.lua
 LibRealmInfo\LibRealmInfo.lua
@@ -88,7 +89,7 @@ LibSpecialization\LibSpecialization\LibSpecialization.xml
 LibSpellRange-1.0\lib.xml
 LibTime-1.0\LibTime-1.0.xml
 LibTranslit-1.0\LibTranslit-1.0.xml
-LibWindow-1.1\LibWindow-1.1\LibWindow-1.1.lua
+LibWindow-1.1\LibWindow-1.1.lua
 NickTag-1.0\NickTag-1.0.xml
 TaintLess\TaintLess.xml
 

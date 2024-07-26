@@ -303,6 +303,7 @@ addonTable.Default = {
 			["Open"] = true,
 			["Lock"] = "OFF",
 			["BGHide"] = true,
+			["NOtargetHide"]=true,
 			["AutoShow"] = false,
 			["Scale"]=1,
 		},

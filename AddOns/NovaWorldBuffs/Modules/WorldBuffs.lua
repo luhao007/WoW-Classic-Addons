@@ -13,6 +13,13 @@ NWB.firstYells = {rend = 0, ony = 0, nef = 0, zan = 0}; --Npc yells, shared guil
 NWB.buffDrops = {rend = 0, ony = 0, nef = 0, zan = 0}; --Full duration buff applications, personal cooldown.
 NWB.lastSets = {rend = 0, ony = 0, nef = 0, zan = 0}; --Buff drops actual being set in the addon, if it meets all checks after buff applications.
 
+--5 second leeway for funcs sharing the same cooldown, this is for buff drops that have a 1 minute server cooldown anyway.
+local function isOnCooldown(cooldownType, type)
+	if (NWB[cooldownType] and (GetServerTime() - NWB[cooldownType][type] < NWB.buffDropSpamCooldown - 5)) then
+		return true;
+	end
+end
+
 --Adding a central place to control whether an event should fire, things are changing a lot recently in classic with buff cooldowns etc and this just make it easier to change things in one place.
 function NWB:checkEventStatus(event, type, subEvent, channel)
 	if (event == subEvent) then
@@ -32,7 +39,9 @@ function NWB:checkEventStatus(event, type, subEvent, channel)
 		--No matching atm.
 	end]]
 	--Other specific events.
+	--NWB:debug("event check", event, type, subEvent, channel);
 	if (event == "sendGuildMsg") then
+		--NWB:debug("guild msg check", type, subEvent, channel);
 		--Blanket match all guild chat events attached to a buff type.
 		if (type == "rend") then
 			if (NWB.isSOD) then --No rend msgs in sod it's been too spammy since the cooldown was removed.
@@ -66,6 +75,9 @@ function NWB:checkEventStatus(event, type, subEvent, channel)
 			return NWB:checkEventStatus(subEvent, type);
 		elseif (subEvent == "firstYell") then
 			return NWB:checkEventStatus(subEvent, type);
+		elseif (subEvent == "guildNpcDialogue") then
+			--Guild chat msg.
+			--return NWB:checkEventStatus("firstYell", type);
 		else
 			return true;
 		end
@@ -75,7 +87,7 @@ function NWB:checkEventStatus(event, type, subEvent, channel)
 			--Disable rend guild msgs in SoD.
 			return;
 		end
-		if (GetServerTime() - NWB.firstYells[type] > NWB.buffDropSpamCooldown) then
+		if (not isOnCooldown("firstYells", type)) then
 			NWB.firstYells[type] = GetServerTime();
 			return true;
 		else
@@ -87,7 +99,7 @@ function NWB:checkEventStatus(event, type, subEvent, channel)
 			--Disable rend guild msgs in SoD.
 			return;
 		end
-		if (GetServerTime() - NWB.buffDrops[type] > NWB.buffDropSpamCooldown) then
+		if (not isOnCooldown("buffDrops", type)) then
 			--NWB.buffDrops[type] = GetServerTime(); --Set in the drop func below.
 			return true;
 		else
@@ -104,8 +116,8 @@ function NWB:checkEventStatus(event, type, subEvent, channel)
 	elseif (event == "songFlower") then
 		return true;
 	elseif (event == "startFlash") then
-		if (NWB.isSOD and type == "rend") then --No rend flashes outside city in sod, there's also seperate setting in the flash func for all flashes in city only..
-			if (NWB.isCapitalCityAction("rend")) then
+		if (NWB.isSOD and type == "rend") then --No rend flashes outside city in sod, there's also seperate setting in the flash func for all flashes in city only.
+			if (NWB:isCapitalCityAction("rend")) then
 				return true;
 			else
 				return;
@@ -1402,7 +1414,7 @@ function NWB:doFirstYell(type, layer, source, distribution, arg)
 			if (source == "self") then
 				NWB.data.zanYell = GetServerTime();
 			end
-			if (NWB:checkEventStatus("firstYell")) then
+			if (NWB:checkEventStatus("firstYell", "zan")) then
 				if (NWB.db.global.chatZan) then
 					NWB:print(msg, nil, nil, true);
 				end
@@ -1440,22 +1452,23 @@ function NWB:doBuffDropMsg(type, layer)
 	if (NWB.isLayered and tonumber(layer) and NWB.doLayerMsg) then
 		layerMsg = " (" .. L["Layer"] .. " " .. layer .. ")";
 	end
+	local cooldown = NWB.buffDropSpamCooldown > 39 and NWB.buffDropSpamCooldown or 40;
 	if (type == "rend") then
-		if ((GetServerTime() - rendDropMsg) > NWB.buffDropSpamCooldown) then
+		if ((GetServerTime() - rendDropMsg) > cooldown) then
 			if (NWB.db.global.guildBuffDropped == 1) then
 				NWB:sendGuildMsg(L["rendBuffDropped"] .. layerMsg, "guildBuffDropped", "rend");
 			end
 			rendDropMsg = GetServerTime();
 		end
 	elseif (type == "ony") then
-		if ((GetServerTime() - onyDropMsg) > NWB.buffDropSpamCooldown) then
+		if ((GetServerTime() - onyDropMsg) > cooldown) then
 			if (NWB.db.global.guildBuffDropped == 1) then
 				NWB:sendGuildMsg(L["onyxiaBuffDropped"] .. layerMsg, "guildBuffDropped", "ony");
 			end
 			onyDropMsg = GetServerTime();
 		end
 	elseif (type == "nef") then
-		if ((GetServerTime() - nefDropMsg) > NWB.buffDropSpamCooldown) then
+		if ((GetServerTime() - nefDropMsg) > cooldown) then
 			if (NWB.db.global.guildBuffDropped == 1) then
 				NWB:sendGuildMsg(L["nefarianBuffDropped"] .. layerMsg, "guildBuffDropped", "nef");
 			end
@@ -1621,3 +1634,5 @@ function NWB:doHandIn(id, layer, sender)
 		NWB:print(msg);
 	end
 end
+
+--/run NWB:sendBigWigs(14, "[NWB] Rallying Cry of the Dragonslayer", "ony");

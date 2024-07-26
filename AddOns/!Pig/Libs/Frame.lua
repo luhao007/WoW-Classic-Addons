@@ -42,7 +42,7 @@ end
 function Create.PIGFontStringBG(fuF,Point,Text,WH,Zihao,UIName)
 	local Zihao = Zihao or 14
 	local FontF =Create.PIGFrame(fuF,{Point[1],Point[2],Point[3],Point[4],Point[5]},{WH[1],WH[2]})
-	FontF:PIGSetBackdrop()
+	FontF:PIGSetBackdrop(0.4,0.2)
 	local Font = FontF:CreateFontString(UIName);
 	Font:SetPoint("CENTER", FontF, "CENTER", 0,0);
 	Font:SetSize(WH[1],WH[2])

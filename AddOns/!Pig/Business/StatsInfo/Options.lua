@@ -16,13 +16,13 @@ local PIGQuickBut=Create.PIGQuickBut
 local BusinessInfo=addonTable.BusinessInfo
 local fuFrame,fuFrameBut = BusinessInfo.fuFrame,BusinessInfo.fuFrameBut
 
-local GnName,GnUI,GnIcon,FrameLevel = "角色信息统计","StatsInfo_UI",133734,10
+local GnName,GnUI,GnIcon,FrameLevel = "信息统计","StatsInfo_UI",133734,10
 BusinessInfo.StatsInfoData={GnName,GnUI,GnIcon,FrameLevel}
 ------------
 function BusinessInfo.StatsInfoOptions()
 	fuFrame.StatsInfo_line = PIGLine(fuFrame,"TOP",-(fuFrame.dangeH*fuFrame.GNNUM))
 	fuFrame.GNNUM=fuFrame.GNNUM+3
-	local Tooltip = "显示所有角色:副本CD/专业CD/物品/货币信息/交易记录";
+	local Tooltip = "显示副本CD/专业CD/物品/货币信息/交易/离线拍卖等各种信息记录";
 	fuFrame.StatsInfo = PIGModCheckbutton(fuFrame,{GnName,Tooltip},{"TOPLEFT",fuFrame.StatsInfo_line,"TOPLEFT",20,-30})
 	fuFrame.StatsInfo:SetScript("OnClick", function (self)
 		if self:GetChecked() then
@@ -402,7 +402,11 @@ function BusinessInfo.StatsInfoOptions()
 		if bagfuji==ContainerFrameCombinedBags then
 			bagfuji.lixianBut:SetPoint("TOPLEFT",bagfuji,"TOPLEFT",220,-38)
 		elseif bagfuji==BAGheji_UI then
-			bagfuji.lixianBut:SetPoint("TOPLEFT",bagfuji,"TOPLEFT",210,-39)
+			if NDui or ElvUI then
+				bagfuji.lixianBut:SetPoint("TOPLEFT",bagfuji,"TOPLEFT",210,-31)
+			else
+				bagfuji.lixianBut:SetPoint("TOPLEFT",bagfuji,"TOPLEFT",210,-39)
+			end
 		elseif bagfuji==ElvUI_ContainerFrame then
 			bagfuji.lixianBut:SetPoint("TOPLEFT",bagfuji,"TOPLEFT",11,-6)
 		else
@@ -427,19 +431,45 @@ function BusinessInfo.StatsInfoOptions()
 	function fuFrame.ADD_lixianBUT()
 		if not PIGA["StatsInfo"]["Open"] or not PIGA["StatsInfo"]["lixianBank"] then return end
 		local _,yijiazai = IsAddOnLoaded("ElvUI")
-		if yijiazai then
+		if yijiazai and ElvUI_ContainerFrame then
 			add_lixianBut(ElvUI_ContainerFrame,wwc,hhc)
 			return
 		end
 		local _,yijiazai = IsAddOnLoaded("NDui")
 		if yijiazai and NDuiDB and NDuiDB["Bags"]["Enable"] then
-			add_lixianBut(NDui_BackpackBag,wwc,hhc)
-			return
+			local B, C = unpack(NDui)
+			local anniushuS = NDui_BackpackBag.widgetButtons
+			local function CreatelixianBut(self)
+				local bu = B.CreateButton(self, 22, 22, true, 136453)
+				bu:SetPoint("RIGHT", anniushuS[#anniushuS], "LEFT", -3, 0)
+				bu:SetScript("OnClick", function()
+					PlaySoundFile(567463, "Master")
+					StatsInfo_UI:BagLixian()
+				end)
+				bu.title =  "查看离线银行或其他角色物品"
+				B.AddTooltip(bu, "ANCHOR_TOP")
+				self.lixianBut = bu
+				return bu
+			end
+			anniushuS[#anniushuS+1] = CreatelixianBut(NDui_BackpackBag)
+			local function ToggleWidgetButtons(self)
+				if C.db["Bags"]["HideWidgets"] then
+					self:SetPoint("RIGHT", anniushuS[2], "LEFT", -1, 0)
+					B.SetupArrow(self.__texture, "left")
+					self.tag:Show()
+				else
+					self:SetPoint("RIGHT", anniushuS[#anniushuS], "LEFT", -1, 0)
+					B.SetupArrow(self.__texture, "right")
+					self.tag:Hide()
+				end
+				self:SetFrameLevel(self:GetFrameLevel()+2)
+			end
+			ToggleWidgetButtons(NDui_BackpackBag.widgetArrow)
 		end
-		if tocversion<100000 then
-			if BAGheji_UI then add_lixianBut(BAGheji_UI,wwc,hhc) end
-		else
+		if ContainerFrameCombinedBags then
 			if ContainerFrameCombinedBags then add_lixianBut(ContainerFrameCombinedBags,wwc,hhc) end
+		else
+			if BAGheji_UI then add_lixianBut(BAGheji_UI,wwc,hhc) end
 		end
 	end	
 	local BAGhejiElvUINDui = CreateFrame("Frame")

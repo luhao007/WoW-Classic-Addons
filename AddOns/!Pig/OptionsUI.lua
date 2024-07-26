@@ -10,32 +10,88 @@ local PIGFontString=Create.PIGFontString
 local PIGSetFont=Create.PIGSetFont
 
 --系统插件菜单======================
-local PIG_AddOn = {};
-PIG_AddOn.panel = CreateFrame( "Frame", "PIG_AddOnPanel", UIParent );
-PIG_AddOn.panel:Hide()
-PIG_AddOn.panel.name = "!Pig";
-InterfaceOptions_AddCategory(PIG_AddOn.panel);
---子页
--- PIG_AddOn.childpanel = CreateFrame( "Frame", "PIG_AddOnChild", PIG_AddOn.panel);
--- PIG_AddOn.childpanel.name = "About";
---指定归属父级
--- PIG_AddOn.childpanel.parent = PIG_AddOn.panel.name;
--- InterfaceOptions_AddCategory(PIG_AddOn.childpanel);
---系统设置面板
-PIG_AddOnPanel.Openshezhi = PIGButton(PIG_AddOnPanel,{"TOPLEFT",PIG_AddOnPanel,"TOPLEFT",20,-20},{80,24},L["OPTUI_SET"])
-PIG_AddOnPanel.Openshezhi:SetScript("OnClick", function ()
-	HideUIPanel(InterfaceOptionsFrame);
-	HideUIPanel(SettingsPanel);
-	HideUIPanel(GameMenuFrame);
-	Pig_OptionsUI:Show();
-end)
-PIGLine(PIG_AddOnPanel,"TOP",-60,1,{4,-4})
-Create.About_Update(PIG_AddOnPanel,-80,"Panel")
---子页内容
-PIGLine(PIG_AddOnPanel,"TOP",-300,1,{4,-4})
-Create.About_Thanks(PIG_AddOnPanel,-320)
--- PIG_AddOnPanel.okay = function (self) SC_ChaChingPanel_Close(); end;
--- PIG_AddOnPanel.cancel = function (self) SC_ChaChingPanel_CancelOrLoad();  end;
+PIG_SavedVars = {}
+
+-- local category = Settings.RegisterVerticalLayoutCategory("My AddOn")
+
+-- local function OnSettingChanged(setting, value)
+-- 	-- This callback will be invoked whenever a setting is modified.
+-- 	print("Setting changed:", setting:GetVariable(), value)
+-- end
+
+-- do 
+-- 	-- RegisterAddOnSetting example. This will read/write the setting directly
+-- 	-- to `MyAddOn_SavedVars.toggle`.
+
+--     local name = "Test Checkbox"
+--     local variable = "MyAddOn_Toggle"
+-- 	local variableKey = "toggle"
+-- 	local variableTbl = MyAddOn_SavedVars
+--     local defaultValue = false
+
+--     local setting = Settings.RegisterAddOnSetting(category, variable, variableKey, variableTbl, type(defaultValue), name, defaultValue)
+-- 	setting:SetValueChangedCallback(OnSettingChanged)
+
+--     local tooltip = "This is a tooltip for the checkbox."
+-- 	Settings.CreateCheckbox(category, setting, tooltip)
+-- end
+
+-- do
+-- 	-- RegisterProxySetting example. This will run the GetValue and SetValue
+-- 	-- callbacks whenever access to the setting is required.
+
+-- 	local name = "Test Slider"
+-- 	local variable = "MyAddOn_Slider"
+--     local defaultValue = 180
+--     local minValue = 90
+--     local maxValue = 360
+--     local step = 10
+
+-- 	local function GetValue()
+-- 		return MyAddOn_SavedVars.slider or defaultValue
+-- 	end
+
+-- 	local function SetValue(value)
+-- 		MyAddOn_SavedVars.slider = value
+-- 	end
+
+-- 	local setting = Settings.RegisterProxySetting(category, variable, type(defaultValue), name, defaultValue, GetValue, SetValue)
+-- 	setting:SetValueChangedCallback(OnSettingChanged)
+
+-- 	local tooltip = "This is a tooltip for the slider."
+--     local options = Settings.CreateSliderOptions(minValue, maxValue, step)
+--     options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right);
+--     Settings.CreateSlider(category, setting, options, tooltip)
+-- end
+
+-- Settings.RegisterAddOnCategory(category)
+
+-- local PIG_AddOn = {};
+-- PIG_AddOn.panel = CreateFrame( "Frame", "PIG_AddOnPanel", UIParent );
+-- PIG_AddOn.panel:Hide()
+-- PIG_AddOn.panel.name = "!Pig";
+-- InterfaceOptions_AddCategory(PIG_AddOn.panel);
+-- --子页
+-- -- PIG_AddOn.childpanel = CreateFrame( "Frame", "PIG_AddOnChild", PIG_AddOn.panel);
+-- -- PIG_AddOn.childpanel.name = "About";
+-- --指定归属父级
+-- -- PIG_AddOn.childpanel.parent = PIG_AddOn.panel.name;
+-- -- InterfaceOptions_AddCategory(PIG_AddOn.childpanel);
+-- --系统设置面板
+-- PIG_AddOnPanel.Openshezhi = PIGButton(PIG_AddOnPanel,{"TOPLEFT",PIG_AddOnPanel,"TOPLEFT",20,-20},{80,24},L["OPTUI_SET"])
+-- PIG_AddOnPanel.Openshezhi:SetScript("OnClick", function ()
+-- 	HideUIPanel(InterfaceOptionsFrame);
+-- 	HideUIPanel(SettingsPanel);
+-- 	HideUIPanel(GameMenuFrame);
+-- 	Pig_OptionsUI:Show();
+-- end)
+-- PIGLine(PIG_AddOnPanel,"TOP",-60,1,{4,-4})
+-- Create.About_Update(PIG_AddOnPanel,-80,"Panel")
+-- --子页内容
+-- PIGLine(PIG_AddOnPanel,"TOP",-300,1,{4,-4})
+-- Create.About_Thanks(PIG_AddOnPanel,-320)
+-- -- PIG_AddOnPanel.okay = function (self) SC_ChaChingPanel_Close(); end;
+-- -- PIG_AddOnPanel.cancel = function (self) SC_ChaChingPanel_CancelOrLoad();  end;
 
 ---------------
 local OptionsW,OptionsH,OptionsJG,BottomHHH = 800,600,14,40

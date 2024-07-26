@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: QartemisT
-## Version: r178
+## Version: r179
 ## RequiredDeps: DBM-Core
 ## LoadOnDemand: 1
 ## SavedVariables: DBMPvP_AllSavedVars

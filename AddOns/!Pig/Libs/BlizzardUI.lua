@@ -3,95 +3,114 @@ local _, _, _, tocversion = GetBuildInfo()
 local Create = addonTable.Create
 local PIGFrame=Create.PIGFrame
 local PIGFontString=Create.PIGFontString
+local PIGCloseBut = Create.PIGCloseBut
 --
 --角色界面
 function Create.ADD_BlizzardBG(self,texname,Point)
 	local Point = Point or {14,-13,-3,5}
-	self.Bg = self:CreateTexture(texname.."Bg", "BACKGROUND");
-	self.Bg:SetTexture("interface/framegeneral/ui-background-rock.blp");
-	self.Bg:SetPoint("TOPLEFT", self, "TOPLEFT",Point[1], Point[2]);
-	self.Bg:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", Point[3], Point[4]);
-	self.Bg:SetDrawLayer("BACKGROUND", -1)
+	if NDui then
+		self.Bg = self:CreateTexture(texname.."Bg", "BACKGROUND");
+		self.Bg:SetTexture("interface/chatframe/chatframebackground.blp");
+		self.Bg:SetPoint("TOPLEFT", self, "TOPLEFT",Point[1], Point[2]);
+		self.Bg:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", Point[3], Point[4]);
+		self.Bg:SetDrawLayer("BACKGROUND", -1)
+		self.Bg:SetColorTexture(unpack(Create.BackdropColor))
+		BankPortraitTexture:Hide()
+		BankCloseButton:Hide()
+		self.PigClose = PIGCloseBut(self,{"TOPRIGHT", self, "TOPRIGHT",-1,-10},{26,26})
+		self.PigClose:HookScript("OnClick", function ()
+			CloseBankFrame();
+		end);
+	else
+		self.Bg = self:CreateTexture(texname.."Bg", "BACKGROUND");
+		self.Bg:SetTexture("interface/framegeneral/ui-background-rock.blp");
+		self.Bg:SetPoint("TOPLEFT", self, "TOPLEFT",Point[1], Point[2]);
+		self.Bg:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", Point[3], Point[4]);
+		self.Bg:SetDrawLayer("BACKGROUND", -1)
 
-	self.topbg = self:CreateTexture(texname.."topbg", "BACKGROUND");
-	self.topbg:SetTexture(374157);
-	self.topbg:SetPoint("TOPLEFT", self, "TOPLEFT",68, -13);
-	self.topbg:SetPoint("TOPRIGHT", self, "TOPRIGHT",-24, -13);
-	self.topbg:SetTexCoord(0,0.2890625,0,0.421875,1.359809994697571,0.2890625,1.359809994697571,0.421875);
-	self.topbg:SetHeight(20);
-	self.TOPLEFT = self:CreateTexture(texname.."TOPLEFT", "BORDER");
-	self.TOPLEFT:SetTexture("interface/framegeneral/ui-frame.blp");
-	self.TOPLEFT:SetPoint("TOPLEFT", self, "TOPLEFT",0, 0);
-	self.TOPLEFT:SetTexCoord(0.0078125,0.0078125,0.0078125,0.6171875,0.6171875,0.0078125,0.6171875,0.6171875);
-	self.TOPLEFT:SetSize(78,78);
-	self.TOPRIGHT = self:CreateTexture(texname.."TOPRIGHT", "BORDER");
-	self.TOPRIGHT:SetTexture(374156);
-	self.TOPRIGHT:SetPoint("TOPRIGHT", self, "TOPRIGHT",0, -10);
-	self.TOPRIGHT:SetTexCoord(0.6328125,0.0078125,0.6328125,0.265625,0.890625,0.0078125,0.890625,0.265625);
-	self.TOPRIGHT:SetSize(33,33);
-	self.TOP = self:CreateTexture(texname.."TOP", "BORDER");
-	self.TOP:SetTexture(374157);
-	self.TOP:SetPoint("TOPLEFT", self.TOPLEFT, "TOPRIGHT",0, -10);
-	self.TOP:SetPoint("BOTTOMRIGHT", self.TOPRIGHT, "BOTTOMLEFT", 0, 5);
-	self.TOP:SetTexCoord(0,0.4375,0,0.65625,1.08637285232544,0.4375,1.08637285232544,0.65625);
-	self.BOTTOMLEFT = self:CreateTexture(texname.."BOTTOMLEFT", "BORDER");
-	self.BOTTOMLEFT:SetTexture(374156);
-	self.BOTTOMLEFT:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT",8, 0);
-	self.BOTTOMLEFT:SetTexCoord(0.0078125,0.6328125,0.0078125,0.7421875,0.1171875,0.6328125,0.1171875,0.7421875);
-	self.BOTTOMLEFT:SetSize(14,14);
+		self.topbg = self:CreateTexture(texname.."topbg", "BACKGROUND");
+		self.topbg:SetTexture(374157);
+		self.topbg:SetPoint("TOPLEFT", self, "TOPLEFT",68, -13);
+		self.topbg:SetPoint("TOPRIGHT", self, "TOPRIGHT",-24, -13);
+		self.topbg:SetTexCoord(0,0.2890625,0,0.421875,1.359809994697571,0.2890625,1.359809994697571,0.421875);
+		self.topbg:SetHeight(20);
+		self.TOPLEFT = self:CreateTexture(texname.."TOPLEFT", "BORDER");
+		self.TOPLEFT:SetTexture("interface/framegeneral/ui-frame.blp");
+		self.TOPLEFT:SetPoint("TOPLEFT", self, "TOPLEFT",0, 0);
+		self.TOPLEFT:SetTexCoord(0.0078125,0.0078125,0.0078125,0.6171875,0.6171875,0.0078125,0.6171875,0.6171875);
+		self.TOPLEFT:SetSize(78,78);
+		self.TOPRIGHT = self:CreateTexture(texname.."TOPRIGHT", "BORDER");
+		self.TOPRIGHT:SetTexture(374156);
+		self.TOPRIGHT:SetPoint("TOPRIGHT", self, "TOPRIGHT",0, -10);
+		self.TOPRIGHT:SetTexCoord(0.6328125,0.0078125,0.6328125,0.265625,0.890625,0.0078125,0.890625,0.265625);
+		self.TOPRIGHT:SetSize(33,33);
+		self.TOP = self:CreateTexture(texname.."TOP", "BORDER");
+		self.TOP:SetTexture(374157);
+		self.TOP:SetPoint("TOPLEFT", self.TOPLEFT, "TOPRIGHT",0, -10);
+		self.TOP:SetPoint("BOTTOMRIGHT", self.TOPRIGHT, "BOTTOMLEFT", 0, 5);
+		self.TOP:SetTexCoord(0,0.4375,0,0.65625,1.08637285232544,0.4375,1.08637285232544,0.65625);
+		self.BOTTOMLEFT = self:CreateTexture(texname.."BOTTOMLEFT", "BORDER");
+		self.BOTTOMLEFT:SetTexture(374156);
+		self.BOTTOMLEFT:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT",8, 0);
+		self.BOTTOMLEFT:SetTexCoord(0.0078125,0.6328125,0.0078125,0.7421875,0.1171875,0.6328125,0.1171875,0.7421875);
+		self.BOTTOMLEFT:SetSize(14,14);
 
-	self.BOTTOMRIGHT = self:CreateTexture(texname.."BOTTOMRIGHT", "BORDER");
-	self.BOTTOMRIGHT:SetTexture(374156);
-	self.BOTTOMRIGHT:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT",0, 0);
-	self.BOTTOMRIGHT:SetTexCoord(0.1328125,0.8984375,0.1328125,0.984375,0.21875,0.8984375,0.21875,0.984375);
-	self.BOTTOMRIGHT:SetSize(11,11);
+		self.BOTTOMRIGHT = self:CreateTexture(texname.."BOTTOMRIGHT", "BORDER");
+		self.BOTTOMRIGHT:SetTexture(374156);
+		self.BOTTOMRIGHT:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT",0, 0);
+		self.BOTTOMRIGHT:SetTexCoord(0.1328125,0.8984375,0.1328125,0.984375,0.21875,0.8984375,0.21875,0.984375);
+		self.BOTTOMRIGHT:SetSize(11,11);
 
-	self.LEFT = self:CreateTexture(texname.."LEFT", "BORDER");
-	self.LEFT:SetTexture(374153);
-	self.LEFT:SetTexCoord(0.359375,0,0.359375,1.42187488079071,0.609375,0,0.609375,1.42187488079071);
-	self.LEFT:SetPoint("TOPLEFT", self.TOPLEFT, "BOTTOMLEFT",8, 0);
-	self.LEFT:SetPoint("BOTTOMLEFT", self.BOTTOMLEFT, "TOPLEFT", 0, 0);
-	self.LEFT:SetWidth(16);
+		self.LEFT = self:CreateTexture(texname.."LEFT", "BORDER");
+		self.LEFT:SetTexture(374153);
+		self.LEFT:SetTexCoord(0.359375,0,0.359375,1.42187488079071,0.609375,0,0.609375,1.42187488079071);
+		self.LEFT:SetPoint("TOPLEFT", self.TOPLEFT, "BOTTOMLEFT",8, 0);
+		self.LEFT:SetPoint("BOTTOMLEFT", self.BOTTOMLEFT, "TOPLEFT", 0, 0);
+		self.LEFT:SetWidth(16);
 
-	self.RIGHT = self:CreateTexture(texname.."RIGHT", "BORDER");
-	self.RIGHT:SetTexture(374153);
-	self.RIGHT:SetTexCoord(0.171875,0,0.171875,1.5703125,0.328125,0,0.328125,1.5703125);
-	self.RIGHT:SetPoint("TOPRIGHT", self.TOPRIGHT, "BOTTOMRIGHT",0.8, 0);
-	self.RIGHT:SetPoint("BOTTOMRIGHT", self.BOTTOMRIGHT, "TOPRIGHT", 0, 0);
-	self.RIGHT:SetWidth(10);
+		self.RIGHT = self:CreateTexture(texname.."RIGHT", "BORDER");
+		self.RIGHT:SetTexture(374153);
+		self.RIGHT:SetTexCoord(0.171875,0,0.171875,1.5703125,0.328125,0,0.328125,1.5703125);
+		self.RIGHT:SetPoint("TOPRIGHT", self.TOPRIGHT, "BOTTOMRIGHT",0.8, 0);
+		self.RIGHT:SetPoint("BOTTOMRIGHT", self.BOTTOMRIGHT, "TOPRIGHT", 0, 0);
+		self.RIGHT:SetWidth(10);
 
-	self.BOTTOM = self:CreateTexture(texname.."BOTTOM", "BORDER");
-	self.BOTTOM:SetTexture(374157);
-	self.BOTTOM:SetTexCoord(0,0.203125,0,0.2734375,1.425781607627869,0.203125,1.425781607627869,0.2734375);
-	self.BOTTOM:SetPoint("BOTTOMLEFT", self.BOTTOMLEFT, "BOTTOMRIGHT",0, -0);
-	self.BOTTOM:SetPoint("BOTTOMRIGHT", self.BOTTOMRIGHT, "BOTTOMLEFT", 0, 0);
-	self.BOTTOM:SetHeight(9);
+		self.BOTTOM = self:CreateTexture(texname.."BOTTOM", "BORDER");
+		self.BOTTOM:SetTexture(374157);
+		self.BOTTOM:SetTexCoord(0,0.203125,0,0.2734375,1.425781607627869,0.203125,1.425781607627869,0.2734375);
+		self.BOTTOM:SetPoint("BOTTOMLEFT", self.BOTTOMLEFT, "BOTTOMRIGHT",0, -0);
+		self.BOTTOM:SetPoint("BOTTOMRIGHT", self.BOTTOMRIGHT, "BOTTOMLEFT", 0, 0);
+		self.BOTTOM:SetHeight(9);
+	end
 end
 --背包银行界面
 function Create.BagBankBG(self,texname)
-	Create.ADD_BlizzardBG(self,texname)
-	self.portrait = self:CreateTexture(nil,"BACKGROUND");
-	self.portrait:SetSize(60,60);
-	self.portrait:SetPoint("TOPLEFT",self,"TOPLEFT",8.5,-4);
-	local Mkuandu,Mgaodu = 8,22
-	self.moneyframe = CreateFrame("Frame", nil, self);
-	self.moneyframe:SetSize(160,Mgaodu);
-	self.moneyframe:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -8, 7)
-	self.moneyframe_R = self:CreateTexture(texname.."moneyframe_R", "BORDER");
-	self.moneyframe_R:SetTexture("interface/common/moneyframe.blp");
-	self.moneyframe_R:SetTexCoord(0,0.05,0,0.31);
-	self.moneyframe_R:SetSize(Mkuandu,Mgaodu);
-	self.moneyframe_R:SetPoint("RIGHT", self.moneyframe, "RIGHT", 0, 0)
-	self.moneyframe_l = self:CreateTexture(texname.."moneyframe_L", "BORDER");
-	self.moneyframe_l:SetTexture("interface/common/moneyframe.blp");
-	self.moneyframe_l:SetTexCoord(0.95,1,0,0.31);
-	self.moneyframe_l:SetSize(Mkuandu,Mgaodu);
-	self.moneyframe_l:SetPoint("LEFT", self.moneyframe, "LEFT", 0, 0)
-	self.moneyframe_C = self:CreateTexture(texname.."moneyframe_C", "BORDER");
-	self.moneyframe_C:SetTexture("interface/common/moneyframe.blp");
-	self.moneyframe_C:SetTexCoord(0.1,0.9,0.314,0.621);
-	self.moneyframe_C:SetPoint("TOPLEFT", self.moneyframe_l, "TOPRIGHT", 0, 0)
-	self.moneyframe_C:SetPoint("BOTTOMRIGHT", self.moneyframe_R, "BOTTOMLEFT", 0, 0)
+	if ElvUI then
+	else
+		Create.ADD_BlizzardBG(self,texname)		
+		self.portrait = self:CreateTexture(nil,"BACKGROUND");
+		self.portrait:SetSize(60,60);
+		self.portrait:SetPoint("TOPLEFT",self,"TOPLEFT",8.5,-4);
+		local Mkuandu,Mgaodu = 8,22
+		self.moneyframe = CreateFrame("Frame", nil, self);
+		self.moneyframe:SetSize(160,Mgaodu);
+		self.moneyframe:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -8, 7)
+		self.moneyframe_R = self:CreateTexture(texname.."moneyframe_R", "BORDER");
+		self.moneyframe_R:SetTexture("interface/common/moneyframe.blp");
+		self.moneyframe_R:SetTexCoord(0,0.05,0,0.31);
+		self.moneyframe_R:SetSize(Mkuandu,Mgaodu);
+		self.moneyframe_R:SetPoint("RIGHT", self.moneyframe, "RIGHT", 0, 0)
+		self.moneyframe_l = self:CreateTexture(texname.."moneyframe_L", "BORDER");
+		self.moneyframe_l:SetTexture("interface/common/moneyframe.blp");
+		self.moneyframe_l:SetTexCoord(0.95,1,0,0.31);
+		self.moneyframe_l:SetSize(Mkuandu,Mgaodu);
+		self.moneyframe_l:SetPoint("LEFT", self.moneyframe, "LEFT", 0, 0)
+		self.moneyframe_C = self:CreateTexture(texname.."moneyframe_C", "BORDER");
+		self.moneyframe_C:SetTexture("interface/common/moneyframe.blp");
+		self.moneyframe_C:SetTexCoord(0.1,0.9,0.314,0.621);
+		self.moneyframe_C:SetPoint("TOPLEFT", self.moneyframe_l, "TOPRIGHT", 0, 0)
+		self.moneyframe_C:SetPoint("BOTTOMRIGHT", self.moneyframe_R, "BOTTOMLEFT", 0, 0)
+	end
 end
 function Create.BagBankFrame(fuji,Point,UIName,data,FrameLevel)
 	local WH={data["meihang"]*(data["ButW"])+8,200}
@@ -134,6 +153,7 @@ function Create.BagBankFrame(fuji,Point,UIName,data,FrameLevel)
 	if tocversion<100000 then
 		frameX.wupin:SetBackdrop( { bgFile = "interface/framegeneral/ui-background-marble.blp" });
 		if ElvUI or NDui then
+			frameX.wupin:SetBackdropColor(0, 0, 0, 0.3);
 			frameX.wupin:SetPoint("TOPLEFT", frameX, "TOPLEFT",6, -56);
 			frameX.wupin:SetPoint("BOTTOMRIGHT", frameX, "BOTTOMRIGHT", -6, 29);
 		else

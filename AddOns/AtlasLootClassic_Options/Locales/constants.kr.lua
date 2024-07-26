@@ -2,7 +2,7 @@
 
 if not AL then return end
 
--- These localization strings are translated on Curseforge: https://www.curseforge.com/wow/addons/atlaslootclassic-cata/localization
+-- These localization strings are translated on Curseforge: https://www.curseforge.com/wow/addons/atlaslootclassic/localization
 -- Options
 AL["Add line break before source."] = "제작자 표시 전 위치에 추가"
 AL["Add new list"] = "새 목록 등록"

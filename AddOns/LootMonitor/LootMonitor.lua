@@ -65,7 +65,7 @@ local Output = Addon.Output
 local MinimapIcon = Addon.MinimapIcon
 Frame:Hide() -- 隐藏Frame，避免Update开销
 -- 版本号（不再读取toc文件，/reload后版本号立刻生效）
-Addon.Version = "3.30"
+Addon.Version = "3.34"
 local Version = tonumber(Addon.Version)
 -- Addon MSG Prefix
 local PrefixLM = "LMPX"
@@ -560,10 +560,40 @@ function Addon:CleanLootLogs()
     end
     self:PrintLootLog()
 end
+--将有关变量存入SavedVariables表
+function Addon:SaveVariables()
+   	-- 清理不合法LootLog
+       if #LootLog > 0 then
+        for i = #LootLog, 1, -1 do
+            if not LootLog[i].Date or not LootLog[i].InstanceName or not LootLog[i].Player then
+                t_remove(LootLog, i)
+            end
+            if #LootLog[i].LootTable == 0 then
+                t_remove(LootLog, i)
+            end
+            for j = #LootLog[i].LootTable, 1, -1 do
+                if #LootLog[i].LootTable[j].Loots == 0 then
+                    t_remove(LootLog[i].LootTable, j)
+                end
+            end
+        end
+    end
+   	-- 存儲窗口位置
+    Config.SetWindowPos[1], _, Config.SetWindowPos[3], Config.SetWindowPos[4], Config.SetWindowPos[5] = SetWindow.background:GetPoint()
+    Config.OutputPos[1], _, Config.OutputPos[3], Config.OutputPos[4], Config.OutputPos[5] = Output.background:GetPoint()
+    LootMonitorDB = {
+        ["Config"] = {},
+        ["LootLog"] = {},
+    }
+    -- 用当前Config覆盖LootMonitorDB
+    Addon:UpdateTable(LootMonitorDB.Config, Config)
+    Addon:UpdateTable(LootMonitorDB.LootLog, LootLog)
+end
 
 -- 注册事件
 Frame:RegisterEvent("ADDON_LOADED")
 Frame:RegisterEvent("PLAYER_ENTERING_WORLD")
+Frame:RegisterEvent("PLAYER_LEAVING_WORLD")
 Frame:RegisterEvent("PLAYER_LOGOUT")
 Frame:RegisterEvent("LOOT_OPENED")
 Frame:RegisterEvent("CHAT_MSG_ADDON")
@@ -707,7 +737,10 @@ function Frame:ADDON_LOADED(Name)
 	end
 end
 -- 进入世界
-function Frame:PLAYER_ENTERING_WORLD()
+function Frame:PLAYER_ENTERING_WORLD(isLogin, isReload)
+    if not isLogin and not isReload then
+        return
+    end
 	if Addon.LDB and Addon.LDBIcon and ((IsAddOnLoaded("TitanClassic")) or (IsAddOnLoaded("Titan"))) then
 		MinimapIcon:InitBroker()
 	else
@@ -724,38 +757,16 @@ function Frame:PLAYER_ENTERING_WORLD()
 	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
 end
 -- 退出处理（包括/reload）
+function Frame:PLAYER_LEAVING_WORLD()
+    Addon:SaveVariables()
+end
 function Frame:PLAYER_LOGOUT()
-   	-- 清理不合法LootLog
-    if #LootLog > 0 then
-        for i = #LootLog, 1, -1 do
-            if not LootLog[i].Date or not LootLog[i].InstanceName or not LootLog[i].Player then
-                t_remove(LootLog, i)
-            end
-            if #LootLog[i].LootTable == 0 then
-                t_remove(LootLog, i)
-            end
-            for j = #LootLog[i].LootTable, 1, -1 do
-                if #LootLog[i].LootTable[j].Loots == 0 then
-                    t_remove(LootLog[i].LootTable, j)
-                end
-            end
-        end
-    end
-   	-- 存儲窗口位置
-    Config.SetWindowPos[1], _, Config.SetWindowPos[3], Config.SetWindowPos[4], Config.SetWindowPos[5] = SetWindow.background:GetPoint()
-    Config.OutputPos[1], _, Config.OutputPos[3], Config.OutputPos[4], Config.OutputPos[5] = Output.background:GetPoint()
-    LootMonitorDB = {
-        ["Config"] = {},
-        ["LootLog"] = {},
-    }
-    -- 用当前Config覆盖LootMonitorDB
-    Addon:UpdateTable(LootMonitorDB.Config, Config)
-    Addon:UpdateTable(LootMonitorDB.LootLog, LootLog)
+    Addon:SaveVariables()
     -- 释放变量
-    CorpseInfo = nil
-    GroupMemberStates = nil
-    GroupFlagsStates = nil
-    PlayerInInstance = nil
+    CorpseInfo = {}
+    GroupMemberStates = {}
+    GroupFlagsStates = {}
+    PlayerInInstance = {}
 end
 -- ADDON频道信息处理
 function Frame:CHAT_MSG_ADDON(...)
@@ -772,7 +783,7 @@ function Frame:CHAT_MSG_ADDON(...)
         -- 切分信息，以空格为界
         local CMD, REST = arg[2]:match("(%S+)%s+(.-)$")
         -- 确定输出频道
-        local OutputChannel = "party"
+        local OutputChannel = "instance_chat"
         if IsInRaid() then
             OutputChannel = "raid"
             if UnitIsGroupLeader("player") or UnitIsGroupAssistant("player") then
@@ -1187,7 +1198,7 @@ function Frame:LOOT_OPENED(...)
         end
 
         -- 设置发送频道
-        local channel = "party"
+        local channel = "instance_chat"
         if IsInRaid() then
             channel = "raid"
         end

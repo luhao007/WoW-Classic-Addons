@@ -686,11 +686,12 @@ QuickButUI.ButList[6]=function()
 		General.START:SetBlendMode("ADD");
 		General.START:SetAllPoints(General)
 		General.START:Hide();
-		local lushiitemID,lushiSpellID,lushijisuqi=nil,nil,0
+
+		local GetItemCount=GetItemCount or C_Item and C_Item.GetItemCount
 		local GetItemCooldown=C_Container.GetItemCooldown
 		local function gengxinlushiCD()
-			if lushiitemID then
-				local start, duration= GetItemCooldown(lushiitemID)
+			if General.lushiitemID then
+				local start, duration= GetItemCooldown(General.lushiitemID)
 				if start and duration then
 		 			General.Cooldown.N:SetCooldown(start, duration);
 		 		end
@@ -705,24 +706,28 @@ QuickButUI.ButList[6]=function()
 				end
 			end
 		end
+		local lushiList = {184871}
 		local function PIGPlayerHasHearthstone()
+			for i=1,#lushiList do
+				local Ccount = GetItemCount(lushiList[i])
+				if Ccount>0 then
+					return lushiList[i]
+				end
+			end
 			return 6948
 		end
-		local PlayerHasHearthstone=PlayerHasHearthstone or C_Container and C_Container.PlayerHasHearthstone or PIGPlayerHasHearthstone
 		local function Skill_Button_Genxin()
-			if InCombatLockdown() then C_Timer.After(10, Skill_Button_Genxin) return end
-			if lushijisuqi>10 then return end
-			lushiitemID = PlayerHasHearthstone()
-			if not lushiitemID  then
-				C_Timer.After(1, Skill_Button_Genxin);
-				lushijisuqi=lushijisuqi+1
-				return
-			end
+			if InCombatLockdown() then return end
+			local lushiitemID = PIGPlayerHasHearthstone()
 			local lushiName, SpellID = GetItemSpell(lushiitemID)
-			lushiSpellID=SpellID
-			General:SetAttribute("type1", "item");
-			General:SetAttribute("item", lushiName);
-			gengxinlushiCD()
+			if lushiName and SpellID then
+				General.lushiitemID=lushiitemID
+				General.lushiSpellID=SpellID
+				General:SetAttribute("type1", "item");
+				General:SetAttribute("item", lushiName);
+				General:SetNormalTexture(GetItemIcon(lushiitemID))
+				gengxinlushiCD()
+			end
 			local Skill_List = addonTable.FramePlusfun.Skill_List
 			if tocversion<40000 then
 				local _, _, tabOffset, numEntries = GetSpellTabInfo(1)
@@ -740,24 +745,24 @@ QuickButUI.ButList[6]=function()
 				end
 			end
 		end
-
+		General.lushijisuq=0
+		Skill_Button_Genxin()
 		General:RegisterUnitEvent("UNIT_SPELLCAST_START","player");
 		General:RegisterUnitEvent("UNIT_SPELLCAST_STOP","player");
 		General:RegisterEvent("SPELL_UPDATE_COOLDOWN")
 		General:SetScript("OnEvent", function(self,event,arg1,_,arg3)
-			if arg3==lushiSpellID then 
+			if arg3==self.lushiSpellID then 
 				if event=="UNIT_SPELLCAST_START" then
-			 		General.START:Show();
+			 		self.START:Show();
 			 	end
 			 	if event=="UNIT_SPELLCAST_STOP" then
-			 		General.START:Hide();
+			 		self.START:Hide();
 				end	
 		 	end
 			if event=="SPELL_UPDATE_COOLDOWN" then
-				C_Timer.After(0.1, gengxinlushiCD);
+				C_Timer.After(0.01, gengxinlushiCD);
 			end
-		end)
-		Skill_Button_Genxin()
+		end)	
 	end
 end
 --职业技能----

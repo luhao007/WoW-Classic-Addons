@@ -1,20 +1,22 @@
-# [v4.0.1-beta4](https://github.com/snowflame0/AtlasLootClassic_Cata/tree/v4.0.1-beta4) (2024-06-21)
+# AtlasLootClassic
 
-[Full Changelog](https://github.com/snowflame0/AtlasLootClassic_Cata/compare/v4.0.1-beta3...v4.0.1-beta4)
+This mod is distributed under Version 2 of the GPL.  A copy of the GPL is included in this zip file with links to non-english translations.
 
-## Highlights
+[Changelog history](https://github.com/Hoizame/AtlasLootClassic/blob/master/AtlasLootClassic/Documentation/Release_Notes.md)
 
- Fix spine of deathwing achievement link 
+## v3.2.0 (Oct. 22, 2023)
 
-## Commits
-
-Marcos Lopez (1):
-
-- Fix: Do not add star icons from favourite lists that are not active
-
-Snowflame (3):
-
-- Fix spine of deathwing achievement link
-- Add satchel where weapon comes from
-- Add midsummer festival new items, fix some profession item sources
-
+- update .toc version
+- fix lua error with companions
+- Hallow's End update PR #416
+- Fix epic blue gem id, add Ashen Verdict engineering PR #413
+- Add Defiler Scourgestone Vendor
+- Update Dalaran Vendor
+- #397, #388 Update to use new Mount API
+- #396 Added "Maiden of Grief" Missing items in Titan Rune Beta - Halls of Stone
+- #395 Fixed "King Dred" Wrong loot in Titan Rune Beta - Drak'Tharon Keep
+- #394 Fixed "The Prophet Tharon'ja" Wrong loot in Titan Rune Beta - Drak'Tharon Keep
+- #393 Added Missing Leatherworking Fur Linings
+- #391 Added Enchanting Cloak Resistances (Arcane, Fire, Frost, Nature, Shadow), Removed Duplicates
+- #387 Fixed Incorrect Set Links for Death Knight Season 7 PvP Set
+- #381 Added "Six Shared Loot Bosses" Missing items in Titan Rune Beta - Violet Hold

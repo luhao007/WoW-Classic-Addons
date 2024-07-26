@@ -6,54 +6,52 @@ local _, _, _, tocversion = GetBuildInfo()
 ----
 local Fun=addonTable.Fun
 --------------------
+-- local PIGhuoquF
+-- local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture, itemSellPrice
+--  -- 如果元素多于 0，则此函数为 1。  它不返回元素的实际数量。  这是为了节省处理时间。
+-- local function count(tab)
+--     for _ in pairs(tab) do
+--         return 1
+--     end
+--     return 0
+-- end
+-- local function process(self, item, ...)
+--     itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture, itemSellPrice = ...
+--     if itemName then   
+--         self.itemQueue[item] = nil-- 从队列中删除项目
+--     end
+-- end
+-- ----
+-- local function update(self, e)
+--     self.updateTimer = self.updateTimer - e
+--     if self.updateTimer <= 0 then
+--         for _, item in pairs(self.itemQueue) do
+--             process(self, item, GetItemInfo(item))
+--         end
+--         self.updateTimer = 1
+--         -- 如果队列中没有项目，则隐藏 OnUpdate 框架。
+--         if count(self.itemQueue) == 0 then
+--             self:Hide()
+--         end
+--     end
+-- end
 
-local PIGhuoquF
-local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture, itemSellPrice
- -- 如果元素多于 0，则此函数为 1。  它不返回元素的实际数量。  这是为了节省处理时间。
-local function count(tab)
-    for _ in pairs(tab) do
-        return 1
-    end
-    return 0
-end
-local function process(self, item, ...)
-    itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture, itemSellPrice = ...
-    if itemName then   
-        self.itemQueue[item] = nil-- 从队列中删除项目
-    end
-end
-----
-local function update(self, e)
-    self.updateTimer = self.updateTimer - e
-    if self.updateTimer <= 0 then
-        for _, item in pairs(self.itemQueue) do
-            process(self, item, GetItemInfo(item))
-        end
-        self.updateTimer = 1
-        
-        -- 如果队列中没有项目，则隐藏 OnUpdate 框架。
-        if count(self.itemQueue) == 0 then
-            self:Hide()
-        end
-    end
-end
-
- -- 将请求的项目添加到队列中。
- -- 如果该项目在本地缓存中，它将立即可用。
- -- 如果该项目不在本地缓存中，请以一秒为增量等待并重试。
- -- 调用它来代替 GetItemInfo(item)。
- -- 此函数不返回任何数据。
-function PIGGetItemInfo(item)
-    if not PIGhuoquF then
-        PIGhuoquF = CreateFrame("Frame")
-        PIGhuoquF:SetScript("OnUpdate", update)
-        PIGhuoquF.itemQueue = {}
-    end
-    -- 将计时器设置为 0，将项目添加到队列中，并显示 OnUpdate 帧
-    PIGhuoquF.updateTimer = 0
-    PIGhuoquF.itemQueue[item] = item
-    PIGhuoquF:Show()
-end
+--  -- 将请求的项目添加到队列中。
+--  -- 如果该项目在本地缓存中，它将立即可用。
+--  -- 如果该项目不在本地缓存中，请以一秒为增量等待并重试。
+--  -- 调用它来代替 GetItemInfo(item)。
+--  -- 此函数不返回任何数据。
+-- function PIGGetItemInfo(item)
+--     if not PIGhuoquF then
+--         PIGhuoquF = CreateFrame("Frame")
+--         PIGhuoquF:SetScript("OnUpdate", update)
+--         PIGhuoquF.itemQueue = {}
+--     end
+--     -- 将计时器设置为 0，将项目添加到队列中，并显示 OnUpdate 帧
+--     PIGhuoquF.updateTimer = 0
+--     PIGhuoquF.itemQueue[item] = item
+--     PIGhuoquF:Show()
+-- end
 -----------------
 --local kaishijishuxulie = {{1,6},{7,13},{14,19}}
 local function GetItemLinkJJ(ItemLink)
@@ -64,6 +62,8 @@ local function GetItemLinkJJ(ItemLink)
             local ItemLink2 = ItemLink1:gsub("item:","");
         	msg = Fun.yasuo_NumberString(ItemLink2)
         end
+    else
+        msg="^" 
     end
     return msg;
 end
@@ -71,7 +71,6 @@ Fun.GetItemLinkJJ=GetItemLinkJJ
 local function GetEquipmList(kaishi,jieshu)
     local msg = "";
     for slot = kaishi,jieshu do
-        local slotD="^" 
         local item = GetInventoryItemLink("player", slot);
         local slotD = GetItemLinkJJ(item)
         if slot==jieshu then
@@ -97,7 +96,7 @@ function Fun.HY_EquipmTXT(msg)
         local list = {strsplit("+", msg)}
         for i=1,#list do
             local xuhao,link = strsplit("-", list[i])
-            if link=="^" then
+            if link=="^" or link=="" then
                 Data[tonumber(xuhao)]=nil
             else
                 Data[tonumber(xuhao)]=HY_ItemLinkJJ(link)

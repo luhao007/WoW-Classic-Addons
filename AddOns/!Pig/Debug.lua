@@ -59,170 +59,182 @@ end
 fuFrame.OPENJK = PIGButton(fuFrame,{"TOPLEFT",fuFrame,"TOPLEFT",20,-200},{150,24},L["DEBUG_BUTNAME"])
 fuFrame.OPENJK:SetScript("OnClick", function (self)
 	Pig_OptionsUI:Hide()
-	AddOnCPU_UI:Show()
+	PIGAddOnMemoryCPU_UI:Show()
 end);
-SetCVar("scriptProfile", 0)--默认关闭cpu監控
-local AddOnCPU=PIGFrame(UIParent,{"CENTER",UIParent,"CENTER",0,0},{360,494},"AddOnCPU_UI",true)
-AddOnCPU:PIGSetBackdrop()
-AddOnCPU:PIGSetMovable()
-AddOnCPU:PIGClose()
-AddOnCPU.biaoti=PIGFontString(AddOnCPU,{"TOP", AddOnCPU, "TOP", 0, -4},L["DEBUG_BUTNAME"])
-PIGLine(AddOnCPU,"TOP",-20)
---
-AddOnCPU.sort=21--排序
-local hang_Height,hang_NUM  = 22, 18;
-local function Get_AddOnData()
-	AddOnCPU.AddOnData={}
-	AddOnCPU.NumAddOns=0
-	AddOnCPU.NumMemory=0
-	AddOnCPU.NumCPU="N/A"
-	UpdateAddOnMemoryUsage()
-	if GetCVar("scriptProfile")=="1" then
-		UpdateAddOnCPUUsage()
-		AddOnCPU.NumCPU=0
-	end
-	local addhejinum = GetNumAddOns()
-	AddOnCPU.NumAddOns=addhejinum
-	for id=1,addhejinum do	
-		local name=GetAddOnInfo(id)
-		local Memory=GetAddOnMemoryUsage(id)
-		local adddata = {name,floor(Memory),"N/A",false}
-		AddOnCPU.NumMemory=AddOnCPU.NumMemory+Memory
-		if GetCVar("scriptProfile")=="1" then
-			local CPUUsage=GetAddOnCPUUsage(id)
-			adddata[3]=floor(CPUUsage)
-			AddOnCPU.NumCPU=AddOnCPU.NumCPU+CPUUsage
-		end
-		table.insert(AddOnCPU.AddOnData,adddata)
-		if IsAddOnLoaded(id) then
-			adddata[4]=true
-		end
-	end
-	AddOnCPU.NumMemory=floor(AddOnCPU.NumMemory)
-	if GetCVar("scriptProfile")=="1" then
-		AddOnCPU.NumCPU=floor(AddOnCPU.NumCPU)
-	end
-end
-local function AddOn_Update(self)
-	for id=1,hang_NUM do
-		_G["AddOnCPU_"..id]:Hide()
-	end
-	local shujuheji=AddOnCPU.AddOnData
-	if AddOnCPU.sort==21 then
-		table.sort(shujuheji,function(a,b)
-			return a[2]>b[2]
-		end)
-	elseif AddOnCPU.sort==31 then
-		table.sort(shujuheji,function(a,b)
-			return a[3]>b[3]
-		end)
-	end
-	FauxScrollFrame_Update(self, #shujuheji, hang_NUM, hang_Height);
-	local offset = FauxScrollFrame_GetOffset(self);
-	for id=1,hang_NUM do
-		local dangqianID = id+offset
-		if shujuheji[dangqianID] then
-			local tetf = _G["AddOnCPU_"..id]
-			tetf:Show()
 
-			tetf.tet1:SetText(shujuheji[dangqianID][1]);
-			if shujuheji[dangqianID][4] then
-				tetf.tet1:SetTextColor(0, 1, 0, 1)
+local PIGAddOnMemoryCPU=PIGFrame(UIParent,{"CENTER",UIParent,"CENTER",0,0},{360,494},"PIGAddOnMemoryCPU_UI")
+PIGAddOnMemoryCPU:PIGSetBackdrop()
+PIGAddOnMemoryCPU:PIGSetMovable()
+PIGAddOnMemoryCPU:PIGClose()
+PIGAddOnMemoryCPU:Hide()
+PIGAddOnMemoryCPU.biaoti=PIGFontString(PIGAddOnMemoryCPU,{"TOP", PIGAddOnMemoryCPU, "TOP", 0, -2},L["DEBUG_BUTNAME"])
+PIGAddOnMemoryCPU.NR=PIGFrame(PIGAddOnMemoryCPU)
+PIGAddOnMemoryCPU.NR:SetPoint("TOPLEFT", PIGAddOnMemoryCPU, "TOPLEFT", 0, -20)
+PIGAddOnMemoryCPU.NR:SetPoint("BOTTOMRIGHT", PIGAddOnMemoryCPU, "BOTTOMRIGHT", 0, 0)
+PIGAddOnMemoryCPU.NR:PIGSetBackdrop(0)
+PIGAddOnMemoryCPU.NR.autoRefresh=PIGCheckbutton(PIGAddOnMemoryCPU.NR,{"TOPLEFT",PIGAddOnMemoryCPU.NR,"TOPLEFT",6,-4},{SELF_CAST_AUTO..REFRESH,SELF_CAST_AUTO..REFRESH})
+PIGAddOnMemoryCPU.NR.autoRefresh:SetScale(0.88)
+PIGAddOnMemoryCPU.jishiqi=0
+PIGAddOnMemoryCPU.NR.autoRefresh:SetScript("OnClick", function (self)
+	if self:GetChecked() then
+		PIGAddOnMemoryCPU:SetScript("OnUpdate", function (self,sss)
+			if self.jishiqi>1 then
+				self.jishiqi=0
+				self.gengxinhang(self.NR.List.Scroll)
 			else
-				tetf.tet1:SetTextColor(0.5, 0.5, 0.5, 1)
+				self.jishiqi = self.jishiqi + sss;
 			end
-			tetf.tet2:SetText(shujuheji[dangqianID][2]);
-			tetf.tet3:SetText(shujuheji[dangqianID][3]);
-		end
-	end
-	AddOnCPU.NR.buttet1:SetText(AddOnCPU.NumAddOns..L["DEBUG_ADDNUM"]);
-	AddOnCPU.NR.buttet2:SetText(AddOnCPU.NumMemory.."k");
-	AddOnCPU.NR.buttet3:SetText(AddOnCPU.NumCPU.."ms");
-end
-AddOnCPU.NR=PIGFrame(AddOnCPU)
-AddOnCPU.NR:SetPoint("TOPLEFT", AddOnCPU, "TOPLEFT", 4, -70)
-AddOnCPU.NR:SetPoint("BOTTOMRIGHT", AddOnCPU, "BOTTOMRIGHT", -4, 24)
-AddOnCPU.NR:PIGSetBackdrop()
-local nrww = AddOnCPU.NR:GetWidth()
-AddOnCPU.NR.tet1=PIGFontStringBG(AddOnCPU.NR,{"BOTTOMLEFT", AddOnCPU.NR, "TOPLEFT", 0,-1},L["DEBUG_ADD"],{nrww*0.5,22})
-AddOnCPU.NR.tet2 = PIGButton(AddOnCPU.NR,{"LEFT", AddOnCPU.NR.tet1, "RIGHT", 0,0},{nrww*0.25,22},L["DEBUG_MEMORY"].."(k)")
-AddOnCPU.NR.tet2:SetScript("OnClick", function ()
-	AddOnCPU.sort=21
-	AddOn_Update(AddOnCPU.NR.Scroll)
-end);
-AddOnCPU.NR.tet3 = PIGButton(AddOnCPU.NR,{"LEFT", AddOnCPU.NR.tet2, "RIGHT", 0,0},{nrww*0.25,22},"CPU(ms)")
-AddOnCPU.NR.tet3:SetScript("OnClick", function ()
-	if GetCVar("scriptProfile")=="1" then
-		AddOnCPU.sort=31
-		AddOn_Update(AddOnCPU.NR.Scroll)
-	end
-end);
-AddOnCPU.NR.buttet1=PIGFontStringBG(AddOnCPU.NR,{"TOPLEFT", AddOnCPU.NR, "BOTTOMLEFT", 0,1},"",{nrww*0.5,22})
-AddOnCPU.NR.buttet2=PIGFontStringBG(AddOnCPU.NR,{"LEFT", AddOnCPU.NR.buttet1, "RIGHT", 0,0},"",{nrww*0.25,22})
-AddOnCPU.NR.buttet3=PIGFontStringBG(AddOnCPU.NR,{"LEFT", AddOnCPU.NR.buttet2, "RIGHT", 0,0},"",{nrww*0.25,22})
-AddOnCPU.NR.Scroll = CreateFrame("ScrollFrame",nil,AddOnCPU.NR, "FauxScrollFrameTemplate");  
-AddOnCPU.NR.Scroll:SetPoint("TOPLEFT",AddOnCPU.NR,"TOPLEFT",0,-1);
-AddOnCPU.NR.Scroll:SetPoint("BOTTOMRIGHT",AddOnCPU.NR,"BOTTOMRIGHT",-24,1);
-AddOnCPU.NR.Scroll:SetScript("OnVerticalScroll", function(self, offset)
-    FauxScrollFrame_OnVerticalScroll(self, offset, hang_Height, AddOn_Update)
-end)
-
-for id = 1, hang_NUM do
-	local hang = CreateFrame("Frame", "AddOnCPU_"..id, AddOnCPU.NR.Scroll:GetParent());
-	hang:SetSize(AddOnCPU.NR:GetWidth()-24, hang_Height);
-	if id==1 then
-		hang:SetPoint("TOP",AddOnCPU.NR.Scroll,"TOP",0,0);
+		end);
 	else
-		hang:SetPoint("TOP",_G["AddOnCPU_"..(id-1)],"BOTTOM",0,0);
+		PIGAddOnMemoryCPU:SetScript("OnUpdate", nil);
 	end
-	hang.tet1 = PIGFontString(hang,{"LEFT", hang, "LEFT", 2,0})
-	hang.tet1:SetSize(nrww*0.5-2,hang_Height)
-	hang.tet1:SetJustifyH("LEFT")
-	hang.tet2 = PIGFontString(hang,{"LEFT", hang.tet1, "RIGHT", 2,0})
-	hang.tet2:SetSize(nrww*0.25-2,hang_Height)
-	hang.tet2:SetJustifyH("LEFT")
-	hang.tet3 = PIGFontString(hang,{"LEFT", hang.tet2, "RIGHT", 2,0})
-	hang.tet3:SetSize(nrww*0.25-2,hang_Height)
-	hang.tet3:SetJustifyH("LEFT")
-end
-AddOnCPU.NR:SetScript("OnShow", function (self)
-	Get_AddOnData()
-	AddOn_Update(AddOnCPU.NR.Scroll)
 end);
-AddOnCPU.CPU_OPEN=PIGCheckbutton(AddOnCPU,{"TOPLEFT",AddOnCPU,"TOPLEFT",6,-21},{L["DEBUG_CPUUSAGE"],L["DEBUG_CPUUSAGETIPS"]})
-AddOnCPU.CPU_OPEN:SetScript("OnClick", function (self)
+PIGAddOnMemoryCPU.NR.CPU_OPEN=PIGCheckbutton(PIGAddOnMemoryCPU.NR,{"LEFT",PIGAddOnMemoryCPU.NR.autoRefresh.Text,"RIGHT",10,0},{L["DEBUG_CPUUSAGE"],L["DEBUG_CPUUSAGETIPS"]})
+PIGAddOnMemoryCPU.NR.CPU_OPEN:SetScale(0.88)
+PIGAddOnMemoryCPU.NR.CPU_OPEN:SetScript("OnClick", function (self)
 	if self:GetChecked() then
 		SetCVar("scriptProfile", "1")
 	else
 		SetCVar("scriptProfile", "0")
 	end
-	Get_AddOnData()
-	AddOn_Update(AddOnCPU.NR.Scroll)
+	ReloadUI();
 end);
-AddOnCPU.shuaxin = PIGButton(AddOnCPU,{"TOPLEFT",AddOnCPU,"TOPLEFT",130,-25},{60,20},L["DEBUG_REFRESH"])
-AddOnCPU.shuaxin:SetScript("OnClick", function (self)
-	Get_AddOnData()
-	AddOn_Update(AddOnCPU.NR.Scroll)
-end);
-AddOnCPU.CZ = PIGButton(AddOnCPU,{"TOPLEFT",AddOnCPU,"TOPLEFT",210,-25},{60,20},L["DEBUG_RESET"])
-AddOnCPU.CZ:SetScript("OnClick", function (self)
+
+PIGAddOnMemoryCPU.NR.CZ = PIGButton(PIGAddOnMemoryCPU.NR,{"LEFT",PIGAddOnMemoryCPU.NR.CPU_OPEN.Text,"RIGHT",20,0},{50,18},L["DEBUG_RESET"])
+PIGAddOnMemoryCPU.NR.CZ:SetScript("OnClick", function (self)
 	ResetCPUUsage()
 	-- debugprofilestart()
 	-- debugprofilestop()
-	Get_AddOnData()
-	AddOn_Update(AddOnCPU.NR.Scroll)
+	PIGAddOnMemoryCPU.gengxinhang(PIGAddOnMemoryCPU.NR.List.Scroll)
 end);
-AddOnCPU.COLLECT = PIGButton(AddOnCPU,{"TOPLEFT",AddOnCPU,"TOPLEFT",290,-25},{60,20},L["DEBUG_COLLECT"])
-AddOnCPU.COLLECT:SetScript("OnClick", function (self)
-	collectgarbage()--回收内存
-	Get_AddOnData()
-	AddOn_Update(AddOnCPU.NR.Scroll)
+PIGAddOnMemoryCPU.NR.COLLECT = PIGButton(PIGAddOnMemoryCPU.NR,{"LEFT",PIGAddOnMemoryCPU.NR.CZ,"RIGHT",20,0},{50,18},L["DEBUG_COLLECT"])
+PIGAddOnMemoryCPU.NR.COLLECT:Disable()
+PIGAddOnMemoryCPU.NR.COLLECT:SetMotionScriptsWhileDisabled(true)
+PIGEnter(PIGAddOnMemoryCPU.NR.COLLECT,L["LIB_TIPS"],L["DEBUG_COLLECTTIPS"]);
+PIGAddOnMemoryCPU.NR.COLLECT:SetScript("OnClick", function (self)
+	-- collectgarbage()--回收内存
+	-- PIGAddOnMemoryCPU.gengxinhang(PIGAddOnMemoryCPU.NR.List.Scroll)
 end);
-AddOnCPU.COLLECT:Disable()
-AddOnCPU.COLLECT:SetMotionScriptsWhileDisabled(true)
-PIGEnter(AddOnCPU.COLLECT,L["LIB_TIPS"],L["DEBUG_COLLECTTIPS"]);
+PIGAddOnMemoryCPU.NR.List=PIGFrame(PIGAddOnMemoryCPU.NR)
+PIGAddOnMemoryCPU.NR.List:SetPoint("TOPLEFT", PIGAddOnMemoryCPU.NR, "TOPLEFT", 0, -22)
+PIGAddOnMemoryCPU.NR.List:SetPoint("BOTTOMRIGHT", PIGAddOnMemoryCPU.NR, "BOTTOMRIGHT", 0, 0)
+PIGAddOnMemoryCPU.NR.List:PIGSetBackdrop(0)
+-- 
+local nrww = PIGAddOnMemoryCPU.NR.List:GetWidth()
+PIGAddOnMemoryCPU.sort=21--排序
+local hang_Height,hang_NUM  = 22, 18;
+PIGAddOnMemoryCPU.NR.List.tet1=PIGFontStringBG(PIGAddOnMemoryCPU.NR.List,{"TOPLEFT", PIGAddOnMemoryCPU.NR.List, "TOPLEFT", 0,-1},L["DEBUG_ADD"],{nrww*0.5,22})
+PIGAddOnMemoryCPU.NR.List.tet2 = PIGButton(PIGAddOnMemoryCPU.NR.List,{"LEFT", PIGAddOnMemoryCPU.NR.List.tet1, "RIGHT", 0,0},{nrww*0.25,22},L["DEBUG_MEMORY"].."(k)")
+PIGAddOnMemoryCPU.NR.List.tet2:PIGSetBackdrop(0.4, 0.2)
+PIGAddOnMemoryCPU.NR.List.tet2:SetScript("OnClick", function ()
+	AddOnCPU.sort=21
+	PIGAddOnMemoryCPU.gengxinhang(PIGAddOnMemoryCPU.NR.List.Scroll)
+end);
+PIGAddOnMemoryCPU.NR.List.tet3 = PIGButton(PIGAddOnMemoryCPU.NR.List,{"LEFT", PIGAddOnMemoryCPU.NR.List.tet2, "RIGHT", 0,0},{nrww*0.25,22},"CPU(ms)")
+PIGAddOnMemoryCPU.NR.List.tet3:PIGSetBackdrop(0.4, 0.2)
+PIGAddOnMemoryCPU.NR.List.tet3:SetScript("OnClick", function ()
+	if GetCVar("scriptProfile")=="1" then
+		AddOnCPU.sort=31
+		PIGAddOnMemoryCPU.gengxinhang(PIGAddOnMemoryCPU.NR.List.Scroll)
+	end
+end);
+PIGAddOnMemoryCPU.NR.List.buttet1=PIGFontStringBG(PIGAddOnMemoryCPU.NR.List,{"BOTTOMLEFT", PIGAddOnMemoryCPU.NR.List, "BOTTOMLEFT", 0,1},"",{nrww*0.5,22})
+PIGAddOnMemoryCPU.NR.List.buttet2=PIGFontStringBG(PIGAddOnMemoryCPU.NR.List,{"LEFT", PIGAddOnMemoryCPU.NR.List.buttet1, "RIGHT", 0,0},"",{nrww*0.25,22})
+PIGAddOnMemoryCPU.NR.List.buttet3=PIGFontStringBG(PIGAddOnMemoryCPU.NR.List,{"LEFT", PIGAddOnMemoryCPU.NR.List.buttet2, "RIGHT", 0,0},"",{nrww*0.25,22})
 
---
+PIGAddOnMemoryCPU.NR.List.Scroll = CreateFrame("ScrollFrame",nil,PIGAddOnMemoryCPU.NR.List, "FauxScrollFrameTemplate");  
+PIGAddOnMemoryCPU.NR.List.Scroll:SetPoint("TOPLEFT",PIGAddOnMemoryCPU.NR.List,"TOPLEFT",0,-24);
+PIGAddOnMemoryCPU.NR.List.Scroll:SetPoint("BOTTOMRIGHT",PIGAddOnMemoryCPU.NR.List,"BOTTOMRIGHT",-20,23);
+PIGAddOnMemoryCPU.NR.List.Scroll.ScrollBar:SetScale(0.8)
+PIGAddOnMemoryCPU.NR.List.Scroll:SetScript("OnVerticalScroll", function(self, offset)
+    FauxScrollFrame_OnVerticalScroll(self, offset, hang_Height, PIGAddOnMemoryCPU.gengxinhang)
+end)
+for id = 1, hang_NUM do
+	local hang = CreateFrame("Frame", "PIGAddOnMemoryCPUbut_"..id, PIGAddOnMemoryCPU.NR.List);
+	hang:SetSize(nrww-20, hang_Height);
+	if id==1 then
+		hang:SetPoint("TOP",PIGAddOnMemoryCPU.NR.List.Scroll,"TOP",0,0);
+	else
+		hang:SetPoint("TOP",_G["PIGAddOnMemoryCPUbut_"..(id-1)],"BOTTOM",0,0);
+	end
+	hang.tet1 = PIGFontString(hang,{"LEFT", hang, "LEFT", 2,0},"","OUTLINE")
+	hang.tet1:SetSize(nrww*0.5-2,hang_Height)
+	hang.tet1:SetJustifyH("LEFT")
+	hang.tet1:SetTextColor(1, 1, 1, 0.9); 
+	hang.tet2 = PIGFontString(hang,{"LEFT", hang.tet1, "RIGHT", 2,0},"","OUTLINE")
+	hang.tet2:SetSize(nrww*0.25-6,hang_Height)
+	hang.tet2:SetJustifyH("RIGHT")
+	hang.tet2:SetTextColor(1, 1, 1, 0.9); 
+	hang.tet3 = PIGFontString(hang,{"LEFT", hang.tet2, "RIGHT", 2,0},"","OUTLINE")
+	hang.tet3:SetSize(nrww*0.25-20,hang_Height)
+	hang.tet3:SetJustifyH("RIGHT")
+	hang.tet3:SetTextColor(1, 1, 1, 0.9); 
+end
+local GetNumAddOns=GetNumAddOns or C_AddOns.GetNumAddOns and C_AddOns.GetNumAddOns
+local GetAddOnEnableState=GetAddOnEnableState or C_AddOns.GetAddOnEnableState and C_AddOns.GetAddOnEnableState
+function PIGAddOnMemoryCPU.gengxinhang(self)
+	local MemoryCPUData = {
+		["NumAddOns"]=GetNumAddOns(),
+		["NumMemory"]=0,
+		["NumCPU"]=0,
+		["DATA"]={},
+	}
+	UpdateAddOnMemoryUsage()
+	UpdateAddOnCPUUsage()
+	for id=1,MemoryCPUData.NumAddOns do	
+		local name, title, notes, loadable=GetAddOnInfo(id)
+		if loadable then
+			local Memory=GetAddOnMemoryUsage(id)
+			local CPUUsage=GetAddOnCPUUsage(id)
+			MemoryCPUData.NumMemory=MemoryCPUData.NumMemory+Memory
+			MemoryCPUData.NumCPU=MemoryCPUData.NumCPU+CPUUsage
+			table.insert(MemoryCPUData.DATA,{name,Memory,CPUUsage})
+		end
+	end
+	for id=1,hang_NUM do
+		_G["PIGAddOnMemoryCPUbut_"..id]:Hide()
+	end
+	-- 	if AddOnCPU.sort==21 then
+	-- 		table.sort(MemoryCPUData.DATA,function(a,b)
+	-- 			return a[2]>b[2]
+	-- 		end)
+	-- 	elseif AddOnCPU.sort==31 then
+	-- 		table.sort(MemoryCPUData.DATA,function(a,b)
+	-- 			return a[3]>b[3]
+	-- 		end)
+	-- 	end
+	local hejilist = #MemoryCPUData.DATA
+	FauxScrollFrame_Update(self, hejilist, hang_NUM, hang_Height);
+	local offset = FauxScrollFrame_GetOffset(self);
+	for id=1,hejilist do
+		local newID = id+offset
+		local newDATA = MemoryCPUData.DATA[newID]
+		local tetf = _G["PIGAddOnMemoryCPUbut_"..newID]
+		tetf:Show()
+		tetf.tet1:SetText(newDATA[1]);
+		tetf.tet2:SetText(floor(newDATA[2]));
+		tetf.tet3:SetText(floor(newDATA[3]*100)*0.01);
+	end
+	PIGAddOnMemoryCPU.NR.List.buttet1:SetText(hejilist.."/"..MemoryCPUData.NumAddOns);
+	PIGAddOnMemoryCPU.NR.List.buttet2:SetText(floor(MemoryCPUData.NumMemory).."k");
+	PIGAddOnMemoryCPU.NR.List.buttet3:SetText(floor(MemoryCPUData.NumCPU).."ms");
+end
+PIGAddOnMemoryCPU:HookScript("OnShow", function (self)
+	if GetCVar("scriptProfile")=="1" then
+		PIGAddOnMemoryCPU.NR.CPU_OPEN:SetChecked(true)
+	else
+		PIGAddOnMemoryCPU.NR.CPU_OPEN:SetChecked(false)
+	end
+	self.gengxinhang(self.NR.List.Scroll)
+end);
+if GetCVar("scriptProfile")=="1" then
+	PIGAddOnMemoryCPU:Show()
+	local masg = "你开启了CPU性能分析，请在测试后关闭此选项"
+	UIErrorsFrame:AddMessage(masg, 1, 1, 0, 1.0);
+	PIG_print(masg)
+end
+
+--获取NPC物品
 fuFrame.NPCID = PIGButton(fuFrame,{"TOPLEFT",fuFrame,"TOPLEFT",20,-350},{125,24},L["DEBUG_GETGUIDBUT"])
 fuFrame.NPCID:SetScript("OnClick", function (self)
 	print(UnitGUID("target"))

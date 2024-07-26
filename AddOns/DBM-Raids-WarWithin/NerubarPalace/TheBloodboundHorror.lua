@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(2611, "DBM-Raids-WarWithin", 1, 1273)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240629080643")
+mod:SetRevision("20240704050257")
 mod:SetCreatureID(214502)
 mod:SetEncounterID(2917)
 mod:SetUsedIcons(3, 4, 5, 6, 7, 8)
@@ -33,14 +33,14 @@ mod:RegisterEventsInCombat(
 --TODO, Manifest Horror nameplate timer? i kinda assume it's just sort of spam cast til dead
 --TODO, change option keys to match BW for weak aura compatability before live
 --TODO, possibly rework timers to restart on Goresplatter so they can be more accurate and not rely in hacky fixes
+--TODO, add spawn nameplate timer
+--TODO, track personal https://www.wowhead.com/beta/spell=445570/unseeming-blight ?
 --[[
 (ability.id = 444363 or ability.id = 452237 or ability.id = 445936 or ability.id = 442530 or ability.id = 451288 or ability.id = 445016 or ability.id = 445174) and type = "begincast"
  or ability.id = 443203 and type = "cast"
  or ability.id = 443042 and type = "applydebuff"
  or (ability.id = 444830 or ability.id = 444835) and type = "summon"
 --]]
---Phase One: The Black Blood
-mod:AddTimerLine(DBM:EJ_GetSectionInfo(29061))
 local warnBanefulShift							= mod:NewYouAnnounce(443612, 2)
 local warnBanefulShiftFades						= mod:NewFadesAnnounce(443612, 2)
 local warnCrimsonRain							= mod:NewCountAnnounce(443203, 2)
@@ -54,25 +54,25 @@ local yellBloodcurdleFades						= mod:NewShortFadesYell(452237)
 local specWarnSpewingHemorrhage					= mod:NewSpecialWarningRunCount(445936, nil, nil, nil, 4, 2)
 local specWarnGoresplatter						= mod:NewSpecialWarningDodgeCount(442530, nil, nil, nil, 2, 2)
 local specWarnGraspFromBeyond					= mod:NewSpecialWarningMoveAway(443042, nil, 367465, nil, 1, 2)
-local yellGraspFromBeyond						= mod:NewShortYell(443042, 367465)--ShortYell "Grasp"
+local yellGraspFromBeyond						= mod:NewShortYell(443042, 285205)--ShortYell "Tentacle"
 local specWarnGTFO								= mod:NewSpecialWarningGTFO(445518, nil, nil, nil, 1, 8)
 
 local timerGruesomeDigorgeCD					= mod:NewNextCountTimer(49, 444363, nil, nil, nil, 5, nil, DBM_COMMON_L.TANK_ICON)
 local timerBanefulShift							= mod:NewBuffFadesTimer(40, 443612, nil, nil, nil, 5)
-local timerBloodcurdleCD						= mod:NewNextCountTimer(40, 452237, nil, nil, nil, 3, nil, DBM_COMMON_L.MYTHIC_ICON)
+local timerBloodcurdleCD						= mod:NewNextCountTimer(40, 452237, DBM_COMMON_L.SPREADS.." (%s)", nil, nil, 3, nil, DBM_COMMON_L.MYTHIC_ICON)
 local timerSpewingHemorrhageCD					= mod:NewNextCountTimer(40, 445936, nil, nil, nil, 3, nil, DBM_COMMON_L.DEADLY_ICON)
 local timerGoresplatterCD						= mod:NewNextCountTimer(128, 442530, nil, nil, nil, 2, nil, DBM_COMMON_L.HEALER_ICON..DBM_COMMON_L.DEADLY_ICON)
 local timerCrimsonRainCD						= mod:NewNextCountTimer(128, 443203, nil, nil, nil, 3, nil, DBM_COMMON_L.HEALER_ICON)
-local timerGraspFromBeyondCD					= mod:NewNextCountTimer(40, 443042, 367465, nil, nil, 3)--ShortYell "Grasp"
---Phase Two: The Unseeming
-mod:AddTimerLine(DBM:EJ_GetSectionInfo(29068))
+local timerGraspFromBeyondCD					= mod:NewNextCountTimer(40, 443042, 367465, nil, nil, 3)--ShortYell "Tentacles"
+--The Unseeming
+mod:AddTimerLine(DBM:GetSpellName(462306))
 local warnManifestHorror						= mod:NewCastAnnounce(445174, 4, nil, nil, false, 2)--Spammy, opt in
 local warnBloodPact								= mod:NewStackAnnounce(445272, 2)
 
 local specWarnBlackBulwark						= mod:NewSpecialWarningInterruptCount(451288, "HasInterrupt", nil, nil, 1, 2)
 local specWarnSpectralSlam						= mod:NewSpecialWarningDefensive(445016, nil, nil, nil, 1, 2)
 
-local timerBlackBulwarkCD						= mod:NewCDNPTimer(17.1, 451288, nil, nil, nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)--Nameplate only timer
+local timerBlackBulwarkCD						= mod:NewCDNPTimer(15.5, 451288, nil, nil, nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)--Nameplate only timer
 local timerSpectralSlamCD						= mod:NewCDNPTimer(13.4, 445016, nil, nil, nil, 5, nil, DBM_COMMON_L.TANK_ICON)--Nameplate only, larger variation
 
 --mod:AddInfoFrameOption(407919, true)

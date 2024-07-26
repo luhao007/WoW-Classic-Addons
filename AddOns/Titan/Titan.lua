@@ -2226,6 +2226,10 @@ local function BuildAProfileMenu()
 	end
 	TitanPanelRightClickMenu_AddButton(info, TitanPanelRightClickMenu_GetDropdownLevel());
 
+	TitanPanelRightClickMenu_AddSeparator(TitanPanelRightClickMenu_GetDropdownLevel());
+
+	TitanPanelRightClickMenu_AddSeparator(TitanPanelRightClickMenu_GetDropdownLevel());
+
 	info = {};
 	info.notCheckable = true
 	info.disabled = (TitanPanelRightClickMenu_GetDropdMenuValue() == TitanSettings.Player)

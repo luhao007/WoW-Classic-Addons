@@ -1,10 +1,10 @@
 local mod	= DBM:NewMod(2599, "DBM-Raids-WarWithin", 1, 1273)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240629075406")
+mod:SetRevision("20240716172957")
 mod:SetCreatureID(214503)
 mod:SetEncounterID(2898)
-mod:SetUsedIcons(1, 2, 3, 4)
+mod:SetUsedIcons(1, 2, 3)
 mod:SetHotfixNoticeRev(20240628000000)
 mod:SetMinSyncRevision(20240628000000)
 mod.respawnTime = 29
@@ -13,9 +13,9 @@ mod:RegisterCombat("combat")
 
 mod:RegisterEventsInCombat(
 	"SPELL_CAST_START 456420 435401 432965 435403 439559 453258 442428",
-	"SPELL_AURA_APPLIED 459273 438845 435410 433517 439191",
+	"SPELL_AURA_APPLIED 459273 438845 435410 439191",--433517
 	"SPELL_AURA_APPLIED_DOSE 459273 438845",
-	"SPELL_AURA_REMOVED 459273 433517 439191",
+	"SPELL_AURA_REMOVED 459273 439191",--433517
 --	"SPELL_PERIODIC_DAMAGE",
 --	"SPELL_PERIODIC_MISSED",
 	"CHAT_MSG_RAID_BOSS_WHISPER",
@@ -24,25 +24,25 @@ mod:RegisterEventsInCombat(
 
 --TODO, figure out how tanks survive being hit for 15 million on mythic, cause I see no viable strategy besides 3 tanking. On heroic and lower you can 2 tank...kinda
 --TODO, GTFO for rain of arrows with correct ID
---TODO, remove icons and icon yells when blizzard makes phase blades a private aura and add PA sound instead
+--NOTE, As predicted, phase blades was made a private aura
 --TODO, change option keys to match BW for weak aura compatability before live
 --[[
 (ability.id = 456420 or ability.id = 435401 or ability.id = 432965 or ability.id = 435403 or ability.id = 439559 or ability.id = 453258 or ability.id = 442428) and type = "begincast"
  or ability.id = 433517 and type = "applydebuff"
 --]]
 local warnCosmicShards							= mod:NewCountAnnounce(459273, 4, nil, nil, DBM_CORE_L.AUTO_ANNOUNCE_OPTIONS.stack:format(459273))--Player
-local warnPhaseBlades							= mod:NewTargetNoFilterAnnounce(433517, 3)
+local warnPhaseBlades							= mod:NewIncomingCountAnnounce(433517, 3)
 local warnRainofArrows							= mod:NewCountAnnounce(439559, 3)
 local warnDecimate								= mod:NewTargetNoFilterAnnounce(442428, 3)
 
-local specWarnShatteringSweep					= mod:NewSpecialWarningCount(456420, nil, nil, nil, 2, 2)
+local specWarnShatteringSweep					= mod:NewSpecialWarningRunCount(456420, nil, nil, nil, 4, 2)
 local specWarnExpose							= mod:NewSpecialWarningDefensive(435401, nil, nil, nil, 1, 2)
 local specWarnPhaseLunge						= mod:NewSpecialWarningDefensive(435403, nil, nil, nil, 1, 2)
 local specWarnExposedWeakness					= mod:NewSpecialWarningTaunt(438845, nil, nil, nil, 1, 2)
 local specWarnPiercedDefenses					= mod:NewSpecialWarningTaunt(435410, nil, nil, nil, 1, 2)
-local specWarnPhaseBlades						= mod:NewSpecialWarningYou(433517, nil, nil, nil, 1, 2)
-local yellPhaseBlades							= mod:NewPosYell(433517)
-local yellPhaseBladesFades						= mod:NewIconFadesYell(433517)
+--local specWarnPhaseBlades						= mod:NewSpecialWarningYou(433517, nil, nil, nil, 1, 2)
+--local yellPhaseBlades							= mod:NewPosYell(433517)
+--local yellPhaseBladesFades					= mod:NewIconFadesYell(433517)
 local specWarnDecimate							= mod:NewSpecialWarningYou(442428, nil, nil, nil, 1, 2)
 local yellDecimate								= mod:NewShortYell(442428)
 local yellDecimateFades							= mod:NewShortFadesYell(442428)
@@ -56,9 +56,9 @@ local timerRainofArrowsCD						= mod:NewCDCountTimer(52.3, 439559, nil, nil, nil
 local timerDecimateCD							= mod:NewCDCountTimer(38.1, 442428, nil, nil, nil, 3)
 
 --mod:AddInfoFrameOption(407919, true)
-mod:AddSetIconOption("SetIconOnPhaseBlades", 433517, true, 0, {1, 2, 3, 4})
+--mod:AddSetIconOption("SetIconOnPhaseBlades", 433517, true, 0, {1, 2, 3, 4})
 mod:AddSetIconOption("SetIconOnDecimate", 442428, true, 0, {1, 2, 3})
---mod:AddPrivateAuraSoundOption(426010, true, 425885, 4)
+mod:AddPrivateAuraSoundOption(433517, true, 433517, 1)--Phase Blades
 
 mod.vb.sweepCount = 0
 mod.vb.tankCombo = 0
@@ -66,7 +66,7 @@ mod.vb.comboCount = 0
 mod.vb.bladesCount = 0
 mod.vb.arrowsCount = 0
 mod.vb.decimateCount = 0
-mod.vb.bladesIcon = 1
+--mod.vb.bladesIcon = 1
 mod.vb.decimateIcon = 1
 
 function mod:OnCombatStart(delay)
@@ -87,24 +87,25 @@ function mod:OnCombatStart(delay)
 		timerDecimateCD:Start(42.7-delay, 1)
 	end
 	timerShatteringSweepCD:Start(89.9, 1)
+	self:EnablePrivateAuraSound(433517, "runout", 2)--Phase Blades
 end
 
 function mod:SPELL_CAST_START(args)
 	local spellId = args.spellId
 	if spellId == 456420 then
 		self.vb.sweepCount = self.vb.sweepCount + 1
-		specWarnShatteringSweep:Show()
-		specWarnShatteringSweep:Play("aesoon")
+		specWarnShatteringSweep:Show(self.vb.sweepCount)
+		specWarnShatteringSweep:Play("justrun")
 		timerShatteringSweepCD:Start(nil, self.vb.sweepCount+1)
 		--Restart timers
-		self.vb.tankCombo = 0
-		self.vb.bladesCount = 0
-		self.vb.arrowsCount = 0
-		self.vb.decimateCount = 0
-		timerCaptainsFlourishCD:Start(10.7, 1)
-		timerPhaseBladesCD:Start(19.3, 1)
-		timerRainofArrowsCD:Start(self:IsMythic() and 29.1 or 39.7, 1)
-		timerDecimateCD:Start(self:IsMythic() and 62.3 or 48.3, 1)
+		--self.vb.tankCombo = 0
+		--self.vb.bladesCount = 0
+		--self.vb.arrowsCount = 0
+		--self.vb.decimateCount = 0
+		timerCaptainsFlourishCD:Start(10.7, self.vb.tankCombo+1)
+		timerPhaseBladesCD:Start(19.3, self.vb.bladesCount+1)
+		timerRainofArrowsCD:Start(self:IsMythic() and 29.1 or 39.7, self.vb.arrowsCount+1)
+		timerDecimateCD:Start(self:IsMythic() and 61.9 or 48.3, self.vb.decimateCount+1)
 	elseif spellId == 435401 or spellId == 432965 then--Second cast / First cast
 		if spellId == 432965 then
 			--First part of Combo
@@ -113,8 +114,7 @@ function mod:SPELL_CAST_START(args)
 			self.vb.comboCount = 0
 			if self.vb.tankCombo < 4 then
 				--On mythic, the first tank combos are always 25.1 apart but then they are 27.9 apart after first sweep
-				--22s are rare, so making the min for normal and heroic 23 for now
-				timerCaptainsFlourishCD:Start(self:IsMythic() and (self.vb.sweepCount == 0 and 25.1 or 27.9) or 23, self.vb.tankCombo+1)
+				timerCaptainsFlourishCD:Start(self:IsMythic() and (self.vb.sweepCount == 0 and 25.1 or 27.2) or 22.5, self.vb.tankCombo+1)
 			end
 		end
 		--Now do combo stuff
@@ -219,34 +219,34 @@ function mod:SPELL_AURA_APPLIED(args)
 		--	specWarnFlamingSlashTaunt:Show(args.destName)
 		--	specWarnFlamingSlashTaunt:Play("tauntboss")
 		--end
-	elseif spellId == 433517 then
-		if self:AntiSpam(10, 2) then--Backup
-			self.vb.bladesCount = self.vb.bladesCount + 1
-			self.vb.bladesIcon = 1
-			if self:IsMythic() then
-				if self.vb.bladesCount < 3 then
-					--Mythic consistently same before and after sweep, within the standard variation of ~28
-					timerPhaseBladesCD:Start(27.6, 1)
-				end
-			else
-				if self.vb.bladesCount == 1 then
-					--The 45 seems to be a consisted fluke only in first rotation (ie before first sweep)
-					timerPhaseBladesCD:Start(self.vb.sweepCount == 0 and 44.9 or 42.5, 1)
-				end
-			end
-		end
-		local icon = self.vb.bladesIcon
-		if self.Options.SetIconOnPhaseBlades then
-			self:SetIcon(args.destName, icon)
-		end
-		if args:IsPlayer() then
-			specWarnPhaseBlades:Show()
-			specWarnPhaseBlades:Play("targetyou")
-			yellPhaseBlades:Yell(icon, icon)
-			yellPhaseBladesFades:Countdown(5, nil, icon)
-		end
-		warnPhaseBlades:PreciseShow(4, args.destName)--4 is max targets, but it can scale down to less
-		self.vb.bladesIcon = self.vb.bladesIcon + 1
+	--elseif spellId == 433517 then
+	--	if self:AntiSpam(10, 2) then--Backup
+	--		self.vb.bladesCount = self.vb.bladesCount + 1
+	--		self.vb.bladesIcon = 1
+	--		if self:IsMythic() then
+	--			if self.vb.bladesCount < 3 then
+	--				--Mythic consistently same before and after sweep, within the standard variation of ~28
+	--				timerPhaseBladesCD:Start(27.6, 1)
+	--			end
+	--		else
+	--			if self.vb.bladesCount == 1 then
+	--				--The 45 seems to be a consisted fluke only in first rotation (ie before first sweep)
+	--				timerPhaseBladesCD:Start(self.vb.sweepCount == 0 and 44.9 or 42.5, 1)
+	--			end
+	--		end
+	--	end
+	--	local icon = self.vb.bladesIcon
+	--	if self.Options.SetIconOnPhaseBlades then
+	--		self:SetIcon(args.destName, icon)
+	--	end
+	--	if args:IsPlayer() then
+	--		specWarnPhaseBlades:Show()
+	--		specWarnPhaseBlades:Play("targetyou")
+	--		yellPhaseBlades:Yell(icon, icon)
+	--		yellPhaseBladesFades:Countdown(5, nil, icon)
+	--	end
+	--	warnPhaseBlades:PreciseShow(4, args.destName)--4 is max targets, but it can scale down to less
+	--	self.vb.bladesIcon = self.vb.bladesIcon + 1
 --	elseif spellId == 439191 then
 
 	end
@@ -257,13 +257,13 @@ function mod:SPELL_AURA_REMOVED(args)
 	local spellId = args.spellId
 	if spellId == 459273 and args:IsPlayer() then
 		timerCosmicShards:Stop()
-	elseif spellId == 433517 then
-		if self.Options.SetIconOnPhaseBlades then
-			self:SetIcon(args.destName, 0)
-		end
-		if args:IsPlayer() then
-			yellPhaseBladesFades:Cancel()
-		end
+	--elseif spellId == 433517 then
+	--	if self.Options.SetIconOnPhaseBlades then
+	--		self:SetIcon(args.destName, 0)
+	--	end
+	--	if args:IsPlayer() then
+	--		yellPhaseBladesFades:Cancel()
+	--	end
 	--elseif spellId == 439191 then
 	--	if self.Options.SetIconOnDecimate then
 	--		self:SetIcon(args.destName, 0)
@@ -309,10 +309,18 @@ function mod:UNIT_SPELLCAST_SUCCEEDED(uId, _, spellId)
 	if spellId == 433475 then
 		if self:AntiSpam(10, 2) then
 			self.vb.bladesCount = self.vb.bladesCount + 1
+			warnPhaseBlades:Show(self.vb.bladesCount)
 			self.vb.bladesIcon = 1
-			if self.vb.bladesCount == 1 then
-				--The 45 seems to be a consisted fluke only in first rotation (ie before first sweep)
-				timerPhaseBladesCD:Start(self.vb.sweepCount == 0 and 45.1 or 42.6, 1)
+			if self:IsMythic() then
+				if self.vb.bladesCount < 3 then
+					--Mythic consistently same before and after sweep, within the standard variation of ~28
+					timerPhaseBladesCD:Start(27.6, 1)
+				end
+			else
+				if self.vb.bladesCount == 1 then
+					--The 45 seems to be a consisted fluke only in first rotation (ie before first sweep)
+					timerPhaseBladesCD:Start(self.vb.sweepCount == 0 and 44.9 or 42.5, 1)
+				end
 			end
 		end
 	end

@@ -67,12 +67,11 @@ local function Update_BAGFrame_WidthHeight(new_hangshu)
 	BAGheji_UI:SetScale(BAGheji_UI.suofang);
 	BAGheji_UI:SetWidth(BagdangeW*BAGheji_UI.meihang+28)
 	if new_hangshu then
-		BAGheji_UI:SetHeight(BagdangeW*new_hangshu+102);
+		BAGheji_UI:SetHeight(BagdangeW*new_hangshu+102-BAGheji_UI.pianyiliangV);
 	end
 end
 local function UpdateP_KEY(frame, size, id)
 	local name = frame:GetName();
-	frame.PortraitButton:Hide();
 	frame.Portrait:Show();
 	_G[name.."CloseButton"]:Show();
 	frame:SetParent(UIParent);
@@ -101,7 +100,6 @@ local function UpdateP_BAG(frame, size, id)
 	frame:SetHeight(100);
 	frame:SetToplevel(false)
 	frame:SetParent(BAGheji_UI)
-	frame.PortraitButton:Hide();
 	frame.Portrait:Hide();
 	local name = frame:GetName();
 	_G[name.."BackgroundTop"]:Hide();
@@ -129,9 +127,7 @@ local function UpdateP_BAG(frame, size, id)
 		local itemF = _G[name.."Item"..slot]
 		itemF:ClearAllPoints();
 		if slot==1 then
-			itemF:SetPoint("TOPRIGHT", BAGheji_UI.wupin, "TOPRIGHT", -(new_kongyu*BagdangeW)-5, -(new_hangshu*BagdangeW)+36);
-			_G[name.."PortraitButton"]:ClearAllPoints();
-			_G[name.."PortraitButton"]:SetPoint("TOPLEFT", BAGheji_UI, "TOPRIGHT", 0, -(42*id)-60);
+			itemF:SetPoint("TOPRIGHT", BAGheji_UI.wupin, "TOPRIGHT", -(new_kongyu*BagdangeW)-5-BAGheji_UI.pianyiliangV, -(new_hangshu*BagdangeW)+36);
 		else
 			local yushu=math.fmod((slot+new_kongyu-1),BAGheji_UI.meihang)
 			local itemFshang = _G[name.."Item"..(slot-1)]
@@ -148,7 +144,6 @@ local function UpdateP_BAG(frame, size, id)
 end
 ----
 local function UpdateP_BANK(frame, size, id)
-	frame.PortraitButton:Hide();
 	frame.Portrait:Hide();
 	local name = frame:GetName();
 	_G[name.."MoneyFrame"]:Hide()
@@ -171,8 +166,6 @@ local function UpdateP_BANK(frame, size, id)
 		itemF:ClearAllPoints();
 		if slot==1 then
 			itemF:SetPoint("TOPRIGHT", BankSlotsFrame, "TOPRIGHT", -new_kongyu*BagdangeW-15, -new_hangshu*BagdangeW-33);
-			_G[name.."PortraitButton"]:ClearAllPoints();
-			_G[name.."PortraitButton"]:SetPoint("TOPLEFT", BankSlotsFrame, "TOPRIGHT", 0, -(42*(id-4))-18);
 		else
 			local yushu=math.fmod((slot+new_kongyu-1),BankFrame.meihang)
 			local itemFshang = _G[name.."Item"..(slot-1)]
@@ -264,8 +257,8 @@ function BagBankfun.Zhenghe(Rneirong,tabbut)
 			if(UnitExists("NPC"))then OpenAllBags() end
 		end
 	end);
+	if NDui and NDuiDB["Bags"]["Enable"] or ElvUI and ElvUI_ContainerFrame then 
 
-	if NDui or ElvUI then
 	else
 		hooksecurefunc("ContainerFrame_Update", function(frame)
 			if not PIGA["BagBank"]["JunkShow"] then return end
@@ -305,19 +298,23 @@ function BagBankfun.Zhenghe(Rneirong,tabbut)
 		BAGheji:HookScript("OnHide",function(self)
 			CloseAllBags()
 		end)
-		SetPortraitTexture(BAGheji.portrait, "player")
-		BAGheji.biaoti = PIGFontString(BAGheji,{"TOP", BAGheji, "TOP",10, -14},Pig_OptionsUI.AllName)
+		BAGheji.pianyiliangV=0
+		if NDui or ElvUI then
+			BAGheji.pianyiliangV=8
+		end
+		if BAGheji.portrait then SetPortraitTexture(BAGheji.portrait, "player") end
+		BAGheji.biaoti = PIGFontString(BAGheji,{"TOP", BAGheji, "TOP",10, -14+BAGheji.pianyiliangV},Pig_OptionsUI.AllName)
 		BAGheji.Close:HookScript("OnClick",  function (self)
 			CloseAllBags()
 		end);
 		BAGheji.Search = CreateFrame("EditBox", nil, BAGheji, "BagSearchBoxTemplate");
 		BAGheji.Search:SetSize(120,hhc);
-		BAGheji.Search:SetPoint("TOPLEFT",BAGheji,"TOPLEFT",78,-37);
+		BAGheji.Search:SetPoint("TOPLEFT",BAGheji,"TOPLEFT",78,-37+BAGheji.pianyiliangV);
 
 		BAGheji.AutoSort = CreateFrame("Button",nil,BAGheji, "TruncatedButtonTemplate");
 		BAGheji.AutoSort:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square");
 		BAGheji.AutoSort:SetSize(wwc,hhc);
-		BAGheji.AutoSort:SetPoint("TOPRIGHT",BAGheji,"TOPRIGHT",-54,-38);
+		BAGheji.AutoSort:SetPoint("TOPRIGHT",BAGheji,"TOPRIGHT",-54,-38+BAGheji.pianyiliangV);
 		BAGheji.AutoSort.Tex = BAGheji.AutoSort:CreateTexture(nil, "BORDER");
 		BAGheji.AutoSort.Tex:SetTexture(zhengliIcon);
 		BAGheji.AutoSort.Tex:SetTexCoord(0.168,0.27,0.837,0.934);
@@ -344,7 +341,7 @@ function BagBankfun.Zhenghe(Rneirong,tabbut)
 		BAGheji.shezhi:SetNormalTexture("interface/gossipframe/bindergossipicon.blp"); 
 		BAGheji.shezhi:SetHighlightTexture(130718);
 		BAGheji.shezhi:SetSize(wwc-4,hhc-4);
-		BAGheji.shezhi:SetPoint("TOPLEFT",BAGheji,"TOPLEFT",250,-39);
+		BAGheji.shezhi:SetPoint("TOPLEFT",BAGheji,"TOPLEFT",250,-39+BAGheji.pianyiliangV);
 		BAGheji.shezhi.Down = BAGheji.shezhi:CreateTexture(nil, "OVERLAY");
 		BAGheji.shezhi.Down:SetTexture(130839);
 		BAGheji.shezhi.Down:SetAllPoints(BAGheji.shezhi)
@@ -364,48 +361,92 @@ function BagBankfun.Zhenghe(Rneirong,tabbut)
 				Create.Show_TabBut(Rneirong,tabbut)
 			end
 		end);
+
 		--分类设置
-		for vb=1,NUM_CONTAINER_FRAMES do
-			local fameXX = _G["ContainerFrame"..vb.."PortraitButton"]
-			fameXX.ICONpig = fameXX:CreateTexture(nil, "BORDER");
-			fameXX.ICONpig:SetTexture();
-			fameXX.ICONpig:SetSize(25,25);
-			fameXX.ICONpig:SetPoint("TOPLEFT",fameXX,"TOPLEFT",7,-7);
-			fameXX.BGpig = fameXX:CreateTexture(nil, "ARTWORK");
-			fameXX.BGpig:SetTexture("Interface/Minimap/MiniMap-TrackingBorder");
-			fameXX.BGpig:SetSize(70,70);
-			fameXX.BGpig:SetPoint("TOPLEFT",fameXX,"TOPLEFT",0,0);
-			fameXX:SetScript("OnEnter", function (self)
-				local fujikj = self:GetParent()
-				local hh = {fujikj:GetChildren()} 
-				for _,v in pairs(hh) do
-					local Vname = v:GetName()
-					if Vname then
-						local cunzai = Vname:find("Item")
-						if cunzai then
-							v.BattlepayItemTexture:Show()
+		local newbankID = {}
+		for i=2,#bagData["bankID"] do
+			table.insert(newbankID,bagData["bankID"][i])
+		end
+		local bagicon={
+			["bagicon"]={
+				MainMenuBarBackpackButton,
+				CharacterBag0Slot,
+				CharacterBag1Slot,
+				CharacterBag2Slot,
+				CharacterBag3Slot,
+			},
+			["bankicon"]={
+				BankSlotsFrame.Bag1,
+				BankSlotsFrame.Bag2,
+				BankSlotsFrame.Bag3,
+				BankSlotsFrame.Bag4,
+				BankSlotsFrame.Bag5,
+				BankSlotsFrame.Bag6,
+			},
+		}
+		if tocversion>19999 then
+			table.insert(bagicon.bankicon, BankSlotsFrame.Bag7);
+		end
+		local function Show_Hide_but(showV,baginfo,uiname,bagiconD)
+			for vb=1,#baginfo do
+				local fameXX = _G[uiname..vb]
+				fameXX:SetShown(showV)
+				fameXX.xitongbagF=bagiconD[vb]
+				if showV then
+					fameXX.ICONpig:SetTexture(bagiconD[vb].icon:GetTexture());
+				end
+			end
+		end
+		local function addfenleibagbut(fujiui,baginfo,uiname)
+			for vb=1,#baginfo do
+				local fameXX = CreateFrame("Button",uiname..vb,fujiui,nil,baginfo[vb]);
+				fameXX:SetSize(34,34);
+				fameXX:SetPoint("TOPLEFT", fujiui, "TOPRIGHT", 0, -(45*vb)-20);
+				fameXX:Hide()
+				fameXX:RegisterForDrag("LeftButton")
+				--local fameXX = _G["ContainerFrame"..vb.."PortraitButton"]
+				fameXX.ICONpig = fameXX:CreateTexture(nil, "BORDER");
+				fameXX.ICONpig:SetSize(26,26);
+				fameXX.ICONpig:SetPoint("TOPLEFT",fameXX,"TOPLEFT",5,-5);
+				if NDui or ElvUI then
+				else
+					fameXX.BGpig = fameXX:CreateTexture(nil, "ARTWORK");
+					fameXX.BGpig:SetTexture("Interface/Minimap/MiniMap-TrackingBorder");
+					fameXX.BGpig:SetSize(66,66);
+					fameXX.BGpig:SetPoint("TOPLEFT",fameXX,"TOPLEFT",-2,1);
+				end
+				fameXX:HookScript("OnEnter", function (self)
+					local frameID = IsBagOpen(self:GetID())
+					if frameID then
+						for slot = 1, MAX_CONTAINER_ITEMS do
+							local famrr=_G["ContainerFrame"..frameID.."Item"..slot]
+						    famrr.BattlepayItemTexture:Show()
 						end
 					end
-				end
-			end);
-			fameXX:SetScript("OnLeave", function (self)
-				local fujikj = self:GetParent()
-				local hh = {fujikj:GetChildren()} 
-				for _,v in pairs(hh) do
-					local Vname = v:GetName()
-					if Vname then
-						local cunzai = Vname:find("Item")
-						if cunzai then
-							v.BattlepayItemTexture:Hide()
+				end);
+				fameXX:HookScript("OnLeave", function (self)
+					local frameID = IsBagOpen(self:GetID())
+					if frameID then
+						for slot = 1, MAX_CONTAINER_ITEMS do
+							local famrr=_G["ContainerFrame"..frameID.."Item"..slot]
+						    famrr.BattlepayItemTexture:Hide()
 						end
 					end
+				end);
+				if fujiui==BAGheji then
+					fameXX:HookScript("OnDragStart", function (self, button)
+						BagSlotButton_OnDrag(self.xitongbagF, button);
+					end);
+					fameXX:HookScript("OnReceiveDrag", function (self)
+						BagSlotButton_OnClick(self.xitongbagF);
+					end);
 				end
-			end);
+			end
 		end
 		BAGheji.fenlei = CreateFrame("Button",nil,BAGheji, "TruncatedButtonTemplate");
 		BAGheji.fenlei:SetHighlightTexture("interface/buttons/ui-common-mousehilight.blp");
 		BAGheji.fenlei:SetSize(18,18);
-		BAGheji.fenlei:SetPoint("TOPRIGHT",BAGheji,"TOPRIGHT",-6,-42);
+		BAGheji.fenlei:SetPoint("TOPRIGHT",BAGheji,"TOPRIGHT",-6,-42+BAGheji.pianyiliangV);
 		BAGheji.fenlei.Tex = BAGheji.fenlei:CreateTexture(nil, "BORDER");
 		BAGheji.fenlei.Tex:SetTexture("interface/chatframe/chatframeexpandarrow.blp");
 		BAGheji.fenlei.Tex:SetSize(18,18);
@@ -418,35 +459,15 @@ function BagBankfun.Zhenghe(Rneirong,tabbut)
 		end);
 		BAGheji.fenlei.show=false
 		BAGheji.fenlei:SetScript("OnClick",  function (self)
-			if BAGheji.fenlei.show then
-				BAGheji.fenlei.show=false
-				xuanzhuangsanjiao(self.Tex,false)
-				for vb=1,#bagData["bagID"] do
-					local Fid=IsBagOpen(bagData["bagID"][vb])
-					if Fid then
-						_G["ContainerFrame"..Fid.."PortraitButton"]:Hide()
-					end
-				end
+			if self.show then
+				self.show=false
 			else
-				BAGheji.fenlei.show=true
-				xuanzhuangsanjiao(self.Tex,true)
-				local bagicon={
-					133633,
-					CharacterBag0SlotIconTexture:GetTexture(),
-					CharacterBag1SlotIconTexture:GetTexture(),
-					CharacterBag2SlotIconTexture:GetTexture(),
-					CharacterBag3SlotIconTexture:GetTexture(),
-				}
-				for vb=1,#bagData["bagID"] do
-					local Fid=IsBagOpen(bagData["bagID"][vb])
-					if Fid then
-						local fameXX = _G["ContainerFrame"..Fid.."PortraitButton"]
-						fameXX.ICONpig:SetTexture(bagicon[bagData["bagID"][vb]+1]);
-						fameXX:Show()
-					end
-				end
+				self.show=true
 			end
+			xuanzhuangsanjiao(self.Tex,self.show)
+			Show_Hide_but(self.show,bagData["bagID"],"PIG_CharacterBag_",bagicon.bagicon)		
 		end);
+		addfenleibagbut(BAGheji,bagData["bagID"],"PIG_CharacterBag_")
 		---=====================
 		if tocversion>30000 then
 			hooksecurefunc("ManageBackpackTokenFrame", function(backpack)
@@ -520,16 +541,14 @@ function BagBankfun.Zhenghe(Rneirong,tabbut)
 		--行囊关闭时追加关闭背景
 		hooksecurefunc("CloseBackpack", function()
 			BAGheji:Hide()
-			BAGheji.fenlei.show=false
-			xuanzhuangsanjiao(BAGheji.fenlei.Tex,false)
 		end);
 		UIParent:HookScript("OnHide", function(self)
 			BAGheji:Hide()
 		end)
 		-------------------
 		BAGheji:RegisterEvent("PLAYER_ENTERING_WORLD");
-		BAGheji:RegisterEvent("BAG_UPDATE_DELAYED")
 		BAGheji:RegisterEvent("AUCTION_HOUSE_SHOW")
+		BAGheji:RegisterEvent("BAG_CONTAINER_UPDATE")
 		BAGheji:RegisterUnitEvent("UNIT_PORTRAIT_UPDATE","player")
 		BAGheji:HookScript("OnEvent", function(self,event,arg1,arg2)
 			if event=="PLAYER_ENTERING_WORLD" then
@@ -542,6 +561,17 @@ function BagBankfun.Zhenghe(Rneirong,tabbut)
 					end)
 				end
 			end
+			if event=="BAG_CONTAINER_UPDATE" then
+				CloseAllBags()
+				OpenAllBags()
+				Show_Hide_but(BAGheji.fenlei.show,bagData["bagID"],"PIG_CharacterBag_",bagicon.bagicon)
+				if BankSlotsFrame:IsShown() then
+					for banki=2,#bagData["bankID"] do
+						OpenBag(bagData["bankID"][banki])
+					end
+					Show_Hide_but(BankSlotsFrame.fenlei.show,newbankID,"PIG_CharacterBANK_",bagicon.bankicon)
+				end
+			end
 			if event=="AUCTION_HOUSE_SHOW" then
 				if PIGA["BagBank"]["AHOpen"] then
 					if(UnitExists("NPC"))then
@@ -549,12 +579,6 @@ function BagBankfun.Zhenghe(Rneirong,tabbut)
 					end
 				end
 			end		
-			if event=="BAG_UPDATE_DELAYED" then
-				if self:IsShown() then
-					CloseAllBags()
-					OpenAllBags()
-				end
-			end
 			if event=="UNIT_PORTRAIT_UPDATE" then
 				if self.portrait then
 					SetPortraitTexture(BAGheji_UI.portrait, "player")
@@ -621,37 +645,16 @@ function BagBankfun.Zhenghe(Rneirong,tabbut)
 			self.Tex:SetPoint("CENTER",BankSlotsFrame.fenlei,"CENTER",2,0);
 		end);
 		BankSlotsFrame.fenlei.show=false
-		local bagicon={BankSlotsFrame.Bag1.icon,BankSlotsFrame.Bag2.icon,BankSlotsFrame.Bag3.icon,BankSlotsFrame.Bag4.icon,BankSlotsFrame.Bag5.icon,BankSlotsFrame.Bag6.icon,}
-		if tocversion>19999 then
-			table.insert(bagicon, BankSlotsFrame.Bag7.icon);
-		end
 		BankSlotsFrame.fenlei:SetScript("OnClick",  function (self)
-			if BankSlotsFrame.fenlei.show then
-				BankSlotsFrame.fenlei.show=false
-				xuanzhuangsanjiao(self.Tex,false)
-				for vb=2,#bagData["bankID"] do
-					local Fid=IsBagOpen(bagData["bankID"][vb])
-					if Fid then
-						_G["ContainerFrame"..Fid.."PortraitButton"]:Hide()
-					end
-				end
+			if self.show then
+				self.show=false
 			else
-				BankSlotsFrame.fenlei.show=true
-				xuanzhuangsanjiao(self.Tex,true)
-				for vb=2,#bagData["bankID"] do
-					local Fid=IsBagOpen(bagData["bankID"][vb])
-					if Fid then
-						local fameXX = _G["ContainerFrame"..Fid.."PortraitButton"]
-						fameXX.ICONpig:SetTexture(bagicon[bagData["bankID"][vb]-4]:GetTexture());
-						fameXX:Show()
-					end
-				end
+				self.show=true
 			end
+			xuanzhuangsanjiao(self.Tex,self.show)
+			Show_Hide_but(self.show,newbankID,"PIG_CharacterBANK_",bagicon.bankicon)
 		end);
-		BankSlotsFrame:HookScript("OnHide", function(self)
-			self.fenlei.show=false
-			xuanzhuangsanjiao(self.fenlei.Tex,false)
-		end);
+		addfenleibagbut(BankFrame,newbankID,"PIG_CharacterBANK_")
 		Create.BagBankBG(BankFrame,"BankFrame_PigBG")
 		--物品显示区域
 		BankSlotsFrame.wupin = CreateFrame("Frame", nil, BankSlotsFrame,"BackdropTemplate")
@@ -671,13 +674,6 @@ function BagBankfun.Zhenghe(Rneirong,tabbut)
 				Bank_Item_lv(nil,nil,arg1)
 				Bank_Item_ranse(nil,nil,arg1)
 			end
-		-- 	if event=="BAG_UPDATE_DELAYED" then
-		-- 		if BankFrame:IsShown() then
-		-- 			for banki=2,#bagData["bankID"] do
-				-- 	OpenBag(bagData["bankID"][banki])
-				-- end
-		-- 		end
-		-- 	end
 		end)
 		-----清空位置设置让系统自行设置
 		local Old_ContainerFrame_GenerateFrame=ContainerFrame_GenerateFrame

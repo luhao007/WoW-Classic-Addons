@@ -603,7 +603,7 @@ function BusinessInfo.MailPlus_ADDUI()
 	coll.list.tishi.Texture:SetPoint("CENTER");
 	coll.list.tishiNR= "\124cff00ff001、发送过的玩家将自动加入通讯录。\n"..
 	"2、通讯录玩家名"..KEY_BUTTON1..":选择发件人，"..KEY_BUTTON2..":删除。\124r\n"..
-	"\124cff00ff003、本人角色删除请到角色信息统计功能\124r"
+	"\124cff00ff003、本人角色删除请到信息统计功能\124r"
 	PIGEnter(coll.list.tishi,L["LIB_TIPS"],coll.list.tishiNR);
 	coll.list.qitajuese = PIGCheckbutton(coll.list,{"TOPLEFT",coll.list,"TOPLEFT",20,-30},{"其他"})
 	if NDui then coll.list.qitajuese:Disable() end

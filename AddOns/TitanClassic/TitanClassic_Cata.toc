@@ -1,10 +1,10 @@
 ## Interface: 30400
 ## Author: Titan Panel Dev Team
-## Version: 8.0.15
+## Version: 8.0.16
 ## OptionalDeps: Ace3, AceGUI-3.0-SharedMediaWidgets, LibSharedMedia-3.0, LibQTip-1.0, !LibUIDropDownMenu
 ## SavedVariables: TitanAll, TitanSettings, TitanSkins, ServerTimeOffsets, ServerHourFormat
 
-## Title: Titan Panel [|cffeda55f_Core_|r] |cff00aa008.0.15|r
+## Title: Titan Panel [|cffeda55f_Core_|r] |cff00aa008.0.16|r
 ## Notes: Adds display bars to show and control information/launcher plugins.
 ## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFF泰坦面板|r |cFFFFE00ATitanClassic|r
 ## Notes-zhCN: 在屏幕顶端/底端增加一个可视化侧边栏

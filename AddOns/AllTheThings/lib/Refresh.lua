@@ -155,7 +155,6 @@ local function CacheAccountWideMiscQuests(accountWideData)
 		-- etc.
 
 		-- Account Unlocks
-		70941,	-- Fishing Holes [DF Iskaaran Fishing]
 		74576,	-- Restored Hakkari Bijou [Zul'Gurub]
 		76390,	-- Inconvenience Fee [Naxxramas]
 
@@ -230,21 +229,21 @@ end
 local function FixNonOneTimeQuests(accountWideData)
 	local oneTimeQuests = accountWideData.OneTimeQuests;
 
-	-- if we ever erroneously add an account-wide quest and find out it isn't (or Blizzard actually fixes it to give account-wide credit)
-	-- put it here so it reverts back to being handled as a normal quest
+	-- if we ever erroneously add an account-wide quest and find out it isn't put it here so it reverts back to being handled as a normal quest
+	-- quests in AccountWideQuestsDB will automatically be removed from OneTimeQuests
 	for _,questID in ipairs({
 		32008,	-- Audrey Burnhep (A)
 		32009,	-- Varzok (H)
-
 		62038,	-- Handful of Oats
 		62042,	-- Grooming Brush
 		62047,	-- Sturdy Horseshoe
 		62049,	-- Bucket of Clean Water
 		62048,	-- Comfortable Saddle Blanket
 		62050,	-- Dredhollow Apple
-
-		76307,	-- Makeshift Grappling Hook
 	}) do
+		oneTimeQuests[questID] = nil;
+	end
+	for questID,_ in pairs(app.AccountWideQuestsDB) do
 		oneTimeQuests[questID] = nil;
 	end
 end
@@ -272,7 +271,6 @@ end
 app.AddEventHandler("OnRefreshCollections", CacheAccountWideCompleteViaAchievement)
 app.AddEventHandler("OnRefreshCollections", CacheAccountWideMiscQuests)
 app.AddEventHandler("OnRefreshCollections", CacheAccountWideSharedQuests)
-app.AddEventHandler("OnRefreshCollections", FixNonOneTimeQuests)
 app.AddEventHandler("OnRefreshCollections", CheckOncePerAccountQuestsForCharacter)
 
 RefreshCollections = function()
@@ -307,6 +305,7 @@ app.AddEventHandler("OnRefreshCollectionsDone", function()
 end)
 app.AddEventHandler("OnSavedVariablesAvailable", function(currentCharacter, accountWideData)
 	ATTAccountWideData = accountWideData
+	FixNonOneTimeQuests(accountWideData)
 end)
 
 else	-- Classic

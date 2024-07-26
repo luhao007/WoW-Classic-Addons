@@ -14,7 +14,7 @@ local bagData=addonTable.Data.bagData
 local BagBankfun=addonTable.BagBankfun
 ----
 local wwc,hhc = 24,24
-local BagdangeW=ContainerFrame1Item1:GetWidth()+5
+local BagdangeW=30
 ------
 local xuanzhuangsanjiao=BagBankfun.xuanzhuangsanjiao
 local Bag_Item_lv=BagBankfun.Bag_Item_lv

@@ -48,10 +48,9 @@ L["OPTUI_RLUITIPS"] = "***配寘已更改，請重載UI介面以應用新配寘*
 L["OPTUI_ERRORTIPS"] = "***插件加載失敗，請重新嘗試***";
 --Debug
 L["DEBUG_TABNAME"] = "調試";
-L["DEBUG_BUTNAME"] = "記憶體CPU使用率";
-L["DEBUG_CPUUSAGE"] = "CPU使用率";
+L["DEBUG_BUTNAME"] = "記憶體CPU監控";
+L["DEBUG_CPUUSAGE"] = "CPU性能分析";
 L["DEBUG_CPUUSAGETIPS"] = "開啟CPU使用率監控，請只在需要時候開啟，此功能需要消耗一些系統性能";
-L["DEBUG_REFRESH"] = "刷新";
 L["DEBUG_RESET"] = "重置";
 L["DEBUG_COLLECT"] = "回收";
 L["DEBUG_COLLECTTIPS"] = "|cff00FFff此功能會導致挿件所有執行都停止，直到收回過程完成\n挿件過多情况下可能超過幾秒，這會令遊戲暫時凍結（卡住）\n除開挿件開發調試，大多數情况不需要手動調用，LUA自動記憶體管理機制會定期運作|r";

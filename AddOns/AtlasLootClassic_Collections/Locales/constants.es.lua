@@ -2,7 +2,7 @@
 
 if not AL then return end
 
--- These localization strings are translated on Curseforge: https://www.curseforge.com/wow/addons/atlaslootclassic-cata/localization
+-- These localization strings are translated on Curseforge: https://www.curseforge.com/wow/addons/atlaslootclassic/localization
 -- Collections
 AL["'%s %s' Vendor"] = "Vendedor de '%s %s'"
 AL["%s Sets"] = "Conjuntos de %s"
@@ -25,11 +25,10 @@ AL["Baron Kazum"] = "Barón Kazum"
 AL["Box of Chocolates"] = "Caja de bombones"
 AL["Brewfest"] = "Fiesta de la Cerveza"
 AL["Brightly Colored Egg"] = "Huevo de colores vivos"
-AL["Capitals"] = "Capitales"
+--[[Translation missing --]]
+--[[ AL["Capitals"] = "Capitals"--]] 
 --[[Translation missing --]]
 --[[ AL["Card Game Tabards"] = "Card Game Tabards"--]] 
---[[Translation missing --]]
---[[ AL["Cata"] = "Cata"--]] 
 AL["Childrens Week"] = "Semana de los Niños"
 AL["Crimson Templar"] = "Templario Carmesí"
 --[[Translation missing --]]
@@ -66,10 +65,6 @@ AL["Harvest Festival"] = "Festival de la Cosecha"
 AL["High Marshal Whirlaxis"] = "Alto mariscal Eje Torbellino"
 AL["Hoary Templar"] = "Templario vetusto"
 AL["Idols"] = "Ídolos"
---[[Translation missing --]]
---[[ AL["Justice Points"] = "Justice Points"--]] 
---[[Translation missing --]]
---[[ AL["Legendaries"] = "Legendaries"--]] 
 AL["Legendarys"] = "Legendarios"
 AL["Librams"] = "Tratados"
 AL["Lord Skwol"] = "Lord Skwol"
@@ -112,8 +107,6 @@ AL["Two-Handed Weapons"] = "Armas de dos manos"
 AL["Unobtainable"] = "Inobtenible"
 --[[Translation missing --]]
 --[[ AL["Unobtainable Tabards"] = "Unobtainable Tabards"--]] 
---[[Translation missing --]]
---[[ AL["Valor Points"] = "Valor Points"--]] 
 AL["Wands"] = "Varitas"
 AL["World Epics"] = "Épicos del Mundo"
 AL["World Events"] = "Eventos del Mundo"

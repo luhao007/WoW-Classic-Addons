@@ -847,6 +847,205 @@ function TitanUtils_ToString(text)
 	return TitanUtils_Ternary(text, text, "");
 end
 
+---API Add separators into the value given.  This does not break coin into its parts.
+--- This routines handles negative and fractional numbers.
+--- Assumes amount decimal separator is a period per tostring().
+---@param amount number
+---@param thousands_separator string
+---@param decimal_separator string
+---@return string formatted
+function TitanUtils_NumToString(amount, thousands_separator, decimal_separator)
+	-- Jul 2024 Moved to Utils for use by plugins
+	--[=[ Jul 2024 
+	Handle the general cases of converting any number to a string with separators for plugins.
+	Titan usage is , / . or . / , although this will handle other schemes.
+	NOTE: Currently only positive, whole numbers are passed in from Titan (no fractional or negative).
+	NOTE: If ampount is 100 trillion or more then return the string as is to avoid very messy strings.
+		This is the behavior of Lua tostring.
+	NOTE: Do not use separator directly in gsub - it could be a pattern special char, resulting in unexpected behavior!
+	--]=]
+
+	local formatted = ""
+
+	if type(amount) == "number" then
+		-- Break number into segments - minus, integer, and fractional
+		local i, j, minus, int, fraction = 0, 0, "", "", ""
+		if amount > 99999999999999 then -- 1 trillion - 1
+			int = tostring(amount) 
+			-- leave as is and, if gold, congratulate the player!!!
+			-- Result will be have an exponent (1.23+e16)
+		else
+			i, j, minus, int, fraction = tostring(amount):find('([-]?)(%d+)([.]?%d*)')
+
+			-- Reverse the int-string and append a separator to all blocks of 3 digits
+			int = int:reverse():gsub("(%d%d%d)", "%1|")
+
+			-- Reverse the int-string back and remove an extraneous separator
+			int = int:reverse():gsub("^|", "")
+
+			-- Now use the given decimal separator. 
+			-- tostring outputs a period as the separator so it needs to be escaped.
+			int = int:gsub("%.", decimal_separator)
+
+			-- Now use the given thousands separator
+			int = int:gsub("|", thousands_separator)
+
+			-- Add optional minus part back
+			formatted = minus .. int .. fraction
+		end
+	else
+		formatted = "0" -- 'silent' error
+	end
+	return formatted
+end
+
+---API Take the total cash and make it into a nice, colorful string of g s c (gold silver copper)
+---@param value number
+---@param thousands_separator string
+---@param decimal_separator string
+---@param only_gold boolean
+---@param show_labels boolean
+---@param show_icons boolean
+---@param add_color boolean
+---@return string outstr Formatted cash for output
+---@return integer gold part of value
+---@return integer silver part of value
+---@return integer copper part of value
+function TitanUtils_CashToString(value, thousands_separator, decimal_separator,
+	only_gold, show_labels, show_icons,
+	add_color)
+	local show_zero = true
+	local show_neg = true
+
+	local neg1 = ""
+	local neg2 = ""
+	local agold = 10000;
+	local asilver = 100;
+	local outstr = "";
+	local gold = 0;
+	local gold_str = ""
+	local gc = ""
+	local silver = 0;
+	local silver_str = ""
+	local sc = ""
+	local copper = 0;
+	local copper_str = ""
+	local cc = ""
+	local amount = (value or 0)
+	local font_size = TitanPanelGetVar("FontSize")
+	local icon_pre = "|TInterface\\MoneyFrame\\"
+	local icon_post = ":" .. font_size .. ":" .. font_size .. ":2:0|t"
+	local g_icon = icon_pre .. "UI-GoldIcon" .. icon_post
+	local s_icon = icon_pre .. "UI-SilverIcon" .. icon_post
+	local c_icon = icon_pre .. "UI-CopperIcon" .. icon_post
+	-- build the coin label strings based on the user selections
+	local c_lab = (show_labels and L["TITAN_GOLD_COPPER"]) or (show_icons and c_icon) or ""
+	local s_lab = (show_labels and L["TITAN_GOLD_SILVER"]) or (show_icons and s_icon) or ""
+	local g_lab = (show_labels and L["TITAN_GOLD_GOLD"]) or (show_icons and g_icon) or ""
+
+	-- show the money in highlight or coin color based on user selection
+	if add_color then
+		gc = Titan_Global.colors.coin_gold
+		sc = Titan_Global.colors.coin_silver
+		cc = Titan_Global.colors.coin_copper
+	else
+		gc = Titan_Global.colors.white
+		sc = Titan_Global.colors.white
+		cc = Titan_Global.colors.white
+	end
+
+	if show_neg then
+		if amount < 0 then
+			neg1 = TitanUtils_GetHexText("(", Titan_Global.colors.orange) -- "|cFFFF6600" .. "(" .. FONT_COLOR_CODE_CLOSE
+			neg2 = TitanUtils_GetHexText(")", Titan_Global.colors.orange) --"|cFFFF6600" .. ")" .. FONT_COLOR_CODE_CLOSE
+		else
+			-- no padding
+		end
+	end
+	if amount < 0 then
+		amount = amount * -1
+	end
+
+	-- amount INCLUDES silver and copper (last 4 digits)
+	if amount == 0 then
+		if show_zero then
+		   copper_str = TitanUtils_GetHexText("0".. c_lab, cc) --cc .. (amount or "?") .. c_lab .. "" .. FONT_COLOR_CODE_CLOSE
+		end
+	 elseif amount > 999999999999999999 then -- 999,999,999,999,999,999 (1 quadrillion - 1)
+		-- we are really in trouble :)
+		-- gold should be accurate but in exponent format
+		gold = (math.floor(amount / agold) or 0)
+		gold_str = TitanUtils_GetHexText(tostring(gold)..g_lab .. " ", gc) 
+		-- silver and copper will be off
+		silver_str = ""
+		copper_str = ""
+	 elseif amount > 99999999999999999 then -- 99,999,999,999,999,999 (100 trillion - 1)
+		-- we are in some trouble :)
+		-- gold should be accurate so format
+		gold = (math.floor(amount / agold) or 0)
+		local gnum = TitanUtils_NumToString(gold, thousands_separator, decimal_separator)
+		gold_str = TitanUtils_GetHexText(gnum..g_lab .. " ", gc)
+		-- silver and copper will be off
+		silver_str = ""
+		copper_str = ""
+		
+	  elseif amount > 0 then
+		-- figure out the gold - silver - copper components for return and string
+		gold = (math.floor(amount / agold) or 0)
+		amount = amount - (gold * agold) -- now only silver + copper
+		silver = (math.floor(amount / asilver) or 0)
+		copper = amount - (silver * asilver)
+
+		-- now make the coin strings
+		if gold > 0 then
+			local gnum = TitanUtils_NumToString(gold, thousands_separator, decimal_separator)
+			gold_str = TitanUtils_GetHexText(gnum..g_lab .. " ", gc) --gc .. (gnum) .. g_lab .. " " .. FONT_COLOR_CODE_CLOSE
+		else
+			gold_str = ""
+		end
+		if (silver > 0) then
+			local snum = (string.format("%02d", silver) or "?")
+			silver_str = TitanUtils_GetHexText(snum..s_lab .. " ", sc) --sc .. (silver or "?") .. s_lab .. " " .. FONT_COLOR_CODE_CLOSE
+		else
+			silver_str = ""
+		end
+		if (copper > 0) then
+			local cnum = (string.format("%02d", copper) or "?")
+			copper_str = TitanUtils_GetHexText(cnum..c_lab, cc) --cc .. (copper or "?") .. c_lab .. "" .. FONT_COLOR_CODE_CLOSE
+		else
+			copper_str = ""
+		end
+	end
+
+	if only_gold then
+		silver_str = ""
+		copper_str = ""
+		-- special case for those who want only gold when amount is less than 1 gold
+		if gold == 0 then
+			if show_zero then
+				gold_str = TitanUtils_GetHexText("0"..g_lab, gc) --gc .. "0" .. g_lab .. " " .. FONT_COLOR_CODE_CLOSE
+			end
+		end
+	end
+
+	-- build the return string
+	outstr = outstr
+		.. neg1
+		.. gold_str
+		.. silver_str
+		.. copper_str
+		.. neg2
+	--[[
+print("_CashToString:"
+..(gold or "?").."g "
+..(silver or "?").."s "
+..(copper or "?").."c "
+..(outstr or "?")
+);
+--]]
+	return outstr, gold, silver, copper
+end
+
 --====== Right click menu routines - Retail dropdown menu
 
 ---local Add menu button at the given level.

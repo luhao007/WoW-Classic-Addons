@@ -5,6 +5,10 @@ if (not addon.WOW_MAINLINE) then
     return
 end
 
+if not QuestPOIGetIconInfo then
+    return
+end
+
 local enableClicks = true       -- True if waypoint-clicking is enabled to set points
 local enableClosest = true      -- True if 'Automatic' quest waypoints are enabled
 local modifier                  -- A string representing click-modifiers "CAS", etc.
@@ -86,6 +90,7 @@ local function ObjectivesChanged()
         local qid = C_QuestLog.GetQuestIDForQuestWatchIndex(watchIndex)
         C_QuestLog.SetSelectedQuest(qid)
         C_QuestLog.GetNextWaypoint(qid)
+
         local completed, x, y, objective = QuestPOIGetIconInfo(qid)
         local qmap = GetQuestUiMapID(qid)
 

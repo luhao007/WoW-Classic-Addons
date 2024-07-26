@@ -233,7 +233,45 @@ ChatF.SetFrame.AltEX:SetScript("OnClick", function (self)
 	end
 	ChatFrame_AltEX_Open(PIGA["Chat"]["AltEX"]);
 end);
-
+-- local function ChatFrame_Althistory_Open(onoff)
+-- 	-- local onoff = onoff or PIGA["Chat"]["AltEX"]
+-- 	-- if onoff then
+-- 	-- 	if ChatFrame1EditBox:GetAltArrowKeyMode() then
+-- 	-- 		for i = 1, NUM_CHAT_WINDOWS do
+-- 	-- 			_G["ChatFrame"..i.."EditBox"]:SetAltArrowKeyMode(false) --false只按方向键即可控制输入框光标 
+-- 	-- 		end
+-- 	-- 	end
+-- 	-- else
+-- 	-- 	if not ChatFrame1EditBox:GetAltArrowKeyMode() then
+-- 	-- 		for i = 1, NUM_CHAT_WINDOWS do
+-- 	-- 			_G["ChatFrame"..i.."EditBox"]:SetAltArrowKeyMode(true) --
+-- 	-- 		end
+-- 	-- 	end
+-- 	-- end
+-- 	-- ChatFrame1EditBox:HookScript("OnArrowPressed", function (self, key)
+-- 	-- 	print(self, key)
+-- 	-- 	--local autoComplete = AutoCompleteBox;
+-- 	-- 	--if ( autoComplete:IsShown() and autoComplete.parent == self ) then
+-- 	-- 	--local selectedIndex = AutoComplete_GetSelectedIndex(autoComplete);
+-- 	-- 	--local numReturns = AutoComplete_GetNumResults(autoComplete);
+-- 	-- 	local numHistoryLines = self:GetHistoryLines()
+-- 	-- 	print(numHistoryLines)
+-- 	-- 	--print(numReturns)
+-- 	-- 	--AutoComplete_IncrementSelection(self, key)
+-- 	-- --end
+-- 	-- end);
+-- end
+-- ChatFrame_Althistory_Open(onoff)
+-- -------------------
+-- ChatF.SetFrame.Althistory = PIGCheckbutton_R(ChatF.SetFrame,{"免ALT查看输入记录","免ALT查看输入记录"})
+-- ChatF.SetFrame.Althistory:SetScript("OnClick", function (self)
+-- 	if self:GetChecked() then
+-- 		PIGA["Chat"]["Althistory"]=true;	
+-- 	else
+-- 		PIGA["Chat"]["Althistory"]=false;
+-- 	end
+-- 	ChatFrame_Althistory_Open(PIGA["Chat"]["Althistory"]);
+-- end);
 --移除聊天文字渐隐
 local function ChatFrame_Jianyin_Open()
 	if PIGA["Chat"]["Jianyin"] then

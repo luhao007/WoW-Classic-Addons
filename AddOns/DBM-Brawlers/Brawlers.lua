@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("BrawlersGeneral", "DBM-Brawlers")
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240514212303")
+mod:SetRevision("20240721192753")
 --mod:SetCreatureID(60491)
 --mod:SetModelID(41448)
 mod:SetZone(DBM_DISABLE_ZONE_DETECTION)
@@ -34,6 +34,7 @@ local modsStopped = false
 local eventsRegistered = false
 local lastRank = 0
 
+---@param self DBMMod
 local function setDialog(self, set)
 	if not self.Options.NormalizeVolume then return end
 	if set then

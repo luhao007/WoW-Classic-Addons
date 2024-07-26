@@ -1,33 +1,45 @@
 # DBM - Core
 
-## [10.2.50](https://github.com/DeadlyBossMods/DeadlyBossMods/tree/10.2.50) (2024-06-29)
-[Full Changelog](https://github.com/DeadlyBossMods/DeadlyBossMods/compare/10.2.49...10.2.50) [Previous Releases](https://github.com/DeadlyBossMods/DeadlyBossMods/releases)
+## [11.0.0](https://github.com/DeadlyBossMods/DeadlyBossMods/tree/11.0.0) (2024-07-23)
+[Full Changelog](https://github.com/DeadlyBossMods/DeadlyBossMods/compare/10.2.54...11.0.0) [Previous Releases](https://github.com/DeadlyBossMods/DeadlyBossMods/releases)
 
-- bump version  
-- more tweaks to silken court to reduce information overload  
-- tweak defaults and increase throttling in places to reduce spam on bloodbound horror  
-- Slightly shorten ass timers  
-- Fix bug causing tank combo timer to double increment  
-- Fix warning text on desolation  
-    Fix missing spike eruption alert  
-- Fixed a bug where stage wasn't set on engage  
-- Add support for silken court normal mode, which has radically different timers from heroic  
-- Fixed some timer bugs on kyveza  
-- Don't start web timer on normal Ovinax  
-- Update Ulgrax for both mythic and normal (and heroic too likely)  
-- bloodbound horror fixes for normal  
-- minor tweaks to last form normal mode  
-- Competely reework Sikran to how timers actually work and added mythic updates  
-- Finally push reworked Silken Court mod disabling stuff that blizzard didn't allow and having alternate warnings that fit what's available  
-    Added all real data timers for silken court as well, including auto detection of when boss skips casts  
-- fix icon clearning  
-- Fix double expose defense message  
-- update bloodbound horror for mythic  
-- Update Sikran from yesterday, so it's ready for mythic testing  
-- re-enable whisper syncs and whisper auto replies on long character-realm names now that https://github.com/Stanzilla/WoWUIBugs/issues/573 is fully fixed  
-- Preliminary drycode of Xal'atath's orb affix  
-- Update pull timer code to work agian with TWW beta  
-- Update localization.cn.lua (#1124)  
-- Fix  Dk backup spec being set wrong in cata if player is raiding unspecced. Doesn't explain why it even needs fallback, why are people raiding unspecced?  
-- Fix definition for "pullin" audio  
+- Prep new DBM core with version bump and Delve tier detection support for statistics.  
+- Push delve tier fix  
+- Begin work on supporting delve tiers in stats recording and GUI. This way it records highest delves as priority over shortest time, similar to Mythic + behavior  
+    Fixed bug where story raid returned "delves" type  
+    Queen Ansurek will now store/show story kills in GUI  
+- Make sure LuaLS recognizes "self" in all local functions used by mods, to avoid missing any errors (none found, but just good convention to practice now)  
+- Add some nil error protection on Rashanan that i missed on normal  
+- fix counts in initial timers on each movement  
+- another fix  
+- Fixes to Rashanan  
+- Update koKR (#1151)  
+- Fix and close https://github.com/DeadlyBossMods/DeadlyBossMods/issues/1152  
+- disable two warnings inconsiquential in LFR. Closes https://github.com/DeadlyBossMods/DeadlyBossMods/issues/1153  
+- Redo how timers and phases are handled on Rashanan to be accurate to way it's coded.  
+- Fix a bug where tank combo and shroud timer on biurna could fully start new timers on phase 2 start because the previous timer had already expired. Now if previous timer has expired, no replacement timer is created as the abilities remain off CD on stage 2 start (intended behavior)  
+    Closes https://github.com/DeadlyBossMods/DeadlyBossMods/issues/1149  
+- Update DBM-Raids-WarWithin\_Mainline.toc (#1147)  
+- Create localization.tw.lua (#1146)  
+- Update koKR (#1145)  
+- Update localization.ru.lua (#1144)  
+- Update commonlocal.ru.lua (#1143)  
+- Core/Timers: add missing timerTypes to options constructor (#1148)  
+- Add icontarget yell type that just shows 5 icons (#1142)  
+- Make IsTanking object more robust by validating both enemy and player UIDs. Now test I did in video would fail ;)  
+    Ironically scanning entirety of DBMs history found 0 occurances that was ever typoed, but now it can't be.  
+- Tests: update filters and fix bug when parsing logs with source flags  
+- Tests: reconstruct unit targets without boss unit IDs (for classic)  
+- Fix and close https://github.com/DeadlyBossMods/DeadlyBossMods/issues/1136  
+- Update localization.ru.lua (#1141)  
+- Add a common local for an idea i'm thinking about  
+- Update koKR (#1140)  
+- prune some deprecated stuff and cleanup  
+- Special warning objects now have more robust LuaLS checking  
+    Fixed a bug on Magmorax where Blazing Breath alert gave no count  
+    Fixed a bug on Raszageth where Ball lighting gave no count  
+    Fixed a bug on Sennarth where Gossamer burst gave no count  
+- scope last  
+- Fix DBM not reporting new dungeon in SoD as having dungeon mods available.  
 - bump alpha  
+- Update localization.ru.lua (#1139)  

@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: arith, Dynaletik, dubcat
-## Version: v1.52.01
+## Version: v1.52.04
 ## RequiredDeps: Atlas
 ## SavedVariables: Atlas_TransportationDB
 
@@ -9,7 +9,7 @@
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本地图|r |cFF69CCF0交通|r
 ## Notes-zhCN: 交通地图
 
-## X-Date: 2022-11-20T3:50:16Z
+## X-Date: 2023-07-29T6:34:27Z
 ## X-Credits: Dan Gilbert, Lothaer
 ## X-Email: atlas.addon at gmail dot com
 ## X-Website: http://www.atlasmod.com

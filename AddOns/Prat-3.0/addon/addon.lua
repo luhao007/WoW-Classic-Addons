@@ -69,7 +69,7 @@ Prat.Version = "Prat |cff8080ff3.0|r (|cff8080ff" .. "DEBUG" .. "|r)"
 --@end-debug@]==]
 
 --@non-debug@
-Prat.Version = "Prat |cff8080ff3.0|r (|cff8080ff".."3.9.54".."|r)"
+Prat.Version = "Prat |cff8080ff3.0|r (|cff8080ff".."3.9.55".."|r)"
 --@end-non-debug@
 
 

@@ -42,7 +42,7 @@ local function HideHPMPTT()
 			PetFrameHealthBarText:SetAlpha(toumingdu);
 			PetFrameManaBarText:SetAlpha(toumingdu);
 		else
-			PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarArea.HealthBar.HealthBarText:SetAlpha(toumingdu);
+			PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarsContainer.HealthBarText:SetAlpha(toumingdu);
 			PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.ManaBarArea.ManaBar.ManaBarText:SetAlpha(toumingdu);
 			PetFrameHealthBar.TextString:SetAlpha(toumingdu);
 			PetFrameManaBar.TextString:SetAlpha(toumingdu);
@@ -68,8 +68,8 @@ local function HideHPMPTT()
 		PlayerFrameHealthBar:HookScript("OnLeave", yinHPMP)
 		PlayerFrameManaBar:HookScript("OnLeave", yinHPMP)
 	else
-		PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarArea.HealthBar:HookScript("OnEnter",xianHPMP);
-		PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarArea.HealthBar:HookScript("OnLeave", yinHPMP)
+		PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarsContainer.HealthBar:HookScript("OnEnter",xianHPMP);
+		PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarsContainer.HealthBar:HookScript("OnLeave", yinHPMP)
 		PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.ManaBarArea.ManaBar:HookScript("OnEnter", xianHPMP)
 		PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.ManaBarArea.ManaBar:HookScript("OnLeave", yinHPMP)
 		if PlayerFrameAlternateManaBar then 

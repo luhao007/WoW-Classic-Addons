@@ -191,7 +191,7 @@ function TardisInfo.Chedui(Activate)
 	-- 	}
 	-- 	if laiyu then
 	-- 		if not C_LFGList.HasActiveEntryInfo() then return end
-	-- 		local numGroupMembers = GetNumGroupMembers("LE_PARTY_CATEGORY_HOME")
+	-- 		local numGroupMembers = GetNumGroupMembers(LE_PARTY_CATEGORY_HOME)
 	-- 		if numGroupMembers>0 then
 	-- 			for p=1,MAX_RAID_MEMBERS do
 	-- 				local name, rank, subgroup, level, class, fileName, zone, online, isDead, role, isML, combatRole = GetRaidRosterInfo(p);
@@ -1023,7 +1023,7 @@ function TardisInfo.Chedui(Activate)
 	-- 	for ix=1,#zhizename do
 	-- 		dixiacinfo[zhizename[ix]]={}
 	-- 	end	
-	-- 	local numGroupMembers = GetNumGroupMembers("LE_PARTY_CATEGORY_HOME")
+	-- 	local numGroupMembers = GetNumGroupMembers(LE_PARTY_CATEGORY_HOME)
 	-- 	if numGroupMembers>0 then
 	-- 		for p=1,MAX_RAID_MEMBERS do
 	-- 			local name, rank, subgroup, level, class, fileName, zone, online, isDead, role, isML, combatRole = GetRaidRosterInfo(p);

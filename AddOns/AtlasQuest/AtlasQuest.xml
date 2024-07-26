@@ -22,8 +22,10 @@
 -->
 
 
-<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+					
 
+<Script file="AtlasQuest_Backdrop.lua" />										 
 <Script file="AtlasQuest_Instanzen.lua" />
 <Script file="AtlasQuest_Buttons.lua" />
 <Script file="AtlasQuest_OptionUI.lua" />
@@ -71,29 +73,20 @@
 <GameTooltip name="AtlasQuestTooltip" inherits="GameTooltipTemplate" parent="UIParent" hidden="true"/>
 
 <!-- Option panel -->
-<Frame name="AtlasQuestOptionFrame" enableMouse="true" movable="true" hidden="true" parent="UIParent" toplevel="true" frameStrata="DIALOG" enableKeyboard="true">
+<Frame name="AtlasQuestOptionFrame" inherits="BackdropTemplate" enableMouse="true" movable="true" hidden="true" parent="UIParent" toplevel="true" frameStrata="DIALOG" enableKeyboard="true">
  <Size>
    <AbsDimension x="325" y="425"/>
  </Size>
  <Anchors>
-   <Anchor point="TOP">
-      <Offset><AbsDimension x="0" y="-210"/></Offset>>
+   <Anchor point="TOP" relativeTo="AtlasFrame">
+      <Offset><AbsDimension x="0" y="-50"/></Offset>>
    </Anchor>
  </Anchors>
- <Backdrop name="$parentBackdrop" bgFile="Interface\ChatFrame\ChatFrameBackground" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-  <EdgeSize>
-   <AbsValue val="16"/>
-  </EdgeSize>
-  <Color r="0" g="0" b="0" a="1"/>
-  <TileSize>
-    <AbsValue val="32"/>
-  </TileSize>
-  <BackgroundInsets>
-    <AbsInset left="5" right="5" top="5" bottom="5"/>
-  </BackgroundInsets>
- </Backdrop>
+	<KeyValues>
+		<KeyValue key="backdropInfo" value="BACKDROP_AtlasQuestOption_32_16" type="global" />
+	</KeyValues>
  <Frames>
- <Button name="AQOptionCloseButton" inherits="OptionsButtonTemplate">
+ <Button name="AQOptionCloseButton" inherits="UIPanelButtonTemplate">
    <Size>
      <AbsDimension x="35" y="30"/>
    </Size>
@@ -113,7 +106,7 @@
 	    </OnShow>
 	</Scripts>
   </Button>
-   <Button name="AQOptionQuestQueryButton" inherits="OptionsButtonTemplate">
+   <Button name="AQOptionQuestQueryButton" inherits="UIPanelButtonTemplate">
    <Size>
      <AbsDimension x="95" y="30"/>
    </Size>
@@ -133,7 +126,7 @@
 	    </OnShow>
 	</Scripts>
   </Button>
-   <Button name="AQOptionClaerQuestAndQueryButton" inherits="OptionsButtonTemplate">
+   <Button name="AQOptionClaerQuestAndQueryButton" inherits="UIPanelButtonTemplate">
     <Size>
       <AbsDimension x="95" y="30"/>
     </Size>
@@ -153,7 +146,7 @@
  	    </OnShow>
  	</Scripts>
    </Button>
-  <CheckButton name="AQAutoshowOption" inherits="OptionsCheckButtonTemplate" checked="true">
+  <CheckButton name="AQAutoshowOption" inherits="UICheckButtonTemplate" checked="true">
     <Size>
       <AbsDimension x="30" y="30"/>
     </Size>
@@ -163,10 +156,10 @@
 				<AbsDimension x="10" y="-50"></AbsDimension>
 			</Offset>
 		</Anchor>
-		<HitRectInsets>
-          <AbsInset left="0" right="0" top="0" bottom="0"/>
-        </HitRectInsets>
 	</Anchors>
+	<HitRectInsets>
+	  <AbsInset left="0" right="0" top="0" bottom="0"/>
+	</HitRectInsets>
 	<Scripts>
 		<OnClick>
 		  AQAutoshowOption_OnClick();
@@ -176,7 +169,7 @@
 	    </OnShow>
 	</Scripts>
    </CheckButton>
-   <CheckButton name="AQLEFTOption" inherits="OptionsCheckButtonTemplate" checked="true">
+   <CheckButton name="AQLEFTOption" inherits="UICheckButtonTemplate" checked="true">
     <Size>
       <AbsDimension x="30" y="30"/>
     </Size>
@@ -186,10 +179,10 @@
 				<AbsDimension x="10" y="-80"></AbsDimension>
 			</Offset>
 		</Anchor>
-		<HitRectInsets>
-          <AbsInset left="0" right="0" top="0" bottom="0"/>
-        </HitRectInsets>
 	</Anchors>
+	<HitRectInsets>
+	  <AbsInset left="0" right="0" top="0" bottom="0"/>
+	</HitRectInsets>
 	<Scripts>
 		<OnClick>
 		  AQLEFTOption_OnClick();
@@ -199,7 +192,7 @@
 	    </OnShow>
 	</Scripts>
    </CheckButton>
-   <CheckButton name="AQRIGHTOption" inherits="OptionsCheckButtonTemplate" checked="true">
+   <CheckButton name="AQRIGHTOption" inherits="UICheckButtonTemplate" checked="true">
     <Size>
       <AbsDimension x="30" y="30"/>
     </Size>
@@ -209,10 +202,10 @@
 				<AbsDimension x="10" y="-110"></AbsDimension>
 			</Offset>
 		</Anchor>
-		<HitRectInsets>
-          <AbsInset left="0" right="0" top="0" bottom="0"/>
-        </HitRectInsets>
 	</Anchors>
+	<HitRectInsets>
+	  <AbsInset left="0" right="0" top="0" bottom="0"/>
+	</HitRectInsets>
 	<Scripts>
 		<OnClick>
 		  AQRIGHTOption_OnClick();
@@ -222,7 +215,7 @@
 	    </OnShow>
 	</Scripts>
    </CheckButton>
-   <CheckButton name="AQColourOption" inherits="OptionsCheckButtonTemplate" checked="true">
+   <CheckButton name="AQColourOption" inherits="UICheckButtonTemplate" checked="true">
     <Size>
       <AbsDimension x="30" y="30"/>
     </Size>
@@ -232,10 +225,10 @@
 				<AbsDimension x="10" y="-140"></AbsDimension>
 			</Offset>
 		</Anchor>
-		<HitRectInsets>
-          <AbsInset left="0" right="0" top="0" bottom="0"/>
-        </HitRectInsets>
 	</Anchors>
+	<HitRectInsets>
+	  <AbsInset left="0" right="0" top="0" bottom="0"/>
+	</HitRectInsets>
 	<Scripts>
 		<OnClick>
 		  AQColourOption_OnClick();
@@ -245,7 +238,7 @@
 	    </OnShow>
 	</Scripts>
    </CheckButton>
-   <CheckButton name="AQCheckQuestlogButton" inherits="OptionsCheckButtonTemplate" checked="true">
+   <CheckButton name="AQCheckQuestlogButton" inherits="UICheckButtonTemplate" checked="true">
     <Size>
       <AbsDimension x="30" y="30"/>
     </Size>
@@ -255,10 +248,10 @@
 				<AbsDimension x="10" y="-170"></AbsDimension>
 			</Offset>
 		</Anchor>
-		<HitRectInsets>
-          <AbsInset left="0" right="0" top="0" bottom="0"/>
-        </HitRectInsets>
 	</Anchors>
+	<HitRectInsets>
+	  <AbsInset left="0" right="0" top="0" bottom="0"/>
+	</HitRectInsets>
 	<Scripts>
 		<OnClick>
 		  AQCheckQuestlogButton_OnClick();
@@ -269,20 +262,20 @@
 	</Scripts>
    </CheckButton>
 
-   <CheckButton name="AQCompareTooltipOption" inherits="OptionsCheckButtonTemplate" checked="true">
+   <CheckButton name="AQCompareTooltipOption" inherits="UICheckButtonTemplate" checked="true">
     <Size>
       <AbsDimension x="30" y="30"/>
     </Size>
 	<Anchors>
 		<Anchor point="TOPLEFT">
 			<Offset>
-				<AbsDimension x="10" y="-260"></AbsDimension>
+				<AbsDimension x="10" y="-200"/>
 			</Offset>
 		</Anchor>
-		<HitRectInsets>
-          <AbsInset left="0" right="0" top="0" bottom="0"/>
-        </HitRectInsets>
 	</Anchors>
+	<HitRectInsets>
+	  <AbsInset left="0" right="0" top="0" bottom="0"/>
+	</HitRectInsets>
 	<Scripts>
 		<OnClick>
 		  AQCompareTooltipOption_OnClick();
@@ -398,7 +391,7 @@
        <Anchors>
          <Anchor point="TOPLEFT">
            <Offset>
-              <AbsDimension x="45" y="-260"/>
+              <AbsDimension x="45" y="-200"/>
            </Offset>
          </Anchor>
        </Anchors>
@@ -406,6 +399,10 @@
     </Layer>
    </Layers>
    <Scripts>
+	<OnLoad>
+		self:ApplyBackdrop()
+		self:SetBackdropColor(0,0,0,1)
+	</OnLoad>
     <OnShow>
       AtlasQuestOptionFrame_OnShow();
     </OnShow>
@@ -416,37 +413,25 @@
 <!-- AtlasQuest Panel-->
 <!-- Don't forget to update AtlasQuest_OptionUI.lua when changing anchor point values.  Specifically the LEFT and RIGHT options. -->
 
-<Frame name="AtlasQuestFrame" toplevel="false" enableMouse="true" movable="false" parent="AtlasFrame">
+<Frame name="AtlasQuestFrame" inherits="BackdropTemplate" toplevel="false" enableMouse="true" movable="false" parent="AtlasFrame">
  <Size>
    <AbsDimension x="198" y="585"/>
  </Size>
  <Anchors>
-   <Anchor point="TOP" relativeTo="AtlasFrame">
-      <Offset><AbsDimension x="-597" y="-45"/></Offset>>
+   <Anchor point="TOPRIGHT" relativeTo="AtlasFrame" relativePoint="TOPLEFT">
+      <Offset><AbsDimension x="12" y="-45"/></Offset>>
    </Anchor>
  </Anchors>
- <Backdrop name="$parentBackdrop" bgFile="Interface\Minimap\TooltipBackdrop-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-  <EdgeSize>
-   <AbsValue val="16"/>
-  </EdgeSize>
-  <TileSize>
-    <AbsValue val="32"/>
-  </TileSize>
-  <BackgroundInsets>
-    <AbsInset left="5" right="5" top="5" bottom="5"/>
-  </BackgroundInsets>
- </Backdrop>
- <Frames>
+ 	<KeyValues>
+		<KeyValue key="backdropInfo" value="BACKDROP_AtlasQuest_32_16" type="global" />
+	</KeyValues>
+<Frames>
  <Button name="CLOSEbutton" inherits="UIPanelCloseButton" text="X">
    <Size>
      <AbsDimension x="27" y="27"/>
    </Size>
 	<Anchors>
-		<Anchor point="TOPLEFT">
-			<Offset>
-				<AbsDimension x="4" y="-4"/>
-			</Offset>
-		</Anchor>
+		<Anchor point="TOPRIGHT" />
 	</Anchors>
 	<Scripts>
 		<OnClick>
@@ -457,7 +442,7 @@
 	    </OnShow>
 	</Scripts>
  </Button>
- <Button name="OPTIONbutton" inherits="OptionsButtonTemplate" text="Options">
+ <Button name="OPTIONbutton" inherits="UIPanelButtonTemplate" text="Options">
    <Size>
      <AbsDimension x="65" y="23"/>
    </Size>
@@ -478,7 +463,7 @@
 	</Scripts>
  </Button>
 
- <CheckButton name="AQACB" inherits="OptionsCheckButtonTemplate" checked="true" text="AQACB">
+ <CheckButton name="AQACB" inherits="UICheckButtonTemplate" checked="true" text="AQACB">
     <Size>
       <AbsDimension x="30" y="30"/>
     </Size>
@@ -499,7 +484,7 @@
 	    </OnShow>
 	</Scripts>
 </CheckButton>
- <CheckButton name="AQHCB" inherits="OptionsCheckButtonTemplate" checked="false" text="AQHCB">
+ <CheckButton name="AQHCB" inherits="UICheckButtonTemplate" checked="false" text="AQHCB">
     <Size>
       <AbsDimension x="30" y="30"/>
     </Size>
@@ -1008,7 +993,7 @@
        <Anchors>
          <Anchor point="TOP">
            <Offset>
-              <AbsDimension x="6" y="-12"/>
+              <AbsDimension x="-3" y="-12"/>
            </Offset>
          </Anchor>
        </Anchors>
@@ -1020,22 +1005,11 @@
        <Anchors>
          <Anchor point="TOP">
            <Offset>
-              <AbsDimension x="0" y="-45"/>
+              <AbsDimension x="-3" y="-45"/>
            </Offset>
          </Anchor>
        </Anchors>
      </FontString>
-     <Texture name="AQBACKGROUNDTEXTUR" file="Interface\AddOns\AtlasQuest\Images\AtlasQuestPanelFrame">
-         <Size><AbsDimension x="187" y="575"/></Size>
-           <Anchors>
-             <Anchor point="TOPRIGHT" >
-               <Offset>
-				  <AbsDimension x="-5" y="-5"/>
-			   </Offset>
-             </Anchor>
-           </Anchors>
-           <TexCoords left="0.2" right="0.6" top="0.4" bottom="0.9" />
-      </Texture>
    </Layer>
    <Layer level="OVERLAY">
      <Texture name="AQQuestlineArrow_1" file="Interface\Glues\Login\UI-BackArrow">
@@ -1432,6 +1406,8 @@
   </Layers>
   <Scripts>
      <OnLoad>
+		self:ApplyBackdrop()
+		self:SetBackdropColor(0,0,0,1)
         AQ_OnLoad();
      </OnLoad>
      <OnUpdate>

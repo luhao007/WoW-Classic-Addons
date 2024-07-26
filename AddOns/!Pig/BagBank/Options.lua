@@ -15,9 +15,10 @@ local PIGFontString=Create.PIGFontString
 ---
 local BagBankfun={}
 addonTable.BagBankfun=BagBankfun
-local GetInsertItemsLeftToRight=C_Container and C_Container.GetInsertItemsLeftToRight or GetInsertItemsLeftToRight
-local GetSortBagsRightToLeft=C_Container and C_Container.GetSortBagsRightToLeft or GetSortBagsRightToLeft
-local SetInsertItemsLeftToRight=C_Container and C_Container.SetInsertItemsLeftToRight or SetInsertItemsLeftToRight
+local GetSortBagsRightToLeft=GetSortBagsRightToLeft or C_Container and C_Container.GetSortBagsRightToLeft
+local GetInsertItemsLeftToRight=GetInsertItemsLeftToRight or C_Container and C_Container.GetInsertItemsLeftToRight
+local SetSortBagsRightToLeft=SetSortBagsRightToLeft or C_Container and C_Container.SetSortBagsRightToLeft
+local SetInsertItemsLeftToRight=SetInsertItemsLeftToRight or C_Container and C_Container.SetInsertItemsLeftToRight
 local BagBankF,BagBankFTabBut = PIGOptionsList(L["BAGBANK_TABNAME"],"TOP")
 ----------
 BagBankF.Zhenghe = PIGCheckbutton_R(BagBankF,{"启用背包/银行整合","整合背包/银行包裹到一个界面"})
@@ -217,6 +218,8 @@ BagBankF:HookScript("OnShow", function(self)
 	for i=1,#BAG_SetList do
 		if BAG_SetList[i][1]=="反向整理" then
 			_G["BAG_SetList"..i]:SetChecked(not BagBankfun.GetSortBagsRightToLeft())
+		elseif BAG_SetList[i][1]=="战利品放入左边包" then
+			_G["BAG_SetList"..i]:SetChecked(BAG_SetList[i][2]())
 		else
 			_G["BAG_SetList"..i]:SetChecked(PIGA["BagBank"][BAG_SetList[i][2]])
 		end

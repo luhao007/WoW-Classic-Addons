@@ -1,11 +1,11 @@
 local mod	= DBM:NewMod(2601, "DBM-Raids-WarWithin", 1, 1273)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240629080202")
+mod:SetRevision("20240712035451")
 mod:SetCreatureID(217748)--Needs confirmation, could also use 218510
 mod:SetEncounterID(2920)
 mod:SetUsedIcons(1, 2, 3, 4, 5)
-mod:SetHotfixNoticeRev(20240628000000)
+mod:SetHotfixNoticeRev(20240711000000)
 --mod:SetMinSyncRevision(20230929000000)
 mod.respawnTime = 29
 
@@ -14,33 +14,34 @@ mod:RegisterCombat("combat")
 mod:RegisterEventsInCombat(
 	"SPELL_CAST_START 436971 437620 448364 438245 439576 440377 453683 442277 435405",
 --	"SPELL_CAST_SUCCESS",
-	"SPELL_AURA_APPLIED 436870 437343 447169 447174 440576",
+	"SPELL_AURA_APPLIED 447169 447174 440576",--436870 437343
 	"SPELL_AURA_APPLIED_DOSE 447174 440576",
-	"SPELL_AURA_REMOVED 436870 437343 447169 435405"
+	"SPELL_AURA_REMOVED 447169 435405"--436870 437343
 --	"SPELL_PERIODIC_DAMAGE",
 --	"SPELL_PERIODIC_MISSED",
 --	"UNIT_DIED"
 --	"UNIT_SPELLCAST_SUCCEEDED boss1"
 )
 
---NOTE: if they don't make ass a private aura, change yells to also include icons
---NOTE: see if https://www.wowhead.com/beta/spell=438153/twilight-massacre can be target scanned off phantom themselves to defeat the private aura
+--NOTE: They made ass a private aura. Called it :D
 --TODO: Get the right tank stack swap count
---TODO, change option keys to match BW for weak aura compatability before live
+--TODO, recheck option keys to match BW for weak aura compatability before live
+--TODO, verify queensbane is actually hidden, cause they flagged wrong spellids.
 --[[
 (ability.id = 436971 or ability.id = 435405 or ability.id = 437620 or ability.id = 448364 or ability.id = 438245 or ability.id = 439576 or ability.id = 440377 or ability.id = 453683 or ability.id = 442277) and type = "begincast"
  or ability.id = 435405 and type = "removebuff"
 --]]
-local warnAss									= mod:NewTargetAnnounce(436971, 3)
+local warnAss									= mod:NewIncomingCountAnnounce(436867, 3)
 local warnDeathMasks							= mod:NewCountAnnounce(448364, 4)
+local warnTwilightMassacre						= mod:NewCountAnnounce(438245, 3, nil, nil, 281001)--Shortname "Massacre"
 local warnChasmalGash							= mod:NewStackAnnounce(440576, 2, nil, "Tank|Healer")
 local warnStarlessNight							= mod:NewCountAnnounce(435414, 3)
 local warnEternalNight							= mod:NewCastAnnounce(442277, 4)
 
-local specWarnAss								= mod:NewSpecialWarningSpell(436971, nil, nil, nil, 3, 2)
-local yellAss									= mod:NewShortYell(436971)
-local yellAssFades								= mod:NewShortFadesYell(436971)
-local yellQueensBane							= mod:NewShortFadesYell(437343)
+--local specWarnAss								= mod:NewSpecialWarningSpell(436867, nil, nil, nil, 3, 2)
+--local yellAss									= mod:NewShortYell(436867)
+--local yellAssFades							= mod:NewShortFadesYell(436867)
+--local yellQueensBane							= mod:NewShortFadesYell(437343)
 local specWarnDeathCloak						= mod:NewSpecialWarningSpell(447174, nil, nil, nil, 2, 2)
 local specWarnNetherRift						= mod:NewSpecialWarningDodgeCount(437620, nil, nil, nil, 2, 2)
 local specWarnNexusDaggers						= mod:NewSpecialWarningDodgeCount(439576, nil, nil, nil, 2, 2)
@@ -49,20 +50,21 @@ local specWarnChasmalGashStack					= mod:NewSpecialWarningStack(440576, nil, 8, 
 local specWarnChasmalGashSwap					= mod:NewSpecialWarningTaunt(440576, nil, nil, nil, 1, 2)
 --local specWarnGTFO							= mod:NewSpecialWarningGTFO(421532, nil, nil, nil, 1, 8)
 
-local timerAssCD								= mod:NewCDCountTimer(120, 436971, nil, nil, nil, 3)
+local timerAssCD								= mod:NewCDCountTimer(120, 436867, nil, nil, nil, 3)
 local timerDeathMasksCD							= mod:NewAITimer(49, 448364, nil, nil, nil, 3, nil, DBM_COMMON_L.MYTHIC_ICON)
-local timerTwilightMassacreCD					= mod:NewCDCountTimer(30, 438245, nil, nil, nil, 3)
-local timerNetherRiftCD							= mod:NewCDCountTimer(30, 437620, nil, nil, nil, 3)
+local timerTwilightMassacreCD					= mod:NewCDCountTimer(30, 438245, 281001, nil, nil, 3)--Shortname "Massacre"
+local timerNetherRiftCD							= mod:NewCDCountTimer(30, 437620, DBM_COMMON_L.RIFT.." (%s)", nil, nil, 3)--shortname Rift
 local timerNexusDaggersCD						= mod:NewCDCountTimer(30, 439576, nil, nil, nil, 3)
-local timerVoidShreddersCD						= mod:NewCDCountTimer(30, 440377, nil, "Tank|healer", nil, 5, nil, DBM_COMMON_L.TANK_ICON)
+local timerVoidShreddersCD						= mod:NewCDCountTimer(30, 440377, DBM_COMMON_L.TANKDEBUFF.." (%s)", "Tank|healer", nil, 5, nil, DBM_COMMON_L.TANK_ICON)
 local timerStarlessNightCD						= mod:NewCDCountTimer(120, 435405, nil, nil, nil, 6)
 local timerStarlessNight						= mod:NewBuffActiveTimer(24, 435405, nil, nil, nil, 5)
 
 --mod:AddInfoFrameOption(407919, true)
-mod:AddSetIconOption("SetIconOnAss", 436971, true, 0, {1, 2, 3, 4, 5})--Applies to 3, 4 or 5 targets based on difficultiy or raid size
+--mod:AddSetIconOption("SetIconOnAss", 436867, true, 0, {1, 2, 3, 4, 5})--Applies to 3, 4 or 5 targets based on difficultiy or raid size
 mod:AddNamePlateOption("NPOnMask", 448364)
 mod:AddPrivateAuraSoundOption(438141, true, 438245, 1)--Twilight Massacre Target
 mod:AddPrivateAuraSoundOption(436671, true, 435486, 1)--Regicide Targets
+mod:AddPrivateAuraSoundOption(436870, true, 436867, 1)--Assassination Targets
 --mod:AddPrivateAuraSoundOption(426010, true, 425885, 4)
 
 mod.vb.assCount = 0
@@ -84,11 +86,11 @@ function mod:OnCombatStart(delay)
 	self.vb.starlessCount = 0
 	self:SetStage(1)
 	timerVoidShreddersCD:Start(6, 1)
-	timerAssCD:Start(11.3, 1)
+	timerAssCD:Start(11.3, 1)--13.2 mythic
 	timerNetherRiftCD:Start(22, 1)
 	timerTwilightMassacreCD:Start(34, 1)
 	timerNexusDaggersCD:Start(45.2, 1)
-	timerStarlessNightCD:Start(86, 1)
+	timerStarlessNightCD:Start(self:IsMythic() and 96 or 86, 1)
 	self:EnablePrivateAuraSound(438141, "runout", 2)--Twilight Massacre
 	self:EnablePrivateAuraSound(436671, "lineyou", 17)--Regicide
 	self:EnablePrivateAuraSound(436664, "lineyou", 17, 436671)--Regicide
@@ -97,8 +99,9 @@ function mod:OnCombatStart(delay)
 	self:EnablePrivateAuraSound(436663, "lineyou", 17, 436671)--Regicide
 	self:EnablePrivateAuraSound(436666, "lineyou", 17, 436671)--Regicide
 	self:EnablePrivateAuraSound(435534, "lineyou", 17, 436671)--Regicide
+	self:EnablePrivateAuraSound(436870, "runout", 2)--Assassination
 	if self:IsMythic() then
-		timerDeathMasksCD:Start(1)
+		timerDeathMasksCD:Start(18.9, 1)
 		if self.Options.NPOnMask then
 			DBM:FireEvent("BossMod_EnableHostileNameplates")
 		end
@@ -115,12 +118,19 @@ function mod:SPELL_CAST_START(args)
 	local spellId = args.spellId
 	if spellId == 436971 then
 		self.vb.assCount = self.vb.assCount + 1
+		warnAss:Show(self.vb.assCount)
 		self.vb.assIcon = 1
 	elseif spellId == 437620 then
 		if self:AntiSpam(5, 1) then
 			self.vb.riftCount = self.vb.riftCount + 1
-			if self.vb.riftCount == 1 then
-				timerNetherRiftCD:Start(30, 2)
+			if self:IsMythic() then
+				if self.vb.riftCount % 3 ~= 0 then--Sets of 3 between each night
+					timerNetherRiftCD:Start(30, self.vb.riftCount+1)
+				end
+			else
+				if self.vb.riftCount % 2 == 1 then--Sets of 2 between each night
+					timerNetherRiftCD:Start(30, 2)
+				end
 			end
 			specWarnNetherRift:Show(self.vb.riftCount)
 			specWarnNetherRift:Play("watchstep")
@@ -128,20 +138,21 @@ function mod:SPELL_CAST_START(args)
 	elseif spellId == 448364 then
 		self.vb.maskCount = self.vb.maskCount + 1
 		warnDeathMasks:Show(self.vb.maskCount)
-		timerDeathMasksCD:Start()
+--		timerDeathMasksCD:Start(30, self.vb.maskCount+1)--Only once per rotation, so timer started at starless night end
 	elseif spellId == 438245 then
 		self.vb.massacreCount = self.vb.massacreCount + 1
-		if self.vb.massacreCount == 1 then
+		warnTwilightMassacre:Show(self.vb.massacreCount)
+		if self.vb.massacreCount % 2 == 1 then
 			timerTwilightMassacreCD:Start(30, 2)
 		end
 	elseif spellId == 439576 then
 		if self:AntiSpam(5, 2) then
 			self.vb.daggersCount = self.vb.daggersCount + 1
-			if self.vb.daggersCount == 1 then
+			if self.vb.daggersCount % 2 == 1 then
 				timerNexusDaggersCD:Start(30, 2)
 			end
 			specWarnNexusDaggers:Show(self.vb.daggersCount)
-			specWarnNexusDaggers:Play("watchstep")
+			specWarnNexusDaggers:Play("farfromline")
 		end
 	elseif spellId == 440377 or spellId == 453683 then
 		self.vb.shredderCount = self.vb.shredderCount + 1
@@ -149,9 +160,9 @@ function mod:SPELL_CAST_START(args)
 			specWarnVoidShredders:Show()
 			specWarnVoidShredders:Play("defensive")
 		end
-		if self.vb.shredderCount == 1 then
+		if self.vb.shredderCount % 3 == 1 then
 			timerVoidShreddersCD:Start(34, 2)
-		elseif self.vb.shredderCount == 2 then
+		elseif self.vb.shredderCount % 3 == 2 then
 			timerVoidShreddersCD:Start(30, 3)
 		end
 	elseif spellId == 442277 then
@@ -172,26 +183,26 @@ end
 
 function mod:SPELL_AURA_APPLIED(args)
 	local spellId = args.spellId
-	if spellId == 436870 then
-		warnAss:CombinedShow(0.5, args.destName)
-		if args:IsPlayer() then
-			specWarnAss:Show()
-			specWarnAss:Play("targetyou")
-			yellAss:Yell()
-			yellAssFades:Countdown(spellId, 3)
-		end
-		if self.Options.SetIconOnAss then
-			self:SetIcon(args.destName, self.vb.assIcon)
-		end
-		self.vb.assIcon = self.vb.assIcon + 1
-	elseif spellId == 437343 then
-		if args:IsPlayer() and not self:IsEasy() then
-			yellQueensBane:Countdown(spellId)
-		end
-	elseif spellId == 447169 then
+	if spellId == 447169 then
 		if self.Options.NPOnMask then
 			DBM.Nameplate:Show(true, args.destGUID, spellId)
 		end
+	--elseif spellId == 437343 then
+	--	if args:IsPlayer() and not self:IsEasy() then
+	--		yellQueensBane:Countdown(spellId)
+	--	end
+	--elseif spellId == 436870 then
+	--	warnAss:CombinedShow(0.5, args.destName)
+	--	if args:IsPlayer() then
+	--		specWarnAss:Show()
+	--		specWarnAss:Play("targetyou")
+	--		yellAss:Yell()
+	--		yellAssFades:Countdown(spellId, 3)
+	--	end
+	--	if self.Options.SetIconOnAss then
+	--		self:SetIcon(args.destName, self.vb.assIcon)
+	--	end
+	--	self.vb.assIcon = self.vb.assIcon + 1
 	elseif spellId == 447174 then
 		local amount = args.amount or 1
 		--Only warn death cloak aoe if it's at least 1 million damage per second
@@ -223,38 +234,32 @@ mod.SPELL_AURA_APPLIED_DOSE = mod.SPELL_AURA_APPLIED
 
 function mod:SPELL_AURA_REMOVED(args)
 	local spellId = args.spellId
-	if spellId == 436870 then
-		if args:IsPlayer() then
-			yellAssFades:Cancel()
-		end
-		if self.Options.SetIconOnAss then
-			self:SetIcon(args.destName, 0)
-		end
-	elseif spellId == 437343 then
-		if args:IsPlayer() then
-			yellQueensBane:Cancel()
-		end
-	elseif spellId == 447169 then
+	if spellId == 447169 then
 		if self.Options.NPOnMask then
 			DBM.Nameplate:Hide(true, args.destGUID, spellId)
 		end
+	--elseif spellId == 437343 then
+	--	if args:IsPlayer() then
+	--		yellQueensBane:Cancel()
+	--	end
+	--elseif spellId == 436870 then
+	--	if args:IsPlayer() then
+	--		yellAssFades:Cancel()
+	--	end
+	--	if self.Options.SetIconOnAss then
+	--		self:SetIcon(args.destName, 0)
+	--	end
 	elseif spellId == 435405 then
 		self:SetStage(1)
---		self.vb.assCount = 0--Doesn't reset, it's linked to returning to phase 1 after starry
-		self.vb.maskCount = 0
-		self.vb.massacreCount = 0
-		self.vb.riftCount = 0
-		self.vb.daggersCount = 0
-		self.vb.shredderCount = 0
 		timerStarlessNight:Stop()
-		timerVoidShreddersCD:Start(10.8, 1)
-		timerAssCD:Start(16, self.vb.assCount+1)
-		timerNetherRiftCD:Start(26.8, 1)
-		timerTwilightMassacreCD:Start(38.8, 1)
-		timerNexusDaggersCD:Start(50, 1)
-		timerStarlessNightCD:Start(90, self.vb.starlessCount+1)
+		timerVoidShreddersCD:Start(10.8, self.vb.shredderCount+1)
+		timerAssCD:Start(16, self.vb.assCount+1)--18.1 on mythic?
+		timerNetherRiftCD:Start(26.8, self.vb.riftCount+1)
+		timerTwilightMassacreCD:Start(38.8, self.vb.massacreCount+1)
+		timerNexusDaggersCD:Start(50, self.vb.daggersCount+1)
+		timerStarlessNightCD:Start(self:IsMythic() and 100 or 90, self.vb.starlessCount+1)
 		if self:IsMythic() then
-			timerDeathMasksCD:Start(2)
+			timerDeathMasksCD:Start(23.8, self.vb.maskCount+1)
 		end
 	end
 end

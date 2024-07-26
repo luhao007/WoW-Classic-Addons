@@ -253,11 +253,11 @@ RegisterAddonMessagePrefix(pig_PREFIX)
 local function Update_ShowItem_List(zbData,laiyuan)
 	for k,v in pairs(zbData) do
 		local _,itemLink = GetItemInfo(v) 
-		if not itemLink and yuanchengCFrame.changshicishunum<10 then
-			yuanchengCFrame.changshicishunum=yuanchengCFrame.changshicishunum+1
-			return C_Timer.After(0.1,function()
+		if not itemLink then
+			C_Timer.After(0.1,function()
 				Update_ShowItem_List(zbData,laiyuan)
 			end)
+			return
 		end
 	end
 	local NewzbData = {}
@@ -303,8 +303,9 @@ local function Update_ShowItem(itemstxt,laiyuan)
 	for k,v in pairs(zbData) do
 		GetItemInfo(v)
 	end
-	yuanchengCFrame.changshicishunum=0
-	Update_ShowItem_List(zbData,laiyuan)
+	C_Timer.After(0.1,function()
+		Update_ShowItem_List(zbData,laiyuan)
+	end)
 end
 Fun.Update_ShowItem=Update_ShowItem
 local function Update_ShowPlayer(Player,lyfrome)
@@ -364,6 +365,7 @@ local function PIG_tiquMsg(msgx,nameX)
 	if yuanchengCFrame:IsShown() and yuanchengCFrame.fullnameX==nameX then
 		local qianzhui = msgx:sub(1, 2)
 		if qianzhui == "!P" then
+
 			if not msgx:match("@") then
 				yuanchengCFrame.fanhuiYN=true
 				local allnum = msgx:sub(3, 3)

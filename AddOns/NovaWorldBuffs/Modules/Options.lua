@@ -1712,13 +1712,21 @@ function NWB:loadSpecificOptions()
 			get = "getOverlayShowStranglethorn",
 			set = "setOverlayShowStranglethorn",
 		};
+		NWB.options.args["overlayShowBlackrock"] = {
+			type = "toggle",
+			name = L["overlayShowBlackrockTitle"],
+			desc = L["overlayShowBlackrockDesc"],
+			order = 34,
+			get = "getOverlayShowBlackrock",
+			set = "setOverlayShowBlackrock",
+		};
 		NWB.options.args["ashenvaleOverlayFont"] = {
 			type = "select",
 			name = L["ashenvaleOverlayFontTitle"],
 			desc = L["ashenvaleOverlayFontDesc"],
 			values = NWB.LSM:HashTable("font"),
 			dialogControl = "LSM30_Font",
-			order = 34,
+			order = 35,
 			get = "getAshenvaleOverlayFont",
 			set = "setAshenvaleOverlayFont",
 		};
@@ -1726,7 +1734,7 @@ function NWB:loadSpecificOptions()
 			type = "toggle",
 			name = L["printStvCoinsTitle"],
 			desc = L["printStvCoinsDesc"],
-			order = 35,
+			order = 36,
 			get = "getPrintStvCoins",
 			set = "setPrintStvCoins",
 		};
@@ -1734,7 +1742,7 @@ function NWB:loadSpecificOptions()
 			type = "toggle",
 			name = L["printBlackrockHonorTitle"],
 			desc = L["printBlackrockHonorDesc"],
-			order = 36,
+			order = 37,
 			get = "getPrintBlackrockHonor",
 			set = "setPrintBlackrockHonor",
 		};
@@ -1742,7 +1750,7 @@ function NWB:loadSpecificOptions()
 			type = "description",
 			name = "|cFF9CD6DE" .. L["layersNoteText"],
 			fontSize = "medium",
-			order = 37,
+			order = 38,
 		};
 		NWB.options.args.cappingSupport = {
 			type = "toggle",
@@ -1939,6 +1947,7 @@ NWB.optionDefaults = {
 		minimapLayerFont = "NWB Default",
 		minimapLayerFontSize = 10,
 		minimapLayerScale = 1,
+		buffsFrameMinLevel = 2,
 		
 		--TBC options
 		disableSoundsAboveMaxBuffLevel = true,
@@ -1967,6 +1976,7 @@ NWB.optionDefaults = {
 		overlayShowArt = true,
 		overlayShowAshenvale = true,
 		overlayShowStranglethorn = true,
+		overlayShowBlackrock = true,
 		showStvBoss = false,
 		sodMiddleScreenWarning = false,
 		printStvCoins = true,
@@ -4262,6 +4272,19 @@ function NWB:setOverlayShowStranglethorn(info, value)
 	NWB:refreshOverlay();
 end
 
+function NWB:getOverlayShowStranglethorn(info)
+	return self.db.global.overlayShowStranglethorn;
+end
+
+function NWB:setOverlayShowBlackrock(info, value)
+	self.db.global.overlayShowBlackrock = value;
+	NWB:refreshOverlay();
+end
+
+function NWB:getOverlayShowBlackrock(info)
+	return self.db.global.overlayShowBlackrock;
+end
+
 function NWB:getPrintStvCoins(info)
 	return self.db.global.printStvCoins;
 end
@@ -4276,10 +4299,6 @@ end
 
 function NWB:setPrintBlackrockHonor(info, value)
 	self.db.global.printBlackrockHonor = value;
-end
-
-function NWB:getOverlayShowStranglethorn(info)
-	return self.db.global.overlayShowStranglethorn;
 end
 
 --Minimap layer display font.

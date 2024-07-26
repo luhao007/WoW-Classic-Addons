@@ -207,6 +207,9 @@ function BagBankfun.Update_BankFrame_Height(BagdangeW)
 			BankFrame:SetHeight(BANK_PANELS[1].size.y);
 		end
 	end
+	if ElvUI then
+		BankFrame.backdrop:SetPoint("BOTTOMRIGHT", BankFrame, "BOTTOMRIGHT", 10.17, 0);	
+	end
 end
 -------
 function BagBankfun.add_Itemslot_ZLV_ranse(famrr,BagdangeW)		

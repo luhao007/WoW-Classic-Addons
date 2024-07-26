@@ -232,7 +232,6 @@ GTFO.SpellID["428650"] = {
 GTFO.SpellID["422393"] = {
   --desc = "Suffocating Darkness (Skittering Darkness)";
   sound = 3;
-  test = true; -- Verification
 };
 
 GTFO.SpellID["427011"] = {
@@ -257,6 +256,11 @@ GTFO.SpellID["427100"] = {
   --desc = "Umbral Slash (The Darkness)";
   sound = 3;
   test = true; -- Verification
+};
+
+GTFO.SpellID["422414"] = {
+  --desc = "Shadow Smash (Shuffling Horror)";
+  sound = 3;
 };
 
 --- ******************************
@@ -579,9 +583,9 @@ GTFO.SpellID["427869"] = {
   test = true; -- Verification
 };
 
---- ********************
---- * Earthcrawl Mines *
---- ********************
+--- ***************
+--- * TWW Devles  *
+--- ***************
 
 GTFO.SpellID["433410"] = {
   --desc = "Fearful Shriek (Chittering Fearmonger)";
@@ -599,22 +603,15 @@ GTFO.SpellID["448412"] = {
   sound = 3;
 };
 
---- *******************
---- * Kriegval's Rest *
---- *******************
-
 GTFO.SpellID["448529"] = {
   --desc = "BOOM! (Spitfire Fusetender)";
   sound = 3;
 };
 
---- ****************
---- * Fungal Folly *
---- ****************
-
 GTFO.SpellID["427710"] = {
   --desc = "Sporesplosion (Sporbit)";
   sound = 3;
+  applicationOnly = true;
 };
 
 GTFO.SpellID["424738"] = {
@@ -623,19 +620,20 @@ GTFO.SpellID["424738"] = {
   sound = 3;
 };
 
---- ******************
---- * The Waterworks *
---- ******************
+GTFO.SpellID["424798"] = {
+  --desc = "Bloated Eruption (Infected Beast)";
+  sound = 3;
+};
+
+GTFO.SpellID["425319"] = {
+  --desc = "Fungsplosion (Spinshroom)";
+  sound = 3;
+};
 
 GTFO.SpellID["450131"] = {
   --desc = "Noxious Gas (Waxface - Swirl)";
   sound = 3;
 };
-
-
---- *****************
---- * The Dread Pit *
---- *****************
 
 GTFO.SpellID["450714"] = {
   --desc = "Jagged Barbs (Nerubian Lord)";
@@ -651,10 +649,6 @@ GTFO.SpellID["448638"] = {
   --desc = "Impale (Under-Lord Vik'tis)";
   sound = 3;
 };
-
---- *************
---- * Underkeep *
---- *************
 
 GTFO.SpellID["439840"] = {
   --desc = "Cold Retort (Ice Block)";
@@ -672,40 +666,72 @@ GTFO.SpellID["447187"] = {
   sound = 3;
 };
 
+GTFO.SpellID["440679"] = {
+  --desc = "Forbidden Ritual (Nerubian Ritualist - Swirl)";
+  sound = 3;
+};
 
---- *********************
---- * Skittering Breach *
---- *********************
+GTFO.SpellID["442253"] = {
+  --desc = "Forbidden Ritual (Nerubian Ritualist - Purple orb)";
+  sound = 3;
+};
 
+GTFO.SpellID["440801"] = {
+  --desc = "Dark Abatement (Nerl'athekk the Skulking)";
+  sound = 3;
+  applicationOnly = true;
+};
 
---- *********************
---- * Nightfall Sanctum *
---- *********************
+GTFO.SpellID["440806"] = {
+  --desc = "Darkrift Smash (Nerl'athekk the Skulking - Impact)";
+  sound = 3;
+};
 
+GTFO.SpellID["441129"] = {
+  --desc = "Spotted! (Dark Bombardier)";
+  applicationOnly = true;
+  sound = 3;
+};
 
---- ****************
---- * The Sinkhole *
---- ****************
+GTFO.SpellID["443292"] = {
+  --desc = "Umbral Slam (Devouring Shade)";
+  sound = 3;
+};
 
+GTFO.SpellID["453335"] = {
+  --desc = "Erratic Energies";
+  sound = 3;
+};
 
---- **********************
---- * Myconmancer Cavern *
---- **********************
+GTFO.SpellID["443837"] = {
+  --desc = "Shadow Sweep (Speaker Halven)";
+  sound = 3;
+};
 
+GTFO.SpellID["444446"] = {
+  --desc = "Speaker's Wrath (Speaker Davenruth)";
+  sound = 3;
+};
 
---- ********************
---- * The Spiral Weave *
---- ********************
+GTFO.SpellID["457448"] = {
+  --desc = "Shadow Eruption (Slippery Syphoner)";
+  sound = 3;
+};
+
+GTFO.SpellID["424891"] = {
+  --desc = "Vine Spear (Fungal Speartender)";
+  sound = 3;
+};
+
+GTFO.SpellID["454205"] = {
+  --desc = "Muck Charge (Bogpiper)";
+  sound = 3;
+};
 
 GTFO.SpellID["449061"] = {
   --desc = "Impaling Spikes (Overseer Kaskel)";
   sound = 3;
 };
-
-
---- ********************
---- * Tak-Rethan Abyss *
---- ********************
 
 GTFO.SpellID["445038"] = {
   --desc = "Cleave (Kobyss Trickster)";
@@ -725,14 +751,6 @@ GTFO.SpellID["446321"] = {
   sound = 3;
 };
 
---- **********************
---- * Mystery 13th Delve *
---- **********************
-
---- ***************
---- * Delve Rares *
---- ***************
-
 GTFO.SpellID["445781"] = {
   --desc = "Lava Blast (Stolen Loader)";
   sound = 3;
@@ -741,6 +759,11 @@ GTFO.SpellID["445781"] = {
 
 GTFO.SpellID["415253"] = {
   --desc = "Fungal Breath (Invasive Sporecap)";
+  sound = 3;
+};
+
+GTFO.SpellID["415356"] = {
+  --desc = "Fungal Explosion (Invasive Sporecap)";
   sound = 3;
 };
 

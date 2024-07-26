@@ -2,7 +2,7 @@
 
 if not AL then return end
 
--- These localization strings are translated on Curseforge: https://www.curseforge.com/wow/addons/atlaslootclassic-cata/localization
+-- These localization strings are translated on Curseforge: https://www.curseforge.com/wow/addons/atlaslootclassic/localization
 -- DungeonsAndRaids
 AL["%s killed last"] = "最後殺死 %s"
 AL["20 Raids"] = "20 人團隊"
@@ -195,7 +195,7 @@ AL["Lord Alexei Barov"] = "阿萊克斯·巴羅夫領主"
 AL["Lord Cobrahn"] = "考布萊恩領主"
 AL["Lord Hel'nurath"] = "赫爾努拉斯領主"
 AL["Lord Incendius"] = "伊森迪奧斯領主"
-AL["Lord Kazzak"] = "卡札克"
+AL["Lord Kazzak"] = "毀滅領主卡札克"
 AL["Lord Kri"] = "克里勳爵"
 AL["Lord Pythas"] = "皮薩斯領主"
 AL["Lord Roccor"] = "洛考爾領主"
@@ -342,6 +342,7 @@ AL["Ysondre"] = "伊索德雷"
 AL["Zerillis"] = "澤雷利斯"
 AL["Zevrim Thornhoof"] = "瑟雷姆·刺蹄"
 
+if AtlasLoot:GameVersion_LT(AtlasLoot.BC_VERSION_NUM) then return end
 -- DungeonsAndRaidsTBC
 AL["10 Raids"] = "10人團隊"
 AL["25 Raids"] = "25人團隊"
@@ -440,6 +441,7 @@ AL["Warlord Kalithresh"] = "督軍卡利斯瑞"
 AL["Wrath-Scryer Soccothrates"] = "怒鐮者索寇斯瑞特"
 AL["Zereketh the Unbound"] = "無約束的希瑞奇斯"
 
+if AtlasLoot:GameVersion_LT(AtlasLoot.WRATH_VERSION_NUM) then return end
 -- DungeonsAndRaidsWrath
 AL["%s Attempts left"] = "%s 剩餘次數"
 AL["Achievements"] = "成就"
@@ -568,5 +570,3 @@ AL["Xevozz"] = "基沃滋"
 AL["XT-002 Deconstructor"] = "XT-002拆解者"
 AL["Yogg-Saron"] = "尤格薩倫"
 AL["Zuramat the Obliterator"] = "『消滅者』舒拉邁特"
-
--- DungeonsAndRaidsCata

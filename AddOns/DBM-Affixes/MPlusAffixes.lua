@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("MPlusAffixes", "DBM-Affixes")
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240626050044")
+mod:SetRevision("20240721192753")
 --mod:SetModelID(47785)
 mod:SetZone(DBM_DISABLE_ZONE_DETECTION)--Stays active in all zones for zone change handlers, but registers events based on dungeon ids
 
@@ -51,6 +51,7 @@ local afflictedDetected = false
 local unstableDetected = false
 local unstableCounting = false
 
+---@param self DBMMod
 local function checkEntangled(self)
 	if timerEntangledCD:GetRemaining() > 0 then
 		--Timer exists, do nothing
@@ -60,6 +61,7 @@ local function checkEntangled(self)
 	self:Schedule(30, checkEntangled, self)
 end
 
+---@param self DBMMod
 local function checkAfflicted(self)
 	if timerAfflictedCD:GetRemaining() > 0 then
 		--Timer exists, do nothing
@@ -69,6 +71,7 @@ local function checkAfflicted(self)
 	self:Schedule(30, checkAfflicted, self)
 end
 
+---@param self DBMMod
 local function checkIncorp(self)
 	if timerIncorporealCD:GetRemaining() > 0 then
 		--Timer exists, do nothing

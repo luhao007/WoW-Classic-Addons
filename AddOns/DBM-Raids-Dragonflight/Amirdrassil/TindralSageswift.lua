@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(2565, "DBM-Raids-Dragonflight", 1, 1207)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240629030018")
+mod:SetRevision("20240721192753")
 mod:SetCreatureID(209090)--Primary ID
 mod:SetEncounterID(2786)
 mod:SetUsedIcons(1, 2, 3, 4)
@@ -27,8 +27,6 @@ mod:RegisterEventsInCombat(
  or (ability.id = 424180 or ability.id = 420540 or ability.id = 422115 or ability.id = 425582 or ability.id = 424140) and (type = "applybuff" or type = "removebuff" or type = "applydebuff" or type = "removedebuff")
  or ability.id = 421603
 --]]
---TODO, https://www.wowhead.com/ptr-2/spell=425888/igniting-growth ?
---TODO, review dream essence for spam
 --General
 local warnPhase										= mod:NewPhaseChangeAnnounce(2, 2, nil, nil, nil, nil, nil, 2)
 
@@ -261,6 +259,7 @@ local allTimers = {
 	},
 }
 
+---@param self DBMMod
 local function delaySuperNova(self)
 	timerSuperNovaCD:Start(self:IsEasy() and 387 or 249)--Blizzard energy, so ~3
 end

@@ -2,7 +2,7 @@
 
 if not AL then return end
 
--- These localization strings are translated on Curseforge: https://www.curseforge.com/wow/addons/atlaslootclassic-cata/localization
+-- These localization strings are translated on Curseforge: https://www.curseforge.com/wow/addons/atlaslootclassic/localization
 -- DungeonsAndRaids
 AL["%s killed last"] = "%s matado el último"
 AL["20 Raids"] = "Bandas de 20"
@@ -90,7 +90,7 @@ AL["Dire Maul West"] = "La Masacre Oeste"
 AL["Doan's Strongbox"] = "Caja fuerte de Doan"
 AL["Doctor Theolen Krastinov"] = "Doctor Theolen Krastinov"
 AL["Dreamscythe"] = "Segasueños"
-AL["Dungeons"] = "Calabozos"
+AL["Dungeons"] = "Mazmorras"
 AL["Dustwraith"] = "Ánima de polvo"
 AL["Earthcaller Halmgar"] = "Clamatierras Halmgar"
 AL["Ebonroc"] = "Ebanorroca"
@@ -101,11 +101,11 @@ AL["Emperor Dagran Thaurissan"] = "Emperador Dagran Thaurissan"
 AL["Emperor Vek'lor"] = "Emperador Vek'lor"
 AL["Emperor Vek'nilash"] = "Emperador Vek'nilash"
 AL["Enchants"] = "Encantamientos"
-AL["Eric \"The Swift\""] = "Eric \"El Veloz\""
+AL["Eric \"The Swift\""] = "Eric \"el Veloz\""
 AL["Eviscerator"] = "Eviscerador"
 AL["Fallen Champion"] = "Campeón caído"
 AL["Fankriss the Unyielding"] = "Fankriss el Implacable"
-AL["Fel Steed / Shadow Charger"] = "Corcel vil / Destrero de la Sombra"
+AL["Fel Steed / Shadow Charger"] = "Corcel vil / Destrero de las Sombras"
 AL["Fengus's Chest"] = "Cofre de Fengus"
 AL["Fenrus the Devourer"] = "Fenrus el Devorador"
 AL["Fineous Darkvire"] = "Finoso Virunegro"
@@ -345,6 +345,7 @@ AL["Ysondre"] = "Ysondre"
 AL["Zerillis"] = "Zerillis"
 AL["Zevrim Thornhoof"] = "Zevrim Pezuñahendida"
 
+if AtlasLoot:GameVersion_LT(AtlasLoot.BC_VERSION_NUM) then return end
 -- DungeonsAndRaidsTBC
 AL["10 Raids"] = "Bandas de 10"
 AL["25 Raids"] = "Bandas de 25"
@@ -486,11 +487,7 @@ AL["Yor <Void Hound of Shaffar>"] = "Yor <Can del Vacío de Shaffar>"
 AL["Zereketh the Unbound"] = "Zereketh el Desatado"
 AL["Zul'jin"] = "Zul'jin"
 
+if AtlasLoot:GameVersion_LT(AtlasLoot.WRATH_VERSION_NUM) then return end
 -- DungeonsAndRaidsWrath
 AL["%s Attempts left"] = "Quedan %s intentos"
 AL["Achievements"] = "Logros"
-AL["Anub'arak"] = "Anub'arak"
-AL["Enhancement"] = "Mejora"
-AL["Raids"] = "Bandas"
-
--- DungeonsAndRaidsCata

@@ -2,7 +2,7 @@
 
 if not AL then return end
 
--- These localization strings are translated on Curseforge: https://www.curseforge.com/wow/addons/atlaslootclassic-cata/localization
+-- These localization strings are translated on Curseforge: https://www.curseforge.com/wow/addons/atlaslootclassic/localization
 -- Collections
 AL["'%s %s' Vendor"] = "Comerciante de '%s %s'"
 AL["%s Sets"] = "%s Conjuntos"

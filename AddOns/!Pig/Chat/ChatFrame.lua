@@ -55,29 +55,28 @@ function fuFrame.Bianju_Fun()
 end
 --输入框移动
 local function Update_editBoxPoint()
-	if PIGA["Chat"]["Frame"]["editMove"] then
+	local weizhidata = {-5,-2,5,-2}
+	if PIGA["Chat"]["QuickChat"] or PIGA["Chat"]["Frame"]["editMove"] then
+		if PIGA["Chat"]["QuickChat_maodian"]==1 then
+
+		elseif PIGA["Chat"]["QuickChat_maodian"]==2 then
+			weizhidata[1]=-5
+			weizhidata[2]=-23
+			weizhidata[3]=5
+			weizhidata[4]=-23
+		end
+		if PIGA["Chat"]["Frame"]["editMove"] then
+			weizhidata[1]=weizhidata[1]+PIGA["Chat"]["Frame"]["editPoint_X"]
+			weizhidata[2]=weizhidata[2]+PIGA["Chat"]["Frame"]["editPoint_Y"]
+			weizhidata[3]=weizhidata[3]+PIGA["Chat"]["Frame"]["editPoint_X"]
+			weizhidata[4]=weizhidata[4]+PIGA["Chat"]["Frame"]["editPoint_Y"]
+		end
 		for i=1,NUM_CHAT_WINDOWS do
 			local fujichat = _G["ChatFrame"..i]
 			fujichat.editBox:ClearAllPoints();
-			fujichat.editBox:SetPoint("TOPLEFT",fujichat,"BOTTOMLEFT",PIGA["Chat"]["Frame"]["editPoint_X"]-5,PIGA["Chat"]["Frame"]["editPoint_Y"]-2);
-			fujichat.editBox:SetPoint("TOPRIGHT",fujichat,"BOTTOMRIGHT",PIGA["Chat"]["Frame"]["editPoint_X"]+5,PIGA["Chat"]["Frame"]["editPoint_Y"]-2);
+			fujichat.editBox:SetPoint("TOPLEFT",fujichat,"BOTTOMLEFT",weizhidata[1],weizhidata[2]);
+			fujichat.editBox:SetPoint("TOPRIGHT",fujichat,"BOTTOMRIGHT",weizhidata[3],weizhidata[4]);
 		end
-	else
-		if PIGA["Chat"]["QuickChat_maodian"]==2 then
-			for i=1,NUM_CHAT_WINDOWS do
-				local fujichat = _G["ChatFrame"..i]
-				fujichat.editBox:ClearAllPoints();
-				fujichat.editBox:SetPoint("TOPLEFT",fujichat,"BOTTOMLEFT",-5,-23);
-				fujichat.editBox:SetPoint("TOPRIGHT",fujichat,"BOTTOMRIGHT",5,-23);
-			end
-		else
-			for i=1,NUM_CHAT_WINDOWS do
-				local fujichat = _G["ChatFrame"..i]
-				fujichat.editBox:ClearAllPoints();
-				fujichat.editBox:SetPoint("TOPLEFT",fujichat,"BOTTOMLEFT",-5,-2);
-				fujichat.editBox:SetPoint("TOPRIGHT",fujichat,"BOTTOMRIGHT",5,-2);
-			end
-		end	
 	end
 end
 QuickChatfun.Update_editBoxPoint=Update_editBoxPoint

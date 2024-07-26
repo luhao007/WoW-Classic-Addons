@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Novaspark-Arugal OCE
-## Version: 2.85
+## Version: 2.88
 ## SavedVariables: NWBdatabase
 
 ## Title: Nova World Buffs
@@ -27,3 +27,5 @@ Modules\Blackrock.lua
 Modules\TolBarad.lua
 Modules\Wintergrasp.lua
 Modules\Overlay.lua
+Modules\BuffsWindow.lua
+Modules\DungeonPortals.lua

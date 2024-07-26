@@ -12,12 +12,14 @@ end
 local mod	= DBM:NewMod("Golemagg", "DBM-Raids-Vanilla", catID)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20230814031337")
-mod:SetCreatureID(11988)--, 11672
+mod:SetRevision("20240726025149")
+mod:SetCreatureID(DBM:IsSeasonal("SeasonOfDiscovery") and 228435 or 11988)--, 11672
 mod:SetEncounterID(670)
 if not mod:IsClassic() then
 	mod:SetModelID(11986)--Totally fucked on classic
 end
+mod:SetHotfixNoticeRev(20240724000000)
+
 mod:RegisterCombat("combat")
 
 mod:RegisterEventsInCombat(

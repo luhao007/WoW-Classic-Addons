@@ -25,6 +25,10 @@ local function add_ButtonUI(MODE,fuF,Point,WH,Text,UIName,id,TemplateP,Zihao)
 		But = CreateFrame("Button", UIName, fuF,TemplateP,id);
 		But:RegisterForClicks("LeftButtonUp","RightButtonUp")
 		BackdropSet(But)
+		function But:PIGSetBackdrop(BGAlpha,BorderAlpha)
+			self:SetBackdropColor(BGColor[1],BGColor[2],BGColor[3], BGAlpha);
+			self:SetBackdropBorderColor(BorderColor[1], BorderColor[2], BorderColor[3], BorderAlpha);
+		end
 		But:HookScript("OnEnter", function(self)
 			if self:IsEnabled() then
 				self:SetBackdropBorderColor(BorderColor_OnEnter[1], BorderColor_OnEnter[2], BorderColor_OnEnter[3], BorderColor_OnEnter[4]);

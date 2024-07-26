@@ -65,4 +65,17 @@ function QuickChatfun.QuickBut_jiuwei()
 			self.daoshuTicker = C_Timer.NewTicker(1, daojishikaiguai, 6)
 		end
 	end);
+	fuFrame.jiuweidaojishi:RegisterEvent("PLAYER_ENTERING_WORLD")
+	fuFrame.jiuweidaojishi:RegisterEvent("GROUP_ROSTER_UPDATE")
+	fuFrame.jiuweidaojishi:SetScript("OnEvent", function(self,event)
+		self.ShowHide=false
+		if IsInRaid() then
+			if UnitIsGroupLeader("player") or UnitIsGroupAssistant("player") then
+				self.ShowHide=true
+			end
+		elseif IsInGroup() then
+			self.ShowHide=true
+		end
+		self:SetShown(self.ShowHide)
+	end);
 end

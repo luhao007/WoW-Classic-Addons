@@ -494,8 +494,8 @@ function TardisInfo.Plane(Activate)
 					if arg2:match(shenqingMSG_T) then
 						if PIGA["Tardis"]["Plane"]["AutoInvite"] then
 							local inInstance, instanceType =IsInInstance()
-							local zuduizhong =IsInGroup("LE_PARTY_CATEGORY_HOME");
-							if not inInstance and not zuduizhong then
+							local zuduizhong =IsInGroup(LE_PARTY_CATEGORY_HOME);
+							if not inInstance and not zuduizhong and not MiniMapLFGFrame:IsShown() then
 								local Nerarg2 = arg2:gsub(shenqingMSG_T,"")
 								if tonumber(Nerarg2)<shenqingMSG_V then
 									SendChatMessage(INVITE..FAILED..","..addonName..GAME_VERSION_LABEL..ADDON_INTERFACE_VERSION, "WHISPER", nil, waname);

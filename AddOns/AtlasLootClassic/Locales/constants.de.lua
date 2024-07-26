@@ -2,7 +2,7 @@ local AL = _G.AtlasLoot.GetLocales("deDE")
 
 if not AL then return end
 
--- These localization strings are translated on Curseforge: https://www.curseforge.com/wow/addons/atlaslootclassic-cata/localization
+-- These localization strings are translated on Curseforge: https://www.curseforge.com/wow/addons/atlaslootclassic/localization
 AL["--- or ---"] = "--- oder ---"
 AL["%s will finish loading after combat."] = "%s wird nach dem Kampf geladen."
 AL["(%d) Set:"] = "(%d) Set:"

@@ -2,7 +2,7 @@ local AL = _G.AtlasLoot.GetLocales("deDE")
 
 if not AL then return end
 
--- These localization strings are translated on Curseforge: https://www.curseforge.com/wow/addons/atlaslootclassic-cata/localization
+-- These localization strings are translated on Curseforge: https://www.curseforge.com/wow/addons/atlaslootclassic/localization
 -- Crafting
 AL["Apprentice"] = "Lehrling"
 AL["Artisan"] = "Fachmann"
@@ -11,11 +11,8 @@ AL["Cauldrons"] = "Kessel"
 AL["Class Professions"] = "Klassenspezifische Berufe"
 AL["Drums"] = "Trommeln"
 AL["Elixirs"] = "Elixiere"
-AL["Enhancements"] = "Verbesserungen"
 AL["Expert"] = "Experte"
 AL["Fireworks"] = "Feuerwerk"
-AL["Fish"] = "Fisch"
-AL["Fishes"] = "Fische"
 AL["Flares"] = "Rauchsignal"
 AL["Flasks"] = "Fläschchen"
 AL["Healing/Mana Potions"] = "Heil/Mana Tränke"
@@ -37,6 +34,5 @@ AL["Stat Elixirs"] = "Wert-Elixiere"
 AL["Stones"] = "Steine"
 AL["Swords"] = "Schwerter"
 AL["Transmutes"] = "Transmutieren"
-AL["Trinkets"] = "Schmuckstücke"
 AL["Util Potions"] = "Nutzungstränke"
 

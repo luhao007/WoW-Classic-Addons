@@ -59,37 +59,17 @@ end
 ---@param amount number
 ---@return string
 local function comma_value(amount)
---[===[
-	local formatted = tostring(amount)
-	local k
-	local sep = (TitanGetVar(TITAN_GOLD_ID, "UseSeperatorComma") and "UseComma" or "UsePeriod")
-	while true do
-		if sep == "UseComma" then formatted, k = string.gsub(formatted, "^(-?%d+)(%d%d%d)", '%1,%2') end
-		if sep == "UsePeriod" then formatted, k = string.gsub(formatted, "^(-?%d+)(%d%d%d)", '%1.%2') end
-		if (k == 0) then
-			break
-		end
-	end
-	return formatted
---]===]
-	-- Jul 2024 Use same code as XP
-	local formatted = ""
-
-	if type(amount) == "number" then
-		local sep = (TitanGetVar(TITAN_GOLD_ID, "UseSeperatorComma") and "," or ".")
-		local i, j, minus, int, fraction = tostring(amount):find('([-]?)(%d+)([.]?%d*)')
-
-		-- reverse the int-string and append a comma to all blocks of 3 digits
-		int = int:reverse():gsub("(%d%d%d)", "%1"..sep)
-
-		-- reverse the int-string back remove an optional comma and put the 
-		-- optional minus and fractional part back
-		formatted = minus .. int:reverse():gsub("^"..sep, "") .. fraction
+	local sep = ""
+	local dec = ""
+	if (TitanGetVar(TITAN_GOLD_ID, "UseSeperatorComma")) then
+		sep = ","
+		dec = "."
 	else
-		formatted = "0" -- 'silent' error
+		sep = "."
+		dec = ","
 	end
-	return formatted
 
+	return TitanUtils_NumToString(amount, sep, dec)
 end
 
 ---local Take the total cash and make it into a nice, colorful string of g s c (gold silver copper)
@@ -97,11 +77,11 @@ end
 ---@param show_zero boolean
 ---@param show_neg boolean
 ---@return string outstr Formatted cash for output
----@return number cash Value as passed in
 ---@return integer gold part of value
 ---@return integer silver part of value
 ---@return integer copper part of value
 local function NiceCash(value, show_zero, show_neg)
+	--[[
 	local neg1 = ""
 	local neg2 = ""
 	local agold = 10000;
@@ -195,15 +175,30 @@ local function NiceCash(value, show_zero, show_neg)
 		.. silver_str
 		.. copper_str
 		.. neg2
-	--[[
-SC.Print("Acc cash:"
+print("Acc cash:"
 ..(gold or "?").."g "
 ..(silver or "?").."s "
 ..(copper or "?").."c "
 ..(outstr or "?")
 );
 --]]
-	return outstr, cash, gold, silver, copper
+	local sep = ""
+	local dec = ""
+	if (TitanGetVar(TITAN_GOLD_ID, "UseSeperatorComma")) then
+		sep = ","
+		dec = "."
+	else
+		sep = "."
+		dec = ","
+	end
+
+	local outstr, gold, silver, copper =
+		TitanUtils_CashToString(value, sep, dec,
+			TitanGetVar(TITAN_GOLD_ID, "ShowGoldOnly"),
+			TitanGetVar(TITAN_GOLD_ID, "ShowCoinLabels"),
+			TitanGetVar(TITAN_GOLD_ID, "ShowCoinIcons"),
+			TitanGetVar(TITAN_GOLD_ID, "ShowColoredText"))
+	return outstr, gold, silver, copper
 end
 
 ---local Create Show menu - list of characters in same faction

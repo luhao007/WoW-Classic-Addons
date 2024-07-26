@@ -1,7 +1,7 @@
 # Prat 3.0
 
-## [3.9.54](https://github.com/Legacy-of-Sylvanaar/prat-3-0/tree/3.9.54) (2024-05-18)
-[Full Changelog](https://github.com/Legacy-of-Sylvanaar/prat-3-0/compare/3.9.53...3.9.54) [Previous Releases](https://github.com/Legacy-of-Sylvanaar/prat-3-0/releases)
+## [3.9.55](https://github.com/Legacy-of-Sylvanaar/prat-3-0/tree/3.9.55) (2024-07-23)
+[Full Changelog](https://github.com/Legacy-of-Sylvanaar/prat-3-0/compare/3.9.54...3.9.55) [Previous Releases](https://github.com/Legacy-of-Sylvanaar/prat-3-0/releases)
 
-- [Fixes #181] Cata: Minimise button didn't hide correctly  
-- [Fixes #184] Retail: Show timerunning icon next to chats from timerunning players  
+- Update toc for TWW pre-patch  
+- Use C\_Item for item info APIs ready for The War Within  

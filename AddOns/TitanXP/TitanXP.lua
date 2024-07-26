@@ -83,22 +83,17 @@ end
 ---@param amount number
 ---@return string
 local function comma_value(amount)
-	local formatted = ""
-
-	if type(amount) == "number" then
-		local sep = (TitanGetVar(TITAN_XP_ID, "UseSeperatorComma") and "," or ".")
-		local i, j, minus, int, fraction = tostring(amount):find('([-]?)(%d+)([.]?%d*)')
-
-		-- reverse the int-string and append a comma to all blocks of 3 digits
-		int = int:reverse():gsub("(%d%d%d)", "%1"..sep)
-
-		-- reverse the int-string back remove an optional comma and put the 
-		-- optional minus and fractional part back
-		formatted = minus .. int:reverse():gsub("^"..sep, "") .. fraction
+	local sep = ""
+	local dec = ""
+	if (TitanGetVar(TITAN_XP_ID, "UseSeperatorComma")) then
+		sep = ","
+		dec = "."
 	else
-		formatted = "0" -- 'silent' error
+		sep = "."
+		dec = ","
 	end
-	return formatted
+
+	return TitanUtils_NumToString(amount, sep, dec)
 end
 
 ---local Reset session and accumulated variables

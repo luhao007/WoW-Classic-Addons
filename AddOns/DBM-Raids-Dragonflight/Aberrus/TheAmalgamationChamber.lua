@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(2529, "DBM-Raids-Dragonflight", 2, 1208)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240629030018")
+mod:SetRevision("20240721192753")
 mod:SetCreatureID(201774, 201773, 201934)--Krozgoth, Moltannia, Molgoth
 mod:SetEncounterID(2687)
 mod:SetUsedIcons(1, 2, 3, 4)
@@ -249,6 +249,7 @@ local allTimers = {
 
 --As computational as this looks, it's purpose is to just filter information overload.
 --Basically, it solves for what should or shouldn't be shown, not what a player should or shouldn't do.
+---@param self DBMMod
 local function updateBossDistance(self)
 	if not self.Options.AdvancedBossFiltering then return end
 	--Check if near or far from Krozgoth
@@ -290,6 +291,7 @@ local function updateBossDistance(self)
 	self:Schedule(2, updateBossDistance, self)
 end
 
+---@param self DBMMod
 local function yellRepeater(self, text)
 	yellShadowandFlameRepeat:Yell(text)
 	self:Schedule(1.5, yellRepeater, self, text)

@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: MysticalOS
-## Version: 10.2.50
+## Version: 11.0.0
 ## RequiredDeps: DBM-Core
 ## LoadOnDemand: 1
 ## SavedVariables: DBMRaidsWarWithin_AllSavedVars
@@ -19,6 +19,7 @@
 ## X-DBM-Mod-Name-koKR: 공격대 (내부 전쟁)
 ## X-DBM-Mod-Name-ruRU: Рейды (Война Внутри)
 ## X-DBM-Mod-Name-zhCN: 团队副本（地心之战）
+## X-DBM-Mod-Name-zhTW: 團隊副本 (地心之戰)
 ## X-DBM-Mod-Sort: 101
 ## X-DBM-Mod-MapID: 2657
 ## X-DBM-Mod-MinCoreRevision: 20230617000000
@@ -32,6 +33,7 @@ localization.en.lua
 localization.kr.lua
 localization.ru.lua
 localization.cn.lua
+localization.tw.lua
 
 NerubarPalace\UlgraxtheDevourer.lua
 NerubarPalace\TheBloodboundHorror.lua

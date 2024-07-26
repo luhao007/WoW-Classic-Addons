@@ -2,7 +2,7 @@
 
 if not AL then return end
 
--- These localization strings are translated on Curseforge: https://www.curseforge.com/wow/addons/atlaslootclassic-cata/localization
+-- These localization strings are translated on Curseforge: https://www.curseforge.com/wow/addons/atlaslootclassic/localization
 -- DungeonsAndRaids
 AL["Agathelos the Raging"] = "Agathelos il Rabbioso"
 AL["Aggem Thorncurse"] = "Aggem Malaspina"
@@ -37,7 +37,6 @@ AL["Blind Hunter"] = "Cacciatore Cieco"
 AL["Blood Steward of Kirtonos"] = "Blood Steward of Kirtonos"
 AL["Bloodlord Mandokir"] = "Mandokir il Sanguinario "
 AL["Bloodmage Thalnos"] = "Mago del Sangue Thalnos"
-AL["Books"] = "Libri"
 AL["Broodlord Lashlayer"] = "Fustigor il Signore della Progenie"
 AL["Bruegal Ironknuckle"] = "Bruegal Ironknuckle"
 AL["Burning Felguard"] = "Vilguardia Infuocata"
@@ -272,8 +271,10 @@ AL["Wushoolay"] = "Wushoolay"
 AL["Zerillis"] = "Zerillis"
 AL["Zevrim Thornhoof"] = "Zevrim Zamparossa"
 
+if AtlasLoot:GameVersion_LT(AtlasLoot.BC_VERSION_NUM) then return end
 -- DungeonsAndRaidsTBC
 
+if AtlasLoot:GameVersion_LT(AtlasLoot.WRATH_VERSION_NUM) then return end
 -- DungeonsAndRaidsWrath
 AL["Algalon the Observer"] = "Algalon l'Osservatore"
 AL["Amanitar"] = "Amanitar"
@@ -375,6 +376,3 @@ AL["Xevozz"] = "Xevozz"
 AL["XT-002 Deconstructor"] = "Demolitore XT-002"
 AL["Yogg-Saron"] = "Yogg-Saron"
 AL["Zuramat the Obliterator"] = "Zuramat il Disintegratore"
-
--- DungeonsAndRaidsCata
-AL["\"Captain\" Cookie"] = "\"Captain\" Cookie"

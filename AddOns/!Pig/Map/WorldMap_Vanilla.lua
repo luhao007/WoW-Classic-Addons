@@ -88,9 +88,11 @@ function Mapfun.WorldMap_Wind()
 		hooksecurefunc(WorldMapFrame, "SynchronizeDisplayState", function(self)
 			if self:IsMaximized() then
 				if self.QuestLog:IsShown() then
-					local point, relativeTo, relativePoint, offsetX, offsetY=unpack(PIGA["WowUI"]["WorldMapFrame"]["Point"])
-					self:ClearAllPoints();
-					self:SetPoint(point, relativeTo, relativePoint, offsetX, offsetY);
+					if PIGA["WowUI"]["WorldMapFrame"] and PIGA["WowUI"]["WorldMapFrame"]["Point"] then
+						local point, relativeTo, relativePoint, offsetX, offsetY=unpack(PIGA["WowUI"]["WorldMapFrame"]["Point"])
+						self:ClearAllPoints();
+						self:SetPoint(point, relativeTo, relativePoint, offsetX, offsetY);
+					end
 				end
 			else
 				if WorldMapTrackQuest then

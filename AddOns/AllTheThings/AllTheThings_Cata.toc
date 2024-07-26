@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Crieve-Sargeras
-## Version: DF-3.12.12
+## Version: TWW-4.0.0a
 ## SavedVariables: ATTCharacterData, ATTAccountWideData, AllTheThingsSavedVariables, AllTheThingsAD, AllTheThingsSettings, AllTheThingsAuctionData, AllTheThingsDebugData, ATTClassicSettings, ATTClassicAuctionData, AllTheThingsHarvestItems
 ## SavedVariablesPerCharacter: AllTheThingsSettingsPerCharacter, ATTClassicSettingsPerCharacter
 

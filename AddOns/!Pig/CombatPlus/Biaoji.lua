@@ -21,13 +21,10 @@ local CombatPlusfun=addonTable.CombatPlusfun
 -- /click DropDownList1Button5
 -- 光标宏是
 -- /wm 1-8
-
 -- 清除是
 -- /cwm 1-8
-
 -- 清除全部
 -- /cwm 0
-
 -- 鼠标指向技能是
 -- /cast [@cursor] 照明弹
 
@@ -69,12 +66,28 @@ local function SetLock()
 		end
 	end
 end
+local function SetAutoShowFun(self)
+	self.ShowHide=true
+	if self.NOtargetHide and not UnitExists("target") then
+		self.ShowHide=false
+	end
+	if self.AutoShow and not CanBeRaidTarget("target") then
+		self.ShowHide=false
+	end
+	self:SetShown(self.ShowHide)
+end
 local function SetAutoShow()
 	if PIGA["CombatPlus"]["Biaoji"]["AutoShow"] then
-		PIGbiaoji:RegisterEvent("PLAYER_TARGET_CHANGED")
+		PIGbiaoji.AutoShow=true
 	else
-		PIGbiaoji:UnregisterEvent("PLAYER_TARGET_CHANGED")
+		PIGbiaoji.AutoShow=false
 	end
+	if PIGA["CombatPlus"]["Biaoji"]["NOtargetHide"] then
+		PIGbiaoji.NOtargetHide=true
+	else
+		PIGbiaoji.NOtargetHide=false
+	end
+	SetAutoShowFun(PIGbiaoji)
 end
 function CombatPlusfun.biaoji()
 	if not PIGA["CombatPlus"]["Biaoji"]["Open"] then return end
@@ -110,19 +123,11 @@ function CombatPlusfun.biaoji()
 	SetBGHide()
 	SetAutoShow()
 	--
+	PIGbiaoji:RegisterEvent("PLAYER_ENTERING_WORLD")
+	PIGbiaoji:RegisterEvent("RAID_TARGET_UPDATE")
+	PIGbiaoji:RegisterEvent("PLAYER_TARGET_CHANGED")
 	PIGbiaoji:SetScript("OnEvent", function(self,event)
-		if CanBeRaidTarget("target") then
-			if IsInRaid(LE_PARTY_CATEGORY_HOME) then
-				local isLeader = UnitIsGroupLeader("player");
-				if isLeader or UnitIsGroupAssistant("player") then
-					PIGbiaoji:Show()
-				else
-					PIGbiaoji:Hide()
-				end
-			else
-				PIGbiaoji:Show()
-			end
-		end
+		SetAutoShowFun(self)
 	end);
 	PIGbiaoji.yizairu=true
 end
@@ -170,6 +175,15 @@ CombatPlusF.SetF.BGHide:SetScript("OnClick", function (self)
 	end
 	SetBGHide()
 end);
+CombatPlusF.SetF.NOtargetHide= PIGCheckbutton_R(CombatPlusF.SetF,{"无目标隐藏","当你没有目标时隐藏标记按钮"})
+CombatPlusF.SetF.NOtargetHide:SetScript("OnClick", function (self)
+	if self:GetChecked() then
+		PIGA["CombatPlus"]["Biaoji"]["NOtargetHide"]=true;
+	else
+		PIGA["CombatPlus"]["Biaoji"]["NOtargetHide"]=false;
+	end
+	SetAutoShow()
+end);
 CombatPlusF.SetF.AutoShow= PIGCheckbutton_R(CombatPlusF.SetF,{"智能显示/隐藏","当你没有标记权限时隐藏标记按钮"})
 CombatPlusF.SetF.AutoShow:SetScript("OnClick", function (self)
 	if self:GetChecked() then
@@ -194,6 +208,7 @@ CombatPlusF:HookScript("OnShow", function (self)
 	self.Open:SetChecked(PIGA["CombatPlus"]["Biaoji"]["Open"]);
 	self.SetF.Lock:SetChecked(PIGA["CombatPlus"]["Biaoji"]["Lock"]);
 	self.SetF.BGHide:SetChecked(PIGA["CombatPlus"]["Biaoji"]["BGHide"]);
+	self.SetF.NOtargetHide:SetChecked(PIGA["CombatPlus"]["Biaoji"]["NOtargetHide"]);
 	self.SetF.AutoShow:SetChecked(PIGA["CombatPlus"]["Biaoji"]["AutoShow"]);
 	self.SetF.Slider:PIGSetValue(PIGA["CombatPlus"]["Biaoji"]["Scale"])
 end);

@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: arith, Dynaletik, dubcat
-## Version: v1.52.01
+## Version: v1.52.03
 ## RequiredDeps: Atlas
 
 ## Title: Atlas |r|cFF0099FF[Burning Crusade]|r
@@ -8,7 +8,7 @@
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本地图|r |cFF69CCF0燃烧的远征|r
 ## Notes-zhCN: 燃烧的远征副本地图
 
-## X-Date: 2022-11-19T7:34:47Z
+## X-Date: 2023-07-29T4:05:21Z
 ## X-Credits: Dan Gilbert, Lothaer
 ## X-Email: atlas.addon at gmail.com
 ## X-Website: http://www.atlasmod.com

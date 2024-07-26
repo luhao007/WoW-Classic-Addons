@@ -1,12 +1,18 @@
 # DBM - Vanilla and Season of Discovery
 
-## [r730](https://github.com/DeadlyBossMods/DBM-Vanilla/tree/r730) (2024-07-19)
-[Full Changelog](https://github.com/DeadlyBossMods/DBM-Vanilla/compare/r729...r730) [Previous Releases](https://github.com/DeadlyBossMods/DBM-Vanilla/releases)
+## [r734](https://github.com/DeadlyBossMods/DBM-Vanilla/tree/r734) (2024-07-26)
+[Full Changelog](https://github.com/DeadlyBossMods/DBM-Vanilla/compare/r733...r734) [Previous Releases](https://github.com/DeadlyBossMods/DBM-Vanilla/releases)
 
-- Kazzak has a new ID in SoD, Azuregos is unchanged  
-- enable loadzone for instanced versions of SoD world bosses and add SoD encounter ID detection  
-- Fix flavored toc for vanilla  
-- Fix SoD raid tests loading on retail  
-- bump test toc  
-- Fixed Shade of Eranikus interrupt warning not correctively giving target name and count being in wrong arg for Bellowing Roar  
-    Fixed bug on Hakkar where enrage warning would not give target name  
+- SoD Molten Core Bigger Update:  
+     - All creature Ids corrected for SoD  
+     - Added Magmakin timer back to Garr  
+     - Fixed Inferno and armageddon Alerts and timers on Geddon by adding SoD spellids  
+     - Fixed rain of fire alert and timers on Gehennas by using correct event and spellid for SoD  
+     - Fixed curse and doom warnings and timers on Lucifron  
+     - Updated timers to SoD values on Lucifron  
+     - Fixed panic alert and timers on Magmadar  
+     - Added dark mending alert to Majordomo  
+     - improved Flare alert on Majordomo  
+     - Added the full reflect spell alert and timer to Shazzrah (this replaces Deaden magic from OG version)  
+     - Fixed Curse alert and timer on Shazzrah  
+     - Updated gate and counterspell timers on Shazzrah to much shorter CDs SoD has  

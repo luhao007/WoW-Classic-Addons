@@ -17,10 +17,15 @@ local ClassColor=Data.ClassColor
 local Texwidth,Texheight = 500,500
 local function ShowZb_Link_Icon(newText)
 	if PIGA["Chat"]["ShowZb"] then
-		local namex = newText:match("%[|cff%w%w%w%w%w%w(.-)|r%]")
-		if namex and namex~="" then
-			if wanjiaxinxil[namex] then
-				local _, _, _, englishRace, sex = GetPlayerInfoByGUID(wanjiaxinxil[namex])
+		local namexShowZb=""
+		if PIGA["Chat"]["ClassColor"] then
+			namexShowZb = newText:match("%[|cff%w%w%w%w%w%w(.-)|r%]")
+		else
+			namexShowZb = newText:match("%[.-%].-%[(.-)%]")
+		end	
+		if namexShowZb and namexShowZb~="" then
+			if wanjiaxinxil[namexShowZb] then
+				local _, _, _, englishRace, sex = GetPlayerInfoByGUID(wanjiaxinxil[namexShowZb])
 				local raceX = GetRaceClassTXT(0,Texwidth,englishRace,sex)
 				if raceX~="" then
 					newText=newText:gsub("(|Hplayer:(.-)|h%[.-%]|h)", "|Hgarrmission:%2|h"..raceX.."|h%1")
@@ -213,11 +218,11 @@ function QuickChatfun.PIGMessage()
 			local chatID = _G["ChatFrame"..i]
 			local msninfo = chatID.AddMessage
 			chatID.AddMessage = function(frame, text, ...)
-				--ChatFrame99:AddMessage(text);
+				--ChatFrame99:AddMessage(text:gsub("|", "||"));
 				-- if i==1 then
 				-- 	table.insert(PIGA["xxxxxx"],text)
 				-- end
-				if text and text~="" then
+				if text and text~="" and text:match("player") then
 					local text=PindaoName(text)
 					local text=ShowZb_Link_Icon(text,frame)
 					return msninfo(frame, text, ...)

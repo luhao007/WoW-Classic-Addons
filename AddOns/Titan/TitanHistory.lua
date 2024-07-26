@@ -15,6 +15,19 @@ Green - 'header' - Titan or plugin
 Highlight - notes. tips. and details
 --]]
 Titan_Global.recent_changes = ""
+.. TitanUtils_GetGoldText("8.0.16 : 2024/07/22\n")
+.. TitanUtils_GetGreenText("Gold, Repair, XP : \n")
+.. TitanUtils_GetHighlightText(""
+.. "- Gold : Fix gold display when user selects . (period) as thousands separator.\n"
+.. "- Added TitanUtils_NumToString for use in all 3.\n"
+.. "- Added TitanUtils_CashToString for use in Gold and Repair for common look of gold/silver/copper.\n"
+)
+.. TitanUtils_GetGreenText("Regen : \n")
+.. TitanUtils_GetHighlightText(""
+.. "- Cleanup documentation (comments); made some routines local.\n"
+)
+.. "\n\n"
+Titan_Global.recent_changes = ""
 .. TitanUtils_GetGoldText("8.0.15 : 2024/07/14\n")
 .. TitanUtils_GetGreenText("Location : \n")
 .. TitanUtils_GetHighlightText(""

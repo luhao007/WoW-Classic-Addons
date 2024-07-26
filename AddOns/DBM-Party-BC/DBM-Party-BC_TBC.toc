@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Arta/MysticalOS
-## Version: r139
+## Version: r140
 ## RequiredDeps: DBM-Core
 ## LoadOnDemand: 1
 ## SavedVariables: DBMPartyBC_AllSavedVars

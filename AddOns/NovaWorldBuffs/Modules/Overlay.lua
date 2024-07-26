@@ -28,6 +28,15 @@ local function updateOverlay()
 		else
 			text = text .. "" .. stranglethornText;
 		end
+		text = text .. "\n";
+	end
+	if (NWB.db.global.overlayShowBlackrock) then
+		local blackrockText, blackrockTimeLeftm, blackrockType, blackrockRealTimeLeft = NWB:getBlackrockTimeString(nil, true);
+		if (blackrockRealTimeLeft < 900) then
+			text = text .. "|cFF00C800" .. blackrockText .. "|r";
+		else
+			text = text .. "" .. blackrockText;
+		end
 	end
 	overlay.fsBottom:SetText("|cFFFFFF00" .. text);
 end

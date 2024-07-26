@@ -45,15 +45,17 @@ function SetWindow:Initialize()
         Config.SetWindowPos[1], _, Config.SetWindowPos[3], Config.SetWindowPos[4], Config.SetWindowPos[5] = f:GetPoint()
     end)
     f:SetScript("OnMouseDown", clearAllFocus)
-    f:SetPropagateKeyboardInput(false)
-    f:SetScript("OnKeyDown", function(self, key)
-        if key == "ESCAPE" then
-            f:SetPropagateKeyboardInput(false)
-            f:Hide()
-        else
-            f:SetPropagateKeyboardInput(true)
-        end
-    end)
+    if not UnitAffectingCombat("player") then
+        f:SetPropagateKeyboardInput(false)
+        f:SetScript("OnKeyDown", function(self, key)
+            if key == "ESCAPE" then
+                f:SetPropagateKeyboardInput(false)
+                f:Hide()
+            else
+                f:SetPropagateKeyboardInput(true)
+            end
+        end)
+    end
     f:Hide()
     self.background = f
     do -- 创建框体标题栏纹理

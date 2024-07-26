@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(2519, "DBM-Raids-Dragonflight", 1, 1207)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240614081510")
+mod:SetRevision("20240721192753")
 mod:SetCreatureID(204931)
 
 mod:SetEncounterID(2677)
@@ -33,7 +33,6 @@ mod:RegisterEventsInCombat(
  or ability.id = 417807 and type = "applydebuff"
 --]]
 --TODO, tank swap stacks/when to taunt in stage 3, or maybe periods of time it shoudln't happen on mythic (if holding seed and shit going on, don't distract with taunt warning type deal)
---TODO, more common locals/short names applied to mod?
 --General
 local warnPhase										= mod:NewPhaseChangeAnnounce(2, 2, nil, nil, nil, nil, nil, 2)
 
@@ -188,6 +187,7 @@ local allTimers = {
 	},
 }
 
+---@param self DBMMod
 local function blazeLoop(self)
 	self.vb.blazeCount = self.vb.blazeCount + 1
 	warnBlaze:Show(self.vb.blazeCount)
@@ -211,6 +211,7 @@ local function blazeLoop(self)
 	end
 end
 
+---@param self DBMMod
 local function eternalFireLoop(self)
 	self.vb.firestormCount = self.vb.firestormCount + 1
 	warnEternalFirestorm:Show(self.vb.firestormCount)
@@ -219,6 +220,7 @@ local function eternalFireLoop(self)
 	self:Schedule(timer, eternalFireLoop, self)
 end
 
+---@param self DBMMod
 local function eternalFireSwirlLoop(self)
 	self.vb.swirlCount = self.vb.swirlCount + 1
 	warnEternalFirestormSwirl:Show(self.vb.swirlCount)
@@ -230,6 +232,7 @@ local function eternalFireSwirlLoop(self)
 end
 
 --Countmod inherits firestorm count on initial then iterates on loop
+---@param self DBMMod
 local function mythicDebuffs(self)
 	self.vb.debuffsCount = self.vb.debuffsCount + 1
 	warnMythicDebuffs:Show(self.vb.debuffsCount)
@@ -237,6 +240,7 @@ local function mythicDebuffs(self)
 	self:Schedule(23, mythicDebuffs, self)
 end
 
+---@param self DBMMod
 local function orbsLoop(self)
 	self.vb.orbsCount = self.vb.orbsCount + 1
 	warnShadowflameOrbs:Show(self.vb.orbsCount)

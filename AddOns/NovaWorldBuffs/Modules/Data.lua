@@ -152,16 +152,17 @@ function NWB:OnCommReceived(commPrefix, string, distribution, sender)
 		--data = args[3];
 		--NWB:extractSettings(data, sender, distribution);
 		--Just ignore versions this old now.
+		NWB:debug("version missing", sender, cmd, remoteVersion);
 		return;
 	end
 	NWB.hasAddon[sender] = (remoteVersion or "0");
 	--Trying to fix double guild msg bug, extract settings from data first even if the rest fails for some reason.
 	NWB:extractSettings(data, sender, distribution);
-	if (not tonumber(remoteVersion)) then
+	--if (not tonumber(remoteVersion)) then
 		--Trying to catch a lua error and find out why.
-		NWB:debug("version missing", sender, cmd, data, deserialized);
-		return;
-	end
+	--	NWB:debug("version missing", sender, cmd, data, deserialized);
+	--	return;
+	--end
 	--Ignore all commands but settings requests for much older versions.
 	if (tonumber(remoteVersion) < 1.50) then
 		--Ignore all commands but settings requests.
@@ -177,7 +178,11 @@ function NWB:OnCommReceived(commPrefix, string, distribution, sender)
 		end
 		return;
 	end
+	
 	if (not data) then
+		--if (cmd ~= "l") then
+		--	NWB:debug("Missing inc data:", cmd, remoteVersion, args[3], args[4]);
+		--end
 		return;
 	end
 	if (distribution == "GUILD" or distribution == "PARTY" or distribution == "RAID") then
@@ -267,6 +272,13 @@ end
 
 --Send to specified addon channel.
 function NWB:sendComm(distribution, string, target, prio, useOldSerializer)
+	--if (NWB.isDebug) then
+	--	local a, b, c, d, e = strsplit(" ", string, 5);
+	--	print(1, a, b, c, d, e)
+	--	local deserializeResult, deserialized = NWB.serializer:Deserialize(e);
+		--print(2, deserializeResult, deserialized)
+	--	NWB:debug(deserialized);
+	--end
 	if (useOldSerializer) then
 		NWB:debug("useOldSerializer", useOldSerializer);
 	end
@@ -279,7 +291,7 @@ function NWB:sendComm(distribution, string, target, prio, useOldSerializer)
 	if ((UnitInBattleground("player") or NWB:isInArena()) and distribution ~= "GUILD") then
 		return;
 	end
-	if (LE_PARTY_CATEGORY_INSTANCE and IsInGroup(LE_PARTY_CATEGORY_INSTANCE)) then
+	if ((LE_PARTY_CATEGORY_INSTANCE and IsInGroup(LE_PARTY_CATEGORY_INSTANCE)) and distribution ~= "GUILD") then
 		--Just don't send any data in LFD.
 		return;
 	end
@@ -311,6 +323,19 @@ function NWB:sendComm(distribution, string, target, prio, useOldSerializer)
 	NWB:SendCommMessage(NWB.commPrefix, data, distribution, target);
 end
 
+--Doesn't need to be sent with logon cmds.
+local function getStatusL()
+	local l = "";
+	if (NWB.isLayered) then
+		if (NWB.db.global.guildL and distribution == "GUILD" and NWB.currentLayerShared and NWB.currentLayerShared > 0) then
+			l = "-" .. NWB.currentLayerShared;
+		elseif (NWB.db.global.guildL and distribution == "GUILD" and NWB.lastDataSent == 0) then
+			--If first at logon.
+			l = "-0";
+		end
+	end
+	return l;
+end
 --Send full data.
 NWB.lastDataSent = 0;
 local version = version .. " " .. NWB.i;
@@ -338,15 +363,7 @@ function NWB:sendData(distribution, target, prio, noLayerMap, noLogs, type, forc
 	--NWB:debug(data)
 	if (next(data) ~= nil and NWB:isClassicCheck()) then
 		data = NWB.serializer:Serialize(data);
-		local l = "";
-		if (NWB.isLayered) then
-			if (NWB.db.global.guildL and distribution == "GUILD" and NWB.currentLayerShared and NWB.currentLayerShared > 0) then
-				l = "-" .. NWB.currentLayerShared;
-			elseif (NWB.db.global.guildL and distribution == "GUILD" and NWB.lastDataSent == 0) then
-				--If first at logon.
-				l = "-0";
-			end
-		end
+		local l = getStatusL();
 		NWB.lastDataSent = GetServerTime();
 		NWB:sendComm(distribution, "data " .. version .. l .. " " .. self.k() .. " " .. data, target, prio);
 	end
@@ -422,15 +439,7 @@ function NWB:sendSettings(distribution, target, prio)
 	local data = NWB:createSettings(distribution);
 	if (next(data) ~= nil) then
 		data = NWB.serializer:Serialize(data);
-		local l = "";
-		if (NWB.isLayered) then
-			if (NWB.db.global.guildL and distribution == "GUILD" and NWB.currentLayerShared and NWB.currentLayerShared > 0) then
-				l = "-" .. NWB.currentLayerShared;
-			elseif (NWB.db.global.guildL and distribution == "GUILD" and NWB.lastDataSent == 0) then
-				--If first at logon.
-				l = "-0";
-			end
-		end
+		local l = getStatusL();
 		NWB.lastDataSent = GetServerTime();
 		NWB:sendComm(distribution, "settings " .. version .. l .. " " .. self.k() .. " " .. data, target, prio);
 	end
@@ -699,6 +708,7 @@ function NWB:requestData(distribution, target, prio)
 	data = NWB.serializer:Serialize(data);
 	NWB.lastDataSent = GetServerTime();
 	if (NWB:isClassicCheck()) then
+		local l = getStatusL();
 		NWB:sendComm(distribution, "requestData " .. version .. " " .. self.k() .. " " .. data, target, prio);
 	else
 		NWB:requestSettings(distribution, target, prio);
@@ -848,9 +858,9 @@ function NWB:createData(distribution, noLogs, type, isRequestData)
 	--NWB:debug("Before key convert:", string.len(NWB.serializer:Serialize(data)));
 	data = NWB:convertKeys(data, true, distribution);
 	--NWB:debug("After key convert:", string.len(NWB.serializer:Serialize(data)));
-	if (NWB.isClassic and NWB.tar("player") == nil and distribution ~= "GUILD") then
+	--if (NWB.isClassic and NWB.tar("player") == nil and distribution ~= "GUILD") then
 		--data = {};
-	end
+	--end
 	return data;
 end
 
@@ -1691,8 +1701,10 @@ function NWB:receivedData(dataReceived, sender, distribution, elapsed)
 														else
 															--print(2, k, v)
 															--Ignore data if we've set this buff type to 0 cooldown.
-															local type = strmatch(k, "Timer$");
+															local type = strmatch(k, "(%a+)Timer$");
+															--print(2, k, v, type)
 															if (not (type and NWB[type .. "CooldownTime"] and NWB[type .. "CooldownTime"] < 1)) then
+																--print(3, k, v, type)
 																NWB.data.layers[layer][k] = v;
 															end
 														end
@@ -1900,13 +1912,13 @@ function NWB:receivedData(dataReceived, sender, distribution, elapsed)
 									skip = true;
 								end
 								if (not skip) then
-									local type = strmatch(k, "Timer$");
+									local type = strmatch(k, "(%a+)Timer$");
 									if (not (type and NWB[type .. "CooldownTime"] and NWB[type .. "CooldownTime"] < 1)) then
 										NWB.data[k] = v;
-									end
-									if (not string.match(k, "terokTowers") and not string.match(k, "wintergrasp")
-											and not string.match(k, "hellfireRep") and not string.match(k, "tbcHDT")) then
-										hasNewData = true;
+										if (not string.match(k, "terokTowers") and not string.match(k, "wintergrasp")
+												and not string.match(k, "hellfireRep") and not string.match(k, "tbcHDT")) then
+											hasNewData = true;
+										end
 									end
 									if (not NWB.isLayered) then
 										NWB:timerLog(k, v, nil, nil, nil, distribution);

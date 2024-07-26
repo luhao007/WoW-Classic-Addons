@@ -5,6 +5,7 @@ local FramePlusfun=addonTable.FramePlusfun
 function FramePlusfun.Quest()
 	if not PIGA["FramePlus"]["Quest"] then return end
 	if NDui then return end
+	local maxWWW = 250
 	if tocversion<50000 then
 		local function gengxinLVQR()--显示任务等级
 			local numEntries, numQuests = GetNumQuestLogEntries();
@@ -12,7 +13,7 @@ function FramePlusfun.Quest()
 			for i = 1, QUESTS_DISPLAYED, 1 do
 				local questIndex = i + FauxScrollFrame_GetOffset(QuestLogListScrollFrame);		
 				if (questIndex <= numEntries) then
-					local title, level, _, isHeader = GetQuestLogTitle(questIndex)
+					local title, level, questTag, isHeader = GetQuestLogTitle(questIndex)
 					if not isHeader then
 						QuestLogDummyText:SetText(" ["..level.."]"..title)
 						if tocversion<30000 then
@@ -23,9 +24,16 @@ function FramePlusfun.Quest()
 						elseif tocversion<50000 then
 							local questLogbut = _G["QuestLogListScrollFrameButton"..i]
 							questLogbut.normalText:SetText(" ["..level.."]"..title)
-							local TitleWWW =QuestLogDummyText:GetWidth()
-							questLogbut.normalText:SetWidth(TitleWWW+16)
-							questLogbut.check:SetPoint("LEFT", questLogbut.normalText, "RIGHT", -16, 0);	
+							local PIG_tempWidth = 0
+							PIG_tempWidth = 275 - 15 - questLogbut.tag:GetWidth();
+							if ( QuestLogDummyText:GetWidth() > PIG_tempWidth ) then
+								PIG_tempWidth = PIG_tempWidth;
+							else
+								PIG_tempWidth = QuestLogDummyText:GetWidth();
+							end
+							questLogbut.normalText:SetWidth(PIG_tempWidth+14);
+							questLogbut.check:SetPoint("LEFT", questLogbut.normalText, "RIGHT", -16, 0);
+							PIG_tempWidth=nil
 						end		
 					end
 				end  

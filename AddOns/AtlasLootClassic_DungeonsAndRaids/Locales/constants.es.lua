@@ -2,7 +2,7 @@
 
 if not AL then return end
 
--- These localization strings are translated on Curseforge: https://www.curseforge.com/wow/addons/atlaslootclassic-cata/localization
+-- These localization strings are translated on Curseforge: https://www.curseforge.com/wow/addons/atlaslootclassic/localization
 -- DungeonsAndRaids
 AL["%s killed last"] = "%s matado el último"
 AL["20 Raids"] = "Bandas de 20"
@@ -71,7 +71,7 @@ AL["Commander Springvale"] = "Comandante Vallefont"
 AL["Conspicuous Urn"] = "Urna llamativa"
 AL["Cookie"] = "El Chef"
 AL["Crimson Hammersmith"] = "Forjamartillos Carmesí"
-AL["Crowd Pummeler 9-60"] = "Golpeamasa 9-60"
+AL["Crowd Pummeler 9-60"] = "Gopleamasa 9-60"
 AL["Crystal Fang"] = "Colmillor de cristal"
 AL["C'Thun"] = "C'Thun"
 AL["Dark Coffer"] = "Arca oscura"
@@ -345,6 +345,7 @@ AL["Ysondre"] = "Ysondre"
 AL["Zerillis"] = "Zerillis"
 AL["Zevrim Thornhoof"] = "Zevrim Pezuñahendida"
 
+if AtlasLoot:GameVersion_LT(AtlasLoot.BC_VERSION_NUM) then return end
 -- DungeonsAndRaidsTBC
 AL["10 Raids"] = "Bandas de 10"
 AL["25 Raids"] = "Bandas de 25"
@@ -486,6 +487,7 @@ AL["Yor <Void Hound of Shaffar>"] = "Yor <Can del vacío de Shaffar>"
 AL["Zereketh the Unbound"] = "Zereketh el Desatado"
 AL["Zul'jin"] = "Zul'jin"
 
+if AtlasLoot:GameVersion_LT(AtlasLoot.WRATH_VERSION_NUM) then return end
 -- DungeonsAndRaidsWrath
 AL["Algalon the Observer"] = "Algalon el Observador"
 AL["Amanitar"] = "Amanitar"
@@ -509,7 +511,6 @@ AL["Eadric the Pure"] = "Eadric el Puro"
 AL["Eck the Ferocious"] = "Eck the Ferocious"
 AL["Elder Nadox"] = "Ancestro Nadox"
 AL["Emalon the Storm Watcher"] = "Emalon el Vigía de la Tormenta"
-AL["Enhancement"] = "Mejora"
 AL["Erekem"] = "Erekem"
 AL["Faction Champions"] = "Campeones de la facción"
 AL["Falric"] = "Falric"
@@ -588,5 +589,3 @@ AL["Xevozz"] = "Xevozz"
 AL["XT-002 Deconstructor"] = "Desarmador XA-002"
 AL["Yogg-Saron"] = "Yogg-Saron"
 AL["Zuramat the Obliterator"] = "Zuramat el Obliterador"
-
--- DungeonsAndRaidsCata

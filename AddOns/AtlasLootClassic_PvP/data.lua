@@ -43,7 +43,6 @@ local SET_EXTRA_ITTYPE = data:AddExtraItemTableType("Set")
 local PVP_CONTENT = data:AddContentType(AL["Battlegrounds"], ATLASLOOT_PVP_COLOR)
 local GENERAL_CONTENT = data:AddContentType(GENERAL, ATLASLOOT_RAID40_COLOR)
 
---[[
 local KEYS = {	-- Keys
 	name = AL["Keys"],
 	TableType = NORMAL_ITTYPE,
@@ -80,7 +79,6 @@ local KEYS = {	-- Keys
 		{ 30, 21986 },
 	},
 }
---]]
 
 local HORDE, ALLIANCE, RANK_FORMAT = "Horde", "Alliance", AL["|cff33ff99Rank:|r %s"]
 local GetRankName, GetRankIcon = AtlasLoot.Data.Requirements.GetPvPRankName, AtlasLoot.Data.Requirements.GetPvPRankIcon

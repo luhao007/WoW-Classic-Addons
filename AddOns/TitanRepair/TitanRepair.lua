@@ -564,20 +564,11 @@ local function GetGSC(money)
 	return g, s, c, neg;
 end
 
---[[ local
--- **************************************************************************
--- NAME : GetGSC(money)
--- DESC : Scan all bags and equipment and set the 'scan in progress'
--- VARS : 
--- money : int : money in copper
--- OUT : 
--- gsc : string : formatted and colored of given money
--- **************************************************************************
---]]
 ---local Get a formated string from the given money (in copper)
 ---@param money number Money in copper
 ---@return string readable_money
 local function GetTextGSC(money)
+--[===[
 	local GSC_GOLD = "ffd100";
 	local GSC_SILVER = "e6e6e6";
 	local GSC_COPPER = "c8602c";
@@ -611,6 +602,30 @@ local function GetTextGSC(money)
 	end
 	if (neg) then gsc = "(" .. gsc .. ")"; end
 	return gsc;
+--]===]
+
+	local sep = ""
+	local dec = ""
+--	if (TitanGetVar(TITAN_REPAIR_ID, "UseSeperatorComma")) then
+		sep = ","
+		dec = "."
+--	else
+--		sep = "."
+--		dec = ","
+--	end
+
+	-- Not all parameters are Repair options so default.
+	local outstr, gold, silver, copper =
+		TitanUtils_CashToString(money,
+			",", -- thousand seprator
+			".", -- decimal seprator
+			TitanGetVar(TITAN_REPAIR_ID, "ShowCostGoldOnly"),
+			false, -- coin labels
+			false, -- coin icons
+			true -- color G / S / C
+		)
+	return outstr
+
 end
 
 ---local Repair items per user settings to use Guild or own gold.

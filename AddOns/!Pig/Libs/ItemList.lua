@@ -126,55 +126,21 @@ local function ShowGemBut(Gemse,GemitemLink,nulltishi)
 		GameTooltip:Hide() 
 	end);
 end
-local function GetGemInfo(Gemse,id,nulltishi,duixiang,Slot,itemLink)
-	if duixiang=="yc" or unit=="lx" then
-		local _, GemitemLink = GetItemGem(itemLink, id)
-		if GemitemLink then
-			ShowGemBut(Gemse,GemitemLink)
-		else
-			Gemse.getnum=Gemse.getnum+1
-			if Gemse:GetParent():GetParent():GetParent():IsShown() then
-				if Gemse.getnum<5 then
-					if Gemse.ItemGem then Gemse.ItemGem:Cancel() end
-					Gemse.ItemGem=C_Timer.NewTimer(0.2,function()
-						GetGemInfo(Gemse,id,nulltishi,duixiang,Slot,itemLink)
-					end)
-				else
-					ShowGemBut(Gemse,GemitemLink,nulltishi)
-				end
+local function PIG_SetGemInfo(Gemse,id,nulltishi,duixiang,Slot,itemLink)
+	local _, GemitemLink = GetItemGem(itemLink, id)
+	if GemitemLink then
+		ShowGemBut(Gemse,GemitemLink)
+	else
+		Gemse.getnum=Gemse.getnum+1
+		if Gemse:GetParent():GetParent():GetParent():IsShown() then
+			if Gemse.getnum<5 then
+				if Gemse.ItemGem then Gemse.ItemGem:Cancel() end
+				Gemse.ItemGem=C_Timer.NewTimer(0.2,function()
+					PIG_SetGemInfo(Gemse,id,nulltishi,duixiang,Slot,itemLink)
+				end)
+			else
+				ShowGemBut(Gemse,GemitemLink,nulltishi)
 			end
-		end
-	else	
-		local itemLink=GetInventoryItemLink(duixiang, Slot)
-		if itemLink then
-			local _, GemitemLink = GetItemGem(itemLink, id)
-			if GemitemLink then
-				ShowGemBut(Gemse,GemitemLink)
-		    else
-		    	Gemse.getnum=Gemse.getnum+1
-				if Gemse:GetParent():GetParent():GetParent():IsShown() then
-					if Gemse.getnum<5 then
-						if Gemse.ItemGem then Gemse.ItemGem:Cancel() end
-						Gemse.ItemGem=C_Timer.NewTimer(0.2,function()
-							GetGemInfo(Gemse,id,nulltishi,duixiang,Slot,itemLink)
-						end)
-					else
-						ShowGemBut(Gemse,GemitemLink,nulltishi)
-					end
-				end
-		  	end
-		-- else
-		-- 	Gemse.getnum=Gemse.getnum+1
-		-- 	if Gemse:GetParent():GetParent():GetParent():IsShown() then
-		-- 		if Gemse.getnum<5 then
-		-- 			if Gemse.ItemGem then Gemse.ItemGem:Cancel() end
-		-- 			Gemse.ItemGem=C_Timer.NewTimer(0.2,function()
-		-- 				GetGemInfo(Gemse,id,nulltishi,duixiang,Slot,itemLink)
-		-- 			end)
-		-- 		else
-		-- 			ShowGemBut(Gemse,GemitemLink,nulltishi)
-		-- 		end
-		-- 	end
 		end
 	end
 end
@@ -236,7 +202,8 @@ local function Show_fuwenBut_yanchi(Parent,hangUI,fuwenIcon,k)
 	if Pig_OptionsUI.talentData[Parent.cName] and Pig_OptionsUI.talentData[Parent.cName]["R"] and Pig_OptionsUI.talentData[Parent.cName]["R"][2][k] then
 		Show_fuwenBut(fuwenIcon,Pig_OptionsUI.talentData[Parent.cName]["R"][2][k])
 	else
-		C_Timer.After(0.3,function()
+		if Parent.fuwenBut_yanchi then Parent.fuwenBut_yanchi:Cancel() end
+		Parent.fuwenBut_yanchi=C_Timer.NewTimer(0.3,function()
 			Show_fuwenBut_yanchi(Parent,hangUI,fuwenIcon,k)
 		end)
 	end
@@ -306,28 +273,32 @@ local function PIGGetItemStats(Data)
 end
 
 local function ShowItemTaozhuang(Parent,Data)
-	local taozhuang = PIGGetItemStats(Data)
-	local taozhuangNum = #taozhuang
-	if taozhuangNum<1 then
-		return C_Timer.After(0.1,function()
-			ShowItemTaozhuang(Parent,Data)
-		end)
-	end
-	for tid=1,taozhuangNum do
-		local taoui = _G[Parent:GetName().."_".."tao_"..tid]
-		taoui:SetText(string.format(BOSS_BANNER_LOOT_SET,taozhuang[tid][1].."("..taozhuang[tid][2].."/"..taozhuang[tid][3]..")"))
-		local r, g, b =GetItemQualityColor(taozhuang[tid][4] or 0)
-		taoui:SetTextColor(r, g, b,1);
-		local taoui_width = taoui:GetStringWidth()+4
-		if taoui_width>Parent.ALLWWWW then
-			Parent.ALLWWWW=taoui_width
-		end
-	end
-	if taozhuangNum>1 then
-		Parent:SetHeight(ListWWWHHH[2]+(taozhuangNum-1)*(ListWWWHHH[3]-3))
-	end
+	--local taozhuang = PIGGetItemStats(Data)
+	-- local taozhuangNum = #taozhuang
+	-- if taozhuangNum<1 then
+		-- if EnchantBut.EnchantInfo then EnchantBut.EnchantInfo:Cancel() end
+		-- 		EnchantBut.EnchantInfo=C_Timer.NewTimer(0.2,function()
+		-- 			ShowEnchantInfo(EnchantBut,ItemID)
+		-- 		end)
+	-- 	return C_Timer.After(0.1,function()
+	-- 		ShowItemTaozhuang(Parent,Data)
+	-- 	end)
+	-- end
+	-- for tid=1,taozhuangNum do
+	-- 	local taoui = _G[Parent:GetName().."_".."tao_"..tid]
+	-- 	taoui:SetText(string.format(BOSS_BANNER_LOOT_SET,taozhuang[tid][1].."("..taozhuang[tid][2].."/"..taozhuang[tid][3]..")"))
+	-- 	local r, g, b =GetItemQualityColor(taozhuang[tid][4] or 0)
+	-- 	taoui:SetTextColor(r, g, b,1);
+	-- 	local taoui_width = taoui:GetStringWidth()+4
+	-- 	if taoui_width>Parent.ALLWWWW then
+	-- 		Parent.ALLWWWW=taoui_width
+	-- 	end
+	-- end
+	-- if taozhuangNum>1 then
+	-- 	Parent:SetHeight(ListWWWHHH[2]+(taozhuangNum-1)*(ListWWWHHH[3]-3))
+	-- end
 end
-local function ShowItemList(Parent,unit,Data,taozhuang,fuwen)
+local function ShowItemList(Parent,unit,Data,fuwen)
 	local Parentname = Parent:GetName()
 	Parent.zhuangbeiInfo = {["allleve"]=0,["wuqixiuzhengV"]=""}
 	Parent.ALLWWWW=ListWWWHHH[1]
@@ -373,7 +344,7 @@ local function ShowItemList(Parent,unit,Data,taozhuang,fuwen)
 					Gemui:SetWidth(ListWWWHHH[3])
 					Gemui:SetAlpha(1)
 					Gemui.getnum=0
-					GetGemInfo(Gemui,Gemi,baoshiinfo[Gemi],unit,k,itemLink)
+					PIG_SetGemInfo(Gemui,Gemi,baoshiinfo[Gemi],unit,k,itemLink)
 				end
 				---
 				local fumoid = PIGGetEnchantID(itemLink)
@@ -384,7 +355,7 @@ local function ShowItemList(Parent,unit,Data,taozhuang,fuwen)
 					Enchantui:SetAlpha(1)
 					Enchantui.icon:SetDesaturated(false)
 					if EnchantItemID[fumoid] then
-						PIGGetItemInfo(EnchantItemID[fumoid])--获取未缓存物品信息
+						GetItemInfo(EnchantItemID[fumoid])--获取附魔物品信息
 						Enchantui.getnum=0
 						ShowEnchantInfo(Enchantui,EnchantItemID[fumoid])
 					elseif EnchantSpellID[fumoid] then
@@ -461,9 +432,10 @@ local function ShowItemList(Parent,unit,Data,taozhuang,fuwen)
 								Show_fuwenBut(fuwenIcon,fuwen[k])
 							end
 						else
-							C_Timer.After(0.3,function()
+							if Parent.fuwenBut_yanchi then Parent.fuwenBut_yanchi:Cancel() end
+							Parent.fuwenBut_yanchi=C_Timer.NewTimer(0.3,function()
 								Show_fuwenBut_yanchi(Parent,fujikk,fuwenIcon,k)
-							end)	
+							end)
 						end
 					end
 				end
@@ -559,30 +531,7 @@ local function ShowItemList(Parent,unit,Data,taozhuang,fuwen)
 	Parent:SetWidth(Parent.ALLWWWW)
 end
 --获取装备信息
-local function GetItemMuluData(Parent,unit,ycdata)
-	local ItemData={}
-	if unit=="yc" or unit=="lx" then
-		for k,v in pairs(ycdata) do
-			local _,itemLink= GetItemInfo(v)
-			ItemData[k]=itemLink
-		end
-	else
-		for Slot = 1, 19 do
-			local itemLink=GetInventoryItemLink(unit, Slot)
-			
-			ItemData[Slot]=itemLink
-		end
-	end
-	for k,v in pairs(ItemData) do
-		local _,itemLink = GetItemInfo(v) 
-		if not itemLink and Parent.zhixinghuoqucishu<10 then
-			Parent.zhixinghuoqucishu=Parent.zhixinghuoqucishu+1
-			return C_Timer.After(0.1,function()
-				GetItemMuluData(Parent,unit,ycdata)
-			end)
-		end
-	end
-	---
+local function GetItemMuluData(Parent,unit,ItemData)
 	local fuweninfo={}
 	if unit=="player" then
 		fuweninfo=GetRuneData()
@@ -812,9 +761,41 @@ local function add_ItemList(fujik,miaodian,ziji)
 			jichuxinxi.OpenTF()
 		end)
 	end
+	local function PIG_GetInventoryItem(Parent,unit)
+		if not Parent:IsShown() then return end
+		local ItemData = {}
+		for Slot = 1, 19 do
+			local itemId = GetInventoryItemID(unit, Slot)
+			if itemId then
+				local itemLink=GetInventoryItemLink(unit, Slot)
+				if itemLink then
+					ItemData[Slot]=itemLink
+				else
+					ItemData[Slot]="-"
+				end
+			end
+		end
+		for k,v in pairs(ItemData) do
+			if v=="-" then
+				if Parent.zhixinghuoqucishu<5 then
+					Parent.zhixinghuoqucishu=Parent.zhixinghuoqucishu+1
+					if Parent.GetItemInfoX then Parent.GetItemInfoX:Cancel() end
+					Parent.GetItemInfoX=C_Timer.NewTimer(0.2,function()
+						PIG_GetInventoryItem(Parent,unit)
+					end)
+					return
+				end
+			end
+		end
+		GetItemMuluData(Parent,unit,ItemData)
+	end
 	function ZBLsit:Update_ItemList(unit,zbData)
-		self.zhixinghuoqucishu=0
-		GetItemMuluData(self,unit,zbData)
+		if unit=="lx" or unit=="yc" then
+			GetItemMuluData(self,unit,zbData)
+		else
+			self.zhixinghuoqucishu=0
+			PIG_GetInventoryItem(self,unit)
+		end		
 	end
 	return ZBLsit
 end

@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: geligasi
-## Version: 1.26
+## Version: 1.27
 ## RequiredDeps: !Pig
 ## SavedVariables: PIGT
 ## SavedVariablesPerCharacter: PIGT_Per

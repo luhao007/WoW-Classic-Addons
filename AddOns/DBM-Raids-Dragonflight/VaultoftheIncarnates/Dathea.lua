@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(2502, "DBM-Raids-Dragonflight", 3, 1200)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240605145810")
+mod:SetRevision("20240702200348")
 mod:SetCreatureID(189813)
 mod:SetEncounterID(2635)
 mod:SetUsedIcons(8, 7, 6, 5, 4)
@@ -134,7 +134,7 @@ function mod:SPELL_CAST_START(args)
 			timerColaescingStormCD:Start(75.5, self.vb.stormCount+1)
 		else
 			timerConductiveMarkCD:Start(9.7, self.vb.markCount+1)
-			timerZephyrSlamCD:Start(15.7, self.vb.slamCount+1)
+			timerZephyrSlamCD:Start(14.6, self.vb.slamCount+1)
 			timerCrosswindsCD:Start(34, self.vb.crosswindCount+1)
 			timerColaescingStormCD:Start(86.2, self.vb.stormCount+1)
 		end
