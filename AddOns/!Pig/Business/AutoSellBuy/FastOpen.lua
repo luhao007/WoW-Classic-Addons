@@ -16,6 +16,7 @@ local GetContainerItemLink = C_Container.GetContainerItemLink
 local PickupContainerItem =C_Container.PickupContainerItem
 local UseContainerItem =C_Container.UseContainerItem
 -- 
+local bagIDMax= addonTable.Data.bagData["bagIDMax"]
 local gongnengName = "开启"
 local buticon=136058
 local BusinessInfo=addonTable.BusinessInfo
@@ -35,7 +36,7 @@ function BusinessInfo.FastOpen()
 			else
 				local shujuy =PIGA["AutoSellBuy"]["Open_List"]
 				if #shujuy>0 then
-					for bag=0,NUM_BAG_FRAMES do			
+					for bag=0,bagIDMax do			
 						local bganum=GetContainerNumSlots(bag)
 						for slot=1,bganum do	
 							local itemID=GetContainerItemID(bag, slot)

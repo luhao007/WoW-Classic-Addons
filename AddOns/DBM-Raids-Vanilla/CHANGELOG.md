@@ -1,18 +1,12 @@
 # DBM - Vanilla and Season of Discovery
 
-## [r734](https://github.com/DeadlyBossMods/DBM-Vanilla/tree/r734) (2024-07-26)
-[Full Changelog](https://github.com/DeadlyBossMods/DBM-Vanilla/compare/r733...r734) [Previous Releases](https://github.com/DeadlyBossMods/DBM-Vanilla/releases)
+## [r735](https://github.com/DeadlyBossMods/DBM-Vanilla/tree/r735) (2024-07-26)
+[Full Changelog](https://github.com/DeadlyBossMods/DBM-Vanilla/compare/r734...r735) [Previous Releases](https://github.com/DeadlyBossMods/DBM-Vanilla/releases)
 
-- SoD Molten Core Bigger Update:  
-     - All creature Ids corrected for SoD  
-     - Added Magmakin timer back to Garr  
-     - Fixed Inferno and armageddon Alerts and timers on Geddon by adding SoD spellids  
-     - Fixed rain of fire alert and timers on Gehennas by using correct event and spellid for SoD  
-     - Fixed curse and doom warnings and timers on Lucifron  
-     - Updated timers to SoD values on Lucifron  
-     - Fixed panic alert and timers on Magmadar  
-     - Added dark mending alert to Majordomo  
-     - improved Flare alert on Majordomo  
-     - Added the full reflect spell alert and timer to Shazzrah (this replaces Deaden magic from OG version)  
-     - Fixed Curse alert and timer on Shazzrah  
-     - Updated gate and counterspell timers on Shazzrah to much shorter CDs SoD has  
+- Ragnaros: slight timer adjustment for Wrath  
+- Ragnaros: support health-based submerge at 50%  
+    Stop timer at submerge and show a pre-warning at 55%  
+- Geddon: show self in combined warning for bomb and reduce delay  
+- support core hound alert  
+- Update koKR (#168)  
+- Onyxia: add timer for deterministic SoD breath and add test  

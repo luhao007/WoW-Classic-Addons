@@ -1,0 +1,33 @@
+<!--
+    Exported at 2023-01-03 20-18-25
+    This code is automatically generated as an export from
+    an SQLite database and is not meant for manual edit.
+-->
+
+<Bindings>
+    <Binding name="KrowiAF_OPEN_TAB_Achievements" category="BINDING_HEADER_KrowiAF">
+        KrowiAF_ToggleAchievementFrame("Krowi_AchievementFilter", "Achievements");
+    </Binding>
+    <Binding name="KrowiAF_OPEN_TAB_Expansions" category="BINDING_HEADER_KrowiAF">
+        KrowiAF_ToggleAchievementFrame("Krowi_AchievementFilter", "Expansions");
+    </Binding>
+    <Binding name="KrowiAF_OPEN_TAB_Events" category="BINDING_HEADER_KrowiAF">
+        KrowiAF_ToggleAchievementFrame("Krowi_AchievementFilter", "Events");
+    </Binding>
+    <Binding name="KrowiAF_OPEN_TAB_PvP" category="BINDING_HEADER_KrowiAF">
+        KrowiAF_ToggleAchievementFrame("Krowi_AchievementFilter", "PvP");
+    </Binding>
+    <Binding name="KrowiAF_OPEN_TAB_Specials" category="BINDING_HEADER_KrowiAF">
+        KrowiAF_ToggleAchievementFrame("Krowi_AchievementFilter", "Specials");
+    </Binding>
+    <Binding name="KrowiAF_OPEN_CAT_Current_Zone" category="BINDING_HEADER_KrowiAF">
+        KrowiAF_OpenCurrentZone(true);
+    </Binding>
+    <Binding name="KrowiAF_BROWSER_HISTORY_PREV" category="BINDING_HEADER_KrowiAF">
+        KrowiAF_AchievementFrameBrowsingHistoryPrevAchievementButton:Click();
+    </Binding>
+    <Binding name="KrowiAF_BROWSER_HISTORY_NEXT" category="BINDING_HEADER_KrowiAF">
+        KrowiAF_AchievementFrameBrowsingHistoryNextAchievementButton:Click();
+    </Binding>
+</Bindings>
+

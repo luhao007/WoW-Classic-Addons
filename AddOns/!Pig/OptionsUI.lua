@@ -10,10 +10,11 @@ local PIGFontString=Create.PIGFontString
 local PIGSetFont=Create.PIGSetFont
 
 --系统插件菜单======================
-PIG_SavedVars = {}
-
--- local category = Settings.RegisterVerticalLayoutCategory("My AddOn")
-
+--PIG_SavedVars = {}
+local frame = CreateFrame("Frame");
+local category, layout = Settings.RegisterCanvasLayoutCategory(frame,addonName)
+layout:AddAnchorPoint("TOPLEFT", 10, -10);
+layout:AddAnchorPoint("BOTTOMRIGHT", -10, 10);
 -- local function OnSettingChanged(setting, value)
 -- 	-- This callback will be invoked whenever a setting is modified.
 -- 	print("Setting changed:", setting:GetVariable(), value)
@@ -21,16 +22,16 @@ PIG_SavedVars = {}
 
 -- do 
 -- 	-- RegisterAddOnSetting example. This will read/write the setting directly
--- 	-- to `MyAddOn_SavedVars.toggle`.
+-- 	-- to `PIG_SavedVars.toggle`.
 
 --     local name = "Test Checkbox"
 --     local variable = "MyAddOn_Toggle"
 -- 	local variableKey = "toggle"
--- 	local variableTbl = MyAddOn_SavedVars
+-- 	local variableTbl = PIG_SavedVars
 --     local defaultValue = false
 
 --     local setting = Settings.RegisterAddOnSetting(category, variable, variableKey, variableTbl, type(defaultValue), name, defaultValue)
--- 	setting:SetValueChangedCallback(OnSettingChanged)
+-- 	--setting:SetValueChangedCallback(OnSettingChanged)
 
 --     local tooltip = "This is a tooltip for the checkbox."
 -- 	Settings.CreateCheckbox(category, setting, tooltip)
@@ -48,11 +49,11 @@ PIG_SavedVars = {}
 --     local step = 10
 
 -- 	local function GetValue()
--- 		return MyAddOn_SavedVars.slider or defaultValue
+-- 		return PIG_SavedVars.slider or defaultValue
 -- 	end
 
 -- 	local function SetValue(value)
--- 		MyAddOn_SavedVars.slider = value
+-- 		PIG_SavedVars.slider = value
 -- 	end
 
 -- 	local setting = Settings.RegisterProxySetting(category, variable, type(defaultValue), name, defaultValue, GetValue, SetValue)
@@ -64,7 +65,7 @@ PIG_SavedVars = {}
 --     Settings.CreateSlider(category, setting, options, tooltip)
 -- end
 
--- Settings.RegisterAddOnCategory(category)
+Settings.RegisterAddOnCategory(category)
 
 -- local PIG_AddOn = {};
 -- PIG_AddOn.panel = CreateFrame( "Frame", "PIG_AddOnPanel", UIParent );

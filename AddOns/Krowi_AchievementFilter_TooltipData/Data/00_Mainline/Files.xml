@@ -1,0 +1,10 @@
+<Ui>
+    <Script file="03_Wrath.lua" />
+    <Script file="04_Cata.lua" />
+    <Script file="05_Mists.lua" />
+    <Script file="06_Warlords.lua" />
+    <Script file="07_Legion.lua" />
+    <Script file="08_Battle.lua" />
+    <Script file="09_Shadowlands.lua" />
+    <Script file="10_Dragonflight.lua" />
+</Ui>

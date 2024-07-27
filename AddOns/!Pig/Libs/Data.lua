@@ -111,18 +111,19 @@ if tocversion<50000 then
 end
 Data.bagData = {
 	["bagID"]={0,1,2,3,4},
-	["bagIDMax"]= 5,
+	["bagIDMax"]= NUM_BAG_FRAMES,
 	["bankID"]={-1,5,6,7,8,9,10,11},
 	["bankmun"]=24,
 	["bankbag"]=6,
+	["ItemWH"]=_G["BankFrameItem1"]:GetWidth()+5,
 }
 if tocversion>20000 then
 	Data.bagData["bankmun"]=28;
 	Data.bagData["bankbag"]=7;
 end
 if tocversion>100000 then
+	Data.bagData["bagIDMax"]= NUM_TOTAL_BAG_FRAMES
 	Data.bagData["bagID"]={0,1,2,3,4,5}
-	Data.bagData["bagIDMax"]=6
 	Data.bagData["bankID"]={-1,6,7,8,9,10,11,12}
 end
 --装备颜色

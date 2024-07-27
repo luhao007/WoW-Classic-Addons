@@ -96,11 +96,13 @@ local BAG_SetList = {
 	{"交易时打开背包","jiaoyiOpen",false},
 	{"拍卖时打开背包","AHOpen",false},
 	{"显示装备等级","wupinLV",true},
-	{"根据品质染色装备边框","wupinRanse",true},
 	{"垃圾物品提示","JunkShow",true},
 	{"战利品放入左边包",GetInsertItemsLeftToRight,false},
 	{"反向整理",BagBankfun.GetSortBagsRightToLeft,false},
 }
+if tocversion<100000 then
+	table.insert(BAG_SetList,4,{"根据品质染色装备边框","wupinRanse",true})
+end
 for i=1,#BAG_SetList do
 	local tishi = BAG_SetList[i][4] or BAG_SetList[i][1]
 	local BagBankSet = PIGCheckbutton_R(BagBankF.SetListF,{BAG_SetList[i][1],tishi},nil,nil,nil,nil,"BAG_SetList"..i)

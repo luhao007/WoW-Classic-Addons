@@ -17,7 +17,7 @@ local GetContainerItemID = C_Container.GetContainerItemID
 local GetContainerItemLink = C_Container.GetContainerItemLink
 local PickupContainerItem =C_Container.PickupContainerItem
 local UseContainerItem =C_Container.UseContainerItem
-NUM_BAG_FRAMES=NUM_BAG_FRAMES or NUM_TOTAL_BAG_FRAMES
+local bagIDMax= addonTable.Data.bagData["bagIDMax"]
 --
 local BusinessInfo=addonTable.BusinessInfo
 function BusinessInfo.AutoBuy()
@@ -39,7 +39,7 @@ function BusinessInfo.AutoBuy()
 	--------------------------------
 	local function jisuanBAGshuliang(QitemID)
 		local zongjiBAGitemCount=0
-		for bag = 0, NUM_BAG_FRAMES do
+		for bag = 0, bagIDMax do
 			for slot = 1, GetContainerNumSlots(bag) do
 				local itemID, itemLink, icon, itemCount = PIGGetContainerIDlink(bag, slot)
 				if itemID then
@@ -55,8 +55,8 @@ function BusinessInfo.AutoBuy()
 	local function Buy_item()
 		if ( MerchantFrame:IsVisible() and MerchantFrame.selectedTab == 1 ) then
 			local dataY = PIGA_Per["AutoSellBuy"]["Buy_List"]
+			local price_itempriceG=0
 			for i=1,#dataY do
-				BUGINFO_itemCount=0
 				local goumaiItem=dataY[i][1]
 				local xuyaogoumaishu=dataY[i][4];--预设购买数
 				local yiyoushuliang=jisuanBAGshuliang(goumaiItem);--已有数量
@@ -65,17 +65,18 @@ function BusinessInfo.AutoBuy()
 					local numItems = GetMerchantNumItems();
 					for ii=1,numItems do
 						if goumaiItem==GetMerchantItemID(ii) then
-							local NPCshuliang = select(5, GetMerchantItemInfo(ii))
-							if NPCshuliang==(-1) then
+							local name, texture, price, quantity, numAvailable, isPurchasable, isUsable, extendedCost= GetMerchantItemInfo(ii)
+							price_itempriceG=price_itempriceG+price
+							if numAvailable==(-1) then
 								goumaihanshu(i,ii,shijigoumai,dataY)
 								if PIGA["AutoSellBuy"]["Buy_Tishi"] then
 									PIG_print("|cFF00ff00执行自动补货:|r "..PIGA_Per["AutoSellBuy"]["Buy_List"][i][2].." |cFF00ff00补货数量:|r"..shijigoumai);
 								end
 							else
-								if shijigoumai>NPCshuliang then
-									BuyMerchantItem(ii,NPCshuliang)
+								if shijigoumai>numAvailable then
+									BuyMerchantItem(ii,numAvailable)
 									if PIGA["AutoSellBuy"]["Buy_Tishi"] then
-										PIG_print("|cFF00ff00商家物品限购:|r "..PIGA_Per["AutoSellBuy"]["Buy_List"][i][2].." |cFF00ff00抢购数量:|r"..NPCshuliang);
+										PIG_print("|cFF00ff00商家物品限购:|r "..PIGA_Per["AutoSellBuy"]["Buy_List"][i][2].." |cFF00ff00抢购数量:|r"..numAvailable);
 									end
 								else
 									goumaihanshu(i,ii,shijigoumai,dataY)
@@ -87,6 +88,9 @@ function BusinessInfo.AutoBuy()
 						end
 					end
 				end		
+			end
+			if price_itempriceG>0 then
+				PIG_print("|cFF00ff00本次补货花费:|r "..GetMoneyString(price_itempriceG));
 			end
 		end
 	end

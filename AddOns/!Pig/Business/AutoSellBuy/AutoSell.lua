@@ -17,7 +17,7 @@ local GetContainerItemID = C_Container.GetContainerItemID
 local GetContainerItemLink = C_Container.GetContainerItemLink
 local PickupContainerItem =C_Container.PickupContainerItem
 local UseContainerItem =C_Container.UseContainerItem
-NUM_BAG_FRAMES=NUM_BAG_FRAMES or NUM_TOTAL_BAG_FRAMES
+local bagIDMax= addonTable.Data.bagData["bagIDMax"]
 --
 local BusinessInfo=addonTable.BusinessInfo
 function BusinessInfo.AutoSell()
@@ -28,7 +28,7 @@ function BusinessInfo.AutoSell()
 		if ( MerchantFrame:IsVisible() and MerchantFrame.selectedTab == 1 ) then
 			fujiF.shoumaiShuliang = 0;
 			local dataX = PIGA["AutoSellBuy"]["Sell_List"]
-			for bag = 0, NUM_BAG_FRAMES do
+			for bag = 0, bagIDMax do
 				for slot = 1, GetContainerNumSlots(bag) do
 					local itemID, itemLink, icon, itemCount, quality, noValue = PIGGetContainerIDlink(bag, slot)
 					if itemID then

@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Cladhaire, Ludovicus
-## Version: v4.0.0-release
+## Version: v4.0.1-release
 ## OptionalDeps: HereBeDragons-2.0
 ## SavedVariables: TomTomDB, TomTomWaypoints, TomTomWaypointsM
 

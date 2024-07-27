@@ -1,0 +1,19 @@
+<Ui>
+    <Script file="Localization.lua" />
+    <Script file="enUS.lua" />
+    <Script file="enUS.WrathClassic.lua" />
+    <Script file="enUS.Plugins.lua" />
+    <Script file="deDE.lua" />
+    <Script file="deDE.WrathClassic.lua" />
+    <Script file="deDE.Plugins.lua" />
+    <Script file="frFR.lua" />
+    <Script file="frFR.WrathClassic.lua" />
+    <Script file="frFR.Plugins.lua" />
+    <Script file="ruRU.lua" />
+    <Script file="ruRU.WrathClassic.lua" />
+    <Script file="ruRU.Plugins.lua" />
+    <Script file="zhCN.lua" />
+    <Script file="zhCN.WrathClassic.lua" />
+    <Script file="zhCN.Plugins.lua" />
+    <Script file="GlobalStrings.lua" />
+</Ui>

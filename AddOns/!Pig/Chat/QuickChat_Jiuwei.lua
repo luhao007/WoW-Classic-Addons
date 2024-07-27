@@ -26,7 +26,7 @@ function QuickChatfun.QuickBut_jiuwei()
 		self.Tex:SetPoint("CENTER",2,-1);
 	end);
 	fuFrame.jiuweidaojishi:SetScript("OnMouseUp", function (self)
-		self.Tex:SetPoint("CENTER",1,0);
+		self.Tex:SetPoint("CENTER",-0.4,0);
 	end);
 	PIGEnter(fuFrame.jiuweidaojishi,"|cff00FFff"..KEY_BUTTON1.."-|r|cffFFFF00"..READY_CHECK.."\n|cff00FFff"..KEY_BUTTON2.."-|r|cffFFFF00"..L["CHAT_DAOSHU"].."|r")
 	fuFrame.jiuweidaojishi:HookScript("OnEnter", function (self)	

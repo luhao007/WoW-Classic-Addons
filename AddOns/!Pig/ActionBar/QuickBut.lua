@@ -688,6 +688,7 @@ QuickButUI.ButList[6]=function()
 		General.START:Hide();
 
 		local GetItemCount=GetItemCount or C_Item and C_Item.GetItemCount
+		local IsUsableSpell=IsUsableSpell or C_Spell and C_Spell.IsSpellUsable
 		local GetItemCooldown=C_Container.GetItemCooldown
 		local function gengxinlushiCD()
 			if General.lushiitemID then
@@ -706,11 +707,11 @@ QuickButUI.ButList[6]=function()
 				end
 			end
 		end
-		local lushiList = {184871}
+		local lushiList = {184871}--玩具
 		local function PIGPlayerHasHearthstone()
 			for i=1,#lushiList do
-				local Ccount = GetItemCount(lushiList[i])
-				if Ccount>0 then
+				local HasToy = PlayerHasToy(lushiList[i])
+				if HasToy then
 					return lushiList[i]
 				end
 			end

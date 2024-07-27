@@ -1,0 +1,50 @@
+## Interface: 30400
+## Author: Krowi-Frostmane EU
+## Version: 73.6
+## SavedVariables: Options, SavedData, Filters, DebugTable, KrowiAF_Options, KrowiAF_SavedData, KrowiAF_Filters, KrowiAF_SearchOptions, KrowiAF_Achievements
+
+## Title: Krowi's |cFF1D92C2Achievement Filter|r
+## Notes: Filters your achievements.
+## Title-zhCN: |cFFFFE00A<|r|cFFA9D271收藏|r|cFFFFE00A>|r |cFFFFFFFFKrowi成就过滤器|r |cFFFFE00AKrowi_AchievementFilter|r
+
+## X-Prefix: KrowiAF
+## X-Acronym: KAF
+## X-Discord-Invite-Link: https://discord.gg/mdBFQJYeQZ
+## X-Discord-Server-Name: Krowi's Addons
+## X-CurseForge: https://www.curseforge.com/wow/addons/krowi-achievement-filter
+## X-Curse-Project-ID: 413582
+## X-Wago: https://addons.wago.io/addons/krowi-achievement-filter
+## X-Wago-Project-ID: XrNkx46a
+## X-WoWInterface: https://www.wowinterface.com/downloads/info26229-KrowisAchievementFilter
+## X-WoWInterface-Project-ID: 26229
+
+Libs\Files.xml
+
+Api\Files.xml
+
+Plugins\Files.xml
+
+Credits.lua
+
+Localization\Files.xml
+
+ExportedTabs.lua
+
+Krowi_AchievementFilter.lua
+Globals.lua
+
+Diagnostics.lua
+Options\Files.xml
+Libs\Krowi_Util\Icon.lua
+Icon.lua
+Tutorials.lua
+BrowsingHistory.lua
+
+Objects\Files.xml
+
+Data\Files.xml
+Data\CataClassic\Files.xml
+
+Filters.lua
+SearchOptions.lua
+Gui\Files.xml

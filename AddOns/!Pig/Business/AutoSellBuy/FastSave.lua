@@ -27,7 +27,7 @@ function BusinessInfo.FastSave()
 		fujiF.qingkong()
 	end)
 	BusinessInfo.ADDScroll(fujiF,gongnengName,"Save",19,PIGA_Per["AutoSellBuy"]["Save_List"],{true,"AutoSellBuy","Save_List"})
-	BankSlotsFrame.cun = PIGButton(BankSlotsFrame,{"TOPRIGHT",BankSlotsFrame,"TOPRIGHT",-100,-30},{40,22},gongnengName);
+	BankSlotsFrame.cun = PIGButton(BankSlotsFrame,{"TOPRIGHT",BankSlotsFrame,"TOPRIGHT",-260,-30},{40,22},gongnengName);
 	if tocversion<100000 then BankSlotsFrame.cun:SetPoint("TOPRIGHT",BankSlotsFrame,"TOPRIGHT",-108,-40) end
 	PIGEnter(BankSlotsFrame.cun,KEY_BUTTON1.."-\124cff00FFFF一键"..gongnengName.."预设物品\124r\n"..KEY_BUTTON2.."-\124cff00FFFF设置一键"..gongnengName.."的物品\124r")  
 	BankSlotsFrame.cun:SetScript("OnClick", function (self,button)
@@ -40,7 +40,7 @@ function BusinessInfo.FastSave()
 	end)
 	function fujiF.cunchu()
 		local shujuy=PIGA_Per["AutoSellBuy"]["Save_List"]
-		for bag=0,NUM_BAG_FRAMES do			
+		for bag=0,bagIDMax do			
 			local bganum=GetContainerNumSlots(bag)
 			for slot=1,bganum do	
 				local itemID=GetContainerItemID(bag, slot)

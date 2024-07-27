@@ -22,6 +22,7 @@ local Fun=addonTable.Fun
 local lixian_chakan=Fun.lixian_chakan
 local GetEquipmTXT=Fun.GetEquipmTXT
 local GetRuneData=Fun.GetRuneData
+
 --------
 local GetContainerNumSlots = C_Container.GetContainerNumSlots
 local GetContainerItemLink=C_Container.GetContainerItemLink
@@ -35,6 +36,8 @@ local function zairumorenpeizhi(peizhiV)
 	return NewpeizhiV
 end
 function BusinessInfo.Item()
+	local BagdangeW=bagData.ItemWH-10
+	
 	local StatsInfo = StatsInfo_UI
 	PIGA["StatsInfo"]["Items"][StatsInfo.allname]=zairumorenpeizhi(PIGA["StatsInfo"]["Items"][StatsInfo.allname])
 	local fujiF,fujiTabBut=PIGOptionsList_R(StatsInfo.F,"物\n品",StatsInfo.butW,"Left")
@@ -46,7 +49,6 @@ function BusinessInfo.Item()
 	fujiF.PList.lineRR = PIGLine(fujiF.PList,"R")
 	fujiF.SelectName=nil
 	---
-	local BagdangeW=ContainerFrame1Item1:GetWidth()-5
 	local lixianNum,meihang=(#bagData["bankID"])*MAX_CONTAINER_ITEMS+bagData["bankmun"],20
 	local hang_Height,hang_NUM  = 18, 12;
 	local function gengxin_List(self)

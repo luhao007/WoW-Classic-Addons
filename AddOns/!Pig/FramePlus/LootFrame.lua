@@ -76,6 +76,7 @@ function FramePlusfun.Loot()
 		local function PIG_LootFrame_UpdateButton(index)
 			local numLootItems = LootFrame.numLootItems
 			if not numLootItems then return end
+			if not _G["LootButton"..index] then AddlootBut(index) end
 			local button = _G["LootButton"..index];
 			local slot = index;
 			if ( slot <= numLootItems ) then

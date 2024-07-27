@@ -12,7 +12,7 @@ end
 local mod	= DBM:NewMod("Geddon", "DBM-Raids-Vanilla", catID)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240726025149")
+mod:SetRevision("20240726193106")
 mod:SetCreatureID(DBM:IsSeasonal("SeasonOfDiscovery") and 228433 or 12056)
 mod:SetEncounterID(668)
 mod:SetModelID(12129)
@@ -88,9 +88,8 @@ function mod:SPELL_AURA_APPLIED(args)
 				yellBomb:Yell()
 				yellBombFades:Countdown(8)
 			end
-		else
-			warnBomb:CombinedShow(0.3, args.destName)
 		end
+		warnBomb:CombinedShow(0.1, args.destName)
 	elseif args:IsSpell(19659) and self:CheckDispelFilter("magic") then
 		specWarnIgnite:CombinedShow(0.3, args.destName)
 		specWarnIgnite:ScheduleVoice(0.3, "helpdispel")

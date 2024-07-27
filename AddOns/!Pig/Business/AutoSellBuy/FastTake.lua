@@ -31,7 +31,7 @@ function BusinessInfo.FastTake()
 	end)
 	BusinessInfo.ADDScroll(fujiF,gongnengName,"Take",19,PIGA_Per["AutoSellBuy"]["Take_List"],{true,"AutoSellBuy","Take_List"})
 	--一键存/取
-	BankSlotsFrame.qu = PIGButton(BankSlotsFrame,{"TOPRIGHT",BankSlotsFrame,"TOPRIGHT",-40,-30},{40,22},gongnengName);
+	BankSlotsFrame.qu = PIGButton(BankSlotsFrame,{"TOPRIGHT",BankSlotsFrame,"TOPRIGHT",-200,-30},{40,22},gongnengName);
 	if tocversion<100000 then BankSlotsFrame.qu:SetPoint("TOPRIGHT",BankSlotsFrame,"TOPRIGHT",-48,-40) end
 	PIGEnter(BankSlotsFrame.qu,KEY_BUTTON1.."-\124cff00FFFF一键"..gongnengName.."预设物品\124r\n"..KEY_BUTTON2.."-\124cff00FFFF设置一键"..gongnengName.."的物品\124r")  
 	BankSlotsFrame.qu:SetScript("OnClick", function (self,button)

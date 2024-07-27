@@ -1,8 +1,9 @@
 # TomTom
 
-## [v4.0.0-release](https://github.com/jnwhiteh/TomTom/tree/v4.0.0-release) (2024-07-24)
-[Full Changelog](https://github.com/jnwhiteh/TomTom/commits/v4.0.0-release) [Previous Releases](https://github.com/jnwhiteh/TomTom/releases)
+## [v4.0.1-release](https://github.com/jnwhiteh/TomTom/tree/v4.0.1-release) (2024-07-26)
+[Full Changelog](https://github.com/jnwhiteh/TomTom/commits/v4.0.1-release) [Previous Releases](https://github.com/jnwhiteh/TomTom/releases)
 
+- Update HereBeDragons embedded library  
 - Update for 11.x codebranch  
 - Better defaults for distance units  
      - Default to yards in the US  
@@ -697,4 +698,3 @@
 - * Updated to Astrolabe-coroutine branch  
 - * Fix for WorldMap dots, since they were using the wrong texture  
 - * Parent world map icons to the WorldMapDetailFrame  
-- Added in TTA. May need tweaking for cosmetic value.  

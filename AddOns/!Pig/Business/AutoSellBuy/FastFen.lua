@@ -14,7 +14,7 @@ local GetContainerNumSlots = C_Container.GetContainerNumSlots
 local GetContainerItemID = C_Container.GetContainerItemID
 local GetContainerItemLink = C_Container.GetContainerItemLink
 local PickupContainerItem =C_Container.PickupContainerItem
-NUM_BAG_FRAMES=NUM_BAG_FRAMES or NUM_TOTAL_BAG_FRAMES
+local bagIDMax= addonTable.Data.bagData["bagIDMax"]
 -- 
 local BusinessInfo=addonTable.BusinessInfo
 local GnName,GnUI,GnIcon,FrameLevel = unpack(BusinessInfo.AutoSellBuyData)
@@ -43,7 +43,7 @@ function BusinessInfo.FastFen()
 			if button=="LeftButton" then
 				local shujuy =PIGA["AutoSellBuy"]["Fen_List"]
 				if #shujuy>0 then
-					for bag=0,NUM_BAG_FRAMES do			
+					for bag=0,bagIDMax do			
 						local xx=GetContainerNumSlots(bag)
 						for slot=1,xx do
 							local itemID=GetContainerItemID(bag, slot)

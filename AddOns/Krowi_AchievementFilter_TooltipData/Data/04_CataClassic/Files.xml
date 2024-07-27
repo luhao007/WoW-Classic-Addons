@@ -1,0 +1,4 @@
+<Ui>
+    <Script file="03_Wrath.lua" />
+    <Script file="04_Cata.lua" />
+</Ui>

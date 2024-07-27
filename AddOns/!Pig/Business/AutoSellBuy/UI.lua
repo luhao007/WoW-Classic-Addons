@@ -16,7 +16,7 @@ local PIGOptionsList_R=Create.PIGOptionsList_R
 local PIGFontString=Create.PIGFontString
 --
 local GetContainerNumSlots = C_Container.GetContainerNumSlots
-NUM_BAG_FRAMES=NUM_BAG_FRAMES or NUM_TOTAL_BAG_FRAMES
+local bagIDMax= addonTable.Data.bagData["bagIDMax"]
 ---
 local BusinessInfo=addonTable.BusinessInfo
 local GnName,GnUI,GnIcon,FrameLevel = unpack(BusinessInfo.AutoSellBuyData)
@@ -80,7 +80,7 @@ function BusinessInfo.ADDScroll(fuFrame,text,hangName,hang_NUM,Config0,Config1)
 	---
 	fuFrame.List.bagbut.List.xuanzhong={}
 	local Quality = Data.Quality
-	for i=0,NUM_BAG_FRAMES do
+	for i=0,bagIDMax do
 		fuFrame.List.bagbut.List.xuanzhong[i]=true
 		local text ={Quality[i]["Name"],Quality[i]["Name"]}
 		local Checkbut =PIGCheckbutton(fuFrame.List.bagbut.List,nil,text)
@@ -109,7 +109,7 @@ function BusinessInfo.ADDScroll(fuFrame,text,hangName,hang_NUM,Config0,Config1)
 	end
 	fuFrame.List.bagbut.List.addall = PIGButton(fuFrame.List.bagbut.List,{"TOPLEFT", fuFrame.List.bagbut.List, "TOPLEFT", 142, -52},{80,22},"添加以下");
 	fuFrame.List.bagbut.List.addall:SetScript("OnClick", function()
-		for bag=0,NUM_BAG_FRAMES do			
+		for bag=0,bagIDMax do			
 			local xx=GetContainerNumSlots(bag)
 			for slot=1,xx do
 				local itemID, itemLink, icon, _,quality = PIGGetContainerIDlink(bag, slot)
@@ -172,7 +172,7 @@ function BusinessInfo.ADDScroll(fuFrame,text,hangName,hang_NUM,Config0,Config1)
 			_G[hangName.."addbaghang"..id]:Hide();
 	    end
 	    local bagshujuy = {}
-		for bag=0,NUM_BAG_FRAMES do			
+		for bag=0,bagIDMax do			
 			local xx=GetContainerNumSlots(bag)
 			for slot=1,xx do
 				local itemID, itemLink, icon, _,quality = PIGGetContainerIDlink(bag, slot)

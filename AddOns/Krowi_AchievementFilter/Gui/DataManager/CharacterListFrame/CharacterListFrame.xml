@@ -1,0 +1,28 @@
+<Ui>
+    <Script file="CharacterListFrameMixin.lua"/>
+
+    <Frame name="KrowiAF_CharacterListFrame_Template" mixin="KrowiAF_CharacterListFrameMixin" virtual="true">
+        <Frames>
+            <Frame parentKey="ColumnDisplay" inherits="ColumnDisplayTemplate" hidden="true">
+                <Size x="0" y="40"/>
+                <Anchors>
+                    <Anchor point="TOPLEFT" x="-5" y="40"/>
+                    <Anchor point="TOPRIGHT" x="0" y="40"/>
+                </Anchors>
+            </Frame>
+            <Frame parentKey="ScrollBox" inherits="WowScrollBoxList"/>
+			<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="0"/>
+					<Anchor point="BOTTOMRIGHT" x="0" y="5"/>
+				</Anchors>
+			</EventFrame>
+        </Frames>
+        <Scripts>
+            <OnLoad method="OnLoad"/>
+            <OnEvent method="OnEvent"/>
+            <OnShow method="OnShow"/>
+            <OnHide method="OnHide"/>
+        </Scripts>
+    </Frame>
+</Ui>

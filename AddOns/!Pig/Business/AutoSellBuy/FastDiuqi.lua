@@ -17,7 +17,7 @@ local GetContainerItemID = C_Container.GetContainerItemID
 local GetContainerItemLink = C_Container.GetContainerItemLink
 local PickupContainerItem =C_Container.PickupContainerItem
 local UseContainerItem =C_Container.UseContainerItem
-NUM_BAG_FRAMES=NUM_BAG_FRAMES or NUM_TOTAL_BAG_FRAMES
+local bagIDMax= addonTable.Data.bagData["bagIDMax"]
 -------
 local BusinessInfo=addonTable.BusinessInfo
 local GnName,GnUI,GnIcon,FrameLevel = unpack(BusinessInfo.AutoSellBuyData)
@@ -63,7 +63,7 @@ function BusinessInfo.FastDiuqi()
 	zidongkaishidiuqiFFF:SetScript("OnEvent", function(self,event,arg1)
 		if PIGA["AutoSellBuy"]["Diuqi_Tishi"] or PIGA["AutoSellBuy"]["Open_Tishi"] or PIGA["AutoSellBuy"]["Fen_Tishi"] then
 			local beibaoInfo = {}
-			for bag=0,NUM_BAG_FRAMES do
+			for bag=0,bagIDMax do
 				local bnum=GetContainerNumSlots(bag)
 				for slot=1,bnum do
 					local itemID=GetContainerItemID(bag,slot)
@@ -138,7 +138,7 @@ function Pig_DelItem()
 	end
 	local dataX = PIGA["AutoSellBuy"]["Diuqi_List"]
 	if #dataX>0 then
-		for bag=0,NUM_BAG_FRAMES do
+		for bag=0,bagIDMax do
 			local xx=GetContainerNumSlots(bag) 
 			for slot=1,xx do
 				for k=1,#dataX do
