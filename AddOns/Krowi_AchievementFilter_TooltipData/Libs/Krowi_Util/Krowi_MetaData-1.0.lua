@@ -22,7 +22,7 @@ lib.Metadata = {};
 local metadata = lib.Metadata;
 
 function metadata.GetAddOnMetadata(addonName)
-    local getAddOnMetadata = C_AddOns.GetAddOnMetadata;
+    local getAddOnMetadata = GetAddOnMetadata;
     local title = getAddOnMetadata(addonName, "Title");
     local prefix = getAddOnMetadata(addonName, "X-Prefix");
     local acronym = getAddOnMetadata(addonName, "X-Acronym");

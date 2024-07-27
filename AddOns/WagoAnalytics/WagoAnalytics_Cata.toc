@@ -1,10 +1,14 @@
-## Interface: 40400
-## Title: WagoAnalytics
-## Version: 1.0
-## Notes: Please leave me on :) This addon enables usage data collection for addon authors. You can opt-out of it in the settings section of your Wago App.
-## SavedVariables: WagoAnalyticsSV
-## LoadOnDemand: 0
+## Interface: 30400
 ## Author: Wago Addons Team
+## Version: 1.0
+## LoadOnDemand: 0
+## SavedVariables: WagoAnalyticsSV
+
+## Title: WagoAnalytics
+## Notes: Please leave me on :) This addon enables usage data collection for addon authors. You can opt-out of it in the settings section of your Wago App.
+## Title-zhCN: |cFFFFE00A<|r|cFFFFFFFF辅助|r|cFFFFE00A>|r |cFFFFFFFFWago分析|r |cFFFFE00AWagoAnalytics|r
+## Notes-zhCN: 辅助分析WAGO使用情况
+
 ## X-Wago-ID: qv63o6bQ
 
 WagoAnalytics.lua

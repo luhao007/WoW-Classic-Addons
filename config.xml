@@ -546,6 +546,10 @@
 				<Title>皮肤</Title>
 				<TitleExtra>经典计时条</TitleExtra>
 			</SubAddon>
+			<SubAddon name="DBM-Delves-WarWithin">
+				<Title>地下堡</Title>
+				<TitleExtra>地心之战</TitleExtra>
+			</SubAddon>
 			<SubAddon name="DBM-DMF">
 				<Title>暗月马戏团</Title>
 			</SubAddon>
@@ -595,6 +599,10 @@
 			</SubAddon>
 			<SubAddon name="DBM-Karazhan">
 				<Title>卡拉赞</Title>
+			</SubAddon>
+			<SubAddon name="DBM-KhazAlgar">
+				<Title>户外</Title>
+				<TitleExtra>卡兹阿加</TitleExtra>
 			</SubAddon>
 			<SubAddon name="DBM-MC">
 				<Title>熔火之心</Title>
@@ -724,6 +732,13 @@
 			</SubAddon>
 			<SubAddon name="DBM-TerraceofEndlessSpring">
 				<Title>永春台</Title>
+			</SubAddon>
+			<SubAddon name="DBM-Test">
+				<Title>测试功能</Title>
+			</SubAddon>
+			<SubAddon name="DBM-Test-Dragonflight">
+				<Title>测试功能</Title>
+				<TitleExtra>巨龙时代</TitleExtra>
 			</SubAddon>
 			<SubAddon name="DBM-TheEye">
 				<Title>风暴要塞</Title>
@@ -1446,6 +1461,10 @@
 		<Title>宠物对战增强</Title>
 		<Category>战斗</Category>
 	</Addon>
+	<Addon name="Rurutia">
+		<Title>露露缇娅语音包</Title>
+		<Category>副本</Category>
+	</Addon>
 	<Addon name="Scrap">
 		<Title>垃圾管理</Title>
 		<Notes>自动出售灰色物品</Notes>
@@ -1733,6 +1752,16 @@
 				<Title>设置</Title>
 			</SubAddon>
 		</SubAddons>
+	</Addon>
+	<Addon name="WagoAnalytics">
+		<Title>Wago分析</Title>
+		<Notes>辅助分析WAGO使用情况</Notes>
+		<Category>辅助</Category>
+	</Addon>
+	<Addon name="WagoAppCompanion">
+		<Title>WagoApp伴侣</Title>
+		<Notes>辅助Wago App收集插件使用状况</Notes>
+		<Category>辅助</Category>
 	</Addon>
 	<Addon name="WarPlan">
 		<Title>阵营战役助手</Title>

@@ -335,7 +335,8 @@ class Manager:
 
     @staticmethod
     def handle_dup_libraries():
-        addons = [addon for addon in os.listdir('AddOns') if addon not in ['!!Libs', 'Questie', 'RareScanner']]
+        ignores = ['!!Libs', 'Questie', 'RareScanner']
+        addons = [addon for addon in os.listdir('AddOns') if addon not in ignores]
         for addon in addons:
             utils.remove_libraries_all(addon)
 
@@ -623,6 +624,8 @@ class Manager:
 
     @staticmethod
     def handle_tsm():
+        if not os.path.exists('Addons/TradeSkillMaster'):
+            return
         utils.rm_tree('AddOns/TradeSkillMaster/External/EmbeddedLibs/')
 
         utils.process_file(

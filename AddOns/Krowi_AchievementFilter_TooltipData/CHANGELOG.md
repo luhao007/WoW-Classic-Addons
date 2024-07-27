@@ -1,6 +1,13 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## 2.0 - 2024-07-24
+### Changed
+- Updated toc for The War Within
+
+### Wrath Classic
+- No longer supported
+
 ## 1.3 - 2024-05-12
 ### Changed
 - Code cleanup and API improvements

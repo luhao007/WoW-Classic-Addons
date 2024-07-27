@@ -1,7 +1,7 @@
 ## Interface: 30400
 ## Author: Krowi-Frostmane EU
-## Version: 73.6
-## SavedVariables: Options, SavedData, Filters, DebugTable, KrowiAF_Options, KrowiAF_SavedData, KrowiAF_Filters, KrowiAF_SearchOptions, KrowiAF_Achievements
+## Version: 74.4
+## SavedVariables: KrowiAF_DebugTable, KrowiAF_Options, KrowiAF_SavedData, KrowiAF_Filters, KrowiAF_SearchOptions, KrowiAF_Achievements
 
 ## Title: Krowi's |cFF1D92C2Achievement Filter|r
 ## Notes: Filters your achievements.
@@ -47,4 +47,4 @@ Data\Retail\Files.xml
 
 Filters.lua
 SearchOptions.lua
-Gui\Files.xml
+Gui\FilesModern.xml

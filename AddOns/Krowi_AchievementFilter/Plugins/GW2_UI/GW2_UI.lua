@@ -796,50 +796,16 @@ do -- [[ Summary ]]
 end
 
 local function SkinFilterButton(button)
-    button:GwStripTextures();
-    button.TopLeft:Hide();
-	button.TopRight:Hide();
-	button.BottomLeft:Hide();
-	button.BottomRight:Hide();
-	button.TopMiddle:Hide();
-	button.MiddleLeft:Hide();
-	button.MiddleRight:Hide();
-	button.BottomMiddle:Hide();
-	button.MiddleMiddle:Hide();
-
-    button:SetSize(155, 32);
-
-    button:GwCreateBackdrop(GW2_ADDON.BackdropTemplates.DopwDown, true);
-    button.backdrop:SetBackdropColor(0, 0, 0);
-
-    button:SetFrameLevel(button:GetFrameLevel() + 2);
-
+    button:GwHandleDropDownBox(GW2_ADDON.BackdropTemplates.DopwDown, true, "MENU_ACHIEVEMENT_FILTER")
     button:ClearAllPoints();
-    button:SetPoint('BOTTOMLEFT', KrowiAF_SearchBoxFrame, 'TOPLEFT', 0, 10);
-    button:SetPoint('BOTTOMRIGHT', KrowiAF_SearchBoxFrame, 'TOPRIGHT', 0, 10);
+    button:SetPoint("BOTTOMLEFT", KrowiAF_SearchBoxFrame, "TOPLEFT", 0, 10);
+    button:SetPoint("BOTTOMRIGHT", KrowiAF_SearchBoxFrame, "TOPRIGHT", 0, 10);
+    button:SetHeight(26);
 
-    button.backdrop:ClearAllPoints()
-    button.backdrop:SetPoint('TOPLEFT', button, 'TOPLEFT', 0, 0);
-    button.backdrop:SetPoint('BOTTOMRIGHT', button, 'BOTTOMRIGHT', 0, 0);
+    button.backdrop:ClearAllPoints();
+    button.backdrop:SetPoint("TOPLEFT", button, "TOPLEFT", 0, 0);
+    button.backdrop:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 0, 0);
     button.backdrop:SetAlpha(0.5);
-
-    local text = button.Text;
-    text:ClearAllPoints();
-    text:SetPoint("LEFT", button, "LEFT", 10, 0);
-    text:SetFont(UNIT_NAME_FONT, 12, "");
-    text:SetTextColor(178 / 255, 178 / 255, 178 / 255);
-    text:SetHeight(button:GetHeight());
-    text:SetJustifyV("MIDDLE");
-
-    local icon = button.Icon;
-    icon:SetTexture("Interface/AddOns/GW2_UI/textures/uistuff/arrowup_down");
-    icon:SetRotation(3.14);
-    icon:SetPoint("RIGHT", -15, 0);
-    icon:SetSize(20, 20);
-
-    button:HookScript("OnMouseDown", function(self)
-        self.Icon:SetPoint("RIGHT", -15, 0);
-    end);
 
     button:HookScript("OnShow", function()
         GW2_ADDON.AchievementFrameFilterDropDownDummy:Hide();
@@ -1169,11 +1135,11 @@ local function SkinDataManager(frame)
     -- frame.Inset:StripTextures();
     -- frame.CloseButton:Point("TOPRIGHT", 0, 2);
     -- skins:HandleFrame(frame, true, nil, -5, 0, -1, 0);
-    
+
     -- frame.CharacterList.InsetFrame:StripTextures();
     -- skins:HandleInsetFrame(frame.CharacterList.InsetFrame);
     -- skins:HandleScrollBar(frame.CharacterList.ScrollFrame.ScrollBar)
-    
+
 	-- local columnDisplay = frame.CharacterList.ColumnDisplay;
 	-- columnDisplay:StripTextures();
 	-- columnDisplay.InsetBorderLeft:Hide();
@@ -1310,7 +1276,7 @@ function gw2_ui.InjectOptions()
 
     addon.InjectOptions:AddTable(pluginTable, "Unsupported", {
         order = OrderPP(), type = "description", width = "full",
-        name = (addon.L["Unsupported GW2_UI Desc"]:K_ReplaceVars(C_AddOns.IsAddOnLoaded("GW2_UI") and C_AddOns.GetAddOnMetadata("GW2_UI", "Version") or "") ..
+        name = (addon.L["Unsupported GW2_UI Desc"]:K_ReplaceVars(IsAddOnLoaded("GW2_UI") and GetAddOnMetadata("GW2_UI", "Version") or "") ..
         (addon.Util.IsMainline and (" " .. addon.L["At least version is required"]:K_ReplaceVars("6.6.1")) or "\n")):SetColorRed(),
         fontSize = "medium",
         hidden = not (GW2_ADDON ~= nil and not gw2_ui.IsLoaded())
@@ -1409,17 +1375,17 @@ function gw2_ui.Load()
 end
 
 function gw2_ui.IsLoaded()
-    if not C_AddOns.IsAddOnLoaded("GW2_UI") then
+    if not IsAddOnLoaded("GW2_UI") then
         return false;
     end
     if not addon.Util.IsMainline then -- No Wrath Classic support for now
         return false;
     end
-    if C_AddOns.GetAddOnMetadata("GW2_UI", "Version") == "@project-version@" then
+    if GetAddOnMetadata("GW2_UI", "Version") == "@project-version@" then
         return true;
     end
 
-    local versionComponents = strsplittable(".", C_AddOns.GetAddOnMetadata("GW2_UI", "Version"));
+    local versionComponents = strsplittable(".", GetAddOnMetadata("GW2_UI", "Version"));
     local referenceComponents = strsplittable(".", "6.6.1");
 
     local i = 1;

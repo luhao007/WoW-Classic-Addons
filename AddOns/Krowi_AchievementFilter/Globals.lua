@@ -366,7 +366,7 @@ local function HandleAchievements(gapSize, i, highestId, characterGuid)
     buildCacheHelper:SetScript("OnUpdate", nil);
     coFinished = true;
     coStarted = nil;
-    addon.Diagnostics.Debug("Cache: Finished loading data");
+    addon.Diagnostics.Trace("Cache: Finished loading data");
     if #coOnFinish >= 1 then
         for _, onFinish in next, coOnFinish do
             onFinish(criteriaCache);
@@ -390,7 +390,7 @@ function addon.BuildCacheAsync(onFinish, onDelay)
     end
 
     coStarted = true;
-    addon.Diagnostics.Debug("Cache: Start loading data");
+    addon.Diagnostics.Trace("Cache: Start loading data");
     local characterGuid = UnitGUID("player");
     criteriaCache = {};
     local gapSize, i = 0, 1;
@@ -584,7 +584,7 @@ local function MakeStatic(frame, rememberLastPositionOption, target)
 end
 
 function addon.MakeWindowStatic()
-    if not C_AddOns.IsAddOnLoaded("Blizzard_AchievementUI") then
+    if not IsAddOnLoaded("Blizzard_AchievementUI") then
         return;
     end
     MakeStatic(AchievementFrame, "AchievementWindow");
@@ -625,7 +625,7 @@ function addon.MakeMovable(frame, rememberLastPositionOption, target, point)
 end
 
 function addon.MakeWindowMovable()
-    if not C_AddOns.IsAddOnLoaded("Blizzard_AchievementUI") then
+    if not IsAddOnLoaded("Blizzard_AchievementUI") then
         return;
     end
     addon.MakeMovable(AchievementFrame, "AchievementWindow");
@@ -791,7 +791,7 @@ function addon.IsCustomModifierKeyDown(modifier)
     end
 end
 
---  Budgets 50% of target or current FPS to perform a workload. 
+--  Budgets 50% of target or current FPS to perform a workload.
 --  finished = start(workload, onFinish, onDelay)
 --  Arguments:
 --      workload        table       Stack (last in, first out) of functions to call.

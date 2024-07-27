@@ -5,6 +5,7 @@ addon.Gui = {
 };
 local gui = addon.Gui;
 
+
 local eventReminderSideButtonSystemIsLoaded;
 function gui:LoadWithAddon()
     self:OverwriteAdjustAnchors();
@@ -198,8 +199,8 @@ end
 
 local firstTimeLatch = true;
 function gui:ToggleAchievementFrame(_addonName, tabName, resetView, forceOpen) -- Issue #26 Broken, Fix
-    if not C_AddOns.IsAddOnLoaded("Blizzard_AchievementUI") then
-        C_AddOns.LoadAddOn("Blizzard_AchievementUI");
+    if not IsAddOnLoaded("Blizzard_AchievementUI") then
+        LoadAddOn("Blizzard_AchievementUI");
     end
 
     AchievementFrameComparison:Hide();
@@ -252,7 +253,7 @@ function gui:ShowHideTabs(_addonName, tabName)
             return;
         end
         addon.Options.db.profile.Tabs[_addonName][tabName].Show = not addon.Options.db.profile.Tabs[_addonName][tabName].Show;
-        if not C_AddOns.IsAddOnLoaded(_addonName) or not addon.Gui.Tabs[_addonName] or not addon.Gui.Tabs[_addonName][tabName] then
+        if not IsAddOnLoaded(_addonName) or not addon.Gui.Tabs[_addonName] or not addon.Gui.Tabs[_addonName][tabName] then
             return;
         end
     end
@@ -311,7 +312,7 @@ end
 local function AssignProperTabsOrder()
     local tabsOrder = {};
     for tabsAddonName, tabs in next, addon.Options.db.profile.Tabs do
-        if tabsAddonName == "Blizzard_AchievementUI" or C_AddOns.IsAddOnLoaded(tabsAddonName) then
+        if tabsAddonName == "Blizzard_AchievementUI" or IsAddOnLoaded(tabsAddonName) then
             for tabName, tab in next, tabs do
                 tinsert(tabsOrder, {
                     AddonName = tabsAddonName,
@@ -410,11 +411,8 @@ end
 function gui:RefreshViewAfterPlayerLogin()
     AchievementFrame.Header.Points:SetText();
     local selectedTab = addon.Gui.SelectedTab;
-	local categories = selectedTab:GetCategories();
-    if categories and not selectedTab.SelectedCategory then
-		selectedTab.SelectedCategory = categories[1];
-		selectedTab:ShowSubFrames();
-    end
+    selectedTab.SelectedCategory = nil;
+    selectedTab:ShowSubFrames();
     KrowiAF_SummaryFrame:UpdateAchievementsOnNextShow();
 end
 

@@ -12,11 +12,11 @@ function section:Add(menu, achievement)
 	local tSets = addon.GetUsableSets(achievement.TransmogSets);
 	for _, set in next, tSets do
 		local setInfo = C_TransmogSets.GetSetInfo(set.Id);
-		transmogSets:AddFull({ 
+		transmogSets:AddFull({
 			Text = setInfo.name .. " (" .. setInfo.description .. ")",
 			Func = function()
-				if not C_AddOns.IsAddOnLoaded("Blizzard_Collections") then
-					C_AddOns.LoadAddOn("Blizzard_Collections");
+				if not IsAddOnLoaded("Blizzard_Collections") then
+					LoadAddOn("Blizzard_Collections");
 				end
 				CollectionsJournal:Show();
 				CollectionsJournal_SetTab(CollectionsJournal, 5);
