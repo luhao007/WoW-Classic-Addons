@@ -62,7 +62,7 @@ function temporaryObtainable:GetObtainableState(achievement)
 
     local start, _end;
     local startFunction = achievement.TemporaryObtainable.Start.Function;
-    if startFunction == "Mythic+ Season" or startFunction == "Season" then
+    if startFunction == "Mythic+ Season" then
         start = self:GetMplusSeasonStartState(achievement);
     elseif startFunction == "PvP Season" then
         start = self:GetPvpSeasonStartState(achievement);
@@ -85,7 +85,7 @@ function temporaryObtainable:GetObtainableState(achievement)
     end
 
     local endFunction = achievement.TemporaryObtainable.End.Function;
-    if endFunction == "Mythic+ Season" or startFunction == "Season" then
+    if endFunction == "Mythic+ Season" then
         _end = self:GetMplusSeasonEndState(achievement);
     elseif endFunction == "PvP Season" then
         _end = self:GetPvpSeasonEndState(achievement);
@@ -127,7 +127,7 @@ do -- Tooltip, maybe move to not obtainable tooltip lua
         local start, _end; -- Past, Future
 
         local startFunction = achievement.TemporaryObtainable.Start.Function;
-        if startFunction == "Mythic+ Season" or startFunction == "Season" then
+        if startFunction == "Mythic+ Season" then
             start = self:GetMplusSeasonStartState(achievement);
         elseif startFunction == "PvP Season" then
             start = self:GetPvpSeasonStartState(achievement);
@@ -138,7 +138,7 @@ do -- Tooltip, maybe move to not obtainable tooltip lua
         end
 
         local endFunction = achievement.TemporaryObtainable.End.Function;
-        if endFunction == "Mythic+ Season" or startFunction == "Season" then
+        if endFunction == "Mythic+ Season" then
             _end = self:GetMplusSeasonEndState(achievement);
         elseif endFunction == "PvP Season" then
             _end = self:GetPvpSeasonEndState(achievement);
@@ -237,8 +237,6 @@ do -- Tooltip, maybe move to not obtainable tooltip lua
             startDetail = addon.L["Patch"];
         elseif achievement.TemporaryObtainable.Start.Function == "Version" then
             startDetail = addon.L["Version"];
-        elseif achievement.TemporaryObtainable.Start.Function == "Season" then
-            startDetail = addon.L["Season"];
         else
             startDetail = achievement.TemporaryObtainable.Start.Function;
         end
@@ -278,8 +276,6 @@ do -- Tooltip, maybe move to not obtainable tooltip lua
             endDetail = addon.L["Patch"];
         elseif achievement.TemporaryObtainable.End.Function == "Version" then
             endDetail = addon.L["Version"];
-        elseif achievement.TemporaryObtainable.End.Function == "Season" then
-            endDetail = addon.L["Season"];
         else
             endDetail = achievement.TemporaryObtainable.End.Function;
         end
@@ -287,8 +283,9 @@ do -- Tooltip, maybe move to not obtainable tooltip lua
 
         if achievement.TemporaryObtainable.End.Function == "Event" then
             local eventId = achievement.TemporaryObtainable.End.Value;
-            local _, calendarEvent = FindCachedCalendarEvent(eventId);
+            local event, calendarEvent = FindCachedCalendarEvent(eventId);
             if calendarEvent then
+                endThe = true;
                 endDetail = calendarEvent.Name;
             end
         end
@@ -302,7 +299,7 @@ do -- Get Start Sate
         if achievement.TemporaryObtainable.Start.Inclusion == "From" then
             if self:GetCurrentMplusSeason() == 0 then
                 return self:GetPreviousMplusSeason() >= achievement.TemporaryObtainable.Start.Value and "Past" or "Future";
-            end
+            end 
             return self:GetCurrentMplusSeason() >= achievement.TemporaryObtainable.Start.Value and "Past" or "Future";
         elseif achievement.TemporaryObtainable.Start.Inclusion == "After" then
             if self:GetCurrentMplusSeason() == 0 then

@@ -1,9 +1,9 @@
 ## Interface: 30400
 ## Author: MysticalOS, QartemisT
-## Version: 11.0.1
+## Version: 11.0.2
 ## Dependencies: DBM-StatusBarTimers
 ## LoadOnDemand: 0
-## SavedVariables: DBM_AllSavedOptions, DBM_MinimapIcon
+## SavedVariables: DBM_AllSavedOptions, DBM_MinimapIcon, DBM_AnnoyingPopupDisables
 ## SavedVariablesPerCharacter: DBM_UsedProfile, DBM_UseDualProfile, DBM_CharSavedRevision
 ## DefaultState: enabled
 
@@ -72,6 +72,7 @@ modules\MinimapButton.lua
 modules\Notes.lua
 modules\Sounds.lua
 modules\UpdateReminder.lua
+modules\AnnoyingPopup.lua
 
 modules\objects\Difficulties.lua
 modules\objects\BossMod.lua
@@ -82,3 +83,4 @@ modules\objects\EnrageTimer.lua
 modules\objects\Announce.lua
 modules\objects\SpecialWarning.lua
 modules\objects\Yell.lua
+modules\objects\NilWarning.lua

@@ -85,6 +85,7 @@ end
 ---@type table<integer, ScheduledTask>
 local scheduledTasks = {}
 local tableUtils = dbmPrivate:GetPrototype("TableUtils")
+local difficulties = dbmPrivate:GetPrototype("Difficulties")
 
 local function shortObjectName(obj, currentMod)
 	return obj == DBM and "DBM"
@@ -324,7 +325,7 @@ function test:SetupDBMOptions()
 	DBM.Options.FilterDispel = false
 	DBM.Options.FilterCrowdControl = false
 	DBM.Options.FilterTrashWarnings2 = false
-	DBM.Options.FilterVoidFormSay = false
+	DBM.Options.FilterVoidFormSay2 = false
 	-- Don't spam guild members when testing
 	DBM.Options.DisableGuildStatus = true
 	DBM.Options.AutoRespond = false
@@ -521,6 +522,19 @@ function test:Playback(testData, timeWarp)
 	-- 100 messages or so anyways, so whatever.
 	self.logPlayerName = findRecordingPlayer(testData.log)
 	self.Mocks:SetInstanceInfo(testData.instanceInfo)
+	if testData.instanceInfo.difficultyModifier then
+		-- Only MC is supported right now
+	   if testData.instanceInfo.instanceID == 409 then
+			local heatLevel = testData.instanceInfo.difficultyModifier
+			if heatLevel == 1 then
+				self.Mocks:ApplyUnitAura(UnitName("player"), UnitGUID("player"), 458841, "Sweltering Heat", "DEBUFF")
+			elseif heatLevel == 2 then
+				self.Mocks:ApplyUnitAura(UnitName("player"), UnitGUID("player"), 458842, "Blistering Heat", "DEBUFF")
+			elseif heatLevel == 3 then
+				self.Mocks:ApplyUnitAura(UnitName("player"), UnitGUID("player"), 458843, "Molten Heat", "DEBUFF")
+			end
+	   end
+   end
 	local maxTimestamp = testData.log[#testData.log][1]
 	local timeWarper = test.TimeWarper:New()
 	self.timeWarper = timeWarper
@@ -551,9 +565,19 @@ function test:Playback(testData, timeWarp)
 	if timeWarp <= 5 then
 		DBM:AddMsg("Test playback finished, waiting for delayed cleanup events (3 seconds)")
 	end
-	timeWarper:WaitUntil(timeWarper.fakeTime + 3.1)
+	timeWarper:WaitFor(3.1) -- Events like AURA_REMOVED are only unregistered after 3 seconds for icon cleanup
+	local extraTime = 0
+	if DBM:InCombat() then
+		-- Worldbosses wait for 15 seconds for wipe, everything else for 5. Using 3.1 for normal mods because checkWipe runs every 3 seconds.
+		extraTime = difficulties.savedDifficulty == "worldboss" and 12.1 or 3.1
+		DBM:AddMsg("DBM is still reporting in combat, waiting for " .. math.floor(extraTime) .. " more seconds")
+		timeWarper:WaitFor(extraTime)
+	end
 	timeWarper:Stop()
 	local reporter = self.reporter
+	if DBM:InCombat() then
+		reporter:FlagCombat(extraTime + 3.1)
+	end
 	local report = reporter:ReportWithHeader()
 	DBM_TestResults_Export = DBM_TestResults_Export or {}
 	DBM_TestResults_Export[testData.name] = report
@@ -590,13 +614,16 @@ frame:SetScript("OnUpdate", function(self)
 	end
 end)
 
+---@class DBMInstanceInfo: InstanceInfo
+---@field difficultyModifier number?
+
 ---@class TestDefinition
 ---@field name string Unique test ID.
 ---@field gameVersion GameVersion Required version of the game to run the test.
 ---@field addon string AddOn in which the mod under test is located.
 ---@field mod string|integer The boss mod being tested.
 ---@field ignoreWarnings? TestIgnoreWarnings Acknowledge findings to remove them from the report.
----@field instanceInfo InstanceInfo Fake GetInstanceInfo() data for the test.
+---@field instanceInfo DBMInstanceInfo Fake GetInstanceInfo() data for the test.
 ---@field playerName string? (Deprecated, no longer required) Name of the player who recorded the log.
 ---@field log TestLogEntry[] Log to replay
 

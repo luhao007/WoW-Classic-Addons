@@ -5,7 +5,6 @@ addon.Gui = {
 };
 local gui = addon.Gui;
 
-
 local eventReminderSideButtonSystemIsLoaded;
 function gui:LoadWithAddon()
     self:OverwriteAdjustAnchors();
@@ -48,12 +47,6 @@ local function LoadOldAchievementFrameTabsCompatibility()
     end
 end
 
-local function LoadOldGuiCompatibility()
-    if not AchievementFrameFilterDropdown then
-        AchievementFrameFilterDropdown = AchievementFrameFilterDropDown;
-    end
-end
-
 local function ShowSubFrame(self, ...)
     local show;
 	for _, subFrame in ipairs(self.SubFrames) do
@@ -68,19 +61,9 @@ local function ShowSubFrame(self, ...)
 	end
 end
 
-local function LoadHooks(self)
+local function HookShowSubFrame(self)
     hooksecurefunc("AchievementFrame_ShowSubFrame", function(...)
         ShowSubFrame(self, ...);
-    end);
-
-    AchievementFrameComparison:HookScript("OnHide", function()
-        if gui.SelectedTab then
-            gui:SetAchievementFrameWidth();
-            gui:SetAchievementFrameHeight();
-        else
-            gui:ResetAchievementFrameWidth();
-            gui:ResetAchievementFrameHeight();
-        end
     end);
 end
 
@@ -88,8 +71,6 @@ local defaultAchievementFrameWidth;
 local defaultAchievementFrameHeight;
 local defaultAchievementFrameMetalBorderHeight;
 function gui:LoadWithBlizzard_AchievementUI()
-    LoadOldGuiCompatibility();
-
     defaultAchievementFrameWidth = AchievementFrame:GetWidth();
     defaultAchievementFrameHeight = AchievementFrame:GetHeight();
     defaultAchievementFrameMetalBorderHeight = AchievementFrameMetalBorderLeft:GetHeight();
@@ -132,7 +113,7 @@ function gui:LoadWithBlizzard_AchievementUI()
     self:ResetAchievementFrameHeight();
 
     self:RegisterFrameForClosing(AchievementFrame);
-    LoadHooks(self);
+    HookShowSubFrame(self);
 end
 
 function gui:SetAchievementFrameWidth()
@@ -411,8 +392,11 @@ end
 function gui:RefreshViewAfterPlayerLogin()
     AchievementFrame.Header.Points:SetText();
     local selectedTab = addon.Gui.SelectedTab;
-    selectedTab.SelectedCategory = nil;
-    selectedTab:ShowSubFrames();
+	local categories = selectedTab:GetCategories();
+    if categories and not selectedTab.SelectedCategory then
+		selectedTab.SelectedCategory = categories[1];
+		selectedTab:ShowSubFrames();
+    end
     KrowiAF_SummaryFrame:UpdateAchievementsOnNextShow();
 end
 

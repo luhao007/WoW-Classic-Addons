@@ -1,5 +1,4 @@
 local _, addon = ...;
-local menuUtil = addon.Gui.MenuUtil;
 local section = {};
 tinsert(addon.Gui.RightClickMenu.EventReminderMenu.Sections, section);
 
@@ -17,10 +16,9 @@ local function GetTypeAsString(type)
 end
 
 function section:Add(menu, event)
-    menuUtil:CreateButtonAndAdd(
-        menu,
-        addon.L["Stop tracking"],
-		function()
+    menu:AddFull({
+		Text = addon.L["Stop tracking"],
+		Func = function()
             local typeAsString = GetTypeAsString(event.Type);
 			addon.Options.db.profile.EventReminders[typeAsString .. "Events"][event.Id] = false;
             if event.LinkedEventIds then
@@ -30,5 +28,5 @@ function section:Add(menu, event)
             end
             addon.Gui.EventReminderSideButtonSystem:Refresh();
 		end
-	);
+	});
 end

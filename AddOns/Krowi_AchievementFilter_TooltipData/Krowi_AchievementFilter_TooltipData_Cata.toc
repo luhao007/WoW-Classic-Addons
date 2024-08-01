@@ -1,14 +1,11 @@
-## Interface: 30400
-## Author: Krowi-Frostmane EU
-## Version: 2.0
-## Dependencies: Krowi_AchievementFilter
-
+## Interface: 40400
 ## Title: Krowi's |cFF1D92C2Achievement Filter|r - TooltipData
-## Notes: Adds additioanl Tooltip Data to objects if they are related to achievements.
-## Title-zhCN: |cFFFFE00A<|r|cFFA9D271收藏|r|cFFFFE00A>|r |cFFFFFFFFKrowi成就过滤器|r |cFF69CCF0鼠标提示|r
-
 ## X-Prefix: KrowiAF_TD
 ## X-Acronym: KAF_TD
+## Version: 1.3
+## Author: Krowi-Frostmane EU
+## Notes: Adds additioanl Tooltip Data to objects if they are related to achievements.
+## IconTexture: interface/icons/achievement_dungeon_heroic_gloryoftheraider
 ## X-Discord-Invite-Link: https://discord.gg/mdBFQJYeQZ
 ## X-Discord-Server-Name: Krowi's Addons
 ## X-CurseForge: https://www.curseforge.com/wow/addons/krowi-achievement-filter
@@ -17,7 +14,7 @@
 ## X-Wago-Project-ID: XrNkx46a
 ## X-WoWInterface: https://www.wowinterface.com/downloads/info26229-KrowisAchievementFilter
 ## X-WoWInterface-Project-ID: 26229
-## X-Part-Of: Krowi_AchievementFilter
+## Dependencies: Krowi_AchievementFilter
 
 Libs\Files.xml
 

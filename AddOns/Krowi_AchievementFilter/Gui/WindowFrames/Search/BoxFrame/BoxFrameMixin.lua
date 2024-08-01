@@ -33,9 +33,6 @@ local function LoadPreviewContainer(self)
     showFullSearchResultsButton:SetPoint("RIGHT", container.Buttons[numButtons]);
 
 	self.HasStickyFocus = function()
-		if addon.Util.IsTheWarWithin then
-			return DoesAncestryIncludeAny(container, GetMouseFoci());
-		end
 		return DoesAncestryInclude(container, GetMouseFocus());
     end
 end
@@ -66,7 +63,7 @@ function KrowiAF_SearchBoxFrameMixin:OnShow()
 end
 
 function KrowiAF_SearchBoxFrameMixin:OnHide()
-	if addon.Util.IsClassicWithAchievements and not AchievementFrameFilterDropdown:IsShown() then
+	if addon.Util.IsClassicWithAchievements and not AchievementFrameFilterDropDown:IsShown() then
 		AchievementFrame.Header.RightDDLInset:Hide();
 	end
 	if not addon.Util.IsClassicWithAchievements then

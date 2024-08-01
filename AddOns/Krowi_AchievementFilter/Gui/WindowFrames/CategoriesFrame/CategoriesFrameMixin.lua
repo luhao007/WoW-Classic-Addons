@@ -125,10 +125,6 @@ function KrowiAF_CategoriesFrameMixin:Update(getAchNums, retainScrollPosition)
 	for _, category in next, categories do
 		GetDisplayCategories(displayCategories, category, getAchNums);
 	end
-	if not addon.Util.TableFindKeyByValue(displayCategories, selectedTab.SelectedCategory) then
-		selectedTab.SelectedCategory = displayCategories[1];
-		selectedTab:ShowSubFrames();
-	end
 	UpdateDataProvider(self, displayCategories, retainScrollPosition);
 end
 

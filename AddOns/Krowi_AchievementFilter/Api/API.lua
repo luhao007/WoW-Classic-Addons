@@ -1,3 +1,4 @@
+-- [[ Namespaces ]] --
 local addonName, addon = ...;
 KrowiAF = {};
 
@@ -9,11 +10,7 @@ local function SelectAchievement(achievement)
 	end
 
 	KrowiAF_AchievementsFrame:ForceUpdate();
-	if addon.Util.IsTheWarWithin then
-		scrollBox:ScrollToElementData(achievement, ScrollBoxConstants.AlignCenter, nil, ScrollBoxConstants.NoScrollInterpolation);
-	else
-		scrollBox:ScrollToElementData(achievement, ScrollBoxConstants.AlignCenter, ScrollBoxConstants.NoScrollInterpolation);
-	end
+	scrollBox:ScrollToElementData(achievement, ScrollBoxConstants.AlignCenter, ScrollBoxConstants.NoScrollInterpolation);
 	-- print("api select")
 	KrowiAF_AchievementsFrame.SelectionBehavior:SelectElementData(achievement);
 	KrowiAF_AchievementsFrame:ScrollToNearest(achievement);
@@ -75,11 +72,7 @@ local function SelectCategory(category, collapsed, quick)
 		return;
 	end
 
-	if addon.Util.IsTheWarWithin then
-		scrollBox:ScrollToElementData(category, ScrollBoxConstants.AlignCenter, nil, ScrollBoxConstants.NoScrollInterpolation);
-	else
-		scrollBox:ScrollToElementData(category, ScrollBoxConstants.AlignCenter, ScrollBoxConstants.NoScrollInterpolation);
-	end
+	scrollBox:ScrollToElementData(category, ScrollBoxConstants.AlignCenter, ScrollBoxConstants.NoScrollInterpolation);
 
 	KrowiAF_CategoriesFrame:ShowSubFrame(category);
 end
@@ -287,8 +280,8 @@ do --[[ KrowiAF_RegisterTabOptions ]]
 	end
 
 	local function InjectTabsOrderOptionsTable(index)
-		addon.InjectOptions:AddTable("Layout.args.Tabs.args.Order.args.Order.args", tostring(index), {
-			order = index, type = "select", width = AdjustedWidth(1.95),
+		addon.InjectOptions:AddTable("Layout.args.Tabs.args.Order.args.Order.args", tostring(OrderPP()), {
+			order = OrderPP(), type = "select", width = AdjustedWidth(1.95),
 			name = "",
 			values = function() return addon.Gui:TabsOrderGetActiveKeys(); end,
 			get = function() return GetOrder(index); end,
@@ -356,14 +349,14 @@ do --[[ KrowiAF_RegisterEventOptions ]]
 
 	local OrderPP = addon.InjectOptions.AutoOrderPlusPlus;
 	local AdjustedWidth = addon.InjectOptions.AdjustedWidth;
-	local function InjectOptionsTable(eventType, eventIds, eventDisplayName, groupDisplayName, order, expansionId)
+	local function InjectOptionsTable(eventType, eventIds, eventDisplayName, groupDisplayName, order, expansionDisplayName)
 		local path = "EventReminders.args." .. (eventType == "Widget" and "World" or eventType) .. "Events.args";
-		local expansionName = expansionId and ("EXPANSION_NAME" .. tostring(expansionId));
+		local expansionName = expansionDisplayName and expansionDisplayName:gsub("[%p%c%s]", "_");
 		if expansionName then
 			if not addon.InjectOptions:TableExists(path .. "." .. expansionName) then
 				addon.InjectOptions:AddTable(path, expansionName, {
-					order = expansionId, type = "group",
-					name = _G[expansionName],
+					order = order, type = "group",
+					name = expansionDisplayName,
 					args = {}
 				});
 			end
@@ -391,14 +384,13 @@ do --[[ KrowiAF_RegisterEventOptions ]]
 		});
 	end
 
-	function KrowiAF_RegisterEventOptions(eventType, eventIds, eventDisplayName, groupDisplayName, order, expansionId, hideByDefault)
+	function KrowiAF_RegisterEventOptions(eventType, eventIds, eventDisplayName, groupDisplayName, order, expansionDisplayName, hideByDefault)
 		InjectOptionsDefaults(eventType, eventIds, hideByDefault);
-		InjectOptionsTable(eventType, eventIds, eventDisplayName, groupDisplayName, order, expansionId);
+		InjectOptionsTable(eventType, eventIds, eventDisplayName, groupDisplayName, order, expansionDisplayName);
 	end
 
-	function KrowiAF_RegisterDeSelectAllEventOptions(eventType, eventIds, groupDisplayName, expansionId)
+	function KrowiAF_RegisterDeSelectAllEventOptions(eventType, eventIds, groupDisplayName, expansionName)
 		local groupName = groupDisplayName:gsub("[%p%c%s]", "_");
-		local expansionName = expansionId and ("EXPANSION_NAME" .. tostring(expansionId));
 		local path = "EventReminders.args." .. (eventType == "Widget" and "World" or eventType) .. "Events.args." .. (expansionName and (expansionName .. ".args.") or "") .. groupName .. ".args";
 		if addon.InjectOptions:TableExists(path .. ".SelectAll") then
 			return;

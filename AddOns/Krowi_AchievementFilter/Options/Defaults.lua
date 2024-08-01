@@ -82,9 +82,7 @@ addon.Options.Defaults = {
                 ToggleWatchList = 2,
                 ToggleExcluded = 1
             },
-            MouseWheelPanScalar = 1,
-            ShowTemporarilyObtainableIcon = true,
-            TemporarilyObtainableHeaderColors = true
+            MouseWheelPanScalar = 1
         },
         RightClickMenu = {
             ShowButtonOnAchievement = false,

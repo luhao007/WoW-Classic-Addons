@@ -163,6 +163,10 @@
 				<Title>专业制作</Title>
 				<Notes>AtlasLoot 专业制作物品列表</Notes>
 			</SubAddon>
+			<SubAddon name="AtlasLoot_Dragonflight">
+				<Title>巨龙时代</Title>
+				<Notes>AtlasLoot 巨龙时代副本掉落列表</Notes>
+			</SubAddon>
 			<SubAddon name="AtlasLoot_Factions">
 				<Title>阵营</Title>
 				<Notes>AtlasLoot 阵营物品列表</Notes>
@@ -182,6 +186,10 @@
 			<SubAddon name="AtlasLoot_PvP">
 				<Title>PVP</Title>
 				<Notes>AtlasLoot PVP物品列表</Notes>
+			</SubAddon>
+			<SubAddon name="AtlasLoot_Shadowlands">
+				<Title>暗影国度</Title>
+				<Notes>AtlasLoot 暗影国度副本掉落列表</Notes>
 			</SubAddon>
 			<SubAddon name="AtlasLoot_WarlordsofDraenor">
 				<Title>德拉诺之王</Title>
@@ -380,6 +388,10 @@
 				<Title>争霸艾泽拉斯</Title>
 				<Notes>BtWQuests 争霸艾泽拉斯模块</Notes>
 			</SubAddon>
+			<SubAddon name="BtWQuestsBattleForAzerothPrologue">
+				<Title>争霸艾泽拉斯前夕</Title>
+				<Notes>BtWQuests 争霸艾泽拉斯前夕模块</Notes>
+			</SubAddon>
 			<SubAddon name="BtWQuestsCataclysm">
 				<Title>大灾变</Title>
 				<Notes>BtWQuests 大灾变模块</Notes>
@@ -387,6 +399,10 @@
 			<SubAddon name="BtWQuestsDragonflight">
 				<Title>巨龙时代</Title>
 				<Notes>BtWQuests 巨龙时代模块</Notes>
+			</SubAddon>
+			<SubAddon name="BtWQuestsDragonflightPrologue">
+				<Title>巨龙时代前夕</Title>
+				<Notes>BtWQuests 巨龙时代前夕模块</Notes>
 			</SubAddon>
 			<SubAddon name="BtWQuestsLegion">
 				<Title>军团再临</Title>
@@ -404,9 +420,17 @@
 				<Title>暗影国度</Title>
 				<Notes>BtWQuests 暗影国度模块</Notes>
 			</SubAddon>
+			<SubAddon name="BtWQuestsShadowlandsPrologue">
+				<Title>暗影国度前夕</Title>
+				<Notes>BtWQuests 暗影国度前夕模块</Notes>
+			</SubAddon>
 			<SubAddon name="BtWQuestsTheBurningCrusade">
 				<Title>燃烧的远征</Title>
 				<Notes>BtWQuests 燃烧的远征模块</Notes>
+			</SubAddon>
+			<SubAddon name="BtWQuestsTheWarWithin">
+				<Title>地心之战</Title>
+				<Notes>BtWQuests 地心之战模块</Notes>
 			</SubAddon>
 			<SubAddon name="BtWQuestsWarlordsOfDraenor">
 				<Title>德拉诺之王</Title>
@@ -529,6 +553,10 @@
 			</SubAddon>
 			<SubAddon name="DBM-CastleNathria">
 				<Title>纳斯利亚堡</Title>
+			</SubAddon>
+			<SubAddon name="DBM-Cataclysm">
+				<Title>户外</Title>
+				<TitleExtra>大地的裂变</TitleExtra>
 			</SubAddon>
 			<SubAddon name="DBM-Challenges">
 				<Title>白虎试练场</Title>
@@ -678,6 +706,14 @@
 				<Title>小队</Title>
 				<TitleExtra>巫妖王之怒</TitleExtra>
 			</SubAddon>
+			<SubAddon name="DBM-Raids-BfA">
+				<Title>团队</Title>
+				<TitleExtra>争霸艾泽拉斯</TitleExtra>
+			</SubAddon>
+			<SubAddon name="DBM-Raids-Cata">
+				<Title>团队</Title>
+				<TitleExtra>大地的裂变</TitleExtra>
+			</SubAddon>
 			<SubAddon name="DBM-Raids-Dragonflight">
 				<Title>团队</Title>
 				<TitleExtra>巨龙时代</TitleExtra>
@@ -686,6 +722,18 @@
 				<Title>团队</Title>
 				<TitleExtra>燃烧的远征</TitleExtra>
 			</SubAddon>
+			<SubAddon name="DBM-Raids-Legion">
+				<Title>团队</Title>
+				<TitleExtra>军团再临</TitleExtra>
+			</SubAddon>
+			<SubAddon name="DBM-Raids-MoP">
+				<Title>团队</Title>
+				<TitleExtra>熊猫人之谜</TitleExtra>
+			</SubAddon>
+			<SubAddon name="DBM-Raids-Shadowlands">
+				<Title>团队</Title>
+				<TitleExtra>暗影国度</TitleExtra>
+			</SubAddon>
 			<SubAddon name="DBM-Raids-Vanilla">
 				<Title>团队</Title>
 				<TitleExtra>经典旧世</TitleExtra>
@@ -693,6 +741,10 @@
 			<SubAddon name="DBM-Raids-WarWithin">
 				<Title>团队</Title>
 				<TitleExtra>地心之战</TitleExtra>
+			</SubAddon>
+			<SubAddon name="DBM-Raids-WoD">
+				<Title>团队</Title>
+				<TitleExtra>德拉诺之王</TitleExtra>
 			</SubAddon>
 			<SubAddon name="DBM-Raids-WoTLK">
 				<Title>团队</Title>
@@ -919,6 +971,9 @@
 			<SubAddon name="GladiatorlosSA2_zhCN">
 				<Title>夏一可语音包</Title>
 			</SubAddon>
+			<SubAddon name="GladiatorlosSA2_zhCN_VV">
+				<Title>VV语音包</Title>
+			</SubAddon>
 		</SubAddons>
 	</Addon>
 	<Addon name="Gladius">
@@ -1021,6 +1076,10 @@
 				<Title>宝藏/稀有</Title>
 				<TitleExtra>德拉诺</TitleExtra>
 			</SubAddon>
+			<SubAddon name="HandyNotes_Dragonflight">
+				<Title>宝藏/稀有</Title>
+				<TitleExtra>巨龙时代</TitleExtra>
+			</SubAddon>
 			<SubAddon name="HandyNotes_DungeonLocations">
 				<Title>副本入口</Title>
 			</SubAddon>
@@ -1079,6 +1138,10 @@
 			<SubAddon name="HandyNotes_SuramarShalAranTelemancy">
 				<Title>苏拉玛传送点</Title>
 			</SubAddon>
+			<SubAddon name="HandyNotes_TheWarWithin">
+				<Title>宝藏/稀有</Title>
+				<TitleExtra>地心之战</TitleExtra>
+			</SubAddon>
 			<SubAddon name="HandyNotes_TimelessIsleChests">
 				<Title>宝藏</Title>
 				<TitleExtra>永恒岛</TitleExtra>
@@ -1119,15 +1182,6 @@
 			</SubAddon>
 		</SubAddons>
 	</Addon>
-	<Addon name="Krowi_AchievementFilter">
-		<Title>Krowi成就过滤器</Title>
-		<Category>收藏</Category>
-		<SubAddons>
-			<SubAddon name="Krowi_AchievementFilter_TooltipData">
-				<Title>鼠标提示</Title>
-			</SubAddon>
-		</SubAddons>
-	</Addon>
 	<Addon name="Leatrix_Plus">
 		<Title>功能百宝箱</Title>
 		<Category>功能</Category>
@@ -1160,6 +1214,10 @@
 	</Addon>
 	<Addon name="MeetingStone">
 		<Title>集合石</Title>
+		<Category>社交</Category>
+	</Addon>
+	<Addon name="MeetingStoneEX">
+		<Title>集合石 开心快乐版</Title>
 		<Category>社交</Category>
 	</Addon>
 	<Addon name="MeetingHorn">

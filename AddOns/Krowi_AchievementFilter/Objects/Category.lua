@@ -217,3 +217,7 @@ end
 function category:SetFlexibleData(value)
 	self.HasFlexibleData = value;
 end
+
+function category:SetAsSummary(value)
+	self.IsSummary = value;
+end

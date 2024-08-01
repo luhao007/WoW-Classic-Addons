@@ -34,7 +34,7 @@ loadHelper:RegisterEvent("ACHIEVEMENT_EARNED");
 local function LoadKrowi_AchievementFilter()
     addon.Diagnostics.Load();
 
-    addon.Data.SpecialCategories.InjectDynamicOptions();
+    addon.Data.ExportedCategories.InjectDynamicOptions();
     addon.Data.ExportedCalendarEvents.InjectDynamicOptions();
     if addon.Data.ExportedWidgetEvents then
         addon.Data.ExportedWidgetEvents.InjectDynamicOptions();
@@ -99,6 +99,7 @@ end
 
 function loadHelper:OnEvent(event, arg1, arg2)
     if event == "ADDON_LOADED" then
+        addon.Data.DataIntegrityManager.FixSavedVariables();
         if arg1 == "Krowi_AchievementFilter" then -- This always needs to load
             LoadKrowi_AchievementFilter();
         elseif arg1 == "Blizzard_AchievementUI" then -- This needs the Blizzard_AchievementUI addon available to load
@@ -145,7 +146,7 @@ loadHelper:SetScript("OnEvent", loadHelper.OnEvent);
 --     if not AllTheThings then
 --         return;
 --     end
-
+    
 --     DebugTable = {};
 --     -- for key1, value1 in pairs(KrowiAF_ATT.Achievements) do
 --         for key2, value2 in pairs(AllTheThings.Achievements) do

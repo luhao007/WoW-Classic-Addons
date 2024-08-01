@@ -489,12 +489,8 @@ do -- [[ Achievements]]
         button.Shield:SetPoint("CENTER", button.cBackground, "CENTER", 0, 0);
 
         -- Move extra icon
-        -- print("extra icons test", button.ExtraIcons)
-        -- if button.ExtraIcons then
-        --     print("extra icons")
-        --     button.ExtraIcons[1]:ClearAllPoints();
-        --     button.ExtraIcons[1]:SetPoint("BOTTOMLEFT", button, "BOTTOMLEFT", 3, 8);
-        -- end
+        button.ExtraIcon1:ClearAllPoints();
+        button.ExtraIcon1:SetPoint("BOTTOMLEFT", button, "BOTTOMLEFT", 3, 8);
 
         -- Extra flare when achievement is completed
         button.completeFlare = button:CreateTexture("completeFlare", "BACKGROUND", nil, 0);
@@ -796,23 +792,57 @@ do -- [[ Summary ]]
 end
 
 local function SkinFilterButton(button)
-    button:GwHandleDropDownBox(GW2_ADDON.BackdropTemplates.DopwDown, true, "MENU_ACHIEVEMENT_FILTER")
-    button:ClearAllPoints();
-    button:SetPoint("BOTTOMLEFT", KrowiAF_SearchBoxFrame, "TOPLEFT", 0, 10);
-    button:SetPoint("BOTTOMRIGHT", KrowiAF_SearchBoxFrame, "TOPRIGHT", 0, 10);
-    button:SetHeight(26);
+    button:GwStripTextures();
+    button.TopLeft:Hide();
+	button.TopRight:Hide();
+	button.BottomLeft:Hide();
+	button.BottomRight:Hide();
+	button.TopMiddle:Hide();
+	button.MiddleLeft:Hide();
+	button.MiddleRight:Hide();
+	button.BottomMiddle:Hide();
+	button.MiddleMiddle:Hide();
 
-    button.backdrop:ClearAllPoints();
-    button.backdrop:SetPoint("TOPLEFT", button, "TOPLEFT", 0, 0);
-    button.backdrop:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 0, 0);
+    button:SetSize(155, 32);
+
+    button:GwCreateBackdrop(GW2_ADDON.BackdropTemplates.DopwDown, true);
+    button.backdrop:SetBackdropColor(0, 0, 0);
+
+    button:SetFrameLevel(button:GetFrameLevel() + 2);
+
+    button:ClearAllPoints();
+    button:SetPoint('BOTTOMLEFT', KrowiAF_SearchBoxFrame, 'TOPLEFT', 0, 10);
+    button:SetPoint('BOTTOMRIGHT', KrowiAF_SearchBoxFrame, 'TOPRIGHT', 0, 10);
+
+    button.backdrop:ClearAllPoints()
+    button.backdrop:SetPoint('TOPLEFT', button, 'TOPLEFT', 0, 0);
+    button.backdrop:SetPoint('BOTTOMRIGHT', button, 'BOTTOMRIGHT', 0, 0);
     button.backdrop:SetAlpha(0.5);
+
+    local text = button.Text;
+    text:ClearAllPoints();
+    text:SetPoint("LEFT", button, "LEFT", 10, 0);
+    text:SetFont(UNIT_NAME_FONT, 12, "");
+    text:SetTextColor(178 / 255, 178 / 255, 178 / 255);
+    text:SetHeight(button:GetHeight());
+    text:SetJustifyV("MIDDLE");
+
+    local icon = button.Icon;
+    icon:SetTexture("Interface/AddOns/GW2_UI/textures/uistuff/arrowup_down");
+    icon:SetRotation(3.14);
+    icon:SetPoint("RIGHT", -15, 0);
+    icon:SetSize(20, 20);
+
+    button:HookScript("OnMouseDown", function(self)
+        self.Icon:SetPoint("RIGHT", -15, 0);
+    end);
 
     button:HookScript("OnShow", function()
         GW2_ADDON.AchievementFrameFilterDropDownDummy:Hide();
     end);
 
     button:HookScript("OnHide", function()
-        if AchievementFrameFilterDropdown:IsShown() then
+        if AchievementFrameFilterDropDown:IsShown() then
             GW2_ADDON.AchievementFrameFilterDropDownDummy:Hide();
         else
             GW2_ADDON.AchievementFrameFilterDropDownDummy:Show();
@@ -981,14 +1011,14 @@ do -- [[ Header ]]
         hooksecurefunc("AchievementFrame_RefreshView", UpdatePointsDisplay);
         hooksecurefunc("AchievementFrame_UpdateTabs", UpdatePointsDisplay);
 
-        AchievementFrameFilterDropdown:ClearAllPoints()
-        AchievementFrameFilterDropdown:SetPoint("BOTTOMLEFT", AchievementFrame.SearchBox, "TOPLEFT", 0, 10)
-        AchievementFrameFilterDropdown:SetPoint("BOTTOMRIGHT", AchievementFrame.SearchBox, "TOPRIGHT", 0, 10)
+        AchievementFrameFilterDropDown:ClearAllPoints()
+        AchievementFrameFilterDropDown:SetPoint("BOTTOMLEFT", AchievementFrame.SearchBox, "TOPLEFT", 0, 10)
+        AchievementFrameFilterDropDown:SetPoint("BOTTOMRIGHT", AchievementFrame.SearchBox, "TOPRIGHT", 0, 10)
 
-        AchievementFrameFilterDropdown.backdrop:ClearAllPoints()
-        AchievementFrameFilterDropdown.backdrop:SetPoint("TOPLEFT", AchievementFrameFilterDropdown, "TOPLEFT", 0, 0)
-        AchievementFrameFilterDropdown.backdrop:SetPoint("BOTTOMRIGHT", AchievementFrameFilterDropdown, "BOTTOMRIGHT", 0, 0)
-        AchievementFrameFilterDropdown.backdrop:SetAlpha(0.5)
+        AchievementFrameFilterDropDown.backdrop:ClearAllPoints()
+        AchievementFrameFilterDropDown.backdrop:SetPoint("TOPLEFT", AchievementFrameFilterDropDown, "TOPLEFT", 0, 0)
+        AchievementFrameFilterDropDown.backdrop:SetPoint("BOTTOMRIGHT", AchievementFrameFilterDropDown, "BOTTOMRIGHT", 0, 0)
+        AchievementFrameFilterDropDown.backdrop:SetAlpha(0.5)
 
         GW2_ADDON.HandleNextPrevButton(KrowiAF_AchievementFrameBrowsingHistoryPrevAchievementButton);
         GW2_ADDON.HandleNextPrevButton(KrowiAF_AchievementFrameBrowsingHistoryNextAchievementButton);
@@ -1135,11 +1165,11 @@ local function SkinDataManager(frame)
     -- frame.Inset:StripTextures();
     -- frame.CloseButton:Point("TOPRIGHT", 0, 2);
     -- skins:HandleFrame(frame, true, nil, -5, 0, -1, 0);
-
+    
     -- frame.CharacterList.InsetFrame:StripTextures();
     -- skins:HandleInsetFrame(frame.CharacterList.InsetFrame);
     -- skins:HandleScrollBar(frame.CharacterList.ScrollFrame.ScrollBar)
-
+    
 	-- local columnDisplay = frame.CharacterList.ColumnDisplay;
 	-- columnDisplay:StripTextures();
 	-- columnDisplay.InsetBorderLeft:Hide();
@@ -1352,16 +1382,6 @@ function gw2_ui.Load()
                 gw2_ui.SkinSideButtons();
             end
         end);
-    end);
-
-    hooksecurefunc(addon.Gui.AchievementButtonExtraIconFactory, "GetNew", function(button)
-        local extraIconId = #button.ExtraIcons;
-        local extraIcon = button.ExtraIcons[extraIconId];
-        if extraIconId == 1 then
-            extraIcon:SetPoint("TOPLEFT", button, "TOPLEFT", 5, -5);
-        else
-            extraIcon:SetPoint("LEFT", button.ExtraIcons[extraIconId - 1], "RIGHT", 0, 0);
-        end
     end);
 
     -- if addon.Util.IsWrathClassic then

@@ -22,19 +22,18 @@ lib.Metadata = {};
 local metadata = lib.Metadata;
 
 function metadata.GetAddOnMetadata(addonName)
-    local getAddOnMetadata = GetAddOnMetadata;
-    local title = getAddOnMetadata(addonName, "Title");
-    local prefix = getAddOnMetadata(addonName, "X-Prefix");
-    local acronym = getAddOnMetadata(addonName, "X-Acronym");
+    local title = GetAddOnMetadata(addonName, "Title");
+    local prefix = GetAddOnMetadata(addonName, "X-Prefix");
+    local acronym = GetAddOnMetadata(addonName, "X-Acronym");
     local build = GetBuildInfo();
-    local version = getAddOnMetadata(addonName, "Version");
-    local author = getAddOnMetadata(addonName, "Author");
-    local icon = getAddOnMetadata(addonName, "IconTexture");
-    local discordInviteLink = getAddOnMetadata(addonName, "X-Discord-Invite-Link");
-    local discordServerName = getAddOnMetadata(addonName, "X-Discord-Server-Name");
-    local curseForge = getAddOnMetadata(addonName, "X-CurseForge");
-    local wago = getAddOnMetadata(addonName, "X-Wago");
-    local woWInterface = getAddOnMetadata(addonName, "X-WoWInterface");
+    local version = GetAddOnMetadata(addonName, "Version");
+    local author = GetAddOnMetadata(addonName, "Author");
+    local icon = GetAddOnMetadata(addonName, "IconTexture");
+    local discordInviteLink = GetAddOnMetadata(addonName, "X-Discord-Invite-Link");
+    local discordServerName = GetAddOnMetadata(addonName, "X-Discord-Server-Name");
+    local curseForge = GetAddOnMetadata(addonName, "X-CurseForge");
+    local wago = GetAddOnMetadata(addonName, "X-Wago");
+    local woWInterface = GetAddOnMetadata(addonName, "X-WoWInterface");
 
     return {
         AddonName = addonName,

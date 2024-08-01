@@ -1,23 +1,10 @@
 local addonName, addon = ...;
 
-local customPreviousAchievements = {};
-customPreviousAchievements[15664] = 15663;
-customPreviousAchievements[15665] = 15664;
-customPreviousAchievements[15668] = 15667;
-customPreviousAchievements[15669] = 15668;
-
-function addon.GetPreviousAchievement(achievementId)
-    if customPreviousAchievements[achievementId] then
-        return customPreviousAchievements[achievementId];
-    end
-    return GetPreviousAchievement(achievementId);
-end
-
 function addon.GetFirstAchievementId(id)
     local firstId;
 	while id do
 		firstId = id;
-		id = addon.GetPreviousAchievement(id);
+		id = GetPreviousAchievement(id);
 	end
     return firstId;
 end
@@ -366,7 +353,7 @@ local function HandleAchievements(gapSize, i, highestId, characterGuid)
     buildCacheHelper:SetScript("OnUpdate", nil);
     coFinished = true;
     coStarted = nil;
-    addon.Diagnostics.Trace("Cache: Finished loading data");
+    addon.Diagnostics.Debug("Cache: Finished loading data");
     if #coOnFinish >= 1 then
         for _, onFinish in next, coOnFinish do
             onFinish(criteriaCache);
@@ -390,7 +377,7 @@ function addon.BuildCacheAsync(onFinish, onDelay)
     end
 
     coStarted = true;
-    addon.Diagnostics.Trace("Cache: Start loading data");
+    addon.Diagnostics.Debug("Cache: Start loading data");
     local characterGuid = UnitGUID("player");
     criteriaCache = {};
     local gapSize, i = 0, 1;
@@ -546,14 +533,14 @@ function addon.HookFunctions()
         end);
     end
 
-    AchievementFrameFilterDropdown:HookScript("OnShow", function()
+    AchievementFrameFilterDropDown:HookScript("OnShow", function()
         if addon.Util.IsClassicWithAchievements then
             AchievementFrame.Header.RightDDLInset:Show();
         else
             AchievementFrame.Header.LeftDDLInset:Show();
         end
     end);
-    AchievementFrameFilterDropdown:HookScript("OnHide", function()
+    AchievementFrameFilterDropDown:HookScript("OnHide", function()
         if addon.Util.IsClassicWithAchievements then
             if not KrowiAF_SearchBoxFrame:IsShown() then
                 AchievementFrame.Header.RightDDLInset:Hide();
@@ -791,7 +778,7 @@ function addon.IsCustomModifierKeyDown(modifier)
     end
 end
 
---  Budgets 50% of target or current FPS to perform a workload.
+--  Budgets 50% of target or current FPS to perform a workload. 
 --  finished = start(workload, onFinish, onDelay)
 --  Arguments:
 --      workload        table       Stack (last in, first out) of functions to call.
