@@ -1182,6 +1182,15 @@
 			</SubAddon>
 		</SubAddons>
 	</Addon>
+	<Addon name="Krowi_AchievementFilter">
+		<Title>Krowi成就过滤器</Title>
+		<Category>收藏</Category>
+		<SubAddons>
+			<SubAddon name="Krowi_AchievementFilter_TooltipData">
+				<Title>鼠标提示</Title>
+			</SubAddon>
+		</SubAddons>
+	</Addon>
 	<Addon name="Leatrix_Plus">
 		<Title>功能百宝箱</Title>
 		<Category>功能</Category>

@@ -51,7 +51,7 @@ class TOC:
                 'RequiredDeps', 'Dependencies', 'OptionalDeps',
                 'LoadOnDemand', 'LoadWith', 'LoadManagers',
                 'SavedVariables', 'SavedVariablesPerCharacter',
-                'DefaultState', 'Secure']
+                'DefaultState', 'Secure', 'IconTexture']
         ret = self.tags_to_line(keys)
         ret += ['\n']
 

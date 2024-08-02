@@ -73,7 +73,11 @@ local questTagCorrections = {
     [7842] = {0, ""},
     [7843] = {0, ""},
     [8122] = {41, "PvP"},
+    [8367] = {41, "PvP"},
+    [8371] = {41, "PvP"},
+    [8385] = {41, "PvP"},
     [8386] = {41, "PvP"},
+    [8388] = {41, "PvP"},
     [8404] = {41, "PvP"},
     [8405] = {41, "PvP"},
     [8406] = {41, "PvP"},
@@ -1214,12 +1218,16 @@ function QuestieDB.GetQuest(questId) -- /dump QuestieDB.GetQuest(867)
         end
         if objectives[5] and type(objectives[5]) == "table" and #objectives[5] > 0 then
             for _, creditObjective in pairs(objectives[5]) do
+                if creditObjective[4] == 0 then
+                    creditObjective[4] = nil
+                end
                 ---@type KillObjective
                 local killCreditObjective = {
                     Type = "killcredit",
                     IdList = creditObjective[1],
                     RootId = creditObjective[2],
-                    Text = creditObjective[3]
+                    Text = creditObjective[3],
+                    Icon = creditObjective[4]
                 }
 
                 --? There are quest(s) which have the killCredit at first so we need to switch them
@@ -1256,12 +1264,6 @@ function QuestieDB.GetQuest(questId) -- /dump QuestieDB.GetQuest(867)
             Text = triggerEnd[1],
             Coordinates = triggerEnd[2]
         }
-    end
-
-    local preQuestGroup = QO.preQuestGroup
-    local preQuestSingle = QO.preQuestSingle
-    if preQuestGroup and preQuestSingle and next(preQuestGroup) and next(preQuestSingle) then
-        Questie:Debug(Questie.DEBUG_CRITICAL, "ERRRRORRRRRRR not mutually exclusive for questID:", questId)
     end
 
     --- Quest objectives generated from quest log in QuestieQuest.lua -> QuestieQuest:PopulateQuestLogInfo(quest)

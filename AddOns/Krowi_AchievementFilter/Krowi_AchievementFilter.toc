@@ -1,15 +1,15 @@
-## Interface: 100207
+## Interface: 30400
+## Author: Krowi-Frostmane EU
+## Version: 72.5
+## SavedVariables: Options, SavedData, Filters, DebugTable, KrowiAF_Options, KrowiAF_SavedData, KrowiAF_Filters, KrowiAF_SearchOptions, KrowiAF_Achievements
+## IconTexture: interface/icons/achievement_dungeon_heroic_gloryoftheraider
+
 ## Title: Krowi's |cFF1D92C2Achievement Filter|r
+## Notes: Filters your achievements.
+## Title-zhCN: |cFFFFE00A<|r|cFFA9D271收藏|r|cFFFFE00A>|r |cFFFFFFFFKrowi成就过滤器|r |cFFFFE00AKrowi_AchievementFilter|r
+
 ## X-Prefix: KrowiAF
 ## X-Acronym: KAF
-## Version: 72.5
-## Author: Krowi-Frostmane EU
-## SavedVariables: Options, SavedData, Filters, DebugTable, KrowiAF_Options, KrowiAF_SavedData, KrowiAF_Filters, KrowiAF_SearchOptions, KrowiAF_Achievements
-## Notes: Filters your achievements.
-## AddonCompartmentFuncOnEnter: KrowiAF_OnAddonCompartmentEnter
-## AddonCompartmentFuncOnLeave: KrowiAF_OnAddonCompartmentLeave
-## AddonCompartmentFunc: KrowiAF_OnAddonCompartmentClick
-## IconTexture: interface/icons/achievement_dungeon_heroic_gloryoftheraider
 ## X-Discord-Invite-Link: https://discord.gg/mdBFQJYeQZ
 ## X-Discord-Server-Name: Krowi's Addons
 ## X-CurseForge: https://www.curseforge.com/wow/addons/krowi-achievement-filter

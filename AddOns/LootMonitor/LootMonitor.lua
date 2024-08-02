@@ -1171,7 +1171,7 @@ function Frame:LOOT_OPENED(...)
             if not TargetGUID then
                 TargetGUID = (GetLootSourceInfo(i))
             end
-            if Loots[i].quantity ~= 0 then
+            if Loots[i] and Loots[i].quantity ~= 0 then
                 if Loots[i].quality >= Config.Quality then
                     t_insert(LootLink, GetLootSlotLink(i))
                 end

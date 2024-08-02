@@ -13,7 +13,7 @@ logger = logging.getLogger('manager')
 
 CLASSIC_ERA_VER = '11401'
 CLASSIC_VER = '30400'
-RETAIL_VER = '100002'
+RETAIL_VER = '110000'
 
 
 def available_on(platforms):
@@ -634,10 +634,10 @@ class Manager:
                             if 'EmbeddedLibs' not in line]
         )
 
-        utils.change_defaults(
-            'AddOns/TradeSkillMaster/LibTSM/Service/Settings.lua',
-            ['			minimapIcon = { type = "table", default = { hide = true, minimapPos = 220, radius = 80 }, lastModifiedVersion = 10 },']
-        )
+        # utils.change_defaults(
+        #     'AddOns/TradeSkillMaster/LibTSM/Service/Settings.lua',
+        #     ['			minimapIcon = { type = "table", default = { hide = true, minimapPos = 220, radius = 80 }, lastModifiedVersion = 10 },']
+        # )
 
     @staticmethod
     def handle_ufp():

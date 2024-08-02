@@ -15,6 +15,7 @@
 14. 支持TBC副本。
 15. 更新TOC文件。
 16. 取消对正式服支持
+17. 更新ChatThrottleLib.lua
 
 Readme:
 1. Slash Command /lm or /lootmonitor to open/close LootMonitor Window.
@@ -33,3 +34,4 @@ Readme:
 14. Support BCC Raid Instance.
 15. Update TOC file.
 16. Remove Retail toc files.
+17. Update ChatThrottleLib.lua

@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Aoikaze
-## Version: 3.34
+## Version: 3.35
 ## SavedVariables: LootMonitorDB
 
 ## Title: LootMonitor

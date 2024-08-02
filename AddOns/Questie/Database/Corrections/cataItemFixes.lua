@@ -444,6 +444,9 @@ function CataItemFixes.Load()
         [58365] = { -- Horn of the Ancients
             [itemKeys.class] = itemClasses.QUEST,
         },
+        [58490] = { -- Opened Mosh'Ogg Bounty
+            [itemKeys.npcDrops] = {43003},
+        },
         [58500] = { -- Jade Crystal Cluster
             [itemKeys.npcDrops] = {},
         },
@@ -651,6 +654,9 @@ function CataItemFixes.Load()
         [68890] = { -- Dragon Kite 2-Pack
             [itemKeys.class] = itemClasses.QUEST,
         },
+        [68937] = { -- Direhammer's Boots
+            [itemKeys.objectDrops] = {208376},
+        },
         [69027] = { -- Cone of Cold
             [itemKeys.class] = itemClasses.QUEST,
         },
@@ -716,6 +722,9 @@ function CataItemFixes.Load()
         },
         [71716] = { -- Soothsayer's Runes
             [itemKeys.class] = itemClasses.QUEST,
+        },
+        [73269] = { -- Great Sea Herring
+            [itemKeys.npcDrops] = {},
         },
     }
 end
