@@ -94,7 +94,7 @@ function GDKPInfo.ADD_Check()
 		Check.Box.tongbu_3:Disable()
 		Check.Box.tongbu_2:SetText(NONE)
 		Check.Box.tongbu_4:SetText(NONE)
-		if IsInGroup("LE_PARTY_CATEGORY_HOME") then
+		if IsInGroup(LE_PARTY_CATEGORY_HOME) then
 			local Leader,Loot = Get_Leader_Loot()
 			if Leader then
 				Check.Box.tongbu_1:Enable()

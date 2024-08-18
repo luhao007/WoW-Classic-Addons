@@ -1,10 +1,11 @@
 local mod	= DBM:NewMod("CinderbrewMeaderyTrash", "DBM-Party-WarWithin", 7)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240622210644")
+mod:SetRevision("20240808043723")
 --mod:SetModelID(47785)
 mod:SetZone(2661)
 mod.isTrashMod = true
+mod.isTrashModBossFightAllowed = true
 
 mod:RegisterEvents(
 	"SPELL_CAST_START 437956 434761 434706 437721 434756 434998 448619 441434 441627 441214",
@@ -19,6 +20,7 @@ mod:RegisterEvents(
 --TODO, do more with throw chair? can you actually dodge it? is it actually threatening on higher keys?
 --[[
 (ability.id = 437956 or ability.id = 434761 or ability.id = 434706 or ability.id = 437721 or ability.id = 434756 or ability.id = 434998 or ability.id = 448619 or ability.id = 441434 or ability.id = 441627 or ability.id = 441214) and type = "begincast"
+ or stoppedAbility.id = 437956 or stoppedAbility.id = 434761 or stoppedAbility.id = 434706 or stoppedAbility.id = 437721 or stoppedAbility.id = 434756 or stoppedAbility.id = 434998 or stoppedAbility.id = 448619 or stoppedAbility.id = 441434 or stoppedAbility.id = 441627 or stoppedAbility.id = 441214)
 --]]
 local warnCinderBrewToss					= mod:NewTargetAnnounce(434706, 3)
 local warnThrowChair						= mod:NewTargetNoFilterAnnounce(434756, 2)

@@ -1,5 +1,7 @@
 local _, addonTable = ...;
+local _, _, _, tocversion = GetBuildInfo()
 ------------
+local IsAddOnLoaded=IsAddOnLoaded or C_AddOns and C_AddOns.IsAddOnLoaded
 local CommonInfo=addonTable.CommonInfo
 ---快速焦点
 local UnitFrame = {
@@ -14,6 +16,7 @@ local UnitFrame = {
 		"ElvUF_PartyGroup1UnitButton1","ElvUF_PartyGroup1UnitButton2","ElvUF_PartyGroup1UnitButton3","ElvUF_PartyGroup1UnitButton4","ElvUF_PartyGroup1UnitButton5",
 	},
 }
+
 CommonInfo.SetKeyList = {
 	{"SHIFT+"..KEY_BUTTON1,"shift"},
 	{"CTRL+"..KEY_BUTTON1,"ctrl"},
@@ -26,6 +29,7 @@ CommonInfo.SetKeyListName = {
 }
 local FrameyanchiNUM = {}
 local function zhixingshezhiFocus(Frame)
+	--print(Frame,type(Frame))
 	if _G[Frame] then
 		if not InCombatLockdown() then
 			local gonegnengKEY = PIGA["Common"]["SetFocusKEY"].."-type1"
@@ -42,10 +46,11 @@ local function zhixingshezhiFocus(Frame)
 		end
 	end
 end
-local function zhixingshezhiFocus1()
+local function zhixingMouseoverFocus()
 	if PIGA["Common"]["SetFocusMouse"] then 
 		if not PIG_MouseoverFocuser then
-			local MF = CreateFrame("CheckButton", "PIG_MouseoverFocuser", UIParent, "SecureActionButtonTemplate")	
+			local MouseoverFocuser=CreateFrame("CheckButton", "PIG_MouseoverFocuser", UIParent, "SecureActionButtonTemplate")
+			addonTable.Fun.ActionFun.PIGUseKeyDown(MouseoverFocuser)
 		end
 		PIG_MouseoverFocuser:SetAttribute("type1","macro")
 		PIG_MouseoverFocuser:SetAttribute("macrotext","/focus mouseover")
@@ -56,17 +61,18 @@ local function zhixingshezhiFocus1()
 		end
 	end
 end
-local function SET_BlizzardUnit()
-	if not IsAddOnLoaded("Blizzard_RaidUI") then return end
+local function SET_BlizzardUnit()	
 	for k,v in pairs(UnitFrame.Blizzard) do
 		zhixingshezhiFocus(v)
 	end
-	for i=1, 40 do
-		zhixingshezhiFocus("CompactRaidFrame"..i)
-	end
-	for groupIndex=1, 8 do
-		for i=1,5 do
-			zhixingshezhiFocus("CompactRaidGroup"..groupIndex.."Member"..i)
+	if IsAddOnLoaded("Blizzard_RaidUI") then
+		for i=1, 40 do
+			zhixingshezhiFocus("CompactRaidFrame"..i)
+		end
+		for groupIndex=1, 8 do
+			for i=1,5 do
+				zhixingshezhiFocus("CompactRaidGroup"..groupIndex.."Member"..i)
+			end
 		end
 	end
 end
@@ -88,7 +94,7 @@ local function SET_ElvUIUnit()
 end
 function CommonInfo.Commonfun.SetFocus()
 	if not PIGA["Common"]["SetFocus"] then return end
-	zhixingshezhiFocus1()
+	zhixingMouseoverFocus()
 	SET_BlizzardUnit()
 	SET_ElvUIUnit()
 	hooksecurefunc("CompactRaidGroup_GenerateForGroup", function(groupIndex)

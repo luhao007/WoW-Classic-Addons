@@ -17,6 +17,7 @@ local SkillIcon={
 	[2]=136240,--炼金
 	[3]=134071,--珠宝加工
 	[4]=237171,--铭文
+	[5]=135811,--采矿熔炼
 }
 local SkillData={
 	["event"]="TRADE_SKILL_UPDATE",
@@ -95,6 +96,8 @@ elseif tocversion<40000 then
 		[62242]={3},
 		--铭文
 		[61177]={4},
+		--采矿
+		[55208]={5},--泰坦精钢锭
 	};
 	SkillData.ItemID={
 		--筛盐器
@@ -117,7 +120,7 @@ function BusinessInfo.SkillCD()
 	local function xieru_SkillCD()	
 		local CDxinxi=PIGA["StatsInfo"]["SkillCD"][StatsInfo.allname]
 		for k,v in pairs(SkillData.SkillID) do
-			local nametxt =GetSpellInfo(k)
+			local nametxt =PIGGetSpellInfo(k)
 			CDxinxi[nametxt]=CDxinxi[nametxt] or {"spell",false,v[1],nil,k,nil}
 			if IsPlayerSpell(k) then
 				CDxinxi[nametxt][2]=true
@@ -336,7 +339,7 @@ function BusinessInfo.SkillCD()
 			for k,v in pairs(SkillData.SkillID) do
 				if arg3==k then
 					C_Timer.After(0.8, function()
-						local nametxt =GetSpellInfo(arg3)
+						local nametxt =PIGGetSpellInfo(arg3)
 						local start, duration = GetSpellCooldown(arg3);
 						PIGA["StatsInfo"]["SkillCD"][StatsInfo.allname][nametxt][2]=true
 						PIGA["StatsInfo"]["SkillCD"][StatsInfo.allname][nametxt][4]=duration

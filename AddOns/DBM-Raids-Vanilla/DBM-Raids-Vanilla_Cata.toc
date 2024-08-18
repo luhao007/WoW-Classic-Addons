@@ -1,10 +1,11 @@
 ## Interface: 30400
 ## Author: MysticalOS
-## Version: r736
+## Version: r738
 ## RequiredDeps: DBM-Core
 ## LoadOnDemand: 1
 ## SavedVariables: DBMRaidsVanilla_AllSavedVars
 ## SavedVariablesPerCharacter: DBMRaidsVanilla_SavedStats
+## IconTexture: Interface\AddOns\DBM-Core\textures\dbm_airhorn
 
 ## Title: |cffffe00a<|r|cffff7d0aDBM Mod|r|cffffe00a>|r |cffff6010Raids (Vanilla)|r
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFF69CCF0团队|r |cFF22B14C经典旧世|r
@@ -14,7 +15,7 @@
 ## X-DBM-Mod-Type: RAID
 ## X-DBM-Mod-Category: Classic
 ## X-DBM-StatTypes: normal
-## X-DBM-Mod-SubCategoriesID: 531, 509, 309, 469, 409
+## X-DBM-Mod-SubCategoriesID: 531, 509, 469, 409, 309
 ## X-DBM-Mod-Name: Raids (Vanilla)
 ## X-DBM-Mod-Name-koKR: 공격대 (클래식)
 ## X-DBM-Mod-Name-ruRU: Рейды (классический)

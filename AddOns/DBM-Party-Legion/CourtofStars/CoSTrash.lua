@@ -1,13 +1,14 @@
 local mod	= DBM:NewMod("CoSTrash", "DBM-Party-Legion", 7)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240622210644")
+mod:SetRevision("20240808043723")
 --mod:SetModelID(47785)
 mod:SetOOCBWComms()
 mod:SetMinSyncRevision(20221228000000)
 mod:SetZone(1571)
 
 mod.isTrashMod = true
+mod.isTrashModBossFightAllowed = true
 
 --LW solution, unregister/reregister other addons/WA frames from GOSSIP_SHOW
 --This is to prevent things like https://wago.io/M+Timer/114 from breaking clue helper do to advancing

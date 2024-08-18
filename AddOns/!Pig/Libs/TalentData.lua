@@ -5840,8 +5840,8 @@ function TalentData.SAVE_Player()
 	local raceName, raceFile, raceID = UnitRace("player")
 	local level = UnitLevel("player")
 	local _, classId = UnitClassBase("player");
-	local myItemLevel = GetAverageItemLevel();
-	local Info = Info..classId.."-"..raceID.."-"..level.."-"..myItemLevel
+	local avgItemLevel, avgItemLevelEquipped, avgItemLevelPvP = GetAverageItemLevel();
+	local Info = Info..classId.."-"..raceID.."-"..level.."-"..avgItemLevelEquipped
 	return Info
 end
 local function PIGGetNumTalentGroups()
@@ -6077,6 +6077,61 @@ function TalentData.HY_GlyphTXT(txt)
 		end
 	end
 	return unpack(data)
+end
+---通告
+local function Player_Stats_1(activeGroup,guancha)
+	local txt = ""
+	local zuidazhi = {"--",0,""}
+	local numTabs = GetNumTalentTabs(guancha)
+	for i=1,numTabs do
+		if tocversion<20000 then
+			local _, name, _, icon, pointsSpent, background, previewPointsSpent = GetTalentTabInfo(i,guancha,false,activeGroup);
+			if i==numTabs then
+				zuidazhi[3]=zuidazhi[3]..pointsSpent
+			else
+				zuidazhi[3]=zuidazhi[3]..pointsSpent.."-"
+			end
+			if pointsSpent>zuidazhi[2] then
+				zuidazhi[1]=name
+				zuidazhi[2]=pointsSpent
+			end
+		else
+			local name, icon, pointsSpent, background, previewPointsSpent = GetTalentTabInfo(i,guancha,false,activeGroup);
+			if i==numTabs then
+				zuidazhi[3]=zuidazhi[3]..pointsSpent
+			else
+				zuidazhi[3]=zuidazhi[3]..pointsSpent.."-"
+			end
+			if pointsSpent>zuidazhi[2] then
+				zuidazhi[1]=name
+				zuidazhi[2]=pointsSpent
+			end
+		end	
+	end
+	return zuidazhi[1]..zuidazhi[3]
+end
+function TalentData.Player_Stats()
+	local Info = "装等:"
+	local avgItemLevel, avgItemLevelEquipped, avgItemLevelPvP = GetAverageItemLevel();
+	local Info = Info..string.format("%.1f",avgItemLevelEquipped)
+	if tocversion<50000 then
+		local tianfutxt = " 天赋:"
+		local numGroup = GetNumTalentGroups(false, false)
+		local activeGroup = GetActiveTalentGroup(false, false)
+		local zhutianfu=Player_Stats_1(activeGroup,false)
+		tianfutxt = tianfutxt..zhutianfu
+		if numGroup>1 then
+			if activeGroup==1 then
+				tianfutxt = tianfutxt.."/"..Player_Stats_1(2,false)
+			elseif activeGroup==2 then
+				tianfutxt = tianfutxt.."/"..Player_Stats_1(1,false)
+			end
+		end
+		Info =Info..tianfutxt
+	else
+
+	end
+	return Info
 end
 -------
 addonTable.Data.TalentData=TalentData

@@ -23,7 +23,7 @@ local TalentData=Data.TalentData
 --
 local Fun=addonTable.Fun
 local GetRuneData=Fun.GetRuneData
-
+local GetItemStats=GetItemStats or C_Item and C_Item.GetItemStats
 -------------
 local ListWWWHHH = {206,425,18,36,6}--3Gembut/4buweiW/5宝石+附魔+符文数
 local function CZ_ItemListinfo(fujikk,Slot,fujiname)
@@ -100,7 +100,7 @@ local function ShowGemBut(Gemse,GemitemLink,nulltishi)
     	Gemse.icon:SetDesaturated(true)
     	Gemse:SetBackdropBorderColor(0.5, 0.5, 0.5, 1);
     	if nulltishi==55655 then
-    		local name, rank, texture = GetSpellInfo(55655)
+    		local name, texture = PIGGetSpellInfo(55655)
     		Gemse.icon:SetTexture(texture)
 	    else
 	    	Gemse.icon:SetTexture(134071)
@@ -252,51 +252,69 @@ local function PIGGetTaozhuang(statsg)
 	return taozhuainfo
 end
 local Plisttip = CreateFrame("GameTooltip", "Plisttip_UI", UIParent, "GameTooltipTemplate")
-local function PIGGetItemStats(Data)
-	local allstats={}
-	for k,v in pairs(Data) do
+Plisttip:SetOwner(UIParent, "ANCHOR_NONE")
+local function PIGGetItemStats(Parent,soltlink)
+	if not Parent:IsVisible() then return end	
+	if tocversion<50000 then
 		Plisttip:ClearLines();
-		Plisttip:SetOwner(UIParent, "ANCHOR_NONE")
-		Plisttip:SetHyperlink(v)
+		Plisttip:SetHyperlink(soltlink)
+		local quality = C_Item.GetItemQualityByID(soltlink) or 1
 	    local hangname = Plisttip:GetName()
 	    local txtNum = Plisttip:NumLines()
 	    if txtNum then
-			local quality = C_Item.GetItemQualityByID(v) or 1
 	    	for g = 2, txtNum do
 		    	local text = _G[hangname.."TextLeft" .. g]:GetText() or ""
 		    	--local r, g, b = _G[hangname.."TextLeft" .. g]:GetTextColor()
-		    	tinsert(allstats, {text,quality,Slot})
+		    	tinsert(Parent.allstats, {text,quality})
 		    end
 		end
+	else
+		local tooltipData = C_TooltipInfo.GetHyperlink(soltlink)
+		local quality = C_Item.GetItemQualityByID(soltlink) or 1
+		for _, line in ipairs(tooltipData.lines) do
+		    tinsert(Parent.allstats, {line.leftText,quality})
+		end
 	end
-	return PIGGetTaozhuang(allstats)
 end
-
 local function ShowItemTaozhuang(Parent,Data)
-	--local taozhuang = PIGGetItemStats(Data)
-	-- local taozhuangNum = #taozhuang
-	-- if taozhuangNum<1 then
-		-- if EnchantBut.EnchantInfo then EnchantBut.EnchantInfo:Cancel() end
-		-- 		EnchantBut.EnchantInfo=C_Timer.NewTimer(0.2,function()
-		-- 			ShowEnchantInfo(EnchantBut,ItemID)
-		-- 		end)
-	-- 	return C_Timer.After(0.1,function()
-	-- 		ShowItemTaozhuang(Parent,Data)
-	-- 	end)
-	-- end
-	-- for tid=1,taozhuangNum do
-	-- 	local taoui = _G[Parent:GetName().."_".."tao_"..tid]
-	-- 	taoui:SetText(string.format(BOSS_BANNER_LOOT_SET,taozhuang[tid][1].."("..taozhuang[tid][2].."/"..taozhuang[tid][3]..")"))
-	-- 	local r, g, b =GetItemQualityColor(taozhuang[tid][4] or 0)
-	-- 	taoui:SetTextColor(r, g, b,1);
-	-- 	local taoui_width = taoui:GetStringWidth()+4
-	-- 	if taoui_width>Parent.ALLWWWW then
-	-- 		Parent.ALLWWWW=taoui_width
-	-- 	end
-	-- end
-	-- if taozhuangNum>1 then
-	-- 	Parent:SetHeight(ListWWWHHH[2]+(taozhuangNum-1)*(ListWWWHHH[3]-3))
-	-- end
+	if Parent.taozhuangTicker then Parent.taozhuangTicker:Cancel() end
+	Parent.taozhuangTicker=C_Timer.NewTimer(0.2,function()
+		Parent.xuhaoID = 0
+		wipe(Parent.allstats)
+		for k,v in pairs(Data) do
+			if tocversion<50000 then
+				Plisttip:ClearLines();
+				Plisttip:SetHyperlink(v)
+			else
+				C_TooltipInfo.GetHyperlink(v)
+			end
+		end
+		for k,v in pairs(Data) do
+			C_Timer.After(0.04*Parent.xuhaoID,function()
+				PIGGetItemStats(Parent,v)
+			end)
+			Parent.xuhaoID=Parent.xuhaoID+1
+		end
+		Parent.xuhaoID=Parent.xuhaoID+1
+		C_Timer.After(0.04*Parent.xuhaoID,function()
+			if not Parent:IsVisible() then return end
+			local taozhuang = PIGGetTaozhuang(Parent.allstats)
+			local taozhuangNum = #taozhuang
+			for tid=1,taozhuangNum do
+				local taoui = _G[Parent:GetName().."_".."tao_"..tid]
+				taoui:SetText(string.format(BOSS_BANNER_LOOT_SET,taozhuang[tid][1].."("..taozhuang[tid][2].."/"..taozhuang[tid][3]..")"))
+				local r, g, b =GetItemQualityColor(taozhuang[tid][4] or 0)
+				taoui:SetTextColor(r, g, b,1);
+				local taoui_width = taoui:GetStringWidth()+4
+				if taoui_width>Parent.ALLWWWW then
+					Parent.ALLWWWW=taoui_width
+				end
+			end
+			if taozhuangNum>1 then
+				Parent:SetHeight(ListWWWHHH[2]+(taozhuangNum-1)*(ListWWWHHH[3]-3))
+			end
+		end)
+	end)
 end
 local function ShowItemList(Parent,unit,Data,fuwen)
 	local Parentname = Parent:GetName()
@@ -359,7 +377,7 @@ local function ShowItemList(Parent,unit,Data,fuwen)
 						Enchantui.getnum=0
 						ShowEnchantInfo(Enchantui,EnchantItemID[fumoid])
 					elseif EnchantSpellID[fumoid] then
-						local name, rank, texture = GetSpellInfo(EnchantSpellID[fumoid])
+						local name, texture = PIGGetSpellInfo(EnchantSpellID[fumoid])
 						Enchantui.icon:SetTexture(texture)
 						Enchantui:SetBackdropBorderColor(1, 0.843, 0, 0.8);
 						Enchantui:SetScript("OnEnter", function (self)
@@ -371,7 +389,7 @@ local function ShowItemList(Parent,unit,Data,fuwen)
 					elseif EnchantSlotID[fumoid] then
 						local itemID, itemType, itemSubType, itemEquipLoc = GetItemInfoInstant(itemLink)
 						local EnchantSpell = EnchantSlotID[fumoid][itemEquipLoc]
-						local name, rank, texture = GetSpellInfo(EnchantSpell)
+						local name, texture = PIGGetSpellInfo(EnchantSpell)
 						Enchantui.icon:SetTexture(texture)
 						Enchantui:SetBackdropBorderColor(1, 0.843, 0, 0.8);
 						Enchantui:SetScript("OnEnter", function (self)
@@ -447,6 +465,8 @@ local function ShowItemList(Parent,unit,Data,fuwen)
 	if GetAverageItemLevel and unit=="player" then
 		local avgItemLevel, avgItemLevelEquipped, avgItemLevelPvP = GetAverageItemLevel();
 		Parent.pingjunLV_V:SetText(string.format("%.2f",avgItemLevelEquipped))
+	elseif yuanchengCFrame.ZBLsit.itemLV then
+		Parent.pingjunLV_V:SetText(string.format("%.2f",yuanchengCFrame.ZBLsit.itemLV))
 	else
 		local wuqiLV={{0,"null"},{0,"null"},{0,"null"}}
 		if Data[16] then
@@ -520,7 +540,6 @@ local function ShowItemList(Parent,unit,Data,fuwen)
 		local pingjunLvl = Parent.zhuangbeiInfo.allleve/16
 		Parent.pingjunLV_V:SetText(string.format("%.2f",pingjunLvl).."|cffFF0000"..Parent.zhuangbeiInfo.wuqixiuzhengV.."|r")
 	end
-
 	--调整UI宽度
 	local biaotiwidth1 = Parent.pingjunLV:GetStringWidth()+Parent.pingjunLV_V:GetStringWidth()
 	local biaotiwidth2 = Parent.talent_1:GetStringWidth()+Parent.talent_1v:GetStringWidth()
@@ -618,9 +637,9 @@ local function add_ItemList(fujik,miaodian,ziji)
 	end
 	local Dibuline=PIGLine(ZBLsit,"TOP",-391-ZBLsit.TopJG,nil,{1,-1},{0.2,0.2,0.2,0.9})
 	for tid=1,6 do
-		local taozhuant = PIGFontString(ZBLsit,{"TOPLEFT",Dibuline,"BOTTOMLEFT",2,-3},"","OUTLINE",nil,fujiname.."_".."tao_"..tid);
+		local taozhuant = PIGFontString(ZBLsit,nil,"","OUTLINE",nil,fujiname.."_".."tao_"..tid);
 		if tid==1 then
-			taozhuant:SetPoint("TOPLEFT",Dibuline,"BOTTOMLEFT",ZBLsit.LeftJG,-3);
+			taozhuant:SetPoint("TOPLEFT",Dibuline,"BOTTOMLEFT",ZBLsit.LeftJG-3,-4);
 		else
 			taozhuant:SetPoint("TOPLEFT",_G[fujiname.."_".."tao_"..(tid-1)],"BOTTOMLEFT",0,-1);
 		end
@@ -630,12 +649,14 @@ local function add_ItemList(fujik,miaodian,ziji)
 	end
 	--
 	local FramePlusfun=addonTable.FramePlusfun
+	ZBLsit.allstats={}
 	function ZBLsit:CZ_ItemList()
 		if self.TalentF then self.TalentF:Hide() self.TalentF:CZ_Tianfu() end
 		local Parent=self:GetParent()
 		FramePlusfun.GengxinPoint(Parent)
 		self.WJname:SetText(yuanchengCFrame.fullnameX)
 		self.pingjunLV_V:SetText("--")
+		yuanchengCFrame.ZBLsit.itemLV=nil
 		self.classes:SetTexCoord(0,0,0,0);
 		self.talent_1v:SetText("--")
 		self.talentTex:SetTexture(132222);
@@ -734,16 +755,10 @@ local function add_ItemList(fujik,miaodian,ziji)
 							PlaySound(SOUNDKIT.IG_CHAT_EMOTE_BUTTON);
 							PIGinfotip:TryDisplayMessage("请专心战斗", YELLOW_FONT_COLOR:GetRGB());
 						else
-							InspectPaperDollItemsFrame.InspectTalents:Click()
+							InspectPaperDollFrameTalentsButtonMixin:OnClick()
 						end
 					else
-						ClassTalentFrame_LoadUI()
-						if ClassTalentFrame:IsVisible() then
-							ClassTalentFrame:Hide()
-						else
-							ClassTalentFrame.inspectUnit=nil
-							ClassTalentFrame:Show()
-						end
+						PlayerSpellsMicroButtonMixin:OnClick()
 					end
 				end
 			end
@@ -762,9 +777,9 @@ local function add_ItemList(fujik,miaodian,ziji)
 		end)
 	end
 	local function PIG_GetInventoryItem(Parent,unit)
-		if not Parent:IsShown() then return end
+		if not Parent:IsVisible() then return end
 		local ItemData = {}
-		for Slot = 1, 19 do
+		for Slot = 1, 18 do
 			local itemId = GetInventoryItemID(unit, Slot)
 			if itemId then
 				local itemLink=GetInventoryItemLink(unit, Slot)
@@ -797,6 +812,9 @@ local function add_ItemList(fujik,miaodian,ziji)
 			PIG_GetInventoryItem(self,unit)
 		end		
 	end
+	ZBLsit:HookScript("OnHide", function(self)
+		if self.allstats_Ticker then self.allstats_Ticker:Cancel() end
+	end);
 	return ZBLsit
 end
 function Create.PIGItemListUI(laiyuan)

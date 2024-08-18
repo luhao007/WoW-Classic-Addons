@@ -8,38 +8,58 @@ local PIGFontString=Create.PIGFontString
 ----
 local CommonInfo=addonTable.CommonInfo
 local FasongYCqingqiu=addonTable.Fun.FasongYCqingqiu
+local InviteUnit=InviteUnit or C_PartyInfo and C_PartyInfo.InviteUnit
 ---
-local function ClickGongNeng(menuName,PigRightF)
+local gelibanban = 50000
+local yijiazaijinlai = {
+	["jiazai"]=false,
+	["listName"]={},
+	["listNameFun"]={
+		[STATUS_TEXT_TARGET..INFO]=function(wanjiaName,name)
+			if tocversion<gelibanban then
+				C_FriendList.SendWho(WHO_TAG_EXACT..wanjiaName, Enum.SocialWhoOrigin.Item);
+			else
+				C_FriendList.SendWho(WHO_TAG_EXACT..wanjiaName, Enum.SocialWhoOrigin.ITEM);
+			end
+		end,
+		[INVITE]=function(wanjiaName)
+			InviteUnit(wanjiaName)
+		end,
+		[ADD_FRIEND]=function(wanjiaName)
+			C_FriendList.AddFriend(wanjiaName)
+		end,
+		[INVITE..GUILD]=function(wanjiaName)
+			GuildInvite(wanjiaName)
+		end,
+		[INVTYPE_RANGED..INSPECT]=function(wanjiaName)
+			FasongYCqingqiu(wanjiaName)
+		end,
+		[CALENDAR_COPY_EVENT..NAME]=function(wanjiaName)
+			local editBoxXX = ChatEdit_ChooseBoxForSend()
+	        local hasText = (editBoxXX:GetText() ~= "")
+	        ChatEdit_ActivateChat(editBoxXX)
+			editBoxXX:Insert(wanjiaName)
+	        if (not hasText) then editBoxXX:HighlightText() end
+		end,
+		[IGNORE]=function(wanjiaName)
+			C_FriendList.AddIgnore(wanjiaName)
+		end,
+		[BNET_REPORT]=function(wanjiaName,mmsg)
+			if wanjiaName and mmsg then
+				ComplainChat(wanjiaName, mmsg)
+			end
+		end,
+	},
+}
+addonTable.Fun.RightlistNameFun=yijiazaijinlai.listNameFun
+local function ClickGongNeng(menuName,listName)
 	local wanjiaName = UIDROPDOWNMENU_INIT_MENU.name
 	--local unitX = UIDROPDOWNMENU_INIT_MENU.unit
 	local serverX = UIDROPDOWNMENU_INIT_MENU.server
-	if tocversion<100000 then
-		if serverX and Pig_OptionsUI.Realm~=serverX then
-			wanjiaName = wanjiaName.."-"..serverX
-		end
-	else
-		local serverX = serverX or Pig_OptionsUI.Realm
+	if serverX and Pig_OptionsUI.Realm~=serverX then
 		wanjiaName = wanjiaName.."-"..serverX
 	end
-	if menuName==PigRightF.listName[1] then
-		C_FriendList.SendWho('n-'..'"'..wanjiaName..'"')
-	end
-	if menuName==PigRightF.listName[2] then
-		C_FriendList.AddFriend(wanjiaName)
-	end
-	if menuName==PigRightF.listName[3] then
-		GuildInvite(wanjiaName)
-	end
-	if menuName==PigRightF.listName[4] then
-		local editBoxXX = ChatEdit_ChooseBoxForSend()
-        local hasText = (editBoxXX:GetText() ~= "")
-        ChatEdit_ActivateChat(editBoxXX)
-		editBoxXX:Insert(wanjiaName)
-        if (not hasText) then editBoxXX:HighlightText() end
-	end
-	if menuName==PigRightF.listName[5] then
-		FasongYCqingqiu(wanjiaName)
-	end
+	yijiazaijinlai.listNameFun[menuName](wanjiaName)
 	Pig_RightFUI:Hide()
 	CloseDropDownMenus()
 end
@@ -60,8 +80,10 @@ end
 --------------------
 function CommonInfo.Interactionfun.RightPlus()
 	if not PIGA["Interaction"]["RightPlus"] then return end
-	if Pig_RightFUI then return end
-	if tocversion<110000 then
+	if yijiazaijinlai.jiazai then return end
+	yijiazaijinlai.jiazai=true
+	if tocversion<gelibanban then
+		if Pig_RightFUI then return end
 		local beijingico=DropDownList1MenuBackdrop.NineSlice.Center:GetTexture()
 		local beijing1,beijing2,beijing3,beijing4=DropDownList1MenuBackdrop.NineSlice.Center:GetVertexColor()
 		local Biankuang1,Biankuang2,Biankuang3,Biankuang4=DropDownList1MenuBackdrop:GetBackdropBorderColor()
@@ -118,8 +140,8 @@ function CommonInfo.Interactionfun.RightPlus()
 			end); 
 		end
 		------
-		PigRightF.listName={STATUS_TEXT_TARGET..INFO,ADD_FRIEND,INVITE..GUILD,CALENDAR_COPY_EVENT..NAME,INVTYPE_RANGED..INSPECT}
-		PigRightF.listName2={INVITE..GUILD,CALENDAR_COPY_EVENT..NAME,INVTYPE_RANGED..INSPECT}
+		PigRightF.listName={INVTYPE_RANGED..INSPECT,STATUS_TEXT_TARGET..INFO,ADD_FRIEND,INVITE..GUILD}
+		PigRightF.listName2={INVTYPE_RANGED..INSPECT,INVITE..GUILD}--CALENDAR_COPY_EVENT..NAME,
 		for i=1,zongHang do
 			local PigRightF_TAB = CreateFrame("Button", "RightF_TAB_"..i, PigRightF);
 			PigRightF_TAB:SetSize(caidanW-8,caidanH);
@@ -174,13 +196,18 @@ function CommonInfo.Interactionfun.RightPlus()
 			end
 	    end)
 	else
+		local listName={INVTYPE_RANGED..INSPECT,STATUS_TEXT_TARGET..INFO,ADD_FRIEND,INVITE..GUILD}
+		for i=1,#listName do
+			table.insert(yijiazaijinlai.listName,listName[i])
+		end
 		Menu.ModifyMenu("MENU_UNIT_FRIEND", function(ownerRegion, rootDescription, contextData)
-		    -- Append a new section to the end of the menu.
-		    -- rootDescription:CreateDivider()
-		    -- rootDescription:CreateTitle(addonName)
-		    -- rootDescription:CreateButton("Appended button", function() print("Clicked the appended button!") end)
-
-		    -- -- Insert a new section at the start of the menu.
+		   	-- 在菜单末尾加入新按钮.
+		    rootDescription:CreateDivider()
+		    rootDescription:CreateTitle(addonName)
+		    for i=1,#listName do
+		    	rootDescription:CreateButton(listName[i], function() yijiazaijinlai.listNameFun[listName[i]](contextData.chatTarget,contextData.name) end)
+		    end
+		    -- 在菜单开始处加入按钮.
 		    -- local title = MenuUtil.CreateTitle(addonName)
 		    -- rootDescription:Insert(title, 1)
 		    -- local button = MenuUtil.CreateButton("Inserted button", function() print("Clicked the inserted button!") end)

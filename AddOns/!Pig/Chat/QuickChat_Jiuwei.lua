@@ -79,3 +79,47 @@ function QuickChatfun.QuickBut_jiuwei()
 		self:SetShown(self.ShowHide)
 	end);
 end
+function QuickChatfun.QuickBut_Stats()
+	local fuFrame=QuickChatFFF_UI
+	local fuWidth = fuFrame.Width
+	local Width,Height = fuWidth,fuWidth
+	local ziframe = {fuFrame:GetChildren()}
+	if PIGA["Chat"]["QuickChat_style"]==1 then
+		fuFrame.playerStats = CreateFrame("Button",nil,fuFrame, "TruncatedButtonTemplate"); 
+	elseif PIGA["Chat"]["QuickChat_style"]==2 then
+		fuFrame.playerStats = CreateFrame("Button",nil,fuFrame, "UIMenuButtonStretchTemplate"); 
+	end
+	fuFrame.playerStats:SetSize(Width,Height);
+	fuFrame.playerStats:SetFrameStrata("LOW")
+	fuFrame.playerStats:SetPoint("LEFT",fuFrame,"LEFT",#ziframe*Width,0);
+	fuFrame.playerStats:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+	fuFrame.playerStats.Tex = fuFrame.playerStats:CreateTexture(nil);
+	fuFrame.playerStats.Tex:SetTexture(666623)
+	fuFrame.playerStats.Tex:SetSize(Width,Height+2);
+	fuFrame.playerStats.Tex:SetPoint("CENTER",fuFrame.playerStats,"CENTER",0,-2);
+	fuFrame.playerStats:SetScript("OnMouseDown", function (self)
+		self.Tex:SetPoint("CENTER",1,-3);
+	end);
+	fuFrame.playerStats:SetScript("OnMouseUp", function (self)
+		self.Tex:SetPoint("CENTER",0,-2);
+	end);
+	PIGEnter(fuFrame.playerStats,"|cff00FFff"..KEY_BUTTON1.."-|r|cffFFFF00"..CHAT_ANNOUNCE..PAPERDOLL_SIDEBAR_STATS.."\n|cff00FFff"..KEY_BUTTON2.."-|r|cffFFFF00"..PARTY.."/"..RAID_MEMBERS..INFO.."|r")
+	fuFrame.playerStats:HookScript("OnEnter", function (self)	
+		fuFrame:PIGEnterAlpha()
+	end);
+	fuFrame.playerStats:HookScript("OnLeave", function (self)
+		fuFrame:PIGLeaveAlpha()
+	end);
+	local TalentData=addonTable.Data.TalentData
+	fuFrame.playerStats:SetScript("OnClick", function(self, event)
+		if event=="LeftButton" then
+			local shuxintxt = TalentData.Player_Stats()
+			local editBoxXX = ChatEdit_ChooseBoxForSend()
+	        ChatEdit_ActivateChat(editBoxXX)
+			editBoxXX:Insert(shuxintxt)
+			--PIGSendChatRaidParty()
+		else
+			PIGSendChatRaidParty("面包会有的")
+		end
+	end);
+end

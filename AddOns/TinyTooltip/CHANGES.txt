@@ -1,30 +1,10 @@
-lightweight tag 9506d6fa406cbcfb8d4eec3180ca1287fb634639 4.4.0.2
-Author:	GitHub <noreply@github.com>
-Date:	Fri May 31 09:21:40 2024 -0700
+lightweight tag 34e7bd0c793bd4b2a31a74b38f7114cd311745ad 4.4.0.4
+Author:	govtgeek <26489473+GovtGeek@users.noreply.github.com>
+Date:	Thu Aug 8 14:04:16 2024 -0700
 
-commit 9506d6fa406cbcfb8d4eec3180ca1287fb634639
-Author: GovtGeek <26489473+GovtGeek@users.noreply.github.com>
-Date:   Fri May 31 09:21:40 2024 -0700
-
-    Update TinyTooltip.toc
-    
-    Updated version
-
-commit f5f89cc383fe0c7996f538f787261493889f3956
+commit 34e7bd0c793bd4b2a31a74b38f7114cd311745ad
 Author: govtgeek <26489473+GovtGeek@users.noreply.github.com>
-Date:   Fri May 31 09:17:55 2024 -0700
+Date:   Thu Aug 8 14:04:16 2024 -0700
 
-    Consolidated TOC files and updated version
-
-commit f5f89cc383fe0c7996f538f787261493889f3956
-Author: govtgeek <26489473+GovtGeek@users.noreply.github.com>
-Date:   Fri May 31 09:17:55 2024 -0700
-
-    Consolidated TOC files and updated version
-
-commit 9fbedc26745383825a8cb727a1aafb81684b9238
-Author: govtgeek <26489473+GovtGeek@users.noreply.github.com>
-Date:   Fri May 31 09:08:39 2024 -0700
-
-    Updated ColorPicker call to work with overhauled picker
+    Bumped era version
 

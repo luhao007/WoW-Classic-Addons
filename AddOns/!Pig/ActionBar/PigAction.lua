@@ -355,42 +355,56 @@ local function ADD_ActionBar(index)
 		piganniu:RegisterEvent("AREA_POIS_UPDATED");
 		piganniu:RegisterEvent("EQUIPMENT_SETS_CHANGED");
 		piganniu:RegisterEvent("PLAYER_ENTERING_WORLD");
+		piganniu:RegisterEvent("PLAYER_REGEN_DISABLED")
+		piganniu:RegisterEvent("PLAYER_REGEN_ENABLED");
 		piganniu:HookScript("OnEvent", function(self,event,arg1,arg2,arg3)
 			if event=="ACTIONBAR_SHOWGRID" then
 				if InCombatLockdown() then return end
 				self:Show();
-			end
-			if event=="ACTIONBAR_HIDEGRID" then
+			elseif event=="ACTIONBAR_HIDEGRID" then
 				if InCombatLockdown() then
-					self:RegisterEvent("PLAYER_REGEN_ENABLED");
-					return 
-				end
-				local Showvalue = GetCVar("alwaysShowActionBars")
-				if Showvalue=="0" then
-					if not self.Type then
-						self:Hide();
+					self.always_show=true
+				else
+					local Showvalue = GetCVar("alwaysShowActionBars")
+					if Showvalue=="0" then
+						if not self.Type then
+							self:Hide();
+						end
 					end
 				end
-			end
-			if event=="CVAR_UPDATE" then
+			elseif event=="CVAR_UPDATE" then
 				if arg1=="ActionButtonUseKeyDown" then
 					PIGUseKeyDown(self)
 				end
 				if InCombatLockdown() then
-					self:RegisterEvent("PLAYER_REGEN_ENABLED");
-					return 
-				end
-				if arg1=="ALWAYS_SHOW_MULTIBARS_TEXT" then
-					if arg2=="0" then
-						if not self.Type then
-							self:Hide();
+					self.always_show=true
+				else
+					if arg1=="ALWAYS_SHOW_MULTIBARS_TEXT" then
+						if arg2=="0" then
+							if not self.Type then
+								self:Hide();
+							end
+						elseif arg2=="1" then
+							self:Show();
 						end
-					elseif arg2=="1" then
-						self:Show();
 					end
-				end	
-			end
-			if event=="PLAYER_REGEN_ENABLED" then
+				end
+			elseif event=="BAG_UPDATE" then
+				Update_Count(self)
+				Update_bukeyong(self)
+			elseif event=="ACTIONBAR_UPDATE_COOLDOWN" then
+				Update_Cooldown(self)
+				Update_bukeyong(self)
+			elseif event=="ACTIONBAR_UPDATE_STATE" or event=="TRADE_SKILL_CLOSE" or event=="CRAFT_CLOSE" or event=="UNIT_AURA" or event=="EXECUTE_CHAT_LINE" then
+				Update_State(self)
+				Update_Icon(self)
+			elseif event=="AREA_POIS_UPDATED" then
+				Update_bukeyong(self)
+			elseif event=="EQUIPMENT_SETS_CHANGED" then
+				Update_Equipment(self,"PigAction")
+			elseif event=="PLAYER_REGEN_ENABLED" then
+				Update_bukeyong(self)
+				Update_Equipment(self,"PigAction")
 				local Showvalue = GetCVar("alwaysShowActionBars")
 				if Showvalue=="0" then
 					if not self.Type then
@@ -399,29 +413,17 @@ local function ADD_ActionBar(index)
 				elseif Showvalue=="1" then
 					self:Show();
 				end
-				self:UnregisterEvent("PLAYER_REGEN_ENABLED");
-			end
-			if event=="BAG_UPDATE" then
-				Update_Count(self)
+				self.always_show=nil
+			elseif event=="PLAYER_REGEN_DISABLED" then
 				Update_bukeyong(self)
-			end
-			if event=="ACTIONBAR_UPDATE_COOLDOWN" then
-				Update_Cooldown(self)
-				Update_bukeyong(self)
-			end
-			if event=="ACTIONBAR_UPDATE_STATE" or event=="TRADE_SKILL_CLOSE" or event=="CRAFT_CLOSE" or event=="UNIT_AURA" or event=="EXECUTE_CHAT_LINE" then
-				Update_State(self)
-				Update_Icon(self)
-			end
-			if event=="PLAYER_REGEN_ENABLED" or event=="PLAYER_ENTERING_WORLD" then
+			elseif event=="PLAYER_ENTERING_WORLD" then
 				if self.Type=="macro" then
 					Update_Macro(self,PigMacroDeleted,PigMacroCount,"PigAction")
 				end
 				Update_Icon(self)
 				Update_Count(self)
 				Update_State(self)
-			end
-			if event=="UPDATE_MACROS" then
+			elseif event=="UPDATE_MACROS" then
 				PigMacroEventCount=PigMacroEventCount+1;
 				if self.Type=="macro" then
 					if PigMacroEventCount>5 then
@@ -437,12 +439,6 @@ local function ADD_ActionBar(index)
 				Update_Icon(self)
 				Update_Count(self)
 				Update_State(self)
-			end
-			if event=="EQUIPMENT_SETS_CHANGED" or event=="PLAYER_REGEN_ENABLED" then
-				Update_Equipment(self,"PigAction")
-			end
-			if event=="AREA_POIS_UPDATED" then
-				Update_bukeyong(self)
 			end
 		end)
 	end

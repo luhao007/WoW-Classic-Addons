@@ -65,7 +65,7 @@ local Output = Addon.Output
 local MinimapIcon = Addon.MinimapIcon
 Frame:Hide() -- 隐藏Frame，避免Update开销
 -- 版本号（不再读取toc文件，/reload后版本号立刻生效）
-Addon.Version = "3.34"
+Addon.Version = "3.41"
 local Version = tonumber(Addon.Version)
 -- Addon MSG Prefix
 local PrefixLM = "LMPX"
@@ -144,7 +144,7 @@ Addon.Config = {
     ["ExpireDay"] = 14, -- 日志保存天数
 	["ShowMinimapIcon"] = true,
 	["MinimapIconAngle"] = 310,
-    ["SetWindowPos"] = {"CENTER", nil, "CENTER", 210, 0},
+    ["SetWindowPos"] = {"CENTER", nil, "CENTER", 120, 0},
     ["OutputPos"] = {"RIGHT", nil, "RIGHT", -20, 0},
 }
 local Config = Addon.Config
@@ -173,32 +173,40 @@ function Addon:UpdateTable(Target, Source)
     end
     return Target
 end
--- 返回队伍Unit
+--[[ 返回队伍Unit -- 棄用
 function Addon:GetUnitPartyUnit(Name)
     if IsInGroup() and not IsInRaid() then
         for i = 1, GetNumGroupMembers() do
             local u = "party"..i
-            if (UnitName(u)) == Name then
+            if (GetUnitName(u, true)) == Name then
                 return u
             end
         end
     end
     return nil
-end
+end ]]
 -- 返回某个GUID的名字
 function Addon:GetMobNameFromGUID(TargetGUID)
     if IsInRaid() then
         for i = 1, GetNumGroupMembers() do
             local u = "raid" .. i .. "target"
             if UnitExists(u) and UnitGUID(u) == TargetGUID then
-                return (UnitName(u))
+                local n, r = UnitName(u)
+                if not r or r == "" then
+                    r = GetRealmName()
+                end
+                return n.."-"..r
             end
         end
     elseif IsInGroup() then
         for i = 1, GetNumGroupMembers() do
             local u = "party" .. i .. "target"
             if UnitExists(u) and UnitGUID(u) == TargetGUID then
-                return (UnitName(u))
+                local n, r = UnitName(u)
+                if not r or r == "" then
+                    r = GetRealmName()
+                end
+                return n.."-"..r
             end
         end
     end
@@ -250,7 +258,7 @@ function Addon:DoCheck()
     if IsInRaid() then
         ChatThrottleLib:SendAddonMessage(Priority[2], PrefixLM, "check " .. Addon.Version, "raid")
     elseif IsInGroup() then
-        ChatThrottleLib:SendAddonMessage(Priority[2], PrefixLM, "check " .. Addon.Version, "party")
+        ChatThrottleLib:SendAddonMessage(Priority[2], PrefixLM, "check " .. Addon.Version, "instance_chat")
     end
     for i = 1, 40 do
         Addon.GroupState[i]:SetText("")
@@ -265,7 +273,7 @@ function Addon:DoReply()
     if IsInRaid() then
         ChatThrottleLib:SendAddonMessage(Priority[2], PrefixLM, "reply " .. msg, "raid")
     elseif IsInGroup() then
-        ChatThrottleLib:SendAddonMessage(Priority[2], PrefixLM, "reply " .. msg, "party")
+        ChatThrottleLib:SendAddonMessage(Priority[2], PrefixLM, "reply " .. msg, "instance_chat")
     end
 end
 -- 初始化团队成员状态
@@ -277,9 +285,13 @@ function Addon:InitGroupFlags()
         for i = 1, 40 do
             local u = "raid"..i
             if (UnitName(u)) then
+                local n, r = UnitName(u)
+                if not r or r == "" then
+                    r = GetRealmName()
+                end
                 if not GroupFlagsStates[u] then
                     GroupFlagsStates[u] = {
-                        ["Name"] = (UnitName(u)),
+                        ["Name"] = n.."-"..r,
                         -- ["Connected"] = UnitIsConnected(u),
                         -- ["DeadOrGhost"] = UnitIsDead(u) and "Dead" or (UnitIsGhost(u) and "Ghost" or "Alive"),
                         ["InCombat"] = UnitAffectingCombat(u),
@@ -288,7 +300,7 @@ function Addon:InitGroupFlags()
                         -- ["Triggered"] = {},
                     }
                 else
-                    GroupFlagsStates[u].Name = (UnitName(u))
+                    GroupFlagsStates[u].Name = n.."-"..r
                     -- GroupFlagsStates[u].Connected = UnitIsConnected
                     -- GroupFlagsStates[u].DeadOrGhost = UnitIsDead(u) and "Dead" or (UnitIsGhost(u) and "Ghost" or "Alive")
                     GroupFlagsStates[u].InCombat = UnitAffectingCombat(u)
@@ -302,7 +314,7 @@ function Addon:InitGroupFlags()
     elseif IsInGroup() then
         if not GroupFlagsStates["player"] then
             GroupFlagsStates["player"] = {
-                ["Name"] = (UnitName("player")),
+                ["Name"] = PlayerName,
                 -- ["Connected"] = true,
                 -- ["DeadOrGhost"] = UnitIsDead("player") and "Dead" or (UnitIsGhost("player") and "Ghost" or "Alive"),
                 ["InCombat"] = UnitAffectingCombat("player"),
@@ -311,7 +323,7 @@ function Addon:InitGroupFlags()
                 -- ["Triggered"] = {},
             }
         else
-            GroupFlagsStates["player"].Name = (UnitName("player"))
+            GroupFlagsStates["player"].Name = PlayerName
             -- GroupFlagsStates["player"].Connected = true
             -- GroupFlagsStates["player"].DeadOrGhost = UnitIsDead("player") and "Dead" or (UnitIsGhost("player") and "Ghost" or "Alive")
             GroupFlagsStates["player"].InCombat = UnitAffectingCombat("player")
@@ -321,9 +333,13 @@ function Addon:InitGroupFlags()
         for i = 1, 4 do
             local u = "party"..i
             if (UnitName(u)) then
+                local n, r = UnitName(u)
+                if not r or r == "" then
+                    r = GetRealmName()
+                end
                 if not GroupFlagsStates[u] then
                     GroupFlagsStates[u] = {
-                        ["Name"] = (UnitName(u)),
+                        ["Name"] = n.."-"..r,
                         -- ["Connected"] = UnitIsConnected(u),
                         -- ["DeadOrGhost"] = UnitIsDead(u) and "Dead" or (UnitIsGhost(u) and "Ghost" or "Alive"),
                         ["InCombat"] = UnitAffectingCombat(u),
@@ -332,7 +348,7 @@ function Addon:InitGroupFlags()
                         -- ["Triggered"] = {},
                     }
                 else
-                    GroupFlagsStates[u].Name = (UnitName(u))
+                    GroupFlagsStates[u].Name = n.."-"..r
                     -- GroupFlagsStates[u].Connected = UnitIsConnected
                     -- GroupFlagsStates[u].DeadOrGhost = UnitIsDead(u) and "Dead" or (UnitIsGhost(u) and "Ghost" or "Alive")
                     GroupFlagsStates[u].InCombat = UnitAffectingCombat(u)
@@ -354,11 +370,14 @@ function Addon:InitGroupInfo()
     if IsInRaid() then -- 初始化Raid团队信息
         for i = 1, 40 do
             local u = "raid"..i
-            local n = (UnitName(u))
-            if n then
+            if (UnitName(u)) then
+                local n, r = UnitName(u)
+                if not r or r == "" then
+                    r = GetRealmName()
+                end
                 local state = {
                     ["Index"] = u,
-                    ["Name"] = n,
+                    ["Name"] = n.."-"..r,
                     ["Rank"] = "NONE",
                     ["LootMonitor"] = "NONE",
                     ["Version"] = 0,
@@ -384,11 +403,14 @@ function Addon:InitGroupInfo()
         t_insert(GroupMemberStates, yourself)
         for i = 1, GetNumGroupMembers() do
             local u = "party"..i
-            local n = (UnitName(u))
-            if n then
+            if (UnitName(u)) then
+                local n, r = UnitName(u)
+                if not r or r == "" then
+                    r = GetRealmName()
+                end
                 local state = {
                     ["Index"] = u,
-                    ["Name"] = n,
+                    ["Name"] = n.."-"..r,
                     ["Rank"] = "NONE",
                     ["LootMonitor"] = "NONE",
                     ["Version"] = 0,
@@ -459,7 +481,7 @@ function Addon:UpdateGroupInfo(Sender, REST)
                 if GroupMemberStates[i].Rank == "LEADER" and GroupMemberStates[i].LootMonitor == "ON" then
                     Announce.Rank = "LEADER"
                     Announce.Index = i
-                elseif Announce.Rank == "NONE" and GroupMemberStates[i].LootMonitor == "ON" and GroupMemberStates[i].Name ~= (UnitName("player")) then
+                elseif Announce.Rank == "NONE" and GroupMemberStates[i].LootMonitor == "ON" and GroupMemberStates[i].Name ~= PlayerName then
                     if GroupMemberStates[i].Name < GroupMemberStates[Announce.Index].Name then
                         Announce.Index = i
                     end
@@ -626,11 +648,19 @@ do
                         ["Announced"] = false,
                         ["PlayerList"] = {},
                     }
-                    local Name = (UnitName("raid"..i))
+                    local n, r = UnitName("raid"..i)
+                    if not r or r == "" then
+                        r = GetRealmName()
+                    end
+                    local Name = n.."-"..r
                     t_insert(PlayerInInstance[InstanceID].PlayerList, Name)
                 else
-                    local Name = (UnitName("raid"..i))
-                    local IsExist = false
+                    local n, r = UnitName("raid"..i)
+                    if not r or r == "" then
+                        r = GetRealmName()
+                    end
+                    local Name = n.."-"..r
+                   local IsExist = false
                     for j = 1, #PlayerInInstance[InstanceID].PlayerList do
                         if Name == PlayerInInstance[InstanceID].PlayerList[j] then
                             IsExist = true
@@ -704,7 +734,13 @@ function Frame:ADDON_LOADED(Name)
         ConsoleExec("overrideArchive 0")
     end
     -- 初始化常量
-    PlayerName = UnitName("player")
+    do
+        local n, r = UnitName("player")
+        if not r or r == "" then
+            r = GetRealmName()
+        end
+        PlayerName = n.."-"..r
+    end
     -- 初始化设定窗口
     SetWindow:Initialize()
    	-- 初始化Output窗口
@@ -741,7 +777,7 @@ function Frame:PLAYER_ENTERING_WORLD(isLogin, isReload)
     if not isLogin and not isReload then
         return
     end
-	if Addon.LDB and Addon.LDBIcon and ((IsAddOnLoaded("TitanClassic")) or (IsAddOnLoaded("Titan"))) then
+	if Addon.LDB and Addon.LDBIcon --[[and ((IsAddOnLoaded("TitanClassic")) or (IsAddOnLoaded("Titan")))]] then
 		MinimapIcon:InitBroker()
 	else
         -- 初始化小地图按钮
@@ -824,7 +860,7 @@ function Frame:CHAT_MSG_ADDON(...)
                     return
                 end
 
-                -- 兼容旧版本
+                --[[ 兼容旧版本
                 local SenderVersion = nil
                 for i = 1, #GroupMemberStates do
                     if GroupMemberStates[i].Name == arg[5] then
@@ -913,7 +949,7 @@ function Frame:CHAT_MSG_ADDON(...)
                             end
                         end
                     end
-                end
+                end ]]
             end
         elseif CMD:lower() == "looter" then
             local TargetGUID, Looter = REST:match("(%S+)%s(.-)$")
@@ -1115,16 +1151,20 @@ function Frame:UNIT_FLAGS(Unit)
         elseif GroupFlagsStates[Unit].FeignDeath == 0 then
             local TargetGUID = UnitGUID(Unit.."target")
             local NowTime = GetTime()
+            local n, r = UnitName(Unit)
+            if not r or r == "" then
+                r = GetRealmName()
+            end
             if not CorpseInfo[TargetGUID] then
                 CorpseInfo[TargetGUID] = {
                     ["TargetName"] = (UnitName(Unit.."target")),
-                    ["LooterName"] = (UnitName(Unit)),
+                    ["LooterName"] = n.."-"..r,
                     ["Sender"] = nil,
                     ["LootAnnounced"] = false,
                     ["Time"] = NowTime,
                 }
             elseif NowTime - CorpseInfo[TargetGUID].Time > 0.1 and not CorpseInfo[TargetGUID].LooterName then
-                CorpseInfo[TargetGUID].LooterName = (UnitName(Unit))
+                CorpseInfo[TargetGUID].LooterName = n.."-"..r
             end
         end
     elseif IsInGroup() and not IsInRaid() and (string.find(Unit, "party") or Unit == "player") then
@@ -1135,16 +1175,20 @@ function Frame:UNIT_FLAGS(Unit)
         elseif GroupFlagsStates[Unit].FeignDeath == 0 then
             local TargetGUID = UnitGUID(Unit.."target")
             local NowTime = GetTime()
+            local n, r = UnitName(Unit)
+            if not r or r == "" then
+                r = GetRealmName()
+            end
             if not CorpseInfo[TargetGUID] then
                 CorpseInfo[TargetGUID] = {
                     ["TargetName"] = (UnitName(Unit.."target")),
-                    ["LooterName"] = (UnitName(Unit)),
+                    ["LooterName"] = n.."-"..r,
                     ["Sender"] = nil,
                     ["LootAnnounced"] = false,
                     ["Time"] = NowTime,
                 }
             elseif NowTime - CorpseInfo[TargetGUID].Time > 0.1 and not CorpseInfo[TargetGUID].LooterName then
-                CorpseInfo[TargetGUID].LooterName = (UnitName(Unit))
+                CorpseInfo[TargetGUID].LooterName = n.."-"..r
             end
         end
     end

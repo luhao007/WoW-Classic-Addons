@@ -291,7 +291,7 @@ function TardisInfo.Chedui(Activate)
 	-- 	TabF.Hang_Clear()
 	-- end);
 
-	-- TabF.GetBut=PIGButton(TabF,{"TOPLEFT",TabF,"TOPLEFT",520,-6},{80,21},L["DEBUG_REFRESH"])
+	-- TabF.GetBut=PIGButton(TabF,{"TOPLEFT",TabF,"TOPLEFT",520,-6},{80,21},2)
 	-- TabF.GetBut:Hide()
 	-- function TabF.GetBut:GetBut_Enable()
 	-- 	self:Show()

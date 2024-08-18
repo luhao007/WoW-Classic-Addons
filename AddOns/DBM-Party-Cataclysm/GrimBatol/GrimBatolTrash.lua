@@ -1,9 +1,10 @@
 local mod	= DBM:NewMod("GrimBatolTrash", "DBM-Party-Cataclysm", 3)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240616102700")
+mod:SetRevision("20240808043723")
 --mod:SetModelID(47785)
 mod.isTrashMod = true
+mod.isTrashModBossFightAllowed = true
 
 mod:RegisterEvents(
 	"SPELL_CAST_START 451871 456696 451612 451939 451379 451378 76711 456711 456713 451387 451067 451224 451391",

@@ -124,18 +124,18 @@ local function ActionBar_PetTishi()
 	if classId==3 or classId==9 then
 		local chaofengjinengName={}
 		if classId==3 then
-			local spname= GetSpellInfo(2649)
+			local spname= PIGGetSpellInfo(2649)
 			table.insert(chaofengjinengName,spname)
 		elseif classId==9 then
 			if tocversion<80000 then
-				local spname= GetSpellInfo(3716)
-				local spname1= GetSpellInfo(33698)
-				--local spname2= GetSpellInfo(17735)
+				local spname= PIGGetSpellInfo(3716)
+				local spname1= PIGGetSpellInfo(33698)
+				--local spname2= PIGGetSpellInfo(17735)
 				table.insert(chaofengjinengName,spname)
 				table.insert(chaofengjinengName,spname1)
 				--table.insert(chaofengjinengName,spname2)
 			else
-				local spname= GetSpellInfo(112042)
+				local spname= PIGGetSpellInfo(112042)
 				table.insert(chaofengjinengName,spname)
 			end
 		end
@@ -192,8 +192,7 @@ local function ActionBar_PetTishi()
 		local PETchaofeng= CreateFrame("Frame");
 		PETchaofeng:RegisterEvent("PET_BAR_UPDATE")
 		PETchaofeng:RegisterUnitEvent("UNIT_AURA","pet");
-		PETchaofeng:SetScript("OnEvent",PetTishizhhixing)
-		
+		PETchaofeng:SetScript("OnEvent",PetTishizhhixing)	
 	end
 end
 local Pettooltip = "宠物动作条嘲讽技能上方增加一个提示按钮，副本内提示关闭宠物嘲讽/副本外提示开启！\r|cffFFff00（只对有宠物职业生效）|r";

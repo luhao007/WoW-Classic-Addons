@@ -22,10 +22,15 @@ local Fun=addonTable.Fun
 local lixian_chakan=Fun.lixian_chakan
 local GetEquipmTXT=Fun.GetEquipmTXT
 local GetRuneData=Fun.GetRuneData
+local GetItemLinkJJ=Fun.GetItemLinkJJ
+local HY_ItemLinkJJ=Fun.HY_ItemLinkJJ
 
 --------
 local GetContainerNumSlots = C_Container.GetContainerNumSlots
 local GetContainerItemLink=C_Container.GetContainerItemLink
+local GetItemInfo=GetItemInfo or C_Item and C_Item.GetItemInfo
+-----------
+
 local BusinessInfo=addonTable.BusinessInfo
 local morenitem={["BAG"]={},["BANK"]={},["MAIL"]={},["C"]={},["T"]={},["G"]={},["R"]={},["GUILD"]={}}
 local function zairumorenpeizhi(peizhiV)
@@ -151,14 +156,18 @@ function BusinessInfo.Item()
 		end
 	end
 	local function huancunwupinData(But,itemlin,shuliang)
-		local itemName,itemLink,itemQuality,itemLevel,itemMinLevel,itemType,itemSubType,itemStackCount,itemEquipLoc,itemTexture,sellPrice,classID=GetItemInfo(itemlin);
-		if itemLink then
-			Show_itemList(But,itemTexture,itemLink,itemStackCount,shuliang,classID)
-		else
-			if But:IsVisible() then
-				C_Timer.After(0.1,function()
-					huancunwupinData(But,itemlin,shuliang)
-				end)
+		if itemlin then
+			local Linktxt=HY_ItemLinkJJ(itemlin)
+			local itemName,itemLink,itemQuality,itemLevel,itemMinLevel,itemType,itemSubType,itemStackCount,itemEquipLoc,itemTexture,sellPrice,classID=GetItemInfo(Linktxt);
+			if itemLink then
+				Show_itemList(But,itemTexture,itemLink,itemStackCount,shuliang,classID)
+			else
+				if But:IsVisible() and But.zhixingnum<5 then
+					C_Timer.After(0.1,function()
+						But.zhixingnum=But.zhixingnum+1
+						huancunwupinData(But,itemlin,shuliang)
+					end)
+				end
 			end
 		end
 	end
@@ -181,6 +190,7 @@ function BusinessInfo.Item()
 			for i=1,#lixiandata do
 				local itemBut=_G["lixian_Bag_item"..i]
 				itemBut:Show()
+				itemBut.zhixingnum=0
 				huancunwupinData(itemBut,lixiandata[i][1],lixiandata[i][2])
 			end
 		else
@@ -375,7 +385,7 @@ function BusinessInfo.Item()
 			XitemLink=ItemInfo.hyperlink
 			XitemCount=ItemInfo.stackCount
 			XitemID=ItemInfo.itemID
-			local XitemLink = XitemLink:match("\124H(item:[%-0-9:]+)\124h");
+			local XitemLink = GetItemLinkJJ(XitemLink)
 			table.insert(wupinshujuinfo, {XitemLink,XitemCount,XitemID});
 		end
 	end

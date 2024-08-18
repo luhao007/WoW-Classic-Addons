@@ -1,15 +1,18 @@
 local isClassic = WOW_PROJECT_ID == (WOW_PROJECT_CLASSIC or 2)
 local isBCC = WOW_PROJECT_ID == (WOW_PROJECT_BURNING_CRUSADE_CLASSIC or 5)
+local isWrath = WOW_PROJECT_ID == (WOW_PROJECT_WRATH_CLASSIC or 11)
 local catID
 if isBCC or isClassic then
 	catID = 4
-else--Wrath classic
+elseif isWrath then--Wrath classic
 	catID = 3
+else--Cataclysm classic
+	catID = 5
 end
 local mod	= DBM:NewMod("Jindo", "DBM-Raids-Vanilla", catID)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20231109032614")
+mod:SetRevision("20240811195641")
 mod:SetCreatureID(11380)
 mod:SetEncounterID(792)
 mod:RegisterCombat("combat")

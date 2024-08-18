@@ -297,6 +297,10 @@ local function ProcessForCompletedBy(t, reference, tooltipInfo)
 end
 local function ProcessForKnownBy(t, reference, tooltipInfo)
 	if reference.illusionID then return; end
+	if app.IsRetail then
+		-- Classic can pre-emptively see 'fake' future achievements which are based on a spell
+		if reference.achievementID then return end
+	end
 
 	-- This is to show which characters have this profession.
 	local id = reference.spellID;
@@ -532,7 +536,7 @@ local InformationTypes = {
 	}),
 	CreateInformationType("description", { text = L.DESCRIPTIONS, priority = 2.5,
 		Process = function(t, reference, tooltipInfo)
-			local description = reference.description;
+			local description = reference.description or GetRelativeValue(reference, "sharedDescription")
 			if description then
 				tinsert(tooltipInfo, {
 					left = description,

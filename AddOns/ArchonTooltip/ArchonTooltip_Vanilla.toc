@@ -1,0 +1,30 @@
+## Interface: 30400
+## Author: Archon
+## Version: 8.12.35
+## OptionalDeps: !LibDropDownExtension, !!AddonLocale
+## SavedVariables: ArchonTooltipSaved
+## DefaultState: enabled
+## IconTexture: Interface/AddOns/ArchonTooltip/Media/logo-32-circle.tga
+
+## Title: Archon Tooltip
+## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFFWCL助手|r |cFFFFE00AArchonTooltip|r
+## Notes-zhCN: 显示角色的WCL分数
+
+
+# Libs
+Libs/LibStub/LibStub.lua
+Libs/LibDropDownExtension-1.0/LibDropDownExtension.lua
+
+# Must come first to initialize tables
+Init.lua
+Localization.lua
+Utils.lua
+Realms.lua
+Zones.lua
+
+StaticData.lua
+Provider.lua
+Profile.lua
+Tooltip.lua
+Dropdown.lua
+Chat.lua

@@ -1,7 +1,6 @@
 # Prat 3.0
 
-## [3.9.55](https://github.com/Legacy-of-Sylvanaar/prat-3-0/tree/3.9.55) (2024-07-23)
-[Full Changelog](https://github.com/Legacy-of-Sylvanaar/prat-3-0/compare/3.9.54...3.9.55) [Previous Releases](https://github.com/Legacy-of-Sylvanaar/prat-3-0/releases)
+## [3.9.58](https://github.com/Legacy-of-Sylvanaar/prat-3-0/tree/3.9.58) (2024-08-14)
+[Full Changelog](https://github.com/Legacy-of-Sylvanaar/prat-3-0/compare/3.9.57...3.9.58) [Previous Releases](https://github.com/Legacy-of-Sylvanaar/prat-3-0/releases)
 
-- Update toc for TWW pre-patch  
-- Use C\_Item for item info APIs ready for The War Within  
+- LinkInfoIcons: Fix usage of GetSpellInfo for 11.0.2  

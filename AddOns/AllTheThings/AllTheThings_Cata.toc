@@ -1,8 +1,9 @@
 ## Interface: 30400
 ## Author: Crieve-Sargeras
-## Version: TWW-4.0.2
+## Version: 4.0.5
 ## SavedVariables: ATTCharacterData, ATTAccountWideData, AllTheThingsSavedVariables, AllTheThingsAD, AllTheThingsSettings, AllTheThingsAuctionData, AllTheThingsDebugData, ATTClassicSettings, ATTClassicAuctionData, AllTheThingsHarvestItems
 ## SavedVariablesPerCharacter: AllTheThingsSettingsPerCharacter, ATTClassicSettingsPerCharacter
+## IconTexture: Interface/Addons/AllTheThings/assets/logo_32x32
 
 ## Title: AllTheThings |cfd9b9b9b(Cataclysm)|r
 ## Notes: Addon for Tracking Collections & Account Completion

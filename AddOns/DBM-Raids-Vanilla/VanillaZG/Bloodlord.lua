@@ -1,15 +1,18 @@
 local isClassic = WOW_PROJECT_ID == (WOW_PROJECT_CLASSIC or 2)
 local isBCC = WOW_PROJECT_ID == (WOW_PROJECT_BURNING_CRUSADE_CLASSIC or 5)
+local isWrath = WOW_PROJECT_ID == (WOW_PROJECT_WRATH_CLASSIC or 11)
 local catID
 if isBCC or isClassic then
 	catID = 4
-else--Wrath classic
+elseif isWrath then--Wrath classic
 	catID = 3
+else--Cataclysm classic
+	catID = 5
 end
 local mod = DBM:NewMod("Bloodlord", "DBM-Raids-Vanilla", catID)
 local L = mod:GetLocalizedStrings()
 
-mod:SetRevision("20240615124047")
+mod:SetRevision("20240811195641")
 mod:SetCreatureID(11382, 14988)
 mod:SetEncounterID(787)
 mod:SetHotfixNoticeRev(20200418000000)--2020, 04, 18

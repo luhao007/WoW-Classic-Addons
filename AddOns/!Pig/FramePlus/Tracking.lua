@@ -63,7 +63,7 @@ function FramePlusfun.Zhuizong()
 		local Bufficon = GetTrackingTexture()
 		for i=1,#spells,1 do
 			if IsPlayerSpell(spells[i]) then
-				local spellName = GetSpellInfo(spells[i])
+				local spellName = PIGGetSpellInfo(spells[i])
 			    info.text, info.arg1 = spellName, spells[i]
 			    info.icon = GetSpellTexture(spells[i])
 			    if Bufficon==info.icon then

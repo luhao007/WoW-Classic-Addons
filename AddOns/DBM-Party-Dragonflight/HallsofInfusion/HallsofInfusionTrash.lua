@@ -1,10 +1,11 @@
 local mod	= DBM:NewMod("HallsofInfusionTrash", "DBM-Party-Dragonflight", 8)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240622210644")
+mod:SetRevision("20240808043723")
 --mod:SetModelID(47785)
 --mod:SetZone(1234)--FIXME RIGHT ID
 mod.isTrashMod = true
+mod.isTrashModBossFightAllowed = true
 
 mod:RegisterEvents(
 	"SPELL_CAST_START 390290 374080 375351 375348 375327 375384 374563 374045 374339 374066 374020 395694 374699 374706 375079 374823 385141 377341 377402 376171 437719",

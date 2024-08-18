@@ -1,9 +1,10 @@
 ## Interface: 30400
 ## Author: geligasi
-## Version: 1.14
+## Version: 1.15
 ## RequiredDeps: !Pig
 ## SavedVariables: PIGG
 ## SavedVariablesPerCharacter: PIGG_Per
+## IconTexture: interface/icons/ability_seal.blp
 
 ## Title: !Pig_GDKP
 ## Notes: GDKP Assistant features, including loot record, quick auction/bid, rewards/fine record, sub-G assistant

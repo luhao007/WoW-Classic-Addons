@@ -1963,3 +1963,129 @@ Change Log:
 * Added Dragonflight spells (world)
 * Added Dragonflight spells for Headless Horseman
 * Added Wrath spells (Heroic+) (thanks daevert)
+
+5.5.4
+* Added Dragonflight spells for Headless Horseman
+
+5.5.5
+* Updated for patch 10.2
+* Added Dragonflight spells (world)
+* Added Dragonflight spells for Amirdrassil, The Dream's Hope
+
+5.5.6
+* Added Dragonflight spells (world)
+* Added Dragonflight spells for Amirdrassil, The Dream's Hope
+
+5.5.7
+* Added Dragonflight spells (world)
+* Added Dragonflight spells for Amirdrassil, The Dream's Hope
+* Added Cataclysm spells for Throne of the Tides (Mythic+) (thanks swgam12)
+* Added WoD spells for the Everbloom (Mythic+) (thanks aisenfaire)
+
+5.6
+* Integrated Skada fixes from bKader
+* Added Dragonflight spells (world)
+* Added Dragonflight spells for Amirdrassil, The Dream's Hope
+* Added Cataclysm spells for Throne of the Tides (Mythic+)
+* Added Vanilla spells (world)
+
+5.6.1
+* Updated ToC for WoW Classic 1.15
+* Added Dragonflight spells (world)
+* Added Dragonflight spells for Amirdrassil, The Dream's Hope
+* Added Dragonflight spells for The Abominable Greench
+* Added Battle for Azeroth spells (world)
+* Added BFA spells for Waycrest Manor
+* Added BFA spells for Atal'Dazar
+* Added Legion spells for Darkheart Thicket
+* Added Legion spells for Black Rook Hold
+* Added WoD spells for the Everbloom
+* Fixed WoD spells for the Everbloom
+
+5.6.2
+* Updated for patch 10.2.5
+* Added Dragonflight spells (world)
+* Added Dragonflight spells for Amirdrassil, The Dream's Hope
+* Added Cataclysm spells for Throne of the Tides (Mythic+) (thanks aisenfaire)
+* Fixed Legion spells for Black Rook Hold
+
+5.7
+* Cataclysm Classic support
+* Updated for patch 10.2.6
+* Updated ToC for WoW Classic 1.15.1
+* Added Dragonflight spells (world)
+* Added Legion spells for The Broken Isles (world)
+* Added Battle for Azeroth spells (world)
+* Added BFA spells for Mechagon
+
+5.7.1
+* Fixed Cataclysm Classic support
+* Added Dragonflight spells (world)
+
+5.7.2
+* Updated for patch 10.2.7
+* Updated ToC for WoW Classic 1.15.2
+* Updated ToC for WoW Cataclysm 4.4.0
+
+5.8
+* Added support for The War Within (placeholders)
+* Added support for new WoW 11.0 menu system
+* Fixed special ignore list showing Retail spells for Classic versions
+* Fixed Retail spells loading for Classic versions
+* Integrated more Skada fixes from bKader
+* Updated ToC for WoW Classic 1.15.2 (again)
+* Added Dragonflight spells (world)
+* Added Mists of Pandaria spells (world)
+* Added Mists of Pandaria remix spells
+
+5.9
+* Utilized the new Blizzard buff/debuff functions
+* Fixed various bugs with TWW workarounds
+* Added TWW spells for Kriegval's Rest
+* Added TWW spells for Fungal Folly
+* Added TWW spells for Earthcrawl Mines 
+
+5.9.1
+* Fixed Pandaria spells for Throne of Thunder
+
+5.9.2
+* Added TWW spells for Ara-Kara, City of Echoes
+* Added TWW spells for Cinderbrew Meadery
+* Added TWW spells for City of Threads
+* Added TWW spells for Darkflame Cleft
+* Added TWW spells for Priory of the Scared Flame
+* Added TWW spells for Tak-Rethan Abyss
+* Added TWW spells for The Dawnbreaker
+* Added TWW spells for The Dread Pit
+* Added TWW spells for The Rookery
+* Added TWW spells for The Spiral Weave
+* Added TWW spells for The Stonevault
+* Added TWW spells for The Waterworks
+* Added TWW spells for Underkeep
+
+5.9.3
+* Added Dragonflight spells (world)
+* Added Dragonflight spells for Aberrus, the Shadowed Crucible
+* Added TWW spells for TWW Delves 
+* Added TWW spells for Darkflame Cleft
+* Combined all delves into one section
+* Added Pandaria spells for Temple of the Jade Serpent
+
+5.10
+* Updated for patch 11.0
+* Added TWW spells for Darkflame Cleft
+* Added Dragonflight spells (world)
+* Added Shadowlands spells (world)
+
+5.11
+* Updated TOC for Classic 1.5.3
+* Fixed options menu opening incorrectly
+* Added Addon Compartment support (Thanks NoctusMirus)
+* Fixed BFA spells for Battle of Dazar'alor
+* Fixed Cataclysm spells for Blackwing Descent (Thanks Emuburger)
+
+5.11.1
+* Fixed issue with update notifications
+
+5.11.2
+* Updated for patch 11.0.2

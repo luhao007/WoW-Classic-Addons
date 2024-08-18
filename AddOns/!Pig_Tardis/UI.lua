@@ -87,7 +87,7 @@ function TardisInfo.ADD_UI()
 end
 
 function TardisInfo.GetInfoBut(fuF,Point,daojiCDtime,jinduS,butTXT,jindutiaoW,GetButW)
-	local GetButTXT = butTXT or L["DEBUG_REFRESH"]
+	local GetButTXT = butTXT or REFRESH
 	local GetButW=GetButW or {80,21}
 	local GetBut = PIGButton(fuF,{Point[1],Point[2],Point[3],Point[4],Point[5]},{GetButW[1],GetButW[2]},GetButTXT);
 	GetBut.daojiCDtime=daojiCDtime;

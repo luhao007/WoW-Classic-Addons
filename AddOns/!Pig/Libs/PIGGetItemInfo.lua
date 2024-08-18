@@ -57,10 +57,15 @@ local Fun=addonTable.Fun
 local function GetItemLinkJJ(ItemLink)
     local msg = "";
     if ItemLink ~= nil then
-        local ItemLink1 = ItemLink:match("\124H(item:[%-0-9:]+)\124h");
+        local ItemLink1 = ItemLink:match("\124Hitem:([%w:%-]+)\124h%[");
         if ItemLink1 then
-            local ItemLink2 = ItemLink1:gsub("item:","");
-        	msg = Fun.yasuo_NumberString(ItemLink2)
+            if ItemLink1:match("Player%-") then
+                local Player1,Player2 = ItemLink1:match("([%w:]+)Player%-([%w%-]+:)");
+            	local msgjj = Fun.yasuo_NumberString(Player1)
+                msg=msgjj..":"
+            else
+                msg = Fun.yasuo_NumberString(ItemLink1)
+            end
         end
     else
         msg="^" 
@@ -86,8 +91,18 @@ function Fun.GetEquipmTXT(kaishi,jieshu)
     return GetEquipmList(kaishi,jieshu)
 end
 local function HY_ItemLinkJJ(ItemJJ)
-    local ItemJJ = Fun.jieya_NumberString(ItemJJ)
-    return "item:"..ItemJJ
+    local Player
+    if ItemJJ:match("Player%-") then
+        local Player1,Player2 = ItemJJ:match("([%w:]+)Player%-([%w%-]+:)");
+        ItemJJ=Player1
+        Player="Player-"..Player2
+    end
+    local Itemhy = Fun.jieya_NumberString(ItemJJ)
+    if Player then
+        return "item:"..Itemhy..Player
+    else
+        return "item:"..Itemhy
+    end
 end
 Fun.HY_ItemLinkJJ=HY_ItemLinkJJ
 function Fun.HY_EquipmTXT(msg)

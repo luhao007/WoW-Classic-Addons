@@ -4,6 +4,7 @@
 ## LoadOnDemand: 1
 ## SavedVariables: DBMWorldEvents_AllSavedVars
 ## SavedVariablesPerCharacter: DBMWorldEvents_SavedStats
+## IconTexture: Interface\AddOns\DBM-Core\textures\dbm_airhorn
 
 ## Title: |cffffe00a<|r|cffff7d0aDBM|r|cffffe00a>|r |cff69ccf0World Events|r
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFF69CCF0世界事件|r

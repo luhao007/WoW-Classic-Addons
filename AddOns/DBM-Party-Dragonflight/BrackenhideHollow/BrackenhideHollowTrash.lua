@@ -1,9 +1,10 @@
 local mod	= DBM:NewMod("BrackenhideHollowTrash", "DBM-Party-Dragonflight", 1)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240621023045")
+mod:SetRevision("20240808043723")
 --mod:SetModelID(47785)
 mod.isTrashMod = true
+mod.isTrashModBossFightAllowed = true
 
 mod:RegisterEvents(
 	"SPELL_CAST_START 382555 367500 388060 388046 382474 382787 374544 385029 383062 367503 373897 382712 373943 374569 385832 384961",

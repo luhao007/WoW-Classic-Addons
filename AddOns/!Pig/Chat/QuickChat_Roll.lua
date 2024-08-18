@@ -30,7 +30,7 @@ function QuickChatfun.QuickBut_Roll()
 	fuFrame.ROLL:SetScript("OnMouseUp", function (self)
 		self.Tex:SetPoint("CENTER",0,-1);
 	end);
-	PIGEnter(fuFrame.ROLL,"|cff00FFff"..KEY_BUTTON1.."-|r|cffFFFF00Roll\n|cff00FFff"..KEY_BUTTON2.."-|r|cffFFFF00Roll"..GUILD_BANK_LOG.."|r");
+	PIGEnter(fuFrame.ROLL,"|cff00FFff"..KEY_BUTTON1.."-|r|cffFFFF00Roll"..GUILD_BANK_LOG.."|r\n|cff00FFff"..KEY_BUTTON2.."-|r|cffFFFF00Roll");
 	fuFrame.ROLL:HookScript("OnEnter", function (self)	
 		fuFrame:PIGEnterAlpha()
 	end);
@@ -38,7 +38,7 @@ function QuickChatfun.QuickBut_Roll()
 		fuFrame:PIGLeaveAlpha()
 	end);
 	fuFrame.ROLL:SetScript("OnClick", function(self, but)
-		if but=="RightButton" then
+		if but=="LeftButton" then
 			ToggleLootHistoryFrame()
 		else
 			RandomRoll(1, 100)

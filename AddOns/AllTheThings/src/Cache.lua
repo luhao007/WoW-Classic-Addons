@@ -63,8 +63,6 @@ local CreateDataCache = function(name, skipMapCaching)
 	end
 	setmetatable(cache, fieldMeta);
 	cache.npcID = cache.creatureID;	-- identical cache as creatureID (probably deprecate npcID use eventually)
-	-- cache.mountID = cache.spellID;	-- identical cache as spellID
-	cache.recipeID = cache.spellID;	-- identical cache as spellID
 	--cache.requireSkill = cache.professionID;	-- identical cache as professionID (in Retail)
 	return cache;
 end
@@ -319,12 +317,14 @@ local function zoneTextAreasRunner(group, value)
 	-- Remap the original mapID to the new mapID when it encounters any of these artIDs.
 	local mapIDs, parentMapID, info = {}, nil, nil;
 	if group.coords then
-		parentMapID = group.coords[1][3];
-		if parentMapID then
-			mapIDs[parentMapID] = 1;
-			info = C_Map_GetMapInfo(parentMapID);
-			if info and info.parentMapID then
-				mapIDs[info.parentMapID] = 1;
+		for index,coord in ipairs(group.coords) do
+			parentMapID = coord[3];
+			if parentMapID and not mapIDs[parentMapID] then
+				mapIDs[parentMapID] = 1;
+				info = C_Map_GetMapInfo(parentMapID);
+				if info and info.parentMapID then
+					mapIDs[info.parentMapID] = 1;
+				end
 			end
 		end
 	else
@@ -339,10 +339,12 @@ local function zoneTextAreasRunner(group, value)
 	end
 	if group.maps then
 		for i,parentMapID in ipairs(group.maps) do
-			mapIDs[parentMapID] = 1;
-			info = C_Map_GetMapInfo(parentMapID);
-			if info and info.parentMapID then
-				mapIDs[info.parentMapID] = 1;
+			if not mapIDs[parentMapID] then
+				mapIDs[parentMapID] = 1;
+				info = C_Map_GetMapInfo(parentMapID);
+				if info and info.parentMapID then
+					mapIDs[info.parentMapID] = 1;
+				end
 			end
 		end
 	end
@@ -403,6 +405,10 @@ local function zoneTextNamesRunner(group, value)
 	--else
 		--print("Invalid MapRemapping (name):", group.hash);
 	end
+end
+local function zoneTextHeaderIDRunner(group, value)
+	value = app.L.HEADER_NAMES[value];
+	if value then zoneTextNamesRunner(group, { value }); end
 end
 local fieldConverters = {
 	-- Simple Converters
@@ -466,6 +472,7 @@ local fieldConverters = {
 	end,
 	["mapID"] = cacheMapID,
 	["mountID"] = function(group, value)
+		CacheField(group, "mountID", value);
 		CacheField(group, "spellID", value);
 	end,
 	["npcID"] = cacheCreatureID,
@@ -476,7 +483,11 @@ local fieldConverters = {
 	["questID"] = cacheQuestID,
 	["questIDA"] = cacheQuestID,
 	["questIDH"] = cacheQuestID,
+	["raceID"] = function(group, value)
+		CacheField(group, "raceID", value);
+	end,
 	["recipeID"] = function(group, value)
+		CacheField(group, "recipeID", value);
 		CacheField(group, "spellID", value);
 	end,
 	["requireSkill"] = function(group, value)
@@ -615,6 +626,11 @@ local fieldConverters = {
 	["zone-text-continent"] = function(group, value)
 		tinsert(runners, function()
 			zoneTextContinentRunner(group, value);
+		end);
+	end,
+	["zone-text-headerID"] = function(group, value)
+		tinsert(runners, function()
+			zoneTextHeaderIDRunner(group, value);
 		end);
 	end,
 	["zone-text-names"] = function(group, value)
@@ -757,6 +773,17 @@ if app.IsRetail then
 	end
 	fieldConverters.up = function(group, up)
 		CacheField(group, "up", up);
+	end
+else
+	-- Classic needs a little help with instances that don't have actual maps... Thanks, SOD.
+	fieldConverters.instanceID = function(group, value)
+		CacheField(group, "instanceID", value);
+		if group.headerID then
+			tinsert(runners, function()
+				print("Encountered Instance With HeaderID", value, group.headerID, group.text);
+				zoneTextHeaderIDRunner(group, group.headerID);
+			end);
+		end
 	end
 end
 

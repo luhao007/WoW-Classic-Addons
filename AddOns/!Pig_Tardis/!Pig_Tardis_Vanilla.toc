@@ -1,9 +1,10 @@
 ## Interface: 30400
 ## Author: geligasi
-## Version: 1.27
+## Version: 1.28
 ## RequiredDeps: !Pig
 ## SavedVariables: PIGT
 ## SavedVariablesPerCharacter: PIGT_Per
+## IconTexture: interface/icons/ability_seal.blp
 
 ## Title: !Pig_Tardis
 ## Notes: Invite enhancement. Group info, Layer info, Convenient shout function (support automatic invitation reply)

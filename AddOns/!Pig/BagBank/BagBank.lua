@@ -175,17 +175,6 @@ function BagBankfun.Zhenghe(Rneirong,tabbut)
 		hooksecurefunc("ContainerFrame_GenerateFrame", function(frame, size, id)
 			ContainerFrameCombinedBags:SetScale(ContainerFrameCombinedBags.suofang)
 		end)
-		ContainerFrameCombinedBags:RegisterForDrag("LeftButton")
-		ContainerFrameCombinedBags:SetMovable(true)
-		ContainerFrameCombinedBags:SetClampedToScreen(true)
-		ContainerFrameCombinedBags:SetScript("OnDragStart",function(self)
-		    self:StartMoving();
-		    self:SetUserPlaced(false)
-		end)
-		ContainerFrameCombinedBags:SetScript("OnDragStop",function(self)
-		    self:StopMovingOrSizing()
-		    self:SetUserPlaced(false)
-		end)
 		--调整系统整合背包搜索框
 		hooksecurefunc(ContainerFrameCombinedBags, "SetSearchBoxPoint", function()
 			BagItemSearchBox:SetWidth(160);

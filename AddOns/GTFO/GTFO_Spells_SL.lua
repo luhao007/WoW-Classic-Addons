@@ -5,7 +5,7 @@
 GTFO Spell List - Shadowlands
 ]]--
 
-if (not (GTFO.ClassicMode or GTFO.BurningCrusadeMode or GTFO.WrathMode)) then
+if (GTFO.RetailMode) then
 
 --- ***********************
 --- * Shadowlands (World) *
@@ -238,6 +238,12 @@ GTFO.SpellID["360677"] = {
   --desc = "Fleeting Flames";
   sound = 1;
 };
+
+GTFO.SpellID["324283"] = {
+  --desc = "Fire (Ember Court)";
+  sound = 1;
+};
+
 
 
 --- **********************

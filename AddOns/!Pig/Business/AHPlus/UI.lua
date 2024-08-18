@@ -8,6 +8,7 @@ local PIGLine=Create.PIGLine
 local PIGCheckbutton=Create.PIGCheckbutton
 local Data=addonTable.Data
 local BusinessInfo=addonTable.BusinessInfo
+local IsAddOnLoaded=IsAddOnLoaded or C_AddOns and C_AddOns.IsAddOnLoaded
 
 function BusinessInfo.huoquhuizhangjiageG()
 	local marketPrice = C_WowTokenPublic.GetCurrentMarketPrice();

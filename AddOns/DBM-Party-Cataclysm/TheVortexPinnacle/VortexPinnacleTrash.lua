@@ -1,11 +1,12 @@
 local mod	= DBM:NewMod("VortexPinnacleTrash", "DBM-Party-Cataclysm", 8)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240727190007")
+mod:SetRevision("20240808043723")
 --mod:SetModelID(47785)
 mod:SetZone(657)
 
 mod.isTrashMod = true
+mod.isTrashModBossFightAllowed = true
 
 mod:RegisterEvents(
 	"SPELL_CAST_START 88061 88010 88201 88194 87762 87761 87779 411012 411000 410870 410999 411002 411001 413385",
@@ -230,21 +231,27 @@ function mod:UNIT_DIED(args)
 	elseif cid == 45915 then--Armored Mistral
 		timerGaleStrikeCD:Stop(args.destGUID)--Old
 		timerStormSurgeCD:Stop(args.destGUID)--Old
-		timerCloudGuardCD:Stop(args.destGUID)--New
-		timerPressurizedBlastCD:Stop(args.destGUID)--New
+		if self:IsRetail() then
+			timerCloudGuardCD:Stop(args.destGUID)--New
+			timerPressurizedBlastCD:Stop(args.destGUID)--New
+		end
 	elseif cid == 45919 then--Young Storm Dragon
 		timerIcyBuffetCD:Stop(args.destGUID)
 	elseif cid == 45912 then--Wild Vortex
 		timerCycloneCD:Stop(args.destGUID)
 	elseif cid == 45477 then--Gust Soldier
 		timerWindBlastCD:Stop(args.destGUID)
-		timerWindFlurryCD:Stop(args.destGUID)
-	elseif cid == 45917 then--Cloud Prince
+		if self:IsRetail() then
+			timerWindFlurryCD:Stop(args.destGUID)
+		end
+	elseif cid == 45917 and self:IsRetail() then--Cloud Prince
 		timerBombCycloneCD:Stop(args.destGUID)
 		timerTurbulenceCD:Stop(args.destGUID)
 	elseif cid == 45930 then--Minster of Air
 		timerLightningLashCD:Stop(args.destGUID)
-		timerOverloadGroundingFieldCD:Stop(args.destGUID)
+		if self:IsRetail() then
+			timerOverloadGroundingFieldCD:Stop(args.destGUID)
+		end
 	elseif cid == 45935 then--Temple Adept
 		timerGreaterHealCD:Stop(args.destGUID)
 	end

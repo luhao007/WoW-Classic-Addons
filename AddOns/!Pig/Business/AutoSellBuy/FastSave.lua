@@ -16,8 +16,10 @@ local GetContainerItemLink = C_Container.GetContainerItemLink
 local PickupContainerItem =C_Container.PickupContainerItem
 local UseContainerItem =C_Container.UseContainerItem
 -- 
-local gongnengName = "存储"
+local Data=addonTable.Data
+local bagID=Data.bagData["bagID"]
 local buticon=136058
+local gongnengName = "存储"
 local BusinessInfo=addonTable.BusinessInfo
 function BusinessInfo.FastSave()
 	local fujiF,fujiTabBut=PIGOptionsList_R(AutoSellBuy_UI.F,"存",60,"Left")
@@ -40,14 +42,14 @@ function BusinessInfo.FastSave()
 	end)
 	function fujiF.cunchu()
 		local shujuy=PIGA_Per["AutoSellBuy"]["Save_List"]
-		for bag=0,bagIDMax do			
-			local bganum=GetContainerNumSlots(bag)
+		for bag=1,#bagID do
+			local bganum=GetContainerNumSlots(bagID[bag])
 			for slot=1,bganum do	
-				local itemID=GetContainerItemID(bag, slot)
+				local itemID=GetContainerItemID(bagID[bag], slot)
 				if itemID then
 					for k=1,#shujuy do
 						if itemID==shujuy[k][1] then
-							UseContainerItem(bag, slot);
+							UseContainerItem(bagID[bag], slot);
 						end
 					end
 				end

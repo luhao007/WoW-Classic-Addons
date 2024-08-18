@@ -10,6 +10,48 @@ local Fun = {}
 addonTable.Fun=Fun
 local L =addonTable.locale
 -------------
+function PIGGetSpellInfo(SpellID)
+	if C_Spell and C_Spell.GetSpellInfo then
+		local spellInfo = C_Spell.GetSpellInfo(SpellID)
+		if spellInfo then
+			return spellInfo.name,spellInfo.iconID,spellInfo.castTime,spellInfo.minRange,spellInfo.maxRange,spellInfo.spellID,spellInfo.originalIconID
+		end
+	else
+		local name, rank, icon, castTime, minRange, maxRange, spellID, originalIcon= GetSpellInfo(SpellID)
+		return name, icon, castTime, minRange, maxRange, spellID, originalIcon,rank
+	end
+end
+--获取背包信息
+function PIGGetContainerIDlink(bag, slot)
+	if C_Container and C_Container.GetContainerItemInfo then
+		local ItemInfo = C_Container.GetContainerItemInfo(bag, slot)
+		if ItemInfo then
+			return ItemInfo.itemID, ItemInfo.hyperlink, ItemInfo.iconFileID, ItemInfo.stackCount, ItemInfo.quality, ItemInfo.hasNoValue
+		end
+	else
+		local itemID, itemLink, icon, stackCount, quality = GetContainerItemInfo(bag, slot)
+		return itemID, itemLink, icon, stackCount, quality
+	end
+end
+--发送消息
+function PIGSendChatRaidParty(txt)
+	if IsInRaid() then
+		SendChatMessage(txt, "RAID");
+	elseif IsInGroup() then
+		SendChatMessage(txt, "PARTY");
+	else
+		SendChatMessage(txt, "SAY");
+	end
+end
+function PIGSendAddonMessage(biaotou,txt)
+	--C_ChatInfo.SendAddonMessage(biaotou,txt,"SAY");--测试
+	if IsInRaid() then
+		C_ChatInfo.SendAddonMessage(biaotou,txt,"RAID")
+	elseif IsInGroup() then
+		C_ChatInfo.SendAddonMessage(biaotou,txt,"PARTY")
+	end
+end
+---------
 local function PIGCopyfun(old,new)
 	for k,v in pairs(old) do
     	if type(v)=="table" then
@@ -25,6 +67,15 @@ function PIGCopyTable(OldTable)
     PIGCopyfun(OldTable,NewTable)
     return NewTable
 end
+function PIG_print(msg,colour)
+	if colour=="R" then
+		print("|cff00FFFF!Pig:|r|cffFF0000"..msg.."|r");
+	elseif colour=="G" then
+		print("|cff00FFFF!Pig:|r|cff00FF00"..msg.."|r");
+	else
+		print("|cff00FFFF!Pig:|r|cffFFFF00"..msg.."|r");
+	end
+end
 function table.removekey(table, key)
     local element = table[key]
     table[key] = nil
@@ -35,47 +86,6 @@ function Fun.Delmaohaobiaodain(oldt)
 	local oldt=oldt:gsub("：","");
 	local oldt=oldt:gsub(":","");
 	return oldt
-end
-function PIG_print(msg,colour)
-	if colour=="R" then
-		print("|cff00FFFF!Pig:|r|cffFF0000"..msg.."|r");
-	elseif colour=="G" then
-		print("|cff00FFFF!Pig:|r|cff00FF00"..msg.."|r");
-	else
-		print("|cff00FFFF!Pig:|r|cffFFFF00"..msg.."|r");
-	end
-end
-----
-function PIGEnable(self)
-	self:Enable() self.Text:SetTextColor(1, 1, 1, 1) 
-end
-function PIGDisable(self)
-	self:Disable() self.Text:SetTextColor(0.4, 0.4, 0.4, 1) 
-end
---获取背包信息
-function PIGGetContainerIDlink(bag, slot)
-	local ItemInfo = C_Container.GetContainerItemInfo(bag, slot)
-	if ItemInfo then
-		return ItemInfo.itemID, ItemInfo.hyperlink, ItemInfo.iconFileID, ItemInfo.stackCount, ItemInfo.quality, ItemInfo.hasNoValue
-	end
-	return false
-end
---发送消息
-function PIGSendChatRaidParty(txt)
-	--SendChatMessage(txt, "SAY");--测试
-	if IsInRaid() then
-		SendChatMessage(txt, "RAID");
-	elseif IsInGroup() then
-		SendChatMessage(txt, "PARTY");
-	end
-end
-function PIGSendAddonMessage(biaotou,txt)
-	--C_ChatInfo.SendAddonMessage(biaotou,txt,"SAY");--测试
-	if IsInRaid() then
-		C_ChatInfo.SendAddonMessage(biaotou,txt,"RAID")
-	elseif IsInGroup() then
-		C_ChatInfo.SendAddonMessage(biaotou,txt,"PARTY")
-	end
 end
 --
 Fun.pig64='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'

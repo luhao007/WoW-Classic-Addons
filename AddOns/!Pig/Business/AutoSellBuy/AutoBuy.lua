@@ -124,7 +124,7 @@ function BusinessInfo.AutoBuy()
 				MerchantFrame.Buy:Hide()
 			end
 		else
-			MerchantFrame.Buy = PIGButton(MerchantFrame,{"TOPLEFT",MerchantFrame,"TOPLEFT",130,-28},{44,22},"购买")
+			MerchantFrame.Buy = PIGButton(MerchantFrame,{"TOPLEFT",MerchantFrame,"TOPLEFT",124,-30},{44,22},"购买")
 			PIGEnter(MerchantFrame.Buy,KEY_BUTTON1.."-购买预设物资\n"..KEY_BUTTON2.."-设置购买清单")
 			MerchantFrame.Buy:SetScript("OnClick", function (self,button)
 				if button=="LeftButton" then

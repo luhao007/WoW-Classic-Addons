@@ -227,29 +227,9 @@ function QuickChatfun.QuickBut_Jilu()
 	end)
 
 	--右键功能
-	local listName={INVITE..GROUPS,STATUS_TEXT_TARGET..INFO,ADD_FRIEND,INVITE..GUILD,CALENDAR_COPY_EVENT..NAME,INVTYPE_RANGED..INSPECT,CANCEL}
+	local listName={INVITE,INVTYPE_RANGED..INSPECT,STATUS_TEXT_TARGET..INFO,ADD_FRIEND,INVITE..GUILD,CALENDAR_COPY_EVENT..NAME,IGNORE,BNET_REPORT..CHAT,CANCEL}
 	local FasongYCqingqiu=addonTable.Fun.FasongYCqingqiu
-	local function RGongNeng(menuName,name)
-		local fullnameX = name
-		if menuName==listName[1] then
-			InviteUnit(fullnameX)
-		elseif menuName==listName[2] then
-			C_FriendList.SendWho(fullnameX)
-		elseif menuName==listName[3] then
-			C_FriendList.AddFriend(fullnameX)
-		elseif menuName==listName[4] then
-			GuildInvite(fullnameX)
-		elseif menuName==listName[5] then
-			local editBoxXX
-			editBoxXX = ChatEdit_ChooseBoxForSend()
-	        local hasText = (editBoxXX:GetText() ~= "")
-	        ChatEdit_ActivateChat(editBoxXX)
-			editBoxXX:Insert(fullnameX)
-	        if (not hasText) then editBoxXX:HighlightText() end
-		elseif menuName==listName[6] then
-			FasongYCqingqiu(fullnameX)
-		end
-	end
+	local RightlistNameFun=addonTable.Fun.RightlistNameFun
 	local caidanW,caidanH=www,20
 	local beijingico=DropDownList1MenuBackdrop.NineSlice.Center:GetTexture()
 	local beijing1,beijing2,beijing3,beijing4=DropDownList1MenuBackdrop.NineSlice.Center:GetVertexColor()
@@ -307,9 +287,13 @@ function QuickChatfun.QuickBut_Jilu()
 			self.Title:SetPoint("LEFT", self, "LEFT", 7.4, -1.4);
 		end);
 		RGNTAB:SetScript("OnMouseUp", function(self)
-			self.Title:SetPoint("LEFT", self, "LEFT", 6, 0);
-			miyijiluF.RGN:Hide();
-			RGongNeng(self.Title:GetText(),miyijiluF.RGN.name.X)
+			if i==#listName then
+				miyijiluF.RGN:Hide()
+			else
+				self.Title:SetPoint("LEFT", self, "LEFT", 6, 0);
+				miyijiluF.RGN:Hide();
+				RightlistNameFun[self.Title:GetText()](miyijiluF.RGN.name.X,miyijiluF.RGN.zuihouyiju)
+			end
 		end);
 	end
 	---------
@@ -371,7 +355,6 @@ function QuickChatfun.QuickBut_Jilu()
 							hang.name:SetTextColor(0.9, 0.9, 0.9, 1);
 						end
 					elseif nrheji[#nrheji][1]=="CHAT_MSG_BN_WHISPER" then
-						
 						if shuju[1][dangqian][3] then
 							hang.name:SetTextColor(0, 1, 0.9647, 1);
 						else
@@ -465,6 +448,7 @@ function QuickChatfun.QuickBut_Jilu()
 				miyijiluF.nr:SetHeight(150);
 			end
 			--
+			self.zuihouyiju=nil
 			for ix=1,zonghhh do
 				local Event =nering[ix][1];
 				local info2 ="[\124cffC0C0C0"..date("%m-%d %H:%M",nering[ix][2]).."]\124r ";
@@ -474,6 +458,7 @@ function QuickChatfun.QuickBut_Jilu()
 					local xinxi_1 = string.format(CHAT_WHISPER_INFORM_GET,"|Hplayer:"..self.Aname..":000:WHISPER:"..self.Aname.."|h[|cff888888"..self.Aname.."|r]|h")
 					textCHATINFO=info2.."\124cff888888"..xinxi_1..info4_jiluxiaoxineirong.."\124r";						
 				elseif Event=="CHAT_MSG_WHISPER" then
+					self.zuihouyiju=info4_jiluxiaoxineirong
 					local xinxi_2 = string.format(CHAT_WHISPER_GET,"[|c"..self.argbHex..self.Aname.."|r]|h")
 					textCHATINFO=info2.."\124cffFF80FF|Hplayer:"..self.Aname..":000:WHISPER:"..self.Aname.."|h"..xinxi_2..info4_jiluxiaoxineirong.."\124r";
 				elseif Event=="CHAT_MSG_BN_WHISPER" then
@@ -508,11 +493,12 @@ function QuickChatfun.QuickBut_Jilu()
 				elseif button=="RightButton" then
 					miyijiluF.RGN:ClearAllPoints();
 					miyijiluF.RGN:SetPoint("TOPLEFT",self,"BOTTOMLEFT",0,0);
-					miyijiluF.RGN:Show()
 					miyijiluF.RGN.name:SetText(nameinfo);
 					miyijiluF.RGN.name.X=nameinfo;
+					miyijiluF.RGN.zuihouyiju=self.zuihouyiju
 					miyijiluF.RGN.xiaoshidaojishi = 1.5;
 					miyijiluF.RGN.zhengzaixianshi = true;
+					miyijiluF.RGN:Show()
 				end
 			end
 		end)

@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(2405, "DBM-Party-Shadowlands", 3, 1184)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240620061233")
+mod:SetRevision("20240808043723")
 mod:SetCreatureID(164517)
 mod:SetEncounterID(2393)
 mod:SetUsedIcons(1, 2, 3, 4, 5)--Probably doesn't use all 5, unsure number of mind link targets at max inteligence/energy
@@ -73,9 +73,9 @@ function mod:OnCombatStart(delay)
 	timerAcidExpulsionCD:Start(7.1-delay, 1)
 	timerMindLinkCD:Start(18.1-delay, 1)--21 in TWW?
 	timerAcceleratedIncubationCD:Start(21.4-delay, 1)--Was 45.2
-	if self:IsMythic() then
-		timerParasiticInfesterCD:Start(11.7-delay, 1)
-	end
+	--if self:IsMythic() then
+	--	timerParasiticInfesterCD:Start(11.7-delay, 1)
+	--end
 end
 
 function mod:OnCombatEnd()

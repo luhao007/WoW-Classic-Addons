@@ -49,7 +49,7 @@ function BusinessInfo.FastFen()
 							local itemID=GetContainerItemID(bag, slot)
 							for k=1,#shujuy do
 								if itemID==shujuy[k][1] then
-									local fenspellname = GetSpellInfo(13262)
+									local fenspellname = PIGGetSpellInfo(13262)
 									self:SetAttribute("macrotext", string.format(DestroyMacro, fenspellname, bag, slot))
 									return
 								end

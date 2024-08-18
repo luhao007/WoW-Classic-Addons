@@ -444,11 +444,11 @@ function GDKPInfo.ADD_Options()
 	end)
 	function fuFrame.SetListF.jiaoyijiluEvent()
 		if PIGA["GDKP"]["Open"] and PIGA["GDKP"]["Rsetting"]["jiaoyijilu"] then
-			PIGEnable(fuFrame.SetListF.jiaoyitonggao)
+			fuFrame.SetListF.jiaoyitonggao:Enable()
 			PIGTradeFrame:RegisterEvent("UI_INFO_MESSAGE");
 			--PIGTradeFrame:RegisterEvent("CHAT_MSG_ADDON");
 		else
-			PIGDisable(fuFrame.SetListF.jiaoyitonggao)
+			fuFrame.SetListF.jiaoyitonggao:Disable()
 			PIGTradeFrame:UnregisterEvent("UI_INFO_MESSAGE");
 			--PIGTradeFrame:UnregisterEvent("CHAT_MSG_ADDON");
 		end
@@ -573,7 +573,7 @@ function GDKPInfo.ADD_Options()
 	fuFrame.SetListF.Paichu = PIGFrame(fuFrame.SetListF,{"TOPLEFT", fuFrame.SetListF, "TOPRIGHT", -260, -28})
 	fuFrame.SetListF.Paichu:SetPoint("BOTTOMRIGHT", fuFrame.SetListF, "BOTTOMRIGHT", -6, 6)
 	fuFrame.SetListF.Paichu:PIGSetBackdrop()
-	fuFrame.SetListF.Paichu.biaoti = PIGFontString(fuFrame.SetListF.Paichu,{"BOTTOMLEFT", fuFrame.SetListF.Paichu, "TOPLEFT", 4, 4},"\124cff00FF00忽略以下物品拾取记录\124r");
+	fuFrame.SetListF.Paichu.biaoti = PIGFontString(fuFrame.SetListF.Paichu,{"BOTTOMLEFT", fuFrame.SetListF.Paichu, "TOPLEFT", 4, 4},"\124cffFF0000忽略以下物品拾取记录\124r");
 	--提示
 	fuFrame.SetListF.Paichu.biaoti_tishi = CreateFrame("Frame", nil, fuFrame.SetListF.Paichu);
 	fuFrame.SetListF.Paichu.biaoti_tishi:SetSize(30,30);

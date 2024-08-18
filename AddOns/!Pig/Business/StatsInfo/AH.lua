@@ -238,7 +238,8 @@ function BusinessInfo.AH()
 					local itemName,itemLink = GetItemInfo(jieguomulu[i][1]) 
 					if not itemLink and fujiF.PList.BOTTOM.changshicishunum<10 then
 						fujiF.PList.BOTTOM.changshicishunum=fujiF.PList.BOTTOM.changshicishunum+1
-						return C_Timer.After(0.1,GetItemInfo_yanchi)
+						C_Timer.After(0.1,GetItemInfo_yanchi)
+						return 
 					end
 				end
 				for i=1,#jieguomulu do

@@ -5,6 +5,7 @@ local ClasseNameID=addonTable.Data.ClasseNameID
 local PIGraceList=addonTable.Data.PIGraceList
 local Create=addonTable.Create
 local PIGFontString=Create.PIGFontString
+local IsAddOnLoaded=IsAddOnLoaded or C_AddOns and C_AddOns.IsAddOnLoaded
 -------------
 local FramePlusfun=addonTable.FramePlusfun
 function FramePlusfun.Friends()
@@ -18,7 +19,18 @@ function FramePlusfun.Friends()
 	local hangH,iconH,texW = 28,16,500
 	
 	--好友列表
-	if tocversion>100000 and tocversion<110000 then
+	if tocversion<50000 then
+		FriendsFrameFriendsScrollFrame:SetWidth(butWidth)
+		FriendsFrameFriendsScrollFrameTop:Hide()
+		FriendsFrameFriendsScrollFrameBottom:Hide()
+		FriendsFrameFriendsScrollFrameMiddle:Hide()
+		local buttons = FriendsFrameFriendsScrollFrame.buttons
+		for ix=1,#buttons do
+			local xuio = _G["FriendsFrameFriendsScrollFrameButton"..ix]
+			xuio:SetWidth(butWidth)
+			xuio.info:SetWidth(www-90)
+		end
+	else
 		FriendsListFrame.ScrollBox.view:SetElementFactory(function(factory, elementData)
 			local buttonType = elementData.buttonType;
 			if buttonType == FRIENDS_BUTTON_TYPE_DIVIDER then
@@ -42,17 +54,6 @@ function FramePlusfun.Friends()
 	        CreateAnchor("BOTTOMRIGHT", FriendsListFrame, "BOTTOMRIGHT", -10, 29),
 	    } 
 	    ScrollUtil.AddManagedScrollBarVisibilityBehavior(FriendsListFrame.ScrollBox, FriendsListFrame.ScrollBar, anchorsWithBar, anchorsWithoutBar)
-	else
-		FriendsFrameFriendsScrollFrame:SetWidth(butWidth)
-		FriendsFrameFriendsScrollFrameTop:Hide()
-		FriendsFrameFriendsScrollFrameBottom:Hide()
-		FriendsFrameFriendsScrollFrameMiddle:Hide()
-		local buttons = FriendsFrameFriendsScrollFrame.buttons
-		for ix=1,#buttons do
-			local xuio = _G["FriendsFrameFriendsScrollFrameButton"..ix]
-			xuio:SetWidth(butWidth)
-			xuio.info:SetWidth(www-90)
-		end
 	end
     ----  
     local playerRealmID = GetRealmID();

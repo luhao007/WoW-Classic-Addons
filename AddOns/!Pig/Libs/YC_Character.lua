@@ -245,7 +245,7 @@ local SendAddonMessage = C_ChatInfo and C_ChatInfo.SendAddonMessage or SendAddon
 local pig_PREFIX="!Pig-YCIN";
 local ala_PREFIX = "ATEADD"
 local td_PREFIX = "tdInspect"
-local YCinfo_GET_MSG = {"!GETALL","!GETT-","!GETG-","!GETR-"};
+local YCinfo_GET_MSG = {"!GETALL","!GETT-","!GETG-","!GETR-","!GETI-"};
 local RegisterAddonMessagePrefix = C_ChatInfo and C_ChatInfo.RegisterAddonMessagePrefix or RegisterAddonMessagePrefix;
 local IsAddonMessagePrefixRegistered = C_ChatInfo and C_ChatInfo.IsAddonMessagePrefixRegistered or IsAddonMessagePrefixRegistered;
 RegisterAddonMessagePrefix(pig_PREFIX)
@@ -253,8 +253,9 @@ RegisterAddonMessagePrefix(pig_PREFIX)
 local function Update_ShowItem_List(zbData,laiyuan)
 	for k,v in pairs(zbData) do
 		local _,itemLink = GetItemInfo(v) 
-		if not itemLink then
+		if not itemLink and yuanchengCFrame.ZBLsit<5 then
 			C_Timer.After(0.1,function()
+				yuanchengCFrame.ZBLsit.ShowItemNum=yuanchengCFrame.ZBLsit.ShowItemNum+1
 				Update_ShowItem_List(zbData,laiyuan)
 			end)
 			return
@@ -296,7 +297,7 @@ local function Update_ShowItem_List(zbData,laiyuan)
 end
 local function Update_ShowItem(itemstxt,laiyuan)
 	local zbData = {}
-	if not itemstxt or itemstxt and #itemstxt==0 then return end
+	if not itemstxt then return end
 	for k,v in pairs(itemstxt) do
 		zbData[k]=v
 	end
@@ -304,12 +305,13 @@ local function Update_ShowItem(itemstxt,laiyuan)
 		GetItemInfo(v)
 	end
 	C_Timer.After(0.1,function()
+		yuanchengCFrame.ZBLsit.ShowItemNum=0
 		Update_ShowItem_List(zbData,laiyuan)
 	end)
 end
 Fun.Update_ShowItem=Update_ShowItem
 local function Update_ShowPlayer(Player,lyfrome)
-	local class,race,level = unpack(Player)
+	local class,race,level,itemLV = unpack(Player)
 	local className, classFile = PIG_ClassInfo(class)
 	local raceName = "  "
 	if tonumber(race)>0 then
@@ -325,6 +327,7 @@ local function Update_ShowPlayer(Player,lyfrome)
 	yuanchengCFrame.ZBLsit.level=level
 	yuanchengCFrame.ZBLsit.zhiyeID=class
 	yuanchengCFrame.ZBLsit.zhiye=classFile
+	yuanchengCFrame.ZBLsit.itemLV=itemLV
 	yuanchengCFrame.ZBLsit:Update_Player(lyfrome)
 end
 Fun.Update_ShowPlayer=Update_ShowPlayer
@@ -365,7 +368,6 @@ local function PIG_tiquMsg(msgx,nameX)
 	if yuanchengCFrame:IsShown() and yuanchengCFrame.fullnameX==nameX then
 		local qianzhui = msgx:sub(1, 2)
 		if qianzhui == "!P" then
-
 			if not msgx:match("@") then
 				yuanchengCFrame.fanhuiYN=true
 				local allnum = msgx:sub(3, 3)
@@ -397,6 +399,11 @@ local function PIG_tiquMsg(msgx,nameX)
 			end
 			if leixing == "R" then
 				yuanchengCFrame.fanhuiYN_RR=true
+				local fwData=HY_RuneTXT(msgx:sub(4, -1))
+				Pig_OptionsUI.talentData[nameX][leixing]={GetServerTime(),fwData}
+			end
+			if leixing == "I" then
+				yuanchengCFrame.fanhuiYN_II=true
 				local fwData=HY_RuneTXT(msgx:sub(4, -1))
 				Pig_OptionsUI.talentData[nameX][leixing]={GetServerTime(),fwData}
 			end
@@ -445,9 +452,9 @@ local function GetDATA_YN_GG(fullnameX)
 	end)
 end
 local function GetDATA_YN_RR(fullnameX)
-	if yuanchengCFrame.alaGet_GG then yuanchengCFrame.alaGet_GG:Cancel() end
-	yuanchengCFrame.alaGet_GG=C_Timer.NewTimer(0.8,function()
-		if not yuanchengCFrame.fanhuiYN_GG then
+	if yuanchengCFrame.alaGet_RR then yuanchengCFrame.alaGet_RR:Cancel() end
+	yuanchengCFrame.alaGet_RR=C_Timer.NewTimer(0.8,function()
+		if not yuanchengCFrame.fanhuiYN_RR then
 			SendAddonMessage(ala_PREFIX, "!Q32R", "WHISPER", fullnameX);
 		end
 	end)
@@ -504,7 +511,12 @@ local function FasongYCqingqiu(fullnameX,iidd)
 		if not Pig_OptionsUI.talentData[fullnameX]["R"] or GetServerTime()-Pig_OptionsUI.talentData[fullnameX]["R"][1]>10 then
 			yuanchengCFrame.fanhuiYN_RR=false
 			SendAddonMessage(pig_PREFIX,YCinfo_GET_MSG[iidd], "WHISPER", fullnameX)
-			--GetDATA_YN_RR(fullnameX)
+			GetDATA_YN_RR(fullnameX)
+		end
+	elseif iidd==5 then--只请求角色信息
+		if not Pig_OptionsUI.talentData[fullnameX]["I"] or GetServerTime()-Pig_OptionsUI.talentData[fullnameX]["I"][1]>10 then
+			yuanchengCFrame.fanhuiYN_II=false
+			SendAddonMessage(pig_PREFIX,YCinfo_GET_MSG[iidd], "WHISPER", fullnameX)
 		end
 	end
 end
@@ -571,6 +583,9 @@ yuanchangchakanFFF:SetScript("OnEvent",function(self, event, arg1, arg2, _, arg4
 			elseif arg2==YCinfo_GET_MSG[4] then
 				local info =GetRuneTXT()
 				SendAddonMessage(pig_PREFIX, "!R-"..info, "WHISPER", arg5)
+			elseif arg2==YCinfo_GET_MSG[5] then
+				local Player =TalentData.SAVE_Player()
+				SendAddonMessage(pig_PREFIX, "!I-"..Player, "WHISPER", arg5)
 			else
 				PIG_tiquMsg(arg2,arg5)
 			end

@@ -39,15 +39,25 @@ function BusinessInfo.AHPlusOptions()
 		fuFrame:ShowChecked()
 	end);
 	--扫描间隔
-	BusinessInfo.AHPlusData.ScanCD=PIGA["AHPlus"]["ScanCD"]
 	fuFrame.AHPlus.ScanSliderT = PIGFontString(fuFrame.AHPlus,{"LEFT",fuFrame.AHPlus.Text,"RIGHT",20,0},"扫描间隔")
-	local Scaninfo = {0.002,0.08,0.001}
+	local Scaninfo
+	if tocversion<100000 then
+		Scaninfo = {0.002,0.08,0.001,1000}
+		BusinessInfo.AHPlusData.ScanCD=PIGA["AHPlus"]["ScanCD"]
+	else
+		Scaninfo = {0.0002,0.008,0.0001,10000}
+		BusinessInfo.AHPlusData.ScanCD=PIGA["AHPlus"]["ScanCD_M"]
+	end
 	fuFrame.AHPlus.ScanSlider = PIGSlider(fuFrame.AHPlus,{"LEFT",fuFrame.AHPlus.ScanSliderT,"RIGHT",10,0},{100,14},Scaninfo)
 	function fuFrame.AHPlus.ScanSlider:OnValueFun()
 		local val = self:GetValue()
-		local val = floor(val*1000+0.5)*0.001
+		local val = floor(val*Scaninfo[4]+0.5)*Scaninfo[3]
 		self.Text:SetText(val);
-		PIGA["AHPlus"]["ScanCD"]=val
+		if tocversion<100000 then
+			PIGA["AHPlus"]["ScanCD"]=val
+		else
+			PIGA["AHPlus"]["ScanCD_M"]=val
+		end
 		BusinessInfo.AHPlusData.ScanCD=val
 	end
 	fuFrame.AHPlus.AHtooltip =PIGCheckbutton(fuFrame.AHPlus,{"TOPLEFT",fuFrame.AHPlus,"BOTTOMLEFT",0,-20},{"鼠标提示拍卖价钱","在物品的鼠标提示上显示拍卖缓存价钱"})
@@ -154,7 +164,11 @@ function BusinessInfo.AHPlusOptions()
 		self.AHPlus:SetChecked(PIGA["AHPlus"]["Open"])
 		self.AHPlus.AHtooltip:SetChecked(PIGA["AHPlus"]["AHtooltip"])
 		self.AHPlus.AHUIoff:SetChecked(PIGA["AHPlus"]["AHUIoff"])
-		self.AHPlus.ScanSlider:PIGSetValue(PIGA["AHPlus"]["ScanCD"])
+		if tocversion<100000 then
+			self.AHPlus.ScanSlider:PIGSetValue(PIGA["AHPlus"]["ScanCD"])
+		else
+			self.AHPlus.ScanSlider:PIGSetValue(PIGA["AHPlus"]["ScanCD_M"])
+		end
 		if self.AHPlus.QuicAuc then
 			self.AHPlus.QuicAuc:SetChecked(PIGA["AHPlus"]["QuicAuc"])
 		end

@@ -72,7 +72,7 @@ function BusinessInfo.FastDiuqi()
 					end
 				end
 			end
-			C_Timer.After(1,function()
+			C_Timer.After(0.4,function()
 				if QkBut_AutoSellBuy then
 					if shifoucunzai(beibaoInfo,PIGA["AutoSellBuy"]["Diuqi_List"]) then
 						QkBut_AutoSellBuy.Height:Show()

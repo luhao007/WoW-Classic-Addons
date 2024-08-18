@@ -4,6 +4,14 @@ local _, _, _, tocversion = GetBuildInfo()
 local GetItemCooldown=C_Container.GetItemCooldown
 local GetContainerNumSlots = C_Container.GetContainerNumSlots
 local GetContainerItemLink = C_Container.GetContainerItemLink
+local IsCurrentSpell=IsCurrentSpell or C_Spell and C_Spell.IsCurrentSpell
+local GetSpellBookItemInfo=GetSpellBookItemInfo or C_SpellBook and C_SpellBook.GetSpellBookItemInfo
+local PIGbookType
+if tocversion<50000 then
+	PIGbookType=BOOKTYPE_SPELL
+else
+	PIGbookType=Enum.SpellBookSpellBank.Player
+end
 -----
 _G.BINDING_HEADER_PIG = addonName
 local ActionFun={}
@@ -273,11 +281,11 @@ function ActionFun.Update_bukeyong(self)
 				self.icon:SetVertexColor(0.5, 0.5, 0.5);
 				return
 			end
-			-- local usable, noMana = IsUsableItem(SimID)
-			-- if not usable then 
-			-- 	self.icon:SetVertexColor(0.5, 0.5, 0.5);
-			-- 	return
-			-- end
+			local usable, noMana = IsUsableItem(SimID)
+			if not usable then 
+				self.icon:SetVertexColor(0.5, 0.5, 0.5);
+				return
+			end
 		elseif Type=="macro" then
 			local Name, Icon, Body = GetMacroInfo(SimID);
 			local TrimBody = strtrim(Body or "");
@@ -303,7 +311,8 @@ function ActionFun.Update_bukeyong(self)
 				end
 			end
 		elseif Type=="companion" then
-			local usable, noMana = IsUsableSpell(SimID)
+			local spellID=self.SimID_3
+			local usable, noMana = IsUsableSpell(spellID)
 			if not usable then
 				self.icon:SetVertexColor(0.5, 0.5, 0.5) 
 				return 
@@ -334,13 +343,13 @@ function ActionFun.Update_State(self)
 	if Type then
 		local SimID=self.SimID
 		if Type=="spell" then
-			if IsCurrentSpell(SimID) then--进入队列
+			if SimID and IsCurrentSpell(SimID) then--进入队列
 				self:SetChecked(true)
 				return
 			end
 			self:SetChecked(false)
 		elseif Type=="item" then
-			if IsCurrentItem(SimID) then
+			if SimID and IsCurrentItem(SimID) then
 				self:SetChecked(true)
 				return
 			end	
@@ -348,7 +357,7 @@ function ActionFun.Update_State(self)
 		elseif Type=="macro" then
 			local hongSpellID = GetMacroSpell(SimID)
 			if hongSpellID then
-				if IsCurrentSpell(hongSpellID) then--进入队列
+				if SimID and IsCurrentSpell(hongSpellID) then--进入队列
 					self:SetChecked(true)
 					return
 				end
@@ -356,7 +365,7 @@ function ActionFun.Update_State(self)
 				local ItemName, ItemLink = GetMacroItem(SimID);
 				if ItemName then
 					local ItemID = GetItemInfoInstant(ItemLink)
-					if IsCurrentItem(ItemID) then
+					if SimID and IsCurrentItem(ItemID) then
 						self:SetChecked(true)
 						return
 					end
@@ -364,7 +373,8 @@ function ActionFun.Update_State(self)
 			end
 			self:SetChecked(false)
 		elseif Type=="companion" then
-			if IsCurrentSpell(SimID) then
+			local spellID=self.SimID_3
+			if SimID and IsCurrentSpell(spellID) then
 				self:SetChecked(true)
 				return
 			end
@@ -374,7 +384,7 @@ function ActionFun.Update_State(self)
 				local numMounts = C_MountJournal.GetNumMounts()
 				for i=1,numMounts do
 					local name, spellID= C_MountJournal.GetDisplayedMountInfo(i)
-					if IsCurrentSpell(spellID) then
+					if SimID and IsCurrentSpell(spellID) then
 						self:SetChecked(true)
 						return
 					end
@@ -382,7 +392,7 @@ function ActionFun.Update_State(self)
 				self:SetChecked(false)
 			else
 				local spellID=self.SimID_3
-				if IsCurrentSpell(spellID) then
+				if SimID and IsCurrentSpell(spellID) then
 					self:SetChecked(true)
 					return
 				end
@@ -410,11 +420,10 @@ function ActionFun.Update_PostClick(self)
 				self:SetChecked(false)
 			end
 		elseif Type=="companion" then
-			local usable, noMana = IsUsableSpell(SimID)	
+			local usable, noMana = IsUsableSpell(self.SimID_3)	
 			if not usable then self:SetChecked(false) end
 		elseif Type=="mount" then
-			local spellID=self.SimID_3
-			local usable, noMana = IsUsableSpell(spellID)	
+			local usable, noMana = IsUsableSpell(self.SimID_3)	
 			if not usable then self:SetChecked(false) end
 		end
 	else
@@ -447,59 +456,47 @@ end
 --鼠标悬浮
 local function OnEnter_Spell(Type,SimID)
 	if IsSpellKnown(SimID) then
-		for i = 1, GetNumSpellTabs() do
-			local _, _, offset, numSlots = GetSpellTabInfo(i)
-			for j = offset+1, offset+numSlots do
-				local _,bookspellID= GetSpellBookItemInfo(j, BOOKTYPE_SPELL)
-				if SimID==bookspellID then
-					local _,jibiex= GetSpellBookItemName(j, BOOKTYPE_SPELL)
-					GameTooltipTextRight1:Show()
-					GameTooltip:SetSpellBookItem(j, BOOKTYPE_SPELL);
-					GameTooltipTextRight1:SetText(jibiex)
-					GameTooltipTextRight1:SetTextColor(0.5, 0.5, 0.5, 1);
-					GameTooltip:Show();
-					return
+		if GetProfessions then
+			for _, i in pairs{GetProfessions()} do
+				local offset, numSlots = select(3, GetSpellTabInfo(i))
+				for j = offset+1, offset+numSlots do
+					local _, _ ,spellID=GetSpellBookItemName(j, PIGbookType)
+					if SimID==spellID then
+						local _,jibiex= GetSpellBookItemName(j, PIGbookType)
+						GameTooltipTextRight1:Show()
+						GameTooltip:SetSpellBookItem(j, PIGbookType);
+						GameTooltipTextRight1:SetText(jibiex)
+						GameTooltipTextRight1:SetTextColor(0.5, 0.5, 0.5, 1);
+						GameTooltip:Show();
+						return
+					end
 				end
 			end
-		end
-		for _, i in pairs{GetProfessions()} do
-			local offset, numSlots = select(3, GetSpellTabInfo(i))
-			for j = offset+1, offset+numSlots do
-				local _, _ ,spellID=GetSpellBookItemName(j, BOOKTYPE_SPELL)
-				if SimID==spellID then
-					local _,jibiex= GetSpellBookItemName(j, BOOKTYPE_SPELL)
-					GameTooltipTextRight1:Show()
-					GameTooltip:SetSpellBookItem(j, BOOKTYPE_SPELL);
-					GameTooltipTextRight1:SetText(jibiex)
-					GameTooltipTextRight1:SetTextColor(0.5, 0.5, 0.5, 1);
-					GameTooltip:Show();
-					return
+		else
+			for i = 1, GetNumSpellTabs() do
+				local _, _, offset, numSlots = GetSpellTabInfo(i)
+				for j = offset+1, offset+numSlots do
+					local bookspellID=0
+					if tocversion<50000 then
+						local _,spellID= GetSpellBookItemInfo(j, PIGbookType)
+						bookspellID=spellID
+					else
+						local spellBookItemInfo = C_SpellBook.GetSpellBookItemInfo(j, PIGbookType)
+						bookspellID = spellBookItemInfo.spellID
+					end
+					if SimID==bookspellID then
+						local _,jibiex= GetSpellBookItemName(j, PIGbookType)
+						GameTooltipTextRight1:Show()
+						GameTooltip:SetSpellBookItem(j, PIGbookType);
+						GameTooltipTextRight1:SetText(jibiex)
+						GameTooltipTextRight1:SetTextColor(0.5, 0.5, 0.5, 1);
+						GameTooltip:Show();
+						return
+					end
 				end
 			end
 		end
 	else
-		if C_MountJournal then
-			local numMounts = C_MountJournal.GetNumMounts()
-			for i=1,numMounts do
-				local name, spellID= C_MountJournal.GetDisplayedMountInfo(i)
-				if SimID==spellID then
-					GameTooltip:SetHyperlink("spell:"..spellID)
-					GameTooltip:Show();
-					return
-				end
-			end
-		elseif GetCompanionInfo then
-			local count = GetNumCompanions("MOUNT")
-			for i=1,count do
-				local creatureID, creatureName, creatureSpellID, icon, issummoned, mountType = GetCompanionInfo("MOUNT", i)
-				if SimID==creatureSpellID then
-					GameTooltip:SetHyperlink("spell:"..creatureSpellID)
-					GameTooltip:Show();
-					return
-				end
-			end
-		end
-
 		GameTooltip:SetHyperlink(Type..":"..SimID)
 		GameTooltip:Show();
 	end
@@ -521,11 +518,25 @@ local function OnEnter_Item(Type,SimID,ItemID)
 	end
 end
 local function OnEnter_Companion(Type,SimID,spellID)
+	if C_MountJournal then
+		local numMounts = C_MountJournal.GetNumMounts()--GetNumCompanions("MOUNT")
+		for i=1,numMounts do
+			local creatureName, spellID, icon, active, isUsable, sourceType, isFavorite, isFactionSpecific, faction, hideOnChar, isCollected= C_MountJournal.GetDisplayedMountInfo(i)-- = GetCompanionInfo("MOUNT", i)
+			if spellID then
+				if SimID==spellID then
+					GameTooltip:SetHyperlink("spell:"..spellID)
+					GameTooltip:Show();
+					return
+				end
+			end
+		end
+	end
 	GameTooltip:SetHyperlink("spell:"..spellID)
 	GameTooltip:Show();
 end
 local function OnEnter_equipmentset(Type,SimID)
 	GameTooltip:SetEquipmentSet(SimID);
+	GameTooltip:Show();
 end
 function ActionFun.Update_OnEnter(self,dataY)
 	local butInfo = PIGA_Per[dataY]["ActionData"][self.action]
@@ -537,9 +548,7 @@ function ActionFun.Update_OnEnter(self,dataY)
 				OnEnter_Spell(Type,SimID)
 			elseif Type=="item" then
 				OnEnter_Item(Type,SimID,butInfo[3])
-			elseif Type=="companion" then
-				OnEnter_Companion(Type,SimID,butInfo[3])
-			elseif Type=="mount" then
+			elseif Type=="companion" or Type=="mount" then
 				OnEnter_Companion(Type,SimID,butInfo[3])
 			elseif Type=="macro" then
 				local hongSpellID = GetMacroSpell(SimID)
@@ -577,16 +586,7 @@ local function Cursor_Loot(self,oldType,dataY)
 			PickupItem(oldSimID)
 		elseif oldType=="macro" then
 			PickupMacro(oldSimID)
-		elseif oldType=="companion" then
-			local count = GetNumCompanions("MOUNT")
-			for i=1,count do
-				local creatureID, creatureName, creatureSpellID, icon, issummoned, mountType = GetCompanionInfo("MOUNT", i)
-				if creatureName==oldSimID then
-					PickupCompanion("MOUNT",i)
-					break
-				end
-			end
-		elseif oldType=="mount" then
+		elseif oldType=="companion" or oldType=="mount" then
 			if oldSimID==268435455 then
 				C_MountJournal.Pickup(0)
 			else
@@ -605,7 +605,7 @@ local function Cursor_Loot(self,oldType,dataY)
 	end
 end
 local function Cursor_FZ(self,NewType,canshu1,canshu2,canshu3,dataY)
-	--print(self,NewType,canshu1,canshu2,canshu3,dataY)
+	--print(NewType,canshu1,canshu2,canshu3,dataY)
 	self.Type=NewType
 	if NewType=="spell" then
 		self.SimID=canshu3
@@ -618,18 +618,13 @@ local function Cursor_FZ(self,NewType,canshu1,canshu2,canshu3,dataY)
 		self.SimID=canshu1
 		local name, icon, body = GetMacroInfo(canshu1)
 		PIGA_Per[dataY]["ActionData"][self.action]={NewType,canshu1,name,body}
-	elseif NewType=="companion" then
-		local creatureID, creatureName, creatureSpellID, icon, issummoned, mountType = GetCompanionInfo(canshu2, canshu1)
-		self.SimID=creatureName
-		self.SimID_3=creatureSpellID
-		PIGA_Per[dataY]["ActionData"][self.action]={NewType,creatureName,creatureSpellID}
-	elseif NewType=="mount" then
+	elseif NewType=="companion" or NewType=="mount" then
 		if canshu1==268435455 then
 			self.SimID=268435455
 	    	self.SimID_3=150544
 			PIGA_Per[dataY]["ActionData"][self.action]={NewType,268435455,150544}
 		else
-			local name, spellID, icon, isActive, isUsable, sourceType, isFavorite, isFactionSpecific, faction, shouldHideOnChar, isCollected, mountID= C_MountJournal.GetMountInfoByID(canshu1)
+			local name, spellID= C_MountJournal.GetDisplayedMountInfo(canshu1)
 	    	self.SimID=name
 	    	self.SimID_3=spellID
 			PIGA_Per[dataY]["ActionData"][self.action]={NewType,name,spellID}
@@ -656,16 +651,12 @@ function ActionFun.Cursor_Fun(self,Script,dataY)
 			Cursor_Loot(self,oldType,dataY)
 		end
 		if NewType then
-			if NewType=="companion" then
-				local creatureID, creatureName = GetCompanionInfo(canshu2, canshu1)
-				self:SetAttribute("type", "spell")
-				self:SetAttribute("spell", creatureName)
-			elseif NewType=="mount" then
+			if NewType=="companion" or NewType=="mount" then
 				if canshu1==268435455 then
 					self:SetAttribute("type", "macro")
 					self:SetAttribute("macrotext", suijizuoqi)
 				else
-					local name= C_MountJournal.GetMountInfoByID(canshu1)
+					local name= C_MountJournal.GetDisplayedMountInfo(canshu1)
 					self:SetAttribute("type", "spell")
 					self:SetAttribute("spell", name)
 				end
@@ -692,16 +683,12 @@ function ActionFun.Cursor_Fun(self,Script,dataY)
 			elseif NewType=="macro" then
 				self:SetAttribute("type", NewType)
 				self:SetAttribute(NewType, canshu1)
-			elseif NewType=="companion" then
-				local creatureID, creatureName = GetCompanionInfo(canshu2, canshu1)
-				self:SetAttribute("type", "spell")
-				self:SetAttribute("spell", creatureName)
-			elseif NewType=="mount" then
+			elseif NewType=="companion" or NewType=="mount" then
 				if canshu1==268435455 then
 					self:SetAttribute("type", "macro")
 					self:SetAttribute("macrotext", suijizuoqi)
 				else
-					local name= C_MountJournal.GetMountInfoByID(canshu1)
+					local name= C_MountJournal.GetDisplayedMountInfo(canshu1)
 					self:SetAttribute("type", "spell")
 					self:SetAttribute("spell", name)
 				end

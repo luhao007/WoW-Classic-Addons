@@ -64,12 +64,14 @@ local paichulist = {
 	"QueueStatusButton",
 	"MinimapPanel",
 	"RecycleBinToggleButton",
+	--"LibDBIcon10_DetailsStreamer",
 }
 local ShouNaButHeji={};
 local function gengxinMBweizhi(newValue)
 	local meipaishu=newValue or PIGA["Map"]["MiniButShouNa_hang"];--每排按钮数
 	PigMinimapBut_UI.Snf:SetSize(meipaishu*35+30, math.ceil(#ShouNaButHeji/meipaishu)*35+30)
 	for i=1, #ShouNaButHeji,1 do
+		_G[ShouNaButHeji[i]]:Show()
 		_G[ShouNaButHeji[i]]:SetParent(PigMinimapBut_UI.Snf)
 		_G[ShouNaButHeji[i]]:HookScript("OnEnter", function()
 			PigMinimapBut_UI.Snf.zhengzaixianshi = nil;
@@ -112,8 +114,12 @@ local function gengxinMBweizhi(newValue)
 	end
 end
 local function SN_MiniMapBut()
+	if RecycleBinToggleButton then return end
 	local children = { Minimap:GetChildren() };
 	local NewPaichulist = {}
+	for i=1,10 do
+		table.insert(NewPaichulist,"GatherLite"..i)
+	end
 	for i=1,10 do
 		table.insert(NewPaichulist,"Spy_MapNoteList_mini"..i)
 	end
@@ -141,10 +147,10 @@ local function SN_MiniMapBut()
 	gengxinMBweizhi(newValue)
 end
 function PigMinimapBut_UI.SN_MiniMapBut()
-	if PIGA["Map"]["MiniButShouNa_YN"]==1 and not NDui then	
-		SN_MiniMapBut()
-		C_Timer.After(3, SN_MiniMapBut);
-		C_Timer.After(8, SN_MiniMapBut);
+	if PIGA["Map"]["MiniButShouNa_YN"]==1 then	
+		C_Timer.After(0.1, SN_MiniMapBut);
+		C_Timer.After(1, SN_MiniMapBut);
+		C_Timer.After(6, SN_MiniMapBut);
 		C_Timer.After(14, SN_MiniMapBut);
 	end
 end
@@ -152,7 +158,7 @@ end
 function PigMinimapBut_UI.MinimapBut()
 	if PIGA["Map"]["MinimapBut"] then
 		PigMinimapBut_UI:Show()
-		if PIGA["Map"]["MiniButShouNa_YN"]==2 or NDui then
+		if PIGA["Map"]["MiniButShouNa_YN"]==2 then
 			PigMinimapBut_UI:SetParent(Minimap)
 			PigMinimapBut_UI:SetFrameStrata("MEDIUM")
 		elseif PIGA["Map"]["MiniButShouNa_YN"]==1 then

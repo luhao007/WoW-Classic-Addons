@@ -73,6 +73,17 @@
 		<Notes>追踪账号完成度，提示诸如任务、飞行点、配方等各个分类的收集和完成情况</Notes>
 		<Category>收藏</Category>
 	</Addon>
+	<Addon name="ArchonTooltip">
+		<Title>WCL助手</Title>
+		<Notes>显示角色的WCL分数</Notes>
+		<Category>界面</Category>
+		<SubAddons>
+			<SubAddon name="ArchonTooltipDB_5105">
+				<Title>数据包</Title>
+				<TitleExtra>娅尔罗</TitleExtra>
+			</SubAddon>
+		</SubAddons>
+	</Addon>
 	<Addon name="Atlas">
 		<Title>副本地图</Title>
 		<Category>副本</Category>

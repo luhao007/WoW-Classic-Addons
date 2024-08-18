@@ -621,4 +621,4 @@ function Prat.ToggleOptionsWindow()
   end
 end
 
-	
+_G["Prat_ToggleOptionsWindow"] = Prat.ToggleOptionsWindow

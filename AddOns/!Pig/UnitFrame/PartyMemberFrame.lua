@@ -15,6 +15,8 @@ local function Update_zhiye(Party,id)
 	if class then
 		local coords = CLASS_ICON_TCOORDS[class];
 		Party.Icon:SetTexCoord(unpack(coords));
+		local Role = UnitGroupRolesAssigned(id)
+		Party.role.Icon:SetAtlas(GetIconForRole(Role, false));
 	end
 end
 --队友等级
@@ -117,7 +119,7 @@ duiyouFrameReg:RegisterEvent("PLAYER_ENTERING_WORLD")
 duiyouFrameReg:RegisterEvent("GROUP_ROSTER_UPDATE");
 duiyouFrameReg:SetScript("OnEvent", function(self,event,arg1)
 	C_Timer.After(0.2,yanchizhixingsuoyou)
-	C_Timer.After(0.8,yanchizhixingsuoyou)
+	C_Timer.After(0.8,yanchizhixingsuoyou)	
 end)
 -----
 local zhiyetubiao_Click=UnitFramefun.zhiyetubiao_Click
@@ -154,6 +156,12 @@ local function PartyMember_Plus()
 			Party.zhiye:HookScript("OnClick", function (self,button)
 				zhiyetubiao_Click(self:GetParent().unit,button)
 			end);
+			Party.zhiye.role = CreateFrame("Button", nil, Party.zhiye);
+			Party.zhiye.role:SetSize(20,20);
+			Party.zhiye.role:SetPoint("TOP", Party.zhiye, "BOTTOM", -1, -15);
+			Party.zhiye.role.Icon = Party.zhiye.role:CreateTexture();
+			Party.zhiye.role.Icon:SetSize(20,20);
+			Party.zhiye.role.Icon:SetPoint("CENTER");
 		end
 		--队友等级
 		if not Party.Level then	

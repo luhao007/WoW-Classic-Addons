@@ -21,9 +21,48 @@ Addon.RaidInstanceID = {
     [580] = L["Sunwell Plateau"],
     [550] = L["Tempest Keep"],
     [568] = L["Zul'Aman"],
+   -- Wrath
+    [624] = L["Vault of Archavon"],--阿尔卡冯的宝库
+	[615] = L["The Obsidian Sanctum"],--黑曜石圣殿
+	[616] = L["The Eye of Eternity"],--永恒之眼
+	[603] = L["Ulduar"],--奥杜尔
+	[649] = L["Trial of the Crusader"],--十字军的试炼
+	[631] = L["Icecrown Citadel"],--冰冠堡垒
+	[724] = L["The Ruby Sanctum"],--红玉圣殿
 }
 Addon.IsRaidBoss = {
-    -- Zul'Gurub
+    --阿尔卡冯的宝库
+	["31125"] = true, -- Archavon the Stone Watcher
+    ["33993"] = true, -- Emalon the Storm Watcher
+    ["35013"] = true, -- Koralon the Flame Watcher
+	["38433"] = true, -- Toravon the Ice Watcher
+	--黑曜石圣殿
+	["28860"] = true, -- Sartharion
+    ["30451"] = true, -- Shadron
+    ["30452"] = true, -- Tenebron
+	["30449"] = true, -- Vesperon
+	--永恒之眼
+	["28859"] = true, -- Malygos
+	--奥杜尔
+	["33113"] = true, -- Flame Leviathan
+    ["33118"] = true, -- Ignis the Furnace Master
+    ["33186"] = true, -- Razorscale
+	["33293"] = true, -- XT-002 Deconstructor
+	["32867"] = true, -- Steelbreaker
+    ["32927"] = true, -- Runemaster Molgeim
+    ["32857"] = true, -- Stormcaller Brundir
+	["32930"] = true, -- Kologarn
+    ["33515"] = true, -- Auriaya
+    ["32845"] = true, -- Hodir
+	["32865"] = true, -- Thorim
+	["32906"] = true, -- Freya
+    ["33350"] = true, -- Mimiron
+    ["33271"] = true, -- General Vezax
+	["33288"] = true, -- Yogg-Saron
+	["32871"] = true, -- Algalon the Observer
+	
+	
+	-- Zul'Gurub
     ["14517"] = true, -- Jeklik
     ["14510"] = true, -- Mar'li
     ["11382"] = true, -- Bloodlord

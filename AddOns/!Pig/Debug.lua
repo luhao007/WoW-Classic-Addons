@@ -100,7 +100,7 @@ PIGAddOnMemoryCPU.NR.CPU_OPEN:SetScript("OnClick", function (self)
 	ReloadUI();
 end);
 
-PIGAddOnMemoryCPU.NR.CZ = PIGButton(PIGAddOnMemoryCPU.NR,{"LEFT",PIGAddOnMemoryCPU.NR.CPU_OPEN.Text,"RIGHT",20,0},{50,18},L["DEBUG_RESET"])
+PIGAddOnMemoryCPU.NR.CZ = PIGButton(PIGAddOnMemoryCPU.NR,{"LEFT",PIGAddOnMemoryCPU.NR.CPU_OPEN.Text,"RIGHT",20,0},{50,18},RESET)
 PIGAddOnMemoryCPU.NR.CZ:SetScript("OnClick", function (self)
 	ResetCPUUsage()
 	-- debugprofilestart()
@@ -108,12 +108,12 @@ PIGAddOnMemoryCPU.NR.CZ:SetScript("OnClick", function (self)
 	PIGAddOnMemoryCPU.gengxinhang(PIGAddOnMemoryCPU.NR.List.Scroll)
 end);
 PIGAddOnMemoryCPU.NR.COLLECT = PIGButton(PIGAddOnMemoryCPU.NR,{"LEFT",PIGAddOnMemoryCPU.NR.CZ,"RIGHT",20,0},{50,18},L["DEBUG_COLLECT"])
-PIGAddOnMemoryCPU.NR.COLLECT:Disable()
+--PIGAddOnMemoryCPU.NR.COLLECT:Disable()
 PIGAddOnMemoryCPU.NR.COLLECT:SetMotionScriptsWhileDisabled(true)
 PIGEnter(PIGAddOnMemoryCPU.NR.COLLECT,L["LIB_TIPS"],L["DEBUG_COLLECTTIPS"]);
 PIGAddOnMemoryCPU.NR.COLLECT:SetScript("OnClick", function (self)
-	-- collectgarbage()--回收内存
-	-- PIGAddOnMemoryCPU.gengxinhang(PIGAddOnMemoryCPU.NR.List.Scroll)
+	collectgarbage()--回收内存
+	PIGAddOnMemoryCPU.gengxinhang(PIGAddOnMemoryCPU.NR.List.Scroll)
 end);
 PIGAddOnMemoryCPU.NR.List=PIGFrame(PIGAddOnMemoryCPU.NR)
 PIGAddOnMemoryCPU.NR.List:SetPoint("TOPLEFT", PIGAddOnMemoryCPU.NR, "TOPLEFT", 0, -22)
@@ -127,14 +127,14 @@ PIGAddOnMemoryCPU.NR.List.tet1=PIGFontStringBG(PIGAddOnMemoryCPU.NR.List,{"TOPLE
 PIGAddOnMemoryCPU.NR.List.tet2 = PIGButton(PIGAddOnMemoryCPU.NR.List,{"LEFT", PIGAddOnMemoryCPU.NR.List.tet1, "RIGHT", 0,0},{nrww*0.25,22},L["DEBUG_MEMORY"].."(k)")
 PIGAddOnMemoryCPU.NR.List.tet2:PIGSetBackdrop(0.4, 0.2)
 PIGAddOnMemoryCPU.NR.List.tet2:SetScript("OnClick", function ()
-	AddOnCPU.sort=21
+	PIGAddOnMemoryCPU.sort=21
 	PIGAddOnMemoryCPU.gengxinhang(PIGAddOnMemoryCPU.NR.List.Scroll)
 end);
 PIGAddOnMemoryCPU.NR.List.tet3 = PIGButton(PIGAddOnMemoryCPU.NR.List,{"LEFT", PIGAddOnMemoryCPU.NR.List.tet2, "RIGHT", 0,0},{nrww*0.25,22},"CPU(ms)")
 PIGAddOnMemoryCPU.NR.List.tet3:PIGSetBackdrop(0.4, 0.2)
 PIGAddOnMemoryCPU.NR.List.tet3:SetScript("OnClick", function ()
 	if GetCVar("scriptProfile")=="1" then
-		AddOnCPU.sort=31
+		PIGAddOnMemoryCPU.sort=31
 		PIGAddOnMemoryCPU.gengxinhang(PIGAddOnMemoryCPU.NR.List.Scroll)
 	end
 end);
@@ -194,15 +194,15 @@ function PIGAddOnMemoryCPU.gengxinhang(self)
 	for id=1,hang_NUM do
 		_G["PIGAddOnMemoryCPUbut_"..id]:Hide()
 	end
-	-- 	if AddOnCPU.sort==21 then
-	-- 		table.sort(MemoryCPUData.DATA,function(a,b)
-	-- 			return a[2]>b[2]
-	-- 		end)
-	-- 	elseif AddOnCPU.sort==31 then
-	-- 		table.sort(MemoryCPUData.DATA,function(a,b)
-	-- 			return a[3]>b[3]
-	-- 		end)
-	-- 	end
+	if PIGAddOnMemoryCPU.sort==21 then
+		table.sort(MemoryCPUData.DATA,function(a,b)
+			return a[2]>b[2]
+		end)
+	elseif PIGAddOnMemoryCPU.sort==31 then
+		table.sort(MemoryCPUData.DATA,function(a,b)
+			return a[3]>b[3]
+		end)
+	end
 	local hejilist = #MemoryCPUData.DATA
 	FauxScrollFrame_Update(self, hejilist, hang_NUM, hang_Height);
 	local offset = FauxScrollFrame_GetOffset(self);

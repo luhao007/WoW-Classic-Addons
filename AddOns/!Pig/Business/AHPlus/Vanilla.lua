@@ -113,10 +113,6 @@ function BusinessInfo.AHPlus_Vanilla()
 	local xulieID_www = {170,44,38,58,111,111,111,43,100}
 	local hang_Height,hang_NUM ,anniuH = 20, 14,18;
 	local shengyuTime = {[1]="|cffFF0000<30m|r",[2]="|cffFFFF0030m~2H|r",[3]="|cff00FF002H~12H|r",[4]="|cff00FF00>12H|r",}
-
-	local function qingkongtiaojian()
-		AuctionFrameBrowse_Reset(BrowseResetButton)
-	end
 	--调整原版UI
 	local suoxiaozhi = 58
 	local function SetBlizzardUI(tmV)
@@ -649,8 +645,44 @@ function BusinessInfo.AHPlus_Vanilla()
 	elseif NDui then
 		AuctionFrameBrowse.History:SetPoint("TOPRIGHT",AuctionFrameBrowse,"TOPRIGHT",10,-10);
 	end
-	local HistoryBut=AuctionFrameBrowse.History
-	HistoryBut:HookScript("OnShow",function(self)
+	---
+	AuctionFrameBrowse.huancunUI = CreateFrame("Frame", nil, AuctionFrameBrowse,"BackdropTemplate");
+	local HCUI = AuctionFrameBrowse.huancunUI
+	HCUI:SetBackdrop({bgFile = "interface/characterframe/ui-party-background.blp",edgeFile = "Interface/Tooltips/UI-Tooltip-Border",edgeSize = 13,});
+	HCUI:SetBackdropBorderColor(0, 1, 1, 0.9);
+	HCUI:SetPoint("TOPLEFT",AuctionFrameBrowse,"TOPLEFT",14,-34);
+	HCUI:SetPoint("BOTTOMRIGHT",AuctionFrameBrowse,"BOTTOMRIGHT",70,12);
+	HCUI:SetFrameLevel(520)
+	HCUI:Hide();
+	HCUI.close = CreateFrame("Button",nil,HCUI, "UIPanelButtonTemplate");
+	HCUI.close:SetSize(90,30);
+	HCUI.close:SetPoint("CENTER",HCUI,"CENTER",0,-40);
+	HCUI.close:SetText("关闭");
+	HCUI.close:Hide();
+	HCUI.close:HookScript("OnClick",function(self)
+		HCUI:Hide()
+	end)
+
+	local jinduW,jinduH = 300,20
+	HCUI.jindu = CreateFrame("StatusBar", nil, HCUI);
+	HCUI.jindu:SetStatusBarTexture("interface/raidframe/raid-bar-hp-fill.blp")
+	HCUI.jindu:SetStatusBarColor(0, 1, 0 ,1);
+	HCUI.jindu:SetSize(jinduW,jinduH);
+	HCUI.jindu:SetPoint("CENTER",HCUI,"CENTER",0,40);
+	HCUI.jindu:SetMinMaxValues(0, 100)
+	HCUI.jindu.BACKGROUND = HCUI.jindu:CreateTexture(nil, "BACKGROUND");
+	HCUI.jindu.BACKGROUND:SetTexture("interface/characterframe/ui-party-background.blp")
+	HCUI.jindu.BACKGROUND:SetAllPoints(HCUI.jindu)
+	HCUI.jindu.BACKGROUND:SetColorTexture(1, 1, 1, 0.4)
+	HCUI.jindu.t1 = PIGFontString(HCUI.jindu,{"CENTER",HCUI.jindu,"CENTER",0,0},"/","OUTLINE",13)
+	HCUI.jindu.t2 = PIGFontString(HCUI.jindu,{"RIGHT",HCUI.jindu.t1,"LEFT",0,0},0,"OUTLINE",13)
+	HCUI.jindu.t3 = PIGFontString(HCUI.jindu,{"LEFT",HCUI.jindu.t1,"RIGHT",0,0},0,"OUTLINE",13)
+	HCUI.jindu.tbiaoti = PIGFontString(HCUI.jindu,{"BOTTOM",HCUI.jindu,"TOP",0,2},"正在扫描物品...","OUTLINE",13)
+	HCUI.jindu.tname = PIGFontString(HCUI.jindu,{"TOP",HCUI.jindu,"BOTTOM",0,-2},"","OUTLINE",13)
+	HCUI.UpdateF = CreateFrame("Frame")
+	HCUI.UpdateF:Hide()
+	---
+	AuctionFrameBrowse.History:HookScript("OnShow",function(self)
 		local canQuery,canQueryAll = CanSendAuctionQuery()
 		if canQueryAll then
 			self:Enable()
@@ -658,8 +690,133 @@ function BusinessInfo.AHPlus_Vanilla()
 			self:Disable()
 		end
 	end)
+	HCUI.auctions = {}
+	HCUI.ItemLoadList = {}
+	local function Save_Data()
+		local shujuyuan = PIGA["AHPlus"]["DataList"][Pig_OptionsUI.Realm]
+		for k,v in pairs(HCUI.auctions) do
+			if shujuyuan[k] then
+				table.insert(shujuyuan[k][2],v[2])
+   			else
+   				shujuyuan[k]={v[1],{v[2]}}
+   			end
+		end
+		HCUI.jindu.tbiaoti:SetText("价格缓存完毕");
+		HCUI.jindu.tname:SetText("");
+		HCUI.close:Show();
+	end
+	local function huancunData_End()
+		if HCUI.yicunchu==nil then
+			HCUI.jindu.tbiaoti:SetText("价格获取完毕,存储中...");
+			C_Timer.After(0.6,Save_Data)
+		else
+			if HCUI.yicunchu then
+				HCUI.jindu.tbiaoti:SetText("价格获取完毕,存储中...");
+				C_Timer.After(0.6,Save_Data)
+			else
+				C_Timer.After(0.1,huancunData_End)
+			end
+		end
+	end
+	local function GetBuyoutPriceG(name,count,buyoutPrice,itemLink)
+		if name and name~="" and name~=" " and buyoutPrice>0 then
+			if not HCUI.auctions[name] then
+				local itemLinkJJ = Fun.GetItemLinkJJ(itemLink)
+				HCUI.auctions[name]={itemLinkJJ,{buyoutPrice/count,GetServerTime()}}
+			end
+		end
+		HCUI.jishuID=HCUI.jishuID+1
+		HCUI.jindu:SetValue(HCUI.jishuID);
+	end
+	local function huancunData_H(index)
+		local name, texture, count, quality, canUse, level, levelColHeader, minBid, minIncrement, buyoutPrice,bidAmount, highBidder, bidderFullName, owner, ownerFullName, saleStatus, itemId, hasAllInfo =  GetAuctionItemInfo("list", index);
+		local ItemLink=GetAuctionItemLink("list", index)
+		if not hasAllInfo then
+			HCUI.yicunchu=false
+			local item = Item:CreateFromItemID(itemId)
+			HCUI.ItemLoadList[item] = true
+			item:ContinueOnItemLoad(function()
+				HCUI.ItemLoadList[item] = nil
+				local name, texture, count, quality, canUse, level, levelColHeader, minBid, minIncrement, buyoutPrice,bidAmount, highBidder, bidderFullName, owner, ownerFullName, saleStatus, itemId, hasAllInfo =  GetAuctionItemInfo("list", index);
+				local ItemLink=GetAuctionItemLink("list", index)
+				HCUI.jindu.t2:SetText(index);
+				HCUI.jindu.tname:SetText(name);
+				GetBuyoutPriceG(name,count,buyoutPrice,ItemLink)
+				if not next(HCUI.ItemLoadList) then
+					HCUI.yicunchu=true
+				end
+			end)
+		else	
+			HCUI.jindu.t2:SetText(index);
+			HCUI.jindu.tname:SetText(name);
+			GetBuyoutPriceG(name,count,buyoutPrice,ItemLink)
+		end
+	end
+	local function GetItemsData()
+		HCUI.jindu.tbiaoti:SetText("正在获取价格...");
+		wipe(HCUI.auctions)
+		wipe(HCUI.ItemLoadList)
+		for i = 1, HCUI.ItemListNum do
+			C_Timer.After(i*HCUI.ScanCD,function()
+				huancunData_H(i)
+				if i==HCUI.ItemListNum then
+					huancunData_End()
+				end
+			end)
+		end
+	end
+	HCUI.UpdateF:HookScript("OnUpdate",function(self,sss)
+		if self.jishiqitime>0.1 then
+			self.jishiqitime=0
+			if HCUI.SMend then
+				self:Hide()
+				HCUI.jindu.tbiaoti:SetText("物品扫描完毕,开始获取价格...");
+				local _, AuctionsNum = GetNumAuctionItems("list");
+				HCUI.ItemListNum = AuctionsNum
+				HCUI.jindu.t3:SetText(AuctionsNum);
+				HCUI.jindu:SetMinMaxValues(0, AuctionsNum)
+				GetItemsData()
+			else
+				local _, AuctionsNum = GetNumAuctionItems("list");
+				HCUI.jindu.t2:SetText(AuctionsNum);
+				HCUI.jindu.t3:SetText(AuctionsNum);
+				local canQuery,canQueryAll = CanSendAuctionQuery()	
+				if canQuery then
+					HCUI.SMend=true
+				end
+			end
+		else
+			self.jishiqitime = self.jishiqitime + sss;
+		end
+	end)
+	AuctionFrameBrowse.History:HookScript("OnClick", function(self, button)
+		self:Disable()
+		HCUI:DEL_OLDdata()
+		AuctionFrameBrowse_Reset(BrowseResetButton)
+		HCUI:Show();
+		HCUI.close:Hide();
+		HCUI.jindu.tbiaoti:SetText("正在扫描物品...");
+		HCUI.jindu:SetMinMaxValues(0, 100)
+		HCUI.jindu:SetValue(100);
+		HCUI.jindu.t2:SetText(0);
+		HCUI.jindu.t3:SetText(0);
+		HCUI.jindu.tname:SetText("");
+		HCUI.jishuID = 0
+		HCUI.yicunchu=nil
+		HCUI.SMend=nil
+		HCUI.UpdateF.jishiqitime=1
+		local dangqianTime = date("%H",GetServerTime())
+		local dangqianTime = tonumber(dangqianTime)
+		if dangqianTime>18 and dangqianTime<23 then
+			HCUI.ScanCD=BusinessInfo.AHPlusData.ScanCD+0.001
+		else
+			HCUI.ScanCD=BusinessInfo.AHPlusData.ScanCD
+		end
+		HCUI.UpdateF:Show()
+		QueryAuctionItems("", nil, nil, 0, nil, nil, true, false, nil)--查询全部
+	end)
 	local baocunnum = 40
-	local function DEL_OLDdata()
+	function HCUI:DEL_OLDdata()
 		for k,v in pairs(PIGA["AHPlus"]["DataList"][Pig_OptionsUI.Realm]) do
 			local itemDataL = v[2]
 			local ItemsNum = #itemDataL;
@@ -670,154 +827,13 @@ function BusinessInfo.AHPlus_Vanilla()
 			end
 		end
 	end
-
-	HistoryBut:HookScript("OnClick", function(self, button)
-		self:Disable()
-		self.F:Show();
-		self.F.close:Hide();
-		self.F.jindu.edg.t:SetText("整理已有缓存信息...");
-		DEL_OLDdata()
-		self.F.jindu.edg.t:SetText("正在获取物品信息...");
-		self.F.jindu.tex:SetWidth(0)
-		HistoryBut.F.AHGdate={}
-		HistoryBut.F.yiend=false
-		HistoryBut.F.itemNUM=0
-		qingkongtiaojian()
-		-- AuctionFrameBrowse_Search()--获取总数
-		local dangqianTime = date("%H",GetServerTime())
-		local dangqianTime = tonumber(dangqianTime)
-		if dangqianTime>18 and dangqianTime<23 then
-			HistoryBut.ScanCD=BusinessInfo.AHPlusData.ScanCD+0.001
-		else
-			HistoryBut.ScanCD=BusinessInfo.AHPlusData.ScanCD
-		end
-		C_Timer.After(0.64,HistoryBut.GetAHdata)
-	end)
-	HistoryBut:HookScript("OnHide",function(self)
-		self:Disable()
-		self.F.Update_UI:Hide()
-		self.F:Hide();
-		self.F.close:Hide();
-	end)
-	function HistoryBut.GetAHdata()
-		local _, totalAuctions = GetNumAuctionItems("list");
-		HistoryBut.F.totalAuctions=totalAuctions or 1	
-		QueryAuctionItems("", nil, nil, 0, nil, nil, true, false, nil)--查询全部
-		HistoryBut.F.Update_UI:Show()
+	function HCUI.showhide()
+		HCUI.UpdateF:Hide()
+		HCUI:Hide();
+		HCUI.close:Hide();
 	end
-	---
-	HistoryBut.F = CreateFrame("Frame", nil, HistoryBut,"BackdropTemplate");
-	HistoryBut.F:SetBackdrop( { 
-		bgFile = "interface/characterframe/ui-party-background.blp",
-		edgeFile = "Interface/Tooltips/UI-Tooltip-Border",edgeSize = 9,insets = { left = 2, right = 2, top = 2, bottom = 2 }});
-	HistoryBut.F:SetBackdropBorderColor(0, 1, 1, 0.9);
-	HistoryBut.F:SetPoint("TOPLEFT",AuctionFrameBrowse,"TOPLEFT",14,-34);
-	HistoryBut.F:SetPoint("BOTTOMRIGHT",AuctionFrameBrowse,"BOTTOMRIGHT",70,12);
-	HistoryBut.F:SetFrameLevel(20)
-	HistoryBut.F:Hide();
-	HistoryBut.F.close = CreateFrame("Button",nil,HistoryBut.F, "UIPanelButtonTemplate");
-	HistoryBut.F.close:SetSize(90,30);
-	HistoryBut.F.close:SetPoint("CENTER",HistoryBut.F,"CENTER",0,-40);
-	HistoryBut.F.close:SetText(CLOSE);
-	HistoryBut.F.close:Hide();
-	HistoryBut.F.close:HookScript("OnClick",function(self)
-		self:GetParent():Hide()
-	end)
-	local jinduW,jinduH = 300,30
-	HistoryBut.F.jindu = CreateFrame("Frame", nil, HistoryBut.F);
-	HistoryBut.F.jindu:SetSize(jinduW,jinduH);
-	HistoryBut.F.jindu:SetPoint("CENTER",HistoryBut.F,"CENTER",0,40);
-	HistoryBut.F.jindu.tex = HistoryBut.F.jindu:CreateTexture(nil, "BORDER");
-	HistoryBut.F.jindu.tex:SetTexture("interface/raidframe/raid-bar-hp-fill.blp");
-	HistoryBut.F.jindu.tex:SetColorTexture(0.3, 0.7, 0.1, 1)
-	HistoryBut.F.jindu.tex:SetSize(jinduW-6,jinduH-7.6);
-	HistoryBut.F.jindu.tex:SetPoint("LEFT",HistoryBut.F.jindu,"LEFT",3,0);
-	HistoryBut.F.jindu.edg = CreateFrame("Frame", nil, HistoryBut.F.jindu,"BackdropTemplate");
-	HistoryBut.F.jindu.edg:SetBackdrop( { edgeFile = "Interface/Tooltips/UI-Tooltip-Border",edgeSize = 9});
-	HistoryBut.F.jindu.edg:SetBackdropBorderColor(0, 1, 1, 0.9);
-	HistoryBut.F.jindu.edg:SetAllPoints(HistoryBut.F.jindu)
-	HistoryBut.F.jindu.edg.t = PIGFontString(HistoryBut.F.jindu.edg,{"CENTER",HistoryBut.F.jindu.edg,"CENTER",0,0},"","OUTLINE",13)
-	HistoryBut.F.jindu.edg.tname = PIGFontString(HistoryBut.F.jindu.edg,{"TOP",HistoryBut.F.jindu.edg,"BOTTOM",0,-2},"","OUTLINE",13)
-	----
-	HistoryBut.F.Update_UI = CreateFrame("Frame")
-	HistoryBut.F.Update_UI:Hide()
-	local chushikuandu=jinduW-6
-	local function Save_Data()
-		local linshidataV = {}
-		local zongnum = #HistoryBut.F.AHGdate
-		for i=1,zongnum do
-			local nameX=HistoryBut.F.AHGdate[i][1]
-			local xianzaidanjia = HistoryBut.F.AHGdate[i][3]/HistoryBut.F.AHGdate[i][2]
-			if linshidataV[nameX] then
-				if linshidataV[nameX][2][1]>xianzaidanjia then
-					linshidataV[nameX][2][1]=xianzaidanjia
-					linshidataV[nameX][2][2]=GetServerTime()
-				end
-			else
-				linshidataV[nameX]={HistoryBut.F.AHGdate[i][4],{xianzaidanjia,GetServerTime()}}
-			end
-			HistoryBut.F.jindu.edg.t:SetText("正在缓存价格("..i.."/"..zongnum..")");
-			HistoryBut.F.jindu.edg.tname:SetText(nameX);
-			HistoryBut.F.jindu.tex:SetWidth(chushikuandu*(i/zongnum))
-		end
-		local shujuyuan = PIGA["AHPlus"]["DataList"][Pig_OptionsUI.Realm]
-		for k,v in pairs(linshidataV) do
-			if shujuyuan[k] then
-				table.insert(shujuyuan[k][2],v[2])
-   			else
-   				shujuyuan[k]={v[1],{v[2]}}
-   			end
-		end
-		HistoryBut.F.jindu.tex:SetWidth(chushikuandu*1)
-		HistoryBut.F.jindu.edg.t:SetText("价格缓存完毕");
-		HistoryBut.F.jindu.edg.tname:SetText("");
-		HistoryBut.F.close:Show();
-	end
-	local function huancunData_H(piciID)
-		local namex, texture, count, quality, canUse, level, levelColHeader, minBid, minIncrement, buyoutPrice,bidAmount, highBidder, bidderFullName, owner, ownerFullName, saleStatus, itemId, hasAllInfo =  GetAuctionItemInfo("list", piciID);
-		if namex and namex~="" and namex~=" " and hasAllInfo and buyoutPrice>0 then	
-			HistoryBut.F.jindu.edg.t:SetText("正在获取价格("..piciID.."/"..HistoryBut.F.totalAuctions..")");
-			HistoryBut.F.jindu.edg.tname:SetText(namex);
-			HistoryBut.F.jindu.tex:SetWidth(chushikuandu*(piciID/HistoryBut.F.totalAuctions))
-			HistoryBut.F.itemNUM=HistoryBut.F.itemNUM+1
-			local itemLink = GetAuctionItemLink("list", piciID)
-			local itemLinkJJ = Fun.GetItemLinkJJ(itemLink)
-			HistoryBut.F.AHGdate[HistoryBut.F.itemNUM]={namex,count,buyoutPrice,itemLinkJJ}
-		end
-		if piciID>=HistoryBut.F.totalAuctions then
-			HistoryBut.F.jindu.edg.t:SetText("获取完毕,开始缓存价格...");
-			HistoryBut.F.jindu.edg.tname:SetText("");
-			HistoryBut.F.jindu.tex:SetWidth(0)
-			C_Timer.After(0.6,Save_Data)
-		end
-	end
-	local function huancunData()
-		for i=1,HistoryBut.F.totalAuctions do
-			C_Timer.After(i*HistoryBut.ScanCD,function()
-				huancunData_H(i)
-			end)		
-		end
-	end
-	HistoryBut.F.Update_UI:HookScript("OnUpdate",function(self)
-		local _, totalAuctions = GetNumAuctionItems("list");
-		if totalAuctions>HistoryBut.F.totalAuctions then
-			HistoryBut.F.totalAuctions=totalAuctions
-		end
-		HistoryBut.F.jindu.edg.t:SetText("正在获取物品数量("..totalAuctions.."/"..HistoryBut.F.totalAuctions..")");
-		HistoryBut.F.jindu.tex:SetWidth(chushikuandu*(totalAuctions/HistoryBut.F.totalAuctions))
-		if not HistoryBut.F.yiend then
-			local canQuery,canQueryAll = CanSendAuctionQuery()	
-			if canQuery then
-				HistoryBut.F.yiend=true
-				self:Hide()
-				C_Timer.After(1,function()
-					HistoryBut.F.jindu.edg.t:SetText("物品数量获取完毕,开始获取价格...");
-					HistoryBut.F.jindu.tex:SetWidth(0)
-					C_Timer.After(0.6,huancunData)
-				end)
-			end
-		end
-	end)
+	AuctionFrameBrowse:HookScript("OnShow",HCUI.showhide)
+	AuctionFrameBrowse:HookScript("OnHide",HCUI.showhide)
 	---时光徽章
 	for i = 1, 33 do
 		local huizhangG = PIGFontString(BrowseWowTokenResults,nil,nil,"OUTLINE",13,"huizhangG_"..i)
@@ -865,6 +881,7 @@ function BusinessInfo.AHPlus_Vanilla()
 			gengxinlist(listF.Scroll)
 		end
 	end)
+	------
 	local CVarName={
 		["UnitNameNPC"]="0",
 		["nameplateShowOnlyNames"]="1",
@@ -1015,7 +1032,7 @@ function BusinessInfo.AHPlus_Vanilla()
 		colllistitem:SetScript("OnClick", function (self,button)
 			local caozuoID = self:GetID()
 			if button=="LeftButton" then
-				qingkongtiaojian()
+				AuctionFrameBrowse_Reset(BrowseResetButton)
 				local datakey=PIGA["AHPlus"]["Coll"][caozuoID][1]
 				BrowseName:SetText('"'..datakey..'"')
 				AuctionFrameBrowse_Search()
@@ -1294,7 +1311,7 @@ function BusinessInfo.AHPlus_Vanilla()
 			local name, texture, count, quality, canUse, price, pricePerUnit, stackCount, totalCount, itemID = GetAuctionSellItemInfo();
 			if name then
 				SortAuctionSetSort("list","unitprice", false)
-				qingkongtiaojian()
+				AuctionFrameBrowse_Reset(BrowseResetButton)
 				BrowseName:SetText('"'..name..'"')
 				if AuctionsItemButton.OLDname==name and PIGA["AHPlus"]["RepeatQuery"] then
 				else

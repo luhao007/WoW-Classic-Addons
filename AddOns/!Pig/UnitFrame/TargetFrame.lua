@@ -159,8 +159,33 @@ function UnitFramefun.Mubiao()
 				end;
 			end
 		end);
-		--目标仇恨百分比
+		--目标生命百分比
+		TargetFrame.mubiaoHP=CreateFrame("Frame",nil,TargetFrame);
 		if tocversion<50000 then
+			TargetFrame.mubiaoHP:SetPoint("RIGHT",TargetFrame,"LEFT",5,-2);
+		else
+			TargetFrame.mubiaoHP:SetPoint("RIGHT",TargetFrame,"LEFT",24,-2);
+		end
+		TargetFrame.mubiaoHP:SetSize(49,22);
+		TargetFrame.mubiaoHP.title = PIGFontString(TargetFrame.mubiaoHP,{"TOPRIGHT", TargetFrame.mubiaoHP, "TOPRIGHT", 0, 0},"", "OUTLINE",13)
+		TargetFrame.mubiaoHP.title:SetTextColor(1, 1, 0.47,1);
+		----------------------
+		TargetFrame:HookScript("OnEvent", function (self,event,arg1)
+			if event=="PLAYER_ENTERING_WORLD" or event=="PLAYER_TARGET_CHANGED" or event=="UNIT_HEALTH" or event=="UNIT_AURA" then
+				local mubiaoH = UnitHealth("target")
+				local mubiaoHmax = UnitHealthMax("target")
+				local mubiaobaifenbi = math.ceil((mubiaoH/mubiaoHmax)*100);--目标血量百分比
+				if mubiaoHmax>0 then
+					TargetFrame.mubiaoHP.title:SetText(mubiaobaifenbi..'%');
+				else
+					TargetFrame.mubiaoHP.title:SetText('??%');
+				end
+			end
+		end)
+	end
+	--目标仇恨百分比
+	if tocversion<50000 then
+		if PIGA["UnitFrame"]["TargetFrame"]["Chouhen"] and not TargetFrame.mubiaoCHbaifenbi then
 			TargetFrame.mubiaoCHbaifenbi=CreateFrame("Frame",nil,TargetFrame);
 			TargetFrame.mubiaoCHbaifenbi:SetPoint("TOPLEFT",TargetFrame,"TOPLEFT",7,0);
 			TargetFrame.mubiaoCHbaifenbi:SetSize(49,22);
@@ -256,37 +281,14 @@ function UnitFramefun.Mubiao()
 					end
 				end
 			end)
-		else
-			TargetFrame:HookScript("OnEvent", function (self,event,arg1)
-				if event=="PLAYER_ENTERING_WORLD" or event=="PLAYER_TARGET_CHANGED" or event=="UNIT_THREAT_LIST_UPDATE" or event=="UNIT_THREAT_SITUATION_UPDATE" then
-					TargetFrame.threatNumericIndicator:SetPoint("BOTTOM",TargetFrame.TargetFrameContent.TargetFrameContentMain.ReputationColor,"TOP",-42,0);
-				end
-			end)
 		end
-		--目标生命百分比
-		TargetFrame.mubiaoHP=CreateFrame("Frame",nil,TargetFrame);
-		if tocversion<50000 then
-			TargetFrame.mubiaoHP:SetPoint("RIGHT",TargetFrame,"LEFT",5,-2);
-		else
-			TargetFrame.mubiaoHP:SetPoint("RIGHT",TargetFrame,"LEFT",24,-2);
-		end
-		TargetFrame.mubiaoHP:SetSize(49,22);
-		TargetFrame.mubiaoHP.title = PIGFontString(TargetFrame.mubiaoHP,{"TOPRIGHT", TargetFrame.mubiaoHP, "TOPRIGHT", 0, 0},"", "OUTLINE",13)
-		TargetFrame.mubiaoHP.title:SetTextColor(1, 1, 0.47,1);
-		----------------------
-		TargetFrame:HookScript("OnEvent", function (self,event,arg1)
-			if event=="PLAYER_ENTERING_WORLD" or event=="PLAYER_TARGET_CHANGED" or event=="UNIT_HEALTH" or event=="UNIT_AURA" then
-				local mubiaoH = UnitHealth("target")
-				local mubiaoHmax = UnitHealthMax("target")
-				local mubiaobaifenbi = math.ceil((mubiaoH/mubiaoHmax)*100);--目标血量百分比
-				if mubiaoHmax>0 then
-					TargetFrame.mubiaoHP.title:SetText(mubiaobaifenbi..'%');
-				else
-					TargetFrame.mubiaoHP.title:SetText('??%');
-				end
-			end
-		end)
-	 end
+	else
+		-- TargetFrame:HookScript("OnEvent", function (self,event,arg1)
+		-- 	if event=="PLAYER_ENTERING_WORLD" or event=="PLAYER_TARGET_CHANGED" or event=="UNIT_THREAT_LIST_UPDATE" or event=="UNIT_THREAT_SITUATION_UPDATE" then
+		-- 		TargetFrame.threatNumericIndicator:SetPoint("BOTTOM",TargetFrame.TargetFrameContent.TargetFrameContentMain.ReputationColor,"TOP",-42,0);
+		-- 	end
+		-- end)
+	end
 	-----目标的目标的目标
 	if PIGA["UnitFrame"]["TargetFrame"]["ToToToT"] and not TargetFrameToT_ToT then	
 		SetCVar("showTargetOfTarget","1")

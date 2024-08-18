@@ -8,92 +8,36 @@ local PIGButton=Create.PIGButton
 local PIGLine=Create.PIGLine
 local PIGFontString=Create.PIGFontString
 local PIGSetFont=Create.PIGSetFont
-
+---
+local GetAddOnInfo=GetAddOnInfo or C_AddOns and C_AddOns.GetAddOnInfo
+local GetAddOnMetadata=GetAddOnMetadata or C_AddOns and C_AddOns.GetAddOnMetadata
 --系统插件菜单======================
---PIG_SavedVars = {}
-local frame = CreateFrame("Frame");
-local category, layout = Settings.RegisterCanvasLayoutCategory(frame,addonName)
-layout:AddAnchorPoint("TOPLEFT", 10, -10);
-layout:AddAnchorPoint("BOTTOMRIGHT", -10, 10);
--- local function OnSettingChanged(setting, value)
--- 	-- This callback will be invoked whenever a setting is modified.
--- 	print("Setting changed:", setting:GetVariable(), value)
--- end
-
--- do 
--- 	-- RegisterAddOnSetting example. This will read/write the setting directly
--- 	-- to `PIG_SavedVars.toggle`.
-
---     local name = "Test Checkbox"
---     local variable = "MyAddOn_Toggle"
--- 	local variableKey = "toggle"
--- 	local variableTbl = PIG_SavedVars
---     local defaultValue = false
-
---     local setting = Settings.RegisterAddOnSetting(category, variable, variableKey, variableTbl, type(defaultValue), name, defaultValue)
--- 	--setting:SetValueChangedCallback(OnSettingChanged)
-
---     local tooltip = "This is a tooltip for the checkbox."
--- 	Settings.CreateCheckbox(category, setting, tooltip)
--- end
-
--- do
--- 	-- RegisterProxySetting example. This will run the GetValue and SetValue
--- 	-- callbacks whenever access to the setting is required.
-
--- 	local name = "Test Slider"
--- 	local variable = "MyAddOn_Slider"
---     local defaultValue = 180
---     local minValue = 90
---     local maxValue = 360
---     local step = 10
-
--- 	local function GetValue()
--- 		return PIG_SavedVars.slider or defaultValue
--- 	end
-
--- 	local function SetValue(value)
--- 		PIG_SavedVars.slider = value
--- 	end
-
--- 	local setting = Settings.RegisterProxySetting(category, variable, type(defaultValue), name, defaultValue, GetValue, SetValue)
--- 	setting:SetValueChangedCallback(OnSettingChanged)
-
--- 	local tooltip = "This is a tooltip for the slider."
---     local options = Settings.CreateSliderOptions(minValue, maxValue, step)
---     options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right);
---     Settings.CreateSlider(category, setting, options, tooltip)
--- end
-
-Settings.RegisterAddOnCategory(category)
-
--- local PIG_AddOn = {};
--- PIG_AddOn.panel = CreateFrame( "Frame", "PIG_AddOnPanel", UIParent );
--- PIG_AddOn.panel:Hide()
--- PIG_AddOn.panel.name = "!Pig";
--- InterfaceOptions_AddCategory(PIG_AddOn.panel);
--- --子页
--- -- PIG_AddOn.childpanel = CreateFrame( "Frame", "PIG_AddOnChild", PIG_AddOn.panel);
--- -- PIG_AddOn.childpanel.name = "About";
--- --指定归属父级
--- -- PIG_AddOn.childpanel.parent = PIG_AddOn.panel.name;
--- -- InterfaceOptions_AddCategory(PIG_AddOn.childpanel);
--- --系统设置面板
--- PIG_AddOnPanel.Openshezhi = PIGButton(PIG_AddOnPanel,{"TOPLEFT",PIG_AddOnPanel,"TOPLEFT",20,-20},{80,24},L["OPTUI_SET"])
--- PIG_AddOnPanel.Openshezhi:SetScript("OnClick", function ()
--- 	HideUIPanel(InterfaceOptionsFrame);
--- 	HideUIPanel(SettingsPanel);
--- 	HideUIPanel(GameMenuFrame);
--- 	Pig_OptionsUI:Show();
--- end)
--- PIGLine(PIG_AddOnPanel,"TOP",-60,1,{4,-4})
--- Create.About_Update(PIG_AddOnPanel,-80,"Panel")
--- --子页内容
--- PIGLine(PIG_AddOnPanel,"TOP",-300,1,{4,-4})
--- Create.About_Thanks(PIG_AddOnPanel,-320)
--- -- PIG_AddOnPanel.okay = function (self) SC_ChaChingPanel_Close(); end;
--- -- PIG_AddOnPanel.cancel = function (self) SC_ChaChingPanel_CancelOrLoad();  end;
-
+local PIG_SetF = CreateFrame("Frame");
+PIG_SetF.Openshezhi = PIGButton(PIG_SetF,{"TOPLEFT",PIG_SetF,"TOPLEFT",20,-20},{80,24},L["OPTUI_SET"])
+PIG_SetF.Openshezhi:SetScript("OnClick", function ()
+	HideUIPanel(InterfaceOptionsFrame);
+	HideUIPanel(SettingsPanel);
+	HideUIPanel(GameMenuFrame);
+	Pig_OptionsUI:Show();
+end)
+PIGLine(PIG_SetF,"TOP",-60,1,{4,-4})
+Create.About_Update(PIG_SetF,-80,"Panel")
+if tocversion<110000 then
+	PIG_SetF.name = addonName
+	InterfaceOptions_AddCategory(PIG_SetF);
+	--子页
+	-- PIG_SetF.childpanel = CreateFrame( "Frame", nil, PIG_SetF);
+	-- PIG_SetF.childpanel.name = "About";
+	-- PIG_SetF.childpanel.parent = PIG_SetF.name--指定归属父级
+	-- InterfaceOptions_AddCategory(PIG_SetF.childpanel);
+	-- PIG_AddOnPanel.okay = function (self) SC_ChaChingPanel_Close(); end;
+	-- PIG_AddOnPanel.cancel = function (self) SC_ChaChingPanel_CancelOrLoad();  end;
+else
+	local category, layout = Settings.RegisterCanvasLayoutCategory(PIG_SetF,addonName)
+	layout:AddAnchorPoint("TOPLEFT", 10, -10);
+	layout:AddAnchorPoint("BOTTOMRIGHT", -10, 10);
+	Settings.RegisterAddOnCategory(category)
+end
 ---------------
 local OptionsW,OptionsH,OptionsJG,BottomHHH = 800,600,14,40
 local Pig_Options=PIGFrame(UIParent,{"CENTER",UIParent,"CENTER",0,0},{OptionsW,OptionsH},"Pig_OptionsUI",true)
@@ -228,30 +172,17 @@ function Pig_Options:ShowAuthor()
 	end
 end
 ---小地图按钮
-local www,hhh = 33,33
-local PigMinimapBut = CreateFrame("Button","PigMinimapBut_UI",UIParent); 
-PigMinimapBut:SetSize(www,hhh);
+local PigMinimapBut = CreateFrame("Button","PigMinimapBut_UI",UIParent);
 PigMinimapBut:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 0, 0);
 PigMinimapBut:SetMovable(true)
 PigMinimapBut:EnableMouse(true)
 PigMinimapBut:RegisterForClicks("LeftButtonUp","RightButtonUp")
 PigMinimapBut:RegisterForDrag("LeftButton")
-PigMinimapBut:SetHighlightTexture("Interface/Minimap/UI-Minimap-ZoomButton-Highlight");
 PigMinimapBut:SetFrameStrata("MEDIUM")
-PigMinimapBut:SetFrameLevel(PigMinimapBut:GetFrameLevel()+10);
+PigMinimapBut:SetFrameLevel(PigMinimapBut:GetFrameLevel()+1);
 PigMinimapBut.Border = PigMinimapBut:CreateTexture(nil,"BORDER");
-PigMinimapBut.Border:SetTexture("Interface/Minimap/MiniMap-TrackingBorder");
-PigMinimapBut.Border:SetSize(56,56);
-PigMinimapBut.Border:SetPoint("TOPLEFT", 0, 0);
 PigMinimapBut.Icon = PigMinimapBut:CreateTexture(nil, "BACKGROUND");
 PigMinimapBut.Icon:SetTexture("interface/icons/ability_seal.blp");
-if tocversion<100000 then
-	PigMinimapBut.Icon:SetSize(www-10,hhh-10);
-	PigMinimapBut.Icon:SetPoint("CENTER", 0, 1);
-else
-	PigMinimapBut.Icon:SetSize(www-11,hhh-11);
-	PigMinimapBut.Icon:SetPoint("CENTER", 0.94, -0.4);
-end
 PigMinimapBut.error = PigMinimapBut:CreateTexture(nil, "BORDER");
 PigMinimapBut.error:SetTexture("interface/common/voicechat-muted.blp");
 PigMinimapBut.error:SetSize(18,18);
@@ -280,50 +211,108 @@ PigMinimapBut:SetScript("OnLeave", function()
 	GameTooltip:ClearLines();
 	GameTooltip:Hide() 
 end);
-local function YDButtonP(weizhiXY)
-	local banjing = PigMinimapBut.banjing
-	local pianyi =PigMinimapBut.pianyi
-	PigMinimapBut:ClearAllPoints();
-	PigMinimapBut:SetPoint("TOPLEFT",Minimap,"TOPLEFT",pianyi-2-(banjing*cos(weizhiXY)),(banjing*sin(weizhiXY))-pianyi)
-	PIGA["Map"]["MinimapPos"]=weizhiXY
-end
-local function YDButtonP_ElvUI(xpos,ypos)
-	PigMinimapBut:ClearAllPoints();	
-	PigMinimapBut:SetPoint("TOPLEFT",Minimap,"TOPLEFT",xpos,ypos)
-	PIGA["Map"]["MinimapPos_ElvUI"]={xpos,ypos}
+local function YDButtonP(xpos,ypos)
+	local mode = PIGA["Map"]["MinimapPoint"]
+	if mode==1 or mode==2 then
+		PigMinimapBut:ClearAllPoints();
+		if mode==1 then
+			if NDui then
+				local xpos=xpos or PIGA["Map"]["MinimapPoint_NDui"][1]
+				local ypos=ypos or PIGA["Map"]["MinimapPoint_NDui"][2]
+				PigMinimapBut:SetPoint("BOTTOMLEFT",Minimap,"BOTTOMLEFT",xpos,ypos)
+				PIGA["Map"]["MinimapPoint_NDui"][1]=xpos
+				PIGA["Map"]["MinimapPoint_NDui"][2]=ypos
+			elseif ElvUI then
+				local xpos=xpos or PIGA["Map"]["MinimapPoint_ElvUI"][1]
+				local ypos=ypos or PIGA["Map"]["MinimapPoint_ElvUI"][2]
+				PigMinimapBut:SetPoint("BOTTOMRIGHT",Minimap,"BOTTOMRIGHT",xpos,ypos)
+				PIGA["Map"]["MinimapPoint_ElvUI"][1]=xpos
+				PIGA["Map"]["MinimapPoint_ElvUI"][2]=ypos
+			else
+				local xpos=xpos or PIGA["Map"]["MinimapPos"]
+				local banjing = PigMinimapBut.banjing
+				local pianyi =PigMinimapBut.pianyi
+				PigMinimapBut:SetPoint("TOPLEFT",Minimap,"TOPLEFT",pianyi-2-(banjing*cos(xpos)),(banjing*sin(xpos))-pianyi)
+				PIGA["Map"]["MinimapPos"]=xpos
+			end
+		elseif mode==2 then
+			local xpos=xpos or PIGA["Map"]["MinimapPointXY"][1]
+			local ypos=ypos or PIGA["Map"]["MinimapPointXY"][2]
+			PigMinimapBut:SetPoint("CENTER",UIParent,"CENTER",xpos,ypos)
+			PIGA["Map"]["MinimapPointXY"][1]=xpos
+			PIGA["Map"]["MinimapPointXY"][2]=ypos
+		end
+	end
 end
 local function YDButtonP_OnUpdate()	
+	local mode = PIGA["Map"]["MinimapPoint"]
 	local banjing = PigMinimapBut.banjing
 	local xpos,ypos = GetCursorPosition()
 	local UIScale = UIParent:GetScale()
-	local xmin,ymin = Minimap:GetLeft(), Minimap:GetBottom()
-	if ElvUI then
-		local xpos = xpos/UIScale-xmin
-		local ypos = ypos/UIScale-ymin
-		local MinimapWidth = PigMinimapBut:GetWidth()
-		local wwwvvv = -MinimapWidth*0.5+11		
-		if xpos<wwwvvv then
-			xpos=wwwvvv
+	if mode==2 then
+		local MinibutW = PigMinimapBut:GetWidth()*0.5-4
+		local WowWidth=GetScreenWidth()*0.5;
+		local WowHeight=GetScreenHeight()*0.5;
+		local xpos = xpos/UIScale-WowWidth
+		local ypos = ypos/UIScale-WowHeight
+		if xpos>WowWidth-MinibutW then xpos=WowWidth-MinibutW end
+		if xpos<-WowWidth+MinibutW then xpos=-WowWidth+MinibutW end
+		if ypos>WowHeight-MinibutW then ypos=WowHeight-MinibutW end
+		if ypos<-WowHeight+MinibutW then ypos=-WowHeight+MinibutW end
+		YDButtonP(xpos,ypos)
+		PigMinimapBut.Snf:ClearAllPoints();
+		local Pointinfo = {"RIGHT", "LEFT", "TOP", "BOTTOM", -2, 25}
+		if xpos<0 then
+			Pointinfo[1]="LEFT"
+			Pointinfo[2]="RIGHT"
 		end
-		local banjingX = banjing-MinimapWidth*0.5-12
-		if xpos>banjingX then
-			xpos=banjingX
+		if ypos<0 then
+			Pointinfo[3]="BOTTOM"
+			Pointinfo[4]="TOP"
+			Pointinfo[6]=0
 		end
-		local MinimapHeight = PigMinimapBut:GetHeight()
-		local hhhvvv = MinimapHeight*0.5+10
-		if ypos<hhhvvv then
-			ypos=hhhvvv
-		end
-		local banjingY = banjing-MinimapHeight*0.5+10
-		if ypos>banjingY then
-			ypos=banjingY
-		end
-		local ypos = ypos-banjing
-		YDButtonP_ElvUI(xpos,ypos)
+		PigMinimapBut.Snf:SetPoint(Pointinfo[3]..Pointinfo[1], PigMinimapBut_UI, Pointinfo[4]..Pointinfo[2], Pointinfo[5], Pointinfo[6]);
 	else
-		local xpos = xmin-xpos/UIScale+banjing
-		local ypos = ypos/UIScale-ymin-banjing
-		YDButtonP(math.deg(math.atan2(ypos,xpos)))
+		local xmin,ymin = Minimap:GetLeft(), Minimap:GetBottom()
+		if NDui or ElvUI then
+			local xpos = xpos/UIScale-xmin
+			local ypos = ypos/UIScale-ymin
+			local MinibutW = PigMinimapBut:GetWidth()
+			local MinibutW2 = MinibutW*0.5
+			if NDui then
+				local xpos = xpos-banjing-banjing*0.5+MinibutW2
+				local ypos = ypos-banjing+MinibutW2
+				if xpos<-1 then xpos=-1 end--X左边
+				local rightbianp = banjing-MinibutW-6
+				if xpos>rightbianp then--X右边
+					xpos=rightbianp
+				end
+				if ypos<-0.4 then ypos=-0.4 end--下
+				local topbianp = banjing-MinibutW-5
+				if ypos>topbianp then
+					ypos=topbianp
+				end
+				YDButtonP(xpos,ypos)
+			elseif ElvUI then
+				local xpos = xpos-banjing+MinibutW2
+				local ypos = ypos-MinibutW2
+				if xpos>-1 then xpos=-1 end--X左边
+				local rightbianp = -banjing+MinibutW-1
+				if xpos<rightbianp then--X右边
+					xpos=rightbianp
+				end
+				if ypos<0 then ypos=0 end--下
+				local topbianp = banjing-MinibutW
+				if ypos>topbianp then
+					ypos=topbianp
+				end
+				YDButtonP(xpos,ypos)
+			end
+		else
+			local xpos = xmin-xpos/UIScale+banjing
+			local ypos = ypos/UIScale-ymin-banjing
+			YDButtonP(math.deg(math.atan2(ypos,xpos)))
+		end
 	end
 end
 local function addonsClick(button)
@@ -335,15 +324,15 @@ local function addonsClick(button)
 		elseif IsShiftKeyDown() then
 			ReloadUI()
 		else
-			if NDui then 
-				if Pig_OptionsUI:IsShown() then	
-					Pig_OptionsUI:Hide();
+			if PIGA["Map"]["MiniButShouNa_YN"]==1 then
+				if NDui and RecycleBinToggleButton then
+					if Pig_OptionsUI:IsShown() then	
+						Pig_OptionsUI:Hide();
+					else
+						PigMinimapBut.Snf:Hide();
+						Pig_OptionsUI:Show();
+					end
 				else
-					PigMinimapBut.Snf:Hide();
-					Pig_OptionsUI:Show();
-				end 
-			else
-				if PIGA["Map"]["MiniButShouNa_YN"]==1 then
 					PigMinimapBut.Snf.tishi:Hide();
 					if PigMinimapBut.Snf:IsShown() then	
 						PigMinimapBut.Snf:Hide();
@@ -353,13 +342,13 @@ local function addonsClick(button)
 						PigMinimapBut.Snf.xiaoshidaojishi = 1.5;
 						PigMinimapBut.Snf.zhengzaixianshi = true;
 					end
+				end
+			else	
+				PigMinimapBut.Snf.tishi:Show();
+				if PigMinimapBut.Snf:IsShown() then
+					PigMinimapBut.Snf:Hide();
 				else
-					PigMinimapBut.Snf.tishi:Show();
-					if PigMinimapBut.Snf:IsShown() then
-						PigMinimapBut.Snf:Hide();
-					else
-						PigMinimapBut.Snf:Show();
-					end
+					PigMinimapBut.Snf:Show();
 				end
 			end
 		end
@@ -377,67 +366,172 @@ PigMinimapBut:SetScript("OnClick", function(event, button)
 end)
 local PigMinimapButYD = CreateFrame("Frame", nil);
 PigMinimapButYD:Hide();
-function PigMinimapBut.zhucetuodong()
-	PigMinimapButYD:SetScript("OnUpdate",YDButtonP_OnUpdate)
-	PigMinimapBut:SetScript("OnDragStart", function(self)
-		self:LockHighlight();PigMinimapButYD:Show();
-	end)
-	PigMinimapBut:SetScript("OnDragStop", function(self)
-		self:UnlockHighlight();PigMinimapButYD:Hide();
-	end)
-end
-function PigMinimapBut:Point()
-	if ElvUI then
-		PigMinimapBut:SetHighlightTexture("Interface/Buttons/ButtonHilight-Square");
-		PigMinimapBut.Border:Hide()
-		PigMinimapBut.Icon:SetTexCoord(0.08,0.92,0.08,0.92)
-		local mode = 1
-		if mode == 1 then--固定位置
-			local function ElvUIPoint()
-				if MinimapPanel then
-					PigMinimapBut:ClearAllPoints();	
-					PigMinimapBut:SetPoint("TOPLEFT",MinimapPanel,"TOPLEFT",0.8,-0.6)
-					PigMinimapBut:SetPoint("BOTTOMLEFT",MinimapPanel,"BOTTOMLEFT",0,0.6)
-					local hhhh = MinimapPanel:GetHeight()	
-					PigMinimapBut:SetWidth(hhhh-1.2);
-					PigMinimapBut.Icon:SetAllPoints(PigMinimapBut)
-					local wwww = MinimapPanel:GetWidth()	
-					local DataTextwww = (wwww-hhhh-2)*0.5
-					if MinimapPanel_DataText1 then
-						MinimapPanel_DataText1:SetWidth(DataTextwww)
-						MinimapPanel_DataText1:SetPoint("LEFT",MinimapPanel,"LEFT",hhhh,0)
-						MinimapPanel_DataText2:SetWidth(DataTextwww)
-					end
-				end
-			end
-			C_Timer.After(0.1,ElvUIPoint)
-			C_Timer.After(1,ElvUIPoint)
-		elseif mode == 2 then--拖动模式
-			PigMinimapBut.zhucetuodong()
-			PigMinimapBut:SetSize(www-10,hhh-10);
-			PigMinimapBut.Icon:SetSize(www-10,hhh-10);	
-			if tocversion<20000 then
-				PIGA["Map"]["MinimapPos_ElvUI"]=PIGA["Map"]["MinimapPos_ElvUI"] or {32.63,-152}
-			elseif tocversion<40000 then
-				PIGA["Map"]["MinimapPos_ElvUI"]=PIGA["Map"]["MinimapPos_ElvUI"] or {32.63,-197.76}
-			else
-				PIGA["Map"]["MinimapPos_ElvUI"]=PIGA["Map"]["MinimapPos_ElvUI"] or {32.63,-152}
-			end
-			local banjing = Minimap:GetWidth()
-			PigMinimapBut.banjing=banjing
-			YDButtonP_ElvUI(PIGA["Map"]["MinimapPos_ElvUI"][1],PIGA["Map"]["MinimapPos_ElvUI"][2])
-		end
+function PigMinimapBut.zhucetuodong(ONOFF)
+	if ONOFF then
+		PigMinimapButYD:SetScript("OnUpdate",YDButtonP_OnUpdate)
+		PigMinimapBut:SetScript("OnDragStart", function(self)
+			self:LockHighlight();PigMinimapButYD:Show();
+		end)
+		PigMinimapBut:SetScript("OnDragStop", function(self)
+			self:UnlockHighlight();PigMinimapButYD:Hide();
+		end)
 	else
-		PigMinimapBut.zhucetuodong()
-		if tocversion<100000 then
-			PigMinimapBut.pianyi = 56
-		else
-			PigMinimapBut.pianyi = 82
-		end
-		local banjing = Minimap:GetWidth()*0.5+8
-		PigMinimapBut.banjing=banjing
-		YDButtonP(PIGA["Map"]["MinimapPos"]);
+		PigMinimapButYD:SetScript("OnUpdate",nil)
+		PigMinimapBut:SetScript("OnDragStart",nil)
+		PigMinimapBut:SetScript("OnDragStop",nil)
 	end
+end
+function PigMinimapBut:CZMinimapInfo()
+	PIGA["Map"]["MinimapPos"]=addonTable.Default["Map"]["MinimapPos"]
+	PIGA["Map"]["MinimapPointXY"]={0,0}
+	PIGA["Map"]["MinimapPoint_ElvUI"]={-130,0}
+	PIGA["Map"]["MinimapPoint_NDui"]={-1,-0.4}
+	YDButtonP();
+end
+local www,hhh = 33,33
+function PigMinimapBut:Point()
+	local mode = PIGA["Map"]["MinimapPoint"]
+	local ButpingXY = {
+		["W"]=www,["H"]=hhh,
+		["iconW"]=www-10,["iconH"]=hhh-10,
+		["iconX"]=0,["iconY"]=0,
+	}
+	PIGA["Map"]["MinimapPoint_NDui"]=PIGA["Map"]["MinimapPoint_ElvUI"] or {-1,0}
+	PIGA["Map"]["MinimapPoint_ElvUI"]=PIGA["Map"]["MinimapPoint_NDui"] or {-1,-0.4}
+	PIGA["Map"]["MinimapPointXY"]=PIGA["Map"]["MinimapPointXY"] or {0,0}
+	PigMinimapBut.Snf:ClearAllPoints();
+	PigMinimapBut:ClearNormalTexture()
+	PigMinimapBut:ClearPushedTexture()
+	PigMinimapBut.zhucetuodong(false)
+	local function Point_Minidown()
+		local banjing = Minimap:GetWidth()*0.5
+		PigMinimapBut.banjing=banjing
+		PigMinimapBut.zhucetuodong(true)
+		if mode == 1 then--小地图
+			if ElvUI or NDui then
+				if ElvUI then
+					ButpingXY.W,ButpingXY.H=www-14,hhh-14
+					ButpingXY.iconW,ButpingXY.iconH=www-14,hhh-14
+				elseif NDui then
+					ButpingXY.W,ButpingXY.H=www-12,hhh-12
+					ButpingXY.iconW,ButpingXY.iconH=www-12,hhh-12
+				end
+				PigMinimapBut:SetHighlightTexture("Interface/Buttons/ButtonHilight-Square");
+				PigMinimapBut.Border:Hide()
+				PigMinimapBut.banjing=banjing*2
+			else
+				PigMinimapBut:SetHighlightTexture("Interface/Minimap/UI-Minimap-ZoomButton-Highlight");
+				PigMinimapBut.Border:SetDrawLayer("BORDER",1)
+				PigMinimapBut.Icon:SetDrawLayer("BACKGROUND",1)
+				PigMinimapBut.Border:SetTexture("Interface/Minimap/MiniMap-TrackingBorder");
+				PigMinimapBut.Border:SetSize(56,56);
+				PigMinimapBut.Border:ClearAllPoints();	
+				PigMinimapBut.Border:SetPoint("TOPLEFT", -1, 0);
+				PigMinimapBut.Border:Show()
+				if tocversion<100000 then
+					PigMinimapBut.pianyi = 56
+				else
+					PigMinimapBut.pianyi = 82
+				end
+				PigMinimapBut.banjing=PigMinimapBut.banjing+8
+			end
+		elseif mode == 2 then--自由
+			PigMinimapBut.Border:Hide()
+			PigMinimapBut:SetHighlightAtlas("chatframe-button-highlight");
+		end
+		PigMinimapBut.Snf:SetPoint("TOPRIGHT", PigMinimapBut_UI, "BOTTOMLEFT", -2, 20);
+		YDButtonP();
+	end
+	if mode == 1 or mode == 2 then
+		Point_Minidown()
+	elseif mode == 3 then--角色信息
+		PigMinimapBut:ClearAllPoints();
+		if NDui then
+			ButpingXY.W,ButpingXY.H=21,21
+			ButpingXY.iconW,ButpingXY.iconH=21,21
+			PigMinimapBut:SetPoint("RIGHT",CharacterMicroButton,"LEFT",-2,0);
+			PigMinimapBut.Snf:SetPoint("BOTTOMRIGHT", PigMinimapBut_UI, "TOPRIGHT", 0, 2);
+		elseif ElvUI then
+			ButpingXY.W,ButpingXY.H=18,25
+			ButpingXY.iconW,ButpingXY.iconH=18,25
+			PigMinimapBut:SetPoint("LEFT",StoreMicroButton,"RIGHT",2,0);
+			PigMinimapBut.Snf:SetPoint("BOTTOMLEFT", PigMinimapBut_UI, "TOPRIGHT", 0, 2);
+		else
+			if tocversion<110000 then
+				ButpingXY.W,ButpingXY.H=24,34
+				ButpingXY.iconW,ButpingXY.iconH=18,18
+				PigMinimapBut:SetPoint("BOTTOMRIGHT",CharacterMicroButton,"BOTTOMLEFT",1,1);
+				PigMinimapBut.Snf:SetPoint("BOTTOMRIGHT", PigMinimapBut_UI, "TOPRIGHT", 0, 112);
+				PigMinimapBut.Border:SetTexture(130818)
+				PigMinimapBut.Border:SetSize(26,58);
+				PigMinimapBut.Border:ClearAllPoints();
+				PigMinimapBut.Border:SetPoint("TOP", 0, 23);
+			else
+				ButpingXY.W,ButpingXY.H=24,34
+				ButpingXY.iconW,ButpingXY.iconH=21,21
+				PigMinimapBut:SetPoint("RIGHT",CharacterMicroButton,"LEFT",0,-1);
+				PigMinimapBut.Snf:SetPoint("BOTTOMRIGHT", PigMinimapBut_UI, "TOPRIGHT", 0, 2);
+				PigMinimapBut.Border:SetAtlas("UI-HUD-MicroMenu-ButtonBG-Up")
+				PigMinimapBut.Border:SetSize(32,42);
+				PigMinimapBut.Border:ClearAllPoints();
+				PigMinimapBut.Border:SetPoint("CENTER", 0, 1);
+			end
+			PigMinimapBut.Icon:SetDrawLayer("ARTWORK",1)
+			PigMinimapBut.Border:SetDrawLayer("BACKGROUND",1)
+			PigMinimapBut.Border:Show()
+		end
+		PigMinimapBut:SetHighlightTexture("Interface/Buttons/ButtonHilight-Square");
+	elseif mode == 4 then--聊天框
+		PigMinimapBut.Border:Hide()
+		PigMinimapBut:ClearAllPoints();	
+		if NDui then
+			ButpingXY.W,ButpingXY.H=21,21
+			ButpingXY.iconW,ButpingXY.iconH=20,20
+			PigMinimapBut:SetPoint("TOP",ChatFrameChannelButton,"BOTTOM",0,-1);
+			PigMinimapBut:SetHighlightTexture("Interface/Buttons/ButtonHilight-Square");
+		elseif ElvUI then
+			ButpingXY.W,ButpingXY.H=21,21
+			ButpingXY.iconW,ButpingXY.iconH=20,20
+			PigMinimapBut:SetPoint("RIGHT",ChatFrameChannelButton,"LEFT",0,0);
+			PigMinimapBut:SetHighlightTexture("Interface/Buttons/ButtonHilight-Square");
+		else
+			ButpingXY.W,ButpingXY.H=27,26
+			ButpingXY.iconW,ButpingXY.iconH=17,17
+			PigMinimapBut:SetPoint("BOTTOM",ChatFrameChannelButton,"TOP",0,2);
+			PigMinimapBut:SetNormalAtlas("chatframe-button-up")
+			PigMinimapBut:SetPushedAtlas("chatframe-button-down")
+			PigMinimapBut:SetHighlightAtlas("chatframe-button-highlight");
+		end
+		PigMinimapBut.Icon:SetDrawLayer("ARTWORK",1)
+		PigMinimapBut.Snf:SetPoint("BOTTOMLEFT", PigMinimapBut_UI, "TOPRIGHT", 2, 2);
+	elseif mode == 5 then--附着于ElvUI地图下方
+		local function ElvUIPoint()
+			if ElvUI and MinimapPanel:IsVisible() then
+				PigMinimapBut:ClearAllPoints();	
+				PigMinimapBut:SetPoint("TOPLEFT",MinimapPanel,"TOPLEFT",0.8,-0.6)
+				PigMinimapBut:SetPoint("BOTTOMLEFT",MinimapPanel,"BOTTOMLEFT",0,0.6)
+				local hhhh = MinimapPanel:GetHeight()	
+				PigMinimapBut:SetWidth(hhhh-1.2);
+				PigMinimapBut.Icon:SetAllPoints(PigMinimapBut)
+				local wwww = MinimapPanel:GetWidth()	
+				local DataTextwww = (wwww-hhhh-2)*0.5
+				if MinimapPanel_DataText1 then
+					MinimapPanel_DataText1:SetWidth(DataTextwww)
+					MinimapPanel_DataText1:SetPoint("LEFT",MinimapPanel,"LEFT",hhhh,0)
+					MinimapPanel_DataText2:SetWidth(DataTextwww)
+				end
+				PigMinimapBut.Snf:SetPoint("TOPRIGHT", PigMinimapBut_UI, "BOTTOMLEFT", -2, 20);
+			else
+				PIGA["Map"]["MinimapPoint"]=1
+				Point_Minidown()
+			end
+		end
+		C_Timer.After(0.2,ElvUIPoint)
+	end
+	if ElvUI or NDui then PigMinimapBut.Icon:SetTexCoord(0.08,0.92,0.08,0.92) end
+	PigMinimapBut:SetSize(ButpingXY.W,ButpingXY.H);
+	PigMinimapBut.Icon:SetSize(ButpingXY.iconW,ButpingXY.iconH);
+	PigMinimapBut.Icon:SetPoint("CENTER", ButpingXY.iconX, ButpingXY.iconY);
 end
 PigMinimapBut.Snf = PIGFrame(PigMinimapBut,{"TOPRIGHT", PigMinimapBut_UI, "BOTTOMLEFT", -2, 25},{200, 100});
 PigMinimapBut.Snf:PIGSetBackdrop()
@@ -557,6 +651,19 @@ end
 -- ButtoSDn:SetScript("OnClick", function ()
 -- 	-- PIGA["tianfuID_CTM"]={}
 -- 	-- PIGA["tianfuID_CTM_ICON"]={}
--- 	InspectUnit("target")
--- 	C_Timer.After(1,kaishiguoqutianfu)
+-- 	-- InspectUnit("target")
+-- 	-- C_Timer.After(1,kaishiguoqutianfu)
+-- 	print(GetNumSpellTabs())
+-- 	for i = 1, GetNumSpellTabs() do
+-- 		local _, _, offset, numSlots = GetSpellTabInfo(i)
+-- 		print(GetSpellTabInfo(i))
+-- 		for j = offset+1, offset+numSlots do
+-- 			--print(j)
+-- 			local spellBookItemInfo = C_SpellBook.GetSpellBookItemInfo(j, Enum.SpellBookSpellBank.Player)
+-- 			print(spellBookItemInfo)
+-- 			for k,v in pairs(spellBookItemInfo) do
+-- 				print(k,v)
+-- 			end
+-- 		end
+-- 	end
 -- end);

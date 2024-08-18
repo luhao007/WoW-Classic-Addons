@@ -69,7 +69,7 @@ function TardisInfo.Plane(Activate)
 	local Tooltip1= "|cffFFFF00当双方都打开此选项时可以直接申请组队，如只有一方打开则只能"..L["CHAT_WHISPER"].."申请对方组队|r";
 	local Tooltip2 = "\n|cffFF0000关闭后其他玩家将不会自动接收你的申请\n(注意你在24小时内只能开关一次)|r"
 	local Tooltip = Tooltip1..Tooltip2
-	fujiF.AutoInvite =PIGCheckbutton(fujiF,{"TOPLEFT",fujiF,"TOPLEFT",420,-10},{"|cff00FF00自动接受"..L["TARDIS_PLANE"].."申请(只在主城生效)|r",Tooltip})
+	fujiF.AutoInvite =PIGCheckbutton(fujiF,{"TOPLEFT",fujiF,"TOPLEFT",420,-10},{"|cff00FF00自动接受"..L["TARDIS_PLANE"].."申请(只在休息状态生效)|r",Tooltip})
 	fujiF.AutoInvite.help = PIGFontString(fujiF.AutoInvite,{"TOPLEFT", fujiF.AutoInvite, "BOTTOMLEFT", 20, -4},"我为人人，人人为我。请不要做精致的利己主义者");
 	fujiF.AutoInvite.help:SetTextColor(0, 1, 1, 1);
 	fujiF.AutoInvite:SetScript("OnClick", function (self)

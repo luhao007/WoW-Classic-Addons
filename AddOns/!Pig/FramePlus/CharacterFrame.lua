@@ -21,6 +21,7 @@ local GetContainerNumFreeSlots = C_Container.GetContainerNumFreeSlots
 local GetContainerNumSlots = C_Container.GetContainerNumSlots
 local GetContainerItemID = C_Container.GetContainerItemID
 local PickupContainerItem =C_Container.PickupContainerItem
+local IsAddOnLoaded=IsAddOnLoaded or C_AddOns and C_AddOns.IsAddOnLoaded
 
 ---自身角色和观察目标信息---------------
 if not InspectTalentFrameSpentPoints then InspectTalentFrameSpentPoints = CreateFrame("Frame") end
@@ -221,8 +222,9 @@ function FramePlusfun.Character_ADD()
 	end
 end
 ---人物界面属性==========================
-local function Character_xiuliG()
+local function Character_xiuliG()--修理费用
 	if PaperDollFrame.xiuli then return end
+	local xiulitip = CreateFrame("GameTooltip", "xiulitipUI", UIParent, "GameTooltipTemplate")
 	PaperDollFrame.xiuli = CreateFrame("Frame",nil,PaperDollFrame);  
 	PaperDollFrame.xiuli:SetSize(110,20);
 	if tocversion<40000 then
@@ -243,27 +245,46 @@ local function Character_xiuliG()
 	PaperDollFrame.xiuli.ICON:SetPoint("LEFT", PaperDollFrame.xiuli, "LEFT", 0, 0);
 	PaperDollFrame.xiuli.G = PIGFontString(PaperDollFrame.xiuli,{"LEFT", PaperDollFrame.xiuli.ICON, "RIGHT", 0, 0},nil,nil,13)
 	local naijiubuweiID=Data.InvSlot.Name
-	PaperDollFrame:HookScript("OnShow",function (self,event)
-		PaperDollFrame.repaircost=0	
+	local xiuliinfo = {
+		["invnum"]=0,
+		["myTicker"]=nil,
+		["repaircost"]=0,
+		["solt"]={},
+		["xuhaoID"]=1,
+	}
+	for k,v in pairs(naijiubuweiID) do
+		if v[4] then
+			table.insert(xiuliinfo.solt,k)
+		end
+	end
+	xiuliinfo.invnum=#xiuliinfo.solt
+	local function GetInventoryrepaircost(i)
+		if not PaperDollFrame:IsVisible() then if xiuliinfo.myTicker then xiuliinfo.myTicker:Cancel() end return end
+		local solt=xiuliinfo.solt[i]
 		if tocversion<50000 then 
-			for inv=1,19 do
-				if naijiubuweiID[inv][4] then
-					local hasItem,_,cost = GameTooltip:SetInventoryItem("player", inv)
-					PaperDollFrame.repaircost=PaperDollFrame.repaircost+cost
-				end
-			end
+			xiulitip:ClearLines();
+			local hasItem,_,repairCost = xiulitip:SetInventoryItem("player", solt)
+			xiuliinfo.repaircost=xiuliinfo.repaircost+repairCost
 		else
-			for inv=1,19 do
-				if naijiubuweiID[inv][4] then
-					local dataxxx = C_TooltipInfo.GetInventoryItem("player", inv)
-					if dataxxx and dataxxx.repairCost then
-						PaperDollFrame.repaircost=PaperDollFrame.repaircost+dataxxx.repairCost
-					end
-				end
+			local dataxxx = C_TooltipInfo.GetInventoryItem("player", solt)
+			if dataxxx and dataxxx.repairCost then
+				xiuliinfo.repaircost=xiuliinfo.repaircost+dataxxx.repairCost
 			end
 		end
-		PaperDollFrame.xiuli.G:SetText(GetCoinTextureString(PaperDollFrame.repaircost))
-	end)--修理费用
+		if i>=xiuliinfo.invnum then
+			PaperDollFrame.xiuli.G:SetText(GetCoinTextureString(xiuliinfo.repaircost))
+		end
+		xiuliinfo.xuhaoID=xiuliinfo.xuhaoID+1
+	end
+	PaperDollFrame:HookScript("OnShow",function (self,event)
+		if xiuliinfo.myTicker then xiuliinfo.myTicker:Cancel() end
+		xiuliinfo.repaircost=0
+		xiuliinfo.xuhaoID=1
+		xiuliinfo.myTicker = C_Timer.NewTicker(0.01, function() GetInventoryrepaircost(xiuliinfo.xuhaoID) end, xiuliinfo.invnum)
+	end)
+	PaperDollFrame:HookScript("OnHide", function(self)
+		if xiuliinfo.myTicker then xiuliinfo.myTicker:Cancel() end
+	end);
 end
 local function Character_Mingzhong()--命中说明
 	if tocversion>40000 then return end
@@ -1959,7 +1980,7 @@ function FramePlusfun.GengxinPoint(fuji)
 			if fuji.ZBLsit_C then fuji.ZBLsit_C:SetBackdropColor(0,0,0,0.5) end
 		end
 		if fuji==PaperDollFrame then
-			if tocversion<40000 then
+			if tocversion<50000 then
 				if _G["PIG_PaperDollSidebarTab3"] then
 					if ElvUI then
 						fuji.ZBLsit:SetPoint("TOPLEFT", PaperDollFrame, "TOPRIGHT",-31,-13);
@@ -1989,7 +2010,7 @@ function FramePlusfun.GengxinPoint(fuji)
 				elseif NDui then
 					fuji.ZBLsit:SetPoint("TOPLEFT", CharacterFrame, "TOPRIGHT",3,1.4);
 				else
-					fuji.ZBLsit:SetPoint("TOPLEFT", CharacterFrame, "TOPRIGHT",-1,2)
+					fuji.ZBLsit:SetPoint("TOPLEFT", CharacterFrame, "TOPRIGHT",-1,0)
 				end
 			end
 		else
