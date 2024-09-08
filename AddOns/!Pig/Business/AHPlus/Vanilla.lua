@@ -720,9 +720,16 @@ function BusinessInfo.AHPlus_Vanilla()
 	end
 	local function GetBuyoutPriceG(name,count,buyoutPrice,itemLink)
 		if name and name~="" and name~=" " and buyoutPrice>0 then
-			if not HCUI.auctions[name] then
+			local xianzaidanjia =buyoutPrice/count
+			if HCUI.auctions[name] then
+				if HCUI.auctions[name][2] then
+	   				if xianzaidanjia<HCUI.auctions[name][2][1] then
+	   					HCUI.auctions[name][2][1]=xianzaidanjia
+	   				end
+	   			end
+			else
 				local itemLinkJJ = Fun.GetItemLinkJJ(itemLink)
-				HCUI.auctions[name]={itemLinkJJ,{buyoutPrice/count,GetServerTime()}}
+				HCUI.auctions[name]={itemLinkJJ,{xianzaidanjia,GetServerTime()}}
 			end
 		end
 		HCUI.jishuID=HCUI.jishuID+1
@@ -732,20 +739,26 @@ function BusinessInfo.AHPlus_Vanilla()
 		local name, texture, count, quality, canUse, level, levelColHeader, minBid, minIncrement, buyoutPrice,bidAmount, highBidder, bidderFullName, owner, ownerFullName, saleStatus, itemId, hasAllInfo =  GetAuctionItemInfo("list", index);
 		local ItemLink=GetAuctionItemLink("list", index)
 		if not hasAllInfo then
-			HCUI.yicunchu=false
-			local item = Item:CreateFromItemID(itemId)
-			HCUI.ItemLoadList[item] = true
-			item:ContinueOnItemLoad(function()
-				HCUI.ItemLoadList[item] = nil
-				local name, texture, count, quality, canUse, level, levelColHeader, minBid, minIncrement, buyoutPrice,bidAmount, highBidder, bidderFullName, owner, ownerFullName, saleStatus, itemId, hasAllInfo =  GetAuctionItemInfo("list", index);
-				local ItemLink=GetAuctionItemLink("list", index)
-				HCUI.jindu.t2:SetText(index);
-				HCUI.jindu.tname:SetText(name);
-				GetBuyoutPriceG(name,count,buyoutPrice,ItemLink)
-				if not next(HCUI.ItemLoadList) then
-					HCUI.yicunchu=true
-				end
-			end)
+			if itemId and itemId>0 then
+				HCUI.yicunchu=false
+				local itemf = Item:CreateFromItemID(itemId)
+				itemf.index=index
+				HCUI.ItemLoadList[itemf] = true
+				itemf:ContinueOnItemLoad(function()
+					HCUI.ItemLoadList[itemf] = nil
+					local name, texture, count, quality, canUse, level, levelColHeader, minBid, minIncrement, buyoutPrice,bidAmount, highBidder, bidderFullName, owner, ownerFullName, saleStatus, itemId, hasAllInfo =  GetAuctionItemInfo("list", itemf.index);
+					local ItemLink=GetAuctionItemLink("list", index)
+					HCUI.jindu.t2:SetText(itemf.index);
+					HCUI.jindu.tname:SetText(name);
+					GetBuyoutPriceG(name,count,buyoutPrice,ItemLink)
+					if not next(HCUI.ItemLoadList) then
+						HCUI.yicunchu=true
+					end
+				end)
+			else
+				HCUI.jishuID=HCUI.jishuID+1
+				HCUI.jindu:SetValue(HCUI.jishuID);
+			end
 		else	
 			HCUI.jindu.t2:SetText(index);
 			HCUI.jindu.tname:SetText(name);
@@ -772,6 +785,11 @@ function BusinessInfo.AHPlus_Vanilla()
 				self:Hide()
 				HCUI.jindu.tbiaoti:SetText("物品扫描完毕,开始获取价格...");
 				local _, AuctionsNum = GetNumAuctionItems("list");
+				if AuctionsNum>100000 then
+					HCUI.ScanCD=BusinessInfo.AHPlusData.ScanCD+0.001
+				else
+					HCUI.ScanCD=BusinessInfo.AHPlusData.ScanCD
+				end
 				HCUI.ItemListNum = AuctionsNum
 				HCUI.jindu.t3:SetText(AuctionsNum);
 				HCUI.jindu:SetMinMaxValues(0, AuctionsNum)
@@ -805,13 +823,6 @@ function BusinessInfo.AHPlus_Vanilla()
 		HCUI.yicunchu=nil
 		HCUI.SMend=nil
 		HCUI.UpdateF.jishiqitime=1
-		local dangqianTime = date("%H",GetServerTime())
-		local dangqianTime = tonumber(dangqianTime)
-		if dangqianTime>18 and dangqianTime<23 then
-			HCUI.ScanCD=BusinessInfo.AHPlusData.ScanCD+0.001
-		else
-			HCUI.ScanCD=BusinessInfo.AHPlusData.ScanCD
-		end
 		HCUI.UpdateF:Show()
 		QueryAuctionItems("", nil, nil, 0, nil, nil, true, false, nil)--查询全部
 	end)
@@ -960,7 +971,7 @@ function BusinessInfo.AHPlus_Vanilla()
 	coll.list.tishi.Texture:SetTexture("interface/common/help-i.blp");
 	coll.list.tishi.Texture:SetSize(30,30);
 	coll.list.tishi.Texture:SetPoint("CENTER");
-	PIGEnter(coll.list.tishi,L["LIB_TIPS"],"\124cff00ff001、在浏览列表"..KEY_BUTTON2.."物品名可加入关注。\n2、关注列表物品"..KEY_BUTTON1.."搜索，"..KEY_BUTTON2.."删除。\124r");
+	PIGEnter(coll.list.tishi,L["LIB_TIPS"]..": ","\124cff00ff001、在浏览列表"..KEY_BUTTON2.."物品名可加入关注。\n2、关注列表物品"..KEY_BUTTON1.."搜索，"..KEY_BUTTON2.."删除。\124r");
 	--
 	local collhang_NUM = 18
 	local function gengxinlistcoll(self)

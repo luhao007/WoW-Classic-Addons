@@ -107,7 +107,7 @@ def remove_libraries_all(addon: str, lib_path: Optional[str] = None):
         remove_libs_in_file(path, [f'{lib_path}\\{lib}' for lib in libs])
 
     # Remove lib entry in lib folder
-    xmls = ['Includes.xml', 'Libs.xml', 'main.xml', 'Manifest.xml', 'Files.xml', 'embeds.xml']
+    xmls = ['Includes.xml', 'Libs.xml', 'load_libs.xml', 'main.xml', 'Manifest.xml', 'Files.xml', 'embeds.xml']
     lib_files = [Path('Addons') / addon / lib_path / lib_file for lib_file in xmls]
     lib_files = [path for path in lib_files if os.path.exists(str(path))]
     for path in lib_files:

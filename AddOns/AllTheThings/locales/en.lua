@@ -553,6 +553,7 @@ for key, value in pairs({
 		["The Shadowlands"] = "SL",
 		["Shadowlands"] = "SL",
 		["Dragonflight"] = "DF",
+		["The War Within"] = "TWW",
 		-- Dungeon&Raids
 		["Player vs Player"] = "PvP",
 		["Raid Finder"] = "LFR",
@@ -588,6 +589,9 @@ for key, value in pairs({
 		["Il'gynoth, The Heart of Corruption"] = "Il'gynoth",
 		-- SL
 		["Tazavesh, the Veiled Market"] = "Tazavesh",
+		-- TWW
+		["Ara-Kara, City of Echoes"] = "Ara-Kara",
+		["Sikran, Captain of the Sureki"] = "Sikran",
 		-- Outdoor Zones
 		["Quartermaster Miranda Breechlock"] = "Quartermaster Miranda",
 		["Season "] = "S",
@@ -647,8 +651,6 @@ for key, value in pairs({
 		[-148] = 236566,																	-- Level 50 Class Trial
 		[-149] = 1408997,																	-- Level 110
 		[-150] = 2065613,																	-- Level 120
-	-- Garrison
-		[-152] = "Interface\\Icons\\achievement_zone_draenor_01",							-- Garrison Campaign
 		[-153] = 1103070,																	-- Work Orders
 	-- Class Trial
 		[-154] = "Interface\\Icons\\ability_bossmagistrix_timewarp1",						-- Level 48
@@ -758,8 +760,6 @@ for key, value in pairs({
 		[-148] = sformat(SPELLBOOK_AVAILABLE_AT, 50).." Class Trial",	-- Level 50 Class Trial
 		[-149] = sformat(SPELLBOOK_AVAILABLE_AT, 110),					-- Level 110
 		[-150] = sformat(SPELLBOOK_AVAILABLE_AT, 120),					-- Level 120
-	-- Garrison
-		[-152] = "Garrison Campaign",											-- Garrison Campaign
 		[-153] = CAPACITANCE_WORK_ORDERS,										-- Work Orders
 	-- Class Trial
 		[-154] = sformat(SPELLBOOK_AVAILABLE_AT, 48),						-- Level 48

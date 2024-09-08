@@ -3,6 +3,7 @@ local _, _, _, tocversion = GetBuildInfo()
 local gsub = _G.string.gsub 
 local find = _G.string.find
 local sub = _G.string.sub
+local gmatch = _G.string.gmatch
 local match = _G.string.match
 local upper = _G.string.upper
 local lower= _G.string.lower
@@ -10,6 +11,8 @@ local L=addonTable.locale
 local Fun=addonTable.Fun
 local Key_fenge=Fun.Key_fenge
 local del_link=Fun.del_link
+local gsub_NOlink=Fun.gsub_NOlink
+local Is_IndexContain=Fun.Is_IndexContain
 local del_biaoqing=Fun.del_biaoqing
 local del_biaodian=Fun.del_biaodian
 local TihuanBiaoqing=Fun.TihuanBiaoqing
@@ -69,6 +72,7 @@ local function FilterBlack_IsFriend(name,name1)
 	end
 	return false
 end
+Fun.IsFriend=FilterBlack_IsFriend
 local function FilterBlack_Name(name)
 	if name then
 		local p_blnum = #BlackList["name"]
@@ -359,7 +363,7 @@ function QuickChatfun.QuickBut_Keyword()
 		end
 	end
 	PIGKeyword_UI.Tiqu_SetFun()
-	TiquF.KeyOpen = PIGCheckbutton(TiquF,{"TOPLEFT",TiquF,"TOPLEFT",10,-10},{ENABLE..L["CHAT_KEYWORD_NAME1"]..L["CHAT_KEYWORD_NAME"]..INFO})
+	TiquF.KeyOpen = PIGCheckbutton(TiquF,{"TOPLEFT",TiquF,"TOPLEFT",10,-10},{"|cff00FF00"..ENABLE.."|r"..L["CHAT_KEYWORD_NAME1"]..L["CHAT_KEYWORD_NAME"]..INFO})
 	TiquF.KeyOpen:SetScript("OnClick", function (self)
 		if self:GetChecked() then
 			PIGA["Chat"]["Tiqu"]["Open"]=true
@@ -369,7 +373,7 @@ function QuickChatfun.QuickBut_Keyword()
 		PIGKeyword_UI.Tiqu_SetFun()
 	end);
 	---
-	TiquF.tishi=PIGFontString(TiquF,{"TOPLEFT",TiquF,"TOPLEFT",30,-30},L["CHAT_KEYWORD_NAME"]..L["CHAT_KEYWORD_NAME2"])
+	TiquF.tishi=PIGFontString(TiquF,{"TOPLEFT",TiquF,"TOPLEFT",80,-30},L["CHAT_KEYWORD_NAME"]..L["CHAT_KEYWORD_NAME2"])
 	TiquF.tishi:SetJustifyH("LEFT");
 	TiquF.tishi:SetTextColor(1, 1, 0, 1)
 	local White_keywords={}
@@ -589,12 +593,21 @@ function QuickChatfun.QuickBut_Keyword()
 	TiquF.shuchumode_2.F:SetPoint("TOPLEFT",TiquF.shuchumode_biaoti,"BOTTOMLEFT",-15,-10);
 	TiquF.shuchumode_2.F:SetPoint("BOTTOMRIGHT",TiquF,"BOTTOMRIGHT",-6,6);
 	TiquF.shuchumode_2.F.Color_t = PIGFontString(TiquF.shuchumode_2.F,{"TOPLEFT",TiquF.shuchumode_2.F,"TOPLEFT",20,-20},"背景颜色")
+	local function PIGGetAlpha()
+		if ColorPickerFrame and ColorPickerFrame.GetColorAlpha then
+			return ColorPickerFrame:GetColorAlpha()
+		elseif OpacitySliderFrame and OpacitySliderFrame.GetValue then
+			return OpacitySliderFrame:GetValue()
+		else
+			return 1
+		end
+	end
 	local function PIGkeyColorCallFun(restore)
 		local newR, newG, newB, newA;
 		if restore then
 			newR, newG, newB, newA = restore.r, restore.g, restore.b, restore.opacity
 		else
-			newA, newR, newG, newB = OpacitySliderFrame:GetValue(), ColorPickerFrame:GetColorRGB()
+			newA, newR, newG, newB = PIGGetAlpha(), ColorPickerFrame:GetColorRGB()
 		end
 		ChatF99.Background:SetVertexColor(newR, newG, newB, newA)
 		if tocversion<100000 then
@@ -691,7 +704,7 @@ function QuickChatfun.QuickBut_Keyword()
 			local outMsg = "|cff828282"..date("%H:%M",timetxt).."|r [|cff00FF00关注|r] "..PlayerLink..":  "..outMsg
 			shuchatf:AddMessage(outMsg, CHANNELinfo.r, CHANNELinfo.g, CHANNELinfo.b, CHANNELinfo.id);
 		elseif TiquCanshu["shuchumode"]==2 then
-			local outMsg = "|cff828282"..date("%H:%M",timetxt).."|r [|cff00FF00关注|r] "..PlayerLink..":  "..outMsg
+			local outMsg = "|cff828282"..date("%H:%M",timetxt).."|r "..PlayerLink..":  "..outMsg
 			ChatF99:AddMessage(outMsg, CHANNELinfo.r, CHANNELinfo.g, CHANNELinfo.b, CHANNELinfo.id);
 		end
 	end
@@ -711,6 +724,26 @@ function QuickChatfun.QuickBut_Keyword()
 			end
 		end
 		return true
+	end
+	local function replaceChar(str, start, over)
+		return str:sub(1, start-1) .. "|cff00FF00"..str:sub(start, over) .."|r".. str:sub(over+1)
+	end
+	local function TXTgsub(txtmsg,key)
+		local paichuinfo = gsub_NOlink(txtmsg)
+		local oldover = 0
+		for _ in txtmsg:gmatch(key) do
+			local olds, olde = txtmsg:find(key,oldover+1)
+			if olds and olde then
+				if Is_IndexContain(paichuinfo,olds,olde) then
+
+				else
+					local txtmsg1=replaceChar(txtmsg, olds, olde)
+					return txtmsg1 or ""
+				end
+				oldover = olde
+			end
+		end
+		return txtmsg or ""
 	end
 	local function tiquKeysFun(event, ...)
 		local arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17=...
@@ -739,24 +772,16 @@ function QuickChatfun.QuickBut_Keyword()
 			for x=1,blnum do
 				if type(White_keywords[x])=="string" then
 					if newText:match(White_keywords[x]) then
-						local arg1,thcishu =  arg1:gsub(White_keywords[x], "|cff00FF00"..White_keywords[x].."|r")
-						if thcishu==0 then
-							local guanjianziTT=White_keywords[x]:lower()--转换小写
-							arg1 =  arg1:gsub(guanjianziTT, "|cff00FF00"..guanjianziTT.."|r")
-						end
-						return Show_Keyword_MSG(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17)
+						local newarg1=TXTgsub(arg1,White_keywords[x])
+						return Show_Keyword_MSG(event, newarg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17)
 					end
 				elseif type(White_keywords[x])=="table" then
 					if IsKeywordMatch(White_keywords[x],newText) then
+						local newarg1=arg1
 						for xx=1,#White_keywords[x] do
-							local thciTT,thcishu =  arg1:gsub(White_keywords[x][xx], "|cff00FF00"..White_keywords[x][xx].."|r")
-							arg1=thciTT
-							if thcishu==0 then
-								local guanjianziTT=White_keywords[x][xx]:lower()--转换小写
-								arg1 =  arg1:gsub(guanjianziTT, "|cff00FF00"..guanjianziTT.."|r")
-							end
-						end
-						return Show_Keyword_MSG(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17)
+							newarg1=TXTgsub(newarg1,White_keywords[x][xx])
+						end	
+						return Show_Keyword_MSG(event, newarg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17)
 					end
 				end
 			end

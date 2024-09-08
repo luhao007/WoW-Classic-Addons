@@ -12,11 +12,23 @@ function CataItemFixes.Load()
         [2629] = { -- Intrepid Strongbox Key
             [itemKeys.npcDrops] = {41429},
         },
+        [2633] = { -- Jungle Remedy
+            [itemKeys.npcDrops] = {937,940,941,942},
+        },
         [2859] = { -- Vile Fin Scale
             [itemKeys.npcDrops] = {1541,1543,1544,1545},
         },
         [3082] = { -- Dargol's Skull
             [itemKeys.startQuest] = 25030,
+        },
+        [4106] = { -- Tumbled Crystal
+            [itemKeys.npcDrops] = {1096,4260},
+        },
+        [4506] = { -- Stromgarde Badge
+            [itemKeys.npcDrops] = {2588,2590,2591,24477},
+        },
+        [5084] = { -- Cap'n Garvey's Head
+            [itemKeys.npcDrops] = {34750},
         },
         [5169] = { -- Timberling Sprout
             [itemKeys.objectDrops] = {4608},
@@ -35,13 +47,19 @@ function CataItemFixes.Load()
             [itemKeys.startQuest] = 0,
         },
         [10458] = { -- Prayer to Elune
-            [itemKeys.npcDrops] = {}
+            [itemKeys.npcDrops] = {},
+        },
+        [12283] = { -- Broodling Essence
+            [itemKeys.npcDrops] = {},
         },
         [18597] = { -- Orcish Orphan Whistle
             [itemKeys.class] = itemClasses.QUEST,
         },
         [18598] = { -- Human Orphan Whistle
             [itemKeys.class] = itemClasses.QUEST,
+        },
+        [19424] = { -- Sayge's Fortune #24
+            [itemKeys.startQuest] = 0,
         },
         [18960] = { -- Lookout's Spyglass
             [itemKeys.npcDrops] = {5840},
@@ -57,6 +75,9 @@ function CataItemFixes.Load()
         },
         [22978] = { -- Emitter Spare Part
             [itemKeys.npcDrops] = {},
+        },
+        [23798] = { -- Diabolical Plans
+            [itemKeys.npcDrops] = {6073},
         },
         [24416] = { -- Corrupted Flower
             [itemKeys.npcDrops] = {},
@@ -390,8 +411,14 @@ function CataItemFixes.Load()
         [55238] = { -- Concentrated Solvent
             [itemKeys.class] = itemClasses.QUEST,
         },
+        [55241] = { -- Incendicite Ore
+            [itemKeys.npcDrops] = {},
+        },
         [55280] = { -- Deepmoss Venom Sac
             [itemKeys.npcDrops] = {41185,4005,4006,4007},
+        },
+        [55808] = { -- Horde's Proposal
+            [itemKeys.npcDrops] = {41199},
         },
         [55809] = { -- Twilight Armor Plate
             [itemKeys.npcDrops] = {},
@@ -432,6 +459,12 @@ function CataItemFixes.Load()
         [57766] = { -- Prickly Pear Fruit
             [itemKeys.npcDrops] = {},
         },
+        [57789] = { -- Fresh Dirt
+            [itemKeys.npcDrops] = {},
+        },
+        [58120] = { -- Skittering Spiderling
+            [itemKeys.npcDrops] = {42689},
+        },
         [58141] = { -- Twilight Highlands Coastal Chart
             [itemKeys.npcDrops] = {42638},
         },
@@ -440,6 +473,15 @@ function CataItemFixes.Load()
         },
         [58224] = { -- Induction Samophlange
             [itemKeys.objectDrops] = {204091},
+        },
+        [58228] = { -- Spider Idol
+            [itemKeys.npcDrops] = {42857},
+        },
+        [58252] = { -- Shadraspawn Egg
+            [itemKeys.npcDrops] = {},
+        },
+        [58282] = { -- Eye of Shadra
+            [itemKeys.objectDrops] = {204133},
         },
         [58365] = { -- Horn of the Ancients
             [itemKeys.class] = itemClasses.QUEST,
@@ -470,6 +512,7 @@ function CataItemFixes.Load()
         },
         [58950] = { -- Messner's Cage Key
             [itemKeys.class] = itemClasses.QUEST,
+            [itemKeys.npcDrops] = {}
         },
         [58951] = { -- Giant Furious Pike
             [itemKeys.npcDrops] = {}
@@ -478,13 +521,25 @@ function CataItemFixes.Load()
             [itemKeys.npcDrops] = {39464},
         },
         [58959] = { -- Petrified Stone Bat
-            [itemKeys.npcDrops] = {43181,43182},
+            [itemKeys.npcDrops] = {43181,43182,43339},
         },
         [58969] = { -- Jorgensen's Cage Key
             [itemKeys.class] = itemClasses.QUEST,
         },
         [59033] = { -- Blackrock Lever Key
             [itemKeys.class] = itemClasses.QUEST,
+        },
+        [59057] = { -- Poobah's Tiara
+            [itemKeys.npcDrops] = {2521,43417},
+        },
+        [59058] = { -- Poobah's Scepter
+            [itemKeys.npcDrops] = {2521,43417},
+        },
+        [59059] = { -- Poobah's Slippers
+            [itemKeys.npcDrops] = {2521,43417},
+        },
+        [59060] = { -- Poobah's Diary
+            [itemKeys.npcDrops] = {2521,43417},
         },
         [59123] = { -- Verlok Miracle-Grow
             [itemKeys.npcDrops] = {},
@@ -534,6 +589,9 @@ function CataItemFixes.Load()
         [60835] = { -- Depleted Totem
             [itemKeys.class] = itemClasses.QUEST,
         },
+        [60850] = { -- Brownfeather Quill
+            [itemKeys.npcDrops] = {},
+        },
         [60857] = { -- Recovered Supplies
             [itemKeys.npcDrops] = {},
         },
@@ -558,6 +616,9 @@ function CataItemFixes.Load()
         [61929] = { -- Broken Spectacles
             [itemKeys.npcDrops] = {45874},
         },
+        [61973] = { -- Highvale Records
+            [itemKeys.objectDrops] = {144071},
+        },
         [61976] = { -- Orb of the North Star
             [itemKeys.npcDrops] = {},
         },
@@ -572,6 +633,9 @@ function CataItemFixes.Load()
         },
         [62542] = { -- Mech Control Scrambler
             [itemKeys.class] = itemClasses.QUEST,
+        },
+        [62544] = { -- Dustbelcher Meat
+            [itemKeys.npcDrops] = {},
         },
         [62607] = { -- Titan Activation Device
             [itemKeys.objectDrops] = {},

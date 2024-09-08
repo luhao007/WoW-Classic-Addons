@@ -1797,33 +1797,39 @@ function FramePlusfun.Character_Shuxing()
 				SidebarTab:HookScript("OnClick", function(self)
 					EngravingFrame:Show();
 				end)
-				SidebarTab.F:SetAllPoints(PaperDollFrame.InsetR)
+				SidebarTab.Scroll = CreateFrame("ScrollFrame",nil,SidebarTab, "UIPanelScrollFrameTemplate"); 
+				SidebarTab.Scroll.ScrollBar:SetScale(0.8)
+				SidebarTab.Scroll:SetPoint("TOPLEFT",PaperDollFrame.InsetR,"TOPLEFT",0,-2);
+				SidebarTab.Scroll:SetPoint("BOTTOMRIGHT",PaperDollFrame.InsetR,"BOTTOMRIGHT",-18,2);
+				SidebarTab.F:SetWidth(SidebarTab.Scroll:GetWidth()+8)
+				SidebarTab.F:SetHeight(10) 
+				SidebarTab.Scroll:SetScrollChild(SidebarTab.F)
 				SidebarTab.F.numallT = PIGFontString(SidebarTab.F,{"TOP",SidebarTab.F,"TOP", -20, -3},RUNES..COLLECTED)
 				SidebarTab.F.numall = PIGFontString(SidebarTab.F,{"LEFT",SidebarTab.F.numallT,"RIGHT", 1, 0})
-				local FFWW,fWhangH,buweifuwenNum = SidebarTab.F:GetWidth()-8,49,5
+				local FFWW,fWhangH,buweifuwenNum = SidebarTab.F:GetWidth()-8,48,10
 				SidebarTab.F.fuwenSlotS = {}
 				for Slot=1,19 do
 					if EngravingSlot[Slot] then
 						local fuwenF = PIGFrame(SidebarTab.F,{"TOP",SidebarTab.F,"TOP",0,-fWhangH*(#SidebarTab.F.fuwenSlotS)-19},{FFWW,fWhangH})
 						table.insert(SidebarTab.F.fuwenSlotS,{fuwenF,Slot})
-						fuwenF:PIGSetBackdrop(0,0.1,nil,{0.5, 0.5, 0.5})
+						fuwenF:PIGSetBackdrop(0,0.6,nil,{0.2, 0.2, 0.2})
 						fuwenF.biaoti = PIGFontString(fuwenF,{"TOPLEFT", fuwenF, "TOPLEFT", 1, -10},InvSlot.Name[Slot][2])
 						fuwenF.num= PIGFontString(fuwenF,{"TOPLEFT", fuwenF.biaoti, "BOTTOMLEFT", 2, 0})
 						for ir=1,buweifuwenNum do
 							local RuneBut = CreateFrame("Button","RuneSlot_"..Slot..ir,fuwenF);
 							RuneBut:SetHighlightTexture("Interface/Buttons/ButtonHilight-Square");
-							RuneBut:SetSize(fWhangH*0.6-2,fWhangH*0.6-2);
+							RuneBut:SetSize(fWhangH*0.5-2,fWhangH*0.5-2);
 							RuneBut.xuanzhong = RuneBut:CreateTexture(nil, "OVERLAY");
 							RuneBut.xuanzhong:SetTexture(130724);
 							RuneBut.xuanzhong:SetBlendMode("ADD");
 							RuneBut.xuanzhong:SetAllPoints(RuneBut)
 							RuneBut.xuanzhong:Hide()
 							if ir==1 then
-								RuneBut:SetPoint("LEFT",fuwenF,"LEFT",32,0);
-							--elseif ir==6 then
-								--RuneBut:SetPoint("TOPLEFT",_G["RuneSlot_"..Slot..(ir-5)],"BOTTOMLEFT",0,-1);
+								RuneBut:SetPoint("TOPLEFT",fuwenF,"TOPLEFT",34,-2);
+							elseif ir==6 then
+								RuneBut:SetPoint("TOPLEFT",_G["RuneSlot_"..Slot..(ir-5)],"BOTTOMLEFT",0,-1);
 							else
-								RuneBut:SetPoint("LEFT",_G["RuneSlot_"..Slot..(ir-1)],"RIGHT",2,0);
+								RuneBut:SetPoint("LEFT",_G["RuneSlot_"..Slot..(ir-1)],"RIGHT",5,0);
 							end
 							RuneBut:HookScript("OnLeave", function()
 								GameTooltip:ClearLines();
@@ -1861,11 +1867,17 @@ function FramePlusfun.Character_Shuxing()
 							end
 						end
 					end
+					C_Engraving.ClearExclusiveCategoryFilter();
+					C_Engraving.EnableEquippedFilter(false);
 					local known, max = C_Engraving.GetNumRunesKnown();
 					SidebarTab.F.numall:SetText(known.."/"..max);
 					SetnumTextColor(SidebarTab.F.numall,known,max)
 					for i=1,#SidebarTab.F.fuwenSlotS do
-						local known, max = C_Engraving.GetNumRunesKnown(SidebarTab.F.fuwenSlotS[i][2]);
+						local infosole = SidebarTab.F.fuwenSlotS[i][2]
+						if infosole==12 then
+							infosole = 11
+						end
+						local known, max = C_Engraving.GetNumRunesKnown(infosole);
 						SidebarTab.F.fuwenSlotS[i][1].num:SetText(known.."/"..max);
 						SetnumTextColor(SidebarTab.F.fuwenSlotS[i][1].num,known,max)
 					end
@@ -1877,7 +1889,7 @@ function FramePlusfun.Character_Shuxing()
 							local RuneBut = _G["RuneSlot_"..rune.equipmentSlot..BUTxuhao]
 							BUTxuhao=BUTxuhao+1
 							RuneBut:Show()
-							RuneBut:SetAlpha(0.4)
+							RuneBut:SetAlpha(0.6)
 							RuneBut.skillLineAbilityID=rune.skillLineAbilityID
 							RuneBut:SetNormalTexture(rune.iconTexture);
 							local engravingInfo = C_Engraving.GetRuneForEquipmentSlot(category);
@@ -1993,15 +2005,27 @@ function FramePlusfun.GengxinPoint(fuji)
 					fuji.ZBLsit.LEFTtoppig = 0
 					if EngravingFrame and EngravingFrame:IsShown() then fuji.ZBLsit.LEFTtoppig=210 end
 					if ElvUI then
-						fuji.ZBLsit:SetPoint("TOPLEFT", CharacterFrame, "TOPRIGHT",-31+fuji.ZBLsit.LEFTtoppig,-13);
-					elseif NDui then
-						if CharacterFrame.NDuiStatPanelYN and NDuiStatPanel and NDuiStatPanel:IsShown() then
-							fuji.ZBLsit:SetPoint("TOPLEFT", NDuiStatPanel, "TOPRIGHT",3+fuji.ZBLsit.LEFTtoppig,0);
+						if tocversion<40000 then
+							fuji.ZBLsit:SetPoint("TOPLEFT", CharacterFrame, "TOPRIGHT",-31+fuji.ZBLsit.LEFTtoppig,-13);
 						else
-							fuji.ZBLsit:SetPoint("TOPLEFT", CharacterFrame, "TOPRIGHT",-33+fuji.ZBLsit.LEFTtoppig,-15);
+							fuji.ZBLsit:SetPoint("TOPLEFT", CharacterFrame, "TOPRIGHT",0+fuji.ZBLsit.LEFTtoppig,0);
+						end
+					elseif NDui then
+						if tocversion<40000 then
+							if CharacterFrame.NDuiStatPanelYN and NDuiStatPanel and NDuiStatPanel:IsShown() then
+								fuji.ZBLsit:SetPoint("TOPLEFT", NDuiStatPanel, "TOPRIGHT",3+fuji.ZBLsit.LEFTtoppig,0);
+							else
+								fuji.ZBLsit:SetPoint("TOPLEFT", CharacterFrame, "TOPRIGHT",-33+fuji.ZBLsit.LEFTtoppig,-15);
+							end
+						else
+							fuji.ZBLsit:SetPoint("TOPLEFT", CharacterFrame, "TOPRIGHT",0+fuji.ZBLsit.LEFTtoppig,1);
 						end
 					else
-						fuji.ZBLsit:SetPoint("TOPLEFT", CharacterFrame, "TOPRIGHT",-33+fuji.ZBLsit.LEFTtoppig,-13)
+						if tocversion<40000 then
+							fuji.ZBLsit:SetPoint("TOPLEFT", CharacterFrame, "TOPRIGHT",-33+fuji.ZBLsit.LEFTtoppig,-13)
+						else
+							fuji.ZBLsit:SetPoint("TOPLEFT", CharacterFrame, "TOPRIGHT",-3+fuji.ZBLsit.LEFTtoppig,0)
+						end
 					end
 				end
 			else

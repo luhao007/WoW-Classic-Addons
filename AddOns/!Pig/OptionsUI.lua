@@ -38,6 +38,7 @@ else
 	layout:AddAnchorPoint("BOTTOMRIGHT", -10, 10);
 	Settings.RegisterAddOnCategory(category)
 end
+
 ---------------
 local OptionsW,OptionsH,OptionsJG,BottomHHH = 800,600,14,40
 local Pig_Options=PIGFrame(UIParent,{"CENTER",UIParent,"CENTER",0,0},{OptionsW,OptionsH},"Pig_OptionsUI",true)
@@ -55,7 +56,7 @@ Pig_Options.L.top:SetHeight(50)
 Pig_Options.L.top:SetPoint("TOPLEFT", Pig_Options.L, "TOPLEFT", 2, -2)
 Pig_Options.L.top:SetPoint("TOPRIGHT", Pig_Options.L, "TOPRIGHT", 0, 0)
 Pig_Options.L.top:PIGSetMovable(Pig_Options)
-Pig_Options.L.top.title = PIGFontString(Pig_Options.L.top,{"LEFT", Pig_Options.L.top, "LEFT", 13, 6},"!Pig",nil, 36)
+Pig_Options.L.top.title = PIGFontString(Pig_Options.L.top,{"LEFT", Pig_Options.L.top, "LEFT", 13, 6},addonName,nil, 36)
 Pig_Options.L.top.title:SetTextColor(1, 69/255, 0, 1)
 Pig_Options.L.top.title1 =PIGFontString(Pig_Options.L.top,{"BOTTOMLEFT", Pig_Options.L.top.title, "BOTTOMRIGHT", 10, 0},L["ADDON_NAME"],nil, 16)
 Pig_Options.L.top.title1:SetTextColor(0, 1, 1, 1)
@@ -225,12 +226,12 @@ local function YDButtonP(xpos,ypos)
 			elseif ElvUI then
 				local xpos=xpos or PIGA["Map"]["MinimapPoint_ElvUI"][1]
 				local ypos=ypos or PIGA["Map"]["MinimapPoint_ElvUI"][2]
-				PigMinimapBut:SetPoint("BOTTOMRIGHT",Minimap,"BOTTOMRIGHT",xpos,ypos)
+				PigMinimapBut:SetPoint("BOTTOMLEFT",Minimap,"BOTTOMLEFT",xpos,ypos)
 				PIGA["Map"]["MinimapPoint_ElvUI"][1]=xpos
 				PIGA["Map"]["MinimapPoint_ElvUI"][2]=ypos
 			else
 				local xpos=xpos or PIGA["Map"]["MinimapPos"]
-				local banjing = PigMinimapBut.banjing
+				local banjing = Minimap:GetWidth()*0.5+8
 				local pianyi =PigMinimapBut.pianyi
 				PigMinimapBut:SetPoint("TOPLEFT",Minimap,"TOPLEFT",pianyi-2-(banjing*cos(xpos)),(banjing*sin(xpos))-pianyi)
 				PIGA["Map"]["MinimapPos"]=xpos
@@ -246,19 +247,32 @@ local function YDButtonP(xpos,ypos)
 end
 local function YDButtonP_OnUpdate()	
 	local mode = PIGA["Map"]["MinimapPoint"]
-	local banjing = PigMinimapBut.banjing
+	local UIScale = UIParent:GetEffectiveScale()
 	local xpos,ypos = GetCursorPosition()
-	local UIScale = UIParent:GetScale()
+	local xpos = xpos/UIScale
+	local ypos = ypos/UIScale
+	local left, bottom, width, height = Minimap:GetScaledRect()
+	local left = left/UIScale
+    local bottom = bottom/UIScale
+    local width = width/UIScale
+    local height = height/UIScale
+	local Pigleft, Pigbottom, Pigwidth, Pigheight  = PigMinimapBut:GetScaledRect()
+	local Pigleft = Pigleft/UIScale
+    local Pigbottom = Pigbottom/UIScale
+    local Pigwidth = Pigwidth/UIScale
+    local Pigheight = Pigheight/UIScale
+	local Pigwidth2 = Pigwidth*0.5
+	local Pigheight2 = Pigheight*0.5
 	if mode==2 then
-		local MinibutW = PigMinimapBut:GetWidth()*0.5-4
-		local WowWidth=GetScreenWidth()*0.5;
-		local WowHeight=GetScreenHeight()*0.5;
-		local xpos = xpos/UIScale-WowWidth
-		local ypos = ypos/UIScale-WowHeight
-		if xpos>WowWidth-MinibutW then xpos=WowWidth-MinibutW end
-		if xpos<-WowWidth+MinibutW then xpos=-WowWidth+MinibutW end
-		if ypos>WowHeight-MinibutW then ypos=WowHeight-MinibutW end
-		if ypos<-WowHeight+MinibutW then ypos=-WowHeight+MinibutW end
+		local MinibutW3 = Pigwidth2-4
+		local WowWidth2=GetScreenWidth()*0.5;
+		local WowHeight2=GetScreenHeight()*0.5;
+		local xpos = xpos-WowWidth2
+		local ypos = ypos-WowHeight2
+		if xpos>WowWidth2-MinibutW3 then xpos=WowWidth2-MinibutW3 end
+		if xpos<-WowWidth2+MinibutW3 then xpos=-WowWidth2+MinibutW3 end
+		if ypos>WowHeight2-MinibutW3 then ypos=WowHeight2-MinibutW3 end
+		if ypos<-WowHeight2+MinibutW3 then ypos=-WowHeight2+MinibutW3 end
 		YDButtonP(xpos,ypos)
 		PigMinimapBut.Snf:ClearAllPoints();
 		local Pointinfo = {"RIGHT", "LEFT", "TOP", "BOTTOM", -2, 25}
@@ -273,44 +287,23 @@ local function YDButtonP_OnUpdate()
 		end
 		PigMinimapBut.Snf:SetPoint(Pointinfo[3]..Pointinfo[1], PigMinimapBut_UI, Pointinfo[4]..Pointinfo[2], Pointinfo[5], Pointinfo[6]);
 	else
-		local xmin,ymin = Minimap:GetLeft(), Minimap:GetBottom()
 		if NDui or ElvUI then
-			local xpos = xpos/UIScale-xmin
-			local ypos = ypos/UIScale-ymin
-			local MinibutW = PigMinimapBut:GetWidth()
-			local MinibutW2 = MinibutW*0.5
-			if NDui then
-				local xpos = xpos-banjing-banjing*0.5+MinibutW2
-				local ypos = ypos-banjing+MinibutW2
-				if xpos<-1 then xpos=-1 end--X左边
-				local rightbianp = banjing-MinibutW-6
-				if xpos>rightbianp then--X右边
-					xpos=rightbianp
-				end
-				if ypos<-0.4 then ypos=-0.4 end--下
-				local topbianp = banjing-MinibutW-5
-				if ypos>topbianp then
-					ypos=topbianp
-				end
-				YDButtonP(xpos,ypos)
-			elseif ElvUI then
-				local xpos = xpos-banjing+MinibutW2
-				local ypos = ypos-MinibutW2
-				if xpos>-1 then xpos=-1 end--X左边
-				local rightbianp = -banjing+MinibutW-1
-				if xpos<rightbianp then--X右边
-					xpos=rightbianp
-				end
-				if ypos<0 then ypos=0 end--下
-				local topbianp = banjing-MinibutW
-				if ypos>topbianp then
-					ypos=topbianp
-				end
-				YDButtonP(xpos,ypos)
+			local xpos = xpos-left-Pigwidth2
+			local ypos = ypos-bottom-Pigheight2
+			if xpos<0 then xpos=0 end--X左边
+			local rightbianp = width-Pigwidth
+			if xpos>rightbianp then--X右边
+				xpos=rightbianp
 			end
+			if ypos<0 then ypos=0 end--下
+			local topbianp = height-Pigheight
+			if ypos>topbianp then
+				ypos=topbianp
+			end
+			YDButtonP(xpos,ypos)
 		else
-			local xpos = xmin-xpos/UIScale+banjing
-			local ypos = ypos/UIScale-ymin-banjing
+			local xpos = left-xpos+width*0.5
+			local ypos = ypos-bottom-width*0.5
 			YDButtonP(math.deg(math.atan2(ypos,xpos)))
 		end
 	end
@@ -381,31 +374,32 @@ function PigMinimapBut.zhucetuodong(ONOFF)
 		PigMinimapBut:SetScript("OnDragStop",nil)
 	end
 end
+local morenweizhi = {{0,0},{0,0},{28,0}}
 function PigMinimapBut:CZMinimapInfo()
 	PIGA["Map"]["MinimapPos"]=addonTable.Default["Map"]["MinimapPos"]
-	PIGA["Map"]["MinimapPointXY"]={0,0}
-	PIGA["Map"]["MinimapPoint_ElvUI"]={-130,0}
-	PIGA["Map"]["MinimapPoint_NDui"]={-1,-0.4}
+	PIGA["Map"]["MinimapPointXY"]=morenweizhi[1]
+	PIGA["Map"]["MinimapPoint_NDui"]=morenweizhi[2]
+	PIGA["Map"]["MinimapPoint_ElvUI"]=morenweizhi[3]
 	YDButtonP();
 end
 local www,hhh = 33,33
 function PigMinimapBut:Point()
+	if not ElvUI and PIGA["Map"]["MinimapPoint"]==5 then PIGA["Map"]["MinimapPoint"]=1 end
 	local mode = PIGA["Map"]["MinimapPoint"]
 	local ButpingXY = {
 		["W"]=www,["H"]=hhh,
 		["iconW"]=www-10,["iconH"]=hhh-10,
 		["iconX"]=0,["iconY"]=0,
 	}
-	PIGA["Map"]["MinimapPoint_NDui"]=PIGA["Map"]["MinimapPoint_ElvUI"] or {-1,0}
-	PIGA["Map"]["MinimapPoint_ElvUI"]=PIGA["Map"]["MinimapPoint_NDui"] or {-1,-0.4}
-	PIGA["Map"]["MinimapPointXY"]=PIGA["Map"]["MinimapPointXY"] or {0,0}
+	PIGA["Map"]["MinimapPointXY"]=PIGA["Map"]["MinimapPointXY"] or morenweizhi[1]
+	PIGA["Map"]["MinimapPoint_NDui"]=PIGA["Map"]["MinimapPoint_NDui"] or morenweizhi[2]
+	PIGA["Map"]["MinimapPoint_ElvUI"]=PIGA["Map"]["MinimapPoint_ElvUI"] or morenweizhi[3]
 	PigMinimapBut.Snf:ClearAllPoints();
 	PigMinimapBut:ClearNormalTexture()
 	PigMinimapBut:ClearPushedTexture()
 	PigMinimapBut.zhucetuodong(false)
 	local function Point_Minidown()
-		local banjing = Minimap:GetWidth()*0.5
-		PigMinimapBut.banjing=banjing
+		PigMinimapBut.pianyi = 0
 		PigMinimapBut.zhucetuodong(true)
 		if mode == 1 then--小地图
 			if ElvUI or NDui then
@@ -418,7 +412,6 @@ function PigMinimapBut:Point()
 				end
 				PigMinimapBut:SetHighlightTexture("Interface/Buttons/ButtonHilight-Square");
 				PigMinimapBut.Border:Hide()
-				PigMinimapBut.banjing=banjing*2
 			else
 				PigMinimapBut:SetHighlightTexture("Interface/Minimap/UI-Minimap-ZoomButton-Highlight");
 				PigMinimapBut.Border:SetDrawLayer("BORDER",1)
@@ -433,7 +426,6 @@ function PigMinimapBut:Point()
 				else
 					PigMinimapBut.pianyi = 82
 				end
-				PigMinimapBut.banjing=PigMinimapBut.banjing+8
 			end
 		elseif mode == 2 then--自由
 			PigMinimapBut.Border:Hide()
@@ -521,9 +513,6 @@ function PigMinimapBut:Point()
 					MinimapPanel_DataText2:SetWidth(DataTextwww)
 				end
 				PigMinimapBut.Snf:SetPoint("TOPRIGHT", PigMinimapBut_UI, "BOTTOMLEFT", -2, 20);
-			else
-				PIGA["Map"]["MinimapPoint"]=1
-				Point_Minidown()
 			end
 		end
 		C_Timer.After(0.2,ElvUIPoint)
@@ -585,6 +574,7 @@ function infotip:TryDisplayMessage(message, r, g, b)
 	self:AddMessage(message, r, g, b, 1);
 	PlaySound(SOUNDKIT.IG_CHAT_EMOTE_BUTTON);
 end
+-- PIGinfotip:TryDisplayMessage(txt)
 --功能动作条
 Pig_Options.qiege=16
 local _, _, _, tocversion = GetBuildInfo()
@@ -607,9 +597,9 @@ QuickBut.ButList={
 	[9]=function() end,--售卖助手丢弃
 	[10]=function() end,--售卖助手开
 	[11]=function() end,--售卖助手分
-	[12]=function() end,--时空之门
-	[13]=function() end,--喊话
-	[14]=function() end,
+	[12]=function() end,--售卖助手选矿
+	[13]=function() end,--时空之门
+	[14]=function() end,--时空之门喊话
 	[15]=function() end,--开团助手
 	[16]=function() end,--带本助手
 	[17]=function() end,

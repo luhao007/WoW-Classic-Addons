@@ -19,15 +19,15 @@ local bagIDMax= addonTable.Data.bagData["bagIDMax"]
 local BusinessInfo=addonTable.BusinessInfo
 local GnName,GnUI,GnIcon,FrameLevel = unpack(BusinessInfo.AutoSellBuyData)
 local hang_Height,hang_NUM  = 24, 17;
-BusinessInfo.buticon=132853
+BusinessInfo.Fenbuticon=132853
 if tocversion<20000 then
-	BusinessInfo.buticon=135952
+	BusinessInfo.Fenbuticon=135952
 end
 local gongnengName = "分解"
 
 function BusinessInfo.FastFen()
 	local PIGUseKeyDown=Fun.PIGUseKeyDown
-	local fujiF,fujiTabBut=PIGOptionsList_R(AutoSellBuy_UI.F,"分",60,"Left")
+	local fujiF,fujiTabBut=PIGOptionsList_R(AutoSellBuy_UI.F,"分",50,"Left")
 	BusinessInfo.ADDScroll(fujiF,gongnengName,"Fen",18,PIGA["AutoSellBuy"]["Fen_List"],{false,"AutoSellBuy","Fen_List"})
 	local MassDestroyMacro = "/cast %1$s \n/run C_TradeSkillUI.CraftRecipe(%2$d, 1);\n/cast %1$s";
 	local DestroyMacro = "/cast %s\n/use %d %d"
@@ -72,7 +72,7 @@ function BusinessInfo.FastFen()
 		if PIGA["QuickBut"]["Open"] and PIGA["AutoSellBuy"]["Open"] and PIGA["AutoSellBuy"]["Fen_QkBut"] then
 			if _G[QkButUI] then return end
 			local QuickTooltip = KEY_BUTTON1.."-|cff00FFFF"..gongnengName.."指定物品|r\n"..KEY_BUTTON2.."-|cff00FFFF打开"..GnName.."|r"
-			local QkBut=PIGQuickBut(QkButUI,QuickTooltip,BusinessInfo.buticon,nil,FrameLevel,"SecureActionButtonTemplate")
+			local QkBut=PIGQuickBut(QkButUI,QuickTooltip,BusinessInfo.Fenbuticon,nil,FrameLevel,"SecureActionButtonTemplate")
 			QkBut:SetAttribute("type", "macro")
 			PIGUseKeyDown(QkBut)
 			QkBut:HookScript("PreClick",  function (self,button)
@@ -140,12 +140,12 @@ function BusinessInfo.FastFen()
 		end
 		local macroSlot = GetMacroIndexByName(hongName)
 		if macroSlot>0 then
-			EditMacro(macroSlot, nil, BusinessInfo.buticon, hongNR)
+			EditMacro(macroSlot, nil, BusinessInfo.Fenbuticon, hongNR)
 			PIGinfotip:TryDisplayMessage("已更新"..gongnengName.."宏");
 		else
 			local global, perChar = GetNumMacros()
 			if global<120 then
-				CreateMacro(hongName, BusinessInfo.buticon, hongNR, nil)
+				CreateMacro(hongName, BusinessInfo.Fenbuticon, hongNR, nil)
 				fujiF.fuzhiCDM:SetText("更新"..gongnengName.."宏");
 			else
 				PIGinfotip:TryDisplayMessage(L["LIB_MACROERR"]);

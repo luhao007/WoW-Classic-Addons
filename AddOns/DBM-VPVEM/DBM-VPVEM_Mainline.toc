@@ -1,8 +1,9 @@
 ## Interface: 30400
 ## Author: Iceoven
-## Version: eeae112
+## Version: af7e6f3
 ## RequiredDeps: DBM-Core
 ## DefaultState: enabled
+## IconTexture: Interface\AddOns\DBM-Core\textures\dbm_airhorn
 
 ## Title: |cffffe00a<|r|cffff7d0aDBM Media|r|cffffe00a>|r |cff308530Voicepack VEM|r
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFF69CCF0VEM语音包|r

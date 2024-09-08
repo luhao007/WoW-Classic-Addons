@@ -1,8 +1,9 @@
 ## Interface: 30400
 ## Author: Cladhaire, Ludovicus
-## Version: v4.0.1-release
+## Version: v4.0.3-release
 ## OptionalDeps: HereBeDragons-2.0
 ## SavedVariables: TomTomDB, TomTomWaypoints, TomTomWaypointsM
+## IconTexture: Interface\AddOns\TomTom\Images\StaticArrow.tga
 
 ## Title: TomTom
 ## Notes: Acts as your portable navigation assistant

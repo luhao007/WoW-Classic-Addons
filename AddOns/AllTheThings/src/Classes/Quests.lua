@@ -29,6 +29,7 @@ local GetFactionName = app.WOWAPI.GetFactionName;
 local GetFactionCurrentReputation = app.WOWAPI.GetFactionCurrentReputation;
 local GetSpellName = app.WOWAPI.GetSpellName;
 local GetSpellIcon = app.WOWAPI.GetSpellIcon;
+local IsQuestFlaggedCompletedOnAccount = app.WOWAPI.IsQuestFlaggedCompletedOnAccount;
 
 -- Class locals
 local LastQuestTurnedIn, MostRecentQuestTurnIns;
@@ -115,7 +116,7 @@ if C_QuestLog_RequestLoadQuestByID and pcall(app.RegisterEvent, app, "QUEST_DATA
 			if rawget(QuestNameFromServer, questID) == false then
 				QuestNameFromServer[questID] = nil
 				app.PrintDebug("Fresh Quest Name!",questID,QuestNameFromServer[questID])
-				app.HandleEvent("OnRefreshWindows")
+				app.CallbackEvent("OnRenderDirty")
 			end
 		else
 			-- this quest name cannot be populated by the server
@@ -290,7 +291,10 @@ if app.IsRetail then
 		if questID then
 			if IsQuestFlaggedCompleted(questID) then return 1; end
 			if not t.repeatable then
-				return app.IsAccountTracked("Quests", questID) and 2
+				-- ATT Account cache tracking (may eventually remove)
+				if app.IsAccountTracked("Quests", questID) then return 2 end
+				-- WoW Account tracking
+				if app.Settings.AccountWide.Quests and IsQuestFlaggedCompletedOnAccount(questID) then return 2 end
 			end
 		end
 		-- account-mode: any character is viable to complete the quest, so alt quest completion shouldn't count for this quest
@@ -424,6 +428,12 @@ local function GetQuestIndicator(t)
 		end
 	end
 end
+local NonQuestDataKeys = {
+	aqd = 1,
+	hqd = 1,
+	otherQuestData = 1,
+	g = 1,
+}
 local function ResolveQuestData(t)
 	local aqd, hqd = t.aqd, t.hqd;
 	if aqd and hqd then
@@ -447,24 +457,21 @@ local function ResolveQuestData(t)
 			end
 			questData.g = nil;
 		end
-		if otherQuestData.g then
-			for _,o in ipairs(otherQuestData.g) do
-				o.parent = otherQuestData;
-			end
-		end
+		app.AssignChildren(otherQuestData)
+		otherQuestData.parent = t.parent
 
 		-- Apply this quest's current data into the other faction's quest. (this is for tooltip caching and source quest resolution)
 		for key,value in pairs(t) do
-			if key ~= "g" then
+			if not NonQuestDataKeys[key] then
 				otherQuestData[key] = value;
 			end
 		end
 
 		-- Apply the faction specific quest data to this object.
 		for key,value in pairs(questData) do t[key] = value; end
-		aqd.r = ALLIANCE_FACTION_ID;
-		hqd.r = HORDE_FACTION_ID;
 		t.otherQuestData = otherQuestData;
+		t.aqd = nil
+		t.hqd = nil
 		otherQuestData.nmr = 1;
 	else
 		error("Missing AQD / HQD: " .. (aqd and true or false) .. " " .. (hqd and true or false));
@@ -530,9 +537,9 @@ local function BuildDiscordQuestInfoTable(id, infoText, questChange, questRef, c
 			covInfo = covInfo .. "N/A";
 		end
 		if C_MajorFactions then
-			local DFmajorFactionIDs, majorFactionInfo, data = C_MajorFactions.GetMajorFactionIDs(9), {}, nil;
-			if DFmajorFactionIDs then
-				for _,factionID in ipairs(DFmajorFactionIDs) do
+			local MajorFactionIDs, majorFactionInfo, data = C_MajorFactions.GetMajorFactionIDs(10), {}, nil;
+			if MajorFactionIDs then
+				for _,factionID in ipairs(MajorFactionIDs) do
 					tinsert(majorFactionInfo, "|");
 					tinsert(majorFactionInfo, factionID);
 					data = C_MajorFactions.GetMajorFactionData(factionID);
@@ -564,8 +571,9 @@ local function BuildDiscordQuestInfoTable(id, infoText, questChange, questRef, c
 		local acctUnlocks = {
 			IsQuestFlaggedCompleted(72366) and "DF_CA" or "N",	-- Dragonflight Campaign Complete
 			IsQuestFlaggedCompleted(75658) and "DF_ZC" or "N",	-- Dragonflight Zaralek Caverns Complete
+			IsQuestFlaggedCompleted(79573) and "WW_CA" or "N",	-- The War Within Campaign Complete
 		}
-		tinsert(info, "unlocks:"..app.TableConcat(acctUnlocks, nil, nil, "|"))
+		tinsert(info, "unlocks:"..app.TableConcat(acctUnlocks, nil, nil, "/"))
 	end
 	tinsert(info, "sq:"..GenerateSourceQuestString(questRef or id));
 	tinsert(info, "lq:"..(app.TableConcat(MostRecentQuestTurnIns, nil, nil, "<") or ""));
@@ -1766,6 +1774,7 @@ app.AddEventRegistration("QUEST_TURNED_IN", function(questID)
 		LastQuestTurnedIn = questID;
 		if not MostRecentQuestTurnIns then
 			MostRecentQuestTurnIns = {questID}
+			app.MostRecentQuestTurnIns = MostRecentQuestTurnIns
 		else
 			tinsert(MostRecentQuestTurnIns, 1, questID);
 			if #MostRecentQuestTurnIns > 5 then

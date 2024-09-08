@@ -1,9 +1,10 @@
 ## Interface: 30400
 ## Author: MysticalOS, QartemisT
-## Version: 11.0.2
+## Version: 11.0.5
 ## LoadOnDemand: 0
 ## SavedVariables: DBT_AllPersistentOptions
 ## DefaultState: enabled
+## IconTexture: Interface\AddOns\DBM-Core\textures\dbm_airhorn
 
 ## Title: |cffffe00a<|r|cffff7d0aDBM Core|r|cffffe00a>|r |cff69ccf0Status Bar Timers|r
 ## Notes: DBM - status bar timer library

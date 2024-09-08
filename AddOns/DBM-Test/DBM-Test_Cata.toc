@@ -3,6 +3,7 @@
 ## LoadOnDemand: 1
 ## SavedVariables: DBM_TestResults_Export, DBM_Test_DefaultTimeWarp
 ## DefaultState: enabled
+## IconTexture: Interface\AddOns\DBM-Core\textures\dbm_airhorn
 
 ## Title: |cffffe00a<|r|cffff7d0aDBM Tests|r|cffffe00a>|r |cff69ccf0Test runner for DBM|r
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFF69CCF0测试功能|r
@@ -15,3 +16,14 @@ Report.lua
 Runner.lua
 TimeWarper.lua
 Mocks.lua
+ReportFrame.lua
+
+Tools/WoW/Environment.lua
+Tools/Shared/Data/Difficulties.lua
+Tools/Shared/Data/Instances.lua
+Tools/Shared/Data/Transcriptor-Filter.lua
+Tools/Shared/InstanceInfoGuesser.lua
+Tools/Shared/Anonymizer.lua
+Tools/Shared/ParseTranscriptor.lua
+Tools/Shared/RoleGuesser.lua
+Tools/Shared/StupidParser.lua

@@ -24,7 +24,7 @@ local GnName,GnUI,GnIcon,FrameLevel = unpack(BusinessInfo.AutoSellBuyData)
 
 function BusinessInfo.FastOpen()
 	local PIGUseKeyDown=Fun.PIGUseKeyDown
-	local fujiF,fujiTabBut=PIGOptionsList_R(AutoSellBuy_UI.F,"开",60,"Left")
+	local fujiF,fujiTabBut=PIGOptionsList_R(AutoSellBuy_UI.F,"开",50,"Left")
 	BusinessInfo.ADDScroll(fujiF,gongnengName,"Open",18,PIGA["AutoSellBuy"]["Open_List"],{false,"AutoSellBuy","Open_List"})
 	local OpenItemKey = CreateFrame("Button","OpenItemKey",UIParent, "SecureActionButtonTemplate");
 	PIGUseKeyDown(OpenItemKey)

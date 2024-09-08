@@ -184,110 +184,117 @@ function UnitFramefun.Mubiao()
 		end)
 	end
 	--目标仇恨百分比
-	if tocversion<50000 then
-		if PIGA["UnitFrame"]["TargetFrame"]["Chouhen"] and not TargetFrame.mubiaoCHbaifenbi then
-			TargetFrame.mubiaoCHbaifenbi=CreateFrame("Frame",nil,TargetFrame);
-			TargetFrame.mubiaoCHbaifenbi:SetPoint("TOPLEFT",TargetFrame,"TOPLEFT",7,0);
-			TargetFrame.mubiaoCHbaifenbi:SetSize(49,22);
-			TargetFrame.mubiaoCHbaifenbi:Hide();
-			TargetFrame.mubiaoCHbaifenbi.Background=TargetFrame.mubiaoCHbaifenbi:CreateTexture(nil,"BACKGROUND");
-			TargetFrame.mubiaoCHbaifenbi.Background:SetTexture("Interface\\TargetingFrame\\UI-StatusBar");
-			TargetFrame.mubiaoCHbaifenbi.Background:SetPoint("TOP",0,-3);
-			TargetFrame.mubiaoCHbaifenbi.Background:SetSize(37,18);
-			TargetFrame.mubiaoCHbaifenbi.border=TargetFrame.mubiaoCHbaifenbi:CreateTexture(nil,"ARTWORK");
-			TargetFrame.mubiaoCHbaifenbi.border:SetTexture("Interface\\TargetingFrame\\NumericThreatBorder");
-			TargetFrame.mubiaoCHbaifenbi.border:SetTexCoord(0,0.765625,0,0.5625);
-			TargetFrame.mubiaoCHbaifenbi.border:SetAllPoints(TargetFrame.mubiaoCHbaifenbi);
-			TargetFrame.mubiaoCHbaifenbi.title = PIGFontString(TargetFrame.mubiaoCHbaifenbi,{"CENTER", TargetFrame.mubiaoCHbaifenbi, "CENTER", 1, -1.4},"", "OUTLINE",13)
-			TargetFrame.mubiaoCHbaifenbi.title:SetTextColor(1,1,1,1);
-			--仇恨高亮背景
-			TargetFrame.mubiaoCHbaifenbi_REDALL=TargetFrame:CreateTexture(nil,"BACKGROUND");
-			TargetFrame.mubiaoCHbaifenbi_REDALL:SetTexture("interface/targetingframe/ui-targetingframe-flash.blp");
-			if tocversion<20000 then
-				TargetFrame.mubiaoCHbaifenbi_REDALL:SetTexCoord(0.09,1,0,0.194);
-				TargetFrame.mubiaoCHbaifenbi_REDALL:SetPoint("TOPLEFT",TargetFrameTextureFrame,"TOPLEFT",0,0);
-				TargetFrame.mubiaoCHbaifenbi_REDALL:SetPoint("BOTTOMRIGHT",TargetFrameTextureFrame,"BOTTOMRIGHT",0,0);
-			elseif tocversion<30000 then
-				TargetFrame.mubiaoCHbaifenbi_REDALL:SetPoint("TOPLEFT",TargetFrameTextureFrame,"TOPLEFT",-23,0);
-			else
-				TargetFrame.mubiaoCHbaifenbi_REDALL:SetTexCoord(0.09,1,0,0.194);
-				TargetFrame.mubiaoCHbaifenbi_REDALL:SetPoint("TOPLEFT",TargetFrameTextureFrame,"TOPLEFT",0,0);
-				TargetFrame.mubiaoCHbaifenbi_REDALL:SetPoint("BOTTOMRIGHT",TargetFrameTextureFrame,"BOTTOMRIGHT",0,0);
-			end
-			TargetFrame.mubiaoCHbaifenbi_REDALL:SetVertexColor(1,0,0);
-			TargetFrame.mubiaoCHbaifenbi_REDALL:Hide();
-			---
-			-- local YuanshiW=TargetFrame.nameBackground:GetWidth();
-			-- TargetFrame.nameBackground:ClearAllPoints();
-			-- TargetFrame.nameBackground:SetPoint("TOPLEFT", TargetFrame, "TOPLEFT", 7, -22);
-			--
-			TargetFrame:RegisterUnitEvent("UNIT_THREAT_LIST_UPDATE","target");--怪物仇恨列表目录改变
+	if PIGA["UnitFrame"]["TargetFrame"]["Chouhen"] then
+		if TargetFrame.threatNumericIndicator then
+			SetCVar("threatShowNumeric", "1")
 			TargetFrame:HookScript("OnEvent", function (self,event,arg1)
-				if event=="PLAYER_TARGET_CHANGED" or event=="UNIT_THREAT_LIST_UPDATE" then
-					if not (UnitIsPlayer("target")) and UnitCanAttack("player", "target") then --不是玩家/可攻击		
-						local isTanking, status, threatpct, rawthreatpct, threatvalue = UnitDetailedThreatSituation("player", "target")
-						if threatpct==nil then --进度条
-							--self.nameBackground:SetWidth(YuanshiW);
-							TargetFrame.mubiaoCHbaifenbi.title:SetText('0%');
-						else
-							--self.nameBackground:SetWidth(YuanshiW*(threatpct/100));
-							if isTanking then
-								TargetFrame.mubiaoCHbaifenbi.title:SetText('Tank');
-							else
-								TargetFrame.mubiaoCHbaifenbi.title:SetText(math.ceil(threatpct)..'%');
-							end	
-						end
-						if status==0 then --进度条/百分比材质颜色
-							TargetFrame.mubiaoCHbaifenbi_REDALL:Hide();
-							--self.nameBackground:SetVertexColor(0.69, 0.69, 0.69);
-							TargetFrame.mubiaoCHbaifenbi:Show();
-							TargetFrame.mubiaoCHbaifenbi.Background:SetVertexColor(0.69, 0.69, 0.69);
-						elseif status==1 then
-							TargetFrame.mubiaoCHbaifenbi_REDALL:Hide();
-							--self.nameBackground:SetVertexColor(1, 1, 0.47);
-							TargetFrame.mubiaoCHbaifenbi:Show();
-							TargetFrame.mubiaoCHbaifenbi.Background:SetVertexColor(1, 1, 0.47);
-						elseif status==2 then
-							TargetFrame.mubiaoCHbaifenbi_REDALL:Show();
-							--self.nameBackground:SetVertexColor(1, 0.6, 0);
-							TargetFrame.mubiaoCHbaifenbi:Show();
-							TargetFrame.mubiaoCHbaifenbi.Background:SetVertexColor(1, 0.6, 0);
-							--PlaySoundFile("sound/item/weapons/sword1h/m1hswordhitmetalshieldcrit.ogg", "Master")
-						elseif status==3 then
-							TargetFrame.mubiaoCHbaifenbi_REDALL:Show();
-							--self.nameBackground:SetVertexColor(1, 0, 0);
-							TargetFrame.mubiaoCHbaifenbi:Show();
-							TargetFrame.mubiaoCHbaifenbi.Background:SetVertexColor(1, 0, 0);
-							--PlaySoundFile("sound/item/weapons/sword1h/m1hswordhitmetalshieldcrit.ogg", "Master")		
-						elseif status==nil then
-							TargetFrame.mubiaoCHbaifenbi_REDALL:Hide();
-							if ( not UnitPlayerControlled(self.unit) and UnitIsTapDenied(self.unit) ) then
-								--self.nameBackground:SetVertexColor(0.5, 0.5, 0.5);
-								if ( self.portrait ) then
-									self.portrait:SetVertexColor(0.5, 0.5, 0.5);
-								end
-							else
-								--self.nameBackground:SetVertexColor(UnitSelectionColor(self.unit));
-								if ( self.portrait ) then
-									self.portrait:SetVertexColor(1.0, 1.0, 1.0);
-								end
-							end
-							TargetFrame.mubiaoCHbaifenbi:Hide();
-						end
+				if event=="PLAYER_ENTERING_WORLD" or event=="PLAYER_TARGET_CHANGED" or event=="UNIT_THREAT_LIST_UPDATE" or event=="UNIT_THREAT_SITUATION_UPDATE" then
+					if tocversion<100000 then
+						TargetFrame.threatNumericIndicator:SetPoint("BOTTOM", TargetFrame, "TOP", -86, -22);
 					else
-						--self.nameBackground:SetWidth(YuanshiW);
-						TargetFrame.mubiaoCHbaifenbi_REDALL:Hide();
-						TargetFrame.mubiaoCHbaifenbi:Hide();
+						TargetFrame.threatNumericIndicator:SetPoint("BOTTOM", TargetFrame, "TOP", -68, -24);
 					end
 				end
 			end)
+		else
+			if not TargetFrame.mubiaoCHbaifenbi then
+				TargetFrame.mubiaoCHbaifenbi=CreateFrame("Frame",nil,TargetFrame);
+				TargetFrame.mubiaoCHbaifenbi:SetPoint("TOPLEFT",TargetFrame,"TOPLEFT",7,0);
+				TargetFrame.mubiaoCHbaifenbi:SetSize(49,22);
+				TargetFrame.mubiaoCHbaifenbi:Hide();
+				TargetFrame.mubiaoCHbaifenbi.Background=TargetFrame.mubiaoCHbaifenbi:CreateTexture(nil,"BACKGROUND");
+				TargetFrame.mubiaoCHbaifenbi.Background:SetTexture("Interface\\TargetingFrame\\UI-StatusBar");
+				TargetFrame.mubiaoCHbaifenbi.Background:SetPoint("TOP",0,-3);
+				TargetFrame.mubiaoCHbaifenbi.Background:SetSize(37,18);
+				TargetFrame.mubiaoCHbaifenbi.border=TargetFrame.mubiaoCHbaifenbi:CreateTexture(nil,"ARTWORK");
+				TargetFrame.mubiaoCHbaifenbi.border:SetTexture("Interface\\TargetingFrame\\NumericThreatBorder");
+				TargetFrame.mubiaoCHbaifenbi.border:SetTexCoord(0,0.765625,0,0.5625);
+				TargetFrame.mubiaoCHbaifenbi.border:SetAllPoints(TargetFrame.mubiaoCHbaifenbi);
+				TargetFrame.mubiaoCHbaifenbi.title = PIGFontString(TargetFrame.mubiaoCHbaifenbi,{"CENTER", TargetFrame.mubiaoCHbaifenbi, "CENTER", 1, -1.4},"", "OUTLINE",13)
+				TargetFrame.mubiaoCHbaifenbi.title:SetTextColor(1,1,1,1);
+				--仇恨高亮背景
+				TargetFrame.mubiaoCHbaifenbi_REDALL=TargetFrame:CreateTexture(nil,"BACKGROUND");
+				TargetFrame.mubiaoCHbaifenbi_REDALL:SetTexture("interface/targetingframe/ui-targetingframe-flash.blp");
+				if tocversion<20000 then
+					TargetFrame.mubiaoCHbaifenbi_REDALL:SetTexCoord(0.09,1,0,0.194);
+					TargetFrame.mubiaoCHbaifenbi_REDALL:SetPoint("TOPLEFT",TargetFrameTextureFrame,"TOPLEFT",0,0);
+					TargetFrame.mubiaoCHbaifenbi_REDALL:SetPoint("BOTTOMRIGHT",TargetFrameTextureFrame,"BOTTOMRIGHT",0,0);
+				elseif tocversion<30000 then
+					TargetFrame.mubiaoCHbaifenbi_REDALL:SetPoint("TOPLEFT",TargetFrameTextureFrame,"TOPLEFT",-23,0);
+				else
+					TargetFrame.mubiaoCHbaifenbi_REDALL:SetTexCoord(0.09,1,0,0.194);
+					TargetFrame.mubiaoCHbaifenbi_REDALL:SetPoint("TOPLEFT",TargetFrameTextureFrame,"TOPLEFT",0,0);
+					TargetFrame.mubiaoCHbaifenbi_REDALL:SetPoint("BOTTOMRIGHT",TargetFrameTextureFrame,"BOTTOMRIGHT",0,0);
+				end
+				TargetFrame.mubiaoCHbaifenbi_REDALL:SetVertexColor(1,0,0);
+				TargetFrame.mubiaoCHbaifenbi_REDALL:Hide();
+				---
+				-- local YuanshiW=TargetFrame.nameBackground:GetWidth();
+				-- TargetFrame.nameBackground:ClearAllPoints();
+				-- TargetFrame.nameBackground:SetPoint("TOPLEFT", TargetFrame, "TOPLEFT", 7, -22);
+				--
+				TargetFrame:RegisterUnitEvent("UNIT_THREAT_LIST_UPDATE","target");--怪物仇恨列表目录改变
+				TargetFrame:HookScript("OnEvent", function (self,event,arg1)
+					if event=="PLAYER_TARGET_CHANGED" or event=="UNIT_THREAT_LIST_UPDATE" then
+						if not (UnitIsPlayer("target")) and UnitCanAttack("player", "target") then --不是玩家/可攻击		
+							local isTanking, status, threatpct, rawthreatpct, threatvalue = UnitDetailedThreatSituation("player", "target")
+							if threatpct==nil then --进度条
+								--self.nameBackground:SetWidth(YuanshiW);
+								TargetFrame.mubiaoCHbaifenbi.title:SetText('0%');
+							else
+								--self.nameBackground:SetWidth(YuanshiW*(threatpct/100));
+								if isTanking then
+									TargetFrame.mubiaoCHbaifenbi.title:SetText('Tank');
+								else
+									TargetFrame.mubiaoCHbaifenbi.title:SetText(math.ceil(threatpct)..'%');
+								end	
+							end
+							if status==0 then --进度条/百分比材质颜色
+								TargetFrame.mubiaoCHbaifenbi_REDALL:Hide();
+								--self.nameBackground:SetVertexColor(0.69, 0.69, 0.69);
+								TargetFrame.mubiaoCHbaifenbi:Show();
+								TargetFrame.mubiaoCHbaifenbi.Background:SetVertexColor(0.69, 0.69, 0.69);
+							elseif status==1 then
+								TargetFrame.mubiaoCHbaifenbi_REDALL:Hide();
+								--self.nameBackground:SetVertexColor(1, 1, 0.47);
+								TargetFrame.mubiaoCHbaifenbi:Show();
+								TargetFrame.mubiaoCHbaifenbi.Background:SetVertexColor(1, 1, 0.47);
+							elseif status==2 then
+								TargetFrame.mubiaoCHbaifenbi_REDALL:Show();
+								--self.nameBackground:SetVertexColor(1, 0.6, 0);
+								TargetFrame.mubiaoCHbaifenbi:Show();
+								TargetFrame.mubiaoCHbaifenbi.Background:SetVertexColor(1, 0.6, 0);
+								--PlaySoundFile("sound/item/weapons/sword1h/m1hswordhitmetalshieldcrit.ogg", "Master")
+							elseif status==3 then
+								TargetFrame.mubiaoCHbaifenbi_REDALL:Show();
+								--self.nameBackground:SetVertexColor(1, 0, 0);
+								TargetFrame.mubiaoCHbaifenbi:Show();
+								TargetFrame.mubiaoCHbaifenbi.Background:SetVertexColor(1, 0, 0);
+								--PlaySoundFile("sound/item/weapons/sword1h/m1hswordhitmetalshieldcrit.ogg", "Master")		
+							elseif status==nil then
+								TargetFrame.mubiaoCHbaifenbi_REDALL:Hide();
+								if ( not UnitPlayerControlled(self.unit) and UnitIsTapDenied(self.unit) ) then
+									--self.nameBackground:SetVertexColor(0.5, 0.5, 0.5);
+									if ( self.portrait ) then
+										self.portrait:SetVertexColor(0.5, 0.5, 0.5);
+									end
+								else
+									--self.nameBackground:SetVertexColor(UnitSelectionColor(self.unit));
+									if ( self.portrait ) then
+										self.portrait:SetVertexColor(1.0, 1.0, 1.0);
+									end
+								end
+								TargetFrame.mubiaoCHbaifenbi:Hide();
+							end
+						else
+							--self.nameBackground:SetWidth(YuanshiW);
+							TargetFrame.mubiaoCHbaifenbi_REDALL:Hide();
+							TargetFrame.mubiaoCHbaifenbi:Hide();
+						end
+					end
+				end)
+			end
 		end
-	else
-		-- TargetFrame:HookScript("OnEvent", function (self,event,arg1)
-		-- 	if event=="PLAYER_ENTERING_WORLD" or event=="PLAYER_TARGET_CHANGED" or event=="UNIT_THREAT_LIST_UPDATE" or event=="UNIT_THREAT_SITUATION_UPDATE" then
-		-- 		TargetFrame.threatNumericIndicator:SetPoint("BOTTOM",TargetFrame.TargetFrameContent.TargetFrameContentMain.ReputationColor,"TOP",-42,0);
-		-- 	end
-		-- end)
 	end
 	-----目标的目标的目标
 	if PIGA["UnitFrame"]["TargetFrame"]["ToToToT"] and not TargetFrameToT_ToT then	

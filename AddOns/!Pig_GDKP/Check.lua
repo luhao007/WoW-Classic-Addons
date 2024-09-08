@@ -25,13 +25,17 @@ function GDKPInfo.ADD_Check()
 	-- local LeftmenuV=GDKPInfo.LeftmenuV
 	-- local buzhuzhize=GDKPInfo.buzhuzhize
 	local RaidR=_G[GnUI]
-	local Check=PIGButton(RaidR,{"TOPRIGHT",RaidR,"TOPRIGHT",-30,-25},{60,22},"查账")
+	local Check=PIGButton(RaidR,{"TOPRIGHT",RaidR,"TOPRIGHT",-30,-25},{50,22},"查账")
 	Check:SetScript("OnClick", function (self)
 		if self.Box:IsShown() then
 			self.Box:Hide()
 		else
 			self.Box:ShowFun()
 		end
+	end);
+	Check.YY=PIGButton(Check,{"TOPRIGHT",Check,"TOPLEFT",-20,0},{50,22},"语音")
+	Check.YY:SetScript("OnClick", function (self)
+		PIGSendChatRaidParty(PIGA["GDKP"]["Rsetting"]["YYneirong"])
 	end);
 	-------------
 	Check.xuanzhongID=1;

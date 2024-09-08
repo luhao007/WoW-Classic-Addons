@@ -11,6 +11,65 @@ if (GTFO.RetailMode) then
 --- *  Khaz Algar (World)  *
 --- ************************
 
+GTFO.SpellID["446807"] = {
+  --desc = "Explosion (Bomb, Dalaran intro)";
+  sound = 3;
+};
+
+GTFO.SpellID["445935"] = {
+  --desc = "Heartbane Poison (Bomb, Dalaran intro)";
+  applicationOnly = true;
+  sound = 3;
+  trivialLevel = 80;
+};
+
+GTFO.SpellID["445974"] = {
+  --desc = "Bloodchill Toxin (Bomb, Dalaran intro)";
+  sound = 3;
+  trivialLevel = 80;
+};
+
+GTFO.SpellID["441738"] = {
+  --desc = "EZ-Mine Dynamite (Dislodged Dynamite)";
+  sound = 3;
+};
+
+GTFO.SpellID["433796"] = {
+  --desc = "Erratic Energy (Bomb, Post Dalaran)";
+  sound = 3;
+};
+
+GTFO.SpellID["448547"] = {
+  --desc = "Impale (Queensguard Zirix)";
+  sound = 3;
+};
+
+GTFO.SpellID["456047"] = {
+  --desc = "Storm Surge (Kereke)";
+  sound = 3;
+  applicationOnly = true;
+  trivialLevel = 90;
+};
+
+GTFO.SpellID["459022"] = {
+  --desc = "Plaguestomp (Rotfist)";
+  sound = 3;
+};
+
+GTFO.SpellID["450183"] = {
+  --desc = "Seismic Slam (Kronolith, Might of the Mountain)";
+  sound = 3;
+};
+
+GTFO.SpellID["390927"] = {
+  --desc = "Throw Dynamite (Sparklit Bomber)";
+  sound = 3;
+};
+
+GTFO.SpellID["457526"] = {
+  --desc = "Molten Barrage (Cogchewer)";
+  sound = 3;
+};
 
 --- ****************************
 --- * Ara-Kara, City of Echoes *
@@ -401,13 +460,22 @@ GTFO.SpellID["434441"] = {
 GTFO.SpellID["427331"] = {
   --desc = "Charged Bombardment (Cursed Stormrider)";
   sound = 3;
-  test = true; -- Unknown if this is avoidable?
 };
 
 GTFO.SpellID["432605"] = {
   --desc = "Charged Bombardment (Cursed Stormrider - Impact)";
   sound = 3;
-  test = true; -- Verification
+};
+
+GTFO.SpellID["434950"] = {
+  --desc = "Void Orb";
+  sound = 3;
+};
+
+GTFO.SpellID["433078"] = {
+  --desc = "Implosion (Void Cursed Crusher)";
+  sound = 3;
+  test = true;
 };
 
 GTFO.SpellID["426968"] = {

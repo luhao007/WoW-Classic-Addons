@@ -251,10 +251,10 @@ GTFO.SpellID["414144"] = {
   applicationOnly = true;
   soundFunction = function() 
 	local stacks = GTFO_DebuffStackCount("player", 414144);
-	if (stacks > 45 and stacks % 5 == 0) then
+	if (stacks >= 50 and stacks % 5 == 0) then
 		-- Lost 50% of your HP
 		return 1;
-	elseif ((stacks == 2 or stacks % 5 == 0) and stacks <= 45) then
+	elseif ((stacks == 2 or stacks % 10 == 0) and stacks < 50) then
 		-- Losing HP
 		return 2;
 	end
@@ -297,10 +297,10 @@ GTFO.SpellID["443852"] = {
   applicationOnly = true;
   soundFunction = function() 
 	local stacks = GTFO_DebuffStackCount("player", 443852);
-	if (stacks > 45 and stacks % 5 == 0) then
+	if (stacks >= 50 and stacks % 5 == 0) then
 		-- Lost 50% of your HP
 		return 1;
-	elseif ((stacks == 2 or stacks % 5 == 0) and stacks <= 45) then
+	elseif ((stacks == 2 or stacks % 10 == 0) and stacks < 50) then
 		-- Losing HP
 		return 2;
 	end

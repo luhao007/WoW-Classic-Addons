@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(2582, "DBM-Party-WarWithin", 4, 1269)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240718015351")
+mod:SetRevision("20240824045847")
 mod:SetCreatureID(213119)
 mod:SetEncounterID(2883)
 mod:SetHotfixNoticeRev(20240428000000)
@@ -31,14 +31,14 @@ mod:RegisterEventsInCombat(
 local warnVoidCorruption					= mod:NewFadesAnnounce(427329, 1)
 
 local specWarnVoidCorruption				= mod:NewSpecialWarningMoveTo(427329, nil, nil, nil, 1, 15)
-local specWarnEntropicReckoning				= mod:NewSpecialWarningMoveAwayCount(427854, nil, nil, nil, 1, 15)
+local specWarnEntropicReckoning				= mod:NewSpecialWarningMoveAwayCount(427852, nil, nil, nil, 1, 15)
 local specWarnUnbridledVoid					= mod:NewSpecialWarningDodgeCount(427869, nil, nil, nil, 1, 15)
 --local yellSomeAbility						= mod:NewYell(372107)
 --local specWarnGTFO						= mod:NewSpecialWarningGTFO(372820, nil, nil, nil, 1, 8)
 
-local timerVoidCorruptionCD					= mod:NewCDCountTimer(27.9, 427329, nil, nil, nil, 3)--Medium priority, some delays
-local timerEntropicReckoningCD				= mod:NewCDCountTimer(16.9, 427854, nil, nil, nil, 3)--Lowest priority, biggest delays
-local timerUnbfridledVoidCD					= mod:NewCDCountTimer(20.6, 427869, nil, nil, nil, 3)--Medium priority, some delays
+local timerVoidCorruptionCD					= mod:NewCDCountTimer(29.1, 427329, nil, nil, nil, 3)--Medium priority, some delays
+local timerEntropicReckoningCD				= mod:NewCDCountTimer(16.9, 427852, nil, nil, nil, 3)--Lowest priority, biggest delays
+local timerUnbfridledVoidCD					= mod:NewCDCountTimer(20.2, 427869, nil, nil, nil, 3)--Medium priority, some delays
 
 mod.vb.corruptionCount = 0
 mod.vb.reckoningCount = 0
@@ -76,7 +76,7 @@ function mod:OnCombatStart(delay)
 	self.vb.unbridledCount = 0
 	timerUnbfridledVoidCD:Start(7.6-delay, 1)
 	timerVoidCorruptionCD:Start(15.5-delay, 1)
-	timerEntropicReckoningCD:Start(21.6-delay, 1)
+	timerEntropicReckoningCD:Start(21.5-delay, 1)
 end
 
 --function mod:OnCombatEnd()
@@ -99,7 +99,6 @@ function mod:SPELL_CAST_START(args)
 		else
 			timerEntropicReckoningCD:Start(16.9, self.vb.reckoningCount+1)
 		end
-		timerEntropicReckoningCD:Start(nil, self.vb.reckoningCount+1)
 		updateAllTimers(self, 4.8)
 	elseif spellId == 427869 then
 		self.vb.unbridledCount = self.vb.unbridledCount + 1

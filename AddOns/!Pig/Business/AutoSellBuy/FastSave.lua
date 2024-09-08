@@ -22,7 +22,7 @@ local buticon=136058
 local gongnengName = "存储"
 local BusinessInfo=addonTable.BusinessInfo
 function BusinessInfo.FastSave()
-	local fujiF,fujiTabBut=PIGOptionsList_R(AutoSellBuy_UI.F,"存",60,"Left")
+	local fujiF,fujiTabBut=PIGOptionsList_R(AutoSellBuy_UI.F,"存",50,"Left")
 	PIGFontString(fujiF,{"TOPLEFT",fujiF,"TOPLEFT",10,-9},"|cff00FFFF(角色配置)|r")
 	fujiF.qingkogn = PIGButton(fujiF,{"TOPLEFT",fujiF,"TOPLEFT",120,-6},{80,22},"清空目录");
 	fujiF.qingkogn:SetScript("OnClick", function()

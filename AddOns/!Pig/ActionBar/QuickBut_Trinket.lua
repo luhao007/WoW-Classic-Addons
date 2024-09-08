@@ -116,9 +116,13 @@ QuickButUI.ButList[3]=function()
 			GameTooltip:SetPoint("BOTTOMLEFT",AutoTrinketList,"BOTTOMRIGHT",0,0);
 			GameTooltip:SetBagItem(self.bagID, self.slot)
 			GameTooltip:Show();
-			local tooltip, anchorFrame, shoppingTooltip1, shoppingTooltip2 = GameTooltip_InitializeComparisonTooltips(GameTooltip);
-			shoppingTooltip1:Hide()
-			shoppingTooltip2:Hide()
+			if tocversion<100000 then
+				local tooltip, anchorFrame, shoppingTooltip1, shoppingTooltip2 = GameTooltip_InitializeComparisonTooltips(GameTooltip);
+				shoppingTooltip1:Hide()
+				shoppingTooltip2:Hide()
+			else
+				GameTooltip_HideShoppingTooltips(GameTooltip);
+			end
 		end)
 		QkbutBut:SetScript("OnLeave", function()
 			GameTooltip:ClearLines();
@@ -275,6 +279,7 @@ QuickButUI.ButList[3]=function()
 		QuickTrinket.yidong=PIGFrame(QuickTrinket)
 		QuickTrinket.yidong:PIGSetBackdrop()
 		QuickTrinket.yidong:PIGSetMovable(QuickTrinket)
+		QuickTrinketUI.yidong:SetShown(not PIGA["QuickBut"]["TrinketFenlilock"])
 		QuickTrinket.yidong:SetScript("OnEnter", function (self)
 			self:SetBackdropBorderColor(0,0.8,1, 0.9);
 			GameTooltip:ClearLines();

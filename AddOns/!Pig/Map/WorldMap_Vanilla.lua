@@ -20,36 +20,44 @@ local function MouseXY()
 end
 function Mapfun.WorldMap_XY()
 	if not PIGA["Map"]["WorldMapXY"] then return end
-	WorldMapFrame.zuobiaoX = PIGFontString(WorldMapFrame,nil,"玩家 X:","OUTLINE")
-	if tocversion<30000 then
-		WorldMapFrame.zuobiaoX:SetPoint("BOTTOM", WorldMapFrame, "BOTTOM", -200, 9);
-	else
-		WorldMapFrame.zuobiaoX:SetPoint("BOTTOMLEFT", WorldMapFrame, "BOTTOMLEFT", 120, 9);
-	end
-	WorldMapFrame.zuobiaoX:SetTextColor(0, 1, 0, 1);
-	WorldMapFrame.zuobiaoXV = PIGFontString(WorldMapFrame,{"LEFT", WorldMapFrame.zuobiaoX, "RIGHT", 0, 0},"","OUTLINE")
-	WorldMapFrame.zuobiaoXV:SetTextColor(1, 1, 0, 1);
-
-	WorldMapFrame.zuobiaoY = PIGFontString(WorldMapFrame,{"LEFT", WorldMapFrame.zuobiaoX, "RIGHT", 40, 0},"Y:","OUTLINE")
-	WorldMapFrame.zuobiaoY:SetTextColor(0, 1, 0, 1);
-	WorldMapFrame.zuobiaoYV = PIGFontString(WorldMapFrame,{"LEFT", WorldMapFrame.zuobiaoY, "RIGHT", 0, 0},"","OUTLINE")
-	WorldMapFrame.zuobiaoYV:SetTextColor(1, 1, 0, 1);
-
-	WorldMapFrame.shubiaoX = PIGFontString(WorldMapFrame,nil,"鼠标 X:","OUTLINE")
-	if tocversion<30000 then
-		WorldMapFrame.shubiaoX:SetPoint("BOTTOM", WorldMapFrame, "BOTTOM", 100, 9);
-	else
-		WorldMapFrame.shubiaoX:SetPoint("BOTTOMLEFT", WorldMapFrame, "BOTTOMLEFT", 280, 9);
-	end
-	WorldMapFrame.shubiaoX:SetTextColor(0, 1, 0, 1);
-	WorldMapFrame.shubiaoXV = PIGFontString(WorldMapFrame,{"LEFT", WorldMapFrame.shubiaoX, "RIGHT", 0, 0},"","OUTLINE")
-	WorldMapFrame.shubiaoXV:SetTextColor(1, 1, 0, 1);
-
-	WorldMapFrame.shubiaoY = PIGFontString(WorldMapFrame,{"LEFT", WorldMapFrame.shubiaoX, "RIGHT", 40, 0},"Y:","OUTLINE")
-	WorldMapFrame.shubiaoY:SetTextColor(0, 1, 0, 1);
-	WorldMapFrame.shubiaoYV = PIGFontString(WorldMapFrame,{"LEFT", WorldMapFrame.shubiaoY, "RIGHT", 0, 0},"","OUTLINE")
-	WorldMapFrame.shubiaoYV:SetTextColor(1, 1, 0, 1);
+	WorldMapScrollChild.zuobiaoX = PIGFontString(WorldMapScrollChild,nil,"玩家 X:","OUTLINE")
 	
+	WorldMapScrollChild.zuobiaoX:SetTextColor(0, 1, 0, 1);
+	WorldMapScrollChild.zuobiaoXV = PIGFontString(WorldMapScrollChild,{"LEFT", WorldMapScrollChild.zuobiaoX, "RIGHT", 0, 0},"","OUTLINE")
+	WorldMapScrollChild.zuobiaoXV:SetTextColor(1, 1, 0, 1);
+
+	WorldMapScrollChild.zuobiaoY = PIGFontString(WorldMapScrollChild,{"LEFT", WorldMapScrollChild.zuobiaoX, "RIGHT", 40, 0},"Y:","OUTLINE")
+	WorldMapScrollChild.zuobiaoY:SetTextColor(0, 1, 0, 1);
+	WorldMapScrollChild.zuobiaoYV = PIGFontString(WorldMapScrollChild,{"LEFT", WorldMapScrollChild.zuobiaoY, "RIGHT", 0, 0},"","OUTLINE")
+	WorldMapScrollChild.zuobiaoYV:SetTextColor(1, 1, 0, 1);
+	if tocversion<30000 then
+		WorldMapScrollChild.zuobiaoX:SetPoint("BOTTOM", WorldMapScrollChild, "BOTTOM", -200, 9);
+	else
+		WorldMapScrollChild.zuobiaoX:SetPoint("BOTTOMLEFT", WorldMapScrollChild, "BOTTOMLEFT", 120, 0);
+		WorldMapScrollChild.zuobiaoX:SetIgnoreParentScale(true)
+		WorldMapScrollChild.zuobiaoXV:SetIgnoreParentScale(true)
+		WorldMapScrollChild.zuobiaoY:SetIgnoreParentScale(true)
+		WorldMapScrollChild.zuobiaoYV:SetIgnoreParentScale(true)
+	end
+
+	WorldMapScrollChild.shubiaoX = PIGFontString(WorldMapScrollChild,nil,"鼠标 X:","OUTLINE")
+	WorldMapScrollChild.shubiaoX:SetTextColor(0, 1, 0, 1);
+	WorldMapScrollChild.shubiaoXV = PIGFontString(WorldMapScrollChild,{"LEFT", WorldMapScrollChild.shubiaoX, "RIGHT", 0, 0},"","OUTLINE")
+	WorldMapScrollChild.shubiaoXV:SetTextColor(1, 1, 0, 1);
+
+	WorldMapScrollChild.shubiaoY = PIGFontString(WorldMapScrollChild,{"LEFT", WorldMapScrollChild.shubiaoX, "RIGHT", 40, 0},"Y:","OUTLINE")
+	WorldMapScrollChild.shubiaoY:SetTextColor(0, 1, 0, 1);
+	WorldMapScrollChild.shubiaoYV = PIGFontString(WorldMapScrollChild,{"LEFT", WorldMapScrollChild.shubiaoY, "RIGHT", 0, 0},"","OUTLINE")
+	WorldMapScrollChild.shubiaoYV:SetTextColor(1, 1, 0, 1);
+	if tocversion<30000 then
+		WorldMapScrollChild.shubiaoX:SetPoint("BOTTOM", WorldMapScrollChild, "BOTTOM", 100, 9);
+	else
+		WorldMapScrollChild.shubiaoX:SetPoint("BOTTOMLEFT", WorldMapScrollChild, "BOTTOMLEFT", 280, 0);
+		WorldMapScrollChild.shubiaoX:SetIgnoreParentScale(true)
+		WorldMapScrollChild.shubiaoXV:SetIgnoreParentScale(true)
+		WorldMapScrollChild.shubiaoY:SetIgnoreParentScale(true)
+		WorldMapScrollChild.shubiaoYV:SetIgnoreParentScale(true)
+	end
 	WorldMapFrame:HookScript("OnUpdate", function(self)
 		local mapinfo = C_Map.GetBestMapForUnit("player"); 
 		if not mapinfo then return end
@@ -57,14 +65,14 @@ function Mapfun.WorldMap_XY()
 		if not pos then return end
 		--local zuobiaoBB = C_Map.GetMapInfo(mapinfo).name, 
 		local zuobiaoXX,zuobiaoYY = math.ceil(pos.x*10000)/100, math.ceil(pos.y*10000)/100
-		self.zuobiaoXV:SetText(zuobiaoXX);
-		self.zuobiaoYV:SetText(zuobiaoYY);
+		WorldMapScrollChild.zuobiaoXV:SetText(zuobiaoXX);
+		WorldMapScrollChild.zuobiaoYV:SetText(zuobiaoYY);
 		local xxx, yyy = MouseXY()
 		if xxx and yyy then
 			local xxx =math.ceil(xxx*10000)/100
 			local yyy =math.ceil(yyy*10000)/100
-			self.shubiaoXV:SetText(xxx);
-			self.shubiaoYV:SetText(yyy);
+			WorldMapScrollChild.shubiaoXV:SetText(xxx);
+			WorldMapScrollChild.shubiaoYV:SetText(yyy);
 		end
 	end);
 end

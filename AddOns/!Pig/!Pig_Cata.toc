@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: geligasi
-## Version: 7.37
+## Version: 7.62
 ## SavedVariables: PIGA
 ## SavedVariablesPerCharacter: PIGA_Per
 ## IconTexture: interface/icons/ability_seal.blp
@@ -19,12 +19,13 @@ OptionsUI.lua
 Common\Common.xml
 Business\Business.xml
 Chat\Chat.xml
-ActionBar\ActionBar.xml
-BagBank\BagBank_Vanilla.xml
+ActionBar\ActionBar_Vanilla.xml
+CombatPlus\CombatPlus.xml
+Tooltip\Tooltip.xml
 FramePlus\FramePlus.xml
 UnitFrame\UnitFrame.xml
-CombatPlus\CombatPlus.xml
-Map\Map.xml
+BagBank\BagBank_Vanilla.xml
+Map\Map_Vanilla.xml
 CVars\CVars.xml
 Config\Config.lua
 About.lua

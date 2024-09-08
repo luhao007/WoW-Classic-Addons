@@ -13,7 +13,7 @@ logger = logging.getLogger('manager')
 
 CLASSIC_ERA_VER = '11401'
 CLASSIC_VER = '30400'
-RETAIL_VER = '110000'
+RETAIL_VER = '110002'
 
 
 def available_on(platforms):
@@ -298,6 +298,19 @@ class Manager:
                 shutil.rmtree(root/lib)
 
     @staticmethod
+    def handle_separated_installed_libs():
+        """Move the separated installed addon to !!Libs folder"""
+        libs = ['Ace3', 'HereBeDragons', 'Krowi_WorldMapButtons']
+        root = Path('Addons')
+        for addon in os.listdir(root):
+            if addon in libs or addon.startswith('Lib') or addon.startswith('!Lib'):
+                print(f'Moving {addon} to !!Libs...')
+                shutil.copytree(root/addon,
+                                root/'!!Libs'/addon,
+                                dirs_exist_ok=True)
+                shutil.rmtree(root/addon)
+
+    @staticmethod
     def _handle_lib_in_libs(root):
         for lib in os.listdir(root):
             if not os.path.isdir(root/lib) or lib == 'Ace3':
@@ -564,7 +577,7 @@ class Manager:
         )
 
     @staticmethod
-    @available_on(['classic'])
+    @available_on(['classic', 'retail'])
     def handle_rs():
         utils.change_defaults(
             'AddOns/RareScanner/Core/Libs/RSConstants.lua',
@@ -575,7 +588,8 @@ class Manager:
                 'AceConsole-3.0', 'AceDB-3.0', 'AceDBOptions-3.0',
                 'AceGUI-3.0', 'AceGUI-3.0-SharedMediaWidgets',
                 'AceLocale-3.0', 'AceSerializer-3.0', 'CallbackHandler-1.0', 'HereBeDragons',
-                'LibDBIcon-1.0', 'LibDialog-1.0-9.0.1.1', 'LibSharedMedia-3.0', 'LibStub', 'LibTime-1.0'],
+                'Krowi_WorldMapButtons-1.4',
+                'LibDBIcon-1.0', 'LibSharedMedia-3.0', 'LibStub', 'LibTime-1.0'],
             'AddOns/RareScanner/ExternalLibs',
             'AddOns/RareScanner/ExternalLibs/Libs.xml'
         )
@@ -607,12 +621,11 @@ class Manager:
         utils.rm_tree('Addons/Titan/Libs')
         utils.remove_libs_in_file('Addons/Titan/Titan_Mainline.toc',
                                     ['Libs'])
-        utils.remove_libs_in_file('Addons/TitanClassic/TitanClassic_Cata.toc',
-                                    ['Libs'])
-        utils.remove_libs_in_file('Addons/TitanClassic/TitanClassic_Vanilla.toc',
-                                    ['Libs'])
-        utils.remove_libs_in_file('Addons/TitanClassic/TitanClassic_Wrath.toc',
-                                    ['Libs'])
+
+        for f in ['Cata', 'Vanilla', 'Wrath', 'Classic']:
+            p = f'Addons/TitanClassic/TitanClassic_{f}.toc'
+            if os.path.exists(p):
+                utils.remove_libs_in_file(p, ['Libs'])
 
     @staticmethod
     def handle_tomtom():
@@ -689,6 +702,9 @@ class Manager:
 
     @staticmethod
     def handle_whlooter():
+        if not os.path.exists('Addons/+Wowhead_Looter/'):
+            return
+
         utils.change_defaults(
             'Addons/+Wowhead_Looter/Wowhead_Looter.lua',
             'wlSetting = {minimap=false};'

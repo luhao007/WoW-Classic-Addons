@@ -110,7 +110,7 @@ end);
 PIGAddOnMemoryCPU.NR.COLLECT = PIGButton(PIGAddOnMemoryCPU.NR,{"LEFT",PIGAddOnMemoryCPU.NR.CZ,"RIGHT",20,0},{50,18},L["DEBUG_COLLECT"])
 --PIGAddOnMemoryCPU.NR.COLLECT:Disable()
 PIGAddOnMemoryCPU.NR.COLLECT:SetMotionScriptsWhileDisabled(true)
-PIGEnter(PIGAddOnMemoryCPU.NR.COLLECT,L["LIB_TIPS"],L["DEBUG_COLLECTTIPS"]);
+PIGEnter(PIGAddOnMemoryCPU.NR.COLLECT,L["LIB_TIPS"]..": ",L["DEBUG_COLLECTTIPS"]);
 PIGAddOnMemoryCPU.NR.COLLECT:SetScript("OnClick", function (self)
 	collectgarbage()--回收内存
 	PIGAddOnMemoryCPU.gengxinhang(PIGAddOnMemoryCPU.NR.List.Scroll)

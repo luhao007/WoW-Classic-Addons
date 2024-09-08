@@ -48,7 +48,7 @@ end
 --判断频道信息显示与否
 local function PIGIsListeningForMessageType(messageType)
 	-- print(IsRestrictedAccount())	
-	local pindaomulu = {GetChatWindowMessages(1)}
+	local pindaomulu = {GetChatWindowMessages(DEFAULT_CHAT_FRAME:GetID())}
 	for i=1,#pindaomulu do
 		if ( pindaomulu[i] == messageType ) then
 			return true;
@@ -57,15 +57,19 @@ local function PIGIsListeningForMessageType(messageType)
 	return false;
 end
 local function PIGIsIsCHANNELJoin(pdname)
-	local Showchatmulu = {GetChatWindowChannels(1)}
-	for ii=1,#Showchatmulu do
-		if pdname==Showchatmulu[ii] then
+	-- local channels = {GetChannelList()}
+	-- for x=1,#channels,3 do
+	-- 	local id, name, disabled=channels[x], channels[x+1], channels[x+2]
+	-- end
+	local channels = {GetChatWindowChannels(DEFAULT_CHAT_FRAME:GetID())}
+	for x=1,#channels,2 do
+		if pdname==channels[x] then
 			return true
 		end
-		if pdname=="PIG" or pdname==worldname then
+		if pdname==worldname then
 			for x=1,ChatpindaoMAX do
 				local newpindaoname = pdname..x
-				if Showchatmulu[ii]==newpindaoname then
+				if channels[x]==newpindaoname then
 					return true
 				end
 			end
@@ -284,8 +288,7 @@ function QuickChatfun.Update_ChatBut_icon()
 			{"CHANNEL_1",GENERAL},
 			{"CHANNEL_2",TRADE},
 			{"CHANNEL_3",LOOK_FOR_GROUP},
-			{"CHANNEL_4","PIG"},
-			{"CHANNEL_5",worldname},
+			{"CHANNEL_4",worldname},
 		}
 		for i=1,#chaozhaopindaoX do
 			if QuickChatFFF_UI[chaozhaopindaoX[i][1]] then
@@ -316,10 +319,14 @@ function QuickChatfun.Open()
 	if QuickChatFFF_UI then return end
 	for i=1,#L["CHAT_QUKBUTNAME"]-1 do
 		if PIGA["Chat"]["QuickChat_ButList"][L["CHAT_QUKBUTNAME"][i]]==nil then
-			PIGA["Chat"]["QuickChat_ButList"][L["CHAT_QUKBUTNAME"][i]]=true
+			if i==11 then
+				PIGA["Chat"]["QuickChat_ButList"][L["CHAT_QUKBUTNAME"][i]]=false
+			else
+				PIGA["Chat"]["QuickChat_ButList"][L["CHAT_QUKBUTNAME"][i]]=true
+			end
 		end
 	end
-	PIGA["Chat"]["QuickChat_ButList"]["P"]=false
+	
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL", TihuanBQfun)
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_SAY", TihuanBQfun)
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_YELL", TihuanBQfun)
@@ -486,14 +493,13 @@ function QuickChatfun.Open()
 	QuickChatFFF.CHANNEL_1 = ADD_chatbut(QuickChatFFF,"CHANNEL",L["CHAT_QUKBUTNAME"][8],GENERAL,{0.888, 0.668, 0.668})
 	QuickChatFFF.CHANNEL_2 = ADD_chatbut(QuickChatFFF,"CHANNEL",L["CHAT_QUKBUTNAME"][9],TRADE,{0.888, 0.668, 0.668})
 	QuickChatFFF.CHANNEL_3 = ADD_chatbut(QuickChatFFF,"CHANNEL",L["CHAT_QUKBUTNAME"][10],LOOK_FOR_GROUP,{0.888, 0.668, 0.668})
-	QuickChatFFF.CHANNEL_4 = ADD_chatbut(QuickChatFFF,"CHANNEL",L["CHAT_QUKBUTNAME"][11],"PIG",{0.4,1,0.8})
-	QuickChatFFF.CHANNEL_5 = ADD_chatbut(QuickChatFFF,"CHANNEL",L["CHAT_QUKBUTNAME"][12],worldname,{0.888, 0.668, 0.668})
+	QuickChatFFF.CHANNEL_4 = ADD_chatbut(QuickChatFFF,"CHANNEL",L["CHAT_QUKBUTNAME"][11],worldname,{0.888, 0.668, 0.668})
 	--
 	QuickChatfun.QuickBut_Keyword()
 	QuickChatfun.QuickBut_Roll()
 	QuickChatfun.QuickBut_Stats()
 	QuickChatfun.QuickBut_Jilu()
-	QuickChatfun.QuickBut_jiuwei()
+	QuickChatfun.QuickBut_Time()
 	QuickChatfun.Update_QuickChatPoint(PIGA["Chat"]["QuickChat_maodian"])
 	C_Timer.After(3,QuickChatfun.Update_ChatBut_icon)
 	C_Timer.After(5,QuickChatfun.Update_ChatBut_icon)

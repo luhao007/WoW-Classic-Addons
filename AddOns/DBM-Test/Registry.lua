@@ -10,7 +10,13 @@ test.Registry = {
 	sortedTests = {}
 }
 
+---@type table<string|integer, TestDefinition[]>
 local testsByMod = {}
+
+function test:GetTestsForMod(mod)
+	mod = type(mod) == "table" and mod.id or mod
+	return testsByMod[mod]
+end
 
 ---@param def1 TestDefinition
 ---@param def2 TestDefinition
@@ -56,6 +62,7 @@ function test:DefineTest(def)
 	end
 	self.Registry.tests[def.name] = def
 	table.insert(self.Registry.sortedTests, def.name)
+	def.mod = tostring(def.mod) -- Canonicalize mod ids to strings because DBM:NewMod() does so internally and the UI only has the stringified ID available
 	testsByMod[def.mod] = testsByMod[def.mod] or {}
 	processIgnores(def.ignoreWarnings)
 	propagateIgnores(def, testsByMod[def.mod])

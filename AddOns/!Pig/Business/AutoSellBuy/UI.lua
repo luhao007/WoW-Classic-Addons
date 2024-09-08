@@ -43,6 +43,7 @@ function BusinessInfo.AutoSellBuy_ADDUI()
 	BusinessInfo.AutoBuy()
 	BusinessInfo.FastOpen()
 	BusinessInfo.FastFen()
+	BusinessInfo.FastXuan()
 	BusinessInfo.FastSave()
 	BusinessInfo.FastTake()
 end

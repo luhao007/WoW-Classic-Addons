@@ -3,6 +3,7 @@
 ## Version: 20240524
 ## RequiredDeps: DBM-Core
 ## DefaultState: enabled
+## IconTexture: Interface\AddOns\DBM-Core\textures\dbm_airhorn
 
 ## Title: |cffffe00a<|r|cffff7d0aDBM Media|r|cffffe00a>|r |cff308530Voicepack Yike|r
 ## Notes: https://github.com/Mini-Dragon/DBM-VoicePack-Yike

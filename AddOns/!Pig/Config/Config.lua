@@ -142,7 +142,7 @@ StaticPopupDialogs["PEIZHI_ZAIRUQUEREN"] = {
 }
 
 ---提示-----------------------------------
-fuFrame.tishi = PIGFontString(fuFrame,{"TOPLEFT", fuFrame, "TOPLEFT", 20, -300},L["LIB_TIPS"])
+fuFrame.tishi = PIGFontString(fuFrame,{"TOPLEFT", fuFrame, "TOPLEFT", 20, -300},L["LIB_TIPS"]..": ")
 fuFrame.tishi:SetTextColor(1, 1, 0, 1);
 fuFrame.tishi1 = PIGFontString(fuFrame,{"TOPLEFT", fuFrame.tishi, "TOPRIGHT", 10, -2},L["CONFIG_ERRTIPS"])
 fuFrame.tishi1:SetTextColor(0.6, 1, 0, 1);

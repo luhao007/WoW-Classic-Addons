@@ -5,31 +5,50 @@ local PIGFrame=Create.PIGFrame
 local PIGButton = Create.PIGButton
 local PIGSetFont=Create.PIGSetFont
 --======================
-function Create.About_Update(txtUI,YY,Panel)
-	txtUI.Reminder = Create.PIGFontString(txtUI,{"TOP",txtUI,"TOP",0,YY},L["ABOUT_REMINDER"],"OUTLINE",16)
-	txtUI.UpdateURLtxt = Create.PIGFontString(txtUI,{"TOPLEFT",txtUI,"TOPLEFT",20,YY-30},L["ABOUT_UPDATEADD"],"OUTLINE",15)
-	txtUI.UpdateURL = CreateFrame("EditBox", nil, txtUI, "InputBoxInstructionsTemplate");
-	txtUI.UpdateURL:SetSize(460,30);
-	txtUI.UpdateURL:SetPoint("LEFT",txtUI.UpdateURLtxt,"RIGHT",0,0);
-	PIGSetFont(txtUI.UpdateURL, 16, "OUTLINE");
-	txtUI.UpdateURL:SetAutoFocus(false);
-	txtUI.UpdateURL:HookScript("OnShow", function(self)
-		self:Insert("https://www.curseforge.com/wow/addons/pig");
+local Aboutdata={
+	["Mail"] = "xdfxjf1004@hotmail.com",
+	["URL"] = "https://www.curseforge.com/wow/addons/pig",
+	["Media"] = "|cffFF00FF哔哩哔哩/抖音|r搜",
+	["Author"] = "geligasi",
+	["Other"]="QQ群|cff00FFFF27397148|r 2群|cff00FFFF117883385|r YY频道|cff00FFFF113213|r"
+}
+local function Add_EditBox(fuUI,Point,biaoti,txt,WWW)
+	local WWW=WWW or 460
+	local EditButBT = Create.PIGFontString(fuUI,Point,biaoti,"OUTLINE",15)
+	local EditBut = CreateFrame("EditBox", nil, fuUI, "InputBoxInstructionsTemplate");
+	EditBut:SetSize(WWW,30);
+	EditBut:SetPoint("LEFT",EditButBT,"RIGHT",4,0);
+	PIGSetFont(EditBut, 16, "OUTLINE");
+	EditBut:SetTextInsets(6, 0, 0, 0)
+	EditBut:SetAutoFocus(false);
+	EditBut:HookScript("OnShow", function(self)
+		self:SetText(txt);
 	end); 
-	function txtUI.UpdateURL:SetTextpig()
-		self:SetText("https://www.curseforge.com/wow/addons/pig");
+	function EditBut:SetTextpig()
+		self:SetText(txt);
 	end
-	txtUI.UpdateURL:SetScript("OnEscapePressed", function(self) self:SetTextpig() self:ClearFocus() end);
-	txtUI.UpdateURL:SetScript("OnEditFocusLost", function(self) self:SetTextpig() end);
-	txtUI.Mail = Create.PIGFontString(txtUI,{"TOPLEFT",txtUI.UpdateURLtxt,"BOTTOMLEFT",0,-20},L["ABOUT_MAIL"],"OUTLINE",15)
+	EditBut:SetScript("OnEditFocusGained", function(self) self:HighlightText() end);
+	EditBut:SetScript("OnEscapePressed", function(self) self:SetTextpig() self:ClearFocus() end);
+	EditBut:SetScript("OnEditFocusLost", function(self) self:SetTextpig() end);
+	return EditButBT,EditBut
+end
+function Create.About_Update(txtUI,YY,Panel,data)
+	local data=data or Aboutdata
+	txtUI.Reminder = Create.PIGFontString(txtUI,{"TOP",txtUI,"TOP",0,YY},L["ABOUT_REMINDER"],"OUTLINE",16)
+	Add_EditBox(txtUI,{"TOPLEFT",txtUI,"TOPLEFT",20,YY-30},L["ABOUT_UPDATEADD"],data.URL)
+	Add_EditBox(txtUI,{"TOPLEFT",txtUI,"TOPLEFT",20,YY-70},L["ABOUT_MAIL"],data.Mail)
+	Add_EditBox(txtUI,{"TOPLEFT",txtUI,"TOPLEFT",20,YY-110},L["ABOUT_MEDIA"]..data.Media,data.Author,280)
 	if Panel~="Panel" and GetLocale() == "zhCN" then
-		txtUI.ShowAuthor = PIGButton(txtUI,{"LEFT",txtUI.Mail,"RIGHT",10,0},{110,24},L["ADDON_AUTHOR"])
+		txtUI.ShowAuthor = PIGButton(txtUI,{"TOPLEFT",txtUI,"TOPLEFT",20,YY-150},{110,24},L["ADDON_AUTHOR"])
 		txtUI.ShowAuthor:SetScript("OnClick", function (self)
-			Pig_OptionsUI:ShowAuthor()
+			local fujiUI=txtUI:GetParent():GetParent():GetParent():GetParent()
+			fujiUI:ShowAuthor()
 		end);
+		if data.Other then
+			txtUI.Other = Create.PIGFontString(txtUI,{"LEFT",txtUI.ShowAuthor,"RIGHT",20,0},data.Other,"OUTLINE",15)
+			txtUI.Other:SetJustifyH("LEFT")
+		end
 	end
-	txtUI.Bili = Create.PIGFontString(txtUI,{"TOPLEFT",txtUI.Mail,"BOTTOMLEFT",0,-20},L["ABOUT_BILI"].."\n\n"..L["ABOUT_QQ"],"OUTLINE",15)
-	txtUI.Bili:SetJustifyH("LEFT")
 end
 function Create.About_Thanks(self,YY)
 	self.tks = Create.PIGFontString(self,{"TOP",self,"TOP",0,YY},L["ABOUT_OTHERADDONS"],"OUTLINE",16)
@@ -47,6 +66,7 @@ function Create.About_Thanks(self,YY)
 		function addname_ot:SetTextpig()
 			self:SetText(L["ABOUT_OTHERADDON_LIST"][i][1]);
 		end
+		addname_ot:SetScript("OnEditFocusGained", function(self) self:HighlightText() end);
 		addname_ot:SetScript("OnEscapePressed", function(self) self:SetTextpig() self:ClearFocus() end);
 		addname_ot:SetScript("OnEditFocusLost", function(self) self:SetTextpig() end);
 		local pigaddname = Create.PIGFontString(self,{"LEFT",addname_ot,"RIGHT",10,0},L["ABOUT_OTHERADDON_LIST"][i][2]..L["ABOUT_OTHERADDONS_DOWN"],"OUTLINE",15)
@@ -61,6 +81,7 @@ function Create.About_Thanks(self,YY)
 		function UpdateURL:SetTextpig()
 			self:SetText(L["ABOUT_OTHERADDON_LIST"][i][3]);
 		end
+		UpdateURL:SetScript("OnEditFocusGained", function(self) self:HighlightText() end);
 		UpdateURL:SetScript("OnEscapePressed", function(self) self:SetTextpig() self:ClearFocus() end);
 		UpdateURL:SetScript("OnEditFocusLost", function(self) self:SetTextpig() end);	
 	end

@@ -292,7 +292,6 @@ local function TalentFrame_Update_Pig(TFID)
 		_G[talentFrameName.."Arrow"..i]:Hide();
 	end
 end
-
 local function TalentFrame_ADD()
 	UIPanelWindows["PlayerTalentFrame"].width=allwww
 	local old_SetTalentButtonLocation=SetTalentButtonLocation

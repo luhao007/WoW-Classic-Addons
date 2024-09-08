@@ -469,8 +469,8 @@ function BusinessInfo.Item()
 	end)
 	----
 	fujiF:RegisterEvent("PLAYER_ENTERING_WORLD")
-	
 	fujiF:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
+	fujiF:RegisterEvent("PLAYER_TALENT_UPDATE")
 	fujiF:RegisterEvent("BANKFRAME_OPENED")
 	fujiF:RegisterEvent("PLAYERBANKSLOTS_CHANGED")
 	fujiF:RegisterEvent("MAIL_SHOW");
@@ -495,7 +495,7 @@ function BusinessInfo.Item()
 				--print("进出副本")
 			end
 		end
-		if event=="PLAYER_EQUIPMENT_CHANGED" then
+		if event=="PLAYER_EQUIPMENT_CHANGED" or event=="PLAYER_TALENT_UPDATE" then
 			SAVE_C()
 		end
 		if event=="BAG_UPDATE" then

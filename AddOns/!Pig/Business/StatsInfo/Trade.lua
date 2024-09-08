@@ -1,8 +1,8 @@
 local addonName, addonTable = ...;
 local _, _, _, tocversion = GetBuildInfo()
--- local fmod=math.fmod
--- local match = _G.string.match
+local IsAddOnLoaded=IsAddOnLoaded or C_AddOns and C_AddOns.IsAddOnLoaded
 --
+local Fun=addonTable.Fun
 local Create=addonTable.Create
 local PIGLine=Create.PIGLine
 local PIGFrame=Create.PIGFrame
@@ -497,6 +497,7 @@ function BusinessInfo.Trade()
 		end
 		return false
 	end
+	local IsFriend=Fun.IsFriend
 	fujiF:RegisterEvent("UI_INFO_MESSAGE");
 	fujiF:SetScript("OnEvent", function(self,event,arg1,arg2)
 		if event=="UI_INFO_MESSAGE" then
@@ -523,43 +524,56 @@ function BusinessInfo.Trade()
 				else
 					PIGA["StatsInfo"]["TradeData"][StatsInfo.allname]={{YYDAY},{{TradeDATA}}}
 				end
-				if PIGA["StatsInfo"]["TradeTongGao"] then
-					local FSmsgT = {"",""}
-					if TradeFrame.PIG_Data.MoneyP>0 then
-						FSmsgT[1]=FSmsgT[1]..(TradeFrame.PIG_Data.MoneyP*0.0001).."G"
+				
+				local FSmsgT = {"",""}
+				if TradeFrame.PIG_Data.MoneyP>0 then
+					FSmsgT[1]=FSmsgT[1]..(TradeFrame.PIG_Data.MoneyP*0.0001).."G"
+				end
+				for i=1,6 do
+					if TradeFrame.PIG_Data.ItemP[i]~=NONE then
+						FSmsgT[1]=FSmsgT[1]..TradeFrame.PIG_Data.ItemP[i][1]
+						if TradeFrame.PIG_Data.ItemP[i][2]>1 then
+							FSmsgT[1]=FSmsgT[1].."×"..TradeFrame.PIG_Data.ItemP[i][2]
+						end
 					end
-					for i=1,6 do
-						if TradeFrame.PIG_Data.ItemP[i]~=NONE then
-							FSmsgT[1]=FSmsgT[1]..TradeFrame.PIG_Data.ItemP[i][1]
-							if TradeFrame.PIG_Data.ItemP[i][2]>1 then
-								FSmsgT[1]=FSmsgT[1].."×"..TradeFrame.PIG_Data.ItemP[i][2]
+				end
+				if FSmsgT[1]~="" then FSmsgT[1]="交出"..FSmsgT[1] end
+				if TradeFrame.PIG_Data.MoneyT>0 then
+					FSmsgT[2]=FSmsgT[2]..(TradeFrame.PIG_Data.MoneyT*0.0001).."G"
+				end
+				for i=1,6 do
+					if TradeFrame.PIG_Data.ItemT[i]~=NONE then
+						FSmsgT[2]=FSmsgT[2]..TradeFrame.PIG_Data.ItemT[i][1]
+						if TradeFrame.PIG_Data.ItemT[i][2]>1 then
+							FSmsgT[2]=FSmsgT[2].."×"..TradeFrame.PIG_Data.ItemT[i][2]
+						end
+					end
+				end
+				if FSmsgT[2]~="" and FSmsgT[1]~="" then
+					FSmsgT[2]=",收到"..FSmsgT[2]
+				elseif FSmsgT[2]~="" then
+					FSmsgT[2]="收到"..FSmsgT[2]
+				end
+				if FSmsgT[1]~="" or FSmsgT[2]~="" then
+					local msgT = "!Pig:与<"..TradeFrame.PIG_Data.Name..">交易成功,"..FSmsgT[1]..FSmsgT[2]
+					if PIGA["StatsInfo"]["TradeTongGao"] then
+						if not IsFriend(TradeFrame.PIG_Data.Name) then
+							if PIGA["StatsInfo"]["TradeTongGaoChannel"]=="WHISPER" then
+								SendChatMessage(msgT, "WHISPER", nil, TradeFrame.PIG_Data.Name);
+							else
+								if HasLFGRestrictions() then
+									SendChatMessage(msgT, "INSTANCE_CHAT");
+								elseif IsInRaid() then
+									SendChatMessage(msgT, "RAID");
+								elseif IsInGroup() then
+									SendChatMessage(msgT, "PARTY");
+								end
+								return
 							end
 						end
 					end
-					if FSmsgT[1]~="" then FSmsgT[1]="交出"..FSmsgT[1] end
-					if TradeFrame.PIG_Data.MoneyT>0 then
-						FSmsgT[2]=FSmsgT[2]..(TradeFrame.PIG_Data.MoneyT*0.0001).."G"
-					end
-					for i=1,6 do
-						if TradeFrame.PIG_Data.ItemT[i]~=NONE then
-							FSmsgT[2]=FSmsgT[2]..TradeFrame.PIG_Data.ItemT[i][1]
-							if TradeFrame.PIG_Data.ItemT[i][2]>1 then
-								FSmsgT[2]=FSmsgT[2].."×"..TradeFrame.PIG_Data.ItemT[i][2]
-							end
-						end
-					end
-					if FSmsgT[2]~="" and FSmsgT[1]~="" then
-						FSmsgT[2]=",收到"..FSmsgT[2]
-					elseif FSmsgT[2]~="" then
-						FSmsgT[2]="收到"..FSmsgT[2]
-					end
-					if FSmsgT[1]~="" or FSmsgT[2]~="" then
-						local msgT = "与<"..TradeFrame.PIG_Data.Name..">交易成功,"..FSmsgT[1]..FSmsgT[2]
-						if HasLFGRestrictions() then
-							SendChatMessage("!Pig:"..msgT, "INSTANCE_CHAT", nil, TradeFrame.PIG_Data.Name);
-						else	
-							SendChatMessage("!Pig:"..msgT, PIGA["StatsInfo"]["TradeTongGaoPindao"], nil, TradeFrame.PIG_Data.Name);
-						end
+					if IsAddOnLoaded(L.extLsit[2]) and PIGA["GDKP"]["Rsetting"]["tradetonggao"] then
+						SendChatMessage(msgT, "RAID");
 					end
 				end
 				-- 

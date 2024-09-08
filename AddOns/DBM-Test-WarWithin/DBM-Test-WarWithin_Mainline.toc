@@ -1,0 +1,27 @@
+## Interface: 30400
+## Dependencies: DBM-Test
+## LoadOnDemand: 1
+## DefaultState: enabled
+## IconTexture: Interface\AddOns\DBM-Core\textures\dbm_airhorn
+
+## Title: |cffffe00a<|r|cffff7d0aDBM Tests|r|cffffe00a>|r |cff69ccf0Tests for The War Within mods|r
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFF69CCF0测试功能|r |cFF22B14C地心之战|r
+
+## X-DBM-Test: true
+## X-Part-Of: DBM-Core
+
+NerubarPalace/Ulgrax-Mythic-Wipe1.lua
+NerubarPalace/BloodboundHorror-Mythic-Kill.lua
+NerubarPalace/Sikran-Mythic-Wipe1.lua
+NerubarPalace/Rashanan-Mythic-Wipe1.lua
+NerubarPalace/Ovinax-Mythic-Wipe1.lua
+NerubarPalace/Kyveza-Mythic-Wipe1.lua
+NerubarPalace/SilkenCourt-Mythic-Wipe1.lua
+
+NerubarPalace/Reports/Ulgrax-Mythic-Wipe1.lua
+NerubarPalace/Reports/BloodboundHorror-Mythic-Kill.lua
+NerubarPalace/Reports/Sikran-Mythic-Wipe1.lua
+NerubarPalace/Reports/Rashanan-Mythic-Wipe1.lua
+NerubarPalace/Reports/Ovinax-Mythic-Wipe1.lua
+NerubarPalace/Reports/Kyveza-Mythic-Wipe1.lua
+NerubarPalace/Reports/SilkenCourt-Mythic-Wipe1.lua

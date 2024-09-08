@@ -6,12 +6,11 @@ local Create = addonTable.Create
 local PIGLine=Create.PIGLine
 local PIGButton=Create.PIGButton
 local PIGOptionsList=Create.PIGOptionsList
-local PIGFontString=Create.PIGFontString
 local GetPIGID=addonTable.Fun.GetPIGID
 
 local SendAddonMessage = SendAddonMessage or C_ChatInfo and C_ChatInfo.SendAddonMessage
 ----------------------------------------
-local fuFrame = PIGOptionsList(L["ABOUT_TABNAME"])
+local fuFrame = PIGOptionsList(L["ABOUT_TABNAME"],"BOT")
 ------
 Create.About_Update(fuFrame,-10)
 PIGLine(fuFrame,"TOP",-200,1.1)

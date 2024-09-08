@@ -263,6 +263,21 @@ function BagBankfun.Zhenghe(Rneirong,tabbut)
 				Bank_Item_lv(BankFrame,nil,arg1)
 			end
 		end)
+		BankFrameTab1:HookScript("OnClick", function(self)
+			for i=2,#bagData["bankID"] do
+				OpenBag(bagData["bankID"][i])
+			end
+		end); 
+		BankFrameTab2:HookScript("OnClick", function(self)
+			for i=2,#bagData["bankID"] do
+				CloseBag(bagData["bankID"][i])
+			end
+		end); 
+		BankFrameTab3:HookScript("OnClick", function(self)
+			for i=2,#bagData["bankID"] do
+				CloseBag(bagData["bankID"][i])
+			end
+		end); 
 		--分类设置
 		BankSlotsFrame.fenlei = CreateFrame("Button",nil,BankSlotsFrame, "TruncatedButtonTemplate");
 		BankSlotsFrame.fenlei:SetHighlightTexture("interface/buttons/ui-common-mousehilight.blp");

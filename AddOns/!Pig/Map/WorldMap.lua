@@ -18,31 +18,32 @@ local function MouseXY()
 end
 function Mapfun.WorldMap_XY()
 	if not PIGA["Map"]["WorldMapXY"] then return end
-	local zuobiaoXYFFF = CreateFrame("Frame", nil, WorldMapScrollChild,"BackdropTemplate");
+	WorldMapScrollChild.zuobiaoXYFFFX = CreateFrame("Frame", nil, WorldMapScrollChild);
+	local zuobiaoXYFFF=WorldMapScrollChild.zuobiaoXYFFFX
 	zuobiaoXYFFF:SetSize(600,32);
-	zuobiaoXYFFF:SetPoint("BOTTOM",WorldMapScrollChild,"BOTTOM",0,0);
+	zuobiaoXYFFF:SetPoint("BOTTOMLEFT",WorldMapScrollChild,"BOTTOMLEFT",10,0);
 	zuobiaoXYFFF:SetFrameLevel(3000)
-	zuobiaoXYFFF.zuobiaoX = PIGFontString(zuobiaoXYFFF,{"BOTTOM", zuobiaoXYFFF, "BOTTOM", -200, 6},"玩家 X:","OUTLINE", 18)
+	zuobiaoXYFFF:SetIgnoreParentScale(true)
+	zuobiaoXYFFF.zuobiaoX = PIGFontString(zuobiaoXYFFF,{"BOTTOMLEFT", zuobiaoXYFFF, "BOTTOMLEFT", 40, 2},"玩家 X:","OUTLINE")
 	zuobiaoXYFFF.zuobiaoX:SetTextColor(0, 1, 0, 1);
-	zuobiaoXYFFF.zuobiaoXV = PIGFontString(zuobiaoXYFFF,{"LEFT", zuobiaoXYFFF.zuobiaoX, "RIGHT", 0, 0},"","OUTLINE", 18)
+	zuobiaoXYFFF.zuobiaoXV = PIGFontString(zuobiaoXYFFF,{"LEFT", zuobiaoXYFFF.zuobiaoX, "RIGHT", 0, 0},"","OUTLINE")
 	zuobiaoXYFFF.zuobiaoXV:SetTextColor(1, 1, 0, 1);
 
-	zuobiaoXYFFF.zuobiaoY = PIGFontString(zuobiaoXYFFF,{"LEFT", zuobiaoXYFFF.zuobiaoX, "RIGHT", 60, 0},"Y:","OUTLINE", 18)
+	zuobiaoXYFFF.zuobiaoY = PIGFontString(zuobiaoXYFFF,{"LEFT", zuobiaoXYFFF.zuobiaoX, "RIGHT", 60, 0},"Y:","OUTLINE")
 	zuobiaoXYFFF.zuobiaoY:SetTextColor(0, 1, 0, 1);
-	zuobiaoXYFFF.zuobiaoYV = PIGFontString(zuobiaoXYFFF,{"LEFT", zuobiaoXYFFF.zuobiaoY, "RIGHT", 0, 0},"","OUTLINE", 18)
+	zuobiaoXYFFF.zuobiaoYV = PIGFontString(zuobiaoXYFFF,{"LEFT", zuobiaoXYFFF.zuobiaoY, "RIGHT", 0, 0},"","OUTLINE")
 	zuobiaoXYFFF.zuobiaoYV:SetTextColor(1, 1, 0, 1);
 
-	zuobiaoXYFFF.shubiaoX = PIGFontString(zuobiaoXYFFF,{"BOTTOM", zuobiaoXYFFF, "BOTTOM", 100, 6},"鼠标 X:","OUTLINE", 18)
+	zuobiaoXYFFF.shubiaoX = PIGFontString(zuobiaoXYFFF,{"LEFT", zuobiaoXYFFF.zuobiaoY, "RIGHT", 80, 0},"鼠标 X:","OUTLINE")
 	zuobiaoXYFFF.shubiaoX:SetTextColor(0, 1, 0, 1);
 
-	zuobiaoXYFFF.shubiaoXV = PIGFontString(zuobiaoXYFFF,{"LEFT", zuobiaoXYFFF.shubiaoX, "RIGHT", 0, 0},"","OUTLINE", 18)
+	zuobiaoXYFFF.shubiaoXV = PIGFontString(zuobiaoXYFFF,{"LEFT", zuobiaoXYFFF.shubiaoX, "RIGHT", 0, 0},"","OUTLINE")
 	zuobiaoXYFFF.shubiaoXV:SetTextColor(1, 1, 0, 1);
 
-	zuobiaoXYFFF.shubiaoY = PIGFontString(zuobiaoXYFFF,{"LEFT", zuobiaoXYFFF.shubiaoX, "RIGHT", 60, 0},"Y:","OUTLINE", 18)
+	zuobiaoXYFFF.shubiaoY = PIGFontString(zuobiaoXYFFF,{"LEFT", zuobiaoXYFFF.shubiaoX, "RIGHT", 60, 0},"Y:","OUTLINE")
 	zuobiaoXYFFF.shubiaoY:SetTextColor(0, 1, 0, 1);
-	zuobiaoXYFFF.shubiaoYV = PIGFontString(zuobiaoXYFFF,{"LEFT", zuobiaoXYFFF.shubiaoY, "RIGHT", 0, 0},"","OUTLINE", 18)
+	zuobiaoXYFFF.shubiaoYV = PIGFontString(zuobiaoXYFFF,{"LEFT", zuobiaoXYFFF.shubiaoY, "RIGHT", 0, 0},"","OUTLINE")
 	zuobiaoXYFFF.shubiaoYV:SetTextColor(1, 1, 0, 1);
-
 	zuobiaoXYFFF:HookScript("OnUpdate", function(self)
 		local mapinfo = C_Map.GetBestMapForUnit("player"); 
 		if not mapinfo then return end

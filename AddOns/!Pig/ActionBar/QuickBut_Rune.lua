@@ -112,6 +112,7 @@ QuickButUI.ButList[4]=function()
 		for _, category in ipairs(categories) do
 			local runes = C_Engraving.GetRunesForCategory(category, true);
 			AutoRuneList.F.BUTxuhao = 0
+			AutoRuneList.F.BUTxuhao_1 = 0
 			for _, rune in ipairs(runes) do
 				local engravingInfo = C_Engraving.GetRuneForEquipmentSlot(category);
 				if not engravingInfo or engravingInfo and engravingInfo.skillLineAbilityID~=rune.skillLineAbilityID then
@@ -120,6 +121,13 @@ QuickButUI.ButList[4]=function()
 					RuneBut:Show()
 					RuneBut.skillLineAbilityID=rune.skillLineAbilityID
 					RuneBut:SetNormalTexture(rune.iconTexture);
+					if category==11 then
+						AutoRuneList.F.BUTxuhao_1=AutoRuneList.F.BUTxuhao_1+1
+						local RuneBut = _G["QkBut_RuneSlot_but12"..AutoRuneList.F.BUTxuhao_1]
+						RuneBut:Show()
+						RuneBut.skillLineAbilityID=rune.skillLineAbilityID
+						RuneBut:SetNormalTexture(rune.iconTexture);
+					end
 				end
 				if AutoRuneList.F.BUTxuhao>AutoRuneList.F.MaxXUHAO then
 					AutoRuneList.F.MaxXUHAO=AutoRuneList.F.BUTxuhao

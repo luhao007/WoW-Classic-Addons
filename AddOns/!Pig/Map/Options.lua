@@ -99,6 +99,7 @@ MiniMapF.Minimap_but_Pointbiaoti=PIGFontString(MiniMapF,{"TOPLEFT",MiniMapF,"TOP
 local mapPointList = {"附着于小地图","自由模式(可随意拖动)","附着于系统菜单","附着于聊天框","ElvUI_小地图下方"};
 MiniMapF.Minimap_but_Point=PIGDownMenu(MiniMapF,{"TOPLEFT",MiniMapF.Minimap_but_Pointbiaoti,"BOTTOMLEFT",30,-6},{180,24})
 function MiniMapF.Minimap_but_Point:PIGDownMenu_Update_But(self)
+	if not ElvUI then mapPointList[5]=nil end
 	local info = {}
 	info.func = self.PIGDownMenu_SetValue
 	for i=1,#mapPointList,1 do

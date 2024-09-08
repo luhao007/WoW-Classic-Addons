@@ -21,7 +21,7 @@ local bagIDMax= addonTable.Data.bagData["bagIDMax"]
 --
 local BusinessInfo=addonTable.BusinessInfo
 function BusinessInfo.AutoBuy()
-	local fujiF,fujiTabBut=PIGOptionsList_R(AutoSellBuy_UI.F,"购",60,"Left")
+	local fujiF,fujiTabBut=PIGOptionsList_R(AutoSellBuy_UI.F,"购",50,"Left")
 	local Width = fujiF:GetWidth()-20;
 	BusinessInfo.ADDScroll(fujiF,"购买","Buy",17,PIGA_Per["AutoSellBuy"]["Buy_List"],{true,"AutoSellBuy","Buy_List"})
 	--------------

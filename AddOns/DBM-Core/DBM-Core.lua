@@ -75,15 +75,16 @@ end
 ---@class DBM
 local DBM = private:GetPrototype("DBM")
 _G.DBM = DBM
-DBM.Revision = parseCurseDate("20240728191115")
+DBM.Revision = parseCurseDate("20240903061113")
+DBM.TaintedByTests = false -- Tests may mess with some internal state, you probably don't want to rely on DBM for an important boss fight after running it in test mode
 
-local fakeBWVersion, fakeBWHash = 349, "fc8e3ff"--349.1
+local fakeBWVersion, fakeBWHash = 351, "186d70b"--351.1
 local bwVersionResponseString = "V^%d^%s"
 local PForceDisable
 -- The string that is shown as version
-DBM.DisplayVersion = "11.0.2"--Core version
+DBM.DisplayVersion = "11.0.5"--Core version
 DBM.classicSubVersion = 0
-DBM.ReleaseRevision = releaseDate(2024, 7, 28) -- the date of the latest stable version that is available, optionally pass hours, minutes, and seconds for multiple releases in one day
+DBM.ReleaseRevision = releaseDate(2024, 9, 3) -- the date of the latest stable version that is available, optionally pass hours, minutes, and seconds for multiple releases in one day
 PForceDisable = 14--When this is incremented, trigger force disable regardless of major patch
 DBM.HighestRelease = DBM.ReleaseRevision --Updated if newer version is detected, used by update nags to reflect critical fixes user is missing on boss pulls
 
@@ -352,6 +353,7 @@ DBM.DefaultOptions = {
 	NPIconTextFontStyle = "None",
 	NPIconTextFontSize = 10,
 	NPIconTextMaxLen = 7,
+	NPIconGlowBehavior = 1,
 	DontPlayCountdowns = false,
 	DontSendYells = false,
 	BlockNoteShare = false,
@@ -439,7 +441,7 @@ local currentSpecID, currentSpecName, currentSpecGroup, loadOptions, checkWipe, 
 local eeSyncReceived, cSyncReceived, showConstantReminder, updateNotificationDisplayed, updateSubNotificationDisplayed = 0, 0, 0, 0, 0
 local LastInstanceMapID = -1
 
-local bannedMods = { -- a list of "banned" (meaning they are replaced by another mod or discontinued). These mods will not be loaded by DBM (and they wont show up in the GUI)
+local deprecatedMods = { -- a list of "banned" (meaning they are replaced by another mod or discontinued). These mods will not be loaded by DBM (and they wont show up in the GUI)
 	"DBM-Battlegrounds", --replaced by DBM-PvP
 	"DBM-SiegeOfOrgrimmar",--Block legacy version. New version is "DBM-SiegeOfOrgrimmarV2"
 	"DBM-HighMail",
@@ -601,6 +603,11 @@ do
 			return cachedAddOns[addon]
 		end,
 	}
+
+	---Needed for non core files still calling this in wrath client
+	function DBM:DoesAddOnExist(addon)
+		return C_AddOns.DoesAddOnExist(addon)
+	end
 end
 
 -- this is not technically a lib and instead a standalone addon but the api is available via LibStub
@@ -865,15 +872,36 @@ function DBM:ParseSpellName(spellId, objectType)
 	if objectType and objectType == "achievement" then
 		spellName = select(2, GetAchievementInfo(spellId))
 	elseif type(spellId) == "string" and spellId:match("ej%d+") then--Old Journal Format
-		spellName = DBM:EJ_GetSectionInfo(string.sub(spellId, 3))
+		spellName = self:EJ_GetSectionInfo(string.sub(spellId, 3))
 	elseif type(spellId) == "number" then
 		if spellId < 0 then--New Journal Format
-			spellName = DBM:EJ_GetSectionInfo(-spellId)
+			spellName = self:EJ_GetSectionInfo(-spellId)
 		else
-			spellName = DBM:GetSpellName(spellId)
+			spellName = self:GetSpellName(spellId)
 		end
 	end
 	return spellName
+end
+
+do
+	local customSpellNamesByspellId = {}
+	---Function for Registering Spell Renames/ShortText to original spellIDs
+	---@param spellId number Original spellID of spell and not alternate ID
+	---@param AltName string Custom name used for the spell and not alternateID
+	function DBM:RegisterAltSpellName(spellId, AltName)
+		--Protection against internal and external misuse
+		--Also filters spellIds 0-5 which are typically not real spellids such as phase announces or spell-less timer objects
+		if spellId and type(spellId) == "number" and spellId > 5 and AltName and type(AltName) == "string" then
+			if not customSpellNamesByspellId[spellId] then
+				customSpellNamesByspellId[spellId] = AltName
+			end
+		end
+	end
+	---Function for providing Plater and other addons access to Spell Renames/ShortText
+	---@param spellId number
+	function DBM:GetAltSpellName(spellId)
+		return customSpellNamesByspellId[spellId]
+	end
 end
 
 --------------
@@ -1581,6 +1609,9 @@ do
 			end
 			onLoadCallbacks = nil
 			loadOptions(self)
+			DBM_ModsToLoadWithFullTestSupport = DBM_ModsToLoadWithFullTestSupport or {} -- Separate saved var because tests mess with the usual saved vars temporarily
+			DBM_ModsToLoadWithFullTestSupport.bossModsWithTests = DBM_ModsToLoadWithFullTestSupport.bossModsWithTests or {}
+			DBM_ModsToLoadWithFullTestSupport.addonsWithTests = DBM_ModsToLoadWithFullTestSupport.addonsWithTests or {}
 			DBT:LoadOptions("DBM")
 			self.AddOns = {}
 			private:OnModuleLoad()
@@ -1651,7 +1682,7 @@ do
 				local enabled = C_AddOns.GetAddOnEnableState(i, playerName)
 				if C_AddOns.GetAddOnMetadata(i, "X-DBM-Mod") then
 					if enabled ~= 0 then
-						if checkEntry(bannedMods, addonName) then
+						if checkEntry(deprecatedMods, addonName) then
 							AddMsg(self, "The mod " .. addonName .. " is deprecated and will not be available. Please remove the folder " .. addonName .. " from your Interface" .. (IsWindowsClient() and "\\" or "/") .. "AddOns folder to get rid of this message. Check for an updated version of " .. addonName .. " that is compatible with your game version.")
 						else
 							local mapIdTable = {strsplit(",", C_AddOns.GetAddOnMetadata(i, "X-DBM-Mod-MapID") or "")}
@@ -1739,7 +1770,7 @@ do
 					end
 				end
 				if C_AddOns.GetAddOnMetadata(i, "X-DBM-Voice") and enabled ~= 0 then
-					if checkEntry(bannedMods, addonName) then
+					if checkEntry(deprecatedMods, addonName) then
 						AddMsg(self, "The mod " .. addonName .. " is deprecated and will not be available. Please remove the folder " .. addonName .. " from your Interface" .. (IsWindowsClient() and "\\" or "/") .. "AddOns folder to get rid of this message. Check for an updated version of " .. addonName .. " that is compatible with your game version.")
 					else
 						C_TimerAfter(0.01, function()
@@ -1757,7 +1788,7 @@ do
 					end
 				end
 				if C_AddOns.GetAddOnMetadata(i, "X-DBM-CountPack") and enabled ~= 0 then
-					if checkEntry(bannedMods, addonName) then
+					if checkEntry(deprecatedMods, addonName) then
 						AddMsg(self, "The mod " .. addonName .. " is deprecated and will not be available. Please remove the folder " .. addonName .. " from your Interface" .. (IsWindowsClient() and "\\" or "/") .. "AddOns folder to get rid of this message. Check for an updated version of " .. addonName .. " that is compatible with your game version.")
 					else
 						local loaded = C_AddOns.LoadAddOn(addonName)
@@ -1773,7 +1804,7 @@ do
 					end
 				end
 				if C_AddOns.GetAddOnMetadata(i, "X-DBM-VictoryPack") and enabled ~= 0 then
-					if checkEntry(bannedMods, addonName) then
+					if checkEntry(deprecatedMods, addonName) then
 						AddMsg(self, "The mod " .. addonName .. " is deprecated and will not be available. Please remove the folder " .. addonName .. " from your Interface" .. (IsWindowsClient() and "\\" or "/") .. "AddOns folder to get rid of this message. Check for an updated version of " .. addonName .. " that is compatible with your game version.")
 					else
 						local loaded = C_AddOns.LoadAddOn(addonName)
@@ -1789,7 +1820,7 @@ do
 					end
 				end
 				if C_AddOns.GetAddOnMetadata(i, "X-DBM-DefeatPack") and enabled ~= 0 then
-					if checkEntry(bannedMods, addonName) then
+					if checkEntry(deprecatedMods, addonName) then
 						AddMsg(self, "The mod " .. addonName .. " is deprecated and will not be available. Please remove the folder " .. addonName .. " from your Interface" .. (IsWindowsClient() and "\\" or "/") .. "AddOns folder to get rid of this message. Check for an updated version of " .. addonName .. " that is compatible with your game version.")
 					else
 						local loaded = C_AddOns.LoadAddOn(addonName)
@@ -1805,7 +1836,7 @@ do
 					end
 				end
 				if C_AddOns.GetAddOnMetadata(i, "X-DBM-MusicPack") and enabled ~= 0 then
-					if checkEntry(bannedMods, addonName) then
+					if checkEntry(deprecatedMods, addonName) then
 						AddMsg(self, "The mod " .. addonName .. " is deprecated and will not be available. Please remove the folder " .. addonName .. " from your Interface" .. (IsWindowsClient() and "\\" or "/") .. "AddOns folder to get rid of this message. Check for an updated version of " .. addonName .. " that is compatible with your game version.")
 					else
 						local loaded = C_AddOns.LoadAddOn(addonName)
@@ -1862,7 +1893,7 @@ do
 					"CANCEL_PLAYER_COUNTDOWN"
 				)
 			end
-			if private.wowTOC >= 110000 then
+			if private.wowTOC >= 110002 then
 				self:RegisterEvents(
 					"PLAYER_MAP_CHANGED"
 				)
@@ -1954,6 +1985,36 @@ end
 --  Callbacks  --
 -----------------
 do
+	---@alias DBMCallbackEvent DBMTestEvent
+	--- |"BossMod_ShowNameplateAura"
+	--- |"BossMod_HideNameplateAura"
+	--- |"BossMod_EnableHostileNameplates"
+	--- |"BossMod_EnableFriendlyNameplates"
+	--- |"BossMod_DisableFriendlyNameplates"
+	--- |"BossMod_DisableHostileNameplates"
+	--- |"DBM_Debug"
+	--- |"DBM_SetStage"
+	--- |"DBM_AffixEvent"
+	--- |"DBM_TimerStart"
+	--- |"DBM_TimerStop"
+	--- |"DBM_TimerFadeUpdate"
+	--- |"DBM_TimerUpdate"
+	--- |"DBM_TimerPause"
+	--- |"DBM_TimerResume"
+	--- |"DBM_TimerUpdateIcon"
+	--- |"DBM_Announce"
+	--- |"DBM_raidJoin"
+	--- |"DBM_raidLeave"
+	--- |"DBM_partyJoin"
+	--- |"DBM_partyLeave"
+	--- |"DBM_MusicStart"
+	--- |"DBM_MusicStop"
+	--- |"DBM_UpdateZone"
+	--- |"DBM_Pull"
+	--- |"DBM_Kill"
+	--- |"DBM_Wipe"
+	--- |"DBM_PlaySound"
+	--- |"DBM_TestModStarted"
 	local callbacks = {}
 
 	function fireEvent(event, ...)
@@ -1963,12 +2024,13 @@ do
 		end
 	end
 
-	---@param event string
+	---@param event DBMCallbackEvent
 	---@param ... any?
 	function DBM:FireEvent(event, ...)
 		fireEvent(event, ...)
 	end
 
+	---@param event DBMCallbackEvent
 	function DBM:IsCallbackRegistered(event, f)
 		if not event or type(f) ~= "function" then
 			error("Usage: IsCallbackRegistered(event, callbackFunc)", 2)
@@ -1980,6 +2042,7 @@ do
 		return false
 	end
 
+	---@param event DBMCallbackEvent
 	function DBM:RegisterCallback(event, f)
 		if not event or type(f) ~= "function" then
 			error("Usage: DBM:RegisterCallback(event, callbackFunc)", 2)
@@ -1989,6 +2052,7 @@ do
 		return #callbacks[event]
 	end
 
+	---@param event DBMCallbackEvent
 	function DBM:UnregisterCallback(event, f)
 		if not event or not callbacks[event] then return end
 		if f then
@@ -2855,7 +2919,7 @@ do
 	---@param higher boolean?
 	---@return number
 	function DBM:GetGroupId(name, higher)
-		local raidMember = raid[name] or raid[GetUnitName(name, true) or ""]
+		local raidMember = raid[name] or raid[self:GetUnitFullName(name) or ""]
 		return raidMember and raidMember.groupId or UnitInRaid(name) or higher and 99 or 0
 	end
 end
@@ -3125,7 +3189,9 @@ function DBM:LoadModOptions(modId, inCombat, first)
 		existId[id] = true
 		-- init
 		if not savedOptions[id] then savedOptions[id] = {} end
+		---@class DBMMod
 		local mod = self:GetModByName(id)
+		mod.showTestUI = DBM_ModsToLoadWithFullTestSupport.bossModsWithTests[id]
 		-- migrate old option
 		if _G[oldSavedVarsName] and _G[oldSavedVarsName][id] then
 			self:Debug("LoadModOptions: Found old options, importing", 2)
@@ -3783,7 +3849,7 @@ do
 				end
 				if self:IsSeasonal("SeasonOfDiscovery") then
 					self:AnnoyingPopupCheckZone(LastInstanceMapID, "Vanilla")
-				elseif seasonalZones[LastInstanceMapID] then--M+ Dungeons Only
+				elseif seasonalZones[LastInstanceMapID] and private.isRetail then--M+ Dungeons Only
 					self:AnnoyingPopupCheckZone(LastInstanceMapID, "Retail")
 				end
 			elseif (self:IsSeasonal("SeasonOfDiscovery") and sodRaids[LastInstanceMapID] or classicZones[LastInstanceMapID] or (LastInstanceMapID == 249 and private.isClassic)) then
@@ -3805,7 +3871,7 @@ do
 				--if not isRetail and (DBM.classicSubVersion or 0) < 1 then
 				--	C_TimerAfter(5, function() self:AddMsg(L.NEWS_UPDATE_REPEAT, nil, true) end)
 				--end
-				self:AnnoyingPopupCheckZone(LastInstanceMapID, "Wrath") -- Show extra annoying popup in current content that's non trivial in classic
+				self:AnnoyingPopupCheckZone(LastInstanceMapID, "WoTLK") -- Show extra annoying popup in current content that's non trivial in classic
 			elseif cataZones[LastInstanceMapID] then
 				if not C_AddOns.DoesAddOnExist("DBM-Raids-Cata") then
 					AddMsg(self, L.MOD_AVAILABLE:format("DBM Cataclysm mods"), nil, private.isCata)--Play sound only in cata
@@ -4001,7 +4067,7 @@ do
 		DBM:CheckAvailableModsByMap()
 		--if a special zone, we need to force update LastInstanceMapID and run zone change functions without loading screen
 		--This hack and table can go away in TWW pre patch when we gain access to PLAYER_MAP_CHANGED
-		if private.wowTOC < 110000 and specialZoneIDs[LastInstanceMapID] then--or difficulties:InstanceType(LastInstanceMapID) == 4
+		if private.wowTOC < 110002 and specialZoneIDs[LastInstanceMapID] then--or difficulties:InstanceType(LastInstanceMapID) == 4
 			DBM:Debug("Forcing LOADING_SCREEN_DISABLED", 2)
 			self:LOADING_SCREEN_DISABLED(true)
 		end
@@ -4099,7 +4165,8 @@ function DBM:ScenarioCheck(delay)
 	end
 end
 
-function DBM:LoadMod(mod, force)
+function DBM:LoadMod(mod, force, enableTestSupport)
+	enableTestSupport = enableTestSupport or DBM_ModsToLoadWithFullTestSupport.addonsWithTests[mod.modId]
 	if type(mod) ~= "table" then
 		self:Debug("LoadMod failed because mod table not valid")
 		return false
@@ -4129,7 +4196,15 @@ function DBM:LoadMod(mod, force)
 		EJ_SetDifficulty(difficulties.difficultyIndex)--Work around blizzard crash bug where other mods (like Boss) screw with Ej difficulty value, which makes EJ_GetSectionInfo crash the game when called with invalid difficulty index set.
 	end
 	self:Debug("LoadAddOn should have fired for " .. mod.name, 2)
-	local loaded, reason = C_AddOns.LoadAddOn(mod.modId)
+	local loaded, reason
+	if enableTestSupport then
+		test:Load()
+		test:OnBeforeLoadAddOn()
+		loaded, reason = C_AddOns.LoadAddOn(mod.modId)
+		test:OnAfterLoadAddOn()
+	else
+		loaded, reason = C_AddOns.LoadAddOn(mod.modId)
+	end
 	if not loaded then
 		if reason == "DISABLED" then
 			self:AddMsg(L.LOAD_MOD_DISABLED:format(mod.name))
@@ -4145,7 +4220,7 @@ function DBM:LoadMod(mod, force)
 		if self.NewerVersion and showConstantReminder >= 1 then
 			AddMsg(self, L.UPDATEREMINDER_HEADER:format(self.NewerVersion, showRealDate(self.HighestRelease)))
 		end
-		self:LoadModOptions(mod.modId, InCombatLockdown(), true)
+		self:LoadModOptions(mod.modId, InCombatLockdown(), true) -- Show the test UI immediately to make it clear that the mod is loaded with test support
 		if DBM_GUI then
 			DBM_GUI:UpdateModList()
 			DBM_GUI:CreateBossModTab(mod, mod.panel)
@@ -4172,10 +4247,10 @@ function DBM:LoadMod(mod, force)
 	end
 end
 
-function DBM:LoadModByName(modName, force)
+function DBM:LoadModByName(modName, force, enableTestSupport)
 	for _, v in ipairs(self.AddOns) do
 		if v.modId == modName then
-			self:LoadMod(v, force)
+			self:LoadMod(v, force, enableTestSupport)
 		end
 	end
 end
@@ -5484,8 +5559,8 @@ end
 --  Kill/Wipe Detection  --
 ---------------------------
 
+local lastValidCombat = 0
 do
-	local lastValidCombat = 0
 	---@param self DBM
 	---@param confirm boolean?
 	---@param confirmTime number?
@@ -5650,6 +5725,9 @@ do
 		cSyncSender = {}
 		cSyncReceived = 0
 		if not checkEntry(inCombat, mod) then
+			if DBM.TaintedByTests then
+				self:AddMsg(L.DBM_TAINTED_BY_TESTS) -- Shows this early in case tests messed with some filters below
+			end
 			if not mod.Options.Enabled then return end
 			if not mod.combatInfo then return end
 			if mod.combatInfo.noCombatInVehicle and UnitInVehicle("player") then -- HACK
@@ -6665,7 +6743,6 @@ do
 	---Wrapper for Blizzard GetSpellCooldown global that converts new table returns to old arg returns
 	---<br>This avoids having to significantly update nearly 20 years of boss mods.
 	---@param spellId string|number --Should be number, but accepts string too since Blizzards api converts strings to number.
-	---@return number, number, number
 	function DBM:GetSpellCooldown(spellId)
 		local start, duration, enable
 		if newPath then
@@ -7182,6 +7259,38 @@ end
 --  Enable/Disable DBM  --
 --------------------------
 do
+	-- Clear all stored timers for antispam, sync spam, combat re-detection etc.
+	-- This is run after tests with time warping because these may refer to a time in the future
+	function DBM:ClearSpamTimers()
+		-- TODO: many of these timers follow the same anti-spam pattern, it would be useful to move those to a shared function to clean up this mess
+		local time = _G.GetTime() -- to not accidentally pull in time-warped time, but it should be called after timewarping is disabled
+		table.wipe(private.modSyncSpam)
+		table.wipe(lastBossEngage)
+		table.wipe(lastBossDefeat)
+		lastCombatStarted = time
+		lastValidCombat = time
+		--lastLFGAlert = time -- local to the event handler, but doesn't really matter
+		local function clearAntiSpam(obj)
+			for k, v in pairs(obj) do -- TODO: consider moving lastAntiSpam to its own table, it'd be much cleaner
+				if type(k) == "string" and k:match("^lastAntiSpam") and type(v) == "number" then
+					obj[k] = nil
+				end
+			end
+		end
+		for _, mod in ipairs(DBM.Mods) do
+			---@diagnostic disable-next-line: inject-field
+			mod.lastKillTime = nil
+			---@diagnostic disable-next-line: inject-field
+			mod.lastWipeTime = nil
+			---@diagnostic disable-next-line: inject-field
+			if mod.combatInfo then
+				mod.combatInfo.pull = nil
+			end
+			clearAntiSpam(mod)
+		end
+		clearAntiSpam(DBM)
+	end
+
 	local forceDisabled = false
 	function DBM:Disable(forceDisable)
 		for _, mod in ipairs(inCombat) do
@@ -7191,6 +7300,9 @@ do
 		DBMScheduler:Unschedule()
 		dbmIsEnabled = false
 		forceDisabled = forceDisable
+		DBT:CancelAllBars()
+		DBM:ClearSpamTimers()
+		DBM.InfoFrame:Hide()
 	end
 
 	function DBM:Enable()
@@ -7253,10 +7365,10 @@ do
 			testWarning3 = testMod:NewAnnounce("%s", 3, "135826")
 			testTimer1 = testMod:NewTimer(20, "%s", "136116", nil, nil)
 			testTimer2 = testMod:NewTimer(20, "%s ", "134170", nil, nil, 1)
-			testTimer3 = testMod:NewTimer(20, "%s  ", private.isRetail and "136194" or "136221", nil, nil, 3, CL.MAGIC_ICON, nil, 1, 4, nil, nil, nil, nil, nil, nil, "next")--inlineIcon, keep, countdown, countdownMax, r, g, b, spellId, requiresCombat, waCustomName, customType
-			testTimer4 = testMod:NewTimer(20, "%s   ", "136116", nil, nil, 4, CL.INTERRUPT_ICON)
-			testTimer5 = testMod:NewTimer(20, "%s    ", "135826", nil, nil, 2, CL.HEALER_ICON, nil, 3, 4, nil, nil, nil, nil, nil, nil, "next")--inlineIcon, keep, countdown, countdownMax, r, g, b, spellId, requiresCombat, waCustomName, customType
-			testTimer6 = testMod:NewTimer(20, "%s     ", "136116", nil, nil, 5, CL.TANK_ICON, nil, 2, 4, nil, nil, nil, nil, nil, nil, "next")--inlineIcon, keep, countdown, countdownMax, r, g, b, spellId, requiresCombat, waCustomName, customType
+			testTimer3 = testMod:NewTimer(20, "%s  ", private.isRetail and "136194" or "136221", nil, nil, 3, CL.MAGIC_ICON, nil, 1, 4, nil, nil, nil, nil, nil, nil, "next")
+			testTimer4 = testMod:NewTimer(20, "%s   ", "136116", nil, nil, 4, CL.INTERRUPT_ICON, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)--Flagged Priority for test mode
+			testTimer5 = testMod:NewTimer(20, "%s    ", "135826", nil, nil, 2, CL.HEALER_ICON, nil, 3, 4, nil, nil, nil, nil, nil, nil, "next")
+			testTimer6 = testMod:NewTimer(20, "%s     ", "136116", nil, nil, 5, CL.TANK_ICON, nil, 2, 4, nil, nil, nil, nil, nil, nil, "next")
 			testTimer7 = testMod:NewTimer(20, "%s      ", "136116", nil, nil, 6)
 			testTimer8 = testMod:NewTimer(20, "%s       ", "136116", nil, nil, 7)
 			testSpecialWarning1 = testMod:NewSpecialWarning("%s", nil, nil, nil, 1, 2)
@@ -7357,14 +7469,20 @@ end
 ---@param self DBMModOrDBM
 ---@param time number? time to wait between two events (optional, default 2.5 seconds)
 ---@param id any? id to distinguish different events (optional, only necessary if your mod keeps track of two different spam events at the same time)
-function DBM:AntiSpam(time, id)
+---@param targetName any? string optional extra ID to filter spams per target
+function DBM:AntiSpam(time, id, targetName)
 	id = id or "(nil)"
+	if targetName then
+		-- Yes, mods could just piece together an id like this themselves
+		-- The actual point of this is tests: targetName may refer to the real player replaying the log due to combat log rewriting and hence needs to be filtered in the report.
+		id = id .. " on " .. targetName
+	end
 	if GetTime() - (self["lastAntiSpam" .. tostring(id)] or 0) > (time or 2.5) then
 		self["lastAntiSpam" .. tostring(id)] = GetTime()
-		test:Trace(self, "AntiSpam", id, true)
+		test:Trace(self, "AntiSpam", id, targetName or false, true)
 		return true
 	end
-	test:Trace(self, "AntiSpam", id, false)
+	test:Trace(self, "AntiSpam", id, targetName or false, false)
 	return false
 end
 
@@ -7570,6 +7688,7 @@ do
 		return false
 	end
 
+	---@param uId playerUUIDs?
 	function bossModPrototype:IsMeleeDps(uId)
 		if uId then--This version includes ONLY melee dps
 			local name = GetUnitName(uId, true)
@@ -7615,6 +7734,7 @@ do
 	end
 
 	---@param self DBMModOrDBM
+	---@param uId playerUUIDs?
 	function DBM:IsMelee(uId, mechanical)--mechanical arg means the check is asking if boss mechanics consider them melee (even if they aren't, such as holy paladin/mistweaver monks)
 		if uId then--This version includes monk healers as melee and tanks as melee
 			--Class checks performed first due to mechanical check needing to be broader than a specID check
@@ -7657,6 +7777,7 @@ do
 	bossModPrototype.IsMelee = DBM.IsMelee
 
 	---@param self DBMModOrDBM
+	---@param uId playerUUIDs?
 	function DBM:IsRanged(uId)
 		if uId then
 			local name = GetUnitName(uId, true)
@@ -7675,6 +7796,7 @@ do
 	end
 	bossModPrototype.IsRanged = DBM.IsRanged
 
+	---@param uId playerUUIDs?
 	function bossModPrototype:IsSpellCaster(uId)
 		if uId then
 			local name = GetUnitName(uId, true)
@@ -7692,6 +7814,7 @@ do
 		return private.specRoleTable[currentSpecID]["SpellCaster"]
 	end
 
+	---@param uId playerUUIDs?
 	function bossModPrototype:IsMagicDispeller(uId)
 		if uId then
 			local name = GetUnitName(uId, true)
@@ -7834,7 +7957,7 @@ do
 	end
 end
 
----@param uId string? Used for querying external unit. If nil, queries "player"
+---@param uId playerUUIDs? Used for querying external unit. If nil, queries "player"
 ---@return boolean
 function bossModPrototype:IsDps(uId)
 	if uId then--External unit call.
@@ -7852,7 +7975,7 @@ function bossModPrototype:IsDps(uId)
 end
 
 ---@param self DBMModOrDBM
----@param uId string? Used for querying external unit. If nil, queries "player"
+---@param uId playerUUIDs? Used for querying external unit. If nil, queries "player"
 ---@return boolean
 function DBM:IsHealer(uId)
 	if uId then--External unit call.
@@ -9026,7 +9149,7 @@ function bossModPrototype:ReceiveSync(event, sender, revision, ...)
 	end
 end
 
----@param revision number|string Either a number in the format "202101010000" (year, month, day, hour, minute) or string "20240728191115" to be auto set by packager
+---@param revision number|string Either a number in the format "202101010000" (year, month, day, hour, minute) or string "20240903061113" to be auto set by packager
 function bossModPrototype:SetRevision(revision)
 	revision = parseCurseDate(revision or "")
 	if not revision or type(revision) == "string" then

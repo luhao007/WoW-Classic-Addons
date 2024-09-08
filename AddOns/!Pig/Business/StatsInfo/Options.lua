@@ -450,6 +450,7 @@ function BusinessInfo.StatsInfoOptions()
 				bu.title =  "查看离线银行或其他角色物品"
 				B.AddTooltip(bu, "ANCHOR_TOP")
 				self.lixianBut = bu
+				if C.db["Bags"]["HideWidgets"] then bu:Hide() end
 				return bu
 			end
 			anniushuS[#anniushuS+1] = CreatelixianBut(NDui_BackpackBag)
@@ -483,7 +484,7 @@ function BusinessInfo.StatsInfoOptions()
 		end
 	end)
 	---交易
-	local Tooltip = {"交易通告","通告交易记录"};
+	local Tooltip = {"交易通告","通告交易记录(不通告与好友的交易)"};
 	fuFrame.TradeTongGao = PIGCheckbutton(fuFrame,{"TOPLEFT",fuFrame.Qita_Num,"BOTTOMLEFT",0,-20},Tooltip)
 	fuFrame.TradeTongGao:SetScript("OnClick", function (self)
 		if self:GetChecked() then
@@ -492,10 +493,11 @@ function BusinessInfo.StatsInfoOptions()
 			PIGA["StatsInfo"]["TradeTongGao"]=false;
 		end
 	end);
-	local pindaoName = {["WHISPER"]="|cffFF80FF"..WHISPER.."|r",["PARTY"]="|cffAAAAFF"..PARTY.."|r",
-		["RAID"]="|cffFF7F00"..RAID.."|r",["GUILD"]="|cff40FF40"..GUILD.."|r"};
-	local pindaoID = {"WHISPER","PARTY","RAID","GUILD"};
-	fuFrame.TradeTongGao.guangbo_dow=PIGDownMenu(fuFrame.TradeTongGao,{"LEFT",fuFrame.TradeTongGao.Text,"RIGHT", 2,-1},{80})
+	local pindaoName = {
+		["WHISPER"]="|cffFF80FF"..WHISPER.."|r",
+		["PARTY_RAID_INSTANCE_CHAT"]="|cffAAAAFF"..PARTY.."|r/|cffFF7F00"..RAID.."|r/|cffFF7F00"..INSTANCE_CHAT.."|r"};
+	local pindaoID = {"WHISPER","PARTY_RAID_INSTANCE_CHAT"};
+	fuFrame.TradeTongGao.guangbo_dow=PIGDownMenu(fuFrame.TradeTongGao,{"LEFT",fuFrame.TradeTongGao.Text,"RIGHT", 2,-1},{140})
 	function fuFrame.TradeTongGao.guangbo_dow:PIGDownMenu_Update_But(self)
 		local info = {}
 		info.func = self.PIGDownMenu_SetValue
@@ -507,10 +509,10 @@ function BusinessInfo.StatsInfoOptions()
 	end
 	function fuFrame.TradeTongGao.guangbo_dow:PIGDownMenu_SetValue(value,arg1,arg2)
 		fuFrame.TradeTongGao.guangbo_dow:PIGDownMenu_SetText(value)
-		PIGA["StatsInfo"]["TradeTongGaoPindao"]=arg1
+		PIGA["StatsInfo"]["TradeTongGaoChannel"]=arg1
 		PIGCloseDropDownMenus()
 	end
-	fuFrame.TradeTongGao.guangbo_dow:PIGDownMenu_SetText(pindaoName[PIGA["StatsInfo"]["TradeTongGaoPindao"]])
+	fuFrame.TradeTongGao.guangbo_dow:PIGDownMenu_SetText(pindaoName[PIGA["StatsInfo"]["TradeTongGaoChannel"]])
 	---
 	fuFrame.TradeClassLV = PIGCheckbutton(fuFrame,{"LEFT",fuFrame.TradeTongGao,"RIGHT",220,0},{"交易界面显示职业等级","在交易界面显示对方职业和等级"})
 	fuFrame.TradeClassLV:SetScript("OnClick", function (self)

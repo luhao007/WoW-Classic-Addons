@@ -3,4 +3,5 @@
 	<Script file="Biaoji.lua" />
 	<Script file="CombatTime.lua" />
 	<Script file="HPMPbar.lua" />
+	<Script file="AttackBar.lua" />
 </Ui>

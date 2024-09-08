@@ -5,7 +5,9 @@ local GetItemCooldown=C_Container.GetItemCooldown
 local GetContainerNumSlots = C_Container.GetContainerNumSlots
 local GetContainerItemLink = C_Container.GetContainerItemLink
 local IsCurrentSpell=IsCurrentSpell or C_Spell and C_Spell.IsCurrentSpell
-local GetSpellBookItemInfo=GetSpellBookItemInfo or C_SpellBook and C_SpellBook.GetSpellBookItemInfo
+local GetSpellTexture=GetSpellTexture or C_Spell and C_Spell.GetSpellTexture
+local IsUsableSpell=IsUsableSpell or C_Spell and C_Spell.IsSpellUsable
+local GetSpellBookItemName=GetSpellBookItemName or C_SpellBook and C_SpellBook.GetSpellBookItemName
 local PIGbookType
 if tocversion<50000 then
 	PIGbookType=BOOKTYPE_SPELL
@@ -155,7 +157,7 @@ function ActionFun.Update_Cooldown(self)
 	if Type then
 		local SimID=self.SimID
 		if Type=="spell" then
-			local start, duration, enabled = GetSpellCooldown(SimID);
+			local start, duration, enabled = PIGGetSpellCooldown(SimID);
 			if enabled==0 then
 			else
 				self.cooldown:SetCooldown(start, duration);
@@ -169,7 +171,7 @@ function ActionFun.Update_Cooldown(self)
 		elseif Type=="macro" then
 			local hongSpellID = GetMacroSpell(SimID)
 			if hongSpellID then
-				local start, duration, enabled = GetSpellCooldown(hongSpellID);
+				local start, duration, enabled = PIGGetSpellCooldown(hongSpellID);
 				if enabled==0 then
 				else
 					self.cooldown:SetCooldown(start, duration);
@@ -456,11 +458,11 @@ end
 --鼠标悬浮
 local function OnEnter_Spell(Type,SimID)
 	if IsSpellKnown(SimID) then
-		if GetProfessions then
-			for _, i in pairs{GetProfessions()} do
-				local offset, numSlots = select(3, GetSpellTabInfo(i))
+		if tocversion<50000 then
+			for i = 1, GetNumSpellTabs() do
+				local _, _, offset, numSlots = PIGGetSpellTabInfo(i)
 				for j = offset+1, offset+numSlots do
-					local _, _ ,spellID=GetSpellBookItemName(j, PIGbookType)
+					local _,spellID=PIGGetSpellBookItemInfo(j, PIGbookType)
 					if SimID==spellID then
 						local _,jibiex= GetSpellBookItemName(j, PIGbookType)
 						GameTooltipTextRight1:Show()
@@ -473,25 +475,38 @@ local function OnEnter_Spell(Type,SimID)
 				end
 			end
 		else
-			for i = 1, GetNumSpellTabs() do
-				local _, _, offset, numSlots = GetSpellTabInfo(i)
-				for j = offset+1, offset+numSlots do
-					local bookspellID=0
-					if tocversion<50000 then
-						local _,spellID= GetSpellBookItemInfo(j, PIGbookType)
-						bookspellID=spellID
-					else
-						local spellBookItemInfo = C_SpellBook.GetSpellBookItemInfo(j, PIGbookType)
-						bookspellID = spellBookItemInfo.spellID
-					end
-					if SimID==bookspellID then
-						local _,jibiex= GetSpellBookItemName(j, PIGbookType)
+			for skillLineIndex = 1, C_SpellBook.GetNumSpellBookSkillLines() do
+				local skillLineInfo = C_SpellBook.GetSpellBookSkillLineInfo(skillLineIndex);
+				for i = 1, skillLineInfo.numSpellBookItems do
+					local spellIndex = skillLineInfo.itemIndexOffset + i;
+					local spellType, spellID = C_SpellBook.GetSpellBookItemType(spellIndex, PIGbookType);
+					if SimID==spellID then
+						local _,jibiex= GetSpellBookItemName(spellIndex, PIGbookType)
 						GameTooltipTextRight1:Show()
-						GameTooltip:SetSpellBookItem(j, PIGbookType);
+						GameTooltip:SetSpellBookItem(spellIndex, PIGbookType);
 						GameTooltipTextRight1:SetText(jibiex)
 						GameTooltipTextRight1:SetTextColor(0.5, 0.5, 0.5, 1);
 						GameTooltip:Show();
 						return
+					end
+					if spellType == 4 then
+						local _, _, numSlots, isKnown = GetFlyoutInfo(spellID);
+						if isKnown and (numSlots > 0) then
+							for k = 1, numSlots do
+								local spellID, overrideSpellID, isSlotKnown = GetFlyoutSlotInfo(spellID, k)
+								if isSlotKnown then
+									if SimID==spellID then
+										local _,jibiex= GetSpellBookItemName(spellIndex, PIGbookType)
+										GameTooltipTextRight1:Show()
+										GameTooltip:SetSpellBookItem(spellIndex, PIGbookType);
+										GameTooltipTextRight1:SetText(jibiex)
+										GameTooltipTextRight1:SetTextColor(0.5, 0.5, 0.5, 1);
+										GameTooltip:Show();
+										return
+									end
+								end
+							end
+						end
 					end
 				end
 			end
@@ -553,11 +568,11 @@ function ActionFun.Update_OnEnter(self,dataY)
 			elseif Type=="macro" then
 				local hongSpellID = GetMacroSpell(SimID)
 				if hongSpellID then
-					OnEnter_Spell(Type,hongSpellID)
+					OnEnter_Spell("spell",hongSpellID)
 				else
 					local _, ItemLink = GetMacroItem(SimID);
 					if ItemLink then
-						OnEnter_Item(Type,ItemLink,butInfo[3])
+						OnEnter_Item("item",ItemLink,butInfo[3])
 					else
 						local name, icon, body, isLocal = GetMacroInfo(SimID)
 						GameTooltip:SetText(name,1, 1, 1, 1)

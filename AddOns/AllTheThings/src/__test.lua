@@ -460,19 +460,46 @@ end
 function ATTcheckawquests()
 
 	local isaw = C_QuestLog.IsAccountQuest
-	local aw, max = {}, 85000
+	local dc = app.CallbackHandlers.DelayedCallback
+	local aw, cur, step = {}, 1, 250
+	local lim = step
 	AllTheThingsHarvestItems.AccountWideQuestsDB = aw
 	local awdb = app.AccountWideQuestsDB
 	local function scan()
-		for i=1,max,1 do
-			if isaw(i) and not awdb[i] then
+		for i=cur,lim do
+			if not awdb[i] and isaw(i) then
 				aw[i] = true
 			end
-			if i % 100 == 0 then
-				coroutine.yield()
-			end
 		end
+		app.PrintDebug("scanned thru",lim)
+		cur = lim + 1
+		lim = lim + step
+		if lim > 86000 then return end
+		dc(scan, 1)
 	end
-	app.StartCoroutine(scan)
-	app.PrintDebug("done scanning AW quests thru",max)
+	scan()
+end
+
+
+function ATTtestsort()
+
+	local sort1 = app.SortDefaults.Global
+	local sort2 = app.SortDefaults.Accessibility
+
+	local rawdatasearch1 = app:BuildSearchResponse("u", 2)
+	local rawdatasearch2 = app:BuildSearchResponse("u", 2)
+
+	local function dosorts()
+		app.PrintDebug("doSorts")
+		coroutine.yield()
+		app.PrintDebug("sort1")
+		app.Sort(rawdatasearch1, sort1, true)
+		app.PrintDebugPrior("sort1.done")
+		coroutine.yield()
+		app.PrintDebug("sort2")
+		app.Sort(rawdatasearch2, sort2, true)
+		app.PrintDebugPrior("sort2.done")
+	end
+
+	app.StartCoroutine("dosorts",dosorts)
 end

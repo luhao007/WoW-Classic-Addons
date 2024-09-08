@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Crieve-Sargeras
-## Version: 4.0.5
+## Version: 4.0.11
 ## SavedVariables: ATTCharacterData, ATTAccountWideData, AllTheThingsSavedVariables, AllTheThingsAD, AllTheThingsSettings, AllTheThingsAuctionData, AllTheThingsDebugData, ATTClassicSettings, ATTClassicAuctionData
 ## SavedVariablesPerCharacter: AllTheThingsSettingsPerCharacter, ATTClassicSettingsPerCharacter
 ## IconTexture: Interface/Addons/AllTheThings/assets/logo_32x32
@@ -60,6 +60,7 @@ src\Modules\Color.lua
 # src\Modules\Costs.lua
 src\Modules\Events.lua
 src\Modules\Filter.lua
+src\Modules\Model.lua
 src\Modules\Social.lua
 src\Modules\Tooltip.lua
 # src\Modules\Upgrade.lua

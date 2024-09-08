@@ -89,9 +89,16 @@ function BusinessInfo.AHPlus_Mainline()
 		end
 	end
 	local function GetBuyoutPriceG(name,count,buyoutPrice,itemLink)
-		if not HCUI.auctions[name] then
+		local xianzaidanjia =buyoutPrice/count
+		if HCUI.auctions[name] then
+			if HCUI.auctions[name][2] then
+   				if xianzaidanjia<HCUI.auctions[name][2][1] then
+   					HCUI.auctions[name][2][1]=xianzaidanjia
+   				end
+   			end
+		else
 			local itemLinkJJ = Fun.GetItemLinkJJ(itemLink)
-			HCUI.auctions[name]={itemLinkJJ,{buyoutPrice/count,GetServerTime()}}
+			HCUI.auctions[name]={itemLinkJJ,{xianzaidanjia,GetServerTime()}}
 		end
 		HCUI.jishuID=HCUI.jishuID+1
 		HCUI.jindu:SetValue(HCUI.jishuID);
@@ -100,20 +107,26 @@ function BusinessInfo.AHPlus_Mainline()
 		local name, texture, count, qualityID, usable, level, levelType, minBid, minIncrement, buyoutPrice, bidAmount, highBidder, bidderFullName, owner, ownerFullName, saleStatus, itemID, hasAllInfo = C_AuctionHouse.GetReplicateItemInfo(index)
 		local ItemLink=C_AuctionHouse.GetReplicateItemLink(index)
 		if not hasAllInfo then
-			HCUI.yicunchu=false
-			local item = Item:CreateFromItemID(itemID) -- itemID
-			HCUI.ItemLoadList[item] = true
-			item:ContinueOnItemLoad(function()
-				HCUI.ItemLoadList[item] = nil
-				local name, texture, count, qualityID, usable, level, levelType, minBid, minIncrement, buyoutPrice, bidAmount, highBidder, bidderFullName, owner, ownerFullName, saleStatus, itemID, hasAllInfo = C_AuctionHouse.GetReplicateItemInfo(index)
-				local ItemLink=C_AuctionHouse.GetReplicateItemLink(index)
-				HCUI.jindu.t2:SetText(index);
-				HCUI.jindu.tname:SetText(name);
-				GetBuyoutPriceG(name,count,buyoutPrice,ItemLink)
-				if not next(HCUI.ItemLoadList) then
-					HCUI.yicunchu=true
-				end
-			end)
+			if itemID and itemID>0 then
+				HCUI.yicunchu=false
+				local itemf = Item:CreateFromItemID(itemID) -- itemID
+				itemf.index=index
+				HCUI.ItemLoadList[itemf] = true
+				itemf:ContinueOnItemLoad(function()
+					HCUI.ItemLoadList[itemf] = nil
+					local name, texture, count, qualityID, usable, level, levelType, minBid, minIncrement, buyoutPrice, bidAmount, highBidder, bidderFullName, owner, ownerFullName, saleStatus, itemID, hasAllInfo = C_AuctionHouse.GetReplicateItemInfo(itemf.index)
+					local ItemLink=C_AuctionHouse.GetReplicateItemLink(itemf.index)
+					HCUI.jindu.t2:SetText(itemf.index);
+					HCUI.jindu.tname:SetText(name);
+					GetBuyoutPriceG(name,count,buyoutPrice,ItemLink)
+					if not next(HCUI.ItemLoadList) then
+						HCUI.yicunchu=true
+					end
+				end)
+			else
+				HCUI.jishuID=HCUI.jishuID+1
+				HCUI.jindu:SetValue(HCUI.jishuID);
+			end
 		else
 			HCUI.jindu.t2:SetText(index);
 			HCUI.jindu.tname:SetText(name);

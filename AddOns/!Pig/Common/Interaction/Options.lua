@@ -110,7 +110,7 @@ end);
 
 fujiF.xiayiTxt = PIGFontString(fujiF,{"LEFT",fujiF.RightPlus.Text,"RIGHT",20,0},"下移增强菜单")
 local xiayiinfo = {0,100,1}
-fujiF.xiayiSlider = PIGSlider(fujiF,{"LEFT",fujiF.xiayiTxt,"RIGHT",10,0},{100,14},xiayiinfo)
+fujiF.xiayiSlider = PIGSlider(fujiF,{"LEFT",fujiF.xiayiTxt,"RIGHT",10,0},{140,14},xiayiinfo)
 function fujiF.xiayiSlider:OnValueFun()
 	local val = self:GetValue()
 	self.Text:SetText(val);

@@ -21,7 +21,7 @@ local bagIDMax= addonTable.Data.bagData["bagIDMax"]
 --
 local BusinessInfo=addonTable.BusinessInfo
 function BusinessInfo.AutoSell()
-	local fujiF,fujiTabBut=PIGOptionsList_R(AutoSellBuy_UI.F,"卖",60,"Left")
+	local fujiF,fujiTabBut=PIGOptionsList_R(AutoSellBuy_UI.F,"卖",50,"Left")
 	local Width = fujiF:GetWidth()-20;
 	BusinessInfo.ADDScroll(fujiF,"卖出","Sell",17,PIGA["AutoSellBuy"]["Sell_List"],{false,"AutoSellBuy","Sell_List"})
 	local function shoumailaji()

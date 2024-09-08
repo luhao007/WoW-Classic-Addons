@@ -180,7 +180,7 @@ else
 			Pig_Options_RLtishi_UI:Show()
 		end
 	end);
-	fujiF.SetFocus.xiala=PIGDownMenu(fujiF.SetFocus,{"LEFT",fujiF.SetFocus.Text, "RIGHT", 4,0},{140,24})
+	fujiF.SetFocus.xiala=PIGDownMenu(fujiF.SetFocus,{"LEFT",fujiF.SetFocus.Text, "RIGHT", 4,0},{150,24})
 	function fujiF.SetFocus.xiala:PIGDownMenu_Update_But(self)
 		local info = {}
 		info.func = self.PIGDownMenu_SetValue

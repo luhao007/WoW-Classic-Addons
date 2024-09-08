@@ -1,138 +1,107 @@
 # AllTheThings
 
-## [4.0.5](https://github.com/DFortun81/AllTheThings/tree/4.0.5) (2024-08-16)
-[Full Changelog](https://github.com/DFortun81/AllTheThings/compare/4.0.4...4.0.5) [Previous Releases](https://github.com/DFortun81/AllTheThings/releases)
+## [4.0.11](https://github.com/DFortun81/AllTheThings/tree/4.0.11) (2024-09-04)
+[Full Changelog](https://github.com/DFortun81/AllTheThings/compare/4.0.10...4.0.11) [Previous Releases](https://github.com/DFortun81/AllTheThings/releases)
 
-- parseing  
-- Parser: Added 'isEnableTypeRecipe' (bool) field for special Recipes which can only be marked as collected by interaction with a specific NPC or location  
-    Applied 'isEnableTypeRecipe' to Tanaan Jungle Jewelcrafting Recipes  
-    Retail: Recipe collection no longer removes 'isEnableTypeRecipe' Recipes from being collected when they are not 'disabled', unless interacting with the proper profession UI  
-- added nl & cos m+ drops  
-- Retail: Revised use of Colors since in some cases it could result in an infinite metatable recursive reference to itself (fixes #1720) (fixes #1668)  
-- Assign factions for RaceDB directly since Classic parses have differing values in faction lists  
-- Added a symlink to Collapsing Riftstone  
-- Fixed Proving Grounds HQTs timelines for Darkal  
-    SourceIgnored groups are now also ignored for GetSearchResults logic for selection of the resulting root group (fixes situations where Achievements wouldn't show their inherited awp/rwp values in tooltips; other duplicate-source Things would still have this issue)  
-- Earthen duplication yeeted  
-- RaceID is now cached for lookups  
-    RaceID can be used in CreateObject  
-- Added support for 'Race' automatic header type  
-- Couple of TODO notes for stuff I can't fix immediately :(  
-- Allied Races: Earthen is not cooperating as a chievement so I slapped a fix on it for now  
-- Faction achievements given minimum reputation, moved under faction headers, fixed wrong factionID for Assembly  
-- Parser: Pure Lua exported tables are now exported in sorted order by their keys  
-- War Within Delves: Endgame achievement was changed  
-- Retail can has parse too  
-- Beta parsed with beta source harvest  
-- Fresh batch of Wago files  
-- Unbound Bounty achievement is finally working correctly  
-- Updated achievementDB  
-- TWW: Clean up backlog  
-- Moved Proving Grounds HQTs to Proving Grounds file for better organization  
-- Fixed FactionData generation from RaceDB  
-- RaceDB now contains 'faction' as matches HORDE\_ONLY and ALLIANCE\_ONLY lists  
-    FactionData is now driven from RaceDB  
-- Added a Database Exports file to setup the Exports container  
-    Added RaceDB to Exports container so that it is now automatically exported by the Parser from raw data (existing stucture and values are available)  
-    Updated the Races Class to properly support new data in RaceDB  
-- Parser: Extended Export with 'Pure' Lua (doesn't do all the ATT conversions and data changes when exporting)  
-    Parser: Can now read the 'Exports' table to directly export pure DB files for the addon  
-- Retail: Added handling for a group to provide a 'OnSetVisibility' function for itself for when we expect the group to process all typical Update handling, but provide an additional visible allowance  
-    Retail: Fixed Quest chain display sorting/visibility by utilizing OnSetVisibility  
-- name for object 180682 Oily Blackmouth School  
-- Retail: Removed RunnerStats (it's already in Analyzers module)  
-    Retail: CheckSymlinks Analyzer go brrrr  
-- Retail: Re-harvested ReagentsDB (including unsourced recipes)  
-- Retail: Updated Recipe harvesting (now stored in typical harvest saved variable)  
-    Retail: HarvestRecipes now properly checks for required Reagents  
-- Retail: Re-designed Filling for Craftable Items  
-    * Now changes as expected with Settings changes after being filled  
-    * Filled Items are linked to their crafting Recipe Skill such that they filter appropriately with user settings (instead of filling differently based on BoP Reagent + known Profession)  
-    * Crafting outputs for Unsourced Recipes are now included (previously for BoP Reagents they would be omitted since it was unknown whether the player could craft the output)  
-- Since all objects that we need for achievements are now sourced, unsourced object has been upgraded to a parser warning.  
-- Wrapped C\_TradeSkillUI.GetTradeSkillTexture in WOWAPI  
-    Retail: Profession requirement in tooltips now includes an icon if possible  
-- Restored and split out some things for Classic  
-- Fixed RecipeID caching to work as required  
-    Cleaned up row Summary generation to more-easily support additional information  
-    Added Profession/Required Skill icon to Summary information  
-- Fishing objects yay  
-- added brh, dht&hov m+  
-- The Scavenger achievement objects  
-- Northrend angler objects + some missing automated notes  
-- Parser support for automating fishing achievements via Wago data, sourced objects for non-classic version of Outland Angler achievement  
-- Objects for dungeon and expansion feature achievements  
-- The sourcing of achievement objects continues  
-- Cleaned up commented out achievements and either moved them to HAT or NYI + added some new achievements too  
-- Various Zskera Vaults quest fixes  
-- Unsorted item and some incorrect headers  
-- Parser: Greatly improved parsing time by fixing duplicate parsing of various global DBs generated during parsing (e.g. ItemDBConditional was being re-parsed by every file which added to the DB, re-accumulating all the data every time, leading to a final set of nearly ~250K data elements being conditionally applied. In total there are actually about 11K unique data elements in the DB)  
-- Parser: Now accepts and consolidates the 'sharedDescription' field. This should be used in situations where lots of individual content within a single group is all sharing an identical description (i.e. TWW Pre-Launch Recruit Items)  
-- Fixed a Lua error when inventory scan fails to retrieve an item's info after 5 attempts  
-- Minor cleaning  
-- Generate Missing FIles  
-- Harvest: 11.0.2.56110  
-- Harvest: 11.0.2.56071  
-- Harvest: 11.0.0.56008  
-- Some Parsing of Beta/PTR  
-- Retail: Fixed a Lua error where some Professions failed to render an icon (fixes #1728)  
-- Follower Dungeon difficulty now maps as Normal Dungeon for minilist use (fixes #1716)  
-- Adjusted 'es' translation for 'Disturbed Dirt' to match actual in-game text (differs from Wowhead) (fixes #1718)  
-- Git should now be on 11.0.2  
-- Parser update  
-- Some remaining cleaning of timelines  
-- Remaining Timeline Changes  
-- Structures > Prof Timeline Changes  
-- Professions Timeline change  
-- PvP Cleanup and Timeline Change  
-- EF Timeline Change  
-- Timeline + Lore Changes for Zones  
-- Ringing Deeps Max Level Chapter  
+- retail errors / parsed for release  
+- Revised a lot of logic for DisplayID into a Model.lua file (potentially temporary until Classic uses NPC.lua). This allows the same DisplayID blocking to be done in one place for both Model preview and row icons  
+    DisplayID calculation is now cached for the respective data  
+    Game Tooltip now uses a priority function chain to assign a Model from a reference since Retail & Classic support different tooltip functions  
+    Followers can once again show their model  
+    Retail: Scrollbar changes now only cause the respective ATT window to refresh once per game frame (there were some situations where dragging a scrollbar would refresh the window multiple times with different scroll amounts in one game frame)  
+- Retail: dm fixes  
+- TWW/Hallowfall: Stay awhile gossip in Veneration Grounds appears when you accept the quest The Flame Still Burns  
+- More Fixes  
+- Sweep some retail errors, add Lurker of the Deep coords  
+- Source two new Trading Post quests  
+- Reparse  
+- Some hidden achievement triggers sorted so I can yeet the missing file  
+- Updat WSG note that's been wrong for 9 years, fixes #1767  
+- Some achievement updates related to TWW main campaign being fully available  
+- Parser: Removed some old obsolete Mount handling logic  
+    Parser: Removed some arbitrary Mount type assignment being done after we've already calculated what is what  
+    Fixed a couple NYI Items from being attached to in-game Mount spells  
+- Add final TWW campaign chapter (on plate at least) and Earthen allied race mount  
+- Use achievement headers for family battler types of past expansions (current expansion doesn't get one, unfortunately)  
+- Moved many "Stay awhile and Listen" quests to the correct positions.  
+- Moved entire 'The War Within' questline to one place.  
+- TWW/Hallowfall: Simplify the notes/answers for Loremaster's Reward  
+- Testing out sourceQuest-only structure for Loremaster's Reward  
+- Small note for Arathi Treasure Hoard  
+- Retail: Removed the extra nesting of top-level categories in the minilist  
+- TWW: Spreading The Light hqt clarification  
+- Fix some Widow Arak'Nai coords  
+- TWW/Hallowfall: Correct a coordinate for an NPC  
+    and remove a piece of the treasure code already present in Spreading the Light.  
+- Many small DF HQTs sorting + timelines.  
+    Sorted few manuscripts.  
+- Converted Zul'Gurub Ensembles to iensemble and moved their HQTs to the backup file.  
+- Moved skinning HQT to other professions.  
+- theaer troupe is weekly reward from the quest with the same name & the recipes are a reward from the box  
+- some duplicates for severed thread recipes  
+    found 3 items that are sorted but dont load ingame (digits only)  
+- since we are using monthly dates for trading post for a couple months now, we can rename the monthly reward.  
+    old: trading post>monthly reward  
+    new: trading post>june 2024>filled travelers log  
+- delves is now 02 instead of 16 to follow ingame list of  
+    d&r  
+    delves  
+    outdoor  
+    due outdoor beginning with O, delves can use 02 and stay above that  
+    same with secrets  
+- stunning sapphire re-sourced  
+- storm vessel is no longer a zone drop & crackling shard can drop from any mob  
+- Sorted 'Vow-Taker's Boots'  
+- 2 more sorted!  
+- Update Skinning.lua  
+    Refine Hides+++  
+- Bit of sorting perhaps  
+- Add breadcrumb sourcequests, fix map coord for LW treasure  
+- Fix two sourcequests  
+- Retail Errors  
+- Fixed: The Wealth of a Kingdom  
+- No more parser warnings  
+- Sort some rare drops and a bugged quest starter  
+- TWW/Isle of Dorn: Treasures do not appear with some delay anymore  
+- The titles require renown 25.  
+    Added back NYI item.  
+- Add TWW Renown 25 titles, sort some unsorted  
+- Quest fixes.  
+- TWW Profession clean up  
+- Blizzard forgot that shaman exists and made 2 less special items :(  
+- Added all season 1 tier sets.  
+- Minor fixes to BlacksmithingDB  
+- Fixes TWW Blacksmithing  
+- Missing L  
+- Fixed tabs.  
+- Fixes to TWW Alchemy  
+- Some updating to QuestNames Handling for new expansion  
+- Generating Missing Files  
+- Harvest: 11.0.2.56421  
+- Harvest: 11.0.2.56382  
+- Harvest: 11.0.2.56380  
+- Harvest: 11.0.2.56313  
+- Harvest: 4.4.0.56420  
+- Harvest: 1.15.4.56419  
+- Harvest: 1.15.4.56400  
+- Add TWW paragon boxes, missing inscription weekly treasures, and resort profession weeklies to match other files  
+- Retail-Errors  
+- Comma Comma  
+- Weavercloth Spellthread  
+- uncommented catalyst under primal storms. technically primal storm mobs can also drop primal gear which can be upgraded to s1 tier set, but can farm them on forbidden reach. Way more rares & not time based.  
+- added catalyst fully into vault of the incarnates as well as into primal storm&forbidden reach  
+- more QIs, mostly 8.0.1 but some SL items  
+- If the 'if tww' if statement is used, then if I have to decide, should I write it if 'if before tww,' or if after 'df'?  
+- sussy if statements  
+- more wording for revival cata  
+- DF S2 & DF S3 revival catalyst also now show in their respective zones, but only LFR as only event rewards can be converted.  
+    wording for raid catalysators  
 - Merge branch 'master' of https://github.com/DFortun81/AllTheThings  
-- Parser: Fixed an issue where Ensemble cleanup could randomly cause a concurrency exception when debugging  
-    Parser: Fixed an issue where Ensemble-Sourced items were receiving a 'races' field instead of the 'r' field for the whole Faction (this is likely the cause of why many TWW pre-patch 'Recruit' items were not being properly flagged as collected in Unique mode from their matching Faction-restricted BFA Ensemble shared appearances) (fixes #1717)  
-- Azj Max Level Chapter  
-- D&R Timeline Change  
-- Placeholder Timeline for Prepatch End, Further Timeline cleaning  
-- Some DBs (Still need further cleaning soon) with timelines  
-- Mythic+ Season Tempered!  
-- Updated InGameShop Information.. Loads of missing pieces  
-- Parser: Now accepts OnSourceInit to provide an OnInit for the specific source (since OnInit assignments are copied to all Sources of the Thing)  
-    Parser: Improved the Lua function compression a bit  
-    regionExclusive/regionUnavailable now use OnSourceInit  
-    Mount properly cache themselves by 'mountID' (fixes Mount type being considered 'missing' in ATT using general logic)  
-    Retail: Minor adjustment to common Unobtainable logic for NYI/Removed Items having multiple Sources (due to per-Region availability differences, thanks Blizzard :weary:)  
-- waifu whitemane loot is back  
-- Reharvested SourceIDs  
-- Some unsorted for rares in Azj  
-- chinaOnly() Darkal/Runaway NYI?!?!  
-- Added in some old Tailoring Information while reworking undergoing  
-- Commented out some achievements that aren't loading anymore or have otherwise been (soft) removed. Will sort them better later!  
-- Retail: Various rendering improvements (should not have very noticeable visible differences)  
-- Retail: Update TOC  
-- Parser: Fixed some potential gaps in DataValidator & validation Reason will now be provided in log message  
-    Parser: Added validation on 'collectible' field to only accept 'false' when provided  
-- Source WoD ring  
-- Move Watcher petDB entry from NYI to launch timeline  
-- Retail: Future Warband Collected no longer excludes due to Class restriction (account for 11.0.5 confirmed change)  
-- Twitch gifts cost real money  
-- You WILL collect NPCIDs and you will LIKE it  
-- updated note for something that nobody ever reads  
-- Fixed BRF Essence tokens to be the proper item/quest association  
-- Add Smouldering Phoenix Ash creature source  
-- Parser: Now removes the 'c' field from data when equivalent to ALL\_CLASSES  
-- Fix broken FAQ link  
-- Source quest item, fixes #1724  
-- Parser: Consolidated some DB file merging logic  
-    Parser: Consolidated some conditional file export logic  
-- Add TWW launch Twitch promos  
-- Classic: Reclassified the phase identifier for enchants that were originally added with BWL to use "PHASE\_THREE\_ENCHANTS" instead so that the value can be changed in SOD. (not sure if the enchants are in yet, but we'll see)  
-- Classic: Reclassified the phase identifier for crafting recipes that were originally added with BWL to use "PHASE\_THREE\_RECIPES" instead so that the value can be changed in SOD.  
-- Classic: Reclassified the phase identifier for DMF cards to use a new constant "PHASE\_THREE\_DMF\_CARDS", but use the same phase ID. This will help categorization later in future SOD releases.  
-- Added a warning message if trying to merge non-table data into a DB container  
-- Added object data for Symbol of Lost Honor.  
-- Parser: ItemDBConditional now works properly with modItemID keys  
-- Charred Locket details  
-- Sourced pandaria outdoor zone objects that belong to achievement criteria  
-- SOD: You can buy the Dawnbringer Shoulders recipe from the Argent Quartermasters.  
-- TWW: fixed dungeon crs for some bosses, added follower dungeon difficultyID (commented out)  
+    * 'master' of https://github.com/DFortun81/AllTheThings:  
+      Update NYI Quests.lua  
+- Update NYI Quests.lua  
+- moved zaralek wq rewards to zone rewards as they can also drop as zone drop  
+    catalyst for s2 & s3 now show inside of the raid instead of under expansion feature similar to s3/s4 from shadowlands. vault still need updating  
+- I Fix!  
+- blacklisted an item  
+- added weekly wording to weekly treasure knowledge in tww  

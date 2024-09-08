@@ -57,14 +57,18 @@ end
 --获取宝石槽位信息add
 local function PIGGetGemList(Link)
 	local baoshiinfo = {}
-    local statsg = GetItemStats(Link)
-    for key, num in pairs(statsg) do
-        if (key:match("EMPTY_SOCKET_")) then
-            for i = 1, num do
-                table.insert(baoshiinfo, _G[key])
-            end
-        end
-    end
+	if Link then
+	    local statsg = GetItemStats(Link)
+	    if statsg then
+		    for key, num in pairs(statsg) do
+		        if (key:match("EMPTY_SOCKET_")) then
+		            for i = 1, num do
+		                table.insert(baoshiinfo, _G[key])
+		            end
+		        end
+		    end
+		end
+	end
     return baoshiinfo
 end
 local function add_GemBut(self,id)

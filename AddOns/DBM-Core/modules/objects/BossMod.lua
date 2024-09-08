@@ -103,8 +103,9 @@ function DBM:NewMod(name, modId, modSubTab, instanceId, nameModifier)
 		test.Mocks:SetModEnvironment(2)
 	end
 
-	if tonumber(name) and EJ_GetEncounterInfo and EJ_GetEncounterInfo(tonumber(name)) then
-		local t = EJ_GetEncounterInfo(tonumber(name))
+	local encounterId = tonumber(name)
+	if encounterId and EJ_GetEncounterInfo and EJ_GetEncounterInfo(encounterId) then
+		local t = EJ_GetEncounterInfo(encounterId)
 		if type(nameModifier) == "number" then--Get name form EJ_GetCreatureInfo
 			t = select(2, EJ_GetCreatureInfo(nameModifier, tonumber(name)))
 		elseif type(nameModifier) == "function" then--custom name modify function
@@ -544,7 +545,7 @@ do
 	---@return boolean
 	function bossModPrototype:CheckInterruptFilter(sourceGUID, checkOnlyTandF, checkCooldown, ignoreTandF)
 		--Check healer spec filter
-		if self:IsHealer() and (self.isTrashMod and DBM.Options.FilterTInterruptHealer or not self.isTrashMod and DBM.Options.FilterBInterruptHealer) then
+		if not checkOnlyTandF and self:IsHealer() and (self.isTrashMod and DBM.Options.FilterTInterruptHealer or not self.isTrashMod and DBM.Options.FilterBInterruptHealer) then
 			return false
 		end
 
@@ -578,7 +579,7 @@ do
 
 		--Check if it's casting something that's not interruptable at the moment
 		--needed for torghast since many mobs can have interrupt immunity with same spellIds as other mobs that can be interrupted
-		if private.isRetail and unitID then
+		if not checkOnlyTandF and private.isRetail and unitID then
 			if UnitCastingInfo(unitID) then
 				local _, _, _, _, _, _, _, notInterruptible = UnitCastingInfo(unitID)
 				if notInterruptible then return false end

@@ -1,49 +1,69 @@
---@non-alpha@
-do return end
---@end-non-alpha@
-
 ---@class DBMGUI
 local DBM_GUI = DBM_GUI
+local L = DBM_GUI_L
 
-DBM_GUI.Cat_Development = DBM_GUI:CreateNewPanel("Development & Testing", "option")
+local isDevBuild = true
+--@non-alpha@
+isDevBuild = false
+--@end-non-alpha@
 
-local infoArea = DBM_GUI.Cat_Development:CreateArea("Development and Testing UI")
-infoArea:CreateText("You are seeing this UI tab because you have an alpha or development build of DBM installed.", nil, true)
+DBM_GUI.Cat_Development = DBM_GUI:CreateNewPanel(L.DevPanel, "option")
 
-local testPanel = DBM_GUI.Cat_Development:CreateNewPanel("Tests", "option")
+local infoArea = DBM_GUI.Cat_Development:CreateArea(L.DevPanelArea)
+infoArea:CreateText(L.DevPanelExplanation, nil, true)
 
----@class TimeWarpSlider: DBMPanelSlider
-local timeWarpSlider = testPanel:CreateSlider("", 1, 500, 1, 400)
-timeWarpSlider:SetScript("OnValueChanged", function(self, value)
-	local sliderMax = select(2, self:GetMinMaxValues())
-	if value >= sliderMax then -- slider at max == dynamic fastest speed
-		DBM_Test_DefaultTimeWarp = 0
-		timeWarpSlider.textFrame:SetText("Time warp: dynamic (fastest)")
-		if DBM.Test.timeWarper then
-			DBM.Test.timeWarper:SetSpeed(0)
+local testPanel = DBM_GUI.Cat_Development:CreateNewPanel(L.Tests, "option")
+
+function DBM_GUI:CreateTimewarpSlider(parent)
+	---@class TimeWarpSlider: DBMPanelSlider
+	local timeWarpSlider = parent:CreateSlider("", 1, 500, 1, 400)
+	timeWarpSlider:SetScript("OnValueChanged", function(self, value)
+		local sliderMax = select(2, self:GetMinMaxValues())
+		if value >= sliderMax then -- slider at max == dynamic fastest speed
+			DBM_Test_DefaultTimeWarp = 0
+			timeWarpSlider.textFrame:SetText(L.TimewarpDynamic)
+			if DBM.Test.timeWarper then
+				DBM.Test.timeWarper:SetSpeed(0)
+			end
+			return
 		end
-		return
-	end
-	value = self:TransformInput(value)
-	DBM_Test_DefaultTimeWarp = value
-	timeWarpSlider.textFrame:SetFormattedText("Time warp: %dx", value)
-	if DBM.Test.timeWarper then
-		DBM.Test.timeWarper:SetSpeed(value)
-	end
-end)
+		value = self:TransformInput(value)
+		DBM_Test_DefaultTimeWarp = value
+		timeWarpSlider.textFrame:SetFormattedText(L.TimewarpSetting, value)
+		if DBM.Test.timeWarper then
+			DBM.Test.timeWarper:SetSpeed(value)
+		end
+	end)
 
--- exponential slider that isn't too steep and feels good
-timeWarpSlider.steepness = 3.3
-function timeWarpSlider:TransformInput(value)
-	local sliderMin, sliderMax = self:GetMinMaxValues()
-	value = (value - sliderMin) / (sliderMax - sliderMin)
-	return (math.exp(value * self.steepness) - 1) / (math.exp(self.steepness) - 1) * (sliderMax - sliderMin) + sliderMin
-end
+	timeWarpSlider:SetScript("OnShow", function()
+		timeWarpSlider:SetValue(timeWarpSlider:TransformInputInverse(DBM_Test_DefaultTimeWarp or 10))
+	end)
 
-function timeWarpSlider:TransformInputInverse(value)
-	local sliderMin, sliderMax = self:GetMinMaxValues()
-	value = (value - sliderMin) / (sliderMax - sliderMin)
-	return math.log((math.exp(self.steepness) - 1) * (value - 1 / (1 - math.exp(self.steepness)))) / self.steepness * (sliderMax - sliderMin) + sliderMin
+	-- Saved variable is in DBM-Test because it's also used by the CLI. The slider triggers OnShow before this one is loaded, so trigger again to update the value
+	timeWarpSlider:RegisterEvent("ADDON_LOADED")
+	timeWarpSlider:SetScript("OnEvent", function(self, event, addonName)
+		if event == "ADDON_LOADED" and addonName == "DBM-Test" then
+			self:GetScript("OnShow")(self)
+		end
+	end)
+
+	-- exponential slider that isn't too steep and feels good
+	timeWarpSlider.steepness = 3.3
+	function timeWarpSlider:TransformInput(value)
+		local sliderMin, sliderMax = self:GetMinMaxValues()
+		value = (value - sliderMin) / (sliderMax - sliderMin)
+		return (math.exp(value * self.steepness) - 1) / (math.exp(self.steepness) - 1) * (sliderMax - sliderMin) + sliderMin
+	end
+
+	function timeWarpSlider:TransformInputInverse(value)
+		local sliderMin, sliderMax = self:GetMinMaxValues()
+		if value <= 0 then
+			return sliderMax
+		end
+		value = (value - sliderMin) / (sliderMax - sliderMin)
+		return math.log((math.exp(self.steepness) - 1) * (value - 1 / (1 - math.exp(self.steepness)))) / self.steepness * (sliderMax - sliderMin) + sliderMin
+	end
+	return timeWarpSlider
 end
 
 
@@ -67,7 +87,7 @@ end
 local function setCombinedTestResults(uiInfo, test, result)
 	if uiInfo.numTests == 1  and result == "Failure" then
 		-- TODO: add flakiness detection here: did this succeed or fail in prior runs?
-		test.uiInfo.statusText:SetText("Failed")
+		test.uiInfo.statusText:SetText(L.Failed)
 		test.uiInfo.statusText:SetTextColor(RED_FONT_COLOR:GetRGB())
 		return
 	end
@@ -107,10 +127,10 @@ local function stopAll()
 	for _, button in ipairs(runButtons) do
 		button:Enable()
 	end
-	runAllOrStopButton:SetText("Run all tests")
+	runAllOrStopButton:SetText(L.RunAllTests)
 end
 
-runAllOrStopButton = testPanel:CreateButton("Run all tests", 120, 35, function()
+runAllOrStopButton = testPanel:CreateButton(L.RunAllTests, 120, 35, function()
 	if #queuedTests > 0 then
 		stopAll()
 	elseif runButtons[1] then
@@ -120,27 +140,39 @@ runAllOrStopButton = testPanel:CreateButton("Run all tests", 120, 35, function()
 	end
 end)
 runAllOrStopButton:SetPoint("TOPLEFT", testPanel.frame, "TOPLEFT", 10, -5)
+local timeWarpSlider = DBM_GUI:CreateTimewarpSlider(testPanel)
 timeWarpSlider:SetPoint("LEFT", runAllOrStopButton, "RIGHT", 10, 0)
 
 ---@param test TestDefinition
 local function onTestStart(test)
-	test.uiInfo.statusText:SetText("Running")
+	test.uiInfo.statusText:SetText(L.Running)
 	test.uiInfo.statusText:SetTextColor(LIGHTBLUE_FONT_COLOR:GetRGB())
 	test.uiInfo.statusText:Hide() test.uiInfo.statusText:Show() -- Do not remove, this actually avoids some problem with it not reliably showing up while running tests
 end
 
+
 ---@param results TestReporter
-local function onTestFinish(test, results, testCount, numTests)
+local function onTestFinish(test, testOptions, results, testCount, numTests)
 	if queuedTests[#queuedTests] == test then
 		queuedTests[#queuedTests] = nil
 	end
 	local result = results:GetResult()
+	-- Don't report a diff as an error if a test is tainted/non-deterministic, e.g., non-english client
+	-- Also hide on non-alpha versions, random diff failures due to non-determinism, someone not updating tests or something may
+	-- give the incorrect impression that there is something wrong. Only show errors if
+	if (results:IsTainted() or not isDevBuild) and not results:HasErrors() then
+		result = "Success"
+	end
 	for _, parent in ipairs(test.uiInfo.parents) do
 		setCombinedTestResults(parent.uiInfo, test, result)
 	end
 	setCombinedTestResults(test.uiInfo, test, result)
 	test.uiInfo.lastResults = results
-	if results:HasDiff() then
+	if results:IsTainted() or not isDevBuild then
+		test.uiInfo.showDiffButton:SetText(L.ShowReport)
+		test.uiInfo.showDiffButton:Show()
+	elseif results:HasDiff() then
+		test.uiInfo.showDiffButton:SetText(L.ShowDiff)
 		test.uiInfo.showDiffButton:Show()
 	end
 	if results:HasErrors() then
@@ -150,7 +182,7 @@ local function onTestFinish(test, results, testCount, numTests)
 		for _, button in ipairs(runButtons) do
 			button:Enable()
 		end
-		runAllOrStopButton:SetText("Run all tests")
+		runAllOrStopButton:SetText(L.RunAllTests)
 	end
 end
 
@@ -169,17 +201,17 @@ local function onRunTestClicked(tests)
 		for _, button in ipairs(runButtons) do
 			button:Disable()
 		end
-		runAllOrStopButton:SetText("Stop tests")
+		runAllOrStopButton:SetText(L.StopTests)
 		for i = #tests, 1, -1 do
 			local test = tests[i]
 			queuedTests[#queuedTests + 1] = test
 			test.uiInfo.showDiffButton:Hide()
 			test.uiInfo.showErrorsButton:Hide()
-			test.uiInfo.statusText:SetText("Queued")
+			test.uiInfo.statusText:SetText(L.Queued)
 			test.uiInfo.statusText:SetTextColor(BLUE_FONT_COLOR:GetRGB())
 		end
 		onTestStart(tests[1])
-		DBM.Test:RunTests(tests, nil, testStatusCallback)
+		DBM.Test:RunTests(tests, nil, nil, testStatusCallback)
 	end
 end
 
@@ -199,7 +231,7 @@ local function createTestEntry(testName, tests, parents, indentation)
 		childTestState = {}
 	}
 
-	local runButton = testPanel:CreateButton("Run", 40, 22, onRunTestClicked(tests))
+	local runButton = testPanel:CreateButton(L.RunTestShort, 40, 22, onRunTestClicked(tests))
 	runButton.myheight = yDistance
 	runButtons[#runButtons + 1] = runButton
 	runButton:SetPoint("TOPLEFT", testPanel.frame, "TOPLEFT", 10, yPos)
@@ -220,15 +252,20 @@ local function createTestEntry(testName, tests, parents, indentation)
 	if #tests == 1 then
 		---@class TestDefinition
 		local test = tests[1]
-		local showDiffButton = testPanel:CreateButton("Show diff", 0, 22, function(self)
-			if test.uiInfo.lastResults then
-				test.uiInfo.lastResults:ReportDiff(true)
+		local showDiffButton = testPanel:CreateButton(L.ShowDiff, 90, 22, function(self)
+			local lastResults = test.uiInfo.lastResults
+			if lastResults then
+				if lastResults:IsTainted() or not isDevBuild then
+					lastResults:ShowReport()
+				else
+					lastResults:ReportDiff()
+				end
 			end
 		end)
 		uiInfo.showDiffButton = showDiffButton
 		showDiffButton:SetPoint("TOPRIGHT", testPanel.frame, "TOPRIGHT", -25, yPos)
 		showDiffButton:Hide()
-		local showErrorsButton = testPanel:CreateButton("Show errors", 0, 22, function(self)
+		local showErrorsButton = testPanel:CreateButton(L.ShowErrors, 0, 22, function(self)
 			if test.uiInfo.lastResults then
 				test.uiInfo.lastResults:ReportErrors()
 			end
@@ -272,7 +309,7 @@ local function createTestTreeEntry(node)
 		node.uiInfo = createTestEntry(node.test.name, {node.test}, getParents(node), node.depth)
 	end
 	if node.count > 1 then
-		local name = node.path == "" and "All tests" or (node.path .. "/*")
+		local name = node.path == "" and L.AllTests or (node.path .. "/*")
 		node.uiInfo = createTestEntry(name, gatherChildTests(node), getParents(node), node.depth)
 	end
 	for _, v in ipairs(node.children) do
@@ -345,9 +382,6 @@ testPanel.frame:HookScript("OnShow", function(self)
 		area:CreateText("Could not find any test definitions, check if DBM-Test-* mods are installed and enabled.", nil, true)
 		return
 	end
-	local savedTimeWarpSliderVal = DBM_Test_DefaultTimeWarp or 0
-	savedTimeWarpSliderVal = savedTimeWarpSliderVal > 0 and savedTimeWarpSliderVal or 500
-	timeWarpSlider:SetValue(timeWarpSlider:TransformInputInverse(savedTimeWarpSliderVal))
 	for _, testName in ipairs(DBM.Test.Registry.sortedTests) do
 		local pathElements = {string.split("/", testName)}
 		insertElement(root, 1, testName, pathElements)

@@ -30,13 +30,13 @@ local function Update_itemLV_(itemButton, id, slot)
 			local info = C_Container.GetContainerItemInfo(bagID, itemButton:GetID());
 			if info and info.hyperlink then
 				local quality = info.quality;
-				local itemID, itemType, itemSubType, itemEquipLoc, icon, classID= GetItemInfoInstant(info.hyperlink) 
+				local itemID, itemType, itemSubType, itemEquipLoc, icon, classID, subClassID = C_Item.GetItemInfoInstant(info.hyperlink)
 				if quality and quality>1 and classID==2 or classID==4 then
-					local effectiveILvl = GetDetailedItemLevelInfo(info.hyperlink)
-					local r, g, b = GetItemQualityColor(quality);
+					local actualItemLevel, previewLevel, sparseItemLevel = C_Item.GetDetailedItemLevelInfo(info.hyperlink)
+					local colorRGBR, colorRGBG, colorRGBB, qualityString = C_Item.GetItemQualityColor(quality)
 					if itemButton.ZLV then
-						itemButton.ZLV:SetText(effectiveILvl);
-						itemButton.ZLV:SetTextColor(r, g, b, 1);
+						itemButton.ZLV:SetText(actualItemLevel);
+						itemButton.ZLV:SetTextColor(colorRGBR, colorRGBG, colorRGBB, 1);
 					end
 				end
 			end
@@ -88,9 +88,7 @@ function BagBankfun.Bag_Item_lv(frame, size, id)
 			if id>bagData["bagIDMax"] then
 				local Frameid=ContainerFrameUtil_GetShownFrameForID(id)
 				if Frameid then
-					print(Frameid)
 					for i, itemButton in Frameid:EnumerateValidItems() do
-						print(i, itemButton)
 						Update_itemLV_(itemButton)
 					end
 				end	

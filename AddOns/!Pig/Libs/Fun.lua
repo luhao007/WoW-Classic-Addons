@@ -10,6 +10,14 @@ local Fun = {}
 addonTable.Fun=Fun
 local L =addonTable.locale
 -------------
+
+function PIGGetIconForRole(role)
+	if role=="NONE" then
+		return "UI-LFG-RoleIcon-Pending"
+	else
+		return GetIconForRole(role)
+	end
+end
 function PIGGetSpellInfo(SpellID)
 	if C_Spell and C_Spell.GetSpellInfo then
 		local spellInfo = C_Spell.GetSpellInfo(SpellID)
@@ -19,6 +27,39 @@ function PIGGetSpellInfo(SpellID)
 	else
 		local name, rank, icon, castTime, minRange, maxRange, spellID, originalIcon= GetSpellInfo(SpellID)
 		return name, icon, castTime, minRange, maxRange, spellID, originalIcon,rank
+	end
+end
+function PIGGetSpellTabInfo(SpellID)
+	if C_SpellBook and C_SpellBook.GetSpellBookSkillLineInfo then
+		local spellInfo = C_SpellBook.GetSpellBookSkillLineInfo(SpellID)
+		if spellInfo then
+			return spellInfo.name,spellInfo.iconID,spellInfo.itemIndexOffset,spellInfo.numSpellBookItems,spellInfo.isGuild,spellInfo.shouldHide,spellInfo.specID,spellInfo.offSpecID
+		end
+	else
+		local name, texture, offset, numSlots, isGuild, offspecID= GetSpellTabInfo(SpellID)
+		return name, texture, offset, numSlots, isGuild, offspecID
+	end
+end
+function PIGGetSpellBookItemInfo(index, bookType)
+	if C_SpellBook and C_SpellBook.GetSpellBookItemInfo then
+		local spellInfo = C_SpellBook.GetSpellBookItemInfo(index, bookType)
+		if spellInfo then
+			return spellInfo.itemType,spellInfo.spellID
+		end
+	else
+		local spellType, id= GetSpellBookItemInfo(index, bookType)
+		return spellType, id
+	end
+end
+function PIGGetSpellCooldown(SpellID)
+	if C_Spell and C_Spell.GetSpellCooldown then
+		local spellInfo = C_Spell.GetSpellCooldown(SpellID)
+		if spellInfo then
+			return spellInfo.startTime,spellInfo.duration,spellInfo.isEnabled,spellInfo.modRate
+		end
+	else
+		local start, duration, enabled, modRate= GetSpellCooldown(SpellID)
+		return start, duration, enabled, modRate
 	end
 end
 --获取背包信息
@@ -148,22 +189,61 @@ function Fun.GetRaceClassTXT(iconH,texW,race,sex,class,color)
 	end
 	return RaceX,ClassX
 end
---删除聊天额外信息
-function Fun.del_link(newText)--删除Link
+--删除聊天link信息
+function Fun.del_link(newText)
 	local newText = newText or ""
 	local newText=newText:gsub("|cff%w%w%w%w%w%w|Hitem:.-|h%[","");
 	local newText=newText:gsub("|cff%w%w%w%w%w%w|Henchant:.-|h%[","");
 	local newText=newText:gsub("|cff%w%w%w%w%w%w|Htrade:.-|h%[","");
+	local newText=newText:gsub("|cff%w%w%w%w%w%w|Hmount:.-|h%[","");--
 	local newText=newText:gsub("|cff%w%w%w%w%w%w|Hjournal:.-|h%[","");
 	local newText=newText:gsub("|cff%w%w%w%w%w%w|Hachievement:.-|h%[","");
 	local newText=newText:gsub("|cff%w%w%w%w%w%w|Hspell:.-|h%[","");
 	local newText=newText:gsub("|cff%w%w%w%w%w%w|Hquest:.-|h%[","");
 	local newText=newText:gsub("|cff%w%w%w%w%w%w|HclubFinder:.-|h%[","");--加入公会
 	local newText=newText:gsub("|cff%w%w%w%w%w%w|HclubTicket:.-|h%[","");--加入群组
+	local newText=newText:gsub("|cff%w%w%w%w%w%w|Htransmogillusion:.-|h%[","");--附魔外观
+	local newText=newText:gsub("|cff%w%w%w%w%w%w|Hworldmap:.-|h%[","");--附魔外观
 	--local newText=newText:gsub("|cff%w%w%w%w%w%w|Hquestie:(%d+):Player%-(%d+)%-(%w+)|h","");
 	local newText=newText:gsub("|A.-%]|h|r","");
 	local newText=newText:gsub("%]|h|r","");
 	return newText or ""
+end
+local function find_NOlink(paichuinfo,Text,key)
+	local oldstart = 0
+	for _ in Text:gmatch(key) do
+		local start, over = Text:find(key,oldstart+1);
+		if start and over then table.insert(paichuinfo,{start, over}) end
+		oldstart = start
+	end
+end
+function Fun.gsub_NOlink(newText)--替换Link之外信息
+	local newText = newText or ""
+	local paichuinfo = {}
+	find_NOlink(paichuinfo,newText,"(|cff%w%w%w%w%w%w|Hitem:.-|h%[.-%]|h|r)")
+	find_NOlink(paichuinfo,newText,"(|cff%w%w%w%w%w%w|Henchant:.-|h%[.-%]|h|r)");
+	find_NOlink(paichuinfo,newText,"(|cff%w%w%w%w%w%w|Htrade:.-|h%[.-%]|h|r)");
+	find_NOlink(paichuinfo,newText,"(|cff%w%w%w%w%w%w|Hmount:.-|h%[.-%]|h|r)");
+	find_NOlink(paichuinfo,newText,"(|cff%w%w%w%w%w%w|Hjournal:.-|h%[.-%]|h|r)");
+	find_NOlink(paichuinfo,newText,"(|cff%w%w%w%w%w%w|Hachievement:.-|h%[.-%]|h|r)");
+	find_NOlink(paichuinfo,newText,"(|cff%w%w%w%w%w%w|Hspell:.-|h%[.-%]|h|r)");
+	find_NOlink(paichuinfo,newText,"(|cff%w%w%w%w%w%w|Hquest:.-|h%[.-%]|h|r)");
+	find_NOlink(paichuinfo,newText,"(|cff%w%w%w%w%w%w|HclubFinder:.-|h%[.-%]|h|r)");
+	find_NOlink(paichuinfo,newText,"(|cff%w%w%w%w%w%w|HclubTicket:.-|h%[.-%]|h|r)");
+	find_NOlink(paichuinfo,newText,"(|cff%w%w%w%w%w%w|Htransmogillusion:.-|h%[.-%]|h|r)");
+	find_NOlink(paichuinfo,newText,"(|cff%w%w%w%w%w%w|Hworldmap:.-|h%[.-%]|h|r)");
+	find_NOlink(paichuinfo,newText,"(|cff%w%w%w%w%w%w|T.-:%d|t)");
+	find_NOlink(paichuinfo,newText,"(|cff%w%w%w%w%w%w|T.-:%d|T)");
+	return paichuinfo
+end
+function Fun.Is_IndexContain(paichuinfo,start,over)--判断是否在编号内
+	local paichuinfo = paichuinfo or {}
+	for i=1,#paichuinfo do
+		if start>=paichuinfo[i][1] and over<=paichuinfo[i][2] then
+			return true
+		end
+	end
+	return false
 end
 local biaoqingData = {
 	{"{rt1}","INTERFACE/TARGETINGFRAME/UI-RAIDTARGETINGICON_1"}, {"{rt2}","INTERFACE/TARGETINGFRAME/UI-RAIDTARGETINGICON_2"}, 

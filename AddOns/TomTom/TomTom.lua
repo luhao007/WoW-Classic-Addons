@@ -212,14 +212,14 @@ function TomTom:Initialize(event, addon)
 end
 
 function TomTom:Enable(addon)
-    if self.WOW_MAINLINE and not self.WAR_WITHIN then
-        self:EnableDisablePOIIntegration()
-    end
-
     self:ReloadWaypoints()
     self:CreateConfigPanels()
 
     self:CreateWorldMapClickHandler()
+
+    if self.WOW_MAINLINE then
+        self:EnableDisablePOIIntegration()
+    end
 end
 
 -- Some utility functions that can pack/unpack data from a waypoint
@@ -1035,6 +1035,17 @@ function TomTom:IsValidWaypoint(waypoint)
     else
         return false
     end
+end
+
+function TomTom:WaypointHasSameMapXYTitle(waypoint, map, x, y, title)
+    -- This is a hack that relies on the UID format, do not use this
+    -- in your addons, please.
+    local pm, px, py = unpack(waypoint)
+    if map == pm and x == px and y == py and waypoint.title == title then
+        return true
+    end
+
+    return false
 end
 
 function TomTom:WaypointExists(m, x, y, desc)

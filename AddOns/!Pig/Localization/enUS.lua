@@ -18,9 +18,8 @@ L["ABOUT_UPDATETIPS"] = "The AddOn has expired. Please check the update address 
 L["ABOUT_LOAD"] = "Loading succeeded /pig or mini map button setting";
 L["ABOUT_REMINDER"]="|cffFF0000This AddOn is completely free, online shopping platform for sale are liars|r"
 L["ABOUT_UPDATEADD"]="Update URL: "
-L["ABOUT_MAIL"]="Feedback: |cff00ffffxdfxjf1004@hotmail.com|r"
-L["ABOUT_BILI"]=" "
-L["ABOUT_QQ"]=""
+L["ABOUT_MAIL"]="Feedback: "
+L["ABOUT_MEDIA"]="Use tutorial: "
 L["ABOUT_OTHERADDONS"]="Other addons by the author"
 L["ABOUT_OTHERADDON_LIST"]={
 	{"|cff00FFFF"..L.extLsit[1].."|r","|cff00ff00["..L["PIGaddonList"][L.extLsit[1]].."]|r","https://www.curseforge.com/wow/addons/pig_tardis"},

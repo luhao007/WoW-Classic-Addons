@@ -16,6 +16,8 @@ function test:NewReporter(testData, trace)
 		---@diagnostic disable-next-line: dbm-event-checker
 		mod = DBM:GetModByName(testData.mod), ---@type DBMMod
 		errors = {},
+		taints = {},
+		strayObjects = {}, -- Warning objects that didn't show up while loading but were triggered by the test
 	}, reporterMt)
 	return obj
 end
@@ -233,12 +235,14 @@ end
 function reporter:FindPreciseShowsThatAlwaysFailed(findings)
 	local objs = self:FindObjects()
 	for _, obj in ipairs(objs) do
-		for maxTotal in pairs(obj.testUsedWithPreciseShow) do
-			if not obj.testUsedWithPreciseShowSucess[maxTotal] then
-				findings[#findings + 1] = {
-					type = "precise-show-always-failed", spellId = obj.spellId, sortKey = 3, extraSortKey = maxTotal,
-					text = ("%s uses PreciseShow(%d) but never gets %d targets"):format(self:ObjectToString(obj), maxTotal, maxTotal)
-				}
+		if obj.testUsedWithPreciseShow then
+			for maxTotal in pairs(obj.testUsedWithPreciseShow) do
+				if not obj.testUsedWithPreciseShowSucess[maxTotal] then
+					findings[#findings + 1] = {
+						type = "precise-show-always-failed", spellId = obj.spellId, sortKey = 3, extraSortKey = maxTotal,
+						text = ("%s uses PreciseShow(%d) but never gets %d targets"):format(self:ObjectToString(obj), maxTotal, maxTotal)
+					}
+				end
 			end
 		end
 	end
@@ -297,14 +301,33 @@ function reporter:FindObjects()
 	if self.cachedObjects then
 		return self.cachedObjects
 	end
+	local seenObjs = {}
 	local objs = {}
+	-- Objects we saw during loading
 	for _, entry in ipairs(self.trace) do
 		for _, v in ipairs(entry.traces) do
 			if v.mod == self.mod and (v.event == "NewTimer" or v.event == "NewAnnounce" or v.event == "NewSpecialWarning" or v.event == "NewYell") then
-				objs[#objs + 1] = v[1]
+				local obj = v[1]
+				objs[#objs + 1] = obj
+				seenObjs[obj] = true
 			end
 		end
 	end
+	local function gatherObjects(list)
+		for _, obj in ipairs(list) do
+			if not seenObjs[obj] then
+				objs[#objs + 1] = obj
+				seenObjs[obj] = true
+			end
+		end
+	end
+	-- Objects the mod defines, these should be identical to what we already saw above if the mod was loaded properly
+	gatherObjects(self.mod.timers)
+	gatherObjects(self.mod.announces)
+	gatherObjects(self.mod.specwarns)
+	gatherObjects(self.mod.yells)
+	-- Objects we saw during test execution but not during test load, if there is anything new here then a second mod triggered
+	gatherObjects(self.strayObjects) -- TODO: We might want to tag these in the report, because we usually don't want that (but I do have some interesting multi-encounter pull logs)
 	table.sort(objs, compareObjects)
 	self.cachedObjects = objs
 	return objs
@@ -519,7 +542,7 @@ function reporter:EventToStringForReport(event, indent, subIndent)
 					-- StartTimer can have a dynamic arg, so round to one .1 second precision to avoid flakes
 					result[#result + 1] = ("%.1f"):format(v)
 				else
-					if (event.event == "ShowAnnounce" or event.event == "ShowYell") and paramId == 2 then
+					if (event.event == "ShowAnnounce" or event.event == "ShowYell" or event.event == "ShowSpecialWarning") and paramId == 2 then
 						-- These sometimes include the player name, either from UnitName("player") or from the name/guid translation from the test runner
 						-- FIXME: these can fail if your character name matches a spell name
 						if v == UnitName("player") then
@@ -534,7 +557,13 @@ function reporter:EventToStringForReport(event, indent, subIndent)
 		end
 	end
 	if event.event == "AntiSpam" then
+		local targetName = event[2]
 		result[#result] = nil -- filter bool result
+		result[#result] = nil -- filter target name as it's already part of the ID
+		if targetName and targetName == UnitName("player") then -- May refer to the player due to combat log rewriting
+			-- id is "<id> on <targetName>" if targetName is specified
+			result[#result] = result[#result]:gsub("on " .. UnitName("player") .. "$", "on PlayerName")
+		end
 		local filteredSpams = {}
 		if event.filteredAntiSpams and #event.filteredAntiSpams > 0 then
 			for _, v in ipairs(event.filteredAntiSpams) do
@@ -605,7 +634,7 @@ function reporter:FilterTraceEntry(entry, trigger)
 		return true
 	end
 	-- AntiSpams returned false, they are summarized in the previous true event
-	if entry.event == "AntiSpam" and not entry[2] then
+	if entry.event == "AntiSpam" and not entry[3] then
 		return true
 	end
 	-- Generic warning sounds
@@ -746,10 +775,14 @@ function reporter:ReportDiff()
 	DBM:ShowUpdateReminder(nil, nil, msg, self:ReportWithHeader(), 300, "LEFT")
 end
 
+function reporter:ShowReport()
+	test:ShowTestReportFrame(self:Report())
+end
+
 ---@alias TestResultEnum "Success"|"Failure"
 ---@return TestResultEnum
 function reporter:GetResult()
-	return not self:HasDiff() and not self:HasErrors() and "Success" or "Failure"
+	return (not self:HasDiff() or self:IsTainted()) and not self:HasErrors() and "Success" or "Failure"
 end
 
 function reporter:HasErrors()
@@ -757,11 +790,11 @@ function reporter:HasErrors()
 end
 
 local realErrorHandler
-local ourErrorsHandlers = setmetatable({}, {__mode = "k"})
+local ourErrorHandlers = setmetatable({}, {__mode = "k"})
 
 function reporter:GetRealErrorHandler()
 	local errorHandler = geterrorhandler()
-	if ourErrorsHandlers[errorHandler] then
+	if ourErrorHandlers[errorHandler] then
 		-- handle the case when you click on report errors while another test is running
 		errorHandler = realErrorHandler or HandleLuaError
 	end
@@ -775,13 +808,16 @@ function reporter:ReportErrors()
 	end
 end
 
-function reporter:SetupErrorHandler()
+function reporter:SetupErrorHandler(passthroughErrors)
 	self.oldErrorHandler = geterrorhandler()
 	realErrorHandler = self.oldErrorHandler
 	local errorHandler = function(err)
 		self.errors[#self.errors + 1] = err
+		if passthroughErrors then
+			realErrorHandler(err)
+		end
 	end
-	ourErrorsHandlers[errorHandler] = true
+	ourErrorHandlers[errorHandler] = true
 	seterrorhandler(errorHandler)
 end
 
@@ -794,4 +830,26 @@ end
 
 function reporter:FlagCombat(waitedFor)
 	self.inCombatAfterTest = waitedFor
+end
+
+---@alias DBMTestTaintType "Lang"|"ModEnv"|"DBMOptions"|"ModOptions"|"Perspective"|"StrayObjects"|"Playground"
+
+---@type table<DBMTestTaintType, string>
+local taintDescriptions = {
+	Lang = "Running on an %s client, golden test reports are created with English clients",
+	ModEnv = "Mod was not loaded with full test support enabled, global hooks in mods are disabled",
+	DBMOptions = "Running with DBM options set to something other than the test defaults",
+	ModOptions = "Running with mod options set to something other than the test defaults",
+	Perspective = "Test specifies player %s, but running as player %s",
+	StrayObjects = "Encountered stray warning objects during test run, an unexpected mod might have been triggered or mod was loaded without full test support",
+	Playground = "Test was started in playground mode"
+}
+
+---@param taintType DBMTestTaintType
+function reporter:Taint(taintType, ...)
+	self.taints[#self.taints + 1] = {type = taintType, description = taintDescriptions[taintType]:format(...)}
+end
+
+function reporter:IsTainted()
+	return #self.taints > 0
 end

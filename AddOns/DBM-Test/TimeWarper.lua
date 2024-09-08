@@ -13,9 +13,13 @@ local timeWarperMt = {__index = test.TimeWarper}
 
 ---@param frame Frame
 function test.TimeWarper:RegisterFrame(frame)
-	self.framesToHook[frame] = true
+	if self.framesToHook[frame] ~= nil then
+		return
+	end
 	if active then
 		self:HookOnUpdateHandler(frame)
+	else
+		self.framesToHook[frame] = true
 	end
 end
 
@@ -99,6 +103,10 @@ local GetTimePreciseSec = GetTimePreciseSec
 -- Call coroutine.yield() until a given point in (fake) time has been reached.
 -- Pass the real time elapsed since the last coroutine.resume to coroutine.resume, i.e., run the coroutine in an OnUpdate handler.
 function test.TimeWarper:WaitUntil(time)
+	-- Tests simulate 30 FPS by default, using anything else might give slightly different outcomes which we don't want for the golden tests
+	-- Fine to use different values in playground mode.
+	-- It's tempting to use a number that's neatly representable in IEEE 754 here like 1 / 32 and round up the start time to fix potential floating point messes.
+	-- but that doesn't help anything here because mods are full of 0.1 granularity type timers and test events are at 0.01 granularity (neither are representable).
 	local timeStep = 1 / 30
 	local minRealFps = 20 -- the exact value here doesn't really matter, and it's not accurate anyways, this is mainly here to implement dynamic speed without terrible lag
 	self.currentFrameStart = self.currentFrameStart or GetTimePreciseSec()
@@ -113,11 +121,17 @@ function test.TimeWarper:WaitUntil(time)
 		end
 		self.fakeTime = self.fakeTime + timeStep
 		self.fakeTimeSinceLastFrame = self.fakeTimeSinceLastFrame + timeStep
+		-- FIXME: This calls handlers in a non-deterministic order, but it's a bit annoying to fix, because how would we order the frames?
+		-- Options to consider
+		--  * Frame creation/registration time: mod load order can differ and timers are created lazily
+		--  * By name: might be anonymous frames
+		--  * Hard-coded logic to run DBT, then DBM, then DBM scheduler, then everything else by some logic?
 		for frame, updateFunc in pairs(self.framesToHook) do
 			if frame:IsVisible() and type(updateFunc) == "function" then
 				updateFunc(frame, timeStep)
 			end
 		end
+		DBM:FireEvent("DBMTest_Tick", timeStep)
 	end
 end
 
@@ -141,6 +155,15 @@ function test.TimeWarper:SetSpeed(factor)
 		self:DisableSound()
 	end
 	self.factor = factor <= 0 and 1e9 or factor
+	if self.factor > 1 then
+		DBM.TaintedByTests = true
+	end
+	---@type DBMTestCallbackTimewarp
+	local testStopCallbackArgs = {
+		Speed = factor,
+		Timewarper = self --[[@as DBMTestTimewarperPublic]]
+	}
+	DBM:FireEvent("DBMTest_Timewarp", testStopCallbackArgs)
 end
 
 function test.TimeWarper:New()

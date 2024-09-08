@@ -449,7 +449,7 @@ L.SpamBlockNoIconRestore			= "不在戰鬥結束後記住和還原團隊圖示�
 L.SpamBlockNoRangeRestore			= "不因模組預設值還原距離框架的狀態"
 
 L.Area_PullTimer					= "開怪、休息、戰鬥和自定義計時器過濾器選項"
-L.DontShowPTNoID					= "阻擋與你不同區域ID送出的開怪倒數計時條(永遠不會阻擋在沒有區域ID的情況下發送的Bigwigs計時器)"
+L.DontShowPTNoID					= "阻擋與你不同區域ID送出的開怪倒數計時條"
 L.DontShowPT						= "不要顯示開怪/休息倒數計時條"
 L.DontShowPTText					= "不要顯示開怪/休息計時提示文字"
 L.DontPlayPTCountdown				= "完全不要播放開怪/休息/開戰/自訂計時器倒數音效"
@@ -596,3 +596,30 @@ L.FontShadow				= "陰影"
 L.FontType					= "選擇字型"
 
 L.FontHeight	= 16
+
+
+-- Testing
+L.DevPanel							= "開發 & 測試"
+L.DevPanelArea						= "開發以及測試UI"
+L.DevPanelExplanation				= "這是一個開發和測試UI，它透由播放戰鬥日誌來驗證DBM是否按預期工作。"
+
+L.TimewarpSetting					= "時間扭曲: %dx"
+L.TimewarpDynamic					= "時間扭曲: 動態 (最快)"
+
+
+L.Test								= "測試"
+L.Tests								= "測試"
+L.AllTests							= "全部測試"
+L.RunTest							= "運行測試"
+L.RunTestShort						= "運行" -- Same intend as RunTest, but a smaller button
+L.StopTest							= "停止測試"
+L.StopTests							= "停止測試"
+L.RunAllTests						= "運行全部測試"
+L.Queued							= "佇列"
+L.Running							= "運行中"
+L.Failed							= "失敗"
+L.ShowReport						= "顯示報告"
+L.ShowDiff							= "顯示不同"
+L.ShowErrors						= "顯示錯誤"
+L.TestModEntry						= "[操練場] %s"
+L.EnterTestMode						= "操練場模式"

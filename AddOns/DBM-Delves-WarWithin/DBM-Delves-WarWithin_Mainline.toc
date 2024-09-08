@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: MysticalOS
-## Version: r142
+## Version: r148
 ## RequiredDeps: DBM-Core
 ## LoadOnDemand: 1
 ## SavedVariables: DBMDelvesWarWithin_AllSavedVars
@@ -10,15 +10,16 @@
 ## Title: |cffffe00a<|r|cffff7d0aDBM Mod|r|cffffe00a>|r |cff4565ffDelves (TWW)|r
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFF69CCF0地下堡|r |cFF22B14C地心之战|r
 
-## X-Min-Interface: 110000
+## X-Min-Interface: 110002
 ## X-DBM-Mod: 1
 ## X-DBM-Mod-Type: SCENARIO
 ## X-DBM-Mod-Category: OTHER
 ## X-DBM-StatTypes: normal
 ## X-DBM-Mod-Name: Delves (TWW)
 ## X-DBM-Mod-Name-koKR: 구렁 (내부 전쟁)
-## X-DBM-Mod-Name-ruRU: Погружение в норы (Война Внутри)
+## X-DBM-Mod-Name-ruRU: Вылазки (Война Внутри)
 ## X-DBM-Mod-Name-zhTW: 探究 (地心之戰)
+## X-DBM-Mod-Name-zhCN: 地下堡 (地心之战)
 ## X-DBM-Mod-Sort: 120
 ## X-DBM-Mod-MapID: 2664, 2679, 2680, 2681, 2682, 2683, 2684, 2685, 2686, 2687, 2688, 2689, 2690, 2767, 2768
 ## X-DBM-Mod-MinCoreRevision: 20200524142133
@@ -27,6 +28,8 @@
 
 localization.en.lua
 localization.kr.lua
+localization.ru.lua
+localization.cn.lua
 TrashCommon.lua
 FungalFolly.lua
 MycomancerCavern.lua

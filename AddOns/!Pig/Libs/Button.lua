@@ -99,9 +99,9 @@ function Create.PIGButton(fuF,Point,WH,Text,UIName,id,TemplateP,Zihao,Angle)--,n
 		return add_ButtonUI(false,fuF,Point,WH,Text,UIName,id,TemplateP,Zihao)
 	end
 end
-function Create.PIGCloseBut(fuF,Point,WH,UIName)
+function Create.PIGCloseBut(fuF,Point,WH,UIName,TemplateP)
 	local WH = WH or {22,22}
-	local But = CreateFrame("Button",UIName,fuF);
+	local But = CreateFrame("Button",UIName,fuF,TemplateP);
 	But:SetHighlightTexture("interface/buttons/ui-common-mousehilight.blp")
 	But:SetSize(WH[1],WH[2])
 	if Point then
@@ -219,8 +219,70 @@ function Create.PIGSlider(fuF,Point,WH,minmaxSet,tooltip,UIName)
 	end
 	return Slider
 end
+-- function Create.PIGSlider(fuF,Point,WH,minmaxSet,tooltip,UIName)
+-- 	local tooltip = tooltip or "拖动滑块或者用鼠标滚轮调整数值";
+-- 	local Slider = CreateFrame("Slider", UIName, fuF, "MinimalSliderWithSteppersTemplate")--"OptionsSliderTemplate"
+-- 	--Slider:SetSize(WH[1],WH[2]);
+-- 	Slider.Slider:SetWidth(WH[1]+100);
+-- 	Slider.Slider:SetHeight(WH[2]-14);
+-- 	Slider:SetPoint(Point[1],Point[2],Point[3],Point[4],Point[5]);
+-- 	-- Slider.tooltipText = tooltip
+-- 	-- -- Slider.TopText:SetFont(FontUrl,14)
+-- 	-- -- Slider.TopText:SetText(minmaxSet[2]);
+-- 	-- -- Slider.TopText:Show();
+-- 	-- -- Slider.LeftText:SetFont(FontUrl,14)
+-- 	-- -- Slider.LeftText:SetText(minmaxSet[1]);
+-- 	-- -- Slider.LeftText:Show();
+-- 	-- Slider.RightText:SetFont(FontUrl,14)
+-- 	-- Slider.RightText:SetText(minmaxSet[2]);
+-- 	-- --Slider.RightText:Show();
+-- 	-- -- Slider.High:SetFont(FontUrl,14)
+-- 	-- -- Slider.Text:SetFont(FontUrl,14)
+-- 	-- -- Slider.High:SetText(minmaxSet[2]);
+-- 	-- Slider:SetMinMaxValues(minmaxSet[1], minmaxSet[2]);
+-- 	-- Slider:SetValueStep(minmaxSet[3]);
+-- 	Slider:SetObeyStepOnDrag(true);
+-- 	-- Slider:EnableMouseWheel(true);
+-- 	-- Slider:SetEnabled(true)
+-- 	-- -- hooksecurefunc(Slider, "Enable", function(self)
+-- 	-- -- 	self.Low:SetTextColor(1, 1, 1, 1);
+-- 	-- -- 	self.High:SetTextColor(1, 1, 1, 1);
+-- 	-- -- 	--self.Text:SetTextColor(1, 1, 1, 1);
+-- 	-- -- end)
+-- 	-- -- hooksecurefunc(Slider, "Disable", function(self)
+-- 	-- -- 	self.Low:SetTextColor(0.2, 0.2, 0.2, 1);
+-- 	-- -- 	self.High:SetTextColor(0.2, 0.2, 0.2, 1);
+-- 	-- -- 	--self.Text:SetTextColor(0.2, 0.2, 0.2, 1);
+-- 	-- -- end)
+-- 	-- Slider:Init(value, minValue, maxValue, steps, formatters)
+-- 	-- Slider:HookScript("OnMouseWheel", function(self, arg1)
+-- 	-- 	if self:IsEnabled() then
+-- 	-- 		local Value = self:GetValue()
+-- 	-- 		--local val = floor(val*100+0.5)*0.01
+-- 	-- 		local step = minmaxSet[3] * arg1
+-- 	-- 		if step > 0 then
+-- 	-- 			self:SetValue(min(Value + step, minmaxSet[2]))
+-- 	-- 		else
+-- 	-- 			self:SetValue(max(Value + step, minmaxSet[1]))
+-- 	-- 		end
+-- 	-- 	end
+-- 	-- end)
+-- 	function Slider:PIGSetValue(chushiV,danweiT)
+-- 		-- local chushiV = chushiV or 1
+-- 		-- self:SetValue(chushiV);
+-- 		-- if danweiT then
+-- 		-- 	self.RightText:SetText(chushiV..danweiT);
+-- 		-- else
+-- 		-- 	self.RightText:SetText(chushiV);
+-- 		-- end
+-- 		-- self:SetScript("OnValueChanged", function(self)
+-- 		-- 	self:OnValueFun()
+-- 		-- end)
+-- 	end
+-- 	return Slider
+-- end
 local morenColor = {
-	{0.16,0.16,0.16},
+	{0.1,0.1,0.1},
 	{BorderColor[1], BorderColor[2], BorderColor[3], BorderColor[4]},
 	{1,0.7,0},
 }
@@ -341,20 +403,24 @@ function Create.PIGCheckbutton_R(fuF,text,vertical,lienum,Vjiange,WH,UIName)
 end
 --左边主菜单
 function Create.Show_TabBut(Rneirong,tabbut)---选择主菜单
-	local PigUI=Pig_OptionsUI
+	local PigUI=Rneirong:GetParent():GetParent():GetParent():GetParent()
+	--local PigUI=fujiUI or Pig_OptionsUI
 	local ListTOP = {PigUI.L.F.ListTOP:GetChildren()}
 	for x=1, #ListTOP, 1 do
 		ListTOP[x]:NotSelected()
 	end
-	local ListEXT = {PigUI.L.F.ListEXT:GetChildren()}
-	for x=1, #ListEXT, 1 do
-		ListEXT[x]:NotSelected()
+	if PigUI.L.F.ListEXT then
+		local ListEXT = {PigUI.L.F.ListEXT:GetChildren()}
+		for x=1, #ListEXT, 1 do
+			ListEXT[x]:NotSelected()
+		end
 	end
-	local ListBOT = {PigUI.L.F.ListBOT:GetChildren()}
-	for x=1, #ListBOT, 1 do
-		ListBOT[x]:NotSelected()
+	if PigUI.L.F.ListBOT then
+		local ListBOT = {PigUI.L.F.ListBOT:GetChildren()}
+		for x=1, #ListBOT, 1 do
+			ListBOT[x]:NotSelected()
+		end
 	end
-
 	local RNR = {PigUI.R.F.NR:GetChildren()}
 	for x=1, #RNR, 1 do
 		RNR[x]:Hide()
@@ -362,22 +428,26 @@ function Create.Show_TabBut(Rneirong,tabbut)---选择主菜单
 	tabbut:Selected()
 	Rneirong:Show()
 end
-function Create.PIGOptionsList(GnName,weizhi)
-	local PigUI=Pig_OptionsUI
+function Create.PIGOptionsList(GnName,weizhi,fujiUI)
+	local PigUI=fujiUI or Pig_OptionsUI
 	local fuUI=PigUI.L.F.ListTOP
 	local tabbutWW = fuUI:GetWidth()-6.8
 	if weizhi=="EXT" then
 		fuUI=PigUI.L.F.ListEXT
 	elseif weizhi=="BOT" then
 		fuUI=PigUI.L.F.ListBOT
-		tabbutWW = 90
+		tabbutWW = 60
 	end
 	local List_ButH,jiange = 26,4
 	local ziframe = {fuUI:GetChildren()}
 	local zinum = #ziframe
 	local TabBut = Create.PIGTabBut(fuUI,nil,{tabbutWW,List_ButH},GnName)
 	if weizhi=="BOT" then
-		TabBut:SetPoint("LEFT", fuUI, "LEFT", 30, 0);
+		if zinum==0 then
+			TabBut:SetPoint("LEFT", fuUI, "LEFT", 10, 0);
+		else
+			TabBut:SetPoint("LEFT", fuUI, "LEFT", (zinum*(tabbutWW+16)+10), 0);
+		end
 	else
 		if zinum==0 then
 			TabBut:SetPoint("TOP", fuUI, "TOP", 0, -jiange);

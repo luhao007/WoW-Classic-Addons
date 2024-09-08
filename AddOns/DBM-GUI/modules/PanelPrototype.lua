@@ -270,7 +270,7 @@ function PanelPrototype:CreateEditBox(text, value, width, height)
 	return textbox
 end
 
-function PanelPrototype:CreateLine(text)
+function PanelPrototype:CreateLine(text, extraWidth)
 	---@class DBMPanelLine: Frame
 	local line = CreateFrame("Frame", "DBM_GUI_Option_" .. self:GetNewID(), self.frame)
 	line:SetSize(self.frame:GetWidth() - 20, 20)
@@ -281,6 +281,7 @@ function PanelPrototype:CreateLine(text)
 	end
 	line.myheight = 20
 	line.mytype = "line"
+	line.extraWidth = extraWidth
 	local linetext = line:CreateFontString("$parentText", "ARTWORK", "GameFontNormal")
 	linetext:SetPoint("TOPLEFT", line, "TOPLEFT")
 	linetext:SetJustifyH("LEFT")
@@ -637,7 +638,8 @@ function PanelPrototype:CreateAbility(titleText, icon, spellID, isPrivate)
 	})
 end
 
-function DBM_GUI:CreateNewPanel(frameName, frameType, showSub, displayName, forceChildren, addonId, isSeason)
+---@return DBMPanel
+function DBM_GUI:CreateNewPanel(frameName, frameType, showSub, displayName, forceChildren, addonId, isSeason, isTest)
 	---@class DBMPanelFrame: Frame
 	local panel = CreateFrame("Frame", "DBM_GUI_Option_" .. self:GetNewID(), _G["DBM_GUI_OptionsFramePanelContainer"])
 	panel.mytype = "panel"
@@ -649,6 +651,7 @@ function DBM_GUI:CreateNewPanel(frameName, frameType, showSub, displayName, forc
 	panel.showSub = showSub or showSub == nil
 	panel.modId = frameName
 	panel.addonId = addonId
+	panel.isTest = isTest
 	panel.isSeason = isSeason
 	panel:Hide()
 	if frameType == "option" then

@@ -8,6 +8,27 @@ local UFP_MAX_PARTY_BUFFS = 16;
 local UFP_MAX_PARTY_DEBUFFS = 8;
 local UFP_MAX_PARTY_PET_DEBUFFS = 4;
 ----------------
+local UnitAura=UnitAura or function(unitToken, index, filter)
+	local auraData = C_UnitAuras.GetAuraDataByIndex(unitToken, index, filter);
+	if not auraData then
+		return nil;
+	end
+	return AuraUtil.UnpackAuraData(auraData);
+end
+local UnitBuff=UnitBuff or function(unitToken, index, filter)
+	local auraData = C_UnitAuras.GetBuffDataByIndex(unitToken, index, filter);
+	if not auraData then
+		return nil;
+	end
+	return AuraUtil.UnpackAuraData(auraData);
+end
+local UnitDebuff= UnitDebuff or function(unitToken, index, filter)
+	local auraData = C_UnitAuras.GetDebuffDataByIndex(unitToken, index, filter);
+	if not auraData then
+		return nil;
+	end
+	return AuraUtil.UnpackAuraData(auraData);
+end
 --职业图标
 local function Update_zhiye(Party,id)
 	if IsInRaid() then return end
@@ -16,7 +37,12 @@ local function Update_zhiye(Party,id)
 		local coords = CLASS_ICON_TCOORDS[class];
 		Party.Icon:SetTexCoord(unpack(coords));
 		local Role = UnitGroupRolesAssigned(id)
-		Party.role.Icon:SetAtlas(GetIconForRole(Role, false));
+		Party.role.Icon:SetAtlas(PIGGetIconForRole(Role, false));
+		if tocversion>100000 then
+			local pfujiui = Party:GetParent()
+			pfujiui.PartyMemberOverlay.RoleIcon:Hide()
+			pfujiui.Name:SetWidth(170)
+		end
 	end
 end
 --队友等级
@@ -330,18 +356,20 @@ local function PartyMember_ToToT()
 		local Party=_G["PartyMemberFrame"..id] or PartyFrame and PartyFrame["MemberFrame"..id]
 	    --队友目标
 	    if Party and not Party.mubiao then
-			Party.mubiao = CreateFrame("Button", nil, Party,"SecureUnitButtonTemplate")
+			Party.mubiao = CreateFrame("Button", nil, Party,"SecureUnitButtonTemplate",id)
 			Party.mubiao:SetSize(100,22);
 			Party.mubiao:SetPoint("LEFT", Party.HP, "RIGHT", 4, -0);
 			Party.mubiao:RegisterForClicks("AnyUp")
 			Party.mubiao:RegisterForDrag("LeftButton")
 			Party.mubiao:SetAttribute("*type1", "target")
-			Party.mubiao:SetAttribute("unit", "Party"..id.."target")
+			Party.mubiao:SetAttribute("unit", "party"..id.."target")
 		    Party.mubiao.title = PIGFontString(Party.mubiao,{"LEFT", Party.mubiao, "LEFT", 0, 0},"", "OUTLINE")
 		    Party.mubiao.title:SetTextColor(1, 0.82, 0);
 		    Party.mubiao:RegisterUnitEvent("UNIT_TARGET","party"..id);
+		    Party.mubiao:RegisterUnitEvent("UNIT_HEALTH", "party"..id.."target");
+			Party.mubiao:RegisterUnitEvent("UNIT_MAXHEALTH", "party"..id.."target");
 		    Party.mubiao:HookScript("OnEvent", function(self,event,arg1)
-				Update_mubiao(self,arg1)
+				Update_mubiao(self,"party"..id)
 			end)
 			RegisterUnitWatch(Party.mubiao)
 		end

@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Zensunim of Dragonblight
-## Version: 5.11.2
+## Version: 5.11.3
 ## SavedVariables: GTFOData
 ## DefaultState: Enabled
 ## IconTexture: Interface\Icons\spell_fire_fire

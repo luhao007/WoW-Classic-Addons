@@ -126,18 +126,16 @@ mubiaoF.Plus:SetScript("OnClick", function (self)
 		Pig_Options_RLtishi_UI:Show()
 	end
 end);
-if tocversion<50000 then
-	mubiaoF.Chouhen=PIGCheckbutton_R(mubiaoF,{"仇恨值/仇恨高亮/仇恨目录","显示目标的仇恨值/仇恨高亮/仇恨目录"})
-	mubiaoF.Chouhen:SetScript("OnClick", function (self)
-		if self:GetChecked() then
-			PIGA["UnitFrame"]["TargetFrame"]["Chouhen"]=true;
-			UnitFramefun.Mubiao()
-		else
-			PIGA["UnitFrame"]["TargetFrame"]["Chouhen"]=false;
-			Pig_Options_RLtishi_UI:Show()
-		end
-	end);
-end
+mubiaoF.Chouhen=PIGCheckbutton_R(mubiaoF,{"仇恨值/仇恨高亮/仇恨目录","显示目标的仇恨值/仇恨高亮/仇恨目录"})
+mubiaoF.Chouhen:SetScript("OnClick", function (self)
+	if self:GetChecked() then
+		PIGA["UnitFrame"]["TargetFrame"]["Chouhen"]=true;
+		UnitFramefun.Mubiao()
+	else
+		PIGA["UnitFrame"]["TargetFrame"]["Chouhen"]=false;
+		Pig_Options_RLtishi_UI:Show()
+	end
+end);
 mubiaoF.ToToToT=PIGCheckbutton_R(mubiaoF,{"显示目标的目标的目标","显示目标的目标的目标（注意：请先打开系统的目标的目标）"})
 mubiaoF.ToToToT:SetScript("OnClick", function (self)
 	if self:GetChecked() then

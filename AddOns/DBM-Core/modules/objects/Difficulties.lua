@@ -13,6 +13,8 @@ local bossModPrototype = private:GetPrototype("DBMMod")
 ---@class Difficulties
 local difficulties = private:GetPrototype("Difficulties")
 
+local test = private:GetPrototype("DBMTest")
+
 difficulties.savedDifficulty = nil
 difficulties.difficultyIndex = nil
 difficulties.difficultyText = nil
@@ -111,6 +113,13 @@ else--TBC and Vanilla
 		instanceDifficultyBylevel[90] = {40, 3} -- Gnomeregan level up raid
 		instanceDifficultyBylevel[109] = {50, 3} -- Sunken Temple level up raid
 		instanceDifficultyBylevel[2784] = {60, 2} -- Demon Fall Canyon dungeon
+		instanceDifficultyBylevel[2789] = {60, 3} -- Lord kazzak
+		instanceDifficultyBylevel[2791] = {60, 3} -- Azuregos
+		instanceDifficultyBylevel[2784] = {60, 3} -- Azgaloth
+		instanceDifficultyBylevel[2804] = {60, 3} -- Prince Thunderaan
+		instanceDifficultyBylevel[2806] = {60, 2} -- Shadow Hold
+		instanceDifficultyBylevel[2807] = {60, 2} -- Burning of Andorhal
+		instanceDifficultyBylevel[2817] = {60, 2} -- Starfall Barrow Den
 	end
 end
 
@@ -142,6 +151,9 @@ end
 
 ---@param self DBM|DBMMod
 function DBM:IsTrivial(customLevel)
+	if test.testRunning then
+		return false
+	end
 	local lastInstanceMapId = DBM:GetCurrentArea()
 	--if timewalking or chromie time or challenge modes. it's always non trivial content
 	if C_PlayerInfo.IsPlayerInChromieTime and C_PlayerInfo.IsPlayerInChromieTime() or self:IsRemix() or difficulties.difficultyIndex == 24 or difficulties.difficultyIndex == 33 or difficulties.difficultyIndex == 8 then
@@ -232,7 +244,7 @@ end
 ---Pretty much ANYTHING that has a normal mode
 function bossModPrototype:IsNormal()
 	local diff = difficulties.savedDifficulty or DBM:GetCurrentInstanceDifficulty()
-	return diff == "normal" or diff == "normal5" or diff == "normal10" or diff == "normal20" or diff == "normal25" or diff == "normal40" or diff == "normalisland" or diff == "normalwarfront"
+	return diff == "normal" or diff == "normal5" or diff == "normal10" or diff == "normal20" or diff == "normal25" or diff == "normal40" or diff == "normalisland" or diff == "normalwarfront" or diff == "follower"
 end
 
 ---Dungeons with AI "follower" npcs. 1-5 players
@@ -242,9 +254,10 @@ function bossModPrototype:IsFollower()
 end
 
 ---Dungeons designed for just the player. "quest dungeons"
-function bossModPrototype:IsQuest()
+---<br> NOT to be confused with follower, which are just normal dungeons with AI followers
+function bossModPrototype:IsStory()
 	local diff = difficulties.savedDifficulty or DBM:GetCurrentInstanceDifficulty()
-	return diff == "quest"
+	return diff == "quest" or diff == "story"
 end
 
 ---Pretty much ANYTHING that has a heroic mode
@@ -295,7 +308,7 @@ function DBM:GetCurrentInstanceDifficulty()
 	local _, instanceType, difficulty, difficultyName, _, _, _, _, instanceGroupSize = private.GetInstanceInfo()
 	if difficulty == 0 or difficulty == 172 or (difficulty == 1 and instanceType == "none") or (C_Garrison and C_Garrison:IsOnGarrisonMap()) then--draenor field returns 1, causing world boss mod bug.
 		return "worldboss", RAID_INFO_WORLD_BOSS .. " - ", difficulty, instanceGroupSize, 0
-	elseif difficulty == 1 or difficulty == 173 or difficulty == 184 or difficulty == 150 or difficulty == 201 then--5 man Normal Dungeon / 201 is SoD 5 man ID for a dungeon that's also a 10/20 man SoD Raid
+	elseif difficulty == 1 or difficulty == 173 or difficulty == 184 or difficulty == 150 or difficulty == 201 then--5 man Normal Dungeon / 201 is SoD 5 man ID for a dungeon that's also a 10/20 man SoD Raid.
 		return "normal5", difficultyName .. " - ", difficulty, instanceGroupSize, 0
 	elseif difficulty == 2 or difficulty == 174 then--5 man Heroic Dungeon
 		return "heroic5", difficultyName .. " - ", difficulty, instanceGroupSize, 0
@@ -378,6 +391,8 @@ function DBM:GetCurrentInstanceDifficulty()
 --		return "delve1", difficultyName .. " - ", difficulty, instanceGroupSize, 0
 	elseif difficulty == 205 then--Follower (Party Dungeon - Dragonflight 10.2.5+)
 		return "follower", difficultyName .. " - ", difficulty, instanceGroupSize, 0
+	elseif difficulty == 207 then--SoD 1 player dungeon? Assigning as follower for now but will sort it out later
+		return "follower", difficultyName .. " - ", difficulty, instanceGroupSize, 0
 	elseif difficulty == 208 then--Delves (War Within 11.0.0+)
 		local delveInfo = C_UIWidgetManager.GetScenarioHeaderDelvesWidgetVisualizationInfo(6183)
 		local delveTier = 0
@@ -386,6 +401,8 @@ function DBM:GetCurrentInstanceDifficulty()
 			delveTier = tonumber(delveInfo.tierText)
 		end
 		return "delves", difficultyName .. "(" .. delveTier .. ") - ", difficulty, instanceGroupSize, delveTier
+	elseif difficulty == 213 then--Infinite Dungeon (timewalking in sod?)
+		return "timewalker", difficultyName .. " - ", difficulty, instanceGroupSize, 0
 	elseif difficulty == 216 then--Quest (Party Dungeon - War Within 11.0.0+)
 		return "quest", difficultyName .. " - ", difficulty, instanceGroupSize, 0
 	elseif difficulty == 220 then--Story (Raid Dungeon - War Within 11.0.0+)

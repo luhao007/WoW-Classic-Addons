@@ -295,12 +295,14 @@ function FramePlusfun.Friends()
 	WhoFrameEditBox:SetHeight(32);
 	WhoFrameEditBox:ClearAllPoints();
 	WhoFrameTotals:SetPoint("BOTTOM",WhoFrameListInset,"BOTTOM",-80,-39)
+	WhoFrameEditBox:SetPoint("BOTTOMLEFT",WhoFrame,"BOTTOMLEFT",10,20);
+	WhoFrameEditBox:SetPoint("BOTTOMRIGHT",WhoFrame,"BOTTOMRIGHT",-10,20);
 	if ElvUI then
-		WhoFrameEditBox:SetPoint("BOTTOMLEFT",WhoFrame,"BOTTOMLEFT",10,30);
-		WhoFrameEditBox:SetPoint("BOTTOMRIGHT",WhoFrame,"BOTTOMRIGHT",-10,28);
-	else
-		WhoFrameEditBox:SetPoint("BOTTOMLEFT",WhoFrame,"BOTTOMLEFT",10,20);
-		WhoFrameEditBox:SetPoint("BOTTOMRIGHT",WhoFrame,"BOTTOMRIGHT",-10,20);
+		local E= unpack(ElvUI)
+		if E.private.skins.blizzard.enable and E.private.skins.blizzard.friends then
+			WhoFrameEditBox:SetPoint("BOTTOMLEFT",WhoFrame,"BOTTOMLEFT",10,30);
+			WhoFrameEditBox:SetPoint("BOTTOMRIGHT",WhoFrame,"BOTTOMRIGHT",-10,28);
+		end
 	end
 	local ColumnHeader0 = CreateFrame("Button","WhoFrameColumnHeader0",WhoFrame, "WhoFrameColumnHeaderTemplate")
 	ColumnHeader0:SetText("*")
@@ -336,13 +338,21 @@ function FramePlusfun.Friends()
 	WhoFrameColumn_SetWidth(WhoFrameColumnHeader2, WhoFrameHeaderP[5])
 	WhoFrameColumn_SetWidth(WhoFrameColumnHeader9, WhoFrameHeaderP[6])
 	WhoFrameDropDown:Hide()
-	if NDui or ElvUI then
+	local function Hide_Header()
 		WhoFrameColumnHeader0.Left:Hide()
 		WhoFrameColumnHeader0.Right:Hide()
 		WhoFrameColumnHeader0.Middle:Hide()
 		WhoFrameColumnHeader9.Left:Hide()
 		WhoFrameColumnHeader9.Right:Hide()
 		WhoFrameColumnHeader9.Middle:Hide()
+	end
+	if NDui then
+		Hide_Header()
+	elseif ElvUI then
+		local E= unpack(ElvUI)
+		if E.private.skins.blizzard.enable and E.private.skins.blizzard.friends then
+			Hide_Header()
+		end
 	end
 	if tocversion>100000 and tocversion<110000 then
 		WhoFrame.ScrollBox.view:SetElementExtent(WhohangH)
@@ -386,7 +396,7 @@ function FramePlusfun.Friends()
 			end
 		end)
 	elseif tocversion<50000 then
-		local function PIGWhoList_But()
+		local function PIGWhoList_But(elvuiopen)
 			WhoFrameColumnHeader4:SetWidth(26)
 			WhoFrameColumnHeader4:ClearAllPoints();
 			WhoFrameColumnHeader4:SetPoint("LEFT",WhoFrameColumnHeader0,"RIGHT",-2,0);
@@ -405,7 +415,7 @@ function FramePlusfun.Friends()
 				local NameText = _G["WhoFrameButton"..i.."Name"];
 				local variableText = _G["WhoFrameButton"..i.."Variable"];
 				ClassText:ClearAllPoints();
-				if ElvUI then
+				if elvuiopen then
 					ClassText:SetPoint("LEFT", button, "LEFT", -6, 0);
 					if button.icon then button.icon:SetAlpha(0) end
 					if button.backdrop then button.backdrop:SetAlpha(0) end
@@ -419,6 +429,8 @@ function FramePlusfun.Friends()
 				LevelText:ClearAllPoints();
 				if NDui then
 					LevelText:SetPoint("LEFT", ClassText, "RIGHT", 0, 0);
+				elseif elvuiopen then
+					LevelText:SetPoint("LEFT", ClassText, "RIGHT", -13, 0);
 				else
 					LevelText:SetPoint("LEFT", ClassText, "RIGHT", -8, 0);
 				end
@@ -440,7 +452,12 @@ function FramePlusfun.Friends()
 		end
 		WhoListScrollFrame:SetWidth(butWidth)
 		if ElvUI then
-			C_Timer.After(1,PIGWhoList_But)
+			local E= unpack(ElvUI)
+			if E.private.skins.blizzard.enable and E.private.skins.blizzard.friends then
+				C_Timer.After(1,function()
+					PIGWhoList_But(true)
+				end)	
+			end
 		else
 			PIGWhoList_But()
 		end
@@ -468,7 +485,7 @@ function FramePlusfun.Friends()
 				else
 					NameText:SetPoint("LEFT", LevelText, "RIGHT", 6, 0);
 				end
-				if ElvUI then
+				if ElvUI and FriendsFrame.backdrop then
 					C_Timer.After(0.001,function()
 						ClassText:Show()
 						if button.icon then button.icon:Hide() end
@@ -490,7 +507,7 @@ function FramePlusfun.Friends()
 					local kogngeW = " "
 					if NDui then
 						kogngeW= " "
-					elseif ElvUI then
+					elseif ElvUI and FriendsFrame.backdrop then
 						kogngeW= "  "
 					end
 					ClassText:SetText(raceX..kogngeW..classX);
@@ -528,7 +545,7 @@ function FramePlusfun.Friends()
 		-- 	return lastOnline;
 		-- end
 		local GuildFrameHeaderP={24,24,24,120,140,90,150}
-		local function PIGGuildList_But()
+		local function PIGGuildList_But(elvuiopen)
 			GuildFrameTotals:SetPoint("LEFT",GuildFrame,"LEFT",70,174);
 			GuildFrameGuildListToggleButton:Hide()
 			GuildListScrollFrame:SetWidth(butWidth)
@@ -537,11 +554,12 @@ function FramePlusfun.Friends()
 			GuildColumnHeader0:SetText("*")
 			GuildColumnHeader0:SetPoint("TOPLEFT",GuildPlayerStatusFrame,"TOPLEFT",7,-57);
 			GuildColumnHeader0:SetScript("OnClick", function(self) end)
-			if NDui or ElvUI then
+			if NDui or elvuiopen then
 				GuildFrameColumnHeader0Left:Hide()
 				GuildFrameColumnHeader0Right:Hide()
 				GuildFrameColumnHeader0Middle:Hide()
 			end
+
 			GuildFrameColumnHeader4:SetText("*")
 			GuildFrameColumnHeader4:ClearAllPoints();
 			GuildFrameColumnHeader4:SetPoint("LEFT",GuildColumnHeader0,"RIGHT",-2,0);
@@ -571,7 +589,7 @@ function FramePlusfun.Friends()
 				local LevelText = _G["GuildFrameButton"..i.."Level"];
 				local ZoneText = _G["GuildFrameButton"..i.."Zone"]
 				ClassText:ClearAllPoints();
-				if ElvUI then
+				if elvuiopen then
 					ClassText:SetPoint("LEFT", button, "LEFT", -2, 0);
 				elseif NDui then
 					ClassText:SetPoint("LEFT", button, "LEFT", 2, 0);
@@ -581,7 +599,11 @@ function FramePlusfun.Friends()
 				ClassText:SetJustifyH("RIGHT")
 				ClassText:SetWidth(GuildFrameHeaderP[1]+GuildFrameHeaderP[2])
 				LevelText:ClearAllPoints();
-				LevelText:SetPoint("LEFT", ClassText, "RIGHT", -2, 0);
+				if elvuiopen then
+					LevelText:SetPoint("LEFT", ClassText, "RIGHT", -4, 0);
+				else
+					LevelText:SetPoint("LEFT", ClassText, "RIGHT", -2, 0);
+				end
 				LevelText:SetWidth(GuildFrameHeaderP[3]+4)
 				NameText:ClearAllPoints();
 				NameText:SetPoint("LEFT", LevelText, "RIGHT", 0, 0);
@@ -599,7 +621,12 @@ function FramePlusfun.Friends()
 			end
 		end
 		if ElvUI then
-			C_Timer.After(1,PIGGuildList_But)
+			local E= unpack(ElvUI)
+			if E.private.skins.blizzard.enable and E.private.skins.blizzard.friends then
+				C_Timer.After(1,function()
+					PIGGuildList_But(true)
+				end)	
+			end
 		else
 			PIGGuildList_But()
 		end
@@ -616,7 +643,7 @@ function FramePlusfun.Friends()
 			local kogngeW = " "
 			if NDui then
 				kogngeW= " "
-			elseif ElvUI then
+			elseif ElvUI and FriendsFrame.backdrop then
 				kogngeW= "  "
 			end
 			local ClassText = _G[button:GetName().."Class"];
@@ -642,7 +669,7 @@ function FramePlusfun.Friends()
 				local ZoneText = _G["GuildFrameButton"..i.."Zone"]
 				ClassText:SetWidth(GuildFrameHeaderP[1]+GuildFrameHeaderP[2])
 				ZoneText:SetWidth(GuildFrameHeaderP[5]-6)
-				if ElvUI then
+				if ElvUI and FriendsFrame.backdrop then
 					ClassText:Show()
 					if button.icon then button.icon:Hide() end
 					if button.backdrop then button.backdrop:Hide() end

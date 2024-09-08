@@ -5855,22 +5855,32 @@ local GetActiveTalentGroup=GetActiveTalentGroup or PIGGetActiveTalentGroup
 function TalentData.GetTianfuIcon(guancha,zhiye)
 	local zuidazhi = {"--",132222,0}
 	local index = GetActiveTalentGroup(guancha,false)
-	local numTabs = GetNumTalentTabs(guancha)
-	for ti=1,numTabs do
-		local itemlistTalentmax = {}
-		if tocversion<20000 then
-			local _, name, _, icon, pointsSpent, background, previewPointsSpent = GetTalentTabInfo(ti,guancha,false,index);
-			itemlistTalentmax.pointsSpent=pointsSpent or 0
-			itemlistTalentmax.name=name
-			itemlistTalentmax.icon=icon
-		else
-			local name, icon, pointsSpent, background, previewPointsSpent = GetTalentTabInfo(ti,guancha,false,index);
-			itemlistTalentmax.pointsSpent=pointsSpent or 0
-			itemlistTalentmax.name=name
-			itemlistTalentmax.icon=icon
+	if tocversion<40000 then
+		local numTabs = GetNumTalentTabs(guancha)
+		for ti=1,numTabs do
+			local itemlistTalentmax = {["pointsSpent"]=0,["name"]=zuidazhi[1],["icon"]=zuidazhi[2]}
+			if tocversion<20000 then
+				local _, name, _, icon, pointsSpent, background, previewPointsSpent = GetTalentTabInfo(ti,guancha,false,index);
+				itemlistTalentmax.pointsSpent=pointsSpent or 0
+				itemlistTalentmax.name=name
+				itemlistTalentmax.icon=icon
+			elseif tocversion<40000 then
+				local name, icon, pointsSpent, background, previewPointsSpent = GetTalentTabInfo(ti,guancha,false,index);
+				itemlistTalentmax.pointsSpent=pointsSpent or 0
+				itemlistTalentmax.name=name
+				itemlistTalentmax.icon=icon
+			end
+			if itemlistTalentmax.pointsSpent>zuidazhi[3] then
+				zuidazhi={itemlistTalentmax.name, itemlistTalentmax.icon or tianfuTabIcon[zhiye][ti] or zuidazhi[2], itemlistTalentmax.pointsSpent}
+			end
 		end
-		if itemlistTalentmax.pointsSpent>zuidazhi[3] then
-			zuidazhi={itemlistTalentmax.name, itemlistTalentmax.icon or tianfuTabIcon[zhiye][ti] or 132222, itemlistTalentmax.pointsSpent}
+	elseif tocversion<50000 then
+		local index = GetActiveTalentGroup(guancha,false)
+		local masteryIndex = GetPrimaryTalentTree();
+		if masteryIndex then
+			local id, name, description, icon, pointsSpent, background, previewPointsSpent, isUnlocked = GetTalentTabInfo(masteryIndex,guancha,false,index);
+			zuidazhi[1]=name
+			zuidazhi[2]=icon
 		end
 	end
 	return zuidazhi
@@ -5964,7 +5974,7 @@ function TalentData.GetTianfuNum(guancha)
 	local txt = ""
 	if tocversion<50000 then
 		local numGroup = GetNumTalentGroups(guancha, false)
-		local activeGroup = GetActiveTalentGroup(guancha, false)
+		local activeGroup = GetActiveTalentGroup(guancha, false)	
 		local code1=GetTianfuData(activeGroup,guancha)
 		txt = code1
 		if numGroup>1 then
@@ -6108,26 +6118,136 @@ local function Player_Stats_1(activeGroup,guancha)
 			end
 		end	
 	end
-	return zuidazhi[1]..zuidazhi[3]
+	return zuidazhi[1],zuidazhi[3]
+end
+--1坦克/2治疗/3法系DPS/4近战物理DPS/5远程物理DPS
+local tianfuTabRole = {
+	["DEATHKNIGHT"]={["鲜血"]=1,["冰霜"]=4,["邪恶"]=4},
+	["DRUID"] ={["平衡"]=3,["野性战斗"]=4,["恢复"]=2},
+	["HUNTER"] ={["野兽控制"]=5,["射击"]=5,["生存"]=5},
+	["MAGE"] ={["奥术"]=3,["火焰"]=3,["冰霜"]=3},
+	["PALADIN"] ={["神圣"]=2,["防护"]=1,["惩戒"]=4},
+	["PRIEST"] ={["戒律"]=2,["神圣"]=2,["暗影"]=3},
+	["ROGUE"] ={["刺杀"]=4,["战斗"]=4,["敏锐"]=4},
+	["SHAMAN"] ={["元素"]=3,["增强"]=4,["恢复"]=2},
+	["WARLOCK"] ={["痛苦"]=3,["恶魔学识"]=3,["毁灭"]=3},
+	["WARRIOR"] ={["武器"]=4,["狂怒"]=4,["防护"]=1},
+	["MONK"] = {["酒仙"]=1,["织雾"]=2,["踏风"]=4},
+	["DEMONHUNTER"] = {["浩劫"]=4,["复仇"]=1},
+	["EVOKER"] = {["恩护"]=2,["湮灭"]=3,["增辉"]=3}, 
+};
+local function PIG_GetSpellCritChance()
+		local holySchool = 2
+	    local minCrit = GetSpellCritChance(holySchool);
+		for i=(holySchool+1), 7 do
+			local spellCrit = GetSpellCritChance(i);
+			minCrit = max(minCrit, spellCrit);
+		end
+		return minCrit,spellTishi
+	end
+	local function PIG_GetSpellBonusDamage()
+		local holySchool = 2
+	    local minCrit = GetSpellBonusDamage(holySchool);
+		for i=(holySchool+1), 7 do
+			local spellCrit = GetSpellBonusDamage(i);
+			minCrit = max(minCrit, spellCrit);
+		end
+		return minCrit,spellTishi
+	end
+local function GetStatsData(role)
+	local shuxing = ""
+	if role==1 then
+		local base, effectiveArmor, armor, bonusArmor= UnitArmor("player");
+		local dodgeChance = GetDodgeChance()
+		local base, modifier = UnitDefense("player");
+		local DefenseTXT = DEFENSE..base+modifier.." "
+		local dodgeChance = GetDodgeChance()
+		local dodgeChanceTXT=DODGE..string.format("%.2f",dodgeChance).."% "
+		local parryChance = GetParryChance()
+		local parryChanceTXT=PARRY..string.format("%.2f",parryChance).."% "
+		local blockChance = GetBlockChance()
+		local blockChanceTXT=BLOCK..string.format("%.2f",blockChance).."%"
+		shuxing=shuxing..ARMOR..armor.." "..DefenseTXT..dodgeChanceTXT..parryChanceTXT..blockChanceTXT
+	elseif role==2 then
+		local SpellBonusHealingV=GetSpellBonusHealing()--法术治疗加成
+		shuxing=shuxing..STAT_SPELLHEALING..SpellBonusHealingV.." "
+		--local rating = GetCombatRating(CR_HASTE_SPELL);--加速等级
+		local ratingBonus = GetCombatRatingBonus(CR_HASTE_SPELL);--加速百分比
+		shuxing=shuxing..RAID_BUFF_4..string.format("%.2f",ratingBonus).."% "
+		local powerType, powerToken = UnitPowerType("player");
+		if (powerToken == "ENERGY") then
+			--local basePowerRegen, castingPowerRegen = GetPowerRegen()
+			--shuxing=shuxing..STAT_ENERGY_REGEN..":"..floor((basePowerRegen*5)).."/5s"..MANA_REGEN_COMBAT..floor((castingPowerRegen*5)).."/5s"
+		else
+			local base, casting = GetManaRegen()--精神2秒回蓝
+			shuxing=shuxing..MANA_REGEN..floor((base*5)).."/5s "..MANA_REGEN_COMBAT..floor((casting*5)).."/5s"
+		end
+	elseif role==3 then
+		local BonusDamageV = PIG_GetSpellBonusDamage()--法术伤害加成
+		shuxing=shuxing..STAT_SPELLDAMAGE..BonusDamageV.." "
+		local SpellHitModifierV=GetSpellHitModifier() or 0--法术命中几率
+		if SpellHitModifierV>0 then
+			SpellHitModifierV=SpellHitModifierV/7
+		end
+		local ratingBonus = GetCombatRatingBonus(CR_HIT_SPELL);
+		shuxing=shuxing..PLAYERSTAT_SPELL_COMBAT..ACTION_RANGE_DAMAGE..string.format("%.2f",SpellHitModifierV+ratingBonus).."% "
+		local CritChanceV = PIG_GetSpellCritChance()--法术暴击几率
+		--local ratingBonus = GetCombatRatingBonus(CR_CRIT_SPELL);
+		shuxing=shuxing..PLAYERSTAT_SPELL_COMBAT..RAID_BUFF_6..string.format("%.2f",CritChanceV).."% "
+		local ratingBonus = GetCombatRatingBonus(CR_HASTE_SPELL);--加速百分比
+		shuxing=shuxing..RAID_BUFF_4..string.format("%.2f",ratingBonus).."%"
+	elseif role==4 then
+		local base, posBuff, negBuff = UnitAttackPower("player");
+		local effective = base + posBuff + negBuff
+		shuxing=shuxing..MELEE..ATTACK_POWER..effective.." "
+		local HitModifierV=GetHitModifier()--近战命中百分比
+		local ratingBonus = GetCombatRatingBonus(CR_HIT_MELEE);
+		shuxing=shuxing..MELEE..ACTION_RANGE_DAMAGE..string.format("%.2f",HitModifierV+ratingBonus).."% "
+		local CritChanceV=GetCritChance()--近战暴击率百分比
+		shuxing=shuxing..MELEE..RAID_BUFF_6..string.format("%.2f",CritChanceV).."% "
+		local armorPen = GetArmorPenetration()--返回由于护甲穿透而忽略的物理攻击忽略的目标军械库的百分比
+		shuxing=shuxing..ARMOR..SPELL_PENETRATION..string.format("%.2f",armorPen).."%"
+	elseif role==5 then
+		local attackPower, posBuff, negBuff = UnitRangedAttackPower("player")
+		local effective = attackPower + posBuff + negBuff
+		shuxing=shuxing..RANGED..ATTACK_POWER..effective.." "
+		local HitModifierV=GetHitModifier()--近战命中百分比
+		local ratingBonus = GetCombatRatingBonus(CR_HIT_RANGED);
+		shuxing=shuxing..RANGED..ACTION_RANGE_DAMAGE..string.format("%.2f",HitModifierV+ratingBonus).."% "
+		local RangedCritChanceV=GetRangedCritChance()--返回远程暴击率
+		shuxing=shuxing..RANGED..RAID_BUFF_6..string.format("%.2f",RangedCritChanceV).."% "
+		local armorPen = GetArmorPenetration()--返回由于护甲穿透而忽略的物理攻击忽略的目标军械库的百分比
+		shuxing=shuxing..ARMOR..SPELL_PENETRATION..string.format("%.2f",armorPen).."%"
+	else
+		shuxing=ERR_LFG_ROLE_CHECK_FAILED
+	end
+	return shuxing
+end
+local function Player_Stats_2(tianfu)
+	local classFilename, classId = UnitClassBase("player");
+	local role=tianfuTabRole[classFilename][tianfu]
+	return GetStatsData(role)
 end
 function TalentData.Player_Stats()
-	local Info = "装等:"
+	local Info = "装等"
 	local avgItemLevel, avgItemLevelEquipped, avgItemLevelPvP = GetAverageItemLevel();
 	local Info = Info..string.format("%.1f",avgItemLevelEquipped)
 	if tocversion<50000 then
-		local tianfutxt = " 天赋:"
+		local tianfutxt = " 天赋"
 		local numGroup = GetNumTalentGroups(false, false)
 		local activeGroup = GetActiveTalentGroup(false, false)
-		local zhutianfu=Player_Stats_1(activeGroup,false)
-		tianfutxt = tianfutxt..zhutianfu
+		local zhutianfu1,zhutianfu2=Player_Stats_1(activeGroup,false)
+		tianfutxt = tianfutxt..zhutianfu1..zhutianfu2
 		if numGroup>1 then
 			if activeGroup==1 then
-				tianfutxt = tianfutxt.."/"..Player_Stats_1(2,false)
+				local futianfu1,futianfu2=Player_Stats_1(2,false)
+				tianfutxt = tianfutxt.."/"..futianfu1..futianfu2
 			elseif activeGroup==2 then
-				tianfutxt = tianfutxt.."/"..Player_Stats_1(1,false)
+				local futianfu1,futianfu2=Player_Stats_1(1,false)
+				tianfutxt = tianfutxt.."/"..futianfu1..futianfu2
 			end
 		end
-		Info =Info..tianfutxt
+		Info =Info..tianfutxt.." "..Player_Stats_2(zhutianfu1)
 	else
 
 	end

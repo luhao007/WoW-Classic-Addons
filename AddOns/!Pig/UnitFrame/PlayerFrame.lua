@@ -234,13 +234,39 @@ function UnitFramefun.Zishen()
 			PlayerFrame.ziji:SetPoint("BOTTOMLEFT", PlayerFrame, "BOTTOMRIGHT", -20, 26);
 		end
 		if not NDui and not ElvUI then
-			hooksecurefunc("UIParent_UpdateTopFramePositions", function()
-				--if InCombatLockdown() then
-				if TargetFrame and not TargetFrame:IsUserPlaced() then
-					TargetFrame:ClearAllPoints();
-					TargetFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 350, -4);
+			local function Update_TargetFrame()
+				local point, relativeTo, relativePoint, xOfs, yOfs = TargetFrame:GetPoint()
+				if tocversion<100000 then
+					if floor(xOfs+0.5)==250 and floor(yOfs+0.5)==-4 then
+						TargetFrame:ClearAllPoints();
+						TargetFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 350, -4);
+					end
+				else
+					local data = EDIT_MODE_CLASSIC_SYSTEM_MAP
+					local oldxOfs=data[Enum.EditModeSystem.UnitFrame][Enum.EditModeUnitFrameSystemIndices.Target].anchorInfo.offsetX
+					local oldyOfs=data[Enum.EditModeSystem.UnitFrame][Enum.EditModeUnitFrameSystemIndices.Target].anchorInfo.offsetY
+					if floor(xOfs+0.5)==oldxOfs and floor(yOfs+0.5)==oldyOfs then
+						TargetFrame:ClearAllPoints();
+						TargetFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 350, -4);
+					end
 				end
-			end)
+			end
+			TargetFrame:HookScript("OnEvent", function(self,event,arg1)
+				if event=="PLAYER_ENTERING_WORLD" then
+					Update_TargetFrame()
+				end
+			end); 
+			if tocversion<100000 then
+				hooksecurefunc("UIParent_UpdateTopFramePositions", function()
+					Update_TargetFrame()
+				end)
+			else
+				hooksecurefunc(TargetFrame, "AnchorSelectionFrame", function(self)
+					if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Target then
+						Update_TargetFrame()
+					end
+				end)
+			end
 		end
 		--血量
 		PlayerFrame.ziji.HP = PIGFontString(PlayerFrame.ziji,{"CENTER", PlayerFrame.ziji, "CENTER", 0, 0},"", "OUTLINE",15)

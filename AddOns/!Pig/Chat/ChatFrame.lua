@@ -51,6 +51,11 @@ function fuFrame.Bianju_Fun()
 		for i = 1, NUM_CHAT_WINDOWS do 
 			_G["ChatFrame"..i]:SetClampRectInsets(-35, 0, 0, 0) --可拖动至紧贴屏幕边缘 
 		end
+		hooksecurefunc("FloatingChatFrame_UpdateBackgroundAnchors", function(self)
+			if self==_G["ChatFrame2"] then
+				self:SetClampRectInsets(-35, 0, 0, 0);
+			end
+		end)
 	end
 end
 --输入框移动
@@ -96,8 +101,8 @@ fuFrame.editF.editMove:SetScript("OnClick", function (self)
 	editF_Enable_Disable()
 	Update_editBoxPoint()
 end);
-local xiayiinfoX = {-200,200,1}
-fuFrame.editF.editPoint_X = PIGSlider(fuFrame.editF,{"TOPLEFT",fuFrame.editF.editMove,"BOTTOMLEFT",70,-20},{100,14},xiayiinfoX)
+local pianyiinfoX = {-200,200,1}
+fuFrame.editF.editPoint_X = PIGSlider(fuFrame.editF,{"TOPLEFT",fuFrame.editF.editMove,"BOTTOMLEFT",70,-20},{100,14},pianyiinfoX)
 fuFrame.editF.editPoint_X.bt = PIGFontString(fuFrame.editF.editPoint_X,{"RIGHT", fuFrame.editF.editPoint_X, "LEFT", -10, 0},"X偏移")
 function fuFrame.editF.editPoint_X:OnValueFun()
 	local valxxx = self:GetValue()
@@ -106,8 +111,8 @@ function fuFrame.editF.editPoint_X:OnValueFun()
 	Update_editBoxPoint()
 end
 --Y偏移
-local xiayiinfoY = {-30,500,1}
-fuFrame.editF.editPoint_Y = PIGSlider(fuFrame.editF,{"LEFT",fuFrame.editF.editPoint_X,"RIGHT",100,0},{100,14},xiayiinfoY)
+local pianyiinfoY = {-30,500,1}
+fuFrame.editF.editPoint_Y = PIGSlider(fuFrame.editF,{"LEFT",fuFrame.editF.editPoint_X,"RIGHT",100,0},{100,14},pianyiinfoY)
 fuFrame.editF.editPoint_Y.bt = PIGFontString(fuFrame.editF.editPoint_Y,{"RIGHT", fuFrame.editF.editPoint_Y, "LEFT", -10, 0},"Y偏移")
 function fuFrame.editF.editPoint_Y:OnValueFun()
 	local valxxx = self:GetValue()
@@ -164,8 +169,8 @@ fuFrame.zhuF.Width:SetScript("OnClick", function (self)
 	end
 	Zhu_Width_Height_XY()
 end);
-local xiayiinfo = {150,800,1}
-fuFrame.zhuF.Width.Slider = PIGSlider(fuFrame.zhuF,{"LEFT",fuFrame.zhuF.Width.Text,"RIGHT",6,0},{100,14},xiayiinfo)
+local xiayiinfoW = {150,800,1}
+fuFrame.zhuF.Width.Slider = PIGSlider(fuFrame.zhuF,{"LEFT",fuFrame.zhuF.Width.Text,"RIGHT",6,0},{100,14},xiayiinfoW)
 function fuFrame.zhuF.Width.Slider:OnValueFun()
 	local valxxx = self:GetValue()
 	self.Text:SetText(valxxx)
@@ -184,8 +189,8 @@ fuFrame.zhuF.Height:SetScript("OnClick", function (self)
 	Zhu_Width_Height_XY()
 end);
 -----------------------------------
-local xiayiinfo = {120,500,1}
-fuFrame.zhuF.Height.Slider = PIGSlider(fuFrame.zhuF,{"LEFT",fuFrame.zhuF.Height.Text,"RIGHT",6,0},{100,14},xiayiinfo)
+local xiayiinfoH = {120,500,1}
+fuFrame.zhuF.Height.Slider = PIGSlider(fuFrame.zhuF,{"LEFT",fuFrame.zhuF.Height.Text,"RIGHT",6,0},{100,14},xiayiinfoH)
 function fuFrame.zhuF.Height.Slider:OnValueFun()
 	local valxxx = self:GetValue()
 	self.Text:SetText(valxxx)
@@ -203,16 +208,16 @@ fuFrame.zhuF.Point:SetScript("OnClick", function (self)
 	end
 	Zhu_Width_Height_XY()
 end);
-local xiayiinfo = {35,floor(GetScreenWidth()),1}
-fuFrame.zhuF.Point.Slider_X = PIGSlider(fuFrame.zhuF,{"LEFT",fuFrame.zhuF.Point.Text,"RIGHT",8,0},{100,14},xiayiinfo)
+local xiayiinfoX = {35,floor(GetScreenWidth()),1}
+fuFrame.zhuF.Point.Slider_X = PIGSlider(fuFrame.zhuF,{"LEFT",fuFrame.zhuF.Point.Text,"RIGHT",8,0},{100,14},xiayiinfoX)
 function fuFrame.zhuF.Point.Slider_X:OnValueFun()
 	local valxxx = self:GetValue()
 	self.Text:SetText(valxxx)
 	PIGA["Chat"]["Frame"]["Point_X"]=valxxx;
 	Zhu_Width_Height_XY()
 end
-local xiayiinfo = {0,floor(GetScreenHeight()),1}
-fuFrame.zhuF.Point.Slider_Y = PIGSlider(fuFrame.zhuF,{"LEFT",fuFrame.zhuF.Point.Slider_X,"RIGHT",48,0},{100,14},xiayiinfo)
+local xiayiinfoY = {0,floor(GetScreenHeight()),1}
+fuFrame.zhuF.Point.Slider_Y = PIGSlider(fuFrame.zhuF,{"LEFT",fuFrame.zhuF.Point.Slider_X,"RIGHT",48,0},{100,14},xiayiinfoY)
 function fuFrame.zhuF.Point.Slider_Y:OnValueFun()
 	local valxxx = self:GetValue()
 	self.Text:SetText(valxxx)
@@ -292,7 +297,7 @@ end)
 -- fuFrame.LOOTF.tishi.Texture = fuFrame.LOOTF.tishi:CreateTexture(nil, "BORDER");
 -- fuFrame.LOOTF.tishi.Texture:SetTexture("interface/common/help-i.blp");
 -- fuFrame.LOOTF.tishi.Texture:SetAllPoints(fuFrame.LOOTF.tishi)
--- PIGEnter(fuFrame.LOOTF.tishi,L["LIB_TIPS"],L["CHAT_LOOTFTIPS"])
+-- PIGEnter(fuFrame.LOOTF.tishi,L["LIB_TIPS"]..": ",L["CHAT_LOOTFTIPS"])
 -- fuFrame.LOOTF.ShowlootF = PIGButton(fuFrame.LOOTF,{"TOPLEFT",fuFrame.LOOTF,"TOPLEFT",410,-8},{150,22},L["CHAT_LOOTFFENLI"]);
 -- fuFrame.LOOTF.ShowlootF:SetScript("OnClick", function (self)
 -- 	if fuFrame.ChatlootID then

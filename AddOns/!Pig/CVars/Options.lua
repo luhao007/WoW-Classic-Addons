@@ -36,7 +36,7 @@ local function ADD_tishi(fujiF,CVarsV,pianyiX,pianyiY)
 	fujiF.tishi:SetScript("OnEnter", function (self)
 		GameTooltip:ClearLines();
 		GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT",0,0);
-		GameTooltip:AddLine(L["LIB_TIPS"])
+		GameTooltip:AddLine(L["LIB_TIPS"]..": ")
 		if CVarsV=="反河蟹" then
 			GameTooltip:AddLine("\124cff00ff00此设置需退出战网和WOW客户端重新进入生效!\124r")
 		else

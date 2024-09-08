@@ -94,8 +94,8 @@ local function PindaoName(text)
 			--xuhao
 			local text=text:gsub("|h%[(%d+)%. "..GENERAL.."(.-)%]|h", "|h%[%1%."..JJM[8].."%]|h")--综合
 			local text=text:gsub("|h%[(%d+)%. "..LOOK_FOR_GROUP.."%]|h", "|h%[%1%."..JJM[10].."%]|h")--寻求组队
+			local text=text:gsub("|h%[(%d+)%. 大脚世界频道%]|h", "|h%[%1%."..JJM[11].."%]|h")
 			local text=text:gsub("|h%[(%d+)%. PIG%]|h", "|h%[%.PIG%]|h")
-			local text=text:gsub("|h%[(%d+)%. 大脚世界频道%]|h", "|h%[%1%."..JJM[12].."%]|h")
 			if GetLocale() == "zhCN" then
 				local text=text:gsub("(|Hplayer:.-|h)说", "%[说%]%1")
 				local text=text:gsub("(|Hplayer:.-|h)喊道", "%[喊%]%1")
@@ -218,7 +218,8 @@ function QuickChatfun.PIGMessage()
 			local chatID = _G["ChatFrame"..i]
 			local msninfo = chatID.AddMessage
 			chatID.AddMessage = function(frame, text, ...)
-				--ChatFrame99:AddMessage(text:gsub("|", "||"));
+				-- local text=text:gsub("|cff%w%w%w%w%w%w|Hmount:.-|h%[","");
+				-- ChatFrame99:AddMessage(text:gsub("|", "||"));
 				-- if i==1 then
 				-- 	table.insert(PIGA["xxxxxx"],text)
 				-- end

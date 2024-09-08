@@ -6,7 +6,6 @@
 	<Include file="LibUIDropDownMenu\LibUIDropDownMenu.xml"/>
 	<Include file="LibAboutPanel-2.0\lib.xml"/>
 	<Include file="LibQTip-1.0\lib.xml"/>
-	<Include file="Krowi_WorldMapButtons-1.4\Krowi_WorldMapButtons-1.4.lua"/>
 	<Include file="LibBabble-Zone-3.0\lib.xml"/>
 
 </Ui>

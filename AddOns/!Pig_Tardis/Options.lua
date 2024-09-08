@@ -31,18 +31,18 @@ function TardisInfo.ADD_Options()
 			fuFrame.SetListF:Hide()
 			Pig_Options_RLtishi_UI:Show()
 		end
-		QuickButUI.ButList[12]()
+		QuickButUI.ButList[13]()
 	end);
 	fuFrame.Open.QKBut:SetScript("OnClick", function (self)
 		if self:GetChecked() then
 			PIGA["Tardis"]["AddBut"]=true
-			QuickButUI.ButList[12]()
+			QuickButUI.ButList[13]()
 		else
 			PIGA["Tardis"]["AddBut"]=false
 			Pig_Options_RLtishi_UI:Show();
 		end
 	end);
-	QuickButUI.ButList[12]=function()	
+	QuickButUI.ButList[13]=function()	
 		if PIGA["QuickBut"]["Open"] and PIGA["Tardis"]["Open"] and PIGA["Tardis"]["AddBut"] then
 			local QkButUI = "QkBut_Invite"
 			if _G[QkButUI] then return end
@@ -176,7 +176,7 @@ fuFrame:SetScript("OnEvent",function(self, event, arg1, arg2, arg3, arg4, arg5)
 		end
 		TardisInfo.ADD_Options()
 		TardisInfo.ADD_UI()
-		QuickButUI.ButList[12]()
+		QuickButUI.ButList[13]()
 	end
 	if event=="CHAT_MSG_ADDON" then
 		GetExtVer(self,addonName,self.VersionID, fuFrame.FasVer, arg1, arg2, arg4)

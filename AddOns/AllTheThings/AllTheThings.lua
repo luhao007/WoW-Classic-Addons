@@ -49,10 +49,10 @@ local GetAchievementInfo = _G.GetAchievementInfo;
 local GetAchievementLink = _G.GetAchievementLink;
 local InCombatLockdown = _G.InCombatLockdown;
 local GetTimePreciseSec = GetTimePreciseSec
+local IsInInstance = IsInInstance
 
 -- WoW API Cache
 local GetFactionName = app.WOWAPI.GetFactionName;
-local GetFactionBonusReputation = app.WOWAPI.GetFactionBonusReputation;
 local GetItemInfo = app.WOWAPI.GetItemInfo;
 local GetItemID = app.WOWAPI.GetItemID;
 local GetItemIcon = app.WOWAPI.GetItemIcon;
@@ -81,6 +81,7 @@ local IsRetrieving = app.Modules.RetrievingData.IsRetrieving;
 local GetProgressColorText = app.Modules.Color.GetProgressColorText;
 local TryColorizeName = app.TryColorizeName;
 local DESCRIPTION_SEPARATOR = app.DESCRIPTION_SEPARATOR;
+local GetDisplayID = app.GetDisplayID
 local ATTAccountWideData;
 
 -- Color Lib
@@ -247,37 +248,6 @@ local function GetMoneyString(amount)
 	end
 	return amount
 end
-local function GetDisplayID(data)
-	-- don't create a displayID for groups with a sourceID/itemID/difficultyID/mapID
-	if data.sourceID or data.itemID or data.difficultyID or data.mapID then return end
-	local displayID = data.displayID
-	if displayID then
-		return displayID
-	end
-	local npcID = data.npcID or data.creatureID
-	if npcID then
-		displayID = app.NPCDisplayIDFromID[npcID]
-		if displayID then
-			return displayID
-		end
-	end
-
-	local qgs = data.qgs
-	if qgs and #qgs > 0 then
-		return app.NPCDisplayIDFromID[qgs[1]]
-	end
-
-	local providers = data.providers
-	if providers and #providers > 0 then
-		local lookup = app.NPCDisplayIDFromID
-		for _,v in ipairs(providers) do
-			-- if one of the providers is an NPC, we should show its texture regardless of other providers
-			if v[1] == "n" then
-				return lookup[v[2]]
-			end
-		end
-	end
-end
 local function GetIconFromProviders(group)
 	if group.providers then
 		local icon;
@@ -314,205 +284,11 @@ app.GetIconFromProviders = GetIconFromProviders;
 app.GetNameFromProviders = GetNameFromProviders;
 
 do -- TradeSkill Functionality
-local tradeSkillSpecializationMap = {
-	[202] = {	-- Engineering
-		20219,    -- Gnomish Engineering
-		20222     -- Goblin Engineering
-	},
-	[164] = {	-- Blacksmithing
-		9788,	-- Armorsmith
-		9787,	-- Weaponsmith
-	},
-};
-local specializationTradeSkillMap = {
-	-- Engineering Skills
-	[20219] = 202,  -- Gnomish Engineering
-	[20222] = 202,   -- Goblin Engineering
-	-- Blacksmithing Skills
-	[9788] = 9788,	-- Armorsmith
-	[9787] = 9787,	-- Weaponsmith
-	[17041] = 17041,	-- Master Axesmith
-	[17040] = 17040,	-- Master Hammersmith
-	[17039] = 17039,	-- Master Swordsmith
-	-- Leatherworking
-	[10656] = 10656,	-- Dragonscale Leatherworking
-	[10658] = 10658,	-- Elemental Leatherworking
-	[10660] = 10660,	-- Tribal Leatherworking
-	-- Tailoring
-	[26801] = 26801,	-- Shadoweave Tailoring
-	[26797] = 26797,	-- Spellfire Tailoring
-	[26798] = 26798,	-- Mooncloth Tailoring
-};
--- Map all Skill IDs to the old Skill IDs
-local tradeSkillMap = {
-	-- Alchemy Skills
-	[171] = 171,	-- Alchemy [7.3.5]
-	[2485] = 171,	-- Classic Alchemy [8.0.1]
-	[2484] = 171,	-- Outland Alchemy [8.0.1]
-	[2483] = 171,	-- Northrend Alchemy [8.0.1]
-	[2482] = 171,	-- Cataclysm Alchemy [8.0.1]
-	[2481] = 171,	-- Pandaria Alchemy [8.0.1]
-	[2480] = 171,	-- Draenor Alchemy [8.0.1]
-	[2479] = 171,	-- Legion Alchemy [8.0.1]
-	[2478] = 171,	-- Kul Tiran Alchemy [8.0.1]
-	[2750] = 171,	-- Shadowlands Alchemy [9.0.1]
-
-	-- Archaeology Skills
-	[794] = 794,	-- Archaeology [7.3.5]
-
-	-- Blacksmithing Skills
-	[164] = 164,	-- Blacksmithing [7.3.5]
-	[2477] = 164,	-- Classic Blacksmithing [8.0.1]
-	[2476] = 164,	-- Outland Blacksmithing [8.0.1]
-	[2475] = 164,	-- Northrend Blacksmithing [8.0.1]
-	[2474] = 164,	-- Cataclysm Blacksmithing [8.0.1]
-	[2473] = 164,	-- Pandaria Blacksmithing [8.0.1]
-	[2472] = 164,	-- Draenor Blacksmithing [8.0.1]
-	[2454] = 164,	-- Legion Blacksmithing [8.0.1]
-	[2437] = 164,	-- Kul Tiran Blacksmithing [8.0.1]
-	[2751] = 164,	-- Shadowlands Blacksmithing [9.0.1]
-
-	-- Cooking Skills
-	[185] = 185,	-- Cooking [7.3.5]
-	[975] = 185,	-- Way of the Grill
-	[976] = 185,	-- Way of the Wok
-	[977] = 185,	-- Way of the Pot
-	[978] = 185,	-- Way of the Steamer
-	[979] = 185,	-- Way of the Oven
-	[980] = 185,	-- Way of the Brew
-	[2548] = 185,	-- Classic Cooking [8.0.1]
-	[2547] = 185,	-- Outland Cooking [8.0.1]
-	[2546] = 185,	-- Northrend Cooking [8.0.1]
-	[2545] = 185,	-- Cataclysm Cooking [8.0.1]
-	[2544] = 185,	-- Pandaria Cooking [8.0.1]
-	[2543] = 185,	-- Draenor Cooking [8.0.1]
-	[2542] = 185,	-- Legion Cooking [8.0.1]
-	[2541] = 185,	-- Kul Tiran Cooking [8.0.1]
-	[2752] = 185,	-- Shadowlands Cooking [9.0.1]
-
-	-- Enchanting Skills
-	[333] = 333,	-- Enchanting [7.3.5]
-	[2494] = 333,	-- Classic Enchanting [8.0.1]
-	[2493] = 333,	-- Outland Enchanting [8.0.1]
-	[2492] = 333,	-- Northrend Enchanting [8.0.1]
-	[2491] = 333,	-- Cataclysm Enchanting [8.0.1]
-	[2489] = 333,	-- Pandaria Enchanting [8.0.1]
-	[2488] = 333,	-- Draenor Enchanting [8.0.1]
-	[2487] = 333,	-- Legion Enchanting [8.0.1]
-	[2486] = 333,	-- Kul Tiran Enchanting [8.0.1]
-	[2753] = 333,	-- Shadowlands Enchanting [8.0.1]
-
-	-- Engineering Skills
-	[202] = 202,	-- Engineering [7.3.5]
-	[2506] = 202,	-- Classic Engineering [8.0.1]
-	[2505] = 202,	-- Outland Engineering [8.0.1]
-	[2504] = 202,	-- Northrend Engineering [8.0.1]
-	[2503] = 202,	-- Cataclysm Engineering [8.0.1]
-	[2502] = 202,	-- Pandaria Engineering [8.0.1]
-	[2501] = 202,	-- Draenor Engineering [8.0.1]
-	[2500] = 202,	-- Legion Engineering [8.0.1]
-	[2499] = 202,	-- Kul Tiran Engineering [8.0.1]
-	[2755] = 202,	-- Shadowlands Engineering [9.0.1]
-
-	-- First Aid Skills
-	[129] = 129,	-- First Aid [7.3.5] [REMOVED FROM GAME]
-
-	-- Fishing Skills
-	[356] = 356,	-- Fishing [7.3.5]
-	[2592] = 356,	-- Classic Fishing [8.0.1]
-	[2591] = 356,	-- Outland Fishing [8.0.1]
-	[2590] = 356,	-- Northrend Fishing [8.0.1]
-	[2589] = 356,	-- Cataclysm Fishing [8.0.1]
-	[2588] = 356,	-- Pandaria Fishing [8.0.1]
-	[2587] = 356,	-- Draenor Fishing [8.0.1]
-	[2586] = 356,	-- Legion Fishing [8.0.1]
-	[2585] = 356,	-- Kul Tiran Fishing [8.0.1]
-	[2754] = 356,	-- Shadowlands Fishing [9.0.1]
-
-	-- Herbalism Skills
-	[182] = 182,	-- Herbalism [7.3.5]
-	[2556] = 182,	-- Classic Herbalism [8.0.1]
-	[2555] = 182,	-- Outland Herbalism [8.0.1]
-	[2554] = 182,	-- Northrend Herbalism [8.0.1]
-	[2553] = 182,	-- Cataclysm Herbalism [8.0.1]
-	[2552] = 182,	-- Pandaria Herbalism [8.0.1]
-	[2551] = 182,	-- Draenor Herbalism [8.0.1]
-	[2550] = 182,	-- Legion Herbalism [8.0.1]
-	[2549] = 182,	-- Kul Tiran Herbalism [8.0.1]
-	[2760] = 182,	-- Shadowlands Herbalism [9.0.1]
-
-	-- Inscription Skills
-	[773] = 773,	-- Inscription [7.3.5]
-	[2514] = 773,	-- Classic Inscription [8.0.1]
-	[2513] = 773,	-- Outland Inscription [8.0.1]
-	[2512] = 773,	-- Northrend Inscription [8.0.1]
-	[2511] = 773,	-- Cataclysm Inscription [8.0.1]
-	[2510] = 773,	-- Pandaria Inscription [8.0.1]
-	[2509] = 773,	-- Draenor Inscription [8.0.1]
-	[2508] = 773,	-- Legion Inscription [8.0.1]
-	[2507] = 773,	-- Kul Tiran Inscription [8.0.1]
-	[2756] = 773,	-- Shadowlands Inscription [8.0.1]
-
-	-- Jewelcrafting Skills
-	[755] = 755,	-- Jewelcrafting [7.3.5]
-	[2524] = 755,	-- Classic Jewelcrafting [8.0.1]
-	[2523] = 755,	-- Outland Jewelcrafting [8.0.1]
-	[2522] = 755,	-- Northrend Jewelcrafting [8.0.1]
-	[2521] = 755,	-- Cataclysm Jewelcrafting [8.0.1]
-	[2520] = 755,	-- Pandaria Jewelcrafting [8.0.1]
-	[2519] = 755,	-- Draenor Jewelcrafting [8.0.1]
-	[2518] = 755,	-- Legion Jewelcrafting [8.0.1]
-	[2517] = 755,	-- Kul Tiran Jewelcrafting [8.0.1]
-	[2757] = 755,	-- Shadowlands Jewelcrafting [9.0.1]
-
-	-- Leatherworking Skills
-	[165] = 165,	-- Leatherworking [7.3.5]
-	[2532] = 165,	-- Classic Leatherworking [8.0.1]
-	[2531] = 165,	-- Outland Leatherworking [8.0.1]
-	[2530] = 165,	-- Northrend Leatherworking [8.0.1]
-	[2529] = 165,	-- Cataclysm Leatherworking [8.0.1]
-	[2528] = 165,	-- Pandaria Leatherworking [8.0.1]
-	[2527] = 165,	-- Draenor Leatherworking [8.0.1]
-	[2526] = 165,	-- Legion Leatherworking [8.0.1]
-	[2525] = 165,	-- Kul Tiran Leatherworking [8.0.1]
-	[2758] = 165,	-- Shadowlands Leatherworking [9.0.1]
-
-	-- Mining Skills
-	[186] = 186,	-- Mining [7.3.5]
-	[2572] = 186,	-- Classic Mining [8.0.1]
-	[2571] = 186,	-- Outland Mining [8.0.1]
-	[2570] = 186,	-- Northrend Mining [8.0.1]
-	[2569] = 186,	-- Cataclysm Mining [8.0.1]
-	[2568] = 186,	-- Pandaria Mining [8.0.1]
-	[2567] = 186,	-- Draenor Mining [8.0.1]
-	[2566] = 186,	-- Legion Mining [8.0.1]
-	[2565] = 186,	-- Kul Tiran Mining [8.0.1]
-	[2761] = 186,	-- Shadowlands Mining [9.0.1]
-
-	-- Skinning Skills
-	[393] = 393,	-- Skinning [7.3.5]
-	[2564] = 393,	-- Classic Skinning [8.0.1]
-	[2563] = 393,	-- Outland Skinning [8.0.1]
-	[2562] = 393,	-- Northrend Skinning [8.0.1]
-	[2561] = 393,	-- Cataclysm Skinning [8.0.1]
-	[2560] = 393,	-- Pandaria Skinning [8.0.1]
-	[2559] = 393,	-- Draenor Skinning [8.0.1]
-	[2558] = 393,	-- Legion Skinning [8.0.1]
-	[2557] = 393,	-- Kul Tiran Skinning [8.0.1]
-	[2762] = 393,	-- Shadowlands Skinning [9.0.1]
-
-	-- Tailoring Skills
-	[197] = 197,	-- Tailoring [7.3.5]
-	[2540] = 197,	-- Classic Tailoring [8.0.1]
-	[2539] = 197,	-- Outland Tailoring [8.0.1]
-	[2538] = 197,	-- Northrend Tailoring [8.0.1]
-	[2537] = 197,	-- Cataclysm Tailoring [8.0.1]
-	[2536] = 197,	-- Pandaria Tailoring [8.0.1]
-	[2535] = 197,	-- Draenor Tailoring [8.0.1]
-	[2534] = 197,	-- Legion Tailoring [8.0.1]
-	[2533] = 197,	-- Kul Tiran Tailoring [8.0.1]
-	[2759] = 197,	-- Shadowlands Tailoring [9.0.1]
-};
+local tradeSkillSpecializationMap = app.SkillDB.Specializations
+local specializationTradeSkillMap = app.SkillDB.BaseSkills
+local tradeSkillMap = app.SkillDB.Conversion
+-- this is still required by Shared Modules
+app.SkillIDToSpellID = app.SkillDB.SkillToSpell
 local function GetBaseTradeSkillID(skillID)
 	return tradeSkillMap[skillID] or skillID;
 end
@@ -531,13 +307,9 @@ local function RefreshTradeSkillCache()
 	local cache = app.CurrentCharacter.Professions;
 	wipe(cache);
 	-- "Professions" that anyone can "know"
-	cache[2720] = 1;	-- Junkyard Tinkering
-	cache[2787] = 1;	-- Abominable Stitching
-	cache[2791] = 1;	-- Ascension Crafting
-	cache[2811] = 1;	-- Stygia Crafting
-	cache[2819] = 1;	-- Protoform Synthesis
-	cache[2847] = 1;	-- Tuskarr Fishing Gear
-	cache[2886] = 1;	-- Supply Shipments
+	for _,skillID in ipairs(app.SkillDB.AlwaysAvailable) do
+		cache[skillID] = true
+	end
 	-- app.PrintDebug("RefreshTradeSkillCache");
 	local prof1, prof2, archaeology, fishing, cooking, firstAid = GetProfessions();
 	for i,j in ipairs({prof1 or 0, prof2 or 0, archaeology or 0, fishing or 0, cooking or 0, firstAid or 0}) do
@@ -561,7 +333,7 @@ app.AddEventHandler("OnStartup", function()
 	local conversions = app.Settings.InformationTypeConversionMethods;
 	conversions.professionName = function(skillID)
 		local texture = GetTradeSkillTexture(skillID or 0)
-		local name = GetSpellName(app.SkillIDToSpellID[skillID] or 0) or C_TradeSkillUI.GetTradeSkillDisplayName(skillID) or RETRIEVING_DATA
+		local name = GetSpellName(app.SkillDB.SkillToSpell[skillID] or 0) or C_TradeSkillUI.GetTradeSkillDisplayName(skillID) or RETRIEVING_DATA
 		return texture and "|T"..texture..":0|t "..name or name
 	end;
 end);
@@ -1188,66 +960,6 @@ local function GetRelativeFieldInSet(group, field, set)
 	end
 end
 
--- NPC & Title Name Harvesting Lib (https://us.battle.net/forums/en/wow/topic/20758497390?page=1#post-4, Thanks Gello!)
-(function()
-local NPCNameFromID, NPCTitlesFromID = {},{};
-local C_TooltipInfo_GetHyperlink = C_TooltipInfo and C_TooltipInfo.GetHyperlink;
-local IsRetrievingData = app.Modules.RetrievingData.IsRetrievingData;
-local blacklisted = {
-	[TOOLTIP_UNIT_LEVEL:format("??")] = true,
-	[TOOLTIP_UNIT_LEVEL_TYPE:format("??", ELITE)] = true,
-};
-if C_TooltipInfo_GetHyperlink then
-	setmetatable(NPCNameFromID, { __index = function(t, id)
-		id = tonumber(id);
-		if id and id > 0 then
-			local tooltipData = C_TooltipInfo_GetHyperlink(("unit:Creature-0-0-0-0-%d-0000000000"):format(id));
-			if tooltipData then
-				local title = tooltipData.lines[1].leftText;
-				if title and #tooltipData.lines > 2 then
-					local leftText = tooltipData.lines[2].leftText;
-					if leftText and not blacklisted[leftText] then
-						NPCTitlesFromID[id] = leftText;
-					end
-				end
-				if not IsRetrievingData(title) then
-					t[id] = title;
-					return title;
-				end
-			end
-		else
-			return L.HEADER_NAMES[id];
-		end
-	end});
-else
-	---@class ATTNPCHarvesterForRetail: GameTooltip
-	local ATTCNPCHarvester = CreateFrame("GameTooltip", "ATTCNPCHarvester", UIParent, "GameTooltipTemplate");
-	setmetatable(NPCNameFromID, { __index = function(t, id)
-		if id > 0 then
-			ATTCNPCHarvester:SetOwner(UIParent,"ANCHOR_NONE")
-			ATTCNPCHarvester:SetHyperlink(("unit:Creature-0-0-0-0-%d-0000000000"):format(id))
-			local title = ATTCNPCHarvesterTextLeft1:GetText();
-			if title and ATTCNPCHarvester:NumLines() > 2 then
-				local leftText = ATTCNPCHarvesterTextLeft2:GetText();
-				if leftText and not blacklisted[leftText] then
-					NPCTitlesFromID[id] = leftText;
-				end
-			end
-			ATTCNPCHarvester:Hide();
-			if not IsRetrievingData(title) then
-				t[id] = title;
-				return title;
-			end
-		else
-			return L.HEADER_NAMES[id];
-		end
-	end});
-end
-app.NPCNameFromID = NPCNameFromID;
-app.NPCTitlesFromID = NPCTitlesFromID;
-end)();
-
-
 -- Merges an Object into an existing set of Objects so as to not duplicate any incoming Objects
 local MergeObject,
 -- Nests an Object under another Object, only creating the 'g' group if necessary
@@ -1301,14 +1013,14 @@ end
 MergeObjects = function(g, g2, newCreate)
 	if not g or not g2 then return end
 	if #g2 > 25 then
-		local hashTable,t = {},nil;
+		local t, hash
+		local hashTable = {}
 		for i,o in ipairs(g) do
 			local hash = o.hash;
 			if hash then
 				hashTable[hash] = o;
 			end
 		end
-		local hash;
 		if newCreate then
 			for i,o in ipairs(g2) do
 				hash = o.hash;
@@ -3315,8 +3027,6 @@ end	-- Search results Lib
 
 -- Auto-Expansion logic
 do
-local knownSkills;
-
 -- Determines searches required for upgrades using this group
 local function DetermineUpgradeGroups(group, FillData)
 	local nextUpgrade = group.nextUpgrade;
@@ -3366,18 +3076,52 @@ local function DeterminePurchaseGroups(group, FillData)
 		return groups;
 	end
 end
+local function DetermineRecipeOutputGroups(group, FillData)
+	local recipeID = group.recipeID;
+	if not recipeID then return end
+	-- only fill root recipes or those marked as 'fillable'
+	if not group.fillable and FillData.Root ~= group then return end
+
+	-- this would be more efficient as a RecipeDB instead if that becomes a thing
+	local info
+	for reagent,recipes in pairs(app.ReagentsDB) do
+		info = recipes[recipeID]
+		if info then break end
+	end
+	if not info then return end
+
+	local skipLevel = FillData.SkipLevel or 0
+	-- track crafted items which are filled across the entire fill sequence
+	local craftedItems = FillData.CraftedItems
+
+	local recipeMod = recipeID / 1000000
+	local craftedItemID = info[1];
+	if craftedItemID and (skipLevel > 1 or not craftedItems[craftedItemID + recipeMod]) then
+		craftedItems[craftedItemID + recipeMod] = true
+		local search = SearchForObject("itemID",craftedItemID,"field")
+		search = (search and CreateObject(search)) or app.CreateItem(craftedItemID)
+		-- app.PrintDebug("DetermineRecipeOutput",app:SearchLink(group),"=>",app:SearchLink(search))
+		return {search}
+	end
+end
 local function DetermineCraftedGroups(group, FillData)
 	local itemID = group.itemID;
-	if not itemID then return; end
 	local itemRecipes = app.ReagentsDB[itemID];
-	if not itemRecipes then return; end
+	-- if we're filling a window (level 2) for a Reagent
+	-- then we will allow showing the same crafted item multiple times
+	-- so that different reagents can all be visible for the same purpose
+	local expandedNesting = (FillData.SkipLevel or 0) > 1 and FillData.FillRecipes
+	-- if not itemRecipes then return; end
+	if not itemRecipes then
+		if expandedNesting then
+			return DetermineRecipeOutputGroups(group, FillData)
+		end
+		return
+	end
 
 	local craftableItemIDs = {}
 	-- track crafted items which are filled across the entire fill sequence
 	local craftedItems = FillData.CraftedItems
-	-- if we're filling a window (level 2) then we will allow showing the same crafted item multiple times
-	-- so that different reagents can all be visible for the same purpose
-	local skipLevel = FillData.SkipLevel or 0
 	local craftedItemID, recipe, skillID
 
 	-- If needing to filter by skill due to BoP reagent, then check via recipe cache instead of by crafted item
@@ -3386,16 +3130,25 @@ local function DetermineCraftedGroups(group, FillData)
 	-- and include necessary filtering information for each output, i.e. the skillID on outputs
 	-- this should filter properly based on ignoring filters on BoE items & using Debug/Account mode without having to refill
 
+	local groups = {};
 	-- find recipe(s) which creates this item
 	for recipeID,info in pairs(itemRecipes) do
 		craftedItemID = info[1];
 		-- app.PrintDebug(itemID,"x",info[2],"=>",craftedItemID,"via",recipeID,skipLevel);
-		if craftedItemID and not craftableItemIDs[craftedItemID] and (skipLevel > 1 or not craftedItems[craftedItemID]) then
+		if craftedItemID and not craftableItemIDs[craftedItemID] and (expandedNesting or not craftedItems[craftedItemID]) then
 			-- app.PrintDebug("recipeID",recipeID);
 			recipe = SearchForObject("recipeID",recipeID,"key");
 			if recipe then
-				-- crafted items should be considered unique per recipe
-				craftableItemIDs[craftedItemID + (recipeID / 1000000)] = recipe;
+				if expandedNesting then
+					recipe = CreateObject(recipe)
+					recipe.collectible = false
+					recipe.fillable = true
+					recipe.nomerge = true
+					groups[#groups + 1] = recipe
+				else
+					-- crafted items should be considered unique per recipe
+					craftableItemIDs[craftedItemID + (recipeID / 1000000)] = recipe;
+				end
 			else
 				-- app.PrintDebug("Unsourced recipeID",recipe);
 				-- we don't have the Recipe sourced, so just include the crafted item anyway
@@ -3405,22 +3158,23 @@ local function DetermineCraftedGroups(group, FillData)
 		end
 	end
 
-	local groups = {};
-	local search
-	for craftedItemID,recipe in pairs(craftableItemIDs) do
-		craftedItemID = math_floor(craftedItemID)
-		craftedItems[craftedItemID] = true
-		skillID = recipe ~= true and GetRelativeValue(recipe, "skillID") or nil
-		-- Searches for a filter-matched crafted Item
-		search = SearchForObject("itemID",craftedItemID,"field");
-		search = (search and CreateObject(search)) or app.CreateItem(craftedItemID)
-		-- link the respective crafted item object to the skill required by the crafting recipe
-		search.requireSkill = skillID
-		-- app.PrintDebug("craftedItemID",craftedItemID,"via skill",skillID)
-		groups[#groups + 1] = search
+	if not expandedNesting then
+		local search
+		for craftedItemID,recipe in pairs(craftableItemIDs) do
+			craftedItemID = math_floor(craftedItemID)
+			craftedItems[craftedItemID] = true
+			skillID = recipe ~= true and GetRelativeValue(recipe, "skillID") or nil
+			-- Searches for a filter-matched crafted Item
+			search = SearchForObject("itemID",craftedItemID,"field");
+			search = (search and CreateObject(search)) or app.CreateItem(craftedItemID)
+			-- link the respective crafted item object to the skill required by the crafting recipe
+			search.requireSkill = skillID
+			-- app.PrintDebug("craftedItemID",craftedItemID,"via skill",skillID)
+			groups[#groups + 1] = search
+		end
 	end
 
-	-- app.PrintDebug("DetermineCraftedGroups",group.hash,groups and #groups);
+	-- app.PrintDebug("DetermineCraftedGroups",app:SearchLink(group),groups and #groups);
 	if #groups > 0 then
 		group.filledReagent = true;
 	end
@@ -3567,7 +3321,29 @@ local function FillGroupDirect(group, FillData, doDGU)
 	end
 end
 -- Iterates through all groups of the group, filling them with appropriate data, then recursively follows the next layer of groups
-local function FillGroupsRecursive(group, FillData)
+-- local function FillGroupsRecursive(group, FillData)
+-- 	if SkipFillingGroup(group, FillData) then
+-- 		-- if FillData.Debug then
+-- 		-- 	app.print(Colorize("FGR-SKIP",app.Colors.ChatLinkError),app:SearchLink(group))
+-- 		-- end
+-- 		-- app.PrintDebug(Colorize("FGR-SKIP",app.Colors.ChatLinkError),app:SearchLink(group))
+-- 		return;
+-- 	end
+-- 	-- app.PrintDebug("FGR",group.hash)
+
+-- 	FillGroupDirect(group, FillData)
+
+-- 	local g = group.g;
+-- 	if g then
+-- 		-- app.PrintDebug(".g",group.hash,#g)
+-- 		-- Then nest anything further
+-- 		for _,o in ipairs(g) do
+-- 			FillGroupsRecursive(o, FillData);
+-- 		end
+-- 	end
+-- end
+-- Fills the group and returns an array of the next layer of groups to fill
+local function FillGroupsLayered(group, FillData)
 	if SkipFillingGroup(group, FillData) then
 		-- if FillData.Debug then
 		-- 	app.print(Colorize("FGR-SKIP",app.Colors.ChatLinkError),app:SearchLink(group))
@@ -3579,14 +3355,7 @@ local function FillGroupsRecursive(group, FillData)
 
 	FillGroupDirect(group, FillData)
 
-	local g = group.g;
-	if g then
-		-- app.PrintDebug(".g",group.hash,#g)
-		-- Then nest anything further
-		for _,o in ipairs(g) do
-			FillGroupsRecursive(o, FillData);
-		end
-	end
+	return group.g
 end
 -- Iterates through all groups of the group, filling them with appropriate data, then queueing itself on the FillData.Runner to recursively follow the next layer of groups
 -- over multiple frames to reduce stutter
@@ -3632,10 +3401,9 @@ app.FillGroups = function(group)
 		InWindow = groupWindow and true or nil,
 		NestNPCData = app.Settings:GetTooltipSetting("NPCData:Nested"),
 		SkipLevel = app.GetSkipLevel(),
-		Root = group
+		Root = group,
+		FillRecipes = group.recipeID or app.ReagentsDB[group.itemID or 0]
 	};
-	-- Get tradeskill cache
-	knownSkills = app.CurrentCharacter.Professions;
 
 	-- app.PrintDebug("FillGroups",app:SearchLink(group),group.__type,"window?",groupWindow)
 
@@ -3650,7 +3418,23 @@ app.FillGroups = function(group)
 		Runner.Run(FillGroupsRecursiveAsync, group, FillData);
 	else
 		-- app.PrintDebug("FG",group.hash)
-		FillGroupsRecursive(group, FillData);
+		-- this performs depth-first filling which leads to usually one group having tons of nesting
+		-- and other top-level groups being skipped as they had some other means of being
+		-- filled in a deeper group
+		-- FillGroupsRecursive(group, FillData);
+
+		-- this logic performs fills across an entire logical layer of data via a breadth-first approach
+		-- which should ideally have less nesting in total
+		local FillLayer = {group}
+		local NextLayer = {}
+		while #FillLayer > 0 do
+			for _,fillGroup in ipairs(FillLayer) do
+				app.ArrayAppend(NextLayer, FillGroupsLayered(fillGroup, FillData))
+			end
+			FillLayer = NextLayer
+			NextLayer = {}
+		end
+
 		-- app.PrintDebugPrior("FG",group.hash)
 	end
 
@@ -3745,6 +3529,8 @@ app.BuildTotalCost = function(group)
 	if group.window then
 		-- changing settings should refresh the Collector...
 		group.window:AddEventHandler("OnRecalculate_NewSettings", RefreshCollector)
+		-- force refresh should refresh collector...
+		group.window:AddEventHandler("OnRefreshCollections", RefreshCollector)
 	end
 
 	-- Add the cost group to the popout
@@ -4923,612 +4709,6 @@ local function GetPopulatedQuestObject(questID)
 	return questObject;
 end
 
--- Achievement Lib
-do
-local GetAchievementCategory, GetAchievementNumCriteria, GetCategoryInfo, GetStatistic = GetAchievementCategory, GetAchievementNumCriteria, GetCategoryInfo, GetStatistic;
-local cache = app.CreateCache("achievementID");
-local function CacheInfo(t, field)
-	local _t, id = cache.GetCached(t);
-	--local IDNumber, Name, Points, Completed, Month, Day, Year, Description, Flags, Image, RewardText, isGuildAch = GetAchievementInfo(t.achievementID);
-	local _, name, _, _, _, _, _, _, _, icon = GetAchievementInfo(id);
-	_t.link = GetAchievementLink(id);
-	_t.name = name or ("Achievement #"..id);
-	_t.icon = icon or QUESTION_MARK_ICON;
-	if field then return _t[field]; end
-end
-local function OnUpdateWindows()
-	app.HandleEvent("OnUpdateWindows")
-end
-local function DelayedOnUpdateWindows()
-	AfterCombatOrDelayedCallback(OnUpdateWindows, 1)
-end
-app.AddEventRegistration("RECEIVED_ACHIEVEMENT_LIST", DelayedOnUpdateWindows);
-local fields = {
-	["key"] = function(t)
-		return "achievementID";
-	end,
-	["achievementID"] = function(t)
-		local achievementID = t.altAchID and app.FactionID == Enum.FlightPathFaction.Horde and t.altAchID or t.achID;
-		if achievementID then
-			t.achievementID = achievementID;
-			return achievementID;
-		end
-	end,
-	["link"] = function(t)
-		return cache.GetCachedField(t, "link", CacheInfo);
-	end,
-	["name"] = function(t)
-		return cache.GetCachedField(t, "name", CacheInfo);
-	end,
-	["icon"] = function(t)
-		return cache.GetCachedField(t, "icon", CacheInfo);
-	end,
-	["collectible"] = function(t)
-		return app.Settings.Collectibles.Achievements;
-	end,
-	["collected"] = function(t)
-		if t.saved then return 1; end
-		if app.Settings.AccountWide.Achievements then
-			local id = t.achievementID;
-			-- cached account-wide credit, or API account-wide credit
-			if ATTAccountWideData.Achievements[id] then return 2; end
-			local acctApiCredit = select(4, GetAchievementInfo(id));
-			if acctApiCredit then
-				return 2;
-			end
-		end
-	end,
-	["trackable"] = app.ReturnTrue,
-	["saved"] = function(t)
-		local id = t.achievementID;
-		if app.CurrentCharacter.Achievements[id] then return true; end
-		local earnedByMe = select(13, GetAchievementInfo(id));
-		if earnedByMe then
-			app.CurrentCharacter.Achievements[id] = 1;
-			ATTAccountWideData.Achievements[id] = 1;
-			return true;
-		end
-	end,
-	["parentCategoryID"] = function(t)
-		return GetAchievementCategory(t.achievementID) or -1;
-	end,
-	["statistic"] = function(t)
-		if GetAchievementNumCriteria(t.achievementID) == 1 then
-			local quantity, reqQuantity = select(4, GetAchievementCriteriaInfo(t.achievementID, 1));
-			if quantity and reqQuantity and reqQuantity > 1 then
-				return tostring(quantity) .. " / " .. tostring(reqQuantity);
-			end
-		end
-		---@diagnostic disable-next-line: missing-parameter
-		local statistic = GetStatistic(t.achievementID);
-		if statistic and statistic ~= '0' and statistic ~= '' and not statistic:match("%W") then
-			return statistic;
-		end
-	end,
-	["sortProgress"] = function(t)
-		if t.collected then
-			return 1;
-		end
-		-- only calculate achievement progress using achievements where the single criteria is the 'progress bar'
-		if GetAchievementNumCriteria(t.achievementID) == 1 then
-			local quantity, reqQuantity = select(4, GetAchievementCriteriaInfo(t.achievementID, 1));
-			if quantity and reqQuantity and reqQuantity > 1 then
-				-- print("ach-prog",t.achievementID,quantity,reqQuantity);
-				return (quantity / reqQuantity);
-			end
-		end
-		return 0;
-	end,
-	["back"] = function(t)
-		return t.sourceIgnored and 0.5 or 0;
-	end,
-};
-app.BaseAchievement = app.BaseObjectFields(fields, "BaseAchievement");
-app.CreateAchievement = function(id, t)
-	return setmetatable(constructor(id, t, "achID"), app.BaseAchievement);
-end
-app.CreateGuildAchievement = function(id, t)
-	-- TODO: Proper Class Extension Maybe? I think the Achievement class doesn't use a Class Constructor yet, but when it does, do this too.
-	t = app.CreateAchievement(id, t);
-	t.collectible = false;
-	t.isGuild = true;
-	return t;
-end
-
--- Achievement Category Lib
-local categoryFields = {
-	["key"] = function(t)
-		return "achievementCategoryID";
-	end,
-	["name"] = function(t)
-		return GetCategoryInfo(t.achievementCategoryID);
-	end,
-	["icon"] = function(t)
-		return app.asset("Category_Achievements");
-	end,
-	["parentCategoryID"] = function(t)
-		return select(2, GetCategoryInfo(t.achievementCategoryID)) or -1;
-	end,
-};
-app.BaseAchievementCategory = app.BaseObjectFields(categoryFields, "BaseAchievementCategory");
-app.CreateAchievementCategory = function(id, t)
-	return setmetatable(constructor(id, t, "achievementCategoryID"), app.BaseAchievementCategory);
-end
-
--- Achievement Criteria Lib
-local GetAchievementCriteriaInfoByID
-	= GetAchievementCriteriaInfoByID
--- Criteria field values which will use the value of the respective Achievement instead
-local UseParentAchievementValueKeys = {
-	"c", "classID", "races", "r", "u", "e", "pb", "pvp", "requireSkill"
-}
-local function GetParentAchievementInfo(t, key)
-	-- if the Achievement data was already cached, but the criteria is still getting here
-	-- then the Achievement's data field was nil
-	if t._cached then return nil; end
-	local id = t.achievementID;
-	if not id then
-		app.PrintDebug("Missing achievementID for criteria reference",t.hash)
-		return;
-	end
-	local achievement = SearchForObject("achievementID", id, "key");
-	if achievement then
-		-- copy parent Achievement field re-mappings
-		for _,key in ipairs(UseParentAchievementValueKeys) do
-			t[key] = achievement[key]
-		end
-		t._cached = true;
-		return rawget(t, key);
-	end
-	DelayedCallback(app.report, 1, "Missing Referenced Achievement!",id);
-end
--- Returns expected criteria data for either criteriaIndex or criteriaID
-local function GetCriteriaInfo(achievementID, t)
-	-- prioritize the correct id
-	local critUID = t.uid or t.criteriaID
-	local critID = t.id or critUID
-	local criteriaString, criteriaType, completed, quantity, reqQuantity, charName, flags, assetID, quantityString, criteriaID, eligible
-		= GetAchievementCriteriaInfoByID(achievementID, critUID)
-	if IsRetrieving(criteriaString) and critID <= GetAchievementNumCriteria(achievementID) then
-		criteriaString, criteriaType, completed, quantity, reqQuantity, charName, flags, assetID, quantityString, criteriaID, eligible
-		---@diagnostic disable-next-line: redundant-parameter
-		= GetAchievementCriteriaInfo(achievementID, critID, true)
-	end
-	return criteriaString, criteriaType, completed, quantity, reqQuantity, charName, flags, assetID, quantityString, criteriaID, eligible
-end
-local function default_name(t)
-	if t.link then return t.link; end
-	local name
-	local achievementID = t.achievementID;
-	if achievementID then
-		local criteriaID = t.criteriaID;
-		if criteriaID then
-			-- typical criteria name lookup
-			name = GetCriteriaInfo(achievementID, t);
-			if not IsRetrieving(name) then return name; end
-
-			-- app.PrintDebug("fallback crit name",achievementID,criteriaID,t.uid,t.id)
-			-- criteria nested under a parent of a known Thing
-			local parent = t.parent
-			if parent and parent.key and app.ThingKeys[parent.key] and parent.key ~= "achievementID" then
-				name = parent.name
-				if not IsRetrieving(name) and not name:find("Quest #") then return name; end
-			end
-
-			-- criteria with provider data
-			local providers = t.providers;
-			if providers then
-				for k,v in ipairs(providers) do
-					if v[2] > 0 then
-						if v[1] == "o" then
-							name = app.ObjectNames[v[2]];
-							break
-						elseif v[1] == "i" then
-							name = GetItemInfo(v[2]);
-							break
-						elseif v[1] == "n" then
-							name = app.NPCNameFromID[v[2]];
-							break
-						end
-					end
-				end
-				if not IsRetrieving(name) then return name; end
-			end
-
-			-- criteria with sourceQuests data
-			local sourceQuests = t.sourceQuests;
-			if sourceQuests then
-				for k,id in ipairs(sourceQuests) do
-					name = app.GetQuestName(id);
-					t.__questname = name
-					if not IsRetrieving(name) and not name:find("Quest #") then return name; end
-				end
-				-- app.PrintDebug("criteria sq no name",t.achievementID,t.criteriaID,rawget(t,"name"))
-				return
-			end
-
-			-- criteria with spellID (TODO)
-
-			-- criteria fallback to base achievement name
-			name = "Criteria: "..(select(2, GetAchievementInfo(achievementID)) or "#"..criteriaID)
-		end
-	end
-	app.PrintDebug("failed to retrieve criteria name",achievementID,t.criteriaID,name,t._default_name_retry)
-	t._default_name_retry = (t._default_name_retry or 0) + 1
-	if (t._default_name_retry > 25) then
-		t._default_name_retry = nil
-		return name or UNKNOWN
-	end
-end
-local cache = app.CreateCache("hash")
-local criteriaFields = {
-	["key"] = function(t)
-		return "criteriaID";
-	end,
-	["achievementID"] = function(t)
-		local achievementID = t.altAchID and app.FactionID == Enum.FlightPathFaction.Horde and t.altAchID or t.achID;
-		if achievementID then
-			t.achievementID = achievementID;
-			return achievementID;
-		end
-		local sourceAch = t.sourceParent or t.parent;
-		achievementID = sourceAch and (sourceAch.achievementID or (sourceAch.parent and sourceAch.parent.achievementID));
-		if achievementID then
-			t.achievementID = achievementID;
-			return achievementID;
-		end
-	end,
-	["name"] = function(t)
-		return cache.GetCachedField(t, "name", default_name) or t.__questname
-	end,
-	["link"] = function(t)
-		if t.itemID then
-			local _, link, _, _, _, _, _, _, _, icon = GetItemInfo(t.itemID);
-			if link then
-				t.text = link;
-				t.link = link;
-				t.icon = icon;
-				return link;
-			end
-		end
-	end,
-	["trackable"] = app.ReturnTrue,
-	["collected"] = function(t)
-		if t.saved then return 1; end
-		if app.Settings.AccountWide.Achievements then
-			local achievementID = t.achievementID;
-			-- cached account-wide credit, or API account-wide credit
-			if achievementID then
-				if ATTAccountWideData.Achievements[achievementID] then return 2; end
-				local acctApiCredit = select(4, GetAchievementInfo(achievementID));
-				if acctApiCredit then
-					return 2;
-				end
-			end
-		end
-	end,
-	["saved"] = function(t)
-		local achievementID = t.achievementID;
-		if achievementID then
-			if app.CurrentCharacter.Achievements[achievementID] then return true; end
-			local criteriaID = t.criteriaID;
-			if criteriaID then
-				return select(3, GetCriteriaInfo(achievementID, t));
-			end
-		end
-	end,
-	["index"] = function(t)
-		return 1;
-	end,
-};
-criteriaFields.collectible = fields.collectible;
-criteriaFields.icon = fields.icon;
--- apply parent Achievement field re-mappings
-for _,key in ipairs(UseParentAchievementValueKeys) do
-	criteriaFields[key] = function(t)
-		return GetParentAchievementInfo(t, key);
-	end
-end
-local BaseAchievementCriteria = app.BaseObjectFields(criteriaFields, "BaseAchievementCriteria");
-app.CreateAchievementCriteria = function(id, t, init)
-	t = setmetatable(constructor(id, t, "criteriaID"), BaseAchievementCriteria);
-	if init then
-		GetParentAchievementInfo(t, "");
-		-- app.PrintDebug("CreateAchievementCriteria.Init",t.hash)
-	end
-	return t;
-end
-app.CreateGuildAchievementCriteria = function(id, t)
-	-- TODO: Proper Class Extension Maybe? I think the Achievement class doesn't use a Class Constructor yet, but when it does, do this too.
-	t = app.CreateAchievementCriteria(id, t);
-	t.collectible = false;
-	t.isGuild = true;
-	return t;
-end
-
-local HarvestedAchievementDatabase = {};
-local harvesterFields = RawCloneData(fields);
-harvesterFields.visible = app.ReturnTrue;
-harvesterFields.collectible = app.ReturnTrue;
-harvesterFields.collected = app.ReturnFalse;
-harvesterFields.text = function(t)
-	local achievementID = t.achievementID;
-	if achievementID then
-		local IDNumber, Name, _, _, _, _, _, Description, _, Image, _, isGuildAch = GetAchievementInfo(achievementID);
-		if Name then
-			local info = {
-				["name"] = Name,
-				["achievementID"] = IDNumber,
-				["parentCategoryID"] = GetAchievementCategory(achievementID) or -1,
-				["icon"] = Image,
-				["isGuild"] = isGuildAch and true or nil,
-			};
-			if Description ~= nil and Description ~= "" then
-				info.description = Description;
-			end
-			local totalCriteria = GetAchievementNumCriteria(achievementID);
-			if totalCriteria > 0 then
-				local criteria = {};
-				for criteriaID=totalCriteria,1,-1 do
-					---@diagnostic disable-next-line: redundant-parameter
-					local criteriaString, criteriaType, _, _, reqQuantity, _, flags, assetID, _, criteriaUID = GetAchievementCriteriaInfo(achievementID, criteriaID, true);
-					local crit = { ["criteriaID"] = criteriaID, ["criteriaUID"] = criteriaUID };
-					if criteriaString ~= nil and criteriaString ~= "" then
-						crit.name = criteriaString;
-					end
-					if assetID and assetID ~= 0 then
-						crit.assetID = assetID;
-					end
-					if reqQuantity and reqQuantity > 0 then
-						crit.rank = reqQuantity;
-					end
-					if criteriaType then
-						-- Unknown type, not sure what to do with this.
-						crit.criteriaType = criteriaType;
-						if crit.assetID then
-							if criteriaType == 27 then	-- Quest Completion
-								crit._quests = { assetID };
-								crit.criteriaType = nil;
-								crit.assetID = nil;
-								if crit.rank and crit.rank == 1 then
-									crit.rank = nil;
-								end
-							elseif criteriaType == 36 or criteriaType == 41 or criteriaType == 42 then
-								-- 36: Items (Generic)
-								-- 41: Items (Use/Eat)
-								-- 42: Items (Loot)
-								if crit.rank and crit.rank < 2 then
-									crit.provider = { "i", crit.assetID };
-								else
-									crit.cost = { { "i", crit.assetID, crit.rank }};
-								end
-								crit.criteriaType = nil;
-								crit.assetID = nil;
-								crit.rank = nil;
-							elseif criteriaType == 43 then	-- Exploration?!
-								crit.explorationID = crit.assetID;
-								crit.criteriaType = nil;
-								crit.assetID = nil;
-								crit.rank = nil;
-							elseif criteriaType == 0 then	-- NPC Kills
-								crit._npcs = { crit.assetID };
-								if crit.rank and crit.rank < 2 then
-									crit.rank = nil;
-								end
-								crit.criteriaType = nil;
-								crit.assetID = nil;
-							elseif criteriaType == 96 then	-- Collect Pets
-								crit._npcs = { crit.assetID };
-								if crit.rank and crit.rank < 2 then
-									crit.rank = nil;
-								end
-								crit.criteriaType = nil;
-								crit.assetID = nil;
-							elseif criteriaType == 68 or criteriaType == 72 then	-- Interact with Object (68) / Fish from a School (72)
-								crit._objects = { crit.assetID };
-								if crit.rank and crit.rank < 2 then
-									crit.rank = nil;
-								end
-								crit.criteriaType = nil;
-								crit.assetID = nil;
-							elseif criteriaType == 7 then	-- Skill ID, Rank is Requirement
-								crit.requireSkill = crit.assetID;
-								crit.criteriaType = nil;
-								crit.assetID = nil;
-							elseif criteriaType == 40 then	-- Skill ID Learned
-								crit.requireSkill = crit.assetID;
-								crit.criteriaType = nil;
-								crit.assetID = nil;
-								crit.rank = nil;
-							elseif criteriaType == 8 then	-- Achievements as Children
-								crit._achievements = { crit.assetID };
-								if crit.rank and crit.rank < 2 then
-									crit.rank = nil;
-								end
-								crit.criteriaType = nil;
-								crit.assetID = nil;
-							elseif criteriaType == 12 then	-- Currencies (Collected Total)
-								if crit.rank and crit.rank < 2 then
-									crit.cost = { { "c", crit.assetID, 1 }};
-								else
-									crit.cost = { { "c", crit.assetID, crit.rank }};
-								end
-								crit.criteriaType = nil;
-								crit.assetID = nil;
-								crit.rank = nil;
-							elseif criteriaType == 26 then
-								-- 26: Environmental Deaths
-								--  0: fatigue
-								--  1: drowning
-								--  2: falling
-								--  3/5: fire/lava
-								-- https://wowwiki-archive.fandom.com/wiki/API_GetAchievementCriteriaInfo
-								if crit.rank and totalCriteria == 1 then
-									info.rank = crit.rank;
-								end
-							elseif criteriaType == 29 or criteriaType == 69 then	-- Cast X Spell Y Times
-								if crit.rank and totalCriteria == 1 then
-									info.rank = crit.rank;
-								else
-									crit.spellID = crit.assetID;
-									crit.criteriaType = nil;
-									crit.assetID = nil;
-								end
-							elseif criteriaType == 46 then	-- Minimum Faction Requirement
-								crit.minReputation = { crit.assetID, crit.rank };
-								crit.criteriaType = nil;
-								crit.assetID = nil;
-								crit.rank = nil;
-							end
-							-- 28: Something to do with event-based encounters, not sure what assetID is.
-							-- 49: Something to do with Equipment Slots, assetID is the equipSlotID. (useless maybe?)
-							-- 52: Honorable kill on a specific Class, assetID is the ClassID. (useless maybe? might be able to use a class icon?)
-							-- 53: Honorable kill on a specific Class at level 35+, assetID is the ClassID. (useless maybe? might be able to use a class icon?)
-							-- 54: Show a critter you /love them, assetID is useless or not present.
-							-- 70: Honorable Kill at a specific place.
-							-- 71: Instance Clears, assetID is of an unknown type... might be Saved Instance ID?
-							-- 73: Mal'Ganis? Complete Objective? (useless)
-							-- 74: No idea, tracking of some kind
-							-- 92: Encounter Kills, of non-NPC type. (Group of NPCs - IE: Lilian Voss)
-						elseif criteriaType == 0 or criteriaType == 3 or criteriaType == 5 or criteriaType == 6 or criteriaType == 9 or criteriaType == 10 or criteriaType == 14 or criteriaType == 15 or criteriaType == 17 or criteriaType == 19 or criteriaType == 26 or criteriaType == 37 or criteriaType == 45 or criteriaType == 75 or criteriaType == 78 or criteriaType == 79 or criteriaType == 81 or criteriaType == 90 or criteriaType == 91 or criteriaType == 109 or criteriaType == 124 or criteriaType == 126 or criteriaType == 130 or criteriaType == 134 or criteriaType == 135 or criteriaType == 136 or criteriaType == 138 or criteriaType == 139 or criteriaType == 151 or criteriaType == 156 or criteriaType == 157 or criteriaType == 158 or criteriaType == 200 or criteriaType == 203 or criteriaType == 207 then
-							-- 0: Some tracking statistic, generally X/Y format and simple enough to not justify a type if no assetID is present.
-							-- 3: Collect X of something that's generic for Archeology
-							-- 5: Level Requirement
-							-- 6: Digsites (Archeology)
-							-- 9: Total Quests Completed
-							-- 10: Daily Quests, every day for X days.
-							-- 14: Total Daily Quests Completed
-							-- 15: Battleground battles
-							-- 17: Total Deaths
-							-- 19: Instances Run
-							-- 26: Environmental Deaths
-							-- 37: Ranked Arena Wins
-							-- 45: Bank Slots Purchased
-							-- 75: Mounts (Total - on one Character)
-							-- 78: Kill NPCs
-							-- 79: Cook Food
-							-- 81: Pet battle achievement points
-							-- 90: Gathering (Nodes)
-							-- 91: Pet Charm Totals
-							-- 109: Catch Fish
-							-- 124: Guild Member Repairs
-							-- 126: Guild Crafting
-							-- 130: Rated Battleground Wins
-							-- 134: Complete Quests
-							-- 135: Honorable Kills (Total)
-							-- 136: Kill Critters
-							-- 138: Guild Scenario Challenges Completed
-							-- 139: Guild Challenges Completed
-							-- 151: Guild Scenario Completed
-							-- 156: Collect Pets (Total)
-							-- 157: Collect Pets (Rare)
-							-- 158: Pet Battles
-							-- 200: Recruit Troops
-							-- 203: World Quests (Total Complete)
-							-- 207: Honor Earned (Total)
-							-- https://wowwiki-archive.fandom.com/wiki/API_GetAchievementCriteriaInfo
-							if crit.rank and totalCriteria == 1 then
-								info.rank = crit.rank;
-							end
-						elseif criteriaType == 38 or criteriaType == 39 or criteriaType == 58 or criteriaType == 63 or criteriaType == 65 or criteriaType == 66 or criteriaType == 76 or criteriaType == 77 or criteriaType == 82 or criteriaType == 83 or criteriaType == 84 or criteriaType == 85 or criteriaType == 86 or criteriaType == 107 or criteriaType == 128 or criteriaType == 152 or criteriaType == 153 or criteriaType == 163 then	-- Ignored
-							-- 38: Team Rating, which is irrelevant.
-							-- 39: Personal Rating, which is irrelevant.
-							-- 58: Killing Blows, might specifically be PvP.
-							-- 63: Total Gold (Spent on Travel)
-							-- 65: Total Gold (Spent on Barber Shop)
-							-- 66: Total Gold (Spent on Mail)
-							-- 76: Duels Won
-							-- 77: Duels Lost
-							-- 82: Auctions (Total Posted)
-							-- 83: Auctions (Highest Bid)
-							-- 84: Auctions (Total Purchases)
-							-- 85: Auctions (Highest Sold)]
-							-- 86: Most Gold Ever Owned
-							-- 107: Quests Abandoned
-							-- 128: Guild Bank Tabs
-							-- 152: Defeat Scenarios
-							-- 153: Ride to Location?
-							-- 163: Also ride to location
-							break;
-						elseif criteriaType == 59 or criteriaType == 62 or criteriaType == 67 or criteriaType == 80 then	-- Gold Cost, if available.
-							-- 59: Total Gold (Vendors)
-							-- 62: Total Gold (Quest Rewards)
-							-- 67: Total Gold (Looted)
-							-- 80: Total Gold (Auctions)
-							if crit.rank and crit.rank > 1 then
-								if totalCriteria == 1 then
-									-- Generic, such as the Bread Winner
-									info.rank = crit.rank;
-								else
-									crit.cost = { { "g", crit.assetID, crit.rank } };
-									crit.criteriaType = nil;
-									crit.assetID = nil;
-									info.rank = nil;
-								end
-							else
-								-- nothing
-							end
-						end
-						-- 155: Collect Battle Pets from a Raid, no assetID though RIP
-						-- 158: Defeat Master Trainers
-						-- 161: Capture a Battle Pet in a Zone
-						-- 163: Defeat an Encounter of some kind? AssetID useless
-						-- 169: Construct a building, assetID might be the buildingID.
-					end
-					tinsert(criteria, 1, crit);
-				end
-				if #criteria > 0 then info.criteria = criteria; end
-			end
-
-			HarvestedAchievementDatabase[achievementID] = info;
-			setmetatable(t, app.BaseAchievement);
-			t.collected = true;
-			return Name;
-		end
-		-- Save an empty value just so the Saved Variable table is always in order for easier partial-replacements if needed
-		HarvestedAchievementDatabase[achievementID] = 0;
-	end
-
-	AllTheThingsHarvestItems = HarvestedAchievementDatabase;
-	local name = t.name;
-	-- retries exceeded, so check the raw .name on the group (gets assigned when retries exceeded during cache attempt)
-	if name then t.collected = true; end
-	return name;
-end
-app.BaseAchievementHarvester = app.BaseObjectFields(harvesterFields, "BaseAchievementHarvester");
-app.CreateAchievementHarvester = function(id, t)
-	return setmetatable(constructor(id, t, "achievementID"), app.BaseAchievementHarvester);
-end
-
--- TODO: migrate this achievement refresh to proper handling within Achievement lib
-local function CheckAchievementCollectionStatus(achievementID)
-	if ATTAccountWideData then
-		achievementID = tonumber(achievementID) or achievementID;
-		local _,_,_,acctCredit,_,_,_,_,_,_,_,isGuild,earnedByMe = GetAchievementInfo(achievementID);
-		if earnedByMe then
-			app.CurrentCharacter.Achievements[achievementID] = 1;
-			ATTAccountWideData.Achievements[achievementID] = 1;
-		elseif acctCredit and not isGuild then
-			ATTAccountWideData.Achievements[achievementID] = 1;
-		end
-	end
-end
-local function RefreshAchievementCollection()
-	if ATTAccountWideData then
-		local maxid, achID = 0, 0;
-		for achievementID,_ in pairs(SearchForFieldContainer("achievementID")) do
-			achID = tonumber(achievementID) or achievementID;
-			if achID > maxid then maxid = achID; end
-		end
-		for achievementID=maxid,1,-1 do
-			CheckAchievementCollectionStatus(achievementID);
-		end
-	end
-end
-app.AddEventHandler("OnRefreshCollections", RefreshAchievementCollection)
-app.AddEventRegistration("ACHIEVEMENT_EARNED", CheckAchievementCollectionStatus);
-end	-- Achievement Lib
-
 -- Currency Lib
 (function()
 local C_CurrencyInfo_GetCurrencyInfo, C_CurrencyInfo_GetCurrencyLink
@@ -5632,27 +4812,7 @@ end)();
 
 -- Flight Path Lib
 do
-local FlightPathMapIDs = {
-	1209,	-- Kalimdor
-	1208,	-- Eastern Kingdoms
-	1467,	-- Outland
-	1384,	-- Northrend
-	1923,	-- Pandaria
-	1922,	-- Draenor
-	993,	-- Broken Isles
-	994,	-- Argus
-	1011,	-- Zandalar
-	1014,	-- Kul Tiras
-	1504,	-- Nazjatar
-	1647,	-- The Shadowlands
-	1409,	-- Exile's Reach
-	2046,	-- Zereth Mortis
-	2057,	-- Dragon Isles
-	2055,	-- Sepulcher of the First Ones (has FPs inside)
-	2149,	-- Ohn'ahran Plains [The Nokhud Offensive] (has FPs inside)
-	2175,	-- Zaralek Cavern
-	2241,	-- Emerald Dream
-};
+local FlightPathMapIDs = app.FlightPathDB.FlightPathMapIDs
 local C_TaxiMap_GetTaxiNodesForMap, C_TaxiMap_GetAllTaxiNodes, GetTaxiMapID
 	= C_TaxiMap.GetTaxiNodesForMap, C_TaxiMap.GetAllTaxiNodes, GetTaxiMapID;
 local localizedFlightPathNames;
@@ -5959,7 +5119,7 @@ app.CreateItemTooltipHarvester = app.ExtendClass("ItemHarvester", "ItemTooltipHa
 												spellName = spellName:trim();
 												local spellID = app.SpellNameToSpellID[spellName];
 												if spellID then
-													local skillID = app.SpellIDToSkillID[spellID];
+													local skillID = app.SkillDB.SpellToSkill[spellID];
 													if skillID then
 														t.info.requireSkill = skillID;
 													elseif spellName == "Pick Pocket" then
@@ -6157,364 +5317,9 @@ app.CreateSelfieFilter = function(id, t)
 end
 end)();
 
--- NPC Lib
-(function()
--- NPC Model Harvester (also acquires the displayID)
-local npcModelHarvester = CreateFrame("DressUpModel", nil, UIParent);
-npcModelHarvester:SetPoint("TOPRIGHT", UIParent, "BOTTOMRIGHT", 0, 0);
-npcModelHarvester:SetSize(1, 1);
-npcModelHarvester:Hide();
-app.NPCDisplayIDFromID = setmetatable({}, { __index = function(t, id)
-	if id > 0 then
-		npcModelHarvester:SetDisplayInfo(0);
-		npcModelHarvester:SetUnit("none");
-		npcModelHarvester:SetCreature(id);
-		local displayID = npcModelHarvester:GetDisplayInfo();
-		if displayID and displayID ~= 0 then
-			t[id] = displayID;
-			return displayID;
-		end
-	end
-end});
-local npcFields = {
-	["key"] = function(t)
-		return "npcID";
-	end,
-	["name"] = function(t)
-		return app.NPCNameFromID[t.npcID];
-	end,
-	["title"] = function(t)
-		return app.NPCTitlesFromID[t.npcID];
-	end,
-	["displayID"] = function(t)
-		return app.NPCDisplayIDFromID[t.npcID];
-	end,
-	["iconAsDefault"] = function(t)
-		return (t.parent and t.parent.headerID == app.HeaderConstants.VENDORS and "Interface\\Icons\\INV_Misc_Coin_01") or app.GetRelativeDifficultyIcon(t);
-	end,
-	-- questID is sometimes a faction-based questID for a single NPC (i.e. BFA Warfront Rares), thanks Blizzard
-	["questID"] = function(t)
-		local qa = t.questIDA;
-		local qh = t.questIDH;
-		if qa then
-			if app.FactionID == Enum.FlightPathFaction.Horde then
-				t.questID = qh;
-				t.otherFactionQuestID = qa;
-				return qh;
-			else
-				t.questID = qa;
-				t.otherFactionQuestID = qh;
-				return qa;
-			end
-		end
-	end,
-	["otherFactionQuestID"] = function(t)
-		local qa = t.questIDA;
-		local qh = t.questIDH;
-		if qa then
-			if app.FactionID == Enum.FlightPathFaction.Horde then
-				t.questID = qh;
-				t.otherFactionQuestID = qa;
-				return qa;
-			else
-				t.questID = qa;
-				t.otherFactionQuestID = qh;
-				return qh;
-			end
-		end
-	end,
-	["collectibleAsQuest"] = app.CollectibleAsQuest,
-	["collectedAsQuest"] = function(t)
-		return IsQuestFlaggedCompletedForObject(t);
-	end,
-	["savedAsQuest"] = function(t)
-		return IsQuestFlaggedCompleted(t.questID);
-	end,
-	["trackableAsQuest"] = app.ReturnTrue,
-	["repeatableAsQuest"] = function(t)
-		return t.isDaily or t.isWeekly or t.isMonthly or t.isYearly;
-	end,
-	["altcollectedAsQuest"] = function(t)
-		if t.altQuests then
-			for i,questID in ipairs(t.altQuests) do
-				if IsQuestFlaggedCompleted(questID) then
-					t.altcollected = questID;
-					return questID;
-				end
-			end
-		end
-	end,
-	["indicatorIcon"] = function(t)
-		if app.ActiveVignettes.npc[t.npcID] then
-			return app.asset("Interface_Ping");
-		end
-	end,
-	-- use custom to track opposite faction questID collection in account/debug if the NPC is considered collectible
-	["customTotal"] = function(t)
-		if app.MODE_DEBUG_OR_ACCOUNT and t.questIDA and t.collectible then
-			return 1;
-		end
-	end,
-	["customProgress"] = function(t)
-		return (t.otherFactionQuestID and IsQuestFlaggedCompleted(t.otherFactionQuestID)) and 1 or 0;
-	end,
-};
-npcFields.icon = npcFields.iconAsDefault;
-app.BaseNPC = app.BaseObjectFields(npcFields, "BaseNPC");
-
-local fields = RawCloneData(npcFields);
-fields.altcollected = npcFields.altcollectedAsQuest;
-fields.collected = npcFields.collectedAsQuest;
-fields.trackable = npcFields.trackableAsQuest;
-fields.repeatable = npcFields.repeatableAsQuest;
-fields.saved = fields.savedAsQuest;
--- this would be an actual variant once migrated
-fields.collectible = app.GlobalVariants.AndLockCriteria.collectible;
-fields.locked = app.GlobalVariants.AndLockCriteria.locked
-app.BaseNPCWithQuest = app.BaseObjectFields(fields, "BaseNPCWithQuest");
-
--- Header Lib
-local headerFields = {
-	["key"] = function(t)
-		return "headerID";
-	end,
-	["name"] = function(t)
-		return L.HEADER_NAMES[t.headerID];
-	end,
-	["icon"] = function(t)
-		return L.HEADER_ICONS[t.headerID];
-	end,
-	["description"] = function(t)
-		return L.HEADER_DESCRIPTIONS[t.headerID];
-	end,
-	["lore"] = function(t)
-		return L.HEADER_LORE[t.headerID];
-	end,
-	["savedAsQuest"] = function(t)
-		return IsQuestFlaggedCompleted(t.questID);
-	end,
-};
-app.BaseHeader = app.BaseObjectFields(headerFields, "BaseHeader");
-
-local fields = RawCloneData(headerFields);
-fields.saved = headerFields.savedAsQuest;
-fields.trackable = app.ReturnTrue;
-app.BaseHeaderWithQuest = app.BaseObjectFields(fields, "BaseHeaderWithQuest");
-
--- Event Lib (using the Events Module!)
-local fields = RawCloneData(headerFields, app.Modules.Events.Fields);
-app.BaseHeaderWithEvent = app.BaseObjectFields(fields, "BaseHeaderWithEvent");
-app.CreateNPC = function(id, t)
-	if t then
-		if id < 1 then
-			if t.questID then
-				return setmetatable(constructor(id, t, "headerID"), app.BaseHeaderWithQuest);
-			elseif L.HEADER_EVENTS[id] then
-				return setmetatable(constructor(id, t, "headerID"), app.BaseHeaderWithEvent);
-			else
-				return setmetatable(constructor(id, t, "headerID"), app.BaseHeader);
-			end
-		else
-			if t.questID or t.questIDA then
-				return setmetatable(constructor(id, t, "npcID"), app.BaseNPCWithQuest);
-			else
-				return setmetatable(constructor(id, t, "npcID"), app.BaseNPC);
-			end
-		end
-	elseif id > 1 then
-		return setmetatable(constructor(id, t, "npcID"), app.BaseNPC);
-	else
-		return setmetatable(constructor(id, t, "headerID"), app.BaseHeader);
-	end
-end
-
-
-
-
-
-
--- Automatic Headers
-local HeaderTypeAbbreviations = {
-	["a"] = "achievementID",
-	["c"] = "classID",
-	["m"] = "mapID",
-	["i"] = "itemID",
-	["r"] = "raceID",
-	["q"] = "questID",
-	["s"] = "spellID",
-};
--- Alternate functions to attach data into a table based on an id for a given type code
-local AlternateDataTypes = {
-	["ac"] = function(id)
-		return { name = GetCategoryInfo(id) };
-	end,
-	["crit"] = function(id)
-		local ach = math_floor(id);
-		local crit = math_floor(100 * (id - ach) + 0.005);
-		local icon = select(10, GetAchievementInfo(ach))
-		return { name = GetAchievementCriteriaInfo(ach, crit), icon = icon };
-	end,
-	["d"] = function(id)
-		local name, _, _, _, _, _, _, _, _, _, textureFilename = GetLFGDungeonInfo(id);
-		return { name = name, icon = textureFilename };
-	end,
-	["df"] = function(id)
-		local aid = math_floor(id);
-		local hid = math_floor(10000 * (id - aid) + 0.005);
-		id = app.FactionID == Enum.FlightPathFaction.Alliance and tonumber(aid) or tonumber(hid);
-		local name, _, _, _, _, _, _, _, _, _, textureFilename = GetLFGDungeonInfo(id);
-		return { name = name, icon = textureFilename };
-	end,
-	["n"] = function(id)
-		return { name = app.NPCNameFromID[tonumber(id)], displayID = app.NPCDisplayIDFromID[tonumber(id)] };
-	end,
-	["o"] = function(id)
-		return { name = app.ObjectNames[tonumber(id)] or ("Object ID #"..id), icon = app.ObjectIcons[tonumber(id)] };
-	end,
-	["_G"] = function(id)
-		return { name = _G[id] };
-	end,
-	-- TODO: add Campaign lookups
-	-- https://wowpedia.fandom.com/wiki/Category:API_namespaces/C_CampaignInfo
-};
--- Returns the 'name' and 'icon' values to use for a given id/type automatic name lookup
-local function GetAutomaticHeaderData(id, type)
-	local altFunc = AlternateDataTypes[type];
-	if altFunc then
-		return altFunc(id);
-	end
-	local typeID = HeaderTypeAbbreviations[type] or type;
-	local obj = SearchForObject(typeID, id, "key") or CreateObject({[typeID]=id});
-	if obj then
-		-- app.PrintDebug("GetAutomaticHeaderData", id, typeID, obj.text, obj.key, obj[obj.key]);
-		-- app.PrintDebug("Automatic Header",obj.name or obj.link)
-		local name = obj.name or obj.link;
-		return { name = not IsRetrieving(name) and name or nil, icon = obj.icon };
-	end
-	app.print("Failed finding object/function for automatic header",type,id);
-end
--- Allows for directly accessing the Automatic Header Name logic for a specific ID/Type combination
-app.GetAutomaticHeaderData = GetAutomaticHeaderData;
-local cache = app.CreateCache("headerCode");
-local function CacheInfo(t, field)
-	local type = t.type;
-	if not type then return; end
-	local id = t.headerID;
-	local _t = cache.GetCached(t);
-	local data = GetAutomaticHeaderData(id, type);
-	for key,value in pairs(data) do
-		_t[key] = value;
-	end
-	if field then return _t[field]; end
-end
-
--- Automatic Type Header
-local fields = RawCloneData(headerFields, {
-	["headerCode"] = function(t)
-		if t.type then
-			return t.type..t.headerID;
-		else
-			return t.headerID;
-		end
-	end,
-	["name"] = function(t)
-		return cache.GetCachedField(t, "name", CacheInfo);
-	end,
-	["icon"] = function(t)
-		return cache.GetCachedField(t, "icon", CacheInfo) or 4555017;
-	end,
-	["displayID"] = function(t)
-		return cache.GetCachedField(t, "displayID", CacheInfo);
-	end,
-});
-fields.description = nil;
-app.BaseAutomaticHeader = app.BaseObjectFields(fields, "BaseAutomaticHeader");
-local fields = RawCloneData(fields);
-fields.saved = function(t)
-	return IsQuestFlaggedCompleted(t.questID);
-end;
-fields.trackable = app.ReturnTrue;
-app.BaseAutomaticHeaderWithQuest = app.BaseObjectFields(fields, "BaseAutomaticHeaderWithQuest");
-app.CreateHeader = function(id, t)
-	if t and t.questID then
-		return setmetatable(constructor(id, t, "headerID"), app.BaseAutomaticHeaderWithQuest);
-	end
-	return setmetatable(constructor(id, t, "headerID"), app.BaseAutomaticHeader);
-end
-end)();
-
 -- Profession Lib
 (function()
-app.SkillIDToSpellID = {
-	[171] = 2259,	-- Alchemy
-	[794] = 158762,	-- Arch
-	[261] = 5149,	-- Beast Training
-	[164] = 2018,	-- Blacksmithing
-	[185] = 2550,	-- Cooking
-	[333] = 7411,	-- Enchanting
-	[202] = 4036,	-- Engineering
-	[356] = 7620,	-- Fishing
-	[129] = 3273,	-- First Aid
-	[182] = 2366,	-- Herb Gathering
-	[773] = 45357,	-- Inscription
-	[755] = 25229,	-- Jewelcrafting
-	--[2720] = 2720,	-- Junkyard Tinkering [Does not have a spellID]
-	[165] = 2108,	-- Leatherworking
-	[186] = 2575,	-- Mining
-	[393] = 8613,	-- Skinning
-	[197] = 3908,	-- Tailoring
-	[960] = 53428,  -- Runeforging
-	[40] = 2842,	-- Poisons
-	[633] = 1809,	-- Lockpicking
-	[921] = 921,	-- Pickpocketing
-
-	-- Specializations
-	[20219] = 20219,	-- Gnomish Engineering
-	[20222] = 20222,	-- Goblin Engineering
-	[9788] = 9788,		-- Armorsmith
-	[9787] = 9787,		-- Weaponsmith
-	[17041] = 17041,	-- Master Axesmith
-	[17040] = 17040,	-- Master Hammersmith
-	[17039] = 17039,	-- Master Swordsmith
-	[10656] = 10656,	-- Dragonscale Leatherworking
-	[10658] = 10658,	-- Elemental Leatherworking
-	[10660] = 10660,	-- Tribal Leatherworking
-	[26801] = 26801,	-- Shadoweave Tailoring
-	[26797] = 26797,	-- Spellfire Tailoring
-	[26798] = 26798,	-- Mooncloth Tailoring
-	[125589] = 125589,	-- Way of the Brew
-	[124694] = 124694,	-- Way of the Grill
-	[125588] = 125588,	-- Way of the Oven
-	[125586] = 125586,	-- Way of the Pot
-	[125587] = 125587,	-- Way of the Steamer
-	[125584] = 125584,	-- Way of the Wok
-};
-app.SpellIDToSkillID = {};
-for skillID,spellID in pairs(app.SkillIDToSpellID) do
-	app.SpellIDToSkillID[spellID] = skillID;
-end
-app.SpecializationSpellIDs = setmetatable({
-	[20219] = 4036,	-- Gnomish Engineering
-	[20222] = 4036,	-- Goblin Engineering
-	[9788] = 2018,	-- Armorsmith
-	[9787] = 2018,	-- Weaponsmith
-	[17041] = 2018,	-- Master Axesmith
-	[17040] = 2018,	-- Master Hammersmith
-	[17039] = 2018,	-- Master Swordsmith
-	[10656] = 2108,	-- Dragonscale Leatherworking
-	[10658] = 2108,	-- Elemental Leatherworking
-	[10660] = 2108,	-- Tribal Leatherworking
-	[26801] = 3908,	-- Shadoweave Tailoring
-	[26797] = 3908,	-- Spellfire Tailoring
-	[26798] = 3908,	-- Mooncloth Tailoring
-	[125589] = 2550,-- Way of the Brew
-	[124694] = 2550,-- Way of the Grill
-	[125588] = 2550,-- Way of the Oven
-	[125586] = 2550,-- Way of the Pot
-	[125587] = 2550,-- Way of the Steamer
-	[125584] = 2550,-- Way of the Wok
-}, {__index = function(t,k) return k; end})
-
+app.SpecializationSpellIDs = setmetatable(app.SkillDB.SpecializationSpells, {__index = function(t,k) return k; end})
 local fields = {
 	["key"] = function(t)
 		return "professionID";
@@ -6543,7 +5348,7 @@ local fields = {
 		return icon or GetTradeSkillTexture(t.professionID);
 	end,
 	["spellID"] = function(t)
-		return app.SkillIDToSpellID[t.professionID];
+		return app.SkillDB.SkillToSpell[t.professionID];
 	end,
 	["skillID"] = function(t)
 		return t.professionID;
@@ -6614,7 +5419,7 @@ local function SetGroupVisibility(parent, group)
 	end
 	-- Trackable
 	if not visible and TrackableFilter(group) then
-		visible = not group.saved;
+		visible = not group.saved or GroupVisibilityFilter(group)
 		forceShowParent = visible;
 	end
 	-- Custom Visibility
@@ -6663,7 +5468,7 @@ local function SetThingVisibility(parent, group)
 	end
 	-- Trackable
 	if not visible and TrackableFilter(group) then
-		visible = not group.saved;
+		visible = not group.saved or ThingVisibilityFilter(group)
 		forceShowParent = visible;
 		-- if debug then print("trackable",visible) end
 	end
@@ -7288,8 +6093,8 @@ local function SetRowData(self, row, data)
 end
 local CreateRow;
 local function Refresh(self)
-	if not app.IsReady or not self:IsVisible() then return; end
-	-- app.PrintDebug("Refresh:",self.Suffix)
+	if not self:IsVisible() then return; end
+	-- app.PrintDebug(Colorize("Refresh:", app.Colors.TooltipDescription),self.Suffix)
 	local height = self:GetHeight();
 	if height > 80 then
 		self.ScrollBar:Show();
@@ -8948,7 +7753,8 @@ end
 local function OnScrollBarValueChanged(self, value)
 	if self.CurrentValue ~= value then
 		self.CurrentValue = value;
-		self:GetParent():Refresh();
+		local window = self:GetParent()
+		Callback(window.Refresh, window)
 	end
 end
 local function ProcessGroup(data, object)
@@ -8966,6 +7772,7 @@ local function ProcessGroup(data, object)
 end
 local function UpdateWindow(self, force, got)
 	local data = self.data;
+	-- TODO: remove IsReady check when Windows have OnInit capability
 	if not data or not app.IsReady then return end
 	local visible = self:IsVisible();
 	-- either by Setting or by special windows apply ad-hoc logic
@@ -9114,161 +7921,163 @@ function app:GetWindow(suffix, parent, onUpdate)
 		ResetWindow(suffix);
 	end
 	local window = app.Windows[suffix];
-	if not window then
-		-- Create the window instance.
-		-- app.PrintDebug("GetWindow",suffix)
-		---@class ATTWindowFrameForRetail: BackdropTemplate, Frame
-		window = CreateFrame("Frame", appName .. "-Window-" .. suffix, parent or UIParent, BackdropTemplateMixin and "BackdropTemplate");
-		app.Windows[suffix] = window;
-		window.Suffix = suffix;
-		window.Toggle = Toggle;
-		local updateFunc = onUpdate or app:CustomWindowUpdate(suffix) or UpdateWindow;
-		-- Update/Refresh functions can be called through callbacks, so they need to be distinct functions
-		window.BaseUpdate = function(...) UpdateWindow(...) end;
-		window.Update = function(...) updateFunc(...) end;
-		window.Refresh = function(...) Refresh(...) end;
-		window.SetVisible = SetVisible;
-		window.StorePosition = StoreWindowPosition;
-		window.SetData = SetData;
-		window.BuildData = BuildData;
-		window.GetRunner = GetRunner;
-		window.ToggleExtraFilters = ToggleExtraFilters
+	if window then return window end
 
-		window:SetScript("OnMouseWheel", OnScrollBarMouseWheel);
-		window:SetScript("OnMouseDown", StartMovingOrSizing);
-		window:SetScript("OnMouseUp", StopMovingOrSizing);
-		window:SetScript("OnHide", StopMovingOrSizing);
-		window:SetBackdrop(backdrop);
-		window:SetBackdropBorderColor(1, 1, 1, 1);
-		window:SetBackdropColor(0, 0, 0, 1);
-		window:SetClampedToScreen(true);
-		window:SetToplevel(true);
-		window:EnableMouse(true);
-		window:SetMovable(true);
-		window:SetResizable(true);
-		window:SetPoint("CENTER");
-		window:SetResizeBounds(96, 32);
-		window:SetSize(300, 300);
+	-- Create the window instance.
+	-- app.PrintDebug("GetWindow",suffix)
+	---@class ATTWindowFrameForRetail: BackdropTemplate, Frame
+	window = CreateFrame("Frame", appName .. "-Window-" .. suffix, parent or UIParent, BackdropTemplateMixin and "BackdropTemplate");
+	app.Windows[suffix] = window;
+	window.Suffix = suffix;
+	window.Toggle = Toggle;
+	local updateFunc = onUpdate or app:CustomWindowUpdate(suffix) or UpdateWindow;
+	-- Update/Refresh functions can be called through callbacks, so they need to be distinct functions
+	window.BaseUpdate = function(...) UpdateWindow(...) end;
+	window.Update = function(...) updateFunc(...) end;
+	window.Refresh = function(...) Refresh(...) end;
+	window.SetVisible = SetVisible;
+	window.StorePosition = StoreWindowPosition;
+	window.SetData = SetData;
+	window.BuildData = BuildData;
+	window.GetRunner = GetRunner;
+	window.ToggleExtraFilters = ToggleExtraFilters
 
-		-- set the scaling for the new window if settings have been initialized
-		local scale = app.Settings and app.Settings._Initialize and (suffix == "Prime" and app.Settings:GetTooltipSetting("MainListScale") or app.Settings:GetTooltipSetting("MiniListScale")) or 1;
-		window:SetScale(scale);
+	window:SetScript("OnMouseWheel", OnScrollBarMouseWheel);
+	window:SetScript("OnMouseDown", StartMovingOrSizing);
+	window:SetScript("OnMouseUp", StopMovingOrSizing);
+	window:SetScript("OnHide", StopMovingOrSizing);
+	window:SetBackdrop(backdrop);
+	window:SetBackdropBorderColor(1, 1, 1, 1);
+	window:SetBackdropColor(0, 0, 0, 1);
+	window:SetClampedToScreen(true);
+	window:SetToplevel(true);
+	window:EnableMouse(true);
+	window:SetMovable(true);
+	window:SetResizable(true);
+	window:SetPoint("CENTER");
+	window:SetResizeBounds(96, 32);
+	window:SetSize(300, 300);
 
-		window:SetUserPlaced(true);
-		window.data = {
-			['text'] = suffix,
-			['icon'] = "Interface\\Icons\\Ability_Spy.blp",
-			['visible'] = true,
-			['g'] = {
-				{
-					['text'] = "No data linked to listing.",
-					['visible'] = true
-				}
+	-- set the scaling for the new window if settings have been initialized
+	local scale = app.Settings and app.Settings._Initialize and (suffix == "Prime" and app.Settings:GetTooltipSetting("MainListScale") or app.Settings:GetTooltipSetting("MiniListScale")) or 1;
+	window:SetScale(scale);
+
+	window:SetUserPlaced(true);
+	window.data = {
+		['text'] = suffix,
+		['icon'] = "Interface\\Icons\\Ability_Spy.blp",
+		['visible'] = true,
+		['g'] = {
+			{
+				['text'] = "No data linked to listing.",
+				['visible'] = true
 			}
-		};
+		}
+	};
 
-		-- set whether this window lock is persistable between sessions
-		if suffix == "Prime" or suffix == "CurrentInstance" or suffix == "RaidAssistant" or suffix == "WorldQuests" then
-			window.lockPersistable = true;
-		end
-
-		window:Hide();
-
-		-- The Close Button. It's assigned as a local variable so you can change how it behaves.
-		window.CloseButton = CreateFrame("Button", nil, window, "UIPanelCloseButton");
-		window.CloseButton:SetPoint("TOPRIGHT", window, "TOPRIGHT", -1, -1);
-		window.CloseButton:SetSize(20, 20);
-		window.CloseButton:SetScript("OnClick", OnCloseButtonPressed);
-
-		-- The Scroll Bar.
-		---@class ATTWindowScrollBar: Slider
-		local scrollbar = CreateFrame("Slider", nil, window, "UIPanelScrollBarTemplate");
-		scrollbar:SetPoint("TOP", window.CloseButton, "BOTTOM", 0, -15);
-		scrollbar:SetPoint("BOTTOMRIGHT", window, "BOTTOMRIGHT", -4, 36);
-		scrollbar:SetScript("OnValueChanged", OnScrollBarValueChanged);
-		scrollbar.back = scrollbar:CreateTexture(nil, "BACKGROUND");
-		scrollbar.back:SetColorTexture(0.1,0.1,0.1,1);
-		scrollbar.back:SetAllPoints(scrollbar);
-		scrollbar:SetMinMaxValues(1, 1);
-		scrollbar:SetValueStep(1);
-		scrollbar:SetValue(1);
-		scrollbar:SetObeyStepOnDrag(true);
-		scrollbar.CurrentValue = 1;
-		scrollbar:SetWidth(16);
-		scrollbar:EnableMouseWheel(true);
-		window:EnableMouseWheel(true);
-		window.ScrollBar = scrollbar;
-
-		-- The Corner Grip. (this isn't actually used, but it helps indicate to players that they can do something)
-		local grip = window:CreateTexture(nil, "ARTWORK");
-		grip:SetTexture(app.asset("grip"));
-		grip:SetSize(16, 16);
-		grip:SetTexCoord(0,1,0,1);
-		grip:SetPoint("BOTTOMRIGHT", -5, 5);
-		window.Grip = grip;
-
-		-- The Row Container. This contains all of the row frames.
-		---@class ATTWindowContainer: Frame
-		local container = CreateFrame("Frame", nil, window);
-		container:SetPoint("TOPLEFT", window, "TOPLEFT", 5, -5);
-		container:SetPoint("RIGHT", scrollbar, "LEFT", -1, 0);
-		container:SetPoint("BOTTOM", window, "BOTTOM", 0, 6);
-		-- container:SetClipsChildren(true);
-		window.Container = container;
-		container.rows = {};
-		container:Show();
-
-		-- Allows the window to toggle whether it shows it is currently processing changes/updates
-		-- Currently will do this by changing the texture of the CloseButton
-		-- local closeTexture = window.CloseButton:GetNormalTexture():GetTexture();
-		-- app.PrintDebug(closeTexture, window.CloseButton:GetHighlightTexture(), window.CloseButton:GetPushedTexture(), window.CloseButton:GetDisabledTexture())
-		-- Textures are a bit funky, maybe not good to try using that... maybe will come up with another idea sometime...
-		window.StartProcessing = function()
-			-- app.PrintDebug("StartProcessing",suffix)
-			-- window.CloseButton:SetNormalTexture(134376);	-- Inv_misc_pocketwatch_01
-		end
-		window.StopProcessing = function()
-			-- app.PrintDebug("StopProcessing",suffix)
-			-- window.CloseButton:SetNormalTexture(closeTexture);
-		end
-
-		-- Setup the Event Handlers
-		-- TODO: review how necessary this actually is in Retail
-		local handlers = {};
-		window:SetScript("OnEvent", function(self, e, ...)
-			local handler = handlers[e];
-			if handler then
-				handler(self, ...);
-			else
-				app.PrintDebug("Unhandled Window Event",e,...)
-				self:Update();
-			end
-		end);
-		local refreshWindow = function() DelayedCallback(window.Refresh, 0.25, window) end;
-		handlers.ACHIEVEMENT_EARNED = refreshWindow;
-		handlers.QUEST_DATA_LOAD_RESULT = refreshWindow;
-		handlers.QUEST_ACCEPTED = refreshWindow;
-		handlers.QUEST_REMOVED = refreshWindow;
-		window:RegisterEvent("ACHIEVEMENT_EARNED");
-		window:RegisterEvent("QUEST_ACCEPTED");
-		window:RegisterEvent("QUEST_DATA_LOAD_RESULT");
-		window:RegisterEvent("QUEST_REMOVED");
-
-		window.AddEventHandler = AddEventHandler
-		window.RemoveEventHandlers = RemoveEventHandlers
-
-		-- Some Window functions should be triggered from ATT events
-		window:AddEventHandler("OnUpdateWindows", function(...)
-			window:Update(...)
-		end)
-		window:AddEventHandler("OnRefreshWindows", function(...)
-			window:Refresh(...)
-		end)
-
-		-- Ensure the window updates itself when opened for the first time
-		window.HasPendingUpdate = true;
-		window:Update();
+	-- set whether this window lock is persistable between sessions
+	if suffix == "Prime" or suffix == "CurrentInstance" or suffix == "RaidAssistant" or suffix == "WorldQuests" then
+		window.lockPersistable = true;
 	end
+
+	window:Hide();
+
+	-- The Close Button. It's assigned as a local variable so you can change how it behaves.
+	window.CloseButton = CreateFrame("Button", nil, window, "UIPanelCloseButton");
+	window.CloseButton:SetPoint("TOPRIGHT", window, "TOPRIGHT", -1, -1);
+	window.CloseButton:SetSize(20, 20);
+	window.CloseButton:SetScript("OnClick", OnCloseButtonPressed);
+
+	-- The Scroll Bar.
+	---@class ATTWindowScrollBar: Slider
+	local scrollbar = CreateFrame("Slider", nil, window, "UIPanelScrollBarTemplate");
+	scrollbar:SetPoint("TOP", window.CloseButton, "BOTTOM", 0, -15);
+	scrollbar:SetPoint("BOTTOMRIGHT", window, "BOTTOMRIGHT", -4, 36);
+	scrollbar:SetScript("OnValueChanged", OnScrollBarValueChanged);
+	scrollbar.back = scrollbar:CreateTexture(nil, "BACKGROUND");
+	scrollbar.back:SetColorTexture(0.1,0.1,0.1,1);
+	scrollbar.back:SetAllPoints(scrollbar);
+	scrollbar:SetMinMaxValues(1, 1);
+	scrollbar:SetValueStep(1);
+	scrollbar:SetValue(1);
+	scrollbar:SetObeyStepOnDrag(true);
+	scrollbar.CurrentValue = 1;
+	scrollbar:SetWidth(16);
+	scrollbar:EnableMouseWheel(true);
+	window:EnableMouseWheel(true);
+	window.ScrollBar = scrollbar;
+
+	-- The Corner Grip. (this isn't actually used, but it helps indicate to players that they can do something)
+	local grip = window:CreateTexture(nil, "ARTWORK");
+	grip:SetTexture(app.asset("grip"));
+	grip:SetSize(16, 16);
+	grip:SetTexCoord(0,1,0,1);
+	grip:SetPoint("BOTTOMRIGHT", -5, 5);
+	window.Grip = grip;
+
+	-- The Row Container. This contains all of the row frames.
+	---@class ATTWindowContainer: Frame
+	local container = CreateFrame("Frame", nil, window);
+	container:SetPoint("TOPLEFT", window, "TOPLEFT", 5, -5);
+	container:SetPoint("RIGHT", scrollbar, "LEFT", -1, 0);
+	container:SetPoint("BOTTOM", window, "BOTTOM", 0, 6);
+	-- container:SetClipsChildren(true);
+	window.Container = container;
+	container.rows = {};
+	container:Show();
+
+	-- Allows the window to toggle whether it shows it is currently processing changes/updates
+	-- Currently will do this by changing the texture of the CloseButton
+	-- local closeTexture = window.CloseButton:GetNormalTexture():GetTexture();
+	-- app.PrintDebug(closeTexture, window.CloseButton:GetHighlightTexture(), window.CloseButton:GetPushedTexture(), window.CloseButton:GetDisabledTexture())
+	-- Textures are a bit funky, maybe not good to try using that... maybe will come up with another idea sometime...
+	window.StartProcessing = function()
+		-- app.PrintDebug("StartProcessing",suffix)
+		-- window.CloseButton:SetNormalTexture(134376);	-- Inv_misc_pocketwatch_01
+	end
+	window.StopProcessing = function()
+		-- app.PrintDebug("StopProcessing",suffix)
+		-- window.CloseButton:SetNormalTexture(closeTexture);
+		window.data._fillcomplete = true
+	end
+
+	-- Setup the Event Handlers
+	-- TODO: review how necessary this actually is in Retail
+	local handlers = {};
+	window:SetScript("OnEvent", function(self, e, ...)
+		local handler = handlers[e];
+		if handler then
+			handler(self, ...);
+		else
+			app.PrintDebug("Unhandled Window Event",e,...)
+			self:Update();
+		end
+	end);
+	local refreshWindow = function() DelayedCallback(window.Refresh, 0.25, window) end;
+	handlers.ACHIEVEMENT_EARNED = refreshWindow;
+	handlers.QUEST_DATA_LOAD_RESULT = refreshWindow;
+	handlers.QUEST_ACCEPTED = refreshWindow;
+	handlers.QUEST_REMOVED = refreshWindow;
+	window:RegisterEvent("ACHIEVEMENT_EARNED");
+	window:RegisterEvent("QUEST_ACCEPTED");
+	window:RegisterEvent("QUEST_DATA_LOAD_RESULT");
+	window:RegisterEvent("QUEST_REMOVED");
+
+	window.AddEventHandler = AddEventHandler
+	window.RemoveEventHandlers = RemoveEventHandlers
+
+	-- Some Window functions should be triggered from ATT events
+	window:AddEventHandler("OnUpdateWindows", function(...)
+		window:Update(...)
+	end)
+	window:AddEventHandler("OnRefreshWindows", function(...)
+		window:Refresh(...)
+	end)
+
+	-- Ensure the window updates itself when opened for the first time
+	window.HasPendingUpdate = true;
+	-- TODO: eventually remove this when Windows are re-designed to have an OnInit/OnUpdate distinction for Retail
+	window:Update();
 	return window;
 end
 
@@ -9394,9 +8203,7 @@ function app:GetDataCache()
 
 	-- Delves
 	if app.Categories.Delves then
-		tinsert(g, app.CreateNPC(app.HeaderConstants.DELVES, {
-			g = app.Categories.Delves,
-		}));
+		tinsert(g, app.CreateNPC(app.HeaderConstants.DELVES, app.Categories.Delves));
 	end
 
 	-- Zones
@@ -9938,7 +8745,7 @@ local function AddSearchGroupsByFieldValue(groups, field, value)
 		for _,group in ipairs(groups) do
 			if not group.sourceIgnored then
 				v = group[field];
-				if v == value or (field == "requireSkill" and v and app.SpellIDToSkillID[app.SpecializationSpellIDs[v] or 0] == value) then
+				if v == value or (field == "requireSkill" and v and app.SkillDB.SpellToSkill[app.SpecializationSpellIDs[v] or 0] == value) then
 					tinsert(SearchGroups, group);
 				else
 					AddSearchGroupsByFieldValue(group.g, field, value);
@@ -10475,7 +9282,6 @@ customWindowUpdates.CurrentInstance = function(self, force, got)
 		self.initialized = true;
 		self.CurrentMaps = {};
 		self.mapID = -1;
-		local IsInInstance = IsInInstance
 		self.IsSameMapID = function(self)
 			return self.CurrentMaps[self.mapID];
 		end
@@ -10542,7 +9348,50 @@ customWindowUpdates.CurrentInstance = function(self, force, got)
 		};
 		-- Headers possible in a hierarchy that should just be ignored
 		local ignoredHeaders = app.HeaderData.IGNOREINMINILIST or app.EmptyTable;
-		-- self.Rebuild
+
+		local function BuildDiscordMapInfoTable(id, mapInfo)
+			-- Builds a table to be used in the SetupReportDialog to display text which is copied into Discord for player reports
+			mapInfo = mapInfo or C_Map_GetMapInfo(id)
+			local info = {
+				"### missing-map"..":"..id,
+				"```elixir",	-- discord fancy box start
+				"L:"..app.Level.." R:"..app.RaceID.." ("..app.Race..") C:"..app.ClassIndex.." ("..app.Class..")",
+				id and ("mapID:"..id.." ("..(mapInfo.name or ("Map ID #" .. id))..")") or "mapID:??",
+			};
+
+			local mapID = mapInfo.parentMapID
+			while mapID do
+				mapInfo = C_Map_GetMapInfo(mapID)
+				if mapInfo then
+					tinsert(info, "> parentMapID:"..mapID.." ("..(mapInfo.name or "??")..")")
+					mapID = mapInfo.parentMapID;
+				else break
+				end
+			end
+
+			local position, coord = id and C_Map.GetPlayerMapPosition(id, "player"), nil;
+			if position then
+				local x,y = position:GetXY();
+				coord = (math_floor(x * 1000) / 10) .. ", " .. (math_floor(y * 1000) / 10);
+			end
+			tinsert(info, coord and ("coord:"..coord) or "coord:??");
+
+			if app.GameBuildVersion >= 100000 then	-- Only include this after Dragonflight
+				local acctUnlocks = {
+					IsQuestFlaggedCompleted(72366) and "DF_CA" or "N",	-- Dragonflight Campaign Complete
+					IsQuestFlaggedCompleted(75658) and "DF_ZC" or "N",	-- Dragonflight Zaralek Caverns Complete
+					IsQuestFlaggedCompleted(79573) and "WW_CA" or "N",	-- The War Within Campaign Complete
+				}
+				tinsert(info, "unlocks:"..app.TableConcat(acctUnlocks, nil, nil, "/"))
+			end
+			tinsert(info, "lq:"..(app.TableConcat(app.MostRecentQuestTurnIns or app.EmptyTable, nil, nil, "<") or ""));
+
+			tinsert(info, "ver:"..app.Version);
+			tinsert(info, "build:"..app.GameBuildVersion);
+			tinsert(info, "```");	-- discord fancy box end
+			return info
+		end
+
 		(function()
 		local results, groups, nested, header, headerKeys, difficultyID, topHeader, nextParent, headerID, groupKey, typeHeaderID, isInInstance;
 		local rootGroups, mapGroups = {}, {};
@@ -10637,8 +9486,8 @@ customWindowUpdates.CurrentInstance = function(self, force, got)
 					-- Building the header chain for each mapped Thing
 					topHeader = nil;
 					while nextParent do
-						headerID = nextParent.headerID;
-						if headerID and headerID ~= true then
+						headerID = nextParent.headerID
+						if headerID then
 							-- This matches a top-level header, track that top-level header at the highest point
 							if topHeaders[headerID] then
 								-- already found a matching header, then nest it before switching
@@ -10650,6 +9499,9 @@ customWindowUpdates.CurrentInstance = function(self, force, got)
 								group = CreateHeaderData(group, nextParent);
 								nested = true;
 							end
+						elseif nextParent.isMinilistHeader then
+							group = CreateHeaderData(group, nextParent);
+							nested = true;
 						else
 							for _,hkey in ipairs(headerKeys) do
 								if nextParent[hkey] then
@@ -10778,22 +9630,12 @@ customWindowUpdates.CurrentInstance = function(self, force, got)
 				self.CurrentMaps = {[mapID]=true};
 				local mapInfo = C_Map_GetMapInfo(mapID);
 				if mapInfo then
-					local mapPath = mapInfo.name or ("Map ID #" .. mapID);
-					mapID = mapInfo.parentMapID;
-					while mapID do
-						mapInfo = C_Map_GetMapInfo(mapID);
-						if mapInfo then
-							mapPath = (mapInfo.name or ("Map ID #" .. mapID)) .. " -> " .. mapPath;
-							mapID = mapInfo.parentMapID;
-						else
-							break;
-						end
-					end
 					-- only report for mapIDs which actually exist
 					mapID = self.mapID
-					print("No data found for this Location ", app.GetMapName(mapID), " [", mapID, "]");
-					print("Path: ", mapPath);
-					app.report();
+					-- Linkify the output
+					local popupID = "map-" .. mapID
+					app:SetupReportDialog(popupID, "Missing Map: " .. mapID, BuildDiscordMapInfoTable(mapID, mapInfo))
+					app.report(app:Linkify(app.Version.." (Click to Report) No data found for this Location!", app.Colors.ChatLinkError, "dialog:" .. popupID));
 				end
 				self:SetData(app.CreateMap(mapID, {
 					["text"] = L.MINI_LIST .. " [" .. mapID .. "]",
@@ -11432,6 +10274,14 @@ customWindowUpdates.Random = function(self)
 			self.initialized = true;
 			local searchCache = {}
 
+			local function ClearCache()
+				wipe(searchCache)
+			end
+
+			-- when changing settings, we need the random cache to be cleared since it's determined based on search
+			-- results with specific settings
+			self:AddEventHandler("OnRecalculate_NewSettings", ClearCache)
+
 			local function SearchRecursively(group, field, temp, func)
 				if group.visible and not (group.saved or group.collected) then
 					if group.g then
@@ -11631,6 +10481,7 @@ customWindowUpdates.Random = function(self)
 				[875] = 1,	-- Zandalar
 				[1550] = 1,	-- The Shadowlands
 				[1978] = 1,	-- Dragon Isles
+				[2274] = 1,	-- Khaz Algar
 			};
 			function self.SelectZone(rootData)
 				if searchCache.randomzone then
@@ -12634,8 +11485,9 @@ customWindowUpdates.Tradeskills = function(self, force, got)
 						end
 						-- recipe is learned, so cache that it's learned regardless of being craftable
 						if spellRecipeInfo and spellRecipeInfo.learned then
-							if spellRecipeInfo.disabled then
-								-- disabled recipes shouldn't be marked as known by the character (they require an 'unlock' typically to become usable)
+							-- only disabled & enable-type recipes should be un-cached when considered learned
+							if spellRecipeInfo.disabled and cachedRecipe and cachedRecipe.isEnableTypeRecipe then
+								-- disabled learned enable-type recipes shouldn't be marked as known by the character (they require an 'unlock' typically to become usable)
 								if charSpells[recipeID] then
 									charSpells[recipeID] = nil;
 									-- local link = app:Linkify(recipeID, app.Colors.ChatLink, "search:recipeID:"..recipeID);
@@ -12657,6 +11509,7 @@ customWindowUpdates.Tradeskills = function(self, force, got)
 									-- app.PrintDebug("Unlearned Disabled Recipe", link);
 								end
 							else
+								-- ignore removal of enable-type recipes when considered unlearned and not disabled
 								if cachedRecipe and cachedRecipe.isEnableTypeRecipe then
 									-- local link = app:Linkify(recipeID, app.Colors.ChatLink, "search:recipeID:"..recipeID);
 									-- app.PrintDebug("Unlearned Enable-Type Recipe", link);
@@ -12968,6 +11821,10 @@ customWindowUpdates.WorldQuests = function(self, force, got)
 				{ app.FactionID == Enum.FlightPathFaction.Horde and 875 or 876, 895 },	-- Kul'Tiras or Zandalar, Stormsong Valley
 			};
 			local worldMapIDs = {
+				-- The War Within Continents
+				{
+					2274,	-- Khaz Algar
+				},
 				-- Dragon Isles Continents
 				{
 					1978,	-- Dragon Isles
@@ -13657,12 +12514,13 @@ app.LoadDebugger = function()
 
 			-- Setup Event Handlers and register for events
 			self:SetScript("OnEvent", function(self, e, ...)
-				app.PrintDebug(e, ...);
+				-- app.PrintDebug(e, ...);
 				if e == "ZONE_CHANGED_NEW_AREA" or e == "NEW_WMO_CHUNK" then
 					AddObject();
 				elseif e == "MERCHANT_SHOW" or e == "MERCHANT_UPDATE" then
-					MerchantFrame_SetFilter(MerchantFrame, 1);
-					DelayedCallback(AddMerchant, 1, UnitGUID("npc"));
+					SetMerchantFilter(LE_LOOT_FILTER_ALL)
+					MerchantFrame_Update()
+					DelayedCallback(AddMerchant, 0.5, UnitGUID("npc"));
 				elseif e == "TRADE_SKILL_LIST_UPDATE" then
 					local tradeSkillID = app.GetTradeSkillLine();
 					local currentCategoryID, categories = -1, {};

@@ -29,4 +29,5 @@ addonTable.CombatPlus = function()
 	CombatPlusfun.biaoji()
 	CombatPlusfun.CombatTime()
 	CombatPlusfun.HPMPBar()
+	CombatPlusfun.AttackBar()
 end

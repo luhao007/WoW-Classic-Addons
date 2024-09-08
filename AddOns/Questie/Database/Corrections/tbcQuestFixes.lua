@@ -193,6 +193,9 @@ function QuestieTBCQuestFixes:Load()
         [1220] = {
             [questKeys.startedBy] = {{23951}},
         },
+        [1322] = {
+            [questKeys.objectivesText] = {"Acquire 5 Acidic Venom Sacs for Do'gol in Brackenwall Village."},
+        },
         [1437] = {
             [questKeys.triggerEnd] = {"Find and search Tyranis and Dalinda Malem's wagon", {[zoneIDs.DESOLACE]={{56.52,17.84}}}},
         },
@@ -397,7 +400,7 @@ function QuestieTBCQuestFixes:Load()
         [4490] = {
             [questKeys.startedBy] = {{6251}},
             [questKeys.finishedBy] = {{6251}},
-            [questKeys.requiredRaces] = raceIDs.ALL_ALLIANCE,
+            [questKeys.requiredRaces] = raceIDs.NONE,
         },
         [4813] = {
             [questKeys.requiredRaces] = raceIDs.ALL_ALLIANCE,
@@ -2306,6 +2309,18 @@ function QuestieTBCQuestFixes:Load()
                 {nil, Questie.ICON_TYPE_EVENT, l10n("Use Sablemane's Trap at Gorgrom's Altar"), 0, {{"object", 185234}}},
                 {nil, Questie.ICON_TYPE_SLAY, l10n("Place the 3 Grisly Totems near Gorgrom's corpse"), 0, {{"monster", 21514}}},
             },
+        },
+        [10725] = {
+            [questKeys.nextQuestInChain] = 11031,
+        },
+        [10726] = {
+            [questKeys.nextQuestInChain] = 11034,
+        },
+        [10727] = {
+            [questKeys.nextQuestInChain] = 11033,
+        },
+        [10728] = {
+            [questKeys.nextQuestInChain] = 11032,
         },
         [10742] = {
             [questKeys.extraObjectives] = {{nil, Questie.ICON_TYPE_EVENT, l10n("Use Rexxar's Battle Horn at the Altar of Goc"), 0, {{"object", 185309}}}},

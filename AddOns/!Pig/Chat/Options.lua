@@ -160,51 +160,50 @@ ChatF.SetFrame:SetPoint("TOPLEFT",ChatF,"TOPLEFT",0,-140);
 ChatF.SetFrame:SetPoint("BOTTOMRIGHT",ChatF,"BOTTOMRIGHT",0,50);
 --（关闭语言过滤器）
 local function guanbiGuolv()
-	if PIGA["Chat"]["Guolv"] then return end
-	if not PIGA["Chat"]["Guolv"] then return end
-	if GetLocale() ~= "zhCN" then return end
-	if GetCVar("portal") == "CN" then
-		ConsoleExec("portal TW")
-	end
-	SetCVar("profanityFilter", "0")
-	if tocversion>90000 then
-		local Old_fun = C_BattleNet.GetFriendGameAccountInfo
-		C_BattleNet.GetFriendGameAccountInfo = function(...)
-			local gameAccountInfo = Old_fun(...)
-			gameAccountInfo.isInCurrentRegion = true
-			return gameAccountInfo;
-		end
-	else
-		local OLD_BNGetFriendInfo = BNGetFriendInfo
-		BNGetFriendInfo = function(...)
-			local bnetIDAccount, accountName, battleTag, isBattleTagPresence, characterName, bnetIDGameAccount, client, isOnline, lastOnline, isAFK, isDND, messageText, noteText, isRIDFriend, messageTime, canSoR, isReferAFriend, canSummonFriend = OLD_BNGetFriendInfo(...)
-			local canSummonFriend = true
-			return bnetIDAccount, accountName, battleTag, isBattleTagPresence, characterName, bnetIDGameAccount, client, isOnline, lastOnline, isAFK, isDND, messageText, noteText, isRIDFriend, messageTime, canSoR, isReferAFriend, canSummonFriend;
-		end
-	end
-	HelpFrame.guanbiguolvqi=PIGButton(HelpFrame,{"TOPRIGHT", HelpFrame, "TOPRIGHT", -50, -0.6},{280,19},"无法访问点这里然后重新登录游戏")
-	HelpFrame.guanbiguolvqi:SetFrameLevel(510)
-	HelpFrame.guanbiguolvqi:SetScript("OnClick", function (self)
-		PIGA["Chat"]["Guolv"]=false
-		self:SetText("请退出游戏重新登录")
-		self:Disable()
-	end);
+	--if PIGA["Chat"]["Guolv"] then return end
+	-- if not PIGA["Chat"]["Guolv"] then return end
+	-- if GetLocale() ~= "zhCN" then return end
+	-- if GetCVar("portal") == "CN" then
+	-- 	ConsoleExec("portal TW")
+	-- end
+	-- SetCVar("profanityFilter", "0")
+	-- if tocversion>90000 then
+	-- 	local Old_fun = C_BattleNet.GetFriendGameAccountInfo
+	-- 	C_BattleNet.GetFriendGameAccountInfo = function(...)
+	-- 		local gameAccountInfo = Old_fun(...)
+	-- 		gameAccountInfo.isInCurrentRegion = true
+	-- 		return gameAccountInfo;
+	-- 	end
+	-- else
+	-- 	local OLD_BNGetFriendInfo = BNGetFriendInfo
+	-- 	BNGetFriendInfo = function(...)
+	-- 		local bnetIDAccount, accountName, battleTag, isBattleTagPresence, characterName, bnetIDGameAccount, client, isOnline, lastOnline, isAFK, isDND, messageText, noteText, isRIDFriend, messageTime, canSoR, isReferAFriend, canSummonFriend = OLD_BNGetFriendInfo(...)
+	-- 		local canSummonFriend = true
+	-- 		return bnetIDAccount, accountName, battleTag, isBattleTagPresence, characterName, bnetIDGameAccount, client, isOnline, lastOnline, isAFK, isDND, messageText, noteText, isRIDFriend, messageTime, canSoR, isReferAFriend, canSummonFriend;
+	-- 	end
+	-- end
+	-- HelpFrame.guanbiguolvqi=PIGButton(HelpFrame,{"TOPRIGHT", HelpFrame, "TOPRIGHT", -50, -0.6},{280,19},"无法访问点这里然后重新登录游戏")
+	-- HelpFrame.guanbiguolvqi:SetFrameLevel(510)
+	-- HelpFrame.guanbiguolvqi:SetScript("OnClick", function (self)
+	-- 	PIGA["Chat"]["Guolv"]=false
+	-- 	self:SetText("请退出游戏重新登录")
+	-- 	self:Disable()
+	-- end);
 end
 if GetLocale() == "zhCN" then
 	--/console SET portal "TW"    /console SET profanityFilter "0" 
 	---------------------
-	ChatF.SetFrame.Guolv = PIGCheckbutton_R(ChatF.SetFrame,{"强制关闭语言过滤器","强制关闭系统选项中无法设置的语言过滤器"})
-	ChatF.SetFrame.Guolv:SetScript("OnClick", function (self)
-		if self:GetChecked() then
-			PIGA["Chat"]["Guolv"]=true;
-		else
-			PIGA["Chat"]["Guolv"]=false;
-		end
-		guanbiGuolv()
-	end);
-	ChatF.SetFrame.Guolv.title1 = PIGFontString(ChatF.SetFrame,{"LEFT", ChatF.SetFrame.Guolv.Text, "RIGHT", 4, 0},"***更改后需重新登录游戏生效***")
-	ChatF.SetFrame.GuolvNULL=PIGFrame(ChatF.SetFrame)
-	ChatF.SetFrame.Guolv:Disable()
+	-- ChatF.SetFrame.Guolv = PIGCheckbutton_R(ChatF.SetFrame,{"强制关闭语言过滤器","强制关闭系统选项中无法设置的语言过滤器"})
+	-- ChatF.SetFrame.Guolv:SetScript("OnClick", function (self)
+	-- 	if self:GetChecked() then
+	-- 		PIGA["Chat"]["Guolv"]=true;
+	-- 	else
+	-- 		PIGA["Chat"]["Guolv"]=false;
+	-- 	end
+	-- 	guanbiGuolv()
+	-- end);
+	-- ChatF.SetFrame.Guolv.title1 = PIGFontString(ChatF.SetFrame,{"LEFT", ChatF.SetFrame.Guolv.Text, "RIGHT", 4, 0},"***更改后需重新登录游戏生效***")
+	-- ChatF.SetFrame.GuolvNULL=PIGFrame(ChatF.SetFrame)
 end
 --输入框光标优化
 local function ChatFrame_AltEX_Open(onoff)
@@ -588,10 +587,9 @@ ChatF.SetFrame.RemTips:SetScript("OnClick", function (self)
 	RemTips_Fun()
 end);
 ChatF.SetFrame:HookScript("OnShow", function (self)
-	if GetLocale() == "zhCN" then
-		--self.Guolv:SetChecked(PIGA["Chat"]["Guolv"])
-		self.Guolv:SetChecked(false)
-	end
+	-- if GetLocale() == "zhCN" then
+	-- 	self.Guolv:SetChecked(PIGA["Chat"]["Guolv"])
+	-- end
 	self.AltEX:SetChecked(not ChatFrame1EditBox:GetAltArrowKeyMode())
 	self.Jianyin:SetChecked(PIGA["Chat"]["Jianyin"])
 	self.LinkShow:SetChecked(PIGA["Chat"]["LinkShow"])

@@ -3,5 +3,6 @@
     <Include file="LibClass-2.0\LibClass-2.0.xml"/>
     <Script file="LibCommSocket-3.0\Socket.lua"/>
     <Script file="LibNeteaseStats-1.0\Stats.lua"/>
+    <Script file="NetEaseBase64\NetEaseBase64.lua"/>
     <Include file="tdGUI\Load.xml"/>
 </Ui>

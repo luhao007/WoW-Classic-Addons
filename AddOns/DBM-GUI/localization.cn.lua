@@ -1,7 +1,7 @@
 -- Diablohu(diablohudream@gmail.com)
 -- yleaf(yaroot@gmail.com)
 -- sunlcy@NGA
--- Mini Dragon <流浪者酒馆-Brilla@金色平原> 20240323
+-- Mini Dragon <流浪者酒馆-Brilla@金色平原> 20240801
 
 if GetLocale() ~= "zhCN" then return end
 if not DBM_GUI_L then DBM_GUI_L = {} end
@@ -25,6 +25,7 @@ L.OTabOptions	= "核心选项"
 L.OTabAbout		= "关于"
 
 L.FOLLOWER	= "追随者"
+L.STORY 	= "故事模式"--i.e. the new dungeon type in 11.0.0. I haven't found a translated string yet
 
 L.TabCategory_CURRENT_SEASON		= "当前赛季"
 
@@ -117,13 +118,13 @@ L.RecordOnlyBosses			= "不记录小怪数据 (只记录团队BOSS数据，使�
 L.DoNotLogLFG				= "不记录随机5人本/团队副本"
 --Auto Logging: Recorded Content types
 L.Area_AutoLoggingContent	= "自动记录内容"
-L.LogCurrentMythicRaids		= "当前等级M团队副本"--Retail Only
-L.LogCurrentRaids			= "当前等级非M团队副本"
-L.LogTWRaids				= "时光团队副本或通过克罗米进入的团队副本"--Retail Only
+L.LogCurrentMythicRaids		= "当前等级（或Remix）M团队副本"--Retail Only
+L.LogCurrentRaids			= "当前等级（或Remix）非M团队副本"
+L.LogTWRaids				= "时光团队副本或通过克罗米进入的（非Remix）团队副本"--Retail Only
 L.LogTrivialRaids			= "低等级团队"
-L.LogCurrentMPlus			= "当前等级的M+5人本"--Retail Only
-L.LogCurrentMythicZero		= "当前等级M0 5人本"--Retail Only
-L.LogTWDungeons				= "时光5人本或通过克罗米进入的5人本"--Retail Only
+L.LogCurrentMPlus			= "当前等级（或Remix）M+ 5人本"--Retail Only
+L.LogCurrentMythicZero		= "当前等级（或Remix）M0 5人本"--Retail Only
+L.LogTWDungeons				= "时光5人本或通过克罗米进入的（非Remix）5人本"--Retail Only
 L.LogCurrentHeroic			= "当前等级的英雄5人本"
 
 -- Panel: Extra Features
@@ -259,7 +260,7 @@ L.Area_ChatAlerts			= "其他警报选项"
 L.RoleSpecAlert				= "当进入团队时，如果拾取专精与当前角色专精不同，则显示警告。"
 L.CheckGear					= "当你身上的装备装等低于背包装等40点时显示警告。(可能没有装备某物品或装备了低等级的任务道具或没有装备主武器)"
 L.WorldBossAlert			= "当世界Boss进入战斗后发送警告，这个信息可能是你的朋友或者同公会成员发送的。 (由于跨服，卡位面等因素，可能不准确)"
-L.WorldBuffAlert			= "在您的位面启动世界增益释放时显示警报信息和计时器。"
+L.WorldBuffAlert			= "在您的位面启动世界增益释放时显示警报信息和计时器。(探索服不可用)"
 
 L.Area_BugAlerts			= "错误报告选项"
 L.BadTimerAlert				= "在聊天窗口中显示DBM检测到计时器错误且至少有1秒不正确的信息"
@@ -478,7 +479,7 @@ L.Area_SpecFilter					= "角色过滤选项"
 L.FilterTankSpec					= "当非坦克专精时，过滤掉给予坦克的专用信息"
 L.FilterDispels						= "当驱散技能在冷却时，过滤掉驱散提示"
 L.FilterCrowdControl				= "当打断技能在冷却时，过滤掉打断提示"
-L.FilterTrashWarnings				= "当进入低等级、普通或英雄副本时，过滤掉所有小怪警报"
+L.FilterTrashWarnings				= "当进入低等级、普通副本时，过滤掉所有小怪警报"
 
 L.Area_BInterruptFilter				= "Boss打断过滤选项"
 L.FilterTargetFocus					= "过滤掉不是你选中目标的打断提示"
@@ -507,8 +508,8 @@ L.Panel_HideBlizzard				= "隐藏游戏自带内容"
 L.Area_HideBlizzard					= "隐藏游戏自带提示选项"
 L.HideGarrisonUpdates				= "Boss 战斗中隐藏要塞队列完成提示"
 L.HideGuildChallengeUpdates			= "Boss 战斗中隐藏公会挑战成功信息"
-L.HideBossKill						= "隐藏 Boss 击杀剧情"
-L.HideVaultUnlock					= "隐藏宝箱开启剧情"
+--L.HideBossKill						= "隐藏 Boss 击杀剧情"
+--L.HideVaultUnlock					= "隐藏宝箱开启剧情"
 --Cut Scenes
 L.Area_Cinematics					= "隐藏游戏过场动画"
 L.DuringFight						= "自动跳过Boss战斗时的过场动画"--uses explicite IsEncounterInProgress check
@@ -534,10 +535,10 @@ L.OverrideIcons 					= "禁用团队中所有玩家的团队标记，包括我�
 L.OverrideSay						= "禁用团队中所有玩家的聊天泡泡/说话功能，包含我自己"
 L.DisableStatusWhisperShort			= "禁用整个团队的私聊状态回复"--Duplicated from privacy but makes sense to include option in both panels
 L.DisableGuildStatusShort			= "禁用整个团队的公会进度消息同步"--Duplicated from privacy but makes sense to include option in both panels
-L.DisabledForDropdown				= "选中的模块禁用已经发送给"--NYI
-L.DiabledForBoth					= "向DBM和BW用户发送以上禁用选项"--NYI
-L.DiabledForDBM						= "向DBM用户发送以上禁用选项"--NYI
-L.DiabledForBW						= "向BW用户发送以上禁用选项"--NYI
+--L.DisabledForDropdown				= "选中的模块禁用已经发送给"--NYI
+--L.DiabledForBoth					= "向DBM和BW用户发送以上禁用选项"--NYI
+--L.DiabledForDBM						= "向DBM用户发送以上禁用选项"--NYI
+--L.DiabledForBW						= "向BW用户发送以上禁用选项"--NYI
 
 L.Area_ConfigOverrides				= "设定覆盖选项 (施工中)"--NYI
 L.OverrideBossAnnounceOptions		= "使用我的配置覆盖全团的通告配置"--NYI

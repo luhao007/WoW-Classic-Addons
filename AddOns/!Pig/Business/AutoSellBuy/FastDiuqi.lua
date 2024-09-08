@@ -33,7 +33,7 @@ local function shifoucunzai(beibaoInfo,dataX)
 	return false
 end
 function BusinessInfo.FastDiuqi()
-	local fujiF,fujiTabBut=PIGOptionsList_R(AutoSellBuy_UI.F,"丢",60,"Left")
+	local fujiF,fujiTabBut=PIGOptionsList_R(AutoSellBuy_UI.F,"丢",50,"Left")
 	fujiF:Show()
 	fujiTabBut:Selected()
 	BusinessInfo.ADDScroll(fujiF,gongnengName,"Diuqi",17,PIGA["AutoSellBuy"]["Diuqi_List"],{false,"AutoSellBuy","Diuqi_List"})

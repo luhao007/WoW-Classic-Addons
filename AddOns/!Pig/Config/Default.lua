@@ -80,8 +80,8 @@ addonTable.Default = {
 		["Token"] = {},
 		["Items"] = {},
 		["AHData"] = {},
-		["TradeTongGao"]=true,
-		["TradeTongGaoPindao"]="WHISPER",
+		["TradeTongGao"]=false,
+		["TradeTongGaoChannel"]="WHISPER",
 		["TradeClassLV"]=true,
 		["TradeData"] = {},
 	},
@@ -103,6 +103,9 @@ addonTable.Default = {
 		["Fen_QkBut"] = false,
 		["Fen_Tishi"]=false,
 		["Fen_List"] = {},
+		["Xuan_QkBut"] = false,
+		["Xuan_Tishi"]=false,
+		["Xuan_List"] = {},
 	},
 	["AHPlus"]={
 		["Open"] = true,
@@ -256,7 +259,9 @@ addonTable.Default = {
 	},
 	["FramePlus"] = {
 		["Roll"] = true,
+		["RollScale"] = 1,
 		["Loot"] = true,
+		["Macro"] = true,
 		["Friends"] = true,
 		["Merchant"] = true,
 		["BuffTime"] = true,
@@ -278,6 +283,10 @@ addonTable.Default = {
 		["ItemLevel"] = true,
 		["ItemMaxCount"] = true,
 		["IDinfo"] = true,
+		["PointOpen"]=false,
+		["Point"] = 1,
+		["PointX"] = 0,
+		["PointY"] = 0,
 	},
 	["UnitFrame"] = {
 		["PlayerFrame"] = {
@@ -307,6 +316,8 @@ addonTable.Default = {
 			["NOtargetHide"]=true,
 			["AutoShow"] = false,
 			["Scale"]=1,
+			["daojishiFun"]=1,
+			["daojishiTime"]=5,
 		},
 		["CombatTime"]={
 			["Open"] = true,
@@ -323,6 +334,10 @@ addonTable.Default = {
 			["Scale"]=1,
 			["Xpianyi"]=0,
 			["Ypianyi"]=-80,
+		},
+		["AttackBar"]={
+			["Open"] = false,
+			["Showshuzhi"]=false,
 		},
 	},
 	["Map"] = {
@@ -358,7 +373,9 @@ addonTable.Default_Per = {
 	["PigAction"] = {
 		["Open"] = {"OFF","OFF","OFF","OFF"},
 		["Lock"] = {"OFF","OFF","OFF","OFF"},
+		["Scale"] = {1,1,1,1},
 		["Pailie"] = {1,1,1,1},
+		["AnniuNum"] = {12,12,12,12},
 		["ShowTJ"] = {1,1,1,1},
 		["ActionData"] = {},
 	},

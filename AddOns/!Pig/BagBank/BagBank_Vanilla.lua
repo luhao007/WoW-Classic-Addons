@@ -102,6 +102,8 @@ local function UpdateP_BAG(frame, size, id)
 	frame:SetParent(BAGheji_UI)
 	frame.Portrait:Hide();
 	local name = frame:GetName();
+	_G[name.."Portrait"]:Hide();
+	_G[name.."PortraitButton"]:Hide();
 	_G[name.."BackgroundTop"]:Hide();
 	_G[name.."BackgroundMiddle1"]:Hide();
 	_G[name.."BackgroundMiddle2"]:Hide();
@@ -146,6 +148,8 @@ end
 local function UpdateP_BANK(frame, size, id)
 	frame.Portrait:Hide();
 	local name = frame:GetName();
+	_G[name.."Portrait"]:Hide();
+	_G[name.."PortraitButton"]:Hide();
 	_G[name.."MoneyFrame"]:Hide()
 	_G[name.."BackgroundTop"]:Hide();
 	_G[name.."BackgroundMiddle1"]:Hide();
@@ -600,7 +604,7 @@ function BagBankfun.Zhenghe(Rneirong,tabbut)
 				Bank_Item_ranse(nil,nil,arg1)
 			end
 		end)
-		-----清空位置设置让系统自行设置
+		---清空位置设置让系统自行设置
 		local Old_ContainerFrame_GenerateFrame=ContainerFrame_GenerateFrame
 		ContainerFrame_GenerateFrame= function(frame, size, id)
 			local name = frame:GetName();
@@ -629,7 +633,7 @@ function BagBankfun.Zhenghe(Rneirong,tabbut)
 				end
 			end
 		end)
-		----
+		--
 	end
 	----
 end
