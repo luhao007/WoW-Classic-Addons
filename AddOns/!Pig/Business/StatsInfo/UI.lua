@@ -7,7 +7,6 @@ local PIGFrame=Create.PIGFrame
 local PIGLine=Create.PIGLine
 local PIGModbutton=Create.PIGModbutton
 local PIGFontString=Create.PIGFontString
-local PIGCloseBut=Create.PIGCloseBut
 local PIGOptionsList_RF=Create.PIGOptionsList_RF
 --
 local BusinessInfo=addonTable.BusinessInfo

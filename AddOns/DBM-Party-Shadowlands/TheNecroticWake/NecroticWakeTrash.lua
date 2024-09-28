@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("NecroticWakeTrash", "DBM-Party-Shadowlands", 1)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240902224710")
+mod:SetRevision("20240925005958")
 --mod:SetModelID(47785)
 
 mod.isTrashMod = true
@@ -48,11 +48,11 @@ local warnWrathOfZolramus					= mod:NewSpellAnnounce(322756, 2)
 --General
 --local specWarnGTFO						= mod:NewSpecialWarningGTFO(257274, nil, nil, nil, 1, 8)
 local specWarnSpineCrush					= mod:NewSpecialWarningRun(327240, nil, nil, nil, 4, 2)
-local specWarnGutSlice						= mod:NewSpecialWarningDodge(333477, nil, nil, nil, 2, 2)
+local specWarnGutSlice						= mod:NewSpecialWarningDodge(333477, nil, nil, nil, 2, 15)
 local specWarnDeathBurst					= mod:NewSpecialWarningDodge(345623, nil, nil, nil, 2, 2)
 local specWarnShadowWell					= mod:NewSpecialWarningDodge(320571, nil, nil, nil, 2, 2)
 local specWarnFrigidSpikes					= mod:NewSpecialWarningDodge(324387, nil, nil, nil, 2, 2)
-local specWarnGruesomeCleave				= mod:NewSpecialWarningDodge(324323, nil, nil, nil, 2, 2)
+local specWarnGruesomeCleave				= mod:NewSpecialWarningDodge(324323, nil, nil, nil, 2, 15)
 local specWarnSharedAgony					= mod:NewSpecialWarningMoveAway(327401, nil, nil, nil, 1, 11)
 local yellSharedAgony						= mod:NewYell(327401)
 local specWarnReapingWinds					= mod:NewSpecialWarningRun(324372, nil, nil, nil, 4, 2)
@@ -95,6 +95,7 @@ local timerTenderizeCD						= mod:NewCDNPTimer(14.5, 338357, nil, nil, nil, 5)--
 local timerGutSliceCD						= mod:NewCDPNPTimer(12.5, 333477, nil, nil, nil, 3)
 local timerSpewDiseaseCD					= mod:NewCDNPTimer(10.6, 333479, nil, nil, nil, 3)
 local timerSpineCrushCD						= mod:NewCDNPTimer(14.0, 327240, nil, nil, nil, 3)
+local timerSpineCrush						= mod:NewCastNPTimer(3, 327240, nil, nil, nil, 5)
 local timerRepairFleshCD					= mod:NewCDPNPTimer(14.3, 327130, nil, nil, nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)--14-17
 
 --Antispam IDs for this mod: 1 run away, 2 dodge, 3 dispel, 4 incoming damage, 5 you/role, 6 misc, 7 off interrupt
@@ -155,12 +156,15 @@ function mod:SPELL_CAST_START(args)
 			specWarnFrostBoltVolley:Show(args.sourceName)
 			specWarnFrostBoltVolley:Play("kickcast")
 		end
-	elseif spellId == 327240 and self:AntiSpam(3, 4) then
-		specWarnSpineCrush:Show()
-		specWarnSpineCrush:Play("justrun")
+	elseif spellId == 327240 then
+		timerSpineCrush:Start(nil, args.sourceGUID)
+		if self:AntiSpam(3, 4) then
+			specWarnSpineCrush:Show()
+			specWarnSpineCrush:Play("justrun")
+		end
 	elseif spellId == 333477 and self:AntiSpam(3, 2) then
 		specWarnGutSlice:Show()
-		specWarnGutSlice:Play("shockwave")
+		specWarnGutSlice:Play("frontal")
 	elseif spellId == 327399 and self:AntiSpam(3, 6) then
 		warnSharedAgony:Show()
 	elseif spellId == 323496 and self:AntiSpam(3, 6) then
@@ -203,7 +207,7 @@ function mod:SPELL_CAST_START(args)
 	elseif spellId == 324323 then
 		if self:AntiSpam(3, 2) then
 			specWarnGruesomeCleave:Show()
-			specWarnGruesomeCleave:Play("shockwave")
+			specWarnGruesomeCleave:Play("frontal")
 		end
 	end
 end
@@ -279,6 +283,7 @@ function mod:SPELL_CAST_SUCCESS(args)
 end
 
 function mod:SPELL_INTERRUPT(args)
+	if not self.Options.Enabled then return end
 	if type(args.extraSpellId) ~= "number" then return end
 	if args.extraSpellId == 334748 then
 		--Harvester (166302) 15-17.5, Collector (173016) 14.1-18.3, Stitching Assistant (173044) 16.6-17.9
@@ -359,6 +364,7 @@ function mod:SPELL_AURA_REMOVED(args)
 end
 
 function mod:UNIT_DIED(args)
+	if not self.Options.Enabled then return end
 	local cid = self:GetCIDFromGUID(args.destGUID)
 	if cid == 173016 then--Corpse Collector
 		timerDrainFluidsCD:Stop(args.destGUID)
@@ -402,5 +408,6 @@ function mod:UNIT_DIED(args)
 		timerSpewDiseaseCD:Stop(args.destGUID)
 	elseif cid == 165911 then--Loyal Creation
 		timerSpineCrushCD:Stop(args.destGUID)
+		timerSpineCrush:Stop(args.destGUID)
 	end
 end

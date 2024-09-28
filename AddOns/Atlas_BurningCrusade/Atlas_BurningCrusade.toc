@@ -1,12 +1,13 @@
 ## Interface: 30400
 ## Author: arith, Dynaletik, dubcat
 ## Version: v1.52.03
-## RequiredDeps: Atlas
 
 ## Title: Atlas |r|cFF0099FF[Burning Crusade]|r
 ## Notes: Burning Crusade Instances' Maps
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本地图|r |cFF69CCF0燃烧的远征|r
 ## Notes-zhCN: 燃烧的远征副本地图
+
+## RequiredDeps: Atlas
 
 ## X-Date: 2023-07-29T4:05:21Z
 ## X-Credits: Dan Gilbert, Lothaer

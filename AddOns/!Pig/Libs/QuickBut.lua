@@ -12,7 +12,11 @@ function Create.PIGQuickBut(QkButUI,Tooltip,Icon,GnUI,FrameLevel,Template)
 	local geshu = #Children;
 	local But = CreateFrame("Button", QkButUI, nr, Template);
 	But:RegisterForClicks("LeftButtonUp","RightButtonUp")
-	But:SetNormalTexture(Icon)
+	if type(Icon)=="number" then
+		But:SetNormalTexture(Icon)
+	else
+		But:SetNormalAtlas(Icon)
+	end
 	But:SetHighlightTexture(130718);
 	But:SetSize(butW-2,butW-2);
 	if geshu==0 then
@@ -73,7 +77,12 @@ function Create.PIGModbutton(GnTooltip,GnIcon,GnUI,FrameLevel)
 	local nr = Pig_OptionsUI.ListFun
 	local butW = nr:GetWidth()
 	local But = CreateFrame("Button", nil, nr);
-	But:SetNormalTexture(GnIcon)
+	if type(GnIcon)=="number" then
+		But:SetNormalTexture(GnIcon)
+	else
+		But:SetNormalAtlas(GnIcon)
+	end
+	But:GetNormalTexture():SetTexCoord(0.07,0.93,0.07,0.93);
 	But:SetHighlightTexture(130718);
 	But:SetSize(butW-10,butW-10);
 	local Children = {nr:GetChildren()};

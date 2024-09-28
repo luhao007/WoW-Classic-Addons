@@ -3,7 +3,7 @@ local _, _, _, tocversion = GetBuildInfo()
 local Create = addonTable.Create
 local PIGFrame=Create.PIGFrame
 local PIGFontString=Create.PIGFontString
-local PIGCloseBut = Create.PIGCloseBut
+local PIGDiyBut = Create.PIGDiyBut
 --
 --角色界面
 function Create.ADD_BlizzardBG(self,texname,Point)
@@ -17,7 +17,7 @@ function Create.ADD_BlizzardBG(self,texname,Point)
 		self.Bg:SetColorTexture(unpack(Create.BackdropColor))
 		BankPortraitTexture:Hide()
 		BankCloseButton:Hide()
-		self.PigClose = PIGCloseBut(self,{"TOPRIGHT", self, "TOPRIGHT",-1,-10},{26,26})
+		self.PigClose = PIGDiyBut(self,{"TOPRIGHT", self, "TOPRIGHT",-1,-10},{26})
 		self.PigClose:HookScript("OnClick", function ()
 			CloseBankFrame();
 		end);

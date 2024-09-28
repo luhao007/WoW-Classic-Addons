@@ -49,6 +49,7 @@ local tuNum1=#iconqita
 local tuNumall=tuNum+tuNum1
 local biaojiweizhi={"TOP", UIParent, "TOP", 0, -30}
 local PIGbiaoji = PIGFrame(UIParent,biaojiweizhi,{(biaojiW+3)*tuNumall+5,biaojiW+4},"PIGbiaoji_UI")
+PIGbiaoji:PIGSetBackdrop()
 PIGbiaoji:PIGSetMovable()
 PIGbiaoji:Hide()
 local function SetBGHide()
@@ -168,16 +169,9 @@ end
 function CombatPlusfun.biaoji()
 	if not PIGA["CombatPlus"]["Biaoji"]["Open"] then return end
 	if PIGbiaoji.yizairu then return end
-	PIGbiaoji:Show()
-	PIGbiaoji:PIGSetBackdrop()
 	for i=1,tuNumall do
 		local listbut = CreateFrame("Button", nil, PIGbiaoji)
-		listbut:SetScript("OnDragStart",function(self)
-			PIGbiaoji:StartMoving()
-		end)
-		listbut:SetScript("OnDragStop",function(self)
-			PIGbiaoji:StopMovingOrSizing()
-		end)
+		Create.PIGSetMovable(listbut,PIGbiaoji)
 		listbut:SetHighlightTexture("Interface/Buttons/ButtonHilight-Square")
 		listbut:SetSize(biaojiW,biaojiW)	
 		if i<=tuNum then
@@ -245,18 +239,18 @@ end
 local CombatPlusF,CombatPlustabbut =PIGOptionsList_R(CombatPlusfun.RTabFrame,L["COMBAT_TABNAME1"],90)
 CombatPlusF:Show()
 CombatPlustabbut:Selected()
-
+-----
 CombatPlusF.Open = PIGCheckbutton_R(CombatPlusF,{"启用标记按钮","在屏幕上显示快速标记按钮"})
 CombatPlusF.Open:SetScript("OnClick", function (self)
 	if self:GetChecked() then
-		CombatPlusfun.biaoji()
-		CombatPlusF.SetF:Show()
 		PIGA["CombatPlus"]["Biaoji"]["Open"]=true;
+		CombatPlusF.SetF:Show()
 	else
 		PIGA["CombatPlus"]["Biaoji"]["Open"]=false;
 		CombatPlusF.SetF:Hide()
 		Pig_Options_RLtishi_UI:Show()
 	end
+	CombatPlusfun.biaoji()
 end)
 ---
 local CombatLine1=PIGLine(CombatPlusF,"TOP",-70)
@@ -304,15 +298,13 @@ CombatPlusF.SetF.AutoShow:SetScript("OnClick", function (self)
 	SetAutoShow()
 end);
 
-local xiayiinfo = {0.6,2,0.1}
-CombatPlusF.SetF.Slider = PIGSlider(CombatPlusF.SetF,{"TOPLEFT",CombatPlusF.SetF,"TOPLEFT",64,-120},{100,14},xiayiinfo)
+local xiayiinfo = {0.6,2,0.01,{["Right"]="%"}}
+CombatPlusF.SetF.Slider = PIGSlider(CombatPlusF.SetF,{"TOPLEFT",CombatPlusF.SetF,"TOPLEFT",64,-120},xiayiinfo)
 CombatPlusF.SetF.Slider.T = PIGFontString(CombatPlusF.SetF.Slider,{"RIGHT",CombatPlusF.SetF.Slider,"LEFT",-10,0},"缩放")
-function CombatPlusF.SetF.Slider:OnValueFun()
-	local Value = (floor(self:GetValue()*10+0.5))/10
-	PIGA["CombatPlus"]["Biaoji"]["Scale"]=Value;
-	self.Text:SetText(Value);
-	PIGbiaoji_UI:SetScale(Value)
-end
+CombatPlusF.SetF.Slider.Slider:HookScript("OnValueChanged", function(self, arg1)
+	PIGA["CombatPlus"]["Biaoji"]["Scale"]=arg1;
+	PIGbiaoji_UI:SetScale(arg1)
+end)
 local daojishiFun = {[1]="PIG",[2]="暴雪(正式服)",[3]="DBM",[4]="BigWigs"}
 CombatPlusF.SetF.Daojishi=PIGDownMenu(CombatPlusF.SetF,{"TOPLEFT",CombatPlusF.SetF,"TOPLEFT",100,-200},{140,nil})
 CombatPlusF.SetF.Daojishi.t = PIGFontString(CombatPlusF.SetF.Daojishi,{"RIGHT",CombatPlusF.SetF.Daojishi,"LEFT",-4,0},"倒计时程序");
@@ -332,15 +324,12 @@ function CombatPlusF.SetF.Daojishi:PIGDownMenu_SetValue(value,arg1,arg2)
 	PIGCloseDropDownMenus()
 end
 local xiayiinfoTime = {3,30,1}
-CombatPlusF.SetF.daojishiTime = PIGSlider(CombatPlusF.SetF,{"LEFT",CombatPlusF.SetF.Daojishi,"RIGHT",100,0},{100,14},xiayiinfoTime)
+CombatPlusF.SetF.daojishiTime = PIGSlider(CombatPlusF.SetF,{"LEFT",CombatPlusF.SetF.Daojishi,"RIGHT",100,0},xiayiinfoTime)
 CombatPlusF.SetF.daojishiTime.T = PIGFontString(CombatPlusF.SetF.daojishiTime,{"RIGHT",CombatPlusF.SetF.daojishiTime,"LEFT",-10,0},"倒计延迟(秒)")
-function CombatPlusF.SetF.daojishiTime:OnValueFun()
-	local Value = self:GetValue()
-	PIGbiaoji.morendaojiTime=Value
-	PIGA["CombatPlus"]["Biaoji"]["daojishiTime"]=Value;
-	self.Text:SetText(Value);
-end
-
+CombatPlusF.SetF.daojishiTime.Slider:HookScript("OnValueChanged", function(self, arg1)
+	PIGbiaoji.morendaojiTime=arg1
+	PIGA["CombatPlus"]["Biaoji"]["daojishiTime"]=arg1;
+end)
 --
 CombatPlusF:HookScript("OnShow", function (self)
 	self.Open:SetChecked(PIGA["CombatPlus"]["Biaoji"]["Open"]);

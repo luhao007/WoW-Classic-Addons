@@ -31,6 +31,15 @@ function SeasonOfDiscovery:LoadQuests()
         [5167] = { -- Legplates of the Chromatic Flight
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
         },
+        [7636] = { -- An Introduction
+            [questKeys.nextQuestInChain] = 84546,
+        },
+        [7493] = { -- The Journey Has Just Begun
+            [questKeys.preQuestSingle] = {84561},
+        },
+        [7497] = { -- The Journey Has Just Begun
+            [questKeys.preQuestSingle] = {84560},
+        },
         [8922] = { -- A Supernatural Device
             [questKeys.preQuestSingle] = {84147,84148,84149,84150,84151,84152,84153,84154},
         },
@@ -1815,6 +1824,7 @@ function SeasonOfDiscovery:LoadQuests()
             [questKeys.preQuestSingle] = {82003},
             [questKeys.requiredSkill] = {profKeys.ENGINEERING,225},
             [questKeys.zoneOrSort] = zoneIDs.THOUSAND_NEEDLES,
+            [questKeys.specialFlags] = specialFlags.REPEATABLE,
         },
         [82008] = { -- Gnomish Solutions (Gnome)
             [questKeys.requiredSkill] = {profKeys.ENGINEERING,225},
@@ -1839,6 +1849,7 @@ function SeasonOfDiscovery:LoadQuests()
             [questKeys.preQuestSingle] = {82011},
             [questKeys.requiredSkill] = {profKeys.ENGINEERING,225},
             [questKeys.zoneOrSort] = zoneIDs.THOUSAND_NEEDLES,
+            [questKeys.specialFlags] = specialFlags.REPEATABLE,
         },
         [82016] = { -- Atal'ai Potent Potables
             [questKeys.zoneOrSort] = zoneIDs.STRANGLETHORN_VALE,
@@ -1890,6 +1901,18 @@ function SeasonOfDiscovery:LoadQuests()
         },
         [82044] = { -- The Wild Gods
             [questKeys.zoneOrSort] = zoneIDs.FELWOOD,
+        },
+        [82055] = { -- Darkmoon Dunes Deck
+            [questKeys.zoneOrSort] = sortKeys.DARKMOON_FAIRE,
+        },
+        [82056] = { -- Darkmoon Nightmares Deck
+            [questKeys.zoneOrSort] = sortKeys.DARKMOON_FAIRE,
+        },
+        [82057] = { -- Darkmoon Plagues Deck
+            [questKeys.zoneOrSort] = sortKeys.DARKMOON_FAIRE,
+        },
+        [82058] = { -- Darkmoon Wilds Deck
+            [questKeys.zoneOrSort] = sortKeys.DARKMOON_FAIRE,
         },
         [82062] = { -- Ever After
             [questKeys.zoneOrSort] = zoneIDs.BLACKROCK_DEPTHS,
@@ -2261,6 +2284,12 @@ function SeasonOfDiscovery:LoadQuests()
         [84135] = { -- Beach Bot
             [questKeys.zoneOrSort] = sortKeys.WARRIOR,
         },
+        [84136] = { -- The Beast Master of Moonglade
+            [questKeys.startedBy] = {{233084}},
+            [questKeys.finishedBy] = {{228176}},
+            [questKeys.preQuestSingle] = {85521},
+            [questKeys.zoneOrSort] = sortKeys.HUNTER,
+        },
         [84137] = { -- Mechanical Romance
             [questKeys.objectives] = {},
             [questKeys.preQuestSingle] = {84135},
@@ -2621,6 +2650,15 @@ function SeasonOfDiscovery:LoadQuests()
             [questKeys.startedBy] = {{228611}},
             [questKeys.zoneOrSort] = sortKeys.WARRIOR,
         },
+        [84318] = { -- Oi!
+            [questKeys.startedBy] = {{228619,228620}},
+            [questKeys.objectives] = {nil,nil,{{227686}}},
+            [questKeys.zoneOrSort] = sortKeys.PALADIN,
+        },
+        [84319] = { -- Oh No Ye Don't!
+            [questKeys.preQuestSingle] = {84318},
+            [questKeys.zoneOrSort] = sortKeys.PALADIN,
+        },
         [84320] = { -- Lost Heirloom
             [questKeys.zoneOrSort] = sortKeys.PRIEST,
         },
@@ -2635,6 +2673,22 @@ function SeasonOfDiscovery:LoadQuests()
         [84323] = { -- The Prize Within
             [questKeys.preQuestSingle] = {84322},
             [questKeys.zoneOrSort] = sortKeys.PRIEST,
+        },
+        [84330] = { -- A Wee Bit O' Necromancy
+            [questKeys.preQuestSingle] = {84319},
+            [questKeys.objectives] = {nil,nil,{{227690}}},
+            [questKeys.zoneOrSort] = sortKeys.PALADIN,
+        },
+        [84332] = { -- A Thane's Gratitude
+            [questKeys.preQuestSingle] = {84414},
+            [questKeys.zoneOrSort] = sortKeys.PALADIN,
+        },
+        [84235] = { -- Dive! Dive!
+            [questKeys.startedBy] = {{228176}},
+            [questKeys.finishedBy] = {{228176}},
+            [questKeys.objectives] = {{{229897,nil,Questie.ICON_TYPE_INTERACT}}},
+            [questKeys.preQuestSingle] = {84136},
+            [questKeys.zoneOrSort] = sortKeys.HUNTER,
         },
         [84348] = { -- Priority Target: Duke Tectonis
             [questKeys.zoneOrSort] = sortKeys.BLACKROCK_ERUPTION,
@@ -2689,6 +2743,7 @@ function SeasonOfDiscovery:LoadQuests()
         },
         [84377] = { -- End of the Dark Horde
             [questKeys.startedBy] = {{10429},nil,{227911}},
+            [questKeys.finishedBy] = {{332}},
             [questKeys.zoneOrSort] = zoneIDs.STORMWIND_CITY,
         },
         [84384] = { -- Demonic Deceptions
@@ -2751,14 +2806,169 @@ function SeasonOfDiscovery:LoadQuests()
             [questKeys.preQuestSingle] = {84406},
             [questKeys.zoneOrSort] = sortKeys.PRIEST,
         },
+        [84414] = { -- Send Me On Me Way!
+            [questKeys.preQuestSingle] = {84330},
+            [questKeys.objectives] = {{{228619,nil,Questie.ICON_TYPE_TALK}}},
+            [questKeys.zoneOrSort] = sortKeys.PALADIN,
+        },
         [84525] = { -- Otherworldly Treasure
             [questKeys.zoneOrSort] = sortKeys.WARLOCK,
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
+        },
+        [84545] = { -- A Hero's Reward
+            [questKeys.preQuestSingle] = {6824},
+            [questKeys.zoneOrSort] = zoneIDs.AZSHARA,
+        },
+        [84546] = { -- Stave of the Ancients
+            [questKeys.preQuestSingle] = {7633},
+            [questKeys.objectives] = {nil,nil,{{18952},{18953},{18954},{18955}}},
+            [questKeys.zoneOrSort] = sortKeys.HUNTER,
+        },
+        [84548] = { -- Garona: A Study on Stealth and Treachery
+            [questKeys.startedBy] = {nil,nil,{228691}},
+            [questKeys.requiredClasses] = classIDs.ROGUE,
+            [questKeys.zoneOrSort] = zoneIDs.DIRE_MAUL,
+        },
+        [84549] = { -- The Arcanist's Cookbook
+            [questKeys.startedBy] = {nil,nil,{228693}},
+            [questKeys.requiredClasses] = classIDs.MAGE,
+            [questKeys.zoneOrSort] = zoneIDs.DIRE_MAUL,
+        },
+        [84550] = { -- Codex of Defense
+            [questKeys.startedBy] = {nil,nil,{228692}},
+            [questKeys.requiredClasses] = classIDs.WARRIOR,
+            [questKeys.zoneOrSort] = zoneIDs.DIRE_MAUL,
+        },
+        [84551] = { -- The Light and How To Swing It
+            [questKeys.startedBy] = {nil,nil,{228690}},
+            [questKeys.requiredClasses] = classIDs.PALADIN,
+            [questKeys.zoneOrSort] = zoneIDs.DIRE_MAUL,
+        },
+        [84560] = { -- Celebrating Good Times
+            [questKeys.preQuestSingle] = {7495},
+            [questKeys.zoneOrSort] = zoneIDs.STORMWIND_CITY,
+        },
+        [84561] = { -- For All To See
+            [questKeys.preQuestSingle] = {7490},
+            [questKeys.zoneOrSort] = zoneIDs.ORGRIMMAR,
+        },
+        [84636] = { -- Prowler
+            [questKeys.startedBy] = {{228176}},
+            [questKeys.finishedBy] = {{228176}},
+            [questKeys.objectives] = {{{230481,nil,Questie.ICON_TYPE_INTERACT}}},
+            [questKeys.preQuestSingle] = {84235},
+            [questKeys.zoneOrSort] = sortKeys.HUNTER,
         },
         [84777] = { -- Feathers for Nafien
             [questKeys.preQuestSingle] = {8461},
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.zoneOrSort] = zoneIDs.FELWOOD,
+        },
+        [84853] = { -- Tracks in the Snow
+            [questKeys.startedBy] = {{228176}},
+            [questKeys.finishedBy] = {nil,{467315}},
+            [questKeys.preQuestSingle] = {84636},
+            [questKeys.zoneOrSort] = sortKeys.HUNTER,
+        },
+        [84950] = { -- Out in the Cold
+            [questKeys.startedBy] = {nil,{467315}},
+            [questKeys.finishedBy] = {nil,{469796}},
+            [questKeys.preQuestSingle] = {84853},
+            [questKeys.zoneOrSort] = sortKeys.HUNTER,
+            [questKeys.extraObjectives] = {{{[zoneIDs.WINTERSPRING]={{58,21}}}, Questie.ICON_TYPE_EVENT, l10n("Use your Survival Supplies")}},
+        },
+        [85061] = { -- Bug Hunt
+            [questKeys.startedBy] = {{227755}},
+            [questKeys.finishedBy] = {{15181}},
+            [questKeys.preQuestSingle] = {84950},
+            [questKeys.zoneOrSort] = sortKeys.HUNTER,
+        },
+        [85150] = { -- The Only Good Bug is a Dead Bug
+            [questKeys.startedBy] = {{15181}},
+            [questKeys.finishedBy] = {{15181}},
+            [questKeys.preQuestSingle] = {85061},
+            [questKeys.zoneOrSort] = sortKeys.HUNTER,
+        },
+        [85248] = { -- Everyone Knows That Bugs Can't Fly
+            [questKeys.startedBy] = {{15181}},
+            [questKeys.finishedBy] = {{15181}},
+            [questKeys.objectives] = {{{231984,nil,Questie.ICON_TYPE_INTERACT}}},
+            [questKeys.preQuestSingle] = {85150},
+            [questKeys.zoneOrSort] = sortKeys.HUNTER,
+        },
+        [85250] = { -- Meeting the Menagerie
+            [questKeys.startedBy] = {{15181}},
+            [questKeys.finishedBy] = {{233084}},
+            [questKeys.preQuestSingle] = {85248},
+            [questKeys.zoneOrSort] = sortKeys.HUNTER,
+        },
+        [85251] = { -- Showdown at Un'Goro Crater
+            [questKeys.startedBy] = {{233084}},
+            [questKeys.finishedBy] = {{233084}},
+            [questKeys.preQuestSingle] = {85250},
+            [questKeys.zoneOrSort] = sortKeys.HUNTER,
+        },
+        [85507] = { -- Our Wayward Friend
+            [questKeys.objectives] = {{{231498,nil,Questie.ICON_TYPE_EVENT}}},
+            [questKeys.zoneOrSort] = sortKeys.PALADIN,
+        },
+        [85508] = { -- Our Wayward Friend
+            [questKeys.objectives] = {{{231498,nil,Questie.ICON_TYPE_TALK}}},
+            [questKeys.preQuestSingle] = {85507},
+            [questKeys.zoneOrSort] = sortKeys.PALADIN,
+        },
+        [85509] = { -- Grand Theft Echoing Orb
+            [questKeys.objectives] = {{{217980,nil,Questie.ICON_TYPE_TALK}}},
+            [questKeys.preQuestSingle] = {85508},
+            [questKeys.zoneOrSort] = sortKeys.PALADIN,
+        },
+        [85510] = { -- A Solid Lead
+            [questKeys.preQuestSingle] = {85509},
+            [questKeys.zoneOrSort] = sortKeys.PALADIN,
+        },
+        [85511] = { -- Plaguelands Rendezvous
+            [questKeys.objectives] = {{{232912,nil,Questie.ICON_TYPE_EVENT}}},
+            [questKeys.preQuestSingle] = {85510},
+            [questKeys.zoneOrSort] = sortKeys.PALADIN,
+        },
+        [85521] = { -- Tracking the Trapper
+            [questKeys.startedBy] = {{10429}},
+            [questKeys.finishedBy] = {{233084}},
+            [questKeys.zoneOrSort] = sortKeys.HUNTER,
+        },
+        [85525] = { -- One Night in Winterspring
+            [questKeys.startedBy] = {nil,{469796}},
+            [questKeys.finishedBy] = {{227755}},
+            [questKeys.objectives] = {nil,{{469600}},{{12622},{229416}}},
+            [questKeys.preQuestSingle] = {84950},
+            [questKeys.zoneOrSort] = sortKeys.HUNTER,
+        },
+        [85658] = { -- For All To See
+            [questKeys.requiredRaces] = raceIDs.ALL_HORDE,
+            [questKeys.preQuestSingle] = {84561},
+            [questKeys.zoneOrSort] = zoneIDs.ORGRIMMAR,
+            [questKeys.specialFlags] = specialFlags.REPEATABLE,
+        },
+        [85659] = { -- Celebrating Good Times
+            [questKeys.requiredRaces] = raceIDs.ALL_ALLIANCE,
+            [questKeys.preQuestSingle] = {84560},
+            [questKeys.zoneOrSort] = zoneIDs.STORMWIND_CITY,
+            [questKeys.specialFlags] = specialFlags.REPEATABLE,
+        },
+        [85882] = { -- End of the Dark Horde
+            [questKeys.startedBy] = {{10429}},
+            [questKeys.finishedBy] = {{332}},
+            [questKeys.requiredRaces] = raceIDs.ALL_ALLIANCE,
+            [questKeys.preQuestSingle] = {84377},
+            [questKeys.zoneOrSort] = zoneIDs.STORMWIND_CITY,
+            [questKeys.specialFlags] = specialFlags.REPEATABLE,
+        },
+        [85883] = { -- For The Horde!
+            [questKeys.startedBy] = {{4949}},
+            [questKeys.requiredRaces] = raceIDs.ALL_HORDE,
+            [questKeys.preQuestSingle] = {4974},
+            [questKeys.zoneOrSort] = zoneIDs.ORGRIMMAR,
+            [questKeys.specialFlags] = specialFlags.REPEATABLE,
         },
 
         --- Fake rune quests

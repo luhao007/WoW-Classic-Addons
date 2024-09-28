@@ -8,18 +8,16 @@ local PIGDownMenu=Create.PIGDownMenu
 local PIGLine=Create.PIGLine
 local PIGEnter=Create.PIGEnter
 local PIGSlider = Create.PIGSlider
-local PIGCloseBut=Create.PIGCloseBut
 local PIGCheckbutton=Create.PIGCheckbutton
 local PIGOptionsList_RF=Create.PIGOptionsList_RF
 local PIGOptionsList_R=Create.PIGOptionsList_R
 local PIGQuickBut=Create.PIGQuickBut
 local Show_TabBut_R=Create.Show_TabBut_R
 local PIGFontString=Create.PIGFontString
-local PIGCloseBut=Create.PIGCloseBut
 local PIGSetFont=Create.PIGSetFont
 ----------
 local GDKPInfo=addonTable.GDKPInfo
-function GDKPInfo.ADD_fenG()
+function GDKPInfo.ADD_fenG(RaidR)
 	local GnName,GnUI,GnIcon,FrameLevel = unpack(GDKPInfo.uidata)
 	local iconWH,hang_Height,hang_NUM,lineTOP  =  GDKPInfo.iconWH,GDKPInfo.hang_Height,GDKPInfo.hang_NUM,GDKPInfo.lineTOP
 	local RaidR=_G[GnUI]
@@ -305,22 +303,26 @@ function GDKPInfo.ADD_fenG()
 		self.Text:SetPoint("LEFT",self,"LEFT",21,0);
 		fujiF.nr.guangbo_dow.Text:SetPoint("RIGHT",fujiF.nr.guangbo_dow.Button,"LEFT",0,0);
 	end);
-	local function bobaoxini(idx,ZongSR)
+	local function bobaoxini(idx,ZongSR,SendCD)
     	local dataX = PIGA["GDKP"]["Raidinfo"]
 		for p=1,#dataX do
 			for pp=1,#dataX[p] do
 				if dataX[p][pp][4] then
 					if dataX[p][pp][4]==LeftmenuV[idx] then
-						if dataX[p][pp][5] then--百分比补助
-							local baifenbishouru=ZongSR*(dataX[p][pp][6]*0.01)
-							SendChatMessage("["..buzhuzhize[idx].."补助]支出"..baifenbishouru.."G("..dataX[p][pp][6].."%)<"..dataX[p][pp][1]..">", fujiF.nr.guangbo_dow.moren)
-						else
-							SendChatMessage("["..buzhuzhize[idx].."补助]支出"..dataX[p][pp][6].."G<"..dataX[p][pp][1]..">", fujiF.nr.guangbo_dow.moren)
-						end
+						SendCD=SendCD+0.01
+						C_Timer.After(SendCD,function()
+							if dataX[p][pp][5] then--百分比补助
+								local baifenbishouru=ZongSR*(dataX[p][pp][6]*0.01)
+								SendChatMessage("["..buzhuzhize[idx].."补助]支出"..baifenbishouru.."G("..dataX[p][pp][6].."%)<"..dataX[p][pp][1]..">", RaidR.ChatTypes)
+							else
+								SendChatMessage("["..buzhuzhize[idx].."补助]支出"..dataX[p][pp][6].."G<"..dataX[p][pp][1]..">", RaidR.ChatTypes)
+							end
+						end)
 					end
 				end
 			end
 		end
+		return SendCD
 	end
 	local function geshihuaMSG(ryg,renshu,biaoti)
 		if renshu>0 then
@@ -355,74 +357,95 @@ function GDKPInfo.ADD_fenG()
 		return msg
 	end
 	fujiF.nr.guangbo:SetScript("OnClick", function (self)
-		local liupaichupin={};
-		SendChatMessage("========收支明细========", fujiF.nr.guangbo_dow.moren)
-		local ItemSLsit = PIGA["GDKP"]["ItemList"];
-		for id=1,#ItemSLsit do
-			if ItemSLsit[id][9]>0 or ItemSLsit[id][14]>0 then
-				if ItemSLsit[id][14]>0 then
-					SendChatMessage(ItemSLsit[id][2].."x"..ItemSLsit[id][3].." 收入:"..ItemSLsit[id][9]+ItemSLsit[id][14].."G(买方<"..ItemSLsit[id][8]..">尚欠"..ItemSLsit[id][14]..")", fujiF.nr.guangbo_dow.moren);
+		self.SendCD=0
+		self.liupaichupin={};
+		SendChatMessage("========收支明细========", RaidR.ChatTypes)
+		self.SendCD=self.SendCD+0.2
+		C_Timer.After(self.SendCD,function()
+			local ItemSLsit = PIGA["GDKP"]["ItemList"];
+			for id=1,#ItemSLsit do
+				if ItemSLsit[id][9]>0 or ItemSLsit[id][14]>0 then
+					self.SendCD=self.SendCD+0.02
+					if ItemSLsit[id][14]>0 then
+						SendChatMessage(ItemSLsit[id][2].."x"..ItemSLsit[id][3].." 收入:"..ItemSLsit[id][9]+ItemSLsit[id][14].."G(买方<"..ItemSLsit[id][8]..">尚欠"..ItemSLsit[id][14]..")", RaidR.ChatTypes);
+					else
+						SendChatMessage(ItemSLsit[id][2].."x"..ItemSLsit[id][3].." 收入:"..ItemSLsit[id][9].."G(买方<"..ItemSLsit[id][8]..">)", RaidR.ChatTypes);
+					end
 				else
-					SendChatMessage(ItemSLsit[id][2].."x"..ItemSLsit[id][3].." 收入:"..ItemSLsit[id][9].."G(买方<"..ItemSLsit[id][8]..">)", fujiF.nr.guangbo_dow.moren);
-				end
-			else
-				if PIGA["GDKP"]["Rsetting"]["liupaibobao"] then
-					table.insert(liupaichupin,ItemSLsit[id][2]);
+					if PIGA["GDKP"]["Rsetting"]["liupaibobao"] then
+						table.insert(self.liupaichupin,ItemSLsit[id][2]);
+					end
 				end
 			end
-		end
-		if #liupaichupin>0 then
-			SendChatMessage("以下为流拍物品:", fujiF.nr.guangbo_dow.moren);
-			local LPnum = 3--流派每行物品数
-			for l=1,math.ceil(#liupaichupin/LPnum) do
-				if l==1 then
-					local textmsgIiem="";
-					for ll=1,l*LPnum do
-						if liupaichupin[ll]~=nil then
-							textmsgIiem=textmsgIiem..liupaichupin[ll];
+		end)
+		if PIGA["GDKP"]["Rsetting"]["liupaibobao"] then
+			self.SendCD=self.SendCD+0.3
+			C_Timer.After(self.SendCD,function() SendChatMessage("以下为流拍物品:", RaidR.ChatTypes);end)	
+			self.SendCD=self.SendCD+0.2
+			C_Timer.After(self.SendCD,function()
+				if #self.liupaichupin>0 then	
+					local LPnum = 3--流派每行物品数
+					for l=1,math.ceil(#self.liupaichupin/LPnum) do
+						self.SendCD=self.SendCD+0.02
+						if l==1 then
+							local textmsgIiem="";
+							for ll=1,l*LPnum do
+								if self.liupaichupin[ll]~=nil then
+									textmsgIiem=textmsgIiem..self.liupaichupin[ll];
+								end
+							end
+							SendChatMessage(textmsgIiem, RaidR.ChatTypes);
+						else
+							local textmsgIiem1="";
+							for ll=(l-1)*LPnum+1,l*LPnum do
+								if self.liupaichupin[ll]~=nil then
+									textmsgIiem1=textmsgIiem1..self.liupaichupin[ll];
+								end
+							end
+							SendChatMessage(textmsgIiem1, RaidR.ChatTypes);
 						end
+						textmsgIiem=nil;textmsgIiem1=nil;
 					end
-					SendChatMessage(textmsgIiem, fujiF.nr.guangbo_dow.moren);
-				else
-					local textmsgIiem1="";
-					for ll=(l-1)*LPnum+1,l*LPnum do
-						if liupaichupin[ll]~=nil then
-							textmsgIiem1=textmsgIiem1..liupaichupin[ll];
-						end
-					end
-					SendChatMessage(textmsgIiem1, fujiF.nr.guangbo_dow.moren);
 				end
-				textmsgIiem=nil;textmsgIiem1=nil;
-			end
+			end)
 		end
-		--补助
 		local ZongSR=RaidR.xiafangF.ZongSR_V:GetText();
+		--补助		
 		if PIGA["GDKP"]["Rsetting"]["bobaomingxi"] then
+			self.SendCD=self.SendCD+0.3
 			local dataX = PIGA["GDKP"]["fakuan"]
 	    	for p=1,#dataX do
 				if dataX[p][3]~="N/A" then
-					if dataX[p][4]>0 then
-						SendChatMessage("["..dataX[p][1].."]收入"..dataX[p][2].."G<"..dataX[p][3]..">尚欠"..dataX[p][4].."G",fujiF.nr.guangbo_dow.moren)
-					else
-						SendChatMessage("["..dataX[p][1].."]收入"..dataX[p][2].."G<"..dataX[p][3]..">",fujiF.nr.guangbo_dow.moren)
-					end
+					self.SendCD=self.SendCD+0.02
+					C_Timer.After(self.SendCD,function()
+						if dataX[p][4]>0 then
+							SendChatMessage("["..dataX[p][1].."]收入"..dataX[p][2].."G<"..dataX[p][3]..">尚欠"..dataX[p][4].."G",RaidR.ChatTypes)
+						else
+							SendChatMessage("["..dataX[p][1].."]收入"..dataX[p][2].."G<"..dataX[p][3]..">",RaidR.ChatTypes)
+						end
+					end)
 				end
 			end
-			bobaoxini(1,ZongSR)
-			bobaoxini(2,ZongSR)
-			bobaoxini(3,ZongSR)
+			self.SendCD=self.SendCD+0.3
+			self.SendCD=bobaoxini(1,ZongSR,self.SendCD)
+			self.SendCD=bobaoxini(2,ZongSR,self.SendCD)
+			self.SendCD=bobaoxini(3,ZongSR,self.SendCD)
 			local dataX = PIGA["GDKP"]["jiangli"]
 	    	for p=1,#dataX do
 				if dataX[p][3]~="N/A" then
-					if dataX[p][4] then--百分比补助
-						local baifenbishouru=ZongSR*(dataX[p][2]*0.01);
-						SendChatMessage("["..dataX[p][1].."]支出"..baifenbishouru.."G("..dataX[p][2].."%)<"..dataX[p][3]..">",fujiF.nr.guangbo_dow.moren)
-					else
-						SendChatMessage("["..dataX[p][1].."]支出"..dataX[p][2].."G<"..dataX[p][3]..">",fujiF.nr.guangbo_dow.moren)
-					end
+					self.SendCD=self.SendCD+0.02
+					C_Timer.After(self.SendCD,function()
+						if dataX[p][4] then--百分比补助
+							local baifenbishouru=ZongSR*(dataX[p][2]*0.01);
+							SendChatMessage("["..dataX[p][1].."]支出"..baifenbishouru.."G("..dataX[p][2].."%)<"..dataX[p][3]..">",RaidR.ChatTypes)
+						else
+							SendChatMessage("["..dataX[p][1].."]支出"..dataX[p][2].."G<"..dataX[p][3]..">",RaidR.ChatTypes)
+						end
+					end)
 				end
 			end
 		end
+
 		local Wupin_SR=RaidR.xiafangF.Wupin_SR_V:GetText()
 		local fakuan_SR=RaidR.xiafangF.fakuan_SR_V:GetText();
 		local buzhu_ZC=RaidR.xiafangF.buzhu_SR_V:GetText();
@@ -441,7 +464,8 @@ function GDKPInfo.ADD_fenG()
 			hejifayanxianMSG=hejifayanxianMSG.."奖励支出:"..jiangli_ZC.."G,";
 		end
 		hejifayanxianMSG=hejifayanxianMSG.."净收入:"..Jing_RS.."G,";
-		SendChatMessage(hejifayanxianMSG, fujiF.nr.guangbo_dow.moren);
+		self.SendCD=self.SendCD+0.3
+		C_Timer.After(self.SendCD,function() SendChatMessage(hejifayanxianMSG, RaidR.ChatTypes);end)
 		--
 		local zongrenshu=fujiF.nr.rensh_ALL_V:GetText();
 		local renshu2=fujiF.nr.fenGbili_1_V:GetText();
@@ -449,14 +473,16 @@ function GDKPInfo.ADD_fenG()
 		local renshu0=fujiF.nr.fenGbili_3_V:GetText();
 		local renshu1=zongrenshu-renshu0
 		local shourumingxi=fasongrenjunMSG(fujiF.shourubili_info, renshu1, renshu2, renshu05)
-		SendChatMessage(shourumingxi, fujiF.nr.guangbo_dow.moren);
-		SendChatMessage("==<!Pig金团助手为你服务>==",fujiF.nr.guangbo_dow.moren);
+		self.SendCD=self.SendCD+0.3
+		C_Timer.After(self.SendCD,function() SendChatMessage(shourumingxi, RaidR.ChatTypes);end)
+		self.SendCD=self.SendCD+0.3
+		C_Timer.After(self.SendCD,function() SendChatMessage("==<!Pig金团助手为你服务>==",RaidR.ChatTypes);end)
 	end);
 	local pindaoName = {["RAID"]="|cffFF7F00"..RAID.."|r",["SAY"]="|cffFFFFFF"..SAY.."|r",["PARTY"]="|cffAAAAFF"..PARTY.."|r",["GUILD"]="|cff40FF40"..GUILD.."|r"};
-	local pindaoID = {"RAID","SAY","PARTY","GUILD"};
+	local pindaoID = {"RAID","PARTY","GUILD"};
 	fujiF.nr.guangbo_dow=PIGDownMenu(fujiF.nr,{"LEFT",fujiF.nr.guangbo,"RIGHT", -40,0},{62,24})
 	fujiF.nr.guangbo_dow:SetBackdrop(nil)
-	fujiF.nr.guangbo_dow.moren="RAID"
+	RaidR.ChatTypes="RAID"
 	function fujiF.nr.guangbo_dow:PIGDownMenu_Update_But(self)
 		local info = {}
 		info.func = self.PIGDownMenu_SetValue
@@ -468,10 +494,10 @@ function GDKPInfo.ADD_fenG()
 	end
 	function fujiF.nr.guangbo_dow:PIGDownMenu_SetValue(value,arg1,arg2)
 		fujiF.nr.guangbo_dow:PIGDownMenu_SetText(value)
-		fujiF.nr.guangbo_dow.moren=arg1
+		RaidR.ChatTypes=arg1
 		PIGCloseDropDownMenus()
 	end
-	fujiF.nr.guangbo_dow:PIGDownMenu_SetText(pindaoName[fujiF.nr.guangbo_dow.moren])
+	fujiF.nr.guangbo_dow:PIGDownMenu_SetText(pindaoName[RaidR.ChatTypes])
 	--
 	fujiF.nr.liupaibobao = PIGCheckbutton(fujiF.nr,{"LEFT",fujiF.nr.guangbo,"RIGHT",40,0},{"流拍物品","发送拍卖结果时会播报流拍物品"})
 	fujiF.nr.liupaibobao:SetScript("OnClick", function (self)

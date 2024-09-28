@@ -8,18 +8,16 @@ local PIGDownMenu=Create.PIGDownMenu
 local PIGLine=Create.PIGLine
 local PIGEnter=Create.PIGEnter
 local PIGSlider = Create.PIGSlider
-local PIGCloseBut=Create.PIGCloseBut
 local PIGCheckbutton=Create.PIGCheckbutton
 local PIGOptionsList_RF=Create.PIGOptionsList_RF
 local PIGOptionsList_R=Create.PIGOptionsList_R
 local PIGQuickBut=Create.PIGQuickBut
 local Show_TabBut_R=Create.Show_TabBut_R
 local PIGFontString=Create.PIGFontString
-local PIGCloseBut=Create.PIGCloseBut
 local PIGSetFont=Create.PIGSetFont
 ----------
 local GDKPInfo=addonTable.GDKPInfo
-function GDKPInfo.ADD_RaidInfo()
+function GDKPInfo.ADD_RaidInfo(RaidR)
 	local GnName,GnUI,GnIcon,FrameLevel = unpack(GDKPInfo.uidata)
 	local RaidR=_G[GnUI]
 	local fujiF=PIGOptionsList_R(RaidR.F,"人员信息",80)

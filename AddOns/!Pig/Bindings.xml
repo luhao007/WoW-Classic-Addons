@@ -1,4 +1,8 @@
 <Bindings>
-  <Binding name="CLICK PIGTrinket_13:LeftButton" category="BINDING_HEADER_PIG"></Binding>
-  <Binding name="CLICK PIGTrinket_14:LeftButton" category="BINDING_HEADER_PIG"></Binding>
+  <Binding name="CLICK QkBut_AutoSellBuy_Del:LeftButton" category="BINDING_HEADER_PIG"></Binding>
+  <Binding name="CLICK QkBut_AutoSellBuy_Open:LeftButton" category="BINDING_HEADER_PIG"></Binding>
+  <Binding name="CLICK QkBut_AutoSellBuy_Fen:LeftButton" category="BINDING_HEADER_PIG"></Binding>
+  <Binding name="CLICK QkBut_AutoSellBuy_Xuan:LeftButton" category="BINDING_HEADER_PIG"></Binding>
+  <Binding name="CLICK QkBut_AutoTrinket:LeftButton" category="BINDING_HEADER_PIG" header="PIG_TRINKETO"></Binding>
+  <Binding name="CLICK QkBut_AutoTrinket1:LeftButton" category="BINDING_HEADER_PIG"></Binding>
 </Bindings>

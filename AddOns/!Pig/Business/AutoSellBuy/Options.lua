@@ -15,7 +15,7 @@ local PIGQuickBut=Create.PIGQuickBut
 ------
 local BusinessInfo=addonTable.BusinessInfo
 local fuFrame,fuFrameBut = BusinessInfo.fuFrame,BusinessInfo.fuFrameBut
-local GnName,GnUI,GnIcon,FrameLevel = "售卖助手","AutoSellBuy_UI",134409,20
+local GnName,GnUI,GnIcon,FrameLevel = "售卖助手","AutoSellBuy_UI",135725,20
 BusinessInfo.AutoSellBuyData={GnName,GnUI,GnIcon,FrameLevel}
 ------------
 function BusinessInfo.AutoSellBuyOptions()

@@ -580,7 +580,24 @@ L = DBM:GetModLocalization("Flamegor")
 L:SetGeneralLocalization{
 	name = "Flamagor"
 }
+----------------
+--  Ebonroc and Flamegor  --
+----------------
+L:SetGeneralLocalization{
+	name = "Petrébano e Flamagor"
+}
 
+L:SetTimerLocalization{
+	TimerBrandCD	= "Marca"
+}
+L:SetOptionLocalization{
+	TimerBrandCD	= "Exibir cronômetro para recarga da marca"
+}
+
+L:SetMiscLocalization{
+	Ebonroc		= "Petrébano",
+	Flamegor	= "Flamagor"
+}
 -----------------------
 --  Vulnerabilities  --
 -----------------------
@@ -794,7 +811,7 @@ L:SetMiscLocalization{
 }
 
 -----------------
---  The Molten Core (Placeholder?_  --
+--  The Molten Core  --
 -----------------
 L = DBM:GetModLocalization("MoltenCore")
 
@@ -802,6 +819,14 @@ L:SetGeneralLocalization{
 	name = "O Núcleo Derretido"
 }
 
+L:SetOptionLocalization{
+	YellHeartCleared	= "Grite quando o Coração de cinzas/brasas for removido.",
+	WarnBossPower		= "Mostrar avisos quando a energia do chefe atingir 50%, 75%, 90% e 100%"
+}
+
+L:SetWarningLocalization{
+	WarnBossPower		= "Energia do chefe em %d%%"
+}
 -----------------
 --  MC: Trash  --
 -----------------

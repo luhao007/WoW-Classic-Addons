@@ -11,6 +11,7 @@ local UINameList={
 	{FriendsFrame,},
 	{LFGParentFrame,},
 	{PVEFrame,},
+	{MailFrame,},
 	{ChannelFrame,},--聊天频道
 	{AddonList,},
 	{MerchantFrame},--商人
@@ -31,16 +32,20 @@ local UINameList_AddOn={
 	{"CommunitiesFrame","Blizzard_Communities",},--公会与社区
 	{"CollectionsJournal","Blizzard_Collections",},--藏品
 	{"EncounterJournal","Blizzard_EncounterJournal",},--冒险手册
-	{"PlayerTalentFrame","Blizzard_TalentUI",},--天赋UI 
-	{"ClassTalentFrame","Blizzard_ClassTalentUI",},--天赋UI 
-	{"TradeSkillFrame","Blizzard_TradeSkillUI",},--专业面板
 	{"CraftFrame","Blizzard_CraftUI",},--附魔
-	{"ProfessionsBookFrame","Blizzard_ProfessionsBook",},--专业面板
 	{"InspectFrame","Blizzard_InspectUI",},--观察
 	{"GuildBankFrame","Blizzard_GuildBankUI",},--公会银行
-	{"AuctionFrame","Blizzard_AuctionUI"},--拍卖{"AuctionFrameBrowse","piglist"}
-	{"PlayerSpellsFrame","Blizzard_PlayerSpells"},--新技能页
+	{"AuctionFrame","Blizzard_AuctionUI"},--拍卖{"AuctionFrameBrowse","piglist"}	
 }
+if tocversion<50000 then
+	table.insert(UINameList_AddOn,{"TradeSkillFrame","Blizzard_TradeSkillUI",})--专业面板
+	table.insert(UINameList_AddOn,{"PlayerTalentFrame","Blizzard_TalentUI",})--天赋UI 
+elseif tocversion<110000 then
+	table.insert(UINameList_AddOn,{"ClassTalentFrame","Blizzard_ClassTalentUI",})--天赋UI 
+else
+	table.insert(UINameList_AddOn,{"ProfessionsBookFrame","Blizzard_ProfessionsBook"})--专业面板
+	--table.insert(UINameList_AddOn,{"PlayerSpellsFrame","Blizzard_PlayerSpells"})--天赋UI 有BUG
+end
 local function add_Movebiaoti(oldbiaoti,point)
 	local Movebiaoti = CreateFrame("Frame", nil, oldbiaoti);
 	Movebiaoti:SetPoint("TOPLEFT",oldbiaoti,"TOPLEFT",0,0);

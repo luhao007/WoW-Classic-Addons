@@ -1,12 +1,13 @@
 ## Interface: 30400
 ## Author: kagaro, Xinhuan, Spinx, Marrtin
 ## Version: v2024-07-23
-## Dependencies: GatherMate2
-## LoadOnDemand: 1
 
 ## Title: GatherMate2Data
 ## Notes: GatherMate2 data fetched from Wowhead
 ## Title-zhCN: |cFFFFE00A<|r|cFF0070DE专业|r|cFFFFE00A>|r |cFFFFFFFF采集助手|r |cFF69CCF0数据|r
+
+## Dependencies: GatherMate2
+## LoadOnDemand: 1
 
 ## X-Part-Of: GatherMate2
 

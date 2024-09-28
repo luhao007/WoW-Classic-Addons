@@ -1,14 +1,17 @@
 ## Interface: 30400
 ## Author: Cladhaire, Ludovicus
 ## Version: v4.0.3-release
-## OptionalDeps: HereBeDragons-2.0
-## SavedVariables: TomTomDB, TomTomWaypoints, TomTomWaypointsM
-## IconTexture: Interface\AddOns\TomTom\Images\StaticArrow.tga
 
 ## Title: TomTom
 ## Notes: Acts as your portable navigation assistant
 ## Title-zhCN: |cFFFFE00A<|r|cFF40C7EB探索|r|cFFFFE00A>|r |cFFFFFFFF导航助手|r |cFFFFE00ATomTom|r
 ## Notes-zhCN: 一个简单的导航助手。
+
+## IconTexture: Interface\AddOns\TomTom\Images\StaticArrow.tga
+
+## OptionalDeps: HereBeDragons-2.0
+
+## SavedVariables: TomTomDB, TomTomWaypoints, TomTomWaypointsM
 
 ## X-Localizations: enUS, enGB, deDE, frFR, zhCN, ruRU, zhTW
 ## X-CompatibleLocales: enUS, enGB, deDE, frFR, esES, esMX, zhCN, zhTW, koKR, ruRU

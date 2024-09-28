@@ -1,11 +1,12 @@
 ## Interface: 30400
 ## Author: SabreValkyrn
 ## Version: v2.5.0
-## SavedVariables: RankSentinelDB
 
 ## Title: RankSentinel
 ## Notes: Detect players using lower ranked abilities and notifies them.
 ## Title-zhCN: |cFFFFE00A<|r|cFFC79C6E战斗|r|cFFFFE00A>|r |cFFFFFFFF低级技能提示|r |cFFFFE00ARankSentinel|r
+
+## SavedVariables: RankSentinelDB
 
 ## X-Credits: Gogo, Splendiferus, Aevala, Fathom
 ## X-Curse-Project-ID: 560210

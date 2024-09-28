@@ -1,11 +1,11 @@
 local mod	= DBM:NewMod(2607, "DBM-Raids-WarWithin", 1, 1273)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240901051854")
+mod:SetRevision("20240920081756")
 mod:SetCreatureID(215657)--VERIFY
 mod:SetEncounterID(2902)
 --mod:SetUsedIcons(1, 2, 3)
-mod:SetHotfixNoticeRev(20240628000000)
+mod:SetHotfixNoticeRev(20240911000000)
 --mod:SetMinSyncRevision(20230929000000)
 mod.respawnTime = 29
 
@@ -35,9 +35,9 @@ local warnVenomLash								= mod:NewCountAnnounce(435136, 3)
 local warnDigestiveAcid							= mod:NewTargetAnnounce(435138, 3)
 local warnHungeringBelows						= mod:NewCountAnnounce(438012, 3)
 
-local specWarnCarnivorousContest				= mod:NewSpecialWarningSoakCount(434803, nil, nil, nil, 2, 2)
-local specWarnCarnivorousContestTarget			= mod:NewSpecialWarningYou(434803, nil, nil, nil, 1, 2)
-local yellCarnivorousContest					= mod:NewShortYell(434803, nil, nil, nil, "YELL")
+local specWarnCarnivorousContest				= mod:NewSpecialWarningMoveTo(434803, nil, nil, DBM_COMMON_L.GROUPSOAK, 2, 2)
+local specWarnCarnivorousContestTarget			= mod:NewSpecialWarningYou(434803, nil, nil, DBM_COMMON_L.GROUPSOAK, 1, 2)
+local yellCarnivorousContest					= mod:NewShortYell(434803, DBM_COMMON_L.GROUPSOAK, nil, nil, "YELL")
 local yellCarnivorousContestFades				= mod:NewShortFadesYell(434803, nil, nil, nil, "YELL")
 local specWarnStalkersWebbing					= mod:NewSpecialWarningDodgeCount(441452, nil, 157317, nil, 2, 2)--aka Viscous Slobber apparently
 local specWarnDigestiveAcid						= mod:NewSpecialWarningMoveTo(435138, nil, nil, nil, 1, 17)
@@ -54,6 +54,7 @@ local timerVenomLashCD							= mod:NewCDCountTimer(32.9, 435136, nil, nil, nil, 
 local timerBrutalCrushCD						= mod:NewCDCountTimer(13.0, 434697, nil, "Tank|Healer", nil, 5, nil, DBM_COMMON_L.TANK_ICON)
 local timerDigestiveAcidCD						= mod:NewCDCountTimer(47, 435138, nil, nil, nil, 3)
 local timerPhaseChange							= mod:NewStageCountTimer(10, 438012, nil, nil, nil, 6)
+local berserkTimer								= mod:NewBerserkTimer(600)
 --Feeding Frenzy
 mod:AddTimerLine(DBM:EJ_GetSectionInfo(28845))
 local warnJuggernautCharge						= mod:NewCountAnnounce(436200, 4, nil, nil, 100, nil, nil, 2)--Charges 2+ of the set
@@ -92,6 +93,7 @@ function mod:OnCombatStart(delay)
 	timerDigestiveAcidCD:Start(14.9, 1)
 	timerCarnivorousContestCD:Start(33, 1)
 	timerPhaseChange:Start(90, 2)--Needs monitoring. There have been pulls this came sooner
+	berserkTimer:Start(-delay)--confirmed on normal and heroic
 end
 
 function mod:SPELL_CAST_START(args)
@@ -127,20 +129,20 @@ function mod:SPELL_CAST_START(args)
 		--This code below will break if boss is kited around.
 		--None the less, for most users, it provides a nicer experience then on fly timer correction
 		if self.vb.brutalHungeringCount < 5 then
-			timerBrutalCrushCD:Start(self.vb.brutalHungeringCount == 3 and 22 or 13, self.vb.brutalHungeringCount+1)
+			timerBrutalCrushCD:Start(self.vb.brutalHungeringCount == 3 and 19 or 15, self.vb.brutalHungeringCount+1)
 		end
 	elseif spellId == 445052 then--Chittering Swarm
 		specWarnChitteringSwarm:Show()
 		specWarnChitteringSwarm:Play("killmob")
 	elseif spellId == 436200 or spellId == 436203 then--First charge, subsiquent ones
 		if spellId == 436200 then
-			self.vb.webbingChargeCount = 1
-			timerJuggernautChargeCD:Start(4.6, 2)
+			self.vb.webbingChargeCount = 0
+			timerJuggernautChargeCD:Start(4.6, 1)
 		else
 			self.vb.webbingChargeCount = self.vb.webbingChargeCount + 1
 			warnJuggernautCharge:Show(self.vb.webbingChargeCount)
 			warnJuggernautCharge:Play("chargemove")
-			if self.vb.webbingChargeCount < 5 then
+			if self.vb.webbingChargeCount < 4 then
 				timerJuggernautChargeCD:Start(7.1, self.vb.webbingChargeCount+1)
 			end
 		end
@@ -153,7 +155,7 @@ function mod:SPELL_CAST_START(args)
 		if self.vb.brutalHungeringCount % 4 == 0 then
 			timerHungeringBellowsCD:Start(6, self.vb.brutalHungeringCount+1)
 		else
-			timerHungeringBellowsCD:Start(9, self.vb.brutalHungeringCount+1)
+			timerHungeringBellowsCD:Start(7, self.vb.brutalHungeringCount+1)
 		end
 	elseif spellId == 435138 then
 		self.vb.digestiveCount = self.vb.digestiveCount + 1
@@ -180,7 +182,7 @@ function mod:SPELL_CAST_START(args)
 			timerBrutalCrushCD:Stop()
 			timerDigestiveAcidCD:Stop()
 			timerChitteringSwarmCD:Start(6.8)--Cast only once
-			timerJuggernautChargeCD:Start(12.1, 1)--Cast only once (but multi hit so still count timer)
+			timerJuggernautChargeCD:Start(11.8, 1)--Cast only once (but multi hit so still count timer)
 			timerSwallowingDarknessCD:Start(48.1)--Cast only once
 			--Technically these can also be started below by 441445
 			timerHungeringBellowsCD:Start(59, 1)
@@ -208,16 +210,14 @@ function mod:SPELL_AURA_APPLIED(args)
 			local uID = DBM:GetUnitIdFromGUID(args.destGUID)
 			---@diagnostic disable-next-line: param-type-mismatch
 			if self:IsTanking(uID, "boss1") then--Filter non tank spec numpties in front of boss for some reason
-				if not DBM:UnitDebuff("player", spellId) then--Double check player didn't also get hit
-					specWarnTenderized:Show(args.destName)
-					specWarnTenderized:Play("tauntboss")
-				end
+				specWarnTenderized:Show(args.destName)
+				specWarnTenderized:Play("tauntboss")
 			end
 		end
 	elseif spellId == 458129 then
 		if args:IsPlayer() and self:AntiSpam(3, 1) then
 			specWarnCarnivorousContestTarget:Show()
-			specWarnCarnivorousContestTarget:Play("gathershare")
+			specWarnCarnivorousContestTarget:ScheduleVoice(1.5, "gathershare")
 			yellCarnivorousContest:Yell()
 			yellCarnivorousContestFades:Countdown(spellId)
 		elseif self:AntiSpam(3, 2) then
@@ -252,7 +252,8 @@ mod.SPELL_PERIODIC_MISSED = mod.SPELL_PERIODIC_DAMAGE
 function mod:CHAT_MSG_RAID_BOSS_WHISPER(msg)
 	if msg:find("spell:434776") and self:AntiSpam(3, 1) then
 		specWarnCarnivorousContestTarget:Show()
-		specWarnCarnivorousContestTarget:Play("gathershare")
+		specWarnCarnivorousContestTarget:Play("runout")
+		specWarnCarnivorousContestTarget:ScheduleVoice(1.5, "gathershare")
 		yellCarnivorousContest:Yell()
 		yellCarnivorousContestFades:Countdown(8)
 	end
@@ -260,9 +261,10 @@ end
 
 function mod:OnTranscriptorSync(msg, targetName)
 	if msg:find("spell:434776") and self:AntiSpam(3, 2) then
+		specWarnCarnivorousContest:Play("runout")
 		if targetName ~= UnitName("player") then
-			specWarnCarnivorousContestTarget:Show()
-			specWarnCarnivorousContestTarget:Play("helpsoak")
+			specWarnCarnivorousContest:Show(targetName)
+			specWarnCarnivorousContest:ScheduleVoice(1.5, "helpsoak")
 		end
 	end
 end
@@ -285,7 +287,7 @@ function mod:UNIT_SPELLCAST_SUCCEEDED(uId, _, spellId)
 		timerBrutalCrushCD:Start(7, 1)
 		timerVenomLashCD:Start(9, 1)
 		timerStalkersWebbingCD:Start(13, 1)
-		timerDigestiveAcidCD:Start(19.6, 1)
+		timerDigestiveAcidCD:Start(19.2, 1)
 		timerCarnivorousContestCD:Start(37, 1)
 		timerPhaseChange:Start(94.9, 2)--Approx based oncomparison to stalker webbingg first cast, since no transcriptor logs this long
 	--441425 with a stage 2 only check is primary, but has one fatal flaw, it lacks disconnect protection

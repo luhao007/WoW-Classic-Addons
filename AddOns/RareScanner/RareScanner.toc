@@ -1,13 +1,15 @@
 ## Interface: 30400
 ## Author: maqjav, Maciza-Tyrande
 ## Version: 3.4.3.5
-## OptionalDeps: Ace3
-## SavedVariables: RareScannerDB
 
 ## Title: RareScanner
 ## Notes: Minimap scanner. Warns you visually with a button and a miniature and plays a sound everytime a rare NPC, treasure/chest or event shows up in your minimap
 ## Title-zhCN: |cFFFFE00A<|r|cFFA9D271收藏|r|cFFFFE00A>|r |cFFFFFFFF稀有精英追踪|r |cFFFFE00ARareScanner|r
 ## Notes-zhCN: 小地图扫描器。 当每次稀有NPC、宝藏/宝箱或事件出现在您的小地图上时，使用一个按钮与缩小的模型视觉化提醒您并拨放声音。
+
+## OptionalDeps: Ace3
+
+## SavedVariables: RareScannerDB
 
 ## X-Category: Achievements, Map, Miscellaneous
 ## X-Credits: maqjav, Maciza-Tyrande

@@ -1,12 +1,13 @@
 ## Interface: 30400
 ## Author: Novaspark-Arugal OCE
 ## Version: 2.88
-## SavedVariables: NWBdatabase
 
 ## Title: Nova World Buffs
 ## Notes: World buff timers and much more.
 ## Title-zhCN: |cFFFFE00A<|r|cFFFFFFFF辅助|r|cFFFFE00A>|r |cFFFFFFFF世界增益|r |cFFFFE00ANovaWorldBuffs|r
 ## Notes-zhCN: 与其他玩家共享世界BUFF刷新时间
+
+## SavedVariables: NWBdatabase
 
 
 embeds.xml

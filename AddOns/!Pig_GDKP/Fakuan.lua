@@ -8,18 +8,17 @@ local PIGDownMenu=Create.PIGDownMenu
 local PIGLine=Create.PIGLine
 local PIGEnter=Create.PIGEnter
 local PIGSlider = Create.PIGSlider
-local PIGCloseBut=Create.PIGCloseBut
+local PIGDiyBut=Create.PIGDiyBut
 local PIGCheckbutton=Create.PIGCheckbutton
 local PIGOptionsList_RF=Create.PIGOptionsList_RF
 local PIGOptionsList_R=Create.PIGOptionsList_R
 local PIGQuickBut=Create.PIGQuickBut
 local Show_TabBut_R=Create.Show_TabBut_R
 local PIGFontString=Create.PIGFontString
-local PIGCloseBut=Create.PIGCloseBut
 local PIGSetFont=Create.PIGSetFont
 -- ----------
 local GDKPInfo=addonTable.GDKPInfo
-function GDKPInfo.ADD_Fakuan()
+function GDKPInfo.ADD_Fakuan(RaidR)
 	local GnName,GnUI,GnIcon,FrameLevel = unpack(GDKPInfo.uidata)
 	local iconWH,hang_Height,hang_NUM,lineTOP  =  GDKPInfo.iconWH,GDKPInfo.hang_Height,GDKPInfo.hang_NUM,GDKPInfo.lineTOP
 	
@@ -209,7 +208,7 @@ function GDKPInfo.ADD_Fakuan()
 			hang:SetPoint("TOP",_G["fakuan_hang_"..(id-1)],"BOTTOM",0,0);
 		end
 		if id~=hang_NUM then PIGLine(hang,"BOT",nil,nil,nil,{0.3,0.3,0.3,0.3}) end
-		hang.del = PIGCloseBut(hang,{"LEFT", hang, "LEFT", 0,0},{hang_Height-8,hang_Height-8})
+		hang.del = PIGDiyBut(hang,{"LEFT", hang, "LEFT", 0,0},{hang_Height-8})
 		hang.del:SetScript("OnClick", function (self)
 			local dataX = PIGA["GDKP"]["fakuan"]
 	    	for p=1,#dataX do

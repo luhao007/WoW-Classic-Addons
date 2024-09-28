@@ -8,7 +8,6 @@ local Create=addonTable.Create
 local PIGLine=Create.PIGLine
 local PIGFrame=Create.PIGFrame
 local PIGButton = Create.PIGButton
-local PIGCloseBut = Create.PIGCloseBut
 local PIGFontString=Create.PIGFontString
 local PIGOptionsList_R=Create.PIGOptionsList_R
 local PIGOptionsList_RF=Create.PIGOptionsList_RF

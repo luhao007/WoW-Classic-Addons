@@ -1,7 +1,11 @@
 <Bindings>
-  <Binding name="CLICK QkBut_AutoTrinket:LeftButton" category="BINDING_HEADER_PIG"></Binding>
+  <Binding name="CLICK QkBut_AutoSellBuy_Del:LeftButton" category="BINDING_HEADER_PIG"></Binding>
+  <Binding name="CLICK QkBut_AutoSellBuy_Open:LeftButton" category="BINDING_HEADER_PIG"></Binding>
+  <Binding name="CLICK QkBut_AutoSellBuy_Fen:LeftButton" category="BINDING_HEADER_PIG"></Binding>
+  <Binding name="CLICK QkBut_AutoSellBuy_Xuan:LeftButton" category="BINDING_HEADER_PIG"></Binding>
+  <Binding name="CLICK QkBut_AutoTrinket:LeftButton" category="BINDING_HEADER_PIG" header="PIG_TRINKETO"></Binding>
   <Binding name="CLICK QkBut_AutoTrinket1:LeftButton" category="BINDING_HEADER_PIG"></Binding>
-  <Binding name="CLICK Pigbar1_But1:LeftButton" category="BINDING_HEADER_PIG" header="PIGDZUOTIAO0"></Binding>
+  <Binding name="CLICK Pigbar1_But1:LeftButton" category="BINDING_HEADER_PIG" header="PIG_ACTIONBAR0"></Binding>
   <Binding name="CLICK Pigbar1_But2:LeftButton" category="BINDING_HEADER_PIG"></Binding>
   <Binding name="CLICK Pigbar1_But3:LeftButton" category="BINDING_HEADER_PIG"></Binding>
   <Binding name="CLICK Pigbar1_But4:LeftButton" category="BINDING_HEADER_PIG"></Binding>
@@ -13,7 +17,7 @@
   <Binding name="CLICK Pigbar1_But10:LeftButton" category="BINDING_HEADER_PIG"></Binding>
   <Binding name="CLICK Pigbar1_But11:LeftButton" category="BINDING_HEADER_PIG"></Binding>
   <Binding name="CLICK Pigbar1_But12:LeftButton" category="BINDING_HEADER_PIG"></Binding>
-  <Binding name="CLICK Pigbar2_But1:LeftButton" category="BINDING_HEADER_PIG" header="PIGDZUOTIAO1"></Binding>
+  <Binding name="CLICK Pigbar2_But1:LeftButton" category="BINDING_HEADER_PIG" header="PIG_ACTIONBAR1"></Binding>
   <Binding name="CLICK Pigbar2_But2:LeftButton" category="BINDING_HEADER_PIG"></Binding>
   <Binding name="CLICK Pigbar2_But3:LeftButton" category="BINDING_HEADER_PIG"></Binding>
   <Binding name="CLICK Pigbar2_But4:LeftButton" category="BINDING_HEADER_PIG"></Binding>
@@ -25,7 +29,7 @@
   <Binding name="CLICK Pigbar2_But10:LeftButton" category="BINDING_HEADER_PIG"></Binding>
   <Binding name="CLICK Pigbar2_But11:LeftButton" category="BINDING_HEADER_PIG"></Binding>
   <Binding name="CLICK Pigbar2_But12:LeftButton" category="BINDING_HEADER_PIG"></Binding>
-  <Binding name="CLICK Pigbar3_But1:LeftButton" category="BINDING_HEADER_PIG" header="PIGDZUOTIAO2"></Binding>
+  <Binding name="CLICK Pigbar3_But1:LeftButton" category="BINDING_HEADER_PIG" header="PIG_ACTIONBAR2"></Binding>
   <Binding name="CLICK Pigbar3_But2:LeftButton" category="BINDING_HEADER_PIG"></Binding>
   <Binding name="CLICK Pigbar3_But3:LeftButton" category="BINDING_HEADER_PIG"></Binding>
   <Binding name="CLICK Pigbar3_But4:LeftButton" category="BINDING_HEADER_PIG"></Binding>
@@ -37,7 +41,7 @@
   <Binding name="CLICK Pigbar3_But10:LeftButton" category="BINDING_HEADER_PIG"></Binding>
   <Binding name="CLICK Pigbar3_But11:LeftButton" category="BINDING_HEADER_PIG"></Binding>
   <Binding name="CLICK Pigbar3_But12:LeftButton" category="BINDING_HEADER_PIG"></Binding>
-  <Binding name="CLICK Pigbar4_But1:LeftButton" category="BINDING_HEADER_PIG" header="PIGDZUOTIAO3"></Binding>
+  <Binding name="CLICK Pigbar4_But1:LeftButton" category="BINDING_HEADER_PIG" header="PIG_ACTIONBAR3"></Binding>
   <Binding name="CLICK Pigbar4_But2:LeftButton" category="BINDING_HEADER_PIG"></Binding>
   <Binding name="CLICK Pigbar4_But3:LeftButton" category="BINDING_HEADER_PIG"></Binding>
   <Binding name="CLICK Pigbar4_But4:LeftButton" category="BINDING_HEADER_PIG"></Binding>

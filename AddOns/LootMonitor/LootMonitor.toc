@@ -1,12 +1,13 @@
 ## Interface: 30400
 ## Author: Aoikaze
 ## Version: 3.41
-## SavedVariables: LootMonitorDB
 
 ## Title: LootMonitor
 ## Notes: Announce Loots Info
 ## Title-zhCN: |cFFFFE00A<|r|cFFFFF468功能|r|cFFFFE00A>|r |cFFFFFFFF黑手检测|r |cFFFFE00ALootMonitor|r
 ## Notes-zhCN: 通报Loot情况
+
+## SavedVariables: LootMonitorDB
 
 
 ChatThrottleLib.lua

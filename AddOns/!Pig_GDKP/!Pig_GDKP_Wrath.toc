@@ -1,15 +1,22 @@
 ## Interface: 30400
 ## Author: geligasi
-## Version: 1.16
-## RequiredDeps: !Pig
-## SavedVariables: PIGG
-## SavedVariablesPerCharacter: PIGG_Per
-## IconTexture: interface/icons/ability_seal.blp
+## Version: 1.20
 
 ## Title: !Pig_GDKP
 ## Notes: GDKP Assistant features, including loot record, quick auction/bid, rewards/fine record, sub-G assistant
 ## Title-zhCN: |cFFFFE00A<|r|cFFFFF468功能|r|cFFFFE00A>|r |cFFFFFFFFPig工具箱|r |cFF69CCF0金团助手|r
 ## Notes-zhCN: |cffFF8C00!Pig金团助手功能，包含拾取记录，快速拍卖/出价，补助/罚款记录，分G助手|r|n|cff00FF00祝你游戏愉快-来自|cffFF00FF[猪猪加油]|r的祝福|r
+
+## IconTexture: interface/icons/ability_seal.blp
+
+## AddonCompartmentFunc: PIGCompartmentClick_GDKP
+## AddonCompartmentFuncOnEnter: PIGCompartmentEnter_GDKP
+## AddonCompartmentFuncOnLeave: PIGCompartmentLeave_GDKP
+
+## RequiredDeps: !Pig
+
+## SavedVariables: PIGG
+## SavedVariablesPerCharacter: PIGG_Per
 
 ## X-Part-Of: !Pig
 

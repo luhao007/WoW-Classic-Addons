@@ -1,3 +1,4 @@
+if DBM:IsSeasonal("SeasonOfDiscovery") then return end--If SoM/SoD, this is handled by combo mod
 local isClassic = WOW_PROJECT_ID == (WOW_PROJECT_CLASSIC or 2)
 local isBCC = WOW_PROJECT_ID == (WOW_PROJECT_BURNING_CRUSADE_CLASSIC or 5)
 local isWrath = WOW_PROJECT_ID == (WOW_PROJECT_WRATH_CLASSIC or 11)
@@ -12,7 +13,7 @@ end
 local mod	= DBM:NewMod("Flamegor", "DBM-Raids-Vanilla", catID)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20230814031337")
+mod:SetRevision("20240922212223")
 mod:SetCreatureID(11981)
 mod:SetEncounterID(615)
 if not mod:IsClassic() then

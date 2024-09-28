@@ -1,13 +1,16 @@
 ## Interface: 30400
 ## Author: MysticalOS
-## RequiredDeps: DBM-Core
-## LoadOnDemand: 1
-## SavedVariables: DBMWorldEvents_AllSavedVars
-## SavedVariablesPerCharacter: DBMWorldEvents_SavedStats
-## IconTexture: Interface\AddOns\DBM-Core\textures\dbm_airhorn
 
 ## Title: |cffffe00a<|r|cffff7d0aDBM Mod|r|cffffe00a>|r |cff10ff10World Events|r
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFF69CCF0世界事件|r
+
+## IconTexture: Interface\AddOns\DBM-Core\textures\dbm_airhorn
+
+## RequiredDeps: DBM-Core
+## LoadOnDemand: 1
+
+## SavedVariables: DBMWorldEvents_AllSavedVars
+## SavedVariablesPerCharacter: DBMWorldEvents_SavedStats
 
 ## X-DBM-Mod: 1
 ## X-DBM-Mod-Type: OTHER
@@ -37,7 +40,7 @@
 ## X-DBM-Mod-Name-itIT: Eventi Mondiali
 ## X-DBM-Mod-MapID: 230,189,33,547,1004,1,0,1704,1705,1706,1707,2235,974,2710
 ## X-DBM-Mod-Sort: 253
-## X-DBM-Mod-LoadCID: 55003,54499,15467,15466,49687,15664,23558,27215,23486,24710,24484,153931,167749,121820,121818,121911,121912,121913,121821,20130,18166,530
+## X-DBM-Mod-LoadCID: 55003,54499,15467,15466,49687,15664,23558,27215,23486,24710,24484,153931,167749,121820,121818,121911,121912,121913,121821,20130,18166,530,227257,226646
 ## X-DBM-Mod-MinCoreRevision: 12473
 ## X-Part-Of: DBM-Core
 
@@ -75,6 +78,8 @@ Events\Azeroth\Ysondre.lua
 Events\Azeroth\Lethon.lua
 Events\Azeroth\Emeriss.lua
 Events\Azeroth\Doomwalker.lua
+Events\Azeroth\Archavon.lua
+Events\Azeroth\ShaofAnger.lua
 
 Events\DMF\Cannon.lua
 Events\DMF\Gnoll.lua

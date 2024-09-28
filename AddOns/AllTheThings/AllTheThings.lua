@@ -436,6 +436,11 @@ local function GetProgressTextForRow(data)
 	if icon then
 		tinsert(text, icon)
 	end
+	-- Progress Achievement
+	local statistic = data.statistic
+	if statistic then
+		tinsert(text, "["..statistic.."]")
+	end
 	-- Collectible
 	local stateIcon = GetCollectibleIcon(data, true)
 	if stateIcon then
@@ -489,6 +494,11 @@ local function GetProgressTextForTooltip(data)
 	if icon then
 		tinsert(text, icon)
 	end
+	-- Progress Achievement (this is a bit redundant with the 'Progress' information type for tooltips)
+	-- local statistic = data.statistic
+	-- if statistic then
+	-- 	tinsert(text, "["..statistic.."]")
+	-- end
 	-- Collectible
 	local stateIcon = GetCollectibleIcon(data, iconOnly)
 	if stateIcon then
@@ -569,6 +579,8 @@ app.MergeSkipFields = {
 	isYearly = 1,
 	OnUpdate = 1,
 	requireSkill = 1,
+	modID = 1,
+	bonusID = 1,
 };
 -- Fields on a Thing which are specific to where the Thing is Sourced or displayed in a ATT window
 app.SourceSpecificFields = {
@@ -778,8 +790,8 @@ local function CreateObject(t, rootOnly)
 			t = app.CreateInstance(t.instanceID, t);
 		elseif t.currencyID then
 			t = app.CreateCurrencyClass(t.currencyID, t);
-		elseif t.drakewatcherManuscriptID then
-			t = app.CreateDrakewatcherManuscript(t.drakewatcherManuscriptID, t);
+		elseif t.mountmodID then
+			t = app.CreateMountMod(t.mountmodID, t);
 		elseif t.speciesID then
 			t = app.CreateSpecies(t.speciesID, t);
 		elseif t.objectID then
@@ -1678,7 +1690,7 @@ if GetAchievementNumCriteria then
 			elseif criteriaType == 0	-- Monster kill
 			then
 				-- app.PrintDebug("NPC Kill Criteria",assetID)
-				local c = SearchForObject("npcID", assetID)
+				local c = SearchForObject("npcID", assetID, "field")
 				if c then
 					-- criteria inherit their achievement data ONLY when the achievement data is actually referenced... this is required for proper caching
 					NestObject(c, criteriaObject);
@@ -2401,6 +2413,7 @@ local function GetSearchResults(method, paramA, paramB, ...)
 	if group then
 		if a then paramA = a; end
 		if b then paramB = b; end
+		if paramA == "modItemID" then paramA = "itemID" end
 		-- Move all post processing here?
 		if #group > 0 then
 			-- For Creatures and Encounters that are inside of an instance, we only want the data relevant for the instance + difficulty.
@@ -2760,48 +2773,7 @@ local function GetSearchResults(method, paramA, paramB, ...)
 				working = true;
 			end
 
-			if app.Settings:GetTooltipSetting("SpecializationRequirements") then
-				local specs = GetFixedItemSpecInfo(itemID);
-				-- specs is already filtered/sorted to only current class
-				if specs and #specs > 0 then
-					tinsert(tooltipInfo, { right = GetSpecsString(specs, true, true) });
-				elseif sourceID then
-					tinsert(tooltipInfo, { right = L.NOT_AVAILABLE_IN_PL });
-				end
-			end
-
-			app.AddArtifactRelicInformation(itemID, rawlink, tooltipInfo, group);
-		end
-
-		if group.isLimited then
-			tinsert(tooltipInfo, 1, { left = L.LIMITED_QUANTITY, wrap = false, color = app.Colors.TooltipDescription });
-		end
-
-		-- Description for Items
-		if group.u and (not group.crs or group.itemID or group.sourceID) then
-			-- specifically-tagged NYI groups which are under 'Unsorted' should show a slightly different message
-			if group.u == 1 and app.GetRelativeValue(group, "_missing") then
-				tinsert(tooltipInfo, { left = L.UNSORTED_DESC, wrap = true, color = app.Colors.ChatLinkError });
-			else
-				-- removed BoE seen with a non-generic BonusID, potentially a level-scaled drop made re-obtainable
-				if group.u == 2 and not app.IsBoP(group) and (group.bonusID or 3524) ~= 3524 then
-					if isTopLevelSearch then tinsert(tooltipInfo, { left = L.RECENTLY_MADE_OBTAINABLE }); end
-				end
-			end
-		end
-		-- an item used for a faction which is repeatable
-		if group.itemID and group.factionID and group.repeatable then
-			tinsert(tooltipInfo, { left = L.ITEM_GIVES_REP .. (GetFactionName(group.factionID) or ("Faction #" .. tostring(group.factionID))) .. "'", wrap = true, color = app.Colors.TooltipDescription });
-		end
-		if paramA == "itemID" and paramB == 137642 then
-			if app.Settings:GetTooltipSetting("SummarizeThings") then
-				tinsert(tooltipInfo, 1, { left = L.MARKS_OF_HONOR_DESC, color = app.Colors.SourceIgnored });
-			end
-		end
-		if paramA == "currencyID" and paramB == 2778 then
-			if app.Settings:GetTooltipSetting("SummarizeThings") then
-				tinsert(tooltipInfo, 1, { left = L.MOP_REMIX_BRONZE_DESC, color = app.Colors.SourceIgnored });
-			end
+			app.AddArtifactRelicInformation(itemID, tooltipInfo, group);
 		end
 
 		if group.g and app.Settings:GetTooltipSetting("SummarizeThings") then
@@ -3732,7 +3704,7 @@ app.BuildSourceParent = function(group)
 		-- re-popping this Achievement will do normal Sources for all the Criteria and be useful
 		if groupKey == "criteriaID" then
 			local achID = group.achievementID;
-			parent = SearchForObject("achievementID", achID) or { achievementID = achID };
+			parent = SearchForObject("achievementID", achID, "key") or { achievementID = achID };
 			-- app.PrintDebug("add achievement for empty criteria",achID)
 			tinsert(parents, parent);
 		end
@@ -4810,110 +4782,6 @@ app.CreateCostCurrency = function(t, total)
 end
 end)();
 
--- Flight Path Lib
-do
-local FlightPathMapIDs = app.FlightPathDB.FlightPathMapIDs
-local C_TaxiMap_GetTaxiNodesForMap, C_TaxiMap_GetAllTaxiNodes, GetTaxiMapID
-	= C_TaxiMap.GetTaxiNodesForMap, C_TaxiMap.GetAllTaxiNodes, GetTaxiMapID;
-local localizedFlightPathNames;
-local HarvestFlightPaths = function(requestID)
-	if not localizedFlightPathNames then
-		-- app.PrintDebug("HarvestFlightPaths");
-		local userLocale = AllTheThingsAD.UserLocale;
-		localizedFlightPathNames = userLocale.FLIGHTPATH_NAMES;
-		if not localizedFlightPathNames then
-			localizedFlightPathNames = {};
-			userLocale.FLIGHTPATH_NAMES = localizedFlightPathNames;
-		end
-		local flightPathNames = app.FlightPathNames;
-		if flightPathNames then
-			app.FlightPathNames = nil;
-			setmetatable(localizedFlightPathNames, { __index = flightPathNames });
-		end
-
-		local allNodeData;
-		for _,mapID in ipairs(FlightPathMapIDs) do
-			allNodeData = C_TaxiMap_GetTaxiNodesForMap(mapID);
-			if allNodeData then
-				for _,nodeData in ipairs(allNodeData) do
-					localizedFlightPathNames[nodeData.nodeID] = nodeData.name;
-				end
-			end
-		end
-		-- app.PrintDebugPrior("done")
-	end
-	return requestID and localizedFlightPathNames[requestID];
-end
-local fields = {
-	["key"] = function(t)
-		return "flightPathID";
-	end,
-	["name"] = function(t)
-		return HarvestFlightPaths(t.flightPathID) or L.VISIT_FLIGHT_MASTER;
-	end,
-	["icon"] = function(t)
-		local r = t.r;
-		if r then
-			return r == Enum.FlightPathFaction.Horde and app.asset("fp_horde") or app.asset("fp_alliance");
-		end
-		return app.asset("fp_neutral");
-	end,
-	["collectible"] = function(t)
-		return app.Settings.Collectibles.FlightPaths;
-	end,
-	["collected"] = function(t)
-		if t.saved then return 1; end
-		if app.Settings.AccountWide.FlightPaths and ATTAccountWideData.FlightPaths[t.flightPathID] then return 1; end
-		if t.altQuests then
-			for _,questID in ipairs(t.altQuests) do
-				if IsQuestFlaggedCompleted(questID) then
-					return 2;
-				end
-			end
-		end
-	end,
-	["trackable"] = app.ReturnTrue,
-	["saved"] = function(t)
-		return app.CurrentCharacter.FlightPaths[t.flightPathID];
-	end,
-};
-app.BaseFlightPath = app.BaseObjectFields(fields, "BaseFlightPath");
-app.CreateFlightPath = function(id, t)
-	return setmetatable(constructor(id, t, "flightPathID"), app.BaseFlightPath);
-end
-app.AddEventRegistration("TAXIMAP_OPENED", function()
-	local mapID = GetTaxiMapID() or -1;
-	if mapID < 0 then return; end
-	if app.Debugging then
-		if not contains(FlightPathMapIDs, mapID) then
-			app.print("Missing FlightPath Map:",app.GetMapName(mapID) or UNKNOWN,mapID)
-		end
-	end
-	local userLocale = AllTheThingsAD.UserLocale;
-	local names = userLocale.FLIGHTPATH_NAMES or {};
-	local allNodeData = C_TaxiMap_GetAllTaxiNodes(mapID);
-	if allNodeData then
-		local newFPs, nodeID;
-		local currentCharFPs, acctFPs = app.CurrentCharacter.FlightPaths, ATTAccountWideData.FlightPaths;
-		for _,nodeData in ipairs(allNodeData) do
-			nodeID = nodeData.nodeID;
-			names[nodeID] = nodeData.name;
-			-- app.PrintDebug("FP",nodeID,nodeData.name)
-			if nodeData.state and nodeData.state < 2 then
-				if not currentCharFPs[nodeID] then
-					acctFPs[nodeID] = 1;
-					currentCharFPs[nodeID] = 1;
-					if not newFPs then newFPs = { nodeID }
-					else tinsert(newFPs, nodeID); end
-				end
-			end
-		end
-		userLocale.FLIGHTPATH_NAMES = names;
-		UpdateRawIDs("flightPathID", newFPs);
-	end
-end)
-end	-- Flight Path Lib
-
 -- Item Lib
 (function()
 
@@ -5454,7 +5322,7 @@ local function SetThingVisibility(parent, group)
 	-- Total
 	if not visible and group.total > 0 then
 		visible = group.progress < group.total or ThingVisibilityFilter(group);
-		-- if debug then print("total",visible) end
+		-- app.PrintDebug("STV.total",group.hash,visible,group.progress,group.total,ThingVisibilityFilter(group))
 	end
 	-- Cost
 	if not visible and ((group.costTotal or 0) > 0) then
@@ -5506,9 +5374,9 @@ local function UpdateGroup(group, parent)
 	-- Things which are determined to be a cost for something else which meets user filters will
 	-- be shown anyway, so don't need to undergo a filtering pass
 	local valid = group.isCost
-	if valid then
+	-- if valid then
 		-- app.PrintDebug("Pre-valid group as from cost/upgrade",group.isCost,group.isUpgrade,app:SearchLink(group))
-	end
+	-- end
 	-- A group with a source parent means it has a different 'real' heirarchy than in the current window
 	-- so need to verify filtering based on that instead of only itself
 	if not valid then
@@ -5587,7 +5455,7 @@ local function UpdateGroup(group, parent)
 
 	-- if debug then print("UpdateGroup.Done",group.progress,group.total,group.visible,group.__type) end
 	-- debug = nil
-	return group.visible;
+	-- return group.visible;
 end
 UpdateGroups = function(parent, g)
 	if g then
@@ -5673,27 +5541,25 @@ local function DirectGroupUpdate(group, got)
 	end
 	local window = app.GetRelativeRawWithField(group, "window");
 	if window then window:ToggleExtraFilters(true) end
+	local wasHidden = app.GetRawRelativeField(group, "visible")
 	-- starting an update from a non-top-level group means we need to verify this group should even handle updates based on current filters first
-	if not app.RecursiveDirectGroupRequirementsFilter(group) then
-		-- app.PrintDebug("DGU:Filtered",group.hash,group.parent and group.parent.text)
+	if wasHidden and not app.RecursiveDirectGroupRequirementsFilter(group) then
+		-- app.PrintDebug("DGU:Filtered",group.visible,app:SearchLink(group))
 		if window then window:ToggleExtraFilters() end
 		return;
 	end
 	local prevTotal, prevProg, prevCost, prevUpgrade
 		= group.total or 0, group.progress or 0, group.costTotal or 0, group.upgradeTotal or 0
 	TopLevelUpdateGroup(group);
-	-- Set proper visibility for the updated group
-	local parent = rawget(group, "parent");
-	if group.g then
-		SetGroupVisibility(parent, group);
-	else
-		SetThingVisibility(parent, group);
-	end
 	local progChange, totalChange, costChange, upgradeChange
 		= group.progress - prevProg, group.total - prevTotal, group.costTotal - prevCost, group.upgradeTotal - prevUpgrade
-	-- Something to change
+	-- Something to change for a visible group prior to the DGU or changed in visibility
 	if progChange ~= 0 or totalChange ~= 0 or costChange ~= 0 or upgradeChange ~= 0 then
-		AdjustParentProgress(group, progChange, totalChange, costChange, upgradeChange);
+		local isHidden = not group.visible
+		-- app.PrintDebug("DGU:Change",window.Suffix,wasHidden,"=>",isHidden,app:SearchLink(group),progChange, totalChange, costChange, upgradeChange)
+		if not isHidden or isHidden ~= wasHidden then
+			AdjustParentProgress(group, progChange, totalChange, costChange, upgradeChange);
+		end
 	end
 	-- After completing the Direct Update, setup a soft-update on the affected Window, if any
 	if window then
@@ -5764,6 +5630,7 @@ local CCFuncs = {
 	end,
 	["SL_SKIP"] = function()
 		-- Threads content becomes unavailable when a player reaches max level
+		-- TODO: this is weird now... some stuff is available to alts post-70
 		if app.Level >= 70 then return false end
 		-- check if quest #62713 is completed. appears to be a HQT concerning whether the character has chosen to skip the SL Storyline
 		return IsQuestFlaggedCompleted(62713);
@@ -5865,6 +5732,8 @@ local DGU_Quests = {
 	[59926] = DGU_CustomCollect,	-- New Player Experience Starting Quest
 	[58911] = DGU_CustomCollect,	-- New Player Experience Ending Quest
 	[60359] = DGU_CustomCollect,	-- New Player Experience Ending Quest
+	[60129] = DGU_CustomCollect,	-- Shadowlands - SL_SKIP (Threads of Fate)
+	[62704] = DGU_CustomCollect,	-- Shadowlands - SL_SKIP (Threads of Fate)
 	[62713] = DGU_CustomCollect,	-- Shadowlands - SL_SKIP (Threads of Fate)
 	[65076] = DGU_CustomCollect,	-- Shadowlands - Covenant - Kyrian
 	[65077] = DGU_CustomCollect,	-- Shadowlands - Covenant - Venthyr
@@ -5879,7 +5748,7 @@ app.__CacheQuestTriggers = nil
 local function AssignDirectGroupOnUpdates()
 	local questRef;
 	for questID,func in pairs(DGU_Quests) do
-		questRef = SearchForObject("questID", questID);
+		questRef = SearchForObject("questID", questID, "field");
 		if questRef then
 			-- app.PrintDebug("Assign DGUOnUpdate",questRef.hash)
 			questRef.DGUOnUpdate = func;
@@ -8421,8 +8290,8 @@ function app:GetDataCache()
 				icon = app.asset("Interface_Vendor")
 			}),
 
-			-- Drake Manuscripts (TODO)
-			-- app.CreateDynamicHeader("dmID", SimpleNPCGroup(app.HeaderConstants.DRA)),
+			-- Mount Mods (TODO)
+			-- app.CreateDynamicHeader("mmID", SimpleNPCGroup(app.HeaderConstants.DRA)),
 
 			-- Factions
 			app.CreateDynamicHeaderByValue("factionID", {
@@ -8462,6 +8331,7 @@ function app:GetDataCache()
 			-- Professions
 			app.CreateDynamicHeaderByValue("professionID", {
 				dynamic_withsubgroups = true,
+				dynamic_valueField = "requireSkill",
 				name = TRADE_SKILLS,
 				icon = app.asset("Category_Professions")
 			}),
@@ -8567,6 +8437,17 @@ function app:GetDataCache()
 		db.g = app.Categories.HiddenQuestTriggers;
 		db.description = L.HIDDEN_QUEST_TRIGGERS_DESC;
 		db._hqt = true;
+		tinsert(g, db);
+		CacheFields(db, true);
+	end
+
+	-- Sourceless
+	if app.Categories.Sourceless then
+		db = app.CreateRawText(L.SOURCELESS)
+		db.g = app.Categories.Sourceless;
+		db.description = L.SOURCELESS_DESC;
+		db._missing = true;
+		db._unsorted = true;
 		tinsert(g, db);
 		CacheFields(db, true);
 	end
@@ -8849,7 +8730,7 @@ customWindowUpdates.AchievementHarvester = function(self, ...)
 			self.doesOwnUpdate = true;
 			self.initialized = true;
 			self.Limit = 45000;	-- MissingAchievements:11.0.0.54774 (maximum achievementID)
-			self.PartitionSize = 2000;
+			self.PartitionSize = 5000;
 			local db = {};
 			local CleanUpHarvests = function()
 				local g, partition, pg, pgcount, refresh = self.data.g, nil, nil, nil, nil;
@@ -9292,6 +9173,7 @@ customWindowUpdates.CurrentInstance = function(self, force, got)
 			self:Update();
 		end
 		-- local C_Map_GetMapChildrenInfo = C_Map.GetMapChildrenInfo;
+
 		-- Wraps a given object such that it can act as an unfiltered Header of the base group
 		local CreateWrapVisualHeader = app.CreateVisualHeaderWithGroups
 		-- Returns the consolidated data format for the next header level
@@ -12267,6 +12149,7 @@ app.LoadDebugger = function()
 				key = 1,
 				visible = 1,
 				displayInfo = 1,
+				displayID = 1,
 				fetchedDisplayID = 1,
 				nmr = 1,
 				nmc = 1,
@@ -13428,6 +13311,16 @@ SlashCmdList.AllTheThings = function(cmd)
 			-- app.PrintDebug("Split custom arg:",customArg,customValue)
 			app.SetCustomWindowParam(cmd, customArg, customValue or true);
 		end
+
+		-- Eventually will migrate known Chat Commands to their respective creators
+		-- TODO: maybe this block migrates to base.lua or a separate module?
+		local commandFunc = app.ChatCommands[cmd]
+		if commandFunc then
+			local help = args[2] == "help"
+			if help then return app.ChatCommands.PrintHelp(cmd) end
+			return commandFunc(args)
+		end
+
 		if not cmd or cmd == "" or cmd == "main" or cmd == "mainlist" then
 			app.ToggleMainList();
 			return true;
@@ -13470,6 +13363,9 @@ SlashCmdList.AllTheThings = function(cmd)
 		elseif cmd == "unsorted" then
 			app:GetWindow("Unsorted"):Toggle();
 			return true;
+		elseif cmd == "contribute" then
+			app.Contribute(not app.Contributor and 1)
+			return true
 		elseif cmd:sub(1, 4) == "mini" then
 			app:ToggleMiniListForCurrentZone();
 			return true;

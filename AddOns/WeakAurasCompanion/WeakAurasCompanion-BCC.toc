@@ -1,14 +1,15 @@
 ## Interface: 30400
 ## Author: The WeakAuras Team
 ## Version: 4.1.0
-## OptionalDeps: WeakAuras,Plater,
-## LoadOnDemand: 0
-## DefaultState: Enabled
 
 ## Title: WeakAuras Companion
 ## Notes: Keep your WeakAuras updated!
 ## Title-zhCN: |cFFFFE00A<|r|cFFFFF468功能|r|cFFFFE00A>|r |cFFFFFFFF辅助增强|r |cFF69CCF0伴侣|r
 ## Notes-zhCN: 同步更新WAGO上下载的WA
+
+## OptionalDeps: WeakAuras,Plater,
+## LoadOnDemand: 0
+## DefaultState: Enabled
 
 ## X-Category: Interface Enhancements
 ## X-Part-Of: WeakAuras

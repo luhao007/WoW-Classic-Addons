@@ -17,21 +17,21 @@ local function ItemSell_Tooltip(self, data1, data2,laiyuan)
 			if link then
 				local itemSellG = select(11, GetItemInfo(link))
 				if itemSellG and itemSellG > 0 then
-					local stackCount = 1
+					local new_stackCount = 1
 					if laiyuan=="Bag" then
-						local ItemInfo = C_Container.GetContainerItemInfo(data1, data2)
-						stackCount=ItemInfo.stackCount or stackCount
+						local itemID, itemLink, icon, stackCount=PIGGetContainerItemInfo(data1, data2)
+						new_stackCount=stackCount
 					elseif laiyuan=="Quest" then
 						local _, _, count = GetQuestItemInfo(data1, data2)
-						stackCount=count or stackCount
+						new_stackCount=count or stackCount
 					elseif laiyuan=="QuestLog" then
 						local _, _, count = GetQuestLogRewardInfo(data2)
-						stackCount=count or stackCount
+						new_stackCount=count or stackCount
 					end
-					if stackCount>1 then
-						self:AddLine(SELL_PRICE..": |cffFFFFFF"..GetMoneyString(itemSellG*stackCount).."|r   ( 单价|cffFFFFFF"..GetMoneyString(itemSellG).."|r )")
+					if new_stackCount>1 then
+						self:AddLine(SELL_PRICE..": |cffFFFFFF"..GetMoneyString(itemSellG*new_stackCount).."|r   ( 单价|cffFFFFFF"..GetMoneyString(itemSellG).."|r )")
 					else
-						self:AddLine(SELL_PRICE..": |cffFFFFFF"..GetMoneyString(itemSellG*stackCount).."|r")
+						self:AddLine(SELL_PRICE..": |cffFFFFFF"..GetMoneyString(itemSellG*new_stackCount).."|r")
 					end
 					self:Show()
 				end

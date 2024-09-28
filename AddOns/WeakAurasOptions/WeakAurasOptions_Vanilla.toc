@@ -1,14 +1,16 @@
 ## Interface: 30400
 ## Author: The WeakAuras Team
 ## Version: 5.12.9
-## Dependencies: WeakAuras
-## LoadOnDemand: 1
-## SavedVariables: WeakAurasOptionsSaved
-## DefaultState: Enabled
 
 ## Title: WeakAuras Options
 ## Notes: Options for WeakAuras
 ## Title-zhCN: |cFFFFE00A<|r|cFFFFF468功能|r|cFFFFE00A>|r |cFFFFFFFF辅助增强|r |cFF0055FF设置|r
+
+## Dependencies: WeakAuras
+## LoadOnDemand: 1
+## DefaultState: Enabled
+
+## SavedVariables: WeakAurasOptionsSaved
 
 ## X-Category: Interface Enhancements
 ## X-Part-Of: WeakAuras

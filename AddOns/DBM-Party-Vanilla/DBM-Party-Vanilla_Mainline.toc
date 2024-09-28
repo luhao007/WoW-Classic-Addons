@@ -1,21 +1,24 @@
 ## Interface: 30400
 ## Author: MysticalOS
-## Version: r148
-## RequiredDeps: DBM-Core
-## LoadOnDemand: 1
-## SavedVariables: DBMPartyVanilla_AllSavedVars
-## SavedVariablesPerCharacter: DBMPartyVanilla_SavedStats
-## IconTexture: Interface\AddOns\DBM-Core\textures\dbm_airhorn
+## Version: r156
 
 ## Title: |cffffe00a<|r|cffff7d0aDBM Mod|r|cffffe00a>|r |cffc030c0Dungeons (Vanilla)|r
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFF69CCF0小队|r |cFF22B14C旧世经典（怀旧服）|r
+
+## IconTexture: Interface\AddOns\DBM-Core\textures\dbm_airhorn
+
+## RequiredDeps: DBM-Core
+## LoadOnDemand: 1
+
+## SavedVariables: DBMPartyVanilla_AllSavedVars
+## SavedVariablesPerCharacter: DBMPartyVanilla_SavedStats
 
 ## X-Min-Interface: 80000
 ## X-DBM-Mod: 1
 ## X-DBM-Mod-Type: PARTY
 ## X-DBM-Mod-Category: Classic
 ## X-DBM-StatTypes: normal
-## X-DBM-Mod-SubCategoriesID: 48,230,429,90,229,349,389,129,47,329,34,109,70,43,209,289|Legacy,189|Legacy
+## X-DBM-Mod-SubCategoriesID: 48,230,429,90,229,349,389,129,47,329,34,109,70,43,209,289|Legacy,189|Legacy,36|Legacy
 ## X-DBM-Mod-SubCategoriesID-koKR: 48,230,429,90,229,349,389,129,47,329,34,109,70,43,209,289|구버전,189|구버전
 ## X-DBM-Mod-Name: Dungeons (Vanilla)
 ## X-DBM-Mod-Name-deDE: Gruppe (Vanilla)
@@ -25,7 +28,7 @@
 ## X-DBM-Mod-Name-zhCN: 队伍首领 (经典旧世)
 ## X-DBM-Mod-Name-ruRU: Классические подземелья
 ## X-DBM-Mod-Sort: 1102
-## X-DBM-Mod-MapID: 48,230,429,90,229,349,389,129,47,329,34,109,70,43,209,289,189
+## X-DBM-Mod-MapID: 48,230,429,90,229,349,389,129,47,329,34,109,70,43,209,289,189,36
 ## X-DBM-Mod-MinCoreRevision: 20200524142133
 ## X-DBM-Mod-MinExpansion: 0
 ## X-Curse-Project-ID: 314994
@@ -138,6 +141,7 @@ Shared\Stratholme\MalekithePallid.lua
 Shared\Stratholme\MagistrateBarthilas.lua
 Shared\Stratholme\RamsteintheGorger.lua
 Shared\Stratholme\LordAuriusRivendare.lua
+Shared\Stratholme\PostmasterMalown.lua
 
 Retail\StormwindStockaid\Hogger.lua
 Retail\StormwindStockaid\LordOverheat.lua
@@ -199,3 +203,12 @@ Shared\ScarletMonastery_Old\ArcanistDoan.lua
 Shared\ScarletMonastery_Old\Herod.lua
 Shared\ScarletMonastery_Old\Mograine_and_Whitemane.lua
 Shared\ScarletMonastery_Old\HighInquisitorFairbanks.lua
+
+Shared\Deadmines\RhahkZor.lua
+Shared\Deadmines\MinerJohnson.lua
+Shared\Deadmines\SneedsShredder.lua
+Shared\Deadmines\Gilnid.lua
+Shared\Deadmines\MrSmite.lua
+Shared\Deadmines\CaptainGreenskin.lua
+Shared\Deadmines\EdwinVanCleef.lua
+Shared\Deadmines\Cookie.lua

@@ -40,26 +40,23 @@ function BusinessInfo.AHPlusOptions()
 	end);
 	--扫描间隔
 	fuFrame.AHPlus.ScanSliderT = PIGFontString(fuFrame.AHPlus,{"LEFT",fuFrame.AHPlus.Text,"RIGHT",20,0},"扫描间隔")
-	local Scaninfo
+	local Scaninfo={1,1,1}
 	if tocversion<100000 then
-		Scaninfo = {0.002,0.08,0.001,1000}
+		Scaninfo = {0.002,0.08,0.001}
 		BusinessInfo.AHPlusData.ScanCD=PIGA["AHPlus"]["ScanCD"]
 	else
-		Scaninfo = {0.0002,0.008,0.0001,10000}
+		Scaninfo = {0.0002,0.008,0.0001}
 		BusinessInfo.AHPlusData.ScanCD=PIGA["AHPlus"]["ScanCD_M"]
 	end
-	fuFrame.AHPlus.ScanSlider = PIGSlider(fuFrame.AHPlus,{"LEFT",fuFrame.AHPlus.ScanSliderT,"RIGHT",10,0},{100,14},Scaninfo)
-	function fuFrame.AHPlus.ScanSlider:OnValueFun()
-		local val = self:GetValue()
-		local val = floor(val*Scaninfo[4]+0.5)*Scaninfo[3]
-		self.Text:SetText(val);
+	fuFrame.AHPlus.ScanSlider = PIGSlider(fuFrame.AHPlus,{"LEFT",fuFrame.AHPlus.ScanSliderT,"RIGHT",10,0},Scaninfo)
+	fuFrame.AHPlus.ScanSlider.Slider:HookScript("OnValueChanged", function(self, arg1)
 		if tocversion<100000 then
-			PIGA["AHPlus"]["ScanCD"]=val
+			PIGA["AHPlus"]["ScanCD"]=arg1
 		else
-			PIGA["AHPlus"]["ScanCD_M"]=val
+			PIGA["AHPlus"]["ScanCD_M"]=arg1
 		end
-		BusinessInfo.AHPlusData.ScanCD=val
-	end
+		BusinessInfo.AHPlusData.ScanCD=arg1
+	end)
 	fuFrame.AHPlus.AHtooltip =PIGCheckbutton(fuFrame.AHPlus,{"TOPLEFT",fuFrame.AHPlus,"BOTTOMLEFT",0,-20},{"鼠标提示拍卖价钱","在物品的鼠标提示上显示拍卖缓存价钱"})
 	fuFrame.AHPlus.AHtooltip:SetScript("OnClick", function (self)
 		if self:GetChecked() then

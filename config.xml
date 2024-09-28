@@ -926,6 +926,11 @@
 		<Notes>施法时自动下马</Notes>
 		<Category>功能</Category>
 	</Addon>
+	<Addon name="DragonRider">
+		<Title>龙骑士</Title>
+		<Notes>提供驭龙术速度显示，驭龙术比赛计时等驭龙术有关的内容。</Notes>
+		<Category>功能</Category>
+	</Addon>
 	<Addon name="EditModeExpanded">
 		<Title>编辑模式增强</Title>
 		<Notes>增加编辑模式种可调节的窗体</Notes>

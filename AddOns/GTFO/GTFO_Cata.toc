@@ -1,14 +1,17 @@
 ## Interface: 30400
 ## Author: Zensunim of Dragonblight
-## Version: 5.11.3
-## SavedVariables: GTFOData
-## DefaultState: Enabled
-## IconTexture: Interface\Icons\spell_fire_fire
+## Version: 5.13
 
 ## Title: GTFO
 ## Notes: GTFO, you're dying!
 ## Title-zhCN: |cFFFFE00A<|r|cFFC79C6E战斗|r|cFFFFE00A>|r |cFFFFFFFF伤害警报|r |cFFFFE00AGTFO|r
 ## Notes-zhCN: 当你站在错误的位置时发出警报
+
+## IconTexture: Interface\Icons\spell_fire_fire
+
+## DefaultState: Enabled
+
+## SavedVariables: GTFOData
 
 ## X-WoWI-ID: 17996
 ## X-Curse-Project-ID: 20697

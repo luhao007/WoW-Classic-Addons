@@ -29,19 +29,17 @@ MiniMaptabbut:Selected()
 ----------------------
 function MiniMapF.PIGChecked()
 	MiniMapF.Minimap_but:SetChecked(PIGA["Map"]["MinimapBut"])
-	if PIGA["Map"]["MinimapBut"] then
-		MiniMapF.Minimap_but_SN:Enable();
-		MiniMapF.Minimap_but_BS:Enable();
-	else
-		MiniMapF.Minimap_but_SN:Disable();
-		MiniMapF.Minimap_but_BS:Disable();
-	end
+	MiniMapF.Minimap_but_BS:SetEnabled(PIGA["Map"]["MinimapBut"])
+	MiniMapF.Minimap_but_SN:SetEnabled(PIGA["Map"]["MinimapBut"])
+	MiniMapF.Minimap_but_SN.Smeihangshu:SetEnabled(PIGA["Map"]["MinimapBut"])
 	if PIGA["Map"]["MiniButShouNa_YN"]==1 then
-		MiniMapF.Minimap_but_SN:SetChecked(true)
 		MiniMapF.Minimap_but_BS:SetChecked(false)
+		MiniMapF.Minimap_but_SN:SetChecked(true)
+		MiniMapF.Minimap_but_SN.Smeihangshu:SetEnabled(true)
 	elseif PIGA["Map"]["MiniButShouNa_YN"]==2 then
 		MiniMapF.Minimap_but_BS:SetChecked(true)
 		MiniMapF.Minimap_but_SN:SetChecked(false)
+		MiniMapF.Minimap_but_SN.Smeihangshu:SetEnabled(false)
 	end
 end
 MiniMapF.Minimap_but = PIGCheckbutton_R(MiniMapF,{L["MAP_NIMIBUT"],L["MAP_NIMIBUTTIPS"]})
@@ -77,23 +75,13 @@ MiniMapF.Minimap_but_SN:SetScript("OnClick", function (self)
 	MiniMapF.PIGChecked()
 end);
 --收纳小地图按钮每行数目
-local meihangshuxiala = {1,2,3,4,5,6,7,8,9,10};
-MiniMapF.Minimap_but_SN.Smeihangshu=PIGDownMenu(MiniMapF.Minimap_but_SN,{"TOPLEFT",MiniMapF.Minimap_but_SN,"BOTTOMLEFT",30,-6},{150,24})
-function MiniMapF.Minimap_but_SN.Smeihangshu:PIGDownMenu_Update_But(self)
-	local info = {}
-	info.func = self.PIGDownMenu_SetValue
-	for i=1,#meihangshuxiala,1 do
-	    info.text, info.arg1 = meihangshuxiala[i].."个", meihangshuxiala[i]
-	    info.checked = meihangshuxiala[i]==PIGA["Map"]["MiniButShouNa_hang"]
-		MiniMapF.Minimap_but_SN.Smeihangshu:PIGDownMenu_AddButton(info)
-	end 
-end
-function MiniMapF.Minimap_but_SN.Smeihangshu:PIGDownMenu_SetValue(value,arg1,arg2)
-	MiniMapF.Minimap_but_SN.Smeihangshu:PIGDownMenu_SetText(L["MAP_NIMIBUT_HANGNUM"]..value)
+MiniMapF.Minimap_but_SN.SmeihangshuTXT = PIGFontString(MiniMapF.Minimap_but_SN,{"TOPLEFT",MiniMapF.Minimap_but_SN,"BOTTOMLEFT",20,-16},L["MAP_NIMIBUT_HANGNUM"])
+local meihangshuxiala = {1,10,1}
+MiniMapF.Minimap_but_SN.Smeihangshu = PIGSlider(MiniMapF.Minimap_but_SN,{"LEFT", MiniMapF.Minimap_but_SN.SmeihangshuTXT,"RIGHT",4,0},meihangshuxiala)	
+MiniMapF.Minimap_but_SN.Smeihangshu.Slider:HookScript("OnValueChanged", function(self, arg1)
 	PIGA["Map"]["MiniButShouNa_hang"]=arg1
 	MiniMapF.PIGChecked()
-	PIGCloseDropDownMenus()
-end
+end)
 --按钮位置
 MiniMapF.Minimap_but_Pointbiaoti=PIGFontString(MiniMapF,{"TOPLEFT",MiniMapF,"TOPLEFT",20,-200},"小地图按钮位置:")
 local mapPointList = {"附着于小地图","自由模式(可随意拖动)","附着于系统菜单","附着于聊天框","ElvUI_小地图下方"};
@@ -257,7 +245,7 @@ end);
 ----
 MiniMapF:HookScript("OnShow", function (self)
 	gengxinMiniPaichu(MiniMapF.MinimapButF.Scroll);
-	self.Minimap_but_SN.Smeihangshu:PIGDownMenu_SetText(L["MAP_NIMIBUT_HANGNUM"]..PIGA["Map"]["MiniButShouNa_hang"].."个")
+	self.Minimap_but_SN.Smeihangshu:PIGSetValue(PIGA["Map"]["MiniButShouNa_hang"])
 	self.Minimap_but_Point:PIGDownMenu_SetText(mapPointList[PIGA["Map"]["MinimapPoint"]])
 	MiniMapF.PIGChecked()
 end);

@@ -104,6 +104,9 @@ if C_QuestLog_RequestLoadQuestByID and pcall(app.RegisterEvent, app, "QUEST_DATA
 			app.FunctionRunner.Run(C_QuestLog_RequestLoadQuestByID, questID);
 		end
 	end
+	if app.Debugging then
+		app.RequestLoadQuestByID = RequestLoadQuestByID
+	end
 
 	-- This event seems to fire synchronously from C_QuestLog.RequestLoadQuestByID if we already have the data
 	app:RegisterFuncEvent("QUEST_DATA_LOAD_RESULT", function(questID, success)
@@ -216,8 +219,12 @@ app.AddEventHandler("OnSavedVariablesAvailable", function(currentCharacter, acco
 	local userignored = ATTAccountWideData.IGNORE_QUEST_PRINT
 	-- add user ignored to the list if any, don't save our hardcoded quests for everyone...
 	if userignored then
-		for i,questID in ipairs(userignored) do
-			IgnoreErrorQuests[questID] = 1;
+		for i,questID in pairs(userignored) do
+			if questID == 1 then
+				IgnoreErrorQuests[i] = 1;
+			else
+				IgnoreErrorQuests[questID] = 1;
+			end
 		end
 		-- a bunch of bad data got contaminated into literally everyones saved vars... so let's clean it
 		if IgnoreErrorQuests[7171] or IgnoreErrorQuests[8706] or IgnoreErrorQuests[10759]
@@ -226,6 +233,54 @@ app.AddEventHandler("OnSavedVariablesAvailable", function(currentCharacter, acco
 			app.CallbackHandlers.DelayedCallback(app.print, 10, "Wiped 'ATTAccountWideData.IGNORE_QUEST_PRINT' Saved Variable table due to bad data!")
 		end
 	end
+	-- Allows a user to use /att ignore-quest-print ### ### ### ### ...
+	-- to manually add to IGNORE_QUEST_PRINT without needing to run scripts or modify saved variables
+	app.ChatCommands.Add("ignore-quest-print", function(args)
+		if not userignored then
+			userignored = {}
+			ATTAccountWideData.IGNORE_QUEST_PRINT = userignored
+		end
+		local questID
+		for i=2,#args do
+			questID = tonumber(args[i])
+			if not questID then
+				app.print("Unable to add a questID to ignore",questID)
+			else
+				if not app.contains(userignored, questID) then
+					userignored[#userignored + 1] = questID
+				end
+				IgnoreErrorQuests[questID] = 1
+				app.print("Ignoring Quest Chat output for",questID,app:SearchLink(Search("questID",questID,"field")))
+			end
+		end
+		return true
+	end, {
+		"Usage : /att ignore-quest-print questID1 [questID2] [questID3] ...",
+		"Example : /att ignore-quest-print 12345",
+		"          Will ignore Quest 12345 flagging from being reported in chat"
+	})
+	app.ChatCommands.Add("allow-quest-print", function(args)
+		if not userignored then
+			userignored = {}
+			ATTAccountWideData.IGNORE_QUEST_PRINT = userignored
+		end
+		local questID
+		for i=2,#args do
+			questID = tonumber(args[i])
+			if not questID then
+				app.print("Unable to add a questID to allow",questID)
+			else
+				tremove(userignored, app.indexOf(userignored, questID))
+				IgnoreErrorQuests[questID] = nil
+				app.print("Allowing Quest Chat output for",questID,app:SearchLink(Search("questID",questID,"field")))
+			end
+		end
+		return true
+	end, {
+		"Usage : /att allow-quest-print questID1 [questID2] [questID3] ...",
+		"Example : /att allow-quest-print 12345",
+		"          Will allow Quest 12345 flagging to be reported in chat"
+	})
 end)
 local BatchRefresh
 -- We can't track unflagged quests with a single meta-table unless we double-assign keys... that's a bit silly
@@ -604,19 +659,21 @@ PrintQuestInfo = function(questID, new)
 	local questChange = (new == true and "accepted") or (new == false and "unflagged") or "completed";
 	local searchResults = SearchForField("questID", questID);
 	if #searchResults > 0 then
-		local nmr, nmc, nyi, hqt
+		local nmr, nmc, nyi, hqt, unsorted
 		if #searchResults == 1 then
 			questRef = searchResults[1]
 			nmr = questRef.nmr
 			nmc = questRef.nmc
-			nyi = GetRelativeField(questRef, "u", 1) or GetRelativeValue(questRef, "_unsorted")
+			nyi = GetRelativeField(questRef, "u", 1)
+			unsorted = GetRelativeValue(questRef, "_unsorted") or nyi
 			hqt = GetRelativeValue(questRef, "_hqt")
 		else
 			for i,searchResult in ipairs(searchResults) do
 				if searchResult.key == "questID" then
 					nmr = nmr or searchResult.nmr
 					nmc = nmc or searchResult.nmc
-					nyi = nyi or GetRelativeField(searchResult, "u", 1) or GetRelativeValue(searchResult, "_unsorted")
+					nyi = nyi or GetRelativeField(searchResult, "u", 1)
+					unsorted = GetRelativeValue(questRef, "_unsorted") or nyi
 					hqt = hqt or GetRelativeValue(searchResult, "_hqt")
 					questRef = searchResult
 				end
@@ -629,17 +686,16 @@ PrintQuestInfo = function(questID, new)
 		end
 
 		-- if user is allowing reporting of Sourced quests (true = don't report Sourced)
-		if not nyi and app.Settings:GetTooltipSetting("Report:UnsortedQuests") then
+		if not unsorted and app.Settings:GetTooltipSetting("Report:UnsortedQuests") then
 			return true;
 		end
 
-		-- don't worry about names if we know it's HQT
-		if hqt then
-			text = questID
-		else
-			-- Quest can be linked to all sorts of things...
-			text = (QuestNameFromID[questID] or (questRef and questRef.name) or UNKNOWN) .. " (" .. questID .. ")"
+		-- Quest can be linked to all sorts of things...
+		text = (QuestNameFromID[questID] or (questRef and questRef.name))
+		if IsRetrieving(text) then
+			text = UNKNOWN
 		end
+		text = text .. " (" .. questID .. ")"
 		if nmc then text = text .. "[C]"; end
 		if nmr then text = text .. "[R]"; end
 		-- only check to report when accepting a quest, quests flag complete all the time without being filtered
@@ -658,6 +714,20 @@ PrintQuestInfo = function(questID, new)
 				BuildDiscordQuestInfoTable(questID, "nyi-quest", questChange)
 			);
 			print("Quest", questChange, app:Linkify(text .. " [NYI] ATT " .. app.Version, app.Colors.ChatLinkError, "dialog:" .. popupID));
+			return
+		end
+
+		-- give a chat output if the user has just interacted with a quest flagged as Unsorted
+		if unsorted then
+			-- Play a sound when a reportable error is found, if any sound setting is enabled
+			app.Audio:PlayReportSound();
+
+			-- Linkify the output
+			local popupID = "quest-" .. questID .. questChange;
+			app:SetupReportDialog(popupID, "Unsorted Quest: " .. questID,
+				BuildDiscordQuestInfoTable(questID, "unsorted-quest", questChange)
+			);
+			print("Quest", questChange, app:Linkify(text .. " [UNS] ATT " .. app.Version, app.Colors.ChatLinkError, "dialog:" .. popupID));
 			return
 		end
 
@@ -697,7 +767,7 @@ app.CheckInaccurateQuestInfo = function(questRef, questChange, forceShow)
 		-- is marked as in the game
 		-- NOTE: Classic doesn't use the Filters Module yet. (TODO)
 		-- The logic is simple enough to where it shouldn't matter.
-		local inGame = not questRef.u or questRef.u > 2--app.Modules.Filter.Filters.InGame(questRef);
+		local inGame = app.Modules.Filter.Filters.InGame(questRef);
 		-- repeatable or not previously completed or the accepted quest was immediately completed prior to the check, or character in party sync
 		local incomplete = (questRef.repeatable or not completed or LastQuestTurnedIn == completed or IsPartySyncActive);
 		-- not missing pre-requisites
@@ -1282,9 +1352,9 @@ local AndBreadcrumbWithLockCriteria = {
 	end,
 }
 if app.IsRetail then
-	local WithTypeName = {
+	local WithAutoName = {
 		name = function(t)
-			local type, id = (":"):split(t.type)
+			local type, id = (":"):split(t.an)
 			local data = app.GetAutomaticHeaderData(id,type)
 			for key,value in pairs(data) do
 				t[key] = value;
@@ -1292,7 +1362,7 @@ if app.IsRetail then
 			return data.name
 		end,
 		icon = function(t)
-			local type, id = (":"):split(t.type)
+			local type, id = (":"):split(t.an)
 			local data = app.GetAutomaticHeaderData(id,type)
 			for key,value in pairs(data) do
 				t[key] = value;
@@ -1300,12 +1370,12 @@ if app.IsRetail then
 			return data.icon
 		end,
 		__condition = function(t)
-			return t.type
+			return t.an
 		end,
 	}
-	app.GlobalVariants.WithTypeName = WithTypeName
+	app.GlobalVariants.WithAutoName = WithAutoName
 else
-	app.GlobalVariants.WithTypeName = {}
+	app.GlobalVariants.WithAutoName = {}
 end
 
 -- Party Sync Support
@@ -1359,9 +1429,11 @@ local createQuest = app.CreateClass("Quest", "questID", {
 		return t.name;
 	end or nil,
 	name = function(t)
+		-- TODO: need app.GetAutomaticHeaderData to provide name if not returned from server prior to using QuestNameDefault
 		return QuestNameFromID[t.questID] or RETRIEVING_DATA;
 	end,
 	icon = function(t)
+		-- TODO: need app.GetAutomaticHeaderData to provide icon
 		return app.GetIconFromProviders(t)
 			or (t.isWorldQuest and GetWorldQuestIcon(t))
 			or (t.repeatable and RepeatableQuestIcon)
@@ -1548,7 +1620,7 @@ local createQuest = app.CreateClass("Quest", "questID", {
 -- Both: Locked Quest support (no way to make a variant on the base Class at this time)
 ,"WithLockCriteria", app.CloneDictionary(AndLockCriteria), AndLockCriteria.__condition
 -- Retail: Quests with a 'type' field can derive their name from other in-game data automatically
-,app.IsRetail and "WithTypeName" or false, app.CloneDictionary(app.GlobalVariants.WithTypeName), app.GlobalVariants.WithTypeName.__condition
+,app.IsRetail and "WithAutoName" or false, app.CloneDictionary(app.GlobalVariants.WithAutoName), app.GlobalVariants.WithAutoName.__condition
 );
 
 app.CreateQuest = createQuest;

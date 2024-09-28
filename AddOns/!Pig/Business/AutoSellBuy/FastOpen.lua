@@ -14,27 +14,30 @@ local GetContainerNumSlots = C_Container.GetContainerNumSlots
 local GetContainerItemID = C_Container.GetContainerItemID
 local GetContainerItemLink = C_Container.GetContainerItemLink
 local PickupContainerItem =C_Container.PickupContainerItem
-local UseContainerItem =C_Container.UseContainerItem
 -- 
 local bagIDMax= addonTable.Data.bagData["bagIDMax"]
-local gongnengName = "开启"
-local buticon=136058
 local BusinessInfo=addonTable.BusinessInfo
 local GnName,GnUI,GnIcon,FrameLevel = unpack(BusinessInfo.AutoSellBuyData)
+local OpenData = {"开启",136058}
 
 function BusinessInfo.FastOpen()
-	local PIGUseKeyDown=Fun.PIGUseKeyDown
 	local fujiF,fujiTabBut=PIGOptionsList_R(AutoSellBuy_UI.F,"开",50,"Left")
-	BusinessInfo.ADDScroll(fujiF,gongnengName,"Open",18,PIGA["AutoSellBuy"]["Open_List"],{false,"AutoSellBuy","Open_List"})
-	local OpenItemKey = CreateFrame("Button","OpenItemKey",UIParent, "SecureActionButtonTemplate");
-	PIGUseKeyDown(OpenItemKey)
-	OpenItemKey:SetAttribute("type", "item")
+	local gongnengNameE = "Open"
+	BusinessInfo.ADDScroll(fujiF,OpenData[1],gongnengNameE,17,{false,"AutoSellBuy",gongnengNameE.."_List"})
+	------
+	fujiF.Bindings = PIGButton(fujiF,{"TOPLEFT",fujiF,"TOPLEFT",20,-10},{76,20},KEY_BINDING);
+	fujiF.Bindings:SetScript("OnClick", function (self)
+		Settings.OpenToCategory(Settings.KEYBINDINGS_CATEGORY_ID, addonName);
+	end)
+	local QkButAction=CreateFrame("Button","QkBut_AutoSellBuy_"..gongnengNameE,UIParent, "SecureActionButtonTemplate");
+	QkButAction:SetAttribute("type", "item")
+	_G["BINDING_NAME_CLICK QkBut_AutoSellBuy_"..gongnengNameE..":LeftButton"]= "PIG"..OpenData[1]
 	local function zhixingClick(self,button)
 		if button=="LeftButton" then
 			if InCombatLockdown() then
-				PIGinfotip:TryDisplayMessage("请在脱战后使用")
+				PIGinfotip:TryDisplayMessage(ERR_NOT_IN_COMBAT)
 			else
-				local shujuy =PIGA["AutoSellBuy"]["Open_List"]
+				local shujuy =PIGA["AutoSellBuy"][gongnengNameE.."_List"]
 				if #shujuy>0 then
 					for bag=0,bagIDMax do			
 						local bganum=GetContainerNumSlots(bag)
@@ -51,25 +54,89 @@ function BusinessInfo.FastOpen()
 							end
 						end
 					end
-					PIGinfotip:TryDisplayMessage("没有需"..gongnengName.."物品")
+					PIGinfotip:TryDisplayMessage("没有需"..OpenData[1].."物品")
 				else
-					PIGinfotip:TryDisplayMessage(gongnengName.."目录为空,"..KEY_BUTTON2.."设置")
+					PIGinfotip:TryDisplayMessage(OpenData[1].."目录为空,"..KEY_BUTTON2.."设置")
 				end	
 			end
 		end
 	end
-	OpenItemKey:HookScript("PreClick",  function (self,button)
+	QkButAction:HookScript("PreClick",  function (self,button)
 		zhixingClick(self,button)
 	end);
+	--
+	fujiF.fuzhiCDM = PIGButton(fujiF,{"TOPLEFT",fujiF,"TOPLEFT",160,-10},{100,20},"创建"..OpenData[1].."宏");
+	local hongName = "PIG"..gongnengNameE
+	fujiF.fuzhiCDM:HookScript("OnShow", function (self)
+		local macroSlot = GetMacroIndexByName(hongName)
+		if macroSlot>0 then
+			self:SetText("更新"..OpenData[1].."宏");
+		else
+			self:SetText("创建"..OpenData[1].."宏");
+		end
+	end)
+	local function ADD_kaiqiHong()
+		local hongNR = [=[/click QkBut_AutoSellBuy_Open LeftButton]=]
+		local macroSlot = GetMacroIndexByName(hongName)
+		if macroSlot>0 then
+			EditMacro(macroSlot, nil, OpenData[2], hongNR)
+			PIGinfotip:TryDisplayMessage("已更新"..OpenData[1].."宏");
+		else
+			local global, perChar = GetNumMacros()
+			if global<120 then
+				CreateMacro(hongName, OpenData[2], hongNR, nil)
+				fujiF.fuzhiCDM:SetText("更新"..OpenData[1].."宏");
+			else
+				PIGinfotip:TryDisplayMessage(L["LIB_MACROERR"]);
+				return
+			end
+		end
+	end
+	fujiF.fuzhiCDM:HookScript("OnClick",  function (self)
+		if self:GetText()=="创建"..OpenData[1].."宏" then
+			StaticPopup_Show("AUTOSELLBUY_"..OpenData[1]);
+		else
+			ADD_kaiqiHong()
+		end	
+	end)
+	StaticPopupDialogs["AUTOSELLBUY_"..OpenData[1]] = {
+		text = "将创建一个名为"..hongName.."的"..OpenData[1].."宏\n\n确定创建吗？",
+		button1 = YES,
+		button2 = NO,
+		OnAccept = function()
+			ADD_kaiqiHong()
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+	}
 	---
+	fujiF.QkBut = PIGCheckbutton(fujiF,{"TOPLEFT",fujiF,"TOPLEFT",20,-44},{"添加到"..L["ACTION_TABNAME2"], "在"..L["ACTION_TABNAME2"].."增加一个快捷使用按钮"})
+	fujiF.QkBut:SetScript("OnClick", function (self)
+		if self:GetChecked() then
+			PIGA["AutoSellBuy"][gongnengNameE.."_QkBut"]=true;
+			QuickButUI.ButList[10]()
+			self.RL:Hide()
+		else
+			PIGA["AutoSellBuy"][gongnengNameE.."_QkBut"]=false;
+			self.RL:Show()
+		end
+	end);
+	fujiF.QkBut.RL = PIGButton(fujiF.QkBut,{"LEFT",fujiF.QkBut.Text,"RIGHT",4,0},{60,20},"重载UI")
+	fujiF.QkBut.RL:Hide()
+	fujiF.QkBut.RL:SetScript("OnClick", function (self)
+		ReloadUI()
+	end)
+	fujiF:HookScript("OnShow", function (self)
+		self.QkBut:SetChecked(PIGA["AutoSellBuy"][gongnengNameE.."_QkBut"])
+	end);
 	QuickButUI.ButList[10]=function()
-		if PIGA["QuickBut"]["Open"] and PIGA["AutoSellBuy"]["Open"] and PIGA["AutoSellBuy"]["Open_QkBut"] then
-			local QkButUI = "QkBut_FastOpen"
+		if PIGA["QuickBut"]["Open"] and PIGA["AutoSellBuy"]["Open"] and PIGA["AutoSellBuy"][gongnengNameE.."_QkBut"] then
+			local QkButUI = "QkBut_Fast"..gongnengNameE
 			if _G[QkButUI] then return end
-			local QuickTooltip = KEY_BUTTON1.."-|cff00FFFF"..gongnengName.."指定物品|r\n"..KEY_BUTTON2.."-|cff00FFFF打开"..GnName.."|r"
-			local QkBut=PIGQuickBut(QkButUI,QuickTooltip,buticon,nil,FrameLevel,"SecureActionButtonTemplate")
+			local QuickTooltip = KEY_BUTTON1.."-|cff00FFFF"..OpenData[1].."指定物品|r\n"..KEY_BUTTON2.."-|cff00FFFF打开"..GnName.."|r"
+			local QkBut=PIGQuickBut(QkButUI,QuickTooltip,OpenData[2],nil,FrameLevel,"SecureActionButtonTemplate")
 			QkBut:SetAttribute("type", "item")
-			PIGUseKeyDown(QkBut)
 			QkBut:HookScript("PreClick",  function (self,button)
 				zhixingClick(self,button)
 			end);
@@ -85,84 +152,4 @@ function BusinessInfo.FastOpen()
 			end);
 		end
 	end
-	fujiF.Open_Tishi = PIGCheckbutton(fujiF,{"TOPLEFT",fujiF,"TOPLEFT",10,-6},{"提示"..gongnengName, "有可"..gongnengName.."物品将会在"..L["ACTION_TABNAME2"].."按钮提示"})
-	fujiF.Open_Tishi:SetScript("OnClick", function (self)
-		if self:GetChecked() then
-			PIGA["AutoSellBuy"]["Open_Tishi"]=true;
-		else
-			PIGA["AutoSellBuy"]["Open_Tishi"]=false;
-		end
-	end);
-	fujiF.Open_Tishi:SetChecked(PIGA["AutoSellBuy"]["Open_Tishi"])
-	fujiF.QkBut = PIGCheckbutton(fujiF,{"TOPLEFT",fujiF,"TOPLEFT",140,-6},{"添加到"..L["ACTION_TABNAME2"], "在"..L["ACTION_TABNAME2"].."增加一个快捷使用按钮"})
-	fujiF.QkBut:SetScript("OnClick", function (self)
-		if self:GetChecked() then
-			PIGA["AutoSellBuy"]["Open_QkBut"]=true;
-			QuickButUI.ButList[10]()
-			self.RL:Hide()
-		else
-			PIGA["AutoSellBuy"]["Open_QkBut"]=false;
-			self.RL:Show()
-		end
-	end);
-	fujiF.QkBut:SetChecked(PIGA["AutoSellBuy"]["Open_QkBut"])
-
-	fujiF.QkBut.RL = PIGButton(fujiF.QkBut,{"LEFT",fujiF.QkBut.Text,"RIGHT",4,0},{60,20},"重载UI")
-	fujiF.QkBut.RL:Hide()
-	fujiF.QkBut.RL:SetScript("OnClick", function (self)
-		ReloadUI()
-	end)
-	--
-	fujiF.fuzhiCDM = PIGButton(fujiF,{"TOPLEFT",fujiF,"TOPLEFT",60,-32},{90,22},"创建"..gongnengName.."宏");
-	PIGEnter(fujiF.fuzhiCDM,"注意:","|cffFF0000当你更改<按下按键时施法>请更新一次宏|r")
-	local hongName = "PIGOpen"
-	fujiF.fuzhiCDM:HookScript("OnShow", function (self)
-		local macroSlot = GetMacroIndexByName(hongName)
-		if macroSlot>0 then
-			self:SetText("更新"..gongnengName.."宏");
-		else
-			self:SetText("创建"..gongnengName.."宏");
-		end
-	end)
-	local function ADD_kaiqiHong()
-		local hongNR = [=[/click OpenItemKey]=]
-		local UseKeyDown =GetCVar("ActionButtonUseKeyDown")
-		if UseKeyDown=="0" then
-			hongNR = [=[/click OpenItemKey LeftButton 0]=]
-		elseif UseKeyDown=="1" then
-			hongNR = [=[/click OpenItemKey LeftButton 1]=]
-		end
-		local macroSlot = GetMacroIndexByName(hongName)
-		if macroSlot>0 then
-			EditMacro(macroSlot, nil, buticon, hongNR)
-			PIGinfotip:TryDisplayMessage("已更新"..gongnengName.."宏");
-		else
-			local global, perChar = GetNumMacros()
-			if global<120 then
-				CreateMacro(hongName, buticon, hongNR, nil)
-				fujiF.fuzhiCDM:SetText("更新"..gongnengName.."宏");
-			else
-				PIGinfotip:TryDisplayMessage(L["LIB_MACROERR"]);
-				return
-			end
-		end
-	end
-	fujiF.fuzhiCDM:HookScript("OnClick",  function (self)
-		if self:GetText()=="创建"..gongnengName.."宏" then
-			StaticPopup_Show("ADD_OPEN_HONG");
-		else
-			ADD_kaiqiHong()
-		end	
-	end)
-	StaticPopupDialogs["ADD_OPEN_HONG"] = {
-		text = "将创建一个"..gongnengName.."宏，请拖拽到动作条使用\n\n确定创建吗？\n\n|cffFF0000当你更改<按下按键时施法>请更新一次宏|r",
-		button1 = YES,
-		button2 = NO,
-		OnAccept = function()
-			ADD_kaiqiHong()
-		end,
-		timeout = 0,
-		whileDead = true,
-		hideOnEscape = true,
-	}
 end

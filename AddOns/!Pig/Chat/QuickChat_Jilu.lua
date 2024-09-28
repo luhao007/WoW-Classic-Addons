@@ -19,7 +19,7 @@ local PIGOptionsList_RF=Create.PIGOptionsList_RF
 local PIGOptionsList_R=Create.PIGOptionsList_R
 local PIGFontString=Create.PIGFontString
 local PIGFontStringBG=Create.PIGFontStringBG
-local PIGCloseBut=Create.PIGCloseBut
+local PIGDiyBut=Create.PIGDiyBut
 -----------------------------------------
 local Fun=addonTable.Fun
 local TihuanBiaoqing=Fun.TihuanBiaoqing
@@ -516,8 +516,8 @@ function QuickChatfun.QuickBut_Jilu()
 		hang.zhiye:SetPoint("LEFT", hang, "LEFT", 4,0);
 		hang.zhiye:SetSize(hang_Height-5,hang_Height-5);
 		hang.name = PIGFontString(hang,{"LEFT", hang.zhiye, "RIGHT", 4,0},nil,nil,13)
-		hang.del = PIGCloseBut(hang,{"RIGHT",hang,"RIGHT",-14,-0});
-		hang.del.Tex:SetAlpha(0.5)
+		hang.del = PIGDiyBut(hang,{"RIGHT",hang,"RIGHT",-14,-0});
+		hang.del.icon:SetAlpha(0.5)
 		hang.del:HookScript("OnClick", function (self)
 			local idid=self:GetID()
 			local shuju=PIGA["Chatjilu"]["jiluinfo"]["WHISPER"]["neirong"]	
@@ -529,6 +529,7 @@ function QuickChatfun.QuickBut_Jilu()
 	---聊天内容显示区域---
 	miyijiluF.nr=PIGFrame(miyijiluF,{"TOPRIGHT",miyijiluF,"TOPLEFT",-1,0},{400,120})
 	miyijiluF.nr:PIGSetBackdrop()
+	miyijiluF.nr:SetFrameStrata("HIGH")
 	miyijiluF.nr:Hide()
 	miyijiluF.nr:HookScript("OnEnter",  function(self)
 		self:Show();
@@ -913,7 +914,7 @@ function QuickChatfun.QuickBut_Jilu()
 		buttonNormal:SetRotation(math.rad(180))
 		local buttonPushed=PindaolistF.Msg.Scroll.kaishi:GetPushedTexture() 
 		buttonPushed:SetRotation(math.rad(180))
-		PindaolistF.Msg.Scroll.del =PIGCloseBut(PindaolistF.Msg.Scroll,{"TOPLEFT",PindaolistF.Msg.Scroll,"TOPRIGHT",1,-4},nil,"PindaolistF.Msg_del"..id.."_UI")
+		PindaolistF.Msg.Scroll.del =PIGDiyBut(PindaolistF.Msg.Scroll,{"TOPLEFT",PindaolistF.Msg.Scroll,"TOPRIGHT",1,-4},nil,"PindaolistF.Msg_del"..id.."_UI")
 
 		PindaolistF.Msg.Scroll.kaishi:SetScript("OnClick", function (self)
 			PindaolistF.Msg.Scroll:ScrollToTop()

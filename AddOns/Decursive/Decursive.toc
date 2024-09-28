@@ -1,14 +1,16 @@
 ## Interface: 30400
 ## Author: John Wellesz
 ## Version: 2.7.19
-## OptionalDeps: Ace3, LibQTip-1.0, LibDataBroker-1.1, LibDBIcon-1.0, !BugGrabber, LibDualSpec-1.0
-## LoadManagers: AddonLoader
-## SavedVariables: DecursiveDB
 
 ## Title: Decursive |cffff00ff -Ace3-|r
 ## Notes: Afflictions display and cleaning for solo, group and raid with advanced filtering and priority system.
 ## Title-zhCN: |cFFFFE00A<|r|cFFC79C6E战斗|r|cFFFFE00A>|r |cFFFFFFFF一键驱散|r |cFFFFE00ADecursive|r
 ## Notes-zhCN: 一键驱散队员的异常状态
+
+## OptionalDeps: Ace3, LibQTip-1.0, LibDataBroker-1.1, LibDBIcon-1.0, !BugGrabber, LibDualSpec-1.0
+## LoadManagers: AddonLoader
+
+## SavedVariables: DecursiveDB
 
 ## X-Max-Interface: 100207
 ## X-Min-Interface: 11502

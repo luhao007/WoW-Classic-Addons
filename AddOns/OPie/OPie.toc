@@ -1,14 +1,16 @@
 ## Interface: 30400
 ## Author: foxlit
 ## Version: Zeta 6
-## OptionalDeps: TaintLess
-## SavedVariables: OneRing_Config, OPie_SavedData
-## SavedVariablesPerCharacter: OPie_SavedDataPC
 
 ## Title: OPie
 ## Notes: Group abilities into rings that appear when you hold down a binding.
 ## Title-zhCN: |cFFFFE00A<|r|cFFFFF468功能|r|cFFFFE00A>|r |cFFFFFFFF环形动作条|r |cFFFFE00AOPie|r
 ## Notes-zhCN: 当你按下快捷键时显示一个环形的技能分组.
+
+## OptionalDeps: TaintLess
+
+## SavedVariables: OneRing_Config, OPie_SavedData
+## SavedVariablesPerCharacter: OPie_SavedDataPC
 
 ## X-Website: https://www.townlong-yak.com/addons/opie
 ## X-M6-AB: OPie.ActionBook

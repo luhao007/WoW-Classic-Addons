@@ -1,13 +1,15 @@
 ## Interface: 30400
 ## Author: The Wago team
 ## Version: 1.0.0
-## LoadOnDemand: 0
-## DefaultState: Enabled
-## IconTexture: Interface\AddOns\WagoAppCompanion\logo.png
 
 ## Title: Wago App Companion
 ## Title-zhCN: |cFFFFE00A<|r|cFFFFFFFF辅助|r|cFFFFE00A>|r |cFFFFFFFFWagoApp伴侣|r |cFFFFE00AWagoAppCompanion|r
 ## Notes-zhCN: 辅助Wago App收集插件使用状况
+
+## IconTexture: Interface\AddOns\WagoAppCompanion\logo.png
+
+## LoadOnDemand: 0
+## DefaultState: Enabled
 
 
 data.lua

@@ -1,12 +1,14 @@
 ## Interface: 30400
 ## Author: MysticalOS
-## RequiredDeps: DBM-Core
-## LoadOnDemand: 1
-## SavedVariables: DBMPartyVanilla_AllSavedVars
-## SavedVariablesPerCharacter: DBMPartyVanilla_SavedStats
 
 ## Title: |cffffe00a<|r|cffff7d0aDBM Mod|r|cffffe00a>|r |cffc030c0Dungeons (Vanilla)|r
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFF69CCF0小队|r |cFF22B14C旧世经典（怀旧服）|r
+
+## RequiredDeps: DBM-Core
+## LoadOnDemand: 1
+
+## SavedVariables: DBMPartyVanilla_AllSavedVars
+## SavedVariablesPerCharacter: DBMPartyVanilla_SavedStats
 
 ## X-Min-Interface: 30400
 ## X-DBM-Mod: 1
@@ -95,14 +97,14 @@ Classic\UpperBlackrockSpire\TheBeast.lua
 Classic\UpperBlackrockSpire\LordValthalak.lua
 Classic\UpperBlackrockSpire\GeneralDrakkisath.lua
 
-Classic\Deadmines\RhahkZor.lua
-Classic\Deadmines\MinerJohnson.lua
-Classic\Deadmines\SneedsShredder.lua
-Classic\Deadmines\Gilnid.lua
-Classic\Deadmines\MrSmite.lua
-Classic\Deadmines\CaptainGreenskin.lua
-Classic\Deadmines\EdwinVanCleef.lua
-Classic\Deadmines\Cookie.lua
+Shared\Deadmines\RhahkZor.lua
+Shared\Deadmines\MinerJohnson.lua
+Shared\Deadmines\SneedsShredder.lua
+Shared\Deadmines\Gilnid.lua
+Shared\Deadmines\MrSmite.lua
+Shared\Deadmines\CaptainGreenskin.lua
+Shared\Deadmines\EdwinVanCleef.lua
+Shared\Deadmines\Cookie.lua
 
 Shared\DireMaul\ZevrimThornhoof.lua
 Shared\DireMaul\Hydrospawn.lua

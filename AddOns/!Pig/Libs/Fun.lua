@@ -10,7 +10,6 @@ local Fun = {}
 addonTable.Fun=Fun
 local L =addonTable.locale
 -------------
-
 function PIGGetIconForRole(role)
 	if role=="NONE" then
 		return "UI-LFG-RoleIcon-Pending"
@@ -63,25 +62,29 @@ function PIGGetSpellCooldown(SpellID)
 	end
 end
 --获取背包信息
-function PIGGetContainerIDlink(bag, slot)
+function PIGGetContainerItemInfo(bag, slot)
 	if C_Container and C_Container.GetContainerItemInfo then
 		local ItemInfo = C_Container.GetContainerItemInfo(bag, slot)
 		if ItemInfo then
-			return ItemInfo.itemID, ItemInfo.hyperlink, ItemInfo.iconFileID, ItemInfo.stackCount, ItemInfo.quality, ItemInfo.hasNoValue
+			return ItemInfo.itemID,ItemInfo.hyperlink,ItemInfo.iconFileID,ItemInfo.stackCount,ItemInfo.quality,ItemInfo.hasNoValue,ItemInfo.hasLoot,ItemInfo.isLocked
 		end
 	else
-		local itemID, itemLink, icon, stackCount, quality = GetContainerItemInfo(bag, slot)
-		return itemID, itemLink, icon, stackCount, quality
+		local icon, itemCount, locked, quality, readable, lootable, itemLink, isFiltered, noValue, itemID, isBound = GetContainerItemInfo(bag, slot)
+		return itemID, itemLink, icon, stackCount, quality, noValue, lootable, locked
 	end
 end
 --发送消息
-function PIGSendChatRaidParty(txt)
+function PIGSendChatRaidParty(txt,GroupLeader)
 	if IsInRaid() then
-		SendChatMessage(txt, "RAID");
+		if GroupLeader then
+			SendChatMessage(txt, "RAID_WARNING");
+		else
+			SendChatMessage(txt, "RAID");
+		end
 	elseif IsInGroup() then
 		SendChatMessage(txt, "PARTY");
 	else
-		SendChatMessage(txt, "SAY");
+		--SendChatMessage(txt, "SAY");
 	end
 end
 function PIGSendAddonMessage(biaotou,txt)
@@ -189,6 +192,39 @@ function Fun.GetRaceClassTXT(iconH,texW,race,sex,class,color)
 	end
 	return RaceX,ClassX
 end
+local biaoqingData = {
+	{"{rt1}","INTERFACE/TARGETINGFRAME/UI-RAIDTARGETINGICON_1"}, {"{rt2}","INTERFACE/TARGETINGFRAME/UI-RAIDTARGETINGICON_2"}, 
+	{"{rt3}","INTERFACE/TARGETINGFRAME/UI-RAIDTARGETINGICON_3"}, {"{rt4}","INTERFACE/TARGETINGFRAME/UI-RAIDTARGETINGICON_4"}, 
+	{"{rt5}","INTERFACE/TARGETINGFRAME/UI-RAIDTARGETINGICON_5"}, {"{rt6}","INTERFACE/TARGETINGFRAME/UI-RAIDTARGETINGICON_6"}, 
+	{"{rt7}","INTERFACE/TARGETINGFRAME/UI-RAIDTARGETINGICON_7"}, {"{rt8}","INTERFACE/TARGETINGFRAME/UI-RAIDTARGETINGICON_8"},
+	{"{天使}","Interface/AddOns/"..addonName.."/Chat/icon/angel.tga"},{"{生气}","Interface/AddOns/"..addonName.."/Chat/icon/angry.tga"},
+	{"{大笑}","Interface/AddOns/"..addonName.."/Chat/icon/biglaugh.tga"},{"{鼓掌}","Interface/AddOns/"..addonName.."/Chat/icon/clap.tga"},
+	{"{酷}","Interface/AddOns/"..addonName.."/Chat/icon/cool.tga"},{"{哭}","Interface/AddOns/"..addonName.."/Chat/icon/cry.tga"},
+	{"{可爱}","Interface/AddOns/"..addonName.."/Chat/icon/cutie.tga"},{"{鄙视}","Interface/AddOns/"..addonName.."/Chat/icon/despise.tga"},
+	{"{美梦}","Interface/AddOns/"..addonName.."/Chat/icon/dreamsmile.tga"},{"{尴尬}","Interface/AddOns/"..addonName.."/Chat/icon/embarrass.tga"},
+	{"{邪恶}","Interface/AddOns/"..addonName.."/Chat/icon/evil.tga"},{"{兴奋}","Interface/AddOns/"..addonName.."/Chat/icon/excited.tga"},
+	{"{晕}","Interface/AddOns/"..addonName.."/Chat/icon/faint.tga"},{"{打架}","Interface/AddOns/"..addonName.."/Chat/icon/fight.tga"},
+	{"{流感}","Interface/AddOns/"..addonName.."/Chat/icon/flu.tga"},{"{呆}","Interface/AddOns/"..addonName.."/Chat/icon/freeze.tga"},
+	{"{皱眉}","Interface/AddOns/"..addonName.."/Chat/icon/frown.tga"},{"{致敬}","Interface/AddOns/"..addonName.."/Chat/icon/greet.tga"},
+	{"{鬼脸}","Interface/AddOns/"..addonName.."/Chat/icon/grimace.tga"},{"{龇牙}","Interface/AddOns/"..addonName.."/Chat/icon/growl.tga"},
+	{"{开心}","Interface/AddOns/"..addonName.."/Chat/icon/happy.tga"},{"{心}","Interface/AddOns/"..addonName.."/Chat/icon/heart.tga"},
+	{"{恐惧}","Interface/AddOns/"..addonName.."/Chat/icon/horror.tga"},{"{生病}","Interface/AddOns/"..addonName.."/Chat/icon/ill.tga"},
+	{"{无辜}","Interface/AddOns/"..addonName.."/Chat/icon/Innocent.tga"},{"{功夫}","Interface/AddOns/"..addonName.."/Chat/icon/kongfu.tga"},
+	{"{花痴}","Interface/AddOns/"..addonName.."/Chat/icon/love.tga"},{"{邮件}","Interface/AddOns/"..addonName.."/Chat/icon/mail.tga"},
+	{"{化妆}","Interface/AddOns/"..addonName.."/Chat/icon/makeup.tga"},{"{马里奥}","Interface/AddOns/"..addonName.."/Chat/icon/mario.tga"},
+	{"{沉思}","Interface/AddOns/"..addonName.."/Chat/icon/meditate.tga"},{"{可怜}","Interface/AddOns/"..addonName.."/Chat/icon/miserable.tga"},
+	{"{好}","Interface/AddOns/"..addonName.."/Chat/icon/okay.tga"},{"{漂亮}","Interface/AddOns/"..addonName.."/Chat/icon/pretty.tga"},
+	{"{吐}","Interface/AddOns/"..addonName.."/Chat/icon/puke.tga"},{"{握手}","Interface/AddOns/"..addonName.."/Chat/icon/shake.tga"},
+	{"{喊}","Interface/AddOns/"..addonName.."/Chat/icon/shout.tga"},{"{闭嘴}","Interface/AddOns/"..addonName.."/Chat/icon/shuuuu.tga"},
+	{"{害羞}","Interface/AddOns/"..addonName.."/Chat/icon/shy.tga"},{"{睡觉}","Interface/AddOns/"..addonName.."/Chat/icon/sleep.tga"},
+	{"{微笑}","Interface/AddOns/"..addonName.."/Chat/icon/smile.tga"},{"{吃惊}","Interface/AddOns/"..addonName.."/Chat/icon/suprise.tga"},
+	{"{失败}","Interface/AddOns/"..addonName.."/Chat/icon/surrender.tga"},{"{流汗}","Interface/AddOns/"..addonName.."/Chat/icon/sweat.tga"},
+	{"{流泪}","Interface/AddOns/"..addonName.."/Chat/icon/tear.tga"},{"{悲剧}","Interface/AddOns/"..addonName.."/Chat/icon/tears.tga"},
+	{"{想}","Interface/AddOns/"..addonName.."/Chat/icon/think.tga"},{"{偷笑}","Interface/AddOns/"..addonName.."/Chat/icon/Titter.tga"},
+	{"{猥琐}","Interface/AddOns/"..addonName.."/Chat/icon/ugly.tga"},{"{胜利}","Interface/AddOns/"..addonName.."/Chat/icon/victory.tga"},
+	{"{雷锋}","Interface/AddOns/"..addonName.."/Chat/icon/volunteer.tga"},{"{委屈}","Interface/AddOns/"..addonName.."/Chat/icon/wronged.tga"},
+};
+Fun.biaoqingData=biaoqingData
 --删除聊天link信息
 function Fun.del_link(newText)
 	local newText = newText or ""
@@ -234,6 +270,9 @@ function Fun.gsub_NOlink(newText)--替换Link之外信息
 	find_NOlink(paichuinfo,newText,"(|cff%w%w%w%w%w%w|Hworldmap:.-|h%[.-%]|h|r)");
 	find_NOlink(paichuinfo,newText,"(|cff%w%w%w%w%w%w|T.-:%d|t)");
 	find_NOlink(paichuinfo,newText,"(|cff%w%w%w%w%w%w|T.-:%d|T)");
+	for i=1,#biaoqingData do
+		find_NOlink(paichuinfo,newText,biaoqingData[i][1]);
+	end
 	return paichuinfo
 end
 function Fun.Is_IndexContain(paichuinfo,start,over)--判断是否在编号内
@@ -245,39 +284,7 @@ function Fun.Is_IndexContain(paichuinfo,start,over)--判断是否在编号内
 	end
 	return false
 end
-local biaoqingData = {
-	{"{rt1}","INTERFACE/TARGETINGFRAME/UI-RAIDTARGETINGICON_1"}, {"{rt2}","INTERFACE/TARGETINGFRAME/UI-RAIDTARGETINGICON_2"}, 
-	{"{rt3}","INTERFACE/TARGETINGFRAME/UI-RAIDTARGETINGICON_3"}, {"{rt4}","INTERFACE/TARGETINGFRAME/UI-RAIDTARGETINGICON_4"}, 
-	{"{rt5}","INTERFACE/TARGETINGFRAME/UI-RAIDTARGETINGICON_5"}, {"{rt6}","INTERFACE/TARGETINGFRAME/UI-RAIDTARGETINGICON_6"}, 
-	{"{rt7}","INTERFACE/TARGETINGFRAME/UI-RAIDTARGETINGICON_7"}, {"{rt8}","INTERFACE/TARGETINGFRAME/UI-RAIDTARGETINGICON_8"},
-	{"{天使}","Interface/AddOns/"..addonName.."/Chat/icon/angel.tga"},{"{生气}","Interface/AddOns/"..addonName.."/Chat/icon/angry.tga"},
-	{"{大笑}","Interface/AddOns/"..addonName.."/Chat/icon/biglaugh.tga"},{"{鼓掌}","Interface/AddOns/"..addonName.."/Chat/icon/clap.tga"},
-	{"{酷}","Interface/AddOns/"..addonName.."/Chat/icon/cool.tga"},{"{哭}","Interface/AddOns/"..addonName.."/Chat/icon/cry.tga"},
-	{"{可爱}","Interface/AddOns/"..addonName.."/Chat/icon/cutie.tga"},{"{鄙视}","Interface/AddOns/"..addonName.."/Chat/icon/despise.tga"},
-	{"{美梦}","Interface/AddOns/"..addonName.."/Chat/icon/dreamsmile.tga"},{"{尴尬}","Interface/AddOns/"..addonName.."/Chat/icon/embarrass.tga"},
-	{"{邪恶}","Interface/AddOns/"..addonName.."/Chat/icon/evil.tga"},{"{兴奋}","Interface/AddOns/"..addonName.."/Chat/icon/excited.tga"},
-	{"{晕}","Interface/AddOns/"..addonName.."/Chat/icon/faint.tga"},{"{打架}","Interface/AddOns/"..addonName.."/Chat/icon/fight.tga"},
-	{"{流感}","Interface/AddOns/"..addonName.."/Chat/icon/flu.tga"},{"{呆}","Interface/AddOns/"..addonName.."/Chat/icon/freeze.tga"},
-	{"{皱眉}","Interface/AddOns/"..addonName.."/Chat/icon/frown.tga"},{"{致敬}","Interface/AddOns/"..addonName.."/Chat/icon/greet.tga"},
-	{"{鬼脸}","Interface/AddOns/"..addonName.."/Chat/icon/grimace.tga"},{"{龇牙}","Interface/AddOns/"..addonName.."/Chat/icon/growl.tga"},
-	{"{开心}","Interface/AddOns/"..addonName.."/Chat/icon/happy.tga"},{"{心}","Interface/AddOns/"..addonName.."/Chat/icon/heart.tga"},
-	{"{恐惧}","Interface/AddOns/"..addonName.."/Chat/icon/horror.tga"},{"{生病}","Interface/AddOns/"..addonName.."/Chat/icon/ill.tga"},
-	{"{无辜}","Interface/AddOns/"..addonName.."/Chat/icon/Innocent.tga"},{"{功夫}","Interface/AddOns/"..addonName.."/Chat/icon/kongfu.tga"},
-	{"{花痴}","Interface/AddOns/"..addonName.."/Chat/icon/love.tga"},{"{邮件}","Interface/AddOns/"..addonName.."/Chat/icon/mail.tga"},
-	{"{化妆}","Interface/AddOns/"..addonName.."/Chat/icon/makeup.tga"},{"{马里奥}","Interface/AddOns/"..addonName.."/Chat/icon/mario.tga"},
-	{"{沉思}","Interface/AddOns/"..addonName.."/Chat/icon/meditate.tga"},{"{可怜}","Interface/AddOns/"..addonName.."/Chat/icon/miserable.tga"},
-	{"{好}","Interface/AddOns/"..addonName.."/Chat/icon/okay.tga"},{"{漂亮}","Interface/AddOns/"..addonName.."/Chat/icon/pretty.tga"},
-	{"{吐}","Interface/AddOns/"..addonName.."/Chat/icon/puke.tga"},{"{握手}","Interface/AddOns/"..addonName.."/Chat/icon/shake.tga"},
-	{"{喊}","Interface/AddOns/"..addonName.."/Chat/icon/shout.tga"},{"{闭嘴}","Interface/AddOns/"..addonName.."/Chat/icon/shuuuu.tga"},
-	{"{害羞}","Interface/AddOns/"..addonName.."/Chat/icon/shy.tga"},{"{睡觉}","Interface/AddOns/"..addonName.."/Chat/icon/sleep.tga"},
-	{"{微笑}","Interface/AddOns/"..addonName.."/Chat/icon/smile.tga"},{"{吃惊}","Interface/AddOns/"..addonName.."/Chat/icon/suprise.tga"},
-	{"{失败}","Interface/AddOns/"..addonName.."/Chat/icon/surrender.tga"},{"{流汗}","Interface/AddOns/"..addonName.."/Chat/icon/sweat.tga"},
-	{"{流泪}","Interface/AddOns/"..addonName.."/Chat/icon/tear.tga"},{"{悲剧}","Interface/AddOns/"..addonName.."/Chat/icon/tears.tga"},
-	{"{想}","Interface/AddOns/"..addonName.."/Chat/icon/think.tga"},{"{偷笑}","Interface/AddOns/"..addonName.."/Chat/icon/Titter.tga"},
-	{"{猥琐}","Interface/AddOns/"..addonName.."/Chat/icon/ugly.tga"},{"{胜利}","Interface/AddOns/"..addonName.."/Chat/icon/victory.tga"},
-	{"{雷锋}","Interface/AddOns/"..addonName.."/Chat/icon/volunteer.tga"},{"{委屈}","Interface/AddOns/"..addonName.."/Chat/icon/wronged.tga"},
-};
-Fun.biaoqingData=biaoqingData
+
 local function TihuanBiaoqing(arg1)
 	for i=1,#biaoqingData do
 		if arg1:match(biaoqingData[i][1]) then

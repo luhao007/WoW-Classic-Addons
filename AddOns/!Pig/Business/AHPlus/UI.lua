@@ -34,8 +34,8 @@ end
 local function zhixingdianjiFUn(framef)
 	framef:HookScript("PreClick",  function (self,button)
 		if button=="RightButton" and not IsShiftKeyDown() and not IsControlKeyDown() and not IsAltKeyDown() then
-			local info = C_Container.GetContainerItemInfo(self:GetParent():GetID(), self:GetID());
-			if info then
+			local itemID=PIGGetContainerItemInfo(self:GetParent():GetID(), self:GetID())
+			if itemID then
 				if IsAddOnLoaded("Blizzard_AuctionUI") then AuctionFrameTab_OnClick(AuctionFrameTab3) end
 			end
 		end

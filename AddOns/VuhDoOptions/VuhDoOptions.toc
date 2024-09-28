@@ -1,15 +1,17 @@
 ## Interface: 30400
 ## Author: Iza@Gilneas, humfras, Ivaria@Hyjal
 ## Version: 3.164-wotlkc
-## Dependencies: VuhDo
-## LoadOnDemand: 0
-## SavedVariables: VUHDO_OPTIONS_SETTINGS
-## SavedVariablesPerCharacter: VUHDO_GLOBAL_ICONS, VUHDO_GI_SCAN_IDX
-## DefaultState: Enabled
 
 ## Title: VuhDo ['vu:du:] - Options
 ## Notes: VuhDo Options
 ## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFF团队面板|r |cFF0055FF设置|r
+
+## Dependencies: VuhDo
+## LoadOnDemand: 0
+## DefaultState: Enabled
+
+## SavedVariables: VUHDO_OPTIONS_SETTINGS
+## SavedVariablesPerCharacter: VUHDO_GLOBAL_ICONS, VUHDO_GI_SCAN_IDX
 
 ## X-Curse-Project-ID: 7950
 ## X-WoWI-ID: 26372

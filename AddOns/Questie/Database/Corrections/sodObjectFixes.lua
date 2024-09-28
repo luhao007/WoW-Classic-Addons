@@ -521,5 +521,25 @@ function SeasonOfDiscovery:LoadObjects()
                 [zoneIDs.WESTERN_PLAGUELANDS] = {{69.41,72.84}},
             },
         },
+        [467315] = { -- Old Campsite
+            [objectKeys.name] = "Old Campsite",
+            [objectKeys.zoneID] = zoneIDs.WINTERSPRING,
+            [objectKeys.spawns] = {
+                [zoneIDs.WINTERSPRING] = {{58,21}},
+            },
+        },
+        [469796] = { -- Crude Tent -- TODO: This might be wrong
+            [objectKeys.name] = "Crude Tent",
+            [objectKeys.zoneID] = zoneIDs.WINTERSPRING,
+            [objectKeys.spawns] = {
+                [zoneIDs.WINTERSPRING] = {{58,21}},
+            },
+        },
+        [478075] = { -- Campsite
+            [objectKeys.zoneID] = zoneIDs.BURNING_STEPPES,
+            [objectKeys.spawns] = {
+                [zoneIDs.BURNING_STEPPES] = {{17,46}},
+            },
+        },
     }
 end

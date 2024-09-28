@@ -1,14 +1,17 @@
 ## Interface: 30400
 ## Author: MysticalOS
-## Version: 11.0.5
-## RequiredDeps: DBM-Core
-## LoadOnDemand: 1
-## SavedVariables: DBMRaidsWarWithin_AllSavedVars
-## SavedVariablesPerCharacter: DBMRaidsWarWithin_SavedStats
-## IconTexture: Interface\AddOns\DBM-Core\textures\dbm_airhorn
+## Version: 11.0.19
 
 ## Title: |cffffe00a<|r|cffff7d0aDBM Mod|r|cffffe00a>|r |cffff6010Raids (WW)|r
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFF69CCF0团队|r |cFF22B14C地心之战|r
+
+## IconTexture: Interface\AddOns\DBM-Core\textures\dbm_airhorn
+
+## RequiredDeps: DBM-Core
+## LoadOnDemand: 1
+
+## SavedVariables: DBMRaidsWarWithin_AllSavedVars
+## SavedVariablesPerCharacter: DBMRaidsWarWithin_SavedStats
 
 ## X-Min-Interface: 100206
 ## X-DBM-Mod: 1

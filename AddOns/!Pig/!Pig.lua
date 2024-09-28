@@ -36,6 +36,7 @@ PIGUI:SetScript("OnEvent",function(self, event, arg1)
 		addonTable.Business()
 		addonTable.BagBank()
 		addonTable.Chat()
+		addonTable.PigLayout()
 		--
 		QuickButUI:Add()
 		addonTable.Create.PIGSetPoint()

@@ -2,7 +2,7 @@ if not DBM:IsRetail() then return end
 local mod	= DBM:NewMod("GrimBatolTrash", "DBM-Party-Cataclysm", 3)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240902224710")
+mod:SetRevision("20240925005958")
 --mod:SetModelID(47785)
 mod.isTrashMod = true
 mod.isTrashModBossFightAllowed = true
@@ -32,11 +32,11 @@ local warnMindPiercer					= mod:NewTargetNoFilterAnnounce(451394, 4)
 local specWarnUmbralWind				= mod:NewSpecialWarningSpell(451939, nil, nil, nil, 2, 2)
 local specWarnAscension					= mod:NewSpecialWarningDodge(451387, nil, nil, nil, 2, 2)
 local specWarnObsidianStomp				= mod:NewSpecialWarningDodge(456696, nil, nil, nil, 2, 2)
-local specWarnShadowlavaBlast			= mod:NewSpecialWarningDodge(456711, nil, nil, nil, 2, 2)
+local specWarnShadowlavaBlast			= mod:NewSpecialWarningDodge(456711, nil, nil, nil, 2, 15)
 local specWarnDarkEruption				= mod:NewSpecialWarningDodge(456713, nil, nil, nil, 2, 2)
 local specWarnDecapitate				= mod:NewSpecialWarningDodge(451067, nil, nil, nil, 2, 2)
 local specWarnMindPiercer				= mod:NewSpecialWarningDodge(451391, nil, nil, nil, 2, 2)
-local specWarnBlazingShadowflame		= mod:NewSpecialWarningDodge(462216, nil, nil, nil, 2, 2)
+local specWarnBlazingShadowflame		= mod:NewSpecialWarningDodge(462216, nil, nil, nil, 2, 15)
 local specWarnTwilightFlames			= mod:NewSpecialWarningMoveAway(451612, nil, nil, nil, 2, 2)
 local specWarnLavaFist					= mod:NewSpecialWarningDefensive(451971, nil, nil, nil, 2, 2)--12.8
 local yellTwilightFlames				= mod:NewShortYell(451612)
@@ -82,6 +82,7 @@ end
 
 
 function mod:SPELL_CAST_START(args)
+	if not self.Options.Enabled then return end
 	local spellId = args.spellId
 	if not self:IsValidWarning(args.sourceGUID) then return end
 	if spellId == 451871 then
@@ -115,7 +116,7 @@ function mod:SPELL_CAST_START(args)
 	elseif spellId == 456711 then
 		if self:AntiSpam(3, 2) then
 			specWarnShadowlavaBlast:Show()
-			specWarnShadowlavaBlast:Play("shockwave")
+			specWarnShadowlavaBlast:Play("frontal")
 		end
 	elseif spellId == 456713 then
 		if self:AntiSpam(3, 2) then
@@ -150,12 +151,13 @@ function mod:SPELL_CAST_START(args)
 	elseif spellId == 462216 then
 		if self:AntiSpam(3, 2) then
 			specWarnBlazingShadowflame:Show()
-			specWarnBlazingShadowflame:Play("shockwave")
+			specWarnBlazingShadowflame:Play("frontal")
 		end
 	end
 end
 
 function mod:SPELL_CAST_SUCCESS(args)
+	if not self.Options.Enabled then return end
 	local spellId = args.spellId
 	if not self:IsValidWarning(args.sourceGUID) then return end
 	if spellId == 451224 then
@@ -190,6 +192,7 @@ function mod:SPELL_CAST_SUCCESS(args)
 end
 
 function mod:SPELL_INTERRUPT(args)
+	if not self.Options.Enabled then return end
 	if type(args.extraSpellId) ~= "number" then return end
 	if args.extraSpellId == 451871 then
 		timerMassTremorCD:Start(20, args.destGUID)
@@ -236,6 +239,7 @@ function mod:SPELL_AURA_REMOVED(args)
 end
 
 function mod:UNIT_DIED(args)
+	if not self.Options.Enabled then return end
 	local cid = self:GetCIDFromGUID(args.destGUID)
 	if cid == 224219 then--Twilight Earthcaller
 		timerMassTremorCD:Stop(args.destGUID)

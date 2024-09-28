@@ -7,7 +7,6 @@ local match = _G.string.match
 local Create=addonTable.Create
 local PIGLine=Create.PIGLine
 local PIGFrame=Create.PIGFrame
-local PIGCloseBut = Create.PIGCloseBut
 local PIGFontString=Create.PIGFontString
 local PIGOptionsList_R=Create.PIGOptionsList_R
 local PIGOptionsList_RF=Create.PIGOptionsList_RF
@@ -380,13 +379,10 @@ function BusinessInfo.Item()
 	end
 	local function SAVE_item_data(bagID, slot,wupinshujuinfo)
 		local XitemLink,XitemCount,XitemID
-		local ItemInfo= C_Container.GetContainerItemInfo(bagID, slot);
-		if ItemInfo then
-			XitemLink=ItemInfo.hyperlink
-			XitemCount=ItemInfo.stackCount
-			XitemID=ItemInfo.itemID
-			local XitemLink = GetItemLinkJJ(XitemLink)
-			table.insert(wupinshujuinfo, {XitemLink,XitemCount,XitemID});
+		local itemID, itemLink, icon, stackCount=PIGGetContainerItemInfo(bagID, slot)
+		if itemID then
+			local XitemLink = GetItemLinkJJ(itemLink)
+			table.insert(wupinshujuinfo, {XitemLink,stackCount,itemID});
 		end
 	end
 	local function SAVE_BAG()

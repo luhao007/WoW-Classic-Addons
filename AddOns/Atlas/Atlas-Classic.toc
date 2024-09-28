@@ -1,13 +1,15 @@
 ## Interface: 30400
 ## Author: arith, dubcat
 ## Version: v1.52.08
-## OptionalDeps: LibStub, CallbackHandler-1.0, Ace3, LibBabble-Boss-3.0, LibBabble-SubZone-3.0, LibBabble-Faction-3.0, LibDBIcon-1.0, LibDialog-1.0, LibUIDropDownMenu
-## SavedVariables: AtlasDB
 
 ## Title: Atlas
 ## Notes: Instance Map Browser
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本地图|r |cFFFFE00AAtlas|r
 ## Notes-zhCN: |cff00CC33副本地图浏览器|r
+
+## OptionalDeps: LibStub, CallbackHandler-1.0, Ace3, LibBabble-Boss-3.0, LibBabble-SubZone-3.0, LibBabble-Faction-3.0, LibDBIcon-1.0, LibDialog-1.0, LibUIDropDownMenu
+
+## SavedVariables: AtlasDB
 
 ## X-Category: Map
 ## X-Credits: Dan Gilbert, Lothaer, Dynaletik

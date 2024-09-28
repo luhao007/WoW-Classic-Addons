@@ -172,6 +172,7 @@ function UnitFramefun.Mubiao()
 		----------------------
 		TargetFrame:HookScript("OnEvent", function (self,event,arg1)
 			if event=="PLAYER_ENTERING_WORLD" or event=="PLAYER_TARGET_CHANGED" or event=="UNIT_HEALTH" or event=="UNIT_AURA" then
+				if not UnitExists("target") then return end
 				local mubiaoH = UnitHealth("target")
 				local mubiaoHmax = UnitHealthMax("target")
 				local mubiaobaifenbi = math.ceil((mubiaoH/mubiaoHmax)*100);--目标血量百分比

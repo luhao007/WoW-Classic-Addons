@@ -1,15 +1,17 @@
 ## Interface: 30400
 ## Author: Lag
 ## Version: v3.2.0
-## OptionalDeps: Ace3, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, LibDBIcon-1.0, LibDataBroker-1.1
-## LoadOnDemand: 0
-## SavedVariables: AtlasLootClassicDB
-## DefaultState: Enabled
 
 ## Title: AtlasLootClassic |cFF22B14C[Core]|r
 ## Notes: Shows the possible loot from the bosses
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本掉落|r |cFFFFE00AAtlasLootClassic|r
 ## Notes-zhCN: 显示首领可能掉落的物品
+
+## OptionalDeps: Ace3, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, LibDBIcon-1.0, LibDataBroker-1.1
+## LoadOnDemand: 0
+## DefaultState: Enabled
+
+## SavedVariables: AtlasLootClassicDB
 
 ## X-Credits: Daviesh, Lag, Arith, Cellelach, Asurn, Pernicus, Dynaletik and many others
 ## X-Category: Map

@@ -6,7 +6,6 @@ local fmod=math.fmod
 local gsub = _G.string.gsub
 local PIGLine=Create.PIGLine
 local PIGFrame=Create.PIGFrame
-local PIGCloseBut = Create.PIGCloseBut
 local PIGFontString=Create.PIGFontString
 local PIGOptionsList_R=Create.PIGOptionsList_R
 --------

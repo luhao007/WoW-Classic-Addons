@@ -458,7 +458,24 @@ L = DBM:GetModLocalization("Flamegor")
 L:SetGeneralLocalization{
 	name = "Flamegor"
 }
+----------------
+--  Ebonroc and Flamegor  --
+----------------
+L:SetGeneralLocalization{
+	name = "Rochébène et Flamegor"
+}
 
+L:SetTimerLocalization{
+	TimerBrandCD	= "Marque"
+}
+L:SetOptionLocalization{
+	TimerBrandCD	= "Afficher le chronomètre pour le temps de recharge de la marque"
+}
+
+L:SetMiscLocalization{
+	Ebonroc		= "Rochébène",
+	Flamegor	= "Flamegor"
+}
 
 -----------------------
 --  Vulnerabilities  --
@@ -483,7 +500,6 @@ L:SetMiscLocalization{
 	Arcane		= "Arcanes",
 	Holy		= "Sacré"
 }
-
 
 ------------------
 --  Chromaggus  --
@@ -673,7 +689,7 @@ L:SetMiscLocalization{
 }
 
 -----------------
---  The Molten Core (Placeholder?_  --
+--  The Molten Core  --
 -----------------
 L = DBM:GetModLocalization("MoltenCore")
 
@@ -681,6 +697,14 @@ L:SetGeneralLocalization{
 	name = "Le Cœur du Magma"
 }
 
+L:SetOptionLocalization{
+	YellHeartCleared	= "Crier lorsque le Cœur de cendre/braise est retiré.",
+	WarnBossPower		= "Afficher des avertissements lorsque l'énergie du boss atteint 50 %, 75 %, 90 % et 100 %"
+}
+
+L:SetWarningLocalization{
+	WarnBossPower		= "L'énergie du boss à %d%%"
+}
 -----------------
 --  MC: Trash  --
 -----------------

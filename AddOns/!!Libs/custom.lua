@@ -12,6 +12,10 @@ media:Register("statusbar", "Relay", "Interface\\AddOns\\!!Libs\\textures\\Relay
 media:Register("statusbar", "Sublime Light", "Interface\\AddOns\\!!Libs\\textures\\Sublime Light")
 media:Register("statusbar", "Ultra Voilet", "Interface\\AddOns\\!!Libs\\textures\\Ultra Voilet")
 
+media:Register("statusbar", "SmokAugbar", "Interface\\AddOns\\!!Libs\\textures\\SmokAugbar")
+media:Register("statusbar", "SmokObjectiveTracker", "Interface\\AddOns\\!!Libs\\textures\\SmokObjectiveTracker")
+media:Register("statusbar", "SmokOnePixelBackground", "Interface\\AddOns\\!!Libs\\textures\\SmokOnePixelBackground")
+media:Register("statusbar", "SmokOnePixelbar", "Interface\\AddOns\\!!Libs\\textures\\SmokOnePixelbar")
 
 
 -- 显示装等

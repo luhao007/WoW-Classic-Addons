@@ -228,7 +228,7 @@ local function Character_xiuliG()--修理费用
 	PaperDollFrame.xiuli = CreateFrame("Frame",nil,PaperDollFrame);  
 	PaperDollFrame.xiuli:SetSize(110,20);
 	if tocversion<40000 then
-		PaperDollFrame.xiuli:SetPoint("BOTTOMLEFT", PaperDollFrame, "BOTTOMLEFT", 20, 88);
+		PaperDollFrame.xiuli:SetPoint("BOTTOMLEFT", PaperDollFrame, "BOTTOMLEFT", 22, 88);
 	elseif tocversion<50000 then
 		if ElvUI then
 			PaperDollFrame.xiuli:SetPoint("TOPLEFT", PaperDollFrame, "TOPLEFT", 8, -42);
@@ -272,6 +272,11 @@ local function Character_xiuliG()--修理费用
 			end
 		end
 		if i>=xiuliinfo.invnum then
+			if xiuliinfo.repaircost>10000 then
+				local linshiG=xiuliinfo.repaircost*0.01
+				local linshiG=floor(linshiG+0.5)
+				xiuliinfo.repaircost=linshiG*100
+			end
 			PaperDollFrame.xiuli.G:SetText(GetCoinTextureString(xiuliinfo.repaircost))
 		end
 		xiuliinfo.xuhaoID=xiuliinfo.xuhaoID+1
@@ -842,9 +847,9 @@ local function add_AutoEquip(ManageEquip)
 			id = C_Container.GetContainerItemID(bag, slot);
 			name, _, _, _, _, _, _, _, invType = GetItemInfo(id);
 			local info = C_Container.GetContainerItemInfo(bag, slot);
-			textureName = info and info.iconFileID;
-			count = info and info.stackCount;
-			locked = info and info.isLocked;
+			local itemID, itemLink, icon, stackCount, quality, noValue, lootable, locked=PIGGetContainerItemInfo(bag, slot)
+			textureName = icon;
+			count = stackCount;
 			start, duration, enable = C_Container.GetContainerItemCooldown(bag, slot);
 			durability, maxDurability = C_Container.GetContainerItemDurability(bag, slot);
 			setTooltip = function () GameTooltip:SetBagItem(bag, slot); end;

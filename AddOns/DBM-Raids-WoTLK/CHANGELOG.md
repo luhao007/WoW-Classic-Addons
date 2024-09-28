@@ -1,7 +1,13 @@
 # <DBM Mod> Raids (WoTLK)
 
-## [r336](https://github.com/DeadlyBossMods/DBM-WotLK/tree/r336) (2024-06-16)
-[Full Changelog](https://github.com/DeadlyBossMods/DBM-WotLK/compare/r334...r336) [Previous Releases](https://github.com/DeadlyBossMods/DBM-WotLK/releases)
+## [r337](https://github.com/DeadlyBossMods/DBM-WotLK/tree/r337) (2024-09-08)
+[Full Changelog](https://github.com/DeadlyBossMods/DBM-WotLK/compare/r335...r337) [Previous Releases](https://github.com/DeadlyBossMods/DBM-WotLK/releases)
 
-- Fix numerous cases where count was missing, or wrong object type was set (also causing count to be missing)  
-    Disabled some false diagnostics reports as well  
+- Mark DBM as compatible/up to date on 11.0.5 PTR  
+- remove 10.2.7 and 11.0.0 game versions from tocs  
+- End shadow crash scan faster  
+    Wipe mark target sooner.  
+- shorten time mark target is cached  
+- Fixed Northrend Beasts enrage alert not showing target name  
+    Fixed Saviana enrage alert not showing target name  
+- Flag DBM mods as current on 11.0.2 (in addition to 11.0.0)  

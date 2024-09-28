@@ -1,10 +1,12 @@
 ## Interface: 30400
 ## Author: 露露緹婭@Bilibili
-## DefaultState: enabled
-## IconTexture: Interface\AddOns\Rurutia\Rurutia_Logo_64R.tga
 
 ## Title: |cffff559a露露语音·Rurutia|r
 ## Notes: 露露的语音包，此项为露露的语音WA正常工作所必须的语音文件。|n语音录制：|cffff559a露露緹婭@Bilibili|r，抖音：|cffff559a露露缇娅|r，斗鱼9593311。
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF露露缇娅语音包|r |cFFFFE00ARurutia|r
+
+## IconTexture: Interface\AddOns\Rurutia\Rurutia_Logo_64R.tga
+
+## DefaultState: enabled
 
 

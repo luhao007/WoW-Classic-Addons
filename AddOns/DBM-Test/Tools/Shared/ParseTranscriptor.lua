@@ -2,7 +2,7 @@
 local transcriptorParser = DBM.Test.CreateSharedModule("ParseTranscriptor")
 
 local anonymizer			= require "Anonymizer"
-local parser				= require "StupidParser"
+local parser				= require "Parser"
 local filter    			= require "Data.Transcriptor-Filter"
 local instanceInfoGuesser	= require "InstanceInfoGuesser"
 
@@ -29,6 +29,9 @@ function transcriptorParser:New(data)
 	}
 	if type(obj.data) ~= "table" then
 		error("could not find Transcriptor entry, check that the imported log is a valid Transcriptor log including the `TranscriptDB =` statement at the beginning")
+	end
+	if obj.data.TranscriptDB then
+		obj.data = obj.data.TranscriptDB
 	end
 	return setmetatable(obj, mt)
 end
@@ -112,6 +115,13 @@ local function getEncounters(lines)
 		v.endOffset = select(2, findFrameBoundaries(lines, v.endOffset))
 		v.startTime = timeFromLine(lines[v.startOffset])
 		v.endTime = timeFromLine(lines[v.endOffset])
+	end
+	for i = #encounters, 1, -1 do
+		local v = encounters[i]
+		-- Filter out obviously buggy or empty encounters, e.g., SoD Vaelastrasz triggering ENCOUNTER_START for every single raid member
+		if v.endTime - v.startTime < 1 then
+			table.remove(encounters, i)
+		end
 	end
 	return encounters
 end
@@ -255,10 +265,12 @@ end
 
 local function transcribeUnitSpellEvent(event, params, anon)
 	if params:match("^PLAYER_SPELL") then
-		return -- Note: don't forget to scrub player name if you want to support this event
+		return
 	end
 	-- Transcriptor has some useful extra data that we can use to reconstruct unit targets, health and power
-	local unitName, unitHp, unitPower, unitTarget, unit, guid, spellId = params:match("(.*)%(([%d.]*)%%%-([%d.]*)%%%){Target:([^}]*)} .* %[%[([^:]+):([^:]+):([^%]]+)%]%]")
+	local unitName, unitHp, unitPower, unitTarget, unit, guid, spellId = params:match("(.*)%(([%d.-]*)%%%-([%d.-]*)%%%){Target:([^}]*)} .* %[%[([^:]+):([^:]+):([^%]]+)%]%]")
+	-- This should not be necessary because PLAYER_SPELLS are filtered above, yet I've got a log where this shows up with the player somehow on an arena unit ID in a raid (???)
+	unitName = anon:ScrubName(unitName)
 	guid = anon:ScrubGUID(guid)
 	unitTarget = anon:ScrubTarget(unitTarget)
 	unitHp = tonumber(unitHp) or 0
@@ -432,7 +444,7 @@ local function transcribeCleu(rawParams, anon)
 end
 
 local function transcribeEvent(event, params, anon)
-	if event:match("^DBM_") or event:match("^NAME_PLATE_UNIT_") or event:match("BigWigs_") or event == "Echo_Log" or event == "ARENA_OPPONENT_UPDATE" then
+	if event:match("^DBM_") or event:match("^NAME_PLATE_UNIT_") or event:match("BigWigs_") or event == "Echo_Log" or event == "ARENA_OPPONENT_UPDATE" or event == "PLAYER_INFO" then
 		return
 	end
 	if event:match("^UNIT_SPELL") then
@@ -530,8 +542,8 @@ function testGenerator:parseMetadata()
 				= guessTypes(line:match(
 					"%[DBM_Debug%] GetInstanceInfo%(%) = ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^#]+)"
 				))
-			elseif line:match("DBM:GetCurrentInstanceDifficulty%(%) = normal20, 20 Player%(%d%)") then -- SoD/Molten Core heat levels
-				local modifier = line:match("%((%d)%)")
+			elseif line:match("DBM:GetCurrentInstanceDifficulty%(%) = [^,]*,[^,]*,[^,]*,[^,]*, (%d*)") then -- Difficulty modifiers
+				local modifier = line:match(" = [^,]*,[^,]*,[^,]*,[^,]*, (%d*)")
 				instanceInfo.difficultyModifier = tonumber(modifier) or 0
 			elseif line:match("%[ENCOUNTER_[SE][TN][AD]") then
 				local id, name, difficulty, groupSize, success, isStart = parseEncounterEvent(line)
@@ -585,8 +597,12 @@ function testGenerator:parseMetadata()
 end
 
 function testGenerator:guessMod()
-	if not self.metadata.encounterInfo.name then return "" end
-	return self.metadata.encounterInfo.name:gsub("%s*", ""):gsub("'", "")
+	local encounterName = self.metadata.encounterInfo.name
+	if not encounterName then return "" end
+	encounterName = encounterName:gsub(" the .*", "")
+	encounterName = encounterName:gsub(", .*", "")
+	encounterName = encounterName:gsub("^The", "")
+	return encounterName:gsub("%s*", ""):gsub("'", "")
 end
 
 -- TODO: all of these guessing functions could be much smarter, but I'm adding stuff as I go
@@ -595,6 +611,8 @@ function testGenerator:guessTestName()
 	local difficulty = ""
 	if self.metadata.instanceInfo.instanceID == 409 and self.metadata.instanceInfo.difficultyModifier then -- MC heat levels
 		difficulty = "Heat-" .. self.metadata.instanceInfo.difficultyModifier .. "/"
+	elseif self.metadata.instanceInfo.difficultyName then
+		difficulty = self.metadata.instanceInfo.difficultyName .. "/"
 	end
 	local name = self:guessMod() .. "/" .. difficulty .. (self.metadata.encounterInfo.kill and "Kill" or "Wipe")
 	if self.prefix then

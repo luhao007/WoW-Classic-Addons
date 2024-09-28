@@ -1,0 +1,75 @@
+local addonName, addonTable = ...;
+-- local L=addonTable.locale
+-- local _, _, _, tocversion = GetBuildInfo()
+-- -----
+-- local Create=addonTable.Create
+-- -- local PIGFrame=Create.PIGFrame
+-- -- local PIGLine=Create.PIGLine
+-- -- local PIGEnter=Create.PIGEnter
+-- -- local PIGButton = Create.PIGButton
+-- -- local PIGDiyBut=Create.PIGDiyBut
+-- -- local PIGCheckbutton_R=Create.PIGCheckbutton_R
+-- local PIGOptionsList=Create.PIGOptionsList
+-- local PIGFontString=Create.PIGFontString
+-- -- local PIGModCheckbutton=Create.PIGModCheckbutton
+-- -- local PIGQuickBut=Create.PIGQuickBut
+-- local PIGSetFont=Create.PIGSetFont
+-- local Data=addonTable.Data
+-- local fuFrame,fuFrameBut = PIGOptionsList(L["PIGaddonList"][L.extLsit[2]],"EXT")
+-- fuFrame.errtishi = PIGFontString(fuFrame,{"CENTER", fuFrame, "CENTER", 4,0},"没有检测到<"..L["PIGaddonList"][L.extLsit[2]]..">模块\n\n!Pig金团助手: 包含拾取记录，快速拍卖/出价，补助/罚款记录，分G助手","OUTLINE");
+-- Data.Ext[L.extLsit[2]]={fuFrame,fuFrameBut}
+
+-- 	local addname_ot = CreateFrame("EditBox", nil, fuFrame, "InputBoxInstructionsTemplate");
+-- 	addname_ot:SetSize(120,30);
+-- 	addname_ot:SetPoint("TOPLEFT",fuFrame,"TOPLEFT",20,-30);
+-- 	PIGSetFont(addname_ot, 15, "OUTLINE");
+-- 	addname_ot:SetAutoFocus(false);
+-- 	addname_ot:SetText(L["ABOUT_OTHERADDON_LIST"][2][1]);
+-- 	function addname_ot:SetTextpig()
+-- 		self:SetText(L["ABOUT_OTHERADDON_LIST"][2][1]);
+-- 	end
+-- 	addname_ot:SetScript("OnEditFocusGained", function(self) self:HighlightText() end);
+-- 	addname_ot:SetScript("OnEscapePressed", function(self) self:SetTextpig() self:ClearFocus() end);
+-- 	addname_ot:SetScript("OnEditFocusLost", function(self) self:SetTextpig() end);
+-- 	local pigaddname = PIGFontString(fuFrame,{"LEFT",addname_ot,"RIGHT",10,0},L["ABOUT_OTHERADDON_LIST"][2][2]..L["ABOUT_OTHERADDONS_DOWN"],"OUTLINE",15)
+
+-- 	local UpdateURLtxt = PIGFontString(fuFrame,{"TOPLEFT",addname_ot,"BOTTOMLEFT",0,-6},L["ABOUT_UPDATEADD"],"OUTLINE",15)
+-- 	local UpdateURL = CreateFrame("EditBox", nil, fuFrame, "InputBoxInstructionsTemplate");
+-- 	UpdateURL:SetSize(500,30);
+-- 	UpdateURL:SetPoint("LEFT",UpdateURLtxt,"RIGHT",0,0);
+-- 	PIGSetFont(UpdateURL, 16, "OUTLINE");
+-- 	UpdateURL:SetAutoFocus(false);
+-- 	UpdateURL:SetText(L["ABOUT_OTHERADDON_LIST"][2][3]);
+-- 	function UpdateURL:SetTextpig()
+-- 		self:SetText(L["ABOUT_OTHERADDON_LIST"][2][3]);
+-- 	end
+-- 	UpdateURL:SetScript("OnEditFocusGained", function(self) self:HighlightText() end);
+-- 	UpdateURL:SetScript("OnEscapePressed", function(self) self:SetTextpig() self:ClearFocus() end);
+-- 	UpdateURL:SetScript("OnEditFocusLost", function(self) self:SetTextpig() end);	
+
+-- -- GDKPInfo.fuFrame,GDKPInfo.fuFrameBut=fuFrame,fuFrameBut
+-- -- function GDKPInfo.ADD_Options()
+-- -- 	local Key_fenge=Fun.Key_fenge
+-- -- 	local Tooltip = "!Pig金团助手功能，包含拾取记录，快速拍卖/出价，补助/罚款记录，分G助手"
+-- -- 	fuFrame.Open = PIGModCheckbutton(fuFrame,{GnName,Tooltip},{"TOPLEFT",fuFrame,"TOPLEFT",20,-20})
+-- -- 	fuFrame.Open:SetScript("OnClick", function (self)
+-- -- 		if self:GetChecked() then
+-- -- 			PIGA["GDKP"]["Open"]=true;
+-- -- 			fuFrame.SetListF:Show()
+-- -- 			GDKPInfo.ADD_UI()
+-- -- 		else
+-- -- 			PIGA["GDKP"]["Open"]=false;
+-- -- 			fuFrame.SetListF:Hide()
+-- -- 			Pig_Options_RLtishi_UI:Show()
+-- -- 		end
+-- -- 		QuickButUI.ButList[15]()
+-- -- 	end);
+-- -- 	fuFrame.Open.QKBut:SetScript("OnClick", function (self)
+-- -- 		if self:GetChecked() then
+-- -- 			PIGA["GDKP"]["AddBut"]=true
+-- -- 			QuickButUI.ButList[15]()
+-- -- 		else
+-- -- 			PIGA["GDKP"]["AddBut"]=false
+-- -- 			Pig_Options_RLtishi_UI:Show();
+-- -- 		end
+-- -- 	end);

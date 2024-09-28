@@ -29,7 +29,7 @@ end
 
 -- Conversion Methods for specific formats for a given Information Type.
 local function GetCoordString(x, y)
-	return GetNumberWithZeros(math_floor(x * 10) * 0.1, 1) .. ", " .. GetNumberWithZeros(math_floor(y * 10) * 0.1, 1);
+	return GetNumberWithZeros(app.round(x, 1), 1) .. ", " .. GetNumberWithZeros(app.round(y, 1), 1);
 end
 local function GetPatchString(patch)
 	patch = tonumber(patch)
@@ -197,104 +197,115 @@ local function BuildKnownByInfoForKind(tooltipInfo, kind)
 end
 local function ProcessForCompletedBy(t, reference, tooltipInfo)
 	-- If the item is a recipe, then show which characters know this recipe.
-	if not reference.objectiveID then
-		-- Completed By for Quests
-		local id = reference.questID;
+	if reference.objectiveID then return end
+
+	-- Completed By for Quests
+	local id = reference.questID;
+	if id then
+		-- Account-Wide Quests
+		if app.AccountWideQuestsDB[id] then
+			if IsQuestFlaggedCompletedOnAccount(id) then
+				tinsert(knownBy, {text=ITEM_UPGRADE_DISCOUNT_TOOLTIP_ACCOUNT_WIDE or "Quest completed on your Account"});
+			end
+		else
+			for _,character in pairs(ATTCharacterData) do
+				if character.Quests and character.Quests[id] then
+					tinsert(knownBy, character);
+				end
+			end
+			if #knownBy == 0 and IsQuestFlaggedCompletedOnAccount(id) then
+				tinsert(knownBy, {text=ACCOUNT_COMPLETED_QUEST_NOTICE or "Quest completed on your Account"});
+			end
+		end
+		BuildKnownByInfoForKind(tooltipInfo, L.COMPLETED_BY);
+	end
+
+	-- Completed By for Exploration
+	local id = reference.explorationID;
+	if id then
+		for _,character in pairs(ATTCharacterData) do
+			if character.Exploration and character.Exploration[id] then
+				tinsert(knownBy, character);
+			end
+		end
+		BuildKnownByInfoForKind(tooltipInfo, L.COMPLETED_BY);
+	end
+
+	-- Pre-MOP Known By types
+	if app.GameBuildVersion < 50000 then
+		id = reference.achievementID;
 		if id then
-			-- Account-Wide Quests
-			if app.AccountWideQuestsDB[id] then
-				if IsQuestFlaggedCompletedOnAccount(id) then
-					tinsert(knownBy, {text=ITEM_UPGRADE_DISCOUNT_TOOLTIP_ACCOUNT_WIDE or "Quest completed on your Account"});
-				end
-			else
-				for _,character in pairs(ATTCharacterData) do
-					if character.Quests and character.Quests[id] then
-						tinsert(knownBy, character);
-					end
-				end
-				if #knownBy == 0 and IsQuestFlaggedCompletedOnAccount(id) then
-					tinsert(knownBy, {text=ACCOUNT_COMPLETED_QUEST_NOTICE or "Quest completed on your Account"});
+			-- Prior to Cata, Achievements were not tracked account wide
+			for guid,character in pairs(ATTCharacterData) do
+				if character.Achievements and character.Achievements[id] then
+					tinsert(knownBy, character);
 				end
 			end
 			BuildKnownByInfoForKind(tooltipInfo, L.COMPLETED_BY);
 		end
 
-		-- Pre-MOP Known By types
-		if app.GameBuildVersion < 50000 then
-			id = reference.achievementID;
-			if id then
-				-- Prior to Cata, Achievements were not tracked account wide
-				for guid,character in pairs(ATTCharacterData) do
-					if character.Achievements and character.Achievements[id] then
-						tinsert(knownBy, character);
+		local itemID = reference.itemID;
+		if itemID then
+			local knownByGUID = {};
+
+			-- Prior to Cata, transmog was not tracked account wide
+			id = reference.sourceID;
+			for guid,character in pairs(ATTCharacterData) do
+				if character.Transmog and character.Transmog[id] then
+					if ATTAccountWideData.Sources and ATTAccountWideData.Sources[id] then
+						character.Transmog[id] = nil;
+					else
+						knownByGUID[guid] = character;
 					end
 				end
-				BuildKnownByInfoForKind(tooltipInfo, L.COMPLETED_BY);
 			end
-
-			local itemID = reference.itemID;
-			if itemID then
-				local knownByGUID = {};
-
-				-- Prior to Cata, transmog was not tracked account wide
-				id = reference.sourceID;
-				for guid,character in pairs(ATTCharacterData) do
-					if character.Transmog and character.Transmog[id] then
-						if ATTAccountWideData.Sources and ATTAccountWideData.Sources[id] then
-							character.Transmog[id] = nil;
-						else
+			if app.GameBuildVersion < 30000 then
+				-- Prior to Wrath, mounts, pets, and toys were not tracked account wide
+				id = reference.spellID;
+				if id and reference.filterID == 100 then	-- Mounts only!
+					for guid,character in pairs(ATTCharacterData) do
+						if character.Spells and character.Spells[id] then
 							knownByGUID[guid] = character;
 						end
 					end
 				end
-				if app.GameBuildVersion < 30000 then
-					-- Prior to Wrath, mounts, pets, and toys were not tracked account wide
-					id = reference.spellID;
-					if id and reference.filterID == 100 then	-- Mounts only!
-						for guid,character in pairs(ATTCharacterData) do
-							if character.Spells and character.Spells[id] then
-								knownByGUID[guid] = character;
-							end
-						end
-					end
 
-					id = reference.speciesID;
-					if id then
-						for guid,character in pairs(ATTCharacterData) do
-							if character.BattlePets and character.BattlePets[id] then
-								knownByGUID[guid] = character;
-							end
-						end
-					end
-
-					if reference.toyID then
-						for guid,character in pairs(ATTCharacterData) do
-							if character.Toys and character.Toys[itemID] then
-								knownByGUID[guid] = character;
-							end
+				id = reference.speciesID;
+				if id then
+					for guid,character in pairs(ATTCharacterData) do
+						if character.BattlePets and character.BattlePets[id] then
+							knownByGUID[guid] = character;
 						end
 					end
 				end
 
-				-- For the current character, count how many of the thing they own.
-				local currentCharacter = knownByGUID[app.GUID];
-				if currentCharacter then
-					local text = currentCharacter.text or "???";
-					local count = GetItemCount(itemID, true);
-					if count and count > 1 then
-						text = text .. " (x" .. count .. ")";
+				if reference.toyID then
+					for guid,character in pairs(ATTCharacterData) do
+						if character.Toys and character.Toys[itemID] then
+							knownByGUID[guid] = character;
+						end
 					end
-					knownByGUID[app.GUID] = setmetatable({ text = text }, { __index = currentCharacter });
 				end
-
-				-- Convert the GUID dictionary to the knownBy list.
-				for guid,character in pairs(knownByGUID) do
-					tinsert(knownBy, character);
-				end
-
-				-- All of this can be stored together.
-				BuildKnownByInfoForKind(tooltipInfo, L.OWNED_BY);
 			end
+
+			-- For the current character, count how many of the thing they own.
+			local currentCharacter = knownByGUID[app.GUID];
+			if currentCharacter then
+				local text = currentCharacter.text or "???";
+				local count = GetItemCount(itemID, true);
+				if count and count > 1 then
+					text = text .. " (x" .. count .. ")";
+				end
+				knownByGUID[app.GUID] = setmetatable({ text = text }, { __index = currentCharacter });
+			end
+
+			-- Convert the GUID dictionary to the knownBy list.
+			for guid,character in pairs(knownByGUID) do
+				tinsert(knownBy, character);
+			end
+
+			-- All of this can be stored together.
+			BuildKnownByInfoForKind(tooltipInfo, L.OWNED_BY);
 		end
 	end
 end
@@ -890,6 +901,81 @@ local InformationTypes = {
 	-- Summary Information Types
 	CreateInformationType("CompletedBy", { text = L.COMPLETED_BY:format(""), priority = 11000, HideCheckBox = true, Process = ProcessForCompletedBy });
 	CreateInformationType("KnownBy", { text = L.KNOWN_BY:format(""), priority = 11000, HideCheckBox = true, Process = ProcessForKnownBy });
+	CreateInformationType("extraInfo", { text = "extraInfo", priority = 2.51, HideCheckBox = true, ForceActive = true,
+		Process = function(t, reference, tooltipInfo)
+			local itemID = reference.itemID
+			if itemID then
+				-- an item used for a faction which is repeatable
+				if reference.factionID and reference.repeatable then
+					tinsert(tooltipInfo, {
+						left = L.ITEM_GIVES_REP .. (app.WOWAPI.GetFactionName(reference.factionID) or ("Faction #" .. tostring(reference.factionID))) .. "'",
+						wrap = true,
+						color = app.Colors.TooltipDescription });
+				end
+				-- Holiday drop description
+				if app.GameBuildVersion >= 100500 then	-- Dragonflight 10.0.5
+					if itemID == 54537 or	-- Heart-Shaped Box [Love is in the Air]
+						itemID == 117393 or		-- Keg-Shaped Treasure Chest [Brewfest]
+						itemID == 117394 or		-- Satchel of Chilled Goods [Midsummer Fire Festival]
+						itemID == 209024 or		-- Loot-Filled Pumpkin [Hallow's End]
+						itemID == 216874  	-- Loot-Filled Basket [Noblegarden]
+					then
+						tinsert(tooltipInfo, 1, { left = L.HOLIDAY_DROP, wrap = true, color = app.Colors.TooltipDescription });
+					end
+				end
+				-- Mark of Honor
+				if itemID == 137642 then
+					if app.Settings:GetTooltipSetting("SummarizeThings") then
+						tinsert(tooltipInfo, 1, { left = L.MARKS_OF_HONOR_DESC, color = app.Colors.SourceIgnored });
+					end
+				end
+			end
+			local currencyID = reference.currencyID
+			if currencyID then
+				-- Bronze [MoP Timerunning]
+				if currencyID == 2778 then
+					if app.Settings:GetTooltipSetting("SummarizeThings") then
+						tinsert(tooltipInfo, 1, { left = L.MOP_REMIX_BRONZE_DESC, color = app.Colors.SourceIgnored });
+					end
+				end
+			end
+
+			-- Description for Unobtainable Things
+			if reference.u and (not reference.crs or reference.itemID or reference.sourceID) then
+				-- specifically-tagged NYI groups which are under 'Unsorted' should show a slightly different message
+				if reference.u == 1 and app.GetRelativeValue(reference, "_missing") then
+					tinsert(tooltipInfo, { left = L.UNSORTED_DESC, wrap = true, color = app.Colors.ChatLinkError });
+				else
+					-- removed BoE seen with a non-generic BonusID, potentially a level-scaled drop made re-obtainable
+					if reference.u == 2 and not app.IsBoP(reference) and (reference.bonusID or 3524) ~= 3524 then
+						tinsert(tooltipInfo, { left = L.RECENTLY_MADE_OBTAINABLE });
+					end
+				end
+			end
+
+			-- Limited availability
+			if reference.isLimited then
+				tinsert(tooltipInfo, 1, { left = L.LIMITED_QUANTITY, wrap = false, color = app.Colors.TooltipDescription });
+			end
+		end,
+	}),
+
+	CreateInformationType("SpecializationRequirements", {
+		priority = 9002,
+		text = "SpecializationRequirements",
+		Process = function(t, reference, tooltipInfo)
+			local itemID = reference.itemID
+			-- Currently excluded for Classic versions
+			if not itemID or not app.IsRetail then return end
+			local specs = app.GetFixedItemSpecInfo(itemID);
+			-- specs is already filtered/sorted to only current class
+			if specs and #specs > 0 then
+				tinsert(tooltipInfo, { right = app.GetSpecsString(specs, true, true) });
+			elseif reference.sourceID then
+				tinsert(tooltipInfo, { right = L.NOT_AVAILABLE_IN_PL });
+			end
+		end,
+	});
 
 	-- We want this after most of the regular fields.
 	CreateInformationType("OnTooltip", {

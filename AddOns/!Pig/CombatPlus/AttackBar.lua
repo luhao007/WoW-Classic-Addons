@@ -7,6 +7,8 @@ local floor=floor
 local Create=addonTable.Create
 local PIGFrame=Create.PIGFrame
 local PIGLine=Create.PIGLine
+local PIGButton = Create.PIGButton
+local PIGSlider = Create.PIGSlider
 local PIGFontString=Create.PIGFontString
 local PIGCheckbutton_R=Create.PIGCheckbutton_R
 local PIGOptionsList_R=Create.PIGOptionsList_R
@@ -15,6 +17,13 @@ local CombatPlusfun=addonTable.CombatPlusfun
 ---------------------------------
 local IsCurrentSpell = IsCurrentSpell or C_Spell and C_Spell.IsCurrentSpell
 local IsAutoRepeatSpell = IsAutoRepeatSpell or C_Spell and C_Spell.IsAutoRepeatSpell
+
+local function SetScaleXY()
+	if AttackBar_UI then
+		AttackBar_UI:SetScale(PIGA["CombatPlus"]["AttackBar"]["Scale"])
+		AttackBar_UI:SetPoint("BOTTOM", AttackBar_UI.PointfujiUI, "TOP", PIGA["CombatPlus"]["AttackBar"]["Xpianyi"], PIGA["CombatPlus"]["AttackBar"]["Ypianyi"]);
+	end
+end
 function CombatPlusfun.AttackBar(open)
 	if not PIGA["CombatPlus"]["AttackBar"]["Open"] then return end
 	if AttackBar_UI then return end
@@ -27,6 +36,7 @@ function CombatPlusfun.AttackBar(open)
 	AttackBar:SetSize(195,13);
 	AttackBar:SetToplevel(true);
 	AttackBar:SetPoint("BOTTOM",PointfujiUI[1],"TOP",0,14);
+	AttackBar.PointfujiUI=PointfujiUI[1]
 	AttackBar.Icon:Hide();
 	AttackBar.Flash:Hide();
 	AttackBar:Hide()
@@ -170,7 +180,42 @@ CombatPlusF.SetF.Showshuzhi:SetScript("OnClick", function (self)
 	end
 end);
 
+local xiayiinfo = {0.6,2,0.01,{["Right"]="%"}}
+CombatPlusF.SetF.Slider = PIGSlider(CombatPlusF.SetF,{"TOPLEFT",CombatPlusF.SetF,"TOPLEFT",70,-80},xiayiinfo)
+CombatPlusF.SetF.Slider.T = PIGFontString(CombatPlusF.SetF.Slider,{"RIGHT",CombatPlusF.SetF.Slider,"LEFT",-10,0},"缩放")
+CombatPlusF.SetF.Slider.Slider:HookScript("OnValueChanged", function(self, arg1)
+	PIGA["CombatPlus"]["AttackBar"]["Scale"]=arg1;
+	SetScaleXY()
+end)
+local WowWidth=floor(GetScreenWidth()*0.5);
+local xiayiinfo = {-WowWidth,WowWidth,1}
+CombatPlusF.SetF.SliderX = PIGSlider(CombatPlusF.SetF,{"TOPLEFT",CombatPlusF.SetF,"TOPLEFT",70,-140},xiayiinfo)
+CombatPlusF.SetF.SliderX.T = PIGFontString(CombatPlusF.SetF.SliderX,{"RIGHT",CombatPlusF.SetF.SliderX,"LEFT",0,0},"X偏移")
+CombatPlusF.SetF.SliderX.Slider:HookScript("OnValueChanged", function(self, arg1)
+	PIGA["CombatPlus"]["AttackBar"]["Xpianyi"]=arg1;
+	SetScaleXY()
+end)
+local WowHeight=floor(GetScreenHeight()*0.5);
+local xiayiinfo = {-WowHeight,WowHeight,1}
+CombatPlusF.SetF.SliderY = PIGSlider(CombatPlusF.SetF,{"LEFT",CombatPlusF.SetF.SliderX,"RIGHT",100,0},xiayiinfo)
+CombatPlusF.SetF.SliderY.T = PIGFontString(CombatPlusF.SetF.SliderY,{"RIGHT",CombatPlusF.SetF.SliderY,"LEFT",0,0},"Y偏移")
+CombatPlusF.SetF.SliderY.Slider:HookScript("OnValueChanged", function(self, arg1)
+	PIGA["CombatPlus"]["AttackBar"]["Ypianyi"]=arg1;
+	SetScaleXY()
+end)
+
+CombatPlusF.SetF.CZBUT = PIGButton(CombatPlusF.SetF.Slider,{"LEFT",CombatPlusF.SetF.SliderY,"RIGHT",60,0},{80,24},"重置位置")
+CombatPlusF.SetF.CZBUT:SetScript("OnClick", function ()
+	PIGA["CombatPlus"]["AttackBar"]["Xpianyi"]=addonTable.Default["CombatPlus"]["AttackBar"]["Xpianyi"]
+	PIGA["CombatPlus"]["AttackBar"]["Ypianyi"]=addonTable.Default["CombatPlus"]["AttackBar"]["Ypianyi"]
+	CombatPlusF.SetF.SliderX:PIGSetValue(PIGA["CombatPlus"]["AttackBar"]["Xpianyi"])
+	CombatPlusF.SetF.SliderY:PIGSetValue(PIGA["CombatPlus"]["AttackBar"]["Ypianyi"])
+	SetScaleXY()
+end)
 CombatPlusF:HookScript("OnShow", function (self)
 	self.Open:SetChecked(PIGA["CombatPlus"]["AttackBar"]["Open"]);
 	self.SetF.Showshuzhi:SetChecked(PIGA["CombatPlus"]["AttackBar"]["Showshuzhi"]);
+	self.SetF.Slider:PIGSetValue(PIGA["CombatPlus"]["AttackBar"]["Scale"])
+	self.SetF.SliderX:PIGSetValue(PIGA["CombatPlus"]["AttackBar"]["Xpianyi"])
+	self.SetF.SliderY:PIGSetValue(PIGA["CombatPlus"]["AttackBar"]["Ypianyi"])
 end);

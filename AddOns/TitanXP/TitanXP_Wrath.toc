@@ -1,14 +1,16 @@
 ## Interface: 30400
 ## Author: Titan Panel Development Team (http://www.titanpanel.org)
 ## Version: 8.0.16
-## Dependencies: TitanClassic
-## OptionalDeps: 
-## SavedVariables: 
 
 ## Title: Titan Panel [|cffeda55fXP|r] |cff00aa008.0.16|r
 ## Notes: Adds information to Titan Panel about XP earned and time to level
 ## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFF泰坦面板|r |cFF69CCF0经验|r
 ## Notes-zhCN: 泰坦面板的经验模块
+
+## Dependencies: TitanClassic
+## OptionalDeps: 
+
+## SavedVariables: 
 
 ## X-Part-Of: Titan
 

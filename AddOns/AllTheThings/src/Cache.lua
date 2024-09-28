@@ -63,7 +63,6 @@ local CreateDataCache = function(name, skipMapCaching)
 	end
 	setmetatable(cache, fieldMeta);
 	cache.npcID = cache.creatureID;	-- identical cache as creatureID (probably deprecate npcID use eventually)
-	--cache.requireSkill = cache.professionID;	-- identical cache as professionID (in Retail)
 	return cache;
 end
 currentCache = CreateDataCache("default");
@@ -464,7 +463,7 @@ local fieldConverters = {
 	["otherItemID"] = function(group, value)
 		CacheField(group, "itemID", value);
 	end,
-	["drakewatcherManuscriptID"] = function(group, value)
+	["mountmodID"] = function(group, value)
 		CacheField(group, "itemID", value);
 	end,
 	["heirloomID"] = function(group, value)
@@ -491,7 +490,7 @@ local fieldConverters = {
 		CacheField(group, "spellID", value);
 	end,
 	["requireSkill"] = function(group, value)
-		CacheField(group, "requireSkill", value);	-- NOTE: professionID in Retail, investigate why
+		CacheField(group, "requireSkill", value);
 	end,
 	["runeforgePowerID"] = function(group, value)
 		CacheField(group, "runeforgePowerID", value);
@@ -733,7 +732,7 @@ if app.IsRetail then
 		CacheField(group, "itemID", value);
 		cacheGroupForModItemID[#cacheGroupForModItemID + 1] = group
 	end
-	fieldConverters.drakewatcherManuscriptID = fieldConverters.itemID;
+	fieldConverters.mountmodID = fieldConverters.itemID;
 	fieldConverters.heirloomID = fieldConverters.itemID;
 	tinsert(postscripts, function()
 		if #cacheGroupForModItemID == 0 then return end
@@ -984,33 +983,13 @@ local function SearchForObject(field, id, require, allowMultiple)
 			fcacheObj = fcache[i];
 			-- field matching id
 			if fcacheObj[field] == id then
-				if fcacheObj.key == field then
-					-- with keyed-field matching key
-					keyMatch[#keyMatch + 1] = fcacheObj
-				else
 					-- with field matching id
 					fieldMatch[#fieldMatch + 1] = fcacheObj
-				end
 			end
 		end
 	else
 		-- No require
-		for i=1,count,1 do
-			fcacheObj = fcache[i];
-			-- field matching id
-			if fcacheObj[field] == id then
-				if fcacheObj.key == field then
-					-- with keyed-field matching key
-					keyMatch[#keyMatch + 1] = fcacheObj
-				else
-					-- with field matching id
-					fieldMatch[#fieldMatch + 1] = fcacheObj
-				end
-			else
-				-- basic group related to search
-				match[#match + 1] = fcacheObj
-			end
-		end
+		match = fcache
 	end
 	-- app.PrintDebug("SFO",field,id,require,"?>",#keyMatch,#fieldMatch,#match)
 	local results = (#keyMatch > 0 and keyMatch) or (#fieldMatch > 0 and fieldMatch) or (#match > 0 and match) or app.EmptyTable

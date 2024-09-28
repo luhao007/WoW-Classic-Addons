@@ -1,13 +1,16 @@
 ## Interface: 30400
-## Version: r148
-## RequiredDeps: DBM-Core
-## LoadOnDemand: 1
-## SavedVariables: DBMPartyWoD_AllSavedVars
-## SavedVariablesPerCharacter: DBMPartyWoD_SavedStats
-## IconTexture: Interface\AddOns\DBM-Core\textures\dbm_airhorn
+## Version: r156
 
 ## Title: |cffffe00a<|r|cffff7d0aDBM Mod|r|cffffe00a>|r |cffc030c0Dungeons (WoD)|r
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFF69CCF0小队|r |cFF22B14C德拉诺之王|r
+
+## IconTexture: Interface\AddOns\DBM-Core\textures\dbm_airhorn
+
+## RequiredDeps: DBM-Core
+## LoadOnDemand: 1
+
+## SavedVariables: DBMPartyWoD_AllSavedVars
+## SavedVariablesPerCharacter: DBMPartyWoD_SavedStats
 
 ## X-Min-Interface: 80000
 ## X-DBM-Mod: 1

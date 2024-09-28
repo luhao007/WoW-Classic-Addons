@@ -557,7 +557,7 @@ L.AUTO_YELL_ANNOUNCE_TEXT.fade				= "%s %%d秒後消退!"
 L.AUTO_YELL_ANNOUNCE_TEXT.shortfade			= "%%d"
 L.AUTO_YELL_ANNOUNCE_TEXT.iconfade			= "{rt%%2$d}%%1$d"
 L.AUTO_YELL_ANNOUNCE_TEXT.position 			= UnitName("player").." ({rt%%3$d})中了%1$s! (%%1$s - {rt%%2$d})"
-L.AUTO_YELL_ANNOUNCE_TEXT.shortposition 	= "{rt%%1$d}%s %%2$d"--Icon, Spellname, number
+L.AUTO_YELL_ANNOUNCE_TEXT.shortposition 	= "{rt%%1$d}%s"--Icon, Spellname
 L.AUTO_YELL_ANNOUNCE_TEXT.combo				= "%s與%%s"--Spell name (from option, plus spellname given in arg)
 L.AUTO_YELL_ANNOUNCE_TEXT.repeatplayer		= UnitName("player")--Doesn't need translation, it's just player name spam
 L.AUTO_YELL_ANNOUNCE_TEXT.repeaticon		= "{rt%%1$d}"
@@ -648,7 +648,7 @@ L.WORLD_BUFFS = {
 	zgHeartBooty						= "靈魂掠奪者血神已經被打敗了！我們不再有危險了！",
 	zgHeartYojamba						= "開始儀式，我的僕從們。我們必須把哈卡完全打回扭曲虛空中！",
 	rendHead							= "那個假的酋長，雷德·黑手，已經倒下了！",
-	--blackfathomBoon						= "boon of Blackfathom"
+	blackfathomBoon						= "黑澗深淵的恩賜"
 }
 
 -- Annoying popup, especially for classic players

@@ -5,8 +5,6 @@ local PIGCheckbutton=Create.PIGCheckbutton
 local PIGFontString=Create.PIGFontString
 local FramePlusfun=addonTable.FramePlusfun
 ----------------
-TALENT_TOOLTIP_LEARNTALENTGROUP = "点击这里确认你预置的天赋。";
-TALENT_TOOLTIP_RESETTALENTGROUP = "点击这里重置你预置的天赋。";
 local gundongWW,gundongHH,ScrollPY,ScaleZhi = 290, 420, -96, 0.76
 local allwww = 715
 --
@@ -294,6 +292,8 @@ local function TalentFrame_Update_Pig(TFID)
 	end
 end
 local function TalentFrame_ADD()
+	TALENT_TOOLTIP_LEARNTALENTGROUP = "点击这里确认你预置的天赋。";
+	TALENT_TOOLTIP_RESETTALENTGROUP = "点击这里重置你预置的天赋。";
 	UIPanelWindows["PlayerTalentFrame"].width=allwww
 	local old_SetTalentButtonLocation=SetTalentButtonLocation
 	SetTalentButtonLocation=function(button, tier, column)

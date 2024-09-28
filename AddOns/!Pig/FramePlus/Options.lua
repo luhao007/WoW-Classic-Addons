@@ -166,7 +166,7 @@ end);
 FramePlusF.yidong.BlizzardUI_Move.CZ = PIGButton(FramePlusF.yidong,{"LEFT",FramePlusF.yidong.BlizzardUI_Move.Save.Text,"RIGHT",40,0},{90,22},"重置UI数据")
 FramePlusF.yidong.BlizzardUI_Move.CZ:SetScript("OnClick", function ()
 	PIGA["WowUI"]={}
-	PIG_print("已重置UI位置和缩放比例数据")
+	PIG_print("已重置UI位置和缩放数据")
 end);
 --
 FramePlusF:HookScript("OnShow", function(self)
@@ -276,16 +276,14 @@ if tocversion<50000 then
 			Pig_Options_RLtishi_UI:Show()
 		end
 	end)
-	local Scaleinfo = {0.8,2,0.1}
+	local Scaleinfo = {0.8,2,0.01,{["Right"]="%"}}
 	LootRollF.Roll.SliderT = PIGFontString( LootRollF.Roll,{"LEFT", LootRollF.Roll.Text,"RIGHT",20,0},"缩放")
-	LootRollF.Roll.Slider = PIGSlider( LootRollF.Roll,{"LEFT", LootRollF.Roll.SliderT,"RIGHT",4,0},{80,14},Scaleinfo)	
-	function  LootRollF.Roll.Slider:OnValueFun()
+	LootRollF.Roll.Slider = PIGSlider(LootRollF.Roll,{"LEFT", LootRollF.Roll.SliderT,"RIGHT",4,0},Scaleinfo)	
+	LootRollF.Roll.Slider.Slider:HookScript("OnValueChanged", function(self, arg1)
 		if InCombatLockdown() then PIGinfotip:TryDisplayMessage(ERR_NOT_IN_COMBAT) return end
-		local Value = (floor(self:GetValue()*10+0.5))/10
-		PIGA["FramePlus"]["RollScale"]=Value;
-		self.Text:SetText(Value);
+		PIGA["FramePlus"]["RollScale"]=arg1;
 		if PIG_Roll_LsitUI then PIG_Roll_LsitUI:DebugUI() end
-	end
+	end)
 end
 LootRollF:HookScript("OnShow", function(self)
 	self.Loot:SetChecked(PIGA["FramePlus"]["Loot"])

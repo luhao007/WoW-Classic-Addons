@@ -1,6 +1,6 @@
 local _, addonTable = ...;
 local _, _, _, tocversion = GetBuildInfo()
-local sub = _G.string.sub
+local gsub = _G.string.gsub
 local L=addonTable.locale
 local Create=addonTable.Create
 local PIGFrame=Create.PIGFrame
@@ -76,39 +76,41 @@ function BusinessInfo.AHPlus_Vanilla()
 			end
 		end)
 	end
-
-	local color = CreateColor(1, 1, 1, 1)
-	--ITEM_QUALITY_COLORS["-1"]={r = 1, g = 1, b = 1, hex = color:GenerateHexColorMarkup(), color = color}
-	-- local OLD_QueryAuctionItems = QueryAuctionItems	
-	-- QueryAuctionItems = function(...)
-	-- 	local text, minLevel, maxLevel, page, usable, rarity, allxiazai, exactMatch, filterData =...
-	-- 	if PIGA["AHPlus"]["exactMatch"] or AuctionFrame.maichuxunjia then
-	-- 		local exactMatch = true
-	-- 		return OLD_QueryAuctionItems(text, minLevel, maxLevel, page, usable, rarity, allxiazai, exactMatch, filterData)
-	-- 	else
-	-- 		return OLD_QueryAuctionItems(text, minLevel, maxLevel, page, usable, rarity, allxiazai, exactMatch, filterData)
-	-- 	end
-	-- end
-	-- AuctionFrameBrowse.exact =PIGCheckbutton(AuctionFrameBrowse,nil,{AH_EXACT_MATCH,AH_EXACT_MATCH_TOOLTIP})
-	-- if ElvUI and AuctionFrame.backdrop then
-	-- 	AuctionFrameBrowse.exact:SetPoint("TOPLEFT",AuctionFrameBrowse,"TOPLEFT",530,-4);
-	-- else
-	-- 	AuctionFrameBrowse.exact:SetPoint("TOPLEFT",AuctionFrameBrowse,"TOPLEFT",530,-16);
-	-- end
-	-- AuctionFrameBrowse.exact:SetSize(15,15);
-	-- AuctionFrameBrowse.exact.Text:SetTextColor(0, 1, 0, 0.8);
-	-- AuctionFrameBrowse.exact:SetScript("OnClick", function (self)
-	-- 	if self:GetChecked() then
-	-- 		PIGA["AHPlus"]["exactMatch"]=true
-	-- 	else
-	-- 		PIGA["AHPlus"]["exactMatch"]=false
-	-- 	end
-	-- end);
+	local function exactMatchFun()
+		if not PIGA["AHPlus"]["exactMatch"] then return end
+		local color = CreateColor(1, 1, 1, 1)
+		ITEM_QUALITY_COLORS["-1"]={r = 1, g = 1, b = 1, hex = color:GenerateHexColorMarkup(), color = color}
+		local OLD_QueryAuctionItems = QueryAuctionItems	
+		QueryAuctionItems = function(...)
+			local text, minLevel, maxLevel, page, usable, rarity, allxiazai, exactMatch, filterData =...
+			if PIGA["AHPlus"]["exactMatch"] then exactMatch = true end
+			return OLD_QueryAuctionItems(text, minLevel, maxLevel, page, usable, rarity, allxiazai, exactMatch, filterData)
+		end
+	end
+	exactMatchFun()
+	AuctionFrameBrowse.exact =PIGCheckbutton(AuctionFrameBrowse,nil,{AH_EXACT_MATCH,AH_EXACT_MATCH_TOOLTIP},nil,nil,nil,0)
+	if ElvUI and AuctionFrame.backdrop then
+		AuctionFrameBrowse.exact:SetPoint("TOPLEFT",AuctionFrameBrowse,"TOPLEFT",530,-4);
+	else
+		AuctionFrameBrowse.exact:SetPoint("TOPLEFT",AuctionFrameBrowse,"TOPLEFT",530,-14);
+	end
+	AuctionFrameBrowse.exact.Text:SetTextColor(0, 1, 0, 0.8);
+	AuctionFrameBrowse.exact:SetScript("OnClick", function (self)
+		if self:GetChecked() then
+			PIGA["AHPlus"]["exactMatch"]=true
+			exactMatchFun()
+		else
+			PIGA["AHPlus"]["exactMatch"]=false
+		end
+	end);
 	----
-	local AH_TIME = TIME_LABEL:sub(1,-2)
-	local AH_BIDDANJIA = AUCTION_TOOLTIP_BID_PREFIX:sub(1,-4)
-	local AH_BUYDANJIA = AUCTION_TOOLTIP_BUYOUT_PREFIX:sub(1,-4)
-	local xulieID = {RARITY,ACTION_SPELL_AURA_APPLIED_DOSE,"Lv",AH_TIME,BUYOUT,BID..AUCTION_BROWSE_UNIT_PRICE_SORT,AH_BUYDANJIA,"涨跌",AUCTION_CREATOR}
+	local AH_TIME = TIME_LABEL:gsub(":","")
+	local AH_TIME = AH_TIME:gsub("：","")
+	local AH_BIDDANJIA = AUCTION_TOOLTIP_BID_PREFIX:gsub(":","")
+	local AH_BIDDANJIA = AH_BIDDANJIA:gsub("：","")
+	local AH_BUYDANJIA = AUCTION_TOOLTIP_BUYOUT_PREFIX:gsub(":","")
+	local AH_BUYDANJIA = AH_BUYDANJIA:gsub("：","")
+	local xulieID = {RARITY,ACTION_SPELL_AURA_APPLIED_DOSE,"Lv",AH_TIME,BUYOUT,AH_BIDDANJIA,AH_BUYDANJIA,"涨跌",AUCTION_CREATOR}
 	local paixuID = {"quality","_3","level","duration","buyout","unitbid","unitprice","_8","seller"}
 	local xulieID_www = {170,44,38,58,111,111,111,43,100}
 	local hang_Height,hang_NUM ,anniuH = 20, 14,18;
@@ -194,9 +196,11 @@ function BusinessInfo.AHPlus_Vanilla()
 		AuctionsNumStacksMaxButton:SetWidth(40);
 		AuctionsNumStacksMaxButton:SetPoint("LEFT",AuctionsNumStacksEntry,"RIGHT",-10,0);
 		--每个/每组
-		UIDropDownMenu_SetWidth(PriceDropDown, 100)
-		PriceDropDown:ClearAllPoints();
-		PriceDropDown:SetPoint("TOPLEFT",AuctionFrameAuctions,"TOPLEFT",70,-174);
+		if PriceDropDown then
+			UIDropDownMenu_SetWidth(PriceDropDown, 100)
+			PriceDropDown:ClearAllPoints();
+			PriceDropDown:SetPoint("TOPLEFT",AuctionFrameAuctions,"TOPLEFT",70,-174);
+		end
 		--价格
 		StartPrice:ClearAllPoints();
 		StartPrice:SetPoint("TOPLEFT",AuctionFrameAuctions,"TOPLEFT",33,-214);
@@ -272,7 +276,11 @@ function BusinessInfo.AHPlus_Vanilla()
 		local Buttonxx = CreateFrame("Button","piglist_biaoti_"..paixuID[i],listF,"AuctionSortButtonTemplate");
 		Buttonxx:SetSize(xulieID_www[i]+2,anniuH);
 		if i>4 and i<8 then
-			_G["piglist_biaoti_"..paixuID[i].."Text"]:SetPoint("LEFT",Buttonxx,"LEFT",30,0);
+			_G["piglist_biaoti_"..paixuID[i].."Arrow"]:ClearAllPoints();
+			_G["piglist_biaoti_"..paixuID[i].."Arrow"]:SetPoint("RIGHT",Buttonxx,"RIGHT",-2,0);
+			_G["piglist_biaoti_"..paixuID[i].."Text"]:ClearAllPoints();
+			_G["piglist_biaoti_"..paixuID[i].."Text"]:SetPoint("RIGHT",Buttonxx,"RIGHT",-10,0);
+
 		end
 		if ElvUI and AuctionFrame.backdrop or NDui then
 			_G["piglist_biaoti_"..paixuID[i].."Left"]:Hide()
@@ -639,9 +647,9 @@ function BusinessInfo.AHPlus_Vanilla()
 	AuctionFrameBrowse.chushouzheF:Hide()
 	
 	---缓存价格
-	AuctionFrameBrowse.History = PIGButton(AuctionFrameBrowse,{"TOPRIGHT",AuctionFrameBrowse,"TOPRIGHT",10,-12.4},{90,19},"缓存价格",nil,nil,nil,nil,0);
+	AuctionFrameBrowse.History = PIGButton(AuctionFrameBrowse,{"TOPRIGHT",AuctionFrameBrowse,"TOPRIGHT",10,-13},{90,20},"缓存价格",nil,nil,nil,nil,0);
 	if ElvUI and AuctionFrame.backdrop then
-		AuctionFrameBrowse.History:SetPoint("TOPRIGHT",AuctionFrameBrowse,"TOPRIGHT",10,-4);
+		AuctionFrameBrowse.History:SetPoint("TOPRIGHT",AuctionFrameBrowse,"TOPRIGHT",10,-1);
 	elseif NDui then
 		AuctionFrameBrowse.History:SetPoint("TOPRIGHT",AuctionFrameBrowse,"TOPRIGHT",10,-10);
 	end
@@ -843,8 +851,7 @@ function BusinessInfo.AHPlus_Vanilla()
 		HCUI:Hide();
 		HCUI.close:Hide();
 	end
-	AuctionFrameBrowse:HookScript("OnShow",HCUI.showhide)
-	AuctionFrameBrowse:HookScript("OnHide",HCUI.showhide)
+
 	---时光徽章
 	for i = 1, 33 do
 		local huizhangG = PIGFontString(BrowseWowTokenResults,nil,nil,"OUTLINE",13,"huizhangG_"..i)
@@ -884,50 +891,6 @@ function BusinessInfo.AHPlus_Vanilla()
 		AuctionFrameBrowse.piglist:Show()
 		_G["piglist_biaoti_"..(paixuID[1])].ShowHide:Show()
 	end)
-	AuctionFrameBrowse:HookScript("OnEvent",function(self,event,arg1,arg2)
-		if event=="AUCTION_ITEM_LIST_UPDATE" then
-			local numBatchAuctions, totalAuctions = GetNumAuctionItems("list");
-			listF.numBatchAuctions=numBatchAuctions
-			listF.totalAuctions=totalAuctions
-			gengxinlist(listF.Scroll)
-		end
-	end)
-	------
-	local CVarName={
-		["UnitNameNPC"]="0",
-		["nameplateShowOnlyNames"]="1",
-		["nameplateShowFriends"]="0",
-		["UnitNameFriendlyPlayerName"]="0",
-		["UnitNameFriendlyPetName"]="0",
-		["UnitNameFriendlyGuardianName"]="0",
-		["UnitNameFriendlyTotemName"]="0",
-		["UnitNameFriendlyMinionName"]="0",
-	}
-	local OLD_CVarName={}
-	local function Save_SettCVar()
-		for k,v in pairs(CVarName) do
-			local OLDcannn = GetCVar(k)
-			if OLDcannn then
-				OLD_CVarName[k]=OLDcannn
-			end
-		end
-		for k,v in pairs(CVarName) do
-			SetCVar(k, v)
-		end
-	end
-	local function Huifu_SettCVar()
-		for k,v in pairs(OLD_CVarName) do
-			SetCVar(k, v)
-		end
-	end
-	AuctionFrame:HookScript("OnShow",function(self)
-		Save_SettCVar()
-		--AuctionFrameBrowse.exact:SetChecked(PIGA["AHPlus"]["exactMatch"])
-		PIG_AuctionFrame_OnClickSortColumn("list")
-	end)
-	AuctionFrame:HookScript("OnHide", function(self)
-		Huifu_SettCVar()
-	end);
 
 	--关注------------------------
 	local collW,collY = 24,24
@@ -1064,27 +1027,8 @@ function BusinessInfo.AHPlus_Vanilla()
 	function listF:Gengxinlistcoll()
 		gengxinlistcoll(coll.list.Scroll)	
 	end
-	AuctionFrameBrowse:HookScript("OnShow",function(self)
-		self.coll.list:Show()
-	end)
 
 	---拍卖页==============================
-	AuctionFrameAuctions.RepeatQuery =PIGCheckbutton(AuctionFrameAuctions,nil,{"相同物品不重复查询","卖出物品与上次物品相同时不重复查询物品售价，这样可以防止触发系统的查询CD，加快你的上架速度。\n如果需要每次上架都查询最新价格请关闭此选项(可能导致拍卖延迟)"})
-	if ElvUI and AuctionFrame.backdrop then
-		AuctionFrameAuctions.RepeatQuery:SetPoint("BOTTOMLEFT",AuctionFrameAuctions,"BOTTOMLEFT",230,10);
-	else
-		AuctionFrameAuctions.RepeatQuery:SetPoint("BOTTOMLEFT",AuctionFrameAuctions,"BOTTOMLEFT",230,18);
-	end
-	AuctionFrameAuctions.RepeatQuery:SetSize(15,15);
-	AuctionFrameAuctions.RepeatQuery.Text:SetTextColor(0, 1, 0, 0.8);
-	AuctionFrameAuctions.RepeatQuery:SetScript("OnClick", function (self)
-		if self:GetChecked() then
-			PIGA["AHPlus"]["RepeatQuery"]=true
-		else
-			PIGA["AHPlus"]["RepeatQuery"]=false
-		end
-	end);
-	AuctionFrameAuctions.RepeatQuery:SetChecked(PIGA["AHPlus"]["RepeatQuery"])
 	AuctionFrameAuctions.SellList=PIGFrame(AuctionFrameAuctions,{"TOPLEFT",AuctionFrameAuctions,"TOPLEFT",216,-222})
 	AuctionFrameAuctions.SellList:SetPoint("BOTTOMRIGHT",AuctionFrameAuctions,"BOTTOMRIGHT",66,38);
 	AuctionFrameAuctions.SellList:PIGSetBackdrop(nil,nil,nil,nil,0)
@@ -1094,7 +1038,23 @@ function BusinessInfo.AHPlus_Vanilla()
 	SellListF:SetFrameLevel(10)
 	SellListF:EnableMouse(true)
 	SellListF:Hide()
-	SellListF.tishi = PIGFontString(SellListF,{"CENTER", SellListF, "CENTER", 0,0},"没有此物品在售卖，无参考价！","OUTLINE")
+	SellListF.tishibut = PIGButton(SellListF,{"CENTER", SellListF, "CENTER", 0,10},{80,24},LFG_LIST_SEARCH_AGAIN,nil,nil,nil,nil,0)
+	local function pigah_Search()
+		AuctionFrameBrowse_Search()--用系统搜索函数
+		SellListF.tishibut:Hide()
+		SellListF.tishibut_txt:SetText(SEARCHING);
+		C_Timer.After(0.4,function()
+			if AuctionsItemButton.kaishiSearch then
+				SellListF.tishibut:Show()
+				SellListF.tishibut_txt:SetText(LFG_LIST_SEARCH_FAILED);
+			end
+		end)
+	end
+	SellListF.tishibut:SetScript("OnClick", function (self)
+		AuctionFrameBrowse_Search()
+		pigah_Search()
+	end);
+	SellListF.tishibut_txt = PIGFontString(SellListF,{"BOTTOM", SellListF.tishibut, "TOP", 0,8},nil,"OUTLINE")
 	--
 	local SellxulieID = {"",ACTION_SPELL_AURA_APPLIED_DOSE,BUYOUT,BID..AUCTION_BROWSE_UNIT_PRICE_SORT,AH_BUYDANJIA,AH_TIME,AUCTION_CREATOR}
 	local SellxulieID_www = {30,42,106,106,106,60,134}
@@ -1135,20 +1095,23 @@ function BusinessInfo.AHPlus_Vanilla()
 			Buttonxx.title:SetPoint("LEFT", Buttonxx, "LEFT", 6, 0);
 		end
 	end
-	local function yajiaFUN(count,minBid,buyoutPrice)
-		local BiddanjiaGG = math.floor(minBid/count)
-		local buyoutdanjiaGG = math.floor(buyoutPrice/count)
+	local function DownPriceFun(BiddanjiaGG,buyoutdanjiaGG,old)
+		local OldName = GetAuctionSellItemInfo();
+		local jianshaozhiV = 1
+		if old then jianshaozhiV = 0 end
+		local BiddanjiaGG = math.floor(BiddanjiaGG)
+		local buyoutdanjiaGG = math.floor(buyoutdanjiaGG)
 		local priceType =UIDropDownMenu_GetSelectedValue(PriceDropDown) or 2
 		local stackSize = AuctionsStackSizeEntry:GetNumber()
 		if ( stackSize >= 0 ) then
 			if priceType == 1 then
 				if owner~=Pig_OptionsUI.Name then
 					if PIGA["AHPlus"]["yajingbiao"] then
-						MoneyInputFrame_SetCopper(StartPrice, BiddanjiaGG-1);
+						MoneyInputFrame_SetCopper(StartPrice, BiddanjiaGG-jianshaozhiV);
 					else
-						MoneyInputFrame_SetCopper(StartPrice, buyoutdanjiaGG-1);
+						MoneyInputFrame_SetCopper(StartPrice, buyoutdanjiaGG-jianshaozhiV);
 					end
-					MoneyInputFrame_SetCopper(BuyoutPrice, buyoutdanjiaGG-1);
+					MoneyInputFrame_SetCopper(BuyoutPrice, buyoutdanjiaGG-jianshaozhiV);
 				else
 					MoneyInputFrame_SetCopper(StartPrice, BiddanjiaGG);
 					MoneyInputFrame_SetCopper(BuyoutPrice, buyoutdanjiaGG);
@@ -1158,11 +1121,11 @@ function BusinessInfo.AHPlus_Vanilla()
 				local ZbuyoutdanjiaGG = stackSize*buyoutdanjiaGG
 				if owner~=Pig_OptionsUI.Name then
 					if PIGA["AHPlus"]["yajingbiao"] then
-						MoneyInputFrame_SetCopper(StartPrice, ZBiddanjiaGG-1);
+						MoneyInputFrame_SetCopper(StartPrice, ZBiddanjiaGG-jianshaozhiV);
 					else
-						MoneyInputFrame_SetCopper(StartPrice, ZbuyoutdanjiaGG-1);
+						MoneyInputFrame_SetCopper(StartPrice, ZbuyoutdanjiaGG-jianshaozhiV);
 					end
-					MoneyInputFrame_SetCopper(BuyoutPrice, ZbuyoutdanjiaGG-1);
+					MoneyInputFrame_SetCopper(BuyoutPrice, ZbuyoutdanjiaGG-jianshaozhiV);
 				else
 					MoneyInputFrame_SetCopper(StartPrice, ZBiddanjiaGG);
 					MoneyInputFrame_SetCopper(BuyoutPrice, ZbuyoutdanjiaGG);
@@ -1171,58 +1134,64 @@ function BusinessInfo.AHPlus_Vanilla()
 			UpdateDeposit()
 		end
 	end
-	AuctionsStackSizeEntry:HookScript("OnTextChanged",  function (self)
-		local self1=_G["SellList_item_1"].yajia
-		local count=self1.hang_count
-		local minBid=self1.hang_minBid
-		local buyoutPrice=self1.hang_buyoutPrice
-		if count and minBid and buyoutPrice then
-			yajiaFUN(count,minBid,buyoutPrice)
+	AuctionsStackSizeEntry:HookScript("OnTextChanged", function (self)
+		local OldName = GetAuctionSellItemInfo();
+		if OldName then
+			if PIGA["AHPlus"]["oldaucG"] and AuctionsItemButton.OldGlist[OldName] then
+				DownPriceFun(AuctionsItemButton.OldGlist[OldName][1],AuctionsItemButton.OldGlist[OldName][2],true)
+			else
+				local hang=_G["SellList_item_1"].yajia
+				if hang.hang_minBid and hang.hang_buyoutPrice then
+					DownPriceFun(hang.hang_minBid,hang.hang_buyoutPrice)
+				end
+			end
 		end
 	end);
 	local spellhangnum, hang_Height1= 6,hang_Height+4
-	local function gengxinSpelllist()
+	local function clearSpelllist()
+		SellListF.tishibut:Hide()
+		SellListF.tishibut_txt:SetText("");
 		for i = 1, spellhangnum do
 		   	local listFGV = _G["SellList_item_"..i]
 		   	listFGV:Hide()
-		   	listFGV.yajia.hang_count=count
-			listFGV.yajia.hang_minBid=minBid
-			listFGV.yajia.hang_buyoutPrice=buyoutPrice
+		   	listFGV.yajia.hang_count=nil
+			listFGV.yajia.hang_minBid=nil
+			listFGV.yajia.hang_buyoutPrice=nil
 		end
-		local chushouwupinname = GetAuctionSellItemInfo();
-		if not chushouwupinname then
-			SellListF.tishi:SetText("没有放入拍卖物品！");
-			return
-		end
-		SellListF.tishi:SetText("没有此物品在售，无参考价！");
-		local numBatchAuctions = GetNumAuctionItems("list");
-		if numBatchAuctions>0 then
-			SellListF.tishi:SetText("");
-			for i = 1, spellhangnum do
-				local listFGV = _G["SellList_item_"..i]
-				local name, texture, count, quality, canUse, level, levelColHeader, minBid, minIncrement, buyoutPrice, bidAmount, 
-	   			highBidder, bidderFullName, owner =  GetAuctionItemInfo("list", i);
-				if name then
-					if i==1 then
-						if PIGA["AHPlus"]["autoya"] then yajiaFUN(count,minBid,buyoutPrice) end
-			   			if chushouwupinname~=name then
-							SellListF.tishi:SetText(LFG_LIST_SEARCH_FAILED);
-							break
-			   			end
+	end
+	local function gengxinSpelllist()
+		clearSpelllist()
+		local OldName = GetAuctionSellItemInfo();
+		if OldName then
+			local numBatchAuctions = GetNumAuctionItems("list");
+			if numBatchAuctions>0 then
+				for i = 1, spellhangnum do
+					local listFGV = _G["SellList_item_"..i]
+					local name, _, count, _, _, _, _, minBid, _, buyoutPrice, _, _, _, owner =  GetAuctionItemInfo("list", i);
+					if OldName==name then
+						AuctionsItemButton.kaishiSearch=false
+						local BiddanjiaGG = minBid/count
+						local buyoutdanjiaGG = buyoutPrice/count
+						if i==1 then
+				   			if PIGA["AHPlus"]["autoya"] then
+				   				DownPriceFun(BiddanjiaGG,buyoutdanjiaGG) 
+				   			end
+				   		end
+						listFGV.yajia.hang_minBid=BiddanjiaGG
+						listFGV.yajia.hang_buyoutPrice=buyoutdanjiaGG
+				   		Update_GGG(listFGV.biddanjia,BiddanjiaGG)
+						Update_GGG(listFGV.yikou,buyoutPrice)
+						Update_GGG(listFGV.yikoudanjia,buyoutdanjiaGG)
+						listFGV.count:SetText(count);
+						listFGV.chushouzhe:SetText(owner);
+						local timeleft = GetAuctionItemTimeLeft("list", i)
+						listFGV.TimeLeft:SetText(shengyuTime[timeleft]);
+						listFGV:Show()
 			   		end
-			   		listFGV.yajia.hang_count=count
-					listFGV.yajia.hang_minBid=minBid
-					listFGV.yajia.hang_buyoutPrice=buyoutPrice
-			   		Update_GGG(listFGV.biddanjia,minBid/count)
-					Update_GGG(listFGV.yikou,buyoutPrice)
-					Update_GGG(listFGV.yikoudanjia,buyoutPrice/count)
-					listFGV.count:SetText(count);
-					listFGV.chushouzhe:SetText(owner);
-					local timeleft = GetAuctionItemTimeLeft("list", i)
-					listFGV.TimeLeft:SetText(shengyuTime[timeleft]);
-					listFGV:Show()
-		   		end
+				end
 			end
+		else
+			SellListF.tishibut_txt:SetText("没有放入拍卖物品！");
 		end
 		SellListF:Show()
 	end
@@ -1248,10 +1217,7 @@ function BusinessInfo.AHPlus_Vanilla()
 		listFitem.yajia:SetPoint("LEFT", listFitem, "LEFT", 0,0);
 		listFitem.yajia:SetText("压");
 		listFitem.yajia:SetScript("OnClick", function(self, button)
-			local count=self.hang_count
-			local minBid=self.hang_minBid
-			local buyoutPrice=self.hang_buyoutPrice
-			yajiaFUN(count,minBid,buyoutPrice)
+			DownPriceFun(self.hang_minBid,self.hang_buyoutPrice)
 		end)
 		---
 		listFitem.count = PIGFontString(listFitem,{"LEFT", listFitem.yajia, "RIGHT", 0,0},nil,"OUTLINE",13)
@@ -1269,15 +1235,9 @@ function BusinessInfo.AHPlus_Vanilla()
 		listFitem.chushouzhe:SetWidth(SellxulieID_www[7]);
 		listFitem.chushouzhe:SetJustifyH("LEFT");
 	end
-	AuctionFrameAuctions:HookScript("OnHide",function()
-		SellListF:Hide()
-	end)
-	AuctionFrame:HookScript("OnHide",function()
-		AuctionsItemButton.OLDname=nil
-	end)
-		
+
 	--压价按钮
-	AuctionFrameAuctions.autoya =PIGCheckbutton(AuctionFrameAuctions,{"TOPLEFT",AuctionFrameAuctions,"TOPLEFT",24,-286},{"自动压","选中后拍卖物品时将根据现售最低价自动压价"})
+	AuctionFrameAuctions.autoya =PIGCheckbutton(AuctionFrameAuctions,{"TOPLEFT",AuctionFrameAuctions,"TOPLEFT",24,-286},{"自动压","选中后拍卖物品时将根据现售最低价自动压价"},nil,nil,nil,0)
 	AuctionFrameAuctions.autoya.Text:SetTextColor(0, 1, 0, 0.8);
 	AuctionFrameAuctions.autoya:SetChecked(PIGA["AHPlus"]["autoya"])
 	AuctionFrameAuctions.autoya:SetScript("OnClick", function (self)
@@ -1288,7 +1248,7 @@ function BusinessInfo.AHPlus_Vanilla()
 		end
 	end);
 	
-	AuctionFrameAuctions.yajingbiao =PIGCheckbutton(AuctionFrameAuctions,{"LEFT",AuctionFrameAuctions.autoya.Text,"RIGHT",4,0},{"压竞标","选中后压一口价同时压竞标价"})
+	AuctionFrameAuctions.yajingbiao =PIGCheckbutton(AuctionFrameAuctions,{"LEFT",AuctionFrameAuctions.autoya.Text,"RIGHT",1,0},{"压竞标","选中后压一口价同时压竞标价"},nil,nil,nil,0)
 	AuctionFrameAuctions.yajingbiao.Text:SetTextColor(0, 1, 0, 0.8);
 	AuctionFrameAuctions.yajingbiao:SetChecked(PIGA["AHPlus"]["yajingbiao"])
 	AuctionFrameAuctions.yajingbiao:SetScript("OnClick", function (self)
@@ -1298,16 +1258,28 @@ function BusinessInfo.AHPlus_Vanilla()
 			PIGA["AHPlus"]["yajingbiao"]=false
 		end
 	end);
-	
-	AuctionFrameAuctions.Showcankao = PIGButton(AuctionFrameAuctions,{"LEFT",AuctionFrameAuctions.yajingbiao.Text,"RIGHT",4,0},{46,20},"在售",nil,nil,nil,nil,0)
+	AuctionFrameAuctions.Showcankao = PIGButton(AuctionFrameAuctions,{"LEFT",AuctionFrameAuctions.yajingbiao.Text,"RIGHT",1,0},{46,20},"在售",nil,nil,nil,nil,0)
 	AuctionFrameAuctions.Showcankao:SetScript("OnClick", function (self)
 		if SellListF:IsShown() then
 			SellListF:Hide()
 		else
-			SellListF:Show()
-			C_Timer.After(0.2,gengxinSpelllist)
+			gengxinSpelllist()
 		end
 	end);
+
+	AuctionFrameAuctions.oldaucG =PIGCheckbutton(AuctionFrameAuctions,{"BOTTOMLEFT",AuctionFrameAuctions,"BOTTOMLEFT",230,15},{"记住拍卖价格","本次卖出相同物品使用前一次设置拍卖价格,而不是压已有的最低价。\n(只在本次打开拍卖界面期间生效)"},nil,nil,nil,0)
+	if ElvUI and AuctionFrame.backdrop then
+		AuctionFrameAuctions.oldaucG:SetPoint("BOTTOMLEFT",AuctionFrameAuctions,"BOTTOMLEFT",230,9);
+	end
+	AuctionFrameAuctions.oldaucG.Text:SetTextColor(0, 1, 0, 0.8);
+	AuctionFrameAuctions.oldaucG:SetScript("OnClick", function (self)
+		if self:GetChecked() then
+			PIGA["AHPlus"]["oldaucG"]=true
+		else
+			PIGA["AHPlus"]["oldaucG"]=false
+		end
+	end);
+	AuctionFrameAuctions.oldaucG:SetChecked(PIGA["AHPlus"]["oldaucG"])
 	AuctionsCreateAuctionButton:HookScript("OnUpdate", function(self)
 		local canQuery,canQueryAll = CanSendAuctionQuery()
 		if canQuery then
@@ -1316,19 +1288,86 @@ function BusinessInfo.AHPlus_Vanilla()
 			self:Disable()
 		end
 	end)
+	--浏览页
+	AuctionFrameBrowse:HookScript("OnShow",function(self)
+		self.exact:SetChecked(PIGA["AHPlus"]["exactMatch"])
+		self.coll.list:Show()
+		HCUI.showhide()
+	end)
+	AuctionFrameBrowse:HookScript("OnHide",HCUI.showhide)
+	--拍卖页
+	AuctionFrameAuctions:HookScript("OnHide",function()
+		SellListF:Hide()
+	end)
+	----拍卖行
+	local CVarName={
+		["UnitNameNPC"]="0",
+		["nameplateShowOnlyNames"]="1",
+		["nameplateShowFriends"]="0",
+		["UnitNameFriendlyPlayerName"]="0",
+		["UnitNameFriendlyPetName"]="0",
+		["UnitNameFriendlyGuardianName"]="0",
+		["UnitNameFriendlyTotemName"]="0",
+		["UnitNameFriendlyMinionName"]="0",
+	}
+	local OLD_CVarName={}
+	AuctionFrame:HookScript("OnShow",function(self)
+		for k,v in pairs(CVarName) do
+			local OLDcannn = GetCVar(k)
+			if OLDcannn then
+				OLD_CVarName[k]=OLDcannn
+			end
+		end
+		for k,v in pairs(CVarName) do
+			SetCVar(k, v)
+		end
+		PIG_AuctionFrame_OnClickSortColumn("list")
+		AuctionsItemButton.OldGlist={}
+	end)
+	AuctionFrame:HookScript("OnHide", function(self)
+		for k,v in pairs(OLD_CVarName) do
+			SetCVar(k, v)
+		end
+	end);
+	AuctionsCreateAuctionButton:HookScript("OnClick", function(self)
+		if AuctionsItemButton.OldName then
+			AuctionsItemButton.OldGlist[AuctionsItemButton.OldName]={LAST_ITEM_START_BID,LAST_ITEM_BUYOUT} 
+			AuctionsItemButton.OldName=nil
+		end
+	end);		
+	AuctionFrameBrowse:HookScript("OnEvent",function(self,event,arg1,arg2)
+		if event=="AUCTION_ITEM_LIST_UPDATE" then
+			if self:IsShown() then
+				local numBatchAuctions, totalAuctions = GetNumAuctionItems("list");
+				listF.numBatchAuctions=numBatchAuctions
+				listF.totalAuctions=totalAuctions
+				gengxinlist(listF.Scroll)
+			elseif AuctionsItemButton:IsShown() then
+				gengxinSpelllist()
+			end
+		end
+	end)
 	AuctionsItemButton:HookScript("OnEvent",function(self,event,arg1,arg2)
 		if event=="NEW_AUCTION_UPDATE" then
 			AuctionsItemButtonCount:Hide();
+			AuctionsStackSizeEntry:Hide();
+			AuctionsStackSizeMaxButton:Hide();
+			AuctionsNumStacksEntry:Hide();
+			AuctionsNumStacksMaxButton:Hide();
+			clearSpelllist()
 			local name, texture, count, quality, canUse, price, pricePerUnit, stackCount, totalCount, itemID = GetAuctionSellItemInfo();
 			if name then
+				AuctionsItemButton.kaishiSearch=true
+				AuctionsItemButton.OldName=name
 				SortAuctionSetSort("list","unitprice", false)
 				AuctionFrameBrowse_Reset(BrowseResetButton)
 				BrowseName:SetText('"'..name..'"')
-				if AuctionsItemButton.OLDname==name and PIGA["AHPlus"]["RepeatQuery"] then
+				if PIGA["AHPlus"]["oldaucG"] and AuctionsItemButton.OldGlist[name] then
+					PIGinfotip:TryDisplayMessage("<"..name..">存在本次历史卖价,不再查询")
+					DownPriceFun(AuctionsItemButton.OldGlist[name][1],AuctionsItemButton.OldGlist[name][2],true)
 				else
-					AuctionFrameBrowse_Search()--用系统搜索函数
+					pigah_Search()
 				end
-				AuctionsItemButton.OLDname=name
 				if (C_WowTokenPublic.IsAuctionableWowToken(itemID)) then
 				else
 					if ( totalCount > 1 ) then
@@ -1336,7 +1375,7 @@ function BusinessInfo.AHPlus_Vanilla()
 						AuctionsStackSizeMaxButton:Show();
 						AuctionsNumStacksEntry:Show();
 						AuctionsNumStacksMaxButton:Show();
-						PriceDropDown:Show();
+						if PriceDropDown then PriceDropDown:Show();end
 						UpdateMaximumButtons();
 					else	
 						AuctionsStackSizeEntry:Hide();
@@ -1345,15 +1384,7 @@ function BusinessInfo.AHPlus_Vanilla()
 						AuctionsNumStacksMaxButton:Hide();
 					end
 				end
-				C_Timer.After(0.6,gengxinSpelllist)
-			else
-				AuctionsStackSizeEntry:Hide();
-				AuctionsStackSizeMaxButton:Hide();
-				AuctionsNumStacksEntry:Hide();
-				AuctionsNumStacksMaxButton:Hide();
-				SellListF:Hide()
 			end
 		end
 	end)
-	-----
 end

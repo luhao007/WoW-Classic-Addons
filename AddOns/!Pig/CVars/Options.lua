@@ -142,7 +142,7 @@ local combattext1 = {
 	{"目标伤害旧版弹出方式","floatingCombatTextCombatDamageDirectionalScale","0","1","开启后伤害弹出数字将会从目标上方弹出，而不是发散样式",false},
 }
 for i=1,#combattext1 do
-	local CVarsCB = PIGCheckbutton_R(combattextF,{combattext1[i][1],combattext1[i][5]},true,8)
+	local CVarsCB = PIGCheckbutton_R(combattextF,{combattext1[i][1],combattext1[i][5]})
 	if combattext1[i][6] then
 		ADD_tishi(CVarsCB,combattext1[i][1],-2,0)
 	end
@@ -172,7 +172,7 @@ local combattext2 = {
 	{HIDE..COMBAT_SELF..FLOATING_COMBATTEXT_LABEL,nil,"HitIndicator",false,},
 }
 for i=1,#combattext2 do
-	local CVarsCB = PIGCheckbutton_R(combattextF,{combattext2[i][1],combattext2[i][2] or combattext2[i][1]},true,8)
+	local CVarsCB = PIGCheckbutton_R(combattextF,{combattext2[i][1],combattext2[i][2] or combattext2[i][1]})
 	if combattext2[i][6] then
 		ADD_tishi(CVarsCB,combattext2[i][1],-2,0)
 	end
@@ -197,8 +197,9 @@ hooksecurefunc("CombatFeedback_OnCombatEvent", function(self)
 		self.feedbackText:Hide()
 	end
 end)
-combattextF.RF=PIGFrame(combattextF,{"TOPRIGHT",combattextF,"TOPRIGHT",0,0},{300,500})
-combattextF.RF.OPENcombattext = PIGCheckbutton(combattextF.RF,{"TOPLEFT",combattextF.RF,"TOPLEFT",0,-20},{SHOW_COMBAT_TEXT_TEXT,OPTION_TOOLTIP_SHOW_COMBAT_TEXT})
+combattextF.RF=PIGFrame(combattextF,{"TOPLEFT",combattextF,"TOPLEFT",0,-260})
+combattextF.RF:SetPoint("BOTTOMRIGHT",combattextF,"BOTTOMRIGHT",0,0);
+combattextF.RF.OPENcombattext = PIGCheckbutton(combattextF.RF,{"TOPLEFT",combattextF.RF,"TOPLEFT",20,-20},{SHOW_COMBAT_TEXT_TEXT,OPTION_TOOLTIP_SHOW_COMBAT_TEXT})
 combattextF.RF.OPENcombattext:SetScript("OnClick", function (self)
 	if self:GetChecked() then
 		SetCVar("enableFloatingCombatText", "1")
@@ -208,16 +209,13 @@ combattextF.RF.OPENcombattext:SetScript("OnClick", function (self)
 end)
 --浮动方式
 local fudongModeName = {["1"]=COMBAT_TEXT_SCROLL_UP,["2"]=COMBAT_TEXT_SCROLL_DOWN,["3"]=COMBAT_TEXT_SCROLL_ARC}
-ADD_DownMenu(combattextF.RF,1,3,fudongModeName,"floatingCombatTextFloatMode",COMBAT_TEXT_FLOAT_MODE_LABEL,{"TOPLEFT",combattextF.RF,"TOPLEFT",140,-60},100)
+ADD_DownMenu(combattextF.RF,1,3,fudongModeName,"floatingCombatTextFloatMode",COMBAT_TEXT_FLOAT_MODE_LABEL,{"TOPLEFT",combattextF.RF,"TOPLEFT",170,-60},100)
 ---
-combattextF.RF.fudongScale = PIGSlider(combattextF.RF,{"TOPLEFT",combattextF.RF,"TOPLEFT",140,-120},{100,14},{1,3,0.1})
+combattextF.RF.fudongScale = PIGSlider(combattextF.RF,{"TOPLEFT",combattextF.RF,"TOPLEFT",170,-100},{1,3,0.1,{["Right"]="%"}})
 combattextF.RF.fudongScale.t = PIGFontString(combattextF.RF.fudongScale,{"RIGHT",combattextF.RF.fudongScale,"LEFT",-4,0},FLOATING_COMBATTEXT_LABEL.."缩放");
-function combattextF.RF.fudongScale:OnValueFun()
-	local val = self:GetValue()
-	local val = floor(val*100+0.5)*0.01
-	self.Text:SetText(val);
-	SetCVar("WorldTextScale",val)
-end
+combattextF.RF.fudongScale.Slider:HookScript("OnValueChanged", function(self, arg1)
+	SetCVar("WorldTextScale",arg1)
+end)
 combattextF.RF:HookScript("OnShow", function (self)
 	self.fudongScale:PIGSetValue(GetCVar("WorldTextScale"))
 	self.OPENcombattext:SetChecked(GetCVar("enableFloatingCombatText")=="1");
@@ -251,28 +249,22 @@ for i=1,#xingmingList do
 		end
 	end)
 end
-xingmingbanF.nameplatebiaoti = PIGFontString(xingmingbanF,{"TOPLEFT",xingmingbanF,"TOPLEFT",20,-190},"姓名板锁定在屏幕内显示距离");
-xingmingbanF.nameplateTop=PIGSlider(xingmingbanF,{"TOPLEFT",xingmingbanF.nameplatebiaoti,"BOTTOMLEFT",100,-20},{100,14},{0,0.2,0.01})
+xingmingbanF.nameplatebiaoti = PIGFontString(xingmingbanF,{"TOPLEFT",xingmingbanF,"TOPLEFT",40,-170},"姓名板锁定在屏幕内显示距离");
+xingmingbanF.nameplateTop=PIGSlider(xingmingbanF,{"TOPLEFT",xingmingbanF.nameplatebiaoti,"BOTTOMLEFT",70,-10},{0,0.2,0.01,{["Right"]="%d%%屏幕尺寸"}})
 xingmingbanF.nameplateTop.t = PIGFontString(xingmingbanF,{"RIGHT",xingmingbanF.nameplateTop,"LEFT",-4,0},"顶部距离");
-function xingmingbanF.nameplateTop:OnValueFun()
-	local val = self:GetValue()
-	local val = floor(val*100+0.5)*0.01
-	self.Text:SetText(val.."%屏幕尺寸");
-	SetCVar("nameplateOtherTopInset",val)
-end
+xingmingbanF.nameplateTop.Slider:HookScript("OnValueChanged", function(self, arg1)
+	SetCVar("nameplateOtherTopInset",arg1)
+end)
 xingmingbanF.nameplateTop:HookScript("OnShow", function (self)
-	self:PIGSetValue(GetCVar("nameplateOtherTopInset"),"%屏幕尺寸")
+	self:PIGSetValue(GetCVar("nameplateOtherTopInset"))
 end);
-xingmingbanF.nameplateBottom=PIGSlider(xingmingbanF,{"TOPLEFT",xingmingbanF.nameplatebiaoti,"BOTTOMLEFT",100,-70},{100,14},{0,0.2,0.01})
+xingmingbanF.nameplateBottom=PIGSlider(xingmingbanF,{"TOPLEFT",xingmingbanF.nameplateTop,"BOTTOMLEFT",0,0},{0,0.2,0.01,{["Right"]="%d%%屏幕尺寸"}})
 xingmingbanF.nameplateBottom.t = PIGFontString(xingmingbanF,{"RIGHT",xingmingbanF.nameplateBottom,"LEFT",-4,0},"底部距离");
-function xingmingbanF.nameplateBottom:OnValueFun()
-	local val = self:GetValue()
-	local val = floor(val*100+0.5)*0.01
-	self.Text:SetText(val.."%屏幕尺寸");
-	SetCVar("nameplateOtherBottomInset",val)
-end
+xingmingbanF.nameplateBottom.Slider:HookScript("OnValueChanged", function(self, arg1)
+	SetCVar("nameplateOtherBottomInset",arg1)
+end)
 xingmingbanF.nameplateBottom:HookScript("OnShow", function (self)
-	self:PIGSetValue(GetCVar("nameplateOtherBottomInset"),"%屏幕尺寸")
+	self:PIGSetValue(GetCVar("nameplateOtherBottomInset"))
 end);
 
 --自身高亮

@@ -1,14 +1,16 @@
 ## Interface: 30400
 ## Author: Stanzilla, Semlar
 ## Version: 1.9.0
-## LoadOnDemand: 0
-## SavedVariables: AdvancedInterfaceOptionsSaved
-## DefaultState: Enabled
 
 ## Title: Advanced Interface Options
 ## Notes: Restores access to removed interface options in Legion
 ## Title-zhCN: |cFFFFE00A<|r|cFFFFF468功能|r|cFFFFE00A>|r |cFFFFFFFF高级界面设置|r |cFFFFE00AAdvancedInterfaceOptions|r
 ## Notes-zhCN: 可以修改各种隐藏参数，包括隐藏的内部CVar参数
+
+## LoadOnDemand: 0
+## DefaultState: Enabled
+
+## SavedVariables: AdvancedInterfaceOptionsSaved
 
 ## X-Category: Interface Enhancements
 ## X-Website: https://www.curseforge.com/wow/addons/advancedinterfaceoptions

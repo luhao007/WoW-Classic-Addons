@@ -2095,3 +2095,56 @@ Change Log:
 * Added The War Within spells (world)
 * Added TWW spells for The Rookery
 * Fixed TWW general environment debuff spells for TWW Delves to be less spammy
+
+5.11.4
+* Added The War Within spells (world)
+* Added TWW spells for The Rookery
+* Added TWW spells for TWW Delves 
+
+5.12
+* Improved internal scanner to assist with verifying alerts marked as "test"
+* Added The War Within spells (world)
+* Added TWW spells for The Rookery
+* Added TWW spells for The Stonevault
+* Added TWW spells for Darkflame Cleft
+* Added TWW spells for Priory of the Scared Flame
+* Added special ignore for "Smothering Shadows" (Darkflame Cleft - TWW)
+
+5.12.1
+* Added TWW spells for City of Threads
+* Added TWW spells for The Dawnbreaker
+* Added TWW spells for Cinderbrew Meadery
+
+5.12.2
+* Added The War Within spells (world)
+* Added TWW spells for Darkflame Cleft
+* Added TWW spells for Priory of the Scared Flame
+* Added TWW spells for TWW Delves 
+
+5.12.3
+* Added The War Within spells (world)
+* Added TWW spells for Nerub-ar Palace
+* Added TWW spells for City of Threads
+* Added TWW spells for Priory of the Scared Flame
+* Added Cataclysm spells for Grim Batol (Mythic)
+
+5.12.4
+* Added The War Within spells (world)
+* Added TWW spells for Nerub-ar Palace
+* Added TWW spells for Ara-Kara, City of Echoes
+* Added TWW spells for TWW Delves 
+* Added SL spells for Mists of Tirna Scithe
+* Added BFA spells for Siege of Boralus
+
+5.12.5
+* Updated ToC and UI updates for WoW Cataclysm 4.4.1
+* Added The War Within spells (world)
+* Added Cataclysm spells for Grim Batol (Mythic)
+* Added TWW spells for TWW Delves 
+* Added TWW spells for Nerub-ar Palace
+
+5.13
+* Disabled sliders temporarily for WoW Classic until a replacement can be found
+* Updated ToC for WoW Classic 1.15.4
+* Removed Pre-Dragonflight UI management
+* Added TWW spells for Nerub-ar Palace

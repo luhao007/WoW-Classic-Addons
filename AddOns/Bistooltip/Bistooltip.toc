@@ -1,13 +1,15 @@
 ## Interface: 30400
 ## Author: Dweem  |cFFA335EE火锤|r |cFFABD473联盟：猛汉王德发|r |cFFFF7D0A全阶段魔改版|r
 ## Version: 7.40
-## OptionalDeps: 
-## SavedVariables: BisTooltipDB
 
 ## Title: BiS-Tooltip
 ## Notes: v7.40. In game BiS lists and item tooltip enrichment.
 ## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFF最佳装备提示|r |cFFFFE00ABistooltip|r
 ## Notes-zhCN: 提示最佳装备
+
+## OptionalDeps: 
+
+## SavedVariables: BisTooltipDB
 
 
 # Libs.

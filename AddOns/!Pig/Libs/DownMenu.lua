@@ -182,17 +182,28 @@ function Create.PIGDownMenu(fuF,Point,SizeWH,EasyMenu,UIname)
 		DownMenu:HookScript("OnHide", function(self)
 			PIGCloseDropDownMenus()
 		end)
-		DownMenu.Button = CreateFrame("Button",nil,DownMenu, "TruncatedButtonTemplate");
-		DownMenu.Button:SetNormalTexture("Interface/ChatFrame/UI-ChatIcon-ScrollDown-Up")
-		DownMenu.Button:SetPushedTexture("Interface/ChatFrame/UI-ChatIcon-ScrollDown-Down")
-		DownMenu.Button:SetDisabledTexture("Interface/ChatFrame/UI-ChatIcon-ScrollDown-Disabled")
-		DownMenu.Button:SetHighlightTexture("Interface/Buttons/UI-Common-MouseHilight");
-		DownMenu.Button:SetSize(Height+3,Height+3);
-		DownMenu.Button:SetPoint("RIGHT",DownMenu,"RIGHT",2,0);
+		DownMenu.Button = CreateFrame("Button",nil,DownMenu);
+		DownMenu.Button:SetHighlightTexture("interface/buttons/ui-common-mousehilight.blp");
+		DownMenu.Button:SetSize(Height,Height);
+		DownMenu.Button:SetPoint("RIGHT",DownMenu,"RIGHT",0,0);
+		DownMenu.Button.UpTex = DownMenu.Button:CreateTexture();
+		DownMenu.Button.UpTex:SetAtlas("NPE_ArrowDown")
+		DownMenu.Button.UpTex:SetSize(Height-3,Height+6);
+		DownMenu.Button.UpTex:SetPoint("CENTER", 0, -1);
+		DownMenu.Button:HookScript("OnMouseDown", function(self)
+			if self:IsEnabled() then
+				self.UpTex:SetPoint("CENTER", 1.5, -2.5);
+			end
+		end);
+		DownMenu.Button:HookScript("OnMouseUp", function(self)
+			if self:IsEnabled() then
+				self.UpTex:SetPoint("CENTER", 0, -1);
+			end
+		end);
 
 		DownMenu.Text = DownMenu:CreateFontString();
 		DownMenu.Text:SetWidth(Width-(Height+3));
-		DownMenu.Text:SetPoint("RIGHT", DownMenu.Button, "LEFT", 0, 0);
+		DownMenu.Text:SetPoint("RIGHT", DownMenu.Button, "LEFT", -2, 0);
 		DownMenu.Text:SetFont(FontUrl,14)
 		DownMenu.Text:SetJustifyH("RIGHT");
 	end
@@ -320,11 +331,20 @@ function Create.PIGDownMenu(fuF,Point,SizeWH,EasyMenu,UIname)
 		self:SetBackdropBorderColor(0, 0, 0, 1);
 		self.Text:SetTextColor(1, 1, 1, 1);
 		self.Button:Enable()
+		self.Button.UpTex:SetDesaturated(false)
 	end
 	function DownMenu:Disable()
 		self:SetBackdropBorderColor(0.5, 0.5, 0.5, 1);
 		self.Text:SetTextColor(0.5, 0.5, 0.5, 1);
 		self.Button:Disable()
+		self.Button.UpTex:SetDesaturated(true)
+	end
+	function DownMenu:SetEnabled(bool)
+		if bool then
+			self:Enable()
+		else
+			self:Disable()
+		end
 	end
 	return DownMenu
 end

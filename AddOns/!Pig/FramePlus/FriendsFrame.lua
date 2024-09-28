@@ -4,6 +4,9 @@ local GetRaceClassTXT=addonTable.Fun.GetRaceClassTXT
 local ClasseNameID=addonTable.Data.ClasseNameID
 local PIGraceList=addonTable.Data.PIGraceList
 local Create=addonTable.Create
+local PIGFrame=Create.PIGFrame
+local PIGEnter=Create.PIGEnter
+local PIGButton=Create.PIGButton
 local PIGFontString=Create.PIGFontString
 local IsAddOnLoaded=IsAddOnLoaded or C_AddOns and C_AddOns.IsAddOnLoaded
 -------------
@@ -337,6 +340,7 @@ function FramePlusfun.Friends()
 	WhoFrameColumn_SetWidth(WhoFrameColumnHeader1, WhoFrameHeaderP[4])
 	WhoFrameColumn_SetWidth(WhoFrameColumnHeader2, WhoFrameHeaderP[5])
 	WhoFrameColumn_SetWidth(WhoFrameColumnHeader9, WhoFrameHeaderP[6])
+	local WhoFrameDropDown=WhoFrameDropDown or WhoFrameDropdown
 	WhoFrameDropDown:Hide()
 	local function Hide_Header()
 		WhoFrameColumnHeader0.Left:Hide()
@@ -448,6 +452,15 @@ function FramePlusfun.Friends()
 				button.Guild:SetSize(WhoFrameHeaderP[6]-2,WhoiconH)
 				button.Guild:SetJustifyH("LEFT")
 				button.Guild:SetFont(NameText:GetFont())
+				button:HookScript("OnClick", function()
+					if WhoFrame.selectedWho then
+						if WhoFrame.endsenList[NameText:GetText()] then	
+							WhoFrame.senmsg:Disable()
+						else
+							WhoFrame.senmsg:Enable()
+						end
+					end
+				end)
 			end
 		end
 		WhoListScrollFrame:SetWidth(butWidth)

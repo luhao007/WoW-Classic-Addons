@@ -1,13 +1,14 @@
 ## Interface: 30400
 ## Author: mitch0
 ## Version: v6.1.4
-## Dependencies: RangeDisplay
-## OptionalDeps: AceGUI-3.0-SharedMediaWidgets
-## LoadOnDemand: 1
 
 ## Title: RangeDisplay Options
 ## Notes: Configuration options for RangeDisplay
 ## Title-zhCN: |cFFFFE00A<|r|cFFC79C6E战斗|r|cFFFFE00A>|r |cFFFFFFFF目标距离|r |cFF0055FF设置|r
+
+## Dependencies: RangeDisplay
+## OptionalDeps: AceGUI-3.0-SharedMediaWidgets
+## LoadOnDemand: 1
 
 ## X-License: Public Domain
 ## X-RelSite-WoWI: 7297

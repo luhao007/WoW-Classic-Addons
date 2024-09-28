@@ -22,7 +22,12 @@ PIG_SetF.Openshezhi:SetScript("OnClick", function ()
 end)
 PIGLine(PIG_SetF,"TOP",-60,1,{4,-4})
 Create.About_Update(PIG_SetF,-80,"Panel")
-if tocversion<110000 then
+if Settings and Settings.RegisterCanvasLayoutCategory then
+	local category, layout = Settings.RegisterCanvasLayoutCategory(PIG_SetF,addonName)
+	layout:AddAnchorPoint("TOPLEFT", 10, -10);
+	layout:AddAnchorPoint("BOTTOMRIGHT", -10, 10);
+	Settings.RegisterAddOnCategory(category)
+elseif InterfaceOptions_AddCategory then
 	PIG_SetF.name = addonName
 	InterfaceOptions_AddCategory(PIG_SetF);
 	--子页
@@ -32,11 +37,6 @@ if tocversion<110000 then
 	-- InterfaceOptions_AddCategory(PIG_SetF.childpanel);
 	-- PIG_AddOnPanel.okay = function (self) SC_ChaChingPanel_Close(); end;
 	-- PIG_AddOnPanel.cancel = function (self) SC_ChaChingPanel_CancelOrLoad();  end;
-else
-	local category, layout = Settings.RegisterCanvasLayoutCategory(PIG_SetF,addonName)
-	layout:AddAnchorPoint("TOPLEFT", 10, -10);
-	layout:AddAnchorPoint("BOTTOMRIGHT", -10, 10);
-	Settings.RegisterAddOnCategory(category)
 end
 
 ---------------
@@ -416,6 +416,7 @@ function PigMinimapBut:Point()
 				PigMinimapBut:SetHighlightTexture("Interface/Minimap/UI-Minimap-ZoomButton-Highlight");
 				PigMinimapBut.Border:SetDrawLayer("BORDER",1)
 				PigMinimapBut.Icon:SetDrawLayer("BACKGROUND",1)
+				--PigMinimapBut.Border:SetAtlas("ui-lfg-roleicon-incentive")
 				PigMinimapBut.Border:SetTexture("Interface/Minimap/MiniMap-TrackingBorder");
 				PigMinimapBut.Border:SetSize(56,56);
 				PigMinimapBut.Border:ClearAllPoints();	

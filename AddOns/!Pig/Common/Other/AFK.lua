@@ -4,10 +4,11 @@ local PIGQuickBut=Create.PIGQuickBut
 local PIGFontString=Create.PIGFontString
 --============================
 local Otherfun=addonTable.CommonInfo.Otherfun
-local GnUI = "AFK_UI"
+local GnUI = "PigAFK_UI"
+local Pig_AFKData = {}
 function Otherfun.Pig_AFK()
-	UIParent.cameraYawMoveSpeed=GetCVar("cameraYawMoveSpeed")
-	UIParent.cameraPitchMoveSpeed=GetCVar("cameraPitchMoveSpeed")
+	Pig_AFKData.cameraYawMoveSpeed=GetCVar("cameraYawMoveSpeed")
+	Pig_AFKData.cameraPitchMoveSpeed=GetCVar("cameraPitchMoveSpeed")
 	if not PIGA["Other"]["AFK"]["Open"] or _G[GnUI] then return end
 	local WowWidth=GetScreenWidth();
 	local WowHeight=GetScreenHeight();
@@ -73,7 +74,7 @@ function Otherfun.Pig_AFK()
 	AFKUI.title = PIGFontString(AFKUI,{"TOP", WorldFrame, "TOP", 0, -100},PIGA["Other"]["AFK"]["TispTXT"],"OUTLINE",50)
 	AFKUI.title:SetTextColor(1, 1, 0, 1);
 	UIParent:HookScript("OnShow", function(self)
-		SetCVar("cameraYawMoveSpeed",UIParent.cameraYawMoveSpeed)
+		SetCVar("cameraYawMoveSpeed",Pig_AFKData.cameraYawMoveSpeed)
 		AFKUI:Hide()
 		MoveViewLeftStop()
 	end)
@@ -99,7 +100,7 @@ function Otherfun.Pig_AFK()
 		end
 	end
 	local function Stopzhuandong()
-		SetCVar("cameraYawMoveSpeed",UIParent.cameraYawMoveSpeed)--旋转速度
+		SetCVar("cameraYawMoveSpeed",Pig_AFKData.cameraYawMoveSpeed)--旋转速度
 		MoveViewLeftStop()
 		AFKUI:Hide()
 		UIParent:Show()
@@ -115,9 +116,9 @@ function Otherfun.Pig_AFK()
 	AFKUI:SetScript("OnEvent", function(self,event,arg1,arg2)
 		if event=="CVAR_UPDATE" then
 			if arg1=="cameraYawMoveSpeed"  then
-				UIParent.cameraYawMoveSpeed=arg2
+				Pig_AFKData.cameraYawMoveSpeed=arg2
 			elseif arg1=="cameraPitchMoveSpeed" then
-				UIParent.cameraPitchMoveSpeed=arg2
+				Pig_AFKData.cameraPitchMoveSpeed=arg2
 			end
 		end
 		if event=="PLAYER_REGEN_DISABLED" or event=="PLAYER_LEAVING_WORLD" or event=="PLAYER_LOGOUT" then

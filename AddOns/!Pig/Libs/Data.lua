@@ -112,13 +112,14 @@ end
 Data.bagData = {
 	["bagID"]={0,1,2,3,4},
 	["bagIDMax"]= NUM_BAG_FRAMES,
-	["bankID"]={-1,5,6,7,8,9,10,11},
+	["bankID"]={-1,5,6,7,8,9,10},
 	["bankmun"]=24,
 	["bankbag"]=6,
 	["ItemWH"]=_G["BankFrameItem1"]:GetWidth()+5,
 }
 if tocversion>20000 then
 	Data.bagData["bankmun"]=28;
+	Data.bagData["bankID"]={-1,5,6,7,8,9,10,11};
 	Data.bagData["bankbag"]=7;
 end
 if tocversion>100000 then
@@ -203,6 +204,8 @@ end)
 ---喊话随机符
 Data.MSGsuijizifu ={",",".","!",";","，","。","！","；"};
 ----------------
+Data.Ext ={};
+-----
 addonTable.Data=Data
 ---
 Data.ElvUI_BagName = {"ElvUI_ContainerFrameBag-1","ElvUI_ContainerFrameBag-3","ElvUI_ContainerFrameBag0","ElvUI_ContainerFrameBag1","ElvUI_ContainerFrameBag2","ElvUI_ContainerFrameBag3"}

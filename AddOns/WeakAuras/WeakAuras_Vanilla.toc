@@ -1,15 +1,17 @@
 ## Interface: 30400
 ## Author: The WeakAuras Team
 ## Version: 5.12.9
-## OptionalDeps: Ace3, LibCompress, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, Masque, GTFO, LibButtonGlow-1.0, LibSpellRange-1.0, LibRangeCheck-3.0, LibDBIcon-1.0, LibGetFrame-1.0, !LibUIDropDownMenu, !!AddonLocale, BigWigs, DBM-Core
-## LoadOnDemand: 0
-## SavedVariables: WeakAurasSaved
-## DefaultState: Enabled
 
 ## Title: WeakAuras
 ## Notes: A powerful, comprehensive utility for displaying graphics and information based on buffs, debuffs, and other triggers.
 ## Title-zhCN: |cFFFFE00A<|r|cFFFFF468功能|r|cFFFFE00A>|r |cFFFFFFFF辅助增强|r |cFFFFE00AWeakAuras|r
 ## Notes-zhCN: 自定义界面显示、辅助信息，支持一定程度上的LUA脚本（迷你插件）
+
+## OptionalDeps: Ace3, LibCompress, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, Masque, GTFO, LibButtonGlow-1.0, LibSpellRange-1.0, LibRangeCheck-3.0, LibDBIcon-1.0, LibGetFrame-1.0, !LibUIDropDownMenu, !!AddonLocale, BigWigs, DBM-Core
+## LoadOnDemand: 0
+## DefaultState: Enabled
+
+## SavedVariables: WeakAurasSaved
 
 ## X-Flavor: Vanilla
 ## X-Category: Interface Enhancements

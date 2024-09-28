@@ -572,12 +572,14 @@ function BusinessInfo.StatsInfoOptions()
 	end
 	------
 	function fuFrame.CheckbutShow()
+		fuFrame.TradeTongGao.guangbo_dow:SetEnabled(PIGA["StatsInfo"]["Open"])
 		if PIGA["StatsInfo"]["Open"] then
 			fuFrame.StatsInfo.QKBut:Enable()
 			fuFrame.Qita_Num:Enable()
 			fuFrame.lixianBank:Enable()
 			fuFrame.TradeTongGao:Enable()
 			fuFrame.TradeClassLV:Enable()
+
 		else
 			fuFrame.StatsInfo.QKBut:Disable();
 			fuFrame.Qita_Num:Disable()

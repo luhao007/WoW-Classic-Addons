@@ -3,7 +3,7 @@ local L		= mod:GetLocalizedStrings()
 
 mod.statTypes = "normal,normal25,heroic,heroic25"
 
-mod:SetRevision("20240512232312")
+mod:SetRevision("20240714050722")
 mod:SetCreatureID(39747)
 mod:SetEncounterID(not mod:IsPostCata() and 891 or 1149)
 mod:SetModelID(31577)
@@ -68,7 +68,7 @@ end
 
 function mod:SPELL_AURA_APPLIED(args)
 	if args.spellId == 78722 then
-		specWarnTranq:Show()
+		specWarnTranq:Show(args.destName)
 		specWarnTranq:Play("trannow")
 		timerEnrage:Start()
 	elseif args.spellId == 74453 then

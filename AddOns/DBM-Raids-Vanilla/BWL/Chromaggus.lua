@@ -12,7 +12,7 @@ end
 local mod	= DBM:NewMod("Chromaggus", "DBM-Raids-Vanilla", catID)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240615135519")
+mod:SetRevision("20240922161955")
 mod:SetCreatureID(14020)
 mod:SetEncounterID(616)
 mod:SetModelID(14367)
@@ -139,12 +139,14 @@ local function update_vulnerability(self)
 	self:UnregisterShortTermEvents()--Unregister SPELL_DAMAGE until next shimmer emote
 end
 
+local damageThreshold = DBM:IsSeasonal("SeasonOfDiscovery") and 1000 or 800
+
 local function check_spell_damage(self, target, amount, spellSchool, critical)
 	local cid = self:GetCIDFromGUID(target)
 	if cid ~= 14020 then
 		return
 	end
-	if amount > (critical and 1600 or 800) then
+	if amount > (critical and damageThreshold * 2 or damageThreshold) then
 		if not vulnerabilities[target] or vulnerabilities[target] ~= spellSchool then
 			vulnerabilities[target] = spellSchool
 			update_vulnerability(self)

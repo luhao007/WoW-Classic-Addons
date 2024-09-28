@@ -22,14 +22,8 @@ local fuFrame =PIGOptionsList_R(QuickChatfun.RTabFrame,L["CHAT_TABNAME4"],110)
 local function Enable_Disable(ui,Booleans)
 	if Booleans then
 		ui:Enable()
-		ui.Low:SetTextColor(1, 1, 1, 1);
-		ui.High:SetTextColor(1, 1, 1, 1);
-		ui.Text:SetTextColor(1, 1, 1, 1);
 	else
 		ui:Disable();
-		ui.Low:SetTextColor(0.8, 0.8, 0.8, 0.5);
-		ui.High:SetTextColor(0.8, 0.8, 0.8, 0.5);
-		ui.Text:SetTextColor(0.8, 0.8, 0.8, 0.5);
 	end
 end
 --聊天窗口可以移动到屏幕边缘
@@ -102,24 +96,20 @@ fuFrame.editF.editMove:SetScript("OnClick", function (self)
 	Update_editBoxPoint()
 end);
 local pianyiinfoX = {-200,200,1}
-fuFrame.editF.editPoint_X = PIGSlider(fuFrame.editF,{"TOPLEFT",fuFrame.editF.editMove,"BOTTOMLEFT",70,-20},{100,14},pianyiinfoX)
+fuFrame.editF.editPoint_X = PIGSlider(fuFrame.editF,{"TOPLEFT",fuFrame.editF.editMove,"BOTTOMLEFT",70,-20},pianyiinfoX)
 fuFrame.editF.editPoint_X.bt = PIGFontString(fuFrame.editF.editPoint_X,{"RIGHT", fuFrame.editF.editPoint_X, "LEFT", -10, 0},"X偏移")
-function fuFrame.editF.editPoint_X:OnValueFun()
-	local valxxx = self:GetValue()
-	PIGA["Chat"]["Frame"]["editPoint_X"]=valxxx;
-	self.Text:SetText(PIGA["Chat"]["Frame"]["editPoint_X"]);
+fuFrame.editF.editPoint_X.Slider:HookScript("OnValueChanged", function(self, arg1)
+	PIGA["Chat"]["Frame"]["editPoint_X"]=arg1;
 	Update_editBoxPoint()
-end
+end)
 --Y偏移
 local pianyiinfoY = {-30,500,1}
-fuFrame.editF.editPoint_Y = PIGSlider(fuFrame.editF,{"LEFT",fuFrame.editF.editPoint_X,"RIGHT",100,0},{100,14},pianyiinfoY)
+fuFrame.editF.editPoint_Y = PIGSlider(fuFrame.editF,{"LEFT",fuFrame.editF.editPoint_X,"RIGHT",100,0},pianyiinfoY)
 fuFrame.editF.editPoint_Y.bt = PIGFontString(fuFrame.editF.editPoint_Y,{"RIGHT", fuFrame.editF.editPoint_Y, "LEFT", -10, 0},"Y偏移")
-function fuFrame.editF.editPoint_Y:OnValueFun()
-	local valxxx = self:GetValue()
-	PIGA["Chat"]["Frame"]["editPoint_Y"]=valxxx;
-	self.Text:SetText(PIGA["Chat"]["Frame"]["editPoint_Y"]);
+fuFrame.editF.editPoint_Y.Slider:HookScript("OnValueChanged", function(self, arg1)
+	PIGA["Chat"]["Frame"]["editPoint_Y"]=arg1;
 	Update_editBoxPoint()
-end
+end)
 fuFrame.editF:HookScript("OnShow", function(self)
 	editF_Enable_Disable()
 	self.editMove:SetChecked(PIGA["Chat"]["Frame"]["editMove"]);
@@ -170,13 +160,11 @@ fuFrame.zhuF.Width:SetScript("OnClick", function (self)
 	Zhu_Width_Height_XY()
 end);
 local xiayiinfoW = {150,800,1}
-fuFrame.zhuF.Width.Slider = PIGSlider(fuFrame.zhuF,{"LEFT",fuFrame.zhuF.Width.Text,"RIGHT",6,0},{100,14},xiayiinfoW)
-function fuFrame.zhuF.Width.Slider:OnValueFun()
-	local valxxx = self:GetValue()
-	self.Text:SetText(valxxx)
-	PIGA["Chat"]["Frame"]["Width_value"]=valxxx;
+fuFrame.zhuF.Width.Slider = PIGSlider(fuFrame.zhuF,{"LEFT",fuFrame.zhuF.Width.Text,"RIGHT",6,0},xiayiinfoW)
+fuFrame.zhuF.Width.Slider.Slider:HookScript("OnValueChanged", function(self, arg1)
+	PIGA["Chat"]["Frame"]["Width_value"]=arg1;
 	Zhu_Width_Height_XY()
-end
+end)
 --设置主聊天窗口高度
 fuFrame.zhuF.Height = PIGCheckbutton(fuFrame.zhuF,{"LEFT",fuFrame.zhuF.Width.Slider,"RIGHT",100,0},{L["CHAT_ZHUCHATFH"],L["CHAT_ZHUCHATFHTIPS"]})
 fuFrame.zhuF.Height:SetScript("OnClick", function (self)
@@ -190,13 +178,11 @@ fuFrame.zhuF.Height:SetScript("OnClick", function (self)
 end);
 -----------------------------------
 local xiayiinfoH = {120,500,1}
-fuFrame.zhuF.Height.Slider = PIGSlider(fuFrame.zhuF,{"LEFT",fuFrame.zhuF.Height.Text,"RIGHT",6,0},{100,14},xiayiinfoH)
-function fuFrame.zhuF.Height.Slider:OnValueFun()
-	local valxxx = self:GetValue()
-	self.Text:SetText(valxxx)
-	PIGA["Chat"]["Frame"]["Height_value"]=valxxx;
+fuFrame.zhuF.Height.Slider = PIGSlider(fuFrame.zhuF,{"LEFT",fuFrame.zhuF.Height.Text,"RIGHT",6,0},xiayiinfoH)
+fuFrame.zhuF.Height.Slider.Slider:HookScript("OnValueChanged", function(self, arg1)
+	PIGA["Chat"]["Frame"]["Height_value"]=arg1;
 	Zhu_Width_Height_XY()
-end
+end)
 --主聊天窗口X位置====
 fuFrame.zhuF.Point = PIGCheckbutton(fuFrame.zhuF,{"TOPLEFT",fuFrame.zhuF.Width,"BOTTOMLEFT",0,-30},{L["CHAT_ZHUCHATFXY"],L["CHAT_ZHUCHATFXYTIPS"]})
 fuFrame.zhuF.Point:SetScript("OnClick", function (self)
@@ -209,21 +195,17 @@ fuFrame.zhuF.Point:SetScript("OnClick", function (self)
 	Zhu_Width_Height_XY()
 end);
 local xiayiinfoX = {35,floor(GetScreenWidth()),1}
-fuFrame.zhuF.Point.Slider_X = PIGSlider(fuFrame.zhuF,{"LEFT",fuFrame.zhuF.Point.Text,"RIGHT",8,0},{100,14},xiayiinfoX)
-function fuFrame.zhuF.Point.Slider_X:OnValueFun()
-	local valxxx = self:GetValue()
-	self.Text:SetText(valxxx)
-	PIGA["Chat"]["Frame"]["Point_X"]=valxxx;
+fuFrame.zhuF.Point.Slider_X = PIGSlider(fuFrame.zhuF,{"LEFT",fuFrame.zhuF.Point.Text,"RIGHT",8,0},xiayiinfoX)
+fuFrame.zhuF.Point.Slider_X.Slider:HookScript("OnValueChanged", function(self, arg1)
+	PIGA["Chat"]["Frame"]["Point_X"]=arg1;
 	Zhu_Width_Height_XY()
-end
+end)
 local xiayiinfoY = {0,floor(GetScreenHeight()),1}
-fuFrame.zhuF.Point.Slider_Y = PIGSlider(fuFrame.zhuF,{"LEFT",fuFrame.zhuF.Point.Slider_X,"RIGHT",48,0},{100,14},xiayiinfoY)
-function fuFrame.zhuF.Point.Slider_Y:OnValueFun()
-	local valxxx = self:GetValue()
-	self.Text:SetText(valxxx)
-	PIGA["Chat"]["Frame"]["Point_Y"]=valxxx;
+fuFrame.zhuF.Point.Slider_Y = PIGSlider(fuFrame.zhuF,{"LEFT",fuFrame.zhuF.Point.Slider_X,"RIGHT",48,0},xiayiinfoY)
+fuFrame.zhuF.Point.Slider_Y.Slider:HookScript("OnValueChanged", function(self, arg1)
+	PIGA["Chat"]["Frame"]["Point_Y"]=arg1;
 	Zhu_Width_Height_XY()
-end
+end)
 ----
 fuFrame.zhuF:HookScript("OnShow", function(self)
 	Zhu_Enable_Disable()
@@ -405,10 +387,9 @@ end)
 -- 	LOOT_SetValueText()
 -- end);
 -- local xiayiinfo = {150,800,1}
--- fuFrame.LOOTF.Width.Slider = PIGSlider(fuFrame.LOOTF,{"LEFT",fuFrame.LOOTF.Width.Text,"RIGHT",6,0},{100,14},xiayiinfo)
--- function fuFrame.LOOTF.Width.Slider:OnValueFun()
--- 	local valxxx = self:GetValue()
--- 	PIGA["Chat"]["Frame"]["Loot_Width_value"]=valxxx;
+-- fuFrame.LOOTF.Width.Slider = PIGSlider(fuFrame.LOOTF,{"LEFT",fuFrame.LOOTF.Width.Text,"RIGHT",6,0},xiayiinfo)
+--fuFrame.LOOTF.Width.Slider.Slider:HookScript("OnValueChanged", function(self, arg1)
+-- 	PIGA["Chat"]["Frame"]["Loot_Width_value"]=arg1;
 -- 	if fuFrame.Chatloot then
 -- 		if PIGA["Chat"]["Frame"]["Loot_Width_value"]<50 then
 -- 			_G["ChatFrame"..fuFrame.ChatlootID]:SetClampRectInsets(-35, 0, 0, 0) --可拖动至紧贴屏幕边缘 
@@ -417,7 +398,7 @@ end)
 -- 		_G["ChatFrame"..fuFrame.ChatlootID]:SetWidth(PIGA["Chat"]["Frame"]["Loot_Width_value"]);
 -- 		FCF_UpdateButtonSide(_G["ChatFrame"..fuFrame.ChatlootID]);
 -- 	end
--- end
+-- end)
 -- ------
 -- fuFrame.LOOTF.Height = PIGCheckbutton(fuFrame.LOOTF,{"LEFT",fuFrame.LOOTF.Width.Slider,"RIGHT",100,0},{L["CHAT_LOOTFH"],L["CHAT_LOOTFHTIPS"]})
 -- fuFrame.LOOTF.Height:SetScript("OnClick", function (self)
@@ -432,16 +413,15 @@ end)
 -- end);
 -- ------------------------------
 -- local xiayiinfo = {120,500,1}
--- fuFrame.LOOTF.Height.Slider = PIGSlider(fuFrame.LOOTF,{"LEFT",fuFrame.LOOTF.Height.Text,"RIGHT",6,0},{100,14},xiayiinfo)
--- function fuFrame.LOOTF.Height.Slider:OnValueFun()
--- 	local Hval = self:GetValue()
--- 	PIGA["Chat"]["Frame"]["Loot_Height_value"]=Hval;
+-- fuFrame.LOOTF.Height.Slider = PIGSlider(fuFrame.LOOTF,{"LEFT",fuFrame.LOOTF.Height.Text,"RIGHT",6,0},xiayiinfo)
+--fuFrame.LOOTF.Height.Slider.Slider:HookScript("OnValueChanged", function(self, arg1)
+-- 	PIGA["Chat"]["Frame"]["Loot_Height_value"]=arg1;
 -- 	if fuFrame.Chatloot then
 -- 		FCF_UnDockFrame(_G["ChatFrame"..fuFrame.ChatlootID]);
 -- 		_G["ChatFrame"..fuFrame.ChatlootID]:SetHeight(PIGA["Chat"]["Frame"]["Loot_Height_value"]);
 -- 		FCF_UpdateButtonSide(_G["ChatFrame"..fuFrame.ChatlootID]);
 -- 	end
--- end
+-- end)
 -- ---------
 -- fuFrame.LOOTF.Point = PIGCheckbutton(fuFrame.LOOTF,{"TOPLEFT",fuFrame.LOOTF.Width,"BOTTOMLEFT",0,-20},{L["CHAT_LOOTFXY"],L["CHAT_LOOTFXYTIPS"]})
 -- fuFrame.LOOTF.Point:SetScript("OnClick", function (self)
@@ -455,17 +435,15 @@ end)
 -- 	LOOT_SetValueText()
 -- end);
 -- local xiayiinfo = {26,floor(GetScreenWidth()),1}
--- fuFrame.LOOTF.Point.Slider_X = PIGSlider(fuFrame.LOOTF,{"LEFT",fuFrame.LOOTF.Point.Text,"RIGHT",6,0},{100,14},xiayiinfo)
--- function fuFrame.LOOTF.Point.Slider_X:OnValueFun()
--- 	local valxxx = self:GetValue()
--- 	PIGA["Chat"]["Frame"]["Loot_Point_X"]=valxxx;
+-- fuFrame.LOOTF.Point.Slider_X = PIGSlider(fuFrame.LOOTF,{"LEFT",fuFrame.LOOTF.Point.Text,"RIGHT",6,0},xiayiinfo)
+-- fuFrame.LOOTF.Point.Slider_X.Slider:HookScript("OnValueChanged", function(self, arg1)
+-- 	PIGA["Chat"]["Frame"]["Loot_Point_X"]=arg1;
 -- 	Loot_Point_XY()
--- end
+-- end)
 -- local xiayiinfo = {8,floor(GetScreenHeight()),1}
--- fuFrame.LOOTF.Point.Slider_Y = PIGSlider(fuFrame.LOOTF,{"LEFT",fuFrame.LOOTF.Point.Slider_X,"RIGHT",48,0},{100,14},xiayiinfo)
--- function fuFrame.LOOTF.Point.Slider_Y:OnValueFun()
--- 	local valxxx = self:GetValue()
--- 	PIGA["Chat"]["Frame"]["Loot_Point_Y"]=valxxx;
+-- fuFrame.LOOTF.Point.Slider_Y = PIGSlider(fuFrame.LOOTF,{"LEFT",fuFrame.LOOTF.Point.Slider_X,"RIGHT",48,0},xiayiinfo)
+-- fuFrame.LOOTF.Point.Slider_Y.Slider:HookScript("OnValueChanged", function(self, arg1)
+-- 	PIGA["Chat"]["Frame"]["Loot_Point_Y"]=arg1;
 -- 	Loot_Point_XY()
 -- end
 -- --创建拾取聊天窗口

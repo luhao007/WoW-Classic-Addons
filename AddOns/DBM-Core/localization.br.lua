@@ -526,12 +526,13 @@ L.AUTO_TIMER_OPTIONS.combat				= "Mostrar cronômetro para começo do combate"
 
 
 L.AUTO_ICONS_OPTION_TARGETS				= "Colocar ícones nos alvos de $spell:%s"
-L.AUTO_ICONS_OPTION_TARGETS_TANK_A 		= "Colocar ícones nos alvos de $spell:%s com prioridade para tanque sobre corpo a corpo sobre alcance e fallback alfabético"
-L.AUTO_ICONS_OPTION_TARGETS_TANK_R 		= "Colocar ícones nos alvos de $spell:%s com prioridade para tanque sobre corpo a corpo sobre alcance e fallback da lista de raide"
+L.AUTO_ICONS_OPTION_TARGETS_TANK_A 		= "Colocar ícones nos alvos de $spell:%s com prioridade para tanque sobre corpo a corpo sobre alcance e alfabético como substituto"
+L.AUTO_ICONS_OPTION_TARGETS_TANK_R 		= "Colocar ícones nos alvos de $spell:%s com prioridade para tanque sobre corpo a corpo sobre alcance e lista de raide como substituto"
 L.AUTO_ICONS_OPTION_TARGETS_MELEE_A 	= "Colocar ícones nos alvos de $spell:%s com prioridade para corpo a corpo e alfabética"
 L.AUTO_ICONS_OPTION_TARGETS_MELEE_R 	= "Colocar ícones nos alvos de $spell:%s com prioridade para corpo a corpo e lista de raide"
 L.AUTO_ICONS_OPTION_TARGETS_RANGED_A 	= "Colocar ícones nos alvos de $spell:%s com prioridade para alcance e alfabética"
 L.AUTO_ICONS_OPTION_TARGETS_RANGED_R 	= "Colocar ícones nos alvos de $spell:%s com prioridade para alcance e lista de raide"
+L.AUTO_ICONS_OPTION_TARGETS_MRH			= "Colocar ícones nos alvos de $spell:%s com prioridade para corpo a corpo sobre alcance sobre curandeiro e lista de raide como substituto"
 L.AUTO_ICONS_OPTION_TARGETS_ALPHA 		= "Colocar ícones nos alvos de $spell:%s com prioridade alfabética"
 L.AUTO_ICONS_OPTION_TARGETS_ROSTER 		= "Colocar ícones nos alvos de $spell:%s com prioridade da lista de raide"
 L.AUTO_ICONS_OPTION_NPCS				= "Colocar ícones no $spell:%s"
@@ -560,7 +561,7 @@ L.AUTO_YELL_ANNOUNCE_TEXT.fade			= "%s desaparecendo em %%d"
 L.AUTO_YELL_ANNOUNCE_TEXT.shortfade		= "%%d" -- OPTIONAL
 L.AUTO_YELL_ANNOUNCE_TEXT.iconfade		= "{rt%%2$d}%%1$d" -- OPTIONAL
 L.AUTO_YELL_ANNOUNCE_TEXT.position 		= "%s %%s em {rt%%d}" ..UnitName("player").. "{rt%%d}"
-L.AUTO_YELL_ANNOUNCE_TEXT.shortposition = "{rt%%1$d}%s %%2$d"--Icon, Spellname, number -- OPTIONAL
+L.AUTO_YELL_ANNOUNCE_TEXT.shortposition = "{rt%%1$d}%s"--Icon, Spellname -- OPTIONAL
 L.AUTO_YELL_ANNOUNCE_TEXT.combo			= "%s e %%s"--Spell name (from option, plus spellname given in arg)
 L.AUTO_YELL_ANNOUNCE_TEXT.repeatplayer	= UnitName("player")--Doesn't need translation, it's just player name spam -- OPTIONAL
 L.AUTO_YELL_ANNOUNCE_TEXT.repeaticon	= "{rt%%1$d}"--Doesn't need translation. It's just icon spam -- OPTIONAL

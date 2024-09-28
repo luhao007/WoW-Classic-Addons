@@ -1,13 +1,14 @@
 ## Interface: 30400
 ## Author: Lag
 ## Version: v3.2.0
-## Dependencies: AtlasLootClassic
-## LoadOnDemand: 1
 
 ## Title: AtlasLootClassic |cFF0099FF[Dungeons and Raids]|r
 ## Notes: AtlasLoot loot tables from Dungeons and Raids
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本掉落|r |cFF69CCF0地下城和团队|r
 ## Notes-zhCN: AtlasLoot 地下城和团队副本掉落列表
+
+## Dependencies: AtlasLootClassic
+## LoadOnDemand: 1
 
 ## X-Category: Map
 ## X-License: GPL v2

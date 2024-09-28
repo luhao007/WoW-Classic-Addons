@@ -10,7 +10,7 @@ local CommonInfo=addonTable.CommonInfo
 local FasongYCqingqiu=addonTable.Fun.FasongYCqingqiu
 local InviteUnit=InviteUnit or C_PartyInfo and C_PartyInfo.InviteUnit
 ---
-local gelibanban = 50000
+local gelibanban = 40000
 local yijiazaijinlai = {
 	["jiazai"]=false,
 	["listName"]={},
@@ -82,7 +82,27 @@ function CommonInfo.Interactionfun.RightPlus()
 	if not PIGA["Interaction"]["RightPlus"] then return end
 	if yijiazaijinlai.jiazai then return end
 	yijiazaijinlai.jiazai=true
-	if tocversion<gelibanban then
+	if Menu and Menu.ModifyMenu then
+		local listName={INVTYPE_RANGED..INSPECT,STATUS_TEXT_TARGET..INFO,ADD_FRIEND,INVITE..GUILD}
+		for i=1,#listName do
+			table.insert(yijiazaijinlai.listName,listName[i])
+		end
+		Menu.ModifyMenu("MENU_UNIT_FRIEND", function(ownerRegion, rootDescription, contextData)
+		   	-- 在菜单末尾加入新按钮.
+		    rootDescription:CreateDivider()
+		    rootDescription:CreateTitle(addonName)
+		    for i=1,#listName do
+		    	rootDescription:CreateButton(listName[i], function() yijiazaijinlai.listNameFun[listName[i]](contextData.chatTarget,contextData.name) end)
+		    end
+		    -- 在菜单开始处加入按钮.
+		    -- local title = MenuUtil.CreateTitle(addonName)
+		    -- rootDescription:Insert(title, 1)
+		    -- local button = MenuUtil.CreateButton("Inserted button", function() print("Clicked the inserted button!") end)
+		    -- rootDescription:Insert(button, 2)
+		    -- local divider = MenuUtil.CreateDivider()
+		    -- rootDescription:Insert(divider, 3)
+		end)
+	else
 		if Pig_RightFUI then return end
 		local beijingico=DropDownList1MenuBackdrop.NineSlice.Center:GetTexture()
 		local beijing1,beijing2,beijing3,beijing4=DropDownList1MenuBackdrop.NineSlice.Center:GetVertexColor()
@@ -195,25 +215,5 @@ function CommonInfo.Interactionfun.RightPlus()
 				Show_RightF(PigRightF.listName2)
 			end
 	    end)
-	else
-		local listName={INVTYPE_RANGED..INSPECT,STATUS_TEXT_TARGET..INFO,ADD_FRIEND,INVITE..GUILD}
-		for i=1,#listName do
-			table.insert(yijiazaijinlai.listName,listName[i])
-		end
-		Menu.ModifyMenu("MENU_UNIT_FRIEND", function(ownerRegion, rootDescription, contextData)
-		   	-- 在菜单末尾加入新按钮.
-		    rootDescription:CreateDivider()
-		    rootDescription:CreateTitle(addonName)
-		    for i=1,#listName do
-		    	rootDescription:CreateButton(listName[i], function() yijiazaijinlai.listNameFun[listName[i]](contextData.chatTarget,contextData.name) end)
-		    end
-		    -- 在菜单开始处加入按钮.
-		    -- local title = MenuUtil.CreateTitle(addonName)
-		    -- rootDescription:Insert(title, 1)
-		    -- local button = MenuUtil.CreateButton("Inserted button", function() print("Clicked the inserted button!") end)
-		    -- rootDescription:Insert(button, 2)
-		    -- local divider = MenuUtil.CreateDivider()
-		    -- rootDescription:Insert(divider, 3)
-		end)
 	end
 end

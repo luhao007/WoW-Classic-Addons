@@ -1,12 +1,13 @@
 ## Interface: 30400
 ## Author: Novaspark-Arugal OCE
 ## Version: 1.37
-## SavedVariables: NRCdatabase
 
 ## Title: Nova Raid Companion
 ## Notes: Raid and combat helpers, raid wide cooldown tracking.
 ## Title-zhCN: |cFFFFE00A<|r|cFFC79C6E战斗|r|cFFFFE00A>|r |cFFFFFFFF团队助手|r |cFFFFE00ANovaRaidCompanion|r
 ## Notes-zhCN: 提示团队技能冷却
+
+## SavedVariables: NRCdatabase
 
 
 embeds.xml

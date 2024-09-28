@@ -4,23 +4,12 @@ local Create, Data, Fun, L, Default, Default_Per= unpack(PIG)
 -----
 local PIGFrame=Create.PIGFrame
 local PIGButton = Create.PIGButton
--- local PIGDownMenu=Create.PIGDownMenu
--- local PIGLine=Create.PIGLine
--- local PIGEnter=Create.PIGEnter
--- local PIGSlider = Create.PIGSlider
--- local PIGCloseBut=Create.PIGCloseBut
 local PIGCheckbutton=Create.PIGCheckbutton
--- local PIGOptionsList_RF=Create.PIGOptionsList_RF
--- local PIGOptionsList_R=Create.PIGOptionsList_R
--- local PIGQuickBut=Create.PIGQuickBut
--- local Show_TabBut_R=Create.Show_TabBut_R
 local PIGFontString=Create.PIGFontString
--- local PIGCloseBut=Create.PIGCloseBut
--- local PIGSetFont=Create.PIGSetFont
 ----------
 local GDKPInfo=addonTable.GDKPInfo
 -- -------
-function GDKPInfo.ADD_Check()
+function GDKPInfo.ADD_Check(RaidR)
 	local GnName,GnUI,GnIcon,FrameLevel = unpack(GDKPInfo.uidata)
 	-- local LeftmenuV=GDKPInfo.LeftmenuV
 	-- local buzhuzhize=GDKPInfo.buzhuzhize

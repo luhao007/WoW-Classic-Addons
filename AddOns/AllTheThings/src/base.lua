@@ -3,7 +3,8 @@
 --------------------------------------------------------------------------------
 --            Copyright 2017-2024 Dylan Fortune (Crieve-Sargeras)             --
 --------------------------------------------------------------------------------
-local rawget, ipairs, pairs, tinsert, setmetatable, print = rawget, ipairs, pairs, tinsert, setmetatable, print
+local rawget, ipairs, pairs, tinsert, setmetatable, print,math_sqrt,math_floor
+	= rawget, ipairs, pairs, tinsert, setmetatable, print,math.sqrt,math.floor
 -- This is a hidden frame that intercepts all of the event notifications that we have registered for.
 local appName, app = ...;
 app.EmptyFunction = function() end;
@@ -97,6 +98,14 @@ local function CloneReference(group)
 	end
 	return setmetatable(clone, { __index = group });
 end
+app.distance = function( x1, y1, x2, y2 )
+	return math_sqrt( (x2-x1)^2 + (y2-y1)^2 )
+end
+-- from http://lua-users.org/wiki/SimpleRound
+app.round = function(num, numDecimalPlaces)
+	local mult = 10^(numDecimalPlaces or 0)
+	return math_floor(num * mult + 0.5) / mult
+end
 -- Returns the best mapID for a group based on that group's coordinate and map data. If the current mapID is included in any of those fields, it will return that. This is used exclusively within tooltips and does not need to reference the source parent.
 local function GetBestMapForGroup(group, currentMapID)
 	if group then
@@ -138,6 +147,11 @@ local function GetRelativeField(group, field, value)
 		return group[field] == value or GetRelativeField(group.sourceParent or group.parent, field, value);
 	end
 end
+local function GetRawRelativeField(group, field, value)
+	if group then
+		return group[field] == value or GetRawRelativeField(rawget(group, "parent"), field, value)
+	end
+end
 -- Returns the first encountered group's value tracing upwards in parent hierarchy which has a value for the provided field
 -- Prioritizes sourceParent before parent
 local function GetRelativeValue(group, field)
@@ -175,6 +189,7 @@ app.CloneReference = CloneReference;
 app.GetBestMapForGroup = GetBestMapForGroup;
 app.GetDeepestRelativeValue = GetDeepestRelativeValue;
 app.GetRelativeField = GetRelativeField;
+app.GetRawRelativeField = GetRawRelativeField
 app.GetRelativeValue = GetRelativeValue;
 
 -- Cache information about the player.
@@ -525,6 +540,45 @@ end
 
 -- Define Modules
 app.Modules = {};
+
+-- Define Chat Commands handling
+app.ChatCommands = { Help = {} }
+-- Adds a handled chat command for ATT
+-- cmd : The lowercase string to trigger the command handler
+-- func : The function which is run with provided 'args' from chat input when 'cmd' is used
+-- info : (optional, WIP) An Info table which defines helpful information about using the command
+app.ChatCommands.Add = function(cmd, func, help)
+	if not cmd or cmd == "" then error("Must supply an Add Chat Command name") end
+	if type(func) ~= "function" then error("Attempted to add a non-function handler for a Chat Command: "..cmd) end
+		app.ChatCommands[cmd:lower()] = func
+		if help then
+			if type(help) ~= "table" then
+				app.print("Attempted to add a non-table Help for a Chat Command: "..cmd)
+			else
+				app.ChatCommands.Help[cmd:lower()] = help
+			end
+		end
+	end
+-- Removes a handled chat command for ATT
+-- cmd : The lowercase string command whose handler will be removed
+app.ChatCommands.Remove = function(cmd)
+	if not cmd or cmd == "" then error("Must supply a Remove Chat Command name") end
+	app.ChatCommands[cmd:lower()] = nil
+	app.ChatCommands.Help[cmd:lower()] = nil
+end
+-- Prints the Help information for a given command
+-- cmd : The command's Help to print
+app.ChatCommands.PrintHelp = function(cmd)
+	local help = app.ChatCommands.Help[cmd:lower()]
+	if not help then
+		app.print("No Help provided for command:",cmd)
+		return true
+	end
+	for _,helpLine in ipairs(help) do
+		app.print(helpLine)
+	end
+	return true
+end
 
 -- Global Variables
 AllTheThingsSavedVariables = {};

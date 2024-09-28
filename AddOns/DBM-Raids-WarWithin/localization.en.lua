@@ -33,9 +33,18 @@ local L
 --L= DBM:GetModLocalization(2609)
 
 ---------------------------
---  Eggtender Ovi'nax (2919) --
+--  Bloodtwister Ovi'nax (2919) --
 ---------------------------
---L= DBM:GetModLocalization(2612)
+L= DBM:GetModLocalization(2612)
+
+L:SetOptionLocalization({
+	EggBreakerBehavior	= "Set Egg Breaker Behavior (Will override everyone elses setting if you are raid leader)",
+	MatchBW				= DBM_COMMON_L.SQUARE_ICON_SMALL ..", ".. DBM_COMMON_L.TRIANGLE_ICON_SMALL ..", ".. DBM_COMMON_L.DIAMOND_ICON_SMALL ..", ".. DBM_COMMON_L.CROSS_ICON_SMALL .. " (all difficulties) with a melee > ranged > healer priority (matches Bigwigs behavior)",--Default
+	MatchEW				= DBM_COMMON_L.SQUARE_ICON_SMALL ..", ".. DBM_COMMON_L.TRIANGLE_ICON_SMALL ..", ".. DBM_COMMON_L.DIAMOND_ICON_SMALL ..", ".. DBM_COMMON_L.CROSS_ICON_SMALL .. " (non mythic) ".. DBM_COMMON_L.SQUARE_ICON_SMALL ..", ".. DBM_COMMON_L.TRIANGLE_ICON_SMALL ..", ".. DBM_COMMON_L.STAR_ICON_SMALL ..", ".. DBM_COMMON_L.CIRCLE_ICON_SMALL .. " (mythic) with a melee > ranged > healer priority (matches Echowigs behavior)",
+	UseAllAscending		= "|TInterface\\TargetingFrame\\UI-RaidTargetingIcons.blp:13:13:0:0:64:64:0:16:0:16|t, |TInterface\\TargetingFrame\\UI-RaidTargetingIcons.blp:13:13:0:0:64:64:16:32:0:16|t, |TInterface\\TargetingFrame\\UI-RaidTargetingIcons.blp:13:13:0:0:64:64:32:48:0:16|t, |TInterface\\TargetingFrame\\UI-RaidTargetingIcons.blp:13:13:0:0:64:64:48:64:0:16|t, etc with a melee > ranged > healer priority",
+	DisableIconsForRaid	= "Disable setting icons and show yells with no icons",
+	DisableAllForRaid	= "Disable setting icons and yells entirely"
+})
 
 ---------------------------
 --  Nexus-Princess Ky'veza(2920) --
@@ -45,12 +54,25 @@ local L
 ---------------------------
 --  The Silken Court (2921) --
 ---------------------------
---L= DBM:GetModLocalization(2608)
+L= DBM:GetModLocalization(2608)
+
+L:SetMiscLocalization({
+	Red		= " [Red]",--Skeinspinner Takazj
+	Blue	= " [Blue]"--Anub'arash
+})
 
 ---------------------------
 --  Queen Ansurek (2922) --
 ---------------------------
---L= DBM:GetModLocalization(2602)
+L= DBM:GetModLocalization(2602)
+
+L:SetOptionLocalization({
+	ToxinBehavior		= "Set Reactive Toxin Behavior (Will override everyone elses setting if you are raid leader)",
+	MatchBW				= DBM_COMMON_L.SQUARE_ICON_SMALL ..", ".. DBM_COMMON_L.TRIANGLE_ICON_SMALL ..", ".. DBM_COMMON_L.DIAMOND_ICON_SMALL ..", ".. DBM_COMMON_L.STAR_ICON_SMALL ..", ".. DBM_COMMON_L.CIRCLE_ICON_SMALL .. " (all difficulties) with a melee > ranged > healer priority (matches Bigwigs behavior)",--Default
+	UseAllAscending		= DBM_COMMON_L.STAR_ICON_SMALL ..", ".. DBM_COMMON_L.CIRCLE_ICON_SMALL ..", ".. DBM_COMMON_L.DIAMOND_ICON_SMALL ..", ".. DBM_COMMON_L.TRIANGLE_ICON_SMALL ..", ".. DBM_COMMON_L.MOON_ICON_SMALL .. " (all difficulties) with a melee > ranged > healer priority",
+	DisableIconsForRaid	= "Disable setting icons and show yells with no icons",
+	DisableAllForRaid	= "Disable setting icons and yells entirely"
+})
 
 -------------
 --  Trash  --

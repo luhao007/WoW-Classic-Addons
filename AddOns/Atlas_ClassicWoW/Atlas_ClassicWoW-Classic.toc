@@ -1,12 +1,13 @@
 ## Interface: 30400
 ## Author: arith, Dynaletik, dubcat
 ## Version: v1.52.05
-## RequiredDeps: Atlas
 
 ## Title: Atlas |r|cFF0099FF[Classic WoW]|r
 ## Notes: Classic WoW Instances' Maps
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本地图|r |cFF69CCF0经典旧世|r
 ## Notes-zhCN: 经典旧世副本地图
+
+## RequiredDeps: Atlas
 
 ## X-Date: 2023-07-29T6:15:02Z
 ## X-Credits: Dan Gilbert, Lothaer

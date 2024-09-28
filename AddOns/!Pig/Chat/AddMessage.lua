@@ -16,22 +16,32 @@ local wanjiaxinxil = {}
 local ClassColor=Data.ClassColor
 local Texwidth,Texheight = 500,500
 local function ShowZb_Link_Icon(newText)
-	if PIGA["Chat"]["ShowZb"] then
+	if PIGA["Chat"]["FastCopy"] or PIGA["Chat"]["ShowZb"] then
 		local namexShowZb=""
 		if PIGA["Chat"]["ClassColor"] then
 			namexShowZb = newText:match("%[|cff%w%w%w%w%w%w(.-)|r%]")
 		else
 			namexShowZb = newText:match("%[.-%].-%[(.-)%]")
-		end	
-		if namexShowZb and namexShowZb~="" then
-			if wanjiaxinxil[namexShowZb] then
+		end
+		if namexShowZb and namexShowZb~="" and wanjiaxinxil[namexShowZb] then
+			if PIGA["Chat"]["FastCopy"] then
+				local left=0.08*Texheight+5
+				local right=0.92*Texheight-5
+				local top=0*Texheight+5
+				local bottom=0.95*Texheight-5
+				local Copyicon ="|Tinterface/buttons/ui-guildbutton-publicnote-up.blp:0:0:0:0:"..Texheight..":"..Texheight..":"..left..":"..right..":"..top..":"..bottom.."|t"
+				if Copyicon~="" then
+					newText=newText:gsub("(|Hplayer:(.-)|h%[.-%]|h)", "|Hgarrmission:-999:%2|h"..Copyicon.."|h%1")
+				end
+			end
+			if PIGA["Chat"]["ShowZb"] then
 				local _, _, _, englishRace, sex = GetPlayerInfoByGUID(wanjiaxinxil[namexShowZb])
 				local raceX = GetRaceClassTXT(0,Texwidth,englishRace,sex)
 				if raceX~="" then
-					newText=newText:gsub("(|Hplayer:(.-)|h%[.-%]|h)", "|Hgarrmission:%2|h"..raceX.."|h%1")
+					newText=newText:gsub("(|Hplayer:(.-)|h%[.-%]|h)", "|Hgarrmission:-998:%2|h"..raceX.."|h%1")
 				end
 			end
-		end	
+		end
 	end
 	if PIGA["Chat"]["ShowLinkIcon"] then
 		if newText:match("Hitem:") then
@@ -40,7 +50,7 @@ local function ShowZb_Link_Icon(newText)
 				tihuanidlist[word]=GetItemIcon(word)
 			end
 			for k,v in pairs(tihuanidlist) do
-				newText=newText:gsub("(|cff%w%w%w%w%w%w|Hitem:"..k..":)"," |T"..v..":0|t%1");
+				newText=newText:gsub("(|cff%w%w%w%w%w%w|Hitem:"..k..":)","|T"..v..":0|t%1");
 			end
 		end
 	end
@@ -169,44 +179,52 @@ end
 -- end
 ---
 function QuickChatfun.PIGMessage()
-	hooksecurefunc("SetItemRef", function(link, text, button, chatFrame)
-		--print(link)
-		-- local newTextxx = text:gsub("|", "||")
+	hooksecurefunc("SetItemRef", function(text,link, button, chatFrame)
+		-- print(text)
+		-- local newTextxx = link:gsub("|", "||")
 		-- print(newTextxx)
-		--
-		if not PIGA["Chat"]["ShowZb"] then return end
-		if ( strsub(link, 1, 11) == "garrmission" ) then
-			local namelink = strsub(link, 13);
-			--local name_server, lineID, chatType, chatTarget = strsplit(":", namelink);
-			local name_server = strsplit(":", namelink);
-			if tocversion<100000 then
-				local name,server = strsplit("-",name_server)
-				if Pig_OptionsUI.Realm==server then
-					name_server = name
-				end
+		if not PIGA["Chat"]["ShowZb"] and not PIGA["Chat"]["FastCopy"] then return end
+		if ( strsub(text, 1, 11) ~= "garrmission" ) then return end
+		local nametext = strsub(text, 13);
+		local gnid,name_server = strsplit(":", nametext);--lineID, chatType, chatTarget
+		if tocversion<100000 then
+			local name,server = strsplit("-",name_server)
+			if Pig_OptionsUI.Realm==server then
+				name_server = name
 			end
+		end
+		if gnid=="-999" and PIGA["Chat"]["FastCopy"] then
+			local editBoxXX = ChatEdit_ChooseBoxForSend()
+	        local hasText = (editBoxXX:GetText() ~= "")
+	        ChatEdit_ActivateChat(editBoxXX)
 			if button=="LeftButton" then
-				if IsShiftKeyDown() then
-					for ixx = chatFrame:GetNumMessages(), 1, -1 do
-						local text = chatFrame:GetMessageInfo(ixx)
-						if text and text:find(link, nil, true) then
-							local kaishi,jieshu=text:find("|r%]|h： ")
-							local newText = strsub(text, jieshu+1);
+				editBoxXX:Insert(name_server)
+				if (not hasText) then editBoxXX:HighlightText() end
+			else
+				for msgid = chatFrame:GetNumMessages(), 1, -1 do
+					local msgtext = chatFrame:GetMessageInfo(msgid)
+					if msgtext and msgtext:find(text, nil, true) then
+						local endjieshu
+						local kaishi,jieshu=msgtext:find("|r%]|h:")
+						local endjieshu=jieshu
+						if not endjieshu then
+							local kaishi,jieshu=msgtext:find("|r%]|h： ")
+							endjieshu=jieshu
+						end
+						if endjieshu then
+							local newText = strsub(msgtext, endjieshu+1);
 							local newText=newText:gsub(" |T.-|t","");
 							local newText=newText:gsub("|T.-|t","");
-							local editBoxXX = ChatEdit_ChooseBoxForSend()
-					        local hasText = (editBoxXX:GetText() ~= "")
-					        ChatEdit_ActivateChat(editBoxXX)
 							editBoxXX:Insert(newText)
 					        if (not hasText) then editBoxXX:HighlightText() end
-							return
-						end
+					    end
+						return
 					end
-				elseif IsControlKeyDown() then
-					
-				else
-					FasongYCqingqiu(name_server)
 				end
+			end
+		elseif gnid=="-998" and PIGA["Chat"]["ShowZb"] then
+			if button=="LeftButton" then
+				FasongYCqingqiu(name_server)
 			else
 				C_FriendList.SendWho('n-"'..name_server..'"')
 			end

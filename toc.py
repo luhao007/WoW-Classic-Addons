@@ -47,18 +47,34 @@ class TOC:
             self.contents.pop(i)
 
     def to_lines(self):
-        keys = ['Interface', 'Author', 'Version',
-                'RequiredDeps', 'Dependencies', 'OptionalDeps',
-                'LoadOnDemand', 'LoadWith', 'LoadManagers',
-                'SavedVariables', 'SavedVariablesPerCharacter',
-                'DefaultState', 'Secure', 'IconTexture']
-        ret = self.tags_to_line(keys)
-        ret += ['\n']
+        keys = [['Interface', 'Author', 'Version'],
 
-        keys = ['Title', 'Notes', 'Title-zhCN', 'Notes-zhCN']
-        ret += self.tags_to_line(keys)
-        ret += ['\n']
+                # Addon info in list
+                ['Title', 'Notes', 'Title-zhCN', 'Notes-zhCN'],
 
+                # Addon icon in list
+                ['IconTexture', 'IconAtlas'],
+
+                # New tags added in 10.0 for the dropdown menu next to minimap
+                ['AddonCompartmentFunc',
+                 'AddonCompartmentFuncOnEnter', 'AddonCompartmentFuncOnLeave'],
+
+                # Loading conditions
+                ['RequiredDeps', 'Dependencies', 'OptionalDeps',
+                 'LoadOnDemand', 'LoadWith', 'LoadManagers', 'DefaultState'],
+
+                # Saved variables
+                ['SavedVariables', 'SavedVariablesPerCharacter']]
+
+        ret = []
+        for key in keys:
+            tag = [k for k in key if k in self.tags.keys()]
+            if not tag:
+                continue
+            ret += self.tags_to_line(tag)
+            ret += ['\n']
+
+        # Extra meta tags
         ret += self.tags_to_line(k for k in self.tags if k.startswith('X-'))
         ret += ['\n']
 

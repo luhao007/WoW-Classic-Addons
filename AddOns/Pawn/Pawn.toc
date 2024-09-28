@@ -1,11 +1,12 @@
 ## Interface: 30400
 ## Version: 2.8.11
-## SavedVariables: PawnCommon
-## SavedVariablesPerCharacter: PawnOptions, PawnMrRobotScaleProviderOptions, PawnClassicScaleProviderOptions
 
 ## Title: Pawn
 ## Notes: Pawn helps you compare items and find upgrades.
 ## Title-zhCN: |cFFFFE00A<|r|cFFC79C6E战斗|r|cFFFFE00A>|r |cFFFFFFFF装备评分|r |cFFFFE00APawn|r
+
+## SavedVariables: PawnCommon
+## SavedVariablesPerCharacter: PawnOptions, PawnMrRobotScaleProviderOptions, PawnClassicScaleProviderOptions
 
 ## X-Wago-ID: R4N2k46L
 

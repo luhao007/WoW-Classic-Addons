@@ -1,13 +1,15 @@
 ## Interface: 30400
 ## Author: Mikord
 ## Version: 5.9.1
-## OptionalDeps: LibSharedMedia-3.0
-## SavedVariables: MSBTProfiles_SavedVars, MSBT_SavedMedia
-## SavedVariablesPerCharacter: MSBTProfiles_SavedVarsPerChar
 
 ## Title: Mik's Scrolling Battle Text
 ## Notes: Scrolls battle information around the character model.
 ## Title-zhCN: |cFFFFE00A<|r|cFFC79C6E战斗|r|cFFFFE00A>|r |cFFFFFFFF浮动战斗信息|r |cFFFFE00AMikScrollingBattleText|r
+
+## OptionalDeps: LibSharedMedia-3.0
+
+## SavedVariables: MSBTProfiles_SavedVars, MSBT_SavedMedia
+## SavedVariablesPerCharacter: MSBTProfiles_SavedVarsPerChar
 
 
 Libs\LibStub.lua

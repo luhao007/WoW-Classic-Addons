@@ -356,7 +356,7 @@ local function PartyMember_ToToT()
 		local Party=_G["PartyMemberFrame"..id] or PartyFrame and PartyFrame["MemberFrame"..id]
 	    --队友目标
 	    if Party and not Party.mubiao then
-			Party.mubiao = CreateFrame("Button", nil, Party,"SecureUnitButtonTemplate",id)
+			Party.mubiao = CreateFrame("Button", "PartyMemberFrame"..id.."ToToT", Party,"SecureUnitButtonTemplate",id)
 			Party.mubiao:SetSize(100,22);
 			Party.mubiao:SetPoint("LEFT", Party.HP, "RIGHT", 4, -0);
 			Party.mubiao:RegisterForClicks("AnyUp")

@@ -1,12 +1,13 @@
 ## Interface: 30400
 ## Author: Boshi Lian(farmer1992@gmail.com)
 ## Version: v1.10.1
-## SavedVariablesPerCharacter: RaidLedgerDatabase
 
 ## Title: Raid Ledger
 ## Notes: A ledger for GDKP/gold run raid. Feedback: farmer1992@gmail.com
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF金团账本|r |cFFFFE00ARaidLedger|r
 ## Notes-zhCN: 金团账本，帮你在金团中记账 反馈问题 farmer1992@gmail.com
+
+## SavedVariablesPerCharacter: RaidLedgerDatabase
 
 ## X-Curse-Project-ID: 349048
 ## X-Wago-ID: aN0YLA6j

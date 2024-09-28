@@ -5,205 +5,205 @@ local name, app = ...;
 local L = app.L;
 for key,value in pairs({
 	-- General Text
-	["THINGS_UNTIL"] = " THINGS UNTIL ";
-	["THING_UNTIL"] = " THING UNTIL ";
-	["YOU_DID_IT"] = "YOU DID IT!";
-	
+	-- ["THINGS_UNTIL"] = " THINGS UNTIL ";
+	-- ["THING_UNTIL"] = " THING UNTIL ";
+	-- ["YOU_DID_IT"] = "YOU DID IT!";
+
 	-- Social Module
-	["NEW_VERSION_AVAILABLE"] = "A newer version of %s is available. Please update the AddOn, %s.";
-	["NEW_VERSION_FLAVORS"] = {
-		"or we'll give Sylvanas another lighter",
-		"Alexstrasza is worried about you",
-		"and Invincible will drop |cffffaaaafor sure|r next time",
-		"this was merely a setback",
-	};
-	["SOCIAL_PROGRESS"] = "Social Progress";
-	["TRACKING_PROGRESS"] = "Tracking Progress";
-	["COLLECTION_PROGRESS"] = "Collection Progress";
-	
+	-- ["NEW_VERSION_AVAILABLE"] = "A newer version of %s is available. Please update the AddOn, %s.";
+	-- ["NEW_VERSION_FLAVORS"] = {
+	-- 	"or we'll give Sylvanas another lighter",
+	--	"Alexstrasza is worried about you",
+	--	"and Invincible will drop |cffffaaaafor sure|r next time",
+	--	"this was merely a setback",
+	--};
+	-- ["SOCIAL_PROGRESS"] = "Social Progress";
+	-- ["TRACKING_PROGRESS"] = "Tracking Progress";
+	-- ["COLLECTION_PROGRESS"] = "Collection Progress";
+
 	-- Settings
-	["DATA_TYPE_NOT_SUPPORTED"] = "This data type is not supported at this time.",
-	
-	["OPEN_MINILIST_FOR"] = "Open mini list for ";
-	["REFRESHING_COLLECTION"] = "Refreshing collection...";
-	["DONE_REFRESHING"] = "Done refreshing collection.";
-	["ADDED_WITH_PATCH"] = "Added With Patch";
-	["REMOVED_WITH_PATCH"] = "Removed With Patch";
-	["AVAILABILITY"] = "Availability";
-	["CREATURES_COUNT"] = "[%s Creatures]";
-	["CREATURES_LIST"] = "Creatures List";
-	["PROGRESS"] = "Progress";
-	["COMPLETED_BY"] = "Completed By: %s";
-	["KNOWN_BY"] = "Known by %s";
-	["OWNED_BY"] = "Owned by %s";
-	["ALIVE"] = "Alive";
-	["SPAWNED"] = "Spawned";
-	["LAYER"] = "Layer";
-	["BINDING"] = "Binding";
-	["BONUS_ID"] = "Bonus ID";
-	["CONDUIT_ID"] = "Conduit ID";
-	["DISPLAY_ID"] = "Display ID";
-	["PET_BATTLES"] = "Pet Battles";
-	["EVENT_ID"] = "Event ID";
-	["ICON_PATH"] = "Icon Path";
-	["ITEM_LEVEL"] = "iLvl";
-	["ITEM_STRING"] = "Item String";
-	["MOD_ID"] = "Mod ID";
-	["OBJECT_TYPE"] = "Object Type";
-	["OBJECTIVES"] = "Objectives";
-	["QUEST_GIVERS"] = "Quest Givers";
-	["RUNEFORGE_POWER_ID"] = "Runeforge Power ID";
-	["UNOBTAINABLE_LABEL"] = "Unobtainable Content";
-	
+	-- ["DATA_TYPE_NOT_SUPPORTED"] = "This data type is not supported at this time.",
+
+	-- ["OPEN_MINILIST_FOR"] = "Open mini list for ";
+	-- ["REFRESHING_COLLECTION"] = "Refreshing collection...";
+	-- ["DONE_REFRESHING"] = "Done refreshing collection.";
+	-- ["ADDED_WITH_PATCH"] = "Added With Patch";
+	-- ["REMOVED_WITH_PATCH"] = "Removed With Patch";
+	-- ["AVAILABILITY"] = "Availability";
+	-- ["CREATURES_COUNT"] = "[%s Creatures]";
+	-- ["CREATURES_LIST"] = "Creatures List";
+	-- ["PROGRESS"] = "Progress";
+	-- ["COMPLETED_BY"] = "Completed By: %s";
+	-- ["KNOWN_BY"] = "Known by %s";
+	-- ["OWNED_BY"] = "Owned by %s";
+	-- ["ALIVE"] = "Alive";
+	-- ["SPAWNED"] = "Spawned";
+	-- ["LAYER"] = "Layer";
+	-- ["BINDING"] = "Binding";
+	-- ["BONUS_ID"] = "Bonus ID";
+	-- ["CONDUIT_ID"] = "Conduit ID";
+	-- ["DISPLAY_ID"] = "Display ID";
+	-- ["PET_BATTLES"] = "Pet Battles";
+	-- ["EVENT_ID"] = "Event ID";
+	-- ["ICON_PATH"] = "Icon Path";
+	-- ["ITEM_LEVEL"] = "iLvl";
+	-- ["ITEM_STRING"] = "Item String";
+	-- ["MOD_ID"] = "Mod ID";
+	-- ["OBJECT_TYPE"] = "Object Type";
+	-- ["OBJECTIVES"] = "Objectives";
+	-- ["QUEST_GIVERS"] = "Quest Givers";
+	-- ["RUNEFORGE_POWER_ID"] = "Runeforge Power ID";
+	-- ["UNOBTAINABLE_LABEL"] = "Unobtainable Content";
+
 	-- Instructional Text
-	["MINIMAP_MOUSEOVER_TEXT"] = "Right click to change settings.\nLeft click to open the Main List.\nCtrl + Left click to open the Mini List.\nShift + Left click to Refresh Collections.";
-	["TOP_ROW_INSTRUCTIONS"] = "|cff3399ffLeft Click and Drag to Move|r\n|cff3399ffRight Click to Open the Settings Menu|r\n|cff3399ffShift + Click to Refresh Collections|r";
-	["OTHER_ROW_INSTRUCTIONS"] = "|cff3399ffLeft Click to Expand/Collapse|r\n|cff3399ffRight Click to Pop Out to Mini List|r\n|cff3399ffShift + Click to Refresh Collections|r\n|cff3399ffAlt + Right Click to Plot Waypoints|r";
-	["TOP_ROW_INSTRUCTIONS_AH"] = "|cff3399ffLeft Click and Drag to Move|r\n|cff3399ffRight Click to Open the Settings Menu|r\n|cff3399ffShift + Click to Search the Auction House|r";
-	["OTHER_ROW_INSTRUCTIONS_AH"] = "|cff3399ffLeft Click to Expand/Collapse|r\n|cff3399ffRight Click to Pop Out to Mini List|r\n|cff3399ffShift + Click to Search the Auction House|r";
-	["RECENTLY_MADE_OBTAINABLE"] = "|CFFFF0000If this recently dropped for you (anywhere but Salvage\nCrates), please post in Discord where you got it to drop!|r";
-	["RECENTLY_MADE_OBTAINABLE_PT2"] = "|CFFFF0000The more information, the better.  Thanks!|r";
-	["MAIN_LIST_REQUIRES_REFRESH"] = "[Click to Update Progress]";
-	["UPDATES_PAUSED"] = "Updates Paused";
-	["VISIT_FLIGHT_MASTER"] = "Visit the Flight Master to cache.";
-	["REQUIRES_PVP"] = "|CFF00FFDERequires PvP Activities or Currencies|r";
-	["REQUIRES_PETBATTLES"] = "|CFF00FFDERequires Pet Battling|r";
-	["PLEASE_REPORT_MESSAGE"] = "Please report this to the ATT Discord in #retail-errors! Thanks!";
-	["REPORT_TIP"] = "\n("..CTRL_KEY_TEXT.."+C to copy multiline report to your clipboard)";
-	["QUEST_PREVENTS_BREADCRUMB_COLLECTION_FORMAT"] = "Quest '%s' %s will prevent collection of Breadcrumb Quest '%s' %s";
-	["REPORT_INACCURATE_QUEST"] = "Wrong Quest Info! (Click to Report)";
-	["ITEM_GIVES_REP"] = "Provides Reputation with '";
+	-- ["MINIMAP_MOUSEOVER_TEXT"] = "Right click to change settings.\nLeft click to open the Main List.\nCtrl + Left click to open the Mini List.\nShift + Left click to Refresh Collections.";
+	-- ["TOP_ROW_INSTRUCTIONS"] = "|cff3399ffLeft Click and Drag to Move|r\n|cff3399ffRight Click to Open the Settings Menu|r\n|cff3399ffShift + Click to Refresh Collections|r";
+	-- ["OTHER_ROW_INSTRUCTIONS"] = "|cff3399ffLeft Click to Expand/Collapse|r\n|cff3399ffRight Click to Pop Out to Mini List|r\n|cff3399ffShift + Click to Refresh Collections|r\n|cff3399ffAlt + Right Click to Plot Waypoints|r";
+	-- ["TOP_ROW_INSTRUCTIONS_AH"] = "|cff3399ffLeft Click and Drag to Move|r\n|cff3399ffRight Click to Open the Settings Menu|r\n|cff3399ffShift + Click to Search the Auction House|r";
+	-- ["OTHER_ROW_INSTRUCTIONS_AH"] = "|cff3399ffLeft Click to Expand/Collapse|r\n|cff3399ffRight Click to Pop Out to Mini List|r\n|cff3399ffShift + Click to Search the Auction House|r";
+	-- ["RECENTLY_MADE_OBTAINABLE"] = "|CFFFF0000If this recently dropped for you (anywhere but Salvage\nCrates), please post in Discord where you got it to drop!|r";
+	-- ["RECENTLY_MADE_OBTAINABLE_PT2"] = "|CFFFF0000The more information, the better.  Thanks!|r";
+	-- ["MAIN_LIST_REQUIRES_REFRESH"] = "[Click to Update Progress]";
+	-- ["UPDATES_PAUSED"] = "Updates Paused";
+	-- ["VISIT_FLIGHT_MASTER"] = "Visit the Flight Master to cache.";
+	-- ["REQUIRES_PVP"] = "|CFF00FFDERequires PvP Activities or Currencies|r";
+	-- ["REQUIRES_PETBATTLES"] = "|CFF00FFDERequires Pet Battling|r";
+	-- ["PLEASE_REPORT_MESSAGE"] = "Please report this to the ATT Discord in #retail-errors! Thanks!";
+	-- ["REPORT_TIP"] = "\n("..CTRL_KEY_TEXT.."+C to copy multiline report to your clipboard)";
+	-- ["QUEST_PREVENTS_BREADCRUMB_COLLECTION_FORMAT"] = "Quest '%s' %s will prevent collection of Breadcrumb Quest '%s' %s";
+	-- ["REPORT_INACCURATE_QUEST"] = "Wrong Quest Info! (Click to Report)";
+	-- ["ITEM_GIVES_REP"] = "Provides Reputation with '";
 
 	-- Event Text
-	["ITEM_ID_ADDED"] = "%s (%d) was added to your collection.";
-	["ITEM_ID_ADDED_RANK"] = "%s (%d) [Rank %d] was added to your collection.";
-	["ITEM_ID_ADDED_MISSING"] = "%s (%d) was added to your collection. Not found in the database. Please report to the ATT Discord!";
-	["ITEM_ID_ADDED_SHARED"] = "%s (%d) [+%d] were added to your collection.";
-	["ITEM_ID_ADDED_SHARED_MISSING"] = "%s (%d) [+%d] were added to your collection. Not found in the database. Please report to the ATT Discord!";
-	["ITEM_ID_REMOVED"] = "%s (%d) was removed from your collection.";
-	["ITEM_ID_REMOVED_SHARED"] = "%s (%d) [+%d] were removed from your collection.";
+	-- ["ITEM_ID_ADDED"] = "%s (%d) was added to your collection.";
+	-- ["ITEM_ID_ADDED_RANK"] = "%s (%d) [Rank %d] was added to your collection.";
+	-- ["ITEM_ID_ADDED_MISSING"] = "%s (%d) was added to your collection. Not found in the database. Please report to the ATT Discord!";
+	-- ["ITEM_ID_ADDED_SHARED"] = "%s (%d) [+%d] were added to your collection.";
+	-- ["ITEM_ID_ADDED_SHARED_MISSING"] = "%s (%d) [+%d] were added to your collection. Not found in the database. Please report to the ATT Discord!";
+	-- ["ITEM_ID_REMOVED"] = "%s (%d) was removed from your collection.";
+	-- ["ITEM_ID_REMOVED_SHARED"] = "%s (%d) [+%d] were removed from your collection.";
 
 	-- Tooltip Text
-	["DROP_RATE"] = "Drop Rate";
-	["QUEST_GIVER"] = "Quest Giver";
-	["COORDINATES"] = "Coordinates";
-	["PLAYER_COORDINATES"] = "Player Coordinates";
-	["EVENT_SCHEDULE"] = "Event Schedule";
-	["EVENT_ACTIVE"] = "Active:";
-	["EVENT_START"] = "Start:";
-	["EVENT_END"] = "End:";
-	["EVENT_WHERE"] = "Where:";
-	["REQUIRES_EVENT"] = "Requires Event";
-	["BREADCRUMBS"] = "Breadcrumbs";
-	["MAPS"] = "Maps";
-	["LOCKOUT"] = "Lockout";
-	["LOCKOUTS"] = "Lockouts";
-	["RESETS"] = "Resets";
-	["SHARED"] = "Shared";
-	["SPLIT"] = "Per Difficulty";
-	["REQUIRES"] = "Requires";
-	["REQUIRES_LEVEL"] = "Requires Level";
-	["LIMITED_QUANTITY"] = "This has a limited quantity and may not always be present on the vendor.";
-	["ADDED_WITH_PATCH_FORMAT"] = "This gets added with patch %s";
-	["ADDED_BACK_WITH_PATCH_FORMAT"] = "This gets added back with patch %s";
-	["REMOVED_WITH_PATCH_FORMAT"] = "This gets removed with patch %s";
-	["WAS_ADDED_WITH_PATCH_FORMAT"] = "This was added with patch %s";
-	["WAS_ADDED_BACK_WITH_PATCH_FORMAT"] = "This was added back with patch %s";
-	
-	["FACTION_SPECIFIC_REP"] = "Not all reputations can be viewed on a single character. IE: Warsong Outriders cannot be viewed by an Alliance Player and Silverwing Sentinels cannot be viewed by a Horde Player.";
-	["MINUMUM_STANDING_WITH_FACTION"] = "Requires a minimum standing of %s with %s.";
-	["MAXIMUM_STANDING_WITH_FACTION"] = "Requires a standing lower than %s with %s.";
-	["MIN_MAX_STANDING_WITH_FACTION"] = "Requires a standing between %s and %s with %s.";
-	
-	["HEIRLOOM_TEXT"] = "Unlocked Heirloom";
-	["HEIRLOOM_TEXT_DESC"] = "This indicates whether or not you have acquired or purchased the heirloom yet.";
-	["HEIRLOOMS_UPGRADES_DESC"] = "This indicates whether or not you have upgraded the heirloom to a certain level.\n\nR.I.P. Gold.\n - Crieve";
-	
-	["LOCK_CRITERIA_LEVEL_LABEL"] = "Player Level";
-	["LOCK_CRITERIA_QUEST_LABEL"] = "Completed Quest";
-	["LOCK_CRITERIA_SPELL_LABEL"] = "Learned Spell/Mount/Recipe";
-	["LOCK_CRITERIA_FACTION_LABEL"] = "Faction Reputation";
-	["LOCK_CRITERIA_SOURCE_LABEL"] = "Known Appearance";
-	["LOCK_CRITERIA_FACTION_FORMAT"] = "%s with %s (Current: %s)";
-	["TITLES_DESC"] = "Titles are tracked across your account, however, your individual character must qualify for certain titles to be usable on that character.";
+	-- ["DROP_RATE"] = "Drop Rate";
+	-- ["QUEST_GIVER"] = "Quest Giver";
+	-- ["COORDINATES"] = "Coordinates";
+	-- ["PLAYER_COORDINATES"] = "Player Coordinates";
+	-- ["EVENT_SCHEDULE"] = "Event Schedule";
+	-- ["EVENT_ACTIVE"] = "Active:";
+	-- ["EVENT_START"] = "Start:";
+	-- ["EVENT_END"] = "End:";
+	-- ["EVENT_WHERE"] = "Where:";
+	-- ["REQUIRES_EVENT"] = "Requires Event";
+	-- ["BREADCRUMBS"] = "Breadcrumbs";
+	-- ["MAPS"] = "Maps";
+	-- ["LOCKOUT"] = "Lockout";
+	-- ["LOCKOUTS"] = "Lockouts";
+	-- ["RESETS"] = "Resets";
+	-- ["SHARED"] = "Shared";
+	-- ["SPLIT"] = "Per Difficulty";
+	-- ["REQUIRES"] = "Requires";
+	-- ["REQUIRES_LEVEL"] = "Requires Level";
+	-- ["LIMITED_QUANTITY"] = "This has a limited quantity and may not always be present on the vendor.";
+	-- ["ADDED_WITH_PATCH_FORMAT"] = "This gets added with patch %s";
+	-- ["ADDED_BACK_WITH_PATCH_FORMAT"] = "This gets added back with patch %s";
+	-- ["REMOVED_WITH_PATCH_FORMAT"] = "This gets removed with patch %s";
+	-- ["WAS_ADDED_WITH_PATCH_FORMAT"] = "This was added with patch %s";
+	-- ["WAS_ADDED_BACK_WITH_PATCH_FORMAT"] = "This was added back with patch %s";
+
+	-- ["FACTION_SPECIFIC_REP"] = "Not all reputations can be viewed on a single character. IE: Warsong Outriders cannot be viewed by an Alliance Player and Silverwing Sentinels cannot be viewed by a Horde Player.";
+	-- ["MINUMUM_STANDING_WITH_FACTION"] = "Requires a minimum standing of %s with %s.";
+	-- ["MAXIMUM_STANDING_WITH_FACTION"] = "Requires a standing lower than %s with %s.";
+	-- ["MIN_MAX_STANDING_WITH_FACTION"] = "Requires a standing between %s and %s with %s.";
+
+	-- ["HEIRLOOM_TEXT"] = "Unlocked Heirloom";
+	-- ["HEIRLOOM_TEXT_DESC"] = "This indicates whether or not you have acquired or purchased the heirloom yet.";
+	-- ["HEIRLOOMS_UPGRADES_DESC"] = "This indicates whether or not you have upgraded the heirloom to a certain level.\n\nR.I.P. Gold.\n - Crieve";
+
+	-- ["LOCK_CRITERIA_LEVEL_LABEL"] = "Player Level";
+	-- ["LOCK_CRITERIA_QUEST_LABEL"] = "Completed Quest";
+	-- ["LOCK_CRITERIA_SPELL_LABEL"] = "Learned Spell/Mount/Recipe";
+	-- ["LOCK_CRITERIA_FACTION_LABEL"] = "Faction Reputation";
+	-- ["LOCK_CRITERIA_SOURCE_LABEL"] = "Known Appearance";
+	-- ["LOCK_CRITERIA_FACTION_FORMAT"] = "%s with %s (Current: %s)";
+	-- ["TITLES_DESC"] = "Titles are tracked across your account, however, your individual character must qualify for certain titles to be usable on that character.";
 
 	-- Filter Text
-	["ARTIFACT_ID"] = "Artifact ID";
-	["AZERITE_ESSENCE_ID"] = "Azerite Essence ID";
-	["ART_ID"] = "Art ID";
-	["CREATURE_ID"] = "Creature ID";
-	["CURRENCY_ID"] = "Currency ID";
-	["DESCRIPTIONS"] = "Descriptions";
-	["DIFFICULTY_ID"] = "Difficulty ID";
-	["ENCOUNTER_ID"] = "Encounter ID";
-	["EXPANSION_ID"] = "Expansion ID";
-	["EXPLORATION_ID"] = "Exploration ID";
-	["FILTER_ID"] = "Filter ID";
-	["FOLLOWER_ID"] = "Follower ID";
-	["GUID"] = "Global ID";
-	["HEADER_ID"] = "Header ID";
-	["ILLUSION_ID"] = "Illusion ID";
-	["INSTANCE_ID"] = "Instance ID";
-	["SAVED_INSTANCE_ID"] = "Saved Instance ID";
-	["ITEM_ID"] = "Item ID";
-	["FACTION_ID"] = "Faction ID";
-	["FLIGHT_PATH_ID"] = "Flight Path ID";
-	["LORE"] = "Lore";
-	["MAP_ID"] = "Map ID";
-	["MOUNT_ID"] = "Mount ID";
-	["MUSIC_ROLL_ID"] = "Music Roll ID";
-	["NPC_ID"] = "NPC ID";
-	["OBJECT_ID"] = "Object ID";
-	["PROVIDERS"] = "Provider(s)";
-	["QUEST_ID"] = "Quest ID";
-	["SET_ID"] = "Gear Set ID";
-	["SOURCE_ID"] = "Source ID";
-	["SPELL_ID"] = "Spell ID";
-	["SPELL_NAME"] = "Spell Name";
-	["SPECIES_ID"] = "Species ID";
-	["TITLE_ID"] = "Title ID";
-	["TOY_ID"] = "Toy ID";
-	["VISUAL_ID"] = "Visual ID";
-	["AND_MORE"] = "And %s more...";
-	["SYM_ROW_INFORMATION"] = "Right Click to see additional content which is Sourced in another location";
-	["SYM_ROW_SKIP_DESC"] = "Linked content is only displayed in the tooltip for this object.";
-	["ACHIEVEMENT_PRE_WRATH_SOURCE_QUEST_INFO"] = "This achievement has associated quests that can be completed before the introduction of the Achievement system coming with the Wrath Prepatch. Not all achievements can be tracked this way, but for those that can, they will be displayed. All other non-trackable achievements will be activated with the prepatch.";
-	["CLASSES"] = "Classes";
-	
-	["ADDITIONAL_LABEL"] = "Additional Information";
-	["CRITERIA_FOR"] = "Criteria for";
-	["CURRENCY_FOR"] = "Currency for";
-	
-	["CHAT_COMMANDS_LABEL"] = "Chat Commands";
-	["CHAT_COMMANDS_TEXT"] = "/att |cffFFFFFFor|R /allthethings\n|cffFFFFFFOpens the Main List.\n\n|R/attmini\n|cffFFFFFFOpens the Mini List.\n\n|R/attbounty\n|cffFFFFFFOpens a list of bugged or unconfirmed items.\n\n|R/attra\n|cffFFFFFFOpens the Raid Assistant.\n\n|R/attwq\n|cffFFFFFFOpens the World Quests List.\n\n|R/att item:1234 |cffFFFFFFor|R /att [Item Link]\n|cffFFFFFFOpens a window with shared appearances. Also works with other things, such as|R quest:1234|cffFFFFFF, |Rnpcid:1234|cffFFFFFF, |Rmapid:1234|cffFFFFFF or |Rrecipeid:1234|cffFFFFFF.\n\n|R/attrwp\n|cffFFFFFFShows all future Removed With Patch things.\n\n|R/attnwp\n|cffFFFFFFShows all current New With Patch things.\n\n|R/attrandom\n|cffFFFFFFOpens the Random List.\n\n|R/attunsorted\n|cffFFFFFFOpens a list of unsourced items. Best opened in Debug Mode.\n\n|R/rl\n|cffFFFFFFReload your WoW interface.|R";
-	["ICON_LEGEND_LABEL"] = "Icon Legend";
-	["ICON_LEGEND_TEXT"] = app.ccColors.White .. "|TInterface\\AddOns\\AllTheThings\\assets\\status-unobtainable.blp:0|t " .. "Unobtainable" .. "\n|TInterface\\AddOns\\AllTheThings\\assets\\status-prerequisites.blp:0|t " .. "Obtainable only with prerequisites" .. "\n|TInterface\\AddOns\\AllTheThings\\assets\\status-seasonal-available.blp:0|t " .. "Available seasonal content" .. "\n|TInterface\\AddOns\\AllTheThings\\assets\\status-seasonal-unavailable.blp:0|t " .. "Unavailable seasonal content" .. "\n|TInterface\\FriendsFrame\\StatusIcon-Offline:0|t " .. "Unavailable on current character";
-	["KEYBINDINGS"] = SETTINGS_KEYBINDINGS_LABEL;
-	["KEYBINDINGS_TEXT"] = "You can set keybindings for ATT in the game's options.";
-	["MINIMAP_LABEL"] = "Minimap Button";
-	["MODULES_LABEL"] = "Modules & Mini Lists";
-	["AUTO_PROF_LIST_CHECKBOX"] = "Automatically Open the Profession List";
-	["AUTO_PROF_LIST_CHECKBOX_TOOLTIP"] = "Enable this option if you want ATT to open and refresh the profession list when you open your professions. Due to an API limitation imposed by Blizzard, the only time an addon can interact with your profession data is when it is open. The list will automatically switch when you change to a different profession.\n\nWe don't recommend disabling this option as it may prevent recipes from tracking correctly.\n\nYou can also bind this setting to a Key. (only works when a profession is open)\n\nKey Bindings -> Addons -> ALL THE THINGS -> Toggle Profession Mini List";
-	["SKIP_CUTSCENES_CHECKBOX"] = "Automatically Skip Cutscenes";
-	["SKIP_CUTSCENES_CHECKBOX_TOOLTIP"] = "Enable this option if you want ATT to automatically skip all cutscenes on your behalf.";
-	["MINIMAP_BUTTON_CHECKBOX"] = "Show the Minimap Button";
-	["MINIMAP_BUTTON_CHECKBOX_TOOLTIP"] = "Enable this option if you want to see the minimap button. This button allows you to quickly access the Main List, show your Overall Collection Progress, and access the Settings Menu by right clicking it.\n\nSome people don't like clutter. Alternatively, you can access the Main List by typing '/att' in your chatbox. From there, you can right click the header to get to the Settings Menu.";
-	["MINIMAP_SLIDER"] = "Minimap Button Size";
-	["MINIMAP_SLIDER_TOOLTIP"] = 'Use this to customize the size of the Minimap Button.\n\nDefault: 36';
-	["WORLDMAP_BUTTON_CHECKBOX"] = "Show the World Map Button";
-	["WORLDMAP_BUTTON_CHECKBOX_TOOLTIP"] = "Enable this option if you want to see the ATT button on your world map. This button allows you to quickly access the Mini List for the currently displayed zone. Regularly, you'd need to physically travel to the zone in order to see the content on the mini list that you can access by typing '/att mini' in your chatbox.";
+	-- ["ARTIFACT_ID"] = "Artifact ID";
+	-- ["AZERITE_ESSENCE_ID"] = "Azerite Essence ID";
+	-- ["ART_ID"] = "Art ID";
+	-- ["CREATURE_ID"] = "Creature ID";
+	-- ["CURRENCY_ID"] = "Currency ID";
+	-- ["DESCRIPTIONS"] = "Descriptions";
+	-- ["DIFFICULTY_ID"] = "Difficulty ID";
+	-- ["ENCOUNTER_ID"] = "Encounter ID";
+	-- ["EXPANSION_ID"] = "Expansion ID";
+	-- ["EXPLORATION_ID"] = "Exploration ID";
+	-- ["FILTER_ID"] = "Filter ID";
+	-- ["FOLLOWER_ID"] = "Follower ID";
+	-- ["GUID"] = "Global ID";
+	-- ["HEADER_ID"] = "Header ID";
+	-- ["ILLUSION_ID"] = "Illusion ID";
+	-- ["INSTANCE_ID"] = "Instance ID";
+	-- ["SAVED_INSTANCE_ID"] = "Saved Instance ID";
+	-- ["ITEM_ID"] = "Item ID";
+	-- ["FACTION_ID"] = "Faction ID";
+	-- ["FLIGHT_PATH_ID"] = "Flight Path ID";
+	-- ["LORE"] = "Lore";
+	-- ["MAP_ID"] = "Map ID";
+	-- ["MOUNT_ID"] = "Mount ID";
+	-- ["MUSIC_ROLL_ID"] = "Music Roll ID";
+	-- ["NPC_ID"] = "NPC ID";
+	-- ["OBJECT_ID"] = "Object ID";
+	-- ["PROVIDERS"] = "Provider(s)";
+	-- ["QUEST_ID"] = "Quest ID";
+	-- ["SET_ID"] = "Gear Set ID";
+	-- ["SOURCE_ID"] = "Source ID";
+	-- ["SPELL_ID"] = "Spell ID";
+	-- ["SPELL_NAME"] = "Spell Name";
+	-- ["SPECIES_ID"] = "Species ID";
+	-- ["TITLE_ID"] = "Title ID";
+	-- ["TOY_ID"] = "Toy ID";
+	-- ["VISUAL_ID"] = "Visual ID";
+	-- ["AND_MORE"] = "And %s more...";
+	-- ["SYM_ROW_INFORMATION"] = "Right Click to see additional content which is Sourced in another location";
+	-- ["SYM_ROW_SKIP_DESC"] = "Linked content is only displayed in the tooltip for this object.";
+	-- ["ACHIEVEMENT_PRE_WRATH_SOURCE_QUEST_INFO"] = "This achievement has associated quests that can be completed before the introduction of the Achievement system coming with the Wrath Prepatch. Not all achievements can be tracked this way, but for those that can, they will be displayed. All other non-trackable achievements will be activated with the prepatch.";
+	-- ["CLASSES"] = "Classes";
+
+	-- ["ADDITIONAL_LABEL"] = "Additional Information";
+	-- ["CRITERIA_FOR"] = "Criteria for";
+	-- ["CURRENCY_FOR"] = "Currency for";
+
+	-- ["CHAT_COMMANDS_LABEL"] = "Chat Commands";
+	-- ["CHAT_COMMANDS_TEXT"] = "/att |cffFFFFFFor|R /allthethings\n|cffFFFFFFOpens the Main List.\n\n|R/attmini\n|cffFFFFFFOpens the Mini List.\n\n|R/attbounty\n|cffFFFFFFOpens a list of bugged or unconfirmed items.\n\n|R/attra\n|cffFFFFFFOpens the Raid Assistant.\n\n|R/attwq\n|cffFFFFFFOpens the World Quests List.\n\n|R/att item:1234 |cffFFFFFFor|R /att [Item Link]\n|cffFFFFFFOpens a window with shared appearances. Also works with other things, such as|R quest:1234|cffFFFFFF, |Rnpcid:1234|cffFFFFFF, |Rmapid:1234|cffFFFFFF or |Rrecipeid:1234|cffFFFFFF.\n\n|R/attrwp\n|cffFFFFFFShows all future Removed With Patch things.\n\n|R/attnwp\n|cffFFFFFFShows all current New With Patch things.\n\n|R/attrandom\n|cffFFFFFFOpens the Random List.\n\n|R/attunsorted\n|cffFFFFFFOpens a list of unsourced items. Best opened in Debug Mode.\n\n|R/rl\n|cffFFFFFFReload your WoW interface.|R";
+	-- ["ICON_LEGEND_LABEL"] = "Icon Legend";
+	-- ["ICON_LEGEND_TEXT"] = app.ccColors.White .. "|TInterface\\AddOns\\AllTheThings\\assets\\status-unobtainable.blp:0|t " .. "Unobtainable" .. "\n|TInterface\\AddOns\\AllTheThings\\assets\\status-prerequisites.blp:0|t " .. "Obtainable only with prerequisites" .. "\n|TInterface\\AddOns\\AllTheThings\\assets\\status-seasonal-available.blp:0|t " .. "Available seasonal content" .. "\n|TInterface\\AddOns\\AllTheThings\\assets\\status-seasonal-unavailable.blp:0|t " .. "Unavailable seasonal content" .. "\n|TInterface\\FriendsFrame\\StatusIcon-Offline:0|t " .. "Unavailable on current character";
+	-- ["KEYBINDINGS"] = SETTINGS_KEYBINDINGS_LABEL;
+	-- ["KEYBINDINGS_TEXT"] = "You can set keybindings for ATT in the game's options.";
+	-- ["MINIMAP_LABEL"] = "Minimap Button";
+	-- ["MODULES_LABEL"] = "Modules & Mini Lists";
+	-- ["AUTO_PROF_LIST_CHECKBOX"] = "Automatically Open the Profession List";
+	-- ["AUTO_PROF_LIST_CHECKBOX_TOOLTIP"] = "Enable this option if you want ATT to open and refresh the profession list when you open your professions. Due to an API limitation imposed by Blizzard, the only time an addon can interact with your profession data is when it is open. The list will automatically switch when you change to a different profession.\n\nWe don't recommend disabling this option as it may prevent recipes from tracking correctly.\n\nYou can also bind this setting to a Key. (only works when a profession is open)\n\nKey Bindings -> Addons -> ALL THE THINGS -> Toggle Profession Mini List";
+	-- ["SKIP_CUTSCENES_CHECKBOX"] = "Automatically Skip Cutscenes";
+	-- ["SKIP_CUTSCENES_CHECKBOX_TOOLTIP"] = "Enable this option if you want ATT to automatically skip all cutscenes on your behalf.";
+	-- ["MINIMAP_BUTTON_CHECKBOX"] = "Show the Minimap Button";
+	-- ["MINIMAP_BUTTON_CHECKBOX_TOOLTIP"] = "Enable this option if you want to see the minimap button. This button allows you to quickly access the Main List, show your Overall Collection Progress, and access the Settings Menu by right clicking it.\n\nSome people don't like clutter. Alternatively, you can access the Main List by typing '/att' in your chatbox. From there, you can right click the header to get to the Settings Menu.";
+	-- ["MINIMAP_SLIDER"] = "Minimap Button Size";
+	-- ["MINIMAP_SLIDER_TOOLTIP"] = 'Use this to customize the size of the Minimap Button.\n\nDefault: 36';
+	-- ["WORLDMAP_BUTTON_CHECKBOX"] = "Show the World Map Button";
+	-- ["WORLDMAP_BUTTON_CHECKBOX_TOOLTIP"] = "Enable this option if you want to see the ATT button on your world map. This button allows you to quickly access the Mini List for the currently displayed zone. Regularly, you'd need to physically travel to the zone in order to see the content on the mini list that you can access by typing '/att mini' in your chatbox.";
 
 	-- Icons and Collection Text
-	["COLLECTED_ICON"] = "|T" .. app.asset("known") .. ":0|t";	-- Acquired the colors and icon from CanIMogIt.
-	["COLLECTED_APPEARANCE_ICON"] = "|T" .. app.asset("known_circle") .. ":0|t";		-- Acquired the colors and icon from CanIMogIt.
-	["COMPLETE_ICON"] = "|T" .. app.asset("known_green") .. ":0|t";		-- Acquired the colors and icon from CanIMogIt.
-	["NOT_COLLECTED_ICON"] = "|T" .. app.asset("unknown") .. ":0|t";		-- Acquired the colors and icon from CanIMogIt.
-	["COLLECTED"] = "|T" .. app.asset("known") .. ":0|t |c" .. app.Colors.Completed .. "Collected|r";		-- Acquired the colors and icon from CanIMogIt.
-	["COLLECTED_APPEARANCE"] = "|T" .. app.asset("known_circle") .. ":0|t |c" .. app.Colors.Completed .. "Collected*|r";	-- Acquired the colors and icon from CanIMogIt.
-	["NOT_COLLECTED"] = "|T" .. app.asset("unknown") .. ":0|t |cffff9333Not Collected|r";		-- Acquired the colors and icon from CanIMogIt.
-	["COMPLETE"] = "|T" .. app.asset("known_green") .. ":0|t |cff6dce47Complete|r";		-- Acquired the colors and icon from CanIMogIt.
-	["COMPLETE_OTHER"] = "|T" .. app.asset("known_green") .. ":0|t |cff6dce47Complete*|r";		-- Acquired the colors and icon from CanIMogIt.
-	["INCOMPLETE"] = "|T" .. app.asset("unknown") .. ":0|t |cffff9333Incomplete|r";		-- Acquired the colors and icon from CanIMogIt.
+	-- ["COLLECTED_ICON"] = "|T" .. app.asset("known") .. ":0|t";	-- Acquired the colors and icon from CanIMogIt.
+	-- ["COLLECTED_APPEARANCE_ICON"] = "|T" .. app.asset("known_circle") .. ":0|t";		-- Acquired the colors and icon from CanIMogIt.
+	-- ["COMPLETE_ICON"] = "|T" .. app.asset("known_green") .. ":0|t";		-- Acquired the colors and icon from CanIMogIt.
+	-- ["NOT_COLLECTED_ICON"] = "|T" .. app.asset("unknown") .. ":0|t";		-- Acquired the colors and icon from CanIMogIt.
+	-- ["COLLECTED"] = "|T" .. app.asset("known") .. ":0|t |c" .. app.Colors.Completed .. "Collected|r";		-- Acquired the colors and icon from CanIMogIt.
+	-- ["COLLECTED_APPEARANCE"] = "|T" .. app.asset("known_circle") .. ":0|t |c" .. app.Colors.Completed .. "Collected*|r";	-- Acquired the colors and icon from CanIMogIt.
+	-- ["NOT_COLLECTED"] = "|T" .. app.asset("unknown") .. ":0|t |cffff9333Not Collected|r";		-- Acquired the colors and icon from CanIMogIt.
+	-- ["COMPLETE"] = "|T" .. app.asset("known_green") .. ":0|t |cff6dce47Complete|r";		-- Acquired the colors and icon from CanIMogIt.
+	-- ["COMPLETE_OTHER"] = "|T" .. app.asset("known_green") .. ":0|t |cff6dce47Complete*|r";		-- Acquired the colors and icon from CanIMogIt.
+	-- ["INCOMPLETE"] = "|T" .. app.asset("unknown") .. ":0|t |cffff9333Incomplete|r";		-- Acquired the colors and icon from CanIMogIt.
 
 	["ABBREVIATIONS"] = {
 		["ALL THE THINGS"] = "ATT",
@@ -233,7 +233,7 @@ for key,value in pairs({
 		["Pet Journal"] = PETS,
 		["Toy Box"] = TOY,
 	};
-	
+
 	-- These need to be localized manually.
 	["ACHIEVEMENT_DATA"] = {
 		[6] = { 92, "Level 10", app.asset("Achievement_Level_10") },
@@ -257,15 +257,15 @@ for key,value in pairs({
 		[1248] = { 92, "Plethora of Pets", "Interface\\Icons\\inv_box_petcarrier_01" },
 		[1250] = { 92, "Shop Smart, Shop Pet...Smart", "Interface\\Icons\\inv_box_petcarrier_01" },
 		[2516] = { 92, "Lil' Game Hunter", "Interface\\Icons\\inv_box_petcarrier_01" },
-		
+
 		[2141] = { 92, "Stable Keeper", "Interface\\Icons\\Ability_mount_ridinghorse" },
 		[2142] = { 92, "Filling Up The Barn", "Interface\\Icons\\Ability_mount_nightmarehorse" },
 		[2143] = { 92, "Leading the Cavalry", "Interface\\Icons\\Ability_mount_wyvern_01" },
 		[2536] = { 92, "Mountain o' Mounts", "Interface\\Icons\\ability_hunter_pet_dragonhawk" },
 		[2537] = { 92, "Mountain o' Mounts", "Interface\\Icons\\ability_hunter_pet_dragonhawk" },
-		
+
 		[1165] = { 92, "My Sack is \"Gigantique\"" },
-		
+
 		[628] = { 14808, "Deadmines", app.asset("achievement_boss_edwinvancleef") },
 		[629] = { 14808, "Ragefire Chasm", app.asset("spell_shadow_summonfelguard") },
 		[630] = { 14808, "Wailing Caverns", app.asset("achievement_boss_mutanus_the_devourer") },
@@ -312,13 +312,13 @@ for key,value in pairs({
 		[696] = { 14805, "Tempest Keep", app.asset("achievement_character_bloodelf_male") },
 		[697] = { 14805, "The Black Temple", app.asset("achievement_boss_illidan") },
 		[1307] = { 14808, "Upper Blackrock Spire", app.asset("achievement_boss_generaldrakkisath") },
-		
+
 		[121] = { 170, "Journeyman Cook", "Interface\\Icons\\inv_misc_food_15" },
 		[122] = { 170, "Expert Cook", "Interface\\Icons\\inv_misc_food_15" },
 		[123] = { 170, "Artisan Cook", "Interface\\Icons\\inv_misc_food_15" },
 		[124] = { 170, "Master Cook", "Interface\\Icons\\inv_misc_food_15" },
 		[125] = { 170, "Grand Master Cook", "Interface\\Icons\\inv_misc_food_15" },
-		
+
 		[126] = { 171, "Journeyman Fisherman", "Interface\\Icons\\trade_fishing" },
 		[127] = { 171, "Expert Fisherman", "Interface\\Icons\\trade_fishing" },
 		[128] = { 171, "Artisan Fisherman", "Interface\\Icons\\trade_fishing" },
@@ -331,13 +331,13 @@ for key,value in pairs({
 		[1243] = { 171, "Fish Don't Leave Footprints" },
 		[1836] = { 171 },	-- Old Crafty, name and icon from providers
 		[1837] = { 171 },	-- Old Ironjaw, name and icon from providers
-		
+
 		[131] = { 172, "Journeyman in First Aid", "Interface\\Icons\\spell_holy_sealofsacrifice" },
 		[132] = { 172, "Expert in First Aid", "Interface\\Icons\\spell_holy_sealofsacrifice" },
 		[133] = { 172, "Artisan in First Aid", "Interface\\Icons\\spell_holy_sealofsacrifice" },
 		[134] = { 172, "Master in First Aid", "Interface\\Icons\\spell_holy_sealofsacrifice" },
 		[135] = { 172, "Grand Master in First Aid", "Interface\\Icons\\spell_holy_sealofsacrifice" },
-		
+
 		[238] = { 95, "An Honorable Kill", app.asset("achievement_pvp_p_01") },
 		[513] = { 95, "100 Honorable Kills", app.asset("achievement_pvp_p_02") },
 		[515] = { 95, "500 Honorable Kills", app.asset("achievement_pvp_p_03") },
@@ -347,13 +347,13 @@ for key,value in pairs({
 		[239] = { 95, "25000 Honorable Kills", app.asset("achievement_pvp_p_11") },
 		[869] = { 95, "50000 Honorable Kills", app.asset("achievement_pvp_p_14") },
 		[870] = { 95, "100000 Honorable Kills", app.asset("achievement_pvp_p_15") },
-		
+
 		[389] = { 95, "Gurubashi Arena Master" },	-- Arena Master, icon from providers
 		[396] = { 95, "Gurubashi Arena Grand Master" },	-- Arena Grand Master, icon from providers
 		[727] = { 95, "Call in the Cavalry" },	-- Call in the Cavalry, icon from providers
 		[714] = { 95, "The Conqueror", "Interface\\Icons\\inv_misc_tabardpvp_04" },
 		[907] = { 95, "The Justicar", "Interface\\Icons\\inv_misc_tabardpvp_03" },
-		
+
 		-- Quests
 		[940] = { 14861, "The Green Hills of Stranglethorn", "Interface\\Icons\\ability_mount_whitetiger" },
 		[939] = { 14862, "Hills Like White Elekk", "Interface\\Icons\\ability_mount_ridingelekk" },
@@ -373,12 +373,12 @@ for key,value in pairs({
 		[1677] = { 14861, "Loremaster of Eastern Kindoms", app.asset("achievement_zone_easternkingdoms_01") },
 		[1678] = { 14861, "Loremaster of Kalimdor", app.asset("achievement_zone_kalimdor_01") },
 		[1680] = { 14861, "Loremaster of Kalimdor", app.asset("achievement_zone_kalimdor_01") },
-		
+
 		-- Exploration
 		[42] = { 97, "Explore Eastern Kingdoms", app.asset("achievement_zone_easternkingdoms_01") },
 		[43] = { 97, "Explore Kalimdor", app.asset("achievement_zone_kalimdor_01") },
 		[44] = { 97, "Explore Outland", app.asset("achievement_zone_outland_01") },
-		
+
 		-- Eastern Kingdoms
 		[627] = { 14777, "Explore Dun Morogh", app.asset("achievement_zone_dunmorogh") },
 		[760] = { 14777, "Explore Alterac Mountains", app.asset("achievement_zone_alteracmountains_01") },
@@ -405,7 +405,7 @@ for key,value in pairs({
 		[868] = { 14777, "Explore Isle of Quel'Danas", app.asset("achievement_zone_isleofqueldanas") },
 		[858] = { 14777, "Explore Ghostlands", app.asset("achievement_zone_ghostlands") },
 		[859] = { 14777, "Explore Eversong Woods", app.asset("achievement_zone_eversongwoods") },
-		
+
 		-- Kalimdor
 		[728] = { 14778, "Explore Durotar", app.asset("achievement_zone_durotar") },
 		[736] = { 14778, "Explore Mulgore", app.asset("achievement_zone_mulgore_01") },
@@ -427,7 +427,7 @@ for key,value in pairs({
 		[857] = { 14778, "Explore Winterspring", app.asset("achievement_zone_winterspring") },
 		[860] = { 14778, "Explore Azuremyst Isle", app.asset("achievement_zone_azuremystisle_01") },
 		[861] = { 14778, "Explore Bloodmyst Isle", app.asset("achievement_zone_bloodmystisle_01") },
-		
+
 		-- Outland
 		[843] = { 14779, "Explore Netherstorm", app.asset("achievement_zone_netherstorm_01") },
 		[862] = { 14779, "Explore Hellfire Peninsula", app.asset("achievement_zone_hellfirepeninsula_01") },
@@ -436,21 +436,21 @@ for key,value in pairs({
 		[865] = { 14779, "Explore Blade's Edge Mountains", app.asset("achievement_zone_bladesedgemtns_01") },
 		[866] = { 14779, "Explore Nagrand", app.asset("achievement_zone_nagrand_01") },
 		[867] = { 14779, "Explore Terokkar Forest", app.asset("achievement_zone_terrokar") },
-		
+
 		-- Alterac Valley Achievements
 		[706] = { 14801 },	-- Frostwolf Howler, name and icon from providers
 		[707] = { 14801 },	-- Stormpike Battle Charger, name and icon from providers
 		[708] = { 14801, "Hero of the Frostwolf Clan", "Interface\\Icons\\inv_jewelry_frostwolftrinket_05" },
 		[709] = { 14801, "Hero of the Stormpike Guard", "Interface\\Icons\\inv_jewelry_stormpiketrinket_05" },
-		
+
 		-- Arathi Basin Achievements
 		[711] = { 14802, "Knight of Arathor", "Interface\\Icons\\Ability_warrior_battleshout" },
 		[710] = { 14802, "The Defiler", "Interface\\Icons\\Ability_Sap" },
-		
+
 		-- Warsong Gulch Achievements
 		[712] = { 14804, "Warsong Outrider", "Interface\\Icons\\ability_warrior_warcry" },
 		[713] = { 14804, "Silverwing Sentinel", "Interface\\Icons\\ability_racial_shadowmeld" },
-		
+
 		[522] = { 201, "Somebody Likes Me", app.asset("achievement_reputation_01") },
 		[523] = { 201, "5 Exalted Reputations", app.asset("achievement_reputation_01") },
 		[524] = { 201, "10 Exalted Reputations", app.asset("achievement_reputation_02") },
@@ -486,11 +486,11 @@ for key,value in pairs({
 		[959] = { 14865, "The Scale of the Sands", "Interface\\Icons\\inv_enchant_dustillusion" },
 		[960] = { 14865, "The Violet Eye", "Interface\\Icons\\spell_holy_mindsooth" },
 		[1638] = { 14865, "Skyshattered", "Interface\\Icons\\ability_mount_netherdrakepurple" },
-		
+
 		[292] = { 158, "Sinister Calling" },	-- Sinister Squashling, icon from providers
 		[303] = { 162, "Have Keg, Will Travel", "Interface\\Icons\\inv_cask_01" },
 		[1936] = { 162, "Does Your Wolpertinger Linger?" },	-- Wolpertinger Tankard, icon from providers
-		
+
 		[416] = { 81, "Scarab Lord", app.asset("achievement_zone_silithus_01") },
 		[424] = { 81, "Why? Because It's Red" },	-- Why? Because It's Red, icon from providers
 		[425] = { 81 },	-- Atiesh, Greatstaff of the Guardian, name and icon from providers
@@ -530,10 +530,10 @@ for key,value in pairs({
 		[3357] = { 81, "Venomhide Ravasaur", "Interface\\Icons\\ability_hunter_pet_raptor" },
 		[3496] = { 81, "A Brew-FAST Mount", "Interface\\Icons\\inv_cask_01" },
 		[4782] = { 81 },	-- Green Brewfest Stein, name and icon from providers
-		
+
 		-- Does not get added until 4.1.0, btw. So just keep that in mind for wrath.
 		[5788] = { 81, "Agent of the Shen'dralar", "Interface\\Icons\\inv_misc_book_04" },
-		
+
 		-- Season of Mastery
 		[16433] = { 81, "Soul of Iron", "Interface\\Icons\\inv_qirajidol_life" },
 	},
@@ -570,10 +570,10 @@ for key,value in pairs({
 		[81] = { -1, "Feats of Strength" },
 		[15301] = { -1, "Expansion Features" },
 	},
-	
+
 	-- Module Localizations
 	["PVP_RANK_DESCRIPTION"] = "There are a total of 14 ranks for both factions. Each rank requires a minimum amount of Rating Points to be calculated every week, then calculated in comparison to other players on your server.\n\nEach rank grants access to different rewards, from PvP consumables to Epic Mounts that do not require Epic Riding Skill and Epic pieces of gear at the highest ranks. Each rank is also applied to your character as a Title.";
-	
+
 	["EXPANSION_DATA"] = {
 		{	-- Classic
 			["name"] = "Classic",
@@ -635,7 +635,7 @@ for key,value in pairs({
 			["lvl"] = 58,
 		},
 	};
-	
+
 	-- Unobtainable Listing
 	["UNOBTAINABLE_ITEM_TEXTURES"] = {
 		app.asset("status-unobtainable"),
@@ -649,7 +649,7 @@ for key,value in pairs({
 		[2] = {1, "|CFFFF0000This has been removed from the game.|r", "Removed From Game"},
 		[3] = {2, "|CFFFF0000This is locked behind a paywall such as the in-game shop, another Blizzard product, or the Recruit-A-Friend service.|r", "Blizzard Balance", nil, nil, "\n \n|CFFFFAAAAThe act of encouraging the use of real money in the Classic version of the game is widely frowned upon. Participate in this content at your own risk.|r" },
 		[4] = {3, "|CFFFF0000This can no longer be purchased or unlocked as Transmog unless you have the required PvP Title, required PvP Rating or were in the Top % of that season.|r", "PvP Elite/Gladiator"},
-		
+
 		-- Classic Phases
 		[11] = {2, "|CFFAAFFAAThis was not available until Phase 1 of WoW Classic.|r", "Phase 1", 1130100, 11301, "\n \n|CFFFFAAAAIncluded Molten Core and Onyxia's Lair.|r" },
 		[1101] = {2, "|CFFAAFFAAThis became available with the Dire Maul Phase Release of WoW Classic.|r", "Dire Maul", 11301, 11301 },
@@ -666,7 +666,7 @@ for key,value in pairs({
 		[1602] = {2, "|CFFAAFFAAThis was only available during the Silithyst Must Flow World PVP Event.|r", "Silithyst", 11301, 11306, "\n \n|CFFFFAAAAIf the World PVP Event is available, simply turn this on.|r" },
 		[1603] = {2, "|CFFAAFFAAThis was only available after the start of Classic Era.|r", "Classic Era", 11301, 11307, "\n \n|CFFFFAAAAIf the Classic Era has begun, simply turn this on.|r" },
 		[1604] = {2, "|CFFAAFFAAThis was only available during Season of Mastery.|r", "Season of Mastery", 11301, nil, "\n \n|CFFFFAAAAIf Season of Mastery is active on your server, simply turn this on.|r" },
-		
+
 		-- Season of Discovery Phases
 		[1605] = {2, "|CFFAAFFAAThis was not available until Phase 1 of Season of Discovery.|r", "Season of Discovery", 11500, nil, "\n \n|CFFFFAAAAIf Season of Discovery is active on your server, simply turn this on.|r" },
 		[1606] = {2, "|CFFAAFFAAThis was not available until Phase 2 of Season of Discovery.|r", "Phase 2", 11501, nil, "\n \n|CFFFFAAAAIf Phase 2 of Season of Discovery is active on your server, simply turn this on.|r" },
@@ -676,7 +676,7 @@ for key,value in pairs({
 		[1610] = {2, "|CFFAAFFAAThis was not available until Phase 6 of Season of Discovery.|r", "Phase 6", 11505, nil, "\n \n|CFFFFAAAAIf Phase 6 of Season of Discovery is active on your server, simply turn this on.|r" },
 		[1611] = {2, "|CFFAAFFAAThis was not available until Phase 7 of Season of Discovery.|r", "Phase 7", 11506, nil, "\n \n|CFFFFAAAAIf Phase 7 of Season of Discovery is active on your server, simply turn this on.|r" },
 		[1612] = {2, "|CFFAAFFAAThis was not available until Phase 8 of Season of Discovery.|r", "Phase 8", 11507, nil, "\n \n|CFFFFAAAAIf Phase 8 of Season of Discovery is active on your server, simply turn this on.|r" },
-		
+
 		-- TBC Classic Phases
 		[17] = {2, "|CFFAAFFAAThis was not available until Phase 1 of TBC Classic.|r", "Phase 1", 20501, 20501, "\n \n|CFFFFAAAAIncluded Karazhan, Magtheridon's Lair, and Gruul's Lair.|r" },
 		[1701] = {2, "|CFFAAFFAAThis was only available during the Opening of the Dark Portal event before the launch of TBC.|r", "Dark Portal Opens", 20501, nil, "\n \n|CFFFFAAAAIf the Dark Portal has been opened on your server, simply turn this off.|r" },
@@ -695,7 +695,7 @@ for key,value in pairs({
 		[2105] = {2, "|CFFAAFFAAThis was not available until the Harbor on the Isle of Quel'Danas was completed.|r", "Harbor", 20501, 30400, "\n \n|CFFFFAAAAIf the Shattered Sun Offensive has already unlocked the Harbor and has begun working on the Alch Lab and Monument on your server, simply turn this on.|r" },
 		[2106] = {2, "|CFFAAFFAAThis was not available until the Monument on the Isle of Quel'Danas was completed.|r", "Monument", 20501, 30400, "\n \n|CFFFFAAAAIf the Shattered Sun Offensive has already unlocked the Monument on your server, simply turn this on.|r" },
 		[2107] = {2, "|CFFAAFFAAThis was not available until the Alch Lab on the Isle of Quel'Danas was completed.|r", "Alch Lab", 20501, 30400, "\n \n|CFFFFAAAAIf the Shattered Sun Offensive has already unlocked the Alch Lab on your server, simply turn this on.|r" },
-		
+
 		-- Wrath Classic Phases
 		[30] = {2, "|CFFAAFFAAThis was not available until Phase 1 of Wrath Classic.|r", "Phase 1", 30400, 30400, "\n \n|CFFFFAAAAIncluded Naxxramas, Obsidian Sanctum, and Eye of Eternity.|r" },
 		[3001] = {2, "|CFFAAFFAAThis was only available for the first player to do the thing on your realm!|r", "Realm First", 30400, nil, "\n \n|CFFFFAAAABut if you were realm first, good for you.|r" },
@@ -707,10 +707,11 @@ for key,value in pairs({
 		[3302] = {2, "|CFFAAFFAAThis became available with the release of Ruby Sanctum during Wrath Classic.|r", "Ruby Sanctum", 30400, 30403, "\n \n|CFFFFAAAAIncluded The Ruby Sanctum.|r" },
 		[3303] = {2, "|CFFAAFFAAThis became available with the release of Operation Gnomeregan and Zalazane's Fall during Wrath Classic.|r", "Operation Zalazane", 30400, 30403, "\n \n|CFFFFAAAAIncluded Operation Gnomeregan and Zalazane's Fall|r" },
 		[3304] = {2, "|CFFAAFFAAThis became available with the release of the Elemental Unrest Cataclysm Prepatch Event during Wrath Classic.|r", "Elemental Unrest", 30400, 30404, "\n \n|CFFFFAAAAThe Elemental Unrest Pre-Expansion Event?|r" },
-		
+
 		-- Cataclysm Classic Phases
 		[40] = {2, "|CFFAAFFAAThis was not available until Phase 1 of Cataclysm Classic.|r", "Phase 1", 40400, 40400, "\n \n|CFFFFAAAAIncluded Bastion of Twilight, Throne of the Four Winds, and Blackwing Descent.|r" },
 		[4001] = {2, "|CFFAAFFAAThis was not available until the Rise of the Zandalari during Cataclysm Classic.|r", "Rise of the Zandalari", 40400, 40400, "\n \n|CFFFFAAAAIncluded Zul'Aman and Zul'Gurub Heroic Dungeons.|r" },
+		[4002] = {2, "|CFFAAFFAAThis was not available until the Molten Front became available during Cataclysm Classic.|r", "Molten Front", 40400, 40400, "\n \n|CFFFFAAAAIncluded the Molten Front Dailies.|r" },
 		[41] = {2, "|CFFAAFFAAThis was not available until the Rage of the Firelands during Cataclysm Classic.|r", "Rage of the Firelands", 40400, 40401, "\n \n|CFFFFAAAAIncluded Firelands.|r" },
 		[42] = {2, "|CFFAAFFAAThis was not available until the Hour of Twilight during Cataclysm Classic.|r", "Hour of Twilight", 40400, 40402, "\n \n|CFFFFAAAAIncluded Dragon Soul.|r" },
 	};

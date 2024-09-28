@@ -464,7 +464,7 @@ if tocversion<100000 then
 		end
 	end)
 	--主动作条缩放比例
-	function ActionBarfun.ActionBar_bili()
+	function ActionBarfun.ActionBar_bili(ly)
 		if PIGA["ActionBar"]["ActionBar_bili"] then
 			MainMenuBar:SetScale(PIGA["ActionBar"]["ActionBar_bili_value"]);
 			VerticalMultiBarsContainer:SetScale(PIGA["ActionBar"]["ActionBar_bili_value"]);
@@ -472,21 +472,15 @@ if tocversion<100000 then
 				_G["MultiBarLeftButton"..i]:SetScale(PIGA["ActionBar"]["ActionBar_bili_value"])
 				--_G["MultiBarRightButton"..i]:SetScale(PIGA["ActionBar"]["ActionBar_bili_value"])
 			end
-		end
-	end
-	function ActionBarfun.ActionBar_bili_OP()	
-		if PIGA["ActionBar"]["ActionBar_bili"] then
-			ActionF.ActionBar_bili:SetChecked(true);
-			ActionF.ActionBar_bili.Slider:Enable();
-			ActionF.ActionBar_bili.Slider.Low:SetTextColor(1, 1, 1, 1);
-			ActionF.ActionBar_bili.Slider.High:SetTextColor(1, 1, 1, 1);
-			ActionF.ActionBar_bili.Slider.Text:SetTextColor(1, 1, 1, 1);
 		else
-			ActionF.ActionBar_bili:SetChecked(false);
-			ActionF.ActionBar_bili.Slider:Disable();
-			ActionF.ActionBar_bili.Slider.Low:SetTextColor(0.8, 0.8, 0.8, 0.5);
-			ActionF.ActionBar_bili.Slider.High:SetTextColor(0.8, 0.8, 0.8, 0.5);
-			ActionF.ActionBar_bili.Slider.Text:SetTextColor(0.8, 0.8, 0.8, 0.5);
+			if ly then
+				MainMenuBar:SetScale(1);
+				VerticalMultiBarsContainer:SetScale(1);
+				for i=1, 12 do
+					_G["MultiBarLeftButton"..i]:SetScale(1)
+					--_G["MultiBarRightButton"..i]:SetScale(1)
+				end
+			end
 		end
 	end
 	ActionF.ActionBar_bili = PIGCheckbutton(ActionF,{"TOPLEFT",ActionF.botline,"TOPLEFT",20,-60},{"缩放动作条","启用缩放动作条,注意此设置和系统高级里面的UI缩放不同，只调整动作条比例"})
@@ -495,21 +489,16 @@ if tocversion<100000 then
 			PIGA["ActionBar"]["ActionBar_bili"]=true	
 		else
 			PIGA["ActionBar"]["ActionBar_bili"]=false
-			Pig_Options_RLtishi_UI:Show()
 		end
-		ActionBarfun.ActionBar_bili_OP()
-		ActionBarfun.ActionBar_bili()
+		ActionF.ActionBar_bili.Slider:SetEnabled(PIGA["ActionBar"]["ActionBar_bili"])
+		ActionBarfun.ActionBar_bili(true)
 	end);
 	-------
-	local tooltipText = '拖动滑块或者用鼠标滚轮调整动作条缩放比例,注意此设置和系统高级里面的UI缩放不同，只调整动作条比例';
-	ActionF.ActionBar_bili.Slider = PIGSlider(ActionF,{"LEFT",ActionF.ActionBar_bili,"RIGHT",96,0},{110,14},{0.6,1.4,0.1},tooltipText)
-	function ActionF.ActionBar_bili.Slider:OnValueFun()
-		local Newval = self:GetValue()
-		local Newval = floor(Newval*10+0.5)*0.1
-		self.Text:SetText(Newval);
-		PIGA["ActionBar"]["ActionBar_bili_value"]=Newval;
+	ActionF.ActionBar_bili.Slider = PIGSlider(ActionF,{"LEFT",ActionF.ActionBar_bili,"RIGHT",96,0},{0.6, 1.4, 0.01,{["Right"]="%"}})
+	ActionF.ActionBar_bili.Slider.Slider:HookScript("OnValueChanged", function(self, arg1)
+		PIGA["ActionBar"]["ActionBar_bili_value"]=arg1;
 		ActionBarfun.ActionBar_bili()
-	end
+	end)
 end
 ---=======
 ActionF:HookScript("OnShow", function(self)
@@ -519,7 +508,7 @@ ActionF:HookScript("OnShow", function(self)
 	elseif GetCVar("countdownForCooldowns")=="0" then
 		self.Cooldowns:SetChecked(false);
 	end
-	if tocversion<20000 then
+	if self.Cailiao then
 		self.Cailiao:SetChecked(PIGA["ActionBar"]["Cailiao"])
 	end
 	self.PetTishi:SetChecked(PIGA["ActionBar"]["PetTishi"])
@@ -527,7 +516,8 @@ ActionF:HookScript("OnShow", function(self)
 	if tocversion<100000 then
 		self.HideShijiu:SetChecked(PIGA["ActionBar"]["HideShijiu"])
 		self.BarRight:SetChecked(PIGA["ActionBar"]["BarRight"])
-		ActionBarfun.ActionBar_bili_OP()
+		self.ActionBar_bili:SetChecked(PIGA["ActionBar"]["ActionBar_bili"]);
+		self.ActionBar_bili.Slider:SetEnabled(PIGA["ActionBar"]["ActionBar_bili"])
 		self.ActionBar_bili.Slider:PIGSetValue(PIGA["ActionBar"]["ActionBar_bili_value"])
 		self.xiufuShowAction:SetChecked(PIGA["ActionBar"]["xiufuShowAction"])
 	end		

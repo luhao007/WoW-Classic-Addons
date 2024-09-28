@@ -8,20 +8,9 @@ local CreateTexture=CreateTexture
 -- local PIGFrame=Create.PIGFrame
 -- local PIGLine=Create.PIGLine
 -- local PIGEnter=Create.PIGEnter
--- local PIGButton = Create.PIGButton
--- local PIGCloseBut = Create.PIGCloseBut
--- local PIGDownMenu=Create.PIGDownMenu
--- local PIGSlider = Create.PIGSlider
--- local PIGCheckbutton=Create.PIGCheckbutton
--- local PIGCheckbutton_R=Create.PIGCheckbutton_R
--- local PIGOptionsList=Create.PIGOptionsList
--- local PIGOptionsList_RF=Create.PIGOptionsList_RF
--- local PIGOptionsList_R=Create.PIGOptionsList_R
 -- local PIGFontString=Create.PIGFontString
 -- local PIGFontStringBG=Create.PIGFontStringBG
--- local PIGQuickBut=Create.PIGQuickBut
 -- local PIGSetFont=Create.PIGSetFont
--- local Show_TabBut_R=Create.Show_TabBut_R
 
 local Create = {}
 local FontUrl = "Fonts/ARHei.ttf"
@@ -120,8 +109,7 @@ function Create.PIGSetMovable(LeftUI,MovableUI,KeyDown)
 		local uiname = MovableUI:GetName()
 		if uiname then
 			local point, relativeTo, relativePoint, offsetX, offsetY = MovableUI:GetPoint()
-			local relativeTo=relativeTo or UIParent
-			PIGA["PigUIPoint"][uiname]={point, relativeTo, relativePoint, offsetX, offsetY}
+			PIGA["PigUIPoint"][uiname]={point, nil, relativePoint, offsetX, offsetY}
 		end
 		MovableUI:SetUserPlaced(false)
 	end)

@@ -131,26 +131,44 @@ for i=1,#BAG_SetList do
 	end)
 end
 --每行格数
-BagBankF.SetListF.hangNUMTXT = PIGFontString(BagBankF.SetListF,{"TOPLEFT",BagBankF.SetListF,"TOPLEFT",20,-250},"背包每行格数")
-local BagmeihangN = {8,10,12,14,16};
-BagBankF.SetListF.hangNUM=PIGDownMenu(BagBankF.SetListF,{"LEFT",BagBankF.SetListF.hangNUMTXT,"RIGHT",4,0},{70,nil})
-function BagBankF.SetListF.hangNUM:PIGDownMenu_Update_But(self)
-	local info = {}
-	info.func = self.PIGDownMenu_SetValue
-	for i=1,#BagmeihangN,1 do
-	    info.text, info.arg1 = BagmeihangN[i], BagmeihangN[i]
-	    if tocversion<20000 then
-	    	info.checked = BagmeihangN[i]==PIGA["BagBank"]["BAGmeihangshu"]
-		elseif tocversion<90000 then
-			info.checked = BagmeihangN[i]==PIGA["BagBank"]["BAGmeihangshu_WLK"]
-		else
-			info.checked = BagmeihangN[i]==PIGA["BagBank"]["BAGmeihangshu_retail"]
-		end
-		BagBankF.SetListF.hangNUM:PIGDownMenu_AddButton(info)
-	end 
-end
-function BagBankF.SetListF.hangNUM:PIGDownMenu_SetValue(value,arg1,arg2)
-	BagBankF.SetListF.hangNUM:PIGDownMenu_SetText(value)
+-- BagBankF.SetListF.hangNUMTXT = PIGFontString(BagBankF.SetListF,{"TOPLEFT",BagBankF.SetListF,"TOPLEFT",20,-250},"背包每行格数")
+-- local BagmeihangN = {8,10,12,14,16};
+-- BagBankF.SetListF.hangNUM=PIGDownMenu(BagBankF.SetListF,{"LEFT",BagBankF.SetListF.hangNUMTXT,"RIGHT",4,0},{70,nil})
+-- function BagBankF.SetListF.hangNUM:PIGDownMenu_Update_But(self)
+-- 	local info = {}
+-- 	info.func = self.PIGDownMenu_SetValue
+-- 	for i=1,#BagmeihangN,1 do
+-- 	    info.text, info.arg1 = BagmeihangN[i], BagmeihangN[i]
+-- 	    if tocversion<20000 then
+-- 	    	info.checked = BagmeihangN[i]==PIGA["BagBank"]["BAGmeihangshu"]
+-- 		elseif tocversion<90000 then
+-- 			info.checked = BagmeihangN[i]==PIGA["BagBank"]["BAGmeihangshu_WLK"]
+-- 		else
+-- 			info.checked = BagmeihangN[i]==PIGA["BagBank"]["BAGmeihangshu_retail"]
+-- 		end
+-- 		BagBankF.SetListF.hangNUM:PIGDownMenu_AddButton(info)
+-- 	end 
+-- end
+-- function BagBankF.SetListF.hangNUM:PIGDownMenu_SetValue(value,arg1,arg2)
+-- 	BagBankF.SetListF.hangNUM:PIGDownMenu_SetText(value)
+-- 	if tocversion<20000 then
+-- 		if BAGheji_UI then BAGheji_UI.meihang=arg1 end
+--     	PIGA["BagBank"]["BAGmeihangshu"] = arg1;
+-- 	elseif tocversion<90000 then
+-- 		if BAGheji_UI then BAGheji_UI.meihang=arg1 end
+-- 		PIGA["BagBank"]["BAGmeihangshu_WLK"] = arg1;
+-- 	else
+-- 		ContainerFrameCombinedBags.meihang=arg1
+-- 		PIGA["BagBank"]["BAGmeihangshu_retail"] = arg1;
+-- 	end
+-- 	CloseAllBags()
+-- 	OpenAllBags()
+-- 	PIGCloseDropDownMenus()
+-- end
+BagBankF.SetListF.hangNUMTXT = PIGFontString(BagBankF.SetListF,{"TOPLEFT",BagBankF.SetListF,"TOPLEFT",20,-220},"背包每行格数")
+local BagmeihangN= {8,16,1}
+BagBankF.SetListF.hangNUM = PIGSlider(BagBankF.SetListF,{"LEFT", BagBankF.SetListF.hangNUMTXT,"RIGHT",4,0},BagmeihangN)	
+BagBankF.SetListF.hangNUM.Slider:HookScript("OnValueChanged", function(self, arg1)
 	if tocversion<20000 then
 		if BAGheji_UI then BAGheji_UI.meihang=arg1 end
     	PIGA["BagBank"]["BAGmeihangshu"] = arg1;
@@ -161,35 +179,27 @@ function BagBankF.SetListF.hangNUM:PIGDownMenu_SetValue(value,arg1,arg2)
 		ContainerFrameCombinedBags.meihang=arg1
 		PIGA["BagBank"]["BAGmeihangshu_retail"] = arg1;
 	end
-	CloseAllBags()
-	OpenAllBags()
-	PIGCloseDropDownMenus()
-end
+	if BAGheji_UI and BAGheji_UI:IsShown() or ContainerFrameCombinedBags and ContainerFrameCombinedBags:IsShown() then
+		CloseAllBags()
+		OpenAllBags()
+	end
+end)
 --缩放
-BagBankF.SetListF.suofangTXT = PIGFontString(BagBankF.SetListF,{"TOPLEFT",BagBankF.SetListF.hangNUMTXT,"BOTTOMLEFT",0,-14},"背包缩放比例")
-local BAGsuofangbili = {0.8,0.9,1,1.1,1.2,1.3,1.4};
-BagBankF.SetListF.suofang=PIGDownMenu(BagBankF.SetListF,{"LEFT",BagBankF.SetListF.suofangTXT,"RIGHT",4,0},{70,nil})
-function BagBankF.SetListF.suofang:PIGDownMenu_Update_But(self)
-	local info = {}
-	info.func = self.PIGDownMenu_SetValue
-	for i=1,#BAGsuofangbili,1 do
-	    info.text, info.arg1 = BAGsuofangbili[i], BAGsuofangbili[i]
-	    info.checked = BAGsuofangbili[i]==PIGA["BagBank"]["BAGsuofangBili"]
-		BagBankF.SetListF.suofang:PIGDownMenu_AddButton(info)
-	end 
-end
-function BagBankF.SetListF.suofang:PIGDownMenu_SetValue(value,arg1,arg2)
-	BagBankF.SetListF.suofang:PIGDownMenu_SetText(value)
+BagBankF.SetListF.suofangTXT = PIGFontString(BagBankF.SetListF,{"TOPLEFT",BagBankF.SetListF.hangNUMTXT,"BOTTOMLEFT",0,-20},"背包缩放比例")
+local BAGsuofangbili = {0.8,1.4,0.01,{["Right"]="%"}}
+BagBankF.SetListF.suofang = PIGSlider(BagBankF.SetListF,{"LEFT", BagBankF.SetListF.suofangTXT,"RIGHT",4,0},BAGsuofangbili)	
+BagBankF.SetListF.suofang.Slider:HookScript("OnValueChanged", function(self, arg1)
 	PIGA["BagBank"]["BAGsuofangBili"] = arg1;
 	if tocversion<100000 then
 		if BAGheji_UI then BAGheji_UI.suofang=arg1 end
 	else
 		ContainerFrameCombinedBags.suofang=arg1
 	end
-	CloseAllBags()
-	OpenAllBags()
-	PIGCloseDropDownMenus()
-end
+	if BAGheji_UI and BAGheji_UI:IsShown() or ContainerFrameCombinedBags and ContainerFrameCombinedBags:IsShown() then
+		CloseAllBags()
+		OpenAllBags()
+	end
+end)
 
 BagBankF.CZpeizhi = PIGButton(BagBankF,{"BOTTOMLEFT",BagBankF,"BOTTOMLEFT",20,6},{150,24},"背包异常点此重置");
 BagBankF.CZpeizhi:SetScript("OnClick", function(self, button)
@@ -226,13 +236,13 @@ BagBankF:HookScript("OnShow", function(self)
 			_G["BAG_SetList"..i]:SetChecked(PIGA["BagBank"][BAG_SetList[i][2]])
 		end
 	end
-	BagBankF.SetListF.suofang:PIGDownMenu_SetText(PIGA["BagBank"]["BAGsuofangBili"])
+	BagBankF.SetListF.suofang:PIGSetValue(PIGA["BagBank"]["BAGsuofangBili"])
 	if tocversion<20000 then
-		BagBankF.SetListF.hangNUM:PIGDownMenu_SetText(PIGA["BagBank"]["BAGmeihangshu"])
+		BagBankF.SetListF.hangNUM:PIGSetValue(PIGA["BagBank"]["BAGmeihangshu"])
 	elseif tocversion<90000 then
-		BagBankF.SetListF.hangNUM:PIGDownMenu_SetText(PIGA["BagBank"]["BAGmeihangshu_WLK"])
+		BagBankF.SetListF.hangNUM:PIGSetValue(PIGA["BagBank"]["BAGmeihangshu_WLK"])
 	else
-		BagBankF.SetListF.hangNUM:PIGDownMenu_SetText(PIGA["BagBank"]["BAGmeihangshu_retail"])
+		BagBankF.SetListF.hangNUM:PIGSetValue(PIGA["BagBank"]["BAGmeihangshu_retail"])
 	end
 end)
 --==================================

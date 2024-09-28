@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("AraKaraTrash", "DBM-Party-WarWithin", 6)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240902224710")
+mod:SetRevision("20240925005958")
 --mod:SetModelID(47785)
 mod.isTrashMod = true
 mod.isTrashModBossFightAllowed = true
@@ -30,8 +30,8 @@ local warnToxicRupture						= mod:NewSpellAnnounce(438622, 4, nil, "Melee")
 local warnCalloftheBrood					= mod:NewSpellAnnounce(438877, 3)
 local warnPoisonousCloud					= mod:NewSpellAnnounce(438826, 3)
 
-local specWarnWebSpray						= mod:NewSpecialWarningDodge(434824, nil, nil, nil, 2, 2)
-local specWarnImpale						= mod:NewSpecialWarningDodge(453161, nil, nil, nil, 2, 2)
+local specWarnWebSpray						= mod:NewSpecialWarningDodge(434824, nil, nil, nil, 2, 15)
+local specWarnImpale						= mod:NewSpecialWarningDodge(453161, nil, nil, nil, 2, 15)
 local specWarnEruptingWebs					= mod:NewSpecialWarningDodge(433845, nil, nil, nil, 2, 2)
 --local yellChainLightning					= mod:NewYell(387127)
 --local specWarnStormshield					= mod:NewSpecialWarningDispel(386223, "MagicDispeller", nil, nil, 1, 2)
@@ -69,13 +69,14 @@ end
 --]]
 
 function mod:SPELL_CAST_START(args)
+	if not self.Options.Enabled then return end
 	local spellId = args.spellId
 	if not self:IsValidWarning(args.sourceGUID) then return end
 	if spellId == 434824 then
 		timerWebSprayCD:Start(nil, args.sourceGUID)
 		if self:AntiSpam(3, 2) then
 			specWarnWebSpray:Show()
-			specWarnWebSpray:Play("shockwave")
+			specWarnWebSpray:Play("frontal")
 		end
 	elseif spellId == 434802 then
 		if self.Options.SpecWarn434802interrupt and self:CheckInterruptFilter(args.sourceGUID, false, true) then
@@ -106,7 +107,7 @@ function mod:SPELL_CAST_START(args)
 		timerImpaleCD:Start(14.5, args.sourceGUID)
 		if self:AntiSpam(3, 2) then
 			specWarnImpale:Show()
-			specWarnImpale:Play("shockwave")
+			specWarnImpale:Play("frontal")
 		end
 	elseif spellId == 432967 and self:AntiSpam(5, 6) then
 		warnAlarmShill:Show()
@@ -128,6 +129,7 @@ function mod:SPELL_CAST_START(args)
 end
 
 function mod:SPELL_CAST_SUCCESS(args)
+	if not self.Options.Enabled then return end
 	local spellId = args.spellId
 	if not self:IsValidWarning(args.sourceGUID) then return end
 	if spellId == 434802 then
@@ -150,6 +152,7 @@ function mod:SPELL_CAST_SUCCESS(args)
 end
 
 function mod:SPELL_INTERRUPT(args)
+	if not self.Options.Enabled then return end
 	if args.extraSpellId == 434802 then
 		timerHorrifyingShrillCD:Start(13.3, args.destGUID)
 	elseif args.extraSpellId == 448248 then
@@ -171,6 +174,7 @@ end
 --]]
 
 function mod:UNIT_DIED(args)
+	if not self.Options.Enabled then return end
 	local cid = self:GetCIDFromGUID(args.destGUID)
 	if cid == 217531 then--Ixin
 		timerWebSprayCD:Stop(args.destGUID)

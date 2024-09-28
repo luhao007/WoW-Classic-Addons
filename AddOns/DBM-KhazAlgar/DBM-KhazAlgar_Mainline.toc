@@ -1,14 +1,17 @@
 ## Interface: 30400
 ## Author: MysticalOS
-## Version: 11.0.5
-## RequiredDeps: DBM-Core
-## LoadOnDemand: 1
-## SavedVariables: DBMWarWithin_AllSavedVars
-## SavedVariablesPerCharacter: DBMWarWithin_SavedStats
-## IconTexture: Interface\AddOns\DBM-Core\textures\dbm_airhorn
+## Version: 11.0.19
 
 ## Title: |cffffe00a<|r|cffff7d0aDBM Mod|r|cffffe00a>|r |cff10ff10World Bosses (War Within)|r
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFF69CCF0户外|r |cFF22B14C卡兹阿加|r
+
+## IconTexture: Interface\AddOns\DBM-Core\textures\dbm_airhorn
+
+## RequiredDeps: DBM-Core
+## LoadOnDemand: 1
+
+## SavedVariables: DBMWarWithin_AllSavedVars
+## SavedVariablesPerCharacter: DBMWarWithin_SavedStats
 
 ## X-DBM-Mod: 1
 ## X-DBM-Mod-Type: WORLDBOSS

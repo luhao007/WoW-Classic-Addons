@@ -100,7 +100,7 @@ def remove_libraries_all(addon: str, lib_path: Optional[str] = None):
         rm_tree(Path('AddOns') / addon / lib_path / lib)
 
     # Remove lib entry in root folder
-    lib_files = [Path('AddOns') / addon / f"{addon.split('/')[-1]}{postfix}" for postfix in ['.xml'] + TOCS]
+    lib_files = [Path('AddOns') / addon / f"{addon.split('/')[-1]}{postfix}" for postfix in (['.xml'] + TOCS)]
     lib_files += [Path('Addons') / addon / file for file in ['embeds.xml', 'include.xml']]
     lib_files = [path for path in lib_files if os.path.exists(str(path))]
     for path in lib_files:

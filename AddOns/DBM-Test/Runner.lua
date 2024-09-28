@@ -231,6 +231,12 @@ function test:Trace(mod, event, ...)
 		obj.testUsedWithPreciseShowSucess[maxTotal] = true
 		return
 	end
+	if event == "SetStage" then
+		if self.timeWarper then
+			self.timeWarper:OnStageChanged(...)
+		end
+		return
+	end
 	local key = currentEventKey or "Unknown trigger" -- TODO: can we somehow include the timestamp here without messing up determinism?
 	-- FIXME: this logic will get real messy real fast as we add more events -- come up with a way to define per-event behavior somehow
 	if key == "InternalLoading" then
@@ -438,6 +444,14 @@ function test:ForceCVar(cvar, value)
 	SetCVar(cvar, value)
 end
 
+function test:RestoreCVar(cvar)
+	self.restoreCVars = self.restoreCVars or {}
+	if self.restoreCVars[cvar] then
+		SetCVar(cvar, self.restoreCVars[cvar])
+		self.restoreCVars[cvar] = nil
+	end
+end
+
 function test:Teardown()
 	self.testRunning = false
 	self.modUnderTest = nil
@@ -511,9 +525,12 @@ function test:InjectEvent(event, ...)
 		if unitTarget == self.logPlayerName or self.allOnYou and self.players[unitTarget] then
 			unitTarget = UnitName("player")
 		end
-		self.Mocks:UpdateTarget(uId, unitName, unitTarget)
-		self.Mocks:UpdateUnitHealth(uId, unitName, unitHealth)
-		self.Mocks:UpdateUnitPower(uId, unitName, unitPower)
+		-- For some reason UNIT_SPELLCAST events from units where UnitName() is nil exist and for some reason those come from arena unit IDs in raids...?
+		if unitName then
+			self.Mocks:UpdateTarget(uId, unitName, unitTarget)
+			self.Mocks:UpdateUnitHealth(uId, unitName, unitHealth)
+			self.Mocks:UpdateUnitPower(uId, unitName, unitPower)
+		end
 		-- UNIT_HEALTH is usually used like this: UnitGUID(uId), check cid, then call UnitHealth(uId)
 		if uId:match("^boss") then
 			self:InjectExtraEvent("UNIT_HEALTH", uId)
@@ -671,9 +688,9 @@ function test:Playback(testData, timeWarp, testOptions)
 	end
 	adjustFlagsForPerspective(testData, self.logPlayerName, self.allOnYou)
 	self.Mocks:SetInstanceInfo(testData.instanceInfo)
+	DBM:ScenarioCheck(0)
 	if testData.instanceInfo.difficultyModifier then
-		-- Only MC is supported right now
-	   if testData.instanceInfo.instanceID == 409 then
+	   if testData.instanceInfo.instanceID == 409 then -- Molten Core
 			local heatLevel = testData.instanceInfo.difficultyModifier
 			if heatLevel == 1 then
 				self.Mocks:ApplyUnitAura(UnitName("player"), UnitGUID("player"), 458841, "Sweltering Heat", "DEBUFF")
@@ -682,7 +699,24 @@ function test:Playback(testData, timeWarp, testOptions)
 			elseif heatLevel == 3 then
 				self.Mocks:ApplyUnitAura(UnitName("player"), UnitGUID("player"), 458843, "Molten Heat", "DEBUFF")
 			end
-	   end
+		elseif testData.instanceInfo.instanceID == 469 then -- BWL
+			local trials = testData.instanceInfo.difficultyModifier or 0
+			if bit.band(trials, DBM.Difficulties.SOD_BWL_TRIAL_BLACK) ~= 0 then
+				self.Mocks:ApplyUnitAura(UnitName("player"), UnitGUID("player"), 467047, "Black Essence", "DEBUFF")
+			end
+			if bit.band(trials, DBM.Difficulties.SOD_BWL_TRIAL_GREEN) ~= 0 then
+				self.Mocks:ApplyUnitAura(UnitName("player"), UnitGUID("player"), 466416, "Green Trial", "DEBUFF")
+			end
+			if bit.band(trials, DBM.Difficulties.SOD_BWL_TRIAL_BLUE) ~= 0 then
+				self.Mocks:ApplyUnitAura(UnitName("player"), UnitGUID("player"), 466277, "Blue Trial", "DEBUFF")
+			end
+			if bit.band(trials, DBM.Difficulties.SOD_BWL_TRIAL_BRONZE) ~= 0 then
+				self.Mocks:ApplyUnitAura(UnitName("player"), UnitGUID("player"), 466071, "Bronze Trial", "DEBUFF")
+			end
+			if bit.band(trials, DBM.Difficulties.SOD_BWL_TRIAL_RED) ~= 0 then
+				self.Mocks:ApplyUnitAura(UnitName("player"), UnitGUID("player"), 466261, "Red Trial", "DEBUFF")
+			end
+		end
    end
 	local maxTimestamp = testData.log[#testData.log][1]
 	local timeWarper = test.TimeWarper:New()
@@ -748,9 +782,10 @@ function test:Playback(testData, timeWarp, testOptions)
 	}
 	DBM:FireEvent("DBMTest_Stop", testStopCallbackArgs) -- Must fire before stopping the time warper otherwise Public/Example.lua breaks
 	timeWarper:Stop()
-	local report = reporter:ReportWithHeader()
-	DBM_TestResults_Export = DBM_TestResults_Export or {}
-	DBM_TestResults_Export[testData.name] = report
+	if not reporter:IsTainted() then
+		DBM_TestResults_Export = DBM_TestResults_Export or {}
+		DBM_TestResults_Export[testData.name] = reporter:ReportWithHeader()
+	end
 	local cb = self.testCallback
 	if cb then
 		self.testCallback = nil -- coroutine scheduler also attempts to call this on failure, prevent calling it twice if this throws

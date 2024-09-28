@@ -1,13 +1,14 @@
 ## Interface: 30400
 ## Author: Lag
 ## Version: v3.2.0
-## Dependencies: AtlasLootClassic
-## LoadOnDemand: 1
 
 ## Title: AtlasLootClassic |cFF0099FF[Factions]|r
 ## Notes: AtlasLoot loot tables from Factions
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本掉落|r |cFF69CCF0阵营|r
 ## Notes-zhCN: AtlasLoot 阵营物品列表
+
+## Dependencies: AtlasLootClassic
+## LoadOnDemand: 1
 
 ## X-Category: Map
 ## X-License: GPL v2

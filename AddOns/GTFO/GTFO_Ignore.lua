@@ -49,6 +49,13 @@ if (GTFO.RetailMode) then
 		desc = "Icy Ground (Sennarth - Dragonflight)",
 		tooltip = "Icy Ground (Sennarth - Dragonflight)"
 	}
+	
+	GTFO.IgnoreSpellCategory["SmotheringShadows"] = {
+		-- 11.0 Smothering Shadows (darkness aura) from Darkflame Cleft
+		spellID = 422806,
+		desc = "Smothering Shadows (Darkflame Cleft TWW)",
+		tooltip = "Alert from the darkness aura during Darkflame Cleft (TWW)"
+	}
 end
 
 -- Scanner ignore list
@@ -181,3 +188,39 @@ GTFO.IgnoreScan["434796"] = true; -- Resonant Barrage
 GTFO.IgnoreScan["451764"] = true; -- Radiant Flame
 GTFO.IgnoreScan["435148"] = true; -- Blazing Strike
 GTFO.IgnoreScan["423665"] = true; -- Embrace the Light
+GTFO.IgnoreScan["387846"] = true; -- Fel Armor
+GTFO.IgnoreScan["458340"] = true; -- Cosmic Simulacrum
+GTFO.IgnoreScan["441314"] = true; -- Lacerated Wound
+GTFO.IgnoreScan["404551"] = true; -- Mana Spring
+GTFO.IgnoreScan["454860"] = true; -- Infectious Wound
+GTFO.IgnoreScan["439198"] = true; -- Lingering Venom
+GTFO.IgnoreScan["434705"] = true; -- Tenderized
+GTFO.IgnoreScan["435136"] = true; -- Venomous Lash
+GTFO.IgnoreScan["434776"] = true; -- Carnivorous Contest
+GTFO.IgnoreScan["439037"] = true; -- Disembowel
+GTFO.IgnoreScan["438012"] = true; -- Hungering Bellows
+GTFO.IgnoreScan["445005"] = true; -- Putrid Being
+GTFO.IgnoreScan["448060"] = true; -- Hex of Abhorrence
+GTFO.IgnoreScan["443305"] = true; -- Crimson Rain 
+GTFO.IgnoreScan["443612"] = true; -- Gruesome Disgorge
+GTFO.IgnoreScan["444704"] = true; -- Savage Wound
+GTFO.IgnoreScan["444702"] = true; -- Savage Wound
+GTFO.IgnoreScan["440193"] = true; -- Lingering Erosion
+GTFO.IgnoreScan["454860"] = true; -- Infectious Wound
+GTFO.IgnoreScan["437839"] = true; -- Nether Rift
+GTFO.IgnoreScan["436996"] = true; -- Stalking Shadows
+GTFO.IgnoreScan["439861"] = true; -- Dark Sermon
+GTFO.IgnoreScan["460600"] = true; -- Entropic Barrage
+GTFO.IgnoreScan["461910"] = true; -- Cosmic Ascension
+GTFO.IgnoreScan["453609"] = true; -- Liquefy
+GTFO.IgnoreScan["459145"] = true; -- Bloodstained Blessing
+GTFO.IgnoreScan["445005"] = true; -- 
+GTFO.IgnoreScan["445005"] = true; -- 
+GTFO.IgnoreScan["445005"] = true; -- 
+GTFO.IgnoreScan["445005"] = true; -- 
+GTFO.IgnoreScan["445005"] = true; -- 
+GTFO.IgnoreScan["445005"] = true; -- 
+GTFO.IgnoreScan["445005"] = true; -- 
+GTFO.IgnoreScan["445005"] = true; -- 
+GTFO.IgnoreScan["445005"] = true; -- 
+GTFO.IgnoreScan["445005"] = true; -- 

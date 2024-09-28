@@ -27,12 +27,11 @@ local function Update_itemLV_(itemButton, id, slot)
 			end
 		else
 			local bagID = itemButton:GetBagID();
-			local info = C_Container.GetContainerItemInfo(bagID, itemButton:GetID());
-			if info and info.hyperlink then
-				local quality = info.quality;
-				local itemID, itemType, itemSubType, itemEquipLoc, icon, classID, subClassID = C_Item.GetItemInfoInstant(info.hyperlink)
+			local itemID, itemLink, icon, stackCount, quality=PIGGetContainerItemInfo(bagID, itemButton:GetID())
+			if itemLink then
+				local itemID, itemType, itemSubType, itemEquipLoc, icon, classID, subClassID = C_Item.GetItemInfoInstant(itemLink)
 				if quality and quality>1 and classID==2 or classID==4 then
-					local actualItemLevel, previewLevel, sparseItemLevel = C_Item.GetDetailedItemLevelInfo(info.hyperlink)
+					local actualItemLevel, previewLevel, sparseItemLevel = C_Item.GetDetailedItemLevelInfo(itemLink)
 					local colorRGBR, colorRGBG, colorRGBB, qualityString = C_Item.GetItemQualityColor(quality)
 					if itemButton.ZLV then
 						itemButton.ZLV:SetText(actualItemLevel);
@@ -269,53 +268,85 @@ function BagBankfun.addfenleibagbut(fujiui,uiname)
 		baginfo.icon=bankicon
 	end
 	function fujiui:Show_Hide_but(showV)
+		local numSlots,full = GetNumBankSlots();
 		for vb=1,#baginfo.id do
 			local fameXX = _G[uiname..vb]
 			fameXX:SetShown(showV)
 			fameXX.xitongbagF=baginfo.icon[vb]
 			if showV then
-				fameXX.ICONpig:SetTexture(baginfo.icon[vb].icon:GetTexture());
+				fameXX.Portrait:SetTexture(baginfo.icon[vb].icon:GetTexture());
+				if ( vb <= numSlots ) then
+					fameXX.Portrait:SetVertexColor(1.0,1.0,1.0);
+				else
+					fameXX.Portrait:SetVertexColor(1.0,0.1,0.1);
+				end
 			end
+			fameXX:UpdateFilterIcon();
 		end
 	end
+	local www,hhh,jiangeW = 26,26,3
 	for vb=1,#baginfo.id do
-		local fameXX = CreateFrame("Button",uiname..vb,fujiui,nil,baginfo.id[vb]);
-		fameXX:SetSize(34,34);
-		fameXX:SetPoint("TOPLEFT", fujiui, "TOPRIGHT", 0, -(45*vb)-20);
-		fameXX:Hide()
-		fameXX:RegisterForDrag("LeftButton")
 		--local fameXX = _G["ContainerFrame"..vb.."PortraitButton"]
-		fameXX.ICONpig = fameXX:CreateTexture(nil, "BORDER");
-		fameXX.ICONpig:SetSize(26,26);
-		fameXX.ICONpig:SetPoint("TOPLEFT",fameXX,"TOPLEFT",5,-5);
-		if NDui or ElvUI then
+		local fameXX = CreateFrame("Frame",uiname..vb,fujiui);
+		local ContainerFrameMixin=ContainerFrameMixin or {}
+		local fameXX = Mixin(fameXX, ContainerFrameMixin)
+		fameXX:SetSize(www,hhh);
+		if fujiui==BAGheji_UI then
+			fameXX:SetPoint("TOPLEFT", fujiui.fenlei, "TOPRIGHT", 8, -((www+jiangeW)*(vb-1)));
 		else
-			fameXX.BGpig = fameXX:CreateTexture(nil, "ARTWORK");
-			fameXX.BGpig:SetTexture("Interface/Minimap/MiniMap-TrackingBorder");
-			fameXX.BGpig:SetSize(66,66);
-			fameXX.BGpig:SetPoint("TOPLEFT",fameXX,"TOPLEFT",-2,1);
+			fameXX:SetPoint("LEFT", fujiui.fenlei, "RIGHT", ((www+jiangeW)*(vb-1))+2, 0);
 		end
-		fameXX:HookScript("OnEnter", function (self)
+		fameXX:Hide()
+		fameXX.BagID=baginfo.id[vb]
+		function fameXX:GetBagID()
+			return self.BagID
+		end
+		function fameXX:MatchesBagID(id)
+			return self.BagID == id;
+		end
+		fameXX.Portrait = fameXX:CreateTexture(nil, "BORDER");
+		fameXX.Portrait:SetAllPoints(fameXX)
+		fameXX.FilterIcon = CreateFrame("Frame",nil,fameXX);
+		fameXX.FilterIcon:SetSize(www*0.7,hhh*0.7);
+		fameXX.FilterIcon:SetPoint("BOTTOMRIGHT",fameXX,"BOTTOMRIGHT",5,-4);
+		fameXX.FilterIcon.Icon = fameXX.FilterIcon:CreateTexture(nil, "OVERLAY");
+		fameXX.FilterIcon.Icon:SetAllPoints(fameXX.FilterIcon)
+
+		local Templateinfo = C_XMLUtil.GetTemplateInfo("ContainerFramePortraitButtonTemplate")
+		if Templateinfo then
+			fameXX.PortraitButton = CreateFrame("DropdownButton","$parentPortraitButton",fameXX,"ContainerFramePortraitButtonTemplate");
+		else
+			fameXX.PortraitButton = CreateFrame("Button","$parentPortraitButton",fameXX);
+			fameXX.PortraitButton:SetHighlightTexture("Interface/Buttons/ButtonHilight-Square");
+		end
+		fameXX.PortraitButton:SetAllPoints(fameXX)
+		fameXX.PortraitButton:RegisterForDrag("LeftButton")
+		local OLD_OnValueChanged=fameXX.PortraitButton:GetScript("OnEnter") or function() end
+		fameXX.PortraitButton:SetScript("OnEnter", function (self)
+			local BagID = self:GetParent():GetBagID()
 			if tocversion<100000 then
-				local frameID = IsBagOpen(self:GetID())
+				local frameID = IsBagOpen(BagID)
 				if frameID then
+					OLD_OnValueChanged(self)
 					for slot = 1, MAX_CONTAINER_ITEMS do
 						local famrr=_G["ContainerFrame"..frameID.."Item"..slot]
 					 	famrr.BattlepayItemTexture:Show()
 					end
 				end
 			else
-				local frameID=ContainerFrameUtil_GetShownFrameForID(self:GetID())
+				local frameID=ContainerFrameUtil_GetShownFrameForID(BagID)
 				if frameID then
+					OLD_OnValueChanged(self)
 					for i, itemButton in frameID:EnumerateValidItems() do
 						itemButton.BattlepayItemTexture:Show()
 					end
 				end
 			end
 		end);
-		fameXX:HookScript("OnLeave", function (self)
+		fameXX.PortraitButton:HookScript("OnLeave", function (self)
+			local BagID = self:GetParent():GetBagID()
 			if tocversion<100000 then
-				local frameID = IsBagOpen(self:GetID())
+				local frameID = IsBagOpen(BagID)
 				if frameID then
 					for slot = 1, MAX_CONTAINER_ITEMS do
 						local famrr=_G["ContainerFrame"..frameID.."Item"..slot]
@@ -323,7 +354,7 @@ function BagBankfun.addfenleibagbut(fujiui,uiname)
 					end
 				end
 			else
-				local frameID=ContainerFrameUtil_GetShownFrameForID(self:GetID())
+				local frameID=ContainerFrameUtil_GetShownFrameForID(BagID)
 				if frameID then
 					for i, itemButton in frameID:EnumerateValidItems() do
 						itemButton.BattlepayItemTexture:Hide()
@@ -331,13 +362,53 @@ function BagBankfun.addfenleibagbut(fujiui,uiname)
 				end
 			end
 		end);
-		if fujiui==BAGheji_UI then
-			fameXX:HookScript("OnDragStart", function (self, button)
-				BagSlotButton_OnDrag(self.xitongbagF, button);
+		fameXX.UpdateFilterIcon=fameXX.UpdateFilterIcon or function() end
+		if fujiui==BAGheji_UI then	
+			fameXX.PortraitButton:HookScript("OnDragStart", function (self, button)
+				BagSlotButton_OnDrag(self:GetParent().xitongbagF, button);
 			end);
-			fameXX:HookScript("OnReceiveDrag", function (self)
-				BagSlotButton_OnClick(self.xitongbagF);
+			fameXX.PortraitButton:HookScript("OnReceiveDrag", function (self)
+				BagSlotButton_OnClick(self:GetParent().xitongbagF);
 			end);
+		else
+			fameXX.PortraitButton:HookScript("OnDragStart", function (self, button)
+				BankFrameItemButtonBag_Pickup(self:GetParent().xitongbagF, button);
+			end);
+			fameXX.PortraitButton:HookScript("OnReceiveDrag", function (self)
+				BankFrameItemButtonBag_OnClick(self:GetParent().xitongbagF);
+			end);
+			if Templateinfo then			
+				local fameXX_xxx = CreateFrame("Button",nil,fameXX,"ContainerFramePortraitButtonRouterTemplate");
+				local function AddButtons_BagFilters(description, bagID,bagframe)
+					if not ContainerFrame_CanContainerUseFilterMenu(bagID) then
+						return;
+					end
+					description:CreateTitle(BAG_FILTER_ASSIGN_TO);
+					local function IsSelected(flag)
+						return C_Container.GetBagSlotFlag(bagID, flag);
+					end
+					local function SetSelected(flag)
+						local value = not IsSelected(flag);
+						C_Container.SetBagSlotFlag(bagID, flag, value);
+						if not ContainerFrameSettingsManager.filterFlags then
+							ContainerFrameSettingsManager.filterFlags = {};
+						end
+						local currentFilters = ContainerFrameSettingsManager.filterFlags[bagID] or 0;
+						ContainerFrameSettingsManager.filterFlags[bagID] = FlagsUtil.Combine(currentFilters, flag, value);
+						bagframe:UpdateFilterIcon();
+					end
+					for i, flag in ContainerFrameUtil_EnumerateBagGearFilters() do
+						local checkbox = description:CreateCheckbox(BAG_FILTER_LABELS[flag], IsSelected, SetSelected, flag);
+						checkbox:SetResponse(MenuResponse.Close);
+					end
+				end
+				fameXX.PortraitButton:SetupMenu(function(dropdown, rootDescription)
+					rootDescription:SetTag("MENU_CONTAINER_FRAME");
+					local bagID = fameXX:GetBagID();
+					if not bagID then return end
+					AddButtons_BagFilters(rootDescription, bagID,fameXX);
+				end);
+			end
 		end
 	end
 end

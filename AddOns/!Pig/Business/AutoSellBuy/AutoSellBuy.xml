@@ -1,12 +1,11 @@
 <Ui>
 	<Script file="Options.lua" />
 	<Script file="UI.lua" />
-	<Script file="FastDiuqi.lua" />
-	<Script file="FastOpen.lua" />
 	<Script file="AutoSell.lua" />
 	<Script file="AutoBuy.lua" />
+	<Script file="FastDrop.lua" />
+	<Script file="FastOpen.lua" />
 	<Script file="FastFen.lua" />
 	<Script file="FastXuan.lua" />
 	<Script file="FastSave.lua" />
-	<Script file="FastTake.lua" />
 </Ui>

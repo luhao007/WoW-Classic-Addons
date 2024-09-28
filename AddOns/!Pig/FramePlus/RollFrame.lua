@@ -92,17 +92,21 @@ function FramePlusfun.Roll()
 			GameTooltip:Hide()
 		end);
 	end
+	local function PIG_RemoveFrame(frame)
+		local left = GetLootRollTimeLeft(frame.rollID);
+		if left<=0 then GroupLootContainer_RemoveFrame(RollFFF, frame) return end
+	end
 	local function SETbutEnableDisable(but,nooff)
 		if nooff then
 			GroupLootFrame_EnableLootButton(but.Need)
 			GroupLootFrame_EnableLootButton(but.Greed)
 			GroupLootFrame_EnableLootButton(but.De)
-			--GroupLootFrame_EnableLootButton(but.Pass)
+			GroupLootFrame_EnableLootButton(but.Pass)
 		else
 			GroupLootFrame_DisableLootButton(but.Need)
 			GroupLootFrame_DisableLootButton(but.Greed)
 			GroupLootFrame_DisableLootButton(but.De)
-			--GroupLootFrame_DisableLootButton(but.Pass)
+			GroupLootFrame_DisableLootButton(but.Pass)
 		end
 	end
 	local function add_hang(id)
@@ -152,6 +156,7 @@ function FramePlusfun.Roll()
 		itemhang.Timer:SetMinMaxValues(0, 60000)
 		itemhang.Timer:SetScript("OnUpdate", function (self, elapsed)
 			if RollFFF.ceshi then return end
+			PIG_RemoveFrame(self:GetParent())
 			GroupLootFrame_OnUpdate(self, elapsed);
 		end);
 		itemhang.Timer.BACKGROUND = itemhang.Timer:CreateTexture(nil, "BACKGROUND");
@@ -263,7 +268,7 @@ function FramePlusfun.Roll()
 		itemhang:RegisterEvent("CANCEL_LOOT_ROLL");
 		itemhang:HookScript("OnEvent", function(self, event, arg1)
 			if ( arg1 == self.rollID ) then
-				GroupLootContainer_RemoveFrame(RollFFF, self);
+				--GroupLootContainer_RemoveFrame(RollFFF, self);
 				--StaticPopup_Hide("CONFIRM_LOOT_ROLL", self.rollID);
 			end
 		end)
@@ -324,7 +329,7 @@ function FramePlusfun.Roll()
 		end
 		return yirollplayerall
 	end
-	local function UpdateRollBut(historyIndex, playerIndex)
+	local function UpdateRollBut(historyIndex, playerIndex,chushiV)
 		local rollID, itemLink, numPlayers, isDone, winnerIdx = C_LootHistory.GetItem(historyIndex);
 		for k, frame in pairs(RollFFF.rollFrames) do
 			if frame.rollID == rollID then
@@ -336,8 +341,9 @@ function FramePlusfun.Roll()
 					end
 				end
 				if GetrollTypeNumAll(frame)<numPlayers then
-					local left = GetLootRollTimeLeft(frame.rollID);
-					if left<=0 then GroupLootContainer_RemoveFrame(RollFFF, frame) return end
+					if chushiV then
+						PIG_RemoveFrame(frame)
+					end
 					frame:Show()
 					return
 				end
@@ -365,7 +371,7 @@ function FramePlusfun.Roll()
 			local historyIndex, numPlayers=GetItemhistoryIndex(pendingLootRollIDs[i])
 			if historyIndex>0 and numPlayers>0 then
 				for playerIndex=1,numPlayers do
-					UpdateRollBut(historyIndex, playerIndex)
+					UpdateRollBut(historyIndex, playerIndex,true)
 				end
 			end
 		end

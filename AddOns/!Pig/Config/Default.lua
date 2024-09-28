@@ -67,6 +67,7 @@ addonTable.Default = {
 		["MoneyEdit"] = true,
 		["ALTbatch"] = true,
 		["lianxuMode"] = true,
+		["OpenAllCD"]=0.6,
 	},
 	["StatsInfo"] = {
 		["Open"] = true,
@@ -94,6 +95,7 @@ addonTable.Default = {
 		["Sell_But"]=true,
 		["Sell_Tishi"]=true,
 		["Sell_List"]={},
+		["Sell_Lsit_Filtra"]={},
 		["Buy_Open"]=true,
 		["Buy_But"]=true,
 		["Buy_Tishi"]=true,
@@ -122,9 +124,11 @@ addonTable.Default = {
 		["autoya"]=false,
 		["yajingbiao"] = true,
 		["exactMatch"] = false,
-		["RepeatQuery"]=true,
+		["oldaucG"]=false,
 	},
 	["Chat"] = {
+		["FastCopy"]=false,
+		["WhoWhisper"]=true,
 		["RemTips"]=true,
 		["ChatSetSave"]={},
 		["ShowLinkIcon"]=true,
@@ -338,6 +342,9 @@ addonTable.Default = {
 		["AttackBar"]={
 			["Open"] = false,
 			["Showshuzhi"]=false,
+			["Scale"]=1,
+			["Xpianyi"]=0,
+			["Ypianyi"]=14,
 		},
 	},
 	["Map"] = {
@@ -365,7 +372,9 @@ addonTable.Default_Per = {
 	["AutoSellBuy"] = {
 		["Buy_List"]={},
 		["Save_List"] = {},
+		["Save_Money"] = 10000000,
 		["Take_List"] = {},
+		["Take_Money"] = 10000000,
 	},
 	["QuickFollow"]={
 		["beidongOpen"]="OFF",

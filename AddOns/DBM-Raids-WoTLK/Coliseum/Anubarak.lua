@@ -3,7 +3,7 @@ local L		= mod:GetLocalizedStrings()
 
 mod.statTypes = "normal,normal25,heroic,heroic25"
 
-mod:SetRevision("20240512232312")
+mod:SetRevision("20240714050722")
 mod:SetCreatureID(34564)
 mod:SetEncounterID(not mod:IsPostCata() and 645 or 1085)
 mod:SetModelID(29268)
@@ -176,7 +176,7 @@ function mod:SPELL_AURA_APPLIED(args)
 			end
 		end
 		if args:IsPlayer() then
-			specWarnPCold:Show(self:IconNumToTexture(icon))
+			specWarnPCold:Show()
 			specWarnPCold:Play("targetyou")
 		end
 		warnPCold:CombinedShow(0.5, args.destName)

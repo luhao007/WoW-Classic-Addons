@@ -1,12 +1,13 @@
 ## Interface: 30400
 ## Author: Tuller
 ## Version: 10.2.9
-## SavedVariables: OmniCCDB, OmniCC4Config
 
 ## Title: OmniCC
 ## Notes: Cooldown count for everything
 ## Title-zhCN: |cFFFFE00A<|r|cFFC79C6E战斗|r|cFFFFE00A>|r |cFFFFFFFF技能冷却|r |cFFFFE00AOmniCC|r
 ## Notes-zhCN: 显示技能冷却时间
+
+## SavedVariables: OmniCCDB, OmniCC4Config
 
 
 embeds.xml

@@ -265,13 +265,7 @@ function GDKPInfo.ADD_UI()
 			RaidR:GetRiadPlayerInfo()
 			RaidR:RaidInfoShow()
 			RaidR.PlayerList:PlayerList_UP()
-			if UnitIsGroupLeader("player") then
-				if IsInRaid() then
-					SendChatMessage("人员信息已记录,退组/离线/不影响分G，需邮寄工资请"..L["CHAT_WHISPER"].."【"..Pig_OptionsUI.Name.."】:邮寄工资", "RAID_WARNING", nil);
-				elseif IsInGroup() then
-					SendChatMessage("人员信息已记录,退组/离线/不影响分G，需邮寄工资请"..L["CHAT_WHISPER"].."【"..Pig_OptionsUI.Name.."】:邮寄工资", "PARTY", nil);
-				end
-			end
+			PIGSendChatRaidParty("人员信息已记录,退组/离线/不影响分G，需邮寄工资请"..L["CHAT_WHISPER"].."【"..Pig_OptionsUI.Name.."】:邮寄工资",UnitIsGroupLeader("player"))
 		end,
 		timeout = 0,
 		whileDead = true,
@@ -372,7 +366,7 @@ function GDKPInfo.ADD_UI()
 		end
 	end);
 	local ewaishuoming = {
-		"====半工不等于全工一半说明====",
+		"====半工×2不等于全工说明====",
 		"注意区分理论人均数和实发人均，半工为理论人均一半非实发人均一半",
 		"半工扣除的一半金额会平均分配给其他成员",
 		"半工队员因没有做到应有的事，导致其他人员工作量增加",
@@ -488,13 +482,13 @@ function GDKPInfo.ADD_UI()
 	end);
 
 	---子页面
-	GDKPInfo.ADD_Item()
-	GDKPInfo.ADD_Buzhu()
-	GDKPInfo.ADD_Fakuan()
-	GDKPInfo.ADD_RaidInfo()
-	GDKPInfo.ADD_fenG()
-	GDKPInfo.ADD_History()
-	GDKPInfo.ADD_Check()
+	GDKPInfo.ADD_Item(RaidR)
+	GDKPInfo.ADD_Buzhu(RaidR)
+	GDKPInfo.ADD_Fakuan(RaidR)
+	GDKPInfo.ADD_RaidInfo(RaidR)
+	GDKPInfo.ADD_fenG(RaidR)
+	GDKPInfo.ADD_History(RaidR)
+	GDKPInfo.ADD_Check(RaidR)
 	--
 	RaidR:Update_DongjieBUT()
 	--新的记录==================================
@@ -603,13 +597,22 @@ function GDKPInfo.ADD_UI()
 			end
 		--end
 	end
+	local MaxList = 30
 	RaidR:RegisterEvent("PLAYER_ENTERING_WORLD");
 	RaidR:SetScript("OnEvent",function (self,event)
 		local lishiDATA = PIGA["GDKP"]["History"]
 		local lishiNum = #lishiDATA
-		if lishiNum>0 then
-			for i=(lishiNum-30),1,-1 do
+		for i=lishiNum,1,-1 do
+			if not lishiDATA[i].ItemList[1][3] then
+				lishiDATA[i].ItemList[1][3]=1
+			end
+			if i<=(lishiNum-MaxList) then
 				table.remove(lishiDATA,i)
+			end
+		end
+		for i=1,#PIGA["GDKP"]["ItemList"],1 do
+			if not PIGA["GDKP"]["ItemList"][i][3] then
+				PIGA["GDKP"]["ItemList"][i][3]=1
 			end
 		end
 		local inInstance, instanceType = IsInInstance()

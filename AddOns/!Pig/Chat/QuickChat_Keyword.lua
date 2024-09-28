@@ -32,7 +32,6 @@ local PIGOptionsList_RF=Create.PIGOptionsList_RF
 local PIGOptionsList_R=Create.PIGOptionsList_R
 local PIGFontString=Create.PIGFontString
 local PIGFontStringBG=Create.PIGFontStringBG
-local PIGCloseBut=Create.PIGCloseBut
 local PIGSetFont=Create.PIGSetFont
 --===============================
 local BlackList = {["BlackName"]=true,["FilterRepeat"]=true,["IGNORE_DND"]=true,["Precise"]=false,["name"]={},["word"]={},["chongfu"]={},["count"]=0,["OKcount"]=0,["name_count"]=0,["chongfu_count"]=0,["word_count"]=0}
@@ -236,7 +235,8 @@ function QuickChatfun.QuickBut_Keyword()
 	TiquCanshu["tiquOKFlash"]=PIGA["Chat"]["Tiqu"]["tiquOKFlash"]
 
 	local ChatF99 = CreateFrame("ScrollingMessageFrame", "ChatFrame99", UIParent, "ChatFrameTemplate")
-	ChatF99:SetHeight(200);
+	local KeywordFHeight = PIGA["Chat"]["Tiqu"]["KeywordFHeight"] or 180
+	ChatF99:SetHeight(KeywordFHeight);
 	ChatF99:SetFrameStrata("LOW")
 	ChatF99:EnableMouse(false)
 	ChatF99:UnregisterAllEvents()
@@ -647,15 +647,11 @@ function QuickChatfun.QuickBut_Keyword()
 	end);
 	--高度
 	TiquF.shuchumode_2.F.GaoduH = PIGFontString(TiquF.shuchumode_2.F,{"TOPLEFT",TiquF.shuchumode_2.F.Color_t,"BOTTOMLEFT",0,-30},"高度：");
-	TiquF.shuchumode_2.F.GaoduHSlider =PIGSlider(TiquF.shuchumode_2.F,{"LEFT",TiquF.shuchumode_2.F.GaoduH,"RIGHT",10,0},{100,14},{100,500,1},"拖动滑块或者用鼠标滚轮调整数值")
-	TiquF.shuchumode_2.F.GaoduHSlider:SetScript("OnValueChanged", function(self)
-		local val = self:GetValue()
-		self.Text:SetText(val);
-		ChatF99:SetHeight(val)
-		PIGA["Chat"]["Tiqu"]["KeywordFHeight"]=val
+	TiquF.shuchumode_2.F.GaoduHSlider =PIGSlider(TiquF.shuchumode_2.F,{"LEFT",TiquF.shuchumode_2.F.GaoduH,"RIGHT",10,0},{100,500,1})
+	TiquF.shuchumode_2.F.GaoduHSlider.Slider:HookScript("OnValueChanged", function(self, arg1)
+		ChatF99:SetHeight(arg1)
+		PIGA["Chat"]["Tiqu"]["KeywordFHeight"]=arg1
 	end)
-	TiquF.shuchumode_2.F.GaoduHSlider:SetValue(PIGA["Chat"]["Tiqu"]["KeywordFHeight"]);
-
 	TiquF.shuchumode_2.F.CombatHide = PIGCheckbutton(TiquF.shuchumode_2.F,{"TOPLEFT",TiquF.shuchumode_2.F.GaoduH,"BOTTOMLEFT",0,-30},{"战斗中隐藏"})
 	TiquF.shuchumode_2.F.CombatHide:SetScript("OnClick", function (self)
 		if self:GetChecked() then
@@ -666,6 +662,7 @@ function QuickChatfun.QuickBut_Keyword()
 		PIGKeyword_UI.Tiqu_SetFun()
 	end);
 	TiquF.shuchumode_2.F:HookScript("OnShow", function(self)
+		self.GaoduHSlider:PIGSetValue(PIGA["Chat"]["Tiqu"]["KeywordFHeight"]);
 		self.CombatHide:SetChecked(PIGA["Chat"]["Tiqu"]["CombatHide"])
 	end);
 	TiquF:HookScript("OnShow", function(self)

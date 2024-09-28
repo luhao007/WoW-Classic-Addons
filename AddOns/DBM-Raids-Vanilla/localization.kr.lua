@@ -327,6 +327,27 @@ L:SetGeneralLocalization{
 	name = "플레임고르"
 }
 
+----------------
+--  Ebonroc and Flamegor  --
+----------------
+L = DBM:GetModLocalization("EbonrocandFlamegor")
+
+L:SetGeneralLocalization{
+	name = "에본로크와 플레임고르"
+}
+
+L:SetTimerLocalization{
+	TimerBrandCD	= "낙인"
+}
+L:SetOptionLocalization{
+	TimerBrandCD	= "낙인 쿨타임 타이머 바 보기"
+}
+
+L:SetMiscLocalization{
+	Ebonroc		= "에본로크",
+	Flamegor	= "플레임고르"
+}
+
 -----------------------
 --  Vulnerabilities  --
 -----------------------
@@ -541,13 +562,22 @@ L:SetMiscLocalization{
 	Pull		= "건방진 젖먹이! 죽고 싶어 안달이구나! 자, 보아라. 주인님께서 일어나신다!"
 }
 
------------------
---  The Molten Core (Placeholder?_  --
------------------
+----------------------
+--  The Molten Core --
+----------------------
 L = DBM:GetModLocalization("MoltenCore")
 
 L:SetGeneralLocalization{
 	name = "화산 심장부"
+}
+
+L:SetOptionLocalization{
+	YellHeartCleared	= "재/불씨의 심장이 사라질 때 말풍선으로 알립니다.",
+	WarnBossPower		= "보스 기력 50%, 75%, 90%, 100%에 알림 보기"
+}
+
+L:SetWarningLocalization{
+	WarnBossPower		= "보스 기력 %d%%"
 }
 
 -----------------

@@ -506,6 +506,18 @@ local easternKingdomsLocales = {
         ["zhTW"] = false,
         ["zhCN"] = "丧钟镇",
     },
+    ["New Tinkertown"] = {
+        ["ptBR"] = "Vila da Gambiarra",
+        ["ruRU"] = "Новый Город Механиков",
+        ["deDE"] = "Neu-Tüftlerstadt",
+        ["koKR"] = "신 땜장이 마을",
+        ["esMX"] = "Nueva Ciudad Manitas",
+        ["enUS"] = true,
+        ["frFR"] = "La Nouvelle-Brikabrok",
+        ["esES"] = "Nueva Ciudad Manitas",
+        ["zhTW"] = false,
+        ["zhCN"] = "新工匠镇",
+    },
 }
 
 for k, v in pairs(easternKingdomsLocales) do

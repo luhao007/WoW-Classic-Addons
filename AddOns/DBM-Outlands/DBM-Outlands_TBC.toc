@@ -1,12 +1,16 @@
 ## Interface: 30400
-## Version: r4
-## RequiredDeps: DBM-Core
-## LoadOnDemand: 1
-## SavedVariables: DBMOutlands_AllSavedVars
-## SavedVariablesPerCharacter: DBMOutlands_SavedStats
+## Version: r5
 
 ## Title: |cffffe00a<|r|cffff7d0aDBM Mod|r|cffffe00a>|r |cff10ff10World Bosses (BC)|r
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFF69CCF0户外|r |cFF22B14C外域|r
+
+## IconTexture: Interface\AddOns\DBM-Core\textures\dbm_airhorn
+
+## RequiredDeps: DBM-Core
+## LoadOnDemand: 1
+
+## SavedVariables: DBMOutlands_AllSavedVars
+## SavedVariablesPerCharacter: DBMOutlands_SavedStats
 
 ## X-Min-Interface: 20504
 ## X-DBM-Mod: 1

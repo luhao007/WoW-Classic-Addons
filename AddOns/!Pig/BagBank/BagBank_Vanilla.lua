@@ -200,13 +200,14 @@ local function zhegnheBANK()
 		BKregions1[i]:Hide()
 	end
 	for i=1,bagData["bankbag"] do
-		BankSlotsFrame["Bag"..i]:SetScale(0.76);
-		BankSlotsFrame["Bag"..i]:ClearAllPoints();
-		if i==1 then
-			BankSlotsFrame["Bag"..i]:SetPoint("TOPLEFT", BankFrameItem1, "BOTTOMLEFT", 80, 100);
-		else
-			BankSlotsFrame["Bag"..i]:SetPoint("LEFT", BankSlotsFrame["Bag"..(i-1)], "RIGHT", 0, 0);
-		end
+		BankSlotsFrame["Bag"..i]:Hide();
+		--BankSlotsFrame["Bag"..i]:SetScale(0.76);
+		--BankSlotsFrame["Bag"..i]:ClearAllPoints();
+		-- if i==1 then
+		-- 	BankSlotsFrame["Bag"..i]:SetPoint("TOPLEFT", BankFrameItem1, "BOTTOMLEFT", 70, 100);
+		-- else
+		-- 	BankSlotsFrame["Bag"..i]:SetPoint("LEFT", BankSlotsFrame["Bag"..(i-1)], "RIGHT", 0, 0);
+		-- end
 	end
 	for i = 1, bagData["bankmun"] do
 		_G["BankFrameItem"..i]:ClearAllPoints();
@@ -225,7 +226,7 @@ local function zhegnheBANK()
 	BankFrameTitleText:SetPoint("TOP", BankFrame, "TOP", 0, -15);
 	BankFramePurchaseButton:SetWidth(90)
 	BankFramePurchaseButton:ClearAllPoints();
-	BankFramePurchaseButton:SetPoint("TOPLEFT", BankSlotsFrame, "TOPLEFT", 300, -42);
+	BankFramePurchaseButton:SetPoint("TOPLEFT", BankSlotsFrame, "TOPLEFT", 69, -11.6);
 	BankFramePurchaseButtonText:SetPoint("RIGHT", BankFramePurchaseButton, "RIGHT", -8, 0);
 	BankFrameDetailMoneyFrame:ClearAllPoints();
 	BankFrameDetailMoneyFrame:SetPoint("RIGHT", BankFramePurchaseButtonText, "LEFT", 6, -1);
@@ -270,8 +271,8 @@ function BagBankfun.Zhenghe(Rneirong,tabbut)
 			local name = frame:GetName();
 			for i=1, frame.size, 1 do
 				local itemButton = _G[name.."Item"..i];
-				local ItemInfo= C_Container.GetContainerItemInfo(id,itemButton:GetID());
-				if ItemInfo and ItemInfo.quality==0 then
+				local itemID, itemLink, icon, stackCount, quality=PIGGetContainerItemInfo(id,itemButton:GetID())
+				if quality and quality==0 then
 					itemButton.JunkIcon:Show();
 				end
 			end
@@ -372,8 +373,8 @@ function BagBankfun.Zhenghe(Rneirong,tabbut)
 		BAGheji.fenlei:SetSize(18,18);
 		BAGheji.fenlei:SetPoint("TOPRIGHT",BAGheji,"TOPRIGHT",-6,-42+BAGheji.pianyiliangV);
 		BAGheji.fenlei.Tex = BAGheji.fenlei:CreateTexture(nil, "BORDER");
-		BAGheji.fenlei.Tex:SetTexture("interface/chatframe/chatframeexpandarrow.blp");
-		BAGheji.fenlei.Tex:SetSize(18,18);
+		BAGheji.fenlei.Tex:SetAtlas("common-icon-forwardarrow")
+		BAGheji.fenlei.Tex:SetSize(22,19);
 		BAGheji.fenlei.Tex:SetPoint("CENTER",BAGheji.fenlei,"CENTER",2,0);
 		BAGheji.fenlei:SetScript("OnMouseDown", function (self)
 			self.Tex:SetPoint("CENTER",BAGheji.fenlei,"CENTER",3,-1);
@@ -473,6 +474,7 @@ function BagBankfun.Zhenghe(Rneirong,tabbut)
 		BAGheji:RegisterEvent("PLAYER_ENTERING_WORLD");
 		--BAGheji:RegisterEvent("BAG_UPDATE_DELAYED")
 		BAGheji:RegisterEvent("AUCTION_HOUSE_SHOW")
+		BAGheji:RegisterEvent("PLAYERBANKBAGSLOTS_CHANGED")
 		BAGheji:RegisterUnitEvent("UNIT_PORTRAIT_UPDATE","player")
 		BAGheji:HookScript("OnEvent", function(self,event,arg1,arg2)
 			if event=="PLAYER_ENTERING_WORLD" then
@@ -485,8 +487,7 @@ function BagBankfun.Zhenghe(Rneirong,tabbut)
 						self:RegisterEvent("BAG_CONTAINER_UPDATE")
 					end)
 				end
-			end
-			if event=="BAG_CONTAINER_UPDATE" then
+			elseif event=="BAG_CONTAINER_UPDATE" or event=="PLAYERBANKBAGSLOTS_CHANGED" then
 				self:Show_Hide_but(self.fenlei.show)
 				if BankSlotsFrame:IsShown() then
 					BankSlotsFrame:Show_Hide_but(BankSlotsFrame.fenlei.show)
@@ -494,26 +495,26 @@ function BagBankfun.Zhenghe(Rneirong,tabbut)
 						OpenBag(bagData["bankID"][banki])
 					end
 				end
-			end
-			if event=="BAG_UPDATE_DELAYED" then
+			elseif event=="PLAYERBANKBAGSLOTS_CHANGED" then
+				if BankSlotsFrame:IsShown() then
+					BankSlotsFrame:Show_Hide_but(BankSlotsFrame.fenlei.show)
+				end
+			elseif event=="BAG_UPDATE_DELAYED" then
 				if self:IsShown() then
 					CloseAllBags()
 					OpenAllBags()
 				end
-			end
-			if event=="AUCTION_HOUSE_SHOW" then
+			elseif event=="AUCTION_HOUSE_SHOW" then
 				if PIGA["BagBank"]["AHOpen"] then
 					if(UnitExists("NPC"))then
 						OpenAllBags()
 					end
 				end
-			end		
-			if event=="UNIT_PORTRAIT_UPDATE" then
+			elseif event=="UNIT_PORTRAIT_UPDATE" then
 				if self.portrait then
 					SetPortraitTexture(BAGheji_UI.portrait, "player")
 				end
-			end
-			if event=="BAG_UPDATE" then
+			elseif event=="BAG_UPDATE" then
 				if arg1~=-2 then
 					if arg1>=0 and arg1<=bagData["bagIDMax"] then
 						if self:IsVisible() then
@@ -536,7 +537,7 @@ function BagBankfun.Zhenghe(Rneirong,tabbut)
 		BankFrame.AutoSort = CreateFrame("Button",nil,BankFrame, "TruncatedButtonTemplate");
 		BankFrame.AutoSort:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square");
 		BankFrame.AutoSort:SetSize(24,24);
-		BankFrame.AutoSort:SetPoint("TOPRIGHT",BankFrame,"TOPRIGHT",-180,-41);
+		BankFrame.AutoSort:SetPoint("TOPRIGHT",BankFrame,"TOPRIGHT",-10,-41);
 		BankFrame.AutoSort.Tex = BankFrame.AutoSort:CreateTexture(nil, "BORDER");
 		BankFrame.AutoSort.Tex:SetTexture(zhengliIcon);
 		BankFrame.AutoSort.Tex:SetTexCoord(0.168,0.27,0.837,0.934);
@@ -560,12 +561,12 @@ function BagBankfun.Zhenghe(Rneirong,tabbut)
 		end);
 		--分类设置
 		BankSlotsFrame.fenlei = CreateFrame("Button",nil,BankSlotsFrame, "TruncatedButtonTemplate");
-		BankSlotsFrame.fenlei:SetHighlightTexture("interface/buttons/ui-common-mousehilight.blp");
-		BankSlotsFrame.fenlei:SetSize(18,18);
-		BankSlotsFrame.fenlei:SetPoint("TOPRIGHT",BankSlotsFrame,"TOPRIGHT",-12,-44);
+		BankSlotsFrame.fenlei:SetHighlightTexture(136477);
+		BankSlotsFrame.fenlei:SetSize(20,24);
+		BankSlotsFrame.fenlei:SetPoint("TOPLEFT",BankSlotsFrame,"TOPLEFT",70,-40);
 		BankSlotsFrame.fenlei.Tex = BankSlotsFrame.fenlei:CreateTexture(nil, "BORDER");
-		BankSlotsFrame.fenlei.Tex:SetTexture("interface/chatframe/chatframeexpandarrow.blp");
-		BankSlotsFrame.fenlei.Tex:SetSize(18,18);
+		BankSlotsFrame.fenlei.Tex:SetAtlas("common-icon-forwardarrow")
+		BankSlotsFrame.fenlei.Tex:SetSize(22,20);
 		BankSlotsFrame.fenlei.Tex:SetPoint("CENTER",BankSlotsFrame.fenlei,"CENTER",2,0);
 		BankSlotsFrame.fenlei:SetScript("OnMouseDown", function (self)
 			self.Tex:SetPoint("CENTER",BankSlotsFrame.fenlei,"CENTER",3,-1);

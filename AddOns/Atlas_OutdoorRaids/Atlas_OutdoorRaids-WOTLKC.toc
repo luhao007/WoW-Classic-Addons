@@ -1,12 +1,13 @@
 ## Interface: 30400
 ## Author: arith, dubcat
 ## Version: v1.52.02
-## RequiredDeps: Atlas
 
 ## Title: Atlas |r|cFF0099FF[Outdoor Raids]|r
 ## Notes: Maps for Outdoor Raid Encounters
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本地图|r |cFF69CCF0户外首领|r
 ## Notes-zhCN: 户外团队战斗地图
+
+## RequiredDeps: Atlas
 
 ## X-Date: 2022-11-19T8:52:37Z
 ## X-Credits: Dan Gilbert, Lothaer

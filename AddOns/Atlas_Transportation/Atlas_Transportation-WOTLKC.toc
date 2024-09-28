@@ -1,13 +1,15 @@
 ## Interface: 30400
 ## Author: arith, Dynaletik, dubcat
 ## Version: v1.52.04
-## RequiredDeps: Atlas
-## SavedVariables: Atlas_TransportationDB
 
 ## Title: Atlas |r|cFF0099FF[Transportation]|r
 ## Notes: Transportation Maps
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本地图|r |cFF69CCF0交通|r
 ## Notes-zhCN: 交通地图
+
+## RequiredDeps: Atlas
+
+## SavedVariables: Atlas_TransportationDB
 
 ## X-Date: 2023-07-29T6:34:27Z
 ## X-Credits: Dan Gilbert, Lothaer

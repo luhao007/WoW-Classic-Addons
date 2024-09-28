@@ -1,11 +1,12 @@
 ## Interface: 30400
 ## Author: Isler
 ## Version: 2.5.4
-## RequiredDeps: CritSound
-## LoadOnDemand: 1
 
 ## Title: CritSound Options
 ## Title-zhCN: |cFFFFE00A<|r|cFFC79C6E战斗|r|cFFFFE00A>|r |cFFFFFFFF爆击音效|r |cFF0055FF设置|r
+
+## RequiredDeps: CritSound
+## LoadOnDemand: 1
 
 ## X-Repple: 辅助
 ## X-Website: http://isler-wowui.googlecode.com

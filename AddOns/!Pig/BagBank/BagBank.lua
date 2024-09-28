@@ -62,10 +62,12 @@ end
 local function zhegnheBANK()
 	BankFramePurchaseButton:SetWidth(90)
 	BankFramePurchaseButton:ClearAllPoints();
-	BankFramePurchaseButton:SetPoint("TOPLEFT", BankFrame, "TOPLEFT", 280, -28);
+	BankFramePurchaseButton:SetPoint("TOPLEFT", BankSlotsFrame, "TOPLEFT", 56, -2);
+	BankFramePurchaseButton:SetFrameLevel(598)
 	BankFramePurchaseButtonText:SetPoint("RIGHT", BankFramePurchaseButton, "RIGHT", -8, 0);
 	BankFrameDetailMoneyFrame:ClearAllPoints();
 	BankFrameDetailMoneyFrame:SetPoint("RIGHT", BankFramePurchaseButtonText, "LEFT", 6, -1);
+	BankFrameDetailMoneyFrame:SetFrameLevel(599)
 	local BKregions1 = {BankFramePurchaseInfo:GetRegions()}
 	for i=1,#BKregions1 do
 		BKregions1[i]:Hide()
@@ -75,12 +77,13 @@ local function zhegnheBANK()
 		BankSlotsFrameReg[i]:SetAlpha(0)
 	end
 	for i=1,bagData["bankbag"] do
-		BankSlotsFrame["Bag"..i]:SetScale(0.76);
-		if i==1 then
-			BankSlotsFrame["Bag"..i]:SetPoint("TOPLEFT", BankFrameItem1, "BOTTOMLEFT", 70, 92);
-		else
-			BankSlotsFrame["Bag"..i]:SetPoint("TOPLEFT", BankSlotsFrame["Bag"..(i-1)], "TOPRIGHT", 0, 0);
-		end
+		BankSlotsFrame["Bag"..i]:Hide();
+		-- BankSlotsFrame["Bag"..i]:SetScale(0.76);
+		-- if i==1 then
+		-- 	BankSlotsFrame["Bag"..i]:SetPoint("TOPLEFT", BankFrameItem1, "BOTTOMLEFT", 70, 92);
+		-- else
+		-- 	BankSlotsFrame["Bag"..i]:SetPoint("TOPLEFT", BankSlotsFrame["Bag"..(i-1)], "TOPRIGHT", 0, 0);
+		-- end
 	end
 	for i = 1, bagData["bankmun"] do
 		_G["BankFrameItem"..i]:ClearAllPoints();
@@ -98,6 +101,60 @@ local function zhegnheBANK()
 	BankFrame:SetWidth(738)
 	BANK_PANELS[1].size.x=738
 	Bank_Item_lv()
+end
+local function PIG_SetTabSelct(self)
+	local tabIndex = BankFrame.activeTabIndex or 1
+	local Tabbut =self or _G["BankFrameTab"..tabIndex]
+	for ix=1,3 do
+		local tabx=_G["BankFrameTab"..ix]
+		tabx.Text:SetPoint("CENTER", tabx, "CENTER", 0, -4);
+	end
+	Tabbut.Text:SetPoint("CENTER", Tabbut, "CENTER", 0, 0);
+end
+local function PIG_SelectTabTex(id)
+	local tab=_G["BankFrameTab"..id]
+	tab.LeftActive:ClearAllPoints();
+	tab.LeftActive:SetPoint("BOTTOMLEFT",tab,"BOTTOMLEFT",-6,-6);
+	tab.LeftActive:SetAtlas("uiframe-activetab-right")
+	tab.LeftActive:SetRotation(math.rad(180), {x=0.5, y=0.5})
+	tab.MiddleActive:SetRotation(math.rad(180), {x=0.5, y=0.5})
+	tab.RightActive:ClearAllPoints();
+	tab.RightActive:SetPoint("BOTTOMRIGHT",tab,"BOTTOMRIGHT",0,-6);
+	tab.RightActive:SetAtlas("uiframe-activetab-left")
+	tab.RightActive:SetRotation(math.rad(180), {x=0.5, y=0.5})
+	
+	tab.Left:ClearAllPoints();
+	tab.Left:SetPoint("BOTTOMLEFT",tab,"BOTTOMLEFT",-6,-3);
+	tab.Left:SetAtlas("uiframe-tab-right")
+	tab.Left:SetRotation(math.rad(180), {x=0.5, y=0.5})
+	tab.Middle:SetRotation(math.rad(180), {x=0.5, y=0.5})
+	tab.Right:ClearAllPoints();
+	tab.Right:SetPoint("BOTTOMRIGHT",tab,"BOTTOMRIGHT",0,-3);
+	tab.Right:SetAtlas("uiframe-tab-left")
+	tab.Right:SetRotation(math.rad(180), {x=0.5, y=0.5})
+
+	tab.LeftHighlight:SetAtlas("uiframe-tab-right")
+	tab.LeftHighlight:SetRotation(math.rad(180), {x=0.5, y=0.5})
+	tab.MiddleHighlight:SetRotation(math.rad(180), {x=0.5, y=0.5})
+	tab.RightHighlight:SetAtlas("uiframe-tab-left")
+	tab.RightHighlight:SetRotation(math.rad(180), {x=0.5, y=0.5})
+	if id==1 then
+		tab:ClearAllPoints();
+		tab:SetPoint("BOTTOMLEFT",BankFrame,"TOPLEFT",60,-2);
+		tab:HookScript("OnClick", function(self)
+			for i=2,#bagData["bankID"] do
+				OpenBag(bagData["bankID"][i])
+			end
+			PIG_SetTabSelct(self)
+		end); 
+	else
+		tab:HookScript("OnClick", function(self)
+			for i=2,#bagData["bankID"] do
+				CloseBag(bagData["bankID"][i])
+			end
+			PIG_SetTabSelct(self)
+		end); 
+	end
 end
 --================
 local XWidth, XHeight =CharacterHeadSlot:GetWidth(),CharacterHeadSlot:GetHeight()
@@ -121,8 +178,7 @@ function BagBankfun.Zhenghe(Rneirong,tabbut)
 				BagBankfun.add_Itemslot_ZLV_ranse(itemButton,BagdangeW)--背包/银行包裹格子
 				if PIGA["BagBank"]["JunkShow"] then
 					local bagID = itemButton:GetBagID();
-					local info = C_Container.GetContainerItemInfo(bagID, itemButton:GetID());
-					local quality = info and info.quality;
+					local itemID, itemLink, icon, stackCount, quality=PIGGetContainerItemInfo(bagID, itemButton:GetID())
 					itemButton.JunkIcon:Hide();
 					if quality and quality==0 then
 						itemButton.JunkIcon:Show();
@@ -138,8 +194,7 @@ function BagBankfun.Zhenghe(Rneirong,tabbut)
 					BagBankfun.add_Itemslot_ZLV_ranse(itemButton,BagdangeW)--银行包裹格子
 					if PIGA["BagBank"]["JunkShow"] then
 						local bagID = itemButton:GetBagID();
-						local info = C_Container.GetContainerItemInfo(bagID, itemButton:GetID());
-						local quality = info and info.quality;
+						local itemID, itemLink, icon, stackCount, quality=PIGGetContainerItemInfo(bagID, itemButton:GetID())
 						itemButton.JunkIcon:Hide();
 						if quality and quality==0 then
 							itemButton.JunkIcon:Show();
@@ -251,42 +306,43 @@ function BagBankfun.Zhenghe(Rneirong,tabbut)
 		    self:StopMovingOrSizing()
 		    self:SetUserPlaced(false)
 		end)
+		hooksecurefunc("BankFrame_UpdateAnchoringForPanel", function()
+			local accountBankSelected = BankFrame.activeTabIndex == 3;
+			local xOffset, yOffset = -340, -33;
+			BankItemSearchBox:SetPoint("TOPRIGHT", BankItemSearchBox:GetParent(), "TOPRIGHT", xOffset, yOffset);
+		end)
+		BankItemAutoSortButton:ClearAllPoints();
+		BankItemAutoSortButton:SetPoint("TOPRIGHT", BankItemSearchBox:GetParent(), "TOPRIGHT", -11, -29);
 		BankFrame:RegisterEvent("PLAYER_INTERACTION_MANAGER_FRAME_SHOW")
+		BankFrame:RegisterEvent("BAG_CONTAINER_UPDATE")
+		BankFrame:RegisterEvent("PLAYERBANKBAGSLOTS_CHANGED")
 		BankFrame:HookScript("OnEvent", function (self,event,arg1)
 			if event=="PLAYER_INTERACTION_MANAGER_FRAME_SHOW" then
 				zhegnheBANK()
 				for i=2,#bagData["bankID"] do
 					OpenBag(bagData["bankID"][i])
 				end
-			end
-			if event=="PLAYERBANKSLOTS_CHANGED" then
+				PIG_SetTabSelct()
+			elseif event=="BAG_CONTAINER_UPDATE" or event=="PLAYERBANKBAGSLOTS_CHANGED" then
+				if BankSlotsFrame:IsShown() then
+					BankSlotsFrame:Show_Hide_but(BankSlotsFrame.fenlei.show)
+				end
+			elseif event=="PLAYERBANKSLOTS_CHANGED" then
 				Bank_Item_lv(BankFrame,nil,arg1)
 			end
 		end)
-		BankFrameTab1:HookScript("OnClick", function(self)
-			for i=2,#bagData["bankID"] do
-				OpenBag(bagData["bankID"][i])
-			end
-		end); 
-		BankFrameTab2:HookScript("OnClick", function(self)
-			for i=2,#bagData["bankID"] do
-				CloseBag(bagData["bankID"][i])
-			end
-		end); 
-		BankFrameTab3:HookScript("OnClick", function(self)
-			for i=2,#bagData["bankID"] do
-				CloseBag(bagData["bankID"][i])
-			end
-		end); 
+		for id=1,3 do		
+			PIG_SelectTabTex(id)
+		end
 		--分类设置
 		BankSlotsFrame.fenlei = CreateFrame("Button",nil,BankSlotsFrame, "TruncatedButtonTemplate");
 		BankSlotsFrame.fenlei:SetHighlightTexture("interface/buttons/ui-common-mousehilight.blp");
-		BankSlotsFrame.fenlei:SetSize(20,20);
-		BankSlotsFrame.fenlei:SetPoint("TOPRIGHT",BankSlotsFrame,"TOPRIGHT",-10,-30);
+		BankSlotsFrame.fenlei:SetSize(20,24);
+		BankSlotsFrame.fenlei:SetPoint("TOPLEFT",BankSlotsFrame,"TOPLEFT",56,-30);
 		BankSlotsFrame.fenlei.Tex = BankSlotsFrame.fenlei:CreateTexture(nil, "BORDER");
-		BankSlotsFrame.fenlei.Tex:SetTexture("interface/chatframe/chatframeexpandarrow.blp");
+		BankSlotsFrame.fenlei.Tex:SetAtlas("common-icon-forwardarrow")
 		BankSlotsFrame.fenlei.Tex:SetRotation(0)
-		BankSlotsFrame.fenlei.Tex:SetSize(20,20);
+		BankSlotsFrame.fenlei.Tex:SetSize(22,20);
 		BankSlotsFrame.fenlei.Tex:SetPoint("CENTER",BankSlotsFrame.fenlei,"CENTER",2,0);
 		BankSlotsFrame.fenlei:SetScript("OnMouseDown", function (self)
 			self.Tex:SetPoint("CENTER",BankSlotsFrame.fenlei,"CENTER",3,-1);
@@ -305,5 +361,5 @@ function BagBankfun.Zhenghe(Rneirong,tabbut)
 			BankSlotsFrame:Show_Hide_but(self.show)	
 		end);
 		BagBankfun.addfenleibagbut(BankSlotsFrame,"PIG_CharacterBANK_")
-	end	
+	end
 end

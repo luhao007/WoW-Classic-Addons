@@ -1,13 +1,15 @@
 ## Interface: 30400
 ## Author: Sutorix=AT=hotmail.com
 ## Version: 0.9.4
-## OptionalDeps: FB_Debugging, myAddOns, Titan, TownsfolkTracker
-## SavedVariables: FishingBuddy_Info
-## SavedVariablesPerCharacter: FishingBuddy_Player, FBODF_PlayerInfo
 
 ## Title: Fishing Buddy (Classic)
 ## Notes: Help with fishing related tasks -- clothing, fish information, etc.
 ## Title-zhCN: |cFFFFE00A<|r|cFF0070DE专业|r|cFFFFE00A>|r |cFFFFFFFF钓鱼助手|r |cFFFFE00AFishingBuddy|r
+
+## OptionalDeps: FB_Debugging, myAddOns, Titan, TownsfolkTracker
+
+## SavedVariables: FishingBuddy_Info
+## SavedVariablesPerCharacter: FishingBuddy_Player, FBODF_PlayerInfo
 
 ## X-Curse-Project-ID: 340577
 ## X-WoWI-ID: 25476

@@ -211,10 +211,9 @@ function BagBankfun.qiyongzidongzhengli()
 	end
 
 	function Move(src, dst)
-		local srcContainerInfo = C_Container.GetContainerItemInfo(src.container, src.position)
-		local dstContainerInfo = C_Container.GetContainerItemInfo(dst.container, dst.position)
-
-		if srcContainerInfo and not srcContainerInfo.isLocked and (not dstContainerInfo or not dstContainerInfo.isLocked) then
+		local srcitemID, _, _, _, _, _, _, srcisLocked = PIGGetContainerItemInfo(src.container, src.position)
+		local dstisLocked = select(8,PIGGetContainerItemInfo(dst.container, dst.position))
+		if srcitemID and not srcisLocked and not dstisLocked then
 			ClearCursor()
 			C_Container.PickupContainerItem(src.container, src.position)
 			C_Container.PickupContainerItem(dst.container, dst.position)
@@ -381,13 +380,13 @@ function BagBankfun.qiyongzidongzhengli()
 					local slot = {container=container, position=position, class=class}
 					local item = Item(container, position)
 					if item then
-						local containerInfo = C_Container.GetContainerItemInfo(container, position)
-						if containerInfo and containerInfo.isLocked then
+						local srcitemID, _, _, stackCount, _, _, _, srcisLocked = PIGGetContainerItemInfo(container, position)
+						if srcitemID and srcisLocked then
 							return false
 						end
 						slot.item = item
-						slot.count = containerInfo.stackCount
-						counts[item] = (counts[item] or 0) + containerInfo.stackCount
+						slot.count = stackCount
+						counts[item] = (counts[item] or 0) + stackCount
 					end
 					insert(model, slot)
 				end

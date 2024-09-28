@@ -1,12 +1,12 @@
 local addonName, addonTable = ...;
 local _, _, _, tocversion = GetBuildInfo()
-local Create, Data, Fun, L, Default, Default_Per= unpack(PIG)
 -----
+local Create, Data, Fun, L, Default, Default_Per= unpack(PIG)
 local PIGFrame=Create.PIGFrame
 local PIGLine=Create.PIGLine
 local PIGEnter=Create.PIGEnter
 local PIGButton = Create.PIGButton
-local PIGCloseBut=Create.PIGCloseBut
+local PIGDiyBut=Create.PIGDiyBut
 local PIGCheckbutton_R=Create.PIGCheckbutton_R
 local PIGOptionsList=Create.PIGOptionsList
 local PIGFontString=Create.PIGFontString
@@ -214,12 +214,12 @@ function GDKPInfo.ADD_Options()
 		end
 		fuFrame.SetListF.jiaoyijiluEvent()
 	end);
-	fuFrame.SetListF.jiaoyitonggao = PIGCheckbutton_R(fuFrame.SetListF,{"通告交易对象/物品/金额","通告交易对象/物品/金额"},true)
-	fuFrame.SetListF.jiaoyitonggao:SetScript("OnClick", function (self)
+	fuFrame.SetListF.tradetonggao = PIGCheckbutton_R(fuFrame.SetListF,{"通告交易详情","在团队频道通告交易详情"},true)
+	fuFrame.SetListF.tradetonggao:SetScript("OnClick", function (self)
 		if self:GetChecked() then
-			PIGA["GDKP"]["Rsetting"]["jiaoyitonggao"]=true;
+			PIGA["GDKP"]["Rsetting"]["tradetonggao"]=true;
 		else
-			PIGA["GDKP"]["Rsetting"]["jiaoyitonggao"]=false;
+			PIGA["GDKP"]["Rsetting"]["tradetonggao"]=false;
 		end
 	end);
 	-------
@@ -387,9 +387,10 @@ function GDKPInfo.ADD_Options()
 		end)
 	end
 	local function jiaoyi_InfoPD_1(TName,TMoney,ItemS)
+		local Money=TMoney*0.0001
 		local RRItemList = PIGA["GDKP"]["ItemList"]
 		local wupinNum = #ItemS
-		local pingjunfenG = (TMoney/wupinNum)*0.0001;
+		local pingjunfenG = TMoney/wupinNum
 		for p=1,wupinNum do
 			local itemLink_P = ItemS[p][1]
 			local itemID_P = GetItemInfoInstant(itemLink_P) 
@@ -413,24 +414,14 @@ function GDKPInfo.ADD_Options()
 	end
 	function PIGTradeFrame.jiaoyi_infoPD(TargetName,TargetMoney,PlayerItemS)
 		local ItemS={}
-		-- local itemName,itemLink= GetItemInfo(159)
-		-- PlayerItemS[1]={itemLink,1}
-		-- PlayerItemS[2]={itemLink,1}
-		-- local TargetMoney=18260000
-		-- local TargetName="一一龙门安"
-		local ItemMsg = ""
 		for i=1,#PlayerItemS do
 			if PlayerItemS[i]~=NONE then
 				table.insert(ItemS,PlayerItemS[i])
-				ItemMsg=ItemMsg..PlayerItemS[i][1]
 			end
 		end
 		if #ItemS>0 and TargetMoney>0 then--有物品交出和金币收入			
 			PIGshiqulinshiStop()
 			jiaoyi_InfoPD_1(TargetName,TargetMoney,ItemS)
-			if PIGA["GDKP"]["Rsetting"]["jiaoyitonggao"] then
-				PIGSendChatRaidParty("!Pig:"..ItemMsg.."已交予"..TargetName.."，收到"..GetCoinText(TargetMoney))
-			end	
 		elseif TargetMoney>0 then--只有金币收入
 			PIGTradeFrame.GetQiankuan_Info(TargetName,TargetMoney)
 		end
@@ -444,13 +435,9 @@ function GDKPInfo.ADD_Options()
 	end)
 	function fuFrame.SetListF.jiaoyijiluEvent()
 		if PIGA["GDKP"]["Open"] and PIGA["GDKP"]["Rsetting"]["jiaoyijilu"] then
-			fuFrame.SetListF.jiaoyitonggao:Enable()
 			PIGTradeFrame:RegisterEvent("UI_INFO_MESSAGE");
-			--PIGTradeFrame:RegisterEvent("CHAT_MSG_ADDON");
 		else
-			fuFrame.SetListF.jiaoyitonggao:Disable()
 			PIGTradeFrame:UnregisterEvent("UI_INFO_MESSAGE");
-			--PIGTradeFrame:UnregisterEvent("CHAT_MSG_ADDON");
 		end
 	end
 	fuFrame.SetListF.jiaoyijiluEvent();
@@ -602,7 +589,7 @@ function GDKPInfo.ADD_Options()
 		if id~=paichu_NUM then
 			Pcwupin.line = PIGLine(Pcwupin,"BOT")
 		end
-		Pcwupin.del=PIGCloseBut(Pcwupin,{"LEFT", Pcwupin, "LEFT", 4,0},{22,22})
+		Pcwupin.del=PIGDiyBut(Pcwupin,{"LEFT", Pcwupin, "LEFT", 4,0},{22})
 		Pcwupin.del:SetScript("OnClick", function (self)
 			table.remove(PIGA["GDKP"]["Rsetting"]["PaichuList"], self:GetID());
 			fuFrame.SetListF.Paichu.gengxinpaichu(fuFrame.SetListF.Paichu.Scroll);
@@ -657,7 +644,7 @@ function GDKPInfo.ADD_Options()
 		self.wurenben:SetChecked(PIGA["GDKP"]["Rsetting"]["wurenben"]);
 		self.shoudongloot:SetChecked(PIGA["GDKP"]["Rsetting"]["shoudongloot"]);
 		self.jiaoyijilu:SetChecked(PIGA["GDKP"]["Rsetting"]["jiaoyijilu"]);
-		self.jiaoyitonggao:SetChecked(PIGA["GDKP"]["Rsetting"]["jiaoyitonggao"]);
+		self.tradetonggao:SetChecked(PIGA["GDKP"]["Rsetting"]["tradetonggao"]);
 		self.zidonghuifuYY:SetChecked(PIGA["GDKP"]["Rsetting"]["zidonghuifuVoice"]);
 		local huifuYY_guanjianzineirong="";
 		for i=1,#PIGA["GDKP"]["Rsetting"]["YYguanjianzi"] do
@@ -672,7 +659,7 @@ function GDKPInfo.ADD_Options()
 	end)
 	----
 end
---======
+---======
 fuFrame:HookScript("OnShow", function (self)
 	if self.VersionID<PIGA["Ver"][addonName] then
 		self.UpdateVer:Show()

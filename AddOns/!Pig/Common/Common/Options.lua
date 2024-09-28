@@ -48,12 +48,23 @@ function fujiF.QuestsEnd.xiala:PIGDownMenu_SetValue(value,arg1)
 	PIGCloseDropDownMenus()
 end
 fujiF.QuestsEnd.PlayBut = CreateFrame("Button",nil,fujiF.QuestsEnd);
-fujiF.QuestsEnd.PlayBut:SetNormalTexture("interface/buttons/ui-spellbookicon-nextpage-up.blp")
-fujiF.QuestsEnd.PlayBut:SetPushedTexture("interface/buttons/ui-spellbookicon-nextpage-down.blp")
-fujiF.QuestsEnd.PlayBut:SetDisabledTexture("interface/buttons/ui-spellbookicon-nextpage-disabled.blp")
-fujiF.QuestsEnd.PlayBut:SetHighlightTexture("interface/buttons/ui-common-mousehilight.blp");--高亮纹理
-fujiF.QuestsEnd.PlayBut:SetSize(28,28);
-fujiF.QuestsEnd.PlayBut:SetPoint("LEFT",fujiF.QuestsEnd.xiala,"RIGHT",8,-0.5);
+fujiF.QuestsEnd.PlayBut:SetHighlightTexture("interface/buttons/ui-common-mousehilight.blp");
+fujiF.QuestsEnd.PlayBut:SetSize(24,24);
+fujiF.QuestsEnd.PlayBut:SetPoint("LEFT",fujiF.QuestsEnd.xiala,"RIGHT",8,0);
+fujiF.QuestsEnd.PlayBut.UpTex = fujiF.QuestsEnd.PlayBut:CreateTexture();
+fujiF.QuestsEnd.PlayBut.UpTex:SetAtlas("chatframe-button-icon-speaker-on")
+fujiF.QuestsEnd.PlayBut.UpTex:SetSize(24,24);
+fujiF.QuestsEnd.PlayBut.UpTex:SetPoint("CENTER", 0, 0);
+fujiF.QuestsEnd.PlayBut:HookScript("OnMouseDown", function(self)
+	if self:IsEnabled() then
+		self.UpTex:SetPoint("CENTER", 1.5, -1.5);
+	end
+end);
+fujiF.QuestsEnd.PlayBut:HookScript("OnMouseUp", function(self)
+	if self:IsEnabled() then
+		self.UpTex:SetPoint("CENTER", 0, 0);
+	end
+end);
 fujiF.QuestsEnd.PlayBut:SetScript("OnClick", function()
 	PlaySoundFile(CommonInfo.AudioList[PIGA["Common"]["QuestsEndAudio"]][2], "Master")
 end)
@@ -443,26 +454,18 @@ fujiF.xitongF.Scale:SetScript("OnClick", function (self)
 		SetCVar("useUIScale","0")
 	end
 end);
-local Scaleinfo = {0.64,1.14,0.01}
-fujiF.xitongF.ScaleSlider = PIGSlider(fujiF.xitongF,{"LEFT",fujiF.xitongF.Scale.Text,"RIGHT",10,0},{140,16},Scaleinfo)
-function fujiF.xitongF.ScaleSlider:OnValueFun()
+fujiF.xitongF.ScaleSlider = PIGSlider(fujiF.xitongF,{"LEFT",fujiF.xitongF.Scale.Text,"RIGHT",10,0}, {0.65, 1.15, 0.01,{["Right"]="%"}})
+fujiF.xitongF.ScaleSlider.Slider:HookScript("OnValueChanged", function(self, arg1)
 	if InCombatLockdown() then PIGinfotip:TryDisplayMessage(ERR_NOT_IN_COMBAT) return end
-	local val = self:GetValue()
-	local val = floor(val*100+0.5)*0.01
-	self.Text:SetText(val);
-	SetCVar("uiscale",val)
-end
+	SetCVar("uiscale",arg1)
+end)
 --主音量
 fujiF.xitongF.Volume =PIGFontString(fujiF.xitongF,{"TOPLEFT",fujiF.xitongF,"TOPLEFT",340,-20},MASTER_VOLUME)
 fujiF.xitongF.Volume:SetTextColor(1, 1, 1, 1)
-local Scaleinfo = {0,1,0.01}
-fujiF.xitongF.VolumeSlider = PIGSlider(fujiF.xitongF,{"LEFT",fujiF.xitongF.Volume,"RIGHT",10,0},{140,16},Scaleinfo)
-function fujiF.xitongF.VolumeSlider:OnValueFun()
-	local val = self:GetValue()
-	local val = floor(val*100+0.5)*0.01
-	self.Text:SetText(val);
-	SetCVar("Sound_MasterVolume",val)
-end
+fujiF.xitongF.VolumeSlider = PIGSlider(fujiF.xitongF,{"LEFT",fujiF.xitongF.Volume,"RIGHT",10,0},{0, 1, 0.01,{["Right"]="%"}})
+fujiF.xitongF.VolumeSlider.Slider:HookScript("OnValueChanged", function(self, arg1)
+	SetCVar("Sound_MasterVolume",arg1)
+end)
 --
 fujiF:HookScript("OnShow", function (self)
 	self.QuestsEnd:SetChecked(PIGA["Common"]["QuestsEnd"]);
@@ -488,8 +491,7 @@ fujiF:HookScript("OnShow", function (self)
 	gengxinONOFF()
 	self.xitongF.Scale:SetChecked(GetCVarBool("useUIScale"));
 	self.xitongF.ScaleSlider:PIGSetValue(GetCVar("uiscale"))
-	local Volume= floor(GetCVar("Sound_MasterVolume")*100+0.5)*0.01
-	self.xitongF.VolumeSlider:PIGSetValue(Volume)
+	self.xitongF.VolumeSlider:PIGSetValue(GetCVar("Sound_MasterVolume"))
 end);
 ---
 fujiF:RegisterEvent("PLAYER_ENTERING_WORLD");

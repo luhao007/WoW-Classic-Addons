@@ -1,10 +1,11 @@
 ## Interface: 30400
-## RequiredDeps: Details
 
 ## Title: Details!: Raid Check (plugin)
 ## Notes: Show talents and item level for all members in your group, also shows food and flask state.
 ## Title-zhCN: |cFFFFE00A<|r|cFFC79C6E战斗|r|cFFFFE00A>|r |cFFFFFFFF伤害统计|r |cFF69CCF0插件|r |cFF22B14C团队检查|r
 ## Notes-zhCN: 在团队副本中时显示一个合剂、药水等使用状况的图标
+
+## RequiredDeps: Details
 
 ## X-Wago-ID: WL6Jk2Kv
 ## X-Part-Of: Details

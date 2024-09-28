@@ -1,18 +1,22 @@
 ## Interface: 30400
 ## Author: MysticalOS, QartemisT
-## Version: 11.0.5
-## Dependencies: DBM-Core
-## LoadOnDemand: 1
-## DefaultState: enabled
-## IconTexture: Interface\AddOns\DBM-Core\textures\dbm_airhorn
+## Version: 11.0.19
 
 ## Title: |cffffe00a<|r|cffff7d0aDBM Core|r|cffffe00a>|r |cff69ccf0Options GUI|r
 ## Notes: GUI for Deadly Boss Mods
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFF0055FF设置|r
 ## Notes-zhCN: Deadly Boss Mods的设置界面
 
+## IconTexture: Interface\AddOns\DBM-Core\textures\dbm_airhorn
+
+## Dependencies: DBM-Core
+## LoadOnDemand: 1
+## DefaultState: enabled
+
 ## X-Website: https://deadlybossmods.com
 ## X-Part-Of: DBM-Core
+
+Polyfills.xml
 
 localization.en.lua
 localization.de.lua

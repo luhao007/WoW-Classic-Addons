@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("TheDawnbreakerTrash", "DBM-Party-WarWithin", 5)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240902224710")
+mod:SetRevision("20240925005958")
 --mod:SetModelID(47785)
 mod.isTrashMod = true
 mod.isTrashModBossFightAllowed = true
@@ -37,7 +37,7 @@ local warnEnsaringShadows					= mod:NewTargetNoFilterAnnounce(431309, 2, nil, "R
 
 local specWarnShadowyDecay					= mod:NewSpecialWarningSpell(451102, nil, nil, nil, 2, 2)
 local specWarnDarkOrb						= mod:NewSpecialWarningSpell(450854, nil, nil, nil, 2, 2)
-local specWarnBlackEdge						= mod:NewSpecialWarningDodge(431494, nil, nil, nil, 2, 2)
+local specWarnBlackEdge						= mod:NewSpecialWarningDodge(431494, nil, nil, nil, 2, 15)
 local specWarnBlackHail						= mod:NewSpecialWarningDodge(432565, nil, nil, nil, 2, 2)
 local specWarnTerrifyingSlam				= mod:NewSpecialWarningRun(451117, nil, nil, nil, 4, 2)
 local specWarnTackyNova						= mod:NewSpecialWarningRun(451098, nil, nil, nil, 4, 2)
@@ -91,6 +91,7 @@ end
 --]]
 
 function mod:SPELL_CAST_START(args)
+	if not self.Options.Enabled then return end
 	local spellId = args.spellId
 	if not self:IsValidWarning(args.sourceGUID) then return end
 	if spellId == 451102 then
@@ -130,7 +131,7 @@ function mod:SPELL_CAST_START(args)
 	elseif spellId == 431494 then
 		if self:AntiSpam(3, 2) then
 			specWarnBlackEdge:Show()
-			specWarnBlackEdge:Play("shockwave")
+			specWarnBlackEdge:Play("frontal")
 		end
 	elseif spellId == 432565 then
 		if self:AntiSpam(3, 2) then
@@ -176,6 +177,7 @@ function mod:SPELL_CAST_START(args)
 end
 
 function mod:SPELL_CAST_SUCCESS(args)
+	if not self.Options.Enabled then return end
 	local spellId = args.spellId
 	if not self:IsValidWarning(args.sourceGUID) then return end
 	if spellId == 451112 then
@@ -272,6 +274,7 @@ function mod:SPELL_AURA_REMOVED(args)
 end
 
 function mod:UNIT_DIED(args)
+	if not self.Options.Enabled then return end
 	local cid = self:GetCIDFromGUID(args.destGUID)
 	if cid == 211261 then--Ascendant Vis'coxria
 		timerAbyssalBlastCD:Stop(args.destGUID)--They all cast this

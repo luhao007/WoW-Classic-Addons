@@ -1,17 +1,20 @@
 ## Interface: 30400
 ## Author: MysticalOS, QartemisT
-## Version: 11.0.5
-## Dependencies: DBM-StatusBarTimers
-## LoadOnDemand: 0
-## SavedVariables: DBM_AllSavedOptions, DBM_MinimapIcon, DBM_AnnoyingPopupDisables, DBM_ModsToLoadWithFullTestSupport
-## SavedVariablesPerCharacter: DBM_UsedProfile, DBM_UseDualProfile, DBM_CharSavedRevision
-## DefaultState: enabled
-## IconTexture: Interface\AddOns\DBM-Core\textures\dbm_airhorn
+## Version: 11.0.19
 
 ## Title: |cffffe00a<|r|cffff7d0aDBM Core|r|cffffe00a>|r |cff69ccf0Main Core|r
 ## Notes: Deadly Boss Mods
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFFFFE00ADBM|r
 ## Notes-zhCN: 功能强大的副本助手，支持所有Boss。
+
+## IconTexture: Interface\AddOns\DBM-Core\textures\dbm_airhorn
+
+## Dependencies: DBM-StatusBarTimers
+## LoadOnDemand: 0
+## DefaultState: enabled
+
+## SavedVariables: DBM_AllSavedOptions, DBM_MinimapIcon, DBM_AnnoyingPopupDisables, DBM_ModsToLoadWithFullTestSupport
+## SavedVariablesPerCharacter: DBM_UsedProfile, DBM_UseDualProfile, DBM_CharSavedRevision
 
 ## X-Min-Interface: 100207
 ## X-Curse-Project-ID: 3358
@@ -85,3 +88,4 @@ modules\objects\Announce.lua
 modules\objects\SpecialWarning.lua
 modules\objects\Yell.lua
 modules\objects\NilWarning.lua
+modules\objects\Sorting.lua

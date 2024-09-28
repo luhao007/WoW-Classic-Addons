@@ -1,14 +1,20 @@
 ## Interface: 30400
 ## Author: Crieve-Sargeras
-## Version: 4.0.11
-## SavedVariables: ATTCharacterData, ATTAccountWideData, AllTheThingsSavedVariables, AllTheThingsSettings, AllTheThingsAD, AllTheThingsProfiles, AllTheThingsAuctionData, AllTheThingsDebugData, AllTheThingsArtifactsItems, AllTheThingsHarvestItems
-## SavedVariablesPerCharacter: AllTheThingsSettingsPerCharacter
-## IconTexture: Interface/Addons/AllTheThings/assets/logo_32x32
+## Version: 4.0.15
 
 ## Title: AllTheThings
 ## Notes: Addon for Tracking Collections & Account Completion
 ## Title-zhCN: |cFFFFE00A<|r|cFFA9D271收藏|r|cFFFFE00A>|r |cFFFFFFFF收集控助手|r |cFFFFE00AAllTheThings|r
 ## Notes-zhCN: 追踪账号完成度，提示诸如任务、飞行点、配方等各个分类的收集和完成情况
+
+## IconTexture: Interface/Addons/AllTheThings/assets/logo_32x32
+
+## AddonCompartmentFunc: AllTheThings_MinimapButtonOnClick
+## AddonCompartmentFuncOnEnter: AllTheThings_MinimapButtonOnEnter
+## AddonCompartmentFuncOnLeave: AllTheThings_MinimapButtonOnLeave
+
+## SavedVariables: ATTCharacterData, ATTAccountWideData, AllTheThingsSavedVariables, AllTheThingsSettings, AllTheThingsAD, AllTheThingsProfiles, AllTheThingsAuctionData, AllTheThingsDebugData, AllTheThingsArtifactsItems, AllTheThingsHarvestItems
+## SavedVariablesPerCharacter: AllTheThingsSettingsPerCharacter
 
 ## X-Interface: 110002
 ## X-Wago-ID: yQKyY5K7
@@ -55,6 +61,7 @@ locales\ko.lua
 locales\pt.lua
 locales\ru.lua
 locales\cn.lua
+locales\tw.lua
 
 # Search Cache
 src\Cache.lua
@@ -73,11 +80,11 @@ src\Modules\Social.lua
 src\Modules\Tooltip.lua
 src\Modules\Upgrade.lua
 src\Modules\Vignette.lua
+src\Modules\Contributor.lua
 
 # Expansion specific localization files
 db\Retail\ExplorationDB.lua
 db\Retail\LocalizationDB.lua
-db\Retail\en_auto.lua
 db\Presets.lua
 
 # Load object class templates
@@ -87,6 +94,7 @@ src\Classes\BattlePet.lua
 src\Classes\CharacterClass.lua
 src\Classes\Difficulty.lua
 src\Classes\Factions.lua
+src\Classes\FlightPath.lua
 src\Classes\Quests.lua
 src\Classes\Item.Retail.lua
 # src\Classes\Item.Classic.lua
@@ -100,8 +108,10 @@ src\Classes\NPC.lua
 src\Classes\Objects.lua
 src\Classes\Category.lua
 src\Classes\Deaths.lua
+# src\Classes\Dynamic Categories.lua
 src\Classes\Filter Types.lua
 src\Classes\Gear Sets.lua
+# src\Classes\Glyphs.lua
 src\Classes\Illusions.lua
 src\Classes\Miscellaneous.lua
 src\Classes\PVP Ranks.lua
@@ -141,5 +151,4 @@ db\Retail\Categories.lua
 # Window Definitions
 # src\UI\Windows\Windows.xml
 # Finally, prepare the Data Cache
-# Not used in Retail?
 # src\Root.lua

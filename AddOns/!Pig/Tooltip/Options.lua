@@ -106,35 +106,24 @@ PointF.CZBUT:SetScript("OnClick", function ()
 end)
 --
 local xiayiinfoX = {-1000,1000,1}
-PointF.pianyiXbiaoti = PIGFontString(PointF,{"TOPLEFT",PointF,"TOPLEFT",20,-80},"X偏移")
-PointF.pianyiX = PIGSlider(PointF,{"LEFT",PointF.pianyiXbiaoti,"RIGHT",4,0},{120,14},xiayiinfoX)
-function PointF.pianyiX:OnValueFun()
-	local Value = self:GetValue()
-	PIGA["Tooltip"]["PointX"]=Value;
-	self.Text:SetText(Value);
+PointF.pianyiXbiaoti = PIGFontString(PointF,{"TOPLEFT",PointF,"TOPLEFT",24,-80},"X偏移")
+PointF.pianyiX = PIGSlider(PointF,{"LEFT",PointF.pianyiXbiaoti,"RIGHT",4,0},xiayiinfoX)
+PointF.pianyiX.Slider:HookScript("OnValueChanged", function(self, arg1)
+	PIGA["Tooltip"]["PointX"]=arg1;
 	TooltipPlusfun.SetPointCF()
-end
+end)
 local xiayiinfoY = {-1000,1000,1}
-PointF.pianyiYbiaoti = PIGFontString(PointF,{"LEFT",PointF.pianyiX,"RIGHT",20,0},"Y偏移")
-PointF.pianyiY = PIGSlider(PointF,{"LEFT",PointF.pianyiYbiaoti,"RIGHT",4,0},{120,14},xiayiinfoY)
-function PointF.pianyiY:OnValueFun()
-	local Value = self:GetValue()
-	PIGA["Tooltip"]["PointY"]=Value;
-	self.Text:SetText(Value);
+PointF.pianyiYbiaoti = PIGFontString(PointF,{"LEFT",PointF.pianyiX,"RIGHT",100,0},"Y偏移")
+PointF.pianyiY = PIGSlider(PointF,{"LEFT",PointF.pianyiYbiaoti,"RIGHT",4,0},xiayiinfoY)
+PointF.pianyiY.Slider:HookScript("OnValueChanged", function(self, arg1)
+	PIGA["Tooltip"]["PointY"]=arg1
 	TooltipPlusfun.SetPointCF()
-end
+end)
 function TooltipPlusfun.SetCheckbuttonShow()
-	if PIGA["Tooltip"]["PointOpen"] then
-		PointF.miaodian:Enable()
-		PointF.pianyiX:Enable();
-		PointF.pianyiY:Enable();
-		PointF.CZBUT:Enable();
-	else
-		PointF.miaodian:Disable()
-		PointF.pianyiX:Disable();
-		PointF.pianyiY:Disable();
-		PointF.CZBUT:Disable();
-	end
+	PointF.miaodian:SetEnabled(PIGA["Tooltip"]["PointOpen"])
+	PointF.pianyiX:SetEnabled(PIGA["Tooltip"]["PointOpen"]);
+	PointF.pianyiY:SetEnabled(PIGA["Tooltip"]["PointOpen"]);
+	PointF.CZBUT:SetEnabled(PIGA["Tooltip"]["PointOpen"]);
 end
 PointF:HookScript("OnShow", function(self)
 	TooltipPlusfun.SetCheckbuttonShow()

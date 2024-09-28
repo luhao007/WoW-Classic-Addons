@@ -171,14 +171,14 @@ local BGtooltip = "在游戏界面上方中间显示战斗时间\n|cff00FF00副�
 CombatPlusF.Open = PIGCheckbutton_R(CombatPlusF,{"启用战斗时间",BGtooltip})
 CombatPlusF.Open:SetScript("OnClick", function (self)
 	if self:GetChecked() then
-		CombatPlusfun.CombatTime()
-		CombatPlusF.SetF:Show()
 		PIGA["CombatPlus"]["CombatTime"]["Open"]=true;
+		CombatPlusF.SetF:Show()
 	else
 		PIGA["CombatPlus"]["CombatTime"]["Open"]=false;
 		CombatPlusF.SetF:Hide()
 		Pig_Options_RLtishi_UI:Show()
 	end
+	CombatPlusfun.CombatTime()
 end)
 ---
 local CombatLine1=PIGLine(CombatPlusF,"TOP",-70)
@@ -237,15 +237,13 @@ function CombatPlusF.SetF.Beijing:PIGDownMenu_SetValue(value,arg1,arg2)
 	SetBGHide()
 	PIGCloseDropDownMenus()
 end
-local xiayiinfo = {0.6,2,0.1}
-CombatPlusF.SetF.Slider = PIGSlider(CombatPlusF.SetF,{"TOPLEFT",CombatPlusF.SetF,"TOPLEFT",70,-140},{100,14},xiayiinfo)
+local xiayiinfo = {0.6,2,0.01,{["Right"]="%"}}
+CombatPlusF.SetF.Slider = PIGSlider(CombatPlusF.SetF,{"TOPLEFT",CombatPlusF.SetF,"TOPLEFT",70,-140},xiayiinfo)
 CombatPlusF.SetF.Slider.T = PIGFontString(CombatPlusF.SetF.Slider,{"RIGHT",CombatPlusF.SetF.Slider,"LEFT",-10,0},"缩放")
-function CombatPlusF.SetF.Slider:OnValueFun()
-	local Value = (floor(self:GetValue()*10+0.5))/10
-	PIGA["CombatPlus"]["CombatTime"]["Scale"]=Value;
-	self.Text:SetText(Value);
-	PIGCombatTime:SetScale(Value)
-end
+CombatPlusF.SetF.Slider.Slider:HookScript("OnValueChanged", function(self, arg1)
+	PIGA["CombatPlus"]["CombatTime"]["Scale"]=arg1;
+	PIGCombatTime:SetScale(arg1)
+end)
 --
 CombatPlusF:HookScript("OnShow", function (self)
 	self.Open:SetChecked(PIGA["CombatPlus"]["CombatTime"]["Open"]);

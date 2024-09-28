@@ -1,14 +1,20 @@
 ## Interface: 30400
 ## Author: Crieve-Sargeras
-## Version: 4.0.11
-## SavedVariables: ATTCharacterData, ATTAccountWideData, AllTheThingsSavedVariables, AllTheThingsAD, AllTheThingsSettings, AllTheThingsAuctionData, AllTheThingsDebugData, ATTClassicSettings, ATTClassicAuctionData
-## SavedVariablesPerCharacter: AllTheThingsSettingsPerCharacter, ATTClassicSettingsPerCharacter
-## IconTexture: Interface/Addons/AllTheThings/assets/logo_32x32
+## Version: 4.0.15
 
 ## Title: AllTheThings |cfd9b9b9b(Wrath)|r
 ## Notes: Addon for Tracking Collections & Account Completion
 ## Title-zhCN: |cFFFFE00A<|r|cFFA9D271收藏|r|cFFFFE00A>|r |cFFFFFFFF收集控助手|r |cFFFFE00AAllTheThings|r
 ## Notes-zhCN: 追踪账号完成度，提示诸如任务、飞行点、配方等各个分类的收集和完成情况
+
+## IconTexture: Interface/Addons/AllTheThings/assets/logo_32x32
+
+## AddonCompartmentFunc: AllTheThings_MinimapButtonOnClick
+## AddonCompartmentFuncOnEnter: AllTheThings_MinimapButtonOnEnter
+## AddonCompartmentFuncOnLeave: AllTheThings_MinimapButtonOnLeave
+
+## SavedVariables: ATTCharacterData, ATTAccountWideData, AllTheThingsSavedVariables, AllTheThingsAD, AllTheThingsSettings, AllTheThingsAuctionData, AllTheThingsDebugData, ATTClassicSettings, ATTClassicAuctionData, AllTheThingsHarvestItems
+## SavedVariablesPerCharacter: AllTheThingsSettingsPerCharacter, ATTClassicSettingsPerCharacter
 
 ## X-Interface: 30403
 ## X-Wago-ID: yQKyY5K7
@@ -49,6 +55,7 @@ locales\ko.lua
 locales\pt.lua
 locales\ru.lua
 locales\cn.lua
+locales\tw.lua
 
 # Search Cache
 src\Cache.lua
@@ -69,7 +76,6 @@ src\Modules\Vignette.lua
 # Expansion specific localization files
 db\Wrath\ExplorationDB.lua
 db\Wrath\LocalizationDB.lua
-# db\Wrath\en_auto.lua
 # db\Wrath\ReagentsDB.lua
 db\Presets.lua
 db\AccountWideQuestsDB.lua
@@ -91,6 +97,7 @@ src\Classes\Deaths.lua
 src\Classes\Dynamic Categories.lua
 src\Classes\Filter Types.lua
 src\Classes\Gear Sets.lua
+src\Classes\Glyphs.lua
 src\Classes\Illusions.lua
 # src\Classes\Miscellaneous.lua
 src\Classes\PVP Ranks.lua
