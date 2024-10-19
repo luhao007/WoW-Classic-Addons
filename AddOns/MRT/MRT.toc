@@ -7,6 +7,10 @@
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFFMethod团队助手|r |cFFFFE00AMRT|r
 ## Notes-zhCN: 提供团队和小队的一些辅助功能
 
+## IconTexture: Interface\AddOns\MRT\media\MiniMap.tga
+
+## AddonCompartmentFunc: MRT_MinimapClickFunction
+
 ## SavedVariables: VMRT
 
 

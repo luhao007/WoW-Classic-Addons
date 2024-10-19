@@ -1,18 +1,5 @@
 # OmniCC Changelog
 
-## 10.2.9
-
-* Add an additional check for forbidden frames
-
-## 10.2.8
-
-* Update TOCs
-
-## 10.2.7
-
-* Update TOCs
-* Preliminary War Within support
-
 ## 10.2.6
 
 * Update TOCs

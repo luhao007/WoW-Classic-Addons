@@ -406,7 +406,7 @@ function TardisInfo.Yell(Activate)
 	fujiF.topF.zhiyeXZ.RolesJC:SetScript("OnClick", function (self)
 		if tocversion<20000 then
 			--LFGListingRolePollButton_OnClick(self, button)
-		elseif tocversion<40000 then
+		elseif tocversion<30000 then
 			LFGListingRolePollButton_OnClick(self, button)
 		else
 			InitiateRolePoll()

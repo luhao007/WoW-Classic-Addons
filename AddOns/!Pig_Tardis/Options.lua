@@ -16,10 +16,10 @@ addonTable.TardisInfo=TardisInfo
 ------------
 local GnName,GnUI,GnIcon,FrameLevel = L["PIGaddonList"][addonName],"Tardis_UI",132327,30
 TardisInfo.uidata={GnName,GnUI,GnIcon,FrameLevel}
-local fuFrame,fuFrameBut = PIGOptionsList(GnName,"EXT")
+local fuFrame,fuFrameBut,Tooltip,hidetishi = unpack(Data.Ext[L.extLsit[1]])
+hidetishi()
 TardisInfo.fuFrame,TardisInfo.fuFrameBut=fuFrame,fuFrameBut
 function TardisInfo.ADD_Options()
-	local Tooltip = "!Pig组队增强功能，可查找队伍/车队/位面信息，喊话功能（支持自动邀请回复）"
 	fuFrame.Open = PIGModCheckbutton(fuFrame,{GnName,Tooltip},{"TOPLEFT",fuFrame,"TOPLEFT",20,-20})
 	fuFrame.Open:SetScript("OnClick", function (self)
 		if self:GetChecked() then

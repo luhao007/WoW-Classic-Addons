@@ -6,6 +6,8 @@
 ## Notes: VuhDo Options
 ## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFF团队面板|r |cFF0055FF设置|r
 
+## IconTexture: Interface\AddOns\VuhDo\Images\TemporaryPortrait-Female-BloodElf-VuhDo
+
 ## Dependencies: VuhDo
 ## LoadOnDemand: 0
 ## DefaultState: Enabled

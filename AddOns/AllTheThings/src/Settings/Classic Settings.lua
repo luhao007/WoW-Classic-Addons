@@ -18,7 +18,6 @@ local Things = {
 	"HeirloomUpgrades",
 	"Illusions",
 	"Mounts",
-	"MusicRollsAndSelfieFilters",
 	"Quests",
 	"QuestsLocked",
 	"PVPRanks",
@@ -49,7 +48,6 @@ local GeneralSettingsBase = {
 		["AccountWide:Heirlooms"] = true,
 		["AccountWide:Illusions"] = true,
 		["AccountWide:Mounts"] = true,
-		["AccountWide:MusicRollsAndSelfieFilters"] = true,
 		["AccountWide:PVPRanks"] = false,
 		["AccountWide:Quests"] = false,
 		["AccountWide:Recipes"] = true,
@@ -70,7 +68,6 @@ local GeneralSettingsBase = {
 		["Thing:HeirloomUpgrades"] = app.GameBuildVersion >= 60000,
 		["Thing:Illusions"] = true,
 		["Thing:Mounts"] = true,
-		["Thing:MusicRollsAndSelfieFilters"] = app.GameBuildVersion >= 60000,
 		--["Thing:PVPRanks"] = app.GameBuildVersion < 20000,	-- CRIEVE NOTE: Maybe someday? Classic Era project.
 		["Thing:Quests"] = true,
 		["Thing:QuestsLocked"] = false,
@@ -133,6 +130,7 @@ local TooltipSettingsBase = {
 		["PlayDeathSound"] = false,
 		["Precision"] = 2,
 		["Progress"] = true,
+		["Repeatables"] = true,
 		["ShowIconOnly"] = false,
 		["SharedAppearances"] = true,
 		["Show:CraftedItems"] = false,
@@ -200,7 +198,7 @@ local UnobtainableSettingsBase = {
 	__index = {
 		[1] = false,	-- Never Implemented
 		[2] = false,	-- Removed From Game
-		[3] = false,	-- Blizzard Balance
+		[3] = false,	-- Real Money
 	},
 };
 
@@ -211,12 +209,6 @@ if season > 0 then
 		UnobtainableSettingsBase.__index[1604] = true;
 	end
 	if season == 2 then	-- SOD
-		local reasons = L.AVAILABILITY_CONDITIONS;
-		reasons[1605][5] = 11500;
-		reasons[1606][5] = 11501;
-		reasons[1607][5] = 11502;
-		reasons[1608][5] = 11503;
-		reasons[1609][5] = 11504;
 		if app.GameBuildVersion >= 11502 then app.MaximumSkillLevel = 300;
 		elseif app.GameBuildVersion >= 11501 then app.MaximumSkillLevel = 225;
 		else app.MaximumSkillLevel = 150; end
@@ -229,23 +221,11 @@ local AllTheThingsSettings, AllTheThingsSettingsPerCharacter = {}, {};
 settings.Initialize = function(self)
 	local global_AllTheThingsSettings = _G["AllTheThingsSettings"];
 	if global_AllTheThingsSettings then AllTheThingsSettings = global_AllTheThingsSettings; end
-	global_AllTheThingsSettings = _G["ATTClassicSettings"];
-	if global_AllTheThingsSettings then
-		-- Purge the deprecated variable (remove this in a few versions)
-		AllTheThingsSettings = global_AllTheThingsSettings;
-		_G["ATTClassicSettings"] = nil;
-	end
 	_G["AllTheThingsSettings"] = AllTheThingsSettings;
 	RawSettings = AllTheThingsSettings;
 
 	local global_AllTheThingsSettingsPerCharacter = _G["AllTheThingsSettingsPerCharacter"];
 	if global_AllTheThingsSettingsPerCharacter then AllTheThingsSettingsPerCharacter = global_AllTheThingsSettingsPerCharacter; end
-	global_AllTheThingsSettingsPerCharacter = _G["ATTClassicSettingsPerCharacter"];
-	if global_AllTheThingsSettingsPerCharacter then
-		-- Purge the deprecated variable (remove this in a few versions)
-		AllTheThingsSettingsPerCharacter = global_AllTheThingsSettingsPerCharacter;
-		_G["ATTClassicSettingsPerCharacter"] = nil;
-	end
 	_G["AllTheThingsSettingsPerCharacter"] = AllTheThingsSettingsPerCharacter;
 
 	-- Assign the default settings
@@ -275,11 +255,13 @@ settings.Initialize = function(self)
 
 	-- Somehow some forced Account-Wide Things were set to false in user Profiles, so using app.IsAccountTracked ALWAYS returned false
 	-- so let's erase that data, and assign those Things in the Base General class
-	for thing,_ in pairs(settings.ForceAccountWide) do
-		local accountWideThing = "AccountWide:"..thing;
-		settings:Set(accountWideThing, nil)
-		GeneralSettingsBase.__index[accountWideThing] = true
-		settings.AccountWide[thing] = true
+	for thing,forced in pairs(settings.ForceAccountWide) do
+		if forced then
+			local accountWideThing = "AccountWide:"..thing;
+			settings:Set(accountWideThing, nil)
+			GeneralSettingsBase.__index[accountWideThing] = true
+			settings.AccountWide[thing] = true
+		end
 	end
 
 	if self.LocationsSlider then
@@ -301,8 +283,6 @@ settings.Initialize = function(self)
 	app.SetMinimapButtonSettings(
 		self:GetTooltipSetting("MinimapButton"),
 		self:GetTooltipSetting("MinimapSize"));
-
-	app.DoRefreshAppearanceSources = settings:Get("Thing:Transmog")
 
 	self:UpdateMode();
 end
@@ -600,7 +580,7 @@ ATTSettingsPanelMixin = {
 		---@class ATTSettingsCheckButton: CheckButton
 		---@field Text FontString
 		---@field OnRefreshCheckedDisabled any
-		local cb = CreateFrame("CheckButton", self:GetName() .. "-" .. text, self, "InterfaceOptionsCheckButtonTemplate")
+		local cb = CreateFrame("CheckButton", self:GetName() .. "-" .. text, self, "UICheckButtonTemplate")
 		Mixin(cb, ATTSettingsObjectMixin);
 		--self:RegisterObject(cb);
 		if OnClick then cb:SetScript("OnClick", OnClick) end
@@ -610,9 +590,10 @@ ATTSettingsPanelMixin = {
 			OnRefresh(cb);
 		end);
 		cb.Text:SetText(text)
-		cb.Text:SetScale(1.1)
+		cb.Text:SetScale(1.3)
 		cb.Text:SetWordWrap(false)
 		cb:SetHitRectInsets(0,0 - cb.Text:GetUnboundedStringWidth(),0,0);
+		cb:SetScale(0.8);
 		return cb
 	end,
 	CreateTextbox = function(self, opts, functions)
@@ -887,7 +868,7 @@ settings.CreateOptionsPage = function(self, text, parentCategory, isRootCategory
 		if not skipRefresh then settings:UpdateMode("FORCE"); end
 	end)
 	checkboxSkipAutoRefresh:SetATTTooltip(L.SKIP_AUTO_REFRESH_TOOLTIP);
-	checkboxSkipAutoRefresh:SetPoint("BOTTOMRIGHT", separator, "TOPRIGHT", -(checkboxSkipAutoRefresh.Text:GetWidth() + checkboxSkipAutoRefresh:GetWidth()), 0)
+	checkboxSkipAutoRefresh:SetPoint("BOTTOMRIGHT", separator, "TOPRIGHT", -(checkboxSkipAutoRefresh.Text:GetWidth() * checkboxSkipAutoRefresh.Text:GetScale()), 0)
 	return subcategory;
 end
 
@@ -901,7 +882,6 @@ settings.ToggleAccountMode = function(self)
 end
 settings.SetCompletionistMode = function(self, completionistMode)
 	self:Set("Completionist", completionistMode)
-	app.DoRefreshAppearanceSources = true
 	self:UpdateMode(1)
 end
 settings.ToggleCompletionistMode = function(self)
@@ -921,9 +901,6 @@ settings.SetDebugMode = function(self, debugMode)
 		settings:Set("Cache:CollectedThings", settings:Get("Show:CollectedThings"))
 		settings:SetCompletedGroups(true, true)
 		settings:SetCollectedThings(true, true)
-		if not self:Get("Thing:Transmog") then
-			app.DoRefreshAppearanceSources = true
-		end
 	else
 		settings:SetCompletedGroups(settings:Get("Cache:CompletedGroups"), true)
 		settings:SetCollectedThings(settings:Get("Cache:CollectedThings"), true)
@@ -1063,7 +1040,7 @@ settings.UpdateMode = function(self, doRefresh)
 
 		-- Check for any inactive unobtainable filters.
 		local anyFiltered = false
-		for u,v in pairs(L.AVAILABILITY_CONDITIONS) do
+		for u,phase in pairs(L.PHASES) do
 			if not settings:GetUnobtainableFilter(u) then
 				anyFiltered = true;
 				break;
@@ -1185,13 +1162,6 @@ settings.UpdateMode = function(self, doRefresh)
 		filterSet.SkillLevel()
 	end
 	self.Collectibles.Loot = self:Get("LootMode");
-
-	app:UnregisterEvent("GOSSIP_SHOW");
-	app:UnregisterEvent("TAXIMAP_OPENED");
-	if self:Get("Thing:FlightPaths") or self:Get("DebugMode") then
-		app:RegisterEvent("GOSSIP_SHOW");
-		app:RegisterEvent("TAXIMAP_OPENED");
-	end
 
 	-- FORCE = Force Update
 	-- 1 = Force Update IF NOT Skip

@@ -38,7 +38,7 @@ if private.isRetail then
 		[1643] = {50, 1}, [1642] = {50, 1}, [1718] = {50, 1}, [1943] = {50, 1}, [1876] = {50, 1}, [2105] = {50, 1}, [2111] = {50, 1}, [2275] = {50, 1},--Bfa World bosses and warfronts
 		[2222] = {60, 1}, [2374] = {60, 1},--Shadowlands World Bosses
 		[2444] = {70, 1}, [2512] = {70, 1}, [2574] = {70, 1}, [2454] = {70, 1}, [2548] = {70, 1},--Dragonflight World Bosses
-		[2774] = {80, 1},--War Within World Bosses
+		[2774] = {80, 1}, [2552] = {80, 1}, [2601] = {80, 1},--War Within World Bosses
 		--Raids
 		[509] = {30, 3}, [531] = {30, 3}, [469] = {30, 3}, [409] = {30, 3},--Classic Raids
 		[564] = {30, 3}, [534] = {30, 3}, [532] = {30, 3}, [565] = {30, 3}, [544] = {30, 3}, [548] = {30, 3}, [580] = {30, 3}, [550] = {30, 3},--BC Raids
@@ -362,27 +362,27 @@ function DBM:GetCurrentInstanceDifficulty()
 			-- So mods will need to check explicitly for this modifier instead of relying on :IsHeroic()/:IsMythic() :()
 			-- Trials are stored by using difficultyModifier as bit field, see definitions of SOD_BWL_TRIAL_* above
 			local trialCount = 0 -- bit.popcount() would be great to have
-			if self:UnitDebuff("player", 467047) then
+			if self:UnitBuff("player", 467047) then
 				modifierLevel = modifierLevel + difficulties.SOD_BWL_TRIAL_BLACK
 				modifierName = modifierName .. CL.BLACK .. " + "
 				trialCount = trialCount + 1
 			end
-			if self:UnitDebuff("player", 466416) then -- Green
+			if self:UnitBuff("player", 466416) then -- Green
 				modifierLevel = modifierLevel + difficulties.SOD_BWL_TRIAL_GREEN
 				modifierName = modifierName .. CL.GREEN .. " + "
 				trialCount = trialCount + 1
 			end
-			if self:UnitDebuff("player", 466277) then
+			if self:UnitBuff("player", 466277) then
 				modifierLevel = modifierLevel + difficulties.SOD_BWL_TRIAL_BLUE
 				modifierName = modifierName .. CL.BLUE .. " + "
 				trialCount = trialCount + 1
 			end
-			if self:UnitDebuff("player", 466071) then
+			if self:UnitBuff("player", 466071) then
 				modifierLevel = modifierLevel + difficulties.SOD_BWL_TRIAL_BRONZE
 				modifierName = modifierName .. CL.BRONZE .. " + "
 				trialCount = trialCount + 1
 			end
-			if self:UnitDebuff("player", 466261) then
+			if self:UnitBuff("player", 466261) then
 				modifierLevel = modifierLevel + difficulties.SOD_BWL_TRIAL_RED
 				modifierName = modifierName .. CL.RED .. " + "
 				trialCount = trialCount + 1
@@ -457,16 +457,25 @@ function DBM:GetCurrentInstanceDifficulty()
 	elseif difficulty == 207 then--SoD 1 player dungeon? Assigning as follower for now but will sort it out later
 		return "follower", difficultyName .. " - ", difficulty, instanceGroupSize, 0
 	elseif difficulty == 208 then--Delves (War Within 11.0.0+)
-		local delveInfo = C_UIWidgetManager.GetScenarioHeaderDelvesWidgetVisualizationInfo(6183)
+		local delveInfo, delveInfo2, delveInfo3 = C_UIWidgetManager.GetScenarioHeaderDelvesWidgetVisualizationInfo(6183), C_UIWidgetManager.GetScenarioHeaderDelvesWidgetVisualizationInfo(6184), C_UIWidgetManager.GetScenarioHeaderDelvesWidgetVisualizationInfo(6185)
+		local usedDelveInfo
+		if delveInfo and delveInfo.shownState and delveInfo.shownState == 1 then
+			usedDelveInfo = C_UIWidgetManager.GetScenarioHeaderDelvesWidgetVisualizationInfo(6183)
+		elseif delveInfo2 and delveInfo2.shownState and delveInfo2.shownState == 1 then
+			usedDelveInfo = C_UIWidgetManager.GetScenarioHeaderDelvesWidgetVisualizationInfo(6184)
+		elseif delveInfo3 and delveInfo3.shownState and delveInfo3.shownState == 1 then
+			usedDelveInfo = C_UIWidgetManager.GetScenarioHeaderDelvesWidgetVisualizationInfo(6185)
+		end
 		local delveTier = 0
-		if delveInfo and delveInfo and delveInfo.tierText then
-			if delveInfo.tierText == "?" then
-				return "normal", difficultyName .. "(?) - ", difficulty, instanceGroupSize
-			elseif delveInfo.tierText == "??" then
-				return "mythic", difficultyName .. "(??) - ", difficulty, instanceGroupSize
+		if usedDelveInfo and usedDelveInfo.tierText then
+			--Zekvir Hack to normal/mythic since his tiers aren't numbers
+			if usedDelveInfo.tierText == "?" then
+				return "normal", difficultyName .. "(?) - ", difficulty, instanceGroupSize, 0
+			elseif usedDelveInfo.tierText == "??" then
+				return "mythic", difficultyName .. "(??) - ", difficulty, instanceGroupSize, 0
 			end
 			---@diagnostic disable-next-line: cast-local-type
-			delveTier = tonumber(delveInfo.tierText)
+			delveTier = tonumber(usedDelveInfo.tierText)
 		end
 		return "delves", difficultyName .. "(" .. delveTier .. ") - ", difficulty, instanceGroupSize, delveTier
 	elseif difficulty == 213 then--Infinite Dungeon (timewalking in sod?)

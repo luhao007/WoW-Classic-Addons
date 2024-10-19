@@ -252,7 +252,7 @@ local titan_entry = {
 				confversiondesc = {
 					order = 1,
 					type = "description",
-					name = "" .. Titan_Global.config_notes,
+					name = "".. Titan_Global.config_notes,
 					cmdHidden = true
 				},
 			}
@@ -285,52 +285,52 @@ local titan_entry = {
 				confversiondesc = {
 					order = 1,
 					type = "description",
-					name = TitanUtils_GetGoldText(L["TITAN_PANEL_ABOUT_VERSION"] .. ": ")
-						.. TitanUtils_GetGreenText(TitanPanel_GetVersion()),
+					name = "|cffffd700" .. L["TITAN_PANEL_ABOUT_VERSION"] .. ": "
+						.. _G["GREEN_FONT_COLOR_CODE"] .. TitanPanel_GetVersion(),
 					cmdHidden = true
 				},
 				confauthordesc = {
 					order = 2,
 					type = "description",
-					name = TitanUtils_GetGoldText(L["TITAN_PANEL_ABOUT_AUTHOR"] .. ": ")
-						.. TitanUtils_GetGreenText(TitanPanel_GetAuthor()),
+					name = "|cffffd700" .. L["TITAN_PANEL_ABOUT_AUTHOR"] .. ": "
+						.. "|cffff8c00" .. TitanPanel_GetAuthor(),
 					cmdHidden = true
 				},
 				confcreditsdesc = {
 					order = 3,
 					type = "description",
-					name = TitanUtils_GetGoldText(L["TITAN_PANEL_ABOUT_CREDITS"] .. ": ")
-						.. TitanUtils_GetGreenText(TitanPanel_GetCredits()),
+					name = "|cffffd700" .. L["TITAN_PANEL_ABOUT_CREDITS"] .. ": "
+						.. _G["HIGHLIGHT_FONT_COLOR_CODE"] .. TitanPanel_GetCredits(),
 					cmdHidden = true
 				},
 				confcatdesc = {
 					order = 4,
 					type = "description",
-					name = TitanUtils_GetGoldText(L["TITAN_PANEL_ABOUT_CATEGORY"] .. ": ")
-						.. TitanUtils_GetGreenText(TitanPanel_GetCategory()),
+					name = "|cffffd700" .. L["TITAN_PANEL_ABOUT_CATEGORY"] .. ": "
+						.. _G["HIGHLIGHT_FONT_COLOR_CODE"] .. TitanPanel_GetCategory(),
 					cmdHidden = true
 				},
 				confemaildesc = {
 					order = 5,
 					type = "description",
-					name = TitanUtils_GetGoldText(L["TITAN_PANEL_ABOUT_EMAIL"] .. ": ")
-						.. TitanUtils_GetGreenText(TitanPanel_GetEmail()),
+					name = "|cffffd700" .. L["TITAN_PANEL_ABOUT_EMAIL"] .. ": "
+						.. _G["HIGHLIGHT_FONT_COLOR_CODE"] .. TitanPanel_GetEmail(),
 					cmdHidden = true
 				},
 				--[[ has not been updated in quite a while...
 				confwebsitedesc = {
 					order = 6,
 					type = "description",
-					name = TitanUtils_GetGoldText(L["TITAN_PANEL_ABOUT_WEB"]..": ")
-						..TitanUtils_GetGreenText(TitanPanel_GetWebsite()),
+					name = "|cffffd700"..L["TITAN_PANEL_ABOUT_WEB"]..": "
+						.._G["HIGHLIGHT_FONT_COLOR_CODE"]..TitanPanel_GetWebsite(),
 					cmdHidden = true
 				},
 --]]
 				conflicensedesc = {
 					order = 7,
 					type = "description",
-					name = TitanUtils_GetGoldText(L["TITAN_PANEL_ABOUT_LICENSE"] .. ": ")
-						.. TitanUtils_GetGreenText(TitanPanel_GetLicense()),
+					name = "|cffffd700" .. L["TITAN_PANEL_ABOUT_LICENSE"] .. ": "
+						.. _G["HIGHLIGHT_FONT_COLOR_CODE"] .. TitanPanel_GetLicense(),
 					cmdHidden = true
 				},
 			}
@@ -366,7 +366,7 @@ local function ColorAdjShown(frame_str)
 	if TitanAdjustSettings[frame_str].adjust then
 		res = frame_str -- leave as is
 	else
-		res = TitanUtils_GetGrayText(frame_str)
+		res = "|cff808080" .. frame_str .. _G["FONT_COLOR_CODE_CLOSE"]
 	end
 
 	return res
@@ -418,10 +418,10 @@ local function TitanUpdateAdj(t, pos)
 			order = position,
 			width = "full",
 		}
-		position = position + 1 -- Show toggle
+		position = position + 1  -- Show toggle
 		args[f_name].args.show = {
 			type = "toggle",
-			width = .75, --"fill",
+			width = .75,         --"fill",
 			name = USE or "Use", --L["TITAN_PANEL_MENU_DISPLAY_BAR"],
 			order = position,
 			get = function(info)
@@ -517,7 +517,7 @@ local function ColorShown(bar)
 	if TitanBarDataVars[frame_str].show then
 		-- leave as is
 	else
-		res = TitanUtils_GetGrayText(res)
+		res = "|cff808080" .. res .. _G["FONT_COLOR_CODE_CLOSE"]
 	end
 
 	return res
@@ -568,10 +568,10 @@ local function TitanUpdateConfigBars(t, pos)
 			order = position,
 			width = "full",
 		}
-		position = position + 1 -- Show toggle
+		position = position + 1  -- Show toggle
 		args[v.name].args.show = {
 			type = "toggle",
-			width = .75, --"fill",
+			width = .75,         --"fill",
 			name = L["TITAN_PANEL_MENU_DISPLAY_BAR"],
 			order = position,
 			get = function(info)
@@ -585,10 +585,10 @@ local function TitanUpdateConfigBars(t, pos)
 				TitanUpdateConfigBars(optionsBars.args, 1000)
 			end,
 		}
-		position = position + 1 -- Auto hide toggle
+		position = position + 1  -- Auto hide toggle
 		args[v.name].args.autohide = {
 			type = "toggle",
-			width = .75, --"fill",
+			width = .75,         --"fill",
 			name = L["TITAN_PANEL_MENU_AUTOHIDE"],
 			order = position,
 			disabled = (v.hider == nil),
@@ -600,10 +600,10 @@ local function TitanUpdateConfigBars(t, pos)
 				Titan_AutoHide_ToggleAutoHide(info[1]) -- short bar name
 			end,
 		}
-		position = position + 1 -- Center toggle
+		position = position + 1  -- Center toggle
 		args[v.name].args.center = {
 			type = "toggle",
-			width = .75, --"fill",
+			width = .75,         --"fill",
 			name = L["TITAN_PANEL_MENU_CENTER_TEXT"],
 			order = position,
 			get = function(info)
@@ -622,10 +622,10 @@ local function TitanUpdateConfigBars(t, pos)
 				TitanPanelButton_Justify();
 			end,
 		}
-		position = position + 1 -- Combat hide toggle
+		position = position + 1  -- Combat hide toggle
 		args[v.name].args.hideincombat = {
 			type = "toggle",
-			width = .75, --"fill",
+			width = .75,         --"fill",
 			name = L["TITAN_PANEL_MENU_HIDE_IN_COMBAT"],
 			order = position,
 			get = function(info)
@@ -675,8 +675,8 @@ local function TitanUpdateConfigBars(t, pos)
 		}
 		position = position + 1 -- select background
 		args[v.name].args.settextousebar = {
-			name = "",    --L["TITAN_PANEL_MENU_GLOBAL_SKIN"],
-			desc = "",    --L["TITAN_PANEL_MENU_GLOBAL_SKIN_TIP"],
+			name = "",     --L["TITAN_PANEL_MENU_GLOBAL_SKIN"],
+			desc = "",     --L["TITAN_PANEL_MENU_GLOBAL_SKIN_TIP"],
 			order = position,
 			type = "select",
 			width = "full",
@@ -726,9 +726,9 @@ local function TitanUpdateConfigBars(t, pos)
 				for _, val in pairs(TitanSkins) do
 					if val.path ~= TitanBarDataVars[frame_str].skin.path then
 						--						if val.path ~= TitanPanelGetVar("Texture"..v.name) then
-						Skinlist[val.path] = TitanUtils_GetHexText(val.name, Titan_Global.colors.green)
+						Skinlist[val.path] = "|cff19ff19" .. val.name .. "|r"
 					else
-						Skinlist[val.path] = TitanUtils_GetHexText(val.name, Titan_Global.colors.yellow)
+						Skinlist[val.path] = "|cffffff9a" .. val.name .. "|r"
 					end
 				end
 				table.sort(Skinlist, function(a, b)
@@ -761,9 +761,9 @@ local function TitanUpdateConfigBars(t, pos)
 			imageWidth = 256,
 			order = position,
 			type = "description",
-			width = .5,   --"60",
+			width = .5,                                 --"60",
 		}
-		position = position + 1 -- transparency
+		position = position + 1                         -- transparency
 		args[v.name].args.trans = {
 			type = "range",
 			width = "full",
@@ -900,9 +900,9 @@ local optionsGlobals = {
 				local v;
 				for _, v in pairs(TitanSkins) do
 					if v.path ~= TitanBarDataVars["Global"].skin.path then --TitanPanelGetVar("TexturePath") then
-						Skinlist[v.path] = TitanUtils_GetHexText(v.name, Titan_Global.colors.green)
+						Skinlist[v.path] = "|cff19ff19" .. v.name .. "|r"
 					else
-						Skinlist[v.path] = TitanUtils_GetHexText(v.name, Titan_Global.colors.yellow)
+						Skinlist[v.path] = "|cffffff9a" .. v.name .. "|r"
 					end
 				end
 				table.sort(Skinlist, function(a, b)
@@ -1092,7 +1092,7 @@ local function ColorVisible(id, name)
 	if TitanPanel_IsPluginShown(id) then
 		res = (name or "")
 	else
-		res = TitanUtils_GetGrayText(name)
+		res = "|cff808080" .. name .. _G["FONT_COLOR_CODE_CLOSE"]
 	end
 
 	return res
@@ -1302,7 +1302,7 @@ local function TitanUpdateConfigAddons()
 					order = 54,
 					type = "description",
 					name = TitanUtils_GetGoldText(L["TITAN_PANEL_MENU_BAR_ALWAYS"] ..
-						" " .. TitanGetVar(plug_in.id, "ForceBar")),
+					" " .. TitanGetVar(plug_in.id, "ForceBar")),
 					cmdHidden = true,
 				}
 			end
@@ -1339,10 +1339,10 @@ local function TitanUpdateConfigAddons()
 				plug_ldb = ""
 			end
 			local str = ""
-				.. plug_version
-				.. plug_category
+				..plug_version
+				..plug_category
 				.. _G["GREEN_FONT_COLOR_CODE"] .. plug_ldb .. "|r"
-				.. "\n"
+				.."\n"
 				.. plug_notes
 			if plug_in.notes then
 				args[plug_in.id].args.notes = {
@@ -1560,7 +1560,7 @@ local function TitanUpdateChars()
 		type = "description",
 		width = "full",
 		name = L["TITAN_PANEL_GLOBAL_PROFILE"] ..
-			": " .. TitanUtils_GetGoldText(TitanAllGetVar("GlobalProfileName") or "?"),
+		": " .. TitanUtils_GetGoldText(TitanAllGetVar("GlobalProfileName") or "?"),
 	}
 	args["sp_20"] = {
 		type = "description",
@@ -2144,15 +2144,15 @@ local function Show_Skins(t, position)
 	t[skin .. position] = {
 		type = "description",
 		name = ""
-			.. L["TITAN_PANEL_MENU_SKIN_CHANGE"] .. "\n"
-			.. "- " .. L["TITAN_PANEL_MENU_OPTIONS_BARS"] .. "\n"
-			.. "- " .. L["TITAN_PANEL_MENU_OPTIONS_BARS_ALL"] .. "\n"
-			.. "",
-		cmdHidden = true,
+		.. L["TITAN_PANEL_MENU_SKIN_CHANGE"].. "\n"
+		.. "- "..L["TITAN_PANEL_MENU_OPTIONS_BARS"].. "\n"
+		.. "- "..L["TITAN_PANEL_MENU_OPTIONS_BARS_ALL"].. "\n"
+		.. "",
+	cmdHidden = true,
 		order = position,
-	}
+		}
 
-	for idx, v in pairs(TitanSkins) do
+		for idx, v in pairs(TitanSkins) do
 		position = position + 1 -- spacer
 		t[skin .. position] = {
 			type = "header",
@@ -2164,7 +2164,7 @@ local function Show_Skins(t, position)
 		position = position + 1 -- Name of skin (col 1)
 		t[skin .. position] = {
 			type = "description",
-			name = TitanUtils_GetHexText(v.name, Titan_Global.colors.green),
+			name = "|cff19ff19" .. v.name .. "|r",
 			order = position,
 			width = "30",
 		}
@@ -2362,16 +2362,16 @@ local optionsSkinsCustom = {
 						and v.path ~= "Interface\\AddOns\\Titan\\Artwork\\"
 						and v.titan ~= true
 					then
-						Skinlist[v.path] = TitanUtils_GetHexText(v.name, Titan_Global.colors.green)
+						Skinlist[v.path] = "|cff19ff19" .. v.name .. "|r"
 					end
 					if v.path == TitanSkinToRemove then
-						Skinlist[v.path] = TitanUtils_GetHexText(v.name, Titan_Global.colors.yellow)
+						Skinlist[v.path] = "|cffffff9a" .. v.name .. "|r"
 					end
 				end
 				if TitanSkinToRemove ~= "None" then
-					Skinlist["None"] = TitanUtils_GetHexText(L["TITAN_PANEL_NONE"], Titan_Global.colors.green)
+					Skinlist["None"] = "|cff19ff19" .. L["TITAN_PANEL_NONE"] .. "|r"
 				else
-					Skinlist["None"] = TitanUtils_GetHexText(L["TITAN_PANEL_NONE"], Titan_Global.colors.yellow)
+					Skinlist["None"] = "|cffffff9a" .. L["TITAN_PANEL_NONE"] .. "|r"
 				end
 				table.sort(Skinlist, function(a, b)
 					return string.lower(TitanSkins[a].name)
@@ -2524,7 +2524,7 @@ VAR:  None
 OUT:  None
 NOTE:
 - This is called after the plugins are registered in the 'player entering world' event. It can be called again as plugins registered.
-- Any plugins that attempted to register are shown. See the Titan Utils section for more details on plugin registration.
+- Any plugins that attempted to register (no child frames though) are shown. See the Titan Utils section for more details on plugin registration.
 - This option page is for display only. The user can take not action.
 :NOTE
 --]]
@@ -2553,72 +2553,80 @@ local function TitanUpdateAddonAttempts()
 			local ptype = TitanPluginToBeRegistered[idx].plugin_type
 			local btype = TitanPanelButton_GetType(idx)
 			local title = TitanPluginToBeRegistered[idx].name
+			local isChild = TitanPluginToBeRegistered[idx].isChild and true or false
 			if reason ~= TITAN_REGISTERED then
 				title = TitanUtils_GetRedText(title)
 				issue = TitanUtils_GetRedText(issue)
 			end
 
-			args[num] = {
-				type = "group",
-				name = title,
-				order = idx,
-				args = {
-					name = {
-						type = "description",
-						name = TitanUtils_GetGoldText("") .. name,
-						cmdHidden = true,
-						order = 1,
-					},
-					reason = {
-						type = "description",
-						name = TitanUtils_GetGoldText(L["TITAN_PANEL_ATTEMPTS_STATUS"] .. ": ") .. reason,
-						cmdHidden = true,
-						order = 2,
-					},
-					issue = {
-						type = "description",
-						name = TitanUtils_GetGoldText(L["TITAN_PANEL_ATTEMPTS_ISSUE"] .. ": \n") .. issue,
-						cmdHidden = true,
-						order = 3,
-					},
-					notes = {
-						type = "description",
-						name = TitanUtils_GetGoldText(L["TITAN_PANEL_ATTEMPTS_NOTES"] .. ": \n") .. notes,
-						cmdHidden = true,
-						order = 4,
-					},
-					sp_1 = {
-						type = "description",
-						name = "",
-						cmdHidden = true,
-						order = 5,
-					},
-					category = {
-						type = "description",
-						name = TitanUtils_GetGoldText(L["TITAN_PANEL_ATTEMPTS_CATEGORY"] .. ": ") .. category,
-						cmdHidden = true,
-						order = 10,
-					},
-					ptype = {
-						type = "description",
-						name = TitanUtils_GetGoldText(L["TITAN_PANEL_ATTEMPTS_TYPE"] .. ": ") .. ptype, --.." "..btype,
-						cmdHidden = true,
-						order = 11,
-					},
-					button = {
-						type = "description",
-						name = TitanUtils_GetGoldText(L["TITAN_PANEL_ATTEMPTS_BUTTON"] .. ": ") .. button,
-						cmdHidden = true,
-						order = 12,
-					},
-					num_val = {
-						type = "description",
-						name = TitanUtils_GetGoldText(L["TITAN_PANEL_ATTEMPTS_TABLE"] .. ": ") .. num,
-						cmdHidden = true,
-						order = 13,
-					},
+			if isChild then
+				-- Do not show. A child is part of (within) another plugin
+				-- showing it here would be confusing to the 'normal' user.
+				-- A plugin in author would know to look at the
+				-- TitanPluginToBeRegistered array directly.
+			else
+				args[num] = {
+					type = "group",
+					name = title,
+					order = idx,
+					args = {
+						name = {
+							type = "description",
+							name = TitanUtils_GetGoldText("") .. name,
+							cmdHidden = true,
+							order = 1,
+						},
+						reason = {
+							type = "description",
+							name = TitanUtils_GetGoldText(L["TITAN_PANEL_ATTEMPTS_STATUS"] .. ": ") .. reason,
+							cmdHidden = true,
+							order = 2,
+						},
+						issue = {
+							type = "description",
+							name = TitanUtils_GetGoldText(L["TITAN_PANEL_ATTEMPTS_ISSUE"] .. ": \n") .. issue,
+							cmdHidden = true,
+							order = 3,
+						},
+						notes = {
+							type = "description",
+							name = TitanUtils_GetGoldText(L["TITAN_PANEL_ATTEMPTS_NOTES"] .. ": \n") .. notes,
+							cmdHidden = true,
+							order = 4,
+						},
+						sp_1 = {
+							type = "description",
+							name = "",
+							cmdHidden = true,
+							order = 5,
+						},
+						category = {
+							type = "description",
+							name = TitanUtils_GetGoldText(L["TITAN_PANEL_ATTEMPTS_CATEGORY"] .. ": ") .. category,
+							cmdHidden = true,
+							order = 10,
+						},
+						ptype = {
+							type = "description",
+							name = TitanUtils_GetGoldText(L["TITAN_PANEL_ATTEMPTS_TYPE"] .. ": ") .. ptype, --.." "..btype,
+							cmdHidden = true,
+							order = 11,
+						},
+						button = {
+							type = "description",
+							name = TitanUtils_GetGoldText(L["TITAN_PANEL_ATTEMPTS_BUTTON"] .. ": ") .. button,
+							cmdHidden = true,
+							order = 12,
+						},
+						num_val = {
+							type = "description",
+							name = TitanUtils_GetGoldText(L["TITAN_PANEL_ATTEMPTS_TABLE"] .. ": ") .. num,
+							cmdHidden = true,
+							order = 13,
+						},
+					}
 				}
-			}
+			end
 		end
 	end
 

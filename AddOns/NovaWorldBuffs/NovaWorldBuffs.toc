@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Novaspark-Arugal OCE
-## Version: 2.88
+## Version: 2.76
 
 ## Title: Nova World Buffs
 ## Notes: World buff timers and much more.
@@ -12,21 +12,14 @@
 
 embeds.xml
 Locale\Locales.xml
-Modules\DB.lua
 NovaWorldBuffs.lua
-Modules\Options.lua
-Modules\Help.lua
-Modules\Data.lua
-Modules\Creatures.lua
-Modules\Realms.lua
-Modules\GuildFilter.lua
-Modules\WorldBuffs.lua
+Options.lua
+NWBHelp.lua
+NWBData.lua
+NWBCreatures.lua
+NWBRealms.lua
+NWBGuildFilter.lua
 Modules\WeeklyReset.lua
 Modules\Ashenvale.lua
 Modules\Stranglethorn.lua
-Modules\Blackrock.lua
-Modules\TolBarad.lua
-Modules\Wintergrasp.lua
 Modules\Overlay.lua
-Modules\BuffsWindow.lua
-Modules\DungeonPortals.lua

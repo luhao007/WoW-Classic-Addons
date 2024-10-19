@@ -6,6 +6,8 @@
 ## Title-zhCN: |cFFFFE00A<|r|cFFC79C6E战斗|r|cFFFFE00A>|r |cFFFFFFFF伤害统计|r |cFFFFE00ADetails|r
 ## Notes-zhCN: 功能强大的伤害统计插件
 
+## IconTexture: Interface\AddOns\Details\images\minimap
+
 ## OptionalDeps: Ace3, LibSharedMedia-3.0, LibWindow-1.1, LibDBIcon-1.0, NickTag-1.0, LibDataBroker-1.1, LibGraph-2.0
 
 ## SavedVariables: _detalhes_global, __details_backup, __details_debug

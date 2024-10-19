@@ -16,6 +16,7 @@ local GetItemInfo = app.WOWAPI.GetItemInfo;
 -- BattlePet Lib / Species Lib
 do
 	local KEY, CACHE = "speciesID", "BattlePets"
+	local CLASSNAME = "BattlePet"
 	if C_PetBattles then
 
 		local C_PetBattles_GetAbilityInfoByID,C_PetJournal_GetNumCollectedInfo,C_PetJournal_GetPetInfoByPetID,C_PetJournal_GetPetInfoBySpeciesID,C_PetJournal_GetPetInfoByIndex,C_PetJournal_GetNumPets
@@ -109,7 +110,7 @@ do
 			end
 		});
 
-		app.CreateSpecies = app.CreateClass("BattlePet", KEY, {
+		app.CreateSpecies = app.CreateClass(CLASSNAME, KEY, {
 			collectible = function(t) return app.Settings.Collectibles[CACHE]; end,
 			collected = function(t)
 				local id = t[KEY];
@@ -120,7 +121,6 @@ do
 				-- account-wide collected
 				if app.IsAccountCached(CACHE, id) then return 2; end
 			end,
-			trackable = app.ReturnTrue,
 			saved = function(t)
 				-- character collected
 				if CollectedSpeciesHelper[t[KEY]] then return 1; end
@@ -204,6 +204,7 @@ do
 				app.UpdateRawID(KEY, speciesID);
 			end
 		end)
+		app.AddSimpleCollectibleSwap(CLASSNAME, CACHE)
 
 		app.CreatePetAbility = app.CreateClass("PetAbility", "petAbilityID", {
 			["text"] = function(t)

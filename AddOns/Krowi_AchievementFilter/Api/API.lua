@@ -1,6 +1,9 @@
 -- [[ Namespaces ]] --
 local addonName, addon = ...;
 KrowiAF = {};
+local C_AddOns = {}
+C_AddOns.IsAddOnLoaded = IsAddOnLoaded
+C_AddOns.LoadAddOn = LoadAddOn
 
 local function SelectAchievement(achievement)
 	local scrollBox = KrowiAF_AchievementsFrame.ScrollBox;
@@ -10,7 +13,11 @@ local function SelectAchievement(achievement)
 	end
 
 	KrowiAF_AchievementsFrame:ForceUpdate();
-	scrollBox:ScrollToElementData(achievement, ScrollBoxConstants.AlignCenter, ScrollBoxConstants.NoScrollInterpolation);
+	if addon.Util.IsTheWarWithin then
+		scrollBox:ScrollToElementData(achievement, ScrollBoxConstants.AlignCenter, nil, ScrollBoxConstants.NoScrollInterpolation);
+	else
+		scrollBox:ScrollToElementData(achievement, ScrollBoxConstants.AlignCenter, ScrollBoxConstants.NoScrollInterpolation);
+	end
 	-- print("api select")
 	KrowiAF_AchievementsFrame.SelectionBehavior:SelectElementData(achievement);
 	KrowiAF_AchievementsFrame:ScrollToNearest(achievement);
@@ -54,8 +61,8 @@ function KrowiAF_SelectAchievement(achievement)
 end
 
 function KrowiAF_SelectAchievementFromID(id)
-	if not IsAddOnLoaded("Blizzard_AchievementUI") then
-        LoadAddOn("Blizzard_AchievementUI");
+	if not C_AddOns.IsAddOnLoaded("Blizzard_AchievementUI") then
+        C_AddOns.LoadAddOn("Blizzard_AchievementUI");
     end
 
 	local achievement = addon.Data.Achievements[id];
@@ -72,7 +79,11 @@ local function SelectCategory(category, collapsed, quick)
 		return;
 	end
 
-	scrollBox:ScrollToElementData(category, ScrollBoxConstants.AlignCenter, ScrollBoxConstants.NoScrollInterpolation);
+	if addon.Util.IsTheWarWithin then
+		scrollBox:ScrollToElementData(category, ScrollBoxConstants.AlignCenter, nil, ScrollBoxConstants.NoScrollInterpolation);
+	else
+		scrollBox:ScrollToElementData(category, ScrollBoxConstants.AlignCenter, ScrollBoxConstants.NoScrollInterpolation);
+	end
 
 	KrowiAF_CategoriesFrame:ShowSubFrame(category);
 end
@@ -120,8 +131,8 @@ function KrowiAF_ToggleAchievementFrame(_addonName, tabName)
 end
 
 function KrowiAF_OpenCurrentZone(collapsed)
-    if not IsAddOnLoaded("Blizzard_AchievementUI") then
-        LoadAddOn("Blizzard_AchievementUI");
+    if not C_AddOns.IsAddOnLoaded("Blizzard_AchievementUI") then
+        C_AddOns.LoadAddOn("Blizzard_AchievementUI");
     end
 
 	for i = 1, #addon.Data.CurrentZoneCategories do
@@ -280,8 +291,8 @@ do --[[ KrowiAF_RegisterTabOptions ]]
 	end
 
 	local function InjectTabsOrderOptionsTable(index)
-		addon.InjectOptions:AddTable("Layout.args.Tabs.args.Order.args.Order.args", tostring(OrderPP()), {
-			order = OrderPP(), type = "select", width = AdjustedWidth(1.95),
+		addon.InjectOptions:AddTable("Layout.args.Tabs.args.Order.args.Order.args", tostring(index), {
+			order = index, type = "select", width = AdjustedWidth(1.95),
 			name = "",
 			values = function() return addon.Gui:TabsOrderGetActiveKeys(); end,
 			get = function() return GetOrder(index); end,

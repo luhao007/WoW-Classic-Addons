@@ -5,6 +5,10 @@ plugins.ZygorGuidesViewer = {};
 local zygorGuidesViewer = plugins.ZygorGuidesViewer;
 tinsert(plugins.Plugins, zygorGuidesViewer);
 
+local C_AddOns = {}
+C_AddOns.IsAddOnLoaded = IsAddOnLoaded
+C_AddOns.LoadAddOn = LoadAddOn
+
 local function Icon_OnClick(self)
 	local button = self:GetParent();
 	local achievementId = button.Achievement.Id;
@@ -70,6 +74,6 @@ end
 
 function zygorGuidesViewer.InjectOptions()
     addon.InjectOptions:AddPluginTable("ZygorGuidesViewer", addon.L["Zygor Guides Viewer"], addon.L["Zygor Guides Viewer Desc"], function()
-        return IsAddOnLoaded("ZygorGuidesViewer");
+        return C_AddOns.IsAddOnLoaded("ZygorGuidesViewer");
     end);
 end

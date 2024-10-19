@@ -14,7 +14,7 @@ local PIGOptionsList_R=Create.PIGOptionsList_R
 local PIGFontString=Create.PIGFontString
 local PIGQuickBut=Create.PIGQuickBut
 local PIGSetFont=Create.PIGSetFont
-local PIGCloseBut=Create.PIGCloseBut
+local PIGDiyBut=Create.PIGDiyBut
 local FasongYCqingqiu=Fun.FasongYCqingqiu
 -----------------
 local TalentData=Data.TalentData
@@ -148,7 +148,7 @@ function TardisInfo.Chedui(Activate)
 	-- 		tishiui:SetPoint("TOPLEFT", _G["Chedui_tishi_"..zhizename[ix-1]], "BOTTOMLEFT", 0, 0);
 	-- 	end
 	-- 	tishiui.ICON = tishiui:CreateTexture();
-	-- 	tishiui.ICON:SetAtlas(GetIconForRole(zhizename[ix], false), TextureKitConstants.IgnoreAtlasSize);
+	-- 	tishiui.ICON:SetAtlas(PIGGetIconForRole(zhizename[ix], false), TextureKitConstants.IgnoreAtlasSize);
 	-- 	tishiui.ICON:SetSize(hang_Height+8,hang_Height+8);
 	-- 	tishiui.ICON:SetPoint("LEFT", tishiui, "LEFT", 2,10);
 	-- 	tishiui.heji = PIGFontString(tishiui,{"TOP", tishiui.ICON, "BOTTOM",0, 0},0,"OUTLINE");
@@ -462,21 +462,21 @@ function TardisInfo.Chedui(Activate)
 	-- 	hangL.RoleCount.Higt:SetBlendMode("ADD")
 	-- 	hangL.RoleCount.Higt:SetAlpha(0.4)
 	-- 	hangL.RoleCount.T = hangL.RoleCount:CreateTexture();
-	-- 	hangL.RoleCount.T:SetAtlas(GetIconForRole(zhizename[1], false), TextureKitConstants.IgnoreAtlasSize);
+	-- 	hangL.RoleCount.T:SetAtlas(PIGGetIconForRole(zhizename[1], false), TextureKitConstants.IgnoreAtlasSize);
 	-- 	hangL.RoleCount.T:SetSize(hang_Height-4,hang_Height-4);
 	-- 	hangL.RoleCount.T:SetPoint("LEFT", hangL.RoleCount, "LEFT", 19,0);
 	-- 	hangL.RoleCount.T:SetAlpha(0.9);
 	-- 	hangL.RoleCount.TNum = PIGFontString(hangL.RoleCount,{"RIGHT", hangL.RoleCount.T, "LEFT", 2,0},0,"OUTLINE");
 	-- 	hangL.RoleCount.TNum:SetTextColor(1, 1, 1, 1);
 	-- 	hangL.RoleCount.H = hangL.RoleCount:CreateTexture();
-	-- 	hangL.RoleCount.H:SetAtlas(GetIconForRole(zhizename[2], false), TextureKitConstants.IgnoreAtlasSize);
+	-- 	hangL.RoleCount.H:SetAtlas(PIGGetIconForRole(zhizename[2], false), TextureKitConstants.IgnoreAtlasSize);
 	-- 	hangL.RoleCount.H:SetSize(hang_Height-4,hang_Height-4);
 	-- 	hangL.RoleCount.H:SetPoint("LEFT", hangL.RoleCount.T, "RIGHT", 19,0);
 	-- 	hangL.RoleCount.H:SetAlpha(0.9);
 	-- 	hangL.RoleCount.HNum = PIGFontString(hangL.RoleCount,{"RIGHT", hangL.RoleCount.H, "LEFT", 2,0},0,"OUTLINE");
 	-- 	hangL.RoleCount.HNum:SetTextColor(1, 1, 1, 1);
 	-- 	hangL.RoleCount.D = hangL.RoleCount:CreateTexture();
-	-- 	hangL.RoleCount.D:SetAtlas(GetIconForRole(zhizename[3], false), TextureKitConstants.IgnoreAtlasSize);
+	-- 	hangL.RoleCount.D:SetAtlas(PIGGetIconForRole(zhizename[3], false), TextureKitConstants.IgnoreAtlasSize);
 	-- 	hangL.RoleCount.D:SetSize(hang_Height-4,hang_Height-4);
 	-- 	hangL.RoleCount.D:SetPoint("LEFT", hangL.RoleCount.H, "RIGHT", 19,0);
 	-- 	hangL.RoleCount.D:SetAlpha(0.9);
@@ -613,7 +613,7 @@ function TardisInfo.Chedui(Activate)
 	-- 		--C_LFGList.ApplyToGroup(self.resultID)
 	-- 		LFGListApplicationDialog_Show(LFGListApplicationDialog, self:GetParent():GetParent().resultID);
 	-- 	end)
-	-- 	hangL.caozuo.CancelButton = PIGCloseBut(hangL.caozuo, {"RIGHT", hangL.caozuo, "RIGHT", 2, 0})
+	-- 	hangL.caozuo.CancelButton = PIGDiyBut(hangL.caozuo, {"RIGHT", hangL.caozuo, "RIGHT", 2, 0})
 	-- 	hangL.caozuo.CancelButton:HookScript("OnClick", function(self)
 	-- 		C_LFGList.CancelApplication(self:GetParent():GetParent().resultID);
 	-- 	end)
@@ -972,21 +972,21 @@ function TardisInfo.Chedui(Activate)
 	-- FCTabF.DQ.Apply.RoleCount.Higt:SetBlendMode("ADD")
 	-- FCTabF.DQ.Apply.RoleCount.Higt:SetAlpha(0.4)
 	-- FCTabF.DQ.Apply.RoleCount.T = FCTabF.DQ.Apply.RoleCount:CreateTexture();
-	-- FCTabF.DQ.Apply.RoleCount.T:SetAtlas(GetIconForRole(zhizename[1], false), TextureKitConstants.IgnoreAtlasSize);
+	-- FCTabF.DQ.Apply.RoleCount.T:SetAtlas(PIGGetIconForRole(zhizename[1], false), TextureKitConstants.IgnoreAtlasSize);
 	-- FCTabF.DQ.Apply.RoleCount.T:SetSize(hang_Height-4,hang_Height-4);
 	-- FCTabF.DQ.Apply.RoleCount.T:SetPoint("LEFT", FCTabF.DQ.Apply.RoleCount, "LEFT", 19,0);
 	-- FCTabF.DQ.Apply.RoleCount.T:SetAlpha(0.9);
 	-- FCTabF.DQ.Apply.RoleCount.TNum = PIGFontString(FCTabF.DQ.Apply.RoleCount,{"RIGHT", FCTabF.DQ.Apply.RoleCount.T, "LEFT", 2,0},0,"OUTLINE");
 	-- FCTabF.DQ.Apply.RoleCount.TNum:SetTextColor(1, 1, 1, 1);
 	-- FCTabF.DQ.Apply.RoleCount.H = FCTabF.DQ.Apply.RoleCount:CreateTexture();
-	-- FCTabF.DQ.Apply.RoleCount.H:SetAtlas(GetIconForRole(zhizename[2], false), TextureKitConstants.IgnoreAtlasSize);
+	-- FCTabF.DQ.Apply.RoleCount.H:SetAtlas(PIGGetIconForRole(zhizename[2], false), TextureKitConstants.IgnoreAtlasSize);
 	-- FCTabF.DQ.Apply.RoleCount.H:SetSize(hang_Height-4,hang_Height-4);
 	-- FCTabF.DQ.Apply.RoleCount.H:SetPoint("LEFT", FCTabF.DQ.Apply.RoleCount.T, "RIGHT", 19,0);
 	-- FCTabF.DQ.Apply.RoleCount.H:SetAlpha(0.9);
 	-- FCTabF.DQ.Apply.RoleCount.HNum = PIGFontString(FCTabF.DQ.Apply.RoleCount,{"RIGHT", FCTabF.DQ.Apply.RoleCount.H, "LEFT", 2,0},0,"OUTLINE");
 	-- FCTabF.DQ.Apply.RoleCount.HNum:SetTextColor(1, 1, 1, 1);
 	-- FCTabF.DQ.Apply.RoleCount.D = FCTabF.DQ.Apply.RoleCount:CreateTexture();
-	-- FCTabF.DQ.Apply.RoleCount.D:SetAtlas(GetIconForRole(zhizename[3], false), TextureKitConstants.IgnoreAtlasSize);
+	-- FCTabF.DQ.Apply.RoleCount.D:SetAtlas(PIGGetIconForRole(zhizename[3], false), TextureKitConstants.IgnoreAtlasSize);
 	-- FCTabF.DQ.Apply.RoleCount.D:SetSize(hang_Height-4,hang_Height-4);
 	-- FCTabF.DQ.Apply.RoleCount.D:SetPoint("LEFT", FCTabF.DQ.Apply.RoleCount.H, "RIGHT", 19,0);
 	-- FCTabF.DQ.Apply.RoleCount.D:SetAlpha(0.9);
@@ -1229,7 +1229,7 @@ function TardisInfo.Chedui(Activate)
 	-- 			C_LFGList.InviteApplicant(self:GetParent():GetParent().applicantID);
 	-- 		end
 	-- 	end)
-	-- 	self.caozuoF.DeclineButton = PIGCloseBut(self.caozuoF, {"LEFT", self.caozuoF.InviteButton, "RIGHT", 4, 0})
+	-- 	self.caozuoF.DeclineButton = PIGDiyBut(self.caozuoF, {"LEFT", self.caozuoF.InviteButton, "RIGHT", 4, 0})
 	-- 	self.caozuoF.DeclineButton:HookScript("OnEnter", function (self)
 	-- 		self:GetParent():GetParent():SetBackdropColor(unpack(xuanzhongBG[2]));
 	-- 	end);
@@ -1314,7 +1314,7 @@ function TardisInfo.Chedui(Activate)
 	-- end
 	-- local function UpdateApplicantMember(member, appID, memberIdx, applicantInfo)
 	-- 	local name, class, localizedClass, level, itemLevel, honorLevel, tank, healer, damage, assignedRole, relationship, dungeonScore, pvpItemLevel = C_LFGList.GetApplicantMemberInfo(appID, memberIdx);
-	-- 	member.Role:SetAtlas(GetIconForRole(assignedRole, false), TextureKitConstants.IgnoreAtlasSize);
+	-- 	member.Role:SetAtlas(PIGGetIconForRole(assignedRole, false), TextureKitConstants.IgnoreAtlasSize);
 	-- 	member.Classe:SetTexCoord(unpack(CLASS_ICON_TCOORDS[class]));
 	-- 	member.nameF.name:SetText(name.."("..level..")");
 	-- 	member.allname=name
@@ -1625,7 +1625,7 @@ function TardisInfo.Chedui(Activate)
 	-- FCTabF.ADD.Role.T:SetSize(40,40);
 	-- FCTabF.ADD.Role.T.role="TANK";
 	-- FCTabF.ADD.Role.T.roleID=2;
-	-- FCTabF.ADD.Role.T:SetNormalAtlas(GetIconForRole(FCTabF.ADD.Role.T.role, false), TextureKitConstants.IgnoreAtlasSize);
+	-- FCTabF.ADD.Role.T:SetNormalAtlas(PIGGetIconForRole(FCTabF.ADD.Role.T.role, false), TextureKitConstants.IgnoreAtlasSize);
 	-- FCTabF.ADD.Role.T.checkButton:SetScript("OnClick", FCTabF.ADD.Role_checkButton)
 	-- FCTabF.ADD.Role.H = CreateFrame("Button",nil,FCTabF.ADD.Role,"LFGRoleButtonWithBackgroundAndRewardTemplate",3);
 	-- FCTabF.ADD.Role.H:SetPoint("LEFT",FCTabF.ADD.Role.T,"RIGHT",20,0);
@@ -1633,13 +1633,13 @@ function TardisInfo.Chedui(Activate)
 	-- FCTabF.ADD.Role.H.role="HEALER";
 	-- FCTabF.ADD.Role.H.roleID=3;
 	-- FCTabF.ADD.Role.H.checkButton:SetScript("OnClick", FCTabF.ADD.Role_checkButton)
-	-- FCTabF.ADD.Role.H:SetNormalAtlas(GetIconForRole(FCTabF.ADD.Role.H.role, false), TextureKitConstants.IgnoreAtlasSize);
+	-- FCTabF.ADD.Role.H:SetNormalAtlas(PIGGetIconForRole(FCTabF.ADD.Role.H.role, false), TextureKitConstants.IgnoreAtlasSize);
 	-- FCTabF.ADD.Role.D = CreateFrame("Button",nil,FCTabF.ADD.Role,"LFGRoleButtonWithBackgroundAndRewardTemplate",1);
 	-- FCTabF.ADD.Role.D:SetPoint("LEFT",FCTabF.ADD.Role.H,"RIGHT",20,0);
 	-- FCTabF.ADD.Role.D:SetSize(40,40);
 	-- FCTabF.ADD.Role.D.role="DAMAGER";
 	-- FCTabF.ADD.Role.D.roleID=1;
-	-- FCTabF.ADD.Role.D:SetNormalAtlas(GetIconForRole(FCTabF.ADD.Role.D.role, false), TextureKitConstants.IgnoreAtlasSize);
+	-- FCTabF.ADD.Role.D:SetNormalAtlas(PIGGetIconForRole(FCTabF.ADD.Role.D.role, false), TextureKitConstants.IgnoreAtlasSize);
 	-- FCTabF.ADD.Role.D.checkButton:SetScript("OnClick", FCTabF.ADD.Role_checkButton)
 	-- FCTabF.ADD.Role:SetScript("OnShow", function(self)
 	-- 	local availTank, availHealer, availDPS = C_LFGList.GetAvailableRoles();

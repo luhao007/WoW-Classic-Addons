@@ -695,7 +695,7 @@ L["showNaxxMinimapMarkersTitle"] = "Naxxramas Minimap";
 L["showNaxxMinimapMarkersDesc"] = "Show Naxxramas marker on the mini map? This will also show you the direction back to naxx when you are a ghost and died inside raid.";
 
 L["bigWigsSupportTitle"] = "BigWigs Support";
-L["bigWigsSupportDesc"] = "Start a timer bar for buff drops if BigWigs is installed?";
+L["bigWigsSupportDesc"] = "Start a timer bar for buff drops if BigWigs is installed? The same type of timer bar DBM does.";
 
 L["soundsNpcWalkingTitle"] = "NPC Walking";
 L["soundsNpcWalkingDesc"] = "Sound to play when a buff NPC starts walking in Orgrimmar?";
@@ -829,8 +829,8 @@ L["disableBuffTimersMaxBuffLevelDesc"] = "Hide world buff timers when you hover 
 L["hideMinimapBuffTimersTitle"] = "Disable Minimap Buff Timers All Levels";
 L["hideMinimapBuffTimersDesc"] = "Hide world buff timers when you hover over the minimap icon for characters all levels? You will only see the terokkar tower timers and dailies etc.";
 
-L["guildTerok10Title"] = "Guild Timer Messages"; --Changed to generic msg for future expansions now.
-L["guildTerok10Desc"] = "Send a message to guild chat when a world event stars soon like terokkar towers if TBC, wintergrasp if wrath, tol barad if cata etc (Reminder that the disable all guild msgs setting further down overrides this).";
+L["guildTerok10Title"] = "Guild Terok/WG 10 Minutes";
+L["guildTerok10Desc"] = "Send a message to guild chat when there's 10 minutes left on terokkar towers if TBC or wintergrasp if wrath.";
 
 L["showShatWorldmapMarkersTerokTitle"] = "Towers/Wintergrasp Worldmap";
 L["showShatWorldmapMarkersTerokDesc"] = "Show terokkar tower or wintergrasp markers on the Capitcal City world map?";
@@ -970,10 +970,10 @@ L["dmfOfflineStatusTooltip"] = "DMF Cooldown 8+ Hours Offline In Rested Area Sta
 L["chronoboonReleased"] = "You have chronoboon released a Darkmoon Faire buff, a new 4 hour cooldown has started.";
 
 L["Stranglethorn"] = "Stranglethorn"; --One word shorter version of Strangethorn Vale to fit better.
-L["ashenvaleEventRunning"] = "Ashenvale running: %s";
+L["ashenvaleEventRunning"] = "Ashenvale is running: %s";
 L["ashenvaleEventStartsIn"] = "Ashenvale starts in %s";
 L["ashenvaleStartSoon"] = "Ashenvale event starts in %s"; --Guild chat msg.
-L["stranglethornEventRunning"] = "Stranglethorn running: %s";
+L["stranglethornEventRunning"] = "Stranglethorn is running: %s";
 L["stranglethornEventStartsIn"] = "Stranglethorn starts in %s";
 L["stranglethornStartSoon"] = "Stranglethorn event starts in %s"; --Guild chat msg.
 L["Spark of Inspiration"] = "Spark of Inspiration"; --Phase 2 SoD world buff.
@@ -1008,33 +1008,3 @@ L["Fervor of the Temple Explorer"] = "Fervor of the Temple Explorer";
 L["No guild"] = "No guild";
 
 L["Temple of Atal'Hakkar"] = "Temple of Atal'Hakkar"; --Not necessarily the dungeon name, need to match what Zandalarian Emissary shouts calls it for sunken temple buff in SoD.
-
-L["cappingSupportTitle"] = "Capping Support";
-L["cappingSupportDesc"] = "Start a timer bar for Ashenvale/STV if capping is installed?";
-
-L["Tol Barad"] = "Tol Barad";
-L["eventIsRunning"] = "%s is running";
-
-L["Blackrock"] = "Blackrock";
-L["blackrockEventRunning"] = "Blackrock running: %s";
-L["blackrockEventStartsIn"] = "Blackrock starts in %s";
-L["blackrockStartSoon"] = "Blackrock event starts in %s"; --Guild chat msg.
-L["Blackrock PvP Event"] = "Blackrock PvP Event";
-L["Total honor this event"] = "Total honor this event";
-
-L["Might of Stormwind"] = "Might of Stormwind";
-
-L["printStvCoinsTitle"] = "Print STV Coins";
-L["printStvCoinsDesc"] = "Print to chat a counter of how many STV coins earned during the event.";
-
-L["printBlackrockHonorTitle"] = "Print Blackrock Honor";
-L["printBlackrockHonorDesc"] = "Print to chat a counter of how much Blackrock Eruption honor earned during the event.";
-
-L["chatOnlyInCityTitle"] = "Only In City";
-L["chatOnlyInCityDesc"] = "Only print timer and buff drop chat msgs when you are in the main city where the buffs drop (Stranglethorn Vale included for Zandalar buff).";
-
-L["middleOnlyInCityTitle"] = "Only In City";
-L["middleOnlyInCityDesc"] = "Only show middle of the screen timer and buff drop msgs when you are in the main city where the buffs drop (Stranglethorn Vale included for Zandalar buff).";
-
-L["flashOnlyInCityTitle"] = "Only In City";
-L["flashOnlyInCityDesc"] = "Only flash while minimized when you are in the main city where the buffs drop (Stranglethorn Vale included for Zandalar buff).";

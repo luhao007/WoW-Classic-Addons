@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("Azgaloth", "DBM-Party-Vanilla", 21)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240928121922")
+mod:SetRevision("20240930053150")
 mod:SetEncounterID(3080)
 mod:SetCreatureID(232632)
 

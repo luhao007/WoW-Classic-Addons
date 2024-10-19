@@ -29,8 +29,8 @@ function NWB:getWeeklyReset()
 		end
 		--If lib fails use wow client api, less reliable since people can play cross region.
 		if (not regionName) then
-			local regions = {"US", "KR", "EU", "TW", "CN"};
-			regionName = regions[NWB:GetCurrentRegion()];
+			local regions = {"US", "KR", "EU", "TW", "CN"}
+			regionName = regions[GetCurrentRegion()]
 		end
 		local regionDays = {
 	    	["US"] = "Tuesday",
@@ -85,8 +85,8 @@ function NWB:getThreeDayReset()
 	end
 	--If lib fails use wow client api, less reliable since people can play cross region.
 	if (not regionName) then
-		local regions = {"US", "KR", "EU", "TW", "CN"};
-		regionName = regions[NWB:GetCurrentRegion()];
+		local regions = {"US", "KR", "EU", "TW", "CN"}
+		regionName = regions[GetCurrentRegion()]
 	end
 	--Get our static reset timestamp from the past.
 	local staticPastResetTime = threeDayResetTimes[regionName] or 0;

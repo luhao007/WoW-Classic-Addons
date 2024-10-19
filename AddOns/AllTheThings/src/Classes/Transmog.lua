@@ -15,7 +15,6 @@ if not C_TransmogCollection then
 
 	-- External Functionality
 	app.AddSourceInformation = app.EmptyFunction;
-	app.BuildSourceInformationForPopout = app.EmptyFunction;
 	app.GetGroupSourceID = app.EmptyFunction
 
 	-- Extend the Filter Module to include ItemSource
@@ -568,7 +567,6 @@ local function CollectUniqueAppearances()
 end
 local function RefreshAppearanceSources()
 	-- app.PrintDebug("RefreshAppearanceSources")
-	app.DoRefreshAppearanceSources = nil;
 	wipe(AccountSources);
 	-- C_TransmogCollection.PlayerKnowsSource is slower and provides less known sources...
 	-- Simply determine the max known SourceID from ATT cached sources
@@ -590,13 +588,14 @@ end
 -- for instance, Data.Sources would only change in refresh, with nil or 1 being stored
 -- and a separate storage for Unique-collected Sources, then adjusting Transmog class logic to allow referencing
 -- the Unique table when in Unique mode? maybe once events are all good it won't really matter
-app.AddEventHandler("OnSourceCollection", function()
-	if app.DoRefreshAppearanceSources then
+app.AddEventHandler("OnRecalculate", function()
+	if app.MODE_DEBUG or app.Settings:Get("Thing:Transmog") then
 		RefreshAppearanceSources();
+		app.HandleEvent("OnSourcesCollected")
 	end
 end)
-app.AddEventHandler("OnUniqueSourceCollection", function()
-	if app.Settings:Get("Thing:Transmog") and not app.Settings:Get("Completionist") then
+app.AddEventHandler("OnSourcesCollected", function()
+	if not app.Settings:Get("Completionist") then
 		CollectUniqueAppearances();
 	end
 end)
@@ -676,10 +675,6 @@ do
 		collected = function(t)
 			return AccountSources[t.sourceID];
 		end,
-		trackable = app.ReturnTrue,
-		saved = function(t)
-			return app.IsAccountCached("Sources", t.sourceID) == 1
-		end,
 		collectedwarband = app.IsClassic and app.EmptyFunction or
 		function(t)
 			return app.IsAccountCached("SourceItemsOnCharacter", t.sourceID)
@@ -719,7 +714,10 @@ do
 		return t;
 	end) or function(sourceID, itemID, t)
 		t = createItemWithAppearance(sourceID, t);
-		t.itemID = itemID;
+		-- TEMPORARY
+		if itemID and itemID > 0 then
+			t.itemID = itemID;
+		end
 		return t;
 	end
 end
@@ -754,108 +752,106 @@ app.AddSourceInformation = function(sourceID, info, group)
 		local sourceGroup = group
 		-- app.PrintDebug("ASI",app:SearchLink(group))
 		-- app.PrintGroup(group)
-		local working = false;
+		local working
 		local allVisualSources = C_TransmogCollection_GetAllAppearanceSources(sourceInfo.visualID) or app.EmptyTable;
 		if #allVisualSources < 1 or not contains(allVisualSources, sourceID) then
 			-- Items with SourceInfo which don't register as having any visual data or don't include themselves as a shared appearance...
 			-- This typically happens on Items which can have a collectible SourceID, but not usable for Transmog
 			tinsert(info, 1, { left = L.FORCE_REFRESH_REQUIRED, wrap = true, color = app.Colors.TooltipDescription });
 		end
-		if app.Settings:GetTooltipSetting("SharedAppearances") then
-			local text, linkInfo
-			local useItemIDs, origSource = app.Settings:GetTooltipSetting("itemID"), app.Settings:GetTooltipSetting("IncludeOriginalSource")
-			if app.Settings:GetTooltipSetting("OnlyShowRelevantSharedAppearances") then
-				-- The user doesn't want to see Shared Appearances that don't match the item's requirements.
-				for i,otherSourceID in ipairs(allVisualSources) do
-					if otherSourceID == sourceID and not sourceGroup.missing then
-						if origSource then
-							linkInfo = GetLinkTooltipInfo(sourceGroup, useItemIDs, true)
-							if not working and linkInfo.working then
-								working = true
-							end
-							info[#info + 1] = linkInfo
+		local text, linkInfo
+		local useItemIDs, origSource = app.Settings:GetTooltipSetting("itemID"), app.Settings:GetTooltipSetting("IncludeOriginalSource")
+		if app.Settings:GetTooltipSetting("OnlyShowRelevantSharedAppearances") then
+			-- The user doesn't want to see Shared Appearances that don't match the item's requirements.
+			for i,otherSourceID in ipairs(allVisualSources) do
+				if otherSourceID == sourceID and not sourceGroup.missing then
+					if origSource then
+						linkInfo = GetLinkTooltipInfo(sourceGroup, useItemIDs, true)
+						if not working and linkInfo.working then
+							working = true
 						end
-					else
-						local otherATTSource = app.SearchForObject("sourceID", otherSourceID, "field");
-						if otherATTSource then
-							-- Only show Shared Appearances that match the requirements for this class to prevent people from assuming things.
-							if (sourceGroup.f == otherATTSource.f or sourceGroup.f == 2 or otherATTSource.f == 2) and not otherATTSource.nmc and not otherATTSource.nmr then
-								linkInfo = GetLinkTooltipInfo(otherATTSource, useItemIDs)
-								if not working and linkInfo.working then
-									working = true
-								end
-								info[#info + 1] = linkInfo
-							end
-						else
-							local otherSource = C_TransmogCollection_GetSourceInfo(otherSourceID);
-							if otherSource then
-								local link = select(2, GetItemInfo(otherSource.itemID));
-								if not link then
-									link = RETRIEVING_DATA;
-									working = true;
-								end
-								text = " |CFFFF0000!|r " .. link .. (useItemIDs and (" (" .. (otherSourceID == sourceID and "*" or otherSource.itemID or "???") .. ")") or "");
-								if otherSource.isCollected then AccountSources[otherSourceID] = 1; end
-								tinsert(info, { left = text	.. " |CFFFF0000(" .. (IsRetrieving(link) and "INVALID BLIZZARD DATA " or "MISSING IN ATT ") .. otherSourceID .. ")|r", right = app.GetCollectionIcon(otherSource.isCollected)});	-- This is debug info for contribs, do not localize it
-							end
-						end
+						info[#info + 1] = linkInfo
 					end
-				end
-			else
-				-- This is where we need to calculate the requirements differently because Unique Mode users are extremely frustrating.
-				for i,otherSourceID in ipairs(allVisualSources) do
-					if otherSourceID == sourceID and not sourceGroup.missing then
-						if origSource then
-							linkInfo = GetLinkTooltipInfo(sourceGroup, useItemIDs, true)
-							if not working and linkInfo.working then
-								working = true
-							end
-							info[#info + 1] = linkInfo
-						end
-					else
-						local otherATTSource = app.SearchForObject("sourceID", otherSourceID, "field");
-						if otherATTSource then
+				else
+					local otherATTSource = app.SearchForObject("sourceID", otherSourceID, "field");
+					if otherATTSource then
+						-- Only show Shared Appearances that match the requirements for this class to prevent people from assuming things.
+						if (sourceGroup.f == otherATTSource.f or sourceGroup.f == 2 or otherATTSource.f == 2) and not otherATTSource.nmc and not otherATTSource.nmr then
 							linkInfo = GetLinkTooltipInfo(otherATTSource, useItemIDs)
 							if not working and linkInfo.working then
 								working = true
 							end
-							local failText = "";
-							-- Show all of the reasons why an appearance does not meet given criteria.
-							-- Only show Shared Appearances that match the requirements for this class to prevent people from assuming things.
-							if sourceGroup.f ~= otherATTSource.f then
-								-- This is NOT the same type. Therefore, no credit for you!
-								if #failText > 0 then failText = failText .. ", "; end
-								failText = failText .. (L.FILTER_ID_TYPES[otherATTSource.f] or "???");
-							elseif otherATTSource.nmc then
-								-- This is NOT for your class. Therefore, no credit for you!
-								if #failText > 0 then failText = failText .. ", "; end
-								-- failText = failText .. "Class Locked";
-								for i,classID in ipairs(otherATTSource.c) do
-									if i > 1 then failText = failText .. ", "; end
-									failText = failText .. (app.ClassInfoByID[classID].name or "???");
-								end
-							elseif otherATTSource.nmr then
-								-- This is NOT for your race. Therefore, no credit for you!
-								if #failText > 1 then failText = failText .. ", "; end
-								failText = failText .. L.RACE_LOCKED;
-							else
-								-- Should be fine
-							end
-
-							if #failText > 0 then linkInfo.left = linkInfo.left .. " |CFFFF0000(" .. failText .. ")|r"; end
 							info[#info + 1] = linkInfo
-						else
-							local otherSource = C_TransmogCollection_GetSourceInfo(otherSourceID);
-							if otherSource then
-								local link = select(2, GetItemInfo(otherSource.itemID));
-								if not link then
-									link = RETRIEVING_DATA;
-									working = true;
-								end
-								text = " |CFFFF0000!|r " .. link .. (useItemIDs and (" (" .. (otherSourceID == sourceID and "*" or otherSource.itemID or "???") .. ")") or "");
-								if otherSource.isCollected then AccountSources[otherSourceID] = 1; end
-								tinsert(info, { left = text	.. " |CFFFF0000(" .. (IsRetrieving(link) and "INVALID BLIZZARD DATA " or "MISSING IN ATT ") .. otherSourceID .. ")|r", right = app.GetCollectionIcon(otherSource.isCollected)});	-- This is debug info for contribs, do not localize it
+						end
+					else
+						local otherSource = C_TransmogCollection_GetSourceInfo(otherSourceID);
+						if otherSource then
+							local link = select(2, GetItemInfo(otherSource.itemID));
+							if not link then
+								link = RETRIEVING_DATA;
+								working = true;
 							end
+							text = " |CFFFF0000!|r " .. link .. (useItemIDs and (" (" .. (otherSourceID == sourceID and "*" or otherSource.itemID or "???") .. ")") or "");
+							if otherSource.isCollected then AccountSources[otherSourceID] = 1; end
+							tinsert(info, { left = text	.. " |CFFFF0000(" .. (IsRetrieving(link) and "INVALID BLIZZARD DATA " or "MISSING IN ATT ") .. otherSourceID .. ")|r", right = app.GetCollectionIcon(otherSource.isCollected)});	-- This is debug info for contribs, do not localize it
+						end
+					end
+				end
+			end
+		else
+			-- This is where we need to calculate the requirements differently because Unique Mode users are extremely frustrating.
+			for i,otherSourceID in ipairs(allVisualSources) do
+				if otherSourceID == sourceID and not sourceGroup.missing then
+					if origSource then
+						linkInfo = GetLinkTooltipInfo(sourceGroup, useItemIDs, true)
+						if not working and linkInfo.working then
+							working = true
+						end
+						info[#info + 1] = linkInfo
+					end
+				else
+					local otherATTSource = app.SearchForObject("sourceID", otherSourceID, "field");
+					if otherATTSource then
+						linkInfo = GetLinkTooltipInfo(otherATTSource, useItemIDs)
+						if not working and linkInfo.working then
+							working = true
+						end
+						local failText = "";
+						-- Show all of the reasons why an appearance does not meet given criteria.
+						-- Only show Shared Appearances that match the requirements for this class to prevent people from assuming things.
+						if sourceGroup.f ~= otherATTSource.f then
+							-- This is NOT the same type. Therefore, no credit for you!
+							if #failText > 0 then failText = failText .. ", "; end
+							failText = failText .. (L.FILTER_ID_TYPES[otherATTSource.f] or "???");
+						elseif otherATTSource.nmc then
+							-- This is NOT for your class. Therefore, no credit for you!
+							if #failText > 0 then failText = failText .. ", "; end
+							-- failText = failText .. "Class Locked";
+							for i,classID in ipairs(otherATTSource.c) do
+								if i > 1 then failText = failText .. ", "; end
+								failText = failText .. (app.ClassInfoByID[classID].name or "???");
+							end
+						elseif otherATTSource.nmr then
+							-- This is NOT for your race. Therefore, no credit for you!
+							if #failText > 1 then failText = failText .. ", "; end
+							failText = failText .. L.RACE_LOCKED;
+						else
+							-- Should be fine
+						end
+
+						if #failText > 0 then linkInfo.left = linkInfo.left .. " |CFFFF0000(" .. failText .. ")|r"; end
+						info[#info + 1] = linkInfo
+					else
+						local otherSource = C_TransmogCollection_GetSourceInfo(otherSourceID);
+						if otherSource then
+							local link = select(2, GetItemInfo(otherSource.itemID));
+							if not link then
+								link = RETRIEVING_DATA;
+								working = true;
+							end
+							text = " |CFFFF0000!|r " .. link .. (useItemIDs and (" (" .. (otherSourceID == sourceID and "*" or otherSource.itemID or "???") .. ")") or "");
+							if otherSource.isCollected then AccountSources[otherSourceID] = 1; end
+							tinsert(info, { left = text	.. " |CFFFF0000(" .. (IsRetrieving(link) and "INVALID BLIZZARD DATA " or "MISSING IN ATT ") .. otherSourceID .. ")|r", right = app.GetCollectionIcon(otherSource.isCollected)});	-- This is debug info for contribs, do not localize it
 						end
 					end
 				end
@@ -899,7 +895,7 @@ app.AddSourceInformation = function(sourceID, info, group)
 		return working;
 	end
 end
-app.BuildSourceInformationForPopout = function(group)
+local function BuildSourceInformationForPopout(group)
 	-- Create groups showing Appearance information
 	if group.sourceID then
 		-- print(group.__type)
@@ -907,7 +903,7 @@ app.BuildSourceInformationForPopout = function(group)
 		-- source without an item, try to generate the valid item link for it
 		if not group.itemID and not group.artifactID then
 			app.ImportRawLink(group, app.DetermineItemLink(group.sourceID));
-			-- if we found a Item link, save it into ATTHarvestItems for ease of use (don't need to add Item, parse, Havrest, add harvest, parse)
+			-- if we found a Item link, save it into ATTHarvestItems for ease of use (don't need to add Item, parse, Harvest, add harvest, parse)
 			app.SaveHarvestSource(group);
 		end
 		-- Attempt to get information about the source ID.
@@ -921,10 +917,9 @@ app.BuildSourceInformationForPopout = function(group)
 			for _,otherSourceID in ipairs(C_TransmogCollection_GetAllAppearanceSources(sourceInfo.visualID)) do
 				-- If this isn't the source we already did work on and we haven't already completed it
 				if otherSourceID ~= group.sourceID then
-					local shared = app.SearchForMergedObject("sourceID", otherSourceID);
+					local shared = app.SearchForObject("sourceID", otherSourceID, "key");
 					if shared then
-						shared = app.__CreateObject(shared, true);
-						shared.hideText = true;
+						shared = app.CloneObject(shared, true);
 						tinsert(g, shared);
 						-- print("ATT Appearance:",shared.hash,shared.modItemID)
 					else
@@ -944,27 +939,29 @@ app.BuildSourceInformationForPopout = function(group)
 			local appearanceGroup;
 			if #g > 0 then
 				appearanceGroup = app.CreateNPC(app.HeaderConstants.SHARED_APPEARANCES, {
-					["OnUpdate"] = app.AlwaysShowUpdate,
-					["sourceIgnored"] = true,
-					["skipFill"] = true,
-					["g"] = g,
+					OnUpdate = app.AlwaysShowUpdate,
+					OnClick = app.UI.OnClick.IgnoreRightClick,
+					sourceIgnored = true,
+					skipFill = true,
+					SortPriority = -2.3,
+					g = g,
 				});
 			else
 				appearanceGroup = app.CreateNPC(app.HeaderConstants.UNIQUE_APPEARANCE, {
-					["OnUpdate"] = app.AlwaysShowUpdate,
-					["sourceIgnored"] = true,
-					["skipFill"] = true,
+					OnUpdate = app.AlwaysShowUpdate,
+					OnClick = app.UI.OnClick.IgnoreRightClick,
+					sourceIgnored = true,
+					skipFill = true,
+					SortPriority = -2.3,
 				});
 			end
 			-- add the group showing the Appearance information for this popout
 			if group.g then tinsert(group.g, appearanceGroup)
 			else group.g = { appearanceGroup } end
 		end
-
-		-- Now apply Gear Sets, if relevant.
-		app.BuildGearSetInformationForGroup(group);
 	end
 end
+app.AddEventHandler("OnNewPopoutGroup", BuildSourceInformationForPopout)
 
 -- Event Handling
 app.AddEventRegistration("TRANSMOG_COLLECTION_SOURCE_ADDED", function(sourceID)
@@ -1024,10 +1021,22 @@ app.AddEventRegistration("TRANSMOG_COLLECTION_SOURCE_REMOVED", function(sourceID
 		-- Refresh the Data and Cry!
 		app.UpdateRawIDs("sourceID", unlearnedSourceIDs);
 		app.HandleEvent("OnThingRemoved", "Transmog")
-		app.WipeSearchCache();
 	end
 end)
 
+app.AddEventHandler("OnLoad", function()
+	app.Settings.CreateInformationType("SharedAppearances", {
+		text = "SharedAppearances",
+		priority = 2.899, HideCheckBox = true,
+		Process = function(t, reference, tooltipInfo)
+			local sourceID = reference.sourceID
+			if not sourceID then return end
+			if app.AddSourceInformation(sourceID, tooltipInfo, reference) then
+				reference.working = true
+			end
+		end
+	})
+end)
 app.AddEventHandler("OnStartup", function()
 	local conversions = app.Settings.InformationTypeConversionMethods;
 	conversions.sourceID = function(sourceID)

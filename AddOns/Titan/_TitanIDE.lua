@@ -1,6 +1,6 @@
 --[===[ File
     This file is NOT to be included in the TOC file!
-    This is intended for IDE Intellisense.
+    This is intended to be used for IDE Intellisense.
 --]===]
 
 --[[ IDE
@@ -37,6 +37,7 @@
 
 --====== Frames from Titan Template XML
 TitanPanelButtonTemplate = {}
+TitanPanelChildButtonTemplate = {}
 TitanPanelTextTemplate = {}
 TitanPanelIconTemplate = {}
 TitanPanelComboTemplate = {}
@@ -120,7 +121,7 @@ VideoOptionsFrameOkay_OnClick = {}
 -- Lua allows table updates but the IDE complains about 'injecting' a field it does not know about.
 -- Adding a function or variable to a frame in this case.
 
----@class Button Plugin frame from a Titan template
+---@class Frame Plugin frame from a Titan template
 ---@field TitanLDBSetOwnerPosition function Anchor tooltip
 ---@field TitanLDBSetTooltip function Fill tooltip
 ---@field TitanLDBHandleScripts function Set frame scripts
@@ -133,15 +134,11 @@ VideoOptionsFrameOkay_OnClick = {}
 ---@field TitanAction string Not used ATM
 ---@field bar_name string Used by auto hide built-in
 ---@field registry table Any Titan plugin (built-in; third party; or LDB)
----@field tooltipText string Titan text for the tool tip
 
----@class UIParent WoW frame
----@field GetScale function WoW region routine
 
 ---@class Button Plugin frame
 ---@field RequestTimePlayed table Override default - XP
 ---@field TIME_PLAYED_MSG table Override default - XP
----@field short_name string Placeholder for short bar name
 
 
 --====== WoW Drop down menu

@@ -95,3 +95,4 @@ TaintLess\TaintLess.xml
 
 # Custom Luas
 custom.lua
+sharedmedia.lua

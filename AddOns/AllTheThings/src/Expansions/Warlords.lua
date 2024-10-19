@@ -4,7 +4,7 @@ local _, app = ...;
 -- Check to see if Garrison APIs are available for Warlords
 local C_Garrison = C_Garrison;
 if not C_Garrison then
-	app.CreateGarrisonBuilding = app.CreateUnimplementedClass("GarrisonBuilding", "garrisonBuildingID");
+	app.CreateGarrisonBuilding = app.CreateUnimplementedClass("GarrisonBuilding", "garrisonbuildingID");
 	app.CreateGarrisonMission = app.CreateUnimplementedClass("GarrisonMission", "missionID");
 	app.CreateGarrisonTalent = app.CreateUnimplementedClass("GarrisonTalent", "garrisonTalentID");
 	app.CreateFollower = app.CreateUnimplementedClass("Follower", "followerID");
@@ -21,7 +21,7 @@ local L = app.L;
 
 -- Buildings
 do
-	local KEY, CACHE = "garrisonBuildingID", "GarrisonBuildings"
+	local KEY, CACHE = "garrisonbuildingID", "GarrisonBuildings"
 	local C_Garrison_GetBuildingInfo
 		= C_Garrison.GetBuildingInfo;
 	local GarrisonBuildingInfoMeta = { __index = function(t, key)
@@ -150,7 +150,6 @@ do
 		description = function(t)
 			return t.info.description;
 		end,
-		trackable = app.ReturnTrue,
 		saved = function(t)
 			return C_Garrison_GetTalentInfo(t.garrisonTalentID).researched;
 		end,
@@ -160,6 +159,7 @@ end
 -- Followers (Not Warlords exclusive, but the API originally was added with Warlords!)
 do
 	local KEY, CACHE = "followerID", "Followers"
+	local CLASSNAME = "Follower"
 	local C_Garrison_GetFollowerInfo, C_Garrison_GetFollowerLinkByID, C_Garrison_IsFollowerCollected
 		= C_Garrison.GetFollowerInfo, C_Garrison.GetFollowerLinkByID, C_Garrison.IsFollowerCollected;
 	local cache = app.CreateCache(KEY);
@@ -177,7 +177,7 @@ do
 		_t.link = C_Garrison_GetFollowerLinkByID(id);
 		if field then return _t[field]; end
 	end
-	app.CreateFollower = app.CreateClass("Follower", KEY, {
+	app.CreateFollower = app.CreateClass(CLASSNAME, KEY, {
 		name = function(t)
 			return cache.GetCachedField(t, "name", CacheInfo);
 		end,
@@ -207,7 +207,6 @@ do
 			-- account-wide collected
 			if app.IsAccountTracked(CACHE, id) then return 2; end
 		end,
-		trackable = app.ReturnTrue,
 		saved = function(t)
 			local id = t[KEY];
 			-- character collected
@@ -233,6 +232,7 @@ do
 			if not currentCharacter[CACHE] then currentCharacter[CACHE] = {} end
 			if not accountWideData[CACHE] then accountWideData[CACHE] = {} end
 		end);
+		app.AddSimpleCollectibleSwap(CLASSNAME, CACHE)
 	});
 end
 

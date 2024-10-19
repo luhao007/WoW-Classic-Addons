@@ -155,7 +155,7 @@ for index=1,zongshu do
 			PIGA_Per["PigAction"]["Open"][index]=false
 			Pig_Options_RLtishi_UI:Show()
 		end
-		Action_plusF:OnShow_ope()
+		Checkbut:ShowOpenFun()
 	end);
 	Checkbut.ShowHide=PIGDownMenu(Checkbut,{"LEFT",Checkbut.Text,"RIGHT",20,0},{130,24})
 	function Checkbut.ShowHide:PIGDownMenu_Update_But(self)

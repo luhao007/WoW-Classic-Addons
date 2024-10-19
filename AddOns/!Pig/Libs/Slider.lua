@@ -18,13 +18,11 @@ local function PIGformatter(labelType,danwei,weishu)
 		if danwei and danwei~="" and danwei~=" " then
 			if type(danwei)=="function" then
 				return danwei(arg1)
-			elseif danwei:match("%%") then
+			elseif danwei:match("%%s") then
+				return format(danwei, arg1)
+			elseif danwei:match("%%") and danwei=="%" then
 				local arg1 = arg1*100
-				if danwei=="%" then
-					return arg1.."%"
-				else
-					return format(danwei, arg1)
-				end
+				return arg1.."%"
 			else
 				return format(danwei, arg1)
 			end

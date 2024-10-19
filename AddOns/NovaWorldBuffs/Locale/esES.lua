@@ -899,8 +899,8 @@ L["disableBuffTimersMaxBuffLevelDesc"] = "¿Oculta los temporizadores de benefic
 L["hideMinimapBuffTimersTitle"] = "Desactivar los temporizadores de beneficio del minimapa todos los niveles";
 L["hideMinimapBuffTimersDesc"] = "¿Oculta los temporizadores de beneficio del mundo cuando pasas el cursor sobre el icono del minimapa para personajes de todos los niveles? Solo verás los temporizadores y diarios de la torre Terokkar, etc.";
 
-L["guildTerok10Title"] = "Mensajes de temporizador de hermandad"; --Changed to generic msg for future expansions now.
-L["guildTerok10Desc"] = "Envía un mensaje al chat de la hermandad cuando un evento del mundo esté por aparecer, como las torres de Terokkar en TBC, Conquista del Invierno en Wrath, Tol Barad en Cata, etc.";
+L["guildTerok10Title"] = "Hermandad Terokkar/CI 10 Minutos";
+L["guildTerok10Desc"] = "Envía un mensaje al chat de la hermandad cuando quedan 10 minutos en las torres de Terokkar si es TBC o en Conquista del Invierno si es WoTLK.";
 
 L["showShatWorldmapMarkersTerokTitle"] = "Mapa Torres/Conquista del Invierno";
 L["showShatWorldmapMarkersTerokDesc"] = "¿Muestra la torre Terokkar o los marcadores de Conquista del Invierno en el mapa de la ciudad capital?";
@@ -1080,18 +1080,3 @@ L["Fervor of the Temple Explorer"] = "Fervor del expedicionario del templo";
 L["No guild"] = "Sin hermandad";
 
 L["Temple of Atal'Hakkar"] = "Templo de Atal'Hakkar";
-
-L["cappingSupportTitle"] = "Soporte de Capping";
-L["cappingSupportDesc"] = "¿Inicia una barra de temporizador para Vallefresno/Tuercespina si Capping está instalado?";
-
-L["Tol Barad"] = "Tol Barad";
-L["eventIsRunning"] = "%s está activo";
-
-L["Blackrock"] = "Blackrock";
-L["blackrockEventRunning"] = "Blackrock running: %s";
-L["blackrockEventStartsIn"] = "Blackrock starts in %s";
-L["blackrockStartSoon"] = "Blackrock event starts in %s"; --Guild chat msg.
-L["Blackrock PvP Event"] = "Blackrock PvP Event";
-L["Total honor this event"] = "Total honor this event";
-
-L["Might of Stormwind"] = "Poderío de Ventormenta";

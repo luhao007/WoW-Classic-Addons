@@ -5,6 +5,8 @@
 ## Title-zhCN: |cFFFFE00A<|r|cFFC79C6E战斗|r|cFFFFE00A>|r |cFFFFFFFF伤害统计|r |cFF69CCF0插件|r |cFF22B14C坦克守护|r
 ## Notes-zhCN: 显示坦克的减益，同时显示受到的治疗以及上一次伤害
 
+## IconTexture: Interface\AddOns\Details\images\minimap
+
 ## RequiredDeps: Details
 ## OptionalDeps: Ace3
 

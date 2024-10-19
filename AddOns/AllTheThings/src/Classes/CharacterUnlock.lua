@@ -58,7 +58,6 @@ end
 local CreateCharacterUnlockQuestItem = app.ExtendClass("Item", "CharacterUnlockQuestItem", "questID", {
 	collectible = Collectible,
 	collected = CollectedAsQuest,
-	trackable = app.ReturnTrue,
 	saved = SavedAsQuest,
 	characterUnlock = app.ReturnTrue,
 	IsClassIsolated = true,
@@ -66,7 +65,6 @@ local CreateCharacterUnlockQuestItem = app.ExtendClass("Item", "CharacterUnlockQ
 local CreateCharacterUnlockSpellItem = app.ExtendClass("Item", "CharacterUnlockSpellItem", "spellID", {
 	collectible = Collectible,
 	collected = CollectedAsSpell,
-	trackable = app.ReturnTrue,
 	saved = SavedAsSpell,
 	characterUnlock = app.ReturnTrue,
 	IsClassIsolated = true,
@@ -74,15 +72,16 @@ local CreateCharacterUnlockSpellItem = app.ExtendClass("Item", "CharacterUnlockS
 local CreateCharacterUnlockQuest = app.ExtendClass("Quest", "CharacterUnlockQuest", "questID", {
 	collectible = Collectible,
 	collected = CollectedAsQuest,
-	trackable = app.ReturnTrue,
 	saved = SavedAsQuest,
 	characterUnlock = app.ReturnTrue,
 	IsClassIsolated = true,
+	variants = {
+		WithAutoName = app.GlobalVariants.WithAutoName
+	}
 })
 local CreateCharacterUnlockSpell = app.ExtendClass("Spell", "CharacterUnlockSpell", "spellID", {
 	collectible = Collectible,
 	collected = CollectedAsSpell,
-	trackable = app.ReturnTrue,
 	saved = SavedAsSpell,
 	characterUnlock = app.ReturnTrue,
 	IsClassIsolated = true,

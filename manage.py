@@ -70,6 +70,7 @@ class Manager:
             if func.startswith('handle_lib'):
                 getattr(self, func)()
 
+        self.process_custom_luas()
         self.process_lib_tocs()
 
     @functools.lru_cache
@@ -168,6 +169,26 @@ class Manager:
                 if os.path.exists(path):
                     utils.process_file(path, functools.partial(process, config, addon))
 
+    def process_custom_luas(self):
+        lines = ['local media = LibStub("LibSharedMedia-3.0")\n', '\n']
+
+        root = Path('AddOns/!!Libs/SharedMedia/')
+        p = 'Interface\\\\AddOns\\\\!!Libs\\\\SharedMedia'
+
+        lines += ['-- Add textures\n', '\n']
+        for texture in os.listdir(root / 'textures'):
+            t = texture.split('.')[0]
+            lines.append(f'media:Register(media.MediaType.STATUSBAR, "{t}", "{p}\\\\textures\\\\{t}.tga")\n')
+
+        lines += ['\n', '-- Add fonts\n', '\n']
+
+        for texture in os.listdir(root / 'fonts'):
+            t = texture.split('.')[0]
+            lines.append(f'media:Register(media.MediaType.FONT, "{t}", "{p}\\\\fonts\\\\{t}.ttf", media.LOCALE_BIT_zhCN)\n')
+
+        with open('AddOns/!!Libs/sharedmedia.lua', 'w', encoding='utf-8') as file:
+            file.writelines(lines)
+
     def process_lib_tocs(self):
         toc = TOC([])
 
@@ -241,7 +262,7 @@ class Manager:
         libs -= luas
         toc.contents.append('# Other Libs\n')
         for lib in sorted(libs):
-            if lib == 'textures':
+            if lib == 'SharedMedia':
                 continue
             toc.contents.append(utils.lib_to_toc(lib))
 

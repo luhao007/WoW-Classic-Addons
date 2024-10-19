@@ -60,12 +60,16 @@ end
 -- Most of the time, there's no reason for ATT to try handling game events until it's even ready to do anything with it
 -- So instead of individually adding a bazillion OnReady event registrations, let's just have one method do that all for us
 local OnReadyEventRegistrations = {}
-app.AddEventRegistration = function(event, func)
+app.AddEventRegistration = function(event, func, doNotPreRegister)
 	if not event or not func then
 		app.print("AddEventRegistration invalid call",event,func)
 	end
-	-- app.PrintDebug("Event Func Registered",event,func)
-	OnReadyEventRegistrations[event] = func
+	if doNotPreRegister then
+		app.events[event] = func
+	else
+		-- app.PrintDebug("Event Func Registered",event,func)
+		OnReadyEventRegistrations[event] = func
+	end
 end
 app.AddEventHandler("OnReady", function()
 	local Register = app.RegisterFuncEvent
@@ -92,19 +96,14 @@ local EventSequence = {
 	OnStartup = {
 		"OnStartupDone"
 	},
-	OnStartupDone = {
-		"OnRefreshSettings"
-	},
 	OnRefreshSettings = {
 		"OnSettingsRefreshed"
 	},
-	OnRefreshCollections = {
-		"OnRefreshCollectionsDone",
-	},
 	OnRecalculate = {
-		"OnSourceCollection",
-		"OnUniqueSourceCollection",
 		"OnRecalculateDone",
+	},
+	OnRecalculateDone = {
+		"OnRefreshComplete",
 	},
 	OnRenderDirty = {
 		"OnRefreshWindows"
@@ -112,59 +111,88 @@ local EventSequence = {
 	OnSavesUpdated = {
 		"OnRefreshWindows"
 	},
-	-- OnRecalculate_NewSettings = {
-	-- },
-	-- OnRecalculateDone = {
-	-- 	"OnRefreshComplete",
-	-- },
 }
+-- Classic has some convoluted refresh sequence handling with coroutines and manual calls to events and data refreshes, so
+-- I don't wanna mess with all that. We just won't link the OnRecalculate to the OnRefreshCollections for Classic --Runaway
+if app.IsRetail then
+	EventSequence.OnRefreshCollections = {
+		"OnBeforeRecalculate",
+		"OnRecalculate",
+		"OnRefreshCollectionsDone",
+	}
+else
+	EventSequence.OnRefreshCollections = {
+		"OnRefreshCollectionsDone",
+	}
+end
 
 local Runner = app.CreateRunner("events")
 -- Runner.SetPerFrameDefault(5)
 local Callback = app.CallbackHandlers.Callback
 local function DebugEventStart(eventName,...)
-	app.PrintDebug("HandleEvent:Start",app.Modules.Color.Colorize(eventName,app.Colors.Time),...)
+	app.PrintDebug(app.Modules.Color.Colorize(eventName,app.Colors.Time),...)
 end
 local function DebugEventDone(eventName,...)
-	app.PrintDebug("HandleEvent:Done",app.Modules.Color.Colorize(eventName,app.Colors.Horde),...)
+	app.PrintDebug(app.Modules.Color.Colorize(eventName,app.Colors.Horde),...)
 end
-
-app.HandleEvent = function(eventName, ...)
+local SequenceEventsStack = {}
+local function OnEndSequenceEvents()
+	local sequenceEventCount = #SequenceEventsStack
+	if sequenceEventCount > 0 then
+		-- app.PrintDebug(app.Modules.Color.Colorize(SequenceEventsStack[sequenceEventCount],app.Colors.Mount))
+		-- callback the top event in the SequenceEventsStack (Runner is reset after OnEnd in the same frame)
+		app.CallbackEvent(SequenceEventsStack[sequenceEventCount])
+		SequenceEventsStack[sequenceEventCount] = nil
+	end
+end
+local function QueueSequenceEvents(eventName)
 	local sequenceEvents = EventSequence[eventName]
-	-- getting to the point where there's noticeable stutter again during refresh due to the amount of handlers added
-	-- to the refresh event. would rather spread that out over multiple frames so it remains unnoticeable
-	-- additionally, since some events can process on a Runner, then following Events need to also be pushed onto
-	-- the Event Runner so that they execute in the expected sequence
-	if RunnerEvents[eventName] or Runner.IsRunning() then
-		-- app.PrintDebug("HandleEvent:",app.Modules.Color.Colorize(eventName,app.Colors.LockedWarning),...)
-		-- Runner.Run(DebugEventStart, eventName, ...)
-		for i,handler in ipairs(EventHandlers[eventName]) do
-			-- Runner.Run(app.PrintDebug,"HandleEvent:",app.Modules.Color.Colorize(eventName,app.Colors.Time),"Handler #",i)
-			Runner.Run(handler, ...)
-			-- Runner.Run(app.PrintDebugPrior,"HandleEvent:",app.Modules.Color.Colorize(eventName,app.Colors.Horde),"Handler Done")
-		end
-		-- Runner.Run(DebugEventDone, eventName)
-		if sequenceEvents then
-			-- run the sequence events immediately when in a Runner
-			for _,event in ipairs(sequenceEvents) do
-				app.HandleEvent(event)
+	if sequenceEvents then
+		-- app.PrintDebug(app.Modules.Color.Colorize(eventName,app.Colors.Alliance))
+		if #SequenceEventsStack > 0 or Runner.IsRunning() then
+			-- add sequence events to the SequenceEventsStack if there's a Runner running
+			for i=#sequenceEvents,1,-1 do
+				-- app.PrintDebug(app.Modules.Color.Colorize(sequenceEvents[i],app.Colors.Default))
+				SequenceEventsStack[#SequenceEventsStack + 1] = sequenceEvents[i]
 			end
-		end
-	else
-		-- app.PrintDebug("HandleEvent:",app.Modules.Color.Colorize(eventName,app.Colors.Renown),...)
-		-- DebugEventStart(eventName, ...)
-		for i,handler in ipairs(EventHandlers[eventName]) do
-			handler(...);
-		end
-		-- DebugEventDone(eventName)
-		if sequenceEvents then
-			-- app.PrintDebug("HandleSequenceEvents:",app.Modules.Color.Colorize(eventName,app.Colors.Alliance),...)
+		else
 			-- run the sequence events on the next frame when not in a Runner
+			-- NOTE: Multiple Callbacks in the same frame are not guaranteed to process in the same order in which they
+			-- were registered. This might just be a nuance of how C_Timer.After() handles the set of functions registered
+			-- for the same delay...
 			for _,event in ipairs(sequenceEvents) do
 				app.CallbackEvent(event)
 			end
 		end
 	end
+	if #SequenceEventsStack > 0 then
+		Runner.OnEnd(OnEndSequenceEvents)
+	end
+end
+
+app.HandleEvent = function(eventName, ...)
+	-- getting to the point where there's noticeable stutter again during refresh due to the amount of handlers added
+	-- to the refresh event. would rather spread that out over multiple frames so it remains unnoticeable
+	-- additionally, since some events can process on a Runner, then following Events need to also be pushed onto
+	-- the Event Runner so that they execute in the expected sequence
+	if #SequenceEventsStack > 0 or RunnerEvents[eventName] or Runner.IsRunning() then
+		-- app.PrintDebug(app.Modules.Color.Colorize(eventName,app.Colors.LockedWarning),...)
+		-- Runner.Run(DebugEventStart, eventName, ...)
+		for i,handler in ipairs(EventHandlers[eventName]) do
+			-- Runner.Run(app.PrintDebug,app.Modules.Color.Colorize(eventName,app.Colors.Time),"Handler #",i)
+			Runner.Run(handler, ...)
+			-- Runner.Run(app.PrintDebugPrior,app.Modules.Color.Colorize(eventName,app.Colors.Horde),"Handler Done")
+		end
+		-- Runner.Run(DebugEventDone, eventName)
+	else
+		-- app.PrintDebug(app.Modules.Color.Colorize(eventName,app.Colors.Renown),...)
+		-- DebugEventStart(eventName, ...)
+		for i,handler in ipairs(EventHandlers[eventName]) do
+			handler(...);
+		end
+		-- DebugEventDone(eventName)
+	end
+	QueueSequenceEvents(eventName)
 end
 -- Provides a unique function per EventName which can be used in a Callback without interfering with other Callback Events
 local CallbackEventFunctions = setmetatable({}, { __index = function(t, eventName)
@@ -177,6 +205,6 @@ end})
 -- Allows performing an Event on the next frame instead of immediately.
 -- Also enforces that a single handle of that Event is performed that frame, thus for clarity, parameters are NOT supported
 app.CallbackEvent = function(eventName)
-	-- app.PrintDebug("CallbackEvent:",app.Modules.Color.Colorize(eventName,app.Colors.ChatLinkHQT))
+	-- app.PrintDebug(app.Modules.Color.Colorize(eventName,app.Colors.ChatLinkHQT))
 	Callback(CallbackEventFunctions[eventName], eventName)
 end

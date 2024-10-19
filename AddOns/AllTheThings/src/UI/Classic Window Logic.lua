@@ -6,7 +6,6 @@ local AssignChildren, CloneClassInstance, CloneReference
 local IsQuestFlaggedCompleted, IsQuestReadyForTurnIn = app.IsQuestFlaggedCompleted, app.IsQuestReadyForTurnIn;
 local DESCRIPTION_SEPARATOR = app.DESCRIPTION_SEPARATOR;
 local GetDeepestRelativeValue = app.GetDeepestRelativeValue;
-local GetCompletionIcon = app.GetCompletionIcon;
 local GetProgressTextForRow = app.GetProgressTextForRow;
 local GetRelativeValue = app.GetRelativeValue;
 local ResolveSymbolicLink = app.ResolveSymbolicLink;
@@ -225,9 +224,9 @@ local function CalculateRowIndicatorTexture(group)
 	end
 	
 	if group.u then
-		local condition = L["AVAILABILITY_CONDITIONS"][group.u];
-		if condition and (not condition[5] or app.GameBuildVersion < condition[5]) then
-			return L["UNOBTAINABLE_ITEM_TEXTURES"][condition[1]];
+		local phase = L.PHASES[group.u];
+		if phase and (not phase.buildVersion or app.GameBuildVersion < phase.buildVersion) then
+			return L["UNOBTAINABLE_ITEM_TEXTURES"][phase.state];
 		end
 	end
 	return group.e and L["UNOBTAINABLE_ITEM_TEXTURES"][app.Modules.Events.FilterIsEventActive(group) and 5 or 4];
@@ -566,17 +565,19 @@ local function StopMovingOrSizing(self)
 	if self.isMoving then
 		self:StopMovingOrSizing();
 		self.isMoving = false;
+		self:RecordSettings();
 	end
 end
 local function StartMovingOrSizing(self)
-	if not (self:IsMovable() or self:IsResizable()) then
+	if not (self:IsMovable() or self:IsResizable()) or self.isLocked then
 		return
 	end
 	if self.isMoving then
 		StopMovingOrSizing(self);
 	else
 		self.isMoving = true;
-		if not self:IsMovable() or ((select(2, GetCursorPosition()) / self:GetEffectiveScale()) < math.max(self:GetTop() - 40, self:GetBottom() + 10)) then
+		self.isMoving = true;
+		if ((select(2, GetCursorPosition()) / self:GetEffectiveScale()) < math.max(self:GetTop() - 40, self:GetBottom() + 10)) then
 			self:StartSizing();
 			self:StartATTCoroutine("StartMovingOrSizing (Sizing)", function()
 				while self.isMoving do
@@ -585,14 +586,8 @@ local function StartMovingOrSizing(self)
 				end
 				self:RecordSettings();
 			end);
-		else
+		elseif self:IsMovable() then
 			self:StartMoving();
-			self:StartATTCoroutine("StartMovingOrSizing (Moving)", function()
-				while IsSelfOrChild(self, GetMouseFocus()) do
-					coroutine.yield();
-				end
-				StopMovingOrSizing(self);
-			end);
 		end
 	end
 end
@@ -896,14 +891,7 @@ local function RowOnEnter(self)
 	end
 	
 	-- Show Breadcrumb information
-	if reference.isBreadcrumb then tinsert(tooltipInfo, { left = "This is a breadcrumb quest." }); end
-	if reference.repeatable then
-		if reference.isDaily then tinsert(tooltipInfo, { left = "This can be completed daily." });
-		elseif reference.isWeekly then tinsert(tooltipInfo, { left = "This can be completed weekly." });
-		elseif reference.isMontly then tinsert(tooltipInfo, { left = "This can be completed monthly." });
-		elseif reference.isYearly then tinsert(tooltipInfo, { left = "This can be completed yearly." });
-		else tinsert(tooltipInfo, { left = "This can be completed multiple times.", wrap = true }); end
-	end
+	if reference.isBreadcrumb then tinsert(tooltipInfo, { left = "This is a breadcrumb quest.", color = app.Colors.Breadcrumb }); end
 
 	-- Show Quest Prereqs
 	local isDebugMode = app.MODE_DEBUG;
@@ -951,7 +939,7 @@ local function RowOnEnter(self)
 				if mapID and mapID ~= currentMapID then text = text .. " (" .. app.GetMapName(mapID) .. ")"; end
 				tinsert(tooltipInfo, {
 					left = text,
-					right = GetCompletionIcon(IsQuestFlaggedCompleted(prereq.questID)),
+					right = app.GetCompletionIcon(IsQuestFlaggedCompleted(prereq.questID)),
 				});
 			end
 		end
@@ -966,7 +954,7 @@ local function RowOnEnter(self)
 				if mapID and mapID ~= currentMapID then text = text .. " (" .. app.GetMapName(mapID) .. ")"; end
 				tinsert(tooltipInfo, {
 					left = text,
-					right = GetCompletionIcon(IsQuestFlaggedCompleted(prereq.questID)),
+					right = app.GetCompletionIcon(IsQuestFlaggedCompleted(prereq.questID)),
 				});
 			end
 		end
@@ -1004,7 +992,7 @@ local function RowOnEnter(self)
 				if prereq.isGuild then text = text .. " (" .. GUILD .. ")"; end
 				tinsert(tooltipInfo, {
 					left = text,
-					right = GetCompletionIcon(prereq.collected),
+					right = app.GetCompletionIcon(prereq.collected),
 				});
 			end
 		end
@@ -2398,6 +2386,11 @@ local function OnInitForPopout(self, group)
 	self.data.indent = 0;
 	self.data.total = 0;
 	self.data.progress = 0;
+	app.HandleEvent("OnNewPopoutGroup", self.data);
+	if self.data.g then
+		-- Sort any content added to the Popout data by the Global sort
+		app.Sort(self.data.g, app.SortDefaults.Global)
+	end
 
 	-- If this is an achievement, build the criteria within it if possible.
 	local achievementID = group.achievementID;

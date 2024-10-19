@@ -1,11 +1,15 @@
 ## Interface: 30400
 ## Author: Tuller
-## Version: 10.2.9
+## Version: 10.2.6
 
 ## Title: OmniCC
 ## Notes: Cooldown count for everything
 ## Title-zhCN: |cFFFFE00A<|r|cFFC79C6E战斗|r|cFFFFE00A>|r |cFFFFFFFF技能冷却|r |cFFFFE00AOmniCC|r
 ## Notes-zhCN: 显示技能冷却时间
+
+## IconTexture: Interface/Icons/spell_nature_timestop
+
+## AddonCompartmentFunc: OmniCC_Launch
 
 ## SavedVariables: OmniCCDB, OmniCC4Config
 

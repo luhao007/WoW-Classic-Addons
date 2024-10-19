@@ -378,22 +378,6 @@ function Plater.GetBossModsEventTimeLeft(spell) -- more or less deprecated, need
 	end
 end
 
----@class plater_altcastbarconfig : table
----@field iconTexture string
----@field iconTexcoord table
----@field iconAlpha number
----@field text string
----@field texture any
----@field color any
----@field isChanneling boolean
----@field canInterrupt boolean
----@field height number
----@field iconSize number
----@field textSize number
----@field spellNameAnchor df_anchor
----@field timerAnchor df_anchor
----@field iconAnchor df_anchor
-
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --> spell prediction
 
@@ -416,7 +400,6 @@ function Plater.ClearAltCastBar(plateFrame)
 end
 
 function Plater.SetAltCastBar(plateFrame, configTable, timer, startedAt, altCastId)
-	---@cast configTable plater_altcastbarconfig
 
 	--check if the nameplate is valid
 	if (not plateFrame or not plateFrame.unitFrame) then
@@ -550,9 +533,7 @@ function Plater.SetAltCastBar(plateFrame, configTable, timer, startedAt, altCast
 
 	castBar.spellName = 		configTable.text
 	castBar.spellID = 		1
-	castBar.spellTexture = 		configTable.iconTexture or ""
-
-	castBar:SetStatusBarTexture(configTable.texture or [[Interface\AddOns\Plater\images\bar_background]])
+	castBar.spellTexture = 		configTable.texture
 
 	castBar.flashTexture:Hide()
 	castBar:Animation_StopAllAnimations()
@@ -808,7 +789,7 @@ function Plater.RegisterBossModsBars()
 					start = curTime,
 					icon = icon,
 					spellId = spellId,
-					barType = barType or "cd",
+					barType = barType,
 					color = color,
 					colorId = colorId,
 					modId = modId,
@@ -955,10 +936,10 @@ function Plater.RegisterBossModsBars()
 						start = GetTime(),
 						icon = icon,
 						spellId = key,
-						barType = "cd", --bar,
+						barType = bar,
 						--color = {1,1,1,1},
 						--colorId = colorId,
-						modId = (module and (module.moduleName or module.name)) or "N/A",
+						modId = module,
 						--keep = keep,
 						--fade = fade,
 						name = text,

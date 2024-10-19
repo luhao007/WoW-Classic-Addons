@@ -30,7 +30,16 @@ local Update_OnEnter=ActionFun.Update_OnEnter
 local Cursor_Fun=ActionFun.Cursor_Fun
 local Update_Macro=ActionFun.Update_Macro
 ----
+local Data=addonTable.Data
+local bagData=Data.bagData
+---
+local GetContainerNumSlots = C_Container.GetContainerNumSlots
+local GetContainerItemID=GetContainerItemID or C_Container and C_Container.GetContainerItemID
 local GetItemInfoInstant= GetItemInfoInstant or C_Item and C_Item.GetItemInfoInstant
+local GetItemInfo=GetItemInfo or C_Item and C_Item.GetItemInfo
+local GetItemCount=GetItemCount or C_Item and C_Item.GetItemCount
+local IsUsableSpell=IsUsableSpell or C_Spell and C_Spell.IsSpellUsable
+local GetItemCooldown=C_Container.GetItemCooldown
 local PIGbookType
 if tocversion<50000 then
 	PIGbookType=BOOKTYPE_SPELL
@@ -679,7 +688,7 @@ QuickButUI.ButList[6]=function()
 		local GnUI = "General_UI"
 		if _G[GnUI] then return end
 		local Icon=134414
-		local Tooltip = KEY_BUTTON1.."-|cff00FFFF使用炉石\r|r"..KEY_BUTTON2.."-|cff00FFFF专业技能|r"
+		local Tooltip = KEY_BUTTON1.."-|cff00FFFF使用炉石|r\rShift+"..KEY_BUTTON1.."-|cff00FFFF选择炉石\r|r"..KEY_BUTTON2.."-|cff00FFFF专业技能|r"
 		local General=PIGQuickBut(GnUI,Tooltip,Icon,nil,nil,"SecureActionButtonTemplate")
 		PIGUseKeyDown(General)
 		General.Cooldown = CreateFrame("Frame", nil, General);
@@ -693,9 +702,23 @@ QuickButUI.ButList[6]=function()
 		General.START:SetAllPoints(General)
 		General.START:Hide();
 
-		local GetItemCount=GetItemCount or C_Item and C_Item.GetItemCount
-		local IsUsableSpell=IsUsableSpell or C_Spell and C_Spell.IsSpellUsable
-		local GetItemCooldown=C_Container.GetItemCooldown
+		General.arrow = General:CreateTexture(nil,"ARTWORK");
+		General.arrow:SetDrawLayer("ARTWORK", 7)
+		General.arrow.chushijiaodu=0
+		General.arrow.jieshujiaodu=180
+		if tocversion<50000 then
+			General.arrow:SetAtlas("bag-arrow")
+			General.arrow:SetSize(11,16);
+			General.arrow:SetPoint("TOP",0,1);
+			General.arrow.chushijiaodu=270
+			General.arrow.jieshujiaodu=90
+		else
+			General.arrow:SetAtlas("UI-HUD-ActionBar-Flyout-Mouseover");
+			General.arrow:SetSize(16,8);
+			General.arrow:SetPoint("TOP",0,0);
+		end
+		SetClampedTextureRotation(General.arrow,General.arrow.chushijiaodu);
+
 		local function gengxinlushiCD()
 			if General.lushiitemID then
 				local start, duration= GetItemCooldown(General.lushiitemID)
@@ -714,28 +737,97 @@ QuickButUI.ButList[6]=function()
 			end
 			return false
 		end
-		local lushiList = {184871}--玩具
-		local function PIGPlayerHasHearthstone()
-			for i=1,#lushiList do
-				local HasToy = PlayerHasToy(lushiList[i])
-				if HasToy then
-					return lushiList[i]
+		--玩具
+		local ToyList = {}
+		local ToyList_Retail = {
+			168907,--数字化全息炉石
+			162973,--冬天爷爷的炉石
+			166746,--吞火者的炉石
+			165802,--复活节的炉石
+			165802,--复活节的炉石
+			165670,--小匹德菲特的可爱炉石
+			208704,--幽邃住民的土灵炉石
+			190196,--开悟者的炉石
+			228940,--恶名丝线炉石
+			163045,--无头骑士的炉石
+			193588,--时光旅行者的炉石
+			165669,
+			184353,
+			200630,
+			172179,
+			180290,
+			209035,
+			166747,
+			188952,
+			110560,--要塞炉石
+			140192,--达拉然炉石
+			182773,
+			212337,--炉之石
+			93672,--黑暗之门
+		}
+		local BagList = {
+			6948,--炉石
+		}
+		if tocversion>110000 then
+			for k,v in pairs(ToyList_Retail) do
+				table.insert(ToyList,v)
+			end
+		elseif tocversion>20000 then
+			table.insert(ToyList,184871)--黑暗之门
+			table.insert(BagList,28585)--红宝石靴子
+		else
+
+		end
+		local listall={}
+		local function BAGIsitemID(duibiID)
+			for bag=1,#bagData["bagID"] do
+				for slot=1,GetContainerNumSlots(bagData["bagID"][bag]) do
+					local ItemID = GetContainerItemID(bagData["bagID"][bag], slot)
+					if ItemID and ItemID==duibiID then
+						return true
+					end
 				end
 			end
-			return 6948
+			return false
 		end
-		local function Skill_Button_Genxin()
-			if InCombatLockdown() then return end
-			local lushiitemID = PIGPlayerHasHearthstone()
-			local lushiName, SpellID = GetItemSpell(lushiitemID)
+		local function jiazaiHasToy()
+			for i=1,#ToyList do
+				local HasToy = PlayerHasToy(ToyList[i])
+				if HasToy then
+					table.insert(listall,{ToyList[i],true})
+				else
+					table.insert(listall,{ToyList[i],false})
+				end
+			end
+			for i=1,#BagList do
+				local HasToy = BAGIsitemID(BagList[i])
+				if HasToy then
+					table.insert(listall,{BagList[i],true})
+				else
+					table.insert(listall,{BagList[i],false})
+				end
+			end
+		end
+		jiazaiHasToy()
+		local function UpdateIconAttribute(itemID)
+			local itemID=itemID or PIGA_Per["QuickBut"]["LushiID"]
+			local lushiName, SpellID = GetItemSpell(itemID)
+			if not lushiName and General.lushijisuqi<5 then
+				General.lushijisuqi=General.lushijisuqi+1
+				return C_Timer.After(0.2, UpdateIconAttribute);
+			end
 			if lushiName and SpellID then
-				General.lushiitemID=lushiitemID
+				--local itemName = GetItemInfo(itemID)
+				General.lushiitemID=itemID
 				General.lushiSpellID=SpellID
 				General:SetAttribute("type1", "item");
 				General:SetAttribute("item", lushiName);
-				General:SetNormalTexture(GetItemIcon(lushiitemID))
+				General:SetNormalTexture(GetItemIcon(itemID))
 				gengxinlushiCD()
 			end
+		end	
+		local function Skill_Button_Genxin()
+			if InCombatLockdown() then return end
 			local Skill_List = addonTable.FramePlusfun.Skill_List
 			if tocversion<40000 then
 				local _, _, tabOffset, numEntries = GetSpellTabInfo(1)
@@ -763,24 +855,133 @@ QuickButUI.ButList[6]=function()
 				end
 			end
 		end
-		General.lushijisuq=0
-		Skill_Button_Genxin()
+		General:RegisterEvent("PLAYER_ENTERING_WORLD")
 		General:RegisterUnitEvent("UNIT_SPELLCAST_START","player");
 		General:RegisterUnitEvent("UNIT_SPELLCAST_STOP","player");
 		General:RegisterEvent("SPELL_UPDATE_COOLDOWN")
 		General:SetScript("OnEvent", function(self,event,arg1,_,arg3)
-			if arg3==self.lushiSpellID then 
-				if event=="UNIT_SPELLCAST_START" then
-			 		self.START:Show();
-			 	end
-			 	if event=="UNIT_SPELLCAST_STOP" then
-			 		self.START:Hide();
-				end	
-		 	end
-			if event=="SPELL_UPDATE_COOLDOWN" then
+			if event=="PLAYER_ENTERING_WORLD" then
+				self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+				General.lushijisuqi=0
+				UpdateIconAttribute()
+				Skill_Button_Genxin()
+			elseif event=="SPELL_UPDATE_COOLDOWN" then
 				C_Timer.After(0.01, gengxinlushiCD);
+			else
+				if arg3==self.lushiSpellID then 
+					if event=="UNIT_SPELLCAST_START" then
+				 		self.START:Show();
+				 	end
+				 	if event=="UNIT_SPELLCAST_STOP" then
+				 		self.START:Hide();
+					end
+				end
 			end
-		end)	
+		end)
+		--内容页
+		local butW = ActionButton1:GetWidth()
+		local gaoNum,kuanNum = 5,6
+		local General_List = CreateFrame("Frame", "General_List_UI", UIParent,"BackdropTemplate");
+		General_List:SetBackdrop(Create.Backdropinfo)
+		General_List:SetBackdropColor(Create.BackdropColor[1], Create.BackdropColor[2], Create.BackdropColor[3], Create.BackdropColor[4]);
+		General_List:SetBackdropBorderColor(Create.BackdropBorderColor[1], Create.BackdropBorderColor[2], Create.BackdropBorderColor[3], Create.BackdropBorderColor[4]);
+		General_List:SetSize((butW+6)*kuanNum+6,(butW+6)*gaoNum+6);
+		General_List:SetScale(PIGA["QuickBut"]["bili"]);
+		General_List:Hide();
+		General_List:SetFrameLevel(33)
+		General_List:SetScale(0.8)
+		--
+		local WowHeight=GetScreenHeight();
+		local offset = QuickButUI:GetBottom();
+		General_List:ClearAllPoints()
+		if offset>(WowHeight*0.5) then
+			General_List:SetPoint("TOP", General, "BOTTOM", 0, -4);
+		else
+			General_List:SetPoint("BOTTOM", General, "TOP", 0, 4);
+		end
+		--
+		General_List:HookScript("OnShow",function(self)
+			PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
+			SetClampedTextureRotation(General.arrow,General.arrow.jieshujiaodu);
+			for i=1,#listall do
+				if listall[i][1]==PIGA_Per["QuickBut"]["LushiID"] then
+					_G["General_List_"..i].Select:Show();
+				else
+					_G["General_List_"..i].Select:Hide();
+				end
+			end
+		end)
+		General_List:HookScript("OnHide",function(self)
+			PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
+			SetClampedTextureRotation(General.arrow,General.arrow.chushijiaodu);
+		end)
+		General_List.Close=PIGDiyBut(General_List,{"BOTTOM",General_List,"TOP",0,0},{34})
+		General_List.Close:HookScript("OnClick",function(self)
+			General_List:Hide();
+		end)
+		General:HookScript("OnClick",function(self,button)
+			if button == "LeftButton" and IsShiftKeyDown() then
+				if General_List:IsShown() then
+					General_List:Hide();
+				else
+					General_List:Show();
+				end
+			end
+		end)
+		for i=1,gaoNum*kuanNum do
+			if listall[i] then
+				local butitem = CreateFrame("Button", "General_List_"..i, General_List)
+				butitem:SetHighlightTexture(130839)
+				butitem:SetSize(butW, butW)
+				if i==1 then
+					butitem:SetPoint("BOTTOMLEFT",General_List,"BOTTOMLEFT",6,6);
+				else
+					local num1,num2=math.modf(i/(kuanNum))
+					if num2==0 then
+						butitem.huanhang=true
+					end
+					if _G["General_List_"..(i-1)].huanhang then
+						butitem:SetPoint("BOTTOMLEFT",_G["General_List_"..(i-kuanNum)],"TOPLEFT",0,6);
+					else
+						butitem:SetPoint("LEFT",_G["General_List_"..(i-1)],"RIGHT",6,0);
+					end	
+				end
+				butitem.Select = butitem:CreateTexture(nil, "OVERLAY");
+				butitem.Select:SetTexture(130724);
+				butitem.Select:SetBlendMode("ADD");
+				butitem.Select:SetAllPoints(butitem)
+				butitem.Select:Hide();
+				local itemicon=C_Item.GetItemIconByID(listall[i][1])
+				butitem:SetNormalTexture(itemicon);
+				if listall[i][2] then
+					if listall[i][1]==PIGA_Per["QuickBut"]["LushiID"] then
+						butitem.Select:Show();
+					end
+				else
+					butitem:GetNormalTexture():SetDesaturated(true)
+				end
+				butitem:HookScript("OnClick", function(self)
+					if listall[i][2] then
+						if InCombatLockdown() then
+							PIGinfotip:TryDisplayMessage(ERR_NOT_IN_COMBAT)
+						else
+							PIGA_Per["QuickBut"]["LushiID"]=listall[i][1]
+							UpdateIconAttribute(listall[i][1]) General_List:Hide();
+						end
+					end
+				end);
+				butitem:SetScript("OnEnter", function (self)
+					GameTooltip:ClearLines();
+					GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT",0,0);
+					GameTooltip:SetItemByID(listall[i][1])
+					GameTooltip:Show();
+				end)
+				butitem:SetScript("OnLeave", function ()
+					GameTooltip:ClearLines();
+					GameTooltip:Hide() 
+				end);
+			end
+		end
 	end
 end
 --职业技能----
@@ -879,20 +1080,25 @@ QuickButUI.ButList[7]=function()
 		end
 		local Tooltip = KEY_BUTTON1.."-|cff00FFFF展开职业辅助技能栏|r\n"..KEY_BUTTON2.."-|cff00FFFF打开Recount/Details插件记录面板|r"
 		local Zhushou=PIGQuickBut(GnUI,Tooltip,Icon,nil,nil,"SecureHandlerClickTemplate")
+		local IconTEX=Zhushou:GetNormalTexture()
+		local IconCoord = CLASS_ICON_TCOORDS[select(2,UnitClass("player"))];
+		IconTEX:SetTexCoord(unpack(IconCoord));
 		Zhushou.arrow = Zhushou:CreateTexture(nil,"ARTWORK");
 		Zhushou.arrow:SetDrawLayer("ARTWORK", 7)
+		Zhushou.arrow.chushijiaodu=0
+		Zhushou.arrow.jieshujiaodu=180
 		if tocversion<50000 then
-			Zhushou.arrow:SetTexture("interface/buttons/jumpuparrow.blp");
-			Zhushou.arrow:SetSize(16,18);
-			Zhushou.arrow:SetPoint("RIGHT",1.4,0);
+			Zhushou.arrow:SetAtlas("bag-arrow")
+			Zhushou.arrow:SetSize(11,16);
+			Zhushou.arrow:SetPoint("TOP",0,1);
+			Zhushou.arrow.chushijiaodu=270
+			Zhushou.arrow.jieshujiaodu=90
 		else
 			Zhushou.arrow:SetAtlas("UI-HUD-ActionBar-Flyout-Mouseover");
 			Zhushou.arrow:SetSize(16,8);
 			Zhushou.arrow:SetPoint("TOP",0,0);
 		end
-		local IconTEX=Zhushou:GetNormalTexture()
-		local IconCoord = CLASS_ICON_TCOORDS[select(2,UnitClass("player"))];
-		IconTEX:SetTexCoord(unpack(IconCoord));
+		SetClampedTextureRotation(Zhushou.arrow,Zhushou.arrow.chushijiaodu);
 		---内容页----
 		local butW = ActionButton1:GetWidth()
 		local gaoNum,kuanNum = 10,2
@@ -916,10 +1122,10 @@ QuickButUI.ButList[7]=function()
 		end
 		--
 		Zhushou_List:HookScript("OnShow",function(self)
-			SetClampedTextureRotation(Zhushou.arrow,180);
+			SetClampedTextureRotation(Zhushou.arrow,Zhushou.arrow.jieshujiaodu);
 		end)
 		Zhushou_List:HookScript("OnHide",function(self)
-			SetClampedTextureRotation(Zhushou.arrow,0);
+			SetClampedTextureRotation(Zhushou.arrow,Zhushou.arrow.chushijiaodu);
 		end)
 		Zhushou:SetAttribute("_onclick",[=[
 			if button == "LeftButton" then
@@ -979,9 +1185,9 @@ QuickButUI.ButList[7]=function()
 			if i==1 then
 				zhushoubut:SetPoint("BOTTOMLEFT",Zhushou_List,"BOTTOMLEFT",6,6);
 			else
-				local num1,num2=math.modf(i/2)
+				local num1,num2=math.modf(i/kuanNum)
 				if num2~=0 then
-					zhushoubut:SetPoint("BOTTOMLEFT",_G["Zhushou_List_"..(i-2)],"TOPLEFT",0,6);
+					zhushoubut:SetPoint("BOTTOMLEFT",_G["Zhushou_List_"..(i-kuanNum)],"TOPLEFT",0,6);
 				else
 					zhushoubut:SetPoint("LEFT",_G["Zhushou_List_"..(i-1)],"RIGHT",6,0);
 				end

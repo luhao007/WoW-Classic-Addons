@@ -127,6 +127,15 @@ for i=1,#CVarsList1 do
 end
 ------
 ADD_DownMenu(CVarsF,1,3,{["1"]="默认",["2"]="所有PVP目标",["3"]="仅限玩家"},"TargetPriorityPvp","TAB优先级",{"TOPLEFT",CVarsF,"TOPLEFT",100,-360},130)
+--
+CVarsF.SpellQueue = PIGSlider(CVarsF,{"TOPLEFT",CVarsF,"TOPLEFT",120,-398},{10,400,1,{["Right"]="%sms"}})
+CVarsF.SpellQueue.t = PIGFontString(CVarsF.SpellQueue,{"RIGHT",CVarsF.SpellQueue,"LEFT",-4,0},"施法延迟容限");
+CVarsF.SpellQueue.Slider:HookScript("OnValueChanged", function(self, arg1)
+	SetCVar("SpellQueueWindow",arg1)
+end)
+CVarsF:HookScript("OnShow", function (self)
+	self.SpellQueue:PIGSetValue(GetCVar("SpellQueueWindow"))
+end);
 ---
 local tianqiName = {["0"]="小雨",["1"]="中雨",["2"]="大雨",["3"]="暴雨"}
 ADD_DownMenu(CVarsF,0,3,tianqiName,"weatherDensity","天气效果",{"TOPLEFT",CVarsF,"TOPLEFT",400,-360},100)

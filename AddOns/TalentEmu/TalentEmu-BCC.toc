@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: |cff00ff00ALA|r
-## Version: 205r.240920
+## Version: 205r.241015
 
 ## Title: Talent Emu Cata
 ## Notes: Talent Emu

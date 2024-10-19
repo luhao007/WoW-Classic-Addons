@@ -7,6 +7,12 @@ local function GetExpansionName(expansionID)
 	-- /script for key,value in pairs(_G) do if key:find("EXPANSION_NAME") then print(key, value); end end
 	return _G["EXPANSION_NAME" .. (expansionID - 1)] or (EXPANSION_FILTER_TEXT .. " " .. expansionID);
 end
+
+-- These should match the `patch()` function shifts for `expansion()` objects
+-- ref: .contrib\Parser\lib\Functions\Shortcuts.lua
+local PatchDecimals = 2
+local RevDecimals = 2
+
 --[[
 local EJ_GetTierInfo = EJ_GetTierInfo;
 if EJ_GetTierInfo then
@@ -30,6 +36,8 @@ local GetExpansionInfoMeta = function(t, key)
 	return rawget(t, key)
 end
 
+local PatchShift = 10 ^ PatchDecimals
+local RevShift = 10 ^ RevDecimals
 local ExpansionInfoByID = {};
 local EXPANSION_DATA = app.L.EXPANSION_DATA;
 setmetatable(ExpansionInfoByID, {
@@ -37,11 +45,23 @@ setmetatable(ExpansionInfoByID, {
 		local info;
 		local expansionID = math_floor(patchID);
 		if expansionID ~= patchID then
-			local patch_decimal = 100 * (patchID - expansionID);
+			local patch_decimal = PatchShift * (patchID - expansionID);
 			local patch = math_floor(patch_decimal + 0.0001);
-			local rev = math_floor(10 * (patch_decimal - patch) + 0.0001);
+			local rev_decimal = RevShift * (patch_decimal - patch)
+			local rev = math_floor(rev_decimal + 0.0001);
+			local name = tostring(expansionID).."."..tostring(patch).."."..tostring(rev)
+			-- not currently supoprting build for expansion headers
+			-- honestly might be easier just to tuck it into a new field if needed
+			-- local build_decimal = rev_decimal - rev
+			-- if build_decimal > 0 then
+			-- 	while (math_floor(build_decimal) ~= build_decimal) do
+			-- 		build_decimal = build_decimal * 10
+			-- 	end
+			-- 	local build = math_floor(build_decimal + 0.0001);
+			-- 	name = name.."."..tostring(build)
+			-- end
 			info = setmetatable({
-				name = tostring(expansionID).."."..tostring(patch).."."..tostring(rev),
+				name = name,
 			}, { __index = ExpansionInfoByID[expansionID] });
 		else
 			-- We want to use the same reference table from the locales if possible

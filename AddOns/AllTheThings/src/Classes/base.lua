@@ -3,8 +3,8 @@
 local appName, app = ...;
 
 -- Global locals
-local type, ipairs, pairs, setmetatable, rawget, tinsert, unpack
-	= type, ipairs, pairs, setmetatable, rawget, tinsert, unpack;
+local type,ipairs,pairs,setmetatable,rawget,tinsert,unpack,rawset
+	= type,ipairs,pairs,setmetatable,rawget,tinsert,unpack,rawset
 
 -- App locals
 local GetRelativeValue = app.GetRelativeValue;
@@ -373,12 +373,12 @@ local function CloneClassInstance(object, ignoreChildren)
 		end
 	end
 end
-local function CloneObject(object)
+local function CloneObject(object, ignoreChildren)
 	local clone = setmetatable({}, getmetatable(object));
 	for key,value in pairs(object) do
 		clone[key] = value;
 	end
-	if object.g then
+	if object.g and not ignoreChildren then
 		local g = {};
 		for i,object in ipairs(object.g) do
 			local child = CloneObject(object);
@@ -418,27 +418,42 @@ end
 local function AppendVariantConditionals(conditionals, class)
 	local subcassCondition = class.__class.__condition
 	local variants = class.__class.variants
-	if variants then
-		conditionals[#conditionals + 1] = function(t)
-			if subcassCondition(t) then
-				-- check any variants for this subclass
-				for variantName,variant in pairs(variants) do
-					if variant.__class.__condition(t) then
-						setmetatable(t, variant);
-						-- app.PrintDebug("Create Variant",t.hash,class.__class.__type()..variantName)
-						return true
+	if subcassCondition then
+		if variants then
+			conditionals[#conditionals + 1] = function(t)
+				if subcassCondition(t) then
+					-- check any variants for this subclass
+					for variantName,variant in pairs(variants) do
+						if variant.__class.__condition(t) then
+							setmetatable(t, variant);
+							-- app.PrintDebug("Create Variant",t.hash,class.__class.__type()..variantName)
+							return true
+						end
 					end
+					setmetatable(t, class);
+					return true;
 				end
-				setmetatable(t, class);
-				return true;
+			end
+		else
+			conditionals[#conditionals + 1] = function(t)
+				if subcassCondition(t) then
+					setmetatable(t, class);
+					return true;
+				end
 			end
 		end
-	else
+	elseif variants then
 		conditionals[#conditionals + 1] = function(t)
-			if subcassCondition(t) then
-				setmetatable(t, class);
-				return true;
+			-- check any variants for this class
+			for variantName,variant in pairs(variants) do
+				if variant.__class.__condition(t) then
+					setmetatable(t, variant);
+					-- app.PrintDebug("Create Variant",t.hash,class.__class.__type()..variantName)
+					return true
+				end
 			end
+			setmetatable(t, class);
+			return true;
 		end
 	end
 end
@@ -477,9 +492,10 @@ app.CreateClass = function(className, classKey, fields, ...)
 
 	local args = { ... };
 	local total = #args;
+	local Class = BaseObjectFields(fields, className);
+	local conditionals = {};
+	GenerateVariantClasses(Class)
 	if total > 0 then
-		local conditionals = {};
-		local Class;
 		local base = function(t, key) return Class.__index; end
 		for i=1,total,3 do
 			local subclassName = args[i];
@@ -499,39 +515,27 @@ app.CreateClass = function(className, classKey, fields, ...)
 				end
 			end
 		end
-		total = #conditionals;
-		-- Not sure the use case for this assignment...
-		fields.conditionals = conditionals;
-		Class = BaseObjectFields(fields, className);
-		local classConstructor = total > 0 and function(id, t)
-			t = constructor(id, t, classKey);
-			for i=1,total,1 do
-				if conditionals[i](t) then
-					return t;
-				end
-			end
-			return setmetatable(t, Class);
-		end or function(id, t)
-			return setmetatable(constructor(id, t, classKey), Class);
-		end
-		if not classesByKey[classKey] then
-			classesByKey[classKey] = classConstructor;
-		elseif not fields.IsClassIsolated then
-			print(className, "does not have a unique class Key", classKey, "and will have trouble with instance creation without a direct reference to an existing object or a direct integration using parser!");
-		end
-		return classConstructor, Class;
-	else
-		local Class = BaseObjectFields(fields, className);
-		local classConstructor = function(id, t)
-			return setmetatable(constructor(id, t, classKey), Class);
-		end;
-		if not classesByKey[classKey] then
-			classesByKey[classKey] = classConstructor;
-		elseif not fields.IsClassIsolated then
-			print(className, "does not have a unique class Key", classKey, "and will have trouble with instance creation without a direct reference to an existing object or a direct integration using parser!");
-		end
-		return classConstructor, Class;
 	end
+	-- Class variants must be added following other subclasses/variants
+	AppendVariantConditionals(conditionals, Class)
+	total = #conditionals;
+	local classConstructor = total > 0 and function(id, t)
+		t = constructor(id, t, classKey);
+		for i=1,total,1 do
+			if conditionals[i](t) then
+				return t;
+			end
+		end
+		return setmetatable(t, Class);
+	end or function(id, t)
+		return setmetatable(constructor(id, t, classKey), Class);
+	end
+	if not classesByKey[classKey] then
+		classesByKey[classKey] = classConstructor;
+	elseif not fields.IsClassIsolated then
+		print(className, "does not have a unique class Key", classKey, "and will have trouble with instance creation without a direct reference to an existing object or a direct integration using parser!");
+	end
+	return classConstructor, Class;
 end
 app.CreateClassFromArray = function(arr)
 	return app.CreateClass(unpack(arr));
@@ -611,6 +615,44 @@ app.ExtendClass = function(baseClassName, className, classKey, fields, ...)
 	end
 	-- app.PrintDebug("ExtendClass",baseClassName, className, classKey)
 	return app.CreateClass(className, classKey, fields, ...);
+end
+-- Allows swapping the Class's method for a given field
+app.SwapClassDefinitionMethod = function(className, classField, newFunc)
+	local class = classDefinitions[className]
+	if not class then app.print("Class",className,"does not exist!") return end
+
+	local curFunc = class[classField]
+	if not curFunc then app.print("Class",className,"does not contain field",classField) return end
+
+	if newFunc and type(newFunc) ~= "function" then app.print("Cannot assing non-function for Class",className,"field",classField) return end
+
+	local swapdefaults = class.__swapdefaults
+	if not swapdefaults then
+		swapdefaults = {}
+		class.__swapdefaults = swapdefaults
+	end
+
+	if not swapdefaults[classField] then
+		swapdefaults[classField] = curFunc
+	end
+
+	if newFunc then
+		-- app.PrintDebug("SwapClassNew",className,classField,newFunc)
+		class[classField] = newFunc
+	else
+		-- app.PrintDebug("SwapClassDef",className,classField,swapdefaults[classField])
+		class[classField] = swapdefaults[classField]
+	end
+end
+-- Setup a simple true/false swap for the 'collectible' field of the given class based on the tracked setting name
+app.AddSimpleCollectibleSwap = function(classname, setting)
+	app.AddEventHandler("OnSettingsNeedsRefresh", function()
+		if app.Settings.Collectibles[setting] then
+			app.SwapClassDefinitionMethod(classname,"collectible",app.ReturnTrue)
+		else
+			app.SwapClassDefinitionMethod(classname,"collectible",app.ReturnFalse)
+		end
+	end);
 end
 
 -- Allows wrapping one Type Object with another Type Object. This allows for fall-through field logic
@@ -710,6 +752,66 @@ app.CreateCache = function(idField, className)
 	return cache;
 end
 
+-- Returns an object which contains no data, but can return values from an overrides table, and be loaded/created when a specific field is attempted to be referenced
+-- i.e. Create a data group which contains no information but will attempt to populate itself when [loadField] is referenced
+app.DelayLoadedObject = function(objFunc, loadField, overrides, ...)
+	local o;
+	local params = {...};
+	local loader = {
+		__index = function(t, key)
+			-- load the object if it matches the load field and not yet loaded
+			if not o and key == loadField then
+				o = objFunc(unpack(params))
+				if not o then
+					error("DLO failed to generate an Object when loading!",unpack(params))
+				end
+				-- parent of the underlying object should correspond to the hierarchical parent of t (dlo)
+				local dloParent = rawget(t, "parent");
+				rawset(o, "parent", dloParent);
+				rawset(t, "__o", o);
+				-- allow the object to reference the DLO if needed
+				o.__dlo = t;
+				-- app.PrintDebug("DLO:Loaded",o.hash,"parent:",dloParent,dloParent and dloParent.hash)
+				-- DLOs can now have an OnLoad function which runs here when loaded for the first time
+				if overrides.OnLoad then overrides.OnLoad(o); end
+			end
+
+			-- override for the object
+			local override = overrides and overrides[key];
+			if override ~= nil then
+				-- app.PrintDebug("DLO:override",key,":",override)
+				-- overrides can also be a function which will execute once the object has been created
+				if o and type(override) == "function" then
+					return override(o, key);
+				else
+					return override;
+				end
+			-- existing object, then reference the respective key
+			elseif o then
+				return o[key];
+			-- otherwise ensure visible
+			elseif key == "visible" then
+				-- app.PrintDebug("dlo.visible",unpack(params))
+				return true;
+			end
+		end,
+		-- transfer field sets to the underlying object if the field does not have an override for the object
+		__newindex = function(t, key, val)
+			if o then
+				if not overrides[key] then
+					-- app.PrintDebug("DLO:__newindex:",o.hash,key,val)
+					rawset(o, key, val);
+				end
+			elseif key == "parent" then
+				rawset(t, key, val);
+			end
+		end,
+	};
+	-- data is just an empty table with a loader metatable
+	local dlo = setmetatable({__dlo=true}, loader);
+	return dlo;
+end
+
 --[[
 -- Proof of Concept with Class Conditionals
 local fields = {
@@ -794,10 +896,7 @@ local function NotInitialized(name)
 	app.print(name,"not initialized yet...");
 end
 app.SetAccountCollected = function() NotInitialized("SetAccountCollected") end;
-app.SetAccountCollectedForSubType = function() NotInitialized("SetAccountCollectedForSubType") end
 app.SetCollected = function() NotInitialized("SetCollected") end;
-app.SetCollectedForSubType = function() NotInitialized("SetCollectedForSubType") end
--- Classic needs to use modules/Collection.lua pls
 app.SetCached = function() NotInitialized("SetCached") end;
 app.IsCached = function() NotInitialized("IsCached") end;
 app.IsAccountCached = function() NotInitialized("IsAccountCached") end;

@@ -367,8 +367,12 @@ if app.IsRetail then
 		questID
 		and
 		(
-			-- Regular Quests
-			app.Settings.Collectibles.Quests
+			-- Quest collectible type is being collected
+			-- TODO: will probably need to split this method into separate types
+			-- and use in separate Quest types...
+			-- but really need a revision of the Variant/Subclass logic to make this
+			-- viable and not chaos like it is becoming
+			app.Settings.Collectibles[t.CollectibleType or "Quests"]
 			and
 			(
 				(
@@ -691,7 +695,7 @@ PrintQuestInfo = function(questID, new)
 		end
 
 		-- Quest can be linked to all sorts of things...
-		text = (QuestNameFromID[questID] or (questRef and questRef.name))
+		text = questRef.name or hqt and UNKNOWN or QuestNameFromID[questID]
 		if IsRetrieving(text) then
 			text = UNKNOWN
 		end
@@ -1351,32 +1355,27 @@ local AndBreadcrumbWithLockCriteria = {
 		return t.lc or t.altQuests
 	end,
 }
-if app.IsRetail then
-	local WithAutoName = {
-		name = function(t)
-			local type, id = (":"):split(t.an)
-			local data = app.GetAutomaticHeaderData(id,type)
-			for key,value in pairs(data) do
-				t[key] = value;
-			end
-			return data.name
-		end,
-		icon = function(t)
-			local type, id = (":"):split(t.an)
-			local data = app.GetAutomaticHeaderData(id,type)
-			for key,value in pairs(data) do
-				t[key] = value;
-			end
-			return data.icon
-		end,
-		__condition = function(t)
-			return t.an
-		end,
-	}
-	app.GlobalVariants.WithAutoName = WithAutoName
-else
-	app.GlobalVariants.WithAutoName = {}
-end
+app.GlobalVariants.WithAutoName = {
+	name = function(t)
+		local type, id = (":"):split(t.an)
+		local data = app.GetAutomaticHeaderData(id,type)
+		for key,value in pairs(data) do
+			t[key] = value;
+		end
+		return data.name
+	end,
+	icon = function(t)
+		local type, id = (":"):split(t.an)
+		local data = app.GetAutomaticHeaderData(id,type)
+		for key,value in pairs(data) do
+			t[key] = value;
+		end
+		return data.icon
+	end,
+	__condition = function(t)
+		return t.an
+	end,
+}
 
 -- Party Sync Support
 local IsQuestReplayable = C_QuestLog.IsQuestReplayable
@@ -1424,6 +1423,7 @@ end
 
 -- Quest Lib
 local createQuest = app.CreateClass("Quest", "questID", {
+	CollectibleType = function() return "Quests" end,
 	text = app.IsClassic and function(t)
 		if t.repeatable then return "|cff0070DD" .. t.name .. "|r"; end
 		return t.name;
@@ -1472,7 +1472,10 @@ local createQuest = app.CreateClass("Quest", "questID", {
 			end
 		end
 	end,
-	trackable = app.ReturnTrue,
+	trackable = function(t)
+		-- raw repeatable quests can't really be tracked since they immediately unflag
+		return not rawget(t, "repeatable") and t.repeatable
+	end,
 	saved = function(t)
 		return IsQuestSaved(t.questID);
 	end,
@@ -1538,6 +1541,10 @@ local createQuest = app.CreateClass("Quest", "questID", {
 		end
 	end,
 	indicatorIcon = GetQuestIndicator,
+	variants = {
+		AndLockCriteria = app.GlobalVariants.AndLockCriteria,
+		WithAutoName = app.GlobalVariants.WithAutoName,
+	}
 },
 "WithReputation", {
 	-- Classic: Quests which give Reputation are always collectible if tracking Quests & Reputations
@@ -1576,6 +1583,13 @@ local createQuest = app.CreateClass("Quest", "questID", {
 		AndLockCriteria = AndLockCriteria,
 	},
 }, (function(t) return t.maxReputation; end),
+"AsHQT", {
+	CollectibleType = function() return "QuestsHidden" end,
+	variants = {
+		AndLockCriteria = AndLockCriteria,
+		WithAutoName = app.GlobalVariants.WithAutoName,
+	},
+}, (function(t) return t.type == "hqt" end),
 -- Both: Breadcrumbs
 "AsBreadcrumb", {
 	text = function(t)
@@ -1617,10 +1631,6 @@ local createQuest = app.CreateClass("Quest", "questID", {
 	end,
 }, (function(t) return (t.isWorldQuest or IsWorldQuest(t)); end)
 --]]
--- Both: Locked Quest support (no way to make a variant on the base Class at this time)
-,"WithLockCriteria", app.CloneDictionary(AndLockCriteria), AndLockCriteria.__condition
--- Retail: Quests with a 'type' field can derive their name from other in-game data automatically
-,app.IsRetail and "WithAutoName" or false, app.CloneDictionary(app.GlobalVariants.WithAutoName), app.GlobalVariants.WithAutoName.__condition
 );
 
 app.CreateQuest = createQuest;
@@ -1994,8 +2004,141 @@ if app.IsRetail then
 			MapSourceQuestsRecursive(questID, sq, nextDepth, depths, parents, refs, inFilters);
 		end
 	end
+
+	local function NestSourceQuests(questChainRoot, group)
+		-- Create a copy of the root group
+		local root = app.__CreateObject(group);
+		local g = { root };
+
+		local sourceQuests, sourceQuest, subSourceQuests, prereqs = root.sourceQuests, nil, nil, nil;
+		local addedQuests = {};
+		while sourceQuests and #sourceQuests > 0 do
+			subSourceQuests = {}; prereqs = {};
+			for i,sourceQuestID in ipairs(sourceQuests) do
+				if not addedQuests[sourceQuestID] then
+					addedQuests[sourceQuestID] = true;
+					local qs = sourceQuestID < 1 and SearchForField("creatureID", math.abs(sourceQuestID)) or SearchForField("questID", sourceQuestID);
+					if qs and #qs > 0 then
+						local i, sq = #qs,nil;
+						while not sq and i > 0 do
+							if qs[i].questID == sourceQuestID then sq = qs[i]; end
+							i = i - 1;
+						end
+						-- just throw every sourceQuest into groups since it's specific questID?
+						-- continue to force collectible though even without quest tracking since it's a temp window
+						-- only reason to include altQuests in search was because of A/H questID usage, which is now cleaned up for quest objects
+						local found = nil;
+						if sq and sq.questID then
+							if sq.parent and sq.parent.questID == sq.questID then
+								sq = sq.parent;
+							end
+							found = sq;
+						end
+						if found
+							-- ensure the character meets the custom collect for the quest
+							and app.CheckCustomCollects(found)
+							-- ensure the current settings do not filter the quest
+							and app.RecursiveGroupRequirementsFilter(found) then
+							sourceQuest = app.__CreateObject(found);
+							sourceQuest.visible = true;
+							if found.sourceQuests and #found.sourceQuests > 0 and
+								(not found.saved or app.CollectedItemVisibilityFilter(sourceQuest)) then
+								-- Mark the sub source quest IDs as marked (as the same sub quest might point to 1 source quest ID)
+								for j, subsourceQuests in ipairs(found.sourceQuests) do
+									subSourceQuests[subsourceQuests] = true;
+								end
+							end
+						else
+							sourceQuest = nil;
+						end
+					elseif sourceQuestID > 0 then
+						-- Create a Quest Object.
+						sourceQuest = app.CreateQuest(sourceQuestID, { ['visible'] = true, ['collectible'] = true });
+					else
+						-- Create a NPC Object.
+						sourceQuest = app.CreateNPC(math.abs(sourceQuestID), { ['visible'] = true });
+					end
+
+					-- If the quest was valid, attach it.
+					if sourceQuest then tinsert(prereqs, sourceQuest); end
+				end
+			end
+
+			-- Convert the subSourceQuests table into an array
+			sourceQuests = {};
+			if #prereqs > 0 then
+				for sourceQuestID,i in pairs(subSourceQuests) do
+					tinsert(sourceQuests, tonumber(sourceQuestID));
+				end
+				-- print("Shifted pre-reqs down & next sq layer",#prereqs)
+				-- app.PrintTable(sourceQuests)
+				-- print("---")
+				tinsert(prereqs, {
+					text = L.UPON_COMPLETION,
+					description = L.UPON_COMPLETION_DESC,
+					icon = "Interface\\Icons\\Spell_Holy_MagicalSentry.blp",
+					visible = true,
+					expanded = true,
+					g = g,
+				});
+				g = prereqs;
+			end
+		end
+
+		-- Clean up the recursive hierarchy. (this removed duplicates)
+		sourceQuests = {};
+		prereqs = g;
+		while prereqs and #prereqs > 0 do
+			for i=#prereqs,1,-1 do
+				local o = prereqs[i];
+				if o.key then
+					sourceQuest = o.key .. o[o.key];
+					if sourceQuests[sourceQuest] then
+						-- Already exists in the hierarchy. Uh oh.
+						tremove(prereqs, i);
+					else
+						sourceQuests[sourceQuest] = true;
+					end
+				end
+			end
+
+			if #prereqs > 1 then
+				prereqs = prereqs[#prereqs];
+				if prereqs then prereqs = prereqs.g; end
+			else
+				prereqs = prereqs[#prereqs];
+				if prereqs then prereqs = prereqs.g; end
+			end
+		end
+
+		-- Clean up standalone "Upon Completion" headers.
+		prereqs = g;
+		repeat
+			local n = #prereqs;
+			local lastprereq = prereqs[n];
+			if lastprereq.text == "Upon Completion" and n > 1 then
+				tremove(prereqs, n);
+				local g = prereqs[n-1].g;
+				if not g then
+					g = {};
+					prereqs[n-1].g = g;
+				end
+				if lastprereq.g then
+					for i,data in ipairs(lastprereq.g) do
+						tinsert(g, data);
+					end
+				end
+				prereqs = g;
+			else
+				prereqs = lastprereq.g;
+			end
+		until not prereqs or #prereqs < 1;
+
+		app.NestObjects(questChainRoot, g);
+	end
+
 	-- Will find, clone, and nest into 'root' all known source quests starting from the provided 'root', listing each quest once at the maximum depth that it has been encountered
-	app.NestSourceQuestsV2 = function(questChainRoot, questID)
+	local function NestSourceQuestsNested(questChainRoot, questID)
 		if not questID then
 			if not questChainRoot.sourceQuests then return; end
 			questID = 0;
@@ -2041,6 +2184,68 @@ if app.IsRetail then
 			app.NestObject(refs[pID], refs[qID]);
 		end
 	end
+
+	local function BuildSourceQuestChain(group)
+		if not ((group.key == "questID" and group.questID) or group.sourceQuests) then return end
+
+		group.isQuestChain = true;
+
+		-- if the group was created from a popout and thus contains its own pre-req quests already, then clean out direct quest entries from the group
+		if group.g then
+			local noQuests = {}
+			for _,o in pairs(group.g) do
+				if o.key ~= "questID" then
+					noQuests[#noQuests + 1] = o
+				end
+			end
+			group.g = noQuests
+		end
+
+		-- Check to see if Source Quests are listed elsewhere.
+		if group.questID and not group.sourceQuests then
+			local questID = group.questID;
+			local qs = SearchForField("questID", group.questID);
+			if #qs > 1 then
+				local sq
+				local i = #qs
+				while not sq and i > 0 do
+					-- found another group with this questID that has sourceQuests listed
+					if qs[i].questID == questID and qs[i].sourceQuests then sq = qs[i]; end
+					i = i - 1;
+				end
+				-- copy the found sq sourceQuests into the group
+				if sq then
+					group.sourceQuests = app.CloneArray(sq.sourceQuests)
+				end
+			end
+		end
+
+		-- Show Quest Prereqs
+		if group.sourceQuests then
+			local useNested = app.Settings:GetTooltipSetting("QuestChain:Nested");
+			local questChainHeader = app.CreateRawText(useNested and L.NESTED_QUEST_REQUIREMENTS or L.QUEST_CHAIN_REQ, {
+				description = L.QUEST_CHAIN_REQ_DESC,
+				icon = "Interface\\Icons\\Spell_Holy_MagicalSentry.blp",
+				OnUpdate = app.AlwaysShowUpdate,
+				OnClick = app.UI.OnClick.IgnoreRightClick,
+				sourceIgnored = true,
+				skipFill = true,
+				SortPriority = 1.0,	-- follow any raw content in group
+				-- copy any sourceQuests into the header incase the root is not actually a quest
+				sourceQuests = group.sourceQuests,
+			});
+			if useNested then
+				NestSourceQuestsNested(questChainHeader, group.questID)
+			else
+				NestSourceQuests(questChainHeader, group)
+			end
+			app.NestObject(group, questChainHeader);
+			-- Sort by the totals of the quest chain on the next game frame
+			app.CallbackHandlers.Callback(app.Sort, questChainHeader.g, app.SortDefaults.Total, true);
+			questChainHeader.sourceQuests = nil;
+		end
+	end
+	app.AddEventHandler("OnNewPopoutGroup", BuildSourceQuestChain)
 
 	-- These are Items/Currencies rewarded by WQs which are treated as currency but have a 'huge' amount of purchases
 	-- and are often readily available

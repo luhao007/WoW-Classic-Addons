@@ -13,12 +13,14 @@
 -- ******************************** Constants *******************************
 local _G = getfenv(0);
 local TITAN_LOCATION_ID = "Location";
-local TITAN_BUTTON = "TitanPanel" .. TITAN_LOCATION_ID .. "Button"
+local TITAN_BUTTON = "TitanPanel"..TITAN_LOCATION_ID.."Button"
 local TITAN_MAP_FRAME = "TitanMapFrame"
 local TITAN_LOCATION_VERSION = TITAN_VERSION;
 
 local addon_conflict = false -- used for addon conflicts
-local updateTable = { TITAN_LOCATION_ID, TITAN_PANEL_UPDATE_BUTTON };
+local cachedX = 0;
+local cachedY = 0;
+local updateTable = {TITAN_LOCATION_ID, TITAN_PANEL_UPDATE_BUTTON};
 -- ******************************** Variables *******************************
 local AceTimer = LibStub("AceTimer-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale(TITAN_ID, true)
@@ -27,34 +29,34 @@ local LocationTimerRunning = false
 
 local debug_flow = false
 
-local place = {
-	zoneText = "",
-	subZoneText = "",
-	pvpType = "",
-	factionName = "",
-	px = 0,
-	py = 0,
-	}
-
 ---@diagnostic disable-next-line: deprecated
 local GetZonePVP = C_PvP.GetZonePVPInfo or GetZonePVPInfo -- For Classic versions
 
 -- ******************************** Functions *******************************
-
+--[[ local
+-- **************************************************************************
+-- NAME : debug_msg(Message)
+-- DESC : Debug function to print message to chat frame
+-- VARS : Message = message to print to chat frame
+-- **************************************************************************
+--]]
 local function debug_msg(Message)
 	local msg = ""
 	local stamp = date("%H:%M:%S") -- date("%m/%d/%y %H:%M:%S")
-	local milli = GetTime()     -- seconds with millisecond precision (float)
+	local milli = GetTime() -- seconds with millisecond precision (float)
 	local milli_str = string.format("%0.2F", milli - math.modf(milli))
-	msg = msg .. TitanUtils_GetGoldText(stamp .. milli_str .. " " .. TITAN_LOCATION_ID .. ": ")
-	msg = msg .. TitanUtils_GetGreenText(Message)
+	msg = msg..TitanUtils_GetGoldText(stamp..milli_str.." "..TITAN_LOCATION_ID..": ")
+	msg = msg..TitanUtils_GetGreenText(Message)
 	DEFAULT_CHAT_FRAME:AddMessage(msg)
-	--		DEFAULT_CHAT_FRAME:AddMessage(TITAN_LOCATION_ID..": " .. Message, 1.00, 0.49, 0.04)
+--		DEFAULT_CHAT_FRAME:AddMessage(TITAN_LOCATION_ID..": " .. Message, 1.00, 0.49, 0.04)
 end
 
----local Register event if not already registered
----@param plugin Button
----@param event string
+--[[ local
+-- **************************************************************************
+-- NAME : RegEvent()
+-- DESC : Check if already registered, register if not
+-- **************************************************************************
+--]]
 local function RegEvent(plugin, event)
 	if plugin:IsEventRegistered(event) then
 		-- already registered
@@ -63,10 +65,15 @@ local function RegEvent(plugin, event)
 	end
 end
 
----local Registers / unregisters (action) events the plugin needs
----@param action string
----@param reason string
+--[[ local
+-- **************************************************************************
+-- NAME : Events()
+-- DESC : Registers / unregisters events the plugin needs
+-- **************************************************************************
+--]]
 local function Events(action, reason)
+--[[
+--]]
 	local plugin = _G[TITAN_BUTTON]
 
 	if action == "register" then
@@ -84,124 +91,111 @@ local function Events(action, reason)
 	if debug_flow then
 		local msg =
 			"Events"
-			.. " " .. tostring(action) .. ""
-			.. " " .. tostring(reason) .. ""
+			.." "..tostring(action)..""
+			.." "..tostring(reason)..""
 		debug_msg(msg)
 	else
 		-- not requested
 	end
 end
 
----local Get the player coordinates on x,y axis
----@return number | nil X
----@return number | nil Y
+--[[ local
+-- **************************************************************************
+-- NAME : GetPlayerMapPosition()
+-- DESC : Get the player coordinates
+-- VARS : x = location on x axis, y = location on y axis
+-- **************************************************************************
+--]]
 local function GetPlayerMapPosition()
-	local mapID = C_Map.GetBestMapForUnit("player")
-	if mapID == nil then
-		return nil, nil
-	end
+    local mapID = C_Map.GetBestMapForUnit("player")
+    if mapID == nil then
+        return nil, nil
+    end
 
-	local position = C_Map.GetPlayerMapPosition(mapID, "player")
-	if position == nil then
-		return nil, nil
-	else
-		return position:GetXY()
+    local position = C_Map.GetPlayerMapPosition(mapID, "player")
+    if position == nil then
+        return nil, nil
+    else
+    	return position:GetXY()
 	end
 end
 
----local Function to throttle down unnecessary updates
+--[[
+-- **************************************************************************
+-- NAME : CheckForPositionUpdate()
+-- DESC : Function to throttle down unnecessary updates
+-- **************************************************************************
+--]]
 local function CheckForPositionUpdate()
 	local mapID = C_Map.GetBestMapForUnit("player")
-	local tempx, tempy = GetPlayerMapPosition()
-
-	-- If unknown then use 0,0
-	if tempx == nil then
-		place.px = 0
-		tempx = 0
-	end
-	if tempy == nil then
-		place.py = 0
-		tempy = 0
-	end
-
-	-- If the same then do not update the text to save a few cycles.
-	if tempx ~= place.px or tempy ~= place.py then
-		place.px = tempx
-		place.py = tempy
+	local tempx, tempy = GetPlayerMapPosition();
+	if tempx ~= cachedX or tempy ~= cachedY then
 		TitanPanelPluginHandle_OnUpdate(updateTable);
 	end
 end
 
----local Update zone info of current toon
----@param self Button
 local function ZoneUpdate(self)
+
+--[==[
+print("TLoc ZoneUpdate"
+.." c "..tostring(self).." "
+.." p "..tostring(self:GetName()).." "
+)
+--]==]
 	local _ = nil
-	place.zoneText = GetZoneText();
-	place.subZoneText = GetSubZoneText();
-	place.pvpType, _, place.factionName = GetZonePVP();
+	self.zoneText = GetZoneText();
+	self.subZoneText = GetSubZoneText();
+	self.pvpType, _, self.factionName = GetZonePVP();
 
 	TitanPanelPluginHandle_OnUpdate(updateTable);
 end
 
----local Set textg coord on map per user selection
----@param player string
----@param cursor string
 local function SetCoordText(player, cursor)
-	local player_frame = TitanMapPlayerLocation
-	local cursor_frame = TitanMapCursorLocation
-	local world_frame = WorldMapFrame
+	local playerLocationText = player or ""
+	local cursorLocationText = cursor or ""
 
-	player_frame:SetText(player or "");
-	cursor_frame:SetText(cursor or "");
+	TitanMapPlayerLocation:SetText(cursorLocationText);
+	TitanMapCursorLocation:SetText(playerLocationText);
 
+--		local mloc = TitanGetVar(TITAN_LOCATION_ID, "MapLocation") or "TOPRIGHT"
 	if TITAN_ID == "TitanClassic" then
 		-- Determine where to show the text
-		player_frame:ClearAllPoints()
-		cursor_frame:ClearAllPoints()
+		TitanMapPlayerLocation:ClearAllPoints()
+		TitanMapCursorLocation:ClearAllPoints()
 
-		local mloc = TitanGetVar(TITAN_LOCATION_ID, "CoordsLoc")
-		if mloc == "Top" then
-			if WorldMapFrame:IsMaximized() then
-				TitanMapPlayerLocation:SetPoint("TOPLEFT", WorldMapFrame.BorderFrame, "TOPLEFT", 10, -5)
-			else
-				TitanMapPlayerLocation:SetPoint("TOPLEFT", WorldMapFrame.MiniBorderFrame, "TOPLEFT", 20, -33)
-			end
-			TitanMapCursorLocation:SetPoint("RIGHT", WorldMapFrame.MaximizeMinimizeFrame, "LEFT", 0, 0)
-		elseif mloc == "Bottom" then
-			player_frame:SetPoint("BOTTOMRIGHT", world_frame, "BOTTOM", -10, 10)
-			cursor_frame:SetPoint("BOTTOMLEFT", world_frame, "BOTTOM", 0, 10)
-		else
-			-- Correct to the default of bottom
-			TitanSetVar(TITAN_LOCATION_ID, "CoordsLoc", "Bottom")
-			player_frame:SetPoint("BOTTOMRIGHT", world_frame, "BOTTOM", -10, 10)
-			cursor_frame:SetPoint("BOTTOMLEFT", world_frame, "BOTTOM", 0, 10)
-		end
+		TitanMapPlayerLocation:SetPoint("BOTTOMLEFT", WorldMapFrame, "BOTTOM", 0, 10)
+		TitanMapCursorLocation:SetPoint("BOTTOMRIGHT", WorldMapFrame, "BOTTOM", -10, 10)
 	else -- current retail
 		-- Position the text
-		local anchor = world_frame.BorderFrame.MaximizeMinimizeFrame
-		if world_frame:IsMaximized() then
+		local anchor = WorldMapFrame.BorderFrame.MaximizeMinimizeFrame
+		if WorldMapFrame:IsMaximized() then
 			-- map should be 'full' screen
-			player_frame:ClearAllPoints();
-			cursor_frame:ClearAllPoints();
-			player_frame:SetPoint("RIGHT", anchor, "LEFT", 0, 0)
-			cursor_frame:SetPoint("TOP", player_frame, "BOTTOM", 0, -5)
-			world_frame.TitanSize = "large"
+			TitanMapPlayerLocation:ClearAllPoints();
+			TitanMapCursorLocation:ClearAllPoints();
+			TitanMapPlayerLocation:SetPoint("RIGHT", anchor, "LEFT", 0, 0)
+			TitanMapCursorLocation:SetPoint("TOP", TitanMapPlayerLocation, "BOTTOM", 0, -5)
+			WorldMapFrame.TitanSize = "large"
 		else
-			player_frame:ClearAllPoints();
-			cursor_frame:ClearAllPoints();
-			player_frame:SetPoint("RIGHT", anchor, "LEFT", 0, 0)
-			cursor_frame:SetPoint("LEFT", world_frame.BorderFrame.Tutorial, "RIGHT", 0, 0)
-			world_frame.TitanSize = "small"
+			TitanMapPlayerLocation:ClearAllPoints();
+			TitanMapCursorLocation:ClearAllPoints();
+			TitanMapPlayerLocation:SetPoint("RIGHT", anchor, "LEFT", 0, 0)
+			TitanMapCursorLocation:SetPoint("LEFT", WorldMapFrame.BorderFrame.Tutorial, "RIGHT", 0, 0)
+			WorldMapFrame.TitanSize = "small"
 		end
 	end
 end
 
----local Show / hide the location above the mini map per user settings
----@param reason string
+--[[
+-- **************************************************************************
+-- NAME : LocOnMiniMap()
+-- DESC : Show / hide the location above the mini map per user settings
+-- **************************************************************************
+--]]
 local function LocOnMiniMap(reason)
 	if TitanGetVar(TITAN_LOCATION_ID, "ShowLocOnMiniMap") then
 		MinimapBorderTop:Show()
 		MinimapZoneTextButton:Show()
+--		MiniMapWorldMapButton:Show()
 	else
 		MinimapBorderTop:Hide()
 		MinimapZoneTextButton:Hide()
@@ -216,9 +210,12 @@ local function LocOnMiniMap(reason)
 	end
 end
 
----local Update coordinates on map
----@param self Button
----@param elapsed number
+--[[
+-- **************************************************************************
+-- NAME : TitanMapFrame_OnUpdate()
+-- DESC : Update coordinates on map
+-- **************************************************************************
+--]]
 local function TitanMapFrame_OnUpdate(self, elapsed)
 	-- Determine the text to show for player coords
 
@@ -232,34 +229,23 @@ local function TitanMapFrame_OnUpdate(self, elapsed)
 		-- use default
 	end
 
-	local player_format = ""
-	local cursor_format = ""
-	local label = TitanGetVar(TITAN_LOCATION_ID, "CoordsLabel")
-	if label then
-		player_format = L["TITAN_LOCATION_MAP_PLAYER_COORDS_TEXT"]
-		cursor_format = L["TITAN_LOCATION_MAP_CURSOR_COORDS_TEXT"]
-	else
-		player_format = "%s"
-		cursor_format = "%s"
-	end
-
 	if (TitanGetVar(TITAN_LOCATION_ID, "ShowCoordsOnMap")) then
-		place.px, place.py = GetPlayerMapPosition();
-		if place.px == nil then place.px = 0 end
-		if place.py == nil then place.py = 0 end
-		if place.px == 0 and place.py == 0 then
+		self.px, self.py = GetPlayerMapPosition();
+		if self.px == nil then self.px = 0 end
+		if self.py == nil then self.py = 0 end
+		if self.px == 0 and self.py == 0 then
 			playerLocationText = L["TITAN_LOCATION_NO_COORDS"]
 		else
-			playerLocationText = format(TitanGetVar(TITAN_LOCATION_ID, "CoordsFormat"), 100 * place.px, 100 * place.py);
+			playerLocationText = format(TitanGetVar(TITAN_LOCATION_ID, "CoordsFormat"), 100 * self.px, 100 * self.py);
 		end
-		playerLocationText = (format(player_format, TitanUtils_GetHighlightText(playerLocationText)));
+		playerLocationText = (format(L["TITAN_LOCATION_MAP_PLAYER_COORDS_TEXT"], TitanUtils_GetHighlightText(playerLocationText)));
 
 		-- Determine the text to show for cursor coords
 		local cx, cy = GetCursorPosition();
 
 		-- use the global cursor position to confirm the cursor is over the map, but then use a normalized cursor position to account for map zooming
 		local left, bottom, width, height = WorldMapFrame.ScrollContainer:GetScaledRect();
-		if (cx > left and cy > bottom and cx < left + width and cy < bottom + height) then
+		if (cx > left and cy > bottom and cx < left + width and cy < bottom+ height) then
 			cx, cy = WorldMapFrame:GetNormalizedCursorPosition();
 			cx, cy = cx or 0, cy or 0;
 		else
@@ -268,17 +254,27 @@ local function TitanMapFrame_OnUpdate(self, elapsed)
 
 		-- per the user requested format
 		cursorLocationText = format(TitanGetVar(TITAN_LOCATION_ID, "CoordsFormat"), 100 * cx, 100 * cy)
-		cursorLocationText = (format(cursor_format, TitanUtils_GetHighlightText(cursorLocationText)))
+		cursorLocationText = (format(L["TITAN_LOCATION_MAP_CURSOR_COORDS_TEXT"],
+			TitanUtils_GetHighlightText(cursorLocationText)))
 	else
 		-- use defaults, saving a few cpu cycles
 	end
-
+--[==[
+print("TLoc"
+.." c "..tostring(cursorLocationText).." "
+.." p "..tostring(playerLocationText).." "
+)
+--]==]
 	SetCoordText(playerLocationText, cursorLocationText)
+
 end
 
----local Set the coordinates text for player and cursor. Used on update to refresh and on hide to clear the text.
----@param action string Start | Stop
+--[[
+-- Set the coordinates text for player and cursor
+-- Used on update to refresh and on hide to clear the text
+--]]
 local function CoordFrames(action)
+
 	local show_on_map = (TitanGetVar(TITAN_LOCATION_ID, "ShowCoordsOnMap") and true or false)
 	if addon_conflict then
 		-- do not attempt coords
@@ -287,7 +283,7 @@ local function CoordFrames(action)
 		if show_on_map then
 			if action == "start" then
 				local function updateFunc()
-					TitanMapFrame_OnUpdate(frame, 0.07); -- simulating an OnUpdate call
+					TitanMapFrame_OnUpdate(frame, 0.07);	-- simulating an OnUpdate call
 				end
 				frame:SetScript("OnShow", function()
 					frame.updateTicker = frame.updateTicker or C_Timer.NewTicker(0.07, updateFunc);
@@ -321,16 +317,22 @@ local function CoordFrames(action)
 	if debug_flow then
 		local msg =
 			"CoordFrames"
-			.. " " .. tostring(action) .. ""
-			.. " " .. tostring(show_on_map) .. ""
-			.. " " .. tostring(addon_conflict) .. ""
+			.." "..tostring(action)..""
+			.." "..tostring(show_on_map)..""
+			.." "..tostring(addon_conflict)..""
 		debug_msg(msg)
 	else
 		-- not requested
 	end
 end
 
----local Adds player and cursor coords to the WorldMapFrame, unless the player has CT_MapMod
+--[[
+-- **************************************************************************
+-- NAME : CreateMapFrames()
+-- DESC : Adds player and cursor coords to the WorldMapFrame, unless the player has CT_MapMod
+-- VARS : none
+-- **************************************************************************
+--]]
 local function CreateMapFrames()
 	if _G[TITAN_MAP_FRAME] then
 		return -- if already created
@@ -344,8 +346,8 @@ local function CreateMapFrames()
 
 	if debug_flow then
 		local msg =
-		"CreateMapFrames"
-		--			.." "..tostring(reason)..""
+			"CreateMapFrames"
+--			.." "..tostring(reason)..""
 		debug_msg(msg)
 	else
 		-- not requested
@@ -364,13 +366,18 @@ local function CreateMapFrames()
 	cursortext:SetPoint("TOP", playertext, "BOTTOM", 0, 0)
 end
 
----local Display button when plugin is visible
----@param self Button
+--[[
+-- **************************************************************************
+-- NAME : OnShow()
+-- DESC : Display button when plugin is visible
+-- **************************************************************************
+--]]
 local function OnShow(self)
+
 	if debug_flow then
 		local msg =
-		"_OnShow"
-		--			.." "..tostring(reason)..""
+			"_OnShow"
+--			.." "..tostring(reason)..""
 		debug_msg(msg)
 	else
 		-- not requested
@@ -393,8 +400,12 @@ local function OnShow(self)
 	TitanPanelButton_UpdateButton(TITAN_LOCATION_ID);
 end
 
----local Destroy repeating timer when plugin is hidden
----@param self Button
+--[[
+-- **************************************************************************
+-- NAME : OnHide()
+-- DESC : Destroy repeating timer when plugin is hidden
+-- **************************************************************************
+--]]
 local function OnHide(self)
 	AceTimer:CancelTimer(LocationTimer)
 	LocationTimerRunning = false
@@ -403,136 +414,131 @@ local function OnHide(self)
 	CoordFrames("stop") -- stop coords on map, if requested
 end
 
----local Calculate coordinates and then display data on button.
----@param id string
----@return string plugin_label
----@return string plugin_text
+--[[
+-- **************************************************************************
+-- NAME : GetButtonText(id)
+-- DESC : Calculate coordinates and then display data on button
+-- VARS : id = button ID
+-- **************************************************************************
+--]]
 local function GetButtonText(id)
-	-- Jul 2024 : Made display only; vars assigned per timer or events.
-	local button = TitanUtils_GetButton(id);
-	local locationRichText = ""
+	local button, id = TitanUtils_GetButton(id);
+	local locationText = ""
 
-	local zone_text = ""
-	local subzone_text = ""
-	local xy_text = ""
+	-- Coordinates text, if requested
+	if button and TitanGetVar(TITAN_LOCATION_ID, "ShowCoordsText") then
+		button.px, button.py = GetPlayerMapPosition();
+		cachedX = button.px;
+		cachedY = button.py;
+		if button.px == nil then button.px = 0 end
+		if button.py == nil then button.py = 0 end
 
-	if button then -- sanity check
-		-- Set in order of display on plugin...
-
-		-- Zone text, if requested
-		if TitanGetVar(TITAN_LOCATION_ID, "ShowZoneText") then
-			zone_text = TitanUtils_ToString(place.zoneText)
-				.." "..TitanUtils_ToString(place.subZoneText)
-			-- overwrite with subZone text, if requested
-			if TitanGetVar(TITAN_LOCATION_ID, "ShowSubZoneText") then
-				if place.subZoneText == "" then
-					-- Show the zone instead
-				else
-					zone_text = TitanUtils_ToString(place.subZoneText)
-				end
-			else
-				-- leave alone
-			end
+		if button.px == 0 and button.py == 0 then
+			locationText = "";
 		else
-			zone_text = ""
-		end
-
-		-- Coordinates text, if requested
-		if TitanGetVar(TITAN_LOCATION_ID, "ShowCoordsText") then
-			if place.px == 0 and place.py == 0 then
-				xy_text = ""
-			else
-				xy_text = format(TitanGetVar(TITAN_LOCATION_ID, "CoordsFormat"), 100 * place.px, 100 * place.py)
-			end
-		else
-			xy_text = "";
-		end
-
-		-- seperator, if needed
-		if ((zone_text:len() > 0) or (xy_text:len() > 0)) then
-			zone_text = zone_text .. " "
-		else
-			-- no seperator needed
+		locationText = format(TitanGetVar(TITAN_LOCATION_ID, "CoordsFormat"), 100 * button.px, 100 * button.py)
 		end
 	else
-		locationRichText = "? id"
+		locationText = "";
 	end
-	-- Color per type of zone (friendly, contested, hostile)
-	locationRichText = zone_text..xy_text
-	if (TitanGetVar(TITAN_LOCATION_ID, "ShowColoredText")) then
-		if (place.isArena) then
-			locationRichText = TitanUtils_GetRedText(locationRichText);
-		elseif (place.pvpType == "friendly") then
-			locationRichText = TitanUtils_GetGreenText(locationRichText);
-		elseif (place.pvpType == "hostile") then
-			locationRichText = TitanUtils_GetRedText(locationRichText);
-		elseif (place.pvpType == "contested") then
-			locationRichText = TitanUtils_GetNormalText(locationRichText);
+
+	-- Zone text, if requested
+	if button and TitanGetVar(TITAN_LOCATION_ID, "ShowZoneText") then
+		if (TitanUtils_ToString(button.subZoneText) == '') then
+			if (button.zoneText == '') then
+				local Map_unit = C_Map.GetBestMapForUnit -- DF change of API
+								or C_Map.GetBestMapUnit
+				local _
+				_, _, button.zoneText = C_Map.GetMapInfo(Map_unit("player"));
+			end
+			locationText = TitanUtils_ToString(button.zoneText)..' '..locationText;
 		else
-			locationRichText = TitanUtils_GetNormalText(locationRichText);
+			locationText = TitanUtils_ToString(button.subZoneText)..' '..locationText;
 		end
 	else
-		locationRichText = TitanUtils_GetHighlightText(locationRichText);
+		if button and button.px == 0 and button.py == 0 then
+			locationText = L["TITAN_LOCATION_NO_COORDS"];
+		end
+	end
+
+	-- Color per type of zone (friendly, contested, hostile)
+	local locationRichText;
+	if (TitanGetVar(TITAN_LOCATION_ID, "ShowColoredText")) then
+		if (TitanPanelLocationButton.isArena) then
+			locationRichText = TitanUtils_GetRedText(locationText);
+		elseif (TitanPanelLocationButton.pvpType == "friendly") then
+			locationRichText = TitanUtils_GetGreenText(locationText);
+		elseif (TitanPanelLocationButton.pvpType == "hostile") then
+			locationRichText = TitanUtils_GetRedText(locationText);
+		elseif (TitanPanelLocationButton.pvpType == "contested") then
+			locationRichText = TitanUtils_GetNormalText(locationText);
+		else
+			locationRichText = TitanUtils_GetNormalText(locationText);
+		end
+	else
+		locationRichText = TitanUtils_GetHighlightText(locationText);
 	end
 
 	return L["TITAN_LOCATION_BUTTON_LABEL"], locationRichText;
 end
 
----local Get tooltip text
----@return string formatted_tooltip
+--[[
+-- **************************************************************************
+-- NAME : GetTooltipText()
+-- DESC : Display tooltip text
+-- **************************************************************************
+--]]
 local function GetTooltipText()
 	local pvpInfoRichText;
 
 	pvpInfoRichText = "";
-	if (place.pvpType == "sanctuary") then
+	if (TitanPanelLocationButton.pvpType == "sanctuary") then
 		pvpInfoRichText = TitanUtils_GetGreenText(SANCTUARY_TERRITORY);
-	elseif (place.pvpType == "arena") then
-		place.subZoneText = TitanUtils_GetRedText(place.subZoneText);
+	elseif (TitanPanelLocationButton.pvpType == "arena") then
+		TitanPanelLocationButton.subZoneText = TitanUtils_GetRedText(TitanPanelLocationButton.subZoneText);
 		pvpInfoRichText = TitanUtils_GetRedText(CONTESTED_TERRITORY);
-	elseif (place.pvpType == "friendly") then
-		pvpInfoRichText = TitanUtils_GetGreenText(format(FACTION_CONTROLLED_TERRITORY,
-			place.factionName));
-	elseif (place.pvpType == "hostile") then
-		pvpInfoRichText = TitanUtils_GetRedText(format(FACTION_CONTROLLED_TERRITORY, place
-		.factionName));
-	elseif (place.pvpType == "contested") then
+		elseif (TitanPanelLocationButton.pvpType == "friendly") then
+		pvpInfoRichText = TitanUtils_GetGreenText(format(FACTION_CONTROLLED_TERRITORY, TitanPanelLocationButton.factionName));
+	elseif (TitanPanelLocationButton.pvpType == "hostile") then
+		pvpInfoRichText = TitanUtils_GetRedText(format(FACTION_CONTROLLED_TERRITORY, TitanPanelLocationButton.factionName));
+	elseif (TitanPanelLocationButton.pvpType == "contested") then
 		pvpInfoRichText = TitanUtils_GetRedText(CONTESTED_TERRITORY);
 	else
 		pvpInfoRichText = ""
 	end
 
 	-- build the tool tip
-	local zone = TitanUtils_GetHighlightText(place.zoneText) or ""
+	local zone = TitanUtils_GetHighlightText(TitanPanelLocationButton.zoneText) or ""
 	local sub_zone = TitanUtils_Ternary(
-		(place.subZoneText == ""),
-		"",
-		L["TITAN_LOCATION_TOOLTIP_SUBZONE"] ..
-		"\t" .. TitanUtils_GetHighlightText(place.subZoneText) .. "\n"
-	)
+			(TitanPanelLocationButton.subZoneText == ""),
+			"",
+			L["TITAN_LOCATION_TOOLTIP_SUBZONE"].."\t"..TitanUtils_GetHighlightText(TitanPanelLocationButton.subZoneText).."\n"
+			)
 	local bind_loc = TitanUtils_GetHighlightText(GetBindLocation())
 
-	return "" ..
-		L["TITAN_LOCATION_TOOLTIP_ZONE"] .. "\t" .. zone .. "\n"
-		.. sub_zone .. "\n"
-		.. TitanUtils_GetHighlightText(L["TITAN_LOCATION_TOOLTIP_HOMELOCATION"]) .. "\n"
-		.. L["TITAN_LOCATION_TOOLTIP_INN"] .. "\t" .. bind_loc .. "\n"
-		.. pvpInfoRichText .. "\n\n"
-		.. TitanUtils_GetGreenText(L["TITAN_LOCATION_TOOLTIP_HINTS_1"]) .. "\n"
-		.. TitanUtils_GetGreenText(L["TITAN_LOCATION_TOOLTIP_HINTS_2"])
+	return ""..
+		L["TITAN_LOCATION_TOOLTIP_ZONE"].."\t"..zone.."\n"
+		..sub_zone.."\n"
+		..TitanUtils_GetHighlightText(L["TITAN_LOCATION_TOOLTIP_HOMELOCATION"]).."\n"
+		..L["TITAN_LOCATION_TOOLTIP_INN"].."\t"..bind_loc.."\n"
+		..TitanUtils_GetGreenText(L["TITAN_LOCATION_TOOLTIP_HINTS_1"]).."\n"
+		..TitanUtils_GetGreenText(L["TITAN_LOCATION_TOOLTIP_HINTS_2"])
 end
 
----local Handle events registered to plugin
----@param self Button
----@param event string
----@param ... any
+--[[
+-- **************************************************************************
+-- NAME : OnEvent()
+-- DESC : Parse events registered to plugin and act on them
+-- **************************************************************************
+--]]
 local function OnEvent(self, event, ...)
-	-- DF TODO See if we can turn off zone on minimap
-	--[=[
+-- DF TODO See if we can turn off zone on minimap
+--[=[
 --]=]
 	if debug_flow then
 		local msg =
 			"_OnEvent"
-			.. " " .. tostring(event) .. ""
+			.." "..tostring(event)..""
 		debug_msg(msg)
 	else
 		-- not requested
@@ -554,20 +560,24 @@ local function OnEvent(self, event, ...)
 	end
 
 	ZoneUpdate(self);
-	--[[
+--[[
 --]]
 end
 
----local Handle events registered to plugin. Copies coordinates to chat line for shift-LeftClick
----@param self Button
----@param button string
+--[[
+-- **************************************************************************
+-- NAME : OnClick(button)
+-- DESC : Copies coordinates to chat line for shift-LeftClick
+-- VARS : button = value of action
+-- **************************************************************************
+--]]
 local function OnClick(self, button)
 	if (button == "LeftButton") then
 		if (IsShiftKeyDown()) then
 			local activeWindow = ChatEdit_GetActiveWindow();
-			if (activeWindow) then
-				local message = TitanUtils_ToString(place.zoneText) .. " " ..
-					format(TitanGetVar(TITAN_LOCATION_ID, "CoordsFormat"), 100 * place.px, 100 * place.py);
+			if ( activeWindow ) then
+				local message = TitanUtils_ToString(self.zoneText).." "..
+					format(TitanGetVar(TITAN_LOCATION_ID, "CoordsFormat"), 100 * self.px, 100 * self.py);
 				activeWindow:Insert(message);
 			end
 		else
@@ -576,39 +586,11 @@ local function OnClick(self, button)
 	end
 end
 
----local Create right click menu
 local function CreateMenu()
 	local info
 
-	-- level 1
-	if TitanPanelRightClickMenu_GetDropdownLevel() == 1 then
-		-- level 1
-		TitanPanelRightClickMenu_AddTitle(TitanPlugins[TITAN_LOCATION_ID].menuText);
-
-		info = {};
-		info.notCheckable = true
-		info.text = L["TITAN_PANEL_OPTIONS"];
-		info.value = "Options"
-		info.hasArrow = 1;
-		TitanPanelRightClickMenu_AddButton(info, TitanPanelRightClickMenu_GetDropdownLevel());
-
-		info = {};
-		info.notCheckable = true
-		info.text = L["TITAN_LOCATION_FORMAT_COORD_LABEL"];
-		info.value = "CoordFormat"
-		info.hasArrow = 1;
-		TitanPanelRightClickMenu_AddButton(info, TitanPanelRightClickMenu_GetDropdownLevel());
-
-		info = {};
-		info.notCheckable = true
-		info.text = "WorldMap"
-		info.value = "WorldMap"
-		info.hasArrow = 1;
-		TitanPanelRightClickMenu_AddButton(info, TitanPanelRightClickMenu_GetDropdownLevel());
-
-		TitanPanelRightClickMenu_AddControlVars(TITAN_LOCATION_ID)
-		-- level 2
-	elseif TitanPanelRightClickMenu_GetDropdownLevel() == 2 then
+	-- level 2
+	if TitanPanelRightClickMenu_GetDropdownLevel() == 2 then
 		if TitanPanelRightClickMenu_GetDropdMenuValue() == "Options" then
 			TitanPanelRightClickMenu_AddTitle(L["TITAN_PANEL_OPTIONS"], TitanPanelRightClickMenu_GetDropdownLevel());
 			info = {};
@@ -620,7 +602,7 @@ local function CreateMenu()
 			info.checked = TitanGetVar(TITAN_LOCATION_ID, "ShowZoneText");
 			TitanPanelRightClickMenu_AddButton(info, TitanPanelRightClickMenu_GetDropdownLevel());
 
---			if TITAN_ID == "TitanClassic" then
+			if TITAN_ID == "TitanClassic" then
 				info = {};
 				info.text = L["TITAN_LOCATION_MENU_SHOW_SUBZONE_ON_PANEL_TEXT"];
 				info.func = function()
@@ -629,9 +611,9 @@ local function CreateMenu()
 				end
 				info.checked = TitanGetVar(TITAN_LOCATION_ID, "ShowSubZoneText");
 				TitanPanelRightClickMenu_AddButton(info, TitanPanelRightClickMenu_GetDropdownLevel());
---			else
+			else
 				-- no work needed
---			end
+			end
 
 			info = {};
 			info.text = L["TITAN_LOCATION_MENU_SHOW_COORDS_ON_PANEL_TEXT"];
@@ -656,15 +638,15 @@ local function CreateMenu()
 			TitanPanelRightClickMenu_AddButton(info, TitanPanelRightClickMenu_GetDropdownLevel());
 
 			if TITAN_ID == "TitanClassic" then
-				info = {};
-				info.text = L["TITAN_LOCATION_MENU_SHOW_LOC_ON_MINIMAP_TEXT"];
-				info.func = function()
-					TitanToggleVar(TITAN_LOCATION_ID, "ShowLocOnMiniMap");
-					LocOnMiniMap("config")
-				end
-				info.checked = TitanGetVar(TITAN_LOCATION_ID, "ShowLocOnMiniMap");
-				info.disabled = InCombatLockdown()
-				TitanPanelRightClickMenu_AddButton(info, TitanPanelRightClickMenu_GetDropdownLevel());
+			info = {};
+			info.text = L["TITAN_LOCATION_MENU_SHOW_LOC_ON_MINIMAP_TEXT"];
+			info.func = function()
+				TitanToggleVar(TITAN_LOCATION_ID, "ShowLocOnMiniMap");
+				LocOnMiniMap("config")
+			end
+			info.checked = TitanGetVar(TITAN_LOCATION_ID, "ShowLocOnMiniMap");
+			info.disabled = InCombatLockdown()
+			TitanPanelRightClickMenu_AddButton(info, TitanPanelRightClickMenu_GetDropdownLevel());
 			else
 				-- no work needed
 			end
@@ -676,11 +658,11 @@ local function CreateMenu()
 			info.checked = TitanGetVar(TITAN_LOCATION_ID, "UpdateWorldmap");
 			info.disabled = InCombatLockdown()
 			TitanPanelRightClickMenu_AddButton(info, TitanPanelRightClickMenu_GetDropdownLevel());
+
 		end
 
 		if TitanPanelRightClickMenu_GetDropdMenuValue() == "CoordFormat" then
-			TitanPanelRightClickMenu_AddTitle(L["TITAN_LOCATION_FORMAT_COORD_LABEL"],
-				TitanPanelRightClickMenu_GetDropdownLevel());
+			TitanPanelRightClickMenu_AddTitle(L["TITAN_LOCATION_FORMAT_COORD_LABEL"], TitanPanelRightClickMenu_GetDropdownLevel());
 			info = {};
 			info.text = L["TITAN_LOCATION_FORMAT_LABEL"];
 			info.func = function()
@@ -708,75 +690,39 @@ local function CreateMenu()
 			info.checked = (TitanGetVar(TITAN_LOCATION_ID, "CoordsFormat") == L["TITAN_LOCATION_FORMAT3"])
 			TitanPanelRightClickMenu_AddButton(info, TitanPanelRightClickMenu_GetDropdownLevel());
 		end
-
-		if TitanPanelRightClickMenu_GetDropdMenuValue() == "WorldMap" then
-			TitanPanelRightClickMenu_AddTitle(L["TITAN_LOCATION_MENU_TEXT"], TitanPanelRightClickMenu_GetDropdownLevel());
-			info = {};
-			info.text = L["TITAN_LOCATION_MENU_SHOW_COORDS_ON_MAP_TEXT"];
-			info.func = function()
-				TitanToggleVar(TITAN_LOCATION_ID, "ShowCoordsOnMap");
-				if (TitanGetVar(TITAN_LOCATION_ID, "ShowCoordsOnMap")) then
-					CoordFrames("start")
-				else
-					CoordFrames("stop")
-				end
-			end
-			info.checked = TitanGetVar(TITAN_LOCATION_ID, "ShowCoordsOnMap");
-			TitanPanelRightClickMenu_AddButton(info, TitanPanelRightClickMenu_GetDropdownLevel());
-
-			info = {};
-			info.text = L["TITAN_LOCATION_MENU_UPDATE_WORLD_MAP"];
-			info.func = function()
-				TitanToggleVar(TITAN_LOCATION_ID, "UpdateWorldmap");
-			end
-			info.checked = TitanGetVar(TITAN_LOCATION_ID, "UpdateWorldmap");
-			info.disabled = InCombatLockdown()
-			TitanPanelRightClickMenu_AddButton(info, TitanPanelRightClickMenu_GetDropdownLevel());
-
-			if TITAN_ID == "TitanClassic" then
-				info = {};
-				info.notCheckable = true
-				info.text = L["TITAN_LOCATION_MENU_TEXT"];
-				info.value = "CoordsLoc"
-				info.hasArrow = 1;
-				TitanPanelRightClickMenu_AddButton(info, TitanPanelRightClickMenu_GetDropdownLevel());
-			else
-				-- no work needed
-			end
-		end
-
-		-- level 3
-	elseif TitanPanelRightClickMenu_GetDropdownLevel() == 3 then
-		if TitanPanelRightClickMenu_GetDropdMenuValue() == "CoordsLoc" then
-			info = {};
-			info.text = L["TITAN_PANEL_MENU_BOTTOM"];
-			info.func = function()
-				TitanSetVar(TITAN_LOCATION_ID, "CoordsLoc", "Bottom");
-				--				TitanPanelButton_UpdateButton(TITAN_LOCATION_ID);
-			end
-			info.checked = (TitanGetVar(TITAN_LOCATION_ID, "CoordsLoc") == "Bottom")
-			TitanPanelRightClickMenu_AddButton(info, TitanPanelRightClickMenu_GetDropdownLevel());
-
-			info = {};
-			info.text = L["TITAN_PANEL_MENU_TOP"];
-			info.func = function()
-				TitanSetVar(TITAN_LOCATION_ID, "CoordsLoc", "Top");
-				--				TitanPanelButton_UpdateButton(TITAN_LOCATION_ID);
-			end
-			info.checked = (TitanGetVar(TITAN_LOCATION_ID, "CoordsLoc") == "Top")
-			TitanPanelRightClickMenu_AddButton(info, TitanPanelRightClickMenu_GetDropdownLevel());
-		end
+		return
 	end
+
+	-- level 1
+	TitanPanelRightClickMenu_AddTitle(TitanPlugins[TITAN_LOCATION_ID].menuText);
+
+	info = {};
+	info.notCheckable = true
+	info.text = L["TITAN_PANEL_OPTIONS"];
+	info.value = "Options"
+	info.hasArrow = 1;
+	TitanPanelRightClickMenu_AddButton(info, TitanPanelRightClickMenu_GetDropdownLevel());
+
+	info = {};
+	info.notCheckable = true
+	info.text = L["TITAN_LOCATION_FORMAT_COORD_LABEL"];
+	info.value = "CoordFormat"
+	info.hasArrow = 1;
+	TitanPanelRightClickMenu_AddButton(info, TitanPanelRightClickMenu_GetDropdownLevel());
+
+	TitanPanelRightClickMenu_AddControlVars(TITAN_LOCATION_ID)
 end
 
----local Create the plugin .registry and register startign events
----@param self Button
+--[[
+-- **************************************************************************
+-- NAME : OnLoad()
+-- DESC : Registers the plugin upon it loading
+-- **************************************************************************
+--]]
 local function OnLoad(self)
 	local notes = ""
-	.. "Adds coordinates and location information to Titan Panel.\n"
-	.. "Option Show Zone Text shows zone text - or not.\n"
-	.. "- Show ONLY Subzone Text removes zone text from plugin.\n"
-	--		.."- xxx.\n"
+		.."Adds coordinates and location information to Titan Panel.\n"
+--		.."- xxx.\n"
 	self.registry = {
 		id = TITAN_LOCATION_ID,
 		category = "Built-ins",
@@ -798,7 +744,7 @@ local function OnLoad(self)
 		},
 		savedVariables = {
 			ShowZoneText = 1,
-			ShowSubZoneText = false,
+            ShowSubZoneText = true,
 			ShowCoordsText = true,
 			ShowCoordsOnMap = false,
 			ShowCursorOnMap = false,
@@ -807,9 +753,8 @@ local function OnLoad(self)
 			ShowLabelText = 1,
 			ShowColoredText = 1,
 			CoordsFormat = L["TITAN_LOCATION_FORMAT"],
-			CoordsLoc = "Bottom",
-			CoordsLabel = true,
 			UpdateWorldmap = false,
+			MapLocation = "TOPRIGHT",
 			DisplayOnRightSide = false,
 		}
 	};
@@ -818,15 +763,16 @@ local function OnLoad(self)
 
 	if debug_flow then
 		local msg =
-		"_OnLoad"
-		--			.." "..tostring(reason)..""
+			"_OnLoad"
+--			.." "..tostring(reason)..""
 		debug_msg(msg)
 	else
 		-- not requested
 	end
+
 end
 
----local Create needed frames
+-- ====== Create needed frames
 local function Create_Frames()
 	if _G[TITAN_BUTTON] then
 		return -- if already created
@@ -834,14 +780,14 @@ local function Create_Frames()
 
 	-- general container frame
 	local f = CreateFrame("Frame", nil, UIParent)
-	--	f:Hide()
+--	f:Hide()
 
 	-- Titan plugin button
 	local window = CreateFrame("Button", TITAN_BUTTON, f, "TitanPanelComboTemplate")
 	window:SetFrameStrata("FULLSCREEN")
 	-- Using SetScript("OnLoad",   does not work
 	OnLoad(window);
-	--	TitanPanelButton_OnLoad(window); -- Titan XML template calls this...
+--	TitanPanelButton_OnLoad(window); -- Titan XML template calls this...
 
 	window:SetScript("OnShow", function(self)
 		OnShow(self);

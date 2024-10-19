@@ -26,7 +26,7 @@ local DT = __private.DT;
 	local GetGuildRosterInfo = GetGuildRosterInfo;
 	local GetItemInfoInstant = GetItemInfoInstant;
 	local Ambiguate = Ambiguate;
-	local GetMouseFocus = GetMouseFocus;
+	local GetMouseFocus = GetMouseFocus or VT._comptb.GetMouseFocus;
 	local CreateFrame = CreateFrame;
 	local _G = _G;
 	local UIParent = UIParent;
@@ -501,7 +501,7 @@ MT.BuildEnv('RAIDTOOL');
 			Frame.RosterInfo = RosterInfo;
 			--[[
 				RosterList = { group, guild, };
-				RosterInfo = { class, level, online, rank }
+				RosterInfo = { class, level, online, unit }
 			]]
 
 			local ScrollList = VT.__scrolllib.CreateScrollFrame(Frame, nil, nil, TUISTYLE.RaidToolUIFrameButtonHeight, CreateRaidNode, SetRaidNode);

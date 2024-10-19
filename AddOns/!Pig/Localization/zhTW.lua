@@ -24,8 +24,9 @@ L["ABOUT_OTHERADDONS"]="作者的其他挿件"
 L["ABOUT_OTHERADDON_LIST"]={
 	{"|cff00FFFF"..L.extLsit[1].."|r","|cff00ff00["..L["PIGaddonList"][L.extLsit[1]].."]|r","https://www.curseforge.com/wow/addons/pig_tardis"},
 	{"|cff00FFFF"..L.extLsit[2].."|r","|cff00ff00["..L["PIGaddonList"][L.extLsit[2]].."]|r","https://www.curseforge.com/wow/addons/pig_gdkp"},
+	{"|cff00FFFF"..L.extLsit[3].."|r","|cff00ff00["..L["PIGaddonList"][L.extLsit[3]].."]|r","https://www.curseforge.com/wow/addons/pig-farm"},
 }
-L["ABOUT_OTHERADDONS_DOWN"]="-"..COPY_NAME.."到CurseForge App或其他插件更新器"..SEARCH.."下載"
+L["ABOUT_OTHERADDONS_DOWN"]="- "..COPY_NAME.."到你的插件更新器"..SEARCH.."安裝"
 --error
 L["ERROR_CLEAR"] = "清空";
 L["ERROR_PREVIOUS"] = "上一條";
@@ -126,8 +127,8 @@ L["CHAT_QUKBUT_DOWN"] = "敷著於聊天欄下方";
 L["CHAT_QUKBUT_STYLE"]= "樣式";
 L["CHAT_MINMAXB"]= "顯示放大縮小字體按鈕";
 L["CHAT_MINMAXBTIPS"]= "在聊天欄添加放大縮小字體按鈕";
-L["CHAT_ALTEX"]= "免ALT鍵移動光標";
-L["CHAT_ALTEXTIPS"]= "只按方向鍵即可控制輸入框光標，正常系統需要按住ALT鍵才可移動光標";
+L["CHAT_ALTEX"]= "免ALT鍵移動光標/查看輸入記錄";
+L["CHAT_ALTEXTIPS"]= "無需按住ALT鍵即可移動光標，上下翻看輸入記錄，左右移動光標";
 L["CHAT_JIANYIN"]= "關閉聊天欄文字漸隱"
 L["CHAT_JIANYINTIPS"]= "移除聊天欄的文字漸隱效果";
 L["CHAT_LINKSHOW"]= "滑鼠指向鏈接直接預覽物品屬性"

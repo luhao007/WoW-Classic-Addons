@@ -164,7 +164,7 @@ end)
 local CombatLine1=PIGLine(CombatPlusF,"TOP",-70)
 CombatPlusF.SetF = PIGFrame(CombatPlusF,{"TOPLEFT", CombatLine1, "BOTTOMLEFT", 0, 0})
 CombatPlusF.SetF:SetPoint("BOTTOMRIGHT",CombatPlusF,"BOTTOMRIGHT",0,0);
-
+CombatPlusF.SetF:Hide()
 CombatPlusF.SetF.Showshuzhi =PIGCheckbutton_R(CombatPlusF.SetF,{"显示数值","显示进度数值"})
 CombatPlusF.SetF.Showshuzhi:SetScript("OnClick", function (self)
 	if self:GetChecked() then
@@ -214,8 +214,13 @@ CombatPlusF.SetF.CZBUT:SetScript("OnClick", function ()
 end)
 CombatPlusF:HookScript("OnShow", function (self)
 	self.Open:SetChecked(PIGA["CombatPlus"]["AttackBar"]["Open"]);
-	self.SetF.Showshuzhi:SetChecked(PIGA["CombatPlus"]["AttackBar"]["Showshuzhi"]);
-	self.SetF.Slider:PIGSetValue(PIGA["CombatPlus"]["AttackBar"]["Scale"])
-	self.SetF.SliderX:PIGSetValue(PIGA["CombatPlus"]["AttackBar"]["Xpianyi"])
-	self.SetF.SliderY:PIGSetValue(PIGA["CombatPlus"]["AttackBar"]["Ypianyi"])
+	if PIGA["CombatPlus"]["AttackBar"]["Open"] then
+		self.SetF:Show()
+	end
+end);
+CombatPlusF.SetF:HookScript("OnShow", function (self)
+	self.Showshuzhi:SetChecked(PIGA["CombatPlus"]["AttackBar"]["Showshuzhi"]);
+	self.Slider:PIGSetValue(PIGA["CombatPlus"]["AttackBar"]["Scale"])
+	self.SliderX:PIGSetValue(PIGA["CombatPlus"]["AttackBar"]["Xpianyi"])
+	self.SliderY:PIGSetValue(PIGA["CombatPlus"]["AttackBar"]["Ypianyi"])
 end);

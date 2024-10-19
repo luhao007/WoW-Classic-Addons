@@ -7,6 +7,32 @@ local L, contains, GetRelativeValue = app.L, app.contains, app.GetRelativeValue;
 local date, pairs, select, GetDifficultyInfo, IsInInstance, GetInstanceInfo, UNKNOWN
 	= date, pairs, select, GetDifficultyInfo, IsInInstance, GetInstanceInfo, UNKNOWN;
 
+local function GetRelativeDifficulty(group, checkDifficultyID)
+	if not group then return end
+	local difficultyID = group.difficultyID
+	if difficultyID then
+		if difficultyID == checkDifficultyID then
+			return true;
+		end
+		local difficulties = group.difficulties
+		if difficulties then
+			for i=1,#difficulties do
+				if difficulties[i] == checkDifficultyID then
+					return true;
+				end
+			end
+		end
+		return false;
+	end
+	local parent = group.parent
+	if parent then
+		return GetRelativeDifficulty(group.sourceParent or parent, checkDifficultyID);
+	else
+		return true;
+	end
+end
+app.GetRelativeDifficulty = GetRelativeDifficulty
+
 -- Class Locals
 local DifficultyColors = {
 	[2] = "ff0070dd",
@@ -252,6 +278,7 @@ app.AddEventHandler("OnLoad", function()
 end);
 local CurrentDifficultyRemapper ={
 	[205] = 1,	-- Follower Dungeon -> Normal Dungeon
+	[220] = 220,	-- Story -> Story (currently only available to defeat during a quest and provides no loot...)
 }
 app.GetCurrentDifficultyID = function()
 	if not IsInInstance() then return 0 end

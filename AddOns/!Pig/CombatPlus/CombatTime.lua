@@ -20,7 +20,7 @@ local PIGEnter=Create.PIGEnter
 local CombatPlusfun=addonTable.CombatPlusfun
 ---------------
 local WWW,HHH = 60,24
-local CombatTimeweizhi={"TOP", UIParent, "TOP", 0, -70}
+local CombatTimeweizhi={"TOP", UIParent, "TOP", 0, -80}
 local PIGCombatTime = PIGFrame(UIParent,CombatTimeweizhi,{WWW,HHH},"PIGCombatTime_UI")
 PIGCombatTime:PIGSetMovable()
 PIGCombatTime:Hide()
@@ -184,6 +184,7 @@ end)
 local CombatLine1=PIGLine(CombatPlusF,"TOP",-70)
 CombatPlusF.SetF = PIGFrame(CombatPlusF,{"TOPLEFT", CombatLine1, "BOTTOMLEFT", 0, 0})
 CombatPlusF.SetF:SetPoint("BOTTOMRIGHT",CombatPlusF,"BOTTOMRIGHT",0,0);
+CombatPlusF.SetF:Hide()
 --
 CombatPlusF.SetF.Lock =PIGCheckbutton_R(CombatPlusF.SetF,{LOCK_FRAME,LOCK_FOCUS_FRAME})
 CombatPlusF.SetF.Lock:SetScript("OnClick", function (self)
@@ -247,8 +248,14 @@ end)
 --
 CombatPlusF:HookScript("OnShow", function (self)
 	self.Open:SetChecked(PIGA["CombatPlus"]["CombatTime"]["Open"]);
-	self.SetF.Lock:SetChecked(PIGA["CombatPlus"]["CombatTime"]["Lock"]);
-	self.SetF.Miaobian:PIGDownMenu_SetText(PIGA["CombatPlus"]["CombatTime"]["Miaobian"])
-	self.SetF.Beijing:PIGDownMenu_SetText(BGList[PIGA["CombatPlus"]["CombatTime"]["Beijing"]])
-	self.SetF.Slider:PIGSetValue(PIGA["CombatPlus"]["CombatTime"]["Scale"])
+	if PIGA["CombatPlus"]["CombatTime"]["Open"] then
+		self.SetF:Show()
+	end
 end);
+CombatPlusF.SetF:HookScript("OnShow", function (self)
+	self.Lock:SetChecked(PIGA["CombatPlus"]["CombatTime"]["Lock"]);
+	self.Miaobian:PIGDownMenu_SetText(PIGA["CombatPlus"]["CombatTime"]["Miaobian"])
+	self.Beijing:PIGDownMenu_SetText(BGList[PIGA["CombatPlus"]["CombatTime"]["Beijing"]])
+	self.Slider:PIGSetValue(PIGA["CombatPlus"]["CombatTime"]["Scale"])
+end);
+

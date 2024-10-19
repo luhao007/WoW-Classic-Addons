@@ -796,6 +796,14 @@
 				<Title>测试功能</Title>
 				<TitleExtra>巨龙时代</TitleExtra>
 			</SubAddon>
+			<SubAddon name="DBM-Test-Dungeons">
+				<Title>测试功能</Title>
+				<TitleExtra>地下城</TitleExtra>
+			</SubAddon>
+			<SubAddon name="DBM-Test-Vanilla">
+				<Title>测试功能</Title>
+				<TitleExtra>经典旧世</TitleExtra>
+			</SubAddon>
 			<SubAddon name="DBM-Test-WarWithin">
 				<Title>测试功能</Title>
 				<TitleExtra>地心之战</TitleExtra>
@@ -1149,6 +1157,11 @@
 				<TitleExtra>巫妖王之怒</TitleExtra>
 			</SubAddon>
 		</SubAddons>
+	</Addon>
+	<Addon name="Hekili">
+		<Title>技能提示</Title>
+		<Notes>提示技能优先级</Notes>
+		<Category>战斗</Category>
 	</Addon>
 	<Addon name="honorspy">
 		<Title>荣誉间谍</Title>

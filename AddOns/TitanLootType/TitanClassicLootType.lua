@@ -113,7 +113,7 @@ local function LootDebug(msg, mtype)
 	end
 
 	if show then
-		TitanPluginDebug(TITAN_LOOTTYPE_ID, tostring(msg))
+		TitanPluginDebug(tostring(msg))
 	end
 end
 
@@ -508,7 +508,7 @@ OUT: retName	- table of player names pointing into ret
 local function OutPlayer(player)
 	if LT.Debug.on then --
 		if player then
-			TitanPluginDebug(TITAN_LOOTTYPE_ID, "GetPlayerList:"
+			TitanPluginDebug("GetPlayerList:"
 				.. " p'" .. (player.name or "nyl") .. "'"
 				.. " r'" .. (player.rank or "nyl") .. "'"
 				.. " c'" .. (player.class or "nyl") .. "'"
@@ -1119,7 +1119,7 @@ function Track.UpdateRollList()
 		if ctxt ~= "" then ctxt = ctxt .. "\n" .. L["TxtLine"] .. "\n" end
 	end
 	if LT.Debug.on then --
-		TitanPluginDebug(TITAN_LOOTTYPE_ID, "UpdateRollList"
+		TitanPluginDebug("UpdateRollList"
 			.. " '" .. (rollText or "nyl") .. "'"
 			.. " '" .. (ctxt or "nyl") .. "'"
 			.. " '" .. (gtxt or "nyl") .. "'"

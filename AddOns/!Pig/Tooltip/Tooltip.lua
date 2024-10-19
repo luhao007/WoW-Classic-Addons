@@ -116,6 +116,7 @@ local function Tooltip_ItemLV(self,link)
 	self:Show()
 end
 function TooltipPlusfun.InfoPlus()
+	--卖价
 	hooksecurefunc(GameTooltip, "SetBagItem", function(self, bag, slot)
 		ItemSell_Tooltip(self, bag, slot,"Bag")
 	end)
@@ -179,6 +180,22 @@ function TooltipPlusfun.InfoPlus()
 				Tooltip_ItemLV(self,link)
 			end
 		end)
+		--处理技能
+		GameTooltip:HookScript("OnTooltipSetSpell", function(self)
+			if not PIGA["Tooltip"]["IDinfo"] then return end
+			local _,id = self:GetSpell()
+			if id then
+				self:AddDoubleLine("|cffd33c54SpellID:|r "..id,"")
+				self:Show()
+			end
+		end)
+		--处理收藏
+		hooksecurefunc(GameTooltip, "SetToyByItemID", function(self,itemID)
+			if itemID then
+				self:AddDoubleLine("|cffd33c54ID:|r "..itemID,"")
+			end
+			self:Show()
+		end)
 		--处理天赋
 		hooksecurefunc(GameTooltip, "SetTalent", function(self,talentTree,tfID,inspect,pet,Group,...)
 			local _, _, _, _, _, _, _, _, _, _, ctid, tID = GetTalentInfo(talentTree,tfID, inspect,pet,Group)
@@ -188,15 +205,6 @@ function TooltipPlusfun.InfoPlus()
 				self:AddDoubleLine("|cffd33c54TalentID:|r "..ctid,"")
 			end
 			self:Show()
-		end)
-		--处理技能
-		GameTooltip:HookScript("OnTooltipSetSpell", function(self)
-			if not PIGA["Tooltip"]["IDinfo"] then return end
-			local _,id = self:GetSpell()
-			if id then
-				self:AddDoubleLine("|cffd33c54SpellID:|r "..id,"")
-				self:Show()
-			end
 		end)
 		---处理BUFF/DEBUFF
 		local function UnitBuff_Tooltip(self, unit, index, filter)
@@ -279,6 +287,14 @@ function TooltipPlusfun.InfoPlus()
 				if spellID then
 					self:AddDoubleLine("|cffd33c54ID:|r "..spellID,"")
 				end
+			end
+		end)
+		--处理收藏
+		TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Toy, function(self, data)
+			if not PIGA["Tooltip"]["IDinfo"] then return end
+			if data and data.id then
+				self:AddDoubleLine("|cffd33c54ID:|r "..data.id,"")
+				self:Show()
 			end
 		end)
 	end

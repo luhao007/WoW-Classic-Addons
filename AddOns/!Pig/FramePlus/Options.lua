@@ -295,6 +295,7 @@ end)
 --==================================
 addonTable.FramePlus = function()
 	FramePlusfun.BuffTime()
+	FramePlusfun.AddonList()
 	FramePlusfun.Loot()
 	FramePlusfun.Roll()
 	FramePlusfun.Merchant()

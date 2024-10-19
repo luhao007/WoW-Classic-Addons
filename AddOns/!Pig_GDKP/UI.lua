@@ -4,6 +4,7 @@ local Create, Data, Fun, L, Default, Default_Per= unpack(PIG)
 -----
 local PIGFrame=Create.PIGFrame
 local PIGLine=Create.PIGLine
+local PIGTabBut=Create.PIGTabBut
 local PIGButton = Create.PIGButton
 local PIGOptionsList_RF=Create.PIGOptionsList_RF
 local PIGFontString=Create.PIGFontString
@@ -476,9 +477,9 @@ function GDKPInfo.ADD_UI()
 	RaidR.xiafangF.NEW_jilu:SetScript("OnClick", function ()
 		StaticPopup_Show("NEW_WUPIN_LIST","");
 	end);
-	RaidR.xiafangF.HistoryBut = PIGButton(RaidR.xiafangF,{"TOPLEFT",RaidR.xiafangF.NEW_jilu,"BOTTOMLEFT",0,-6},{74,21},"历史记录"); 
-	RaidR.xiafangF.HistoryBut:SetScript("OnClick", function ()
-		RaidR.ShowHideHistory()
+	RaidR.xiafangF.HistoryBut = PIGTabBut(RaidR.xiafangF,{"TOPLEFT",RaidR.xiafangF.NEW_jilu,"BOTTOMLEFT",0,-6},{74,21},"历史记录")
+	RaidR.xiafangF.HistoryBut:SetScript("OnClick", function (self)
+		RaidR.ShowHideHistory(self)
 	end);
 
 	---子页面

@@ -722,7 +722,7 @@ function GDKPInfo.ADD_Buzhu(RaidR)
 		PIGCloseDropDownMenus()
 	end
 
-	fujiF.buzhu_QITA.SaveBut = PIGButton(fujiF.buzhu_QITA,{"RIGHT",fujiF.buzhu_QITA.daoruBut,"LEFT",-10,0},{60,22},"保存");
+	fujiF.buzhu_QITA.SaveBut = PIGButton(fujiF.buzhu_QITA,{"RIGHT",fujiF.buzhu_QITA.daoruBut,"LEFT",-10,0},{106,22},"保存奖励设置");
 	fujiF.buzhu_QITA.SaveBut:SetScript("OnClick", function (self)
 		if self.F:IsShown() then
 			self.F:Hide();
@@ -731,7 +731,6 @@ function GDKPInfo.ADD_Buzhu(RaidR)
 			self.F:Show();
 		end
 	end);
-	fujiF.buzhu_QITA.SaveButT = PIGFontString(fujiF.buzhu_QITA,{"RIGHT",fujiF.buzhu_QITA.SaveBut,"LEFT",-8,0},"奖励配置");
 
 	fujiF.buzhu_QITA.SaveBut.F = PIGFrame(fujiF.buzhu_QITA.SaveBut,{"TOPLEFT",fujiF.buzhu_QITA,"TOPLEFT",80,-34});
 	fujiF.buzhu_QITA.SaveBut.F:SetPoint("BOTTOMRIGHT",fujiF.buzhu_QITA,"BOTTOMRIGHT",-6,36);

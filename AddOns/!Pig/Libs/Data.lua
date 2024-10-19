@@ -58,11 +58,12 @@ Data.ClassFile_Name=ClassFile_Name
 
 --种族
 local PIGraceList = {}
-for i=70,1,-1 do
+for i=100,1,-1 do
 	local raceInfo = C_CreatureInfo.GetRaceInfo(i)
 	if raceInfo then
 		if raceInfo.raceName then
 			if raceInfo.clientFileString=="Scourge" then raceInfo.clientFileString="undead" end
+			if raceInfo.clientFileString=="EarthenDwarf" then raceInfo.clientFileString="earthen" end
 			PIGraceList[raceInfo.raceName]=raceInfo.clientFileString
 		end
 	end
@@ -72,6 +73,8 @@ Data.PIGraceList=PIGraceList
 --local zhizeIcon = {{0.01,0.26,0.26,0.51},{0.27,0.52,0,0.25},{0.27,0.52,0.25,0.5},{0.01,0.26,0,0.25}}
 local zhizeIcon = {{0.01,0.26,0.26,0.51},{0.27,0.52,0,0.25},{0.27,0.52,0.25,0.5}}
 Data.zhizeIcon=zhizeIcon
+local zhizeAtlas = {"ui-lfg-roleicon-tank","ui-lfg-roleicon-healer","ui-lfg-roleicon-dps"}
+Data.zhizeAtlas=zhizeAtlas
 --装备编号
 Data.buwei={}
 if tocversion<50000 then
@@ -208,5 +211,5 @@ Data.Ext ={};
 -----
 addonTable.Data=Data
 ---
-Data.ElvUI_BagName = {"ElvUI_ContainerFrameBag-1","ElvUI_ContainerFrameBag-3","ElvUI_ContainerFrameBag0","ElvUI_ContainerFrameBag1","ElvUI_ContainerFrameBag2","ElvUI_ContainerFrameBag3"}
+Data.ElvUI_BagName = {"ElvUI_ContainerFrameBag-1","ElvUI_ContainerFrameBag"}
 Data.NDui_BagName={"NDui_BackpackSlot",6*36}

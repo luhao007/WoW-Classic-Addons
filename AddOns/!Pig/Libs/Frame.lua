@@ -115,8 +115,9 @@ function Create.PIGSetMovable(LeftUI,MovableUI,KeyDown)
 	end)
 	MovableUI:SetClampedToScreen(true)
 end
-function Create.PIGFrame(Parent,Point,WH,UIName,ESCOFF)
-	local frameX = CreateFrame("Frame", UIName, Parent,"BackdropTemplate")
+function Create.PIGFrame(Parent,Point,WH,UIName,ESCOFF,Template)
+	local Template=Template or "BackdropTemplate"
+	local frameX = CreateFrame("Frame", UIName, Parent,Template)
 	if WH then
 		frameX:SetSize(WH[1],WH[2]);
 	end
@@ -179,8 +180,9 @@ function Create.PIGFrame(Parent,Point,WH,UIName,ESCOFF)
 			self.Close:SetSize(Ww,Hh);
 			self.Close:SetPoint("TOPRIGHT",self,"TOPRIGHT",0,0);
 			self.Close.Tex = self.Close:CreateTexture(nil, "BORDER");
-			self.Close.Tex:SetTexture("interface/common/voicechat-muted.blp");
-			self.Close.Tex:SetSize(self.Close:GetWidth()-8,self.Close:GetHeight()-8);
+			--self.Close.Tex:SetTexture("interface/common/voicechat-muted.blp");
+			self.Close.Tex:SetAtlas("common-icon-redx")
+			self.Close.Tex:SetSize(self.Close:GetWidth()-6,self.Close:GetHeight()-6);
 			self.Close.Tex:SetPoint("CENTER",0,0);
 			self.Close:HookScript("OnMouseDown", function (self)
 				self.Tex:SetPoint("CENTER",-1.5,-1.5);
@@ -195,8 +197,12 @@ function Create.PIGFrame(Parent,Point,WH,UIName,ESCOFF)
 		end
 	end
 	function frameX:PIGClose(Ww,Hh,CloseUI)
-		local Ww = Ww or 22
-		local Hh = Hh or 22
+		local WwHH = {22,22}
+		if tocversion>100000 then
+			WwHH[1]=17;WwHH[2]=17;
+		end
+		local Ww = Ww or WwHH[1]
+		local Hh = Hh or WwHH[2]
 		local CloseUI=CloseUI or self
 		if self.Angle==0 then
 			if ElvUI or NDui then

@@ -14,7 +14,6 @@ local PIGOptionsList_R=Create.PIGOptionsList_R
 local PIGFontString=Create.PIGFontString
 local PIGQuickBut=Create.PIGQuickBut
 local PIGSetFont=Create.PIGSetFont
-local PIGCloseBut=Create.PIGCloseBut
 -----------------
 local FasongYCqingqiu=Fun.FasongYCqingqiu
 local GetRuneTXT=Fun.GetRuneTXT
@@ -482,7 +481,7 @@ function TardisInfo.Houche(Activate)
 					local activityInfo = C_LFGList.GetActivityInfoTable(ActivityID)
 					hangL.mudidi:SetText(activityInfo.fullName)
 					local classId,raceID,level,ItemLevel = strsplit("-", playerData);
-					hangL.nameF.Role:SetAtlas(GetIconForRole(zhizenameID[assignedRole], false));
+					hangL.nameF.Role:SetAtlas(PIGGetIconForRole(zhizenameID[assignedRole], false));
 					local className, classFile, classID = GetClassInfo(classId)
 					hangL.nameF.Classe:SetTexCoord(unpack(CLASS_ICON_TCOORDS[classFile]));
 					hangL.nameF.LVT:SetText(level)
@@ -646,7 +645,7 @@ function TardisInfo.Houche(Activate)
 	FCTabF.ADD.Role.T:SetSize(40,40);
 	FCTabF.ADD.Role.T.role="TANK";
 	FCTabF.ADD.Role.T.roleID=2;
-	FCTabF.ADD.Role.T:SetNormalAtlas(GetIconForRole(FCTabF.ADD.Role.T.role, false));
+	FCTabF.ADD.Role.T:SetNormalAtlas(PIGGetIconForRole(FCTabF.ADD.Role.T.role, false));
 	FCTabF.ADD.Role.T.checkButton:SetScript("OnClick", FCTabF.ADD.Role_checkButton)
 	FCTabF.ADD.Role.H = CreateFrame("Button",nil,FCTabF.ADD.Role,"LFGRoleButtonWithBackgroundAndRewardTemplate",3);
 	FCTabF.ADD.Role.H:SetPoint("LEFT",FCTabF.ADD.Role.T,"RIGHT",20,0);
@@ -654,13 +653,13 @@ function TardisInfo.Houche(Activate)
 	FCTabF.ADD.Role.H.role="HEALER";
 	FCTabF.ADD.Role.H.roleID=3;
 	FCTabF.ADD.Role.H.checkButton:SetScript("OnClick", FCTabF.ADD.Role_checkButton)
-	FCTabF.ADD.Role.H:SetNormalAtlas(GetIconForRole(FCTabF.ADD.Role.H.role, false));
+	FCTabF.ADD.Role.H:SetNormalAtlas(PIGGetIconForRole(FCTabF.ADD.Role.H.role, false));
 	FCTabF.ADD.Role.D = CreateFrame("Button",nil,FCTabF.ADD.Role,"LFGRoleButtonWithBackgroundAndRewardTemplate",1);
 	FCTabF.ADD.Role.D:SetPoint("LEFT",FCTabF.ADD.Role.H,"RIGHT",20,0);
 	FCTabF.ADD.Role.D:SetSize(40,40);
 	FCTabF.ADD.Role.D.role="DAMAGER";
 	FCTabF.ADD.Role.D.roleID=1;
-	FCTabF.ADD.Role.D:SetNormalAtlas(GetIconForRole(FCTabF.ADD.Role.D.role, false));
+	FCTabF.ADD.Role.D:SetNormalAtlas(PIGGetIconForRole(FCTabF.ADD.Role.D.role, false));
 	FCTabF.ADD.Role.D.checkButton:SetScript("OnClick", FCTabF.ADD.Role_checkButton)
 	local function PIG_UpdateAvailableRoleButton(button, canBeRole)
 		if (canBeRole) then

@@ -839,8 +839,8 @@ L["disableBuffTimersMaxBuffLevelDesc"] = "Cache les minuteurs des buffs mondiaux
 L["hideMinimapBuffTimersTitle"] = "Désactiver les minuteurs des buffs du minicarte pour tous les niveaux";
 L["hideMinimapBuffTimersDesc"] = "Cache les minuteurs des buffs mondiaux lorsque vous survolez l'icône de la mini-carte pour tous les personnages. Vous ne verrez que les minuteurs et les quotidiens de la tour Terokkar, etc.";
 
-L["guildTerok10Title"] = "Messages de minuteur de guilde"; --Changed to generic msg for future expansions now.
-L["guildTerok10Desc"] = "Envoie un message à la discussion de guilde lorsqu'un événement mondial apparaît bientôt, comme les tours de Terokkar dans TBC, Joug-d'Hiver dans Wrath, Tol Barad dans Cata, etc."; 
+L["guildTerok10Title"] = "Guilde Terokkar/Joug-d'hiver 10 Minutes";
+L["guildTerok10Desc"] = "Envoie un message dans la discussion de la guilde lorsqu'il reste 10 minutes aux tours de Terokkar s'il s'agit de TBC ou à la Conquête de l'hiver s'il s'agit de WoTLK.";
 
 L["showShatWorldmapMarkersTerokTitle"] = "Marqueurs de Tours/Joug-d'hiver";
 L["showShatWorldmapMarkersTerokDesc"] = "Affiche les marqueurs de la tour Terokkar ou du Joug-d'hiver sur la carte de la ville capitale.";
@@ -1022,18 +1022,3 @@ L["Fervor of the Temple Explorer"] = "Ferveur de l’explorateur du temple";
 L["No guild"] = "Pas de guilde";
 
 L["Temple of Atal'Hakkar"] = "temple d’Atal’Hakkar";
-
-L["cappingSupportTitle"] = "Support de Capping";
-L["cappingSupportDesc"] = "Commence une barre de minuteur pour Ashenvale/Strangleronce si Capping est installé ?";
-
-L["Tol Barad"] = "Tol Barad";
-L["eventIsRunning"] = "%s est active";
-
-L["Blackrock"] = "Blackrock";
-L["blackrockEventRunning"] = "Blackrock running: %s";
-L["blackrockEventStartsIn"] = "Blackrock starts in %s";
-L["blackrockStartSoon"] = "Blackrock event starts in %s"; --Guild chat msg.
-L["Blackrock PvP Event"] = "Blackrock PvP Event";
-L["Total honor this event"] = "Total honor this event";
-
-L["Might of Stormwind"] = "Puissance de Hurlevent";

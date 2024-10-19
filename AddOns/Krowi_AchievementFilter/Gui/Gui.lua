@@ -5,6 +5,10 @@ addon.Gui = {
 };
 local gui = addon.Gui;
 
+local C_AddOns = {}
+C_AddOns.IsAddOnLoaded = IsAddOnLoaded
+C_AddOns.LoadAddOn = LoadAddOn
+
 local eventReminderSideButtonSystemIsLoaded;
 function gui:LoadWithAddon()
     self:OverwriteAdjustAnchors();
@@ -47,6 +51,12 @@ local function LoadOldAchievementFrameTabsCompatibility()
     end
 end
 
+local function LoadOldGuiCompatibility()
+    if not AchievementFrameFilterDropdown then
+        AchievementFrameFilterDropdown = AchievementFrameFilterDropDown;
+    end
+end
+
 local function ShowSubFrame(self, ...)
     local show;
 	for _, subFrame in ipairs(self.SubFrames) do
@@ -61,9 +71,19 @@ local function ShowSubFrame(self, ...)
 	end
 end
 
-local function HookShowSubFrame(self)
+local function LoadHooks(self)
     hooksecurefunc("AchievementFrame_ShowSubFrame", function(...)
         ShowSubFrame(self, ...);
+    end);
+
+    AchievementFrameComparison:HookScript("OnHide", function()
+        if gui.SelectedTab then
+            gui:SetAchievementFrameWidth();
+            gui:SetAchievementFrameHeight();
+        else
+            gui:ResetAchievementFrameWidth();
+            gui:ResetAchievementFrameHeight();
+        end
     end);
 end
 
@@ -71,6 +91,8 @@ local defaultAchievementFrameWidth;
 local defaultAchievementFrameHeight;
 local defaultAchievementFrameMetalBorderHeight;
 function gui:LoadWithBlizzard_AchievementUI()
+    LoadOldGuiCompatibility();
+
     defaultAchievementFrameWidth = AchievementFrame:GetWidth();
     defaultAchievementFrameHeight = AchievementFrame:GetHeight();
     defaultAchievementFrameMetalBorderHeight = AchievementFrameMetalBorderLeft:GetHeight();
@@ -113,7 +135,7 @@ function gui:LoadWithBlizzard_AchievementUI()
     self:ResetAchievementFrameHeight();
 
     self:RegisterFrameForClosing(AchievementFrame);
-    HookShowSubFrame(self);
+    LoadHooks(self);
 end
 
 function gui:SetAchievementFrameWidth()
@@ -180,8 +202,8 @@ end
 
 local firstTimeLatch = true;
 function gui:ToggleAchievementFrame(_addonName, tabName, resetView, forceOpen) -- Issue #26 Broken, Fix
-    if not IsAddOnLoaded("Blizzard_AchievementUI") then
-        LoadAddOn("Blizzard_AchievementUI");
+    if not C_AddOns.IsAddOnLoaded("Blizzard_AchievementUI") then
+        C_AddOns.LoadAddOn("Blizzard_AchievementUI");
     end
 
     AchievementFrameComparison:Hide();
@@ -234,7 +256,7 @@ function gui:ShowHideTabs(_addonName, tabName)
             return;
         end
         addon.Options.db.profile.Tabs[_addonName][tabName].Show = not addon.Options.db.profile.Tabs[_addonName][tabName].Show;
-        if not IsAddOnLoaded(_addonName) or not addon.Gui.Tabs[_addonName] or not addon.Gui.Tabs[_addonName][tabName] then
+        if not C_AddOns.IsAddOnLoaded(_addonName) or not addon.Gui.Tabs[_addonName] or not addon.Gui.Tabs[_addonName][tabName] then
             return;
         end
     end
@@ -293,7 +315,7 @@ end
 local function AssignProperTabsOrder()
     local tabsOrder = {};
     for tabsAddonName, tabs in next, addon.Options.db.profile.Tabs do
-        if tabsAddonName == "Blizzard_AchievementUI" or IsAddOnLoaded(tabsAddonName) then
+        if tabsAddonName == "Blizzard_AchievementUI" or C_AddOns.IsAddOnLoaded(tabsAddonName) then
             for tabName, tab in next, tabs do
                 tinsert(tabsOrder, {
                     AddonName = tabsAddonName,

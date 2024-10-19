@@ -21,8 +21,10 @@ local GnName,GnUI,GnIcon,FrameLevel = unpack(BusinessInfo.AutoSellBuyData)
 local OpenData = {"开启",136058}
 
 function BusinessInfo.FastOpen()
-	local fujiF,fujiTabBut=PIGOptionsList_R(AutoSellBuy_UI.F,"开",50,"Left")
+	local PIGUseKeyDown=Fun.PIGUseKeyDown
 	local gongnengNameE = "Open"
+	local hongName = "PIG"..gongnengNameE
+	local fujiF,fujiTabBut=PIGOptionsList_R(AutoSellBuy_UI.F,"开",50,"Left")
 	BusinessInfo.ADDScroll(fujiF,OpenData[1],gongnengNameE,17,{false,"AutoSellBuy",gongnengNameE.."_List"})
 	------
 	fujiF.Bindings = PIGButton(fujiF,{"TOPLEFT",fujiF,"TOPLEFT",20,-10},{76,20},KEY_BINDING);
@@ -30,7 +32,8 @@ function BusinessInfo.FastOpen()
 		Settings.OpenToCategory(Settings.KEYBINDINGS_CATEGORY_ID, addonName);
 	end)
 	local QkButAction=CreateFrame("Button","QkBut_AutoSellBuy_"..gongnengNameE,UIParent, "SecureActionButtonTemplate");
-	QkButAction:SetAttribute("type", "item")
+	QkButAction:SetAttribute("type1", "item")
+	PIGUseKeyDown(QkButAction)
 	_G["BINDING_NAME_CLICK QkBut_AutoSellBuy_"..gongnengNameE..":LeftButton"]= "PIG"..OpenData[1]
 	local function zhixingClick(self,button)
 		if button=="LeftButton" then
@@ -64,54 +67,44 @@ function BusinessInfo.FastOpen()
 	QkButAction:HookScript("PreClick",  function (self,button)
 		zhixingClick(self,button)
 	end);
-	--
-	fujiF.fuzhiCDM = PIGButton(fujiF,{"TOPLEFT",fujiF,"TOPLEFT",160,-10},{100,20},"创建"..OpenData[1].."宏");
-	local hongName = "PIG"..gongnengNameE
-	fujiF.fuzhiCDM:HookScript("OnShow", function (self)
-		local macroSlot = GetMacroIndexByName(hongName)
-		if macroSlot>0 then
-			self:SetText("更新"..OpenData[1].."宏");
-		else
-			self:SetText("创建"..OpenData[1].."宏");
-		end
-	end)
-	local function ADD_kaiqiHong()
-		local hongNR = [=[/click QkBut_AutoSellBuy_Open LeftButton]=]
-		local macroSlot = GetMacroIndexByName(hongName)
-		if macroSlot>0 then
-			EditMacro(macroSlot, nil, OpenData[2], hongNR)
-			PIGinfotip:TryDisplayMessage("已更新"..OpenData[1].."宏");
-		else
-			local global, perChar = GetNumMacros()
-			if global<120 then
-				CreateMacro(hongName, OpenData[2], hongNR, nil)
-				fujiF.fuzhiCDM:SetText("更新"..OpenData[1].."宏");
+	--宏-----
+	if tocversion<50000 then
+		fujiF.fuzhiCDM = PIGButton(fujiF,{"TOPLEFT",fujiF,"TOPLEFT",160,-10},{100,20},CALENDAR_CREATE..OpenData[1]..MACRO);
+		fujiF.fuzhiCDM:HookScript("OnClick",  function (self)
+			local macroSlot = GetMacroIndexByName(hongName)
+			if macroSlot>0 then
+				PIGinfotip:TryDisplayMessage(OpenData[1]..MACRO.."已存在");
 			else
-				PIGinfotip:TryDisplayMessage(L["LIB_MACROERR"]);
-				return
-			end
+				StaticPopup_Show("AUTOSELLBUY_"..OpenData[1]);
+			end	
+		end)
+		local hongNR = [=[/click QkBut_AutoSellBuy_Open LeftButton]=]
+		StaticPopupDialogs["AUTOSELLBUY_"..OpenData[1]] = {
+			text = CALENDAR_CREATE..OpenData[1]..MACRO.."\n\n确定创建吗？",
+			button1 = YES,
+			button2 = NO,
+			OnAccept = function()
+				local global, perChar = GetNumMacros()
+				if global<120 then
+					CreateMacro(hongName, OpenData[2], hongNR, nil)
+					PIGinfotip:TryDisplayMessage("已"..CALENDAR_CREATE..OpenData[1]..MACRO);
+				else
+					PIGinfotip:TryDisplayMessage(L["LIB_MACROERR"]);
+					return
+				end
+			end,
+			timeout = 0,
+			whileDead = true,
+			hideOnEscape = true,
+		}
+	else
+		local macroSlot = GetMacroIndexByName(hongName)
+		if macroSlot>0 then
+			DeleteMacro(hongName)
 		end
 	end
-	fujiF.fuzhiCDM:HookScript("OnClick",  function (self)
-		if self:GetText()=="创建"..OpenData[1].."宏" then
-			StaticPopup_Show("AUTOSELLBUY_"..OpenData[1]);
-		else
-			ADD_kaiqiHong()
-		end	
-	end)
-	StaticPopupDialogs["AUTOSELLBUY_"..OpenData[1]] = {
-		text = "将创建一个名为"..hongName.."的"..OpenData[1].."宏\n\n确定创建吗？",
-		button1 = YES,
-		button2 = NO,
-		OnAccept = function()
-			ADD_kaiqiHong()
-		end,
-		timeout = 0,
-		whileDead = true,
-		hideOnEscape = true,
-	}
 	---
-	fujiF.QkBut = PIGCheckbutton(fujiF,{"TOPLEFT",fujiF,"TOPLEFT",20,-44},{"添加到"..L["ACTION_TABNAME2"], "在"..L["ACTION_TABNAME2"].."增加一个快捷使用按钮"})
+	fujiF.QkBut = PIGCheckbutton(fujiF,{"TOPLEFT",fujiF,"TOPLEFT",20,-44},{"添加"..OpenData[1].."到"..L["ACTION_TABNAME2"], "在"..L["ACTION_TABNAME2"].."增加一个快捷使用按钮"})
 	fujiF.QkBut:SetScript("OnClick", function (self)
 		if self:GetChecked() then
 			PIGA["AutoSellBuy"][gongnengNameE.."_QkBut"]=true;
@@ -136,7 +129,8 @@ function BusinessInfo.FastOpen()
 			if _G[QkButUI] then return end
 			local QuickTooltip = KEY_BUTTON1.."-|cff00FFFF"..OpenData[1].."指定物品|r\n"..KEY_BUTTON2.."-|cff00FFFF打开"..GnName.."|r"
 			local QkBut=PIGQuickBut(QkButUI,QuickTooltip,OpenData[2],nil,FrameLevel,"SecureActionButtonTemplate")
-			QkBut:SetAttribute("type", "item")
+			QkBut:SetAttribute("type1", "item")
+			PIGUseKeyDown(QkBut)
 			QkBut:HookScript("PreClick",  function (self,button)
 				zhixingClick(self,button)
 			end);

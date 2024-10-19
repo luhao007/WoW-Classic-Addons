@@ -7,6 +7,8 @@
 ## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFF团队面板|r |cFFFFE00AVuhDo|r
 ## Notes-zhCN: 强大的团队面板，可实现鼠标点击治疗、上BUFF等一系列操作
 
+## IconTexture: Interface\AddOns\VuhDo\Images\TemporaryPortrait-Female-BloodElf-VuhDo
+
 ## LoadOnDemand: 0
 ## DefaultState: Enabled
 

@@ -13,11 +13,11 @@ local TITAN_BAG_THRESHOLD_TABLE = {
 	Values = { 0.5, 0.75, 0.9 },
 	Colors = { HIGHLIGHT_FONT_COLOR, NORMAL_FONT_COLOR, ORANGE_FONT_COLOR, RED_FONT_COLOR },
 }
---local updateTable = {TITAN_BAG_ID, TITAN_PANEL_UPDATE_BUTTON};
+local updateTable = {TITAN_BAG_ID, TITAN_PANEL_UPDATE_BUTTON};
 -- ******************************** Variables *******************************
---local AceTimer = LibStub("AceTimer-3.0")
+local AceTimer = LibStub("AceTimer-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale(TITAN_ID, true)
---local BagTimer
+local BagTimer
 
 local bag_info = { -- itemType : warcraft.wiki.gg/wiki/itemType
 	[1] = -- Soul bag
@@ -53,9 +53,6 @@ local MAX_BAGS = Constants.InventoryConstants.NumBagSlots
 local bag_data = {} -- to hold the user bag data
 
 -- ******************************** Functions *******************************
-
-local GetItemNow = C_Item.GetItemInfoInstant or GetItemInfoInstant
-
 local function IsProfessionBagID(slot)
 	-- The info needed is available using GetItemInfoInstant; only the bag / item id is required
 	-- itemType : warcraft.wiki.gg/wiki/itemType
@@ -68,8 +65,20 @@ local function IsProfessionBagID(slot)
 		-- Only works on bag and bank bags NOT backpack!
 	else
 		info = GetInventoryItemLink("player", inv_id)
-		itemId, itemType, itemSubType, itemEquipLoc, itemTexture, classID, subclassID = GetItemNow(info)
+		itemId, itemType, itemSubType, itemEquipLoc, itemTexture, classID, subclassID	= GetItemInfoInstant(info)
 		style = subclassID
+--[[
+TitanDebug("T isP 0:"
+	.." "..tostring(slot)..""
+	.." "..tostring(itemId).."" 
+	.." '"..tostring(itemType).."'" 
+	.." '"..tostring(itemSubType).."'" 
+	.." "..tostring(itemEquipLoc).."" 
+	.." '"..tostring(itemTexture).."'" 
+	.." "..tostring(classID).."" 
+	.." "..tostring(subclassID).."" 
+	)
+--]]
 		if classID == 1 then -- is a container / bag
 			if subclassID >= 1 then
 				-- profession bag of some type [2 - 10] Jan 2024 (DragonFlight / Wrath / Classic Era)
@@ -108,7 +117,6 @@ local function ToggleBags()
 	if TitanGetVar(TITAN_BAG_ID, "OpenBags") then
 		ToggleAllBags()
 	else
-		-- User has not enabled open on click
 	end
 end
 
@@ -257,7 +265,6 @@ end
 function TitanPanelBagButton_OnLoad(self)
 	local notes = ""
 		.."Adds bag and free slot information to Titan Panel.\n"
-		.."- Open bags should work... Retail taint fixed Apr 2024 (10.2.7).\n"
 --		.."- xxx.\n"
 	self.registry = {
 		id = TITAN_BAG_ID,
@@ -284,11 +291,17 @@ function TitanPanelBagButton_OnLoad(self)
 			ShowLabelText = 1,
 			ShowColoredText = 1,
 			DisplayOnRightSide = false,
-			OpenBags = true,
+			OpenBags = false,
+			OpenBagsClassic = "new_install",
 		}
 	};
-
-	-- As of Apr 2024 (10.2.7) the taint on opening bags in Retail is fixed.
+	if TITAN_ID == "Titan" then -- 10.* / Retail
+		-- for taint issue
+		self.registry.savedVariables.OpenBags = false
+	else
+		-- does not taint so default to open bags on click
+		self.registry.savedVariables.OpenBags = true
+	end
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 end
@@ -301,7 +314,52 @@ end
 --]]
 function TitanPanelBagButton_OnEvent(self, event, a1, a2, ...)
 	if event == "PLAYER_ENTERING_WORLD" then
-		-- Leave in case future code is needed...
+--[===[
+local inv_id = C_Container.ContainerIDToInventoryID(1)
+local info = GetInventoryItemLink("player", inv_id)
+local name, _, Color, Ltype, Id, Enchant, Gem1, Gem2, Gem3, Gem4, Suffix, Unique, LinkLvl, reforging, Name = string.find(info, "|?c?f?f?(%x*)|?H?([^:]*):?(%d+):?(%d*):?(%d*):?(%d*):?(%d*):?(%d*):?(%-?%d*):?(%-?%d*):?(%d*):?(%d*)|?h?%[?([^%[%]]*)%]?|?h?|?r?")
+
+local itemName, itemLink, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount,
+itemEquipLoc, itemTexture, sellPrice, classID, subclassID, bindType, expacID, setID, isCraftingReagent
+= GetItemInfo(Id)
+
+local iitemId, iitemType, iitemSubType, 
+iitemEquipLoc, iitemTexture, iclassID, isubclassID
+= GetItemInfoInstant(info)
+
+print("======")
+print("bag"
+   .." "..tostring(inv_id)..""
+)
+print("inv"
+   .." "..tostring(name)..""
+   .." "..tostring(Id)..""
+   .." "..tostring(classID)..""
+   .." "..tostring(subclassID)..""
+)
+print("iinv"
+   .." "..tostring(iitemId)..""
+   .." "..tostring(Id)..""
+   .." "..tostring(iclassID)..""
+   .." "..tostring(isubclassID)..""
+)
+print("======")
+--]===]
+
+		if a1 == true and TITAN_ID == "Titan" then -- 10.* / Retail
+			-- initial login
+
+			TitanPrint(L["TITAN_BAG_TAINT_TEXT"], "warning")
+		else -- either Classic version
+			local open = TitanGetVar(TITAN_BAG_ID, "OpenBagsClassic")
+			if open == "new_install" then -- 
+				-- set to default behavior of opening bag on left click
+				TitanSetVar(TITAN_BAG_ID, "OpenBags", true)
+				TitanSetVar(TITAN_BAG_ID, "OpenBagsClassic", "processed") -- don't do again
+			else
+				-- already processed...
+			end
+		end
 	end
 
 	if event == "BAG_UPDATE" then
@@ -569,16 +627,3 @@ end
 
 
 Create_Frames() -- do the work
-
---[[
-TitanDebug("T isP 0:"
-	.." "..tostring(slot)..""
-	.." "..tostring(itemId).."" 
-	.." '"..tostring(itemType).."'" 
-	.." '"..tostring(itemSubType).."'" 
-	.." "..tostring(itemEquipLoc).."" 
-	.." '"..tostring(itemTexture).."'" 
-	.." "..tostring(classID).."" 
-	.." "..tostring(subclassID).."" 
-	)
---]]

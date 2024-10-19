@@ -1,0 +1,19 @@
+## Interface: 30400
+## Author: kagaro, Xinhuan, Spinx, Marrtin
+## Version: v2024-04-14
+
+## Title: GatherMate2Data
+## Notes: GatherMate2 data fetched from Wowhead
+## Title-zhCN: |cFFFFE00A<|r|cFF0070DE专业|r|cFFFFE00A>|r |cFFFFFFFF采集助手|r |cFF69CCF0数据|r
+
+## Dependencies: GatherMate2
+## LoadOnDemand: 1
+
+## X-Part-Of: GatherMate2
+
+Classic\MiningData.lua
+Classic\HerbalismData.lua
+Classic\FishData.lua
+Classic\TreasureData.lua
+Classic\GasData.lua
+Classic\GatherMateData.lua

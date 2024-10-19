@@ -229,7 +229,7 @@ if tocversion<50000 then
 	local CombatLine1=PIGLine(CombatPlusF,"TOP",-70)
 	CombatPlusF.SetF = PIGFrame(CombatPlusF,{"TOPLEFT", CombatLine1, "BOTTOMLEFT", 0, 0})
 	CombatPlusF.SetF:SetPoint("BOTTOMRIGHT",CombatPlusF,"BOTTOMRIGHT",0,0);
-
+	CombatPlusF.SetF:Hide()
 	CombatPlusF.SetF.Showshuzhi =PIGCheckbutton_R(CombatPlusF.SetF,{"显示数值","显示血量/资源数值"})
 	CombatPlusF.SetF.Showshuzhi:SetScript("OnClick", function (self)
 		if self:GetChecked() then
@@ -315,11 +315,16 @@ if tocversion<50000 then
 	--
 	CombatPlusF:HookScript("OnShow", function (self)
 		self.Open:SetChecked(PIGA["CombatPlus"]["HPMPBar"]["Open"]);
-		self.SetF.Showshuzhi:SetChecked(PIGA["CombatPlus"]["HPMPBar"]["Showshuzhi"]);
-		self.SetF.CombatShow:SetChecked(PIGA["CombatPlus"]["HPMPBar"]["CombatShow"]);
-		--self.SetF.Fuziyuan:SetChecked(PIGA["CombatPlus"]["HPMPBar"]["Fuziyuan"]);
-		self.SetF.Slider:PIGSetValue(PIGA["CombatPlus"]["HPMPBar"]["Scale"])
-		self.SetF.SliderX:PIGSetValue(PIGA["CombatPlus"]["HPMPBar"]["Xpianyi"])
-		self.SetF.SliderY:PIGSetValue(PIGA["CombatPlus"]["HPMPBar"]["Ypianyi"])
+		if PIGA["CombatPlus"]["HPMPBar"]["Open"] then
+			self.SetF:Show()
+		end
+	end);
+	CombatPlusF.SetF:HookScript("OnShow", function (self)
+		self.Showshuzhi:SetChecked(PIGA["CombatPlus"]["HPMPBar"]["Showshuzhi"]);
+		self.CombatShow:SetChecked(PIGA["CombatPlus"]["HPMPBar"]["CombatShow"]);
+		--self.Fuziyuan:SetChecked(PIGA["CombatPlus"]["HPMPBar"]["Fuziyuan"]);
+		self.Slider:PIGSetValue(PIGA["CombatPlus"]["HPMPBar"]["Scale"])
+		self.SliderX:PIGSetValue(PIGA["CombatPlus"]["HPMPBar"]["Xpianyi"])
+		self.SliderY:PIGSetValue(PIGA["CombatPlus"]["HPMPBar"]["Ypianyi"])
 	end);
 end

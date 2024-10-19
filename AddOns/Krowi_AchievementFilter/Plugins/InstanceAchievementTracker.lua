@@ -5,6 +5,10 @@ plugins.InstanceAchievementTracker = {};
 local iat = plugins.InstanceAchievementTracker;
 tinsert(plugins.Plugins, iat);
 
+local C_AddOns = {}
+C_AddOns.IsAddOnLoaded = IsAddOnLoaded
+C_AddOns.LoadAddOn = LoadAddOn
+
 function iat.InjectOptions()
     addon.InjectOptions:AddDefaults("Plugins", "InstanceAchievementTracker", {
         AddToRightClickMenu = true;
@@ -46,5 +50,5 @@ function iat:AddRightClickMenuItems(rightClickMenu, achievement)
 end
 
 function iat.IsLoaded()
-    return IsAddOnLoaded("InstanceAchievementTracker") and GetAddOnMetadata("InstanceAchievementTracker", "Version") >= "3.18.0";
+    return C_AddOns.IsAddOnLoaded("InstanceAchievementTracker") and C_AddOns.GetAddOnMetadata("InstanceAchievementTracker", "Version") >= "3.18.0";
 end

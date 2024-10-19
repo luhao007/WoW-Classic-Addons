@@ -147,7 +147,15 @@ fuFrame.tishi:SetTextColor(1, 1, 0, 1);
 fuFrame.tishi1 = PIGFontString(fuFrame,{"TOPLEFT", fuFrame.tishi, "TOPRIGHT", 10, -2},L["CONFIG_ERRTIPS"])
 fuFrame.tishi1:SetTextColor(0.6, 1, 0, 1);
 fuFrame.tishi1:SetJustifyH("LEFT");
-
+---
+fuFrame.GETVER = PIGButton(fuFrame,{"BOTTOMRIGHT",fuFrame,"BOTTOMRIGHT",-304,4},{100,22},"重置更新提示")
+fuFrame.GETVER:SetScript("OnClick", function ()
+	PIGA["Ver"]={}
+	Pig_Options_RLtishi_UI:Show()
+	-- SendAddonMessage(Pig_OptionsUI.Ver_biaotou,"!Pig_Tardis#G#1.04","WHISPER",Pig_OptionsUI.AllName)
+	-- local enabledState = GetAddOnEnableState(nil, "!Pig_Tardis")
+	-- print(enabledState)
+end);
 --配置导出/导入页面-----------------
 local ConfigWWW,ConfigHHH = 800, 600
 local Config_Transfer=PIGFrame(UIParent,{"CENTER",UIParent,"CENTER",0,0},{ConfigWWW,ConfigHHH})

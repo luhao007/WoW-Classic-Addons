@@ -362,6 +362,18 @@ function BagBankfun.addfenleibagbut(fujiui,uiname)
 				end
 			end
 		end);
+		fameXX.PortraitButton.GetInventorySlot = function(self)
+			local BagID = self:GetParent():GetBagID()
+			local invID = C_Container.ContainerIDToInventoryID(BagID)
+			return invID
+		end
+		fameXX.PortraitButton:HookScript("OnClick", function (self)
+			if ( IsModifiedClick("PICKUPITEM") ) then
+				BankFrameItemButtonBag_Pickup(self);
+			else
+				BankFrameItemButtonBag_OnClick(self, button);
+			end
+		end)
 		fameXX.UpdateFilterIcon=fameXX.UpdateFilterIcon or function() end
 		if fujiui==BAGheji_UI then	
 			fameXX.PortraitButton:HookScript("OnDragStart", function (self, button)
@@ -403,6 +415,10 @@ function BagBankfun.addfenleibagbut(fujiui,uiname)
 					end
 				end
 				fameXX.PortraitButton:SetupMenu(function(dropdown, rootDescription)
+					local BagID = fameXX:GetBagID()
+					local invID = C_Container.ContainerIDToInventoryID(BagID)
+					local ItemLink = GetInventoryItemLink("player", invID)
+					if not ItemLink then return end
 					rootDescription:SetTag("MENU_CONTAINER_FRAME");
 					local bagID = fameXX:GetBagID();
 					if not bagID then return end

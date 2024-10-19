@@ -8,6 +8,11 @@ plugins.GW2_UI = {};
 local gw2_ui = plugins.GW2_UI;
 tinsert(plugins.Plugins, gw2_ui);
 
+local C_AddOns = {}
+C_AddOns.IsAddOnLoaded = IsAddOnLoaded
+C_AddOns.LoadAddOn = LoadAddOn
+C_AddOns.GetAddOnMetadata = GetAddOnMetadata
+
 do -- [[ Shared ]]
     function gw2_ui.HandleScrollBar(self)
         self:SetWidth(20);
@@ -489,8 +494,12 @@ do -- [[ Achievements]]
         button.Shield:SetPoint("CENTER", button.cBackground, "CENTER", 0, 0);
 
         -- Move extra icon
-        button.ExtraIcon1:ClearAllPoints();
-        button.ExtraIcon1:SetPoint("BOTTOMLEFT", button, "BOTTOMLEFT", 3, 8);
+        -- print("extra icons test", button.ExtraIcons)
+        -- if button.ExtraIcons then
+        --     print("extra icons")
+        --     button.ExtraIcons[1]:ClearAllPoints();
+        --     button.ExtraIcons[1]:SetPoint("BOTTOMLEFT", button, "BOTTOMLEFT", 3, 8);
+        -- end
 
         -- Extra flare when achievement is completed
         button.completeFlare = button:CreateTexture("completeFlare", "BACKGROUND", nil, 0);
@@ -842,7 +851,7 @@ local function SkinFilterButton(button)
     end);
 
     button:HookScript("OnHide", function()
-        if AchievementFrameFilterDropDown:IsShown() then
+        if AchievementFrameFilterDropdown:IsShown() then
             GW2_ADDON.AchievementFrameFilterDropDownDummy:Hide();
         else
             GW2_ADDON.AchievementFrameFilterDropDownDummy:Show();
@@ -1011,14 +1020,14 @@ do -- [[ Header ]]
         hooksecurefunc("AchievementFrame_RefreshView", UpdatePointsDisplay);
         hooksecurefunc("AchievementFrame_UpdateTabs", UpdatePointsDisplay);
 
-        AchievementFrameFilterDropDown:ClearAllPoints()
-        AchievementFrameFilterDropDown:SetPoint("BOTTOMLEFT", AchievementFrame.SearchBox, "TOPLEFT", 0, 10)
-        AchievementFrameFilterDropDown:SetPoint("BOTTOMRIGHT", AchievementFrame.SearchBox, "TOPRIGHT", 0, 10)
+        AchievementFrameFilterDropdown:ClearAllPoints()
+        AchievementFrameFilterDropdown:SetPoint("BOTTOMLEFT", AchievementFrame.SearchBox, "TOPLEFT", 0, 10)
+        AchievementFrameFilterDropdown:SetPoint("BOTTOMRIGHT", AchievementFrame.SearchBox, "TOPRIGHT", 0, 10)
 
-        AchievementFrameFilterDropDown.backdrop:ClearAllPoints()
-        AchievementFrameFilterDropDown.backdrop:SetPoint("TOPLEFT", AchievementFrameFilterDropDown, "TOPLEFT", 0, 0)
-        AchievementFrameFilterDropDown.backdrop:SetPoint("BOTTOMRIGHT", AchievementFrameFilterDropDown, "BOTTOMRIGHT", 0, 0)
-        AchievementFrameFilterDropDown.backdrop:SetAlpha(0.5)
+        AchievementFrameFilterDropdown.backdrop:ClearAllPoints()
+        AchievementFrameFilterDropdown.backdrop:SetPoint("TOPLEFT", AchievementFrameFilterDropdown, "TOPLEFT", 0, 0)
+        AchievementFrameFilterDropdown.backdrop:SetPoint("BOTTOMRIGHT", AchievementFrameFilterDropdown, "BOTTOMRIGHT", 0, 0)
+        AchievementFrameFilterDropdown.backdrop:SetAlpha(0.5)
 
         GW2_ADDON.HandleNextPrevButton(KrowiAF_AchievementFrameBrowsingHistoryPrevAchievementButton);
         GW2_ADDON.HandleNextPrevButton(KrowiAF_AchievementFrameBrowsingHistoryNextAchievementButton);
@@ -1165,11 +1174,11 @@ local function SkinDataManager(frame)
     -- frame.Inset:StripTextures();
     -- frame.CloseButton:Point("TOPRIGHT", 0, 2);
     -- skins:HandleFrame(frame, true, nil, -5, 0, -1, 0);
-    
+
     -- frame.CharacterList.InsetFrame:StripTextures();
     -- skins:HandleInsetFrame(frame.CharacterList.InsetFrame);
     -- skins:HandleScrollBar(frame.CharacterList.ScrollFrame.ScrollBar)
-    
+
 	-- local columnDisplay = frame.CharacterList.ColumnDisplay;
 	-- columnDisplay:StripTextures();
 	-- columnDisplay.InsetBorderLeft:Hide();
@@ -1306,7 +1315,7 @@ function gw2_ui.InjectOptions()
 
     addon.InjectOptions:AddTable(pluginTable, "Unsupported", {
         order = OrderPP(), type = "description", width = "full",
-        name = (addon.L["Unsupported GW2_UI Desc"]:K_ReplaceVars(IsAddOnLoaded("GW2_UI") and GetAddOnMetadata("GW2_UI", "Version") or "") ..
+        name = (addon.L["Unsupported GW2_UI Desc"]:K_ReplaceVars(C_AddOns.IsAddOnLoaded("GW2_UI") and C_AddOns.GetAddOnMetadata("GW2_UI", "Version") or "") ..
         (addon.Util.IsMainline and (" " .. addon.L["At least version is required"]:K_ReplaceVars("6.6.1")) or "\n")):SetColorRed(),
         fontSize = "medium",
         hidden = not (GW2_ADDON ~= nil and not gw2_ui.IsLoaded())
@@ -1384,6 +1393,16 @@ function gw2_ui.Load()
         end);
     end);
 
+    hooksecurefunc(addon.Gui.AchievementButtonExtraIconFactory, "GetNew", function(button)
+        local extraIconId = #button.ExtraIcons;
+        local extraIcon = button.ExtraIcons[extraIconId];
+        if extraIconId == 1 then
+            extraIcon:SetPoint("TOPLEFT", button, "TOPLEFT", 5, -5);
+        else
+            extraIcon:SetPoint("LEFT", button.ExtraIcons[extraIconId - 1], "RIGHT", 0, 0);
+        end
+    end);
+
     -- if addon.Util.IsWrathClassic then
     --     local worldMapModule = engine:GetModule("WorldMap");
     --     hooksecurefunc(worldMapModule, "SetSmallWorldMap", function()
@@ -1395,17 +1414,17 @@ function gw2_ui.Load()
 end
 
 function gw2_ui.IsLoaded()
-    if not IsAddOnLoaded("GW2_UI") then
+    if not C_AddOns.IsAddOnLoaded("GW2_UI") then
         return false;
     end
     if not addon.Util.IsMainline then -- No Wrath Classic support for now
         return false;
     end
-    if GetAddOnMetadata("GW2_UI", "Version") == "@project-version@" then
+    if C_AddOns.GetAddOnMetadata("GW2_UI", "Version") == "@project-version@" then
         return true;
     end
 
-    local versionComponents = strsplittable(".", GetAddOnMetadata("GW2_UI", "Version"));
+    local versionComponents = strsplittable(".", C_AddOns.GetAddOnMetadata("GW2_UI", "Version"));
     local referenceComponents = strsplittable(".", "6.6.1");
 
     local i = 1;

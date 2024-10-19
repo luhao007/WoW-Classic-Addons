@@ -114,7 +114,7 @@ Titan has no dependencies but Titan plugins need to list Titan or TitanClassic.
 === .toc internals
 NOTE: The ## Interface value should match the current interface value of the corresponding WoW version.
 In BattleNet this is typically shown below the 'Play' button.
-DragonFlight 10.02.05 is represented without dots - 100207 - in the .toc.
+DragonFlight 10.02.05 is represented without dots - 100206 - in the .toc.
 
 If the interface value is higher or lower, WoW will complain that you are running 'out of date' addons.
 

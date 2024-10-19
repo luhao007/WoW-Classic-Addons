@@ -13,8 +13,8 @@ local SendAddonMessage = SendAddonMessage or C_ChatInfo and C_ChatInfo.SendAddon
 local fuFrame = PIGOptionsList(L["ABOUT_TABNAME"],"BOT")
 ------
 Create.About_Update(fuFrame,-10)
-PIGLine(fuFrame,"TOP",-200,1.1)
-Create.About_Thanks(fuFrame,-210)
+PIGLine(fuFrame,"TOP",-170,1)
+Create.About_Thanks(fuFrame,-170)
 
 --Update
 local reverse=string.reverse
@@ -103,12 +103,3 @@ fuFrame:SetScript("OnEvent",function(self, event, arg1, arg2, arg3, arg4, arg5)
 		GetExtVer(self,addonName,Pig_OptionsUI.VersionID, fuFrame.FasVer, arg1, arg2, arg4)
 	end
 end)
-
-fuFrame.GETVER = PIGButton(fuFrame,{"BOTTOMRIGHT",fuFrame,"BOTTOMRIGHT",-304,4},{100,22},"重置更新提示")
-fuFrame.GETVER:SetScript("OnClick", function ()
-	PIGA["Ver"]={}
-	Pig_Options_RLtishi_UI:Show()
-	-- SendAddonMessage(Pig_OptionsUI.Ver_biaotou,"!Pig_Tardis#G#1.04","WHISPER",Pig_OptionsUI.AllName)
-	-- local enabledState = GetAddOnEnableState(nil, "!Pig_Tardis")
-	-- print(enabledState)
-end);

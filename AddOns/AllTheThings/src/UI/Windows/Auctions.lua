@@ -105,10 +105,6 @@ app:CreateWindow("Auctions", {
 			-- If we have left over auction data from previous, then use it.
 			if AllTheThingsAuctionData and not AllTheThingsAuctionData[1] then
 				auctionData = AllTheThingsAuctionData;
-			elseif ATTClassicAuctionData and not ATTClassicAuctionData[1] then
-				auctionData = ATTClassicAuctionData;
-				AllTheThingsAuctionData = auctionData;
-				ATTClassicAuctionData = nil;
 			end
 			self.data = {
 				text = "Auction Module",
@@ -375,7 +371,11 @@ app:CreateWindow("Auctions", {
 							end
 							
 							-- Process the Non-Collectible Items for Reagents
-							local reagentCache = app.GetDataMember("Reagents");
+							local reagentCache = AllTheThingsAD.Reagents;
+							if not reagentCache then
+								reagentCache = {};
+								AllTheThingsAD.Reagents = reagentCache;
+							end
 							if reagentCache and searchResultsByKey.itemID then
 								local cachedItems = searchResultsByKey.itemID;
 								searchResultsByKey.itemID = {};

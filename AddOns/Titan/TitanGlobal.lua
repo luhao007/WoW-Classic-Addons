@@ -150,7 +150,6 @@ Titan_Global.debug.plugin_text = false
 Titan_Global.debug.plugin_register = false
 Titan_Global.debug.plugin_register_deep = false
 Titan_Global.debug.movable = false
-Titan_Global.debug.titan_startup = false
 
 -- For WoW localized strings / literals we are using
 Titan_Global.literals = {
@@ -163,23 +162,6 @@ Titan_Global.literals = {
 	muted = MUTED,
 }
 
-Titan_Global.colors = {
-	alliance = "00adf0", -- PLAYER_FACTION_COLOR_ALLIANCE
-	blue = "0000ff", -- PURE_BLUE_COLOR
-	coin_gold = "ffd100",
-	coin_silver = "e6e6e6",
-	coin_copper = "c8602c",
-	gold = "f2e699", -- GOLD_FONT_COLOR
-	gray = "808080", -- GRAY_FONT_COLOR
-	green = "19ff19", -- GREEN_FONT_COLOR
-	horde = "ff2934", -- PLAYER_FACTION_COLOR_HORDE
-	orange = "ff8c00",
-	red = "ff2020", -- RED_FONT_COLOR
-	white = "ffffff", -- HIGHLIGHT_FONT_COLOR
-	yellow_gold = "ffd200", -- NORMAL_FONT_COLOR
-	yellow = "ffff00", -- YELLOW_FONT_COLOR
-}
-
 -- type for plugin registry
 ---@class PluginRegistryType
 ---@field id string The unique name of the plugin
@@ -188,7 +170,7 @@ Titan_Global.colors = {
 ---@field menuText? string Localized string for the menu (right click)
 ---@field menuTextFunction? string | function Plugin function to call on right click
 ---@field buttonTextFunction? string | function Function to call when updating button display
----@field tooltipTitle? string Localized string for the menu
+---@field tooltipTitle? string Localized string for the menu 
 ---@field tooltipTextFunction? string | function Function to call for a simple tooltip (OnEnter)
 ---@field tooltipCustomFunction? function Function to call for a complex tooltip (OnEnter)
 ---@field icon? string Path to the plugin icon

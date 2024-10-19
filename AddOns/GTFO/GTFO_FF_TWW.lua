@@ -14,7 +14,6 @@ if (GTFO.RetailMode) then
 GTFO.FFSpellID["437965"] = {
   --desc = "Pulsing Flames";
   sound = 4;
-  test = true; -- Verification
 };
 
 end

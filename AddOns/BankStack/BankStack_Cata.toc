@@ -1,0 +1,46 @@
+## Interface: 40400
+## Title: BankStack
+## Author: Kemayo
+## Notes: From bags we came, to bank we return
+## Version: v2024.1
+## X-Category: Inventory
+## LoadOnDemand: 0
+## OptionalDeps: Ace3, LibDBIcon-1.0, tekDebug
+## SavedVariables: BankStackDB
+
+## X-Website: https://www.wowace.com/projects/bank-stack
+## X-License: All rights reserved.
+## X-Curse-Project-ID: 13494
+## X-WoWI-ID: 7761
+## X-Wago-ID: 25NR1EG3
+
+# ## LoadManagers: AddonLoader
+# ## X-LoadOn-Slash: /bankstack, /sort, /sortbags, /stack, /compress, /compressbags, /fill, /fillbags
+# ## X-LoadOn-LDB-Launcher: Interface\Icons\INV_Misc_Shovel_01
+# ## X-LoadOn-Events: BANKFRAME_OPENED, GUILDBANKFRAME_OPENED
+# ## X-LoadOn-BANKFRAME_OPENED: AddonLoader:LoadAddOn("BankStack"); BankStack.bank_open = true
+# ## X-LoadOn-GUILDBANKFRAME_OPENED: AddonLoader:LoadAddOn("BankStack"); BankStack.guild_bank_open = true
+
+embeds.xml
+
+local.enUS.lua
+local.deDE.lua
+local.esES.lua
+local.frFR.lua
+local.koKR.lua
+local.ruRU.lua
+local.zhCN.lua
+local.zhTW.lua
+
+core.lua
+stack.lua
+sort.lua
+fill.lua
+config.lua
+
+auto.lua
+ldb.lua
+blizzard.lua
+inventorian.lua
+
+debug.lua

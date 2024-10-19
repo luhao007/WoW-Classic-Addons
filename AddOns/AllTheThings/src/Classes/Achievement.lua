@@ -1,5 +1,6 @@
 
 local _, app = ...
+local L = app.L
 
 -- Globals
 local setmetatable, rawget, select, tostring, ipairs, pairs, tinsert, tonumber
@@ -55,6 +56,7 @@ end})
 -- Achievement Lib
 do
 	local KEY, CACHE = "achievementID", "Achievements"
+	local CLASSNAME = "Achievement"
 	local GetStatistic
 		= GetStatistic
 
@@ -105,7 +107,7 @@ do
 	-- 	AfterCombatOrDelayedCallback(OnUpdateWindows, 1)
 	-- end
 	-- app.AddEventRegistration("RECEIVED_ACHIEVEMENT_LIST", DelayedOnUpdateWindows);
-	app.CreateAchievement = app.CreateClass("Achievement", KEY, {
+	app.CreateAchievement = app.CreateClass(CLASSNAME, KEY, {
 		silentLink = function(t)
 			return cache.GetCachedField(t, "silentLink", CacheInfo);
 		end,
@@ -129,7 +131,6 @@ do
 			-- account-wide collected
 			if app.IsAccountTracked(CACHE, id) then return 2; end
 		end,
-		trackable = app.ReturnTrue,
 		saved = function(t)
 			local id = t[KEY];
 			-- character collected
@@ -178,22 +179,25 @@ do
 	end
 
 	app.AddEventHandler("OnRefreshCollections", function()
-		local state
+		local me, completed
 		-- app.PrintDebug("OnRefreshCollections.Achievement")
-		local saved, none = {}, {}
+		local mine, acct, none = {}, {}, {}
 		for _,id in ipairs(CollectionCache.RealAchievementIDs) do
-			state = select(13, GetAchievementInfo(id))
-			if state then
-				saved[id] = true
+			completed, _, _, _, _, _, _, _, _, me = select(4, GetAchievementInfo(id))
+			if me then
+				mine[id] = true
+			elseif completed then	-- any character has completed it, we can cache for account directly
+				acct[id] = true
 			else
 				none[id] = true
 			end
 		end
 		-- Character Cache
-		app.SetBatchCached(CACHE, saved, 1)
+		app.SetBatchCached(CACHE, mine, 1)
 		app.SetBatchCached(CACHE, none)
 		-- Account Cache (removals handled by Sync)
-		app.SetBatchAccountCached(CACHE, saved, 1)
+		app.SetBatchAccountCached(CACHE, mine, 1)
+		app.SetBatchAccountCached(CACHE, acct, 1)
 		-- app.PrintDebugPrior("OnRefreshCollections.Achievement")
 	end);
 	app.AddEventHandler("OnSavedVariablesAvailable", function(currentCharacter, accountWideData)
@@ -208,6 +212,41 @@ do
 			app.UpdateRawID(KEY, id);
 		end
 	end);
+	app.AddSimpleCollectibleSwap(CLASSNAME, CACHE)
+
+	-- Information Types
+	app.AddEventHandler("OnLoad", function()
+		app.Settings.CreateInformationType("Achievement_CriteriaFor", {
+			text = "Achievement_CriteriaFor",
+			priority = 1.5, HideCheckBox = true, ForceActive = true,
+			Process = function(t, reference, tooltipInfo)
+				if reference.criteriaID and reference.achievementID and not (reference.parent and reference.parent.achievementID) then
+					local achievement = SearchForObject("achievementID", reference.achievementID, "key")
+					tinsert(tooltipInfo, {
+						left = L.CRITERIA_FOR,
+						right = achievement.text or GetAchievementLink(reference.achievementID),
+					});
+				end
+			end
+		})
+		app.Settings.CreateInformationType("Achievement_Statistic", {
+			text = "Achievement_Statistic",
+			HideCheckBox = true, ForceActive = true,
+			Process = function(t, reference, tooltipInfo)
+				-- achievement progress. If it has a measurable statistic, show it under the achievement description
+				if reference.achievementID then
+					if reference.statistic then
+						tinsert(tooltipInfo, {
+							left = L.PROGRESS,
+							right = reference.statistic,
+						});
+					end
+				end
+			end
+		})
+
+	end)
+
 end
 
 -- Achievement Category Lib
@@ -381,7 +420,6 @@ do
 			-- account-wide collected achievement
 			if app.IsAccountTracked("Achievements", id) then return 2 end
 		end,
-		trackable = app.ReturnTrue,
 		saved = function(t)
 			local id = t.achievementID
 			-- character collected achievement
@@ -406,6 +444,7 @@ do
 		t.isGuild = true;
 		return t;
 	end
+	app.AddSimpleCollectibleSwap("Criteria", "Achievements")
 end
 
 

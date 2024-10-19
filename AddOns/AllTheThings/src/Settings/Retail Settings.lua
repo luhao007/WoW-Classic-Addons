@@ -18,9 +18,9 @@ local Things = {
 	"HeirloomUpgrades",
 	"Illusions",
 	"Mounts",
-	"MusicRollsAndSelfieFilters",
 	"Quests",
 	"QuestsLocked",
+	"QuestsHidden",
 	"PVPRanks",
 	"Recipes",
 	"Reputations",
@@ -49,7 +49,6 @@ local GeneralSettingsBase = {
 		["AccountWide:Heirlooms"] = true,
 		["AccountWide:Illusions"] = true,
 		["AccountWide:Mounts"] = true,
-		["AccountWide:MusicRollsAndSelfieFilters"] = true,
 		["AccountWide:PVPRanks"] = false,
 		["AccountWide:Quests"] = false,
 		["AccountWide:Recipes"] = true,
@@ -70,10 +69,10 @@ local GeneralSettingsBase = {
 		["Thing:HeirloomUpgrades"] = app.GameBuildVersion >= 60000,
 		["Thing:Illusions"] = true,
 		["Thing:Mounts"] = true,
-		["Thing:MusicRollsAndSelfieFilters"] = app.GameBuildVersion >= 60000,
 		--["Thing:PVPRanks"] = app.GameBuildVersion < 20000,	-- CRIEVE NOTE: Maybe someday? Classic Era project.
 		["Thing:Quests"] = true,
 		["Thing:QuestsLocked"] = false,
+		["Thing:QuestsHidden"] = false,
 		["Thing:Recipes"] = true,
 		["Thing:Reputations"] = true,
 		["Thing:RuneforgeLegendaries"] = app.GameBuildVersion >= 90000,
@@ -135,6 +134,7 @@ local TooltipSettingsBase = {
 		["Precision"] = 2,
 		["PlayDeathSound"] = false,
 		["Progress"] = true,
+		["Repeatables"] = true,
 		["ShowIconOnly"] = false,
 		["SharedAppearances"] = true,
 		["Show:CraftedItems"] = false,
@@ -211,7 +211,7 @@ local UnobtainableSettingsBase = {
 	__index = {
 		[1] = false,	-- Never Implemented
 		[2] = false,	-- Removed From Game
-		[3] = false,	-- Blizzard Balance
+		[3] = false,	-- Real Money
 	},
 };
 
@@ -303,12 +303,6 @@ settings.Initialize = function(self)
 
 	app._SettingsRefresh = GetTimePreciseSec()
 	settings._Initialize = true
-	app.DoRefreshAppearanceSources = settings:Get("Thing:Transmog")
-
-	-- setup settings refresh functionality now that we're done initializing
-	settings.Refresh = function()
-		app.CallbackEvent("OnRefreshSettings");
-	end
 	-- app.PrintDebug("settings.Initialize:Done")
 end
 -- dumb self-referencing...
@@ -710,6 +704,18 @@ local function Refresh()
 end
 app.AddEventHandler("OnRefreshSettings", Refresh)
 settings.Refresh = app.EmptyFunction	-- Refresh triggers when Initializing Settings, which we don't want to do anything yet
+-- setup settings refresh functionality once Startup is done
+-- there's some tooltip settings updates during quest refresh triggered during Onstartup
+-- that inadvertently trigger an unexpected settings refresh which delays the loading sequence
+-- by a micro-amount. Let's just avoid refreshing the settings until OnStartupDone
+app.AddEventHandler("OnStartupDone", function()
+	settings.Refresh = function(self, source)
+		-- app.PrintDebug("settings.Refresh",source)
+		app.CallbackEvent("OnRefreshSettings");
+	end
+	-- do an immediate Refresh as well
+	Refresh()
+end)
 
 local function Mixin(o, mixin)
 	for k,v in pairs(mixin) do
@@ -834,15 +840,16 @@ ATTSettingsPanelMixin = {
 		---@class ATTSettingsCheckButtonForRetail: CheckButton
 		---@field Text FontString
 		---@field OnRefreshCheckedDisabled any
-		local cb = CreateFrame("CheckButton", self:GetName() .. "-" .. text, self, "InterfaceOptionsCheckButtonTemplate")
+		local cb = CreateFrame("CheckButton", self:GetName() .. "-" .. text, self, "UICheckButtonTemplate")
 		Mixin(cb, ATTSettingsObjectMixin);
 		self:RegisterObject(cb);
 		if OnClick then cb:SetScript("OnClick", OnClick) end
 		cb.OnRefresh = OnRefresh or cb.OnRefreshCheckedDisabled
 		cb.Text:SetText(text)
-		cb.Text:SetScale(1.1)
+		cb.Text:SetScale(1.3)
 		cb.Text:SetWordWrap(false)
 		cb:SetHitRectInsets(0,0 - cb.Text:GetUnboundedStringWidth(),0,0);
+		cb:SetScale(0.8);
 		return cb
 	end,
 	CreateTextbox = function(self, opts, functions)
@@ -1115,10 +1122,10 @@ settings.CreateOptionsPage = function(self, text, parentCategory, isRootCategory
 	function(self)
 		local skipRefresh = self:GetChecked();
 		settings:Set("Skip:AutoRefresh", skipRefresh)
-		if not skipRefresh then settings:UpdateMode("FORCE"); end
+		if not skipRefresh and settings.NeedsRefresh then settings:UpdateMode("FORCE"); end
 	end)
 	checkboxSkipAutoRefresh:SetATTTooltip(L.SKIP_AUTO_REFRESH_TOOLTIP);
-	checkboxSkipAutoRefresh:SetPoint("BOTTOMRIGHT", separator, "TOPRIGHT", -(checkboxSkipAutoRefresh.Text:GetWidth() + checkboxSkipAutoRefresh:GetWidth()), 0)
+	checkboxSkipAutoRefresh:SetPoint("BOTTOMRIGHT", separator, "TOPRIGHT", -(checkboxSkipAutoRefresh.Text:GetWidth() * checkboxSkipAutoRefresh.Text:GetScale()), 0)
 	return subcategory;
 end
 
@@ -1137,7 +1144,6 @@ settings.ToggleAccountMode = function(self)
 end
 settings.SetCompletionistMode = function(self, completionistMode)
 	self:Set("Completionist", completionistMode)
-	app.DoRefreshAppearanceSources = true
 	self:UpdateMode(1)
 end
 settings.ToggleCompletionistMode = function(self)
@@ -1157,9 +1163,6 @@ settings.SetDebugMode = function(self, debugMode)
 		settings:Set("Cache:CollectedThings", settings:Get("Show:CollectedThings"))
 		settings:SetCompletedGroups(true, true)
 		settings:SetCollectedThings(true, true)
-		if not self:Get("Thing:Transmog") then
-			app.DoRefreshAppearanceSources = true
-		end
 	else
 		settings:SetCompletedGroups(settings:Get("Cache:CompletedGroups"), true)
 		settings:SetCollectedThings(settings:Get("Cache:CollectedThings"), true)
@@ -1300,7 +1303,7 @@ settings.UpdateMode = function(self, doRefresh)
 
 		-- Check for any inactive unobtainable filters.
 		local anyFiltered = false
-		for u,v in pairs(L.AVAILABILITY_CONDITIONS) do
+		for u,phase in pairs(L.PHASES) do
 			if not settings:GetUnobtainableFilter(u) then
 				anyFiltered = true;
 				break;
@@ -1407,26 +1410,31 @@ settings.UpdateMode = function(self, doRefresh)
 	end
 	-- if auto-refresh
 	if doRefresh then
+		app._SettingsRefresh = GetTimePreciseSec()
 		self.NeedsRefresh = true
 	end
 	-- app.PrintDebug("UpdateMode",doRefresh)
 	-- FORCE = Force Update
 	-- 1 = Force Update IF NOT Skip
 	-- not = Soft Update
-	doRefresh = doRefresh == "FORCE" or
-		(doRefresh and not settings:Get("Skip:AutoRefresh"))
-
+	doRefresh = doRefresh == "FORCE" or (doRefresh and not settings:Get("Skip:AutoRefresh"))
 	if doRefresh then
+		app.HandleEvent("OnSettingsNeedsRefresh")
+		app.CallbackEvent("OnRecalculate")
 		self.NeedsRefresh = nil
-		app:RefreshData(nil,nil,true)
-		app._SettingsRefresh = GetTimePreciseSec()
-	else
-		-- lazy refresh instead if ATT is ready
-		if app.IsReady then
-			app:RefreshData(true,nil,true)
-		end
 	end
 
 	-- ensure the settings pane itself is refreshed
 	self:Refresh()
 end
+app.AddEventHandler("OnBeforeRecalculate", function()
+	if settings.NeedsRefresh then
+		-- Settings need to refresh before recalculate
+		app.HandleEvent("OnSettingsNeedsRefresh")
+	end
+end)
+app.AddEventHandler("OnRefreshCollectionsDone", function()
+	settings.NeedsRefresh = nil
+	-- Need to update the Settings window as well if User does not have auto-refresh for Settings
+	settings:UpdateMode()
+end)

@@ -5,6 +5,8 @@
 ## Title-zhCN: |cFFFFE00A<|r|cFFC79C6E战斗|r|cFFFFE00A>|r |cFFFFFFFF伤害统计|r |cFF69CCF0插件|r |cFF22B14C首领详情|r
 ## Notes-zhCN: 显示打断、驱散等数据，并且支持对于该首领一键生成WA
 
+## IconTexture: Interface\AddOns\Details\images\minimap
+
 ## RequiredDeps: Details
 ## OptionalDeps: Ace3
 

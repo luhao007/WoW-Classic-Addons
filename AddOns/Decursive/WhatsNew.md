@@ -1,28 +1,5 @@
-Decursive 2.7.19
+Decursive 2.7.17
 ================
-
-Decursive 2.7.19 (2024-05-10)
------------------------------
-
-- Cataclysm: fix Druid Nature's Cure talent detection.
-
-- Show a checkbox in the main option panel when the MUF's handle was hidden
-  using the /dcr related command to make it easily visible again.
-
-- TOC update for 10.2.7
-
-
-Decursive 2.7.18 (2024-05-02)
------------------------------
-
-- Cataclysm compatibility update.
- There might be some other necessary fixes, update [issue #23](https://github.com/2072/Decursive/issues/23)
- on GitHub if you find anything.
-
-- Fix expired version false alert in Retail.
-
-- Update TOC for classic.
-
 
 Decursive 2.7.17 (2024-03-21)
 -----------------------------

@@ -6,7 +6,6 @@ local addonName, addon = ...;
 local NWB = addon.a;
 local L = LibStub("AceLocale-3.0"):GetLocale("NovaWorldBuffs");
 local calcStart, lastSendGuild, lastSendPersonal = 0, 0, 0;
-local isRunning;
 
 SLASH_NWBASHVCMD1 = '/ashenvale';
 function SlashCmdList.NWBASHVCMD(msg, editBox)
@@ -16,7 +15,7 @@ end
 
 --These times are adjusted if DST is active in the getTimeLeft() func.
 local isUS;
-local region = NWB:GetCurrentRegion();
+local region = GetCurrentRegion();
 if (region == 1 and string.match(NWB.realm, "(AU)")) then
 	--OCE.
 	calcStart = 1707264000; --Date and time (GMT): Wednesday, February 7, 2024 12:00:00 AM
@@ -37,9 +36,7 @@ elseif (region == 5) then
 	--China.
 	calcStart = 1707260400; --CN same as OCE/US.
 end
---Trying to fix some issues with the timer not being exact, why is GetServerTime() not accurate?
-calcStart = calcStart + 30;
---/dump date("%c", GetServerTime())
+
 _G["calcStart"] = calcStart;
 
 local function getTimeLeft()
@@ -131,7 +128,7 @@ function NWB:addAshenvaleMinimapString(tooltip, noTopSeperator, noBottomSeperato
 	return true;
 end
 
---[[function NWB:checkAshenvaleTimer()
+function NWB:checkAshenvaleTimer()
 	local timeLeft, type = getTimeLeft();
 	if (timeLeft <= 900 and timeLeft >= 899 and GetTime() - lastSendGuild > 900) then
 		lastSendGuild = GetTime();
@@ -139,15 +136,15 @@ end
 			local msg = string.format(L["ashenvaleStartSoon"], "15 " .. L["minutes"]) .. ".";
 			if (IsInGuild()) then
 				if (isUS) then
-					NWB:sendGuildMsg(msg, "guild10", nil, nil, "[NWB]", 2.69);
+					NWB:sendGuildMsg(msg, "guild10", nil, "[NWB]", 2.69);
 				else
-					NWB:sendGuildMsg(msg, "guild10", nil, nil, "[NWB]", 2.67);
+					NWB:sendGuildMsg(msg, "guild10", nil, "[NWB]", 2.67);
 				end
 			else
 				NWB:print(msg, nil, "[NWB]");
 			end
 		end
-	end]]
+	end
 	--[[if (NWB.db.global.personalAshenvale30 and timeLeft <= 1800 and timeLeft >= 1799 and GetTime() - lastSendPersonal > 900) then
 		lastSendPersonal = GetTime();
 		if (NWB.db.global.personalAshenvale30) then
@@ -157,7 +154,7 @@ end
 			RaidNotice_AddMessage(RaidWarningFrame, NWB:stripColors(msg), colorTable, 5);
 		end
 	end]]
---end
+end
 
 local mapMarkerTypes;
 if (NWB.isSOD) then
@@ -179,18 +176,11 @@ function NWB:updateAshenvaleMarkers(type)
 			text2 = L["Stranglethorn"] .. " " .. string.lower(text2);
 		end
 		_G["AllianceNWBAshenvaleMap"].timerFrame2.fs:SetText("|cFFFFFF00" .. text2);
-		local text3, _, _, _, type3 = NWB:getBlackrockTimeString(true);
-		if (type3 ~= "running") then
-			text3 = L["Blackrock"] .. " " .. string.lower(text3);
-		end
-		_G["AllianceNWBAshenvaleMap"].timerFrame3.fs:SetText("|cFFFFFF00" .. text3);
 	else
 		local text = NWB:getAshenvaleTimeString(true);
 		_G["AllianceNWBAshenvaleMap"].timerFrame.fs:SetText("|cFFFFFF00" .. text);
 		local text2 = NWB:getStranglethornTimeString(true);
 		_G["AllianceNWBAshenvaleMap"].timerFrame2.fs:SetText("|cFFFFFF00" .. text2);
-		local text3 = NWB:getBlackrockTimeString(true);
-		_G["AllianceNWBAshenvaleMap"].timerFrame3.fs:SetText("|cFFFFFF00" .. text3);
 	end
 end
 
@@ -271,7 +261,7 @@ function NWB:createAshenvaleMarker(type, data)
 			end)
 			
 			obj.timerFrame2 = CreateFrame("Frame", type .. "AshenvaleTimerFrame2", obj, "TooltipBorderedFrameTemplate");
-			obj.timerFrame2:SetPoint("CENTER", obj, "CENTER",  26, -45);
+			obj.timerFrame2:SetPoint("CENTER", obj, "CENTER",  26, -43);
 			obj.timerFrame2:SetFrameStrata("FULLSCREEN");
 			obj.timerFrame2:SetFrameLevel(9);
 			obj.timerFrame2.fs = obj.timerFrame2:CreateFontString(type .. "NWBAshenvaletimerFrame22FS", "ARTWORK");
@@ -279,16 +269,6 @@ function NWB:createAshenvaleMarker(type, data)
 			obj.timerFrame2.fs:SetFont("Fonts\\FRIZQT__.ttf", 13);
 			obj.timerFrame2:SetWidth(54);
 			obj.timerFrame2:SetHeight(24);
-			
-			obj.timerFrame3 = CreateFrame("Frame", type .. "AshenvaleTimerFrame2", obj, "TooltipBorderedFrameTemplate");
-			obj.timerFrame3:SetPoint("CENTER", obj, "CENTER",  26, -67);
-			obj.timerFrame3:SetFrameStrata("FULLSCREEN");
-			obj.timerFrame3:SetFrameLevel(9);
-			obj.timerFrame3.fs = obj.timerFrame3:CreateFontString(type .. "NWBAshenvaletimerFrame32FS", "ARTWORK");
-			obj.timerFrame3.fs:SetPoint("CENTER", 0, 0);
-			obj.timerFrame3.fs:SetFont("Fonts\\FRIZQT__.ttf", 13);
-			obj.timerFrame3:SetWidth(54);
-			obj.timerFrame3:SetHeight(24);
 			
 			obj.lastUpdate = 0;
 			obj.resetType = L["Ashenvale Towers"];
@@ -301,8 +281,6 @@ function NWB:createAshenvaleMarker(type, data)
 					obj.timerFrame:SetHeight(obj.timerFrame.fs:GetStringHeight() + 12);
 					obj.timerFrame2:SetWidth(obj.timerFrame2.fs:GetStringWidth() + 18);
 					obj.timerFrame2:SetHeight(obj.timerFrame2.fs:GetStringHeight() + 12);
-					obj.timerFrame3:SetWidth(obj.timerFrame3.fs:GetStringWidth() + 18);
-					obj.timerFrame3:SetHeight(obj.timerFrame3.fs:GetStringHeight() + 12);
 				end
 			end)
 			
@@ -334,7 +312,6 @@ function NWB:refreshAshenvaleMarkers(updateOnly)
 		_G["AllianceNWBAshenvaleMap"].fsBottom:ClearAllPoints();
 		_G["AllianceNWBAshenvaleMap"].fsBottom:SetPoint("BOTTOM", 28, -45);
 		_G["AllianceNWBAshenvaleMap"].timerFrame2:Show();
-		_G["AllianceNWBAshenvaleMap"].timerFrame3:Show();
 		_G["AllianceNWBAshenvaleMap"].fsTitle:SetText("|cFFFFFF00" .. L["World Events"]);
 	elseif (NWB.faction == "Alliance" and WorldMapFrame and WorldMapFrame:GetMapID() == 1453) then
 		mapMarkerTypes = {
@@ -345,7 +322,6 @@ function NWB:refreshAshenvaleMarkers(updateOnly)
 		_G["AllianceNWBAshenvaleMap"].fsBottom:ClearAllPoints();
 		_G["AllianceNWBAshenvaleMap"].fsBottom:SetPoint("BOTTOM", 28, -45);
 		_G["AllianceNWBAshenvaleMap"].timerFrame2:Show();
-		_G["AllianceNWBAshenvaleMap"].timerFrame3:Show();
 		_G["AllianceNWBAshenvaleMap"].fsTitle:SetText("|cFFFFFF00" .. L["World Events"]);
 	else
 		mapMarkerTypes = {
@@ -356,7 +332,6 @@ function NWB:refreshAshenvaleMarkers(updateOnly)
 		_G["AllianceNWBAshenvaleMap"].fsBottom:ClearAllPoints();
 		_G["AllianceNWBAshenvaleMap"].fsBottom:SetPoint("TOPRIGHT", _G["AllianceNWBAshenvaleMap"], "TOPRIGHT", 70, -50);
 		_G["AllianceNWBAshenvaleMap"].timerFrame2:Hide();
-		_G["AllianceNWBAshenvaleMap"].timerFrame3:Hide();
 		_G["AllianceNWBAshenvaleMap"].fsTitle:SetText("|cFFFFFF00" .. L["Ashenvale"]);
 	end
 	if (WorldMapFrame and hookWorldMap) then
@@ -384,70 +359,10 @@ function NWB:loadAshenvale()
 	createAshenvaleMarkers();
 end
 
-if (NWB.isSOD) then
-	local f = CreateFrame("Frame");
-	local barRunning;
-	f:RegisterEvent("PLAYER_ENTERING_WORLD");
-	f:RegisterEvent("AREA_POIS_UPDATED");
-	f:RegisterEvent("UPDATE_UI_WIDGET");
-	f:SetScript("OnEvent", function(self, event, ...)
-		if (event == "PLAYER_ENTERING_WORLD" or event == "AREA_POIS_UPDATED") then
-			local _, _, zone = NWB.dragonLib:GetPlayerZonePosition();
-			if (zone == 1440) then
-				if (event == "PLAYER_ENTERING_WORLD") then
-					--Set running state if we logon in the zone, no widget update event will be fired they're loaded before the addon.
-					local isLogon, isReload = ...;
-					if (isLogon or isReload) then
-						local widgetData = C_UIWidgetManager.GetIconAndTextWidgetVisualizationInfo(5366);
-						if (widgetData and widgetData.state == 1) then
-							isRunning = nil;
-							--NWB:debug("Ashenvale not running.");
-						end
-						local widgetData = C_UIWidgetManager.GetIconAndTextWidgetVisualizationInfo(5367);
-						if (widgetData and widgetData.state == 1) then
-							isRunning = true;
-							--NWB:debug("Ashenvale running.");
-						end
-						local widgetData = C_UIWidgetManager.GetIconAndTextWidgetVisualizationInfo(5368);
-						if (widgetData and widgetData.state == 1) then
-							isRunning = true;
-							--NWB:debug("Ashenvale running.");
-						end
-					end
-				end
-				local timeLeft, type, timestamp = getTimeLeft();
-				--Ashenvale has no static end time, but just show the timer if less than 2h50m left, most ashnevale games take less than 10mins now.
-				if (timeLeft < 10200 and not isRunning and not barRunning) then
-					barRunning = NWB:startCapping(timeLeft, "[NWB] " .. L["Ashenvale"], 132484, 10800);
-				end
-			elseif (barRunning) then
-				barRunning = false;
-				NWB:stopCapping("[NWB] " .. L["Ashenvale"]);
-			end
-		elseif (event == "UPDATE_UI_WIDGET") then
-			local data = ...;
-			if (data.widgetID == 5378) then --Progress stage, timer widget.
-				--The widget that fires the event isn't the same as displayed.
-				local widgetData = C_UIWidgetManager.GetIconAndTextWidgetVisualizationInfo(5366);
-				if (widgetData and widgetData.state == 1) then
-					if (isRunning and not barRunning) then
-						--Start timer bar when the event ends.
-						local timeLeft, type, timestamp = getTimeLeft();
-						barRunning = NWB:startCapping(timeLeft, "[NWB] " .. L["Ashenvale"], 132484, 10800);
-					end
-					isRunning = nil;
-					--NWB:debug("Ashenvale not running.");
-				end
-			elseif (data.widgetID == 5367 or data.widgetID == 5368) then --Event is running, horde/alliance boss widgets.
-				local widgetData = C_UIWidgetManager.GetIconAndTextWidgetVisualizationInfo(data.widgetID);
-				if (widgetData and widgetData.state == 1) then
-					isRunning = true;
-					--NWB:debug("Ashenvale running.");
-				end
-			end
-		end
-	end)
-end
+
+
+
+
 
 
 -----------------------------------------------
@@ -743,7 +658,7 @@ function NWB:ashenvaleEventStartsSoon(alliancePercent, hordePercent, timestamp)
 			--end
 			if (NWB.db.global.guild10) then
 				if (not NWB.data.lastAshenvaleGuildMsg or GetServerTime() - NWB.data.lastAshenvaleGuildMsg > lastStartSoonDelay) then
-					NWB:sendGuildMsg(msg, "guild10", nil, nil, "[NWB]", 2.60);
+					NWB:sendGuildMsg(msg, "guild10", nil, "[NWB]", 2.60);
 					NWB.data.lastAshenvaleGuildMsg = GetServerTime();
 				end
 			end

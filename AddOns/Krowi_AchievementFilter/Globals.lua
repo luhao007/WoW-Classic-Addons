@@ -1,10 +1,26 @@
 local addonName, addon = ...;
 
+local C_AddOns = {}
+C_AddOns.IsAddOnLoaded = IsAddOnLoaded
+
+local customPreviousAchievements = {};
+customPreviousAchievements[15664] = 15663;
+customPreviousAchievements[15665] = 15664;
+customPreviousAchievements[15668] = 15667;
+customPreviousAchievements[15669] = 15668;
+
+function addon.GetPreviousAchievement(achievementId)
+    if customPreviousAchievements[achievementId] then
+        return customPreviousAchievements[achievementId];
+    end
+    return GetPreviousAchievement(achievementId);
+end
+
 function addon.GetFirstAchievementId(id)
     local firstId;
 	while id do
 		firstId = id;
-		id = GetPreviousAchievement(id);
+		id = addon.GetPreviousAchievement(id);
 	end
     return firstId;
 end
@@ -533,14 +549,14 @@ function addon.HookFunctions()
         end);
     end
 
-    AchievementFrameFilterDropDown:HookScript("OnShow", function()
+    AchievementFrameFilterDropdown:HookScript("OnShow", function()
         if addon.Util.IsClassicWithAchievements then
             AchievementFrame.Header.RightDDLInset:Show();
         else
             AchievementFrame.Header.LeftDDLInset:Show();
         end
     end);
-    AchievementFrameFilterDropDown:HookScript("OnHide", function()
+    AchievementFrameFilterDropdown:HookScript("OnHide", function()
         if addon.Util.IsClassicWithAchievements then
             if not KrowiAF_SearchBoxFrame:IsShown() then
                 AchievementFrame.Header.RightDDLInset:Hide();
@@ -571,7 +587,7 @@ local function MakeStatic(frame, rememberLastPositionOption, target)
 end
 
 function addon.MakeWindowStatic()
-    if not IsAddOnLoaded("Blizzard_AchievementUI") then
+    if not C_AddOns.IsAddOnLoaded("Blizzard_AchievementUI") then
         return;
     end
     MakeStatic(AchievementFrame, "AchievementWindow");
@@ -612,7 +628,7 @@ function addon.MakeMovable(frame, rememberLastPositionOption, target, point)
 end
 
 function addon.MakeWindowMovable()
-    if not IsAddOnLoaded("Blizzard_AchievementUI") then
+    if not C_AddOns.IsAddOnLoaded("Blizzard_AchievementUI") then
         return;
     end
     addon.MakeMovable(AchievementFrame, "AchievementWindow");
@@ -778,7 +794,7 @@ function addon.IsCustomModifierKeyDown(modifier)
     end
 end
 
---  Budgets 50% of target or current FPS to perform a workload. 
+--  Budgets 50% of target or current FPS to perform a workload.
 --  finished = start(workload, onFinish, onDelay)
 --  Arguments:
 --      workload        table       Stack (last in, first out) of functions to call.

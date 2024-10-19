@@ -193,7 +193,7 @@ local function GetPlayerPosition()
 			return mapID, px * 100, py * 100;
 		end
 	end
-	return mapID, 50, 50;
+	return mapID, 50, 50, true
 end
 app.GetPlayerPosition = GetPlayerPosition
 local UpdateLocation
@@ -886,19 +886,6 @@ local function RefreshSavesCallback()
 		return;
 	end
 
-	-- Make sure there's info available to check save data
-	local saves = GetNumSavedInstances();
-	if saves and saves < 1 then
-		-- While the player is still waiting for information, wait.
-		app.refreshingSaves = (app.refreshingSaves or 30) - 1;
-		if app.refreshingSaves <= 0 then
-			app.refreshingSaves = nil;
-			return;
-		end
-		AfterCombatCallback(RefreshSavesCallback);
-		return;
-	end
-
 	-- Cache the lockouts across your account.
 	local serverTime = GetServerTime();
 
@@ -922,6 +909,14 @@ local function RefreshSavesCallback()
 				end
 			end
 		end
+	end
+
+	-- Make sure there's info available to check save data
+	local saves = GetNumSavedInstances();
+	if not saves then
+		-- While the player is still waiting for information, wait.
+		AfterCombatCallback(RefreshSavesCallback);
+		return;
 	end
 
 	-- Update Saved Instances
@@ -1018,8 +1013,8 @@ local function Event_UPDATE_INSTANCE_INFO()
 	app:UnregisterEvent("UPDATE_INSTANCE_INFO");
 	AfterCombatCallback(RefreshSavesCallback);
 end
-app.AddEventRegistration("UPDATE_INSTANCE_INFO", Event_UPDATE_INSTANCE_INFO)
-app.AddEventHandler("OnStartup", Event_UPDATE_INSTANCE_INFO);
+app.AddEventRegistration("UPDATE_INSTANCE_INFO", Event_UPDATE_INSTANCE_INFO, true)
+app.AddEventHandler("OnRefreshCollectionsDone", Event_UPDATE_INSTANCE_INFO);
 app.AddEventRegistration("BOSS_KILL", function(id, name, ...)
 	-- This is so that when you kill a boss, you can trigger
 	-- an automatic update of your saved instance cache.

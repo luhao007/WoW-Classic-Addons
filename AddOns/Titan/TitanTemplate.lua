@@ -24,6 +24,7 @@ The available plugin types are:
 - TitanPanelIconTemplate - * A frame that only displays an icon ("$parentIcon")
 - TitanPanelComboTemplate - * A frame that displays an icon then text ("$parentIcon"  "$parentText")
 - TitanOptionsSliderTemplate - A frame that contains the basics for a vertical slider control. See TitanVolume for an example.
+- TitanPanelChildButtonTemplate - A frame that allows a plugin within a plugin. !!! Not be used anymore!!!
 
 * Templates inherit TitanPanelButtonTemplate for common elements.
 
@@ -50,7 +51,10 @@ TitanPanelButtonTemplate contains:
 If these events are overridden then the default routine needs to be included!
 
 
-NOTE: TitanPanelChildButtonTemplate - Removed 2024 Jun
+NOTE: TitanPanelChildButtonTemplate - !!! Not be used anymore!!! 
+A much older version of TitanGold was an example. 
+No third party plugins we are aware of have used this over the years. This scheme may not work and will be slowly removed from the code.
+
 --]===]
 
 -- Globals
@@ -209,14 +213,14 @@ local function TitanTooltip_SetPanelTooltip(self, id, frame)
 	end
 end
 
----local Set the tooltip (GameTooltip) of the given Titan plugin.
----@param self table Plugin frame
+---local Set the tooltip of the given Titan plugin.
+---@param self table Tooltip frame
+---@param id string Plugin id name
 --- Set Titan_Global.debug.tool_tips to output debug of this routine
-local function TitanPanelButton_SetTooltip(self)
+local function TitanPanelButton_SetTooltip(self, id)
 	local dbg_msg = "TT:"
 	local ok = false
 	local frame = GameTooltip
-	local id = self.registry.id
 
 	-- ensure that the 'self' passed is a valid frame reference
 	if self:GetName() then
@@ -261,11 +265,6 @@ local function TitanPanelButton_SetTooltip(self)
 
 		if ok and (id and TitanUtils_IsPluginRegistered(id)) then
 			local plugin = TitanUtils_GetPlugin(id)
-			-- 2024 Jun Add id and frame name to 'pass' to tooltip routine.
-			-- A compromise given that this mechanism is used by nearly all plugins.
-			-- Used by Titan auto hide to better determine which bar the 'pin' / icon is on.
-			self.plugin_id = id
-			self.plugin_frame = TitanUtils_ButtonName(id)
 			if (plugin and plugin.tooltipCustomFunction) then
 				-- Prep the tooltip frame
 				TitanTooltip_SetPanelTooltip(self, id, frame);
@@ -274,7 +273,7 @@ local function TitanPanelButton_SetTooltip(self)
 				self.tooltipCustomFunction = plugin.tooltipCustomFunction;
 				dbg_msg = dbg_msg .. " | custom"
 				call_success, -- for pcall
-				tmp_txt = pcall(self.tooltipCustomFunction, self)
+				tmp_txt = pcall(self.tooltipCustomFunction)
 				if call_success then
 					-- all is good
 					dbg_msg = dbg_msg .. " | ok"
@@ -305,7 +304,7 @@ local function TitanPanelButton_SetTooltip(self)
 					TitanTooltip_SetPanelTooltip(self, id, frame);
 					self.tooltipTitle = plugin.tooltipTitle;
 					call_success, -- for pcall
-					tmp_txt = pcall(tooltipTextFunc, self)
+					tmp_txt = pcall(tooltipTextFunc)
 
 					-- Fill the tooltip
 					self.tooltipText = tmp_txt
@@ -380,6 +379,9 @@ local function TitanPanelButton_OnDragStart(self)
 	if TitanPanelGetVar("LockButtons") or InCombatLockdown() then return end
 
 	local frname = self;
+--	if ChildButton then
+--		frname = self:GetParent();
+--	end
 
 	-- Clear button positions or we'll grab the button and all buttons 'after'
 	for i, j in pairs(TitanPanelSettings.Buttons) do
@@ -421,7 +423,10 @@ local function TitanPanelButton_OnDragStart(self)
 
 	-- Hold the plugin id so we can do checks on the drop
 	TITAN_PANEL_MOVE_ADDON = TitanUtils_GetButtonID(self:GetName());
-
+--	if ChildButton then
+--		TITAN_PANEL_MOVE_ADDON =
+--			TitanUtils_GetButtonID(self:GetParent():GetName());
+--	end
 	-- Tell Titan that a drag & drop is in process
 	TITAN_PANEL_MOVING = 1;
 	-- Store the OnEnter handler so the tooltip does not show - or other oddities
@@ -442,7 +447,9 @@ local function TitanPanelButton_OnDragStop(self)
 	local nonmovableFrom = false;
 	local nonmovableTo = false;
 	local frname = self;
-
+--	if ChildButton then
+--		frname = self:GetParent();
+--	end
 	if TITAN_PANEL_MOVING == 1 then
 		frname:StopMovingOrSizing();
 		frname.isMoving = false;
@@ -533,19 +540,21 @@ end
 
 ---API Handle the OnLoad event of the requested Titan plugin. Ensure the plugin is set to be registered.
 ---@param self table Plugin frame
+---@param isChildButton boolean? If is child plugin !! NO LONGER USED !!
 --- This is called from the Titan plugin frame in the OnLoad event - usually as the frame is created in the Titan template.
-function TitanPanelButton_OnLoad(self)
+function TitanPanelButton_OnLoad(self, isChildButton)
 	-- Used by plugins
-	--[[
+--[[
 --- This is called from the Titan plugin frame in the OnLoad event - usually as the frame is created in the Titan template.
 --- This starts the plugin registration process. See TitanUtils for more details on plugin registration.
---- The plugin registration is a two step process because not all addons create Titan plugins in the frame create.
+--- The plugin registration is a two step process because not all addons create Titan plugins in the frame create. 
 --- The Titan feature of converting LDB addons to Titan plugins is an example.
---- If the plugin needs an OnLoad process it should call this routine after its own. I.E.
+--- If the plugin needs an OnLoad process it should call this routine after its own.
 --- TitanPanelLootTypeButton_OnLoad(self)
 --- TitanPanelButton_OnLoad(self)
 --]]
-	TitanUtils_PluginToRegister(self)
+--	TitanUtils_PluginToRegister(self, isChildButton)
+	TitanUtils_PluginToRegister(self, false)
 end
 
 ---API Handle the OnShow event of the requested Titan plugin.
@@ -565,12 +574,17 @@ end
 ---API Handle the OnClick mouse event of the requested Titan plugin.
 ---@param self table Plugin frame
 ---@param button string Mouse button clicked
+---@param isChildButton boolean? If is child plugin ! NO LONGER USED !
 --- Only the left and right mouse buttons are handled by Titan.
 --- Called from Titan templates unless overriden by plugin. If overridden the plugin should call this routine.
-function TitanPanelButton_OnClick(self, button)
+function TitanPanelButton_OnClick(self, button, isChildButton)
 	local id
 	-- ensure that the 'self' passed is a valid frame reference
 	if self and self:GetName() then
+--[[		id = TitanUtils_Ternary(isChildButton,
+			TitanUtils_GetParentButtonID(self:GetName()),
+			TitanUtils_GetButtonID(self:GetName()));
+--]]
 		id = TitanUtils_GetButtonID(self:GetName())
 	end
 
@@ -640,12 +654,17 @@ end
 
 ---API Handle the OnEnter event of the requested Titan plugin.
 ---@param self table Plugin frame
+---@param isChildButton boolean? If is child plugin ! NO LONGER USED !
 --- 1. The cursor has moved over the plugin so show the plugin tooltip.
 --- 2. Return if plugin "is moving" or if tooltip is already shown.
-function TitanPanelButton_OnEnter(self)
+function TitanPanelButton_OnEnter(self, isChildButton)
 	local id = nil;
 	-- ensure that the 'self' passed is a valid frame reference
 	if self and self:GetName() then
+--[[		id = TitanUtils_Ternary(isChildButton,
+			TitanUtils_GetParentButtonID(self:GetName()),
+			TitanUtils_GetButtonID(self:GetName()));
+--]]
 		id = TitanUtils_GetButtonID(self:GetName())
 	end
 
@@ -657,7 +676,7 @@ function TitanPanelButton_OnEnter(self)
 			return;
 		else
 			if TITAN_PANEL_MOVING == 0 then
-				TitanPanelButton_SetTooltip(self);
+				TitanPanelButton_SetTooltip(self, id);
 			end
 			if self.isMoving then
 				GameTooltip:Hide();
@@ -668,11 +687,15 @@ end
 
 ---API Handle the OnLeave event of the requested Titan plugin.
 ---@param self table Plugin frame
+---@param isChildButton boolean? If is child plugin ! NO LONGER USED !
 --- 1. The cursor has moved over the plugin so hide the plugin tooltip.
-function TitanPanelButton_OnLeave(self)
+function TitanPanelButton_OnLeave(self, isChildButton)
 	local id = nil;
 	-- ensure that the 'self' passed is a valid frame reference
 	if self and self:GetName() then
+--		id = TitanUtils_Ternary(isChildButton,
+--			TitanUtils_GetParentButtonID(self:GetName()),
+--			TitanUtils_GetButtonID(self:GetName()));
 		id = TitanUtils_GetButtonID(self:GetName())
 	end
 
@@ -763,7 +786,7 @@ local function TitanPanelButton_SetButtonText(id)
 				text = true
 			else
 				buttonText:SetText("<?>")
-				dbg_msg = dbg_msg .. " | Err '" .. tostring(label1) .. "'"
+				dbg_msg = dbg_msg .. " | Err '"..tostring(label1).."'"
 			end
 		else
 			dbg_msg = dbg_msg .. " | invalid plugin id"
@@ -777,7 +800,7 @@ local function TitanPanelButton_SetButtonText(id)
 		-- Plugin MUST have been shown at least once.
 
 		-- In the case of first label only (no value), set the button and return.
-		if text and
+		if text and 
 			label1 and
 			not (label2 or label3 or label4
 				or value1 or value2 or value3 or value4) then
@@ -909,8 +932,8 @@ end
 --- Wrap up by (re)drawing the plugins on the Bar.
 --- Titan uses a tolerance setting to prevent endless updating of the text width.
 local function TitanPanelButton_SetComboButtonWidth(id, setButtonWidth)
-	-- TODO - ensure this routine is proper - need this param?
-	-- icon width default to .registry.iconWidth before getting the actual width
+-- TODO - ensure this routine is proper - need this param?
+-- icon width default to .registry.iconWidth before getting the actual width
 	if (id) then
 		local button = TitanUtils_GetButton(id)
 		if not button then return end -- sanity check
@@ -992,7 +1015,7 @@ function TitanPanelButton_UpdateTooltip(self)
 	if (GameTooltip:IsOwned(self)) then
 		local id = TitanUtils_GetButtonID(self:GetName());
 
-		TitanPanelButton_SetTooltip(self);
+		TitanPanelButton_SetTooltip(self, id);
 	end
 end
 
@@ -1000,7 +1023,7 @@ end
 ---@param table table | string Either {plugin id, action} OR plugin id
 ---@param oldarg string? action OR nil
 --- This is used by some plugins. It is not used within Titan.
---- Action :
+--- Action : 
 --- 1 = refresh button
 --- 2 = refresh tooltip
 --- 3 = refresh button and tooltip
@@ -1033,17 +1056,21 @@ function TitanPanelPluginHandle_OnUpdate(table, oldarg)
 				return
 			end
 
-			TitanPanelButton_SetTooltip(_G[TitanUtils_ButtonName(id)])
+			TitanPanelButton_SetTooltip(_G[TitanUtils_ButtonName(id)], id)
 		end
 	end
 end
 
 ---Titan Poorly named routine that sets the OnDragStart & OnDragStop scripts of a Titan plugin.
 ---@param id string Plugin id
-function TitanPanelDetectPluginMethod(id)
+---@param isChildButton boolean? If is child plugin
+function TitanPanelDetectPluginMethod(id, isChildButton)
 	-- Ensure the id is not nil
 	if not id then return end
 	local TitanPluginframe = _G[TitanUtils_ButtonName(id)];
+--	if isChildButton then
+--		TitanPluginframe = _G[id];
+--	end
 	-- Ensure the frame is valid
 	if not TitanPluginframe and TitanPluginframe:GetName() then return end -- sanity check...
 
@@ -1052,13 +1079,21 @@ function TitanPanelDetectPluginMethod(id)
 		if not IsShiftKeyDown()
 			and not IsControlKeyDown()
 			and not IsAltKeyDown() then
-			TitanPanelButton_OnDragStart(self);
+--			if isChildButton then
+--				TitanPanelButton_OnDragStart(self, true);
+--			else
+				TitanPanelButton_OnDragStart(self);
+--			end
 		end
 	end)
 
 	-- Set the OnDragStop script
 	TitanPluginframe:SetScript("OnDragStop", function(self)
-		TitanPanelButton_OnDragStop(self);
+--		if isChildButton then
+--			TitanPanelButton_OnDragStop(self, true)
+--		else
+			TitanPanelButton_OnDragStop(self);
+--		end
 	end)
 end
 

@@ -9,11 +9,12 @@
 ## LoadOnDemand: 1
 ## DefaultState: enabled
 
-## SavedVariables: DBM_TestResults_Export, DBM_Test_DefaultTimeWarp
+## SavedVariables: DBM_TestResults_Export, DBM_Test_DefaultTimeWarp, DBM_Test_Settings
 
 ## X-DBM-Test: true
 ## X-Part-Of: DBM-Core
 
+Options.lua
 Registry.lua
 Report.lua
 Runner.lua

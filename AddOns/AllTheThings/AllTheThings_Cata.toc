@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Crieve-Sargeras
-## Version: 4.0.15
+## Version: 4.0.18
 
 ## Title: AllTheThings |cfd9b9b9b(Cataclysm)|r
 ## Notes: Addon for Tracking Collections & Account Completion
@@ -13,8 +13,8 @@
 ## AddonCompartmentFuncOnEnter: AllTheThings_MinimapButtonOnEnter
 ## AddonCompartmentFuncOnLeave: AllTheThings_MinimapButtonOnLeave
 
-## SavedVariables: ATTCharacterData, ATTAccountWideData, AllTheThingsSavedVariables, AllTheThingsAD, AllTheThingsSettings, AllTheThingsAuctionData, AllTheThingsDebugData, ATTClassicSettings, ATTClassicAuctionData, AllTheThingsHarvestItems
-## SavedVariablesPerCharacter: AllTheThingsSettingsPerCharacter, ATTClassicSettingsPerCharacter
+## SavedVariables: ATTCharacterData, ATTAccountWideData, AllTheThingsSavedVariables, AllTheThingsAD, AllTheThingsSettings, AllTheThingsAuctionData, AllTheThingsDebugData, AllTheThingsHarvestItems
+## SavedVariablesPerCharacter: AllTheThingsSettingsPerCharacter
 
 ## X-Interface: 40400
 ## X-Wago-ID: yQKyY5K7
@@ -24,12 +24,8 @@
 src\WoW API Wrappers.lua
 
 # Raw DBs
-db\RaceDB.lua
+db\Cata\ReferenceDB.lua
 # db\Cata\ReagentsDB.lua
-# db\SkillDB.lua
-# db\FlightPathDB.lua
-db\AccountWideQuestsDB.lua
-
 # Libs (no dependencies, only app assignment)
 lib\Debugging.lua
 lib\Print.lua
@@ -69,7 +65,7 @@ src\Cache.lua
 
 # Helper Modules
 src\Modules\RetrievingData.lua
-# src\Modules\Collection.lua
+src\Modules\Collection.lua
 src\Modules\FactionData.lua
 src\Modules\Color.lua
 # src\Modules\Costs.lua
@@ -94,13 +90,13 @@ src\Classes\base.lua
 src\Classes\CharacterClass.lua
 src\Classes\Difficulty.lua
 src\Classes\Factions.lua
-# src\Classes\FlightPath.lua
 src\Classes\Quests.lua
 # src\Classes\Item.Retail.lua
 src\Classes\Item.Classic.lua
 src\Classes\Encounter.lua
 # src\Classes\Ensemble.lua
 src\Classes\Expansion.lua
+src\Classes\FlightPath.lua
 src\Classes\Maps.lua
 # src\Classes\Mount.lua
 # src\Classes\Header.lua
@@ -139,6 +135,7 @@ src\Settings\Classic Settings.xml
 classic\ATT-Classic.lua
 src\UI\Game Tooltip.lua
 src\UI\Minimap Button.lua
+src\UI\Waypoints.lua
 src\UI\World Map Button.lua
 
 # Window Logic Overhaul

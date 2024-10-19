@@ -16,9 +16,12 @@ local PIGOptionsList_R=Create.PIGOptionsList_R
 local PIGFontString=Create.PIGFontString
 local PIGFontStringBG=Create.PIGFontStringBG
 ---
-local fuFrame = PIGOptionsList(L["COMBAT_TABNAME"],"TOP")
 local CombatPlusfun={}
 addonTable.CombatPlusfun=CombatPlusfun
+
+local fuFrame,fuFrameBut = PIGOptionsList(L["COMBAT_TABNAME"],"TOP")
+CombatPlusfun.fuFrame=fuFrame
+CombatPlusfun.fuFrameBut=fuFrameBut
 --
 local DownY=30
 local RTabFrame =Create.PIGOptionsList_RF(fuFrame,DownY)
@@ -26,7 +29,7 @@ CombatPlusfun.RTabFrame=RTabFrame
 --
 --==================================
 addonTable.CombatPlus = function()
-	CombatPlusfun.biaoji()
+	CombatPlusfun.Marker()
 	CombatPlusfun.CombatTime()
 	CombatPlusfun.HPMPBar()
 	CombatPlusfun.AttackBar()

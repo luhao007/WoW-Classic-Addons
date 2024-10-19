@@ -8,7 +8,6 @@ local PIGEnter=Create.PIGEnter
 local PIGButton = Create.PIGButton
 local PIGDiyBut=Create.PIGDiyBut
 local PIGCheckbutton_R=Create.PIGCheckbutton_R
-local PIGOptionsList=Create.PIGOptionsList
 local PIGFontString=Create.PIGFontString
 local PIGModCheckbutton=Create.PIGModCheckbutton
 local PIGQuickBut=Create.PIGQuickBut
@@ -21,11 +20,11 @@ addonTable.GDKPInfo=GDKPInfo
 ------------
 local GnName,GnUI,GnIcon,FrameLevel = L["PIGaddonList"][addonName],"PigGDKP_UI",133742,50
 GDKPInfo.uidata={GnName,GnUI,GnIcon,FrameLevel}
-local fuFrame,fuFrameBut = PIGOptionsList(GnName,"EXT")
+local fuFrame,fuFrameBut,Tooltip,hidetishi = unpack(Data.Ext[L.extLsit[2]])
+hidetishi()
 GDKPInfo.fuFrame,GDKPInfo.fuFrameBut=fuFrame,fuFrameBut
 function GDKPInfo.ADD_Options()
 	local Key_fenge=Fun.Key_fenge
-	local Tooltip = "!Pig金团助手功能，包含拾取记录，快速拍卖/出价，补助/罚款记录，分G助手"
 	fuFrame.Open = PIGModCheckbutton(fuFrame,{GnName,Tooltip},{"TOPLEFT",fuFrame,"TOPLEFT",20,-20})
 	fuFrame.Open:SetScript("OnClick", function (self)
 		if self:GetChecked() then
@@ -387,10 +386,10 @@ function GDKPInfo.ADD_Options()
 		end)
 	end
 	local function jiaoyi_InfoPD_1(TName,TMoney,ItemS)
-		local Money=TMoney*0.0001
+		local NewMoney=TMoney*0.0001
 		local RRItemList = PIGA["GDKP"]["ItemList"]
 		local wupinNum = #ItemS
-		local pingjunfenG = TMoney/wupinNum
+		local pingjunfenG = NewMoney/wupinNum
 		for p=1,wupinNum do
 			local itemLink_P = ItemS[p][1]
 			local itemID_P = GetItemInfoInstant(itemLink_P) 

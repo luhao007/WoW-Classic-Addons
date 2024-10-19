@@ -5,6 +5,8 @@
 ## Title-zhCN: |cFFFFE00A<|r|cFFC79C6E战斗|r|cFFFFE00A>|r |cFFFFFFFF伤害统计|r |cFF69CCF0数据存储|r
 ## Notes-zhCN: 存储Details!的统计数据
 
+## IconTexture: Interface\AddOns\Details\images\minimap
+
 ## Dependencies: Details
 ## LoadOnDemand: 1
 ## DefaultState: Enabled

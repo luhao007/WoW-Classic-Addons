@@ -24,8 +24,9 @@ L["ABOUT_OTHERADDONS"]="Other addons by the author"
 L["ABOUT_OTHERADDON_LIST"]={
 	{"|cff00FFFF"..L.extLsit[1].."|r","|cff00ff00["..L["PIGaddonList"][L.extLsit[1]].."]|r","https://www.curseforge.com/wow/addons/pig_tardis"},
 	{"|cff00FFFF"..L.extLsit[2].."|r","|cff00ff00["..L["PIGaddonList"][L.extLsit[2]].."]|r","https://www.curseforge.com/wow/addons/pig_gdkp"},
+	{"|cff00FFFF"..L.extLsit[3].."|r","|cff00ff00["..L["PIGaddonList"][L.extLsit[3]].."]|r","https://www.curseforge.com/wow/addons/pig-farm"},
 }
-L["ABOUT_OTHERADDONS_DOWN"]="-"..COPY_NAME.." to CurseForge App to"..SEARCH.."and download"
+L["ABOUT_OTHERADDONS_DOWN"]="- "..COPY_NAME.." to your addons updater "..SEARCH.." install"
 --error
 L["ERROR_CLEAR"] = "clear";
 L["ERROR_PREVIOUS"] = "previous";

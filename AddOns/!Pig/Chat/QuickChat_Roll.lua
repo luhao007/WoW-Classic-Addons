@@ -20,8 +20,9 @@ function QuickChatfun.QuickBut_Roll()
 	fuFrame.ROLL:SetFrameStrata("LOW")
 	fuFrame.ROLL:SetPoint("LEFT",fuFrame,"LEFT",#ziframe*Width,0);
 	fuFrame.ROLL:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-	fuFrame.ROLL.Tex = fuFrame.ROLL:CreateTexture(nil, "BORDER");
+	fuFrame.ROLL.Tex = fuFrame.ROLL:CreateTexture();
 	fuFrame.ROLL.Tex:SetTexture("interface/buttons/ui-grouploot-dice-up.blp");
+	--fuFrame.ROLL.Tex:SetAtlas("charactercreate-icon-dice")
 	fuFrame.ROLL.Tex:SetPoint("CENTER",0,-1);
 	fuFrame.ROLL.Tex:SetSize(Width-8,Height-4);
 	fuFrame.ROLL:SetScript("OnMouseDown", function (self)

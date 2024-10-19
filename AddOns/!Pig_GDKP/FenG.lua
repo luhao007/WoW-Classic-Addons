@@ -359,7 +359,7 @@ function GDKPInfo.ADD_fenG(RaidR)
 	fujiF.nr.guangbo:SetScript("OnClick", function (self)
 		self.SendCD=0
 		self.liupaichupin={};
-		SendChatMessage("========收支明细========", RaidR.ChatTypes)
+		SendChatMessage("=====收支明细=====", RaidR.ChatTypes)
 		self.SendCD=self.SendCD+0.2
 		C_Timer.After(self.SendCD,function()
 			local ItemSLsit = PIGA["GDKP"]["ItemList"];
@@ -380,7 +380,7 @@ function GDKPInfo.ADD_fenG(RaidR)
 		end)
 		if PIGA["GDKP"]["Rsetting"]["liupaibobao"] then
 			self.SendCD=self.SendCD+0.3
-			C_Timer.After(self.SendCD,function() SendChatMessage("以下为流拍物品:", RaidR.ChatTypes);end)	
+			C_Timer.After(self.SendCD,function() SendChatMessage("-----流拍物品-----：", RaidR.ChatTypes);end)	
 			self.SendCD=self.SendCD+0.2
 			C_Timer.After(self.SendCD,function()
 				if #self.liupaichupin>0 then	

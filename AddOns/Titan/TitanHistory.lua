@@ -15,79 +15,54 @@ Green - 'header' - Titan or plugin
 Highlight - notes. tips. and details
 --]]
 Titan_Global.recent_changes = ""
-.. TitanUtils_GetGoldText("8.0.16 : 2024/07/22\n")
-.. TitanUtils_GetGreenText("Gold, Repair, XP : \n")
+.. TitanUtils_GetGoldText("8.0.12 : 2024/04/14\n")
+.. TitanUtils_GetGreenText("Ammo : \n")
 .. TitanUtils_GetHighlightText(""
-.. "- Gold : Fix gold display when user selects . (period) as thousands separator.\n"
-.. "- Added TitanUtils_NumToString for use in all 3.\n"
-.. "- Added TitanUtils_CashToString for use in Gold and Repair for common look of gold/silver/copper.\n"
+.. "- Fix to remove plugin error text when wand (non-ammo) weapon is equipped in Classic (Wrath or Era) .\n"
 )
-.. TitanUtils_GetGreenText("Regen : \n")
-.. TitanUtils_GetHighlightText(""
-.. "- Cleanup documentation (comments); made some routines local.\n"
-)
-.. "\n\n"
-Titan_Global.recent_changes = ""
-.. TitanUtils_GetGoldText("8.0.15 : 2024/07/14\n")
-.. TitanUtils_GetGreenText("Location : \n")
-.. TitanUtils_GetHighlightText(""
-.. "- Fix error shown when in instances.\n"
-.. "- Options same in all versions: Show Zone Text shows text or not; Show ONLY subzone removes zone text.\n"
-)
-.. TitanUtils_GetGreenText("Auto Hide (full bars) : \n")
-.. TitanUtils_GetHighlightText(""
-.. "- Fix error on clicking 'pin' to toggle auto hide.\n"
-)
-.. "\n\n"
-.. TitanUtils_GetGoldText("8.0.14 : 2024/07/12\n")
-.. TitanUtils_GetGreenText("Titan : \n")
-.. TitanUtils_GetHighlightText(""
-.. "- Updated Classic Era version to 1.15.3."
-.. "- AutoHide : Fix tooltip error; shows Enabled / Disabled.\n"
-.. "- Deprecated Titan Child template plugin code removed.\n"
-.. "- Cleanup Titan tool tip code.\n"
-.. "- Refactor Titan code to move color codes to Titan globals.\n"
-.. "- Add debug to Titan startup code.\n"
-)
-.. TitanUtils_GetGreenText("Clock, Location, Performance, Repair, Volume, XP : \n")
-.. TitanUtils_GetHighlightText(""
-.. "- Refactor code for IDE, mostly comments; some code.\n"
-.. "- Refactor code for Titan color code changes.\n"
-)
-.. "\n\n"
-.. TitanUtils_GetGoldText("8.0.13 : 2024/06/18\n")
-.. TitanUtils_GetGreenText("Titan : \n")
-.. TitanUtils_GetHighlightText(""
-.. "- Update Retail version to 10.2.7.\n"
-.. "- Unknown LDB will not print error to Chat. Remains in Config > Attempted.\n")
-.. TitanUtils_GetGreenText("Repair : \n")
-.. TitanUtils_GetHighlightText(""
-.. "- Change to not error in Beta (The War Within).\n")
-.. TitanUtils_GetGreenText("Bag : \n")
-.. TitanUtils_GetHighlightText(""
-.. "- Bag taint appears to be fixed (10.2.7). Removed nag message and reverted code.\n"
-.. "- Change to not error in Beta (The War Within).\n")
-.. TitanUtils_GetGreenText("XP : \n")
-.. TitanUtils_GetHighlightText(""
-.. "- Improve performance. Now on a 30 sec timer rather than OnUpdate. Still event driven.\n")
-.. TitanUtils_GetGreenText("Location : \n")
-.. TitanUtils_GetHighlightText(""
-.. "- Classic versions Only : Add option to put coords on Top or Bottom to prevent Cata overlap.\n")
-.. TitanUtils_GetGreenText("AutoHide : \n")
-.. TitanUtils_GetHighlightText(""
-.. "- Fix error in tooltip.\n")
-.. TitanUtils_GetGreenText("Loot : \n")
-.. TitanUtils_GetHighlightText(""
-.. "- Small cleanup.\n")
+.. TitanUtils_GetGoldText("8.0.11 : 2024/04/10\n")
 .. TitanUtils_GetGreenText("Volume : \n")
 .. TitanUtils_GetHighlightText(""
-.. "- Small cleanup.\n")
-.. "\n\n"
-.. TitanUtils_GetGoldText("8.0.12 : 2024/05/01\n")
-.. TitanUtils_GetGreenText("Titan : \n")
-.. TitanUtils_GetHighlightText(""
-.. "- TOC update for Cataclysm.\n")
-.. "\n\n"
+.. "- Double click (left) will mute / unmute. Note: tooltip will flash, not sure how to prevent that.\n"
+.. "- Icon should reflect volume % : = 0 | <= 33% | <= 66% | <= 100% .\n"
+)
+.. TitanUtils_GetGreenText("XP : \n")
+    .. TitanUtils_GetHighlightText(""
+        .. "- Do not output time played - can spam Chat.\n"
+        .. "- /played   Use this command instead to see same output.\n"
+    )
+    .. TitanUtils_GetGreenText("Config : \n")
+    .. TitanUtils_GetHighlightText(""
+        .. "- Plugins : Add to Notes <version> <category - Titan menu> <if LDB>.\n"
+        .. "- Skins : Add text to use Bars / Bars - All to change skins.\n"
+    )
+    .. TitanUtils_GetGreenText("Titan : \n")
+    .. TitanUtils_GetHighlightText(""
+        .. "- Changed annotations and comments for better documentation.\n"
+        .. "- Better handling of routines different between retail and Classic API.\n"
+        ..
+        "- Deprecated the Titan 'child' template, it has not been used in years. Template and param will be deleted in a future release.\n"
+    )
+    .. "\n\n"
+    .. TitanUtils_GetGoldText("8.0.10 : 2024/03/14\n")
+    .. TitanUtils_GetGreenText("Titan : \n")
+    .. TitanUtils_GetHighlightText(""
+        .. "- TOC update only : Classic Era to 1.15.2.\n"
+    )
+    .. "\n\n"
+    .. TitanUtils_GetGoldText("8.0.09 : 2024/03/20\n")
+    .. TitanUtils_GetGreenText("Titan : \n")
+    .. TitanUtils_GetHighlightText(""
+        .. "- TOC update only : Retail to 10.2.6; Classic Era to 1.15.1.\n"
+    )
+    .. "\n\n"
+    .. TitanUtils_GetGoldText("8.0.8 : 2024/03/08\n")
+    .. TitanUtils_GetGreenText("Location : \n")
+    .. TitanUtils_GetHighlightText(""
+        ..
+        "- Reverted change to TITAN_PANEL_MENU_CATEGORIES. Removal of this table broke a couple Titan plugins.  Sorry about that.\n"
+    )
+    .. "\n\n"
 
 --[[ Var Notes
 Use for important notes in the Titan Config About
@@ -101,5 +76,5 @@ Titan_Global.config_notes = ""
     .. "\n"
     .. TitanUtils_GetGoldText("Known Issues:\n")
     .. TitanUtils_GetHighlightText(""
-    .. "- Cata : Titan right-click menu may stay visible even if click elsewhere. Hit Esc twice. Investigating...\n"
-)
+        .. "- Titan Bag : Opening bags is still an option until taint issue is resolved.\n"
+    )

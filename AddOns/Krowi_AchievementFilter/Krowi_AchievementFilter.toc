@@ -1,12 +1,16 @@
 ## Interface: 30400
 ## Author: Krowi-Frostmane EU
-## Version: 72.5
+## Version: 73.6
 
 ## Title: Krowi's |cFF1D92C2Achievement Filter|r
 ## Notes: Filters your achievements.
 ## Title-zhCN: |cFFFFE00A<|r|cFFA9D271收藏|r|cFFFFE00A>|r |cFFFFFFFFKrowi成就过滤器|r |cFFFFE00AKrowi_AchievementFilter|r
 
 ## IconTexture: interface/icons/achievement_dungeon_heroic_gloryoftheraider
+
+## AddonCompartmentFunc: KrowiAF_OnAddonCompartmentClick
+## AddonCompartmentFuncOnEnter: KrowiAF_OnAddonCompartmentEnter
+## AddonCompartmentFuncOnLeave: KrowiAF_OnAddonCompartmentLeave
 
 ## SavedVariables: Options, SavedData, Filters, DebugTable, KrowiAF_Options, KrowiAF_SavedData, KrowiAF_Filters, KrowiAF_SearchOptions, KrowiAF_Achievements
 

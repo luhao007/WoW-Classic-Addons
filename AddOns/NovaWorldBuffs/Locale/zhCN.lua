@@ -2,7 +2,7 @@ local L = LibStub("AceLocale-3.0"):NewLocale("NovaWorldBuffs", "zhCN");
 if (not L) then
 	return;
 end
-
+--由国服[寒脊山小径]服务器“新春快乐”汉化（Simplified Chinese localization by "新春快乐" from Coldridge Pass-CN）
 --Rend buff aura name.
 L["Warchief's Blessing"] = "酋长的祝福";
 --Onyxia and Nefarian buff aura name.
@@ -10,8 +10,7 @@ L["Rallying Cry of the Dragonslayer"] = "屠龙者的咆哮";
 --Songflower buff aura name from felwood.
 L["Songflower Serenade"] = "风歌夜曲";
 L["Songflower"] = "轻歌花";
---Spirit of Zandalar.
-L["Spirit of Zandalar"] = "赞达拉之魂";
+
 L["Flask of Supreme Power"] = "超级能量合剂";
 L["Flask of the Titans"] = "泰坦合剂";
 L["Flask of Distilled Wisdom"] = "精炼智慧合剂";
@@ -20,10 +19,11 @@ L["Flask of Chromatic Resistance"] = "多重抗性合剂";
 L["Supreme Power"] = "至高能量";
 L["Distilled Wisdom"] = "萃取智慧";
 L["Chromatic Resistance"] = "多彩抗性";
-L["Sap"] = "闷棍";
-L["Fire Festival Fortitude"] = "火焰节之韧";
-L["Fire Festival Fury"] = "火焰节之怒";
-L["Ribbon Dance"] = "彩带之舞";
+L["Sap"] = "Sap";
+L["Fire Festival Fortitude"] = "Fire Festival Fortitude";
+L["Fire Festival Fury"] = "Fire Festival Fury";
+L["Ribbon Dance"] = "Ribbon Dance";
+L["Traces of Silithyst"] = "Traces of Silithyst";
 L["Slip'kik's Savvy"] = "斯里基克的机智";
 L["Fengus' Ferocity"] = "芬古斯的狂暴";
 L["Mol'dar's Moxie"] = "摩尔达的勇气";
@@ -59,21 +59,6 @@ L["NEFARIAN IS SLAIN"] = "奈法利安被杀掉了";
 --Horde Nefarian buff NPC second yell string (part of his second yell msg before before buff).
 L["Revel in his rallying cry"] = "为他的胜利而狂欢吧";
 
----===========----
----NPC's killed---
----============---
-
-L["onyxiaNpcKilledHorde"] = "伦萨克 刚刚被杀死了. (奥妮克希亚 buff NPC).";
-L["onyxiaNpcKilledAlliance"] = "玛丁雷少校 刚刚被杀死了. (奥妮克希亚 buff NPC).";
-L["nefarianNpcKilledHorde"] = "萨鲁法尔大王 刚刚被杀死了. (奈法利安 buff NPC).";
-L["nefarianNpcKilledAlliance"] = "艾法希比元帅 刚刚被杀死了 (奈法利安 buff NPC).";
-L["onyxiaNpcKilledHordeWithTimer"] = "奥妮克希亚 NPC (伦萨克) 已于 %s 前被击杀,之后没有buff记录.";
-L["nefarianNpcKilledHordeWithTimer"] = "奈法利安 NPC (萨鲁法尔大王) 已于 %s 前被击杀,之后没有buff记录.";
-L["onyxiaNpcKilledAllianceWithTimer"] = "奥妮克希亚 NPC (玛丁雷少校) 已于 %s 前被击杀,之后没有buff记录.";
-L["nefarianNpcKilledAllianceWithTimer"] = "奈法利安 NPC (艾法希比元帅) 已于 %s 前被击杀,之后没有buff记录.";
-L["anyNpcKilledWithTimer"] = "NPC 已于 %s 前被击杀"; --Map timers tooltip msg.
-
-
 ---========---
 ---Alliance---
 ---========---
@@ -94,6 +79,21 @@ L["Field Marshal Stonebridge"] = "斯托布里奇元帅";
 L["the Lord of Blackrock is slain"] = "联盟的人民们";
 --Alliance Nefarian buff NPC second yell string (part of his second yell msg before before buff).
 L["Revel in the rallying cry"] = "兴奋起来";
+
+---===========----
+---NPC's killed---
+---============---
+
+L["onyxiaNpcKilledHorde"] = "伦萨克 刚刚被杀死了. (奥妮克希亚 buff NPC).";
+L["onyxiaNpcKilledAlliance"] = "玛丁雷少校 刚刚被杀死了. (奥妮克希亚 buff NPC).";
+L["nefarianNpcKilledHorde"] = "萨鲁法尔大王 刚刚被杀死了. (奈法利安 buff NPC).";
+L["nefarianNpcKilledAlliance"] = "艾法希比元帅 刚刚被杀死了 (奈法利安 buff NPC).";
+L["onyxiaNpcKilledHordeWithTimer"] = "奥妮克希亚 NPC (伦萨克) 已于 %s 前被击杀,之后没有buff记录.";
+L["nefarianNpcKilledHordeWithTimer"] = "奈法利安 NPC (萨鲁法尔大王) 已于 %s 前被击杀,之后没有buff记录.";
+L["onyxiaNpcKilledAllianceWithTimer"] = "奥妮克希亚 NPC (玛丁雷少校) 已于 %s 前被击杀,之后没有buff记录.";
+L["nefarianNpcKilledAllianceWithTimer"] = "奈法利安 NPC (艾法希比元帅) 已于 %s 前被击杀,之后没有buff记录.";
+L["anyNpcKilledWithTimer"] = "NPC 已于 %s 前被击杀"; --Map timers tooltip msg.
+
 
 ---==============---
 ---Darkmoon Faire---
@@ -122,6 +122,7 @@ L["elwynnForest"] = "艾尔文森林";
 ---==============---
 ---Output Strings---
 ---==============---
+
 L["rend"] = "雷德·黑手"; --Rend Blackhand
 L["onyxia"] = "奥妮克希亚"; --Onyxia
 L["nefarian"] = "奈法利安"; --Nefarian
@@ -137,6 +138,10 @@ L["nefarianFirstYellMsg"] = "奈法利安Buff将于 15 秒后释放.";
 L["rendBuffDropped"] = "酋长的祝福Buff(雷德·黑手) 已经释放.";
 L["onyxiaBuffDropped"] = "屠龙者的咆哮Buff（奥妮克希亚）已经释放.";
 L["nefarianBuffDropped"] = "屠龙者的咆哮Buff（奈法利安）已经释放.";
+L["onyxiaNpcKilledHorde"] = "伦萨克 刚刚被杀死了.(奥妮克希亚 buff NPC).";
+L["onyxiaNpcKilledAlliance"] = "玛丁雷少校 刚刚被杀死了.(奥妮克希亚 buff NPC).";
+L["nefarianNpcKilledHorde"] = "萨鲁法尔大王 刚刚被杀死了.(奈法利安 buff NPC).";
+L["nefarianNpcKilledAlliance"] = "艾法希比元帅 刚刚被杀死了.(奈法利安 buff NPC).";
 L["newSongflowerReceived"] = "收到新的轻歌花计时"; --New songflower timer received
 L["songflowerPicked"] = "轻歌花在 %s 被拾取, 将于25分钟后刷新."; -- Guild msg when songflower picked.
 L["North Felpaw Village"] = "魔爪村北部"; --Felwood map subzones (flower1).
@@ -163,7 +168,7 @@ L["hourShort"] = "小时"; --Used in short timers like 1h30m (single letter only
 L["dayShort"] = "天"; --Used in short timers like 1d8h (single letter only, usually the first letter of days).
 L["startsIn"] = "将于 %s 后开始"; --"Starts in 1hour".
 L["endsIn"] = "将于 %s 后结束"; --"Ends in 1hour".
-L["versionOutOfDate"] = "您的Nova World Buffs 插件已过期,请前往 https://www.curseforge.com/wow/addons/nova-world-buffs 进行更新。";
+L["versionOutOfDate"] = "Nova World Buffs 插件已过期,请前往 https://www.curseforge.com/wow/addons/nova-world-buffs 或在 twitch 上更新.";
 L["Your Current World Buffs"] = "当前的世界Buffs";
 L["Options"] = "设置";
 
@@ -174,7 +179,9 @@ L["Begin the ritual"] = "开始仪式";
 L["The Blood God"] = "夺灵者已经被打败了"; --First Booty bay yell from Zandalarian Emissary.
 --Spirit of Zandalar buff NPC second yell string (part of his second yell msg before before buff).
 L["slayer of Hakkar"] = "向你致敬";
-L["Molthor"] = "莫托尔"; --NPC on zaldalar sland you hand in ZG head to.
+
+L["Spirit of Zandalar"] = "赞达拉之魂";
+L["Molthor"] = "莫托尔";
 L["Zandalarian Emissary"] = "赞达拉大使";
 L["Whipper Root Tuber"] = "鞭根块茎";
 L["Night Dragon's Breath"] = "夜龙之息";
@@ -194,11 +201,13 @@ L["North-West of Irontree Woods"] = "铁木森林西北部";
 L["South of Irontree Woods"] = "铁木森林南部";
 
 L["worldMapBuffsMsg"] = "输入/buffs来查看你所有的\n角色已获得的世界Buffs.";
-L["cityMapLayerMsgHorde"] = "当前位于%s\n选中奥格瑞玛的任何NPC\n来更新你的位面信息.\n（在切换地区后）|r";
-L["cityMapLayerMsgAlliance"] = "当前位于%s\n选中暴风城的任何NPC\n来更新你的位面信息.\n（在切换地区后）|r";
+L["cityMapLayerMsgHorde"] = "当前位于 %s\n选中奥格瑞玛的任何NPC\n来更新你的位面信息.\n（在切换地区后）|r";
+L["cityMapLayerMsgAlliance"] = "当前位于 %s\n选中暴风城的任何NPC\n来更新你的位面信息.\n（在切换地区后）|r";
 L["noLayerYetHorde"] = "请选定奥格瑞玛的任何NPC\n来确认你当前所在的位面.";
 L["noLayerYetAlliance"] = "请选定暴风城的任何NPC\n来确认你当前所在的位面.";
 L["Reset Data"] = "重置数据"; --A button to Reset buffs window data.
+
+---New translations to do---
 L["layerFrameMsgOne"] = "服务器重启后,以前的位面仍会显示几个小时."; --Msg at bottom of layer timers frame.
 L["layerFrameMsgTwo"] = "如果一个位面在6个小时后仍没有计时信息,则该位面将从此处消失."; --Msg at bottom of layer timers frame.
 L["You are currently on"] = "你当前位于"; --You are currently on [Layer 2]
@@ -545,6 +554,10 @@ L["flowerWarning"] = "你在开启了位面的服务器上采集了风歌花,虽
 L["mmColorTitle"] = "小地图位面信息颜色";
 L["mmColorDesc"] = "设置小地图位面信息文本(Layer 1)的颜色";
 
+L["minimapLayerHoverTitle"] = "小地图鼠标悬停";
+L["minimapLayerHoverDesc"] = "仅当将鼠标悬停在小地图上时才在小地图显示位面编号?";
+
+---new---
 L["layerHasBeenDisabled"] = "位面 %s已禁用,此位面仍在数据库中,但是将被忽略,直到你再次启用它或它被检测为是有效的.";
 L["layerHasBeenEnabled"] = "位面 %s已启用,此位面会重新显示计时器和位面计数.";
 L["layerDoesNotExist"] = "位面ID %s 在数据库中不存在.";
@@ -552,9 +565,6 @@ L["enableLayerButton"] = "启用位面";
 L["disableLayerButton"] = "禁用位面";
 L["enableLayerButtonTooltip"] = "单击以重新启用此位面.\n此位面将被重新放回计时器和位面计算中.";
 L["disableLayerButtonTooltip"] = "在服务器重启后,单击以禁用此位面.\n插件将忽略此位面并在稍后将其删除.";
-
-L["minimapLayerHoverTitle"] = "小地图鼠标悬停";
-L["minimapLayerHoverDesc"] = "仅当将鼠标悬停在小地图上时才在小地图显示位面编号?";
 
 L["Blackrock Mountain"] = "黑石山";
 
@@ -583,10 +593,10 @@ L["flashNpcKilledTitle"] = "NPC被击杀后闪烁";
 L["flashNpcKilledDesc"] = "当一个Buff NPC被击杀后,闪烁魔兽世界图标?";
 
 L["trimDataHeaderDesc"] = "清除数据";
-										 
+ 
 L["trimDataBelowLevelTitle"] = "删除的最高等级";
 L["trimDataBelowLevelDesc"] = "选择要从数据库中删除角色的最高等级, 所有已选等级和低于该等级的角色都将被删除.";
-
+ 
 L["trimDataBelowLevelButtonTitle"] = "删除角色";
 L["trimDataBelowLevelButtonDesc"] = "单击此按钮可从此插件数据库中删除具有所选等级及更低等级的所有角色. 注意: 这将永久删除Buff计数数据.";
  
@@ -620,12 +630,12 @@ L["timerWindowWidthDesc"] = "设置计时器窗口的宽度.";
 
 L["timerWindowHeightTitle"] = "计时器窗口高度";
 L["timerWindowHeightDesc"] = "设置计时器窗口的高度.";
-										   
+
 L["buffWindowWidthTitle"] = "Buff窗口宽度";
 L["buffWindowWidthDesc"] = "设置Buff窗口的宽度.";
 
 L["buffWindowHeightTitle"] = "Buff窗口高度";
-L["buffWindowHeightDesc"] = "设置Buff窗口的高度.";
+L["buffWindowHeightDesc"] = "设置Buff窗口的都高度.";
 
 L["dmfSettingsListTitle"] = "暗夜马戏团Buff列表";
 L["dmfSettingsListDesc"] = "点击显示你的小号所设置的暗夜马戏团Buff类型列表.";
@@ -645,368 +655,47 @@ L["layerMsg4"] = "在 %s 选中任何NPC以查看你当前的位面."; --Target 
 L["note"] = "注意:";
 L["dmfConfigWarning"] = "暗夜马戏团Buff现在是角色独立设置,更改Buff类型只会对此角色生效.";
 
----New---
-L["onyNpcMoving"] = "奥妮克希亚NPC开始移动了！";
-L["nefNpcMoving"] = "奈法利安NPC开始移动了！";
-
-L["buffHelpersHeaderDesc"] = "PVP服务器Buff助手";
-
-L["buffHelpersTextDesc"] = "PVP服务器Buff助手 (如果你在取得Buff设定秒数内执行其中一项操作，即触发以下行为，你可以调整以下秒数).";
-L["buffHelpersTextDesc2"] = "\n 赞达拉Buff";
-L["buffHelpersTextDesc3"] = "暗月马戏团Buff";
---L["buffHelpersTextDesc4"] = "Enter Battleground Macro (這只是阻擋他，你需要按兩下才能運作，如果你還沒有跳出，請小心不要提前按下。).\n|cFF9CD6DE/click DropDownList1Button2\n/click MiniMapBatlefieldFrame RightButton";
-																 
-L["takeTaxiZGTitle"] = "自动选择飞行目的地";
-L["takeTaxiZGDesc"] = "从藏宝海湾获取Buff后， 自动按照设置选择路线飞行。可以在获取Buff后与飞行NPC对话，也可以在获取Buff时与飞行NPC对话。|cFF00C800 (可以使用灵魂状态获取Buff，复活后与飞行NPC对话飞出藏宝海湾。)";
-
-L["takeTaxiNodeTitle"] = "飞行路线";
-L["takeTaxiNodeDesc"] = "如果启用了自动飞行路线选型，选择飞行目的地";
-			
-L["dmfVanishSummonTitle"] = "消失后召唤";
-L["dmfVanishSummonDesc"] = "盗贼: 在取得暗月Buff后，使用消失技能自动接受召唤";
-
-L["dmfFeignSummonTitle"] = "假死后召唤";
-L["dmfFeignSummonDesc"] = "猎人: 在取得暗月Buff后，使用假死技能自动接受召唤";
-			
-L["dmfCombatSummonTitle"] = "脱战后召唤";
-L["dmfCombatSummonDesc"] = "在取得暗月Buff后，脱战后自动接守召唤";
-			
-L["dmfLeaveBGTitle"] = "自动离开战场";
-L["dmfLeaveBGDesc"] = "在取得暗月Buff后自动离开战场";
-
-L["dmfGotBuffSummonTitle"] = "暗月Buff后召唤";
-L["dmfGotBuffSummonDesc"] = "在取得暗月Buff后，自动接受召唤。";
-
-L["zgGotBuffSummonTitle"] = "赞达拉Buff后召唤";
-L["zgGotBuffSummonDesc"] = "在取得赞达拉Buff后，自动接受召唤。";
-
-L["buffHelperDelayTitle"] = "设置Buff助手延迟运行时间";
-L["buffHelperDelayDesc"] = "获得世界Buff后，Buff助手应在多少秒后运行?启用该选项后，功能将只在Buff获得后起作用。";
-
-L["showNaxxWorldmapMarkersTitle"] = "世界地图显示NAXX标记";
-L["showNaxxWorldmapMarkersDesc"] = "在世界地图上显示NAXX标记";
-
-L["showNaxxMinimapMarkersTitle"] = "小地图显示NAXX标记";
-L["showNaxxMinimapMarkersDesc"] = "在小地图显示NAXX标记，在副本死亡后，显示返回NAXX方向。";
-
-L["bigWigsSupportTitle"] = "BigWigs支持";
-L["bigWigsSupportDesc"] = "安装BigWigs后，在Buff施放是显示一个类似DBM的计时条。";
-
-L["soundsNpcWalkingTitle"] = "NPC开始移动";
-L["soundsNpcWalkingDesc"] = "当奥格瑞玛的任务NPC开始移动是播放音效。";
-
-L["buffHelpersTextDesc4"] = "轻歌花Buff";
-L["songflowerGotBuffSummonTitle"] = "轻歌花后召唤";
-L["songflowerGotBuffSummonDesc"] = "在取得轻歌花Buff后，自动接受召唤。";
-
-L["buffHelpersTextDesc5"] = "龙头/雷德 Buff";
-L["cityGotBuffSummonTitle"] = "龙头/雷德 Buff后召唤";
-L["cityGotBuffSummonDesc"] = "取得黑龙/奈法/雷德Buff后，自动接受召唤。";
-
-L["heraldFoundCrossroads"] = "前方发现! 十字路口-雷德Buff將在20秒施放。";
-L["heraldFoundTimerMsg"] = "十字路口-雷德"; --DBM/Bigwigs timer bar text.
-
-L["guildNpcWalkingTitle"] = "NPC移动";
-L["guildNpcWalkingDesc"] = "当你启动NPC移动警报时，在公会频道发送信息并播放音效?(打开聊天窗口，奥格 黑龙/奈法 NPC开始移动时触发该通知。).";
-
-L["buffHelpersTextDesc6"] = "暗月马戏团帮助窗口";
-L["dmfFrameTitle"] = "暗月马戏团帮助窗口";
-L["dmfFrameDesc"] = "当你用灵魂状态接近暗月马戏团赛格时弹出窗口，解决魔兽客户端卡住问题。";
-
 L["Sheen of Zanza"] = "赞扎之光";
 L["Spirit of Zanza"] = "赞扎之魂";
 L["Swiftness of Zanza"] = "赞扎之速";
 
-L["Mind Control"] = "心灵控制";
-L["Gnomish Mind Control Cap"] = "地精洗脑帽";
+L["Mind Control"] = "精神控制";
+L["Gnomish Mind Control Cap"] = "侏儒洗脑帽";
 
+L["Flask of Fortification"] = "Flask of Fortification";
+L["Flask of Pure Death"] = "Flask of Pure Death";
+L["Flask of Relentless Assault"] = "Flask of Relentless Assault";
+L["Flask of Blinding Light"] = "Flask of Blinding Light";
+L["Flask of Mighty Restoration"] = "Flask of Mighty Restoration";
+L["Flask of Chromatic Wonder"] = "Flask of Chromatic Wonder";
+L["Fortification of Shattrath"] = "Fortification of Shattrath";
+L["Pure Death of Shattrath"] = "Pure Death of Shattrath";
+L["Relentless Assault of Shattrath"] = "Relentless Assault of Shattrath";
+L["Blinding Light of Shattrath"] = "Blinding Light of Shattrath";
+L["Mighty Restoration of Shattrath"] = "Mighty Restoration of Shattrath";
+L["Supreme Power of Shattrath"] = "Supreme Power of Shattrath";
+L["Unstable Flask of the Beast"] = "Unstable Flask of the Beast";
+L["Unstable Flask of the Sorcerer"] = "Unstable Flask of the Sorcerer";
+L["Unstable Flask of the Bandit"] = "Unstable Flask of the Bandit";
+L["Unstable Flask of the Elder"] = "Unstable Flask of the Elder";
+L["Unstable Flask of the Physician"] = "Unstable Flask of the Physician";
+L["Unstable Flask of the Soldier"] = "Unstable Flask of the Soldier";
 
-L["tbcHeaderText"] = "燃烧的远征选项";
-L["tbcNoteText"] = "注意: 所有公會提醒在TBC的鏡像下關閉。.";
+L["Chronoboon Displacer"] = "Chronoboon Displacer";
 
-L["disableSoundsAboveMaxBuffLevelTitle"] = "在64級以上關閉音效";
-L["disableSoundsAboveMaxBuffLevelDesc"] = "在於TCB領域時為63級以上角色，關閉世界增益音效?";
+L["Silithyst"] = "水晶尘";
 
-L["disableSoundsAllLevelsTitle"] = "所有級別角色關閉音效";
-L["disableSoundsAllLevelsDesc"] = "為 TBC 領域的所有級別的角色，關閉世界增益音效。";
+L["Gold"] = "Gold";
+L["level"] = "Level";
+L["realmGold"] = "Realm gold for";
+L["total"] = "Total";
+L["guild"] = "Guild";
+L["bagSlots"] = "Bag slots";
+L["durability"] = "Durability";
+L["items"] = "Items";
+L["ammunition"] = "Ammo";
+L["attunements"] = "Attunements";
+L["currentRaidLockouts"] = "Current Raid Lockouts";
+L["none"] = "None.";
 
-L["disableMiddleAboveMaxBuffLevelTitle"] = "在64級以上關閉螢幕提示";
-L["disableMiddleAboveMaxBuffLevelDesc"] = "在於TCB領域時為63級以上角色，關閉世界增益螢幕提示。";
-
-L["disableMiddleAllLevelsTitle"] = "所有級別角色關閉螢幕提示";
-L["disableMiddleAllLevelsDesc"] = "為 TBC 領域的所有級別的角色，關閉世界增益螢幕提示。";
-
-L["disableChatAboveMaxBuffLevelTitle"] = "在64級以上關閉聊天提示";
-L["disableChatAboveMaxBuffLevelDesc"] = "在於TCB領域時為63級以上角色，關閉世界增益聊天提示。";
-
-L["disableChatAllLevelsTitle"] = "所有級別角色關閉聊天提示";
-L["disableChatAllLevelsDesc"] = "為 TBC 領域的所有級別的角色，關閉世界增益聊天提醒示窗。";
-
-L["disableFlashAboveMaxBuffLevelTitle"] = "在64級以上關閉螢幕閃爍";
-L["disableFlashAboveMaxBuffLevelDesc"] = "在於TCB領域時為63級以上角色關閉螢幕閃爍。";
-
-L["disableFlashAllLevelsTitle"] = "所有級別角色關閉螢幕閃爍";
-L["disableFlashAllLevelsDesc"] = "為 TBC 領域的所有級別的角色，關閉螢幕閃爍。";
-
-L["disableLogonAboveMaxBuffLevelTitle"] = "在64級以上關閉登錄計時器 ";
-L["disableLogonAboveMaxBuffLevelDesc"] = "當您在 TBC 領域登錄 63 級以上的角色時，在聊天中關閉計時器？";
-
-L["disableLogonAllLevelsTitle"] = "所有級別角色關閉登入計時器";
-L["disableLogonAllLevelsDesc"] = "為 TBC 領域的所有級別的角色，關閉登入計時器。";
-
-L["Flask of Fortification"] = "防禦精煉藥劑";
-L["Flask of Pure Death"] = "純淨死亡精煉藥劑";
-L["Flask of Relentless Assault"] = "強襲精煉藥劑";
-L["Flask of Blinding Light"] = "盲目之光精煉藥劑";
-L["Flask of Mighty Restoration"] = "法力恢復精煉藥劑";
-L["Flask of Chromatic Wonder"] = "炫彩驚奇精煉藥劑";
-L["Fortification of Shattrath"] = "撒塔斯防禦精煉藥劑";
-L["Pure Death of Shattrath"] = "撒塔斯純淨死亡精煉藥劑";
-L["Relentless Assault of Shattrath"] = "撒塔斯強襲精煉藥劑";
-L["Blinding Light of Shattrath"] = "撒塔斯盲目之光精煉藥劑";
-L["Mighty Restoration of Shattrath"] = "撒塔斯法力恢復精煉藥劑";
-L["Supreme Power of Shattrath"] = "撒塔斯炫彩驚奇精煉藥劑";
-L["Unstable Flask of the Beast"] = "野獸的不穩定精煉藥劑";
-L["Unstable Flask of the Sorcerer"] = "巫師的不穩定精煉藥劑";
-L["Unstable Flask of the Bandit"] = "強盜的不穩定精煉藥劑";
-L["Unstable Flask of the Elder"] = "長者的不穩定精煉藥劑";
-L["Unstable Flask of the Physician"] = "醫師的不穩定精煉藥劑";
-L["Unstable Flask of the Soldier"] = "士兵的不穩定精煉藥劑";
-
-L["Chronoboon Displacer"] = "時光祝福置換器";
-
-L["Silithyst"] = "水晶塵";
-
-L["Gold"] = "金币";
-L["level"] = "等级";
-L["realmGold"] = "服务器金币 - ";
-L["total"] = "统计";
-L["guild"] = "公会";
-L["bagSlots"] = "背包栏位";
-L["durability"] = "耐久度";
-L["items"] = "物品";
-L["ammunition"] = "弹药";
-L["attunements"] = "调和";
-L["currentRaidLockouts"] = "当前副本进度";
-L["none"] = "无";
-
-
-
-L["dmfDamagePercent"] = "這個新的暗夜增益是 %s%% 傷害。";
-L["dmfDamagePercentTooltip"] = "NWB檢測到這個 %s 傷害。";
-L["guildLTitle"] = "共享公会位面"
-L["guildLDesc"] = "跟您的公会分享您在哪个位面，输入 /wb guild 指令可显示您的公会位面信息。";		
-L["terokkarTimer"] = "泰洛卡";
-L["terokkarWarning"] = "泰洛卡森林靈魂尖塔重置再 %s";
-
-L["Nazgrel"] = "納茲格雷爾";
-L["Hellfire Citadel is ours"] = "地獄火堡壘是我們的";
-L["The time for us to rise"] = "我們崛起的時刻到了";
-L["Force Commander Danath Trollbane"] = "Force Commander Danath Trollbane";
-L["The feast of corruption is no more"] = "The feast of corruption is no more";
-L["Hear me brothers"] = "Hear me brothers";
-
-L["terokkarChat10Title"] = "泰洛卡10分鐘";
-L["terokkarChat10Desc"] = "在泰洛卡靈魂尖塔還剩 10 分鐘時，在聊天視窗顯示訊息。";
-
-L["terokkarMiddle10Title"] = "泰洛卡10分鐘";
-L["terokkarMiddle10Desc"] = "在泰洛卡靈魂尖塔還剩 10 分鐘時，顯示一個團隊警告式樣的訊息在螢幕中間。";
-
-L["showShatWorldmapMarkersTitle"] = "显示每日副本标记";
-L["showShatWorldmapMarkersDesc"] = "在世界地图显示每日副本标记。"; 
-L["disableBuffTimersMaxBuffLevelTitle"] = "64級以上關閉小地圖增益計時器";
-L["disableBuffTimersMaxBuffLevelDesc"] = "是否在64級以上角色的小地圖圖標上時隱藏世界增益計時器？你只會看到泰羅卡塔的計時器和每日任務等。";
-
-L["hideMinimapBuffTimersTitle"] = "關閉所有等級的小地圖增益計時器";
-L["hideMinimapBuffTimersDesc"] = "是否在所有角色的小地圖圖標上時隱藏世界增益計時器？你只會看到泰羅卡塔的計時器和每日任務等。";
-
-L["guildTerok10Title"] = "公會計時器訊息"; 
-L["guildTerok10Desc"] = "當世界事件即將出現時，例如 TBC 的泰羅卡森林塔樓、巫妖王之怒的冬泉谷、大災變的托爾巴拉德等，向公會聊天發送一條訊息。";
-
-L["showShatWorldmapMarkersTerokTitle"] = "在薩塔斯世界地圖顯示泰洛卡計時器";
-L["showShatWorldmapMarkersTerokDesc"] = "是否在在薩塔斯世界地圖上顯示泰洛卡計時器圖標?";
-
-
-
-L["sodHeaderText"] = "探索赛季服务器选项";
-
-L["disableOnlyNefRendBelowMaxLevelTitle"] = "黑龙/奈法/雷德 Buff提示等级限制";
-L["disableOnlyNefRendBelowMaxLevelDesc"] = "低于设置等级时，将禁用主城地图上的 黑龙/奈法/雷德 Buff的小地图显示。（小地图图标只会显示位面而不显示Buff计时器）";
-
-L["disableOnlyNefRendBelowMaxLevelNumTitle"] = "黑龙/奈法/雷德 显示最低等级";
-L["disableOnlyNefRendBelowMaxLevelNumDesc"] = "低于设置等级时，将隐藏主城地图上的 黑龙/奈法/雷德 Buff的小地图显示。";
-
-L["soundsBlackfathomBoonTitle"] = "黑暗深渊的祝福音效";
-L["soundsBlackfathomBoonDesc"] = "获得黑暗深渊的祝福Buff效果时播放音效";
-
-L["soundsAshenvaleStartsSoonTitle"] = "灰谷大战即将开始音效";
-L["soundsAshenvaleStartsSoonDesc"] = "当灰谷大战即将开始时播放音效";
-
-L["blackfathomBoomBuffDropped"] = "黑暗深渊的祝福Buff效果已消失。";
-
-L["showAshenvaleOverlayTitle"] = "限时活动计时器";
-L["showAshenvaleOverlayDesc"] = "是否在界面上显示一个可移动的计时器图标？";
-
-L["lockAshenvaleOverlayTitle"] = "锁定限时活动计时器";
-L["lockAshenvaleOverlayDesc"] = "锁定计时器图标。";
-
-L["ashenvaleOverlayScaleTitle"] = "缩放限时活动计时器";
-L["ashenvaleOverlayScaleDesc"] = "设置计时器图标缩放大小。";
-
-L["ashenvaleOverlayText"] = "|cFFFFFF00-用户界面始终显示计时器图标-";
-L["layersNoteText"] = "|cFFFF6900关于探索赛季服中的位面说明:|r |cFF9CD6DE 本插件最多只能追踪10个位面，这样数据量不会太大，以便玩家间进行数据共享。在人数较多的探索赛季服务器上，位面超过了10个，因此有可能您不在10个已记录位面以内，插件将显示无位面信息。一旦赛季推出的高峰期过后，位面数量将少于10个，插件显示将恢复正常，但在此之前插件信息不可靠，对此深表歉意。|r";
-
-L["Mouseover char names for extra info"] = "鼠标指向角色名称以获取更多信息";
-L["Show Stats"] = "显示统计数据"; 
-L["Event Running"] = "活动进行中";
-
-L["Left-Click"] = "左键点击";
-L["Right-Click"] = "右键点击";
-L["Shift Left-Click"] = "Shift + 左键点击";
-L["Shift Right-Click"] = "Shift + 右键点击";
-L["Control Left-Click"] = "Ctrl + 左键点击";
-
---Try keep these roughly the same length or shorter.
-L["Guild Layers"] = "公会位面";
-L["Timers"] = "计时器";
-L["Buffs"] = "Buff效果";
-L["Felwood Map"] = "费伍德森林";
-L["Config"] = "设置";
-L["Resources"] = "资源"; 
-L["Layer"] = "位面";
-L["Layer Map"] = "地图位面";
-L["Rend Log"] = "切换日志";
-L["Timer Log"] = "计时器记录";
-L["Copy/Paste"] = "复制/粘贴";
-L["Ashenvale PvP Event Resources"] = "灰谷 PvP 活动资源";
-L["All other alts using default"] = "所有其他角色使用默认设置";
-L["Chronoboon CD"] = "时光祝福置换器冷却时间"; 
-L["All"] = "全部"; 
-L["Old Data"] = "过期数据";
-L["Ashenvale data is old"] = "灰谷数据过期";
-L["Ashenvale"] = "灰谷大战";
-L["Ashenvale Towers"] = "灰谷首领";
-L["Warning"] = "警告";
-L["Refresh"] = "刷新";
-L["PvP enabled"] = "PVP已启用";
-L["Hold Shift to drag"] = "按住 Shift 键拖拽";
-L["Hold to drag"] = "按住拖拽";
-
-L["Can't find current layer or no timers active for this layer."] = "未发现位面或此位面未启用计时器。";
-L["No guild members online sharing layer data found."] = "找不到公会成员分享的位面信息。";
-
-L["ashenvaleOverlayFontTitle"] = "字体设置";
-L["ashenvaleOverlayFontDesc"] = "设置您要显示的字体。";
-
-L["minimapLayerFontTitle"] = "小地图位面字体";
-L["minimapLayerFontDesc"] = "选择小地图位面要显示的字体。";
-
-L["minimapLayerFontSizeTitle"] = "小地图位面文字大小";
-L["minimapLayerFontSizeDesc"] = "选择小地图位面文字的字体大小。";
-
-L["zone"] = "区域";
-L["zones mapped"] = "绘制位面";
-L["Layer Mapping for"] = "位面绘制于";
-L["formatForDiscord"] = "将文字可以复制黏贴到Discord中。（可添加颜色等）";
-L["Copy Frame"] = "复制框架";
-L["Show how many times you got each buff."] = "显示您获得每个Buff效果的次数。";
-L["Show all alts that have buff stats? (stats must be enabled)."] = "显示所有获得Buff效果角色的统计数据。（必须启用统计数据设置）";
-L["No timer logs found."] = "未找到计时器记录";
-L["Merge Layers"] = "合并位面";
-L["mergeLayersTooltip"] = "如果多个位面的计时器相同，将合并到[所有位面]中，而非单独显示。";
-L["Ready"] = "准备就绪";
-L["Chronoboon"] = "时光祝福置换器";
-L["Local Time"] = "本地时间";
-L["Server Time"] = "服务器时间";
-L["12 hour"] = "12 小时";
-L["24 hour"] = "24 小时";
-L["Alliance"] = "联盟";
-L["Horde"] = "部落";
-L["No Layer"] = "无位面";
-L["No data yet."] = "尚无数据。";
-L["Ashenvale Resources"] = "灰谷数据";
-L["No character specific buffs set yet."] = "无角色特定Buff效果设置。";
-L["All characters are using default"] = "所有角色使用默认设置";
-L["Orgrimmar"] = "奥格瑞玛";
-L["Stormwind"] = "暴风城";
-L["Dalaran"] = "达拉然";
-L["left"] = "剩余";  --Same as remaining basically.
-L["remaining"] = "剩余";
-
-L["Online"] = "在线";
-L["Offline"] = "离线";
-L["Rested"] = "已休息";
-L["Not Rested"] = "未休息";
-L["No zones mapped for this layer yet."] = "此位面无区域绘制信息。";
-L["Cooldown"] = "冷却时间";
-L["dmfLogonBuffResetMsg"] = "这些角色已在休息区域离线8小时以上，黑暗之门Buff效果冷却时间已重置";
-L["dmfOfflineStatusTooltip"] = "暗月马戏团Buff离线休息状态冷却时间已达到8小时";
-L["chronoboonReleased"] = "您已使用时间祝福置换器释放了一个黑暗之门Buff，新的4小时冷却计时已开始。";
-
-L["Stranglethorn"] = "血月活动"; 
-L["ashenvaleEventRunning"] = "灰谷大战正在进行：%s";
-L["ashenvaleEventStartsIn"] = "灰谷大战将在 %s 后开始";
-L["ashenvaleStartSoon"] = "灰谷大战将在 %s 后开始"; 
-L["stranglethornEventRunning"] = "血月活动正在进行：%s";
-L["stranglethornEventStartsIn"] = "血月活动将在 %s 后开始";
-L["stranglethornStartSoon"] = "血月活动将在 %s 后开始"; 
-L["Spark of Inspiration"] = "癫狂灵感火花"; 
-L["specificBuffDropped"] = "%s 增益效果已掉落。";
-L["3 day raid reset"] = "3天后团本重置";
-L["Darkmoon Faire is up"] = "黑暗之门正在进行中";
-L["dmfAbbreviation"] = "暗月马戏团";
-L["Ashenvale PvP Event"] = "灰谷大战 PvP 活动";
-L["Stranglethorn PvP Event"] = "血月 PvP 活动";
-
-L["overlayShowArtTitle"] = "显示浮动计时器图标";
-L["overlayShowArtDesc"] = "显示浮动计时器图标？";
-
-L["overlayShowAshenvaleTitle"] = "显示灰谷大战图标";
-L["overlayShowAshenvaleDesc"] = "显示灰谷大战计时器？";
-
-L["overlayShowStranglethornTitle"] = "显示血月活动计时器图标";
-L["overlayShowStranglethornDesc"] = "显示血月活动计时器图标？";
-
-L["sodMiddleScreenWarningTitle"] = "显示屏幕居中警报";
-L["sodMiddleScreenWarningDesc"] = "在屏幕中间显示一个 15/30 分钟的警告，提醒您类似血月这类探索赛季活动即将开始。";
-
-L["stvBossMarkerTooltip"] = "NWB Boss标记（实验性）";
-L["Boss"] = "Boss"; 
-L["stvBossSpotted"] = "發現了 Loa 首領！請查看地圖以獲取位置。";
-L["Total coins this event"] = "此活动的硬币总数"; 
-L["Last seen"] = "上次看见";
-L["World Events"] = "世界事件";
-L["layersNoGuild"] = "您未加入公会，无法显示公会成员信息。";
-
-L["No guild"] = "无公会";
-
-L["Temple of Atal'Hakkar"] = "阿塔哈卡神庙"; 
-
-L["cappingSupportTitle"] = "Capping插件支持";
-L["cappingSupportDesc"] = "如果安装了Capping插件功能，是否为灰谷大战/血月活动显示计时条？";
-
-L["Tol Barad"] = "托尔巴拉德";
-L["eventIsRunning"] = "%s 活动进行中";
-L["Blackrock"] = "黑石大爆发";
-L["blackrockEventRunning"] = "黑石大爆发正在进行: %s";
-L["blackrockEventStartsIn"] = "黑石大爆发开始时间 %s";
-L["blackrockStartSoon"] = "黑石大爆发将在 %s 后开始"; --Guild chat msg.
-L["Blackrock PvP Event"] = "黑石大爆发 PVP 活动";
-L["Total honor this event"] = "活动总计获得荣誉";
-
-L["Might of Stormwind"] = "暴风城的力量";
-
-L["printStvCoinsTitle"] = "显示血月币数量";
-L["printStvCoinsDesc"] = "是否在血月活动开始后，在聊天窗口输出获取的血月币数量？";
-
-L["printBlackrockHonorTitle"] = "显示黑石大爆发荣誉数";
-L["printBlackrockHonorDesc"] = "是否在黑石大爆发活动开始后，在聊天窗口显示获取的荣誉数量？";
-
-L["chatOnlyInCityTitle"] = "是否只在主城提示";
-L["chatOnlyInCityDesc"] = "只有当您在掉落 Buff 的主城时，才会输出计时器和 Buff 掉落聊天信息（赞达拉 BUFF 的 荆棘谷也包括在内）";
-
-L["middleOnlyInCityTitle"] = "是否只在主城提示";
-L["middleOnlyInCityDesc"] = "只有当您在掉落 Buff 的主城时，才会显示屏幕中央计时器信息（赞达拉 BUFF 的 荆棘谷也包括在内）";
-
-L["flashOnlyInCityTitle"] = "是否只在主城闪烁";
-L["flashOnlyInCityDesc"] = "只有当您在掉落 Buff 的主城时，才会进行最小化闪烁（赞达拉 BUFF 的 荆棘谷也包括在内）";														   
+L["Temple of Atal'Hakkar"] = "阿塔哈卡神庙";

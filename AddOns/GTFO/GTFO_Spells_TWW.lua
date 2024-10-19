@@ -108,6 +108,30 @@ GTFO.SpellID["452261"] = {
   sound = 1;
 };
 
+GTFO.SpellID["446843"] = {
+  --desc = "Darkness Outburst (The Oozekhan)";
+  ignoreApplication = true;
+  sound = 1;
+};
+
+GTFO.SpellID["453876"] = {
+  --desc = "Militant Green (Grand Overspinner Antourix)";
+  ignoreApplication = true;
+  sound = 1;
+};
+
+GTFO.SpellID["449770"] = {
+  --desc = "Worm Bile (Magma Serpent)";
+  ignoreApplication = true;
+  sound = 1;
+};
+
+GTFO.SpellID["458799"] = {
+  --desc = "Overcharged Earth (Kordac)";
+  ignoreApplication = true;
+  sound = 1;
+};
+
 --- ****************************
 --- * Ara-Kara, City of Echoes *
 --- ****************************
@@ -226,6 +250,12 @@ GTFO.SpellID["462439"] = {
   sound = 1;
 };
 
+GTFO.SpellID["461825"] = {
+  --desc = "Black Blood (The Coaglamation)";
+  sound = 1;
+};
+
+
 --- *******************
 --- * Darkflame Cleft *
 --- *******************
@@ -327,12 +357,18 @@ GTFO.SpellID["434096"] = {
   sound = 1;
 };
 
--- 
-GTFO.SpellID["453310"] = {
+GTFO.SpellID["453214"] = {
   --desc = "Obsidian Beam (Speaker Shadowcrown)";
+  applicationOnly = true;
   sound = 1;
-  test = true; -- Verify
 };
+
+GTFO.SpellID["453173"] = {
+  --desc = "Collapsing Night (Speaker Shadowcrown)";
+  sound = 1;
+  ignoreApplication = true;
+};
+
 
 --- ***************
 --- * The Rookery *
@@ -567,6 +603,22 @@ GTFO.SpellID["414523"] = {
   sound = 1;
 };
 
+GTFO.SpellID["452041"] = {
+  --desc = "Grimweave Orb (Ascended Webfriar)";
+  sound = 1;
+};
+
+GTFO.SpellID["440939"] = {
+  --desc = "Frost Grip (Researcher Xik'vik)";
+  sound = 1;
+};
+
+GTFO.SpellID["453152"] = {
+  --desc = "Gossamer Webbing (Web Marauder)";
+  sound = 1;
+};
+
+
 --- *******************
 --- * Nerub-ar Palace *
 --- *******************
@@ -691,6 +743,17 @@ GTFO.SpellID["445818"] = {
   applicationOnly = true;
   sound = 1;
 };
+
+GTFO.SpellID["462252"] = {
+  --desc = "Volatile Eruption (Volatile Black Blood Pool)";
+  sound = 1;
+};
+
+GTFO.SpellID["446253"] = {
+  --desc = "Slime Trail (Congealed Mass)";
+  sound = 1;
+};
+
 
 end
 

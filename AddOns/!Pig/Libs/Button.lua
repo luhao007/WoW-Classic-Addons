@@ -1,4 +1,5 @@
 local addonName, addonTable = ...;
+local _, _, _, tocversion = GetBuildInfo()
 local L=addonTable.locale
 local Create = addonTable.Create
 local FontUrl=Create.FontUrl
@@ -29,8 +30,15 @@ end
 local function add_Button(MODE,fuF,Point,WH,Text,UIName,id,TemplateP,Zihao)
 	local But
 	if MODE then
-		But = CreateFrame("Button",UIName,fuF, "UIPanelButtonTemplate",id);
+		local Templatepig= "UIPanelButtonTemplate"
+		-- if tocversion>110000 then
+		-- 	Templatepig= "SharedButtonTemplate"
+		-- end
+		But = CreateFrame("Button",UIName,fuF,Templatepig ,id);
+		
 		But:SetText(Text);
+		local buttonFont=But:GetFontString()
+		But.Text=buttonFont
 		function But:PIGHighlight()
 			self.Highlight = self:CreateTexture(nil, "OVERLAY");
 			self.Highlight:SetTexture(130724);

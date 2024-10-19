@@ -1,10 +1,16 @@
-## Interface: 11504
-## Title:|cffffe00a<|r|cffff7d0aDBM Tests|r|cffffe00a>|r |cff69ccf0Tests for Dungeon mods|r
+## Interface: 30400
+
+## Title: |cffffe00a<|r|cffff7d0aDBM Tests|r|cffffe00a>|r |cff69ccf0Tests for Dungeon mods|r
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFF69CCF0测试功能|r |cFF22B14C地下城|r
+
 ## IconTexture: Interface/AddOns/DBM-Core/textures/dbm_airhorn
+
 ## Dependencies: DBM-Test
-## DefaultState: enabled
 ## LoadOnDemand: 1
+## DefaultState: enabled
+
 ## X-DBM-Test: true
+## X-Part-Of: DBM-Core
 
 Vanilla/DemonFallCanyon/Grimroot.lua
 Vanilla/DemonFallCanyon/DestructorsWraith.lua

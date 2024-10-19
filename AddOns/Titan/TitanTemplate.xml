@@ -19,6 +19,22 @@
 			</OnLeave>
 		</Scripts>
 	</Button>
+	<Button name="TitanPanelChildButtonTemplate" hidden="true" virtual="true">
+		<Scripts>
+			<OnLoad>
+				TitanPanelButton_OnLoad(self, true);
+			</OnLoad>
+			<OnClick>
+				TitanPanelButton_OnClick(self, button, true);
+			</OnClick>
+			<OnEnter>
+				TitanPanelButton_OnEnter(self, true);
+			</OnEnter>
+			<OnLeave>
+				TitanPanelButton_OnLeave(self, true);
+			</OnLeave>
+		</Scripts>
+	</Button>
 	<Button name="TitanPanelTextTemplate" inherits="TitanPanelButtonTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="0" y="16" />

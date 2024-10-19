@@ -55,6 +55,12 @@ local function defaultComparison(a,b)
 		return a < b;
 	end
 	local acomp, bcomp;
+	-- SortPriority
+	acomp = a.SortPriority or 0
+	bcomp = b.SortPriority or 0
+	if acomp ~= 0 or bcomp ~= 0 then
+		return acomp < bcomp
+	end
 	-- Maps
 	acomp = a.mapID;
 	bcomp = b.mapID;

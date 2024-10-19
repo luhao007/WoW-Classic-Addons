@@ -199,6 +199,47 @@ if GetLocale() == "zhCN" then
 	-- ChatF.SetFrame.GuolvNULL=PIGFrame(ChatF.SetFrame)
 end
 --输入框光标优化
+local function ChatFrame_Althistory_Open()
+	local ChatHistory = {}
+	local ChatHistoryIndex = 0
+	for i = 1, NUM_CHAT_WINDOWS do
+		local ChatFrame=_G["ChatFrame"..i.."EditBox"]
+		hooksecurefunc(ChatFrame, "AddHistoryLine", function(self, msg)
+			if ChatFrame:GetAltArrowKeyMode() then return end
+			if #ChatHistory>19 then
+				for ix=#ChatHistory,20,-1 do
+					table.remove(ChatHistory,ix)
+				end
+			end
+			table.insert(ChatHistory,1,msg)
+		end)
+		ChatFrame:HookScript("OnShow",function()
+			if ChatFrame:GetAltArrowKeyMode() then return end
+			ChatHistoryIndex = 0
+		end)	
+		ChatFrame:HookScript("OnKeyDown",function(self,key)
+			if key=="UP" or key=="DOWN" then
+				if #ChatHistory==0 then return end
+				if key=="UP" then
+					if ChatHistoryIndex<#ChatHistory then
+						ChatHistoryIndex=ChatHistoryIndex+1
+					else
+						ChatHistoryIndex=1
+					end
+				elseif key=="DOWN" then
+					if ChatHistoryIndex>1 then
+						ChatHistoryIndex=ChatHistoryIndex-1
+					else
+						ChatHistoryIndex = #ChatHistory
+					end
+				end
+				self:SetText(ChatHistory[ChatHistoryIndex])
+	        	--self:HighlightText()
+			end
+		end)
+	end
+end
+ChatFrame_Althistory_Open()
 local function ChatFrame_AltEX_Open(onoff)
 	local onoff = onoff or PIGA["Chat"]["AltEX"]
 	if onoff then
@@ -225,45 +266,7 @@ ChatF.SetFrame.AltEX:SetScript("OnClick", function (self)
 	end
 	ChatFrame_AltEX_Open(PIGA["Chat"]["AltEX"]);
 end);
--- local function ChatFrame_Althistory_Open(onoff)
--- 	-- local onoff = onoff or PIGA["Chat"]["AltEX"]
--- 	-- if onoff then
--- 	-- 	if ChatFrame1EditBox:GetAltArrowKeyMode() then
--- 	-- 		for i = 1, NUM_CHAT_WINDOWS do
--- 	-- 			_G["ChatFrame"..i.."EditBox"]:SetAltArrowKeyMode(false) --false只按方向键即可控制输入框光标 
--- 	-- 		end
--- 	-- 	end
--- 	-- else
--- 	-- 	if not ChatFrame1EditBox:GetAltArrowKeyMode() then
--- 	-- 		for i = 1, NUM_CHAT_WINDOWS do
--- 	-- 			_G["ChatFrame"..i.."EditBox"]:SetAltArrowKeyMode(true) --
--- 	-- 		end
--- 	-- 	end
--- 	-- end
--- 	-- ChatFrame1EditBox:HookScript("OnArrowPressed", function (self, key)
--- 	-- 	print(self, key)
--- 	-- 	--local autoComplete = AutoCompleteBox;
--- 	-- 	--if ( autoComplete:IsShown() and autoComplete.parent == self ) then
--- 	-- 	--local selectedIndex = AutoComplete_GetSelectedIndex(autoComplete);
--- 	-- 	--local numReturns = AutoComplete_GetNumResults(autoComplete);
--- 	-- 	local numHistoryLines = self:GetHistoryLines()
--- 	-- 	print(numHistoryLines)
--- 	-- 	--print(numReturns)
--- 	-- 	--AutoComplete_IncrementSelection(self, key)
--- 	-- --end
--- 	-- end);
--- end
--- ChatFrame_Althistory_Open(onoff)
--- -------------------
--- ChatF.SetFrame.Althistory = PIGCheckbutton_R(ChatF.SetFrame,{"免ALT查看输入记录","免ALT查看输入记录"})
--- ChatF.SetFrame.Althistory:SetScript("OnClick", function (self)
--- 	if self:GetChecked() then
--- 		PIGA["Chat"]["Althistory"]=true;	
--- 	else
--- 		PIGA["Chat"]["Althistory"]=false;
--- 	end
--- 	ChatFrame_Althistory_Open(PIGA["Chat"]["Althistory"]);
--- end);
+
 --移除聊天文字渐隐
 local function ChatFrame_Jianyin_Open()
 	if PIGA["Chat"]["Jianyin"] then
@@ -563,7 +566,7 @@ local function WhoWhisper_Fun()
 	if WhoFrame.endsenList then return end
 	WhoFrame.endsenList={}
 	WhoFrame.endsenmsg="随机黑石深渊，来吗？"
-	WhoFrame.senmsg = PIGButton(WhoFrame,{"TOPLEFT",WhoFrame,"TOPLEFT",60,-26},{60,26},"密语",nil,nil,nil,nil,0);
+	WhoFrame.senmsg = PIGButton(WhoFrame,{"TOPLEFT",WhoFrame,"TOPLEFT",160,-26},{60,26},"密语",nil,nil,nil,nil,0);
 	WhoFrame.senmsg:Disable();
 	WhoFrame.senmsg:HookScript("OnClick", function(self, button)
 		if WhoFrame.selectedWho then
@@ -582,7 +585,20 @@ local function WhoWhisper_Fun()
 			self.F:Show()
 		end
 	end);
-
+	WhoFrame.senmsg.listUpdate=function(button)
+		if button.senmsgFun then return end
+		button:HookScript("OnClick", function(self)
+			if WhoFrame.selectedWho then
+				local NameText = self.Name or self:GetName() and _G[self:GetName().."Name"]:GetText()
+				if WhoFrame.endsenList[NameText] then	
+					WhoFrame.senmsg:Disable()
+				else
+					WhoFrame.senmsg:Enable()
+				end
+			end
+		end)
+		button.senmsgFun=true
+	end
 	WhoFrame.senmsg.bianji.F=PIGFrame(WhoFrame.senmsg.bianji,{"TOPLEFT",WhoFrame.senmsg.bianji,"TOPRIGHT",4,0},{300,200})
 	WhoFrame.senmsg.bianji.F:PIGSetBackdrop(1)
 	WhoFrame.senmsg.bianji.F:PIGClose()

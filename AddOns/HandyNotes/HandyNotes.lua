@@ -200,7 +200,6 @@ or {
 	[876] = true, -- Kul Tiras
 	[1550] = true, -- Shadowlands
 	[1978] = true, -- Dragon Isles
-	[2274] = true, -- Khaz Algar
 
 	-- mapFile compat entries
 	["Kalimdor"]              = 12,

@@ -15,52 +15,24 @@ local cooldowns = {}
 local Cooldown = {}
 
 -- queries
-local IsGlobalCooldown, GetGCDTimeRemaining
-
-if C_Spell and type(C_Spell.GetSpellCooldown) == "function" then
-    IsGlobalCooldown = function (start, duration)
-        if start == 0 or duration == 0 then
-            return false
-        end
-
-        local gcd = C_Spell.GetSpellCooldown(GCD_SPELL_ID)
-
-        return gcd and start == gcd.startTime and duration == gcd.duration
+local function IsGlobalCooldown(start, duration)
+    if start == 0 or duration == 0 then
+        return false
     end
 
-    GetGCDTimeRemaining = function()
-        local gcd = C_Spell.GetSpellCooldown(GCD_SPELL_ID)
+    local gcdStart, gcdDuration = GetSpellCooldown(GCD_SPELL_ID)
 
-        if not gcd then
-            return 0
-        end
+    return start == gcdStart and duration == gcdDuration
+end
 
-        if gcd.startTime == 0 or gcd.duration == 0 then
-            return 0
-        end
+local function GetGCDTimeRemaining()
+    local start, duration = GetSpellCooldown(GCD_SPELL_ID)
 
-        return (gcd.startTime + gcd.duration) - GetTime()
-    end
-else
-    IsGlobalCooldown = function (start, duration)
-        if start == 0 or duration == 0 then
-            return false
-        end
-
-        local gcdStart, gcdDuration = GetSpellCooldown(GCD_SPELL_ID)
-
-        return start == gcdStart and duration == gcdDuration
+    if start == 0 or duration == 0 then
+        return 0
     end
 
-    GetGCDTimeRemaining = function()
-        local start, duration = GetSpellCooldown(GCD_SPELL_ID)
-
-        if start == 0 or duration == 0 then
-            return 0
-        end
-
-        return (start + duration) - GetTime()
-    end
+    return (start + duration) - GetTime()
 end
 
 function Cooldown:CanShowText()
@@ -253,7 +225,7 @@ function Cooldown:HideText()
 end
 
 function Cooldown:UpdateText()
-    if self._occ_show and (not self:IsForbidden()) and self:IsVisible() then
+    if self._occ_show and self:IsVisible() then
         Cooldown.ShowText(self)
     else
         Cooldown.HideText(self)

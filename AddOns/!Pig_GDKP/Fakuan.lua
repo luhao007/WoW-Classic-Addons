@@ -370,7 +370,7 @@ function GDKPInfo.ADD_Fakuan(RaidR)
 		PIGCloseDropDownMenus()
 	end
 
-	fujiF.fakuan.SaveBut = PIGButton(fujiF.fakuan,{"RIGHT",fujiF.fakuan.daoruBut,"LEFT",-10,0},{60,22},"保存");
+	fujiF.fakuan.SaveBut = PIGButton(fujiF.fakuan,{"RIGHT",fujiF.fakuan.daoruBut,"LEFT",-10,0},{106,22},"保存罚款设置");
 	fujiF.fakuan.SaveBut:SetScript("OnClick", function (self)
 		if self.F:IsShown() then
 			self.F:Hide();
@@ -379,7 +379,6 @@ function GDKPInfo.ADD_Fakuan(RaidR)
 			self.F:Show();
 		end
 	end);
-	fujiF.fakuan.SaveButT = PIGFontString(fujiF.fakuan,{"RIGHT",fujiF.fakuan.SaveBut,"LEFT",-8,0},"罚款配置");
 
 	fujiF.fakuan.SaveBut.F = PIGFrame(fujiF.fakuan.SaveBut,{"TOPLEFT",fujiF.fakuan,"TOPLEFT",80,-34});
 	fujiF.fakuan.SaveBut.F:SetPoint("BOTTOMRIGHT",fujiF.fakuan,"BOTTOMRIGHT",-6,36);

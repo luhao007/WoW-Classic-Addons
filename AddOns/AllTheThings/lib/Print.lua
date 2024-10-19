@@ -1,8 +1,8 @@
 -- Chat and Print functionality
-local _, app = ...;
+local appName, app = ...;
 
-local print
-	= print
+local print, tostring, ipairs, pairs, type
+	= print, tostring, ipairs, pairs, type
 
 app.print = function(...)
 	print(app.L.SHORTTITLE, ...);
@@ -12,6 +12,10 @@ app.report = function(...)
 		app.print(...);
 	end
 	app.print(app.Version..": "..app.L.PLEASE_REPORT_MESSAGE);
+end
+app.PrintMemoryUsage = function(...)
+	UpdateAddOnMemoryUsage();
+	app.print(... or "Memory", GetAddOnMemoryUsage(appName));
 end
 -- Consolidated debug-only print with preceding precise timestamp
 local GetTimePreciseSec = GetTimePreciseSec;
@@ -32,6 +36,23 @@ app.PrintDebugPrior = function(...)
 		end
 		DEBUG_PRINT_LAST = GetTimePreciseSec();
 	end
+end
+app.PrintGroup = function(group,depth)
+	depth = depth or 0;
+	if group then
+		local p = "";
+		for i=0,depth,1 do
+			p = p .. "-";
+		end
+		p = p .. tostring(group.key or group.text) .. ":" .. tostring(group[group.key or "NIL"]);
+		print(p);
+		if group.g then
+			for i,sg in ipairs(group.g) do
+				app.PrintGroup(sg,depth + 1);
+			end
+		end
+	end
+	print("---")
 end
 app.PrintTable = function(t,depth)
 	-- only allowing table prints when Debug print is active

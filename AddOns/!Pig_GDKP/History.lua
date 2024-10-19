@@ -29,12 +29,22 @@ function GDKPInfo.ADD_History(RaidR)
 	History:PIGClose()
 	History:SetFrameLevel(FrameLevel+33)
 	History:Hide()
-	function RaidR.ShowHideHistory()
+	function RaidR.ShowHideHistory(self)
+		if not History.yizhuce then History.zhuceshijian(self) end
 		if History:IsShown() then
 			History:Hide()
 		else
 			History:Show()
 		end
+	end
+	function History.zhuceshijian(self)
+		History:HookScript("OnShow", function ()
+			self:Selected()
+		end);
+		History:HookScript("OnHide", function ()
+			self:NotSelected()
+		end);
+		History.yizhuce=true
 	end
 	-------------
 	History.xuanzhongID=0;

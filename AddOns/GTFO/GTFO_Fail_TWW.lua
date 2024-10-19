@@ -329,6 +329,52 @@ GTFO.SpellID["453192"] = {
   sound = 3;
 };
 
+GTFO.SpellID["450863"] = {
+  --desc = "Rupturing Runes (Orta)";
+  applicationOnly = true;
+  sound = 3;
+};
+
+GTFO.SpellID["450407"] = {
+  --desc = "Colossal Slam (Orta)";
+  sound = 3;
+};
+
+GTFO.SpellID["455878"] = {
+  --desc = "Reformation Nova (The Oozekhan)";
+  sound = 3;
+};
+
+GTFO.SpellID["456329"] = {
+  --desc = "Grimweave Bombardment (Harvester Qixt)";
+  sound = 3;
+};
+
+GTFO.SpellID["448351"] = {
+  --desc = "Stomp! (Wicktwister Kobold)";
+  sound = 3;
+};
+
+GTFO.SpellID["442725"] = {
+  --desc = "Furnace Blast";
+  sound = 3;
+};
+
+GTFO.SpellID["458433"] = {
+  --desc = "Arcane Bombardment (Kordac)";
+  sound = 3;
+};
+
+GTFO.SpellID["458220"] = {
+  --desc = "Overcharged Lasers (Kordac)";
+  sound = 3;
+};
+
+GTFO.SpellID["440378"] = {
+  --desc = "Sporefused Explosion";
+  sound = 3;
+};
+
 --- ****************************
 --- * Ara-Kara, City of Echoes *
 --- ****************************
@@ -417,7 +463,6 @@ GTFO.SpellID["435000"] = {
 GTFO.SpellID["434707"] = {
   --desc = "Cinderbrew Toss (Tasting Room Attendant)";
   sound = 3;
-  test = true; -- Unknown if this is avoidable
 };
 
 GTFO.SpellID["432198"] = {
@@ -469,7 +514,6 @@ GTFO.SpellID["435788"] = {
 --- * City of Threads *
 --- *******************
 
--- TODO: Shadows of Doubt (Orator Krix'vizk) - Mythic
 -- TODO: Slime Propagation (Orator Krix'vizk) - Mythic
 -- TODO: Gutburst (Izo - Ravenous Scarab) - Mythic
 
@@ -480,8 +524,20 @@ GTFO.SpellID["443438"] = {
   applicationOnly = true;
 };
 
+GTFO.SpellID["448561"] = {
+  --desc = "Shadows of Doubt (Orator Krix'vizk)";
+  applicationOnly = true;
+  sound = 3;
+};
+
 GTFO.SpellID["450783"] = {
   --desc = "Perfume Toss (Xeph'itik)";
+  sound = 3;
+  applicationOnly = true;
+};
+
+GTFO.SpellID["451426"] = {
+  --desc = "Gossamer Barrage (Xeph'itik)";
   sound = 3;
   applicationOnly = true;
 };
@@ -1577,8 +1633,35 @@ GTFO.SpellID["450034"] = {
   sound = 3;
 };
 
+GTFO.SpellID["471445"] = {
+  --desc = "Expulsion Beam (Chamber Expeller)";
+  sound = 3;
+};
+
 GTFO.SpellID["453264"] = {
   --desc = "Rain of Arrows (Sikran)";
+  sound = 3;
+};
+
+GTFO.SpellID["446351"] = {
+  --desc = "Web Eruption (Broodtwister Ovi'nax)";
+  sound = 4;
+  applicationOnly = true;
+};
+
+GTFO.SpellID["442257"] = {
+  --desc = "Infest (Blood Parasite)";
+  applicationOnly = true;
+  sound = 3;
+};
+
+GTFO.SpellID["439408"] = {
+  --desc = "Dark Viscera (Nexus-Princess Ky'veza)";
+  sound = 3;
+};
+
+GTFO.SpellID["442495"] = {
+  --desc = "Eclipse (Nexus-Princess Ky'veza)";
   sound = 3;
 };
 

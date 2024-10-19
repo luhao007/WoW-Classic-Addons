@@ -5,7 +5,6 @@ if not C_TransmogSets then
 	app.CreateGearSet = app.CreateUnimplementedClass("GearSet", "setID");
 	app.CreateGearSetHeader = app.CreateUnimplementedClass("GearSetHeader", "gearSetHeaderID");
 	app.CreateGearSetSubHeader = app.CreateUnimplementedClass("GearSetSubHeader", "gearSetSubHeaderID");
-	app.BuildGearSetInformationForGroup = app.EmptyFunction;
 	return
 end
 
@@ -19,7 +18,7 @@ local ipairs, select, tinsert, tonumber, type, GetAchievementInfo, GetAchievemen
 	---@diagnostic disable-next-line: deprecated
 	= ipairs, select, tinsert, tonumber, type, GetAchievementInfo, GetAchievementLink,
 		C_TransmogCollection.GetSourceInfo, C_TransmogSets.GetSetInfo, C_TransmogSets.GetAllSourceIDs;
-	
+
 -- Gear Sets
 app.CreateGearSet = app.CreateClass("GearSet", "setID", {
 	["info"] = function(t)
@@ -118,7 +117,7 @@ app.CreateGearSetSubHeader = app.CreateClass("GearSetSubHeader", "gearSetSubHead
 
 local C_TransmogSets_GetVariantSets, C_TransmogSets_GetAllSourceIDs, C_TransmogSets_GetAllSets
 	= C_TransmogSets.GetVariantSets, C_TransmogSets.GetAllSourceIDs, C_TransmogSets.GetAllSets;
-app.BuildGearSetInformationForGroup = function(group)
+local function BuildGearSetInformationForGroup(group)
 	-- Determine if this source is part of a set or two.
 	local allSets = {};
 	local sourceSets = {};
@@ -155,10 +154,9 @@ app.BuildGearSetInformationForGroup = function(group)
 			g = {};
 			setID = tonumber(setID);
 			for _,sourceID in ipairs(allSets[setID]) do
-				local search = app.SearchForMergedObject("sourceID", sourceID);
+				local search = app.SearchForObject("sourceID", sourceID, "key");
 				if search then
-					search = app.__CreateObject(search, true);
-					search.hideText = true;
+					search = app.CloneObject(search, true);
 					tinsert(g, search);
 				else
 					local otherSourceInfo = C_TransmogCollection_GetSourceInfo(sourceID);
@@ -169,15 +167,20 @@ app.BuildGearSetInformationForGroup = function(group)
 			end
 			-- add the group showing the related Set information for this popout
 			if not group.g then group.g = { app.CreateGearSet(setID, {
-				["OnUpdate"] = app.AlwaysShowUpdate,
-				["sourceIgnored"] = true,
-				["skipFill"] = true,
-				["g"] = g }) }
+				OnUpdate = app.AlwaysShowUpdate,
+				OnClick = app.UI.OnClick.IgnoreRightClick,
+				sourceIgnored = true,
+				skipFill = true,
+				SortPriority = -2.1,
+				g = g }) }
 			else tinsert(group.g, app.CreateGearSet(setID, {
-				["OnUpdate"] = app.AlwaysShowUpdate,
-				["sourceIgnored"] = true,
-				["skipFill"] = true,
-				["g"] = g })) end
+				OnUpdate = app.AlwaysShowUpdate,
+				OnClick = app.UI.OnClick.IgnoreRightClick,
+				sourceIgnored = true,
+				skipFill = true,
+				SortPriority = -2.1,
+				g = g })) end
 		end
 	end
 end
+app.AddEventHandler("OnNewPopoutGroup", BuildGearSetInformationForGroup)

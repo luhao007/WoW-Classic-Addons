@@ -6,6 +6,5 @@
 	<Script file="QuickChat_Stats.lua" />
 	<Script file="QuickChat_Keyword.lua" />
 	<Script file="QuickChat_Jilu.lua" />
-	<Script file="QuickChat_Time.lua" />
 	<Script file="AddMessage.lua" />
 </Ui>

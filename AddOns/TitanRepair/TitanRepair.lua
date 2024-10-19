@@ -108,8 +108,13 @@ TR.show_debug_tooltip = false -- shows items processed during scan
 
 -- ******************************** Functions *******************************
 
----local Debug function to print message to chat frame.
----@param Message string
+--[[ local
+-- **************************************************************************
+-- NAME : debug_msg(Message)
+-- DESC : Debug function to print message to chat frame
+-- VARS : Message = message to print to chat frame
+-- **************************************************************************
+--]]
 local function debug_msg(Message)
 	local msg = ""
 	local stamp = date("%H:%M:%S") -- date("%m/%d/%y %H:%M:%S")
@@ -121,7 +126,13 @@ local function debug_msg(Message)
 --		DEFAULT_CHAT_FRAME:AddMessage(TITAN_REPAIR_ID..": " .. Message, 1.00, 0.49, 0.04)
 end
 
----local Reset plugin tables and variables to default values
+--[[ local
+-- **************************************************************************
+-- NAME : RepairInit()
+-- DESC : Reset the tables and variables to default values
+-- VARS : None
+-- **************************************************************************
+--]]
 local function RepairInit()
 	TR.repair_total = 0
 	TR.repair_bags = { cur = 0, max = 0, dur = 0, total = 0 }
@@ -158,61 +169,71 @@ end
 -- int : repair cost or 0
 -- **************************************************************************
 --]]
----local Assuming an equipped item, get repair cost
----@param slotName string For debug
----@param slot number
----@return boolean
----@return number
 local function GetRepairCostEquip(slotName, slot)
 	local equipped = false
 	local res = 0
 	local name = ""
 
 	--Blizz changed SetInventoryItem for DragonFlight
+	-- use a proxy for retail (true) versus classic (false)
 	if C_TooltipInfo then 
 		local data = C_TooltipInfo.GetInventoryItem("player", slot)
 		if data then
---			TooltipUtil.SurfaceArgs(data) -- readable format
+			TooltipUtil.SurfaceArgs(data) -- readable format
 			res = (data.repairCost or 0)
 			equipped = true
 		end
-	else -- Classic
+	else
 		TitanRepairTooltip:SetOwner(UIParent, "ANCHOR_NONE");
 		TitanRepairTooltip:ClearLines()
 
+		local _, itemRarity, itemType, itemSubType
+		-- Had to change the lookup for Classic. Could not find the right lookup text for ranged so used the constants
+		-- instead. The slot in the array above was changed to match.
 		local hasItem, _, repairCost = TitanRepairTooltip:SetInventoryItem("player", slot)
 		res = repairCost
 
-		equipped = hasItem -- debug
-
+		-- debug
+		if hasItem then
+			equipped = true
+		else
+			name = ""
+			equipped = false
+		end
 		TitanRepairTooltip:Hide()
 	end
 
-	if (TR.show_debug) then
-		local msg = "TRepair eq cost"
-		.." equipped : "..tostring(equipped)..""
-		.." cost: "..tostring(res)..""
-		.." slot : "..tostring(slot)..""
-		.."["..tostring(slotName).."]"
-		.." '"..tostring(name).."'"
-		debug_msg(msg)
-	end
-
+--[[
+print("TRepair eq cost"
+	.." "..tostring(equipped)..""
+	.." "..tostring(res)..""
+	.." "..tostring(slot)..""
+	.."["..tostring(slotName).."]"
+	.." '"..tostring(name).."'"
+--]]
 	return equipped, res
 end
 
----local Assuming an item in a bag, get the repair cost
----@param bag number
----@param slot number
----@return number
+--[[ local
+-- **************************************************************************
+-- NAME : GetRepairCostBag()
+-- DESC : Assuming an item in a bag, get the repair cost
+-- VARS : 
+-- bag : int : bag to check
+-- slot : int : bag slot
+-- OUT : 
+-- int : repair cost or 0
+-- **************************************************************************
+--]]
 local function GetRepairCostBag(bag, slot)
 	local res = 0
 
 	--Blizz changed SetInventoryItem for DragonFlight
+	-- use a proxy for retail (true) versus classic (false)
 	if C_TooltipInfo then 
 		local data = C_TooltipInfo.GetBagItem(bag, slot)
 		if data then
---			TooltipUtil.SurfaceArgs(data) -- readable format
+			TooltipUtil.SurfaceArgs(data) -- readable format
 			res = (data.repairCost or 0)
 		end
 	else
@@ -221,15 +242,28 @@ local function GetRepairCostBag(bag, slot)
 		TitanRepairTooltip:ClearLines()
 		local _, repairCost = TitanRepairTooltip:SetBagItem(bag, slot)
 		res = repairCost
+--[[
+print("TRepair cost"
+	.." '"..tostring(bag).."'"
+	.." "..tostring(slot)..""
+	.." "..tostring(res)..""
+--]]
 		TitanRepairTooltip:Hide()
 	end
 
 	return res
 end
 
----local Scan all bags and equipment and set the 'scan in progress'. On a successful scan, the plugin button is updated.
----@param reason string For debug only - why was the scan requested?
----@param force boolean Force a scan if true otherwise use time since last scan
+--[[ local
+-- **************************************************************************
+-- NAME : Scan(reason, force)
+-- DESC : Scan all bags and equipment and set the 'scan in progress'
+-- VARS : 
+-- reason : string : for debug only - why was the scan requested?
+-- force : boolean : whether to force a scan such as on player entering world or user request
+-- Note: On a successful scan, the plugin button is updated.
+-- **************************************************************************
+--]]
 local function Scan(reason, force)
 --[==[
 local _, _, Color, Ltype, Id, Enchant, Gem1, Gem2, Gem3, Gem4, Suffix, Unique, LinkLvl, reforging, Name = string.find(itemLink, "|?c?f?f?(%x*)|?H?([^:]*):?(%d+):?(%d*):?(%d*):?(%d*):?(%d*):?(%d*):?(%-?%d*):?(%-?%d*):?(%d*):?(%d*)|?h?%[?([^%[%]]*)%]?|?h?|?r?")
@@ -274,6 +308,8 @@ print
 			debug_msg(dmsg)
 		end
 
+		local itemName, _, itemQuality
+
 		-- Walk thru slots 'backward' to give weapons 'priority' if most damagaged
 		for slotID = TR.scan_start, TR.scan_end, -1 do  -- thru slots
 			local slotName = slots[slotID].name
@@ -292,29 +328,31 @@ print
 				scan_slots = scan_slots
 					.." item: Empty"
 			else
-				_, _, Color, Ltype, Id, Enchant, 
-				Gem1, Gem2, Gem3, Gem4, 
-				Suffix, Unique, LinkLvl, reforging, Name = string.find(itemLink, parse_item)
+					_, _, Color, Ltype, Id, Enchant, 
+					Gem1, Gem2, Gem3, Gem4, 
+					Suffix, Unique, LinkLvl, reforging, Name = string.find(itemLink, parse_item)
 				itemName, _, itemQuality = GetItem(Id)
 
 				scan_slots = scan_slots
 					.." id:"..tostring(Id)..""
 					.." '"..tostring(itemName).."'"
 
-				if Id == nil or itemName == nil then 
+					if Id == nil or itemName == nil then -- item data should be good
 					-- likely entering world, server has not fully sent data to use
-					-- Set a timer for 1 sec rather than waiting for some event
 					if (TR.show_debug or TR.show_debug_scan) then
 						scan_slots = scan_slots
 							..TitanUtils_GetRedText(" scan: in 1 sec")
 							.." on:"..tostring(TR_Timer_active)..""
 						debug_msg(scan_slots)
 					end
-					TR_Timer_active = true
-					TR_Timer = AceTimer:ScheduleTimer(TitanRepair_ScanShell, 1.0)
+--					if TR_Timer_active then
+						-- Let the existing timer run
+--					else
+						TR_Timer_active = true
+						TR_Timer = AceTimer:ScheduleTimer(TitanRepair_ScanShell, 1.0)
+--					end
 					return -- harsh but best...
 				else
-					-- item data should be good
 					local minimum, maximum = GetInventoryItemDurability(slotID)
 					if minimum and maximum then -- Only calc when item has durability
 						local hasItem, repairCost = GetRepairCostEquip(slotName, slotID)
@@ -498,14 +536,18 @@ print
 	end
 end
 
----local Called from timer; used when entering world and data may not be ready.
 function TitanRepair_ScanShell()
 	Scan("Timer initiated", true)
 	TR_Timer_active = false
 end
 
----local Activate Repair - events, init, scan, etc.
----@param self Button
+--[[ local
+-- **************************************************************************
+-- NAME : RepairShow()
+-- DESC : Prepare to activate Repair - events, init, etc.
+-- VARS : None
+-- **************************************************************************
+--]]
 local function RepairShow(self)
 	if TR.show_debug then
 		debug_msg("RepairShow - starting")
@@ -526,8 +568,13 @@ local function RepairShow(self)
 	end
 end
 
----local Deactivate Repair - events, init, etc.
----@param self Button
+--[[ local
+-- **************************************************************************
+-- NAME : RepairHide()
+-- DESC : Prepare to deactivate Repair - events, etc.
+-- VARS : None
+-- **************************************************************************
+--]]
 local function RepairHide(self)
 	if TR.show_debug then
 		debug_msg("RepairHide - shutting down")
@@ -545,12 +592,19 @@ local function RepairHide(self)
 	end
 end
 
----local Get gold, silver, copper from the given money (in copper)
----@param money number Money in copper
----@return integer
----@return integer
----@return integer
----@return boolean
+--[[ local
+-- **************************************************************************
+-- NAME : GetGSC(money)
+-- DESC : Scan all bags and equipment and set the 'scan in progress'
+-- VARS : 
+-- money : int : money in copper
+-- OUT : 
+-- int : gold component
+-- int : silver component
+-- int : copper component
+-- boolean : whether value is negative or not
+-- **************************************************************************
+--]]
 local function GetGSC(money)
 	local neg = false;
 	if (money == nil) then money = 0; end
@@ -564,11 +618,17 @@ local function GetGSC(money)
 	return g, s, c, neg;
 end
 
----local Get a formated string from the given money (in copper)
----@param money number Money in copper
----@return string readable_money
+--[[ local
+-- **************************************************************************
+-- NAME : GetGSC(money)
+-- DESC : Scan all bags and equipment and set the 'scan in progress'
+-- VARS : 
+-- money : int : money in copper
+-- OUT : 
+-- gsc : string : formatted and colored of given money
+-- **************************************************************************
+--]]
 local function GetTextGSC(money)
---[===[
 	local GSC_GOLD = "ffd100";
 	local GSC_SILVER = "e6e6e6";
 	local GSC_COPPER = "c8602c";
@@ -602,33 +662,14 @@ local function GetTextGSC(money)
 	end
 	if (neg) then gsc = "(" .. gsc .. ")"; end
 	return gsc;
---]===]
-
-	local sep = ""
-	local dec = ""
---	if (TitanGetVar(TITAN_REPAIR_ID, "UseSeperatorComma")) then
-		sep = ","
-		dec = "."
---	else
---		sep = "."
---		dec = ","
---	end
-
-	-- Not all parameters are Repair options so default.
-	local outstr, gold, silver, copper =
-		TitanUtils_CashToString(money,
-			",", -- thousand seprator
-			".", -- decimal seprator
-			TitanGetVar(TITAN_REPAIR_ID, "ShowCostGoldOnly"),
-			false, -- coin labels
-			false, -- coin icons
-			true -- color G / S / C
-		)
-	return outstr
-
 end
 
----local Repair items per user settings to use Guild or own gold.
+--[[ local
+-- **************************************************************************
+-- NAME : TitanRepair_RepairItems()
+-- DESC : <research>
+-- **************************************************************************
+--]]
 local function TitanRepair_RepairItems()
 --[=[
 Jul 2023 / 10.1.5 
@@ -642,12 +683,6 @@ Realized the Disable also changes the button so the DeSat is redundent
 	-- New RepairAll function
 	local cost = GetRepairAllCost();
 	local money = GetMoney();
-
-	if cost == nil then -- for IDE...
-		cost = 0
-	else
-		-- cost is reasonable
-	end
 
 	-- Use Guild Bank funds
 	if TR.guild_bank and TitanGetVar(TITAN_REPAIR_ID,"UseGuildBank") then
@@ -707,7 +742,12 @@ Realized the Disable also changes the button so the DeSat is redundent
 	end
 end
 
----local Rummage through bags, selling any gray items.
+--[[ local
+-- **************************************************************************
+-- NAME : TitanRepair_SellGrayItems()
+-- DESC : <research>
+-- **************************************************************************
+--]]
 local function TitanRepair_SellGrayItems()
 	if TR.show_debug then
 		debug_msg("Selling gray items")
@@ -757,10 +797,15 @@ local function TitanRepair_SellGrayItems()
 	end
 end
 
----local Color (green / white / red) the given string based on its durability % 
----@param item_frac number
----@param valueText string
----@return string
+--[[ local
+-- **************************************************************************
+-- NAME : AutoHighlight (item_frac, valueText)
+-- DESC : Color (green / white / red) the given string (durability as % or x / y) based on the given percentage
+-- VARS : 
+-- item_frac : float : the percentage of durability
+-- valueText : string : durability in color
+-- **************************************************************************
+--]]
 local function AutoHighlight (item_frac, valueText)
 	-- Basic threshold coloring
 	-- Do not check for <= 0.90 or <= 0.20 because fractional eguality test is not acurate...
@@ -779,10 +824,12 @@ local function AutoHighlight (item_frac, valueText)
 	return valueText;
 end
 
----local Handle events registered to plugin
----@param self Button
----@param event string
----@param ... any
+--[[ 
+-- **************************************************************************
+-- NAME : OnEvent(self, event, a1, ...)
+-- DESC : This section will grab the events registered to the add on and act on them
+-- **************************************************************************
+--]]
 local function OnEvent(self, event, a1, ...)
 
 	if TR.show_debug then
@@ -902,14 +949,16 @@ local function GetDiscountCost(sum)
 		return costStr, discountlabel
 end
 
----local Determine the plugin button text based on last scan values and user preferences.
----@param id string
----@return string text_label
----@return string text
----@return string | nil most_label
----@return string | nil most
----@return string | nil gray_header
----@return string | nil gray_total
+--[[ 
+-- **************************************************************************
+-- NAME : GetButtonText(id)
+-- DESC : Determine the plugin button text based on last scan values and user preferences
+-- VARS : id = plugin id (Repair)
+-- OUT : 
+-- string : plugin label
+-- string : plugin text / values
+-- **************************************************************************
+--]]
 local function GetButtonText(id)
 	local itemNamesToShow = ""
 	local itemPercent = 0
@@ -1000,8 +1049,12 @@ local function GetButtonText(id)
 	end
 end
 
----local Create the Repair tool tip based on last scan and user preferences.
----@return string tooltip_text
+--[[ 
+-- **************************************************************************
+-- NAME : GetTooltipText()
+-- DESC : Create the Repair tool tip based on last scan and user preferences
+-- **************************************************************************
+--]]
 local function GetTooltipText()
 	local out = "";
 	local cost = 0;
@@ -1124,11 +1177,6 @@ local function GetTooltipText()
 					out = out..TitanUtils_GetHighlightText(WITHDRAW.." "..AVAILABLE).."\t" ..UNLIMITED.."\n"
 				else
 					local withdrawLimit = GetGuildBankWithdrawMoney()
-					if withdrawLimit == nil then
-						withdrawLimit = 0
-					else
-						-- limit is known
-					end
 					out = out..TitanUtils_GetHighlightText(WITHDRAW.." "..AVAILABLE).."\t"..GetTextGSC(withdrawLimit).."\n"
 					if (withdrawLimit >= sum) then
 						-- funds available
@@ -1162,7 +1210,12 @@ local function GetTooltipText()
 	return out
 end
 
----local Create the Repair right click menu
+--[[ 
+-- **************************************************************************
+-- NAME : CreateMenu()
+-- DESC : Create the Repair right click menu
+-- **************************************************************************
+--]]
 local function CreateMenu()
 	local info;
 
@@ -1427,14 +1480,19 @@ local function CreateMenu()
 	TitanPanelRightClickMenu_AddControlVars(TITAN_REPAIR_ID)
 end
 
----local Create the .registry for the plugin.
----@param self Button
+--[[ 
+-- **************************************************************************
+-- NAME : OnLoad(self)
+-- DESC : Registers the plugin upon loading; OnShow to start; OnHide to stop
+-- **************************************************************************
+--]]
 local function OnLoad(self)
 	local notes = ""
 		.."Provides a configurable durability display. Adds the ability to auto repair items and inventory at vendors.\n"
 		.."- Shift + Left - Click forces a scan.\n"
 		.."- Left - Click now sells ALL gray items - use with CAUTION!\n"
 		.."- Option to auto sell ALL gray items - use with CAUTION!\n"
+		.."May 2023 : New option to display cost in gold only.\n"
 	self.registry = {
 		id = TITAN_REPAIR_ID,
 		category = "Built-ins",
@@ -1483,7 +1541,12 @@ local function OnLoad(self)
 	};
 end
 
----local Create plugin, tooltip, and pop up frames; set frame scripts.
+--[[ local
+-- **************************************************************************
+-- NAME : Create_Frames()
+-- DESC : Create the required Repair plugin frames
+-- **************************************************************************
+--]]
 local function Create_Frames()
 	if _G[TITAN_BUTTON] then
 		return -- if already created

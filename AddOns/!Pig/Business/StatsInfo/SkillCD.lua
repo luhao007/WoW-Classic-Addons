@@ -339,7 +339,7 @@ function BusinessInfo.SkillCD()
 				if arg3==k then
 					C_Timer.After(0.8, function()
 						local nametxt =PIGGetSpellInfo(arg3)
-						local start, duration = GetSpellCooldown(arg3);
+						local start, duration = PIGGetSpellCooldown(arg3);
 						PIGA["StatsInfo"]["SkillCD"][StatsInfo.allname][nametxt][2]=true
 						PIGA["StatsInfo"]["SkillCD"][StatsInfo.allname][nametxt][4]=duration
 						PIGA["StatsInfo"]["SkillCD"][StatsInfo.allname][nametxt][6]=start

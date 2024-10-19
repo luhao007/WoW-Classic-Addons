@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Sylvanaar (Sylvaann - Proudmoore/US-Alliance)
-## Version: 3.9.58
+## Version: 3.9.59
 
 ## Title: Prat |cff8080ff3.0|r
 ## Notes: A framework for chat ehancement modules.
@@ -8,6 +8,8 @@
 ## Notes-zhCN: 整合的聊天增强助手
 
 ## IconTexture: Interface\AddOns\Prat-3.0\textures\prat-logo-dark-small
+
+## AddonCompartmentFunc: Prat_ToggleOptionsWindow
 
 ## OptionalDeps: LibSink-2.0, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, LibDataBroker-1.1, LibDBIcon-1.0, LibAlts-1.0, LibChatAnims
 

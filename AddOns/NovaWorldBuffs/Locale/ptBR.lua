@@ -847,8 +847,10 @@ L["disableBuffTimersMaxBuffLevelDesc"] = "Oculta os temporizadores de bônus mun
 L["hideMinimapBuffTimersTitle"] = "Desativar Temporizadores de Bônus do Minimapa para Todos os Níveis";
 L["hideMinimapBuffTimersDesc"] = "Oculta os temporizadores de bônus mundiais ao passar o cursor sobre o ícone do minimapa para personagens de todos os níveis? Você só verá os temporizadores e diários da torre Terokkar, etc.";
 
-L["guildTerok10Title"] = "Mensagens de temporizador da guilda"; --Changed to generic msg for future expansions now.
-L["guildTerok10Desc"] = "Envia uma mensagem no bate-papo da guilda quando um evento global estiver para aparecer, como as torres de Terokkar em TBC, Invérnia em Wrath, Tol Barad em Cata, etc.";
+
+L["guildTerok10Title"] = "Guilda Terokkar/Invérnia 10 Minutos";
+L["guildTerok10Desc"] = "Envia uma mensagem no bate-papo da guilda quando restarem 10 minutos nas torres de Terokkar se for TBC ou na Conquista do Inverno se for WoTLK.";
+
 
 L["guildTerok10Title"] = "Hermandad Terokkar/Invérnia 10 Minutos";
 L["guildTerok10Desc"] = "Envia uma mensagem no bate-papo da hermandade quando restarem 10 minutos nas torres de Terokkar se for TBC ou na Conquista do Inverno se for WoTLK.";
@@ -1032,18 +1034,3 @@ L["Fervor of the Temple Explorer"] = "Fervor do Explorador do Templo";
 L["No guild"] = "Sem guilda";
 
 L["Temple of Atal'Hakkar"] = "Templo de Atal'hakkar";
-
-L["cappingSupportTitle"] = "Suporte de Capping";
-L["cappingSupportDesc"] = "Inicia uma barra de temporizador para Vale Gris/Selva do Espinhaço se Capping está instalado?";
-
-L["Tol Barad"] = "Tol Barad";
-L["eventIsRunning"] = "%s está ativo"; 
-
-L["Blackrock"] = "Blackrock";
-L["blackrockEventRunning"] = "Blackrock running: %s";
-L["blackrockEventStartsIn"] = "Blackrock starts in %s";
-L["blackrockStartSoon"] = "Blackrock event starts in %s"; --Guild chat msg.
-L["Blackrock PvP Event"] = "Blackrock PvP Event";
-L["Total honor this event"] = "Total honor this event";
-
-L["Might of Stormwind"] = "Poder de Ventobravo";

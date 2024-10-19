@@ -194,8 +194,14 @@ function SeasonOfDiscovery:LoadItems()
         [228141] = { -- Necromancy 101
             [itemKeys.objectDrops] = {463211},
         },
-        [229416] = { -- Warm Fur
-            [itemKeys.npcDrops] = {7445},
+        [229362] = { -- Storehouse Key
+            [itemKeys.npcDrops] = {230775},
+        },
+        [231797] = { -- Soul of the Void
+            [itemKeys.npcDrops] = {232875},
+        },
+        [231842] = { -- Nandieb's Stave
+            [itemKeys.npcDrops] = {232529},
         },
     }
 end
