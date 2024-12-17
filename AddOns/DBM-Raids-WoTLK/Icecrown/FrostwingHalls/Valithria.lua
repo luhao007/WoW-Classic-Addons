@@ -3,11 +3,12 @@ local L		= mod:GetLocalizedStrings()
 
 mod.statTypes = "normal,normal25,heroic,heroic25"
 
-mod:SetRevision("20240616044352")
+mod:SetRevision("20241103133102")
 mod:SetCreatureID(36789)
 mod:SetEncounterID(not mod:IsPostCata() and 854 or 1098)
 mod:SetModelID(30318)
 mod:SetUsedIcons(8)
+mod:SetZone(631)
 mod.onlyHighest = true--Instructs DBM health tracking to literally only store highest value seen during fight, even if it drops below that
 mod:RegisterCombat("combat")
 

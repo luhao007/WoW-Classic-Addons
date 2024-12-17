@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Crieve-Sargeras
-## Version: 4.0.18
+## Version: 4.1.8
 
 ## Title: AllTheThings
 ## Notes: Addon for Tracking Collections & Account Completion
@@ -16,7 +16,7 @@
 ## SavedVariables: ATTCharacterData, ATTAccountWideData, AllTheThingsSavedVariables, AllTheThingsSettings, AllTheThingsAD, AllTheThingsProfiles, AllTheThingsAuctionData, AllTheThingsDebugData, AllTheThingsArtifactsItems, AllTheThingsHarvestItems
 ## SavedVariablesPerCharacter: AllTheThingsSettingsPerCharacter
 
-## X-Interface: 110002
+## X-Interface: 110005, 110007
 ## X-Wago-ID: yQKyY5K7
 ## X-Curse-Project-ID: 267285
 
@@ -79,9 +79,7 @@ src\Modules\Vignette.lua
 src\Modules\Contributor.lua
 
 # Expansion specific localization files
-db\Retail\ExplorationDB.lua
 db\Retail\LocalizationDB.lua
-db\Presets.lua
 
 # Load object class templates
 src\Classes\base.lua
@@ -95,17 +93,17 @@ src\Classes\Quests.lua
 src\Classes\Item.Retail.lua
 # src\Classes\Item.Classic.lua
 src\Classes\Encounter.lua
-src\Classes\Ensemble.lua
 src\Classes\Expansion.lua
 src\Classes\FlightPath.lua
+src\Classes\Header.lua
 src\Classes\Maps.lua
 src\Classes\Mount.lua
-src\Classes\Header.lua
 src\Classes\NPC.lua
 src\Classes\Objects.lua
+src\Classes\Profession.lua
 src\Classes\Category.lua
 src\Classes\Deaths.lua
-# src\Classes\Dynamic Categories.lua
+src\Classes\Dynamic Categories.lua
 src\Classes\Filter Types.lua
 src\Classes\Gear Sets.lua
 # src\Classes\Glyphs.lua
@@ -116,6 +114,7 @@ src\Classes\Races.lua
 src\Classes\Title.lua
 src\Classes\Transmog.lua
 src\Classes\Spell.lua
+src\Classes\Ensemble.lua
 src\Classes\CharacterUnlock.lua
 
 # Item Sub-Classes

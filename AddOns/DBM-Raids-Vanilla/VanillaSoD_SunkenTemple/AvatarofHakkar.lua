@@ -1,12 +1,13 @@
 local mod	= DBM:NewMod("AvatarofHakkarSoD", "DBM-Raids-Vanilla", 8)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240521112819")
+mod:SetRevision("20241103123604")
 mod:SetCreatureID(221394)--221426 Rituals on engage, 221396 Hakkari Bloodkeeper
 mod:SetEncounterID(2956)
 --mod:SetUsedIcons(8)
 mod:SetHotfixNoticeRev(20240405000000)
 --mod:SetMinSyncRevision(20231115000000)
+mod:SetZone(109)
 
 mod:RegisterCombat("combat")
 -- IsEncounterInProgress() only becomes active ~15 seconds after ENCOUNTER_START

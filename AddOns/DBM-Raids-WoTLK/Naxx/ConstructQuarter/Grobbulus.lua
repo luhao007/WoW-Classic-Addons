@@ -1,10 +1,11 @@
 local mod	= DBM:NewMod("Grobbulus", "DBM-Raids-WoTLK", 8)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240428104801")
+mod:SetRevision("20241103133102")
 mod:SetCreatureID(15931)
 mod:SetEncounterID(1111)
 mod:SetUsedIcons(1, 2, 3, 4)
+mod:SetZone(533)
 
 mod:RegisterCombat("combat")
 mod:SetModelID(16035)

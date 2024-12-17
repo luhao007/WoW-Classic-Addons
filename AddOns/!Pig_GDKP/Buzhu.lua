@@ -575,7 +575,7 @@ function GDKPInfo.ADD_Buzhu(RaidR)
 			hang:SetPoint("TOP",_G["QTfakuanhang_"..(id-1)],"BOTTOM",0,0);
 		end
 		if id~=hang_NUM then PIGLine(hang,"BOT",nil,nil,nil,{0.3,0.3,0.3,0.3}) end
-		hang.del = PIGDiyBut(hang,{"LEFT", hang, "LEFT", 0,0},{hang_Height-8})
+		hang.del = PIGDiyBut(hang,{"LEFT", hang, "LEFT", 0,0},{hang_Height-12})
 		hang.del:SetScript("OnClick", function (self)
 			local dataX = PIGA["GDKP"]["jiangli"]
 	    	for p=1,#dataX do

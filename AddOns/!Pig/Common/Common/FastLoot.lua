@@ -96,10 +96,7 @@ function PIG_AutoLoot:LootItems(numItems)
 end
 
 function PIG_AutoLoot:OnLootReady(autoLoot)
-	if IsInGroup() then 
-		local lootmethod = GetLootMethod();
-		if lootmethod=="master" then return end
-	end
+	if PIG_AutoLoot:Is_Open(1) then return end
     if not internal.isLooting then
         internal.isLooting = true;
         local numItems = GetNumLootItems();
@@ -115,10 +112,7 @@ function PIG_AutoLoot:OnLootReady(autoLoot)
 end
 
 function PIG_AutoLoot:OnLootClosed()
-	if IsInGroup() then 
-		local lootmethod = GetLootMethod();
-		if lootmethod=="master" then return end
-	end
+	if PIG_AutoLoot:Is_Open(2) then return end
     internal.isLooting = false;
     internal.isHidden = false;
     internal.isItemLocked = false;
@@ -129,10 +123,7 @@ function PIG_AutoLoot:OnLootClosed()
 end
 
 function PIG_AutoLoot:OnErrorMessage(...)
-	if IsInGroup() then 
-		local lootmethod = GetLootMethod();
-		if lootmethod=="master" then return end
-	end
+	if PIG_AutoLoot:Is_Open(3) then return end
     if tContains(({ERR_INV_FULL,ERR_ITEM_MAX_COUNT}), select(2,...)) then
         if internal.isLooting and internal.isHidden then
             self:ShowLootFrame(true);
@@ -142,10 +133,7 @@ function PIG_AutoLoot:OnErrorMessage(...)
 end
 
 function PIG_AutoLoot:OnBindConfirm()
-	if IsInGroup() then 
-		local lootmethod = GetLootMethod();
-		if lootmethod=="master" then return end
-	end
+	if PIG_AutoLoot:Is_Open(4) then return end
     if internal.isLooting and internal.isHidden then
         self:ShowLootFrame(true);
     end
@@ -159,8 +147,6 @@ function PIG_AutoLoot:PlayInventoryFullSound()
 	end
 end
 
-local function AddMessage(...) _G.DEFAULT_CHAT_FRAME:AddMessage(strjoin(" ", tostringall(...))) end;
-
 function PIG_AutoLoot:Anchor(frame)
     internal.isHidden = false;
     frame:SetFrameStrata("HIGH");
@@ -169,7 +155,6 @@ function PIG_AutoLoot:Anchor(frame)
     else
         frame:SetParent(UIParent);
     end
-
     if GetCVarBool("lootUnderMouse") then
         local x, y = GetCursorPosition();
         x = x / frame:GetEffectiveScale();
@@ -190,10 +175,7 @@ function PIG_AutoLoot:Anchor(frame)
 end
 
 function PIG_AutoLoot:ShowLootFrame(show)
-	if IsInGroup() then 
-		local lootmethod = GetLootMethod();
-		if lootmethod=="master" then return end
-	end
+	if PIG_AutoLoot:Is_Open(5) then return end
     if internal.ElvUI then
         if show then
             self:Anchor(ElvLootFrame);
@@ -209,6 +191,15 @@ function PIG_AutoLoot:ShowLootFrame(show)
             internal.isHidden = true;
         end
     end
+end
+function PIG_AutoLoot:Is_Open(ly)
+    if IsInGroup() then 
+        local lootmethod = GetLootMethod();
+        if lootmethod=="master" then
+            return true
+        end
+    end
+    return false
 end
 function PIG_AutoLoot:RegisterEvent(event, func)
     internal._frame[event] = func;

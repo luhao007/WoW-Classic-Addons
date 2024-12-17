@@ -5,7 +5,7 @@ if not mod:IsClassic() then--on classic, it's normal10,normal25, defined in toc,
 	mod.statTypes = "normal,timewalker"
 end
 
-mod:SetRevision("20240512232312")
+mod:SetRevision("20241103133102")
 
 mod:SetCreatureID(33515)--34014--Add this (kitties) to pull detection when it can be ignored in kill
 if mod:IsPostCata() then
@@ -14,6 +14,8 @@ else
 	mod:SetEncounterID(750)
 end
 mod:SetModelID(28651)
+mod:SetZone(603)
+
 mod:RegisterCombat("combat")
 --mod:RegisterKill("kill", 33515)
 

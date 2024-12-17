@@ -1,10 +1,12 @@
 local mod	= DBM:NewMod("LoathebVanilla", "DBM-Raids-Vanilla", 1)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240615124047")
+mod:SetRevision("20241103123604")
 mod:SetCreatureID(16011)
 mod:SetEncounterID(1115)
 mod:SetModelID(16110)
+mod:SetZone(533)
+
 mod:RegisterCombat("combat")--Maybe change to a yell later so pull detection works if you chain pull him from tash gauntlet
 
 -- There are two types of Corrupted Mind spells for each class.

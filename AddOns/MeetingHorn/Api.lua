@@ -558,12 +558,13 @@ function ns.DataMake(allowCrossRealm)
         realm = decode(realm)
         if allowCrossRealm or realm == GetRealmName() then
             currentRealm = realm
+            return
         end
-        currentLevel = nil
+        currentRealm = nil
     end
 
     local function Name(name)
-        if not currentRealm then
+        if not currentRealm or currentRealm ~= GetRealmName() then
             return nop
         end
 

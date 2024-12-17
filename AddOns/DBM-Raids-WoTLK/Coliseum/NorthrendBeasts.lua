@@ -3,7 +3,7 @@ local L		= mod:GetLocalizedStrings()
 
 mod.statTypes = "normal,normal25,heroic,heroic25"
 
-mod:SetRevision("20240714050722")
+mod:SetRevision("20241103133102")
 mod:SetCreatureID(34796, 35144, 34799, 34797)
 --mod:SetEncounterID(not mod:IsPostCata() and 629 or 1088)--Buggy, never enable this
 mod:SetMinSyncRevision(104)
@@ -11,6 +11,7 @@ mod:SetModelID(21601)
 mod:SetMinCombatTime(30)
 mod:SetUsedIcons(1, 2, 3, 4, 5, 6, 7, 8)
 mod:SetBossHPInfoToHighest()
+mod:SetZone(649)
 
 mod:RegisterCombat("combat")
 

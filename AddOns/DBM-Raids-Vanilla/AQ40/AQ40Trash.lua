@@ -9,9 +9,10 @@ end
 local mod	= DBM:NewMod("AQ40Trash", "DBM-Raids-Vanilla", catID)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240426180207")
+mod:SetRevision("20241103123604")
 --mod:SetModelID(47785)
 mod:SetMinSyncRevision(20200710000000)--2020, 7, 10
+mod:SetZone(531)
 
 mod.isTrashMod = true
 

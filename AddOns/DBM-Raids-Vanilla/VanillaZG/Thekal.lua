@@ -12,10 +12,12 @@ end
 local mod = DBM:NewMod("Thekal", "DBM-Raids-Vanilla", catID)
 local L = mod:GetLocalizedStrings()
 
-mod:SetRevision("20241007195837")
+mod:SetRevision("20241103123604")
 mod:SetCreatureID(14509, 11348, 11347)
 mod:SetEncounterID(789)
 mod:SetBossHPInfoToHighest()
+mod:SetZone(309)
+
 mod:RegisterCombat("combat")
 mod:RegisterKill("yell", L.YellKill)
 

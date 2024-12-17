@@ -3,13 +3,14 @@ local L		= mod:GetLocalizedStrings()
 
 mod.statTypes = "normal,normal25,heroic,heroic25"
 
-mod:SetRevision("20240601045028")
+mod:SetRevision("20241103133102")
 mod:SetCreatureID(39863)--40142 (twilight form)
 mod:SetEncounterID(not mod:IsPostCata() and 887 or 1150)
 mod:SetModelID(31952)
 mod:SetUsedIcons(7, 3)
 mod:SetHotfixNoticeRev(20240113000000)
 mod:SetMinSyncRevision(20240112000000)
+mod:SetZone(724)
 
 mod:RegisterCombat("combat")
 --mod:RegisterKill("yell", L.Kill)

@@ -1,10 +1,12 @@
 local mod	= DBM:NewMod("GluthVanilla", "DBM-Raids-Vanilla", 1)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240426180207")
+mod:SetRevision("20241103123604")
 mod:SetCreatureID(15932)
 mod:SetEncounterID(1108)
 mod:SetModelID(16064)
+mod:SetZone(533)
+
 mod:RegisterCombat("combat")
 
 mod:RegisterEventsInCombat(

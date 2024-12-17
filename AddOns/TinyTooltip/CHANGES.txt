@@ -1,10 +1,10 @@
-lightweight tag 34e7bd0c793bd4b2a31a74b38f7114cd311745ad 4.4.0.4
-Author:	govtgeek <26489473+GovtGeek@users.noreply.github.com>
-Date:	Thu Aug 8 14:04:16 2024 -0700
+lightweight tag fcdd290f14ea41f60dffdf46a5d16ec74247df22 4.4.1.0
+Author:	GitHub <noreply@github.com>
+Date:	Wed Oct 30 00:32:32 2024 -0700
 
-commit 34e7bd0c793bd4b2a31a74b38f7114cd311745ad
+commit 5313b88cb9fa15a36ea38dd4fec48d74e97dc07b
 Author: govtgeek <26489473+GovtGeek@users.noreply.github.com>
-Date:   Thu Aug 8 14:04:16 2024 -0700
+Date:   Mon Oct 7 14:01:43 2024 -0700
 
-    Bumped era version
+    Fix for GetMouseFocus/GetMouseFoci to work with 4.4.0 and 4.4.1
 

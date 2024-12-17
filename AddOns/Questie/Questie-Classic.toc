@@ -1,8 +1,8 @@
 ## Interface: 30400
 ## Author: Aero/Logon/Muehe/TheCrux(BreakBB)/Drejjmit/Dyaxler/Schaka/Zoey/Everyone else
-## Version: 10.6.1
+## Version: 10.9.2
 
-## Title: Questie|cFF00FF00 v10.6.1|r
+## Title: Questie|cFF00FF00 v10.9.2|r
 ## Notes: A standalone Classic QuestHelper
 ## Title-zhCN: |cFFFFE00A<|r|cFF00FF96任务|r|cFFFFE00A>|r |cFFFFFFFF任务助手|r |cFFFFE00AQuestie|r
 ## Notes-zhCN: 在地图和小地图上提供任务指引，在怪物身上提示任务进度
@@ -44,6 +44,7 @@ Database\QuestXP\DB\xpDB-classic.lua
 Modules\QuestieStream.lua
 
 # Zones
+Database\Zones\dungeons.lua
 Database\Zones\zoneTables.lua
 Database\Zones\zoneDB.lua
 
@@ -69,7 +70,9 @@ Database\Corrections\QuestieNPCBlacklist.lua
 Database\Corrections\QuestieQuestBlacklist.lua
 Database\Corrections\HardcoreBlacklist.lua
 Database\Corrections\SeasonOfDiscovery.lua
-Database\Corrections\SoMPhases.lua
+Database\Corrections\ContentPhases\ContentPhases.lua
+Database\Corrections\ContentPhases\Classic.lua
+Database\Corrections\ContentPhases\SeasonOfDiscovery.lua
 Database\Corrections\Holidays\QuestieEvent.lua
 Database\Corrections\Holidays\quests\ChildrensWeek.lua
 Database\Corrections\Holidays\quests\DarkmoonFaire.lua
@@ -117,6 +120,7 @@ Localization\lookups\Classic\lookupObjects\lookupObjects.xml
 Localization\lookups\Classic\lookupQuests\lookupQuests.xml
 
 # Libs
+Modules\Libs\DistanceUtils.lua
 Modules\Libs\QuestieLib.lua
 Modules\Libs\QuestieSerializer.lua
 Modules\Libs\QuestieCombatQueue.lua
@@ -128,7 +132,9 @@ Modules\QuestieInit.lua
 Modules\MinimapIcon.lua
 Modules\QuestieProfessions.lua
 Modules\QuestieReputation.lua
-Modules\QuestieEventHandler.lua
+Modules\EventHandler\EventHandler.lua
+Modules\EventHandler\GroupEventHandler.lua
+Modules\EventHandler\QuestEventHandler.lua
 Modules\Migration.lua
 Modules\Phasing.lua
 Modules\QuestieMenu\Townsfolk.lua
@@ -146,6 +152,7 @@ Modules\QuestieDebugOffer.lua
 Modules\WatchFrameHook.lua
 Modules\WorldMapButton\WorldMapButton.lua
 Modules\WorldMapButton\QuestieWorldMapButtonTemplate.xml
+Modules\DebugFunctions.lua
 
 # QuestLinks
 Modules\QuestLinks\ChatFilter.lua
@@ -178,7 +185,7 @@ Modules\Quest\AvailableQuests\AvailableQuests.lua
 Modules\Quest\QuestLogCache.lua
 Modules\Quest\DailyQuests.lua
 Modules\Quest\IsleOfQuelDanas.lua
-Modules\Quest\QuestEventHandler.lua
+Modules\Quest\QuestFinisher.lua
 Modules\Quest\QuestgiverFrame.lua
 Modules\Quest\QuestieQuest.lua
 Modules\Quest\QuestieQuestPrivates.lua

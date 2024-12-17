@@ -3,13 +3,14 @@ local L		= mod:GetLocalizedStrings()
 
 mod.statTypes = "normal,normal25,heroic,heroic25"
 
-mod:SetRevision("20240616044352")
+mod:SetRevision("20241103133102")
 mod:SetCreatureID(37970, 37972, 37973)
 mod:SetEncounterID(not mod:IsPostCata() and 852 or 1095)
 mod:DisableEEKillDetection()--IEEU fires for this boss.
 mod:SetModelID(30858)
 mod:SetUsedIcons(7, 8)
 mod:SetBossHPInfoToHighest()
+mod:SetZone(631)
 
 mod:RegisterCombat("combat")
 

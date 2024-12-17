@@ -14,6 +14,8 @@ local PIGOptionsList=Create.PIGOptionsList
 local PIGFontString=Create.PIGFontString
 local PIGFontStringBG=Create.PIGFontStringBG
 --
+local GetAddOnInfo=GetAddOnInfo or C_AddOns and C_AddOns.GetAddOnInfo
+--
 local fuFrame = PIGOptionsList(L["DEBUG_TABNAME"],"BOT")
 --------------------------------
 fuFrame.errorUI = PIGButton(fuFrame,{"TOPLEFT",fuFrame,"TOPLEFT",20,-20},{120,24},L["DEBUG_ERRORLOG"])
@@ -89,7 +91,7 @@ PIGAddOnMemoryCPU.NR.autoRefresh:SetScript("OnClick", function (self)
 		PIGAddOnMemoryCPU:SetScript("OnUpdate", nil);
 	end
 end);
-PIGAddOnMemoryCPU.NR.CPU_OPEN=PIGCheckbutton(PIGAddOnMemoryCPU.NR,{"LEFT",PIGAddOnMemoryCPU.NR.autoRefresh.Text,"RIGHT",10,0},{L["DEBUG_CPUUSAGE"],L["DEBUG_CPUUSAGETIPS"]})
+PIGAddOnMemoryCPU.NR.CPU_OPEN=PIGCheckbutton(PIGAddOnMemoryCPU.NR,{"LEFT",PIGAddOnMemoryCPU.NR.autoRefresh.Text,"RIGHT",10,0},{"|cffFF0000"..L["DEBUG_CPUUSAGE"].."|r",L["DEBUG_CPUUSAGETIPS"]})
 PIGAddOnMemoryCPU.NR.CPU_OPEN:SetScale(0.88)
 PIGAddOnMemoryCPU.NR.CPU_OPEN:SetScript("OnClick", function (self)
 	if self:GetChecked() then
@@ -239,10 +241,10 @@ fuFrame.NPCID = PIGButton(fuFrame,{"TOPLEFT",fuFrame,"TOPLEFT",20,-350},{125,24}
 fuFrame.NPCID:SetScript("OnClick", function (self)
 	print(UnitGUID("target"))
 end);
-fuFrame.GetItem = PIGButton(fuFrame,{"LEFT",fuFrame.NPCID,"RIGHT",200,0},{110,24},"获取物品信息")
+fuFrame.GetItem = PIGButton(fuFrame,{"LEFT",fuFrame.NPCID,"RIGHT",300,0},{110,24},"获取物品信息")
 fuFrame.GetItem:SetScript("OnClick", function (self)
-	local itemName,itemLink = GetItemInfo(self.E:GetNumber())
-	print(GetItemInfo(self.E:GetNumber()))
+	--local itemName,itemLink = GetItemInfo(self.E:GetNumber())
+	print(GetItemInfo(self.E:GetText()))
 	-- print(string.gsub(itemLink,"|","||"))
 	-- local itemLink=Fun.GetItemLinkJJ(itemLink)
 	-- print(itemLink)
@@ -250,12 +252,12 @@ fuFrame.GetItem:SetScript("OnClick", function (self)
 	-- print(itemLink)
 end);
 fuFrame.GetItem.E = CreateFrame("EditBox", nil, fuFrame.GetItem, "InputBoxInstructionsTemplate");
-fuFrame.GetItem.E:SetSize(80,24);
+fuFrame.GetItem.E:SetSize(200,24);
 fuFrame.GetItem.E:SetPoint("RIGHT",fuFrame.GetItem,"LEFT",-4,0);
 fuFrame.GetItem.E:SetFontObject(ChatFontNormal);
 fuFrame.GetItem.E:SetAutoFocus(false);--自动获得焦点
-fuFrame.GetItem.E:SetMaxLetters(10)--最大输入字符数
-fuFrame.GetItem.E:SetNumeric(true)--只能输入数字
+-- fuFrame.GetItem.E:SetMaxLetters(10)--最大输入字符数
+-- fuFrame.GetItem.E:SetNumeric(true)--只能输入数字
 -----------------
 fuFrame:SetScript("OnShow", function()
 	if GetCVar("scriptErrors")=="1" then

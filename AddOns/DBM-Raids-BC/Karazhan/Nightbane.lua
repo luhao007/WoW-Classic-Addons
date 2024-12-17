@@ -1,10 +1,12 @@
 local mod	= DBM:NewMod("NightbaneRaid", "DBM-Raids-BC", 8)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240428104809")
+mod:SetRevision("20241103131702")
 mod:SetCreatureID(17225)
 mod:SetEncounterID(662, 2454)
 mod:SetModelID(18062)
+mod:SetZone(532)
+
 mod:RegisterCombat("combat")
 
 mod:RegisterEvents(

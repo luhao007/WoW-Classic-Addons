@@ -590,6 +590,9 @@ function QuestieQuestFixes:Load()
         [976] = {
             [questKeys.triggerEnd] = {"Protect Feero Ironhand", {[zoneIDs.DARKSHORE]={{43.54,94.39}}}},
         },
+        [979] = { -- Find Ranshalla
+            [questKeys.nextQuestInChain] = 4901,
+        },
         [984] = {
             [questKeys.triggerEnd] = {"Find a corrupt furbolg camp",{[zoneIDs.DARKSHORE]={{50.91,34.74},{39.86,53.89},{42.68,86.53},{39.95,78.41}}}},
         },
@@ -2949,35 +2952,35 @@ function QuestieQuestFixes:Load()
             [questKeys.extraObjectives] = {{nil, Questie.ICON_TYPE_EVENT, l10n("Summon a Lord using a full Twilight set, neck and ring."),0,{{"object", 180466},{"object", 180539},{"object", 180559},}}},
         },
         [8353] = {
-            [questKeys.objectives] = {{{5111, "Cluck like a chicken for Innkeeper Firebrew"}}},
+            [questKeys.objectives] = {{{5111, "Cluck like a chicken for Innkeeper Firebrew",Questie.ICON_TYPE_EVENT}}},
             [questKeys.specialFlags] = 1,
         },
         [8354] = {
-            [questKeys.objectives] = {{{6741, "Cluck like a chicken for Innkeeper Norman"}}},
+            [questKeys.objectives] = {{{6741, "Cluck like a chicken for Innkeeper Norman",Questie.ICON_TYPE_EVENT}}},
             [questKeys.specialFlags] = 1,
         },
         [8355] = {
-            [questKeys.objectives] = {{{6826, "Do the \"train\" for Talvash"}}},
+            [questKeys.objectives] = {{{6826, "Do the \"train\" for Talvash",Questie.ICON_TYPE_EVENT}}},
             [questKeys.specialFlags] = 1,
         },
         [8356] = {
-            [questKeys.objectives] = {{{6740, "Flex for Innkeeper Allison"}}},
+            [questKeys.objectives] = {{{6740, "Flex for Innkeeper Allison",Questie.ICON_TYPE_EVENT}}},
             [questKeys.specialFlags] = 1,
         },
         [8357] = {
-            [questKeys.objectives] = {{{6735, "Dance for Innkeeper Saelienne"}}},
+            [questKeys.objectives] = {{{6735, "Dance for Innkeeper Saelienne",Questie.ICON_TYPE_EVENT}}},
             [questKeys.specialFlags] = 1,
         },
         [8358] = {
-            [questKeys.objectives] = {{{11814, "Do the \"train\" for Kali Remik"}}},
+            [questKeys.objectives] = {{{11814, "Do the \"train\" for Kali Remik",Questie.ICON_TYPE_EVENT}}},
             [questKeys.specialFlags] = 1,
         },
         [8359] = {
-            [questKeys.objectives] = {{{6929, "Flex for Innkeeper Gryshka"}}},
+            [questKeys.objectives] = {{{6929, "Flex for Innkeeper Gryshka",Questie.ICON_TYPE_EVENT}}},
             [questKeys.specialFlags] = 1,
         },
         [8360] = {
-            [questKeys.objectives] = {{{6746, "Dance for Innkeeper Pala"}}},
+            [questKeys.objectives] = {{{6746, "Dance for Innkeeper Pala",Questie.ICON_TYPE_EVENT}}},
             [questKeys.specialFlags] = 1,
         },
         [8361] = {

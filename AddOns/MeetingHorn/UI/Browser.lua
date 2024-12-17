@@ -568,7 +568,7 @@ function Browser:OpenVoiceRoom(activity)
             end
             ns.ThreeDimensionsCode:sendCommand('joinRoom', '-1')
             ns.LogStatistics:InsertLog({time(), 7, 2, data})
-            ns.OpenUrlDialog(format('https://dd.163.com/?utm_source=%s', data), '无法成功拉起房间?复制下方链接去浏览器内打开')
+            ns.OpenUrlDialog(format('https://dd.163.com/room/%s/?utm_source=%s', currentRoomID, data), '无法成功拉起房间?复制下方链接去浏览器内打开')
         end)
     end
 end

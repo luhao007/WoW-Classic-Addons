@@ -1,7 +1,8 @@
 local mod	= DBM:NewMod("STTrashSoD", "DBM-Raids-Vanilla", 8)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240511122715")
+mod:SetRevision("20241103123604")
+mod:SetZone(109)
 
 mod.isTrashMod = true
 

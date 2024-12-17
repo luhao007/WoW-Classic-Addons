@@ -28,6 +28,7 @@ function FramePlusfun.Zhuizong()
 		Zhuizong.Border:SetPoint("TOPLEFT",Zhuizong,"TOPLEFT",0,0);
 		Zhuizong.Border:Hide()
 	end
+	local MiniMapTrackingFrame = MiniMapTrackingFrame or MiniMapTracking
 	Zhuizong:RegisterEvent("PLAYER_ENTERING_WORLD");
 	Zhuizong:RegisterEvent("SPELL_UPDATE_COOLDOWN");
 	Zhuizong:HookScript("OnEvent", function(self,event,arg1)

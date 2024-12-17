@@ -507,6 +507,36 @@ function BusinessInfo.Trade()
 		return false
 	end
 	local IsFriend=Fun.IsFriend
+	local shibaiERR = {
+		ERR_TRADE_BAG,--"你不能交易装有物品的包";
+		ERR_TRADE_BAG_FULL,--"交易失败，你没有足够的物品栏空间。";
+		ERR_TRADE_BLOCKED_S,--"%s要求进行交易，你拒绝了。";
+		ERR_TRADE_BOUND_ITEM,--"你不能交易一件灵魂绑定物品";
+		ERR_TRADE_CANCELLED,--"交易取消。";
+		ERR_TRADE_EQUIPPED_BAG,--"你无法交易已经装备的包裹。";
+		ERR_TRADE_FACTION_SPECIFIC,--"你无法与对立阵营交易阵营特色物品。";
+		ERR_TRADE_GROUND_ITEM,--"你不能交易一件还放在地上的物品。";
+		ERR_TRADE_MAX_COUNT_EXCEEDED,--"你拥有超过一件";
+		ERR_TRADE_NOT_ON_TAPLIST,--"你只能将绑定物品交易给拥有该物品起始拾取资格的玩家。";
+		ERR_TRADE_QUEST_ITEM,--"你不能交易一件任务物品";
+		ERR_TRADE_REQUEST_S,--"%s想要和你进行交易。";
+		ERR_TRADE_SELF,--"你不能与自己交易。";
+		ERR_TRADE_TARGET_BAG_FULL,--"交易失败，交易目标没有足够的物品栏空间。";
+		ERR_TRADE_TARGET_DEAD,--"你不能和已死亡的玩家交易";
+		ERR_TRADE_TARGET_MAX_COUNT_EXCEEDED,--"交易对象已经拥有该类唯一物品。";
+		ERR_TRADE_TARGET_MAX_LIMIT_CATEGORY_COUNT_EXCEEDED_IS,--"你的交易对象只能携带%d个%s";
+		ERR_TRADE_TEMP_ENCHANT_BOUND,--"你不能交易带有临时附魔的物品。";
+		ERR_TRADE_TOO_FAR,--"交易目标太远";
+		ERR_TRADE_WRONG_REALM,--"你只能与来自其它服务器的玩家交易魔法制造的物品";
+	}
+	local function iserrtishi(arg2)
+		for k,v in pairs(shibaiERR) do
+			if arg2==v then
+				return true
+			end
+		end
+		return false
+	end
 	fujiF:RegisterEvent("UI_INFO_MESSAGE");
 	fujiF:SetScript("OnEvent", function(self,event,arg1,arg2)
 		if event=="UI_INFO_MESSAGE" then
@@ -585,7 +615,29 @@ function BusinessInfo.Trade()
 						SendChatMessage(msgT, "RAID");
 					end
 				end
-				-- 
+			else
+				if iserrtishi(arg2) then
+					local msgT = "!Pig:与<"..TradeFrame.PIG_Data.Name..">交易失败,原因:"..arg2
+					if PIGA["StatsInfo"]["TradeTongGao"] then
+						if not IsFriend(TradeFrame.PIG_Data.Name) then
+							if PIGA["StatsInfo"]["TradeTongGaoChannel"]=="WHISPER" then
+								SendChatMessage(msgT, "WHISPER", nil, TradeFrame.PIG_Data.Name);
+							else
+								if HasLFGRestrictions() then
+									SendChatMessage(msgT, "INSTANCE_CHAT");
+								elseif IsInRaid() then
+									SendChatMessage(msgT, "RAID");
+								elseif IsInGroup() then
+									SendChatMessage(msgT, "PARTY");
+								end
+								return
+							end
+						end
+					end
+					if IsAddOnLoaded(L.extLsit[2]) and PIGA["GDKP"]["Rsetting"]["tradetonggao"] then
+						SendChatMessage(msgT, "RAID");
+					end
+				end
 			end
 		end
 	end)

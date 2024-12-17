@@ -237,4 +237,18 @@ GTFO.SpellID["248320"] = {
   sound = 3;
 };
 
+GTFO.SpellID["243789"] = {
+  --desc = "Frost Breath (Azuregos)";
+  sound = 3;
+  tankSound = 0;
+  applicationOnly = true;
+};
+
+GTFO.SpellID["243401"] = {
+  --desc = "Noxious Breath (Ysondre)";
+  sound = 3;
+  tankSound = 0;
+  applicationOnly = true;
+};
+
 end

@@ -109,7 +109,7 @@ function BusinessInfo.Admin()
 		hang.nameDQ:SetTexture("interface/common/indicator-green.blp")
 		hang.nameDQ:SetPoint("LEFT", hang.name, "RIGHT", 1,0);
 		hang.nameDQ:SetSize(hang_Height-2,hang_Height-2);
-		hang.del=PIGDiyBut(hang,{"RIGHT", hang, "RIGHT", 0,0},{hang_Height})
+		hang.del=PIGDiyBut(hang,{"RIGHT", hang, "RIGHT", 0,0},{hang_Height-6})
 		hang.del:SetScript("OnClick", function (self)
 			local wanjianame = self:GetParent().allname
 			fujiF.caozuoshuaxin("del",wanjianame)
@@ -212,7 +212,7 @@ function BusinessInfo.Admin()
 		hang.nameDQ:SetTexture("interface/common/indicator-green.blp")
 		hang.nameDQ:SetPoint("LEFT", hang.name, "RIGHT", 1,0);
 		hang.nameDQ:SetSize(hang_Height-2,hang_Height-2);
-		hang.del=PIGDiyBut(hang,{"RIGHT", hang, "RIGHT", 0,0},{hang_Height})
+		hang.del=PIGDiyBut(hang,{"RIGHT", hang, "RIGHT", 0,0},{hang_Height-6})
 		hang.del:SetScript("OnClick", function (self)
 			local wanjianame = self:GetParent().allname
 			fujiF.caozuoshuaxin("del",wanjianame)

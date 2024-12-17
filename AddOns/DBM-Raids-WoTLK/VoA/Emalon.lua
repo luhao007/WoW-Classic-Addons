@@ -1,11 +1,12 @@
 local mod	= DBM:NewMod("Emalon", "DBM-Raids-WoTLK", 9)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240512232312")
+mod:SetRevision("20241103133102")
 mod:SetCreatureID(33993)
 mod:SetEncounterID(not mod:IsPostCata() and 774 or 1127)
 mod:SetModelID(27108)
 mod:SetUsedIcons(8)
+mod:SetZone(624)
 
 mod:RegisterCombat("combat")
 

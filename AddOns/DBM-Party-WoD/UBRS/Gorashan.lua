@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(1226, "DBM-Party-WoD", 8, 559)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20220506210851")
+mod:SetRevision("20241029054153")
 mod:SetCreatureID(76413)
 mod:SetEncounterID(1761)
 
@@ -20,12 +20,13 @@ mod:RegisterEventsInCombat(
 local warnPowerConduitLeft			= mod:NewAddsLeftAnnounce(166168, 2)
 
 local specWarnPowerConduit			= mod:NewSpecialWarningSpell(166168, nil, nil, nil, 2, 2)
-local specWarnPowerConduitEnded		= mod:NewSpecialWarningEnd(166168)
-local specWarnShrapnelNova			= mod:NewSpecialWarningRun(154448, "-Tank")
+local specWarnPowerConduitEnded		= mod:NewSpecialWarningEnd(166168, nil, nil, nil, 1, 2)
+local specWarnShrapnelNova			= mod:NewSpecialWarningRun(154448, "-Tank", nil, nil, 1, 2)
 
 function mod:SPELL_CAST_START(args)
 	if args.spellId == 154448 then
 		specWarnShrapnelNova:Show()
+		specWarnShrapnelNova:Play("justrun")
 	end
 end
 

@@ -1,10 +1,12 @@
 local mod	= DBM:NewMod("Curator", "DBM-Raids-BC", 8)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20230523061139")
+mod:SetRevision("20241103131702")
 mod:SetCreatureID(15691)
 mod:SetEncounterID(656, 2448)
 mod:SetModelID(16958)
+mod:SetZone(532)
+
 mod:RegisterCombat("combat")
 
 mod:RegisterEventsInCombat(

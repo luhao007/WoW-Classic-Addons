@@ -61,7 +61,7 @@ CL.BOMBS						= "Bombas"--Usually auto localized but kept around in case it need
 CL.ORB							= "Orbe"--Usually auto localized but kept around in case it needs to be used in a place that's not auto localized such as MoveTo or Use alert
 CL.ORBS							= "Orbes"--Doesn't have a direct auto localize so has to be manually localized, unlike non plural version
 CL.RING							= "Anel"
-CL.RINGS						= "Anéis "
+CL.RINGS						= "Anéis"
 CL.CHEST						= "Cofre"--As in Treasure 'Chest'. Not Chest as in body part.
 CL.ADD							= "Add"--A fight Add as in "boss spawned extra adds"
 CL.ADDS							= "Adds"
@@ -108,3 +108,6 @@ CL.BLUE 						= "Azul"
 CL.GREEN 						= "Verde"
 CL.RED 							= "Vermelho"
 CL.BRONZE 						= "Bronze"
+-- Conjunctions, used to join words, e.g., "Spell1 *and* Spell2 on you!"
+CL.AND		= "e"
+CL.OR		= "ou"

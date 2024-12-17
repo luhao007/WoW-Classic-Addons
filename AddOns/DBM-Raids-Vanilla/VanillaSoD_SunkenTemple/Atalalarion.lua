@@ -1,12 +1,13 @@
 local mod	= DBM:NewMod("AtalalarionSoD", "DBM-Raids-Vanilla", 8)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240409010007")
+mod:SetRevision("20241103123604")
 mod:SetCreatureID(218624)
 mod:SetEncounterID(2952)
 --mod:SetUsedIcons(8)
 mod:SetHotfixNoticeRev(20240404000000)
 --mod:SetMinSyncRevision(20231115000000)
+mod:SetZone(109)
 
 mod:RegisterCombat("combat")
 

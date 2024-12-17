@@ -6,6 +6,7 @@ local Create=addonTable.Create
 local PIGFrame=Create.PIGFrame
 local PIGLine=Create.PIGLine
 local PIGSlider = Create.PIGSlider
+local PIGDownMenu=Create.PIGDownMenu
 local PIGCheckbutton=Create.PIGCheckbutton
 local PIGCheckbutton_R=Create.PIGCheckbutton_R
 local PIGOptionsList_R=Create.PIGOptionsList_R
@@ -16,7 +17,7 @@ CommonInfo.Interactionfun={}
 ------交互
 local fujiF =PIGOptionsList_R(CommonInfo.NR,L["COMMON_TABNAME2"],70)
 --自动对话
-fujiF.AutoDialogue = PIGCheckbutton_R(fujiF,{"自动对话","当NPC只有一个对话选项时自动激活选项，按住Shift停止自动对话"})
+fujiF.AutoDialogue = PIGCheckbutton_R(fujiF,{"自动对话","当NPC只有一个对话选项时自动激活选项，按住Shift停止自动对话\n对话大于1个请在后面下拉菜单设置"})
 fujiF.AutoDialogue:SetScript("OnClick", function (self)
 	if self:GetChecked() then
 		PIGA["Interaction"]["AutoDialogue"]=true;			
@@ -25,6 +26,23 @@ fujiF.AutoDialogue:SetScript("OnClick", function (self)
 	end
 	CommonInfo.Interactionfun.zidongduihua()
 end);
+local setdhname = {[0]=NONE}
+fujiF.AutoDialogue.max1=PIGDownMenu(fujiF.AutoDialogue,{"LEFT",fujiF.AutoDialogue,"RIGHT",160,0},{60,24})
+fujiF.AutoDialogue.max1.T = PIGFontString(fujiF.AutoDialogue.max1,{"RIGHT",fujiF.AutoDialogue.max1,"LEFT",-4,0},"多对话选择")
+function fujiF.AutoDialogue.max1:PIGDownMenu_Update_But(self)
+	local info = {}
+	info.func = self.PIGDownMenu_SetValue
+	for i=0,9,1 do
+	    info.text, info.arg1 = setdhname[i] or i, i
+	    info.checked = i==PIGA["Interaction"]["AutoDialogueIndex"]
+		fujiF.AutoDialogue.max1:PIGDownMenu_AddButton(info)
+	end 
+end
+function fujiF.AutoDialogue.max1:PIGDownMenu_SetValue(value,arg1,arg2)
+	fujiF.AutoDialogue.max1:PIGDownMenu_SetText(value)
+	PIGA["Interaction"]["AutoDialogueIndex"]=arg1
+	PIGCloseDropDownMenus()
+end
 --自动站立下马
 fujiF.AutoDown = PIGCheckbutton_R(fujiF,{"自动下马/站立","与NPC或物体交互时自动下马/站立"})
 fujiF.AutoDown:SetScript("OnClick", function (self)
@@ -119,6 +137,8 @@ end)
 --
 fujiF:HookScript("OnShow", function(self)
 	self.AutoDialogue:SetChecked(PIGA["Interaction"]["AutoDialogue"]);
+	local xmaxindex = setdhname[PIGA["Interaction"]["AutoDialogueIndex"]] or PIGA["Interaction"]["AutoDialogueIndex"]
+	self.AutoDialogue.max1:PIGDownMenu_SetText(xmaxindex)
 	self.AutoDown:SetChecked(PIGA['Interaction']['AutoDown']);
 	self.AutoJierenwu:SetChecked(PIGA["Interaction"]["AutoJierenwu"]);
 	self.AutoJiaorenwu:SetChecked(PIGA["Interaction"]["AutoJiaorenwu"]);

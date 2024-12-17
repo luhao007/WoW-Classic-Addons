@@ -262,8 +262,25 @@ function BagBankfun.Zhenghe(Rneirong,tabbut)
 			if(UnitExists("NPC"))then OpenAllBags() end
 		end
 	end);
-	if NDui and NDuiDB["Bags"]["Enable"] or ElvUI and ElvUI_ContainerFrame then 
-
+	local function Elv_bag()
+		if ElvUI then
+			if ElvPrivateDB then
+				if ElvPrivateDB.profiles then
+					if ElvPrivateDB.profiles[Pig_OptionsUI.AllNameElvUI] then
+						if ElvPrivateDB.profiles[Pig_OptionsUI.AllNameElvUI].bags then
+							if ElvPrivateDB.profiles[Pig_OptionsUI.AllNameElvUI].bags.enable==false then
+								return false
+							end
+						end
+					end
+				end
+			end
+			return true
+		end
+		return false
+	end
+	if NDui and NDuiDB["Bags"]["Enable"] then
+	elseif Elv_bag() then 
 	else
 		hooksecurefunc("ContainerFrame_Update", function(frame)
 			if not PIGA["BagBank"]["JunkShow"] then return end
@@ -318,13 +335,13 @@ function BagBankfun.Zhenghe(Rneirong,tabbut)
 
 		BAGheji.AutoSort = CreateFrame("Button",nil,BAGheji, "TruncatedButtonTemplate");
 		BAGheji.AutoSort:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square");
-		BAGheji.AutoSort:SetSize(wwc,hhc);
-		BAGheji.AutoSort:SetPoint("TOPRIGHT",BAGheji,"TOPRIGHT",-54,-38+BAGheji.pianyiliangV);
-		BAGheji.AutoSort.Tex = BAGheji.AutoSort:CreateTexture(nil, "BORDER");
+		BAGheji.AutoSort:SetSize(wwc-2,hhc-2);
+		BAGheji.AutoSort:SetPoint("TOPRIGHT",BAGheji,"TOPRIGHT",-40,-38+BAGheji.pianyiliangV);
+		BAGheji.AutoSort.Tex = BAGheji.AutoSort:CreateTexture();
 		BAGheji.AutoSort.Tex:SetTexture(zhengliIcon);
 		BAGheji.AutoSort.Tex:SetTexCoord(0.168,0.27,0.837,0.934);
 		BAGheji.AutoSort.Tex:SetAllPoints(BAGheji.AutoSort)
-		BAGheji.AutoSort.Tex1 = BAGheji.AutoSort:CreateTexture(nil, "BORDER");
+		BAGheji.AutoSort.Tex1 = BAGheji.AutoSort:CreateTexture();
 		BAGheji.AutoSort.Tex1:SetTexture(zhengliIcon);
 		BAGheji.AutoSort.Tex1:SetTexCoord(0.008,0.11,0.86,0.958);
 		BAGheji.AutoSort.Tex1:SetAllPoints(BAGheji.AutoSort)
@@ -341,40 +358,19 @@ function BagBankfun.Zhenghe(Rneirong,tabbut)
 			PlaySoundFile(567463, "Master")
 			BagBankfun.SortBags()
 		end);
-
-		BAGheji.shezhi = CreateFrame("Button",nil,BAGheji, "TruncatedButtonTemplate"); 
-		BAGheji.shezhi:SetNormalTexture("interface/gossipframe/bindergossipicon.blp"); 
-		BAGheji.shezhi:SetHighlightTexture(130718);
-		BAGheji.shezhi:SetSize(wwc-4,hhc-4);
-		BAGheji.shezhi:SetPoint("TOPLEFT",BAGheji,"TOPLEFT",250,-39+BAGheji.pianyiliangV);
-		BAGheji.shezhi.Down = BAGheji.shezhi:CreateTexture(nil, "OVERLAY");
-		BAGheji.shezhi.Down:SetTexture(130839);
-		BAGheji.shezhi.Down:SetAllPoints(BAGheji.shezhi)
-		BAGheji.shezhi.Down:Hide();
-		BAGheji.shezhi:SetScript("OnMouseDown", function (self)
-			self.Down:Show();
-		end);
-		BAGheji.shezhi:SetScript("OnMouseUp", function (self)
-			self.Down:Hide();
-		end);
-		BAGheji.shezhi:SetScript("OnClick", function (self)
-			PlaySound(SOUNDKIT.IG_CHAT_EMOTE_BUTTON);
-			if Pig_OptionsUI:IsShown() then
-				Pig_OptionsUI:Hide()
-			else
-				Pig_OptionsUI:Show()
-				Create.Show_TabBut(Rneirong,tabbut)
-			end
-		end);
-
+		---
+		BAGheji.EqBut =BagBankfun.addEquipmentbut(BAGheji,{"TOPRIGHT",BAGheji,"TOPRIGHT",-74,-38+BAGheji.pianyiliangV})
+		---
+		BAGheji.shezhi = BagBankfun.addSetbut(BAGheji,{"TOPRIGHT",BAGheji,"TOPRIGHT",-104,-39+BAGheji.pianyiliangV},Rneirong,tabbut)
+		
 		--分类设置
 		BAGheji.fenlei = CreateFrame("Button",nil,BAGheji, "TruncatedButtonTemplate");
 		BAGheji.fenlei:SetHighlightTexture("interface/buttons/ui-common-mousehilight.blp");
-		BAGheji.fenlei:SetSize(18,18);
+		BAGheji.fenlei:SetSize(wwc-8,hhc-6);
 		BAGheji.fenlei:SetPoint("TOPRIGHT",BAGheji,"TOPRIGHT",-6,-42+BAGheji.pianyiliangV);
 		BAGheji.fenlei.Tex = BAGheji.fenlei:CreateTexture(nil, "BORDER");
 		BAGheji.fenlei.Tex:SetAtlas("common-icon-forwardarrow")
-		BAGheji.fenlei.Tex:SetSize(22,19);
+		BAGheji.fenlei.Tex:SetSize(wwc-4,wwc-7);
 		BAGheji.fenlei.Tex:SetPoint("CENTER",BAGheji.fenlei,"CENTER",2,0);
 		BAGheji.fenlei:SetScript("OnMouseDown", function (self)
 			self.Tex:SetPoint("CENTER",BAGheji.fenlei,"CENTER",3,-1);
@@ -393,6 +389,27 @@ function BagBankfun.Zhenghe(Rneirong,tabbut)
 			BAGheji:Show_Hide_but(self.show)
 		end);
 		BagBankfun.addfenleibagbut(BAGheji,"PIG_CharacterBag_")
+		--钥匙
+		BAGheji.key = CreateFrame("Button",nil,BAGheji, "TruncatedButtonTemplate");
+		BAGheji.key:SetNormalTexture("interface/buttons/ui-button-keyring.blp"); 
+		BAGheji.key:SetPushedTexture("interface/buttons/ui-button-keyring-down.blp")
+		BAGheji.key:SetHighlightTexture("interface/buttons/ui-button-keyring-highlight.blp");
+		BAGheji.key:GetNormalTexture():SetTexCoord(0,0.5625,0,0.609375)
+		BAGheji.key:GetPushedTexture():SetTexCoord(0,0.5625,0,0.609375)
+		BAGheji.key:GetHighlightTexture():SetTexCoord(0,0.5625,0,0.609375)
+		BAGheji.key:GetNormalTexture():SetRotation(math.rad(90), {x=0.5, y=0.5})
+		BAGheji.key:GetPushedTexture():SetRotation(math.rad(90), {x=0.5, y=0.5})
+		BAGheji.key:GetHighlightTexture():SetRotation(math.rad(90), {x=0.5, y=0.5})
+		BAGheji.key:SetSize(wwc-7,hhc+10);
+		BAGheji.key:SetPoint("BOTTOMLEFT",BAGheji,"BOTTOMLEFT",30,1);
+		BAGheji.key:SetHitRectInsets(-8,-8,5,5);
+		BAGheji.key:SetScript("OnClick",  function (self)
+			if (CursorHasItem()) then
+				PutKeyInKeyRing();
+			else
+				ToggleBag(KEYRING_CONTAINER);
+			end
+		end);
 		---=====================
 		if tocversion>30000 then
 			hooksecurefunc("ManageBackpackTokenFrame", function(backpack)
@@ -605,7 +622,7 @@ function BagBankfun.Zhenghe(Rneirong,tabbut)
 				Bank_Item_ranse(nil,nil,arg1)
 			end
 		end)
-		---清空位置设置让系统自行设置
+		---清空位置让系统自行设置
 		local Old_ContainerFrame_GenerateFrame=ContainerFrame_GenerateFrame
 		ContainerFrame_GenerateFrame= function(frame, size, id)
 			local name = frame:GetName();
@@ -636,5 +653,4 @@ function BagBankfun.Zhenghe(Rneirong,tabbut)
 		end)
 		--
 	end
-	----
 end

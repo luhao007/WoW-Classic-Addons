@@ -9,12 +9,14 @@ end
 local mod	= DBM:NewMod("TwinEmpsAQ", "DBM-Raids-Vanilla", catID)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20230814031601")
+mod:SetRevision("20241103123604")
 mod:SetCreatureID(15276, 15275)
 mod:SetEncounterID(715)
 if not mod:IsClassic() then
 	mod:SetModelID(15778)--Renders too close in classic
 end
+mod:SetZone(531)
+
 mod:RegisterCombat("combat")
 
 mod:RegisterEventsInCombat(

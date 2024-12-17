@@ -191,7 +191,7 @@ function Create.PIGFrame(Parent,Point,WH,UIName,ESCOFF,Template)
 				self.Tex:SetPoint("CENTER");
 			end);
 			self.Close:HookScript("OnClick", function (self)
-				PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
+				PlaySound(SOUNDKIT.IG_CHAT_EMOTE_BUTTON);
 				CloseUI:Hide()
 			end);
 		end
@@ -199,7 +199,7 @@ function Create.PIGFrame(Parent,Point,WH,UIName,ESCOFF,Template)
 	function frameX:PIGClose(Ww,Hh,CloseUI)
 		local WwHH = {22,22}
 		if tocversion>100000 then
-			WwHH[1]=17;WwHH[2]=17;
+			WwHH[1]=21;WwHH[2]=21;
 		end
 		local Ww = Ww or WwHH[1]
 		local Hh = Hh or WwHH[2]
@@ -277,5 +277,5 @@ function Create.PIGSetPoint()
 		end
 	end
 end
-
+---
 addonTable.Create=Create

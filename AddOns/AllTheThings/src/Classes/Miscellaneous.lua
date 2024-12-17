@@ -303,7 +303,7 @@ local VisualHeaderFields = {
 	text = BaseClass__class.text,
 }
 local CreateVisualHeader, CreateVisualHeader__class
-CreateVisualHeader, CreateVisualHeader__class = app.CreateClass("VisualHeader", "noKey", VisualHeaderFields);
+CreateVisualHeader, CreateVisualHeader__class = app.CreateClass("VisualHeader", "noKey-VisualHeader", VisualHeaderFields);
 app.CreateVisualHeader = CreateVisualHeader
 local Wrap = app.WrapObject;
 app.CreateVisualHeaderWithGroups = function(base, groups)
@@ -367,4 +367,20 @@ for _,field in ipairs({
 	"requireSkill",
 }) do
 	CreateVisualHeader__class[field] = Empty
+end
+
+local CreateNonCollectible, CreateNonCollectible__class = app.CreateClass("NonCollectible", "noKey-nonCollectible", {
+	-- back = function(t)
+	-- 	return 0.3;	-- visibility of which rows are cloned
+	-- end,
+	collectible = app.EmptyFunction,
+});
+-- manually remove the 'key' field since it isn't in BaseClass
+CreateNonCollectible__class.__class.key = nil
+app.CreateNonCollectibleWithGroups = function(base, groups)
+	if groups and #groups > 0 then
+		return Wrap(CreateNonCollectible(nil, {g=groups}), base)
+	else
+		return Wrap(CreateNonCollectible(), base)
+	end
 end

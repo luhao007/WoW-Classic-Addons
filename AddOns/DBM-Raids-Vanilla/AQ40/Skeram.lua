@@ -9,7 +9,7 @@ end
 local mod	= DBM:NewMod("Skeram", "DBM-Raids-Vanilla", catID)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240428104809")
+mod:SetRevision("20241103123604")
 mod:SetCreatureID(15263)
 mod:SetEncounterID(709)
 if not mod:IsClassic() then
@@ -19,6 +19,7 @@ mod:SetUsedIcons(4, 5, 6, 7, 8)
 mod:DisableBossDeathKill()
 mod:SetHotfixNoticeRev(20210522000000)--2021-05-22
 mod:SetMinSyncRevision(20210522000000)
+mod:SetZone(531)
 
 mod:RegisterCombat("combat")
 

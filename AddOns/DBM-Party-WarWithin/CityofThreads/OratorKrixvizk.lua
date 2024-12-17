@@ -1,11 +1,12 @@
 local mod	= DBM:NewMod(2594, "DBM-Party-WarWithin", 8, 1274)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240925005958")
+mod:SetRevision("20241111103343")
 mod:SetCreatureID(216619)
 mod:SetEncounterID(2907)
 mod:SetHotfixNoticeRev(20240818000000)
 --mod:SetMinSyncRevision(20211203000000)
+mod:SetZone(2669)
 --mod.respawnTime = 29
 mod.sendMainBossGUID = true
 
@@ -49,8 +50,8 @@ function mod:OnCombatStart(delay)
 	self.vb.terrorizeCount = 0
 	self.vb.doubtCount = 0
 	self.vb.fakeNewsCount = 0
-	timerSubjugateCD:Start(4.4-delay, 1)--4.4-4.8
-	timerTerrorizeCD:Start(9.3-delay, 1)--9.3-9.7
+	timerSubjugateCD:Start(4.1-delay, 1)--4.1-4.8
+	timerTerrorizeCD:Start(9.1-delay, 1)--9.1-9.7
 	timerVociferousIndoctrinationCD:Start(25.1-delay, 1)
 	if self:IsMythic() then
 		timerShadowsofDoubtCD:Start(14.1-delay, 1)
@@ -79,7 +80,7 @@ function mod:SPELL_CAST_START(args)
 			timerTerrorizeCD:Start(21.8, self.vb.terrorizeCount+1)--21.8-23.1
 		else
 			--Will be delayed by Vociferous Indoctrination
-			timerTerrorizeCD:Start(8.5, self.vb.terrorizeCount+1)--8.4-8.9
+			timerTerrorizeCD:Start(8.1, self.vb.terrorizeCount+1)--8.1-8.9
 		end
 	elseif spellId == 448560 then
 		self.vb.doubtCount = self.vb.doubtCount + 1

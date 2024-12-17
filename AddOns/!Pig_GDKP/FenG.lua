@@ -364,16 +364,17 @@ function GDKPInfo.ADD_fenG(RaidR)
 		C_Timer.After(self.SendCD,function()
 			local ItemSLsit = PIGA["GDKP"]["ItemList"];
 			for id=1,#ItemSLsit do
+				local _,itemLink = GetItemInfo(Fun.HY_ItemLinkJJ(ItemSLsit[id][2]))
 				if ItemSLsit[id][9]>0 or ItemSLsit[id][14]>0 then
 					self.SendCD=self.SendCD+0.02
 					if ItemSLsit[id][14]>0 then
-						SendChatMessage(ItemSLsit[id][2].."x"..ItemSLsit[id][3].." 收入:"..ItemSLsit[id][9]+ItemSLsit[id][14].."G(买方<"..ItemSLsit[id][8]..">尚欠"..ItemSLsit[id][14]..")", RaidR.ChatTypes);
+						SendChatMessage(itemLink.."x"..ItemSLsit[id][3].." 收入:"..ItemSLsit[id][9]+ItemSLsit[id][14].."G(买方<"..ItemSLsit[id][8]..">尚欠"..ItemSLsit[id][14]..")", RaidR.ChatTypes);
 					else
-						SendChatMessage(ItemSLsit[id][2].."x"..ItemSLsit[id][3].." 收入:"..ItemSLsit[id][9].."G(买方<"..ItemSLsit[id][8]..">)", RaidR.ChatTypes);
+						SendChatMessage(itemLink.."x"..ItemSLsit[id][3].." 收入:"..ItemSLsit[id][9].."G(买方<"..ItemSLsit[id][8]..">)", RaidR.ChatTypes);
 					end
 				else
 					if PIGA["GDKP"]["Rsetting"]["liupaibobao"] then
-						table.insert(self.liupaichupin,ItemSLsit[id][2]);
+						table.insert(self.liupaichupin,itemLink);
 					end
 				end
 			end

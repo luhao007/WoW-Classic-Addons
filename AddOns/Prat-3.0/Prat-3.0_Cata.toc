@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Sylvanaar (Sylvaann - Proudmoore/US-Alliance)
-## Version: 3.9.59
+## Version: 3.9.60
 
 ## Title: Prat |cff8080ff3.0|r
 ## Notes: A framework for chat ehancement modules.

@@ -600,7 +600,7 @@ local function WhoWhisper_Fun()
 		button.senmsgFun=true
 	end
 	WhoFrame.senmsg.bianji.F=PIGFrame(WhoFrame.senmsg.bianji,{"TOPLEFT",WhoFrame.senmsg.bianji,"TOPRIGHT",4,0},{300,200})
-	WhoFrame.senmsg.bianji.F:PIGSetBackdrop(1)
+	WhoFrame.senmsg.bianji.F:PIGSetBackdrop(1,nil,nil,nil,0)
 	WhoFrame.senmsg.bianji.F:PIGClose()
 	WhoFrame.senmsg.bianji.F:Hide()
 	WhoFrame.senmsg.bianji.F.biaoti = PIGFontString(WhoFrame.senmsg.bianji.F,{"TOP", WhoFrame.senmsg.bianji.F, "TOP", 0,-4},"密语内容");
@@ -614,7 +614,7 @@ local function WhoWhisper_Fun()
 	WhoFrame.senmsg.bianji.F.NR.E:SetAutoFocus(false);
 	WhoFrame.senmsg.bianji.F.NR.E:SetMultiLine(true)
 	WhoFrame.senmsg.bianji.F.NR.E:SetMaxLetters(200);
-	WhoFrame.senmsg.bianji.F.NR.E:SetTextColor(0.7, 0.7, 0.7, 1);
+	WhoFrame.senmsg.bianji.F.NR.E:SetTextColor(0.7, 0.7, 0.7, 0.6);
 	WhoFrame.senmsg.bianji.F.NR.E:SetScript("OnEditFocusGained", function(self) 
 		self:SetTextColor(1, 1, 1, 1);
 	end);
@@ -764,6 +764,12 @@ local function chaxunxiayipindao(currChatType)
 	end
 	return TABpindaoList[1]
 end
+-- ChatFrame1EditBox:HookScript("OnTabPressed",function(self,key)
+-- 	--print(self,key)
+-- 	print(ChatFrame1EditBox:GetAttribute("tellTarget"), chatType)
+-- 	local newTarget, newTargetType = ChatEdit_GetNextTellTarget(ChatFrame1EditBox:GetAttribute("tellTarget"), chatType);
+-- 	print(newTarget, newTargetType)
+-- end)
 ChatFrame1EditBox:HookScript("OnKeyDown",function(self,key)
 	if key=="TAB" then
 		if PIGA["Chat"]["TABqiehuanOpen"] then
@@ -1031,7 +1037,7 @@ for v=1,Channel_ListF.maxnum do
 		PIGCloseDropDownMenus()
 		panduanjiangeYN(arg1)
 	end
-	xulie.x = PIGDiyBut(xulie,{"LEFT",xulie,"RIGHT",2,0})
+	xulie.x = PIGDiyBut(xulie,{"LEFT",xulie,"RIGHT",2,0},{18})
 	xulie.x:HookScript("OnClick", function (self)
 		PIGA["Chat"]["Channel_List"][v]=nil
 		_G["Channel_List"..v]:PIGDownMenu_SetText("")
@@ -1081,7 +1087,7 @@ local function JoinPigChannel_add()
 	ChatClassColor()
 	TABchatPindao()
 	zhanlianhuiche()
-	local hkldgjlcm="5Zif5Y+r5YW9I+WnrOelnuengCPlronpnZnnmoTlsYDlhavnm5YjRm9yZXZlciPlsI/kuprpm68j5aSp5ZCv5Lio5q6L6ZuqI+S5hOeng+eBrOWFhCPnpbrngazojrkj552/55Ge552/552/I+W8oOS4iemjjiPmibnmibnli5LpqazohLLmna8j6L+35YWJI+S6jOS4tum7kSPovr7nk6bovr7nk6bmmK/mmK8j57uq6Z2S5pe2I+WkseiQveeahOmdnuS4u+a1gQ=="
+	local hkldgjlcm="5Zif5Y+r5YW9I+WnrOelnuengCPlronpnZnnmoTlsYDlhavnm5YjRm9yZXZlciPlsI/kuprpm68j5aSp5ZCv5Lio5q6L6ZuqI+S5hOeng+eBrOWFhCPnpbrngazojrkj552/55Ge552/552/I+W8oOS4iemjjiPmibnmibnli5LpqazohLLmna8j6L+35YWJI+S6jOS4tum7kSPovr7nk6bovr7nk6bmmK/mmK8j57uq6Z2S5pe2I+WkseiQveeahOmdnuS4u+a1gSPpobbnuqflpKfogqXniZsj6bub54mn55m9"
 	local hkldgjlcm=Fun.Base64_decod(hkldgjlcm)
 	local hkldgjlcm = {strsplit("#", hkldgjlcm)}
 	local function LeaveChanne(Name)

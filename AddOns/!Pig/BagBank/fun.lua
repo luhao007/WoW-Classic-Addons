@@ -5,9 +5,12 @@ local Create=addonTable.Create
 local PIGEnter=Create.PIGEnter
 local PIGFontString=Create.PIGFontString
 local BagBankfun=addonTable.BagBankfun
-local GetContainerNumSlots = C_Container.GetContainerNumSlots
-local GetContainerItemLink=C_Container.GetContainerItemLink
+local GetContainerNumSlots =GetContainerNumSlots or C_Container and C_Container.GetContainerNumSlots
+local GetContainerItemLink=GetContainerItemLink or C_Container and C_Container.GetContainerItemLink
+local GetContainerItemID=GetContainerItemID or C_Container and C_Container.GetContainerItemID
 local bagData=addonTable.Data.bagData
+local gsub = _G.string.gsub
+local match = _G.string.match
 --刷新背包LV
 local function Update_itemLV_(itemButton, id, slot)
 	if itemButton.ZLV then
@@ -427,4 +430,212 @@ function BagBankfun.addfenleibagbut(fujiui,uiname)
 			end
 		end
 	end
+end
+---设置
+function BagBankfun.addSetbut(fujiui,point,Rneirong,tabbut)
+	local setbut = CreateFrame("Button",nil,fujiui, "TruncatedButtonTemplate"); 
+	setbut:SetNormalTexture("interface/gossipframe/bindergossipicon.blp"); 
+	setbut:SetHighlightTexture(130718);
+	setbut:SetSize(20,20);
+	setbut:SetPoint(unpack(point));
+	setbut.Down = setbut:CreateTexture(nil, "OVERLAY");
+	setbut.Down:SetTexture(130839);
+	setbut.Down:SetAllPoints(setbut)
+	setbut.Down:Hide();
+	setbut:SetScript("OnMouseDown", function (self)
+		self.Down:Show();
+	end);
+	setbut:SetScript("OnMouseUp", function (self)
+		self.Down:Hide();
+	end);
+	setbut:SetScript("OnClick", function (self)
+		PlaySound(SOUNDKIT.IG_CHAT_EMOTE_BUTTON);
+		if Pig_OptionsUI:IsShown() then
+			Pig_OptionsUI:Hide()
+		else
+			Pig_OptionsUI:Show()
+			Create.Show_TabBut(Rneirong,tabbut)
+		end
+	end);
+	return shezhi
+end
+--装备管理显示
+local bagIDMax= addonTable.Data.bagData["bagIDMax"]
+local find = _G.string.find
+local sub = _G.string.sub
+local eizhiguanKEY = {["keyeqlist"]=EQUIPSET_EQUIP}
+local kaishi,jiehshu=EQUIPMENT_SETS:find(":")
+if kaishi then
+	local keyeqlist=EQUIPMENT_SETS:sub(1,kaishi-1)
+	if keyeqlist then
+		eizhiguanKEY.keyeqlist=keyeqlist
+	end
+else
+	local kaishi,jiehshu=EQUIPMENT_SETS:find("：")
+	if kaishi then
+		local keyeqlist=EQUIPMENT_SETS:sub(1,kaishi-1)
+		if keyeqlist then
+			eizhiguanKEY.keyeqlist=keyeqlist
+		end
+	end
+end
+local Plisttip = CreateFrame("GameTooltip", "Plisttip_UI", UIParent, "GameTooltipTemplate")
+Plisttip:SetOwner(UIParent, "ANCHOR_NONE")
+local function add_Eqicon(fujiui)
+	if fujiui.Eqicon then return end
+	local BagdangeW=fujiui:GetWidth()*0.5
+	fujiui.Eqicon = fujiui:CreateTexture();
+	fujiui.Eqicon:SetSize(BagdangeW,BagdangeW);
+	fujiui.Eqicon:SetPoint("BOTTOMLEFT", 0, -1);
+	fujiui.Eqicon1 = fujiui:CreateTexture();
+	fujiui.Eqicon1:SetSize(BagdangeW,BagdangeW);
+	fujiui.Eqicon1:SetPoint("LEFT",fujiui.Eqicon,"RIGHT", 0, 0);
+	-- fujiui.Eqname = fujiui:CreateFontString();
+	-- fujiui.Eqname:SetPoint("LEFT", fujiui.Eqicon, "RIGHT", 0, 0);
+	-- fujiui.Eqname:SetFont(ChatFontNormal:GetFont(), 14, "OUTLINE")
+	fujiui:HookScript("OnHide", function(self)
+		self.Eqicon:Hide()
+		self.Eqicon1:Hide()
+		--self.Eqname:Hide()
+	end);
+end
+local function HideEqiconEqname(self)
+	self.Eqicon:Hide()
+	self.Eqicon1:Hide()
+	--self.Eqname:Hide()
+end
+local function GetBagIDFun(self)
+	if self.GetBagID then
+		return self:GetBagID()
+	else
+		return self:GetParent():GetID()
+	end
+end
+local function IseizhiguanKEYFun(framef,text)
+	if text:match(eizhiguanKEY.keyeqlist) then
+		local newtet = text:gsub(eizhiguanKEY.keyeqlist,"")
+		local newtet = newtet:gsub(":","")
+		local newtet = newtet:gsub("：","")
+		local newtet = newtet:gsub("|cFF%w%w%w%w%w%w","")
+		local newtet = newtet:gsub("|r","")
+		local newtet = newtet:gsub("|","||")
+		local newtet = newtet:gsub(" ","")
+		local newtet = newtet:gsub("，",",")
+		if newtet then
+			framef.Eqicon:Show()
+			local namelist = {strsplit(",", newtet)};
+			local equipmentSetID = C_EquipmentSet.GetEquipmentSetID(namelist[1])
+			local name, iconFileID = C_EquipmentSet.GetEquipmentSetInfo(equipmentSetID)
+			framef.Eqicon:SetTexture(iconFileID)
+			if #namelist>1 then
+				local equipmentSetID = C_EquipmentSet.GetEquipmentSetID(namelist[2])
+				local name, iconFileID = C_EquipmentSet.GetEquipmentSetInfo(equipmentSetID)
+				framef.Eqicon1:Show()
+				framef.Eqicon1:SetTexture(iconFileID)
+			-- 	framef.Eqname:Show()
+			-- 	framef.Eqname:SetText(#namelist)
+			end
+		end
+		return true
+	end
+end
+local function update_iconname(framef)
+	HideEqiconEqname(framef)
+	local slotID = framef:GetID()
+	if slotID>0 then
+		local BagID,slotID = GetBagIDFun(framef),framef:GetID()
+		local itemID=GetContainerItemID(BagID,slotID)
+		if itemID then
+			local itemID, itemType, itemSubType, itemEquipLoc, icon, classID, subclassID = GetItemInfoInstant(itemID) 
+			if classID==2 or classID==4 then
+				if tocversion<50000 then
+					Plisttip:ClearLines();
+					Plisttip:SetBagItem(BagID,slotID);
+				    local hangname = Plisttip:GetName()
+				    local txtNum = Plisttip:NumLines()
+				    if txtNum then
+				    	for g = 2, txtNum do
+					    	local text = _G[hangname.."TextLeft" .. g]:GetText() or ""
+					    	if IseizhiguanKEYFun(framef,text) then
+								return
+					    	end
+					    end
+					end
+				else
+					local tooltipData = C_TooltipInfo.GetBagItem(BagID,slotID)
+					for _, line in ipairs(tooltipData.lines) do
+						if IseizhiguanKEYFun(framef,line.leftText) then
+							return
+				    	end
+					end
+				end
+			end
+		end
+	end
+end
+local function fun_bagitems(setfun)
+	if GetCVar("combinedBags")=="1" and ContainerFrameCombinedBags then
+		local butnum =#ContainerFrameCombinedBags.Items
+		for ff=1,butnum do
+			local framef = ContainerFrameCombinedBags.Items[ff]
+			setfun(framef)
+		end
+	else
+		for bagx=1,NUM_CONTAINER_FRAMES do
+			local ContainerF = _G["ContainerFrame"..bagx]
+			if ContainerF then
+				if ContainerF.Items then
+					local butnum =#ContainerF.Items
+					for ff=1,butnum do
+						local framef = ContainerF.Items[ff]
+						setfun(framef)
+					end
+				else
+					for solt=1,MAX_CONTAINER_ITEMS do
+						local framef=_G["ContainerFrame"..bagx.."Item"..solt]
+						if framef then
+							setfun(framef)
+						end
+					end
+				end
+			end
+		end
+	end
+end
+function BagBankfun.addEquipmentbut(fujiui,point)
+	local eqbut = CreateFrame("Button",nil,fujiui, "TruncatedButtonTemplate");
+	-- eqbut:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square");
+	-- eqbut:SetSize(20,20);
+	-- eqbut:SetPoint(unpack(point));
+	-- eqbut.Tex = eqbut:CreateTexture();
+	-- eqbut.Tex:SetTexture(255350);
+	-- eqbut.Tex:SetPoint("TOPLEFT",eqbut,"TOPLEFT",-1.4,-2);
+	-- eqbut.Tex:SetPoint("BOTTOMRIGHT",eqbut,"BOTTOMRIGHT",1.4,0);
+	-- eqbut.Tex1 = eqbut:CreateTexture();
+	-- eqbut.Tex1:SetTexture(293755);
+	-- eqbut.Tex1:SetPoint("TOPLEFT",eqbut,"TOPLEFT",-1.4,-2);
+	-- eqbut.Tex1:SetPoint("BOTTOMRIGHT",eqbut,"BOTTOMRIGHT",1.4,0);
+	-- eqbut.Tex1:Hide();
+	-- eqbut:SetScript("OnMouseDown", function (self)
+	-- 	self.Tex:Hide();
+	-- 	self.Tex1:Show();
+	-- end);
+	-- eqbut:SetScript("OnMouseUp", function (self)
+	-- 	self.Tex:Show();
+	-- 	self.Tex1:Hide();
+	-- end);
+	-- fujiui:RegisterEvent("PLAYER_ENTERING_WORLD")
+	-- fujiui:HookScript("OnEvent", function(self,event)
+	-- 	if event=="BAG_UPDATE" then
+	-- 		if self:IsShown() then
+	-- 			fun_bagitems(HideEqiconEqname)
+	-- 		end
+	-- 	end
+	-- end);
+	-- eqbut:SetScript("OnClick",  function (self)
+	-- 	PlaySoundFile(567463, "Master")
+	-- 	fun_bagitems(add_Eqicon)
+	-- 	fun_bagitems(update_iconname)
+	-- end)
+	return eqbut
 end

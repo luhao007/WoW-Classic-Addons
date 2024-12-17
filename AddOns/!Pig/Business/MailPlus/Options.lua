@@ -684,7 +684,6 @@ function BusinessInfo.MailPlus_ADDUI()
 	coll.list:PIGClose()
 	coll.list.xuanzelaiyuan=1
 	if NDui and NDuiMailBoxScrollFrame then
-		coll.list.xuanzelaiyuan=2
 		coll.list.yijiazai=false
 		coll.list:HookScript("OnShow", function (self)
 			local NDuilist=NDuiMailBoxScrollFrame:GetParent()
@@ -717,23 +716,23 @@ function BusinessInfo.MailPlus_ADDUI()
 	"2、通讯录玩家名"..KEY_BUTTON1..":选择发件人，"..KEY_BUTTON2..":删除。\124r\n"..
 	"\124cff00ff003、本人角色删除请到信息统计功能\124r"
 	PIGEnter(coll.list.tishi,L["LIB_TIPS"]..": ",coll.list.tishiNR);
-	coll.list.qitajuese = PIGCheckbutton(coll.list,{"TOPLEFT",coll.list,"TOPLEFT",20,-30},{"其他"},nil,nil,nil,0)
-	coll.list.benrenjuese = PIGCheckbutton(coll.list,{"LEFT", coll.list.qitajuese.Text, "RIGHT", 30, 0},{"本人"},nil,nil,nil,0)
+	coll.list.benrenjuese = PIGCheckbutton(coll.list,{"TOPLEFT",coll.list,"TOPLEFT",20,-30},{"本人"},nil,nil,nil,0)
+	coll.list.qitajuese = PIGCheckbutton(coll.list,{"LEFT", coll.list.benrenjuese.Text, "RIGHT", 30, 0},{"其他"},nil,nil,nil,0)
 	local function xuanzelianxiren()
 		coll.list.qitajuese:SetChecked(false)
 		coll.list.benrenjuese:SetChecked(false)
-		if coll.list.xuanzelaiyuan==1 then
+		if coll.list.xuanzelaiyuan==2 then
 			coll.list.qitajuese:SetChecked(true)
-		elseif coll.list.xuanzelaiyuan==2 then
+		elseif coll.list.xuanzelaiyuan==1 then
 			coll.list.benrenjuese:SetChecked(true)
 		end
 		coll.list.gengxinlistcoll(coll.list.Scroll)
 	end
-	coll.list.qitajuese:HookScript("OnClick", function ()
+	coll.list.benrenjuese:HookScript("OnClick", function ()
 		coll.list.xuanzelaiyuan=1
 		xuanzelianxiren()
 	end);
-	coll.list.benrenjuese:HookScript("OnClick", function ()
+	coll.list.qitajuese:HookScript("OnClick", function ()
 		coll.list.xuanzelaiyuan=2
 		xuanzelianxiren()
 	end);
@@ -750,9 +749,9 @@ function BusinessInfo.MailPlus_ADDUI()
 			listFGV.name:SetTextColor(1, 1, 1, 1);
 	    end
 	    local lianxirendatainfo={}
-	    if coll.list.xuanzelaiyuan==1 then
+	    if coll.list.xuanzelaiyuan==2 then
 			lianxirendatainfo=PIGA["MailPlus"]["Coll"]
-		elseif coll.list.xuanzelaiyuan==2 then
+		elseif coll.list.xuanzelaiyuan==1 then
 			local PlayerData = PIGA["StatsInfo"]["Players"]
 			for nameserver,data in pairs(PlayerData) do
 				local name, server = strsplit("-", nameserver);
@@ -771,11 +770,11 @@ function BusinessInfo.MailPlus_ADDUI()
 					local listFGV = _G["Mail_colllistName"..i]
 					listFGV:Show()
 					listFGV:SetID(AHdangqianH);
-					if coll.list.xuanzelaiyuan==1 then
+					if coll.list.xuanzelaiyuan==2 then
 						listFGV.Sendname=lianxirendatainfo[AHdangqianH]
 						listFGV.name:SetText(lianxirendatainfo[AHdangqianH])
 						listFGV.name:SetPoint("LEFT", listFGV, "LEFT", 4,0);
-					elseif coll.list.xuanzelaiyuan==2 then
+					elseif coll.list.xuanzelaiyuan==1 then
 						listFGV.Sendname=lianxirendatainfo[AHdangqianH][1]
 						listFGV.name:SetText(lianxirendatainfo[AHdangqianH][1])
 						listFGV.Faction:Show()
@@ -863,7 +862,7 @@ function BusinessInfo.MailPlus_ADDUI()
 			if button=="LeftButton" then
 				SendMailNameEditBox:SetText(self.Sendname)
 			else
-				if coll.list.xuanzelaiyuan==1 then
+				if coll.list.xuanzelaiyuan==2 then
 					table.remove(PIGA["MailPlus"]["Coll"],self:GetID())
 					coll.list.gengxinlistcoll(coll.list.Scroll)
 				end
@@ -899,41 +898,67 @@ function BusinessInfo.MailPlus_ADDUI()
 		end
 	end);
 	local NDui_BagName,slotnum = Data.NDui_BagName[1],Data.NDui_BagName[2]
+	local function GetBagIDFun(self)
+		if self.GetBagID then
+			return self:GetBagID()
+		else
+			return self:GetParent():GetID()
+		end
+	end
+	local function PIG_UseContainerItem(self)
+		if BankFrame.GetActiveBankType then
+			C_Container.UseContainerItem(GetBagIDFun(self), self:GetID(), nil, BankFrame:GetActiveBankType(), BankFrame:IsShown() and BankFrame.selectedTab == 2);
+		else
+			C_Container.UseContainerItem(GetBagIDFun(self), self:GetID(), nil, BankFrame:IsShown() and (BankFrame.selectedTab == 2));
+		end
+	end
 	local function zhixingpiliangFun(framef)
 		framef:HookScript("PreClick",  function (self,button)
 			if SendMailFrame:IsVisible() and IsAltKeyDown() then
 				if button == "LeftButton" then
-					if GetCVar("combinedBags")=="1" and ContainerFrameCombinedBags then
-						C_Container.UseContainerItem(self:GetBagID(), self:GetID(), nil, BankFrame:GetActiveBankType(), BankFrame:IsShown() and BankFrame.selectedTab == 2);
-					else
-						C_Container.UseContainerItem(self:GetBagID(), self:GetID(), nil, BankFrame:GetActiveBankType(), BankFrame:IsShown() and BankFrame.selectedTab == 2);
-					end
+					PIG_UseContainerItem(self)
 					SendMailMailButton_OnClick(SendMailMailButton)
 				else
-					local DQitemID=PIGGetContainerItemInfo(self:GetBagID(), self:GetID())
+					local DQitemID=PIGGetContainerItemInfo(GetBagIDFun(self), self:GetID())
 					if DQitemID then
-						C_Container.UseContainerItem(self:GetBagID(), self:GetID(), nil, BankFrame:GetActiveBankType(), BankFrame:IsShown() and BankFrame.selectedTab == 2);
+						PIG_UseContainerItem(self)
 						if GetCVar("combinedBags")=="1" and ContainerFrameCombinedBags then
 							local butnum =#ContainerFrameCombinedBags.Items
 							for ff=1,butnum do
 								local framef = ContainerFrameCombinedBags.Items[ff]
-								local itemID=PIGGetContainerItemInfo(framef:GetBagID(), framef:GetID())
+								local itemID=PIGGetContainerItemInfo(GetBagIDFun(framef), framef:GetID())
 								if itemID then
 									if DQitemID==itemID then
-										C_Container.UseContainerItem(framef:GetBagID(), framef:GetID(), nil, BankFrame:GetActiveBankType(), BankFrame:IsShown() and BankFrame.selectedTab == 2);
+										PIG_UseContainerItem(framef)
 									end
 								end
 							end
 						else
-							for bagx=1,6 do
-								local ContainerF = _G["ContainerFrame"..bagx].Items
-								local butnum =#ContainerF
-								for ff=1,butnum do
-									local framef = ContainerF[ff]
-									local itemID=PIGGetContainerItemInfo(framef:GetBagID(), framef:GetID())
-									if itemID then
-										if DQitemID==itemID then
-											C_Container.UseContainerItem(framef:GetBagID(), framef:GetID(), nil, BankFrame:GetActiveBankType(), BankFrame:IsShown() and BankFrame.selectedTab == 2);
+							for bagx=1,NUM_CONTAINER_FRAMES do
+								local ContainerF = _G["ContainerFrame"..bagx]
+								if ContainerF then
+									if ContainerF.Items then
+										local butnum =#ContainerF.Items
+										for ff=1,butnum do
+											local framef = ContainerF.Items[ff]
+											local itemID=PIGGetContainerItemInfo(GetBagIDFun(framef), framef:GetID())
+											if itemID then
+												if DQitemID==itemID then
+													PIG_UseContainerItem(framef)
+												end
+											end
+										end
+									else
+										for solt=1,MAX_CONTAINER_ITEMS do
+											local framef=_G["ContainerFrame"..bagx.."Item"..solt]
+											if framef then
+												local itemID=PIGGetContainerItemInfo(GetBagIDFun(framef), framef:GetID())
+												if itemID then
+													if DQitemID==itemID then
+														PIG_UseContainerItem(framef)
+													end
+												end
+											end
 										end
 									end
 								end
@@ -943,10 +968,10 @@ function BusinessInfo.MailPlus_ADDUI()
 							for f=1,slotnum do
 								local framef = _G[NDui_BagName..f]
 								if framef then
-									local itemID=PIGGetContainerItemInfo(framef:GetBagID(), framef:GetID())
+									local itemID=PIGGetContainerItemInfo(GetBagIDFun(framef), framef:GetID())
 									if itemID then
 										if DQitemID==itemID then
-											C_Container.UseContainerItem(framef:GetBagID(), framef:GetID(), nil, BankFrame:GetActiveBankType(), BankFrame:IsShown() and BankFrame.selectedTab == 2);
+											PIG_UseContainerItem(framef)
 										end
 									end
 								end
@@ -969,10 +994,20 @@ function BusinessInfo.MailPlus_ADDUI()
 			end
 			for bagx=1,NUM_CONTAINER_FRAMES do
 				local ContainerF = _G["ContainerFrame"..bagx]
-				if ContainerF and ContainerF.Items then
-					local butnum =#ContainerF.Items
-					for ff=1,butnum do
-						zhixingpiliangFun(ContainerF.Items[ff])
+				if ContainerF then
+					if ContainerF.Items then
+						if ContainerF and ContainerF.Items then
+							local butnum =#ContainerF.Items
+							for ff=1,butnum do
+								zhixingpiliangFun(ContainerF.Items[ff])
+							end
+						end
+					else
+						for solt=1,MAX_CONTAINER_ITEMS do
+							if _G["ContainerFrame"..bagx.."Item"..solt] then
+								zhixingpiliangFun(_G["ContainerFrame"..bagx.."Item"..solt])
+							end
+						end
 					end
 				end
 			end
@@ -984,11 +1019,14 @@ function BusinessInfo.MailPlus_ADDUI()
 				end
 			end
 			if ElvUI then
-				local bagidbianhao = Data.ElvUI_BagName[2]
+				local ElvUI_BagName = Data.ElvUI_BagName
 				for f=1,NUM_CONTAINER_FRAMES do
-					for ff=1,36 do
-						if _G[bagidbianhao..f.."Slot"..ff] then
-							zhixingpiliangFun(_G[bagidbianhao..f.."Slot"..ff])
+					for ff=1,MAX_CONTAINER_ITEMS do
+						for ei=1,#ElvUI_BagName do
+							local bagff = _G[ElvUI_BagName[ei]..f.."Slot"..ff]
+							if bagff then
+								zhixingpiliangFun(bagff)
+							end
 						end
 					end
 				end

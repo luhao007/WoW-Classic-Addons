@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Crieve-Sargeras
-## Version: 4.0.18
+## Version: 4.1.8
 
 ## Title: AllTheThings |cfd9b9b9b(Classic)|r
 ## Notes: Addon for Tracking Collections & Account Completion
@@ -13,13 +13,14 @@
 ## AddonCompartmentFuncOnEnter: AllTheThings_MinimapButtonOnEnter
 ## AddonCompartmentFuncOnLeave: AllTheThings_MinimapButtonOnLeave
 
-## SavedVariables: ATTCharacterData, ATTAccountWideData, AllTheThingsSavedVariables, AllTheThingsAD, AllTheThingsSettings, AllTheThingsAuctionData, AllTheThingsDebugData, AllTheThingsHarvestItems
+## SavedVariables: ATTCharacterData, ATTAccountWideData, AllTheThingsSavedVariables, AllTheThingsSettings, AllTheThingsAD, AllTheThingsProfiles, AllTheThingsAuctionData, AllTheThingsDebugData, AllTheThingsHarvestItems
 ## SavedVariablesPerCharacter: AllTheThingsSettingsPerCharacter
 
-## X-Interface: 11504
+## X-Interface: 11504, 11505
 ## X-Wago-ID: yQKyY5K7
 ## X-Curse-Project-ID: 267285
 
+#src\PerformanceTracking.lua
 src\WoW API Wrappers.lua
 
 # Raw DBs
@@ -48,7 +49,6 @@ lib\Audio.lua
 # Load localization modules
 locales\Default Locale.lua
 # locales\en.lua
-classic\locales.lua
 locales\es.lua
 locales\de.lua
 locales\fr.lua
@@ -70,22 +70,23 @@ src\Modules\Color.lua
 # src\Modules\Costs.lua
 src\Modules\Events.lua
 src\Modules\Filter.lua
+# src\Modules\Inventory.lua
 src\Modules\Model.lua
 src\Modules\Social.lua
 src\Modules\Tooltip.lua
 # src\Modules\Upgrade.lua
 src\Modules\Vignette.lua
-
+# src\Modules\Contributor.lua
 # Expansion specific localization files
-db\Classic\ExplorationDB.lua
 db\Classic\LocalizationDB.lua
 db\Classic\Season of Discovery\LocalizationDB.lua
-# db\Classic\ReagentsDB.lua
-db\Presets.lua
 
 # Load object class templates
 src\Classes\base.lua
+# src\Classes\Achievement.lua
+# src\Classes\BattlePet.lua
 src\Classes\CharacterClass.lua
+# src\Classes\Currency.lua
 src\Classes\Difficulty.lua
 src\Classes\Factions.lua
 src\Classes\Quests.lua
@@ -94,8 +95,12 @@ src\Classes\Item.Classic.lua
 src\Classes\Encounter.lua
 src\Classes\Expansion.lua
 src\Classes\FlightPath.lua
+src\Classes\Header.lua
 src\Classes\Maps.lua
+# src\Classes\Mount.lua
+src\Classes\NPC.lua
 src\Classes\Objects.lua
+# src\Classes\Profession.lua
 src\Classes\Category.lua
 src\Classes\Deaths.lua
 src\Classes\Dynamic Categories.lua
@@ -108,10 +113,13 @@ src\Classes\PVP Ranks.lua
 src\Classes\Races.lua
 src\Classes\Title.lua
 src\Classes\Transmog.lua
+# src\Classes\Spell.lua
+# src\Classes\Ensemble.lua
 # src\Classes\CharacterUnlock.lua
 # Item Sub-Classes
+# src\Classes\Heirloom.lua
 src\Classes\Toys.lua
-#src\Classes\Ensembles.lua
+
 # Expansion specific source files
 src\Expansions\Warlords.lua
 src\Expansions\Legion.lua

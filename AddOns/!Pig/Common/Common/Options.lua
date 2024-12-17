@@ -299,39 +299,18 @@ local Opentiaojian = {[1]="只在"..GUILD_CHALLENGE_TYPE2.."记录",[2]="只在"
 function CommonInfo.Commonfun.CombatLog_tjian()
 	if PIGA["Common"]["AutoCombatLogTJ"]==4 then PIGA["Common"]["AutoCombatLogTJ"]=1 end
 end
---桌面提示
-local WCL = PIGFrame(UIParent,{"TOP",UIParent,"TOP",0,0},{54,20},"WCL_OpenUI")
-WCL:PIGSetMovable()
-WCL:Hide()
-WCL.Tex = WCL:CreateTexture(nil, "BORDER");
-WCL.Tex:SetTexture("interface/common/indicator-gray.blp");
-WCL.Tex:SetPoint("LEFT",WCL,"LEFT",0,-1);
-WCL.Tex:SetSize(18,18);
-WCL.t = PIGFontString(WCL,{"LEFT",WCL,"LEFT",18,0},"WCL","OUTLINE")
-function WCL:Update_Time()
-	if ( LoggingCombat() ) then
-		self.Tex:SetTexture("interface/common/indicator-green.blp");
-	else
-		self.Tex:SetTexture("interface/common/indicator-gray.blp");
-	end
-end
+
 local function CombatLog_Open()
 	if ( not LoggingCombat() ) then
-		LoggingCombat(true) 
-		--PIGinfotip:TryDisplayMessage(START..COMBAT_LOG)
-		DEFAULT_CHAT_FRAME:AddMessage(COMBATLOGENABLED, 1, 1, 0, 1);
+		LoggingCombat(true)
 	end
-	WCL:Update_Time()
 end
 local function CombatLog_Stop()
 	if ( LoggingCombat() ) then
 		LoggingCombat(false) 
-		--PIGinfotip:TryDisplayMessage(DISABLE..COMBAT_LOG)
-		DEFAULT_CHAT_FRAME:AddMessage(COMBATLOGDISABLED, 1, 1, 0, 1);
 	end
-	WCL:Update_Time()
 end
-local function AutoCombatLog()
+local function AutoCombatLogFun()
 	if GetCVar("advancedCombatLogging")=="1" then
 		if PIGA["Common"]["AutoCombatLog"] then	
 			local name, instanceType, difficultyID, difficultyName, maxPlayers = GetInstanceInfo()
@@ -341,46 +320,36 @@ local function AutoCombatLog()
 				else
 					CombatLog_Stop()
 				end
-				return
 			elseif PIGA["Common"]["AutoCombatLogTJ"]==1 then
 				if instanceType=="raid" or maxPlayers>5 then
 					CombatLog_Open()
 				else
 					CombatLog_Stop()
 				end
-				return
 			elseif PIGA["Common"]["AutoCombatLogTJ"]==2 then
 				if instanceType=="party" then
 					CombatLog_Open()
 				else
 					CombatLog_Stop()
 				end
-				return
+			else
+				CombatLog_Stop()
 			end
-			CombatLog_Stop()
 		end
 	else
 		CombatLog_Stop()
 	end
-end
-local function WCL_Show()
-	if PIGA["Common"]["AutoCombatLog"] and GetCVar("advancedCombatLogging")=="1" then
-		WCL:Show()
-	else
-		WCL:Hide()
+	if PIGtopMenu_UI and PIGtopMenu_UI.WCL then
+		if ( LoggingCombat() ) then
+			PIGtopMenu_UI.WCL.Tooltip=COMBAT_LOG..SLASH_TEXTTOSPEECH_ON.."\n"..COMBATLOGENABLED
+			PIGtopMenu_UI.WCL:GetNormalTexture():SetDesaturated(false)
+		else
+			PIGtopMenu_UI.WCL.Tooltip=COMBAT_LOG..SLASH_TEXTTOSPEECH_OFF--COMBATLOGDISABLED
+			PIGtopMenu_UI.WCL:GetNormalTexture():SetDesaturated(true)
+		end
 	end
 end
-local function CombatLog_Set()
-	WCL_Show()
-	if ( LoggingCombat() ) then
-		fujiF.xingnengF.CombatLog.Opentj.on:SetText("正在记录")
-		fujiF.xingnengF.CombatLog.Opentj.on:SetTextColor(0, 1, 0, 1)
-	else
-		fujiF.xingnengF.CombatLog.Opentj.on:SetText("未记录")
-		fujiF.xingnengF.CombatLog.Opentj.on:SetTextColor(1, 0, 0, 1)
-	end
-end
-local function gengxinONOFF()
+local function UpdateWCL_ONOFF()
 	fujiF.xingnengF.Advanced_CombatLog:SetChecked(false);
 	fujiF.xingnengF.CombatLog:SetChecked(PIGA["Common"]["AutoCombatLog"]);
 	fujiF.xingnengF.CombatLog.Opentj:PIGDownMenu_SetText(Opentiaojian[PIGA["Common"]["AutoCombatLogTJ"]])
@@ -389,10 +358,16 @@ local function gengxinONOFF()
 		fujiF.xingnengF.Advanced_CombatLog:SetChecked(true);
 		fujiF.xingnengF.CombatLog:Enable()
 	end
-	CombatLog_Set()
+	if ( LoggingCombat() ) then
+		fujiF.xingnengF.CombatLog.Opentj.on:SetText("正在记录")
+		fujiF.xingnengF.CombatLog.Opentj.on:SetTextColor(0, 1, 0, 1)
+	else
+		fujiF.xingnengF.CombatLog.Opentj.on:SetText("未记录")
+		fujiF.xingnengF.CombatLog.Opentj.on:SetTextColor(1, 0, 0, 1)
+	end
 end
 fujiF.xingnengF.Advanced_CombatLog =PIGCheckbutton_R(fujiF.xingnengF,{ENABLE..ADVANCED_COMBAT_LOGGING,ENABLE..ADVANCED_COMBAT_LOGGING},true)
-fujiF.xingnengF.Advanced_CombatLog.tt = PIGFontString(fujiF.xingnengF.Advanced_CombatLog,{"LEFT",fujiF.xingnengF.Advanced_CombatLog.Text,"RIGHT",2,0},"《"..ENABLE..ADVANCED_COMBAT_LOGGING.."才可自动记录WCL》");
+fujiF.xingnengF.Advanced_CombatLog.tt = PIGFontString(fujiF.xingnengF.Advanced_CombatLog,{"LEFT",fujiF.xingnengF.Advanced_CombatLog.Text,"RIGHT",2,0},"《"..ENABLE..ADVANCED_COMBAT_LOGGING.."才可"..ENABLE..COMBAT_LOG.."》");
 fujiF.xingnengF.Advanced_CombatLog.tt:SetTextColor(1, 0, 0, 1)
 fujiF.xingnengF.Advanced_CombatLog:SetScript("OnClick", function (self)
 	if self:GetChecked() then
@@ -400,18 +375,18 @@ fujiF.xingnengF.Advanced_CombatLog:SetScript("OnClick", function (self)
 	else
 		SetCVar("advancedCombatLogging", "0")
 	end
-	AutoCombatLog()
-	C_Timer.After(1,gengxinONOFF)
+	AutoCombatLogFun()
+	C_Timer.After(1,UpdateWCL_ONOFF)
 end);
-fujiF.xingnengF.CombatLog =PIGCheckbutton_R(fujiF.xingnengF,{"自动"..START.."WCL"..COMBAT_LOG,"根据预设条件自动"..START..COMBAT_LOG},true)
+fujiF.xingnengF.CombatLog =PIGCheckbutton_R(fujiF.xingnengF,{"自动"..START..COMBAT_LOG,"根据预设条件自动"..START..COMBAT_LOG},true)
 fujiF.xingnengF.CombatLog:SetScript("OnClick", function (self)
 	if self:GetChecked() then
 		PIGA["Common"]["AutoCombatLog"]=true
 	else
 		PIGA["Common"]["AutoCombatLog"]=false
 	end
-	AutoCombatLog()
-	C_Timer.After(1,gengxinONOFF)
+	AutoCombatLogFun()
+	C_Timer.After(1,UpdateWCL_ONOFF)
 end);
 fujiF.xingnengF.CombatLog.Opentj=PIGDownMenu(fujiF.xingnengF.CombatLog,{"LEFT",fujiF.xingnengF.CombatLog.Text,"RIGHT",4,0},{210,nil})
 fujiF.xingnengF.CombatLog.Opentj.tt = PIGFontString(fujiF.xingnengF.CombatLog.Opentj,{"LEFT",fujiF.xingnengF.CombatLog.Opentj,"RIGHT",10,0},"当前状态:");
@@ -429,15 +404,11 @@ function fujiF.xingnengF.CombatLog.Opentj:PIGDownMenu_SetValue(value,arg1,arg2)
 	fujiF.xingnengF.CombatLog.Opentj:PIGDownMenu_SetText(value)
 	PIGA["Common"]["AutoCombatLogTJ"]=arg1
 	PIGCloseDropDownMenus()
-	AutoCombatLog()
-	C_Timer.After(1,gengxinONOFF)
+	AutoCombatLogFun()
+	C_Timer.After(1,UpdateWCL_ONOFF)
 end
-fujiF.xingnengF.CombatLog.tishiP=PIGButton(fujiF.xingnengF.CombatLog,{"LEFT",fujiF.xingnengF.CombatLog,"RIGHT",520,0},{50,20},"重置")
-PIGEnter(fujiF.xingnengF.CombatLog.tishiP,"|cffFF0000重置|r桌面提示图标的位置")
-fujiF.xingnengF.CombatLog.tishiP:SetScript("OnClick", function ()
-	WCL:ClearAllPoints();
-	WCL:SetPoint("TOP",UIParent,"TOP",0,0);
-end);
+fujiF.xingnengF.CombatLog.tips = PIGFontString(fujiF.xingnengF.CombatLog,{"TOPLEFT",fujiF.xingnengF.CombatLog,"BOTTOMLEFT",20,-6},COMBATLOGENABLED);
+
 --系统设置---------
 fujiF.xitongF=PIGFrame(fujiF,{"BOTTOMLEFT", fujiF, "BOTTOMLEFT", 0, 0})
 fujiF.xitongF:SetPoint("BOTTOMRIGHT", fujiF, "BOTTOMRIGHT", 0, 0);
@@ -488,7 +459,7 @@ fujiF:HookScript("OnShow", function (self)
 		self.xingnengF.offnewfont:SetChecked(true)
 	end
 	--
-	gengxinONOFF()
+	UpdateWCL_ONOFF()
 	self.xitongF.Scale:SetChecked(GetCVarBool("useUIScale"));
 	self.xitongF.ScaleSlider:PIGSetValue(GetCVar("uiscale"))
 	self.xitongF.VolumeSlider:PIGSetValue(GetCVar("Sound_MasterVolume"))
@@ -497,7 +468,6 @@ end);
 fujiF:RegisterEvent("PLAYER_ENTERING_WORLD");
 fujiF:SetScript("OnEvent",function (self,event,arg1,arg2)
 	if event=="PLAYER_ENTERING_WORLD" then
-		AutoCombatLog()
-		WCL_Show()
+		AutoCombatLogFun()
 	end
 end)

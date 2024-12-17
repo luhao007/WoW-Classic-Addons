@@ -1,7 +1,8 @@
 local mod	= DBM:NewMod("UnderrotTrash", "DBM-Party-BfA", 8)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240808043723")
+mod:SetRevision("20241103105007")
+mod:SetZone(1841)
 --mod:SetModelID(47785)
 
 mod.isTrashMod = true

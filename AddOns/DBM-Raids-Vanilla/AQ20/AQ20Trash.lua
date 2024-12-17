@@ -9,11 +9,12 @@ end
 local mod	= DBM:NewMod("AQ20Trash", "DBM-Raids-Vanilla", catID)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240313002358")
+mod:SetRevision("20241103123604")
 if not mod:IsClassic() then
 	mod:SetModelID(15741)-- Qiraji Gladiator
 end
 mod:SetMinSyncRevision(20200710000000)--2020, 7, 10
+mod:SetZone(509)
 
 mod.isTrashMod = true
 

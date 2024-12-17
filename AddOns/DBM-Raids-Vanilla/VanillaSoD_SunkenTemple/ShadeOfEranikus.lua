@@ -1,12 +1,13 @@
 local mod	= DBM:NewMod("ShadeofEranikusSoD", "DBM-Raids-Vanilla", 8)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240714050835")
+mod:SetRevision("20241103123604")
 mod:SetCreatureID(218571)
 mod:SetEncounterID(2959)
 mod:SetUsedIcons(8, 7)
 mod:SetHotfixNoticeRev(20240405000000)
 --mod:SetMinSyncRevision(20231115000000)
+mod:SetZone(109)
 mod.respawnTime = 29--VERIFY, it felt like at least this long
 
 mod:RegisterCombat("combat")

@@ -450,8 +450,8 @@ local function del_ErrorInfo()
 	PIGA["Error"]=PIGA["Error"] or addonTable.Default["Error"]
 	local cuowuNum = #PIGA["Error"]["ErrorDB"]
 	if cuowuNum>0 then
-		if cuowuNum>500 then
-			for i=(cuowuNum-500),1,-1 do
+		if cuowuNum>10 then
+			for i=(cuowuNum-10),1,-1 do
 				table.remove(PIGA["Error"]["ErrorDB"],i)
 			end
 		end

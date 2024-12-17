@@ -3,7 +3,7 @@ local L		= mod:GetLocalizedStrings()
 
 mod.statTypes = "normal,normal25,heroic,heroic25"
 
-mod:SetRevision("20240512232312")
+mod:SetRevision("20241103133102")
 local addsIcon
 local bossID
 mod:SetEncounterID(not mod:IsPostCata() and 847 or 1099)--No ES fires this combat
@@ -20,6 +20,7 @@ else
 	addsIcon = 23336
 	bossID = 36948
 end
+mod:SetZone(631)
 
 mod:RegisterCombat("combat")
 

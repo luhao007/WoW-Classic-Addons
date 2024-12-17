@@ -6,6 +6,7 @@ local extDefault = {
 	["Rsetting"] ={
 		["danwei"]=1,
 		["autofen"]=false,
+		["autofenMsg"] = true,
 		["bobaomingxi"] = true,
 		["liupaibobao"] = true,
 		["liupaichuli"]="组织者自行处理",

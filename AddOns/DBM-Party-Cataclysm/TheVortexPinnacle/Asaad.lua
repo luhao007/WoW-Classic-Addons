@@ -9,11 +9,12 @@ else
 	mod.statTypes = "normal,heroic"
 end
 
-mod:SetRevision("20240615053330")
+mod:SetRevision("20241102154000")
 mod:SetCreatureID(43875)
 mod:SetEncounterID(1042)
 mod:SetHotfixNoticeRev(20230526000000)
 --mod:SetMinSyncRevision(20230226000000)
+mod:SetZone(657)
 mod.sendMainBossGUID = true
 
 mod:RegisterCombat("combat")

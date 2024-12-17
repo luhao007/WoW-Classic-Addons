@@ -2162,3 +2162,13 @@ Change Log:
 * Added TWW spells for TWW Delves 
 * Added TWW spells for Cinderbrew Meadery
 * Added TWW spells for Nerub-ar Palace
+
+5.14.1
+* Updated for patch 11.0.5
+* Added TWW spells for Blackrock Depths (Raid)
+* Added TWW spells for Nerub-ar Palace (Thanks Kuhani)
+
+5.14.2
+* Added The War Within spells (world)
+* Added Vanilla spells (world)
+* Added TWW spells for Blackrock Depths (Raid)

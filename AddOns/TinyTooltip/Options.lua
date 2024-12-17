@@ -103,17 +103,17 @@ function widgets:checkbox(parent, config, labelText)
 end
 
 function widgets:slider(parent, config)
-    local frame = CreateFrame("Slider", nil, parent, "OptionsSliderTemplate")
+    local frame = CreateFrame("Slider", nil, parent, "UISliderTemplate")
     frame:SetWidth(118)
     frame.Text = frame:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
     frame.Text:SetPoint("LEFT", frame, "RIGHT", 8, 0)
     frame.keystring = config.keystring
-    frame.Low:SetText("")
-    frame.High:SetTextColor(1, 0.82, 0)
-    frame.High:ClearAllPoints()
-    frame.High:SetPoint("RIGHT", frame, "LEFT", -1, 0)
+    --frame.Low:SetText("")
+    --frame.High:SetTextColor(1, 0.82, 0)
+    --frame.High:ClearAllPoints()
+    --frame.High:SetPoint("RIGHT", frame, "LEFT", -1, 0)
     frame.Text:SetText(L[config.keystring])
-    frame.High:SetText(GetVariable(config.keystring))
+    --frame.High:SetText(GetVariable(config.keystring))
     frame:SetMinMaxValues(config.min, config.max)
     frame:SetValueStep(config.step)
     frame:SetValue(GetVariable(config.keystring))
@@ -128,7 +128,7 @@ function widgets:slider(parent, config)
         end
         if (self:GetValue() ~= value) then
             SetVariable(self.keystring, value)
-            self.High:SetText(value)
+            --self.High:SetText(value)
         end
     end)
     return frame
@@ -513,7 +513,8 @@ widgets.borderDropdata = {"default","angular",}
 widgets.fontDropdata = {"default", "ChatFontNormal", "GameFontNormal", "QuestFont", "CombatLogFont",}
 widgets.barDropdata = {"Interface\\AddOns\\"..addonName.."\\texture\\StatusBar",}
 
-LibEvent:attachEvent("VARIABLES_LOADED", function()
+--LibEvent:attachEvent("VARIABLES_LOADED", function()
+LibEvent:attachEvent("PLAYER_ENTERING_WORLD", function()
     local LibMedia = LibStub:GetLibrary("LibSharedMedia-3.0", true)
     local MergeTable = function(a,b)
         for _, v in pairs(b) do tinsert(a, v) end
@@ -631,7 +632,8 @@ local options = {
 local frame = CreateFrame("Frame", nil, UIParent)
 frame.anchor = CreateFrame("Frame", nil, frame)
 frame.anchor:SetPoint("TOPLEFT", 32, -16)
-frame.anchor:SetSize(InterfaceOptionsFramePanelContainer:GetWidth()-64, 1)
+--frame.anchor:SetSize(InterfaceOptionsFramePanelContainer:GetWidth()-64, 1)
+frame.anchor:SetSize(SettingsPanel.Container.SettingsCanvas:GetWidth()-64, 1)
 frame.title = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
 frame.title:SetPoint("TOPLEFT", 18, -16)
 frame.title:SetText(format("%s |cff33eeff%s|r", addonName, "General"))
@@ -640,7 +642,8 @@ frame.name = addonName
 local framePC = CreateFrame("Frame", nil, UIParent)
 framePC.anchor = CreateFrame("Frame", nil, framePC)
 framePC.anchor:SetPoint("TOPLEFT", 32, -13)
-framePC.anchor:SetSize(InterfaceOptionsFramePanelContainer:GetWidth()-64, 1)
+--framePC.anchor:SetSize(InterfaceOptionsFramePanelContainer:GetWidth()-64, 1)
+framePC.anchor:SetSize(SettingsPanel.Container.SettingsCanvas:GetWidth()-64, 1)
 framePC.title = framePC:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
 framePC.title:SetPoint("TOPLEFT", 18, -16)
 framePC.title:SetText(format("%s |cff33eeff%s|r", addonName, "Unit Is Player"))
@@ -677,7 +680,8 @@ framePCScrollFrame:Hide()
 local frameNPC = CreateFrame("Frame", nil, UIParent)
 frameNPC.anchor = CreateFrame("Frame", nil, frameNPC)
 frameNPC.anchor:SetPoint("TOPLEFT", 32, -16)
-frameNPC.anchor:SetSize(InterfaceOptionsFramePanelContainer:GetWidth()-64, 1)
+--frameNPC.anchor:SetSize(InterfaceOptionsFramePanelContainer:GetWidth()-64, 1)
+frameNPC.anchor:SetSize(SettingsPanel.Container.SettingsCanvas:GetWidth()-64, 1)
 frameNPC.title = frameNPC:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
 frameNPC.title:SetPoint("TOPLEFT", 18, -16)
 frameNPC.title:SetText(format("%s |cff33eeff%s|r", addonName, "Unit Is NPC"))
@@ -700,7 +704,8 @@ frameNPCScrollFrame.name = " - NPC"
 local frameStatusbar = CreateFrame("Frame", nil, UIParent)
 frameStatusbar.anchor = CreateFrame("Frame", nil, frameStatusbar)
 frameStatusbar.anchor:SetPoint("TOPLEFT", 32, -16)
-frameStatusbar.anchor:SetSize(InterfaceOptionsFramePanelContainer:GetWidth()-64, 1)
+--frameStatusbar.anchor:SetSize(InterfaceOptionsFramePanelContainer:GetWidth()-64, 1)
+frameStatusbar.anchor:SetSize(SettingsPanel.Container.SettingsCanvas:GetWidth()-64, 1)
 frameStatusbar.title = frameStatusbar:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
 frameStatusbar.title:SetPoint("TOPLEFT", 18, -16)
 frameStatusbar.title:SetText(format("%s |cff33eeff%s|r", addonName, "StatusBar"))
@@ -710,7 +715,8 @@ frameStatusbar.name = " - StatusBar"
 local frameSpell = CreateFrame("Frame", nil, UIParent)
 frameSpell.anchor = CreateFrame("Frame", nil, frameSpell)
 frameSpell.anchor:SetPoint("TOPLEFT", 32, -16)
-frameSpell.anchor:SetSize(InterfaceOptionsFramePanelContainer:GetWidth()-64, 1)
+--frameSpell.anchor:SetSize(InterfaceOptionsFramePanelContainer:GetWidth()-64, 1)
+frameSpell.anchor:SetSize(SettingsPanel.Container.SettingsCanvas:GetWidth()-64, 1)
 frameSpell.title = frameSpell:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
 frameSpell.title:SetPoint("TOPLEFT", 18, -16)
 frameSpell.title:SetText(format("%s |cff33eeff%s|r", addonName, "Spell"))
@@ -720,7 +726,8 @@ frameSpell.name = " - Spell"
 local frameFont = CreateFrame("Frame", nil, UIParent)
 frameFont.anchor = CreateFrame("Frame", nil, frameFont)
 frameFont.anchor:SetPoint("TOPLEFT", 32, -16)
-frameFont.anchor:SetSize(InterfaceOptionsFramePanelContainer:GetWidth()-64, 1)
+--frameFont.anchor:SetSize(InterfaceOptionsFramePanelContainer:GetWidth()-64, 1)
+frameFont.anchor:SetSize(SettingsPanel.Container.SettingsCanvas:GetWidth()-64, 1)
 frameFont.title = frameFont:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
 frameFont.title:SetPoint("TOPLEFT", 18, -16)
 frameFont.title:SetText(format("%s |cff33eeff%s|r", addonName, "Font"))
@@ -730,7 +737,8 @@ frameFont.name = " - Font"
 local frameVariables = CreateFrame("Frame", nil, UIParent)
 frameVariables.anchor = CreateFrame("Frame", nil, frameVariables)
 frameVariables.anchor:SetPoint("TOPLEFT", 32, -16)
-frameVariables.anchor:SetSize(InterfaceOptionsFramePanelContainer:GetWidth()-64, 1)
+--frameVariables.anchor:SetSize(InterfaceOptionsFramePanelContainer:GetWidth()-64, 1)
+frameVariables.anchor:SetSize(SettingsPanel.Container.SettingsCanvas:GetWidth()-64, 1)
 frameVariables.title = frameVariables:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
 frameVariables.title:SetPoint("TOPLEFT", 18, -16)
 frameVariables.title:SetText(format("%s |cff33eeff%s|r", addonName, "Variables"))
@@ -779,7 +787,8 @@ local function InitOptions(list, parent, height)
     end
 end
 
-LibEvent:attachEvent("VARIABLES_LOADED", function()
+--LibEvent:attachEvent("VARIABLES_LOADED", function()
+LibEvent:attachEvent("PLAYER_ENTERING_WORLD", function()
     InitOptions(options.general, frame, 32)
     InitOptions(options.pc, framePC, 29)
     InitOptions(options.npc, frameNPC, 27)
@@ -789,6 +798,15 @@ LibEvent:attachEvent("VARIABLES_LOADED", function()
     InitVariablesFrame()
 end)
 
+local addonCategory = Settings.RegisterCanvasLayoutCategory(frame, addonName)
+Settings.RegisterAddOnCategory(addonCategory)
+Settings.RegisterAddOnCategory(Settings.RegisterCanvasLayoutSubcategory(addonCategory, framePCScrollFrame, framePCScrollFrame.name))
+Settings.RegisterAddOnCategory(Settings.RegisterCanvasLayoutSubcategory(addonCategory, frameNPCScrollFrame, frameNPCScrollFrame.name))
+Settings.RegisterAddOnCategory(Settings.RegisterCanvasLayoutSubcategory(addonCategory, frameSpell, frameSpell.name))
+Settings.RegisterAddOnCategory(Settings.RegisterCanvasLayoutSubcategory(addonCategory, frameFont, frameFont.name))
+Settings.RegisterAddOnCategory(Settings.RegisterCanvasLayoutSubcategory(addonCategory, frameVariables, frameVariables.name))
+
+--[[
 InterfaceOptions_AddCategory(frame)
 InterfaceOptions_AddCategory(framePCScrollFrame)
 InterfaceOptions_AddCategory(frameNPCScrollFrame)
@@ -796,6 +814,7 @@ InterfaceOptions_AddCategory(frameStatusbar)
 InterfaceOptions_AddCategory(frameSpell)
 InterfaceOptions_AddCategory(frameFont)
 InterfaceOptions_AddCategory(frameVariables)
+--]]
 SLASH_TinyTooltip1 = "/tinytooltip"
 SLASH_TinyTooltip2 = "/tt"
 SLASH_TinyTooltip3 = "/tip"
@@ -803,21 +822,21 @@ function SlashCmdList.TinyTooltip(msg, editbox)
     if (msg == "reset") then
         BigTipDB = {}
     elseif (msg == "npc") then
-        InterfaceOptionsFrame_OpenToCategory(frameNPC)
-        InterfaceOptionsFrame_OpenToCategory(frameNPC)
+        Settings.OpenToCategory(frameNPC)
+        --InterfaceOptionsFrame_OpenToCategory(frameNPC)
     elseif (msg == "player") then
-        InterfaceOptionsFrame_OpenToCategory(framePCScrollFrame)
-        InterfaceOptionsFrame_OpenToCategory(framePCScrollFrame)
+        Settings.OpenToCategory(framePCScrollFrame)
+        --InterfaceOptionsFrame_OpenToCategory(framePCScrollFrame)
     elseif (msg == "spell") then
-        InterfaceOptionsFrame_OpenToCategory(frameSpell)
-        InterfaceOptionsFrame_OpenToCategory(frameSpell)
+        Settings.OpenToCategory(frameSpell)
+        --InterfaceOptionsFrame_OpenToCategory(frameSpell)
     elseif (msg == "statusbar") then
-        InterfaceOptionsFrame_OpenToCategory(frameStatusbar)
-        InterfaceOptionsFrame_OpenToCategory(frameStatusbar)
+        Settings.OpenToCategory(frameStatusbar)
+        --InterfaceOptionsFrame_OpenToCategory(frameStatusbar)
     else
-        InterfaceOptionsFrame_OpenToCategory(frameStatusbar)
-        InterfaceOptionsFrame_OpenToCategory(frameStatusbar)
-        InterfaceOptionsFrame_OpenToCategory(frame)
+        Settings.OpenToCategory(frameStatusbar)
+        --InterfaceOptionsFrame_OpenToCategory(frameStatusbar)
+        --InterfaceOptionsFrame_OpenToCategory(frame)
     end
 end
 

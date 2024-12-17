@@ -18,10 +18,12 @@ else
 	mod.statTypes = "normal"
 end
 
-mod:SetRevision("20240928080825")
+mod:SetRevision("20241103123604")
 mod:SetCreatureID(12017)
 mod:SetEncounterID(612)
 mod:SetModelID(14308)
+mod:SetZone(469)
+
 mod:RegisterCombat("combat_yell", L.Pull)--L.Pull is backup for classic, since classic probably won't have ENCOUNTER_START to rely on and player regen never works for this boss
 
 mod:RegisterEventsInCombat(

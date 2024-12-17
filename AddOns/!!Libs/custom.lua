@@ -1,22 +1,3 @@
--- 添加材质
-
-local media = LibStub("LibSharedMedia-3.0")
-
-media:Register("statusbar", "Atlas", "Interface\\AddOns\\!!Libs\\textures\\Atlas")
-media:Register("statusbar", "Delicate", "Interface\\AddOns\\!!Libs\\textures\\Delicate")
-media:Register("statusbar", "Dirty Fog", "Interface\\AddOns\\!!Libs\\textures\\Dirty Fog")
-media:Register("statusbar", "eXpresso", "Interface\\AddOns\\!!Libs\\textures\\eXpresso")
-media:Register("statusbar", "Petrol", "Interface\\AddOns\\!!Libs\\textures\\Petrol")
-media:Register("statusbar", "Portrait", "Interface\\AddOns\\!!Libs\\textures\\Portrait")
-media:Register("statusbar", "Relay", "Interface\\AddOns\\!!Libs\\textures\\Relay")
-media:Register("statusbar", "Sublime Light", "Interface\\AddOns\\!!Libs\\textures\\Sublime Light")
-media:Register("statusbar", "Ultra Voilet", "Interface\\AddOns\\!!Libs\\textures\\Ultra Voilet")
-
-media:Register("statusbar", "SmokAugbar", "Interface\\AddOns\\!!Libs\\textures\\SmokAugbar")
-media:Register("statusbar", "SmokObjectiveTracker", "Interface\\AddOns\\!!Libs\\textures\\SmokObjectiveTracker")
-media:Register("statusbar", "SmokOnePixelBackground", "Interface\\AddOns\\!!Libs\\textures\\SmokOnePixelBackground")
-media:Register("statusbar", "SmokOnePixelbar", "Interface\\AddOns\\!!Libs\\textures\\SmokOnePixelbar")
-
 
 -- 显示装等
 

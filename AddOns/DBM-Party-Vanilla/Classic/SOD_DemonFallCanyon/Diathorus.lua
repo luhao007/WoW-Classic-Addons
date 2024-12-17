@@ -1,9 +1,10 @@
 local mod	= DBM:NewMod("Diathorus", "DBM-Party-Vanilla", 21)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240714212927")
+mod:SetRevision("20241103114940")
 mod:SetEncounterID(3024)
 mod:SetCreatureID(227019)
+mod:SetZone(2784)
 
 mod:RegisterCombat("combat")
 

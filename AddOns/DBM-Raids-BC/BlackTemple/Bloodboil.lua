@@ -7,12 +7,13 @@ else
 	mod.statTypes = "normal25"
 end
 
-mod:SetRevision("20240426180207")
+mod:SetRevision("20241103131702")
 mod:SetCreatureID(22948)
 mod:SetEncounterID(605, 2477)
 mod:SetModelID(21443)
 mod:SetHotfixNoticeRev(20220120000000)
 mod:SetMinSyncRevision(20220120000000)
+mod:SetZone(564)
 
 mod:RegisterCombat("combat")
 

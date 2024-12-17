@@ -178,7 +178,7 @@ class Manager:
         lines += ['-- Add textures\n', '\n']
         for texture in os.listdir(root / 'textures'):
             t = texture.split('.')[0]
-            lines.append(f'media:Register(media.MediaType.STATUSBAR, "{t}", "{p}\\\\textures\\\\{t}.tga")\n')
+            lines.append(f'media:Register(media.MediaType.STATUSBAR, "{t}", "{p}\\\\textures\\\\{t}")\n')
 
         lines += ['\n', '-- Add fonts\n', '\n']
 

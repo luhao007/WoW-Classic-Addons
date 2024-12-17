@@ -235,31 +235,10 @@ function BagBankfun.Zhenghe(Rneirong,tabbut)
 			BagItemSearchBox:SetWidth(160);
 			BagItemSearchBox:SetPoint("TOPLEFT",ContainerFrameCombinedBags,"TOPLEFT",40,-37);
 		end)
+		---
+		ContainerFrameCombinedBags.EqBut =BagBankfun.addEquipmentbut(ContainerFrameCombinedBags,{"TOPRIGHT",ContainerFrameCombinedBags,"TOPRIGHT",-52,-37})
 		--
-		ContainerFrameCombinedBags.shezhi = CreateFrame("Button",nil,ContainerFrameCombinedBags, "TruncatedButtonTemplate"); 
-		ContainerFrameCombinedBags.shezhi:SetNormalTexture("interface/gossipframe/bindergossipicon.blp"); 
-		ContainerFrameCombinedBags.shezhi:SetHighlightTexture(130718);
-		ContainerFrameCombinedBags.shezhi:SetSize(wwc-4,hhc-4);
-		ContainerFrameCombinedBags.shezhi:SetPoint("TOPLEFT",ContainerFrameCombinedBags,"TOPLEFT",260,-38);
-		ContainerFrameCombinedBags.shezhi.Down = ContainerFrameCombinedBags.shezhi:CreateTexture(nil, "OVERLAY");
-		ContainerFrameCombinedBags.shezhi.Down:SetTexture(130839);
-		ContainerFrameCombinedBags.shezhi.Down:SetAllPoints(ContainerFrameCombinedBags.shezhi)
-		ContainerFrameCombinedBags.shezhi.Down:Hide();
-		ContainerFrameCombinedBags.shezhi:SetScript("OnMouseDown", function (self)
-			self.Down:Show();
-		end);
-		ContainerFrameCombinedBags.shezhi:SetScript("OnMouseUp", function (self)
-			self.Down:Hide();
-		end);
-		ContainerFrameCombinedBags.shezhi:SetScript("OnClick", function (self)
-			PlaySound(SOUNDKIT.IG_CHAT_EMOTE_BUTTON);
-			if Pig_OptionsUI:IsShown() then
-				Pig_OptionsUI:Hide()
-			else
-				Pig_OptionsUI:Show()
-				Create.Show_TabBut(Rneirong,tabbut)
-			end
-		end);
+		ContainerFrameCombinedBags.shezhi = BagBankfun.addSetbut(ContainerFrameCombinedBags,{"TOPRIGHT",ContainerFrameCombinedBags,"TOPRIGHT",-86,-38},Rneirong,tabbut)
 	
 		ContainerFrameCombinedBags:RegisterEvent("AUCTION_HOUSE_SHOW")
 		ContainerFrameCombinedBags:HookScript("OnEvent", function(self,event,arg1)

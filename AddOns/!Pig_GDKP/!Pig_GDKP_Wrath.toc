@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: geligasi
-## Version: 1.22
+## Version: 1.26
 
 ## Title: !Pig_GDKP
 ## Notes: GDKP Assistant

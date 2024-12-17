@@ -2,7 +2,7 @@ local mod	= DBM:NewMod(104, "DBM-Party-Cataclysm", 9, 65)
 local L		= mod:GetLocalizedStrings()
 local wowToc = DBM:GetTOC()
 
-mod:SetRevision("20240615053330")
+mod:SetRevision("20241102154000")
 if (wowToc >= 100200) then
 	mod.statTypes = "normal,heroic,challenge,timewalker"
 	mod.upgradedMPlus = true
@@ -14,6 +14,7 @@ else
 	mod:SetMainBossID(42172)--42172 is Ozumat, but we need Neptulon for engage trigger.
 end
 mod:SetEncounterID(1047)
+mod:SetZone(643)
 
 mod:RegisterCombat("combat")
 

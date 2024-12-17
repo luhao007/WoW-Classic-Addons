@@ -1392,6 +1392,7 @@ local function add_AutoEquip(ManageEquip)
 		end
 	end
 end
+
 function FramePlusfun.Character_Shuxing()
 	if not PIGA["FramePlus"]["Character_Shuxing"] then return end
 	if tocversion<30000 then
@@ -1769,7 +1770,6 @@ function FramePlusfun.Character_Shuxing()
 			if CharacterFrame.backdrop then CharacterFrame.backdrop:SetPoint("BOTTOMRIGHT", PaperDollFrame.pigBGF,"BOTTOMRIGHT", 0, 0);end
 			CharacterFrameCloseButton:SetPoint("CENTER",CharacterFrame,"TOPRIGHT",142,-25)
 			PIG_SetSidebarTab(_G["PIG_PaperDollSidebarTab1"])
-			CharacterFrame.NDuiStatPanelYN=true
 			SetPortraitTexture(_G["PIG_PaperDollSidebarTab1"].Icon, "player");
 			Update_Point_P()
 			PaperDollFrameUP()
@@ -1940,26 +1940,32 @@ function FramePlusfun.Character_Shuxing()
 		end
 		HideUIPanel(CharacterFrame);
 	elseif tocversion<40000 then
+		if NDui then return end
 		local kaiqiq=GetCVar("equipmentManager")
 		if kaiqiq=="0" then
 			SetCVar("equipmentManager","1")
 			PIGinfotip:TryDisplayMessage("已打开装备管理功能")
 		end
-		GearManagerDialog:SetSize(200, 430)
-		GearManagerDialogEquipSet:SetWidth(60)
-		GearManagerDialogEquipSet:ClearAllPoints();
-		GearManagerDialogEquipSet:SetPoint("TOPLEFT", GearManagerDialog, "TOPLEFT", 10, -30);
-		GearManagerDialogSaveSet:SetWidth(50)
-		GearManagerDialogSaveSet:ClearAllPoints();
-		GearManagerDialogSaveSet:SetPoint("LEFT", GearManagerDialogEquipSet, "RIGHT", 8, 0);
-		GearManagerDialogDeleteSet:SetWidth(50)
-		GearManagerDialogDeleteSet:ClearAllPoints();
-		GearManagerDialogDeleteSet:SetPoint("LEFT", GearManagerDialogSaveSet, "RIGHT", 8, 0);
-		GearManagerDialogPopup:ClearAllPoints();
-		GearManagerDialogPopup:SetPoint("TOPLEFT", GearManagerDialog, "TOPRIGHT", 0, 0);
+		local function Update_SizePoint()
+			GearManagerDialog:SetSize(200, 430)
+			GearManagerDialogEquipSet:SetWidth(60)
+			GearManagerDialogEquipSet:ClearAllPoints();
+			GearManagerDialogEquipSet:SetPoint("TOPLEFT", GearManagerDialog, "TOPLEFT", 10, -30);
+			GearManagerDialogSaveSet:SetWidth(50)
+			GearManagerDialogSaveSet:ClearAllPoints();
+			GearManagerDialogSaveSet:SetPoint("LEFT", GearManagerDialogEquipSet, "RIGHT", 8, 0);
+			GearManagerDialogDeleteSet:SetWidth(50)
+			GearManagerDialogDeleteSet:ClearAllPoints();
+			GearManagerDialogDeleteSet:SetPoint("LEFT", GearManagerDialogSaveSet, "RIGHT", 8, 0);
+			GearManagerDialogPopup:ClearAllPoints();
+			GearManagerDialogPopup:SetPoint("TOPLEFT", GearManagerDialog, "TOPRIGHT", 0, 0);
+		end
 		hooksecurefunc("GearManagagerDialogPopup_AdjustAnchors", function()
 			GearManagerDialogPopup:ClearAllPoints();
 			GearManagerDialogPopup:SetPoint("TOPLEFT", GearManagerDialog, "TOPRIGHT", -8, 0);
+		end)
+		GearManagerDialog:HookScript("OnShow", function()
+			Update_SizePoint()
 		end)
 		for i = 1, MAX_EQUIPMENT_SETS_PER_PLAYER do
 			local button = _G["GearSetButton" .. i]
@@ -2017,7 +2023,7 @@ function FramePlusfun.GengxinPoint(fuji)
 						end
 					elseif NDui then
 						if tocversion<40000 then
-							if CharacterFrame.NDuiStatPanelYN and NDuiStatPanel and NDuiStatPanel:IsShown() then
+							if NDuiStatPanel and NDuiStatPanel:IsShown() then
 								fuji.ZBLsit:SetPoint("TOPLEFT", NDuiStatPanel, "TOPRIGHT",3+fuji.ZBLsit.LEFTtoppig,0);
 							else
 								fuji.ZBLsit:SetPoint("TOPLEFT", CharacterFrame, "TOPRIGHT",-33+fuji.ZBLsit.LEFTtoppig,-15);

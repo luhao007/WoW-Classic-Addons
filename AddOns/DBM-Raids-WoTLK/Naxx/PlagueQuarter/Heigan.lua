@@ -1,10 +1,12 @@
 local mod	= DBM:NewMod("Heigan", "DBM-Raids-WoTLK", 8)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20230522065847")
+mod:SetRevision("20241103133102")
 mod:SetCreatureID(15936)
 mod:SetEncounterID(1112)
 mod:SetModelID(16309)
+mod:SetZone(533)
+
 mod:RegisterCombat("combat_yell", L.Pull)
 
 local warnTeleportSoon	= mod:NewAnnounce("WarningTeleportSoon", 2, "135736")

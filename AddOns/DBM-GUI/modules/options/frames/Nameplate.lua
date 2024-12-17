@@ -16,7 +16,7 @@ testbutton.myheight = 0
 --When using plater, most options are configured in plater
 --so we generate a button to open plater options instead of showing a bunch of options that are ignored
 local Plater = _G["Plater"]
-if Plater then
+if Plater then--Plater button disabled for now
 	general:CreateCheckButton(L.SpamBlockNoBossGUIDs, true, nil, "DontSendBossGUIDs")--Only option we control that plater doesn't
 
 	local platerButton = general:CreateButton(L.Plater_Config, 100, 25)
@@ -51,17 +51,17 @@ end)
 
 local iconOffsetXSlider = style:CreateSlider(L.NPIcon_BarOffSetX, -50, 50, 1, 200)
 iconOffsetXSlider:SetPoint("TOPLEFT", auraSizeSlider, "BOTTOMLEFT", 0, -20)
-iconOffsetXSlider:SetValue(DBM.Options.NPIconXOffset)
+iconOffsetXSlider:SetValue(DBM.Options.NPIconOffsetX)
 iconOffsetXSlider:HookScript("OnValueChanged", function(self)
-	DBM.Options.NPIconXOffset = self:GetValue()
+	DBM.Options.NPIconOffsetX = self:GetValue()
 	DBM.Nameplate:UpdateIconOptions()
 end)
 
 local iconOffsetYSlider = style:CreateSlider(L.NPIcon_BarOffSetY, -50, 50, 1, 200)
 iconOffsetYSlider:SetPoint("TOPLEFT", iconOffsetXSlider, "BOTTOMLEFT", 0, -20)
-iconOffsetYSlider:SetValue(DBM.Options.NPIconYOffset)
+iconOffsetYSlider:SetValue(DBM.Options.NPIconOffsetY)
 iconOffsetYSlider:HookScript("OnValueChanged", function(self)
-	DBM.Options.NPIconYOffset = self:GetValue()
+	DBM.Options.NPIconOffsetY = self:GetValue()
 	DBM.Nameplate:UpdateIconOptions()
 end)
 
@@ -245,8 +245,8 @@ styleResetbutton:SetHighlightFontObject(GameFontNormalSmall)
 styleResetbutton:SetScript("OnClick", function()
 	-- Set Options
 	DBM.Options.NPIconSize = DBM.DefaultOptions.NPIconSize
-	DBM.Options.NPIconXOffset = DBM.DefaultOptions.NPIconXOffset
-	DBM.Options.NPIconYOffset = DBM.DefaultOptions.NPIconYOffset
+	DBM.Options.NPIconOffsetX = DBM.DefaultOptions.NPIconOffsetX
+	DBM.Options.NPIconOffsetY = DBM.DefaultOptions.NPIconOffsetY
 	DBM.Options.NPIconSpacing = DBM.DefaultOptions.NPIconSpacing
 	DBM.Options.NPIconGrowthDirection = DBM.DefaultOptions.NPIconGrowthDirection
 	DBM.Options.NPIconAnchorPoint = DBM.DefaultOptions.NPIconAnchorPoint
@@ -261,8 +261,8 @@ styleResetbutton:SetScript("OnClick", function()
 	DBM.Options.NPIconTextMaxLen = DBM.DefaultOptions.NPIconTextMaxLen
 	-- Set UI visuals
 	auraSizeSlider:SetValue(DBM.DefaultOptions.NPIconSize)
-	iconOffsetXSlider:SetValue(DBM.DefaultOptions.NPIconXOffset)
-	iconOffsetYSlider:SetValue(DBM.DefaultOptions.NPIconYOffset)
+	iconOffsetXSlider:SetValue(DBM.DefaultOptions.NPIconOffsetX)
+	iconOffsetYSlider:SetValue(DBM.DefaultOptions.NPIconOffsetY)
 	iconSpacingSlider:SetValue(DBM.DefaultOptions.NPIconSpacing)
 	iconGrowthDirection:SetSelectedValue(DBM.DefaultOptions.NPIconGrowthDirection)
 	iconAnchorPoint:SetSelectedValue(DBM.DefaultOptions.NPIconAnchorPoint)

@@ -1,6 +1,6 @@
 <img align="right" width="180" height="180" src="https://wago-addons.ams3.digitaloceanspaces.com/thumbnails/GCM2L2Lxz2AObRXu404Oggp5zcjhBYp01XCXffPQ.png">
 
-[![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/DFortun81/AllTheThings)
+[![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/ATTWoWAddon/AllTheThings)
 [![Bitbucket](https://img.shields.io/badge/bitbucket-%230047B3.svg?style=for-the-badge&logo=bitbucket&logoColor=white)](https://bitbucket.org/product)
 [![Visual Studio Code](https://img.shields.io/badge/Visual%20Studio%20Code-0078d7.svg?style=for-the-badge&logo=visual-studio-code&logoColor=white)](https://code.visualstudio.com)
 [![Lua](https://img.shields.io/badge/lua-%232C2D72.svg?style=for-the-badge&logo=lua&logoColor=white)](https://lua.org)
@@ -9,8 +9,8 @@
 [![Patreon](https://img.shields.io/badge/Patreon-F96854?style=for-the-badge&logo=patreon&logoColor=white)](https://www.patreon.com/allthethings)
 <br>
 [![CurseForge](https://cf.way2muchnoise.eu/267285.svg)](https://www.curseforge.com/wow/addons/all-the-things)
-[![Build Status](https://github.com/DFortun81/AllTheThings/workflows/Release/badge.svg)](https://github.com/DFortun81/AllTheThings/actions?workflow=Release)
-[![GitHub Release](https://img.shields.io/github/v/release/DFortun81/AllTheThings)](https://github.com/DFortun81/AllTheThings/releases)
+[![Build Status](https://github.com/ATTWoWAddon/AllTheThings/workflows/Release/badge.svg)](https://github.com/ATTWoWAddon/AllTheThings/actions?workflow=Release)
+[![GitHub Release](https://img.shields.io/github/v/release/ATTWoWAddon/AllTheThings)](https://github.com/ATTWoWAddon/AllTheThings/releases)
 
 <br>
 
@@ -35,12 +35,12 @@ Do you find yourself completing old content just so that you can get literally e
 If you just updated and are getting tons of errors, completely close your game and then reopen it. Updating addons while the game is running can cause problems!
 
 - [Discord](https://discord.gg/allthethings)
-- [Issues](https://github.com/DFortun81/AllTheThings/issues)
+- [Issues](https://github.com/ATTWoWAddon/AllTheThings/issues)
 - [FAQ](https://legacy.curseforge.com/wow/addons/all-the-things/pages/f-a-q)
 - [WAGO.io](https://addons.wago.io/addons/allthethings)
 
 ## Contributors
-Thank you to the contributors for the work they do and the users who have submitted suggestions and bugs in Discord or on the forums! View and follow [our contributors here](https://github.com/DFortun81/AllTheThings/graphs/contributors)!
+Thank you to the contributors for the work they do and the users who have submitted suggestions and bugs in Discord or on the forums! View and follow [our contributors here](https://github.com/ATTWoWAddon/AllTheThings/graphs/contributors)!
 
 ## Special Thanks
 - AmiYuy -- Has helped many times with different aspects of the addon.

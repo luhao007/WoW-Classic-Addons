@@ -50,6 +50,7 @@ function Create.PIGQuickBut(QkButUI,Tooltip,Icon,GnUI,FrameLevel,Template)
 	end);
 	But:HookScript("OnMouseUp", function (self)
 		self.Down:Hide();
+		PlaySound(SOUNDKIT.IG_CHAT_EMOTE_BUTTON);
 	end);
 	But.Height = But:CreateTexture(nil, "OVERLAY");
 	But.Height:SetTexture(130724);
@@ -59,7 +60,6 @@ function Create.PIGQuickBut(QkButUI,Tooltip,Icon,GnUI,FrameLevel,Template)
 	if GnUI then
 		But:HookScript("OnClick", function(self,button)
 			if button=="LeftButton" then
-				PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 				if _G[GnUI]:IsShown() then
 					_G[GnUI]:Hide();
 				else
@@ -99,6 +99,7 @@ function Create.PIGModbutton(GnTooltip,GnIcon,GnUI,FrameLevel)
 		GameTooltip:Hide() 
 	end);
 	But:HookScript("OnMouseUp", function (self)
+		PlaySound(SOUNDKIT.IG_CHAT_EMOTE_BUTTON);
 		self.Down:Hide();
 	end);
 	But.Height = But:CreateTexture(nil, "OVERLAY");

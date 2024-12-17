@@ -12,7 +12,7 @@ end
 local mod	= DBM:NewMod("Majordomo", "DBM-Raids-Vanilla", catID)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240726025149")
+mod:SetRevision("20241103123604")
 if DBM:IsSeasonal("SeasonOfDiscovery") then
 	mod:SetCreatureID(228437, 228836, 228837)
 else
@@ -21,6 +21,7 @@ end
 mod:SetEncounterID(671)
 mod:SetModelID(12029)
 mod:SetHotfixNoticeRev(20240724000000)
+mod:SetZone(409)
 
 mod:RegisterCombat("combat")
 --mod:RegisterKill("yell", L.Kill)

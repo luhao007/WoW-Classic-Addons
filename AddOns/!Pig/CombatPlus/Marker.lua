@@ -1,6 +1,7 @@
 ﻿local _, addonTable = ...;
 local L=addonTable.locale
 local _, _, _, tocversion = GetBuildInfo()
+local sub = _G.string.sub
 --
 local Fun=addonTable.Fun
 local Create=addonTable.Create
@@ -18,11 +19,22 @@ local PIGFontString=Create.PIGFontString
 local PIGFontStringBG=Create.PIGFontStringBG
 --
 local IsAddOnLoaded=IsAddOnLoaded or C_AddOns and C_AddOns.IsAddOnLoaded
+local SendAddonMessage = C_ChatInfo and C_ChatInfo.SendAddonMessage or SendAddonMessage;
+local RegisterAddonMessagePrefix = C_ChatInfo and C_ChatInfo.RegisterAddonMessagePrefix or RegisterAddonMessagePrefix;
 local CombatPlusfun=addonTable.CombatPlusfun
 --------------------------
 local CombatPlusF,CombatPlustabbut =PIGOptionsList_R(CombatPlusfun.RTabFrame,L["COMBAT_TABNAME1"],90)
 CombatPlusF:Show()
 CombatPlustabbut:Selected()
+local function Show_OptionsUI()
+	if Pig_OptionsUI:IsShown() then
+		Pig_OptionsUI:Hide()
+	else
+		Pig_OptionsUI:Show()
+		Create.Show_TabBut(CombatPlusfun.fuFrame,CombatPlusfun.fuFrameBut)
+		Create.Show_TabBut_R(CombatPlusfun.RTabFrame,CombatPlusF,CombatPlustabbut)
+	end
+end
 --------
 local biaojiW = 22
 local function updateiconDesaturated(uiname)
@@ -40,65 +52,171 @@ local function updateiconall(uiname,l,r,t,b)
 	updateiconDesaturated(uiname)
 	updateicon(uiname,l,r,t,b)
 end
-local PigPulldata={["morenCD"]=5,["daojishi"]=0}
-local function Pull_Fun()
-	if HasLFGRestrictions() then
-		if PigPulldata.daojishi==0 then
-			PIGinfotip:TryDisplayMessage("***开始攻击***");
-			SendChatMessage("***开始攻击***", "INSTANCE_CHAT", nil);
-		else
-			PIGinfotip:TryDisplayMessage("***开怪倒计时："..PigPulldata.daojishi.." ***");
-			SendChatMessage("***开怪倒计时："..PigPulldata.daojishi.." ***", "INSTANCE_CHAT", nil);
-		end
-	elseif IsInRaid() then
-		if PigPulldata.daojishi==0 then
-			SendChatMessage("***开始攻击***", "RAID_WARNING", nil);
-		else
-			SendChatMessage("***开怪倒计时："..PigPulldata.daojishi.." ***", "RAID_WARNING", nil);
-		end
-	elseif IsInGroup() then
-		if PigPulldata.daojishi==0 then
-			PIGinfotip:TryDisplayMessage("***开始攻击***");
-			SendChatMessage("***开始攻击***", "PARTY", nil);
-		else
-			PIGinfotip:TryDisplayMessage("***开怪倒计时："..PigPulldata.daojishi.." ***");
-			SendChatMessage("***开怪倒计时："..PigPulldata.daojishi.." ***", "PARTY", nil);
-		end
-	else
-		if PigPulldata.daojishi==0 then
-			PIGinfotip:TryDisplayMessage("***开始攻击***");
-		else
-			PIGinfotip:TryDisplayMessage("***开怪倒计时："..PigPulldata.daojishi.." ***");
-		end
-	end
-	PigPulldata.daojishi=PigPulldata.daojishi-1
-end
-local function PIG_PULL()
-	if PigPulldata.daoshuTicker  then
-		PigPulldata.daoshuTicker:Cancel()
-	end
-	PigPulldata.daojishi=PigPulldata.morenCD
-	PigPulldata.daoshuTicker = C_Timer.NewTicker(1, Pull_Fun, PigPulldata.morenCD+1)
-end
-local daojishiList = {[1]="PIG",[2]="暴雪(正式服)",[3]="DBM",[4]="BigWigs"}
-local daojishiFun = {
-	[1]=PIG_PULL,
-	[2]=C_PartyInfo.DoCountdown,
-	[3]=function(morenCD) 
-			if IsAddOnLoaded("DBM-Core") then 
-				SlashCmdList.DEADLYBOSSMODSPULL(morenCD) 
-			else
-				PIGinfotip:TryDisplayMessage("你的倒计时程序设置为DBM，但没有安装DBM")
-			end
-		end,
-	[4]=function(morenCD)
-			if IsAddOnLoaded("BigWigs") then 
-				SlashCmdList.BIGWIGSPULL(morenCD)  
-			else
-				PIGinfotip:TryDisplayMessage("你的倒计时程序设置为BigWigs，但没有安装BigWigs")
-			end
-		end,
+--add倒计时
+local PigPulldata={
+	["morenCD"]=10,
+	["BigGold"]  = {
+		texture = "Interface\\Timer\\BigTimerNumbers", 
+		w=256, h=170, texW=1024, texH=512,
+		numberHalfWidths = {
+			--0,   1,   2,   3,   4,   5,   6,   7,   8,   9,
+			35/128, 14/128, 33/128, 32/128, 36/128, 32/128, 33/128, 29/128, 31/128, 31/128,
+		},
+	},
 }
+local daojishiList = {[1]="暴雪1",[2]="暴雪2",[3]="XXX",[4]="XXXX"}
+local function ADDDoCountdownUI()
+	local timer=CreateFrame("Frame", "PIG_TimerTracker", UIParent)
+	timer:SetAllPoints(UIParent)
+	timer:Hide();
+	local texCoW = PigPulldata.BigGold.w/PigPulldata.BigGold.texW;
+	local texCoH = PigPulldata.BigGold.h/PigPulldata.BigGold.texH;
+	local columns = floor(PigPulldata.BigGold.texW/PigPulldata.BigGold.w);
+	for i=0,9 do
+		local number = timer:CreateTexture("PIG_TimerTracker_"..i);
+		local number1 = timer:CreateTexture("PIG_TimerTracker_1"..i);
+		number:SetTexture(PigPulldata.BigGold.texture);
+		number1:SetTexture(PigPulldata.BigGold.texture);
+		local hw = PigPulldata.BigGold.numberHalfWidths[i+1]*PigPulldata.BigGold.w*0.5
+		local l = mod(i, columns) * texCoW;
+		local r = l + texCoW;
+		local t = floor(i/columns) * texCoH;
+		local b = t + texCoH;
+		number:SetTexCoord(l,r,t,b);
+		number1:SetTexCoord(l,r,t,b);
+	end
+	timer.Bar = CreateFrame("StatusBar", nil, timer);
+	timer.Bar:SetStatusBarTexture("interface/chatframe/chatframebackground.blp")
+	timer.Bar:SetStatusBarColor(1, 0.1, 0.1, 0.8);
+	timer.Bar:SetSize(300,26);
+	timer.Bar:SetPoint("CENTER", 0, 280);
+	timer.Bar.Border = CreateFrame("Frame", nil, timer.Bar,"BackdropTemplate")
+	timer.Bar.Border:SetBackdrop({edgeFile = Create.edgeFile, edgeSize = 8,})
+	timer.Bar.Border:SetBackdropBorderColor(0.5, 0.5, 0.5, 1)
+	timer.Bar.Border:SetAllPoints(timer.Bar)
+	timer.Bar.bg = timer.Bar:CreateTexture(nil, "BACKGROUND");
+	timer.Bar.bg:SetTexture("interface/characterframe/ui-party-background.blp");
+	timer.Bar.bg:SetPoint("TOPLEFT",timer.Bar,"TOPLEFT",0,0);
+	timer.Bar.bg:SetPoint("BOTTOMRIGHT",timer.Bar,"BOTTOMRIGHT",0,0);
+	timer.Bar.bg:SetAlpha(0.4)
+	timer.Bar.t = PIGFontString(timer.Bar,{"CENTER", -10, 0},"开怪倒计: ","OUTLINE",16)
+	timer.Bar.t:SetTextColor(1, 1, 1, 1);
+	timer.Bar.V = PIGFontString(timer.Bar,{"LEFT",timer.Bar.t,"RIGHT", 0, 0},"","OUTLINE",18)
+	timer.Bar.V:SetTextColor(1, 1, 1, 1);
+	local function Hide_numbut()
+		PIG_TimerTracker.Bar:Hide()
+		for i=0,9 do
+			_G["PIG_TimerTracker_"..i]:Hide()
+			_G["PIG_TimerTracker_1"..i]:Hide()
+		end
+	end
+	local function updatenumid(shid)
+		if shid<10 then
+			local numnut = _G["PIG_TimerTracker_"..shid]
+			numnut:SetSize(PigPulldata.BigGold.w,PigPulldata.BigGold.h);
+			numnut:SetPoint("CENTER", 0, 30);
+			numnut:Show()
+			PlaySound(SOUNDKIT.IG_CHAT_EMOTE_BUTTON);
+		elseif shid<31 then
+			local shouid = tostring(shid):sub(1,1)
+			local endid = tostring(shid):sub(2,2)
+			local numnut = _G["PIG_TimerTracker_"..shouid]
+			numnut:SetSize(PigPulldata.BigGold.w*0.5,PigPulldata.BigGold.h*0.5);
+			numnut:SetPoint("CENTER", -24, 280);
+			numnut:Show()
+			local numnut = _G["PIG_TimerTracker_1"..endid]
+			numnut:SetSize(PigPulldata.BigGold.w*0.5,PigPulldata.BigGold.h*0.5);
+			numnut:SetPoint("CENTER", 24, 280);
+			numnut:Show()
+		end
+	end
+	local function StartTimer_BigNumberOnUpdate(self, elapsed)
+		self.time = self.endTime - GetTime();
+		if self.time>60 then
+			self.Bar:SetValue(self.time);
+			self.Bar.V:SetText(date("%M:%S",self.time))
+			self.Bar:Show()
+		elseif self.time>31 then
+			self.Bar:SetValue(self.time);
+			self.Bar.V:SetText(date("%S",self.time))
+			self.Bar:Show()
+		elseif self.time>1 then
+			local seconds = floor(mod(self.time, 60));
+			if self.updateTime>seconds then
+				Hide_numbut()
+				updatenumid(seconds)
+				self.updateTime = seconds
+			end
+		else
+			self:Hide()
+			PlaySound(SOUNDKIT.ALARM_CLOCK_WARNING_3);
+		end
+	end
+	local function PIG_PULL(CDtime,ly)
+		Hide_numbut()
+		local CDtime = CDtime+1
+		PIG_TimerTracker:SetScript("OnUpdate", nil);
+		PIG_TimerTracker.updateTime=CDtime
+		PIG_TimerTracker.endTime = GetTime() + CDtime;
+		PIG_TimerTracker.Bar:SetMinMaxValues(0, CDtime)
+		PIG_TimerTracker:SetScript("OnUpdate", StartTimer_BigNumberOnUpdate);
+		PIG_TimerTracker:Show()
+	end
+	local function PIG_opentiem()
+		timer.opentiem=true
+		C_Timer.After(0.1,function()
+			timer.opentiem=nil
+		end)
+	end
+	local function DoCountdown(CDtime, arg1)
+		if not SlashCmdList.DEADLYBOSSMODSPULL and not SlashCmdList.BIGWIGSPULL then
+			PIG_opentiem()
+			PIG_PULL(tonumber(CDtime),arg1)
+		end
+	end
+	RegisterAddonMessagePrefix("D5")
+	RegisterAddonMessagePrefix("BigWigs")
+	timer:RegisterEvent("CHAT_MSG_ADDON")
+	timer:SetScript("OnEvent",function(self, event, arg1, arg2, arg3, arg4)
+		if self.opentiem then return end
+		if arg1=="D5" then
+			local fullname, SyncProtocol, prefix, CDtime, CurrentArea = strsplit("\t", arg2);
+			if prefix=="PT" and CDtime then
+				DoCountdown(CDtime, arg1)
+			end
+		elseif arg1=="BigWigs" then
+			local SyncProtocol, prefix, CDtime = strsplit("^", arg2);
+			if SyncProtocol=="P" and prefix=="Pull" and CDtime then
+				if not SlashCmdList.BIGWIGSPULL and not SlashCmdList.DEADLYBOSSMODSPULL then
+					DoCountdown(CDtime, arg1)
+				end
+			end
+		end
+	end)
+	return function(CDtime)
+		local CDtime = CDtime or PigPulldata.morenCD
+		if IsInGroup() then
+			local _, instanceType, difficulty, _, _, _, _, mapID = GetInstanceInfo()
+			if IsInRaid() then
+				SendAddonMessage("D5", Pig_OptionsUI.AllName .. "\t1\t" .. "PT" .. "\t" .. CDtime .. "\t" .. mapID, "RAID")
+				SendAddonMessage("BigWigs", "P^Pull^"..CDtime, "RAID")
+			else
+				SendAddonMessage("D5", Pig_OptionsUI.AllName .. "\t1\t" .. "PT" .. "\t" .. CDtime .. "\t" .. mapID, "PARTY")
+				SendAddonMessage("BigWigs", "P^Pull^"..CDtime, "RAID")
+			end
+		else
+			PIG_PULL(CDtime)
+		end
+	end
+end
+local function GetDoCountdownFun()
+	if C_PartyInfo and C_PartyInfo.DoCountdown then
+		return C_PartyInfo.DoCountdown
+	else
+		return ADDDoCountdownUI()
+	end
+end
+
 -- --坐标，延迟，帧数,重置，宏
 -- FramerateFrame.Label:SetText("FPS:")
 -- hooksecurefunc(FramerateFrame, "UpdatePosition", function()
@@ -130,6 +248,8 @@ local function updateicon_Difficulty(button)
 	end
 	button:GetNormalTexture():SetAtlas(atlas, TextureKitConstants.IgnoreAtlasSize);
 end
+local ConvertToParty=ConvertToParty or C_PartyInfo and C_PartyInfo.ConvertToParty
+local ConvertToRaid=ConvertToRaid or C_PartyInfo and C_PartyInfo.ConvertToRaid
 local function ToPartyToRaid()
 	if IsInRaid(LE_PARTY_CATEGORY_HOME) then
 		ConvertToParty() 
@@ -137,26 +257,34 @@ local function ToPartyToRaid()
 		ConvertToRaid()
 	end
 end
+--转换队伍
+--QuestSharing-QuestLog-Active--plunderstorm-glues-queueselector-duo-selected--trios-icon-bubble-active
+--groupfinder-waitdot--个人转换--GM-icon-assist
+--Ping_SpotGlw_Assist_In
+--NecrolordAssaults-64x64
+--groupfinder-icon-class-color-monk
 local MenuiconList = {}
 if tocversion>100000 then
 	table.insert(MenuiconList,1,{{"Atlas","common-icon-rotateleft"},{"离开队伍","离开副本队伍"},{updateiconall,-1,-3,-1,-1},function(self,button) if button=="LeftButton" then C_PartyInfo.LeaveParty() else ConfirmOrLeaveLFGParty() end end})
 	table.insert(MenuiconList,2,{{"Atlas","GM-icon-assist"},{"切换小队/团队"},{updateicon},ToPartyToRaid})
-	table.insert(MenuiconList,3,{{"Atlas","GM-raidMarker-reset"},{"重置副本"},{updateiconDesaturated},function() ResetInstances() end})
+	table.insert(MenuiconList,3,{{"Atlas","GM-raidMarker-reset"},{"重置副本"},{updateiconDesaturated},function() StaticPopup_Show("CONFIRM_RESET_INSTANCES"); end})
 	table.insert(MenuiconList,4,{{"Atlas","GM-icon-difficulty-normalSelected"},{"副本难度"},{updateicon}, updateicon_Difficulty})
-	table.insert(MenuiconList,5,{{"Atlas","GM-icon-roles"},{"职责检查"},{updateicon,4,4,4,4},function() InitiateRolePoll() end})
-	table.insert(MenuiconList,6,{{"Atlas","GM-icon-readyCheck"},{"就位确认"},{updateicon,6,6,5,7},function() DoReadyCheck() end})
-	table.insert(MenuiconList,{{"Atlas","GM-icon-countdown"},{"倒计时"},{updateicon},PIG_PULL})
+	table.insert(MenuiconList,5,{{"Atlas","Ping_SpotGlw_Assist_In"},{COMBATLOGDISABLED},{updateicon,-2,-2,-1,-2},function() end})
+	table.insert(MenuiconList,6,{{"Atlas","GM-icon-roles"},{"职责检查"},{updateicon,4,4,4,4},function() InitiateRolePoll() end})
+	table.insert(MenuiconList,7,{{"Atlas","GM-icon-readyCheck"},{"就位确认"},{updateicon,6,6,5,7},function() DoReadyCheck() end})
+	table.insert(MenuiconList,{{"Atlas","GM-icon-countdown"},{"倒计时","设置倒数秒"},{updateicon},GetDoCountdownFun()})
 else
 	--interface/raidframe/readycheck-notready.blp
 	-- {"Atlas","UI-LFG-PendingMark"},
 	-- {"Atlas","UI-LFG-ReadyMark"},
 	-- {"Atlas","UI-LFG-DeclineMark"},
 	table.insert(MenuiconList,1,{{"Atlas","common-icon-rotateleft"},{"离开队伍","离开副本队伍"},{updateicon,0,-1,-1,0},function(self,button) if button=="LeftButton" then LeaveParty() else ConfirmOrLeaveLFGParty() end end})
-	table.insert(MenuiconList,2,{{"Atlas","UI-ChatIcon-App"},{"切换小队/团队"},{updateicon,0,0,0.6,0.6},ToPartyToRaid})--UI-ChatIcon-App/socialqueuing-icon-group
-	table.insert(MenuiconList,3,{{"Atlas","common-icon-undo"},{"重置副本"},{updateicon,-1,-1,-1,-1},function() ResetInstances() end})
-	table.insert(MenuiconList,4,{{"Tex","interface/raidframe/readycheck-waiting.blp"},{"职责检查"},nil,function() InitiateRolePoll() end})
-	table.insert(MenuiconList,5,{{"Tex","interface/raidframe/readycheck-ready.blp"},{"就位确认"},nil,function() DoReadyCheck() end})
-	table.insert(MenuiconList,{{"Tex","interface/helpframe/helpicon-reportlag.blp",{0.13,0.87,0.13,0.87}},{"倒计时"},nil,PIG_PULL})
+	table.insert(MenuiconList,2,{{"Atlas","groupfinder-waitdot"},{"切换小队/团队"},{updateicon,-3,-3,-3,-2.4},ToPartyToRaid})--UI-ChatIcon-App/socialqueuing-icon-group
+	table.insert(MenuiconList,3,{{"Atlas","common-icon-undo"},{"重置副本"},{updateicon,-1,-1,-1,-1},function() StaticPopup_Show("CONFIRM_RESET_INSTANCES"); end})
+	table.insert(MenuiconList,4,{{"Tex","interface/common/indicator-green.blp"},{COMBATLOGDISABLED},nil,function() end})
+	table.insert(MenuiconList,5,{{"Tex","interface/raidframe/readycheck-waiting.blp"},{"职责检查"},nil,function() InitiateRolePoll() end})
+	table.insert(MenuiconList,6,{{"Tex","interface/raidframe/readycheck-ready.blp"},{"就位确认"},nil,function() DoReadyCheck() end})
+	table.insert(MenuiconList,{{"Tex","interface/helpframe/helpicon-reportlag.blp",{0.13,0.87,0.13,0.87}},{"倒计时","设置倒数秒"},nil,GetDoCountdownFun()})
 end
 local MenuiconNum=#MenuiconList
 ---
@@ -215,13 +343,8 @@ local function add_barUI(peizhiT,SizeHH,listNum,topbutui)
 		GameTooltip:Hide() 
 	end)
 	biaojiUIx.yidong:SetScript("OnMouseUp", function (self,Button)
-		if Pig_OptionsUI:IsShown() then
-			Pig_OptionsUI:Hide()
-		else
-			Pig_OptionsUI:Show()
-			Create.Show_TabBut(CombatPlusfun.fuFrame,CombatPlusfun.fuFrameBut)
-			Create.Show_TabBut_R(CombatPlusfun.RTabFrame,CombatPlusF,CombatPlustabbut)
-		end
+
+		Show_OptionsUI()
 	end);
 	return biaojiUIx
 end
@@ -283,8 +406,8 @@ local function add_buttonList(peizhiT,listNum)
 				listbut:GetNormalTexture():SetTexCoord(RiconList[i][2][1],RiconList[i][2][2],RiconList[i][2][3],RiconList[i][2][4])
 			end
 			listbut:SetScript("OnClick", function(self) 
-				SetRaidTargetIcon("target", listNum-i) 
-				--SetRaidTarget("target", listNum-i)
+				--SetRaidTargetIcon("target", listNum-i) 
+				SetRaidTarget("target", listNum-i)
 			end)
 		elseif pigui==_G["PIGmarkerW_UI"] then
 			listbut = CreateFrame("CheckButton", "$parent_But"..i, pigui,"SecureActionButtonTemplate")
@@ -331,6 +454,8 @@ local function add_buttonList(peizhiT,listNum)
 			if MenuiconList[i][3] then
 				MenuiconList[i][3][1](listbut,MenuiconList[i][3][2],MenuiconList[i][3][3],MenuiconList[i][3][4],MenuiconList[i][3][5])
 			end
+			listbut.Tooltip=MenuiconList[i][2][1]
+			listbut.Tooltip1=MenuiconList[i][2][2]
 			listbut:SetScript("OnEnter", function (self)
 				GameTooltip:ClearLines();
 				GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT",0,0);
@@ -342,10 +467,10 @@ local function add_buttonList(peizhiT,listNum)
 						GameTooltip_SetTitle(GameTooltip, MenuiconList[i][2][1]);
 					end
 				else
-					if MenuiconList[i][2][2] then
-						GameTooltip:AddLine(KEY_BUTTON1.."-|cffFFFFff"..MenuiconList[i][2][1].."|r\n"..KEY_BUTTON2.."-|cffFFFFff"..MenuiconList[i][2][2].."|r")
+					if self.Tooltip1 then
+						GameTooltip:AddLine(KEY_BUTTON1.."-|cffFFFFff"..self.Tooltip.."|r\n"..KEY_BUTTON2.."-|cffFFFFff"..self.Tooltip1.."|r")
 					else
-						GameTooltip:AddLine("|cffFFFFff"..MenuiconList[i][2][1].."|r")
+						GameTooltip:AddLine("|cffFFFFff"..self.Tooltip.."|r")
 					end
 				end
 				GameTooltip:Show();
@@ -380,20 +505,27 @@ local function add_buttonList(peizhiT,listNum)
 					MenuiconList[i][4](self)
 				end)
 			end
+			if MenuiconList[i][2][1]==COMBATLOGDISABLED then pigui.WCL=listbut end
 			listbut:SetScript("OnLeave", function (self)
 				GameTooltip:ClearLines();
 				GameTooltip:Hide() 
 			end)
 			listbut:SetScript("OnClick", function(self,button)
 				if i==listNum then
-					if MenuiconList[i][4] then MenuiconList[i][4](PigPulldata.morenCD) end
+					if button=="LeftButton" then
+						MenuiconList[i][4](PigPulldata.morenCD)
+					else
+						Show_OptionsUI()
+					end
 				else
 					MenuiconList[i][4](self,button)
 				end
 			end)
 		end
 		listbut:HookScript("OnClick", function(self) 
-			PlaySound(SOUNDKIT.IG_CHAT_EMOTE_BUTTON);
+			if i~=listNum then
+				PlaySound(SOUNDKIT.IG_CHAT_EMOTE_BUTTON);
+			end
 		end)
 	end
 	pigui:SetScale(PIGA["CombatPlus"][peizhiT]["Scale"])
@@ -430,7 +562,7 @@ local function add_Options(peizhiT,topHV,nameGN,pigui)
 			self.F:Hide()
 			Pig_Options_RLtishi_UI:Show()
 		end
-		add_buttonList(peizhiT,pigui)
+		add_buttonList(peizhiT,GNLsits[peizhiT].iconNum)
 	end)
 	---
 	checkbutOpen.F = PIGFrame(checkbutOpen,{"TOPLEFT",checkbutOpen,"BOTTOMLEFT",20,-20},{1,1})
@@ -496,8 +628,26 @@ local function add_Options(peizhiT,topHV,nameGN,pigui)
 			end);
 		end
 	else
-		checkbutOpen.F.Daojishi=PIGDownMenu(checkbutOpen.F,{"TOPLEFT",checkbutOpen.F,"TOPLEFT",80,-80},{140,nil})
-		checkbutOpen.F.Daojishi.t = PIGFontString(checkbutOpen.F.Daojishi,{"RIGHT",checkbutOpen.F.Daojishi,"LEFT",-4,0},"倒计时程序");
+		local xiayiinfoTime = {3,180,1}
+		checkbutOpen.F.daojishiTime = PIGSlider(checkbutOpen.F,{"LEFT",checkbutOpen.F.BGHide,"RIGHT",200,0},xiayiinfoTime)
+		checkbutOpen.F.daojishiTime.T = PIGFontString(checkbutOpen.F.daojishiTime,{"RIGHT",checkbutOpen.F.daojishiTime,"LEFT",0,0},"倒数(秒)")
+		checkbutOpen.F.daojishiTime.Slider:HookScript("OnValueChanged", function(self, arg1)
+			PigPulldata.morenCD=arg1
+			PIGA["CombatPlus"][peizhiT]["daojishiTime"]=arg1;
+		end)
+		checkbutOpen.F.PIGPULLSHOW= PIGCheckbutton(checkbutOpen.F,{"TOPLEFT",checkbutOpen.F,"TOPLEFT",0,-80},{"始终启用","正常情况下在开启DBM/BigWigs插件时禁用PIG倒计时功能\n开启后在存在DBM/BigWigs插件时也使用PIG倒计时"})
+		checkbutOpen.F.PIGPULLSHOW:Disable()
+		checkbutOpen.F.PIGPULLSHOW:SetScript("OnClick", function (self)
+			if self:GetChecked() then
+				PIGA["CombatPlus"][peizhiT]["PIGPULLSHOW"]=true;
+			else
+				PIGA["CombatPlus"][peizhiT]["PIGPULLSHOW"]=false;
+			end
+			SetBGHide(peizhiT,pigui)
+		end);
+		checkbutOpen.F.Daojishi=PIGDownMenu(checkbutOpen.F,{"LEFT",checkbutOpen.F.PIGPULLSHOW,"RIGHT",260,0},{180})
+		checkbutOpen.F.Daojishi:Disable()
+		checkbutOpen.F.Daojishi.t = PIGFontString(checkbutOpen.F.Daojishi,{"RIGHT",checkbutOpen.F.Daojishi,"LEFT",-4,0},"倒计结束音效");
 		function checkbutOpen.F.Daojishi:PIGDownMenu_Update_But(self)
 			local info = {}
 			info.func = self.PIGDownMenu_SetValue
@@ -510,17 +660,9 @@ local function add_Options(peizhiT,topHV,nameGN,pigui)
 		function checkbutOpen.F.Daojishi:PIGDownMenu_SetValue(value,arg1,arg2)
 			checkbutOpen.F.Daojishi:PIGDownMenu_SetText(value)
 			PIGA["CombatPlus"][peizhiT]["daojishiFun"]=arg1
-			PigPulldata.morenCD=PIGA["CombatPlus"][peizhiT]["daojishiTime"]
-			MenuiconList[#MenuiconList][4]=daojishiFun[PIGA["CombatPlus"][peizhiT]["daojishiFun"]]
 			PIGCloseDropDownMenus()
 		end
-		local xiayiinfoTime = {3,30,1}
-		checkbutOpen.F.daojishiTime = PIGSlider(checkbutOpen.F,{"LEFT",checkbutOpen.F.Daojishi,"RIGHT",120,0},xiayiinfoTime)
-		checkbutOpen.F.daojishiTime.T = PIGFontString(checkbutOpen.F.daojishiTime,{"RIGHT",checkbutOpen.F.daojishiTime,"LEFT",-10,0},"倒计延迟(秒)")
-		checkbutOpen.F.daojishiTime.Slider:HookScript("OnValueChanged", function(self, arg1)
-			PigPulldata.morenCD=arg1
-			PIGA["CombatPlus"][peizhiT]["daojishiTime"]=arg1;
-		end)
+		
 	end
 	--
 	checkbutOpen.F:HookScript("OnShow", function (self)
@@ -539,7 +681,6 @@ local function add_Options(peizhiT,topHV,nameGN,pigui)
 	end);
 	return checkbutOpen
 end
---设置
 for i=1,#GNLsitsName do
 	if GNLsits[GNLsitsName[i]].yes then
 		local PIGtopbar=add_barUI(GNLsitsName[i],GNLsits[GNLsitsName[i]].barHH,GNLsits[GNLsitsName[i]].iconNum,GNLsits[GNLsitsName[i]].topbutui)
@@ -548,9 +689,7 @@ for i=1,#GNLsitsName do
 	end
 end
 function CombatPlusfun.Marker()
-	--PIGA["CombatPlus"]=addonTable.Default["CombatPlus"]
 	PigPulldata.morenCD=PIGA["CombatPlus"]["topMenu"]["daojishiTime"]
-	MenuiconList[#MenuiconList][4]=daojishiFun[PIGA["CombatPlus"]["topMenu"]["daojishiFun"]]
 	for i=1,#GNLsitsName do
 		if GNLsits[GNLsitsName[i]].yes then
 			add_buttonList(GNLsitsName[i],GNLsits[GNLsitsName[i]].iconNum)

@@ -148,6 +148,38 @@ local function GetUnobtainableTexture(group)
 end
 app.GetUnobtainableTexture = GetUnobtainableTexture;
 
+-- Keys for groups which are in-game 'Things'
+-- Copied from Retail since it's used in UI/Waypoints.lua
+app.ThingKeys = {
+	-- filterID = true,
+	flightpathID = true,
+	-- professionID = true,
+	-- categoryID = true,
+	-- mapID = true,
+	npcID = true,
+	creatureID = true,
+	currencyID = true,
+	itemID = true,
+	toyID = true,
+	sourceID = true,
+	speciesID = true,
+	recipeID = true,
+	runeforgepowerID = true,
+	spellID = true,
+	mountID = true,
+	mountmodID = true,
+	illusionID = true,
+	questID = true,
+	objectID = true,
+	encounterID = true,
+	artifactID = true,
+	azeriteessenceID = true,
+	followerID = true,
+	factionID = true,
+	explorationID = true,
+	achievementID = true,	-- special handling
+	criteriaID = true,	-- special handling
+};
 
 local MergeObject;
 local CloneArray = app.CloneArray;
@@ -751,7 +783,7 @@ local SourceLocationSettingsKey = setmetatable({
 		return "SourceLocations:Things";
 	end
 });
-local UnobtainableTexture = "|T" .. app.asset("status-unobtainable.blp") .. ":0|t";
+local UnobtainableTexture = "|T" .. app.asset("status-unobtainable") .. ":0|t";
 local function HasCost(group, idType, id)
 	-- check if the group has a cost which includes the given parameters
 	if group.cost and type(group.cost) == "table" then
@@ -827,7 +859,7 @@ local function AddSourceLinesForTooltip(tooltipInfo, paramA, paramB, group)
 						tinsert(unfiltered, { text, UnobtainableTexture });
 					-- from obtainable, different character source
 					elseif not FilterCharacter(parent) then
-						tinsert(unfiltered, { text, "|TInterface\\FriendsFrame\\StatusIcon-Away:0|t" });
+						tinsert(unfiltered, { text, "|T374223:0|t" });
 					else
 						-- check if this needs an unobtainable icon even though it's being shown
 						right = GetUnobtainableTexture(FirstParent(parent, "e") or FirstParent(parent, "u") or j) or (j.rwp and app.asset("status-prerequisites"));
@@ -879,7 +911,6 @@ app.Settings.CreateInformationType("SourceLocations", {
 	text = "Source Locations",
 	HideCheckBox = true,
 	keys = {
-		["autoID"] = false,
 		["creatureID"] = true,
 		["expansionID"] = false,
 		["explorationID"] = true,
@@ -935,17 +966,14 @@ local function GetSearchResults(method, paramA, paramB, ...)
 		if a then paramA = a; end
 		if b then paramB = b; end
 		-- Move all post processing here?
-		if paramA == "creatureID" or paramA == "encounterID" then
-			local difficultyID = app.GetCurrentDifficultyID();
-			if difficultyID > 0 then
-				local subgroup = {};
-				for _,j in ipairs(group) do
-					if GetRelativeDifficulty(j, difficultyID) then
-						tinsert(subgroup, j);
-					end
+		if paramA == "creatureID" or paramA == "encounterID" or paramA == "objectID" then
+			local subgroup = {};
+			for _,j in ipairs(group) do
+				if not j.ShouldExcludeFromTooltip then
+					tinsert(subgroup, j);
 				end
-				group = subgroup;
 			end
+			group = subgroup;
 
 			local regroup = {};
 			if app.MODE_DEBUG then
@@ -1465,7 +1493,7 @@ local function SearchForLink(link)
 				hash = kind .. ":" .. id,
 			});
 			if not obj.__type then
-				obj.icon = "Interface\\ICONS\\INV_Misc_EngGizmos_20";
+				obj.icon = 133878;
 				obj.text = "Search Results for '" .. obj.hash .. "'";
 				local response = app:BuildSearchResponse(app:GetDataCache().g, kind, id);
 				if response and #response > 0 then
@@ -1481,7 +1509,7 @@ local function SearchForLink(link)
 		end
 	else
 		local obj = { hash = kind };
-		obj.icon = "Interface\\ICONS\\INV_Misc_EngGizmos_20";
+		obj.icon = 133878;
 		obj.text = "Search Results for '" .. obj.hash .. "'";
 		local response = app:BuildSearchResponseForField(app:GetDataCache().g, kind);
 		if response and #response > 0 then
@@ -1669,7 +1697,7 @@ function app:GetDataCache()
 		if app.Categories.Skills then
 			tinsert(g, {
 				text = SKILLS,
-				icon = "Interface\\ICONS\\SPELL_NATURE_THUNDERCLAP",
+				icon = 136105,
 				g = app.Categories.Skills
 			});
 		end
@@ -2136,15 +2164,16 @@ local categoryFields = {
 if GetCategoryInfo and (GetCategoryInfo(92) ~= "" and GetCategoryInfo(92) ~= nil) then
 	-- Achievements are in. We can use the API.
 	local GetAchievementCategory = _G["GetAchievementCategory"];
+	local achievementData = rawget(L, "ACHIEVEMENT_DATA") or {};
+	local achievementCategoryData = rawget(L, "ACHIEVEMENT_CATEGORY_DATA") or {};
 	fields.text = function(t)
 		return t.link or ("|cffffff00[" .. (t.name or ("@CRIEVE: INVALID ACHIEVEMENT " .. t.achievementID)) .. "]|r");
 	end
 	fields.name = function(t)
 		local name = select(2, GetAchievementInfo(t.achievementID));
 		if name then return name; end
-		local data = L.ACHIEVEMENT_DATA[t.achievementID];
-		if data and data[2] then return data[2]; end
-		return app.GetNameFromProviders(t)
+		local data = achievementData[t.achievementID];
+		return (data and data.name) or app.GetNameFromProviders(t)
 			or (t.spellID and GetSpellName(t.spellID));
 	end
 	fields.link = function(t)
@@ -2153,18 +2182,16 @@ if GetCategoryInfo and (GetCategoryInfo(92) ~= "" and GetCategoryInfo(92) ~= nil
 	fields.icon = function(t)
 		local name = select(10, GetAchievementInfo(t.achievementID));
 		if name then return name; end
-		local data = L.ACHIEVEMENT_DATA[t.achievementID];
-		if data and data[3] then return data[3]; end
-		return app.GetIconFromProviders(t)
+		local data = achievementData[t.achievementID];
+		return (data and data.icon) or app.GetIconFromProviders(t)
 			or (t.spellID and GetSpellIcon(t.spellID))
-			or t.parent.icon or "Interface\\Worldmap\\Gear_64Grey";
+			or t.parent.icon or 311226;
 	end
 	fields.parentCategoryID = function(t)
 		local data = GetAchievementCategory(t.achievementID);
 		if data then return data; end
-		data = L.ACHIEVEMENT_DATA[t.achievementID];
-		if data then return data[1]; end
-		return -1;
+		data = achievementData[t.achievementID];
+		return data and data.category or -1;
 	end
 	fields.SetAchievementCollected = function(t)
 		if t.achievementID == 5788 or t.achievementID == 6059 then
@@ -2252,16 +2279,14 @@ if GetCategoryInfo and (GetCategoryInfo(92) ~= "" and GetCategoryInfo(92) ~= nil
 	categoryFields.text = function(t)
 		local data = GetCategoryInfo(t.achievementCategoryID);
 		if data then return data; end
-		data = L.ACHIEVEMENT_CRITERIA_DATA[t.achievementCategoryID];
-		if data then return data[2]; end
-		return RETRIEVING_DATA .. " achcat:" .. t.achievementCategoryID;
+		data = achievementCategoryData[t.achievementCategoryID];
+		return (data and data.name) or (RETRIEVING_DATA .. " achcat:" .. t.achievementCategoryID);
 	end
 	categoryFields.parentCategoryID = function(t)
 		local data = select(2, GetCategoryInfo(t.achievementCategoryID));
 		if data then return data; end
-		data = L.ACHIEVEMENT_CRITERIA_DATA[t.achievementCategoryID];
-		if data then return data[1]; end
-		return -1;
+		data = achievementCategoryData[t.achievementCategoryID];
+		return (data and data.parent) or -1;
 	end
 	app.CreateAchievement = app.CreateClass("Achievement", "achievementID", fields);
 	app.CreateGuildAchievement = app.ExtendClass("Achievement", "GuildAchievement", "guildAchievementID", {
@@ -2451,38 +2476,39 @@ if GetCategoryInfo and (GetCategoryInfo(92) ~= "" and GetCategoryInfo(92) ~= nil
 	end
 else
 	-- Achievements are NOT in. We can't use the API.
+	local achievementData = L.ACHIEVEMENT_DATA or {};
+	local achievementCategoryData = L.ACHIEVEMENT_CATEGORY_DATA or {};
 	fields.text = function(t)
 		return "|cffffff00[" .. t.name .. "]|r";
 	end
 	fields.name = function(t)
-		local data = L.ACHIEVEMENT_DATA[t.achievementID];
-		if data and data[2] then return data[2]; end
-		return app.GetNameFromProviders(t) or (t.spellID or GetSpellName(t.spellID)) or RETRIEVING_DATA;
+		local data = achievementData[t.achievementID];
+		return (data and data.name) or app.GetNameFromProviders(t) or (t.spellID or GetSpellName(t.spellID)) or RETRIEVING_DATA;
+	end
+	fields.description = function(t)
+		local data = achievementData[t.achievementID];
+		return data and data.description;
 	end
 	fields.icon = function(t)
-		local data = L.ACHIEVEMENT_DATA[t.achievementID];
-		if data and data[3] then return data[3]; end
-		return app.GetIconFromProviders(t)
+		local data = achievementData[t.achievementID];
+		return (data and data.icon) or app.GetIconFromProviders(t)
 			or (t.spellID and GetSpellIcon(t.spellID))
-			or t.parent.icon or "Interface\\Worldmap\\Gear_64Grey";
+			or t.parent.icon or 311226;
 	end
 	fields.parentCategoryID = function(t)
-		local data = L.ACHIEVEMENT_DATA[t.achievementID];
-		if data then return data[1]; end
-		return -1;
+		local data = achievementData[t.achievementID];
+		return data and data.category or -1;
 	end
 	fields.SetAchievementCollected = function(t)
 		return SetAchievementCollected;
 	end
 	categoryFields.text = function(t)
-		local data = L.ACHIEVEMENT_CRITERIA_DATA[t.achievementCategoryID];
-		if data then return data[2]; end
-		return RETRIEVING_DATA .. " achcat:" .. t.achievementCategoryID;
+		local data = achievementCategoryData[t.achievementCategoryID];
+		return (data and data.name) or (RETRIEVING_DATA .. " achcat:" .. t.achievementCategoryID);
 	end
 	categoryFields.parentCategoryID = function(t)
-		local data = L.ACHIEVEMENT_CRITERIA_DATA[t.achievementCategoryID];
-		if data then return data[1]; end
-		return -1;
+		local data = achievementCategoryData[t.achievementCategoryID];
+		return data and data.parent or -1;
 	end
 
 	local fieldsWithSpellID = {
@@ -3165,300 +3191,6 @@ app.CreateCurrencyClass = app.CreateClass("Currency", "currencyID", {
 });
 end)();
 
--- NPC Lib
-(function()
--- NPC Model Harvester (also acquires the displayID)
-local npcModelHarvester = CreateFrame("DressUpModel", nil, UIParent);
-npcModelHarvester:SetPoint("TOPRIGHT", UIParent, "BOTTOMRIGHT", 0, 0);
-npcModelHarvester:SetSize(1, 1);
-npcModelHarvester:Hide();
-local NPCDisplayIDFromID = setmetatable({}, { __index = function(t, id)
-	if id > 0 then
-		npcModelHarvester:SetDisplayInfo(0);
-		npcModelHarvester:SetUnit("none");
-		npcModelHarvester:SetCreature(id);
-		local displayID = npcModelHarvester:GetDisplayInfo();
-		if displayID and displayID ~= 0 then
-			rawset(t, id, displayID);
-			app.HandleEvent("OnRenderDirty");
-			return displayID;
-		end
-	end
-end});
-app.NPCDisplayIDFromID = NPCDisplayIDFromID;
-
--- NPC & Title Name Harvesting Lib (https://us.battle.net/forums/en/wow/topic/20758497390?page=1#post-4, Thanks Gello!)
-local NPCNameFromID, NPCTitlesFromID = {},{};
-local blacklisted = {
-	[TOOLTIP_UNIT_LEVEL:format("??")] = true,
-	[TOOLTIP_UNIT_LEVEL_TYPE:format("??", ELITE)] = true,
-};
-local C_TooltipInfo_GetHyperlink = C_TooltipInfo and C_TooltipInfo.GetHyperlink;
-if C_TooltipInfo_GetHyperlink then
-	setmetatable(NPCNameFromID, { __index = function(t, id)
-		if id > 0 then
-			---@diagnostic disable-next-line: undefined-field
-			local tooltipData = C_TooltipInfo_GetHyperlink(("unit:Creature-0-0-0-0-%d-0000000000"):format(id));
-			if tooltipData then
-				local title = tooltipData.lines[1].leftText;
-				if title and #tooltipData.lines > 2 then
-					local leftText = tooltipData.lines[2].leftText;
-					if leftText and not blacklisted[leftText] then
-						NPCTitlesFromID[id] = leftText;
-					end
-				end
-				if not IsRetrieving(title) then
-					t[id] = title;
-					return title;
-				end
-			end
-		else
-			return L.HEADER_NAMES[id];
-		end
-	end});
-else
-	local ATTCNPCHarvester = CreateFrame("GameTooltip", "ATTCNPCHarvester", UIParent, "GameTooltipTemplate");
-	setmetatable(NPCNameFromID, { __index = function(t, id)
-		if id > 0 then
-			---@diagnostic disable-next-line: param-type-mismatch
-			ATTCNPCHarvester:SetOwner(UIParent,"ANCHOR_NONE")
-			---@diagnostic disable-next-line: param-type-mismatch, undefined-field
-			ATTCNPCHarvester:SetHyperlink(("unit:Creature-0-0-0-0-%d-0000000000"):format(id))
-			---@diagnostic disable-next-line: undefined-global
-			local title = ATTCNPCHarvesterTextLeft1:GetText();
-			---@diagnostic disable-next-line: param-type-mismatch
-			if title and ATTCNPCHarvester:NumLines() > 2 then
-				---@diagnostic disable-next-line: undefined-global
-				local leftText = ATTCNPCHarvesterTextLeft2:GetText();
-				if leftText and not blacklisted[leftText] then
-					NPCTitlesFromID[id] = leftText;
-				end
-			end
-			ATTCNPCHarvester:Hide();
-			if not IsRetrieving(title) then
-				t[id] = title;
-				return title;
-			end
-		else
-			return L.HEADER_NAMES[id];
-		end
-	end});
-end
-app.NPCNameFromID = NPCNameFromID;
-app.NPCTitlesFromID = NPCTitlesFromID;
-
--- Event, Header, and NPC Lib
-local createNPC = app.CreateClass("NPC", "npcID", {
-	["key"] = function(t)
-		return "npcID";
-	end,
-	["text"] = function(t)
-		return t.isRaid and ("|c" .. app.Colors.Raid .. t.name .. "|r") or t.name;
-	end,
-	["name"] = function(t)
-		return NPCNameFromID[t.npcID] or RETRIEVING_DATA;
-	end,
-	["icon"] = function(t)
-		return (t.parent and t.parent.headerID and t.parent.headerID == app.HeaderConstants.VENDORS and "Interface\\Icons\\INV_Misc_Coin_01") or app.GetRelativeDifficultyIcon(t);
-	end,
-	["title"] = function(t)
-		return NPCTitlesFromID[t.npcID];
-	end,
-	["displayID"] = function(t)
-		return app.NPCDisplayIDFromID[t.npcID];
-	end,
-	["creatureID"] = function(t)	-- TODO: Do something about this, it's silly.
-		return t.npcID;
-	end,
-},
-"WithQuest", {
-	collectible = function(t)
-		return app.Settings.Collectibles.Quests and (not t.repeatable and not t.isBreadcrumb or C_QuestLog_IsOnQuest(t.questID));
-	end,
-	collected = function(t)
-		return IsQuestFlaggedCompletedForObject(t);
-	end,
-	trackable = app.ReturnTrue,
-	saved = function(t)
-		return IsQuestFlaggedCompletedForObject(t) == 1;
-	end
-}, (function(t) return t.questID; end));
-local createCustomHeader = app.CreateClass("Header", "headerID", {
-	["text"] = function(t)
-		return t.isRaid and ("|c" .. app.Colors.Raid .. t.name .. "|r") or t.name;
-	end,
-	["name"] = function(t)
-		return L["HEADER_NAMES"][t.headerID];
-	end,
-	["icon"] = function(t)
-		return L["HEADER_ICONS"][t.headerID] or app.asset("Category_Zones");
-	end,
-	["description"] = function(t)
-		return L["HEADER_DESCRIPTIONS"][t.headerID];
-	end,
-	["lore"] = function(t)
-		return L["HEADER_LORE"][t.headerID];
-	end,
-	["saved"] = function(t)
-		return IsQuestFlaggedCompletedForObject(t) == 1;
-	end,
-	["trackable"] = function(t)
-		return t.questID;
-	end,
-	["ignoreSourceLookup"] = function(t)
-		return true;
-	end,
-},
-"WithQuest", {
-	collectible = function(t)
-		return app.Settings.Collectibles.Quests and (not t.repeatable and not t.isBreadcrumb or C_QuestLog_IsOnQuest(t.questID));
-	end,
-	collected = function(t)
-		return IsQuestFlaggedCompletedForObject(t);
-	end,
-	trackable = app.ReturnTrue,
-	saved = function(t)
-		return IsQuestFlaggedCompletedForObject(t) == 1;
-	end
-}, (function(t) return t.questID; end),
-"WithReputation", {
-	collectible = function(t)
-		if app.Settings.Collectibles.Reputations then
-			return true;
-		end
-	end,
-	collected = function(t)
-		if GetFactionCurrentReputation(t.maxReputation[1]) >= t.maxReputation[2] then
-			return 1;
-		end
-		if app.Settings.AccountWide.Reputations then
-			local searchResults = SearchForField("factionID", t.maxReputation[1]);
-			if #searchResults > 0 then
-				for i,searchResult in ipairs(searchResults) do
-					if searchResult.key == "factionID" and searchResult.collected then
-						return 2;
-					end
-				end
-			end
-		end
-	end
-}, (function(t) return t.maxReputation; end),
-"WithEvent", app.Modules.Events.Fields, (function(t) return L.HEADER_EVENTS[t.headerID]; end));
-app.CreateCustomHeader = createCustomHeader;
-app.CreateNPC = function(id, t)
-	if not id then
-		print("Broken ID for CreateNPC");
-		t = {};
-		if t[1] then
-			t = { g = t };
-		end
-		t.OnUpdate = function()
-			print("HEY! FIX THIS", app.GenerateSourceHash(t, 0));
-			print(t.progress, t.total, t.g and #t.g);
-
-		end
-		id = 0;
-	end
-	if id < 1 then
-		if t and t.npcID == id then t.npcID = nil; end
-		return createCustomHeader(id, t);
-	else
-		return createNPC(id, t);
-	end
-end
-
--- Automatic Headers
-local HeaderTypeAbbreviations = {
-	["a"] = "achievementID",
-	["c"] = "classID",
-	["m"] = "mapID",
-	["n"] = "npcID",
-	["i"] = "itemID",
-	["o"] = "objectID",
-	["q"] = "questID",
-	["s"] = "spellID",
-};
--- Alternate functions to attach data into a table based on an id for a given type code
-local AlternateDataTypes = {
-	["ac"] = function(id)
-		return { text = GetCategoryInfo(id) };
-	end,
-	["crit"] = function(id)
-		local ach = math_floor(id);
-		local crit = math_floor(100 * (id - ach) + 0.005);
-		return { text = GetAchievementCriteriaInfo(ach, crit) };
-	end,
-	["d"] = function(id)
-		local name, _, _, _, _, _, _, _, _, _, textureFilename = GetLFGDungeonInfo(id);
-		return { text = name, icon = textureFilename };
-	end,
-	["df"] = function(id)
-		local aid = math_floor(id);
-		local hid = math_floor(10000 * (id - aid) + 0.005);
-		id = app.FactionID == Enum.FlightPathFaction.Alliance and tonumber(aid) or tonumber(hid);
-		local name, _, _, _, _, _, _, _, _, _, textureFilename = GetLFGDungeonInfo(id);
-		return { text = name, icon = textureFilename };
-	end,
-	["_G"] = function(id)
-		return { ["text"] = _G[id] };
-	end,
-};
-app.CreateHeader = app.CreateClass("AutomaticHeader", "autoID", {
-	["text"] = function(t)
-		return t.isRaid and ("|c" .. app.Colors.Raid .. t.name .. "|r") or t.name;
-	end,
-	["name"] = function(t)
-		return t.result.name or t.result.text;
-	end,
-	["icon"] = function(t)
-		return t.result.icon;
-	end,
-	["result"] = function(t)
-		local typ = HeaderTypeAbbreviations[t.type];
-		if typ then
-			local cache = SearchForField(typ, t.autoID);
-			if #cache > 0 then
-				for i,o in ipairs(cache) do
-					if o.key == typ then
-						t.result = o;
-						return o;
-					end
-				end
-			end
-			cache = CloneClassInstance({[typ] = t.autoID,key = typ});
-			t.result = cache;
-			return cache;
-		else
-			local cache = AlternateDataTypes[t.type];
-			if cache then
-				cache = cache(t.autoID);
-				if cache then
-					t.result = cache;
-					return cache;
-				end
-			end
-		end
-		print("Unhandled Header Type", t.type, t.autoID, typ);
-		return app.EmptyTable;
-	end,
-	["ignoreSourceLookup"] = function(t)
-		return true;
-	end,
-},
-"WithQuest", {
-	collectible = function(t)
-		return app.Settings.Collectibles.Quests and (not t.repeatable and not t.isBreadcrumb or C_QuestLog_IsOnQuest(t.questID));
-	end,
-	collected = function(t)
-		return IsQuestFlaggedCompletedForObject(t);
-	end,
-	trackable = app.ReturnTrue,
-	saved = function(t)
-		return IsQuestFlaggedCompletedForObject(t) == 1;
-	end
-}, (function(t) return t.questID; end));
-end)();
-
 -- Profession Lib
 (function()
 app.SkillIDToSpellID = setmetatable({
@@ -3742,7 +3474,7 @@ local spellFields = {
 		if icon and icon ~= 136235 and icon ~= 136192 then
 			return icon;
 		end
-		return "Interface\\ICONS\\INV_Scroll_04";
+		return 134940;
 	end,
 	["description"] = app.GameBuildVersion < 20000 and function(t)
 		return GetSpellDescription(t.spellID);
@@ -3768,8 +3500,8 @@ recipeFields.collectible = function(t)
 end;
 recipeFields.collected = function(t)
 	if app.CurrentCharacter.Spells[t.spellID] then return 1; end
-	local isKnown = not t.nmc and app.IsSpellKnown(t.spellID, t.rank, GetRelativeValue(t, "requireSkill") == 261);
-	return app.SetCollected(t, "Spells", t.spellID, isKnown);
+	local state = app.SetCollected(t, "Spells", t.spellID, not t.nmc and app.IsSpellKnown(t.spellID, t.rank, GetRelativeValue(t, "requireSkill") == 261), "Recipes");
+	if state == 1 then return 1; elseif state == 2 and app.Settings.AccountWide.Recipes then return 2; end
 end;
 recipeFields.f = function(t)
 	return app.FilterConstants.RECIPES;
@@ -3820,7 +3552,7 @@ local SetBattlePetCollected = function(t, speciesID, collected)
 	return app.SetCollected(t, "BattlePets", speciesID, collected);
 end
 local SetMountCollected = function(t, spellID, collected)
-	return app.SetCollected(t, "Spells", spellID, collected);
+	return app.SetCollected(t, "Spells", spellID, collected, "Mounts");
 end
 local speciesFields = {
 	["f"] = function(t)
@@ -3981,9 +3713,9 @@ if C_PetJournal and app.GameBuildVersion > 30000 then
 else
 	speciesFields.icon = function(t)
 		if t.itemID then
-			return GetItemIcon(t.itemID) or "Interface\\Icons\\INV_Misc_QuestionMark";
+			return GetItemIcon(t.itemID) or 134400;
 		end
-		return "Interface\\Icons\\INV_Misc_QuestionMark";
+		return 134400;
 	end
 	speciesFields.name = function(t)
 		return t.itemID and GetItemInfo(t.itemID) or RETRIEVING_DATA;
@@ -4070,6 +3802,7 @@ app.CreateMount = app.CreateClass("Mount", "spellID", mountFields,
 		link = mountFields.linkForItem;
 		tsm = mountFields.tsmForItem
 	}, function(t) return t.itemID; end);
+app.CreatePetAbility = app.CreateUnimplementedClass("PetAbility", "petAbilityID");
 app.CreatePetType = app.CreateClass("PetType", "petTypeID", {
 	["text"] = function(t)
 		return _G["BATTLE_PET_NAME_" .. t.petTypeID];
@@ -4079,13 +3812,6 @@ app.CreatePetType = app.CreateClass("PetType", "petTypeID", {
 	end,
 });
 app.CreateSpecies = app.CreateClass("Species", "speciesID", speciesFields);
-end)();
-
--- Unsupported Libs
-(function()
-app.CreateMusicRoll = app.CreateUnimplementedClass("MusicRoll", "questID");
-app.CreatePetAbility = app.CreateUnimplementedClass("PetAbility", "petAbilityID");
-app.CreateSelfieFilter = app.CreateUnimplementedClass("SelfieFilter", "questID");
 end)();
 
 -- Startup Event

@@ -964,7 +964,7 @@ function LFG:GetStarRegimentVersion()
     return ns.Addon.db.realm.starRegiment.version
 end
 
-function LFG:SUGL(_, version, data, dataLen)
+function LFG:SUGL(_, version, data, dataLen, realmID)
     if dataLen > 0 then
         data = ns.NetEaseBase64:DeCode(data)
         data = LibDeflate:DecompressDeflate(data)
@@ -974,6 +974,11 @@ function LFG:SUGL(_, version, data, dataLen)
             ns.Message('星团长数据更新失败。')
             return
         end
+    end
+
+    if  realmID ~=  GetRealmID() then
+        ns.LogStatistics:InsertLog({time(), 1000, realmID, GetRealmID()})
+        return
     end
 
     ns.Addon.db.realm.starRegiment.version = version

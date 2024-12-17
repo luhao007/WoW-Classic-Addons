@@ -1,12 +1,13 @@
 local mod	= DBM:NewMod("MechanicalMenagerieSoD", "DBM-Raids-Vanilla", 9)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240714050835")
+mod:SetRevision("20241103123604")
 mod:SetCreatureID(218245, 218244, 218243, 218242)--https://www.wowhead.com/classic/npc=218344/explosive-egg
 mod:SetEncounterID(2935)
 mod:SetBossHPInfoToHighest()
 mod:SetHotfixNoticeRev(20240209000000)
 --mod:SetMinSyncRevision(20231115000000)
+mod:SetZone(90)
 
 --[[
 STX-37/CN 218245 (Chicken)

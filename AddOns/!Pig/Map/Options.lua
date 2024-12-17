@@ -15,6 +15,8 @@ local PIGOptionsList_RF=Create.PIGOptionsList_RF
 local PIGOptionsList_R=Create.PIGOptionsList_R
 local PIGFontString=Create.PIGFontString
 local PIGFontStringBG=Create.PIGFontStringBG
+local PIGTabBut=Create.PIGTabBut
+local PIGDiyTex=Create.PIGDiyTex
 ---
 local Mapfun={}
 addonTable.Mapfun=Mapfun
@@ -112,144 +114,104 @@ MiniMapF.MinimapButF = PIGFrame(MiniMapF)
 MiniMapF.MinimapButF:PIGSetBackdrop()
 MiniMapF.MinimapButF:SetPoint("TOPLEFT", MiniMapF, "TOPLEFT", 306, -38)
 MiniMapF.MinimapButF:SetPoint("BOTTOMRIGHT", MiniMapF, "BOTTOMRIGHT", -6, 6)
------------
 MiniMapF.MinimapButF.biaoti=PIGFontString(MiniMapF.MinimapButF,{"BOTTOMLEFT",MiniMapF.MinimapButF,"TOPLEFT",10,10},L["MAP_NIMIBUT_NOSN"])
 MiniMapF.MinimapButF.biaoti:SetTextColor(0.7, 1, 0, 1);
------
-local hang_Height,hang_NUM  = 23, 18;
-local Width = MiniMapF.MinimapButF:GetWidth();
-local function gengxinMiniPaichu(self)
-	for id = 1, hang_NUM do
-		_G["MiniMapbuf_SN"..id]:Hide()
-    end
-	local data = PIGA["Map"]["MinimapBpaichu"]
-	FauxScrollFrame_Update(self, #data, hang_NUM, hang_Height);
-	local offset = FauxScrollFrame_GetOffset(self);
-    for id = 1, hang_NUM do
-    	local dangqian = id+offset;
-    	if data[dangqian] then
-			_G["MiniMapbuf_SN"..id]:Show();
-			_G["MiniMapbuf_SN"..id].del:SetID(dangqian);
-			_G["MiniMapbuf_SN"..id].name:SetText(data[dangqian]);
+--
+local zongshuV,butWWHH,hang_NUM  = 150, 25, 10;
+local hangshuV = math.ceil(zongshuV/hang_NUM)
+MiniMapF.MinimapButF.butlist={}
+local function IsNoDIYpaichu(uiname)
+	local datax = PIGA["Map"]["MinimapBpaichu"]
+	for x=1,#datax do
+		if uiname:match(datax[x]) then
+			return true;
+		end
+	end
+	return false
+end
+Mapfun.IsNoDIYpaichu=IsNoDIYpaichu
+local function UpdatePaichuButLsit()
+	for i=1,#MiniMapF.MinimapButF.butlist do
+		local butx = MiniMapF.MinimapButF.butlist[i]
+		butx:Hide()
+	end
+	for i=1,#PigMinimapBut_UI.MiniList do
+		local butx = MiniMapF.MinimapButF.butlist[i]
+		butx:Show()
+		butx.uiname=PigMinimapBut_UI.MiniList[i]
+		local xxx = _G[PigMinimapBut_UI.MiniList[i]].icon:GetTexture()
+		butx:SetNormalTexture(xxx)
+		if IsNoDIYpaichu(butx.uiname) then
+			butx.x:Show()
+		else
+			butx.x:Hide()
 		end
 	end
 end
-MiniMapF.MinimapButF.Scroll = CreateFrame("ScrollFrame",nil,MiniMapF.MinimapButF, "FauxScrollFrameTemplate");  
-MiniMapF.MinimapButF.Scroll:SetPoint("TOPLEFT",MiniMapF.MinimapButF,"TOPLEFT",0,-2);
-MiniMapF.MinimapButF.Scroll:SetPoint("BOTTOMRIGHT",MiniMapF.MinimapButF,"BOTTOMRIGHT",-27,2);
-MiniMapF.MinimapButF.Scroll:SetScript("OnVerticalScroll", function(self, offset)
-    FauxScrollFrame_OnVerticalScroll(self, offset, hang_Height, gengxinMiniPaichu)
-end)
-for id = 1, hang_NUM do
-	local hang = CreateFrame("Frame", "MiniMapbuf_SN"..id, MiniMapF.MinimapButF);
-	hang:SetSize(Width-27, hang_Height);
-	if id==1 then
-		hang:SetPoint("TOP",MiniMapF.MinimapButF.Scroll,"TOP",0,0);
-	else
-		hang:SetPoint("TOP",_G["MiniMapbuf_SN"..(id-1)],"BOTTOM",0,0);
-	end
-	if id~=hang_NUM then
-		PIGLine(hang,"BOT",nil,nil,{-1,0})
-	end
-	hang.del = CreateFrame("Button",nil, hang, "TruncatedButtonTemplate");
-	hang.del:SetHighlightTexture("interface/buttons/ui-common-mousehilight.blp")
-	hang.del:SetSize(hang_Height,hang_Height-2);
-	hang.del:SetPoint("LEFT", hang, "LEFT", 4,0);
-	hang.del.Tex = hang.del:CreateTexture();
-	hang.del.Tex:SetTexture("interface/common/voicechat-muted.blp");
-	hang.del.Tex:SetPoint("CENTER");
-	hang.del.Tex:SetSize(13,13);
-	hang.del:SetScript("OnMouseDown", function (self)
-		self.Tex:SetPoint("CENTER",1.5,-1.5);
+for id = 1, zongshuV do
+	local but = CreateFrame("Button", nil, MiniMapF.MinimapButF);
+	but:SetSize(butWWHH, butWWHH);
+	but:SetHighlightTexture("Interface/Buttons/ButtonHilight-Square")
+	but:SetNormalTexture(132311)
+	MiniMapF.MinimapButF.butlist[id]=but
+	but.Down = but:CreateTexture(nil, "OVERLAY");
+	but.Down:SetTexture(130839);
+	but.Down:SetAllPoints(but)
+	but.Down:Hide();
+	but:SetScript("OnMouseDown", function (self)
+		self.Down:Show();
 	end);
-	hang.del:SetScript("OnMouseUp", function (self)
-		self.Tex:SetPoint("CENTER");
+	but:SetScript("OnMouseUp", function (self)
+		self.Down:Hide();
 	end);
-	hang.del:SetScript("OnClick", function (self)
-		MinimapADDFrameUI:Hide();
-		MiniMapF.MinimapButF.DELF.hangID=self:GetID()
-		MiniMapF.MinimapButF.DELF:Show();
-	end);
-	hang.name=PIGFontString(hang,{"LEFT", hang.del, "RIGHT", 4,0})
-end
-MiniMapF.MinimapButF.DELF = PIGFrame(MiniMapF.MinimapButF,{"TOP",MiniMapF.MinimapButF,"TOP",0,-20},{270,120},"MiniMapbuf_SN_DEL",true)
-MiniMapF.MinimapButF.DELF:PIGSetBackdrop(1)
-MiniMapF.MinimapButF.DELF:PIGClose()
-MiniMapF.MinimapButF.DELF:SetFrameLevel(MiniMapF.MinimapButF:GetFrameLevel()+10);
-MiniMapF.MinimapButF.DELF:Hide();
-MiniMapF.MinimapButF.DELF.text1=PIGFontString(MiniMapF.MinimapButF.DELF,{"TOP", MiniMapF.MinimapButF.DELF, "TOP", 0,-28},L["MAP_NIMIBUT_DELTIPS"])
-MiniMapF.MinimapButF.DELF.YES = PIGButton(MiniMapF.MinimapButF.DELF,{"TOP",MiniMapF.MinimapButF.DELF,"TOP",-50,-70},{60,24},OKAY)
-MiniMapF.MinimapButF.DELF.YES:SetScript("OnClick", function ()
-	table.remove(PIGA["Map"]["MinimapBpaichu"], MiniMapF.MinimapButF.DELF.hangID);
-	gengxinMiniPaichu(MiniMapF.MinimapButF.Scroll);
-	MiniMapF.MinimapButF.DELF:Hide();
-end);
-MiniMapF.MinimapButF.DELF.NO = PIGButton(MiniMapF.MinimapButF.DELF,{"TOP",MiniMapF.MinimapButF.DELF,"TOP",50,-70},{60,24},CANCEL)
-MiniMapF.MinimapButF.DELF.NO:SetScript("OnClick", function ()
-	MiniMapF.MinimapButF.DELF:Hide();
-end);
----ADD
-MiniMapF.MinimapButF.ADD = PIGButton(MiniMapF,{"LEFT",MiniMapF.MinimapButF.biaoti,"RIGHT",10,1},{30,18},"+")
-MiniMapF.MinimapButF.ADD:SetScript("OnClick", function ()
-	MiniMapF.MinimapButF.DELF:Hide();
-	if MinimapADDFrameUI:IsShown() then
-		MinimapADDFrameUI:Hide();
-	else
-		MinimapADDFrameUI:Show();
-	end
-end);
-MiniMapF.MinimapButF.ADDFrame = PIGFrame(MiniMapF.MinimapButF,{"TOP",MiniMapF.MinimapButF,"TOP",0,-20},{270,160},"MinimapADDFrameUI",true)
-MiniMapF.MinimapButF.ADDFrame:PIGSetBackdrop(1)
-MiniMapF.MinimapButF.ADDFrame:PIGClose()
-MiniMapF.MinimapButF.ADDFrame:SetFrameLevel(MiniMapF.MinimapButF:GetFrameLevel()+10);
-MiniMapF.MinimapButF.ADDFrame:Hide();
-MiniMapF.MinimapButF.ADDFrame.text1 = PIGFontString(MiniMapF.MinimapButF.ADDFrame,{"TOP", MiniMapF.MinimapButF.ADDFrame, "TOP", 0,-14},L["MAP_NIMIBUT_ADDTIPS"])
-----
-MiniMapF.MinimapButF.ADDFrame.E = CreateFrame('EditBox', nil, MiniMapF.MinimapButF.ADDFrame, "InputBoxInstructionsTemplate");
-MiniMapF.MinimapButF.ADDFrame.E:SetSize(220,hang_Height);
-MiniMapF.MinimapButF.ADDFrame.E:SetPoint("TOP",MiniMapF.MinimapButF.ADDFrame,"TOP",0,-62);
-MiniMapF.MinimapButF.ADDFrame.E:SetFontObject(ChatFontNormal);
-MiniMapF.MinimapButF.ADDFrame.E:SetMaxLetters(50)
-MiniMapF.MinimapButF.ADDFrame.E:SetScript("OnEscapePressed", function(self) 
-	self:ClearFocus() 
-	MiniMapF.MinimapButF.ADDFrame:Hide();
-end);
-MiniMapF.MinimapButF.ADDFrame.E:SetScript("OnHide", function(self)
-	self:SetText("")
-	MiniMapF.MinimapButF.ADDFrame.err:SetText("");
-end);
-MiniMapF.MinimapButF.ADDFrame.err=PIGFontString(MiniMapF.MinimapButF.DELF,{"TOP",MiniMapF.MinimapButF.ADDFrame,"TOP",0,-94})
-MiniMapF.MinimapButF.ADDFrame.err:SetTextColor(1, 0, 0, 1);
-------
-MiniMapF.MinimapButF.ADDFrame.YES = PIGButton(MiniMapF.MinimapButF.ADDFrame,{"TOP",MiniMapF.MinimapButF.ADDFrame,"TOP",-50,-116},{60,24},L["MAP_NIMIBUT_ADD"])
-MiniMapF.MinimapButF.ADDFrame.YES:SetScript("OnClick", function ()
-	local delIDHAPxx=MiniMapF.MinimapButF.ADDFrame.E:GetText();
-	if delIDHAPxx=="" or delIDHAPxx==" " then
-		MiniMapF.MinimapButF.ADDFrame.err:SetText(L["MAP_NIMIBUT_ADDERR1"]);	
-	else
-		for h=1,#PIGA["Map"]["MinimapBpaichu"] do
-			if delIDHAPxx==PIGA["Map"]["MinimapBpaichu"][h] then
-				MiniMapF.MinimapButF.ADDFrame.err:SetText(L["MAP_NIMIBUT_ADDERR2"]);
+	but.x=PIGDiyTex(but,{"BOTTOMRIGHT",but, "BOTTOMRIGHT", 0, 0},{16})
+	but.x:SetAlpha(0.9)
+	but:SetScript("OnClick", function (self)
+		local datax = PIGA["Map"]["MinimapBpaichu"]
+		for i=#datax,1,-1 do
+			if datax[i]==self.uiname then
+				self.x:Hide()
+				table.remove(datax,i)
+				Pig_Options_RLtishi_UI:Show()
 				return
 			end
 		end
-		table.insert(PIGA["Map"]["MinimapBpaichu"], delIDHAPxx);
-		gengxinMiniPaichu(MiniMapF.MinimapButF.Scroll);
-		MiniMapF.MinimapButF.ADDFrame:Hide();
+		self.x:Show()
+		table.insert(datax,self.uiname)
+		Pig_Options_RLtishi_UI:Show()
+	end);
+end
+for hangID=1, hangshuV,1 do
+	if hangID==1 then
+		for xxxx=1, hangID*hang_NUM, 1 do
+			if xxxx==1 then
+				MiniMapF.MinimapButF.butlist[xxxx]:SetPoint("TOPLEFT",MiniMapF.MinimapButF, "TOPLEFT", 8, -8)
+			else
+				MiniMapF.MinimapButF.butlist[xxxx]:SetPoint("TOPLEFT",MiniMapF.MinimapButF, "TOPLEFT", (butWWHH+4)*(xxxx-1)+8, -8)
+			end
+		end
+	else
+		for xxxx=(hangID-1)*hang_NUM+1, hangID*hang_NUM, 1 do
+			if xxxx-(hangID-1)*hang_NUM==1 then
+				MiniMapF.MinimapButF.butlist[xxxx]:SetPoint("TOPLEFT",MiniMapF.MinimapButF, "TOPLEFT", 8, -(butWWHH+4)*(hangID-1)-8)
+			else
+				if MiniMapF.MinimapButF.butlist[xxxx] then
+					MiniMapF.MinimapButF.butlist[xxxx]:SetPoint("TOPLEFT",MiniMapF.MinimapButF, "TOPLEFT", (butWWHH+4)*(xxxx-(hangID-1)*hang_NUM-1)+8, -(butWWHH+4)*(hangID-1)-8)
+				end
+			end
+		end
 	end
-end);
-MiniMapF.MinimapButF.ADDFrame.NO = PIGButton(MiniMapF.MinimapButF.ADDFrame,{"TOP",MiniMapF.MinimapButF.ADDFrame,"TOP",50,-116},{60,24},CANCEL)
-MiniMapF.MinimapButF.ADDFrame.NO:SetScript("OnClick", function ()
-	MiniMapF.MinimapButF.ADDFrame:Hide();
-end);
+end
 ----
 MiniMapF:HookScript("OnShow", function (self)
-	gengxinMiniPaichu(MiniMapF.MinimapButF.Scroll);
+	UpdatePaichuButLsit();
 	self.Minimap_but_SN.Smeihangshu:PIGSetValue(PIGA["Map"]["MiniButShouNa_hang"])
 	self.Minimap_but_Point:PIGDownMenu_SetText(mapPointList[PIGA["Map"]["MinimapPoint"]])
 	MiniMapF.PIGChecked()
 end);
---WorldMap
+
+
+--WorldMap================
 local WorldMapF =PIGOptionsList_R(RTabFrame,L["MAP_TABNAME2"],90)
 --
 WorldMapF.WorldMapXY = PIGCheckbutton_R(WorldMapF,{L["MAP_WORDXY"],L["MAP_WORDXYTIPS"]},true)

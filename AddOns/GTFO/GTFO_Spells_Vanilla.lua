@@ -196,4 +196,10 @@ GTFO.SpellID["243459"] = {
   sound = 1;
 };
 
+GTFO.SpellID["243923"] = {
+  --desc = "Manastorm (Azuregos)";
+  ignoreApplication = true;
+  sound = 1;
+};
+
 end

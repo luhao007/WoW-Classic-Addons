@@ -9,12 +9,13 @@ end
 local mod	= DBM:NewMod("Viscidus", "DBM-Raids-Vanilla", catID)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20231110035626")
+mod:SetRevision("20241103123604")
 mod:SetCreatureID(15299)
 mod:SetEncounterID(713)
 mod:SetModelID(15686)
 mod:SetHotfixNoticeRev(20200828000000)--2020, 8, 28
 mod:SetMinSyncRevision(20200828000000)--2020, 8, 28
+mod:SetZone(531)
 
 mod:RegisterCombat("combat")
 

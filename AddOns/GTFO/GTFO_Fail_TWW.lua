@@ -375,6 +375,12 @@ GTFO.SpellID["440378"] = {
   sound = 3;
 };
 
+GTFO.SpellID["464508"] = {
+  --desc = "Shadow Fissure (Kel'Thuzad)";
+  sound = 3;
+};
+
+
 --- ****************************
 --- * Ara-Kara, City of Echoes *
 --- ****************************
@@ -1663,6 +1669,179 @@ GTFO.SpellID["439408"] = {
 GTFO.SpellID["442495"] = {
   --desc = "Eclipse (Nexus-Princess Ky'veza)";
   sound = 3;
+};
+
+--- ***************************
+--- * Blackrock Depths (Raid) *
+--- ***************************
+
+-- TODO: Magma Infusion (Ambassador Flamelash) - Frontal cone, avoidable by tanks?
+-- TODO: Call Imperial Guard (Emperor Dagran Thaurissan) - Knockback from spawning mole machine
+
+GTFO.SpellID["462838"] = {
+  --desc = "Eruption (Lord Roccor)";
+  sound = 3;
+};
+
+GTFO.SpellID["469032"] = {
+  --desc = "Gaze of Terror (High Interrogator Gerstahn)";
+  applicationOnly = true;
+  sound = 3;
+};
+
+GTFO.SpellID["463891"] = {
+  --desc = "Crumbling Ceiling (Bael'Gar)";
+  sound = 3;
+};
+
+GTFO.SpellID["462969"] = {
+  --desc = "Molten Furnace (Bael'Gar)";
+  sound = 3;
+  tankSound = 0;
+};
+
+GTFO.SpellID["462974"] = {
+  --desc = "Giant Strike (Bael'Gar)";
+  sound = 3;
+  tankSound = 0;
+};
+
+GTFO.SpellID["463470"] = {
+  --desc = "Summon Flame Geyser (Lord Incendius)";
+  sound = 3;
+};
+
+GTFO.SpellID["468580"] = {
+  --desc = "Double Smash (Chiseled War Construct)";
+  sound = 3;
+  tankSound = 0;
+};
+
+GTFO.SpellID["468579"] = {
+  --desc = "Double Smash (Chiseled War Construct)";
+  sound = 3;
+  tankSound = 0;
+};
+
+GTFO.SpellID["468569"] = {
+  --desc = "Ironfel Strike (Fineous Darkvire)";
+  sound = 3;
+  tankSound = 0;
+  test = true; -- Tank avoidable?
+};
+
+GTFO.SpellID["468820"] = {
+  --desc = "Designed Disaster (Fineous Darkvire)";
+  sound = 3;
+};
+
+GTFO.SpellID["463831"] = {
+  --desc = "Chemical Pool (Prototype Toxic Golem)";
+  sound = 3;
+};
+
+GTFO.SpellID["425999"] = {
+  --desc = "Unstable Explosives (Weapon Technician)";
+  sound = 3;
+  test = true;
+};
+
+GTFO.SpellID["469711"] = {
+  --desc = "Terrify (Vile'rel)";
+  applicationOnly = true;
+  sound = 3;
+};
+
+GTFO.SpellID["467427"] = {
+  --desc = "Artillery Barrage (Anvilrage Artillerist)";
+  sound = 3;
+};
+
+GTFO.SpellID["467463"] = {
+  --desc = "Rings of Fire (Shadowforge Flame Keeper)";
+  sound = 3;
+};
+
+GTFO.SpellID["467503"] = {
+  --desc = "Mortar (Anvilrage Artillerist)";
+  sound = 3;
+};
+
+GTFO.SpellID["466663"] = {
+  --desc = "Firing Line (Anvilrage Dragoon)";
+  sound = 3;
+};
+
+GTFO.SpellID["464427"] = {
+  --desc = "Detonate (Anvilrage Sapper)";
+  sound = 3;
+};
+
+GTFO.SpellID["466262"] = {
+  --desc = "Dark Iron Bomb (General Angerforge)";
+  sound = 3;
+};
+
+GTFO.SpellID["464394"] = {
+  --desc = "Fireburst Grenade (General Angerforge)";
+  sound = 3;
+  damageMinimum = 1000000; -- Weak in LFR, adding this to make it ignorable
+};
+
+GTFO.SpellID["467756"] = {
+  --desc = "Deploy Mole Machine (General Angerforge)";
+  sound = 3;
+};
+
+GTFO.SpellID["464382"] = {
+  --desc = "Explosive Impact (Firestarter)";
+  sound = 3;
+  test = true; -- Not sure what triggers this?
+};
+
+GTFO.SpellID["408509"] = {
+  --desc = "Superheat (Flamewalker)";
+  sound = 3;
+  damageMinimum = 2000000;
+};
+
+GTFO.SpellID["464379"] = {
+  --desc = "Magma Sweep (Flamewalker)";
+  sound = 3;
+  tankSound = 0;  -- Tank avoidable?
+};
+
+GTFO.SpellID["410865"] = {
+  --desc = "Spitfire (Spitfire Totem)";
+  sound = 3;
+};
+
+GTFO.SpellID["470610"] = {
+  --desc = "Mind Shattering Scream (Moira Bronzebeard)";
+  sound = 3;
+  test = true;
+};
+
+GTFO.SpellID["465074"] = {
+  --desc = "Magma Shower (Magma Clap)";
+  sound = 3;
+  test = true;
+};
+
+GTFO.SpellID["468796"] = {
+  --desc = "Dark Iron Dynamite (Doomforge Mechanic)";
+  sound = 3;
+};
+
+GTFO.SpellID["466492"] = {
+  --desc = "Molten Hand (Emperor Dagran Thaurissan)";
+  sound = 3;
+};
+
+GTFO.SpellID["465068"] = {
+  --desc = "Magma Clap (Emperor Dagran Thaurissan)";
+  sound = 3;
+  test = true;
 };
 
 end

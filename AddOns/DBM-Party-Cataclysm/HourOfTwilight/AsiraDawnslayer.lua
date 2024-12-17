@@ -3,9 +3,10 @@ local L		= mod:GetLocalizedStrings()
 
 mod.statTypes = "heroic,timewalker"
 
-mod:SetRevision("20200912135206")
+mod:SetRevision("20241102154000")
 mod:SetCreatureID(54968)
 mod:SetEncounterID(1340)
+mod:SetZone(940)
 
 mod:RegisterCombat("yell", L.Pull)
 mod:SetMinCombatTime(15)	-- need to do another run to confirm it works

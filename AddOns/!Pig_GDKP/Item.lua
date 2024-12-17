@@ -150,7 +150,7 @@ function GDKPInfo.ADD_Item(RaidR)
 			rritem_biaoti_1:Hide()
 			rritem_biaoti_2:Hide()
 			for p=1,hang_NUM do
-				local hang = _G["RaidRItem_"..p]
+				local hang = _G["PIG_GDKPItem_"..p]
 				hang.time:Hide()
 				hang.Shiquzhe:Hide()
 				hang.del:Hide()
@@ -160,7 +160,7 @@ function GDKPInfo.ADD_Item(RaidR)
 			rritem_biaoti_1:Show()
 			rritem_biaoti_2:Show()
 			for p=1,hang_NUM do
-				local hang = _G["RaidRItem_"..p]
+				local hang = _G["PIG_GDKPItem_"..p]
 				hang.time:Show()
 				hang.Shiquzhe:Show()
 				hang.del:Show()
@@ -191,10 +191,11 @@ function GDKPInfo.ADD_Item(RaidR)
 	    	local ItemsNum_bobaoNR=GetguolvData(ItemS)
 			for id=1,#ItemsNum_bobaoNR do
 				local iinfo = ItemS[ItemsNum_bobaoNR[id]]
+				local _,itemLink = GetItemInfo(Fun.HY_ItemLinkJJ(iinfo[2]))
 				if iinfo[14]>0 then
-					PIGSendChatRaidParty(iinfo[2].."x"..iinfo[3].." 收入"..iinfo[9]+iinfo[14].."G 买方<"..iinfo[8]..">尚欠"..iinfo[14])
+					PIGSendChatRaidParty(itemLink.."x"..iinfo[3].." 收入"..iinfo[9]+iinfo[14].."G 买方<"..iinfo[8]..">尚欠"..iinfo[14])
 				else
-					PIGSendChatRaidParty(iinfo[2].."x"..iinfo[3].." 收入"..iinfo[9].."G 买方"..iinfo[8])
+					PIGSendChatRaidParty(itemLink.."x"..iinfo[3].." 收入"..iinfo[9].."G 买方"..iinfo[8])
 				end
 			end
 		end
@@ -216,12 +217,11 @@ function GDKPInfo.ADD_Item(RaidR)
 			self.E:Hide();
 		end
 	end
-	--获取物品属性列表
 	function RaidR.Update_Item()
 		local gundongF = fujiF.ItemNR.Scroll
 		if not fujiF:IsVisible() then return end
 		for x = 1, hang_NUM do
-			_G["RaidRItem_"..x]:Hide();
+			_G["PIG_GDKPItem_"..x]:Hide();
 	    end
 		local ItemS = PIGA["GDKP"]["ItemList"];
 		local ItemsNum_GL=GetguolvData(ItemS)
@@ -235,7 +235,7 @@ function GDKPInfo.ADD_Item(RaidR)
 				    LOOT_dangqian = ItemsNum_GL[LOOT_dangqian];
 				end
 				if ItemS[LOOT_dangqian] then
-					local Itemf = _G["RaidRItem_"..x]
+					local Itemf = _G["PIG_GDKPItem_"..x]
 					Itemf:Show();
 					local dangqianItem=ItemS[LOOT_dangqian]
 					Itemf.paimai:SetID(LOOT_dangqian);
@@ -246,7 +246,9 @@ function GDKPInfo.ADD_Item(RaidR)
 					end
 					Itemf.item:SetID(LOOT_dangqian);
 					Itemf.item.icon:SetTexture(dangqianItem[6]);
-					Itemf.item.link:SetText(dangqianItem[2]);
+					local _,itemLink = GetItemInfo(Fun.HY_ItemLinkJJ(dangqianItem[2]))
+					Itemf.item.link:SetText(itemLink);
+					Itemf.item.itemLink=itemLink
 					Itemf.item.NO:SetText(dangqianItem[3]);
 					if dangqianItem[15] then
 						Itemf.item.guanzhu:Show()
@@ -310,12 +312,12 @@ function GDKPInfo.ADD_Item(RaidR)
 	fujiF.ItemNR.Scroll.ScrollBar:SetScale(0.9);
 	--创建行
 	for id = 1, hang_NUM do
-		local hang = CreateFrame("Frame", "RaidRItem_"..id, fujiF.ItemNR.Scroll:GetParent());
+		local hang = CreateFrame("Frame", "PIG_GDKPItem_"..id, fujiF.ItemNR.Scroll:GetParent());
 		hang:SetSize(fujiF.ItemNR:GetWidth()-24, hang_Height);
 		if id==1 then
 			hang:SetPoint("TOP",fujiF.ItemNR.Scroll,"TOP",0,0);
 		else
-			hang:SetPoint("TOP",_G["RaidRItem_"..(id-1)],"BOTTOM",0,-0);
+			hang:SetPoint("TOP",_G["PIG_GDKPItem_"..(id-1)],"BOTTOM",0,-0);
 		end
 		if id~=hang_NUM then PIGLine(hang,"BOT",nil,nil,nil,{0.3,0.3,0.3,0.3}) end
 		--拾取时间
@@ -327,7 +329,7 @@ function GDKPInfo.ADD_Item(RaidR)
 		hang.Shiquzhe:SetJustifyH("LEFT");
 		hang.Shiquzhe:Hide()
 		-----------
-		hang.del = PIGDiyBut(hang,{"RIGHT", hang, "LEFT", -6,0},{hang_Height-8})
+		hang.del = PIGDiyBut(hang,{"RIGHT", hang, "LEFT", -6,0},{hang_Height-10})
 		hang.del:SetScript("OnClick", function (self)
 			fujiF.tishiUI:Showtishi("del",self:GetID())	
 		end);
@@ -380,7 +382,7 @@ function GDKPInfo.ADD_Item(RaidR)
 				if not IsShiftKeyDown() and not IsControlKeyDown() then
 					GameTooltip:ClearLines();
 					GameTooltip:SetOwner(self.link, "ANCHOR_CURSOR");
-					GameTooltip:SetHyperlink(PIGA["GDKP"]["ItemList"][self:GetID()][2]);
+					GameTooltip:SetHyperlink(self.itemLink);
 				end
 			end
 		end);
@@ -392,7 +394,7 @@ function GDKPInfo.ADD_Item(RaidR)
 			if button=="LeftButton" then
 		 		if IsShiftKeyDown() then
 					local editBox = ChatEdit_ChooseBoxForSend();
-					local hasText = editBox:GetText()..bianjiData[2]
+					local hasText = editBox:GetText()..self.itemLink
 					if editBox:HasFocus() then
 						editBox:SetText(hasText);
 					else
@@ -411,10 +413,10 @@ function GDKPInfo.ADD_Item(RaidR)
 				elseif IsShiftKeyDown() then--关注
 					if bianjiData[15] then
 						bianjiData[15]=false
-						PIGinfotip:TryDisplayMessage(bianjiData[2].."已取消关注");
+						PIGinfotip:TryDisplayMessage(self.itemLink.."已取消关注");
 					else
 						bianjiData[15]=true
-						PIGinfotip:TryDisplayMessage(bianjiData[2].."已加入关注");
+						PIGinfotip:TryDisplayMessage(self.itemLink.."已加入关注");
 					end
 					RaidR.Update_Item();
 				else
@@ -446,7 +448,6 @@ function GDKPInfo.ADD_Item(RaidR)
 		PIGSetFont(hang.chengjiao.E,14,"OUTLINE")
 		hang.chengjiao.E:SetMaxLetters(7)
 		hang.chengjiao.E:SetNumeric(true)
-		--hang.chengjiao.E:SetAutoFocus(false)
 		hang.chengjiao.E:SetScript("OnEscapePressed", function(self) 
 			shiqujiaodian(self:GetParent())
 		end);
@@ -472,8 +473,8 @@ function GDKPInfo.ADD_Item(RaidR)
 		hang.chengjiao.bianji:SetScript("OnClick", function (self)
 			local NewSELF=self:GetParent()
 			for qq=1,hang_NUM do
-				shiqujiaodian(_G["RaidRItem_"..qq].chengjiao)
-				shiqujiaodian(_G["RaidRItem_"..qq].Qiankuan)
+				shiqujiaodian(_G["PIG_GDKPItem_"..qq].chengjiao)
+				shiqujiaodian(_G["PIG_GDKPItem_"..qq].Qiankuan)
 			end
 			shiqujiaodian(NewSELF,true)
 	 		NewSELF.E:SetText(PIGA["GDKP"]["ItemList"][self:GetID()][9]);
@@ -525,8 +526,8 @@ function GDKPInfo.ADD_Item(RaidR)
 		hang.Qiankuan.bianji:SetScript("OnClick", function (self)
 			local NewSELF=self:GetParent()
 			for qq=1,hang_NUM do
-				shiqujiaodian(_G["RaidRItem_"..qq].chengjiao)
-				shiqujiaodian(_G["RaidRItem_"..qq].Qiankuan)
+				shiqujiaodian(_G["PIG_GDKPItem_"..qq].chengjiao)
+				shiqujiaodian(_G["PIG_GDKPItem_"..qq].Qiankuan)
 			end
 			shiqujiaodian(NewSELF,true)
 	 		NewSELF.E:SetText(PIGA["GDKP"]["ItemList"][self:GetID()][14]);
@@ -570,7 +571,8 @@ function GDKPInfo.ADD_Item(RaidR)
 					if RRItemList[x][8]==self.AllName then
 						if RRItemList[x][9]>0 then
 							pgdkp_qiankuanheji[1]=pgdkp_qiankuanheji[1]+RRItemList[x][9]
-							GameTooltip:AddDoubleLine(RRItemList[x][2],"|cff00FF00收:|r"..GetMoneyString(RRItemList[x][9]*10000))
+							local _,itemLink = GetItemInfo(Fun.HY_ItemLinkJJ(RRItemList[x][2]))
+							GameTooltip:AddDoubleLine(itemLink,"|cff00FF00收:|r"..GetMoneyString(RRItemList[x][9]*10000))
 						end
 					end
 				end
@@ -579,7 +581,8 @@ function GDKPInfo.ADD_Item(RaidR)
 					if RRItemList[x][8]==self.AllName then
 						if RRItemList[x][14]>0 then
 							pgdkp_qiankuanheji[2]=pgdkp_qiankuanheji[2]+RRItemList[x][14]
-							GameTooltip:AddDoubleLine(RRItemList[x][2],"|cffFF0000欠:|r"..GetMoneyString(RRItemList[x][14]*10000))
+							local _,itemLink = GetItemInfo(Fun.HY_ItemLinkJJ(RRItemList[x][2]))
+							GameTooltip:AddDoubleLine(itemLink,"|cffFF0000欠:|r"..GetMoneyString(RRItemList[x][14]*10000))
 						end
 					end
 				end
@@ -719,7 +722,8 @@ function GDKPInfo.ADD_Item(RaidR)
 		else
 			PIGSendAddonMessage(biaotou,auc_daoshu.."&0")
 			local hejishuju = PIGA["GDKP"]["ItemList"][fujiF.tishiUI.bianjiID]
-			PIGSendChatRaidParty(hejishuju[2].."拍卖结束")
+			local _,itemLink = GetItemInfo(Fun.HY_ItemLinkJJ(hejishuju[2]))
+			PIGSendChatRaidParty(itemLink.."拍卖结束")
 			daojishi_End()
 		end
 	end
@@ -727,6 +731,7 @@ function GDKPInfo.ADD_Item(RaidR)
 	fujiF.tishiUI.nr.auc.YES = PIGButton(fujiF.tishiUI.nr.auc,{"TOP",fujiF.tishiUI.nr.auc,"TOP",0,-68},{90,24},"开始拍卖");  
 	fujiF.tishiUI.nr.auc.YES:SetScript("OnClick", function (self)
 		local hejishuju = PIGA["GDKP"]["ItemList"][fujiF.tishiUI.bianjiID]
+		local _,itemLink = GetItemInfo(Fun.HY_ItemLinkJJ(hejishuju[2]))
 		if self:GetText()=="开始拍卖" then
 			fujiF.tishiUI.nr.auc.aucend=false
 			self:Disable();
@@ -735,9 +740,9 @@ function GDKPInfo.ADD_Item(RaidR)
 			local qipaidanweiV=fujiF.tishiUI.nr.auc.qipaijia1:PIGDownMenu_GetValue()
 			local dancishuV=fujiF.tishiUI.nr.auc.dancijia0:PIGDownMenu_GetText()
 			local dancidanweiV=fujiF.tishiUI.nr.auc.dancijia1:PIGDownMenu_GetValue()
-			local paimaiwupinxinxi="开始拍卖:"..hejishuju[2]..",数量:"..hejishuju[3]..",起拍:"..qipaishuV..qipaidanweiV.."G,最低加价："..dancishuV..dancidanweiV.."G";
+			local paimaiwupinxinxi="开始拍卖:"..itemLink..",数量:"..hejishuju[3]..",起拍:"..qipaishuV..qipaidanweiV.."G,最低加价："..dancishuV..dancidanweiV.."G";
 			PIGSendChatRaidParty(paimaiwupinxinxi)
-			PIGSendAddonMessage(biaotou,auc_start.."&"..hejishuju[2].."#"..hejishuju[3].."#"..qipaishuV..qipaidanweiV.."#"..dancishuV..dancidanweiV)
+			PIGSendAddonMessage(biaotou,auc_start.."&"..itemLink.."#"..hejishuju[3].."#"..qipaishuV..qipaidanweiV.."#"..dancishuV..dancidanweiV)
 		elseif self:GetText()=="拍卖完成" then
 			fujiF.tishiUI.nr.auc.aucend=true
 			fujiF.tishiUI:Hide()
@@ -799,7 +804,8 @@ function GDKPInfo.ADD_Item(RaidR)
 		if fujikk.aucend==false then
 			fujikk.aucend=nil
 			local bianjiID=fujiF.tishiUI.bianjiID
-			PIGSendChatRaidParty(PIGA["GDKP"]["ItemList"][bianjiID][2].."拍卖非正常终止")
+			local _,itemLink = GetItemInfo(Fun.HY_ItemLinkJJ(PIGA["GDKP"]["ItemList"][bianjiID][2]))
+			PIGSendChatRaidParty(itemLink.."拍卖非正常终止")
 			PIGSendAddonMessage(biaotou,auc_end)
 		end
 	end);
@@ -847,7 +853,7 @@ function GDKPInfo.ADD_Item(RaidR)
 			end
 			hejishuju[hebingwupinzongshuliang[2]][3]=hebingwupinzongshuliang[1]
 		elseif GNNn=="chai" then
-			local fengeNUM=fujiF.tishiUI.nr.Slider:GetValue()
+			local fengeNUM=fujiF.tishiUI.nr.Slider.Slider:GetValue()
 			if hejishuju[bianjiID][3]>1 then
 				hejishuju[bianjiID][3]=hejishuju[bianjiID][3]-fengeNUM
 				local item1=hejishuju[bianjiID][1]
@@ -856,7 +862,8 @@ function GDKPInfo.ADD_Item(RaidR)
 				local item5=hejishuju[bianjiID][5]
 				local item6=hejishuju[bianjiID][6]
 				local item11=hejishuju[bianjiID][11]
-				local iteminfo={item1,item2,fengeNUM,item4,item5,item6,0,"N/A",0,0,item11,true,true,0};
+				print(fengeNUM)
+				local iteminfo={item1,item2,fengeNUM,item4,item5,item6,false,"N/A",0,0,item11,true,true,0,false};
 				table.insert(hejishuju,bianjiID+1,iteminfo)
 			end
 		end
@@ -874,26 +881,25 @@ function GDKPInfo.ADD_Item(RaidR)
 		self.bianjiID=id
 		self.GNNn=GNNn
 		local biajidata = PIGA["GDKP"]["ItemList"][id]
+		local _,itemLink = GetItemInfo(Fun.HY_ItemLinkJJ(biajidata[2]))
 		if GNNn=="del" then
-			self.nr.t:SetText("确定要\124cffff0000删除\124r\n"..biajidata[2].."\n".."的拾取记录吗?")
+			self.nr.t:SetText("确定要\124cffff0000删除\124r\n"..itemLink.."\n".."的拾取记录吗?")
 		elseif GNNn=="hei" then
-			self.nr.t:SetText("确定要把\n"..biajidata[2].."\n加入到\124cff66FF00拾取忽略名单\124r吗?\n\n\124cff00FF00后续拾取此物品将不会记录,\n可在设置内的\124r|cffffFF00拾取忽略名单|r\124cff00FF00管理。\124r")
+			self.nr.t:SetText("确定要把\n"..itemLink.."\n加入到\124cff66FF00拾取忽略名单\124r吗?\n\n\124cff00FF00后续拾取此物品将不会记录,\n可在设置内的\124r|cffffFF00拾取忽略名单|r\124cff00FF00管理。\124r")
 		elseif GNNn=="he" then
-			self.nr.t:SetText("确定要合并列表中的所有\n"..biajidata[2].."\n".."到一条记录吗？")
+			self.nr.t:SetText("确定要合并列表中的所有\n"..itemLink.."\n".."到一条记录吗？")
 		elseif GNNn=="chai" then
 			self.nr.Slider:Show()
-			self.nr.t:SetText("拆分\n"..biajidata[2].."\n".."拆分数量")
+			self.nr.t:SetText("拆分\n"..itemLink.."\n".."拆分数量")
 			self.nr.Slider.LeftText:SetText(1)
 			self.nr.Slider.LeftText:Show()
 			self.nr.Slider.RightText:SetText(biajidata[3]-1)
 			self.nr.Slider.RightText:Show()
-			-- self.nr.Slider.Slider:SetMinMaxValues(1, biajidata[3]-1);
-			-- self.nr.Slider:PIGSetValue(1)
 			self.nr.Slider:PIGSetValueMinMax(1,1,biajidata[3]-1)
 		elseif GNNn=="auc" then
 			daojishi_Show()
 			self.nr.auc:Show()
-			self.nr.t:SetText("拍卖物品：\n"..biajidata[2].."\124cffffFF00x\124r"..biajidata[3])
+			self.nr.t:SetText("拍卖物品：\n"..itemLink.."\124cffffFF00x\124r"..biajidata[3])
 			self.nr.auc.qipaijia0:PIGDownMenu_SetText(self.nr.auc.qipaijia0.morenqiV)
 			self.nr.auc.qipaijia1:PIGDownMenu_SetText(danweiName[self.nr.auc.qipaijia1.value])
 			self.nr.auc.dancijia0:PIGDownMenu_SetText(self.nr.auc.dancijia0.morenqiV)
@@ -1009,7 +1015,8 @@ function GDKPInfo.ADD_Item(RaidR)
 											ItemL[i][13]=false;	
 										elseif yijingguoqu>6600 then
 											if ItemL[i][12] then
-												PIGSendChatRaidParty("提示：未成交物品"..ItemL[i][2].."可交易时间不足10分钟，请确认物品归属(预估时间仅供参考)！")
+												local _,itemLink = GetItemInfo(Fun.HY_ItemLinkJJ(ItemL[i][2]))
+												PIGSendChatRaidParty("提示：未成交物品"..itemLink.."可交易时间不足10分钟，请确认物品归属(预估时间仅供参考)！")
 												ItemL[i][12]=false;
 											end
 										end	
@@ -1031,6 +1038,7 @@ function GDKPInfo.ADD_Item(RaidR)
 			PIGA["GDKP"]["instanceName"]={GetServerTime(),FBname,difficultyName}
 			RaidR.Show_dangqianName()
 		end
+		local itemLink=Fun.GetItemLinkJJ(itemLink)
 		local iteminfo={
 			GetServerTime(),--1时间
 			itemLink,--2物品
@@ -1059,8 +1067,7 @@ function GDKPInfo.ADD_Item(RaidR)
 				if PIGA["GDKP"]["Rsetting"]["shoudongloot"] then
 					if link:match("item") then
 						local itemID = GetItemInfoInstant(link);
-						local itemName, itemLink, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount,
-						itemEquipLoc, itemTexture, sellPrice, classID, subclassID, bindType, expacID, setID, isCraftingReagent=GetItemInfo(link);
+						local itemName, itemLink, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount,itemEquipLoc, itemTexture=GetItemInfo(link);
 						if itemLink~=nil and itemQuality~=nil and itemTexture~=nil then
 							local LOOT_itemNO,shiquname=1,"手动添加";
 							zhixingtianjia(itemLink,LOOT_itemNO,shiquname,itemQuality,itemTexture,itemID)

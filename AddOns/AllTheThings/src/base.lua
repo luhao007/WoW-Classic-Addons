@@ -27,7 +27,7 @@ SLASH_RELOADUI1 = "/reloadui";
 SLASH_RELOADUI2 = "/rl";
 SlashCmdList.RELOADUI = ReloadUI;
 
-local assetRootPath = "Interface\\Addons\\" .. appName .. "\\assets\\";
+local assetRootPath = "interface/Addons\\" .. appName .. "\\assets\\";
 app.asset = function(path)
 	return assetRootPath .. path;
 end
@@ -233,6 +233,15 @@ app.GetNameFromProviders = function(group)
 	end
 end;
 
+-- Common Metatable Functions
+app.MetaTable = {}
+app.MetaTable.AutoTable = { __index = function(t, key)
+	if key == nil then return end
+	local k = {}
+	t[key] = k
+	return k
+end}
+
 -- Cache information about the player.
 app.Gender = UnitSex("player");
 app.GUID = UnitGUID("player");
@@ -309,6 +318,8 @@ app.LocalizeGlobalIfAllowed = function(globalName, init)
 	end
 	return app.LocalizeGlobal(globalName, init);
 end
+
+if not app.Presets.ALL then app.Presets.ALL = setmetatable({}, {__index = app.ReturnTrue}) end
 
 (function()
 -- Extend the Frame Class and give them ATT-Style Coroutines and Tooltips!
@@ -479,8 +490,8 @@ function app:ShowPopupDialogWithMultiLineEditBox(text, onclick, label)
 		f:SetPoint("CENTER")
 		f:SetSize(600, 500)
 		f:SetBackdrop({
-			bgFile = "Interface/Tooltips/UI-Tooltip-Background",
-			edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
+			bgFile = 137056,
+			edgeFile = 137057,
 			tile = true, tileSize = 16, edgeSize = 16,
 			insets = { left = 4, right = 4, top = 4, bottom = 4 }
 		})
@@ -546,9 +557,9 @@ function app:ShowPopupDialogWithMultiLineEditBox(text, onclick, label)
 		rb:SetPoint("BOTTOMRIGHT", -6, 7)
 		rb:SetSize(16, 16)
 
-		rb:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Up")
-		rb:SetHighlightTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Highlight")
-		rb:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Down")
+		rb:SetNormalTexture(386864)
+		rb:SetHighlightTexture(386863)
+		rb:SetPushedTexture(386862)
 
 		rb:SetScript("OnMouseDown", function(self, button)
 			if button == "LeftButton" then

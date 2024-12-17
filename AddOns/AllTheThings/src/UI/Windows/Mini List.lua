@@ -157,7 +157,11 @@ local CachedMapData = setmetatable({}, {
 						end
 					end
 				elseif key == "headerID" then
-					MergeObject(groups, clone);
+					if clone.parent and clone.parent.headerID then
+						MergeIntoHeader(clone.parent.headerID, clone);
+					else
+						MergeObject(groups, clone);
+					end
 				else
 					local headerID = GetRelativeValue(group, "headerID");
 					if headerID then

@@ -3,7 +3,7 @@ local L		= mod:GetLocalizedStrings()
 
 mod.statTypes = "normal25"
 
-mod:SetRevision("20240428104809")
+mod:SetRevision("20241103131702")
 mod:SetCreatureID(24882)
 mod:SetEncounterID(725, 2489)
 mod:DisableESCombatDetection()--ES fires for the RP event that has nothing to do with engaging boss
@@ -11,6 +11,7 @@ mod:SetModelID(22711)
 mod:SetUsedIcons(1, 2, 3, 4, 5, 6, 7, 8)
 mod:SetHotfixNoticeRev(20220514000000)
 mod:SetMinSyncRevision(20200726000000)
+mod:SetZone(580)
 
 mod:RegisterCombat("yell", L.Pull)
 mod.disableHealthCombat = true

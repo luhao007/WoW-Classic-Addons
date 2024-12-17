@@ -5,7 +5,7 @@ if not mod:IsClassic() then--on classic, it's normal10,normal25, defined in toc,
 	mod.statTypes = "normal,timewalker"
 end
 
-mod:SetRevision("20240512232312")
+mod:SetRevision("20241103133102")
 
 mod:SetCreatureID(33113)
 if mod:IsPostCata() then
@@ -14,9 +14,11 @@ else
 	mod:SetEncounterID(744)
 end
 mod:SetModelID(28875)
-mod:RegisterCombat("yell", L.YellPull)
 mod:SetHotfixNoticeRev(20230120000000)
 mod:SetMinSyncRevision(20220120000000)
+mod:SetZone(603)
+
+mod:RegisterCombat("yell", L.YellPull)
 
 mod:RegisterEventsInCombat(
 	"SPELL_AURA_APPLIED 62396 62475 62374 62297",

@@ -11,8 +11,8 @@ local GetItemID = app.WOWAPI.GetItemID;
 -- Encapsulates the functionality for interacting with and hooking into game Tooltips
 
 -- Global locals
-local ipairs, pairs, InCombatLockdown, pcall, tinsert, tostring, tonumber, C_Map_GetPlayerMapPosition, math_sqrt, GameTooltip
-	= ipairs, pairs, InCombatLockdown, pcall, tinsert, tostring, tonumber, C_Map.GetPlayerMapPosition, math.sqrt, GameTooltip
+local ipairs, pairs, InCombatLockdown, pcall, tinsert, tostring, tonumber, math_sqrt, GameTooltip
+	= ipairs, pairs, InCombatLockdown, pcall, tinsert, tostring, tonumber, math.sqrt, GameTooltip
 
 local timeFormatter = CreateFromMixins(SecondsFormatterMixin);
 timeFormatter:Init(1, SecondsFormatter.Abbreviation.Truncate);
@@ -340,6 +340,8 @@ for i,guid in ipairs({
 	"Player-1096-0A7FACBF",	-- Thrëx-DefiasBrotherhood EU
 	"Player-1096-0A57D3A7",	-- Kaala-DefiasBrotherhood EU
 	"Player-1096-0A7FDD25",	-- Atröpos-DefiasBrotherhood EU
+	-- Eremeir
+	"Player-3675-06DC8D18",	-- Eremeir-MoonGuard US
 }) do
 	PLAYER_TOOLTIPS[guid] = tooltipFunction;
 end
@@ -633,7 +635,7 @@ local function StripColorAndTextureData(txt)
 end
 --[[
 app.StripColorAndTextureData = function()
-	return StripColorAndTextureData("|TInterface\\MONEYFRAME\\UI-GoldIcon:0|t2 |cffff0000GOLD|r Coins")
+	return StripColorAndTextureData("|T237618:0|t2 |cffff0000GOLD|r Coins")
 end;
 ]]--
 local HexToARGB = app.Modules.Color.HexToARGB;
@@ -702,8 +704,9 @@ end
 local CanAttachTooltips = app.EmptyFunction
 app.AddEventHandler("OnReady", function()
 	CanAttachTooltips = function()
+		local settings = app.Settings
 		-- Consolidated logic for whether a tooltip should include ATT information based on combat & user settings
-		return (not InCombatLockdown() or app.Settings:GetTooltipSetting("DisplayInCombat")) and app.Settings:GetTooltipSettingWithMod("Enabled")
+		return (not InCombatLockdown() or settings:GetTooltipSetting("DisplayInCombat")) and settings:GetTooltipSettingWithMod("Enabled")
 	end
 end)
 local function ClearTooltip(tooltip)
@@ -983,6 +986,7 @@ if TooltipDataProcessor and app.GameBuildVersion > 50000 then
 					self:AddDoubleLine(version[3], app.Modules.Color.GetProgressColorText(version[1],version[2]));
 				end
 			elseif type == "Creature" or type == "Vehicle" then
+				if InCombatLockdown() and app.Settings:GetTooltipSetting("DisplayInCombatExceptNPCs") then return end
 				if spawn_uid then
 					local showAliveTime = app.Settings:GetTooltipSetting("Alive");
 					local showSpawnTime = app.Settings:GetTooltipSetting("Spawned");
@@ -1139,6 +1143,7 @@ else
 								self:AddDoubleLine(version[3], app.Modules.Color.GetProgressColorText(version[1],version[2]));
 							end
 						elseif type == "Creature" or type == "Vehicle" then
+							if InCombatLockdown() and app.Settings:GetTooltipSetting("DisplayInCombatExceptNPCs") then return end
 							if spawn_uid then
 								local showAliveTime = app.Settings:GetTooltipSetting("Alive");
 								local showSpawnTime = app.Settings:GetTooltipSetting("Spawned");

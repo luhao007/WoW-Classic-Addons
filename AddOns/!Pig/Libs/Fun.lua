@@ -541,14 +541,15 @@ function Fun.Get_LVminmax(fbName,danjiaList)
 	local min,max = min or 0,max or 0
 	return min,max
 end
-function Fun.Key_hebing(str)
+----
+function Fun.Key_hebing(str,fengefu)
 	local arr = ""
 	local numx = #str
 	for i=1,numx do
 		if i==numx then
 			arr=arr..str[i]
 		else
-			arr=arr..str[i]..","
+			arr=arr..str[i]..fengefu
 		end
 	end
     return arr
@@ -642,7 +643,83 @@ function Fun.Key_fenge(str,fengefu,geshihua,daifengefu)
 	end
     return arr
 end
----字符串压缩
+
+--转字符
+local function tableToString(tbl, indent)
+    indent = indent or ""
+    local result = "{\n"
+    local newIndent = indent .. "  "
+    local isSequence = true
+    local maxIndex = 0
+    for k, v in pairs(tbl) do
+        if type(k) ~= "number" or k < 1 or math.floor(k) ~= k or tbl[k] == nil then
+            isSequence = false
+            break
+        end
+        maxIndex = math.max(maxIndex, k)
+    end
+    if isSequence then
+        for i = 1, maxIndex do
+            local valueStr
+            if type(tbl[i]) == "table" then
+                valueStr = tableToString(tbl[i], newIndent)
+            elseif type(tbl[i]) == "boolean" then
+                valueStr = tostring(tbl[i])
+            elseif type(tbl[i]) == "string" then
+                valueStr = string.format("%q", tbl[i])
+            elseif tbl[i] == nil then
+                valueStr = "nil"
+            elseif type(tbl[i]) == "number" then
+                valueStr = tostring(tbl[i])
+            else
+                valueStr = tostring(tbl[i])
+            end
+            result = result .. newIndent .. valueStr .. ",\n"
+        end
+    else
+        for k, v in pairs(tbl) do
+            local keyStr
+            if type(k) == "string" then
+                keyStr = string.format("[%q]", k)
+            else
+                keyStr = tostring(k)
+            end
+
+            local valueStr
+            if type(v) == "table" then
+                valueStr = tableToString(v, newIndent)
+            elseif type(v) == "boolean" then
+                valueStr = tostring(v)
+            elseif type(v) == "string" then
+                valueStr = string.format("%q", v)
+            elseif v == nil then
+                valueStr = "nil"
+            elseif type(v) == "number" then
+                valueStr = tostring(v)
+            else
+                valueStr = tostring(v)
+            end
+            result = result .. newIndent .. keyStr .. " = " .. valueStr .. ",\n"
+        end
+    end
+    result = result .. indent .. "}"
+    return result
+end
+function Fun.tableToString(tbl)
+	 return tableToString(tbl)
+end
+function Fun.parseTableString(str)
+    local env = { }
+    setmetatable(env, { __index = _G })
+    local func, err = loadstring("return " .. str, nil, 't', env)
+    if not func then
+        error("解析失败: " .. tostring(err))
+    end
+    local result = func()
+    return result
+end
+
+--压缩
 local pig_yasuo = {}
 local pig_jieya = {}
 do

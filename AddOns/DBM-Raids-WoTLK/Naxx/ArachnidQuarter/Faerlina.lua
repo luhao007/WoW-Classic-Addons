@@ -1,10 +1,11 @@
 local mod	= DBM:NewMod("Faerlina", "DBM-Raids-WoTLK", 8)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20231017182117")
+mod:SetRevision("20241103133102")
 mod:SetCreatureID(15953)
 mod:SetEncounterID(1110)
 mod:SetModelID(15940)
+mod:SetZone(533)
 mod:RegisterCombat("combat_yell", L.Pull)
 
 mod:RegisterEventsInCombat(

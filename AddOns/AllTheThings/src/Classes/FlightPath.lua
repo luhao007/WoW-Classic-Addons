@@ -37,11 +37,8 @@ app.CreateFlightPath = app.CreateClass(CLASSNAME, KEY, {
 	end,
 	collectible = function(t) return app.Settings.Collectibles[CACHE] end,
 	collected = function(t)
-		local id = t[KEY]
-		-- character collected
-		if app.IsCached(CACHE, id) then return 1 end
-		-- account-wide collected
-		if app.Settings.AccountWide[CACHE] and app.IsAccountCached(CACHE, id) then return 2 end
+		local collectedViaCache = app.TypicalCharacterCollected(CACHE, t[KEY])
+		if collectedViaCache then return collectedViaCache end
 		if t.altQuests then
 			for i,questID in ipairs(t.altQuests) do
 				if IsQuestFlaggedCompleted(questID) then
@@ -162,7 +159,7 @@ app.AddEventHandler("OnSavedVariablesAvailable", function(currentCharacter, acco
 						t[nodeData.nodeID] = nodeData.name
 					end
 				else
-					print("No taxi nodes found for map", mapID);
+					app.print("No taxi nodes found for map", mapID);
 				end
 			end
 

@@ -5,7 +5,7 @@ if not mod:IsClassic() then--on classic, it's normal10,normal25, defined in toc,
 	mod.statTypes = "normal"
 end
 
-mod:SetRevision("20240512232312")
+mod:SetRevision("20241103133102")
 mod:SetCreatureID(32871)
 if mod:IsPostCata() then--Assumed fixed in classic
 	mod:SetEncounterID(1130)
@@ -16,6 +16,7 @@ end
 mod:SetHotfixNoticeRev(20230120000000)
 mod:SetMinSyncRevision(20230120000000)
 mod:SetModelID(28641)
+mod:SetZone(603)
 --mod:SetModelSound("Sound\\Creature\\AlgalonTheObserver\\UR_Algalon_Aggro01.ogg", "Sound\\Creature\\AlgalonTheObserver\\UR_Algalon_Slay02.ogg")
 
 mod:RegisterCombat("combat")

@@ -13,12 +13,14 @@ end
 local mod	= DBM:NewMod("Ebonroc", "DBM-Raids-Vanilla", catID)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240922212223")
+mod:SetRevision("20241103123604")
 mod:SetCreatureID(14601)
 mod:SetEncounterID(614)
 if not mod:IsClassic() then
 	mod:SetModelID(6377)
 end
+mod:SetZone(469)
+
 mod:RegisterCombat("combat")
 
 mod:RegisterEventsInCombat(

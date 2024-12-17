@@ -1,5 +1,5 @@
 local _, addonTable = ...;
-local InteractionFun=addonTable.CommonInfo.Interactionfun
+local Interactionfun=addonTable.CommonInfo.Interactionfun
 --------------
 local errList1 = {
 	[ERR_CANTATTACK_NOTSTANDING] = true,-- "你必须处于站立状态下才能进行攻击！";
@@ -25,10 +25,33 @@ zidongxiama:SetScript("OnEvent", function(self,event,key,state)
 	end
 end)
 --------------------
-InteractionFun.AutoDown = function()
+Interactionfun.AutoDown = function()
 	if PIGA['Interaction']['AutoDown'] then
 		zidongxiama:RegisterEvent("UI_ERROR_MESSAGE")
 	else
 		zidongxiama:UnregisterEvent("UI_ERROR_MESSAGE")
+	end
+end
+--=====================
+local zidongjieshouzuduiyaoqingFFF = CreateFrame("FRAME") 
+zidongjieshouzuduiyaoqingFFF:SetScript("OnEvent", function(self, event)
+	if event=="PARTY_INVITE_REQUEST" then
+		AcceptGroup()
+		StaticPopup_Hide("PARTY_INVITE")
+	elseif event=="RESURRECT_REQUEST" then
+		AcceptResurrect()
+		StaticPopup_Hide("RESURRECT")
+	end
+end)
+function Interactionfun.YaoqingFuhuo()
+	if PIGA['Interaction']['AutoJyaoqing'] then
+		zidongjieshouzuduiyaoqingFFF:RegisterEvent("PARTY_INVITE_REQUEST")
+	else
+		zidongjieshouzuduiyaoqingFFF:UnregisterEvent("PARTY_INVITE_REQUEST")
+	end
+	if PIGA['Interaction']['AutoFuhuo'] then
+		zidongjieshouzuduiyaoqingFFF:RegisterEvent("RESURRECT_REQUEST")
+	else
+		zidongjieshouzuduiyaoqingFFF:UnregisterEvent("RESURRECT_REQUEST")
 	end
 end

@@ -1,9 +1,10 @@
 local mod	= DBM:NewMod(412, "DBM-Party-Vanilla", DBM:IsPostCata() and 3 or 6, 230)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240316010232")
+mod:SetRevision("20241103114940")
 mod:SetCreatureID(14322)
 mod:SetEncounterID(363)
+mod:SetZone(429)
 
 mod:RegisterCombat("combat")
 mod:DisableFriendlyDetection()

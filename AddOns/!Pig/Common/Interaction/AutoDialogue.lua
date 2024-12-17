@@ -32,50 +32,66 @@ local function duorenwuduihua()
 			end
 	end
 end
+local NoDialogue = {"33662"}
+local function IsNoDialogue(npcID)
+	for i=1,#NoDialogue do
+		if npcID==NoDialogue[i] then
+			return true
+		end
+	end
+	return false
+end
 local function Eventduihua(self,event)
-	--print(event)
 	if IsShiftKeyDown() then return end
-	--接
-	if event=="QUEST_DETAIL" then
+	local targetGUID =UnitGUID("NPC")
+	if targetGUID then
+		local unitType, _, _, _, _, npcID = strsplit("-", targetGUID)
+		--print(event,unitType,npcID)
+		if unitType and npcID and unitType=="Creature" then
+			if IsNoDialogue(npcID) then return end
+		end
+	end
+	if event=="QUEST_DETAIL" then--接
 		if PIGA['Interaction']['AutoJierenwu'] then
 			AcceptQuest()
 		end
-	end
-	--交
-	if event=="QUEST_PROGRESS" then
+	elseif event=="QUEST_PROGRESS" then--交
 		if PIGA['Interaction']['AutoJiaorenwu'] then
 			if (IsQuestCompletable()) then
 				CompleteQuest();
 			end
 		end
-	end
-	if event=="QUEST_COMPLETE" then
+	elseif event=="QUEST_COMPLETE" then
 		if PIGA['Interaction']['AutoJiaorenwu'] then
 			if GetNumQuestChoices() <= 1 then
 				GetQuestReward(1);
 			end
 		end
-	end
-	--多任务
-	if event=="QUEST_GREETING" then
+	elseif event=="QUEST_GREETING" then--多任务
 		duorenwuduihua()
-	end
-	--对话/任务
-	if event=="GOSSIP_SHOW" then
-			local kejierenwu = C_GossipInfo.GetNumActiveQuests() --返回此 NPC 提供的任务（您尚未参与）的数量
-			local jiaofurenwu = C_GossipInfo.GetNumAvailableQuests() --返回你最终应该交给这个 NPC 的活动任务的数量。
-			local zongjirenwu=kejierenwu+jiaofurenwu
-			if zongjirenwu>0 then
-				duorenwuduihua()
-			else
-				if PIGA['Interaction']['AutoDialogue'] then
-					local options = C_GossipInfo.GetOptions() --NPC对话选项
-					local zongjirenwu=#options
-					if zongjirenwu==1 then
-						C_GossipInfo.SelectOption(options[1].gossipOptionID)
+	elseif event=="GOSSIP_SHOW" then--对话/任务
+		local kejierenwu = C_GossipInfo.GetNumActiveQuests() --返回此 NPC 提供的任务（您尚未参与）的数量
+		local jiaofurenwu = C_GossipInfo.GetNumAvailableQuests() --返回你最终应该交给这个 NPC 的活动任务的数量。
+		local zongjirenwu=kejierenwu+jiaofurenwu
+		if zongjirenwu>0 then
+			duorenwuduihua()
+		else
+			if PIGA['Interaction']['AutoDialogue'] then
+				local options = C_GossipInfo.GetOptions() --NPC对话选项
+				local zongjirenwu=#options
+				if zongjirenwu==1 then
+					C_GossipInfo.SelectOption(options[1].gossipOptionID)
+				else
+					if PIGA["Interaction"]["AutoDialogueIndex"]>0 then
+						for k,v in pairs(options) do
+							if (v.orderIndex+1)==PIGA["Interaction"]["AutoDialogueIndex"] then
+								C_GossipInfo.SelectOption(v.gossipOptionID)
+							end
+						end
 					end
 				end
-			end	
+			end
+		end	
 	end
 end
 local zidongduihuaFFF = CreateFrame("Frame")
@@ -95,29 +111,5 @@ function CommonInfo.Interactionfun.zidongduihua()
 		zidongduihuaFFF:UnregisterEvent("QUEST_PROGRESS")
 		zidongduihuaFFF:UnregisterEvent("QUEST_GREETING")
 		zidongduihuaFFF:UnregisterEvent("QUEST_COMPLETE") 
-	end
-end
---=====================
-local zidongjieshouzuduiyaoqingFFF = CreateFrame("FRAME") 
-zidongjieshouzuduiyaoqingFFF:SetScript("OnEvent", function(self, event)
-	if event=="PARTY_INVITE_REQUEST" then
-		AcceptGroup()
-		StaticPopup_Hide("PARTY_INVITE")
-	end
-	if event=="RESURRECT_REQUEST" then
-		AcceptResurrect()
-		StaticPopup_Hide("RESURRECT")
-	end
-end)
-function CommonInfo.Interactionfun.YaoqingFuhuo()
-	if PIGA['Interaction']['AutoJyaoqing'] then
-		zidongjieshouzuduiyaoqingFFF:RegisterEvent("PARTY_INVITE_REQUEST")
-	else
-		zidongjieshouzuduiyaoqingFFF:UnregisterEvent("PARTY_INVITE_REQUEST")
-	end
-	if PIGA['Interaction']['AutoFuhuo'] then
-		zidongjieshouzuduiyaoqingFFF:RegisterEvent("RESURRECT_REQUEST")
-	else
-		zidongjieshouzuduiyaoqingFFF:UnregisterEvent("RESURRECT_REQUEST")
 	end
 end

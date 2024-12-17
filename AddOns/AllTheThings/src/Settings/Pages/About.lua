@@ -53,6 +53,8 @@ local ACTIVE_CONTRIBUTORS = {
 	"Danny Donkey",
 	"Darkal",
 	"DeadSerious",
+	"Eremeir",
+	"Exodius",
 	"Gold",
 	"Jenstonedart",
 	"Jezartroz",

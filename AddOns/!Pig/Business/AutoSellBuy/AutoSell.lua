@@ -106,7 +106,7 @@ function BusinessInfo.AutoSell()
 				MerchantFrame.Sell:Hide()
 			end
 		else
-			MerchantFrame.Sell = PIGButton(MerchantFrame,{"TOPLEFT",MerchantFrame,"TOPLEFT",56,-30},{60,22},"出售");
+			MerchantFrame.Sell = PIGButton(MerchantFrame,{"TOPLEFT",MerchantFrame,"TOPLEFT",56,-30},{50,24},"出售",nil,nil,nil,nil,0);
 			PIGEnter(MerchantFrame.Sell,KEY_BUTTON1.."-卖垃圾和预设出售物品\n"..KEY_BUTTON2.."-设置出售清单")  
 			MerchantFrame.Sell:SetScript("OnClick", function (self,button)
 				if button=="LeftButton" then

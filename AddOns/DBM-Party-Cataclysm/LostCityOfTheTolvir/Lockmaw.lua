@@ -3,9 +3,10 @@ local L		= mod:GetLocalizedStrings()
 
 mod.statTypes = "normal,heroic,timewalker"
 
-mod:SetRevision("20200912135206")
+mod:SetRevision("20241102154000")
 mod:SetCreatureID(43614)
 --mod:SetEncounterID(1054)--Disabled because it's likely not correct since him and augh are split.
+mod:SetZone(755)
 
 mod:RegisterCombat("combat")
 

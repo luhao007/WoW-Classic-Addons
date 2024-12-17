@@ -259,7 +259,7 @@ for i=1,#xingmingList do
 	end)
 end
 xingmingbanF.nameplatebiaoti = PIGFontString(xingmingbanF,{"TOPLEFT",xingmingbanF,"TOPLEFT",40,-170},"姓名板锁定在屏幕内显示距离");
-xingmingbanF.nameplateTop=PIGSlider(xingmingbanF,{"TOPLEFT",xingmingbanF.nameplatebiaoti,"BOTTOMLEFT",70,-10},{0,0.2,0.01,{["Right"]="%d%%屏幕尺寸"}})
+xingmingbanF.nameplateTop=PIGSlider(xingmingbanF,{"TOPLEFT",xingmingbanF.nameplatebiaoti,"BOTTOMLEFT",70,-10},{0,0.2,0.01,{["Right"]="%s%%屏幕尺寸"}})
 xingmingbanF.nameplateTop.t = PIGFontString(xingmingbanF,{"RIGHT",xingmingbanF.nameplateTop,"LEFT",-4,0},"顶部距离");
 xingmingbanF.nameplateTop.Slider:HookScript("OnValueChanged", function(self, arg1)
 	SetCVar("nameplateOtherTopInset",arg1)
@@ -267,7 +267,7 @@ end)
 xingmingbanF.nameplateTop:HookScript("OnShow", function (self)
 	self:PIGSetValue(GetCVar("nameplateOtherTopInset"))
 end);
-xingmingbanF.nameplateBottom=PIGSlider(xingmingbanF,{"TOPLEFT",xingmingbanF.nameplateTop,"BOTTOMLEFT",0,0},{0,0.2,0.01,{["Right"]="%d%%屏幕尺寸"}})
+xingmingbanF.nameplateBottom=PIGSlider(xingmingbanF,{"TOPLEFT",xingmingbanF.nameplateTop,"BOTTOMLEFT",0,0},{0,0.2,0.01,{["Right"]="%s%%屏幕尺寸"}})
 xingmingbanF.nameplateBottom.t = PIGFontString(xingmingbanF,{"RIGHT",xingmingbanF.nameplateBottom,"LEFT",-4,0},"底部距离");
 xingmingbanF.nameplateBottom.Slider:HookScript("OnValueChanged", function(self, arg1)
 	SetCVar("nameplateOtherBottomInset",arg1)

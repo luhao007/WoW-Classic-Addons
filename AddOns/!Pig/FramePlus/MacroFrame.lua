@@ -44,6 +44,22 @@ function FramePlusfun.Macro()
 		MacroFrameCharLimitText:ClearAllPoints();
 		MacroFrameCharLimitText:SetPoint("TOP",MacroFrameTextBackground,"BOTTOM",0,0);
 		MacroHorizontalBarLeft:ClearAllPoints();
+		hooksecurefunc(MacroPopupFrame, "OkayButton_OnClick", function(self)
+			if InCombatLockdown() then return end
+			local macroFrame = self:GetMacroFrame();
+			local text = self.BorderBox.IconSelectorEditBox:GetText();
+			local text = string.gsub(text, "\"", "");
+			local macroSlot = GetMacroIndexByName(text)
+			if macroSlot>0 then
+				macroFrame:SelectMacro(macroSlot);
+			else
+				C_Timer.After(0.01,function()
+					local macroSlot = GetMacroIndexByName(text)
+					macroFrame:SelectMacro(macroSlot);
+					macroFrame:Update(retainScrollPosition);
+				end)
+			end			
+		end)
 	end
 	if IsAddOnLoaded("Blizzard_MacroUI") then
 		SETMacroFrame()
@@ -53,7 +69,7 @@ function FramePlusfun.Macro()
         shequFRAME:SetScript("OnEvent", function(self, event, arg1)
         	if arg1=="Blizzard_MacroUI" then
         		SETMacroFrame()
-				shequFRAME:UnregisterEvent("ADDON_LOADED")
+				self:UnregisterEvent("ADDON_LOADED")
 			end
         end)
     end

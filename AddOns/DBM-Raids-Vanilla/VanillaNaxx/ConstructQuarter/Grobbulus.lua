@@ -1,10 +1,11 @@
 local mod	= DBM:NewMod("GrobbulusVanilla", "DBM-Raids-Vanilla", 1)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240428104809")
+mod:SetRevision("20241103123604")
 mod:SetCreatureID(15931)
 mod:SetEncounterID(1111)
 mod:SetUsedIcons(1, 2, 3, 4)
+mod:SetZone(533)
 
 mod:RegisterCombat("combat")
 --mod:SetModelID(16035)--Renders too close

@@ -3,7 +3,7 @@ local L		= mod:GetLocalizedStrings()
 
 mod.statTypes = "normal25"
 
-mod:SetRevision("20240428104809")
+mod:SetRevision("20241103131702")
 mod:SetCreatureID(21215)
 mod:SetEncounterID(625, 2460)
 mod:SetModelID(20514)
@@ -12,6 +12,7 @@ mod:SetHotfixNoticeRev(20220114000000)--01-14-22
 mod:SetMinSyncRevision(20220114000000)--01-14-22
 mod:DisableRegenDetection()--Disable Player regen pull detection
 --mod:DisableESCombatDetection()--Disable ENCOUNTER_START
+mod:SetZone(548)
 
 mod:RegisterCombat("combat")
 

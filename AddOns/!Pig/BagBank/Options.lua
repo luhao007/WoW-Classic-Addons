@@ -131,40 +131,6 @@ for i=1,#BAG_SetList do
 	end)
 end
 --每行格数
--- BagBankF.SetListF.hangNUMTXT = PIGFontString(BagBankF.SetListF,{"TOPLEFT",BagBankF.SetListF,"TOPLEFT",20,-250},"背包每行格数")
--- local BagmeihangN = {8,10,12,14,16};
--- BagBankF.SetListF.hangNUM=PIGDownMenu(BagBankF.SetListF,{"LEFT",BagBankF.SetListF.hangNUMTXT,"RIGHT",4,0},{70,nil})
--- function BagBankF.SetListF.hangNUM:PIGDownMenu_Update_But(self)
--- 	local info = {}
--- 	info.func = self.PIGDownMenu_SetValue
--- 	for i=1,#BagmeihangN,1 do
--- 	    info.text, info.arg1 = BagmeihangN[i], BagmeihangN[i]
--- 	    if tocversion<20000 then
--- 	    	info.checked = BagmeihangN[i]==PIGA["BagBank"]["BAGmeihangshu"]
--- 		elseif tocversion<90000 then
--- 			info.checked = BagmeihangN[i]==PIGA["BagBank"]["BAGmeihangshu_WLK"]
--- 		else
--- 			info.checked = BagmeihangN[i]==PIGA["BagBank"]["BAGmeihangshu_retail"]
--- 		end
--- 		BagBankF.SetListF.hangNUM:PIGDownMenu_AddButton(info)
--- 	end 
--- end
--- function BagBankF.SetListF.hangNUM:PIGDownMenu_SetValue(value,arg1,arg2)
--- 	BagBankF.SetListF.hangNUM:PIGDownMenu_SetText(value)
--- 	if tocversion<20000 then
--- 		if BAGheji_UI then BAGheji_UI.meihang=arg1 end
---     	PIGA["BagBank"]["BAGmeihangshu"] = arg1;
--- 	elseif tocversion<90000 then
--- 		if BAGheji_UI then BAGheji_UI.meihang=arg1 end
--- 		PIGA["BagBank"]["BAGmeihangshu_WLK"] = arg1;
--- 	else
--- 		ContainerFrameCombinedBags.meihang=arg1
--- 		PIGA["BagBank"]["BAGmeihangshu_retail"] = arg1;
--- 	end
--- 	CloseAllBags()
--- 	OpenAllBags()
--- 	PIGCloseDropDownMenus()
--- end
 BagBankF.SetListF.hangNUMTXT = PIGFontString(BagBankF.SetListF,{"TOPLEFT",BagBankF.SetListF,"TOPLEFT",20,-220},"背包每行格数")
 local BagmeihangN= {8,16,1}
 BagBankF.SetListF.hangNUM = PIGSlider(BagBankF.SetListF,{"LEFT", BagBankF.SetListF.hangNUMTXT,"RIGHT",4,0},BagmeihangN)	

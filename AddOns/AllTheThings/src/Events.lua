@@ -9,13 +9,7 @@ local EventHandlers = setmetatable({
 	OnReady = {},
 	OnRecalculate = {},
 	OnRefreshCollections = {},
-}, {
-	__index = function(t, key)
-		local item = {};
-		rawset(t, key, item);
-		return item;
-	end,
-})
+}, app.MetaTable.AutoTable)
 app.AddEventHandler = function(eventName, handler, forceStart)
 	if type(handler) ~= "function" then
 		app.print("AddEventHandler was provided a non-function",handler)
@@ -79,6 +73,13 @@ app.AddEventHandler("OnReady", function()
 		pcall(Register, app, event, func);
 	end
 	OnReadyEventRegistrations = nil
+	-- in case future events are registered, they need to directly be registered
+	app.AddEventRegistration = function(event, func)
+		if not event or not func then
+			app.print("AddEventRegistration invalid call",event,func)
+		end
+		app:RegisterFuncEvent(event, func)
+	end
 end)
 
 -- Represents Events whose individual handlers should be processed over multiple frames to reduce potential stutter
@@ -87,6 +88,13 @@ local RunnerEvents = {
 	OnRecalculate = app.IsRetail,
 	OnUpdateWindows = app.IsRetail,
 	-- OnRefreshWindows = true,
+}
+-- Represents Events which must always be run synchronously in the same frame as when they are triggered. These should be user-based triggers
+-- typically where their execution must be handled ASAP, even if other Events are running through the Runner
+local ImmediateEvents = {
+	RowOnEnter = true,
+	RowOnLeave = true,
+	RowOnClick = true,
 }
 -- Represents Events which should always fire upon completion of a prior Event. These cannot be passed arguments currently
 local EventSequence = {
@@ -111,6 +119,9 @@ local EventSequence = {
 	OnSavesUpdated = {
 		"OnRefreshWindows"
 	},
+	OnCurrentMapIDChanged = {
+		"OnRefreshWindows"
+	},
 }
 -- Classic has some convoluted refresh sequence handling with coroutines and manual calls to events and data refreshes, so
 -- I don't wanna mess with all that. We just won't link the OnRecalculate to the OnRefreshCollections for Classic --Runaway
@@ -129,11 +140,21 @@ end
 local Runner = app.CreateRunner("events")
 -- Runner.SetPerFrameDefault(5)
 local Callback = app.CallbackHandlers.Callback
+local IgnoredDebugEvents = {
+	RowOnEnter = true,
+	RowOnLeave = true
+}
+local function DebugEventTriggered(eventName,...)
+	if IgnoredDebugEvents[eventName] then return end
+	app.PrintDebug(app.Modules.Color.Colorize(eventName,app.Colors.Renown),...)
+end
 local function DebugEventStart(eventName,...)
-	app.PrintDebug(app.Modules.Color.Colorize(eventName,app.Colors.Time),...)
+	if IgnoredDebugEvents[eventName] then return end
+	app.PrintDebug(app.Modules.Color.Colorize(eventName,Runner.IsRunning() and app.Colors.Time or app.Colors.AddedWithPatch),...)
 end
 local function DebugEventDone(eventName,...)
-	app.PrintDebug(app.Modules.Color.Colorize(eventName,app.Colors.Horde),...)
+	if IgnoredDebugEvents[eventName] then return end
+	app.PrintDebug(app.Modules.Color.Colorize(eventName,Runner.IsRunning() and app.Colors.Horde or app.Colors.RemovedWithPatch),...)
 end
 local SequenceEventsStack = {}
 local function OnEndSequenceEvents()
@@ -175,7 +196,7 @@ app.HandleEvent = function(eventName, ...)
 	-- to the refresh event. would rather spread that out over multiple frames so it remains unnoticeable
 	-- additionally, since some events can process on a Runner, then following Events need to also be pushed onto
 	-- the Event Runner so that they execute in the expected sequence
-	if #SequenceEventsStack > 0 or RunnerEvents[eventName] or Runner.IsRunning() then
+	if not ImmediateEvents[eventName] and (#SequenceEventsStack > 0 or RunnerEvents[eventName] or Runner.IsRunning()) then
 		-- app.PrintDebug(app.Modules.Color.Colorize(eventName,app.Colors.LockedWarning),...)
 		-- Runner.Run(DebugEventStart, eventName, ...)
 		for i,handler in ipairs(EventHandlers[eventName]) do
@@ -185,7 +206,7 @@ app.HandleEvent = function(eventName, ...)
 		end
 		-- Runner.Run(DebugEventDone, eventName)
 	else
-		-- app.PrintDebug(app.Modules.Color.Colorize(eventName,app.Colors.Renown),...)
+		-- DebugEventTriggered(eventName, ...)
 		-- DebugEventStart(eventName, ...)
 		for i,handler in ipairs(EventHandlers[eventName]) do
 			handler(...);
@@ -205,6 +226,6 @@ end})
 -- Allows performing an Event on the next frame instead of immediately.
 -- Also enforces that a single handle of that Event is performed that frame, thus for clarity, parameters are NOT supported
 app.CallbackEvent = function(eventName)
-	-- app.PrintDebug(app.Modules.Color.Colorize(eventName,app.Colors.ChatLinkHQT))
+	-- app.PrintDebug(app.Modules.Color.Colorize(eventName,app.Colors.Insane))
 	Callback(CallbackEventFunctions[eventName], eventName)
 end

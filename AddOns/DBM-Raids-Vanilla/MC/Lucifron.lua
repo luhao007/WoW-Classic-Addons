@@ -12,12 +12,13 @@ end
 local mod	= DBM:NewMod("Lucifron", "DBM-Raids-Vanilla", catID)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240814223859")
+mod:SetRevision("20241103123604")
 mod:SetCreatureID(DBM:IsSeasonal("SeasonOfDiscovery") and 228429 or 12118)--, 12119
 mod:SetEncounterID(663)
 mod:SetModelID(13031)
 mod:SetHotfixNoticeRev(20240724000000)
 mod:SetUsedIcons(1, 2)
+mod:SetZone(409)
 
 mod:RegisterCombat("combat")
 

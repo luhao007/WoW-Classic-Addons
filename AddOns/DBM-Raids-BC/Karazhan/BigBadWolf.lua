@@ -1,11 +1,13 @@
 local mod	= DBM:NewMod("BigBadWolf", "DBM-Raids-BC", 8)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240428104809")
+mod:SetRevision("20241103131702")
 mod:SetCreatureID(17521)
 --mod:SetEncounterID(655)--used by all 3 of them, so not usuable
 mod:SetModelID(17053)
 mod:SetUsedIcons(8)
+mod:SetZone(532)
+
 mod:RegisterCombat("combat_yell", L.DBM_BBW_YELL_1)
 
 mod:RegisterEventsInCombat(

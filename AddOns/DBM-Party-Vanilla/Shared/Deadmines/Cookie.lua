@@ -7,10 +7,11 @@ else
 	mod.statTypes = "normal"
 end
 
-mod:SetRevision("20240906051518")
+mod:SetRevision("20241103114940")
 mod:SetCreatureID(645)
 mod:SetEncounterID(2986)--Retail Encounter ID
 mod:RequiresTimeWalking()
+mod:SetZone(36)
 
 mod:RegisterCombat("combat")
 

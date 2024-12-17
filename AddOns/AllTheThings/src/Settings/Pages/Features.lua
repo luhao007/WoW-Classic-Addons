@@ -171,8 +171,11 @@ if app.IsRetail then
 	local checkboxFilterMiniListTimerunning = child:CreateCheckBox(L.FILTER_MINI_LIST_FOR_TIMERUNNING_CHECKBOX,
 	function(self)
 		self:SetChecked(settings:GetTooltipSetting("Filter:MiniList:Timerunning"))
+		self:SetAlpha(0.4)
 	end,
 	function(self)
+		-- No Timerunning Active, don't modify settings
+		if not app.Modules.Events.IsTimerunningActive then self:SetChecked(false) return end
 		settings:SetTooltipSetting("Filter:MiniList:Timerunning", self:GetChecked())
 		AddTimerunningToCurrentInstance()
 		app.LocationTrigger(true)

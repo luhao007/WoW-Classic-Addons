@@ -12,10 +12,11 @@ end
 local mod	= DBM:NewMod("Hakkar", "DBM-Raids-Vanilla", catID)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20241005192403")
+mod:SetRevision("20241103123604")
 mod:SetCreatureID(14834)
 mod:SetEncounterID(793)
 mod:SetHotfixNoticeRev(20200419000000)--2020, 04, 19
+mod:SetZone(309)
 
 mod:RegisterCombat("combat")
 

@@ -401,7 +401,7 @@ function BusinessInfo.StatsInfoOptions()
 		bagfuji.lixianBut:SetHighlightTexture(130718);
 		bagfuji.lixianBut:SetSize(wwc-4,hhc-4);
 		if bagfuji==ContainerFrameCombinedBags then
-			bagfuji.lixianBut:SetPoint("TOPLEFT",bagfuji,"TOPLEFT",220,-38)
+			bagfuji.lixianBut:SetPoint("TOPLEFT",bagfuji,"TOPLEFT",210,-38)
 		elseif bagfuji==BAGheji_UI then
 			if NDui or ElvUI then
 				bagfuji.lixianBut:SetPoint("TOPLEFT",bagfuji,"TOPLEFT",210,-31)

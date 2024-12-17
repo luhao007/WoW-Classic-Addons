@@ -1,10 +1,11 @@
 local mod	= DBM:NewMod("Malygos", "DBM-Raids-WoTLK", 6)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20231117104143")
+mod:SetRevision("20241103133102")
 mod:SetCreatureID(28859)
 mod:SetEncounterID(1094)
 mod:SetModelID(26752)
+mod:SetZone(616)
 
 mod:RegisterCombat("combat")
 mod:SetWipeTime(45)

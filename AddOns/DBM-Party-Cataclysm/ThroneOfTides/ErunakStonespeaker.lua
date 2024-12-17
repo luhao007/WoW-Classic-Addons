@@ -9,10 +9,11 @@ else
 	mod.statTypes = "normal,heroic"
 end
 
-mod:SetRevision("20240616044034")
+mod:SetRevision("20241102154000")
 mod:SetCreatureID(40825, 40788)
 mod:SetMainBossID(40788)-- 40788 = Mindbender Ghur'sha
 mod:SetEncounterID(1046)
+mod:SetZone(643)
 
 mod:RegisterCombat("combat")
 

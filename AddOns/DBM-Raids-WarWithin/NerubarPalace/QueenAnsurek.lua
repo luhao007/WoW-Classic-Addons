@@ -3,25 +3,27 @@ local L		= mod:GetLocalizedStrings()
 
 mod.statTypes = "story,lfr,normal,heroic,mythic"
 
-mod:SetRevision("20241002060427")
+mod:SetRevision("20241113031003")
 mod:SetCreatureID(218370)
 mod:SetEncounterID(2922)
 mod:SetUsedIcons(1, 2, 3, 4, 5, 6, 7, 8)
-mod:SetHotfixNoticeRev(20240917000000)
+mod:SetHotfixNoticeRev(20241106000000)
 mod:SetMinSyncRevision(20240910000000)
+mod:SetZone(2657)
 mod.respawnTime = 29
 
 mod:RegisterCombat("combat")
 
 mod:RegisterEventsInCombat(
-	"SPELL_CAST_START 437592 456623 437417 439814 440899 440883 437093 447076 447411 450191 449940 449986 447950 448458 448147 451600 455374 443888 445422 444829 445021 438976 443325 443336 447456",
-	"SPELL_CAST_SUCCESS 439299 449986",
+	"SPELL_CAST_START 437592 456623 437417 439814 440899 440883 437093 447076 447411 450191 449940 449986 447950 448458 448147 451600 455374 443888 445422 444829 445021 438976 443325 443336",
+	"SPELL_CAST_SUCCESS 439299 449986 447456",
 	"SPELL_AURA_APPLIED 437586 441958 436800 440885 447207 453990 464056 447967 462558 451278 443903 455387 445880 445152 438974 443656 443726 443342 451832 464638 441556 445013 462693",--455404
 	"SPELL_AURA_APPLIED_DOSE 449236 445880 443726 443342 464638 441556",
 	"SPELL_AURA_REMOVED 437586 447207 453990 462558 451278 443903 455387 445152 443656 445013 445021 464056 447967",
 	"SPELL_PERIODIC_DAMAGE 443403",
 	"SPELL_PERIODIC_MISSED 443403",
 	"UNIT_DIED",
+	"RAID_BOSS_WHISPER",
 	"UNIT_SPELLCAST_SUCCEEDED boss1"
 )
 
@@ -85,11 +87,12 @@ mod:AddDropdownOption("ToxinBehavior", {"MatchBW", "UseAllAscending", "DisableIc
 --mod:AddPrivateAuraSoundOption(426010, true, 425885, 4)
 --Intermission: The Spider's Web
 mod:AddTimerLine(DBM:EJ_GetSectionInfo(28755))
-local warnParalyzingVenom					= mod:NewCountAnnounce(447456, 2, nil, nil, 441740)--Shortname "toxic waves"
+local warnParalyzingVenom					= mod:NewCountAnnounce(447456, 2, nil, nil, 441740)--Shortname "Toxic waves"
+local warnWrest							= mod:NewCountAnnounce(447411, 2, nil, nil, 193997)--Shortname "Pull"
 
 local specWarnWrest							= mod:NewSpecialWarningCount(447411, nil, 193997, nil, 2, 12)--Shortname "Pull"
 
-local timerParalyzingVenomCD				= mod:NewCDCountTimer(4, 447456, 441740, nil, nil, 2)--Shortname "toxic waves"
+local timerParalyzingVenomCD				= mod:NewCDCountTimer(4, 447456, 441740, nil, nil, 2)--Shortname "Toxic waves"
 local timerWrestCD							= mod:NewCDCountTimer(49, 447411, 193997, nil, nil, 3)--Shortname "Pull"
 
 mod:AddInfoFrameOption(447076, true)
@@ -158,7 +161,7 @@ local yellAbyssalInfusionFades				= mod:NewIconFadesYell(443888, 161722)--Shortn
 local specWarnAbyssalReverb					= mod:NewSpecialWarningMoveAway(455387, nil, 37859, nil, 1, 2, 3)--Heroic+ secondary effect of Abyssal Infusion
 local yellAbyssalReverb						= mod:NewShortYell(455387, 37859)
 local yellAbyssalReverbFades				= mod:NewShortFadesYell(455387, 37859)
-local specWarnFrothingGluttony				= mod:NewSpecialWarningRunCount(445422, nil, nil, DBM_COMMON_L.RING, 4, 12)
+local specWarnFrothingGluttony				= mod:NewSpecialWarningCount(445422, nil, nil, DBM_COMMON_L.RING, 3, 2)
 local specWarnAcolytesEssence				= mod:NewSpecialWarningMoveAway(445152, nil, nil, nil, 1, 2)
 local yellAcolytesEssenceFades				= mod:NewShortFadesYell(445152)
 local specWarnNullDetonation				= mod:NewSpecialWarningInterruptCount(445021, nil, nil, nil, 1, 2)
@@ -217,19 +220,19 @@ mod.vb.cataEvoActivated = false
 local savedDifficulty = "normal"
 local allTimers = {
 	["mythic"] = {
-		[1] = {
+		[1] = {--Nov 12th Hotfixes Current
 			--Reactive Toxin
 			[437592] = {19.1, 55.8, 55.8},
 			--Venom Nova
 			[437417] = {29.3, 56, 56},
 			--Silken Tomb
-			[439814] = {12.4, 40.0, 54.0, 26.0},
+			[439814] = {12.4, 40.0, 57.0},
 			--Liquefy
 			[440899] = {6.4, 40.0, 54.0},
 			--Web Blades
-			[439299] = {20.4, 40.0, 13.0, 25.0, 16.0, 26.0}
+			[439299] = {20.4, 40.0, 13.0, 25.0, 19.0, 23.0}
 		},
-		[3] = {
+		[3] = {--Nov 12th Hotfixes Current (Missing some longer pull data)
 			--Abyssal Infusion
 			[443888] = {57.8, 80, 80},
 			--Frothing Gluttony
@@ -237,13 +240,13 @@ local allTimers = {
 			--Queen's Summons
 			[444829] = {43.8, 64, 83},
 			--Royal Condemnation
-			[438976] = {116.3, 52, 34},
+			[438976] = {116.3, 86},
 			--Infest
-			[443325] = {29.8, 66, 82},
+			[443325] = {29.8, 66, 80},
 			--Gorge
-			[443336] = {31.8, 66, 82},
+			[443336] = {31.8, 66, 80},
 			--Web Blades
-			[439299] = {48.5, 11.0, 26.0, 21.0, 17.0, 16.0, 47.0, 19.0, 14.0, 22.0}
+			[439299] = {48.5, 37.0, 21.0, 17.0, 42.0, 21.0, 19.0, 36.1}
 
 		},
 	},
@@ -254,11 +257,11 @@ local allTimers = {
 			--Venom Nova
 			[437417] = {29.3, 56, 56},--56 repeating? (Same as normal)
 			--Silken Tomb
-			[439814] = {57.4, 54, 15.9},--(different from normal)
+			[439814] = {57.2, 64},--(different from normal)
 			--Liquefy
 			[440899] = {8.3, 39.7, 51},--(different from normal)
 			--Web Blades
-			[439299] = {20.4, 47, 47, 25}--(different from normal)
+			[439299] = {20.2, 47.0, 43.0, 29.0}--(different from normal)
 		},
 		[3] = {
 			--Abyssal Infusion
@@ -466,6 +469,20 @@ function mod:OnTimerRecovery()
 	end
 end
 
+---@param self DBMMod
+local function showWrest(self, myPlatform)
+	if myPlatform then
+		specWarnWrest:Show(self.vb.wrestCount)
+		specWarnWrest:Play("pullin")
+		--if stage is 2 and you got emote, next wrest is on other side so set it faded
+		if self:GetStage(2) then
+			timerWrestCD:SetSTFade(true, self.vb.wrestCount+1)--If it's on this platform this time, next one isn't so we fade timer for next one
+		end
+	else--No emote, on other platform
+		warnWrest:Show(self.vb.wrestCount)
+	end
+end
+
 function mod:SPELL_CAST_START(args)
 	local spellId = args.spellId
 	if spellId == 437592 or spellId == 456623 then--437592 confirmed, 456623 unknown
@@ -512,8 +529,12 @@ function mod:SPELL_CAST_START(args)
 		--end
 	elseif spellId == 447411 or spellId == 450191 then--Intermission Left / Phase 2 right
 		self.vb.wrestCount = self.vb.wrestCount + 1
-		specWarnWrest:Show(self.vb.wrestCount)
-		specWarnWrest:Play("pullin")
+		self:Unschedule(showWrest)
+		if spellId == 450191 then
+			self:Schedule(0.5, showWrest, self, false)
+		else--Intermission, just trigger immediately
+			showWrest(self, true)
+		end
 		timerWrestCD:Start(spellId == 447411 and 19 or 8, self.vb.wrestCount+1)
 	elseif spellId == 449940 then
 		timerWrestCD:Stop()
@@ -555,7 +576,7 @@ function mod:SPELL_CAST_START(args)
 				specWarnNullDetonation:Play("kickcast")
 			end
 		end
-		timerNullDetonationCD:Start(nil, args.sourceGUID)
+		timerNullDetonationCD:Start(4.3, args.sourceGUID)
 	elseif spellId == 448458 and self:AntiSpam(5, 1) then
 		warnCosmicApocalypse:Show()
 		timerCosmicApocalypse:Start()
@@ -580,7 +601,7 @@ function mod:SPELL_CAST_START(args)
 	elseif spellId == 445422 and not self.vb.cataEvoActivated then
 		self.vb.frothingGluttonyCount = self.vb.frothingGluttonyCount + 1
 		specWarnFrothingGluttony:Show(self.vb.frothingGluttonyCount)
-		specWarnFrothingGluttony:Play("pullin")
+		specWarnFrothingGluttony:Play("specialsoon")
 		local timer = self:GetFromTimersTable(allTimers, savedDifficulty, self.vb.phase, 445422, self.vb.frothingGluttonyCount+1)
 		if timer then
 			timerFrothingGluttonyCD:Start(timer, self.vb.frothingGluttonyCount+1)
@@ -615,14 +636,6 @@ function mod:SPELL_CAST_START(args)
 		if timer then
 			timerGorgeCD:Start(timer, self.vb.gorgeCount+1)
 		end
-	elseif spellId == 447456 then
-		self.vb.reactiveCount = self.vb.reactiveCount + 1
-		warnParalyzingVenom:Show(self.vb.reactiveCount)
-		if self.vb.reactiveCount % 3 == 0 then
-			timerParalyzingVenomCD:Start(11, self.vb.reactiveCount+1)
-		else
-			timerParalyzingVenomCD:Start(4, self.vb.reactiveCount+1)
-		end
 	elseif spellId == 447076 then--Predation
 		self:SetStage(1.5)
 		self.vb.wrestCount = 0
@@ -637,7 +650,7 @@ function mod:SPELL_CAST_START(args)
 		warnPhase:Show(DBM_CORE_L.AUTO_ANNOUNCE_TEXTS.stage:format(1.5))
 		warnPhase:Play("phasechange")
 		timerWrestCD:Start(6, 1)
-		timerParalyzingVenomCD:Start(13, 1)
+		timerParalyzingVenomCD:Start(15.5, 1)
 	elseif spellId == 449986 then--Aphotic Communion Starting
 		self:SetStage(3)
 		timerAcidicApocalypse:Stop()
@@ -652,7 +665,7 @@ function mod:SPELL_CAST_START(args)
 		timerRoyalCondemnationCD:Start(allTimers[savedDifficulty][3][438976][1], 1)
 		timerInfestCD:Start(allTimers[savedDifficulty][3][443325][1], 1)
 		timerGorgeCD:Start(allTimers[savedDifficulty][3][443336][1], 1)
-		timerWebBladesCD:Start(allTimers[savedDifficulty][1][439299][1], 1)
+		timerWebBladesCD:Start(allTimers[savedDifficulty][3][439299][1], 1)
 	end
 end
 
@@ -665,6 +678,14 @@ function mod:SPELL_CAST_SUCCESS(args)
 		local timer = self:GetFromTimersTable(allTimers, savedDifficulty, self.vb.phase, 439299, self.vb.webBladesCount+1)
 		if timer then
 			timerWebBladesCD:Start(timer, self.vb.webBladesCount+1)
+		end
+	elseif spellId == 447456 then
+		self.vb.reactiveCount = self.vb.reactiveCount + 1
+		warnParalyzingVenom:Show(self.vb.reactiveCount)
+		if self.vb.reactiveCount % 3 == 0 then
+			timerParalyzingVenomCD:Start(11, self.vb.reactiveCount+1)
+		else
+			timerParalyzingVenomCD:Start(4, self.vb.reactiveCount+1)
 		end
 	--elseif spellId == 449986 then--Aphotic Communion Finishing
 	--	timerAbyssalInfusionCD:Start(3)
@@ -936,7 +957,7 @@ function mod:UNIT_DIED(args)
 			--Better place to start Stage 2 wrest timer
 			if self.vb.wrestCount == 0 then
 				timerWrestCD:Stop()
-				timerWrestCD:Start(self:IsEasy() and 12.9 or 11.9, 1)
+				timerWrestCD:Start(self:IsEasy() and 12.9 or 11.7, 1)
 				timerExpulsionBeamCD:Start(12.5, 1)
 			end
 		end
@@ -955,6 +976,15 @@ function mod:UNIT_DIED(args)
 		if self.vb.expellerKilled == 2 then
 			timerExpulsionBeamCD:Stop()
 		end
+	end
+end
+
+--"<3.13 00:08:13> [CLEU] SPELL_CAST_START#Creature-0-4214-2657-21126-218370-0000318FF8#Queen Ansurek(38.0%-0.0%)##nil#450191#Wrest#nil#nil#nil#nil#nil#nil",
+--"<3.23 00:08:13> [RAID_BOSS_WHISPER] |TInterface\\ICONS\\Misc_Legionfall_Warlock.BLP:20|t %s begins to cast |cFFFF0000|Hspell:447411|h[Wrest]|h|r!#Queen Ansurek#5#true",
+function mod:RAID_BOSS_WHISPER(msg)
+	if msg:find("spell:447411") then
+		self:Unschedule(showWrest)
+		showWrest(self, true)
 	end
 end
 
@@ -979,7 +1009,7 @@ function mod:UNIT_SPELLCAST_SUCCEEDED(uId, _, spellId)
 		warnPlatform:Show(self.vb.platformCount)
 		if self.vb.platformCount == 1 then
 			timerWrestCD:Stop()
-			timerWrestCD:Start(6, self.vb.wrestCount+1)--6-6.6
+			timerWrestCD:Start(5.4, self.vb.wrestCount+1)--6-6.6
 			timerGloomTouchCD:Start(6)
 		elseif self.vb.platformCount == 2 then
 			timerWrestCD:Stop()

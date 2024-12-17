@@ -1,7 +1,7 @@
 do
 -- App locals
 local appName,app = ...;
-local L, contains, GetRelativeValue = app.L, app.contains, app.GetRelativeValue;
+local L, contains, containsValue, GetRelativeValue = app.L, app.contains, app.containsValue, app.GetRelativeValue;
 
 -- Global locals
 local date, pairs, select, GetDifficultyInfo, IsInInstance, GetInstanceInfo, UNKNOWN
@@ -179,6 +179,20 @@ app.CreateDifficulty = app.CreateClass("Difficulty", "difficultyID", {
 			end
 			return key .. t[key];
 		end
+	end,
+	["ShouldExcludeFromTooltip"] = function(t)
+		local difficultyID = app.GetCurrentDifficultyID();
+		if difficultyID > 0 then
+			if t.difficultyID == difficultyID then
+				return false;
+			end
+			local difficulties = t.difficulties;
+			if difficulties and containsValue(difficulties, difficultyID) then
+				return false;
+			end
+			return true;
+		end
+		return t.ShouldExcludeFromTooltipHelper(t);
 	end,
 },
 "Group", {

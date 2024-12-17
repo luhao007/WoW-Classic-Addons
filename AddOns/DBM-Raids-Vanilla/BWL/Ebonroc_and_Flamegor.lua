@@ -8,10 +8,12 @@ else
 	mod.statTypes = "normal"
 end
 
-mod:SetRevision("20241009231935")
+mod:SetRevision("20241103123604")
 mod:SetCreatureID(14601, 11981)
 mod:SetEncounterID(614, 615, 2566)
 mod:SetModelID(6377)
+mod:SetZone(469)
+
 mod:RegisterCombat("combat")
 mod:SetBossHPInfoToHighest()
 

@@ -1,12 +1,13 @@
 local mod	= DBM:NewMod("FesteringRotslimeSoD", "DBM-Raids-Vanilla", 8)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240513223911")
+mod:SetRevision("20241103123604")
 mod:SetCreatureID(218819)--Drum 222542, Slab 222543, Mask 222544, Candle 222545
 mod:SetEncounterID(2953)
 --mod:SetUsedIcons(8)
 mod:SetHotfixNoticeRev(20240404000000)
 --mod:SetMinSyncRevision(20231115000000)
+mod:SetZone(109)
 
 mod:RegisterCombat("combat")
 

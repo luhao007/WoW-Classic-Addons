@@ -1,10 +1,11 @@
 local mod	= DBM:NewMod("Onyxia", "DBM-Raids-WoTLK", 4)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20230713231805")
+mod:SetRevision("20241103133102")
 mod:SetCreatureID(10184)
 mod:SetEncounterID(1084)
 mod:SetModelID(8570)
+mod:SetZone(249)
 
 mod:RegisterCombat("combat")
 

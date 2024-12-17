@@ -52,12 +52,45 @@ local function Config_format(DQPEIZHI,Def)
 	return DQPEIZHI
 end
 Fun.Config_format=Config_format
-
+local function ISitem(item)
+	if item:match("|cff%w%w%w%w%w%w|Hitem:") then
+		print(Fun.GetItemLinkJJ(item))
+		return Fun.GetItemLinkJJ(item)
+	end
+	return item
+end
 function addonTable.Load_Config()
 	PIGA = PIGA or addonTable.Default;
 	PIGA = Config_format(PIGA,addonTable.Default)
 	PIGA_Per = PIGA_Per or addonTable.Default_Per;
 	PIGA_Per = Config_format(PIGA_Per,addonTable.Default_Per)
+	for k,v in pairs(PIGA) do
+		if type(v)=="table" then
+			for kk,vv in pairs(v) do
+				if type(vv)=="table" then
+					for kkk,vvv in pairs(vv) do
+						if type(vvv)=="table" then
+							for kkkk,vvvv in pairs(vvv) do
+								if type(vvvv)=="table" then
+									for kkkkk,vvvvv in pairs(vvvv) do
+										if type(vvvvv)=="string" then
+											PIGA[k][kk][kkk][kkkk][kkkkk]=ISitem(vvvvv)
+										end
+									end
+								elseif type(vvvv)=="string" then
+									PIGA[k][kk][kkk][kkkk]=ISitem(vvvv)
+								end
+							end
+						elseif type(vvv)=="string" then
+							PIGA[k][kk][kkk]=ISitem(vvv)
+						end
+					end
+				elseif type(vv)=="string" then
+					PIGA[k][kk]=ISitem(vv)
+				end
+			end
+		end
+	end
 end
 function addonTable.Set_Name_Realm()
 	local wanjia, realm = UnitFullName("player")
@@ -65,13 +98,9 @@ function addonTable.Set_Name_Realm()
 	Pig_OptionsUI.Name=wanjia or ""
 	Pig_OptionsUI.Realm=realm or ""
 	Pig_OptionsUI.AllName = wanjia.."-"..realm
+	Pig_OptionsUI.AllNameElvUI = wanjia.." - "..realm
 end
 ---------
-local function load_Default()
-	PIGA=addonTable.Default;
-	PIGA_Per=addonTable.Default_Per;
-	ReloadUI()
-end
 local function Config_Set(cfdata,bool)
 	for k,v in pairs(cfdata) do
 		if type(v)=="boolean" then
@@ -96,13 +125,18 @@ local function Config_Set(cfdata,bool)
 	end
 end
 addonTable.Config_Set=Config_Set
--- local function load_ALL()
--- 	PIGA=addonTable.Default;
--- 	Config_Set(PIGA,true)
--- 	PIGA_Per=addonTable.Default_Per;
--- 	Config_Set(PIGA_Per,true)
--- 	ReloadUI()
--- end
+local function load_Default()
+	PIGA=addonTable.Default;
+	PIGA_Per=addonTable.Default_Per;
+	ReloadUI()
+end
+local function load_ALL()
+	PIGA=addonTable.Default;
+	Config_Set(PIGA,true)
+	PIGA_Per=addonTable.Default_Per;
+	Config_Set(PIGA_Per,true)
+	ReloadUI()
+end
 local Config_ID ={
 	{"Default",L["CONFIG_DEFAULT"],L["CONFIG_DEFAULTTIPS"],load_Default},
 	--{"AllON",L["CONFIG_ALLON"],L["CONFIG_ALLONTIPS"],load_ALL},

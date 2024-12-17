@@ -197,7 +197,7 @@ local function ProcessForCompletedBy(t, reference, tooltipInfo)
 		-- Account-Wide Quests
 		if app.AccountWideQuestsDB[id] then
 			if IsQuestFlaggedCompletedOnAccount(id) then
-				tinsert(knownBy, {text=ITEM_UPGRADE_DISCOUNT_TOOLTIP_ACCOUNT_WIDE or "Quest completed on your Account"});
+				tinsert(knownBy, {text=ITEM_UPGRADE_DISCOUNT_TOOLTIP_ACCOUNT_WIDE or "Account-Wide"});
 			end
 		else
 			for _,character in pairs(ATTCharacterData) do
@@ -206,7 +206,7 @@ local function ProcessForCompletedBy(t, reference, tooltipInfo)
 				end
 			end
 			if #knownBy == 0 and IsQuestFlaggedCompletedOnAccount(id) then
-				tinsert(knownBy, {text=ACCOUNT_COMPLETED_QUEST_NOTICE or "Quest completed on your Account"});
+				tinsert(knownBy, {text=ITEM_UPGRADE_DISCOUNT_TOOLTIP_ACCOUNT_WIDE or "Account-Wide"});
 			end
 		end
 		BuildKnownByInfoForKind(tooltipInfo, L.COMPLETED_BY);
@@ -574,7 +574,11 @@ local InformationTypes = {
 	}),
 	CreateInformationType("description", { text = L.DESCRIPTIONS, priority = 2.5,
 		Process = function(t, reference, tooltipInfo)
-			local description = reference.description or GetRelativeValue(reference, "sharedDescription")
+			local description = reference.description
+				or GetRelativeValue(reference, "sharedDescription")
+				-- duplicated search results loose their parent references in order to prevent issues in filtering/tooltips
+				-- so also check the active row reference for accuracy if the tooltip is in context of a row
+				or GetRelativeValue(app.ActiveRowReference, "sharedDescription")
 			if description then
 				tinsert(tooltipInfo, {
 					left = description,
@@ -951,7 +955,7 @@ local InformationTypes = {
 					if itemID == 54537 or		-- Heart-Shaped Box [Love is in the Air]
 						itemID == 117393 or		-- Keg-Shaped Treasure Chest [Brewfest]
 						itemID == 117394 or		-- Satchel of Chilled Goods [Midsummer Fire Festival]
-						itemID == 209024 or		-- Loot-Filled Pumpkin [Hallow's End]
+						--itemID == 209024 or		-- Loot-Filled Pumpkin [Hallow's End] (Blizz is inconsistent, big mad.)
 						itemID == 216874		-- Loot-Filled Basket [Noblegarden]
 					then
 						tinsert(tooltipInfo, 1, { left = L.HOLIDAY_DROP, wrap = true, color = app.Colors.TooltipDescription });

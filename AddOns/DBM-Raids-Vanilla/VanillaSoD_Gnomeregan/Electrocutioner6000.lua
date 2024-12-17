@@ -1,12 +1,13 @@
 local mod	= DBM:NewMod("ElectrocutionerSoD", "DBM-Raids-Vanilla", 9)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240426180207")
+mod:SetRevision("20241103123604")
 mod:SetCreatureID(220072)
 mod:SetEncounterID(2927)
 mod:SetUsedIcons(8)
 mod:SetHotfixNoticeRev(20240209000000)
 --mod:SetMinSyncRevision(20231115000000)
+mod:SetZone(90)
 
 mod:RegisterCombat("combat")
 

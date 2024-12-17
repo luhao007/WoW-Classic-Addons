@@ -1,9 +1,10 @@
 local mod	= DBM:NewMod(125, "DBM-Party-Cataclysm", 4, 70)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20200806142123")
+mod:SetRevision("20241102154000")
 mod:SetCreatureID(39428, 99999)--Combat log shows him as dying when he borrows, wtf?
 --mod:SetEncounterID(1076)--In case this has same bug as unit died with borrow
+mod:SetZone(644)
 
 mod:RegisterCombat("combat")
 mod:RegisterKill("yell", L.Kill)

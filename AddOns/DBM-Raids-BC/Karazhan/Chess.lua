@@ -2,7 +2,7 @@ local mod	= DBM:NewMod("Chess", "DBM-Raids-BC", 8)
 local L		= mod:GetLocalizedStrings()
 
 local playerFactoin = UnitFactionGroup("player")
-mod:SetRevision("20231229225155")
+mod:SetRevision("20241103131702")
 if playerFactoin == "Alliance" then
 	mod:SetCreatureID(21752)--Warchief Blackhand
 else
@@ -10,6 +10,8 @@ else
 end
 mod:SetModelID(18720)
 mod:SetEncounterID(660, 2452)
+mod:SetZone(532)
+
 mod:RegisterCombat("combat")--Actually not how we register combat, bogus because SetWipeTime needs it
 mod:SetWipeTime(600)
 

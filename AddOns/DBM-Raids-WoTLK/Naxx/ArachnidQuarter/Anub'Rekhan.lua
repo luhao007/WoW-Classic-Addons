@@ -1,10 +1,11 @@
 local mod	= DBM:NewMod("Anub'Rekhan", "DBM-Raids-WoTLK", 8)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240413002358")
+mod:SetRevision("20241103133102")
 mod:SetCreatureID(15956)
 mod:SetEncounterID(1107)
 mod:SetModelID(15931)
+mod:SetZone(533)
 mod:RegisterCombat("combat_yell", L.Pull1, L.Pull2)
 
 mod:RegisterEventsInCombat(

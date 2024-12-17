@@ -208,7 +208,7 @@ function GDKPInfo.ADD_Fakuan(RaidR)
 			hang:SetPoint("TOP",_G["fakuan_hang_"..(id-1)],"BOTTOM",0,0);
 		end
 		if id~=hang_NUM then PIGLine(hang,"BOT",nil,nil,nil,{0.3,0.3,0.3,0.3}) end
-		hang.del = PIGDiyBut(hang,{"LEFT", hang, "LEFT", 0,0},{hang_Height-8})
+		hang.del = PIGDiyBut(hang,{"LEFT", hang, "LEFT", 0,0},{hang_Height-12})
 		hang.del:SetScript("OnClick", function (self)
 			local dataX = PIGA["GDKP"]["fakuan"]
 	    	for p=1,#dataX do

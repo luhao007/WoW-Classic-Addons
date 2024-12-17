@@ -211,5 +211,5 @@ Data.Ext ={};
 -----
 addonTable.Data=Data
 ---
-Data.ElvUI_BagName = {"ElvUI_ContainerFrameBag-1","ElvUI_ContainerFrameBag"}
+Data.ElvUI_BagName = {"ElvUI_ContainerFrameBag-","ElvUI_ContainerFrameBag"}
 Data.NDui_BagName={"NDui_BackpackSlot",6*36}

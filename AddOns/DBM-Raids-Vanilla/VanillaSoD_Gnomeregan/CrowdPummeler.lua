@@ -1,12 +1,13 @@
 local mod	= DBM:NewMod("CrowdPummellerSoD", "DBM-Raids-Vanilla", 9)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240406163851")
+mod:SetRevision("20241103123604")
 mod:SetCreatureID(215728)
 mod:SetEncounterID(2899)
 mod:SetUsedIcons(8)
 mod:SetHotfixNoticeRev(20240209000000)
 --mod:SetMinSyncRevision(20231115000000)
+mod:SetZone(90)
 
 mod:RegisterCombat("combat")
 

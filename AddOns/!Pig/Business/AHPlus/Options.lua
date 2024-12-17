@@ -40,21 +40,11 @@ function BusinessInfo.AHPlusOptions()
 	end);
 	--扫描间隔
 	fuFrame.AHPlus.ScanSliderT = PIGFontString(fuFrame.AHPlus,{"LEFT",fuFrame.AHPlus.Text,"RIGHT",20,0},"扫描间隔")
-	local Scaninfo={1,1,1}
-	if tocversion<100000 then
-		Scaninfo = {0.002,0.08,0.001}
-		BusinessInfo.AHPlusData.ScanCD=PIGA["AHPlus"]["ScanCD"]
-	else
-		Scaninfo = {0.0002,0.008,0.0001}
-		BusinessInfo.AHPlusData.ScanCD=PIGA["AHPlus"]["ScanCD_M"]
-	end
+	local Scaninfo = {0.01,0.1,0.01}
+	BusinessInfo.AHPlusData.ScanCD=PIGA["AHPlus"]["ScanTime"]
 	fuFrame.AHPlus.ScanSlider = PIGSlider(fuFrame.AHPlus,{"LEFT",fuFrame.AHPlus.ScanSliderT,"RIGHT",10,0},Scaninfo)
 	fuFrame.AHPlus.ScanSlider.Slider:HookScript("OnValueChanged", function(self, arg1)
-		if tocversion<100000 then
-			PIGA["AHPlus"]["ScanCD"]=arg1
-		else
-			PIGA["AHPlus"]["ScanCD_M"]=arg1
-		end
+		PIGA["AHPlus"]["ScanTime"]=arg1
 		BusinessInfo.AHPlusData.ScanCD=arg1
 	end)
 	fuFrame.AHPlus.AHtooltip =PIGCheckbutton(fuFrame.AHPlus,{"TOPLEFT",fuFrame.AHPlus,"BOTTOMLEFT",0,-20},{"鼠标提示拍卖价钱","在物品的鼠标提示上显示拍卖缓存价钱"})
@@ -65,17 +55,17 @@ function BusinessInfo.AHPlusOptions()
 			PIGA["AHPlus"]["AHtooltip"]=false;
 		end
 	end);
-	fuFrame.AHPlus.AHUIoff =PIGCheckbutton(fuFrame.AHPlus,{"LEFT",fuFrame.AHPlus.AHtooltip,"RIGHT",220,0},{"禁止专业面板关闭","拍卖界面打开时禁止系统的专业面板自动关闭功能"})
-	fuFrame.AHPlus.AHUIoff:SetScript("OnClick", function (self)
-		if self:GetChecked() then
-			PIGA["AHPlus"]["AHUIoff"]=true;
-			BusinessInfo.AHUIoff()
-		else
-			PIGA["AHPlus"]["AHUIoff"]=false;
-			Pig_Options_RLtishi_UI:Show()
-		end
-	end);
 	if tocversion<50000 then
+		fuFrame.AHPlus.AHUIoff =PIGCheckbutton(fuFrame.AHPlus,{"LEFT",fuFrame.AHPlus.AHtooltip,"RIGHT",220,0},{"禁止专业面板关闭","拍卖界面打开时禁止系统的专业面板自动关闭功能"})
+		fuFrame.AHPlus.AHUIoff:SetScript("OnClick", function (self)
+			if self:GetChecked() then
+				PIGA["AHPlus"]["AHUIoff"]=true;
+				BusinessInfo.AHUIoff()
+			else
+				PIGA["AHPlus"]["AHUIoff"]=false;
+				Pig_Options_RLtishi_UI:Show()
+			end
+		end);
 		fuFrame.AHPlus.QuicAuc =PIGCheckbutton(fuFrame.AHPlus,{"TOPLEFT",fuFrame.AHPlus.AHtooltip,"BOTTOMLEFT",0,-20},{"鼠标右键快速拍卖","鼠标右键背包物品快速拍卖"})
 		fuFrame.AHPlus.QuicAuc:SetScript("OnClick", function (self)
 			if self:GetChecked() then
@@ -88,12 +78,12 @@ function BusinessInfo.AHPlusOptions()
 		end);
 		GameTooltip:HookScript("OnTooltipSetItem", function(self)
 			if PIGA["AHPlus"]["Open"] and PIGA["AHPlus"]["AHtooltip"] then
-				local name, link = self:GetItem()
-				if name and name~="" then
-					local  bindType = select(14, GetItemInfo(link))
+				local itemName, itemlink = self:GetItem()
+				if itemName and itemName~="" then
+					local  bindType = select(14, GetItemInfo(itemlink))
 					if bindType~=1 and bindType~=4 then
-						if PIGA["AHPlus"]["DataList"][Pig_OptionsUI.Realm] and PIGA["AHPlus"]["DataList"][Pig_OptionsUI.Realm][name] then
-							local jiagelist = PIGA["AHPlus"]["DataList"][Pig_OptionsUI.Realm][name][2]
+						if PIGA["AHPlus"]["CacheData"][Pig_OptionsUI.Realm] and PIGA["AHPlus"]["CacheData"][Pig_OptionsUI.Realm][itemName] then
+							local jiagelist = PIGA["AHPlus"]["CacheData"][Pig_OptionsUI.Realm][itemName][2]
 							local jiagelistNum=#jiagelist
 							local jiluTime = jiagelist[jiagelistNum][2] or 1660000000
 							local jiluTime = date("%m-%d %H:%M",jiluTime)
@@ -106,25 +96,27 @@ function BusinessInfo.AHPlusOptions()
 			end
 		end)
 	else
-		-- TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Item, function(tooltip, data)
-		-- 	if PIGA["AHPlus"]["Open"] and PIGA["AHPlus"]["AHtooltip"] then
-		-- 		if tooltip == GameTooltip then	
-		-- 			local ItemID = data["id"]
-		-- 			if ItemID then
-		-- 				local  bubangding = select(14, GetItemInfo(ItemID))--非绑定
-		-- 				if bubangding~=1 and bubangding~=4 then
-		-- 					if PIGA["AHPlus"]["DataList"][Pig_OptionsUI.Realm] and PIGA["AHPlus"]["DataList"][Pig_OptionsUI.Realm][ItemID] then
-		-- 						local jiluTime = PIGA["AHPlus"]["DataList"][Pig_OptionsUI.Realm][ItemID][3] or 1660000000
-		-- 						local jiluTime = date("%m-%d %H:%M",jiluTime)
-		-- 						tooltip:AddDoubleLine("拍卖("..jiluTime.."):",GetMoneyString(PIGA["AHPlus"]["DataList"][Pig_OptionsUI.Realm][ItemID][1]),0,1,1,0,1,1)
-		-- 					else
-		-- 						tooltip:AddDoubleLine("拍卖(尚未缓存)","",0,1,1,0,1,1)
-		-- 					end
-		-- 				end
-		-- 			end
-		-- 		end
-		-- 	end
-		-- end)
+		TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Item, function(tooltip, data)
+			if PIGA["AHPlus"]["Open"] and PIGA["AHPlus"]["AHtooltip"] then
+				if tooltip == GameTooltip then	
+					local ItemID = data["id"]
+					if ItemID then
+						local itemName,_,_,_,_,_,_,_,_,_,sellPrice,classID,subclassID,bindType= GetItemInfo(ItemID) 
+						if bindType~=1 and bindType~=4 then
+							if PIGA["AHPlus"]["CacheData"] and PIGA["AHPlus"]["CacheData"][itemName] then
+								local jiagelist = PIGA["AHPlus"]["CacheData"][itemName][2]
+								local jiagelistNum=#jiagelist
+								local jiluTime = jiagelist[jiagelistNum][2] or 1660000000
+								local jiluTime = date("%m-%d %H:%M",jiluTime)
+								tooltip:AddDoubleLine("拍卖("..jiluTime.."):",GetMoneyString(jiagelist[jiagelistNum][1]),0,1,1,0,1,1)
+							else
+								tooltip:AddDoubleLine("拍卖(尚未缓存)","",0,1,1,0,1,1)
+							end
+						end
+					end
+				end
+			end
+		end)
 	end
 	---
 	fuFrame.AHPlus.CZ = PIGButton(fuFrame,{"TOPLEFT",fuFrame.AHPlus,"TOPLEFT",516,0},{60,22},"重置");  
@@ -149,23 +141,19 @@ function BusinessInfo.AHPlusOptions()
 	function fuFrame:ShowChecked()
 		if self.AHPlus:GetChecked() then
 			self.AHPlus.AHtooltip:Enable()
-			self.AHPlus.AHUIoff:Enable()
+			if self.AHPlus.AHUIoff then self.AHPlus.AHUIoff:Enable() end
 			if self.AHPlus.QuicAuc then self.AHPlus.QuicAuc:Enable() end
 		else
 			self.AHPlus.AHtooltip:Disable()
-			self.AHPlus.AHUIoff:Disable()
+			if self.AHPlus.AHUIoff then self.AHPlus.AHUIoff:Disable() end
 			if self.AHPlus.QuicAuc then self.AHPlus.QuicAuc:Disable() end
 		end
 	end
 	fuFrame:HookScript("OnShow", function (self)
 		self.AHPlus:SetChecked(PIGA["AHPlus"]["Open"])
 		self.AHPlus.AHtooltip:SetChecked(PIGA["AHPlus"]["AHtooltip"])
-		self.AHPlus.AHUIoff:SetChecked(PIGA["AHPlus"]["AHUIoff"])
-		if tocversion<100000 then
-			self.AHPlus.ScanSlider:PIGSetValue(PIGA["AHPlus"]["ScanCD"])
-		else
-			self.AHPlus.ScanSlider:PIGSetValue(PIGA["AHPlus"]["ScanCD_M"])
-		end
+		self.AHPlus.ScanSlider:PIGSetValue(PIGA["AHPlus"]["ScanTime"])
+		if self.AHPlus.AHUIoff then self.AHPlus.AHUIoff:SetChecked(PIGA["AHPlus"]["AHUIoff"]) end
 		if self.AHPlus.QuicAuc then
 			self.AHPlus.QuicAuc:SetChecked(PIGA["AHPlus"]["QuicAuc"])
 		end

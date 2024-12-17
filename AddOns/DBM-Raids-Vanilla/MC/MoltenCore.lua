@@ -2,11 +2,12 @@ if not DBM:IsSeasonal("SeasonOfDiscovery") then return end
 local mod	= DBM:NewMod("MoltenCore", "DBM-Raids-Vanilla", 6)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240821153448")
+mod:SetRevision("20241103123604")
 mod:SetCreatureID(227939)
 mod:SetEncounterID(3018)
 mod:RegisterCombat("combat")
 mod:SetUsedIcons(1, 2)
+mod:SetZone(409)
 
 mod:RegisterEventsInCombat(
 	"SPELL_AURA_APPLIED 460890 460898 460895",

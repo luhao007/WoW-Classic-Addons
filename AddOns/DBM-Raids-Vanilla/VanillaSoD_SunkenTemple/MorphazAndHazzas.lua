@@ -1,13 +1,14 @@
 local mod	= DBM:NewMod("MorphazandHazzasSoD", "DBM-Raids-Vanilla", 8)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240518094614")
+mod:SetRevision("20241103123604")
 mod:SetCreatureID(221942, 221943)--Morphaz, Hazzas
 mod:SetEncounterID(2958)
 mod:SetBossHPInfoToHighest()
 --mod:SetUsedIcons(8)
 mod:SetHotfixNoticeRev(20240405000000)
 --mod:SetMinSyncRevision(20231115000000)
+mod:SetZone(109)
 
 mod:RegisterCombat("combat")
 

@@ -68,8 +68,9 @@ function BusinessInfo.ADDScroll(fuFrame,text,hangName,hang_NUM,Config1)
 		end
 		return false
 	end
-	local function InsertItemData(itemID,itemLink,itemTexture,itemStackCount)
-		if fuFrame.List.addList.lx=="filtra" then
+	local function InsertItemData(itemID,itemLink,itemTexture,itemStackCount,ly)
+		local itemLink=Fun.GetItemLinkJJ(itemLink)
+		if fuFrame.List.addList.lx=="filtra" and ly~="Cursor" then
 			if IsItemExist(FiltraConfig0,itemID) then
 				PIGinfotip:TryDisplayMessage("物品已在排除列表",1,0,0);
 				return false
@@ -88,6 +89,7 @@ function BusinessInfo.ADDScroll(fuFrame,text,hangName,hang_NUM,Config1)
 	local function IsItemMay(add,itemLink,quality,sellPrice,classID,subclassID,bag,slot)
 		if hangName=="Sell" then
 			if sellPrice>0 then
+				if bag=="Cursor" then return true end	
 				if fuFrame.List.addList.lx=="filtra" then
 					if quality>0 then
 						return false, "排除列表只支持灰色物品"
@@ -104,7 +106,7 @@ function BusinessInfo.ADDScroll(fuFrame,text,hangName,hang_NUM,Config1)
 			if add then
 				return true
 			else
-				if classID==15 and subclassID==1 then
+				if classID==0 or classID==5 or classID==6 or classID==7 then
 					return true
 				else
 					return false,"非消费品"
@@ -250,7 +252,7 @@ function BusinessInfo.ADDScroll(fuFrame,text,hangName,hang_NUM,Config1)
 			local ItemsNum = #bagshujuy;
 			for ix=1,ItemsNum do
 				if not IsItemExist(Config0,bagshujuy[ix][1]) then
-					table.insert(Config0, {bagshujuy[ix][1],bagshujuy[ix][2],bagshujuy[ix][3],bagshujuy[ix][4],bagshujuy[ix][5]});
+					table.insert(Config0, {bagshujuy[ix][1],Fun.GetItemLinkJJ(bagshujuy[ix][2]),bagshujuy[ix][3],bagshujuy[ix][4],bagshujuy[ix][5]});
 				end
 			end
 		end
@@ -266,8 +268,7 @@ function BusinessInfo.ADDScroll(fuFrame,text,hangName,hang_NUM,Config1)
 	fuFrame.List.addList.EditBox:SetNumeric(true)
 	fuFrame.List.addList.EditBox.addbut = PIGButton(fuFrame.List.addList.EditBox,{"LEFT", fuFrame.List.addList.EditBox, "RIGHT", 2, 0},{42,20},"添加");
 	fuFrame.List.addList.EditBox.addbut:Hide()
-	fuFrame.List.addList.EditBox:SetScript("OnEditFocusGained", function(self) self.addbut:Show() end)
-	fuFrame.List.addList.EditBox:SetScript("OnEditFocusLost", function(self) self.addbut:Hide() end)
+	fuFrame.List.addList.EditBox:SetScript("OnTextChanged", function(self) if self:GetNumber()>0 then self.addbut:Show() else self.addbut:Hide() end end)
 	fuFrame.List.addList.EditBox.addbut:SetScript("OnClick", function(self)
 		local fujie = self:GetParent()
 		local NewVVV = fujie:GetNumber()
@@ -310,7 +311,7 @@ function BusinessInfo.ADDScroll(fuFrame,text,hangName,hang_NUM,Config1)
 		if id~=addBag_hang_NUM then
 			PIGLine(hang,"BOT",nil,nil,{2,-2},{0.3,0.3,0.3,0.5})
 		end
-		hang.check = PIGDiyBut(hang,{"LEFT", hang, "LEFT", 0,0},{hang_Height-2});
+		hang.check = PIGDiyBut(hang,{"LEFT", hang, "LEFT", 2,0},{hang_Height-4});
 		hang.icon = hang:CreateTexture(nil, "BORDER");
 		hang.icon:SetSize(hang_Height-1,hang_Height-1);
 		hang.icon:SetPoint("LEFT", hang.check, "RIGHT", 0,0);
@@ -347,7 +348,8 @@ function BusinessInfo.ADDScroll(fuFrame,text,hangName,hang_NUM,Config1)
 							local itemStackCount, itemEquipLoc, itemTexture,sellPrice,classID,subclassID= select(8, GetItemInfo(itemLink))
 							local jieguo = IsItemMay(false,itemLink,quality,sellPrice,classID,subclassID,bag, slot)
 							if jieguo then
-								table.insert(bagshujuy,{itemID,itemLink,icon,itemStackCount,itemStackCount,false})
+								local ItemLevel = GetDetailedItemLevelInfo(itemLink)
+								table.insert(bagshujuy,{itemID,itemLink,icon,itemStackCount,itemStackCount,false,ItemLevel})
 							end
 						end
 					end
@@ -367,15 +369,18 @@ function BusinessInfo.ADDScroll(fuFrame,text,hangName,hang_NUM,Config1)
 	    for id = 1, addBag_hang_NUM do
 	    	local dangqianH = id+offset;
 	    	if bagshujuy[dangqianH] then
+	    		local ItemLevel = GetDetailedItemLevelInfo(bagshujuy[dangqianH][2])
+	    		local ItemLevel=bagshujuy[dangqianH][7] or ItemLevel or "*"
+	    		local _,itemLink=GetItemInfo(Fun.HY_ItemLinkJJ(bagshujuy[dangqianH][2]));
 	    		local hang = _G[hangName.."addList"..id]
 	    		hang:Show();
 	    		hang.check:SetID(dangqianH);
 		    	hang.icon:SetTexture(bagshujuy[dangqianH][3]);
-				hang.link:SetText(bagshujuy[dangqianH][2]);
+				hang.link:SetText(ItemLevel..itemLink);
 				hang:SetScript("OnMouseDown", function (self)
 					GameTooltip:ClearLines();
 					GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
-					GameTooltip:SetHyperlink(bagshujuy[dangqianH][2])
+					GameTooltip:SetHyperlink(itemLink)
 				end);
 				if fuFrame.List.addList.lx=="filtra" then
 					hang.check.icon:SetSize(hang_Height-9,hang_Height-9);
@@ -395,16 +400,17 @@ function BusinessInfo.ADDScroll(fuFrame,text,hangName,hang_NUM,Config1)
 					hang.check:SetShown(bagshujuy[dangqianH][6])
 					hang:SetScript("OnMouseUp", function (self)
 						GameTooltip:ClearLines();
-						GameTooltip:Hide() 
+						GameTooltip:Hide()
+						local ItemLinkJJ = Fun.GetItemLinkJJ(bagshujuy[dangqianH][2])
 						for g=1,#Config0 do
-							if bagshujuy[dangqianH][2]==Config0[g][2] then
+							if ItemLinkJJ==Config0[g][2] then
 								table.remove(Config0, g);
 								fuFrame.UpdateListHang();
 								fuFrame.UpdateListHang_addBag()
 								return
 							end
 						end
-						table.insert(Config0, {bagshujuy[dangqianH][1],bagshujuy[dangqianH][2],bagshujuy[dangqianH][3],bagshujuy[dangqianH][4],bagshujuy[dangqianH][5]});
+						table.insert(Config0, {bagshujuy[dangqianH][1],ItemLinkJJ,bagshujuy[dangqianH][3],bagshujuy[dangqianH][4],bagshujuy[dangqianH][5]});
 						fuFrame.UpdateListHang();
 						fuFrame.UpdateListHang_addBag()
 					end);
@@ -441,7 +447,7 @@ function BusinessInfo.ADDScroll(fuFrame,text,hangName,hang_NUM,Config1)
 		if id~=hang_NUM then
 			PIGLine(hang,"BOT",nil,nil,{2,-2},{0.3,0.3,0.3,0.5})
 		end
-		hang.del = PIGDiyBut(hang,{"LEFT", hang, "LEFT", 0,0});
+		hang.del = PIGDiyBut(hang,{"LEFT", hang, "LEFT", 4,0},{hang_Height-6});
 		hang.del:SetScript("OnClick", function (self)
 			table.remove(Config0, self:GetID());
 			fuFrame.UpdateListHang();
@@ -449,7 +455,7 @@ function BusinessInfo.ADDScroll(fuFrame,text,hangName,hang_NUM,Config1)
 		end);
 		hang.item = CreateFrame("Frame", nil, hang);
 		hang.item:SetSize(Width-94,hang_Height);
-		hang.item:SetPoint("LEFT",hang,"LEFT",hang_Height,0);
+		hang.item:SetPoint("LEFT",hang.del,"RIGHT",2,0);
 		hang.item.icon = hang.item:CreateTexture(nil, "BORDER");
 		hang.item.icon:SetSize(hang_Height-1,hang_Height-1);
 		hang.item.icon:SetPoint("LEFT", hang.item, "LEFT", 0,0);
@@ -497,14 +503,15 @@ function BusinessInfo.ADDScroll(fuFrame,text,hangName,hang_NUM,Config1)
 		    for id = 1, hang_NUM do
 		    	local dangqianH = id+offset;
 		    	if Config0[dangqianH] then
+		    		local _,itemLink=GetItemInfo(Fun.HY_ItemLinkJJ(Config0[dangqianH][2]));
 		    		local hang = _G[hangName.."hang"..id]
 		    		hang:Show();
 			    	hang.item.icon:SetTexture(Config0[dangqianH][3]);
-					hang.item.link:SetText(Config0[dangqianH][2]);
+					hang.item.link:SetText(itemLink);
 					hang.item:SetScript("OnMouseDown", function (self)
 						GameTooltip:ClearLines();
 						GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
-						GameTooltip:SetHyperlink(Config0[dangqianH][2])
+						GameTooltip:SetHyperlink(itemLink)
 					end);
 					hang.item:SetScript("OnMouseUp", function ()
 						GameTooltip:ClearLines();
@@ -531,8 +538,8 @@ function BusinessInfo.ADDScroll(fuFrame,text,hangName,hang_NUM,Config1)
 		if self:IsVisible() then
 			if arg1==false then
 				self.ADD:SetFrameLevel(FrameLevel+8);
-			elseif arg1==true  and arg2==1 or arg2==5 then
-				print(CursorHasItem())
+			elseif arg1==true and arg2==1 or arg2==5 then
+				--print(CursorHasItem())
 				self.ADD:SetFrameLevel(FrameLevel);
 			end
 		end
@@ -549,9 +556,9 @@ function BusinessInfo.ADDScroll(fuFrame,text,hangName,hang_NUM,Config1)
 		end
 		if not chazhaowupinlink then fuFrame.List.ADD:SetFrameLevel(FrameLevel); ClearCursor(); return end
 		local itemName, itemLink, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType,itemStackCount, itemEquipLoc, itemTexture,sellPrice,classID= GetItemInfo(chazhaowupinlink) 
-		local jieguo,errtishi = IsItemMay(true,itemLink,itemQuality,sellPrice,classID,subclassID)
+		local jieguo,errtishi = IsItemMay(true,itemLink,itemQuality,sellPrice,classID,subclassID,"Cursor")
 		if jieguo then
-			InsertItemData(chazhaowupinID,itemLink,itemTexture,itemStackCount)
+			InsertItemData(chazhaowupinID,itemLink,itemTexture,itemStackCount,"Cursor")
 		else
 			PIGinfotip:TryDisplayMessage(errtishi,1,0,0) 
 		end	

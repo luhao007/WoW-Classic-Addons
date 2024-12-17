@@ -4,7 +4,8 @@ local mod	= DBM:NewMod("SoDBWLTrials", "DBM-Raids-Vanilla", 5)
 local L		= mod:GetLocalizedStrings()
 local CL	= DBM_COMMON_L
 
-mod:SetRevision("20241016203123")
+mod:SetRevision("20241103123604")
+mod:SetZone(469)
 mod.isTrashMod = true
 mod.isTrashModBossFightAllowed = true
 

@@ -1287,6 +1287,7 @@ function SeasonOfDiscovery:LoadQuests()
             [questKeys.zoneOrSort] = zoneIDs.DUSKWOOD,
             [questKeys.objectives] = {nil,nil,{{219759, nil, Questie.ICON_TYPE_TALK}},nil,{{{221226},221226},{{221223},221223},{{221227},221227}}},
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
+            [questKeys.requiredMaxLevel] = 39,
         },
         [81727] = { -- Recover Incursion Field Report: Ashenvale
             [questKeys.requiredRaces] = raceIDs.NONE,
@@ -1294,6 +1295,7 @@ function SeasonOfDiscovery:LoadQuests()
             [questKeys.zoneOrSort] = zoneIDs.ASHENVALE,
             [questKeys.objectives] = {nil,nil,{{219770, nil, Questie.ICON_TYPE_TALK}},nil,{{{221283},221283},{{221282},221282},{{221292},221292}}},
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
+            [questKeys.requiredMaxLevel] = 49,
         },
         [81728] = { -- Recover Incursion Field Report: Hinterlands
             [questKeys.requiredRaces] = raceIDs.NONE,
@@ -1301,6 +1303,7 @@ function SeasonOfDiscovery:LoadQuests()
             [questKeys.zoneOrSort] = zoneIDs.THE_HINTERLANDS,
             [questKeys.objectives] = {nil,nil,{{219772, nil, Questie.ICON_TYPE_TALK}},nil,{{{221357},221357},{{221356},221356},{{221360},221360}}},
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
+            [questKeys.requiredMaxLevel] = 53,
         },
         [81729] = { -- Recover Incursion Field Report: Feralas
             [questKeys.requiredRaces] = raceIDs.NONE,
@@ -1308,6 +1311,7 @@ function SeasonOfDiscovery:LoadQuests()
             [questKeys.zoneOrSort] = zoneIDs.FERALAS,
             [questKeys.objectives] = {nil,nil,{{219771, nil, Questie.ICON_TYPE_TALK}},nil,{{{221407},221407},{{221406},221406},{{221408},221408}}},
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
+            [questKeys.requiredMaxLevel] = 53,
         },
 
         -- Begin Duskwood Incursion
@@ -1315,79 +1319,94 @@ function SeasonOfDiscovery:LoadQuests()
             [questKeys.zoneOrSort] = zoneIDs.DUSKWOOD,
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 39,
         },
         [81731] = { -- Duskwood Mission II: Defeat Ogres
             [questKeys.zoneOrSort] = zoneIDs.DUSKWOOD,
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 39,
         },
         [81732] = { -- Duskwood Mission III: Defeat Dragonkin
             [questKeys.zoneOrSort] = zoneIDs.DUSKWOOD,
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 39,
         },
         [81733] = { -- Duskwood Mission IV: Ogre Intelligence
             [questKeys.zoneOrSort] = zoneIDs.DUSKWOOD,
             [questKeys.objectives] = {nil,nil,{{219776, nil, Questie.ICON_TYPE_TALK}}},
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 39,
         },
         [81734] = { -- Duskwood Mission V: Worgen Intelligence
             [questKeys.zoneOrSort] = zoneIDs.DUSKWOOD,
             [questKeys.objectives] = {nil,nil,{{219778, nil, Questie.ICON_TYPE_TALK}}},
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 39,
         },
         [81735] = { -- Duskwood Mission VI: Dragon Intelligence
             [questKeys.zoneOrSort] = zoneIDs.DUSKWOOD,
             [questKeys.objectives] = {nil,nil,{{219803, nil, Questie.ICON_TYPE_TALK}}},
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 39,
         },
         [81736] = { -- Duskwood Mission VII: Recover Shadowscythe
             [questKeys.zoneOrSort] = zoneIDs.DUSKWOOD,
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 39,
         },
         [81737] = { -- Duskwood Mission VIII: Recover Ogre Magi text
             [questKeys.zoneOrSort] = zoneIDs.DUSKWOOD,
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 39,
         },
         [81738] = { -- Duskwood Mission IX: Recover Dragon Egg
             [questKeys.zoneOrSort] = zoneIDs.DUSKWOOD,
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 39,
         },
         [81739] = { -- Duskwood Mission X: Nightmare Moss
             [questKeys.zoneOrSort] = zoneIDs.DUSKWOOD,
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 39,
         },
         [81740] = { -- Duskwood Mission XI: Cold Iron Ore
             [questKeys.zoneOrSort] = zoneIDs.DUSKWOOD,
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 39,
         },
         [81741] = { -- Duskwood Mission XII: Dream-Touched Dragonscale
             [questKeys.zoneOrSort] = zoneIDs.DUSKWOOD,
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 39,
         },
         [81742] = { -- Duskwood Mission XIII: Defeat Ylanthrius
             [questKeys.zoneOrSort] = zoneIDs.DUSKWOOD,
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 39,
         },
         [81743] = { -- Duskwood Mission XIV: Defeat Vvarc'zul
             [questKeys.zoneOrSort] = zoneIDs.DUSKWOOD,
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 39,
         },
         [81744] = { -- Duskwood Mission XV: Defeat Amokarok
             [questKeys.zoneOrSort] = zoneIDs.DUSKWOOD,
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 39,
         },
         [81745] = { -- Duskwood Mission XVI: Rescue Kroll Mountainshade
             [questKeys.zoneOrSort] = zoneIDs.DUSKWOOD,
@@ -1395,6 +1414,7 @@ function SeasonOfDiscovery:LoadQuests()
             [questKeys.extraObjectives] = {{{[zoneIDs.DUSKWOOD]={{46.52,38.69}}}, Questie.ICON_TYPE_EVENT, l10n("Escort Kroll Mountainshade to the Dream Portal"),}},
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 39,
         },
         [81746] = { -- Duskwood Mission XVII: Rescue Alara Grovemender
             [questKeys.zoneOrSort] = zoneIDs.DUSKWOOD,
@@ -1402,6 +1422,7 @@ function SeasonOfDiscovery:LoadQuests()
             [questKeys.extraObjectives] = {{{[zoneIDs.DUSKWOOD]={{46.52,38.69}}}, Questie.ICON_TYPE_EVENT, l10n("Escort Alara Grovemender to the Dream Portal"),}},
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 39,
         },
         [81747] = { -- Duskwood Mission XVIII: Rescue Elenora Marshwalker
             [questKeys.zoneOrSort] = zoneIDs.DUSKWOOD,
@@ -1409,6 +1430,7 @@ function SeasonOfDiscovery:LoadQuests()
             [questKeys.extraObjectives] = {{{[zoneIDs.DUSKWOOD]={{46.52,38.69}}}, Questie.ICON_TYPE_EVENT, l10n("Escort Elenora Marshwalker to the Dream Portal"),}},
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 39,
         },
         -- End Duskwood Incursion
 
@@ -1437,79 +1459,94 @@ function SeasonOfDiscovery:LoadQuests()
             [questKeys.zoneOrSort] = zoneIDs.ASHENVALE,
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 49,
         },
         [81769] = { -- Ashenvale Mission II: Defeat Treants
             [questKeys.zoneOrSort] = zoneIDs.ASHENVALE,
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 49,
         },
         [81770] = { -- Ashenvale Mission III: Defeat Dragonkin
             [questKeys.zoneOrSort] = zoneIDs.ASHENVALE,
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 49,
         },
         [81771] = { -- Ashenvale Mission IV: Dragon Intelligence
             [questKeys.zoneOrSort] = zoneIDs.ASHENVALE,
             [questKeys.objectives] = {nil,nil,{{219924, nil, Questie.ICON_TYPE_TALK}}},
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 49,
         },
         [81772] = { -- Ashenvale Mission V: Satyr Intelligence
             [questKeys.zoneOrSort] = zoneIDs.ASHENVALE,
             [questKeys.objectives] = {nil,nil,{{219925, nil, Questie.ICON_TYPE_TALK}}},
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 49,
         },
         [81773] = { -- Ashenvale Mission VI: Treant Intelligence
             [questKeys.zoneOrSort] = zoneIDs.ASHENVALE,
             [questKeys.objectives] = {nil,nil,{{219926, nil, Questie.ICON_TYPE_TALK}}},
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 49,
         },
         [81774] = { -- Ashenvale Mission VII: Recover Dreamengine
             [questKeys.zoneOrSort] = zoneIDs.ASHENVALE,
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 49,
         },
         [81775] = { -- Ashenvale Mission VIII: Recover Azsharan Prophecy
             [questKeys.zoneOrSort] = zoneIDs.ASHENVALE,
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 49,
         },
         [81776] = { -- Ashenvale Mission IX: Recover Dream-Touched Dragonegg
             [questKeys.zoneOrSort] = zoneIDs.ASHENVALE,
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 49,
         },
         [81777] = { -- Ashenvale Mission X: Dreamroot
             [questKeys.zoneOrSort] = zoneIDs.ASHENVALE,
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 49,
         },
         [81778] = { -- Ashenvale Mission XI: Fool's Gold Dust
             [questKeys.zoneOrSort] = zoneIDs.ASHENVALE,
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 49,
         },
         [81779] = { -- Ashenvale Mission XII: Dream-Infused Dragonscale
             [questKeys.zoneOrSort] = zoneIDs.ASHENVALE,
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 49,
         },
         [81780] = { -- Ashenvale Mission XIII: Defeat Larsera
             [questKeys.zoneOrSort] = zoneIDs.ASHENVALE,
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 49,
         },
         [81781] = { -- Ashenvale Mission XIV: Defeat Zalius
             [questKeys.zoneOrSort] = zoneIDs.ASHENVALE,
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 49,
         },
         [81782] = { -- Ashenvale Mission XV: Defeat Shredder 9000
             [questKeys.zoneOrSort] = zoneIDs.ASHENVALE,
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 49,
         },
         [81783] = { -- Ashenvale Mission XVI: Rescue Alyssian Windcaller
             [questKeys.zoneOrSort] = zoneIDs.ASHENVALE,
@@ -1517,6 +1554,7 @@ function SeasonOfDiscovery:LoadQuests()
             [questKeys.extraObjectives] = {{{[zoneIDs.ASHENVALE]={{93.94,38.35}}}, Questie.ICON_TYPE_EVENT, l10n("Escort Alyssian Windcaller to the Dream Portal"),}},
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 49,
         },
         [81784] = { -- Ashenvale Mission XVII: Rescue Doran Dreambough
             [questKeys.zoneOrSort] = zoneIDs.ASHENVALE,
@@ -1524,6 +1562,7 @@ function SeasonOfDiscovery:LoadQuests()
             [questKeys.extraObjectives] = {{{[zoneIDs.ASHENVALE]={{93.94,38.35}}}, Questie.ICON_TYPE_EVENT, l10n("Escort Doran Dreambough to the Dream Portal"),}},
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 49,
         },
         [81785] = { -- Ashenvale Mission XVIII: Rescue Maseara Autumnmoon
             [questKeys.zoneOrSort] = zoneIDs.ASHENVALE,
@@ -1531,6 +1570,7 @@ function SeasonOfDiscovery:LoadQuests()
             [questKeys.extraObjectives] = {{{[zoneIDs.ASHENVALE]={{93.94,38.35}}}, Questie.ICON_TYPE_EVENT, l10n("Escort Maseara Autumnmoon to the Dream Portal"),}},
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 49,
         },
         -- End Ashenvale Incursion
 
@@ -1539,79 +1579,94 @@ function SeasonOfDiscovery:LoadQuests()
             [questKeys.zoneOrSort] = zoneIDs.THE_HINTERLANDS,
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 53,
         },
         [81787] = { -- Hinterlands Mission II: Defeat Giant Turtles
             [questKeys.zoneOrSort] = zoneIDs.THE_HINTERLANDS,
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 53,
         },
         [81788] = { -- Hinterlands Mission III: Defeat Dragonkin
             [questKeys.zoneOrSort] = zoneIDs.THE_HINTERLANDS,
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 53,
         },
         [81789] = { -- Hinterlands Mission IV: Dragon Intelligence
             [questKeys.zoneOrSort] = zoneIDs.THE_HINTERLANDS,
             [questKeys.objectives] = {nil,nil,{{219928, nil, Questie.ICON_TYPE_TALK}}},
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 53,
         },
         [81817] = { -- Hinterlands Mission V: Turtle Intelligence
             [questKeys.zoneOrSort] = zoneIDs.THE_HINTERLANDS,
             [questKeys.objectives] = {nil,nil,{{219937, nil, Questie.ICON_TYPE_TALK}}},
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 53,
         },
         [81820] = { -- Hinterlands Mission VI: Moonkin Intelligence
             [questKeys.zoneOrSort] = zoneIDs.THE_HINTERLANDS,
             [questKeys.objectives] = {nil,nil,{{219938, nil, Questie.ICON_TYPE_TALK}}},
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 53,
         },
         [81826] = { -- Hinterlands Mission VII: Recover Star-Touched Dragonegg
             [questKeys.zoneOrSort] = zoneIDs.THE_HINTERLANDS,
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 53,
         },
         [81830] = { -- Hinterlands Mission VIII: Recover Elunar Relic
             [questKeys.zoneOrSort] = zoneIDs.THE_HINTERLANDS,
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 53,
         },
         [81832] = { -- Hinterlands Mission IX: Recover Dreampearl
             [questKeys.zoneOrSort] = zoneIDs.THE_HINTERLANDS,
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 53,
         },
         [81833] = { -- Hinterlands Mission X: Star Lotus
             [questKeys.zoneOrSort] = zoneIDs.THE_HINTERLANDS,
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 53,
         },
         [81834] = { -- Hinterlands Mission XI: Starsilver Ore
             [questKeys.zoneOrSort] = zoneIDs.THE_HINTERLANDS,
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 53,
         },
         [81835] = { -- Hinterlands Mission XII: Starshells
             [questKeys.zoneOrSort] = zoneIDs.THE_HINTERLANDS,
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 53,
         },
         [81837] = { -- Hinterlands Mission XIII: Defeat Florius
             [questKeys.zoneOrSort] = zoneIDs.THE_HINTERLANDS,
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 53,
         },
         [81838] = { -- Hinterlands Mission XIV: Defeat Doomkin
             [questKeys.zoneOrSort] = zoneIDs.THE_HINTERLANDS,
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 53,
         },
         [81839] = { -- Hinterlands Mission XV: Defeat Ghamoo-Raja
             [questKeys.zoneOrSort] = zoneIDs.THE_HINTERLANDS,
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 53,
         },
         [81850] = { -- Hinterlands Mission XVI: Rescue Elianar Shadowdrinker
             [questKeys.zoneOrSort] = zoneIDs.THE_HINTERLANDS,
@@ -1619,6 +1674,7 @@ function SeasonOfDiscovery:LoadQuests()
             [questKeys.extraObjectives] = {{{[zoneIDs.THE_HINTERLANDS]={{63.24,27.39}}}, Questie.ICON_TYPE_EVENT, l10n("Escort Elianar Shadowdrinker to the Dream Portal"),}},
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 53,
         },
         [81851] = { -- Hinterlands Mission XVII: Rescue Serlina Starbright
             [questKeys.zoneOrSort] = zoneIDs.THE_HINTERLANDS,
@@ -1626,6 +1682,7 @@ function SeasonOfDiscovery:LoadQuests()
             [questKeys.extraObjectives] = {{{[zoneIDs.THE_HINTERLANDS]={{63.24,27.39}}}, Questie.ICON_TYPE_EVENT, l10n("Escort Serlina Starbright to the Dream Portal"),}},
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 53,
         },
         [81852] = { -- Hinterlands Mission XVIII: Rescue Veanna Cloudsleeper
             [questKeys.zoneOrSort] = zoneIDs.THE_HINTERLANDS,
@@ -1633,6 +1690,7 @@ function SeasonOfDiscovery:LoadQuests()
             [questKeys.extraObjectives] = {{{[zoneIDs.THE_HINTERLANDS]={{63.24,27.39}}}, Questie.ICON_TYPE_EVENT, l10n("Escort Veanna Cloudsleeper to the Dream Portal"),}},
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 53,
         },
         -- End Hinterlands Incursion
 
@@ -1641,79 +1699,94 @@ function SeasonOfDiscovery:LoadQuests()
             [questKeys.zoneOrSort] = zoneIDs.FERALAS,
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 53,
         },
         [81856] = { -- Feralas Mission II: Defeat Harpies
             [questKeys.zoneOrSort] = zoneIDs.FERALAS,
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 53,
         },
         [81857] = { -- Feralas Mission III: Defeat Dragonkin
             [questKeys.zoneOrSort] = zoneIDs.FERALAS,
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 53,
         },
         [81858] = { -- Feralas Mission IV: Dragon Intelligence
             [questKeys.zoneOrSort] = zoneIDs.FERALAS,
             [questKeys.objectives] = {nil,nil,{{219957, nil, Questie.ICON_TYPE_TALK}}},
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 53,
         },
         [81859] = { -- Feralas Mission V: Cenarion Intelligence
             [questKeys.zoneOrSort] = zoneIDs.FERALAS,
             [questKeys.objectives] = {nil,nil,{{219958, nil, Questie.ICON_TYPE_TALK}}},
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 53,
         },
         [81860] = { -- Feralas Mission VI: Harpy Intelligence
             [questKeys.zoneOrSort] = zoneIDs.FERALAS,
             [questKeys.objectives] = {nil,nil,{{219959, nil, Questie.ICON_TYPE_TALK}}},
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 53,
         },
         [81861] = { -- Feralas Mission VII: Recover Moonglow Dragonegg
             [questKeys.zoneOrSort] = zoneIDs.FERALAS,
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 53,
         },
         [81863] = { -- Feralas Mission VIII: Recover Keeper's Notes
             [questKeys.zoneOrSort] = zoneIDs.FERALAS,
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 53,
         },
         [81864] = { -- Feralas Mission IX: Recover Harpy Screed
             [questKeys.zoneOrSort] = zoneIDs.FERALAS,
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 53,
         },
         [81865] = { -- Feralas Mission X: Moonroot
             [questKeys.zoneOrSort] = zoneIDs.FERALAS,
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 53,
         },
         [81866] = { -- Feralas Mission XI: Greater Moonstone
             [questKeys.zoneOrSort] = zoneIDs.FERALAS,
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 53,
         },
         [81867] = { -- Feralas Mission XII: Greater Moondragon Scales
             [questKeys.zoneOrSort] = zoneIDs.FERALAS,
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 53,
         },
         [81868] = { -- Feralas Mission XIII: Defeat Tyrannikus
             [questKeys.zoneOrSort] = zoneIDs.FERALAS,
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 53,
         },
         [81870] = { -- Feralas Mission XIV: Defeat Alondrius
             [questKeys.zoneOrSort] = zoneIDs.FERALAS,
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 53,
         },
         [81871] = { -- Feralas Mission XV: Defeat Slirena
             [questKeys.zoneOrSort] = zoneIDs.FERALAS,
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 53,
         },
         [81872] = { -- Feralas Mission XVI: Rescue Mellias Earthtender
             [questKeys.zoneOrSort] = zoneIDs.FERALAS,
@@ -1721,6 +1794,7 @@ function SeasonOfDiscovery:LoadQuests()
             [questKeys.extraObjectives] = {{{[zoneIDs.FERALAS]={{50.97,11.67}}}, Questie.ICON_TYPE_EVENT, l10n("Escort Mellias Earthtender to the Dream Portal"),}},
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 53,
         },
         [81873] = { -- Feralas Mission XVII: Rescue Nerene Brooksinger
             [questKeys.zoneOrSort] = zoneIDs.FERALAS,
@@ -1728,6 +1802,7 @@ function SeasonOfDiscovery:LoadQuests()
             [questKeys.extraObjectives] = {{{[zoneIDs.FERALAS]={{50.97,11.67}}}, Questie.ICON_TYPE_EVENT, l10n("Escort Nerene Brooksinger to the Dream Portal"),}},
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 53,
         },
         [81874] = { -- Feralas Mission XVIII: Rescue Jamniss Treemender
             [questKeys.zoneOrSort] = zoneIDs.FERALAS,
@@ -1735,6 +1810,7 @@ function SeasonOfDiscovery:LoadQuests()
             [questKeys.extraObjectives] = {{{[zoneIDs.FERALAS]={{50.97,11.67}}}, Questie.ICON_TYPE_EVENT, l10n("Escort Jamniss Treemender to the Dream Portal"),}},
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.questFlags] = questFlags.DAILY,
+            [questKeys.requiredMaxLevel] = 53,
         },
         -- End Feralas Incursion
 
@@ -1821,51 +1897,61 @@ function SeasonOfDiscovery:LoadQuests()
         },
         [81987] = { -- Goblin Solutions (Goblin)
             [questKeys.requiredSkill] = {profKeys.ENGINEERING,225},
+            [questKeys.requiredSpecialization] = specKeys.ENGINEERING_GOBLIN,
             [questKeys.zoneOrSort] = zoneIDs.THOUSAND_NEEDLES,
         },
         [82001] = { -- Require Gnomish Problems (Goblin)
             [questKeys.preQuestSingle] = {81987},
             [questKeys.requiredSkill] = {profKeys.ENGINEERING,225},
+            [questKeys.requiredSpecialization] = specKeys.ENGINEERING_GOBLIN,
             [questKeys.zoneOrSort] = zoneIDs.UN_GORO_CRATER,
         },
         [82002] = { -- Whats Red and Smells like Paint?" (Goblin)
             [questKeys.preQuestSingle] = {82001},
             [questKeys.requiredSkill] = {profKeys.ENGINEERING,225},
+            [questKeys.requiredSpecialization] = specKeys.ENGINEERING_GOBLIN,
             [questKeys.zoneOrSort] = zoneIDs.WESTERN_PLAGUELANDS,
         },
         [82003] = { -- Victory Lap For the Goblins! (Goblin)
             [questKeys.preQuestSingle] = {82002},
             [questKeys.requiredSkill] = {profKeys.ENGINEERING,225},
+            [questKeys.requiredSpecialization] = specKeys.ENGINEERING_GOBLIN,
             [questKeys.zoneOrSort] = zoneIDs.THOUSAND_NEEDLES,
         },
         [82004] = { -- Hush Money (Goblin)
             [questKeys.preQuestSingle] = {82003},
             [questKeys.requiredSkill] = {profKeys.ENGINEERING,225},
+            [questKeys.requiredSpecialization] = specKeys.ENGINEERING_GOBLIN,
             [questKeys.zoneOrSort] = zoneIDs.THOUSAND_NEEDLES,
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
         },
         [82008] = { -- Gnomish Solutions (Gnome)
             [questKeys.requiredSkill] = {profKeys.ENGINEERING,225},
+            [questKeys.requiredSpecialization] = specKeys.ENGINEERING_GNOMISH,
             [questKeys.zoneOrSort] = zoneIDs.THOUSAND_NEEDLES,
         },
         [82009] = { -- Require Goblin Problems (Gnome)
             [questKeys.preQuestSingle] = {82008},
             [questKeys.requiredSkill] = {profKeys.ENGINEERING,225},
+            [questKeys.requiredSpecialization] = specKeys.ENGINEERING_GNOMISH,
             [questKeys.zoneOrSort] = zoneIDs.UN_GORO_CRATER,
         },
         [82010] = { -- Watering Down the Competition (Gnome)
             [questKeys.preQuestSingle] = {82009},
             [questKeys.requiredSkill] = {profKeys.ENGINEERING,225},
+            [questKeys.requiredSpecialization] = specKeys.ENGINEERING_GNOMISH,
             [questKeys.zoneOrSort] = zoneIDs.WESTERN_PLAGUELANDS,
         },
         [82011] = { -- Victory Lap For the Gnomes! (Gnome)
             [questKeys.preQuestSingle] = {82010},
             [questKeys.requiredSkill] = {profKeys.ENGINEERING,225},
+            [questKeys.requiredSpecialization] = specKeys.ENGINEERING_GNOMISH,
             [questKeys.zoneOrSort] = zoneIDs.THOUSAND_NEEDLES,
         },
         [82013] = { -- Hush Money (Gnome)
             [questKeys.preQuestSingle] = {82011},
             [questKeys.requiredSkill] = {profKeys.ENGINEERING,225},
+            [questKeys.requiredSpecialization] = specKeys.ENGINEERING_GNOMISH,
             [questKeys.zoneOrSort] = zoneIDs.THOUSAND_NEEDLES,
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
         },
@@ -1942,6 +2028,7 @@ function SeasonOfDiscovery:LoadQuests()
             [questKeys.questFlags] = questFlags.DAILY,
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
             [questKeys.zoneOrSort] = sortKeys.NIGHTMARE_INCURSIONS,
+            [questKeys.requiredMaxLevel] = 53,
         },
         [82071] = { -- Purifying Fire
             [questKeys.startedBy] = {{5852,5855},nil,{221350}},
@@ -2882,6 +2969,11 @@ function SeasonOfDiscovery:LoadQuests()
             [questKeys.objectives] = {{{228619,nil,Questie.ICON_TYPE_TALK}}},
             [questKeys.zoneOrSort] = sortKeys.PALADIN,
         },
+        [84496] = { -- Sweet Serenity
+            [questKeys.requiredSkill] = {profKeys.BLACKSMITHING,250},
+            [questKeys.zoneOrSort] = sortKeys.BLACKSMITHING,
+            [questKeys.requiredSpecialization] = specKeys.BLACKSMITHING_WEAPON,
+        },
         [84525] = { -- Otherworldly Treasure
             [questKeys.zoneOrSort] = sortKeys.WARLOCK,
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
@@ -2923,6 +3015,10 @@ function SeasonOfDiscovery:LoadQuests()
             [questKeys.preQuestSingle] = {7490},
             [questKeys.zoneOrSort] = zoneIDs.ORGRIMMAR,
         },
+        [84590] = { -- The Balance of Light and Shadow
+            [questKeys.triggerEnd] = {"The Balance of Light and Shadow", {[zoneIDs.EASTERN_PLAGUELANDS]={{21.19,17.79}}}},
+            [questKeys.zoneOrSort] = sortKeys.PRIEST,
+        },
         [84636] = { -- Prowler
             [questKeys.startedBy] = {{228176}},
             [questKeys.objectives] = {{{230481,nil,Questie.ICON_TYPE_INTERACT}}},
@@ -2953,6 +3049,7 @@ function SeasonOfDiscovery:LoadQuests()
             [questKeys.startedBy] = {{6707}},
             [questKeys.finishedBy] = {{6706}},
             [questKeys.objectives] = {{{231430}},nil,{{229911}}},
+            [questKeys.extraObjectives] = {{{[zoneIDs.FELWOOD]={{35.4,57.8}}}, Questie.ICON_TYPE_EVENT, l10n("Find Caius Blackwood")}},
             [questKeys.preQuestSingle] = {84880},
             [questKeys.zoneOrSort] = sortKeys.ROGUE,
         },
@@ -2998,6 +3095,36 @@ function SeasonOfDiscovery:LoadQuests()
             [questKeys.finishedBy] = {{231500}},
             [questKeys.objectives] = {{{231498,nil,Questie.ICON_TYPE_TALK}}},
             [questKeys.preQuestSingle] = {85066},
+            [questKeys.zoneOrSort] = sortKeys.PALADIN,
+        },
+        [85068] = { -- Who Says You Can Never Go Back?
+            [questKeys.startedBy] = {{231500}},
+            [questKeys.preQuestSingle] = {85067},
+            [questKeys.zoneOrSort] = sortKeys.PALADIN,
+        },
+        [85074] = { -- The Burning of Andorhal
+            [questKeys.startedBy] = {{232960}},
+            [questKeys.preQuestSingle] = {85068},
+            [questKeys.zoneOrSort] = sortKeys.PALADIN,
+        },
+        [85087] = { -- A Desperate Escape
+            [questKeys.startedBy] = {{232998}},
+            [questKeys.preQuestSingle] = {85074},
+            [questKeys.zoneOrSort] = sortKeys.PALADIN,
+        },
+        [85090] = { -- Back to the Future
+            [questKeys.startedBy] = {{233138}},
+            [questKeys.preQuestSingle] = {85087},
+            [questKeys.zoneOrSort] = sortKeys.PALADIN,
+        },
+        [85091] = { -- The Cost of Victory
+            [questKeys.startedBy] = {{232932}},
+            [questKeys.preQuestSingle] = {85090},
+            [questKeys.zoneOrSort] = sortKeys.PALADIN,
+        },
+        [85092] = { -- Truthbearer
+            [questKeys.startedBy] = {{233776}},
+            [questKeys.preQuestSingle] = {85091},
             [questKeys.zoneOrSort] = sortKeys.PALADIN,
         },
         [85112] = { -- The Depleted Scythe
@@ -3062,6 +3189,39 @@ function SeasonOfDiscovery:LoadQuests()
             [questKeys.preQuestSingle] = {85441},
             [questKeys.zoneOrSort] = sortKeys.LEGENDARY,
         },
+        [85445] = { -- The Golden Disk
+            [questKeys.startedBy] = {{13020},nil,{231378}},
+            [questKeys.objectives] = {{{2888,nil,Questie.ICON_TYPE_TALK}}},
+            [questKeys.zoneOrSort] = sortKeys.WARRIOR,
+            [questKeys.nextQuestInChain] = 85447,
+        },
+        [85446] = { -- Scale of the Dragon Lord
+            [questKeys.finishedBy] = {{232596}},
+            [questKeys.objectives] = {{{11583}},nil,{{231386},{232414}}},
+            [questKeys.preQuestSingle] = {85447},
+            [questKeys.zoneOrSort] = sortKeys.WARRIOR,
+            [questKeys.nextQuestInChain] = 85453,
+        },
+        [85447] = { -- Grim Batol
+            [questKeys.preQuestSingle] = {85445},
+            [questKeys.zoneOrSort] = sortKeys.WARRIOR,
+            [questKeys.nextQuestInChain] = 85446,
+        },
+        [85453] = { -- No Good Deed Goes Unpunished
+            [questKeys.startedBy] = {{232596}},
+            [questKeys.finishedBy] = {{232596}},
+            [questKeys.preQuestSingle] = {85446},
+            [questKeys.zoneOrSort] = sortKeys.WARRIOR,
+            [questKeys.nextQuestInChain] = 85454,
+            [questKeys.extraObjectives] = {{{[zoneIDs.WETLANDS]={{74.4,70.5}}}, Questie.ICON_TYPE_EVENT, l10n("Fight Riosustrasz near the edge")}},
+        },
+        [85454] = { -- A Just Reward
+            [questKeys.startedBy] = {{232596}},
+            [questKeys.finishedBy] = {{232624}},
+            [questKeys.objectives] = {{{232626,nil,Questie.ICON_TYPE_TALK}}},
+            [questKeys.preQuestSingle] = {85453},
+            [questKeys.zoneOrSort] = sortKeys.WARRIOR,
+        },
         [85455] = { -- The Blood of the Lightbringer
             [questKeys.startedBy] = {{12017},nil,{231452}},
             [questKeys.finishedBy] = {{216289}},
@@ -3087,9 +3247,27 @@ function SeasonOfDiscovery:LoadQuests()
             [questKeys.preQuestSingle] = {85468},
             [questKeys.zoneOrSort] = sortKeys.WARLOCK,
         },
+        [85486] = { -- Soul of Enthralling
+            [questKeys.objectives] = {nil,nil,{{231798}}},
+            [questKeys.requiredSourceItems] = {231836},
+            [questKeys.preQuestSingle] = {85485},
+            [questKeys.zoneOrSort] = sortKeys.WARLOCK,
+        },
         [85501] = { -- The Heart of Chromaggus
             [questKeys.startedBy] = {{14020},nil,{231814}},
             [questKeys.zoneOrSort] = sortKeys.DRUID,
+        },
+        [85505] = { -- Soul of Devouring
+            [questKeys.objectives] = {nil,nil,{{231799}}},
+            [questKeys.requiredSourceItems] = {231837},
+            [questKeys.preQuestSingle] = {85486},
+            [questKeys.zoneOrSort] = sortKeys.WARLOCK,
+        },
+        [85506] = { -- The Final Test
+            [questKeys.startedBy] = {{232802}},
+            [questKeys.objectives] = {{{232924,nil,Questie.ICON_TYPE_TALK}},nil,{{231800}}},
+            [questKeys.preQuestSingle] = {85505},
+            [questKeys.zoneOrSort] = sortKeys.WARLOCK,
         },
         [85507] = { -- Our Wayward Friend
             [questKeys.objectives] = {{{231498,nil,Questie.ICON_TYPE_EVENT}}},
@@ -3152,46 +3330,55 @@ function SeasonOfDiscovery:LoadQuests()
             [questKeys.zoneOrSort] = sortKeys.HUNTER,
         },
         [85595] = { -- Presence of Might
+            [questKeys.requiredClasses] = classIDs.WARRIOR,
             [questKeys.requiredMinRep] = {factionIDs.ZANDALAR_TRIBE,3000},
             [questKeys.reputationReward] = {{factionIDs.ZANDALAR_TRIBE,250}},
             [questKeys.zoneOrSort] = zoneIDs.ZUL_GURUB,
         },
         [85596] = { -- Death's Embrace
+            [questKeys.requiredClasses] = classIDs.ROGUE,
             [questKeys.requiredMinRep] = {factionIDs.ZANDALAR_TRIBE,3000},
             [questKeys.reputationReward] = {{factionIDs.ZANDALAR_TRIBE,100}},
             [questKeys.zoneOrSort] = zoneIDs.ZUL_GURUB,
         },
         [85597] = { -- Falcon's Call
+            [questKeys.requiredClasses] = classIDs.HUNTER,
             [questKeys.requiredMinRep] = {factionIDs.ZANDALAR_TRIBE,3000},
             [questKeys.reputationReward] = {{factionIDs.ZANDALAR_TRIBE,100}},
             [questKeys.zoneOrSort] = zoneIDs.ZUL_GURUB,
         },
         [85598] = { -- Prophetic Aura
+            [questKeys.requiredClasses] = classIDs.PRIEST,
             [questKeys.requiredMinRep] = {factionIDs.ZANDALAR_TRIBE,3000},
             [questKeys.reputationReward] = {{factionIDs.ZANDALAR_TRIBE,100}},
             [questKeys.zoneOrSort] = zoneIDs.ZUL_GURUB,
         },
         [85599] = { -- Hoodoo Hex
+            [questKeys.requiredClasses] = classIDs.WARLOCK,
             [questKeys.requiredMinRep] = {factionIDs.ZANDALAR_TRIBE,3000},
             [questKeys.reputationReward] = {{factionIDs.ZANDALAR_TRIBE,100}},
             [questKeys.zoneOrSort] = zoneIDs.ZUL_GURUB,
         },
         [85600] = { -- Presence of Sight
+            [questKeys.requiredClasses] = classIDs.MAGE,
             [questKeys.requiredMinRep] = {factionIDs.ZANDALAR_TRIBE,3000},
             [questKeys.reputationReward] = {{factionIDs.ZANDALAR_TRIBE,250}},
             [questKeys.zoneOrSort] = zoneIDs.ZUL_GURUB,
         },
         [85601] = { -- Syncretist's Sigil
+            [questKeys.requiredClasses] = classIDs.PALADIN,
             [questKeys.requiredMinRep] = {factionIDs.ZANDALAR_TRIBE,3000},
             [questKeys.reputationReward] = {{factionIDs.ZANDALAR_TRIBE,250}},
             [questKeys.zoneOrSort] = zoneIDs.ZUL_GURUB,
         },
         [85602] = { -- Animist's Caress
+            [questKeys.requiredClasses] = classIDs.DRUID,
             [questKeys.requiredMinRep] = {factionIDs.ZANDALAR_TRIBE,3000},
             [questKeys.reputationReward] = {{factionIDs.ZANDALAR_TRIBE,250}},
             [questKeys.zoneOrSort] = zoneIDs.ZUL_GURUB,
         },
         [85603] = { -- Vodouisant's Vigilant Embrace
+            [questKeys.requiredClasses] = classIDs.SHAMAN,
             [questKeys.requiredMinRep] = {factionIDs.ZANDALAR_TRIBE,3000},
             [questKeys.reputationReward] = {{factionIDs.ZANDALAR_TRIBE,100}},
             [questKeys.zoneOrSort] = zoneIDs.ZUL_GURUB,
@@ -3199,6 +3386,7 @@ function SeasonOfDiscovery:LoadQuests()
         [85604] = { -- The Unmarred Vision of Voodress
             [questKeys.startedBy] = {{14904}},
             [questKeys.finishedBy] = {{14904}},
+            [questKeys.requiredClasses] = classIDs.SHAMAN,
             [questKeys.preQuestSingle] = {8118},
             [questKeys.requiredMinRep] = {factionIDs.ZANDALAR_TRIBE,42000},
             [questKeys.reputationReward] = {{factionIDs.ZANDALAR_TRIBE,100}},
@@ -3224,6 +3412,7 @@ function SeasonOfDiscovery:LoadQuests()
         [85608] = { -- Pristine Enchanted South Seas Kelp
             [questKeys.startedBy] = {{14904}},
             [questKeys.finishedBy] = {{14904}},
+            [questKeys.requiredClasses] = classIDs.DRUID,
             [questKeys.preQuestSingle] = {8112},
             [questKeys.requiredMinRep] = {factionIDs.ZANDALAR_TRIBE,42000},
             [questKeys.reputationReward] = {{factionIDs.ZANDALAR_TRIBE,100}},
@@ -3246,6 +3435,7 @@ function SeasonOfDiscovery:LoadQuests()
             [questKeys.zoneOrSort] = zoneIDs.ZUL_GURUB,
         },
         [85612] = { -- The Rage of Mugamba
+            [questKeys.requiredClasses] = classIDs.WARRIOR,
             [questKeys.preQuestSingle] = {8043},
             [questKeys.requiredMinRep] = {factionIDs.ZANDALAR_TRIBE,42000},
             [questKeys.reputationReward] = {{factionIDs.ZANDALAR_TRIBE,100}},
@@ -3270,6 +3460,7 @@ function SeasonOfDiscovery:LoadQuests()
         [85616] = { -- The All-Seeing Eye of Zuldazar
             [questKeys.startedBy] = {{14903}},
             [questKeys.finishedBy] = {{14903}},
+            [questKeys.requiredClasses] = classIDs.PRIEST,
             [questKeys.preQuestSingle] = {8051},
             [questKeys.requiredMinRep] = {factionIDs.ZANDALAR_TRIBE,42000},
             [questKeys.reputationReward] = {{factionIDs.ZANDALAR_TRIBE,100}},
@@ -3278,6 +3469,7 @@ function SeasonOfDiscovery:LoadQuests()
         [85617] = { -- The Hero's Brand
             [questKeys.startedBy] = {{14902}},
             [questKeys.finishedBy] = {{14902}},
+            [questKeys.requiredClasses] = classIDs.PALADIN,
             [questKeys.preQuestSingle] = {8047},
             [questKeys.requiredMinRep] = {factionIDs.ZANDALAR_TRIBE,42000},
             [questKeys.reputationReward] = {{factionIDs.ZANDALAR_TRIBE,100}},
@@ -3343,6 +3535,7 @@ function SeasonOfDiscovery:LoadQuests()
         [85629] = { -- The Jewel of Kajaro
             [questKeys.startedBy] = {{14903}},
             [questKeys.finishedBy] = {{14903}},
+            [questKeys.requiredClasses] = classIDs.MAGE,
             [questKeys.preQuestSingle] = {8103},
             [questKeys.requiredMinRep] = {factionIDs.ZANDALAR_TRIBE,42000},
             [questKeys.reputationReward] = {{factionIDs.ZANDALAR_TRIBE,100}},
@@ -3367,6 +3560,7 @@ function SeasonOfDiscovery:LoadQuests()
         [85633] = { -- Zandalarian Shadow Mastery Talisman
             [questKeys.startedBy] = {{14905}},
             [questKeys.finishedBy] = {{14905}},
+            [questKeys.requiredClasses] = classIDs.ROGUE,
             [questKeys.preQuestSingle] = {8143},
             [questKeys.requiredMinRep] = {factionIDs.ZANDALAR_TRIBE,42000},
             [questKeys.reputationReward] = {{factionIDs.ZANDALAR_TRIBE,100}},
@@ -3390,6 +3584,7 @@ function SeasonOfDiscovery:LoadQuests()
         [85637] = { -- Maelstrom's Wrath
             [questKeys.startedBy] = {{14905}},
             [questKeys.finishedBy] = {{14905}},
+            [questKeys.requiredClasses] = classIDs.HUNTER,
             [questKeys.preQuestSingle] = {8147},
             [questKeys.requiredMinRep] = {factionIDs.ZANDALAR_TRIBE,42000},
             [questKeys.reputationReward] = {{factionIDs.ZANDALAR_TRIBE,100}},
@@ -3432,6 +3627,16 @@ function SeasonOfDiscovery:LoadQuests()
         [85660] = { -- The Heart of Hakkar
             [questKeys.startedBy] = {{14834},nil,{19802}},
             [questKeys.zoneOrSort] = zoneIDs.ZUL_GURUB,
+        },
+        [85699] = { -- Snakestone of the Shadow Huntress
+            [questKeys.requiredSkill] = {profKeys.BLACKSMITHING,250},
+            [questKeys.zoneOrSort] = sortKeys.BLACKSMITHING,
+            [questKeys.requiredSpecialization] = specKeys.BLACKSMITHING_WEAPON,
+        },
+        [85700] = { -- Corruption
+            [questKeys.requiredSkill] = {profKeys.BLACKSMITHING,250},
+            [questKeys.zoneOrSort] = sortKeys.BLACKSMITHING,
+            [questKeys.requiredSpecialization] = specKeys.BLACKSMITHING_WEAPON,
         },
         [85701] = { -- Dragonscale Leatherworking
             [questKeys.requiredSkill] = {profKeys.LEATHERWORKING,225},
@@ -7549,35 +7754,35 @@ function SeasonOfDiscovery:LoadFactionQuestFixes()
         },
         [84395] = { -- Undead Potatoes
             [questKeys.requiredRaces] = raceIDs.ALL_HORDE,
-            [questKeys.objectivesText] = {"Collect 'Undead Potatoes' and bring it to Owen Thadd in Undercity."},
+            [questKeys.objectivesText] = {"Collect 'Undead Potatoes' and bring it to Oran Snakewrithe in Undercity."},
         },
         [84396] = { -- Magma or Lava?
             [questKeys.requiredRaces] = raceIDs.ALL_HORDE,
-            [questKeys.objectivesText] = {"Collect 'Magma or Lava?' and bring it to Owen Thadd in Undercity."},
+            [questKeys.objectivesText] = {"Collect 'Magma or Lava?' and bring it to Oran Snakewrithe in Undercity."},
         },
         [84397] = { -- Northern Kalimdor - A Comprehensive Guide
             [questKeys.requiredRaces] = raceIDs.ALL_HORDE,
-            [questKeys.objectivesText] = {"Collect 'Northern Kalimdor - A Comprehensive Guide' and bring it to Owen Thadd in Undercity."},
+            [questKeys.objectivesText] = {"Collect 'Northern Kalimdor - A Comprehensive Guide' and bring it to Oran Snakewrithe in Undercity."},
         },
         [84398] = { -- A Study of the Light
             [questKeys.requiredRaces] = raceIDs.ALL_HORDE,
-            [questKeys.objectivesText] = {"Collect 'A Study of the Light' and bring it to Owen Thadd in Undercity."},
+            [questKeys.objectivesText] = {"Collect 'A Study of the Light' and bring it to Oran Snakewrithe in Undercity."},
         },
         [84399] = { -- Ka-Boom!
             [questKeys.requiredRaces] = raceIDs.ALL_HORDE,
-            [questKeys.objectivesText] = {"Collect 'Ka-Boom!' and bring it to Owen Thadd in Undercity."},
+            [questKeys.objectivesText] = {"Collect 'Ka-Boom!' and bring it to Oran Snakewrithe in Undercity."},
         },
         [84400] = { -- The Knight and the Lady
             [questKeys.requiredRaces] = raceIDs.ALL_HORDE,
-            [questKeys.objectivesText] = {"Collect 'The Knight and the Lady' and bring it to Owen Thadd in Undercity."},
+            [questKeys.objectivesText] = {"Collect 'The Knight and the Lady' and bring it to Oran Snakewrithe in Undercity."},
         },
         [84401] = { -- Scourge: Undead Menace or Misunderstood?
             [questKeys.requiredRaces] = raceIDs.ALL_HORDE,
-            [questKeys.objectivesText] = {"Collect 'Scourge: Undead Menace or Misunderstood?' and bring it to Owen Thadd in Undercity."},
+            [questKeys.objectivesText] = {"Collect 'Scourge: Undead Menace or Misunderstood?' and bring it to Oran Snakewrithe in Undercity."},
         },
         [84402] = { -- Necromancy 101
             [questKeys.requiredRaces] = raceIDs.ALL_HORDE,
-            [questKeys.objectivesText] = {"Collect 'Necromancy 101' and bring it to Owen Thadd in Undercity."},
+            [questKeys.objectivesText] = {"Collect 'Necromancy 101' and bring it to Oran Snakewrithe in Undercity."},
         },
     }
 
@@ -7788,35 +7993,35 @@ function SeasonOfDiscovery:LoadFactionQuestFixes()
         },
         [84395] = { -- Undead Potatoes
             [questKeys.requiredRaces] = raceIDs.ALL_ALLIANCE,
-            [questKeys.objectivesText] = {"Collect 'Undead Potatoes' and bring it to Garion Wendell in Stormwind."},
+            [questKeys.objectivesText] = {"Collect 'Undead Potatoes' and bring it to Jennea Cannon in Stormwind."},
         },
         [84396] = { -- Magma or Lava?
             [questKeys.requiredRaces] = raceIDs.ALL_ALLIANCE,
-            [questKeys.objectivesText] = {"Collect 'Magma or Lava?' and bring it to Garion Wendell in Stormwind."},
+            [questKeys.objectivesText] = {"Collect 'Magma or Lava?' and bring it to Jennea Cannon in Stormwind."},
         },
         [84397] = { -- Northern Kalimdor - A Comprehensive Guide
             [questKeys.requiredRaces] = raceIDs.ALL_ALLIANCE,
-            [questKeys.objectivesText] = {"Collect 'Northern Kalimdor - A Comprehensive Guide' and bring it to Garion Wendell in Stormwind."},
+            [questKeys.objectivesText] = {"Collect 'Northern Kalimdor - A Comprehensive Guide' and bring it to Jennea Cannon in Stormwind."},
         },
         [84398] = { -- A Study of the Light
             [questKeys.requiredRaces] = raceIDs.ALL_ALLIANCE,
-            [questKeys.objectivesText] = {"Collect 'A Study of the Light' and bring it to Garion Wendell in Stormwind."},
+            [questKeys.objectivesText] = {"Collect 'A Study of the Light' and bring it to Jennea Cannon in Stormwind."},
         },
         [84399] = { -- Ka-Boom!
             [questKeys.requiredRaces] = raceIDs.ALL_ALLIANCE,
-            [questKeys.objectivesText] = {"Collect 'Ka-Boom!' and bring it to Garion Wendell in Stormwind."},
+            [questKeys.objectivesText] = {"Collect 'Ka-Boom!' and bring it to Jennea Cannon in Stormwind."},
         },
         [84400] = { -- The Knight and the Lady
             [questKeys.requiredRaces] = raceIDs.ALL_ALLIANCE,
-            [questKeys.objectivesText] = {"Collect 'The Knight and the Lady' and bring it to Garion Wendell in Stormwind."},
+            [questKeys.objectivesText] = {"Collect 'The Knight and the Lady' and bring it to Jennea Cannon in Stormwind."},
         },
         [84401] = { -- Scourge: Undead Menace or Misunderstood?
             [questKeys.requiredRaces] = raceIDs.ALL_ALLIANCE,
-            [questKeys.objectivesText] = {"Collect 'Scourge: Undead Menace or Misunderstood?' and bring it to Garion Wendell in Stormwind."},
+            [questKeys.objectivesText] = {"Collect 'Scourge: Undead Menace or Misunderstood?' and bring it to Jennea Cannon in Stormwind."},
         },
         [84402] = { -- Necromancy 101
             [questKeys.requiredRaces] = raceIDs.ALL_ALLIANCE,
-            [questKeys.objectivesText] = {"Collect 'Necromancy 101' and bring it to Garion Wendell in Stormwind."},
+            [questKeys.objectivesText] = {"Collect 'Necromancy 101' and bring it to Jennea Cannon in Stormwind."},
         },
     }
 

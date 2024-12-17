@@ -915,7 +915,7 @@ QuickButUI.ButList[6]=function()
 			PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 			SetClampedTextureRotation(General.arrow,General.arrow.chushijiaodu);
 		end)
-		General_List.Close=PIGDiyBut(General_List,{"BOTTOM",General_List,"TOP",0,0},{34})
+		General_List.Close=PIGDiyBut(General_List,{"BOTTOM",General_List,"TOP",0,0},{26})
 		General_List.Close:HookScript("OnClick",function(self)
 			General_List:Hide();
 		end)
@@ -1034,7 +1034,6 @@ if tocversion<50000 then
 		end)
 	end
 end
-local PIGDiyBut=Create.PIGDiyBut
 QuickButUI.ButList[7]=function()
 	local PigMacroEventCount_QK =0;
 	local PigMacroDeleted_QK = false;
@@ -1078,7 +1077,7 @@ QuickButUI.ButList[7]=function()
 				PIGA_Per["QuickBut"]["ActionData"][butid]={"spell",Item_Spell_List[2][i]}
 			end
 		end
-		local Tooltip = KEY_BUTTON1.."-|cff00FFFF展开职业辅助技能栏|r\n"..KEY_BUTTON2.."-|cff00FFFF打开Recount/Details插件记录面板|r"
+		local Tooltip = KEY_BUTTON1.."-|cff00FFFF随机使用坐骑|r\nShift+"..KEY_BUTTON1.."-|cff00FFFF打开Recount/Details插件记录面板|r\n"..KEY_BUTTON2.."-|cff00FFFF展开职业辅助技能栏|r"
 		local Zhushou=PIGQuickBut(GnUI,Tooltip,Icon,nil,nil,"SecureHandlerClickTemplate")
 		local IconTEX=Zhushou:GetNormalTexture()
 		local IconCoord = CLASS_ICON_TCOORDS[select(2,UnitClass("player"))];
@@ -1127,8 +1126,10 @@ QuickButUI.ButList[7]=function()
 		Zhushou_List:HookScript("OnHide",function(self)
 			SetClampedTextureRotation(Zhushou.arrow,Zhushou.arrow.chushijiaodu);
 		end)
+		PIGUseKeyDown(Zhushou)
+		Zhushou:RegisterForClicks("AnyUp");
 		Zhushou:SetAttribute("_onclick",[=[
-			if button == "LeftButton" then
+			if button == "RightButton" then
 				local ref=self:GetFrameRef("frame1")
 				if ref:IsShown() then
 					ref:Hide();
@@ -1137,34 +1138,59 @@ QuickButUI.ButList[7]=function()
 				end
 			end
 		]=])
-		Zhushou:RegisterForClicks("AnyUp");
 		Zhushou:SetFrameRef("frame1", Zhushou_List);
 		Zhushou:HookScript("OnClick",function(self,button)
 			PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
-			if button == "RightButton" then
-				if Recount then
-					if Recount.MainWindow:IsShown() then
-						Recount.MainWindow:Hide()
-					else
-						Recount.MainWindow:Show()
-						Recount:RefreshMainWindow()
-					end
-				elseif DetailsBaseFrame1 then
-					for i=1,10 do
-						if not _G["DetailsBaseFrame"..i] then break end
-						if _G["DetailsBaseFrame"..i]:IsShown() then
-							_G["DetailsBaseFrame"..i]:Hide()
+			if button == "LeftButton" then
+				if IsShiftKeyDown() then
+					if Recount then
+						if Recount.MainWindow:IsShown() then
+							Recount.MainWindow:Hide()
 						else
-							_G["DetailsBaseFrame"..i]:Show()
+							Recount.MainWindow:Show()
+							Recount:RefreshMainWindow()
 						end
+					elseif DetailsBaseFrame1 then
+						for i=1,10 do
+							if not _G["DetailsBaseFrame"..i] then break end
+							if _G["DetailsBaseFrame"..i]:IsShown() then
+								_G["DetailsBaseFrame"..i]:Hide()
+							else
+								_G["DetailsBaseFrame"..i]:Show()
+							end
+						end
+					else
+						PIGinfotip:TryDisplayMessage("未安装Recount/Details");
 					end
 				else
-					PIGinfotip:TryDisplayMessage("未安装Recount/Details");
+					C_MountJournal.SummonByID(0)
+				end
+			end
+		end)
+		Zhushou.START = Zhushou:CreateTexture(nil, "OVERLAY");
+		Zhushou.START:SetTexture(130724);
+		Zhushou.START:SetBlendMode("ADD");
+		Zhushou.START:SetAllPoints(Zhushou)
+		Zhushou.START:Hide();
+		Zhushou:RegisterUnitEvent("UNIT_SPELLCAST_START","player");
+		Zhushou:RegisterUnitEvent("UNIT_SPELLCAST_STOP","player");
+		Zhushou:SetScript("OnEvent", function(self,event,arg1,_,arg3)
+			if event=="UNIT_SPELLCAST_START" or event=="UNIT_SPELLCAST_STOP" then
+				local mountID = C_MountJournal.GetMountFromSpell(arg3)
+				if mountID then 
+					-- local name, spellID= C_MountJournal.GetMountInfoByID(mountID)
+					-- if arg3==spellID then
+					if event=="UNIT_SPELLCAST_START" then
+				 		self.START:Show();
+				 	end
+				 	if event=="UNIT_SPELLCAST_STOP" then
+				 		self.START:Hide();
+					end
 				end
 			end
 		end)
 		---
-		Zhushou_List.Close=PIGDiyBut(Zhushou_List,{"BOTTOM",Zhushou_List,"TOP",0,0},{34},nil,"SecureHandlerClickTemplate")
+		Zhushou_List.Close=PIGDiyBut(Zhushou_List,{"BOTTOM",Zhushou_List,"TOP",0,0},{26},nil,"SecureHandlerClickTemplate")
 		Zhushou_List.Close:SetAttribute("_onclick",[=[
 			if button == "LeftButton" then
 				local ref=self:GetFrameRef("frame1")

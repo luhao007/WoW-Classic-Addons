@@ -3,9 +3,8 @@ local addonName, addonTable = ...;
 local L=addonTable.locale
 SLASH_RELOAD1 = '/rl'
 SlashCmdList["RELOAD"] = ReloadUI
---
 SLASH_PIG1 = "/pig"
-SLASH_PIG2 = "/Pig"
+SLASH_PIG2 = "/pig"
 SLASH_PIG3 = "/PIG"
 SlashCmdList["PIG"] = function()
 	Pig_OptionsUI:Show();
@@ -26,6 +25,7 @@ PIGUI:SetScript("OnEvent",function(self, event, arg1)
 		PigMinimapBut_UI:Point()
 		PigMinimapBut_UI.MinimapBut()
 		addonTable.CVars()
+		---
 		addonTable.Map()
 		addonTable.CombatPlus()
 		addonTable.Common()

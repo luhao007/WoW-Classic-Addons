@@ -7,7 +7,7 @@ local events = setmetatable({}, {
 	-- undefined event handler
 	__index = function(t, key)
 		local unhandledEventFunction = function(...)
-			print("UNHANDLED EVENT",key,...)
+			app.print("UNHANDLED EVENT",key,...)
 		end
 		t[key] = unhandledEventFunction
 		return unhandledEventFunction

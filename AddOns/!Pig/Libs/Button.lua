@@ -31,11 +31,8 @@ local function add_Button(MODE,fuF,Point,WH,Text,UIName,id,TemplateP,Zihao)
 	local But
 	if MODE then
 		local Templatepig= "UIPanelButtonTemplate"
-		-- if tocversion>110000 then
-		-- 	Templatepig= "SharedButtonTemplate"
-		-- end
+		-- if tocversion>110000 then Templatepig= "SharedButtonTemplate" end
 		But = CreateFrame("Button",UIName,fuF,Templatepig ,id);
-		
 		But:SetText(Text);
 		local buttonFont=But:GetFontString()
 		But.Text=buttonFont
@@ -59,7 +56,6 @@ local function add_Button(MODE,fuF,Point,WH,Text,UIName,id,TemplateP,Zihao)
 	else
 		local TemplateP = TemplateP or "BackdropTemplate,"
 		But = CreateFrame("Button", UIName, fuF,TemplateP,id);
-		But:RegisterForClicks("LeftButtonUp","RightButtonUp")
 		BackdropSet(But)
 		function But:PIGSetBackdrop(BGAlpha,BorderAlpha)
 			self:SetBackdropColor(BGColor[1],BGColor[2],BGColor[3], BGAlpha);
@@ -125,11 +121,16 @@ local function add_Button(MODE,fuF,Point,WH,Text,UIName,id,TemplateP,Zihao)
 		But.Text:SetTextColor(TextColor[1], TextColor[2], TextColor[3], TextColor[4]);
 		But.Text:SetText(Text)
 	end
+	But:RegisterForClicks("LeftButtonUp","RightButtonUp")
 	if WH then
 		But:SetSize(WH[1],WH[2]);
 	end
 	if Point then
-		But:SetPoint(Point[1],Point[2],Point[3],Point[4],Point[5]);
+		if MODE then
+			But:SetPoint(Point[1],Point[2],Point[3],Point[4],Point[5]-1.6);
+		else
+			But:SetPoint(Point[1],Point[2],Point[3],Point[4],Point[5]);
+		end
 	end
 	return But
 end
@@ -148,11 +149,11 @@ function Create.PIGButton(fuF,Point,WH,Text,UIName,id,TemplateP,Zihao,mode)--,ni
 end
 ---自定义材质按钮
 function Create.PIGDiyBut(fuF,Point,WH,UIName,TemplateP)
-	local Www = WH and WH[1] or 22
+	local Www = WH and WH[1] or 20
 	local Hhh = WH and WH[2] or Www
-	local WwwTex = WH and WH[3] or Www-8
+	local WwwTex = WH and WH[3] or Www-2
 	local HhhTex = WH and WH[4] or WwwTex
-	local icontex = WH and WH[5] or 130976
+	local icontex = WH and WH[5] or "common-icon-redx"--130976or
 	local But = CreateFrame("Button",UIName,fuF,TemplateP);
 	But:SetHighlightTexture("Interface/Buttons/ButtonHilight-Square")
 	But:SetSize(Www,Hhh)
@@ -166,12 +167,7 @@ function Create.PIGDiyBut(fuF,Point,WH,UIName,TemplateP)
 		But.icon:SetAtlas(icontex)
 	end
 	But.icon:SetPoint("CENTER",0,0);
-	if ElvUI or NDui then
-		But.icon:SetSize(WwwTex-2,HhhTex-2);
-		But.icon:SetTexCoord(0.17,0.83,0.17,0.83);
-	else
-		But.icon:SetSize(WwwTex,HhhTex);
-	end
+	But.icon:SetSize(WwwTex,HhhTex);
 	hooksecurefunc(But, "Enable", function(self)
 		self.icon:SetDesaturated(false)
 	end)
@@ -194,8 +190,25 @@ function Create.PIGDiyBut(fuF,Point,WH,UIName,TemplateP)
 		self.icon:SetPoint("CENTER");
 	end);
 	But:HookScript("PostClick", function (self)
-		PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
+		PlaySound(SOUNDKIT.IG_CHAT_EMOTE_BUTTON);
 	end);
+	return But
+end
+function Create.PIGDiyTex(fuF,Point,WH,UIName,TemplateP)
+	local Www = WH and WH[1] or 20
+	local Hhh = WH and WH[2] or Www
+	local icontex = WH and WH[3] or "common-icon-redx"--130976or
+	local TemplateP=TemplateP or "OVERLAY"
+	local But = fuF:CreateTexture(UIName, TemplateP);
+	But:SetSize(Www,Hhh)
+	if Point then
+		But:SetPoint(Point[1],Point[2],Point[3],Point[4],Point[5])
+	end
+	if type(icontex)=="number" then
+		But:SetTexture(icontex);
+	else
+		But:SetAtlas(icontex)
+	end
 	return But
 end
 local function PIGTabBut(fuF,Point,WH,Text,UIName)

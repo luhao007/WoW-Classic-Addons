@@ -334,7 +334,7 @@ local function default_link(t)
 	return UNKNOWN;
 end
 local function default_icon(t)
-	return t.itemID and GetItemIcon(t.itemID) or "Interface\\Icons\\INV_Misc_QuestionMark";
+	return t.itemID and GetItemIcon(t.itemID) or 134400;
 end
 local function default_specs(t)
 	return GetFixedItemSpecInfo(t.itemID);
@@ -442,6 +442,7 @@ itemFields.collectibleAsUpgrade = app.Modules.Upgrade.CollectibleAsUpgrade;
 
 -- This is used for the Grand Commendations unlocking Bonus Reputation
 local ItemWithFactionBonus = {
+	__name = "AndFactionBonus",
 	collected = function(t)
 		local factionID = t.factionID;
 		if ATTAccountWideData.FactionBonus[factionID] then return 1; end
@@ -488,7 +489,7 @@ app.CreateItem = app.CreateClass(CLASS, KEY, itemFields,
 		return cachedFaction.collected;
 	end,
 	variants = {
-		Bonus = ItemWithFactionBonus,
+		ItemWithFactionBonus,
 	},
 }, (function(t) return t.factionID; end));
 

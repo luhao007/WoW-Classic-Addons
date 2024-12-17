@@ -367,6 +367,7 @@ L.AUTO_SPEC_WARN_TEXTS.youposcount	= "%s (%%s) (위치: %%s) 당신"
 L.AUTO_SPEC_WARN_TEXTS.soakpos		= "%s (뭉칠 위치: %%s)"
 L.AUTO_SPEC_WARN_TEXTS.target		= "%s: >%%s<"
 L.AUTO_SPEC_WARN_TEXTS.targetcount	= "%s (%%s): >%%s< "
+L.AUTO_SPEC_WARN_TEXTS.link		= "%s|1이;가; >%%s<랑 연결됨"
 L.AUTO_SPEC_WARN_TEXTS.defensive		= "%s - 생존기 켜세요"
 L.AUTO_SPEC_WARN_TEXTS.taunt		= "%s: >%%s< - 지금 도발"
 L.AUTO_SPEC_WARN_TEXTS.close		= "근처의 >%%2$s<에게 %1$s"
@@ -416,6 +417,7 @@ L.AUTO_SPEC_WARN_OPTIONS.youposcount		= "당신이 $spell:%s 대상이면 특수
 L.AUTO_SPEC_WARN_OPTIONS.soakpos			= "$spell:%s 대상에게 뭉쳐야 할 때 특수 알림 보기 (위치 포함)"
 L.AUTO_SPEC_WARN_OPTIONS.target			= "$spell:%s 대상 특수 알림 보기"
 L.AUTO_SPEC_WARN_OPTIONS.targetcount		= "$spell:%s 대상 특수 알림 보기 (횟수 포함)"
+L.AUTO_SPEC_WARN_OPTIONS.link			= "$spell:%s에 의해 다른 사람과 연결됐을 때 특수 알림 보기"
 L.AUTO_SPEC_WARN_OPTIONS.defensive		= "$spell:%s에 생존기 사용 특수 알림 보기"
 L.AUTO_SPEC_WARN_OPTIONS.taunt			= "다른 탱커가 $spell:%s 대상이면 도발 특수 알림 보기"
 L.AUTO_SPEC_WARN_OPTIONS.close			= "당신 근처에 $spell:%s 대상이 있으면 특수 알림 보기"
@@ -635,7 +637,7 @@ L.WORLD_BUFFS.blackfathomBoon	= "검은심연의 은혜"
 
 -- Annoying popup, especially for classic players
 L.DBM_INSTALL_REMINDER_HEADER	= "완료되지 않은 DBM 설치 작업이 감지되었습니다!"
-L.DBM_INSTALL_REMINDER_EXPLAIN	= "%s을 이용해 주셔서 감사합니다. %s에 있는 보스들의 DBM 모듈을 설치하지 않았습니다. %s 설치를 하기 전까지 DBM은 이 지역에서 타이머나 경고를 표시하지 않을 것입니다!"
+L.DBM_INSTALL_REMINDER_EXPLAIN	= "%s에 오신 것을 환영합니다. %s에서 이곳 보스들의 DBM 모듈을 설치하지 않았습니다. %s 설치를 하기 전까지 DBM은 이 지역에서 타이머나 경고를 표시하지 않을 것입니다!"
 L.DBM_INSTALL_REMINDER_DISABLE	= "이 지역의 모든 DBM 경고와 타이머 작동을 중지합니다." -- Used when we believe it's a user error that the mod isn't installed (i.e., current raids)
 L.DBM_INSTALL_REMINDER_DISABLE2 = "이 패키지를 설치하면 이 메시지는 나오지 않습니다." -- Used for unimportant mods, i.e., dungeons
 L.DBM_INSTALL_REMINDER_DL_WAGO	= (IsMacClient() and "Cmd+C" or "Ctrl+C")  ..  "를 누르면 Wago.io 링크를 클립보드로 복사합니다."

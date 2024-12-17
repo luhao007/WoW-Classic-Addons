@@ -18,12 +18,13 @@ else
 	mod.statTypes = "normal"
 end
 
-mod:SetRevision("20240928080825")
+mod:SetRevision("20241103123604")
 mod:SetCreatureID(13020)
 mod:SetEncounterID(611)
 if not mod:IsClassic() then
 	mod:SetModelID(13992)
 end
+mod:SetZone(469)
 mod:SetUsedIcons(8, 7, 6)
 
 mod:RegisterCombat("combat")

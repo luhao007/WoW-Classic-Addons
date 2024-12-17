@@ -182,8 +182,8 @@ PigMinimapBut:RegisterForDrag("LeftButton")
 PigMinimapBut:SetFrameStrata("MEDIUM")
 PigMinimapBut:SetFrameLevel(PigMinimapBut:GetFrameLevel()+1);
 PigMinimapBut.Border = PigMinimapBut:CreateTexture(nil,"BORDER");
-PigMinimapBut.Icon = PigMinimapBut:CreateTexture(nil, "BACKGROUND");
-PigMinimapBut.Icon:SetTexture("interface/icons/ability_seal.blp");
+PigMinimapBut.icon = PigMinimapBut:CreateTexture(nil, "BACKGROUND");
+PigMinimapBut.icon:SetTexture("interface/icons/ability_seal.blp");
 PigMinimapBut.error = PigMinimapBut:CreateTexture(nil, "BORDER");
 PigMinimapBut.error:SetTexture("interface/common/voicechat-muted.blp");
 PigMinimapBut.error:SetSize(18,18);
@@ -355,6 +355,7 @@ local function addonsClick(button)
 	end
 end
 PigMinimapBut:SetScript("OnClick", function(event, button)
+	PlaySound(SOUNDKIT.IG_CHAT_EMOTE_BUTTON);
 	addonsClick(button)
 end)
 local PigMinimapButYD = CreateFrame("Frame", nil);
@@ -415,7 +416,7 @@ function PigMinimapBut:Point()
 			else
 				PigMinimapBut:SetHighlightTexture("Interface/Minimap/UI-Minimap-ZoomButton-Highlight");
 				PigMinimapBut.Border:SetDrawLayer("BORDER",1)
-				PigMinimapBut.Icon:SetDrawLayer("BACKGROUND",1)
+				PigMinimapBut.icon:SetDrawLayer("BACKGROUND",1)
 				--PigMinimapBut.Border:SetAtlas("ui-lfg-roleicon-incentive")
 				PigMinimapBut.Border:SetTexture("Interface/Minimap/MiniMap-TrackingBorder");
 				PigMinimapBut.Border:SetSize(56,56);
@@ -469,7 +470,7 @@ function PigMinimapBut:Point()
 				PigMinimapBut.Border:ClearAllPoints();
 				PigMinimapBut.Border:SetPoint("CENTER", 0, 1);
 			end
-			PigMinimapBut.Icon:SetDrawLayer("ARTWORK",1)
+			PigMinimapBut.icon:SetDrawLayer("ARTWORK",1)
 			PigMinimapBut.Border:SetDrawLayer("BACKGROUND",1)
 			PigMinimapBut.Border:Show()
 		end
@@ -495,7 +496,7 @@ function PigMinimapBut:Point()
 			PigMinimapBut:SetPushedAtlas("chatframe-button-down")
 			PigMinimapBut:SetHighlightAtlas("chatframe-button-highlight");
 		end
-		PigMinimapBut.Icon:SetDrawLayer("ARTWORK",1)
+		PigMinimapBut.icon:SetDrawLayer("ARTWORK",1)
 		PigMinimapBut.Snf:SetPoint("BOTTOMLEFT", PigMinimapBut_UI, "TOPRIGHT", 2, 2);
 	elseif mode == 5 then--附着于ElvUI地图下方
 		local function ElvUIPoint()
@@ -505,7 +506,7 @@ function PigMinimapBut:Point()
 				PigMinimapBut:SetPoint("BOTTOMLEFT",MinimapPanel,"BOTTOMLEFT",0,0.6)
 				local hhhh = MinimapPanel:GetHeight()	
 				PigMinimapBut:SetWidth(hhhh-1.2);
-				PigMinimapBut.Icon:SetAllPoints(PigMinimapBut)
+				PigMinimapBut.icon:SetAllPoints(PigMinimapBut)
 				local wwww = MinimapPanel:GetWidth()	
 				local DataTextwww = (wwww-hhhh-2)*0.5
 				if MinimapPanel_DataText1 then
@@ -518,10 +519,10 @@ function PigMinimapBut:Point()
 		end
 		C_Timer.After(0.2,ElvUIPoint)
 	end
-	if ElvUI or NDui then PigMinimapBut.Icon:SetTexCoord(0.08,0.92,0.08,0.92) end
+	if ElvUI or NDui then PigMinimapBut.icon:SetTexCoord(0.08,0.92,0.08,0.92) end
 	PigMinimapBut:SetSize(ButpingXY.W,ButpingXY.H);
-	PigMinimapBut.Icon:SetSize(ButpingXY.iconW,ButpingXY.iconH);
-	PigMinimapBut.Icon:SetPoint("CENTER", ButpingXY.iconX, ButpingXY.iconY);
+	PigMinimapBut.icon:SetSize(ButpingXY.iconW,ButpingXY.iconH);
+	PigMinimapBut.icon:SetPoint("CENTER", ButpingXY.iconX, ButpingXY.iconY);
 end
 PigMinimapBut.Snf = PIGFrame(PigMinimapBut,{"TOPRIGHT", PigMinimapBut_UI, "BOTTOMLEFT", -2, 25},{200, 100});
 PigMinimapBut.Snf:PIGSetBackdrop()
@@ -635,6 +636,7 @@ function QuickBut:Add()
 	end
 	self:GengxinWidth()
 end
+------------------------
 -- local ButtoSDn = CreateFrame("Button",nil,UIParent, "UIPanelButtonTemplate,SecureActionButtonTemplate");
 -- ButtoSDn:SetSize(76,25);
 -- ButtoSDn:SetPoint("CENTER",UIParent,"CENTER",4,0);
@@ -644,17 +646,16 @@ end
 -- 	-- PIGA["tianfuID_CTM_ICON"]={}
 -- 	-- InspectUnit("target")
 -- 	-- C_Timer.After(1,kaishiguoqutianfu)
--- 	print(GetNumSpellTabs())
--- 	for i = 1, GetNumSpellTabs() do
--- 		local _, _, offset, numSlots = GetSpellTabInfo(i)
--- 		print(GetSpellTabInfo(i))
--- 		for j = offset+1, offset+numSlots do
--- 			--print(j)
--- 			local spellBookItemInfo = C_SpellBook.GetSpellBookItemInfo(j, Enum.SpellBookSpellBank.Player)
--- 			print(spellBookItemInfo)
--- 			for k,v in pairs(spellBookItemInfo) do
--- 				print(k,v)
--- 			end
--- 		end
--- 	end
+-- 	-- for i = 1, GetNumSpellTabs() do
+-- 	-- 	local _, _, offset, numSlots = GetSpellTabInfo(i)
+-- 	-- 	print(GetSpellTabInfo(i))
+-- 	-- 	for j = offset+1, offset+numSlots do
+-- 	-- 		--print(j)
+-- 	-- 		local spellBookItemInfo = C_SpellBook.GetSpellBookItemInfo(j, Enum.SpellBookSpellBank.Player)
+-- 	-- 		print(spellBookItemInfo)
+-- 	-- 		for k,v in pairs(spellBookItemInfo) do
+-- 	-- 			print(k,v)
+-- 	-- 		end
+-- 	-- 	end
+-- 	-- end
 -- end);

@@ -1,11 +1,12 @@
 local mod	= DBM:NewMod(2405, "DBM-Party-Shadowlands", 3, 1184)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240922115047")
+mod:SetRevision("20241103105705")
 mod:SetCreatureID(164517)
 mod:SetEncounterID(2393)
 mod:SetHotfixNoticeRev(20240808000000)
 mod:SetUsedIcons(1, 2, 3, 4, 5)--Probably doesn't use all 5, unsure number of mind link targets at max inteligence/energy
+mod:SetZone(2290)
 
 mod:RegisterCombat("combat")
 
@@ -33,7 +34,7 @@ local warnMarkedPrey				= mod:NewTargetNoFilterAnnounce(322563, 3)
 --local warnInfestor					= mod:NewAnnounce("warnInfestor", 4, 337235, nil, nil, nil, 337235)
 
 local specWarnConsumption			= mod:NewSpecialWarningDodge(322450, nil, nil, nil, 2, 2)
-local specWarnConsumptionKick		= mod:NewSpecialWarningInterrupt(322450, "HasInterrupt", nil, 2, 1, 2)
+--local specWarnConsumptionKick		= mod:NewSpecialWarningInterrupt(322450, "HasInterrupt", nil, 2, 1, 2)
 local specWarnAcceleratedIncubation	= mod:NewSpecialWarningSwitchCount(322550, "Dps", nil, nil, 1, 2)
 local specWarnMindLink				= mod:NewSpecialWarningMoveAway(322648, nil, nil, nil, 1, 11)
 local yellMindLink					= mod:NewYell(322648)
@@ -208,8 +209,8 @@ function mod:SPELL_AURA_REMOVED(args)
 			timerCoalescingPoisonCD:Start(26, self.vb.poisonCount+1)
 		end
 	elseif spellId == 322527 then--Gorging Shield
-		specWarnConsumptionKick:Show(args.destName)
-		specWarnConsumptionKick:Play("kickcast")
+--		specWarnConsumptionKick:Show(args.destName)
+--		specWarnConsumptionKick:Play("kickcast")
 		if self.Options.InfoFrame then
 			DBM.InfoFrame:Hide()
 		end

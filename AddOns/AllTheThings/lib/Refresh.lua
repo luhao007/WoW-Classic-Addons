@@ -247,7 +247,7 @@ local function FixNonOneTimeQuests(accountWideData)
 end
 
 local OneTimeFixFunctions = {
-	-- ref. https://github.com/DFortun81/AllTheThings/commit/d1b02b8021a7f2aa80c03d212a2ea54a443e9117
+	-- ref. https://github.com/ATTWoWAddon/AllTheThings/commit/d1b02b8021a7f2aa80c03d212a2ea54a443e9117
 	Spell148972 = function()
 		local ATTCharacterData = app.LocalizeGlobalIfAllowed("ATTCharacterData", true);
 		local found
@@ -264,7 +264,7 @@ local OneTimeFixFunctions = {
 						"they will need to log in to properly re-collect in ATT")
 		end
 	end,
-	-- ref. https://github.com/DFortun81/AllTheThings/commit/d1b02b8021a7f2aa80c03d212a2ea54a443e9117
+	-- ref. https://github.com/ATTWoWAddon/AllTheThings/commit/d1b02b8021a7f2aa80c03d212a2ea54a443e9117
 	Spell241857 = function()
 		local ATTCharacterData = app.LocalizeGlobalIfAllowed("ATTCharacterData", true);
 		local found

@@ -17,6 +17,8 @@ local C_Map_GetMapInfo, C_Map_GetAreaInfo = C_Map.GetMapInfo, C_Map.GetAreaInfo;
 local C_Map_GetMapChildrenInfo = C_Map.GetMapChildrenInfo;
 local C_Map_GetWorldPosFromMapPos = C_Map.GetWorldPosFromMapPos;
 local C_MapExplorationInfo_GetExploredAreaIDsAtPosition = C_MapExplorationInfo.GetExploredAreaIDsAtPosition;
+-- added in 8.0, can't use in Classic
+local C_Map_GetMapInfoAtPosition = C_Map.GetMapInfoAtPosition or app.ReturnFalse
 
 -- Current Map Detection
 local CurrentMapID;
@@ -272,13 +274,7 @@ app.AddEventRegistration("PLAYER_INTERACTION_MANAGER_FRAME_HIDE", UpdateLocation
 app.GetMapName = GetMapName;
 
 -- Exploration
-local ExplorationDB = setmetatable(app.ExplorationDB or {}, {
-	__index = function(t, mapID)
-		local data = {};
-		t[mapID] = data;
-		return data;
-	end
-});
+local ExplorationDB = setmetatable(app.ExplorationDB or {}, app.MetaTable.AutoTable);
 local ExplorationAreaPositionDB = app.ExplorationAreaPositionDB or {};
 app.CreateExploration = app.CreateClass("Exploration", "explorationID", {
 	["name"] = function(t)
@@ -307,7 +303,7 @@ app.CreateExploration = app.CreateClass("Exploration", "explorationID", {
 	["collectible"] = function(t)
 		return app.Settings.Collectibles.Exploration and t.coords and #t.coords > 0;
 	end,
-	["collected"] = function(t)
+	["collected"] = app.IsClassic and function(t)
 		if app.CurrentCharacter.Exploration[t.explorationID] then return 1; end
 
 		local coords = t.coords;
@@ -324,6 +320,10 @@ app.CreateExploration = app.CreateClass("Exploration", "explorationID", {
 			end
 		end
 		if app.Settings.AccountWide.Exploration and ATTAccountWideData.Exploration[t.explorationID] then return 2; end
+	end
+	-- Retail: only check cached data on collected checks
+	or function(t)
+		return app.TypicalCharacterCollected("Exploration", t.explorationID)
 	end,
 	["coords"] = function(t)
 		return ExplorationAreaPositionDB[t.explorationID];
@@ -331,8 +331,31 @@ app.CreateExploration = app.CreateClass("Exploration", "explorationID", {
 });
 
 -- Reporting
+local AreaIDNameMapper = setmetatable({}, {__index = function(t,key)
+	local id = #t + 1
+	local keyid = tonumber(key)
+	local name
+	while id < 25000 do
+		name = C_Map_GetAreaInfo(id)
+		if name then
+			t[name] = id
+		end
+		t[id] = name or UNKNOWN
+		if key == name then
+			-- app.PrintDebug("Found AreaID",id,"for",key)
+			return id
+		end
+		if keyid == id then
+			-- app.PrintDebug("Found Name",name,"for",id)
+			return name or UNKNOWN
+		end
+		id = id + 1
+	end
+	app.PrintDebug("Ran out of AreaID and never found for",key)
+end})
 local ReportedAreas = {};
 local function PrintDiscordInformationForExploration(o)
+	if not app.Contributor then return end
 	local areaID = o.explorationID;
 	if not areaID or ReportedAreas[areaID] then return; end
 	ReportedAreas[areaID] = o;
@@ -358,18 +381,56 @@ local function PrintDiscordInformationForExploration(o)
 		end
 	end
 
+	local position, coord = mapID and C_Map.GetPlayerMapPosition(mapID, "player"), nil;
+	if position then
+		local x,y = position:GetXY();
+		coord = (math_floor(x * 1000) / 10) .. ", " .. (math_floor(y * 1000) / 10);
+	end
+	tinsert(info, coord and ("playercoord:"..coord) or "playercoord:??");
+
 	tinsert(info, "ver: "..app.Version);
 	tinsert(info, "build: "..app.GameBuildVersion);
 	tinsert(info, "```");	-- discord fancy box end
 
 	local popupID = "area-" .. areaID;
 	app:SetupReportDialog(popupID, text, info);
-	print("Found Area:", app:Linkify(text, app.Colors.ChatLinkError, "dialog:" .. popupID));
+	app.print("Found New Area:", app:Linkify(text, app.Colors.ChatLinkError, "dialog:" .. popupID));
 end
 local RefreshExplorationData = app.IsClassic and (function(data)
 	app:RefreshDataQuietly("RefreshExploration", true);
 end) or (function(data) app.UpdateRawIDs("explorationID", data); end)
-local function CheckExplorationForMapID(mapID)
+local function CacheAndUpdateExploration(explorationIDTable)
+	-- app.PrintTable(saved)
+	app.SetBatchCached("Exploration", explorationIDTable, 1)
+	-- Trigger updates for these exploration areas
+	local rawAreaIDdata = {}
+	for areaID,_ in pairs(explorationIDTable) do
+		rawAreaIDdata[#rawAreaIDdata + 1] = areaID
+	end
+	RefreshExplorationData(rawAreaIDdata)
+end
+local function GetExplorationBySubzone()
+	local subzone = GetSubZoneText()
+	if subzone and subzone ~= "" then
+		local mapObject = app.SearchForObject("mapID",app.RealMapID,"key")
+		if mapObject and mapObject.g then
+			for _,o in ipairs(mapObject.g) do
+				if o.headerID == app.HeaderConstants.EXPLORATION and o.g then
+					for _,e in ipairs(o.g) do
+						if e.name == subzone and e.__type == "Exploration" then
+							return e
+						end
+					end
+					break
+				end
+			end
+		end
+		local e = app.CreateExploration(AreaIDNameMapper[subzone], { mapID = app.RealMapID, name = subzone})
+		PrintDiscordInformationForExploration(e);
+		return e
+	end
+end
+local function CheckExplorationForPlayerPosition()
 	local mapID = C_Map_GetBestMapForUnit("player");
 	if not mapID then return; end
 	local pos = C_Map_GetPlayerMapPosition(mapID, "player");
@@ -377,10 +438,13 @@ local function CheckExplorationForMapID(mapID)
 	local areaIDs = C_MapExplorationInfo_GetExploredAreaIDsAtPosition(mapID, pos);
 	if not areaIDs then return end;
 
+	local ExplorationDB = app.CurrentCharacter.Exploration
 	local newAreas = {};
+	local saved = {}
 	for _,areaID in ipairs(areaIDs) do
-		if not app.CurrentCharacter.Exploration[areaID] then
-			app.SetCollected(nil, "Exploration", areaID, true);
+		-- app.PrintDebug("CheckPlayerExploration",mapID,pos.x,pos.y,app:SearchLink(app.SearchForObject("explorationID",areaID,"field")))
+		if not ExplorationDB[areaID] then
+			saved[areaID] = true
 			tinsert(newAreas, areaID);
 		end
 		if not ReportedAreas[areaID] then
@@ -389,34 +453,57 @@ local function CheckExplorationForMapID(mapID)
 			end
 		end
 	end
-	if #newAreas > 0 then RefreshExplorationData(newAreas); end
+	-- do a manual check by way of the sub-zone name (since this is what correlates to the exploration name players see in ATT)
+	-- we will provide a manual collection by way of exact player position having a specific subzone name when performing a check
+	local explorationForSubzone = GetExplorationBySubzone()
+	if explorationForSubzone then
+		-- app.PrintDebug("SubzoneExplorationFind",mapID,pos.x,pos.y,app:SearchLink(explorationForSubzone))
+		local areaID = explorationForSubzone.explorationID
+		-- don't know how areaID could be nil here...
+		if areaID and not ExplorationDB[areaID] then
+			-- app.PrintDebug("Manual cached Exploration by Subzone name")
+			-- we won't use regular caching since we're manually checking instead of the expected API utilization
+			-- maybe eventually blizzard will fix the API
+			ExplorationDB[areaID] = 2
+		end
+	end
+	if #newAreas > 0 then
+		CacheAndUpdateExploration(saved)
+	end
 end
 local function CheckExplorationForCurrentLocation()
 	app:StartATTCoroutine("Check Exploration", function()
 		while not CurrentMapID do
 			coroutine.yield();
 		end
-		CheckExplorationForMapID(CurrentMapID);
+		CheckExplorationForPlayerPosition();
 	end);
 end
 app.CheckExplorationForCurrentLocation = CheckExplorationForCurrentLocation;
 
 -- Event Handling
-app.AddEventHandler("OnRecalculate", CheckExplorationForCurrentLocation);
+if app.IsClassic then
+	app.AddEventHandler("OnRecalculate", CheckExplorationForCurrentLocation);
+else
+	app.AddEventHandler("OnRefreshCollections", CheckExplorationForPlayerPosition)
+end
 app.AddEventRegistration("MAP_EXPLORATION_UPDATED", CheckExplorationForCurrentLocation)
 app.AddEventRegistration("UI_INFO_MESSAGE", function(messageID)
 	if messageID == 372 then CheckExplorationForCurrentLocation(); end
 end)
+--
+app.ChatCommands.Add("realtime-exploration-check", function(args)
+	app.AddEventRegistration("FOG_OF_WAR_UPDATED", CheckExplorationForPlayerPosition)
+	app.print("Enabled: realtime-exploration-check")
+	return true
+end, {
+	"Usage : /att realtime-exploration-check",
+	"This enables ATT to perform real-time Exploration checks when the Player visits new sub-zones of maps. This cannot be turned off except by reloading the UI.",
+	"NOTE: This is not intended to be used except by Contribs in order to do fine-tuned testing of Exploration data",
+})
 
 -- Harvesting
 local MAXIMUM_COORDS_PER_AREA = 5;
-local AreaExplorationMeta = {
-	__index = function(t, areaID)
-		local coords = {};
-		t[areaID] = coords;
-		return coords;
-	end
-};
 local MapDataMeta = {
 	__index = function(t, mapID)
 		local data = {
@@ -430,7 +517,7 @@ local MapDataMeta = {
 };
 local function GenerateHitsForMap(grid, mapID)
 	if mapID == 594 or mapID == 2091 then return nil, nil; end	-- Shattrath City messing up Talador, War of the Shifting Sands messing up Silithus
-	local any, hits = false, setmetatable({}, AreaExplorationMeta);
+	local any, hits = false, setmetatable({}, app.MetaTable.AutoTable);
 	for _,pos in ipairs(grid) do
 		local explored = C_MapExplorationInfo_GetExploredAreaIDsAtPosition(mapID, pos);
 		if explored then
@@ -442,6 +529,18 @@ local function GenerateHitsForMap(grid, mapID)
 		end
 	end
 	return any, hits;
+end
+local function CheckHitsForMap(grid, mapID, hits)
+	hits = hits or {}
+	for _,pos in ipairs(grid) do
+		local explored = C_MapExplorationInfo_GetExploredAreaIDsAtPosition(mapID, pos);
+		if explored then
+			for _,areaID in ipairs(explored) do
+				hits[areaID] = true
+			end
+		end
+	end
+	return hits
 end
 local OnClickForExplorationHeader = function(row, button)
 	if button == "RightButton" and IsControlKeyDown() then
@@ -525,6 +624,67 @@ local SimplifyExplorationData = function(rawExplorationAreaPositionDB)
 	AllTheThingsAD.ExplorationAreaPositionDB = ExplorationAreaPositionDB;
 	app.print("Done Simplifying Exploration Data.");
 end
+local function CacheExplorationForAllMaps()
+	app.print("Robust Map Exploration Started...")
+	local grid, Granularity = {}, 200;
+	for i=0,Granularity,1 do
+		for j=0,Granularity,1 do
+			tinsert(grid, CreateVector2D(i / Granularity, j / Granularity));
+		end
+	end
+	local saved = {}
+	for mapID,_ in pairs(app.SearchForFieldContainer("mapID")) do
+		if C_Map_GetMapArtID(mapID) then
+			app.print("Checking Map " .. mapID .. "...");
+			coroutine.yield()
+			-- Find all points on the grid that have explored an area and make note of them.
+			pcall(CheckHitsForMap, grid, mapID, saved);
+		end
+	end
+	CacheAndUpdateExploration(saved)
+	app.print("Robust Map Exploration Cached")
+end
+local function CacheExplorationForAllKnownExploration()
+	app.print("Known Map Exploration Started...")
+	local saved = {}
+	local exploration
+	for explorationID,explorations in pairs(app.SearchForFieldContainer("explorationID")) do
+		-- only ever 1 cached
+		exploration = explorations[1]
+		if exploration.coords then
+			local grid = {}
+			local mapID
+			-- convert the coords into a grid for our common method
+			for _,coord in ipairs(exploration.coords) do
+				grid[#grid + 1] = CreateVector2D(coord[1] / 100, coord[2] / 100)
+				-- TODO: ideally we will make sure all ExplorationDB coords for a specific mapID are actually the same as the mapID...
+				if not mapID then mapID = coord[3] end
+			end
+			-- Find all points on the grid that have explored an area and make note of them.
+			pcall(CheckHitsForMap, grid, mapID, saved);
+			-- app.print("Checking ExplorationID " .. explorationID .. "...");
+			coroutine.yield()
+		end
+	end
+	CacheAndUpdateExploration(saved)
+	app.print("Known Map Exploration Cached")
+end
+-- add a parameter for a robust scan which checks all known Map data coords by scanning every map
+-- without parameter do simple scan by cached ExplorationID coords
+-- Allows a user to use /att collect-exploration [robust]
+-- to force a full scan of all known ATT exploration or maps to cache visited exploration data
+app.ChatCommands.Add("collect-exploration", function(args)
+	if args[2] then
+		app:StartATTCoroutine("FullMapExploration",CacheExplorationForAllMaps)
+		return true
+	end
+	app:StartATTCoroutine("FullMapExploration",CacheExplorationForAllKnownExploration)
+	return true
+end, {
+	"Usage : /att collect-exploration [robust]",
+	"This allows a user to fully-scan the entire known set of Zones to harvest current Exploration data.",
+	"NOTE: This operation (when providing the 'robust' parameter) should only be needed once per Character as Exploration is otherwise updated when new areas are explored.",
+})
 local function HarvestExploration(simplify)
 	if app.SetupExplorationEvents then app.SetupExplorationEvents(); end
 	app.print("Harvesting Exploration...");
@@ -658,7 +818,7 @@ local function HarvestExploration(simplify)
 			"```lua",
 		};
 
-		local areasByMapID = setmetatable({}, AreaExplorationMeta);
+		local areasByMapID = setmetatable({}, app.MetaTable.AutoTable);
 		for i,o in ipairs(reportedAreas) do
 			tinsert(areasByMapID[o.mapID], o);
 		end
@@ -681,12 +841,49 @@ local function HarvestExploration(simplify)
 	end
 	if simplify then SimplifyExplorationData(rawExplorationAreaPositionDB); end
 end
-app.HarvestExploration = function(simplify)
+-- Allows a user to use /att harvest-exploration
+-- to force a full scan of all known ATT maps to harvest exploration data
+app.ChatCommands.Add("harvest-exploration", function(args)
 	app:StartATTCoroutine("Harvest Exploration", function()
-		HarvestExploration(simplify);
+		HarvestExploration(args[2]);
 		collectgarbage();
 	end);
-end
+	return true
+end, {
+	"Usage : /att harvest-exploration [simplify]",
+	"This allows fully-scanning the entire known set of Zones to harvest current Exploration data based on what the current character has Explored, and capture all the possible coordinates which 'should' unlock the specified Exploration Areas.",
+	"NOTE: This operation is only expected to be used by Development in order to update Exploration in the addon!",
+})
+
+app.ChatCommands.Add("harvest-map", function(args)
+	local mapID = tonumber(args[2])
+	if not mapID then return end
+	local granularity = tonumber(args[3] or 200)
+	app.print("Harvesting Map",mapID);
+	local grid = {}
+	for i=0,granularity,1 do
+		for j=0,granularity,1 do
+			tinsert(grid, CreateVector2D(i / granularity, j / granularity));
+		end
+	end
+
+	local ok, any, hits = pcall(GenerateHitsForMap, grid, mapID)
+	if not ok then app.print("Failed to find any valid areaIDs on map",mapID) return end
+	local i = 6033345
+	local tempGroup = {visible=true,text=app.GetMapName(mapID)}
+	for areaID,coords in pairs(hits) do
+		app.NestObject(tempGroup, app.CreateExploration(areaID, {coords=coords,icon=i}))
+		i = i + 1
+		if i > 6033354 then i = 6033345 end
+	end
+
+	-- app.AddTomTomWaypoint(tempGroup)
+	-- app.PrintTable(tempGroup)
+	-- app.PrintTable(hits)
+	app:CreateMiniListForGroup(tempGroup)
+end, {
+	"Usage : /att harvest-map mapID [granularity]",
+})
 
 -- Maps
 app.CreateMap = app.CreateClass("Map", "mapID", {
@@ -713,7 +910,7 @@ app.CreateMap = app.CreateClass("Map", "mapID", {
 	["playerCoord"] = function(t)
 		local mapID = t.mapID
 		if mapID < 0 then mapID = app.RealMapID end
-		local position = C_Map_GetPlayerMapPosition(mapID, "player")
+		local position = mapID and C_Map_GetPlayerMapPosition(mapID, "player")
 		if position then
 			local x,y = position:GetXY()
 			return { app.round(x * 100, 1), app.round(y * 100, 1), mapID };
@@ -1008,7 +1205,7 @@ app.AddEventRegistration("LOOT_CLOSED", function()
 	app:UnregisterEvent("LOOT_CLOSED");
 	app:RegisterEvent("UPDATE_INSTANCE_INFO");
 	RequestRaidInfo();
-end)
+end, true)
 local function Event_UPDATE_INSTANCE_INFO()
 	app:UnregisterEvent("UPDATE_INSTANCE_INFO");
 	AfterCombatCallback(RefreshSavesCallback);

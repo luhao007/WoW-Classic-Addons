@@ -659,40 +659,22 @@ PrintQuestInfo = function(questID, new)
 		return;
 	end
 
-	local text, questRef
+	local text
 	local questChange = (new == true and "accepted") or (new == false and "unflagged") or "completed";
-	local searchResults = SearchForField("questID", questID);
-	if #searchResults > 0 then
-		local nmr, nmc, nyi, hqt, unsorted
-		if #searchResults == 1 then
-			questRef = searchResults[1]
-			nmr = questRef.nmr
-			nmc = questRef.nmc
-			nyi = GetRelativeField(questRef, "u", 1)
-			unsorted = GetRelativeValue(questRef, "_unsorted") or nyi
-			hqt = GetRelativeValue(questRef, "_hqt")
-		else
-			for i,searchResult in ipairs(searchResults) do
-				if searchResult.key == "questID" then
-					nmr = nmr or searchResult.nmr
-					nmc = nmc or searchResult.nmc
-					nyi = nyi or GetRelativeField(searchResult, "u", 1)
-					unsorted = GetRelativeValue(questRef, "_unsorted") or nyi
-					hqt = hqt or GetRelativeValue(searchResult, "_hqt")
-					questRef = searchResult
-				end
-			end
-			if not questRef then
-				-- This basically happens when a quest is both Sourced 2+ times and none have a key of questID (DMs)
-				-- app.PrintDebug(Colorize("Failed to check quest info for: "..(questID or "???"), app.Colors.ChatLinkError))
-				questRef = searchResults[1]
-			end
-		end
+	local questRef = Search("questID", questID, "field")
+	if questRef then
+
+		local nyi = GetRelativeField(questRef, "u", 1)
+		local unsorted = GetRelativeValue(questRef, "_unsorted") or nyi
 
 		-- if user is allowing reporting of Sourced quests (true = don't report Sourced)
 		if not unsorted and app.Settings:GetTooltipSetting("Report:UnsortedQuests") then
 			return true;
 		end
+
+		local nmr = questRef.nmr
+		local nmc = questRef.nmc
+		local hqt = GetRelativeValue(questRef, "_hqt")
 
 		-- Quest can be linked to all sorts of things...
 		text = questRef.name or hqt and UNKNOWN or QuestNameFromID[questID]
@@ -717,7 +699,7 @@ PrintQuestInfo = function(questID, new)
 			app:SetupReportDialog(popupID, "NYI Quest: " .. questID,
 				BuildDiscordQuestInfoTable(questID, "nyi-quest", questChange)
 			);
-			print("Quest", questChange, app:Linkify(text .. " [NYI] ATT " .. app.Version, app.Colors.ChatLinkError, "dialog:" .. popupID));
+			app.print("Quest", questChange, app:Linkify(text .. " [NYI] ATT " .. app.Version, app.Colors.ChatLinkError, "dialog:" .. popupID));
 			return
 		end
 
@@ -731,7 +713,7 @@ PrintQuestInfo = function(questID, new)
 			app:SetupReportDialog(popupID, "Unsorted Quest: " .. questID,
 				BuildDiscordQuestInfoTable(questID, "unsorted-quest", questChange)
 			);
-			print("Quest", questChange, app:Linkify(text .. " [UNS] ATT " .. app.Version, app.Colors.ChatLinkError, "dialog:" .. popupID));
+			app.print("Quest", questChange, app:Linkify(text .. " [UNS] ATT " .. app.Version, app.Colors.ChatLinkError, "dialog:" .. popupID));
 			return
 		end
 
@@ -743,7 +725,7 @@ PrintQuestInfo = function(questID, new)
 		else
 			text = app:Linkify(text, app.Colors.ChatLink, "search:questID:" .. questID);
 		end
-		print("Quest", questChange, text, GetQuestFrequency(questID) or "");
+		app.print("Quest", questChange, text, GetQuestFrequency(questID) or "");
 	else
 		text = (QuestNameFromID[questID] or UNKNOWN) .. " (" .. questID .. ")";
 
@@ -755,7 +737,7 @@ PrintQuestInfo = function(questID, new)
 		app:SetupReportDialog(popupID, "Missing Quest: " .. questID,
 			BuildDiscordQuestInfoTable(questID, "missing-quest", questChange)
 		);
-		print("Quest", questChange, app:Linkify(text .. " (Not in ATT " .. app.Version .. ")", app.Colors.ChatLinkError, "dialog:" .. popupID), GetQuestFrequency(questID) or "");
+		app.print("Quest", questChange, app:Linkify(text .. " (Not in ATT " .. app.Version .. ")", app.Colors.ChatLinkError, "dialog:" .. popupID), GetQuestFrequency(questID) or "");
 	end
 end
 app.CheckInaccurateQuestInfo = function(questRef, questChange, forceShow)
@@ -881,6 +863,7 @@ if app.IsRetail then
 		BatchRefresh = nil
 	end
 
+	local Register_CRITERIA_UPDATE = app.EmptyFunction
 	local function RefreshQuestCompletionState(questID)
 		-- app.PrintDebug("RefreshQuestCompletionState",questID)
 		wipe(RetailDirtyQuests);
@@ -896,7 +879,7 @@ if app.IsRetail then
 			end
 		end
 
-		app:RegisterEvent("CRITERIA_UPDATE");
+		Register_CRITERIA_UPDATE()
 		-- app.PrintDebugPrior("RefreshedQuestCompletionState")
 	end
 	RefreshAllQuestInfo = function()
@@ -919,6 +902,11 @@ if app.IsRetail then
 	app.AddEventHandler("OnStartup", QueryCompletedQuests);
 	app.AddEventHandler("OnRecalculate", QueryCompletedQuests);
 	app.AddEventHandler("OnPlayerLevelUp", RefreshAllQuestInfo);
+	app.AddEventHandler("OnReady", function()
+		Register_CRITERIA_UPDATE = function()
+			app:RegisterEvent("CRITERIA_UPDATE");
+		end
+	end)
 else
 	---@diagnostic disable-next-line: undefined-global
 	local GetQuestsCompleted = GetQuestsCompleted;
@@ -1335,6 +1323,7 @@ end
 -- Guess it's easiest for now to make a global variant and just 'remember' to
 -- add it in every possible Class which could have a questID...
 local AndLockCriteria = {
+	__name = "AndLockCriteria",
 	collectible = CollectibleAsQuestOrAsLocked,
 	locked = LockedAsQuest,
 	__condition = function(t)
@@ -1347,6 +1336,7 @@ app.GlobalVariants.AndLockCriteria = AndLockCriteria
 -- logic fell through. i.e. for breadcrumbs... check variant of 'locked' and then fallback to the base breadcrumb.locked
 -- for now I guess this is an explicit variant which covers both
 local AndBreadcrumbWithLockCriteria = {
+	__name = "AndBreadcrumbWithLockCriteria",
 	collectible = CollectibleAsQuestOrAsLocked,
 	locked = function(t)
 		return LockedAsQuest(t) or LockedAsBreadcrumb(t)
@@ -1356,6 +1346,7 @@ local AndBreadcrumbWithLockCriteria = {
 	end,
 }
 app.GlobalVariants.WithAutoName = {
+	__name = "WithAutoName",
 	name = function(t)
 		local type, id = (":"):split(t.an)
 		local data = app.GetAutomaticHeaderData(id,type)
@@ -1376,6 +1367,9 @@ app.GlobalVariants.WithAutoName = {
 		return t.an
 	end,
 }
+app.GlobalVariants.Combine(
+	app.GlobalVariants.AndLockCriteria,
+	app.GlobalVariants.WithAutoName)
 
 -- Party Sync Support
 local IsQuestReplayable = C_QuestLog.IsQuestReplayable
@@ -1457,6 +1451,9 @@ local createQuest = app.CreateClass("Quest", "questID", {
 		return GetQuestLinkForObject(t);
 	end,
 	tooltipLink = function(t)
+		-- linktests[#linktests + 1] = "|cffffff00|Hquest:"..t.questID..":"..(app._subid or 0).."|h["..(t.name or "").."]|h|r" -- works when _subid is correct for questid
+		-- linktests[#linktests + 1] = "|cffffff00|Hquest:"..t.questID..":"..(app._subid or 0).."|h["..(t.name or "").." "..t.questID.."]|h|r" -- de-links
+		-- linktests[#linktests + 1] = "|cffffff00|Hquest:"..t.questID..":"..(app._subid or 0).."|h["..t.questID.."]|h|r" -- cannot send message
 		return "quest:"..t.questID
 	end,
 	collectible = CollectibleAsQuest,
@@ -1542,8 +1539,9 @@ local createQuest = app.CreateClass("Quest", "questID", {
 	end,
 	indicatorIcon = GetQuestIndicator,
 	variants = {
-		AndLockCriteria = app.GlobalVariants.AndLockCriteria,
-		WithAutoName = app.GlobalVariants.WithAutoName,
+		app.GlobalVariants.AndLockCriteriaWithAutoName,
+		app.GlobalVariants.AndLockCriteria,
+		app.GlobalVariants.WithAutoName,
 	}
 },
 "WithReputation", {
@@ -1580,15 +1578,18 @@ local createQuest = app.CreateClass("Quest", "questID", {
 	-- Retail: Quests which have a maxrepuation can be considered a Cost for the respective Faction
 	collectibleAsCost = not app.IsClassic and QuestWithReputationCollectibleAsCost or nil,
 	variants = {
-		AndLockCriteria = AndLockCriteria,
-	},
+		app.GlobalVariants.AndLockCriteriaWithAutoName,
+		app.GlobalVariants.AndLockCriteria,
+		app.GlobalVariants.WithAutoName,
+	}
 }, (function(t) return t.maxReputation; end),
 "AsHQT", {
 	CollectibleType = function() return "QuestsHidden" end,
 	variants = {
-		AndLockCriteria = AndLockCriteria,
-		WithAutoName = app.GlobalVariants.WithAutoName,
-	},
+		app.GlobalVariants.AndLockCriteriaWithAutoName,
+		app.GlobalVariants.AndLockCriteria,
+		app.GlobalVariants.WithAutoName,
+	}
 }, (function(t) return t.type == "hqt" end),
 -- Both: Breadcrumbs
 "AsBreadcrumb", {
@@ -1614,7 +1615,7 @@ local createQuest = app.CreateClass("Quest", "questID", {
 	end or CollectibleAsQuestOrAsLocked,
 	locked = LockedAsBreadcrumb,
 	variants = {
-		AndBreadcrumbWithLockCriteria = AndBreadcrumbWithLockCriteria,
+		AndBreadcrumbWithLockCriteria,
 	},
 }, (function(t) return t.isBreadcrumb; end)
 -- Both: World Quests (Baked back into Quest for now since multiple types can be WorldQuests)
@@ -1659,7 +1660,7 @@ app.CreateQuestObjective = app.CreateClass("Objective", "objectiveID", {
 	icon = function(t)
 		return app.GetIconFromProviders(t)
 			or (t.spellID and GetSpellIcon(t.spellID))
-			or t.parent.icon or "Interface\\Worldmap\\Gear_64Grey";
+			or t.parent.icon or 311226;
 	end,
 	model = function(t)
 		if t.providers then
@@ -1959,15 +1960,18 @@ if app.IsRetail then
 					if p[1] == "i" then
 						id = p[2];
 						-- print("Quest Item Provider",p[1], id);
-						local pRef = Search("itemID", id, "field");
+						local pRef = Search("itemID", id, "field")
 						if pRef then
+							pRef = app.CloneClassInstance(pRef, true)
+							-- Make sure to always show the Quest starting item
+							pRef.OnSetVisibility = app.ReturnTrue;
 							app.NestObject(questRef, pRef, true, 1);
 						else
 							pRef = app.CreateItem(id);
+							-- Make sure to always show the Quest starting item
+							pRef.OnSetVisibility = app.ReturnTrue;
 							app.NestObject(questRef, pRef, nil, 1);
 						end
-						-- Make sure to always show the Quest starting item
-						pRef.OnUpdate = app.AlwaysShowUpdate;
 						-- Quest started by this Item should be represented using any sourceQuests on the Item
 						if pRef.sourceQuests then
 							if not questRef.sourceQuests then questRef.sourceQuests = {}; end
@@ -2076,7 +2080,7 @@ if app.IsRetail then
 				tinsert(prereqs, {
 					text = L.UPON_COMPLETION,
 					description = L.UPON_COMPLETION_DESC,
-					icon = "Interface\\Icons\\Spell_Holy_MagicalSentry.blp",
+					icon = 135932,
 					visible = true,
 					expanded = true,
 					g = g,
@@ -2225,10 +2229,10 @@ if app.IsRetail then
 			local useNested = app.Settings:GetTooltipSetting("QuestChain:Nested");
 			local questChainHeader = app.CreateRawText(useNested and L.NESTED_QUEST_REQUIREMENTS or L.QUEST_CHAIN_REQ, {
 				description = L.QUEST_CHAIN_REQ_DESC,
-				icon = "Interface\\Icons\\Spell_Holy_MagicalSentry.blp",
+				icon = 135932,
 				OnUpdate = app.AlwaysShowUpdate,
 				OnClick = app.UI.OnClick.IgnoreRightClick,
-				sourceIgnored = true,
+				-- sourceIgnored = true,
 				skipFill = true,
 				SortPriority = 1.0,	-- follow any raw content in group
 				-- copy any sourceQuests into the header incase the root is not actually a quest

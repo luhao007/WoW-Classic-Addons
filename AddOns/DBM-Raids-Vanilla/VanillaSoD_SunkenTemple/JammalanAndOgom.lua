@@ -1,13 +1,14 @@
 local mod	= DBM:NewMod("JammalanAndOgomSoD", "DBM-Raids-Vanilla", 8)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240518105851")
+mod:SetRevision("20241103123604")
 mod:SetCreatureID(218721, 218718)--Jammal'an, Ogom
 mod:SetEncounterID(2957)
 mod:SetBossHPInfoToHighest()
 --mod:SetUsedIcons(8)
 mod:SetHotfixNoticeRev(20240405000000)
 --mod:SetMinSyncRevision(20231115000000)
+mod:SetZone(109)
 
 mod:RegisterCombat("combat")
 

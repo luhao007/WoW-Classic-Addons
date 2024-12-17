@@ -1,10 +1,10 @@
 local mod	= DBM:NewMod("Malacrass", "DBM-Raids-BC", 9)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20230523061139")
+mod:SetRevision("20241103131702")
 mod:SetCreatureID(24239)
 mod:SetEncounterID(1193, 2486)
-mod:SetZone()
+mod:SetZone(568)
 
 mod:RegisterCombat("combat_yell", L.YellPull)
 

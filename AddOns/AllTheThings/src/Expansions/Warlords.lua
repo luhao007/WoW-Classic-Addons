@@ -75,11 +75,7 @@ do
 		-- we collect the "Recipes" to know how to build the buildings
 		collectible = function(t) return app.Settings.Collectibles.Recipes; end,
 		collected = function(t)
-			local id = t[KEY];
-			-- character collected
-			if app.IsCached(CACHE, id) then return 1; end
-			-- account-wide collected
-			if app.IsAccountTracked(CACHE, id) then return 2; end
+			return app.TypicalCharacterCollected(CACHE, t[KEY])
 		end,
 	}, (function(t) return t.itemID; end));
 
@@ -115,7 +111,7 @@ do
 			return C_Garrison_GetMissionName(t.missionID);
 		end,
 		icon = function(t)
-			return "Interface/ICONS/INV_Icon_Mission_Complete_Order";
+			return 1103070;
 		end,
 	});
 end
@@ -127,7 +123,7 @@ do
 		local info = C_Garrison_GetTalentInfo(t.garrisonTalentID);
 		if not info then return nil; end
 		t.name = info.name;
-		t.icon = info.icon or "Interface/ICONS/INV_Icon_Mission_Complete_Order";
+		t.icon = info.icon or 1103070;
 		t.description = info.description;
 		setmetatable(t, nil);
 		return t[key];
@@ -201,11 +197,7 @@ do
 		end,
 		collectible = function(t) return app.Settings.Collectibles[CACHE]; end,
 		collected = function(t)
-			local id = t[KEY];
-			-- character collected
-			if app.IsCached(CACHE, id) then return 1; end
-			-- account-wide collected
-			if app.IsAccountTracked(CACHE, id) then return 2; end
+			return app.TypicalCharacterCollected(CACHE, t[KEY])
 		end,
 		saved = function(t)
 			local id = t[KEY];

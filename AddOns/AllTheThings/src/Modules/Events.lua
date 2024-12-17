@@ -92,7 +92,7 @@ local function GetEventCache()
 	if isCalendarAvailable then
 		local C_Calendar_SetAbsMonth, C_Calendar_SetMonth, C_Calendar_GetDayEvent, C_Calendar_GetMonthInfo, C_Calendar_GetNumDayEvents
 			= C_Calendar.SetAbsMonth, C_Calendar.SetMonth, C_Calendar.GetDayEvent, C_Calendar.GetMonthInfo, C_Calendar.GetNumDayEvents;
-			
+
 		-- Go back 6 months and then forward to the next year
 		local date = C_DateAndTime_GetCurrentCalendarTime();
 		C_Calendar_SetAbsMonth(date.month, date.year);
@@ -322,7 +322,9 @@ end
 -- Timerunning Seasons
 local GetTimerunningSeason;
 local PlayerGetTimerunningSeasonID = PlayerGetTimerunningSeasonID;
-if PlayerGetTimerunningSeasonID then
+-- Don't add the Timerunning Filter if there's no Season active!
+local IsTimerunningActive = false
+if PlayerGetTimerunningSeasonID and IsTimerunningActive then
 	-- Timerunning API is available.
 	local timerunningSeasons = L.EVENT_TIMERUNNING_SEASONS;
 	GetTimerunningSeason = function()
@@ -344,7 +346,7 @@ if PlayerGetTimerunningSeasonID then
 		return not e or e ~= 1525
 	end
 
-	-- Add a Timerunning Filters that can be used for Live/Timerunning characters
+	-- Add a Timerunning Filter that can be used for Live/Timerunning characters
 	-- The use of the respective filter would be enabled based on the setting
 	app.AddEventHandler("OnStartup", function()
 		ThingKeys = app.ThingKeys
@@ -361,11 +363,16 @@ if PlayerGetTimerunningSeasonID then
 else
 	-- Timerunning API is not available.
 	GetTimerunningSeason = app.EmptyFunction;
+	-- Make sure the Feature Setting is disabled
+	app.AddEventHandler("OnStartup", function()
+		-- No Timerunning Active, don't be set
+		app.Settings:SetTooltipSetting("Filter:MiniList:Timerunning", false)
+	end)
 end
 
 -- Event API Implementation
 -- Access via AllTheThings.Modules.Events
-local events = {};
+local events = {IsTimerunningActive=IsTimerunningActive};
 app.Modules.Events = events;
 events.CreateSchedule = CreateSchedule;
 events.FilterIsEventActive = FilterIsEventActive;

@@ -1,5 +1,5 @@
 ## Interface: 30400
-## Version: 2.1.3
+## Version: 2.1.5
 
 ## Title: MeetingHorn
 ## Title-zhCN: |cFFFFE00A<|r|cFFF48CBA社交|r|cFFFFE00A>|r |cFFFFFFFF集结号|r |cFFFFE00AMeetingHorn|r

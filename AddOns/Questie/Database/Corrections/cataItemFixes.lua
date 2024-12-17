@@ -9,14 +9,23 @@ function CataItemFixes.Load()
     local itemClasses = QuestieDB.itemClasses
 
     return {
+        [1349] = { -- Abercrombie's Crate
+            [itemKeys.objectDrops] = {119},
+        },
         [1357] = { -- Captain Sander's Treasure Map
             [itemKeys.startQuest] = 26353,
+        },
+        [2536] = { -- Trogg Stone Tooth
+            [itemKeys.npcDrops] = {1161,1162,1163,1164,1165,1166,1167,1197,1393},
         },
         [2629] = { -- Intrepid Strongbox Key
             [itemKeys.npcDrops] = {41429},
         },
         [2633] = { -- Jungle Remedy
             [itemKeys.npcDrops] = {937,940,941,942},
+        },
+        [2676] = { -- Shimmerweed
+            [itemKeys.npcDrops] = {41121},
         },
         [2859] = { -- Vile Fin Scale
             [itemKeys.npcDrops] = {1541,1543,1544,1545},
@@ -55,14 +64,32 @@ function CataItemFixes.Load()
         [8705] = { -- OOX-22/FE Distress Beacon
             [itemKeys.startQuest] = 25475,
         },
+        [9597] = { -- Mountain Giant Muisek
+            [itemKeys.npcDrops] = {40026},
+        },
         [10441] = { -- Glowing Shard
             [itemKeys.startQuest] = 0,
         },
         [10458] = { -- Prayer to Elune
             [itemKeys.npcDrops] = {},
         },
+        [10753] = { -- Amulet of Grol
+            [itemKeys.npcDrops] = {41267},
+        },
+        [10754] = { -- Amulet of Sevine
+            [itemKeys.npcDrops] = {41265},
+        },
+        [10755] = { -- Amulet of Allistarj
+            [itemKeys.npcDrops] = {},
+        },
         [11114] = { -- Dinosaur Bone
             [itemKeys.npcDrops] = {6501,6502,6503,6504,9162,9163,9164},
+        },
+        [11569] = { -- Preserved Threshadon Meat
+            [itemKeys.npcDrops] = {},
+        },
+        [11570] = { -- Preserved Pheromone Mixture
+            [itemKeys.npcDrops] = {},
         },
         [11818] = { -- Grimesilt Outhouse Key
             [itemKeys.startQuest] = 0,
@@ -501,6 +528,9 @@ function CataItemFixes.Load()
         [56178] = { -- Duarn's Rope
             [itemKeys.class] = itemClasses.QUEST,
         },
+        [56225] = { -- Frozen Artifact
+            [itemKeys.npcDrops] = {},
+        },
         [56254] = { -- Merciless Head
             [itemKeys.npcDrops] = {41601,41729,41747},
         },
@@ -643,6 +673,12 @@ function CataItemFixes.Load()
         [60382] = { -- Mylra's Knife
             [itemKeys.class] = itemClasses.QUEST,
         },
+        [60502] = { -- Clever Plant Disguise Kit
+            [itemKeys.npcDrops] = {},
+        },
+        [60503] = { -- Potent Murloc Pheromones
+            [itemKeys.npcDrops] = {},
+        },
         [60574] = { -- The Upper World Pillar Fragment
             [itemKeys.npcDrops] = {},
         },
@@ -651,6 +687,9 @@ function CataItemFixes.Load()
         },
         [60681] = { -- Cannary's Cache
             [itemKeys.class] = itemClasses.QUEST,
+        },
+        [60738] = { -- Nascent Elementium Spike
+            [itemKeys.npcDrops] = {},
         },
         [60739] = { -- Twilight Slaver's Key
             [itemKeys.class] = itemClasses.QUEST,
@@ -667,6 +706,9 @@ function CataItemFixes.Load()
         [60857] = { -- Recovered Supplies
             [itemKeys.npcDrops] = {},
         },
+        [60862] = { -- Forsaken Insignia
+            [itemKeys.npcDrops] = {45197},
+        },
         [60879] = { -- Commander's Holy Symbol
             [itemKeys.npcDrops] = {4278},
         },
@@ -679,11 +721,17 @@ function CataItemFixes.Load()
         [61294] = { -- Infectis Scuttler
             [itemKeys.npcDrops] = {45657},
         },
+        [61310] = { -- Arcane Remnant
+            [itemKeys.startQuest] = 27480,
+        },
         [61317] = { -- Vermillion Egg
             [itemKeys.npcDrops] = {45651,45682},
         },
         [61376] = { -- Suspended Starlight
             [itemKeys.npcDrops] = {},
+        },
+        [61505] = { -- Partially Digested Head
+            [itemKeys.startQuest] = 27574,
         },
         [61929] = { -- Broken Spectacles
             [itemKeys.npcDrops] = {45874},

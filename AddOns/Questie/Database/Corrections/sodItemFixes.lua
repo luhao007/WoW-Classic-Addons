@@ -179,6 +179,9 @@ function SeasonOfDiscovery:LoadItems()
         [221326] = { -- Sacred Stag Heart
             [itemKeys.class] = itemClasses.QUEST,
         },
+        [225954] = { -- Charred Spell Notes
+            [itemKeys.npcDrops] = {227324},
+        },
         [226122] = { -- Dalton's Horn
             [itemKeys.class] = itemClasses.QUEST,
         },
@@ -199,6 +202,12 @@ function SeasonOfDiscovery:LoadItems()
         },
         [231797] = { -- Soul of the Void
             [itemKeys.npcDrops] = {232875},
+        },
+        [231798] = { -- Soul of Enthralling
+            [itemKeys.npcDrops] = {230146},
+        },
+        [231799] = { -- Soul of Devouring
+            [itemKeys.npcDrops] = {232896},
         },
         [231842] = { -- Nandieb's Stave
             [itemKeys.npcDrops] = {232529},

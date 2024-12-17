@@ -3,13 +3,14 @@ local L		= mod:GetLocalizedStrings()
 
 mod.statTypes = "normal25"
 
-mod:SetRevision("20240426180207")
+mod:SetRevision("20241103131702")
 mod:SetCreatureID(21216)
 mod:SetEncounterID(623, 2458)
 mod:DisableEEKillDetection()--EE always fires wipe (at least on classic)
 mod:SetModelID(20162)
 mod:SetHotfixNoticeRev(20220130000000)
 mod:SetMinSyncRevision(20220130000000)
+mod:SetZone(548)
 
 mod:RegisterCombat("combat")
 

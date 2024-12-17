@@ -142,6 +142,7 @@ local MobileNPCDB = {
 	 [64337] = true,	-- Nomi
 	 [67153] = true,	-- Zin'Jun
 	 [77789] = true,	-- Blingtron 5000
+	 [83858] = true,	-- Khadgar's Servant
 	 [87991] = true,	-- Cro Threadstrong
 	 [87992] = true,	-- Olaf
 	 [87994] = true,	-- Moroes <Tower Steward>
@@ -168,29 +169,45 @@ local MobileNPCDB = {
 	 [88026] = true,	-- John J. Keeshan
 	 [88027] = true,	-- Impsy
 	[101527] = true,	-- Blingtron 6000
+	[105637] = true,	-- Scowling Rosa <Texts and Specialty Goods>
+	[115785] = true,	-- Direbeak Hatchling
+	[117475] = true,	-- Lord Darius Crowley
+	[145005] = true,	-- Lor'themar Theron
+	[145707] = true,	-- Advisor Belgrum
 	[153897] = true,	-- Blingtron 7000
 	[158635] = true,	-- Xolartios <Eternal Traveler>
+	[172854] = true,	-- Dredger Butler
 	[185749] = true,	-- Gnoll Mon-Ark
 	[191494] = true,	-- Khanam Matra Sarest
 	[193985] = true,	-- Initiate Zorig
 	[209681] = true,	-- Squally
+	[214890] = true,	-- Magni Bronzebeard
+	[214892] = true,	-- Dagran Thaurissan II
+	[220859] = true,	-- Amy Lychenstone
+	[221492] = true,	-- Baron Sybaestan Braunpyke
 	[221867] = true,	-- Mereldar Child
 	[221980] = true,	-- Faerin Lothar
+	[222239] = true,	-- Scrit
+	[224618] = true,	-- Danagh's Cogwalker
+	[211444] = true,	-- Flynn Fairwind
 }
 
+local ReturnEmptyFunctionMeta = { __index = function() return app.ReturnFalse end}
+local EmptyFunctionTable = setmetatable({}, ReturnEmptyFunctionMeta)
+local ReturnEmptyTableMeta = { __index = function() return EmptyFunctionTable end}
 local IgnoredQuestChecksByTypes = setmetatable({
-	Item = {
+	Item = setmetatable({
 		coord = app.ReturnTrue,
 		provider = app.ReturnTrue,
-	},
-	Player = {
+	}, ReturnEmptyFunctionMeta),
+	Player = setmetatable({
 		coord = app.ReturnTrue,
 		provider = app.ReturnTrue
-	},
-	Creature = {
+	}, ReturnEmptyFunctionMeta),
+	Creature = setmetatable({
 		coord = function(id) return MobileNPCDB[id] end,
-	}
-}, { __index = function() return app.EmptyTable end})
+	}, ReturnEmptyFunctionMeta),
+}, ReturnEmptyTableMeta)
 
 local GuidTypeProviders = {
 	Item = "i",
@@ -276,8 +293,20 @@ local function OnQUEST_DETAIL(...)
 
 	local guid = UnitGUID("questnpc") or UnitGUID("npc")
 	local providerid, guidtype, _
-	if guid then guidtype, _, _, _, _, providerid = ("-"):split(guid) end
+	if not guid then
+		app.print("No Quest check performed for Quest #", questID,"[GUID]")
+		return
+	end
+	-- TODO: would need to be fixed for Item type
+	guidtype, _, _, _, _, providerid = ("-"):split(guid)
 	providerid = tonumber(providerid)
+	if not providerid or not guidtype then
+		-- app.print("Unknown Quest Provider",guidtype,providerid,"during Contribute check!")
+		if not IgnoredQuestChecksByTypes[guidtype].provider() then
+			app.print("No Quest check performed for Quest #", questID,"[ProviderID]")
+		end
+		return
+	end
 	app.PrintDebug(guidtype,providerid,app.NPCNameFromID[providerid] or app.ObjectNames[providerid]," => Quest #", questID)
 
 	-- check coord distance
@@ -307,7 +336,7 @@ local function OnQUEST_DETAIL(...)
 	end
 
 	-- check provider
-	if not IgnoredQuestChecksByTypes[guidtype].provider then
+	if not IgnoredQuestChecksByTypes[guidtype].provider() then
 		Check_providers(questID, questRef, GuidTypeProviders[guidtype], providerid)
 	end
 	-- app.PrintDebug("Contributor.OnQUEST_DETAIL.Done")

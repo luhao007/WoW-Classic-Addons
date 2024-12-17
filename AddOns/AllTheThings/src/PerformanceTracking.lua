@@ -94,34 +94,9 @@ local function GetPerfForScope(t, scope)
 	return scopes[t] or (scope and scopes.__new(t, scope)) or nil
 end
 
-local function perf_replace_function(func, key, scope)
-	if type(func) ~= "function" then return func end
-	local perfScope = GetPerfForScope(func, scope or tostring(func))
-	if not perfScope then
-		print("Perf.F.NOPERF:",func,key,scope)
-		return func
-	end
-
-	-- Perf capture of func calls
-	local typePerf = perfScope[key];
-	-- print("Perf.F:",perfScope.__scope,key)
-	return function(...)
-		local now = GetTimePreciseSec();
-		-- if app.IsReady then print(now,perfScope.__scope,key,">",...) end
-		local res = {func(...)};
-		-- print(now,perfScope.__scope,key,"<")
-		typePerf.time = typePerf.time + (GetTimePreciseSec() - now);
-		typePerf.count = typePerf.count + 1;
-		return unpack(res);
-	end
-end
-
 -- Returns the Function wrapped in a performance capture function.
 -- NOTE: The Caller must replace the original reference
 local function CaptureFunction(func, key, scope)
-	-- GetPerfForScope(func, scope or tostring(func))
-
-	-- return perf_replace_function(func, key, scope);
 
 	if type(func) ~= "function" then return func end
 	local perfScope = GetPerfForScope(func, scope or tostring(func))
@@ -167,6 +142,7 @@ end
 local perf_meta_capture
 local function AutoCaptureTable(t, scope)
 	if IgnorePerf(t, scope) then return t end
+	CaptureTable(t, scope)
 	local perf = GetPerfForScope(t, scope or tostring(t))
 
 	-- setup the captured table for auto-tacking
@@ -212,7 +188,7 @@ perf_meta_capture = {
 	end,
 }
 
--- Sets a metatable.__newindex on the given table which automatically performance-captures all assigned keys of the table (if applicable)
+-- Performs CaptureTable and sets a metatable.__newindex on the given table which automatically performance-captures all assigned keys of the table (if applicable)
 performance.AutoCaptureTable = AutoCaptureTable
 -- Replaces all functions in the provided table with performance capture functions of those functions
 performance.CaptureTable = CaptureTable

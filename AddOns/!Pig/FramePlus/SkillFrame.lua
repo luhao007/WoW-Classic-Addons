@@ -306,8 +306,14 @@ local function TradeSkillFunc()
 			TradeSkillCreateButton:ClearAllPoints()
 			TradeSkillCreateButton:SetPoint("RIGHT", TradeSkillCancelButton, "LEFT", -1, 0)
 			--分类下拉菜单位置
-			TradeSkillInvSlotDropDown:ClearAllPoints()
-			TradeSkillInvSlotDropDown:SetPoint("TOPLEFT", TradeSkillFrame, "TOPLEFT", 498, -40)
+			local SlotDropDown=TradeSkillInvSlotDropDown or TradeSkillInvSlotDropdown
+			if SlotDropDown then
+				SlotDropDown:SetPoint("TOPRIGHT", TradeSkillFrame, "TOPRIGHT", -60, -44)
+				-- local SubDropDown=TradeSkillSubClassDropDown or TradeSkillSubClassDropdown	
+				-- if SubDropDown then
+				-- 	SubDropDown:SetPoint("RIGHT", SlotDropDown, "RIGHT", -5, 0)
+				-- end
+			end
 			--材料齐备
 			if TradeSkillFrameAvailableFilterCheckButton then
 				TradeSkillFrameAvailableFilterCheckButton:ClearAllPoints()

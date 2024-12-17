@@ -69,14 +69,19 @@ do
 		local _t, id = cache.GetCached(t);
 		--local IDNumber, Name, Points, Completed, Month, Day, Year, Description, Flags, Image, RewardText, isGuildAch = GetAchievementInfo(t[KEY]);
 		local _, name, _, _, _, _, _, _, flags, icon = GetAchievementInfo(id);
-		_t.silentLink = GetAchievementLink(id)
+		local silentLink = GetAchievementLink(id)
+		if not silentLink then
+			app.PrintDebug(Colorize("Achievement with no Link",app.Colors.ChatLinkError),id)
+			silentLink = name or "achievementID:"..id
+		end
+		_t.silentLink = silentLink
 		local accountWide = FlagsUtil_IsSet(tonumber(flags) or 0, FLAG_AccountWide)
 		_t.accountWide = accountWide
 		if accountWide then
-			local len = string_len(_t.silentLink)
-			_t.text = Colorize(string_sub(_t.silentLink,11,len - 2),app.Colors.Account)
+			local len = string_len(silentLink)
+			_t.text = Colorize(string_sub(silentLink,11,len - 2),app.Colors.Account)
 		else
-			_t.text = _t.silentLink
+			_t.text = silentLink
 		end
 		_t.name = name or ("Achievement #"..id);
 		_t.icon = icon or QUESTION_MARK_ICON;
@@ -125,11 +130,7 @@ do
 		end,
 		collectible = function(t) return app.Settings.Collectibles[CACHE] end,
 		collected = function(t)
-			local id = t[KEY];
-			-- character collected
-			if app.IsCached(CACHE, id) then return 1; end
-			-- account-wide collected
-			if app.IsAccountTracked(CACHE, id) then return 2; end
+			return app.TypicalCharacterCollected(CACHE, t[KEY])
 		end,
 		saved = function(t)
 			local id = t[KEY];
@@ -414,16 +415,13 @@ do
 		end,
 		collectible = function(t) return app.Settings.Collectibles.Achievements end,
 		collected = function(t)
-			-- character saved
+			-- character saved criteria
 			if t.saved then return 1 end
-			local id = t.achievementID
-			-- account-wide collected achievement
-			if app.IsAccountTracked("Achievements", id) then return 2 end
+			-- otherwise completion based on achievement
+			return app.TypicalCharacterCollected("Achievements", t.achievementID)
 		end,
+		trackable = app.ReturnTrue,
 		saved = function(t)
-			local id = t.achievementID
-			-- character collected achievement
-			if app.IsCached("Achievements", id) then return 1 end
 			return cache.GetCachedField(t, "saved")
 		end,
 		index = function(t)

@@ -5,7 +5,7 @@ if not mod:IsClassic() then--on classic, it's normal10,normal25, defined in toc,
 	mod.statTypes = "normal,timewalker"
 end
 
-mod:SetRevision("20240512232312")
+mod:SetRevision("20241103133102")
 mod:SetCreatureID(32867, 32927, 32857)
 mod:SetEncounterID(1140)
 if mod:IsPostCata() then
@@ -18,6 +18,7 @@ mod:SetModelID(28344)
 mod:SetUsedIcons(1, 2, 3, 4, 5, 6, 7, 8)
 mod:SetBossHPInfoToHighest()
 mod:SetHotfixNoticeRev(20230122000000)
+mod:SetZone(603)
 
 mod:RegisterCombat("combat")
 
