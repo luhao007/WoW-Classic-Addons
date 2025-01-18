@@ -998,6 +998,8 @@ if tocversion<50000 then
 		end
 	elseif classId==4 then--盗贼
 		Item_Spell_List[2] ={2842};
+	elseif classId==6 then
+		Item_Spell_List[2] ={53428,50977};
 	elseif classId==8 then --法师
 		local englishFaction, _ = UnitFactionGroup("player")
 		if englishFaction=="Alliance" then

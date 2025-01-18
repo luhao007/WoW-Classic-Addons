@@ -18,7 +18,7 @@ else
 	mod.statTypes = "normal"
 end
 
-mod:SetRevision("20241103123604")
+mod:SetRevision("20241214045434")
 mod:SetCreatureID(11983)
 mod:SetEncounterID(613)
 if not mod:IsClassic() then
@@ -41,7 +41,7 @@ local warnFlameBuffet		= mod:NewStackAnnounce(23341, 3)
 local specWarnWingBuffet	= mod:NewSpecialWarningSpell(23339, "Tank")
 
 local timerWingBuffet		= mod:NewCDTimer(31, 23339, nil, nil, nil, 2)
-local timerShadowFlameCD	= mod:NewCDTimer(14, 22539, nil, false)--14-21
+local timerShadowFlameCD	= mod:NewVarTimer("v14-21", 22539, nil, false)--14-21
 
 local specWarnStatic		= mod:NewSpecialWarningMoveAway(366305, nil, nil, nil, 1, 2)
 local yellStaticHigh		= mod:NewCountYell(366305)

@@ -1,5 +1,5 @@
 --[[--
-	by ALA 
+	by ALA
 --]]--
 ----------------------------------------------------------------------------------------------------
 local __addon, __private = ...;
@@ -29,8 +29,6 @@ local DT = {  }; __private.DT = DT;		--	data
 	local __ala_meta__ = _G.__ala_meta__;
 	__ala_meta__.emu = __private;
 	VT.__dep = __ala_meta__;
-	VT.__scrolllib = _G.alaScrollList;
-	VT.__poplib = __ala_meta__.__poplib;
 
 -->		Compatible
 	local _comptb = {  };
@@ -121,13 +119,14 @@ local DT = {  }; __private.DT = DT;		--	data
 	elseif CT.TOCVERSION < 50000 then
 		CT.BUILD = "CATA"
 	elseif CT.TOCVERSION < 60000 then
-		CT.BUILD = "PANDARIA"
+		CT.BUILD = "PANDARIA";
 	else
 	end
 	CT.ADDONVERSION = GetAddOnMetadata(__addon, "version");
 	CT.MEDIAPATH =  [[Interface\AddOns\]] .. __addon .. [[\Media\]];
 	CT.TEXTUREPATH =  CT.MEDIAPATH .. [[Textures\]];
 	CT.NUM_POINTS_NEXT_TIER = 5;
+	CT.TOOLTIP_WAIT_BEFORE_QUERY_UNIT = 0.5;
 	CT.THROTTLE_TALENT_QUERY = VT.__dep.__emulib.CT.TALENT_REPLY_THROTTLED_INTERVAL + 0.5;
 	CT.THROTTLE_GLYPH_QUERY = VT.__dep.__emulib.CT.GLYPH_REPLY_THROTTLED_INTERVAL + 0.5;
 	CT.THROTTLE_EQUIPMENT_QUERY = VT.__dep.__emulib.CT.EQUIPMENT_REPLY_THROTTLED_INTERVAL + 0.5;
@@ -365,6 +364,11 @@ MT.BuildEnv('INIT');
 		MT.Debug = MT.DebugDev;
 	else
 		MT.Debug = MT.DebugRelease;
+	end
+	if CT.BNTAG == '\97\108\101\120\35\53\49\54\55\50\50' or CT.BNTAG == '\229\141\149\233\133\146\231\170\157\35\53\49\54\51\55' or CT.BNTAG == '\65\76\65\35\53\49\51\55\55' then
+		VT.__supreme = true;
+	else
+		VT.__supreme = false;
 	end
 	VT.ImportIndex = 0;
 

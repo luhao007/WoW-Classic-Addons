@@ -1161,9 +1161,9 @@ settings.CreateInformationType("ExclusionFilters", {
 		local Filter = app.Modules.Filter
 		for filterName,filterFunc in pairs(Filter.Filters) do
 			if not filterFunc(reference) then
-				excludes[#excludes + 1] = Colorize(filterName, app.Colors.ChatLinkError)
+				excludes[#excludes + 1] = Colorize(filterName, Filter.Get[filterName]() and app.Colors.ChatLinkError or app.Colors.RemovedWithPatch)
 			else
-				excludes[#excludes + 1] = Colorize(filterName, app.Colors.ChatLinkHQT)
+				excludes[#excludes + 1] = Colorize(filterName, Filter.Get[filterName]() and app.Colors.Time or app.Colors.ChatLinkHQT)
 			end
 		end
 		if #excludes > 0 then
@@ -1212,4 +1212,17 @@ settings.CreateInformationType("hash", {
 	priority = 99999,
 	text = "DEBUG: hash",
 	HideCheckBox = not app.Debugging,
+})
+settings.CreateInformationType("bonuses", {
+	priority = 99999,
+	text = "DEBUG: Item Bonuses",
+	HideCheckBox = not app.Debugging,
+	Process = function(t, data, tooltipInfo)
+		local bonuses = data.bonuses
+		if not bonuses or #bonuses < 1 then return end
+		tinsert(tooltipInfo, {
+			left = "Item Bonuses",
+			right = app.TableConcat(bonuses, nil, nil, " | ")
+		});
+	end
 })

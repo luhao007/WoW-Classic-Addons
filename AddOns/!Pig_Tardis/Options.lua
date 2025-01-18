@@ -14,8 +14,9 @@ local SendAddonMessage = SendAddonMessage or C_ChatInfo and C_ChatInfo.SendAddon
 local TardisInfo = {}
 addonTable.TardisInfo=TardisInfo
 ------------
+local QuickBut_ID=13
 local GnName,GnUI,GnIcon,FrameLevel = L["PIGaddonList"][addonName],"Tardis_UI",132327,30
-TardisInfo.uidata={GnName,GnUI,GnIcon,FrameLevel}
+TardisInfo.uidata={GnName,GnUI,GnIcon,FrameLevel,QuickBut_ID}
 local fuFrame,fuFrameBut,Tooltip,hidetishi = unpack(Data.Ext[L.extLsit[1]])
 hidetishi()
 TardisInfo.fuFrame,TardisInfo.fuFrameBut=fuFrame,fuFrameBut
@@ -31,18 +32,19 @@ function TardisInfo.ADD_Options()
 			fuFrame.SetListF:Hide()
 			Pig_Options_RLtishi_UI:Show()
 		end
-		QuickButUI.ButList[13]()
+		QuickButUI.ButList[QuickBut_ID]()
+		QuickButUI.ButList[QuickBut_ID+1]()
 	end);
 	fuFrame.Open.QKBut:SetScript("OnClick", function (self)
 		if self:GetChecked() then
 			PIGA["Tardis"]["AddBut"]=true
-			QuickButUI.ButList[13]()
+			QuickButUI.ButList[QuickBut_ID]()
 		else
 			PIGA["Tardis"]["AddBut"]=false
 			Pig_Options_RLtishi_UI:Show();
 		end
 	end);
-	QuickButUI.ButList[13]=function()	
+	QuickButUI.ButList[QuickBut_ID]=function()	
 		if PIGA["QuickBut"]["Open"] and PIGA["Tardis"]["Open"] and PIGA["Tardis"]["AddBut"] then
 			local QkButUI = "QkBut_Invite"
 			if _G[QkButUI] then return end
@@ -78,7 +80,7 @@ function TardisInfo.ADD_Options()
 		whileDead = true,
 		hideOnEscape = true,
 	}
-	---------========
+	---------
 	fuFrame.SetListline = PIGLine(fuFrame,"TOP",-66)
 	fuFrame.SetListF = PIGFrame(fuFrame)
 	fuFrame.SetListF:SetPoint("TOPLEFT",fuFrame.SetListline,"BOTTOMLEFT",0,0);
@@ -135,7 +137,7 @@ function TardisInfo.ADD_Options()
 			end);
 		end
 	end
-	---
+	TardisInfo.ADD_UI()
 end
 --======
 fuFrame:HookScript("OnShow", function (self)
@@ -164,6 +166,7 @@ fuFrame:SetScript("OnEvent",function(self, event, arg1, arg2, arg3, arg4, arg5)
 		self:UnregisterEvent("ADDON_LOADED")
 		addonTable.Load_Config()
 		Pig_OptionsUI:SetVer_EXT(arg1,self)
+		TardisInfo.ADD_Options()
 	end
 	if event=="PLAYER_LOGIN" then
 		PIGA["Ver"][addonName]=PIGA["Ver"][addonName] or 0
@@ -174,9 +177,6 @@ fuFrame:SetScript("OnEvent",function(self, event, arg1, arg2, arg3, arg4, arg5)
 		else
 			SendMessage(fuFrame.GetVer)
 		end
-		TardisInfo.ADD_Options()
-		TardisInfo.ADD_UI()
-		QuickButUI.ButList[13]()
 	end
 	if event=="CHAT_MSG_ADDON" then
 		GetExtVer(self,addonName,self.VersionID, fuFrame.FasVer, arg1, arg2, arg4)

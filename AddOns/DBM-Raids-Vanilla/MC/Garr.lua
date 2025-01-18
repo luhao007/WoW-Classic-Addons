@@ -12,7 +12,7 @@ end
 local mod	= DBM:NewMod("Garr-Classic", "DBM-Raids-Vanilla", catID)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20241103123604")
+mod:SetRevision("20241214045434")
 mod:SetCreatureID(DBM:IsSeasonal("SeasonOfDiscovery") and 228432 or 12057)--, 12099
 mod:SetEncounterID(666)
 mod:SetModelID(12110)
@@ -33,7 +33,7 @@ mod:RegisterEventsInCombat(
 local warnAntiMagicPulse	= mod:NewSpellAnnounce(19492, 2)
 local warnImmolate			= mod:NewTargetNoFilterAnnounce(15732, 2, nil, false, 3)
 
-local timerAntiMagicPulseCD	= mod:NewCDTimer(15.7, 19492, nil, nil, nil, 2)--15.7-20 variation
+local timerAntiMagicPulseCD	= mod:NewVarTimer("v15.7-20", 19492, nil, nil, nil, 2)--15.7-20 variation
 local timerMagmakinCD		= mod:NewCDTimer(5, 20506, nil, nil, nil, 1)--5-6.5 variation
 
 function mod:OnCombatStart(delay)

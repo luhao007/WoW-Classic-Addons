@@ -37,6 +37,8 @@ function LFG:OnEnable()
     self.bossCache = {}
     self.welcome = {}
     self.inCity = false
+    self.voiceList = {}
+    self.medalMap = {}
     self.filters = setmetatable({}, {
         __mode = 'k',
         __index = function(t, k)
@@ -90,6 +92,8 @@ function LFG:OnEnable()
     self:RegisterServer('SFKWS')
     self:RegisterServer('SBKWS')
     self:RegisterServer('SQG')
+    self:RegisterServer('SQDU')
+    self:RegisterServer('SQGLI')
 
     self:RegisterChallenge('SGA', 'SGETACTIVITY')
     self:RegisterChallenge('SGP', 'SACTIVITYGROUPPROGRESS')
@@ -234,7 +238,7 @@ function LFG:AddActivity(activity)
             end
         end
     end
-
+    self:SendServerCQGLI(activity:GetLeader())
     if not insertTo then
         tinsert(self.activities, activity)
     else
@@ -416,6 +420,15 @@ function LFG:Clean()
     end
 end
 
+local function isInTable(value, tbl)
+    for _, v in ipairs(tbl) do
+        if v == value then
+            return true
+        end
+    end
+    return false
+end
+
 function LFG:Search(path, activityId, modeId, search)
     if search and search:trim() == '' then
         search = nil
@@ -432,10 +445,15 @@ function LFG:Search(path, activityId, modeId, search)
     end
 
     local result = {}
+    local VoiceActivityResult = {}
     for _, activity in ipairs(self.activities) do
         local isBlack = ns.IsBlackListData(activity:GetComment())
         if activity:Match(path, activityId, modeId, search) and not isBlack then
-            tinsert(result, activity)
+            if isInTable(activity:GetLeader(), self.voiceList) then
+                tinsert(VoiceActivityResult, activity)
+            else
+                tinsert(result, activity)
+            end
         end
     end
     if ns.Addon.db.global.SortFilteringData and not search then
@@ -443,7 +461,11 @@ function LFG:Search(path, activityId, modeId, search)
             for _, activity in ipairs(self.chats) do
                 local isBlack = ns.IsBlackListData(activity:GetComment())
                 if activity:Match(nil, nil, nil, data) and not isBlack then
-                    tinsert(result, activity)
+                    if isInTable(activity:GetLeader(), self.voiceList) then
+                        tinsert(VoiceActivityResult, activity)
+                    else
+                        tinsert(result, activity)
+                    end
                 end
             end
         end
@@ -453,11 +475,15 @@ function LFG:Search(path, activityId, modeId, search)
         for _, activity in ipairs(self.chats) do
             local isBlack = ns.IsBlackListData(activity:GetComment())
             if activity:Match(nil, nil, nil, search) and not isBlack then
-                tinsert(result, activity)
+                if isInTable(activity:GetLeader(), self.voiceList) then
+                    tinsert(VoiceActivityResult, activity)
+                else
+                    tinsert(result, activity)
+                end
             end
         end
     end
-    return result
+    return result, VoiceActivityResult
 end
 
 function LFG:SERVER_CONNECTED()
@@ -466,6 +492,8 @@ function LFG:SERVER_CONNECTED()
     self:SendMessage('MEETINGHORN_SERVER_CONNECTED')
 
     self:SendServerCQG()
+    local playerName = UnitName("player")
+    self:SendServerCQGLI(playerName)
 
     --[=[@debug@
     print('Connected', ns.ADDON_VERSION, ns.GetPlayerItemLevel(), UnitGUID('player'), UnitLevel('player'),
@@ -474,7 +502,20 @@ function LFG:SERVER_CONNECTED()
 end
 
 function LFG:SendServerCQG()
-     self:SendServer('CQG', UnitGUID('player'))
+    self:SendServer('CQG', UnitGUID('player'))
+end
+
+function LFG:SendServerCQDU()
+    self:SendServer('CQDU')
+end
+
+function LFG:SendServerCQGLI(LeaderName)
+    if ns.Addon.db.realm.starRegiment.regimentData[LeaderName] == nil or
+    ns.Addon.db.realm.starRegiment.regimentData[LeaderName].level == -1 or
+        self.medalMap[LeaderName] ~= nil then
+        return
+    end
+    self:SendServer('CQGLI', LeaderName)
 end
 
 function LFG:SNEWVERSION(_, version, url, changelog)
@@ -1007,4 +1048,20 @@ end
 function LFG:SBKWS(eventName, data)
     ns.Addon.db.global.BlackListData = data
 end
+
+function LFG:SQDU(eventName, data)
+    self.voiceList = data
+end
+
+function LFG:SQGLI(eventName,LeaderName, data)
+    self.medalMap[LeaderName] = data
+end
+
+function LFG:GetMedalList(LeaderName)
+    if self.medalMap[LeaderName] == nil or self.medalMap[LeaderName]["medal"] == nil then
+        return  false
+    end
+    return self.medalMap[LeaderName]["medal"]
+end
+
 

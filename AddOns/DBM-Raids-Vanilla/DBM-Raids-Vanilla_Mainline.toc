@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: MysticalOS
-## Version: r760
+## Version: r775
 
 ## Title: |cffffe00a<|r|cffff7d0aDBM Mod|r|cffffe00a>|r |cffff6010Raids (Vanilla)|r
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFF69CCF0团队|r |cFF22B14C经典旧世|r
@@ -46,6 +46,11 @@ localization.kr.lua
 localization.mx.lua
 localization.ru.lua
 
+Polyfills.lua
+
+# Temporary, will be moved to Core
+Blocks\Gtfo.lua
+
 AQ40\AQ40Trash.lua
 AQ40\Skeram.lua
 AQ40\ThreeBugs.lua
@@ -65,6 +70,7 @@ AQ20\Buru.lua
 AQ20\Ayamiss.lua
 AQ20\Ossirian.lua
 
+BWL\BWLTrash.lua
 BWL\Razorgore.lua
 BWL\Vaelastrasz.lua
 BWL\Broodlord.lua
@@ -73,7 +79,6 @@ BWL\Ebonroc.lua
 BWL\Flamegor.lua
 BWL\Chromaggus.lua
 BWL\Nefarian.lua
-BWL\TalonGuards.lua
 
 MC\MCTrash.lua
 MC\Lucifron.lua

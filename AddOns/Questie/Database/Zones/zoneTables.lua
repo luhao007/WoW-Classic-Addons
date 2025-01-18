@@ -7,7 +7,7 @@ local ZoneDB = QuestieLoader:ImportModule("ZoneDB")
 --- Dungeons don't have a UiMapId!
 --- https://wow.gamepedia.com/UiMapID/Classic
 ---@type table<AreaId, UiMapId>
-ZoneDB.private.areaIdToUiMapId = {
+ZoneDB.private.areaIdToUiMapId = [[return {
     [1] = 1426, -- Dun Morogh
     [3] = 1418, -- Badlands
     [4] = 1419, -- Blasted Lands
@@ -249,6 +249,7 @@ ZoneDB.private.areaIdToUiMapId = {
     --[5789] = 402, -- End Time
     --[5789] = 403, -- End Time
     --[5892] = 410, -- Dragon Soul
+    [5786] = 370, -- Nexus Legendary
     [5788] = 398, -- Well of Eternity
     [5844] = 399, -- Hour of Twilight
     --[5844] = 400, -- Hour of Twilight
@@ -278,10 +279,10 @@ ZoneDB.private.areaIdToUiMapId = {
     [4494] = 132, -- Ahn'kahet: The Old Kingdom
     [4720] = 174, -- The Lost Isles
     [4950] = 293, -- Grim Batol
-}
+}]]
 
 ---@type table<UiMapId, AreaId>
-ZoneDB.private.uiMapIdToAreaId = {
+ZoneDB.private.uiMapIdToAreaId = [[return {
     [1426] = 1, -- Dun Morogh
     [1418] = 3, -- Badlands
     [1419] = 4, -- Blasted Lands
@@ -624,13 +625,13 @@ ZoneDB.private.uiMapIdToAreaId = {
     --[160] = 4196, -- Drak'Tharon Keep
     --[174] = 4720, -- The Lost Isles
     --[293] = 4950, -- Grim Batol
-}
+}]]
 
 --? If you want to add something overwrite the data after the table
 --! Generated table, add something manually here and i'll kill you //Logon
 
 ---@type table<AreaId, AreaId> table<SubAreaId, ParentAreaId>
-ZoneDB.private.subZoneToParentZone = {
+ZoneDB.private.subZoneToParentZone = [[return {
   [2] = 40, -- Longshore -> Westfall
   [7] = 33, -- Blackwater Cove -> Stranglethorn Vale
   [9] = 12, -- Northshire Valley -> Elwynn Forest
@@ -2756,6 +2757,7 @@ ZoneDB.private.subZoneToParentZone = {
   [4906] = 4820, -- The Shadow Throne -> Halls of Reflection
   [4908] = 4820, -- The Hidden Passage -> Halls of Reflection
   [4910] = 4812, -- Frostmourne -> Icecrown Citadel
+  [5786] = 4265, -- The Nexus -> The Nexus
   [14141] = 210, -- Icecrown -> Icecrown
   [14289] = 14288, -- Westspark Workshop -> Wintergrasp
   [14290] = 14288, -- The Steppe of Life -> Wintergrasp
@@ -2810,15 +2812,13 @@ ZoneDB.private.subZoneToParentZone = {
   [14339] = 14287, -- Agmar's Hammer -> Dragonblight
   [14340] = 14287, -- Coldwind Pass -> Dragonblight
   [14341] = 14287, -- Angrathar the Wrathgate -> Dragonblight
-}
-ZoneDB.private.subZoneToParentZone[3545] = 3483 -- Hellfire Citadel -> Hellfire Peninsula
-ZoneDB.private.subZoneToParentZone[3563] = 3483 -- Hellfire Citadel -> Hellfire Peninsula
+}]]
 
 -- Different source of zoneIds
 -- These are not in use anymore but are quite helpful when fixing the database
 -- https://www.ownedcore.com/forums/world-of-warcraft/world-of-warcraft-emulator-servers/60411-zone-ids.html
 ---@enum ZoneIDs
-ZoneDB.private.zoneIDs = {
+ZoneDB.zoneIDs = {
     DUN_MOROGH = 1,
     BADLANDS = 3,
     BLASTED_LANDS = 4,
@@ -3044,33 +3044,35 @@ ZoneDB.private.zoneIDs = {
     MOLTEN_FRONT = 5733,
     DARKMOON_FAIRE_ISLAND = 5861,
     DEMON_FALL_CANYON = 15475, -- SoD Dungeon
+    THE_TAINTED_SCAR = 15531, -- SoD Lord Kazzak Raid
+    THE_BURNING_OF_ANDORHAL = 15828, -- SoD Paladin specific solo dungeon
 }
 
 -- https://wowpedia.fandom.com/wiki/InstanceID --> Classic
 ZoneDB.instanceIdToUiMapId = {
-    [33] = ZoneDB.private.zoneIDs.SHADOWFANG_KEEP,
-    [36] = ZoneDB.private.zoneIDs.THE_DEADMINES,
-    [43] = ZoneDB.private.zoneIDs.WAILING_CAVERNS,
-    [47] = ZoneDB.private.zoneIDs.RAZORFEN_KRAUL,
-    [48] = ZoneDB.private.zoneIDs.BLACKFATHOM_DEEPS,
-    [70] = ZoneDB.private.zoneIDs.ULDAMAN,
-    [90] = ZoneDB.private.zoneIDs.GNOMEREGAN,
-    [109] = ZoneDB.private.zoneIDs.THE_TEMPLE_OF_ATAL_HAKKAR,
-    [129] = ZoneDB.private.zoneIDs.RAZORFEN_DOWNS,
-    [189] = ZoneDB.private.zoneIDs.SCARLET_MONASTERY,
-    [209] = ZoneDB.private.zoneIDs.ZUL_FARRAK,
-    [229] = ZoneDB.private.zoneIDs.BLACKROCK_SPIRE,
-    [230] = ZoneDB.private.zoneIDs.BLACKROCK_DEPTHS,
-    [249] = ZoneDB.private.zoneIDs.ONYXIAS_LAIR,
-    [289] = ZoneDB.private.zoneIDs.SCHOLOMANCE,
-    [309] = ZoneDB.private.zoneIDs.ZUL_GURUB,
-    [329] = ZoneDB.private.zoneIDs.STRATHOLME,
-    [349] = ZoneDB.private.zoneIDs.MARAUDON,
-    [389] = ZoneDB.private.zoneIDs.RAGEFIRE_CHASM,
-    [409] = ZoneDB.private.zoneIDs.MOLTEN_CORE,
-    [429] = ZoneDB.private.zoneIDs.DIRE_MAUL,
-    [469] = ZoneDB.private.zoneIDs.BLACKWING_LAIR,
-    [509] = ZoneDB.private.zoneIDs.AHN_QIRAJ,
-    [531] = ZoneDB.private.zoneIDs.RUINS_OF_AHN_QIRAJ,
-    [533] = ZoneDB.private.zoneIDs.NAXXRAMAS,
+    [33] = ZoneDB.zoneIDs.SHADOWFANG_KEEP,
+    [36] = ZoneDB.zoneIDs.THE_DEADMINES,
+    [43] = ZoneDB.zoneIDs.WAILING_CAVERNS,
+    [47] = ZoneDB.zoneIDs.RAZORFEN_KRAUL,
+    [48] = ZoneDB.zoneIDs.BLACKFATHOM_DEEPS,
+    [70] = ZoneDB.zoneIDs.ULDAMAN,
+    [90] = ZoneDB.zoneIDs.GNOMEREGAN,
+    [109] = ZoneDB.zoneIDs.THE_TEMPLE_OF_ATAL_HAKKAR,
+    [129] = ZoneDB.zoneIDs.RAZORFEN_DOWNS,
+    [189] = ZoneDB.zoneIDs.SCARLET_MONASTERY,
+    [209] = ZoneDB.zoneIDs.ZUL_FARRAK,
+    [229] = ZoneDB.zoneIDs.BLACKROCK_SPIRE,
+    [230] = ZoneDB.zoneIDs.BLACKROCK_DEPTHS,
+    [249] = ZoneDB.zoneIDs.ONYXIAS_LAIR,
+    [289] = ZoneDB.zoneIDs.SCHOLOMANCE,
+    [309] = ZoneDB.zoneIDs.ZUL_GURUB,
+    [329] = ZoneDB.zoneIDs.STRATHOLME,
+    [349] = ZoneDB.zoneIDs.MARAUDON,
+    [389] = ZoneDB.zoneIDs.RAGEFIRE_CHASM,
+    [409] = ZoneDB.zoneIDs.MOLTEN_CORE,
+    [429] = ZoneDB.zoneIDs.DIRE_MAUL,
+    [469] = ZoneDB.zoneIDs.BLACKWING_LAIR,
+    [509] = ZoneDB.zoneIDs.AHN_QIRAJ,
+    [531] = ZoneDB.zoneIDs.RUINS_OF_AHN_QIRAJ,
+    [533] = ZoneDB.zoneIDs.NAXXRAMAS,
 }

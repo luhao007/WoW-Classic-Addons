@@ -5498,7 +5498,7 @@ end
 local function ShowTianfuInfo(self,fjname,zhiye,level,tfData,fwid,from)
 	if not tfData then return end
 	local tianfudata = {["xulie"]=0,[1]=0,[2]=0,[3]=0}
-	local xnum = strlen(tfData)
+	local xnum = #tfData
 	local TFinfo = {}
 	for i=1,xnum do
 		TFinfo[i]=tfData:sub(i,i)
@@ -5900,7 +5900,7 @@ function TalentData.GetTianfuIcon_YC(zhiye,namex,from,tfData)
 	end
 	for id=1,#tfTXTData do
 		if tfTXTData[id]~="" then
-			local xnum = strlen(tfTXTData[id])
+			local xnum = #tfTXTData[id]
 			local TFinfo = {}
 			for i=1,xnum do
 				TFinfo[i]=tfTXTData[id]:sub(i,i)

@@ -1,7 +1,13 @@
 local mod	= DBM:NewMod("FaerlinaVanilla", "DBM-Raids-Vanilla", 1)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20241103123604")
+if DBM:IsSeasonal("SeasonOfDiscovery") then
+	mod.statTypes = "normal,heroic,mythic"
+else
+	mod.statTypes = "normal"
+end
+
+mod:SetRevision("20241222110740")
 mod:SetCreatureID(15953)
 mod:SetEncounterID(1110)
 mod:SetModelID(15940)
@@ -29,7 +35,7 @@ local timerEnrage			= mod:NewCDTimer(56, 28131, nil, nil, nil, 6)-- 56-76
 mod.vb.enraged = false
 
 function mod:OnCombatStart(delay)
-	timerEnrage:Start(-delay)
+	timerEnrage:Start(56-delay)
 	warnEnrageSoon:Schedule(55 - delay)
 	self.vb.enraged = false
 end

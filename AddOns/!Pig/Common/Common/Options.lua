@@ -72,7 +72,7 @@ end)
 if tocversion<20000 then
 	local classColorTable = {r=0,g=0.44,b=0.87}
 	local colorF = CreateFrame("Frame")
-	colorF:RegisterEvent("ADDON_LOADED")
+	colorF:RegisterEvent("PLAYER_LOGIN")
 	colorF:SetScript("OnEvent", function(self, event, arg1)
 	    if arg1 == addonName then
 	    	if PIGA["Common"]["SHAMAN_Color"] then
@@ -168,7 +168,6 @@ if tocversion<20000 then
 			        end
 			    end)
 			end
-		    self:UnregisterEvent("ADDON_LOADED")
 		end
 	end)
 	fujiF.SHAMAN_Color =PIGCheckbutton_R(fujiF,{"修改"..ClassFile_Name["SHAMAN"]..CLASS_COLORS,"修改"..ClassFile_Name["SHAMAN"]..CLASS_COLORS.."为正式服颜色"},true)

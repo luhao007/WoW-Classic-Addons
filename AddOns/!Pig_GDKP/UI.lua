@@ -492,14 +492,7 @@ function GDKPInfo.ADD_UI()
 	GDKPInfo.ADD_Check(RaidR)
 	--
 	RaidR:Update_DongjieBUT()
-	--新的记录==================================
-	function RaidR.Show_dangqianName()
-		if dangqianName_UI:IsShown() then
-			local fubenN = PIGA["GDKP"]["instanceName"][2] or ""
-			local fubennandu = PIGA["GDKP"]["instanceName"][3] or ""
-			dangqianName_UI:SetText(fubenN.."-"..fubennandu);
-		end
-	end
+	--新的记录===================
 	local function ADD_Instancejilu()
 		local ItemListData = PIGA["GDKP"]["ItemList"]
 		if #ItemListData>0 then
@@ -547,7 +540,7 @@ function GDKPInfo.ADD_UI()
 			PIGA["GDKP"]["Dongjie"] = false;--关闭快照状态
 			local FBname, instanceType, difficultyID, difficultyName = GetInstanceInfo()
 			PIGA["GDKP"]["instanceName"]={GetServerTime(),FBname,difficultyName}
-			RaidR.Show_dangqianName()
+			RaidR.Update_DqName()
 			RaidR:Update_DongjieBUT()
 			RaidR.Update_Item()
 			RaidR.Update_Buzhu_TND()
@@ -567,7 +560,7 @@ function GDKPInfo.ADD_UI()
 		OnCancel = function()
 			local FBname, instanceType, difficultyID, difficultyName = GetInstanceInfo()
 			PIGA["GDKP"]["instanceName"]={GetServerTime(),FBname,difficultyName}
-			RaidR.Show_dangqianName()
+			RaidR.Update_DqName()
 		end,
 		timeout = 0,
 		whileDead = true,
@@ -581,7 +574,7 @@ function GDKPInfo.ADD_UI()
 			if PIGA["GDKP"]["instanceName"][1] then
 				if #PIGA["GDKP"]["ItemList"]==0 then
 					PIGA["GDKP"]["instanceName"]={GetServerTime(),FBname,difficultyName}
-					RaidR.Show_dangqianName()
+					RaidR.Update_DqName()
 				else
 					if PIGA["GDKP"]["instanceName"][2]==FBname then
 						--if PIGA["GDKP"]["instanceName"][3]==difficultyName then
@@ -594,7 +587,7 @@ function GDKPInfo.ADD_UI()
 				end
 			else
 				PIGA["GDKP"]["instanceName"]={GetServerTime(),FBname,difficultyName}
-				RaidR.Show_dangqianName()
+				RaidR.Update_DqName()
 			end
 		--end
 	end

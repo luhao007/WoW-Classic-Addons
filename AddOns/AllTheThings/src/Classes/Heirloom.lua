@@ -57,6 +57,7 @@ do
 	local function HasHigherHeirloomUnlockIDSaved(itemID)
 	end
 	local CreateHeirloomUnlock = app.CreateClass("HeirloomUnlock", "heirloomUnlockID", {
+		-- CACHE = function() return "HeirloomRanks" end,
 		name = function(t)
 			return L.HEIRLOOM_TEXT;
 		end,
@@ -66,6 +67,7 @@ do
 		description = function(t)
 			return L.HEIRLOOM_TEXT_DESC;
 		end,
+		RefreshCollectionOnly = true,	-- remove when fixing event-collection & cache
 		collectible = function(t)
 			return app.Settings.Collectibles.Heirlooms;
 		end,
@@ -96,6 +98,7 @@ do
 
 	local weaponFilterIDs = { 20, 29, 28, 21, 22, 23, 24, 25, 26, 50, 57, 34, 35, 27, 33, 32, 31 };
 	local hierloomLevelFields = {
+		-- CACHE = function() return "HeirloomRanks" end,
 		["level"] = function(t)
 			return 1;
 		end,
@@ -109,6 +112,7 @@ do
 		["description"] = function(t)
 			return L.HEIRLOOMS_UPGRADES_DESC;
 		end,
+		RefreshCollectionOnly = true,	-- remove when fixing event-collection & cache
 		["collectible"] = function(t)
 			return app.Settings.Collectibles.Heirlooms and app.Settings.Collectibles.HeirloomUpgrades;
 		end,
@@ -306,9 +310,30 @@ do
 
 		heirloomIDs = nil
 	end
+
 	if C_Heirloom_GetHeirloomMaxUpgradeLevel then
 		app.AddEventHandler("OnInit", CacheHeirlooms)
 	end
+
+	-- app.AddCollectionReportFormatFunc("HeirloomLevel", function(t)
+	-- 	local itemID, link = t.itemID, t.link or t.silentLink
+	-- 	app.print(L.ITEM_ID_ADDED_RANK:format(link, itemID, (select(5, C_Heirloom_GetHeirloomInfo(itemID)) or 1)))
+	-- end)
+	app.AddEventRegistration("HEIRLOOMS_UPDATED", function(itemID, kind, ...)
+		-- app.PrintDebug("HEIRLOOMS_UPDATED",itemID,kind,...)
+		if itemID then
+			-- local heirloom = app.SearchForObject("heirloomID", itemID, "field")
+			-- TODO: Heirlooms aren't cached when collected so can't use typical logic
+			-- app.SetThingCollected("itemID", itemID, true, true)
+			app.UpdateRawID("itemID", itemID);
+			app.HandleEvent("OnThingCollected", "Heirlooms")
+
+			if app.Settings:GetTooltipSetting("Report:Collected") then
+				local _, link = GetItemInfo(itemID);
+				if link then app.print(L.ITEM_ID_ADDED_RANK:format(link, itemID, (select(5, C_Heirloom_GetHeirloomInfo(itemID)) or 1))); end
+			end
+		end
+	end)
 end
 
 app.AddEventHandler("OnSavedVariablesAvailable", function(currentCharacter, accountWideData)

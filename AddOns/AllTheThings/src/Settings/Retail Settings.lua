@@ -207,13 +207,6 @@ local TooltipSettingsBase = {
 		["u"] = true,
 	},
 };
-local UnobtainableSettingsBase = {
-	__index = {
-		[1] = false,	-- Never Implemented
-		[2] = false,	-- Removed From Game
-		[3] = false,	-- Real Money
-	},
-};
 
 local RawSettings;
 settings.Initialize = function(self)
@@ -228,7 +221,6 @@ settings.Initialize = function(self)
 		if not RawSettings.Unobtainable then RawSettings.Unobtainable = {} end
 		setmetatable(RawSettings.General, GeneralSettingsBase)
 		setmetatable(RawSettings.Tooltips, TooltipSettingsBase)
-		setmetatable(RawSettings.Unobtainable, UnobtainableSettingsBase)
 	end
 
 	-- Initialise custom colors, iterate so if app.Colors gets new colors they aren't lost
@@ -404,6 +396,20 @@ settings.ApplyProfile = function()
 					settings.SetWindowFromProfile(suffix)
 				end
 			end
+
+			-- when applying a profile, clean out any 'false' Unobtainable keys for cleaner settings storage
+			-- since there are no situations where Unobtainables are included by default
+			local unobCopy = app.CloneDictionary(RawSettings.Unobtainable)
+			-- this key is no longer used
+			unobCopy.DoFiltering = false
+			for unobID,set in pairs(unobCopy) do
+				if not set then
+					RawSettings.Unobtainable[unobID] = nil
+				end
+			end
+
+			-- 'Seasonal' set of filters is no longer used
+			RawSettings.Seasonal = nil
 
 			if app.IsReady and settings:Get("Profile:ShowProfileLoadedMessage") then
 				app.print(L.PROFILE..":",settings:GetProfile(true))
@@ -686,7 +692,7 @@ settings.GetUnobtainableFilter = function(self, u)
 	return not u or RawSettings.Unobtainable[u]
 end
 settings.SetUnobtainableFilter = function(self, u, value)
-	self:SetValue("Unobtainable", u, value)
+	self:SetValue("Unobtainable", u, value and true or nil)
 	self:UpdateMode(1);
 end
 

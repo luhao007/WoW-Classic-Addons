@@ -102,6 +102,50 @@ do
 	}, { __index=function(t,key)
 		if not key or key:match("%W") or not key:match(" %/ ") then return 1 end
 	end})
+	local onTooltipForAchievement = function(t, tooltipInfo)
+		local achievementID = t.achievementID;
+		if achievementID and IsShiftKeyDown() then
+			local criteriaDatas,criteriaDatasByUID = {}, {};
+			for criteriaID=1,99999,1 do
+				local criteriaString, criteriaType, completed, _, _, _, _, assetID, quantityString, criteriaUID = GetAchievementCriteriaInfoByID(achievementID, criteriaID);
+				if criteriaString and criteriaUID then
+					criteriaDatasByUID[criteriaUID] = true;
+					tinsert(criteriaDatas, {
+						" [" .. criteriaUID .. "]: " .. tostring(criteriaString),
+						"(" .. tostring(assetID) .. " @ " .. tostring(criteriaType) .. ") " .. tostring(quantityString) .. " " .. app.GetCompletionIcon(completed)
+					});
+				end
+			end
+			local totalCriteria = GetAchievementNumCriteria(achievementID) or 0;
+			if totalCriteria > 0 then
+				for criteriaIndex=1,totalCriteria,1 do
+					---@diagnostic disable-next-line: redundant-parameter
+					local criteriaString, criteriaType, completed, _, _, _, _, assetID, quantityString, criteriaUID = GetAchievementCriteriaInfo(achievementID, criteriaIndex, true);
+					if criteriaString and (not criteriaDatasByUID[criteriaUID] or criteriaUID == 0) then
+						tinsert(criteriaDatas, {
+							" [" .. criteriaUID .. " @ Index: " .. criteriaIndex .. "]: " .. tostring(criteriaString),
+							"(" .. tostring(assetID) .. " @ " .. tostring(criteriaType) .. ") " .. tostring(quantityString) .. " " .. app.GetCompletionIcon(completed)
+						});
+					end
+				end
+			end
+			if #criteriaDatas > 0 then
+				tinsert(tooltipInfo, { left = " " });
+				tinsert(tooltipInfo, {
+					left = "Total Criteria",
+					right = tostring(#criteriaDatas),
+					r = 0.8, g = 0.8, b = 1
+				});
+				for i,criteriaData in ipairs(criteriaDatas) do
+					tinsert(tooltipInfo, {
+						left = criteriaData[1],
+						right = criteriaData[2],
+						r = 1, g = 1, b = 1
+					});
+				end
+			end
+		end
+	end
 	-- This was used to update information about achievement progress following Pet Battles
 	-- This unfortunately triggers all the time and rarely actually represents useful Achievement changes
 	-- TODO: Think of another way to represent Achievement changes post Pet Battles
@@ -113,6 +157,7 @@ do
 	-- end
 	-- app.AddEventRegistration("RECEIVED_ACHIEVEMENT_LIST", DelayedOnUpdateWindows);
 	app.CreateAchievement = app.CreateClass(CLASSNAME, KEY, {
+		CACHE = function() return CACHE end,
 		silentLink = function(t)
 			return cache.GetCachedField(t, "silentLink", CacheInfo);
 		end,
@@ -169,6 +214,9 @@ do
 		back = function(t)
 			return t.sourceIgnored and 0.5 or 0;
 		end,
+		OnTooltip = function(t)
+			return onTooltipForAchievement;
+		end,
 	})
 
 	app.CreateGuildAchievement = function(id, t)
@@ -221,7 +269,7 @@ do
 			text = "Achievement_CriteriaFor",
 			priority = 1.5, HideCheckBox = true, ForceActive = true,
 			Process = function(t, reference, tooltipInfo)
-				if reference.criteriaID and reference.achievementID and not (reference.parent and reference.parent.achievementID) then
+				if reference.criteriaID and reference.achievementID then
 					local achievement = SearchForObject("achievementID", reference.achievementID, "key")
 					tinsert(tooltipInfo, {
 						left = L.CRITERIA_FOR,
@@ -245,9 +293,7 @@ do
 				end
 			end
 		})
-
 	end)
-
 end
 
 -- Achievement Category Lib
@@ -413,6 +459,7 @@ do
 				end
 			end
 		end,
+		RefreshCollectionOnly = true,
 		collectible = function(t) return app.Settings.Collectibles.Achievements end,
 		collected = function(t)
 			-- character saved criteria

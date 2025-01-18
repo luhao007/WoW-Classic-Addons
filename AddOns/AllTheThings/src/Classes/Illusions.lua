@@ -36,6 +36,7 @@ local illusionFields = {
 	icon = function(t)
 		return 132853;
 	end,
+	RefreshCollectionOnly = true,
 	collectible = function(t)
 		return app.Settings.Collectibles[CACHE];
 	end,

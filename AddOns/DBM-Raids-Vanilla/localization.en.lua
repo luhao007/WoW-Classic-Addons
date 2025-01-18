@@ -99,26 +99,26 @@ L:SetGeneralLocalization{
 	name = "C'Thun"
 }
 L:SetWarningLocalization{
-	WarnEyeTentacle			= "Eye Tentacle",
+	WarnEyeTentacle			= "Eye Tentacles",
 	WarnClawTentacle2		= "Claw Tentacle",
 	WarnGiantEyeTentacle	= "Giant Eye Tentacle",
 	WarnGiantClawTentacle	= "Giant Claw Tentacle",
-	SpecWarnWeakened		= "C'Thun Weaken!"
+	SpecWarnWeakened		= "C'Thun Weakened!"
 }
 L:SetTimerLocalization{
-	TimerEyeTentacle		= "Eye Tentacle",
+	TimerEyeTentacle		= "Eye Tentacles",
 	TimerClawTentacle		= "Claw Tentacle",
 	TimerGiantEyeTentacle	= "Giant Eye Tentacle",
 	TimerGiantClawTentacle	= "Giant Claw Tentacle",
 	TimerWeakened			= "Weaken ends"
 }
 L:SetOptionLocalization{
-	WarnEyeTentacle			= "Show warning for Eye Tentacle",
+	WarnEyeTentacle			= "Show warning for Eye Tentacles",
 	WarnClawTentacle2		= "Show warning for Claw Tentacle",
 	WarnGiantEyeTentacle	= "Show warning for Giant Eye Tentacle",
 	WarnGiantClawTentacle	= "Show warning for Giant Claw Tentacle",
 	SpecWarnWeakened		= "Show special warning when boss weaken",
-	TimerEyeTentacle		= "Show timer for next Eye Tentacle",
+	TimerEyeTentacle		= "Show timer for next Eye Tentacles",
 	TimerClawTentacle		= "Show timer for next Claw Tentacle",
 	TimerGiantEyeTentacle	= "Show timer for next Giant Eye Tentacle",
 	TimerGiantClawTentacle	= "Show timer for next Giant Claw Tentacle",
@@ -142,7 +142,8 @@ L:SetGeneralLocalization{
 }
 L:SetWarningLocalization{
 	WarnSubmerge		= "Submerge",
-	WarnEmerge			= "Emerge"
+	WarnEmerge			= "Emerge",
+	SpecWarnEye			= "Look away",
 }
 L:SetTimerLocalization{
 	TimerSubmerge		= "Submerge",
@@ -152,7 +153,8 @@ L:SetOptionLocalization{
 	WarnSubmerge		= "Show warning for submerge",
 	TimerSubmerge		= "Show timer for submerge",
 	WarnEmerge			= "Show warning for emerge",
-	TimerEmerge			= "Show timer for emerge"
+	TimerEmerge			= "Show timer for emerge",
+	SpecWarnEye			= "Show warning for the giant eye"
 }
 
 ----------------
@@ -162,6 +164,20 @@ L = DBM:GetModLocalization("AQ40Trash")
 
 L:SetGeneralLocalization{
 	name = "AQ40 Trash"
+}
+
+L:SetTimerLocalization{
+	TimerExplosion = "Exploding Ghosts"
+}
+
+L:SetWarningLocalization{
+	WarnExplosion = "Single exploding ghost spawned - dodge",
+	SpecWarnExplosion = "Exploding ghosts - dodge",
+}
+L:SetOptionLocalization{
+	WarnExplosion = "Show announce for exploding ghosts ($spell:1214871)",
+	SpecWarnExplosion = "Show special warning when multiple exploding ghosts spawn ($spell:1214871)",
+	TimerExplosion = "Show timer for when multiple exploding ghosts spawn ($spell:1214871)"
 }
 
 ---------------
@@ -225,7 +241,7 @@ L:SetOptionLocalization{
 	WarnDismember	= DBM_CORE_L.AUTO_ANNOUNCE_OPTIONS.spell:format(96)
 }
 L:SetMiscLocalization{
-	PursueEmote 	= "%s sets eyes on %s!"
+	PursueEmote 	= " sets eyes on "
 }
 
 -------------
@@ -265,6 +281,19 @@ L:SetGeneralLocalization{
 	name = "AQ20 Trash"
 }
 
+L:SetTimerLocalization{
+	TimerExplosion = "Exploding Ghosts"
+}
+
+L:SetWarningLocalization{
+	WarnExplosion = "Single exploding ghost spawned - dodge",
+	SpecWarnExplosion = "Exploding ghosts - dodge",
+}
+L:SetOptionLocalization{
+	WarnExplosion = "Show announce for exploding ghosts ($spell:1214871)",
+	SpecWarnExplosion = "Show special warning when multiple exploding ghosts spawn ($spell:1214871)",
+	TimerExplosion = "Show timer for when multiple exploding ghosts spawn ($spell:1214871)"
+}
 -----------------
 --  Razorgore  --
 -----------------
@@ -357,13 +386,13 @@ L:SetMiscLocalization{
 }
 
 -----------------------
---  Vulnerabilities  --
+--  BWL Trash  --
 -----------------------
 -- Chromaggus, Death Talon Overseer and Death Talon Wyrmguard
-L = DBM:GetModLocalization("TalonGuards")
+L = DBM:GetModLocalization("BWLTrash")
 
 L:SetGeneralLocalization{
-	name = "Talon Guards"
+	name = "BWL Trash"
 }
 L:SetWarningLocalization{
 	WarnVulnerable		= "%s Vulnerability"
@@ -1001,6 +1030,7 @@ L:SetOptionLocalization({
 	WarningChargeChanged	= "Show special warning when your polarity changed",
 	WarningChargeNotChanged	= "Show special warning when your polarity did not change",
 	AirowsEnabled			= "Show arrows during $spell:28089",
+	Never					= "Never",
 	TwoCamp					= "Show arrows (normal \"2 camp\" run through strategy)",
 	ArrowsRightLeft			= "Show left/right arrows for the \"4 camp\" strategy (show left arrow if polarity changed, right if not)",
 	ArrowsInverse			= "Inverse \"4 camp\" strategy (show right arrow if polarity changed, left if not)"

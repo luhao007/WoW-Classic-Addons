@@ -27,6 +27,16 @@ Do you find yourself completing old content just so that you can get literally e
 - Extra tooltip information (Models, Icons, Descriptions, etc).
 - Fanfare music when you learn anything new.
 
+## Release Schedule
+There are two release types, alpha build and official release.
+- Alpha Build
+    - Released at 7:00 UTC every day.
+- Official Release
+    - Scheduled every Sunday.
+    - Expected to be updated on the first day of any major WoW update, with frequent releases in the following days.
+
+The git version is not a release, but it is still supported.
+
 ## Why do I need this addon?
 - Ability to see what items you are missing from your collection in a more presentable means than Blizzard's UI.
 - The UI has information on quests, vendors, rares, dungeons and raids, world events, and more.

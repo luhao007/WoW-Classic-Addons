@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: geligasi
-## Version: 1.26
+## Version: 1.28
 
 ## Title: !Pig_GDKP
 ## Notes: GDKP Assistant
@@ -14,9 +14,6 @@
 ## AddonCompartmentFuncOnLeave: PIGCompartmentLeave_GDKP
 
 ## RequiredDeps: !Pig
-
-## SavedVariables: PIGG
-## SavedVariablesPerCharacter: PIGG_Per
 
 ## X-Part-Of: !Pig
 

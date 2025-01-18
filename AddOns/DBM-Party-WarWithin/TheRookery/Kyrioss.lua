@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(2566, "DBM-Party-WarWithin", 3, 1268)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20241102154000")
+mod:SetRevision("20241216011404")
 mod:SetCreatureID(209230)
 mod:SetEncounterID(2816)
 --mod:SetHotfixNoticeRev(20220322000000)
@@ -43,7 +43,7 @@ local specWarnLightningDash					= mod:NewSpecialWarningDodgeCount(419870, nil, n
 --local yellSLightningDash					= mod:NewYell(419870)
 --local specWarnGTFO						= mod:NewSpecialWarningGTFO(372820, nil, nil, nil, 1, 8)
 
-local timerChainLightningCD					= mod:NewCDCountTimer(15.7, 424148, nil, nil, nil, 3)--Lowest priority, 15-18, or longer if delayed by torrent
+local timerChainLightningCD					= mod:NewVarCountTimer("v15.7-18", 424148, nil, nil, nil, 3)--Lowest priority, 15-18, or longer if delayed by torrent
 local timerUnstableChargeCD					= mod:NewCDCountTimer(31.6, 420739, nil, nil, nil, 3)--Timer confirmed by bugging out torrent to disable delays
 local timerLightningTorrentCD				= mod:NewCDCountTimer(30.3, 444123, nil, nil, nil, 2, nil, DBM_COMMON_L.DEADLY_ICON)--always 30, unless boss is out of range of middle, then it'll be delayed til boss is back in range (i'm sure this will be fixed, cause you can keep boss out of range and disable ability entirely)
 local timerLightningDashCD					= mod:NewCDCountTimer(31.6, 419870, nil, nil, nil, 3)--Timer confirmed by bugging out torrent to disable delays
@@ -119,7 +119,7 @@ function mod:OnCombatStart(delay)
 	timerLightningDashCD:Start(2.1, 1)
 	timerChainLightningCD:Start(7, 1)
 	timerUnstableChargeCD:Start(15.5, 1)
-	timerLightningTorrentCD:Start(31.3, 1)
+	timerLightningTorrentCD:Start(30.0, 1)
 	if self:IsMythic() then
 		timerStormheartCD:Start(1)
 	end
@@ -149,7 +149,7 @@ function mod:SPELL_CAST_START(args)
 		self.vb.dashCount = self.vb.dashCount + 1
 		specWarnLightningDash:Show(self.vb.dashCount)
 		specWarnLightningDash:Play("watchstep")
-		timerLightningDashCD:Start(nil, self.vb.dashCount+1)
+		timerLightningDashCD:Start(self:IsFollower() and 18.5 or 31.6, self.vb.dashCount+1)
 --		self:ScheduleMethod(0.1, "BossTargetScanner", args.sourceGUID, "DashTarget", 0.1, 7, true)
 	elseif spellId == 444324 then
 		self.vb.stormheartCount = self.vb.stormheartCount + 1

@@ -12,6 +12,8 @@
 ## X-DBM-Test: true
 ## X-Part-Of: DBM-Core
 
+Undermine/StixBunkjunker-Heroic-Wipe.lua
+
 NerubarPalace/Ulgrax-Mythic-Kill.lua
 NerubarPalace/BloodboundHorror-Mythic-Kill.lua
 NerubarPalace/Sikran-Mythic-Kill.lua

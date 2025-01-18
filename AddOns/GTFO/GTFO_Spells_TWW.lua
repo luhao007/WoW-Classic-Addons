@@ -138,6 +138,52 @@ GTFO.SpellID["459545"] = {
   sound = 1;
 };
 
+GTFO.SpellID["419210"] = {
+  --desc = "Defiling Breath (Scourge Abomination)";
+  sound = 1;
+};
+
+GTFO.SpellID["465284"] = {
+  --desc = "Nether Zone (Tichondrius)";
+  ignoreApplication = true;
+  sound = 1;
+};
+
+GTFO.SpellID["458512"] = {
+  --desc = "Spore Cloud (Parasidious)";
+  ignoreApplication = true;
+  sound = 1;
+};
+
+GTFO.SpellID["469060"] = {
+  --desc = "Breath of Death (Nerathor)";
+  applicationOnly = true;
+  sound = 1;
+  trivialLevel = 90;
+};
+
+GTFO.SpellID["472198"] = {
+  --desc = "Stormcast (Zek'ul the Shipbreaker)";
+  ignoreApplication = true;
+  sound = 1;
+};
+
+GTFO.SpellID["469833"] = {
+  --desc = "Mega Lava Barrage (Haywire MEK IV)";
+  ignoreApplication = true;
+  sound = 1;
+};
+
+GTFO.SpellID["471424"] = {
+  --desc = "Focused Storm (Storm-Touched Clawfiend)";
+  ignoreApplication = true;
+  sound = 1;
+};
+
+GTFO.SpellID["458835"] = {
+  --desc = "Toxic Sludge";
+  sound = 1;
+};
 
 --- ****************************
 --- * Ara-Kara, City of Echoes *
@@ -551,6 +597,7 @@ GTFO.SpellID["454725"] = {
 GTFO.SpellID["452750"] = {
   --desc = "Necrotic Bubble (Air Bubble)";
   sound = 1;
+  ignorePeriodic = true;
 };
 
 GTFO.SpellID["455931"] = {
@@ -613,6 +660,7 @@ GTFO.SpellID["414523"] = {
 GTFO.SpellID["452041"] = {
   --desc = "Grimweave Orb (Ascended Webfriar)";
   sound = 1;
+  ignorePeriodic = true;
 };
 
 GTFO.SpellID["440939"] = {
@@ -748,6 +796,7 @@ GTFO.SpellID["443403"] = {
 GTFO.SpellID["441958"] = {
   --desc = "Grasping Silk (Queen Ansurek)";
   sound = 1;
+  ignoreApplication = true;
 };
 
 GTFO.SpellID["445818"] = {
@@ -765,6 +814,18 @@ GTFO.SpellID["446253"] = {
   --desc = "Slime Trail (Congealed Mass)";
   sound = 1;
 };
+
+GTFO.SpellID["447175"] = {
+  --desc = "Predation Threads (Queen Ansurek)";
+  soundFunction = function() -- Warn only if you get hit more than once within 1.5 seconds
+	if (GTFO_FindEvent("PredationThreads")) then
+		return 4;
+	end
+	GTFO_AddEvent("PredationThreads", 1);
+	return 0;
+  end;
+};
+
 
 --- ***************************
 --- * Blackrock Depths (Raid) *
@@ -823,8 +884,56 @@ GTFO.SpellID["466382"] = {
   sound = 1;
 };
 
+--- ************************
+--- * Operation: Floodgate *
+--- ************************
 
+GTFO.SpellID["464469"] = {
+  --desc = "Taking Aim";
+  applicationOnly = true;
+  sound = 1;
+};
 
+GTFO.SpellID["474350"] = {
+  --desc = "Shreddation Sawblade (Shreddinator 3000)";
+  sound = 1;
+};
+
+GTFO.SpellID["474388"] = {
+  --desc = "Flamethrower (Shreddinator 3000)";
+  sound = 1;
+};
+
+GTFO.SpellID["465128"] = {
+  --desc = "Wind Up (Loaderbot)";
+  sound = 1;
+};
+
+GTFO.SpellID["1215071"] = {
+  --desc = "Electrified Water (Electrified Water)";
+  negatingDebuffSpellID = 1215089; -- Electrified Water
+  sound = 1;
+};
+
+GTFO.SpellID["473224"] = {
+  --desc = "Sonic Boom (Big M.O.M.M.A.)";
+  sound = 1;
+};
+
+GTFO.SpellID["1213790"] = {
+  --desc = "Zeppelin Barrage (Zeppelin)";
+  sound = 1;
+};
+
+GTFO.SpellID["472338"] = {
+  --desc = "Surveyed Ground (Venture Co. Surveyor)";
+  sound = 1;
+};
+
+GTFO.SpellID["473051"] = {
+  --desc = "Rushing Tide (Swampface)";
+  sound = 1;
+};
 
 end
 

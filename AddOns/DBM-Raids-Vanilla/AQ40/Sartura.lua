@@ -9,7 +9,7 @@ end
 local mod	= DBM:NewMod("Sartura", "DBM-Raids-Vanilla", catID)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20241103123604")
+mod:SetRevision("20241214185855")
 mod:SetCreatureID(15516)
 mod:SetEncounterID(711)
 mod:SetModelID(15583)
@@ -20,6 +20,8 @@ mod:RegisterCombat("combat")
 mod:RegisterEventsInCombat(
 	"SPELL_CAST_SUCCESS 26083 8269"
 )
+
+mod:NewGtfo{spell = 26084, spellAura = false, spellPeriodicDamage = false}
 
 --Add sundering cleave?
 local warnEnrageSoon	= mod:NewSoonAnnounce(8269, 2)

@@ -451,11 +451,13 @@ _.HeaderConstants = {
 	QUESTS = -1000031,
 	RARES = -1000032,
 	REWARDS = -1000033,
+	SHARED_APPEARANCES = -1000162,
 	SHOULDER = -1000070,
 	SPECIAL = -1000037,
 	TIER_ZERO_POINT_FIVE_SETS = -1000165,
 	TREASURES = -1000038,
 	UI_BOUNTY_WINDOW = -1000380,
+	UNIQUE_APPEARANCE = -1000163,
 	VENDORS = -1000039,
 	WEAPONS = -1000073,
 	WORLD_BOSSES = -1000042,
@@ -475,7 +477,7 @@ localize(L.HEADER_NAMES, {
 	[-1000019] = "Exploration",
 	[-1000020] = FACTION,
 	[-1000021] = "Flight Paths",
-	[-1000025] = "Holiday",
+	[-1000025] = "Holidays",
 	[-1000026] = MINIMAP_TRACKING_MAILBOX,
 	[-1000027] = BRAWL_TOOLTIP_MAPS,
 	[-1000030] = TRADE_SKILLS,
@@ -543,6 +545,8 @@ localize(L.HEADER_NAMES, {
 	[-1000142] = "Honor Titles",
 	[-1000143] = HONOR,
 	[-1000144] = PVP,
+	[-1000162] = "Shared Appearances",
+	[-1000163] = "Unique Appearance",
 	[-1000164] = "Crieve's Never Implemented List",
 	[-1000165] = "Tier 0.5 Sets",
 	[-1000166] = "Captains",
@@ -612,7 +616,7 @@ localize(L.HEADER_NAMES, {
 	[-1000299] = select(2,GetAchievementInfo(15218)),
 	[-1000373] = "New Character",
 	[-1000380] = "Bounty",
-	[-1000872] = "Plunderstorm",
+	[-1000872] = WOWLABS_GAMEMODE_HEADER,
 	[-1000904] = "Source IDs",
 	[-1001035] = "Seasonal Fish: Summer Bass",
 	[-1001036] = "Seasonal Fish: Winter Squid",
@@ -626,6 +630,8 @@ localize(L.HEADER_DESCRIPTIONS, {
 	[-1000033] = "Contains Things which are rewarded or are available from other content within the containing section.\nThey are consolidated here in an effort to reduce duplication from many possible Sources.",
 	[-1000040] = "A weapon master is an NPC that offers characters the opportunity to learn specific weapon skills, the availability of which varies from one weapon master to another. All weapon skills can be trained at level 1, except for Polearms which require level 20.\n\nTraining with a weapon master became obsolete in Patch 4.0.1, as all class-appropriate weapon proficiencies are now learned by each class upon creation. Weapon masters were removed from the game shortly after.",
 	[-1000097] = "This section will show you things that you could buy in the In-Game Shop in Retail.",
+	[-1000162] = "The items in this list are shared appearances for the above item. In Unique Appearance Mode, this list can help you understand why or why not a specific item would be marked Collected.",
+	[-1000163] = "This item has a Unique Appearance. You must collect this item specifically to earn the appearance.",
 	[-1000164] = "If the following are sorted somewhere, please delete them from this list. Thanks.",
 	[-1000171] = "Also known as 'Lower' Blackrock Spire.",
 	[-1000172] = "One member of your group must have completed the Seal of Ascension quest chain in order for the fires to light and the door to open to this portion of the instance. Also known as 'Upper' Blackrock Spire.",
@@ -735,6 +741,8 @@ localize(L.HEADER_ICONS, {
 	[-1000142] = 135358,
 	[-1000143] = 133278,
 	[-1000144] = _.asset("category_pvp"),
+	[-1000162] = 132874,
+	[-1000163] = 132873,
 	[-1000164] = 132738,
 	[-1000165] = 132738,
 	[-1000166] = 236623,
@@ -843,25 +851,25 @@ localize(L.EVENT_REMAPPING, {
 
 -- Programmatic Event Scheduling
 _.Modules.Events.SetEventInformation(446916, {
-	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=3,["monthDay"]=19,["weekday"]=3,["year"]=2024},{["hour"]=0,["minute"]=0,["month"]=4,["monthDay"]=30,["weekday"]=3,["year"]=2024})
+	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=1,["monthDay"]=14,["weekday"]=3,["year"]=2025},{["hour"]=0,["minute"]=0,["month"]=4,["monthDay"]=30,["weekday"]=4,["year"]=2025})
 });
 _.Modules.Events.SetEventInformation(1262, {
 	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=11,["monthDay"]=6,["weekday"]=1,["year"]=2022},{["hour"]=0,["minute"]=0,["month"]=11,["monthDay"]=27,["weekday"]=1,["year"]=2022})
 });
 _.Modules.Events.SetEventInformation(590, {
-	_.Modules.Events.CreateSchedule({["hour"]=10,["minute"]=0,["month"]=10,["monthDay"]=22,["weekday"]=1,["year"]=2023},{["hour"]=10,["minute"]=0,["month"]=1,["monthDay"]=7,["weekday"]=1,["year"]=2024}),
 	_.Modules.Events.CreateSchedule({["hour"]=10,["minute"]=0,["month"]=10,["monthDay"]=22,["weekday"]=3,["year"]=2024},{["hour"]=10,["minute"]=0,["month"]=1,["monthDay"]=7,["weekday"]=3,["year"]=2025}),
-	_.Modules.Events.CreateSchedule({["hour"]=10,["minute"]=0,["month"]=10,["monthDay"]=22,["weekday"]=4,["year"]=2025},{["hour"]=10,["minute"]=0,["month"]=1,["monthDay"]=7,["weekday"]=4,["year"]=2026})
+	_.Modules.Events.CreateSchedule({["hour"]=10,["minute"]=0,["month"]=10,["monthDay"]=22,["weekday"]=4,["year"]=2025},{["hour"]=10,["minute"]=0,["month"]=1,["monthDay"]=7,["weekday"]=4,["year"]=2026}),
+	_.Modules.Events.CreateSchedule({["hour"]=10,["minute"]=0,["month"]=10,["monthDay"]=22,["weekday"]=5,["year"]=2026},{["hour"]=10,["minute"]=0,["month"]=1,["monthDay"]=7,["weekday"]=5,["year"]=2027})
 });
 _.Modules.Events.SetEventInformation(133899, {
-	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=9,["monthDay"]=23,["weekday"]=7,["year"]=2023},{["hour"]=23,["minute"]=59,["month"]=3,["monthDay"]=19,["weekday"]=3,["year"]=2024}),
 	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=9,["monthDay"]=23,["weekday"]=2,["year"]=2024},{["hour"]=23,["minute"]=59,["month"]=3,["monthDay"]=19,["weekday"]=4,["year"]=2025}),
-	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=9,["monthDay"]=23,["weekday"]=3,["year"]=2025},{["hour"]=23,["minute"]=59,["month"]=3,["monthDay"]=19,["weekday"]=5,["year"]=2026})
+	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=9,["monthDay"]=23,["weekday"]=3,["year"]=2025},{["hour"]=23,["minute"]=59,["month"]=3,["monthDay"]=19,["weekday"]=5,["year"]=2026}),
+	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=9,["monthDay"]=23,["weekday"]=4,["year"]=2026},{["hour"]=23,["minute"]=59,["month"]=3,["monthDay"]=19,["weekday"]=6,["year"]=2027})
 });
 _.Modules.Events.SetEventInformation(133889, {
-	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=3,["monthDay"]=20,["weekday"]=2,["year"]=2023},{["hour"]=23,["minute"]=59,["month"]=9,["monthDay"]=22,["weekday"]=6,["year"]=2023}),
 	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=3,["monthDay"]=20,["weekday"]=4,["year"]=2024},{["hour"]=23,["minute"]=59,["month"]=9,["monthDay"]=22,["weekday"]=1,["year"]=2024}),
-	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=3,["monthDay"]=20,["weekday"]=5,["year"]=2025},{["hour"]=23,["minute"]=59,["month"]=9,["monthDay"]=22,["weekday"]=2,["year"]=2025})
+	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=3,["monthDay"]=20,["weekday"]=5,["year"]=2025},{["hour"]=23,["minute"]=59,["month"]=9,["monthDay"]=22,["weekday"]=2,["year"]=2025}),
+	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=3,["monthDay"]=20,["weekday"]=6,["year"]=2026},{["hour"]=23,["minute"]=59,["month"]=9,["monthDay"]=22,["weekday"]=3,["year"]=2026})
 });
 
 -- Filter Database Module
@@ -2099,6 +2107,7 @@ local ObjectNames = {
 	[181073] = "Fragrant Cauldron",
 	[181074] = "Arena Spoils",
 	[181083] = "Sothos and Jarien's Heirlooms",
+	[181085] = "Stratholme Supply Crate",
 	[181098] = "Volcanic Ash",
 	[181107] = "Weapon Container",
 	[181110] = "Soaked Tome",
@@ -3866,6 +3875,7 @@ local ObjectModels = {
 	[181073] = 198100,
 	[181074] = 196976,
 	[181083] = 196976,
+	[181085] = 199636,
 	[181098] = 204112,
 	[181107] = 197099,
 	[181110] = 200910,
@@ -4787,11 +4797,14 @@ if simplifiedLocale == "de" then
 localize(L.HEADER_NAMES, {
 	[-1000010] = "Gemeinsame Bossbeute",
 	[-1000019] = "Erkundung",
+	[-1000025] = "Feiertage",
 	[-1000040] = "Waffenmeisterin",
 	[-1000048] = "Drachen des Alptraums",
 	[-1000132] = "Hasserfüllten Gladiator",
 	[-1000140] = "Elite Rüstung",
 	[-1000141] = "Gladiatoren Rüstung",
+	[-1000162] = "Geteilte Vorlagen",
+	[-1000163] = "Einzigartige Vorlagen",
 	[-1000168] = "Die Vier Reiter",
 	[-1000179] = "Friedhof",
 	[-1000180] = "Bibliothek",
@@ -4819,6 +4832,8 @@ localize(L.HEADER_NAMES, {
 localize(L.HEADER_DESCRIPTIONS, {
 	[-1000025] = "Es muss möglicherweise ein bestimmter Feiertag aktiv sein, um hier genannte Dinge abschließen zu können.",
 	[-1000040] = "Ein Waffenmeister ist ein NPC, der Charakteren die Möglichkeit bietet, bestimmte Waffenfertigkeiten zu erlernen, deren Verfügbarkeit von Waffenmeister zu Waffenmeister unterschiedlich ist. Alle Waffenfähigkeiten können auf Stufe 1 trainiert werden, mit Ausnahme von Stangenwaffen, für die Stufe 20 erforderlich ist.\n\nDas Training mit einem Waffenmeister wurde in Patch 4.0.1 obsolet, da nun alle klassengerechten Waffenfertigkeiten von jeder Klasse bei der Erstellung erlernt werden. Waffenmeister wurden kurz darauf aus dem Spiel entfernt.",
+	[-1000162] = "Die Gegenstände in dieser Liste teilen ihre Vorlage mit dem oben genannten Gegenstand. Im Modus für Einzigartige Vorlagen kann diese Liste Ihnen helfen zu verstehen, warum ein bestimmter Gegenstand als gesammelt markiert ist, oder ob nicht.",
+	[-1000163] = "Dieser Gegenstand hat eine einzigartige Vorlage. Ihr müsst diesen Gegenstand erhalten, um die Vorlage eurer Sammlung hinzuzufügen.",
 	[-1000380] = "Diese Liste enthält nicht erhältliche Gegenstände, die von ATT Discord als Fehler gemeldet wurden, die Blizzard noch beheben muss.\n\nHINWEIS: Alle Filter werden aus Sichtbarkeitsgründen in dieser Liste ignoriert. In dieser Liste sind nur Gegenstände enthalten, die aufgrund von Fahrlässigkeit aus dem Spiel entfernt wurden, und nicht ein riesiger feuerspeiender Drache.\n\nAn Blizzard-Entwickler: Bitte beheben Sie die unten aufgeführten Gegenstände und Begegnungen.",
 });
 localize(L.FILTER_ID_TYPES, {
@@ -5532,6 +5547,7 @@ localize(ObjectNames, {
 	[181073] = "Duftender Kessel",
 	[181074] = "Arenabeute",
 	[181083] = "Sothos' und Jariens Erbstücke",
+	[181085] = "Vorratskiste von Stratholme",
 	[181098] = "Vulkanasche",
 	[181107] = "Waffenkiste",
 	[181110] = "Aufgeweichter Foliant",
@@ -6066,6 +6082,7 @@ end
 if simplifiedLocale == "fr" then
 localize(L.HEADER_NAMES, {
 	[-1000013] = "Objets communs des vendeurs",
+	[-1000025] = "Évènements saisonniers",
 	[-1000040] = "Maître d'armes",
 	[-1000048] = "Dragons du Cauchemar",
 	[-1000055] = "Événement chronométré",
@@ -6084,6 +6101,8 @@ localize(L.HEADER_NAMES, {
 	[-1000135] = select(2,GetAchievementInfo(4599))..": Saison 8",
 	[-1000140] = "Équipement Élite",
 	[-1000141] = "Équipement Gladiateur",
+	[-1000162] = "Apparences Partagées",
+	[-1000163] = "Apparence unique",
 	[-1000165] = "Ensembles Tier 0.5",
 	[-1000166] = "Capitaines",
 	[-1000168] = "Les quatre cavaliers",
@@ -6120,6 +6139,8 @@ localize(L.HEADER_NAMES, {
 localize(L.HEADER_DESCRIPTIONS, {
 	[-1000033] = "Contient des objets de récompenses ou disponibles dans d’autres contenus de la section qui les contient.\nIls sont regroupés ici dans le but de réduire la duplication de nombreuses sources possibles.",
 	[-1000040] = "Un maître d'armes est un PNJ qui offre aux personnages la possibilité d'apprendre des compétences d'armes spécifiques, dont la disponibilité varie d'un maître d'armes à l'autre. Toutes les compétences d'armes peuvent être entraînées au niveau 1, à l'exception des armes d'hast qui nécessitent le niveau 20.\n\nL'entraînement avec un maître d'armes est devenu obsolète dans le patch 4.0.1, car toutes les compétences d'armes appropriées à la classe sont désormais apprises par chaque classe lors de sa création. Les maîtres d'armes ont été retirés du jeu peu de temps après.",
+	[-1000162] = "Les éléments de cette liste sont des apparences partagées pour l'élément ci-dessus. En mode Apparence unique, cette liste peut vous aider à comprendre pourquoi ou pourquoi un élément spécifique serait marqué Collecté.",
+	[-1000163] = "Cet article a une apparence unique. Vous devez collecter cet objet spécifiquement pour gagner l’apparence.",
 	[-1000380] = "Cette liste contient des éléments impossibles à obtenir que ATT Discord a signalés comme des bogues que Blizzard n'a pas encore corrigés.\n\nREMARQUE : Tous les filtres sont ignorés dans cette liste pour des raisons de visibilité. Seuls les éléments retirés du jeu en raison d'une négligence plutôt que d'un gigantesque dragon cracheur de feu sont présents sur cette liste.\n\nAux développeurs de Blizzard : veuillez corriger les éléments et les rencontres répertoriés ci-dessous.",
 });
 localize(L.FILTER_ID_TYPES, {
@@ -6832,6 +6853,7 @@ localize(ObjectNames, {
 	[181073] = "Chaudron parfumé",
 	[181074] = "Butin de l'arène",
 	[181083] = "Possessions de Sothos et Jarien",
+	[181085] = "Caisse de fournitures de Stratholme",
 	[181098] = "Cendre volcanique",
 	[181107] = "Caisse d'armes",
 	[181110] = "Tome trempé",
@@ -7372,7 +7394,10 @@ do achievements[key].description = value; end
 end
 if simplifiedLocale == "it" then
 localize(L.HEADER_NAMES, {
+	[-1000025] = "Festività",
 	[-1000132] = "Gladiatore Perfido",
+	[-1000162] = "Aspetti Condivisi",
+	[-1000163] = "Aspetto unico",
 	[-1000168] = "I Cavalieri dell'Apocalisse",
 	[-1000186] = "Assalto alla rocca",
 	[-1000187] = "Sale della Pestilenza",
@@ -7391,6 +7416,8 @@ localize(L.HEADER_NAMES, {
 	[-1001036] = "Pesce di stagione: calamari invernali",
 });
 localize(L.HEADER_DESCRIPTIONS, {
+	[-1000162] = "Gli elementi in questo elenco sono aspetti condivisi per l'elemento precedente. Nella modalità Aspetto unico, questo elenco può aiutarti a capire perché o perché un oggetto specifico verrebbe contrassegnato come Raccolto.",
+	[-1000163] = "Questo oggetto ha un aspetto unico. Devi raccogliere questo oggetto appositamente per guadagnare l'aspetto.",
 	[-1000380] = "Questo elenco contiene elementi non ottenibili che ATT Discord ha segnalato come bug che Blizzard deve ancora correggere.\n\nNOTA: tutti i filtri vengono ignorati in questo elenco per motivi di visibilità. In questo elenco sono presenti solo gli oggetti rimossi dal gioco a causa di negligenza e non un gigantesco drago sputafuoco.\n\nAgli sviluppatori Blizzard: correggete gli oggetti e gli incontri elencati di seguito.",
 });
 localize(ObjectNames, {
@@ -7770,6 +7797,7 @@ localize(ObjectNames, {
 	[181011] = "Diario del Magistro Lungovespro",
 	[181053] = "Cesto di Algasangue",
 	[181073] = "Calderone Profumato",
+	[181085] = "Cassa di Rifornimenti di Stratholme",
 	[181107] = "Contenitore d'Armi",
 	[181110] = "Tomo Inzuppato",
 	[181133] = "Provviste di Rathis Tomber",
@@ -8280,8 +8308,11 @@ do phases[key].description = value; end
 end
 if simplifiedLocale == "pt" then
 localize(L.HEADER_NAMES, {
+	[-1000025] = "Feriados",
 	[-1000040] = "Mestre de Armas",
 	[-1000132] = "Gladiador Odioso",
+	[-1000162] = "Aparências Compartilhadas",
+	[-1000163] = "Aparência Única",
 	[-1000168] = "Os Quatro Cavaleiros",
 	[-1000186] = "Invasão da Cidadela",
 	[-1000187] = "Antro da Peste",
@@ -8304,6 +8335,8 @@ localize(L.HEADER_NAMES, {
 });
 localize(L.HEADER_DESCRIPTIONS, {
 	[-1000040] = "Um mestre de armas é um NPC que oferece aos personagens a oportunidade de aprender habilidades específicas com armas, cuja disponibilidade varia de um mestre de armas para outro. Todas as habilidades com armas podem ser treinadas no nível 1, exceto as armas de haste, que exigem nível 20.\n\nO treinamento com um mestre de armas tornou-se obsoleto no Patch 4.0.1, já que todas as proficiências de armas apropriadas à classe agora são aprendidas por cada classe após a criação. Os mestres de armas foram removidos do jogo logo depois.",
+	[-1000162] = "Os itens nesta lista são aparências compartilhadas do item acima. No Modo de Aparência Única, esta lista pode ajudá-lo a entender por que ou não um item específico seria marcado como Coletado.",
+	[-1000163] = "Este item tem uma aparência única. Você deve coletar este item especificamente para ganhar a aparência.",
 	[-1000380] = "Esta lista contém itens inacessíveis que o ATT Discord relatou como bugs que a Blizzard ainda não corrigiu.\n\nNOTA: Todos os filtros são ignorados nesta lista para visibilidade. Apenas itens removidos do jogo por negligência, em vez de um gigantesco dragão cuspidor de fogo, estão presentes nesta lista.\n\nPara os desenvolvedores da Blizzard: Corrijam os itens e encontros listados abaixo.",
 });
 localize(ObjectNames, {
@@ -8951,6 +8984,7 @@ localize(ObjectNames, {
 	[181011] = "Diário do Magíster Ocaso",
 	[181053] = "Cesta de Algassangue",
 	[181073] = "Caldeirão Cheiroso",
+	[181085] = "Caixote de Suprimentos de Stratholme",
 	[181098] = "Cinza Vulcânica",
 	[181107] = "Contêiner de Armas",
 	[181110] = "Tomo Encharcado",
@@ -9483,6 +9517,7 @@ localize(L.HEADER_NAMES, {
 	[-1000013] = "Обычные предметы у Торговцев",
 	[-1000019] = "Исследование",
 	[-1000021] = "Точка полета",
+	[-1000025] = "Праздники",
 	[-1000032] = "Редкие",
 	[-1000038] = "Сундук с сокровищами",
 	[-1000040] = "Эксперт по оружию",
@@ -9505,6 +9540,8 @@ localize(L.HEADER_NAMES, {
 	[-1000135] = select(2,GetAchievementInfo(4599))..": Сезон 8",
 	[-1000140] = "Элитные доспехи",
 	[-1000141] = "Доспехи Гладиатора",
+	[-1000162] = "Общие Облики",
+	[-1000163] = "Уникальный Облик",
 	[-1000165] = "Комплекты T0.5",
 	[-1000166] = "Капитаны",
 	[-1000168] = "Четыре Всадника",
@@ -9535,7 +9572,6 @@ localize(L.HEADER_NAMES, {
 	[-1000284] = "Годовщина WoW",
 	[-1000373] = "Новый персонаж",
 	[-1000380] = "Премия",
-	[-1000872] = "Пиратская буря",
 	[-1001035] = "Сезонная рыба: летний окунь",
 	[-1001036] = "Сезонная рыба: зимний кальмар",
 	[-1001051] = "Защитный протокол \"Альфа\"",
@@ -9546,6 +9582,8 @@ localize(L.HEADER_DESCRIPTIONS, {
 	[-1000025] = "Чтобы выполнить упомянутые в данной секции Штучки, может быть нужен какой-то праздник.",
 	[-1000033] = "Штучки, которые можно получить в награду с разного контента в родительской секции.\nОни собраны здесь, чтобы уменьшить количество источников, когда Штучка доступна из многих мест.",
 	[-1000040] = "Мастер оружия - это NPC, который предлагает персонажам возможность изучить определенные навыки обращения с оружием, доступность которых варьируется от одного мастера к другому. Все навыки обращения с оружием можно изучить на уровне 1, кроме древкового оружия, для которого требуется уровень 20.\n\nОбучение с мастером оружия стало устаревшим в патче 4.0.1, так как все соответствующие классу навыки владения оружием теперь изучаются каждым классом при создании. Вскоре после этого из игры были удалены мастера оружия.",
+	[-1000162] = "Предметы из данного списка - общие облики для предмета выше. Для Режима Уникальных Обликов, этот список может помочь Вам разобраться, почему определённый предмт отмечен как Получен или нет.",
+	[-1000163] = "Этот предмет имеет Уникальный Облик. Вы должны получить именно этот предмет для открытия Облика.",
 	[-1000380] = "Этот список содержит Недоступные предметы, что Дискорд ATT сообщил как ошибки, которые Blizzard ещё не исправили.\n\nВНИМАНИЕ: Все фильтры игнорируются в данном списке для видимости. Только предметы, удалённые из игры из-за халатности, но не из-за гигантского огнедышащего дракона, перечислены в данном списке.\n\nК разработчикам Blizzard: Пожалуйста, почините предметы и события, перечисленные ниже.",
 });
 localize(L.FILTER_ID_TYPES, {
@@ -10261,6 +10299,7 @@ localize(ObjectNames, {
 	[181073] = "Котел Ароматов",
 	[181074] = "Трофеи арены",
 	[181083] = "Наследие Сотоса и Джариена",
+	[181085] = "Стратхольм - ящик с припасами",
 	[181098] = "Вулканический пепел",
 	[181107] = "Ящик с оружием",
 	[181110] = "Промокший фолиант",
@@ -10990,8 +11029,11 @@ localize(_.CategoryNames, {
 	[1011] = "등",
 });
 localize(L.HEADER_NAMES, {
+	[-1000025] = "축제",
 	[-1000040] = "무기 전문가",
 	[-1000132] = "원한에 검투사",
+	[-1000162] = "공유된 모습",
+	[-1000163] = "독특한 외관",
 	[-1000168] = "4인 기사단",
 	[-1000186] = "성채 몰아치기",
 	[-1000187] = "역병작업장",
@@ -11004,6 +11046,7 @@ localize(L.HEADER_NAMES, {
 	[-1000227] = "가시덤불 골짜기 낚시왕 선발대회",
 	[-1000235] = "어둠의 문 열기",
 	[-1000236] = "흐르는 모래의 홀",
+	[-1000243] = "블리즈컨",
 	[-1000373] = "새로운 캐릭터",
 	[-1000380] = "하사품",
 	[-1001035] = "제철 생선: 여름 농어",
@@ -11014,6 +11057,8 @@ localize(L.HEADER_NAMES, {
 });
 localize(L.HEADER_DESCRIPTIONS, {
 	[-1000040] = "웨폰 마스터는 캐릭터에게 특정 무기 기술을 배울 수 있는 기회를 제공하는 NPC로, 사용 가능 여부는 웨폰 마스터마다 다릅니다. 모든 무기 기술은 레벨 20이 필요한 폴암을 제외하고 레벨 1에서 훈련할 수 있습니다.\n\n4.0.1 패치에서는 각 병과가 생성 시 모든 병과에 적합한 무기 숙련도를 배우게 되므로 무기 전문가와의 훈련은 더 이상 필요하지 않게 되었습니다. 무기 마스터는 곧 게임에서 제거되었습니다.",
+	[-1000162] = "이 목록의 항목은 위 항목의 공유 모양입니다. 고유 외형 모드에서 이 목록은 특정 항목이 수집됨으로 표시되는 이유와 이유를 이해하는 데 도움이 될 수 있습니다.",
+	[-1000163] = "이 아이템은 독특한 외형을 가지고 있습니다. 외형을 획득하려면 이 아이템을 특별히 수집해야 합니다.",
 	[-1000380] = "이 목록에는 ATT Discord에서 Blizzard가 아직 수정하지 않은 버그로 보고한 얻을 수 없는 항목이 포함되어 있습니다.\n\n참고: 가시성을 위해 이 목록 내에서 모든 필터는 무시됩니다. 거대한 불을 뿜는 용이 아닌 부주의로 인해 게임에서 제거된 아이템만 이 목록에 있습니다.\n\n블리자드 개발자 여러분께: 아래 나열된 아이템과 만남을 수정해 주세요.",
 });
 localize(ObjectNames, {
@@ -11672,6 +11717,7 @@ localize(ObjectNames, {
 	[181053] = "붉은물풀 광주리",
 	[181073] = "맛있는 향기의 가마솥",
 	[181074] = "투기장 전리품",
+	[181085] = "스트라솔름 보급품 상자",
 	[181098] = "화산재",
 	[181107] = "무기 상자",
 	[181110] = "물에 젖은 고서",
@@ -12182,8 +12228,11 @@ do achievements[key].description = value; end
 end
 if simplifiedLocale == "es" then
 localize(L.HEADER_NAMES, {
+	[-1000025] = "Festividades",
 	[-1000040] = "Maestro armero",
 	[-1000132] = "Gladiador Odioso",
+	[-1000162] = "Apariciones Compartidas",
+	[-1000163] = "Apariencia única",
 	[-1000168] = "Los Cuatro Jinetes",
 	[-1000186] = "Asaltar la Ciudadela",
 	[-1000187] = "Los Talleres de la Peste",
@@ -12206,6 +12255,8 @@ localize(L.HEADER_NAMES, {
 });
 localize(L.HEADER_DESCRIPTIONS, {
 	[-1000040] = "Un maestro de armas es un PNJ que ofrece a los personajes la oportunidad de aprender habilidades específicas con armas, cuya disponibilidad varía de un maestro de armas a otro. Todas las habilidades con armas se pueden entrenar en el nivel 1, excepto las armas de asta que requieren el nivel 20.\n\nEl entrenamiento con un maestro de armas quedó obsoleto en el parche 4.0.1, ya que cada clase ahora aprende todas las competencias de armas apropiadas para la clase en el momento de la creación. Los maestros de armas se eliminaron del juego poco después.",
+	[-1000162] = "Los elementos de esta lista son apariencias compartidas del elemento anterior. En el modo de apariencia única, esta lista puede ayudarlo a comprender por qué o no un elemento específico se marcaría como recopilado.",
+	[-1000163] = "Este artículo tiene una apariencia única. Debes recolectar este artículo específicamente para ganar la apariencia.",
 	[-1000380] = "Esta lista contiene elementos inalcanzables que ATT Discord ha informado como errores que Blizzard aún no ha solucionado.\n\nNOTA: Todos los filtros se ignoran en esta lista para mayor visibilidad. En esta lista solo están presentes los elementos eliminados del juego debido a negligencia y no a un gigantesco dragón que escupe fuego.\n\nA los desarrolladores de Blizzard: arreglen los elementos y encuentros que se enumeran a continuación.",
 });
 localize(ObjectNames, {
@@ -12913,6 +12964,7 @@ localize(ObjectNames, {
 	[181053] = "Cesta de algas de sangre",
 	[181073] = "Caldera apetitosa",
 	[181074] = "Botín de la arena",
+	[181085] = "Cajón de suministros de Stratholme",
 	[181098] = "Ceniza volcánica",
 	[181107] = "Contenedor de armas",
 	[181110] = "Escritos empapados",
@@ -13448,10 +13500,11 @@ localize(_.CategoryNames, {
 	[3] = "塔罗牌",
 });
 localize(L.HEADER_NAMES, {
-	[-1000010] = "一般首领掉落",
-	[-1000013] = "常规商人物品",
+	[-1000010] = "首领共同掉落",
+	[-1000013] = "商人共同物品",
 	[-1000019] = "探索",
 	[-1000021] = "飞行路线",
+	[-1000025] = "节日",
 	[-1000032] = "稀有",
 	[-1000038] = "宝箱",
 	[-1000039] = "商人",
@@ -13476,6 +13529,8 @@ localize(L.HEADER_NAMES, {
 	[-1000140] = "精锐套装",
 	[-1000141] = "角斗士套装",
 	[-1000142] = "荣誉头衔",
+	[-1000162] = "共享外观",
+	[-1000163] = "独特外观",
 	[-1000165] = "T0.5套装",
 	[-1000166] = "船长",
 	[-1000168] = "四骑士",
@@ -13525,6 +13580,8 @@ localize(L.HEADER_DESCRIPTIONS, {
 	[-1000033] = "包含有奖励或可从包含部分中的其他内容获得的事物。\n在此处合并以减少来自许多可能重复来源。",
 	[-1000040] = "武器大师是一个 NPC，为角色提供学习特定武器技能的机会，不同武器大师的可用性各不相同。所有武器技能都可以在 1 级进行训练，长柄武器除外，需要 20 级。\n\n在补丁 4.0.1 中，武器大师的训练已经过时，因为现在每个班级在创建时都会学习所有适合班级的武器熟练程度。不久之后，武器大师就被从游戏中删除了。",
 	[-1000097] = "此部分显示能在游戏内商城购买的东西。",
+	[-1000162] = "此列表中的物品是以下物品的共享外观。在唯一外观模式下，此列表可帮助了解特定物品被标记为已收藏的原因。",
+	[-1000163] = "此列表中的物品是独特外观。你必须专门收藏这个物品以获得外观。",
 	[-1000380] = "此列表包含 ATT Discord 报告的无法获取的物品，这些物品是暴雪尚未修复的错误。\n\n注意：在此列表中忽略所有过滤器以获得可见性。此列表中仅显示因疏忽而从游戏中移除的物品。\n\n致暴雪开发者：请修复下面列出的物品和事件。",
 });
 localize(L.FILTER_ID_TYPES, {
@@ -14148,6 +14205,7 @@ localize(ObjectNames, {
 	[181053] = "一篮血藻",
 	[181073] = "薰炉",
 	[181074] = "竞技场的泥土",
+	[181085] = "斯坦索姆物资箱",
 	[181098] = "火山灰",
 	[181133] = "拉提斯·托博尔的补给品",
 	[181147] = "通缉布告",
@@ -14616,10 +14674,116 @@ for key,value in pairs({
 })
 do achievements[key].description = value; end
 if GetLocale():sub(3,4):lower() == "tw" then
+localize(_.CategoryNames, {
+	[106] = "卡片",
+	[227] = "武器",
+	[233] = "背包",
+	[250] = "背包",
+	[581] = "武器",
+	[747] = "武器",
+	[754] = "武器",
+	[916] = "背包",
+	[929] = "背包",
+	[987] = "背包",
+	[1002] = "背包",
+});
 localize(L.HEADER_NAMES, {
+	[-1000010] = "首領共通掉落",
+	[-1000013] = "商人共通物品",
 	[-1000021] = "飛行路線",
+	[-1000025] = "節慶",
 	[-1000038] = "寶箱",
+	[-1000040] = "武器大師",
+	[-1000042] = "世界首領",
 	[-1000044] = "地區掉落",
+	[-1000048] = "夢魘之龍",
+	[-1000055] = "限時事件",
+	[-1000142] = "榮譽頭銜",
+	[-1000162] = "共享外觀",
+	[-1000163] = "獨特外觀",
+	[-1000165] = "T0.5套裝",
+	[-1000173] = DUNGEON_FLOOR_DIREMAUL5.." (東)",
+	[-1000201] = "暗月馬戲團",
+	[-1000207] = "亡者節",
+	[-1000215] = "冬幕節",
+	[-1000218] = "收穫節",
+	[-1000219] = "卡魯耶克釣魚大賽",
+	[-1000223] = "仲夏火焰節慶",
+	[-1000226] = "海盜節",
+	[-1000227] = "荊棘谷釣魚大賽",
+	[-1000232] = "元素入侵",
+	[-1000234] = "安其拉之戰捐獻",
+	[-1000236] = "流沙節杖",
+	[-1000237] = "天譴入侵",
+	[-1000243] = "暴雪嘉年華",
+	[-1000245] = "英雄版",
+	[-1000246] = "史詩版",
+	[-1000247] = "燃燒的遠征：經典版 - 豪華版",
+	[-1000248] = "巫妖王之怒：經典版 - 北裂境升級",
+	[-1000249] = "浩劫與重生：經典版 - 熾炎升級",
+	[-1000256] = "星海爭霸II：自由之翼",
+	[-1000284] = "《魔獸世界》週年紀念",
+	[-1001035] = "季節性魚類：夏日鱸魚",
+	[-1001036] = "季節性魚類：冬魷魚",
+	[-1001051] = "防禦系統阿爾法",
+	[-1001052] = "防禦系統 Beta",
+	[-1001053] = "防禦系統伽瑪",
+});
+localize(L.HEADER_DESCRIPTIONS, {
+	[-1000025] = "你可能需要在特定節日的活動中才能完成本節中的事物。",
+	[-1000040] = "武器大師是一個 NPC，為角色提供學習特定武器技能的機會，不同武器大師的可用性各不相同。所有武器技能都可以在 1 级進行訓練，長柄武器除外，需要 20 级。\n\n在更新 4.0.1 中，武器大師的訓練已经過時，因為现在每個職業在創建时都會學習所有適合該職業的武器熟練度。不久之後，武器大師就被從遊戲中删除了。",
+	[-1000173] = "副本的這部分可以從最東邊的傳送門進入。（右側）",
+	[-1000174] = "副本的這部分可以從最北邊的傳送門進入。",
+	[-1000175] = "副本的這部分可以從最西邊的傳送門進入。（左側）",
+	[-1000284] = "這是一個每年重複的活動，發生在十一月初到年底之間。",
+});
+localize(L.HEADER_LORE, {
+	[-1000048] = "這些龍中的一隻會在艾澤拉斯的相關座標隨機生成。",
+});
+localize(ObjectNames, {
+	[21581] = "第二次獸人戰爭的結局",
+	[21582] = "跨越黑暗之門",
+	[21583] = "卡多雷和永恆之井",
+	[175724] = "薩格拉斯的背叛",
+	[175725] = "上古諸神和艾澤拉斯的創世",
+	[175726] = "巨龍軍團",
+	[175727] = "先祖之戰",
+	[175729] = "海加爾山跟伊利丹的禮物",
+	[175730] = "世界之樹與翡翠夢境",
+	[175731] = "高等精靈的流放",
+	[175732] = "哨兵的漫長守望",
+	[175733] = "奎爾薩拉斯的建立",
+	[175734] = "阿拉索與食人妖戰爭",
+	[175735] = "提里斯法的守護者",
+	[175736] = "鐵爐堡 - 矮人的覺醒",
+	[175737] = "七大王國",
+	[175738] = "艾格文和獵龍之戰",
+	[175739] = "三錘之戰",
+	[175740] = "最後的守護者",
+	[175741] = "基爾加丹和暗影契約",
+	[175745] = "黑暗之門和暴風城的陷落",
+	[175746] = "羅德隆聯盟",
+	[175747] = "遠征德拉諾",
+	[175748] = "巫妖王的誕生",
+	[175749] = "寒冰皇冠與冰封王座",
+	[175750] = "格瑞姆巴托之戰",
+	[175751] = "獸人的消沉",
+	[175753] = "蜘蛛之戰",
+	[175754] = "科爾蘇加德和天譴軍團的建立",
+	[175756] = "羅德隆的天譴軍團",
+	[175757] = "太陽之井 - 奎爾薩拉斯的陷落",
+	[175758] = "阿克蒙德歸來以及逃亡卡林多",
+	[175759] = "背叛者的勝利",
+	[175760] = "血精靈的崛起",
+	[175761] = "瘟疫之地的內戰",
+	[175762] = "巫妖王的勝利",
+	[175763] = "古老的仇恨 - 卡林多殖民研究",
+	[175854] = "兩個帝國",
+	[175855] = "帝國殞落",
+	[175856] = "奪魂者之怒",
+	[179697] = "競技場寶箱",
+	[180456] = "次級風石",
+	[180461] = "風石",
 });
 for i,objectID in ipairs(CANDY_BUCKETS) do ObjectNames[objectID] = "糖果桶"; end
 for key,value in pairs({
@@ -14628,13 +14792,23 @@ for key,value in pairs({
 	[3] = "暴雪點數",
 	[4] = "PvP 精良/角鬥士",
 	[5] = "不可學",
+	[1604] = "大師賽季",
+	[17] = "第1階段",
+	[18] = "第2階段",
+	[19] = "第3階段",
+	[20] = "第4階段",
+	[21] = "第5階段",
+	[30] = "第1階段",
+	[31] = "第2階段",
+	[32] = "第3階段",
+	[33] = "第4階段",
 })
 do phases[key].name = value; end
 for key,value in pairs({
 	[1] = "|cFFFF0000此項玩家永遠無法獲得。|r",
 	[2] = "|cFFFF0000此項已從遊戲中刪除。|r",
-	[3] = "|cFFAAFFAA這被鎖定在付費牆後面，例如遊戲内商店、另一個暴雪產品或招兵買馬召集令。|r",
-	[4] = "|cFFFFAAAA除非您擁有所需的 PvP 稱號、所需的 PvP 等級或處於該賽季的前 %，否則無法再購買或解鎖塑形。|r",
+	[3] = "|cFFAAFFAA這被鎖定在付費牆後面，例如遊戲內商店、另一個暴雪產品或招兵買馬召集令。|r",
+	[4] = "|cFFFFAAAA除非您擁有所需的 PvP 頭銜、所需的 PvP 等級或處於該賽季的前 %，否則無法再購買或解鎖塑形。|r",
 	[5] = "|cFFFFAAAA這不能永久收集、學習或用於塑形。|r",
 	[11] = "|cFFAAFFAA該功能直到 Phase 1 的 WoW Classic 才可用。|r",
 	[12] = "|cFFAAFFAA該功能直到 Phase 2 的 WoW Classic 才可用。|r",
@@ -14642,15 +14816,15 @@ for key,value in pairs({
 	[14] = "|cFFAAFFAA該功能直到 Phase 4 的 WoW Classic 才可用。|r",
 	[15] = "|cFFAAFFAA該功能直到 Phase 5 的 WoW Classic 才可用。|r",
 	[16] = "|cFFAAFFAA該功能直到 Phase 6 的 WoW Classic 才可用。|r",
-	[17] = "|cFFAAFFAA該功能直到 Phase 1 的 TBC Classic 才可用。|r",
-	[18] = "|cFFAAFFAA該功能直到 Phase 2 的 TBC Classic 才可用。|r",
-	[19] = "|cFFAAFFAA該功能直到 Phase 3 的 TBC Classic 才可用。|r",
-	[20] = "|cFFAAFFAA該功能直到 Phase 4 的 TBC Classic 才可用。|r",
-	[21] = "|cFFAAFFAA該功能直到 Phase 5 的 TBC Classic 才可用。|r",
-	[30] = "|cFFAAFFAA該功能直到 Phase 1 的 Wrath Classic 才可用。|r",
-	[31] = "|cFFAAFFAA該功能直到 Phase 2 的 Wrath Classic 才可用。|r",
-	[32] = "|cFFAAFFAA該功能直到 Phase 3 的 Wrath Classic 才可用。|r",
-	[33] = "|cFFAAFFAA該功能直到 Phase 4 的 Wrath Classic 才可用。|r",
+	[17] = "|cFFAAFFAA該功能直到 第1階段 的 TBC Classic 才可用。|r",
+	[18] = "|cFFAAFFAA該功能直到 第2階段 的 TBC Classic 才可用。|r",
+	[19] = "|cFFAAFFAA該功能直到 第3階段 的 TBC Classic 才可用。|r",
+	[20] = "|cFFAAFFAA該功能直到 第4階段 的 TBC Classic 才可用。|r",
+	[21] = "|cFFAAFFAA該功能直到 第5階段 的 TBC Classic 才可用。|r",
+	[30] = "|cFFAAFFAA該功能直到 第1階段 的 Wrath Classic 才可用。|r",
+	[31] = "|cFFAAFFAA該功能直到 第2階段 的 Wrath Classic 才可用。|r",
+	[32] = "|cFFAAFFAA該功能直到 第3階段 的 Wrath Classic 才可用。|r",
+	[33] = "|cFFAAFFAA該功能直到 第4階段 的 Wrath Classic 才可用。|r",
 })
 do phases[key].description = value; end
 for key,value in pairs({

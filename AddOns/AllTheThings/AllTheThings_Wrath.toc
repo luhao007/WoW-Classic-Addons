@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Crieve-Sargeras
-## Version: 4.1.8
+## Version: 4.2.7a
 
 ## Title: AllTheThings |cfd9b9b9b(Wrath)|r
 ## Notes: Addon for Tracking Collections & Account Completion

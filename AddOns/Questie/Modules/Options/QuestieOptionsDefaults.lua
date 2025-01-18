@@ -6,7 +6,7 @@ function QuestieOptionsDefaults:Load()
         profile = {
             clusterLevelHotzone = 50,
             enableIconLimit = false,
-            iconLimit = 200,
+            iconLimit = 1500,
             availableScale = 1.2,
             eventScale = 1.35,
             lootScale = 1,
@@ -144,6 +144,7 @@ function QuestieOptionsDefaults:Load()
             ldbDisplayText = "Questie",
             enableQuestFrameIcons = true,
             loadCustomSounds = false,
+            soundDelay = 0.5,
             soundOnQuestComplete = false,
             questCompleteSoundChoiceName = "QuestDefault",
             soundOnObjectiveComplete = false,

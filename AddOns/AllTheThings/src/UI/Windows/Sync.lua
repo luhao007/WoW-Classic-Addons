@@ -13,7 +13,7 @@ local BNGetInfo, BNSendGameData, C_BattleNet, C_ChatInfo =
 local AccountWideData, CharacterData, CurrentCharacter, LinkedCharacters, OnlineAccounts, SilentlyLinkedCharacters = {}, {}, {}, {}, {}, {}
 
 -- Module locals
-local AddonMessagePrefix, MESSAGE_HANDLERS, pendingReceiveChunksForUser, pendingSendChunksForUser, uid = "ATTSYNC", {}, {}, {}, 1;
+local AddonMessagePrefix, MESSAGE_HANDLERS, pendingReceiveChunksForUser, pendingSendChunksForUser, uid, EnableBattleNet = "ATTSYNC", {}, {}, {}, 1;
 local function ProcessSendChunks()
 	local any;
 	repeat
@@ -195,7 +195,7 @@ local function SendCharacterMessage(character, msg)
 	if character then
 		msg = ValidateMessage(msg);
 		local gameAccountID = character.gameAccountID;
-		if BNSendGameData and gameAccountID then
+		if BNSendGameData and gameAccountID and EnableBattleNet then
 			SendBattleNetMessage(gameAccountID, msg);
 		elseif character.realm == CurrentCharacter.realm and character.factionID == CurrentCharacter.factionID then
 			SendAddonMessage(character.name, msg);
@@ -955,6 +955,7 @@ app:CreateWindow("Synchronization", {
 	IgnoreQuestUpdates = true,
 	Defaults = {
 		AutoSync = true,
+		EnableBattleNet = not not BNGetInfo,
 		LinkedCharacters = LinkedCharacters,
 	},
 	Commands = { "attsync" },
@@ -993,6 +994,7 @@ app:CreateWindow("Synchronization", {
 		setmetatable(linked, { __index = SilentlyLinkedCharacters });
 		
 		-- Cache the current character's BattleTag. 
+		EnableBattleNet = settings.EnableBattleNet;
 		if BNGetInfo then
 			local battleTag = select(2, BNGetInfo());
 			if battleTag then
@@ -1051,6 +1053,23 @@ app:CreateWindow("Synchronization", {
 				}, { __index = function(t, key)
 					if key == "saved" then
 						return self.Settings.AutoSync;
+					end
+					return table[key];
+				end}),
+				setmetatable({	-- Enable Battle.net
+					text = "Enable Battle.net",
+					icon = 526421,
+					description = "Click here to toggle allowing Battle.net. Sometimes BNET breaks. If it does, you can enable sending messages the old fashioned way by turning this off!",
+					OnClick = function(row, button)
+						EnableBattleNet = not EnableBattleNet;
+						self.Settings.EnableBattleNet = EnableBattleNet;
+						self:Redraw();
+						return true;
+					end,
+					OnUpdate = BNGetInfo and app.AlwaysShowUpdate or nil,
+				}, { __index = function(t, key)
+					if key == "saved" then
+						return EnableBattleNet;
 					end
 					return table[key];
 				end}),

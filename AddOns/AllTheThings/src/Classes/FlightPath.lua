@@ -20,6 +20,7 @@ local localizedFlightPathNames;
 local KEY, CACHE = "flightpathID", "FlightPaths"
 local CLASSNAME = "FlightPath"
 app.CreateFlightPath = app.CreateClass(CLASSNAME, KEY, {
+	CACHE = function() return CACHE end,
 	name = function(t)
 		return localizedFlightPathNames[t[KEY]] or L.VISIT_FLIGHT_MASTER
 	end,
@@ -79,19 +80,9 @@ end
 app.AddEventRegistration("GOSSIP_SHOW", function()
 	local knownNodeIDs = {};
 	if CacheFlightPathDataForTarget(knownNodeIDs) > 0 then
-		local newFPs
 		for nodeID,_ in pairs(knownNodeIDs) do
-			if not app.IsCached(CACHE, nodeID) then
-				local searchResults = SearchForField(KEY, nodeID);
-				if searchResults and #searchResults > 0 then
-					app.SetCollected(searchResults[1], CACHE, nodeID, true);
-					-- TODO: remove once SetCollected handles UpdateRawID
-					if not newFPs then newFPs = { nodeID }
-					else newFPs[#newFPs + 1] = nodeID end
-				end
-			end
+			app.SetThingCollected(KEY, nodeID, false, true)
 		end
-		app.UpdateRawIDs(KEY, newFPs)
 	end
 end)
 app.AddEventRegistration("TAXIMAP_OPENED", function()
@@ -103,29 +94,22 @@ app.AddEventRegistration("TAXIMAP_OPENED", function()
 	end
 	local allNodeData = C_TaxiMap_GetAllTaxiNodes(mapID)
 	if allNodeData then
-		local newFPs, nodeID
+		local nodeID
 		for _,nodeData in ipairs(allNodeData) do
 			nodeID = nodeData.nodeID
 			localizedFlightPathNames[nodeID] = nodeData.name
 			-- app.PrintDebug("FP",nodeID,nodeData.name,nodeData.state)
-			local fp = app.SearchForObject(KEY, nodeID, "key")
 			if nodeData.state and nodeData.state < 2 then
-				-- Retail FPs are account-wide (mostly) so don't play a noise for literally every time any alt touches a FP
-				if fp and fp.collectible and not fp.collected then
-					app.SetCollected(fp, CACHE, nodeID, true)
-					-- TODO: remove once SetCollected handles UpdateRawID
-					if not newFPs then newFPs = { nodeID }
-					else newFPs[#newFPs + 1] = nodeID end
-				else
-					app.SetCached(CACHE, nodeID, 1)
+				app.SetThingCollected(KEY, nodeID, false, true)
+			end
+			if app.Contributor then
+				local fp = app.SearchForObject(KEY, nodeID, "key")
+				if (not fp or not app.Modules.Filter.Filters.InGame(fp)) then
+					app.print("FlightPath",nodeData.name,"#",nodeID,"is available on the Map",mapID,app.GetMapName(mapID) or UNKNOWN,"but is not found in game for ATT!")
+					app.Audio:PlayReportSound();
 				end
 			end
-			if app.Contributor and (not fp or not app.Modules.Filter.Filters.InGame(fp)) then
-				app.print("FlightPath",nodeData.name,"#",nodeID,"is available on the Map",mapID,app.GetMapName(mapID) or UNKNOWN,"but is not found in game for ATT!")
-				app.Audio:PlayReportSound();
-			end
 		end
-		app.UpdateRawIDs(KEY, newFPs)
 	end
 end)
 app.AddEventHandler("OnSavedVariablesAvailable", function(currentCharacter, accountWideData)

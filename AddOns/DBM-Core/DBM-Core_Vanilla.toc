@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: MysticalOS, QartemisT
-## Version: 11.0.29
+## Version: 11.1.1
 
 ## Title: |cffffe00a<|r|cffff7d0aDBM Core|r|cffffe00a>|r |cff69ccf0Main Core|r
 ## Notes: Deadly Boss Mods
@@ -22,6 +22,8 @@
 ## X-Wago-ID: qv633o6b
 ## X-Website: https://deadlybossmods.com
 ## X-Part-Of: DBM-Core
+
+Libs\ChatThrottleLib\ChatThrottleLib.lua
 
 localization.en.lua
 localization.br.lua
@@ -77,9 +79,11 @@ modules\Notes.lua
 modules\Sounds.lua
 modules\UpdateReminder.lua
 modules\AnnoyingPopup.lua
+modules\ZoneCombatScanner.lua
 
 modules\objects\Difficulties.lua
 modules\objects\BossMod.lua
+modules\objects\BossModEventDispatcher.lua
 modules\objects\Localization.lua
 modules\objects\VoicePacks.lua
 modules\objects\Timer.lua

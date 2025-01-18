@@ -922,6 +922,10 @@
 				<TitleExtra>仇恨助手</TitleExtra>
 				<Notes>显示你的队员的仇恨</Notes>
 			</SubAddon>
+			<SubAddon name='Details_TWW'>
+				<Title>插件</Title>
+				<TitleExtra>地心之战</TitleExtra>
+			</SubAddon>
 			<SubAddon name='Details_Vanguard'>
 				<Title>插件</Title>
 				<TitleExtra>坦克守护</TitleExtra>

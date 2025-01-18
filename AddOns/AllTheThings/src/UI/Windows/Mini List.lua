@@ -260,10 +260,13 @@ app:CreateWindow("MiniList", {
 			wipe(CachedMapData);
 			self:Rebuild();
 		end
-		self.SetMapID = function(self, mapID)
+		self.SetMapID = function(self, mapID, show)
 			if mapID and mapID ~= self.mapID then
 				self.mapID = mapID;
 				self:Rebuild();
+			end
+			if show then
+				self:Show();
 			end
 		end
 		app.ToggleMiniListForCurrentZone = function()

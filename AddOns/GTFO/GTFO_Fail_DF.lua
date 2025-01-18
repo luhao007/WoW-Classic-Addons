@@ -1265,6 +1265,12 @@ GTFO.SpellID["408134"] = {
   sound = 3;
 };
 
+GTFO.SpellID["423619"] = {
+  --desc = "Fel Bolt Explosion (Legion Flak Cannon)";
+  sound = 3;
+};
+
+
 --- *******************
 --- * Ruby Life Pools *
 --- *******************

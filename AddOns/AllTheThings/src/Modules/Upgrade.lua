@@ -431,12 +431,21 @@ local function HasUpgrade(t)
 	return GetUpgrade(t, up);
 end
 
-local UpdateUpgradeGroup
-local function CheckIsUpgrade(t)
+local UpgradeSources = {}
+
+local function SetupUpgrade(t)
 	local upgrade = t._up or HasUpgrade(t);
 	if upgrade then
 		t.isUpgrade = upgrade.collectible and not upgrade.collected
-		-- app.PrintDebug("isUpgrade",t.link,t.isUpgrade)
+		-- app.PrintDebug("SetupUpgrade",t.isUpgrade,app:SearchLink(t),"=>",app:SearchLink(upgrade))
+		-- store the upgrade source for ad-hoc updates
+		local upgradehash = upgrade.hash
+		local sources = UpgradeSources[upgradehash]
+		if not sources then
+			sources = {}
+			UpgradeSources[upgradehash] = sources
+		end
+		sources[#sources + 1] = t
 		Runner.Run(DGU, t)
 		return
 	end
@@ -449,18 +458,45 @@ local function CheckIsUpgrade(t)
 		t.retries = (t.retries or 0) + 1
 		-- in situations where the upgrade item cannot be loaded/found quickly, we unfortunately will just give up
 		if (t.retries > 10) then return end
-		Runner.Run(UpdateUpgradeGroup, t)
+		Runner.Run(SetupUpgrade, t)
+	end
+end
+local function CheckIsUpgrade(t)
+	local upgrade = t._up or HasUpgrade(t);
+	if upgrade then
+		t.isUpgrade = upgrade.collectible and not upgrade.collected
+		-- app.PrintDebug("CheckIsUpgrade",t.isUpgrade,app:SearchLink(t),"=>",app:SearchLink(upgrade))
+		Runner.Run(DGU, t)
+		return
+	end
+	-- if it had no upgrade and no link, it isn't cached in game which means
+	-- blizz returns wrong data in some appearance API calls. very nice.
+	-- queue this group up to try again since we are only running this logic on groups which we *know*
+	-- have upgrades
+	if IsRetrieving(t.link) then
+		-- app.PrintDebug("re-try upgrade",t.hash,t.link)
+		t.retries = (t.retries or 0) + 1
+		-- in situations where the upgrade item cannot be loaded/found quickly, we unfortunately will just give up
+		if (t.retries > 10) then return end
+		Runner.Run(CheckIsUpgrade, t)
 	end
 end
 
-UpdateUpgradeGroup = function(ref)
-	-- app.PrintDebug("Upgrade Update",ref.link)
-	CheckIsUpgrade(ref)
+local function OnSearchResultUpdate(t)
+	-- app.PrintDebug("UpdateUpgradeGroup",app:SearchLink(t))
+	local sources = UpgradeSources[t.hash]
+	if not sources then return end
+	for _,upgradeSource in ipairs(sources) do
+		-- app.PrintDebug("UpdateUpgradeGroup.source",app:SearchLink(upgradeSource))
+		CheckIsUpgrade(upgradeSource)
+	end
 end
+app.AddEventHandler("OnSearchResultUpdate", OnSearchResultUpdate)
+
 local function UpdateUpgradeGroups(refs)
 	-- app.PrintDebug("Upgrade Updates",#refs)
 	for i=1,#refs do
-		CheckIsUpgrade(refs[i])
+		SetupUpgrade(refs[i])
 	end
 end
 local function UpdateStart()
@@ -486,7 +522,8 @@ local function UpdateUpgrades()
 		Runner.Run(UpdateStart)
 	end
 
-	-- Get all itemIDAsCost entries
+	wipe(UpgradeSources)
+	-- Get all up entries
 	for up,refs in pairs(SearchForFieldContainer("up")) do
 		Runner.Run(UpdateUpgradeGroups, refs)
 	end

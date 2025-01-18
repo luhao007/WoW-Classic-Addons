@@ -559,7 +559,7 @@ yuanchangchakanFFF:SetScript("OnEvent",function(self, event, arg1, arg2, _, arg4
 				local Rune =GetRuneTXT()
 				local Items =GetEquipmTXT()
 				local infoall = "#P"..Player.."#T"..Tianfu.."#G"..Glyph.."#R"..Rune.."#E"..Items
-				local msglen = strlen(infoall)
+				local msglen = #infoall
 				if msglen>fengeLEN then
 					local fasongcishu = math.ceil(msglen/fengeLEN)
 					for ic=1,fasongcishu do

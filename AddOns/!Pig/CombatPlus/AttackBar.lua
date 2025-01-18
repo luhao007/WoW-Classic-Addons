@@ -18,10 +18,24 @@ local CombatPlusfun=addonTable.CombatPlusfun
 local IsCurrentSpell = IsCurrentSpell or C_Spell and C_Spell.IsCurrentSpell
 local IsAutoRepeatSpell = IsAutoRepeatSpell or C_Spell and C_Spell.IsAutoRepeatSpell
 
-local function SetScaleXY()
+local function SetScaleXY(LY)
 	if AttackBar_UI then
+		if not LY then
+			if not AttackBar_UI:IsShown() then
+				AttackBar_UI.ceshi=true
+				AttackBar_UI:Show()
+				C_Timer.After(2,function()
+					AttackBar_UI:Hide()
+					AttackBar_UI.ceshi=nil
+				end)
+			end
+		end
 		AttackBar_UI:SetScale(PIGA["CombatPlus"]["AttackBar"]["Scale"])
-		AttackBar_UI:SetPoint("BOTTOM", AttackBar_UI.PointfujiUI, "TOP", PIGA["CombatPlus"]["AttackBar"]["Xpianyi"], PIGA["CombatPlus"]["AttackBar"]["Ypianyi"]);
+		local PointfujiUI=PlayerCastingBarFrame
+		if tocversion<50000 then
+			PointfujiUI=CastingBarFrame
+		end
+		AttackBar_UI:SetPoint("BOTTOM", PointfujiUI, "TOP", PIGA["CombatPlus"]["AttackBar"]["Xpianyi"], PIGA["CombatPlus"]["AttackBar"]["Ypianyi"]);
 	end
 end
 function CombatPlusfun.AttackBar(open)
@@ -35,7 +49,6 @@ function CombatPlusfun.AttackBar(open)
 	AttackBar:SetFrameStrata("HIGH")
 	AttackBar:SetSize(195,13);
 	AttackBar:SetToplevel(true);
-	AttackBar:SetPoint("BOTTOM",PointfujiUI[1],"TOP",0,14);
 	AttackBar.PointfujiUI=PointfujiUI[1]
 	AttackBar.Icon:Hide();
 	AttackBar.Flash:Hide();
@@ -71,6 +84,7 @@ function CombatPlusfun.AttackBar(open)
 		end
 	end
 	local function AttackBar_OnUpdate(self, elapsed)
+		if AttackBar_UI.ceshi then return end
 		if self.NewmaxValue==0 then self:Hide() return end
 		if GetSpeed(self)~=self.old_maxValue then GetAttackSpeedTime(self,true) end
 		self.value = self.value + elapsed;
@@ -105,6 +119,7 @@ function CombatPlusfun.AttackBar(open)
 			self.fubar:Hide()
 		end
 	end
+	SetScaleXY(true)
 	if open then AttackBar:jiazaichushiV() end
 	AttackBar:SetScript("OnUpdate", AttackBar_OnUpdate)
 	AttackBar.fubar:SetScript("OnUpdate", AttackBar_OnUpdate)
@@ -115,6 +130,7 @@ function CombatPlusfun.AttackBar(open)
 	AttackBar:RegisterUnitEvent("UNIT_ATTACK_SPEED","player");--当您的攻击速度受到影响时触发
 	--AttackBar:RegisterUnitEvent("PLAYER_TARGET_SET_ATTACKING","target");
 	AttackBar:SetScript("OnEvent", function (self,event,arg1,arg2)
+		--print(event)
 		if event=="PLAYER_ENTERING_WORLD" or event=="UNIT_ATTACK_SPEED" then
 			self:jiazaichushiV()
 			if event=="UNIT_ATTACK_SPEED" then
@@ -196,7 +212,7 @@ CombatPlusF.SetF.SliderX.Slider:HookScript("OnValueChanged", function(self, arg1
 	SetScaleXY()
 end)
 local WowHeight=floor(GetScreenHeight()*0.5);
-local xiayiinfo = {-WowHeight,WowHeight,1}
+local xiayiinfo = {-WowHeight+300,WowHeight+220,1}
 CombatPlusF.SetF.SliderY = PIGSlider(CombatPlusF.SetF,{"LEFT",CombatPlusF.SetF.SliderX,"RIGHT",100,0},xiayiinfo)
 CombatPlusF.SetF.SliderY.T = PIGFontString(CombatPlusF.SetF.SliderY,{"RIGHT",CombatPlusF.SetF.SliderY,"LEFT",0,0},"Y偏移")
 CombatPlusF.SetF.SliderY.Slider:HookScript("OnValueChanged", function(self, arg1)
@@ -223,4 +239,12 @@ CombatPlusF.SetF:HookScript("OnShow", function (self)
 	self.Slider:PIGSetValue(PIGA["CombatPlus"]["AttackBar"]["Scale"])
 	self.SliderX:PIGSetValue(PIGA["CombatPlus"]["AttackBar"]["Xpianyi"])
 	self.SliderY:PIGSetValue(PIGA["CombatPlus"]["AttackBar"]["Ypianyi"])
+end);
+CombatPlusF.SetF:HookScript("OnHide", function (self)
+	if AttackBar_UI then
+		if AttackBar_UI:IsShown() and AttackBar_UI.ceshi then
+			AttackBar_UI:Hide()
+			AttackBar_UI.ceshi=nil
+		end
+	end
 end);

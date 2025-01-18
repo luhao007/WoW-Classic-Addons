@@ -154,6 +154,9 @@ DBT.DefaultOptions = {
 ---@field dummy boolean?
 ---@field dummyEnlarge boolean? Hack used by GUI for large preview bars
 ---@field alwaysHuge boolean?
+---@field minTimer number|nil
+---@field varianceDuration number
+---@field hasVariance boolean
 local barPrototype = {}
 local unusedBarObjects, barIsAnimating = {}, false
 local smallBars, largeBars = {}, {}
@@ -185,6 +188,7 @@ end
 
 do
 	local CreateFrame, IsShiftKeyDown = CreateFrame, IsShiftKeyDown
+
 
 	local function onUpdate(self)
 		if self.obj then
@@ -228,6 +232,7 @@ do
 
 	local fCounter = 1
 
+	---@param self DBT
 	local function createBarFrame(self)
 		---@class DBTBarFrame: Frame
 		local frame = CreateFrame("Frame", "DBT_Bar_" .. fCounter, smallBarsAnchor)
@@ -266,7 +271,21 @@ do
 		local icon2 = bar:CreateTexture("$parentIcon2", "OVERLAY")
 		icon2:SetPoint("LEFT", bar, "RIGHT")
 		icon2:SetSize(20, 20)
+		local varianceTex = bar:CreateTexture("$parentVariance", "OVERLAY")
+		varianceTex:SetPoint("RIGHT", bar, "RIGHT")
+		varianceTex:SetPoint("TOPRIGHT", bar, "TOPRIGHT")
+		varianceTex:SetPoint("BOTTOMRIGHT", bar, "BOTTOMRIGHT")
+		varianceTex:SetTexture("Interface\\TargetingFrame\\UI-StatusBar")
+		varianceTex:SetWidth(20)
+		varianceTex:SetBlendMode("ADD")
+		varianceTex:SetAlpha(0.5)
 
+		local varianceTexBorder = bar:CreateTexture("$parentVarianceBorder", "OVERLAY")
+		varianceTexBorder:SetVertexColor(0, 0, 0, 1)
+		varianceTexBorder:SetPoint("TOPLEFT", varianceTex, "TOPLEFT", -1, 0)
+		varianceTexBorder:SetPoint("BOTTOMLEFT", varianceTex, "BOTTOMLEFT", -1, 0)
+		varianceTexBorder:SetTexture("Interface\\Buttons\\WHITE8X8")
+		varianceTexBorder:SetWidth(1)
 		fCounter = fCounter + 1
 
 		frame:EnableMouse(not self.Options.ClickThrough or self.movable)
@@ -275,8 +294,38 @@ do
 
 	local mt = {__index = barPrototype}
 
+	---@param timer string|number
+	local function parseTimer(timer)
+		if not timer then return end
+
+		if type(timer) == "number" then
+			if timer <= 0 then return end
+
+			return timer -- Normal number timer, no variance
+		end
+
+		-- Check for variance format like "v30.5-40" or "dv30.5-40"
+		if type(timer) == "string" then
+			-- ^v matches starting character d (optional) or v
+			-- (%d+%.?%d*) matches any number of digits with optional decimal
+			-- %- matches literal character "-"
+			-- (%d+%.?%d*)$ matches any number of digits with optional decimal, at the end of the string
+			if not timer:match("^v(%d+%.?%d*)%-(%d+%.?%d*)$") then return end
+
+			local minTimer, maxTimer = timer:match("v(%d+%.?%d*)%-(%d+%.?%d*)")
+			minTimer, maxTimer = tonumber(minTimer), tonumber(maxTimer)
+			local varianceDuration = maxTimer - minTimer
+
+			return maxTimer, minTimer, varianceDuration  -- maximum possible timer from the variance window, minimum..., variance duration
+		end
+
+		return -- Invalid input
+	end
+
 	function DBT:CreateBar(timer, id, icon, huge, small, color, isDummy, colorType, inlineIcon, keep, fade, countdown, countdownMax, isCooldown)
-		if (not timer or type(timer) == "string" or timer <= 0) or (self.numBars >= 15 and not isDummy) then
+		local varianceMinTimer, varianceDuration
+		timer, varianceMinTimer, varianceDuration = parseTimer(timer) -- either normal number or with variance
+		if not timer or (self.numBars >= 15 and not isDummy) then
 			return
 		end
 		-- Most efficient place to block it, nil colorType instead of checking option every update
@@ -288,6 +337,9 @@ do
 			newBar.lastUpdate = GetTime()
 			newBar.huge = huge or nil
 			newBar.paused = nil
+			newBar.minTimer = varianceMinTimer or nil
+			newBar.varianceDuration = varianceDuration or 0
+			newBar.hasVariance = varianceMinTimer and true or false
 			newBar:SetTimer(timer) -- This can kill the timer and the timer methods don't like dead timers
 			if newBar.dead then
 				return
@@ -322,6 +374,9 @@ do
 				newBar.countdownMax = countdownMax
 				newBar.isCooldown = isCooldown
 				newBar.alwaysHuge = nil
+				newBar.minTimer = varianceMinTimer or nil
+				newBar.varianceDuration = varianceDuration or 0
+				newBar.hasVariance = varianceMinTimer and true or false
 			else -- Duplicate code ;(
 				local newFrame = createBarFrame(self)
 				---@class DBTBar
@@ -345,6 +400,9 @@ do
 					countdown = countdown,
 					countdownMax = countdownMax,
 					isCooldown = isCooldown,
+					minTimer = varianceMinTimer or nil,
+					varianceDuration = varianceDuration or 0,
+					hasVariance = varianceMinTimer and true or false,
 					lastUpdate = GetTime(),
 				}, mt)
 				newFrame.obj = newBar
@@ -356,7 +414,7 @@ do
 				newBar.alwaysHuge = true
 			end
 			-- Bars that start huge either by config (above) or because they happen to be short timers
-			if (newBar.alwaysHuge or timer <= (self.Options.EnlargeBarTime or 11)) and self.Options.HugeBarsEnabled then
+			if (newBar.alwaysHuge or (varianceMinTimer or timer) <= (self.Options.EnlargeBarTime or 11)) and self.Options.HugeBarsEnabled then
 				newBar.enlarged = true
 				newBar.huge = true
 				tinsert(largeBars, newBar)
@@ -530,6 +588,7 @@ do
 		end
 	end
 
+	---@param self DBT
 	local function moveEnd(self)
 		updateClickThrough(self, self.Options.ClickThrough)
 		self.movable = false
@@ -785,6 +844,43 @@ function barPrototype:SetColor(color)
 	_G[frame_name .. "BarSpark"]:SetVertexColor(color.r, color.g, color.b)
 end
 
+function barPrototype:SetVariance()
+	local frame_name = self.frame:GetName()
+	local varianceTex = _G[frame_name.."BarVariance"]
+	local varianceTexBorder = _G[frame_name.."BarVarianceBorder"]
+	if self.hasVariance then
+		local varianceWidth = self.frame:GetWidth() * (self.varianceDuration / self.totalTime)
+		varianceTex:SetWidth(varianceWidth)
+
+		-- change SetPoints based on fillUpBars
+		local bar = _G[frame_name.."Bar"]
+		varianceTex:ClearAllPoints()
+		varianceTexBorder:ClearAllPoints()
+		local isEnlarged = self.enlarged and not self.paused
+		local fillUpBars = isEnlarged and DBT.Options.FillUpLargeBars or not isEnlarged and DBT.Options.FillUpBars
+
+		if fillUpBars then
+			varianceTex:SetPoint("RIGHT", bar, "RIGHT")
+			varianceTex:SetPoint("TOPRIGHT", bar, "TOPRIGHT")
+			varianceTex:SetPoint("BOTTOMRIGHT", bar, "BOTTOMRIGHT")
+			varianceTexBorder:SetPoint("TOPLEFT", varianceTex, "TOPLEFT", -1, 0)
+			varianceTexBorder:SetPoint("BOTTOMLEFT", varianceTex, "BOTTOMLEFT", -1, 0)
+		else
+			varianceTex:SetPoint("LEFT", bar, "LEFT")
+			varianceTex:SetPoint("TOPLEFT", bar, "TOPLEFT")
+			varianceTex:SetPoint("BOTTOMLEFT", bar, "BOTTOMLEFT")
+			varianceTexBorder:SetPoint("TOPRIGHT", varianceTex, "TOPRIGHT", 1, 0)
+			varianceTexBorder:SetPoint("BOTTOMRIGHT", varianceTex, "BOTTOMRIGHT", 1, 0)
+		end
+
+		varianceTex:Show()
+		varianceTexBorder:Show()
+	else
+		varianceTex:Hide()
+		varianceTexBorder:Hide()
+	end
+end
+
 local colorVariables = {
 	[0] = "",--Generic
 	[1] = "A",--Add
@@ -824,6 +920,7 @@ function barPrototype:Update(elapsed)
 	local paused = self.paused
 	self.timer = self.timer - (paused and 0 or elapsed)
 	local timerValue = self.timer
+	local timerLowestValueFromVariance = self.varianceDuration and timerValue - self.varianceDuration or timerValue
 	local totaltimeValue = self.totalTime
 	local barOptions = DBT.Options
 	local currentStyle = barOptions.BarStyle
@@ -865,14 +962,14 @@ function barPrototype:Update(elapsed)
 		return self:Cancel()
 	else
 		if fillUpBars then
-			if currentStyle == "NoAnim" and timerValue <= enlargeTime and not enlargeHack then
+			if currentStyle == "NoAnim" and timerValue <= enlargeTime and not enlargeHack and not self.varianceDuration then
 				-- Simple/NoAnim Bar mimics BW in creating a new bar on large bar anchor instead of just moving the small bar
 				bar:SetValue(1 - timerValue/(totaltimeValue < enlargeTime and totaltimeValue or enlargeTime))
 			else
 				bar:SetValue(1 - timerValue/totaltimeValue)
 			end
 		else
-			if currentStyle == "NoAnim" and timerValue <= enlargeTime and not enlargeHack then
+			if currentStyle == "NoAnim" and timerValue <= enlargeTime and not enlargeHack and not self.varianceDuration then
 				-- Simple/NoAnim Bar mimics BW in creating a new bar on large bar anchor instead of just moving the small bar
 				bar:SetValue(timerValue/(totaltimeValue < enlargeTime and totaltimeValue or enlargeTime))
 			else
@@ -970,7 +1067,7 @@ function barPrototype:Update(elapsed)
 		self:ApplyStyle()
 		DBT:UpdateBars(true)
 	end
-	if not paused and (timerValue <= enlargeTime) and not self.small and not isEnlarged and isMoving ~= "enlarge" and enlargeEnabled then
+	if not paused and (timerLowestValueFromVariance <= enlargeTime) and not self.small and not isEnlarged and isMoving ~= "enlarge" and enlargeEnabled then
 		self:RemoveFromList()
 		self:Enlarge()
 	end
@@ -1050,6 +1147,7 @@ function barPrototype:ApplyStyle()
 		icon1:SetSize(sizeHeight, sizeHeight)
 		icon2:SetSize(sizeHeight, sizeHeight)
 	end
+	self:SetVariance()
 	self.frame:Show()
 	if sparkEnabled then
 		spark:SetAlpha(1)

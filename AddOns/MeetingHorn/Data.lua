@@ -1,4 +1,19 @@
 local ns = select(2, ...)
+
+local factionGroup = UnitFactionGroup("player")
+local function GetUnitFactionGroupIcon()
+    if factionGroup == "Alliance" then
+        return '1390441'
+    end
+    return '1390442'
+end
+local function GetUnitFactionGroupName()
+    if factionGroup == "Alliance" then
+        return '部落'
+    end
+    return '联盟'
+end
+
 local ENCOUNTER_BOSSES = {
     [1107] = {
         bossId = 1107,
@@ -1814,6 +1829,61 @@ local ENCOUNTER_BOSSES = {
         },
         icon = '1385713',
     },
+    [629] = {
+        bossId = 629,
+        abilities = {
+            desc = [[|TInterface\AddOns\MeetingHorn\Media\Introduce\Introduce629:2580:320:0:0:1:1:0:1:0:1|t]],
+        },
+        name = '诺森德猛兽',
+        summary = {
+            desc = [[|TInterface\AddOns\MeetingHorn\Media\Introduce\Introduce629:2580:320:0:0:1:1:0:1:0:1|t]],
+        },
+        icon = '1390440',
+    },
+    [633] = {
+        bossId = 633,
+        abilities = {
+            desc = [[|TInterface\AddOns\MeetingHorn\Media\Introduce\Introduce633:2580:320:0:0:1:1:0:1:0:1|t]],
+        },
+        name = '加拉克苏斯大王',
+        summary = {
+            desc = [[|TInterface\AddOns\MeetingHorn\Media\Introduce\Introduce633:2580:320:0:0:1:1:0:1:0:1|t]],
+        },
+        icon = '1385752',
+    },
+    [637] = {
+        bossId = 637,
+        abilities = {
+            desc = [[|TInterface\AddOns\MeetingHorn\Media\Introduce\Introduce637:1250:320:0:0:1:1:0:1:0:1|t]],
+        },
+        name = GetUnitFactionGroupName()..'的冠军',
+        summary = {
+            desc = [[|TInterface\AddOns\MeetingHorn\Media\Introduce\Introduce637:1250:320:0:0:1:1:0:1:0:1|t]],
+        },
+        icon = GetUnitFactionGroupIcon(),
+    },
+    [641] = {
+        bossId = 641,
+        abilities = {
+            desc = [[|TInterface\AddOns\MeetingHorn\Media\Introduce\Introduce641:2580:320:0:0:1:1:0:1:0:1|t]],
+        },
+        name = '瓦格里双子',
+        summary = {
+            desc = [[|TInterface\AddOns\MeetingHorn\Media\Introduce\Introduce641:2580:320:0:0:1:1:0:1:0:1|t]],
+        },
+        icon = '1390443',
+    },
+    [645] = {
+        bossId = 645,
+        abilities = {
+            desc = [[|TInterface\AddOns\MeetingHorn\Media\Introduce\Introduce645:2580:320:0:0:1:1:0:1:0:1|t]],
+        },
+        name = '阿努巴拉克',
+        summary = {
+            desc = [[|TInterface\AddOns\MeetingHorn\Media\Introduce\Introduce645:2580:320:0:0:1:1:0:1:0:1|t]],
+        },
+        icon = '607542',
+    },
     [1090] = {
         bossId = 1090,
         abilities = {
@@ -2031,6 +2101,19 @@ local ENCOUNTER_INSTANCES = {
         title = '奥杜尔',
         instanceId = 603,
     },
+    [649] = {
+        bosses = {
+            ENCOUNTER_BOSSES[629],
+            ENCOUNTER_BOSSES[633],
+            ENCOUNTER_BOSSES[637],
+            ENCOUNTER_BOSSES[641],
+            ENCOUNTER_BOSSES[645],
+        },
+        zones = {
+        },
+        title = '十字军的试炼',
+        instanceId = 649,
+    },
 }
 local ENCOUNTER_DATA = {
     ENCOUNTER_INSTANCES[533],
@@ -2038,8 +2121,10 @@ local ENCOUNTER_DATA = {
     ENCOUNTER_INSTANCES[616],
     ENCOUNTER_INSTANCES[624],
     ENCOUNTER_INSTANCES[603],
+    ENCOUNTER_INSTANCES[649],
 }
 ns.ULDUAR_BOSSES = 603
+ns.THE_CRUSADES_TRIAL_ID = 649
 ns.DEFAULT_ENCOUNTER_INSTANCE_ID = 624
 ns.ENCOUNTER_BOSSES = ENCOUNTER_BOSSES
 ns.ENCOUNTER_INSTANCES = ENCOUNTER_INSTANCES

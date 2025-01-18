@@ -72,14 +72,11 @@ L["DEBUG_CONFIG"] = "调试配置";
 L["DEBUG_CONFIGTIPS"] = "此配置默认关闭所有功能，供调试插件使用";
 --Config
 L["CONFIG_TABNAME"] = "配置";
-L["CONFIG_DEFAULT"] = "默认"..L["CONFIG_TABNAME"];
-L["CONFIG_DEFAULTTIPS"] = "开启常用功能";
-L["CONFIG_ALLON"] = "全部开启";
-L["CONFIG_ALLONTIPS"] = "开启所有功能，不需要的功能请自行关闭";
-L["CONFIG_DIY"] = "定制服务";
-L["CONFIG_DIYTIPS"] = "定制功能：请联系作者咨询";
-L["CONFIG_LOADTIPS"] = "此操作将|cff00ff00载入|r\n|cff00ff00<%s>|r的设置。\n已保存的数据将被|cffff0000清空|r。\n需重载界面,是否载入?";
-L["CONFIG_ERRTIPS"] = "1、如遇到问题，请在此载入插件默认配置。\n|cffFFff002、如问题仍未解决请通过关于内的反馈方式提交问题。|r";
+L["CONFIG_DIYTIPS"] = "把你的"..addonName.."配置加入到插件"..CHAT_DEFAULT.."配置列表，你可以在任何地方载入你的配置";
+L["CONFIG_LOADTIPS"] = "载入|cff00ff00<%s>|r"..INFO.."?\n当前配置数据将被|cffff0000重置|r,需重载界面";
+L["CONFIG_ERRTIPS"] = "1、如遇到问题，请在此载入插件"..CHAT_DEFAULT.."配置。\n2、如问题仍未解决请通过关于内的反馈方式提交问题。";
+L["CONFIG_LOAD"] = "载入";
+L["CONFIG_DAOCHU"] = "导出";
 L["CONFIG_DAORU"] = "导入";
 L["CONFIG_IMPORT"] = "请在下方输入要导入的字符串，并点击导入按钮";
 L["CONFIG_DERIVE"] = "请复制下方字符串，粘贴到需要导入位置";
@@ -193,7 +190,7 @@ L["BAGBANK_TABNAME"] = "背包/银行";
 L["FRAMEP_TABNAME"] = "界面优化";
 L["FRAMEP_TABNAME1"] = "暴雪界面";
 L["FRAMEP_TABNAME2"] = "角色信息";
---
+--鼠标提示
 L["TOOLTIP_TABNAME"] = MOUSE_LABEL..L["LIB_TIPS"];
 L["TOOLTIP_TABNAME1"] = L["LIB_PLUS"]..INFO;
 L["TOOLTIP_TABNAME1"] = L["LIB_PLUS"]..INFO;
@@ -218,11 +215,6 @@ L["MAP_NIMIBUT_SN"] = "收纳其他插件小地图按钮";
 L["MAP_NIMIBUT_SNTIPS"] = "开启后将收纳其他插件的小地图按钮到单独界面，"..KEY_BUTTON1.."点击本插件小地图按钮可查看已收纳按钮！|cffFF0000(注意和上方允许被收纳只能选一)|r";
 L["MAP_NIMIBUT_HANGNUM"]="每行按钮数:"
 L["MAP_NIMIBUT_NOSN"]="点击按钮切换收纳与否"
--- L["MAP_NIMIBUT_DELTIPS"]="删除后小地图按钮将被正常收纳\n确定删除？"
--- L["MAP_NIMIBUT_ADDTIPS"]="添加禁止插件收纳的按钮\n|cffFFFF00注意是插件小地图按钮名\n不是插件名/fstack查看按钮名|r"
--- L["MAP_NIMIBUT_ADD"]="添加"
--- L["MAP_NIMIBUT_ADDERR1"]="添加失败：插件按钮名称不能为空"
--- L["MAP_NIMIBUT_ADDERR2"]="添加失败：已存在同名插件按钮"
 L["MAP_NIMIBUT_TIPS1"]=KEY_BUTTON1.."-|cff00FFFF展开小地图按钮|r\r"..KEY_BUTTON2.."-|cff00FFFF设置|r\rShift+"..KEY_BUTTON1.."-|cff00FFFF重载界面|r\rCtrl+"..KEY_BUTTON1.."-|cff00FFFF打开错误日志|r"
 L["MAP_NIMIBUT_TIPS2"]=KEY_BUTTON1.."-|cff00FFFF设置|r\rShift+"..KEY_BUTTON1.."-|cff00FFFF重载界面|r\rCtrl+"..KEY_BUTTON1.."-|cff00FFFF打开错误日志|r"
 L["MAP_NIMIBUT_TIPS3"]="|cff00FF00此界面为其他插件按钮收纳框,当前未启用收纳功能！\r|r|cff00FFFF"..KEY_BUTTON2.."打开插件-设置|r"
@@ -253,5 +245,5 @@ L["TARDIS_YELL"] = "喊话";
 L["TARDIS_RECEIVEDATA"] = "正在接收数据...";
 L["TARDIS_LFG_JOIN"] = "加入PIG频道";
 L["TARDIS_LFG_LEAVE"] = "已加入PIG频道"
--- 
+---
 addonTable.locale=L

@@ -1190,6 +1190,7 @@ local function GetSearchResults(method, paramA, paramB, ...)
 
 	if mostAccessibleSource then
 		group.parent = mostAccessibleSource.parent;
+		group.awp = mostAccessibleSource.awp;
 		group.rwp = mostAccessibleSource.rwp;
 		group.e = mostAccessibleSource.e;
 		group.u = mostAccessibleSource.u;
@@ -1643,7 +1644,7 @@ function app:GetDataCache()
 		-- Expansion Features
 		if app.Categories.ExpansionFeatures and #app.Categories.ExpansionFeatures > 0 then
 			tinsert(g, {
-				text = "Expansion Features",
+				text = EXPANSION_FILTER_TEXT,
 				icon = app.asset("Category_ExpansionFeatures"),
 				g = app.Categories.ExpansionFeatures
 			});
@@ -2144,6 +2145,7 @@ end,
 app.CommonAchievementHandlers = commonAchievementHandlers;
 
 local fields = {
+	RefreshCollectionOnly = true,
 	["collectible"] = function(t)
 		return app.Settings.Collectibles.Achievements;
 	end,
@@ -2304,6 +2306,7 @@ if GetCategoryInfo and (GetCategoryInfo(92) ~= "" and GetCategoryInfo(92) ~= nil
 		["index"] = function(t)
 			return 1;
 		end,
+		RefreshCollectionOnly = true,
 		["collectible"] = function(t)
 			return app.Settings.Collectibles.Achievements;
 		end,
@@ -2700,8 +2703,10 @@ else
 			local collected = true;
 			for i,o in ipairs(t.areas) do
 				if o.collected ~= 1 and app.RecursiveUnobtainableFilter(o) then
-					collected = false;
-					break;
+					if rawget(o, "collectible") ~= false and o.coords then
+						collected = false;
+						break;
+					end
 				end
 			end
 			t:SetAchievementCollected(t.achievementID, collected);
@@ -3169,6 +3174,7 @@ app.CreateCurrencyClass = app.CreateClass("Currency", "currencyID", {
 	["link"] = function(t)
 		return GetCurrencyLink(t.currencyID, 1);
 	end,
+	RefreshCollectionOnly = true,
 	["collectible"] = function(t)
 		return t.collectibleAsCost;
 	end,
@@ -3463,6 +3469,7 @@ local nameFromSpellID = function(t)
 	return app.GetSpellName(t.spellID) or GetSpellLink(t.spellID) or RETRIEVING_DATA;
 end;
 local spellFields = {
+	CACHE = function() return "Spells" end,
 	["text"] = function(t)
 		return t.link;
 	end,
@@ -3507,6 +3514,7 @@ recipeFields.f = function(t)
 	return app.FilterConstants.RECIPES;
 end;
 recipeFields.IsClassIsolated = true;
+recipeFields.RefreshCollectionOnly = true;
 local createRecipe = app.CreateClass("Recipe", "spellID", recipeFields,
 "WithItem", {
 	baseIcon = function(t)
@@ -3526,15 +3534,15 @@ local createRecipe = app.CreateClass("Recipe", "spellID", recipeFields,
 		return app.Settings.AccountWide.Recipes and 2;
 	end,
 }, (function(t) return t.itemID; end));
-local createItem = app.CreateItem;	-- Temporary Recipe fix until someone fixes parser.
-app.CreateItem = function(id, t)
-	if t and t.spellID and t.f == app.FilterConstants.RECIPES then	-- This is pretty slow, would be great it someone fixes it.
-		t.f = nil;
-		t.itemID = id;
-		return createRecipe(t.spellID, t);
-	end
-	return createItem(id, t);
-end
+-- local createItem = app.CreateItem;	-- Temporary Recipe fix until someone fixes parser.
+-- app.CreateItem = function(id, t)
+-- 	if t and t.spellID and t.f == app.FilterConstants.RECIPES then	-- This is pretty slow, would be great it someone fixes it.
+-- 		t.f = nil;
+-- 		t.itemID = id;
+-- 		return createRecipe(t.spellID, t);
+-- 	end
+-- 	return createItem(id, t);
+-- end
 app.CreateRecipe = createRecipe;
 app.CreateSpell = function(id, t)
 	if t and t.itemID then
@@ -3555,6 +3563,7 @@ local SetMountCollected = function(t, spellID, collected)
 	return app.SetCollected(t, "Spells", spellID, collected, "Mounts");
 end
 local speciesFields = {
+	CACHE = function() return "BattlePets" end,
 	["f"] = function(t)
 		return app.FilterConstants.BATTLE_PETS;
 	end,
@@ -3579,9 +3588,11 @@ local speciesFields = {
 		---@diagnostic disable-next-line: undefined-field
 		return ("p:%d:1:3"):format(t.speciesID);
 	end,
+	["RefreshCollectionOnly"] = true,
 };
 local mountFields = {
 	IsClassIsolated = true,
+	CACHE = function() return "Spells" end,
 	["text"] = function(t)
 		return "|cffb19cd9" .. t.name .. "|r";
 	end,
@@ -3594,6 +3605,7 @@ local mountFields = {
 	["f"] = function(t)
 		return app.FilterConstants.MOUNTS;
 	end,
+	RefreshCollectionOnly = true,
 	["collectible"] = function(t)
 		return app.Settings.Collectibles.Mounts;
 	end,

@@ -1,13 +1,11 @@
-if not C_Seasons or C_Seasons.GetActiveSeason() ~= 2 then
-	return
-end
+if not DBM:IsSeasonal("SeasonOfDiscovery") then return end
 local MAP_STRANGLETHORN = 1434
 local mod = DBM:NewMod("m" .. MAP_STRANGLETHORN, "DBM-PvP")
 local L = mod:GetLocalizedStrings()
 
 local pvpMod = DBM:GetModByName("PvPGeneral")
 
-mod:SetRevision("20240505221847")
+mod:SetRevision("20241229225409")
 mod:SetZone(DBM_DISABLE_ZONE_DETECTION)
 mod:RegisterEvents(
 	"LOADING_SCREEN_DISABLED",

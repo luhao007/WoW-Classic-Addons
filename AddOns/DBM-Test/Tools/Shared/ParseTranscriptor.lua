@@ -184,6 +184,9 @@ function transcriptorParser:NewTestGenerator(log, firstLine, lastLine, prefix, n
 end
 
 local function guessType(str)
+	if type(str) ~= "string" then
+		return str
+	end
 	if str == "nil" then
 		return nil
 	end
@@ -193,7 +196,9 @@ local function guessType(str)
 	if str == "false" then
 		return false
 	end
-	if tostring(tonumber(str)) == str then
+	local testNum = tostring(tonumber(str))
+	-- Very hacky, but much faster than always applying a regex
+	if testNum == str or str:sub(0, 2) == "0x" and str:match("^0x%x*$") or str:match("^%d*%.%d*$") then
 		return tonumber(str)
 	end
 	return str
@@ -308,7 +313,7 @@ end
 local flagWarningShown
 local seenFriendlyCids = {}
 
-local function transcribeCleu(rawParams, anon)
+local function transcribeCleu(rawParams, anon, flagState)
 	local params = {}
 	local i = 1 -- to handle nil
 	local offset = 1
@@ -369,12 +374,19 @@ local function transcribeCleu(rawParams, anon)
 	end
 	local destIsPlayer = destGUID and destGUID:match("^Player%-")
 	local srcIsPlayer = sourceGUID and sourceGUID:match("^Player%-")
-	local destIsPet = destGUID and destGUID:match("^Pet%-")
-	local srcIsPet = sourceGUID and sourceGUID:match("^Pet%-")
+	local destIsPet = destGUID and (destGUID:match("^Pet%-") or flagState.mindcontrol[destGUID])
+	local srcIsPet = sourceGUID and (sourceGUID:match("^Pet%-") or flagState.mindcontrol[sourceGUID])
 	local destIsPlayerOrPet = destIsPlayer or destIsPet
 	local srcIsPlayerOrPet = srcIsPlayer or srcIsPet
 	local destIsNpc = destGUID and (destGUID:match("^Creature-") or destGUID:match("^Vehicle-"))
 	local srcIsNpc = sourceGUID and (sourceGUID:match("^Creature-") or sourceGUID:match("^Vehicle-"))
+	if spellId == 10912 and srcIsPlayer and destIsNpc then
+		if event == "SPELL_AURA_APPLIED" then
+			flagState.mindcontrol[destGUID] = true
+		elseif event == "SPELL_AURA_REMOVED" then
+			flagState.mindcontrol[destGUID] = nil
+		end
+	end
 	if event == "SPELL_DAMAGE[CONDENSED]" then event = "SPELL_DAMAGE" end
 	if event == "SPELL_PERIODIC_DAMAGE[CONDENSED]" then event = "SPELL_PERIODIC_DAMAGE" end
 	if event == "SPELL_SUMMON" and srcIsPlayerOrPet then
@@ -391,7 +403,7 @@ local function transcribeCleu(rawParams, anon)
 		return
 	end
 
-	if (event:match("^SPELL_CAST") or event == "SPELL_EXTRA_ATTACKS") and srcIsPlayerOrPet then
+	if (event:match("^SPELL_CAST") or event == "SPELL_EXTRA_ATTACKS") and srcIsPlayerOrPet and not flagState.mindcontrol[sourceGUID] then
 		return
 	end
 	if (event == "SPELL_DAMAGE" or event == "SPELL_PERIODIC_DAMAGE" or event == "SPELL_PERIODIC_MISSED" or event == "SPELL_MISSED" or event == "DAMAGE_SHIELD" or event == "SWING_DAMAGE" or event == "DAMAGE_SHIELD_MISSED") and srcIsPlayerOrPet then
@@ -445,8 +457,15 @@ local function transcribeCleu(rawParams, anon)
 	)
 end
 
-local function transcribeEvent(event, params, anon)
-	if event:match("^DBM_") or event:match("^NAME_PLATE_UNIT_") or event:match("BigWigs_") or event == "Echo_Log" or event == "ARENA_OPPONENT_UPDATE" or event == "PLAYER_INFO" then
+local ignoredEvents = {
+	["Echo_Log"] = true,
+	["ARENA_OPPONENT_UPDATE"] = true,
+	["PLAYER_INFO"] = true,
+	["CHAT_MSG_RAID_WARNING"] = true
+}
+
+local function transcribeEvent(event, params, anon, flagState)
+	if event:match("^DBM_") or event:match("^NAME_PLATE_UNIT_") or event:match("BigWigs_") or ignoredEvents[event] then
 		return
 	end
 	if event:match("^UNIT_SPELL") then
@@ -457,7 +476,7 @@ local function transcribeEvent(event, params, anon)
 		return
 	end
 	if event == "CLEU" then
-		return transcribeCleu(params, anon)
+		return transcribeCleu(params, anon, flagState)
 	end
 	-- FIXME: it kinda sucks that we only parse after this, but since type guessing may depend on the event it's ugly both ways :/
 	if event == "UNIT_TARGET" then
@@ -465,15 +484,20 @@ local function transcribeEvent(event, params, anon)
 			return arg1 .. anon:ScrubTarget(arg2) .. arg3 .. anon:ScrubTarget(arg4) .. arg5 .. anon:ScrubTarget(arg6)
 		end)
 	end
-	if event:match("^CHAT_MSG_MONSTER") or event:match("^CHAT_MSG_RAID_BOSS") then
+	if event:match("^CHAT_MSG_MONSTER") or event:match("^CHAT_MSG_RAID_BOSS") or event:match("^CHAT_MSG_BG_") then -- AQ40 uses CHAT_MSG_BG on SoD for some reason
 		params = params:gsub("^" .. ("([^#]*)#"):rep(12), function(msg, name, arg3, arg4, targetName, arg6, arg7, arg8, arg9, arg10, arg11, senderGuid)
-			-- Messages can *come from* pets
-			return ("%s#"):rep(12):format(anon:ScrubChatMessage(msg, targetName), anon:ScrubPetName(name) or name, arg3, arg4, anon:ScrubName(targetName) or targetName, arg6, arg7, arg8, arg9, arg10, arg11, senderGuid == "nil" and senderGuid or anon:ScrubGUID(senderGuid))
+			-- Messages can can come from pets or players (e.g., CHAT_MSG_MONSTER in the Stix Bunkjunker encounter)
+			return ("%s#"):rep(12):format(anon:ScrubChatMessage(msg, targetName), anon:ScrubName(name) or name, arg3, arg4, anon:ScrubName(targetName) or targetName, arg6, arg7, arg8, arg9, arg10, arg11, senderGuid == "nil" and senderGuid or anon:ScrubGUID(senderGuid))
 		end)
 	end
 	if event == "RAID_BOSS_EMOTE" then
 		params = params:gsub("^([^#]*)#", function(msg)
 			return ("%s#"):format(anon:ScrubChatMessage(msg))
+		end)
+	end
+	if event == "RAID_BOSS_WHISPER" then
+		params = params:gsub("^([^#]*)#([^#]*)#([^#]*)#([^#]*)", function(msg, target, time, sound)
+			return ("%s#"):rep(4):format(anon:ScrubChatMessage(msg, target), anon:ScrubName(target) or target, time, sound):sub(1, -2)
 		end)
 	end
 	if event == "NAME_PLATE_UNIT_ADDED" then -- Especially relevant for mind controlled players (but currently filtered above anyways)
@@ -532,6 +556,7 @@ end
 -- TODO: this relies a lot on DBM debug logs -- we could try to make some more educated guesses if we don't have these
 function testGenerator:parseMetadata()
 	local player
+	---@diagnostic disable-next-line: missing-fields
 	local instanceInfo = {} ---@type DBMInstanceInfo
 	local encounterInfo = {}
 	local zoneId
@@ -672,7 +697,25 @@ end
 
 function testGenerator:GetLogString()
 	local log = self:GetLogAndPlayers()
-	return log
+	return [[
+	--@strip-from-release@
+	-- This file contains a compressed version of the log at the end that is used in release builds.
+	-- Avoid editing this log by hand, but if you must run <TODO> to keep the compressed log in sync.
+]] .. log .. "--@end-strip-from-release@"
+end
+
+local compressedLogTemplate = [[
+	-- LibSerialize/LibDeflate encoded and compressed list of TestLogEntry. If an uncompressed log is specified it is used instead of the compressed version.
+	compressedLog = "%s",
+	duration = %.2f,
+]]
+
+function testGenerator:GetCompressedLogString()
+	local libSerialize = LibStub("LibSerialize")
+	local libDeflate = LibStub("LibDeflate")
+	local log = select(3, self:GetLogAndPlayers())
+	local compressed = libDeflate:EncodeForPrint(libDeflate:CompressDeflate((libSerialize:Serialize(log))))
+	return compressedLogTemplate:format(compressed, log[#log][1])
 end
 
 function testGenerator:GetTestDefinition()
@@ -694,18 +737,18 @@ function testGenerator:GetTestDefinition()
 	return self:GetTestDefinition()
 end
 
-local function unstringify(arg, ...)
+local function unstringify(param, ...)
 	if select("#", ...) == 0 then
-		if type(arg) == "string" then
-			return arg:sub(
-				arg:sub(1, 1) == "\"" and 2 or 1,
-				arg:sub(-1, -1) == "\"" and -2 or nil
+		if type(param) == "string" then
+			return param:sub(
+				param:sub(1, 1) == "\"" and 2 or 1,
+				param:sub(-1, -1) == "\"" and -2 or nil
 			)
 		else
-			return arg
+			return param
 		end
 	else
-		return unstringify(arg), unstringify(...)
+		return unstringify(param), unstringify(...)
 	end
 end
 
@@ -721,6 +764,7 @@ function testGenerator:GetLogAndPlayers()
 		resultLog[#resultLog + 1] = {0, "PLAYER_REGEN_DISABLED", "+Entering combat!"}
 		resultLogStr[#resultLogStr + 1] = '{0.00, "PLAYER_REGEN_DISABLED", "+Entering combat!"}'
 	end
+	local flagState = {mindcontrol = {}}
 	for i = self.firstLine, self.lastLine do
 		local line = self.log.lines[i]
 		local time, event, params = line:match("^<([%d.]+) [^>]+> %[([^%]]*)%] (.*)")
@@ -731,7 +775,7 @@ function testGenerator:GetLogAndPlayers()
 		end
 		timeOffset = timeOffset or time
 		time = time - timeOffset
-		local testEvent = transcribeEvent(event, params, anon)
+		local testEvent = transcribeEvent(event, params, anon, flagState)
 		if testEvent then
 			-- Unfortunately transcribeEvent already stringifies everything because everything was written with generating code in mind
 			-- But for live imports we obviously want non-stringified versions

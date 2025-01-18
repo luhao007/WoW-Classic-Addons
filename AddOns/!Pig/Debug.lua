@@ -308,65 +308,9 @@ StaticPopupDialogs["TIAOSHIPEIZHIQIYONG"] = {
 }
 fuFrame.zhuanma = PIGButton(fuFrame,{"BOTTOMLEFT",fuFrame,"BOTTOMLEFT",460,20},{80,24},"Base64")
 fuFrame.zhuanma:SetScript("OnClick", function (self)
-	if self.F:IsShown() then
-		self.F:Hide()
+	if ExportImport_UI:IsShown() then
+		ExportImport_UI:Hide()
 	else
-		self.F:Show()
+		ExportImport_UI:Show()
 	end
 end)
-fuFrame.zhuanma:HookScript("OnHide", function (self)
-	self.F:Hide()
-end)
-local ConfigWWW,ConfigHHH = 800, 600
-fuFrame.zhuanma.F=PIGFrame(fuFrame.zhuanma,{"CENTER",UIParent,"CENTER",0,0},{ConfigWWW,ConfigHHH})
-fuFrame.zhuanma.F:PIGSetBackdrop(1)
-fuFrame.zhuanma.F:PIGSetMovable()
-fuFrame.zhuanma.F:PIGClose()
-fuFrame.zhuanma.F:SetFrameLevel(999);
-fuFrame.zhuanma.F:Hide()
-fuFrame.zhuanma.F.biaoti=PIGFontString(fuFrame.zhuanma.F,{"TOP", fuFrame.zhuanma.F, "TOP", 0, -4})
-PIGLine(fuFrame.zhuanma.F,"TOP",-20,1,{-1,-20})
----
-local julidi = -26
-fuFrame.zhuanma.F.zhunma = PIGButton(fuFrame.zhuanma.F,{"TOPLEFT",fuFrame.zhuanma.F,"TOPLEFT",20,julidi},{80,20},"cmd_1")
-fuFrame.zhuanma.F.zhunma:SetScript("OnClick", function (self)
-	local data = fuFrame.zhuanma.F.NR.textArea:GetText()
-	local Ndata = Fun.Base64_encod(data)
-	fuFrame.zhuanma.F.NR.textArea:SetText(Ndata)
-end)
-fuFrame.zhuanma.F.huanyuan = PIGButton(fuFrame.zhuanma.F,{"LEFT",fuFrame.zhuanma.F.zhunma,"RIGHT",20,0},{80,20},"cmd_2")
-fuFrame.zhuanma.F.huanyuan:SetScript("OnClick", function (self)
-	local data = fuFrame.zhuanma.F.NR.textArea:GetText()
-	local Ndata = Fun.Base64_decod(data)
-	fuFrame.zhuanma.F.NR.textArea:SetText(Ndata)
-end)
-fuFrame.zhuanma.F.Copy = PIGButton(fuFrame.zhuanma.F,{"TOPLEFT",fuFrame.zhuanma.F,"TOPLEFT",320,julidi},{80,20},"select all")
-fuFrame.zhuanma.F.Copy:SetScript("OnClick", function (self)
-	fuFrame.zhuanma.F.NR.textArea:HighlightText()
-	--CopyToClipboard(fuFrame.zhuanma.F.NR.textArea:GetText())
-end)
-fuFrame.zhuanma.F.Clear = PIGButton(fuFrame.zhuanma.F,{"LEFT",fuFrame.zhuanma.F.Copy,"RIGHT",20,0},{80,20},"Clear")
-fuFrame.zhuanma.F.Clear:SetScript("OnClick", function (self)
-	fuFrame.zhuanma.F.NR.textArea:SetText("")
-end)
-fuFrame.zhuanma.F.Line2 =PIGLine(fuFrame.zhuanma.F,"TOP",-50,1,{-1,-50})
---
-fuFrame.zhuanma.F.NR=PIGFrame(fuFrame.zhuanma.F)
-fuFrame.zhuanma.F.NR:SetPoint("TOPLEFT", fuFrame.zhuanma.F.Line2, "TOPLEFT", 4, -4)
-fuFrame.zhuanma.F.NR:SetPoint("BOTTOMRIGHT", fuFrame.zhuanma.F, "BOTTOMRIGHT", -4, 4)
-fuFrame.zhuanma.F.NR:PIGSetBackdrop()
-fuFrame.zhuanma.F.NR.scroll = CreateFrame("ScrollFrame", nil, fuFrame.zhuanma.F.NR, "UIPanelScrollFrameTemplate")
-fuFrame.zhuanma.F.NR.scroll:SetPoint("TOPLEFT", fuFrame.zhuanma.F.NR, "TOPLEFT", 6, -6)
-fuFrame.zhuanma.F.NR.scroll:SetPoint("BOTTOMRIGHT", fuFrame.zhuanma.F.NR, "BOTTOMRIGHT", -26, 6)
-
-fuFrame.zhuanma.F.NR.textArea = CreateFrame("EditBox", nil, fuFrame.zhuanma.F.NR.scroll)
-fuFrame.zhuanma.F.NR.textArea:SetFontObject(ChatFontNormal);
-fuFrame.zhuanma.F.NR.textArea:SetWidth(ConfigWWW-40)
-fuFrame.zhuanma.F.NR.textArea:SetMultiLine(true)
-fuFrame.zhuanma.F.NR.textArea:SetMaxLetters(99999)
-fuFrame.zhuanma.F.NR.textArea:EnableMouse(true)
-fuFrame.zhuanma.F.NR.textArea:SetScript("OnEscapePressed", function(self)
-	self:ClearFocus()
-	fuFrame.zhuanma.F:Hide();
-end)
-fuFrame.zhuanma.F.NR.scroll:SetScrollChild(fuFrame.zhuanma.F.NR.textArea)

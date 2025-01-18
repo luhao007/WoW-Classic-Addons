@@ -9,7 +9,7 @@ end
 local mod	= DBM:NewMod("Moam", "DBM-Raids-Vanilla", catID)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20241103123604")
+mod:SetRevision("20241214191036")
 mod:SetCreatureID(15340)
 mod:SetEncounterID(720)
 mod:SetModelID(15392)
@@ -32,7 +32,7 @@ local timerStoneform	= mod:NewNextTimer(90, 25685, nil, nil, nil, 6)
 local timerStoneformDur	= mod:NewBuffActiveTimer(90, 25685, nil, nil, nil, 6)
 
 function mod:OnCombatStart(delay)
-	timerStoneform:Start(-delay)
+	timerStoneform:Start(90-delay)
 end
 
 function mod:SPELL_AURA_APPLIED(args)

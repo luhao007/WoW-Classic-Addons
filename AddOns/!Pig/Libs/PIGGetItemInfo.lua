@@ -54,7 +54,6 @@ local Fun=addonTable.Fun
 --     PIGhuoquF:Show()
 -- end
 -----------------
---local kaishijishuxulie = {{1,6},{7,13},{14,19}}
 local function GetItemLinkJJ(ItemLink)
     local msg = "";
     if ItemLink ~= nil then
@@ -123,6 +122,26 @@ function Fun.HY_EquipmTXT(msg)
     end
     return Data
 end
+local function HY_ShowItemLink(But,itemlin,itemID)
+    if But and itemlin then
+        local Linktxt=HY_ItemLinkJJ(itemlin)
+        local itemName, itemLink, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture, sellPrice, classID, subclassID=GetItemInfo(Linktxt);
+        if itemLink then
+            if But.itemID==itemID then
+                But:SetFun(itemName, itemLink, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture, sellPrice, classID, subclassID)
+            end
+        else
+            But.zhixingnum=But.zhixingnum or 0
+            if But:IsVisible() and But.zhixingnum<5 then
+                C_Timer.After(0.02,function()
+                    But.zhixingnum=But.zhixingnum+1
+                    HY_ShowItemLink(But,itemlin,itemID)
+                end)
+            end
+        end
+    end
+end
+Fun.HY_ShowItemLink=HY_ShowItemLink
 ---60级探索符文
 local pig_yasuo_2 = {
     [10]="_",[11]="=",[12]="(",[13]=")",[14]="[",[15]="]",[16]="{",[17]="}",

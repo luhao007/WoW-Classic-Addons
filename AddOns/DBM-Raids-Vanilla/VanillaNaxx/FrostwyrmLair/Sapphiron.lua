@@ -1,7 +1,13 @@
 local mod	= DBM:NewMod("SapphironVanilla", "DBM-Raids-Vanilla", 1)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20241103123604")
+if DBM:IsSeasonal("SeasonOfDiscovery") then
+	mod.statTypes = "normal,heroic,mythic"
+else
+	mod.statTypes = "normal"
+end
+
+mod:SetRevision("20241222110740")
 mod:SetCreatureID(15989)
 mod:SetEncounterID(1119)
 --mod:SetModelID(16033)--Scales incorrectly
@@ -63,7 +69,7 @@ function mod:OnCombatStart(delay)
 	self.vb.isFlying = false
 	warnAirPhaseSoon:Schedule(38.5 - delay)
 	timerAirPhase:Start(48.5 - delay)
-	berserkTimer:Start(-delay)
+	berserkTimer:Start(900-delay)
 	self:RegisterOnUpdateHandler(function(self, elapsed)
 		if not self:IsInCombat() then return end
 		local foundBoss, target

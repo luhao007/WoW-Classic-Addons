@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: MysticalOS
-## Version: r7
+## Version: r8
 
 ## Title: |cffffe00a<|r|cffff7d0aDBM Mod|r|cffffe00a>|r |cffff6010Raids (BC)|r
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFF69CCF0团队|r |cFF22B14C燃烧的远征|r

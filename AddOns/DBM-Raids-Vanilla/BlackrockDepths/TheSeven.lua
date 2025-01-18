@@ -3,7 +3,7 @@ local L		= mod:GetLocalizedStrings()
 
 mod.statTypes = "lfr,normal,heroic"
 
-mod:SetRevision("20241107120311")
+mod:SetRevision("20250105060534")
 mod:SetCreatureID(226307, 226310, 226309, 226313, 226311, 226312, 226308)--226307 Anger'rel, 226310/doomrel, 226309/doperel, 226313/gloomrel, 226311/haterel, 226312/seethrel, 226308/vilerel
 mod:SetEncounterID(3048)
 mod:SetUsedIcons(1, 2, 3, 4)
@@ -151,7 +151,7 @@ function mod:BladestormTarget(targetname, uId)
 	end
 end
 
-function mod:StartNameplateTimers(guid, cid, delay)
+function mod:StartEngageTimers(guid, cid, delay)
 	if cid == 226307 then--Anger'rel (First activation)
 		if self:IsHeroic() then
 			timerMortalStrikeCD:Start(5.0-delay, guid)
@@ -165,7 +165,7 @@ function mod:StartNameplateTimers(guid, cid, delay)
 	elseif cid == 226313 then--Gloom'rel (First activation)
 		timerRampageCD:Start(6.1-delay, guid)
 		timerRendCD:Start(12.2-delay, guid)
-		timerRecklessnessCD:Start(self:IsHeroic() and 26.7 or 36.1-delay, guid)
+		timerRecklessnessCD:Start(self:IsHeroic() and (26.7-delay) or (36.1-delay), guid)
 --	elseif cid == 226310 then--Doom'rel (First activation)
 		--Empowered timers handled by corporeal activation
 		--Volley cast instantly on pull
@@ -397,7 +397,7 @@ function mod:SPELL_AURA_APPLIED(args)
 				timerMindTorrentCD:Start(15, args.destGUID)
 			else
 				timerTerrifyCD:Stop(args.destGUID)
-				timerTerrifyCD:Start(9.8, args.destGUID)--restarts only on non heroic
+				timerTerrifyCD:Start(7.8, args.destGUID)--restarts only on non heroic
 				timerMindTorrentCD:Start(20, args.destGUID)
 			end
 		end

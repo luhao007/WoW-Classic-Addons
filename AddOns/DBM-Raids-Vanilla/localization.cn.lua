@@ -213,7 +213,7 @@ L:SetOptionLocalization{
 	SpecWarnPursue	= "当你被追击的时候显示特別警告"
 }
 L:SetMiscLocalization{
-	PursueEmote 	= "%s凝视着%s!"
+	PursueEmote 	= "凝视着"
 }
 
 -------------
@@ -327,10 +327,10 @@ L:SetGeneralLocalization{
 --  Vulnerabilities  --
 -----------------------
 -- Chromaggus, Death Talon Overseer and Death Talon Wyrmguard
-L = DBM:GetModLocalization("TalonGuards")
+L = DBM:GetModLocalization("BWLTrash")
 
 L:SetGeneralLocalization{
-	name = "龙人护卫"
+	name = "龙人护卫"--FIXME
 }
 L:SetWarningLocalization{
 	WarnVulnerable		= "%s易伤"

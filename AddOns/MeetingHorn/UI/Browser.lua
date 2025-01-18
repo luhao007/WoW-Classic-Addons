@@ -4,6 +4,16 @@ ns.isOpenVoiceRoom = true
 
 local L = ns.L
 
+local VOICEICON = [[|TInterface\AddOns\MeetingHorn\Media\voiceIocn:20:20:0:-2:96:96:0:96:0:96|t]]
+
+local medalTextures = {
+    [1] = [[|TInterface\AddOns\MeetingHorn\Media\StbTexture\StbTextureBgBig1:16:46:0:0:128:64:0:128:0:46|t]],
+    [2] = [[|TInterface\AddOns\MeetingHorn\Media\StbTexture\StbTextureBgBig2:16:46:0:0:128:64:0:128:0:46|t]],
+    [140] = [[|TInterface\AddOns\MeetingHorn\Media\StbTexture\StbTextureBgBig140:16:46:0:0:128:64:0:128:0:46|t]],
+    [170] = [[|TInterface\AddOns\MeetingHorn\Media\StbTexture\StbTextureBgBig170:16:46:0:0:128:64:0:128:0:46|t]],
+    [200] = [[|TInterface\AddOns\MeetingHorn\Media\StbTexture\StbTextureBgBig200:16:52:0:0:256:64:0:146:0:46|t]],
+}
+
 ---@class MeetingHornUIBrowser: ScrollFrame
 ---@field sortId number
 ---@field sortOrder number
@@ -157,11 +167,100 @@ function Browser:Constructor()
 
     self.Input:HookScript('OnTextChanged', Search)
 
-    ns.UI.ListView:Bind(self.ActivityList)
+    self.VoiceActivity.VoiceActivityTitle:SetTextColor(1, 0.984, 0.863)
+    self.VoiceActivity.VoiceActivityTitle:SetText(VOICEICON.."语音开团快人一步")
 
+    self.VoiceActivityList = CreateFrame("ScrollFrame", "VoiceActivityList", self.VoiceActivity, "HybridScrollFrameTemplate")
+    self.VoiceActivityList:SetPoint("TOPLEFT", self.VoiceActivity.VoiceActivityTitle, "BOTTOMLEFT", 0, 3)
+    self.VoiceActivityList:SetPoint("BOTTOMRIGHT", self.VoiceActivity, "BOTTOMRIGHT", 0, 0)
+    self.VoiceActivityList:SetFrameStrata("MEDIUM")
+    self.VoiceActivityList:SetFrameLevel(6)
+
+    local scrollBar = CreateFrame("Slider", "$parentScrollBar", self.VoiceActivityList, "HybridScrollBarTemplate")
+    scrollBar:SetPoint("TOPLEFT", self.VoiceActivityList, "TOPRIGHT", 0, -13)
+    scrollBar:SetPoint("BOTTOMLEFT", self.VoiceActivityList, "BOTTOMRIGHT", 0, 12)
+
+    self.VoiceActivityList.scrollBar = scrollBar
+
+    ns.UI.ListView:Bind(self.VoiceActivityList)
+    self.VoiceActivityList:SetItemTemplate('MeetingHornAcitvityTemplate')
+
+    ns.UI.ListView:Bind(self.ActivityList)
     self.ActivityList:SetItemTemplate('MeetingHornAcitvityTemplate')
+
     ---@param item MeetingHornActivity
     self.ActivityList:SetCallback('OnItemFormatting', function(_, button, item)
+        self:OnItemFormatting(button, item, false)
+    end)
+    self.VoiceActivityList:SetCallback('OnItemFormatting', function(_, button, item)
+        self:OnItemFormatting(button, item, true)
+    end)
+    ---@param item MeetingHornActivity
+    self.ActivityList:SetCallback('OnItemSignupClick', function(_, button, item)
+        self:OnItemSignupClick(button, item, false)
+    end)
+    self.VoiceActivityList:SetCallback('OnItemSignupClick', function(_, button, item)
+        self:OnItemSignupClick(button, item, true)
+    end)
+
+    ---@param item MeetingHornActivity
+    self.ActivityList:SetCallback('OnItemDoubleClick', function(_, _, item)
+        self:OnItemDoubleClick(item, false)
+    end)
+    self.VoiceActivityList:SetCallback('OnItemDoubleClick', function(_, _, item)
+        self:OnItemDoubleClick(item, true)
+    end)
+
+    self.ActivityList:SetCallback('OnItemRightClick', function(_, button, item)
+        self:OpenActivityMenu(item, button)
+    end)
+    self.VoiceActivityList:SetCallback('OnItemRightClick', function(_, button, item)
+        self:OpenActivityMenu(item, button)
+    end)
+
+    ---@param item MeetingHornActivity
+    self.ActivityList:SetCallback('OnItemEnter', function(_, button, item)
+        self:OnItemEnter(item)
+    end)
+    self.VoiceActivityList:SetCallback('OnItemEnter', function(_, button, item)
+        self:OnItemEnter(item)
+    end)
+    self.ActivityList:SetCallback('OnItemLeave', GameTooltip_Hide)
+    self.VoiceActivityList:SetCallback('OnItemLeave', GameTooltip_Hide)
+
+    self.Reset:SetScript('OnClick', function()
+        self.Activity:SetValue(nil)
+        self.Mode:SetValue(nil)
+        self.Input:SetText('')
+        self.sortOrder = nil
+        self.sortId = nil
+        self:Search()
+    end)
+
+    self.Refresh:SetScript('OnClick', Search)
+
+    -- self.CreateButton:SetScript('OnClick', function()
+    --     ns.Addon.MainPanel:SetTab(2)
+    -- end)
+
+    self.progressTimer = ns.Timer:New(function()
+        self:UpdateProgress()
+    end)
+
+    self:SetScript('OnShow', self.OnShow)
+    self:SetScript('OnHide', self.OnHide)
+    -- self:Show()
+
+    --[=[@classic@
+    self.Header1:ClearAllPoints()
+    self.Header1:SetPoint('BOTTOMLEFT', self.ActivityList, 'TOPLEFT', 2, 5)
+    self.Header7:SetShown(false)
+    self.Header5:SetWidth(290)
+    --@end-classic@]=]
+    self.VoiceActivity:Hide()
+end
+
+function Browser:OnItemFormatting(button, item, isVoice)
         local inApplicant = item:GetCooldown() > 0
         local inActivity = ns.UnitInGroup(item:GetLeader()) or UnitIsUnit(item:GetLeader(), 'player')
         -- local canSignup = not IsInGroup(LE_PARTY_CATEGORY_HOME) and not ns.LFG:GetCurrentActivity()
@@ -223,10 +322,10 @@ function Browser:Constructor()
         button.SameInstanceBgLeft:SetTexture(format("Interface/AddOns/MeetingHorn/Media/ProgressBg%d", item:GetCertificationBgID()))
         button.NormalBg:SetShown(not sameInstance)
         button.SameInstanceBgLeft:SetShown(sameInstance)
-        button.QRIcon:SetShown(item:IsOurAddonCreate())
-        button.QRIcon:SetSize(91, 26)
+        button.QRIcon:SetShown(item:IsOurAddonCreate() and isVoice)
+        button.QRIcon:SetSize(149 * 0.5, 64 * 0.3)
         button.QRIcon:ClearAllPoints()
-        button.QRIcon:SetPoint("LEFT", button.Members, "RIGHT", -18, -5)
+        button.QRIcon:SetPoint("LEFT", button.Members, "RIGHT", -15, 0)
         button.QRIcon:SetNormalTexture("Interface/AddOns/MeetingHorn/Media/buttonInRoom")
         local normalTexture = button.QRIcon:GetNormalTexture()
         normalTexture:SetTexCoord(0, 1, 0, 1)  -- 根据需要调整
@@ -244,81 +343,64 @@ function Browser:Constructor()
         button.Instance:SetPoint('RIGHT', button, 'LEFT', 155, 0)
         button.Name:SetPoint('LEFT', 5, 0)
         --@end-classic@]=]
-    end)
-    ---@param item MeetingHornActivity
-    self.ActivityList:SetCallback('OnItemSignupClick', function(_, button, item)
-        if item:IsActivity() then
-            ns.LogStatistics:InsertLog({time(), 1, item:GetLeader()})
-            -- ns.LFG:SignupActivity(item)
-            ChatFrame_SendTell(item:GetLeader())
+end
+
+function Browser:OnItemSignupClick(button, item, isVoice)
+    if item:IsActivity() then
+        ns.LogStatistics:InsertLog({ time(), 1, item:GetLeader() })
+        -- ns.LFG:SignupActivity(item)
+        ChatFrame_SendTell(item:GetLeader())
+    end
+end
+
+function Browser:OnItemDoubleClick(item, isVoice)
+    if not item:IsActivity() then
+        ChatFrame_SendTell(item:GetLeader())
+    end
+end
+
+function Browser:OnItemEnter(item)
+    local LeaderName = item:GetLeader()
+    local r, g, b = GetClassColor(item:GetLeaderClass())
+    GameTooltip:SetOwner(self, 'ANCHOR_NONE')
+    GameTooltip:SetPoint('TOPLEFT', self, 'TOPRIGHT', 8, 60)
+    GameTooltip:SetText(item:GetTitle())
+    GameTooltip:AddLine(LeaderName, r, g, b)
+
+    local medalList = ns.LFG:GetMedalList(LeaderName)
+    local medalText = ""
+    if medalList then
+        for _, medal in ipairs(medalList) do
+            local texture = medalTextures[medal]
+            if texture then
+                if medal == 200 then
+                    GameTooltip:AddLine(texture)
+                else
+                    medalText = medalText.. texture
+                end
+            end
         end
-    end)
-    ---@param item MeetingHornActivity
-    self.ActivityList:SetCallback('OnItemDoubleClick', function(_, _, item)
-        if not item:IsActivity() then
-            ChatFrame_SendTell(item:GetLeader())
-        end
-    end)
-    self.ActivityList:SetCallback('OnItemRightClick', function(_, button, item)
-        self:OpenActivityMenu(item, button)
-    end)
-    ---@param item MeetingHornActivity
-    self.ActivityList:SetCallback('OnItemEnter', function(_, button, item)
-        local r, g, b = GetClassColor(item:GetLeaderClass())
-        GameTooltip:SetOwner(self, 'ANCHOR_NONE')
-        GameTooltip:SetPoint('TOPLEFT', self, 'TOPRIGHT', 8, 60)
-        GameTooltip:SetText(item:GetTitle())
-        GameTooltip:AddLine(item:GetLeader(), r, g, b)
-        local level = item:GetLeaderLevel()
-        if level then
-            local color = GetQuestDifficultyColor(level)
-            GameTooltip:AddLine(format('%s |cff%02x%02x%02x%s|r', LEVEL, color.r * 255, color.g * 255, color.b * 255,
-                                       item:GetLeaderLevel()), 1, 1, 1)
-        end
-        GameTooltip:AddLine(item:GetComment(), 0.6, 0.6, 0.6, true)
-        GameTooltip:AddLine(' ')
+    end
 
-        if not item:IsActivity() then
-            GameTooltip:AddLine(L['<Double-Click> Whisper to player'], 1, 1, 1)
-        end
-        GameTooltip:AddLine(L['<Right-Click> Open activity menu'], 1, 1, 1)
-        GameTooltip:Show()
-    end)
-    self.ActivityList:SetCallback('OnItemLeave', GameTooltip_Hide)
+    GameTooltip:AddLine(medalText)
+    local level = item:GetLeaderLevel()
+    if level then
+        local color = GetQuestDifficultyColor(level)
+        GameTooltip:AddLine(format('%s |cff%02x%02x%02x%s|r', LEVEL, color.r * 255, color.g * 255, color.b * 255,
+            item:GetLeaderLevel()), 1, 1, 1)
+    end
+    GameTooltip:AddLine(item:GetComment(), 0.6, 0.6, 0.6, true)
+    GameTooltip:AddLine(' ')
 
-    self.Reset:SetScript('OnClick', function()
-        self.Activity:SetValue(nil)
-        self.Mode:SetValue(nil)
-        self.Input:SetText('')
-        self.sortOrder = nil
-        self.sortId = nil
-        self:Search()
-    end)
-
-    self.Refresh:SetScript('OnClick', Search)
-
-    -- self.CreateButton:SetScript('OnClick', function()
-    --     ns.Addon.MainPanel:SetTab(2)
-    -- end)
-
-    self.progressTimer = ns.Timer:New(function()
-        self:UpdateProgress()
-    end)
-
-    self:SetScript('OnShow', self.OnShow)
-    self:SetScript('OnHide', self.OnHide)
-    -- self:Show()
-
-    --[=[@classic@
-    self.Header1:ClearAllPoints()
-    self.Header1:SetPoint('BOTTOMLEFT', self.ActivityList, 'TOPLEFT', 2, 5)
-    self.Header7:SetShown(false)
-    self.Header5:SetWidth(290)
-    --@end-classic@]=]
-
+    if not item:IsActivity() then
+        GameTooltip:AddLine(L['<Double-Click> Whisper to player'], 1, 1, 1)
+    end
+    GameTooltip:AddLine(L['<Right-Click> Open activity menu'], 1, 1, 1)
+    GameTooltip:Show()
 end
 
 function Browser:OnShow()
+    self:SendServerCQDUStart()
     self:RegisterMessage('MEETINGHORN_ACTIVITY_ADDED')
     self:RegisterMessage('MEETINGHORN_ACTIVITY_UPDATE')
     self:RegisterMessage('MEETINGHORN_ACTIVITY_REMOVED')
@@ -329,6 +411,7 @@ function Browser:OnShow()
 end
 
 function Browser:OnHide()
+    self:SendServerCQDUStop()
     self:UnregisterAllMessages()
 
     if self.QRTooltip then
@@ -363,9 +446,9 @@ function Browser:OnClick(id)
     self:Sort()
 end
 
-function Browser:Sort()
+function Browser:Sort(List)
     local sortCall = function()
-        sort(self.ActivityList:GetItemList(), function(a, b)
+        sort(List:GetItemList(), function(a, b)
             -- @lkc@
             local acl, bcl = a:GetCertificationLevel(), b:GetCertificationLevel()
             if acl or bcl then
@@ -406,7 +489,7 @@ function Browser:Sort()
                 return bid < aid
             end
         end)
-        self.ActivityList:Refresh()
+        List:Refresh()
     end
 
     -- @lkc@
@@ -431,6 +514,23 @@ function Browser:Sort()
     end
 end
 
+function Browser:SendServerCQDUStart()
+    if not self.timer then
+        -- 立即执行一次
+        ns.LFG:SendServerCQDU()
+        self.timer = C_Timer.NewTicker(60, function()
+            ns.LFG:SendServerCQDU()
+        end)
+    end
+end
+
+function Browser:SendServerCQDUStop()
+    if self.timer then
+        self.timer:Cancel()
+        self.timer = nil
+    end
+end
+
 function Browser:Search()
     self.updateCount = 0
     self.Refresh.SpellHighlightAnim:Stop()
@@ -447,11 +547,41 @@ function Browser:Search()
         activityId = activityFilter
     end
 
-    local result = ns.LFG:Search(path, activityId, modeId, search)
+    local result, VoiceActivityResult = ns.LFG:Search(path, activityId, modeId, search)
+
+    self.ActivityList:ClearAllPoints()
+    self.VoiceActivity.BackgroundTexture:ClearAllPoints()
+    if #VoiceActivityResult > 0 then
+        self.VoiceActivity:Show()
+
+        if #VoiceActivityResult == 1 then
+            self.VoiceActivity:SetPoint("BOTTOMRIGHT", -20, 245)
+            self.ActivityList:SetPoint("TOPLEFT", 5, -50)
+            self.ActivityList:SetPoint("BOTTOMRIGHT", -20, 5)
+        elseif #VoiceActivityResult == 2 then
+            self.VoiceActivity:SetPoint("BOTTOMRIGHT", -20, 220)
+            self.ActivityList:SetPoint("TOPLEFT", 5, -75)
+            self.ActivityList:SetPoint("BOTTOMRIGHT", -20, 5)
+        else
+            self.VoiceActivity:SetPoint("BOTTOMRIGHT", -20, 195)
+            self.ActivityList:SetPoint("TOPLEFT", 5, -100)
+            self.ActivityList:SetPoint("BOTTOMRIGHT", -20, 5)
+        end
+        self.VoiceActivity.BackgroundTexture:SetPoint("TOPLEFT",self.VoiceActivity,"TOPLEFT")
+        self.VoiceActivity.BackgroundTexture:SetPoint("BOTTOMRIGHT",self.VoiceActivity,"BOTTOMRIGHT")
+    else
+        self.VoiceActivity:Hide()
+        self.ActivityList:SetPoint("TOPLEFT", 5, -5)
+        self.ActivityList:SetPoint("BOTTOMRIGHT", -20, 5)
+    end
+
     self.ActivityList:SetItemList(result)
-    self:Sort()
+    self.VoiceActivityList:SetItemList(VoiceActivityResult)
+    self:Sort(self.ActivityList)
+    self:Sort(self.VoiceActivityList)
     self.ActivityList:Refresh()
-    self.Empty.Text:SetShown(#result == 0)
+    self.VoiceActivityList:Refresh()
+    self.Empty.Text:SetShown(#result == 0 and #VoiceActivityResult == 0)
 end
 
 function Browser:MEETINGHORN_ACTIVITY_ADDED()
@@ -468,6 +598,7 @@ end
 function Browser:MEETINGHORN_ACTIVITY_UPDATE()
     if ns.Addon.MainPanel:IsMouseOver() then
         self.ActivityList:Refresh()
+        self.VoiceActivityList:Refresh()
     else
         self:Search()
     end
@@ -482,6 +613,7 @@ function Browser:MEETINGHORN_ACTIVITY_REMOVED(_, activity)
         end
     end
     self.ActivityList:Refresh()
+    self.VoiceActivityList:Refresh()
 end
 
 function Browser:MEETINGHORN_CHANNEL_READY()
@@ -568,7 +700,7 @@ function Browser:OpenVoiceRoom(activity)
             end
             ns.ThreeDimensionsCode:sendCommand('joinRoom', '-1')
             ns.LogStatistics:InsertLog({time(), 7, 2, data})
-            ns.OpenUrlDialog(format('https://dd.163.com/room/%s/?utm_source=%s', currentRoomID, data), '无法成功拉起房间?复制下方链接去浏览器内打开')
+            ns.OpenUrlDialog(format('https://dd.163.com/room/%s/?utm_source=jjh&utm_term=%s', currentRoomID, data), '复制并访问以下链接，即可快速进入这位星团长的【网页版】DD语音房间。')
         end)
     end
 end

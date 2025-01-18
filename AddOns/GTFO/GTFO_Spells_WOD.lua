@@ -871,6 +871,7 @@ GTFO.SpellID["155484"] = {
 GTFO.SpellID["155818"] = {
 	--desc = "Scorching Burns (Hans'gar and Franzok)";
 	sound = 1;
+	ignoreApplication = true;
 };
 
 GTFO.SpellID["161570"] = {
@@ -890,6 +891,7 @@ GTFO.SpellID["164380"] = {
 
 GTFO.SpellID["174773"] = {
 	--desc = "Exhaust Fumes (Operator Thogar)";
+	ignoreApplication = true;
 	sound = 1;
 };
 
@@ -942,6 +944,8 @@ GTFO.SpellID["156401"] = {
 GTFO.SpellID["156825"] = {
 	--desc = "Molten Slag (Blackhand)";
 	sound = 1;
+	trivialLevelApplication = 70;
+	trivialLevel = 70;
 };
 
 GTFO.SpellID["162490"] = {

@@ -145,6 +145,7 @@ end
 do
 	local KEY, CACHE = "spellID", "Spells"
 	app.CreateSpell = app.CreateClass("Spell", KEY, {
+		CACHE = function() return CACHE end,
 		_cachekey = function(t)
 			return t[KEY];
 		end,
@@ -210,14 +211,21 @@ do
 	app.AddEventHandler("OnRefreshCollections", function()
 		local state
 		local saved, none = {}, {}
+		local IsAccountCached = app.IsAccountCached
 		for id,_ in pairs(app.GetRawFieldContainer(KEY)) do
-			state = IsSpellKnownHelper(id) or CheckRecipeLearned(id)
-			if state ~= nil then
-				saved[id] = true
+			-- Don't cache other cached spells within Spells, they're handled separately
+			if not IsAccountCached("Mounts", id) then
+				state = IsSpellKnownHelper(id) or CheckRecipeLearned(id)
+				if state ~= nil then
+					saved[id] = true
+				else
+					-- for now, don't uncache learned Spells for the character...
+					-- Recipes are weird, and can only properly be refreshed via a TradeSkill window (without crashing the game anyway...)
+					-- none[id] = true
+				end
 			else
-				-- for now, don't uncache learned Spells for the character...
-				-- Recipes are weird, and can only properly be refreshed via a TradeSkill window (without crashing the game anyway...)
-				-- none[id] = true
+				-- Remove other Spells
+				none[id] = true
 			end
 		end
 		-- Character Cache
@@ -284,9 +292,7 @@ do
 	-- saved vars handled by Spell
 	app.AddEventRegistration("NEW_RECIPE_LEARNED", function(spellID, rank, previousSpellID)
 		if spellID then
-			local spell = app.SearchForObject("spellID", spellID, "field")
-			app.SetCollected(spell, CACHE, spellID, true, SETTING)
-			app.UpdateRawID("spellID", spellID)
+			app.SetThingCollected("spellID", spellID, false, true)
 		end
 	end);
 end

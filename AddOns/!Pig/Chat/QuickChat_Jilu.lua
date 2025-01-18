@@ -92,36 +92,8 @@ function QuickChatfun.QuickBut_Jilu()
 		end
 	end
 	--删除过期记录====================
-	local baocuntianshu=PIGA["Chatjilu"]["tianshu"];
-	local jilupindaoID={"PARTY","RAID","GUILD","INSTANCE_CHAT"};
-	local jilupindaoIDName={[4]=CHAT_MSG_INSTANCE_CHAT}
-	for id=1,#jilupindaoID do
-		PIGA["Chatjilu"]["jiluinfo"][jilupindaoID[id]]=PIGA["Chatjilu"]["jiluinfo"][jilupindaoID[id]] or {["kaiguan"]=true,["tixing"]=true,["neirong"]={}}
-	end
-	for id=1,#jilupindaoID do
-		local shujuyaun=PIGA["Chatjilu"]["jiluinfo"][jilupindaoID[id]]["neirong"];
-		if #shujuyaun>0 then
-			if #shujuyaun[1]>0 then
-				for ii=#shujuyaun[1], 1, -1 do
-						local dangqianday=floor(GetServerTime()/60/60/24);
-						local jiluday=shujuyaun[1][ii];
-						if (dangqianday-jiluday)>baocuntianshu then
-							table.remove(shujuyaun[1],ii);
-							table.remove(shujuyaun[2],ii);
-						end
-				end
-			end
-		end
-	end
-	--
-	local DefaultVV={["kaiguan"]=true,["tixing"]=true,["neirong"]={},["jichengBlack"]=true}
-	PIGA["Chatjilu"]["jiluinfo"]["WHISPER"]=PIGA["Chatjilu"]["jiluinfo"]["WHISPER"] or {}
-	for k,v in pairs(DefaultVV) do
-		if PIGA["Chatjilu"]["jiluinfo"]["WHISPER"][k]==nil then
-			PIGA["Chatjilu"]["jiluinfo"]["WHISPER"][k]=v
-		end
-	end
-	local miyushuju=PIGA["Chatjilu"]["jiluinfo"]["WHISPER"]["neirong"];
+	local baocuntianshu=PIGA["Chatjilu"]["Days"];
+	local miyushuju=PIGA["Chatjilu"]["WHISPER"]["record"];
 	if #miyushuju>0 then
 		local paixulist = miyushuju[1]
 		for iv=#paixulist,1,-1 do
@@ -163,7 +135,25 @@ function QuickChatfun.QuickBut_Jilu()
 			end
 		end
 	end
-	--密语记录UI=======================================
+	local jilupindaoID={"PARTY","RAID","GUILD","INSTANCE_CHAT"};
+	local jilupindaoIDName={[4]=CHAT_MSG_INSTANCE_CHAT}
+	for id=1,#jilupindaoID do
+		local shujuyaun=PIGA["Chatjilu"][jilupindaoID[id]]["record"];
+		if #shujuyaun>0 then
+			if #shujuyaun[1]>0 then
+				for ii=#shujuyaun[1], 1, -1 do
+						local dangqianday=floor(GetServerTime()/60/60/24);
+						local jiluday=shujuyaun[1][ii];
+						if (dangqianday-jiluday)>baocuntianshu then
+							table.remove(shujuyaun[1],ii);
+							table.remove(shujuyaun[2],ii);
+						end
+				end
+			end
+		end
+	end
+
+	--密语记录UI================
 	local www,hhh,hang_Height,hang_NUM = 170,310,24,12
 	local miyijiluF=PIGFrame(UIParent,{"CENTER",UIParent,"CENTER",0,70},{www,hhh},"miyijiluF_UI",true)
 	miyijiluF:PIGSetBackdrop()
@@ -172,9 +162,9 @@ function QuickChatfun.QuickBut_Jilu()
 	miyijiluF.biaoti=PIGFontString(miyijiluF,{"TOP", miyijiluF, "TOP", 0, -4},L["CHAT_WHISPER"]..GUILD_BANK_LOG)
 	miyijiluF.biaoti:SetTextColor(1, 0.843, 0, 1);
 	PIGLine(miyijiluF,"TOP",-20)
-	miyijiluF.kaiguanOpen=PIGA["Chatjilu"]["jiluinfo"]["WHISPER"]["kaiguan"]
-	miyijiluF.tixingOpen=PIGA["Chatjilu"]["jiluinfo"]["WHISPER"]["tixing"]
-	miyijiluF.jichengBlackOpen=PIGA["Chatjilu"]["jiluinfo"]["WHISPER"]["jichengBlack"]
+	miyijiluF.kaiguanOpen=PIGA["Chatjilu"]["WHISPER"]["Open"]
+	miyijiluF.tixingOpen=PIGA["Chatjilu"]["WHISPER"]["Tips"]
+	miyijiluF.jichengBlackOpen=PIGA["Chatjilu"]["WHISPER"]["jichengBlack"]
 
 	miyijiluF.shezhi = CreateFrame("Button",nil,miyijiluF);
 	miyijiluF.shezhi:SetHighlightTexture("interface/buttons/ui-common-mousehilight.blp");
@@ -207,25 +197,25 @@ function QuickChatfun.QuickBut_Jilu()
 	miyijiluF.shezhiF.kaiguan = PIGCheckbutton(miyijiluF.shezhiF,{"TOPLEFT", miyijiluF.shezhiF, "TOPLEFT", 10,-30},{ENABLE..L["CHAT_WHISPER"]..GUILD_BANK_LOG,ENABLE..L["CHAT_WHISPER"]..GUILD_BANK_LOG})
 	miyijiluF.shezhiF.kaiguan:SetScript("OnClick", function (self)
 		if self:GetChecked() then
-			PIGA["Chatjilu"]["jiluinfo"]["WHISPER"]["kaiguan"]=true 
+			PIGA["Chatjilu"]["WHISPER"]["Open"]=true 
 		else
-			PIGA["Chatjilu"]["jiluinfo"]["WHISPER"]["kaiguan"]=false 
+			PIGA["Chatjilu"]["WHISPER"]["Open"]=false 
 		end
 	end)
 	miyijiluF.shezhiF.tixing = PIGCheckbutton(miyijiluF.shezhiF,{"TOPLEFT", miyijiluF.shezhiF, "TOPLEFT", 10,-60},{L["CHAT_WHISPERTIXING"],L["CHAT_WHISPERTIXINGTOP"]})
 	miyijiluF.shezhiF.tixing:SetScript("OnClick", function (self)
 		if self:GetChecked() then
-			PIGA["Chatjilu"]["jiluinfo"]["WHISPER"]["tixing"]=true 
+			PIGA["Chatjilu"]["WHISPER"]["Tips"]=true 
 		else
-			PIGA["Chatjilu"]["jiluinfo"]["WHISPER"]["tixing"]=false 
+			PIGA["Chatjilu"]["WHISPER"]["Tips"]=false 
 		end
 	end)
 	miyijiluF.shezhiF.jichengBlack = PIGCheckbutton(miyijiluF.shezhiF,{"TOPLEFT", miyijiluF.shezhiF, "TOPLEFT", 10,-90},{"继承"..L["CHAT_FILTERS"]..SETTINGS,"继承过滤设置，被过滤["..WHISPER.."]将不会记录，(具体设置请在聊天过滤中设置，在密语按钮左边)"})
 	miyijiluF.shezhiF.jichengBlack:SetScript("OnClick", function (self)
 		if self:GetChecked() then
-			PIGA["Chatjilu"]["jiluinfo"]["WHISPER"]["jichengBlack"]=true 
+			PIGA["Chatjilu"]["WHISPER"]["jichengBlack"]=true 
 		else
-			PIGA["Chatjilu"]["jiluinfo"]["WHISPER"]["jichengBlack"]=false 
+			PIGA["Chatjilu"]["WHISPER"]["jichengBlack"]=false 
 		end
 	end)
 	---重置密语记录
@@ -234,9 +224,9 @@ function QuickChatfun.QuickBut_Jilu()
 		StaticPopup_Show("CHONGZHI_MIYUJILU");
 	end);
 	miyijiluF.shezhiF:SetScript("OnShow", function (self)
-		self.kaiguan:SetChecked(PIGA["Chatjilu"]["jiluinfo"]["WHISPER"]["kaiguan"])
-		self.tixing:SetChecked(PIGA["Chatjilu"]["jiluinfo"]["WHISPER"]["tixing"])
-		self.jichengBlack:SetChecked(PIGA["Chatjilu"]["jiluinfo"]["WHISPER"]["jichengBlack"])
+		self.kaiguan:SetChecked(PIGA["Chatjilu"]["WHISPER"]["Open"])
+		self.tixing:SetChecked(PIGA["Chatjilu"]["WHISPER"]["Tips"])
+		self.jichengBlack:SetChecked(PIGA["Chatjilu"]["WHISPER"]["jichengBlack"])
 	end)
 
 	--右键功能
@@ -328,7 +318,7 @@ function QuickChatfun.QuickBut_Jilu()
 		for id = 1, hang_NUM do
 			_G["MSGhang_"..id]:Hide()
 	    end
-	    local shuju=PIGA["Chatjilu"]["jiluinfo"]["WHISPER"]["neirong"]
+	    local shuju=PIGA["Chatjilu"]["WHISPER"]["record"]
 		if #shuju>0 then
 			local ItemsNum = #shuju[1];
 			FauxScrollFrame_Update(self, ItemsNum, hang_NUM, hang_Height);
@@ -385,7 +375,7 @@ function QuickChatfun.QuickBut_Jilu()
 		button1 = OKAY,
 		button2 = CANCEL,
 		OnAccept = function()
-			PIGA["Chatjilu"]["jiluinfo"]["WHISPER"]["neirong"] = {["kaiguan"]=true,["tixing"]=true,["neirong"]={}}
+			PIGA["Chatjilu"]["WHISPER"]["record"] = {["Open"]=true,["Tips"]=true,["record"]={}}
 			gengxinhang(miyijiluF.F.Scroll)
 		end,
 		timeout = 0,
@@ -422,7 +412,7 @@ function QuickChatfun.QuickBut_Jilu()
 			miyijiluF.nr.Scroll:Clear()
 
 			local idxx=self.del:GetID()
-			local shuju=PIGA["Chatjilu"]["jiluinfo"]["WHISPER"]["neirong"]
+			local shuju=PIGA["Chatjilu"]["WHISPER"]["record"]
 			shuju[1][idxx][3]=false
 
 			self.Aname = UNKNOWNOBJECT
@@ -532,7 +522,7 @@ function QuickChatfun.QuickBut_Jilu()
 		hang.del.icon:SetAlpha(0.5)
 		hang.del:HookScript("OnClick", function (self)
 			local idid=self:GetID()
-			local shuju=PIGA["Chatjilu"]["jiluinfo"]["WHISPER"]["neirong"]	
+			local shuju=PIGA["Chatjilu"]["WHISPER"]["record"]	
 			table.removekey(shuju[2],shuju[1][idid][1])
 			table.remove(shuju[1],idid);
 			gengxinhang(miyijiluF.F.Scroll)
@@ -671,7 +661,7 @@ function QuickChatfun.QuickBut_Jilu()
 			self.englishClass="BN_2"	
 		end
 		local xiaoxiTime=GetServerTime()
-		local huancunshuju=PIGA["Chatjilu"]["jiluinfo"]["WHISPER"]["neirong"]
+		local huancunshuju=PIGA["Chatjilu"]["WHISPER"]["record"]
 		if #huancunshuju>0 then
 			self.yijingcunzairiqi=false
 			for f=#huancunshuju[1], 1, -1 do
@@ -691,7 +681,7 @@ function QuickChatfun.QuickBut_Jilu()
 				huancunshuju[2][self.miyuren]={{event,xiaoxiTime,arg1}}
 			end
 		else
-			PIGA["Chatjilu"]["jiluinfo"]["WHISPER"]["neirong"]={
+			PIGA["Chatjilu"]["WHISPER"]["record"]={
 				{{self.miyuren,self.englishClass,true}},{[self.miyuren]={{event,xiaoxiTime,arg1}}}
 			}
 		end
@@ -724,9 +714,9 @@ function QuickChatfun.QuickBut_Jilu()
 		elseif Event=="CHAT_MSG_GUILD" then	
 			textCHATINFO=info2.."|cff40FF40["..JJM[4].."]|r |Hplayer:"..info3..":000:GUILD:|h|cff40FF40[|r|c"..info5..wjname.."|r|cff40FF40]|h："..info4_jiluxiaoxineirong.."|r";
 		elseif Event=="CHAT_MSG_INSTANCE_CHAT" then	
-			textCHATINFO=info2.."|cffFF7F00["..JJM[7].."]|r |Hplayer:"..info3..":000:INSTANCE_CHAT:|h|cff40FF40[|r|c"..info5..wjname.."|r|cff40FF40]|h："..info4_jiluxiaoxineirong.."|r";
+			textCHATINFO=info2.."|Hchannel:INSTANCE_CHAT|h|cffFF7F00["..JJM[7].."]|r|h |Hplayer:"..info3..":000:INSTANCE_CHAT:|h|cffFF7F00[|r|c"..info5..wjname.."|r|cffFF7F00]|h："..info4_jiluxiaoxineirong.."|r";
 		elseif Event=="CHAT_MSG_INSTANCE_CHAT_LEADER" then	
-			textCHATINFO=info2.."|cffFF4809["..JXname[3].."]|r |Hplayer:"..info3..":000:INSTANCE_CHAT:|h|cff40FF40[|r|c"..info5..wjname.."|r|cff40FF40]|h："..info4_jiluxiaoxineirong.."|r";
+			textCHATINFO=info2.."|Hchannel:INSTANCE_CHAT|h|cffFF4809["..JXname[3].."]|r|h |Hplayer:"..info3..":000:INSTANCE_CHAT:|h|cffFF4809[|r|c"..info5..wjname.."|r|cffFF4809]|h："..info4_jiluxiaoxineirong.."|r";
 		end
 		return textCHATINFO
 	end
@@ -744,19 +734,19 @@ function QuickChatfun.QuickBut_Jilu()
 	local baocuntianshulistN ={[7]=L["CHAT_JILUTIME"][1],[31]=L["CHAT_JILUTIME"][2],[180]=L["CHAT_JILUTIME"][3],[365]=L["CHAT_JILUTIME"][4]};
 	ChatjiluMianban.tianshuxiala=PIGDownMenu(ChatjiluMianban,{"LEFT",ChatjiluMianban.baocuntianchu,"RIGHT", 2,0},{70,22})
 	ChatjiluMianban.tianshuxiala:SetFrameLevel(ChatjiluMianban.tianshuxiala:GetFrameLevel()+5)
-	ChatjiluMianban.tianshuxiala:PIGDownMenu_SetText(baocuntianshulistN[PIGA["Chatjilu"]["tianshu"]])
+	ChatjiluMianban.tianshuxiala:PIGDownMenu_SetText(baocuntianshulistN[PIGA["Chatjilu"]["Days"]])
 	function ChatjiluMianban.tianshuxiala:PIGDownMenu_Update_But(self)
 		local info = {}
 		info.func = self.PIGDownMenu_SetValue
 		for i=1,#baocuntianshulist,1 do
 		    info.text, info.arg1, info.arg2 = baocuntianshulistN[baocuntianshulist[i]], baocuntianshulist[i], baocuntianshulist[i]
-		    info.checked = baocuntianshulist[i]==PIGA["Chatjilu"]["tianshu"]
+		    info.checked = baocuntianshulist[i]==PIGA["Chatjilu"]["Days"]
 			ChatjiluMianban.tianshuxiala:PIGDownMenu_AddButton(info)
 		end 
 	end
 	function ChatjiluMianban.tianshuxiala:PIGDownMenu_SetValue(value,arg1,arg2)
 		ChatjiluMianban.tianshuxiala:PIGDownMenu_SetText(value)
-		PIGA["Chatjilu"]["tianshu"]=arg1
+		PIGA["Chatjilu"]["Days"]=arg1
 		PIGCloseDropDownMenus()
 	end
 	ChatjiluMianban.baocuntianchu:Hide()
@@ -773,7 +763,7 @@ function QuickChatfun.QuickBut_Jilu()
 		button2 = CANCEL,
 		OnAccept = function()
 			for id=1,#jilupindaoID do
-				PIGA["Chatjilu"]["jiluinfo"][jilupindaoID[id]]= {["kaiguan"]=true,["tixing"]=true,["neirong"]={}}
+				PIGA["Chatjilu"][jilupindaoID[id]]= {["Open"]=true,["Tips"]=true,["record"]={}}
 			end
 			ChatjiluMianban:Hide()
 		end,
@@ -788,12 +778,12 @@ function QuickChatfun.QuickBut_Jilu()
 	-------
 	function ChatjiluMianban.shijianzhucequxiao(pindaoID,onoff,shijianUI)
 		if onoff then
-			PIGA["Chatjilu"]["jiluinfo"][jilupindaoID[pindaoID]]["kaiguan"]=true;
+			PIGA["Chatjilu"][jilupindaoID[pindaoID]]["Open"]=true;
 			for jj=1,#jilupindaoEvent[jilupindaoID[pindaoID]] do
 				shijianUI:RegisterEvent(jilupindaoEvent[jilupindaoID[pindaoID]][jj]);
 			end
 		else
-			PIGA["Chatjilu"]["jiluinfo"][jilupindaoID[pindaoID]]["kaiguan"]=false;
+			PIGA["Chatjilu"][jilupindaoID[pindaoID]]["Open"]=false;
 			for jj=1,#jilupindaoEvent[jilupindaoID[pindaoID]] do
 				shijianUI:UnregisterEvent(jilupindaoEvent[jilupindaoID[pindaoID]][jj]);
 			end
@@ -809,7 +799,7 @@ function QuickChatfun.QuickBut_Jilu()
 		local namexx = _G[jilupindaoID[id]] or jilupindaoIDName[id]
 		PindaolistF.CheckBUT = PIGCheckbutton(PindaolistF,nil,{GUILD_BANK_LOG.."|cff"..pindaoColorCFF[jilupindaoID[id]].."["..namexx.."]|r"..CHAT_CHANNELS,nil});
 		PindaolistF.CheckBUT:SetPoint("TOPLEFT",PindaolistF,"TOPLEFT",360,20);
-		PindaolistF.CheckBUT:SetChecked(PIGA["Chatjilu"]["jiluinfo"][jilupindaoID[id]]["kaiguan"]);
+		PindaolistF.CheckBUT:SetChecked(PIGA["Chatjilu"][jilupindaoID[id]]["Open"]);
 		PindaolistF.CheckBUT:SetScript("OnClick", function (self)
 			ChatjiluMianban.shijianzhucequxiao(id,self:GetChecked(),PindaolistF)
 		end);
@@ -1001,8 +991,8 @@ function QuickChatfun.QuickBut_Jilu()
 			local ShowID = fujiK.ShowID
 			if ShowID and ShowID>0 then
 				PindaolistF.Msg.Scroll:Clear()
-				table.remove(PIGA["Chatjilu"]["jiluinfo"][jilupindaoID[id]]["neirong"][1],ShowID);
-				table.remove(PIGA["Chatjilu"]["jiluinfo"][jilupindaoID[id]]["neirong"][2],ShowID);
+				table.remove(PIGA["Chatjilu"][jilupindaoID[id]]["record"][1],ShowID);
+				table.remove(PIGA["Chatjilu"][jilupindaoID[id]]["record"][2],ShowID);
 			    PindaolistF.riqi_list_gengxin(PindaolistF.riqi_list.Scroll);
 			    fujiK.ShowID=0
 			end
@@ -1039,8 +1029,8 @@ function QuickChatfun.QuickBut_Jilu()
 				fuji.highlight1:Hide();
 			end
 			local laiyuan=jilupindaoID[id];
-			if #PIGA["Chatjilu"]["jiluinfo"][laiyuan]["neirong"]>0 then
-			    local ItemsNum = #PIGA["Chatjilu"]["jiluinfo"][laiyuan]["neirong"][1];
+			if #PIGA["Chatjilu"][laiyuan]["record"]>0 then
+			    local ItemsNum = #PIGA["Chatjilu"][laiyuan]["record"][1];
 			    FauxScrollFrame_Update(self, ItemsNum, hang_NUM, hang_Height);
 			    local offset = FauxScrollFrame_GetOffset(self);
 			    for i = 1, hang_NUM do
@@ -1049,7 +1039,7 @@ function QuickChatfun.QuickBut_Jilu()
 						local fuji = _G["Chatjilu_riqi_list_"..id.."_"..i]
 						fuji:Show()
 						fuji:SetID(dangqian)
-						fuji.Title:SetText(date("%Y-%m-%d",PIGA["Chatjilu"]["jiluinfo"][laiyuan]["neirong"][1][dangqian]*86400));
+						fuji.Title:SetText(date("%Y-%m-%d",PIGA["Chatjilu"][laiyuan]["record"][1][dangqian]*86400));
 						local yijihuohang=_G["CHatjilu_Msg_Scroll"..id].ShowID
 						if dangqian==yijihuohang then
 							fuji.Title:SetTextColor(1,1,1, 1);
@@ -1061,7 +1051,7 @@ function QuickChatfun.QuickBut_Jilu()
 		end
 		--加载聊天记录
 		function PindaolistF.zairuliaotianINFO(ShowID,id)
-			local laiyuan=PIGA["Chatjilu"]["jiluinfo"][jilupindaoID[id]]["neirong"];
+			local laiyuan=PIGA["Chatjilu"][jilupindaoID[id]]["record"];
 			local jilulist=laiyuan[2][ShowID];
 			for x=1,#jilulist do
 				local Event =jilulist[x][1];
@@ -1084,7 +1074,7 @@ function QuickChatfun.QuickBut_Jilu()
 			PindaolistF.Msg.Scroll.allhang:SetText(xianshiriqishuju.."|cff"..pindaoColorCFF[jilupindaoID[id]].."[".._G[jilupindaoID[id]].."]|r聊天消息总数:|cffffffff"..#jilulist.."|r");
 		end
 		---根据启用注册事件
-		ChatjiluMianban.shijianzhucequxiao(id,PIGA["Chatjilu"]["jiluinfo"][jilupindaoID[id]]["kaiguan"],PindaolistF)
+		ChatjiluMianban.shijianzhucequxiao(id,PIGA["Chatjilu"][jilupindaoID[id]]["Open"],PindaolistF)
 		PindaolistF:HookScript("OnEvent", function (self,event,arg1,arg2,arg3,arg4,arg5,_,_,_,_,_,_,arg12)
 			if arg1:match("!Pig:") then return end
 			for jj=1,#jilupindaoEvent[jilupindaoID[id]] do
@@ -1094,7 +1084,7 @@ function QuickChatfun.QuickBut_Jilu()
 							local YYDAY=floor(xiaoxiTime/60/60/24)
 							local localizedClass, englishClass = GetPlayerInfoByGUID(arg12)
 							local color = PIG_CLASS_COLORS[englishClass];
-							local shujuyuanPR=PIGA["Chatjilu"]["jiluinfo"][jilupindaoID[id]]["neirong"]
+							local shujuyuanPR=PIGA["Chatjilu"][jilupindaoID[id]]["record"]
 							if #shujuyuanPR>0 then
 								self.yijingcunzairiqi=false
 								for f=#shujuyuanPR[1], 1, -1 do
@@ -1109,7 +1099,7 @@ function QuickChatfun.QuickBut_Jilu()
 									table.insert(shujuyuanPR[2], {{event,xiaoxiTime,arg2,arg1,color.colorStr}});
 								end
 							else
-								PIGA["Chatjilu"]["jiluinfo"][jilupindaoID[id]]["neirong"]={
+								PIGA["Chatjilu"][jilupindaoID[id]]["record"]={
 									{YYDAY},{{{event,xiaoxiTime,arg2,arg1,color.colorStr}}}
 								}
 							end

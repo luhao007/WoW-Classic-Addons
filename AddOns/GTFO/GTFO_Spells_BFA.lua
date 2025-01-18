@@ -880,10 +880,18 @@ GTFO.SpellID["279575"] = {
 GTFO.SpellID["283582"] = {
   --desc = "Consecration (Ra'wani Kanae)";
   sound = 1;
+  ignoreApplication = true;
 };
 
 GTFO.SpellID["286373"] = {
   --desc = "Chill of Death (Grong)";
+  ignoreApplication = true;
+  sound = 1;
+};
+
+GTFO.SpellID["283069"] = {
+  --desc = "Megatomic Fire (Grong)";
+  ignoreApplication = true;
   sound = 1;
 };
 
@@ -993,6 +1001,11 @@ GTFO.SpellID["288808"] = {
   test = true;
 };
 
+GTFO.SpellID["287294"] = {
+  --desc = "Blizzard (Jaina Proudmoore)";
+  sound = 1;
+  negatingDebuffSpellID = 287456; -- Frost Nova
+};
 
 --- **********************
 --- * Crucible of Storms *
@@ -1133,6 +1146,7 @@ GTFO.SpellID["299152"] = {
 GTFO.SpellID["296752"] = {
   --desc = "Cutting Coral (Lady Ashvane)";
   sound = 1;
+  ignoreApplication = true;
 };
 
 GTFO.SpellID["300244"] = {
@@ -1171,6 +1185,7 @@ GTFO.SpellID["303913"] = {
 GTFO.SpellID["303958"] = {
   --desc = "Nightmare Pool";
   sound = 1;
+  ignoreApplication = true;
 };
 
 GTFO.SpellID["298192"] = {
@@ -1182,6 +1197,7 @@ GTFO.SpellID["298192"] = {
 GTFO.SpellID["303819"] = {
   --desc = "Nightmare Pool (Za'qul)";
   sound = 1;
+  ignoreApplication = true;
 };
 
 GTFO.SpellID["297907"] = {
@@ -1197,6 +1213,7 @@ GTFO.SpellID["303981"] = {
 GTFO.SpellID["303422"] = {
   --desc = "Blizzard";
   sound = 1;
+  ignoreApplication = true;
 };
 
 GTFO.SpellID["299276"] = {
@@ -1250,6 +1267,7 @@ GTFO.SpellID["310322"] = {
 GTFO.SpellID["307343"] = {
   --desc = "Shadowy Residue (Vexiona)";
   sound = 1;
+  ignoreApplication = true;
 };
 
 GTFO.SpellID["307250"] = {
@@ -1276,11 +1294,13 @@ GTFO.SpellID["317999"] = {
 GTFO.SpellID["314430"] = {
   --desc = "Lingering Blood";
   sound = 1;
+  ignoreApplication = true;
 };
 
 GTFO.SpellID["309704"] = {
   --desc = "Caustic Coating";
   sound = 1;
+  ignoreApplication = true;
 };
 
 GTFO.SpellID["310406"] = {
@@ -1296,10 +1316,22 @@ GTFO.SpellID["308995"] = {
 GTFO.SpellID["307061"] = {
   --desc = "Mycelial Growth (Fury of N'Zoth)";
   sound = 1;
+  ignoreApplication = true;
 };
 
 GTFO.SpellID["313672"] = {
   --desc = "Acid Pool (Ka'zir)";
+  sound = 1;
+};
+
+GTFO.SpellID["307586"] = {
+  --desc = "Devoured Abyss (Maut)";
+  applicationOnly = true;
+  sound = 2;
+};
+
+GTFO.SpellID["314736"] = {
+  --desc = "Bubbling Overflow (Shad'har the Insatiable)";
   sound = 1;
 };
 

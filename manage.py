@@ -13,7 +13,7 @@ logger = logging.getLogger('manager')
 
 CLASSIC_ERA_VER = '11401'
 CLASSIC_VER = '30400'
-RETAIL_VER = '110002'
+RETAIL_VER = '110007'
 
 
 def available_on(platforms):

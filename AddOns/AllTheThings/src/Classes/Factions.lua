@@ -128,6 +128,7 @@ end
 -- Faction lib
 local KEY, CACHE, SETTING = "factionID", "Factions", "Reputations"
 app.CreateFaction = app.CreateClass("Faction", KEY, {
+	CACHE = function() return CACHE end,
 	text = function(t)
 		local name = t.name;
 		if name then
@@ -393,7 +394,7 @@ if app.IsRetail then
 					-- factions can dynamically be during the 'UPDATE_FACTION' event (thanks Blizzard not telling us which Faction got rep...)
 					if faction.standing >= faction.maxstanding then
 						-- Character Cache
-						app.SetCollected(faction, CACHE, id, true, SETTING)
+						app.SetThingCollected(KEY, id, false, true)
 					end
 				else app.PrintDebug(Colorize("MISSING FACTION", app.Colors.ChatLinkError),app:Linkify("Faction "..id,app.Colors.ChatLinkError,"search:factionID:"..id))
 				end

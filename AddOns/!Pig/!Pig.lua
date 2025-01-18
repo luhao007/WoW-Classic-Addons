@@ -37,6 +37,8 @@ PIGUI:SetScript("OnEvent",function(self, event, arg1)
 		addonTable.BagBank()
 		addonTable.Chat()
 		addonTable.PigLayout()
+		local Hardcore = addonTable.Hardcore or function() end
+		Hardcore()
 		--
 		QuickButUI:Add()
 		addonTable.Create.PIGSetPoint()

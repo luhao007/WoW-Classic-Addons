@@ -21,7 +21,8 @@ local function CreateWorldMapButton()
 	texture:SetAllPoints();
 	texture:Show();
 	button.texture = texture;
-
+	
+	local minilist = app:GetWindow(app.IsClassic and "MiniList" or "CurrentInstance");
 	button:SetScript("OnEnter", function(self)
 		local mapID = WorldMapFrame:GetMapID();
 		self.mapID = mapID;
@@ -44,15 +45,10 @@ local function CreateWorldMapButton()
 		GameTooltip:Hide();
 		GameTooltip:ClearLines();
 	end);
-	button:SetScript("OnClick", app.IsClassic and function(self)
+	button:SetScript("OnClick", function(self)
 		local mapID = self.mapID;
 		if mapID and mapID > 0 then
-			app.Windows["MiniList"]:SetMapID(mapID);
-		end
-	end or function(self)
-		local mapID = self.mapID;
-		if mapID and mapID > 0 then
-			app:GetWindow("CurrentInstance"):SetMapID(mapID);
+			minilist:SetMapID(mapID, true);
 		end
 	end);
 	return button;

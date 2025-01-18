@@ -1,5 +1,5 @@
 --[[--
-	by ALA 
+	by ALA
 --]]--
 ----------------------------------------------------------------------------------------------------
 local __addon, __private = ...;
@@ -30,8 +30,7 @@ MT.BuildEnv('COMM');
 	local _TempSavedCommTalents = {  };
 -->		COMM
 	--
-	--	name, realm, force_update, popup, update_talent(nil means true), update_equipment(nil means true)
-	function MT.SendQueryRequest(name, realm, force_update, popup, update_talent, update_glyph, update_equipment)
+	function MT.CacheEmulateComm(name, realm, force_update, talent, glyph, equipment)
 		if name ~= nil then
 			local Tick = MT.GetUnifiedTime();
 			local shortname, r2 = strsplit("-", name);
@@ -44,13 +43,60 @@ MT.BuildEnv('COMM');
 			if realm ~= CT.SELFREALM then
 				name = name .. "-" .. realm;
 			end
-			VT.QuerySent[name] = popup and Tick or VT.QuerySent[name] or nil;
-			VT.AutoShowEquipmentFrameOnComm[name] = popup and update_equipment ~= false and Tick or VT.AutoShowEquipmentFrameOnComm[name];
 			if name == CT.SELFNAME then
 				VT.PrevQueryRequestSentTime[name] = Tick;
 				local code = VT.VAR[CT.SELFGUID];
 				if code ~= nil then
-					return VT.__dep.__emulib.CHAT_MSG_ADDON(VT.__dep.__emulib.CT.COMM_PREFIX, code, "WHISPER", name);
+					VT.__dep.__emulib.CHAT_MSG_ADDON(VT.__dep.__emulib.CT.COMM_PREFIX, code, "WHISPER", name);
+					return name, true;
+				end
+			end
+			-- if VT.__is_inbattleground then
+			-- 	local v = VT.TBattlegroundComm[name];
+			-- end
+			local cache = VT.TQueryCache[name];
+			if cache then
+				local tal = talent ~= false    and cache ~= nil and cache.TalData.Tick ~= nil and Tick - cache.TalData.Tick <= (force_update and CT.THROTTLE_TALENT_QUERY or CT.DATA_VALIDITY);
+				local gly = glyph ~= false     and cache ~= nil and cache.GlyData.Tick ~= nil and Tick - cache.GlyData.Tick <= (force_update and CT.THROTTLE_GLYPH_QUERY or CT.DATA_VALIDITY);
+				local inv = equipment ~= false and cache ~= nil and cache.EquData.Tick ~= nil and Tick - cache.EquData.Tick <= (force_update and CT.THROTTLE_EQUIPMENT_QUERY or CT.DATA_VALIDITY);
+				if tal then
+					MT._TriggerCallback("CALLBACK_DATA_RECV", name);
+					MT._TriggerCallback("CALLBACK_TALENT_DATA_RECV", name, false);
+				end
+				if gly then
+					MT._TriggerCallback("CALLBACK_DATA_RECV", name);
+					MT._TriggerCallback("CALLBACK_GLYPH_DATA_RECV", name, false, false);
+				end
+				if inv then
+					MT._TriggerCallback("CALLBACK_DATA_RECV", name);
+					MT._TriggerCallback("CALLBACK_INVENTORY_DATA_RECV", name, false, false);
+				end
+				return name, tal, gly, inv;
+			end
+		end
+	end
+	--	name, realm, force_update, auto_popup, update_talent(nil means true), update_glyph(nil means true), update_equipment(nil means true)
+	function MT.SendQueryRequest(name, realm, force_update, auto_popup, update_talent, update_glyph, update_equipment)
+		if name ~= nil then
+			local Tick = MT.GetUnifiedTime();
+			local shortname, r2 = strsplit("-", name);
+			if r2 ~= nil and r2 ~= "" then
+				name = shortname;
+				realm = r2;
+			elseif realm == nil or realm == "" then
+				realm = CT.SELFREALM;
+			end
+			if realm ~= CT.SELFREALM then
+				name = name .. "-" .. realm;
+			end
+			VT.QuerySent[name] = auto_popup and Tick or VT.QuerySent[name] or nil;
+			VT.AutoShowEquipmentFrameOnComm[name] = auto_popup and update_equipment ~= false and Tick or VT.AutoShowEquipmentFrameOnComm[name];
+			if name == CT.SELFNAME then
+				VT.PrevQueryRequestSentTime[name] = Tick;
+				local code = VT.VAR[CT.SELFGUID];
+				if code ~= nil then
+					VT.__dep.__emulib.CHAT_MSG_ADDON(VT.__dep.__emulib.CT.COMM_PREFIX, code, "WHISPER", name);
+					return;
 				end
 			end
 			-- if VT.__is_inbattleground then
@@ -58,52 +104,16 @@ MT.BuildEnv('COMM');
 			-- end
 			local ready = VT.PrevQueryRequestSentTime[name] == nil or (Tick - VT.PrevQueryRequestSentTime[name] > 0.1);
 			local cache = VT.TQueryCache[name];
-			local update_tal = update_talent ~= false and
-								ready and
-								(
-									cache == nil or
-									cache.TalData.Tick == nil or
-									(
-										(Tick - (cache.TalData.Tick or -CT.DATA_VALIDITY) > CT.THROTTLE_TALENT_QUERY) and
-										(
-											force_update or
-											(Tick - (cache.TalData.Tick or -CT.DATA_VALIDITY) > CT.DATA_VALIDITY)
-										)
-									)
-								);
-			local update_gly = update_glyph ~= false and
-								ready and
-								(
-									cache == nil or
-									cache.GlyData.Tick == nil or
-									(
-										(Tick - (cache.GlyData.Tick or -CT.DATA_VALIDITY) > CT.THROTTLE_GLYPH_QUERY) and
-										(
-											force_update or
-											(Tick - (cache.GlyData.Tick or -CT.DATA_VALIDITY) > CT.DATA_VALIDITY)
-										)
-									)
-								);
-			local update_inv = update_equipment ~= false and
-								ready and
-								(
-									cache == nil or
-									cache.EquData.Tick == nil or
-									(
-										(Tick - (cache.EquData.Tick or -CT.DATA_VALIDITY) > CT.THROTTLE_EQUIPMENT_QUERY) and
-										(
-											force_update or
-											(Tick - (cache.EquData.Tick or -CT.DATA_VALIDITY) > CT.DATA_VALIDITY)
-										)
-									)
-								);
+			local update_tal = update_talent ~= false    and ready and (cache == nil or cache.TalData.Tick == nil or Tick - cache.TalData.Tick > (force_update and CT.THROTTLE_TALENT_QUERY or CT.DATA_VALIDITY));
+			local update_gly = update_glyph ~= false     and ready and (cache == nil or cache.GlyData.Tick == nil or Tick - cache.GlyData.Tick > (force_update and CT.THROTTLE_GLYPH_QUERY or CT.DATA_VALIDITY));
+			local update_inv = update_equipment ~= false and ready and (cache == nil or cache.EquData.Tick == nil or Tick - cache.EquData.Tick > (force_update and CT.THROTTLE_EQUIPMENT_QUERY or CT.DATA_VALIDITY));
 			if update_tal or update_gly or update_inv then
 				--[[
 				MT.Debug(
 					"MT.SendQueryRequest",
 					name,
 					force_update == false and "0" or "1",
-					popup == false and "0" or "1",
+					auto_popup == false and "0" or "1",
 					update_talent == false and "0" or "1",
 					update_equipment == false and "0" or "1",
 					update_tal == false and "0" or "1",
@@ -119,20 +129,19 @@ MT.BuildEnv('COMM');
 				end
 				if not update_gly then
 					MT._TriggerCallback("CALLBACK_DATA_RECV", name);
-					MT._TriggerCallback("CALLBACK_GLYPH_DATA_RECV", name, false, popup and update_talent ~= false);
+					MT._TriggerCallback("CALLBACK_GLYPH_DATA_RECV", name, false, auto_popup and update_talent ~= false);
 				end
 				if not update_inv then
 					MT._TriggerCallback("CALLBACK_DATA_RECV", name);
-					MT._TriggerCallback("CALLBACK_INVENTORY_DATA_RECV", name, false, popup and update_equipment ~= false);
+					MT._TriggerCallback("CALLBACK_INVENTORY_DATA_RECV", name, false, auto_popup and update_equipment ~= false);
 				end
-			else
+			elseif cache ~= nil then
 				MT._TriggerCallback("CALLBACK_DATA_RECV", name);
 				MT._TriggerCallback("CALLBACK_TALENT_DATA_RECV", name, false);
 				MT._TriggerCallback("CALLBACK_GLYPH_DATA_RECV", name, false);
 				MT._TriggerCallback("CALLBACK_INVENTORY_DATA_RECV", name, false);
 			end
 		end
-		return name;
 	end
 
 	local bak_ERR_CHAT_PLAYER_NOT_FOUND_S = nil;
@@ -262,9 +271,6 @@ MT.BuildEnv('COMM');
 			PakData.Tick = MT.GetUnifiedTime();
 			PakData[1] = code;
 			MT.SetPack(name);
-			-- if VT.SET.inspect_pack then
-				-- NS.display_pack(code);
-			-- end
 			if not overheard then
 				MT._TriggerCallback("CALLBACK_DATA_RECV", name);
 			end

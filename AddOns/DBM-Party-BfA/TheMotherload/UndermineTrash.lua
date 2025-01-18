@@ -1,8 +1,9 @@
-local mod	= DBM:NewMod("UndermineTrash", "DBM-Party-BfA", 7)
+local mod	= DBM:NewMod("MotherloadTrash", "DBM-Party-BfA", 7)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20241103105007")
+mod:SetRevision("20250105060420")
 mod:SetZone(1594)
+mod:RegisterZoneCombat(1594)
 --mod:SetModelID(47785)
 
 mod.isTrashMod = true
@@ -110,4 +111,15 @@ function mod:SPELL_CAST_SUCCESS(args)
 	elseif spellId == 262515 and self:AntiSpam(2.5, args.destName) then
 		warnAzeriteHeartseeker:CombinedShow(0.5, args.destName)
 	end
+end
+
+--All timers subject to a ~0.5 second clipping due to ScanEngagedUnits
+function mod:StartEngageTimers(guid, cid, delay)
+
+end
+
+--Abort timers when all players out of combat, so NP timers clear on a wipe
+--Caveat, it won't calls top with GUIDs, so while it might terminate bar objects, it may leave lingering nameplate icons
+function mod:LeavingZoneCombat()
+	self:Stop(true)
 end

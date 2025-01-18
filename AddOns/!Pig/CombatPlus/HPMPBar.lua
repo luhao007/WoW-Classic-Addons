@@ -72,33 +72,43 @@ local function Update_PowerType(self)
 	local info = PowerBarColor[powerType]
 	self:SetStatusBarColor(info.r, info.g, info.b ,1)
 end
-local RuneColor = {
-	[1]={1,1,40/255,40/255},
-	[2]={2,1,40/255,40/255},
-	[3]={5,0,191/255,1},
-	[4]={6,0,191/255,1},
-	[5]={3,30/255,255/255,100/255},
-	[6]={4,30/255,255/255,100/255},
+local RuneTypeColor = {
+	[1]={1,40/255,40/255},
+	[2]={0,191/255,1},
+	[3]={30/255,255/255,100/255},
+	[4]={1,20/255,147/255},
 }
+local Runeindex = {1,2,5,6,3,4}
+local function UpdateRuneType(index)
+	local runeType = GetRuneType(index)
+	HPMPBar_UI.Rune.Runebut[index]:SetStatusBarColor(RuneTypeColor[runeType][1],RuneTypeColor[runeType][2],RuneTypeColor[runeType][3],1);
+end	
 local function RuneButton_OnUpdate (self)
-	local start, duration, runeReady = GetRuneCooldown(self:GetID()); 
-	self:SetValue(GetTime()-start);
-	if ( runeReady ) then
+	local start, duration, runeReady = GetRuneCooldown(self:GetID())
+	if start==nil or runeReady then
+		self:SetValue(10);
+		self:SetAlpha(1);
 		self:SetScript("OnUpdate", nil);
+	else
+		self:SetValue(GetTime()-start);
 	end
 end
-local function UpdateRunes(self)
+local function UpdateRuneCooldown(index,added)
+	if added then
+		HPMPBar_UI.Rune.Runebut[index]:SetAlpha(1);
+		HPMPBar_UI.Rune.Runebut[index]:SetScript("OnUpdate", nil);
+	else
+		HPMPBar_UI.Rune.Runebut[index]:SetAlpha(0.7);
+		HPMPBar_UI.Rune.Runebut[index]:SetScript("OnUpdate", RuneButton_OnUpdate);
+	end
+end
+local function UpdateRunesAll()
 	for index=1,6 do
-		local start, duration, runeReady = GetRuneCooldown(index);
-		if runeReady then
-			self.butList[index]:SetAlpha(1);
-			self.butList[index]:SetScript("OnUpdate", nil);
-		else
-			self.butList[index]:SetAlpha(0.5);
-			self.butList[index]:SetScript("OnUpdate", RuneButton_OnUpdate);
-		end
+		UpdateRuneType(index)
+		UpdateRuneCooldown(index,false)
 	end
 end
+---
 local function SetCombatShow()
 	if HPMPBar_UI then
 		if PIGA["CombatPlus"]["HPMPBar"]["CombatShow"] then
@@ -108,7 +118,6 @@ local function SetCombatShow()
 		end
 	end
 end
-
 local BarTexList = {
 	{TEXTURES_SUBHEADER.."1","interface/buttons/greyscaleramp64.blp"},
 	{TEXTURES_SUBHEADER.."2","interface/targetingframe/ui-statusbar.blp"},
@@ -126,8 +135,8 @@ local function Set_StatusBarTex()
 	if HPMPBar_UI.MPBar then HPMPBar_UI.MPBar:SetStatusBarTexture(BarTexList[PIGA["CombatPlus"]["HPMPBar"]["BarTex"]][2]) end
 	if HPMPBar_UI.Rune then
 		for index=1,6 do
-			if HPMPBar_UI.Rune.butList[index] then
-				HPMPBar_UI.Rune.butList[index]:SetStatusBarTexture(BarTexList[PIGA["CombatPlus"]["HPMPBar"]["BarTex"]][2])
+			if HPMPBar_UI.Rune.butListID[index] then
+				HPMPBar_UI.Rune.butListID[index].bar:SetStatusBarTexture(BarTexList[PIGA["CombatPlus"]["HPMPBar"]["BarTex"]][2])
 			end
 		end
 	end
@@ -249,35 +258,37 @@ function CombatPlusfun.HPMPBar()
 			HPMPBar.Rune.bg:SetPoint("TOPLEFT",HPMPBar.Rune,"TOPLEFT",0,0);
 			HPMPBar.Rune.bg:SetPoint("BOTTOMRIGHT",HPMPBar.Rune,"BOTTOMRIGHT",0,0);
 			HPMPBar.Rune.bg:SetAlpha(0.6)
-			HPMPBar.Rune.butList={}
 			HPMPBar.Rune.butListID={}
+			HPMPBar.Rune.Runebut={}
 			for index=1,6,1 do
 				local RuneBut = CreateFrame("Frame", nil, HPMPBar.Rune,"BackdropTemplate")
 				RuneBut:SetBackdrop({edgeFile = Create.edgeFile, edgeSize = 8,})
-				RuneBut:SetBackdropBorderColor(0.7, 0.7, 0.7, 1)
+				RuneBut:SetBackdropBorderColor(0.6, 0.6, 0.6, 0.9)
 				if index==1 then
 					RuneBut:SetPoint("LEFT",HPMPBar.Rune,"LEFT",0,0);
 				else
 					RuneBut:SetPoint("LEFT",HPMPBar.Rune.butListID[index-1],"RIGHT",-1,0);
 				end
-				RuneBut.bar = CreateFrame("StatusBar", nil, RuneBut,nil,RuneColor[index][1]);
+				HPMPBar.Rune.butListID[index]=RuneBut
+				RuneBut.bar = CreateFrame("StatusBar", nil, RuneBut,nil,Runeindex[index]);
 				RuneBut.bar:SetStatusBarTexture("interface/chatframe/chatframebackground.blp")
-				RuneBut.bar:SetStatusBarColor(RuneColor[index][2],RuneColor[index][3],RuneColor[index][4],RuneColor[index][5],0.2);
 				RuneBut.bar:SetPoint("TOPLEFT",RuneBut,"TOPLEFT",0,0);
 				RuneBut.bar:SetPoint("BOTTOMRIGHT",RuneBut,"BOTTOMRIGHT",0,0);
 				RuneBut.bar:SetFrameLevel(RuneBut:GetFrameLevel()-1)
 				RuneBut.bar:SetMinMaxValues(0, 10)
-				HPMPBar.Rune.butList[RuneColor[index][1]]=RuneBut.bar
-				HPMPBar.Rune.butListID[index]=RuneBut
+				HPMPBar.Rune.Runebut[Runeindex[index]]=RuneBut.bar
 			end
-			HPMPBar.Rune:RegisterEvent("RUNE_POWER_UPDATE");
-			HPMPBar.Rune:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
 			HPMPBar.Rune:RegisterEvent("PLAYER_ENTERING_WORLD");
-			HPMPBar.Rune:HookScript("OnEvent", function(self, event)
+			HPMPBar.Rune:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
+			HPMPBar.Rune:RegisterEvent("RUNE_TYPE_UPDATE");
+			HPMPBar.Rune:RegisterEvent("RUNE_POWER_UPDATE");
+			HPMPBar.Rune:HookScript("OnEvent", function(self, event, arg1, arg2)
 				if ( event == "PLAYER_SPECIALIZATION_CHANGED" or event == "PLAYER_ENTERING_WORLD" ) then
-					UpdateRunes(self);
+					UpdateRunesAll();
+				elseif ( event == "RUNE_TYPE_UPDATE") then
+					UpdateRuneType(arg1)
 				elseif ( event == "RUNE_POWER_UPDATE") then
-					UpdateRunes(self);
+					UpdateRuneCooldown(arg1, arg2);
 				end
 			end)
 		end

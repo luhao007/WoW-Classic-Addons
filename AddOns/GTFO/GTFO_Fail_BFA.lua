@@ -555,6 +555,11 @@ GTFO.SpellID["304810"] = {
   sound = 3;
 };
 
+GTFO.SpellID["285762"] = {
+  --desc = "Explosion (Land Mine)";
+  sound = 3;
+};
+
 -- ***********************
 -- * Shrine of the Storm *
 -- ***********************
@@ -1611,6 +1616,23 @@ GTFO.SpellID["289937"] = {
   sound = 3;
   tankSound = 0;
 };
+
+GTFO.SpellID["286801"] = {
+  --desc = "Azerite Munitions (The Indomitable)";
+  sound = 3;
+};
+
+GTFO.SpellID["282181"] = {
+  --desc = "Reverberating Echo (Grong)";
+  sound = 3;
+};
+
+GTFO.SpellID["287325"] = {
+  --desc = "Comet Storm (Jaina Proudmoore)";
+  applicationOnly = true;
+  sound = 3;
+};
+
 
 --- **********************
 --- * Crucible of Storms *

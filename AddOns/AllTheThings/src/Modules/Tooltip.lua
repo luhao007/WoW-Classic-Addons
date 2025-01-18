@@ -483,6 +483,7 @@ tooltipFunction = function(self, locClass, engClass, locRace, engRace, gender, n
 end
 for i,guid in ipairs({
 	"Player-4372-01D307D4",	-- Pinkey-Atiesh
+	"Player-4372-00EE32DA",	-- Missdreamie-Atiesh
 }) do
 	PLAYER_TOOLTIPS[guid] = tooltipFunction;
 end

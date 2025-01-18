@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Pazza (Bronzebeard), (Updated by Sylvanaar/MysticalOS/Humfras)
-## Version: 3.12.4
+## Version: 3.12.9
 
 ## Title: WIM
 ## Notes: Give whispers an instant messenger feel.
@@ -13,6 +13,7 @@
 
 ## X-Curse-Project-ID: 7474
 ## X-WoWI-ID: 5342
+## X-Wago-ID: aNDmqo6o
 ## X-Email: johnlangone@gmail.com
 ## X-Category: Chat
 ## X-Embeds: LibStub, CallbackHandler-1.0, ChatThrottleLib, LibSharedMedia-3.0, LibChatAnims

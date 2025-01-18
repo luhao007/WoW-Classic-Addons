@@ -9,8 +9,8 @@ end
 local mod	= DBM:NewMod("Skeram", "DBM-Raids-Vanilla", catID)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20241103123604")
-mod:SetCreatureID(15263)
+mod:SetRevision("20241214190308")
+mod:SetCreatureID(DBM:IsSeasonal("SeasonOfDiscovery") and 176525 or 15263)
 mod:SetEncounterID(709)
 if not mod:IsClassic() then
 	mod:SetModelID(15345)
@@ -27,51 +27,45 @@ mod:RegisterEventsInCombat(
 	"SPELL_AURA_APPLIED 785",
 	"SPELL_AURA_REMOVED 785",
 	"SPELL_CAST_SUCCESS 20449 4801 8195",
+	"SPELL_CAST_START 26192",
 	"SPELL_SUMMON 747",
 	"UNIT_HEALTH"
 )
 
 --TODO, special warning optimizing?
-local warnMindControl	= mod:NewTargetAnnounce(785, 4)
+local warnMindControl	= mod:NewTargetNoFilterAnnounce(785, 4)
 local warnTeleport		= mod:NewSpellAnnounce(20449, 3)
 local warnSummon		= mod:NewSpellAnnounce(747, 3)
 local warnSummonSoon	= mod:NewSoonAnnounce(747, 2)
 
 local timerMindControl	= mod:NewBuffActiveTimer(20, 785, nil, nil, nil, 3)
+local specWarnAoE		= mod:NewSpecialWarningInterrupt(26192, "HasInterrupt", nil, nil, 1, 2)
 
 mod:AddSetIconOption("SetIconOnMC", 785, true, 0, {4, 5, 6, 7, 8})
 
-local MCTargets = {}
 mod.vb.splitCount = 0
 mod.vb.MCIcon = 8
 
 function mod:OnCombatStart(delay)
 	self.vb.splitCount = 0
-	table.wipe(MCTargets)
 	self.vb.MCIcon = 8
 end
 
-local function warnMCTargets(self)
-	warnMindControl:Show(table.concat(MCTargets, "<, >"))
-	timerMindControl:Start()
-	table.wipe(MCTargets)
+local function resetMcIcon(self)
 	self.vb.MCIcon = 8
 end
 
 function mod:SPELL_AURA_APPLIED(args)
 	if args:IsSpell(785) then
-		MCTargets[#MCTargets + 1] = args.destName
-		self:Unschedule(warnMCTargets)
 		if self.Options.SetIconOnMC then
 			self:SetIcon(args.destName, self.vb.MCIcon)
 		end
-		if #MCTargets >= 3 then
-			warnMCTargets(self)
-		else
-			self:Schedule(0.5, warnMCTargets, self)
-		end
 		self.vb.MCIcon = self.vb.MCIcon - 1
+		self:Unschedule(resetMcIcon)
+		self:Schedule(3, resetMcIcon, self)
 	end
+	warnMindControl:CombinedShow(0.3, args.destName)
+	timerMindControl:Start()
 end
 
 function mod:SPELL_AURA_REMOVED(args)
@@ -92,8 +86,15 @@ function mod:SPELL_SUMMON(args)
 	end
 end
 
+function mod:SPELL_CAST_START(args)
+	if args:IsSpell(26192) and self:AntiSpam(3, "ArcaneExplosion") then
+		specWarnAoE:Show(args.sourceName)
+		specWarnAoE:Play("kickcast")
+	end
+end
+
 function mod:UNIT_HEALTH(uId)
-	if self:GetUnitCreatureId(uId) == 15263 then
+	if self:GetUnitCreatureId(uId) == 15263 or self:GetUnitCreatureId(uId) == 176525 then
 		local percent = UnitHealth(uId) / UnitHealthMax(uId) * 100
 		if percent <= 81 and percent >= 77 and self.vb.splitCount < 1 then
 			warnSummonSoon:Show()

@@ -541,8 +541,7 @@ local function TalentFrame_ADD()
 		HideUIPanel(PlayerTalentFrame);
 	end
 	---
-	PlayerTalentFrame.yulanTF=PIGCheckbutton(PlayerTalentFrame,{"TOPLEFT",PlayerTalentFrame,"TOPLEFT",75,-18},{"模拟模式","点击天赋时可先模拟，确定后再学习模拟结果"})
-    PlayerTalentFrame.yulanTF:SetSize(14,14);
+	PlayerTalentFrame.yulanTF=PIGCheckbutton(PlayerTalentFrame,{"TOPLEFT",PlayerTalentFrame,"TOPLEFT",75,-18},{"模拟模式","点击天赋时可先模拟，确定后再学习模拟结果"},nil,nil,nil,0)
     local yulankaiqi = GetCVar("previewTalents")
     if yulankaiqi=="1" then PlayerTalentFrame.yulanTF:SetChecked(true) end
     PlayerTalentFrame.yulanTF:SetScript("OnClick", function (self)

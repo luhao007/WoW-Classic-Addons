@@ -139,8 +139,8 @@ local function UpdatePaichuButLsit()
 		local butx = MiniMapF.MinimapButF.butlist[i]
 		butx:Show()
 		butx.uiname=PigMinimapBut_UI.MiniList[i]
-		local xxx = _G[PigMinimapBut_UI.MiniList[i]].icon:GetTexture()
-		butx:SetNormalTexture(xxx)
+		local iconx = _G[PigMinimapBut_UI.MiniList[i]].icon and _G[PigMinimapBut_UI.MiniList[i]].icon:GetTexture() or _G[PigMinimapBut_UI.MiniList[i]].Icon and _G[PigMinimapBut_UI.MiniList[i]].Icon:GetTexture() or 134400
+		butx:SetNormalTexture(iconx)
 		if IsNoDIYpaichu(butx.uiname) then
 			butx.x:Show()
 		else

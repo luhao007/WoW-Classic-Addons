@@ -383,6 +383,9 @@ function QuestieItemFixes:Load()
             [itemKeys.npcDrops] = {3928},
             [itemKeys.objectDrops] = {},
         },
+        [5535] = {
+            [itemKeys.objectDrops] = {19283},
+        },
         [5619] = {
             [itemKeys.relatedQuests] = {929},
             [itemKeys.npcDrops] = {},
@@ -687,6 +690,9 @@ function QuestieItemFixes:Load()
         [10639] = {
             [itemKeys.npcDrops] = {1988,1989},
         },
+        [10663] = { -- Essence of Hakkar
+            [itemKeys.class] = itemClasses.QUEST,
+        },
         [10691] = { -- #1396
             [itemKeys.relatedQuests] = {3568},
             [itemKeys.npcDrops] = {},
@@ -776,6 +782,7 @@ function QuestieItemFixes:Load()
             [itemKeys.npcDrops] = {92,2258,2359,2592,2735,2736,2752,2755,2791,2919,4034,4035,4120,4499,5465,7031,7032,7135,7136,7137,8278,9396,10119,11658,11659,11665,11746,11747,11777,11778,11781,11782,11783,11784,12076,12100,12101,13256,14462,14464,15205,15208,15307},
         },
         [11914] = {
+            [itemKeys.npcDrops] = {},
             [itemKeys.class] = 12,
         },
         [11947] = { -- #1315
@@ -784,6 +791,7 @@ function QuestieItemFixes:Load()
             [itemKeys.objectDrops] = {},
         },
         [11948] = {
+            [itemKeys.npcDrops] = {},
             [itemKeys.class] = 12,
         },
         [11949] = { -- #1315
@@ -868,10 +876,10 @@ function QuestieItemFixes:Load()
             [itemKeys.objectDrops] = {176344},
         },
         [12766] = {
-            [itemKeys.objectDrops] = {190483},
+            [itemKeys.objectDrops] = {176344},
         },
         [12768] = {
-            [itemKeys.objectDrops] = {190484},
+            [itemKeys.objectDrops] = {176344},
         },
         [12813] = { -- #1313
             [itemKeys.relatedQuests] = {5085},
@@ -885,6 +893,9 @@ function QuestieItemFixes:Load()
             [itemKeys.relatedQuests] = {5149},
             [itemKeys.npcDrops] = {},
             [itemKeys.objectDrops] = {},
+        },
+        [12886] = {
+            [itemKeys.class] = 12,
         },
         [12907] = { -- #1083
             [itemKeys.relatedQuests] = {5157},
@@ -1007,22 +1018,22 @@ function QuestieItemFixes:Load()
         [16967] = {
             [itemKeys.relatedQuests] = {6607},
             [itemKeys.npcDrops] = {},
-            [itemKeys.objectDrops] = {500000},
+            [itemKeys.objectDrops] = {400006},
         },
         [16968] = {
             [itemKeys.relatedQuests] = {6607},
             [itemKeys.npcDrops] = {},
-            [itemKeys.objectDrops] = {500002},
+            [itemKeys.objectDrops] = {400008},
         },
         [16969] = {
             [itemKeys.relatedQuests] = {6607},
             [itemKeys.npcDrops] = {},
-            [itemKeys.objectDrops] = {500003},
+            [itemKeys.objectDrops] = {400009},
         },
         [16970] = {
             [itemKeys.relatedQuests] = {6607},
             [itemKeys.npcDrops] = {},
-            [itemKeys.objectDrops] = {500001},
+            [itemKeys.objectDrops] = {400007},
         },
         [16973] = { -- #1156
             [itemKeys.relatedQuests] = {5247},
@@ -1048,7 +1059,7 @@ function QuestieItemFixes:Load()
         [17696] = {
             [itemKeys.relatedQuests] = {7029,7041},
             [itemKeys.npcDrops] = {},
-            [itemKeys.objectDrops] = {400061},
+            [itemKeys.objectDrops] = {400003},
         },
         [17761] = {
             [itemKeys.npcDrops] = {12240},
@@ -1244,6 +1255,12 @@ function QuestieItemFixes:Load()
         [21314] = {
             [itemKeys.npcDrops] = {},
         },
+        [21232] = { -- Imperial Qiraji Armaments
+            [itemKeys.npcDrops] = {15275,15276,15299,15509,15510,15511,15516,15517,15543,15544},
+        },
+        [21237] = { -- Imperial Qiraji Regalia
+            [itemKeys.npcDrops] = {15275,15276,15299,15509,15510,15511,15516,15517,15543,15544},
+        },
         [21557] = {
             [itemKeys.relatedQuests] = {8867},
             [itemKeys.npcDrops] = {15898},
@@ -1315,7 +1332,7 @@ function QuestieItemFixes:Load()
         },
         [190307] = {
             [itemKeys.name] = "Unlit Torch",
-            [itemKeys.objectDrops] = {400014},
+            [itemKeys.objectDrops] = {400001},
             [itemKeys.flags] = 2, -- Conjured
             [itemKeys.relatedQuests] = {65602},
         },

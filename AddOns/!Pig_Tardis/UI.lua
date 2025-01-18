@@ -16,7 +16,7 @@ local GnName,GnUI,GnIcon,FrameLevel = unpack(TardisInfo.uidata)
 function TardisInfo.ADD_UI()
 	if not PIGA["Tardis"]["Open"] then return end
 	if _G[GnUI] then return end
-	local ModBut = PIGModbutton(GnName,GnIcon,GnUI,FrameLevel)
+	C_Timer.After(0.1,function() PIGModbutton(GnName,GnIcon,GnUI,FrameLevel) end)
 	--
 	local Width,Height  = 880, 505;
 	local InvF=PIGFrame(UIParent,{"CENTER",UIParent,"CENTER",0,60},{Width, Height},GnUI,true)
@@ -82,10 +82,10 @@ function TardisInfo.ADD_UI()
 	----
 	-- TardisInfo.Houche()
 	-- TardisInfo.Chedui()
-	TardisInfo.Plane(true)
-	TardisInfo.Yell()
+	TardisInfo.Yell(true)
+	TardisInfo.Plane()	
 end
-
+-----
 function TardisInfo.GetInfoBut(fuF,Point,daojiCDtime,jinduS,butTXT,jindutiaoW,GetButW)
 	local GetButTXT = butTXT or REFRESH
 	local GetButW=GetButW or {80,21}

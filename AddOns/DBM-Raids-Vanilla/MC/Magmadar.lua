@@ -12,7 +12,7 @@ end
 local mod	= DBM:NewMod("Magmadar", "DBM-Raids-Vanilla", catID)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20241103123604")
+mod:SetRevision("20241214045434")
 mod:SetCreatureID(DBM:IsSeasonal("SeasonOfDiscovery") and 228430 or 11982)
 mod:SetEncounterID(664)
 mod:SetModelID(10193)
@@ -38,7 +38,7 @@ local warnFrenzy		= mod:NewTargetNoFilterAnnounce(19451, 3, nil , "Healer|Tank|R
 
 local specWarnFrenzy	= mod:NewSpecialWarningDispel(19451, "RemoveEnrage", nil, nil, 1, 2)
 
-local timerPanicCD		= mod:NewCDTimer(30, 19408)--30-40
+local timerPanicCD		= mod:NewVarTimer("v30-40", 19408)--30-40
 local timerFrenzyCD		= mod:NewCDTimer(17.8, 19451, nil, nil, nil, 3, nil, DBM_COMMON_L.ENRAGE_ICON)
 local timerFrenzy		= mod:NewBuffActiveTimer(8, 19451, nil, nil, nil, 5, nil, DBM_COMMON_L.ENRAGE_ICON)
 

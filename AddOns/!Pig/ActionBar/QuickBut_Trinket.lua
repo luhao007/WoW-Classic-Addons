@@ -261,15 +261,9 @@ QuickButUI.ButList[3]=function()
 				elseif TrinketAutoModeUI.TrinketMode==2 then
 					zhixingqiehuanFun()
 				end
-			end		
-		-- elseif event=="UNIT_SPELLCAST_START" then
-		--  	if AutoTrinket.SpellID then AutoTrinket.START:Show() end
-		--  	if AutoTrinket1.SpellID then AutoTrinket1.START:Show() end
-		-- elseif event=="UNIT_SPELLCAST_STOP" then
-		--  	if AutoTrinket.SpellID then AutoTrinket.START:Hide() end
-		--  	if AutoTrinket1.SpellID then AutoTrinket1.START:Hide() end
+			end
 		elseif event=="SPELL_UPDATE_COOLDOWN" then
-			C_Timer.After(0.1, Update_Cooldown);
+			C_Timer.After(0.01, Update_Cooldown);
 		end
 	end);
 	if PIGA["QuickBut"]["TrinketFenli"] then

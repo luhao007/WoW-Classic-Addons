@@ -99,7 +99,11 @@ L:SetGeneralLocalization({
 -----------------------------
 --  Forge Speakers  --
 -----------------------------
---L = DBM:GetModLocalization(2590)
+L = DBM:GetModLocalization(2590)
+
+L:SetMiscLocalization{
+	SafeVent		= "Безопасные Вытяжные отверстия"
+}
 
 -----------------------------
 --  High Speaker Eirich  --
@@ -220,7 +224,11 @@ L:SetOptionLocalization({
 -----------------------------
 --  Fangs of the Queen  --
 -----------------------------
---L = DBM:GetModLocalization(2595)
+L = DBM:GetModLocalization(2595)
+
+L:SetMiscLocalization{
+	RolePlay		= "Раньше Зал трансформаций был колыбелью нашей священной эволюции."
+}
 
 -----------------------------
 --  The Coaglamation  --
@@ -239,4 +247,33 @@ L = DBM:GetModLocalization("CityofThreadsTrash")
 
 L:SetGeneralLocalization({
 	name =	"Трэш мобы Город Нитей"
+})
+
+-----------------------------
+--  Big M.O.M.M.A.  --
+-----------------------------
+--L = DBM:GetModLocalization(2648)
+
+-----------------------------
+--  Demolition Duo  --
+-----------------------------
+--L = DBM:GetModLocalization(2649)
+
+-----------------------------
+--  Swampface  --
+-----------------------------
+--L = DBM:GetModLocalization(2650)
+
+-----------------------------
+--  Geezle Gigazap (aka Geez nuts)  --
+-----------------------------
+--L = DBM:GetModLocalization(2651)
+
+---------
+--Trash--
+---------
+L = DBM:GetModLocalization("OperationFloodgateTrash")
+
+L:SetGeneralLocalization({
+	name =	"Трэш мобы Операция Затвор"
 })

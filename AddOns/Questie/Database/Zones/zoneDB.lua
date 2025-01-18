@@ -19,23 +19,21 @@ local QuestieProfessions = QuestieLoader:ImportModule("QuestieProfessions")
 ---@type l10n
 local l10n = QuestieLoader:ImportModule("l10n")
 
-local areaIdToUiMapId = ZoneDB.private.areaIdToUiMapId or {}
-local uiMapIdToAreaId = ZoneDB.private.uiMapIdToAreaId or {}
-local dungeons = ZoneDB.private.dungeons or {}
-local subZoneToParentZone = ZoneDB.private.subZoneToParentZone or {}
+local areaIdToUiMapId
+local uiMapIdToAreaId
+local dungeons
+local subZoneToParentZone
 
 -- Generated from alternativeAreaId in dungeons
 -- [alternativeDungeonAreaId] = dungeonZone
 ---@type table<AreaId, AreaId>
 local alternativeDungeonAreaIdToDungeonAreaId = {}
 
----Zone ids enum
-ZoneDB.zoneIDs = ZoneDB.private.zoneIDs or {}
-
 
 -- Overrides for UiMapId to AreaId
 local UiMapIdOverrides = {
-    [246] = 3713,
+    [174] = 4720, -- The Lost Isles
+    [246] = 3713, -- Hellfire Citadel
     -- We map "Eastern Kingdom" and "Kalimdor" zone to 0, because they are not used for any NPC/object, but can be returned from
     -- C_Map.GetBestMapForUnit("player") when the player is in a cave for example.
     [113] = 0, -- Northrend
@@ -47,6 +45,13 @@ local zoneMap = {} -- Generated
 
 
 function ZoneDB.Initialize()
+    areaIdToUiMapId = loadstring(ZoneDB.private.areaIdToUiMapId)()
+    uiMapIdToAreaId = loadstring(ZoneDB.private.uiMapIdToAreaId)()
+    dungeons = ZoneDB.private.dungeons
+    subZoneToParentZone = loadstring(ZoneDB.private.subZoneToParentZone)()
+    subZoneToParentZone[3545] = 3483 -- Hellfire Citadel -> Hellfire Peninsula
+    subZoneToParentZone[3563] = 3483 -- Hellfire Citadel -> Hellfire Peninsula
+
     -- Run tests if debug enabled
     if Questie.db.profile.debugEnabled then
         _ZoneDB:RunTests()
@@ -126,6 +131,11 @@ function ZoneDB:GetDungeonLocation(areaId)
     local dungeon = dungeons[areaId]
     if dungeon then
         return dungeon[4]
+    else
+        local alternativeDungeonAreaId = alternativeDungeonAreaIdToDungeonAreaId[areaId]
+        if alternativeDungeonAreaId then
+            return dungeons[alternativeDungeonAreaId][4]
+        end
     end
     return nil
 end

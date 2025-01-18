@@ -115,61 +115,6 @@ function BusinessInfo.Item()
 		end
 	end
 	local toptablist = {{"BANK","银行"},{"BAG","背包"},{"MAIL","邮箱"}}
-	local function Show_itemList(But,itemTexture,itemLink,itemStackCount,shuliang,classID)
-		SetItemButtonTexture(But, itemTexture)
-		But:SetScript("OnEnter", function (self)
-			GameTooltip:ClearLines();
-			GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-			GameTooltip:SetHyperlink(itemLink)
-			GameTooltip:Show();
-		end);
-		But:SetScript("OnLeave", function ()
-			GameTooltip:ClearLines();
-			GameTooltip:Hide() 
-		end);
-		But:SetScript("OnMouseUp", function ()
-			if IsShiftKeyDown() then
-				local editBox = ChatEdit_ChooseBoxForSend();
-				local hasText = editBox:GetText()..itemLink
-				if editBox:HasFocus() then
-					editBox:SetText(hasText);
-				else
-					ChatEdit_ActivateChat(editBox)
-					editBox:SetText(hasText);
-				end
-			end
-		end)
-		if itemStackCount>1 then
-			But.Num:SetText(shuliang)
-		end
-		if PIGA["BagBank"]["wupinLV"] then
-			if classID==2 or classID==4 then
-				local effectiveILvl = GetDetailedItemLevelInfo(itemLink)	
-				if effectiveILvl and effectiveILvl>0 then
-					But.LV:SetText(effectiveILvl)
-					local quality = C_Item.GetItemQualityByID(itemLink)
-					local r, g, b, hex = GetItemQualityColor(quality)
-					But.LV:SetTextColor(r, g, b, 1);
-				end
-			end
-		end
-	end
-	local function huancunwupinData(But,itemlin,shuliang)
-		if itemlin then
-			local Linktxt=HY_ItemLinkJJ(itemlin)
-			local itemName,itemLink,itemQuality,itemLevel,itemMinLevel,itemType,itemSubType,itemStackCount,itemEquipLoc,itemTexture,sellPrice,classID=GetItemInfo(Linktxt);
-			if itemLink then
-				Show_itemList(But,itemTexture,itemLink,itemStackCount,shuliang,classID)
-			else
-				if But:IsVisible() and But.zhixingnum<5 then
-					C_Timer.After(0.1,function()
-						But.zhixingnum=But.zhixingnum+1
-						huancunwupinData(But,itemlin,shuliang)
-					end)
-				end
-			end
-		end
-	end
 	local function Show_ItemInfo()
 		local ListBOT = {fujiF.ItemList.TOP:GetChildren()}
 		for xvb=1, #ListBOT, 1 do
@@ -179,18 +124,19 @@ function BusinessInfo.Item()
 		for i=1,lixianNum do
 			local itemBut=_G["lixian_Bag_item"..i]
 			itemBut:Hide()
-			itemBut.Num:SetText("")
+			itemBut.Num:Hide()
 			itemBut.LV:SetText("");
 		end
 		if fujiF.SelectName then
 			fujiF.ItemList.err:Hide()
 			fujiF.ItemList.BOTTOM:Show()
-			local lixiandata=PIGA["StatsInfo"]["Items"][fujiF.SelectName][toptablist[fujiF.ItemSelect][1]] or {}
+			local lixiandata=PIGA["StatsInfo"]["Items"][fujiF.SelectName] and PIGA["StatsInfo"]["Items"][fujiF.SelectName][toptablist[fujiF.ItemSelect][1]] or {}
 			for i=1,#lixiandata do
 				local itemBut=_G["lixian_Bag_item"..i]
 				itemBut:Show()
-				itemBut.zhixingnum=0
-				huancunwupinData(itemBut,lixiandata[i][1],lixiandata[i][2])
+				itemBut.Num:SetText(lixiandata[i][2])
+				itemBut.itemID=lixiandata[i][3]
+				Fun.HY_ShowItemLink(itemBut,lixiandata[i][1],lixiandata[i][3])
 			end
 		else
 			fujiF.ItemList.err:Show()
@@ -341,6 +287,44 @@ function BusinessInfo.Item()
 		itemBut.LV = PIGFontString(itemBut,{"TOPLEFT", itemBut, "TOPLEFT", 0,0},nil,"OUTLINE")
 		itemBut.Num =PIGFontString(itemBut,{"BOTTOMRIGHT", itemBut, "BOTTOMRIGHT", -4,2},nil,"OUTLINE")
 		itemBut.Num:SetTextColor(1, 1, 1, 1);
+		function itemBut:SetFun(itemName, itemLink, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture, sellPrice, classID, subclassID)
+			self.itemLink=itemLink
+			SetItemButtonTexture(self, itemTexture)
+			if itemStackCount>1 then itemBut.Num:Show() end
+			if PIGA["BagBank"]["wupinLV"] then
+				if classID==2 or classID==4 then
+					local effectiveILvl = GetDetailedItemLevelInfo(itemLink)	
+					if effectiveILvl and effectiveILvl>0 then
+						self.LV:SetText(effectiveILvl)
+						local quality = C_Item.GetItemQualityByID(itemLink)
+						local r, g, b, hex = GetItemQualityColor(quality)
+						self.LV:SetTextColor(r, g, b, 1);
+					end
+				end
+			end
+		end
+		itemBut:SetScript("OnEnter", function (self)
+			GameTooltip:ClearLines();
+			GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+			GameTooltip:SetHyperlink(self.itemLink)
+			GameTooltip:Show();
+		end);
+		itemBut:SetScript("OnLeave", function ()
+			GameTooltip:ClearLines();
+			GameTooltip:Hide() 
+		end);
+		itemBut:SetScript("OnMouseUp", function (self)
+			if IsShiftKeyDown() then
+				local editBox = ChatEdit_ChooseBoxForSend();
+				local hasText = editBox:GetText()..self.itemLink
+				if editBox:HasFocus() then
+					editBox:SetText(hasText);
+				else
+					ChatEdit_ActivateChat(editBox)
+					editBox:SetText(hasText);
+				end
+			end
+		end)
 	end
 	--
 	fujiF:HookScript("OnShow", function(self)

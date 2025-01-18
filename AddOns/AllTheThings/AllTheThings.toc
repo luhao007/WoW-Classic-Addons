@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Crieve-Sargeras
-## Version: 4.1.8
+## Version: 4.2.7a
 
 ## Title: AllTheThings
 ## Notes: Addon for Tracking Collections & Account Completion
@@ -16,7 +16,7 @@
 ## SavedVariables: ATTCharacterData, ATTAccountWideData, AllTheThingsSavedVariables, AllTheThingsSettings, AllTheThingsAD, AllTheThingsProfiles, AllTheThingsAuctionData, AllTheThingsDebugData, AllTheThingsArtifactsItems, AllTheThingsHarvestItems
 ## SavedVariablesPerCharacter: AllTheThingsSettingsPerCharacter
 
-## X-Interface: 110005, 110007
+## X-Interface: 110007, 110100
 ## X-Wago-ID: yQKyY5K7
 ## X-Curse-Project-ID: 267285
 
@@ -77,7 +77,7 @@ src\Modules\Tooltip.lua
 src\Modules\Upgrade.lua
 src\Modules\Vignette.lua
 src\Modules\Contributor.lua
-
+#src\__test.lua
 # Expansion specific localization files
 db\Retail\LocalizationDB.lua
 

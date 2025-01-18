@@ -13,7 +13,7 @@ end
 local mod	= DBM:NewMod("Ebonroc", "DBM-Raids-Vanilla", catID)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20241103123604")
+mod:SetRevision("20241214045434")
 mod:SetCreatureID(14601)
 mod:SetEncounterID(614)
 if not mod:IsClassic() then
@@ -38,7 +38,7 @@ local specWarnShadowYou	= mod:NewSpecialWarningYou(23340, nil, nil, nil, 1, 2)
 local specWarnShadow	= mod:NewSpecialWarningTaunt(23340, nil, nil, nil, 1, 2)
 
 local timerWingBuffet	= mod:NewCDTimer(31, 23339, nil, nil, nil, 2)
-local timerShadowFlameCD= mod:NewCDTimer(14, 22539, nil, false)--14-21
+local timerShadowFlameCD= mod:NewVarTimer("v14-21", 22539, nil, false)--14-21
 local timerShadow		= mod:NewTargetTimer(8, 23340, nil, "Tank", 2, 5, nil, DBM_COMMON_L.TANK_ICON)
 
 function mod:OnCombatStart(delay)

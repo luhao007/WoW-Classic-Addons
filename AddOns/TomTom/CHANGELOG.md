@@ -1,8 +1,10 @@
 # TomTom
 
-## [v4.0.5-release](https://github.com/jnwhiteh/TomTom/tree/v4.0.5-release) (2024-10-30)
-[Full Changelog](https://github.com/jnwhiteh/TomTom/commits/v4.0.5-release) [Previous Releases](https://github.com/jnwhiteh/TomTom/releases)
+## [v4.0.7-release](https://github.com/jnwhiteh/TomTom/tree/v4.0.7-release) (2024-12-18)
+[Full Changelog](https://github.com/jnwhiteh/TomTom/commits/v4.0.7-release) [Previous Releases](https://github.com/jnwhiteh/TomTom/releases)
 
+- Update TOC for 11.0.7  
+- Update TOC for classic and cata  
 - Update for 11.0.5  
 - Update TOC for Classic  
 - Respect the set closest waypoint setting  
@@ -696,5 +698,3 @@
 - * More skeleton work  
 - Added Astrolabe coroutine branch as an external, along with the libs for Ace3Config  
 - * Zomg colors  
-- Updated AStrolabe to fix a typo  
-- * Updated Astrolabe to fix coroutine issues  

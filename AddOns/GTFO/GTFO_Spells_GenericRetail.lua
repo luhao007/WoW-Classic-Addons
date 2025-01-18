@@ -17,6 +17,7 @@ Sample:
 		tankSoundChallenge = 2;
 		ignoreSelfInflicted = true;
 		trivialLevel = 80;
+		trivialLevelApplication = 80;
 		trivialPercent = 0;
 		alwaysAlert = true;
 		applicationOnly = true;

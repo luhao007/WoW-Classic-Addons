@@ -22,7 +22,7 @@ function TardisInfo.Plane(Activate)
 	local Biaotou=Data.Tardis[1][1]
 	local GetInfoMsg=Data.Tardis[2][3]
 	local shenqingMSG_T = "!LSQHWM_";
-	local shenqingMSG_V = 6.57;
+	local shenqingMSG_V = 8.04;
 	local shenqingMSG = shenqingMSG_T..shenqingMSG_V;
 	C_ChatInfo.RegisterAddonMessagePrefix(Biaotou)
 	-----
@@ -30,10 +30,7 @@ function TardisInfo.Plane(Activate)
 	local pindao=InvF.pindao
 	local hang_Height,hang_NUM=InvF.hang_Height,InvF.hang_NUM
 	local fujiF,fujiTabBut=PIGOptionsList_R(InvF.F,L["TARDIS_PLANE"],80,"Bot")
-	if Activate then
-		fujiF:Show()
-		fujiTabBut:Selected()
-	end
+	if Activate then fujiF:Show() fujiTabBut:Selected() end
 	-----------------
 	fujiF.zijiweimian = PIGFontString(fujiF,{"TOPLEFT",fujiF,"TOPLEFT",10,-8},"你的区域ID:");
 	fujiF.zijiweimian:SetTextColor(0, 0.98, 0.6, 1);
@@ -41,7 +38,7 @@ function TardisInfo.Plane(Activate)
 	fujiF.ZJweimianID:SetTextColor(1, 1, 1, 1);
 	-----
 	fujiF.JieshouInfoList={};
-	fujiF.GetBut=TardisInfo.GetInfoBut(fujiF,{"TOPLEFT",fujiF,"TOPLEFT",180,-30},300,2)
+	fujiF.GetBut=TardisInfo.GetInfoBut(fujiF,{"TOPLEFT",fujiF,"TOPLEFT",180,-30},3,2)
 	fujiF.GetBut:HookScript("OnClick", function (self)
 		if fujiF.ZJweimianID:GetText()=="点击NPC获取" then
 			self.err:SetText("请点击任意NPC");
@@ -63,7 +60,8 @@ function TardisInfo.Plane(Activate)
 	end);
 	fujiF.GetBut.daojishiJG=PIGA["Tardis"]["Plane"]["DaojishiCD"]
 	function fujiF.GetBut.gengxin_hang()
-		fujiF.gengxinhang(fujiF.nr.Scroll)
+		fujiF.filtrateData()
+		fujiF.Update_hang()
 	end
 	-------------------------
 	local Tooltip1= "|cffFFFF00当双方都打开此选项时可以直接申请组队，如只有一方打开则只能"..L["CHAT_WHISPER"].."申请对方组队|r";
@@ -123,7 +121,7 @@ function TardisInfo.Plane(Activate)
 	fujiF.nr.Scroll:SetPoint("BOTTOMRIGHT",fujiF.nr,"BOTTOMRIGHT",-20,2);
 	fujiF.nr.Scroll.ScrollBar:SetScale(0.8);
 	fujiF.nr.Scroll:SetScript("OnVerticalScroll", function(self, offset)
-	    FauxScrollFrame_OnVerticalScroll(self, offset, hang_Height, fujiF.gengxinhang)
+	    FauxScrollFrame_OnVerticalScroll(self, offset, hang_Height, fujiF.Update_hang)
 	end)
 	for i=1, hang_NUM, 1 do
 		local liebiao = CreateFrame("Frame", "WeimianList_"..i, fujiF.nr.Scroll:GetParent(),"BackdropTemplate");
@@ -191,18 +189,16 @@ function TardisInfo.Plane(Activate)
 			if self:GetText()==L["CHAT_WHISPER"] then
 				local editBox = ChatEdit_ChooseBoxForSend();
 				local hasText = editBox:GetText()
-				if editBox:HasFocus() then
-					editBox:SetText("/WHISPER " ..wjName.." "..hasText.."方便的话组我换个"..L["TARDIS_PLANE"].."，谢谢");
-				else
+				if not editBox:HasFocus() then
 					ChatEdit_ActivateChat(editBox)
-					editBox:SetText("/WHISPER " ..wjName.." "..hasText.."方便的话组我换个"..L["TARDIS_PLANE"].."，谢谢");
 				end
+				editBox:SetText("/WHISPER " ..wjName.." "..hasText.."方便的话组我换个"..L["TARDIS_PLANE"].."，谢谢");
 			elseif self:GetText()=="请求换"..L["TARDIS_PLANE"] then
 				--SendChatMessage("方便的话组我换个"..L["TARDIS_PLANE"].."，谢谢", "WHISPER", nil, wjName);
 				C_ChatInfo.SendAddonMessage(Biaotou,shenqingMSG,"WHISPER",wjName)
 			end
-			fujiF.JieshouInfoList[self:GetID()][3]=true
-			fujiF.gengxinhang(fujiF.nr.Scroll)
+			fujiF.New_InfoList[self:GetID()][3]=true
+			fujiF.Update_hang()
 		end)
 	end
 	-----
@@ -259,7 +255,7 @@ function TardisInfo.Plane(Activate)
 			111,--沙塔斯
 		}
 	end
-	local function panduanISzhucheng(MapID)
+	local function IsMapIDzhucheng(MapID)
 		for i=1,#zhuchengmapid do
 			if tonumber(MapID)==zhuchengmapid[i] then
 				return true
@@ -270,16 +266,24 @@ function TardisInfo.Plane(Activate)
 	local function paixuxiaoda(element1, elemnet2)
 	    return element1 < elemnet2
 	end
-	------------
-	function fujiF.gengxinhang(self)
-		fujiF.GetBut.jindutishi:SetText("上次获取:刚刚");
-		for i = 1, hang_NUM do
-			_G["WeimianList_"..i]:Hide()	
+	local function IsOldWMID(MapID,zoneID)
+		local MapID=tonumber(MapID)
+	    if MapID==1453 or MapID==1454 then
+			for xx=1,#oldshuju do
+				if zoneID==oldshuju[xx][1] then
+					return true
+				end
+			end
 		end
+		return false
+	end
+	------------
+	function fujiF.filtrateData()
+		fujiF.New_InfoList = {};
+		fujiF.New_WMindexID = {};
 		local dqTime=GetServerTime()
 		local ItemsNum = #fujiF.JieshouInfoList;
 		if ItemsNum>0 then
-			fujiF.GetBut.err:SetText("");
 			local oldshuju = PIGA["Tardis"]["Plane"]["InfoList"][Pig_OptionsUI.Realm]
 			for x=#oldshuju,1,-1 do
 				if oldshuju[x] then
@@ -322,66 +326,66 @@ function TardisInfo.Plane(Activate)
 					end
 				end
 			end
-			local New_InfoList = {};
 			for x=1,ItemsNum do
 				local zoneID, MapID = strsplit("^", fujiF.JieshouInfoList[x][1]);
-				if panduanISzhucheng(MapID) then
-					table.insert(New_InfoList,fujiF.JieshouInfoList[x])
+				if IsMapIDzhucheng(MapID) then
+					table.insert(fujiF.New_InfoList,fujiF.JieshouInfoList[x])
 				end
-				local MapIDx=C_Map.GetBestMapForUnit("player")
-				if tonumber(MapID)==1453 or tonumber(MapID)==1454 then
-					local PIG_WB_inshipaixu_you=true
-					for xx=1,#oldshuju do
-						if zoneID==oldshuju[xx][1] then
-							PIG_WB_inshipaixu_you=false
-							break
-						end
-					end
-					if PIG_WB_inshipaixu_you then
-						table.insert(oldshuju,{zoneID,dqTime})
-					end
+				if not IsOldWMID(oldshuju,MapID,zoneID) then
+					table.insert(oldshuju,{zoneID,dqTime})
 				end
 			end
-
-			---
-			local weimianbianhao={}
 			for x=1,#oldshuju do
-				table.insert(weimianbianhao,tonumber(oldshuju[x][1]))
+				table.insert(fujiF.New_WMindexID,tonumber(oldshuju[x][1]))
 			end
-			table.sort(weimianbianhao, paixuxiaoda)
+			table.sort(fujiF.New_WMindexID, paixuxiaoda)
+		end
+	end
+	function fujiF.Update_hang()
+		fujiF.GetBut.jindutishi:SetText("上次获取:刚刚");
+		for i = 1, hang_NUM do
+			_G["WeimianList_"..i]:Hide()	
+		end
+		local ItemsData = fujiF.New_InfoList;
+		local ItemsNum = #ItemsData;
+		if ItemsNum>0 then
+			fujiF.GetBut.err:SetText("");
 			local ZJweimianjeishou = fujiF.AutoInvite:GetChecked()
-		    local ZJweimianID = panduanweimianID(weimianbianhao,tonumber(fujiF.DQweimianID))
-
-		    FauxScrollFrame_Update(self, #New_InfoList, hang_NUM, hang_Height);
-		    local offset = FauxScrollFrame_GetOffset(self);
+		    local ZJweimianID = panduanweimianID(fujiF.New_WMindexID,tonumber(fujiF.DQweimianID))
+		    FauxScrollFrame_Update(fujiF.nr.Scroll, ItemsNum, hang_NUM, hang_Height);
+		    local offset = FauxScrollFrame_GetOffset(fujiF.nr.Scroll);
 		    for i = 1, hang_NUM do
 		    	local dangqian = i+offset;
-		    	if New_InfoList[dangqian] then
+		    	if ItemsData[dangqian] then
 					local fujikk = _G["WeimianList_"..i]	
 					fujikk:Show()
-					fujikk.Name.T:SetText(New_InfoList[dangqian][2]);
-					local zoneID, MapID, RestState, autoinv = strsplit("^", New_InfoList[dangqian][1]);
+					fujikk.Name.T:SetText(ItemsData[dangqian][2]);
+					local zoneID, MapID, RestState, autoinv = strsplit("^", ItemsData[dangqian][1]);
 					fujikk.zoneID:SetText(zoneID);
 					local weizhi = C_Map.GetMapInfo(MapID).name
 					fujikk.Weizhi:SetText(weizhi);
 					--
-				    local weimianID = panduanweimianID(weimianbianhao,tonumber(zoneID))
+				    local weimianID = panduanweimianID(fujiF.New_WMindexID,tonumber(zoneID))
 					fujikk.Weimian:SetText(weimianID);
 					fujikk.miyu:SetID(dangqian)
-					fujikk.miyu.wjName=New_InfoList[dangqian][2]
-					-- fujikk.miyu:Show()
-					-- fujikk.Weimian:SetTextColor(0,0.98,0.6, 1);
-					-- fujikk.Name.T:SetTextColor(0,0.98,0.6, 1);
-					-- fujikk.autoinv:SetTextColor(0,0.98,0.6, 1);
+					fujikk.miyu.wjName=ItemsData[dangqian][2]		
 					if autoinv=="Y" then
-						fujikk.autoinv:SetText("|cff00FF00"..YES.."|r")
+						fujikk.autoinv:SetText(YES)
 					else
-						fujikk.autoinv:SetText("|cffFF0000"..NO.."|r");
+						fujikk.autoinv:SetText(NO);
 					end
-					if New_InfoList[dangqian][3] then
+					if ItemsData[dangqian][3] then
 						fujikk.miyu:Disable()
 						fujikk.miyu:SetText("已发送请求");
+						fujikk.Weimian:SetTextColor(0.5,0.5,0.5, 0.9);
+						fujikk.zoneID:SetTextColor(0.5,0.5,0.5, 0.9);
+						fujikk.Name.T:SetTextColor(0.5,0.5,0.5, 0.9);
+						fujikk.autoinv:SetTextColor(0.5,0.5,0.5, 0.9);
 					else
+						fujikk.Weimian:SetTextColor(0,0.98,0.6, 1);
+						fujikk.zoneID:SetTextColor(0.9,0.9,0.9, 0.9);
+						fujikk.Name.T:SetTextColor(0,0.98,0.6, 1);
+						fujikk.autoinv:SetTextColor(0, 1, 0, 0.9);
 						if weimianID~="?" and weimianID==ZJweimianID then
 							fujikk.miyu:Disable()
 							fujikk.miyu:SetText("同"..L["TARDIS_PLANE"]);
@@ -460,6 +464,7 @@ function TardisInfo.Plane(Activate)
 		local SMessage="!L"..self.WeimianInfo.."^"..kaiguanzhuangtai
 		C_ChatInfo.SendAddonMessage(Biaotou,SMessage,"WHISPER",waname)
 	end
+	
 	fujiF:RegisterEvent("CHAT_MSG_CHANNEL");
 	fujiF:RegisterEvent("CHAT_MSG_ADDON");
 	fujiF:RegisterEvent("PLAYER_TARGET_CHANGED"); 
@@ -495,7 +500,7 @@ function TardisInfo.Plane(Activate)
 						if PIGA["Tardis"]["Plane"]["AutoInvite"] then
 							local inInstance, instanceType =IsInInstance()
 							local zuduizhong =IsInGroup(LE_PARTY_CATEGORY_HOME);
-							if not inInstance and not zuduizhong and not MiniMapLFGFrame:IsShown() then
+							if not inInstance and not zuduizhong and C_LFGList.GetActiveEntryInfo and not C_LFGList.GetActiveEntryInfo() then
 								local Nerarg2 = arg2:gsub(shenqingMSG_T,"")
 								if tonumber(Nerarg2)<shenqingMSG_V then
 									SendChatMessage(INVITE..FAILED..","..addonName..GAME_VERSION_LABEL..ADDON_INTERFACE_VERSION, "WHISPER", nil, waname);

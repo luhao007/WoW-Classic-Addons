@@ -328,6 +328,7 @@ local questsToBlacklistByPhase = {
         [4148] = true, -- Bloodpetal Zapper
         [5283] = true, -- The Art of the Armorsmith -- Replaced by 85713
         [5301] = true, -- The Art of the Armorsmith -- Replaced by 85712
+        [5124] = true, -- Fiery Plate Gauntlets -- Replaced by 84495
         [5141] = true, -- Dragonscale Leatherworking -- Replaced by 85702
         [5143] = true, -- Tribal Leatherworking -- Replaced by 85705
         [5144] = true, -- Elemental Leatherworking -- Replaced by 85703
@@ -339,6 +340,7 @@ local questsToBlacklistByPhase = {
         [5305] = true, -- Sweet Serenity - Replaced by 85700
         [5306] = true, -- Snakestone of the Shadow Huntress - Replaced by 85700
         [5307] = true, -- Corruption - Replaced by 85700
+        [7604] = true, -- A Binding Contract - Replaced by 84338
         [7636] = true, -- Stave of the Ancients - Replaced by 84546
         [7486] = true, -- A Hero's Reward - Replaced by 84545
         [7782] = true, -- The Lord of Blackrock - Replaced by 85643
@@ -350,7 +352,16 @@ local questsToBlacklistByPhase = {
         [7785] = true, -- Examine the Vessel - Replaced by 85442
         [7786] = true, -- Thunderaan the Windseeker - Replaced by 85441
         [7787] = true, -- Rise, Thunderfury! - Replaced by 85443
-        [8446] = true, -- Shrouded in Nightmare (Emerald Dream Dragons)
+        [8446] = true, -- Shrouded in Nightmare (Emerald Dream Dragons) - Replaced by 86679
+        [8447] = true, -- Waking Legends (Emerald Dream Dragons) - Replaced by 86680
+        [8620] = true, -- The Only Prescription - Replaced by 86444
+        [9023] = true, -- The Perfect Poison - Replaced by 86674
+        [8729] = true, -- The Wrath of Neptulon - Replaced by 86445
+        [8730] = true, -- Nefarius's Corruption - Replaced by 86442
+        [8736] = true, -- The Nightmare Manifests - Replaced by 86443
+        [8745] = true, -- Treasure of the Timeless One - Replaced by 86449
+        [8791] = true, -- The Fall of Ossirian - Replaced by 86673
+        [8802] = true, -- The Savior of Kalimdor - Replaced by 86670
 
         -- Original Blackfathom Deeps quests (instance reworked to raid, new quest IDs)
         [909] = true,
@@ -439,16 +450,6 @@ local questsToBlacklistByPhase = {
         [8190] = true, -- Hoodoo Hex - Replaced by 85599
         [8191] = true, -- Prophetic Aura - Replaced by 85598
         [8192] = true, -- Animist's Caress - Replaced by 85602
-
-        -- Events - These might not be re-added at level 60
-        [6963] = true, -- Old "Stolen Winter Veil Treats" quest
-        [6983] = true, -- Old "You're a Mean One..." quest
-        [6984] = true, -- Old "A Smokywood Pastures Thank You!" quest
-        [7042] = true, -- Old "Stolen Winter Veil Treats" quest
-        [7043] = true, -- Old "You're a Mean One..." quest
-        [7045] = true, -- Old "A Smokywood Pastures Thank You!" quest
-        [8746] = true, -- Old "Metzen the Reindeer" quest
-        [8762] = true, -- Old "Metzen the Reindeer" quest
 
         -- Old T0.5 exchange quests
         [8905] = true, -- An Earnest Proposition
@@ -544,6 +545,10 @@ local questsToBlacklistByPhase = {
         [7881] = true, -- Carnival Boots
         [7890] = true, -- Heavy Grinding Stone
         [7889] = true, -- Coarse Weightstone
+        [7907] = true, -- Darkmoon Beast Deck
+        [7927] = true, -- Darkmoon Warlords Deck
+        [7928] = true, -- Darkmoon Elementals Deck
+        [7929] = true, -- Darkmoon Portals Deck
 
         -- ZG quests
         [8053] = true, -- Paragons of Power: The Freethinker's Armguards
@@ -574,6 +579,22 @@ local questsToBlacklistByPhase = {
         [8078] = true, -- Paragons of Power: The Vindicator's Belt
         [8079] = true, -- Paragons of Power: The Vindicator's Breastplate
 
+        -- AQ War Efforts
+        [8548] = true, -- Volunteer's Battlegear - Replaced by 86675
+        [8572] = true, -- Veteran's Battlegear - Replaced by 86676
+        [8573] = true, -- Champion's Battlegear - Replaced by 86677
+        [8574] = true, -- Stalwart's Battlegear - Replaced by 86678
+        [8792] = true, -- The Horde Needs Your Help!
+        [8793] = true, -- The Horde Needs Your Help!
+        [8794] = true, -- The Horde Needs Your Help!
+        [8795] = true, -- The Alliance Needs Your Help!
+        [8796] = true, -- The Alliance Needs Your Help!
+        [8797] = true, -- The Alliance Needs Your Help!
+
+        -- AQ Raid quests
+        [8789] = true, -- Imperial Qiraji Armaments - Replaced by 86672
+        [8790] = true, -- Imperial Qiraji Regalia - Replaced by 86671
+
         [78265] = true, -- Fish Oil (replaced by 82850)
         [78266] = true, -- Dark Iron Ordinance (replaced by 82851)
         [78267] = true, -- Shredder Turbochargers (replaced by 82853)
@@ -582,6 +603,26 @@ local questsToBlacklistByPhase = {
         [81727] = true, -- Recover Incursion Field Report: Ashenvale
         [81728] = true, -- Recover Incursion Field Report: Hinterlands
         [81729] = true, -- Recover Incursion Field Report: Feralas
+
+        -- AQ Brood of Nozdormu Rings (replaced with vendor)
+        [8747] = true, -- The Path of the Protector
+        [8748] = true, -- The Path of the Protector
+        [8749] = true, -- The Path of the Protector
+        [8750] = true, -- The Path of the Protector
+        [8751] = true, -- The Protector of Kalimdor
+        [8752] = true, -- The Path of the Conqueror
+        [8753] = true, -- The Path of the Conqueror
+        [8754] = true, -- The Path of the Conqueror
+        [8755] = true, -- The Path of the Conqueror
+        [8756] = true, -- The Qiraji Conqueror
+        [8757] = true, -- The Path of the Invoker
+        [8758] = true, -- The Path of the Invoker
+        [8759] = true, -- The Path of the Invoker
+        [8760] = true, -- The Path of the Invoker
+        [8761] = true, -- The Grand Invoker
+        [8764] = true, -- The Changing of Paths - Protector No More
+        [8765] = true, -- The Changing of Paths - Invoker No More
+        [8766] = true, -- The Changing of Paths - Conqueror No More
     },
 }
 

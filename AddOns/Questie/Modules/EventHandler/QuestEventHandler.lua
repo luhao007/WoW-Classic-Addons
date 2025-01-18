@@ -152,7 +152,7 @@ function QuestEventHandler:Initialize()
         if deletedQuestItem then
             Questie:Debug(Questie.DEBUG_DEVELOP, "[QuestieQuest] DeleteCursorItem: Quest Item deleted. Update all quests.")
 
-            _QuestEventHandler:UpdateAllQuests()
+            _QuestEventHandler:UpdateAllQuests(true)
             deletedQuestItem = false
         end
     end)
@@ -263,8 +263,8 @@ function QuestEventHandler:QuestTurnedIn(questId, xpReward, moneyReward)
 
     local _, _, _, quality, _, itemID = GetQuestLogRewardInfo(GetNumQuestLogRewards(questId), questId)
 
-    if itemID ~= nil and quality == 1 then
-        Questie:Debug(Questie.DEBUG_DEVELOP, "Quest:", questId, "Recieved a possible Quest Item - do a full Quest Log check")
+    if itemID ~= nil and quality == Enum.ItemQuality.Standard then
+        Questie:Debug(Questie.DEBUG_DEVELOP, "Quest:", questId, "Received a possible Quest Item - do a full Quest Log check")
         doFullQuestLogScan = true
         skipNextUQLCEvent = false
     else
@@ -342,7 +342,7 @@ function QuestEventHandler.QuestLogUpdate()
     if doFullQuestLogScan then
         doFullQuestLogScan = false
         -- Function call updates doFullQuestLogScan. Order matters.
-        _QuestEventHandler:UpdateAllQuests()
+        _QuestEventHandler:UpdateAllQuests(true)
     else
         QuestieCombatQueue:Queue(function()
             QuestieTracker:Update()
@@ -408,7 +408,8 @@ end
 
 --- Does a full scan of the quest log and updates every quest that is in the QUEST_ACCEPTED state and which hash changed
 --- since the last check
-function _QuestEventHandler:UpdateAllQuests()
+---@param doRetryWithoutChanges boolean @If true, the function will be called again at next QUEST_LOG_UPDATE even if there were no changes
+function _QuestEventHandler:UpdateAllQuests(doRetryWithoutChanges)
     Questie:Debug(Questie.DEBUG_INFO, "Running full questlog check")
     local questIdsToCheck = {}
 
@@ -429,6 +430,7 @@ function _QuestEventHandler:UpdateAllQuests()
 
             QuestieNameplate:UpdateNameplate()
             QuestieQuest:UpdateQuest(questId)
+            QuestieTracker.UpdateQuestLines(questId)
         end
         QuestieCombatQueue:Queue(function()
             C_Timer.After(1.0, function()
@@ -437,6 +439,7 @@ function _QuestEventHandler:UpdateAllQuests()
         end)
     else
         Questie:Debug(Questie.DEBUG_INFO, "Nothing to update")
+        doFullQuestLogScan = doRetryWithoutChanges -- There haven't been any changes, even though we called UpdateAllQuests. We need to check again at next QUEST_LOG_UPDATE
     end
 
     -- Do UpdateAllQuests() again at next QUEST_LOG_UPDATE if there was "cacheMiss" (game's cache and addon's cache didn't have all required data yet)
@@ -453,7 +456,7 @@ function _QuestEventHandler:QuestRelatedFrameClosed(event)
         Questie:Debug(Questie.DEBUG_DEVELOP, "[Quest Event]", event)
 
         lastTimeQuestRelatedFrameClosedEvent = now
-        _QuestEventHandler:UpdateAllQuests()
+        _QuestEventHandler:UpdateAllQuests(false)
         QuestieTracker:Update()
     end
 end

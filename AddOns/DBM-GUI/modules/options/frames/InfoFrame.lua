@@ -50,7 +50,8 @@ local linesDropdown = general:CreateDropdown(CL.INFOFRAME_SETLINES, lines, "DBM"
 	DBM.Options.InfoFrameLines = value
 	DBM.InfoFrame:UpdateStyle()
 end)
-linesDropdown:SetPoint("TOPLEFT", showSelf, "BOTTOMLEFT", 0, -10)
+local isNewDropdown = linesDropdown.mytype == "dropdown2"
+linesDropdown:SetPoint("TOPLEFT", showSelf, "BOTTOMLEFT", isNewDropdown and 10 or 0, -10)
 
 local columns = {
 	{
@@ -87,7 +88,7 @@ local columnsDropdown = general:CreateDropdown(CL.INFOFRAME_SETCOLS, columns, "D
 	DBM.Options.InfoFrameCols = value
 	DBM.InfoFrame:UpdateStyle()
 end)
-columnsDropdown:SetPoint("TOPLEFT", linesDropdown, "BOTTOMLEFT", 0, -10)
+columnsDropdown:SetPoint("TOPLEFT", linesDropdown, "BOTTOMLEFT", 0, isNewDropdown and -15 or -10)
 
 --local position = panel:CreateArea(L.Area_Position)
 
@@ -116,7 +117,10 @@ local FontDropDown = style:CreateDropdown(L.FontType, Fonts, "DBM", "InfoFrameFo
 	DBM.Options.InfoFrameFont = value
 	DBM.InfoFrame:UpdateStyle()
 end)
-FontDropDown:SetPoint("TOPLEFT", style.frame, "TOPLEFT", 0, -20)
+FontDropDown:SetPoint("TOPLEFT", style.frame, "TOPLEFT", isNewDropdown and 20 or 0, -20)
+if isNewDropdown then
+	FontDropDown.myheight = 40
+end
 
 local FontStyles = {
 	{
@@ -149,10 +153,10 @@ local FontStyleDropDown = style:CreateDropdown(L.FontStyle, FontStyles, "DBM", "
 	DBM.Options.InfoFrameFontStyle = value
 	DBM.InfoFrame:UpdateStyle()
 end)
-FontStyleDropDown:SetPoint("TOPLEFT", FontDropDown, "BOTTOMLEFT", 0, -10)
+FontStyleDropDown:SetPoint("TOPLEFT", FontDropDown, "BOTTOMLEFT", 0, isNewDropdown and -15 or -10)
 
 local fontSizeSlider = style:CreateSlider(L.FontSize, 8, 60, 1, 150)
-fontSizeSlider:SetPoint("TOPLEFT", FontStyleDropDown, "TOPLEFT", 20, -45)
+fontSizeSlider:SetPoint("TOPLEFT", FontStyleDropDown, "TOPLEFT", isNewDropdown and 0 or 20, -45)
 fontSizeSlider:SetValue(DBM.Options.InfoFrameFontSize)
 fontSizeSlider:HookScript("OnValueChanged", function(self)
 	DBM.Options.InfoFrameFontSize = self:GetValue()
@@ -178,17 +182,17 @@ resetbutton:SetHighlightFontObject(GameFontNormalSmall)
 resetbutton:SetScript("OnClick", function()
 	-- Set Options
 	DBM.Options.DontShowInfoFrame = DBM.DefaultOptions.DontShowInfoFrame
-	DBM.Options.InfoFrameLocked = true
+	DBM.Options.InfoFrameLocked = DBM.DefaultOptions.InfoFrameLocked
 	DBM.Options.InfoFrameShowSelf = DBM.DefaultOptions.InfoFrameShowSelf
 	DBM.Options.InfoFrameFont = DBM.DefaultOptions.InfoFrameFont
 	DBM.Options.InfoFrameFontStyle = DBM.DefaultOptions.InfoFrameFontStyle
 	DBM.Options.InfoFrameFontSize = DBM.DefaultOptions.InfoFrameFontSize
 	-- Set UI visuals
 	dontShow:SetChecked(DBM.Options.DontShowInfoFrame)
-	locked:SetChecked(true)
+	locked:SetChecked(DBM.Options.InfoFrameLocked)
 	showSelf:SetChecked(DBM.Options.InfoFrameShowSelf)
-	FontDropDown:SetSelectedValue(DBM.Options.WarningFont)
-	FontStyleDropDown:SetSelectedValue(DBM.Options.FontStyles)
-	fontSizeSlider:SetValue(DBM.DefaultOptions.WarningFontSize)
+	FontDropDown:SetSelectedValue(DBM.Options.InfoFrameFont)
+	FontStyleDropDown:SetSelectedValue(DBM.Options.InfoFrameFontStyle)
+	fontSizeSlider:SetValue(DBM.DefaultOptions.InfoFrameFontSize)
 	DBM.InfoFrame:UpdateStyle()
 end)

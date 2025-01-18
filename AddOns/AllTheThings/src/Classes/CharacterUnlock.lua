@@ -56,6 +56,7 @@ end
 -- But when that project comes around I guess we will see what happens...
 
 local CreateCharacterUnlockQuestItem = app.ExtendClass("Item", "CharacterUnlockQuestItem", "questID", {
+	RefreshCollectionOnly = true,
 	collectible = Collectible,
 	collected = CollectedAsQuest,
 	saved = SavedAsQuest,
@@ -63,6 +64,7 @@ local CreateCharacterUnlockQuestItem = app.ExtendClass("Item", "CharacterUnlockQ
 	IsClassIsolated = true,
 })
 local CreateCharacterUnlockSpellItem = app.ExtendClass("Item", "CharacterUnlockSpellItem", "spellID", {
+	RefreshCollectionOnly = true,
 	collectible = Collectible,
 	collected = CollectedAsSpell,
 	saved = SavedAsSpell,

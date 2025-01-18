@@ -1162,6 +1162,7 @@ settings.UpdateMode = function(self, doRefresh)
 		filterSet.SkillLevel()
 	end
 	self.Collectibles.Loot = self:Get("LootMode");
+	app.HandleEvent("OnSettingsNeedsRefresh")
 
 	-- FORCE = Force Update
 	-- 1 = Force Update IF NOT Skip

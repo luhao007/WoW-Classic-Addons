@@ -1,5 +1,5 @@
 --[[--
-	by ALA 
+	by ALA
 --]]--
 ----------------------------------------------------------------------------------------------------
 local __addon, __private = ...;
@@ -18,7 +18,6 @@ local DT = __private.DT;
 	local GetSpellBookItemName = GetSpellBookItemName;
 	local GetActionInfo = GetActionInfo;
 	local GetMacroSpell = GetMacroSpell;
-	local Ambiguate = Ambiguate;
 	local _G = _G;
 	local GameTooltip = GameTooltip;
 	local ItemRefTooltip = ItemRefTooltip;
@@ -72,7 +71,7 @@ MT.BuildEnv('TOOLTIP');
 						Tip:AddLine(line);
 					end
 				end
-				if VT.SET.supreme and cache.PakData[1] ~= nil then
+				if VT.__supreme and cache.PakData[1] ~= nil then
 					local _, info = VT.__dep.__emulib.DecodeAddOnPackData(cache.PakData[1]);
 					if info ~= nil then
 						Tip:AddLine("|cffffffffPack|r: " .. info, 0.75, 1.0, 0.25);
@@ -87,8 +86,8 @@ MT.BuildEnv('TOOLTIP');
 			local _, unit = Tip:GetUnit();
 			if unit ~= nil then
 				local name, realm = UnitName(unit);
-				if realm ~= nil and realm ~= "" then
-					name = Ambiguate(name .. "-" .. realm, 'none');
+				if realm ~= nil and realm ~= "" and realm ~= CT.SELFREALM then
+					name = name .. "-" .. realm;
 				end
 				if name == _name then
 					TipAddLine(Tip, _name);
@@ -104,13 +103,26 @@ MT.BuildEnv('TOOLTIP');
 			TipAddInfo(ItemRefTooltip, name);
 		end
 	end
-	local function OnTooltipSetUnit(Tip)
+	local function OnTooltipSetUnitImmdiate(Tip)
 		if VT.SET.talents_in_tip then
 			PrevTipUnitName[Tip] = nil;
 			local _, unit = Tip:GetUnit();
 			if unit ~= nil and UnitIsPlayer(unit) and UnitIsConnected(unit) and UnitFactionGroup(unit) == CT.SELFFACTION then
 				local name, realm = UnitName(unit);
 				MT.SendQueryRequest(name, realm, false, false, true, false, false);
+			end
+		end
+	end
+	local function OnTooltipSetUnit(Tip)
+		if VT.SET.talents_in_tip then
+			PrevTipUnitName[Tip] = nil;
+			local _, unit = Tip:GetUnit();
+			if unit ~= nil and UnitIsPlayer(unit) and UnitIsConnected(unit) and UnitFactionGroup(unit) == CT.SELFFACTION then
+				local name, realm = UnitName(unit);
+				local _, tal = MT.CacheEmulateComm(name, realm, false, true, false, false);
+				if not tal then
+					VT.TooltipUpdateFrame:Waiting(Tip, name, realm);
+				end
 			end
 		end
 	end
@@ -155,11 +167,36 @@ MT.BuildEnv('TOOLTIP');
 		end
 	end
 
+	local function UpdateFrameOnUpdate(UpdateFrame, elasped)
+		if UpdateFrame.Tip:IsVisible() then
+			UpdateFrame.wait = UpdateFrame.wait + elasped;
+			if UpdateFrame.wait >= CT.TOOLTIP_WAIT_BEFORE_QUERY_UNIT then
+				UpdateFrame:Hide();
+				local _, unit = UpdateFrame.Tip:GetUnit();
+				if unit ~= nil and UnitIsPlayer(unit) and UnitIsConnected(unit) and UnitFactionGroup(unit) == CT.SELFFACTION then
+					local name, realm = UnitName(unit);
+					if name == UpdateFrame.name and realm == UpdateFrame.realm then
+						MT.SendQueryRequest(name, realm, false, false, true, false, false);
+					end
+				end
+			end
+		else
+			UpdateFrame:Hide();
+		end
+	end
+	local function UpdateFrameWaiting(UpdateFrame, Tip, name, realm)
+		UpdateFrame.Tip = Tip;
+		UpdateFrame.name = name;
+		UpdateFrame.realm = realm;
+		UpdateFrame.wait = 0;
+		UpdateFrame:Show();
+	end
+
 	MT.RegisterOnInit('TOOLTIP', function(LoggedIn)
 		--	hooksecurefunc(GameTooltip, "SetUnit", OnTooltipSetUnit);
 		--	hooksecurefunc(ItemRefTooltip, "SetUnit", OnTooltipSetUnit);
 		GameTooltip:HookScript("OnTooltipSetUnit", OnTooltipSetUnit);
-		ItemRefTooltip:HookScript("OnTooltipSetUnit", OnTooltipSetUnit);
+		ItemRefTooltip:HookScript("OnTooltipSetUnit", OnTooltipSetUnitImmdiate);
 		MT._RegisterCallback("CALLBACK_TALENT_DATA_RECV", OnTalentDataRecv);
 		--
 		hooksecurefunc(GameTooltip, "SetHyperlink", HookSetHyperlink);
@@ -171,6 +208,15 @@ MT.BuildEnv('TOOLTIP');
 		hooksecurefunc(ItemRefTooltip, "SetSpellBookItem", HookSetSpellBookItem);
 		hooksecurefunc(ItemRefTooltip, "SetSpellByID", HookSetSpellByID);
 		hooksecurefunc(ItemRefTooltip, "SetAction", HookSetAction);
+
+		VT.TooltipUpdateFrame = CreateFrame('FRAME');
+		VT.TooltipUpdateFrame:Hide();
+		VT.TooltipUpdateFrame:SetSize(1, 1);
+		VT.TooltipUpdateFrame:SetAlpha(0);
+		VT.TooltipUpdateFrame:EnableMouse(false);
+		VT.TooltipUpdateFrame:SetPoint("BOTTOM");
+		VT.TooltipUpdateFrame:SetScript("OnUpdate", UpdateFrameOnUpdate);
+		VT.TooltipUpdateFrame.Waiting = UpdateFrameWaiting;
 	end);
 	MT.RegisterOnLogin('TOOLTIP', function(LoggedIn)
 	end);

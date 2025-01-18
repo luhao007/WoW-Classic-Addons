@@ -70,14 +70,9 @@ L["DEBUG_CONFIG"] = "Debug "..L["CONFIG_TABNAME"];
 L["DEBUG_CONFIGTIPS"] = "This configuration disables all functions by default,\nFor debugging addons";
 --Config
 L["CONFIG_TABNAME"] = "Config";
-L["CONFIG_DEFAULT"] = "Default "..L["CONFIG_TABNAME"];
-L["CONFIG_DEFAULTTIPS"] = "Enable common functions";
-L["CONFIG_ALLON"] = "Open all";
-L["CONFIG_ALLONTIPS"] = "Enable all functions. Disable unnecessary functions";
-L["CONFIG_DIY"] = "DIY Config"
 L["CONFIG_DIYTIPS"] = "Customization: Please contact the author";
 L["CONFIG_LOADTIPS"] = "This action |cff00ff00loads|r the Settings for |cff00ff00<%s>|r. The saved data will be |cffff0000cleared|r. Need to reload the interface, is loaded?";
-L["CONFIG_ERRTIPS"] = "1、If you run into problems, load the addon default configuration here.\n|cffFFff002、If the problem is still unresolved,\nPlease submit questions via the feedback on the about.|r";
+L["CONFIG_ERRTIPS"] = "1、If you run into problems, load the addon "..CHAT_DEFAULT.." configuration here.\n2、If the problem is still unresolved,\nPlease submit questions via the feedback on the about.";
 L["CONFIG_DAORU"] = "Import";
 L["CONFIG_IMPORT"] = "Enter the string you want to import below and click the Import button";
 L["CONFIG_DERIVE"] = "Copy the bottom string and paste it to where you want to import it";

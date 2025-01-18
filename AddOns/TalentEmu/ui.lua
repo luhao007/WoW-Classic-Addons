@@ -1,5 +1,5 @@
 --[[--
-	by ALA 
+	by ALA
 --]]--
 ----------------------------------------------------------------------------------------------------
 local __addon, __private = ...;
@@ -26,7 +26,7 @@ local DT = __private.DT;
 	local IsAltKeyDown = IsAltKeyDown;
 	local IsShiftKeyDown = IsShiftKeyDown;
 	local CreateFrame = CreateFrame;
-	local GetMouseFocus = GetMouseFocus or VT._comptb.GetMouseFocus;
+	local GetMouseFocus = VT._comptb.GetMouseFocus;
 	local GetCursorPosition = GetCursorPosition;
 	local SetPortraitToTexture = SetPortraitToTexture;
 	local _G = _G;
@@ -489,7 +489,7 @@ MT.BuildEnv('UI');
 				local cache = VT.TQueryCache[name];
 				local objects = Frame.objects;
 				objects.Name:SetText(name);
-				if VT.SET.supreme and cache ~= nil and cache.PakData[1] ~= nil then
+				if VT.__supreme and cache ~= nil and cache.PakData[1] ~= nil then
 					local _, info = VT.__dep.__emulib.DecodeAddOnPackData(cache.PakData[1]);
 					if info then
 						objects.PackLabel:SetText(info);
@@ -2518,7 +2518,7 @@ MT.BuildEnv('UI');
 			SpellListFrame:SetWidth(TUISTYLE.SpellListFrameXSize);
 			SpellListFrame:Show();
 			SpellListFrame.list = {  };
-			local ScrollList = VT.__scrolllib.CreateScrollFrame(SpellListFrame, nil, nil, TUISTYLE.SpellListNodeHeight, _SpellListFrameFunc.CreateNode, _SpellListFrameFunc.SetNode);
+			local ScrollList = VT.__dep.__scrolllib.CreateScrollFrame(SpellListFrame, nil, nil, TUISTYLE.SpellListNodeHeight, _SpellListFrameFunc.CreateNode, _SpellListFrameFunc.SetNode);
 			ScrollList:SetPoint("BOTTOMLEFT", TUISTYLE.SpellListFrameXToBorder, TUISTYLE.SpellListFrameYToTop);
 			ScrollList:SetPoint("TOPRIGHT", -TUISTYLE.SpellListFrameXToBorder, -TUISTYLE.SpellListFrameYToBottom);
 			SpellListFrame.ScrollList = ScrollList;

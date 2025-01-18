@@ -36,16 +36,34 @@ local C_Item_IsDressableItemByID, GetSlotForInventoryType
 ---@diagnostic disable-next-line: deprecated
 	= C_Item.IsDressableItemByID, C_Transmog.GetSlotForInventoryType
 local IsRetrieving = app.Modules.RetrievingData.IsRetrieving;
-local L, contains, containsAny, SearchForField, SearchForFieldContainer, Callback
-	= app.L, app.contains, app.containsAny, app.SearchForField, app.SearchForFieldContainer, app.CallbackHandlers.Callback
+local L, contains, containsAny, SearchForField, SearchForFieldContainer
+	= app.L, app.contains, app.containsAny, app.SearchForField, app.SearchForFieldContainer
 local C_TransmogCollection_GetItemInfo, C_TransmogCollection_GetSourceInfo
 	= C_TransmogCollection.GetItemInfo, C_TransmogCollection.GetSourceInfo;
-local C_TransmogCollection_GetAppearanceSourceInfo, C_TransmogCollection_GetAllAppearanceSources
-	= C_TransmogCollection.GetAppearanceSourceInfo, C_TransmogCollection.GetAllAppearanceSources;
-local C_TransmogCollection_PlayerHasTransmogItemModifiedAppearance
-	= C_TransmogCollection.PlayerHasTransmogItemModifiedAppearance;
+local C_TransmogCollection_PlayerHasTransmogItemModifiedAppearance,C_TransmogCollection_GetAllAppearanceSources
+	= C_TransmogCollection.PlayerHasTransmogItemModifiedAppearance,C_TransmogCollection.GetAllAppearanceSources
+local C_TooltipInfo_GetItemByItemModifiedAppearanceID = C_TooltipInfo and C_TooltipInfo.GetItemByItemModifiedAppearanceID
 
 local ATTAccountWideData, AccountSources, CharacterData
+-- Stores the SourceID's which are considered collected via Unique logic per Session
+-- Each SourceID value represents how many 'learned' SourceIDs grant Unique-collection for itself
+local AccountUniqueSources = {}
+local function AccountUniqueSources_ADD(sourceID)
+	AccountUniqueSources[sourceID] = (AccountUniqueSources[sourceID] or 0) + 1
+	-- app.PrintDebug("+UniqueSource",sourceID,AccountUniqueSources[sourceID])
+end
+local function AccountUniqueSources_REM(sourceID)
+	local count = AccountUniqueSources[sourceID]
+	if count then
+		if count > 1 then
+			AccountUniqueSources[sourceID] = count - 1
+		else
+			AccountUniqueSources[sourceID] = nil
+		end
+	end
+	-- app.PrintDebug("-UniqueSource",sourceID,AccountUniqueSources[sourceID])
+end
+app.AccountUniqueSources = AccountUniqueSources
 
 -- Inventory Slot Harvester
 local SlotByInventoryType = setmetatable({}, {
@@ -158,6 +176,14 @@ app.DetermineItemLink = function(sourceID)
 	if not GetItemInfo(link) then
 		return RETRIEVING_DATA
 	end
+
+	-- 10.2.7 added a quick lookup of loaded sourceID via tooltip info
+	local tooltipInfoForSource = C_TooltipInfo_GetItemByItemModifiedAppearanceID and C_TooltipInfo_GetItemByItemModifiedAppearanceID(sourceID)
+	if tooltipInfoForSource then
+		link = tooltipInfoForSource.hyperlink
+		-- app.PrintDebug("DetermineItemLink:TooltipInfo",sourceID,link);
+	end
+
 	local checkID, found = GetSourceID(link);
 	if found and checkID == sourceID then return link; end
 
@@ -188,80 +214,68 @@ app.DetermineItemLink = function(sourceID)
 	-- app.PrintDebug("DetermineItemLink:Fail",sourceID,"(No ModID or BonusID match)");
 end
 
+-- Returns: The first found cached group for a given SourceID
+-- NOTE: Do not use this function when the results are being passed into an Update afterward
+-- or if ATT data has not been loaded yet
 local function SearchForSourceIDQuickly(sourceID)
-	-- Returns: The first found cached group for a given SourceID
-	-- NOTE: Do not use this function when the results are being passed into an Update afterward
-	-- or if ATT data has not been loaded yet
 	if sourceID then return SearchForField("sourceID", sourceID)[1]; end
 end
 local function FilterItemSource(sourceInfo)
-	return sourceInfo.isCollected;
+	return sourceInfo.isCollected
 end
 local function FilterItemSourceUnique(sourceInfo, allSources)
-	if sourceInfo.isCollected then
-		-- NOTE: This makes it so that the loop isn't necessary.
-		return true;
-	else
-		-- If at least one of the sources of this visual ID was collected, that means that we've collected the provided source
-		local item = SearchForSourceIDQuickly(sourceInfo.sourceID);
-		if item then
-			local knownItem, knownSource, valid;
-			local factionRaces = app.Modules.FactionData.FACTION_RACES;
-			for _,sourceID in ipairs(allSources or C_TransmogCollection_GetAllAppearanceSources(sourceInfo.visualID)) do
-				-- only compare against other Sources of the VisualID which the Account knows
-				if sourceID ~= sourceInfo.sourceID and AccountSources[sourceID] == 1 then
-					knownItem = SearchForSourceIDQuickly(sourceID);
-					if knownItem then
-						-- filter matches or one item is Cosmetic
-						if item.f == knownItem.f or item.f == 2 or knownItem.f == 2 then
-							valid = true;
-							-- verify all possible restrictions that the known source may have against restrictions on the source in question
-							-- if known source has no equivalent restrictions, then restrictions on the source are irrelevant
-							-- Races
-							if knownItem.races then
-								if item.races then
-									-- the known source has a race restriction that is not shared by the source in question
-									if not containsAny(item.races, knownItem.races) then valid = nil; end
-								else
-									valid = nil;
-								end
-							end
-							-- Classes
-							if valid and knownItem.c then
-								if item.c then
-									-- the known source has a class restriction that is not shared by the source in question
-									if not containsAny(item.c, knownItem.c) then valid = nil; end
-								else
-									valid = nil;
-								end
-							end
-							-- Faction
-							if valid and knownItem.r then
-								if item.r then
-									-- the known source has a faction restriction that is not shared by the source or source races in question
-									if knownItem.r ~= item.r or (item.races and not containsAny(factionRaces[knownItem.r], item.races)) then valid = nil; end
-								else
-									valid = nil;
-								end
-							end
+	-- NOTE: This makes it so that the loop isn't necessary.
+	if sourceInfo.isCollected then return true end
 
-							-- found a known item which meets all the criteria to grant credit for the source in question
-							if valid then
-								knownSource = C_TransmogCollection_GetSourceInfo(sourceID);
-								-- both sources are the same category (Equip-Type)
-								if knownSource.categoryID == sourceInfo.categoryID
-									-- and same Inventory Type
-									and (knownSource.invType == sourceInfo.invType
-										or sourceInfo.categoryID == 4 --[[CHEST: Robe vs Armor]]
-										or SlotByInventoryType[knownSource.invType] == SlotByInventoryType[sourceInfo.invType])
-								then
-									return true;
-								-- else print("sources share visual and filters but different equips",item.sourceID,sourceID)
-								end
-							end
+	-- If at least one of the sources of this visual ID was collected, that means that we've collected the provided source
+	local checkSourceID = sourceInfo.sourceID
+	local item = SearchForSourceIDQuickly(checkSourceID);
+	if not item then return end
+
+	local knownItem, knownSource, valid;
+	-- app.PrintDebug("FISU",checkSourceID,item.f,item.races,item.c,item.r)
+	local factionRaces = app.Modules.FactionData.FACTION_RACES;
+	for _,sourceID in ipairs(allSources or C_TransmogCollection_GetAllAppearanceSources(sourceInfo.visualID)) do
+		-- only compare against other Sources of the VisualID which the Account knows
+		if sourceID ~= checkSourceID and AccountSources[sourceID] == 1 then
+			knownItem = SearchForSourceIDQuickly(sourceID);
+			if knownItem then
+				-- app.PrintDebug("FISU?",sourceID,knownItem.f,knownItem.races,knownItem.c,knownItem.r)
+				-- filter matches or one item is Cosmetic
+				if item.f == knownItem.f or item.f == 2 or knownItem.f == 2 then
+					valid = true;
+					-- verify all possible restrictions that the known source may have against restrictions on the source in question
+					-- if known source has no equivalent restrictions, then restrictions on the source are irrelevant
+					-- Races
+					if knownItem.races then
+						if item.races then
+							-- the known source has a race restriction that is not shared by the source in question
+							if not containsAny(item.races, knownItem.races) then valid = nil; end
+						else
+							valid = nil;
 						end
-					else
-						-- OH NOES! It doesn't exist!
+					end
+					-- Classes
+					if valid and knownItem.c then
+						if item.c then
+							-- the known source has a class restriction that is not shared by the source in question
+							if not containsAny(item.c, knownItem.c) then valid = nil; end
+						else
+							valid = nil;
+						end
+					end
+					-- Faction
+					if valid and knownItem.r then
+						if item.r then
+							-- the known source has a faction restriction that is not shared by the source or source races in question
+							if knownItem.r ~= item.r or (item.races and not containsAny(factionRaces[knownItem.r], item.races)) then valid = nil; end
+						else
+							valid = nil;
+						end
+					end
+
+					-- found a known item which meets all the criteria to grant credit for the source in question
+					if valid then
 						knownSource = C_TransmogCollection_GetSourceInfo(sourceID);
 						-- both sources are the same category (Equip-Type)
 						if knownSource.categoryID == sourceInfo.categoryID
@@ -270,132 +284,163 @@ local function FilterItemSourceUnique(sourceInfo, allSources)
 								or sourceInfo.categoryID == 4 --[[CHEST: Robe vs Armor]]
 								or SlotByInventoryType[knownSource.invType] == SlotByInventoryType[sourceInfo.invType])
 						then
-							-- print("OH NOES! MISSING SOURCE ID ", sourceID, " FOUND THAT YOU HAVE COLLECTED, BUT ATT DOESNT HAVE!!!!");
 							return true;
-						-- else print(knownSource.sourceID, sourceInfo.sourceID, "share appearances, but one is ", sourceInfo.invType, "and the other is", knownSource.invType, sourceInfo.categoryID);
+						-- else print("sources share visual and filters but different equips",item.sourceID,sourceID)
 						end
 					end
 				end
+			else
+				-- OH NOES! It doesn't exist!
+				knownSource = C_TransmogCollection_GetSourceInfo(sourceID);
+				-- both sources are the same category (Equip-Type)
+				if knownSource.categoryID == sourceInfo.categoryID
+					-- and same Inventory Type
+					and (knownSource.invType == sourceInfo.invType
+						or sourceInfo.categoryID == 4 --[[CHEST: Robe vs Armor]]
+						or SlotByInventoryType[knownSource.invType] == SlotByInventoryType[sourceInfo.invType])
+				then
+					-- print("OH NOES! MISSING SOURCE ID ", sourceID, " FOUND THAT YOU HAVE COLLECTED, BUT ATT DOESNT HAVE!!!!");
+					return true;
+				-- else print(knownSource.sourceID, checkSourceID, "share appearances, but one is ", sourceInfo.invType, "and the other is", knownSource.invType, sourceInfo.categoryID);
+				end
 			end
 		end
-		return false;
 	end
+	return false
 end
 local function FilterItemSourceUniqueOnlyMain(sourceInfo, allSources)
-	if sourceInfo.isCollected then
-		-- NOTE: This makes it so that the loop isn't necessary.
-		return true;
-	else
-		-- If at least one of the sources of this visual ID was collected, that means that we've acquired the base appearance.
-		local item = SearchForSourceIDQuickly(sourceInfo.sourceID);
-		if item and not item.nmc and not item.nmr then
-			-- This item is for my race and class.
-			for i,sourceID in ipairs(allSources or C_TransmogCollection_GetAllAppearanceSources(sourceInfo.visualID)) do
-				if sourceID ~= sourceInfo.sourceID and C_TransmogCollection_PlayerHasTransmogItemModifiedAppearance(sourceID) then
-					local otherItem = SearchForSourceIDQuickly(sourceID);
-					if otherItem and (item.f == otherItem.f or item.f == 2 or otherItem.f == 2) and not otherItem.nmc and not otherItem.nmr then
-						return true; -- Okay, fine. You are this class/race. Enjoy your +1, cheater. D:
+	-- NOTE: This makes it so that the loop isn't necessary.
+	if sourceInfo.isCollected then return true end
+
+	-- If at least one of the sources of this visual ID was collected, that means that we've acquired the base appearance.
+	local item = SearchForSourceIDQuickly(sourceInfo.sourceID);
+	if item and not item.nmc and not item.nmr then
+		-- This item is for my race and class.
+		for i,sourceID in ipairs(allSources or C_TransmogCollection_GetAllAppearanceSources(sourceInfo.visualID)) do
+			-- only compare against other Sources of the VisualID which the Account knows
+			if sourceID ~= sourceInfo.sourceID and AccountSources[sourceID] == 1 then
+				local otherItem = SearchForSourceIDQuickly(sourceID);
+				if otherItem and (item.f == otherItem.f or item.f == 2 or otherItem.f == 2) and not otherItem.nmc and not otherItem.nmr then
+					return true; -- Okay, fine. You are this class/race. Enjoy your +1, cheater. D:
+				end
+			end
+		end
+	end
+	return false
+end
+
+local function GetUniqueUnlockedSourceIDs(sourceID, visualID, filter)
+	local unlockedSourceIDs, allSources = {}, C_TransmogCollection_GetAllAppearanceSources(visualID)
+	for _,otherSourceID in ipairs(allSources) do
+		-- If this isn't the source we already did work on and we haven't already completed it
+		-- app.PrintDebug("CheckUniqueUnlock",otherSourceID,AccountSources[otherSourceID],AccountUniqueSources[otherSourceID])
+		if not AccountSources[otherSourceID] or otherSourceID == sourceID then
+			local otherSourceInfo = C_TransmogCollection_GetSourceInfo(otherSourceID)
+			if otherSourceInfo then
+				if otherSourceInfo.isCollected then
+					-- app.PrintDebug("CheckUniqueUnlock isCollected")
+					-- AccountSources is already set via collection logic
+					if not AccountUniqueSources[otherSourceID] then
+						unlockedSourceIDs[#unlockedSourceIDs + 1] = otherSourceID
+					end
+					AccountUniqueSources[otherSourceID] = nil
+				elseif filter(otherSourceInfo, allSources) then
+					-- app.PrintDebug("CheckUniqueUnlock from filter")
+					AccountUniqueSources_ADD(otherSourceID)
+					-- if this otherSourceID was collected only from this new sourceID, then track it
+					if AccountUniqueSources[otherSourceID] == 1 then
+						unlockedSourceIDs[#unlockedSourceIDs + 1] = otherSourceID
 					end
 				end
 			end
 		end
-		return false;
 	end
+	return unlockedSourceIDs
 end
-
--- Wrap calls to the main event handler in a callback so that learning many sources at once
--- only trigger the main event once
-local function OnTransmogCollected()
-	app.HandleEvent("OnThingCollected", "Transmog")
-end
--- The following Helper Methods are used when you obtain a new appearance.
-local function CompletionistItemCollectionHelper(sourceID, oldState)
-	-- Get the source info for this source ID.
-	local sourceInfo = C_TransmogCollection_GetSourceInfo(sourceID);
-	if sourceInfo then
-		-- Search ATT for the related sources.
-		-- Show the collection message.
-		if app.Settings:GetTooltipSetting("Report:Collected") then
-			local searchResults = SearchForField("sourceID", sourceID);
-			if #searchResults > 0 then
-				local firstMatch = searchResults[1];
-				app.print(L.ITEM_ID_ADDED:format(firstMatch.text or ("|cffff80ff|Htransmogappearance:" .. sourceID .. "|h[Source " .. sourceID .. "]|h|r"), firstMatch.itemID));
-			else
-				-- Use the Blizzard API... We don't have this item in the addon.
-				-- NOTE: The itemlink that gets passed is BASE ITEM LINK, not the full item link.
-				-- So this may show green items where an epic was obtained. (particularly with Legion drops)
-				-- This is okay since items of this type share their appearance regardless of the power of the item.
-				local name, link = GetItemInfo(sourceInfo.itemID);
-
-				app.print(L.ITEM_ID_ADDED_MISSING:format(link or name or ("|cffff80ff|Htransmogappearance:" .. sourceID .. "|h[Source " .. sourceID .. "]|h|r"), sourceInfo.itemID, app.Version));
-
-				-- Play a sound when a reportable error is found, if any sound setting is enabled
-				app.Audio:PlayReportSound();
-			end
-
-			Callback(OnTransmogCollected)
-		end
-
-		-- Update the groups for the sourceID results
-		app.UpdateRawID("sourceID", sourceID);
-	end
-end
-local function UniqueModeItemCollectionHelperBase(sourceID, oldState, filter)
-	-- Get the source info for this source ID.
-	local sourceInfo = C_TransmogCollection_GetSourceInfo(sourceID);
-	if sourceInfo then
-		-- Go through all of the shared appearances and see if we've "unlocked" any of them.
-		local unlockedSourceIDs, allSources = { sourceID }, C_TransmogCollection_GetAllAppearanceSources(sourceInfo.visualID);
-		for _,otherSourceID in ipairs(allSources) do
-			-- If this isn't the source we already did work on and we haven't already completed it
-			if otherSourceID ~= sourceID and not AccountSources[otherSourceID] then
-				local otherSourceInfo = C_TransmogCollection_GetSourceInfo(otherSourceID);
-				if otherSourceInfo and filter(otherSourceInfo, allSources) then
-					AccountSources[otherSourceID] = otherSourceInfo.isCollected and 1 or 2;
-					tinsert(unlockedSourceIDs, otherSourceID);
+local function GetUniqueRemovedSourceIDs(sourceID, visualID, filter)
+	local removedSourceIDs, allSources = {}, C_TransmogCollection_GetAllAppearanceSources(visualID)
+	for _,otherSourceID in ipairs(allSources) do
+		if not AccountSources[otherSourceID] then
+			local otherSourceInfo = C_TransmogCollection_GetSourceInfo(otherSourceID)
+			-- app.PrintDebug("UniqueRemove?",otherSourceID,otherSourceInfo.isCollected,filter(otherSourceInfo, allSources))
+			if otherSourceInfo and not otherSourceInfo.isCollected and not filter(otherSourceInfo, allSources) then
+				-- if the otherSourceID will be no longer unique collected due to this removal, then track it
+				if otherSourceID == sourceID or AccountUniqueSources[otherSourceID] == 1 then
+					removedSourceIDs[#removedSourceIDs + 1] = otherSourceID
 				end
+				AccountUniqueSources_REM(otherSourceID)
 			end
 		end
-
-		-- only consider new SourceID as unlocking all shared appearances, otherwise it only unlocks additional appearances
-		-- (i.e. current item was collected in Main Only due to alternate piece, but then learning the raw item itself or something... idk)
-		local newAppearancesLearned = oldState == 0 and #unlockedSourceIDs or (#unlockedSourceIDs - 1);
-
-		-- Show the collection message if learning this Source actually contributed as a new Unique appearance
-		if app.Settings:GetTooltipSetting("Report:Collected") then
-			local newCollected = newAppearancesLearned > 0
-			-- Search for the item that actually was unlocked.
-			local firstMatch = SearchForSourceIDQuickly(sourceID);
-			if firstMatch then
-				app.print(L[newCollected and "ITEM_ID_ADDED_SHARED" or "ITEM_ID_ADDED"]:format(firstMatch.text or ("|cffff80ff|Htransmogappearance:" .. sourceID .. "|h[Source " .. sourceID .. "]|h|r"), firstMatch.itemID, newAppearancesLearned));
-			else
-				-- Use the Blizzard API... We don't have this item in the addon.
-				-- NOTE: The itemlink that gets passed is BASE ITEM LINK, not the full item link.
-				-- So this may show green items where an epic was obtained. (particularly with Legion drops)
-				-- This is okay since items of this type share their appearance regardless of the power of the item.
-				local name, link = GetItemInfo(sourceInfo.itemID);
-
-				app.print(L[newCollected and "ITEM_ID_ADDED_SHARED_MISSING" or "ITEM_ID_ADDED_MISSING"]:format(link or name or ("|cffff80ff|Htransmogappearance:" .. sourceID .. "|h[Source " .. sourceID .. "]|h|r"), sourceInfo.itemID, newAppearancesLearned, app.Version));
-
-				-- Play a sound when a reportable error is found, if any sound setting is enabled
-				app.Audio:PlayReportSound();
-			end
-			if newCollected then
-				Callback(OnTransmogCollected)
-			end
-		end
-
-		-- Update the groups for the sourceIDs
-		app.UpdateRawIDs("sourceID", unlockedSourceIDs);
 	end
+	return removedSourceIDs
 end
-local function UniqueModeItemCollectionHelper(sourceID, oldState)
-	return UniqueModeItemCollectionHelperBase(sourceID, oldState, FilterItemSourceUnique);
-end
-local function UniqueModeItemCollectionHelperOnlyMain(sourceID, oldState)
-	return UniqueModeItemCollectionHelperBase(sourceID, oldState, FilterItemSourceUniqueOnlyMain);
-end
-local ActiveItemCollectionHelper = CompletionistItemCollectionHelper;
+app.AddCollectionTypeHandler("ItemWithAppearance", function(t)
+	-- based on the current ItemSourceFilter assignment (i.e. collection mode)
+	local tkey = t.key
+	local tval = t[tkey]
+	-- change what message format is used
+	if app.ItemSourceFilter == FilterItemSource then
+		-- Completionist
+		-- app.PrintDebug("Completionist Report",app:SearchLink(t))
+		local sourceID = t.sourceID
+		if not t._missing then
+			app.print(L.ITEM_ID_ADDED:format(app:SearchLink(t) or ("|cffff80ff|Htransmogappearance:" .. sourceID .. "|h[Source " .. sourceID .. "]|h|r"), t.itemID))
+		else
+			local sourceInfo = C_TransmogCollection_GetSourceInfo(sourceID)
+			app.print(L.ITEM_ID_ADDED_MISSING:format(app:SearchLink(t) or ("|cffff80ff|Htransmogappearance:" .. sourceID .. "|h[Source " .. sourceID .. "]|h|r"), sourceInfo and sourceInfo.itemID, app.Version))
+		end
+		app.HandleEvent("OnThingCollected", t)
+	else
+		-- Unique
+		-- app.PrintDebug("Unique Report",app:SearchLink(t))
+		local sourceID = t.sourceID
+		local sourceInfo = C_TransmogCollection_GetSourceInfo(sourceID)
+		local unlockedSourceIDs = GetUniqueUnlockedSourceIDs(sourceID, sourceInfo.visualID, app.ItemSourceFilter)
+		local newAppearancesLearned = #unlockedSourceIDs
+		local newCollected = newAppearancesLearned > 0
+		if not t._missing then
+			-- TODO eventual setting to control reporting of already collected Things
+			if newAppearancesLearned > 0 then
+				app.print(L.ITEM_ID_ADDED_SHARED:format(app:SearchLink(t) or ("|cffff80ff|Htransmogappearance:" .. sourceID .. "|h[Source " .. sourceID .. "]|h|r"), t.itemID, newAppearancesLearned));
+				app.HandleEvent("OnThingCollected", t)
+				app.UpdateRawIDs(tkey, unlockedSourceIDs)
+			end
+		else
+			-- always report missing
+			app.print(L[newCollected and "ITEM_ID_ADDED_SHARED_MISSING" or "ITEM_ID_ADDED_MISSING"]:format(app:SearchLink(t) or ("|cffff80ff|Htransmogappearance:" .. sourceID .. "|h[Source " .. sourceID .. "]|h|r"), sourceInfo.itemID, newAppearancesLearned, app.Version));
+			app.HandleEvent("OnThingCollected", t)
+			app.UpdateRawIDs(tkey, unlockedSourceIDs)
+		end
+	end
+	app.UpdateRawID(tkey, tval)
+end)
+app.AddRemovalTypeHandler("ItemWithAppearance", function(t)
+	-- based on the current ItemSourceFilter assignment (i.e. collection mode)
+	local tkey = t.key
+	local tval = t[tkey]
+	-- change what message format is used
+	if app.ItemSourceFilter == FilterItemSource then
+		-- Completionist
+		-- app.PrintDebug("Completionist Remove",app:SearchLink(t))
+		local sourceID = t.sourceID
+		app.print(L.ITEM_ID_REMOVED:format(app:SearchLink(t) or ("|cffff80ff|Htransmogappearance:" .. sourceID .. "|h[Source " .. sourceID .. "]|h|r"), t.itemID))
+		app.HandleEvent("OnThingRemoved", t)
+	else
+		-- Unique
+		-- app.PrintDebug("Unique Remove",app:SearchLink(t))
+		local sourceID = t.sourceID
+		local sourceInfo = C_TransmogCollection_GetSourceInfo(sourceID)
+		local removedSourceIDs = GetUniqueRemovedSourceIDs(sourceID, sourceInfo.visualID, app.ItemSourceFilter)
+		local uniqueRemoved = #removedSourceIDs
+		-- TODO eventual setting to control reporting of already collected Things
+		if uniqueRemoved > 0 then
+			app.print(L.ITEM_ID_REMOVED_SHARED:format(app:SearchLink(t) or ("|cffff80ff|Htransmogappearance:" .. sourceID .. "|h[Source " .. sourceID .. "]|h|r"), sourceInfo.itemID, uniqueRemoved))
+			app.HandleEvent("OnThingRemoved", t)
+			app.UpdateRawIDs(tkey, removedSourceIDs)
+		end
+	end
+	app.UpdateRawID(tkey, tval)
+end)
 
 local VisualIDSourceIDsCache = setmetatable({}, { __index = function(t, visualID)
 	local sourceIDs = C_TransmogCollection_GetAllAppearanceSources(visualID)
@@ -419,119 +464,120 @@ end
 local function MarkUniqueCollectedSourcesBySource(knownSourceID, currentCharacterOnly)
 	-- Find this source in ATT
 	local knownItem = SearchForSourceIDQuickly(knownSourceID);
-	if knownItem then
-		local knownSource = C_TransmogCollection_GetSourceInfo(knownSourceID);
-		if not knownSource then
-			app.PrintDebug("Failed to get source info for",knownSourceID)
-			return;
-		end
-		-- For each shared Visual SourceID
-		-- if knownSource.visualID == 322 then app.Debugging = true; app.PrintTable(knownSource); end
-		-- account cannot collect sourceID? not available for transmog?
-		-- local _, canCollect = C_TransmogCollection.AccountCanCollectSource(knownSourceID); -- pointless, always false if sourceID is known
-		-- local unknown1 = select(8, C_TransmogCollection.GetAppearanceSourceInfo(knownSourceID)); -- pointless, returns nil for many valid transmogs
-		-- Trust that Blizzard returns SourceID's which can actually be used as Transmog for the VisualID
-		local sourceIDs = VisualIDSourceIDsCache[knownSource.visualID]
-		local canMog;
-		local verifySourceIDs
-		for _,sourceID in ipairs(sourceIDs) do
-			if sourceID == knownSourceID then
-				canMog = true;
-			end
-			-- collect the shared SourceIDs that are not yet calculated
-			if not AccountSources[sourceID] then
-				if verifySourceIDs then verifySourceIDs[#verifySourceIDs + 1] = sourceID
-				else verifySourceIDs = { sourceID } end
-			end
-		end
-		-- cannot mog the known SourceID or have no unknown shared SourceIDs to verify, then leave
-		if not canMog or not verifySourceIDs then return; end
-		-- this source unlocks a visual that the current character may tmog, so all shared visuals should be considered 'collected' regardless of restriction
-		-- for current character only, all we care is that the knownItem is equippable and is not exclusive to another
-		-- race/class to consider all shared appearances as 'collected' for the current character
-		if currentCharacterOnly and MainOnlyCanTransmogAppearanceItem(knownItem) then
-			for _,sourceID in ipairs(verifySourceIDs) do
-				AccountSources[sourceID] = 2;
-			end
-			return
-		end
+	if not knownItem then return end
 
-		local checkItem, checkSource, valid, checkFilter
-		local knownRaces, knownClasses, knownFaction, knownFilter = knownItem.races, knownItem.c, knownItem.r, knownItem.f;
-		local factionRaces = app.Modules.FactionData.FACTION_RACES;
+	local knownSource = C_TransmogCollection_GetSourceInfo(knownSourceID);
+	if not knownSource then
+		app.PrintDebug("Failed to get source info for",knownSourceID)
+		return;
+	end
 
+	-- For each shared Visual SourceID
+	-- if knownSource.visualID == 322 then app.Debugging = true; app.PrintTable(knownSource); end
+	-- account cannot collect sourceID? not available for transmog?
+	-- local _, canCollect = C_TransmogCollection.AccountCanCollectSource(knownSourceID); -- pointless, always false if sourceID is known
+	-- local unknown1 = select(8, C_TransmogCollection.GetAppearanceSourceInfo(knownSourceID)); -- pointless, returns nil for many valid transmogs
+	-- Trust that Blizzard returns SourceID's which can actually be used as Transmog for the VisualID
+	local sourceIDs = VisualIDSourceIDsCache[knownSource.visualID]
+	local canMog;
+	local verifySourceIDs
+	for _,sourceID in ipairs(sourceIDs) do
+		if sourceID == knownSourceID then
+			canMog = true;
+		end
+		-- collect the shared SourceIDs that are not yet calculated
+		if not AccountSources[sourceID] then
+			if verifySourceIDs then verifySourceIDs[#verifySourceIDs + 1] = sourceID
+			else verifySourceIDs = { sourceID } end
+		end
+	end
+	-- cannot mog the known SourceID or have no unknown shared SourceIDs to verify, then leave
+	if not canMog or not verifySourceIDs then return; end
+
+	-- this source unlocks a visual that the current character may tmog, so all shared visuals should be considered 'collected' regardless of restriction
+	-- for current character only, all we care is that the knownItem is equippable and is not exclusive to another
+	-- race/class to consider all shared appearances as 'collected' for the current character
+	if currentCharacterOnly and MainOnlyCanTransmogAppearanceItem(knownItem) then
 		for _,sourceID in ipairs(verifySourceIDs) do
-			-- app.PrintDebug("visualID",knownSource.visualID,"sourceID",sourceID,"known:",acctSources[sourceID)]
-			-- Find the check Source in ATT
-			checkItem = SearchForSourceIDQuickly(sourceID);
-			if checkItem then
-				-- filter matches or one item is Cosmetic
-				checkFilter = checkItem.f;
-				if checkFilter == knownFilter or checkFilter == 2 or knownFilter == 2 then
-					valid = true;
-					-- verify all possible restrictions that the known source may have against restrictions on the source in question
-					-- if known source has no equivalent restrictions, then restrictions on the source are irrelevant
-					-- Races
-					if knownRaces then
-						if checkItem.races then
-							-- the known source has a race restriction that is not shared by the source in question
-							if not containsAny(checkItem.races, knownRaces) then valid = nil; end
-						else
-							valid = nil;
-						end
-					end
-					-- Classes
-					if valid and knownClasses then
-						if checkItem.c then
-							-- the known source has a class restriction that is not shared by the source in question
-							if not containsAny(checkItem.c, knownClasses) then valid = nil; end
-						else
-							valid = nil;
-						end
-					end
-					-- Faction
-					if valid and knownFaction then
-						if checkItem.r then
-							-- the known source has a faction restriction that is not shared by the source or source races in question
-							if knownFaction ~= checkItem.r or (checkItem.races and not containsAny(factionRaces[knownFaction], checkItem.races)) then valid = nil; end
-						else
-							valid = nil;
-						end
-					end
+			AccountUniqueSources_ADD(sourceID)
+		end
+		return
+	end
 
-					-- found a known item which meets all the criteria to grant credit for the source in question
-					if valid then
-						checkSource = C_TransmogCollection_GetSourceInfo(sourceID);
-						-- both sources are the same category (Equip-Type)
-						if knownSource.categoryID == checkSource.categoryID
-							-- and same Inventory Type
-							and (knownSource.invType == checkSource.invType
-								or checkSource.categoryID == 4 --[[CHEST: Robe vs Armor]]
-								or SlotByInventoryType[knownSource.invType] == SlotByInventoryType[checkSource.invType])
-						then
-							-- app.PrintDebug("Unique Collected sourceID:",sourceID);
-							AccountSources[sourceID] = 2;
-						-- else print("sources share visual and filters but different equips",item.sourceID,sourceID)
-						end
+	local checkItem, checkSource, valid, checkFilter
+	local knownRaces, knownClasses, knownFaction, knownFilter = knownItem.races, knownItem.c, knownItem.r, knownItem.f;
+	local factionRaces = app.Modules.FactionData.FACTION_RACES;
+
+	for _,sourceID in ipairs(verifySourceIDs) do
+		-- app.PrintDebug("visualID",knownSource.visualID,"sourceID",sourceID,"known:",acctSources[sourceID)]
+		-- Find the check Source in ATT
+		checkItem = SearchForSourceIDQuickly(sourceID);
+		if checkItem then
+			-- filter matches or one item is Cosmetic
+			checkFilter = checkItem.f;
+			if checkFilter == knownFilter or checkFilter == 2 or knownFilter == 2 then
+				valid = true;
+				-- verify all possible restrictions that the known source may have against restrictions on the source in question
+				-- if known source has no equivalent restrictions, then restrictions on the source are irrelevant
+				-- Races
+				if knownRaces then
+					if checkItem.races then
+						-- the known source has a race restriction that is not shared by the source in question
+						if not containsAny(checkItem.races, knownRaces) then valid = nil; end
+					else
+						valid = nil;
 					end
 				end
-			else
-				-- OH NOES! It doesn't exist!
-				checkSource = C_TransmogCollection_GetSourceInfo(sourceID);
-				-- both sources are the same category (Equip-Type)
-				if checkSource.categoryID == knownSource.categoryID
-					-- and same Inventory Type
-					and (checkSource.invType == knownSource.invType
-						or knownSource.categoryID == 4 --[[CHEST: Robe vs Armor]]
-						or SlotByInventoryType[checkSource.invType] == SlotByInventoryType[knownSource.invType])
-				then
-					-- print("OH NOES! MISSING SOURCE ID ", sourceID, " FOUND THAT YOU HAVE COLLECTED, BUT ATT DOESNT HAVE!!!!");
-					AccountSources[sourceID] = 2;
-				-- else print(knownSource.sourceID, sourceInfo.sourceID, "share appearances, but one is ", sourceInfo.invType, "and the other is", knownSource.invType, sourceInfo.categoryID);
+				-- Classes
+				if valid and knownClasses then
+					if checkItem.c then
+						-- the known source has a class restriction that is not shared by the source in question
+						if not containsAny(checkItem.c, knownClasses) then valid = nil; end
+					else
+						valid = nil;
+					end
+				end
+				-- Faction
+				if valid and knownFaction then
+					if checkItem.r then
+						-- the known source has a faction restriction that is not shared by the source or source races in question
+						if knownFaction ~= checkItem.r or (checkItem.races and not containsAny(factionRaces[knownFaction], checkItem.races)) then valid = nil; end
+					else
+						valid = nil;
+					end
+				end
+
+				-- found a known item which meets all the criteria to grant credit for the source in question
+				if valid then
+					checkSource = C_TransmogCollection_GetSourceInfo(sourceID);
+					-- both sources are the same category (Equip-Type)
+					if knownSource.categoryID == checkSource.categoryID
+						-- and same Inventory Type
+						and (knownSource.invType == checkSource.invType
+							or checkSource.categoryID == 4 --[[CHEST: Robe vs Armor]]
+							or SlotByInventoryType[knownSource.invType] == SlotByInventoryType[checkSource.invType])
+					then
+						-- app.PrintDebug("Unique Collected sourceID:",sourceID);
+						AccountUniqueSources_ADD(sourceID)
+					-- else print("sources share visual and filters but different equips",item.sourceID,sourceID)
+					end
 				end
 			end
+		else
+			-- OH NOES! It doesn't exist!
+			checkSource = C_TransmogCollection_GetSourceInfo(sourceID);
+			-- both sources are the same category (Equip-Type)
+			if checkSource.categoryID == knownSource.categoryID
+				-- and same Inventory Type
+				and (checkSource.invType == knownSource.invType
+					or knownSource.categoryID == 4 --[[CHEST: Robe vs Armor]]
+					or SlotByInventoryType[checkSource.invType] == SlotByInventoryType[knownSource.invType])
+			then
+				-- print("OH NOES! MISSING SOURCE ID ", sourceID, " FOUND THAT YOU HAVE COLLECTED, BUT ATT DOESNT HAVE!!!!");
+				AccountUniqueSources_ADD(sourceID)
+			-- else print(knownSource.sourceID, sourceInfo.sourceID, "share appearances, but one is ", sourceInfo.invType, "and the other is", knownSource.invType, sourceInfo.categoryID);
+			end
 		end
-		-- app.Debugging = nil;
 	end
 end
 local function DetermineMaxATTSourceID()
@@ -547,6 +593,7 @@ end
 local function CollectUniqueAppearances()
 	-- Additionally, for Unique Mode we can grant collection of Appearances which match the Visual of explicitly known SourceIDs if other criteria (Race/Faction/Class) match as well using ATT info
 	-- app.PrintDebug("Unique Refresh",app.MaxSourceID)
+	wipe(AccountUniqueSources);
 	local currentCharacterOnly = app.Settings:Get("MainOnly");
 	local ItemSourceFilter = app.ItemSourceFilter;
 	-- Simply determine the max known SourceID from ATT cached sources
@@ -569,7 +616,7 @@ local function CollectUniqueAppearances()
 				local sInfo = C_TransmogCollection_GetSourceInfo(sourceID)
 				if ItemSourceFilter(sInfo) then
 					-- app.PrintDebug("Fixed Unique SourceID Collected",sourceID)
-					AccountSources[sourceID] = 2;
+					AccountUniqueSources_ADD(sourceID)
 				end
 			end
 		end
@@ -678,20 +725,27 @@ do
 		[34] = true,	-- Fist Weapons
 	};
 
+	local KEY, CACHE, SETTING = "sourceID", "Sources", "Transmog"
+	local CLASSNAME = "ItemWithAppearance"
+	local function collected_Completionist(t)
+		return AccountSources[t[KEY]]
+	end
+	local function collected_Unique(t)
+		local sourceID = t[KEY]
+		return (AccountSources[sourceID] and 1) or (AccountUniqueSources[sourceID] and 2)
+	end
 	-- An appearance must be associated with an item since the Item link is displayed in Transmog UI
-	local createItemWithAppearance = app.ExtendClass("Item", "ItemWithAppearance", "sourceID", {
-		collectible = function(t)
-			return app.Settings.Collectibles.Transmog;
-		end,
-		collected = function(t)
-			return AccountSources[t.sourceID];
-		end,
+	local createItemWithAppearance = app.ExtendClass("Item", "ItemWithAppearance", KEY, {
+		CACHE = function() return CACHE end,
+		-- this is swapped based on settings
+		collectible = app.ReturnTrue,
+		collected = collected_Completionist,
 		collectedwarband = app.IsClassic and app.EmptyFunction or
 		function(t)
-			return app.IsAccountCached("SourceItemsOnCharacter", t.sourceID)
+			return app.IsAccountCached("SourceItemsOnCharacter", t[KEY])
 		end,
 		visualID = function(t)
-			local sourceInfo = C_TransmogCollection_GetSourceInfo(t.sourceID)
+			local sourceInfo = C_TransmogCollection_GetSourceInfo(t[KEY])
 			return sourceInfo and sourceInfo.visualID
 		end,
 		-- directly-created source objects can attempt to determine & save their providing ItemID to benefit from the attached Item fields
@@ -709,7 +763,7 @@ do
 	});
 	app.CreateItemSource = app.GameBuildVersion < 50000 and ((C_Seasons and C_Seasons.GetActiveSeason() == 2 and function(sourceID, itemID, t)
 		if t and ((not t.q or t.q < 2) or not (t.f and ITEM_FILTERS_WITH_APPEARANCES[t.f])) then
-			t.sourceID = sourceID;
+			t[KEY] = sourceID;
 			return app.CreateItem(itemID, t);
 		end
 		t = createItemWithAppearance(sourceID, t);
@@ -717,7 +771,7 @@ do
 		return t;
 	end) or function(sourceID, itemID, t)
 		if t and (not t.q or t.q < 2) then
-			t.sourceID = sourceID;
+			t[KEY] = sourceID;
 			return app.CreateItem(itemID, t);
 		end
 		t = createItemWithAppearance(sourceID, t);
@@ -730,6 +784,22 @@ do
 			t.itemID = itemID;
 		end
 		return t;
+	end
+	app.AddSimpleCollectibleSwap(CLASSNAME, SETTING)
+
+	-- Extend the Filter Module to include ItemSource
+	app.Modules.Filter.Set.ItemSource = function(useUnique, useMainOnly)
+		if useUnique then
+			if useMainOnly then
+				app.ItemSourceFilter = FilterItemSourceUniqueOnlyMain;
+			else
+				app.ItemSourceFilter = FilterItemSourceUnique;
+			end
+			app.SwapClassDefinitionMethod(CLASSNAME, "collected", collected_Unique)
+		else
+			app.ItemSourceFilter = FilterItemSource;
+			app.SwapClassDefinitionMethod(CLASSNAME, "collected", collected_Completionist)
+		end
 	end
 end
 
@@ -752,8 +822,35 @@ local function GetLinkTooltipInfo(sourceGroup, useItemIDs, sameItem)
 	local itemID = sourceGroup.modItemID or sourceGroup.itemID or sourceGroup.silentItemID;
 	return {
 		left = text .. link .. (useItemIDs and (" (" .. ((sameItem and "*" or itemID) or "???") .. ")") or ""),
-		right = app.GetCollectionIcon(AccountSources[sourceGroup.sourceID])
+		right = app.GetCollectionIcon(sourceGroup.collected)
 	}
+end
+
+-- If data for an Item group is modified in certain ways, we may need to refresh that group
+-- This also may take multiple frames since it may rely on SourceID or game API results which are not yet available
+app.RefreshItemGroup = function(item)
+	if not item or type(item) ~= "table" or not item.itemID then return end
+
+	-- reset dynamic item group information
+	item.hash = nil
+	item.modItemID = nil
+	item.rawlink = nil
+	item.link = nil
+
+	if item.sourceID then
+		-- app.PrintDebug("RefreshItemGroup.sourceID",item.hash,item.sourceID,"=>",GetSourceID(item.link))
+		local sourceID, success = GetSourceID(item.link)
+		if not sourceID or not success then
+			-- app.PrintDebug("RefreshItemGroup.FR")
+			app.FunctionRunner.Run(app.RefreshItemGroup, item)
+			return
+		end
+		if sourceID ~= item.sourceID then
+			-- app.PrintDebug("RefreshItemGroup.newsourceID",app:SearchLink(item),sourceID)
+			item.sourceID = sourceID
+			app.DirectGroupUpdate(item)
+		end
+	end
 end
 
 -- InformationType Functionality
@@ -876,7 +973,11 @@ local function CheckSourceInformation(sourceID, info, sourceGroup)
 	if not sourceInfo then return end
 	-- Special case to double-check VisualID collection in Unique/Main modes because blizzard doesn't return consistent data
 	-- non-collected SourceID, non-collected* for Account, and in Unique Mode
-	if not sourceInfo.isCollected and not AccountSources[sourceID] and not app.Settings:Get("Completionist") then
+	if not sourceInfo.isCollected
+		and not AccountSources[sourceID]
+		and not AccountUniqueSources[sourceID]
+		and not app.Settings:Get("Completionist")
+	then
 		local collected = app.ItemSourceFilter(sourceInfo);
 		if collected then
 			-- if this is true here, that means C_TransmogCollection_GetAllAppearanceSources() for this SourceID's VisualID
@@ -912,131 +1013,78 @@ local function CheckSourceInformation(sourceID, info, sourceGroup)
 end
 local function BuildSourceInformationForPopout(group)
 	-- Create groups showing Appearance information
-	if group.sourceID then
-		-- print(group.__type)
-		-- app.PrintGroup(group)
-		-- source without an item, try to generate the valid item link for it
-		if not group.itemID and not group.artifactID then
-			app.ImportRawLink(group, app.DetermineItemLink(group.sourceID));
-			-- if we found a Item link, save it into ATTHarvestItems for ease of use (don't need to add Item, parse, Harvest, add harvest, parse)
-			app.SaveHarvestSource(group);
-		end
-		-- Attempt to get information about the source ID.
-		local sourceInfo = C_TransmogCollection_GetSourceInfo(group.sourceID);
-		if sourceInfo then
-			-- print("Source Info on popout")
-			-- app.PrintTable(sourceInfo)
-			-- Show a list of all of the Shared Appearances.
-			local g = {};
-			-- Go through all of the shared appearances and see if we've "unlocked" any of them.
-			for _,otherSourceID in ipairs(C_TransmogCollection_GetAllAppearanceSources(sourceInfo.visualID)) do
-				-- If this isn't the source we already did work on and we haven't already completed it
-				if otherSourceID ~= group.sourceID then
-					local shared = app.SearchForObject("sourceID", otherSourceID, "key");
-					if shared then
-						shared = app.CloneObject(shared, true);
-						tinsert(g, shared);
-						-- print("ATT Appearance:",shared.hash,shared.modItemID)
-					else
-						local otherSourceInfo = C_TransmogCollection_GetSourceInfo(otherSourceID);
-						-- print("Missing Appearance")
-						-- app.PrintTable(otherSourceInfo)
-						if otherSourceInfo then
-							local newItem = app.CreateItemSource(otherSourceID);
-							if otherSourceInfo.isCollected then
-								AccountSources[otherSourceID] = 1;
-							end
-							tinsert(g, newItem);
-						end
+	if not group.sourceID then return end
+	-- print(group.__type)
+	-- app.PrintGroup(group)
+	-- source without an item, try to generate the valid item link for it
+	if not group.itemID and not group.artifactID then
+		app.ImportRawLink(group, app.DetermineItemLink(group.sourceID));
+		-- if we found a Item link, save it into ATTHarvestItems for ease of use (don't need to add Item, parse, Harvest, add harvest, parse)
+		app.SaveHarvestSource(group);
+	end
+	-- Attempt to get information about the source ID.
+	local sourceInfo = C_TransmogCollection_GetSourceInfo(group.sourceID);
+	if not sourceInfo then return end
+	-- print("Source Info on popout")
+	-- app.PrintTable(sourceInfo)
+	-- Show a list of all of the Shared Appearances.
+	local g = {};
+	-- Go through all of the shared appearances and see if we've "unlocked" any of them.
+	for _,otherSourceID in ipairs(C_TransmogCollection_GetAllAppearanceSources(sourceInfo.visualID)) do
+		-- If this isn't the source we already did work on and we haven't already completed it
+		if otherSourceID ~= group.sourceID then
+			local shared = app.SearchForObject("sourceID", otherSourceID, "key");
+			if shared then
+				shared = app.CloneObject(shared, true);
+				tinsert(g, shared);
+				-- print("ATT Appearance:",shared.hash,shared.modItemID)
+			else
+				local otherSourceInfo = C_TransmogCollection_GetSourceInfo(otherSourceID);
+				-- print("Missing Appearance")
+				-- app.PrintTable(otherSourceInfo)
+				if otherSourceInfo then
+					local newItem = app.CreateItemSource(otherSourceID);
+					if otherSourceInfo.isCollected then
+						AccountSources[otherSourceID] = 1;
 					end
+					tinsert(g, newItem);
 				end
 			end
-			local appearanceGroup;
-			if #g > 0 then
-				appearanceGroup = app.CreateNPC(app.HeaderConstants.SHARED_APPEARANCES, {
-					OnUpdate = app.AlwaysShowUpdate,
-					OnClick = app.UI.OnClick.IgnoreRightClick,
-					sourceIgnored = true,
-					skipFill = true,
-					SortPriority = -2.3,
-					g = g,
-				});
-			else
-				appearanceGroup = app.CreateNPC(app.HeaderConstants.UNIQUE_APPEARANCE, {
-					OnUpdate = app.AlwaysShowUpdate,
-					OnClick = app.UI.OnClick.IgnoreRightClick,
-					sourceIgnored = true,
-					skipFill = true,
-					SortPriority = -2.3,
-				});
-			end
-			-- add the group showing the Appearance information for this popout
-			if group.g then tinsert(group.g, appearanceGroup)
-			else group.g = { appearanceGroup } end
 		end
 	end
+	local appearanceGroup;
+	if #g > 0 then
+		appearanceGroup = app.CreateNPC(app.HeaderConstants.SHARED_APPEARANCES, {
+			OnUpdate = app.AlwaysShowUpdate,
+			OnClick = app.UI.OnClick.IgnoreRightClick,
+			sourceIgnored = true,
+			skipFill = true,
+			SortPriority = -2.3,
+			g = g,
+		});
+	else
+		appearanceGroup = app.CreateNPC(app.HeaderConstants.UNIQUE_APPEARANCE, {
+			OnUpdate = app.AlwaysShowUpdate,
+			OnClick = app.UI.OnClick.IgnoreRightClick,
+			sourceIgnored = true,
+			skipFill = true,
+			SortPriority = -2.3,
+		});
+	end
+	-- add the group showing the Appearance information for this popout
+	if group.g then tinsert(group.g, appearanceGroup)
+	else group.g = { appearanceGroup } end
 end
 app.AddEventHandler("OnNewPopoutGroup", BuildSourceInformationForPopout)
 
 -- Event Handling
 app.AddEventRegistration("TRANSMOG_COLLECTION_SOURCE_ADDED", function(sourceID)
-	-- print("TRANSMOG_COLLECTION_SOURCE_ADDED",sourceID)
-	if sourceID then
-		-- Cache the previous state. This will help keep lag under control.
-		local oldState = AccountSources[sourceID] or 0;
-
-		-- Only do work if we weren't already learned.
-		-- We check here because Blizzard likes to double notify for items with timers.
-		if oldState ~= 1 then
-			AccountSources[sourceID] = 1;
-			ActiveItemCollectionHelper(sourceID, oldState);
-		end
-	end
+	-- app.PrintDebug("TRANSMOG_COLLECTION_SOURCE_ADDED",sourceID)
+	app.SetThingCollected("sourceID", sourceID, true, true)
 end)
 app.AddEventRegistration("TRANSMOG_COLLECTION_SOURCE_REMOVED", function(sourceID)
-	-- print("TRANSMOG_COLLECTION_SOURCE_REMOVED",sourceID)
-	local oldState = sourceID and AccountSources[sourceID];
-	if oldState then
-		local unlearnedSourceIDs = { sourceID };
-		local sourceInfo = C_TransmogCollection_GetSourceInfo(sourceID);
-		AccountSources[sourceID] = nil;
-
-		-- If the user is a Completionist
-		if app.Settings:Get("Completionist") then
-			if app.Settings:GetTooltipSetting("Report:Collected") then
-				-- Oh shucks, that was nice of you to give this item to your friend.
-				-- WAIT, WHAT? A VENDOR?! OH GOD NO! TODO: Warn a user when they vendor an appearance?
-				local name, link = GetItemInfo(sourceInfo.itemID);
-				print(L.ITEM_ID_REMOVED:format(link or name or ("|cffff80ff|Htransmogappearance:" .. sourceID .. "|h[Source " .. sourceID .. "]|h|r"), sourceInfo.itemID));
-			end
-		else
-			local shared = 0;
-			local categoryID, appearanceID, canEnchant, texture, isCollected, itemLink = C_TransmogCollection_GetAppearanceSourceInfo(sourceID);
-			if categoryID then
-				for i, otherSourceID in ipairs(C_TransmogCollection_GetAllAppearanceSources(appearanceID)) do
-					if AccountSources[otherSourceID] then
-						local otherSourceInfo = C_TransmogCollection_GetSourceInfo(otherSourceID);
-						if not otherSourceInfo.isCollected and otherSourceInfo.categoryID == categoryID then
-							tinsert(unlearnedSourceIDs, otherSourceID);
-							AccountSources[otherSourceID] = nil;
-							shared = shared + 1;
-						end
-					end
-				end
-			end
-
-			if app.Settings:GetTooltipSetting("Report:Collected") then
-				-- Oh shucks, that was nice of you to give this item to your friend.
-				-- WAIT, WHAT? A VENDOR?! OH GOD NO! TODO: Warn a user when they vendor an appearance?
-				local name, link = GetItemInfo(sourceInfo.itemID);
-				print(L[shared > 0 and "ITEM_ID_REMOVED_SHARED" or "ITEM_ID_REMOVED"]:format(link or name or ("|cffff80ff|Htransmogappearance:" .. sourceID .. "|h[Source " .. sourceID .. "]|h|r"), sourceInfo.itemID, shared));
-			end
-		end
-
-		-- Refresh the Data and Cry!
-		app.UpdateRawIDs("sourceID", unlearnedSourceIDs);
-		app.HandleEvent("OnThingRemoved", "Transmog")
-	end
+	-- app.PrintDebug("TRANSMOG_COLLECTION_SOURCE_REMOVED",sourceID)
+	app.SetThingCollected("sourceID", sourceID, true)
 end)
 
 app.AddEventHandler("OnLoad", function()
@@ -1163,20 +1211,4 @@ if app.IsRetail then
 		app.CallbackHandlers.DelayedCallback(CheckForBoundSourceItems, 2)
 	end)
 	app.AddEventHandler("OnRefreshCollectionsDone", CheckForBoundSourceItems)
-end
-
--- Extend the Filter Module to include ItemSource
-app.Modules.Filter.Set.ItemSource = function(useUnique, useMainOnly)
-	if useUnique then
-		if useMainOnly then
-			app.ItemSourceFilter = FilterItemSourceUniqueOnlyMain;
-			ActiveItemCollectionHelper = UniqueModeItemCollectionHelperOnlyMain
-		else
-			app.ItemSourceFilter = FilterItemSourceUnique;
-			ActiveItemCollectionHelper = UniqueModeItemCollectionHelper
-		end
-	else
-		app.ItemSourceFilter = FilterItemSource;
-		ActiveItemCollectionHelper = CompletionistItemCollectionHelper;
-	end
 end

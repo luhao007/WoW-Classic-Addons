@@ -1394,83 +1394,99 @@ function app:RefreshDataQuietly(source, trigger)
 end
 
 local BuildCategory = function(self, headers, searchResults, inst)
-	local sources, header, headerType = {}, self, nil;
+	local count = #searchResults;
+	if count == 0 then return; end
+	if count > 1 then
+		-- Find the most accessible version of the thing.
+		app.Sort(searchResults, app.SortDefaults.Accessibility);
+	end
+	local mostAccessibleSource = searchResults[1];
+	inst.sourceParent = mostAccessibleSource;
+	local u = GetRelativeValue(mostAccessibleSource, "u");
+	if u then
+		if u == 1 then return inst; end
+		inst.u = u;
+	end
+	local e = GetRelativeValue(mostAccessibleSource, "e");
+	if e then inst.e = e; end
+	local awp = GetRelativeValue(mostAccessibleSource, "awp");
+	if awp then inst.awp = awp; end
+	local rwp = GetRelativeValue(mostAccessibleSource, "rwp");
+	if rwp then inst.rwp = rwp; end
+	local r = GetRelativeValue(mostAccessibleSource, "r");
+	if r then inst.r = r; end
+	local c = GetRelativeValue(mostAccessibleSource, "c");
+	if c then inst.c = c; end
+	local races = GetRelativeValue(mostAccessibleSource, "races");
+	if races then inst.races = races; end
+	for key,value in pairs(mostAccessibleSource) do
+		inst[key] = value;
+	end
+	
+	local header, headerType = {}, self, nil;
 	for j,o in ipairs(searchResults) do
-		local u = GetRelativeValue(o, "u");
-		if not u or u ~= 1 then
-			app.MergeClone(sources, o);
-			if o.parent then
-				if not o.sourceQuests then
-					local questID = GetRelativeValue(o, "questID");
-					if questID then
+		if o.parent then
+			if not o.sourceQuests then
+				local questID = GetRelativeValue(o, "questID");
+				if questID then
+					if not inst.sourceQuests then
+						inst.sourceQuests = {};
+					end
+					if not contains(inst.sourceQuests, questID) then
+						tinsert(inst.sourceQuests, questID);
+					end
+				else
+					local sourceQuests = GetRelativeValue(o, "sourceQuests");
+					if sourceQuests then
 						if not inst.sourceQuests then
 							inst.sourceQuests = {};
-						end
-						if not contains(inst.sourceQuests, questID) then
-							tinsert(inst.sourceQuests, questID);
-						end
-					else
-						local sourceQuests = GetRelativeValue(o, "sourceQuests");
-						if sourceQuests then
-							if not inst.sourceQuests then
-								inst.sourceQuests = {};
-								for k,questID in ipairs(sourceQuests) do
+							for k,questID in ipairs(sourceQuests) do
+								tinsert(inst.sourceQuests, questID);
+							end
+						else
+							for k,questID in ipairs(sourceQuests) do
+								if not contains(inst.sourceQuests, questID) then
 									tinsert(inst.sourceQuests, questID);
-								end
-							else
-								for k,questID in ipairs(sourceQuests) do
-									if not contains(inst.sourceQuests, questID) then
-										tinsert(inst.sourceQuests, questID);
-									end
 								end
 							end
 						end
 					end
 				end
+			end
 
-				if GetRelativeValue(o, "isHolidayCategory") then
-					headerType = "holiday";
-				elseif GetRelativeValue(o, "isPromotionCategory") then
-					headerType = "promo";
-				elseif GetRelativeValue(o, "isPVPCategory") or o.pvp then
-					headerType = "pvp";
-				elseif GetRelativeValue(o, "isEventCategory") then
-					headerType = "event";
-				elseif GetRelativeValue(o, "isWorldDropCategory") or o.parent.headerID == app.HeaderConstants.COMMON_BOSS_DROPS then
+			if GetRelativeValue(o, "isHolidayCategory") then
+				headerType = "holiday";
+			elseif GetRelativeValue(o, "isPromotionCategory") then
+				headerType = "promo";
+			elseif GetRelativeValue(o, "isPVPCategory") or o.pvp then
+				headerType = "pvp";
+			elseif GetRelativeValue(o, "isEventCategory") then
+				headerType = "event";
+			elseif GetRelativeValue(o, "isWorldDropCategory") or o.parent.headerID == app.HeaderConstants.COMMON_BOSS_DROPS then
+				headerType = "drop";
+			elseif o.parent.npcID then
+				headerType = GetDeepestRelativeValue(o, "headerID") or o.parent.parent.headerID == app.HeaderConstants.VENDORS and app.HeaderConstants.VENDORS or "drop";
+			elseif GetRelativeValue(o, "isCraftedCategory") then
+				headerType = "crafted";
+			elseif o.parent.achievementID then
+				headerType = app.HeaderConstants.ACHIEVEMENTS;
+			else
+				headerType = GetDeepestRelativeValue(o, "headerID") or "drop";
+				if headerType == true then	-- Seriously don't do this...
 					headerType = "drop";
-				elseif o.parent.npcID then
-					headerType = GetDeepestRelativeValue(o, "headerID") or o.parent.parent.headerID == app.HeaderConstants.VENDORS and app.HeaderConstants.VENDORS or "drop";
-				elseif GetRelativeValue(o, "isCraftedCategory") then
-					headerType = "crafted";
-				elseif o.parent.achievementID then
-					headerType = app.HeaderConstants.ACHIEVEMENTS;
-				else
-					headerType = GetDeepestRelativeValue(o, "headerID") or "drop";
-					if headerType == true then	-- Seriously don't do this...
-						headerType = "drop";
-					end
 				end
-				local coords = GetRelativeValue(o, "coords");
-				if coords then
-					if not inst.coords then
-						inst.coords = { unpack(coords) };
-					else
-						for i,coord in ipairs(coords) do
-							tinsert(inst.coords, coord);
-						end
+			end
+			local coords = GetRelativeValue(o, "coords");
+			if coords then
+				if not inst.coords then
+					inst.coords = { unpack(coords) };
+				else
+					for i,coord in ipairs(coords) do
+						tinsert(inst.coords, coord);
 					end
 				end
 			end
 		end
-	end
-	local count = #sources;
-	if count == 0 then return inst; end
-	if count > 1 then
-		-- Find the most accessible version of the thing.
-		app.Sort(sources, app.SortDefaults.Accessibility);
-	end
-	for key,value in pairs(sources[1]) do
-		inst[key] = value;
 	end
 
 	-- Determine the type of header to put the thing into.

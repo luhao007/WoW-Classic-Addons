@@ -44,7 +44,9 @@ frame:SetScript("OnShow", function(self)
 	end
 end)
 frame:SetScript("OnHide", function()
-	_G["DBM_GUI_DropDown"]:Hide()
+	if _G["DBM_GUI_DropDown"] then
+		_G["DBM_GUI_DropDown"]:Hide()
+	end
 end)
 frame:SetScript("OnDragStart", frame.StartMoving)
 frame:SetScript("OnDragStop", function(self)
@@ -57,7 +59,7 @@ end)
 frame:SetScript("OnSizeChanged", function(self)
 	self:UpdateMenuFrame()
 	if DBM_GUI.currentViewing then
-		self:DisplayFrame(DBM_GUI.currentViewing)
+		self:DisplayFrame(DBM_GUI.currentViewing, false)
 	end
 end)
 frame.tabs = {}

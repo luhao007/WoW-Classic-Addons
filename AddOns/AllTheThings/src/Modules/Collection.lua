@@ -3,133 +3,180 @@ local L = app.L
 
 -- Dependencies: Locales, Modules.RetrievingData
 
-local wipe, pairs, coroutine_yield
-	= wipe, pairs, coroutine.yield
+local pairs,type
+	= pairs,type
 
 local IsRetrieving = app.Modules.RetrievingData.IsRetrieving;
-local StartCoroutine = app.StartCoroutine;
+local Runner = app.CreateRunner("collection")
+
+local SearchForObject
+app.AddEventHandler("OnLoad", function()
+	SearchForObject = app.SearchForObject
+end)
 
 -- Collection Events
 local Callback = app.CallbackHandlers.Callback
 local FanfareFunctions = setmetatable({
 	Mount = app.Audio.PlayMountFanfare
-}, { __index = function(t,key)
-	return app.Audio.PlayFanfare
-end})
+}, { __index = function(t,key) return app.Audio.PlayFanfare end })
 
 local TooSpammyThings = {
 	Exploration = true,
 	Quests = true,
 }
-app.AddEventHandler("OnThingCollected", function(type)
-	if type and not app.Settings:Get("Thing:"..type) then return end
-	if TooSpammyThings[type] then return end
 
-	Callback(FanfareFunctions[type])
-	if app.Settings:GetTooltipSetting("Screenshot") then
-		Callback(Screenshot)
-	end
-end)
+-- TODO: maybe consolidate to collecting an actual 'Thing' when possible
+app.AddEventHandler("OnThingCollected", function(typeORt)
+	if type(typeORt) == "table" then
+		if not typeORt or not typeORt.collectible then return end
 
-app.AddEventHandler("OnThingRemoved", function(type)
-	if type and not app.Settings:Get("Thing:"..type) then return end
+		-- TODO: test base with Quests/Objects ...
+		local base = typeORt.base or typeORt
 
-	Callback(app.Audio.PlayRemoveSound)
-end)
-
-local pendingCollection, pendingRemovals, retrievingCollection, pendingCollectionCooldown = {},{},{},0;
-local function PendingCollectionCoroutine()
-	while not app.IsReady do coroutine_yield(); end
-	while pendingCollectionCooldown > 0 do
-		-- app.PrintDebug("PCC",pendingCollectionCooldown)
-		pendingCollectionCooldown = pendingCollectionCooldown - 1;
-		coroutine_yield();
-
-		-- If any of the collection objects is retrieving data, try again.
-		local anyRetrieving = false;
-		for hash,thing in pairs(retrievingCollection) do
-			local retries = thing[1];
-			if retries > 0 then
-				retries = retries - 1;
-				thing[1] = retries;
-				if IsRetrieving(thing[2].text) then
-					retrievingCollection[hash] = nil;
-					anyRetrieving = true;
-				end
-			end
-		end
-		if anyRetrieving then
-			pendingCollectionCooldown = pendingCollectionCooldown + 1;
-		end
-	end
-
-	-- Report new things to your collection!
-	-- TODO: this should include an UpdateRawIDs for simplicity elsewhere
-	local any,allTypes = false,{};
-	local reportCollected = app.Settings:GetTooltipSetting("Report:Collected");
-	for hash,t in pairs(pendingCollection) do
-		local f = t.f;
-		if f then allTypes[f] = true; end
-		if reportCollected then
-			app.print(L.ITEM_ID_ADDED:format(app:SearchLink(t) or t.text or UNKNOWN, t[t.key] or "???"));
-		end
-		any = true;
-	end
-	if any then
-		wipe(pendingCollection);
-
-		-- Check if there was a mount.
-		if allTypes[app.FilterConstants.MOUNTS] then
-			app.Audio:PlayMountFanfare();
+		local thingType
+		-- TODO: why is 'base' a function in Classic, likely simpleMeta
+		if type(base) == "function" then
+			-- app.PrintDebug("use base func",base(typeORt, "__type"))
+			thingType = base(typeORt, "__type")
 		else
-			app.Audio:PlayFanfare();
+			-- app.PrintDebug("use base class",base.__type)
+			thingType = base.__type
+		end
+		-- app.PrintDebug("BaseType",thingType)
+		if TooSpammyThings[thingType] then return end
+
+		Callback(FanfareFunctions[thingType])
+		if app.Settings:GetTooltipSetting("Screenshot") then Callback(Screenshot) end
+	else
+		if typeORt and not app.Settings:Get("Thing:"..typeORt) then return end
+		if TooSpammyThings[typeORt] then return end
+
+		Callback(FanfareFunctions[typeORt])
+		if app.Settings:GetTooltipSetting("Screenshot") then Callback(Screenshot) end
+	end
+end)
+
+app.AddEventHandler("OnThingRemoved", function(typeORt)
+	if type(typeORt) == "table" then
+		if not typeORt or not typeORt.collectible then return end
+
+		Callback(app.Audio.PlayRemoveSound)
+	else
+		if not typeORt or not app.Settings:Get("Thing:"..typeORt) then return end
+
+		Callback(app.Audio.PlayRemoveSound)
+	end
+end)
+
+local DefaultCollectedThingFunc = function(t)
+	if not t._missing then
+		app.print(L.ITEM_ID_ADDED:format(app:SearchLink(t) or t.text or UNKNOWN, t[t.key] or "???"))
+	else
+		app.print(L.ITEM_ID_ADDED_MISSING:format(app:SearchLink(t) or t.text or UNKNOWN, t[t.key] or "???"))
+	end
+end
+local CollectionReportFormats = setmetatable({}, { __index = function(t,key) return DefaultCollectedThingFunc end})
+-- Allows supporting more collection report formats from other Modules based on __type
+app.AddCollectionReportFormatFunc = function(ttype, func)
+	CollectionReportFormats[ttype] = func
+end
+local DefaultRemovedThingFunc = function(t)
+	app.print(L.ITEM_ID_REMOVED:format(app:SearchLink(t) or t.text or UNKNOWN, t[t.key] or "???"))
+end
+local RemovalReportFormats = setmetatable({}, { __index = function(t,key) return DefaultRemovedThingFunc end})
+-- Allows supporting more removal report formats from other Modules based on __type
+app.AddRemovalReportFormatFunc = function(ttype, func)
+	RemovalReportFormats[ttype] = func
+end
+
+local DefaultCollectionTypeFunc = function(t)
+	if app.Settings:GetTooltipSetting("Report:Collected") then
+		CollectionReportFormats[t.__type](t)
+	end
+	local tkey = t.key
+	local tval = t[tkey]
+	app.HandleEvent("OnThingCollected", t)
+	app.UpdateRawID(tkey, tval)
+end
+local CollectionTypeHandlers = setmetatable({}, { __index = function(t,key) return DefaultCollectionTypeFunc end})
+-- Allows supporting custom collection handlers from other Modules based on __type
+-- NOTE: Added handlers should include necessary chat Report logic and
+-- trigger necessary calls to app.HandleEvent("OnThingCollected") and app.UpdateRawID(s) if needed
+app.AddCollectionTypeHandler = function(type, func)
+	CollectionTypeHandlers[type] = func
+end
+local DefaultRemovalTypeFunc = function(t)
+	if app.Settings:GetTooltipSetting("Report:Collected") then
+		RemovalReportFormats[t.__type](t)
+	end
+	local tkey = t.key
+	local tval = t[tkey]
+	app.HandleEvent("OnThingRemoved", t)
+	app.UpdateRawID(tkey, tval)
+end
+local RemovalTypeHandlers = setmetatable({}, { __index = function(t,key) return DefaultRemovalTypeFunc end})
+-- Allows supporting custom collection handlers from other Modules based on __type
+-- NOTE: Added handlers should include necessary chat Report logic and
+-- trigger necessary calls to app.HandleEvent("OnThingCollected") and app.UpdateRawID(s) if needed
+app.AddRemovalTypeHandler = function(type, func)
+	RemovalTypeHandlers[type] = func
+end
+
+local function HandleCollectionChange(t, isadd)
+	-- Report new things to your collection!
+	if IsRetrieving(t.text) then
+		t.__collectionretry = (t.__collectionretry or 0) + 1
+		if t.__collectionretry < 10 then
+			-- app.PrintDebug("HCC:RETRY",app:SearchLink(t))
+			Runner.Run(HandleCollectionChange, t, isadd)
+			return
 		end
 	end
 
-	-- Report removed things from your collection...
-	any = false;
-	for hash,t in pairs(pendingRemovals) do
-		if reportCollected then
-			app.print(L.ITEM_ID_REMOVED:format(app:SearchLink(t) or t.text or UNKNOWN, t[t.key] or "???"));
+	t.__collectionretry = nil
+	local ttype = t.__type
+	-- use the Collection Handler for this Type to process the collection
+	-- if that Thing is currently considered collectible
+	if isadd then
+		CollectionTypeHandlers[ttype](t)
+	else
+		RemovalTypeHandlers[ttype](t)
+	end
+end
+local DoCollection
+-- Ok we need Classic (and a couple remaining Retail classes) to stop using
+-- collection assignment within the .collected field reference. This is terrible
+-- for performance and also makes it extremely difficult to use a consolidated function
+-- to handle the collection logic
+if app.IsClassic then
+	-- We cannot check collected within this function since it's called within the .collected field via
+	-- Set/Collected
+	DoCollection = function(group, isadd)
+		if not group then return; end
+		-- Only if it's something collectible...
+		-- TODO: Settings option to allow reporting even when not considered collectible
+		if not group.collectible then return end
+
+		if isadd then
+			-- TODO: Settings option to allow reporting even when already considered collected
+			-- if group.collected then return end
 		end
-		any = true;
-	end
-	if any then
-		wipe(pendingRemovals);
-		app.Audio:PlayRemoveSound();
-	end
-	app.WipeSearchCache()
-end
-local function AddToCollection(group)
-	if not group then return; end
-	local hash = group.hash;
-	if IsRetrieving(group.text) then
-		retrievingCollection[hash] = { 5, group };
-	end
 
-	if pendingRemovals[hash] then
-		pendingRemovals[hash] = nil;
-	-- Do not add the item to the pending list if it was already in it.
-	elseif not pendingCollection[hash] then
-		pendingCollection[hash] = group;
-		pendingCollectionCooldown = 10;
-		StartCoroutine("Pending Collection", PendingCollectionCoroutine);
+		Runner.Run(HandleCollectionChange, group, isadd)
 	end
-end
-local function RemoveFromCollection(group)
-	if not group then return; end
-	local hash = group.hash;
-	if IsRetrieving(group.text) then
-		retrievingCollection[hash] = { 5, group };
-	end
+elseif app.IsRetail then
+	DoCollection = function(group, isadd)
+		if not group then return; end
+		-- Only if it's something collectible...
+		-- TODO: Settings option to allow reporting even when not considered collectible
+		if not group.collectible then return end
 
-	if pendingCollection[hash] then
-		pendingCollection[hash] = nil;
-	-- Do not add the item to the pending list if it was already in it.
-	elseif not pendingRemovals[hash] then
-		pendingRemovals[hash] = group;
-		pendingCollectionCooldown = 10;
-		StartCoroutine("Pending Collection", PendingCollectionCoroutine);
+		if isadd then
+			-- TODO: Settings option to allow reporting even when already considered collected
+			if group.collected then return end
+		end
+
+		Runner.Run(HandleCollectionChange, group, isadd)
 	end
 end
 
@@ -201,14 +248,15 @@ app.AddEventHandler("OnSavedVariablesAvailable", function(currentCharacter, acco
 		end
 		UpdateTimestampForField(field);
 	end
+	-- TODO: replace uses with SetThingCollected
 	local function SetAccountCollected(t, field, id, collected, settingKey)
-		-- app.PrintDebug("SC:A",t and t.hash,t and t.collectible,t and t.collected,field,id,collected)
+		-- app.PrintDebug("SC:A",app:SearchLink(t),t and t.collectible,field,id,collected)
 		local oldstate = IsAccountCached(field, id)
 		if collected then
 			if not oldstate then
 				-- if it's a known collectible thing not collected under current settings, then collect it
-				if t and t.collectible then
-					AddToCollection(t)
+				if t then
+					DoCollection(t, true)
 				else
 					-- if t exists, then AddToCollection does some handling of collection stuff...
 					app.HandleEvent("OnThingCollected", settingKey or field)
@@ -221,9 +269,9 @@ app.AddEventHandler("OnSavedVariablesAvailable", function(currentCharacter, acco
 			-- basically have to recalculate account data to know if this thing is still technically collected
 			-- via another character data, so clear it anyway
 			if accountWideData[field][id] then
-				RemoveFromCollection(t)
+				DoCollection(t, false)
 				accountWideData[field][id] = nil
-				-- if t exists, then RemoveFromCollection does some handling of collection stuff...
+				-- if t exists, then DoCollection does some handling of collection stuff...
 				if not t then
 					app.HandleEvent("OnThingRemoved", settingKey or field)
 				end
@@ -231,16 +279,16 @@ app.AddEventHandler("OnSavedVariablesAvailable", function(currentCharacter, acco
 		end
 		return accountWideData[field][id] and 2 or nil
 	end
-	-- Use this when the collection state of a Thing changes
+	-- TODO: replace uses with SetThingCollected
 	local function SetCollected(t, field, id, collected, settingKey)
-		-- app.PrintDebug("SC",t and t.hash,field,id,collected)
+		-- app.PrintDebug("SC",app:SearchLink(t),field,id,collected)
 		local oldstate = IsCached(field, id)
 		if collected then
 			if not oldstate then
 				UpdateTimestampForField(field);
 				-- if it's a known collectible thing not collected under current settings, then collect it
-				if t and t.collectible then
-					AddToCollection(t)
+				if t then
+					DoCollection(t, true)
 				else
 					-- if t exists, then AddToCollection does some handling of collection stuff...
 					app.HandleEvent("OnThingCollected", settingKey or field)
@@ -255,9 +303,9 @@ app.AddEventHandler("OnSavedVariablesAvailable", function(currentCharacter, acco
 			-- via another character data, so clear it anyway
 			if accountWideData[field][id] then
 				UpdateTimestampForField(field);
-				RemoveFromCollection(t)
+				DoCollection(t, false)
 				accountWideData[field][id] = nil
-				-- if t exists, then RemoveFromCollection does some handling of collection stuff...
+				-- if t exists, then DoCollection does some handling of collection stuff...
 				if not t then
 					app.HandleEvent("OnThingRemoved", settingKey or field)
 				end
@@ -266,6 +314,39 @@ app.AddEventHandler("OnSavedVariablesAvailable", function(currentCharacter, acco
 		SetCached(field, id, nil)
 		return accountWideData[field][id] and 2 or nil
 	end
+	-- Use this when the collection state of a Thing changes, for both Character and Account collectibles
+	-- field : The Key of the Thing
+	-- id : The ID for the Key
+	-- accountWide : Whether this Thing is collected for the entire Account by Blizzard
+	-- collected : Whether this Thing was actually collected, otherwise being removed
+	local function SetThingCollected(key, id, accountWide, collected)
+		local t = SearchForObject(key, id, "key")
+				or SearchForObject(key, id, "field")
+				or app.CreateClassInstance(key, id)
+		local cacheKey = t.CACHE
+		-- app.PrintDebug("STC",app:SearchLink(t),key, id, accountWide, collected, cacheKey)
+		local oldstate = (accountWide and IsAccountCached or IsCached)(cacheKey, id)
+		local accountCache = accountWideData[cacheKey]
+		if collected then
+			if not oldstate then
+				DoCollection(t, true)
+			end
+			if not accountWide then SetCached(cacheKey, id, 1) end
+			accountCache[id] = 1
+			return 1
+		end
+		if oldstate then
+			-- basically have to recalculate account data to know if this thing is still technically collected
+			-- via another character data, so clear it anyway
+			if accountCache[id] then
+				DoCollection(t, false)
+				accountCache[id] = nil
+			end
+		end
+		if not accountWide then SetCached(cacheKey, id, nil) end
+		return accountCache[id] and 2 or nil
+	end
+	app.SetThingCollected = SetThingCollected
 	app.SetAccountCollected = SetAccountCollected;
 	app.SetCached = SetCached
 	app.SetAccountCached = SetAccountCached

@@ -54,7 +54,6 @@ end
 Fun.Config_format=Config_format
 local function ISitem(item)
 	if item:match("|cff%w%w%w%w%w%w|Hitem:") then
-		print(Fun.GetItemLinkJJ(item))
 		return Fun.GetItemLinkJJ(item)
 	end
 	return item
@@ -125,42 +124,63 @@ local function Config_Set(cfdata,bool)
 	end
 end
 addonTable.Config_Set=Config_Set
-local function load_Default()
-	PIGA=addonTable.Default;
-	PIGA_Per=addonTable.Default_Per;
-	ReloadUI()
+--------
+local Config_index={"Default","Rurutia","DIY"}
+local Config_Data={
+	["Default"]={["zhCN"]=CHAT_DEFAULT},
+	["Rurutia"]={["zhCN"]="露露",["zhTW"]="露露",["enUS"]="Rurutia",},
+	["DIY"]={["zhCN"]="定制",["zhTW"]="定製",["enUS"]="DIY",},
+}
+local function load_Configuration(v)
+	if addonTable[v] then
+		PIGA=addonTable[v];
+		PIGA_Per=addonTable[v.."_Per"];
+		ReloadUI()
+	else
+		local buttxt = Config_Data[v][GetLocale()] or Config_Data[v]["zhCN"]
+		local buttxt = buttxt..L["CONFIG_TABNAME"]
+		PIGinfotip:TryDisplayMessage(string.format(ERR_ARENA_TEAM_PLAYER_NOT_FOUND_S,buttxt),1,0,0)
+	end
 end
-local function load_ALL()
-	PIGA=addonTable.Default;
-	Config_Set(PIGA,true)
-	PIGA_Per=addonTable.Default_Per;
-	Config_Set(PIGA_Per,true)
-	ReloadUI()
-end
-local Config_ID ={
-	{"Default",L["CONFIG_DEFAULT"],L["CONFIG_DEFAULTTIPS"],load_Default},
-	--{"AllON",L["CONFIG_ALLON"],L["CONFIG_ALLONTIPS"],load_ALL},
-};
 ---------
 local fuFrame = PIGOptionsList(L["CONFIG_TABNAME"])
-local function add_Configbut(Config_Name,UIname,Config_SM)
-	local But = PIGButton(fuFrame,nil,{120,26},Config_Name,UIname,Config_SM)
-	But.title = PIGFontString(But,{"LEFT", But, "RIGHT", 6, 0},Config_SM)
-	But.title:SetTextColor(0, 1, 0, 1);
-	But.title:SetJustifyH("LEFT");
-	PIGLine(But,"BOT",-20,1,{-20,484})
-	return But
+local cfbutW=fuFrame:GetWidth()-20
+fuFrame.ConfigButLsit={}
+local function add_Configbut(buttxt,tipstxt)
+	local hang=PIGFrame(fuFrame,nil,{cfbutW,60})
+	hang:PIGSetBackdrop(0.4)
+	hang.button = PIGButton(hang,{"LEFT",hang,"LEFT",10,0},{100,24},buttxt)
+	hang.title = PIGFontString(hang,{"LEFT", hang.button, "RIGHT", 6, 0},tipstxt)
+	hang.title:SetTextColor(0, 1, 0, 1);
+	hang.title:SetJustifyH("LEFT");
+	hang.title:SetWidth(cfbutW-100-20);
+	return hang
 end
-
-for id=1,#Config_ID do
-	local Default_But = add_Configbut(Config_ID[id][2],"Default_But_"..id,Config_ID[id][3])
+local maxnum = #Config_index
+for id=1,maxnum do
+	local buttxt = Config_Data[Config_index[id]][GetLocale()] or Config_Data[Config_index[id]]["zhCN"]
+	local buttxt = buttxt..L["CONFIG_TABNAME"]
+	local tipstxt=""
 	if id==1 then
-		Default_But:SetPoint("TOPLEFT",fuFrame,"TOPLEFT",20,-20);
+		tipstxt=L["CONFIG_ERRTIPS"]
+	elseif id==maxnum then
+		tipstxt=L["CONFIG_DIYTIPS"]
 	else
-		Default_But:SetPoint("TOPLEFT",_G["Default_But_"..(id-1)],"BOTTOMLEFT",0,-40);
+		tipstxt=L["CONFIG_LOAD"]..buttxt..INFO
 	end
-	Default_But:SetScript("OnClick", function ()
-		StaticPopup_Show("PEIZHI_ZAIRUQUEREN",Config_ID[id][2],nil,id);
+	local DefaultF = add_Configbut(buttxt,tipstxt)
+	if id==1 then
+		DefaultF:SetPoint("TOPLEFT",fuFrame,"TOPLEFT",10,-10);
+	else
+		DefaultF:SetPoint("TOPLEFT",fuFrame.ConfigButLsit[id-1],"BOTTOMLEFT",0,-20);
+	end
+	fuFrame.ConfigButLsit[id]=DefaultF
+	DefaultF.button:SetScript("OnClick", function ()
+		if id==maxnum then
+			Pig_OptionsUI:ShowAuthor()
+		else
+			StaticPopup_Show("PEIZHI_ZAIRUQUEREN",buttxt,nil,Config_index[id]);
+		end
 	end);
 end
 StaticPopupDialogs["PEIZHI_ZAIRUQUEREN"] = {
@@ -168,21 +188,95 @@ StaticPopupDialogs["PEIZHI_ZAIRUQUEREN"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function(self,arg1)
-		Config_ID[arg1][4]()
+		load_Configuration(arg1)
 	end,
 	timeout = 0,
 	whileDead = true,
 	hideOnEscape = true,
 }
 
----提示-----------------------------------
-fuFrame.tishi = PIGFontString(fuFrame,{"TOPLEFT", fuFrame, "TOPLEFT", 20, -300},L["LIB_TIPS"]..": ")
-fuFrame.tishi:SetTextColor(1, 1, 0, 1);
-fuFrame.tishi1 = PIGFontString(fuFrame,{"TOPLEFT", fuFrame.tishi, "TOPRIGHT", 10, -2},L["CONFIG_ERRTIPS"])
-fuFrame.tishi1:SetTextColor(0.6, 1, 0, 1);
-fuFrame.tishi1:SetJustifyH("LEFT");
----
-fuFrame.GETVER = PIGButton(fuFrame,{"BOTTOMRIGHT",fuFrame,"BOTTOMRIGHT",-304,4},{100,22},"重置更新提示")
+--导出/导入----------
+local function Replacement_data(newdata,czdata)
+	-- newdata["AutoSellBuy"]["Sell_List"]=czdata["AutoSellBuy"]["Sell_List"]
+	-- newdata["AutoSellBuy"]["Sell_Lsit_Filtra"]=czdata["AutoSellBuy"]["Sell_Lsit_Filtra"]
+	-- newdata["AutoSellBuy"]["Fen_List"]=czdata["AutoSellBuy"]["Fen_List"]
+	-- newdata["AutoSellBuy"]["Diuqi_List"]=czdata["AutoSellBuy"]["Diuqi_List"]
+	-- newdata["AutoSellBuy"]["Xuan_List"]=czdata["AutoSellBuy"]["Xuan_List"]
+	-- newdata["AutoSellBuy"]["Open_List"]=czdata["AutoSellBuy"]["Open_List"]
+	-- newdata["Chatjilu"]["jiluinfo"]=czdata["Chatjilu"]["jiluinfo"]
+	-- newdata["AHPlus"]["CacheData"]=czdata["AHPlus"]["CacheData"]
+	-- newdata["AHPlus"]["Coll"]=czdata["AHPlus"]["Coll"]
+	-- newdata["MailPlus"]["Coll"]=czdata["MailPlus"]["Coll"]
+	-- newdata["StatsInfo"]["Players"]=czdata["StatsInfo"]["Players"]
+	-- newdata["StatsInfo"]["SkillCD"]=czdata["StatsInfo"]["SkillCD"]
+	-- newdata["StatsInfo"]["FubenCD"]=czdata["StatsInfo"]["FubenCD"]
+	-- newdata["StatsInfo"]["Token"]=czdata["StatsInfo"]["Token"]
+	-- newdata["StatsInfo"]["TradeData"]=czdata["StatsInfo"]["TradeData"]
+	-- newdata["StatsInfo"]["PlayerSH"]=czdata["StatsInfo"]["PlayerSH"]
+	-- newdata["StatsInfo"]["Items"]=czdata["StatsInfo"]["Items"]
+	-- newdata["StatsInfo"]["AHData"]=czdata["StatsInfo"]["AHData"]
+	-- newdata["Error"]["ErrorDB"]=czdata["Error"]["ErrorDB"]
+	-- --
+	-- newdata["Tardis"]["Plane"]["InfoList"]=czdata["Tardis"]["Plane"]["InfoList"]
+	-- --
+	-- newdata["GDKP"]["ItemList"]=czdata["GDKP"]["ItemList"]
+	-- newdata["GDKP"]["History"]=czdata["GDKP"]["History"]
+	-- newdata["GDKP"]["instanceName"]=czdata["GDKP"]["instanceName"]
+	newdata["Error"]["ErrorDB"]={}
+	newdata["Ver"]={}
+	newdata["Chatjilu"]["WHISPER"]["record"]={}
+	newdata["Chatjilu"]["PARTY"]["record"]={}
+	newdata["Chatjilu"]["GUILD"]["record"]={}
+	newdata["Chatjilu"]["RAID"]["record"]={}
+	newdata["Chatjilu"]["INSTANCE_CHAT"]["record"]={}
+	newdata["AutoSellBuy"]["Sell_List"]={}
+	newdata["AutoSellBuy"]["Sell_Lsit_Filtra"]={}
+	newdata["AutoSellBuy"]["Fen_List"]={}
+	newdata["AutoSellBuy"]["Diuqi_List"]={}
+	newdata["AutoSellBuy"]["Xuan_List"]={}
+	newdata["AutoSellBuy"]["Open_List"]={}
+	newdata["Chatjilu"]["jiluinfo"]={}
+	newdata["AHPlus"]["CacheData"]={}
+	newdata["AHPlus"]["Coll"]={}
+	newdata["MailPlus"]["Coll"]={}
+	newdata["StatsInfo"]["Players"]={}
+	newdata["StatsInfo"]["SkillCD"]={}
+	newdata["StatsInfo"]["FubenCD"]={}
+	newdata["StatsInfo"]["Token"]={}
+	newdata["StatsInfo"]["TradeData"]={}
+	newdata["StatsInfo"]["PlayerSH"]={}
+	newdata["StatsInfo"]["Items"]={}
+	newdata["StatsInfo"]["AHData"]={}
+	if IsAddOnLoaded("!Pig_Tardis") then
+		newdata["Tardis"]["Plane"]["InfoList"]={}
+	end
+	if IsAddOnLoaded("!Pig_GDKP") then
+		newdata["GDKP"]["ItemList"]={}
+		newdata["GDKP"]["History"]={}
+		newdata["GDKP"]["instanceName"]={}
+	end
+	if IsAddOnLoaded("!Pig_Farm") then
+		newdata["Farm"]=nil
+	end
+	return newdata
+end
+fuFrame.daochubut = PIGButton(fuFrame,{"CENTER", fuFrame, "CENTER", -80, -100},{100,24},L["CONFIG_DAOCHU"]..L["CONFIG_TABNAME"])
+fuFrame.daochubut:SetScript("OnClick", function ()
+	PIGA["xxxxxx"]=nil
+	local NewPIGA = PIGCopyTable(PIGA)
+	local NewPIGA = Replacement_data(NewPIGA,addonTable.Default)
+	local NewPIGA = ExportImport_UI.PIGCopyTable_Duplicates(NewPIGA, addonTable.Default)
+	ExportImport_UI:daochuFun(addonName..ADDONS..L["CONFIG_TABNAME"],NewPIGA)
+end);
+fuFrame.daorubut = PIGButton(fuFrame,{"CENTER", fuFrame, "CENTER", 80, -100},{100,24},L["CONFIG_DAORU"]..L["CONFIG_TABNAME"])
+fuFrame.daorubut:SetScript("OnClick", function ()
+	ExportImport_UI:daoruFun(addonName..ADDONS..L["CONFIG_TABNAME"],PIGA)
+end);
+fuFrame.daochubut:Disable();
+fuFrame.daorubut:Disable();
+---提示---------------
+fuFrame.tishi = PIGFontString(fuFrame,{"TOPLEFT", fuFrame, "TOPLEFT", 20, -494},"更新提示异常点→")
+fuFrame.GETVER = PIGButton(fuFrame,{"LEFT",fuFrame.tishi,"RIGHT",10,0},{110,20},"重置更新提示")
 fuFrame.GETVER:SetScript("OnClick", function ()
 	PIGA["Ver"]={}
 	Pig_Options_RLtishi_UI:Show()
@@ -190,7 +284,8 @@ fuFrame.GETVER:SetScript("OnClick", function ()
 	-- local enabledState = GetAddOnEnableState(nil, "!Pig_Tardis")
 	-- print(enabledState)
 end);
---配置导出/导入页面-----------------
+
+----旧版
 local ConfigWWW,ConfigHHH = 800, 600
 local Config_Transfer=PIGFrame(UIParent,{"CENTER",UIParent,"CENTER",0,0},{ConfigWWW,ConfigHHH})
 Config_Transfer:PIGSetBackdrop(1)
@@ -337,7 +432,6 @@ local function DeserializeStringHelper(escape)
 	end
 	error("DeserializeStringHelper got called for '"..escape.."'?!?")
 end
-
 local function DeserializeNumberHelper(number)
 	if number == serNegInf or number == serNegInfMac then
 		return -inf

@@ -42,6 +42,7 @@ local Create, Class = app.CreateClass("PVPRank", "pvpRankID", {
 	["lifetimeRank"] = function(t)
 		return select(3, GetPVPLifetimeStats()) or 0;
 	end,
+	RefreshCollectionOnly = true,
 	["collectible"] = app.IsClassic and function(t)
 		return Collectible;
 	end

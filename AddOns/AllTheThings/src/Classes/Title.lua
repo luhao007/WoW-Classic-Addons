@@ -111,6 +111,7 @@ app.CreateTitle = app.CreateClass("Title", "titleID", {
 			return style;
 		end
 	end,
+	RefreshCollectionOnly = true,
 	collectible = function(t)
 		return app.Settings.Collectibles.Titles;
 	end,

@@ -1,5 +1,5 @@
 --[[--
-	by ALA 
+	by ALA
 --]]--
 ----------------------------------------------------------------------------------------------------
 local __addon, __private = ...;
@@ -26,7 +26,7 @@ local DT = __private.DT;
 	local GetGuildRosterInfo = GetGuildRosterInfo;
 	local GetItemInfoInstant = GetItemInfoInstant;
 	local Ambiguate = Ambiguate;
-	local GetMouseFocus = GetMouseFocus or VT._comptb.GetMouseFocus;
+	local GetMouseFocus = VT._comptb.GetMouseFocus;
 	local CreateFrame = CreateFrame;
 	local _G = _G;
 	local UIParent = UIParent;
@@ -56,6 +56,10 @@ local DT = __private.DT;
 		CONTROL_HIGHLIGHT_COLOR = { 0.25, 0.25, 0.5, 0.5, },
 		CLASS = CT.TEXTUREPATH .. [[UI-Classes-Circles]],
 	};
+	local QUERY_DATA_VALIDATION = 60;
+	local QUERY_FREQUENCY_LIMIT_BASE = 1;
+	local QUERY_FREQUENCY_LIMIT_ASPECT = 20;
+
 -->
 MT.BuildEnv('RAIDTOOL');
 -->		predef
@@ -375,100 +379,96 @@ MT.BuildEnv('RAIDTOOL');
 		TRaidUnit[index] = 'raid' .. index;
 	end
 	local function UpdateGuildRosterList(Frame, force_update)
-		if Frame.guild then
-			local RosterList = Frame.RosterList;
-			local RosterInfo = Frame.RosterInfo;
-			wipe(RosterList);
-			local num = 0;
-			for index = 1, GetNumGuildMembers() do
-				local name, rankName, rankId, level, classLocale, zone, note, officerNote, online, _, class, _, _, _, _, _, GUID = GetGuildRosterInfo(index);
-				name = Ambiguate(name, 'none');
-				if online then
-					num = num + 1;
-					RosterList[num] = name;
-				end
-				RosterInfo[name] = RosterInfo[name] or {  };
-				local info = RosterInfo[name];
-				info[1] = class;
-				info[2] = level;
-				info[3] = online;
-				info[4] = nil;
-				if online then
-					MT.SendQueryRequest(name, nil, force_update, false);
-				end
-			end
-		end
-	end
-	local function UpdateRaidRosterList(Frame, force_update)
-		if not Frame.guild then
-			local RosterList = Frame.RosterList;
-			local RosterInfo = Frame.RosterInfo;
-			wipe(RosterList);
-			local num = 0;
-			do	--	player on top
-				local name = UnitName('player');
-				local level = UnitLevel('player');
-				local class = UnitClassBase('player');
+		local RosterList = Frame.RosterList;
+		local RosterInfo = Frame.RosterInfo;
+		wipe(RosterList);
+		local num = 0;
+		for index = 1, GetNumGuildMembers() do
+			local name, rankName, rankId, level, classLocale, zone, note, officerNote, online, _, class, _, _, _, _, _, GUID = GetGuildRosterInfo(index);
+			name = Ambiguate(name, 'none');
+			if online then
 				num = num + 1;
 				RosterList[num] = name;
-				RosterInfo[name] = RosterInfo[name] or {  };
-				local info = RosterInfo[name];
-				info[1] = class;
-				info[2] = level;
-				info[3] = true;
-				info[4] = unit;
-				MT.SendQueryRequest(name, nil, force_update, false);
 			end
-			if IsInRaid() then
-				for i = 1, 40 do
-					local unit = TRaidUnit[i];
-					if UnitExists(unit) and not UnitIsUnit(unit, 'player') then
-						local name, realm = UnitName(unit);
-						if realm ~= nil and realm ~= "" and realm ~= CT.SELFREALM then
-							name = name .. "-" .. realm;
-						end
-						local level = UnitLevel(unit);
-						local class = UnitClassBase(unit);
-						local online = not not UnitIsConnected(unit);
-						num = num + 1;
-						RosterList[num] = name;
-						RosterInfo[name] = RosterInfo[name] or {  };
-						local info = RosterInfo[name];
-						info[1] = class;
-						info[2] = level;
-						info[3] = online;
-						info[4] = unit;
-						if online then
-							MT.SendQueryRequest(name, nil, force_update, false);
-						end
+			RosterInfo[name] = RosterInfo[name] or {  };
+			local info = RosterInfo[name];
+			info[1] = class;
+			info[2] = level;
+			info[3] = online;
+			info[4] = nil;
+			-- if online then
+			-- 	MT.SendQueryRequest(name, nil, force_update, false);
+			-- end
+		end
+	end
+	local function UpdateGroupRosterList(Frame, force_update)
+		local RosterList = Frame.RosterList;
+		local RosterInfo = Frame.RosterInfo;
+		wipe(RosterList);
+		local num = 0;
+		do	--	player on top
+			local name = UnitName('player');
+			local level = UnitLevel('player');
+			local class = UnitClassBase('player');
+			num = num + 1;
+			RosterList[num] = name;
+			RosterInfo[name] = RosterInfo[name] or {  };
+			local info = RosterInfo[name];
+			info[1] = class;
+			info[2] = level;
+			info[3] = true;
+			info[4] = unit;
+			-- MT.SendQueryRequest(name, nil, force_update, false);
+		end
+		if IsInRaid() then
+			for i = 1, 40 do
+				local unit = TRaidUnit[i];
+				if UnitExists(unit) and not UnitIsUnit(unit, 'player') then
+					local name, realm = UnitName(unit);
+					if realm ~= nil and realm ~= "" and realm ~= CT.SELFREALM then
+						name = name .. "-" .. realm;
 					end
+					local level = UnitLevel(unit);
+					local class = UnitClassBase(unit);
+					local online = not not UnitIsConnected(unit);
+					num = num + 1;
+					RosterList[num] = name;
+					RosterInfo[name] = RosterInfo[name] or {  };
+					local info = RosterInfo[name];
+					info[1] = class;
+					info[2] = level;
+					info[3] = online;
+					info[4] = unit;
+					-- if online then
+					-- 	MT.SendQueryRequest(name, nil, force_update, false);
+					-- end
 				end
-			elseif IsInGroup() then
-				for i = 1, 5 do
-					local unit = TPartyUnit[i];
-					if UnitExists(unit) and unit ~= 'player' then
-						local name, realm = UnitName(unit);
-						if realm ~= nil and realm ~= "" and realm ~= CT.SELFREALM then
-							name = name .. "-" .. realm;
-						end
-						local level = UnitLevel(unit);
-						local class = UnitClassBase(unit);
-						local online = not not UnitIsConnected(unit);
-						num = num + 1;
-						RosterList[num] = name;
-						RosterInfo[name] = RosterInfo[name] or {  };
-						local info = RosterInfo[name];
-						info[1] = class;
-						info[2] = level;
-						info[3] = online;
-						info[4] = unit;
-						if online then
-							MT.SendQueryRequest(name, nil, force_update, false);
-						end
-					end
-				end
-			else
 			end
+		elseif IsInGroup() then
+			for i = 1, 5 do
+				local unit = TPartyUnit[i];
+				if UnitExists(unit) and unit ~= 'player' then
+					local name, realm = UnitName(unit);
+					if realm ~= nil and realm ~= "" and realm ~= CT.SELFREALM then
+						name = name .. "-" .. realm;
+					end
+					local level = UnitLevel(unit);
+					local class = UnitClassBase(unit);
+					local online = not not UnitIsConnected(unit);
+					num = num + 1;
+					RosterList[num] = name;
+					RosterInfo[name] = RosterInfo[name] or {  };
+					local info = RosterInfo[name];
+					info[1] = class;
+					info[2] = level;
+					info[3] = online;
+					info[4] = unit;
+					-- if online then
+					-- 	MT.SendQueryRequest(name, nil, force_update, false);
+					-- end
+				end
+			end
+		else
 		end
 	end
 	local function CreateRaidToolUI()
@@ -489,7 +489,7 @@ MT.BuildEnv('RAIDTOOL');
 				self:StopMovingOrSizing();
 			end);
 			Frame:SetScript("OnShow", function(self)
-				if self.guild then
+				if self.guild and VT.__supreme then
 					GuildRoster();
 				end
 				Frame.Update();
@@ -504,7 +504,7 @@ MT.BuildEnv('RAIDTOOL');
 				RosterInfo = { class, level, online, unit }
 			]]
 
-			local ScrollList = VT.__scrolllib.CreateScrollFrame(Frame, nil, nil, TUISTYLE.RaidToolUIFrameButtonHeight, CreateRaidNode, SetRaidNode);
+			local ScrollList = VT.__dep.__scrolllib.CreateScrollFrame(Frame, nil, nil, TUISTYLE.RaidToolUIFrameButtonHeight, CreateRaidNode, SetRaidNode);
 			ScrollList:SetPoint("BOTTOMLEFT", 4, 24);
 			ScrollList:SetPoint("TOPRIGHT", -4, -24);
 			Frame.ScrollList = ScrollList;
@@ -567,71 +567,107 @@ MT.BuildEnv('RAIDTOOL');
 				Frame.LableBossModInfo = RaidToolLableBossModInfo;
 			--
 
-			local GuildList = CreateFrame('CHECKBUTTON', nil, Frame, "OptionsBaseCheckButtonTemplate");
-			GuildList:SetSize(16, 16);
-			GuildList:SetHitRectInsets(0, 0, 0, 0);
-			GuildList:ClearAllPoints();
-			GuildList:Show();
-			GuildList:SetChecked(false);
-			GuildList:SetPoint("BOTTOMRIGHT", -4, 2);
-			GuildList:SetScript("OnClick", function(self)
-				Frame.guild = self:GetChecked();
-				if self.guild then
-					GuildRoster();
-				end
-				Frame.Update();
-			end);
-			Frame.GuildList = GuildList;
+			if VT.__supreme then
+				local GuildList = CreateFrame('CHECKBUTTON', nil, Frame, "OptionsBaseCheckButtonTemplate");
+				GuildList:SetSize(16, 16);
+				GuildList:SetHitRectInsets(0, 0, 0, 0);
+				GuildList:ClearAllPoints();
+				GuildList:Show();
+				GuildList:SetChecked(false);
+				GuildList:SetPoint("BOTTOMRIGHT", -4, 2);
+				GuildList:SetScript("OnClick", function(self)
+					Frame.guild = self:GetChecked();
+					if self.guild and VT.__supreme then
+						GuildRoster();
+					end
+					Frame.Update();
+				end);
+				Frame.GuildList = GuildList;
 
-			local GuildListLabel = Frame:CreateFontString(nil, "ARTWORK");
-			GuildListLabel:SetFont(TUISTYLE.RaidToolUIFont, 12, TUISTYLE.RaidToolUIFontOutline);
-			GuildListLabel:SetText(l10n.GuildList);
-			GuildList.Name = GuildListLabel;
-			GuildListLabel:SetPoint("RIGHT", GuildList, "LEFT", 0, 0);
+				local GuildListLabel = Frame:CreateFontString(nil, "ARTWORK");
+				GuildListLabel:SetFont(TUISTYLE.RaidToolUIFont, 12, TUISTYLE.RaidToolUIFontOutline);
+				GuildListLabel:SetText(l10n.GuildList);
+				GuildList.Name = GuildListLabel;
+				GuildListLabel:SetPoint("RIGHT", GuildList, "LEFT", 0, 0);
+			end
 		--	Script
 			MT._RegisterCallback("CALLBACK_DATA_RECV", function()
-				if Frame:IsShown() then
+				if Frame:IsVisible() then
 					MT._TimerStart(Frame.UpdateScrollList, 0.2, 1);
 				end
 			end);
 			function Frame.Update(force_update)
-				if Frame:IsShown() then
-					if Frame.guild then
+				if Frame:IsVisible() then
+					if Frame.guild and VT.__supreme then
 						UpdateGuildRosterList(Frame, force_update);
 					else
-						UpdateRaidRosterList(Frame, force_update);
+						UpdateGroupRosterList(Frame, force_update);
 					end
 					Frame.UpdateScrollList();
 				end
 			end
+			function Frame.Refresh()
+				for name, info in next, RosterInfo do
+					info[5] = nil;
+				end
+			end
 			function Frame.UpdateScrollList()
-				if Frame:IsShown() then
+				if Frame:IsVisible() then
 					ScrollList:SetNumValue(#RosterList);
 					ScrollList:Update();
 				end
 			end
 			function Frame.UpdateGroupRosterList(force_update)
-				if Frame:IsShown() and not Frame.guild then
-					UpdateRaidRosterList(Frame, force_update);
+				if Frame:IsVisible() and not (Frame.guild and VT.__supreme) then
+					UpdateGroupRosterList(Frame, force_update);
 				end
 			end
 			function Frame.UpdateGuildRosterList(force_update)
-				if Frame:IsShown() and Frame.guild then
+				if Frame:IsVisible() and Frame.guild and VT.__supreme then
 					UpdateGuildRosterList(Frame, force_update);
 				end
 			end
 			Frame:SetScript("OnEvent", OnEvent);
 			Frame:RegisterEvent("GROUP_ROSTER_UPDATE");
 			--	Frame:RegisterEvent("RAID_ROSTER_UPDATE");	--	not triggered in classic
-			Frame:RegisterEvent("GUILD_ROSTER_UPDATE");
+			if VT.__supreme then
+				Frame:RegisterEvent("GUILD_ROSTER_UPDATE");
+			end
+			Frame._Ticker = 0;
 			MT._TimerStart(function()
-				for index = 1, #RosterList do
-					local name = RosterList[index];
-					if VT.TQueryCache[name] == nil and RosterInfo[name][3] then
-						MT.SendQueryRequest(name, nil, false, false);
-						local unit = RosterInfo[name][4];
-						if unit and CheckInteractDistance(unit, 4) and CanInspect(unit) then
-							NotifyInspect(unit);
+				Frame._Ticker = Frame._Ticker + 1;
+				if Frame:IsVisible() then
+					local limit = QUERY_FREQUENCY_LIMIT_BASE + QUERY_FREQUENCY_LIMIT_ASPECT / #RosterList;
+					for index = 1, #RosterList do
+						local name = RosterList[index];
+						local info = RosterInfo[name];
+						if VT.TQueryCache[name] == nil and info[3] and (info[5] == nil or info[5] <= Frame._Ticker) then
+							limit = limit - 1;
+							MT.SendQueryRequest(name, nil, false, false);
+							info[5] = Frame._Ticker + QUERY_DATA_VALIDATION;
+							local unit = info[4];
+							if unit and CheckInteractDistance(unit, 4) and CanInspect(unit) then
+								NotifyInspect(unit);
+							end
+						end
+						if limit < 1 then
+							return;
+						end
+					end
+					for index = 1, #RosterList do
+						local name = RosterList[index];
+						local info = RosterInfo[name];
+						if info[3] and (info[5] == nil or info[5] <= Frame._Ticker) then
+							limit = limit - 1;
+							MT.SendQueryRequest(name, nil, false, false);
+							info[5] = Frame._Ticker + QUERY_DATA_VALIDATION;
+							local unit = info[4];
+							if unit and CheckInteractDistance(unit, 4) and CanInspect(unit) then
+								NotifyInspect(unit);
+							end
+						end
+						if limit < 1 then
+							return;
 						end
 					end
 				end
@@ -649,12 +685,12 @@ MT.BuildEnv('RAIDTOOL');
 	end
 
 	MT.RegisterOnInit('RAIDTOOL', function(LoggedIn)
+	end);
+	MT.RegisterOnLogin('RAIDTOOL', function(LoggedIn)
 		VT.RaidToolUI = CreateRaidToolUI();
 		if IsInGroup() then
 			MT._TriggerCallback("GROUP_ROSTER_UPDATE");
 		end
-	end);
-	MT.RegisterOnLogin('RAIDTOOL', function(LoggedIn)
 	end);
 
 -->

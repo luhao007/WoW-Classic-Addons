@@ -142,6 +142,8 @@ local function functionArgsPretty(...)
 	return table.concat(res, ", ")
 end
 
+local objIds = {}
+
 local function injectTestDataIntoWarningObject(obj)
 	obj.testUseCount = 0
 	obj.testUsedWithPreciseShow = {}
@@ -150,6 +152,10 @@ local function injectTestDataIntoWarningObject(obj)
 		-- used to identify this table later to filter some schedule logic on it
 		obj.startedTimers._testObjClass = "Timer.startedTimers"
 	end
+	local mod = obj.mod or "unknown"
+	local id = objIds[mod] or 1
+	objIds[mod] = id + 1
+	obj.testCreationOrder = id
 end
 
 ---@param mod DBMModOrDBM
@@ -288,7 +294,19 @@ function test:Trace(mod, event, ...)
 				geterrorhandler()("trace of type " .. event .. " without warning object ")
 			end
 			if not obj.testUseCount then
-				self.reporter:Taint("StrayObjects")
+				local allowedMods = self.testData.otherMods
+				local isAllowedStray = allowedMods == obj.mod.id
+				if type(allowedMods) == "table" then
+					for _, v in ipairs(allowedMods) do
+						if v == obj.mod.id then
+							isAllowedStray = true
+							break
+						end
+					end
+				end
+				if not isAllowedStray then
+					self.reporter:Taint("StrayObjects")
+				end
 				injectTestDataIntoWarningObject(obj)
 			end
 			obj.testUseCount = obj.testUseCount + 1
@@ -663,6 +681,37 @@ local function extractEncounterInfo(log)
 	return res
 end
 
+local function decompressLog(testData)
+	if testData.log then return end
+	local libSerialize = LibStub("LibSerialize")
+	local libDeflate = LibStub("LibDeflate")
+	local decodedLog = libDeflate:DecodeForPrint(testData.compressedLog)
+	coroutine.yield()
+	local serializedLog = libDeflate:DecompressDeflate(decodedLog)
+	local handler = libSerialize:DeserializeAsync(serializedLog)
+	local completed, success, deserialized
+	repeat
+		coroutine.yield()
+		completed, success, deserialized = handler()
+	until completed
+	if not success then
+		error("failed to decompress log")
+	end
+	testData.log = deserialized
+end
+
+local logStripper = CreateFrame("Frame")
+logStripper:RegisterEvent("PLAYER_LOGOUT")
+logStripper:SetScript("OnEvent", function()
+	if not DBM_Test_PersistentImports then return end
+	for k, v in pairs(DBM_Test_PersistentImports) do
+		v.log = nil
+		if not v.persistent then
+			DBM_Test_PersistentImports[k] = nil
+		end
+	end
+end)
+
 ---@param testData TestDefinition
 ---@param testOptions DBMTestOptions
 function test:Playback(testData, timeWarp, testOptions)
@@ -673,6 +722,7 @@ function test:Playback(testData, timeWarp, testOptions)
 	end
 	self.testData = testData
 	self.testOptions = testOptions
+	decompressLog(testData)
 	-- Currently only required to correctly handle UNIT_TARGET messages.
 	-- An alternative to this pre-parsing would be to use a special name/flag in UNIT_TARGET at test generation time for the recording player.
 	-- However, this would mean we'd need to update all old tests, so preparsing it is for now. It should fine the player within the first few
@@ -718,6 +768,10 @@ function test:Playback(testData, timeWarp, testOptions)
 			end
 			if bit.band(trials, DBM.Difficulties.SOD_BWL_TRIAL_RED) ~= 0 then
 				self.Mocks:ApplyUnitAura(UnitName("player"), UnitGUID("player"), 466261, "Red Trial", "BUFF")
+			end
+		elseif testData.instanceInfo.instanceID == 186 then -- Naxx
+			if testData.instanceInfo.difficultyModifier and testData.instanceInfo.difficultyModifier > 0 then
+				self.Mocks:ApplyUnitAura(UnitName("player"), UnitGUID("player"), 1218278, DBM:GetSpellName(1218278), "DEBUFF", testData.instanceInfo.difficultyModifier)
 			end
 		end
    end
@@ -796,9 +850,7 @@ function test:Playback(testData, timeWarp, testOptions)
 	end
 end
 
-local frame = CreateFrame("Frame")
-frame:Show()
-frame:SetScript("OnUpdate", function(self)
+function test:OnUpdate()
 	if currentThread then
 		if coroutine.status(currentThread) == "dead" then
 			currentThread = nil
@@ -818,24 +870,35 @@ frame:SetScript("OnUpdate", function(self)
 				if test.testCallback then
 					xpcall(test.testCallback, realErrorHandler, "TestFinish", test.testData, test.testOptions, test.reporter)
 				end
+			else
+				return true -- Important for DBM-Offline to know that it's still alive
 			end
 		end
 	end
-end)
+end
+
+local frame = CreateFrame("Frame")
+frame:Show()
+frame:SetScript("OnUpdate", function() test:OnUpdate() end)
 
 ---@class TestDefinition
 ---@field name string Unique test ID.
 ---@field gameVersion GameVersion Required version of the game to run the test.
 ---@field addon string AddOn in which the mod under test is located.
 ---@field mod string|integer The boss mod being tested.
+---@field otherMods ((string|integer)[]|(string|integer))? List of other mods that are allowed to trigger warnings/timers during test execution, useful for trash mods that are active during bosses.
 ---@field ignoreWarnings? TestIgnoreWarnings Acknowledge findings to remove them from the report.
 ---@field instanceInfo DBMInstanceInfo Fake GetInstanceInfo() data for the test.
 ---@field playerName string? (Deprecated, no longer required) Name of the player who recorded the log.
 ---@field perspective string? Player name from whose perspective the log gets replayed
 ---@field players DBMTestPlayerDefinition[]? Players participating in the fight (some players may have no log entries due to filtering)
----@field log TestLogEntry[] Log to replay
+---@field log TestLogEntry[] Log to replay, automatically restored from compressedLog on playback if this isn't set
 ---@field ephemeral boolean? Set to true for tests imported from Transcriptor via the test UI
-
+---@field showInAllMods boolean? Ephemeral tests that show up in all playground UIs
+---@field persistent boolean? Ephemeral test that is stored to saved variables
+---@field compressedLog string? LibDeflate compressed log
+---@field duration number? Test duration, required if log is compressed
+---@field uiInfo TestUiInfo? Internal field used by the UI, do not set manually
 
 --[[
 I'm a bit torn on this ignore warning stuff: having the warnings in the report also serves as acknowledgement, however,
@@ -918,7 +981,7 @@ function test:RunTest(testNameOrdata, timeWarp, testOptions, callback)
 		self.reporter:Taint("ModEnv")
 	else
 		local fakeLoadingEvent = {0, "ADDON_LOADED", testData.addon}
-		currentEventKey = eventToString(fakeLoadingEvent, testData.log[#testData.log][1])
+		currentEventKey = eventToString(fakeLoadingEvent, testData.duration or testData.log[#testData.log][1])
 		currentRawEvent = fakeLoadingEvent
 		for _, v in ipairs(loadingEvents) do
 			self:Trace(modUnderTest, unpack(v))
@@ -990,3 +1053,7 @@ stopOnUnload:RegisterEvent("ADDONS_UNLOADING")
 stopOnUnload:SetScript("OnEvent", function()
 	test:StopTests()
 end)
+
+-- Some parts of DBM.Test exist prior to loading the full test support, e.g., test:Trace() is defined as no-op function in DBM-Core
+-- Use this flag to determine whether the full test mod has been loaded or not
+test.loaded = true

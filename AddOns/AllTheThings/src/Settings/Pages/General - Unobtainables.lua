@@ -37,6 +37,7 @@ local AvailabilityConditions = {
 	1,	-- Never Implemented
 	2,	-- Removed From Game
 	6,	-- Conditionally Available
+	5,	-- Unlearnable
 	0,	-- Blank Space
 	3,	-- Real Money
 	9,	-- Black Market AH

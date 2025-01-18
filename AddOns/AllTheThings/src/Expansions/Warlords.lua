@@ -114,6 +114,10 @@ do
 			return 1103070;
 		end,
 	});
+	-- Information Types
+	app.AddEventHandler("OnLoad", function()
+		app.Settings.CreateInformationType("missionID", { text = L.MISSION_ID })
+	end)
 end
 
 -- Talents
@@ -195,6 +199,7 @@ do
 		description = function(t)
 			return L.FOLLOWERS_COLLECTION_DESC;
 		end,
+		RefreshCollectionOnly = true,
 		collectible = function(t) return app.Settings.Collectibles[CACHE]; end,
 		collected = function(t)
 			return app.TypicalCharacterCollected(CACHE, t[KEY])

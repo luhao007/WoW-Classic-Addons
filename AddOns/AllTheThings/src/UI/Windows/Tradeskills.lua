@@ -121,7 +121,7 @@ app:CreateWindow("Tradeskills", {
 					reagentCache = {};
 					AllTheThingsAD.Reagents = reagentCache;
 				end
-				
+
 				local learned, craftSkillID, tradeSkillID, shouldShowSpellRanks = 0, 0, 0, nil;
 				rawset(app.SpellNameToSpellID, 0, nil);
 				app.GetSpellName(0);
@@ -191,7 +191,7 @@ app:CreateWindow("Tradeskills", {
 								elseif spellID == 20583 then spellID = 24492; end 	-- Fix rank 1 Nature Resistance.
 								app.CurrentCharacter.SpellRanks[spellID] = shouldShowSpellRanks and app.CraftTypeToCraftTypeID(craftType) or nil;
 								if not app.CurrentCharacter.Spells[spellID] then
-									app.SetCollected(nil, "Spells", spellID, true);
+									app.SetThingCollected("spellID", spellID, false, true);
 									learned = learned + 1;
 								end
 								if not skillCache[spellID] then
@@ -251,7 +251,7 @@ app:CreateWindow("Tradeskills", {
 								elseif spellID == 20583 then spellID = 24492; end 	-- Fix rank 1 Nature Resistance.
 								app.CurrentCharacter.SpellRanks[spellID] = shouldShowSpellRanks and app.CraftTypeToCraftTypeID(skillType) or nil;
 								if not app.CurrentCharacter.Spells[spellID] then
-									app.SetCollected(nil, "Spells", spellID, true);
+									app.SetThingCollected("spellID", spellID, false, true);
 									learned = learned + 1;
 								end
 
@@ -343,7 +343,7 @@ app:CreateWindow("Tradeskills", {
 					while not self:IsVisible() do
 						coroutine.yield();
 					end
-					
+
 					app.WipeSearchCache();
 					self:CacheRecipes();
 				end);
@@ -467,24 +467,8 @@ app:CreateWindow("Tradeskills", {
 
 		local newSpellLearned = function(self, spellID)
 			if spellID then
-				if not app.CurrentCharacter.Spells[spellID] then
-					local searchResults, spell = SearchForField("spellID", spellID);
-					if #searchResults > 0 then
-						spell = searchResults[1];
-						for i=2,#searchResults,1 do
-							local searchResult = searchResults[i];
-							if not searchResult.itemID then
-								spell = searchResult;
-							end
-						end
-					else
-						spell = app.CreateSpell(spellID);
-					end
-					app.SetCollected(spell, "Spells", spellID, true);
-					app:RefreshDataQuietly("NEW_SPELL_LEARNED", true);
-				else
-					self:RefreshRecipes();
-				end
+				app.SetThingCollected("spellID", spellID, false, true);
+				app:RefreshDataQuietly("NEW_SPELL_LEARNED", true);
 			end
 		end
 		handlers.NEW_RECIPE_LEARNED = newSpellLearned;

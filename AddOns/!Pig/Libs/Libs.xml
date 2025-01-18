@@ -18,4 +18,5 @@
 	<Script file="QuickBut.lua" />
 	<Script file="TradeRecords.lua" />
 	<Script file="GDKP_Auc.lua" />
+	<Script file="ExportImport.lua" />
 </Ui>

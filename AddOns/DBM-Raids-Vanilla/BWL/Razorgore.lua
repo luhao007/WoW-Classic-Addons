@@ -19,7 +19,7 @@ else
 	mod.statTypes = "normal"
 end
 
-mod:SetRevision("20241103123604")
+mod:SetRevision("20241120110019")
 mod:SetCreatureID(12435, 99999)--Bogus detection to prevent invalid kill detection if razorgore happens to die in phase 1
 mod:SetEncounterID(610)--BOSS_KILL is valid, but ENCOUNTER_END is not
 mod:DisableEEKillDetection()--So disable only EE
@@ -102,7 +102,13 @@ function mod:SPELL_CAST_SUCCESS(args)
 		self:SetStage(2)
 	elseif args:IsSpell(19873) then
 		self.vb.eggsLeft = self.vb.eggsLeft - 1
-		warnEggsLeft:Show(string.format("%d/%d",30-self.vb.eggsLeft,30))
+		if self:IsRetail() then
+			if self.vb.eggsLeft % 3 == 0 then
+				warnEggsLeft:Show(string.format("%d/%d",30-self.vb.eggsLeft,30))
+			end
+		else
+			warnEggsLeft:Show(string.format("%d/%d",30-self.vb.eggsLeft,30))
+		end
 		if self.vb.eggsLeft == 20 and timerDrakeSpawn and isBlackEssenceEnabled() and GetTime() - (self.combatInfo.pull or 0) <= 90 then
 			warnDrakeSpawn:Show()
 			timerDrakeSpawn:Stop()
@@ -139,3 +145,6 @@ function mod:OnSync(msg)
 		self:SetStage(2)
 	end
 end
+
+--Possible auto gossip for Vael using ID 29549, 30850
+--Possible auto gossip for engaging nef (retial only) 28595, 28897, 29020

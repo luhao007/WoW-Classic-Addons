@@ -278,10 +278,19 @@ function BagBankfun.addfenleibagbut(fujiui,uiname)
 			fameXX.xitongbagF=baginfo.icon[vb]
 			if showV then
 				fameXX.Portrait:SetTexture(baginfo.icon[vb].icon:GetTexture());
-				if ( vb <= numSlots ) then
-					fameXX.Portrait:SetVertexColor(1.0,1.0,1.0);
+				if fujiui==BankSlotsFrame then
+					if ( vb <= numSlots ) then
+						fameXX.Portrait:SetVertexColor(1.0,1.0,1.0);
+					else
+						fameXX.Portrait:SetVertexColor(1.0,0.1,0.1);
+					end
 				else
-					fameXX.Portrait:SetVertexColor(1.0,0.1,0.1);
+					local numFreeSlots= C_Container.GetContainerNumFreeSlots(baginfo.id[vb])
+					if ( numFreeSlots>0 ) then
+						fameXX.Portrait:SetVertexColor(1.0,1.0,1.0);
+					else
+						fameXX.Portrait:SetVertexColor(1.0,0.1,0.1);
+					end
 				end
 			end
 			fameXX:UpdateFilterIcon();

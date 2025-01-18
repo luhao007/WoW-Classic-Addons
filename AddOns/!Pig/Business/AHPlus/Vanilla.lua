@@ -583,6 +583,7 @@ function BusinessInfo.AHPlus_Vanilla()
 		OpenScanFun(nil)
 	end
 	local function huancunData_End()
+		if not HCUI:IsShown() then return end
 		if HCUI.yicunchu==nil or HCUI.yicunchu==true then
 			HCUI.jindu.tbiaoti:SetText("价格缓存完毕,存储中...");
 			for k,v in pairs(HCUI.auctionsLin) do
@@ -616,51 +617,56 @@ function BusinessInfo.AHPlus_Vanilla()
 	HCUI.UpdateF:HookScript("OnUpdate",function(self,sss)
 		if self.jishiqitime>0.1 then
 			self.jishiqitime=0
+			local AuctionsNum = GetNumAuctionItems("list");
 			if HCUI.SMend then
 				self:Hide()
 				local AuctionsNum= GetNumAuctionItems("list");
 				HCUI.jindu.tbiaoti:SetText("物品扫描完毕,开始缓存价格...");
 				HCUI.jindu.t3:SetText(AuctionsNum);
 				HCUI.jindu:SetMinMaxValues(0, AuctionsNum)
-				C_Timer.After(0.6,function()
-					HCUI.jindu.tbiaoti:SetText("正在缓存价格...");
-					HCUI.ScanCD=BusinessInfo.AHPlusData.ScanCD
-					wipe(HCUI.auctions)
-					wipe(HCUI.auctionsLin)
-					wipe(HCUI.ItemLoadList)
+				HCUI.jindu.tbiaoti:SetText("正在缓存价格...");
+				HCUI.ScanCD=BusinessInfo.AHPlusData.ScanCD
+				wipe(HCUI.auctions)
+				wipe(HCUI.auctionsLin)
+				wipe(HCUI.ItemLoadList)
+				if AuctionsNum>0 then
 					local page=math.ceil(AuctionsNum/meiyenum)
-					for ix=0,(page-1) do
-						C_Timer.After(ix*HCUI.ScanCD,function()
-							local kaishi = ix*meiyenum+1
-							local jieshu = kaishi+meiyenum-1
-							if jieshu>AuctionsNum then
-								jieshu = AuctionsNum
-							end
-							for index=kaishi,jieshu do
-								local name, texture, count, quality, canUse, level, levelColHeader, minBid, minIncrement, buyoutPrice,bidAmount, highBidder, bidderFullName, owner, ownerFullName, saleStatus, itemId, hasAllInfo=GetAuctionItemInfo("list", index);
-								if hasAllInfo then
-									SauctionsLinData(name,buyoutPrice,count,index)
-								else
-									HCUI.yicunchu=false
-									local itemf = Item:CreateFromItemID(itemId)
-									itemf.index=index
-									HCUI.ItemLoadList[itemf] = true
-									itemf:ContinueOnItemLoad(function()
-										local name, texture, count, quality, canUse, level, levelColHeader, minBid, minIncrement, buyoutPrice=GetAuctionItemInfo("list", itemf.index);
-										SauctionsLinData(name,buyoutPrice,count,itemf.index)
-										HCUI.ItemLoadList[itemf] = nil
-										if not next(HCUI.ItemLoadList) then
-											HCUI.yicunchu=true
-										end
-									end)
+					C_Timer.After(0.6,function()
+						for ix=0,(page-1) do
+							C_Timer.After(ix*HCUI.ScanCD,function()
+								local kaishi = ix*meiyenum+1
+								local jieshu = kaishi+meiyenum-1
+								if jieshu>AuctionsNum then
+									jieshu = AuctionsNum
 								end
-								if index>=AuctionsNum then
-									huancunData_End()
+								for index=kaishi,jieshu do
+									local name, texture, count, quality, canUse, level, levelColHeader, minBid, minIncrement, buyoutPrice,bidAmount, highBidder, bidderFullName, owner, ownerFullName, saleStatus, itemId, hasAllInfo=GetAuctionItemInfo("list", index);
+									if hasAllInfo then
+										SauctionsLinData(name,buyoutPrice,count,index)
+									else
+										HCUI.yicunchu=false
+										local itemf = Item:CreateFromItemID(itemId)
+										itemf.index=index
+										HCUI.ItemLoadList[itemf] = true
+										itemf:ContinueOnItemLoad(function()
+											local name, texture, count, quality, canUse, level, levelColHeader, minBid, minIncrement, buyoutPrice=GetAuctionItemInfo("list", itemf.index);
+											SauctionsLinData(name,buyoutPrice,count,itemf.index)
+											HCUI.ItemLoadList[itemf] = nil
+											if not next(HCUI.ItemLoadList) then
+												HCUI.yicunchu=true
+											end
+										end)
+									end
+									if index>=AuctionsNum then
+										huancunData_End()
+									end
 								end
-							end
-						end)
-					end
-				end)
+							end)
+						end
+					end)
+				else
+					huancunData_End()
+				end
 			else
 				local AuctionsNum = GetNumAuctionItems("list");
 				HCUI.jindu.t2:SetText(AuctionsNum);

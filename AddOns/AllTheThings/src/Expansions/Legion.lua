@@ -41,6 +41,7 @@ app.CreateArtifact = app.CreateClass(CLASSNAME, KEY, {
 		return info;
 	end,
 	f = function(t) return 11; end,
+	RefreshCollectionOnly = true,
 	collectible = function(t) return app.Settings.Collectibles[SETTING]; end,
 	collected = function(t)
 		return app.TypicalCharacterCollected(CACHE, t[KEY], SETTING)

@@ -182,6 +182,7 @@ local itemFields = {
 	["GetItemCount"] = function(t)
 		return baseGetItemCount;
 	end,
+	RefreshCollectionOnly = true,
 	["collectible"] = function(t)
 		return t.collectibleAsCost;
 	end,
@@ -259,6 +260,7 @@ if C_Heirloom and app.GameBuildVersion >= 30000 then
 		description = function(t)
 			return L["HEIRLOOM_TEXT_DESC"];
 		end,
+		RefreshCollectionOnly = true,
 		collectible = function(t)
 			return app.Settings.Collectibles.Heirlooms;
 		end,
@@ -319,6 +321,7 @@ if C_Heirloom and app.GameBuildVersion >= 30000 then
 			["description"] = function(t)
 				return L["HEIRLOOMS_UPGRADES_DESC"];
 			end,
+			RefreshCollectionOnly = true,
 			["collectible"] = function(t)
 				return app.Settings.Collectibles.Heirlooms and app.Settings.Collectibles.HeirloomUpgrades;
 			end,
@@ -465,7 +468,7 @@ if C_Heirloom and app.GameBuildVersion >= 30000 then
 			wipe(heirloomIDs);
 		end
 	end
-	
+
 	-- Heirlooms are containers for unlocks & upgrade levels.
 	local heirloomDefinition = { "Item", "Heirloom", "heirloomID", heirloomFields };
 	if gameBuildVersion < 40000 then
@@ -510,7 +513,7 @@ if C_Heirloom and app.GameBuildVersion >= 30000 then
 			end
 		end);
 	end
-	
+
 	-- Faction Extension.
 	tinsert(heirloomDefinition, "WithFaction");
 	tinsert(heirloomDefinition, {
@@ -538,7 +541,7 @@ if C_Heirloom and app.GameBuildVersion >= 30000 then
 		end,
 	});
 	tinsert(heirloomDefinition, function(t) return t.factionID; end);
-	
+
 	local CreateHeirloom = app.ExtendClass(unpack(heirloomDefinition));
 	app.CreateHeirloom = function(id, t)
 		t = CreateHeirloom(id, t);

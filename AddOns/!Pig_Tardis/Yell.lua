@@ -28,15 +28,12 @@ function TardisInfo.Yell(Activate)
 	local Get_famsg=Fun.Get_famsg
 	local cl_Name=Data.cl_Name
 	local cl_Name_Role=Data.cl_Name_Role
-	local zhizeIcon=Data.zhizeIcon
+	local zhizeAtlas=Data.zhizeAtlas
 	local MSGsuijizifu=Data.MSGsuijizifu
 	---
 	local InvF=_G[GnUI]
 	local fujiF,fujiTabBut=PIGOptionsList_R(InvF.F,L["TARDIS_YELL"],80,"Bot")
-	if Activate then
-		fujiF:Show()
-		fujiTabBut:Selected()
-	end
+	if Activate then fujiF:Show() fujiTabBut:Selected() end
 	fujiF.hanhuajiange=10
 	fujiF.PindaoList={}
 	--=====================
@@ -187,8 +184,7 @@ function TardisInfo.Yell(Activate)
 			zhizeF:SetPoint("TOPRIGHT",_G["zhize_F_"..(xulie-1)],"BOTTOMRIGHT",0,-6);
 		end
 		zhizeF.Tex = zhizeF:CreateTexture(nil, "BORDER");
-		zhizeF.Tex:SetTexture("interface/lfgframe/ui-lfg-icon-roles.blp");
-		zhizeF.Tex:SetTexCoord(zhizeIcon[xulie][1],zhizeIcon[xulie][2],zhizeIcon[xulie][3],zhizeIcon[xulie][4]);
+		zhizeF.Tex:SetAtlas(zhizeAtlas[xulie]);
 		zhizeF.Tex:SetSize(zhiye_but_H*3,zhiye_but_H*3);
 		zhizeF.Tex:SetPoint("LEFT", zhizeF, "LEFT", 10,0);
 		--
@@ -673,7 +669,7 @@ function TardisInfo.Yell(Activate)
 	end);
 	local function EditBox_panduan(Newtxt)
 		local famsg = Get_famsg("yell",Newtxt,PIGA["Tardis"]["Yell"]["jinzuCMD"],PIGA["Tardis"]["Yell"]["jinzuCMD_inv"])
-		local msglen = strlen(famsg)
+		local msglen = #famsg
 		if msglen>250 then
 			fujiF.botF_L.Yell_NR.zifulenV:SetText(msglen)
 			fujiF.botF_L.Yell_NR.zifulenV:SetTextColor(1, 0, 0, 1);
@@ -819,10 +815,10 @@ function TardisInfo.Yell(Activate)
 		else
 			PIGA["Tardis"]["Yell"]["ShowDesktopBut"]=false;
 		end
-		QuickButUI.ButList[14]()
+		QuickButUI.ButList[TardisInfo.uidata[5]+1]()
 	end);
 	local QkButUI,WWHH = "QkBut_Invite_Yell",24
-	QuickButUI.ButList[14]=function()
+	QuickButUI.ButList[TardisInfo.uidata[5]+1]=function()
 		if PIGA["QuickBut"]["Open"] and PIGA["Tardis"]["Open"] then
 			if PIGA["Tardis"]["Yell"]["ShowDesktopBut"] then
 				if _G[QkButUI] then

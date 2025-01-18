@@ -23,6 +23,7 @@ app.CreateAzeriteEssence = app.CreateClass(CLASSNAME, KEY, {
 	info = function(t)
 		return AzeriteEssenceInfoCache[t[KEY]]
 	end,
+	RefreshCollectionOnly = true,
 	collectible = function(t) return app.Settings.Collectibles[SETTING]; end,
 	collectibleAsCost = app.ReturnFalse,
 	collected = function(t)

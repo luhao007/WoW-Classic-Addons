@@ -18,11 +18,14 @@ local function MouseXY()
 	end
 	return cx, cy
 end
+local function czWeizhi()
+	if WorldMapFrame.xyf then WorldMapFrame.xyf:SetPoint("BOTTOM",WorldMapFrame,"BOTTOM",0,4.4);end
+end
 function Mapfun.WorldMap_XY()
 	if not PIGA["Map"]["WorldMapXY"] then return end
 	WorldMapFrame.xyf = CreateFrame("Frame", nil, WorldMapFrame);
 	WorldMapFrame.xyf:SetSize(340,26);
-	WorldMapFrame.xyf:SetPoint("BOTTOM",WorldMapFrame,"BOTTOM",0,4.4);
+	czWeizhi()
 	local mapxydata = {["x"]={4, 0, 14}}
 	if tocversion<30000 then
 
@@ -95,9 +98,9 @@ function Mapfun.WorldMap_Wind()
 				self:SetPoint(point, relativeTo, relativePoint, offsetX, offsetY);
 			end
 			if self:IsMaximized() then
-				WorldMapFrame.xyf:SetPoint("BOTTOM",WorldMapFrame,"BOTTOM",0,4.4);
+				czWeizhi()
 			else
-				WorldMapFrame.xyf:SetPoint("BOTTOM",WorldMapFrame,"BOTTOM",-118,4.4);
+				if WorldMapFrame.xyf then WorldMapFrame.xyf:SetPoint("BOTTOM",WorldMapFrame,"BOTTOM",-118,4.4);end
 				if WorldMapTrackQuest then
 					WorldMapTrackQuest:SetPoint("BOTTOMLEFT", WorldMapFrame, "BOTTOMLEFT", 10, 99994);
 				end
@@ -187,91 +190,101 @@ end
 function Mapfun.WorldMap_Miwu()
 	if not PIGA["Map"]["WorldMapMiwu"] then return end
 	local Reveal=addonTable.Mapfun.Reveal
-	local overlayTextures = {}
-
-	local function MapExplorationPin_RefreshOverlays(pin, fullUpdate)
-		overlayTextures = {}
-		local mapID = WorldMapFrame.mapID; if not mapID then return end
-		local artID = C_Map.GetMapArtID(mapID); if not artID or not Reveal[artID] then return end
-		local LeaMapsZone = Reveal[artID]
-
-		local TileExists = {}
-		local exploredMapTextures = C_MapExplorationInfo.GetExploredMapTextures(mapID)
-		if exploredMapTextures then
-			for i, exploredTextureInfo in ipairs(exploredMapTextures) do
-				local key = exploredTextureInfo.textureWidth .. ":" .. exploredTextureInfo.textureHeight .. ":" .. exploredTextureInfo.offsetX .. ":" .. exploredTextureInfo.offsetY
-				TileExists[key] = true
+	local function Updata_zoneTex(self,fullUpdate,exploredTextureInfo,TILE_SIZE_WIDTH,TILE_SIZE_HEIGHT,fog)
+		local numTexturesWide = ceil(exploredTextureInfo.textureWidth/TILE_SIZE_WIDTH);
+		local numTexturesTall = ceil(exploredTextureInfo.textureHeight/TILE_SIZE_HEIGHT);
+		local texturePixelWidth, textureFileWidth, texturePixelHeight, textureFileHeight;
+		for j = 1, numTexturesTall do
+			if ( j < numTexturesTall ) then
+				texturePixelHeight = TILE_SIZE_HEIGHT;
+				textureFileHeight = TILE_SIZE_HEIGHT;
+			else
+				texturePixelHeight = mod(exploredTextureInfo.textureHeight, TILE_SIZE_HEIGHT);
+				if ( texturePixelHeight == 0 ) then
+					texturePixelHeight = TILE_SIZE_HEIGHT;
+				end
+				textureFileHeight = 16;
+				while(textureFileHeight < texturePixelHeight) do
+					textureFileHeight = textureFileHeight * 2;
+				end
 			end
-		end
-
-		pin.layerIndex = pin:GetMap():GetCanvasContainer():GetCurrentLayerIndex()
-		local layers = C_Map.GetMapArtLayers(mapID)
-		local layerInfo = layers and layers[pin.layerIndex]
-		if not layerInfo then return end
-		local TILE_SIZE_WIDTH = layerInfo.tileWidth
-		local TILE_SIZE_HEIGHT = layerInfo.tileHeight
-
-		for key, files in pairs(LeaMapsZone) do
-			if not TileExists[key] then
-				local width, height, offsetX, offsetY = strsplit(":", key)
-				local fileDataIDs = { strsplit(",", files) }
-				local numTexturesWide = ceil(width/TILE_SIZE_WIDTH)
-				local numTexturesTall = ceil(height/TILE_SIZE_HEIGHT)
-				local texturePixelWidth, textureFileWidth, texturePixelHeight, textureFileHeight
-				for j = 1, numTexturesTall do
-					if ( j < numTexturesTall ) then
-						texturePixelHeight = TILE_SIZE_HEIGHT
-						textureFileHeight = TILE_SIZE_HEIGHT
-					else
-						texturePixelHeight = mod(height, TILE_SIZE_HEIGHT)
-						if ( texturePixelHeight == 0 ) then
-							texturePixelHeight = TILE_SIZE_HEIGHT
-						end
-						textureFileHeight = 16
-						while(textureFileHeight < texturePixelHeight) do
-							textureFileHeight = textureFileHeight * 2
-						end
+			for k = 1, numTexturesWide do
+				local texture = self.overlayTexturePool:Acquire();
+				if ( k < numTexturesWide ) then
+					texturePixelWidth = TILE_SIZE_WIDTH;
+					textureFileWidth = TILE_SIZE_WIDTH;
+				else
+					texturePixelWidth = mod(exploredTextureInfo.textureWidth, TILE_SIZE_WIDTH);
+					if ( texturePixelWidth == 0 ) then
+						texturePixelWidth = TILE_SIZE_WIDTH;
 					end
-					for k = 1, numTexturesWide do
-						local texture = pin.overlayTexturePool:Acquire()
-						if ( k < numTexturesWide ) then
-							texturePixelWidth = TILE_SIZE_WIDTH
-							textureFileWidth = TILE_SIZE_WIDTH
-						else
-							texturePixelWidth = mod(width, TILE_SIZE_WIDTH)
-							if ( texturePixelWidth == 0 ) then
-								texturePixelWidth = TILE_SIZE_WIDTH
-							end
-							textureFileWidth = 16
-							while(textureFileWidth < texturePixelWidth) do
-								textureFileWidth = textureFileWidth * 2
-							end
-						end
-						texture:SetSize(texturePixelWidth, texturePixelHeight)
-						texture:SetTexCoord(0, texturePixelWidth/textureFileWidth, 0, texturePixelHeight/textureFileHeight)
-						texture:SetPoint("TOPLEFT", offsetX + (TILE_SIZE_WIDTH * (k-1)), -(offsetY + (TILE_SIZE_HEIGHT * (j - 1))))
-						texture:SetTexture(tonumber(fileDataIDs[((j - 1) * numTexturesWide) + k]), nil, nil, "TRILINEAR")
-						texture:SetDrawLayer("ARTWORK", -1)
-						texture:Show()
-						if fullUpdate then
-							pin.textureLoadGroup:AddTexture(texture)
-						end
-						texture:SetVertexColor(0, 1, 0.1, 1)
-						tinsert(overlayTextures, texture)
+					textureFileWidth = 16;
+					while(textureFileWidth < texturePixelWidth) do
+						textureFileWidth = textureFileWidth * 2;
+					end
+				end
+				texture:SetWidth(texturePixelWidth);
+				texture:SetHeight(texturePixelHeight);
+				texture:SetTexCoord(0, texturePixelWidth/textureFileWidth, 0, texturePixelHeight/textureFileHeight);
+				texture:SetPoint("TOPLEFT", exploredTextureInfo.offsetX + (TILE_SIZE_WIDTH * (k-1)), -(exploredTextureInfo.offsetY + (TILE_SIZE_HEIGHT * (j - 1))));
+				texture:SetTexture(exploredTextureInfo.fileDataIDs[((j - 1) * numTexturesWide) + k], nil, nil, "TRILINEAR");
+				if fog then
+					texture:SetVertexColor(0, 1, 0.1)
+				else
+					texture:SetVertexColor(1, 1, 1)
+				end
+				if exploredTextureInfo.isShownByMouseOver then
+					texture:SetDrawLayer("ARTWORK", 1);
+					texture:Hide();
+					local highlightRect = self.highlightRectPool:Acquire();
+					highlightRect:SetSize(exploredTextureInfo.hitRect.right - exploredTextureInfo.hitRect.left, exploredTextureInfo.hitRect.bottom - exploredTextureInfo.hitRect.top);
+					highlightRect:SetPoint("TOPLEFT", exploredTextureInfo.hitRect.left, -exploredTextureInfo.hitRect.top);
+					highlightRect.index = i;
+					highlightRect.texture = texture;
+				else
+					texture:SetDrawLayer("ARTWORK", 0);
+					texture:Show();
+					if fullUpdate then
+						self.textureLoadGroup:AddTexture(texture);
 					end
 				end
 			end
 		end
+	end	
+	local function PIGRefreshOverlays(self,fullUpdate)
+		self.overlayTexturePool:ReleaseAll();
+		local mapID = self:GetMap():GetMapID();
+		if not mapID then return end
+		local uiMapArtID = C_Map.GetMapArtID(mapID)
+		if not uiMapArtID or not Reveal[uiMapArtID] then return end
+		local TextureInfo = Reveal[uiMapArtID]
+		self.layerIndex = self:GetMap():GetCanvasContainer():GetCurrentLayerIndex();
+		local layers = C_Map.GetMapArtLayers(mapID);
+		local layerInfo = layers[self.layerIndex];
+		local TILE_SIZE_WIDTH = layerInfo.tileWidth;
+		local TILE_SIZE_HEIGHT = layerInfo.tileHeight;
+		for Point,TextureID in pairs(TextureInfo) do
+			local width, height, offsetX, offsetY = strsplit(":", Point)
+			local fileDataIDs = { strsplit(",", TextureID) }
+			local exploredTextureInfo={
+				["textureWidth"]=width,
+				["textureHeight"]=height,
+				["offsetX"]=offsetX,
+				["offsetY"]=offsetY,
+				["fileDataIDs"]=fileDataIDs,
+			}
+			Updata_zoneTex(self,fullUpdate,exploredTextureInfo,TILE_SIZE_WIDTH,TILE_SIZE_HEIGHT,true)
+		end
+		local exploredMapTextures = C_MapExplorationInfo.GetExploredMapTextures(mapID);
+		if exploredMapTextures then
+			for i, exploredTextureInfo in ipairs(exploredMapTextures) do
+				Updata_zoneTex(self,fullUpdate,exploredTextureInfo,TILE_SIZE_WIDTH,TILE_SIZE_HEIGHT)
+			end
+		end
 	end
-
-	local function TexturePool_ResetVertexColor(pool, texture)
-		texture:SetVertexColor(1, 1, 1)
-		texture:SetAlpha(1)
-		return TexturePool_HideAndClearAnchors(pool, texture)
-	end
-
 	for pin in WorldMapFrame:EnumeratePinsByTemplate("MapExplorationPinTemplate") do
-		hooksecurefunc(pin, "RefreshOverlays", MapExplorationPin_RefreshOverlays)
-		pin.overlayTexturePool.resetterFunc = TexturePool_ResetVertexColor
+		hooksecurefunc(pin, "RefreshOverlays", function(self,fullUpdate)
+			PIGRefreshOverlays(self,fullUpdate)
+		end)
 	end
 end

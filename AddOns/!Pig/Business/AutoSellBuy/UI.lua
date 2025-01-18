@@ -316,6 +316,12 @@ function BusinessInfo.ADDScroll(fuFrame,text,hangName,hang_NUM,Config1)
 		hang.icon:SetSize(hang_Height-1,hang_Height-1);
 		hang.icon:SetPoint("LEFT", hang.check, "RIGHT", 0,0);
 		hang.link = PIGFontString(hang,{"LEFT", hang.icon, "RIGHT", 4,0})
+		function hang:SetFun(_,itemLink)
+			self.itemLink=itemLink
+			local ItemLevel = GetDetailedItemLevelInfo(itemLink)
+			local ItemLevel=ItemLevel or "*"
+			self.link:SetText(ItemLevel..itemLink);	
+		end
 	end
 	function fuFrame.UpdateListHang_addBag()
 		if not fuFrame.List.addList:IsShown() then return end
@@ -369,19 +375,12 @@ function BusinessInfo.ADDScroll(fuFrame,text,hangName,hang_NUM,Config1)
 	    for id = 1, addBag_hang_NUM do
 	    	local dangqianH = id+offset;
 	    	if bagshujuy[dangqianH] then
-	    		local ItemLevel = GetDetailedItemLevelInfo(bagshujuy[dangqianH][2])
-	    		local ItemLevel=bagshujuy[dangqianH][7] or ItemLevel or "*"
-	    		local _,itemLink=GetItemInfo(Fun.HY_ItemLinkJJ(bagshujuy[dangqianH][2]));
 	    		local hang = _G[hangName.."addList"..id]
 	    		hang:Show();
 	    		hang.check:SetID(dangqianH);
 		    	hang.icon:SetTexture(bagshujuy[dangqianH][3]);
-				hang.link:SetText(ItemLevel..itemLink);
-				hang:SetScript("OnMouseDown", function (self)
-					GameTooltip:ClearLines();
-					GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
-					GameTooltip:SetHyperlink(itemLink)
-				end);
+		    	hang.itemID=bagshujuy[dangqianH][1]
+				Fun.HY_ShowItemLink(hang,bagshujuy[dangqianH][2],bagshujuy[dangqianH][1])
 				if fuFrame.List.addList.lx=="filtra" then
 					hang.check.icon:SetSize(hang_Height-9,hang_Height-9);
 					hang.check.icon:SetTexture("interface/common/voicechat-muted.blp");
@@ -460,6 +459,28 @@ function BusinessInfo.ADDScroll(fuFrame,text,hangName,hang_NUM,Config1)
 		hang.item.icon:SetSize(hang_Height-1,hang_Height-1);
 		hang.item.icon:SetPoint("LEFT", hang.item, "LEFT", 0,0);
 		hang.item.link = PIGFontString(hang,{"LEFT", hang.item, "LEFT", hang_Height+4,0})
+		function hang.item:SetFun(_,itemLink)
+			self.itemLink=itemLink
+			local ItemLevel = GetDetailedItemLevelInfo(itemLink)
+			local ItemLevel=ItemLevel or "*"
+			self.link:SetText(ItemLevel..itemLink);	
+		end
+		hang.item:SetScript("OnMouseDown", function (self)
+			GameTooltip:ClearLines();
+			GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
+			GameTooltip:SetHyperlink(self.itemLink)
+			GameTooltip:Show() 
+		end);
+		hang.item:SetScript("OnMouseUp", function ()
+			GameTooltip:ClearLines();
+			GameTooltip:Hide() 
+		end);
+		hang:SetScript("OnMouseDown", function (self)
+			GameTooltip:ClearLines();
+			GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
+			GameTooltip:SetHyperlink(self.itemLink)
+			GameTooltip:Show()
+		end);
 		if hangName=="Buy" then
 			hang.Cont = CreateFrame('EditBox', nil, hang,"InputBoxInstructionsTemplate");
 			hang.Cont:SetHeight(28);
@@ -503,20 +524,11 @@ function BusinessInfo.ADDScroll(fuFrame,text,hangName,hang_NUM,Config1)
 		    for id = 1, hang_NUM do
 		    	local dangqianH = id+offset;
 		    	if Config0[dangqianH] then
-		    		local _,itemLink=GetItemInfo(Fun.HY_ItemLinkJJ(Config0[dangqianH][2]));
 		    		local hang = _G[hangName.."hang"..id]
 		    		hang:Show();
 			    	hang.item.icon:SetTexture(Config0[dangqianH][3]);
-					hang.item.link:SetText(itemLink);
-					hang.item:SetScript("OnMouseDown", function (self)
-						GameTooltip:ClearLines();
-						GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
-						GameTooltip:SetHyperlink(itemLink)
-					end);
-					hang.item:SetScript("OnMouseUp", function ()
-						GameTooltip:ClearLines();
-						GameTooltip:Hide() 
-					end);
+					hang.item.itemID=Config0[dangqianH][1]
+					Fun.HY_ShowItemLink(hang.item,Config0[dangqianH][2],Config0[dangqianH][1])
 					hang.del:SetID(dangqianH);
 					if hangName=="Buy" then
 						hang.Cont:Show();

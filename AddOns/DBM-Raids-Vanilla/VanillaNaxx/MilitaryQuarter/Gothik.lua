@@ -1,7 +1,13 @@
 local mod	= DBM:NewMod("GothikVanilla", "DBM-Raids-Vanilla", 1)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20241103123604")
+if DBM:IsSeasonal("SeasonOfDiscovery") then
+	mod.statTypes = "normal,heroic,mythic"
+else
+	mod.statTypes = "normal"
+end
+
+mod:SetRevision("20241222110740")
 mod:SetCreatureID(16060)
 mod:SetEncounterID(1109)
 mod:SetModelID(16279)

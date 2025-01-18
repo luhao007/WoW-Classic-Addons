@@ -209,6 +209,9 @@ function GDKPInfo.ADD_History(RaidR)
 			nrhang.tx2 = PIGFontString(nrhang,{"RIGHT",nrhang,"RIGHT",-220,0},"","OUTLINE");
 			nrhang.tx2:SetTextColor(1, 1, 1, 1);
 			nrhang.tx3 = PIGFontString(nrhang,{"LEFT",nrhang,"LEFT",380,0},"","OUTLINE");
+			function nrhang:SetFun(itemNameD,itemLinkD)
+				self.tx1:SetText(itemLinkD);
+			end
 		end
 		fujif:SetScript("OnShow", function (self)
 			self.gengxinList()
@@ -248,7 +251,8 @@ function GDKPInfo.ADD_History(RaidR)
 						local fameX = _G["History_nr_"..tabname..i]
 						fameX:Show()
 						if tabname=="ItemList" then
-							fameX.tx1:SetText(shujuyuan[dangqian][2]);
+							fameX.itemID=shujuyuan[dangqian][11]
+							Fun.HY_ShowItemLink(fameX,shujuyuan[dangqian][2],shujuyuan[dangqian][11])
 							fameX.tx2:SetText(shujuyuan[dangqian][9].."\124cffFFFF00 G\124r");
 							fameX.tx3:SetText(shujuyuan[dangqian][8]);
 						elseif tabname=="Jiangli" then
@@ -414,7 +418,7 @@ function GDKPInfo.ADD_History(RaidR)
 			PIGA["GDKP"]["Dongjie"] = true;
 			table.remove(PIGA["GDKP"]["History"], History.xuanzhongID);
 			History.xuanzhongID=0
-			RaidR.Show_dangqianName()
+			RaidR.Update_DqName()
 			RaidR:Update_DongjieBUT()
 			RaidR.Update_Item()
 			RaidR.Update_Buzhu_TND()

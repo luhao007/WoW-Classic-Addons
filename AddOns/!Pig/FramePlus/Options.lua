@@ -310,7 +310,5 @@ addonTable.FramePlus = function()
 		FramePlusfun.Talent()
 	end
 	FramePlusfun.Character_Shuxing()
-	if tocversion<20000 then
-		FramePlusfun.Zhuizong()
-	end
+	FramePlusfun.Zhuizong()
 end

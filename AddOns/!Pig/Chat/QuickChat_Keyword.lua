@@ -219,7 +219,6 @@ function QuickChatfun.QuickBut_Keyword()
 	TiquTabBut:Selected()
 
 	local TiquCanshu = {
-		["jichengBlack"]=true,["KeywordFShow"]=true,["Audio"]=1,["shuchuboxid"]=0,["tiquOKFlash"]=false,
 		["KeywordF_x"]={0,56,0,56},
 		["ToBotBut"]={"minimal-scrollbar-arrow-returntobottom","minimal-scrollbar-arrow-returntobottom-down","minimal-scrollbar-arrow-returntobottom","minimal-scrollbar-arrow-returntobottom-over"},
 	}
@@ -228,7 +227,6 @@ function QuickChatfun.QuickBut_Keyword()
 		TiquCanshu["ToBotBut"]={"interface/chatframe/ui-chaticon-scrollend-up.blp","interface/chatframe/ui-chaticon-scrollend-down.blp","interface/chatframe/ui-chaticon-scrollend-disabled.blp","interface/chatframe/ui-chaticon-blinkhilight.blp"}
 	end
 	TiquCanshu["jichengBlack"]=PIGA["Chat"]["Tiqu"]["jichengBlack"]
-	TiquCanshu["KeywordFShow"]=PIGA["Chat"]["Tiqu"]["KeywordFShow"]
 	TiquCanshu["Audio"]=PIGA["Chat"]["Tiqu"]["Audio"]
 	TiquCanshu["ChatWox"]=PIGA["Chat"]["Tiqu"]["ChatWox"]
 	TiquCanshu["shuchumode"]=PIGA["Chat"]["Tiqu"]["shuchumode"]
@@ -269,19 +267,6 @@ function QuickChatfun.QuickBut_Keyword()
 	ChatF99.Background:SetPoint("BOTTOMRIGHT",ChatF99,"BOTTOMRIGHT",15,-2);
 	local newR, newG, newB, newA = unpack(PIGA["Chat"]["Tiqu"]["BgColor"])
 	ChatF99.Background:SetVertexColor(newR, newG, newB, newA)
-	if PIGA["Chat"]["Tiqu"]["KeywordFShow"] then
-		ChatF99:Show();
-	else
-		ChatF99:Hide();
-	end
-	ChatF99:HookScript("OnShow", function(self)
-		PIGA["Chat"]["Tiqu"]["KeywordFShow"]=true
-		TiquCanshu["KeywordFShow"]=true
-	end);
-	ChatF99:HookScript("OnHide", function(self)
-		PIGA["Chat"]["Tiqu"]["KeywordFShow"]=false
-		TiquCanshu["KeywordFShow"]=false
-	end);
 
 	ChatF99.ScrollToBottomButton = CreateFrame("Button",nil,ChatF99, "TruncatedButtonTemplate");
 	ChatF99.ScrollToBottomButton:SetNormalTexture(TiquCanshu["ToBotBut"][1])

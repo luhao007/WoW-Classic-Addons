@@ -394,15 +394,23 @@ function QuestieQuest:ShouldShowQuestNotes(questId)
     return trackedAuto or trackedManual
 end
 
-function QuestieQuest:HideQuest(id)
-    Questie.db.char.hidden[id] = true
-    QuestieMap:UnloadQuestFrames(id)
-    QuestieTooltips:RemoveQuest(id)
+---@param questId QuestId
+function QuestieQuest:HideQuest(questId)
+    Questie.db.char.hidden[questId] = true
+    QuestieMap:UnloadQuestFrames(questId)
+    QuestieTooltips:RemoveQuest(questId)
 end
 
-function QuestieQuest:UnhideQuest(id)
-    Questie.db.char.hidden[id] = nil
-    AvailableQuests.CalculateAndDrawAll()
+---@param questId QuestId
+function QuestieQuest:UnhideQuest(questId)
+    Questie.db.char.hidden[questId] = nil
+
+    if QuestiePlayer.currentQuestlog[questId] then
+        local quest = QuestieDB.GetQuest(questId)
+        QuestieQuest:PopulateObjectiveNotes(quest)
+    else
+        AvailableQuests.CalculateAndDrawAll()
+    end
 end
 
 local allianceTournamentMarkerQuests = {[13684] = true, [13685] = true, [13688] = true, [13689] = true, [13690] = true, [13593] = true, [13703] = true, [13704] = true, [13705] = true, [13706] = true}
@@ -568,7 +576,6 @@ end
 function QuestieQuest:UpdateQuest(questId)
     Questie:Debug(Questie.DEBUG_DEVELOP, "[QuestieQuest:UpdateQuest]", questId)
 
-    ---@type Quest
     local quest = QuestieDB.GetQuest(questId)
 
     if quest and (not Questie.db.char.complete[questId]) then
@@ -607,7 +614,7 @@ function QuestieQuest:UpdateQuest(questId)
             -- Quest was somehow reset back to incomplete after being completed (quest.WasComplete == true).
             -- The "or" check looks for a sourceItemId then checks to see if it's NOT in the players bag.
             -- Player destroyed quest items? Or some other quest mechanic removed the needed quest item.
-            if quest and (quest.WasComplete or (quest.sourceItemId > 0 and QuestieQuest:CheckQuestSourceItem(questId) == false)) then
+            if quest and (quest.WasComplete or (quest.sourceItemId > 0 and QuestieQuest:CheckQuestSourceItem(questId, false) == false)) then
                 Questie:Debug(Questie.DEBUG_DEVELOP, "[QuestieQuest:UpdateQuest] Quest was once complete or Quest Item(s) were removed. Resetting quest.")
 
                 -- Reset quest objectives
@@ -956,11 +963,7 @@ function QuestieQuest:PopulateObjective(quest, objectiveIndex, objective, blockI
     end
 
     if objective.spawnList and next(objective.spawnList) then
-        local maxPerType = 300
-
-        if Questie.db.profile.enableIconLimit and Questie.db.profile.iconLimit < maxPerType then
-            maxPerType = Questie.db.profile.iconLimit
-        end
+        local maxPerType = Questie.db.profile.enableIconLimit and Questie.db.profile.iconLimit or 1500
 
         local zoneCount = 0
         local zones = {}

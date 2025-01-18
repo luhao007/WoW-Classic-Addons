@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("GelihastSoD", "DBM-Raids-Vanilla", 10)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20241103123604")
+mod:SetRevision("20241214191036")
 mod:SetCreatureID(204921)
 mod:SetEncounterID(2704)--2763 is likely 5 man version in instance type 201
 mod:SetHotfixNoticeRev(20231208000000)
@@ -92,7 +92,7 @@ function mod:OnSync(msg, delay)
 		timerShadowStrikeCD:Stop()
 		timerShadowCrashCD:Stop()
 		warnMarchofMurlocs:Show()
-		murlocsActive:Start(-delay)
-		bossImmune:Start(-delay)
+		murlocsActive:Start(32-delay)
+		bossImmune:Start(24.2-delay)
 	end
 end

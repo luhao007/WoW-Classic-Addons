@@ -64,6 +64,8 @@ local drawTimer
 local drawQueueTickRate
 local fadeLogicCoroutine
 
+local _MinimapIconSetFade, _MinimapIconFadeLogic
+
 
 --* TODO: How the frames are handled needs to be reworked, why are we getting them from _G
 --Get the frames for a quest, this returns all of the frames
@@ -430,6 +432,7 @@ function QuestieMap:ShowObject(objectID, icon, scale, title, body, disableShiftT
     }
     data.ManualTooltipData.disableShiftToRemove = disableShiftToRemove
 
+    local manualIcons = {}
     -- draw the notes
     for zone, spawns in pairs(object.spawns) do
         if (zone ~= nil and spawns ~= nil) then
@@ -444,6 +447,17 @@ function QuestieMap:ShowObject(objectID, icon, scale, title, body, disableShiftT
                 else
                     QuestieMap:DrawManualIcon(data, zone, coords[1], coords[2], typ)
                 end
+            end
+        end
+    end
+    -- draw waypoints
+    if object.waypoints then
+        for zone, waypoints in pairs(object.waypoints) do
+            if not ZoneDB:GetDungeonLocation(zone) and waypoints[1] and waypoints[1][1] and waypoints[1][1][1] then
+                if not manualIcons[zone] then
+                    manualIcons[zone] = QuestieMap:DrawManualIcon(data, zone, waypoints[1][1][1], waypoints[1][1][2])
+                end
+                QuestieMap:DrawWaypoints(manualIcons[zone], waypoints, zone)
             end
         end
     end
@@ -498,6 +512,7 @@ function QuestieMap:DrawManualIcon(data, areaID, x, y, typ)
 
     -- create the map icon
     local icon = QuestieFramePool:GetFrame()
+    icon.isManualIcon = true
     icon.data = data
     icon.x = x
     icon.y = y
@@ -516,6 +531,7 @@ function QuestieMap:DrawManualIcon(data, areaID, x, y, typ)
 
     -- create the minimap icon
     local iconMinimap = QuestieFramePool:GetFrame()
+    iconMinimap.isManualIcon = true
     local colorsMinimap = { 1, 1, 1 }
     if data.IconColor ~= nil and Questie.db.profile.questMinimapObjectiveColors then
         colorsMinimap = data.IconColor
@@ -532,6 +548,11 @@ function QuestieMap:DrawManualIcon(data, areaID, x, y, typ)
     iconMinimap.texture:SetTexelSnappingBias(0)
     iconMinimap.texture:SetVertexColor(colorsMinimap[1], colorsMinimap[2], colorsMinimap[3], 1);
     iconMinimap.miniMapIcon = true;
+
+    if (not iconMinimap.FadeLogic) then
+        iconMinimap.SetFade = _MinimapIconSetFade
+        iconMinimap.FadeLogic = _MinimapIconFadeLogic
+    end
 
     -- add the minimap icon
     QuestieMap:QueueDraw(QuestieMap.ICON_MINIMAP_TYPE, Questie, iconMinimap, iconMinimap.UiMapID, x / 100, y / 100, true, true);
@@ -628,63 +649,8 @@ function QuestieMap:DrawWorldIcon(data, areaID, x, y, phase, showFlag)
     iconMinimap.texture:SetTexelSnappingBias(0)
 
     if (not iconMinimap.FadeLogic) then
-        function iconMinimap:SetFade(value)
-            if self.lastGlowFade ~= value then
-                self.lastGlowFade = value
-                if self.glowTexture then
-                    local r, g, b = self.glowTexture:GetVertexColor()
-                    self.glowTexture:SetVertexColor(r, g, b, value)
-                end
-                self.texture:SetVertexColor(self.texture.r, self.texture.g, self.texture.b, value)
-            end
-        end
-
-        function iconMinimap:FadeLogic()
-            local profile = Questie.db.profile
-            if self.miniMapIcon and self.x and self.y and self.texture and self.UiMapID and self.texture.SetVertexColor and HBD and HBD.GetPlayerZonePosition and QuestieLib and QuestieLib.Euclid then
-                if (QuestieMap.playerX and QuestieMap.playerY) then
-                    local x, y
-                    if (not self.worldX) then
-                        x, y = HBD:GetWorldCoordinatesFromZone(self.x / 100, self.y / 100, self.UiMapID)
-                        self.worldX = x
-                        self.worldY = y
-                    else
-                        x = self.worldX
-                        y = self.worldY
-                    end
-                    if (x and y) then
-                        --Very small value before, hard to work with.
-                        local distance = QuestieLib.Euclid(QuestieMap.playerX, QuestieMap.playerY, x, y) / 10;
-
-                        if (distance > profile.fadeLevel) then
-                            local fade = 1 - (math.min(10, (distance - profile.fadeLevel)) * normalizedValue);
-                            self:SetFade(fade)
-                        elseif (distance < profile.fadeOverPlayerDistance) and profile.fadeOverPlayer then
-                            local fadeAmount = profile.fadeOverPlayerLevel + distance * (1 - profile.fadeOverPlayerLevel) / profile.fadeOverPlayerDistance
-                            if self.faded and fadeAmount > profile.iconFadeLevel then
-                                fadeAmount = profile.iconFadeLevel
-                            end
-                            self:SetFade(fadeAmount)
-                        else
-                            if self.faded then
-                                self:SetFade(profile.iconFadeLevel)
-                            else
-                                self:SetFade(1)
-                            end
-                        end
-                    end
-                else
-                    if self.faded then
-                        self:SetFade(profile.iconFadeLevel)
-                    else
-                        self:SetFade(1)
-                    end
-                end
-            end
-        end
-
-        -- We do not want to hook the OnUpdate again!
-        -- iconMinimap:SetScript("OnUpdate", )
+        iconMinimap.SetFade = _MinimapIconSetFade
+        iconMinimap.FadeLogic = _MinimapIconFadeLogic
     end
 
     QuestieMap:QueueDraw(QuestieMap.ICON_MINIMAP_TYPE, Questie, iconMinimap, uiMapId, x / 100, y / 100, true, floatOnEdge)
@@ -722,9 +688,81 @@ QuestieMap.zoneWaypointHoverColorOverrides = {
 
 function QuestieMap:DrawWaypoints(icon, waypoints, zone, color)
     if waypoints and waypoints[1] and waypoints[1][1] and waypoints[1][1][1] then -- check that waypoint data actually exists
+        local shouldBeHidden = icon:ShouldBeHidden()
         local lineFrames = QuestieFramePool:CreateWaypoints(icon, waypoints, nil, color or QuestieMap.zoneWaypointColorOverrides[zone], zone)
         for _, lineFrame in ipairs(lineFrames) do
             QuestieMap:DrawLineIcon(lineFrame, zone, waypoints[1][1][1], waypoints[1][1][2])
+            if shouldBeHidden then
+                lineFrame:FakeHide()
+            end
+        end
+    end
+end
+
+---@param questId QuestId
+function QuestieMap.UpdateDrawnIcons(questId)
+    for _, frame in pairs(QuestieMap:GetFramesForQuest(questId)) do
+        if frame and frame.data and frame.data.QuestData then
+            local newIcon = QuestieLib.GetQuestIcon(frame.data.QuestData)
+
+            if newIcon ~= frame.data.Icon then
+                frame:UpdateTexture(Questie.usedIcons[newIcon])
+            end
+        end
+    end
+end
+
+_MinimapIconSetFade = function(self, value)
+    if self.lastGlowFade ~= value then
+        self.lastGlowFade = value
+        if self.glowTexture then
+            local r, g, b = self.glowTexture:GetVertexColor()
+            self.glowTexture:SetVertexColor(r, g, b, value)
+        end
+        self.texture:SetVertexColor(self.texture.r, self.texture.g, self.texture.b, value)
+    end
+end
+
+_MinimapIconFadeLogic = function(self)
+    local profile = Questie.db.profile
+    if self.miniMapIcon and self.x and self.y and self.texture and self.UiMapID and self.texture.SetVertexColor and HBD and HBD.GetPlayerZonePosition and QuestieLib and QuestieLib.Euclid then
+        if (QuestieMap.playerX and QuestieMap.playerY) then
+            local x, y
+            if (not self.worldX) then
+                x, y = HBD:GetWorldCoordinatesFromZone(self.x / 100, self.y / 100, self.UiMapID)
+                self.worldX = x
+                self.worldY = y
+            else
+                x = self.worldX
+                y = self.worldY
+            end
+            if (x and y) then
+                --Very small value before, hard to work with.
+                local distance = QuestieLib.Euclid(QuestieMap.playerX, QuestieMap.playerY, x, y) / 10;
+
+                if (distance > profile.fadeLevel) then
+                    local fade = 1 - (math.min(10, (distance - profile.fadeLevel)) * normalizedValue);
+                    self:SetFade(fade)
+                elseif (distance < profile.fadeOverPlayerDistance) and profile.fadeOverPlayer then
+                    local fadeAmount = profile.fadeOverPlayerLevel + distance * (1 - profile.fadeOverPlayerLevel) / profile.fadeOverPlayerDistance
+                    if self.faded and fadeAmount > profile.iconFadeLevel then
+                        fadeAmount = profile.iconFadeLevel
+                    end
+                    self:SetFade(fadeAmount)
+                else
+                    if self.faded then
+                        self:SetFade(profile.iconFadeLevel)
+                    else
+                        self:SetFade(1)
+                    end
+                end
+            end
+        else
+            if self.faded then
+                self:SetFade(profile.iconFadeLevel)
+            else
+                self:SetFade(1)
+            end
         end
     end
 end

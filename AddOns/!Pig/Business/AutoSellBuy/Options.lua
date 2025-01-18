@@ -35,6 +35,7 @@ function BusinessInfo.AutoSellBuyOptions()
 		QuickButUI.ButList[9]()
 		QuickButUI.ButList[10]()
 		QuickButUI.ButList[11]()
+		QuickButUI.ButList[12]()
 	end);
 	fuFrame.AutoSellBuy.QKBut:SetScript("OnClick", function (self)
 		if self:GetChecked() then
@@ -42,6 +43,7 @@ function BusinessInfo.AutoSellBuyOptions()
 			QuickButUI.ButList[9]()
 			QuickButUI.ButList[10]()
 			QuickButUI.ButList[11]()
+			QuickButUI.ButList[12]()
 		else
 			PIGA["AutoSellBuy"]["AddBut"]=false
 			Pig_Options_RLtishi_UI:Show();

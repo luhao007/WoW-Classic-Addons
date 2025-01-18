@@ -475,7 +475,7 @@ function ATTcheckawquests()
 		app.PrintDebug("scanned thru",lim)
 		cur = lim + 1
 		lim = lim + step
-		if lim > 86000 then return end
+		if lim > 87000 then return end
 		dc(scan, 1)
 	end
 	scan()

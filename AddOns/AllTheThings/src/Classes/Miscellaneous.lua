@@ -47,9 +47,9 @@ end
 -- Common function set as the OnClick for a group which will build itself a 'nested' version of the
 -- content which matches the specified .dynamic 'field' and .dynamic_value of the group
 local DynamicCategory_Nested = function(self)
-	-- app.PrintDebug("DC:N",self.dynamic,self.dynamic_value,self.dynamic_withsubgroups)
+	-- app.PrintDebug("DC:N",self.dynamic,self.dynamic_value,self.dynamic_withsubgroups,self.dynamic_searchcriteria)
 	-- pull out all Things which should go into this category based on field & value
-	local groups = app:BuildSearchResponse(self.dynamic, self.dynamic_value, not self.dynamic_withsubgroups);
+	local groups = app:BuildSearchResponse(self.dynamic, self.dynamic_value, {g=not self.dynamic_withsubgroups}, self.dynamic_searchcriteria);
 	NestObjects(self, groups);
 	-- reset indents and such
 	AssignChildren(self);
@@ -365,6 +365,7 @@ for _,field in ipairs({
 	"isYearly",
 	"repeatable",
 	"requireSkill",
+	"sym",
 }) do
 	CreateVisualHeader__class[field] = Empty
 end

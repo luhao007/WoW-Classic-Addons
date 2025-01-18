@@ -1,10 +1,12 @@
 local _, addonTable = ...;
+local _, _, _, tocversion = GetBuildInfo()
 local Create=addonTable.Create
 local PIGDownMenu=Create.PIGDownMenu
 --
 local FramePlusfun=addonTable.FramePlusfun
 -----------------------------------
 function FramePlusfun.Zhuizong()
+	if tocversion>19999 then return end
 	if not PIGA["FramePlus"]["Zhuizong"] then return end
 	if Zhuizong_UI then return end
 	local Width,Height = 33,33;

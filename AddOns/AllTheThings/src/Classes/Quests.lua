@@ -3,8 +3,8 @@ local app = select(2, ...);
 local L = app.L;
 
 -- App locals
-local AssignChildren, GetRelativeField, GetRelativeValue, SearchForField =
-	app.AssignChildren, app.GetRelativeField, app.GetRelativeValue, app.SearchForField;
+local AssignChildren, GetRelativeField, GetRelativeValue, SearchForField, GetRelativeByFunc =
+	app.AssignChildren, app.GetRelativeField, app.GetRelativeValue, app.SearchForField, app.GetRelativeByFunc;
 local IsRetrieving = app.Modules.RetrievingData.IsRetrieving;
 local Colorize = app.Modules.Color.Colorize;
 local Search = app.SearchForObject
@@ -467,6 +467,40 @@ local function CollectibleAsQuestOrAsLocked(t)
 	return (not locked and CollectibleAsQuest(t))
 		or CollectibleAsLocked(t, locked);
 end
+-- Returns whether the provided Quest group is expected to be available to the current character or another character when in debug/account mode
+app.IsQuestAvailable = function(t)
+	local questID = t.questID
+	return
+	-- must have a questID associated
+	questID
+	and
+	(
+		-- Repeatable quests cannot ever 'really' be completed, though sometimes their saved state persists
+		-- until manually started via an Item
+		rawget(t, "repeatable")
+		or
+		(
+			-- not already completed by current character
+			not CompletedQuests[questID]
+			and
+			-- and not OTQ or is OTQ not yet known to be completed by any character
+			not OneTimeQuests[questID]
+			and
+			(
+				-- able to access quest on current character
+				not t.locked
+				or
+				(
+					-- debug/account mode
+					app.MODE_DEBUG_OR_ACCOUNT
+					and
+					-- Not Locked by a OPA/AW Quest (to access via another Character)
+					not AccountWideLockedQuestsCache[questID]
+				)
+			)
+		)
+	)
+end
 
 local function IsQuestSaved(questID)
 	-- NOTE: If Party Sync is supported, this will be replaced!
@@ -740,6 +774,9 @@ PrintQuestInfo = function(questID, new)
 		app.print("Quest", questChange, app:Linkify(text .. " (Not in ATT " .. app.Version .. ")", app.Colors.ChatLinkError, "dialog:" .. popupID), GetQuestFrequency(questID) or "");
 	end
 end
+local function NotInGame(ref)
+	return not app.Modules.Filter.Filters.InGame(ref)
+end
 app.CheckInaccurateQuestInfo = function(questRef, questChange, forceShow)
 	-- Checks a given quest reference against the current character info to see if something is inaccurate
 	-- accepted quests from old removed items shouldn't trigger a notification to report as inaccurate, non-removed items should still validate
@@ -753,7 +790,8 @@ app.CheckInaccurateQuestInfo = function(questRef, questChange, forceShow)
 		-- is marked as in the game
 		-- NOTE: Classic doesn't use the Filters Module yet. (TODO)
 		-- The logic is simple enough to where it shouldn't matter.
-		local inGame = app.Modules.Filter.Filters.InGame(questRef);
+		-- This now checks recursively outwards to ensure that an in-game quest isn't buried inside a removed header
+		local inGame = not GetRelativeByFunc(questRef, NotInGame)
 		-- repeatable or not previously completed or the accepted quest was immediately completed prior to the check, or character in party sync
 		local incomplete = (questRef.repeatable or not completed or LastQuestTurnedIn == completed or IsPartySyncActive);
 		-- not missing pre-requisites
@@ -1192,6 +1230,23 @@ local criteriaFuncs = {
         return L.LOCK_CRITERIA_FACTION_FORMAT:format(faction.rankText, faction.name, faction.standingText);
     end,
 
+    renownID = function(v)
+		-- v = factionID.levelRequiredToLock
+		local factionID = math_floor(v + 0.00001);
+		local lockStanding = math_floor((v - factionID) * 100 + 0.00001);
+        local standing = app.CreateFaction(factionID).standing;
+		-- app.PrintDebug(("Check Renown %s Standing (%d) is locked @ (%d)"):format(factionID, standing, lockStanding))
+		return standing >= lockStanding;
+    end,
+	label_renownID = L.LOCK_CRITERIA_FACTION_LABEL,
+    text_renownID = function(v)
+		-- v = factionID.standingRequiredToLock
+		local factionID = math_floor(v + 0.00001);
+		local faction = app.CreateFaction(factionID);
+		faction.rank = math_floor((v - factionID) * 100 + 0.00001);
+        return L.LOCK_CRITERIA_FACTION_FORMAT:format(faction.rankText, faction.name, faction.standingText);
+    end,
+
     sourceID = function(sourceID)
 		return app.IsAccountCached("Sources", sourceID)
 	end,
@@ -1456,6 +1511,7 @@ local createQuest = app.CreateClass("Quest", "questID", {
 		-- linktests[#linktests + 1] = "|cffffff00|Hquest:"..t.questID..":"..(app._subid or 0).."|h["..t.questID.."]|h|r" -- cannot send message
 		return "quest:"..t.questID
 	end,
+	RefreshCollectionOnly = true,
 	collectible = CollectibleAsQuest,
 	collected = IsQuestFlaggedCompletedForObject,
 	altcollected = function(t)
@@ -1585,6 +1641,7 @@ local createQuest = app.CreateClass("Quest", "questID", {
 }, (function(t) return t.maxReputation; end),
 "AsHQT", {
 	CollectibleType = function() return "QuestsHidden" end,
+	isHQT = app.ReturnTrue,
 	variants = {
 		app.GlobalVariants.AndLockCriteriaWithAutoName,
 		app.GlobalVariants.AndLockCriteria,
@@ -1649,7 +1706,7 @@ app.CreateQuestObjective = app.CreateClass("Objective", "objectiveID", {
 			local objectives = C_QuestLog_GetQuestObjectives(questID);
 			if objectives then
 				local objective = objectives[t.objectiveID];
-				if objective then return objective.text; end
+				if objective and not IsRetrieving(objective.text) then return objective.text; end
 			end
 			return app.GetNameFromProviders(t)
 				or (t.spellID and GetSpellName(t.spellID))
@@ -1682,6 +1739,7 @@ app.CreateQuestObjective = app.CreateClass("Objective", "objectiveID", {
 	questID = function(t)
 		return t.parent.questID;
 	end,
+	RefreshCollectionOnly = true,
 	collectible = function(t)
 		if not t.questID then
 			return false;
@@ -1982,6 +2040,7 @@ if app.IsRetail then
 				end
 			end
 
+			questRef.SortType = "Total"
 			refs[questID] = questRef;
 		end
 
@@ -2235,6 +2294,7 @@ if app.IsRetail then
 				-- sourceIgnored = true,
 				skipFill = true,
 				SortPriority = 1.0,	-- follow any raw content in group
+				SortType = "Total",
 				-- copy any sourceQuests into the header incase the root is not actually a quest
 				sourceQuests = group.sourceQuests,
 			});
@@ -2244,8 +2304,6 @@ if app.IsRetail then
 				NestSourceQuests(questChainHeader, group)
 			end
 			app.NestObject(group, questChainHeader);
-			-- Sort by the totals of the quest chain on the next game frame
-			app.CallbackHandlers.Callback(app.Sort, questChainHeader.g, app.SortDefaults.Total, true);
 			questChainHeader.sourceQuests = nil;
 		end
 	end

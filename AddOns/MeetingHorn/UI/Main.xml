@@ -68,11 +68,36 @@
                     </Layer>
                 </Layers>
                 <Frames>
-                    <ScrollFrame parentKey="ActivityList" inherits="HybridScrollFrameTemplate" virtual="true">
+                    <Frame parentKey="VoiceActivity">
                         <Anchors>
                             <Anchor point="TOPLEFT" x="5" y="-5"/>
+                            <Anchor point="BOTTOMRIGHT" x="-20" y="195"/>
+                        </Anchors>
+                        <Layers>
+                            <Layer level="BACKGROUND">
+                                <Texture parentKey="BackgroundTexture" file="Interface\AddOns\MeetingHorn\Media\voiceBg">
+                                    <Anchors>
+                                        <Anchor point="TOPLEFT" relativeKey="$parent.VoiceActivity" relativePoint="TOPLEFT"/>
+                                        <Anchor point="BOTTOMRIGHT" relativeKey="$parent.VoiceActivity" relativePoint="BOTTOMRIGHT"/>
+                                    </Anchors>
+                                    <TexCoords left="0" right="0.53501562" top="0.3" bottom="0.500078125"/>
+                                </Texture>
+                            </Layer>
+                            <Layer level="ARTWORK">
+                                <FontString parentKey="VoiceActivityTitle" inherits="GameFontHighlightLeft" text="语音开团快人一步">
+                                    <Anchors>
+                                        <Anchor point="TOPLEFT" relativeKey="$parent.VoiceActivity" relativePoint="TOPLEFT" x="2" y="5"/>
+                                    </Anchors>
+                                </FontString>
+                            </Layer>
+                        </Layers>
+                     </Frame>
+                    <ScrollFrame parentKey="ActivityList" inherits="HybridScrollFrameTemplate" virtual="true">
+                        <Anchors>
+                            <Anchor point="TOPLEFT" x="5" y="-100"/>
                             <Anchor point="BOTTOMRIGHT" x="-20" y="5"/>
                         </Anchors>
+                        
                         <Frames>
                             <Slider parentKey="scrollBar" inherits="HybridScrollBarTemplate">
                                 <Anchors>
@@ -100,7 +125,7 @@
                     <Button parentKey="Header7" inherits="ColumnDisplayButtonTemplate" id="6">
                         <Size x="60" y="24"/>
                         <Anchors>
-                            <Anchor point="BOTTOMLEFT" relativeKey="$parent.ActivityList" relativePoint="TOPLEFT" x="2" y="5"/>
+                            <Anchor point="BOTTOMLEFT" relativeKey="$parent.VoiceActivity" relativePoint="TOPLEFT" x="2" y="5"/>
                         </Anchors>
                         <ButtonText>
                             <Anchors>
@@ -148,7 +173,7 @@
                         <Size x="150" y="24"/>
                         <Anchors>
                             <Anchor point="LEFT" relativeKey="$parent.Header5" relativePoint="RIGHT"/>
-                            <Anchor point="BOTTOMRIGHT" relativeKey="$parent.ActivityList" relativePoint="TOPRIGHT" x="0" y="5"/>
+                            <Anchor point="BOTTOMRIGHT" relativeKey="$parent.VoiceActivity" relativePoint="TOPRIGHT" x="0" y="5"/>
                         </Anchors>
                     </Button>
                     <Button parentKey="Activity">

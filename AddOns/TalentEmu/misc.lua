@@ -1,5 +1,5 @@
 --[[--
-	by ALA 
+	by ALA
 --]]--
 ----------------------------------------------------------------------------------------------------
 local __addon, __private = ...;
@@ -33,25 +33,25 @@ MT.BuildEnv('MISC');
 	--
 	--	popup
 
-		VT.__poplib:AddMethod("QUERY_TALENT", {
+		VT.__dep.__poplib:AddMethod("QUERY_TALENT", {
 			GetText = function() return l10n.PopupQuery; end,
-			CanShow = function() return true; end,
+			IsShown = function() return true; end,
 			OnClick = function(def, which, context)
 				MT.SendQueryRequest(context.name, context.server, true, true);
 			end,
 		});
-		VT.__poplib:AddEntry("SELF", "QUERY_TALENT");
-		VT.__poplib:AddEntry("_BRFF_SELF", "QUERY_TALENT");
-		VT.__poplib:AddEntry("PLAYER", "QUERY_TALENT");
-		VT.__poplib:AddEntry("FRIEND", "QUERY_TALENT");
-		VT.__poplib:AddEntry("FRIEND_OFFLINE", "QUERY_TALENT");
-		VT.__poplib:AddEntry("PARTY", "QUERY_TALENT");
-		VT.__poplib:AddEntry("_BRFF_PARTY", "QUERY_TALENT");
-		VT.__poplib:AddEntry("RAID", "QUERY_TALENT");
-		VT.__poplib:AddEntry("RAID_PLAYER", "QUERY_TALENT");
-		VT.__poplib:AddEntry("_BRFF_RAID_PLAYER", "QUERY_TALENT");
-		VT.__poplib:AddEntry("CHAT_ROSTER", "QUERY_TALENT");
-		VT.__poplib:AddEntry("GUILD", "QUERY_TALENT");
+		VT.__dep.__poplib:AddEntry("SELF", "QUERY_TALENT");
+		VT.__dep.__poplib:AddEntry("_BRFF_SELF", "QUERY_TALENT");
+		VT.__dep.__poplib:AddEntry("PLAYER", "QUERY_TALENT");
+		VT.__dep.__poplib:AddEntry("FRIEND", "QUERY_TALENT");
+		VT.__dep.__poplib:AddEntry("FRIEND_OFFLINE", "QUERY_TALENT");
+		VT.__dep.__poplib:AddEntry("PARTY", "QUERY_TALENT");
+		VT.__dep.__poplib:AddEntry("_BRFF_PARTY", "QUERY_TALENT");
+		VT.__dep.__poplib:AddEntry("RAID", "QUERY_TALENT");
+		VT.__dep.__poplib:AddEntry("RAID_PLAYER", "QUERY_TALENT");
+		VT.__dep.__poplib:AddEntry("_BRFF_RAID_PLAYER", "QUERY_TALENT");
+		VT.__dep.__poplib:AddEntry("CHAT_ROSTER", "QUERY_TALENT");
+		VT.__dep.__poplib:AddEntry("GUILD", "QUERY_TALENT");
 
 	--
 	--	TalentFrameCall
@@ -145,12 +145,6 @@ MT.BuildEnv('MISC');
 		--GameTooltip:SetSpellByID(SpellID)
 	--
 
-	local ME = {
-		['\97\108\101\120\35\53\49\54\55\50\50'] = 1,
-		['\229\141\149\233\133\146\231\170\157\35\53\49\54\51\55'] = 1,
-		['\65\76\65\35\53\49\51\55\55'] = 1,
-	};
-
 	local trytimes = 0;
 	local function _PerdiocGenerateTitle()
 		local halt = true;
@@ -192,12 +186,6 @@ MT.BuildEnv('MISC');
 		if CT.TOCVERSION >= 30000 then
 			local Map = VT.__dep.__emulib.GetTalentMap(CT.SELFCLASS);
 			VT.MAP[CT.SELFCLASS] = { VMap = Map.VMap, RMap = Map.RMap, };
-		end
-		--
-		local SET = VT.SET;
-		SET.supreme = not not ME[CT.BNTAG];
-		if SET.supreme then
-			MT.SetConfig("inspect_pack", true);
 		end
 		--
 		for GUID, code in next, VT.VAR do

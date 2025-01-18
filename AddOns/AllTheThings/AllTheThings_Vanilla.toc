@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: Crieve-Sargeras
-## Version: 4.1.8
+## Version: 4.2.7a
 
 ## Title: AllTheThings |cfd9b9b9b(Classic)|r
 ## Notes: Addon for Tracking Collections & Account Completion
@@ -16,7 +16,7 @@
 ## SavedVariables: ATTCharacterData, ATTAccountWideData, AllTheThingsSavedVariables, AllTheThingsSettings, AllTheThingsAD, AllTheThingsProfiles, AllTheThingsAuctionData, AllTheThingsDebugData, AllTheThingsHarvestItems
 ## SavedVariablesPerCharacter: AllTheThingsSettingsPerCharacter
 
-## X-Interface: 11504, 11505
+## X-Interface: 11505, 11506
 ## X-Wago-ID: yQKyY5K7
 ## X-Curse-Project-ID: 267285
 

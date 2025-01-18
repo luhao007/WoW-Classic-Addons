@@ -1,107 +1,101 @@
 # AllTheThings
 
-## [4.1.8](https://github.com/ATTWoWAddon/AllTheThings/tree/4.1.8) (2024-11-15)
-[Full Changelog](https://github.com/ATTWoWAddon/AllTheThings/compare/4.1.7...4.1.8) [Previous Releases](https://github.com/ATTWoWAddon/AllTheThings/releases)
+## [4.2.7a](https://github.com/ATTWoWAddon/AllTheThings/tree/4.2.7a) (2025-01-16)
+[Full Changelog](https://github.com/ATTWoWAddon/AllTheThings/compare/4.2.7...4.2.7a) [Previous Releases](https://github.com/ATTWoWAddon/AllTheThings/releases)
 
-- Add note on BRD key caps  
-- Sort some hqts  
-- Add new guest relations secrets  
-- [GitHub Action] Extend the artifact retention days from 1 to 7.  
-- [GitHub Action] Alpha release changes from weekly builds to daily builds.  
-- Removed Hidden Categories Window due to a major bug.  
-    I'll add this in the future when I'll have working solution that won't be re-writing current categories.  
-- [GitHub Action] Run All flavors in single job.  
-- [GitHub Action] Build with multi flavors.  
-- Deepen history in a different way  
-- Fetch the last 2 tags  
-- Fetch tags manually  
-    Can't do that through actions/checkout due to https://github.com/actions/checkout/issues/1467  
-- Try fetching through actions/checkout  
-- [GitHub Action] Add job depends.  
-- [GitHub Action] Fetch without all tags.  
-- [GitHub Action] Remove dummy fetch.  
-- [GitHub Action] Limit Fetch to only the latest 200 commits.  
-- [Github Action] clone without LFS.  
-- [GitHub Action] Remove delete db files.  
-- [Github Action] Update artifact flow from v3 to v4.  
-- [GitHub Action] hybrid build flow test phase 1.  
-- PTR: 11.0.7 build 57528  
-- Retail: More localisation, added questID for previous TW week  
-    wow anniversary fix for text field replace itself with static text  
-- ShouldExcludeFromTooltip should also apply to object tooltips. (noticed in Hellfire Ramparts)  
-- But like actually this time  
-- Update guest relations quest and hqts  
-- Add new guest relations secrets  
-- ZG: removes descriptions from faulty artifacts.  
-- Retail: localisation (a bit) and sneaky ptr update  
-- Added a few tags to faction/class restricted Mounts  
-- Fixed flags in Hidden Categories window.  
-- Added Hidden Categories Window: /att hidden  
-    Individual sub-categories can still be called with commands: nyi, hat, hct, hqt, sourceless, unsorted  
-- Non-consequential Parser code changes from trying to debug stuff  
-- Guest Relations Temp Object Data  
-- Removed some pointless filter assignments on Achievements  
-- Add 11.0.7 MoP timewalking rewards  
-- Update guest relations secrets  
-- Classic: Fixed a Lua error when trying to plot waypoints  
-- Migrated all ExplorationDBs into version-specific files  
-    Reparsed all versions  
-- Parser: Now includes the constant 'debugging' metatable at the end of the localizationDB instead of in a non-related file  
-    Migrated Presets.lua into Retail/Classic ClassPresetsDB.lua  
-    Reparse all flavors to remove reliance on Presets.lua  
-- Bag of Timewarped Badges contains Timewarped Badges  
-- Moved Retail ExplorationDB to ExportDB for consistency and removal from /db/ folder  
-- ExportDB can now store '\_Compressed' keys to indicate which DB outputs should be compressed instead of including newlines for each key  
-    AccountWideQuestsDB and ReagentsDB will now be compressed in ReferenceDB  
-- Added some of the TWW Hidden Currencies.  
-- Added some HAT timelines and changed them all into ADDED instead of CREATED.  
-- Added Hidden Currency Triggers / Trackers.  
-- Update zhCN locales (#1848)  
-- More BFA metas  
-- Removed warnings for 'Player'-shared Quests in Contributor mode  
-- Parser: Can use '\_forcetimeline' to ensure that the applied timeline of a group does not get ignored due to a parent group with an earlier removal (only needed in rare circumstances)  
-    Adjusted a couple 13th anniversary quests to be accurate  
-- Updates  
-- Update Guest Relations.lua  
-    Lets fix this provider  
-- Removed notes from BC Vendor Ensembles since they're learned 100% after relog  
-- Parser: Removed Ensemble Cleanup logic as it has become apparent that Blizz now properly grants all Appearances even when Class/Armor differentiated from the general requirements of the Ensemble (Please report any weird Ensemble issues if encountered of course)  
-- Update The Theater Troupe.lua  
-    Coord fix  
-- With parse we sometimes can fix incorrect id's  
-- FIxed ranks and ordering of some JC SL recipes (fixes #1729)  
-- Add some new 11.0.7 meta achievements and new Cata/Legion timewalking rewards  
-- Adjusted areaID value checking slightly when checking player location exploration (fixes #1847)  
-- Add new guest relations quest  
-- Retail: Don't think we want to arbitrarily mark all quest objectives as uncollectible...  
-- Update Contributor.lua  
-    Added Direbeak Hatchling  
-- DF Season 4 Normal Tier Sets are still obtainable in Catalyst from Mythic Dungeon Items.  
-- PTR: 11.0.7 build 57409 data (once more)  
-- Added object data for Drakkari History Tablet.  
-- Cata: Adjusted the Defense Protocol Common Boss Drops header to not show the source outside the mini list so that it obeys the filtering rules established by the presence of the buffs.  
-- Cata/Wrath: Updated the BuffIDs for the rest of the wrath dungeons.  
-- Cata: Updated the BuffIDs in Trial of the Champion's Defense Protocols.  
-- Classic: Fixed a bug with achievements that don't have rewards not showing their meta achievement data.  
-- Added some of the upcoming meta achievements  
-- Reworked Zul'Gurub description again. This time with nomerge so it works as expected.  
-- Fixed MissingItems.txt from stashed changes merge.  
-- Reverting Darkal's changes to Zul'Gurub (it broke descriptions)  
-- Removed some unused commented out code. (now that DPA uses a different format)  
-- Cata: Fixed some incorrect criteriaIDs for Gamma achievements.  
-- Cata: Fixed a bug with Champion of the Frozen Wastes showing under every version of Cyanigosa.  
-- Cata/Wrath: Updated the format of all the Defense Protocol Dungeons.  
-- Whoops, missed one.  
-- Cata: Added maps to the Protocol Inferno Common Boss Drops header.  
-- Cata: Added Protocol Inferno for Heroic+ Cata Dungeons.  
-- Drake of the North Wind also drops from normal mode.  
-- Removed some duplicated listings of Techniques in M+ versions of dungeons  
-- Cata: Added Protocol Inferno dungeon achievements.  
-- Classic: Updated Halls of Lightning and Halls of Stone to utilize the new Defense Protocol Headers.  
-- Parser: Fixed a bug involving negative headerID values generating a non-unique hash for encounterHashes.  
-- fixing hallows end fudge  
-- Elegant Rune already properly linked in the providers list.  
-- Updated Parser to allow nesting encounter data underneath specific headers. (this is prep work for Defense Protocol Alpha, Beta, Gamma, etc)  
-- more old QIs & fixing candy bucket error text for parsing (hi darkal!)  
-- Added a helper for "ShouldExcludeFromTooltip" to replace the relative difficulty logic filtering. This is to allow for non-difficulty headers to also override their source visibility conditionally. (such as for titan rune dungeons, etc)  
-- Moved the creatureID default field to the shared default field section.  
+- BFA things  
+- Zul Farrak: Desertwalker Cone specification  
+- Another Oribos HQT moved  
+- Couple HQT updates in Oribos  
+- [DB] Added "old" quest: Attunement to the Core.  
+- titleID is NOT the maskID, who knew?  
+- Contribute: Slight adjustment for object interaction reports since the objectID can differ from the ID of the found Thing (i.e. provider object on a header, etc. we want to see both IDs)  
+- Added a 'Hidden Quests' Dynamic category  
+- Plunderstorm shows in Main List now  
+    TODO - Add proper end date  
+- Organized remaining top-level HQTs  
+- Add Plunderstorm Titles  
+- More HQT organization based on source file  
+- todo for plunder  
+- plunderwin and plunder 1mil plunder fos are both back  
+- Fixed some Korthia data & adjusted Korthia HQT categorization  
+- Fix some reported errors, fixes #1763  
+- Fixed a duped questID in Timeless Isle and related achievement automation  
+- [VSCode] Disable diagnostics on ignored & library files.  
+- [DB] Added "old" Stranglethorn Vale quests to the db.  
+    Fixed Missing Quest 614 #1861.  
+- Revert "[DB] Add crit for ach: A Simple Re-Quest."  
+- Revert "[Classic Logic] Replace GetAchievementCriteriaInfo by GetAchievementCriteriaInfoByID."  
+- [Classic Logic] Replace GetAchievementCriteriaInfo by GetAchievementCriteriaInfoByID.  
+    This is a walkaround to fix the issue with crit not working in classic.  
+    It is not final and will need to be reverted when the crit header classification bug is fixed.  
+- PTR: daily stuff update + weekly reset (but no new build)  
+    -  
+- [DB] Try to fix parser error in classic: q: 31145.  
+- [DB] Try to fix parser error in classic: q: 31137.  
+- [DB] Try to fix parser error in classic: q: 41218.  
+- [DB] Try to fix parser error in classic: q: 75189.  
+- Fix symlink for Pool Cleaner  
+- [DB] Delete wrong questid.  
+- Add 6 month sub items, timeline out Diablo IV promo  
+- [DB] Update crit of ach: Exile's Reach.  
+    Since Shadowlands was launched in retail, the conditions for obtaining the achievement have been changed to be based on HQT.  
+    The situation where you need to complete subsequent tasks in the capital should only exist in the beta.  
+- [DB] Try to fix parser error in classic: q: 27022.  
+- Fixed last class (warrior) elite gear in TWW season 1.  
+- [Misc.] Add annotation: inst.  
+- [Misc.] Add annotation: map.  
+- [Misc.] Add annotation: npc.  
+- Added 'RowOnClick' to the ignored debug events (it's still too spammy for me)  
+- Contribute: Check for non-sourced openable objects can now include provider-referenced objects  
+- Various Hallowfall achievement updates  
+- Contribute: Object check now includes when objects are listed as providers for other Things as well  
+- [DB] Add another mapid: Tak-Rethan Abyss.  
+- [DB] Update InstanceDB.  
+- PTR: daily stuff update  
+- Revert "[DB] Remove custom header: Nightmare Grove."  
+- Revert "[logic] add RealzoneTextRunner."  
+    mini list broken again, revert commit :( .  
+- Source more GameObjects to the quests, add some coordinates  
+- WoD: Source some GameObject with their Quest Items  
+- Swamp of Sorrows updates  
+- Some quest sorting  
+- Adjusted TWW achievements because "kill boss on mythic" has remained a valid criteria for past achievements so we can reasonably assume the pattern will continue (unless it is ruled a bug and gets fixed....)  
+- Last bunch of 11.1.0 achievements (for now, probably...)  
+- [DB] Remove custom header: Nightmare Grove.  
+- [DB] Update instanceDB: SoD.  
+- [DB] Update InstanceDB.  
+- [DB] Update InstanceDB.  
+- [logic] add RealzoneTextRunner.  
+- [DB] Try to fix syntax.  
+- [DB] Add crit for ach: A Simple Re-Quest.  
+- [DB] Update crit of ach:Thirty Six and Two.  
+    source: https://wago.tools/db2/CriteriaTree?build=10.0.5.47118&filter[Parent]=68043&page=1&sort[OrderIndex]=asc  
+- Using otherwise hidden criteria to add nuance and automatic nesting to these faction achievements  
+- CHETT and SCRAP stuff  
+- 11.1.0 factions  
+- Added 2 missing timelines for new 11.1.0 achievements.  
+- Undermine adventurer and treasures  
+- 11.1.0 worldsoul stuff + some data fixes for current worldsoul achievements  
+- Undermine Safari  
+- Family battler of Undermine  
+- BFA updatez  
+- PTR: Profession recipes that exist for player  
+- Update Silithus (The Wound).lua  
+- Update 11 - The War Within.lua  
+    Skinning King Splash  
+- Update Sourceless.lua  
+    Bad at saving things oops  
+- Hallowfall: Consolidate quests related to Lost and Found achievement under a separate header  
+    Closes #1883  
+- Searing Gorge updates  
+- PTR: more open world stuff and some delves  
+- Loch Modan: Cleaned up Mo'grosh Masher  
+- Burning Steppes updates  
+- [VSCode] Disable auto-diagnostics.  
+- [Localization] Update zhTW: Battered Chest.  
+- Reparse retail for delve changes since we know what is staying and leaving based on PTR  
+- Loooooots of new delves stuff and also delves changes now we can see what is in season 2  
+- Fix some reported errors  
+- Fixed timeline for 11.1.0 achievement.  
+- Fixed wrong lockCriteria for Iron Mining Pick.  

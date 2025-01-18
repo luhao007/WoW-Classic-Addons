@@ -825,4 +825,8 @@ GTFO.SpellID["73805"] = {
 	sound = 3;
 };
 
+GTFO.SpellID["54819"] = {
+  --desc = "Drenched in Mojo (Drakkari Elemental - Gundrak)";
+  sound = 3;
+};
 end

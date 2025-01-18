@@ -1202,6 +1202,7 @@ local SoftReserveUnitOnClick = function(self, button)
 	return true;
 end
 app.CreateSoftReserveUnit = app.ExtendClass("Unit", "SoftReserveUnit", "unit", {
+	IsClassIsolated = true,
 	["text"] = function(t)
 		return t.classText .. " - " .. t.itemText;
 	end,
@@ -1343,5 +1344,4 @@ app.CreateSoftReserveUnit = app.ExtendClass("Unit", "SoftReserveUnit", "unit", {
 			end
 		end
 	end,
-	IsClassIsolated = true,
 });

@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("z2686", "DBM-Delves-WarWithin")
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20241115080816")
+mod:SetRevision("20241220035749")
 mod:SetHotfixNoticeRev(20240422000000)
 mod:SetMinSyncRevision(20240422000000)
 mod:SetZone(2686)
@@ -33,7 +33,7 @@ local specWarnShadowWave					= mod:NewSpecialWarningDodge(458874, nil, nil, nil,
 --local timerShadowsofStrifeCD				= mod:NewCDNPTimer(12.4, 449318, nil, nil, nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)
 local timerDesolateSurgeCD					= mod:NewCDTimer(26.7, 443840, nil, nil, nil, 3)--Speaker Halven
 local timerFireCD							= mod:NewCDTimer(12.1, 443908, nil, nil, nil, 3)--Speaker Halven
-local timerShadowSweepCD					= mod:NewCDTimer(13.4, 443837, nil, nil, nil, 3)--Speaker Halven and Speaker Davenruth (need more data on Davenruth's timer)
+local timerShadowSweepCD					= mod:NewCDTimer(12.1, 443837, nil, nil, nil, 3)--Speaker Halven and Speaker Davenruth (need more data on Davenruth's timer)
 local timerSpeakersWrathCD					= mod:NewAITimer(12.1, 444408, nil, nil, nil, 3)--Speaker Davenruth
 local timerShadowWaveCD						= mod:NewCDNPTimer(12, 458874, nil, nil, nil, 5)
 
@@ -51,9 +51,14 @@ function mod:SPELL_CAST_START(args)
 		timerFireCD:Start()
 	elseif args.spellId == 443837 then
 		--"Shadow Sweep-443837-npc:217570-00001EAF20 = pull:5.7, 24.3, 14.6, 14.6, 14.6, 14.6, 13.4, 14.5, 14.6, 14.6, 13.4, 13.4, 14.6, 13.4",
+		--"Shadow Sweep-443837-npc:218022-00003A6A23 = pull:3.7, 9.7, 10.9, 7.3",
 		specWarnShadowSweep:Show()
 		specWarnShadowSweep:Play("frontal")
-		timerShadowSweepCD:Start()
+		if args:GetSrcCreatureID() == 217570 then
+			timerShadowSweepCD:Start(13.4)
+		else
+			timerShadowSweepCD:Start(7.3)
+		end
 	elseif args.spellId == 444408 then
 		specWarnSpeakersWrath:Show()
 		specWarnSpeakersWrath:Play("watchstep")
@@ -121,6 +126,8 @@ function mod:ENCOUNTER_START(eID)
 		DBM:AddMsg("Boss alerts/timers not yet implemented for Speaker Pelzeth")
 --	elseif eID == 3050 then--Cult Leaders
 
+	elseif eID == 3147 then--Speaker Wicke
+		DBM:AddMsg("Boss alerts/timers not yet implemented for Speaker Wicke")
 	end
 end
 
@@ -150,6 +157,12 @@ function mod:ENCOUNTER_END(eID, _, _, _, success)
 			--Stop Timers manually
 		end
 	elseif eID == 3050 then--Cult Leaders
+		if success == 1 then
+			DBM:EndCombat(self)
+--		else
+			--Stop Timers manually
+		end
+	elseif eID == 3147 then--Speaker Wicke
 		if success == 1 then
 			DBM:EndCombat(self)
 --		else

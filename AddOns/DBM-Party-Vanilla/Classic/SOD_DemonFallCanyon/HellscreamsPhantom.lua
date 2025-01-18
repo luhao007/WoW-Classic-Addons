@@ -1,7 +1,8 @@
+if not DBM:IsSeasonal("SeasonOfDiscovery") then return end
 local mod	= DBM:NewMod("HellscreamsPhantom", "DBM-Party-Vanilla", 21)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20241103114940")
+mod:SetRevision("20241229223205")
 mod:SetEncounterID(3031)
 mod:SetCreatureID(227028)
 mod:SetZone(2784)

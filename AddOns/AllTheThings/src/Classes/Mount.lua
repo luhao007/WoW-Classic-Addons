@@ -23,15 +23,8 @@ local GetRawField
 do
 	-- Ugh really annoying that Mounts have a unique ID and we use their SpellID instead, assuming this is because in Classic they
 	-- haven't made them MountID yet... bah
-	local KEY, CACHE, SETTING = "mountID", "Spells", "Mounts"
+	local KEY, CACHE, SETTING = "mountID", "Mounts", "Mounts"
 	local CLASSNAME = "Mount"
-	local PerCharacterMountSpells = {
-		[75207] = 1,	-- Vashj'ir Seahorse
-		[148970] = 1,	-- Felsteed (Green)
-		[148972] = 1,	-- Dreadsteed (Green)
-		[241857] = 1,	-- Druid Lunarwing
-		[231437] = 1,	-- Druid Lunarwing (Owl)
-	}
 
 	local SpellIDToMountID = setmetatable({}, { __index = function(t, id)
 		local allMountIDs = C_MountJournal_GetMountIDs();
@@ -97,6 +90,7 @@ do
 	end
 
 	app.CreateMount = app.CreateClass(CLASSNAME, KEY, {
+		CACHE = function() return CACHE end,
 		_cache = function(t)
 			return cache;
 		end,
@@ -135,7 +129,11 @@ do
 		collectibleAsCost = app.CollectibleAsCost,
 		collectible = function(t) return app.Settings.Collectibles[SETTING]; end,
 		collected = function(t)
-			return app.TypicalAccountCollected(CACHE, t.spellID)
+			local id = t[KEY]
+			-- character collected
+			if app.IsCached(CACHE, id) then return 1; end
+			-- account-wide collected
+			if app.IsAccountCached(CACHE, id, SETTING) then return 1; end
 		end,
 		saved = function(t)
 			return app.IsCached(CACHE, t.spellID)
@@ -151,22 +149,25 @@ do
 			if t.parent and t.parent.itemID then return ("i:%d"):format(t.parent.itemID); end
 		end,
 	})
+	local PerCharacterMountSpells = {
+		[148970] = 1,	-- Felsteed (Green)
+		[148972] = 1,	-- Dreadsteed (Green)
+		[241857] = 1,	-- Druid Lunarwing
+		[231437] = 1,	-- Druid Lunarwing (Owl)
+	}
 	app.AddEventHandler("OnRefreshCollections", function()
-		local saved, char, none = {}, {}, {}
+		local acct, char, none = {}, {}, {}
 		local IsSpellKnown = app.IsSpellKnownHelper
 		for _,mountID in ipairs(C_MountJournal_GetMountIDs()) do
 			local _, spellID, _, _, _, _, _, _, _, _, isCollected = C_MountJournal_GetMountInfoByID(mountID);
 			if spellID then
 				 -- also used to have a questID check... is that really needed?
 				if isCollected or IsSpellKnown(spellID) then
-					-- if PerCharacterMountSpells[spellID] then
-					-- 	char[spellID] = true;
-					-- end
-					-- TODO: want to remove this line and only store char-specific mounts per character above
-					-- but need logic revamp of recalc account data
-					char[spellID] = true;
-
-					saved[spellID] = true;
+					if PerCharacterMountSpells[spellID] then
+						char[spellID] = true;
+					else
+						acct[spellID] = true;
+					end
 				else
 					none[spellID] = true
 				end
@@ -175,21 +176,32 @@ do
 			end
 		end
 
+		-- Spell-based Mounts (don't appear in Mount Journal)
+		for spellID,_ in pairs(PerCharacterMountSpells) do
+			if IsSpellKnown(spellID) then
+				char[spellID] = true;
+			else
+				none[spellID] = true
+			end
+		end
+
 		-- Character Cache
 		app.SetBatchCached(CACHE, char, 1)
 		app.SetBatchCached(CACHE, none)
+		-- Remove old storage of Mounts within Character Spell cache
+		app.SetBatchCached("Spells", acct)
+		app.SetBatchCached("Spells", char)
+		app.SetBatchCached("Spells", none)
 		-- Account Cache (removals handled by Sync)
-		app.SetBatchAccountCached(CACHE, saved, 1)
+		app.SetBatchAccountCached(CACHE, acct, 1)
 	end);
 	app.AddEventHandler("OnSavedVariablesAvailable", function(currentCharacter, accountWideData)
 		if not currentCharacter[CACHE] then currentCharacter[CACHE] = {} end
 		if not accountWideData[CACHE] then accountWideData[CACHE] = {} end
 	end);
 	app.AddEventRegistration("NEW_MOUNT_ADDED", function(id)
-		local _, spellID = C_MountJournal_GetMountInfoByID(id);
-		local mount = app.SearchForObject("spellID", spellID, "field")
-		app.SetAccountCollected(mount, CACHE, spellID, true)
-		app.UpdateRawID("spellID", spellID)
+		local _, spellID = C_MountJournal_GetMountInfoByID(id)
+		app.SetThingCollected("spellID", spellID, not PerCharacterMountSpells[spellID], true)
 	end);
 	app.AddSimpleCollectibleSwap(CLASSNAME, SETTING)
 end

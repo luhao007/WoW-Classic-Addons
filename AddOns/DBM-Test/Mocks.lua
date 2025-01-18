@@ -241,11 +241,15 @@ local function checkUnitAura(auraType, uId, spellInput1, spellInput2, spellInput
 	if not unitAuras[uId] then
 		return
 	end
-	return unitAuras[uId][spellInput1] and (unitAuras[uId][spellInput1].auraType == auraType or not auraType) and unitAuras[uId][spellInput1].spellName
-		or unitAuras[uId][spellInput2] and (unitAuras[uId][spellInput2].auraType == auraType or not auraType) and unitAuras[uId][spellInput2].spellName
-		or unitAuras[uId][spellInput3] and (unitAuras[uId][spellInput3].auraType == auraType or not auraType) and unitAuras[uId][spellInput3].spellName
-		or unitAuras[uId][spellInput4] and (unitAuras[uId][spellInput4].auraType == auraType or not auraType) and unitAuras[uId][spellInput4].spellName
-		or unitAuras[uId][spellInput5] and (unitAuras[uId][spellInput5].auraType == auraType or not auraType) and unitAuras[uId][spellInput5].spellName
+	local spellTable = unitAuras[uId][spellInput1] and (unitAuras[uId][spellInput1].auraType == auraType or not auraType) and unitAuras[uId][spellInput1]
+		or unitAuras[uId][spellInput2] and (unitAuras[uId][spellInput2].auraType == auraType or not auraType) and unitAuras[uId][spellInput2]
+		or unitAuras[uId][spellInput3] and (unitAuras[uId][spellInput3].auraType == auraType or not auraType) and unitAuras[uId][spellInput3]
+		or unitAuras[uId][spellInput4] and (unitAuras[uId][spellInput4].auraType == auraType or not auraType) and unitAuras[uId][spellInput4]
+		or unitAuras[uId][spellInput5] and (unitAuras[uId][spellInput5].auraType == auraType or not auraType) and unitAuras[uId][spellInput5]
+	if not spellTable then
+		return
+	end
+	return spellTable.spellName, 0, spellTable.amount, nil, 0, 0, nil, false, nil, spellTable.spellId, nil, nil, nil, nil, nil, spellTable.amount
 end
 
 function mocks.DBMUnitDebuff(_, ...)
@@ -277,7 +281,7 @@ function mocks:ApplyUnitAura(name, guid, spellId, spellName, auraType, amount)
 	auras[spellName] = entry
 	entry.time = self:GetTime()
 	entry.auraType = auraType
-	entry.amount = amount or entry.amount
+	entry.amount = amount or entry.amount or 1
 end
 
 function mocks:RemoveUnitAura(name, guid, spellId, spellName)
@@ -295,17 +299,20 @@ end
 
 local unitPower = {}
 function mocks.UnitPower(uId, ...)
-	return unitPower[uId] or UnitPower(uId, ...)
+	return bosses[uId] and bosses[uId].power or unitPower[uId] or UnitPower(uId, ...)
 end
 
 function mocks.UnitPowerMax(uId)
-	return unitPower[uId] and 100 or UnitPowerMax(uId)
+	return bosses[uId] and bosses[uId].power or unitPower[uId] and 100 or UnitPowerMax(uId)
 end
 
 function mocks:UpdateUnitPower(uId, name, power)
 	unitPower[uId] = power
 	if name then
 		unitPower["fakeunitid-name-" .. name] = power
+	end
+	if bosses[uId] then
+		bosses[uId].power = power
 	end
 end
 
@@ -392,8 +399,9 @@ function mocks:HookModGlobal(key, val)
 		error("tried to hook " .. key .. " twice in modEnv, this function must only be called once before all mods load")
 	end
 	local old = self.modEnv[key]
-	if type(old) ~= "function" then
+	if old and type(old) ~= "function" then
 		-- if we need this implement it by making __index a function instead of a direct reference to _G
+		-- (nil is supported because DBM-Offline doesn't bother adding fakes for everything as most things are mocked anyways)
 		error("tried to hook " .. key .. " of type " .. type(old) .. ", only functions are supported for now")
 	end
 	self.modEnv[key] = function(...)

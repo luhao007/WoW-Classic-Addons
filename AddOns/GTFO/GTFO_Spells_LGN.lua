@@ -1044,6 +1044,7 @@ GTFO.SpellID["203646"] = {
 
 GTFO.SpellID["220916"] = {
   --desc = "Tainted Ground";
+  ignoreApplication = true;
   sound = 1;
 };
 
@@ -1174,6 +1175,7 @@ GTFO.SpellID["205707"] = {
 GTFO.SpellID["226205"] = {
   --desc = "Slime Pool (Sludgerax)";
   sound = 1;
+  ignoreApplication = true;
 };
 
 GTFO.SpellID["223718"] = {
@@ -1325,6 +1327,7 @@ GTFO.SpellID["209191"] = {
 
 GTFO.SpellID["221781"] = {
   --desc = "Desolate Ground (Gul'dan)";
+  ignoreApplication = true;
   sound = 1;
 };
 
@@ -1972,6 +1975,7 @@ GTFO.SpellID["255646"] = {
 GTFO.SpellID["248795"] = {
   --desc = "Fel Wake (Eonar)";
   sound = 1;
+  ignoreApplication = true;
 };
 
 GTFO.SpellID["253020"] = {

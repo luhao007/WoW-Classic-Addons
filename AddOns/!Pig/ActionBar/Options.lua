@@ -91,18 +91,53 @@ end);
 if tocversion<20000 then
 	function ActionBarfun.ActionBar_Cailiao()
 		if not PIGA["ActionBar"]["Cailiao"] then return end
+		local function update_Count(text)
+    		local xxxx = GetInventoryItemCount("player", 18)
+	        if xxxx>1 then
+	            text:SetText(xxxx)
+	        else
+	        	if GetInventoryItemTexture("player", 18) then
+	            	text:SetText("1")
+	            else
+					text:SetText("|cffff00000|r")
+	            end
+	        end
+        end
 	    hooksecurefunc("ActionButton_UpdateCount", function(actionButton)
-		    local text = actionButton.Count
 		    local action = actionButton.action
-		    if IsConsumableAction(action) then
-		        local xxxx = GetActionCount(action)
-		        if xxxx>0 then
-		            text:SetText(xxxx)
-		        else
-		            text:SetText("|cffff0000"..xxxx.."|r")
-		        end
-		    end
+		    if ( HasAction(action) ) then
+		    	local actiontype,spellID = GetActionInfo(action)
+		    	if actiontype=="spell" and spellID==2764 or spellID==2567 then
+		    		update_Count(actionButton.Count)
+		   		else
+				    if IsConsumableAction(action) then
+				        local xxxx = GetActionCount(action)
+				        local text = actionButton.Count
+				        if xxxx>0 then
+				            text:SetText(xxxx)
+				        else
+				            text:SetText("|cffff00000|r")
+				        end
+				    end
+				end
+			end
 		end)
+		local FrameUI = CreateFrame("Frame")
+		FrameUI:RegisterEvent("PLAYER_ENTERING_WORLD");
+		FrameUI:RegisterEvent("UNIT_INVENTORY_CHANGED");
+		FrameUI:HookScript("OnEvent", function(self,event)
+			if event == "UNIT_INVENTORY_CHANGED" or event == "PLAYER_ENTERING_WORLD" then
+				for k, frame in pairs(ActionBarButtonEventsFrame.frames) do
+					local action = frame.action;
+					if ( HasAction(action) ) then
+						local actiontype,spellID = GetActionInfo(action)
+				    	if actiontype=="spell" and spellID==2764 or spellID==2567 then
+					        update_Count(frame.Count)
+				   		end
+				   	end
+				end
+			end
+		end);
 	end
 	ActionF.Cailiao=PIGCheckbutton_R(ActionF,{"显示施法材料数量","在动作条上显示需要施法材料技能材料数量"})
 	ActionF.Cailiao:SetScript("OnClick", function (self)
@@ -151,12 +186,15 @@ local function ActionBar_PetTishi()
 		else
 			PETchaofengtishi.Icon:SetSize(Width*1.2,Height*1.2);
 		end
-		--
 		PETchaofengtishi.Icon:SetPoint("CENTER");
 		PETchaofengtishi:Hide()
 		-----------
 		local tishibiaoti="|cff00FFFF"..addonName..L["ADDON_NAME"]..L["LIB_TIPS"]..": "
-		local function PetTishizhhixing()
+		local PETchaofeng= CreateFrame("Frame");
+		PETchaofeng:RegisterEvent("PLAYER_ENTERING_WORLD")
+		PETchaofeng:RegisterEvent("PET_BAR_UPDATE")
+		PETchaofeng:RegisterUnitEvent("UNIT_AURA","pet");
+		PETchaofeng:SetScript("OnEvent",function(self,event)
 			local hasUI, isHunterPet = HasPetUI()
 			if hasUI then
 				for x=4, 7 do
@@ -186,13 +224,7 @@ local function ActionBar_PetTishi()
 					end
 				end
 			end
-		end
-		C_Timer.After(4,PetTishizhhixing)
-		----------
-		local PETchaofeng= CreateFrame("Frame");
-		PETchaofeng:RegisterEvent("PET_BAR_UPDATE")
-		PETchaofeng:RegisterUnitEvent("UNIT_AURA","pet");
-		PETchaofeng:SetScript("OnEvent",PetTishizhhixing)	
+		end)	
 	end
 end
 local Pettooltip = "宠物动作条嘲讽技能上方增加一个提示按钮，副本内提示关闭宠物嘲讽/副本外提示开启！\r|cffFFff00（只对有宠物职业生效）|r";
@@ -305,6 +337,20 @@ if tocversion<100000 then
 			return showXP,false
 		end
 	end
+	local function IS_bar34Show()
+		local showV = GetCVar("enableMultiActionBars")
+		if showV then
+			if showV=="15" then
+				return true
+			end
+		else
+			local ACTIONBAR_1,ACTIONBAR_2,ACTIONBAR_3,ACTIONBAR_4 = GetActionBarToggles()
+			if ACTIONBAR_4 and ACTIONBAR_3 then
+				return true
+			end
+		end
+		return false
+	end
 	function ActionBarfun.Pig_BarRight()
 		if not PIGA["ActionBar"]["BarRight"] then return end
 		local function Pig_MultiBar_Update()
@@ -327,13 +373,13 @@ if tocversion<100000 then
 				local point, relativeTo, relativePoint, xOfs, yOfs = self:GetPoint()
 				self:SetMovable(true)
 				self:ClearAllPoints();
-				self:SetPoint("BOTTOMLEFT", self:GetParent(),"TOPLEFT", xOfs, yOfs+42)
+				self:SetPoint("BOTTOMLEFT", self:GetParent(),"TOPLEFT", xOfs, 84)
 				self:SetUserPlaced(true)
 				self:UnregisterEvent("PLAYER_REGEN_ENABLED");
 			end 
 		end
 		local function StanceBar_Update(self)
-			if SHOW_MULTI_ACTIONBAR_4 and SHOW_MULTI_ACTIONBAR_3 then
+			if IS_bar34Show() then
 				if not self:IsUserPlaced() then
 					StanceBar_Point(self) 
 				end
@@ -346,7 +392,7 @@ if tocversion<100000 then
 		StanceBar_Update(StanceBarFrame)
 		StanceBarFrame:HookScript("OnEvent", function (self,event)
 			if event=="PLAYER_REGEN_ENABLED" then
-				if SHOW_MULTI_ACTIONBAR_4 and SHOW_MULTI_ACTIONBAR_3 then
+				if IS_bar34Show() then
 					if not self:IsUserPlaced() then
 						StanceBar_Point(self)
 					end
@@ -368,7 +414,7 @@ if tocversion<100000 then
 			end 
 		end
 		local function MultiCastBar_Update(self)
-			if SHOW_MULTI_ACTIONBAR_4 and SHOW_MULTI_ACTIONBAR_3 then
+			if IS_bar34Show() then
 				MultiCastBar_Point(self)
 			else
 				self:SetMovable(true)
@@ -402,7 +448,7 @@ if tocversion<100000 then
 			if InCombatLockdown() then
 				PetActionBarFrame:RegisterEvent("PLAYER_REGEN_ENABLED");
 			else
-				if SHOW_MULTI_ACTIONBAR_3 and SHOW_MULTI_ACTIONBAR_4 then
+				if IS_bar34Show() then
 					local showXP,showRep = GetExpWatched()
 					--self:SetMovable(true)
 					self:ClearAllPoints();

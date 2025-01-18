@@ -14,6 +14,7 @@ local EngravingSlot=Data.EngravingSlot
 -----
 QuickButUI.ButList[4]=function()
 	if tocversion>20000 or not PIGA["QuickBut"]["Open"] or not PIGA["QuickBut"]["Rune"] then return end
+	if not C_Engraving or C_Engraving and not C_Engraving.IsEngravingEnabled() then return end
 	local GnUI = "QkBut_AutoRune"
 	if _G[GnUI] then return end
 	local Icon=134419

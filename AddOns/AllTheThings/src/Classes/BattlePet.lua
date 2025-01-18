@@ -83,22 +83,23 @@ do
 			end
 			return app.EmptyTable;
 		end
+		-- Returns how many of a given speciesID are currently collected
 		local CollectedSpeciesHelper = setmetatable({}, {
 			__index = function(t, key)
-				if key > 0 then
-					local num = C_PetJournal_GetNumCollectedInfo(key);
+				if key and key > 0 then
+					local num = C_PetJournal_GetNumCollectedInfo(key)
 					if not num then
-						app.PrintDebug("SpeciesID " .. key .. " was not found.");
-					elseif num > 0 then
-						t[key] = 1;
-						return 1;
+						app.PrintDebug("SpeciesID " .. key .. " was not found.")
+						num = 0
 					end
-				else
-					return 0;
+					t[key] = num
+					return num
 				end
+				return 0
 			end
 		});
 		local PetIDSpeciesIDHelper = setmetatable({}, {
+			-- this metafunction seems to never be utilized... but guess it can stay for now
 			__index = function(t, key)
 				-- PetID are strings
 				local speciesID = C_PetJournal_GetPetInfoByPetID(key);
@@ -111,19 +112,24 @@ do
 		});
 
 		app.CreateSpecies = app.CreateClass(CLASSNAME, KEY, {
+			CACHE = function() return CACHE end,
 			collectible = function(t) return app.Settings.Collectibles[CACHE]; end,
 			collected = function(t)
-				local id = t[KEY];
-				-- character collected
-				-- TODO: this prevents ATT added to collection message since it becomes 'collected' prior to the cache being set
-				if CollectedSpeciesHelper[id] then return 1; end
 				-- certain Battle Pets are per Character, so we can implicitly check for them as Account-Wide since Battle Pets have no toggle for that
 				-- account-wide collected
-				if app.IsAccountCached(CACHE, id) then return 2; end
+				return app.TypicalAccountCollected(CACHE, t[KEY])
 			end,
 			saved = function(t)
+				local saved = CollectedSpeciesHelper[t[KEY]] > 0
+				-- weird bug where ATT fails to scan battle pets,
+				-- can manually make it collected when checking the saved state (i.e. displayed in a row)
 				-- character collected
-				if CollectedSpeciesHelper[t[KEY]] then return 1; end
+				if saved then
+					if not t.collected then
+						app.SetThingCollected(KEY, t[KEY], true, true)
+					end
+					return 1
+				end
 			end,
 			costCollectibles = function(t)
 				return cache.GetCachedField(t, "costCollectibles", default_costCollectibles);
@@ -160,48 +166,67 @@ do
 			end,
 		});
 
-		app.AddEventHandler("OnRefreshCollections", function()
-			-- app.PrintDebug("RCBP")
-			wipe(CollectedSpeciesHelper);
-			local petID, speciesID;
-			local totalPets = C_PetJournal_GetNumPets();
-			for i=1,totalPets do
-				petID, speciesID = C_PetJournal_GetPetInfoByIndex(i);
+		local function RefreshBattlePets()
+			-- app.PrintDebug("RCBP",C_PetJournal_GetNumPets())
+			local totalPets, ownedPets = C_PetJournal_GetNumPets()
+			-- managed to replicate strange situation where Battle Pets is returned as having 1 Total Pet
+			-- and all API calls return nil when checking
+			if not totalPets or totalPets == 1 then
+				-- app.PrintDebug("RCBP.Callback")
+				-- try to load the Blizzard_Collections addon so that the Battle Pet APIs work properly
+				-- this doesn't seem to work to load the addon....
+				-- app.WOWAPI.LoadAddon("Blizzard_Collections")
+				-- app.CallbackHandlers.Callback(RefreshBattlePets)
+				return
+			end
+
+			wipe(CollectedSpeciesHelper)
+			local petID, speciesID
+			ownedPets = ownedPets or totalPets
+			for i=1,ownedPets do
+				petID, speciesID = C_PetJournal_GetPetInfoByIndex(i)
+				-- app.PrintDebug("RCBP.ID",i,petID,speciesID)
 				if petID then
-					PetIDSpeciesIDHelper[petID] = speciesID;
+					PetIDSpeciesIDHelper[petID] = speciesID
 				end
+				-- placeholder assignment for metatable
 				petID = CollectedSpeciesHelper[speciesID]
 			end
 			-- Cache all ids which are known
 			app.SetBatchAccountCached(CACHE, CollectedSpeciesHelper, 1)
 			-- app.PrintDebug("RCBP-Done")
-		end)
+		end
+		app.AddEventHandler("OnRefreshCollections", RefreshBattlePets)
 		app.AddEventHandler("OnSavedVariablesAvailable", function(currentCharacter, accountWideData)
 			if not currentCharacter[CACHE] then currentCharacter[CACHE] = {} end
 			if not accountWideData[CACHE] then accountWideData[CACHE] = {} end
 		end)
-		app.AddEventRegistration("NEW_PET_ADDED", function(petID)
-			local speciesID = C_PetJournal_GetPetInfoByPetID(petID);
-			PetIDSpeciesIDHelper[petID] = speciesID;
-			-- app.PrintDebug("NEW_PET_ADDED", petID, speciesID);
-			if speciesID and C_PetJournal_GetNumCollectedInfo(speciesID) == 1 and not rawget(CollectedSpeciesHelper, speciesID) then
-				CollectedSpeciesHelper[speciesID] = 1;
-				local pet = app.SearchForObject(KEY, speciesID, "field")
-				app.SetAccountCollected(pet, CACHE, speciesID, true)
-				app.UpdateRawID(KEY, speciesID);
+		-- at some point speciesID began to be included in the Event payload, huzzah!
+		app.AddEventRegistration("NEW_PET_ADDED", function(petID, speciesID)
+			local speciesID = speciesID or C_PetJournal_GetPetInfoByPetID(petID)
+			PetIDSpeciesIDHelper[petID] = speciesID
+			-- app.PrintDebug("NEW_PET_ADDED", petID, speciesID)
+
+			if speciesID then
+				CollectedSpeciesHelper[speciesID] = nil
+				-- if the CollectedSpeciesHelper is exactly 1, then this is newly collected
+				if CollectedSpeciesHelper[speciesID] == 1 then
+					app.SetThingCollected(KEY, speciesID, true, true)
+				end
 			end
 		end)
-		app.AddEventRegistration("PET_JOURNAL_PET_DELETED", function(petID)
-			local speciesID = PetIDSpeciesIDHelper[petID];
+		-- at some point speciesID began to be included in the Event payload, huzzah!
+		app.AddEventRegistration("PET_JOURNAL_PET_DELETED", function(petID, speciesID)
+			local speciesID = speciesID or PetIDSpeciesIDHelper[petID];
 			-- app.PrintDebug("PET_JOURNAL_PET_DELETED",petID,speciesID);
 
-			-- Check against all of the collected species for a species that is no longer 1/X
-			if speciesID and C_PetJournal_GetNumCollectedInfo(speciesID) < 1 then
-				-- app.PrintDebug("Pet Missing",speciesID);
-				CollectedSpeciesHelper[speciesID] = nil;
-				local pet = app.SearchForObject(KEY, speciesID, "field")
-				app.SetAccountCollected(pet, CACHE, speciesID)
-				app.UpdateRawID(KEY, speciesID);
+			if speciesID then
+				CollectedSpeciesHelper[speciesID] = nil
+				-- if the CollectedSpeciesHelper is exactly 0, then this is now removed
+				if CollectedSpeciesHelper[speciesID] == 0 then
+					-- app.PrintDebug("Pet Missing",speciesID);
+					app.SetThingCollected(KEY, speciesID, true)
+				end
 			end
 		end)
 		app.AddSimpleCollectibleSwap(CLASSNAME, CACHE)

@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: MysticalOS
-## Version: r170
+## Version: r181
 
 ## Title: |cffffe00a<|r|cffff7d0aDBM Mod|r|cffffe00a>|r |cff4565ffDelves (TWW)|r
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFF69CCF0地下堡|r |cFF22B14C地心之战|r
@@ -24,7 +24,7 @@
 ## X-DBM-Mod-Name-zhTW: 探究 (地心之戰)
 ## X-DBM-Mod-Name-zhCN: 地下堡 (地心之战)
 ## X-DBM-Mod-Sort: 120
-## X-DBM-Mod-MapID: 2664, 2679, 2680, 2681, 2682, 2683, 2684, 2685, 2686, 2687, 2688, 2689, 2690, 2767, 2768
+## X-DBM-Mod-MapID: 2664, 2679, 2680, 2681, 2682, 2683, 2684, 2685, 2686, 2687, 2688, 2689, 2690, 2767, 2768, 2831, 2815, 2826
 ## X-DBM-Mod-MinCoreRevision: 20200524142133
 ## X-DBM-Mod-MinExpansion: 10
 ## X-Part-Of: DBM-Core
@@ -38,7 +38,6 @@ FungalFolly.lua
 MycomancerCavern.lua
 EarthcrawlMines.lua
 KriegvalsRest.lua
-ZekvirsLair.lua
 TheWaterworks.lua
 TheDreadPit.lua
 SkitteringBreach.lua
@@ -47,3 +46,8 @@ TheSinkhole.lua
 TheSpiralWeave.lua
 TakRethanAbyss.lua
 TheUnderkeep.lua
+ZekvirsLair.lua
+
+ExcavationSite9.lua
+SidestreetSluice.lua
+UnderpinsLair.lua

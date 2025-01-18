@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(431, "DBM-Party-Vanilla", DBM:IsPostCata() and 6 or 8, 232)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20241103114940")
+mod:SetRevision("20241214052000")
 mod:SetCreatureID(12201)
 mod:SetEncounterID(429)
 mod:SetZone(349)
@@ -24,8 +24,8 @@ local warningDustField				= mod:NewSpellAnnounce(21909, 2)
 
 local specWarnDustField				= mod:NewSpecialWarningRun(21909, "Melee", nil, nil, 4, 2)
 
-local timerRespulsiveGazeCD			= mod:NewCDTimer(26.8, 21869, nil, nil, nil, 3)--26.8-51
-local timerDustFieldCD				= mod:NewCDTimer(21.9, 21909, nil, nil, nil, 2)--21.9-44
+local timerRespulsiveGazeCD			= mod:NewVarTimer("v26.8-51", 21869, nil, nil, nil, 3)--26.8-51
+local timerDustFieldCD				= mod:NewVarTimer("v21.9-44", 21909, nil, nil, nil, 2)--21.9-44
 
 function mod:OnCombatStart(delay)
 	timerRespulsiveGazeCD:Start(7-delay)

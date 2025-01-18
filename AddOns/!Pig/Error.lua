@@ -1,6 +1,5 @@
 local addonName, addonTable = ...;
 local L =addonTable.locale
-local strlen = _G.string.len
 -----------------
 local bencierrinfo={}
 --------------------------------
@@ -248,7 +247,7 @@ local function xianshixinxi(id)
 		Bugcollect.NR.textArea:Insert(stack.."\r");
 		Bugcollect.NR.textArea:Insert(logrizhi);
 		local NEWTXT = Bugcollect.NR.textArea:GetText()
-		if strlen(NEWTXT)<2 then
+		if #NEWTXT<2 then
 			ChatFrame1:AddMessage(msg);
 		end
 		Bugcollect.prev.id=id

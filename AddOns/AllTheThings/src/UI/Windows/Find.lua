@@ -108,6 +108,7 @@ app:CreateWindow("AchievementFinder", {
 	OnRebuild = function(self, ...)
 		if not self.data then
 			local CreateAchievementHarvester = app.ExtendClass("Achievement", "AchievementHarvester", "achievementID", {
+				IsClassIsolated = true,
 				collectible = app.ReturnTrue,
 				collected = app.ReturnFalse,
 				text = function(t) return t.name; end,
@@ -411,6 +412,7 @@ app:CreateWindow("ItemFinder", {
 		if not self.data then
 			local ItemHarvester = CreateFrame("GameTooltip", "ATTCItemHarvester", UIParent, "GameTooltipTemplate");
 			local CreateItemHarvester = app.ExtendClass("Item", "ItemHarvester", "itemID", {
+				IsClassIsolated = true,
 				collectible = app.ReturnTrue,
 				collected = app.ReturnFalse,
 				text = function(t)
@@ -559,7 +561,7 @@ app:CreateWindow("ItemFinder", {
 				progress = 0,
 				total = 0,
 				back = 1,
-				currentItemID = 232611,
+				currentItemID = 235825,
 				minimumItemID = 1,
 				OnUpdate = function(header)
 					local g = header.g;
@@ -607,6 +609,7 @@ app:CreateWindow("QuestFinder", {
 	OnRebuild = function(self, ...)
 		if not self.data then
 			local CreateQuestHarvester = app.ExtendClass("Quest", "QuestHarvester", "questID", {
+				IsClassIsolated = true,
 				collectible = app.ReturnFalse,
 				collected = app.ReturnTrue,
 			},
@@ -684,6 +687,7 @@ app:CreateWindow("SpellFinder", {
 	OnRebuild = function(self, ...)
 		if not self.data then
 			local CreateSpellHarvester = app.ExtendClass("Spell", "SpellHarvester", "spellID", {
+				IsClassIsolated = true,
 				collectible = app.ReturnFalse,
 				collected = app.ReturnTrue,
 			},

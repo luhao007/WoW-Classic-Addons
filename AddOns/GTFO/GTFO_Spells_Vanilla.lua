@@ -202,4 +202,22 @@ GTFO.SpellID["243923"] = {
   sound = 1;
 };
 
+GTFO.SpellID["446789"] = {
+  --desc = "Flamestrike (Defias Evoker)";
+  ignoreApplication = true;
+  sound = 1;
+};
+
+GTFO.SpellID["450513"] = {
+  --desc = "Whirling Rage (Rhahk'Zor)";
+  sound = 1;
+  tankSound = 0;
+};
+
+GTFO.SpellID["8265"] = {
+  --desc = "Lava Spout Totem (Lava Spout Totem)";
+  sound = 1;
+};
+
+
 end

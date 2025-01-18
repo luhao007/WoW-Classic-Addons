@@ -157,10 +157,7 @@ PIGFontString(Pig_Options.lianxizuozhe,{"TOP", Pig_Options.lianxizuozhe, "TOP", 
 Pig_Options.lianxizuozhe.wx = Pig_Options.lianxizuozhe:CreateTexture()
 Pig_Options.lianxizuozhe.wx:SetTexture("Interface\\AddOns\\"..addonName.."\\Libs\\wx.blp");
 Pig_Options.lianxizuozhe.wx:SetSize(240,240);
-Pig_Options.lianxizuozhe.wx:SetPoint("TOP",Pig_Options.lianxizuozhe,"TOP", 0, -35);
-Pig_Options.lianxizuozhe.tishi = PIGFontString(Pig_Options.lianxizuozhe,{"BOTTOM", Pig_Options.lianxizuozhe, "BOTTOM", 0, 12},L["CONFIG_DIYTIPS"])
-Pig_Options.lianxizuozhe.tishi:SetTextColor(0, 1, 0.6, 1);
-Pig_Options.lianxizuozhe.tishi:SetWidth(310);
+Pig_Options.lianxizuozhe.wx:SetPoint("CENTER",Pig_Options.lianxizuozhe,"CENTER", 0, 0);
 Pig_Options:HookScript("OnHide", function (self)
 	self.lianxizuozhe:Hide()
 end)
@@ -172,6 +169,7 @@ function Pig_Options:ShowAuthor()
 		zuozheF:Show()
 	end
 end
+
 ---小地图按钮
 local PigMinimapBut = CreateFrame("Button","PigMinimapBut_UI",UIParent);
 PigMinimapBut:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 0, 0);
@@ -375,12 +373,11 @@ function PigMinimapBut.zhucetuodong(ONOFF)
 		PigMinimapBut:SetScript("OnDragStop",nil)
 	end
 end
-local morenweizhi = {{0,0},{0,0},{28,0}}
 function PigMinimapBut:CZMinimapInfo()
 	PIGA["Map"]["MinimapPos"]=addonTable.Default["Map"]["MinimapPos"]
-	PIGA["Map"]["MinimapPointXY"]=morenweizhi[1]
-	PIGA["Map"]["MinimapPoint_NDui"]=morenweizhi[2]
-	PIGA["Map"]["MinimapPoint_ElvUI"]=morenweizhi[3]
+	PIGA["Map"]["MinimapPointXY"]=addonTable.Default["Map"]["MinimapPointXY"]
+	PIGA["Map"]["MinimapPoint_NDui"]=addonTable.Default["Map"]["MinimapPoint_NDui"]
+	PIGA["Map"]["MinimapPoint_ElvUI"]=addonTable.Default["Map"]["MinimapPoint_ElvUI"]
 	YDButtonP();
 end
 local www,hhh = 33,33
@@ -392,9 +389,9 @@ function PigMinimapBut:Point()
 		["iconW"]=www-10,["iconH"]=hhh-10,
 		["iconX"]=0,["iconY"]=0,
 	}
-	PIGA["Map"]["MinimapPointXY"]=PIGA["Map"]["MinimapPointXY"] or morenweizhi[1]
-	PIGA["Map"]["MinimapPoint_NDui"]=PIGA["Map"]["MinimapPoint_NDui"] or morenweizhi[2]
-	PIGA["Map"]["MinimapPoint_ElvUI"]=PIGA["Map"]["MinimapPoint_ElvUI"] or morenweizhi[3]
+	PIGA["Map"]["MinimapPointXY"]=PIGA["Map"]["MinimapPointXY"] or addonTable.Default["Map"]["MinimapPointXY"]
+	PIGA["Map"]["MinimapPoint_NDui"]=PIGA["Map"]["MinimapPoint_NDui"] or addonTable.Default["Map"]["MinimapPoint_NDui"]
+	PIGA["Map"]["MinimapPoint_ElvUI"]=PIGA["Map"]["MinimapPoint_ElvUI"] or addonTable.Default["Map"]["MinimapPoint_ElvUI"]
 	PigMinimapBut.Snf:ClearAllPoints();
 	PigMinimapBut:ClearNormalTexture()
 	PigMinimapBut:ClearPushedTexture()
@@ -563,6 +560,7 @@ function PIGCompartmentLeave(addonName, menuButtonFrame)
 	GameTooltip:ClearLines();
 	GameTooltip:Hide() 
 end
+
 --PIG屏幕提示信息栏
 local infotip = CreateFrame("MessageFrame", "PIGinfotip", UIParent);
 infotip:SetSize(512,60);
@@ -587,27 +585,7 @@ local ActionW = ActionButton1:GetWidth()-Pig_Options.qiege
 local QuickBut=PIGFrame(UIParent,nil,{ActionW+14,ActionW},"QuickButUI")
 QuickBut:PIGSetMovable()
 QuickBut:Hide()
-QuickBut.ButList={
-	[1]=function() end,--总开关
-	[2]=function() end,--战场通报
-	[3]=function() end,--饰品管理
-	[4]=function() end,--符文管理
-	[5]=function() end,--装备管理
-	[6]=function() end,--炉石/专业
-	[7]=function() end,--职业辅助技能
-	[8]=function() end,--角色信息统计
-	[9]=function() end,--售卖助手丢弃
-	[10]=function() end,--售卖助手开
-	[11]=function() end,--售卖助手分
-	[12]=function() end,--售卖助手选矿
-	[13]=function() end,--时空之门
-	[14]=function() end,--时空之门喊话
-	[15]=function() end,--开团助手
-	[16]=function() end,--带本助手
-	[17]=function() end,
-	[18]=function() end,
-	[19]=function() end,--AFK
-}
+QuickBut.ButList={}
 function QuickBut:GengxinWidth()
 	if self.nr then
 		local nr = self.nr
@@ -630,9 +608,33 @@ function QuickBut:GengxinWidth()
 		end
 	end
 end
+
+
+
 function QuickBut:Add()
-	for i=1,19 do
-		self.ButList[i]()
+	QuickBut.ButList[1]()-- [1]总开关
+	-- [2]战场通报
+	-- [3]饰品管理
+	-- [4]符文管理
+	-- [5]装备管理
+	-- [6]炉石/专业
+	-- [7]职业辅助技能
+	-- [8]角色信息统计
+	-- [9]售卖助手丢弃
+	-- [10]售卖助手开
+	-- [11]售卖助手分
+	-- [12]售卖助手选矿
+	-----------------
+	-- [13]时空之门
+	-- [14]时空之门喊话
+	-- [15]开团助手
+	-- [16]带本助手
+	-- [17],
+	-- [18],
+	-- [19],AFK
+	for i=2,19 do
+		local xfun = self.ButList[i] or function() end
+		xfun()
 	end
 	self:GengxinWidth()
 end

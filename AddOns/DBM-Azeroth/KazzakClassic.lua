@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("KazzakClassicVanilla", "DBM-Azeroth")
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240721201209")
+mod:SetRevision("20241214191036")
 if DBM:IsSeasonal("SeasonOfDiscovery") then
 	mod:SetCreatureID(230302)
 else
@@ -37,7 +37,7 @@ function mod:OnCombatStart(delay, yellTriggered)
 		--timerMarkCD:Start(14.1-delay)
 	end
 	if IsInInstance() or yellTriggered then -- To unreliable for random outdoor pull timers
-		enrageTimer:Start(-delay)
+		enrageTimer:Start(180-delay)
 	end
 end
 

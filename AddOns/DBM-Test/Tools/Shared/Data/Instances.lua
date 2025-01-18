@@ -1,8 +1,7 @@
 -- Run these to update
--- for ver in wow_beta wowxptr wow; do curl https://wago.tools/db2/Map/csv\?product=$ver; done | grep -e "^[0-9]" | tr -d \" | awk -F, '{NF >= 28 ? typeId = $11 : typeId = $9; if (typeId != 0) printf "\t\t[%d] = {name = \"%s\", instanceTypeId = %d},\n",$1,$3,typeId}' |  sort -t ']' -k 1.4 -n | uniq | grep -v -e UNUSED -e unused -e DNT -e "NOT USED"
--- for ver in wow_classic_beta wow_classic_ptr wow_classic; do curl https://wago.tools/db2/Map/csv\?product=$ver; done | grep -e "^[0-9]" | tr -d \" | awk -F, '{NF >= 28 ? typeId = $11 : typeId = $9; if (typeId != 0) printf "\t\t[%d] = {name = \"%s\", instanceTypeId = %d},\n",$1,$3,typeId}' |  sort -t ']' -k 1.4 -n | uniq | grep -v -e UNUSED -e unused -e DNT -e "NOT USED"
--- TODO: re-add wow_classic_era_ptr, but something is broken on Wago and it gives retail results?
--- for ver in wow_classic_era; do curl https://wago.tools/db2/Map/csv\?product=$ver; done | grep -e "^[0-9]" | tr -d \" | awk -F, '{NF >= 28 ? typeId = $11 : typeId = $9; if (typeId != 0) printf "\t\t[%d] = {name = \"%s\", instanceTypeId = %d},\n",$1,$3,typeId}' |  sort -t ']' -k 1.4 -n | uniq | grep -v -e UNUSED -e unused -e DNT -e "NOT USED"
+-- for ver in wow_beta wowxptr wow; do curl https://wago.tools/db2/Map/csv\?product=$ver; done | grep -e "^[0-9]" | tr -d \" | awk -F, '{NF >= 28 ? typeId = $11 : typeId = $9; if (typeId != 0) printf "\t\t[%d] = {name = \"%s\", instanceTypeId = %d},\n",$1,$3,typeId}' |  sort -t ']' -k 1.4 -n | uniq | grep -v -e UNUSED -e [uU]nused -e DNT -e "NOT USED"
+-- for ver in wow_classic_beta wow_classic_ptr wow_classic; do curl https://wago.tools/db2/Map/csv\?product=$ver; done | grep -e "^[0-9]" | tr -d \" | awk -F, '{NF >= 28 ? typeId = $11 : typeId = $9; if (typeId != 0) printf "\t\t[%d] = {name = \"%s\", instanceTypeId = %d},\n",$1,$3,typeId}' |  sort -t ']' -k 1.4 -n | uniq | grep -v -e UNUSED -e [uU]nused -e DNT -e "NOT USED"
+-- for ver in wow_classic_era wow_classic_era_ptr; do curl https://wago.tools/db2/Map/csv\?product=$ver; done | grep -e "^[0-9]" | tr -d \" | awk -F, '{NF >= 28 ? typeId = $11 : typeId = $9; if (typeId != 0) printf "\t\t[%d] = {name = \"%s\", instanceTypeId = %d},\n",$1,$3,typeId}' |  sort -t ']' -k 1.4 -n | uniq | grep -v -e UNUSED -e [uU]nused -e DNT -e "NOT USED"
 local data = DBM.Test.CreateSharedModule("Data.Instances", {
 	Retail = {
 		[30] = {name = "Alterac Valley", instanceTypeId = 0},
@@ -83,7 +82,6 @@ local data = DBM.Test.CreateSharedModule("Data.Instances", {
 		[618] = {name = "The Ring of Valor", instanceTypeId = 4},
 		[619] = {name = "Ahn'kahet: The Old Kingdom", instanceTypeId = 1},
 		[624] = {name = "Vault of Archavon", instanceTypeId = 2},
-		[627] = {name = "Unused (DELETE ME)", instanceTypeId = 5},
 		[628] = {name = "Isle of Conquest", instanceTypeId = 0},
 		[631] = {name = "Icecrown Citadel", instanceTypeId = 2},
 		[632] = {name = "The Forge of Souls", instanceTypeId = 1},
@@ -535,9 +533,18 @@ local data = DBM.Test.CreateSharedModule("Data.Instances", {
 		[2710] = {name = "Awakening The Machine", instanceTypeId = 5},
 		[2713] = {name = "11.0 - Campaign Finale Scenario", instanceTypeId = 5},
 		[2716] = {name = "11.0 - Priory Scenario", instanceTypeId = 5},
+		[2759] = {name = "Cage of Carnage", instanceTypeId = 4},
 		[2767] = {name = "The Sinkhole", instanceTypeId = 5},
 		[2768] = {name = "Tak-Rethan Abyss", instanceTypeId = 5},
+		[2769] = {name = "Liberation of Undermine", instanceTypeId = 2},
+		[2773] = {name = "Operation: Floodgate", instanceTypeId = 1},
 		[2774] = {name = "Khaz Algar", instanceTypeId = 2},
+		[2776] = {name = "Kalimdor", instanceTypeId = 5},
+		[2792] = {name = "Blackrock Depths", instanceTypeId = 2},
+		[2815] = {name = "Excavation Site 9", instanceTypeId = 5},
+		[2826] = {name = "Sidestreet Sluice", instanceTypeId = 5},
+		[2831] = {name = "Demolition Dome", instanceTypeId = 5},
+		[2836] = {name = "Earthcrawl Mines", instanceTypeId = 5},
 	},
 	Classic = {
 		[30] = {name = "Alterac Valley", instanceTypeId = 0},
@@ -695,6 +702,15 @@ local data = DBM.Test.CreateSharedModule("Data.Instances", {
 		[2784] = {name = "Demon Fall Canyon", instanceTypeId = 1},
 		[2789] = {name = "The Tainted Scar", instanceTypeId = 2},
 		[2791] = {name = "Storm Cliffs", instanceTypeId = 2},
+		[2804] = {name = "The Crystal Vale", instanceTypeId = 2},
+		[2806] = {name = "Shadow Hold", instanceTypeId = 1},
+		[2807] = {name = "Burning of Andorhal", instanceTypeId = 1},
+		[2817] = {name = "Starfall Barrow Den", instanceTypeId = 1},
+		[2832] = {name = "Nightmare Grove", instanceTypeId = 2},
+		[2835] = {name = "Karazhan Crypts", instanceTypeId = 2},
+		[2853] = {name = "Deadwind Pass", instanceTypeId = 1},
+		[2856] = {name = "Scarlet Enclave", instanceTypeId = 2},
+		[2875] = {name = "Karazhan Crypts", instanceTypeId = 1},
 	},
 })
 

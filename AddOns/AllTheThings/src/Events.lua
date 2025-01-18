@@ -142,7 +142,8 @@ local Runner = app.CreateRunner("events")
 local Callback = app.CallbackHandlers.Callback
 local IgnoredDebugEvents = {
 	RowOnEnter = true,
-	RowOnLeave = true
+	RowOnLeave = true,
+	RowOnClick = true,
 }
 local function DebugEventTriggered(eventName,...)
 	if IgnoredDebugEvents[eventName] then return end

@@ -11,9 +11,9 @@ local l10n = CT.l10n;
 
 if GetLocale() ~= "zhCN" then return;end
 
+BINDING_CATEGORY_ALATALENTEMU = "<|cff00ff00TalentEmu|r>天赋模拟器";
 BINDING_NAME_ALARAIDTOOL_NEWWINDOW = "新建模拟器";
 BINDING_NAME_ALARAIDTOOL_QUERY = "查看目标天赋";
-BINDING_HEADER_ALATALENTEMU_HEADER = "<|cff00ff00TalentEmu|r>天赋模拟器";
 
 l10n.Locale = "zhCN";
 

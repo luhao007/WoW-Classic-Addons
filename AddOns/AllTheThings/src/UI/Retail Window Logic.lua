@@ -600,9 +600,11 @@ local function Refresh(self)
 end
 local StoreWindowPosition = function(self)
 	if AllTheThingsProfiles then
+		local key = app.Settings:GetProfile();
+		local profile = AllTheThingsProfiles.Profiles[key];
+		-- not entirely sure how this is able to happen, but just ignore for now
+		if not profile then return end
 		if self.isLocked or self.lockPersistable then
-			local key = app.Settings:GetProfile();
-			local profile = AllTheThingsProfiles.Profiles[key];
 			if not profile.Windows then profile.Windows = {}; end
 			-- re-save the window position by point anchors
 			local points = {};
@@ -619,9 +621,7 @@ local StoreWindowPosition = function(self)
 		else
 			-- a window which was potentially saved due to being locked, but is now being unlocked (unsaved)
 			-- print("removing stored window",self.Suffix)
-			local key = app.Settings:GetProfile();
-			local profile = AllTheThingsProfiles.Profiles[key];
-			if profile and profile.Windows then
+			if profile.Windows then
 				profile.Windows[self.Suffix] = nil;
 			end
 		end

@@ -380,6 +380,119 @@ GTFO.SpellID["464508"] = {
   sound = 3;
 };
 
+GTFO.SpellID["465368"] = {
+  --desc = "War Stomp (Ossirian the Unscarred)";
+  sound = 3;
+};
+
+GTFO.SpellID["465658"] = {
+  --desc = "Harsh Winds (Ossirian the Unscarred)";
+  sound = 3;
+};
+
+GTFO.SpellID["465373"] = {
+  --desc = "Curse of Locusts (Ossirian the Unscarred)";
+  applicationOnly = true;
+  sound = 3;
+};
+
+GTFO.SpellID["465369"] = {
+  --desc = "Curse of Locusts (Ossirian the Unscarred)";
+  applicationOnly = true;
+  sound = 1;
+};
+
+GTFO.SpellID["466187"] = {
+  --desc = "Curse of Boils (Ossirian the Unscarred)";
+  applicationOnly = true;
+  sound = 3;
+};
+
+GTFO.SpellID["455925"] = {
+  --desc = "Precision Impale (Deepcrawler Tx'kesh)";
+  sound = 3;
+};
+
+GTFO.SpellID["450675"] = {
+  --desc = "Grimweave Burst (Sureki Priestess)";
+  sound = 3;
+};
+
+GTFO.SpellID["468745"] = {
+  --desc = "Crystalline Force (Faded Construct)";
+  sound = 3;
+};
+
+GTFO.SpellID["466692"] = {
+  --desc = "Stomp (Ikir the Flotsurge)";
+  sound = 3;
+  tankSound = 0;
+};
+
+GTFO.SpellID["469167"] = {
+  --desc = "Tail Thrash (Nerathor)";
+  sound = 3;
+  applicationOnly = true;
+};
+
+GTFO.SpellID["464719"] = {
+  --desc = "Cave In (Stalagnarok)";
+  sound = 3;
+};
+
+GTFO.SpellID["468974"] = {
+  --desc = "Boulder Throw (Stalagnarok)";
+  sound = 3;
+  applicationOnly = true;
+};
+
+GTFO.SpellID["468832"] = {
+  --desc = "Colossal Slam (Stalagnarok)";
+  sound = 3;
+  tankSound = 0;
+};
+
+GTFO.SpellID["460967"] = {
+  --desc = "Flash! (Blinding Glowmite)";
+  applicationOnly = true;
+  sound = 3;
+};
+
+GTFO.SpellID["471846"] = {
+  --desc = "Violent Percolation (Wreckwater)";
+  sound = 3;
+};
+
+GTFO.SpellID["471862"] = {
+  --desc = "Tidal Surge (Wreckwater)";
+  sound = 3;
+};
+
+GTFO.SpellID["471863"] = {
+  --desc = "Tidal Surge (Wreckwater)";
+  sound = 3;
+};
+
+GTFO.SpellID["469184"] = {
+  --desc = "Dark Wings (Nerathor)";
+  sound = 3;
+};
+
+GTFO.SpellID["471333"] = {
+  --desc = "Lightning Ball (Shadowtide Watcher)";
+  sound = 3;
+};
+
+GTFO.SpellID["425999"] = {
+  --desc = "Unstable Explosives (Candlelit Boomer)";
+  sound = 3;
+};
+
+GTFO.SpellID["469992"] = {
+  --desc = "Explode (Wildlife Removal Unit)";
+  sound = 3;
+};
+
 
 --- ****************************
 --- * Ara-Kara, City of Echoes *
@@ -1413,9 +1526,19 @@ GTFO.SpellID["449319"] = {
 
 GTFO.SpellID["450544"] = {
   --desc = "Angler's Web (Zekvir)";
+  applicationOnly = true;
   sound = 3;
 };
 
+GTFO.SpellID["450451"] = {
+  --desc = "Claw Smash (Zekvir)";
+  sound = 3;
+};
+
+GTFO.SpellID["451790"] = {
+  --desc = "Infinite Horror (Zekvir)";
+  sound = 3;
+};
 
 --- *******************
 --- * Nerub-ar Palace *
@@ -1671,6 +1794,11 @@ GTFO.SpellID["442495"] = {
   sound = 3;
 };
 
+GTFO.SpellID["448176"] = {
+  --desc = "Gloom Orbs (Ascended Voidspeaker)";
+  sound = 3;
+};
+
 --- ***************************
 --- * Blackrock Depths (Raid) *
 --- ***************************
@@ -1738,12 +1866,6 @@ GTFO.SpellID["468820"] = {
 GTFO.SpellID["463831"] = {
   --desc = "Chemical Pool (Prototype Toxic Golem)";
   sound = 3;
-};
-
-GTFO.SpellID["425999"] = {
-  --desc = "Unstable Explosives (Weapon Technician)";
-  sound = 3;
-  test = true;
 };
 
 GTFO.SpellID["469711"] = {
@@ -1842,6 +1964,112 @@ GTFO.SpellID["465068"] = {
   --desc = "Magma Clap (Emperor Dagran Thaurissan)";
   sound = 3;
   test = true;
+};
+
+--- ************************
+--- * Operation: Floodgate *
+--- ************************
+
+GTFO.SpellID["464471"] = {
+  --desc = "Out of Bounds Missile";
+  sound = 3;
+};
+
+GTFO.SpellID["473473"] = {
+  --desc = "Explosion (Mine Field)";
+  sound = 3;
+};
+
+GTFO.SpellID["464294"] = {
+  --desc = "Weapons Stockpile Explosion (Weapons Stockpile)";
+  sound = 3;
+};
+
+GTFO.SpellID["1215089"] = {
+  --desc = "Electrified Water (Electrified Water)";
+  applicationOnly = true;
+  sound = 3;
+};
+
+GTFO.SpellID["461793"] = {
+  --desc = "R.P.G.G. (Darkfuse Demolitionist)";
+  sound = 3;
+};
+
+GTFO.SpellID["472454"] = {
+  --desc = "Doom Storm (Darkfuse Mechadrone)";
+  sound = 3;
+  test = true;
+};
+
+GTFO.SpellID["473836"] = {
+  --desc = "Electrocrush (Big M.O.M.M.A.)";
+  applicationOnly = true;
+  sound = 3;
+};
+
+GTFO.SpellID["465682"] = {
+  --desc = "Surprise Inspection (Darkfuse Inspector)";
+  sound = 3;
+};
+
+GTFO.SpellID["468727"] = {
+  --desc = "Seaforium Charge (Venture Co. Diver)";
+  sound = 3;
+};
+
+GTFO.SpellID["1217751"] = {
+  --desc = "B.B.B.F.G. (Keeza Quickfuse)";
+  sound = 3;
+};
+
+GTFO.SpellID["473526"] = {
+  --desc = "Big Bada Boom (Keeza Quickfuse)";
+  sound = 3;
+};
+
+GTFO.SpellID["1214341"] = {
+  --desc = "Bomb Pile Explosion (Bomb Pile)";
+  sound = 3;
+};
+
+GTFO.SpellID["473126"] = {
+  --desc = "Mudslide (Swampface)";
+  sound = 3;
+};
+
+GTFO.SpellID["469819"] = {
+  --desc = "Bubble (Bubbles)";
+  sound = 3;
+  test = true; -- NPC died too quickly to see what it does
+};
+
+GTFO.SpellID["465604"] = {
+  --desc = "Battery Bolt (Darkfuse Jumpstarter)";
+  sound = 3;
+};
+
+GTFO.SpellID["465982"] = {
+  --desc = "Turbo Bolt (Geezle Gigazap)";
+  applicationOnly = true;
+  sound = 3;
+};
+
+GTFO.SpellID["468604"] = {
+  --desc = "Dam Rubble (Geezle Gigazap)";
+  sound = 3;
+};
+
+GTFO.SpellID["468723"] = {
+  --desc = "Shock Water (Geezle Gigazap)";
+  applicationOnly = true;
+  sound = 3;
+};
+
+GTFO.SpellID["468616"] = {
+  --desc = "Leaping Spark (Leaping Spark)";
+  applicationOnly = true;
+  sound = 3;
 };
 
 end

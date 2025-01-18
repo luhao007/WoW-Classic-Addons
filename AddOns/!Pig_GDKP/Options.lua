@@ -18,6 +18,7 @@ local SendAddonMessage = SendAddonMessage or C_ChatInfo and C_ChatInfo.SendAddon
 local GDKPInfo = {}
 addonTable.GDKPInfo=GDKPInfo
 ------------
+local QuickBut_xuhaoID=15
 local GnName,GnUI,GnIcon,FrameLevel = L["PIGaddonList"][addonName],"PigGDKP_UI",133742,50
 GDKPInfo.uidata={GnName,GnUI,GnIcon,FrameLevel}
 local fuFrame,fuFrameBut,Tooltip,hidetishi = unpack(Data.Ext[L.extLsit[2]])
@@ -36,18 +37,18 @@ function GDKPInfo.ADD_Options()
 			fuFrame.SetListF:Hide()
 			Pig_Options_RLtishi_UI:Show()
 		end
-		QuickButUI.ButList[15]()
+		QuickButUI.ButList[QuickBut_xuhaoID]()
 	end);
 	fuFrame.Open.QKBut:SetScript("OnClick", function (self)
 		if self:GetChecked() then
 			PIGA["GDKP"]["AddBut"]=true
-			QuickButUI.ButList[15]()
+			QuickButUI.ButList[QuickBut_xuhaoID]()
 		else
 			PIGA["GDKP"]["AddBut"]=false
 			Pig_Options_RLtishi_UI:Show();
 		end
 	end);
-	QuickButUI.ButList[15]=function()
+	QuickButUI.ButList[QuickBut_xuhaoID]=function()
 		if PIGA["QuickBut"]["Open"] and PIGA["GDKP"]["Open"] and PIGA["GDKP"]["AddBut"] then
 			local QkButUI = "QkBut_PigGDKP"
 			if _G[QkButUI] then return end
@@ -592,7 +593,7 @@ function GDKPInfo.ADD_Options()
 	fuFrame.SetListF.Paichu = PIGFrame(fuFrame.SetListF,{"TOPLEFT", fuFrame.SetListF, "TOPRIGHT", -260, -28})
 	fuFrame.SetListF.Paichu:SetPoint("BOTTOMRIGHT", fuFrame.SetListF, "BOTTOMRIGHT", -6, 6)
 	fuFrame.SetListF.Paichu:PIGSetBackdrop()
-	fuFrame.SetListF.Paichu.biaoti = PIGFontString(fuFrame.SetListF.Paichu,{"BOTTOMLEFT", fuFrame.SetListF.Paichu, "TOPLEFT", 4, 4},"\124cffFF0000忽略以下物品拾取记录\124r");
+	fuFrame.SetListF.Paichu.biaoti = PIGFontString(fuFrame.SetListF.Paichu,{"BOTTOMLEFT", fuFrame.SetListF.Paichu, "TOPLEFT", 4, 4},"\124cffFF0000拾取忽略目录\124r");
 	--提示
 	fuFrame.SetListF.Paichu.biaoti_tishi = CreateFrame("Frame", nil, fuFrame.SetListF.Paichu);
 	fuFrame.SetListF.Paichu.biaoti_tishi:SetSize(30,30);
@@ -666,7 +667,6 @@ function GDKPInfo.ADD_Options()
 			end
 		end
 	end
-	--=============================
 	fuFrame.SetListF:HookScript("OnShow", function (self)
 		self.autofen:SetChecked(PIGA["GDKP"]["Rsetting"]["autofen"]);
 		self.autofenMsg:SetChecked(PIGA["GDKP"]["Rsetting"]["autofenMsg"]);
@@ -688,7 +688,8 @@ function GDKPInfo.ADD_Options()
 		self.zidonghuifuYY.E:SetText(huifuYY_guanjianzineirong)
 		self.zidonghuifuYY.NR_E:SetText(PIGA["GDKP"]["Rsetting"]["YYneirong"])
 	end)
-	----
+	--
+	GDKPInfo.ADD_UI()
 end
 ---======
 fuFrame:HookScript("OnShow", function (self)
@@ -717,6 +718,7 @@ fuFrame:SetScript("OnEvent",function(self, event, arg1, arg2, arg3, arg4, arg5)
 		self:UnregisterEvent("ADDON_LOADED")
 		addonTable.Load_Config()
 		Pig_OptionsUI:SetVer_EXT(arg1,self)
+		GDKPInfo.ADD_Options()
 	end
 	if event=="PLAYER_LOGIN" then
 		PIGA["Ver"][addonName]=PIGA["Ver"][addonName] or 0
@@ -727,9 +729,6 @@ fuFrame:SetScript("OnEvent",function(self, event, arg1, arg2, arg3, arg4, arg5)
 		else
 			SendMessage(fuFrame.GetVer)
 		end
-		GDKPInfo.ADD_Options()
-		GDKPInfo.ADD_UI()
-		QuickButUI.ButList[15]()
 	end
 	if event=="CHAT_MSG_ADDON" then
 		GetExtVer(self,addonName,self.VersionID, fuFrame.FasVer, arg1, arg2, arg4)

@@ -79,7 +79,7 @@ local function PIGIsIsCHANNELJoin(pdname)
 end
 -------------
 local function ADD_chatbut(fuF,pdtype,name,chatID,Color,pdname)
-	if name and not PIGA["Chat"]["QuickChat_ButList"][name] then return end
+	if name and PIGA["Chat"]["QuickChat_ButHide"][name] then return end
 	local Width=fuF.Width
 	local PIGTemplate={nil,"NORMAL"}
 	if PIGA["Chat"]["QuickChat_style"]==1 then
@@ -317,16 +317,6 @@ end
 function QuickChatfun.Open()
 	if not PIGA["Chat"]["QuickChat"] then return end
 	if QuickChatFFF_UI then return end
-	for i=1,#L["CHAT_QUKBUTNAME"]-1 do
-		if PIGA["Chat"]["QuickChat_ButList"][L["CHAT_QUKBUTNAME"][i]]==nil then
-			if i==11 then
-				PIGA["Chat"]["QuickChat_ButList"][L["CHAT_QUKBUTNAME"][i]]=false
-			else
-				PIGA["Chat"]["QuickChat_ButList"][L["CHAT_QUKBUTNAME"][i]]=true
-			end
-		end
-	end
-	
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL", TihuanBQfun)
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_SAY", TihuanBQfun)
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_YELL", TihuanBQfun)

@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Author: MysticalOS
-## Version: r760
+## Version: r775
 
 ## Title: |cffffe00a<|r|cffff7d0aDBM Mod|r|cffffe00a>|r |cffff6010Raids (Vanilla)|r
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFF69CCF0团队|r |cFF22B14C经典旧世|r
@@ -27,7 +27,7 @@
 ## X-DBM-Mod-Name-koKR: 공격대 (클래식)
 ## X-DBM-Mod-Name-ruRU: Рейды (классический)
 ## X-DBM-Mod-Sort: 1101
-## X-DBM-Mod-MapID: 533, 531, 509, 309, 469, 409, 249, 109, 90, 48
+## X-DBM-Mod-MapID: 533, 531, 509, 309, 469, 409, 249, 109, 90, 48, 2835, 2856
 ## X-DBM-Mod-MinCoreRevision: 20230521000000
 ## X-DBM-Mod-MinExpansion: 0
 ## X-Curse-Project-ID: 16442
@@ -45,6 +45,11 @@ localization.fr.lua
 localization.kr.lua
 localization.mx.lua
 localization.ru.lua
+
+Polyfills.lua
+
+# Temporary, will be moved to Core
+Blocks\Gtfo.lua
 
 VanillaNaxx\ArachnidQuarter\Anub'Rekhan.lua
 VanillaNaxx\ArachnidQuarter\Faerlina.lua
@@ -92,6 +97,7 @@ VanillaZG\EdgeOfMadness.lua
 VanillaZG\Gahzranka.lua
 VanillaZG\Jindo.lua
 
+BWL\BWLTrash.lua
 BWL\SoDTrials.lua
 BWL\Razorgore.lua
 BWL\Vaelastrasz.lua
@@ -102,7 +108,6 @@ BWL\Flamegor.lua
 BWL\Ebonroc_and_Flamegor.lua
 BWL\Chromaggus.lua
 BWL\Nefarian.lua
-BWL\TalonGuards.lua
 
 MC\MCTrash.lua
 MC\Lucifron.lua

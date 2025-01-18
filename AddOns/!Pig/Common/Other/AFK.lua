@@ -70,17 +70,17 @@ function Otherfun.Pig_AFK()
 	AFKUI.ModelUI:SetScript("OnAnimFinished", function(self) 
 		self:SetAnimation(69); 
 	end);
-
-	AFKUI.title = PIGFontString(AFKUI,{"TOP", WorldFrame, "TOP", 0, -100},PIGA["Other"]["AFK"]["TispTXT"],"OUTLINE",50)
+	AFKUI.title = PIGFontString(AFKUI,{"TOP", WorldFrame, "TOP", 0, -100},nil,"OUTLINE",50)
 	AFKUI.title:SetTextColor(1, 1, 0, 1);
+	function Otherfun.SetAFKTXT()
+		local TispTXT = PIGA["Other"]["AFK"]["TispTXT"] or "临时离开，勿动!!!"
+		AFKUI.title:SetText(PIGA["Other"]["AFK"]["TispTXT"]);
+	end
 	UIParent:HookScript("OnShow", function(self)
 		SetCVar("cameraYawMoveSpeed",Pig_AFKData.cameraYawMoveSpeed)
 		AFKUI:Hide()
 		MoveViewLeftStop()
 	end)
-	function Otherfun.SetAFKTXT()
-		AFKUI.title:SetText(PIGA["Other"]["AFK"]["TispTXT"]);
-	end
 	AFKUI.pxulie=1
 	local function weizhibiandong()
 		if AFKUI:IsShown() then

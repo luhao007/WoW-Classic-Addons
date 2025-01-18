@@ -279,7 +279,7 @@ function Townsfolk.PostBoot() -- post DB boot (use queries here)
         ["HUNTER"] = {},
         ["DEATHKNIGHT"] = {37201},
         ["WARLOCK"] = {5565,16583},
-        ["ROGUE"] = Questie.IsWotlk and {2892} -- All poison vendors sell all ranks of poison, so Rank 1 of one poison is enough here
+        ["ROGUE"] = (Questie.IsWotlk or Questie.IsCata) and {2892} -- All poison vendors sell all ranks of poison, so Rank 1 of one poison is enough here
             or {5140,2928,8924,5173,2930,8923},
         ["DRUID"] = {17034,17026,17035,17021,17038,17036,17037}
     }
@@ -336,6 +336,10 @@ local function _UpdatePetFood() -- call on change pet
 end
 
 local function _UpdateAmmoVendors() -- call on change weapon
+    if Questie.IsCata then
+        return
+    end
+
     Questie.db.char.vendorList["Ammo"] = _reformatVendors(Townsfolk:PopulateVendors({11285,3030,19316,2515,2512,11284,19317,2519,2516,3033,28056,28053,28061,28060}, {}, true))
 end
 

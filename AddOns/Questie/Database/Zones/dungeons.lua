@@ -106,6 +106,8 @@ local dungeons = {
     [5892] = {"Dragon Soul",nil,440,{{440, 64.8, 50}}},
     [7307] = {"Upper Blackrock Spire",nil,51,{{51, 34.8, 85.3}, {46, 29.4, 38.3}}},
     [15475] = {"Demon Fall Canyon",nil,331,{{331, 84.7, 74.4}}},
+    [15531] = {"The Tainted Scar",nil,4,{{4, 45.3,55.0}}},
+    [15828] = {"The Burning of Andorhal",nil,22,{{22, 69.6,79.6}}},
 }
 
 if Questie.IsCata then
@@ -125,7 +127,7 @@ if Questie.IsCata then
     dungeons[1583][4] = {{51, 34.9, 83.9}, {46, 21, 37.9}} -- Blackrock Spire
     dungeons[1584][4] = {{51, 34.9, 83.9}, {46, 21, 37.9}} -- Blackrock Depths
     dungeons[1977][4] = {{33, 72.1, 32.9}} -- Zul'Gurub
-    dungeons[2017][4] = {{139, 27.7, 11.5}, {139, 47.9, 24}} -- Stratholme
+    dungeons[2017][4] = {{139, 27.7, 11.5}, {139, 43.5, 19.4}} -- Stratholme
     dungeons[2100][4] = {{405, 29.1, 62.6}} -- Maraudon
     dungeons[2257][4] = {{1519, 69.49, 31.2}, {1537, 84.1, 53.1}} -- Deeprun Tram
     dungeons[2366][4] = {{440, 64.8, 50}} -- The Black Morass

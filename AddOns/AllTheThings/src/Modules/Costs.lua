@@ -16,15 +16,10 @@ local SearchForFieldContainer, ArrayAppend, GetRawField, GetRelativeByFunc, Sear
 local OneTimeQuests = app.EmptyTable
 
 -- Module locals
-local RecursiveGroupRequirementsFilter, GroupFilter, DGU, UpdateRunner, CheckCanBeCollected, ExtraFilters
--- If a Thing which has a cost is not a quest or not saved
-local function CanBeCollected(ref)
-	return not ref.questID or not ref.saved;
-end
--- If a Thing which has a cost is not a quest or not saved or not an Account-Wide Quest
-local function CanBeAccountCollected(ref)
-	local questID = ref.questID
-	return not questID or not ref.saved or not OneTimeQuests[questID]
+local RecursiveGroupRequirementsFilter, GroupFilter, DGU, UpdateRunner, ExtraFilters
+-- If a Thing which has a cost is not a quest or is available as a quest
+local function IsAvailable(ref)
+	return not ref.questID or app.IsQuestAvailable(ref)
 end
 local function ToggleExtraFilters(active)
 	if not ExtraFilters then return end
@@ -39,9 +34,9 @@ end
 -- Function which returns if a Thing has a cost based on a given 'ref' Thing, which has been previously determined as a
 -- possible collectible without regard to filtering
 local function SubCheckCollectible(ref)
-	-- Collectibles that have a Cost but are already 'saved' should not indicate they are needed as a Cost
-	if CheckCanBeCollected and not CheckCanBeCollected(ref) then
-		-- app.PrintDebug("Saved Quest not collectible as cost",Linkify(ref),ref.saved,OneTimeQuests[ref.questID])
+	-- Only track Costs through Things which are Available
+	if not IsAvailable(ref) then
+		-- app.PrintDebug("Non-available Thing blocking Cost chain",app:SearchLink(ref))
 		return;
 	end
 	-- app.PrintDebug("SubCheckCollectible",ref.hash)
@@ -78,7 +73,7 @@ local function SubCheckCollectible(ref)
 		for i=1,#g do
 			o = g[i];
 			if GroupFilter(o, ExtraFilters) and SubCheckCollectible(o) then
-				-- app.PrintDebug("Purchase via sub-group Purchase",app:SearchLink(ref))
+				-- app.PrintDebug("Purchase via sub-group Collectible",app:SearchLink(ref),"<=",app:SearchLink(o))
 				return true;
 			end
 		end
@@ -86,7 +81,7 @@ local function SubCheckCollectible(ref)
 end
 
 local function CheckCollectible(ref)
-	-- app.PrintDebug("CheckCollectible",ref.hash,ref.__sourcePath)
+	-- app.PrintDebug("CheckCollectible",ref.hash)
 	-- don't include groups which don't meet the current filters
 	if RecursiveGroupRequirementsFilter(ref, ExtraFilters) then
 		return SubCheckCollectible(ref);
@@ -97,7 +92,6 @@ local function CacheFilters()
 	-- Cache repeat-used functions/values
 	RecursiveGroupRequirementsFilter = app.RecursiveGroupRequirementsExtraFilter;
 	GroupFilter = app.GroupExtraFilter;
-	CheckCanBeCollected = app.MODE_DEBUG_OR_ACCOUNT and CanBeAccountCollected or CanBeCollected;
 end
 local function BlockedParent(group)
 	if group.questID and (group.saved or group.locked or OneTimeQuests[group.questID]) then
@@ -278,10 +272,11 @@ local function UpdateCostGroup(c)
 	end
 	-- app.PrintDebug("UCG:Done",c.hash,app._SettingsRefresh)
 end
-app.UpdateCostGroup = function(group)
+local function OnSearchResultUpdate(group)
 	CacheFilters()
 	UpdateCostGroup(group)
 end
+app.AddEventHandler("OnSearchResultUpdate", OnSearchResultUpdate)
 
 -- Returns whether 't' should be considered collectible based on the set of costCollectibles already assigned to this 't'
 app.CollectibleAsCost = function(t)

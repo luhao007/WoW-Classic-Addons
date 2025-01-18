@@ -34,11 +34,15 @@ QuickButUI.ButList[5]=function()
 	};
 	-------
 	local Icon=255350
+	local ClickTooltip ="《"..CHARACTER_INFO.."C键》界面管理配装"
 	local Tooltip = KEY_BUTTON1.."-|cff00FFFF展开切换按钮|r\n"..KEY_BUTTON2.."-|cff00FFFF卸下身上有耐久装备|r"
 	local AutoEquip=PIGQuickBut(GnUI,Tooltip,Icon)
 	local butW = AutoEquip:GetHeight()
 	AutoEquip:GetNormalTexture():SetPoint("TOPLEFT", -3, 0);
 	AutoEquip:GetNormalTexture():SetPoint("BOTTOMRIGHT", 3, 0);
+	AutoEquip.tips = PIGFontString(AutoEquip,nil,"你没有已保存的配装，\n"..ClickTooltip,"OUTLINE");
+	AutoEquip.tips:SetJustifyH("RIGHT")
+	AutoEquip.tips:SetTextColor(1, 0, 0, 1)
 	--
 	local butW = QuickButUI.nr:GetHeight()
 	local AutoEquipList = PIGFrame(AutoEquip,{"BOTTOM",AutoEquip,"TOP",0,0},{butW, (butW+2)*PIG_EquipmentData.anniushu+2})
@@ -177,6 +181,7 @@ QuickButUI.ButList[5]=function()
 		local WowHeight=GetScreenHeight();
 		local offset1 = self:GetBottom();
 		AutoEquipList:ClearAllPoints();
+		AutoEquip.tips:ClearAllPoints();
 		if offset1>(WowHeight*0.5) then
 			for i=1,PIG_EquipmentData.anniushu do
 				local fujikj = _G["QkBut_AutoEquip_but"..i]
@@ -189,6 +194,7 @@ QuickButUI.ButList[5]=function()
 				end
 			end
 			AutoEquipList:SetPoint("TOPRIGHT",self,"BOTTOMRIGHT",0,0);
+			AutoEquip.tips:SetPoint("TOPRIGHT",self,"BOTTOMRIGHT",10,0);
 		else
 			for i=1,PIG_EquipmentData.anniushu do
 				local fujikj = _G["QkBut_AutoEquip_but"..i]
@@ -201,16 +207,20 @@ QuickButUI.ButList[5]=function()
 				end
 			end
 			AutoEquipList:SetPoint("BOTTOMRIGHT",self,"TOPRIGHT",0,0);
+			AutoEquip.tips:SetPoint("BOTTOMRIGHT",self,"TOPRIGHT",10,0);
 		end
 		AutoEquipList:Show()
 	end
 	AutoEquip:HookScript("OnLeave", function(self)
 		AutoEquipList:Hide()
+		self.tips:Hide()
 	end)
 	AutoEquipList:HookScript("OnHide", function(self)
 		if AutoEquip.xuyaoShow then AutoRuneListUI:Show() end
 	end)
 	AutoEquip:SetScript("OnEnter", function(self)
+		self.tips:Hide()
+		self.cunzainum=0
 		if AutoRuneListUI and AutoRuneListUI:IsShown() then AutoEquip.xuyaoShow=true;AutoRuneListUI:Hide() end
 		if tocversion<30000 then
 			for id = 1, PIG_EquipmentData.anniushu do
@@ -219,6 +229,7 @@ QuickButUI.ButList[5]=function()
 				fujikj.name:SetText(EMPTY);
 				local hangitem = PIGA_Per["QuickBut"]["EquipList"][id]
 				if hangitem then
+					self.cunzainum=self.cunzainum+1
 					fujikj:Show()
 					if hangitem[1] then
 						fujikj.name:SetText(hangitem[1]);
@@ -249,11 +260,14 @@ QuickButUI.ButList[5]=function()
 				end
 			end
 		end
+		if self.cunzainum==0 then
+			self.tips:Show()
+		end
 		self:UpDatePoints()
 	end)
 	AutoEquip:HookScript("OnClick", function(self,button)
 		if button=="LeftButton" then
-			PIGinfotip:TryDisplayMessage("右键卸下全部有耐久装备")
+			PIGinfotip:TryDisplayMessage("右键卸下全部有耐久装备\n"..ClickTooltip)
 		else
 			if InCombatLockdown() then PIGinfotip:TryDisplayMessage(CANNOT_UNEQUIP_COMBAT) return end
 			PIG_EquipmentData.InventoryNum={}
@@ -298,7 +312,4 @@ QuickButUI.ButList[5]=function()
 			AutoEquipList:Hide()
 		end
 	end);
-	-- local xiezhuangbei = [=[/run PickupInventoryItem(16) PickupContainerItem(4, 1)]=]
-	-- AutoEquip:SetAttribute("type", "macro")
-	-- AutoEquip:SetAttribute("macrotext", xiezhuangbei)
 end

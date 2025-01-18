@@ -240,7 +240,7 @@ function Create.PIGFrame(Parent,Point,WH,UIName,ESCOFF,Template)
 	return frameX
 end
 function Create.PIGEnter(Parent,text,text1,text2,Xpianyi,Ypianyi,huanhang)
-	local Xpianyi,Ypianyi=Xpianyi or 0,Ypianyi or 0
+	local Xpianyi,Ypianyi=Xpianyi or 16,Ypianyi or 0
 	local huanhangYN = true
 	if huanhang=="not" then
 		huanhangYN =  false

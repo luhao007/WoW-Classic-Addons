@@ -188,11 +188,13 @@ _.HeaderConstants = {
 	QUESTS = -1000031,
 	RARES = -1000032,
 	REWARDS = -1000033,
+	SHARED_APPEARANCES = -1000162,
 	SHOULDER = -1000070,
 	SPECIAL = -1000037,
 	TIER_ZERO_POINT_FIVE_SETS = -1000165,
 	TREASURES = -1000038,
 	UI_BOUNTY_WINDOW = -1000380,
+	UNIQUE_APPEARANCE = -1000163,
 	VENDORS = -1000039,
 	WEAPONS = -1000073,
 	WORLD_BOSSES = -1000042,
@@ -211,7 +213,7 @@ localize(L.HEADER_NAMES, {
 	[-1000019] = "Exploration",
 	[-1000020] = FACTION,
 	[-1000021] = "Flight Paths",
-	[-1000025] = "Holiday",
+	[-1000025] = "Holidays",
 	[-1000026] = MINIMAP_TRACKING_MAILBOX,
 	[-1000027] = BRAWL_TOOLTIP_MAPS,
 	[-1000030] = TRADE_SKILLS,
@@ -248,7 +250,6 @@ localize(L.HEADER_NAMES, {
 	[-1000093] = FACTION_ALLIANCE,
 	[-1000095] = FACTION_HORDE,
 	[-1000099] = ITEM_QUALITY1_DESC,
-	[-1000104] = ITEM_QUALITY5_DESC,
 	[-1000106] = ITEM_QUALITY0_DESC,
 	[-1000114] = "Patch 1.x.x",
 	[-1000123] = "Armor Enchantments",
@@ -256,6 +257,8 @@ localize(L.HEADER_NAMES, {
 	[-1000137] = BATTLEGROUNDS,
 	[-1000142] = "Honor Titles",
 	[-1000144] = PVP,
+	[-1000162] = "Shared Appearances",
+	[-1000163] = "Unique Appearance",
 	[-1000164] = "Crieve's Never Implemented List",
 	[-1000165] = "Tier 0.5 Sets",
 	[-1000166] = "Captains",
@@ -300,7 +303,7 @@ localize(L.HEADER_NAMES, {
 	[-1000267] = BATTLE_PET_SOURCE_9,
 	[-1000373] = "New Character",
 	[-1000380] = "Bounty",
-	[-1000872] = "Plunderstorm",
+	[-1000872] = WOWLABS_GAMEMODE_HEADER,
 	[-1000904] = "Source IDs",
 	[-1001035] = "Seasonal Fish: Summer Bass",
 	[-1001036] = "Seasonal Fish: Winter Squid",
@@ -311,6 +314,8 @@ localize(L.HEADER_DESCRIPTIONS, {
 	[-1000030] = "This section will only show your current character's professions outside of Account and Debug Mode.",
 	[-1000033] = "Contains Things which are rewarded or are available from other content within the containing section.\nThey are consolidated here in an effort to reduce duplication from many possible Sources.",
 	[-1000040] = "A weapon master is an NPC that offers characters the opportunity to learn specific weapon skills, the availability of which varies from one weapon master to another. All weapon skills can be trained at level 1, except for Polearms which require level 20.\n\nTraining with a weapon master became obsolete in Patch 4.0.1, as all class-appropriate weapon proficiencies are now learned by each class upon creation. Weapon masters were removed from the game shortly after.",
+	[-1000162] = "The items in this list are shared appearances for the above item. In Unique Appearance Mode, this list can help you understand why or why not a specific item would be marked Collected.",
+	[-1000163] = "This item has a Unique Appearance. You must collect this item specifically to earn the appearance.",
 	[-1000164] = "If the following are sorted somewhere, please delete them from this list. Thanks.",
 	[-1000171] = "Also known as 'Lower' Blackrock Spire.",
 	[-1000172] = "Also known as 'Upper' Blackrock Spire.",
@@ -382,7 +387,6 @@ localize(L.HEADER_ICONS, {
 	[-1000093] = 374217,
 	[-1000095] = 374221,
 	[-1000099] = 135030,
-	[-1000104] = _.asset("weapon_type_legendary"),
 	[-1000106] = 135025,
 	[-1000114] = _.asset("expansion_classic"),
 	[-1000123] = 237019,
@@ -390,6 +394,8 @@ localize(L.HEADER_ICONS, {
 	[-1000137] = 132486,
 	[-1000142] = 135358,
 	[-1000144] = _.asset("category_pvp"),
+	[-1000162] = 132874,
+	[-1000163] = 132873,
 	[-1000164] = 132738,
 	[-1000165] = 132738,
 	[-1000166] = 236623,
@@ -462,70 +468,70 @@ localize(L.EVENT_REMAPPING, {
 
 -- Programmatic Event Scheduling
 _.Modules.Events.SetEventInformation(446916, {
-	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=3,["monthDay"]=19,["weekday"]=3,["year"]=2024},{["hour"]=0,["minute"]=0,["month"]=4,["monthDay"]=30,["weekday"]=3,["year"]=2024})
+	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=1,["monthDay"]=14,["weekday"]=3,["year"]=2025},{["hour"]=0,["minute"]=0,["month"]=4,["monthDay"]=30,["weekday"]=4,["year"]=2025})
 });
 _.Modules.Events.SetEventInformation(181, {
-	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=4,["monthDay"]=17,["weekday"]=2,["year"]=2023},{["hour"]=0,["minute"]=0,["month"]=4,["monthDay"]=18,["weekday"]=3,["year"]=2023}),
 	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=4,["monthDay"]=17,["weekday"]=4,["year"]=2024},{["hour"]=0,["minute"]=0,["month"]=4,["monthDay"]=18,["weekday"]=5,["year"]=2024}),
-	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=4,["monthDay"]=17,["weekday"]=5,["year"]=2025},{["hour"]=0,["minute"]=0,["month"]=4,["monthDay"]=18,["weekday"]=6,["year"]=2025})
+	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=4,["monthDay"]=17,["weekday"]=5,["year"]=2025},{["hour"]=0,["minute"]=0,["month"]=4,["monthDay"]=18,["weekday"]=6,["year"]=2025}),
+	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=4,["monthDay"]=17,["weekday"]=6,["year"]=2026},{["hour"]=0,["minute"]=0,["month"]=4,["monthDay"]=18,["weekday"]=7,["year"]=2026})
 });
 _.Modules.Events.SetEventInformation(341, {
-	_.Modules.Events.CreateSchedule({["hour"]=10,["minute"]=0,["month"]=6,["monthDay"]=21,["weekday"]=4,["year"]=2023},{["hour"]=10,["minute"]=0,["month"]=7,["monthDay"]=5,["weekday"]=4,["year"]=2023}),
 	_.Modules.Events.CreateSchedule({["hour"]=10,["minute"]=0,["month"]=6,["monthDay"]=21,["weekday"]=6,["year"]=2024},{["hour"]=10,["minute"]=0,["month"]=7,["monthDay"]=5,["weekday"]=6,["year"]=2024}),
-	_.Modules.Events.CreateSchedule({["hour"]=10,["minute"]=0,["month"]=6,["monthDay"]=21,["weekday"]=7,["year"]=2025},{["hour"]=10,["minute"]=0,["month"]=7,["monthDay"]=5,["weekday"]=7,["year"]=2025})
+	_.Modules.Events.CreateSchedule({["hour"]=10,["minute"]=0,["month"]=6,["monthDay"]=21,["weekday"]=7,["year"]=2025},{["hour"]=10,["minute"]=0,["month"]=7,["monthDay"]=5,["weekday"]=7,["year"]=2025}),
+	_.Modules.Events.CreateSchedule({["hour"]=10,["minute"]=0,["month"]=6,["monthDay"]=21,["weekday"]=1,["year"]=2026},{["hour"]=10,["minute"]=0,["month"]=7,["monthDay"]=5,["weekday"]=1,["year"]=2026})
 });
 _.Modules.Events.SetEventInformation(327, {
-	_.Modules.Events.CreateSchedule({["hour"]=10,["minute"]=0,["month"]=1,["monthDay"]=20,["weekday"]=6,["year"]=2023},{["hour"]=10,["minute"]=0,["month"]=2,["monthDay"]=3,["weekday"]=6,["year"]=2023}),
 	_.Modules.Events.CreateSchedule({["hour"]=10,["minute"]=0,["month"]=1,["monthDay"]=20,["weekday"]=7,["year"]=2024},{["hour"]=10,["minute"]=0,["month"]=2,["monthDay"]=3,["weekday"]=7,["year"]=2024}),
-	_.Modules.Events.CreateSchedule({["hour"]=10,["minute"]=0,["month"]=1,["monthDay"]=20,["weekday"]=2,["year"]=2025},{["hour"]=10,["minute"]=0,["month"]=2,["monthDay"]=3,["weekday"]=2,["year"]=2025})
+	_.Modules.Events.CreateSchedule({["hour"]=10,["minute"]=0,["month"]=1,["monthDay"]=20,["weekday"]=2,["year"]=2025},{["hour"]=10,["minute"]=0,["month"]=2,["monthDay"]=3,["weekday"]=2,["year"]=2025}),
+	_.Modules.Events.CreateSchedule({["hour"]=10,["minute"]=0,["month"]=1,["monthDay"]=20,["weekday"]=3,["year"]=2026},{["hour"]=10,["minute"]=0,["month"]=2,["monthDay"]=3,["weekday"]=3,["year"]=2026})
 });
 _.Modules.Events.SetEventInformation(423, {
-	_.Modules.Events.CreateSchedule({["hour"]=10,["minute"]=0,["month"]=2,["monthDay"]=6,["weekday"]=2,["year"]=2023},{["hour"]=10,["minute"]=0,["month"]=2,["monthDay"]=20,["weekday"]=2,["year"]=2023}),
 	_.Modules.Events.CreateSchedule({["hour"]=10,["minute"]=0,["month"]=2,["monthDay"]=6,["weekday"]=3,["year"]=2024},{["hour"]=10,["minute"]=0,["month"]=2,["monthDay"]=20,["weekday"]=3,["year"]=2024}),
-	_.Modules.Events.CreateSchedule({["hour"]=10,["minute"]=0,["month"]=2,["monthDay"]=6,["weekday"]=5,["year"]=2025},{["hour"]=10,["minute"]=0,["month"]=2,["monthDay"]=20,["weekday"]=5,["year"]=2025})
+	_.Modules.Events.CreateSchedule({["hour"]=10,["minute"]=0,["month"]=2,["monthDay"]=6,["weekday"]=5,["year"]=2025},{["hour"]=10,["minute"]=0,["month"]=2,["monthDay"]=20,["weekday"]=5,["year"]=2025}),
+	_.Modules.Events.CreateSchedule({["hour"]=10,["minute"]=0,["month"]=2,["monthDay"]=6,["weekday"]=6,["year"]=2026},{["hour"]=10,["minute"]=0,["month"]=2,["monthDay"]=20,["weekday"]=6,["year"]=2026})
 });
 _.Modules.Events.SetEventInformation(321, {
-	_.Modules.Events.CreateSchedule({["hour"]=10,["minute"]=0,["month"]=9,["monthDay"]=6,["weekday"]=4,["year"]=2023},{["hour"]=10,["minute"]=0,["month"]=9,["monthDay"]=13,["weekday"]=4,["year"]=2023}),
 	_.Modules.Events.CreateSchedule({["hour"]=10,["minute"]=0,["month"]=9,["monthDay"]=6,["weekday"]=6,["year"]=2024},{["hour"]=10,["minute"]=0,["month"]=9,["monthDay"]=13,["weekday"]=6,["year"]=2024}),
-	_.Modules.Events.CreateSchedule({["hour"]=10,["minute"]=0,["month"]=9,["monthDay"]=6,["weekday"]=7,["year"]=2025},{["hour"]=10,["minute"]=0,["month"]=9,["monthDay"]=13,["weekday"]=7,["year"]=2025})
+	_.Modules.Events.CreateSchedule({["hour"]=10,["minute"]=0,["month"]=9,["monthDay"]=6,["weekday"]=7,["year"]=2025},{["hour"]=10,["minute"]=0,["month"]=9,["monthDay"]=13,["weekday"]=7,["year"]=2025}),
+	_.Modules.Events.CreateSchedule({["hour"]=10,["minute"]=0,["month"]=9,["monthDay"]=6,["weekday"]=1,["year"]=2026},{["hour"]=10,["minute"]=0,["month"]=9,["monthDay"]=13,["weekday"]=1,["year"]=2026})
 });
 _.Modules.Events.SetEventInformation(324, {
-	_.Modules.Events.CreateSchedule({["hour"]=10,["minute"]=0,["month"]=10,["monthDay"]=18,["weekday"]=4,["year"]=2023},{["hour"]=11,["minute"]=0,["month"]=11,["monthDay"]=1,["weekday"]=4,["year"]=2023}),
 	_.Modules.Events.CreateSchedule({["hour"]=10,["minute"]=0,["month"]=10,["monthDay"]=18,["weekday"]=6,["year"]=2024},{["hour"]=11,["minute"]=0,["month"]=11,["monthDay"]=1,["weekday"]=6,["year"]=2024}),
-	_.Modules.Events.CreateSchedule({["hour"]=10,["minute"]=0,["month"]=10,["monthDay"]=18,["weekday"]=7,["year"]=2025},{["hour"]=11,["minute"]=0,["month"]=11,["monthDay"]=1,["weekday"]=7,["year"]=2025})
+	_.Modules.Events.CreateSchedule({["hour"]=10,["minute"]=0,["month"]=10,["monthDay"]=18,["weekday"]=7,["year"]=2025},{["hour"]=11,["minute"]=0,["month"]=11,["monthDay"]=1,["weekday"]=7,["year"]=2025}),
+	_.Modules.Events.CreateSchedule({["hour"]=10,["minute"]=0,["month"]=10,["monthDay"]=18,["weekday"]=1,["year"]=2026},{["hour"]=11,["minute"]=0,["month"]=11,["monthDay"]=1,["weekday"]=1,["year"]=2026})
 });
 _.Modules.Events.SetEventInformation(141, {
-	_.Modules.Events.CreateSchedule({["hour"]=10,["minute"]=0,["month"]=12,["monthDay"]=16,["weekday"]=7,["year"]=2023},{["hour"]=6,["minute"]=0,["month"]=1,["monthDay"]=2,["weekday"]=3,["year"]=2024}),
 	_.Modules.Events.CreateSchedule({["hour"]=10,["minute"]=0,["month"]=12,["monthDay"]=16,["weekday"]=2,["year"]=2024},{["hour"]=6,["minute"]=0,["month"]=1,["monthDay"]=2,["weekday"]=5,["year"]=2025}),
-	_.Modules.Events.CreateSchedule({["hour"]=10,["minute"]=0,["month"]=12,["monthDay"]=16,["weekday"]=3,["year"]=2025},{["hour"]=6,["minute"]=0,["month"]=1,["monthDay"]=2,["weekday"]=6,["year"]=2026})
+	_.Modules.Events.CreateSchedule({["hour"]=10,["minute"]=0,["month"]=12,["monthDay"]=16,["weekday"]=3,["year"]=2025},{["hour"]=6,["minute"]=0,["month"]=1,["monthDay"]=2,["weekday"]=6,["year"]=2026}),
+	_.Modules.Events.CreateSchedule({["hour"]=10,["minute"]=0,["month"]=12,["monthDay"]=16,["weekday"]=4,["year"]=2026},{["hour"]=6,["minute"]=0,["month"]=1,["monthDay"]=2,["weekday"]=7,["year"]=2027})
 });
 _.Modules.Events.SetEventInformation(479, {
-	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=10,["monthDay"]=6,["weekday"]=1,["year"]=2024},{["hour"]=0,["minute"]=0,["month"]=10,["monthDay"]=13,["weekday"]=1,["year"]=2024},{["remappedID"]=375}),
-	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=11,["monthDay"]=3,["weekday"]=1,["year"]=2024},{["hour"]=0,["minute"]=0,["month"]=11,["monthDay"]=10,["weekday"]=1,["year"]=2024},{["remappedID"]=374}),
-	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=12,["monthDay"]=1,["weekday"]=1,["year"]=2024},{["hour"]=0,["minute"]=0,["month"]=12,["monthDay"]=8,["weekday"]=1,["year"]=2024},{["remappedID"]=375}),
-	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=1,["monthDay"]=5,["weekday"]=1,["year"]=2025},{["hour"]=0,["minute"]=0,["month"]=1,["monthDay"]=12,["weekday"]=1,["year"]=2025},{["remappedID"]=374}),
-	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=2,["monthDay"]=2,["weekday"]=1,["year"]=2025},{["hour"]=0,["minute"]=0,["month"]=2,["monthDay"]=9,["weekday"]=1,["year"]=2025},{["remappedID"]=375}),
-	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=3,["monthDay"]=2,["weekday"]=1,["year"]=2025},{["hour"]=0,["minute"]=0,["month"]=3,["monthDay"]=9,["weekday"]=1,["year"]=2025},{["remappedID"]=374}),
-	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=4,["monthDay"]=6,["weekday"]=1,["year"]=2025},{["hour"]=0,["minute"]=0,["month"]=4,["monthDay"]=13,["weekday"]=1,["year"]=2025},{["remappedID"]=375}),
-	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=5,["monthDay"]=4,["weekday"]=1,["year"]=2025},{["hour"]=0,["minute"]=0,["month"]=5,["monthDay"]=11,["weekday"]=1,["year"]=2025},{["remappedID"]=374}),
-	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=6,["monthDay"]=1,["weekday"]=1,["year"]=2025},{["hour"]=0,["minute"]=0,["month"]=6,["monthDay"]=8,["weekday"]=1,["year"]=2025},{["remappedID"]=375}),
-	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=7,["monthDay"]=6,["weekday"]=1,["year"]=2025},{["hour"]=0,["minute"]=0,["month"]=7,["monthDay"]=13,["weekday"]=1,["year"]=2025},{["remappedID"]=374}),
-	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=8,["monthDay"]=3,["weekday"]=1,["year"]=2025},{["hour"]=0,["minute"]=0,["month"]=8,["monthDay"]=10,["weekday"]=1,["year"]=2025},{["remappedID"]=375})
+	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=12,["monthDay"]=7,["weekday"]=1,["year"]=2025},{["hour"]=0,["minute"]=0,["month"]=12,["monthDay"]=14,["weekday"]=1,["year"]=2025},{["remappedID"]=375}),
+	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=1,["monthDay"]=4,["weekday"]=1,["year"]=2026},{["hour"]=0,["minute"]=0,["month"]=1,["monthDay"]=11,["weekday"]=1,["year"]=2026},{["remappedID"]=374}),
+	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=2,["monthDay"]=1,["weekday"]=1,["year"]=2026},{["hour"]=0,["minute"]=0,["month"]=2,["monthDay"]=8,["weekday"]=1,["year"]=2026},{["remappedID"]=375}),
+	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=3,["monthDay"]=1,["weekday"]=1,["year"]=2026},{["hour"]=0,["minute"]=0,["month"]=3,["monthDay"]=8,["weekday"]=1,["year"]=2026},{["remappedID"]=374}),
+	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=4,["monthDay"]=5,["weekday"]=1,["year"]=2026},{["hour"]=0,["minute"]=0,["month"]=4,["monthDay"]=12,["weekday"]=1,["year"]=2026},{["remappedID"]=375}),
+	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=5,["monthDay"]=3,["weekday"]=1,["year"]=2026},{["hour"]=0,["minute"]=0,["month"]=5,["monthDay"]=10,["weekday"]=1,["year"]=2026},{["remappedID"]=374}),
+	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=6,["monthDay"]=7,["weekday"]=1,["year"]=2026},{["hour"]=0,["minute"]=0,["month"]=6,["monthDay"]=14,["weekday"]=1,["year"]=2026},{["remappedID"]=375}),
+	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=7,["monthDay"]=5,["weekday"]=1,["year"]=2026},{["hour"]=0,["minute"]=0,["month"]=7,["monthDay"]=12,["weekday"]=1,["year"]=2026},{["remappedID"]=374}),
+	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=8,["monthDay"]=2,["weekday"]=1,["year"]=2026},{["hour"]=0,["minute"]=0,["month"]=8,["monthDay"]=9,["weekday"]=1,["year"]=2026},{["remappedID"]=375}),
+	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=9,["monthDay"]=6,["weekday"]=1,["year"]=2026},{["hour"]=0,["minute"]=0,["month"]=9,["monthDay"]=13,["weekday"]=1,["year"]=2026},{["remappedID"]=374}),
+	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=10,["monthDay"]=4,["weekday"]=1,["year"]=2026},{["hour"]=0,["minute"]=0,["month"]=10,["monthDay"]=11,["weekday"]=1,["year"]=2026},{["remappedID"]=375})
 });
 _.Modules.Events.SetEventInformation(201, {
-	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=5,["monthDay"]=1,["weekday"]=2,["year"]=2023},{["hour"]=23,["minute"]=59,["month"]=5,["monthDay"]=7,["weekday"]=1,["year"]=2023}),
 	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=5,["monthDay"]=1,["weekday"]=4,["year"]=2024},{["hour"]=23,["minute"]=59,["month"]=5,["monthDay"]=7,["weekday"]=3,["year"]=2024}),
-	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=5,["monthDay"]=1,["weekday"]=5,["year"]=2025},{["hour"]=23,["minute"]=59,["month"]=5,["monthDay"]=7,["weekday"]=4,["year"]=2025})
+	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=5,["monthDay"]=1,["weekday"]=5,["year"]=2025},{["hour"]=23,["minute"]=59,["month"]=5,["monthDay"]=7,["weekday"]=4,["year"]=2025}),
+	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=5,["monthDay"]=1,["weekday"]=6,["year"]=2026},{["hour"]=23,["minute"]=59,["month"]=5,["monthDay"]=7,["weekday"]=5,["year"]=2026})
 });
 _.Modules.Events.SetEventInformation(133899, {
-	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=9,["monthDay"]=23,["weekday"]=7,["year"]=2023},{["hour"]=23,["minute"]=59,["month"]=3,["monthDay"]=19,["weekday"]=3,["year"]=2024}),
 	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=9,["monthDay"]=23,["weekday"]=2,["year"]=2024},{["hour"]=23,["minute"]=59,["month"]=3,["monthDay"]=19,["weekday"]=4,["year"]=2025}),
-	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=9,["monthDay"]=23,["weekday"]=3,["year"]=2025},{["hour"]=23,["minute"]=59,["month"]=3,["monthDay"]=19,["weekday"]=5,["year"]=2026})
+	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=9,["monthDay"]=23,["weekday"]=3,["year"]=2025},{["hour"]=23,["minute"]=59,["month"]=3,["monthDay"]=19,["weekday"]=5,["year"]=2026}),
+	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=9,["monthDay"]=23,["weekday"]=4,["year"]=2026},{["hour"]=23,["minute"]=59,["month"]=3,["monthDay"]=19,["weekday"]=6,["year"]=2027})
 });
 _.Modules.Events.SetEventInformation(133889, {
-	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=3,["monthDay"]=20,["weekday"]=2,["year"]=2023},{["hour"]=23,["minute"]=59,["month"]=9,["monthDay"]=22,["weekday"]=6,["year"]=2023}),
 	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=3,["monthDay"]=20,["weekday"]=4,["year"]=2024},{["hour"]=23,["minute"]=59,["month"]=9,["monthDay"]=22,["weekday"]=1,["year"]=2024}),
-	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=3,["monthDay"]=20,["weekday"]=5,["year"]=2025},{["hour"]=23,["minute"]=59,["month"]=9,["monthDay"]=22,["weekday"]=2,["year"]=2025})
+	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=3,["monthDay"]=20,["weekday"]=5,["year"]=2025},{["hour"]=23,["minute"]=59,["month"]=9,["monthDay"]=22,["weekday"]=2,["year"]=2025}),
+	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=3,["monthDay"]=20,["weekday"]=6,["year"]=2026},{["hour"]=23,["minute"]=59,["month"]=9,["monthDay"]=22,["weekday"]=3,["year"]=2026})
 });
 
 -- Filter Database Module
@@ -1429,6 +1435,7 @@ local ObjectNames = {
 	[181073] = "Fragrant Cauldron",
 	[181074] = "Arena Spoils",
 	[181083] = "Sothos and Jarien's Heirlooms",
+	[181085] = "Stratholme Supply Crate",
 	[181098] = "Volcanic Ash",
 	[181366] = "Four Horsemen Chest",
 	[181597] = "Silithyst Mound",
@@ -2410,6 +2417,7 @@ local ObjectModels = {
 	[181073] = 198100,
 	[181074] = 196976,
 	[181083] = 196976,
+	[181085] = 199636,
 	[181098] = 204112,
 	[181366] = 200953,
 	[181597] = 200156,
@@ -3477,9 +3485,12 @@ localize(L.HEADER_NAMES, {
 	[-1000010] = "Gemeinsame Bossbeute",
 	[-1000015] = "Dämonenausbilderin",
 	[-1000019] = "Erkundung",
+	[-1000025] = "Feiertage",
 	[-1000034] = "Reitlehrerin",
 	[-1000040] = "Waffenmeisterin",
 	[-1000048] = "Drachen des Alptraums",
+	[-1000162] = "Geteilte Vorlagen",
+	[-1000163] = "Einzigartige Vorlagen",
 	[-1000168] = "Die Vier Reiter",
 	[-1000179] = "Friedhof",
 	[-1000180] = "Bibliothek",
@@ -3498,6 +3509,8 @@ localize(L.HEADER_NAMES, {
 localize(L.HEADER_DESCRIPTIONS, {
 	[-1000025] = "Es muss möglicherweise ein bestimmter Feiertag aktiv sein, um hier genannte Dinge abschließen zu können.",
 	[-1000040] = "Ein Waffenmeister ist ein NPC, der Charakteren die Möglichkeit bietet, bestimmte Waffenfertigkeiten zu erlernen, deren Verfügbarkeit von Waffenmeister zu Waffenmeister unterschiedlich ist. Alle Waffenfähigkeiten können auf Stufe 1 trainiert werden, mit Ausnahme von Stangenwaffen, für die Stufe 20 erforderlich ist.\n\nDas Training mit einem Waffenmeister wurde in Patch 4.0.1 obsolet, da nun alle klassengerechten Waffenfertigkeiten von jeder Klasse bei der Erstellung erlernt werden. Waffenmeister wurden kurz darauf aus dem Spiel entfernt.",
+	[-1000162] = "Die Gegenstände in dieser Liste teilen ihre Vorlage mit dem oben genannten Gegenstand. Im Modus für Einzigartige Vorlagen kann diese Liste Ihnen helfen zu verstehen, warum ein bestimmter Gegenstand als gesammelt markiert ist, oder ob nicht.",
+	[-1000163] = "Dieser Gegenstand hat eine einzigartige Vorlage. Ihr müsst diesen Gegenstand erhalten, um die Vorlage eurer Sammlung hinzuzufügen.",
 	[-1000380] = "Diese Liste enthält nicht erhältliche Gegenstände, die von ATT Discord als Fehler gemeldet wurden, die Blizzard noch beheben muss.\n\nHINWEIS: Alle Filter werden aus Sichtbarkeitsgründen in dieser Liste ignoriert. In dieser Liste sind nur Gegenstände enthalten, die aufgrund von Fahrlässigkeit aus dem Spiel entfernt wurden, und nicht ein riesiger feuerspeiender Drache.\n\nAn Blizzard-Entwickler: Bitte beheben Sie die unten aufgeführten Gegenstände und Begegnungen.",
 });
 localize(L.FILTER_ID_TYPES, {
@@ -4158,6 +4171,7 @@ localize(ObjectNames, {
 	[181073] = "Duftender Kessel",
 	[181074] = "Arenabeute",
 	[181083] = "Sothos' und Jariens Erbstücke",
+	[181085] = "Vorratskiste von Stratholme",
 	[181098] = "Vulkanasche",
 	[181366] = "Truhe der Vier Reiter",
 	[181597] = "Silithysthaufen",
@@ -4479,9 +4493,12 @@ if simplifiedLocale == "fr" then
 localize(L.HEADER_NAMES, {
 	[-1000013] = "Objets communs des vendeurs",
 	[-1000015] = "Maître des démons",
+	[-1000025] = "Évènements saisonniers",
 	[-1000034] = "Instructrice de monte",
 	[-1000040] = "Maître d'armes",
 	[-1000048] = "Dragons du Cauchemar",
+	[-1000162] = "Apparences Partagées",
+	[-1000163] = "Apparence unique",
 	[-1000165] = "Ensembles Tier 0.5",
 	[-1000166] = "Capitaines",
 	[-1000168] = "Les quatre cavaliers",
@@ -4508,6 +4525,8 @@ localize(L.HEADER_NAMES, {
 localize(L.HEADER_DESCRIPTIONS, {
 	[-1000033] = "Contient des objets de récompenses ou disponibles dans d’autres contenus de la section qui les contient.\nIls sont regroupés ici dans le but de réduire la duplication de nombreuses sources possibles.",
 	[-1000040] = "Un maître d'armes est un PNJ qui offre aux personnages la possibilité d'apprendre des compétences d'armes spécifiques, dont la disponibilité varie d'un maître d'armes à l'autre. Toutes les compétences d'armes peuvent être entraînées au niveau 1, à l'exception des armes d'hast qui nécessitent le niveau 20.\n\nL'entraînement avec un maître d'armes est devenu obsolète dans le patch 4.0.1, car toutes les compétences d'armes appropriées à la classe sont désormais apprises par chaque classe lors de sa création. Les maîtres d'armes ont été retirés du jeu peu de temps après.",
+	[-1000162] = "Les éléments de cette liste sont des apparences partagées pour l'élément ci-dessus. En mode Apparence unique, cette liste peut vous aider à comprendre pourquoi ou pourquoi un élément spécifique serait marqué Collecté.",
+	[-1000163] = "Cet article a une apparence unique. Vous devez collecter cet objet spécifiquement pour gagner l’apparence.",
 	[-1000380] = "Cette liste contient des éléments impossibles à obtenir que ATT Discord a signalés comme des bogues que Blizzard n'a pas encore corrigés.\n\nREMARQUE : Tous les filtres sont ignorés dans cette liste pour des raisons de visibilité. Seuls les éléments retirés du jeu en raison d'une négligence plutôt que d'un gigantesque dragon cracheur de feu sont présents sur cette liste.\n\nAux développeurs de Blizzard : veuillez corriger les éléments et les rencontres répertoriés ci-dessous.",
 });
 localize(L.FILTER_ID_TYPES, {
@@ -5167,6 +5186,7 @@ localize(ObjectNames, {
 	[181073] = "Chaudron parfumé",
 	[181074] = "Butin de l'arène",
 	[181083] = "Possessions de Sothos et Jarien",
+	[181085] = "Caisse de fournitures de Stratholme",
 	[181098] = "Cendre volcanique",
 	[181366] = "Coffre des quatre cavaliers",
 	[181597] = "Monticule de silithyste",
@@ -5487,6 +5507,10 @@ do achievementCategories[key].name = value; end
 end
 if simplifiedLocale == "it" then
 localize(L.HEADER_NAMES, {
+	[-1000025] = "Festività",
+	[-1000034] = "Istruttore di equitazione",
+	[-1000162] = "Aspetti Condivisi",
+	[-1000163] = "Aspetto unico",
 	[-1000168] = "I Cavalieri dell'Apocalisse",
 	[-1000201] = "Fiera di Lunacupa",
 	[-1000223] = "Fuochi di Mezza Estate",
@@ -5499,6 +5523,8 @@ localize(L.HEADER_NAMES, {
 	[-1001036] = "Pesce di stagione: calamari invernali",
 });
 localize(L.HEADER_DESCRIPTIONS, {
+	[-1000162] = "Gli elementi in questo elenco sono aspetti condivisi per l'elemento precedente. Nella modalità Aspetto unico, questo elenco può aiutarti a capire perché o perché un oggetto specifico verrebbe contrassegnato come Raccolto.",
+	[-1000163] = "Questo oggetto ha un aspetto unico. Devi raccogliere questo oggetto appositamente per guadagnare l'aspetto.",
 	[-1000380] = "Questo elenco contiene elementi non ottenibili che ATT Discord ha segnalato come bug che Blizzard deve ancora correggere.\n\nNOTA: tutti i filtri vengono ignorati in questo elenco per motivi di visibilità. In questo elenco sono presenti solo gli oggetti rimossi dal gioco a causa di negligenza e non un gigantesco drago sputafuoco.\n\nAgli sviluppatori Blizzard: correggete gli oggetti e gli incontri elencati di seguito.",
 });
 localize(ObjectNames, {
@@ -5825,6 +5851,7 @@ localize(ObjectNames, {
 	[180901] = "Rottami dei Velerosse",
 	[181053] = "Cesto di Algasangue",
 	[181073] = "Calderone Profumato",
+	[181085] = "Cassa di Rifornimenti di Stratholme",
 	[181366] = "Cassa dei Cavalieri dell'Apocalisse",
 	[181597] = "Mucchio di Silitisti",
 	[181598] = "Geyser Silitista",
@@ -5867,8 +5894,11 @@ end
 if simplifiedLocale == "pt" then
 localize(L.HEADER_NAMES, {
 	[-1000015] = "Treinamento de Demônios",
+	[-1000025] = "Feriados",
 	[-1000034] = "Treinamento de Montaria",
 	[-1000040] = "Mestre de Armas",
+	[-1000162] = "Aparências Compartilhadas",
+	[-1000163] = "Aparência Única",
 	[-1000168] = "Os Quatro Cavaleiros",
 	[-1000201] = "Feira de Negraluna",
 	[-1000223] = "Festival do Fogo do Solstício",
@@ -5882,6 +5912,8 @@ localize(L.HEADER_NAMES, {
 });
 localize(L.HEADER_DESCRIPTIONS, {
 	[-1000040] = "Um mestre de armas é um NPC que oferece aos personagens a oportunidade de aprender habilidades específicas com armas, cuja disponibilidade varia de um mestre de armas para outro. Todas as habilidades com armas podem ser treinadas no nível 1, exceto as armas de haste, que exigem nível 20.\n\nO treinamento com um mestre de armas tornou-se obsoleto no Patch 4.0.1, já que todas as proficiências de armas apropriadas à classe agora são aprendidas por cada classe após a criação. Os mestres de armas foram removidos do jogo logo depois.",
+	[-1000162] = "Os itens nesta lista são aparências compartilhadas do item acima. No Modo de Aparência Única, esta lista pode ajudá-lo a entender por que ou não um item específico seria marcado como Coletado.",
+	[-1000163] = "Este item tem uma aparência única. Você deve coletar este item especificamente para ganhar a aparência.",
 	[-1000380] = "Esta lista contém itens inacessíveis que o ATT Discord relatou como bugs que a Blizzard ainda não corrigiu.\n\nNOTA: Todos os filtros são ignorados nesta lista para visibilidade. Apenas itens removidos do jogo por negligência, em vez de um gigantesco dragão cuspidor de fogo, estão presentes nesta lista.\n\nPara os desenvolvedores da Blizzard: Corrijam os itens e encontros listados abaixo.",
 });
 localize(ObjectNames, {
@@ -6476,6 +6508,7 @@ localize(ObjectNames, {
 	[180901] = "Destroços dos Vela Sangrenta",
 	[181053] = "Cesta de Algassangue",
 	[181073] = "Caldeirão Cheiroso",
+	[181085] = "Caixote de Suprimentos de Stratholme",
 	[181098] = "Cinza Vulcânica",
 	[181366] = "Baú dos Quatro Cavaleiros",
 	[181597] = "Monte de Terra Silitista",
@@ -6800,6 +6833,7 @@ localize(L.HEADER_NAMES, {
 	[-1000015] = "Наставник демонов",
 	[-1000019] = "Исследование",
 	[-1000021] = "Точка полета",
+	[-1000025] = "Праздники",
 	[-1000032] = "Редкие",
 	[-1000034] = "Учитель верховой езды",
 	[-1000038] = "Сундук с сокровищами",
@@ -6807,6 +6841,8 @@ localize(L.HEADER_NAMES, {
 	[-1000042] = "Мировые Боссы",
 	[-1000044] = "Добыча локации",
 	[-1000048] = "Драконы Кошмара",
+	[-1000162] = "Общие Облики",
+	[-1000163] = "Уникальный Облик",
 	[-1000165] = "Комплекты T0.5",
 	[-1000166] = "Капитаны",
 	[-1000168] = "Четыре Всадника",
@@ -6829,7 +6865,6 @@ localize(L.HEADER_NAMES, {
 	[-1000244] = "Коллекционное издание",
 	[-1000373] = "Новый персонаж",
 	[-1000380] = "Премия",
-	[-1000872] = "Пиратская буря",
 	[-1001035] = "Сезонная рыба: летний окунь",
 	[-1001036] = "Сезонная рыба: зимний кальмар",
 });
@@ -6837,6 +6872,8 @@ localize(L.HEADER_DESCRIPTIONS, {
 	[-1000025] = "Чтобы выполнить упомянутые в данной секции Штучки, может быть нужен какой-то праздник.",
 	[-1000033] = "Штучки, которые можно получить в награду с разного контента в родительской секции.\nОни собраны здесь, чтобы уменьшить количество источников, когда Штучка доступна из многих мест.",
 	[-1000040] = "Мастер оружия - это NPC, который предлагает персонажам возможность изучить определенные навыки обращения с оружием, доступность которых варьируется от одного мастера к другому. Все навыки обращения с оружием можно изучить на уровне 1, кроме древкового оружия, для которого требуется уровень 20.\n\nОбучение с мастером оружия стало устаревшим в патче 4.0.1, так как все соответствующие классу навыки владения оружием теперь изучаются каждым классом при создании. Вскоре после этого из игры были удалены мастера оружия.",
+	[-1000162] = "Предметы из данного списка - общие облики для предмета выше. Для Режима Уникальных Обликов, этот список может помочь Вам разобраться, почему определённый предмт отмечен как Получен или нет.",
+	[-1000163] = "Этот предмет имеет Уникальный Облик. Вы должны получить именно этот предмет для открытия Облика.",
 	[-1000380] = "Этот список содержит Недоступные предметы, что Дискорд ATT сообщил как ошибки, которые Blizzard ещё не исправили.\n\nВНИМАНИЕ: Все фильтры игнорируются в данном списке для видимости. Только предметы, удалённые из игры из-за халатности, но не из-за гигантского огнедышащего дракона, перечислены в данном списке.\n\nК разработчикам Blizzard: Пожалуйста, почините предметы и события, перечисленные ниже.",
 });
 localize(L.FILTER_ID_TYPES, {
@@ -7499,6 +7536,7 @@ localize(ObjectNames, {
 	[181073] = "Котел Ароматов",
 	[181074] = "Трофеи арены",
 	[181083] = "Наследие Сотоса и Джариена",
+	[181085] = "Стратхольм - ящик с припасами",
 	[181098] = "Вулканический пепел",
 	[181366] = "Сундук четырех всадников",
 	[181597] = "Курган силитиста",
@@ -7907,14 +7945,18 @@ localize(_.CategoryNames, {
 });
 localize(L.HEADER_NAMES, {
 	[-1000015] = "악마 훈련사",
+	[-1000025] = "축제",
 	[-1000034] = "전문 기수",
 	[-1000040] = "무기 전문가",
+	[-1000162] = "공유된 모습",
+	[-1000163] = "독특한 외관",
 	[-1000168] = "4인 기사단",
 	[-1000201] = "다크문 유랑단",
 	[-1000223] = "한여름 불꽃축제",
 	[-1000227] = "가시덤불 골짜기 낚시왕 선발대회",
 	[-1000235] = "어둠의 문 열기",
 	[-1000236] = "흐르는 모래의 홀",
+	[-1000243] = "블리즈컨",
 	[-1000373] = "새로운 캐릭터",
 	[-1000380] = "하사품",
 	[-1001035] = "제철 생선: 여름 농어",
@@ -7922,6 +7964,8 @@ localize(L.HEADER_NAMES, {
 });
 localize(L.HEADER_DESCRIPTIONS, {
 	[-1000040] = "웨폰 마스터는 캐릭터에게 특정 무기 기술을 배울 수 있는 기회를 제공하는 NPC로, 사용 가능 여부는 웨폰 마스터마다 다릅니다. 모든 무기 기술은 레벨 20이 필요한 폴암을 제외하고 레벨 1에서 훈련할 수 있습니다.\n\n4.0.1 패치에서는 각 병과가 생성 시 모든 병과에 적합한 무기 숙련도를 배우게 되므로 무기 전문가와의 훈련은 더 이상 필요하지 않게 되었습니다. 무기 마스터는 곧 게임에서 제거되었습니다.",
+	[-1000162] = "이 목록의 항목은 위 항목의 공유 모양입니다. 고유 외형 모드에서 이 목록은 특정 항목이 수집됨으로 표시되는 이유와 이유를 이해하는 데 도움이 될 수 있습니다.",
+	[-1000163] = "이 아이템은 독특한 외형을 가지고 있습니다. 외형을 획득하려면 이 아이템을 특별히 수집해야 합니다.",
 	[-1000380] = "이 목록에는 ATT Discord에서 Blizzard가 아직 수정하지 않은 버그로 보고한 얻을 수 없는 항목이 포함되어 있습니다.\n\n참고: 가시성을 위해 이 목록 내에서 모든 필터는 무시됩니다. 거대한 불을 뿜는 용이 아닌 부주의로 인해 게임에서 제거된 아이템만 이 목록에 있습니다.\n\n블리자드 개발자 여러분께: 아래 나열된 아이템과 만남을 수정해 주세요.",
 });
 localize(ObjectNames, {
@@ -8527,6 +8571,7 @@ localize(ObjectNames, {
 	[181053] = "붉은물풀 광주리",
 	[181073] = "맛있는 향기의 가마솥",
 	[181074] = "투기장 전리품",
+	[181085] = "스트라솔름 보급품 상자",
 	[181098] = "화산재",
 	[181366] = "4인 기사단 궤짝",
 	[181598] = "실리시스트 모래기둥",
@@ -8850,8 +8895,11 @@ end
 if simplifiedLocale == "es" then
 localize(L.HEADER_NAMES, {
 	[-1000015] = "Instructor de demonios",
+	[-1000025] = "Festividades",
 	[-1000034] = "Instructora de equitación",
 	[-1000040] = "Maestro armero",
+	[-1000162] = "Apariciones Compartidas",
+	[-1000163] = "Apariencia única",
 	[-1000168] = "Los Cuatro Jinetes",
 	[-1000201] = "Feria de la Luna Negra",
 	[-1000223] = "Festival del Fuego del Solsticio de Verano",
@@ -8865,6 +8913,8 @@ localize(L.HEADER_NAMES, {
 });
 localize(L.HEADER_DESCRIPTIONS, {
 	[-1000040] = "Un maestro de armas es un PNJ que ofrece a los personajes la oportunidad de aprender habilidades específicas con armas, cuya disponibilidad varía de un maestro de armas a otro. Todas las habilidades con armas se pueden entrenar en el nivel 1, excepto las armas de asta que requieren el nivel 20.\n\nEl entrenamiento con un maestro de armas quedó obsoleto en el parche 4.0.1, ya que cada clase ahora aprende todas las competencias de armas apropiadas para la clase en el momento de la creación. Los maestros de armas se eliminaron del juego poco después.",
+	[-1000162] = "Los elementos de esta lista son apariencias compartidas del elemento anterior. En el modo de apariencia única, esta lista puede ayudarlo a comprender por qué o no un elemento específico se marcaría como recopilado.",
+	[-1000163] = "Este artículo tiene una apariencia única. Debes recolectar este artículo específicamente para ganar la apariencia.",
 	[-1000380] = "Esta lista contiene elementos inalcanzables que ATT Discord ha informado como errores que Blizzard aún no ha solucionado.\n\nNOTA: Todos los filtros se ignoran en esta lista para mayor visibilidad. En esta lista solo están presentes los elementos eliminados del juego debido a negligencia y no a un gigantesco dragón que escupe fuego.\n\nA los desarrolladores de Blizzard: arreglen los elementos y encuentros que se enumeran a continuación.",
 });
 localize(ObjectNames, {
@@ -9519,6 +9569,7 @@ localize(ObjectNames, {
 	[181053] = "Cesta de algas de sangre",
 	[181073] = "Caldera apetitosa",
 	[181074] = "Botín de la arena",
+	[181085] = "Cajón de suministros de Stratholme",
 	[181098] = "Ceniza volcánica",
 	[181366] = "Cofre de los Cuatro Jinetes",
 	[181597] = "Túmulo de silitista",
@@ -9881,11 +9932,12 @@ localize(_.CategoryNames, {
 	[3] = "塔罗牌",
 });
 localize(L.HEADER_NAMES, {
-	[-1000010] = "一般首领掉落",
-	[-1000013] = "常规商人物品",
+	[-1000010] = "首领共同掉落",
+	[-1000013] = "商人共同物品",
 	[-1000015] = "恶魔训练师",
 	[-1000019] = "探索",
 	[-1000021] = "飞行路线",
+	[-1000025] = "节日",
 	[-1000032] = "稀有",
 	[-1000034] = "骑术训练师",
 	[-1000038] = "宝箱",
@@ -9895,6 +9947,8 @@ localize(L.HEADER_NAMES, {
 	[-1000044] = "地区掉落",
 	[-1000048] = "梦魇之龙",
 	[-1000142] = "荣誉头衔",
+	[-1000162] = "共享外观",
+	[-1000163] = "独特外观",
 	[-1000165] = "T0.5套装",
 	[-1000166] = "船长",
 	[-1000168] = "四骑士",
@@ -9928,6 +9982,8 @@ localize(L.HEADER_DESCRIPTIONS, {
 	[-1000030] = "此部分只会显示你当前角色的专业技能，除非处于账号模式或调试模式。",
 	[-1000033] = "包含有奖励或可从包含部分中的其他内容获得的事物。\n在此处合并以减少来自许多可能重复来源。",
 	[-1000040] = "武器大师是一个 NPC，为角色提供学习特定武器技能的机会，不同武器大师的可用性各不相同。所有武器技能都可以在 1 级进行训练，长柄武器除外，需要 20 级。\n\n在补丁 4.0.1 中，武器大师的训练已经过时，因为现在每个班级在创建时都会学习所有适合班级的武器熟练程度。不久之后，武器大师就被从游戏中删除了。",
+	[-1000162] = "此列表中的物品是以下物品的共享外观。在唯一外观模式下，此列表可帮助了解特定物品被标记为已收藏的原因。",
+	[-1000163] = "此列表中的物品是独特外观。你必须专门收藏这个物品以获得外观。",
 	[-1000380] = "此列表包含 ATT Discord 报告的无法获取的物品，这些物品是暴雪尚未修复的错误。\n\n注意：在此列表中忽略所有过滤器以获得可见性。此列表中仅显示因疏忽而从游戏中移除的物品。\n\n致暴雪开发者：请修复下面列出的物品和事件。",
 });
 localize(L.FILTER_ID_TYPES, {
@@ -10502,6 +10558,7 @@ localize(ObjectNames, {
 	[181053] = "一篮血藻",
 	[181073] = "薰炉",
 	[181074] = "竞技场的泥土",
+	[181085] = "斯坦索姆物资箱",
 	[181098] = "火山灰",
 	[181597] = "水晶尘土堆",
 	[181598] = "水晶尘喷孔",
@@ -10833,10 +10890,56 @@ for key,value in pairs({
 })
 do achievementCategories[key].name = value; end
 if GetLocale():sub(3,4):lower() == "tw" then
+localize(_.CategoryNames, {
+	[106] = "卡片",
+	[227] = "武器",
+	[233] = "背包",
+	[250] = "背包",
+});
 localize(L.HEADER_NAMES, {
+	[-1000010] = "首領共通掉落",
+	[-1000013] = "商人共通物品",
+	[-1000015] = "惡魔訓練師",
 	[-1000021] = "飛行路線",
+	[-1000025] = "節慶",
+	[-1000034] = "騎術訓練師",
 	[-1000038] = "寶箱",
+	[-1000040] = "武器大師",
+	[-1000042] = "世界首領",
 	[-1000044] = "地區掉落",
+	[-1000048] = "夢魘之龍",
+	[-1000142] = "榮譽頭銜",
+	[-1000162] = "共享外觀",
+	[-1000163] = "獨特外觀",
+	[-1000165] = "T0.5套裝",
+	[-1000173] = DUNGEON_FLOOR_DIREMAUL5.." (東)",
+	[-1000201] = "暗月馬戲團",
+	[-1000215] = "冬幕節",
+	[-1000218] = "收穫節",
+	[-1000223] = "仲夏火焰節慶",
+	[-1000227] = "荊棘谷釣魚大賽",
+	[-1000234] = "安其拉之戰捐獻",
+	[-1000236] = "流沙節杖",
+	[-1000237] = "天譴入侵",
+	[-1000243] = "暴雪嘉年華",
+	[-1001035] = "季節性魚類：夏日鱸魚",
+	[-1001036] = "季節性魚類：冬魷魚",
+});
+localize(L.HEADER_DESCRIPTIONS, {
+	[-1000015] = "術士可以教導他們的惡魔新技能，一些高等級的魔典只能從你陣營首都的惡魔訓練師那裡購買。",
+	[-1000025] = "你可能需要在特定節日的活動中才能完成本節中的事物。",
+	[-1000040] = "武器大師是一個 NPC，為角色提供學習特定武器技能的機會，不同武器大師的可用性各不相同。所有武器技能都可以在 1 级進行訓練，長柄武器除外，需要 20 级。\n\n在更新 4.0.1 中，武器大師的訓練已经過時，因為现在每個職業在創建时都會學習所有適合該職業的武器熟練度。不久之後，武器大師就被從遊戲中删除了。",
+	[-1000173] = "副本的這部分可以從最東邊的傳送門進入。（右側）",
+	[-1000174] = "副本的這部分可以從最北邊的傳送門進入。",
+	[-1000175] = "副本的這部分可以從最西邊的傳送門進入。（左側）",
+});
+localize(L.HEADER_LORE, {
+	[-1000048] = "這些龍中的一隻會在艾澤拉斯的相關座標隨機生成。",
+});
+localize(ObjectNames, {
+	[179697] = "競技場寶箱",
+	[180456] = "次級風石",
+	[180461] = "風石",
 });
 for key,value in pairs({
 	[1] = "從未實裝 [NYI]",
@@ -10849,8 +10952,8 @@ do phases[key].name = value; end
 for key,value in pairs({
 	[1] = "|cFFFF0000此項玩家永遠無法獲得。|r",
 	[2] = "|cFFFF0000此項已從遊戲中刪除。|r",
-	[3] = "|cFFAAFFAA這被鎖定在付費牆後面，例如遊戲内商店、另一個暴雪產品或招兵買馬召集令。|r",
-	[4] = "|cFFFFAAAA除非您擁有所需的 PvP 稱號、所需的 PvP 等級或處於該賽季的前 %，否則無法再購買或解鎖塑形。|r",
+	[3] = "|cFFAAFFAA這被鎖定在付費牆後面，例如遊戲內商店、另一個暴雪產品或招兵買馬召集令。|r",
+	[4] = "|cFFFFAAAA除非您擁有所需的 PvP 頭銜、所需的 PvP 等級或處於該賽季的前 %，否則無法再購買或解鎖塑形。|r",
 	[5] = "|cFFFFAAAA這不能永久收集、學習或用於塑形。|r",
 	[11] = "|cFFAAFFAA該功能直到 Phase 1 的 WoW Classic 才可用。|r",
 	[12] = "|cFFAAFFAA該功能直到 Phase 2 的 WoW Classic 才可用。|r",

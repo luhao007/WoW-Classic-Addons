@@ -62,6 +62,11 @@ fujiF.AFK.QKBut:SetScript("OnClick", function (self)
         Pig_Options_RLtishi_UI:Show()
     end
 end)
+
+local function Set_TispTXT(txtui)
+    local TispTXT = PIGA["Other"]["AFK"]["TispTXT"] or "临时离开，勿动!!!"
+    txtui:SetText(TispTXT)
+end
 fujiF.AFK.TispTXTt = PIGFontString(fujiF.AFK,{"TOPLEFT", fujiF.AFK, "BOTTOMLEFT", 20,-10},"屏保提示:");
 fujiF.AFK.TispTXT = CreateFrame("EditBox", nil, fujiF.AFK,"InputBoxInstructionsTemplate");
 fujiF.AFK.TispTXT:SetSize(300,26);
@@ -75,13 +80,18 @@ fujiF.AFK.TispTXT:SetScript("OnEditFocusGained", function(self)
 end);
 fujiF.AFK.TispTXT:SetScript("OnEditFocusLost", function(self)
     self:SetTextColor(0.7, 0.7, 0.7, 1);
-    self:SetText(PIGA["Other"]["AFK"]["TispTXT"])
+    Set_TispTXT(self)
 end);
 fujiF.AFK.TispTXT:SetScript("OnEscapePressed", function(self) 
     self:ClearFocus()
 end);
 fujiF.AFK.TispTXT:SetScript("OnEnterPressed", function(self) 
-    PIGA["Other"]["AFK"]["TispTXT"]=self:GetText();
+    local TispTXT = self:GetText();
+    if TispTXT=="" or TispTXT==" " then
+        PIGA["Other"]["AFK"]["TispTXT"]=nil
+    else
+        PIGA["Other"]["AFK"]["TispTXT"]=TispTXT
+    end
     CommonInfo.Otherfun.SetAFKTXT()
     self:ClearFocus()
 end);
@@ -91,5 +101,5 @@ fujiF:HookScript("OnShow", function(self)
 	self.PigLoad:SetChecked(PIGA["Other"]["PigLoad"]);
 	self.AFK:SetChecked(PIGA["Other"]["AFK"]["Open"]);
 	self.AFK.QKBut:SetChecked(PIGA["Other"]["AFK"]["QuickBut"]);
-    self.AFK.TispTXT:SetText(PIGA["Other"]["AFK"]["TispTXT"]);
+    Set_TispTXT(self.AFK.TispTXT)
 end)

@@ -28,7 +28,6 @@ local DT = __private.DT;
 		talents_in_tip_icon = true,
 		inspectButtonOnUnitFrame = false,
 		show_equipment = true,
-		inspect_pack = false,
 		max_recv_msg = 16,
 		minimap = false,
 		minimapPos = 185,

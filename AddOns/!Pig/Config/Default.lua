@@ -37,24 +37,12 @@ addonTable.Default = {
 		["RightPlus"] = true,
 		["xiayijuli"]=0,
 	},
-	["QuickFollow"] = {
-		["QuickBut"] = false,
-		["Name"] = "猪猪加油",
-		["Kaishi"] = "1",
-		["Jieshu"] = "2",
-		["Duizhang"] = true,
-		["Tishi"] = false,
-		["Qiangli"]=false,
-		["Jiuwei"] = false,
-		["Yijiao"]=false,
-	},
 	["Other"] = {
 		["ErrorsHide"]=false,
 		["PigLoad"]=false,
 		["AFK"]={
 			["Open"] = false,
 			["QuickBut"]=true,
-			["TispTXT"]="临时离开，勿动!!!",
 		},
 	},
 	["TradePlus"] = {
@@ -147,7 +135,7 @@ addonTable.Default = {
 		["QuickChat_suofang"]=1,
 		["QuickChat_pianyiX"]=0,
 		["QuickChat_pianyiY"]=0,
-		["QuickChat_ButList"]={},
+		["QuickChat_ButHide"]={},
 		["MinMaxB"] = false,
 		["FontSize"] = false,
 		["FontSize_value"] = 12,
@@ -164,7 +152,6 @@ addonTable.Default = {
 			["shuchumode"]=1,
 			["ChatWox"]=0,
 			["tiquOKFlash"]=true,
-			["KeywordFShow"]=true,
 			["BgColor"]={0,0,0,0.4},
 			["KeywordFHeight"]=140,
 			["CombatHide"]=false,
@@ -209,8 +196,34 @@ addonTable.Default = {
 		},
 	},
 	["Chatjilu"] = {
-		["tianshu"]=7,
+		["Days"]=7,
 		["jiluinfo"]={},
+		["WHISPER"]={
+			["Open"]=true,
+			["Tips"]=true,
+			["record"]={},
+			["jichengBlack"]=true,
+		},
+		["PARTY"]={
+			["Open"]=true,
+			["Tips"]=true,
+			["record"]={},
+		},
+		["RAID"]={
+			["Open"]=true,
+			["Tips"]=true,
+			["record"]={},
+		},
+		["GUILD"]={
+			["Open"]=true,
+			["Tips"]=true,
+			["record"]={},
+		},
+		["INSTANCE_CHAT"]={
+			["Open"]=true,
+			["Tips"]=true,
+			["record"]={},
+		},
 	},
 	["ActionBar"] = {
 		["Ranse"] = true,
@@ -246,9 +259,6 @@ addonTable.Default = {
 		["Zhenghe"] = true,
 		["SortBagsRightToLeft"] = false,
 		["JianjieMOD"] = false,
-		["hulueBAG"] = {false,false,false,false,false},
-		["hulueBANK"] = {false,false,false,false,false,false,false,false},
-		["lixian"] = {},
 		["SortBag_Config"]=true,
 		["wupinLV"]=true,
 		["JunkShow"]=true,
@@ -363,7 +373,7 @@ addonTable.Default = {
 		},
 		["AttackBar"]={
 			["Open"] = false,
-			["Showshuzhi"]=false,
+			["Showshuzhi"]=true,
 			["Scale"]=1,
 			["Xpianyi"]=0,
 			["Ypianyi"]=14,
@@ -376,6 +386,9 @@ addonTable.Default = {
 		["MinimapBut"] = true,
 		["MiniButShouNa_YN"] = 1,
 		["MiniButShouNa_hang"] = 5,
+		["MinimapPointXY"] = {0, 0},
+		["MinimapPoint_NDui"] = {0, 0},
+		["MinimapPoint_ElvUI"] = {28, 0},
 		["WorldMapBili"] = 0.8,
 		["WorldMapPlus"] = false,
 		["WorldMapWind"] = true,
@@ -389,6 +402,11 @@ addonTable.Default = {
 	["CVars"]={
 		["MaxZoom"]= true,
 	},
+	["HardcoreDeaths"]={
+		["Open"]= true,
+		["minlevel"]= 1,
+		["List"]= {},
+	},
 };
 addonTable.Default_Per = {
 	["AutoSellBuy"] = {
@@ -397,9 +415,6 @@ addonTable.Default_Per = {
 		["Save_Money"] = 10000000,
 		["Take_List"] = {},
 		["Take_Money"] = 10000000,
-	},
-	["QuickFollow"]={
-		["beidongOpen"]=false,
 	},
 	["PigAction"] = {
 		["Open"] = {false,false,false,false},
