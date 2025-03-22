@@ -26,6 +26,15 @@ app:CreateWindow("Prime", {
 		if cmd and cmd:len() > 0 then
 			-- Search for the Link in the database
 			cmd = cmd:lower();
+			local args = { (" "):split(cmd) };
+			local arg1 = args[1]
+
+			local commandFunc = app.ChatCommands[arg1]
+			if commandFunc then
+				if args[2] == "help" then return app.ChatCommands.PrintHelp(arg1) end
+				return commandFunc(args)
+			end
+
 			local group = app.GetCachedSearchResults(app.SearchForLink, cmd);
 			if group then app:CreateMiniListForGroup(group); end
 			return true;

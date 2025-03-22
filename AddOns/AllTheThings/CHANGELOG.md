@@ -1,101 +1,211 @@
 # AllTheThings
 
-## [4.2.7a](https://github.com/ATTWoWAddon/AllTheThings/tree/4.2.7a) (2025-01-16)
-[Full Changelog](https://github.com/ATTWoWAddon/AllTheThings/compare/4.2.7...4.2.7a) [Previous Releases](https://github.com/ATTWoWAddon/AllTheThings/releases)
+## [4.3.6](https://github.com/ATTWoWAddon/AllTheThings/tree/4.3.6) (2025-03-21)
+[Full Changelog](https://github.com/ATTWoWAddon/AllTheThings/commits/4.3.6) [Previous Releases](https://github.com/ATTWoWAddon/AllTheThings/releases)
 
-- BFA things  
-- Zul Farrak: Desertwalker Cone specification  
-- Another Oribos HQT moved  
-- Couple HQT updates in Oribos  
-- [DB] Added "old" quest: Attunement to the Core.  
-- titleID is NOT the maskID, who knew?  
-- Contribute: Slight adjustment for object interaction reports since the objectID can differ from the ID of the found Thing (i.e. provider object on a header, etc. we want to see both IDs)  
-- Added a 'Hidden Quests' Dynamic category  
-- Plunderstorm shows in Main List now  
-    TODO - Add proper end date  
-- Organized remaining top-level HQTs  
-- Add Plunderstorm Titles  
-- More HQT organization based on source file  
-- todo for plunder  
-- plunderwin and plunder 1mil plunder fos are both back  
-- Fixed some Korthia data & adjusted Korthia HQT categorization  
-- Fix some reported errors, fixes #1763  
-- Fixed a duped questID in Timeless Isle and related achievement automation  
-- [VSCode] Disable diagnostics on ignored & library files.  
-- [DB] Added "old" Stranglethorn Vale quests to the db.  
-    Fixed Missing Quest 614 #1861.  
-- Revert "[DB] Add crit for ach: A Simple Re-Quest."  
-- Revert "[Classic Logic] Replace GetAchievementCriteriaInfo by GetAchievementCriteriaInfoByID."  
-- [Classic Logic] Replace GetAchievementCriteriaInfo by GetAchievementCriteriaInfoByID.  
-    This is a walkaround to fix the issue with crit not working in classic.  
-    It is not final and will need to be reverted when the crit header classification bug is fixed.  
-- PTR: daily stuff update + weekly reset (but no new build)  
-    -  
-- [DB] Try to fix parser error in classic: q: 31145.  
-- [DB] Try to fix parser error in classic: q: 31137.  
-- [DB] Try to fix parser error in classic: q: 41218.  
-- [DB] Try to fix parser error in classic: q: 75189.  
-- Fix symlink for Pool Cleaner  
-- [DB] Delete wrong questid.  
-- Add 6 month sub items, timeline out Diablo IV promo  
-- [DB] Update crit of ach: Exile's Reach.  
-    Since Shadowlands was launched in retail, the conditions for obtaining the achievement have been changed to be based on HQT.  
-    The situation where you need to complete subsequent tasks in the capital should only exist in the beta.  
-- [DB] Try to fix parser error in classic: q: 27022.  
-- Fixed last class (warrior) elite gear in TWW season 1.  
-- [Misc.] Add annotation: inst.  
-- [Misc.] Add annotation: map.  
-- [Misc.] Add annotation: npc.  
-- Added 'RowOnClick' to the ignored debug events (it's still too spammy for me)  
-- Contribute: Check for non-sourced openable objects can now include provider-referenced objects  
-- Various Hallowfall achievement updates  
-- Contribute: Object check now includes when objects are listed as providers for other Things as well  
-- [DB] Add another mapid: Tak-Rethan Abyss.  
-- [DB] Update InstanceDB.  
-- PTR: daily stuff update  
-- Revert "[DB] Remove custom header: Nightmare Grove."  
-- Revert "[logic] add RealzoneTextRunner."  
-    mini list broken again, revert commit :( .  
-- Source more GameObjects to the quests, add some coordinates  
-- WoD: Source some GameObject with their Quest Items  
-- Swamp of Sorrows updates  
-- Some quest sorting  
-- Adjusted TWW achievements because "kill boss on mythic" has remained a valid criteria for past achievements so we can reasonably assume the pattern will continue (unless it is ruled a bug and gets fixed....)  
-- Last bunch of 11.1.0 achievements (for now, probably...)  
-- [DB] Remove custom header: Nightmare Grove.  
-- [DB] Update instanceDB: SoD.  
-- [DB] Update InstanceDB.  
-- [DB] Update InstanceDB.  
-- [logic] add RealzoneTextRunner.  
-- [DB] Try to fix syntax.  
-- [DB] Add crit for ach: A Simple Re-Quest.  
-- [DB] Update crit of ach:Thirty Six and Two.  
-    source: https://wago.tools/db2/CriteriaTree?build=10.0.5.47118&filter[Parent]=68043&page=1&sort[OrderIndex]=asc  
-- Using otherwise hidden criteria to add nuance and automatic nesting to these faction achievements  
-- CHETT and SCRAP stuff  
-- 11.1.0 factions  
-- Added 2 missing timelines for new 11.1.0 achievements.  
-- Undermine adventurer and treasures  
-- 11.1.0 worldsoul stuff + some data fixes for current worldsoul achievements  
-- Undermine Safari  
-- Family battler of Undermine  
-- BFA updatez  
-- PTR: Profession recipes that exist for player  
-- Update Silithus (The Wound).lua  
-- Update 11 - The War Within.lua  
-    Skinning King Splash  
-- Update Sourceless.lua  
-    Bad at saving things oops  
-- Hallowfall: Consolidate quests related to Lost and Found achievement under a separate header  
-    Closes #1883  
-- Searing Gorge updates  
-- PTR: more open world stuff and some delves  
-- Loch Modan: Cleaned up Mo'grosh Masher  
-- Burning Steppes updates  
-- [VSCode] Disable auto-diagnostics.  
-- [Localization] Update zhTW: Battered Chest.  
-- Reparse retail for delve changes since we know what is staying and leaving based on PTR  
-- Loooooots of new delves stuff and also delves changes now we can see what is in season 2  
+- 123p456a789r012s345e678  
+- Added all NYI armors from Liberation of Undermine raid.  
+- First pass of 11.1.5 Sorting  
+- Some more sorting  
+- Adjust C.H.E.T.T. card notes, add some missed Trial of Style quests  
+- Fix some reported quest and object errors  
+- Sort Warband Sites (WS!)  
+- Same NYI copies of PvP items were also made for TWW Season 1.  
+- Add Trial of Style Season something or other  
+- Blizzard decided to make 500 useless PvP items for TWW Season 2.  
+- Minor Fix  
+- Added TWW PvP Season 2 Elite sets.  
+- Added missing NYI sources from Nerubar Palace.  
+    Added missing unknown sources from 11.0.7  
+- Some unsorted sorting  
+- Added missing Legion NYI achievements.  
+- Fix some reported errors, sort new Trial of Style quests  
+- [Logic] Retail: Wawrband Scenes adjustments; now loads correctly but requires further adjustments to be treated as a collectible  
+- All warbandscenes in unsorted  
+- [DB] Fixed some Argent Tournament symlinks  
+- World Drop/Cata: Water-Filled Gills is too rare to be a reliable provider  
+- [MISC] Skyriding isn't a 'Thing' it's a filter  
+- [Logic] Tooltips: Swapped positions of 'Quest Givers' and 'Providers' since almost all NPC Providers on Quests are converted to 'Quest Givers' and only Items/Objects remain as 'Providers'. Additionally, Providers is heavily used in non-quest contexts and the information is not as relevant as to be prioritized in tooltips  
+- note update for delve item  
+- Correct Pepe achievement timeline, clear some parser object warnings  
+- [DB] Added Circle of Thorns Portal and provider for Delegation so it's easier to find it and track your progress  
+- [Parser] Added a new warning for Items with coords and a single Object provider (since this situation typically is not desired) with an allowed override field for niche situations  
+    [DB] Added some overrides for allowed object providers on existing Item listings, where the only purpose of the provider is really to show in tooltips of that object  
+- Pepe is a treasure*  
+- Crafted Items/Cata: Fish and herbs  
+- Pepe has left the nest  
 - Fix some reported errors  
-- Fixed timeline for 11.1.0 achievement.  
-- Fixed wrong lockCriteria for Iron Mining Pick.  
+- Fix Zone Reward caches  
+- Merge branch 'master' of https://github.com/ATTWoWAddon/AllTheThings  
+- Small typo  
+- TBC: Accidentally unsourced flotsam  
+- Some more work on Warband Scenes  
+- Some Intial Work on WarbandScene Collection  
+- Reparse Retail and PTR  
+- Created Missing FIles  
+- GLRC Pets aren't sold by the quartermaster but two npcs by the boss arena, fix some reported object and coord errors  
+- [DB] Fixed cost for Accepting All Eggs  
+- [DB] Added more account-wide quests as reported by ATTcheckawquests()  
+- WotLK: Better with gathering nodes in Crafted Items  
+- TBC: Better with gathering nodes in Crafted Items  
+- [DB] Another coord for Crystalline Flower  
+- Update Quest Name Harvester to current patch  
+- Sort Recipes  
+- Check Build Difference function  
+- Cleaned up empty patches  
+- Reharvest: 1.15.7.59706  
+- Harvest: 7.3.5.25901  
+- Harvest: 7.3.5.25881  
+- Harvest: 7.3.5.25875  
+- Harvest: 7.3.5.25864  
+- Harvest: 7.3.5.25860  
+- Harvest: 7.3.5.25848  
+- Harvest: 7.3.5.25826  
+- Harvest: 7.3.5.25807  
+- Harvest: 7.3.5.25804  
+- Harvest: 7.3.5.25753  
+- Harvest: 7.3.5.25744  
+- Harvest: 7.3.5.25727  
+- Harvest: 7.3.5.25717  
+- Harvest: 7.3.5.25716  
+- Harvest: 7.3.5.25692  
+- Harvest: 7.3.5.25678  
+- Harvest: 7.3.5.25632  
+- Harvest: 7.3.5.25619  
+- Harvest: 7.3.5.25607  
+- Harvest: 7.3.5.25600  
+- PTR: Dastardly Duos stuff from build 59651  
+- Harvest: 11.1.5.59735  
+- Harvest: 11.1.5.59651  
+- Harvest: 11.1.0.59679  
+- Harvest: 11.1.0.59570  
+- Harvest: 4.4.2.59734  
+- Harvest: 4.4.2.59536  
+- Harvest: 1.15.7.59706  
+- Harvest: 11.1.5.59571  
+- Harvest: 11.1.0.59538  
+- Harvest: 11.1.0.59490  
+- Harvest: 11.1.0.59466  
+- Harvest: 11.1.0.59425  
+- Harvest: 11.1.0.59347  
+- Harvest: 11.1.0.59324  
+- Harvest: 11.1.0.59241  
+- Harvest: 11.1.0.59184  
+- Harvest: 11.1.0.59095  
+- Harvest: 11.1.0.58999  
+- Harvest: 11.1.0.58945  
+- Harvest: 11.1.0.58819  
+- Harvest: 11.1.0.58774  
+- Harvest: 11.1.0.58731  
+- Harvest: 11.0.7.59302  
+- Harvest: 11.0.7.59207  
+- Harvest: 11.0.7.58911  
+- Harvest: 11.0.7.58867  
+- Harvest: 11.0.7.58773  
+- Harvest: 11.0.7.58680  
+- Harvest: 10.1.5.50705  
+- Harvest: 10.0.5.47849  
+- Harvest: 10.0.5.47825  
+- Harvest: 10.0.5.47777  
+- Harvest: 10.0.5.47660  
+- Harvest: 10.0.5.47621  
+- Harvest: 10.0.5.47481  
+- Harvest: 10.0.5.47215  
+- Harvest: 10.0.5.47186  
+- Harvest: 10.0.5.47118  
+- Harvest: 10.0.2.47657  
+- Harvest: 10.0.2.46802  
+- Harvest: 10.0.2.46741  
+- Harvest: 10.0.2.46702  
+- Harvest: 10.0.2.46689  
+- Harvest: 10.0.2.46658  
+- Harvest: 10.0.2.46144  
+- Harvest: 10.0.0.46597  
+- Harvest: 10.0.0.46549  
+- Harvest: 10.0.0.46547  
+- Harvest: 10.0.0.46479  
+- Harvest: 10.0.0.46455  
+- Harvest: 10.0.0.46366  
+- Harvest: 10.0.0.46340  
+- Harvest: 10.0.0.46313  
+- Harvest: 10.0.0.46293  
+- Harvest: 10.0.0.46270  
+- Harvest: 10.0.0.46247  
+- Harvest: 10.0.0.46181  
+- Harvest: 10.0.0.46112  
+- [CI] add retail with objective.  
+- [Harvester] Add debug config.  
+- Add GLRC Renown 4, fix some reported errors  
+- [DB] Added some un-linked Korthia Vignette spawns to Rares  
+- Add new shop Ensembles, S&H HQTs  
+- [DB] removed redundant description on Trophy of the Crusade now that it's Sourced properly  
+- Harvest: 10.0.0.46112  
+- Harvest: 10.0.0.46047  
+- Harvest: 10.0.0.45970  
+- Harvest: 4.4.2.59346  
+- Harvest: 4.4.2.59297  
+- Harvest: 4.4.2.59185  
+- Harvest: 4.4.2.59121  
+- Harvest: 4.4.2.58998  
+- Harvest: 4.4.2.58947  
+- Harvest: 4.4.2.58884  
+- Harvest: 4.4.2.58796  
+- Harvest: 4.4.2.58723  
+- Harvest: 4.4.1.59069  
+- Harvest: 3.4.3.58936  
+- Harvest: 3.4.1.49936  
+- Harvest: 3.4.1.49822  
+- Harvest: 3.4.1.47925  
+- Harvest: 3.4.1.47800  
+- Harvest: 3.4.1.47720  
+- Harvest: 3.4.1.47612  
+- Harvest: 3.4.1.47585  
+- Harvest: 3.4.1.47496  
+- Harvest: 3.4.1.47245  
+- Harvest: 3.4.1.47110  
+- Harvest: 3.4.1.47014  
+- Harvest: 3.4.1.46973  
+- Harvest: 3.4.1.46917  
+- Harvest: 3.4.1.46722  
+- Harvest: 3.4.0.47659  
+- Harvest: 3.4.0.47168  
+- Harvest: 3.4.0.46902  
+- Harvest: 3.4.0.46779  
+- Harvest: 3.4.0.46368  
+- Harvest: 3.4.0.46269  
+- Harvest: 3.4.0.46248  
+- Harvest: 3.4.0.46182  
+- Harvest: 3.4.0.45942  
+- Harvest: 3.4.0.45854  
+- Harvest: 1.15.6.59415  
+- Harvest: 1.15.6.58912  
+- Harvest: 1.15.6.58866  
+- Harvest: 1.15.6.58844  
+- Harvest: 1.15.6.58797  
+- Harvest: 1.15.6.58725  
+- Harvest: 1.15.3.56626  
+- Harvest: 1.15.3.56488  
+- Harvest: 1.14.3.45437  
+- Harvest: 1.14.3.44834  
+- Harvest: 1.14.1.42032  
+- Harvest: 1.13.6.36714  
+- Harvest: 1.13.3.33155  
+- better note  
+- Added a new case where we can get the provider npc from Wago files rather than AchievementDB  
+- 11.1.5 new achievement categories  
+- Implied groups are wacky  
+- Fix many reported quest and object errors  
+- Cata: Fixed the removed from game assignments on the Bloodthirsty recipes. (You can still learn them.)  
+- Cata: Added the updated Vicious and Bloodied Blacksmithing recipes.  
+- [Logic] Retail: Costs which are due to containers which contain collectibles or symlinked collectibles now can check more sub-objects to properly determine the filtering requirements for the container as a whole  
+- [Logic] Retail: 'fill' sym command now searches for field-matched Objects instead of simply any matching references  
+- [Logic] Retail: app.MergedObject returns the provided group if it's not an array  
+- [Logic] Fixed an issue where Heirloom copies used to contain Heirloom Upgrade levels could be assigned with specific filtering based on specific versions of the searched Heirlooms  
+    [Logic] Heirlooms no longer show the 'saved' green checkmark since it was misleading that only Heirlooms with an Appeareance would show the checkmark  
+- [Logic] Temp fix for Heirlooms not being sortable Alphabetically  
+- Added hunter FP in Dalaran.  
+    Added currency for Darkfuse Solutions faction.  
+- [Logic] Cost calculations now uses the Account filtering instead of Unobtainable filtering only when determining if the ignore BoE/BoA filtering should be applied to a Cost Item  
+- [Logic] Added RecursiveGroupRequirementsFilter\_Account to perform only the Account-level filtering  
+- [Parser] Heirlooms don't need to include itemID field since their ID is the itemID  
+- [Logic] Moved Requries Skyriding colorize to Default Locale for simplicity  

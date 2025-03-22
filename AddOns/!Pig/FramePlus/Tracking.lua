@@ -15,13 +15,14 @@ function FramePlusfun.Zhuizong()
 	if NDui then
 		Zhuizong:SetPoint("BOTTOMRIGHT", Minimap, "BOTTOMRIGHT", 0, 0);
 	else
-		Zhuizong:SetPoint("TOPLEFT", Minimap, "TOPLEFT", -15, 0);
+		Zhuizong:SetPoint("TOPLEFT", MinimapBackdrop, "TOPLEFT", 11, -26);
 	end
 
 	Zhuizong.search = Zhuizong:CreateTexture(nil, "BORDER");
-	Zhuizong.search:SetTexture("interface/common/ui-searchbox-icon.blp");
-	Zhuizong.search:SetSize(Width*0.6,Height*0.6);
-	Zhuizong.search:SetPoint("CENTER",Zhuizong,"CENTER",3,-3);
+	--Zhuizong.search:SetTexture("interface/common/ui-searchbox-icon.blp");
+	Zhuizong.search:SetAtlas("None")
+	Zhuizong.search:SetSize(Width*0.7,Height*0.7);
+	Zhuizong.search:SetPoint("CENTER",Zhuizong,"CENTER",2,-2);
 	Zhuizong.search:Hide()
 	if NDui then
 	else
@@ -60,7 +61,7 @@ function FramePlusfun.Zhuizong()
 			Zhuizong.search:Show()
 		end
 	end)
-	function Zhuizong.xiala:PIGDownMenu_Update_But(self, level, menuList)
+	function Zhuizong.xiala:PIGDownMenu_Update_But(level, menuList)
 		local spells ={1494,19883,19884,19885,19880,19878,19882,19879,5225,5500,5502,2383,2580,2481}
 		local info = {}
 		local Bufficon = GetTrackingTexture()
@@ -78,7 +79,7 @@ function FramePlusfun.Zhuizong()
 					CastSpellByID(spells[i])
 					PIGCloseDropDownMenus()
 				end
-				Zhuizong.xiala:PIGDownMenu_AddButton(info)
+				self:PIGDownMenu_AddButton(info)
 			end
 		end 
 	end

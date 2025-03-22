@@ -1,10 +1,16 @@
-lightweight tag 8d0353dd15014fc92bbfd1ca5100a7d4cab83bb2 4.4.1.1
+lightweight tag e553ce59f4dc309a1916441c83f9d6cdc751820f 4.4.2.0
 Author:	GitHub <noreply@github.com>
-Date:	Thu Nov 28 18:03:29 2024 -0800
+Date:	Mon Feb 17 23:56:40 2025 -0800
 
-commit 8d0353dd15014fc92bbfd1ca5100a7d4cab83bb2
-Author: GovtGeek <26489473+GovtGeek@users.noreply.github.com>
-Date:   Thu Nov 28 18:03:29 2024 -0800
+commit c929c0ffcb02d27be4b42152e0983ec1fdbe82fd
+Author: govtgeek <26489473+GovtGeek@users.noreply.github.com>
+Date:   Mon Feb 17 23:56:06 2025 -0800
 
-    Bumped Classic version
+    Bumped for Cata Classic version
+
+commit c929c0ffcb02d27be4b42152e0983ec1fdbe82fd
+Author: govtgeek <26489473+GovtGeek@users.noreply.github.com>
+Date:   Mon Feb 17 23:56:06 2025 -0800
+
+    Bumped for Cata Classic version
 

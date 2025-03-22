@@ -202,15 +202,29 @@ function GDKPInfo.ADD_History(RaidR)
 			end
 			if id~=nr_hang_Num then PIGLine(nrhang,"BOT",nil,nil,nil,{0.3,0.3,0.3,0.3}) end
 			--
-			nrhang.tx1 = PIGFontString(nrhang,{"LEFT",nrhang,"LEFT",10,0},"","OUTLINE");
+			nrhang.tx1= CreateFrame("Frame", nil, nrhang);
+			nrhang.tx1:SetSize(240, nr_hang_Height);
+			nrhang.tx1:SetPoint("LEFT",nrhang,"LEFT",10,0);
+			nrhang.tx1.t = PIGFontString(nrhang.tx1,{"LEFT",nrhang.tx1,"LEFT",0,0},"","OUTLINE");
 			if tabname=="Jiangli" or tabname=="Fakuan" then
-				nrhang.tx1:SetTextColor(0, 1, 1, 1);
+				nrhang.tx1.t:SetTextColor(0, 1, 1, 1);
+			else
+				nrhang.tx1:SetScript("OnMouseDown", function (self,button)
+					if button=="LeftButton" then
+						GameTooltip:ClearLines();
+						GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
+						GameTooltip:SetHyperlink(self.t:GetText());
+					end
+				end);
+				nrhang.tx1:SetScript("OnMouseUp", function (self,button)
+					GameTooltip:ClearLines();GameTooltip:Hide()
+				end);
 			end
 			nrhang.tx2 = PIGFontString(nrhang,{"RIGHT",nrhang,"RIGHT",-220,0},"","OUTLINE");
 			nrhang.tx2:SetTextColor(1, 1, 1, 1);
 			nrhang.tx3 = PIGFontString(nrhang,{"LEFT",nrhang,"LEFT",380,0},"","OUTLINE");
 			function nrhang:SetFun(itemNameD,itemLinkD)
-				self.tx1:SetText(itemLinkD);
+				self.tx1.t:SetText(itemLinkD);
 			end
 		end
 		fujif:SetScript("OnShow", function (self)
@@ -256,11 +270,11 @@ function GDKPInfo.ADD_History(RaidR)
 							fameX.tx2:SetText(shujuyuan[dangqian][9].."\124cffFFFF00 G\124r");
 							fameX.tx3:SetText(shujuyuan[dangqian][8]);
 						elseif tabname=="Jiangli" then
-							fameX.tx1:SetText(shujuyuan[dangqian][1]);
+							fameX.tx1.t:SetText(shujuyuan[dangqian][1]);
 							fameX.tx2:SetText(shujuyuan[dangqian][2].."\124cffFFFF00 G\124r");
 							fameX.tx3:SetText(shujuyuan[dangqian][3]);
 						elseif tabname=="Fakuan" then
-							fameX.tx1:SetText(shujuyuan[dangqian][1]);
+							fameX.tx1.t:SetText(shujuyuan[dangqian][1]);
 							fameX.tx2:SetText(shujuyuan[dangqian][2].."\124cffFFFF00 G\124r");
 							fameX.tx3:SetText(shujuyuan[dangqian][3]);
 						end

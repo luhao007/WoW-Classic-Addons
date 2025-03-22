@@ -1,0 +1,17 @@
+## Interface: 30404
+## Author: |cff00ff00ALA|r
+## Version: 205r.250322
+
+## Title: Talent Emu TBC
+## Notes: Talent Emu
+## Title-zhCN: |cFFFFE00A<|r|cFFC79C6E战斗|r|cFFFFE00A>|r |cFFFFFFFF天赋模拟器|r |cFFFFE00ATalentEmuX|r
+
+## Dependencies: 
+## LoadOnDemand: 0
+## DefaultState: enabled
+
+## SavedVariables: TalentEmuSV
+## SavedVariablesPerCharacter: 
+
+
+TalentEmu.xml

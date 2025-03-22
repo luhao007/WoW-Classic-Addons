@@ -569,7 +569,15 @@ function ns.DataMake(allowCrossRealm)
         end
 
         name = decode(name)
-        ns.Addon.db.realm.starRegiment.regimentData[name] = {level = currentLevel, roomID = currentRoomID, bgID = currentBgID}
+        local regimentData = ns.Addon.db.realm.starRegiment.regimentData[name]
+        if regimentData then
+            regimentData.level = currentLevel
+            regimentData.roomID = currentRoomID
+            regimentData.bgID = currentBgID
+            ns.Addon.db.realm.starRegiment.regimentData[name] = regimentData
+        else
+            ns.Addon.db.realm.starRegiment.regimentData[name] = { level = currentLevel, roomID = currentRoomID, bgID = currentBgID }
+        end
     end
 
     local function Level(level)

@@ -58,20 +58,23 @@ function GDKPInfo.ADD_fenG(RaidR)
 
 	local duiwu_Width,duiwu_Height=190,26;
 	local jiangeW,jiangeH,PjiangeH=10,0,2;
+	fujiF.nr.raidbutlist={}
 	for p=1,8 do
-		local duiwuF = PIGFrame(fujiF.nr,nil,{duiwu_Width,duiwu_Height*5+PjiangeH*4+1},"RRfenGList_"..p);
+		local duiwuF = PIGFrame(fujiF.nr,nil,{duiwu_Width,duiwu_Height*5+PjiangeH*4+1});
+		fujiF.nr.raidbutlist[p]=duiwuF
+		fujiF.nr.raidbutlist[p].butlist={}
 		duiwuF:PIGSetBackdrop(0,1)
 		if p==1 then
 			duiwuF:SetPoint("TOPLEFT",fujiF.nr,"TOPLEFT",8,-26);
 		end
 		if p>1 and p<5 then
-			duiwuF:SetPoint("LEFT",_G["RRfenGList_"..(p-1)],"RIGHT",jiangeW,jiangeH);
+			duiwuF:SetPoint("LEFT",fujiF.nr.raidbutlist[p-1],"RIGHT",jiangeW,jiangeH);
 		end
 		if p==5 then
-			duiwuF:SetPoint("TOP",_G["RRfenGList_1"],"BOTTOM",0,-44);
+			duiwuF:SetPoint("TOP",fujiF.nr.raidbutlist[1],"BOTTOM",0,-44);
 		end
 		if p>5 then
-			duiwuF:SetPoint("LEFT",_G["RRfenGList_"..(p-1)],"RIGHT",jiangeW,jiangeH);
+			duiwuF:SetPoint("LEFT",fujiF.nr.raidbutlist[p-1],"RIGHT",jiangeW,jiangeH);
 		end
 		---
 		duiwuF.tongzhi = CreateFrame("Button",nil,duiwuF);  
@@ -82,45 +85,58 @@ function GDKPInfo.ADD_fenG(RaidR)
 		duiwuF.tongzhi.Tex:SetTexture(130979);
 		duiwuF.tongzhi.Tex:SetPoint("CENTER",4,0);
 		duiwuF.tongzhi.Tex:SetSize(iconWH,iconWH);
-		PIGEnter(duiwuF.tongzhi,"通报"..p.."队明细并通知分G人领取小队金额")
+		PIGEnter(duiwuF.tongzhi,KEY_BUTTON1.."-|cff00FFff团队频道通报"..p.."队分G人和分G明细|r\n"..KEY_BUTTON2.."-|cff00FFff私聊"..p.."队分G人明细，并通知小队成员领取|r")
 		duiwuF.tongzhi:SetScript("OnMouseDown", function (self)
 			self.Tex:SetPoint("CENTER",2.5,-1.5);
 		end);
 		duiwuF.tongzhi:SetScript("OnMouseUp", function (self)
 			self.Tex:SetPoint("CENTER",4,0);
 		end);
-		duiwuF.tongzhi:SetScript("OnClick", function(self)	
+		duiwuF.tongzhi:RegisterForClicks("LeftButtonUp","RightButtonUp")
+		duiwuF.tongzhi:SetScript("OnClick", function(self,button)
 			local biaojiName={"{rt1}","{rt2}","{rt3}","{rt4}","{rt5}","{rt6}","{rt7}","{rt8}"};
 			duiwuF.tongzhi.fenGren=0
 			for pp=1,5 do
-				if _G["RRfenGList_"..p.."_"..pp].fenGren:GetChecked() then
+				if fujiF.nr.raidbutlist[p].butlist[pp].fenGren:GetChecked() then
 					duiwuF.tongzhi.fenGren=pp
 					break
 				end
 			end
 			if duiwuF.tongzhi.fenGren==0 then
-				PIGinfotip:TryDisplayMessage("请先选择分G人");
+				PIGTopMsg:add("请先选择分G人");
 				return
 			end
-			local fenGrenFF = _G["RRfenGList_"..p.."_"..duiwuF.tongzhi.fenGren]
-			local fenGrenname=fenGrenFF.Name.t:GetText()
+			local fenGrenname=fujiF.nr.raidbutlist[p].butlist[duiwuF.tongzhi.fenGren].Name.t:GetText()
+			local msnfenG=p.."队明细: ";
+			for kk=1,5 do
+				local zuwanjiaF = fujiF.nr.raidbutlist[p].butlist[kk]
+				local zuwanjiaName = zuwanjiaF.Name.t:GetText()
+				if zuwanjiaF:IsShown() then
+					msnfenG=msnfenG..zuwanjiaName..":"..GetCoinText(zuwanjiaF.fenGV_V).."，"
+				end
+			end
 			if UnitIsConnected(fenGrenname) then
-				PIGSendChatRaidParty("======【"..p.."队】=========");
-				local MSGFENGXINXI="小队分G数: "..GetCoinText(duiwuF.jiaoyiG_V)..",分G人员【"..fenGrenname.."】标记为{rt"..p.."}";
-				SetRaidTarget(fenGrenname, p);
-				PIGSendChatRaidParty(MSGFENGXINXI);
-				local msnfenG="明细: ";
-				for kk=1,5 do
-					local zuwanjiaF = _G["RRfenGList_"..p.."_"..kk]
-					local zuwanjiaName = zuwanjiaF.Name.t:GetText()
-					if zuwanjiaF:IsShown() then
-						msnfenG=msnfenG..zuwanjiaName..":"..GetCoinText(zuwanjiaF.fenGV_V).."，"
+				if button=="LeftButton" then
+					PIGSendChatRaidParty("=====[!Pig提示]=======");
+					local MSGFENGXINXI=""..p.."队分G人[{rt"..p.."}"..fenGrenname.."],小队合计"..GetCoinText(duiwuF.jiaoyiG_V);
+					SetRaidTarget(fenGrenname, p);
+					PIGSendChatRaidParty(MSGFENGXINXI);
+					
+					PIGSendChatRaidParty(msnfenG);
+					self.Tex:SetDesaturated(true);
+				else
+					SendChatMessage("[!Pig] 已指定你为"..p.."队分G人,小队合计"..GetCoinText(duiwuF.jiaoyiG_V), "WHISPER", nil, fenGrenname);
+					C_Timer.After(0.2,function() SendChatMessage(msnfenG, "WHISPER", nil, fenGrenname) end)
+					for kk=1,5 do
+						local zuwanjiaF = fujiF.nr.raidbutlist[p].butlist[kk]
+						local zuwanjiaName = zuwanjiaF.Name.t:GetText()
+						if zuwanjiaF:IsShown() and zuwanjiaName~=fenGrenname then
+							SendChatMessage("[!Pig] 请找"..p.."队分G人["..fenGrenname.."]领取"..GetCoinText(duiwuF.jiaoyiG_V), "WHISPER", nil, zuwanjiaName);
+						end
 					end
 				end
-				PIGSendChatRaidParty(msnfenG);
-				self.Tex:SetDesaturated(true);
 			else
-				PIGinfotip:TryDisplayMessage("当前分G人已离线，请选择其他未离线成员");
+				PIGTopMsg:add("当前分G人已离线，请选择其他未离线成员");
 			end	
 		end);
 		duiwuF.biaoti = PIGFontString(duiwuF,{"LEFT", duiwuF.tongzhi, "RIGHT", 0,1},"\124cff00FF00"..p.."队\124r", "OUTLINE",15);
@@ -130,76 +146,77 @@ function GDKPInfo.ADD_fenG(RaidR)
 		duiwuF.jiaoyi:Hide()
 		duiwuF.jiaoyiG:Hide()
 		for pp=1,5 do
-			local player = CreateFrame("Frame", "RRfenGList_"..p.."_"..pp, duiwuF);
-			player:SetSize(duiwu_Width,duiwu_Height);
+			local playerbut = CreateFrame("Frame", nil, duiwuF);
+			fujiF.nr.raidbutlist[p].butlist[pp]=playerbut
+			playerbut:SetSize(duiwu_Width,duiwu_Height);
 			if pp==1 then
-				player:SetPoint("TOP",duiwuF,"TOP",0,-1);
+				playerbut:SetPoint("TOP",duiwuF,"TOP",0,-1);
 			else
-				player:SetPoint("TOP",_G["RRfenGList_"..p.."_"..(pp-1)],"BOTTOM",0,-PjiangeH);
+				playerbut:SetPoint("TOP",fujiF.nr.raidbutlist[p].butlist[pp-1],"BOTTOM",0,-PjiangeH);
 			end
-			if pp~=5 then PIGLine(player,"BOT",-1,nil,nil,{0.3,0.3,0.3,0.3}) end
+			if pp~=5 then PIGLine(playerbut,"BOT",-1,nil,nil,{0.3,0.3,0.3,0.3}) end
 			-------------
-			player.fenGren = CreateFrame("CheckButton", nil, player, "UIRadioButtonTemplate");
-			player.fenGren:SetSize(duiwu_Height-10,duiwu_Height-9);
-			player.fenGren:SetHitRectInsets(0,0,-2,-2);
-			player.fenGren:SetPoint("LEFT",player,"LEFT",1,0);
-			PIGEnter(player.fenGren,"设置为"..p.."队分G人员")
-			player.fenGren:SetScript("OnClick", function (self)
+			playerbut.fenGren = CreateFrame("CheckButton", nil, playerbut, "UIRadioButtonTemplate");
+			playerbut.fenGren:SetSize(duiwu_Height-10,duiwu_Height-9);
+			playerbut.fenGren:SetHitRectInsets(0,0,-2,-2);
+			playerbut.fenGren:SetPoint("LEFT",playerbut,"LEFT",1,0);
+			PIGEnter(playerbut.fenGren,"设置为"..p.."队分G人员")
+			playerbut.fenGren:SetScript("OnClick", function (self)
 				for qq=1,5 do
-					_G["RRfenGList_"..p.."_"..qq].fenGren:SetChecked(false);
+					fujiF.nr.raidbutlist[p].butlist[qq].fenGren:SetChecked(false);
 				end
 				self:SetChecked(true);
 			end)	
 			-------------
-			player.Name = CreateFrame("Frame", nil, player);
-			player.Name:SetPoint("LEFT",player.fenGren,"RIGHT",1,0);
-			player.Name:SetSize(duiwu_Width-72,duiwu_Height);
-			player.Name.t = PIGFontString(player.Name,{"LEFT",player.Name,"LEFT",0,0},"","OUTLINE");
-			player.Name:SetScript("OnMouseUp", function (self)
+			playerbut.Name = CreateFrame("Frame", nil, playerbut);
+			playerbut.Name:SetPoint("LEFT",playerbut.fenGren,"RIGHT",1,0);
+			playerbut.Name:SetSize(duiwu_Width-72,duiwu_Height);
+			playerbut.Name.t = PIGFontString(playerbut.Name,{"LEFT",playerbut.Name,"LEFT",0,0},"","OUTLINE");
+			playerbut.Name:SetScript("OnMouseUp", function (self)
 				if ( MailFrame:IsVisible() and MailFrame.selectedTab == 2 ) then
-					SendMailInfo(player.AllName,player.fenGV_V,99,99)
+					SendMailInfo(playerbut.AllName,playerbut.fenGV_V,99,99)
 				else
-					PIGinfotip:TryDisplayMessage("请先打开邮箱发件页面");
+					PIGTopMsg:add("请先打开邮箱发件页面");
 				end
 			end);
 			-------------
-			player.buzhu = player:CreateTexture(nil, "ARTWORK");
-			player.buzhu:SetTexture("interface/lfgframe/ui-lfg-icon-roles.blp");
-			player.buzhu:SetSize(duiwu_Height-10,duiwu_Height-8);
-			player.buzhu:SetPoint("LEFT", player.Name, "RIGHT", 0,0);
-			player.fenGbili = player:CreateTexture(nil, "ARTWORK");
-			player.fenGbili:SetSize(duiwu_Height-10,duiwu_Height-8);
-			player.fenGbili:SetPoint("LEFT", player.buzhu, "RIGHT", 0,0);
+			playerbut.buzhu = playerbut:CreateTexture(nil, "ARTWORK");
+			playerbut.buzhu:SetTexture("interface/lfgframe/ui-lfg-icon-roles.blp");
+			playerbut.buzhu:SetSize(duiwu_Height-10,duiwu_Height-8);
+			playerbut.buzhu:SetPoint("LEFT", playerbut.Name, "RIGHT", 0,0);
+			playerbut.fenGbili = playerbut:CreateTexture(nil, "ARTWORK");
+			playerbut.fenGbili:SetSize(duiwu_Height-10,duiwu_Height-8);
+			playerbut.fenGbili:SetPoint("LEFT", playerbut.buzhu, "RIGHT", 0,0);
 			-- ------
-			player.mail = CreateFrame("Button",nil,player, "TruncatedButtonTemplate",pp);
-			player.mail:SetHighlightTexture("interface/buttons/ui-common-mousehilight.blp")
-			player.mail:SetSize(duiwu_Height-9,duiwu_Height-8);
-			player.mail:SetPoint("LEFT", player.fenGbili, "RIGHT", 2,0);
-			player.mail.Tex = player.mail:CreateTexture(nil, "BORDER");
-			player.mail.Tex:SetTexture("interface/cursor/mail.blp");
-			player.mail.Tex:SetSize(duiwu_Height-9,duiwu_Height-8);
-			player.mail.Tex:SetPoint("CENTER");
-			player.mail:SetScript("OnMouseDown", function (self)
+			playerbut.mail = CreateFrame("Button",nil,playerbut, "TruncatedButtonTemplate",pp);
+			playerbut.mail:SetHighlightTexture("interface/buttons/ui-common-mousehilight.blp")
+			playerbut.mail:SetSize(duiwu_Height-9,duiwu_Height-8);
+			playerbut.mail:SetPoint("LEFT", playerbut.fenGbili, "RIGHT", 2,0);
+			playerbut.mail.Tex = playerbut.mail:CreateTexture(nil, "BORDER");
+			playerbut.mail.Tex:SetTexture("interface/cursor/mail.blp");
+			playerbut.mail.Tex:SetSize(duiwu_Height-9,duiwu_Height-8);
+			playerbut.mail.Tex:SetPoint("CENTER");
+			playerbut.mail:SetScript("OnMouseDown", function (self)
 				self.Tex:SetPoint("CENTER",-1.5,-1.5);
 			end);
-			player.mail:SetScript("OnMouseUp", function (self)
+			playerbut.mail:SetScript("OnMouseUp", function (self)
 				self.Tex:SetPoint("CENTER");
 			end);
-			player.mail:SetScript("OnClick", function (self)
+			playerbut.mail:SetScript("OnClick", function (self)
 				if ( MailFrame:IsVisible() and MailFrame.selectedTab == 2 ) then
-					SendMailInfo(player.AllName,player.fenGV_V)
+					SendMailInfo(playerbut.AllName,playerbut.fenGV_V)
 					PIGA["GDKP"]["Raidinfo"][p][pp][8]=1;
 					RaidR.Update_FenG()
 				else
-					PIGinfotip:TryDisplayMessage("请先打开邮箱发件页面");
+					PIGTopMsg:add("请先打开邮箱发件页面");
 				end
 			end);
-			player.fenG = CreateFrame("Frame", nil, player);
-			player.fenG:SetSize(10,duiwu_Height);
-			player.fenG:SetPoint("RIGHT",player.Name,"RIGHT",0,0);
-			player.fenG:SetFrameLevel(FrameLevel+20)
-			player.fenGV = PIGFontString(player.fenG,{"RIGHT",player.fenG,"RIGHT",0,0},0,"OUTLINE");
-			player.fenGV:Hide();
+			playerbut.fenG = CreateFrame("Frame", nil, playerbut);
+			playerbut.fenG:SetSize(10,duiwu_Height);
+			playerbut.fenG:SetPoint("RIGHT",playerbut.Name,"RIGHT",0,0);
+			playerbut.fenG:SetFrameLevel(FrameLevel+20)
+			playerbut.fenGV = PIGFontString(playerbut.fenG,{"RIGHT",playerbut.fenG,"RIGHT",0,0},0,"OUTLINE");
+			playerbut.fenGV:Hide();
 		end
 	end
 
@@ -557,23 +574,23 @@ function GDKPInfo.ADD_fenG(RaidR)
 	fujiF.nr.XianshifenGV:SetScript("OnClick", function (self)
 		if self.yixianshi then
 			for p=1,8 do
-				_G["RRfenGList_"..p].jiaoyi:Hide()
-				_G["RRfenGList_"..p].jiaoyiG:Hide()
+				fujiF.nr.raidbutlist[p].jiaoyi:Hide()
+				fujiF.nr.raidbutlist[p].jiaoyiG:Hide()
 				for pp=1,5 do
-					_G["RRfenGList_"..p.."_"..pp].fenGV:Hide()
+					fujiF.nr.raidbutlist[p].butlist[pp].fenGV:Hide()
 				end
 			end
 			self.Text:SetText("显示金额")
 			self.yixianshi=false
 		else
 			for p=1,8 do
-				local pui = _G["RRfenGList_"..p]
+				local pui = fujiF.nr.raidbutlist[p]
 				if pui.jiaoyiG_V and pui.jiaoyiG_V>0 then
 					pui.jiaoyi:Show()
 					pui.jiaoyiG:Show()
 				end
 				for pp=1,5 do
-					_G["RRfenGList_"..p.."_"..pp].fenGV:Show()
+					fujiF.nr.raidbutlist[p].butlist[pp].fenGV:Show()
 				end
 			end
 			self.Text:SetText("隐藏金额")
@@ -638,10 +655,10 @@ function GDKPInfo.ADD_fenG(RaidR)
 	function RaidR.Update_FenG()
 		if not fujiF.nr:IsShown() then return end
 		for p=1,8 do
-			local duiwuF = _G["RRfenGList_"..p]
+			local duiwuF = fujiF.nr.raidbutlist[p]
 			duiwuF.tongzhi:Hide()
 			for pp=1,5 do
-				_G["RRfenGList_"..p.."_"..pp]:Hide()
+				fujiF.nr.raidbutlist[p].butlist[pp]:Hide()
 			end
 		end
 		local renyuanxinxi = {
@@ -659,11 +676,11 @@ function GDKPInfo.ADD_fenG(RaidR)
 		for p=1,8 do
 			local duinum = #infoData[p]
 			if duinum>0 then
-				local duiwuF = _G["RRfenGList_"..p]
+				local duiwuF = fujiF.nr.raidbutlist[p]
 				duiwuF.tongzhi:Show()
 				renyuanxinxi.renshu=renyuanxinxi.renshu+duinum
 				for pp=1,duinum do
-					local renyF = _G["RRfenGList_"..p.."_"..pp]
+					local renyF = fujiF.nr.raidbutlist[p].butlist[pp]
 					renyF:Show()
 					local AllName = infoData[p][pp][1]
 					renyF.AllName=AllName
@@ -845,11 +862,11 @@ function GDKPInfo.ADD_fenG(RaidR)
 								end
 							end
 						end
-						_G["RRfenGList_"..p.."_"..pp].fenGV_V=duiwufenGshu.renwu[pp]
-						_G["RRfenGList_"..p.."_"..pp].fenGV:SetText(GetMoneyString(duiwufenGshu.renwu[pp]))
+						fujiF.nr.raidbutlist[p].butlist[pp].fenGV_V=duiwufenGshu.renwu[pp]
+						fujiF.nr.raidbutlist[p].butlist[pp].fenGV:SetText(GetMoneyString(duiwufenGshu.renwu[pp]))
 				end
-				_G["RRfenGList_"..p].jiaoyiG_V=duiwufenGshu.duiwuG
-				_G["RRfenGList_"..p].jiaoyiG:SetText(GetMoneyString(duiwufenGshu.duiwuG))
+				fujiF.nr.raidbutlist[p].jiaoyiG_V=duiwufenGshu.duiwuG
+				fujiF.nr.raidbutlist[p].jiaoyiG:SetText(GetMoneyString(duiwufenGshu.duiwuG))
 			end
 		end
 	end

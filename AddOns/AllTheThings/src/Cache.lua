@@ -1,9 +1,10 @@
 
 local _, app = ...;
+local L = app.L
 
 -- Global locals
-local ipairs, tinsert, pairs, rawset, type, wipe, setmetatable, rawget, math_floor
-	= ipairs, tinsert, pairs, rawset, type, wipe, setmetatable, rawget, math.floor
+local ipairs, pairs, rawset, type, wipe, setmetatable, rawget, math_floor,tremove
+	= ipairs, pairs, rawset, type, wipe, setmetatable, rawget, math.floor,tremove
 local C_Map_GetAreaInfo, C_Map_GetMapInfo = C_Map.GetAreaInfo, C_Map.GetMapInfo;
 
 -- App locals
@@ -56,7 +57,7 @@ local CreateDataCache = function(name, skipMapCaching)
 end
 currentCache = CreateDataCache("default");
 
-local currentMapGroup, allowMapCaching = setmetatable({}, { __index = function() return end }), true
+local currentMapGroup, allowMapCaching = setmetatable({}, { __index = app.EmptyFunction }), true
 local cacheAchievementID = function(group, value)
 	CacheField(group, "achievementID", value);
 end
@@ -94,31 +95,34 @@ end;
 local cacheQuestID = function(group, questID)
 	CacheField(group, "questID", questID);
 end
+local cacheSpellID = function(group, spellID)
+	CacheField(group, "spellID", spellID);
+end
 if app.Debugging and app.Version == "[Git]" then
-	local L = app.L;
 	local referenceCounter = {};
 	app.ReferenceCounter = referenceCounter;
+	local tonumber = tonumber
 	app.CheckReferenceCounters = function()
 		local CUSTOM_HEADERS = {};
 		for id,count in pairs(referenceCounter) do
 			if type(id) == "number" and tonumber(id) < 1 and tonumber(id) > -100000 then
-				tinsert(CUSTOM_HEADERS, { id, count });
+				CUSTOM_HEADERS[#CUSTOM_HEADERS + 1] = { id, count }
 			end
 		end
 		for id,_ in pairs(L.HEADER_NAMES) do
 			if not referenceCounter[id] then
 				referenceCounter[id] = 1;
-				tinsert(CUSTOM_HEADERS, { id, 0 });
+				CUSTOM_HEADERS[#CUSTOM_HEADERS + 1] = { id, 0 }
 			end
 		end
 		for id,_ in pairs(L.HEADER_DESCRIPTIONS) do
 			if not referenceCounter[id] then
-				tinsert(CUSTOM_HEADERS, { id, 0, " and only exists as a description..." });
+				CUSTOM_HEADERS[#CUSTOM_HEADERS + 1] = { id, 0, " and only exists as a description..." }
 			end
 		end
 		for id,_ in pairs(L.HEADER_ICONS) do
 			if not referenceCounter[id] then
-				tinsert(CUSTOM_HEADERS, { id, 0, " and only exists as an icon..." });
+				CUSTOM_HEADERS[#CUSTOM_HEADERS + 1] = { id, 0, " and only exists as an icon..." }
 			end
 		end
 		app.Sort(CUSTOM_HEADERS, function(a, b)
@@ -131,7 +135,7 @@ if app.Debugging and app.Version == "[Git]" then
 			if L.HEADER_ICONS[id] then header.icon = L.HEADER_ICONS[id]; end
 			if L.HEADER_DESCRIPTIONS[id] then header.description = L.HEADER_DESCRIPTIONS[id]; end
 			print("Header " .. id .. " has " .. data[2] .. " references" .. (data[3] or "."), header.name);
-			tinsert(data, header);
+			data[#data + 1] = header
 		end
 	end
 	cacheCreatureID = function(group, creatureID)
@@ -163,17 +167,17 @@ end
 local providerTypeConverters = {
 	["n"] = cacheCreatureID,
 	["o"] = cacheObjectID,
+	["s"] = function(group, providerID)
+		CacheField(group, "spellIDAsCost", providerID);
+	end,
 	["c"] = function(group, providerID)
 		CacheField(group, "currencyIDAsCost", providerID);
-		--CacheField(group, "currencyID", providerID);
 	end,
 	["i"] = function(group, providerID)
 		CacheField(group, "itemIDAsCost", providerID);
-		--CacheField(group, "itemID", providerID);
 	end,
-	["g"] = function(group, providerID)
-		-- Do nothing, nothing to cache.
-	end
+	-- Do nothing, nothing to cache.
+	["g"] = app.EmptyFunction
 };
 local cacheProviderOrCost = function(group, provider)
 	providerTypeConverters[provider[1]](group, provider[2]);
@@ -238,7 +242,7 @@ local function zoneArtIDRunner(group, value)
 		nextCustomMapID = nextCustomMapID - 1;
 		if originalMaps then
 			if group.mapID then
-				tinsert(originalMaps, mapID);
+				originalMaps[#originalMaps + 1] = mapID
 			else
 				group.mapID = nil;
 			end
@@ -248,7 +252,7 @@ local function zoneArtIDRunner(group, value)
 
 		-- Manually assign the name of this map since it is not a real mapID.
 		CacheField(group, "mapID", mapID);
-		app.L.MAP_ID_TO_ZONE_TEXT[mapID] = group.text;
+		L.MAP_ID_TO_ZONE_TEXT[mapID] = group.text
 
 		-- Remap the original mapID to the new mapID when it encounters any of these artIDs.
 		local remap = MapRemapping[originalMapID];
@@ -270,7 +274,7 @@ local function zoneArtIDRunner(group, value)
 		mapIDCache = mapIDCache[originalMapID];
 		for i,o in ipairs(mapIDCache) do
 			if o == group then
-				table.remove(mapIDCache, i);
+				tremove(mapIDCache, i)
 				break;
 			end
 		end
@@ -287,11 +291,9 @@ local function zoneTextAreasRunner(group, value)
 		-- Generate a new unique mapID (negative)
 		mapID = nextCustomMapID;
 		nextCustomMapID = nextCustomMapID - 1;
-		if group.maps then
-			tinsert(group.maps, mapID)
-		else
-			group.maps = {mapID};
-		end
+		local maps = group.maps
+		if maps then maps[#maps + 1] = mapID
+		else group.maps = {mapID} end
 
 		-- Manually assign the name of this map since it is not a real mapID.
 		CacheField(group, "mapID", mapID);
@@ -299,7 +301,7 @@ local function zoneTextAreasRunner(group, value)
 
 	-- Use the localizer to force the minilist to display this as if it was a map file.
 	local name = C_Map_GetAreaInfo(value[1]);
-	if name then app.L.MAP_ID_TO_ZONE_TEXT[mapID] = name; end
+	if name then L.MAP_ID_TO_ZONE_TEXT[mapID] = name end
 
 	-- Remap the original mapID to the new mapID when it encounters any of these artIDs.
 	local mapIDs, parentMapID, info = {}, nil, nil;
@@ -363,11 +365,9 @@ local function zoneTextNamesRunner(group, value)
 			-- Generate a new unique mapID (negative)
 			mapID = nextCustomMapID;
 			nextCustomMapID = nextCustomMapID - 1;
-			if group.maps then
-				tinsert(group.maps, mapID)
-			else
-				group.maps = {mapID};
-			end
+			local maps = group.maps
+			if maps then maps[#maps + 1] = mapID
+			else group.maps = {mapID} end
 
 			-- Manually assign the name of this map since it is not a real mapID.
 			CacheField(group, "mapID", mapID);
@@ -394,7 +394,7 @@ local function zoneTextNamesRunner(group, value)
 	end
 end
 local function zoneTextHeaderIDRunner(group, value)
-	value = app.L.HEADER_NAMES[value];
+	value = L.HEADER_NAMES[value]
 	if value then zoneTextNamesRunner(group, { value }); end
 end
 local fieldConverters = {
@@ -579,8 +579,8 @@ local fieldConverters = {
 		end
 	end,
 	["nextQuests"] = function(group, value)
-		for _,questID in ipairs(value) do
-			CacheField(group, "nextQuests", questID);
+		for i=1,#value,1 do
+			CacheField(group, "nextQuests", value[i])
 		end
 	end,
 	["sourceQuests"] = function(group, value)
@@ -596,34 +596,34 @@ local fieldConverters = {
 
 	-- Localization Helpers
 	["zone-artIDs"] = function(group, value)
-		tinsert(runners, function()
+		runners[#runners + 1] = function()
 			zoneArtIDRunner(group, value);
-		end);
+		end
 	end,
 	["zone-text-areaID"] = function(group, value)
-		tinsert(runners, function()
+		runners[#runners + 1] = function()
 			zoneTextAreasRunner(group, { value });
-		end);
+		end
 	end,
 	["zone-text-areas"] = function(group, value)
-		tinsert(runners, function()
+		runners[#runners + 1] = function()
 			zoneTextAreasRunner(group, value);
-		end);
+		end
 	end,
 	["zone-text-continent"] = function(group, value)
-		tinsert(runners, function()
+		runners[#runners + 1] = function()
 			zoneTextContinentRunner(group, value);
-		end);
+		end
 	end,
 	["zone-text-headerID"] = function(group, value)
-		tinsert(runners, function()
+		runners[#runners + 1] = function()
 			zoneTextHeaderIDRunner(group, value);
-		end);
+		end
 	end,
 	["zone-text-names"] = function(group, value)
-		tinsert(runners, function()
+		runners[#runners + 1] = function()
 			zoneTextNamesRunner(group, value);
-		end);
+		end
 	end,
 
 	-- Patch Helpers
@@ -680,15 +680,6 @@ if app.IsRetail then
 	fieldConverters.r = nil
 	fieldConverters.races = nil
 
-	-- Retail doesn't need to double cache the object attached to currencies/items because it uses the cost
-	-- caches for the same information
-	providerTypeConverters.c = function(group, providerID)
-		CacheField(group, "currencyIDAsCost", providerID);
-	end
-	providerTypeConverters.i = function(group, providerID)
-		CacheField(group, "itemIDAsCost", providerID);
-	end
-
 	-- use single iteration of each group by way of not performing any group field additions while the cache process is running
 	_CacheFields = function(group)
 		local mapKeys
@@ -722,7 +713,7 @@ if app.IsRetail then
 	end
 	fieldConverters.mountmodID = fieldConverters.itemID;
 	fieldConverters.heirloomID = fieldConverters.itemID;
-	tinsert(postscripts, function()
+	postscripts[#postscripts + 1] = function()
 		if #cacheGroupForModItemID == 0 then return end
 		local modItemID
 		-- app.PrintDebug("caching for modItemID",#cacheGroupForModItemID)
@@ -737,7 +728,7 @@ if app.IsRetail then
 		end
 		wipe(cacheGroupForModItemID)
 		-- app.PrintDebug("caching for modItemID done")
-	end)
+	end
 
 	-- Retail doesn't have objectives so don't bother checking for it
 	fieldConverters.coord = function(group, coord)
@@ -766,9 +757,9 @@ else
 	fieldConverters.instanceID = function(group, value)
 		CacheField(group, "instanceID", value);
 		if group.headerID then
-			tinsert(runners, function()
+			runners[#runners + 1] = function()
 				zoneTextHeaderIDRunner(group, group.headerID);
-			end);
+			end
 		end
 	end
 end
@@ -819,46 +810,48 @@ local function SearchForFieldContainer(field)
 end
 
 -- Recursive Searching
-local function SearchForFieldRecursively(group, field, value)
-	-- Returns: A table containing all subgroups which contain a given value of field relative to the group or nil.
-	if group.g then
-		-- Go through the sub groups and determine if any of them have a response.
-		local first = nil;
-		for i, subgroup in ipairs(group.g) do
-			local g = SearchForFieldRecursively(subgroup, field, value);
-			if g then
-				if first then
-					-- Merge!
-					for j,data in ipairs(g) do
-						tinsert(first, data);
-					end
-				else
-					-- Cool! (This should be the most common occurance)
-					first = g;
-				end
-			end
-		end
-		if group[field] == value then
-			-- OH BOY, WE FOUND IT!
-			if first then
-				return tinsert(first, group);
-			else
-				return { group };
-			end
-		end
-		return first;
-	elseif group[field] == value then
-		-- OH BOY, WE FOUND IT!
-		return { group };
-	end
-end
+-- Not currently utilized
+-- local function SearchForFieldRecursively(group, field, value)
+-- 	-- Returns: A table containing all subgroups which contain a given value of field relative to the group or nil.
+-- 	if group.g then
+-- 		-- Go through the sub groups and determine if any of them have a response.
+-- 		local first
+-- 		for i, subgroup in ipairs(group.g) do
+-- 			local g = SearchForFieldRecursively(subgroup, field, value);
+-- 			if g then
+-- 				if first then
+-- 					-- Merge!
+-- 					for j,data in ipairs(g) do
+-- 						first[#first + 1] = data;
+-- 					end
+-- 				else
+-- 					-- Cool! (This should be the most common occurance)
+-- 					first = g;
+-- 				end
+-- 			end
+-- 		end
+-- 		if group[field] == value then
+-- 			-- OH BOY, WE FOUND IT!
+-- 			if first then
+-- 				first[#first + 1] = group
+-- 				return first
+-- 			else
+-- 				return { group };
+-- 			end
+-- 		end
+-- 		return first;
+-- 	elseif group[field] == value then
+-- 		-- OH BOY, WE FOUND IT!
+-- 		return { group };
+-- 	end
+-- end
 local function SearchForRelativeItems(group, listing)
 	-- Search a group for all items relative to the given group. (excluding the group passed in)
 	if group and group.g then
 		for i,subgroup in ipairs(group.g) do
 			SearchForRelativeItems(subgroup, listing);
 			if subgroup.itemID then
-				tinsert(listing, subgroup);
+				listing[#listing + 1] = subgroup
 			end
 		end
 	end
@@ -1030,7 +1023,7 @@ local function SearchForSpecificGroups(t, group, hashes)
 	-- Search a group for objects whose hash matches a hash found in hashes and append it to table t.
 	if group then
 		if hashes[group.hash] then
-			tinsert(t, group);
+			t[#t + 1] = group
 		end
 		local g = group.g;
 		if g then
@@ -1070,7 +1063,7 @@ local function GenerateSourcePathForTSM(group, l)
 			return GenerateSourcePathForTSM(parent, l + 1) .. "`" .. group.text;
 		end
 	end
-	return app.L.TITLE;
+	return L.TITLE
 end
 local function GenerateSourcePathForTooltip(group)
 	return GenerateSourcePath(group, 1);
@@ -1097,7 +1090,7 @@ local function VerifyRecursion(group, checked)
 		end
 	end
 	if group.parent then
-		tinsert(checked, group);
+		checked[#checked + 1] = group
 		return VerifyRecursion(group.parent, checked);
 	end
 	return true;
@@ -1130,7 +1123,7 @@ app.GenerateSourceHash = GenerateSourceHash;
 app.GenerateSourcePath = GenerateSourcePath;
 app.GenerateSourcePathForTSM = GenerateSourcePathForTSM;
 app.GenerateSourcePathForTooltip = GenerateSourcePathForTooltip;
-app.SearchForFieldRecursively = SearchForFieldRecursively;
+-- app.SearchForFieldRecursively = SearchForFieldRecursively;	-- not currently utilized
 app.SearchForFieldContainer = SearchForFieldContainer;
 app.SearchForField = SearchForField;
 app.SearchForFieldInAllCaches = SearchForFieldInAllCaches;

@@ -25,7 +25,7 @@ local mt = {__index = bossModPrototype}
 ---@class DBMMod
 ---@field OnCombatStart fun(self: DBMMod, delay: number, startedByCastOrRegenDisabledOrMessage: boolean, startedByEncounter: boolean)
 ---@field OnCombatEnd fun(self: DBMMod, wipe: boolean, delayedSecondCall: boolean?)
----@field StartEngageTimers fun(self: DBMMod, guid: string, cid: number, delay: number)
+---@field StartEngageTimers fun(self: DBMMod, guid: string, cid: number, delay: number, uID: string)
 ---@field OnLeavingCombat fun()
 ---@field EnteringZoneCombat fun(self: DBMMod)
 ---@field LeavingZoneCombat fun(self: DBMMod)
@@ -811,7 +811,8 @@ end
 ---@param phase number|boolean number for phase number, false otherwise
 ---@param spellId number
 ---@param count number|boolean? cast count if count object, false/nil otherwise
-function bossModPrototype:GetFromTimersTable(table, difficultyName, phase, spellId, count)
+---@param subcount number|boolean? sub count if subcount object, false/nil otherwise
+function bossModPrototype:GetFromTimersTable(table, difficultyName, phase, spellId, count, subcount)
 	local prev = table
 
 	if difficultyName ~= false then
@@ -838,6 +839,10 @@ function bossModPrototype:GetFromTimersTable(table, difficultyName, phase, spell
 
 	if count then
 		prev = prev[count]
+	end
+
+	if subcount and count then
+		prev = prev[subcount]
 	end
 
 	return prev

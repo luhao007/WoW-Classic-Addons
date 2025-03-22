@@ -10,7 +10,7 @@ local allwww = 920
 --
 local jianjuzhi = 53
 local function SetBranchTexture_pig(TalentFrame) --重新设置系统目录位置
-	local name, icon, pointsSpent, background, previewPointsSpent = GetTalentTabInfo(1, TalentFrame.inspect, TalentFrame.pet, TalentFrame.talentGroup);
+	local _, name, _, icon, pointsSpent, background, previewPointsSpent = GetTalentTabInfo(1, TalentFrame.inspect, TalentFrame.pet, TalentFrame.talentGroup);
 	local displayPointsSpent = pointsSpent + previewPointsSpent;
 	PlayerTalentFrameScrollFrame.Tianfu:SetText(name..":");
 	PlayerTalentFrameScrollFrame.TianfuV:SetText(displayPointsSpent);
@@ -97,7 +97,7 @@ local function TalentFrame_Update_Pig(TFID)
 		isActiveTalentGroup = TalentFrame.talentGroup == GetActiveTalentGroup(TalentFrame.inspect, TalentFrame.pet);
 	end
 	local base;
-	local name, icon, pointsSpent, background, previewPointsSpent = GetTalentTabInfo(selectedTab, TalentFrame.inspect, TalentFrame.pet, TalentFrame.talentGroup);
+	local _, name, _, icon, pointsSpent, background, previewPointsSpent = GetTalentTabInfo(selectedTab, TalentFrame.inspect, TalentFrame.pet, TalentFrame.talentGroup);
 	PlayerTalentFrame.pointsSpent = pointsSpent;
 	PlayerTalentFrame.previewPointsSpent = previewPointsSpent;
 	local displayPointsSpent = pointsSpent + previewPointsSpent;

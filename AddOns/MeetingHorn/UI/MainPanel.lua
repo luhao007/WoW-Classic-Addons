@@ -16,7 +16,8 @@ function MainPanel:Constructor()
         {L['Create Activity'], self.Manage}, --
         {L['Recent members'], self.Recent}, --
         {'星团长', self.GoodLeader}, --
-        {L['Announcement'], self.Announcement}, --
+        {'实用工具', self.PracticalTool}, --
+        --{L['Announcement'], self.Announcement}, --
         {L['MissionGuidance'], self.MissionGuidance}, --
         {L['Encounter'], self.Encounter}, --
         --[=[@classic@
@@ -24,7 +25,7 @@ function MainPanel:Constructor()
         --@end-classic@]=]
         --{'挑战活动', self.Quest},
         {L['Options'], self.Options}, --
-        {L['Help'], self.Help}, --
+        --{L['Help'], self.Help}, --
     })
 
     self.portrait:SetTexture([[Interface\AddOns\MeetingHorn\Media\Logo]])
@@ -42,6 +43,7 @@ function MainPanel:Constructor()
     self:SetScript('OnHide', self.OnHide)
 
     self.Help.Text:SetText(L.HELP_COMMENT)
+    self.Help:Hide()
 
     ns.UI.Browser:Bind(self.Browser)
     ns.UI.Creator:Bind(self.Manage.Creator)
@@ -53,7 +55,8 @@ function MainPanel:Constructor()
     ns.UI.Recent:Bind(self.Recent)
     ns.UI.Challenge:Bind(self.Challenge)
     ns.UI.GoodLeaderFrame:Bind(self.GoodLeader)
-    ns.UI.Announcement:Bind(self.Announcement)
+    ns.UI.PracticalTool:Bind(self.PracticalTool)
+    --ns.UI.Announcement:Bind(self.Announcement)
     ns.UI.MissionGuidance:Bind(self.MissionGuidance)
     --ns.UI.QuestPanel:Bind(self.Quest) # 挑战活动临时隐藏
     self.Manage.Applicant:Hide()

@@ -5,6 +5,7 @@ local _, _, _, tocversion = GetBuildInfo()
 local Create=addonTable.Create
 local PIGFrame=Create.PIGFrame
 local PIGLine=Create.PIGLine
+local PIGEnter=Create.PIGEnter
 local PIGButton = Create.PIGButton
 local PIGDownMenu=Create.PIGDownMenu
 local PIGSlider = Create.PIGSlider
@@ -88,18 +89,18 @@ end)
 MiniMapF.Minimap_but_Pointbiaoti=PIGFontString(MiniMapF,{"TOPLEFT",MiniMapF,"TOPLEFT",20,-200},"小地图按钮位置:")
 local mapPointList = {"附着于小地图","自由模式(可随意拖动)","附着于系统菜单","附着于聊天框","ElvUI_小地图下方"};
 MiniMapF.Minimap_but_Point=PIGDownMenu(MiniMapF,{"TOPLEFT",MiniMapF.Minimap_but_Pointbiaoti,"BOTTOMLEFT",30,-6},{180,24})
-function MiniMapF.Minimap_but_Point:PIGDownMenu_Update_But(self)
+function MiniMapF.Minimap_but_Point:PIGDownMenu_Update_But()
 	if not ElvUI then mapPointList[5]=nil end
 	local info = {}
 	info.func = self.PIGDownMenu_SetValue
 	for i=1,#mapPointList,1 do
 	    info.text, info.arg1 = mapPointList[i], i
 	    info.checked = i==PIGA["Map"]["MinimapPoint"]
-		MiniMapF.Minimap_but_Point:PIGDownMenu_AddButton(info)
+		self:PIGDownMenu_AddButton(info)
 	end 
 end
 function MiniMapF.Minimap_but_Point:PIGDownMenu_SetValue(value,arg1,arg2)
-	MiniMapF.Minimap_but_Point:PIGDownMenu_SetText(value)
+	self:PIGDownMenu_SetText(value)
 	PIGA["Map"]["MinimapPoint"]=arg1
 	MiniMapF.PIGChecked()
 	PIGCloseDropDownMenus()
@@ -134,6 +135,7 @@ local function UpdatePaichuButLsit()
 	for i=1,#MiniMapF.MinimapButF.butlist do
 		local butx = MiniMapF.MinimapButF.butlist[i]
 		butx:Hide()
+		PIGEnter(butx,"")
 	end
 	for i=1,#PigMinimapBut_UI.MiniList do
 		local butx = MiniMapF.MinimapButF.butlist[i]
@@ -141,6 +143,7 @@ local function UpdatePaichuButLsit()
 		butx.uiname=PigMinimapBut_UI.MiniList[i]
 		local iconx = _G[PigMinimapBut_UI.MiniList[i]].icon and _G[PigMinimapBut_UI.MiniList[i]].icon:GetTexture() or _G[PigMinimapBut_UI.MiniList[i]].Icon and _G[PigMinimapBut_UI.MiniList[i]].Icon:GetTexture() or 134400
 		butx:SetNormalTexture(iconx)
+		PIGEnter(butx,butx.uiname)
 		if IsNoDIYpaichu(butx.uiname) then
 			butx.x:Show()
 		else

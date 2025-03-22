@@ -2,11 +2,11 @@ if DBM:GetTOC() < 110100 then return end
 local mod	= DBM:NewMod(2639, "DBM-Raids-WarWithin", 1, 1296)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20250116171406")
+mod:SetRevision("20250313200234")
 mod:SetCreatureID(225821)--Gear Grinder, 225822 Vexie
 mod:SetEncounterID(3009)
---mod:SetHotfixNoticeRev(20240921000000)
---mod:SetMinSyncRevision(20240921000000)
+mod:SetHotfixNoticeRev(20250122000000)
+mod:SetMinSyncRevision(20250122000000)
 mod:SetZone(2769)
 mod.respawnTime = 29
 
@@ -14,53 +14,52 @@ mod:RegisterCombat("combat")
 
 mod:RegisterEventsInCombat(
 	"SPELL_CAST_START 471403 459943 466040 466042 459671 468216 468487 459974 459627 460603 460173",
-	"SPELL_CAST_SUCCESS 459666 468207",
+--	"SPELL_CAST_SUCCESS",
 	"SPELL_AURA_APPLIED 466615 471500 1216788 466368 465865 460116 468216",
 --	"SPELL_AURA_APPLIED_DOSE",
 	"SPELL_AURA_REMOVED 466615 471500 460116 468216",
---	"SPELL_PERIODIC_DAMAGE",
---	"SPELL_PERIODIC_MISSED"
-	"UNIT_DIED"
---	"CHAT_MSG_RAID_BOSS_WHISPER",
---	"UNIT_SPELLCAST_SUCCEEDED boss1"
+	"SPELL_PERIODIC_DAMAGE 459683",
+	"SPELL_PERIODIC_MISSED 459683",
+	"UNIT_DIED",
+	"UNIT_SPELLCAST_SUCCEEDED boss1"
 )
 
 --TODO, possible infoframe for https://www.wowhead.com/ptr-2/spell=473507/soaked-in-oil on mythic difficulty
---TODO, see if https://www.wowhead.com/ptr-2/spell=1217851/dnt-bike-controller is exposed and use it for auto marking?
---TODO, nameplate timer for hotwheels using https://www.wowhead.com/ptr-2/spell=1217853/hot-wheels ?
---TODO, identify and correct spew cast to only use one of two ids
---TODO, identify correct timer start location for fire spell too
---TODO, see if the fire spell is NOT private on easier difficulties using https://www.wowhead.com/ptr-2/spell=468216/incendiary-fire
+--TODO, find a way to auto mark bikes?
+--TODO, nameplate timer for hotwheels using https://www.wowhead.com/ptr-2/spell=1217853/hot-wheels ? (15)
 --TODO, detect bomb targets with target scan of 459974?
---TODO, oil slick GTFO?
 --TODO, nameplate aura for passive https://www.wowhead.com/ptr-2/spell=473636/high-maintenance trait?
 --TODO, timer correction for missed interrupts for Tune-Up
---TODO, nameplate timer for repair CD?
---TODO, verify biker ID
+--TODO, add https://www.wowhead.com/ptr-2/spell=467776/jobs-done ?
+--[[
+(ability.id = 459943 or ability.id = 459671 or ability.id = 468487 or ability.id = 459627) and type = "begincast"
+or ability.id = 460603 and tyep = "begincast" or ability.id = 466615 and type = "applybuff"
+or ability.id = 459978 and type = "applydebuff"
+--]]
 --Stage One: Fury Road
 mod:AddTimerLine(DBM:EJ_GetSectionInfo(30093))
 ----The Geargrinder (main boss)
 --local warnProtectivePlating						= mod:NewCountAnnounce(466615, 2)--Stacks of plating Remaining
-local warnSpewOil									= mod:NewIncomingCountAnnounce(459666, 2)
+local warnSpewOil									= mod:NewIncomingCountAnnounce(459678, 2)
 local warnIncendiaryFire							= mod:NewIncomingCountAnnounce(468207, 2)
 
 local specWarnUnrelentingcarnage					= mod:NewSpecialWarningSpell(471403, nil, nil, nil, 2, 2)
 local specWarnCallbikers							= mod:NewSpecialWarningSwitchCount(459943, "Dps", nil, nil, 1, 2)
-local specWarnBombVoyage							= mod:NewSpecialWarningDodgeCount(459974, nil, nil, nil, 2, 2)
-local specWarnTankBuster							= mod:NewSpecialWarningDefensive(459627, nil, nil, nil, 1, 2)
-local specWarnTankBusterTaunt						= mod:NewSpecialWarningTaunt(459627, nil, nil, nil, 1, 2)
-local specWarnIncendiaryFire						= mod:NewSpecialWarningYou(468216, nil, nil, nil, 1, 12)--For non private version
---local specWarnGTFO								= mod:NewSpecialWarningGTFO(459785, nil, nil, nil, 1, 8)
+local specWarnBombVoyage							= mod:NewSpecialWarningDodgeCount(459978, false, nil, 2, 2, 2)--evert 8 seconds (4 on mythic) so off by default
+local specWarnTankBuster							= mod:NewSpecialWarningDefensive(465865, nil, nil, nil, 1, 2)
+local specWarnTankBusterTaunt						= mod:NewSpecialWarningTaunt(465865, nil, nil, nil, 1, 2)
+local specWarnIncendiaryFire						= mod:NewSpecialWarningYou(468216, nil, nil, nil, 1, 12)--For some reason, blizzard gave a spell that has a 6 second pre debuff, an additional 4 second pre pre debuff private aura
+local yellIncendiaryFire							= mod:NewShortYell(468216)
+local specWarnGTFO									= mod:NewSpecialWarningGTFO(459683, nil, nil, nil, 1, 8)
 
-local timerUnrelentingcarnageCD						= mod:NewAITimer(97.3, 471403, nil, nil, nil, 2, nil, DBM_COMMON_L.DEADLY_ICON)
-local timerCallbikersCD								= mod:NewAITimer(97.3, 459943, nil, nil, nil, 1, nil, DBM_COMMON_L.DAMAGE_ICON)
-local timerSpewOilCD								= mod:NewAITimer(97.3, 459666, nil, nil, nil, 3)
-local timerIncendiaryFireCD							= mod:NewAITimer(97.3, 468207, nil, nil, nil, 3)
-local timerBombVoyageCD								= mod:NewAITimer(97.3, 459974, nil, nil, nil, 3)
-local timerTankBusterCD								= mod:NewAITimer(97.3, 459627, nil, nil, nil, 5, nil, DBM_COMMON_L.TANK_ICON)
+local timerUnrelentingcarnageCD						= mod:NewCDCountTimer(97.3, 471403, nil, nil, nil, 2, nil, DBM_COMMON_L.DEADLY_ICON)
+local timerCallbikersCD								= mod:NewCDCountTimer(28.1, 459943, nil, nil, nil, 1, nil, DBM_COMMON_L.DAMAGE_ICON)
+local timerSpewOilCD								= mod:NewCDCountTimer(97.3, 459678, nil, nil, nil, 3)
+local timerIncendiaryFireCD							= mod:NewCDCountTimer(35.3, 468207, nil, nil, nil, 3)
+local timerTankBusterCD								= mod:NewCDCountTimer(97.3, 465865, nil, nil, nil, 5, nil, DBM_COMMON_L.TANK_ICON)
 
-mod:AddPrivateAuraSoundOption(459669, true, 459666, 1)--Spew Oil
-mod:AddPrivateAuraSoundOption(468486, true, 468207, 2)--Incendiary Fire (Mythic only?)
+mod:AddPrivateAuraSoundOption(459669, true, 459678, 1)--Spew Oil
+mod:AddPrivateAuraSoundOption(468486, true, 468207, 2)--Incendiary Fire--For some reason, blizzard gave a spell that has a 6 second pre debuff, an additional 4 second pre pre debuff private aura
 ----Geargrinder Biker
 mod:AddTimerLine(DBM:EJ_GetSectionInfo(30118))
 local warnBlazeofGlory								= mod:NewCastAnnounce(466040, 2)
@@ -98,12 +97,13 @@ function mod:OnCombatStart(delay)
 	table.wipe(castsPerGUID)
 	self:EnablePrivateAuraSound(459669, "poolyou", 18)
 	self:EnablePrivateAuraSound(468486, "flameyou", 12)
-	timerUnrelentingcarnageCD:Start(1-delay)
-	timerCallbikersCD:Start(1-delay)
-	timerSpewOilCD:Start(1-delay)
-	timerIncendiaryFireCD:Start(1-delay)
-	timerBombVoyageCD:Start(1-delay)
-	timerTankBusterCD:Start(1-delay)
+	timerTankBusterCD:Start(6-delay, 1)
+	timerSpewOilCD:Start(12.0-delay, 1)
+	timerCallbikersCD:Start(20.2-delay, 1)
+	timerIncendiaryFireCD:Start((self:IsHard() and 25.1 or 30.2)-delay, 1)
+	if self:IsMythic() then
+		timerUnrelentingcarnageCD:Start(121.6, 1)--Only difficulty observed on
+	end
 end
 
 function mod:SPELL_CAST_START(args)
@@ -115,29 +115,46 @@ function mod:SPELL_CAST_START(args)
 		self.vb.bikersCount = self.vb.bikersCount + 1
 		specWarnCallbikers:Show(self.vb.bikersCount)
 		specWarnCallbikers:Play("killmob")
-		timerCallbikersCD:Start()--nil, self.vb.bikersCount+1
+		timerCallbikersCD:Start("v28-36.4", self.vb.bikersCount+1)
 	elseif spellId == 466040 or spellId == 466042 then
 		warnBlazeofGlory:Show()
-	elseif spellId == 459671 and self:AntiSpam(10, 1) then
+	elseif spellId == 459671 then
 		self.vb.spewOilCount = self.vb.spewOilCount + 1
 		warnSpewOil:Show(self.vb.spewOilCount)
-		timerSpewOilCD:Start()--nil, self.vb.spewOilCount+1
-	elseif (spellId == 468216 or spellId == 468487) and self:AntiSpam(10, 2) then
+
+		if self:IsHard() and self.vb.stageTotality == 1 then
+			timerSpewOilCD:Start("v37.1-44.1", self.vb.spewOilCount+1)
+		else
+			--As of March 11, they hotfixed fight to no longer have longer Cd first stage on normal/LFR
+			timerSpewOilCD:Start("v20.6-23.2", self.vb.spewOilCount+1)
+		end
+	elseif (spellId == 468216 or spellId == 468487) then--468487 confirmed
 		self.vb.fireCount = self.vb.fireCount + 1
 		warnIncendiaryFire:Show(self.vb.fireCount)
-		timerIncendiaryFireCD:Start()--nil, self.vb.fireCount+1
-	elseif spellId == 459974 then
-		self.vb.bombCount = self.vb.bombCount + 1
-		specWarnBombVoyage:Show(self.vb.bombCount)
-		specWarnBombVoyage:Play("watchstep")
-		timerBombVoyageCD:Start()--nil, self.vb.bombCount+1
+		if self.vb.stageTotality == 1 then
+			timerIncendiaryFireCD:Start("v25.3-36.5", self.vb.fireCount+1)
+		else
+			timerIncendiaryFireCD:Start("v35.3-36.7", self.vb.fireCount+1)
+		end
+	--elseif spellId == 459974 then
+	--	self.vb.bombCount = self.vb.bombCount + 1
+	--	specWarnBombVoyage:Show(self.vb.bombCount)
+	--	specWarnBombVoyage:Play("watchstep")
 	elseif spellId == 459627 then
 		self.vb.tankBusterCount = self.vb.tankBusterCount + 1
 		if self:IsTanking("player", "boss1", nil, true) then
 			specWarnTankBuster:Show()
 			specWarnTankBuster:Play("defensive")
 		end
-		timerTankBusterCD:Start()--nil, self.vb.tankBusterCount+1
+		--"Tank Buster-459627-npc:225821-0000129545 = pull:6.0, 23.2, 30.4, 25.5, 22.0, Stage 2/17.2, Stage 1/49.7, 9.8/59.4/76.6, 17.0, 17.0, 20.8, 21.7, 23.1, Stage 2/9.8, Stage 1/49.8, 9.6/59.4/69.2, 17.0, 17.0, 20.7, 20.6, 24.3",
+		local timer
+		--Seems to get spell queued more often on heroic and mythic
+		if self:IsHard() then
+			timer = self.vb.stageTotality == 1 and "v21.9-30.4" or "v16.7-24.4"
+		else
+			timer = self.vb.stageTotality == 1 and "v16.7-21.1" or "v17.0-20.7"
+		end
+		timerTankBusterCD:Start(timer, self.vb.tankBusterCount+1)
 	elseif spellId == 460173 then
 		if not castsPerGUID[args.sourceGUID] then
 			castsPerGUID[args.sourceGUID] = 0
@@ -162,38 +179,40 @@ function mod:SPELL_CAST_START(args)
 			timerCallbikersCD:Stop()
 			timerSpewOilCD:Stop()
 			timerIncendiaryFireCD:Stop()
-			timerBombVoyageCD:Stop()
 			timerTankBusterCD:Stop()
 		end
 	end
 end
 
+--[[
 function mod:SPELL_CAST_SUCCESS(args)
 	local spellId = args.spellId
-	if spellId == 459666 and self:AntiSpam(10, 1) then
-		self.vb.spewOilCount = self.vb.spewOilCount + 1
-		warnSpewOil:Show(self.vb.spewOilCount)
-		timerSpewOilCD:Start(nil, self.vb.spewOilCount+1)
-	elseif spellId == 468207 and self:AntiSpam(10, 2) then
-		self.vb.fireCount = self.vb.fireCount + 1
-		warnIncendiaryFire:Show(self.vb.fireCount)
-		timerIncendiaryFireCD:Start(nil, self.vb.fireCount+1)
+	if spellId == 468207  then
+
 	end
 end
+--]]
 
 function mod:SPELL_AURA_APPLIED(args)
 	local spellId = args.spellId
-	if spellId == 466615 or spellId == 471500 then--Plating (remove the invalid ID later)
-		if self:GetStage(2) then
-			self:SetStage(1)
-			--Restart stage 1 timers and end stage 2 timers
-			timerUnrelentingcarnageCD:Start(2)
-			timerCallbikersCD:Start(2)
-			timerSpewOilCD:Start(2)
-			timerIncendiaryFireCD:Start(2)
-			timerBombVoyageCD:Start(2)
-			timerTankBusterCD:Start(2)
-		end
+	if spellId == 466615 or spellId == 471500 then--Plating (remove the invalid ID later) (466615 confirmed valid)
+		--if self:GetStage(2) then--backup trigger that's slower
+		--	self:SetStage(1)
+		--	--Reset Counts
+		--	self.vb.bikersCount = 0
+		--	self.vb.soakCount = 0
+		--	self.vb.spewOilCount = 0
+		--	self.vb.fireCount = 0
+		--	self.vb.bombCount = 0
+		--	self.vb.tankBusterCount = 0
+		--	--Restart stage 1 timers and end stage 2 timers
+		--	--Same timers as initial stage, minus 3.5
+		--	timerCallbikersCD:Start(allTimers[savedDifficulty][459943][1] - 3.5, 1)
+		--	timerSpewOilCD:Start(allTimers[savedDifficulty][459671][1] - 3.5, 1)
+		--	timerIncendiaryFireCD:Start(allTimers[savedDifficulty][468487][1] - 3.5, 1)
+		--	timerTankBusterCD:Start(allTimers[savedDifficulty][459627][1] - 3.5, 1)
+		--	timerUnrelentingcarnageCD:Start(allTimers[savedDifficulty][471403][1] - 3.5, 1)
+		--end
 	elseif spellId == 1216788 and args:IsPlayer() then
 		specWarnCarryingOil:Show()
 		specWarnCarryingOil:Play("targetyou")
@@ -212,40 +231,57 @@ function mod:SPELL_AURA_APPLIED(args)
 	elseif spellId == 468216 and args:IsPlayer() then
 		specWarnIncendiaryFire:Show()
 		specWarnIncendiaryFire:Play("flameyou")
+		yellIncendiaryFire:Yell()
 	end
 end
 --mod.SPELL_AURA_APPLIED_DOSE = mod.SPELL_AURA_APPLIED
 
 function mod:SPELL_AURA_REMOVED(args)
 	local spellId = args.spellId
-	if spellId == 466615 or spellId == 471500 then--Plating (remove the invalid ID later)
+	if spellId == 466615 or spellId == 471500 then--Plating (remove the invalid ID later) 466615 confirmed valid
 		if self:GetStage(1) then
 			self:SetStage(2)
 			timerUnrelentingcarnageCD:Stop()
 			timerCallbikersCD:Stop()
 			timerSpewOilCD:Stop()
 			timerIncendiaryFireCD:Stop()
-			timerBombVoyageCD:Stop()
 			timerTankBusterCD:Stop()
 		end
 	elseif spellId == 460116 then
 		timerTuneUp:Stop()
+		if self:GetStage(2) then
+			self:SetStage(1)
+			--Reset Counts
+			self.vb.bikersCount = 0
+			self.vb.soakCount = 0
+			self.vb.spewOilCount = 0
+			self.vb.fireCount = 0
+			self.vb.bombCount = 0
+			self.vb.tankBusterCount = 0
+			--Restart stage 1 timers and end stage 2 timers
+			--Same timers as initial stage, minus 3.5
+			timerTankBusterCD:Start(6, 1)
+			timerSpewOilCD:Start(12.2, 1)
+			timerCallbikersCD:Start(20.7, 1)
+			timerIncendiaryFireCD:Start(self:IsHard() and 25.5 or 30.6, 1)
+			if self:IsMythic() then
+				timerUnrelentingcarnageCD:Start(121.6, 1)--Only difficulty observed on
+			end
+		end
 	end
 end
 
---[[
 function mod:SPELL_PERIODIC_DAMAGE(_, _, _, _, destGUID, _, _, _, spellId, spellName)
-	if spellId == 459785 and destGUID == UnitGUID("player") and self:AntiSpam(2, 3) then
+	if spellId == 459683 and destGUID == UnitGUID("player") and self:AntiSpam(2, 3) then
 		specWarnGTFO:Show(spellName)
 		specWarnGTFO:Play("watchfeet")
 	end
 end
 mod.SPELL_PERIODIC_MISSED = mod.SPELL_PERIODIC_DAMAGE
---]]
 
 function mod:UNIT_DIED(args)
 	local cid = self:GetCIDFromGUID(args.destGUID)
-	if cid == 237516 then--Geargrinder Biker
+	if cid == 225804 then--Geargrinder Biker
 		if self:IsMythic() then
 			self.vb.soakCount = self.vb.soakCount + 1
 			if not DBM:UnitDebuff("player", 473507) then
@@ -256,10 +292,10 @@ function mod:UNIT_DIED(args)
 	end
 end
 
---[[
 function mod:UNIT_SPELLCAST_SUCCEEDED(uId, _, spellId)
-	if spellId == 433475 then
-
+	if spellId == 464841 then
+		self.vb.bombCount = self.vb.bombCount + 1
+		specWarnBombVoyage:Show(self.vb.bombCount)
+		specWarnBombVoyage:Play("watchstep")
 	end
 end
---]]

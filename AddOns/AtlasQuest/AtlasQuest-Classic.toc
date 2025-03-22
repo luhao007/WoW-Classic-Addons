@@ -1,4 +1,4 @@
-## Interface: 30400
+## Interface: 30404
 ## Author: Created by Thandrenn, Maintained by Thanbini, Code fixed for 10.x by Zilom
 ## Version: 4.13.05
 

@@ -53,6 +53,7 @@ end
 local function Tooltip_ItemLV(self,link)
 	if PIGA["Tooltip"]["ItemLevel"] then
 		local effectiveILvl = GetDetailedItemLevelInfo(link)
+
 		if effectiveILvl then
 			if tocversion<50000 then
 				local txtUI = _G[self:GetName().."TextLeft2"]
@@ -62,9 +63,7 @@ local function Tooltip_ItemLV(self,link)
 	    			--txtUI:SetFormattedText('|cffffcf00'.."物品等级 "..effectiveILvl..'|r'.."\n"..Oldtxt)
 	        		txtUI:SetSpacing(2)
 	        	else
-	        		txtUI:SetText('\n|cffffcf00'.."物品等级 "..effectiveILvl..'|r')
-	        		--txtUI:SetFormattedText('\n|cffffcf00'.."物品等级 "..effectiveILvl..'|r')
-	        		txtUI:SetSpacing(-10)
+	        		self:AddLine('|cffffcf00'.."物品等级 "..effectiveILvl..'|r')
 	        	end
 	            local txtUI_r = _G[self:GetName().."TextRight2"]
 				txtUI_r:SetSpacing(3)
@@ -83,9 +82,7 @@ local function Tooltip_ItemLV(self,link)
 	        			--txtUI:SetFormattedText('|cffffcf00'.."物品等级 "..effectiveILvl..'|r'.."\n"..Oldtxt)
 	            		txtUI:SetSpacing(2)
 	            	else
-	            		txtUI:SetText('\n|cffffcf00'.."物品等级 "..effectiveILvl..'|r')
-	            		--txtUI:SetFormattedText('\n|cffffcf00'.."物品等级 "..effectiveILvl..'|r')
-	            		txtUI:SetSpacing(-10)
+	            		self:AddLine('|cffffcf00'.."物品等级 "..effectiveILvl..'|r')
 	            	end
 	            	 local txtUI_r = _G[self:GetName().."TextRight2"]
 					txtUI_r:SetSpacing(3)

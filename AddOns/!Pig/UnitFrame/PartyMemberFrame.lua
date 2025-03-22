@@ -64,8 +64,16 @@ local function Update_HP(Party,id)
 	local mubiaoH = UnitHealth(id)
 	if mubiaoHmax>0 then
 		Party.title:SetText(mubiaoH..'/'..mubiaoHmax);
+		if mubiaoHmax>9999999 then
+			Party:SetWidth(124);
+		elseif mubiaoHmax>999999 then
+			Party:SetWidth(112);
+		elseif mubiaoHmax>99999 then
+			Party:SetWidth(102);
+		end
 	else
 		Party.title:SetText('?/?');
+		Party:SetWidth(40);
 	end
 end
 --显示BUFF
@@ -217,11 +225,10 @@ local function PartyMember_HPFF()
 			edgeFile = "Interface/Tooltips/UI-Tooltip-Border", edgeSize = 10, 
 			insets = { left = 2, right = 2, top = 2, bottom = 2 }});
 			Party.HP:SetBackdropColor(0, 0, 0, 0.6);
-			Party.HP:SetBackdropBorderColor(0.8, 0.8, 0.8, 0.9);
+			Party.HP:SetBackdropBorderColor(1, 1, 1, 0.6);
 			if tocversion<100000 then
 				Party.HP:SetPoint("TOPLEFT", Party, "TOPRIGHT", -11, -10);
 			else
-				Party.HP:SetWidth(100);
 				Party.HP:SetPoint("TOPLEFT", Party, "TOPRIGHT", -3, -17.6);
 			end
 			Party.HP.title = PIGFontString(Party.HP,{"CENTER", Party.HP, "CENTER", 0, 0},"", "OUTLINE", 13.6)

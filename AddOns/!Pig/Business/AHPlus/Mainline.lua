@@ -1,4 +1,4 @@
-local _, addonTable = ...;
+local addonName, addonTable = ...;
 local _, _, _, tocversion = GetBuildInfo()
 local L=addonTable.locale
 local Create=addonTable.Create
@@ -12,7 +12,7 @@ local Fun=addonTable.Fun
 local BusinessInfo=addonTable.BusinessInfo
 local IsAddOnLoaded=IsAddOnLoaded or C_AddOns and C_AddOns.IsAddOnLoaded
 ----------------------------------
-function BusinessInfo.AHPlus_Mainline()
+function BusinessInfo.AHPlus_Mainline(baocunnum)
 	if not PIGA["AHPlus"]["Open"] or AuctionHouseFrame.History then return end
 	local function Show_hangdata(hangui)
 		local itemKey = hangui.rowData.itemKey
@@ -69,21 +69,27 @@ function BusinessInfo.AHPlus_Mainline()
 				if name then
 					if PIGA["AHPlus"]["CacheData"][name] then
 						local jiagGGG = PIGA["AHPlus"]["CacheData"][name][2]
-						AuctionHouseFrame.BrowseResultsFrame.qushi:Show()
-						AuctionHouseFrame.BrowseResultsFrame.qushi:SetPoint("TOPRIGHT",self,"TOPLEFT",18,1);
+						AuctionHouseFrame.BrowseResultsFrame.qushiUI:Show()
+						AuctionHouseFrame.BrowseResultsFrame.qushiUI:SetPoint("TOPRIGHT",self,"TOPLEFT",18,1);
 						local Name = self:GetParent().cells[2].Text:GetText()
-						AuctionHouseFrame.BrowseResultsFrame.qushi.qushitu(jiagGGG,Name)
+						AuctionHouseFrame.BrowseResultsFrame.qushiUI.qushiF.qushitu(jiagGGG,Name)
 					end
 				end
 			end);
 			Mfuji.updown:HookScript("OnLeave", function(self)
 				self:GetParent().HighlightTexture:Hide();
-				AuctionHouseFrame.BrowseResultsFrame.qushi:Hide()
+				AuctionHouseFrame.BrowseResultsFrame.qushiUI:Hide()
 			end);
 		end
 		Show_hangdata(Mfuji)	
 	end)
-	AuctionHouseFrame.BrowseResultsFrame.qushi,AuctionHouseFrame.BrowseResultsFrame.qushitishi=BusinessInfo.ADD_qushi(AuctionHouseFrame.BrowseResultsFrame,true)
+	AuctionHouseFrame.BrowseResultsFrame.qushiUI=PIGFrame(AuctionHouseFrame.BrowseResultsFrame)
+	AuctionHouseFrame.BrowseResultsFrame.qushiUI:SetSize(328,204);
+	AuctionHouseFrame.BrowseResultsFrame.qushiUI:PIGSetBackdrop(1,nil,nil,nil,0)
+	AuctionHouseFrame.BrowseResultsFrame.qushiUI:SetFrameStrata("HIGH")
+	AuctionHouseFrame.BrowseResultsFrame.qushiUI.qushiF=BusinessInfo.ADD_qushi(AuctionHouseFrame.BrowseResultsFrame.qushiUI,true)
+	AuctionHouseFrame.BrowseResultsFrame.qushiUI.qushiF:SetPoint("TOPLEFT", AuctionHouseFrame.BrowseResultsFrame.qushiUI, "TOPLEFT",4, -24);
+	AuctionHouseFrame.BrowseResultsFrame.qushiUI.qushiF:SetPoint("BOTTOMRIGHT", AuctionHouseFrame.BrowseResultsFrame.qushiUI, "BOTTOMRIGHT",-4, 4);
 	AuctionHouseFrame.BrowseResultsFrame.qushitishi:SetPoint("TOPLEFT",AuctionHouseFrame.BrowseResultsFrame,"TOPLEFT",128,-3);
 	AuctionHouseFrame.BrowseResultsFrame.qushitishi:SetFrameLevel(510)
 
@@ -202,7 +208,6 @@ function BusinessInfo.AHPlus_Mainline()
 				HCUI.jindu.t3:SetText(numReplicateItems);
 				HCUI.jindu:SetMinMaxValues(0, numReplicateItems)
 				HCUI.jindu.tbiaoti:SetText("正在缓存价格...");
-				HCUI.ScanCD=BusinessInfo.AHPlusData.ScanCD
 				wipe(HCUI.auctions)
 				wipe(HCUI.auctionsLin)
 				wipe(HCUI.ItemLoadList)
@@ -266,7 +271,7 @@ function BusinessInfo.AHPlus_Mainline()
 		HCUI.jindu.t2:SetText(0);
 		HCUI.jindu.t3:SetText(0);
 		PIGA["AHPlus"]["DaojiTime"]=GetServerTime()
-		HCUI.ScanCD=BusinessInfo.AHPlusData.ScanCD
+		HCUI.ScanCD=BusinessInfo.AHPlusData.ScanCD*0.0001
 		HCUI.jishuID = 0
 		HCUI.cunchuNum=0
 		HCUI.yicunchu=nil
@@ -276,7 +281,7 @@ function BusinessInfo.AHPlus_Mainline()
 		HCUI.UpdateF:Show()
 		C_AuctionHouse.ReplicateItems()
 	end)
-	local baocunnum = 40
+	local baocunnum=baocunnum-1
 	function AuctionHouseFrame.History:DEL_OLDdata()
 		for k,v in pairs(PIGA["AHPlus"]["CacheData"]) do
 			local itemDataL = v[2]
@@ -305,38 +310,18 @@ function BusinessInfo.AHPlus_Mainline()
 	AuctionHouseFrame.BrowseResultsFrame:HookScript("OnShow",HCUI.UiFameHide)
 	AuctionHouseFrame.BrowseResultsFrame:HookScript("OnHide",HCUI.UiFameHide)
 	---------------------
-	for i = 1, 33 do
-		local huizhangG = PIGFontString(AuctionHouseFrame.WoWTokenResults,nil,nil,nil,13,"huizhangG_"..i)
-		if i==1 then
-			huizhangG:SetPoint("TOPLEFT",AuctionHouseFrame.WoWTokenResults,"TOPLEFT",6,-8);
-		elseif i==4 then
-			huizhangG:SetPoint("TOPLEFT",AuctionHouseFrame.WoWTokenResults,"TOPLEFT",6,-150);
-		elseif i==19 then
-			huizhangG:SetPoint("TOPRIGHT",AuctionHouseFrame.WoWTokenResults,"TOPRIGHT",-6,-150);
-		else
-			huizhangG:SetPoint("TOPLEFT",_G["huizhangG_"..(i-1)],"BOTTOMLEFT",0,-4);
-		end
-		huizhangG:SetJustifyH("LEFT");
-	end
-	local function Update_huizhangG()
-		local lishihuizhangG = PIGA["AHPlus"]["Tokens"]
-		local SHUJUNUM = #lishihuizhangG
-		local shujukaishiid = 0
-		if SHUJUNUM>33 then
-			shujukaishiid=SHUJUNUM-33
-		end
-		for i = 1, 33 do
-			local shujuid = i+shujukaishiid
-			if lishihuizhangG[shujuid] then
-				local tiem1 = date("%Y-%m-%d %H:%M",lishihuizhangG[shujuid][1])
-				local jinbiV = lishihuizhangG[shujuid][2] or 0
-				local jinbiV = (jinbiV/10000)
-				_G["huizhangG_"..i]:SetText(tiem1.."：|cffFFFF00"..jinbiV.."G|r")
+	AuctionHouseFrame.WoWTokenResults.qushibut = PIGButton(AuctionHouseFrame.WoWTokenResults,{"CENTER",AuctionHouseFrame.WoWTokenResults,"CENTER",3,-100},{80,24},"历史价格",nil,nil,nil,nil,0)
+	AuctionHouseFrame.WoWTokenResults.qushibut:HookScript("OnClick",function(self)
+		if StatsInfo_UI then
+			if StatsInfo_UI:IsShown() then
+				StatsInfo_UI:Hide()
+			else
+				AuctionHouseFrame:Hide()
+				StatsInfo_UI:Show()
+				Create.Show_TabBut_R(StatsInfo_UI.F,StatsInfo_UI.timetab[1],StatsInfo_UI.timetab[2])
 			end
+		else
+			PIGTopMsg:add("请打开"..addonName..SETTINGS.."→"..L["BUSINESS_TABNAME"].."→"..INFO..STATISTICS)
 		end
-	end
-	AuctionHouseFrame.WoWTokenResults:HookScript("OnShow",function(self)
-		Update_huizhangG()
 	end)
-	---
 end

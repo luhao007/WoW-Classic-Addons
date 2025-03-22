@@ -14,8 +14,6 @@ local PIGOptionsList=Create.PIGOptionsList
 local PIGFontString=Create.PIGFontString
 local PIGFontStringBG=Create.PIGFontStringBG
 --
-local GetAddOnInfo=GetAddOnInfo or C_AddOns and C_AddOns.GetAddOnInfo
---
 local fuFrame = PIGOptionsList(L["DEBUG_TABNAME"],"BOT")
 --------------------------------
 fuFrame.errorUI = PIGButton(fuFrame,{"TOPLEFT",fuFrame,"TOPLEFT",20,-20},{120,24},L["DEBUG_ERRORLOG"])
@@ -43,17 +41,17 @@ local taintlistmenu = {["0"]=L["DEBUG_TAINT0"],["1"]=L["DEBUG_TAINT1"],
 fuFrame.taintLog=PIGDownMenu(fuFrame,{"TOPLEFT",fuFrame.errorUI,"BOTTOMLEFT",60,-40},{400,24})
 fuFrame.taintLog.tishi=PIGFontString(fuFrame.taintLog,{"RIGHT", fuFrame.taintLog, "LEFT", 0, 0},L["DEBUG_TAINTLOG"])
 fuFrame.taintLog.tishi:SetTextColor(1, 1, 0, 1);
-function fuFrame.taintLog:PIGDownMenu_Update_But(self)
+function fuFrame.taintLog:PIGDownMenu_Update_But()
 	local info = {}
 	info.func = self.PIGDownMenu_SetValue
 	for i=1,#taintlist,1 do
 	    info.text, info.arg1 = taintlistmenu[taintlist[i]], taintlist[i]
 	    info.checked = taintlist[i]==GetCVar("taintLog")
-		fuFrame.taintLog:PIGDownMenu_AddButton(info)
+		self:PIGDownMenu_AddButton(info)
 	end 
 end
 function fuFrame.taintLog:PIGDownMenu_SetValue(value,arg1,arg2)
-	fuFrame.taintLog:PIGDownMenu_SetText(value)
+	self:PIGDownMenu_SetText(value)
 	SetCVar("taintLog", arg1)
 	PIGCloseDropDownMenus()
 end
@@ -82,7 +80,7 @@ PIGAddOnMemoryCPU.NR.autoRefresh:SetScript("OnClick", function (self)
 		PIGAddOnMemoryCPU:SetScript("OnUpdate", function (self,sss)
 			if self.jishiqi>1 then
 				self.jishiqi=0
-				self.gengxinhang(self.NR.List.Scroll)
+				self.Update_List(self.NR.List.Scroll)
 			else
 				self.jishiqi = self.jishiqi + sss;
 			end
@@ -107,7 +105,7 @@ PIGAddOnMemoryCPU.NR.CZ:SetScript("OnClick", function (self)
 	ResetCPUUsage()
 	-- debugprofilestart()
 	-- debugprofilestop()
-	PIGAddOnMemoryCPU.gengxinhang(PIGAddOnMemoryCPU.NR.List.Scroll)
+	PIGAddOnMemoryCPU.Update_List(PIGAddOnMemoryCPU.NR.List.Scroll)
 end);
 PIGAddOnMemoryCPU.NR.COLLECT = PIGButton(PIGAddOnMemoryCPU.NR,{"LEFT",PIGAddOnMemoryCPU.NR.CZ,"RIGHT",20,0},{50,18},L["DEBUG_COLLECT"])
 --PIGAddOnMemoryCPU.NR.COLLECT:Disable()
@@ -115,7 +113,7 @@ PIGAddOnMemoryCPU.NR.COLLECT:SetMotionScriptsWhileDisabled(true)
 PIGEnter(PIGAddOnMemoryCPU.NR.COLLECT,L["LIB_TIPS"]..": ",L["DEBUG_COLLECTTIPS"]);
 PIGAddOnMemoryCPU.NR.COLLECT:SetScript("OnClick", function (self)
 	collectgarbage()--回收内存
-	PIGAddOnMemoryCPU.gengxinhang(PIGAddOnMemoryCPU.NR.List.Scroll)
+	PIGAddOnMemoryCPU.Update_List(PIGAddOnMemoryCPU.NR.List.Scroll)
 end);
 PIGAddOnMemoryCPU.NR.List=PIGFrame(PIGAddOnMemoryCPU.NR)
 PIGAddOnMemoryCPU.NR.List:SetPoint("TOPLEFT", PIGAddOnMemoryCPU.NR, "TOPLEFT", 0, -22)
@@ -130,14 +128,14 @@ PIGAddOnMemoryCPU.NR.List.tet2 = PIGButton(PIGAddOnMemoryCPU.NR.List,{"LEFT", PI
 PIGAddOnMemoryCPU.NR.List.tet2:PIGSetBackdrop(0.4, 0.2)
 PIGAddOnMemoryCPU.NR.List.tet2:SetScript("OnClick", function ()
 	PIGAddOnMemoryCPU.sort=21
-	PIGAddOnMemoryCPU.gengxinhang(PIGAddOnMemoryCPU.NR.List.Scroll)
+	PIGAddOnMemoryCPU.Update_List(PIGAddOnMemoryCPU.NR.List.Scroll)
 end);
 PIGAddOnMemoryCPU.NR.List.tet3 = PIGButton(PIGAddOnMemoryCPU.NR.List,{"LEFT", PIGAddOnMemoryCPU.NR.List.tet2, "RIGHT", 0,0},{nrww*0.25,22},"CPU(ms)")
 PIGAddOnMemoryCPU.NR.List.tet3:PIGSetBackdrop(0.4, 0.2)
 PIGAddOnMemoryCPU.NR.List.tet3:SetScript("OnClick", function ()
 	if GetCVar("scriptProfile")=="1" then
 		PIGAddOnMemoryCPU.sort=31
-		PIGAddOnMemoryCPU.gengxinhang(PIGAddOnMemoryCPU.NR.List.Scroll)
+		PIGAddOnMemoryCPU.Update_List(PIGAddOnMemoryCPU.NR.List.Scroll)
 	end
 end);
 PIGAddOnMemoryCPU.NR.List.buttet1=PIGFontStringBG(PIGAddOnMemoryCPU.NR.List,{"BOTTOMLEFT", PIGAddOnMemoryCPU.NR.List, "BOTTOMLEFT", 0,1},"",{nrww*0.5,22})
@@ -149,15 +147,17 @@ PIGAddOnMemoryCPU.NR.List.Scroll:SetPoint("TOPLEFT",PIGAddOnMemoryCPU.NR.List,"T
 PIGAddOnMemoryCPU.NR.List.Scroll:SetPoint("BOTTOMRIGHT",PIGAddOnMemoryCPU.NR.List,"BOTTOMRIGHT",-20,23);
 PIGAddOnMemoryCPU.NR.List.Scroll.ScrollBar:SetScale(0.8)
 PIGAddOnMemoryCPU.NR.List.Scroll:SetScript("OnVerticalScroll", function(self, offset)
-    FauxScrollFrame_OnVerticalScroll(self, offset, hang_Height, PIGAddOnMemoryCPU.gengxinhang)
+    FauxScrollFrame_OnVerticalScroll(self, offset, hang_Height, PIGAddOnMemoryCPU.Update_List)
 end)
+PIGAddOnMemoryCPU.butlist={}
 for id = 1, hang_NUM do
-	local hang = CreateFrame("Frame", "PIGAddOnMemoryCPUbut_"..id, PIGAddOnMemoryCPU.NR.List);
+	local hang = CreateFrame("Frame", nil, PIGAddOnMemoryCPU.NR.List);
+	PIGAddOnMemoryCPU.butlist[id]=hang
 	hang:SetSize(nrww-20, hang_Height);
 	if id==1 then
 		hang:SetPoint("TOP",PIGAddOnMemoryCPU.NR.List.Scroll,"TOP",0,0);
 	else
-		hang:SetPoint("TOP",_G["PIGAddOnMemoryCPUbut_"..(id-1)],"BOTTOM",0,0);
+		hang:SetPoint("TOP",PIGAddOnMemoryCPU.butlist[id-1],"BOTTOM",0,0);
 	end
 	hang.tet1 = PIGFontString(hang,{"LEFT", hang, "LEFT", 2,0},"","OUTLINE")
 	hang.tet1:SetSize(nrww*0.5-2,hang_Height)
@@ -173,8 +173,7 @@ for id = 1, hang_NUM do
 	hang.tet3:SetTextColor(1, 1, 1, 0.9); 
 end
 local GetNumAddOns=GetNumAddOns or C_AddOns.GetNumAddOns and C_AddOns.GetNumAddOns
-local GetAddOnEnableState=GetAddOnEnableState or C_AddOns.GetAddOnEnableState and C_AddOns.GetAddOnEnableState
-function PIGAddOnMemoryCPU.gengxinhang(self)
+function PIGAddOnMemoryCPU.Update_List(self)
 	local MemoryCPUData = {
 		["NumAddOns"]=GetNumAddOns(),
 		["NumMemory"]=0,
@@ -184,7 +183,7 @@ function PIGAddOnMemoryCPU.gengxinhang(self)
 	UpdateAddOnMemoryUsage()
 	UpdateAddOnCPUUsage()
 	for id=1,MemoryCPUData.NumAddOns do	
-		local name, title, notes, loadable=GetAddOnInfo(id)
+		local name, title, notes, loadable=PIGGetAddOnInfo(id)
 		if loadable then
 			local Memory=GetAddOnMemoryUsage(id)
 			local CPUUsage=GetAddOnCPUUsage(id)
@@ -194,7 +193,7 @@ function PIGAddOnMemoryCPU.gengxinhang(self)
 		end
 	end
 	for id=1,hang_NUM do
-		_G["PIGAddOnMemoryCPUbut_"..id]:Hide()
+		PIGAddOnMemoryCPU.butlist[id]:Hide()
 	end
 	if PIGAddOnMemoryCPU.sort==21 then
 		table.sort(MemoryCPUData.DATA,function(a,b)
@@ -208,14 +207,15 @@ function PIGAddOnMemoryCPU.gengxinhang(self)
 	local hejilist = #MemoryCPUData.DATA
 	FauxScrollFrame_Update(self, hejilist, hang_NUM, hang_Height);
 	local offset = FauxScrollFrame_GetOffset(self);
-	for id=1,hejilist do
+	for id = 1, hang_NUM do
 		local newID = id+offset
-		local newDATA = MemoryCPUData.DATA[newID]
-		local tetf = _G["PIGAddOnMemoryCPUbut_"..newID]
-		tetf:Show()
-		tetf.tet1:SetText(newDATA[1]);
-		tetf.tet2:SetText(floor(newDATA[2]));
-		tetf.tet3:SetText(floor(newDATA[3]*100)*0.01);
+		if MemoryCPUData.DATA[newID] then
+			local tetf = PIGAddOnMemoryCPU.butlist[id]
+			tetf:Show()
+			tetf.tet1:SetText(MemoryCPUData.DATA[newID][1]);
+			tetf.tet2:SetText(floor(MemoryCPUData.DATA[newID][2]));
+			tetf.tet3:SetText(floor(MemoryCPUData.DATA[newID][3]*100)*0.01);
+		end
 	end
 	PIGAddOnMemoryCPU.NR.List.buttet1:SetText(hejilist.."/"..MemoryCPUData.NumAddOns);
 	PIGAddOnMemoryCPU.NR.List.buttet2:SetText(floor(MemoryCPUData.NumMemory).."k");
@@ -227,7 +227,7 @@ PIGAddOnMemoryCPU:HookScript("OnShow", function (self)
 	else
 		PIGAddOnMemoryCPU.NR.CPU_OPEN:SetChecked(false)
 	end
-	self.gengxinhang(self.NR.List.Scroll)
+	self.Update_List(self.NR.List.Scroll)
 end);
 if GetCVar("scriptProfile")=="1" then
 	PIGAddOnMemoryCPU:Show()
@@ -242,14 +242,18 @@ fuFrame.NPCID:SetScript("OnClick", function (self)
 	print(UnitGUID("target"))
 end);
 fuFrame.GetItem = PIGButton(fuFrame,{"LEFT",fuFrame.NPCID,"RIGHT",300,0},{110,24},"获取物品信息")
-fuFrame.GetItem:SetScript("OnClick", function (self)
-	--local itemName,itemLink = GetItemInfo(self.E:GetNumber())
-	print(GetItemInfo(self.E:GetText()))
-	-- print(string.gsub(itemLink,"|","||"))
-	-- local itemLink=Fun.GetItemLinkJJ(itemLink)
-	-- print(itemLink)
-	-- local itemLink=Fun.HY_ItemLinkJJ(itemLink)
-	-- print(itemLink)
+fuFrame.GetItem:SetScript("OnClick", function (self,button)
+	if button=="LeftButton" then
+		--local itemName,itemLink = GetItemInfo(self.E:GetNumber())
+		print(GetItemInfo(self.E:GetText()))
+		-- print(string.gsub(itemLink,"|","||"))
+		-- local itemLink=Fun.GetItemLinkJJ(itemLink)
+		-- print(itemLink)
+		-- local itemLink=Fun.HY_ItemLinkJJ(itemLink)
+		-- print(itemLink)
+	else
+		print(PIGGetSpellInfo(self.E:GetText()))
+	end
 end);
 fuFrame.GetItem.E = CreateFrame("EditBox", nil, fuFrame.GetItem, "InputBoxInstructionsTemplate");
 fuFrame.GetItem.E:SetSize(200,24);
@@ -278,7 +282,7 @@ fuFrame.New_hong:SetScript("OnClick", function ()
 			if global<120 then
 				CreateMacro(k, v[2], v[1], nil)
 			else
-				PIGinfotip:TryDisplayMessage(L["LIB_MACROERR"]);
+				PIGTopMsg:add(L["LIB_MACROERR"]);
 			end
 		end
 	end

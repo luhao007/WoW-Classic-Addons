@@ -106,9 +106,9 @@ QuickButUI.ButList[5]=function()
 				if erqid and erqid>=0 then
 					local name = C_EquipmentSet.GetEquipmentSetInfo(erqid)
 					if button=="LeftButton" then
-						if InCombatLockdown() then PIGinfotip:TryDisplayMessage(CANNOT_UNEQUIP_COMBAT) return end
+						if InCombatLockdown() then PIGTopMsg:add(CANNOT_UNEQUIP_COMBAT) return end
 						C_EquipmentSet.UseEquipmentSet(erqid)
-						PIGinfotip:TryDisplayMessage("更换<"..name..">配装成功")
+						PIGTopMsg:add("更换<"..name..">配装成功")
 						-- if IsShiftKeyDown() then
 						-- 	if tocversion<50000 then
 						-- 		GearManagerDialog_Update();	
@@ -148,11 +148,11 @@ QuickButUI.ButList[5]=function()
 					else
 						--C_EquipmentSet.UnassignEquipmentSetSpec(i-1)
 						C_EquipmentSet.SaveEquipmentSet(erqid)
-						PIGinfotip:TryDisplayMessage("当前装备已保存到<"..name..">配装")
+						PIGTopMsg:add("当前装备已保存到<"..name..">配装")
 					end
 				else
 					if InCombatLockdown() then
-						PIGinfotip:TryDisplayMessage(CANNOT_UNEQUIP_COMBAT)
+						PIGTopMsg:add(CANNOT_UNEQUIP_COMBAT)
 					else
 						ShowUIPanel(CharacterFrame);
 						if tocversion<50000 then
@@ -244,6 +244,7 @@ QuickButUI.ButList[5]=function()
 			end
 		else
 			local equipmentSetIDs = C_EquipmentSet.GetEquipmentSetIDs()
+			self.cunzainum=#equipmentSetIDs
 			for id = 1, PIG_EquipmentData.anniushu do
 				local fujikj = _G["QkBut_AutoEquip_but"..id]
 				if equipmentSetIDs[id] then
@@ -267,9 +268,9 @@ QuickButUI.ButList[5]=function()
 	end)
 	AutoEquip:HookScript("OnClick", function(self,button)
 		if button=="LeftButton" then
-			PIGinfotip:TryDisplayMessage("右键卸下全部有耐久装备\n"..ClickTooltip)
+			PIGTopMsg:add("右键卸下全部有耐久装备\n"..ClickTooltip)
 		else
-			if InCombatLockdown() then PIGinfotip:TryDisplayMessage(CANNOT_UNEQUIP_COMBAT) return end
+			if InCombatLockdown() then PIGTopMsg:add(CANNOT_UNEQUIP_COMBAT) return end
 			PIG_EquipmentData.InventoryNum={}
 			for inv = 1, 19 do
 				if PIG_EquipmentData.zhuangbeixilieID[inv][4] then
@@ -305,9 +306,9 @@ QuickButUI.ButList[5]=function()
 				end
 			end
 			if #PIG_EquipmentData.konggelist<#PIG_EquipmentData.InventoryNum then
-				PIGinfotip:TryDisplayMessage(ERR_EQUIPMENT_MANAGER_BAGS_FULL)
+				PIGTopMsg:add(ERR_EQUIPMENT_MANAGER_BAGS_FULL)
 			else
-				PIGinfotip:TryDisplayMessage("已卸下全部有耐久装备")
+				PIGTopMsg:add("已卸下全部有耐久装备")
 			end
 			AutoEquipList:Hide()
 		end

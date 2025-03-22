@@ -94,11 +94,19 @@ function BusinessInfo.FastSave()
 				for ib=1,#ItemTypeLsit[typeid][2] do
 					if ItemTypeLsit[typeid][2][ib][2] then
 						if classID==ItemTypeLsit[typeid][2][ib][1] and subclassID==ItemTypeLsit[typeid][2][ib][2] then
-							UseContainerItem(bag,slot,nil, BankFrame.GetActiveBankType and BankFrame:GetActiveBankType(), BankFrame:IsShown() and BankFrame.selectedTab == 2);
+							if tocversion<20000 then
+								UseContainerItem(bag,slot,nil, nil, BankFrame:IsShown() and (BankFrame.selectedTab == 2));
+							else
+								UseContainerItem(bag,slot,nil, BankFrame.GetActiveBankType and BankFrame:GetActiveBankType(), BankFrame:IsShown() and BankFrame.selectedTab == 2);
+							end
 						end
 					else
 						if classID==ItemTypeLsit[typeid][2][ib][1] then
-							UseContainerItem(bag,slot,nil, BankFrame.GetActiveBankType and BankFrame:GetActiveBankType(), BankFrame:IsShown() and BankFrame.selectedTab == 2);
+							if tocversion<20000 then
+								UseContainerItem(bag,slot,nil, nil, BankFrame:IsShown() and (BankFrame.selectedTab == 2));
+							else
+								UseContainerItem(bag,slot,nil, BankFrame.GetActiveBankType and BankFrame:GetActiveBankType(), BankFrame:IsShown() and BankFrame.selectedTab == 2);
+							end
 						end
 					end
 				end
@@ -106,6 +114,7 @@ function BusinessInfo.FastSave()
 		end
 	end
 	local function PIGRunUseItem(button,typeid,data)
+		if tocversion<20000 then PIGTopMsg:add("功能正在修复...") return end
 		local shujudata={{},{}}
 		if button=="LeftButton" then
 			if ItemTypeLsit[typeid][2]=="G" then

@@ -303,6 +303,7 @@ L:SetMiscLocalization({
 
 	SpyFoundP 	= "Я нашел шпиона",
 	SpyFound 	= "Шпион был обнаружен %s",
+	SpyGoingAway				= "Шпион-помощник, скорее всего, исчезнет в патче 10.0.7. Следует пользоваться помощью Охотников на демонов или голосовой связью для этого подземелья, как и предполагалось Blizzard",
 
 	Nightshade					= "Закуски ночной тени",
 	UmbralBloom					= "Теневой цветок",
@@ -447,6 +448,10 @@ L= DBM:GetModLocalization(1469)
 -----------------------
 L= DBM:GetModLocalization(1470)
 
+L:SetMiscLocalization{
+	RolePlay		= "Как предсказуемо! Я знала, что вы придете."
+}
+
 -----------------------
 --Vault of Wardens Trash
 -----------------------
@@ -524,7 +529,7 @@ L:SetGeneralLocalization({
 L = DBM:GetModLocalization("RTKTrash")
 
 L:SetGeneralLocalization({
-	name =	"Трэш: Возвращение в Каражан"
+	name =	"Трэш мобы Возвращение в Каражан"
 })
 
 L:SetMiscLocalization({

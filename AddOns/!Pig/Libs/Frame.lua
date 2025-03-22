@@ -4,14 +4,6 @@ local _G = _G
 local CreateFrame = CreateFrame
 local CreateTexture=CreateTexture
 ---------------------------
--- local Create=addonTable.Create
--- local PIGFrame=Create.PIGFrame
--- local PIGLine=Create.PIGLine
--- local PIGEnter=Create.PIGEnter
--- local PIGFontString=Create.PIGFontString
--- local PIGFontStringBG=Create.PIGFontStringBG
--- local PIGSetFont=Create.PIGSetFont
-
 local Create = {}
 local FontUrl = "Fonts/ARHei.ttf"
 Create.FontUrl=FontUrl
@@ -19,9 +11,9 @@ function Create.PIGSetFont(fuji,zihao,Miaobian)
 	local zihao = zihao or 14
 	fuji:SetFont(FontUrl,zihao,Miaobian)
 end
-function Create.PIGFontString(fuF,Point,Text,Miaobian,Zihao,UIName)
+function Create.PIGFontString(fuF,Point,Text,Miaobian,Zihao,UIName,Level)
 	local Text = Text or ""
-	local Font = fuF:CreateFontString(UIName);
+	local Font = fuF:CreateFontString(UIName,Level);
 	if Point then Font:SetPoint(Point[1],Point[2],Point[3],Point[4],Point[5]); end	
 	Create.PIGSetFont(Font,Zihao,Miaobian)
 	Font:SetTextColor(1, 0.843, 0, 1);
@@ -109,7 +101,7 @@ function Create.PIGSetMovable(LeftUI,MovableUI,KeyDown)
 		local uiname = MovableUI:GetName()
 		if uiname then
 			local point, relativeTo, relativePoint, offsetX, offsetY = MovableUI:GetPoint()
-			PIGA["PigUIPoint"][uiname]={point, nil, relativePoint, offsetX, offsetY}
+			PIGA["PigUI"][uiname]={point, nil, relativePoint, offsetX, offsetY}
 		end
 		MovableUI:SetUserPlaced(false)
 	end)
@@ -235,7 +227,7 @@ function Create.PIGFrame(Parent,Point,WH,UIName,ESCOFF,Template)
 		self:ClearAllPoints();
 		self:SetPoint(PointData[1],PointData[2],PointData[3],PointData[4]+X,PointData[5]+Y)
 		local nameUI = QuickButUI:GetName()
-		PIGA["PigUIPoint"][self:GetName()]=PointData
+		PIGA["PigUI"][self:GetName()]=PointData
 	end
 	return frameX
 end
@@ -264,7 +256,7 @@ function Create.PIGEnter(Parent,text,text1,text2,Xpianyi,Ypianyi,huanhang)
 end
 --设置UI位置
 function Create.PIGSetPoint()
-	for k,v in pairs(PIGA["PigUIPoint"]) do
+	for k,v in pairs(PIGA["PigUI"]) do
 		if _G[k] then
 			local point=v[1] or "CENTER"
 			--local relativeTo=v[2] or UIParent
@@ -274,6 +266,7 @@ function Create.PIGSetPoint()
 			--print(_G[k]:GetName(),v[1],v[2],v[3],v[4],v[5])
 			_G[k]:ClearAllPoints();
 			_G[k]:SetPoint(point, UIParent, relativePoint, offsetX, offsetY)
+			if _G[k].updatePoint then _G[k].updatePoint() end
 		end
 	end
 end

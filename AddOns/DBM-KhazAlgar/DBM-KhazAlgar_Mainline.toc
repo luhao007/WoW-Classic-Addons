@@ -1,6 +1,6 @@
-## Interface: 30400
+## Interface: 30404
 ## Author: MysticalOS
-## Version: 11.1.1
+## Version: 11.1.11
 
 ## Title: |cffffe00a<|r|cffff7d0aDBM Mod|r|cffffe00a>|r |cff10ff10World Bosses (War Within)|r
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFF69CCF0户外|r |cFF22B14C卡兹阿加|r
@@ -23,7 +23,7 @@
 ## X-DBM-Mod-World-Boss: 1
 ## X-DBM-Mod-Sort: 110
 ## X-DBM-Mod-MapID: 2774, 2601, 2552
-## X-DBM-Mod-LoadCID: 220999, 221067, 221224, 221084
+## X-DBM-Mod-LoadCID: 220999, 221067, 221224, 221084, 231821
 ## X-DBM-Mod-MinCoreRevision: 17286
 ## X-DBM-Mod-MinExpansion: 10
 ## X-Part-Of: DBM-Core

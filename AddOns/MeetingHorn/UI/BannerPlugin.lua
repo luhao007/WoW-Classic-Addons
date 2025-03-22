@@ -24,16 +24,16 @@ function BannerPlugin:Init()
     self:RegisterMessage('MEETINGHORN_STB')
 
     self.infoPages = {
-        {id = 1, texture = "Interface\\AddOns\\MeetingHorn\\Media\\StbTextureBg1"},
-        {id = 2, texture = "Interface\\AddOns\\MeetingHorn\\Media\\StbTextureBg2"},
+        {id = 3, texture = "Interface\\AddOns\\MeetingHorn\\Media\\BannerPlugin\\StbTextureBg3"},
+        {id = 4, texture = "Interface\\AddOns\\MeetingHorn\\Media\\BannerPlugin\\StbTextureBg4"},
     }
 
     self.currentPage = 1
     self.timer = nil  -- 初始化定时器成员变量
 
     self.frame = CreateFrame("Frame", "BannerFrame", UIParent, "BackdropTemplate")
-    self.frame:SetSize(ns.Addon.MainPanel:GetWidth(), 150)
-    self.frame:SetPoint("BOTTOMLEFT", ns.Addon.MainPanel, "TOPLEFT", 0, -5)
+    self.frame:SetSize(256, ns.Addon.MainPanel:GetHeight())
+    self.frame:SetPoint("LEFT", ns.Addon.MainPanel, "RIGHT", 0, 0)
     self.frame:EnableMouse(true)
     self.frame:SetMovable(true)
     self.frame:SetClampedToScreen(true)
@@ -41,9 +41,21 @@ function BannerPlugin:Init()
         self:PrintCurrentID()
     end)
 
+    -- 创建关闭按钮
+    self.CloseButton = CreateFrame("Button", nil, self.frame, "UIPanelCloseButton")
+    self.CloseButton:SetSize(32, 32)  -- 设置按钮大小
+    self.CloseButton:SetPoint("TOPRIGHT", self.frame, "TOPRIGHT", -5, -5)  -- 设置按钮位置
+
+    -- 设置点击事件
+    self.CloseButton:SetScript("OnClick", function()
+        self.db.global.BannerTime = time()
+        self.frame:Hide()  -- 隐藏 self.frame
+        ns.LogStatistics:InsertLog({ time(), 10, 1 })
+    end)
+
     -- 创建背景纹理
     self.BannerBackground = self.frame:CreateTexture(nil, "BACKGROUND")
-    self.BannerBackground:SetPoint("TOPLEFT", self.frame, "TOPLEFT", 0, 0)
+    self.BannerBackground:SetAllPoints(self.frame)
 
     self:CreateButtons()
     self.frame:Hide()
@@ -83,7 +95,15 @@ function BannerPlugin:UpdateBanner()
     if not self.db.global.BannerData or #self.db.global.BannerData == 0 then
         return
     end
+    if #self.db.global.BannerData == 1 then
+        self.PreviousButton:Hide()
+        self.NextButton:Hide()
+    else
+        self.PreviousButton:Show()
+        self.NextButton:Show()
+    end
     self.BannerBackground:SetTexture(self.db.global.BannerData[self.currentPage].texture)
+    self.BannerBackground:SetTexCoord(0, 1, 0, 424 / 512)
 end
 
 function BannerPlugin:OnPreviousClick()
@@ -104,6 +124,9 @@ end
 
 function BannerPlugin:PrintCurrentID()
     local stbUrl = self.db.global.BannerData[self.currentPage]['u']
+    if stbUrl == '' or stbUrl == nil then
+        return
+    end
     if self.db.global.BannerData[self.currentPage].a == 2 then
         ns.OpenAnnouncementUrl(stbUrl)
     else
@@ -217,8 +240,9 @@ function BannerPlugin:MEETINGHORN_SH(_, data)
     end
 end
 
-function BannerPlugin:MEETINGHORN_STB(_, data)
+function BannerPlugin:MEETINGHORN_STB(_, data, BannerIntervalTime)
     self.db.global.BannerData = {}
+    self.db.global.BannerIntervalTime = BannerIntervalTime
     for _, val in pairs(data) do
         for _, page in pairs(self.infoPages) do
             if val.id == page.id then
@@ -238,6 +262,10 @@ end
 function BannerPlugin:MEETINGHORN_SHOW()
     if not self.db.global.BannerData or #self.db.global.BannerData == 0
     or  not ns.Addon.MainPanel:IsVisible() then
+        return
+    end
+    if self.db.global.BannerIntervalTime and self.db.global.BannerTime
+    and  (self.db.global.BannerTime + self.db.global.BannerIntervalTime) > time() then
         return
     end
     self.frame:Show()

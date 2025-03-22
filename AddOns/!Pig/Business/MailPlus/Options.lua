@@ -787,7 +787,7 @@ function BusinessInfo.MailPlus_ADDUI()
 							listFGV.Faction:SetTexCoord(0.5,1,0,1);
 						end
 						listFGV.Race:SetAtlas(lianxirendatainfo[AHdangqianH][2][3]);
-						local className, classFile, classID = GetClassInfo(lianxirendatainfo[AHdangqianH][2][4])
+						local className, classFile, classID = PIGGetClassInfo(lianxirendatainfo[AHdangqianH][2][4])
 						listFGV.Class:SetTexCoord(unpack(CLASS_ICON_TCOORDS[classFile]));
 						listFGV.level:SetText("("..lianxirendatainfo[AHdangqianH][2][5]..")");
 						listFGV.name:SetPoint("LEFT", listFGV.level, "RIGHT", 2,0);
@@ -840,7 +840,6 @@ function BusinessInfo.MailPlus_ADDUI()
 		colBut.Faction:SetPoint("LEFT", colBut, "LEFT", 0,0);
 		colBut.Faction:SetSize(hang_Height-2,hang_Height-2);
 		colBut.Race = colBut:CreateTexture();
-		colBut.Race:SetTexture("Interface/Glues/CharacterCreate/CharacterCreateIcons")
 		colBut.Race:SetPoint("LEFT", colBut.Faction, "RIGHT", 1,0);
 		colBut.Race:SetSize(hang_Height-2,hang_Height-2);
 		colBut.Class = colBut:CreateTexture();
@@ -898,11 +897,18 @@ function BusinessInfo.MailPlus_ADDUI()
 		end
 	end);
 	local NDui_BagName,slotnum = Data.NDui_BagName[1],Data.NDui_BagName[2]
+	local ElvUI_BagName = Data.ElvUI_BagName
 	local function GetBagIDFun(self)
-		if self.GetBagID then
-			return self:GetBagID()
+		if NDui_BackpackBag then
+			return self.bagId
+		elseif ElvUI_ContainerFrame then
+			return self.BagID
 		else
-			return self:GetParent():GetID()
+			if self.GetBagID then
+				return self:GetBagID()
+			else
+				return self:GetParent():GetID()
+			end
 		end
 	end
 	local function PIG_UseContainerItem(self)
@@ -910,6 +916,16 @@ function BusinessInfo.MailPlus_ADDUI()
 			C_Container.UseContainerItem(GetBagIDFun(self), self:GetID(), nil, BankFrame:GetActiveBankType(), BankFrame:IsShown() and BankFrame.selectedTab == 2);
 		else
 			C_Container.UseContainerItem(GetBagIDFun(self), self:GetID(), nil, BankFrame:IsShown() and (BankFrame.selectedTab == 2));
+		end
+	end
+	local function PIG_UseContainerUI(self,DQitemID)
+		if self then		
+			local itemID=PIGGetContainerItemInfo(GetBagIDFun(self), self:GetID())
+			if itemID then
+				if DQitemID==itemID then
+					PIG_UseContainerItem(self)
+				end
+			end
 		end
 	end
 	local function zhixingpiliangFun(framef)
@@ -922,56 +938,37 @@ function BusinessInfo.MailPlus_ADDUI()
 					local DQitemID=PIGGetContainerItemInfo(GetBagIDFun(self), self:GetID())
 					if DQitemID then
 						PIG_UseContainerItem(self)
-						if GetCVar("combinedBags")=="1" and ContainerFrameCombinedBags then
-							local butnum =#ContainerFrameCombinedBags.Items
-							for ff=1,butnum do
-								local framef = ContainerFrameCombinedBags.Items[ff]
-								local itemID=PIGGetContainerItemInfo(GetBagIDFun(framef), framef:GetID())
-								if itemID then
-									if DQitemID==itemID then
-										PIG_UseContainerItem(framef)
+						if NDui then
+							for f=1,slotnum do
+								PIG_UseContainerUI(_G[NDui_BagName..f],DQitemID)
+							end
+						elseif ElvUI_ContainerFrame then
+							for bagx=1,NUM_CONTAINER_FRAMES do
+								for ei=1,#ElvUI_BagName do
+									for solt=1,MAX_CONTAINER_ITEMS do
+										PIG_UseContainerUI(_G[ElvUI_BagName[ei]..bagx.."Slot"..solt],DQitemID)
 									end
 								end
 							end
 						else
-							for bagx=1,NUM_CONTAINER_FRAMES do
-								local ContainerF = _G["ContainerFrame"..bagx]
-								if ContainerF then
-									if ContainerF.Items then
-										local butnum =#ContainerF.Items
-										for ff=1,butnum do
-											local framef = ContainerF.Items[ff]
-											local itemID=PIGGetContainerItemInfo(GetBagIDFun(framef), framef:GetID())
-											if itemID then
-												if DQitemID==itemID then
-													PIG_UseContainerItem(framef)
-												end
-											end
-										end
-									else
-										for solt=1,MAX_CONTAINER_ITEMS do
-											local framef=_G["ContainerFrame"..bagx.."Item"..solt]
-											if framef then
-												local itemID=PIGGetContainerItemInfo(GetBagIDFun(framef), framef:GetID())
-												if itemID then
-													if DQitemID==itemID then
-														PIG_UseContainerItem(framef)
-													end
-												end
-											end
-										end
-									end
+							if GetCVar("combinedBags")=="1" and ContainerFrameCombinedBags then
+								local butnum =#ContainerFrameCombinedBags.Items
+								for ff=1,butnum do
+									PIG_UseContainerUI(ContainerFrameCombinedBags.Items[ff],DQitemID)
 								end
-							end
-						end
-						if NDui then
-							for f=1,slotnum do
-								local framef = _G[NDui_BagName..f]
-								if framef then
-									local itemID=PIGGetContainerItemInfo(GetBagIDFun(framef), framef:GetID())
-									if itemID then
-										if DQitemID==itemID then
-											PIG_UseContainerItem(framef)
+							else
+								for bagx=1,NUM_CONTAINER_FRAMES do
+									local ContainerF = _G["ContainerFrame"..bagx]
+									if ContainerF then
+										if ContainerF.Items then
+											local butnum =#ContainerF.Items
+											for ff=1,butnum do
+												PIG_UseContainerUI(ContainerF.Items[ff],DQitemID)
+											end
+										else
+											for solt=1,MAX_CONTAINER_ITEMS do
+												PIG_UseContainerUI(_G["ContainerFrame"..bagx.."Item"..solt],DQitemID)
+											end
 										end
 									end
 								end
@@ -1011,15 +1008,14 @@ function BusinessInfo.MailPlus_ADDUI()
 					end
 				end
 			end
-			if NDui then
+			if Pig_OptionsUI.IsOpen_NDui("Bags") then
 				for f=1,slotnum do
 					if _G[NDui_BagName..f] then
 						zhixingpiliangFun(_G[NDui_BagName..f])
 					end
 				end
 			end
-			if ElvUI then
-				local ElvUI_BagName = Data.ElvUI_BagName
+			if Pig_OptionsUI.IsOpen_ElvUI("bags") then
 				for f=1,NUM_CONTAINER_FRAMES do
 					for ff=1,MAX_CONTAINER_ITEMS do
 						for ei=1,#ElvUI_BagName do

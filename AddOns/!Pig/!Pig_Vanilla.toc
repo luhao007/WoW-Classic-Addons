@@ -1,6 +1,6 @@
-## Interface: 30400
+## Interface: 30404
 ## Author: geligasi
-## Version: 8.02
+## Version: 8.51
 
 ## Title: !Pig
 ## Notes: A toolbox. Integrating many small features can greatly reduce the number of plug-ins you have
@@ -33,9 +33,8 @@ FramePlus\CharacterFrame_Equip.xml
 UnitFrame\UnitFrame.xml
 BagBank\BagBank_Vanilla.xml
 Map\Map_Vanilla.xml
+CVars\CVars.xml
 PigLayout\PigLayout.xml
-CVars\CVars.lua
-Hardcore\Hardcore.lua
 Ext.lua
 Config\Config.lua
 About.lua

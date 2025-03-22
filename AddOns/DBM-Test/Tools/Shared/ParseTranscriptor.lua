@@ -259,6 +259,17 @@ local function literalsTable(...)
 	return tbl
 end
 
+local function stripTrailingNilLiterals(tbl)
+	for i = #tbl, 1, -1 do
+		if tbl[i] == "nil" then
+			tbl[i] = nil
+		else
+			break
+		end
+	end
+	return tbl
+end
+
 ---@param info DBMInstanceInfo
 local function instanceInfoLiteral(info)
 	return ("{name = %s, instanceType = %s, difficultyID = %s, difficultyName = %s, difficultyModifier = %s, maxPlayers = %s, dynamicDifficulty = %s, isDynamic = %s, instanceID = %s, instanceGroupSize = %s, lfgDungeonID = %s}"):format(
@@ -326,7 +337,7 @@ local function transcribeCleu(rawParams, anon, flagState)
 		params[i] = guessType(param)
 		i = i + 1
 	end
-	local event, sourceFlags, sourceGUID, sourceName, destGUID, destName, spellId, spellName, extraArg1, extraArg2
+	local event, sourceFlags, sourceGUID, sourceName, destGUID, destName, spellId, spellName, extraArg1, extraArg2, extraArg3, extraArg4, extraArg5
 	if params[1]:match("%[CONDENSED%]") then
 		local _
 		event, sourceGUID, sourceName, _, spellId, spellName = unpack(params, 1, i - 1)
@@ -358,7 +369,7 @@ local function transcribeCleu(rawParams, anon, flagState)
 				--logInfo("Note: log doesn't contain flags, /getspells logflags to log flags in Transcriptor. Results for mods relying heavily on flags may be inaccurate, but usually this is not a problem.")
 				flagWarningShown = true
 			end
-			event, sourceGUID, sourceName, destGUID, destName, spellId, spellName, extraArg1, extraArg2 = unpack(params, 1, i - 1)
+			event, sourceGUID, sourceName, destGUID, destName, spellId, spellName, extraArg1, extraArg2, extraArg3, extraArg4, extraArg5 = unpack(params, 1, i - 1)
 		end
 	end
 	if spellId and filter.ignoredSpellIds[spellId] then
@@ -393,7 +404,7 @@ local function transcribeCleu(rawParams, anon, flagState)
 		return
 	end
 	-- FIXME: use sourceFlags if available to filter healing and attacks of friendly totems
-	if (event:match("_ENERGIZE$") or event:match("_HEAL$")) and destIsPlayerOrPet then
+	if (event:match("_ENERGIZE$") or event:match("_HEAL$") or event:match("_HEAL_ABSORBED$")) and destIsPlayerOrPet then
 		return
 	end
 	if event:match("_HEAL$") and srcIsPlayer and destIsNpc then -- Likely healing summons, opportunity to learn summon creature IDs not yet ignored
@@ -448,13 +459,13 @@ local function transcribeCleu(rawParams, anon, flagState)
 		extraArg2 = anon:ScrubName(extraArg2, extraArg1)
 		extraArg1 = anon:ScrubGUID(extraArg1)
 	end
-	return literalsTable(
+	return stripTrailingNilLiterals(literalsTable(
 		"COMBAT_LOG_EVENT_UNFILTERED", event,				-- skipping timestamp and hideCaster
 		sourceGUID, sourceName, hex(sourceFlags), hex(0),	-- 0x0 == sourceRaidFlags, not logged
 		destGUID, destName, hex(destFlags), hex(0),			-- 0x0 == destRaidFlags, not logged
 		spellId, spellName, hex(0),							-- 0x0 == spellSchool, not logged
-		extraArg1, extraArg2
-	)
+		extraArg1, extraArg2, extraArg3, extraArg4, extraArg5
+	))
 end
 
 local ignoredEvents = {
@@ -509,19 +520,19 @@ local function transcribeEvent(event, params, anon, flagState)
 			return prefix .. anon:ScrubName(name, guid) .. separator .. anon:ScrubGUID(guid)
 		end)
 	end
-	if event == "INSTANCE_ENCOUNTER_ENGAGE_UNIT" then
-		-- capture limits prevents us from doing this a single glorious regex
-		local prefix, suffix
-		prefix, params = params:match("([^#]*#)(.*)")
-		params, suffix = params:match("(" .. ("[^#]*#"):rep(8 * 5) .. ")(.*)")
-		local newParams = ""
-		for boss in params:gmatch("(" .. ("[^#]*#"):rep(8) .. ")") do
-			newParams = newParams .. boss:gsub("^" .. ("([^#]*)#"):rep(8), function(arg1, arg2, arg3, arg4, arg5, guid, arg7, arg8)
-				return ("%s#"):rep(8):format(arg1, arg2, arg3, arg4, arg5, guid == "nil" and guid or anon:ScrubGUID(guid), arg7, arg8)
-			end)
-		end
-		params = prefix .. newParams .. suffix
-	end
+	--if event == "INSTANCE_ENCOUNTER_ENGAGE_UNIT" then
+	--	-- capture limits prevents us from doing this a single glorious regex
+	--	local prefix, suffix
+	--	prefix, params = params:match("([^#]*#)(.*)")
+	--	params, suffix = params:match("(" .. ("[^#]*#"):rep(8 * 5) .. ")(.*)")
+	--	local newParams = ""
+	--	for boss in params:gmatch("(" .. ("[^#]*#"):rep(8) .. ")") do
+	--		newParams = newParams .. boss:gsub("^" .. ("([^#]*)#"):rep(8), function(arg1, arg2, arg3, arg4, arg5, guid, arg7, arg8)
+	--			return ("%s#"):rep(8):format(arg1, arg2, arg3, arg4, arg5, guid == "nil" and guid or anon:ScrubGUID(guid), arg7, arg8)
+	--		end)
+	--	end
+	--	params = prefix .. newParams .. suffix
+	--end
 	if event == "GOSSIP_SHOW" then
 		local guid, suffix = params:match("([^#]*)#(.*)")
 		params = anon:ScrubGUID(guid) .. "#" .. suffix
@@ -531,6 +542,8 @@ local function transcribeEvent(event, params, anon, flagState)
 		local subEvent, msg, name = params:match("([^#]*)#([^#]*)#([^#]*)")
 		if subEvent == "RAID_BOSS_WHISPER_SYNC" then
 			-- Name will always contain the server here, even if there is no cross-server stuff otherwise; this is annoying because the anonymizer might not have learned the name with the server suffix
+			-- So we learn it here since we know that is definitely a player name
+			anon:LearnPlayerServer(name)
 			local scrubbed = anon:ScrubName(name)
 			return literalsTable("CHAT_MSG_RAID_BOSS_WHISPER", msg, scrubbed ~= name and scrubbed or anon:ScrubName(name:match("([^-]*)")), 0, false)
 		else
@@ -642,6 +655,14 @@ function testGenerator:guessMod()
 	return encounterName:gsub("%s*", ""):gsub("'", "")
 end
 
+-- List of instance names to be used for guessed test names.
+-- This does not affect GetInstanceInfo() mocking, see Data/Instances.lua (generated) for that.
+local mappedInstanceNames = {
+	[533] = "Naxx",
+	[2769] = "Undermine",
+	[2657] = "NerubarPalace"
+}
+
 -- TODO: all of these guessing functions could be much smarter, but I'm adding stuff as I go
 function testGenerator:guessTestName()
 	if not self.metadata.encounterInfo.name then return "" end
@@ -652,6 +673,19 @@ function testGenerator:guessTestName()
 		difficulty = self.metadata.instanceInfo.difficultyName .. "/"
 	end
 	local name = self:guessMod() .. "/" .. difficulty .. (self.metadata.encounterInfo.kill and "Kill" or "Wipe")
+	if self.metadata.instanceInfo then
+		local instanceName = mappedInstanceNames[self.metadata.instanceInfo.instanceID] or self.metadata.instanceInfo.name
+		if instanceName then
+			name = instanceName .. "/" .. name
+		end
+	end
+	if self.metadata.gameVersion == "Retail" then
+		name = "TWW/" .. name
+	elseif self.metadata.gameVersion == "SeasonOfDiscovery" then
+		name = "SoD/" .. name
+	elseif self.metadata.gameVersion then
+		name = self.metadata.gameVersion .. "/" .. name
+	end
 	if self.prefix then
 		return self.prefix:gsub("/$", "") .. "/" .. name
 	else
@@ -668,6 +702,13 @@ function testGenerator:guessAddon()
 				or "DBM-Raids-Vanilla"
 		elseif instanceInfo.instanceType == "party" then -- UBRS & co also return party here
 			return "DBM-Party-Vanilla"
+		end
+	elseif self.metadata.gameVersion == "Retail" then
+		local instanceInfo = self.metadata.instanceInfo
+		if instanceInfo.instanceType == "raid" then
+			return "DBM-Raids-WarWithin"
+		elseif instanceInfo.instanceType == "party" then -- FIXME: detect delves by difficulty info
+			return "DBM-Party-WarWithin"
 		end
 	end
 	return ""
@@ -760,6 +801,7 @@ function testGenerator:GetLogAndPlayers()
 	local timeOffset
 	local totalTime = 0
 	local anon = anonymizer:New(self.log.lines, self.firstLine, self.lastLine, self.metadata.player, not self.anonymize)
+	self.anonymizer = anon
 	if self.metadata.startsInCombat then
 		resultLog[#resultLog + 1] = {0, "PLAYER_REGEN_DISABLED", "+Entering combat!"}
 		resultLogStr[#resultLogStr + 1] = '{0.00, "PLAYER_REGEN_DISABLED", "+Entering combat!"}'
@@ -826,9 +868,6 @@ function testGenerator:GetLogAndPlayers()
 	combinedLog = combinedLog .. "\tlog = {\n\t\t"
 	combinedLog = combinedLog ..  table.concat(resultLogStr, ",\n\t\t")
 	combinedLog = combinedLog ..  "\n\t},"
-	if self.validateAnonymizer and self.anonymize then
-		anon:CheckForLeaks(combinedLog)
-	end
 	self.cache.combinedLog, self.cache.combinedPlayers, self.cache.resultLog, self.cache.resultPlayers = combinedLog, combinedPlayers, resultLog, resultPlayers
 	return self:GetLogAndPlayers()
 end

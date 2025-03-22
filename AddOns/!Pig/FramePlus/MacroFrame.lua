@@ -47,18 +47,37 @@ function FramePlusfun.Macro()
 		hooksecurefunc(MacroPopupFrame, "OkayButton_OnClick", function(self)
 			if InCombatLockdown() then return end
 			local macroFrame = self:GetMacroFrame();
-			local text = self.BorderBox.IconSelectorEditBox:GetText();
-			local text = string.gsub(text, "\"", "");
-			local macroSlot = GetMacroIndexByName(text)
-			if macroSlot>0 then
-				macroFrame:SelectMacro(macroSlot);
-			else
-				C_Timer.After(0.01,function()
-					local macroSlot = GetMacroIndexByName(text)
-					macroFrame:SelectMacro(macroSlot);
+			local NewName= self.BorderBox.IconSelectorEditBox:GetText();
+			C_Timer.After(0.02,function()
+				local macroSlotIndex=0
+				local AccMacros, CharMacros = GetNumMacros();
+				local SelectedTab = PanelTemplates_GetSelectedTab(MacroFrame)
+				if SelectedTab==1 then
+					for Index=1,MAX_ACCOUNT_MACROS do
+						local Name, Icon, Body = GetMacroInfo(Index);
+						if Name then
+							if NewName == Name and Body =="" then
+								macroSlotIndex=Index
+								break
+							end
+						end
+					end
+				else
+					for Index=MAX_ACCOUNT_MACROS+1,MAX_ACCOUNT_MACROS+CharMacros do
+						local Name, Icon, Body = GetMacroInfo(Index);
+						if Name then
+							if NewName == Name and Body =="" then
+								macroSlotIndex=Index-MAX_ACCOUNT_MACROS
+								break
+							end
+						end
+					end
+				end
+				if macroSlotIndex>0 then
+					macroFrame:SelectMacro(macroSlotIndex);
 					macroFrame:Update(retainScrollPosition);
-				end)
-			end			
+				end
+			end)			
 		end)
 	end
 	if IsAddOnLoaded("Blizzard_MacroUI") then

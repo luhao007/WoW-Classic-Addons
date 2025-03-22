@@ -614,20 +614,40 @@ GTFO.SpellID["263105"] = {
 GTFO.SpellID["269831"] = {
   --desc = "Azerite Toxicity";
   sound = 1;
+  ignoreApplication = true;
+};
+
+GTFO.SpellID["259940"] = {
+  --desc = "Propellant Blast - Target (Rixxa Fluxflame)";
+  applicationOnly = true;
+  soundFunction = function() 
+	GTFO_AddEvent("PropellantBlast", 5);
+	return 0;
+  end;
 };
 
 GTFO.SpellID["260103"] = {
-  --desc = "Propellant Blast (Rixxa Fluxflame)";
+  --desc = "Propellant Blast - Fire (Rixxa Fluxflame)";
   sound = 1;
+  negatingDebuffSpellID = 259940; -- Propellant Blast
+  ignoreEvent = "PropellantBlast";
 };
 
 GTFO.SpellID["259533"] = {
   --desc = "Agent Azerite (Rixxa Fluxflame)";
   sound = 1;
+  ignoreApplication = true;
 };
 
 GTFO.SpellID["260279"] = {
   --desc = "Gatling Gun (Mogul Razdunk)";
+  sound = 1;
+  ignoreApplication = true;
+};
+
+GTFO.SpellID["1217283"] = {
+  --desc = "Tear Gas (Mechanized Peacekeeper)";
+  ignoreApplication = true;
   sound = 1;
 };
 
@@ -1093,6 +1113,24 @@ GTFO.SpellID["291949"] = {
 GTFO.SpellID["285443"] = {
   --desc = "Hidden Flame Cannon (Head Machinist Sparkflux)";
   applicationOnly = true;
+  sound = 1;
+};
+
+GTFO.SpellID["301299"] = {
+  --desc = "Furnace Flames";
+  ignoreApplication = true;
+  sound = 1;
+};
+
+GTFO.SpellID["1213154"] = {
+  --desc = "Electrified Floor";
+  ignoreApplication = true;
+  sound = 1;
+};
+
+GTFO.SpellID["291914"] = {
+  --desc = "Cutting Beam (King Mechagon)";
+  ignoreApplication = true;
   sound = 1;
 };
 

@@ -837,7 +837,6 @@ GTFO.SpellID["320729"] = {
 GTFO.SpellID["317605"] = {
   --desc = "Whirlwind (Nekthara the Mangler)";
   sound = 3;
-  tankSound = 0;
 };
 
 GTFO.SpellID["332708"] = {
@@ -907,6 +906,37 @@ GTFO.SpellID["339751"] = {
   sound = 3;
 };
 
+GTFO.SpellID["1213695"] = {
+  --desc = "Earthcrusher (Dokigg the Brutalizer)";
+  sound = 3;
+};
+
+GTFO.SpellID["333301"] = {
+  --desc = "Curse of Desolation (Nefarious Darkspeaker)";
+  sound = 3;
+  applicationOnly = true;
+};
+
+GTFO.SpellID["333297"] = {
+  --desc = "Death Winds (Nefarious Darkspeaker)";
+  sound = 3;
+};
+
+GTFO.SpellID["473519"] = {
+  --desc = "Death Spiral (Kul'tharok)";
+  sound = 3;
+};
+
+GTFO.SpellID["474084"] = {
+  --desc = "Necrotic Eruption (Kul'tharok)";
+  sound = 3;
+  tankSound = 0;
+};
+
+GTFO.SpellID["318406"] = {
+  --desc = "Tenderizing Smash (Gorechop)";
+  sound = 3;
+};
 
 --- *********************
 --- * The Necrotic Wake *

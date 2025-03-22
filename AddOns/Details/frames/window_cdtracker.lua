@@ -17,6 +17,8 @@ Details222.CooldownTracking = {
     cooldownPanels = {},
 }
 
+local GetSpellTexture = C_Spell and C_Spell.GetSpellTexture or GetSpellTexture
+
 function Details222.CooldownTracking.IsCooldownIgnored(spellId)
     return Details.ocd_tracker.ignored_cooldowns[spellId]
 end
@@ -161,7 +163,7 @@ end
                         isReady, normalizedPercent, timeLeft, charges, minValue, maxValue, currentValue = openRaidLib.GetCooldownStatusFromCooldownInfo(cooldownInfo)
                     end)
                     if (not bRunOkay) then
-                        local spellName = GetSpellInfo(spellId)
+                        local spellName = Details222.GetSpellInfo(spellId)
                         --print("error on cooldown update:", unitName, spellName, errorText)
                         return
                     end
@@ -864,7 +866,7 @@ end
 
                     for spellId, spellInfo in pairs(LIB_OPEN_RAID_COOLDOWNS_INFO) do
                         if (spellInfo.class == className) then
-                            local spellName, _, spellIcon = GetSpellInfo(spellId)
+                            local spellName, _, spellIcon = Details222.GetSpellInfo(spellId)
 
                             if (spellName) then
                                 local smallSpellName = string.sub(spellName, 1, 12)

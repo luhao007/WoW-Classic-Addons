@@ -15,7 +15,6 @@ local PIGOptionsList_RF=Create.PIGOptionsList_RF
 local PIGOptionsList_R=Create.PIGOptionsList_R
 local PIGFontString=Create.PIGFontString
 local PIGFontStringBG=Create.PIGFontStringBG
-local PIGModCheckbutton=Create.PIGModCheckbutton
 --
 local TooltipPlusfun={}
 addonTable.TooltipPlusfun=TooltipPlusfun
@@ -82,17 +81,17 @@ end);
 local miaodianList = {[1]="右下角",[2]="左下角",[3]="左上角",[4]="右上角",[5]="鼠标(偏移无效)",[6]="鼠标左",[7]="鼠标右"}
 PointF.miaodian=PIGDownMenu(PointF,{"LEFT",PointF.PointOpen.Text,"RIGHT",70,0},{140,nil})
 PointF.miaodian.t = PIGFontString(PointF.miaodian,{"RIGHT",PointF.miaodian,"LEFT",-4,0},"锚点");
-function PointF.miaodian:PIGDownMenu_Update_But(self)
+function PointF.miaodian:PIGDownMenu_Update_But()
 	local info = {}
 	info.func = self.PIGDownMenu_SetValue
 	for i=1,7,1 do
 	    info.text, info.arg1 = miaodianList[i], i
 	    info.checked = i==PIGA["Tooltip"]["Point"]
-		PointF.miaodian:PIGDownMenu_AddButton(info)
+		self:PIGDownMenu_AddButton(info)
 	end 
 end
 function PointF.miaodian:PIGDownMenu_SetValue(value,arg1,arg2)
-	PointF.miaodian:PIGDownMenu_SetText(value)
+	self:PIGDownMenu_SetText(value)
 	PIGA["Tooltip"]["Point"]=arg1
 	TooltipPlusfun.SetPointCF()
 	PIGCloseDropDownMenus()

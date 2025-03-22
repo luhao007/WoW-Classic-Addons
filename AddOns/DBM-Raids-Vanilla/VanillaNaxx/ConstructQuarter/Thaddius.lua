@@ -8,7 +8,7 @@ else
 	mod.statTypes = "normal"
 end
 
-mod:SetRevision("20241222110740")
+mod:SetRevision("20250213212044")
 mod:SetCreatureID(15928)
 mod:SetEncounterID(1120)
 mod:SetModelID(16137)
@@ -33,9 +33,11 @@ local warnChargeNotChanged	= mod:NewSpecialWarning("WarningChargeNotChanged", fa
 local yellShift				= mod:NewShortPosYell(28089, DBM_CORE_L.AUTO_YELL_CUSTOM_POSITION)
 
 local enrageTimer			= mod:NewBerserkTimer(300)
-local timerNextShift		= mod:NewCDTimer(25.9, 28089, nil, nil, nil, 2, nil, DBM_COMMON_L.DEADLY_ICON)--25.9-34
+local timerNextShift		= mod:NewVarTimer("v25.9-34", 28089, nil, nil, nil, 2, nil, DBM_COMMON_L.DEADLY_ICON)--25.9-34
 local timerShiftCast		= mod:NewCastTimer(3, 28089, nil, nil, nil, 5)
 local timerThrow			= mod:NewCDTimer(20.6, 28338, nil, nil, nil, 5, nil, DBM_COMMON_L.TANK_ICON)
+
+mod:AddInfoFrameOption()
 
 mod:AddDropdownOption("AirowsEnabled", {"Never", "TwoCamp", "ArrowsRightLeft", "ArrowsInverse"}, "Never", "misc", nil, 28089)
 
@@ -50,7 +52,25 @@ function mod:OnCombatStart(delay)
 	self:ScheduleMethod(40.6 - delay, "TankThrow")
 	timerThrow:Start(20.6-delay)
 	warnThrowSoon:Schedule(37.6 - delay)
+	if self.Options.InfoFrame then
+		DBM.InfoFrame:Show(10, "bosshealth", {
+			[15929] = true,
+			[15930] = true,
+		})
+		self.bossHealthUpdateTime = 0.5
+		self:BossHealthUpdate()
+	end
 end
+
+-- FIXME: this is required because core by default only checks mod creature IDs, but it should really check everything that info frame wants to see as well
+function mod:BossHealthUpdate()
+	self:GetBossHP(15929)
+	self:GetBossHP(15930)
+	if self.vb.phase ~= 2 then
+		self:ScheduleMethod(0.5, "BossHealthUpdate") -- also canceled on combat end implicitly
+	end
+end
+
 
 function mod:OnCombatEnd(wipe, isSecondRun)
 	if wipe and not isSecondRun then
@@ -66,6 +86,7 @@ function mod:SPELL_CAST_START(args)
 		warnShiftCasting:Show()
 		warnShiftSoon:Schedule(20)
 		lastShift = GetTime()
+		DBM.InfoFrame:Hide()
 	end
 end
 

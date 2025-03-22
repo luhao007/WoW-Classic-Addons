@@ -54,8 +54,18 @@ local IsQuestFlaggedCompleted = IsQuestFlaggedCompleted or C_QuestLog.IsQuestFla
 --- Strucute: [questId] = {tagId, "questType"}
 ---@type table<number, {[1]: number, [2]: string}>
 local questTagCorrections = {
+    [208] = {not Questie.IsCata and 1, not Questie.IsCata and "Elite"},
     [373] = {81, "Dungeon"},
+    [644] = {1, "Elite"},
+    [645] = {1, "Elite"},
+    [646] = {1, "Elite"},
     [4146] = {81, "Dungeon"},
+    [4601] = {81, "Dungeon"},
+    [4602] = {81, "Dungeon"},
+    [4603] = {81, "Dungeon"},
+    [4604] = {81, "Dungeon"},
+    [4605] = {81, "Dungeon"},
+    [4606] = {81, "Dungeon"},
     [5342] = {0, ""},
     [5344] = {0, ""},
     [6846] = {41, "PvP"},
@@ -103,10 +113,21 @@ local questTagCorrections = {
     [13129] = {81, "Dungeon"},
     [13199] = {41, "PvP"},
     [13662] = {0, ""},
+    [26452] = {41, "PvP"},
+    [26856] = {81, "Dungeon"},
+    [26858] = {81, "Dungeon"},
+    [26862] = {81, "Dungeon"},
+    [26866] = {81, "Dungeon"},
+    [26962] = {81, "Dungeon"},
+    [26967] = {81, "Dungeon"},
+    [27848] = {81, "Dungeon"},
+    [27850] = {81, "Dungeon"},
     [28735] = {81, "Dungeon"},
     [28737] = {81, "Dungeon"},
     [28738] = {81, "Dungeon"},
     [28740] = {81, "Dungeon"},
+    [28760] = {81, "Dungeon"},
+    [28814] = {81, "Dungeon"},
     [28845] = {81, "Dungeon"},
     [29135] = {62, "Raid"},
     [29153] = {81, "Dungeon"},
@@ -117,6 +138,8 @@ local questTagCorrections = {
     [29208] = {81, "Dungeon"},
     [29241] = {81, "Dungeon"},
     [29242] = {81, "Dungeon"},
+    [29251] = {81, "Dungeon"},
+    [29252] = {81, "Dungeon"},
     [78680] = {1, "Elite"},
     [78681] = {1, "Elite"},
     [78684] = {1, "Elite"},
@@ -1460,6 +1483,10 @@ function QuestieDB.GetQuest(questId) -- /dump QuestieDB.GetQuest(867)
             Text = triggerEnd[1],
             Coordinates = triggerEnd[2]
         }
+        if QuestieCorrections.eventObjectiveFirst[questId] then
+            tinsert(QO.ObjectiveData, 1, QO.ObjectiveData[#QO.ObjectiveData])
+            tremove(QO.ObjectiveData)
+        end
     end
 
     --- Quest objectives generated from quest log in QuestieQuest.lua -> QuestieQuest:PopulateQuestLogInfo(quest)

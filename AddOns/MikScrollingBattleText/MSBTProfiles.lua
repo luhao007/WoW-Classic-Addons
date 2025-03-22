@@ -20,13 +20,15 @@ local L = MikSBT.translations
 local string_find = string.find
 local string_gsub = string.gsub
 local string_format = string.format
+
 local CopyTable = MikSBT.CopyTable
 local EraseTable = MikSBT.EraseTable
-local SplitString = MikSBT.SplitString
-local Print = MikSBT.Print
 local GetSkillName = MikSBT.GetSkillName
+local Print = MikSBT.Print
+local SplitString = MikSBT.SplitString
 
 local IsClassic = WOW_PROJECT_ID >= WOW_PROJECT_CLASSIC
+local IsCataClassic = WOW_PROJECT_ID == WOW_PROJECT_CATACLYSM_CLASSIC
 
 
 -------------------------------------------------------------------------------
@@ -44,7 +46,7 @@ local SAVED_MEDIA_NAME			= "MSBT_SavedMedia"
 local PET_SPACE = PET .. " "
 
 -- Flags used by the combat log.
-local FLAG_YOU 					= 0xF0000000
+local FLAG_YOU					= 0xF0000000
 local TARGET_TARGET				= 0x00010000
 local REACTION_HOSTILE			= 0x00000040
 
@@ -125,7 +127,7 @@ local eventFrame
 
 -- Meta table for the differential profile tables.
 local differentialMap = {}
-local differential_mt = { __index = function(t,k) return differentialMap[t][k] end }
+local differential_mt = { __index = function(t, k) return differentialMap[t][k] end }
 local differentialCache = {}
 
 -- Holds variables to be saved between sessions.
@@ -1077,6 +1079,18 @@ if IsClassic then
 				alwaysSticky	= true,
 				fontSize		= 26,
 			},
+			NOTIFICATION_ESSENCE_CHANGE = {
+				colorG		= 0.5,
+				colorB		= 0,
+				message		= "%a " .. L.MSG_ESSENCE,
+			},
+			NOTIFICATION_ESSENCE_FULL = {
+				colorG			= 0.5,
+				colorB			= 0,
+				message			= L.MSG_ESSENCE_FULL .. "!",
+				alwaysSticky	= true,
+				fontSize		= 26,
+			},
 			NOTIFICATION_HONOR_GAIN = {
 				colorR		= 0.5,
 				colorG		= 0.5,
@@ -1536,18 +1550,18 @@ if IsClassic then
 
 
 		-- Master font settings.
-		normalFontName		= L.DEFAULT_FONT_NAME,
-		normalOutlineIndex	= 1,
-		normalFontSize		= 18,
-		normalFontAlpha		= 100,
-		critFontName		= L.DEFAULT_FONT_NAME,
-		critOutlineIndex	= 1,
-		critFontSize		= 26,
-		critFontAlpha		= 100,
+		normalFontName			= L.DEFAULT_FONT_NAME,
+		normalOutlineIndex		= 1,
+		normalFontSize			= 18,
+		normalFontAlpha			= 100,
+		critFontName			= L.DEFAULT_FONT_NAME,
+		critOutlineIndex		= 1,
+		critFontSize			= 26,
+		critFontAlpha			= 100,
 
 
 		-- Animation speed.
-		animationSpeed		= 100,
+		animationSpeed			= 100,
 
 
 		-- Partial effect settings.
@@ -1562,14 +1576,38 @@ if IsClassic then
 
 		-- Damage color settings.
 		physical		= { colorR = 1, colorG = 1, colorB = 1 },
-		holy			= { colorR = 1, colorG = 1, colorB = 0.627 },
-		fire			= { colorR = 1, colorG = 0.5, colorB = 0.5 },
-		nature			= { colorR = 0.5, colorG = 1, colorB = 0.5 },
-		frost			= { colorR = 0.5, colorG = 0.5, colorB = 1 },
-		shadow			= { colorR = 0.628, colorG = 0, colorB = 0.628 },
-		arcane			= { colorR = 1, colorG = 0.725, colorB = 1 },
-		frostfire		= { colorR = 0.824, colorG = 0.314, colorB = 0.471 },
-		shadowflame		= { colorR = 0.824, colorG = 0.5, colorB = 0.628 },
+		arcane			= { colorR = 0.956, colorG = 0.658, colorB = 0.894 },
+		fire			= { colorR = 0.933, colorG = 0.490, colorB = 0.501 },
+		frost			= { colorR = 0.462, colorG = 0.792, colorB = 0.929 },
+		holy			= { colorR = 0.976, colorG = 0.945, colorB = 0.631 },
+		nature			= { colorR = 0.631, colorG = 0.858, colorB = 0.396 },
+		shadow			= { colorR = 0.356, colorG = 0.290, colorB = 0.596 },
+		spellfire		= { colorR = 0.898, colorG = 0.360, colorB = 0.501 },
+		spellfrost		= { colorR = 0.321, colorG = 0.321, colorB = 0.8 },
+		divine			= { colorR = 0.956, colorG = 0.894, colorB = 0.572 },
+		astral			= { colorR = 0.737, colorG = 0.411, colorB = 0.968 },
+		spellshadow		= { colorR = 0.450, colorG = 0.215, colorB = 0.6 },
+		radiant			= { colorR = 0.937, colorG = 0.690, colorB = 0.396 },
+		holystorm		= { colorR = 0.752, colorG = 0.909, colorB = 0.545 },
+		holyfrost		= { colorR = 0.545, colorG = 0.909, colorB = 0.874 },
+		volcanic		= { colorR = 0.937, colorG = 0.545, colorB = 0.282 },
+		shadowflame		= { colorR = 0.745, colorG = 0.333, colorB = 0.529 },
+		frostfire		= { colorR = 0.262, colorG = 0.572, colorB = 0.666 },
+		froststorm		= { colorR = 0.356, colorG = 0.698, colorB = 0.556 },
+		shadowfrost		= { colorR = 0.2, colorG = 0.317, colorB = 0.607 },
+		twilight		= { colorR = 0.631, colorG = 0.349, colorB = 0.698 },
+		plague			= { colorR = 0.584, colorG = 0.8, colorB = 0.329 },
+		spellstrike		= { colorR = 0.941, colorG = 0.866, colorB = 0.929 },
+		flamestrike		= { colorR = 0.968, colorG = 0.764, colorB = 0.749 },
+		froststrike		= { colorR = 0.678, colorG = 0.858, colorB = 0.890 },
+		stormstrike		= { colorR = 0.698, colorG = 0.792, colorB = 0.8 },
+		shadowstrike	= { colorR = 0.827, colorG = 0.8, colorB = 0.949 },
+		holystrike		= { colorR = 0.968, colorG = 0.925, colorB = 0.796 },
+		elemental		= { colorR = 0.337, colorG = 0.858, colorB = 0.682 },
+		cosmic			= { colorR = 0.368, colorG = 0.627, colorB = 0.8 },
+		chromatic		= { colorR = 0.573, colorG = 0.976, colorB = 0.098 },
+		magic			= { colorR = 0.470, colorG = 0.937, colorB = 1 },
+		chaos			= { colorR = 0.247, colorG = 0.152, colorB = 0.4 },
 
 
 		-- Class color settings.
@@ -1589,9 +1627,9 @@ if IsClassic then
 
 
 		-- Throttle settings.
-		dotThrottleDuration	= 3,
-		hotThrottleDuration	= 3,
-		powerThrottleDuration	= 3,
+		dotThrottleDuration				= 3,
+		hotThrottleDuration				= 3,
+		powerThrottleDuration			= 3,
 		throttleList = {
 			--[SPELL_BLOOD_PRESENCE]	= 5,
 			--[SPELL_DRAIN_LIFE]		= 3,
@@ -1603,33 +1641,33 @@ if IsClassic then
 
 
 		-- Spam control settings.
-		mergeExclusions		= {},
-		abilitySubstitutions	= {},
-		abilitySuppressions	= {
-			--[SPELL_UNDYING_RESOLVE]		= true,
+		mergeExclusions					= {},
+		abilitySubstitutions			= {},
+		abilitySuppressions				= {
+			--[SPELL_UNDYING_RESOLVE]	= true,
 		},
-		damageThreshold		= 0,
-		healThreshold			= 0,
-		powerThreshold			= 0,
-		hideFullHoTOverheals	= true,
-		shortenNumbers			= false,
-		shortenNumberPrecision	= 0,
-		groupNumbers			= false,
+		damageThreshold					= 0,
+		healThreshold					= 0,
+		powerThreshold					= 0,
+		hideFullHoTOverheals			= true,
+		shortenNumbers					= false,
+		shortenNumberPrecision			= 0,
+		groupNumbers					= false,
 
 
 		-- Cooldown settings.
-		cooldownExclusions		= {},
-		ignoreCooldownThreshold		= {},
-		cooldownThreshold		= 5,
+		cooldownExclusions				= {},
+		ignoreCooldownThreshold			= {},
+		cooldownThreshold				= 5,
 
 
 		-- Loot settings.
-		qualityExclusions		= {
+		qualityExclusions				= {
 			[LE_ITEM_QUALITY_POOR or Enum.ItemQuality.Poor] = true,
 		},
-		alwaysShowQuestItems	= true,
-		itemsAllowed			= {},
-		itemExclusions			= {},
+		alwaysShowQuestItems			= true,
+		itemsAllowed					= {},
+		itemExclusions					= {},
 	}
 else
 	masterProfile = {
@@ -3013,18 +3051,18 @@ else
 
 
 		-- Master font settings.
-		normalFontName		= L.DEFAULT_FONT_NAME,
-		normalOutlineIndex	= 1,
-		normalFontSize		= 18,
-		normalFontAlpha		= 100,
-		critFontName		= L.DEFAULT_FONT_NAME,
-		critOutlineIndex	= 1,
-		critFontSize		= 26,
-		critFontAlpha		= 100,
+		normalFontName			= L.DEFAULT_FONT_NAME,
+		normalOutlineIndex		= 1,
+		normalFontSize			= 18,
+		normalFontAlpha			= 100,
+		critFontName			= L.DEFAULT_FONT_NAME,
+		critOutlineIndex		= 1,
+		critFontSize			= 26,
+		critFontAlpha			= 100,
 
 
 		-- Animation speed.
-		animationSpeed		= 100,
+		animationSpeed			= 100,
 
 
 		-- Partial effect settings.
@@ -3039,14 +3077,38 @@ else
 
 		-- Damage color settings.
 		physical		= { colorR = 1, colorG = 1, colorB = 1 },
-		holy			= { colorR = 1, colorG = 1, colorB = 0.627 },
-		fire			= { colorR = 1, colorG = 0.5, colorB = 0.5 },
-		nature			= { colorR = 0.5, colorG = 1, colorB = 0.5 },
-		frost			= { colorR = 0.5, colorG = 0.5, colorB = 1 },
-		shadow			= { colorR = 0.628, colorG = 0, colorB = 0.628 },
-		arcane			= { colorR = 1, colorG = 0.725, colorB = 1 },
-		frostfire		= { colorR = 0.824, colorG = 0.314, colorB = 0.471 },
-		shadowflame		= { colorR = 0.824, colorG = 0.5, colorB = 0.628 },
+		arcane			= { colorR = 0.956, colorG = 0.658, colorB = 0.894 },
+		fire			= { colorR = 0.933, colorG = 0.490, colorB = 0.501 },
+		frost			= { colorR = 0.462, colorG = 0.792, colorB = 0.929 },
+		holy			= { colorR = 0.976, colorG = 0.945, colorB = 0.631 },
+		nature			= { colorR = 0.631, colorG = 0.858, colorB = 0.396 },
+		shadow			= { colorR = 0.356, colorG = 0.290, colorB = 0.596 },
+		spellfire		= { colorR = 0.898, colorG = 0.360, colorB = 0.501 },
+		spellfrost		= { colorR = 0.321, colorG = 0.321, colorB = 0.8 },
+		divine			= { colorR = 0.956, colorG = 0.894, colorB = 0.572 },
+		astral			= { colorR = 0.737, colorG = 0.411, colorB = 0.968 },
+		spellshadow		= { colorR = 0.450, colorG = 0.215, colorB = 0.6 },
+		radiant			= { colorR = 0.937, colorG = 0.690, colorB = 0.396 },
+		holystorm		= { colorR = 0.752, colorG = 0.909, colorB = 0.545 },
+		holyfrost		= { colorR = 0.545, colorG = 0.909, colorB = 0.874 },
+		volcanic		= { colorR = 0.937, colorG = 0.545, colorB = 0.282 },
+		shadowflame		= { colorR = 0.745, colorG = 0.333, colorB = 0.529 },
+		frostfire		= { colorR = 0.262, colorG = 0.572, colorB = 0.666 },
+		froststorm		= { colorR = 0.356, colorG = 0.698, colorB = 0.556 },
+		shadowfrost		= { colorR = 0.2, colorG = 0.317, colorB = 0.607 },
+		twilight		= { colorR = 0.631, colorG = 0.349, colorB = 0.698 },
+		plague			= { colorR = 0.584, colorG = 0.8, colorB = 0.329 },
+		spellstrike		= { colorR = 0.941, colorG = 0.866, colorB = 0.929 },
+		flamestrike		= { colorR = 0.968, colorG = 0.764, colorB = 0.749 },
+		froststrike		= { colorR = 0.678, colorG = 0.858, colorB = 0.890 },
+		stormstrike		= { colorR = 0.698, colorG = 0.792, colorB = 0.8 },
+		shadowstrike	= { colorR = 0.827, colorG = 0.8, colorB = 0.949 },
+		holystrike		= { colorR = 0.968, colorG = 0.925, colorB = 0.796 },
+		elemental		= { colorR = 0.337, colorG = 0.858, colorB = 0.682 },
+		cosmic			= { colorR = 0.368, colorG = 0.627, colorB = 0.8 },
+		chromatic		= { colorR = 0.573, colorG = 0.976, colorB = 0.098 },
+		magic			= { colorR = 0.470, colorG = 0.937, colorB = 1 },
+		chaos			= { colorR = 0.247, colorG = 0.152, colorB = 0.4 },
 
 
 		-- Class color settings.
@@ -3066,47 +3128,47 @@ else
 
 
 		-- Throttle settings.
-		dotThrottleDuration	= 3,
-		hotThrottleDuration	= 3,
-		powerThrottleDuration	= 3,
+		dotThrottleDuration				= 3,
+		hotThrottleDuration				= 3,
+		powerThrottleDuration			= 3,
 		throttleList = {
 			--[SPELL_BLOOD_PRESENCE]	= 5,
-			[SPELL_DRAIN_LIFE]		= 3,
-			[SPELL_SHADOWMEND]		= 5,
+			[SPELL_DRAIN_LIFE]			= 3,
+			[SPELL_SHADOWMEND]			= 5,
 			--[SPELL_REFLECTIVE_SHIELD]	= 5,
 			[SPELL_VAMPIRIC_EMBRACE]	= 5,
-			[SPELL_VAMPIRIC_TOUCH]	= 5,
+			[SPELL_VAMPIRIC_TOUCH]		= 5,
 		},
 
 
 		-- Spam control settings.
-		mergeExclusions		= {},
-		abilitySubstitutions	= {},
-		abilitySuppressions	= {
+		mergeExclusions					= {},
+		abilitySubstitutions			= {},
+		abilitySuppressions				= {
 			[SPELL_UNDYING_RESOLVE]		= true,
 		},
-		damageThreshold		= 0,
-		healThreshold			= 0,
-		powerThreshold			= 0,
-		hideFullHoTOverheals	= true,
-		shortenNumbers			= false,
-		shortenNumberPrecision	= 0,
-		groupNumbers			= false,
+		damageThreshold					= 0,
+		healThreshold					= 0,
+		powerThreshold					= 0,
+		hideFullHoTOverheals			= true,
+		shortenNumbers					= false,
+		shortenNumberPrecision			= 0,
+		groupNumbers					= false,
 
 
 		-- Cooldown settings.
-		cooldownExclusions		= {},
-		ignoreCooldownThreshold		= {},
-		cooldownThreshold		= 5,
+		cooldownExclusions				= {},
+		ignoreCooldownThreshold			= {},
+		cooldownThreshold				= 5,
 
 
 		-- Loot settings.
-		qualityExclusions		= {
+		qualityExclusions				= {
 			[LE_ITEM_QUALITY_POOR or Enum.ItemQuality.Poor] = true,
 		},
-		alwaysShowQuestItems	= true,
-		itemsAllowed			= {},
-		itemExclusions			= {},
+		alwaysShowQuestItems			= true,
+		itemsAllowed					= {},
+		itemExclusions					= {},
 	}
 end
 
@@ -3122,8 +3184,8 @@ end
 local function ShowOptions()
 	-- Load the options module if it's not already loaded.
 	local optionsName = "MSBTOptions"
-	if (not IsAddOnLoaded(optionsName)) then
-		local loaded, failureReason = LoadAddOn(optionsName)
+	if (not C_AddOns.IsAddOnLoaded(optionsName)) then
+		local loaded, failureReason = C_AddOns.LoadAddOn(optionsName)
 
 		-- Display an error message indicating why the module wasn't loaded if it
 		-- didn't load properly.
@@ -3134,7 +3196,7 @@ local function ShowOptions()
 	end
 
 	-- Display the main frame if the options module is loaded.
-	if (IsAddOnLoaded(optionsName)) then MSBTOptions.Main.ShowMainFrame() end
+	if (C_AddOns.IsAddOnLoaded(optionsName)) then MSBTOptions.Main.ShowMainFrame() end
 end
 
 
@@ -3265,18 +3327,22 @@ local function SetupBlizzardOptions()
 	frame.name = "MikScrollingBattleText"
 
 	-- Create an option button in the center of the frame to launch MSBT's options.
-	local button = CreateFrame("Button", nil, frame, IsClassic and "OptionsButtonTemplate" or "UIPanelButtonTemplate")
+	local button = CreateFrame("Button", nil, frame, IsCataClassic and "OptionsButtonTemplate" or "UIPanelButtonTemplate")
 	button:SetSize(100, 24)
 	button:SetPoint("CENTER")
 	button:SetText(MikSBT.COMMAND)
-	button:SetScript("OnClick",
-		function (this)
-			ShowOptions()
-		end
-	)
+	button:SetScript("OnClick", function(this)
+		ShowOptions()
+	end)
 
 	-- Add the frame as a new category to Blizzard's interface options.
-	InterfaceOptions_AddCategory(frame)
+	if Settings and Settings.RegisterCanvasLayoutCategory then
+		local category = Settings.RegisterCanvasLayoutCategory(frame, frame.name)
+		category.ID = frame.name
+		Settings.RegisterAddOnCategory(category)
+	else
+		InterfaceOptions_AddCategory(frame)
+	end
 end
 
 

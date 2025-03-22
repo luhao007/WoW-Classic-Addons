@@ -1,13 +1,17 @@
-## Interface: 100206
-## Title: BankStack
+## Interface: 30404
 ## Author: Kemayo
-## Notes: From bags we came, to bank we return
 ## Version: v2024.1
-## X-Category: Inventory
-## LoadOnDemand: 0
+
+## Title: BankStack
+## Notes: From bags we came, to bank we return
+## Title-zhCN: |cFFFFE00A<|r|cFFA9D271收藏|r|cFFFFE00A>|r |cFFFFFFFF银行整理|r |cFFFFE00ABankStack|r
+
 ## OptionalDeps: Ace3, LibDBIcon-1.0, tekDebug
+## LoadOnDemand: 0
+
 ## SavedVariables: BankStackDB
 
+## X-Category: Inventory
 ## X-Website: https://www.wowace.com/projects/bank-stack
 ## X-License: All rights reserved.
 ## X-Curse-Project-ID: 13494
@@ -20,7 +24,6 @@
 # ## X-LoadOn-Events: BANKFRAME_OPENED, GUILDBANKFRAME_OPENED
 # ## X-LoadOn-BANKFRAME_OPENED: AddonLoader:LoadAddOn("BankStack"); BankStack.bank_open = true
 # ## X-LoadOn-GUILDBANKFRAME_OPENED: AddonLoader:LoadAddOn("BankStack"); BankStack.guild_bank_open = true
-
 embeds.xml
 
 local.enUS.lua

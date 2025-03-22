@@ -481,6 +481,19 @@ local ItemWithFactionBonus = {
 	end,
 }
 app.CreateItem = app.CreateClass(CLASS, KEY, itemFields,
+"AsHQT", {
+	CollectibleType = function() return "QuestsHidden" end,
+	collectible = app.CollectibleAsQuest,
+	locked = app.GlobalVariants.AndLockCriteria.locked,
+	collected = IsQuestFlaggedCompletedForObject,
+	trackable = function(t)
+		-- raw repeatable quests can't really be tracked since they immediately unflag
+		return not rawget(t, "repeatable")
+	end,
+	saved = function(t)
+		return IsQuestFlaggedCompleted(t.questID);
+	end
+}, (function(t) return t.type == "ihqt"; end),
 "WithQuest", {
 	CollectibleType = app.IsClassic and function() return "Quests" end
 	-- Retail: items tracked as HQT
@@ -559,6 +572,7 @@ local C_Item_GetItemInventoryTypeByID = C_Item.GetItemInventoryTypeByID;
 ---@class ATTItemHarvesterForRetail: GameTooltip
 local ItemHarvester = CreateFrame("GameTooltip", "ATTItemHarvester", UIParent, "GameTooltipTemplate");
 local CreateItemTooltipHarvester
+local FilterBind = app.Modules.Filter.Filters.Bind
 app.CreateItemHarvester = app.ExtendClass("Item", "ItemHarvester", "itemID", {
 	IsClassIsolated = true,
 	visible = app.ReturnTrue,
@@ -603,7 +617,7 @@ app.CreateItemHarvester = app.ExtendClass("Item", "ItemHarvester", "itemID", {
 				if info.inventoryType == 0 then
 					info.inventoryType = nil;
 				end
-				if not app.IsBoP(info) then
+				if not FilterBind(info) then
 					info.b = nil;
 				end
 				if info.iLvl and info.iLvl < 2 then

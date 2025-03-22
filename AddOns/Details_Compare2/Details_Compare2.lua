@@ -1,10 +1,15 @@
 
 do
+	local _
 	local Details = Details
+
 	if (not Details) then
 		print("Details! Not Found.")
 		return
 	end
+
+	---@type detailsframework
+	local detailsFramework = DetailsFramework
 
 	local CONST_COMPARETYPE_SPEC = 1
 	local CONST_COMPARETYPE_SEGMENT = 2
@@ -17,6 +22,41 @@ do
 	--search ~start to go to the start of the main code
 
 	local weakTable = {__mode = "v"}
+
+	local Details222 = {}
+	local GetSpellInfo = GetSpellInfo or C_Spell.GetSpellInfo
+	Details222.GetSpellInfo = GetSpellInfo
+
+	local UnitBuff = UnitBuff or C_UnitAuras.GetBuffDataByIndex
+	Details222.UnitBuff = UnitBuff
+
+	local UnitDebuff = UnitDebuff or C_UnitAuras.GetDebuffDataByIndex
+	Details222.UnitDebuff = UnitDebuff
+
+	if (DetailsFramework.IsWarWow()) then
+		Details222.GetSpellInfo = function(...)
+			local result = GetSpellInfo(...)
+			if result then
+				return result.name, 1, result.iconID
+			end
+		end
+
+		Details222.UnitBuff = function(unitToken, index, filter)
+			local auraData = C_UnitAuras.GetBuffDataByIndex(unitToken, index, filter)
+			if (not auraData) then
+				return nil
+			end
+			return AuraUtil.UnpackAuraData(auraData)
+		end
+
+		Details222.UnitDebuff = function(unitToken, index, filter)
+			local auraData = C_UnitAuras.GetDebuffDataByIndex(unitToken, index, filter)
+			if (not auraData) then
+				return nil
+			end
+			return AuraUtil.UnpackAuraData(auraData)
+		end
+	end
 
 	---@class compare : frame
 	---@field mainPlayerObject actor the actor object of the main player being compared
@@ -114,9 +154,6 @@ do
 
 	--> create a plugin object
 	local compareTwo = Details:NewPluginObject("Details_Compare2", _G.DETAILSPLUGIN_ALWAYSENABLED)
-
-	---@type detailsframework
-	local detailsFramework = DetailsFramework
 
 	--> set the description
 	compareTwo:SetPluginDescription("Replaces the default comparison window on the player breakdown.")
@@ -458,7 +495,7 @@ do
 
 			--amount of casts
 			local combatObject = Details:GetCombatFromBreakdownWindow()
-			local castAmount = combatObject:GetSpellCastAmount(playerName, GetSpellInfo(spellId))
+			local castAmount = combatObject:GetSpellCastAmount(playerName, Details222.GetSpellInfo(spellId))
 			local playerMiscObject = combatObject:GetActor(DETAILS_ATTRIBUTE_MISC, playerName)
 
 			if (castAmount > 0) then
@@ -579,7 +616,7 @@ do
 			local combatObject = Details:GetCombatFromBreakdownWindow()
 			local playerMiscObject = combatObject:GetActor(DETAILS_ATTRIBUTE_MISC, playerName)
 
-			local castAmount = combatObject:GetSpellCastAmount(playerName, GetSpellInfo(spellId))
+			local castAmount = combatObject:GetSpellCastAmount(playerName, Details222.GetSpellInfo(spellId))
 			if (castAmount > 0) then
 				tooltip.casts_label2:SetText(getPercentComparison(mainCastAmount, castAmount))
 				tooltip.casts_label3:SetText(castAmount)
@@ -1004,7 +1041,7 @@ do
 			for i = #latestLinesHighlighted, 1, -1 do
 				local line = latestLinesHighlighted [i]
 				line:SetBackdropColor(unpack(line.BackgroundColor))
-				tremove(latestLinesHighlighted, i)
+				table.remove(latestLinesHighlighted, i)
 			end
 
 			resetComparisonTooltip()
@@ -1897,11 +1934,14 @@ do
 				newComparisonFrame.titleIcon = detailsFramework:CreateTexture(newComparisonFrame)
 				newComparisonFrame.titleIcon:SetPoint("topleft", newComparisonFrame, "topleft", 0, comparisonFrameSettings.playerNameYOffset)
 
-				--player name shown above the scrolls
+				--player name or segment name shown above the scrolls
 				---@type df_label
 				newComparisonFrame.titleLabel = detailsFramework:CreateLabel(newComparisonFrame, "")
 				newComparisonFrame.titleLabel:SetPoint("left", newComparisonFrame.titleIcon, "right", 2, 0)
 				newComparisonFrame.titleLabel.fontsize = comparisonFrameSettings.playerNameSize
+
+				--combat selector dropdown
+				--todo: create a dropdown to select the combat
 
 				--grandient texture above the comparison frame
 				local gradientTitle = detailsFramework:CreateTexture(newComparisonFrame, {gradient = "vertical", fromColor = {0, 0, 0, 0.25}, toColor = "transparent"}, 1, 16, "artwork", {0, 1, 0, 1})

@@ -1,4 +1,4 @@
-## Interface: 30400
+## Interface: 30404
 
 ## Title: Details!: Vanguard (plugin)
 ## Notes: Show the health and debuffs for tanks in your group.
@@ -13,9 +13,5 @@
 ## SavedVariablesPerCharacter: _detalhes_databaseVanguard
 
 ## X-Part-Of: Details
-
-#@no-lib-strip@
-embeds.xml
-#@end-no-lib-strip@
 
 Details_Vanguard.lua

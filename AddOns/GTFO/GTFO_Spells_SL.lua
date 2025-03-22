@@ -453,6 +453,11 @@ GTFO.SpellID["342103"] = {
   sound = 1;
 };
 
+GTFO.SpellID["1223240"] = {
+  --desc = "Death Spiral (Kul'tharok)";
+  sound = 1;
+  ignoreApplication = true;
+};
 
 
 --- *********************

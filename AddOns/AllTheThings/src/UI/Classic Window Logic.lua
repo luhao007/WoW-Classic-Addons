@@ -529,19 +529,6 @@ local function StartMovingOrSizing(self)
 		end
 	end
 end
-local function SearchForMissingItemsRecursively(group, listing)
-	if group.visible then
-		if group.itemID and (group.collectible or (group.total and group.total > 0)) and not app.IsBoP(group) then
-			tinsert(listing, group);
-		end
-		if group.g and group.expanded then
-			-- Go through the sub groups and determine if any of them have a response.
-			for i, subgroup in ipairs(group.g) do
-				SearchForMissingItemsRecursively(subgroup, listing);
-			end
-		end
-	end
-end
 local function RowOnClick(self, button)
 	local reference = self.ref;
 	if reference then
@@ -575,7 +562,7 @@ local function RowOnClick(self, button)
 			local isTSMOpen = TSM_API and TSM_API.IsUIVisible("AUCTION");
 			if isTSMOpen or (AuctionFrame and AuctionFrame:IsShown()) or (AuctionHouseFrame and AuctionHouseFrame:IsShown()) then
 				local missingItems = {};
-				SearchForMissingItemsRecursively(reference, missingItems);
+				app.Search.SearchForMissingItemsRecursively(reference, missingItems);
 				local count = #missingItems;
 				if count < 1 then
 					app.print("No cached items found in search. Expand the group and view the items to cache the names and try again. Only Bind on Equip items will be found using this search.");
@@ -626,7 +613,11 @@ local function RowOnClick(self, button)
 				-- Attempt to search manually with the link.
 				local link = reference.link or reference.silentLink;
 				if link and HandleModifiedItemClick(link) then
-					AuctionFrameBrowse_Search();
+					if AuctionHouseFrame.SearchBar then
+						AuctionHouseFrame.SearchBar:StartSearch();
+					else
+						AuctionFrameBrowse_Search();
+					end
 				end
 				return true;
 			else
@@ -730,11 +721,15 @@ local function RowOnEnter(self)
 	local tooltipInfo = {};
 	tooltip:ClearLines();
 	app.ActiveRowReference = reference;
-	if self:GetCenter() > (UIParent:GetWidth() / 2) and (not AuctionFrame or not AuctionFrame:IsVisible()) then
-		tooltip:SetOwner(self, "ANCHOR_LEFT");
-	else
-		tooltip:SetOwner(self, "ANCHOR_RIGHT");
+	local anchor = self:GetParent():GetParent().TooltipAnchor;
+	if not anchor then
+		if self:GetCenter() > (UIParent:GetWidth() / 2) and (not AuctionFrame or not AuctionFrame:IsVisible()) then
+			anchor = "ANCHOR_LEFT";
+		else
+			anchor = "ANCHOR_RIGHT";
+		end
 	end
+	tooltip:SetOwner(self, anchor);
 
 	-- Attempt to show the object as a hyperlink in the tooltip
 	local linkSuccessful;
@@ -1072,7 +1067,9 @@ local function ApplySettingsForWindow(self, windowSettings)
 	if windowSettings.movable then
 		self:ClearAllPoints();
 		if windowSettings.x then
-			self:SetPoint(windowSettings.point or "CENTER", windowSettings.relativeTo or UIParent, windowSettings.relativePoint or "CENTER", windowSettings.x, windowSettings.y);
+			local relativeTo = windowSettings.relativeTo;
+			if relativeTo and not _G[relativeTo] then relativeTo = UIParent; end
+			self:SetPoint(windowSettings.point or "CENTER", relativeTo or UIParent, windowSettings.relativePoint or "CENTER", windowSettings.x, windowSettings.y);
 		else
 			self:SetPoint("CENTER", UIParent, "CENTER");
 		end
@@ -1422,7 +1419,7 @@ local BuildCategory = function(self, headers, searchResults, inst)
 	for key,value in pairs(mostAccessibleSource) do
 		inst[key] = value;
 	end
-	
+
 	local header, headerType = {}, self, nil;
 	for j,o in ipairs(searchResults) do
 		if o.parent then
@@ -2000,6 +1997,9 @@ function app:CreateWindow(suffix, settings)
 			window.Commands = commands;
 			window.HideFromSettings = settings.HideFromSettings;
 			window.SettingsName = settings.SettingsName or window.Suffix;
+		end
+		if settings.TooltipAnchor then
+			window.TooltipAnchor = settings.TooltipAnchor;
 		end
 		window.IsDynamicCategory = settings.IsDynamicCategory;
 		window.IsTopLevel = settings.IsTopLevel;

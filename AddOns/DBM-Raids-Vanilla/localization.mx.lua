@@ -181,9 +181,8 @@ L:SetMiscLocalization{
 	Phase5 	= "parece a punto de hacerse añicos!",
 	Phase6 	= "explota!",
 
-	HitsRemain	= "Golpes restantes",
-	Frost		= "Escarcha",
-	Physical	= "Daño físico"
+	FrostHitsPerSecond = "Golpes de escarcha por segundo",
+	MeleeHitsPerSecond = "Golpes cuerpo a cuerpo por segundo",
 }
 -------------
 -- Huhuran --
@@ -259,7 +258,8 @@ L:SetGeneralLocalization{
 }
 L:SetWarningLocalization{
 	WarnSubmerge		= "Ouro se sumerge",
-	WarnEmerge			= "Ouro regresa"
+	WarnEmerge			= "Ouro regresa",
+	SpecWarnEye			= "Mira hacia otro lado"
 }
 L:SetTimerLocalization{
 	TimerSubmerge		= "Sumersión",
@@ -269,7 +269,8 @@ L:SetOptionLocalization{
 	WarnSubmerge		= "Mostrar anuncio cuando Ouro se sumerja",
 	TimerSubmerge		= "Mostrar temporizador para cuando Ouro se sumerja",
 	WarnEmerge			= "Mostrar anuncio cuando Ouro regrese a la superficie",
-	TimerEmerge			= "Mostrar temporizador para cuando Ouro regrese a la superficie"
+	TimerEmerge			= "Mostrar temporizador para cuando Ouro regrese a la superficie",
+	SpecWarnEye			= "Mostrar anuncio para el ojo gigante"
 }
 
 ----------------

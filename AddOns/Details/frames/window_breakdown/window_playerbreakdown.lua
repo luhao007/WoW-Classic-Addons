@@ -9,7 +9,7 @@ local addonName, Details222 = ...
 --remove warnings in the code
 local ipairs = ipairs
 local tinsert = table.insert
-local tremove = tremove
+local tremove = table.remove
 local type = type
 local unpack = _G.unpack
 local PixelUtil = PixelUtil
@@ -68,7 +68,12 @@ function breakdownWindowFrame.ShowPluginOnBreakdown(pluginObject, button)
 		if (actorObject) then
 			local instanceObject = Details:GetInstance(1)
 			if (instanceObject) then
-				Details:OpenBreakdownWindow(instanceObject, actorObject)
+				local bFromAttributeChange = false
+				local bIsRefresh = false
+				local bIsShiftKeyDown = false
+				local bIsControlKeyDown = false
+				local bIgnoreOverrides = true
+				Details:OpenBreakdownWindow(instanceObject, actorObject, bFromAttributeChange, bIsRefresh, bIsShiftKeyDown, bIsControlKeyDown, bIgnoreOverrides)
 			end
 		end
 	end
@@ -269,7 +274,7 @@ function Details222.BreakdownWindow.RefreshPlayerScroll()
 end
 
 Details.PlayerBreakdown.RoundedCornerPreset = {
-	roundness = 6,
+	roundness = 12,
 	color = {.1, .1, .1, 0.834},
 }
 
@@ -332,6 +337,17 @@ function Details:SetWindowColor(r, g, b, a)
 	end
 end
 
+---@param self details
+---@param combatObject combat
+---@param actorName string
+---@param mainAttribute number
+---@param subAttribute number
+function Details:OpenSpecificBreakdownWindow(combatObject, actorName, mainAttribute, subAttribute)
+	local newActor = combatObject:GetActor(mainAttribute, actorName)
+	local instance = Details:GetInstance(1)
+	Details:OpenBreakdownWindow(instance, newActor, false, false, false, false, false, mainAttribute, subAttribute)
+end
+
 ---open the breakdown window
 ---@param self details
 ---@param instanceObject instance
@@ -340,9 +356,22 @@ end
 ---@param bIsRefresh boolean|nil
 ---@param bIsShiftKeyDown boolean|nil
 ---@param bIsControlKeyDown boolean|nil
-function Details:OpenBreakdownWindow(instanceObject, actorObject, bFromAttributeChange, bIsRefresh, bIsShiftKeyDown, bIsControlKeyDown)
+---@param bIgnoreOverrides boolean|nil
+---@param mainAttributeOverride number|nil
+---@param subAttributeOverride number|nil
+function Details:OpenBreakdownWindow(instanceObject, actorObject, bFromAttributeChange, bIsRefresh, bIsShiftKeyDown, bIsControlKeyDown, bIgnoreOverrides, mainAttributeOverride, subAttributeOverride)
 	---@type number, number
 	local mainAttribute, subAttribute = instanceObject:GetDisplay()
+
+	if (not bIgnoreOverrides) then
+		if (mainAttributeOverride) then
+			mainAttribute = mainAttributeOverride
+			actorObject = instanceObject:GetCombat():GetActor(mainAttributeOverride, actorObject.nome)
+		end
+		if (subAttributeOverride) then
+			subAttribute = subAttributeOverride
+		end
+	end
 
 	if (not breakdownWindowFrame.__rcorners) then
 		breakdownWindowFrame:SetBackdropColor(.1, .1, .1, 0)
@@ -353,17 +382,19 @@ function Details:OpenBreakdownWindow(instanceObject, actorObject, bFromAttribute
 
 	Details:SetWindowColor(unpack(Details.frame_background_color))
 
-	if (not Details.row_singleclick_overwrite[mainAttribute] or not Details.row_singleclick_overwrite[mainAttribute][subAttribute]) then
-		Details:CloseBreakdownWindow()
-		return
-
-	elseif (type(Details.row_singleclick_overwrite[mainAttribute][subAttribute]) == "function") then
-		if (bFromAttributeChange) then
+	if (not bIgnoreOverrides) then
+		if (not Details.row_singleclick_overwrite[mainAttribute] or not Details.row_singleclick_overwrite[mainAttribute][subAttribute]) then
 			Details:CloseBreakdownWindow()
 			return
+
+		elseif (type(Details.row_singleclick_overwrite[mainAttribute][subAttribute]) == "function") then
+			if (bFromAttributeChange) then
+				Details:CloseBreakdownWindow()
+				return
+			end
+			Details.row_singleclick_overwrite[mainAttribute][subAttribute](_, actorObject, instanceObject, bIsShiftKeyDown, bIsControlKeyDown)
+			return
 		end
-		Details.row_singleclick_overwrite[mainAttribute][subAttribute](_, actorObject, instanceObject, bIsShiftKeyDown, bIsControlKeyDown)
-		return
 	end
 
 	if (instanceObject:GetMode() == DETAILS_MODE_RAID) then
@@ -799,8 +830,12 @@ function Details:CreateBreakdownWindow()
 	breakdownWindowFrame.SummaryWindowWidgets:Hide()
 
 	local scaleBar = detailsFramework:CreateScaleBar(breakdownWindowFrame, Details.player_details_window)
-	scaleBar.label:AdjustPointsOffset(-6, 3)
+	scaleBar.label:AdjustPointsOffset(-3, 1)
+	scaleBar.label:SetTextColor{0.8902, 0.7294, 0.0157, 1}
+	scaleBar.label:SetIgnoreParentAlpha(true)
 	breakdownWindowFrame:SetScale(Details.player_details_window.scale)
+
+	--1, 0.8235, 0, 1 - text color of the label of the scale bar | plugins text color: 0.8902, 0.7294, 0.0157, 1 | 0.8902, 0.7294, 0.0157, 1
 
 	--class icon
 	breakdownWindowFrame.classIcon = breakdownWindowFrame:CreateTexture(nil, "overlay", nil, 1)
@@ -818,7 +853,7 @@ function Details:CreateBreakdownWindow()
 	--title
 	detailsFramework:NewLabel(breakdownWindowFrame, breakdownWindowFrame, nil, "titleText", Loc ["STRING_PLAYER_DETAILS"], "GameFontHighlightLeft", 12, {227/255, 186/255, 4/255})
 	breakdownWindowFrame.titleText:SetPoint("center", breakdownWindowFrame, "center")
-	breakdownWindowFrame.titleText:SetPoint("top", breakdownWindowFrame, "top", 0, -3)
+	breakdownWindowFrame.titleText:SetPoint("top", breakdownWindowFrame, "top", 0, -5)
 
 	--create the texts shown on the window
 	do
@@ -875,7 +910,7 @@ function Details:CreateBreakdownWindow()
 
 	function breakdownWindowFrame:SetStatusbarText(text, fontSize, fontColor)
 		if (not text) then
-			breakdownWindowFrame:SetStatusbarText("Details! Damage Meter | Click 'Options' button for settings.", 10, "gray")
+			breakdownWindowFrame:SetStatusbarText("An AddOn by Terciob | Part of Details! Damage Meter | Click 'Options' button for settings.", 10, "gray")
 			return
 		end
 		statusBar.Text.text = text
@@ -884,7 +919,7 @@ function Details:CreateBreakdownWindow()
 	end
 
 	local rightClickToCloseLabel = Details:CreateRightClickToCloseLabel(statusBar)
-	rightClickToCloseLabel:SetPoint("right", -332, 4)
+	rightClickToCloseLabel:SetPoint("right", -283, 3)
 
 	--set default text
 	breakdownWindowFrame:SetStatusbarText()

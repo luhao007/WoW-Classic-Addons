@@ -61,7 +61,7 @@ function BusinessInfo.Admin()
 						fujik.Faction:SetTexCoord(0.5,1,0,1);
 					end
 					fujik.Race:SetAtlas(cdmulu[dangqian][2][3]);
-					local className, classFile, classID = GetClassInfo(cdmulu[dangqian][2][4])
+					local className, classFile, classID = PIGGetClassInfo(cdmulu[dangqian][2][4])
 					fujik.Class:SetTexCoord(unpack(CLASS_ICON_TCOORDS[classFile]));
 					fujik.level:SetText("("..cdmulu[dangqian][2][5]..")");
 					local color = PIG_CLASS_COLORS[classFile];
@@ -75,7 +75,8 @@ function BusinessInfo.Admin()
 	end
 	fujiF.Admin.Scroll = CreateFrame("ScrollFrame",nil,fujiF.Admin, "FauxScrollFrameTemplate");  
 	fujiF.Admin.Scroll:SetPoint("TOPLEFT",fujiF.Admin.lineTOP,"BOTTOMLEFT",2,-2);
-	fujiF.Admin.Scroll:SetPoint("BOTTOMRIGHT",fujiF.Admin,"BOTTOMRIGHT",-20,2);
+	fujiF.Admin.Scroll:SetPoint("BOTTOMRIGHT",fujiF.Admin,"BOTTOMRIGHT",-24,2);
+	fujiF.Admin.Scroll:SetScale(0.8);
 	fujiF.Admin.Scroll:SetScript("OnVerticalScroll", function(self, offset)
 	    FauxScrollFrame_OnVerticalScroll(self, offset, hang_Height, gengxin_List)
 	end)
@@ -95,7 +96,6 @@ function BusinessInfo.Admin()
 		hang.Faction:SetPoint("LEFT", hang, "LEFT", 0,0);
 		hang.Faction:SetSize(hang_Height,hang_Height);
 		hang.Race = hang:CreateTexture();
-		hang.Race:SetTexture("Interface/Glues/CharacterCreate/CharacterCreateIcons")
 		hang.Race:SetPoint("LEFT", hang.Faction, "RIGHT", 1,0);
 		hang.Race:SetSize(hang_Height,hang_Height);
 		hang.Class = hang:CreateTexture();
@@ -164,7 +164,7 @@ function BusinessInfo.Admin()
 						fujik.Faction:SetTexCoord(0.5,1,0,1);
 					end
 					fujik.Race:SetAtlas(cdmulu[dangqian][2][3]);
-					local className, classFile, classID = GetClassInfo(cdmulu[dangqian][2][4])
+					local className, classFile, classID = PIGGetClassInfo(cdmulu[dangqian][2][4])
 					fujik.Class:SetTexCoord(unpack(CLASS_ICON_TCOORDS[classFile]));
 					fujik.level:SetText("("..cdmulu[dangqian][2][5]..")");
 					local color = PIG_CLASS_COLORS[classFile];
@@ -178,7 +178,8 @@ function BusinessInfo.Admin()
 	end
 	fujiF.Admin_Hide.Scroll = CreateFrame("ScrollFrame",nil,fujiF.Admin_Hide, "FauxScrollFrameTemplate");  
 	fujiF.Admin_Hide.Scroll:SetPoint("TOPLEFT",fujiF.Admin_Hide.lineTOP,"BOTTOMLEFT",2,-2);
-	fujiF.Admin_Hide.Scroll:SetPoint("BOTTOMRIGHT",fujiF.Admin_Hide,"BOTTOMRIGHT",-20,2);
+	fujiF.Admin_Hide.Scroll:SetPoint("BOTTOMRIGHT",fujiF.Admin_Hide,"BOTTOMRIGHT",-24,2);
+	fujiF.Admin_Hide.Scroll:SetScale(0.8);
 	fujiF.Admin_Hide.Scroll:SetScript("OnVerticalScroll", function(self, offset)
 	    FauxScrollFrame_OnVerticalScroll(self, offset, hang_Height, gengxin_List_Hide)
 	end)
@@ -198,7 +199,6 @@ function BusinessInfo.Admin()
 		hang.Faction:SetPoint("LEFT", hang, "LEFT", 0,0);
 		hang.Faction:SetSize(hang_Height,hang_Height);
 		hang.Race = hang:CreateTexture();
-		hang.Race:SetTexture("Interface/Glues/CharacterCreate/CharacterCreateIcons")
 		hang.Race:SetPoint("LEFT", hang.Faction, "RIGHT", 1,0);
 		hang.Race:SetSize(hang_Height,hang_Height);
 		hang.Class = hang:CreateTexture();
@@ -227,11 +227,15 @@ function BusinessInfo.Admin()
 	function fujiF.caozuoshuaxin(ly,name)
 		if ly=="del" then
 			PIGA["StatsInfo"]["Players"][name]=nil
-			PIGA["StatsInfo"]["Token"][name]=nil
-			PIGA["StatsInfo"]["SkillCD"][name]=nil
-			PIGA["StatsInfo"]["FubenCD"][name]=nil
-			PIGA["StatsInfo"]["Items"][name]=nil
 			PIGA["StatsInfo"]["PlayerSH"][name]=nil
+			PIGA["StatsInfo"]["FubenCD"][name]=nil
+			PIGA["StatsInfo"]["InstancesCD"][name]=nil
+			PIGA["StatsInfo"]["SkillData"][name]=nil
+			PIGA["StatsInfo"]["Times"][name]=nil
+			PIGA["StatsInfo"]["Token"][name]=nil
+			PIGA["StatsInfo"]["Items"][name]=nil
+			PIGA["StatsInfo"]["TradeData"][name]=nil
+			PIGA["StatsInfo"]["AHData"][name]=nil		
 		elseif ly=="hide" then
 			PIGA["StatsInfo"]["PlayerSH"][name]=true
 		elseif ly=="show" then

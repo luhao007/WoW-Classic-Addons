@@ -126,6 +126,8 @@ ConversionMethods.provider = function(provider, reference)
 		return ConversionMethods.creatureName(providerID, reference);
 	elseif providerType == "i" then
 		return ConversionMethods.itemNameAndIcon(providerID, reference);
+	elseif providerType == "s" then
+		return ConversionMethods.spellID(providerID, reference);
 	end
 	return UNKNOWN;
 end;
@@ -133,11 +135,16 @@ settings.InformationTypeConversionMethods = ConversionMethods;
 
 -- Class Template for creating an Information Type instance.
 local function GetValueForInformationType(t, reference)
-	return reference[t.informationTypeID];
+	local rowReference = app.ActiveRowReference
+	local informationTypeID = t.informationTypeID
+	return rowReference and rowReference[informationTypeID] or reference[informationTypeID]
 end
 local function GetRecursiveValueForInformationType(t, reference)
-	local informationTypeID = t.informationTypeID;
-	return reference[informationTypeID] or GetRelativeValue(reference, informationTypeID);
+	local rowReference = app.ActiveRowReference
+	local informationTypeID = t.informationTypeID
+	return rowReference and rowReference[informationTypeID]
+		or reference[informationTypeID]
+		or GetRelativeValue(rowReference or reference, informationTypeID)
 end
 local function ProcessInformationType(t, reference, tooltipInfo)
 	local val = t.GetValue(t, reference);
@@ -458,24 +465,15 @@ local InformationTypes = {
 	}),
 
 	-- Quest Fields
-	CreateInformationType("providers", { text = L.PROVIDERS, priority = 2.05, ShouldDisplayInExternalTooltips = false,
-		limit = 25,
+	CreateInformationType("qgs", { text = L.QUEST_GIVERS, priority = 2.05, ShouldDisplayInExternalTooltips = false,
 		Process = function(t, reference, tooltipInfo)
-			local providers = t.GetValue(t, reference);
-			if providers then
-				local limit = t.limit
-				for i,provider in ipairs(providers) do
+			local qgs = reference.qgs;
+			if qgs then
+				for i,creatureID in ipairs(qgs) do
 					tinsert(tooltipInfo, {
-						left = (i == 1 and "Provider(s)"),
-						right = ConversionMethods.provider(provider, reference),
+						left = (i == 1 and L.QUEST_GIVER),
+						right = ConversionMethods.creatureName(creatureID, reference),
 					});
-					limit = limit - 1
-					if limit <= 0 then
-						tinsert(tooltipInfo, {
-							right =  LFG_LIST_AND_MORE:format(#reference.providers - t.limit),
-						});
-						break
-					end
 				end
 			end
 		end,
@@ -591,21 +589,30 @@ local InformationTypes = {
 	CreateInformationType("maps", { text = L.MAPS, priority = 2.6,
 		Process = function(t, reference, tooltipInfo)
 			local maps = reference.maps;
-			if maps and #maps > 0 then
-				local currentMapID = app.CurrentMapID;
-				local mapNames,uniques,name = {},{},nil;
-				local rootMapID = reference.mapID;
-				if rootMapID then uniques[app.GetMapName(rootMapID) or rootMapID] = true; end
-				for i,mapID in ipairs(maps) do
-					if mapID ~= currentMapID then
-						name = app.GetMapName(mapID);
-						if name and not uniques[name] then
-							uniques[name] = true;
-							tinsert(mapNames, name);
-						end
+			if not maps or #maps == 0 then
+				local coords = reference.coords
+				if coords and #coords > 0 then
+					maps = {}
+					for _,coord in ipairs(coords) do
+						maps[#maps + 1] = coord[3]
 					end
 				end
-				if #mapNames > 0 then
+			end
+			if maps and #maps > 0 then
+				local mapNames,uniques,name = {},{},nil;
+				local rootMapID = reference.mapID;
+				local myRealMapID = app.RealMapID
+				local onMyMap = rootMapID == myRealMapID
+				if rootMapID then uniques[app.GetMapName(rootMapID) or rootMapID] = true; end
+				for i,mapID in ipairs(maps) do
+					onMyMap = onMyMap or mapID == myRealMapID
+					name = app.GetMapName(mapID);
+					if name and not uniques[name] then
+						uniques[name] = true;
+						tinsert(mapNames, name);
+					end
+				end
+				if #mapNames > 1 or (not onMyMap and #mapNames > 0) then
 					-- If there's a description and it is visible, add some visual space.
 					local description = reference.description;
 					if description and app.Settings:GetTooltipSetting("description") then
@@ -645,6 +652,19 @@ local InformationTypes = {
 			if t.GetValue(t, reference) then
 				tinsert(tooltipInfo, {
 					left = L.REQUIRES_PVP,
+					wrap = true,
+				});
+			end
+		end,
+	});
+	CreateInformationType("sr", {
+		priority = 2.7,
+		isRecursive = true,
+		text = L.SHOW_SKYRIDING_CHECKBOX,
+		Process = function(t, reference, tooltipInfo)
+			if t.GetValue(t, reference) then
+				tinsert(tooltipInfo, {
+					left = L.REQUIRES_SKYRIDING,
 					wrap = true,
 				});
 			end
@@ -764,19 +784,6 @@ local InformationTypes = {
 	}),
 
 	CreateInformationType("questID", { text = L.QUEST_ID, priority = 8 }),
-	CreateInformationType("qgs", { text = L.QUEST_GIVERS, priority = 8,
-		Process = function(t, reference, tooltipInfo)
-			local qgs = reference.qgs;
-			if qgs then
-				for i,creatureID in ipairs(qgs) do
-					tinsert(tooltipInfo, {
-						left = (i == 1 and L.QUEST_GIVER),
-						right = ConversionMethods.creatureName(creatureID, reference),
-					});
-				end
-			end
-		end,
-	}),
 	CreateInformationType("factionID", { text = L.FACTION_ID, priority = 9 }),
 
 	CreateInformationType("achievementCategoryID", { text = L.ACHIEVEMENT_CATEGORY_ID }),
@@ -801,6 +808,28 @@ local InformationTypes = {
 							left = (i == 1 and CREATURE),
 							right = ConversionMethods.creatureName(creatureID, reference),
 						});
+					end
+				end
+			end
+		end,
+	}),
+	CreateInformationType("providers", { text = L.PROVIDERS, ShouldDisplayInExternalTooltips = false,
+		limit = 25,
+		Process = function(t, reference, tooltipInfo)
+			local providers = t.GetValue(t, reference);
+			if providers then
+				local limit = t.limit
+				for i,provider in ipairs(providers) do
+					tinsert(tooltipInfo, {
+						left = (i == 1 and L.PROVIDERS),
+						right = ConversionMethods.provider(provider, reference),
+					});
+					limit = limit - 1
+					if limit <= 0 then
+						tinsert(tooltipInfo, {
+							right =  LFG_LIST_AND_MORE:format(#reference.providers - t.limit),
+						});
+						break
 					end
 				end
 			end
@@ -987,7 +1016,7 @@ local InformationTypes = {
 					tinsert(tooltipInfo, { left = L.UNSORTED_DESC, wrap = true, color = app.Colors.ChatLinkError });
 				else
 					-- removed BoE seen with a non-generic BonusID, potentially a level-scaled drop made re-obtainable
-					if reference.u == app.PhaseConstants.REMOVED_FROM_GAME and not app.IsBoP(reference) and (reference.bonusID or 3524) ~= 3524 then
+					if reference.u == app.PhaseConstants.REMOVED_FROM_GAME and not app.Modules.Filter.Filters.Bind(reference) and (reference.bonusID or 3524) ~= 3524 then
 						tinsert(tooltipInfo, { left = L.RECENTLY_MADE_OBTAINABLE });
 					end
 				end

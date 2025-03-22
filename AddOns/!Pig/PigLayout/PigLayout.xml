@@ -1,4 +1,6 @@
 <Ui>
 	<Script file="Options.lua" />
 	<Script file="ActionBar.lua" />
+	<Script file="ChatUI.lua" />
+	<Script file="TopBar.lua" />
 </Ui>

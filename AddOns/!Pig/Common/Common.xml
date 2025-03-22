@@ -2,5 +2,5 @@
 	<Script file="Options.lua" />
 	<Include file="Common\Common.xml" />
 	<Include file="Interaction\Interaction.xml" />
-	<Include file="Other\Other.xml" />
+	<Script file="Hardcore\Hardcore.lua" />
 </Ui>

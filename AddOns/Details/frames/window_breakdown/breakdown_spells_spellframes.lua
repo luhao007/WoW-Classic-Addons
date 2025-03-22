@@ -6,8 +6,8 @@ local SharedMedia = LibStub:GetLibrary("LibSharedMedia-3.0")
 local unpack = unpack
 local GetTime = GetTime
 local CreateFrame = CreateFrame
-local GetSpellLink = GetSpellLink
-local GetSpellInfo = GetSpellInfo
+local GetSpellLink = GetSpellLink or C_Spell.GetSpellLink --api local
+local GetSpellInfo = Details222.GetSpellInfo
 local _GetSpellInfo = Details.GetSpellInfo
 local GameTooltip = GameTooltip
 local IsShiftKeyDown = IsShiftKeyDown
@@ -115,21 +115,24 @@ local onEnterSpellTarget = function(targetFrame)
 	end
 
 	---@type number the top value of targets
-	local topValue = targets[1] and targets[1][2] or 0
+	local topValue = math.max(targets[1] and targets[1][2] or 0, 0.001)
 
-	local cooltip = GameCooltip
-	cooltip:Preset(2)
+	local gameCooltip = GameCooltip
+	--cooltip:Preset(2)
+	Details:FormatCooltipForSpells()
+	gameCooltip:SetOption("FixedWidth", 260)
+	gameCooltip:SetOption("YSpacingMod", -8)
 
 	for targetIndex, targetTable in ipairs(targets) do
 		local targetName = targetTable[1]
 		local value = targetTable[2]
-		cooltip:AddLine(targetIndex .. ". " .. targetName, Details:Format(value))
-		GameCooltip:AddIcon(CONST_TARGET_TEXTURE, 1, 1, 14, 14)
+		gameCooltip:AddLine(targetIndex .. ". " .. targetName, Details:Format(value))
+		gameCooltip:AddIcon(CONST_TARGET_TEXTURE, 1, 1, 20, 20)
 		Details:AddTooltipBackgroundStatusbar(false, value / topValue * 100)
 	end
 
-	cooltip:SetOwner(targetFrame)
-	cooltip:Show()
+	gameCooltip:SetOwner(targetFrame)
+	gameCooltip:Show()
 end
 
 local onLeaveSpellTarget = function(self)
@@ -172,6 +175,7 @@ local onEnterSpellBar = function(spellBar, motion) --parei aqui: precisa por nom
 	end
 
 	spellsTab.currentSpellBar = spellBar
+	Details222.FocusedSpellId = spellBar.spellId
 
     ---@type instance
     local instance = spellsTab.GetInstance()
@@ -180,7 +184,7 @@ local onEnterSpellBar = function(spellBar, motion) --parei aqui: precisa por nom
 	local combatObject = spellsTab.GetCombat()
 
 	---@type number, number
-	local mainAttribute, subAttribute = instance:GetDisplay()
+	local mainAttribute, subAttribute = Details:GetDisplayTypeFromBreakdownWindow()
 
 	---@type breakdownspellblockframe
 	local spellBlockContainer = spellsTab.GetSpellBlockFrame()
@@ -336,10 +340,15 @@ local onEnterSpellBar = function(spellBar, motion) --parei aqui: precisa por nom
 			local normalAverage = spellTable.n_total / math.max(normalHitsAmt, 0.0001)
 			blockLine3.leftText:SetText(Loc ["STRING_AVERAGE"] .. ": " .. Details:CommaValue(normalAverage))
 
-			local tempo = (elapsedTime * spellTable.n_total) / math.max(spellTable.total, 0.001)
-			local normalAveragePercent = spellBar.average / normalAverage * 100
-			local normalTempoPercent = normalAveragePercent * tempo / 100
-			blockLine3.rightText:SetText(Loc ["STRING_HPS"] .. ": " .. Details:CommaValue(spellTable.n_total / normalTempoPercent))
+            local normalHPS = 0
+            if (spellTable.n_total > 0) then
+				local tempo = (elapsedTime * spellTable.n_total) / math.max(spellTable.total, 0.001)
+				local normalAveragePercent = spellBar.average / normalAverage * 100
+				local normalTempoPercent = normalAveragePercent * tempo / 100
+				normalHPS = spellTable.n_total / normalTempoPercent
+			end
+
+            blockLine3.rightText:SetText(Loc ["STRING_HPS"] .. ": " .. Details:CommaValue(normalHPS))
 		end
 
 		---@type number
@@ -364,10 +373,15 @@ local onEnterSpellBar = function(spellBar, motion) --parei aqui: precisa por nom
 			local critAverage = spellTable.c_total / math.max(criticalHitsAmt, 0.0001)
 			blockLine3.leftText:SetText(Loc ["STRING_AVERAGE"] .. ": " .. Details:CommaValue(critAverage))
 
-			local tempo = (elapsedTime * spellTable.c_total) / math.max(spellTable.total, 0.001)
-			local critAveragePercent = spellBar.average / critAverage * 100
-			local critTempoPercent = critAveragePercent * tempo / 100
-			blockLine3.rightText:SetText(Loc ["STRING_HPS"] .. ": " .. Details:CommaValue(spellTable.c_total / critTempoPercent))
+            local critHPS = 0
+            if (spellTable.c_total > 0) then
+                local tempo = (elapsedTime * spellTable.c_total) / math.max(spellTable.total, 0.001)
+                local critAveragePercent = spellBar.average / critAverage * 100
+                local critTempoPercent = critAveragePercent * tempo / 100
+                critHPS = spellTable.c_total / critTempoPercent
+            end
+
+            blockLine3.rightText:SetText(Loc ["STRING_HPS"] .. ": " .. Details:CommaValue(critHPS))
 		end
 
 		---@type number
@@ -1083,7 +1097,13 @@ local updateSpellBar = function(spellBar, index, actorName, combatObject, scroll
 			textIndex = textIndex + 1
 
 		elseif (header.name == "uptime") then --need to get the uptime of the spell with the biggest uptime
-			text:SetText(string.format("%.1f", uptime / combatTime * 100) .. "%")
+			local uptimePercent = uptime / combatTime * 100
+			if (uptimePercent > 0) then
+				text:SetText(string.format("%.1f", uptime / combatTime * 100) .. "%")
+			else
+				text:SetText("")
+			end
+
 			spellBar:AddFrameToHeaderAlignment(text)
 			textIndex = textIndex + 1
 
@@ -1187,6 +1207,8 @@ local refreshSpellsFunc = function(scrollFrame, scrollData, offset, totalLines) 
 					if (bIsActorHeader) then
 						nameToUse = bkSpellData.actorName
 					end
+
+					
 
 					--both calls are equal but the traceback will be different in case of an error
 					if (bIsActorHeader) then
@@ -1411,7 +1433,8 @@ function spellsTab.CreateSpellScrollContainer(tabFrame) --~scroll ~create ~spell
 		---@type combat
 		local combatObject = spellsTab.GetCombat()
 		---@type number, number
-		local mainAttribute, subAttribute = spellsTab.GetInstance():GetDisplay()
+		--local mainAttribute, subAttribute = spellsTab.GetInstance():GetDisplay()
+		--local mainAttribute, subAttribute = Details:GetDisplayTypeFromBreakdownWindow()
 
 		--filling necessary information to sort the data by the selected header column
 		for i = 1, #data do

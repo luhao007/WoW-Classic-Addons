@@ -24,6 +24,15 @@ local LibDeflate = LibStub:GetLibrary("LibDeflate")
 ---@field private challengeGroup MeetingHornChallengeGroup
 local LFG = ns.Addon:NewModule('LFG', 'AceEvent-3.0', 'AceTimer-3.0', 'AceComm-3.0', 'LibCommSocket-3.0')
 
+local function isMoreThan24Hours(time1, time2)
+    if not time1 or not time2 then
+        return true
+    end
+    local differenceInSeconds = math.abs(time1 - time2)
+    local hoursDifference = differenceInSeconds / (60 * 60)
+    return hoursDifference > 24
+end
+
 function LFG:OnEnable()
     self.cooldown = ns.Addon.db.profile.cache.cooldown
     self.currentCache = ns.Addon.db.profile.cache.current
@@ -38,7 +47,8 @@ function LFG:OnEnable()
     self.welcome = {}
     self.inCity = false
     self.voiceList = {}
-    self.medalMap = {}
+    self.ServerCQGLIBNames = {}
+    C_Timer.NewTicker(60, function() self:SendServerCQGLIB() end)
     self.filters = setmetatable({}, {
         __mode = 'k',
         __index = function(t, k)
@@ -93,7 +103,7 @@ function LFG:OnEnable()
     self:RegisterServer('SBKWS')
     self:RegisterServer('SQG')
     self:RegisterServer('SQDU')
-    self:RegisterServer('SQGLI')
+    self:RegisterServer('SQGLIB')
 
     self:RegisterChallenge('SGA', 'SGETACTIVITY')
     self:RegisterChallenge('SGP', 'SACTIVITYGROUPPROGRESS')
@@ -162,7 +172,7 @@ function LFG:OnEnable()
             if value.channelName then
                 local checkBox = _G[checkBoxName .. i .. 'Check']
 
-                if ns.IsOurChannel(value.channelName) and not IsServerChannel(value.channelName) then
+                if checkBox and ns.IsOurChannel(value.channelName) and not IsServerChannel(value.channelName) then
                     BlizzardOptionsPanel_CheckButton_Disable(checkBox)
                 end
             end
@@ -238,7 +248,7 @@ function LFG:AddActivity(activity)
             end
         end
     end
-    self:SendServerCQGLI(activity:GetLeader())
+    self:InsertServerCQGLIB(activity:GetLeader())
     if not insertTo then
         tinsert(self.activities, activity)
     else
@@ -493,7 +503,7 @@ function LFG:SERVER_CONNECTED()
 
     self:SendServerCQG()
     local playerName = UnitName("player")
-    self:SendServerCQGLI(playerName)
+    self:InsertServerCQGLIB(playerName)
 
     --[=[@debug@
     print('Connected', ns.ADDON_VERSION, ns.GetPlayerItemLevel(), UnitGUID('player'), UnitLevel('player'),
@@ -509,13 +519,26 @@ function LFG:SendServerCQDU()
     self:SendServer('CQDU')
 end
 
-function LFG:SendServerCQGLI(LeaderName)
-    if ns.Addon.db.realm.starRegiment.regimentData[LeaderName] == nil or
-    ns.Addon.db.realm.starRegiment.regimentData[LeaderName].level == -1 or
-        self.medalMap[LeaderName] ~= nil then
+function LFG:InsertServerCQGLIB(LeaderName)
+    if LeaderName == nil or LeaderName == '' then
         return
     end
-    self:SendServer('CQGLI', LeaderName)
+    local playerName = LeaderName:match("^(.-)-") or LeaderName
+    local regimentData = ns.Addon.db.realm.starRegiment.regimentData[playerName]
+    if regimentData == nil or regimentData.level == -1 or not isMoreThan24Hours(regimentData.medalTime, time()) then
+        return
+    end
+    table.insert(self.ServerCQGLIBNames, playerName)
+end
+
+function LFG:SendServerCQGLIB()
+    if #self.ServerCQGLIBNames > 0 then
+    --[=[@debug@
+        print('Send CQGLIB', table.concat(self.ServerCQGLIBNames, ","))
+    --@end-debug@]=]
+        self:SendServer('CQGLIB', table.concat(self.ServerCQGLIBNames, ","))
+        self.ServerCQGLIBNames = {}
+    end
 end
 
 function LFG:SNEWVERSION(_, version, url, changelog)
@@ -1028,7 +1051,15 @@ function LFG:SUGL(_, version, data, dataLen, realmID)
             local currentLevel = info['l']
             local currentRoomID = info['c']
             local currentBgID = info['b'] or 0
-            ns.Addon.db.realm.starRegiment.regimentData[name] = {level = currentLevel, roomID = currentRoomID, bgID = currentBgID}
+            local regimentData = ns.Addon.db.realm.starRegiment.regimentData[name]
+            if regimentData then
+                regimentData.level = currentLevel
+                regimentData.roomID = currentRoomID
+                regimentData.bgID = currentBgID
+                ns.Addon.db.realm.starRegiment.regimentData[name] = regimentData
+            else
+                ns.Addon.db.realm.starRegiment.regimentData[name] = {level = currentLevel, roomID = currentRoomID, bgID = currentBgID}
+            end
         end
     end
 end
@@ -1053,15 +1084,21 @@ function LFG:SQDU(eventName, data)
     self.voiceList = data
 end
 
-function LFG:SQGLI(eventName,LeaderName, data)
-    self.medalMap[LeaderName] = data
+function LFG:SQGLIB(eventName,maps)
+    for LeaderName, data in pairs(maps) do
+        local regimentData = ns.Addon.db.realm.starRegiment.regimentData[LeaderName]
+        regimentData.medalMap = {acc_exp = data.ae, next_star_level_threshold = data.ne, medal =  data.m}
+        regimentData.medalTime = time()
+        ns.Addon.db.realm.starRegiment.regimentData[LeaderName] = regimentData
+    end
 end
 
 function LFG:GetMedalList(LeaderName)
-    if self.medalMap[LeaderName] == nil or self.medalMap[LeaderName]["medal"] == nil then
-        return  false
+    local regimentData = ns.Addon.db.realm.starRegiment.regimentData[LeaderName]
+    if regimentData == nil or regimentData.level == -1 or not regimentData.medalMap or regimentData.medalMap["medal"] == nil then
+        return false
     end
-    return self.medalMap[LeaderName]["medal"]
+    return regimentData.medalMap["medal"]
 end
 
 

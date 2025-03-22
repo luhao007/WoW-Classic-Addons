@@ -423,10 +423,10 @@ local function Equip_Save(id)
 	else
 		PIGA_Per["QuickBut"]["EquipList"][id] = {"配装"..(id-1),wupinshujuinfo}
 	end
-	PIGinfotip:TryDisplayMessage("当前装备已保存到"..(id-1).."号配装")
+	PIGTopMsg:add("当前装备已保存到"..(id-1).."号配装")
 end
 local function Equip_Use(id)
-	if InCombatLockdown() then PIGinfotip:TryDisplayMessage("战斗中无法切换") return end
+	if InCombatLockdown() then PIGTopMsg:add("战斗中无法切换") return end
 	local wupinshujuinfo =PIGA_Per["QuickBut"]["EquipList"][id]
 	if wupinshujuinfo and wupinshujuinfo[2] then
 		PIG_EquipmentData.hejilist={}
@@ -482,11 +482,11 @@ local function Equip_Use(id)
 				end
 			end
 			if #PIG_EquipmentData.konggelist<#PIG_EquipmentData.hejilist then
-				PIGinfotip:TryDisplayMessage("更换"..(id-1).."号配装失败(背包剩余空间不足)")
+				PIGTopMsg:add("更换"..(id-1).."号配装失败(背包剩余空间不足)")
 				return
 			end
 		end
-		PIGinfotip:TryDisplayMessage("更换"..(id-1).."号配装成功")
+		PIGTopMsg:add("更换"..(id-1).."号配装成功")
 		for inv = 1, 19 do
 			local zhutisolt = _G["Character"..zhuangbeixilieID[inv][3].."Slot"]
 			if ItemList[inv][1] then
@@ -497,7 +497,7 @@ local function Equip_Use(id)
 			PaperDollItemSlotButton_Update(zhutisolt)
 		end
 	else
-		PIGinfotip:TryDisplayMessage((id-1).."号配装尚未保存",1,0,0)
+		PIGTopMsg:add((id-1).."号配装尚未保存","R")
 	end
 end
 QuickButUI.EquipmentPIG={
@@ -1206,11 +1206,7 @@ local function add_AutoEquip(ManageEquip)
 	PaperDollFrame:HookScript("OnHide", function()
 		ManageEquip.F:Hide()
     end)
-    if NDui or ElvUI then
-		ManageEquip.F.EquipBut = PIGButton(ManageEquip.F);
-	else
-		ManageEquip.F.EquipBut = CreateFrame("Button",nil,ManageEquip.F, "UIPanelButtonTemplate");
-	end
+	ManageEquip.F.EquipBut = PIGButton(ManageEquip.F,nil,nil,nil,nil,nil,nil,nil,0);
 	ManageEquip.F.EquipBut:SetSize(80,24);
 	ManageEquip.F.EquipBut:SetPoint("TOPLEFT", ManageEquip.F, "TOPLEFT", 10, -16);
 	ManageEquip.F.EquipBut:SetText(EQUIPSET_EQUIP);
@@ -1218,11 +1214,7 @@ local function add_AutoEquip(ManageEquip)
 	ManageEquip.F.EquipBut:HookScript("OnClick", function (self)
 		Equip_Use(ManageEquip.xuanzhongID)
 	end);
-	if NDui or ElvUI then
-		ManageEquip.F.SaveBut = PIGButton(ManageEquip.F);
-	else
-		ManageEquip.F.SaveBut = CreateFrame("Button",nil,ManageEquip.F, "UIPanelButtonTemplate");
-	end
+	ManageEquip.F.SaveBut = PIGButton(ManageEquip.F,nil,nil,nil,nil,nil,nil,nil,0);
 	ManageEquip.F.SaveBut:SetSize(80,24);
 	ManageEquip.F.SaveBut:SetPoint("LEFT", ManageEquip.F.EquipBut, "RIGHT", 10, 0);
 	ManageEquip.F.SaveBut:SetText(SAVE);
@@ -1233,6 +1225,20 @@ local function add_AutoEquip(ManageEquip)
 	end);
 	--装备
 	local list_WW,hang_Height = 176,31
+	local function save_Equipdata(self)
+		local shangjiF=self:GetParent()
+		local eeerrr=shangjiF.E:GetText()
+		if eeerrr=="" then
+			PIGA_Per["QuickBut"]["EquipList"][shangjiF:GetID()]=nil
+		else
+			if PIGA_Per["QuickBut"]["EquipList"][shangjiF:GetID()] then
+				PIGA_Per["QuickBut"]["EquipList"][shangjiF:GetID()][1]=eeerrr
+			else
+				PIGA_Per["QuickBut"]["EquipList"][shangjiF:GetID()]={eeerrr,nil}
+			end
+		end
+ 		ManageEquip.Update_hang()
+	end
 	ManageEquip.F.EquipF = PIGFrame(ManageEquip.F);
 	ManageEquip.F.EquipF:SetSize(list_WW,anniushu*hang_Height);
 	ManageEquip.F.EquipF:SetPoint("BOTTOMLEFT", ManageEquip.F, "BOTTOMLEFT", 7, 2);
@@ -1292,13 +1298,7 @@ local function add_AutoEquip(ManageEquip)
 			ManageEquip.Update_hang()
 		end);
 		list.E:HookScript("OnEnterPressed", function(self)
-			local shangjiF=self:GetParent()
-			if PIGA_Per["QuickBut"]["EquipList"][shangjiF:GetID()] then
-				PIGA_Per["QuickBut"]["EquipList"][shangjiF:GetID()][1]=self:GetText()
-			else
-				PIGA_Per["QuickBut"]["EquipList"][shangjiF:GetID()]={shangjiF.E:GetText(),nil}
-			end
-	 		ManageEquip.Update_hang()
+	 		save_Equipdata(self)
 		end);
 		list.B = CreateFrame("Button",nil,list, "TruncatedButtonTemplate");
 		list.B:SetHighlightTexture("interface/buttons/ui-common-mousehilight.blp");
@@ -1321,7 +1321,11 @@ local function add_AutoEquip(ManageEquip)
 			shangjiF.B:Hide()
 			shangjiF.E:Show()
 			shangjiF.Q:Show()
-			shangjiF.E:SetText(shangjiF.name:GetText());
+			if shangjiF.name:GetText()==EMPTY then
+				shangjiF.E:SetText("");
+			else
+				shangjiF.E:SetText(shangjiF.name:GetText());
+			end
 		end);
 		list.Q = CreateFrame("Button",nil,list, "TruncatedButtonTemplate");
 		list.Q:SetHighlightTexture("interface/buttons/ui-common-mousehilight.blp");
@@ -1339,13 +1343,7 @@ local function add_AutoEquip(ManageEquip)
 			self.Texture:SetPoint("CENTER");
 		end);
 		list.Q:HookScript("OnClick", function (self)
-			local shangjiF=self:GetParent()
-			if PIGA_Per["QuickBut"]["EquipList"][shangjiF:GetID()] then
-				PIGA_Per["QuickBut"]["EquipList"][shangjiF:GetID()][1]=shangjiF.E:GetText()
-			else
-				PIGA_Per["QuickBut"]["EquipList"][shangjiF:GetID()]={shangjiF.E:GetText(),nil}
-			end
-			ManageEquip.Update_hang()
+			save_Equipdata(self)
 		end);
 	end
 	ManageEquip.F.EquipF:HookScript("OnShow", function(self)
@@ -1376,12 +1374,9 @@ local function add_AutoEquip(ManageEquip)
 			hang.name:SetText(EMPTY);
 			local hangitem = PIGA_Per["QuickBut"]["EquipList"][id]
 			if hangitem then
-				if hangitem[1] then
+				if hangitem[1] and hangitem[2] then
 					hang.name:SetText(hangitem[1]);
-				end
-				if hangitem[2] then
 					hang.name:SetTextColor(1, 1, 1, 1);
-					hang.name:SetText(hangitem[1]);
 				end	
 			end
 			if ManageEquip.xuanzhongID==id then
@@ -1397,6 +1392,7 @@ function FramePlusfun.Character_Shuxing()
 	if not PIGA["FramePlus"]["Character_Shuxing"] then return end
 	if tocversion<30000 then
 		if PaperDollFrame.pigBGF then return end
+		QuickButUI.ButList[5]()
 		local CharacterFW = {384,570}
 		-- SetUIPanelAttribute(CharacterFrame, "width", CharacterFW[2]);
 		-- CharacterFrame:SetAttribute("width", CharacterFW[2])
@@ -1426,7 +1422,7 @@ function FramePlusfun.Character_Shuxing()
 			end
 			PaperDollFrame.InsetR=PIGFrame(PaperDollFrame)
 		else
-			Create.ADD_BlizzardBG(PaperDollFrame.pigBGF,"PaperDollFrame_shuxingBG")
+			Create.CharacterBG(PaperDollFrame.pigBGF,"PaperDollFrame_shuxingBG")
 			PaperDollFrame.InsetL = CreateFrame("Frame",nil,PaperDollFrame,"InsetFrameTemplate")
 			CharacterModelFrame.InsetR = CreateFrame("Frame",nil,CharacterModelFrame,"InsetFrameTemplate")	
 			PaperDollFrame.InsetR = CreateFrame("Frame",nil,PaperDollFrame,"InsetFrameTemplate")		
@@ -1633,6 +1629,7 @@ function FramePlusfun.Character_Shuxing()
 		end
 		local xuyaoxttx = shuxingF.fuji.CategoryF_4.tishineir
 		shuxingF.fuji.CategoryF_4.hang_4 = add_Category_hang(shuxingF.fuji.CategoryF_4,11,xuyaoxttx..":",xuyaoxttx,{"TOP", shuxingF.fuji.CategoryF_4.hang_3,"BOTTOM",0, 0})
+		shuxingF.fuji.CategoryF_4.hang_5 = add_Category_hang(shuxingF.fuji.CategoryF_4,12,DEFENSE..":",DEFENSE,{"TOP", shuxingF.fuji.CategoryF_4.hang_4,"BOTTOM",0, 0})
 		add_Category_hangBG(shuxingF.fuji.CategoryF_4.hang_2)
 		add_Category_hangBG(shuxingF.fuji.CategoryF_4.hang_4)
 		-----------
@@ -1668,7 +1665,7 @@ function FramePlusfun.Character_Shuxing()
 		local function PaperDollFrameUP()
 			if shuxingF:IsVisible() then
 				local avgItemLevel, avgItemLevelEquipped, avgItemLevelPvP = GetAverageItemLevel();
-				shuxingF.fuji.ItemLevelFrame.Value:SetText(string.format("%.2f",avgItemLevelEquipped))
+				shuxingF.fuji.ItemLevelFrame.Value:SetText(string.format("%.2f",avgItemLevelEquipped).." / "..string.format("%.2f",avgItemLevel))
 				local HitModifierV=GetHitModifier()
 				CharacterSetText(CharacterAttackFrame,HitModifierV.."%")
 				CharacterAttackFrame.tooltip2=format(CR_HIT_MELEE_TOOLTIP, UnitLevel("player"),HitModifierV);
@@ -1715,12 +1712,12 @@ function FramePlusfun.Character_Shuxing()
 				local DodgeChanceV = GetDodgeChance()
 				CharacterSetText(shuxingF.fuji.CategoryF_4.hang_1,Round(DodgeChanceV).."%")
 				shuxingF.fuji.CategoryF_4.hang_1.tooltip2=DODGE_CHANCE..": "..Round(DodgeChanceV).."%"
-				local BlockChanceV = GetBlockChance()
-				CharacterSetText(shuxingF.fuji.CategoryF_4.hang_2,Round(BlockChanceV).."%")
-				shuxingF.fuji.CategoryF_4.hang_2.tooltip2=PARRY_CHANCE..": "..Round(BlockChanceV).."%"
 				local ParryChanceV = GetParryChance()
-				CharacterSetText(shuxingF.fuji.CategoryF_4.hang_3,Round(ParryChanceV).."%")
-				shuxingF.fuji.CategoryF_4.hang_3.tooltip2=BLOCK_CHANCE..": "..Round(ParryChanceV).."%"
+				CharacterSetText(shuxingF.fuji.CategoryF_4.hang_2,Round(ParryChanceV).."%")
+				shuxingF.fuji.CategoryF_4.hang_2.tooltip2=PARRY_CHANCE..": "..Round(ParryChanceV).."%"
+				local BlockChanceV = GetBlockChance()
+				CharacterSetText(shuxingF.fuji.CategoryF_4.hang_3,Round(BlockChanceV).."%")
+				shuxingF.fuji.CategoryF_4.hang_3.tooltip2=BLOCK_CHANCE..": "..Round(BlockChanceV).."%"
 				local base, effectiveArmor, armor, posBuff, negBuff = UnitArmor("player");
 				local playerLevel = UnitLevel("player");
 				local armorReduction = effectiveArmor/((85 * playerLevel) + 400);
@@ -1732,6 +1729,17 @@ function FramePlusfun.Character_Shuxing()
 				local armorReduction = 100 * (armorReduction/(armorReduction + 1));
 				local tooltip2txt=tooltip2txt.."\n"..format(ARMOR_TOOLTIP, playerLevel, armorReduction);
 				shuxingF.fuji.CategoryF_4.hang_4.tooltip2=tooltip2txt
+				-- local  baseDefense, armorDefense = UnitDefense("player");
+				-- print(UnitDefense("player"))
+				for skillIndex = 1, GetNumSkillLines() do
+					local skillName, isHeader, isExpanded, skillRank, numTempPoints, skillModifier,skillMaxRank, 
+					isAbandonable, stepCost, rankCost, minLevel, skillCostType,skillDescription = GetSkillLineInfo(skillIndex)
+					if not isHeader and skillName==DEFENSE then
+						CharacterSetText(shuxingF.fuji.CategoryF_4.hang_5,(skillRank+skillModifier).."/"..(skillMaxRank+skillModifier))
+						shuxingF.fuji.CategoryF_4.hang_5.tooltip2=skillDescription
+						break
+					end
+				end
 			end
 		end;
 		local function shunxu_paixie(xuhao)
@@ -1944,7 +1952,7 @@ function FramePlusfun.Character_Shuxing()
 		local kaiqiq=GetCVar("equipmentManager")
 		if kaiqiq=="0" then
 			SetCVar("equipmentManager","1")
-			PIGinfotip:TryDisplayMessage("已打开装备管理功能")
+			PIGTopMsg:add("已打开装备管理功能")
 		end
 		local function Update_SizePoint()
 			GearManagerDialog:SetSize(200, 430)

@@ -38,7 +38,7 @@ function BusinessInfo.FastOpen()
 	local function zhixingClick(self,button)
 		if button=="LeftButton" then
 			if InCombatLockdown() then
-				PIGinfotip:TryDisplayMessage(ERR_NOT_IN_COMBAT)
+				PIGTopMsg:add(ERR_NOT_IN_COMBAT)
 			else
 				local shujuy =PIGA["AutoSellBuy"][gongnengNameE.."_List"]
 				if #shujuy>0 then
@@ -50,16 +50,16 @@ function BusinessInfo.FastOpen()
 								for k=1,#shujuy do
 									if itemID==shujuy[k][1] then
 										local itemLink = GetContainerItemLink(bag, slot);
-										self:SetAttribute("item", itemLink)
+										self:SetAttribute("item1", itemLink)
 										return
 									end
 								end
 							end
 						end
 					end
-					PIGinfotip:TryDisplayMessage("没有需"..OpenData[1].."物品")
+					PIGTopMsg:add("没有需"..OpenData[1].."物品")
 				else
-					PIGinfotip:TryDisplayMessage(OpenData[1].."目录为空,"..KEY_BUTTON2.."设置")
+					PIGTopMsg:add(OpenData[1].."目录为空,"..KEY_BUTTON2.."设置")
 				end	
 			end
 		end
@@ -68,12 +68,12 @@ function BusinessInfo.FastOpen()
 		zhixingClick(self,button)
 	end);
 	--宏-----
-	if tocversion<50000 then
+	if tocversion>20000 and tocversion<50000 then
 		fujiF.fuzhiCDM = PIGButton(fujiF,{"TOPLEFT",fujiF,"TOPLEFT",160,-10},{100,20},CALENDAR_CREATE..OpenData[1]..MACRO);
 		fujiF.fuzhiCDM:HookScript("OnClick",  function (self)
 			local macroSlot = GetMacroIndexByName(hongName)
 			if macroSlot>0 then
-				PIGinfotip:TryDisplayMessage(OpenData[1]..MACRO.."已存在");
+				PIGTopMsg:add(OpenData[1]..MACRO.."已存在");
 			else
 				StaticPopup_Show("AUTOSELLBUY_"..OpenData[1]);
 			end	
@@ -87,9 +87,9 @@ function BusinessInfo.FastOpen()
 				local global, perChar = GetNumMacros()
 				if global<120 then
 					CreateMacro(hongName, OpenData[2], hongNR, nil)
-					PIGinfotip:TryDisplayMessage("已"..CALENDAR_CREATE..OpenData[1]..MACRO);
+					PIGTopMsg:add("已"..CALENDAR_CREATE..OpenData[1]..MACRO);
 				else
-					PIGinfotip:TryDisplayMessage(L["LIB_MACROERR"]);
+					PIGTopMsg:add(L["LIB_MACROERR"]);
 					return
 				end
 			end,

@@ -1,4 +1,4 @@
-## Interface: 30400
+## Interface: 30404
 ## Author: 露露緹婭@Bilibili
 
 ## Title: |cffff559a露露语音·Rurutia|r

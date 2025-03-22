@@ -1,4 +1,4 @@
-## Interface: 30400
+## Interface: 30404
 
 ## Title: |cffffe00a<|r|cffff7d0aDBM|r|cffffe00a>|r |cff69ccf0World Bosses (Vanilla)|r
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFF69CCF0户外|r |cFF22B14C艾泽拉斯（经典旧世）|r
@@ -31,6 +31,8 @@
 ## X-DBM-Mod-MinCoreRevision: 12473
 ## X-DBM-Mod-MinExpansion: 0
 ## X-Part-Of: DBM-Core
+
+locale.generated.lua
 
 localization.en.lua
 localization.de.lua

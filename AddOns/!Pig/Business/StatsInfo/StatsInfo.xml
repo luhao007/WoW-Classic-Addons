@@ -3,6 +3,7 @@
 	<Script file="UI.lua" />
 	<Script file="FBCD.lua" />
 	<Script file="SkillCD.lua" />
+	<Script file="Time.lua" />
 	<Script file="Token.lua" />
 	<Script file="Item.lua" />
 	<Script file="Trade.lua" />

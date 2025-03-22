@@ -1,4 +1,4 @@
-## Interface: 30400
+## Interface: 30404
 ## Author: MysticalOS
 
 ## Title: |cffffe00a<|r|cffff7d0aDBM Mod|r|cffffe00a>|r |cffc030c0Dungeons (Vanilla)|r
@@ -40,6 +40,8 @@
 ## X-DBM-Mod-MinCoreRevision: 12473
 ## X-DBM-Mod-MinExpansion: 0
 ## X-Part-Of: DBM-Core
+
+locale.generated.lua
 
 Classic\localization.en.lua
 Classic\localization.de.lua

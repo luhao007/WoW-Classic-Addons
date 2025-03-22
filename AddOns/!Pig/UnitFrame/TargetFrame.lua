@@ -15,19 +15,19 @@ local function zhiyetubiao_Click(unit,button)
 		--3 = Duel, 决斗，7 码
 		--4 = Follow, 跟随，28 码
 		--5 = Pet-battle Duel,宠物战斗决斗，7 码
-		local inRange = CheckInteractDistance(unit, 1)
-		if inRange then
-			if button=="LeftButton" then
+		if button=="LeftButton" then
+			local inRange = CheckInteractDistance(unit, 1)
+			if inRange then
 				if tocversion<50000 then
 					InspectUnit(unit); --10.0会造成天赋配置无法复制
 				end
-			elseif button=="RightButton" then
-				InitiateTrade(unit);
+			else
+				local cName=GetUnitName(unit, true)
+				FasongYCqingqiu(cName)
 			end
-		else
-			local cName=GetUnitName(unit, true)
-			FasongYCqingqiu(cName)
-		end
+		elseif button=="RightButton" then
+			InitiateTrade(unit);
+		end	
 	end
 end
 UnitFramefun.zhiyetubiao_Click=zhiyetubiao_Click
@@ -187,7 +187,6 @@ function UnitFramefun.Mubiao()
 	--目标仇恨百分比
 	if PIGA["UnitFrame"]["TargetFrame"]["Chouhen"] then
 		if TargetFrame.threatNumericIndicator then
-			SetCVar("threatShowNumeric", "1")
 			TargetFrame:HookScript("OnEvent", function (self,event,arg1)
 				if event=="PLAYER_ENTERING_WORLD" or event=="PLAYER_TARGET_CHANGED" or event=="UNIT_THREAT_LIST_UPDATE" or event=="UNIT_THREAT_SITUATION_UPDATE" then
 					if tocversion<100000 then

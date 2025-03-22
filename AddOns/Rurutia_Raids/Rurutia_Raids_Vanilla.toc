@@ -1,0 +1,13 @@
+## Interface: 30404
+## Author: 露露緹婭@Bilibili
+## Version: 1.0.2
+
+## Title: |cffff559a露|r|cfff049b9露|r|cffde49d6的|r|cffc349eb副|r|cffb153f0本|r|cff9967f5语|r|cff827bf7音|r|cff6a90f9·|r|cff54a4fb经|r|cff3abdfc典|r|cff27cefc旧|r|cff14e0fd世|r
+## Notes: 露露的副本语音包，此项为露露的语音WA正常工作所必须的语音文件。|n语音录制：|cffff559a露露緹婭@Bilibili|r，抖音：|cffff559a露露缇娅|r，斗鱼9593311。
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF露露缇娅语音包-团本|r |cFFFFE00ARurutia_Raids|r
+
+## IconTexture: Interface\AddOns\Rurutia_Raids\Rurutia_Logo_64R.tga
+
+## DefaultState: enabled
+
+

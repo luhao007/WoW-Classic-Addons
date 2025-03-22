@@ -5,10 +5,6 @@ do
 	local Details = 	_G.Details
 	local addonName, Details222 = ...
 	local setmetatable = setmetatable
-	-------- container que armazena o cache de pets
-		Details.container_pets = {}
-		Details.container_pets.__index = Details.container_pets
-		setmetatable(Details.container_pets, Details)
 
 	-------- time machine controla o tempo em combate dos jogadores
 		Details.timeMachine = {}
@@ -278,6 +274,10 @@ do
 	--if (toc < 100200) then
 		Details.GetFullName = Details.GetCLName
 	--end
+
+	function Details:IsValidActor(actor)
+		return actor and actor.classe and actor.nome and actor.flag_original and true
+	end
 
 	function Details:Class(actor)
 		return self.classe or actor and actor.classe

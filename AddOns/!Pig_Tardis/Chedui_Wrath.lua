@@ -113,7 +113,6 @@ function TardisInfo.Chedui(Activate)
 	for i=1,#cl_Name do
 		table.insert(zhiyename,cl_Name[i][1])
 	end
-	local InviteUnit=InviteUnit or C_PartyInfo and C_PartyInfo.InviteUnit
 	local GnName,GnUI,GnIcon,FrameLevel = unpack(TardisInfo.uidata)
 	local InvF=_G[GnUI]
 	local hang_Height,hang_NUM=InvF.hang_Height,InvF.hang_NUM

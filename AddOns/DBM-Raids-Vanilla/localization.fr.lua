@@ -99,7 +99,7 @@ L:SetOptionLocalization{
 L = DBM:GetModLocalization("AQ20Trash")
 
 L:SetGeneralLocalization{
-	name = "AQ20: Ennemis communs"
+	name = "AQ20 : Ennemis communs"
 }
 L:SetTimerLocalization{
 	TimerExplosion = "Fantômes explosifs"
@@ -169,8 +169,8 @@ L:SetWarningLocalization{
 	WarnShatter	= "Briser : %d/3"
 }
 L:SetOptionLocalization{
-	WarnFreeze	= "Afficher une annonce pour l'état de Gel",
-	WarnShatter	= "Afficher une annonce pour l'état de Briser"
+	WarnFreeze	= "Afficher une annonce pour le Gel",
+	WarnShatter	= "Afficher une annonce pour le Bris"
 }
 L:SetMiscLocalization{
 	Slow	= "commence à ralentir !",
@@ -180,9 +180,8 @@ L:SetMiscLocalization{
 	Phase5 	= "semble prêt à se briser !",
 	Phase6 	= "explose !",
 
-	HitsRemain	= "Touche restante",
-	Frost		= "Givre",
-	Physical	= "Physique"
+	FrostHitsPerSecond = "Coups de givre par seconde",
+	MeleeHitsPerSecond = "Coups au corps à corps par seconde",
 }
 -------------
 -- Huhuran --
@@ -256,18 +255,20 @@ L:SetGeneralLocalization{
 	name = "Ouro"
 }
 L:SetWarningLocalization{
-	WarnSubmerge		= "Submerger",
-	WarnEmerge			= "Émerger"
+	WarnSubmerge		= "Ouro a submergé",
+	WarnEmerge			= "Ouro a émergé",
+	SpecWarnEye			= "Détournez le regard"
 }
 L:SetTimerLocalization{
-	TimerSubmerge		= "Submerger",
-	TimerEmerge			= "Émerger"
+	TimerSubmerge		= "Submersion",
+	TimerEmerge			= "Émersion"
 }
 L:SetOptionLocalization{
-	WarnSubmerge		= "Afficher une annonce pour submerger",
-	TimerSubmerge		= "Afficher un chronomètre pour submerger",
-	WarnEmerge			= "Afficher une annonce pour émerger",
-	TimerEmerge			= "Afficher un chronomètre pour émerger"
+	WarnSubmerge		= "Afficher une annonce pour la submersion d'Ouro",
+	TimerSubmerge		= "Afficher un chronomètre pour la submersion d'Ouro",
+	WarnEmerge			= "Afficher une annonce pour l'émersion d'Ouro",
+	TimerEmerge			= "Afficher un chronomètre pour l'émersion d'Ouro",
+	SpecWarnEye			= "Afficher une annonce pour l'œil géant"
 }
 
 ----------------
@@ -276,7 +277,7 @@ L:SetOptionLocalization{
 L = DBM:GetModLocalization("AQ40Trash")
 
 L:SetGeneralLocalization{
-	name = "AQ40: Ennemis communs"
+	name = "AQ40 : Ennemis communs"
 }
 L:SetTimerLocalization{
 	TimerExplosion = "Fantômes explosifs"
@@ -761,7 +762,7 @@ L:SetWarningLocalization{
 L = DBM:GetModLocalization("MCTrash")
 
 L:SetGeneralLocalization{
-	name = "CM: Ennemis communs"
+	name = "CM : Ennemis communs"
 }
 
 --------------
@@ -1347,7 +1348,7 @@ L:SetOptionLocalization({
 L = DBM:GetModLocalization("STTrashSoD")
 
 L:SetGeneralLocalization{
-	name = "Ennemis communs du Temple englouti"
+	name = "Temple englouti : Ennemis communs"
 }
 
 ---------------------------

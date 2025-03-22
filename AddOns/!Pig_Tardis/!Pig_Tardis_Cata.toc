@@ -1,6 +1,6 @@
-## Interface: 30400
+## Interface: 30404
 ## Author: geligasi
-## Version: 1.33
+## Version: 1.44
 
 ## Title: !Pig_Tardis
 ## Notes: Invite enhancement
@@ -23,6 +23,7 @@
 Default.lua
 Options.lua
 UI.lua
+Farm.lua
 Chedui_Wrath.lua
 Houche.lua
 Plane.lua

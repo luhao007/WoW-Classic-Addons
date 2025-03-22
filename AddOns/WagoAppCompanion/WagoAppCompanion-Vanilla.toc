@@ -1,4 +1,4 @@
-## Interface: 30400
+## Interface: 30404
 ## Author: The Wago team
 ## Version: 1.0.0
 

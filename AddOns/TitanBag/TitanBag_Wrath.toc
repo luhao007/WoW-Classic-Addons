@@ -1,4 +1,4 @@
-## Interface: 30400
+## Interface: 30404
 ## Author: Titan Panel Development Team (http://www.titanpanel.org)
 ## Version: 8.0.12
 

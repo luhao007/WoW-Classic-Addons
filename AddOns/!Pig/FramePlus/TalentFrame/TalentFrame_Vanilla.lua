@@ -88,7 +88,7 @@ local function TalentFrame_Update_Pig(TFID)
 	local talentFrameName = "PlayerTalentFrame"..TFID;
 	local fujik = _G["PlayerTalentFrame"..TFID]
 	local selectedTab = TFID
-	local preview = GetCVarBool("previewTalents");
+	local preview = GetCVarBool("previewTalentsOption");
 
 	local isActiveTalentGroup;
 	if ( TalentFrame.inspect ) then
@@ -150,7 +150,7 @@ local function TalentFrame_Update_Pig(TFID)
 		local buttonName = talentFrameTalentName..i;
 		local button = _G[buttonName];
 		if ( i <= numTalents ) then
-			local name, iconTexture, tier, column, rank, maxRank, isExceptional, meetsPrereq, previewRank, meetsPreviewPrereq =
+			local talentName, iconTexture, tier, column, rank, maxRank, meetsPrereq, previewRank, meetsPreviewPrereq, isExceptional =
 				GetTalentInfo(selectedTab, i, TalentFrame.inspect, TalentFrame.pet, TalentFrame.talentGroup);
 			if ( name ) then
 				local displayRank;
@@ -183,7 +183,6 @@ local function TalentFrame_Update_Pig(TFID)
 				GetTalentPrereqs(selectedTab, i, TalentFrame.inspect, TalentFrame.pet, TalentFrame.talentGroup));
 			if ( prereqsSet and ((preview and meetsPreviewPrereq) or (not preview and meetsPrereq)) ) then
 				SetItemButtonDesaturated(button, nil);
-
 				if ( displayRank < maxRank ) then
 					_G[buttonName.."Slot"]:SetVertexColor(0.1, 1.0, 0.1);
 					_G[buttonName.."Rank"]:SetTextColor(GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
@@ -306,7 +305,10 @@ local function TalentFrame_ADD()
 		local unspentPoints = talentPoints - GetGroupPreviewTalentPointsSpent(TalentFrame.pet, TalentFrame.talentGroup);
 		PlayerTalentFrame.shengyuV:SetText(unspentPoints);
 	end)
-
+	hooksecurefunc("PlayerTalentFrame_Update", function(TalentFrame)
+		local activeTalentGroup, numTalentGroups = GetActiveTalentGroup(false, PlayerTalentFrame.pet), GetNumTalentGroups(false, PlayerTalentFrame.pet);
+        PlayerTalentFrame_UpdateControls(activeTalentGroup, numTalentGroups)
+	end)
 	local old_TalentFrame_Update=TalentFrame_Update
 	TalentFrame_Update=function(self)
 		if self==PlayerTalentFrame then
@@ -483,7 +485,7 @@ local function TalentFrame_ADD()
 			local function PlayerTalentFrameTalent_OnEvent_pig(self, event, ...)
 				if ( GameTooltip:IsOwned(self) ) then
 					GameTooltip:SetTalent(tfID, self:GetID(),
-						PlayerTalentFrame.inspect, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup, GetCVarBool("previewTalents"));
+						PlayerTalentFrame.inspect, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup, GetCVarBool("previewTalentsOption"));
 				end
 			end
 			TalentBut:SetScript("OnEvent", PlayerTalentFrameTalent_OnEvent_pig);
@@ -492,20 +494,20 @@ local function TalentFrame_ADD()
 				PlayerTalentFrame.selectedTab=tfID
 				if ( IsModifiedClick("CHATLINK") ) then
 					local link = GetTalentLink(tfID, self:GetID(),
-						PlayerTalentFrame.inspect, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup, GetCVarBool("previewTalents"));
+						PlayerTalentFrame.inspect, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup, GetCVarBool("previewTalentsOption"));
 					if ( link ) then
 						ChatEdit_InsertLink(link);
 					end
 				--elseif ( selectedSpec and (activeSpec == selectedSpec or specs[selectedSpec].pet) ) then
 				else
 					if ( button == "LeftButton" ) then
-						if ( GetCVarBool("previewTalents") ) then
+						if ( GetCVarBool("previewTalentsOption") ) then
 							AddPreviewTalentPoints(tfID, self:GetID(), 1, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup);
 						else
 							LearnTalent(tfID, self:GetID(), PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup);
 						end
 					elseif ( button == "RightButton" ) then
-						if ( GetCVarBool("previewTalents") ) then
+						if ( GetCVarBool("previewTalentsOption") ) then
 							AddPreviewTalentPoints(tfID, self:GetID(), -1, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup);
 						end
 					end
@@ -515,7 +517,7 @@ local function TalentFrame_ADD()
 			local function PlayerTalentFrameTalent_OnEnter_pig(self)
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 				GameTooltip:SetTalent(tfID, self:GetID(),
-					PlayerTalentFrame.inspect, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup, GetCVarBool("previewTalents"));
+					PlayerTalentFrame.inspect, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup, GetCVarBool("previewTalentsOption"));
 				self.UpdateTooltip = PlayerTalentFrameTalent_OnEnter_pig;
 			end
 			TalentBut:SetScript("OnEnter", PlayerTalentFrameTalent_OnEnter_pig);
@@ -542,15 +544,18 @@ local function TalentFrame_ADD()
 	end
 	---
 	PlayerTalentFrame.yulanTF=PIGCheckbutton(PlayerTalentFrame,{"TOPLEFT",PlayerTalentFrame,"TOPLEFT",75,-18},{"模拟模式","点击天赋时可先模拟，确定后再学习模拟结果"},nil,nil,nil,0)
-    local yulankaiqi = GetCVar("previewTalents")
-    if yulankaiqi=="1" then PlayerTalentFrame.yulanTF:SetChecked(true) end
     PlayerTalentFrame.yulanTF:SetScript("OnClick", function (self)
         if self:GetChecked() then
-            SetCVar("previewTalents","1")
+            SetCVar("previewTalentsOption","1")
         else
-            SetCVar("previewTalents","0")
+            SetCVar("previewTalentsOption","0")
         end
-        InterfaceOptionsDisplayPanelPreviewTalentChanges_SetFunc()
+        local activeTalentGroup, numTalentGroups = GetActiveTalentGroup(false, PlayerTalentFrame.pet), GetNumTalentGroups(false, PlayerTalentFrame.pet);
+        PlayerTalentFrame_UpdateControls(activeTalentGroup, numTalentGroups)
+    end);
+    PlayerTalentFrame.yulanTF:SetScript("OnShow", function (self)
+        local yulankaiqi = GetCVar("previewTalentsOption")
+    	if yulankaiqi=="1" then self:SetChecked(true) end
     end);
 end
 if tocversion<20000 then

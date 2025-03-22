@@ -3,6 +3,10 @@ local _, _, Fun, _, Default, Default_Per= unpack(PIG)
 local extDefault ={
 	["Open"] = true,
 	["AddBut"] = true,
+	["Farm"]={
+		["Open"] = true,
+		["DaojishiCD"]=0,
+	},
 	["Houche"]={
 		["Open"] = true,
 		["AutoInvite"]=true,

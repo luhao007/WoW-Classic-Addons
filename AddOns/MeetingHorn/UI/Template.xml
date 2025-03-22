@@ -627,9 +627,9 @@
                 </Texture>
             </Layer>
         </Layers>
-        <HighlightTexture setAllPoints="true">
-            <Color r="0.588" g="0.588" b="0.588" a="0.05"/>
-        </HighlightTexture>
+<!--        <HighlightTexture setAllPoints="true">-->
+<!--            <Color r="0.588" g="0.588" b="0.588" a="0.05"/>-->
+<!--        </HighlightTexture>-->
     </Frame>
     <Frame name="MeetingHornNoticeActivityTemplete" parentArray="notices" virtual="true">
         <Anchors>

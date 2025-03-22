@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("MorphazandHazzasSoD", "DBM-Raids-Vanilla", 8)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20241103123604")
+mod:SetRevision("20250119115238")
 mod:SetCreatureID(221942, 221943)--Morphaz, Hazzas
 mod:SetEncounterID(2958)
 mod:SetBossHPInfoToHighest()
@@ -69,7 +69,7 @@ function mod:OnCombatStart(delay)
 	--One will be at 6.1-6.2 and other at 7.7-7.8
 --	timerBackfireCD:Start(6.2-delay, 1)
 --	timerDreamersLamentCD:Start(6.2-delay, 1)
-	timerCorruptedBreathCD:Start(10.6-delay)
+	timerCorruptedBreathCD:Start(9.7-delay)
 	self:SetStage(1)
 end
 

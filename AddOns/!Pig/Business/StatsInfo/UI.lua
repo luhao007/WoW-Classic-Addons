@@ -17,12 +17,10 @@ local Width,Height,biaotiH  = 860, 530, 21;
 local function Get_renwuInfo(infoUI)
 	infoUI.allname = Pig_OptionsUI.AllName
 	local englishFaction= UnitFactionGroup("player")--阵营"Alliance"/"Horde"
-	local _, raceFile, raceID = UnitRace("player")
-	local _, classId = UnitClassBase("player")
-	local level = UnitLevel("player")
 	local gender = UnitSex("player")
-	local race_icon = PIGGetRaceAtlas(raceFile,gender)
-	PIGA["StatsInfo"]["Players"][infoUI.allname]={englishFaction,raceID,race_icon,classId,level}
+	local race_icon = PIGGetRaceAtlas(Pig_OptionsUI.RaceData.raceFile,gender)
+	local level = UnitLevel("player")
+	PIGA["StatsInfo"]["Players"][infoUI.allname]={englishFaction,Pig_OptionsUI.RaceData.raceId,race_icon,Pig_OptionsUI.ClassData.classId,level}
 end
 --===========================
 function BusinessInfo.StatsInfo_ADDUI()
@@ -33,13 +31,14 @@ function BusinessInfo.StatsInfo_ADDUI()
 	StatsInfo:PIGSetBackdrop()
 	StatsInfo:PIGClose()
 	StatsInfo:PIGSetMovable()
-	StatsInfo.butW=50
+	StatsInfo.butW=46
 	StatsInfo.title = PIGFontString(StatsInfo,{"TOP", StatsInfo, "TOP", 0, -3},GnName)
 	PIGLine(StatsInfo,"TOP",-biaotiH)
 	StatsInfo.F=PIGOptionsList_RF(StatsInfo,biaotiH,"Left")
 	Get_renwuInfo(StatsInfo)
 	BusinessInfo.FBCD()
 	BusinessInfo.SkillCD()
+	BusinessInfo.Time()
 	BusinessInfo.Token()
 	BusinessInfo.Item()
 	BusinessInfo.Trade()

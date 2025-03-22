@@ -1088,6 +1088,56 @@ GTFO.SpellID["262377"] = {
   tankSound = 0;
 };
 
+GTFO.SpellID["257371"] = {
+  --desc = "Tear Gas (Mechanized Peacekeeper)";
+  applicationOnly = true;
+  sound = 3;
+};
+
+GTFO.SpellID["1217296"] = {
+  --desc = "Shocking Claw (Coin-Operated Crowd Pummeler)";
+  sound = 3;
+  applicationOnly = true;
+};
+
+GTFO.SpellID["473198"] = {
+  --desc = "Azerite Eruption (Azerite Extractor)";
+  sound = 3;
+};
+
+GTFO.SpellID["1214754"] = {
+  --desc = "Massive Slam (Taskmaster Askari)";
+  sound = 3;
+};
+
+GTFO.SpellID["275907"] = {
+  --desc = "Tectonic Smash (Azerokk)";
+  sound = 3;
+};
+
+GTFO.SpellID["1214748"] = {
+  --desc = "Brainstorm (Venture Co. Mastermind)";
+  applicationOnly = true;
+  sound = 3;
+};
+
+GTFO.SpellID["271432"] = {
+  --desc = "Test Missile";
+  sound = 3;
+};
+
+GTFO.SpellID["270277"] = {
+  --desc = "Big Red Rocket (Mogul Razdunk)";
+  sound = 3;
+  applicationOnly = true;
+};
+
+GTFO.SpellID["276234"] = {
+  --desc = "Micro Missiles (B.O.O.M.B.A.)";
+  sound = 3;
+};
+
+
 -- **************
 -- * Atal'Dazar *
 -- **************
@@ -1809,6 +1859,30 @@ GTFO.SpellID["293861"] = {
   --desc = "Anti-Personnel Squirrel (Anti-Personnel Squirrel)";
   sound = 3;
 };
+
+GTFO.SpellID["282943"] = {
+  --desc = "Piston Smasher (Piston Smasher)";
+  sound = 3;
+};
+
+GTFO.SpellID["1215065"] = {
+  --desc = "Platinum Pummel (The Platinum Pummeler)";
+  sound = 3;
+  tankSound = 0;
+};
+
+GTFO.SpellID["293986"] = {
+  --desc = "Sonic Pulse (Blastatron X-80)";
+  sound = 3;
+  applicationOnly = true;
+};
+
+GTFO.SpellID["294869"] = {
+  --desc = "Roaring Flame (Inconspicuous Plant)";
+  sound = 3;
+};
+
+
 
 -- **********************
 -- * The Eternal Palace *

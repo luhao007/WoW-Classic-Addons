@@ -28,6 +28,7 @@ local Things = {
 	"Titles",
 	"Toys",
 	"Transmog",
+	--"WarbandScenes",
 }
 local GeneralSettingsBase = {
 	__index = {
@@ -76,9 +77,11 @@ local GeneralSettingsBase = {
 		["Thing:Recipes"] = true,
 		["Thing:Reputations"] = true,
 		["Thing:RuneforgeLegendaries"] = app.GameBuildVersion >= 90000,
+		["Thing:Skyriding"] = app.GameBuildVersion >= 100000,
 		["Thing:Titles"] = true,
 		["Thing:Toys"] = true,
 		["Thing:Transmog"] = app.GameBuildVersion >= 40000,
+		--["Thing:WarbandScenes"] = app.GameBuildVersion >= 110100,
 		["DeathTracker"] = app.GameBuildVersion < 40000,
 		["Only:RWP"] = app.GameBuildVersion < 40000,
 		["Skip:AutoRefresh"] = false,
@@ -86,6 +89,7 @@ local GeneralSettingsBase = {
 		["Show:CollectedThings"] = false,
 		["Show:OnlyActiveEvents"] = true,
 		["Show:PetBattles"] = true,
+		["Show:Skyriding"] = true,
 		["Show:UnavailablePersonalLoot"] = true,
 		["Hide:PvP"] = false,
 		["Dynamic:Style"] = 1,
@@ -202,6 +206,7 @@ local TooltipSettingsBase = {
 		["rwp"] = true,
 		["pvp"] = true,
 		["pb"] = true,
+		["sr"] = true,
 		["c"] = true,
 		["r"] = true,
 		["u"] = true,
@@ -1391,6 +1396,11 @@ settings.UpdateMode = function(self, doRefresh)
 		filterSet.PetBattles()
 	else
 		filterSet.PetBattles(true)
+	end
+	if self:Get("Show:Skyriding") then
+		filterSet.Skyriding()
+	else
+		filterSet.Skyriding(true)
 	end
 
 	if self:Get("Show:UnavailablePersonalLoot") then

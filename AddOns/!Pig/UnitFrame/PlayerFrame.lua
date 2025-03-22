@@ -5,33 +5,49 @@ local PIGFontString=Create.PIGFontString
 ---
 local UnitFramefun=addonTable.UnitFramefun
 -------------
-local function HpMp_Update()
-	if not PIGA["UnitFrame"]["PlayerFrame"]["HPFF"] then return end
-	local HP = UnitHealth("player");	
-	local HPmax = UnitHealthMax("player");
-	PlayerFrame.ziji.HP:SetText(HP..'/'..HPmax);
-	if HPmax>0 then
-		PlayerFrame.ziji.Baifenbi:SetText(math.floor(((HP/HPmax)*100)).."%");
+local floor=math.floor
+local function Update_Hp()
+	if PlayerFrame.ziji then
+		local HP = UnitHealth("player");	
+		local HPmax = UnitHealthMax("player");
+		PlayerFrame.ziji.HP:SetText(HP..'/'..HPmax);
+		if HPmax>0 then
+			PlayerFrame.ziji.Baifenbi:SetText(floor(((HP/HPmax)*100)).."%");
+		end
 	end
-	local MP = UnitPower("player");	
-	local MPmax = UnitPowerMax("player");
-	PlayerFrame.ziji.MP:SetText(MP..'/'..MPmax);
 end
-local function HpMp_Update_W()
-	if not PIGA["UnitFrame"]["PlayerFrame"]["HPFF"] then return end
-	if UnitHealthMax("player")>99999 or UnitPowerMax("player")>99999 then
-		PlayerFrame.ziji:SetWidth(120);
-	elseif UnitHealthMax("player")>9999 or UnitPowerMax("player")>9999 then
-		PlayerFrame.ziji:SetWidth(100);
-	elseif UnitHealthMax("player")>999 or UnitPowerMax("player")>999 then
-		PlayerFrame.ziji:SetWidth(90);
+local function Update_Mp()
+	if PlayerFrame.ziji then
+		local MP = UnitPower("player");	
+		local MPmax = UnitPowerMax("player");
+		PlayerFrame.ziji.MP:SetText(MP..'/'..MPmax);
 	end
-	local powerType = UnitPowerType("player")
-	local info = PowerBarColor[powerType]
-	if info.r==0 and info.g==0 and info.b==1 then
-		PlayerFrame.ziji.MP:SetTextColor(info.r, 0.7, info.b ,1)
-	else
-		PlayerFrame.ziji.MP:SetTextColor(info.r, info.g, info.b ,1)
+end
+local function Update_MaxHp()
+	if PlayerFrame.ziji then
+		Update_Hp()
+		local HPmax = UnitHealthMax("player")
+		if HPmax>999999 then
+			PlayerFrame.ziji:SetWidth(126);
+		elseif HPmax>99999 then
+			PlayerFrame.ziji:SetWidth(110);
+		elseif HPmax>9999 then
+			PlayerFrame.ziji:SetWidth(96);
+		else
+			PlayerFrame.ziji:SetWidth(80);
+		end
+	end
+end
+local function Update_MaxMp()
+	if PlayerFrame.ziji then
+		Update_Mp()
+		local powerType = UnitPowerType("player")
+		local info = PowerBarColor[powerType]
+		if info.r==0 and info.g==0 and info.b==1 then
+			PlayerFrame.ziji.MP:SetTextColor(info.r, 0.7, info.b ,1)
+		else
+			PlayerFrame.ziji.MP:SetTextColor(info.r, info.g, info.b ,1)
+		end
 	end
 end
 local function HideHPMPTT()
@@ -146,175 +162,180 @@ local function Loot_Update()
 end
 ---		
 function UnitFramefun.Zishen()
-	if PIGA["UnitFrame"]["PlayerFrame"]["Plus"] and not PlayerFrame.ICON then
-		--角色耐久
-		PlayerFrame.ICON = PlayerFrame:CreateTexture(nil, "OVERLAY");
-		PlayerFrame.ICON:SetTexture("interface/minimap/tracking/repair.blp");
-		PlayerFrame.ICON:SetSize(16,16);
-		PlayerFrame.ICON:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 20, 4);
-		PlayerFrame.naijiu = PIGFontString(PlayerFrame,{"TOPLEFT", PlayerFrame.ICON, "TOPRIGHT", -1, -1},"??%", "OUTLINE")
-		Naijiu_Update()
-		--角色移速
-		PlayerFrame.yisuF=CreateFrame("Frame",nil,PlayerFrame);
-		PlayerFrame.yisuF:SetPoint("LEFT", PlayerFrame.naijiu, "RIGHT", 8, 0);
-		PlayerFrame.yisuF:SetSize(49,18);
-		PlayerFrame.yisuF.Tex = PlayerFrame.yisuF:CreateTexture("Frame_Texture_UI", "ARTWORK");
-		PlayerFrame.yisuF.Tex:SetTexture("interface/icons/ability_rogue_sprint.blp");
-		PlayerFrame.yisuF.Tex:SetSize(13,13);
-		PlayerFrame.yisuF.Tex:SetPoint("LEFT", PlayerFrame.yisuF, "LEFT", 0, 0);
-		PlayerFrame.yisuT = PIGFontString(PlayerFrame,{"LEFT", PlayerFrame.yisuF.Tex, "RIGHT", 0, 0},"", "OUTLINE")
-		PlayerFrame.yisuT:SetTextColor(1,1,1,1);
-		PlayerFrame.yisuF:SetScript("OnUpdate", function ()
-			local currentSpeed, runSpeed, flightSpeed, swimSpeed = GetUnitSpeed("player");
-			PlayerFrame.yisuT:SetText(Round(((currentSpeed/7)*100))..'%')
-		end)
-	end
-
-	if PIGA["UnitFrame"]["PlayerFrame"]["Loot"] and not PlayerFrame.lootF then
-		--拾取方式
-		PlayerFrame.lootF = CreateFrame("Button", nil, PlayerFrame);
-		PlayerFrame.lootF:SetSize(25,80);
-		if tocversion<100000 then
-			PlayerFrame.lootF:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 16, -20);
-		else
-			PlayerFrame.lootF:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 1, -20);
+	if PIGA["UnitFrame"]["PlayerFrame"]["Plus"] then
+		if not PlayerFrame.ICON then
+			--角色耐久
+			PlayerFrame.ICON = PlayerFrame:CreateTexture(nil, "OVERLAY");
+			PlayerFrame.ICON:SetTexture("interface/minimap/tracking/repair.blp");
+			PlayerFrame.ICON:SetSize(16,16);
+			PlayerFrame.ICON:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 20, 4);
+			PlayerFrame.naijiu = PIGFontString(PlayerFrame,{"TOPLEFT", PlayerFrame.ICON, "TOPRIGHT", -1, -1},"??%", "OUTLINE")
+			Naijiu_Update()
+			--角色移速
+			PlayerFrame.yisuF=CreateFrame("Frame",nil,PlayerFrame);
+			PlayerFrame.yisuF:SetPoint("LEFT", PlayerFrame.naijiu, "RIGHT", 8, 0);
+			PlayerFrame.yisuF:SetSize(49,18);
+			PlayerFrame.yisuF.Tex = PlayerFrame.yisuF:CreateTexture("Frame_Texture_UI", "ARTWORK");
+			PlayerFrame.yisuF.Tex:SetTexture("interface/icons/ability_rogue_sprint.blp");
+			PlayerFrame.yisuF.Tex:SetSize(13,13);
+			PlayerFrame.yisuF.Tex:SetPoint("LEFT", PlayerFrame.yisuF, "LEFT", 0, 0);
+			PlayerFrame.yisuT = PIGFontString(PlayerFrame,{"LEFT", PlayerFrame.yisuF.Tex, "RIGHT", 0, 0},"", "OUTLINE")
+			PlayerFrame.yisuT:SetTextColor(1,1,1,1);
+			PlayerFrame.yisuF:SetScript("OnUpdate", function ()
+				local currentSpeed, runSpeed, flightSpeed, swimSpeed = GetUnitSpeed("player");
+				PlayerFrame.yisuT:SetText(Round(((currentSpeed/7)*100))..'%')
+			end)
+			PlayerFrame:RegisterEvent("UPDATE_INVENTORY_DURABILITY");--耐久变化
+			PlayerFrame:RegisterEvent("CONFIRM_XP_LOSS");--虚弱复活
+			PlayerFrame:RegisterEvent("UPDATE_INVENTORY_ALERTS");--耐久图标变化或其他
 		end
-		PlayerFrame.lootF:SetFrameLevel(PlayerFrame:GetFrameLevel()+4)
-		PlayerFrame.lootF.loot = PIGFontString(PlayerFrame.lootF,nil,"", "OUTLINE")
-		PlayerFrame.lootF.loot:SetPoint("TOPLEFT", PlayerFrame.lootF, "TOPLEFT", 0, 0);
-		PlayerFrame.lootF.loot:SetPoint("BOTTOMRIGHT", PlayerFrame.lootF, "BOTTOMRIGHT", 0, 0);
-		PlayerFrame.lootF.loot:SetTextColor(0, 1, 0, 1);
-		PlayerFrame.lootF.loot:SetJustifyV("TOP")--垂直对齐
-		PlayerFrame.lootF.specIndex=1
-		Loot_Update()
-		PlayerFrame.lootF:SetScript("OnClick", function (self)
-			if tocversion<50000 then
-				local lootmethod, _, _ = GetLootMethod();
-				if lootmethod=="freeforall" then
-					SetLootMethod("master","player")
-					return
-				elseif lootmethod=="master" then
-					SetLootMethod("freeforall")
-					return
-				end
-				SetLootMethod("freeforall")
+	end
+	if PIGA["UnitFrame"]["PlayerFrame"]["Loot"] then
+		if not PlayerFrame.lootF then
+			--拾取方式
+			PlayerFrame.lootF = CreateFrame("Button", nil, PlayerFrame);
+			PlayerFrame.lootF:SetSize(25,80);
+			if tocversion<100000 then
+				PlayerFrame.lootF:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 16, -20);
 			else
-				local numSpecializations = GetNumSpecializations()--总专精数
-				local specID = GetLootSpecialization()
-				if specID==0 then
-					self.specIndex = 1
-					local specID, name = GetSpecializationInfo(self.specIndex)
-					SetLootSpecialization(specID)
+				PlayerFrame.lootF:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 1, -20);
+			end
+			PlayerFrame.lootF:SetFrameLevel(PlayerFrame:GetFrameLevel()+4)
+			PlayerFrame.lootF.loot = PIGFontString(PlayerFrame.lootF,nil,"", "OUTLINE")
+			PlayerFrame.lootF.loot:SetPoint("TOPLEFT", PlayerFrame.lootF, "TOPLEFT", 0, 0);
+			PlayerFrame.lootF.loot:SetPoint("BOTTOMRIGHT", PlayerFrame.lootF, "BOTTOMRIGHT", 0, 0);
+			PlayerFrame.lootF.loot:SetTextColor(0, 1, 0, 1);
+			PlayerFrame.lootF.loot:SetJustifyV("TOP")--垂直对齐
+			PlayerFrame.lootF.specIndex=1
+			Loot_Update()
+			PlayerFrame.lootF:SetScript("OnClick", function (self)
+				if tocversion<50000 then
+					local lootmethod, _, _ = GetLootMethod();
+					if lootmethod=="freeforall" then
+						SetLootMethod("master","player")
+						return
+					elseif lootmethod=="master" then
+						SetLootMethod("freeforall")
+						return
+					end
+					SetLootMethod("freeforall")
 				else
-					self.specIndex = self.specIndex+1
-					if self.specIndex>numSpecializations then
-						SetLootSpecialization(0)
-						self.specIndex = 0
-					else
+					local numSpecializations = GetNumSpecializations()--总专精数
+					local specID = GetLootSpecialization()
+					if specID==0 then
+						self.specIndex = 1
 						local specID, name = GetSpecializationInfo(self.specIndex)
 						SetLootSpecialization(specID)
-					end	
-				end
-				Loot_Update()
-			end
-		end);
-	end
-	if PIGA["UnitFrame"]["PlayerFrame"]["HPFF"] and not PlayerFrame.ziji then
-		--人物血量蓝量信息
-		PlayerFrame.ziji = CreateFrame("Frame", nil, PlayerFrame,"BackdropTemplate");
-		PlayerFrame.ziji:SetBackdrop({bgFile = "Interface/DialogFrame/UI-DialogBox-Background", edgeFile = "Interface/Tooltips/UI-Tooltip-Border", 
-							tile = true, tileSize = 0, edgeSize = 8, insets = { left = 1, right = 1, top = 1, bottom = 1 }});
-		PlayerFrame.ziji:SetBackdropBorderColor(0, 1, 1, 0.4);
-		PlayerFrame.ziji:SetWidth(70);
-		if tocversion<100000 then
-			PlayerFrame.ziji:SetPoint("TOPLEFT", PlayerFrame, "TOPRIGHT", -4, -20);
-			PlayerFrame.ziji:SetPoint("BOTTOMLEFT", PlayerFrame, "BOTTOMRIGHT", -4, 32);
-		else
-			PlayerFrame.ziji:SetPoint("TOPLEFT", PlayerFrame, "TOPRIGHT", -20, -26);
-			PlayerFrame.ziji:SetPoint("BOTTOMLEFT", PlayerFrame, "BOTTOMRIGHT", -20, 26);
-		end
-		if not NDui and not ElvUI then
-			local function Update_TargetFrame()
-				local point, relativeTo, relativePoint, xOfs, yOfs = TargetFrame:GetPoint()
-				local xOfs=xOfs or 250
-				local yOfs=yOfs or -4
-				if tocversion<100000 then
-					if floor(xOfs+0.5)==250 and floor(yOfs+0.5)==-4 then
-						TargetFrame:ClearAllPoints();
-						TargetFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 350, -4);
+					else
+						self.specIndex = self.specIndex+1
+						if self.specIndex>numSpecializations then
+							SetLootSpecialization(0)
+							self.specIndex = 0
+						else
+							local specID, name = GetSpecializationInfo(self.specIndex)
+							SetLootSpecialization(specID)
+						end	
 					end
-				else
-					local data = EDIT_MODE_CLASSIC_SYSTEM_MAP
-					local oldxOfs=data[Enum.EditModeSystem.UnitFrame][Enum.EditModeUnitFrameSystemIndices.Target].anchorInfo.offsetX
-					local oldyOfs=data[Enum.EditModeSystem.UnitFrame][Enum.EditModeUnitFrameSystemIndices.Target].anchorInfo.offsetY
-					if floor(xOfs+0.5)==oldxOfs and floor(yOfs+0.5)==oldyOfs then
-						TargetFrame:ClearAllPoints();
-						TargetFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 350, -4);
-					end
+					Loot_Update()
 				end
-			end
-			TargetFrame:HookScript("OnEvent", function(self,event,arg1)
-				if event=="PLAYER_ENTERING_WORLD" then
-					Update_TargetFrame()
-				end
-			end); 
-			if tocversion<100000 then
-				hooksecurefunc("UIParent_UpdateTopFramePositions", function()
-					Update_TargetFrame()
-				end)
+			end);
+			if tocversion<50000 then
+				PlayerFrame:RegisterEvent("GROUP_ROSTER_UPDATE");
+				PlayerFrame:RegisterEvent("PARTY_LOOT_METHOD_CHANGED");--战利品方法改变时触发
 			else
-				hooksecurefunc(TargetFrame, "AnchorSelectionFrame", function(self)
-					if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Target then
+				PlayerFrame:RegisterEvent("PLAYER_LOOT_SPEC_UPDATED");
+			end
+		end
+	end
+	if PIGA["UnitFrame"]["PlayerFrame"]["HPFF"] then
+		if not PlayerFrame.ziji then
+			--人物血量蓝量信息
+			PlayerFrame.ziji = CreateFrame("Frame", nil, PlayerFrame,"BackdropTemplate");
+			PlayerFrame.ziji:SetBackdrop({bgFile = "Interface/DialogFrame/UI-DialogBox-Background", edgeFile = "Interface/Tooltips/UI-Tooltip-Border", 
+								tile = true, tileSize = 0, edgeSize = 10, insets = { left = 1, right = 1, top = 1, bottom = 1 }});
+			PlayerFrame.ziji:SetBackdropBorderColor(1, 1, 1, 0.6);
+			PlayerFrame.ziji:SetWidth(70);
+			if tocversion<100000 then
+				PlayerFrame.ziji:SetPoint("TOPLEFT", PlayerFrame, "TOPRIGHT", -4, -20);
+				PlayerFrame.ziji:SetPoint("BOTTOMLEFT", PlayerFrame, "BOTTOMRIGHT", -4, 32);
+			else
+				PlayerFrame.ziji:SetPoint("TOPLEFT", PlayerFrame, "TOPRIGHT", -20, -26);
+				PlayerFrame.ziji:SetPoint("BOTTOMLEFT", PlayerFrame, "BOTTOMRIGHT", -20, 26);
+			end
+			if not NDui and not ElvUI then
+				local function Update_TargetFrame()
+					local point, relativeTo, relativePoint, xOfs, yOfs = TargetFrame:GetPoint()
+					local xOfs=xOfs or 250
+					local yOfs=yOfs or -4
+					if tocversion<100000 then
+						if floor(xOfs+0.5)==250 and floor(yOfs+0.5)==-4 then
+							TargetFrame:ClearAllPoints();
+							TargetFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 350, -4);
+						end
+					else
+						local data = EDIT_MODE_CLASSIC_SYSTEM_MAP
+						local oldxOfs=data[Enum.EditModeSystem.UnitFrame][Enum.EditModeUnitFrameSystemIndices.Target].anchorInfo.offsetX
+						local oldyOfs=data[Enum.EditModeSystem.UnitFrame][Enum.EditModeUnitFrameSystemIndices.Target].anchorInfo.offsetY
+						if floor(xOfs+0.5)==oldxOfs and floor(yOfs+0.5)==oldyOfs then
+							TargetFrame:ClearAllPoints();
+							TargetFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 350, -4);
+						end
+					end
+				end
+				TargetFrame:HookScript("OnEvent", function(self,event,arg1)
+					if event=="PLAYER_ENTERING_WORLD" then
 						Update_TargetFrame()
 					end
-				end)
+				end); 
+				if tocversion<100000 then
+					hooksecurefunc("UIParent_UpdateTopFramePositions", function()
+						Update_TargetFrame()
+					end)
+				else
+					hooksecurefunc(TargetFrame, "AnchorSelectionFrame", function(self)
+						if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Target then
+							Update_TargetFrame()
+						end
+					end)
+				end
 			end
+			--血量
+			PlayerFrame.ziji.HP = PIGFontString(PlayerFrame.ziji,{"CENTER", PlayerFrame.ziji, "CENTER", 0, 0},"", "OUTLINE",15)
+			PlayerFrame.ziji.HP:SetTextColor(0,1,0,1);
+
+			PlayerFrame.ziji.Baifenbi = PIGFontString(PlayerFrame.ziji,{"BOTTOM", PlayerFrame.ziji.HP, "TOP", 0, 0},"", "OUTLINE")--血量百分比
+			PlayerFrame.ziji.Baifenbi:SetTextColor(1,0.82,0,1);
+
+			PlayerFrame.ziji.MP = PIGFontString(PlayerFrame.ziji,{"TOP", PlayerFrame.ziji.HP, "BOTTOM", 0, 0},"", "OUTLINE",13)--魔法值
+			HideHPMPTT()
+			Update_MaxHp()
+			Update_MaxMp()
+			PlayerFrame:RegisterUnitEvent("UNIT_HEALTH","player");
+			PlayerFrame:RegisterUnitEvent("UNIT_MAXHEALTH","player");
+			PlayerFrame:RegisterUnitEvent("UNIT_POWER_FREQUENT","player");
+			PlayerFrame:RegisterUnitEvent("UNIT_MAXPOWER","player");
+			PlayerFrame:RegisterUnitEvent("UNIT_DISPLAYPOWER","player");
 		end
-		--血量
-		PlayerFrame.ziji.HP = PIGFontString(PlayerFrame.ziji,{"CENTER", PlayerFrame.ziji, "CENTER", 0, 0},"", "OUTLINE",15)
-		PlayerFrame.ziji.HP:SetTextColor(0,1,0,1);
-
-		PlayerFrame.ziji.Baifenbi = PIGFontString(PlayerFrame.ziji,{"BOTTOM", PlayerFrame.ziji.HP, "TOP", 0, 0},"", "OUTLINE")--血量百分比
-		PlayerFrame.ziji.Baifenbi:SetTextColor(1,0.82,0,1);
-
-		PlayerFrame.ziji.MP = PIGFontString(PlayerFrame.ziji,{"TOP", PlayerFrame.ziji.HP, "BOTTOM", 0, 0},"", "OUTLINE")--魔法值
-		HideHPMPTT()
-		HpMp_Update_W()
-		HpMp_Update()
 	end
 	------
-	PlayerFrame:RegisterUnitEvent("UNIT_HEALTH","player");
-	PlayerFrame:RegisterUnitEvent("UNIT_MAXHEALTH","player");
-	PlayerFrame:RegisterUnitEvent("UNIT_POWER_FREQUENT","player");
-	PlayerFrame:RegisterUnitEvent("UNIT_MAXPOWER","player");
-
-	PlayerFrame:RegisterEvent("UPDATE_INVENTORY_DURABILITY");--耐久变化
-	PlayerFrame:RegisterEvent("CONFIRM_XP_LOSS");--虚弱复活
-	PlayerFrame:RegisterEvent("UPDATE_INVENTORY_ALERTS");--耐久图标变化或其他
-	if tocversion<50000 then
-		PlayerFrame:RegisterEvent("GROUP_ROSTER_UPDATE");
-		PlayerFrame:RegisterEvent("PARTY_LOOT_METHOD_CHANGED");--战利品方法改变时触发
-	else
-		PlayerFrame:RegisterEvent("PLAYER_LOOT_SPEC_UPDATED");
-	end
 	PlayerFrame:HookScript("OnEvent", function (self,event)
-		if event=="PLAYER_ENTERING_WORLD" then
+		if event=="UNIT_HEALTH" then
+			Update_Hp()
+		elseif event=="UNIT_POWER_FREQUENT" then
+			Update_Mp()
+		elseif event=="UNIT_MAXHEALTH" then
+			Update_MaxHp()
+		elseif event=="UNIT_MAXPOWER" or event == "UNIT_DISPLAYPOWER" then
+			Update_MaxMp()
+		elseif event=="UPDATE_INVENTORY_DURABILITY" or event=="CONFIRM_XP_LOSS" or event=="UPDATE_INVENTORY_ALERTS" then
+			Naijiu_Update()
+		elseif event=="PLAYER_LOOT_SPEC_UPDATED" or event=="GROUP_ROSTER_UPDATE" or event=="PARTY_LOOT_METHOD_CHANGED" then
+			Loot_Update()
+		elseif event=="PLAYER_ENTERING_WORLD" then
 			Naijiu_Update()
 			Loot_Update()
-			HpMp_Update_W()
-			HpMp_Update()
-		end
-		if event=="UNIT_HEALTH" or event=="UNIT_POWER_FREQUENT" or event=="UNIT_MAXHEALTH" or event=="UNIT_MAXPOWER" then
-			HpMp_Update()
-		end
-		if event=="UNIT_MAXHEALTH" or event=="UNIT_MAXPOWER" then
-			HpMp_Update_W()
-		end
-		if event=="UPDATE_INVENTORY_DURABILITY" or event=="CONFIRM_XP_LOSS" or event=="UPDATE_INVENTORY_ALERTS" then
-			Naijiu_Update()
-		end
-		if event=="PLAYER_LOOT_SPEC_UPDATED" or event=="GROUP_ROSTER_UPDATE" or event=="PARTY_LOOT_METHOD_CHANGED" then
-			Loot_Update()
+			Update_MaxHp()
+			Update_MaxMp()	
 		end
 	end)
 end

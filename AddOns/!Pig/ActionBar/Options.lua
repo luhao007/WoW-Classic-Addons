@@ -3,10 +3,8 @@ local L=addonTable.locale
 local _, _, _, tocversion = GetBuildInfo()
 ---
 local Create=addonTable.Create
-local PIGFrame=Create.PIGFrame
 local PIGLine=Create.PIGLine
 local PIGButton = Create.PIGButton
-local PIGDownMenu=Create.PIGDownMenu
 local PIGSlider = Create.PIGSlider
 local PIGCheckbutton=Create.PIGCheckbutton
 local PIGCheckbutton_R=Create.PIGCheckbutton_R
@@ -302,250 +300,7 @@ if tocversion<100000 then
 		ActionBarfun.xiufuShowAction()
 	end)
 end
-----下方===============
-ActionF.botline = PIGLine(ActionF,"TOP",-354)
-local function ActionBar_HideShijiu()
-	if PIGA["ActionBar"]["HideShijiu"] then
-		MainMenuBarRightEndCap:Hide();--隐藏右侧鹰标 
-		MainMenuBarLeftEndCap:Hide();--隐藏左侧鹰标 
-	else
-		MainMenuBarRightEndCap:Show();
-		MainMenuBarLeftEndCap:Show();
-	end
-end
-if tocversion<100000 then
-	ActionF.HideShijiu=PIGCheckbutton(ActionF,{"TOPLEFT",ActionF.botline,"TOPLEFT",20,-20},{"隐藏狮鹫图标","隐藏动作条两边的狮鹫图标"})
-	ActionF.HideShijiu:SetScript("OnClick", function (self)
-		if self:GetChecked() then
-			PIGA["ActionBar"]["HideShijiu"]=true;
-		else
-			PIGA["ActionBar"]["HideShijiu"]=false;
-		end
-		ActionBar_HideShijiu()
-	end)
-	--移动右边动作条
-	if not IsXPUserDisabled then
-		function IsXPUserDisabled() return false end
-	end
-	local function GetExpWatched()
-		local name, reaction, min, max, value, factionID = GetWatchedFactionInfo();
-		local newLevel = UnitLevel("player");
-		local showXP = newLevel < GetMaxPlayerLevel() and not IsXPUserDisabled();
-		if name then
-			return showXP,true
-		else
-			return showXP,false
-		end
-	end
-	local function IS_bar34Show()
-		local showV = GetCVar("enableMultiActionBars")
-		if showV then
-			if showV=="15" then
-				return true
-			end
-		else
-			local ACTIONBAR_1,ACTIONBAR_2,ACTIONBAR_3,ACTIONBAR_4 = GetActionBarToggles()
-			if ACTIONBAR_4 and ACTIONBAR_3 then
-				return true
-			end
-		end
-		return false
-	end
-	function ActionBarfun.Pig_BarRight()
-		if not PIGA["ActionBar"]["BarRight"] then return end
-		local function Pig_MultiBar_Update()
-			if not InCombatLockdown() then
-				for i=1, 12 do
-					_G["MultiBarLeftButton"..i]:ClearAllPoints();
-					_G["MultiBarLeftButton"..i]:SetPoint("BOTTOM",_G["MultiBarBottomLeftButton"..i],"TOP",0,6);
-					_G["MultiBarRightButton"..i]:ClearAllPoints();
-					_G["MultiBarRightButton"..i]:SetPoint("BOTTOM",_G["MultiBarBottomRightButton"..i],"TOP",0,6);
-				end
-				VerticalMultiBarsContainer:SetSize(0, 0);
-			end
-		end
-		Pig_MultiBar_Update()
-		--姿态条
-		local function StanceBar_Point(self)
-			if InCombatLockdown() then
-				self:RegisterEvent("PLAYER_REGEN_ENABLED");
-			else
-				local point, relativeTo, relativePoint, xOfs, yOfs = self:GetPoint()
-				self:SetMovable(true)
-				self:ClearAllPoints();
-				self:SetPoint("BOTTOMLEFT", self:GetParent(),"TOPLEFT", xOfs, 84)
-				self:SetUserPlaced(true)
-				self:UnregisterEvent("PLAYER_REGEN_ENABLED");
-			end 
-		end
-		local function StanceBar_Update(self)
-			if IS_bar34Show() then
-				if not self:IsUserPlaced() then
-					StanceBar_Point(self) 
-				end
-			else
-				self:SetMovable(true)
-				self:SetUserPlaced(false)
-				self:SetMovable(false)
-			end
-		end
-		StanceBar_Update(StanceBarFrame)
-		StanceBarFrame:HookScript("OnEvent", function (self,event)
-			if event=="PLAYER_REGEN_ENABLED" then
-				if IS_bar34Show() then
-					if not self:IsUserPlaced() then
-						StanceBar_Point(self)
-					end
-				end
-			end
-		end);
-		---图腾条
-		local function MultiCastBar_Point(self)
-			if InCombatLockdown() then
-				self:RegisterEvent("PLAYER_REGEN_ENABLED");
-			else
-				if not ElvUI then
-					self:SetMovable(true)
-					self:ClearAllPoints();
-					self:SetPoint("BOTTOMLEFT", self:GetParent(),"TOPLEFT", MULTICASTACTIONBAR_XPOS, MULTICASTACTIONBAR_YPOS+42)
-					self:SetUserPlaced(true)
-					self:UnregisterEvent("PLAYER_REGEN_ENABLED");
-				end
-			end 
-		end
-		local function MultiCastBar_Update(self)
-			if IS_bar34Show() then
-				MultiCastBar_Point(self)
-			else
-				self:SetMovable(true)
-				self:SetUserPlaced(false)
-				self:SetMovable(false)
-			end
-		end
-		if MultiCastActionBarFrame then
-			MultiCastBar_Update(MultiCastActionBarFrame)
-			local function jiazaiMultiCast()
-				MultiCastBar_Update(MultiCastActionBarFrame)
-			end
-			MultiCastActionBarFrame:HookScript("OnEvent", function (self,event)
-				if event=="PLAYER_ENTERING_WORLD" then
-					C_Timer.After(0.4,jiazaiMultiCast)
-					C_Timer.After(1,jiazaiMultiCast)
-					C_Timer.After(2,jiazaiMultiCast)
-					C_Timer.After(5,jiazaiMultiCast)
-				end
-				if event=="PLAYER_REGEN_ENABLED" then
-					MultiCastBar_Update(self)
-				end
-			end);
-			UIParent:HookScript("OnShow", function(self)
-				C_Timer.After(0.1,jiazaiMultiCast)
-				C_Timer.After(0.2,jiazaiMultiCast)
-			end)
-		end
-		--宠物动作条
-		local function PetBar_Update(self)
-			if InCombatLockdown() then
-				PetActionBarFrame:RegisterEvent("PLAYER_REGEN_ENABLED");
-			else
-				if IS_bar34Show() then
-					local showXP,showRep = GetExpWatched()
-					--self:SetMovable(true)
-					self:ClearAllPoints();
-					local PIG_PETACTIONBAR_XPOS = PETACTIONBAR_XPOS
-					if StanceBarFrame:IsShown() then
-						PIG_PETACTIONBAR_XPOS = 340
-					end
-					if showXP and showRep then
-						self:SetPoint("BOTTOMLEFT", MainMenuBar,"TOPLEFT", PIG_PETACTIONBAR_XPOS, 96)
-						--self:SetPoint("BOTTOMLEFT", self:GetParent(),"TOPLEFT", PIG_PETACTIONBAR_XPOS, 96)
-					elseif showXP or showRep then
-						self:SetPoint("BOTTOMLEFT", MainMenuBar,"TOPLEFT", PIG_PETACTIONBAR_XPOS, 88)
-						--self:SetPoint("BOTTOMLEFT", self:GetParent(),"TOPLEFT", PIG_PETACTIONBAR_XPOS, 86)
-					else
-						self:SetPoint("BOTTOMLEFT", MainMenuBar,"TOPLEFT", PIG_PETACTIONBAR_XPOS, 82)
-						--self:SetPoint("BOTTOMLEFT", self:GetParent(),"TOPLEFT", PIG_PETACTIONBAR_XPOS, 84)
-					end	
-					--self:SetUserPlaced(true)
-				else
-					self:ClearAllPoints();
-					self:SetPoint("BOTTOMLEFT", self:GetParent(),"BOTTOMLEFT", 36, 2)
-				end
-				PetActionBarFrame:UnregisterEvent("PLAYER_REGEN_ENABLED");
-			end
-		end
-		--PetBar_Update(PetActionBarFrame)
-		PetBar_Update(PetActionButton1)
-		PetActionBarFrame:HookScript("OnEvent", function (self,event)
-			if event=="PLAYER_REGEN_ENABLED" then
-				PetBar_Update(PetActionButton1)
-			end
-		end);
-		hooksecurefunc("MainMenuBar_UpdateExperienceBars",function(newLevel)
-			StanceBar_Update(StanceBarFrame)
-			--PetBar_Update(PetActionBarFrame)
-			PetBar_Update(PetActionButton1)
-			if MultiCastActionBarFrame then
-				MultiCastBar_Update(MultiCastActionBarFrame)
-			end
-		end);
-		hooksecurefunc("MultiActionBar_Update",function()	
-			Pig_MultiBar_Update()
-			StanceBar_Update(StanceBarFrame)
-			--PetBar_Update(PetActionBarFrame)
-			PetBar_Update(PetActionButton1)
-			if MultiCastActionBarFrame then
-				MultiCastBar_Update(MultiCastActionBarFrame)
-			end
-		end);
-	end
-	ActionF.BarRight=PIGCheckbutton(ActionF,{"TOPLEFT",ActionF.botline,"TOPLEFT",300,-20},{"移动右边动作条到下方","移动右边竖向动作条到下方动作条之上"})
-	ActionF.BarRight:SetScript("OnClick", function (self)
-		if self:GetChecked() then
-			PIGA["ActionBar"]["BarRight"]=true
-			ActionBarfun.Pig_BarRight()
-		else
-			PIGA["ActionBar"]["BarRight"]=false
-			Pig_Options_RLtishi_UI:Show()
-		end
-	end)
-	--主动作条缩放比例
-	function ActionBarfun.ActionBar_bili(ly)
-		if PIGA["ActionBar"]["ActionBar_bili"] then
-			MainMenuBar:SetScale(PIGA["ActionBar"]["ActionBar_bili_value"]);
-			VerticalMultiBarsContainer:SetScale(PIGA["ActionBar"]["ActionBar_bili_value"]);
-			for i=1, 12 do
-				_G["MultiBarLeftButton"..i]:SetScale(PIGA["ActionBar"]["ActionBar_bili_value"])
-				--_G["MultiBarRightButton"..i]:SetScale(PIGA["ActionBar"]["ActionBar_bili_value"])
-			end
-		else
-			if ly then
-				MainMenuBar:SetScale(1);
-				VerticalMultiBarsContainer:SetScale(1);
-				for i=1, 12 do
-					_G["MultiBarLeftButton"..i]:SetScale(1)
-					--_G["MultiBarRightButton"..i]:SetScale(1)
-				end
-			end
-		end
-	end
-	ActionF.ActionBar_bili = PIGCheckbutton(ActionF,{"TOPLEFT",ActionF.botline,"TOPLEFT",20,-60},{"缩放动作条","启用缩放动作条,注意此设置和系统高级里面的UI缩放不同，只调整动作条比例"})
-	ActionF.ActionBar_bili:SetScript("OnClick", function (self)
-		if self:GetChecked() then
-			PIGA["ActionBar"]["ActionBar_bili"]=true	
-		else
-			PIGA["ActionBar"]["ActionBar_bili"]=false
-		end
-		ActionF.ActionBar_bili.Slider:SetEnabled(PIGA["ActionBar"]["ActionBar_bili"])
-		ActionBarfun.ActionBar_bili(true)
-	end);
-	-------
-	ActionF.ActionBar_bili.Slider = PIGSlider(ActionF,{"LEFT",ActionF.ActionBar_bili,"RIGHT",96,0},{0.6, 1.4, 0.01,{["Right"]="%"}})
-	ActionF.ActionBar_bili.Slider.Slider:HookScript("OnValueChanged", function(self, arg1)
-		PIGA["ActionBar"]["ActionBar_bili_value"]=arg1;
-		ActionBarfun.ActionBar_bili()
-	end)
-end
+
 ---=======
 ActionF:HookScript("OnShow", function(self)
 	self.Ranse:SetChecked(PIGA["ActionBar"]["Ranse"])
@@ -559,30 +314,17 @@ ActionF:HookScript("OnShow", function(self)
 	end
 	self.PetTishi:SetChecked(PIGA["ActionBar"]["PetTishi"])
 	self.AutoFanye:SetChecked(PIGA["ActionBar"]["AutoFanye"])
-	if tocversion<100000 then
-		self.HideShijiu:SetChecked(PIGA["ActionBar"]["HideShijiu"])
-		self.BarRight:SetChecked(PIGA["ActionBar"]["BarRight"])
-		self.ActionBar_bili:SetChecked(PIGA["ActionBar"]["ActionBar_bili"]);
-		self.ActionBar_bili.Slider:SetEnabled(PIGA["ActionBar"]["ActionBar_bili"])
-		self.ActionBar_bili.Slider:PIGSetValue(PIGA["ActionBar"]["ActionBar_bili_value"])
+	if self.xiufuShowAction then
 		self.xiufuShowAction:SetChecked(PIGA["ActionBar"]["xiufuShowAction"])
 	end		
 end)
 ----------------
-function ActionBarfun.Pig_Action() end
 addonTable.ActionBar = function()
 	ActionBar_Ranse()
 	ActionCD()
-	if tocversion<20000 then
-		ActionBarfun.ActionBar_Cailiao()
-	end
+	if ActionBarfun.ActionBar_Cailiao then ActionBarfun.ActionBar_Cailiao() end
 	ActionBar_PetTishi()
 	ActionBar_AutoFanye()
-	if tocversion<100000 then
-		ActionBarfun.xiufuShowAction()
-		ActionBar_HideShijiu()
-		ActionBarfun.Pig_BarRight()
-		ActionBarfun.ActionBar_bili()
-	end
-	ActionBarfun.Pig_Action()
+	if ActionBarfun.xiufuShowAction then ActionBarfun.xiufuShowAction() end
+	if ActionBarfun.Pig_Action then ActionBarfun.Pig_Action() end
 end

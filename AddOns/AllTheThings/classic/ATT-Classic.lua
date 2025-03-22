@@ -1,7 +1,7 @@
 --------------------------------------------------------------------------------
 --                        A L L   T H E   T H I N G S                         --
 --------------------------------------------------------------------------------
---				Copyright 2017-2024 Dylan Fortune (Crieve-Sargeras)           --
+--				Copyright 2017-2025 Dylan Fortune (Crieve-Sargeras)           --
 --------------------------------------------------------------------------------
 -- App locals
 local appName, app = ...;
@@ -542,11 +542,6 @@ ResolveSymbolicLink = function(o)
 				end
 				searchResults = finalized;
 				finalized = {};
-			elseif cmd == "postprocess" then
-				-- Instruction to take all of the current search results and ensure that there are no duplicated primary keys.
-				local uniques = {};
-				MergeObjects(uniques, searchResults);
-				searchResults = uniques;
 			elseif cmd == "invtype" then
 				-- Instruction to include only search results where an item is of a specific inventory type.
 				local types = {unpack(sym)};
@@ -3073,7 +3068,8 @@ if C_CurrencyInfo and C_CurrencyInfo.GetCurrencyInfo then
 		end
 	end });
 	GetCurrencyCount = function(id)
-		return C_CurrencyInfo_GetCurrencyInfo(id).quantity or 0;
+		local info = C_CurrencyInfo_GetCurrencyInfo(id);
+		return info and info.quantity or 0;
 	end
 else
 	---@diagnostic disable-next-line: undefined-global
@@ -3216,7 +3212,7 @@ app.SkillIDToSpellID = setmetatable({
 	[186] = 2575,	-- Mining
 	[393] = 8613,	-- Skinning
 	[197] = 3908,	-- Tailoring
-	[960] = 53428,  -- Runeforging
+	[960] = 53428,	-- Runeforging
 	[40] = 2842,	-- Poisons
 	[633] = 1809,	-- Lockpicking
 	[921] = 921,	-- Pickpocketing

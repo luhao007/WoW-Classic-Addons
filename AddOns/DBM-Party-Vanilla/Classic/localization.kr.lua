@@ -1608,3 +1608,91 @@ L = DBM:GetModLocalization("HellscreamsPhantom")
 L:SetGeneralLocalization{
 	name 		= "헬스크림의 악령"
 }
+
+-------------------------
+-- SoD Karazhan Crypts --
+-------------------------
+
+-- Apprentice, seems to be a randomized boss
+L = DBM:GetModLocalization("Apprentice")
+
+L:SetGeneralLocalization{
+	name = "수습생"
+}
+
+-- Harbinger of Sin
+L = DBM:GetModLocalization("HarbingerOfSin")
+
+L:SetGeneralLocalization{
+	name = "죄악의 전령"
+}
+
+-- Kharon
+L = DBM:GetModLocalization("Kharon")
+
+L:SetGeneralLocalization{
+	name = "카론"
+}
+
+L:SetWarningLocalization{
+	SpecWarnDropTorch = "%d중첩 - 횃불 떨구세요!"
+}
+
+-- Opera of Malediction
+L = DBM:GetModLocalization("OperaOfMalediction")
+
+L:SetGeneralLocalization{
+	name = "악심의 오페라"
+}
+
+L:SetMiscLocalization {
+	PullTrizivast = "오늘 저녁에 선보일 무대는 생존과 상실, 신념이 뒤얽힌 대담한 이야기입니다.",
+	PullHanselAndGretel1 = "오늘 저녁에 선보일 무대는 길을 찾아 방황하는 두 아이의 이야기입니다!",
+	PullHanselAndGretel2 = "죄송해요, 할머니... 이제 끝낼 때가 됐거든.",
+	PullEngineers = "오늘 저녁에 선보일 무대는 추방자 신세가 된 어느 초라한 기술자의 비극적인 이야기입니다!",
+}
+
+-- Dark Rider
+L = DBM:GetModLocalization("DarkRider")
+
+L:SetGeneralLocalization{
+	name = "암흑 기수"
+}
+
+L:SetOptionLocalization{
+	EnableMinorNameplates = "환영을 표시하기 위해 카라잔에서 하수인 유닛 이름표 자동 활성화"
+}
+
+L:SetMiscLocalization{
+	MirrorImage = "환영",
+	EnabledNameplates = "DBM이 이 전투에서 이름표를 자동으로 활성화 했으며 이는 환영 감지에 도움이 됩니다. 끄려면 던전/카라잔 납골당의 암흑 기수 모드 설정으로 들어가세요."
+}
+
+-- Creeping Malison
+L = DBM:GetModLocalization("CreepingMalison")
+
+L:SetGeneralLocalization{
+	name = "엄습하는 저주"
+}
+
+-- Karazhan Crypts Trash
+L = DBM:GetModLocalization("KCTrash")
+
+L:SetGeneralLocalization{
+	name = "카라잔 납골당 일반몹"
+}
+
+-- Unk'omon
+L = DBM:GetModLocalization("Unkomon")
+
+L:SetGeneralLocalization{
+	name = "운코몬"
+}
+
+L:SetWarningLocalization{
+	WarnDoom = "파멸 - 저주 해제"
+}
+
+L:SetOptionLocalization{
+	WarnDoom = "$spell:1221577 저주 해제 알림 보기"
+}

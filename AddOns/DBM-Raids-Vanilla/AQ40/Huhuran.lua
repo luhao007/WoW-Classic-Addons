@@ -9,7 +9,7 @@ end
 local mod	= DBM:NewMod("Huhuran", "DBM-Raids-Vanilla", catID)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20241207183046")
+mod:SetRevision("20250119115238")
 mod:SetCreatureID(15509)
 mod:SetEncounterID(714)
 mod:SetModelID(15739)
@@ -53,7 +53,7 @@ local StingTargets = {}
 function mod:OnCombatStart(delay)
 	self.vb.prewarn_berserk = false
 	table.wipe(StingTargets)
-	timerEnrageCD:Start(9.6-delay)
+	timerEnrageCD:Start(8.1-delay)
 	timerPoisonCD:Start(11-delay)
 	timerStingCD:Start(20-delay)
 	if self.Options.RangeFrame then

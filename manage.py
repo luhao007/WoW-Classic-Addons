@@ -12,8 +12,8 @@ from toc import TOC
 logger = logging.getLogger('manager')
 
 CLASSIC_ERA_VER = '11401'
-CLASSIC_VER = '30400'
-RETAIL_VER = '110007'
+CLASSIC_VER = '30404'
+RETAIL_VER = '110100'
 
 
 def available_on(platforms):
@@ -178,7 +178,7 @@ class Manager:
         lines += ['-- Add textures\n', '\n']
         for texture in os.listdir(root / 'textures'):
             t = texture.split('.')[0]
-            lines.append(f'media:Register(media.MediaType.STATUSBAR, "{t}", "{p}\\\\textures\\\\{t}")\n')
+            lines.append(f'media:Register(media.MediaType.STATUSBAR, "{t}", "{p}\\\\textures\\\\{t}.tga")\n')
 
         lines += ['\n', '-- Add fonts\n', '\n']
 
@@ -373,15 +373,6 @@ class Manager:
         addons = [addon for addon in os.listdir('AddOns') if addon not in ignores]
         for addon in addons:
             utils.remove_libraries_all(addon)
-
-    # @staticmethod
-    # def handle_att():
-    #     addon = 'AllTheThings'
-    #     utils.change_defaults(
-    #         f'Addons/{addon}/Settings.lua',
-    #         ['		["MinimapButton"] = false,',
-    #             '		["Auto:MiniList"] = false,']
-    #     )
 
     @staticmethod
     def handle_atlas():
@@ -590,14 +581,6 @@ class Manager:
         utils.remove_libraries(['HereBeDragons-2.0'], 'AddOns/Rarity/Libs', 'AddOns/Rarity/Rarity.toc')
 
     @staticmethod
-    @available_on(['classic'])
-    def handle_rl():
-        utils.change_defaults(
-            'AddOns/RaidLedger/options.lua',
-            ['        b:SetChecked(Database:GetConfigOrDefault("minimapicon", false))']
-        )
-
-    @staticmethod
     @available_on(['classic', 'retail'])
     def handle_rs():
         utils.change_defaults(
@@ -627,7 +610,7 @@ class Manager:
     @available_on(['classic'])
     def handle_talentemu():
         utils.change_defaults(
-            'AddOns/TalentEmu/setting.lua',
+            'AddOns/TalentEmuX/setting.lua',
             ['		minimap = false,']
         )
 

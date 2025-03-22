@@ -5837,11 +5837,10 @@ end
 ---
 function TalentData.SAVE_Player()
 	local Info = ""
-	local raceName, raceFile, raceID = UnitRace("player")
 	local level = UnitLevel("player")
-	local _, classId = UnitClassBase("player");
+	local gender = UnitSex("player")
 	local avgItemLevel, avgItemLevelEquipped, avgItemLevelPvP = GetAverageItemLevel();
-	local Info = Info..classId.."-"..raceID.."-"..level.."-"..avgItemLevelEquipped
+	local Info = Info..Pig_OptionsUI.ClassData.classId.."-"..Pig_OptionsUI.RaceData.raceId.."-"..level.."-"..(floor(avgItemLevelEquipped*100+0.5)/100).."-"..gender
 	return Info
 end
 local function PIGGetNumTalentGroups()
@@ -5859,23 +5858,15 @@ function TalentData.GetTianfuIcon(guancha,zhiye)
 		local numTabs = GetNumTalentTabs(guancha)
 		for ti=1,numTabs do
 			local itemlistTalentmax = {["pointsSpent"]=0,["name"]=zuidazhi[1],["icon"]=zuidazhi[2]}
-			if tocversion<20000 then
-				local _, name, _, icon, pointsSpent, background, previewPointsSpent = GetTalentTabInfo(ti,guancha,false,index);
-				itemlistTalentmax.pointsSpent=pointsSpent or 0
-				itemlistTalentmax.name=name
-				itemlistTalentmax.icon=icon
-			elseif tocversion<40000 then
-				local name, icon, pointsSpent, background, previewPointsSpent = GetTalentTabInfo(ti,guancha,false,index);
-				itemlistTalentmax.pointsSpent=pointsSpent or 0
-				itemlistTalentmax.name=name
-				itemlistTalentmax.icon=icon
-			end
+			local _, name, _, icon, pointsSpent, background, previewPointsSpent = GetTalentTabInfo(ti,guancha,false,index);
+			itemlistTalentmax.pointsSpent=pointsSpent or 0
+			itemlistTalentmax.name=name
+			itemlistTalentmax.icon=icon
 			if itemlistTalentmax.pointsSpent>zuidazhi[3] then
 				zuidazhi={itemlistTalentmax.name, itemlistTalentmax.icon or tianfuTabIcon[zhiye][ti] or zuidazhi[2], itemlistTalentmax.pointsSpent}
 			end
 		end
 	elseif tocversion<50000 then
-		local index = GetActiveTalentGroup(guancha,false)
 		local masteryIndex = GetPrimaryTalentTree();
 		if masteryIndex then
 			local id, name, description, icon, pointsSpent, background, previewPointsSpent, isUnlocked = GetTalentTabInfo(masteryIndex,guancha,false,index);
@@ -6137,23 +6128,24 @@ local tianfuTabRole = {
 	["EVOKER"] = {["恩护"]=2,["湮灭"]=3,["增辉"]=3}, 
 };
 local function PIG_GetSpellCritChance()
-		local holySchool = 2
-	    local minCrit = GetSpellCritChance(holySchool);
-		for i=(holySchool+1), 7 do
-			local spellCrit = GetSpellCritChance(i);
-			minCrit = max(minCrit, spellCrit);
-		end
-		return minCrit,spellTishi
+	local holySchool = 2
+    local minCrit = GetSpellCritChance(holySchool);
+	for i=(holySchool+1), 7 do
+		local spellCrit = GetSpellCritChance(i);
+		minCrit = max(minCrit, spellCrit);
 	end
-	local function PIG_GetSpellBonusDamage()
-		local holySchool = 2
-	    local minCrit = GetSpellBonusDamage(holySchool);
-		for i=(holySchool+1), 7 do
-			local spellCrit = GetSpellBonusDamage(i);
-			minCrit = max(minCrit, spellCrit);
-		end
-		return minCrit,spellTishi
+	return minCrit
+end
+local function PIG_GetSpellBonusDamage()--法术伤害加成
+	local holySchool = 2
+    local minCrit = GetSpellBonusDamage(holySchool);
+	for i=(holySchool+1), 7 do
+		local spellCrit = GetSpellBonusDamage(i);
+		minCrit = max(minCrit, spellCrit);
 	end
+	return minCrit
+end
+Fun.PIG_GetSpellBonusDamage=PIG_GetSpellBonusDamage
 local function GetStatsData(role)
 	local shuxing = ""
 	if role==1 then

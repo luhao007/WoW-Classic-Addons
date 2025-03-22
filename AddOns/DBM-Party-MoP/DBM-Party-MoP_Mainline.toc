@@ -1,5 +1,5 @@
-## Interface: 30400
-## Version: r181
+## Interface: 30404
+## Version: r194
 
 ## Title: |cffffe00a<|r|cffff7d0aDBM Mod|r|cffffe00a>|r |cffc030c0Dungeons (MoP)|r
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFF69CCF0小队|r |cFF22B14C熊猫人之谜|r
@@ -53,7 +53,7 @@ JadeSerpentTemple\JadeTempleTrash.lua
 StormstoutBrewery\OokOok.lua
 StormstoutBrewery\Hoptallus.lua
 StormstoutBrewery\YanZhu.lua
-ShadoPanMonastery\GuCloudStrike.lua
+ShadoPanMonastery\GuCloudstrike.lua
 ShadoPanMonastery\Snowdrift.lua
 ShadoPanMonastery\ShaofViolence.lua
 ShadoPanMonastery\TaranZhu.lua

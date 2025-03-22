@@ -6,7 +6,7 @@ local PIGSetFont=Create.PIGSetFont
 -------------------
 local morenColor = {
 	{0.1,0.1,0.1},
-	{0, 0, 0, 1},
+	{1, 0.6, 0, 1},
 	{1,0.7,0},
 }
 local er, eg, eb = 1,1,1 or NORMAL_FONT_COLOR:GetRGB()
@@ -41,7 +41,7 @@ local function add_Checkbutton(mode,fuF,Point,Text,WH,UIName,id)
 	PIGSetFont(But.Text,Zihao,Miaobian)
 	if Text then
 		But.Text:SetText(Text[1]);
-		But.tooltip = Text[2]
+		But.tooltip = Text[2] or Text[1]
 	end
 	local wrappedWidth = But.Text:GetWrappedWidth()
 	But:SetHitRectInsets(0,-wrappedWidth,0,0)

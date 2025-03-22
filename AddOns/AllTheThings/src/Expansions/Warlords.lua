@@ -237,7 +237,7 @@ end
 local function common_wod_dungeon_drop(ResolveFunctions)
 	local select, pop, where = ResolveFunctions.select, ResolveFunctions.pop, ResolveFunctions.where;
 	return function(finalized, searchResults, o, cmd, difficultyID, headerID)
-		select(finalized, searchResults, o, "select", "headerID", app.HeaderConstants.COMMON_DUNGEON_DROP);	-- Common Dungeon Drops
+		select(finalized, searchResults, o, "select", "headerID", app.HeaderConstants.COMMON_DUNGEON_DROPS);	-- Common Dungeon Drops
 		pop(finalized, searchResults);	-- Discard the Header and acquire all of their children.
 		where(finalized, searchResults, o, "where", "difficultyID", difficultyID);	-- Normal/Heroic/Mythic/Timewalking
 		pop(finalized, searchResults);	-- Discard the Diffculty Header and acquire all of their children.
@@ -247,7 +247,7 @@ end
 local function common_wod_dungeon_drop_tw(ResolveFunctions)
 	local select, pop, where = ResolveFunctions.select, ResolveFunctions.pop, ResolveFunctions.where;
 	return function(finalized, searchResults, o, cmd, difficultyID, headerID)
-		select(finalized, searchResults, o, "select", "headerID", app.HeaderConstants.COMMON_DUNGEON_DROP);	-- Common Dungeon Drops
+		select(finalized, searchResults, o, "select", "headerID", app.HeaderConstants.COMMON_DUNGEON_DROPS);	-- Common Dungeon Drops
 		where(finalized, searchResults, o, "where", "e", 1271);	-- only the Common Dungeon Drops which is marked as TIMEWALKING
 		pop(finalized, searchResults);	-- Discard the Header and acquire all of their children.
 		where(finalized, searchResults, o, "where", "headerID", headerID);	-- Head/Shoulder/Chest/Legs/Feet/Wrist/Hands/Waist

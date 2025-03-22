@@ -1,34 +1,30 @@
 local addonName, addonTable = ...;
-local _, _, _, tocversion = GetBuildInfo()
-local Create, Data, Fun, L= unpack(PIG)
-local sub = _G.string.sub 
----------------------------
-local PIGFrame=Create.PIGFrame
-local PIGLine=Create.PIGLine
-local PIGButton = Create.PIGButton
-local PIGCheckbutton=Create.PIGCheckbutton
-local PIGOptionsList_R=Create.PIGOptionsList_R
-local PIGFontString=Create.PIGFontString
-local PIGSetFont=Create.PIGSetFont
------------------
 local TardisInfo=addonTable.TardisInfo
-local xuanzhongBG = {{0.2, 0.2, 0.2, 0.2},{0.4, 0.8, 0.8, 0.2}}
 function TardisInfo.Plane(Activate)
 	if not PIGA["Tardis"]["Plane"]["Open"] then return end
-	local InviteUnit=InviteUnit or C_PartyInfo and C_PartyInfo.InviteUnit
+	local _, _, _, tocversion = GetBuildInfo()
+	local Create, Data, Fun, L= unpack(PIG)
+	local sub = _G.string.sub 
+	---------------------------
+	local PIGFrame=Create.PIGFrame
+	local PIGLine=Create.PIGLine
+	local PIGButton = Create.PIGButton
+	local PIGCheckbutton=Create.PIGCheckbutton
+	local PIGOptionsList_R=Create.PIGOptionsList_R
+	local PIGFontString=Create.PIGFontString
+	local PIGSetFont=Create.PIGSetFont
+	-----------------
 	local GnName,GnUI,GnIcon,FrameLevel = unpack(TardisInfo.uidata)
-	local GetPIGID=Fun.GetPIGID
-	local disp_time=Fun.disp_time
-	local Biaotou=Data.Tardis[1][1]
-	local GetInfoMsg=Data.Tardis[2][3]
-	local shenqingMSG_T = "!LSQHWM_";
-	local shenqingMSG_V = 8.04;
-	local shenqingMSG = shenqingMSG_T..shenqingMSG_V;
-	C_ChatInfo.RegisterAddonMessagePrefix(Biaotou)
-	-----
 	local InvF=_G[GnUI]
-	local pindao=InvF.pindao
-	local hang_Height,hang_NUM=InvF.hang_Height,InvF.hang_NUM
+	local pindao,hang_Height,hang_NUM,xuanzhongBG=InvF.pindao,InvF.hang_Height,InvF.hang_NUM,InvF.xuanzhongBG
+	local GetPIGID=Fun.GetPIGID
+	local gnindexID=4
+	local GetInfoMsg=Data.Tardis.GetMsg[gnindexID]
+	local shenqingMSG_T = Data.Tardis.SqMsg[gnindexID]
+	local shenqingMSG_V = Data.Tardis.ver[gnindexID]
+	local qianzhui=Data.Tardis.qianzhui[gnindexID]
+	local shenqingMSG = shenqingMSG_T..shenqingMSG_V;
+	-----
 	local fujiF,fujiTabBut=PIGOptionsList_R(InvF.F,L["TARDIS_PLANE"],80,"Bot")
 	if Activate then fujiF:Show() fujiTabBut:Selected() end
 	-----------------
@@ -38,28 +34,39 @@ function TardisInfo.Plane(Activate)
 	fujiF.ZJweimianID:SetTextColor(1, 1, 1, 1);
 	-----
 	fujiF.JieshouInfoList={};
-	fujiF.GetBut=TardisInfo.GetInfoBut(fujiF,{"TOPLEFT",fujiF,"TOPLEFT",180,-30},3,2)
+	fujiF.GetBut=TardisInfo.GetInfoBut(fujiF,{"TOPLEFT",fujiF,"TOPLEFT",180,-30},300,2)
+	fujiF.GetBut.ButName=L["TARDIS_PLANE"]
 	fujiF.GetBut:HookScript("OnClick", function (self)
-		if fujiF.ZJweimianID:GetText()=="点击NPC获取" then
-			self.err:SetText("请点击任意NPC");
-			return 
-		end
-		self.PIGID=GetPIGID(pindao)
-		if self.PIGID==0 then
-			self.err:SetText("请先加入"..pindao.."频道");
-			return
-		end
-		if tocversion<40000 then
-			SendChatMessage(GetInfoMsg,"CHANNEL",nil,self.PIGID)
+		if self.yanchiNerMsg then
+			self.Highlight:Hide()
+			self.yanchiNerMsg=false
+			fujiF.filtrateData()
+			fujiF.Update_hang()
+			self:daojishiCDFUN()
 		else
-			C_ChatInfo.SendAddonMessage(Biaotou,GetInfoMsg,"CHANNEL",self.PIGID)
+			if fujiF.ZJweimianID:GetText()=="点击NPC获取" then
+				self.err:SetText("请点击任意NPC");
+				return 
+			end
+			self.PIGID=GetPIGID(pindao)
+			if self.PIGID==0 then
+				self.err:SetText("请先加入"..pindao.."频道");
+				return
+			end
+			PIGA["Tardis"]["Plane"]["DaojishiCD"]=GetServerTime();
+			fujiF.JieshouInfoList={};
+			self.yanchiNerMsg=nil
+			if tocversion<40000 then
+				SendChatMessage(GetInfoMsg,"CHANNEL",nil,self.PIGID)
+			else
+				PIGSendAddonMessage(InvF.Biaotou,GetInfoMsg,"CHANNEL",self.PIGID)
+			end
+			self:CZdaojishi()
 		end
-		self:CZdaojishi()
-		PIGA["Tardis"]["Plane"]["DaojishiCD"]=GetServerTime();
-		fujiF.JieshouInfoList={};
 	end);
 	fujiF.GetBut.daojishiJG=PIGA["Tardis"]["Plane"]["DaojishiCD"]
 	function fujiF.GetBut.gengxin_hang()
+		fujiF.GetBut.yanchiNerMsg=false
 		fujiF.filtrateData()
 		fujiF.Update_hang()
 	end
@@ -67,7 +74,7 @@ function TardisInfo.Plane(Activate)
 	local Tooltip1= "|cffFFFF00当双方都打开此选项时可以直接申请组队，如只有一方打开则只能"..L["CHAT_WHISPER"].."申请对方组队|r";
 	local Tooltip2 = "\n|cffFF0000关闭后其他玩家将不会自动接收你的申请\n(注意你在24小时内只能开关一次)|r"
 	local Tooltip = Tooltip1..Tooltip2
-	fujiF.AutoInvite =PIGCheckbutton(fujiF,{"TOPLEFT",fujiF,"TOPLEFT",420,-10},{"|cff00FF00自动接受"..L["TARDIS_PLANE"].."申请(只在休息状态生效)|r",Tooltip})
+	fujiF.AutoInvite =PIGCheckbutton(fujiF,{"TOPLEFT",fujiF,"TOPLEFT",420,-10},{"|cff00FF00自动接受"..L["TARDIS_PLANE"].."申请(主城/单人/未排本或战场生效)|r",Tooltip})
 	fujiF.AutoInvite.help = PIGFontString(fujiF.AutoInvite,{"TOPLEFT", fujiF.AutoInvite, "BOTTOMLEFT", 20, -4},"我为人人，人人为我。请不要做精致的利己主义者");
 	fujiF.AutoInvite.help:SetTextColor(0, 1, 1, 1);
 	fujiF.AutoInvite:SetScript("OnClick", function (self)
@@ -75,7 +82,7 @@ function TardisInfo.Plane(Activate)
 			local DaojishiCD = PIGA["Tardis"]["Plane"]["AutoInviteCD"]
 			local shengyu = 86400-(GetServerTime()-DaojishiCD)
 			if shengyu>0 then
-				PIGinfotip:TryDisplayMessage(L["TARDIS_PLANE"].."通道充能中...(剩余"..disp_time(shengyu).."分)",1,0,0)
+				PIGTopMsg:add(L["TARDIS_PLANE"].."通道充能中...(剩余"..Fun.disp_time(shengyu).."分)","R")
 				self:SetChecked(false)
 				return 
 			end
@@ -101,7 +108,7 @@ function TardisInfo.Plane(Activate)
 		whileDead = true,
 		hideOnEscape = true,
 	}
-	fujiF.AutoInvite.HelpTXT = PIGFontString(fujiF.AutoInvite,{"LEFT", fujiF.AutoInvite.Text, "RIGHT", 40, 0},"助人为乐+");
+	fujiF.AutoInvite.HelpTXT = PIGFontString(fujiF.AutoInvite,{"LEFT", fujiF.AutoInvite.Text, "RIGHT", 28, 0},"助人为乐+");
 	fujiF.AutoInvite.HelpNum = PIGFontString(fujiF.AutoInvite,{"LEFT", fujiF.AutoInvite.HelpTXT, "RIGHT", 2, 0},0);
 	fujiF.AutoInvite.HelpNum:SetTextColor(0, 1, 0, 1);
 	-------------
@@ -195,7 +202,7 @@ function TardisInfo.Plane(Activate)
 				editBox:SetText("/WHISPER " ..wjName.." "..hasText.."方便的话组我换个"..L["TARDIS_PLANE"].."，谢谢");
 			elseif self:GetText()=="请求换"..L["TARDIS_PLANE"] then
 				--SendChatMessage("方便的话组我换个"..L["TARDIS_PLANE"].."，谢谢", "WHISPER", nil, wjName);
-				C_ChatInfo.SendAddonMessage(Biaotou,shenqingMSG,"WHISPER",wjName)
+				PIGSendAddonMessage(InvF.Biaotou,shenqingMSG,"WHISPER",wjName)
 			end
 			fujiF.New_InfoList[self:GetID()][3]=true
 			fujiF.Update_hang()
@@ -385,7 +392,11 @@ function TardisInfo.Plane(Activate)
 						fujikk.Weimian:SetTextColor(0,0.98,0.6, 1);
 						fujikk.zoneID:SetTextColor(0.9,0.9,0.9, 0.9);
 						fujikk.Name.T:SetTextColor(0,0.98,0.6, 1);
-						fujikk.autoinv:SetTextColor(0, 1, 0, 0.9);
+						if autoinv=="Y" then
+							fujikk.autoinv:SetTextColor(0, 1, 0, 0.9);
+						else
+							fujikk.autoinv:SetTextColor(1, 0, 0, 0.9);
+						end
 						if weimianID~="?" and weimianID==ZJweimianID then
 							fujikk.miyu:Disable()
 							fujikk.miyu:SetText("同"..L["TARDIS_PLANE"]);
@@ -421,7 +432,7 @@ function TardisInfo.Plane(Activate)
 		local mubiaoGUID=UnitGUID("target")
 		if mubiaoGUID then
 			local unitType, _, serverID, instanceID, zoneID, npcID = strsplit("-", mubiaoGUID);
-			if zoneID then
+			if zoneID and unitType=="Creature" then
 				self.DQweimianID=zoneID
 				if self:IsShown() then
 					self.ZJweimianID:SetText(zoneID);
@@ -444,28 +455,43 @@ function TardisInfo.Plane(Activate)
 		end
 	end
 	---------
-	local function fasongBendiMsg(self,waname)
-		if waname == Pig_OptionsUI.Name or waname == Pig_OptionsUI.AllName then return end
-		if not self.WeimianInfo then return end
-		local inInstance=IsInInstance()
-		if inInstance then return end
-		local kaiguanzhuangtai = ""
-		local exhaustionID = GetRestState()
-		if exhaustionID==1 then--休息
-			kaiguanzhuangtai=kaiguanzhuangtai.."Y^"
-		elseif exhaustionID==2 then
-			kaiguanzhuangtai=kaiguanzhuangtai.."N^"
+	local function IsRestingInGroup()
+		local resting = IsResting()
+		if not resting then return false end
+		local inInstance =IsInInstance()
+		if inInstance then return false end
+		local InGroup =IsInGroup(LE_PARTY_CATEGORY_HOME);
+		if InGroup then return false end
+		if C_LFGList and C_LFGList.GetActiveEntryInfo then
+			if C_LFGList.GetActiveEntryInfo() then return false end
 		end
-		if PIGA["Tardis"]["Plane"]["AutoInvite"] then
-			kaiguanzhuangtai=kaiguanzhuangtai.."Y"
+		if tocversion<40000 then
+			for i=1, MAX_BATTLEFIELD_QUEUES do
+				local status, mapName = GetBattlefieldStatus(i)
+				if mapName then return false end
+			end
 		else
-			kaiguanzhuangtai=kaiguanzhuangtai.."N"
+			if QueueStatusButton and QueueStatusButton:IsShown() then return false end
 		end
-		local SMessage="!L"..self.WeimianInfo.."^"..kaiguanzhuangtai
-		C_ChatInfo.SendAddonMessage(Biaotou,SMessage,"WHISPER",waname)
+		return true
 	end
-	
-	fujiF:RegisterEvent("CHAT_MSG_CHANNEL");
+	local function fasongBendiMsg(self,waname)
+		if not self.WeimianInfo then return end
+		if waname == Pig_OptionsUI.Name or waname == Pig_OptionsUI.AllName then return end
+		if IsRestingInGroup() then
+			local kaiguanzhuangtai="Y^"
+			if PIGA["Tardis"]["Plane"]["AutoInvite"] then
+				kaiguanzhuangtai=kaiguanzhuangtai.."Y"
+			else
+				kaiguanzhuangtai=kaiguanzhuangtai.."N"
+			end
+			local SMessage="!L"..self.WeimianInfo.."^"..kaiguanzhuangtai
+			PIGSendAddonMessage(InvF.Biaotou,SMessage,"WHISPER",waname)
+		end
+	end
+	if tocversion<40000 then
+		fujiF:RegisterEvent("CHAT_MSG_CHANNEL");
+	end
 	fujiF:RegisterEvent("CHAT_MSG_ADDON");
 	fujiF:RegisterEvent("PLAYER_TARGET_CHANGED"); 
 	fujiF:RegisterEvent("PLAYER_ENTERING_WORLD");   
@@ -479,41 +505,34 @@ function TardisInfo.Plane(Activate)
 		end
 		if event=="CHAT_MSG_CHANNEL" then
 			if arg1==GetInfoMsg and arg9==pindao then
-				local waname = arg2
-				if tocversion<20000 then
-					waname = arg5
-				end
-				fasongBendiMsg(self,waname)
+				fasongBendiMsg(self,arg5)
 			end
 		end
-		if event=="CHAT_MSG_ADDON" and arg1 == Biaotou then
+		if event=="CHAT_MSG_ADDON" and arg1 == InvF.Biaotou then
 			if arg2==GetInfoMsg and arg3=="CHANNEL" then
 				fasongBendiMsg(self,arg4)
 			elseif arg3 == "WHISPER" then
-				local qianzhui = arg2:sub(1,2)
-				if qianzhui=="!L" then
-					local waname = arg4
-					if tocversion<20000 then
-						waname = arg5
-					end
+				local newqianzhui = arg2:sub(1,2)
+				if newqianzhui==qianzhui then
 					if arg2:match(shenqingMSG_T) then
 						if PIGA["Tardis"]["Plane"]["AutoInvite"] then
-							local inInstance, instanceType =IsInInstance()
-							local zuduizhong =IsInGroup(LE_PARTY_CATEGORY_HOME);
-							if not inInstance and not zuduizhong and C_LFGList.GetActiveEntryInfo and not C_LFGList.GetActiveEntryInfo() then
+							if IsRestingInGroup() then
 								local Nerarg2 = arg2:gsub(shenqingMSG_T,"")
 								if tonumber(Nerarg2)<shenqingMSG_V then
-									SendChatMessage(INVITE..FAILED..","..addonName..GAME_VERSION_LABEL..ADDON_INTERFACE_VERSION, "WHISPER", nil, waname);
+									SendChatMessage(INVITE..FAILED..","..PET_BATTLE_COMBAT_LOG_YOUR..addonName..GAME_VERSION_LABEL..ADDON_INTERFACE_VERSION, "WHISPER", nil, arg5);
 								else
-									InviteUnit(waname)
+									PIG_InviteUnit(arg5)
 									PIGA["Tardis"]["Plane"]["HelpNum"]=PIGA["Tardis"]["Plane"]["HelpNum"]+1
-									PIGinfotip:TryDisplayMessage("助人为乐+"..PIGA["Tardis"]["Plane"]["HelpNum"])
+									PIGTopMsg:add("助人为乐+"..PIGA["Tardis"]["Plane"]["HelpNum"])
 								end
 							end
 						end
 					else
 						local houzhui = arg2:sub(3,-1)
-						table.insert(fujiF.JieshouInfoList, {houzhui,waname})
+						table.insert(fujiF.JieshouInfoList, {houzhui,arg5})
+						if fujiF.GetBut.yanchiNerMsg==false then
+							fujiF.GetBut:NewMsgadd()
+						end
 					end
 				end
 			end

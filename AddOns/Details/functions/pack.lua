@@ -11,7 +11,6 @@ local tonumber = _G.tonumber
 local select = _G.select
 local strsplit = _G.strsplit
 local floor = _G.floor
-local tremove = _G.tremove
 local UnitName = _G.UnitName
 local tinsert = tinsert
 local IsInRaid = _G.IsInRaid
@@ -341,9 +340,12 @@ local packActorSerial = function(actor)
         local npcId = tonumber(select(6, strsplit("-", serial)) or 0)
         return "C" .. npcId
 
-    elseif (serial:match("^P") == "P") then
-        return "P"
-    
+    elseif (serial:match("^Pl") == "Pl") then
+        return "Pl"
+
+    elseif (serial:match("^Pe") == "Pe") then
+        return "Pe"
+
     elseif (serial == "") then
         return "C12345"
     end
@@ -351,8 +353,11 @@ end
 
 local unpackActorSerial = function(serialNumber)
     --player serial
-    if (serialNumber:match("^P")) then
+    if (serialNumber:match("^Pl")) then
         return "Player-1-" .. Details.packFunctions.GenerateSerialNumber()
+
+    elseif (serialNumber:match("^Pe")) then
+        return "Pet-0-0-0-0-" .. serialNumber:gsub("Pe", "") .."-" .. Details.packFunctions.GenerateSerialNumber()
 
     elseif (serialNumber:match("^C")) then
         return "Creature-0-0-0-0-" .. serialNumber:gsub("C", "") .."-" .. Details.packFunctions.GenerateSerialNumber()

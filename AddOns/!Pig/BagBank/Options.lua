@@ -5,7 +5,6 @@ local _, _, _, tocversion = GetBuildInfo()
 local Create=addonTable.Create
 local PIGFrame=Create.PIGFrame
 local PIGButton=Create.PIGButton
-local PIGDownMenu=Create.PIGDownMenu
 local PIGLine=Create.PIGLine
 local PIGSlider = Create.PIGSlider
 local PIGCheckbutton=Create.PIGCheckbutton
@@ -20,8 +19,25 @@ local GetInsertItemsLeftToRight=GetInsertItemsLeftToRight or C_Container and C_C
 local SetSortBagsRightToLeft=SetSortBagsRightToLeft or C_Container and C_Container.SetSortBagsRightToLeft
 local SetInsertItemsLeftToRight=SetInsertItemsLeftToRight or C_Container and C_Container.SetInsertItemsLeftToRight
 local BagBankF,BagBankFTabBut = PIGOptionsList(L["BAGBANK_TABNAME"],"TOP")
+BagBankF.error = PIGFontString(BagBankF,{"CENTER", BagBankF, "CENTER",0, 50})
+BagBankF.czrl = PIGButton(BagBankF,{"TOP",BagBankF.error,"BOTTOM",0,-10},{230,24})
+BagBankF.czrl:SetScript("OnClick", function(self)
+	C_AddOns.DisableAddOn(self.qitaName)
+	ReloadUI();
+end)
 ----------
-BagBankF.Zhenghe = PIGCheckbutton_R(BagBankF,{"启用背包/银行整合","整合背包/银行包裹到一个界面"})
+local BagaddList = {"Bagnon","Combuctor","Baganator"};
+local IsAddOnLoaded = IsAddOnLoaded or C_AddOns and C_AddOns.IsAddOnLoaded
+local function Other_bag()
+	for i = 1, #BagaddList do
+		local loadedOrLoading, loaded = IsAddOnLoaded(BagaddList[i])
+		if loaded then return true,BagaddList[i] end
+	end
+	return false
+end
+BagBankfun.Other_bag=Other_bag
+---
+BagBankF.Zhenghe = PIGCheckbutton(BagBankF,{"TOPLEFT",BagBankF,"TOPLEFT",20,-20},{"启用背包/银行整合","整合背包/银行包裹到一个界面"})
 BagBankF.Zhenghe:SetScript("OnClick", function (self)
 	if self:GetChecked() then
 		PIGA["BagBank"]["Zhenghe"]=true
@@ -54,6 +70,10 @@ local function BagKongyu()
 	end
 end
 ----
+BagBankF.SetListline = PIGLine(BagBankF,"TOP",-60)
+BagBankF.SetListF = PIGFrame(BagBankF)
+BagBankF.SetListF:SetPoint("TOPLEFT",BagBankF.SetListline,"BOTTOMLEFT",0,0);
+BagBankF.SetListF:SetPoint("BOTTOMRIGHT",BagBankF,"BOTTOMRIGHT",0,30);
 MainMenuBarBackpackButton:HookScript("OnEvent", function(self,event,arg1)
 	if event=="PLAYER_ENTERING_WORLD" then
 		BagKongyu()
@@ -64,8 +84,8 @@ MainMenuBarBackpackButton:HookScript("OnEvent", function(self,event,arg1)
 		end
 	end
 end)
-BagBankF.BagKongyu = PIGCheckbutton_R(BagBankF,{"显示背包剩余空间","在行囊显示背包剩余空间(大于等于10显示绿色,小于10显示红色)"})
-BagBankF.BagKongyu:SetScript("OnClick", function (self)
+BagBankF.SetListF.BagKongyu = PIGCheckbutton_R(BagBankF.SetListF,{"显示背包剩余空间","在行囊显示背包剩余空间(大于等于10显示绿色,小于10显示红色)"})
+BagBankF.SetListF.BagKongyu:SetScript("OnClick", function (self)
 	if self:GetChecked() then
 		PIGA["BagBank"]["BagKongyu"]=true;			
 	else
@@ -73,23 +93,18 @@ BagBankF.BagKongyu:SetScript("OnClick", function (self)
 	end
 	BagKongyu()
 end)
---
-BagBankF.SetListline = PIGLine(BagBankF,"TOP",-66)
-BagBankF.SetListF = PIGFrame(BagBankF)
-BagBankF.SetListF:SetPoint("TOPLEFT",BagBankF.SetListline,"BOTTOMLEFT",0,0);
-BagBankF.SetListF:SetPoint("BOTTOMRIGHT",BagBankF,"BOTTOMRIGHT",0,30);
 function BagBankfun.GetSortBagsRightToLeft()
 	if GetSortBagsRightToLeft then
 		return GetSortBagsRightToLeft()
 	else
-		return PIGA['BagBank']["SortBag_Config"]
+		return PIGA["BagBank"]["SortBag_Config"]
 	end
 end
 function BagBankfun.SetSortBagsRightToLeft(enabled)
 	if SetSortBagsRightToLeft then
 		SetSortBagsRightToLeft(enabled)
 	else
-		PIGA['BagBank']["SortBag_Config"] = enabled
+		PIGA["BagBank"]["SortBag_Config"] = enabled
 	end
 end
 local BAG_SetList = {
@@ -102,6 +117,7 @@ local BAG_SetList = {
 }
 if tocversion<100000 then
 	table.insert(BAG_SetList,4,{"根据品质染色装备边框","wupinRanse",true})
+	table.insert(BAG_SetList,5,{"新物品提示","NewItem",false})
 end
 for i=1,#BAG_SetList do
 	local tishi = BAG_SetList[i][4] or BAG_SetList[i][1]
@@ -167,8 +183,8 @@ BagBankF.SetListF.suofang.Slider:HookScript("OnValueChanged", function(self, arg
 	end
 end)
 
-BagBankF.CZpeizhi = PIGButton(BagBankF,{"BOTTOMLEFT",BagBankF,"BOTTOMLEFT",20,6},{150,24},"背包异常点此重置");
-BagBankF.CZpeizhi:SetScript("OnClick", function(self, button)
+BagBankF.SetListF.CZpeizhi = PIGButton(BagBankF.SetListF,{"BOTTOMLEFT",BagBankF.SetListF,"BOTTOMLEFT",20,6},{150,24},"背包异常点此重置");
+BagBankF.SetListF.CZpeizhi:SetScript("OnClick", function(self, button)
 	StaticPopup_Show ("HUIFU_DEFAULT_BEIBAOZHENGHE");
 end)
 StaticPopupDialogs["HUIFU_DEFAULT_BEIBAOZHENGHE"] = {
@@ -187,12 +203,21 @@ StaticPopupDialogs["HUIFU_DEFAULT_BEIBAOZHENGHE"] = {
 }
 BagBankF:HookScript("OnShow", function(self)
 	self.Zhenghe:SetChecked(PIGA["BagBank"]["Zhenghe"])
+	BagBankF.SetListF:Hide()
+	BagBankF.czrl:Show()
+	BagBankF.error:SetText("")
 	if PIGA["BagBank"]["Zhenghe"] then
-		BagBankF.SetListF:Show()
-	else
-		BagBankF.SetListF:Hide()
+		local qitabag,qitaName = Other_bag()
+		if qitabag then
+			BagBankF.error:SetText("检测到背包插件"..qitaName.."，已禁用背包功能")
+			BagBankF.czrl:SetText("禁用"..qitaName.."，启用背包功能")
+			BagBankF.czrl.qitaName=qitaName
+		else
+			BagBankF.czrl:Hide()
+			BagBankF.SetListF:Show()
+		end
 	end
-	self.BagKongyu:SetChecked(PIGA["BagBank"]["BagKongyu"])
+	self.SetListF.BagKongyu:SetChecked(PIGA["BagBank"]["BagKongyu"])
 	for i=1,#BAG_SetList do
 		if BAG_SetList[i][1]=="反向整理" then
 			_G["BAG_SetList"..i]:SetChecked(not BagBankfun.GetSortBagsRightToLeft())

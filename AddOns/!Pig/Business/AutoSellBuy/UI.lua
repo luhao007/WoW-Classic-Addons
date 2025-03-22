@@ -13,7 +13,6 @@ local PIGDiyBut=Create.PIGDiyBut
 local PIGLine=Create.PIGLine
 local PIGModbutton=Create.PIGModbutton
 local PIGCheckbutton=Create.PIGCheckbutton
-local PIGModCheckbutton=Create.PIGModCheckbutton
 local PIGOptionsList_RF=Create.PIGOptionsList_RF
 local PIGOptionsList_R=Create.PIGOptionsList_R
 local PIGFontString=Create.PIGFontString
@@ -72,13 +71,13 @@ function BusinessInfo.ADDScroll(fuFrame,text,hangName,hang_NUM,Config1)
 		local itemLink=Fun.GetItemLinkJJ(itemLink)
 		if fuFrame.List.addList.lx=="filtra" and ly~="Cursor" then
 			if IsItemExist(FiltraConfig0,itemID) then
-				PIGinfotip:TryDisplayMessage("物品已在排除列表",1,0,0);
+				PIGTopMsg:add("物品已在排除列表","R");
 				return false
 			end
 			table.insert(FiltraConfig0,1,{itemID,itemLink,itemTexture,itemStackCount,itemStackCount,false})
 		else
 			if IsItemExist(Config0,itemID) then
-				PIGinfotip:TryDisplayMessage("物品已在"..text.."列表",1,0,0);
+				PIGTopMsg:add("物品已在"..text.."列表","R");
 				return false
 			end
 			table.insert(Config0,1,{itemID,itemLink,itemTexture,itemStackCount,itemStackCount,false})
@@ -88,7 +87,7 @@ function BusinessInfo.ADDScroll(fuFrame,text,hangName,hang_NUM,Config1)
 	end
 	local function IsItemMay(add,itemLink,quality,sellPrice,classID,subclassID,bag,slot)
 		if hangName=="Sell" then
-			if sellPrice>0 then
+			if sellPrice and sellPrice>0 then
 				if bag=="Cursor" then return true end	
 				if fuFrame.List.addList.lx=="filtra" then
 					if quality>0 then
@@ -281,7 +280,7 @@ function BusinessInfo.ADDScroll(fuFrame,text,hangName,hang_NUM,Config1)
 					if jieguo then
 						InsertItemData(NewVVV,itemLink,itemTexture,itemStackCount)
 					else
-						PIGinfotip:TryDisplayMessage(errtishi,1,0,0) 
+						PIGTopMsg:add(errtishi,"R") 
 					end	
 				end
 			end
@@ -572,7 +571,7 @@ function BusinessInfo.ADDScroll(fuFrame,text,hangName,hang_NUM,Config1)
 		if jieguo then
 			InsertItemData(chazhaowupinID,itemLink,itemTexture,itemStackCount,"Cursor")
 		else
-			PIGinfotip:TryDisplayMessage(errtishi,1,0,0) 
+			PIGTopMsg:add(errtishi,"R") 
 		end	
 		chazhaowupinID = nil
 		chazhaowupinlink = nil

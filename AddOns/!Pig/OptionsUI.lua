@@ -9,19 +9,15 @@ local PIGLine=Create.PIGLine
 local PIGFontString=Create.PIGFontString
 local PIGSetFont=Create.PIGSetFont
 ---
-local GetAddOnInfo=GetAddOnInfo or C_AddOns and C_AddOns.GetAddOnInfo
-local GetAddOnMetadata=GetAddOnMetadata or C_AddOns and C_AddOns.GetAddOnMetadata
 --系统插件菜单======================
 local PIG_SetF = CreateFrame("Frame");
-PIG_SetF.Openshezhi = PIGButton(PIG_SetF,{"TOPLEFT",PIG_SetF,"TOPLEFT",20,-20},{80,24},L["OPTUI_SET"])
+PIG_SetF.Openshezhi = PIGButton(PIG_SetF,{"TOPLEFT",PIG_SetF,"TOPLEFT",20,-20},{80,24},L["OPTUI_SET"],nil,nil,nil,nil,0)
 PIG_SetF.Openshezhi:SetScript("OnClick", function ()
 	HideUIPanel(InterfaceOptionsFrame);
 	HideUIPanel(SettingsPanel);
 	HideUIPanel(GameMenuFrame);
 	Pig_OptionsUI:Show();
 end)
-PIGLine(PIG_SetF,"TOP",-60,1,{4,-4})
-Create.About_Update(PIG_SetF,-80,"Panel")
 if Settings and Settings.RegisterCanvasLayoutCategory then
 	local category, layout = Settings.RegisterCanvasLayoutCategory(PIG_SetF,addonName)
 	layout:AddAnchorPoint("TOPLEFT", 10, -10);
@@ -67,7 +63,7 @@ Pig_Options.L.F:SetPoint("TOPLEFT", Pig_Options.L.top, "BOTTOMLEFT", 0, 0)
 Pig_Options.L.F:SetPoint("BOTTOMRIGHT", Pig_Options.L, "BOTTOMRIGHT", 0, BottomHHH)
 Pig_Options.L.F.ListTOP = CreateFrame("Frame", nil, Pig_Options.L.F)
 Pig_Options.L.F.ListTOP:SetPoint("TOPLEFT", Pig_Options.L.F, "TOPLEFT", 0, 0)
-Pig_Options.L.F.ListTOP:SetPoint("BOTTOMRIGHT", Pig_Options.L.F, "BOTTOMRIGHT", 0, 150)
+Pig_Options.L.F.ListTOP:SetPoint("BOTTOMRIGHT", Pig_Options.L.F, "BOTTOMRIGHT", 0, 120)
 Pig_Options.L.F.ListEXT = CreateFrame("Frame", nil, Pig_Options.L.F)
 Pig_Options.L.F.ListEXT:SetPoint("TOPLEFT", Pig_Options.L.F.ListTOP, "BOTTOMLEFT", 0, 0)
 Pig_Options.L.F.ListEXT:SetPoint("BOTTOMRIGHT", Pig_Options.L.F, "BOTTOMRIGHT", 0, 0)
@@ -90,18 +86,19 @@ Pig_Options.R.top:PIGClose(25,25,Pig_Options)
 Pig_Options.R.top.Ver = CreateFrame("Frame", nil, Pig_Options.R.top)
 Pig_Options.R.top.Ver:SetPoint("TOPLEFT", Pig_Options.R.top, "TOPLEFT", 0, 0)
 Pig_Options.R.top.Ver:SetPoint("BOTTOMRIGHT", Pig_Options.R.top, "BOTTOMRIGHT", -30, 0)
+Pig_Options.VersionID=0
 function Pig_Options:SetVer()
-	local VersionTXT=GetAddOnMetadata(addonName, "Version")
+	local VersionTXT=PIGGetAddOnMetadata(addonName, "Version")
 	local VersionID=tonumber(VersionTXT)
 	Pig_Options.VersionID=VersionID
 	local benjibanbenhaoTXT="|cffFFD700"..GAME_VERSION_LABEL..":|r |cff00FF00"..VersionTXT.."|r"
 	PIGFontString(Pig_OptionsUI.R.top.Ver,{"LEFT", Pig_OptionsUI.R.top.Ver, "LEFT", 6, 0},benjibanbenhaoTXT)
 end
-function Pig_Options:SetVer_EXT(EXTaddname,uifff)
-	local VersionTXT=GetAddOnMetadata(EXTaddname, "Version")
+function Pig_Options:SetVer_EXT(EXTaddname,ext_UI)
+	local VersionTXT=PIGGetAddOnMetadata(EXTaddname, "Version")
 	local VersionID=tonumber(VersionTXT)
-	uifff.VersionID=VersionID
-	local name, title, notes, loadable = GetAddOnInfo(EXTaddname)
+	ext_UI.VersionID=VersionID
+	local name, title, notes, loadable = PIGGetAddOnInfo(EXTaddname)
 	local ziframe = {Pig_OptionsUI.R.top.Ver:GetRegions()}
 	local VerTXT = "|cff00FFFF + |r|cffFFD700"..L["PIGaddonList"][EXTaddname]..":|r |cff00FF00"..VersionTXT.."|r"
 	Pig_OptionsUI.R.top.Ver.Vert = Create.PIGFontString(Pig_OptionsUI.R.top.Ver,{"LEFT", ziframe[#ziframe], "RIGHT", 0, 0},VerTXT)
@@ -195,7 +192,7 @@ local function Showaddonstishi(self,laiyuan)
 	else
 		GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT",-24,0);
 	end
-	GameTooltip:AddLine("|cffFF00FF"..addonName.."|r-"..GetAddOnMetadata(addonName, "Version"))
+	GameTooltip:AddLine("|cffFF00FF"..addonName.."|r-"..PIGGetAddOnMetadata(addonName, "Version"))
 	if NDui then
 		GameTooltip:AddLine(L["MAP_NIMIBUT_TIPS2"])
 	else
@@ -560,21 +557,29 @@ function PIGCompartmentLeave(addonName, menuButtonFrame)
 	GameTooltip:ClearLines();
 	GameTooltip:Hide() 
 end
-
 --PIG屏幕提示信息栏
-local infotip = CreateFrame("MessageFrame", "PIGinfotip", UIParent);
+local infotip = CreateFrame("MessageFrame", "PIGTopMsg", UIParent);
 infotip:SetSize(512,60);
 infotip:SetPoint("TOP",UIParent,"TOP",0,-182);
 infotip:SetFrameStrata("DIALOG")
 infotip:SetTimeVisible(2)
 infotip:SetFadeDuration(0.5)
 PIGSetFont(infotip,16,"OUTLINE")
-function infotip:TryDisplayMessage(message, r, g, b)
-	local r, g, b = r or 1, g or 1, b or 0
+function infotip:add(message, Color)
+	local r, g, b
+	if Color=="G" then
+		r, g, b = 0, 1, 0
+	elseif Color=="W" then
+		r, g, b=nil,nil,nil
+	elseif Color=="R" then
+		r, g, b = 1, 0, 0
+	else
+		r, g, b = 1, 1, 0
+	end	
 	self:AddMessage(message, r, g, b, 1);
 	PlaySound(SOUNDKIT.IG_CHAT_EMOTE_BUTTON);
 end
--- PIGinfotip:TryDisplayMessage(txt)
+--PIGTopMsg:add(txt)
 --功能动作条
 Pig_Options.qiege=16
 local _, _, _, tocversion = GetBuildInfo()
@@ -597,7 +602,8 @@ function QuickBut:GengxinWidth()
 				Children1[i]:SetWidth(0.0001)
 				yincangshunum=yincangshunum+1
 			else
-				Children1[i]:SetWidth(butW-2)
+				local addW = Children1[i].addW or 0
+				Children1[i]:SetWidth(butW-2+addW)
 			end
 		end
 		local geshu1 = #Children1-yincangshunum
@@ -608,28 +614,14 @@ function QuickBut:GengxinWidth()
 		end
 	end
 end
-
-
-
 function QuickBut:Add()
-	QuickBut.ButList[1]()-- [1]总开关
-	-- [2]战场通报
-	-- [3]饰品管理
-	-- [4]符文管理
-	-- [5]装备管理
-	-- [6]炉石/专业
-	-- [7]职业辅助技能
-	-- [8]角色信息统计
-	-- [9]售卖助手丢弃
-	-- [10]售卖助手开
-	-- [11]售卖助手分
-	-- [12]售卖助手选矿
-	-----------------
-	-- [13]时空之门
-	-- [14]时空之门喊话
-	-- [15]开团助手
-	-- [16]带本助手
-	-- [17],
+	QuickBut.ButList[1]()
+	--[1]总开关[2]战场通报[3]饰品管理[4]符文管理[5]装备管理
+	--[6]炉石/专业[7]职业辅助技能[8]角色信息统计
+	--[9]售卖助手丢弃[10]售卖助手开[11]售卖助手分[12]售卖助手选矿
+	-------
+	-- [13]时空之门[14]时空之门喊话[15]开团助手[16]带本助手
+	-- [17]带本助手-跟随,
 	-- [18],
 	-- [19],AFK
 	for i=2,19 do
@@ -639,25 +631,13 @@ function QuickBut:Add()
 	self:GengxinWidth()
 end
 ------------------------
+--/run print(GetMouseFocus():GetName())
+--/run print(GetMouseFocus():GetTexture())
 -- local ButtoSDn = CreateFrame("Button",nil,UIParent, "UIPanelButtonTemplate,SecureActionButtonTemplate");
 -- ButtoSDn:SetSize(76,25);
 -- ButtoSDn:SetPoint("CENTER",UIParent,"CENTER",4,0);
 -- ButtoSDn:SetText("ASDADA");
 -- ButtoSDn:SetScript("OnClick", function ()
--- 	-- PIGA["tianfuID_CTM"]={}
--- 	-- PIGA["tianfuID_CTM_ICON"]={}
--- 	-- InspectUnit("target")
--- 	-- C_Timer.After(1,kaishiguoqutianfu)
--- 	-- for i = 1, GetNumSpellTabs() do
--- 	-- 	local _, _, offset, numSlots = GetSpellTabInfo(i)
--- 	-- 	print(GetSpellTabInfo(i))
--- 	-- 	for j = offset+1, offset+numSlots do
--- 	-- 		--print(j)
--- 	-- 		local spellBookItemInfo = C_SpellBook.GetSpellBookItemInfo(j, Enum.SpellBookSpellBank.Player)
--- 	-- 		print(spellBookItemInfo)
--- 	-- 		for k,v in pairs(spellBookItemInfo) do
--- 	-- 			print(k,v)
--- 	-- 		end
--- 	-- 	end
--- 	-- end
+
+
 -- end);

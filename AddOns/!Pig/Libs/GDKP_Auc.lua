@@ -165,7 +165,7 @@ GDKP_AucF.nr.chujiabut:SetScript("OnClick",function(self)
 	else
 		PIGSendChatRaidParty("出价:"..chujiajiaV.." ("..chujiajianxie..")")
 	end
-	PIGSendAddonMessage(biaotou,auc_chujia.."&"..chujiajiaV)
+	PIGSendAddonRaidParty(biaotou,auc_chujia.."&"..chujiajiaV)
 end)
 GDKP_AucF.Min = CreateFrame("Button",nil,GDKP_AucF, "TruncatedButtonTemplate"); 
 GDKP_AucF.Min:SetNormalTexture("interface/chatframe/ui-chaticon-minimize-up.blp");

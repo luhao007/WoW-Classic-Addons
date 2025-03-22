@@ -37,15 +37,13 @@ PIGUI:SetScript("OnEvent",function(self, event, arg1)
 		addonTable.BagBank()
 		addonTable.Chat()
 		addonTable.PigLayout()
-		local Hardcore = addonTable.Hardcore or function() end
-		Hardcore()
 		--
 		QuickButUI:Add()
 		addonTable.Create.PIGSetPoint()
 		PigMinimapBut_UI.SN_MiniMapBut()
 		------------------------------
 		if not PIGA["Other"]["PigLoad"] then
-			PIG_print(L["ABOUT_LOAD"]..","..L["ABOUT_REMINDER"])
+			PIG_print(L["ABOUT_LOAD"]..L["ABOUT_REMINDER"])
 		end
     end  
 end)

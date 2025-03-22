@@ -1,20 +1,20 @@
 local mod	= DBM:NewMod("LethonVanilla", "DBM-Azeroth")
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20241206234946")
+mod:SetRevision("20250309164007")
 --mod:SetModelID(17887)
 
 if DBM:IsSeasonal("SeasonOfDiscovery") then
 	mod:SetCreatureID(235180)
+	mod:SetEncounterID(3112)--Sod Encounter ID
+	mod:RegisterCombat("combat")
 else
 	mod:SetCreatureID(14888)--121821 TW ID, 14888 classic ID
+	mod:RegisterCombat("combat_yell", L.Pull)
 end
 
 mod:EnableWBEngageSync()--Enable syncing engage in outdoors
 
-mod:RegisterCombat("combat_yell", L.Pull)
-
-mod:SetEncounterID(3112)--Sod Encounter ID
 
 mod:RegisterEventsInCombat(
 --	"SPELL_CAST_START 24818 243468",
@@ -39,7 +39,7 @@ local timerSleepingFogCD		= mod:NewCDTimer(16.8, 24814, nil, nil, nil, 3)
 function mod:OnCombatStart(delay, yellTriggered)
 	if yellTriggered then
 		--timerNoxiousBreathCD:Start(11.9-delay)
-		--timerSleepingFogCD:Start(18.4-delay)
+		timerSleepingFogCD:Start(18.4-delay)
 	end
 end
 

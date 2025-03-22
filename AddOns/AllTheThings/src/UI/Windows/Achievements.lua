@@ -97,7 +97,7 @@ app:CreateWindow("Achievements", {
 						local achievement = (matches[1].isGuild and app.CreateGuildAchievement or app.CreateAchievement)(tonumber(i));
 						local sources = {};
 						for j,o in ipairs(matches) do
-							if not GetRelativeValue(o, "_hqt") then
+							if not GetRelativeValue(o, "_hqt") and o.key == "achievementID" then
 								MergeClone(sources, o);
 								if o.parent then
 									achievement.sourceParent = o.parent;

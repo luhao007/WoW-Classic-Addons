@@ -49,6 +49,10 @@ local questsToBlacklistByPhase = {
     [3] = { -- Phase 3 - BWL + Darkmoon Faire
         [7761] = true, -- Blackhand's Command BWL pre quest
         [7787] = true,
+        [7781] = true, -- The Lord of Blackrock
+        [7782] = true, -- The Lord of Blackrock
+        [7783] = true, -- The Lord of Blackrock
+        [7784] = true, -- The Lord of Blackrock
         -- Darkmoon Faire quests
         [7902] = true,
         [7903] = true,
@@ -200,6 +204,7 @@ local questsToBlacklistByPhase = {
         [8146] = true,
         [8147] = true,
         [8148] = true,
+        [8183] = true,
         [8184] = true,
         [8185] = true,
         [8186] = true,
@@ -598,6 +603,14 @@ local questsToBlacklistByPhase = {
         [8819] = true,
     },
     [6] = { --Phase 6 - Naxxramas
+        -- Investigate the Scourge of X - Blacklist with QuestieCorrections.ANNIVERSARY_HIDE after the event is over
+        [9260] = true,
+        [9261] = true,
+        [9262] = true,
+        [9263] = true,
+        [9264] = true,
+        [9265] = true,
+        ---
         [9085] = true,
         [9142] = true,
         [9165] = true,
@@ -690,6 +703,7 @@ local questsToBlacklistByPhase = {
         [9136] = true,
         [9137] = true,
         [9153] = true,
+        [9154] = true,
         [9211] = true,
         [9213] = true,
         [9221] = true,
@@ -725,6 +739,8 @@ local questsToBlacklistByPhase = {
         [9415] = true,
         [9419] = true,
         [9416] = true,
+        [9664] = true,
+        [9665] = true,
     },
 }
 

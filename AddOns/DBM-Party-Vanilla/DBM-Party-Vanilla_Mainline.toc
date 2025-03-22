@@ -1,6 +1,6 @@
-## Interface: 30400
+## Interface: 30404
 ## Author: MysticalOS
-## Version: r181
+## Version: r194
 
 ## Title: |cffffe00a<|r|cffff7d0aDBM Mod|r|cffffe00a>|r |cffc030c0Dungeons (Vanilla)|r
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFF69CCF0小队|r |cFF22B14C旧世经典（怀旧服）|r
@@ -35,6 +35,8 @@
 ## X-WoWI-ID: 24904
 ## X-Wago-ID: xZKxZENk
 ## X-Part-Of: DBM-Core
+
+locale.generated.lua
 
 Retail\localization.en.lua
 Retail\localization.es.lua

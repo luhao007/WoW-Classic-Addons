@@ -118,7 +118,7 @@ local function ShowGemBut(Gemse,GemitemLink,nulltishi)
 		else
 			if nulltishi==55655 then
 				GameTooltip:SetSpellByID(55655)
-				GameTooltip:AddLine("|cff00FFFF!Pig:|r|cffFF0000"..WAISTSLOT.."未打孔|r")
+				GameTooltip:AddLine("|cff00FFFF[!Pig]:|r|cffFF0000"..WAISTSLOT.."未打孔|r")
 			else
 				GameTooltip:AddLine(nulltishi)
 			end
@@ -178,7 +178,7 @@ local function ShowEnchantInfo(EnchantBut,fumoid)
 				GameTooltip:SetHyperlink(ItemLink)
 				GameTooltip:AddLine(ENCHANTS.."ID:"..fumoid..Newdata.laiyuan)
 			else
-				GameTooltip:AddLine("|cff00FFFF!Pig:|r"..ENCHANTS.."ID:"..fumoid..ENCHANTS..INFO..UNKNOWN)
+				GameTooltip:AddLine("|cff00FFFF[!Pig]:|r"..ENCHANTS.."ID:"..fumoid..ENCHANTS..INFO..UNKNOWN)
 			end
 
 			GameTooltip:Show();
@@ -438,7 +438,7 @@ local function ShowItemList(Parent,unit,Data,fuwen)
 							Enchantui:SetScript("OnEnter", function (self)
 								GameTooltip:ClearLines();
 								GameTooltip:SetOwner(self, "ANCHOR_RIGHT",0,0);
-								GameTooltip:AddLine("|cff00FFFF!Pig:|r|cffFF0000"..InvSlot["Name"][k][2]..NONE..ENCHANTS.."|r")
+								GameTooltip:AddLine("|cff00FFFF[!Pig]:|r|cffFF0000"..InvSlot["Name"][k][2]..NONE..ENCHANTS.."|r")
 								GameTooltip:Show();
 							end);
 						end
@@ -456,7 +456,7 @@ local function ShowItemList(Parent,unit,Data,fuwen)
 						fuwenIcon:SetScript("OnEnter", function (self)
 								GameTooltip:ClearLines();
 								GameTooltip:SetOwner(self, "ANCHOR_RIGHT",0,0);
-								GameTooltip:AddLine("|cff00FFFF!Pig:|r|cffFF0000"..InvSlot["Name"][k][2]..NONE..RUNES.."|r")
+								GameTooltip:AddLine("|cff00FFFF[!Pig]:|r|cffFF0000"..InvSlot["Name"][k][2]..NONE..RUNES.."|r")
 								GameTooltip:Show();
 							end);
 						if unit=="player" or unit=="lx" then
@@ -768,7 +768,7 @@ local function add_ItemList(fujik,miaodian,ziji)
 					if IS_guacha then
 						if InCombatLockdown() then
 							PlaySound(SOUNDKIT.IG_CHAT_EMOTE_BUTTON);
-							PIGinfotip:TryDisplayMessage("请专心战斗", YELLOW_FONT_COLOR:GetRGB());
+							PIGTopMsg:add("请专心战斗");
 						else
 							InspectPaperDollFrameTalentsButtonMixin:OnClick()
 						end

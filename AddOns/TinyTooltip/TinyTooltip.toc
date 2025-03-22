@@ -1,6 +1,6 @@
-## Interface: 30400
+## Interface: 30404
 ## Author: M, GovtGeek
-## Version: 4.4.1.1
+## Version: 4.4.2.0
 
 ## Title: TinyTooltip
 ## Notes: TinyTooltip

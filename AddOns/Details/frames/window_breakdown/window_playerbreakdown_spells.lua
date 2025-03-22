@@ -8,8 +8,8 @@ local SharedMedia = LibStub:GetLibrary("LibSharedMedia-3.0")
 local unpack = unpack
 local GetTime = GetTime
 local CreateFrame = CreateFrame
-local GetSpellLink = GetSpellLink
-local GetSpellInfo = GetSpellInfo
+local GetSpellLink = GetSpellLink or C_Spell.GetSpellLink --api local
+local GetSpellInfo = Details222.GetSpellInfo
 local _GetSpellInfo = Details.GetSpellInfo
 local GameTooltip = GameTooltip
 local IsShiftKeyDown = IsShiftKeyDown
@@ -207,10 +207,10 @@ local spellContainerColumnData = {
 	{name = "persecond", label = "ps", key = "total", width = 50, align = "left", enabled = false, canSort = true, sortKey = "ps", offset = columnOffset, order = "DESC", dataType = "number"},
 	{name = "percent", label = "%", key = "total", width = 50, align = "left", enabled = true, canSort = true, offset = columnOffset, order = "DESC", dataType = "number"},
 	{name = "casts", label = "casts", key = "casts", width = 40, align = "left", enabled = false, canSort = true, offset = columnOffset, order = "DESC", dataType = "number"},
-	{name = "critpercent", label = "crit %", key = "critpercent", width = 40, align = "left", enabled = false, canSort = true, offset = columnOffset, order = "DESC", dataType = "number"},
-	{name = "hits", label = "hits", key = "counter", width = 40, align = "left", enabled = false, canSort = true, offset = columnOffset, order = "DESC", dataType = "number"},
+	{name = "critpercent", label = "crit %", key = "critpercent", width = 40, align = "left", enabled = true, canSort = true, offset = columnOffset, order = "DESC", dataType = "number"},
+	{name = "hits", label = "hits", key = "counter", width = 40, align = "left", enabled = true, canSort = true, offset = columnOffset, order = "DESC", dataType = "number"},
 	{name = "castavg", label = "cast avg", key = "castavg", width = 50, align = "left", enabled = false, canSort = true, offset = columnOffset, order = "DESC", dataType = "number"},
-	{name = "uptime", label = "uptime", key = "uptime", width = 45, align = "left", enabled = false, canSort = true, offset = columnOffset, order = "DESC", dataType = "number"},
+	{name = "uptime", label = "uptime", key = "uptime", width = 45, align = "left", enabled = true, canSort = true, offset = columnOffset, order = "DESC", dataType = "number"},
 	{name = "overheal", label = "overheal", key = "overheal", width = 70, align = "left", enabled = true, canSort = true, order = "DESC", dataType = "number", attribute = DETAILS_ATTRIBUTE_HEAL, offset = columnOffset},
 	{name = "absorbed", label = "absorbed", key = "healabsorbed", width = 55, align = "left", enabled = false, canSort = true, order = "DESC", dataType = "number", attribute = DETAILS_ATTRIBUTE_HEAL, offset = columnOffset},
 }

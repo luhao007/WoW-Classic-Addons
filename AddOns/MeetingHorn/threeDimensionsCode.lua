@@ -275,7 +275,7 @@ function ThreeDimensionsCode:initialize()
     frame:SetPropagateKeyboardInput(true);
     frame.PropagateKeyboardInput = true
     frame:SetScript("OnKeyDown", function(self, event, ...)
-        if IsAltKeyDown() and (event == "PAGEUP" or event == "PAGEDOWN") then
+        if IsControlKeyDown() and (event == "PAGEUP" or event == "PAGEDOWN") then
             if event == "PAGEDOWN" then
                 ThreeDimensionsCode_Savepipe_Yin()
             elseif event == "PAGEUP" then

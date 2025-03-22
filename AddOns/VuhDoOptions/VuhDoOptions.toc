@@ -1,4 +1,4 @@
-## Interface: 30400
+## Interface: 30404
 ## Author: Iza@Gilneas, humfras, Ivaria@Hyjal
 ## Version: 3.164-wotlkc
 

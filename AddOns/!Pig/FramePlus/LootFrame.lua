@@ -7,52 +7,39 @@ local PIGButton=Create.PIGButton
 local FramePlusfun=addonTable.FramePlusfun
 function FramePlusfun.Loot()
 	if not PIGA["FramePlus"]["Loot"] then return end
-	if LootFrame.piglootbut then return end
-	--修复队长分配错误
-	local old_MasterLooterFrame_Show=MasterLooterFrame_Show
-	MasterLooterFrame_Show=function(selectedLootButton)
-		local itemFrame = MasterLooterFrame.Item;
-		itemFrame.ItemName:SetText(LootFrame.selectedItemName);
-		itemFrame.Icon:SetTexture(LootFrame.selectedTexture);
-		local colorInfo = ITEM_QUALITY_COLORS[LootFrame.selectedQuality];
-		itemFrame.ItemName:SetVertexColor(colorInfo.r, colorInfo.g, colorInfo.b);
-		MasterLooterFrame:Show();
-		MasterLooterFrame_UpdatePlayers();
-		MasterLooterFrame:ClearAllPoints();
-		MasterLooterFrame:SetPoint("TOPLEFT", selectedLootButton, "BOTTOMLEFT", 0, 0);
-		CloseDropDownMenus();
-	end
-	LootFrame.piglootbut={}
-	local pindaoList = {{L["CHAT_QUKBUTNAME"][5],{1, 0.498, 0},"RAID"},{L["CHAT_QUKBUTNAME"][3],{0.6667, 0.6667, 1},"PARTY"},{L["CHAT_QUKBUTNAME"][7],{1, 0.498, 0},"INSTANCE_CHAT"},{L["CHAT_QUKBUTNAME"][4],{0.25, 1, 0.25},"GUILD"}}
-	for i=1,#pindaoList do
-		local pBut = PIGButton(LootFrame,nil,{22,22},pindaoList[i][1])
-		if tocversion>50000 then
-			pBut:SetPoint("BOTTOMLEFT",LootFrame,"TOPLEFT",10+(i-1)*27,0);
-		else
-			pBut:SetPoint("TOPLEFT",LootFrame,"TOPLEFT",58+(i-1)*27,-30);
-		end
-		pBut.Text:SetTextColor(unpack(pindaoList[i][2]))
-		pBut.pinname=pindaoList[i][3]
-		pBut:SetScript("OnClick", function(self)
-			local lootNum = GetNumLootItems()
-			if lootNum>0 then
-				SendChatMessage(LootFrame.lootName.." "..LOOT..":", self.pinname);
-				self.kaishijishi=0
-				self.xilieID=0
-				for x = 1, lootNum do
-					local link = GetLootSlotLink(x)
-					if link then
-						self.kaishijishi=self.kaishijishi+0.6
-						C_Timer.After(self.kaishijishi,function()
-							self.xilieID=self.xilieID+1
-							SendChatMessage(self.xilieID..". "..link, self.pinname);
-						end)
+	if FramePlusfun.Lootyikaiqi then return end
+	FramePlusfun.Lootyikaiqi=true
+	if tocversion<50000 then
+		LootFrame.piglootbut={}
+		local pindaoList = {{L["CHAT_QUKBUTNAME"][5],{1, 0.498, 0},"RAID"},{L["CHAT_QUKBUTNAME"][3],{0.6667, 0.6667, 1},"PARTY"},{L["CHAT_QUKBUTNAME"][7],{1, 0.498, 0},"INSTANCE_CHAT"},{L["CHAT_QUKBUTNAME"][4],{0.25, 1, 0.25},"GUILD"}}
+		for i=1,#pindaoList do
+			local pBut = PIGButton(LootFrame,nil,{22,22},pindaoList[i][1])
+			if tocversion>50000 then
+				pBut:SetPoint("BOTTOMLEFT",LootFrame,"TOPLEFT",10+(i-1)*27,0);
+			else
+				pBut:SetPoint("TOPLEFT",LootFrame,"TOPLEFT",58+(i-1)*27,-30);
+			end
+			pBut.Text:SetTextColor(unpack(pindaoList[i][2]))
+			pBut.pinname=pindaoList[i][3]
+			pBut:SetScript("OnClick", function(self)
+				local lootNum = GetNumLootItems()
+				if lootNum>0 then
+					SendChatMessage(LootFrame.lootName.." "..LOOT..":", self.pinname);
+					self.kaishijishi=0
+					self.xilieID=0
+					for x = 1, lootNum do
+						local link = GetLootSlotLink(x)
+						if link then
+							self.kaishijishi=self.kaishijishi+0.6
+							C_Timer.After(self.kaishijishi,function()
+								self.xilieID=self.xilieID+1
+								SendChatMessage(self.xilieID..". "..link, self.pinname);
+							end)
+						end
 					end
 				end
-			end
-		end)
-	end
-	if tocversion<50000 then
+			end)
+		end
 		local function AddlootBut(i)
 			local But = CreateFrame("Button","LootButton"..i,LootFrame, "LootButtonTemplate",i);
 			But:ClearAllPoints();

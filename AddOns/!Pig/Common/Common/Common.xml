@@ -2,5 +2,5 @@
 	<Script file="Options.lua" />
 	<Script file="QuestsEnd.lua"/>
 	<Script file="FastFocus.lua"/>
-	<Script file="FastLoot.lua" />
+	<Script file="AFK.lua"/>
 </Ui>

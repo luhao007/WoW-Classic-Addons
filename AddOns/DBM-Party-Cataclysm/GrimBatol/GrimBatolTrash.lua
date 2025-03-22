@@ -2,7 +2,7 @@ if not DBM:IsRetail() then return end
 local mod	= DBM:NewMod("GrimBatolTrash", "DBM-Party-Cataclysm", 3)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20250105060420")
+mod:SetRevision("20250208191443")
 --mod:SetModelID(47785)
 mod.isTrashMod = true
 mod.isTrashModBossFightAllowed = true
@@ -100,7 +100,7 @@ function mod:SPELL_CAST_START(args)
 			warnMassTremor:Show()
 		end
 	elseif spellId == 456696 then--Spammed by non combat enemies entire instance, if IsValidWarning above isn't enough, additional filter messages needed
-		if self:AntiSpam(3, 2) then
+		if self:AntiSpam(2.5, 2) then
 			specWarnObsidianStomp:Show()
 			specWarnObsidianStomp:Play("watchstep")
 		end

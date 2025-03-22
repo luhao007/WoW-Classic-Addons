@@ -1,32 +1,17 @@
 local addonName, addonTable = ...;
 local _, _, _, tocversion = GetBuildInfo()
 local L =addonTable.locale
-local pigname=L.pigname
-local extLsit=L.extLsit
 if GetLocale() == "enUS" then
-L["PIGaddonList"] = {
-	["Fuji"]=addonName,
-	[L.extLsit[1]]="Tardis",
-	[L.extLsit[2]]="GDKP",
-	[L.extLsit[3]]="Farm",
-}
 L["ADDON_NAME"] = "Toolbox";
 L["ADDON_AUTHOR"]="Contact Author";
 --About
 L["ABOUT_TABNAME"] = "About";
 L["ABOUT_UPDATETIPS"] = "The AddOn has expired. Please check the update address in AddOn About";
 L["ABOUT_LOAD"] = "Loading succeeded /pig or mini map button setting";
-L["ABOUT_REMINDER"]="|cffFF0000This AddOn is completely free, online shopping platform for sale are liars|r"
-L["ABOUT_UPDATEADD"]="Update URL: "
+L["ABOUT_REMINDER"]="|cff00FF00(See Plugin About menu for updates)|r"
+L["ABOUT_UPDATEADD"]="Update: "
 L["ABOUT_MAIL"]="Feedback: "
 L["ABOUT_MEDIA"]="Use tutorial: "
-L["ABOUT_OTHERADDONS"]="Other addons by the author"
-L["ABOUT_OTHERADDON_LIST"]={
-	{"|cff00FFFF"..L.extLsit[1].."|r","|cff00ff00["..L["PIGaddonList"][L.extLsit[1]].."]|r","https://www.curseforge.com/wow/addons/pig_tardis"},
-	{"|cff00FFFF"..L.extLsit[2].."|r","|cff00ff00["..L["PIGaddonList"][L.extLsit[2]].."]|r","https://www.curseforge.com/wow/addons/pig_gdkp"},
-	{"|cff00FFFF"..L.extLsit[3].."|r","|cff00ff00["..L["PIGaddonList"][L.extLsit[3]].."]|r","https://www.curseforge.com/wow/addons/pig-farm"},
-}
-L["ABOUT_OTHERADDONS_DOWN"]="- "..COPY_NAME.." to your addons updater "..SEARCH.." install"
 --error
 L["ERROR_CLEAR"] = "clear";
 L["ERROR_PREVIOUS"] = "previous";
@@ -49,7 +34,7 @@ L["OPTUI_ERRORTIPS"] = "***Addon loading failed. Please try again***";
 L["DEBUG_TABNAME"] = "Debug";
 L["DEBUG_BUTNAME"] = "Memory CPU usage";
 L["DEBUG_CPUUSAGE"] = "CPU usage";
-L["DEBUG_CPUUSAGETIPS"] = "Enable CPU usage monitoring only when necessary. This function consumes system performance\n"..string.format(ERR_USE_LOCKED_WITH_ITEM_S,RELOADUI);
+L["DEBUG_CPUUSAGETIPS"] = "Enable CPU usage monitoring only when necessary\nThis function consumes system performance\n"..string.format(ERR_USE_LOCKED_WITH_ITEM_S,RELOADUI);
 L["DEBUG_COLLECT"] = "collect";
 L["DEBUG_COLLECTTIPS"] = "|cff00FFffThis function causes all execution of the plug-in to stop until the recall process is complete\nToo many addons can take more than a few seconds, which causes the game to freeze temporarily\nWith the exception of plug-in development and debugging, manual calls are not required in most cases,\nand LUA's automatic memory management mechanism operates periodically|r";
 L["DEBUG_ADDNUM"] = "AddOn";

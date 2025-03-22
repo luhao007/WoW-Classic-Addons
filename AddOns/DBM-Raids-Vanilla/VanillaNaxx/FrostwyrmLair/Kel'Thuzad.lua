@@ -7,7 +7,7 @@ else
 	mod.statTypes = "normal"
 end
 
-mod:SetRevision("20241222110740")
+mod:SetRevision("20250314083645")
 mod:SetCreatureID(15990)
 mod:SetEncounterID(1114)
 --mod:SetModelID(15945)--Doesn't work at all, doesn't even render.
@@ -15,15 +15,34 @@ mod:SetMinCombatTime(60)
 mod:SetUsedIcons(1, 2, 3, 4, 5, 6, 7, 8)
 mod:SetZone(533)
 
-mod:RegisterCombat("combat_yell", L.Yell)
+if DBM:IsSeasonal("SeasonOfDiscovery") then
+	mod:DisableBossDeathKill() -- He actually dies at end of P2 in on SoD Mythic and gets resurrected
+	mod:RegisterCombat("combat")
+else
+	mod:RegisterCombat("combat_yell", L.Yell)
+end
 
 mod:RegisterEventsInCombat(
-	"SPELL_AURA_APPLIED 27808 27819 28410",
+	"SPELL_AURA_APPLIED 27808 27819 28410 1222430",
 	"SPELL_AURA_REMOVED 28410",
 	"SPELL_CAST_SUCCESS 27810 27819 27808",
 	"UNIT_HEALTH mouseover target",
 	"UNIT_TARGETABLE_CHANGED"
 )
+
+-- New spell ID found in logs on SoD
+-- 364341 (Survivor of the Damned) cast on kill, ID looks like SoM, seems irrelevant
+
+-- On SoD ENCOUNTER_START triggers shortly before the yell and is the better trigger. Phase 1 is shorter on SoD
+-- Not sure about Era, still using old logic there until we can confirm that ENCOUTNER_START works the same way.
+-- People reported that the phase time changed on Era as well, so the diff is just the trigger
+
+-- "<127.94 22:09:41> [ENCOUNTER_START] 1114#Kel'Thuzad#186#40",
+-- "<128.16 22:09:41> [CHAT_MSG_MONSTER_YELL] Minions, servants, soldiers of the cold dark! Obey the call of Kel'Thuzad!#Kel'Thuzad###Sephyx##0#0##0#5535#nil#0#false#false#false#false",
+-- "<342.09 22:13:15> [CHAT_MSG_MONSTER_YELL] The end is upon you!#Kel'Thuzad###World Trigger##0#0##0#5661#nil#0#false#false#false#false",
+-- "<358.05 22:13:31> [CLEU] SWING_DAMAGE#Creature-0-5252-533-11218-15990-000051CFAB#Kel'Thuzad#Player-5827-0271EB0C#Ironjoke#3824#-1#nil#nil#false#false#nil#nil",
+-- "<358.05 22:13:31> [IsEncounterInProgress()] true",
+local phase1Duration = DBM:IsSeasonal("SeasonOfDiscovery") and 230.1 or 229.9
 
 --[[
 ability.id = 27810 or ability.id = 27819 or ability.id = 27808 and type = "cast"
@@ -31,6 +50,7 @@ ability.id = 27810 or ability.id = 27819 or ability.id = 27808 and type = "cast"
 --]]
 local warnAddsSoon			= mod:NewAnnounce("warnAddsSoon", 1, "134321")
 local warnPhase2			= mod:NewPhaseAnnounce(2, 3, nil, nil, nil, nil, nil, 2)
+local warnPhase3			= mod:NewPhaseAnnounce(3, 3, nil, nil, nil, nil, nil, 2)
 local warnBlastTargets		= mod:NewTargetAnnounce(27808, 2)
 local warnFissure			= mod:NewTargetAnnounce(27810, 4, nil, nil, nil, nil, nil, 2)
 local warnMana				= mod:NewTargetAnnounce(27819, 2)
@@ -43,12 +63,16 @@ local specWarnFissureYou	= mod:NewSpecialWarningYou(27810, nil, nil, nil, 3, 2)
 local yellManaBomb			= mod:NewShortYell(27819)
 local yellFissure			= mod:NewYell(27810)
 
+-- Frost blast is a mess on SoD, consider removing it completely
+-- 	"Frost Blast-27808-npc:15990-00002CE928 = pull:265.1, 116.6, 40.1, 31.5, 58.2",
+-- 	"Frost Blast-27808-npc:15990-00002D1657 = pull:290.0, 30.3, 52.2, 36.4",
+
 --Fissure timer is 13-30 or something pretty wide, so no timer
 local timerManaBomb			= mod:NewCDTimer(20, 27819, nil, nil, nil, 3)--20-50 (still true in vanilla, kind of shitty variation too)
-local timerFrostBlastCD		= mod:NewCDTimer(33.5, 27808, nil, nil, nil, 3, nil, DBM_COMMON_L.DEADLY_ICON)--33-46
+local timerFrostBlastCD		= mod:NewVarTimer(DBM:IsSeasonal("SeasonOfDiscovery") and "v30.3-58.2" or "v33.5-46", 27808, nil, nil, nil, 3, nil, DBM_COMMON_L.DEADLY_ICON)--33-46
 local timerfrostBlast		= mod:NewBuffActiveTimer(4, 27808, nil, nil, nil, 5, nil, DBM_COMMON_L.HEALER_ICON)
-local timerMCCD				= mod:NewCDTimer(90, 28410, nil, nil, nil, 3)--actually 60 second cdish but its easier to do it this way for the first one.
-local timerPhase2			= mod:NewTimer(330, "TimerPhase2", "136116", nil, nil, 6)
+local timerMCCD				= mod:NewCDTimer(90, 28410, nil, nil, nil, 3)--Probably should also be made a var timer with good variance data
+local timerPhase2			= mod:NewTimer(phase1Duration, "TimerPhase2", "136116", nil, nil, 6)
 
 mod:AddSetIconOption("SetIconOnMC2", 28410, false, 0, {1, 2, 3, 4, 5})
 mod:AddSetIconOption("SetIconOnManaBomb", 27819, false, 0, {8})
@@ -84,12 +108,12 @@ function mod:OnCombatStart(delay)
 	self.vb.warnedAdds = false
 	self.vb.MCIcon1 = 1
 	self.vb.MCIcon2 = 5
-	specwarnP2Soon:Schedule(320-delay)
+	specwarnP2Soon:Schedule(phase1Duration - 10 - delay)
 	timerPhase2:Start()
-	warnPhase2:Schedule(330)
-	warnPhase2:ScheduleVoice(330, "ptwo")
+	warnPhase2:Schedule(phase1Duration - delay)
+	warnPhase2:ScheduleVoice(phase1Duration - delay, "ptwo")
 	if self.Options.RangeFrame then
-		self:Schedule(330-delay, RangeToggle, true)
+		self:Schedule(phase1Duration - delay, RangeToggle, true)
 	end
 end
 
@@ -158,6 +182,10 @@ function mod:SPELL_AURA_APPLIED(args)
 			end
 		end
 		warnChainsTargets:CombinedShow(1, args.destName)
+	elseif args:IsSpell(1222430) then -- SoD Mythic extra phase
+		self:SetStage(3)
+		warnPhase3:Show()
+		warnPhase3:Play("pthree")
 	end
 end
 

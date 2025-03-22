@@ -342,7 +342,6 @@ app.AddEventHandler("OnReady", function()
 							callbacks.minimap.tooltip_show = function(event, tooltip, uid, dist)
 								tooltip:ClearLines();
 								for i,o in ipairs(root) do
-									local line = tooltip:NumLines() + 1;
 									tooltip:AddLine(o.text);
 									if o.title and not o.explorationID then tooltip:AddLine(o.title); end
 									local key = o.key;
@@ -353,7 +352,7 @@ app.AddEventHandler("OnReady", function()
 										tooltip:AddDoubleLine(L.CRITERIA_FOR, achGroup.text or GetAchievementLink(o.achievementID));
 									else
 										if key == "npcID" then key = "creatureID"; end
-										AttachTooltipSearchResults(tooltip, line, SearchForField, key, o[o.key]);
+										AttachTooltipSearchResults(tooltip, SearchForField, key, o[o.key]);
 									end
 								end
 								tooltip:Show();

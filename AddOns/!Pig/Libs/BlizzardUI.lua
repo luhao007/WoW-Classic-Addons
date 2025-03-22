@@ -6,7 +6,7 @@ local PIGFontString=Create.PIGFontString
 local PIGDiyBut = Create.PIGDiyBut
 
 --角色界面
-function Create.ADD_BlizzardBG(self,texname,Point)
+function Create.CharacterBG(self,texname,Point)
 	local Point = Point or {14,-13,-3,5}
 	if NDui then
 		self.Bg = self:CreateTexture(texname.."Bg", "BACKGROUND");
@@ -87,7 +87,7 @@ end
 function Create.BagBankBG(self,texname)
 	if ElvUI then
 	else
-		Create.ADD_BlizzardBG(self,texname)		
+		Create.CharacterBG(self,texname)		
 		self.portrait = self:CreateTexture(nil,"BACKGROUND");
 		self.portrait:SetSize(60,60);
 		self.portrait:SetPoint("TOPLEFT",self,"TOPLEFT",8.5,-4);

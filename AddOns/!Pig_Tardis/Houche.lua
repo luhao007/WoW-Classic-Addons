@@ -197,13 +197,11 @@ end
 local TardisInfo=addonTable.TardisInfo
 function TardisInfo.Houche(Activate)
 	if not PIGA["Tardis"]["Houche"]["Open"] then return end
-	local InviteUnit=InviteUnit or C_PartyInfo and C_PartyInfo.InviteUnit
-
 	local GetPIGID=Fun.GetPIGID
 	local disp_time=Fun.disp_time
-	local Biaotou=Data.Tardis[1][1]
-	local GetInfoMsg=Data.Tardis[2][2]
-	C_ChatInfo.RegisterAddonMessagePrefix(Biaotou)
+	local Biaotou=Data.Tardis.Prefix
+	local gnindexID=2
+	local GetInfoMsg=Data.Tardis.GetMsg[gnindexID]
 
 	local GnName,GnUI,GnIcon,FrameLevel = unpack(TardisInfo.uidata)
 	local InvF=_G[GnUI]
@@ -233,7 +231,7 @@ function TardisInfo.Houche(Activate)
 		if tocversion<80000 then
 			SendChatMessage(GetInfoMsg..TabF.selectedCategory..TabF.selectedGroup..TabF.selectedActivity,"CHANNEL",nil,self.PIGID)
 		else
-			C_ChatInfo.SendAddonMessage(Biaotou,GetInfoMsg..TabF.selectedCategory..TabF.selectedGroup..TabF.selectedActivity,"CHANNEL",self.PIGID)
+			PIGSendAddonMessage(Biaotou,GetInfoMsg..TabF.selectedCategory..TabF.selectedGroup..TabF.selectedActivity,"CHANNEL",self.PIGID)
 		end
 		self:CZdaojishi()
 		PIGA["Tardis"]["Houche"]["DaojishiCD"]=GetServerTime();
@@ -424,7 +422,7 @@ function TardisInfo.Houche(Activate)
 		hangL.caozuo:HookScript("OnClick", function(self)
 			local wjName = self:GetParent().allname
 			if wjName==UNKNOWNOBJECT then return end
-			InviteUnit(wjName)
+			PIG_InviteUnit(wjName)
 			TabF.JieshouInfoList[self:GetID()][3]=true
 			TabF.gengxinhang(TabF.F.Scroll)
 		end)
@@ -482,7 +480,7 @@ function TardisInfo.Houche(Activate)
 					hangL.mudidi:SetText(activityInfo.fullName)
 					local classId,raceID,level,ItemLevel = strsplit("-", playerData);
 					hangL.nameF.Role:SetAtlas(PIGGetIconForRole(zhizenameID[assignedRole], false));
-					local className, classFile, classID = GetClassInfo(classId)
+					local className, classFile, classID = PIGGetClassInfo(classId)
 					hangL.nameF.Classe:SetTexCoord(unpack(CLASS_ICON_TCOORDS[classFile]));
 					hangL.nameF.LVT:SetText(level)
 					local wjName, servername = strsplit("-", allname)
@@ -846,7 +844,7 @@ function TardisInfo.Houche(Activate)
 		local Player =TalentData.SAVE_Player()
 		local Tianfu =TalentData.GetTianfuTXT()
 		local infoall = "!H"..Player.."#"..Tianfu.."#"..FCTabF.roleID.."#"..FCTabF.selectedActivity.."#"..FCTabF.Description
-		C_ChatInfo.SendAddonMessage(Biaotou,infoall,"WHISPER",waname)
+		PIGSendAddonMessage(Biaotou,infoall,"WHISPER",waname)
 	end
 	TabF:RegisterEvent("CHAT_MSG_CHANNEL");
 	TabF:RegisterEvent("CHAT_MSG_ADDON");

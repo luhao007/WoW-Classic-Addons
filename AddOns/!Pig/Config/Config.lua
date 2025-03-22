@@ -94,10 +94,50 @@ end
 function addonTable.Set_Name_Realm()
 	local wanjia, realm = UnitFullName("player")
 	local realm = realm or GetRealmName()
+	local className, classFile, classId = UnitClass("player")
+	local raceName, raceFile, raceId = UnitRace("player")
 	Pig_OptionsUI.Name=wanjia or ""
 	Pig_OptionsUI.Realm=realm or ""
 	Pig_OptionsUI.AllName = wanjia.."-"..realm
-	Pig_OptionsUI.AllNameElvUI = wanjia.." - "..realm
+	Pig_OptionsUI.ClassData = {["className"]=className,["classFile"]=classFile,["classId"]=classId}
+	Pig_OptionsUI.RaceData = {["raceName"]=raceName,["raceFile"]=raceFile,["raceId"]=raceId}
+	Pig_OptionsUI.AllNameElvUI = format('%s - %s', wanjia, realm)
+	Pig_OptionsUI.IsOpen_ElvUI=function(vf1)
+		if IsAddOnLoaded("ElvUI") then
+			if vf1 then
+				if ElvPrivateDB and ElvPrivateDB["profiles"] then
+					if ElvPrivateDB["profiles"][Pig_OptionsUI.AllNameElvUI] then
+						if ElvPrivateDB["profiles"][Pig_OptionsUI.AllNameElvUI][vf1] then
+							if ElvPrivateDB["profiles"][Pig_OptionsUI.AllNameElvUI][vf1]["enable"]==false then
+								return false
+							end
+						end
+					end
+				end
+				return true
+			else
+				return true
+			end
+		else
+			return false
+		end
+	end
+	Pig_OptionsUI.IsOpen_NDui=function(vf1)
+		if IsAddOnLoaded("NDui") then
+			if vf1 then
+				if NDuiDB and NDuiDB[vf1] then
+					if NDuiDB[vf1]["Enable"] then
+						return true
+					end
+				end
+				return false
+			else
+				return true
+			end
+		else
+			return false
+		end
+	end
 end
 ---------
 local function Config_Set(cfdata,bool)
@@ -125,7 +165,7 @@ local function Config_Set(cfdata,bool)
 end
 addonTable.Config_Set=Config_Set
 --------
-local Config_index={"Default","Rurutia","DIY"}
+local Config_index={"Default","Rurutia"}--,"DIY"
 local Config_Data={
 	["Default"]={["zhCN"]=CHAT_DEFAULT},
 	["Rurutia"]={["zhCN"]="露露",["zhTW"]="露露",["enUS"]="Rurutia",},
@@ -139,7 +179,7 @@ local function load_Configuration(v)
 	else
 		local buttxt = Config_Data[v][GetLocale()] or Config_Data[v]["zhCN"]
 		local buttxt = buttxt..L["CONFIG_TABNAME"]
-		PIGinfotip:TryDisplayMessage(string.format(ERR_ARENA_TEAM_PLAYER_NOT_FOUND_S,buttxt),1,0,0)
+		PIGTopMsg:add(string.format(ERR_ARENA_TEAM_PLAYER_NOT_FOUND_S,buttxt),"R")
 	end
 end
 ---------
@@ -163,7 +203,7 @@ for id=1,maxnum do
 	local tipstxt=""
 	if id==1 then
 		tipstxt=L["CONFIG_ERRTIPS"]
-	elseif id==maxnum then
+	elseif Config_index[id]=="DIY" then
 		tipstxt=L["CONFIG_DIYTIPS"]
 	else
 		tipstxt=L["CONFIG_LOAD"]..buttxt..INFO
@@ -176,7 +216,7 @@ for id=1,maxnum do
 	end
 	fuFrame.ConfigButLsit[id]=DefaultF
 	DefaultF.button:SetScript("OnClick", function ()
-		if id==maxnum then
+		if Config_index[id]=="DIY" then
 			Pig_OptionsUI:ShowAuthor()
 		else
 			StaticPopup_Show("PEIZHI_ZAIRUQUEREN",buttxt,nil,Config_index[id]);
@@ -197,31 +237,6 @@ StaticPopupDialogs["PEIZHI_ZAIRUQUEREN"] = {
 
 --导出/导入----------
 local function Replacement_data(newdata,czdata)
-	-- newdata["AutoSellBuy"]["Sell_List"]=czdata["AutoSellBuy"]["Sell_List"]
-	-- newdata["AutoSellBuy"]["Sell_Lsit_Filtra"]=czdata["AutoSellBuy"]["Sell_Lsit_Filtra"]
-	-- newdata["AutoSellBuy"]["Fen_List"]=czdata["AutoSellBuy"]["Fen_List"]
-	-- newdata["AutoSellBuy"]["Diuqi_List"]=czdata["AutoSellBuy"]["Diuqi_List"]
-	-- newdata["AutoSellBuy"]["Xuan_List"]=czdata["AutoSellBuy"]["Xuan_List"]
-	-- newdata["AutoSellBuy"]["Open_List"]=czdata["AutoSellBuy"]["Open_List"]
-	-- newdata["Chatjilu"]["jiluinfo"]=czdata["Chatjilu"]["jiluinfo"]
-	-- newdata["AHPlus"]["CacheData"]=czdata["AHPlus"]["CacheData"]
-	-- newdata["AHPlus"]["Coll"]=czdata["AHPlus"]["Coll"]
-	-- newdata["MailPlus"]["Coll"]=czdata["MailPlus"]["Coll"]
-	-- newdata["StatsInfo"]["Players"]=czdata["StatsInfo"]["Players"]
-	-- newdata["StatsInfo"]["SkillCD"]=czdata["StatsInfo"]["SkillCD"]
-	-- newdata["StatsInfo"]["FubenCD"]=czdata["StatsInfo"]["FubenCD"]
-	-- newdata["StatsInfo"]["Token"]=czdata["StatsInfo"]["Token"]
-	-- newdata["StatsInfo"]["TradeData"]=czdata["StatsInfo"]["TradeData"]
-	-- newdata["StatsInfo"]["PlayerSH"]=czdata["StatsInfo"]["PlayerSH"]
-	-- newdata["StatsInfo"]["Items"]=czdata["StatsInfo"]["Items"]
-	-- newdata["StatsInfo"]["AHData"]=czdata["StatsInfo"]["AHData"]
-	-- newdata["Error"]["ErrorDB"]=czdata["Error"]["ErrorDB"]
-	-- --
-	-- newdata["Tardis"]["Plane"]["InfoList"]=czdata["Tardis"]["Plane"]["InfoList"]
-	-- --
-	-- newdata["GDKP"]["ItemList"]=czdata["GDKP"]["ItemList"]
-	-- newdata["GDKP"]["History"]=czdata["GDKP"]["History"]
-	-- newdata["GDKP"]["instanceName"]=czdata["GDKP"]["instanceName"]
 	newdata["Error"]["ErrorDB"]={}
 	newdata["Ver"]={}
 	newdata["Chatjilu"]["WHISPER"]["record"]={}
@@ -272,17 +287,14 @@ fuFrame.daorubut = PIGButton(fuFrame,{"CENTER", fuFrame, "CENTER", 80, -100},{10
 fuFrame.daorubut:SetScript("OnClick", function ()
 	ExportImport_UI:daoruFun(addonName..ADDONS..L["CONFIG_TABNAME"],PIGA)
 end);
-fuFrame.daochubut:Disable();
-fuFrame.daorubut:Disable();
+fuFrame.daochubut:Hide();
+fuFrame.daorubut:Hide();
 ---提示---------------
 fuFrame.tishi = PIGFontString(fuFrame,{"TOPLEFT", fuFrame, "TOPLEFT", 20, -494},"更新提示异常点→")
 fuFrame.GETVER = PIGButton(fuFrame,{"LEFT",fuFrame.tishi,"RIGHT",10,0},{110,20},"重置更新提示")
 fuFrame.GETVER:SetScript("OnClick", function ()
 	PIGA["Ver"]={}
 	Pig_Options_RLtishi_UI:Show()
-	-- SendAddonMessage(Pig_OptionsUI.Ver_biaotou,"!Pig_Tardis#G#1.04","WHISPER",Pig_OptionsUI.AllName)
-	-- local enabledState = GetAddOnEnableState(nil, "!Pig_Tardis")
-	-- print(enabledState)
 end);
 
 ----旧版

@@ -9,17 +9,18 @@ local PIGCheckbutton_R=Create.PIGCheckbutton_R
 local PIGModCheckbutton=Create.PIGModCheckbutton
 local PIGQuickBut=Create.PIGQuickBut
 
-local SendAddonMessage = SendAddonMessage or C_ChatInfo and C_ChatInfo.SendAddonMessage
 ------
 local TardisInfo = {}
 addonTable.TardisInfo=TardisInfo
 ------------
 local QuickBut_ID=13
-local GnName,GnUI,GnIcon,FrameLevel = L["PIGaddonList"][addonName],"Tardis_UI",132327,30
+local GnName,GnUI,GnIcon,FrameLevel = L["PIGaddonList"][addonName],"PIG_Tardis_UI",132327,30
 TardisInfo.uidata={GnName,GnUI,GnIcon,FrameLevel,QuickBut_ID}
-local fuFrame,fuFrameBut,Tooltip,hidetishi = unpack(Data.Ext[L.extLsit[1]])
-hidetishi()
+local fuFrame,fuFrameBut,Tooltip = unpack(Data.Ext[L.extLsit[1]])
+if not fuFrame.OpenMode then return end
+fuFrame.extaddonT:Hide()
 TardisInfo.fuFrame,TardisInfo.fuFrameBut=fuFrame,fuFrameBut
+---
 function TardisInfo.ADD_Options()
 	fuFrame.Open = PIGModCheckbutton(fuFrame,{GnName,Tooltip},{"TOPLEFT",fuFrame,"TOPLEFT",20,-20})
 	fuFrame.Open:SetScript("OnClick", function (self)
@@ -89,6 +90,7 @@ function TardisInfo.ADD_Options()
 	local shelistx = {
 		-- {"Chedui",L["TARDIS_CHEDUI"]},
 		-- {"Houche",L["TARDIS_HOUCHE"]},
+		{"Farm",L["TARDIS_CHETOU"]},
 		{"Plane",L["TARDIS_PLANE"]},
 		{"Yell",L["TARDIS_YELL"]},
 	}
@@ -155,32 +157,25 @@ end);
 --===================================
 local GetExtVer=Pig_OptionsUI.GetExtVer
 local SendMessage=Pig_OptionsUI.SendMessage
-fuFrame.VersionID=0
-fuFrame.GetVer=addonName.."#U#0"
-fuFrame.FasVer=addonName.."#D#0"
 fuFrame:RegisterEvent("ADDON_LOADED")   
 fuFrame:RegisterEvent("PLAYER_LOGIN");
 fuFrame:RegisterEvent("CHAT_MSG_ADDON"); 
 fuFrame:SetScript("OnEvent",function(self, event, arg1, arg2, arg3, arg4, arg5)
-	if event=="ADDON_LOADED" and arg1 == addonName then
+	if event=="CHAT_MSG_ADDON" then
+		GetExtVer(self,addonName,self.VersionID, arg1, arg2, arg3, arg4, arg5)
+	elseif event=="PLAYER_LOGIN" then
+		PIGA["Ver"][addonName]=PIGA["Ver"][addonName] or 0
+		if PIGA["Ver"][addonName]>self.VersionID then
+			self.yiGenxing=true;
+		else
+			SendMessage(addonName.."#U#"..self.VersionID)
+		end
+	elseif event=="ADDON_LOADED" and arg1 == addonName then
 		self:UnregisterEvent("ADDON_LOADED")
 		addonTable.Load_Config()
 		Pig_OptionsUI:SetVer_EXT(arg1,self)
 		TardisInfo.ADD_Options()
 	end
-	if event=="PLAYER_LOGIN" then
-		PIGA["Ver"][addonName]=PIGA["Ver"][addonName] or 0
-		fuFrame.GetVer=addonName.."#U#"..self.VersionID;
-		fuFrame.FasVer=addonName.."#D#"..self.VersionID;
-		if PIGA["Ver"][addonName]>self.VersionID then
-			self.yiGenxing=true;
-		else
-			SendMessage(fuFrame.GetVer)
-		end
-	end
-	if event=="CHAT_MSG_ADDON" then
-		GetExtVer(self,addonName,self.VersionID, fuFrame.FasVer, arg1, arg2, arg4)
-	end 
 end)
 -------
 function PIGCompartmentClick_Tardis()
@@ -188,7 +183,7 @@ end
 function PIGCompartmentEnter_Tardis(addonName, menuButtonFrame)
 	GameTooltip:ClearLines();
 	GameTooltip:SetOwner(menuButtonFrame, "ANCHOR_BOTTOMLEFT",-2,16);
-	GameTooltip:AddLine("|cffFF00FF"..addonName.."|r-"..GetAddOnMetadata(addonName, "Version"))
+	GameTooltip:AddLine("|cffFF00FF"..addonName.."|r-"..PIGGetAddOnMetadata(addonName, "Version"))
 	GameTooltip:Show();	
 end
 function PIGCompartmentLeave_Tardis(addonName, menuButtonFrame)

@@ -4,4 +4,5 @@
 	<Script file="CombatTime.lua" />
 	<Script file="HPMPbar.lua" />
 	<Script file="AttackBar.lua" />
+	<Script file="BabySitter.lua" />
 </Ui>

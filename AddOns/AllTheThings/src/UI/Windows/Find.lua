@@ -561,7 +561,7 @@ app:CreateWindow("ItemFinder", {
 				progress = 0,
 				total = 0,
 				back = 1,
-				currentItemID = 235825,
+				currentItemID = 237826,
 				minimumItemID = 1,
 				OnUpdate = function(header)
 					local g = header.g;
@@ -641,7 +641,7 @@ app:CreateWindow("QuestFinder", {
 				progress = 0,
 				total = 0,
 				back = 1,
-				currentID = 90000,
+				currentID = 88749,
 				minimumID = 78295,
 				g = { },
 				OnUpdate = function(header)

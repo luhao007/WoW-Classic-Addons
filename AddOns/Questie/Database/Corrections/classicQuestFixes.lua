@@ -195,6 +195,9 @@ function QuestieQuestFixes:Load()
             [questKeys.startedBy] = {{3,48,202,203,205,206,210,212,215,218,511,531,533,570,604,785,787,889,891,892,898,909,910,920,948,1110,1251,1270,1487},nil,{2794}},
             [questKeys.objectivesText] = {"Return the book: The History of Stormwind, to the Stormwind Library. NOTE: This is a very rare drop!"},
         },
+        [349] = {
+            [questKeys.objectivesText] = {},
+        },
         [353] = {
             [questKeys.preQuestSingle] = {}, -- #2364
         },
@@ -257,6 +260,9 @@ function QuestieQuestFixes:Load()
         },
         [437] = {
             [questKeys.triggerEnd] = {"Enter the Dead Fields",{[zoneIDs.SILVERPINE_FOREST]={{45.91, 21.27}}}},
+        },
+        [443] = {
+            [questKeys.preQuestSingle] = {439},
         },
         [452] = {
             [questKeys.triggerEnd] = {"Aid Faerleia in killing the Pyrewood Council", {[zoneIDs.SILVERPINE_FOREST]={{46.51,74.07}}}},
@@ -859,7 +865,7 @@ function QuestieQuestFixes:Load()
         },
         [1436] = {
             [questKeys.preQuestSingle] = {},
-            [questKeys.preQuestGroup] = {1434,1480},
+            [questKeys.preQuestGroup] = {1434,1435},
         },
         [1440] = {
             [questKeys.triggerEnd] = {"Rescue Dalinda Malem", {[zoneIDs.DESOLACE]={{58.27,30.91}}}},
@@ -1174,7 +1180,7 @@ function QuestieQuestFixes:Load()
             [questKeys.exclusiveTo] = {2281}, -- #1825
         },
         [2278] = {
-            [questKeys.objectives] = {{{7172,"Learn what lore that the stone watcher has to offer"}}},
+            [questKeys.objectives] = {{{7172,"Learn what lore that the stone watcher has to offer",Questie.ICON_TYPE_TALK}}},
         },
         [2298] = {
             [questKeys.preQuestSingle] = {},
@@ -1431,6 +1437,7 @@ function QuestieQuestFixes:Load()
         },
         [3525] = {
             [questKeys.triggerEnd] = {"Protect Belnistrasz while he performs the ritual to shut down the idol", {[zoneIDs.THE_BARRENS]={{50.86,92.87}}}},
+            [questKeys.finishedBy] = {nil,{152097}},
         },
         [3526] = {
             [questKeys.requiredSpecialization] = specKeys.ENGINEERING,
@@ -1609,6 +1616,9 @@ function QuestieQuestFixes:Load()
         },
         [4122] = {
             [questKeys.preQuestSingle] = {4082}, -- #1349
+        },
+        [4123] = {
+            [questKeys.requiredSourceItems] = {11078},
         },
         [4126] = {
             [questKeys.preQuestSingle] = {},
@@ -2050,9 +2060,6 @@ function QuestieQuestFixes:Load()
         [5561] = {
             [questKeys.objectives] = {nil,nil,nil,nil,{{{4700,4701,4702},4700,"Kodos Tamed",Questie.ICON_TYPE_INTERACT}}},
             [questKeys.extraObjectives] = {{{[zoneIDs.DESOLACE]={{60.58,62}}}, Questie.ICON_TYPE_EVENT, l10n("Lure the Kodos to Smeed Scrabblescrew.")}},
-        },
-        [5581] = {
-            [questKeys.extraObjectives] = {{nil, Questie.ICON_TYPE_OBJECT, l10n("Close the portal"), 0, {{"object", 177243},{"object", 177365},{"object", 177366},{"object", 177367},{"object", 177368},{"object", 177369},{"object", 177397},{"object", 177398},{"object", 177399},{"object", 177400}}}},
         },
         [5582] = {
             [questKeys.startedBy] = {{10678},nil,{13920}},
@@ -2918,8 +2925,9 @@ function QuestieQuestFixes:Load()
         [8171] = {
             [questKeys.specialFlags] = 0,
         },
-        [8183] = {
+        [8183] = { -- The Heart of Hakkar
             [questKeys.startedBy] = {{14834},nil,{19802}},
+            [questKeys.zoneOrSort] = zoneIDs.ZUL_GURUB,
         },
         [8184] = {
             [questKeys.requiredClasses] = classIDs.WARRIOR,
@@ -2980,8 +2988,11 @@ function QuestieQuestFixes:Load()
             [questKeys.requiredRaces] = raceIDs.ALL_HORDE,
         },
         [8304] = {
-            [questKeys.objectives] = {{{15171,"Frankal Questioned"},{15170,"Rutgar Questioned"}},nil,nil,nil},
+            [questKeys.objectives] = {{{15171,"Frankal Questioned",Questie.ICON_TYPE_TALK},{15170,"Rutgar Questioned",Questie.ICON_TYPE_TALK}},nil,nil,nil},
             [questKeys.requiredLevel] = 58, -- #2166
+        },
+        [8308] = { -- Brann Bronzebeard's Lost Letter
+            [questKeys.startedBy] = {{11698,11721,11722,11723,11724,11725,11726,11727,11728,11729,11730,11731,11732,11733,11734,13136,13301},nil,{20461}},
         },
         [8314] = {
             [questKeys.specialFlags] = 0, -- #1870
@@ -3107,13 +3118,13 @@ function QuestieQuestFixes:Load()
             [questKeys.triggerEnd] = {"Waking Legends.",{[zoneIDs.MOONGLADE]={{40.0,48.6}}}},
         },
         [8466] = {
-            [questKeys.objectivesText] = nil,
+            [questKeys.objectivesText] = {},
         },
         [8467] = {
-            [questKeys.objectivesText] = nil,
+            [questKeys.objectivesText] = {},
         },
         [8469] = {
-            [questKeys.objectivesText] = nil,
+            [questKeys.objectivesText] = {},
         },
         [8470] = {
             [questKeys.startedBy] = {{7156,7157,7158},nil,{20741}},
@@ -3591,6 +3602,14 @@ function QuestieQuestFixes:Load()
             [questKeys.finishedBy] = {{15700},nil},
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
         },
+        [8860] = { -- New Year Celebrations!
+            [questKeys.requiredLevel] = 1,
+            [questKeys.questLevel] = 60,
+        },
+        [8861] = { -- New Year Celebrations!
+            [questKeys.requiredLevel] = 1,
+            [questKeys.questLevel] = 60,
+        },
         [8863] = {
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
         },
@@ -3648,6 +3667,9 @@ function QuestieQuestFixes:Load()
         },
         [8882] = {
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
+        },
+        [8883] = {
+            [questKeys.requiredSourceItems] = {21711},
         },
         [8897] = {
             [questKeys.exclusiveTo] = {8898,8899,8903},
@@ -3809,9 +3831,6 @@ function QuestieQuestFixes:Load()
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
         },
         [9084] = {
-            [questKeys.specialFlags] = specialFlags.REPEATABLE,
-        },
-        [9085] = {
             [questKeys.specialFlags] = specialFlags.REPEATABLE,
         },
         [9086] = {
@@ -4018,7 +4037,10 @@ function QuestieQuestFixes:Load()
         [9319] = {
             [questKeys.requiredRaces] = raceIDs.NONE,
         },
-        [9321] = {
+        [9320] = { -- Major Mana Potion
+            [questKeys.questLevel] = -1,
+        },
+        [9321] = { -- Major Healing Potion
             [questKeys.zoneOrSort] = sortKeys.INVASION,
         },
         [9322] = {
@@ -4026,6 +4048,18 @@ function QuestieQuestFixes:Load()
         },
         [9323] = {
             [questKeys.requiredLevel] = 1,
+        },
+        [9336] = { -- Major Healing Potion
+            [questKeys.questLevel] = -1,
+        },
+        [9337] = { -- Major Mana Potion
+            [questKeys.questLevel] = -1,
+        },
+        [9341] = { -- Tabard of the Argent Dawn
+            [questKeys.questLevel] = -1,
+        },
+        [9343] = { -- Tabard of the Argent Dawn
+            [questKeys.questLevel] = -1,
         },
         [9386] = {
             [questKeys.preQuestSingle] = {9319},
@@ -4040,6 +4074,8 @@ function QuestieQuestFixes:Load()
         },
         [9419] = {
             [questKeys.preQuestSingle] = {},
+            [questKeys.objectives] = {{{17090,"Return Silithyst",Questie.ICON_TYPE_EVENT}}},
+            [questKeys.extraObjectives] = {{nil, Questie.ICON_TYPE_OBJECT, l10n("Silithyst"),0,{{"object", 181597},{"object", 181598}}}},
         },
         [9422] = {
             [questKeys.preQuestSingle] = {},

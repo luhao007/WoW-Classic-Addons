@@ -1379,6 +1379,7 @@ GTFO.SpellID["182171"] = {
 	--desc = "Blood of Mannoroth (Mannoroth)";
 	sound = 1;
 	trivialLevelApplication = 120;
+	ignoreApplication = true;
 };
 
 GTFO.SpellID["183586"] = {

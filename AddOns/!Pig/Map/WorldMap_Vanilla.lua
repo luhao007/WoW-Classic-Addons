@@ -92,8 +92,8 @@ function Mapfun.WorldMap_Wind()
 			WorldMapFrame.BlackoutFrame:Hide()
 		end)
 		hooksecurefunc(WorldMapFrame, "SynchronizeDisplayState", function(self)
-			if PIGA["WowUI"]["WorldMapFrame"] and PIGA["WowUI"]["WorldMapFrame"]["Point"] then
-				local point, relativeTo, relativePoint, offsetX, offsetY=unpack(PIGA["WowUI"]["WorldMapFrame"]["Point"])
+			if PIGA["BlizzardUI"]["WorldMapFrame"] and PIGA["BlizzardUI"]["WorldMapFrame"]["Point"] then
+				local point, relativeTo, relativePoint, offsetX, offsetY=unpack(PIGA["BlizzardUI"]["WorldMapFrame"]["Point"])
 				self:ClearAllPoints();
 				self:SetPoint(point, relativeTo, relativePoint, offsetX, offsetY);
 			end

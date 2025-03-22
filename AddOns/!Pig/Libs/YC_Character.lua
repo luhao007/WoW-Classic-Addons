@@ -21,15 +21,6 @@ local HY_RuneTXT=Fun.HY_RuneTXT
 ---
 local ALA_tiquMsg=addonTable.ALA.ALA_tiquMsg
 --------
-local function PIG_ClassInfo(id)
-	if tocversion<20000 then
-		local className, classFile=GetClassInfo(id)
-		return className, classFile
-	else
-		local classInfo=C_CreatureInfo.GetClassInfo(id)
-		return classInfo["className"],classInfo["classFile"]
-	end
-end
 --暴雪角色装备界面+装备列表
 local function ADD_CharacterFrame(fuji,Point,laiyuan,FrameLevel)
 	local frameX
@@ -241,14 +232,11 @@ local function ADD_CharacterFrame(fuji,Point,laiyuan,FrameLevel)
 	return frameX
 end
 --------------------------------------------
-local SendAddonMessage = C_ChatInfo and C_ChatInfo.SendAddonMessage or SendAddonMessage;
 local pig_PREFIX="!Pig-YCIN";
 local ala_PREFIX = "ATEADD"
 local td_PREFIX = "tdInspect"
 local YCinfo_GET_MSG = {"!GETALL","!GETT-","!GETG-","!GETR-","!GETI-"};
-local RegisterAddonMessagePrefix = C_ChatInfo and C_ChatInfo.RegisterAddonMessagePrefix or RegisterAddonMessagePrefix;
-local IsAddonMessagePrefixRegistered = C_ChatInfo and C_ChatInfo.IsAddonMessagePrefixRegistered or IsAddonMessagePrefixRegistered;
-RegisterAddonMessagePrefix(pig_PREFIX)
+C_ChatInfo.RegisterAddonMessagePrefix(pig_PREFIX)
 ---------------
 local function Update_ShowItem_List(zbData,laiyuan)
 	for k,v in pairs(zbData) do
@@ -311,8 +299,9 @@ local function Update_ShowItem(itemstxt,laiyuan)
 end
 Fun.Update_ShowItem=Update_ShowItem
 local function Update_ShowPlayer(Player,lyfrome)
-	local class,race,level,itemLV = unpack(Player)
-	local className, classFile = PIG_ClassInfo(class)
+	local class,race,level,itemLV,gender = unpack(Player)
+	if HardcoreDeaths_UI then HardcoreDeaths_UI.Save_playerdata(yuanchengCFrame.fullnameX,class,race,gender) end
+	local className, classFile = PIGGetClassInfo(class)
 	local raceName = "  "
 	if tonumber(race)>0 then
 		local raceInfo = C_CreatureInfo.GetRaceInfo(race)
@@ -413,13 +402,13 @@ end
 --没有获取到目标信息
 local function alaGet_Fun_1()
 	if not yuanchengCFrame.fanhuiYN then
-		SendAddonMessage(ala_PREFIX, "!Q32TGE", "WHISPER", yuanchengCFrame.fullnameX);
+		PIGSendAddonMessage(ala_PREFIX, "!Q32TGE", "WHISPER", yuanchengCFrame.fullnameX);
 	end
 end
 local function alaGet_Fun_2()
 	if not yuanchengCFrame.fanhuiYN then
-		SendAddonMessage(ala_PREFIX, "_q_tal", "WHISPER", yuanchengCFrame.fullnameX);
-		SendAddonMessage(ala_PREFIX, "_q_equ", "WHISPER", yuanchengCFrame.fullnameX);		
+		PIGSendAddonMessage(ala_PREFIX, "_q_tal", "WHISPER", yuanchengCFrame.fullnameX);
+		PIGSendAddonMessage(ala_PREFIX, "_q_equ", "WHISPER", yuanchengCFrame.fullnameX);		
 	end
 end
 local function ycNull_Fun()
@@ -439,7 +428,7 @@ local function GetDATA_YN_TF(fullnameX)
 	if yuanchengCFrame.alaGet_TF then yuanchengCFrame.alaGet_TF:Cancel() end
 	yuanchengCFrame.alaGet_TF=C_Timer.NewTimer(0.8,function()
 		if not yuanchengCFrame.fanhuiYN_TF then
-			SendAddonMessage(ala_PREFIX, "!Q32T", "WHISPER", fullnameX);
+			PIGSendAddonMessage(ala_PREFIX, "!Q32T", "WHISPER", fullnameX);
 		end
 	end)
 end
@@ -447,7 +436,7 @@ local function GetDATA_YN_GG(fullnameX)
 	if yuanchengCFrame.alaGet_GG then yuanchengCFrame.alaGet_GG:Cancel() end
 	yuanchengCFrame.alaGet_GG=C_Timer.NewTimer(0.8,function()
 		if not yuanchengCFrame.fanhuiYN_GG then
-			SendAddonMessage(ala_PREFIX, "!Q32G", "WHISPER", fullnameX);
+			PIGSendAddonMessage(ala_PREFIX, "!Q32G", "WHISPER", fullnameX);
 		end
 	end)
 end
@@ -455,7 +444,7 @@ local function GetDATA_YN_RR(fullnameX)
 	if yuanchengCFrame.alaGet_RR then yuanchengCFrame.alaGet_RR:Cancel() end
 	yuanchengCFrame.alaGet_RR=C_Timer.NewTimer(0.8,function()
 		if not yuanchengCFrame.fanhuiYN_RR then
-			SendAddonMessage(ala_PREFIX, "!Q32R", "WHISPER", fullnameX);
+			PIGSendAddonMessage(ala_PREFIX, "!Q32R", "WHISPER", fullnameX);
 		end
 	end)
 end
@@ -464,7 +453,7 @@ local function CZ_yuancheng_Data(gongneng)
 	yuanchengCFrame.PlayerData = {}
 	yuanchengCFrame.allmsg=""
 	yuanchengCFrame.LevelText:SetText("|cffFFFF00正在获取目标信息...|r");
-	yuanchengCFrame.tishi.t:SetText("!Pig\n"..gongneng..INSPECT)
+	yuanchengCFrame.tishi.t:SetText("[!Pig]\n"..gongneng..INSPECT)
 	if not ElvUI and not NDui then
 		yuanchengCFrame.Portrait:SetTexture(130899)
 		yuanchengCFrame.Portrait:SetTexCoord(0,1,0,1);
@@ -490,7 +479,7 @@ local function FasongYCqingqiu(fullnameX,iidd)
 	if iidd==1 then
 		if InspectFrame and InspectFrame:IsShown() then InspectFrame:Hide() end
 		yuanchengCFrame.fanhuiYN=false
-		SendAddonMessage(pig_PREFIX,YCinfo_GET_MSG[iidd], "WHISPER", fullnameX)
+		PIGSendAddonMessage(pig_PREFIX,YCinfo_GET_MSG[iidd], "WHISPER", fullnameX)
 		yuanchengCFrame.TitleText:SetText(fullnameX);
 		yuanchengCFrame.fullnameX=fullnameX
 		GetDATA_YN()
@@ -498,25 +487,25 @@ local function FasongYCqingqiu(fullnameX,iidd)
 	elseif iidd==2 then--只请求天赋信息
 		if not Pig_OptionsUI.talentData[fullnameX]["T"] or GetServerTime()-Pig_OptionsUI.talentData[fullnameX]["T"][1]>10 then
 			yuanchengCFrame.fanhuiYN_TF=false
-			SendAddonMessage(pig_PREFIX,YCinfo_GET_MSG[iidd], "WHISPER", fullnameX)
+			PIGSendAddonMessage(pig_PREFIX,YCinfo_GET_MSG[iidd], "WHISPER", fullnameX)
 			GetDATA_YN_TF(fullnameX)
 		end
 	elseif iidd==3 then--只请求雕文信息
 		if not Pig_OptionsUI.talentData[fullnameX]["G"] or GetServerTime()-Pig_OptionsUI.talentData[fullnameX]["G"][1]>10 then
 			yuanchengCFrame.fanhuiYN_GG=false
-			SendAddonMessage(pig_PREFIX,YCinfo_GET_MSG[iidd], "WHISPER", fullnameX)
+			PIGSendAddonMessage(pig_PREFIX,YCinfo_GET_MSG[iidd], "WHISPER", fullnameX)
 			GetDATA_YN_GG(fullnameX)
 		end
 	elseif iidd==4 then--只请求符文信息
 		if not Pig_OptionsUI.talentData[fullnameX]["R"] or GetServerTime()-Pig_OptionsUI.talentData[fullnameX]["R"][1]>10 then
 			yuanchengCFrame.fanhuiYN_RR=false
-			SendAddonMessage(pig_PREFIX,YCinfo_GET_MSG[iidd], "WHISPER", fullnameX)
+			PIGSendAddonMessage(pig_PREFIX,YCinfo_GET_MSG[iidd], "WHISPER", fullnameX)
 			GetDATA_YN_RR(fullnameX)
 		end
 	elseif iidd==5 then--只请求角色信息
 		if not Pig_OptionsUI.talentData[fullnameX]["I"] or GetServerTime()-Pig_OptionsUI.talentData[fullnameX]["I"][1]>10 then
 			yuanchengCFrame.fanhuiYN_II=false
-			SendAddonMessage(pig_PREFIX,YCinfo_GET_MSG[iidd], "WHISPER", fullnameX)
+			PIGSendAddonMessage(pig_PREFIX,YCinfo_GET_MSG[iidd], "WHISPER", fullnameX)
 		end
 	end
 end
@@ -540,11 +529,11 @@ yuanchangchakanFFF:SetScript("OnEvent",function(self, event, arg1, arg2, _, arg4
 	if event=="PLAYER_LOGIN" then
 		ADD_CharacterFrame(UIParent,{"TOPLEFT",UIParent,"TOPLEFT",0, -104},"yuanchengCFrame",99)
 		C_Timer.After(3,function()
-			if not IsAddonMessagePrefixRegistered(ala_PREFIX) then
-				RegisterAddonMessagePrefix(ala_PREFIX)
+			if not C_ChatInfo.IsAddonMessagePrefixRegistered(ala_PREFIX) then
+				C_ChatInfo.RegisterAddonMessagePrefix(ala_PREFIX)
 			end
-			if not IsAddonMessagePrefixRegistered(td_PREFIX) then
-				RegisterAddonMessagePrefix(td_PREFIX)
+			if not C_ChatInfo.IsAddonMessagePrefixRegistered(td_PREFIX) then
+				C_ChatInfo.RegisterAddonMessagePrefix(td_PREFIX)
 			end
 		end)
 		self:RegisterEvent("CHAT_MSG_ADDON")
@@ -569,23 +558,23 @@ yuanchangchakanFFF:SetScript("OnEvent",function(self, event, arg1, arg2, _, arg4
 							jiequJ = -1
 						end
 						local NewMsg1 = infoall:sub(jiequK,jiequJ)
-						SendAddonMessage(pig_PREFIX, "!P"..fasongcishu..ic..NewMsg1, "WHISPER", arg5)
+						PIGSendAddonMessage(pig_PREFIX, "!P"..fasongcishu..ic..NewMsg1, "WHISPER", arg5)
 					end		
 				else
-					SendAddonMessage(pig_PREFIX, "!P11"..infoall, "WHISPER", arg5)
+					PIGSendAddonMessage(pig_PREFIX, "!P11"..infoall, "WHISPER", arg5)
 				end
 			elseif arg2==YCinfo_GET_MSG[2] then
 				local info =TalentData.GetTianfuTXT()
-				SendAddonMessage(pig_PREFIX, "!T-"..info, "WHISPER", arg5)
+				PIGSendAddonMessage(pig_PREFIX, "!T-"..info, "WHISPER", arg5)
 			elseif arg2==YCinfo_GET_MSG[3] then
 				local info =TalentData.GetGlyphTXT()
-				SendAddonMessage(pig_PREFIX, "!G-"..info, "WHISPER", arg5)
+				PIGSendAddonMessage(pig_PREFIX, "!G-"..info, "WHISPER", arg5)
 			elseif arg2==YCinfo_GET_MSG[4] then
 				local info =GetRuneTXT()
-				SendAddonMessage(pig_PREFIX, "!R-"..info, "WHISPER", arg5)
+				PIGSendAddonMessage(pig_PREFIX, "!R-"..info, "WHISPER", arg5)
 			elseif arg2==YCinfo_GET_MSG[5] then
 				local Player =TalentData.SAVE_Player()
-				SendAddonMessage(pig_PREFIX, "!I-"..Player, "WHISPER", arg5)
+				PIGSendAddonMessage(pig_PREFIX, "!I-"..Player, "WHISPER", arg5)
 			else
 				PIG_tiquMsg(arg2,arg5)
 			end

@@ -1,6 +1,6 @@
-## Interface: 30400
+## Interface: 30404
 ## Author: MysticalOS
-## Version: r775
+## Version: r786
 
 ## Title: |cffffe00a<|r|cffff7d0aDBM Mod|r|cffffe00a>|r |cffff6010Raids (Vanilla)|r
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFF69CCF0团队|r |cFF22B14C经典旧世|r
@@ -35,6 +35,8 @@
 ## X-Wago-ID: 7x61xpN1
 ## X-Part-Of: DBM-Core
 
+locale.generated.lua
+
 localization.en.lua
 localization.tw.lua
 localization.br.lua
@@ -51,6 +53,8 @@ Polyfills.lua
 # Temporary, will be moved to Core
 Blocks\Gtfo.lua
 
+VanillaNaxx\SoD_Hardmode.lua
+VanillaNaxx\NaxxTrash.lua
 VanillaNaxx\ArachnidQuarter\Anub'Rekhan.lua
 VanillaNaxx\ArachnidQuarter\Faerlina.lua
 VanillaNaxx\ArachnidQuarter\Maexxna.lua

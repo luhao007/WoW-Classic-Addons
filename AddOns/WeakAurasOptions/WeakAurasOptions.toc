@@ -1,10 +1,12 @@
-## Interface: 30400
+## Interface: 30404
 ## Author: The WeakAuras Team
 ## Version: 5.12.9
 
 ## Title: WeakAuras Options
 ## Notes: Options for WeakAuras
 ## Title-zhCN: |cFFFFE00A<|r|cFFFFF468功能|r|cFFFFE00A>|r |cFFFFFFFF辅助增强|r |cFF0055FF设置|r
+
+## IconTexture: Interface\AddOns\WeakAuras\Media\Textures\icon.blp
 
 ## Dependencies: WeakAuras
 ## LoadOnDemand: 1

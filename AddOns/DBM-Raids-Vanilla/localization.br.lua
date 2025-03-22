@@ -169,8 +169,8 @@ L:SetWarningLocalization{
 	WarnShatter	= "Estilhaçar: %d/3"
 }
 L:SetOptionLocalization{
-	WarnFreeze	= "Exibir anúncio para status de congelamento",
-	WarnShatter	= "Exibir anúncio para status de estilhaçar"
+	WarnFreeze	= "Exibir anúncio para congelamento",
+	WarnShatter	= "Exibir anúncio para estilhaço"
 }
 L:SetMiscLocalization{
 	Slow	= "começa a ficar lento!",
@@ -179,9 +179,9 @@ L:SetMiscLocalization{
 	Phase4 	= "começa a rachar!",
 	Phase5 	= "parece estar a ponto de se estilhaçar!",
 	Phase6 	= "explode!",
-	HitsRemain	= "Acertos restantes",
-	Frost		= "Gelo",
-	Physical	= "Dano físico"
+
+	FrostHitsPerSecond = "Golpes de gelo por segundo",
+	MeleeHitsPerSecond = "Golpes corpo a corpo por segundo",
 }
 -------------
 -- Huhuran --
@@ -255,18 +255,20 @@ L:SetGeneralLocalization{
 	name = "Ouroboros"
 }
 L:SetWarningLocalization{
-	WarnSubmerge		= "Submersão",
-	WarnEmerge			= "Emersão"
+	WarnSubmerge		= "Ouroboros se submergiu",
+	WarnEmerge			= "Ouroboros emergiu",
+	SpecWarnEye 		= "Desvia o olhar"
 }
 L:SetTimerLocalization{
 	TimerSubmerge		= "Submersão",
 	TimerEmerge			= "Emersão"
 }
 L:SetOptionLocalization{
-	WarnSubmerge		= "Exibir anúncio para submersão",
-	TimerSubmerge		= "Exibir cronômetro para submersão",
-	WarnEmerge			= "Exibir anúncio para emersão",
-	TimerEmerge			= "Exibir cronômetro para emersão"
+	WarnSubmerge		= "Exibir anúncio para a submersão de Ouroboros",
+	TimerSubmerge		= "Exibir cronômetro para a submersão de Ouroboros",
+	WarnEmerge			= "Exibir anúncio para a emersão de Ouroboros",
+	TimerEmerge			= "Exibir cronômetro para a emersão de Ouroboros",
+	SpecWarnEye 		= "Exibir anúncio para o olho gigante"
 }
 
 ----------------
@@ -282,8 +284,8 @@ L:SetTimerLocalization{
 }
 
 L:SetWarningLocalization{
-	WarnExplosion 		= "Um único fantasma explosivo apareceu - desvie",
-	SpecWarnExplosion 	= "Fantasmas explosivos - desvie",
+	WarnExplosion 		= "Um único fantasma explosivo apareceu - desvia",
+	SpecWarnExplosion 	= "Fantasmas explosivos - desvia",
 }
 L:SetOptionLocalization{
 	WarnExplosion 		= "Exibir anúncio para fantasmas explosivos ($spell:1214871)",
@@ -551,7 +553,7 @@ L:SetOptionLocalization{
 	TimerBreathCD		= "Exibir recarga da respiração",
 	TimerBreath			= "Exibir lançamento da respiração",
 	TimerVulnCD			= "Exibir recarga de Vulnerabilidade",
-	TimerAllBreaths 	= "Exibir chronômetro para Salva da respiração"
+	TimerAllBreaths 	= "Exibir cronômetro para Salva da respiração"
 }
 L:SetMiscLocalization{
 	Breath1		= "Primeira respiração",

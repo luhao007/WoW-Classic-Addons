@@ -1,11 +1,13 @@
-## Interface: 30400
+## Interface: 30404
 ## Author: Stanzilla, Semlar
-## Version: 1.9.0
+## Version: 1.8.14
 
 ## Title: Advanced Interface Options
 ## Notes: Restores access to removed interface options in Legion
 ## Title-zhCN: |cFFFFE00A<|r|cFFFFF468功能|r|cFFFFE00A>|r |cFFFFFFFF高级界面设置|r |cFFFFE00AAdvancedInterfaceOptions|r
 ## Notes-zhCN: 可以修改各种隐藏参数，包括隐藏的内部CVar参数
+
+## IconTexture: 134521
 
 ## LoadOnDemand: 0
 ## DefaultState: Enabled

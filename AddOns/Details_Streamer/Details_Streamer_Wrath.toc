@@ -1,4 +1,4 @@
-## Interface: 30400
+## Interface: 30404
 
 ## Title: Details!: Streamer (plugin)
 ## Notes: Show which spells you are casting, viewers can see what are you doing and follow your steps.
@@ -12,9 +12,5 @@
 ## SavedVariables: Details_StreamerDB
 
 ## X-Part-Of: Details
-
-#@no-lib-strip@
-embeds.xml
-#@end-no-lib-strip@
 
 Details_Streamer.lua

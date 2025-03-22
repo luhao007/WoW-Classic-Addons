@@ -3,7 +3,7 @@ local L		= mod:GetLocalizedStrings()
 
 mod.statTypes = "lfr,normal,heroic"
 
-mod:SetRevision("20241227212339")
+mod:SetRevision("20250307060241")
 mod:SetCreatureID(226305, 226314)
 mod:SetEncounterID(3049)
 --mod:SetUsedIcons(8, 7, 6)
@@ -343,7 +343,7 @@ function mod:UNIT_SPELLCAST_SUCCEEDED(uId, _, spellId)
 		warnCallGuard:Show()
 		warnCallGuard:Play("securityguardcoming")
 		local timer = guardTimers[self.vb.guardCount+1]
-		if timer then
+		if timer and timer > 0 then
 			timerCallGuardCD:Start(timer, self.vb.guardCount+1)
 		end
 	elseif spellId == 465079 then

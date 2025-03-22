@@ -191,6 +191,10 @@
 				<Title>暗影国度</Title>
 				<Notes>AtlasLoot 暗影国度副本掉落列表</Notes>
 			</SubAddon>
+			<SubAddon name="AtlasLoot_TheWarWithin">
+				<Title>地心之战</Title>
+				<Notes>AtlasLoot 地心之战副本掉落列表</Notes>
+			</SubAddon>
 			<SubAddon name="AtlasLoot_WarlordsofDraenor">
 				<Title>德拉诺之王</Title>
 				<Notes>AtlasLoot 德拉诺之王副本掉落列表</Notes>
@@ -354,10 +358,18 @@
 			</SubAddon>
 		</SubAddons>
 	</Addon>
+	<Addon name="BankStack">
+		<Title>银行整理</Title>
+		<Category>收藏</Category>
+	</Addon>
 	<Addon name="BattlePetBreedID">
 		<Title>战斗宠物品种</Title>
 		<Notes>显示战斗宠物的品种（如速度型）</Notes>
 		<Category>收藏</Category>
+	</Addon>
+	<Addon name="BiaoGe">
+		<Title>金团表格</Title>
+		<Category>社交</Category>
 	</Addon>
 	<Addon name="Bistooltip">
 		<Title>最佳装备提示</Title>
@@ -923,8 +935,9 @@
 				<Notes>显示你的队员的仇恨</Notes>
 			</SubAddon>
 			<SubAddon name='Details_TWW'>
-				<Title>插件</Title>
+				<Title>皮肤</Title>
 				<TitleExtra>地心之战</TitleExtra>
+				<Notes>地心之战皮肤</Notes>
 			</SubAddon>
 			<SubAddon name='Details_Vanguard'>
 				<Title>插件</Title>
@@ -940,7 +953,6 @@
 	</Addon>
 	<Addon name="DragonRider">
 		<Title>龙骑士</Title>
-		<Notes>提供驭龙术速度显示，驭龙术比赛计时等驭龙术有关的内容。</Notes>
 		<Category>功能</Category>
 	</Addon>
 	<Addon name="EditModeExpanded">
@@ -1339,6 +1351,11 @@
 		<Title>键位设置</Title>
 		<Category>功能</Category>
 	</Addon>
+	<Addon name="NewBeeBox">
+		<Title>新手盒子</Title>
+		<Notes>新手盒子数据统计</Notes>
+		<Category>辅助</Category>
+	</Addon>
 	<Addon name="NovaRaidCompanion">
 		<Title>团队助手</Title>
 		<Notes>提示团队技能冷却</Notes>
@@ -1533,10 +1550,14 @@
 	</Addon>
 	<Addon name="Rematch">
 		<Title>宠物对战增强</Title>
-		<Category>战斗</Category>
+		<Category>收藏</Category>
 	</Addon>
 	<Addon name="Rurutia">
 		<Title>露露缇娅语音包</Title>
+		<Category>副本</Category>
+	</Addon>
+	<Addon name="Rurutia_Raids">
+		<Title>露露缇娅语音包-团本</Title>
 		<Category>副本</Category>
 	</Addon>
 	<Addon name="Scrap">
@@ -1592,7 +1613,16 @@
 		<Notes>伤害统计窗口</Notes>
 		<Category>战斗</Category>
 	</Addon>
+	<Addon name="SpellActivationOverlay">
+		<Title>技能特效</Title>
+		<Notes>为出发技能增加类似正式服的特效</Notes>
+		<Category>战斗</Category>
+	</Addon>
 	<Addon name="TalentEmu">
+		<Title>天赋模拟器</Title>
+		<Category>战斗</Category>
+	</Addon>
+	<Addon name="TalentEmuX">
 		<Title>天赋模拟器</Title>
 		<Category>战斗</Category>
 	</Addon>
@@ -1609,6 +1639,11 @@
 				<Title>设置</Title>
 			</SubAddon>
 		</SubAddons>
+	</Addon>
+	<Addon name="tdBattlePetScript">
+		<Title>宠物对战脚本</Title>
+		<Notes>让宠物对战使用一键对战脚本</Notes>
+		<Category>收藏</Category>
 	</Addon>
 	<Addon name="ThreatClassic2">
 		<Title>仇恨统计</Title>
@@ -1905,6 +1940,10 @@
 		<Title>任务完成辅助</Title>
 		<Category>任务</Category>
 	</Addon>
+	<Addon name="WorldBossTimers">
+		<Title>世界首领计时器</Title>
+		<Category>收藏</Category>
+	</Addon>
 	<Addon name="WorldQuestsList">
 		<Title>世界任务列表</Title>
 		<Category>任务</Category>
@@ -1912,5 +1951,14 @@
 	<Addon name="WorldQuestTracker">
 		<Title>世界任务追踪</Title>
 		<Category>任务</Category>
+	</Addon>
+	<Addon name="WowSimsExporter">
+		<Title>输出模拟器</Title>
+		<Notes>模拟当前人物的输出，来确认哪个装备属性更好。</Notes>
+		<Category>战斗</Category>
+	</Addon>
+	<Addon name="zAutoLoadPetTeam_Rematch">
+		<Title>自动载入宠物队伍</Title>
+		<Category>收藏</Category>
 	</Addon>
 </my:AddonConfig>

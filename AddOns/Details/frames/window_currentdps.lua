@@ -735,7 +735,7 @@ function Details:CreateCurrentDpsFrame(parent, name)
 					f.YellowDamage = f.YellowDamage + yellowDamageDone
 					
 					--remove player team damage
-					local removedDamage = tremove(f.PlayerTeamBuffer, f.MaxBufferIndex+1)
+					local removedDamage = table.remove(f.PlayerTeamBuffer, f.MaxBufferIndex+1)
 					if (removedDamage) then
 						f.PlayerTeamDamage = f.PlayerTeamDamage - removedDamage
 						--be save
@@ -743,7 +743,7 @@ function Details:CreateCurrentDpsFrame(parent, name)
 					end
 					
 					--remove yellow damage
-					local removedDamage = tremove(f.YellowTeamBuffer, f.MaxBufferIndex+1)
+					local removedDamage = table.remove(f.YellowTeamBuffer, f.MaxBufferIndex+1)
 					if (removedDamage) then
 						f.YellowDamage = f.YellowDamage - removedDamage
 						--be save
@@ -759,7 +759,10 @@ function Details:CreateCurrentDpsFrame(parent, name)
 						local dpsBarFrame = DetailsArenaDpsBars.splitBar
 
 						--a percenntagem na barra esta sendo setada corretamente, porem a animação não esta funcrtionando ainda
-						local percentValue = teamGreenDps / totalDamage
+						local percentValue = 0
+						if (totalDamage > 0) then
+							percentValue = teamGreenDps / totalDamage
+						end
 						percentValue = Saturate(percentValue)
 
 						--print(percentValue)
@@ -833,7 +836,7 @@ function Details:CreateCurrentDpsFrame(parent, name)
 					f.GroupTotalDamage = f.GroupTotalDamage + groupDamageDoneOnThisTick
 					
 					--cicle buffer removing the last index and subtract its damage
-					local removedDamage = tremove(f.GroupBuffer, f.MaxBufferIndex+1)
+					local removedDamage = table.remove(f.GroupBuffer, f.MaxBufferIndex+1)
 					if (removedDamage) then
 						--remove the value from the total damage
 						f.GroupTotalDamage = f.GroupTotalDamage - removedDamage

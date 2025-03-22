@@ -1908,7 +1908,6 @@ L["STRING_ENVIRONMENTAL_FATIGUE"] = "Environment (Fatigue)"
 L["STRING_ENVIRONMENTAL_FIRE"] = "Environment (Fire)"
 L["STRING_ENVIRONMENTAL_LAVA"] = "Environment (Lava)"
 L["STRING_ENVIRONMENTAL_SLIME"] = "Environment (Slime)"
-L["STRING_EQUILIZING"] = "Sharing encounter data"
 L["STRING_ERASE"] = "delete"
 L["STRING_ERASE_DATA"] = "Reset All Data"
 L["STRING_ERASE_DATA_OVERALL"] = "Reset Overall Data"
@@ -2311,7 +2310,7 @@ L["STRING_OPTIONS_CMISC"] = "Collect Misc"
 L["STRING_OPTIONS_CMISC_DESC"] = [=[Enable capture of:
 
 - |cFFFFFF00Crowd Control Break|r
-- |cFFFFFF00Dispells|r
+- |cFFFFFF00Dispels|r
 - |cFFFFFF00Interrupts|r
 - |cFFFFFF00Resurrection|r
 - |cFFFFFF00Deaths|r]=]
@@ -2422,6 +2421,7 @@ L["STRING_OPTIONS_EXTERNALS_TITLE"] = "Externals Widgets"
 L["STRING_OPTIONS_EXTERNALS_TITLE2"] = "These options control the behavior of many foreign widgets."
 L["STRING_OPTIONS_GENERAL"] = "General Settings"
 L["STRING_OPTIONS_GENERAL_ANCHOR"] = "General:"
+L["STRING_OPTIONS_GROUPING_HORIZONTAL_GAP"] = "\"Space Between Windows\""
 L["STRING_OPTIONS_HIDE_ICON"] = "Hide Icon"
 L["STRING_OPTIONS_HIDE_ICON_DESC"] = [=[When enabled, the icon representing the selected display isn't shown.
 
@@ -2558,6 +2558,8 @@ L["STRING_OPTIONS_MINIMAP_ANCHOR"] = "Minimap:"
 L["STRING_OPTIONS_MINIMAP_DESC"] = "Show or Hide minimap icon."
 L["STRING_OPTIONS_MISCTITLE"] = "Miscellaneous Settings"
 L["STRING_OPTIONS_MISCTITLE2"] = "These control several options."
+L["STRING_OPTIONS_MPLUS_AUTO_CLOSE_TIME"] = "Time To Auto Close"
+L["STRING_OPTIONS_MPLUS_AUTO_CLOSE_TIME_DESC"] = "Time to auto close the Show End of M+ Panel automatically."
 L["STRING_OPTIONS_MPLUS_BOSSNEWCOMBAT"] = "New Combat on Boss Pull"
 L["STRING_OPTIONS_MPLUS_BOSSNEWCOMBAT_DESC"] = "If a boss is pulled while in combat, this option closes the current combat encounter and initiates a new one for the boss."
 L["STRING_OPTIONS_MPLUS_DPS_ANCHOR"] = "Overall Segment DPS Calculation"
@@ -2888,6 +2890,7 @@ L["STRING_OPTIONS_TEXT_LPOSITION"] = "Show Number"
 L["STRING_OPTIONS_TEXT_LPOSITION_DESC"] = "Show position number on the player's name left side."
 L["STRING_OPTIONS_TEXT_LTRANSLIT"] = "Translit"
 L["STRING_OPTIONS_TEXT_LTRANSLIT_DESC"] = "Make those russian letters that no one understand to be presented as western letters."
+L["STRING_OPTIONS_TEXT_OUTLINE"] = "Text Outline"
 L["STRING_OPTIONS_TEXT_RIGHT_ANCHOR"] = "Right Text:"
 L["STRING_OPTIONS_TEXT_ROUTILINE_DESC"] = "Enable or disable the outline for right text."
 L["STRING_OPTIONS_TEXT_ROWICONS_ANCHOR"] = "Icons:"
@@ -2974,7 +2977,7 @@ L["STRING_OPTIONS_TOOLTIPS_FONTCOLOR_DESC"] = "Change the color used on tooltip 
 --[[Translation missing --]]
 L["STRING_OPTIONS_TOOLTIPS_FONTFACE"] = ""
 L["STRING_OPTIONS_TOOLTIPS_FONTFACE_DESC"] = "Choose the font used on tooltip texts."
-L["STRING_OPTIONS_TOOLTIPS_FONTSHADOW_DESC"] = "Enable or disable the shadow in the text."
+L["STRING_OPTIONS_TOOLTIPS_FONTSHADOW_DESC"] = "Show an outline in the text."
 --[[Translation missing --]]
 L["STRING_OPTIONS_TOOLTIPS_FONTSIZE"] = ""
 L["STRING_OPTIONS_TOOLTIPS_FONTSIZE_DESC"] = "Increase or decrease the size of tooltip texts"

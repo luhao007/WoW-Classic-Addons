@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(2589, "DBM-Party-WarWithin", 7, 1272)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20241102154000")
+mod:SetRevision("20250308071527")
 mod:SetCreatureID(218523)
 mod:SetEncounterID(2930)
 mod:SetUsedIcons(1, 2)
@@ -12,6 +12,10 @@ mod:SetZone(2661)
 mod.sendMainBossGUID = true
 
 mod:RegisterCombat("combat")
+
+mod:RegisterEvents(
+	"CHAT_MSG_MONSTER_YELL"
+)
 
 mod:RegisterEventsInCombat(
 	"SPELL_CAST_START 435622 435560 436592 436637",
@@ -43,11 +47,12 @@ local yellBurningRicochetFades				= mod:NewIconFadesYell(436644)
 local specWarnCashCannon					= mod:NewSpecialWarningCount(436592, nil, nil, nil, 2, 2)
 --local specWarnGTFO						= mod:NewSpecialWarningGTFO(372820, nil, nil, nil, 1, 8)
 
-local timerLetItHailCD						= mod:NewAITimer(33.9, 435622, nil, nil, nil, 2)
+local timerLetItHailCD						= mod:NewNextCountTimer(55.5, 435622, nil, nil, nil, 2)
 local timerCinderWounds						= mod:NewBuffFadesTimer(33.9, 435789, nil, nil, nil, 5, nil, DBM_COMMON_L.MAGIC_ICON)
-local timerSpreadtheLoveCD					= mod:NewAITimer(49.6, 435560, nil, nil, nil, 5)
-local timerBurningRicochetCD				= mod:NewCDCountTimer(13.3, 436644, nil, nil, nil, 3)
-local timerCashCannonCD						= mod:NewCDCountTimer(13.3, 436592, nil, nil, nil, 5, nil, DBM_COMMON_L.TANK_ICON)
+local timerSpreadtheLoveCD					= mod:NewNextCountTimer(55.2, 435560, nil, nil, nil, 5)
+local timerBurningRicochetCD				= mod:NewNextCountTimer(13.3, 436644, nil, nil, nil, 3)
+local timerCashCannonCD						= mod:NewNextCountTimer(13.3, 436592, nil, nil, nil, 5, nil, DBM_COMMON_L.TANK_ICON)
+local timerRP								= mod:NewRPTimer(9)
 
 mod:AddSetIconOption("SetIconOnRico", 436644, true, 0, {1, 2})
 
@@ -68,9 +73,9 @@ function mod:OnCombatStart(delay)
 	self.vb.DebuffIcon = 1
 	self.vb.cannonCount = 0
 --	timerSpreadtheLoveCD:Start(1)--Instantly on Pull
-	timerCashCannonCD:Start(4.8, 1)
-	timerBurningRicochetCD:Start(13.3, 1)
-	timerLetItHailCD:Start(1)--35
+	timerCashCannonCD:Start(8.1, 1)
+	timerBurningRicochetCD:Start(17, 1)
+	timerLetItHailCD:Start(40.8, 1)
 end
 
 --function mod:OnCombatEnd()
@@ -86,7 +91,7 @@ function mod:SPELL_CAST_START(args)
 		if self.vb.bombsRemaining > 3 then--At least 4 bombs still up, should also emphasize many waves
 			specWarnLetItHail:ScheduleVoice(2, "watchwave")
 		end
-		timerLetItHailCD:Start()
+		timerLetItHailCD:Start(nil, self.vb.hailCount+1)
 	elseif spellId == 435560 then
 		self.vb.spreadCount = self.vb.spreadCount + 1
 		warnSpreadtheLove:Show(self.vb.spreadCount)
@@ -97,11 +102,22 @@ function mod:SPELL_CAST_START(args)
 			specWarnCashCannon:Show(self.vb.cannonCount)
 			specWarnCashCannon:Play("carefly")
 		end
-		timerCashCannonCD:Start(nil, self.vb.cannonCount+1)
+		--"Cash Cannon-436592-npc:214661-000034ED7F = pull:8.1, 14.5, 14.6, 26.7, 14.6, 14.6, 26.7, 14.6, 14.5, 26.7, 14.6",
+		--"Cash Cannon-436592-npc:214661-00004A5C73 = pull:8.6, 14.1, 15.0, 26.3, 14.5, 14.6",
+		if self.vb.cannonCount % 3 == 0 then
+			timerCashCannonCD:Start(26.7, self.vb.cannonCount+1)
+		else
+			timerCashCannonCD:Start(14.6, self.vb.cannonCount+1)
+		end
 	elseif spellId == 436637 then
 		self.vb.DebuffIcon = 1
 		self.vb.ricochetCount = self.vb.ricochetCount + 1
-		timerBurningRicochetCD:Start(nil, self.vb.ricochetCount+1)
+		--"Burning Ricochet-436637-npc:214661-000034ED7F = pull:20.5, 14.5, 41.3, 14.6, 41.3, 14.6, 41.3",
+		if self.vb.ricochetCount % 2 == 0 then
+			timerBurningRicochetCD:Start(40.9, self.vb.ricochetCount+1)
+		else
+			timerBurningRicochetCD:Start(14.6, self.vb.ricochetCount+1)
+		end
 	end
 end
 
@@ -189,3 +205,15 @@ function mod:UNIT_SPELLCAST_SUCCEEDED(uId, _, spellId)
 	end
 end
 --]]
+
+function mod:CHAT_MSG_MONSTER_YELL(msg)
+	if (msg == L.RolePlay or msg:find(L.RolePlay)) and self:LatencyCheck() then
+		self:SendSync("Roleplay")
+	end
+end
+
+function mod:OnSync(msg)
+	if msg == "Roleplay" and self:AntiSpam(10, 3) then
+		timerRP:Start()
+	end
+end

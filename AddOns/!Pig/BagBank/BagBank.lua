@@ -5,9 +5,7 @@ local Create=addonTable.Create
 local PIGFrame=Create.PIGFrame
 local PIGEnter=Create.PIGEnter
 local PIGButton=Create.PIGButton
-local PIGDownMenu=Create.PIGDownMenu
 local PIGFontString=Create.PIGFontString
-local BagBankFrame=Create.BagBankFrame
 --====================================
 local InvSlot=addonTable.Data.InvSlot
 local bagData=addonTable.Data.bagData
@@ -168,6 +166,7 @@ function BagBankfun.Zhenghe(Rneirong,tabbut)
 		end
 	end);
 	if NDui or ElvUI then
+	elseif BagBankfun.Other_bag() then 
 	else
 		if ContainerFrameCombinedBags:IsShown() then CloseAllBags() end
 		if GetCVar("combinedBags")=="0" then SetCVar("combinedBags","1") end

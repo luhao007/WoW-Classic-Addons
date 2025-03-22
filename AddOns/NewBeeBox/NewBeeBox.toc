@@ -1,0 +1,19 @@
+## Interface: 30404
+## Author: wclbox.com
+## Version: 1.0.20
+
+## Title: |cff93d925[新手盒子]|r |cff66ccff数据同步插件|r
+## Notes: 用于新手盒子内角色数据识别同步的插件
+## Title-zhCN: |cFFFFE00A<|r|cFFFFFFFF辅助|r|cFFFFE00A>|r |cFFFFFFFF新手盒子|r |cFFFFE00ANewBeeBox|r
+## Notes-zhCN: 新手盒子数据统计
+
+## DefaultState: Enabled
+
+## SavedVariables: WclBoxGlobal
+## SavedVariablesPerCharacter: WclBoxCharacter
+
+## X-Website: https://www.wclbox.com
+
+libs/crypto.lua
+WclBox.lua
+sync.lua

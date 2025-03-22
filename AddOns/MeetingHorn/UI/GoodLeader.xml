@@ -332,7 +332,7 @@
         <ButtonText parentKey="Text"/>
         <NormalFont style="GameFontHighlightSmall"/>
         <HighlightFont style="GameFontNormalSmall"/>
-        <CheckFont style="GameFontNormalSmall"/>
+<!--        <CheckFont style="GameFontNormalSmall" />-->
         <DisabledFont style="GameFontHighlightSmall"/>
         <Scripts>
             <OnLoad>

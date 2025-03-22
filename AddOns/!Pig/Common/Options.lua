@@ -17,6 +17,8 @@ local Llist,LlistTabBut = PIGOptionsList(L["COMMON_TABNAME"],"TOP")
 Llist:Show()
 LlistTabBut:Selected()
 local NR =Create.PIGOptionsList_RF(Llist,30)
+CommonInfo.Llist=Llist
+CommonInfo.LlistTabBut=LlistTabBut
 CommonInfo.NR=NR
 --==================================
 addonTable.Common=function()
@@ -24,9 +26,6 @@ addonTable.Common=function()
 		v()
 	end
 	for _,v in pairs(CommonInfo.Interactionfun) do
-		v()
-	end
-	for _,v in pairs(CommonInfo.Otherfun) do
 		v()
 	end
 end

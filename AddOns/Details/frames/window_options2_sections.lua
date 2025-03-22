@@ -401,50 +401,27 @@ do
                 desc = Loc ["STRING_OPTIONS_SEGMENTSSAVE_DESC"],
             },
 
-            {type = "blank"},
-            {type = "label", get = function() return "Auto Erase:" end, text_template = subSectionTitleTextTemplate},
-
-            {--auto erase settings | erase data
-                type = "select",
-                get = function() return Details.segments_auto_erase end,
-                values = function()
-                    return buildEraseDataMenu()
-                end,
-                name = Loc ["STRING_OPTIONS_ED"],
-                desc = Loc ["STRING_OPTIONS_ED_DESC"],
-            },
-
-            {--auto erase trash segments
-                type = "toggle",
-                get = function() return Details.trash_auto_remove end,
+            {--max segments on boss wipes
+                type = "range",
+                get = function() return Details.segments_amount_boss_wipes end,
                 set = function(self, fixedparam, value)
-                    Details.trash_auto_remove = value
+                    Details.segments_amount_boss_wipes = value
                     afterUpdate()
                 end,
-                name = Loc ["STRING_OPTIONS_CLEANUP"],
-                desc = Loc ["STRING_OPTIONS_CLEANUP_DESC"],
-                boxfirst = true,
+                min = 1,
+                max = 40,
+                step = 1,
+                name = "Segments Boss Wipe",
+                desc = "Amount of segments to keep for wipes on the same boss.",
             },
-            {--auto erase world segments
+            {--wipe segments keep the best segments and delete the worst ones
                 type = "toggle",
-                get = function() return Details.world_combat_is_trash end,
+                get = function() return Details.segments_boss_wipes_keep_best_performance end,
                 set = function(self, fixedparam, value)
-                    Details.world_combat_is_trash = value
-                    afterUpdate()
+                    Details.segments_boss_wipes_keep_best_performance = value
                 end,
-                name = Loc ["STRING_OPTIONS_PERFORMANCE_ERASEWORLD"],
-                desc = Loc ["STRING_OPTIONS_PERFORMANCE_ERASEWORLD_DESC"],
-                boxfirst = true,
-            },
-            {--erase chart data
-                type = "toggle",
-                get = function() return Details.clear_graphic end,
-                set = function(self, fixedparam, value)
-                    Details.clear_graphic = value
-                    afterUpdate()
-                end,
-                name = Loc ["STRING_OPTIONS_ERASECHARTDATA"],
-                desc = Loc ["STRING_OPTIONS_ERASECHARTDATA_DESC"],
+                name = "Keep Best Performance (boss wipes)",
+                desc = "Keep the segments with more progress in the boss health and delete the ones with less progress.",
                 boxfirst = true,
             },
 
@@ -685,6 +662,53 @@ do
 				desc = "Your Bar Color",
                 boxfirst = true,
             },
+
+            {type = "blank"},
+            {type = "label", get = function() return "Auto Erase:" end, text_template = subSectionTitleTextTemplate},
+
+            {--auto erase settings | erase data
+                type = "select",
+                get = function() return Details.segments_auto_erase end,
+                values = function()
+                    return buildEraseDataMenu()
+                end,
+                name = Loc ["STRING_OPTIONS_ED"],
+                desc = Loc ["STRING_OPTIONS_ED_DESC"],
+            },
+
+            {--auto erase trash segments
+                type = "toggle",
+                get = function() return Details.trash_auto_remove end,
+                set = function(self, fixedparam, value)
+                    Details.trash_auto_remove = value
+                    afterUpdate()
+                end,
+                name = Loc ["STRING_OPTIONS_CLEANUP"],
+                desc = Loc ["STRING_OPTIONS_CLEANUP_DESC"],
+                boxfirst = true,
+            },
+            {--auto erase world segments
+                type = "toggle",
+                get = function() return Details.world_combat_is_trash end,
+                set = function(self, fixedparam, value)
+                    Details.world_combat_is_trash = value
+                    afterUpdate()
+                end,
+                name = Loc ["STRING_OPTIONS_PERFORMANCE_ERASEWORLD"],
+                desc = Loc ["STRING_OPTIONS_PERFORMANCE_ERASEWORLD_DESC"],
+                boxfirst = true,
+            },
+            {--erase chart data
+                type = "toggle",
+                get = function() return Details.clear_graphic end,
+                set = function(self, fixedparam, value)
+                    Details.clear_graphic = value
+                    afterUpdate()
+                end,
+                name = Loc ["STRING_OPTIONS_ERASECHARTDATA"],
+                desc = Loc ["STRING_OPTIONS_ERASECHARTDATA_DESC"],
+                boxfirst = true,
+            },            
 
         }
 
@@ -1753,7 +1777,10 @@ do
 
         sectionFrame.sectionOptions = sectionOptions
         sectionOptions.always_boxfirst = true
-        DF:BuildMenu(sectionFrame, sectionOptions, startX, startY-20, heightSize+40, false, options_text_template, options_dropdown_template, options_switch_template, true, options_slider_template, options_button_template)
+
+        C_Timer.After(0.2, function()
+            DF:BuildMenu(sectionFrame, sectionOptions, startX, startY-20, heightSize+40, false, options_text_template, options_dropdown_template, options_switch_template, true, options_slider_template, options_button_template)
+        end)
     end
 
     tinsert(Details.optionsSection, buildSection)
@@ -2140,24 +2167,26 @@ do
 
         sectionFrame.sectionOptions = sectionOptions
         sectionOptions.always_boxfirst = true
-        DF:BuildMenu(sectionFrame, sectionOptions, startX, startY-20, heightSize, false, options_text_template, options_dropdown_template, options_switch_template, true, options_slider_template, options_button_template)
+        C_Timer.After(0.15, function()
+            DF:BuildMenu(sectionFrame, sectionOptions, startX, startY-20, heightSize, false, options_text_template, options_dropdown_template, options_switch_template, true, options_slider_template, options_button_template)
 
-        local separatorOption = sectionFrame.widget_list[25]
-        local bracketOption = sectionFrame.widget_list[26]
-        local warningLabel = sectionFrame.widget_list[27]
-        Details222.OptionsPanel.textSeparatorOption = separatorOption
-        Details222.OptionsPanel.textbracketOption = bracketOption
+            local separatorOption = sectionFrame.widget_list[25]
+            local bracketOption = sectionFrame.widget_list[26]
+            local warningLabel = sectionFrame.widget_list[27]
+            Details222.OptionsPanel.textSeparatorOption = separatorOption
+            Details222.OptionsPanel.textbracketOption = bracketOption
 
-        sectionFrame:SetScript("OnShow", function()
-            if (currentInstance.use_multi_fontstrings) then
-                separatorOption:Disable()
-                bracketOption:Disable()
-                warningLabel:Show()
-            else
-                separatorOption:Enable()
-                bracketOption:Enable()
-                warningLabel:Hide()
-            end
+            sectionFrame:SetScript("OnShow", function()
+                if (currentInstance.use_multi_fontstrings) then
+                    separatorOption:Disable()
+                    bracketOption:Disable()
+                    warningLabel:Show()
+                else
+                    separatorOption:Enable()
+                    bracketOption:Enable()
+                    warningLabel:Hide()
+                end
+            end)
         end)
     end
 
@@ -2693,7 +2722,9 @@ do
 
         sectionFrame.sectionOptions = sectionOptions
         sectionOptions.always_boxfirst = true
-        DF:BuildMenu(sectionFrame, sectionOptions, startX, startY-20, heightSize, false, options_text_template, options_dropdown_template, options_switch_template, true, options_slider_template, options_button_template)
+        C_Timer.After(0.25, function()
+            DF:BuildMenu(sectionFrame, sectionOptions, startX, startY-20, heightSize, false, options_text_template, options_dropdown_template, options_switch_template, true, options_slider_template, options_button_template)
+        end)
     end
 
     tinsert(Details.optionsSection, buildSection)
@@ -2930,7 +2961,7 @@ do
                 usedecimals = true,
                 step = 0.5,
                 name = Loc ["STRING_OPTIONS_GROUPING_HORIZONTAL_GAP"],
-                desc = Loc ["STRING_OPTIONS_GROUPING_HORIZONTAL_GAP_DESC"],
+                desc = Loc ["STRING_OPTIONS_GROUPING_HORIZONTAL_GAP"],
                 thumbscale = 2.2,
             },
 
@@ -3118,7 +3149,9 @@ do
         }
         sectionFrame.sectionOptions = sectionOptions
         sectionOptions.always_boxfirst = true
-        DF:BuildMenu(sectionFrame, sectionOptions, startX, startY-20, heightSize+20, false, options_text_template, options_dropdown_template, options_switch_template, true, options_slider_template, options_button_template)
+        C_Timer.After(0.05, function()
+            DF:BuildMenu(sectionFrame, sectionOptions, startX, startY-20, heightSize+20, false, options_text_template, options_dropdown_template, options_switch_template, true, options_slider_template, options_button_template)
+        end)
     end
 
     tinsert(Details.optionsSection, buildSection)
@@ -3233,7 +3266,10 @@ do
 
         sectionFrame.sectionOptions = sectionOptions
         sectionOptions.always_boxfirst = true
-        DF:BuildMenu(sectionFrame, sectionOptions, startX, startY-20, heightSize, false, options_text_template, options_dropdown_template, options_switch_template, true, options_slider_template, options_button_template)
+
+        C_Timer.After(0.3, function()
+            DF:BuildMenu(sectionFrame, sectionOptions, startX, startY-20, heightSize, false, options_text_template, options_dropdown_template, options_switch_template, true, options_slider_template, options_button_template)
+        end)
 
         do --micro displays
             
@@ -3716,7 +3752,7 @@ do
                 end
             end
             
-            if (pluginObject.OpenOptionsPanel) then
+            if (rawget(pluginObject, "OpenOptionsPanel")) then
                 DF:NewButton(bframe, nil, "$parentOptionsButton"..i, "OptionsButton"..i, 86, 18, pluginObject.OpenOptionsPanel, nil, nil, nil, Loc ["STRING_OPTIONS_PLUGINS_OPTIONS"], nil, options_button_template)
                 bframe ["OptionsButton"..i]:SetPoint("topleft", anchorFrame, "topleft", 510, y-0)
                 bframe ["OptionsButton"..i]:SetTextColor(button_color_rgb)
@@ -3867,7 +3903,9 @@ do
 
         sectionFrame.sectionOptions = sectionOptions
         sectionOptions.always_boxfirst = true
-        DF:BuildMenu(sectionFrame, sectionOptions, startX, startY-20, heightSize, false, options_text_template, options_dropdown_template, options_switch_template, true, options_slider_template, options_button_template)
+        C_Timer.After(0.333, function()
+            DF:BuildMenu(sectionFrame, sectionOptions, startX, startY-20, heightSize, false, options_text_template, options_dropdown_template, options_switch_template, true, options_slider_template, options_button_template)
+        end)
     end
 
     tinsert(Details.optionsSection, buildSection)
@@ -4124,7 +4162,9 @@ do
 
         sectionFrame.sectionOptions = sectionOptions
         sectionOptions.always_boxfirst = true
-        DF:BuildMenu(sectionFrame, sectionOptions, startX, startY-20, heightSize, false, options_text_template, options_dropdown_template, options_switch_template, true, options_slider_template, options_button_template)
+        C_Timer.After(0.366, function()
+            DF:BuildMenu(sectionFrame, sectionOptions, startX, startY-20, heightSize, false, options_text_template, options_dropdown_template, options_switch_template, true, options_slider_template, options_button_template)
+        end)
     end
 
     tinsert(Details.optionsSection, buildSection)
@@ -4286,8 +4326,27 @@ do
                     Details.tooltip.fontshadow = value
                     afterUpdate()
                 end,
-                name = Loc ["STRING_OPTIONS_TEXT_LOUTILINE"],
+                name = Loc ["STRING_OPTIONS_TEXT_OUTLINE"],
                 desc = Loc ["STRING_OPTIONS_TOOLTIPS_FONTSHADOW_DESC"],
+            },
+
+			{--shadow color
+                type = "color",
+                get = function()
+                    local r, g, b, a = unpack(Details.tooltip.fontcontour)
+                    return {r, g, b, a}
+                end,
+                set = function(self, r, g, b, a)
+                    local color = Details.tooltip.fontcontour
+                    color[1] = r
+                    color[2] = g
+                    color[3] = b
+                    color[4] = a
+                    afterUpdate()
+                end,
+                name = "Shadow Color",
+                desc = "Color of the text shadow",
+                hidden = true,
             },
 
             {--text size
@@ -4552,8 +4611,10 @@ do
         
         sectionFrame.sectionOptions = sectionOptions
         sectionOptions.always_boxfirst = true
-        DF:BuildMenu(sectionFrame, sectionOptions, startX, startY-20, heightSize, false, options_text_template, options_dropdown_template, options_switch_template, true, options_slider_template, options_button_template)
-        refreshToggleAnchor()
+        C_Timer.After(0.275, function()
+            DF:BuildMenu(sectionFrame, sectionOptions, startX, startY-20, heightSize, false, options_text_template, options_dropdown_template, options_switch_template, true, options_slider_template, options_button_template)
+            refreshToggleAnchor()
+        end)
     end
 
     tinsert(Details.optionsSection, buildSection)
@@ -4701,7 +4762,10 @@ do
 
         sectionFrame.sectionOptions = sectionOptions
         sectionOptions.always_boxfirst = true
-        DF:BuildMenu(sectionFrame, sectionOptions, startX, startY-20, heightSize, false, options_text_template, options_dropdown_template, options_switch_template, true, options_slider_template, options_button_template)
+
+        C_Timer.After(0.4, function()
+            DF:BuildMenu(sectionFrame, sectionOptions, startX, startY-20, heightSize, false, options_text_template, options_dropdown_template, options_switch_template, true, options_slider_template, options_button_template)
+        end)
     end
 
     tinsert(Details.optionsSection, buildSection)
@@ -5121,7 +5185,10 @@ do
 
         sectionFrame.sectionOptions = sectionOptions
         sectionOptions.always_boxfirst = true
-        DF:BuildMenu(sectionFrame, sectionOptions, startX, startY-20, heightSize, false, options_text_template, options_dropdown_template, options_switch_template, true, options_slider_template, options_button_template)
+
+        C_Timer.After(0.433, function()
+            DF:BuildMenu(sectionFrame, sectionOptions, startX, startY-20, heightSize, false, options_text_template, options_dropdown_template, options_switch_template, true, options_slider_template, options_button_template)
+        end)
 
         sectionFrame:SetScript("OnShow", function()
             sectionFrame:UpdateWallpaperInfo()
@@ -6313,11 +6380,25 @@ do
                 desc = "Clear Cache Regularly",
             },
 
+            {--hide helptips
+                type = "toggle",
+                get = function() return Details.streamer_config.no_helptips end,
+                set = function(self, fixedparam, value)
+                    Details.streamer_config.no_helptips = value
+                    afterUpdate()
+                end,
+                name = "Hide Yellow Helptips", --localize-me
+                desc = "Those yellow boxes with an arrow and a text showing a text with tips.",
+            },
+
+
         }
 
         sectionFrame.sectionOptions = sectionOptions
         sectionOptions.always_boxfirst = true
-        DF:BuildMenu(sectionFrame, sectionOptions, startX + 350, startY - 20, heightSize + 300, false, options_text_template, options_dropdown_template, options_switch_template, true, options_slider_template, options_button_template)
+        C_Timer.After(0.1, function()
+            DF:BuildMenu(sectionFrame, sectionOptions, startX + 350, startY - 20, heightSize + 300, false, options_text_template, options_dropdown_template, options_switch_template, true, options_slider_template, options_button_template)
+        end)
     end
 
     tinsert(Details.optionsSection, buildSection)
@@ -6383,7 +6464,7 @@ do
 			spellname_entry:SetPoint("left", spellname, "right", 2, 0)
 
 			local spellid_entry_func = function(arg1, arg2, spellid) 
-				local spellname, _, icon = GetSpellInfo(spellid)
+				local spellname, _, icon = _GetSpellInfo(spellid)
 				if (spellname) then
 					spellname_entry:SetText(spellname) 
 					addframe.spellIconButton.icon.texture = icon
@@ -6983,6 +7064,20 @@ do
                 name = Loc["STRING_OPTIONS_MPLUS_SHOWENDPANEL"],
                 desc = Loc["STRING_OPTIONS_MPLUS_SHOWENDPANEL"],
             },
+
+            {--time to auto hide
+                type = "range",
+                get = function() return Details.mythic_plus.autoclose_time end,
+                set = function(self, fixedparam, value)
+                    Details.mythic_plus.autoclose_time = value
+                    afterUpdate()
+                end,
+                min = 20,
+                max = 300,
+                step = 1,
+                name = Loc ["STRING_OPTIONS_MPLUS_AUTO_CLOSE_TIME"],
+                desc = Loc ["STRING_OPTIONS_MPLUS_AUTO_CLOSE_TIME_DESC"],
+            },
         }
 
         sectionFrame.sectionOptions = sectionOptions
@@ -7111,8 +7206,8 @@ do
                     afterUpdate()
                     Details:ClearParserCache()
                 end,
-                name = "Merge Primordial Stones 10.0.7",
-                desc = "Merge Primordial Stones 10.0.7",
+                name = "Merge Ring Gems 11.0.7",
+                desc = "Merge Ring Gems 11.0.7",
                 boxfirst = true,
             },
 
@@ -7159,7 +7254,7 @@ do
                 boxfirst = true,
             },
 
-            {type = "blank"},
+            {type = "breakline"},
             {type = "label", get = function() return "Parser Options:" end, text_template = subSectionTitleTextTemplate},
 
             {--overheal shields
@@ -7202,6 +7297,41 @@ do
                 desc = "Merges spells like Atonement and Awakened Faeline with their critical damage component.",
                 boxfirst = true,
             },
+
+            {--record tank avoidance
+                type = "toggle",
+                get = function() return Details.parser_options.tank_avoidance end,
+                set = function(self, fixedparam, value)
+                    Details.parser_options.tank_avoidance = value
+                    afterUpdate()
+                    Details:ClearParserCache()
+                    Details:UpdateParserGears()
+                end,
+                name = "Record Tank Avoidance",
+                desc = "Record tank avoidance, this information is used in the Avoidance tank for tanks.",
+                boxfirst = true,
+            },
+
+            {--record energy resources
+                type = "toggle",
+                get = function() return Details.parser_options.energy_resources end,
+                set = function(self, fixedparam, value)
+                    Details.parser_options.energy_resources = value
+                    if (value) then
+                        Details:CaptureEnable("energy")
+                    else
+                        Details:CaptureDisable("energy")
+                    end
+                    afterUpdate()
+                    Details:ClearParserCache()
+                    Details:UpdateParserGears()
+                end,
+                name = "Record Energy Resources",
+                desc = "Energy resources are mana, rage, energy, runic power, and others.",
+                boxfirst = true,
+            },
+            
+            
         }
 
         sectionFrame.sectionOptions = sectionOptions

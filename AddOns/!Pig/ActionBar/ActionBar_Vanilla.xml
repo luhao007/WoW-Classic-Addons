@@ -4,5 +4,5 @@
 	<Script file="QuickBut_Equip.lua" />
 	<Script file="QuickBut_Trinket.lua" />
 	<Script file="QuickBut_Rune.lua" />
-	<Script file="PigAction.lua" />	
+	<Script file="PigActionBar.lua" />	
 </Ui>

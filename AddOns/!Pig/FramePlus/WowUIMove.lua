@@ -1,5 +1,7 @@
 local _, addonTable = ...;
 local _, _, _, tocversion = GetBuildInfo()
+local Create=addonTable.Create
+local PIGFontString=Create.PIGFontString
 local FramePlusfun=addonTable.FramePlusfun
 --------
 local IsAddOnLoaded=IsAddOnLoaded or C_AddOns and C_AddOns.IsAddOnLoaded
@@ -55,8 +57,8 @@ local function add_Movebiaoti(oldbiaoti,point)
 	Movebiaoti:EnableMouse(true)
 	return Movebiaoti
 end
-local function PIG_SetPoint(self)    
-   	local point, relativeTo, relativePoint, offsetX, offsetY=unpack(PIGA["WowUI"][self:GetName()]["Point"])
+local function PIG_SetPoint(self)
+   	local point, relativeTo, relativePoint, offsetX, offsetY=unpack(PIGA["BlizzardUI"][self:GetName()]["Point"])
 	self:ClearAllPoints();
 	self:SetPoint(point, relativeTo, relativePoint, offsetX, offsetY);
 end
@@ -64,25 +66,26 @@ local function Moving(MovingUI,Frame)
 	if MovingUI then
 		local Frame = Frame or MovingUI
 		local MovingUIName=MovingUI:GetName()
-		PIGA["WowUI"][MovingUIName]=PIGA["WowUI"][MovingUIName] or {}
+		PIGA["BlizzardUI"][MovingUIName]=PIGA["BlizzardUI"][MovingUIName] or {}
 		--位置
 		MovingUI:EnableMouse(true)
 		MovingUI:SetMovable(true)
 	 	MovingUI:SetClampedToScreen(true)
 	 	Frame:RegisterForDrag("LeftButton")
-	    Frame:SetScript("OnDragStart",function()
+	    Frame:HookScript("OnDragStart",function()
 	        MovingUI:StartMoving();
 	    end)
-	    Frame:SetScript("OnDragStop",function()
+	    Frame:HookScript("OnDragStop",function()
 	        MovingUI:StopMovingOrSizing()
 	        if PIGA["FramePlus"]["BlizzardUI_Move_Save"] then
 	        	local point, relativeTo, relativePoint, offsetX, offsetY = MovingUI:GetPoint()
-	       		PIGA["WowUI"][MovingUIName]["Point"]={point, relativeTo, relativePoint, offsetX, offsetY}
+	        	PIGA["BlizzardUI"][MovingUIName]=PIGA["BlizzardUI"][MovingUIName] or {}
+	       		PIGA["BlizzardUI"][MovingUIName]["Point"]={point, relativeTo, relativePoint, offsetX, offsetY}
 	       	end
 	    end)
 
 	    MovingUI:HookScript("OnShow",function(self)
-	    	if PIGA["WowUI"][MovingUIName] and PIGA["FramePlus"]["BlizzardUI_Move_Save"] and PIGA["WowUI"][self:GetName()]["Point"] and #PIGA["WowUI"][self:GetName()]["Point"]>0 then
+	    	if PIGA["BlizzardUI"][MovingUIName] and PIGA["FramePlus"]["BlizzardUI_Move_Save"] and PIGA["BlizzardUI"][self:GetName()]["Point"] and #PIGA["BlizzardUI"][self:GetName()]["Point"]>0 then
 		    	PIG_SetPoint(self)
 		    	C_Timer.After(0,function() PIG_SetPoint(self) end)
 		    	C_Timer.After(0.001,function() PIG_SetPoint(self) end)
@@ -90,26 +93,26 @@ local function Moving(MovingUI,Frame)
 	    end)
 	    
 	    --缩放
-	    if PIGA["WowUI"][MovingUIName]["Scale"] then
-			MovingUI:SetScale(PIGA["WowUI"][MovingUIName]["Scale"]);
+	    if PIGA["BlizzardUI"][MovingUIName]["Scale"] then
+			MovingUI:SetScale(PIGA["BlizzardUI"][MovingUIName]["Scale"]);
 		end
 	    MovingUI:EnableMouseWheel(true);
 	    MovingUI:HookScript("OnMouseWheel", function(self, arg1)
 			if IsControlKeyDown() and IsAltKeyDown() then
-				PIGA["WowUI"][self:GetName()]["Scale"]=PIGA["WowUI"][self:GetName()]["Scale"] or 1
+				PIGA["BlizzardUI"][self:GetName()]["Scale"]=PIGA["BlizzardUI"][self:GetName()]["Scale"] or 1
 	    		local vera = arg1*0.1
-	    		local newbvv = PIGA["WowUI"][self:GetName()]["Scale"]+vera
+	    		local newbvv = PIGA["BlizzardUI"][self:GetName()]["Scale"]+vera
 	    		if newbvv>=1.8 then
-	    			PIGinfotip:TryDisplayMessage("已达最大缩放比例: 1.8")
-	    			PIGA["WowUI"][self:GetName()]["Scale"]=1.8
+	    			PIGTopMsg:add("已达最大缩放比例: 1.8")
+	    			PIGA["BlizzardUI"][self:GetName()]["Scale"]=1.8
 	    		elseif newbvv<=0.6 then
-	    			PIGinfotip:TryDisplayMessage("已达最小缩放比例: 0.6")
-	    			PIGA["WowUI"][self:GetName()]["Scale"]=0.6
+	    			PIGTopMsg:add("已达最小缩放比例: 0.6")
+	    			PIGA["BlizzardUI"][self:GetName()]["Scale"]=0.6
 	    		else
-	    			PIGA["WowUI"][self:GetName()]["Scale"]=newbvv
-	    			PIGinfotip:TryDisplayMessage("当前缩放: "..PIGA["WowUI"][self:GetName()]["Scale"])
+	    			PIGA["BlizzardUI"][self:GetName()]["Scale"]=newbvv
+	    			PIGTopMsg:add("当前缩放: "..PIGA["BlizzardUI"][self:GetName()]["Scale"])
 	    		end
-	    		self:SetScale(PIGA["WowUI"][self:GetName()]["Scale"]);
+	    		self:SetScale(PIGA["BlizzardUI"][self:GetName()]["Scale"]);
 			end
 		end)
 	end
@@ -121,11 +124,11 @@ function FramePlusfun.BlizzardUI_Move()
 		local oldshowframe = nil
 		hooksecurefunc("UpdateUIPanelPositions", function(Frame)
 			local Frame = Frame or oldshowframe
-			if Frame then
+			if Frame and PIGA["BlizzardUI"][UIName] then
 				local UIName = Frame:GetName()
 				if UIName then
 					oldshowframe=Frame
-					if PIGA["WowUI"][UIName] and PIGA["WowUI"][UIName]["Point"] and #PIGA["WowUI"][UIName]["Point"]>0 then
+					if PIGA["BlizzardUI"][UIName]["Point"] and #PIGA["BlizzardUI"][UIName]["Point"]>0 then
 				    	PIG_SetPoint(Frame)
 				    end
 				end

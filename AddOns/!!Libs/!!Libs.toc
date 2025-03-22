@@ -1,4 +1,4 @@
-## Interface: 30400
+## Interface: 30404
 ## Author: luhao007
 
 ## Title: Libraries
@@ -62,6 +62,7 @@ Krowi_WorldMapButtons\Krowi_WorldMapButtons-1.4.xml
 LibAHTab\LibAHTab.xml
 LibAboutPanel\lib.xml
 LibAlts-1.0\lib.xml
+LibBase64-1.0\lib.xml
 LibCandyBar-3.0\lib.xml
 LibChatAnims\LibChatAnims.xml
 LibClassicCasterino\LibClassicCasterino.lua
@@ -77,6 +78,7 @@ LibDurability\LibDurability\LibDurability.xml
 LibGetEnchant-1.0\LibGetEnchant-1.0.xml
 LibGetFrame-1.0\LibGetFrame-1.0.xml
 LibGraph-2.0\LibGraph-2.0.lua
+LibHealComm-4.0\LibHealComm-4.0.xml
 LibItemUpgradeInfo-1.0\LibItemUpgradeInfo-1.0.xml
 LibLatency\LibLatency\LibLatency.xml
 LibOpenRaid\lib.xml
@@ -85,7 +87,7 @@ LibRangeCheck-3.0\LibRangeCheck-3.0.lua
 LibRealmInfo\LibRealmInfo.lua
 LibSerialize\lib.xml
 LibSink-2.0\lib.xml
-LibSpecialization\LibSpecialization\LibSpecialization.xml
+LibSpecialization\LibSpecialization.xml
 LibSpellRange-1.0\lib.xml
 LibTime-1.0\LibTime-1.0.xml
 LibTranslit-1.0\LibTranslit-1.0.xml

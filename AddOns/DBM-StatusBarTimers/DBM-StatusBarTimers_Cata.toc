@@ -1,6 +1,6 @@
-## Interface: 30400
+## Interface: 30404
 ## Author: MysticalOS, QartemisT
-## Version: 11.1.1
+## Version: 11.1.11
 
 ## Title: |cffffe00a<|r|cffff7d0aDBM Core|r|cffffe00a>|r |cff69ccf0Status Bar Timers|r
 ## Notes: DBM - status bar timer library

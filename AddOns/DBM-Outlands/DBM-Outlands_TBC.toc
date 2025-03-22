@@ -1,4 +1,4 @@
-## Interface: 30400
+## Interface: 30404
 ## Version: r8
 
 ## Title: |cffffe00a<|r|cffff7d0aDBM Mod|r|cffffe00a>|r |cff10ff10World Bosses (BC)|r

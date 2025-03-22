@@ -4,7 +4,7 @@ local addonName, Details222 = ...
 local detailsFramework = DetailsFramework
 local _
 
-local AuraUtil, wipe, C_UnitAuras, GetSpellInfo, GetTime, UnitGUID, UnitExists = AuraUtil, table.wipe, C_UnitAuras, GetSpellInfo, GetTime, UnitGUID, UnitExists
+local AuraUtil, wipe, C_UnitAuras, GetSpellInfo, GetTime, UnitGUID, UnitExists = AuraUtil, table.wipe, C_UnitAuras, Details222.GetSpellInfo, GetTime, UnitGUID, UnitExists
 
 local AuraScan = Details222.AuraScan
 AuraScan.Enabled = false
@@ -15,6 +15,57 @@ AuraScan.AurasToScan = {}
 AuraScan.UnitAurasStorage = {}
 AuraScan.AurasToTimeline = {} --which spells should be added to the timeline
 AuraScan.AuraTimelineStorage = {} --store the timeline here
+
+function AuraScan.FindAndIgnoreWorldAuras()
+    for buffIndex = 1, 41 do
+        ---@type aurainfo
+        local auraInfo = C_UnitAuras.GetAuraDataByIndex("player", buffIndex, "HELPFUL")
+        if (auraInfo) then
+            local auraName, unitCaster, spellId = auraInfo.name, auraInfo.sourceUnit, auraInfo.spellId
+            if (auraName and unitCaster and UnitExists(unitCaster) and UnitIsUnit(unitCaster, "player")) then
+                if (auraInfo.duration == 0 and auraInfo.expirationTime == 0) then --this aura is a world buff, probably a weekly buff
+                    Details222.IgnoredWorldAuras[spellId] = true
+                end
+            end
+        else
+            break
+        end
+    end
+end
+
+function AuraScan.CheckForOneHourBuffs()
+    ---@type combat
+    local currentCombat = Details:GetCurrentCombat()
+    ---@type actorcontainer
+    local utilityContainer = currentCombat:GetContainer(DETAILS_ATTRIBUTE_MISC)
+    ---@type combattime
+    local combatTime = floor(currentCombat:GetCombatTime())
+
+    for _, utilityActor in utilityContainer:ListActors() do
+        ---@cast utilityActor actorutility
+        if (utilityActor:IsPlayer()) then
+            --get the buff container
+            ---@type spellcontainer
+            local buffUptimeContainer = utilityActor.buff_uptime_spells
+            if (buffUptimeContainer) then
+                for spellId, spellTable in buffUptimeContainer:ListSpells() do
+                    ---@cast spellTable spelltable
+                    if (Details222.OneHourAuras[spellId]) then
+                        --is this buff have 100% uptime?
+                        if (spellTable.uptime == combatTime) then
+                            --remove the spell fro the container
+                            utilityActor.buff_uptime = utilityActor.buff_uptime - spellTable.uptime
+                            utilityActor.buff_uptime_spells._ActorTable[spellId] = nil
+                        end
+                    end
+                end
+            end
+        end
+    end
+end
+
+------------------------------
+---------Aura Scan ~aura ~scan
 
 function AuraScan.RegisterCallback(callback)
     AuraScan.Callbacks[callback] = true
@@ -325,7 +376,7 @@ end
 
 ------------------------------------------------------------------------------------------------------------------------------
 
-local scanFrame = CreateFrame("frame", "DetailsAuraScanFrame", UIParent)
+local scanFrame = CreateFrame("frame")
 
 function AuraScan.Start()
     AuraScan.Enabled = true
@@ -352,15 +403,15 @@ function AuraScan.Start()
 
     bIsInitialScan = false
 
-    DetailsAuraScanFrame:RegisterEvent("UNIT_AURA")
-    DetailsAuraScanFrame:SetScript("OnEvent", AuraScan.OnEvent)
+    scanFrame:RegisterEvent("UNIT_AURA")
+    scanFrame:SetScript("OnEvent", AuraScan.OnEvent)
 end
 
 function AuraScan.Stop()
     if (AuraScan.Enabled) then
         AuraScan.Enabled = false
-        DetailsAuraScanFrame:UnregisterEvent("UNIT_AURA")
-        DetailsAuraScanFrame:SetScript("OnEvent", nil)
+        scanFrame:UnregisterEvent("UNIT_AURA")
+        scanFrame:SetScript("OnEvent", nil)
 
         --close all opened auras (by running the remove function)
         for targetGUID, auras in pairs(AuraScan.UnitAurasStorage) do

@@ -361,6 +361,8 @@ function test:Trace(mod, event, ...)
 			-- Note: this is not guaranteed to trigger if the scheduled task throws an error, but that doesn't actually matter
 			currentEventKey = nil
 			currentRawEvent = nil
+		elseif event == "EarlyTimerRefresh" then
+			entry.hidden = true
 		end
 	end
 end
@@ -423,6 +425,8 @@ function test:SetupDBMOptions(defaults, disableFilters, deterministicSorting)
 	-- Don't show intro messages
 	DBM.Options.SettingsMessageShown = true
 	DBM.Options.NewsMessageShown2 = 3
+	-- Be verbose about early timer refreshes
+	DBM.Options.BadTimerAlert = true
 end
 
 ---@param testOptions DBMTestOptions
@@ -590,6 +594,12 @@ function test:InjectEvent(event, ...)
 	if event == "CHAT_MSG_RAID_BOSS_WHISPER" and select(2, ...) ~= self.logPlayerName and not self.allOnYou then
 		return
 	end
+	if event == "CHAT_MSG_RAID_WARNING" then
+		if select(12, ...) == self.logPlayerGuid and self.logPlayerGuid ~= UnitGUID("player") then
+			local arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11 = ...
+			return self:InjectEvent(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, UnitGUID("player"), select(13, ...))
+		end
+	end
 	if event == "COMBAT_LOG_EVENT_UNFILTERED" then
 		self.Mocks:SetFakeCLEUArgs(...)
 		self:OnInjectCombatLog(self.Mocks.CombatLogGetCurrentEventInfo())
@@ -736,9 +746,10 @@ function test:Playback(testData, timeWarp, testOptions)
 	self.players = {}
 	if testData.players then
 		for _, v in ipairs(testData.players) do
-			self.players[v[1]] = true
+			self.players[v[1]] = v[2]
 		end
 	end
+	self.logPlayerGuid = self.players[self.logPlayerName]
 	adjustFlagsForPerspective(testData, self.logPlayerName, self.allOnYou)
 	self.Mocks:SetInstanceInfo(testData.instanceInfo)
 	DBM:ScenarioCheck(0)
@@ -769,9 +780,19 @@ function test:Playback(testData, timeWarp, testOptions)
 			if bit.band(trials, DBM.Difficulties.SOD_BWL_TRIAL_RED) ~= 0 then
 				self.Mocks:ApplyUnitAura(UnitName("player"), UnitGUID("player"), 466261, "Red Trial", "BUFF")
 			end
-		elseif testData.instanceInfo.instanceID == 186 then -- Naxx
-			if testData.instanceInfo.difficultyModifier and testData.instanceInfo.difficultyModifier > 0 then
-				self.Mocks:ApplyUnitAura(UnitName("player"), UnitGUID("player"), 1218278, DBM:GetSpellName(1218278), "DEBUFF", testData.instanceInfo.difficultyModifier)
+		elseif testData.instanceInfo.instanceID == 533 then -- Naxx
+			local modifier = testData.instanceInfo.difficultyModifier
+			-- I've no clue how the spell IDs map to number of modifiers, it could change by week maybe?
+			-- Week 1 had 1218271 for difficulty 1, week 2 has 1218275 for difficulty 1 but for difficulty 2 as well and 1218276 for 3?
+			-- Anyhow, the real important number is the number of stacks and that 1224428 means no hardmode enable, our mods don't care about the exact debuff anyways.
+			if modifier and modifier > 0 then
+				if modifier == 1 or modifier == 2 then
+					self.Mocks:ApplyUnitAura(UnitName("player"), UnitGUID("player"), 1218275, DBM:GetSpellName(1218275), "DEBUFF", modifier)
+				elseif modifier == 3 then
+					self.Mocks:ApplyUnitAura(UnitName("player"), UnitGUID("player"), 1218276, DBM:GetSpellName(1218276), "DEBUFF", modifier)
+				else
+					self.Mocks:ApplyUnitAura(UnitName("player"), UnitGUID("player"), 1218283, DBM:GetSpellName(1218283), "DEBUFF", modifier)
+				end
 			end
 		end
    end
@@ -887,7 +908,6 @@ frame:SetScript("OnUpdate", function() test:OnUpdate() end)
 ---@field addon string AddOn in which the mod under test is located.
 ---@field mod string|integer The boss mod being tested.
 ---@field otherMods ((string|integer)[]|(string|integer))? List of other mods that are allowed to trigger warnings/timers during test execution, useful for trash mods that are active during bosses.
----@field ignoreWarnings? TestIgnoreWarnings Acknowledge findings to remove them from the report.
 ---@field instanceInfo DBMInstanceInfo Fake GetInstanceInfo() data for the test.
 ---@field playerName string? (Deprecated, no longer required) Name of the player who recorded the log.
 ---@field perspective string? Player name from whose perspective the log gets replayed
@@ -899,21 +919,6 @@ frame:SetScript("OnUpdate", function() test:OnUpdate() end)
 ---@field compressedLog string? LibDeflate compressed log
 ---@field duration number? Test duration, required if log is compressed
 ---@field uiInfo TestUiInfo? Internal field used by the UI, do not set manually
-
---[[
-I'm a bit torn on this ignore warning stuff: having the warnings in the report also serves as acknowledgement, however,
-you can't add comments there (cause they themselves would be a diff), so acknowledging them in the test definition is better.
-But putting them there is extra work, extra code, and the ignore logic is somewhat messy and error-prone.
-
-Maybe a better solution would be to support some kind of comment in the report?
-]]
-
----@class TestIgnoreWarnings
----@field sharedWith boolean|string? By default the ignoreWarnings field is shared across all tests for the mod, set this to a regex to match only certain test names of the same mod. Set to false to not share this.
---- List of spell IDs or spell names that are used to detect phase changes, this surpresses spellID mismatch warnings caused by these spells.
----@field phaseChangeSpells string|number|(string|number)[]?
---- Suppress warning spellID mismatch warnings if the spell ID or spell name given as key is used to trigger a warning associated with a spell ID or spell name in the value. Set value to true to ignore all mismatches.
----@field spellIdMismatches table<string|number, string|number|boolean|(string|number)[]>?
 
 ---@class TestLogEntry
 ---@field [1] number

@@ -193,7 +193,6 @@ L["STRING_ENVIRONMENTAL_FATIGUE"] = "환경피해 (피로)"
 L["STRING_ENVIRONMENTAL_FIRE"] = "환경피해 (화염)"
 L["STRING_ENVIRONMENTAL_LAVA"] = "환경피해 (용암)"
 L["STRING_ENVIRONMENTAL_SLIME"] = "환경피해 (독성)"
-L["STRING_EQUILIZING"] = "전투 데이터 공유"
 L["STRING_ERASE"] = "삭제"
 L["STRING_ERASE_DATA"] = "모든 데이터 초기화"
 L["STRING_ERASE_DATA_OVERALL"] = "종합 데이터 초기화"
@@ -712,6 +711,8 @@ L["STRING_OPTIONS_EXTERNALS_TITLE"] = "외부 위젯"
 L["STRING_OPTIONS_EXTERNALS_TITLE2"] = "여러 외부 위젯의 작동 방법을 조절하는 옵션입니다."
 L["STRING_OPTIONS_GENERAL"] = "일반 설정"
 L["STRING_OPTIONS_GENERAL_ANCHOR"] = "일반:"
+--[[Translation missing --]]
+L["STRING_OPTIONS_GROUPING_HORIZONTAL_GAP"] = "\"Space Between Windows\""
 L["STRING_OPTIONS_HIDE_ICON"] = "아이콘 숨기기"
 L["STRING_OPTIONS_HIDE_ICON_DESC"] = [=[활성화하면 선택한 디스플레이를 나타내는 아이콘을 표시하지 않습니다.
 
@@ -846,6 +847,10 @@ L["STRING_OPTIONS_MINIMAP_ANCHOR"] = "미니맵:"
 L["STRING_OPTIONS_MINIMAP_DESC"] = "미니맵 아이콘을 표시하거나 숨깁니다."
 L["STRING_OPTIONS_MISCTITLE"] = "기타 설정"
 L["STRING_OPTIONS_MISCTITLE2"] = "여러가지 옵션을 설정합니다."
+--[[Translation missing --]]
+L["STRING_OPTIONS_MPLUS_AUTO_CLOSE_TIME"] = "Time To Auto Close"
+--[[Translation missing --]]
+L["STRING_OPTIONS_MPLUS_AUTO_CLOSE_TIME_DESC"] = "Time to auto close the Show End of M+ Panel automatically."
 --[[Translation missing --]]
 L["STRING_OPTIONS_MPLUS_BOSSNEWCOMBAT"] = "New Combat on Boss Pull"
 --[[Translation missing --]]
@@ -1191,6 +1196,8 @@ L["STRING_OPTIONS_TEXT_LPOSITION"] = "순위 표시"
 L["STRING_OPTIONS_TEXT_LPOSITION_DESC"] = "플레이어 이름 왼쪽에 순위를 표시합니다."
 L["STRING_OPTIONS_TEXT_LTRANSLIT"] = "번역"
 L["STRING_OPTIONS_TEXT_LTRANSLIT_DESC"] = "아무도 이해하지 못하는 러시아 문자를 서양 문자로 표현합니다."
+--[[Translation missing --]]
+L["STRING_OPTIONS_TEXT_OUTLINE"] = "Text Outline"
 L["STRING_OPTIONS_TEXT_RIGHT_ANCHOR"] = "우측 문자:"
 L["STRING_OPTIONS_TEXT_ROUTILINE_DESC"] = "우측 문자에 외곽선을 켜거나 끕니다."
 L["STRING_OPTIONS_TEXT_ROWICONS_ANCHOR"] = "아이콘:"

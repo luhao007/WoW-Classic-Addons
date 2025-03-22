@@ -152,7 +152,7 @@ function GDKPInfo.ADD_Fakuan(RaidR)
 	fujiF.fakuan.TOPline = PIGLine(fujiF.fakuan,"TOP",-lineTOP)
 	fujiF.fakuan.Scroll = CreateFrame("ScrollFrame",nil,fujiF.fakuan, "FauxScrollFrameTemplate");  
 	fujiF.fakuan.Scroll:SetPoint("TOPLEFT",fujiF.fakuan.TOPline,"BOTTOMLEFT",0,-1);
-	fujiF.fakuan.Scroll:SetPoint("BOTTOMRIGHT",fujiF.fakuan,"BOTTOMRIGHT",-24,1);
+	fujiF.fakuan.Scroll:SetPoint("BOTTOMRIGHT",fujiF.fakuan,"BOTTOMRIGHT",-24,lineTOP);
 	fujiF.fakuan.Scroll:SetScript("OnVerticalScroll", function(self, offset)
 	    FauxScrollFrame_OnVerticalScroll(self, offset, hang_Height, RaidR.Update_Fakuan)
 	end)

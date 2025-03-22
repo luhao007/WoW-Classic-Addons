@@ -109,7 +109,7 @@ function BusinessInfo.FastDrop()
 				end 
 			end
 		else
-			PIGinfotip:TryDisplayMessage(gongnengName.."目录为空,"..KEY_BUTTON2.."设置");
+			PIGTopMsg:add(gongnengName.."目录为空,"..KEY_BUTTON2.."设置");
 		end
 	end
 end

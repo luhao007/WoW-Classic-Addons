@@ -4,17 +4,6 @@ local L=addonTable.locale
 local Create = addonTable.Create
 local FontUrl=Create.FontUrl
 local PIGSetFont=Create.PIGSetFont
--- local PIGButton = Create.PIGButton
--- local PIGDiyBut = Create.PIGDiyBut
--- local PIGDownMenu=Create.PIGDownMenu
--- local PIGSlider = Create.PIGSlider
--- local PIGCheckbutton=Create.PIGCheckbutton
--- local PIGCheckbutton_R=Create.PIGCheckbutton_R
--- local PIGOptionsList=Create.PIGOptionsList
--- local PIGOptionsList_RF=Create.PIGOptionsList_RF
--- local PIGOptionsList_R=Create.PIGOptionsList_R
--- local Show_TabBut_R=Create.Show_TabBut_R
--- local PIGQuickBut=Create.PIGQuickBut
 -------------------
 local BGColor={0.1, 0.1, 0.1, 0.8}
 local BorderColor={0, 0, 0, 1}
@@ -148,14 +137,17 @@ function Create.PIGButton(fuF,Point,WH,Text,UIName,id,TemplateP,Zihao,mode)--,ni
 	end
 end
 ---自定义材质按钮
-function Create.PIGDiyBut(fuF,Point,WH,UIName,TemplateP)
+function Create.PIGDiyBut(fuF,Point,WH,UIName,TemplateP,Check)
 	local Www = WH and WH[1] or 20
 	local Hhh = WH and WH[2] or Www
 	local WwwTex = WH and WH[3] or Www-2
 	local HhhTex = WH and WH[4] or WwwTex
 	local icontex = WH and WH[5] or "common-icon-redx"--130976or
-	local But = CreateFrame("Button",UIName,fuF,TemplateP);
-	But:SetHighlightTexture("Interface/Buttons/ButtonHilight-Square")
+	local HighlightTex = WH and WH[6] or 130718
+	local Butleixing = "Button"
+	if Check then Butleixing = "CheckButton" end
+	local But = CreateFrame(Butleixing,UIName,fuF,TemplateP);
+	But:SetHighlightTexture(HighlightTex)
 	But:SetSize(Www,Hhh)
 	if Point then
 		But:SetPoint(Point[1],Point[2],Point[3],Point[4],Point[5])
@@ -168,6 +160,7 @@ function Create.PIGDiyBut(fuF,Point,WH,UIName,TemplateP)
 	end
 	But.icon:SetPoint("CENTER",0,0);
 	But.icon:SetSize(WwwTex,HhhTex);
+	But:RegisterForClicks("LeftButtonUp","RightButtonUp")
 	hooksecurefunc(But, "Enable", function(self)
 		self.icon:SetDesaturated(false)
 	end)
@@ -197,17 +190,22 @@ end
 function Create.PIGDiyTex(fuF,Point,WH,UIName,TemplateP)
 	local Www = WH and WH[1] or 20
 	local Hhh = WH and WH[2] or Www
-	local icontex = WH and WH[3] or "common-icon-redx"--130976or
+	local WwwTex = WH and WH[3] or Www-2
+	local HhhTex = WH and WH[4] or WwwTex
+	local icontex = WH and WH[5] or "common-icon-redx"--130976or
 	local TemplateP=TemplateP or "OVERLAY"
-	local But = fuF:CreateTexture(UIName, TemplateP);
+	local But = CreateFrame("Frame",UIName,fuF)
 	But:SetSize(Www,Hhh)
 	if Point then
 		But:SetPoint(Point[1],Point[2],Point[3],Point[4],Point[5])
 	end
+	But.icon = But:CreateTexture(nil, TemplateP);
+	But.icon:SetSize(WwwTex,HhhTex)
+	But.icon:SetPoint("CENTER",0,0);
 	if type(icontex)=="number" then
-		But:SetTexture(icontex);
+		But.icon:SetTexture(icontex);
 	else
-		But:SetAtlas(icontex)
+		But.icon:SetAtlas(icontex)
 	end
 	return But
 end

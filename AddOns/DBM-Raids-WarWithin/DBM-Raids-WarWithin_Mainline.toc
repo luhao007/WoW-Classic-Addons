@@ -1,6 +1,6 @@
-## Interface: 30400
+## Interface: 30404
 ## Author: MysticalOS
-## Version: 11.1.1
+## Version: 11.1.11
 
 ## Title: |cffffe00a<|r|cffff7d0aDBM Mod|r|cffffe00a>|r |cffff6010Raids (WW)|r
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFF69CCF0团队|r |cFF22B14C地心之战|r

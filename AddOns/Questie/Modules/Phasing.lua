@@ -183,6 +183,42 @@ local phases = {
     SERENDIA_INN = 1111,
     GRIMCLAW_THICKET = 1112,
     GRIMCLAW_INN = 1113,
+    BARGE_AT_PEACE = 1114,
+    BARGE_UNDER_ATTACK = 1115,
+    KELSEY_AT_COVE = 1116,
+    HORATIO_IRONCLAD_COVE = 1117,
+    DEADMINES_HOGGER_ALIVE = 1118,
+    DEADMINES_HOGGER_DEAD = 1119,
+    SILVERPINE_FOREST_HIGH_COMMAND = 1120,
+    SILVERPINE_FOREST_SEPULCHER = 1121,
+    SILVERPINE_FOREST_FORSAKEN_FRONT = 1122,
+    SILVERPINE_FOREST_FORSAKEN_FRONT_2 = 1123,
+    SILVERPINE_FOREST_BATTLEFRONT = 1124,
+    RUINS_OF_GILNEAS_FFC = 1125,
+    RUINS_OF_GILNEAS_EMBERSTONE = 1126,
+    RUINS_OF_GILNEAS_TEMPESTS_REACH = 1127,
+    SHADOWFANG_KEEP_ENTRANCE_A = 1128,
+    SHADOWFANG_KEEP_ASHBURY_DEAD_A = 1129,
+    SHADOWFANG_KEEP_SPRINGVALE_DEAD_A = 1130,
+    SHADOWFANG_KEEP_WALDEN_DEAD_A = 1131,
+    SHADOWFANG_KEEP_GODFREY_DEAD_A = 1132,
+    SHADOWFANG_KEEP_ENTRANCE_H = 1133,
+    SHADOWFANG_KEEP_ASHBURY_DEAD_H = 1134,
+    SHADOWFANG_KEEP_SPRINGVALE_DEAD_H = 1135,
+    SHADOWFANG_KEEP_WALDEN_DEAD_H = 1136,
+    SHADOWFANG_KEEP_GODFREY_DEAD_H = 1137,
+    LYDON_AWESOME_CAGE = 1138,
+    LYDON_AWESOME_MAIN_BUILDING = 1139,
+    ORKUS_IN_WATER = 1140,
+    ORKUS_ON_LAND = 1141,
+    ET_MUROZOND_DEAD = 1142,
+    WILLIX_IN_TENT = 1143,
+    WILLIX_AT_EXIT = 1144,
+    WOT_NOZDORMU_1 = 1145,
+    WOT_NOZDORMU_2 = 1146,
+    WOT_NOZDORMU_3 = 1147,
+    KAMMAH_STONE = 1148,
+    KAMMAH_TENT = 1149,
 }
 Phasing.phases = phases
 
@@ -708,11 +744,11 @@ function Phasing.IsSpawnVisible(phase)
     end
 
     if phase == phases.SERENDIA_FP then
-        return not complete[13520]
+        return not complete[13518] and not complete[13522]
     end
 
     if phase == phases.SERENDIA_INN then
-        return complete[13520] or false
+        return complete[13518] and complete[13522] or false
     end
 
     if phase == phases.GRIMCLAW_THICKET then
@@ -721,6 +757,150 @@ function Phasing.IsSpawnVisible(phase)
 
     if phase == phases.GRIMCLAW_INN then
         return complete[13599] or false
+    end
+
+    if phase == phases.BARGE_AT_PEACE then
+        return (((not complete[25515]) and (not complete[25517]) and (not complete[25524])) or ((not complete[25516]) and (not complete[25518]) and (not complete[25526]))) or complete[25542] or complete[25543] or complete[25561] or complete[25562] or false
+    end
+
+    if phase == phases.BARGE_UNDER_ATTACK then
+        return (complete[25515] and complete[25517] and complete[25524] and (not complete[25542]) and (not complete[25561])) or (complete[25516] and complete[25518] and complete[25526] and (not complete[25543]) and (not complete[25562])) or false
+    end
+
+    if phase == phases.KELSEY_AT_COVE then
+        return not complete[26889]
+    end
+
+    if phase == phases.HORATIO_IRONCLAD_COVE then
+        return complete[27790] or complete[27850] or (questLog[27790] and questLog[27790].isComplete == 1) or (questLog[27850] and questLog[27850].isComplete == 1) or false
+    end
+
+    if phase == phases.DEADMINES_HOGGER_ALIVE then
+        return not questLog[27739]
+    end
+
+    if phase == phases.DEADMINES_HOGGER_DEAD then
+        return (questLog[27739] and questLog[27739].isComplete == 1) or false
+    end
+
+    if phase == phases.SILVERPINE_FOREST_HIGH_COMMAND then
+        return not complete[27098] and (not questLog[27098] or (questLog[27098] and questLog[27098].isComplete == 0)) or false
+    end
+
+    if phase == phases.SILVERPINE_FOREST_SEPULCHER then
+        return (complete[27098] or (questLog[27098] and questLog[27098].isComplete == 1)) and (not complete[27438]) or false
+    end
+
+    if phase == phases.SILVERPINE_FOREST_FORSAKEN_FRONT then
+        return complete[27438] and (not complete[27472] and (not questLog[27472] or (questLog[27472] and questLog[27472].isComplete == 0))) or false
+    end
+
+    if phase == phases.SILVERPINE_FOREST_FORSAKEN_FRONT_2 then
+        return (complete[27472] or (questLog[27472] and questLog[27472].isComplete == 1)) and (not complete[27601] and (not questLog[27601] or (questLog[27601] and questLog[27601].isComplete == 0))) or false
+    end
+
+    if phase == phases.SILVERPINE_FOREST_BATTLEFRONT then
+        return complete[27601] or (questLog[27601] and questLog[27601].isComplete == 1) or false
+    end
+
+    if phase == phases.RUINS_OF_GILNEAS_FFC then
+        return not complete[27401]
+    end
+
+    if phase == phases.RUINS_OF_GILNEAS_EMBERSTONE then
+        return complete[27401] and (not complete[27406]) and (not complete[27423]) or false
+    end
+
+    if phase == phases.RUINS_OF_GILNEAS_TEMPESTS_REACH then
+        return complete[27406] and complete[27423] and (not complete[27438]) or false
+    end
+
+    if phase == phases.SHADOWFANG_KEEP_ENTRANCE_A then
+        return (not complete[27917]) and (not questLog[27917] or (questLog[27917] and questLog[27917].isComplete == 0)) or false
+    end
+
+    if phase == phases.SHADOWFANG_KEEP_ENTRANCE_H then
+        return (not complete[27974]) and (not questLog[27974] or (questLog[27974] and questLog[27974].isComplete == 0)) or false
+    end
+
+    if phase == phases.SHADOWFANG_KEEP_ASHBURY_DEAD_A then
+        return (complete[27917] or (questLog[27917] and questLog[27917].isComplete == 1)) and ((not complete[27920]) and (not questLog[27920] or (questLog[27920] and questLog[27920].isComplete == 0))) or false
+    end
+
+    if phase == phases.SHADOWFANG_KEEP_ASHBURY_DEAD_H then
+        return (complete[27974] or (questLog[27974] and questLog[27974].isComplete == 1)) and ((not complete[27988]) and (not questLog[27988] or (questLog[27988] and questLog[27988].isComplete == 0))) or false
+    end
+
+    if phase == phases.SHADOWFANG_KEEP_SPRINGVALE_DEAD_A then
+        return (complete[27920] or (questLog[27920] and questLog[27920].isComplete == 1)) and ((not complete[27921]) and (not questLog[27921] or (questLog[27921] and questLog[27921].isComplete == 0))) or false
+    end
+
+    if phase == phases.SHADOWFANG_KEEP_SPRINGVALE_DEAD_H then
+        return (complete[27988] or (questLog[27988] and questLog[27988].isComplete == 1)) and ((not complete[27996]) and (not questLog[27996] or (questLog[27996] and questLog[27996].isComplete == 0))) or false
+    end
+
+    if phase == phases.SHADOWFANG_KEEP_WALDEN_DEAD_A then
+        return (complete[27921] or (questLog[27921] and questLog[27921].isComplete == 1)) and ((not complete[27968]) and (not questLog[27968] or (questLog[27968] and questLog[27968].isComplete == 0))) or false
+    end
+
+    if phase == phases.SHADOWFANG_KEEP_WALDEN_DEAD_H then
+        return (complete[27996] or (questLog[27996] and questLog[27996].isComplete == 1)) and ((not complete[27998]) and (not questLog[27998] or (questLog[27998] and questLog[27998].isComplete == 0))) or false
+    end
+
+    if phase == phases.SHADOWFANG_KEEP_GODFREY_DEAD_A then
+        return (complete[27968] or (questLog[27968] and questLog[27968].isComplete == 1)) or false
+    end
+
+    if phase == phases.SHADOWFANG_KEEP_GODFREY_DEAD_H then
+        return (complete[27998] or (questLog[27998] and questLog[27998].isComplete == 1)) or false
+    end
+
+    if phase == phases.LYDON_AWESOME_CAGE then
+        return not complete[28235]
+    end
+
+    if phase == phases.LYDON_AWESOME_MAIN_BUILDING then
+        return complete[28235] or false
+    end
+
+    if phase == phases.ORKUS_IN_WATER then
+        return (not complete[28345]) and (not questLog[28345] or (questLog[28345] and questLog[28345].isComplete == 0)) or false
+    end
+
+    if phase == phases.ORKUS_ON_LAND then
+        return (complete[28345] or (questLog[28345] and questLog[28345].isComplete == 1)) or false
+    end
+
+    if phase == phases.ET_MUROZOND_DEAD then
+        return complete[30096] or (questLog[30096] and questLog[30096].isComplete == 1) or false
+    end
+
+    if phase == phases.WILLIX_IN_TENT then
+        return not questLog[26903]
+    end
+
+    if phase == phases.WILLIX_AT_EXIT then
+        return questLog[26903]
+    end
+
+    if phase == phases.WOT_NOZDORMU_1 then
+        return false
+    end
+
+    if phase == phases.WOT_NOZDORMU_2 then
+        return false
+    end
+
+    if phase == phases.WOT_NOZDORMU_3 then
+        return false
+    end
+
+    if phase == phases.KAMMAH_STONE then
+        return not complete[14325] and (not questLog[14325] or (questLog[14325] and questLog[14325].isComplete == 0)) or false
+    end
+
+    if phase == phases.KAMMAH_TENT then
+        return complete[14325] or (questLog[14325] and questLog[14325].isComplete == 1) or false
     end
 
     return false

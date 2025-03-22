@@ -1,6 +1,6 @@
-## Interface: 30400
+## Interface: 30404
 ## Author: MysticalOS
-## Version: r181
+## Version: r194
 
 ## Title: |cffffe00a<|r|cffff7d0aDBM Mod|r|cffffe00a>|r |cffc030c0Dungeons (Cata)|r
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFF69CCF0小队|r |cFF22B14C大地的裂变|r
@@ -48,7 +48,7 @@ localization.cn.lua
 localization.br.lua
 BlackrockCaverns\RomoggBonecrusher.lua
 BlackrockCaverns\Corla.lua
-BlackrockCaverns\KarshSteelBender.lua
+BlackrockCaverns\KarshSteelbender.lua
 BlackrockCaverns\Beauty.lua
 BlackrockCaverns\AscendantLordObsidius.lua
 BlackrockCaverns\BlackrockCavernsTrash.lua

@@ -150,7 +150,6 @@ function QuestieEvent:Load()
     QuestieEvent.eventQuests = nil
 end
 
----@param dayOfMonth number
 ---@return boolean
 _GetDarkmoonFaireLocation = function()
     if C_Calendar == nil then
@@ -316,16 +315,15 @@ local isChinaRegion = GetCurrentRegion() == 5
 
 -- EUROPEAN FORMAT! NO FUCKING AMERICAN SHIDAZZLE FORMAT!
 QuestieEvent.eventDates = {
-    ["Lunar Festival"] = { -- WARNING THIS DATE VARIES!!!!
-        startDate = "3/2",
-        endDate = "24/2"
+    ["Love is in the Air"] = { -- WARNING THIS DATE VARIES!!!!
+        startDate = "03/2",
+        endDate = "16/2"
     },
-    ["Love is in the Air"] = {startDate = "05/2", endDate = "19/2"},
     ["Noblegarden"] = { -- WARNING THIS DATE VARIES!!!!
-        startDate = "31/3",
-        endDate = "6/4"
+        startDate = "20/4",
+        endDate = "26/4"
     },
-    ["Children's Week"] = {startDate = "1/5", endDate = "15/5"}, -- TODO: Usually it is only a week long
+    ["Children's Week"] = {startDate = "28/4", endDate = "12/5"}, -- TODO: Usually it is only a week long
     ["Midsummer"] = (isChinaRegion and Questie.IsWotlk) and {startDate = "21/6", endDate = "28/7"} or {startDate = "21/6", endDate = "4/7"},
     ["Brewfest"] = {startDate = "20/9", endDate = "5/10"}, -- TODO: This might be different (retail date)
     ["Harvest Festival"] = { -- WARNING THIS DATE VARIES!!!!
@@ -359,7 +357,7 @@ QuestieEvent.lunarFestival = {
     -- Below are estimates
     ["23"] = {startDate = "20/1", endDate = "10/2"},
     ["24"] = {startDate = "3/2", endDate = "23/2"},
-    ["25"] = {startDate = "29/1", endDate = "12/2"},
+    ["25"] = {startDate = "28/1", endDate = "17/2"},
     ["26"] = {startDate = "17/2", endDate = "3/3"},
     ["27"] = {startDate = "7/2", endDate = "21/2"},
     ["28"] = {startDate = "27/1", endDate = "10/2"}

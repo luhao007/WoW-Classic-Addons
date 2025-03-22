@@ -8,14 +8,12 @@ local PIGFontString=Create.PIGFontString
 ----
 local CommonInfo=addonTable.CommonInfo
 local FasongYCqingqiu=addonTable.Fun.FasongYCqingqiu
-local InviteUnit=InviteUnit or C_PartyInfo and C_PartyInfo.InviteUnit
 ---
 local gelibanban = 40000
 local yijiazaijinlai = {
 	["jiazai"]=false,
-	["listName"]={},
 	["listNameFun"]={
-		[STATUS_TEXT_TARGET..INFO]=function(wanjiaName,name)
+		[STATUS_TEXT_TARGET..INFO]=function(wanjiaName)
 			if tocversion<gelibanban then
 				C_FriendList.SendWho(WHO_TAG_EXACT..wanjiaName, Enum.SocialWhoOrigin.Item);
 			else
@@ -23,7 +21,7 @@ local yijiazaijinlai = {
 			end
 		end,
 		[INVITE]=function(wanjiaName)
-			InviteUnit(wanjiaName)
+			PIG_InviteUnit(wanjiaName)
 		end,
 		[ADD_FRIEND]=function(wanjiaName)
 			C_FriendList.AddFriend(wanjiaName)
@@ -84,25 +82,43 @@ function CommonInfo.Interactionfun.RightPlus()
 	if yijiazaijinlai.jiazai then return end
 	yijiazaijinlai.jiazai=true
 	if Menu and Menu.ModifyMenu then
-		local listName={INVTYPE_RANGED..INSPECT,STATUS_TEXT_TARGET..INFO,ADD_FRIEND,INVITE..GUILD}
-		for i=1,#listName do
-			table.insert(yijiazaijinlai.listName,listName[i])
-		end
-		Menu.ModifyMenu("MENU_UNIT_FRIEND", function(ownerRegion, rootDescription, contextData)
+		local function add_pigmenu(rootDescription, contextData,menulist)
 		   	-- 在菜单末尾加入新按钮.
+		   	local wanjiaName = contextData.name
+			if contextData.server and Pig_OptionsUI.Realm~=contextData.server then
+				wanjiaName = wanjiaName.."-"..contextData.server
+			end
 		    rootDescription:CreateDivider()
 		    rootDescription:CreateTitle(addonName)
-		    for i=1,#listName do
-		    	rootDescription:CreateButton(listName[i], function() yijiazaijinlai.listNameFun[listName[i]](contextData.chatTarget,contextData.name) end)
+		    for i=1,#menulist do
+		    	rootDescription:CreateButton(menulist[i], function() yijiazaijinlai.listNameFun[menulist[i]](wanjiaName) end)
 		    end
 		    -- 在菜单开始处加入按钮.
 		    -- local title = MenuUtil.CreateTitle(addonName)
 		    -- rootDescription:Insert(title, 1)
 		    -- local button = MenuUtil.CreateButton("Inserted button", function() print("Clicked the inserted button!") end)
-		    -- rootDescription:Insert(button, 2)
-		    -- local divider = MenuUtil.CreateDivider()
-		    -- rootDescription:Insert(divider, 3)
+		    -- rootDescription:Insert(button, 6)
+		    --local divider = MenuUtil.CreateDivider()
+		    -- local divider = MenuUtil.GetDivider()
+		   -- rootDescription:Insert(divider, 3)
+	    end
+	    local FRIEND_listName={INVTYPE_RANGED..INSPECT,STATUS_TEXT_TARGET..INFO,ADD_FRIEND,INVITE..GUILD,CALENDAR_COPY_EVENT..NAME}
+		Menu.ModifyMenu("MENU_UNIT_FRIEND", function(ownerRegion, rootDescription, contextData)
+			add_pigmenu(rootDescription, contextData,FRIEND_listName)
 		end)
+		local SELF_listName={CALENDAR_COPY_EVENT..NAME}
+		Menu.ModifyMenu("MENU_UNIT_SELF", function(ownerRegion, rootDescription, contextData)
+		   	add_pigmenu(rootDescription, contextData,SELF_listName)
+		end)
+		local PLAYER_listName={INVTYPE_RANGED..INSPECT,INVITE..GUILD,CALENDAR_COPY_EVENT..NAME}
+		Menu.ModifyMenu("MENU_UNIT_PLAYER", function(ownerRegion, rootDescription, contextData)
+		   	add_pigmenu(rootDescription, contextData,PLAYER_listName)
+		end)
+		local TARGET_listName={CALENDAR_COPY_EVENT..NAME}
+		Menu.ModifyMenu("MENU_UNIT_TARGET", function(ownerRegion, rootDescription, contextData)
+			add_pigmenu(rootDescription, contextData,TARGET_listName)
+		end)
+		--/run Menu.PrintOpenMenuTags()
 	else
 		if Pig_RightFUI then return end
 		local PigRightF=PIGFrame(UIParent,{"TOPLEFT",DropDownList1,"TOPRIGHT",0,-PIGA["Interaction"]["xiayijuli"]},{caidanW,caidanH*zongHang+16},"Pig_RightFUI")

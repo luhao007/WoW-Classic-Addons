@@ -76,16 +76,16 @@ end
 ---@class DBM
 local DBM = private:GetPrototype("DBM")
 _G.DBM = DBM
-DBM.Revision = parseCurseDate("20250117110235")
+DBM.Revision = parseCurseDate("20250321071603")
 DBM.TaintedByTests = false -- Tests may mess with some internal state, you probably don't want to rely on DBM for an important boss fight after running it in test mode
 
-local fakeBWVersion, fakeBWHash = 368, "fc06f51"--368.0
+local fakeBWVersion, fakeBWHash = 373, "9b49b21"--373.0
 local PForceDisable
 -- The string that is shown as version
-DBM.DisplayVersion = "11.1.1"--Core version
+DBM.DisplayVersion = "11.1.11"--Core version
 DBM.classicSubVersion = 0
-DBM.ReleaseRevision = releaseDate(2024, 1, 16) -- the date of the latest stable version that is available, optionally pass hours, minutes, and seconds for multiple releases in one day
-PForceDisable = 15--When this is incremented, trigger force disable regardless of major patch
+DBM.ReleaseRevision = releaseDate(2025, 3, 21) -- the date of the latest stable version that is available, optionally pass hours, minutes, and seconds for multiple releases in one day
+PForceDisable = 16--When this is incremented, trigger force disable regardless of major patch
 DBM.HighestRelease = DBM.ReleaseRevision --Updated if newer version is detected, used by update nags to reflect critical fixes user is missing on boss pulls
 
 -- support for github downloads, which doesn't support curse keyword expansion
@@ -580,37 +580,6 @@ private.GetInstanceInfo = GetInstanceInfo
 private.IsEncounterInProgress = IsEncounterInProgress
 
 local RAID_CLASS_COLORS = _G["CUSTOM_CLASS_COLORS"] or RAID_CLASS_COLORS-- for Phanx' Class Colors
-
--- Polyfill for C_AddOns, Cata, Era and Retail have the fully featured table, Wrath has only Metadata (as of Jun 6th 2024)
-local C_AddOns
-do
-	local cachedAddOns = nil
-	C_AddOns = {
-		GetAddOnMetadata = _G.C_AddOns.GetAddOnMetadata,
-		GetNumAddOns = _G.C_AddOns.GetNumAddOns or GetNumAddOns, ---@diagnostic disable-line:deprecated
-		GetAddOnInfo = _G.C_AddOns.GetAddOnInfo or GetAddOnInfo, ---@diagnostic disable-line:deprecated
-		LoadAddOn = _G.C_AddOns.LoadAddOn or LoadAddOn, ---@diagnostic disable-line:deprecated
-		IsAddOnLoaded = _G.C_AddOns.IsAddOnLoaded or IsAddOnLoaded, ---@diagnostic disable-line:deprecated
-		EnableAddOn = _G.C_AddOns.EnableAddOn or EnableAddOn, ---@diagnostic disable-line:deprecated
-		GetAddOnEnableState = _G.C_AddOns.GetAddOnEnableState or function(addon, character)
-			return GetAddOnEnableState(character, addon) ---@diagnostic disable-line:deprecated
-		end,
-		DoesAddOnExist = _G.C_AddOns.DoesAddOnExist or function(addon)
-			if not cachedAddOns then
-				cachedAddOns = {}
-				for i = 1, GetNumAddOns() do ---@diagnostic disable-line:deprecated
-					cachedAddOns[GetAddOnInfo(i)] = true ---@diagnostic disable-line:deprecated
-				end
-			end
-			return cachedAddOns[addon]
-		end,
-	}
-
-	---Needed for non core files still calling this in wrath client
-	function DBM:DoesAddOnExist(addon)
-		return C_AddOns.DoesAddOnExist(addon)
-	end
-end
 
 -- this is not technically a lib and instead a standalone addon but the api is available via LibStub
 local CustomNames = C_AddOns.IsAddOnLoaded("CustomNames") and LibStub and LibStub("CustomNames")
@@ -1310,6 +1279,7 @@ do
 	end
 
 	---@param self DBMModOrDBM
+	---@param srmIncluded boolean?
 	function DBM:UnregisterInCombatEvents(srmOnly, srmIncluded)
 		for event, mods in pairs(registeredEvents) do
 			if srmOnly then
@@ -1892,17 +1862,10 @@ do
 				"LOADING_SCREEN_DISABLED",
 				"ZONE_CHANGED_NEW_AREA"
 			)
-			if not private.isWrath then
-				self:RegisterEvents(
-					"START_PLAYER_COUNTDOWN",
-					"CANCEL_PLAYER_COUNTDOWN"
-				)
-			end
-			if private.wowTOC >= 110002 then
-				self:RegisterEvents(
-					"PLAYER_MAP_CHANGED"
-				)
-			end
+			self:RegisterEvents(
+				"START_PLAYER_COUNTDOWN",
+				"CANCEL_PLAYER_COUNTDOWN"
+			)
 			if not private.isClassic then -- Retail, WoTLKC, and BCC
 				self:RegisterEvents(
 					"LFG_PROPOSAL_FAILED",
@@ -1917,7 +1880,8 @@ do
 					"CHALLENGE_MODE_RESET",
 					"PLAYER_SPECIALIZATION_CHANGED",
 					"SCENARIO_COMPLETED",
-					"GOSSIP_SHOW"
+					"GOSSIP_SHOW",
+					"PLAYER_MAP_CHANGED"
 				)
 			elseif private.isBCC or private.isClassic then
 				self:RegisterEvents(
@@ -2000,6 +1964,7 @@ do
 	--- |"DBM_Debug"
 	--- |"DBM_SetStage"
 	--- |"DBM_AffixEvent"
+	--- |"DBM_TimerBegin"
 	--- |"DBM_TimerStart"
 	--- |"DBM_TimerStop"
 	--- |"DBM_TimerFadeUpdate"
@@ -2007,6 +1972,7 @@ do
 	--- |"DBM_TimerPause"
 	--- |"DBM_TimerResume"
 	--- |"DBM_TimerUpdateIcon"
+	--- |"DBM_NameplateBegin"
 	--- |"DBM_NameplateStart"
 	--- |"DBM_NameplateStop"
 	--- |"DBM_NameplateStopAll"
@@ -3153,7 +3119,6 @@ do
 		[9278] = 552035,--HoodWolfTransformPlayer01
 		[6674] = 566558,--BellTollNightElf
 		[11742] = 566558,--BellTollNightElf
-		[8585] = 546633,--CThunYouWillDIe
 		[11965] = 551703,--Horseman_Laugh_01
 		[37666] = 876098,--Blizzard Raid Emote
 		[11466] = 552503,--BLACK_Illidan_04
@@ -4514,7 +4479,7 @@ do
 	---@param blizzardTimer boolean?
 	local function pullTimerStart(self, sender, timer, blizzardTimer)
 		if not timer then return end
-		if not private.isWrath and not blizzardTimer then return end--Ignore old DBM version comms
+		if not blizzardTimer then return end--Ignore old DBM version comms
 		local unitId
 		if sender then--Blizzard cancel events triggered by system (such as encounter start) have no sender
 			if blizzardTimer then
@@ -4595,10 +4560,6 @@ do
 				end
 			end
 		end
-	end
-	syncHandlers["PT"] = function(sender, _, timer)
-		if DBM.Options.DontShowUserTimers or not private.isWrath then return end
-		pullTimerStart(DBM, sender, timer)
 	end
 
 	do
@@ -5337,7 +5298,7 @@ do
 		if self.Options.AFKHealthWarning2 and not private.IsEncounterInProgress() and UnitIsAFK("player") and self:AntiSpam(3, "AFK") then--You are afk and losing health, some griever is trying to kill you while you are afk/tabbed out.
 			self:FlashClientIcon()
 			local voice = DBM.Options.ChosenVoicePack2
-			local path = 546633--"Sound\\Creature\\CThun\\CThunYouWillDIe.ogg"
+			local path = 566558--Nightelf Bell
 			if not private.voiceSessionDisabled and voice ~= "None" then
 				path = "Interface\\AddOns\\DBM-VP" .. voice .. "\\checkhp.ogg"
 			end
@@ -5932,7 +5893,7 @@ do
 				trackedAchievements = (C_ContentTracking and C_ContentTracking.GetTrackedIDs(2)[1])
 			end
 			if self.Options.HideObjectivesFrame and mod.addon and mod.addon.type ~= "SCENARIO" and not trackedAchievements and difficulties.difficultyIndex ~= 8 and not InCombatLockdown() then
-				if private.isRetail then--Do nothing due to taint and breaking
+				if private.isRetail or private.isCata then--Do nothing due to taint and breaking
 					--if ObjectiveTrackerFrame:IsVisible() then
 					--	ObjectiveTracker_Collapse()
 					--	watchFrameRestore = true
@@ -6057,7 +6018,7 @@ do
 				if self.Options.EventSoundEngage2 and self.Options.EventSoundEngage2 ~= "" and self.Options.EventSoundEngage2 ~= "None" then
 					self:PlaySoundFile(self.Options.EventSoundEngage2, nil, true)
 				end
-				if self.Options.EventSoundMusic and self.Options.EventSoundMusic ~= "None" and self.Options.EventSoundMusic ~= "" and not (self.Options.EventMusicMythicFilter and (difficulties.savedDifficulty == "mythic" or difficulties.savedDifficulty == "challenge")) and not mod.noStatistics and not self.Options.RestoreSettingMusic then
+				if not mod.inScenario and self.Options.EventSoundMusic and self.Options.EventSoundMusic ~= "None" and self.Options.EventSoundMusic ~= "" and not (self.Options.EventMusicMythicFilter and (difficulties.savedDifficulty == "mythic" or difficulties.savedDifficulty == "challenge")) and not mod.noStatistics and not self.Options.RestoreSettingMusic then
 					fireEvent("DBM_MusicStart", "BossEncounter")
 					if not self.Options.RestoreSettingCustomMusic then
 						self.Options.RestoreSettingCustomMusic = tonumber(GetCVar("Sound_EnableMusic")) or 1
@@ -6069,7 +6030,7 @@ do
 					end
 					local path = "MISSING"
 					if self.Options.EventSoundMusic == "Random" then
-						local usedTable = self.Options.EventSoundMusicCombined and self:GetMusic() or mod.inScenario and self:GetDungeonMusic() or self:GetBattleMusic()
+						local usedTable = self.Options.EventSoundMusicCombined and self:GetMusic() or self:GetBattleMusic()
 						if #usedTable >= 3 then
 							local random = fastrandom(3, #usedTable)
 							---@diagnostic disable-next-line: cast-local-type
@@ -6121,7 +6082,7 @@ do
 				--PRIO afk alert first
 				if self.Options.AFKHealthWarning2 and (health < (private.isHardcoreServer and 95 or 85)) and UnitIsAFK("player") and self:AntiSpam(5, "AFK") then
 					local voice = DBM.Options.ChosenVoicePack2
-					local path = 546633--"Sound\\Creature\\CThun\\CThunYouWillDIe.ogg"
+					local path = 566558--Nightelf Bell
 					if not private.voiceSessionDisabled and voice ~= "None" then
 						path = "Interface\\AddOns\\DBM-VP" .. voice .. "\\checkhp.ogg"
 					end
@@ -6130,7 +6091,7 @@ do
 				--Low health warning
 				elseif self.Options.HealthWarningLow and health < 35 and self:AntiSpam(5, "LOWHEALTH") then
 					local voice = DBM.Options.ChosenVoicePack2
-					local path = 546633--"Sound\\Creature\\CThun\\CThunYouWillDIe.ogg"
+					local path = 566558--Nightelf Bell
 					if not private.voiceSessionDisabled and voice ~= "None" then
 						path = "Interface\\AddOns\\DBM-VP" .. voice .. "\\checkhp.ogg"
 					end
@@ -6194,7 +6155,7 @@ do
 			local usedDifficulty = mod.engagedDiff or difficulties.savedDifficulty
 			local usedDifficultyText = mod.engagedDiffText or difficulties.difficultyText
 			local usedDifficultyIndex = mod.engagedDiffIndex or difficulties.difficultyIndex
-			local usedDifficultyModifier = mod.engagedDiffModifier or difficulties.difficultyModifier
+			local usedDifficultyModifier = mod.engagedDiffModifier or difficulties.difficultyModifier or 0
 			local name = mod.combatInfo.name
 			local modId = mod.id
 			if wipe and mod.stats and not mod.noStatistics then
@@ -6590,10 +6551,9 @@ do
 			if MAX_TALENT_TABS then
 				for i = 1, MAX_TALENT_TABS do
 					if i <= numTabs then
-						local _, _, wrathPointsSpent, _, pointsSpent = GetTalentTabInfo(i)--specID, specName will be used in next update once era spec table rebuilt
-						local usedPoints = private.isWrath and wrathPointsSpent or pointsSpent
-						if usedPoints > highestPointsSpent then
-							highestPointsSpent = usedPoints
+						local _, _, _, _, pointsSpent = GetTalentTabInfo(i)--specID, specName will be used in next update once era spec table rebuilt
+						if pointsSpent > highestPointsSpent then
+							highestPointsSpent = pointsSpent
 							currentSpecGroup = i
 							currentSpecID = playerClass .. tostring(i)--Associate specID with class name and tabnumber (class is used because spec name is shared in some spots like "holy")
 							currentSpecName = currentSpecID
@@ -7057,7 +7017,7 @@ function DBM:UNIT_DIED(args)
 	if not private.isHardcoreServer and self.Options.AFKHealthWarning2 and GUID == UnitGUID("player") and not private.IsEncounterInProgress() and UnitIsAFK("player") and self:AntiSpam(5, "AFK") then--You are afk and losing health, some griever is trying to kill you while you are afk/tabbed out.
 		self:FlashClientIcon()
 		local voice = DBM.Options.ChosenVoicePack2
-		local path = 546633--"Sound\\Creature\\CThun\\CThunYouWillDIe.ogg"
+		local path = 566558--Nightelf Bell
 		if not private.voiceSessionDisabled and voice ~= "None" then
 			path = "Interface\\AddOns\\DBM-VP" .. voice .. "\\checkhp.ogg"
 		end
@@ -8091,8 +8051,7 @@ bossModPrototype.IsHealer = DBM.IsHealer
 function DBM:IsTanking(playerUnitID, enemyUnitID, isName, onlyRequested, enemyGUID, includeTarget, onlyS3)
 	--Didn't have playerUnitID so combat log name was passed
 	if isName then
-		---@diagnostic disable-next-line: param-type-mismatch
-		playerUnitID = DBM:GetRaidUnitId(playerUnitID)
+		playerUnitID = DBM:GetRaidUnitId(isName)
 	end
 	if not playerUnitID then
 		DBM:Debug("IsTanking passed with invalid unit", 2)
@@ -9263,7 +9222,7 @@ function bossModPrototype:ReceiveSync(event, sender, revision, ...)
 	end
 end
 
----@param revision number|string Either a number in the format "202101010000" (year, month, day, hour, minute) or string "20250116171540" to be auto set by packager
+---@param revision number|string Either a number in the format "202101010000" (year, month, day, hour, minute) or string "20250321071603" to be auto set by packager
 function bossModPrototype:SetRevision(revision)
 	revision = parseCurseDate(revision or "")
 	if not revision or type(revision) == "string" then

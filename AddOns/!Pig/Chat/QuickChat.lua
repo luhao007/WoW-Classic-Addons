@@ -46,9 +46,16 @@ local function TihuanBQfun(self,event,arg1,...)
 	return false, arg1, ...
 end
 --判断频道信息显示与否
-local function PIGIsListeningForMessageType(messageType)
-	-- print(IsRestrictedAccount())	
-	local pindaomulu = {GetChatWindowMessages(DEFAULT_CHAT_FRAME:GetID())}
+local function GetBanChatFrame(pindaoid)
+	local SetChatFrame = _G["ChatFrame"..pindaoid]
+	if SetChatFrame then
+		return SetChatFrame
+	end
+	return ChatFrame1
+end
+local function PIG_IsShow_Message(messageType)
+	local pindaoid,pindaoname=Fun.GetSelectpindaoID(PIGA["Chat"]["QuickChat_Ban"],true)
+	local pindaomulu = {GetChatWindowMessages(pindaoid)}
 	for i=1,#pindaomulu do
 		if ( pindaomulu[i] == messageType ) then
 			return true;
@@ -56,12 +63,13 @@ local function PIGIsListeningForMessageType(messageType)
 	end
 	return false;
 end
-local function PIGIsIsCHANNELJoin(pdname)
+local function PIG_IsShow_CHANNEL(pdname)
 	-- local channels = {GetChannelList()}
 	-- for x=1,#channels,3 do
 	-- 	local id, name, disabled=channels[x], channels[x+1], channels[x+2]
 	-- end
-	local channels = {GetChatWindowChannels(DEFAULT_CHAT_FRAME:GetID())}
+	local pindaoid,pindaoname=Fun.GetSelectpindaoID(PIGA["Chat"]["QuickChat_Ban"],true)
+	local channels = {GetChatWindowChannels(pindaoid)}
 	for x=1,#channels,2 do
 		if pdname==channels[x] then
 			return true
@@ -150,8 +158,12 @@ local function ADD_chatbut(fuF,pdtype,name,chatID,Color,pdname)
 			self.Text:SetPoint("CENTER",0,0);
 		end);
 		--
-		if pdtype=="Mes" then	
-			chatbut:SetScript("OnClick", function(self, button)
+		chatbut:SetScript("OnClick", function(self, button)
+			local pindaoid,pindaoname=Fun.GetSelectpindaoID(PIGA["Chat"]["QuickChat_Ban"],true)
+			--local chatFrame = SELECTED_DOCK_FRAME--当前选择聊天框架
+			--local SetChatFrame = DEFAULT_CHAT_FRAME
+			local SetChatFrame = GetBanChatFrame(pindaoid)
+			if pdtype=="Mes" then	
 				if button=="LeftButton" then
 					AddChatWindowMessages(1, pdname)
 					local editBox = ChatEdit_ChooseBoxForSend();
@@ -163,50 +175,47 @@ local function ADD_chatbut(fuF,pdtype,name,chatID,Color,pdname)
 						editBox:SetText("/"..chatID.." " .. hasText);
 					end
 				else
-					if PIGIsListeningForMessageType(pdname) then
-						ChatFrame_RemoveMessageGroup(ChatFrame1, pdname);
+					if PIG_IsShow_Message(pdname) then
+						ChatFrame_RemoveMessageGroup(SetChatFrame, pdname);
 						if pdname=="RAID" then
-							ChatFrame_RemoveMessageGroup(ChatFrame1, "RAID_LEADER");
+							ChatFrame_RemoveMessageGroup(SetChatFrame, "RAID_LEADER");
 						end
 						if pdname=="PARTY" then
-							ChatFrame_RemoveMessageGroup(ChatFrame1, "PARTY_LEADER");
+							ChatFrame_RemoveMessageGroup(SetChatFrame, "PARTY_LEADER");
 						end
 						if pdname=="INSTANCE_CHAT" then
-							ChatFrame_RemoveMessageGroup(ChatFrame1, "INSTANCE_CHAT_LEADER");
+							ChatFrame_RemoveMessageGroup(SetChatFrame, "INSTANCE_CHAT_LEADER");
 						end
 						if pdname=="GUILD" then
-							ChatFrame_RemoveMessageGroup(ChatFrame1, "OFFICER");
+							ChatFrame_RemoveMessageGroup(SetChatFrame, "OFFICER");
 						end
 						PIG_print(IGNORE.._G[pdname]..CHANNEL..INFO);
 						self.X:Show();
 					else
-						ChatFrame_AddMessageGroup(ChatFrame1, pdname);
+						ChatFrame_AddMessageGroup(SetChatFrame, pdname);
 						if pdname=="RAID" then
-							ChatFrame_AddMessageGroup(ChatFrame1, "RAID_LEADER");
+							ChatFrame_AddMessageGroup(SetChatFrame, "RAID_LEADER");
 						end
 						if pdname=="PARTY" then
-							ChatFrame_AddMessageGroup(ChatFrame1, "PARTY_LEADER");
+							ChatFrame_AddMessageGroup(SetChatFrame, "PARTY_LEADER");
 						end
 						if pdname=="INSTANCE_CHAT" then
-							ChatFrame_AddMessageGroup(ChatFrame1, "INSTANCE_CHAT_LEADER");
+							ChatFrame_AddMessageGroup(SetChatFrame, "INSTANCE_CHAT_LEADER");
 						end
 						if pdname=="GUILD" then
-							ChatFrame_AddMessageGroup(ChatFrame1, "OFFICER");
+							ChatFrame_AddMessageGroup(SetChatFrame, "OFFICER");
 						end
 						PIG_print(IGNORE_REMOVE.._G[pdname]..CHANNEL..INFO);
 						self.X:Hide();
 					end
 				end
-			end);
-		elseif pdtype=="CHANNEL" then
-			chatbut:SetScript("OnClick", function(self, button)
+			elseif pdtype=="CHANNEL" then
 				self.pindaoID = GetPIGID(chatID)
-				--local chatFrame = SELECTED_DOCK_FRAME--当前选择聊天框架
 				if button=="LeftButton" then
 					if self.pindaoID==0 then
-						--JoinPermanentChannel(chatID, nil, DEFAULT_CHAT_FRAME:GetID(), 1);
-						JoinTemporaryChannel(chatID, nil, DEFAULT_CHAT_FRAME:GetID(), 1);
-						ChatFrame_AddChannel(DEFAULT_CHAT_FRAME, chatID)--订购一个聊天框以显示先前加入的聊天频道
+						--JoinPermanentChannel(chatID, nil, pindaoid, 1);
+						JoinTemporaryChannel(chatID, nil, pindaoid, 1);
+						ChatFrame_AddChannel(SetChatFrame, chatID)--订购一个聊天框以显示先前加入的聊天频道
 						if GetPIGID(chatID)>0 then
 							chatbut.X:Hide();
 							PIG_print(CHAT_JOIN..chatID..CHANNEL.."，"..KEY_BUTTON2..IGNORE..CHANNEL..INFO);
@@ -214,7 +223,7 @@ local function ADD_chatbut(fuF,pdtype,name,chatID,Color,pdname)
 							PIG_print(CHAT_JOIN..chatID..CHANNEL..FAILED.."，请稍后再试");
 						end
 					else
-						ChatFrame_AddChannel(DEFAULT_CHAT_FRAME, chatID)
+						ChatFrame_AddChannel(SetChatFrame, chatID)
 						local editBox = ChatEdit_ChooseBoxForSend();
 						local hasText = editBox:GetText()
 						if editBox:HasFocus() then
@@ -226,23 +235,23 @@ local function ADD_chatbut(fuF,pdtype,name,chatID,Color,pdname)
 					end		
 				else
 					if self.pindaoID>0 then
-						if PIGIsIsCHANNELJoin(chatID) then
+						if PIG_IsShow_CHANNEL(chatID) then
 							if chatID==GENERAL then
-								ChatFrame_RemoveChannel(DEFAULT_CHAT_FRAME, FUWUPINDAONAME);
-								ChatFrame_RemoveChannel(DEFAULT_CHAT_FRAME, "本地防务");
-								ChatFrame_RemoveChannel(DEFAULT_CHAT_FRAME, "世界防务");
+								ChatFrame_RemoveChannel(SetChatFrame, FUWUPINDAONAME);
+								ChatFrame_RemoveChannel(SetChatFrame, "本地防务");
+								ChatFrame_RemoveChannel(SetChatFrame, "世界防务");
 								PIG_print(IGNORE..chatID.."/"..FUWUPINDAONAME..CHANNEL..INFO);
 							else
 								PIG_print(IGNORE..chatID..CHANNEL..INFO);
 							end
-							ChatFrame_RemoveChannel(DEFAULT_CHAT_FRAME, chatID);
+							ChatFrame_RemoveChannel(SetChatFrame, chatID);
 							self.X:Show();
 						else
-							ChatFrame_AddChannel(DEFAULT_CHAT_FRAME, chatID)
+							ChatFrame_AddChannel(SetChatFrame, chatID)
 							if chatID==GENERAL then
-								ChatFrame_AddChannel(DEFAULT_CHAT_FRAME, FUWUPINDAONAME);
-								ChatFrame_AddChannel(DEFAULT_CHAT_FRAME, "本地防务");
-								ChatFrame_AddChannel(DEFAULT_CHAT_FRAME, "世界防务");
+								ChatFrame_AddChannel(SetChatFrame, FUWUPINDAONAME);
+								ChatFrame_AddChannel(SetChatFrame, "本地防务");
+								ChatFrame_AddChannel(SetChatFrame, "世界防务");
 								PIG_print(IGNORE_REMOVE..chatID.."/"..FUWUPINDAONAME..CHANNEL..INFO);
 							else
 								PIG_print(IGNORE_REMOVE..chatID..CHANNEL..INFO);
@@ -253,8 +262,8 @@ local function ADD_chatbut(fuF,pdtype,name,chatID,Color,pdname)
 						PIG_print("尚未"..CHAT_JOIN..chatID..CHANNEL);
 					end
 				end
-			end);
-		end
+			end
+		end);
 	end
 	return chatbut
 end
@@ -277,7 +286,7 @@ function QuickChatfun.Update_ChatBut_icon()
 			end
 		end
 		for i=1,#changuipindao do
-			if PIGIsListeningForMessageType(changuipindao[i][2]) then
+			if PIG_IsShow_Message(changuipindao[i][2]) then
 				changuipindao[i][1]:Hide();
 			else
 				changuipindao[i][1]:Show();
@@ -292,7 +301,7 @@ function QuickChatfun.Update_ChatBut_icon()
 		}
 		for i=1,#chaozhaopindaoX do
 			if QuickChatFFF_UI[chaozhaopindaoX[i][1]] then
-				if PIGIsIsCHANNELJoin(chaozhaopindaoX[i][2]) then
+				if PIG_IsShow_CHANNEL(chaozhaopindaoX[i][2]) then
 					QuickChatFFF_UI[chaozhaopindaoX[i][1]].X:Hide();
 				else
 					QuickChatFFF_UI[chaozhaopindaoX[i][1]].X:Show();
@@ -311,7 +320,7 @@ function QuickChatfun.Update_QuickChatPoint(arg1)
 		elseif arg1==2 then
 			QuickChatFFF_UI:SetPoint("TOPLEFT",ChatFrame1,"BOTTOMLEFT",-2+PIGA["Chat"]["QuickChat_pianyiX"],-4+PIGA["Chat"]["QuickChat_pianyiY"]);
 		end	
-		QuickChatfun.Update_editBoxPoint()
+		addonTable.QuickChatfun.Update_editBoxPoint()
 	end
 end
 function QuickChatfun.Open()

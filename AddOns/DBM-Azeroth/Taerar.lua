@@ -1,18 +1,17 @@
 local mod	= DBM:NewMod("TaerarVanilla", "DBM-Azeroth")
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20241206234946")
+mod:SetRevision("20250309164007")
 if DBM:IsSeasonal("SeasonOfDiscovery") then
 	mod:SetCreatureID(235197)
+	mod:SetEncounterID(3113)--Sod Encounter ID
+	mod:RegisterCombat("combat")
 else
 	mod:SetCreatureID(14890)--121911 TW ID, 14890 classic ID
+	mod:RegisterCombat("combat_yell", L.Pull)
 end
 --mod:SetModelID(17887)
 mod:EnableWBEngageSync()--Enable syncing engage in outdoors
-
-mod:RegisterCombat("combat_yell", L.Pull)
-
-mod:SetEncounterID(3113)--Sod Encounter ID
 
 mod:RegisterEventsInCombat(
 --	"SPELL_CAST_START 24818 243401",

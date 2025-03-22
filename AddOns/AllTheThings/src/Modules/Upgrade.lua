@@ -37,6 +37,8 @@ end)
 local BonusIDNextUnlock = {
 
 	-- 10.0.7
+	-- Primalist 1/3 (Vendor)
+	[9340] = 9344,
 	-- Primalist 1/3
 	[9342] = 9344,
 	-- Primalist 2/3
@@ -277,30 +279,30 @@ local BonusIDNextUnlock = {
 	-- [10290] = 0,
 
 	-- Veteran
-	[10281] = 10277,
-	[10280] = 10277,
-	[10279] = 10277,
-	[10278] = 10277,
+	-- [10281] = 10277,
+	-- [10280] = 10277,
+	-- [10279] = 10277,
+	-- [10278] = 10277,
 	-- [10277] = 0,
 	-- [10276] = 0,
 	-- [10275] = 0,
 	-- [10274] = 0,
 
 	-- Champion
-	[10273] = 10269,
-	[10272] = 10269,
-	[10271] = 10269,
-	[10270] = 10269,
+	-- [10273] = 10269,
+	-- [10272] = 10269,
+	-- [10271] = 10269,
+	-- [10270] = 10269,
 	-- [10269] = 0,
 	-- [10268] = 0,
 	-- [10267] = 0,
 	-- [10266] = 0,
 
 	-- Hero
-	[10265] = 10261,
-	[10264] = 10261,
-	[10263] = 10261,
-	[10262] = 10261,
+	-- [10265] = 10261,
+	-- [10264] = 10261,
+	-- [10263] = 10261,
+	-- [10262] = 10261,
 	-- [10261] = 0,
 	-- [10256] = 0,
 
@@ -311,6 +313,43 @@ local BonusIDNextUnlock = {
 	-- [10257] = 0,
 	-- [10298] = 0,
 	-- [10299] = 0,
+
+	-- 11.1
+	-- Veteran [https://wago.tools/db2/ItemBonus?build=11.1.0.59538&filter%5BValue_0%5D=439&filter%5BType%5D=34&page=1&sort%5BParentItemBonusListID%5D=asc]
+	[11969] = 11973,
+	[11970] = 11973,
+	[11971] = 11973,
+	[11972] = 11973,
+	-- [11973] = 0,
+	-- [11974] = 0,
+	-- [11975] = 0,
+	-- [11976] = 0,
+
+	-- Champion [https://wago.tools/db2/ItemBonus?build=11.1.0.59538&filter%5BValue_0%5D=440&filter%5BType%5D=34&page=1&sort%5BParentItemBonusListID%5D=asc]
+	[11977] = 11982,
+	[11978] = 11982,
+	[11979] = 11982,
+	[11980] = 11982,
+	-- [11981] = 0,	-- should be this bonusID, but it's currently assigned to the wrong ItemBonusListGroupID
+	-- [11982] = 0,
+	-- [11983] = 0,
+	-- [11984] = 0,
+
+	-- Hero [https://wago.tools/db2/ItemBonus?build=11.1.0.59538&filter%5BType%5D=34&filter%5BValue_0%5D=441&page=1&sort%5BParentItemBonusListID%5D=asc]
+	[11985] = 11989,
+	[11986] = 11989,
+	[11987] = 11989,
+	[11988] = 11989,
+	-- [11989] = 0,
+	-- [11990] = 0,
+
+	-- Myth [https://wago.tools/db2/ItemBonus?build=11.1.0.59538&filter%5BType%5D=34&filter%5BValue_0%5D=442&page=1&sort%5BParentItemBonusListID%5D=asc]
+	-- [11991] = 0,
+	-- [11992] = 0,
+	-- [11993] = 0,
+	-- [11994] = 0,
+	-- [11995] = 0,
+	-- [11996] = 0,
 }
 -- Which bonusID nested upgrades are allowed to be nested under an already-upgraded listing
 local NestedUpgradesAllowedByBonusID = {

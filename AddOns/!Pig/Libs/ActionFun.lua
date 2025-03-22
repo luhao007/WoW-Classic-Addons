@@ -1,5 +1,6 @@
 local addonName, addonTable = ...;
 local _, _, _, tocversion = GetBuildInfo()
+local match = _G.string.match
 -------
 local GetItemCooldown=C_Container.GetItemCooldown
 local GetContainerNumSlots = C_Container.GetContainerNumSlots
@@ -183,7 +184,7 @@ function ActionFun.Update_Cooldown(self)
 					local start, duration, enabled = GetItemCooldown(ItemID);
 					if enabled==0 then
 					else
-						self.cooldown:SetCooldown(start, duration);
+						self.cooldown:SetCooldown(start or 0, duration or 0);
 					end
 				end
 			end
@@ -295,7 +296,9 @@ function ActionFun.Update_bukeyong(self)
 				self.icon:SetVertexColor(0.5, 0.5, 0.5);
 				return
 			end
+			
 			local hongSpellID = GetMacroSpell(SimID)
+
 			if hongSpellID then
 				local usable, noMana = IsUsableSpell(hongSpellID)	
 				if not usable then
@@ -305,10 +308,17 @@ function ActionFun.Update_bukeyong(self)
 			else
 				local ItemName, ItemLink = GetMacroItem(SimID);
 				if ItemName then
-					local usable, noMana = IsUsableItem(ItemName)
-					if not usable then 
-						self.icon:SetVertexColor(0.5, 0.5, 0.5);
-						return
+					if Body:match("equipslot") or Body:match("equipset") then
+						-- if GetItemCount(ItemName)==0 then
+						-- 	self.icon:SetVertexColor(0.5, 0.5, 0.5);
+						-- 	return
+						-- end
+					else
+						local usable, noMana = IsUsableItem(ItemName)
+						if not usable then 
+							self.icon:SetVertexColor(0.5, 0.5, 0.5);
+							return
+						end
 					end
 				end
 			end
@@ -386,7 +396,7 @@ function ActionFun.Update_State(self)
 				local numMounts = C_MountJournal.GetNumMounts()
 				for i=1,numMounts do
 					local name, spellID= C_MountJournal.GetDisplayedMountInfo(i)
-					if SimID and IsCurrentSpell(spellID) then
+					if SimID and spellID and IsCurrentSpell(spellID) then
 						self:SetChecked(true)
 						return
 					end
@@ -639,7 +649,7 @@ local function Cursor_FZ(self,NewType,canshu1,canshu2,canshu3,dataY)
 	    	self.SimID_3=150544
 			PIGA_Per[dataY]["ActionData"][self.action]={NewType,268435455,150544}
 		else
-			local name, spellID= C_MountJournal.GetDisplayedMountInfo(canshu1)
+			local name, spellID= C_MountJournal.GetMountInfoByID(canshu1)
 	    	self.SimID=name
 	    	self.SimID_3=spellID
 			PIGA_Per[dataY]["ActionData"][self.action]={NewType,name,spellID}
@@ -651,17 +661,28 @@ local function Cursor_FZ(self,NewType,canshu1,canshu2,canshu3,dataY)
 	if InCombatLockdown() then return end
 	self:Show()
 end
+if tocversion<40000 then
+	hooksecurefunc(C_MountJournal, "Pickup", function(index)
+		ActionFun.mountindex=index
+	end)
+end
 function ActionFun.Cursor_Fun(self,Script,dataY)
 	local oldType= self.Type
 	local NewType, canshu1, canshu2, canshu3= GetCursorInfo()
 	--print(NewType, canshu1, canshu2, canshu3)
+	if Script=="OnMouseUp" and not NewType then return end
+	if tocversion<40000 then
+		if NewType=="companion" and canshu2=="MOUNT" then
+			local mountID = C_MountJournal.GetDisplayedMountID(ActionFun.mountindex)
+			canshu1=mountID
+		end
+	end
 	ClearCursor();
 	if Script=="OnDragStart" then
 		if oldType then
 			Cursor_Loot(self,oldType,dataY)
 		end
-	end
-	if Script=="OnReceiveDrag" then
+	elseif Script=="OnReceiveDrag" then
 		if oldType then
 			Cursor_Loot(self,oldType,dataY)
 		end
@@ -671,7 +692,7 @@ function ActionFun.Cursor_Fun(self,Script,dataY)
 					self:SetAttribute("type", "macro")
 					self:SetAttribute("macrotext", suijizuoqi)
 				else
-					local name= C_MountJournal.GetDisplayedMountInfo(canshu1)
+					local name, spellID= C_MountJournal.GetMountInfoByID(canshu1)
 					self:SetAttribute("type", "spell")
 					self:SetAttribute("spell", name)
 				end
@@ -681,8 +702,7 @@ function ActionFun.Cursor_Fun(self,Script,dataY)
 			end
 			Cursor_FZ(self,NewType,canshu1,canshu2,canshu3,dataY)
 		end
-	end
-	if Script=="OnMouseUp" then
+	elseif Script=="OnMouseUp" then
 		if NewType then
 			if InCombatLockdown() then return end
 			self:Disable()
@@ -703,7 +723,7 @@ function ActionFun.Cursor_Fun(self,Script,dataY)
 					self:SetAttribute("type", "macro")
 					self:SetAttribute("macrotext", suijizuoqi)
 				else
-					local name= C_MountJournal.GetDisplayedMountInfo(canshu1)
+					local name= C_MountJournal.GetMountInfoByID(canshu1)
 					self:SetAttribute("type", "spell")
 					self:SetAttribute("spell", name)
 				end
@@ -805,7 +825,7 @@ function ActionFun.Update_Macro(self,PigMacroDeleted,PigMacroCount,dataY)
 			BodyIndex = i;
 		end
 	end
-	--无删除未找到名称和内容均相同的
+	--未删除且未找到名称和内容均相同的
 	if PigMacroDeleted==false then
 		--有相同body
 		if (BodyIndex ~= 0) then 

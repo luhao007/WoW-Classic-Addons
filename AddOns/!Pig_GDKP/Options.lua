@@ -1,6 +1,5 @@
 local addonName, addonTable = ...;
 local _, _, _, tocversion = GetBuildInfo()
------
 local Create, Data, Fun, L, Default, Default_Per= unpack(PIG)
 local PIGFrame=Create.PIGFrame
 local PIGLine=Create.PIGLine
@@ -13,7 +12,6 @@ local PIGModCheckbutton=Create.PIGModCheckbutton
 local PIGQuickBut=Create.PIGQuickBut
 local PIGSetFont=Create.PIGSetFont
 
-local SendAddonMessage = SendAddonMessage or C_ChatInfo and C_ChatInfo.SendAddonMessage
 ------
 local GDKPInfo = {}
 addonTable.GDKPInfo=GDKPInfo
@@ -21,9 +19,11 @@ addonTable.GDKPInfo=GDKPInfo
 local QuickBut_xuhaoID=15
 local GnName,GnUI,GnIcon,FrameLevel = L["PIGaddonList"][addonName],"PigGDKP_UI",133742,50
 GDKPInfo.uidata={GnName,GnUI,GnIcon,FrameLevel}
-local fuFrame,fuFrameBut,Tooltip,hidetishi = unpack(Data.Ext[L.extLsit[2]])
-hidetishi()
+local fuFrame,fuFrameBut,Tooltip = unpack(Data.Ext[L.extLsit[2]])
+if not fuFrame.OpenMode then return end
+fuFrame.extaddonT:Hide()
 GDKPInfo.fuFrame,GDKPInfo.fuFrameBut=fuFrame,fuFrameBut
+---
 function GDKPInfo.ADD_Options()
 	local Key_fenge=Fun.Key_fenge
 	fuFrame.Open = PIGModCheckbutton(fuFrame,{GnName,Tooltip},{"TOPLEFT",fuFrame,"TOPLEFT",20,-20})
@@ -170,9 +170,9 @@ function GDKPInfo.ADD_Options()
 										if PIGA["GDKP"]["Rsetting"]["autofenMsg"] then
 											if not self.listdata[x][2] then
 												if lootQuantity>1 then
-													PIGSendChatRaidParty("!Pig:拾取"..link.."×"..lootQuantity)
+													PIGSendChatRaidParty("[!Pig]:拾取"..link.."×"..lootQuantity)
 												else
-													PIGSendChatRaidParty("!Pig:拾取"..link)
+													PIGSendChatRaidParty("[!Pig]:拾取"..link)
 												end
 												self.listdata[x][2]=true
 											end
@@ -440,7 +440,7 @@ function GDKPInfo.ADD_Options()
 		end
 		if wupinNum>1 then
 			C_Timer.After(0.4,function()
-				PIGinfotip:TryDisplayMessage("多件物品收到金额会被平分");
+				PIGTopMsg:add("多件物品收到金额会被平分");
 			end)
 		end
 		_G[GnUI].Update_Item();
@@ -707,31 +707,24 @@ end);
 --==================================
 local GetExtVer=Pig_OptionsUI.GetExtVer
 local SendMessage=Pig_OptionsUI.SendMessage
-fuFrame.VersionID=0
-fuFrame.GetVer=addonName.."#U#0"
-fuFrame.FasVer=addonName.."#D#0"
 fuFrame:RegisterEvent("ADDON_LOADED")   
 fuFrame:RegisterEvent("PLAYER_LOGIN");
 fuFrame:RegisterEvent("CHAT_MSG_ADDON"); 
 fuFrame:SetScript("OnEvent",function(self, event, arg1, arg2, arg3, arg4, arg5)
-	if event=="ADDON_LOADED" and arg1 == addonName then
+	if event=="CHAT_MSG_ADDON" then
+		GetExtVer(self,addonName,self.VersionID, arg1, arg2, arg3, arg4, arg5)
+	elseif event=="PLAYER_LOGIN" then
+		PIGA["Ver"][addonName]=PIGA["Ver"][addonName] or 0
+		if PIGA["Ver"][addonName]>self.VersionID then
+			self.yiGenxing=true;
+		else
+			SendMessage(addonName.."#U#"..self.VersionID)
+		end
+	elseif event=="ADDON_LOADED" and arg1 == addonName then
 		self:UnregisterEvent("ADDON_LOADED")
 		addonTable.Load_Config()
 		Pig_OptionsUI:SetVer_EXT(arg1,self)
 		GDKPInfo.ADD_Options()
-	end
-	if event=="PLAYER_LOGIN" then
-		PIGA["Ver"][addonName]=PIGA["Ver"][addonName] or 0
-		fuFrame.GetVer=addonName.."#U#"..self.VersionID;
-		fuFrame.FasVer=addonName.."#D#"..self.VersionID;
-		if PIGA["Ver"][addonName]>self.VersionID then
-			self.yiGenxing=true;
-		else
-			SendMessage(fuFrame.GetVer)
-		end
-	end
-	if event=="CHAT_MSG_ADDON" then
-		GetExtVer(self,addonName,self.VersionID, fuFrame.FasVer, arg1, arg2, arg4)
 	end
 end)
 -------
@@ -740,7 +733,7 @@ end
 function PIGCompartmentEnter_GDKP(addonName, menuButtonFrame)
 	GameTooltip:ClearLines();
 	GameTooltip:SetOwner(menuButtonFrame, "ANCHOR_BOTTOMLEFT",-2,16);
-	GameTooltip:AddLine("|cffFF00FF"..addonName.."|r-"..GetAddOnMetadata(addonName, "Version"))
+	GameTooltip:AddLine("|cffFF00FF"..addonName.."|r-"..PIGGetAddOnMetadata(addonName, "Version"))
 	GameTooltip:Show();	
 end
 function PIGCompartmentLeave_GDKP(addonName, menuButtonFrame)

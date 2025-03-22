@@ -238,29 +238,30 @@ end)
 local function printInfo(self)
 	print("|cFFFFFF00WCL评分-" .. self.value)
 end
+if UnitPopup and UnitPopup.ShowDropdown then
+	hooksecurefunc(UnitPopup, "ShowDropdown", function(dropdownMenu, which, unit, name, userData)
 
-hooksecurefunc("UnitPopup_ShowMenu", function(dropdownMenu, which, unit, name, userData)
+		WP_TargetName = dropdownMenu.name
 
-	WP_TargetName = dropdownMenu.name
+		if (UIDROPDOWNMENU_MENU_LEVEL > 1) then
+			return
+		end
 
-	if (UIDROPDOWNMENU_MENU_LEVEL > 1) then
-		return
-	end
+		local dstr = load_data(WP_TargetName)
 
-	local dstr = load_data(WP_TargetName)
+		if dstr and UnitExists(unit) and UnitIsPlayer(unit) then
+			local info = UIDropDownMenu_CreateInfo()
+			local s1, s2, s3 = strsplit(" ", dstr)
+			info.text = 'WCL评分: ' .. s1
+			info.owner = which
+			info.notCheckable = 1
+			info.func = printInfo
+			info.value = WP_TargetName .. ": " .. dstr
+			UIDropDownMenu_AddButton(info)
+		end
 
-	if dstr and UnitExists(unit) and UnitIsPlayer(unit) then
-		local info = UIDropDownMenu_CreateInfo()
-		local s1, s2, s3 = strsplit(" ", dstr)
-		info.text = 'WCL评分: ' .. s1
-		info.owner = which
-		info.notCheckable = 1
-		info.func = printInfo
-		info.value = WP_TargetName .. ": " .. dstr
-		UIDropDownMenu_AddButton(info)
-	end
-
-end)
+	end)
+end
 
 function WclPlayerScore:InitCode()
 	GameTooltip:HookScript("OnTooltipSetUnit", function(self)
@@ -307,7 +308,7 @@ function WclPlayerScore:InitCode()
 					end
 					GameTooltip:AddLine(title, 255, 209, 0)
 				end
-			end			
+			end
 			dstr = load_stop(WP_MouseoverName)
 			if dstr then
 				for i, title in ipairs(dstr) do

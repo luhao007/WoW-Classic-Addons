@@ -1,8 +1,8 @@
-## Interface: 30400
-## Author: Aero/Logon/Muehe/TheCrux(BreakBB)/Drejjmit/Dyaxler/Schaka/Zoey/Everyone else
-## Version: 10.13.1
+## Interface: 30404
+## Author: Aero/Logon/Muehe/TheCrux(BreakBB)/Drejjmit/Dyaxler/Cheeq/TechnoHunter/Everyone else
+## Version: 10.19.0
 
-## Title: Questie|cFF00FF00 v10.13.1|r
+## Title: Questie|cFF00FF00 v10.19.0|r
 ## Notes: A standalone Classic QuestHelper
 ## Title-zhCN: |cFFFFE00A<|r|cFF00FF96任务|r|cFFFFE00A>|r |cFFFFFFFF任务助手|r |cFFFFE00AQuestie|r
 ## Notes-zhCN: 在地图和小地图上提供任务指引，在怪物身上提示任务进度
@@ -166,8 +166,7 @@ Modules\Tooltips\MapIconTooltip.lua
 Modules\Tooltips\TooltipHandler.lua
 
 # Auto
-Modules\Auto\QuestieAuto.lua
-Modules\Auto\Privates.lua
+Modules\Auto\AutoQuesting.lua
 Modules\Auto\DisallowedIDs.lua
 
 # FramePool

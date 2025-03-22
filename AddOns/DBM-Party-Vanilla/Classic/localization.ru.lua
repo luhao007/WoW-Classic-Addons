@@ -1595,3 +1595,94 @@ L = DBM:GetModLocalization("HellscreamsPhantom")
 L:SetGeneralLocalization{
 	name 		= "Фантом Адского Крика"
 }
+
+-------------------------
+-- SoD Karazhan Crypts --
+-------------------------
+
+-- Encounter info from PTR: https://wago.tools/db2/DungeonEncounter?build=1.15.6.58866&sort[ID]=desc&filter[MapID]=2875&page=1
+
+-- Apprentice, seems to be a randomized boss
+-- Ученик, похоже, является рандомизированным боссом
+L = DBM:GetModLocalization("Apprentice")
+
+L:SetGeneralLocalization{
+	name = "Ученик"
+}
+
+-- Harbinger of Sin
+L = DBM:GetModLocalization("HarbingerOfSin")
+
+L:SetGeneralLocalization{
+	name = "Вестник Греха"
+}
+
+-- Kharon
+L = DBM:GetModLocalization("Kharon")
+
+L:SetGeneralLocalization{
+	name = "Харон"
+}
+
+L:SetWarningLocalization{
+	SpecWarnDropTorch = "%d стаков - брось факел!"
+}
+
+-- Opera of Malediction
+L = DBM:GetModLocalization("OperaOfMalediction")
+
+L:SetGeneralLocalization{
+	name = "Проклятая опера"
+}
+
+L:SetMiscLocalization {
+	PullTrizivast = "For your evenings entertainment, comes a brave tale of survival, loss, and conviction.",
+	PullHanselAndGretel1 = "For your evenings entertainment, comes the lost fable of two children attempting to find their way!",
+	PullHanselAndGretel2 = "We're sorry grandmother. Your time has expired.",
+	PullEngineers = "For your evening viewing we have a tragic story of a humble technician who has been outcast!"
+}
+
+-- Dark Rider
+L = DBM:GetModLocalization("DarkRider")
+
+L:SetGeneralLocalization{
+	name = "Темный Всадник"
+}
+
+L:SetOptionLocalization{
+	EnableMinorNameplates = "Автоматически включить отображение зеркальных отражений на вражеских индикаторах здоровья для мелких юнитов"
+}
+
+L:SetMiscLocalization{
+	MirrorImage = "Зеркальное отражение",
+	EnabledNameplates = "DBM автоматически включил индикаторы здоровья для этого боя, это помогает обнаружить зеркальные отражения. Вы можете отключить эту функцию в опциях мода Темного Всадника в разделе Подземелья/Склепы Каражана."
+}
+
+-- Creeping Malison
+L = DBM:GetModLocalization("CreepingMalison")
+
+L:SetGeneralLocalization{
+	name = "Ползучая пагуба"
+}
+
+-- Unk'omon
+L = DBM:GetModLocalization("Unkomon")
+
+L:SetGeneralLocalization{
+	name = "Унк'омон"
+}
+
+L:SetWarningLocalization{
+	WarnDoom = "Рок - снимите проклятие"
+}
+
+L:SetOptionLocalization{
+	WarnDoom = "Показывать предупреждение о снятии проклятия $spell:1221577"
+}
+
+-- Karazhan Crypts Trash
+L = DBM:GetModLocalization("KCTrash")
+
+L:SetGeneralLocalization{
+	name = "Трэш мобы Склепы Каражана"
+}

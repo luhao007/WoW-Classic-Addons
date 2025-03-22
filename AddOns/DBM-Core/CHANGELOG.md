@@ -1,31 +1,24 @@
 # DBM - Core
 
-## [11.1.1](https://github.com/DeadlyBossMods/DeadlyBossMods/tree/11.1.1) (2025-01-17)
-[Full Changelog](https://github.com/DeadlyBossMods/DeadlyBossMods/compare/11.1.0...11.1.1) [Previous Releases](https://github.com/DeadlyBossMods/DeadlyBossMods/releases)
+## [11.1.11](https://github.com/DeadlyBossMods/DeadlyBossMods/tree/11.1.11) (2025-03-21)
+[Full Changelog](https://github.com/DeadlyBossMods/DeadlyBossMods/compare/11.1.10...11.1.11) [Previous Releases](https://github.com/DeadlyBossMods/DeadlyBossMods/releases)
 
-- Update koKR (#1487)  
-    Co-authored-by: Adam <MysticalOS@users.noreply.github.com>  
-- Update localization.tw.lua (#1486)  
-- prep new tag  
-- Preliminary Mugzee drycode  
-- Restructuring and renaming for SProcketmonger with latest PTR build  
-- Update localization.ru.lua (#1485)  
-- placeholder localizations  
-- Push full one armed bandit drycode  
-- Upload test results to DeadlyBossMods/DBM-Test-Results  
-- Tests: Add fallback sorting order for otherwise identical objects to fix determinism issues  
-- Hackfix for SimpleHTML not sizing properly on initial load  
-- Add DBM-Offline workflow  
-- Tests: Add test data for Stix Bunkjunker  
-- Tests: Add new 11.1 zones  
-- Tests: Chat-related anonymizer fixes  
-    Fun fact: CHAT\_MSG\_MONSTER\_EMOTE can come from players.  
-- Zone Combat Scanner Fixes:  
-     - Fixed a bug that could cause combat check to counter intuitively unschedle checks when events spam and actually increase time to detect combat instead of decrease it.  
-     - Add redundant zone checks after registering zones to mak sure they always run when a new zone added to hopefully fix race condition where zone checks failed to register.  
-- mod passed local test but needed one antispam tweak  
-- Push preliminary post testing Stix  
-- Core: Add tool to auto-generate localization for mod names from encounter info  
-- Core: Add API to add auto-generated name locales from encounter info  
-- Core: Fix default name for mods missing a name (should never happen anyways)  
+- Tag new release for wrath client compat updates  
+- one armed bandit update:  
+     - Added emphasized alerts for picking up coins with specialized TTS  
+     - Added emphasized "run to edge" tank alert to make it clearer where to drop zone.  
+     - Micro timer adjustments  
+- Mugzee Update:  
+    Fixed bug where gaol yell didn't use red color that's usually used for group soak mechanics.  
+    Fixed bug where several of timers had incorrect values, especially on heroic.  
+- Bump Wrath TOC  
+    Remove old wrath client compat checks and assume that it's using modern functions now based on initial reports. kinda hard to verify though since wrath client is region specific.  
+- Updated spec info to work with wrath client update in China  
+    Updated profiles to actually check right arg for talent points, which has been broken in vanilla since the beginning of SoD. Now DBM should correctly load profile related to actual talent point choices instead of being broken.  
+- increase cast times for rolling rubbish and recycle on mythic stix  
+- Revert last, that doesn't fix problem  
+    Fix it at mod level for now  
+- Fix setstage so it doesn't break if using incrementor right on engage.  
+- Fix a bug causing bad initials stage numbers  
+- adjust stix icons used to remove compat issues  
 - bump alpha  

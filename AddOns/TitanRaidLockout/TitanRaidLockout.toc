@@ -1,4 +1,4 @@
-## Interface: 30400
+## Interface: 30404
 ## Author: Gamut - Nethergarde Keep EU
 ## Version: v1.3.1-classic-wotlk
 

@@ -27,14 +27,26 @@ function CataItemFixes.Load()
         [2676] = { -- Shimmerweed
             [itemKeys.npcDrops] = {41121},
         },
+        [2794] = { -- An Old History Book
+            [itemKeys.startQuest] = 0,
+        },
         [2859] = { -- Vile Fin Scale
             [itemKeys.npcDrops] = {1541,1543,1544,1545},
         },
         [3082] = { -- Dargol's Skull
             [itemKeys.startQuest] = 25030,
         },
+        [3897] = { -- Dizzy's Eye
+            [itemKeys.npcDrops] = {1561,1562,1563,1564,1565,1653,2545,2546,2547,2548,2549,2550,2551,4505,4506,43364,43454,43542,43636},
+        },
+        [3910] = { -- Snuff
+            [itemKeys.npcDrops] = {1561,1562,1563,1564,1565,1653,2545,2546,2547,2548,2549,2550,2551,4505,4506,43364,43454,43542,43636},
+        },
         [4106] = { -- Tumbled Crystal
             [itemKeys.npcDrops] = {1096,4260},
+        },
+        [4440] = { -- Sigil of Strom
+            [itemKeys.npcDrops] = {2588,2590,2591,24477},
         },
         [4506] = { -- Stromgarde Badge
             [itemKeys.npcDrops] = {2588,2590,2591,24477},
@@ -65,6 +77,9 @@ function CataItemFixes.Load()
         [5533] = { -- Ilkrud Magthrull's Tome
             [itemKeys.npcDrops] = {},
         },
+        [5847] = { -- Mirefin Head
+            [itemKeys.npcDrops] = {4358,4359,4360,4361,4362,4363,23841},
+        },
         [8170] = { -- Rugged Leather
             [itemKeys.vendors] = {},
         },
@@ -73,6 +88,9 @@ function CataItemFixes.Load()
         },
         [8705] = { -- OOX-22/FE Distress Beacon
             [itemKeys.startQuest] = 25475,
+        },
+        [8973] = { -- Thick Yeti Hide
+            [itemKeys.npcDrops] = {40224},
         },
         [9597] = { -- Mountain Giant Muisek
             [itemKeys.npcDrops] = {40026},
@@ -95,6 +113,9 @@ function CataItemFixes.Load()
         [10755] = { -- Amulet of Allistarj
             [itemKeys.npcDrops] = {},
         },
+        [11078] = { -- Relic Coffer Key
+            [itemKeys.npcDrops] = {8889,8890,8891,8892,8893,8894,8895,8898,8899,8903,9437,9438,9439,9441,9442,9443,9445,9541,9554,9680,10043,24818,24819}, -- removed the bosses to clean up the map
+        },
         [11114] = { -- Dinosaur Bone
             [itemKeys.npcDrops] = {6501,6502,6503,6504,9162,9163,9164},
         },
@@ -106,6 +127,9 @@ function CataItemFixes.Load()
         },
         [11818] = { -- Grimesilt Outhouse Key
             [itemKeys.startQuest] = 0,
+        },
+        [11829] = { -- Un'Goro Ash
+            [itemKeys.npcDrops] = {6520,6521,9376},
         },
         [11949] = { -- Filled Tainted Ooze Jar
             [itemKeys.npcDrops] = {7092,14345},
@@ -128,6 +152,10 @@ function CataItemFixes.Load()
         [16790] = { -- Damp Note
             [itemKeys.startQuest] = 0,
         },
+        [18240] = { -- Ogre Tannin
+            [itemKeys.objectDrops] = {179499},
+            [itemKeys.npcDrops] = {},
+        },
         [18597] = { -- Orcish Orphan Whistle
             [itemKeys.class] = itemClasses.QUEST,
         },
@@ -143,11 +171,44 @@ function CataItemFixes.Load()
         [18950] = { -- Chambermaid Pillaclencher's Pillow
             [itemKeys.startQuest] = 0,
         },
+        [18960] = { -- Lookout's Spyglass
+            [itemKeys.npcDrops] = {5840},
+        },
+        [19034] = { -- Lard's Lunch
+            [itemKeys.objectDrops] = {},
+        },
         [19424] = { -- Sayge's Fortune #24
             [itemKeys.startQuest] = 0,
         },
-        [18960] = { -- Lookout's Spyglass
-            [itemKeys.npcDrops] = {5840},
+        [19716] = { -- Primal Hakkari Bindings
+            [itemKeys.npcDrops] = {},
+        },
+        [19717] = { -- Primal Hakkari Armsplint
+            [itemKeys.npcDrops] = {},
+        },
+        [19718] = { -- Primal Hakkari Stanchion
+            [itemKeys.npcDrops] = {},
+        },
+        [19719] = { -- Primal Hakkari Girdle
+            [itemKeys.npcDrops] = {},
+        },
+        [19720] = { -- Primal Hakkari Sash
+            [itemKeys.npcDrops] = {},
+        },
+        [19721] = { -- Primal Hakkari Shawl
+            [itemKeys.npcDrops] = {},
+        },
+        [19722] = { -- Primal Hakkari Tabard
+            [itemKeys.npcDrops] = {},
+        },
+        [19723] = { -- Primal Hakkari Kossack
+            [itemKeys.npcDrops] = {},
+        },
+        [19724] = { -- Primal Hakkari Aegis
+            [itemKeys.npcDrops] = {},
+        },
+        [19802] = { -- Heart of Hakkar
+            [itemKeys.npcDrops] = {},
         },
         [20743] = { -- Unstable Mana Crystal
             [itemKeys.npcDrops] = {},
@@ -420,6 +481,9 @@ function CataItemFixes.Load()
         [50746] = { -- Tara's Tar Scraper
             [itemKeys.class] = itemClasses.QUEST,
         },
+        [51549] = { -- Pirate Booty
+            [itemKeys.npcDrops] = {},
+        },
         [51956] = { -- Blessed Offerings
             [itemKeys.class] = itemClasses.QUEST,
         },
@@ -577,6 +641,9 @@ function CataItemFixes.Load()
         [56012] = { -- Stone Knife of Sealing
             [itemKeys.class] = itemClasses.QUEST,
         },
+        [56091] = { -- Krom'gar Log Book
+            [itemKeys.npcDrops] = {},
+        },
         [56178] = { -- Duarn's Rope
             [itemKeys.class] = itemClasses.QUEST,
         },
@@ -716,6 +783,9 @@ function CataItemFixes.Load()
         [59522] = { -- Key of Ilgalar
             [itemKeys.class] = itemClasses.QUEST,
         },
+        [60263] = { -- Whispering Blue Stone
+            [itemKeys.npcDrops] = {939,941,942,978,979,43910,43911,43912,43913},
+        },
         [60291] = { -- Tkashi Fetish
             [itemKeys.npcDrops] = {43977},
         },
@@ -763,6 +833,12 @@ function CataItemFixes.Load()
         },
         [60862] = { -- Forsaken Insignia
             [itemKeys.npcDrops] = {45197},
+        },
+        [60874] = { -- Deathless Sinew
+            [itemKeys.npcDrops] = {47131,47132,47134,47135,47136},
+        },
+        [60875] = { -- Ghostly Essence
+            [itemKeys.npcDrops] = {3873,3875,3877,47231,47232},
         },
         [60878] = { -- Silverlaine's Enchanted Crystal
             [itemKeys.npcDrops] = {3887},
@@ -882,6 +958,9 @@ function CataItemFixes.Load()
             [itemKeys.npcDrops] = {47203},
         },
         [63034] = { -- Dusty Prison Journal
+            [itemKeys.npcDrops] = {},
+        },
+        [63053] = { -- Codemaster's Code
             [itemKeys.npcDrops] = {},
         },
         [63090] = { -- Muckgill's Flipper

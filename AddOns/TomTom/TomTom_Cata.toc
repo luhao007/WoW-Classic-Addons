@@ -1,6 +1,6 @@
-## Interface: 30400
+## Interface: 30404
 ## Author: Cladhaire, Ludovicus
-## Version: v4.0.7-release
+## Version: v4.0.8-release
 
 ## Title: TomTom
 ## Notes: Acts as your portable navigation assistant

@@ -10,6 +10,10 @@ local L =addonTable.locale
 local Fun = {}
 addonTable.Fun=Fun
 -------------
+function PIG_InviteUnit(name)
+	local InviteUnit=C_PartyInfo and C_PartyInfo.InviteUnit or InviteUnit
+	InviteUnit(name)
+end
 function PIGGetIconForRole(role)
 	if role=="NONE" then
 		return "UI-LFG-RoleIcon-Pending"
@@ -74,25 +78,37 @@ function PIGGetContainerItemInfo(bag, slot)
 	end
 end
 --发送消息
-function PIGSendChatRaidParty(txt,GroupLeader)
+function PIGSendChatRaidParty(txt,GroupLeader,xianzhi)
 	if IsInRaid() then
-		if GroupLeader then
-			SendChatMessage(txt, "RAID_WARNING");
+		if xianzhi then
+			if GroupLeader==true then SendChatMessage(txt, "RAID_WARNING"); end
 		else
-			SendChatMessage(txt, "RAID");
+			if GroupLeader==true then
+				SendChatMessage(txt, "RAID_WARNING");
+			else
+				SendChatMessage(txt, "RAID");
+			end
 		end
 	elseif IsInGroup() then
-		SendChatMessage(txt, "PARTY");
-	else
-		--SendChatMessage(txt, "SAY");
+		if xianzhi then
+			if GroupLeader==true then SendChatMessage(txt, "PARTY"); end
+		else
+			SendChatMessage(txt, "PARTY");
+		end
+	elseif GroupLeader=="info" then
+		PIG_print(txt)
 	end
 end
-function PIGSendAddonMessage(biaotou,txt)
-	--C_ChatInfo.SendAddonMessage(biaotou,txt,"SAY");--测试
+function PIGSendAddonMessage(biaotou,txt,chatType, target)
+	local SendAddonMessage=SendAddonMessage or C_ChatInfo and C_ChatInfo.SendAddonMessage
+	SendAddonMessage(biaotou,txt,chatType, target)
+end
+function PIGSendAddonRaidParty(biaotou,txt)
+	--PIGSendAddonMessage(biaotou,txt,"SAY");--测试
 	if IsInRaid() then
-		C_ChatInfo.SendAddonMessage(biaotou,txt,"RAID")
+		PIGSendAddonMessage(biaotou,txt,"RAID")
 	elseif IsInGroup() then
-		C_ChatInfo.SendAddonMessage(biaotou,txt,"PARTY")
+		PIGSendAddonMessage(biaotou,txt,"PARTY")
 	end
 end
 ---------
@@ -113,23 +129,48 @@ function PIGCopyTable(OldTable)
 end
 function PIG_print(msg,colour)
 	if colour=="R" then
-		print("|cff00FFFF!Pig:|r|cffFF0000"..msg.."|r");
+		print("|cff00FFFF[!Pig]:|r|cffFF0000"..msg.."|r");
 	elseif colour=="G" then
-		print("|cff00FFFF!Pig:|r|cff00FF00"..msg.."|r");
+		print("|cff00FFFF[!Pig]:|r|cff00FF00"..msg.."|r");
 	else
-		print("|cff00FFFF!Pig:|r|cffFFFF00"..msg.."|r");
+		print("|cff00FFFF[!Pig]:|r|cffFFFF00"..msg.."|r");
 	end
 end
-function table.removekey(table, key)
-    local element = table[key]
-    table[key] = nil
-    return element
+function PIGGetAddOnInfo(id)
+	local GetAddOnInfo=GetAddOnInfo or C_AddOns and C_AddOns.GetAddOnInfo
+	return GetAddOnInfo(id)
+end
+local PIG_GetAddOnEnableState=C_AddOns and C_AddOns.GetAddOnEnableState
+if PIG_GetAddOnEnableState==nil then
+	local _GetAddOnEnableState = _G.GetAddOnEnableState;
+	PIG_GetAddOnEnableState = function(addon, name)
+		return _GetAddOnEnableState(name, addon);
+	end
+end
+PIGGetAddOnEnableState=PIG_GetAddOnEnableState
+function PIGGetAddOnMetadata(addonName, shuxing)
+	local GetAddOnMetadata=GetAddOnMetadata or C_AddOns and C_AddOns.GetAddOnMetadata
+	return GetAddOnMetadata(addonName, shuxing)
+end
+if table.clear then
+else
+	function table.clear(table)
+		for k in pairs(table) do
+		    table[k] = nil
+		end
+	end
 end
 function Fun.Delmaohaobiaodain(oldt)
 	local oldt=oldt:gsub(" ","");
 	local oldt=oldt:gsub("：","");
 	local oldt=oldt:gsub(":","");
 	return oldt
+end
+function Fun.tihuankuohao(fullName)
+	local fullName = fullName:gsub("%s", "")
+	local fullName = fullName:gsub("（", "(")
+	local fullName = fullName:gsub("）", ")")
+	return fullName
 end
 --
 Fun.pig64='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
@@ -142,6 +183,7 @@ local fixedRaceAtlasNames = {
 };
 local p=Fun.pig64
 function Fun.PIGGetRaceAtlas(raceName, gender)
+	local gender=tonumber(gender)
 	local raceName = lower(raceName)
 	if (fixedRaceAtlasNames[raceName]) then
 		raceName = fixedRaceAtlasNames[raceName];
@@ -436,113 +478,200 @@ function Fun.GetYellPindao(PindaoList,peizhi)
 	end
 	return yellpindaolist
 end
---获取所带副本级别单价文本
-function Fun.Get_LvDanjiaTxt(fubenID,danjiaList)
-	local MsgNr = ""
-	local danjiaData=danjiaList[fubenID]
-	for id = 1, 4, 1 do
-		local kaishiLV =danjiaData[id][1]
-		local jieshuLV =danjiaData[id][2]
-		local jiageG =danjiaData[id][3]
-		if kaishiLV>0 and jieshuLV>0 then
-			if jiageG>0 then
-				MsgNr=MsgNr.."<"..kaishiLV.."-"..jieshuLV..">"..jiageG.."G"
+function Fun.GetpindaoList(kong)
+	local chuangkoulist = {[0]=NONE}
+	if kong then chuangkoulist[0]=nil end
+	for ix=1,NUM_CHAT_WINDOWS do
+		local name= GetChatWindowInfo(ix);
+		if name and name~="" then
+			chuangkoulist[ix]=name
+		end
+	end
+	return chuangkoulist
+end
+function Fun.GetSelectpindaoID(cfname,moren1)
+	local chuangkoulist=Fun.GetpindaoList()
+	for k,v in pairs(chuangkoulist) do
+	 	if cfname and v==cfname then
+	 		return k,v
+	 	end
+	end 
+	if moren1 then 
+		return 1,chuangkoulist[1]
+	else
+		return 0,NONE
+	end
+end
+--获取队伍等级====
+function Fun.Get_GroupLv()
+	local MsgNr="";
+	if IsInRaid() then
+		MsgNr = "R#40#"..GetNumGroupMembers()
+	elseif IsInGroup() then
+		MsgNr="G#"
+		for id = 1, MAX_PARTY_MEMBERS, 1 do
+			if UnitExists("Party"..id) then
+				local dengjiKk = UnitLevel("Party"..id)
+				if id==numgroup then
+					MsgNr=MsgNr..dengjiKk
+				else
+					MsgNr=MsgNr..dengjiKk.."#";
+				end
 			else
-				MsgNr=MsgNr.."<"..kaishiLV.."-"..jieshuLV..">".."免费"
+				if id==numgroup then
+					MsgNr=MsgNr.."-"
+				else
+					MsgNr=MsgNr.."-".."#";
+				end
 			end
 		end
+	else
+		MsgNr="G#-#-#-#-";
 	end
 	return MsgNr
 end
---获取队伍等级文本
-function Fun.Get_GroupLV()
-	local MsgNr=""
+function Fun.Get_GroupLvTxt()
 	if IsInGroup() then
-		local MsgNr=MsgNr..",队内"
 		local numgroup = GetNumSubgroupMembers()
 		if numgroup>0 then
+			local MsgNr=",队内("
 			for id=1,numgroup do
 				local dengjiKk = UnitLevel("Party"..id);
 				if id==numgroup then
-					MsgNr=MsgNr..dengjiKk;
+					MsgNr=MsgNr..dengjiKk..")";
 				else
 					MsgNr=MsgNr..dengjiKk..",";
 				end
 			end
-			MsgNr=MsgNr;
+			return MsgNr
 		end
 	end
-	return MsgNr
+	return ""
 end
-function Fun.Get_famsg(laiyuan,famsg,CMD,peizhiopen,datad)
-	if laiyuan=="yell" then
-		if peizhiopen then
-			famsg=famsg..",进组暗号"..CMD.."";
-		end
-	elseif laiyuan=="FarmYellLV" then
-		if CMD then
-			local lvtxt = Fun.Get_GroupLV();
-			famsg=famsg..lvtxt;
-		end
-	elseif laiyuan=="Farm_huifu" then
-		if danjiaOpen then
-			for k,v in pairs(datad) do
-				print(k,v)
+local function IsdanjiaOK(fubenID,danjiaCF)
+	if danjiaCF[fubenID[1]] and danjiaCF[fubenID[1]][fubenID[2]] then
+		local hangD=danjiaCF[fubenID[1]][fubenID[2]]
+		for id = 1, 4, 1 do
+			if hangD[id][1]>0 and hangD[id][2]>0 then
+				return danjiaCF[fubenID[1]][fubenID[2]]
 			end
-			local danjiatxt = Fun.Get_LvDanjiaTxt(datad[3],datad[4]);
-			famsg=famsg..","..danjiatxt
-		end
-		if LvOpen then
-			local lvtxt = Fun.Get_GroupLV();
-			famsg=famsg..lvtxt;
-		end
-		if autoInvite then
-			famsg=famsg..",进组暗号"..CMD..""
 		end
 	end
-	return famsg
+	return false
 end
 --根据等级计算单价
-function Fun.Get_LvDanjia(lv,fbName,danjiaList)
-	if fbName~=NONE then
+function Fun.Get_LvDanjia(lv,fubenID,danjiaCF)
+	if lv==0 then return 0 end
+	local hangD = IsdanjiaOK(fubenID,danjiaCF)
+	if hangD then
 		for id = 1, 4, 1 do
-			if danjiaList[id][1]>0 then
-				if lv>=danjiaList[id][1] and lv<=danjiaList[id][2] then
-					return danjiaList[id][3]
+			local SavetG = hangD[id]
+			if SavetG[1]>0 and SavetG[2]>0 then
+				if lv>=SavetG[1] and lv<=SavetG[2] then
+					return SavetG[3]
 				end
 			end
 		end
 	end
 	return 0
 end
---获取设置的最小和最大级别
-function Fun.Get_LVminmax(fbName,danjiaList)
-	local min,max = nil,nil
-	for id = 1, 4, 1 do
-		local kaishiLV =danjiaList[id][1]
-		local jieshuLV =danjiaList[id][2]
-		if kaishiLV>0 and jieshuLV>0 then
-			if min then
-				if kaishiLV<min then
-					min=kaishiLV
-				end
-			else
-				min=kaishiLV
+--获取所带副本级别单价文本
+function Fun.Get_LvDanjiaYC(fubenID,danjiaCF)
+	local hangD = IsdanjiaOK(fubenID,danjiaCF)
+	if hangD then
+		local MsgNr = ""
+		for id = 1, 4, 1 do
+			local SavetG = hangD[id]
+			if SavetG[1]>0 and SavetG[2]>0 then
+				MsgNr=MsgNr..SavetG[1].."@"..SavetG[2].."@"..SavetG[3].."#"
 			end
-			if max then
-				if jieshuLV>max then
-					max=jieshuLV
+		end
+		local MsgNr = MsgNr:sub(1,-2)
+		return MsgNr
+	end
+	return "-"
+end
+function Fun.Get_LvDanjiaTxt(fubenID,danjiaCF)
+	local MsgNr = ""
+	local hangD = IsdanjiaOK(fubenID,danjiaCF)
+	if hangD then
+		for id = 1, 4, 1 do
+			local SavetG = hangD[id]
+			if SavetG[1]>0 and SavetG[2]>0 then
+				if SavetG[3]>0 then
+					MsgNr=MsgNr.."<"..SavetG[1].."-"..SavetG[2]..">"..SavetG[3].."G"
+				else
+					MsgNr=MsgNr.."<"..SavetG[1].."-"..SavetG[2]..">".."免费"
 				end
-			else
-				max=jieshuLV
+			end
+		end
+	end
+	return MsgNr
+end
+--获取设置的最小和最大级别
+function Fun.Get_LVminmax(fubenID,danjiaCF)
+	local min,max = nil,nil
+	local hangD = IsdanjiaOK(fubenID,danjiaCF)
+	if hangD then
+		for id = 1, 4, 1 do
+			local SavetG = hangD[id]
+			if SavetG[1]>0 and SavetG[2]>0 then
+				if min then
+					if SavetG[1]<min then
+						min=SavetG[1]
+					end
+				else
+					min=SavetG[1]
+				end
+				if max then
+					if SavetG[2]>max then
+						max=SavetG[2]
+					end
+				else
+					max=SavetG[2]
+				end
 			end
 		end
 	end
 	local min,max = min or 0,max or 0
 	return min,max
 end
+function Fun.Get_LVminmaxTxt(fubenID,danjiaCF)
+	local min,max = Fun.Get_LVminmax(fubenID,danjiaCF)
+	return min.."#"..max
+end
+function Fun.Get_famsg(laiyuan,famsg,CMD_Opne,CMDtxt,otdata)
+	if laiyuan=="yell" then
+		if CMD_Opne then
+			famsg=famsg..",进组暗号"..CMDtxt.."";
+		end
+	elseif laiyuan=="Farm_Yell" then
+		if CMD_Opne then
+			local lvtxt = Fun.Get_GroupLvTxt();
+			famsg=famsg..lvtxt;
+		end
+	elseif laiyuan=="Farm_huifu" then
+		local Auto_lv,Auto_danjia,Fuben_ID,Fuben_G=unpack(otdata)
+		if Auto_lv then
+			local lvtxt = Fun.Get_GroupLvTxt();
+			famsg=famsg..lvtxt;
+		end
+		if Auto_danjia then
+			local danjiatxt = Fun.Get_LvDanjiaTxt(Fuben_ID,Fuben_G);
+			famsg=famsg..", "..danjiatxt
+		end
+		if CMD_Opne then
+			famsg=famsg..",进组暗号"..CMDtxt..""
+		end
+	elseif laiyuan=="Farm_chedui" then
+
+	end
+	return famsg
+end
+
 ----
 function Fun.Key_hebing(str,fengefu)
+	local fengefu=fengefu or ","
 	local arr = ""
 	local numx = #str
 	for i=1,numx do

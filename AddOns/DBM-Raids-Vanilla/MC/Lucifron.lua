@@ -12,7 +12,7 @@ end
 local mod	= DBM:NewMod("Lucifron", "DBM-Raids-Vanilla", catID)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20241219145912")
+mod:SetRevision("20250119115238")
 mod:SetCreatureID(DBM:IsSeasonal("SeasonOfDiscovery") and 228429 or 12118)--, 12119
 mod:SetEncounterID(663)
 mod:SetModelID(13031)
@@ -49,7 +49,7 @@ mod.vb.lastIcon = 1
 
 function mod:OnCombatStart(delay)
 	self.vb.lastIcon = 1
-	timerDoomCD:Start(7-delay)--7-8
+	timerDoomCD:Start(6.5-delay)--6.5-8
 	timerCurseCD:Start(12-delay)--12-15
 end
 

@@ -40,12 +40,12 @@ function BusinessInfo.FastFen()
 	local DestroyMacro = "/cast %s\n/use %d %d"
 	local function zhixingClick(self,button)
 		if button=="LeftButton" then
-			if not IsPlayerSpell(OpenData[3]) then PIGinfotip:TryDisplayMessage("你尚未学会"..OpenData[1].."技能") return end
+			if not IsPlayerSpell(OpenData[3]) then PIGTopMsg:add("你尚未学会"..OpenData[1].."技能") return end
 			if InCombatLockdown() then
-				PIGinfotip:TryDisplayMessage(ERR_NOT_IN_COMBAT)
+				PIGTopMsg:add(ERR_NOT_IN_COMBAT)
 			else
 				local fenspellname = PIGGetSpellInfo(OpenData[3])
-				self:SetAttribute("macrotext", " ")
+				self:SetAttribute("macrotext1", " ")
 				local isCurrentSpell = IsCurrentSpell(OpenData[3])
 				if isCurrentSpell then return end
 				local shujuy =PIGA["AutoSellBuy"][gongnengNameE.."_List"]
@@ -56,15 +56,15 @@ function BusinessInfo.FastFen()
 							local itemID=GetContainerItemID(bag, slot)
 							for k=1,#shujuy do
 								if itemID==shujuy[k][1] then
-									self:SetAttribute("macrotext", string.format(DestroyMacro, fenspellname, bag, slot))
+									self:SetAttribute("macrotext1", string.format(DestroyMacro, fenspellname, bag, slot))
 									return
 								end
 							end
 						end
 					end
-					PIGinfotip:TryDisplayMessage("没有需"..OpenData[1].."物品")
+					PIGTopMsg:add("没有需"..OpenData[1].."物品")
 				else
-					PIGinfotip:TryDisplayMessage(OpenData[1].."目录为空,"..KEY_BUTTON2.."设置")
+					PIGTopMsg:add(OpenData[1].."目录为空,"..KEY_BUTTON2.."设置")
 				end	
 			end
 		end
@@ -73,12 +73,12 @@ function BusinessInfo.FastFen()
 		zhixingClick(self,button)
 	end);
 	--宏-----
-	if tocversion<50000 then
+	if tocversion>20000 and tocversion<50000 then
 		fujiF.fuzhiCDM = PIGButton(fujiF,{"TOPLEFT",fujiF,"TOPLEFT",160,-10},{100,20},CALENDAR_CREATE..OpenData[1]..MACRO);
 		fujiF.fuzhiCDM:HookScript("OnClick",  function (self)
 			local macroSlot = GetMacroIndexByName(hongName)
 			if macroSlot>0 then
-				PIGinfotip:TryDisplayMessage(OpenData[1]..MACRO.."已存在");
+				PIGTopMsg:add(OpenData[1]..MACRO.."已存在");
 			else
 				StaticPopup_Show("AUTOSELLBUY_"..OpenData[1]);
 			end	
@@ -92,9 +92,9 @@ function BusinessInfo.FastFen()
 				local global, perChar = GetNumMacros()
 				if global<120 then
 					CreateMacro(hongName, OpenData[2], hongNR, nil)
-					PIGinfotip:TryDisplayMessage("已"..CALENDAR_CREATE..OpenData[1]..MACRO);
+					PIGTopMsg:add("已"..CALENDAR_CREATE..OpenData[1]..MACRO);
 				else
-					PIGinfotip:TryDisplayMessage(L["LIB_MACROERR"]);
+					PIGTopMsg:add(L["LIB_MACROERR"]);
 					return
 				end
 			end,

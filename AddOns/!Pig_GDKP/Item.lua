@@ -443,10 +443,10 @@ function GDKPInfo.ADD_Item(RaidR)
 				elseif IsShiftKeyDown() then--关注
 					if bianjiData[15] then
 						bianjiData[15]=false
-						PIGinfotip:TryDisplayMessage(self.itemLink.."已取消关注");
+						PIGTopMsg:add(self.itemLink.."已取消关注");
 					else
 						bianjiData[15]=true
-						PIGinfotip:TryDisplayMessage(self.itemLink.."已加入关注");
+						PIGTopMsg:add(self.itemLink.."已加入关注");
 					end
 					RaidR.Update_Item();
 				else
@@ -749,7 +749,7 @@ function GDKPInfo.ADD_Item(RaidR)
 			fujikk.DJtime=fujikk.DJtime-1
 			C_Timer.After(1,daojishikaiguai)
 		else
-			PIGSendAddonMessage(biaotou,auc_daoshu.."&0")
+			PIGSendAddonRaidParty(biaotou,auc_daoshu.."&0")
 			local hejishuju = PIGA["GDKP"]["ItemList"][fujiF.tishiUI.bianjiID]
 			local _,itemLink = GetItemInfo(Fun.HY_ItemLinkJJ(hejishuju[2]))
 			PIGSendChatRaidParty(itemLink.."拍卖结束")
@@ -771,13 +771,13 @@ function GDKPInfo.ADD_Item(RaidR)
 			local dancidanweiV=fujiF.tishiUI.nr.auc.dancijia1:PIGDownMenu_GetValue()
 			local paimaiwupinxinxi="开始拍卖:"..itemLink..",数量:"..hejishuju[3]..",起拍:"..qipaishuV..qipaidanweiV.."G,最低加价："..dancishuV..dancidanweiV.."G";
 			PIGSendChatRaidParty(paimaiwupinxinxi)
-			PIGSendAddonMessage(biaotou,auc_start.."&"..itemLink.."#"..hejishuju[3].."#"..qipaishuV..qipaidanweiV.."#"..dancishuV..dancidanweiV)
+			PIGSendAddonRaidParty(biaotou,auc_start.."&"..itemLink.."#"..hejishuju[3].."#"..qipaishuV..qipaidanweiV.."#"..dancishuV..dancidanweiV)
 		elseif self:GetText()=="拍卖完成" then
 			fujiF.tishiUI.nr.auc.aucend=true
 			fujiF.tishiUI:Hide()
 			hejishuju[7]=true
 			RaidR.Update_Item();
-			PIGSendAddonMessage(biaotou,auc_end)
+			PIGSendAddonRaidParty(biaotou,auc_end)
 		end
 	end);
 	fujiF.tishiUI.nr.auc.daojishiCZ = PIGButton(fujiF.tishiUI.nr.auc,{"LEFT",fujiF.tishiUI.nr.auc.YES,"RIGHT",30,0},{54,24},"重置");  
@@ -835,7 +835,7 @@ function GDKPInfo.ADD_Item(RaidR)
 			local bianjiID=fujiF.tishiUI.bianjiID
 			local _,itemLink = GetItemInfo(Fun.HY_ItemLinkJJ(PIGA["GDKP"]["ItemList"][bianjiID][2]))
 			PIGSendChatRaidParty(itemLink.."拍卖非正常终止")
-			PIGSendAddonMessage(biaotou,auc_end)
+			PIGSendAddonRaidParty(biaotou,auc_end)
 		end
 	end);
 	---
@@ -851,7 +851,7 @@ function GDKPInfo.ADD_Item(RaidR)
 			local paichumulu = PIGA["GDKP"]["Rsetting"]["PaichuList"]
 			for j=1,#paichumulu do
 				if ItemIDx==paichumulu[j] then
-					PIGinfotip:TryDisplayMessage("物品已在目录内");
+					PIGTopMsg:add("物品已在目录内");
 					return
 				end
 			end
@@ -891,7 +891,6 @@ function GDKPInfo.ADD_Item(RaidR)
 				local item5=hejishuju[bianjiID][5]
 				local item6=hejishuju[bianjiID][6]
 				local item11=hejishuju[bianjiID][11]
-				print(fengeNUM)
 				local iteminfo={item1,item2,fengeNUM,item4,item5,item6,false,"N/A",0,0,item11,true,true,0,false};
 				table.insert(hejishuju,bianjiID+1,iteminfo)
 			end
@@ -1014,7 +1013,7 @@ function GDKPInfo.ADD_Item(RaidR)
 										elseif yijingguoqu>6600 then
 											if ItemL[i][12] then
 												local _,itemLink = GetItemInfo(Fun.HY_ItemLinkJJ(ItemL[i][2]))
-												PIGSendChatRaidParty("提示：未成交物品"..itemLink.."可交易时间不足10分钟，请确认物品归属(预估时间仅供参考)！")
+												PIGSendChatRaidParty("提示：未成交物品"..itemLink.."可交易时间不足10分钟，请确认物品归属(预估时间仅供参考)！",true,true)
 												ItemL[i][12]=false;
 											end
 										end	
@@ -1072,7 +1071,7 @@ function GDKPInfo.ADD_Item(RaidR)
 						end
 					end
 				else
-					PIGinfotip:TryDisplayMessage("未开启手动添加物品，请在设置中开启");
+					PIGTopMsg:add("未开启手动添加物品，请在设置中开启");
 				end
 			end
 		end

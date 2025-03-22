@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(1489, "DBM-Party-Legion", 4, 721)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240714045506")
+mod:SetRevision("20250307060117")
 mod:SetCreatureID(95676)
 mod:SetEncounterID(1809)
 mod:SetHotfixNoticeRev(20230306000000)
@@ -116,7 +116,7 @@ function mod:SPELL_CAST_SUCCESS(args)
 --		timerSpearCD:Start(18)
 		local nextCount = self.vb.brandCount+1
 --		local timer = brandTimers[nextCount]
---		if timer then
+--		if timer and timer > 0 then
 			timerRunicBrandCD:Start(nil, nextCount)
 --		end
 	end

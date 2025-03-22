@@ -87,6 +87,7 @@ function Create.PIGSlider(fuF,Point,data,WH,UIName)--,{["Right"]="%"}
 	if SliderF.SetEnabled_ then
 		hooksecurefunc(SliderF, "SetEnabled", function(self,enabled)
 			self:SetEnabled_(enabled)
+			self.Slider:SetEnabled(enabled)
 		end)
 	end
 	function SliderF:PIGSetValue(value)

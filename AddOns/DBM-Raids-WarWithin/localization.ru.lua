@@ -58,8 +58,8 @@ L:SetOptionLocalization({
 L= DBM:GetModLocalization(2608)
 
 L:SetMiscLocalization({
-	Red		= " [R-Таказдж]",--Нитемот Таказдж
-	Blue	= " [B-Анубараш]"--Ануб'араш
+	Red		= RED_FONT_COLOR:WrapTextInColorCode(" [R-Таказдж]"),--Нитемот Таказдж
+	Blue	= BLUE_FONT_COLOR:WrapTextInColorCode(" [B-Анубараш]")--Ануб'араш
 })
 
 ---------------------------
@@ -115,12 +115,24 @@ L:SetOptionLocalization({
 ---------------------------
 --  Sprocketmonger Lockenstock --
 ---------------------------
---L= DBM:GetModLocalization(2653)
+L= DBM:GetModLocalization(2653)
+
+L:SetWarningLocalization{
+	specWarnPolGen	= "Изменение на %s - 3 сек.",
+}
+
+L:SetOptionLocalization({
+	specWarnPolGen	= "Показывать спецпредупреждение, когда генератор полярности меняет заряд"
+})
 
 ---------------------------
 --  The One-Armed Bandit --
 ---------------------------
---L= DBM:GetModLocalization(2644)
+L= DBM:GetModLocalization(2644)
+
+L:SetMiscLocalization({
+	BaitCoil	= "Bait Coil"--Переведу чуть позже
+})
 
 ---------------------------
 --  Mug'Zee, Heads of Security --

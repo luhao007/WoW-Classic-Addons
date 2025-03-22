@@ -104,6 +104,16 @@ duiyouF.ToToT:SetScript("OnClick", function (self)
 		Pig_Options_RLtishi_UI:Show()
 	end
 end);
+-- duiyouF.petbar=PIGCheckbutton_R(zishenF,{"显示队友宠物","显示队友宠物"})
+-- duiyouF.petbar:SetScript("OnClick", function (self)
+-- 	if self:GetChecked() then
+-- 		PIGA["UnitFrame"]["PartyMemberFrame"]["petbar"]=true;
+-- 		UnitFramefun.Zishen()
+-- 	else
+-- 		PIGA["UnitFrame"]["PartyMemberFrame"]["petbar"]=false;
+-- 		Pig_Options_RLtishi_UI:Show()
+-- 	end
+-- end);
 duiyouF:HookScript("OnShow", function(self)
 	self.Plus:SetChecked(PIGA["UnitFrame"]["PartyMemberFrame"]["Plus"])
 	self.HPFF:SetChecked(PIGA["UnitFrame"]["PartyMemberFrame"]["HPFF"])
@@ -126,7 +136,7 @@ mubiaoF.Plus:SetScript("OnClick", function (self)
 		Pig_Options_RLtishi_UI:Show()
 	end
 end);
-mubiaoF.Chouhen=PIGCheckbutton_R(mubiaoF,{"仇恨值/仇恨高亮/仇恨目录","显示目标的仇恨值/仇恨高亮/仇恨目录"})
+mubiaoF.Chouhen=PIGCheckbutton_R(mubiaoF,{"仇恨值/仇恨高亮/仇恨目录","显示目标的仇恨值/仇恨高亮/仇恨目录\n如果未生效请打开系统的<界面-显示威胁值百分>选项"})
 mubiaoF.Chouhen:SetScript("OnClick", function (self)
 	if self:GetChecked() then
 		PIGA["UnitFrame"]["TargetFrame"]["Chouhen"]=true;

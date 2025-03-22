@@ -19,8 +19,6 @@ local PIGFontString=Create.PIGFontString
 local PIGFontStringBG=Create.PIGFontStringBG
 --
 local IsAddOnLoaded=IsAddOnLoaded or C_AddOns and C_AddOns.IsAddOnLoaded
-local SendAddonMessage = C_ChatInfo and C_ChatInfo.SendAddonMessage or SendAddonMessage;
-local RegisterAddonMessagePrefix = C_ChatInfo and C_ChatInfo.RegisterAddonMessagePrefix or RegisterAddonMessagePrefix;
 local CombatPlusfun=addonTable.CombatPlusfun
 --------------------------
 local CombatPlusF,CombatPlustabbut =PIGOptionsList_R(CombatPlusfun.RTabFrame,L["COMBAT_TABNAME1"],90)
@@ -174,8 +172,8 @@ local function ADDDoCountdownUI()
 			PIG_PULL(tonumber(CDtime),arg1)
 		end
 	end
-	RegisterAddonMessagePrefix("D5")
-	RegisterAddonMessagePrefix("BigWigs")
+	C_ChatInfo.RegisterAddonMessagePrefix("D5")
+	C_ChatInfo.RegisterAddonMessagePrefix("BigWigs")
 	timer:RegisterEvent("CHAT_MSG_ADDON")
 	timer:SetScript("OnEvent",function(self, event, arg1, arg2, arg3, arg4)
 		if self.opentiem then return end
@@ -197,13 +195,8 @@ local function ADDDoCountdownUI()
 		local CDtime = CDtime or PigPulldata.morenCD
 		if IsInGroup() then
 			local _, instanceType, difficulty, _, _, _, _, mapID = GetInstanceInfo()
-			if IsInRaid() then
-				SendAddonMessage("D5", Pig_OptionsUI.AllName .. "\t1\t" .. "PT" .. "\t" .. CDtime .. "\t" .. mapID, "RAID")
-				SendAddonMessage("BigWigs", "P^Pull^"..CDtime, "RAID")
-			else
-				SendAddonMessage("D5", Pig_OptionsUI.AllName .. "\t1\t" .. "PT" .. "\t" .. CDtime .. "\t" .. mapID, "PARTY")
-				SendAddonMessage("BigWigs", "P^Pull^"..CDtime, "RAID")
-			end
+			PIGSendAddonRaidParty("D5", Pig_OptionsUI.AllName .. "\t1\t" .. "PT" .. "\t" .. CDtime .. "\t" .. mapID, "RAID")
+			PIGSendAddonRaidParty("BigWigs", "P^Pull^"..CDtime, "RAID")
 		else
 			PIG_PULL(CDtime)
 		end
@@ -264,16 +257,7 @@ end
 --NecrolordAssaults-64x64
 --groupfinder-icon-class-color-monk
 local MenuiconList = {}
-if tocversion>100000 then
-	table.insert(MenuiconList,1,{{"Atlas","common-icon-rotateleft"},{"离开队伍","离开副本队伍"},{updateiconall,-1,-3,-1,-1},function(self,button) if button=="LeftButton" then C_PartyInfo.LeaveParty() else ConfirmOrLeaveLFGParty() end end})
-	table.insert(MenuiconList,2,{{"Atlas","GM-icon-assist"},{"切换小队/团队"},{updateicon},ToPartyToRaid})
-	table.insert(MenuiconList,3,{{"Atlas","GM-raidMarker-reset"},{"重置副本"},{updateiconDesaturated},function() StaticPopup_Show("CONFIRM_RESET_INSTANCES"); end})
-	table.insert(MenuiconList,4,{{"Atlas","GM-icon-difficulty-normalSelected"},{"副本难度"},{updateicon}, updateicon_Difficulty})
-	table.insert(MenuiconList,5,{{"Atlas","Ping_SpotGlw_Assist_In"},{COMBATLOGDISABLED},{updateicon,-2,-2,-1,-2},function() end})
-	table.insert(MenuiconList,6,{{"Atlas","GM-icon-roles"},{"职责检查"},{updateicon,4,4,4,4},function() InitiateRolePoll() end})
-	table.insert(MenuiconList,7,{{"Atlas","GM-icon-readyCheck"},{"就位确认"},{updateicon,6,6,5,7},function() DoReadyCheck() end})
-	table.insert(MenuiconList,{{"Atlas","GM-icon-countdown"},{"倒计时","设置倒数秒"},{updateicon},GetDoCountdownFun()})
-else
+if tocversion<50000 then
 	--interface/raidframe/readycheck-notready.blp
 	-- {"Atlas","UI-LFG-PendingMark"},
 	-- {"Atlas","UI-LFG-ReadyMark"},
@@ -285,6 +269,15 @@ else
 	table.insert(MenuiconList,5,{{"Tex","interface/raidframe/readycheck-waiting.blp"},{"职责检查"},nil,function() InitiateRolePoll() end})
 	table.insert(MenuiconList,6,{{"Tex","interface/raidframe/readycheck-ready.blp"},{"就位确认"},nil,function() DoReadyCheck() end})
 	table.insert(MenuiconList,{{"Tex","interface/helpframe/helpicon-reportlag.blp",{0.13,0.87,0.13,0.87}},{"倒计时","设置倒数秒"},nil,GetDoCountdownFun()})
+else
+	table.insert(MenuiconList,1,{{"Atlas","common-icon-rotateleft"},{"离开队伍","离开副本队伍"},{updateiconall,-1,-3,-1,-1},function(self,button) if button=="LeftButton" then C_PartyInfo.LeaveParty() else ConfirmOrLeaveLFGParty() end end})
+	table.insert(MenuiconList,2,{{"Atlas","GM-icon-assist"},{"切换小队/团队"},{updateicon},ToPartyToRaid})
+	table.insert(MenuiconList,3,{{"Atlas","GM-raidMarker-reset"},{"重置副本"},{updateiconDesaturated},function() StaticPopup_Show("CONFIRM_RESET_INSTANCES"); end})
+	table.insert(MenuiconList,4,{{"Atlas","GM-icon-difficulty-normalSelected"},{"副本难度"},{updateicon}, updateicon_Difficulty})
+	table.insert(MenuiconList,5,{{"Atlas","Ping_SpotGlw_Assist_In"},{COMBATLOGDISABLED},{updateicon,-2,-2,-1,-2},function() end})
+	table.insert(MenuiconList,6,{{"Atlas","GM-icon-roles"},{"职责检查"},{updateicon,4,4,4,4},function() InitiateRolePoll() end})
+	table.insert(MenuiconList,7,{{"Atlas","GM-icon-readyCheck"},{"就位确认"},{updateicon,6,6,5,7},function() DoReadyCheck() end})
+	table.insert(MenuiconList,{{"Atlas","GM-icon-countdown"},{"倒计时","设置倒数秒"},{updateicon},GetDoCountdownFun()})
 end
 local MenuiconNum=#MenuiconList
 ---
@@ -314,11 +307,17 @@ local WmarkerIndex={
 	[9]={0,1,40/255,40/255},
 }
 -----
+local function IsMarkerOK()
+	if PlaceRaidMarker and GetClassicExpansionLevel() >= LE_EXPANSION_CATACLYSM then
+		return true
+	end
+	return false
+end
 local GNLsitsName={"topMenu","markerR","markerW"}
 local GNLsits={
 	["topMenu"]={["yes"]=true,["name"]="快捷菜单",["barHH"]=biaojiW-2,["iconNum"]=MenuiconNum,["topbutui"]=-1,["OptionsTop"]=0},
 	["markerR"]={["yes"]=true,["name"]="目标标记",["barHH"]=biaojiW,["iconNum"]=RiconNum,["topbutui"]=-30,["OptionsTop"]=210},
-	["markerW"]={["yes"]=PlaceRaidMarker,["name"]="地面标记",["barHH"]=biaojiW-8,["iconNum"]=RiconNum,["topbutui"]=-36-biaojiW,["OptionsTop"]=350},
+	["markerW"]={["yes"]=IsMarkerOK(),["name"]="地面标记",["barHH"]=biaojiW-8,["iconNum"]=RiconNum,["topbutui"]=-36-biaojiW,["OptionsTop"]=350},
 }
 local function add_barUI(peizhiT,SizeHH,listNum,topbutui)
 	local biaojiUIx = PIGFrame(UIParent,{"TOP", UIParent, "TOP", 0, topbutui},{(biaojiW+3)*listNum+5,SizeHH+4},"PIG"..peizhiT.."_UI",nil,Template)
@@ -386,7 +385,7 @@ local function SetAutoShow(peizhiT,pigui)
 	pigui.NoGroup=PIGA["CombatPlus"][peizhiT]["NoGroup"]
 	pigui.AutoShow=PIGA["CombatPlus"][peizhiT]["AutoShow"]
 	pigui.NoTarget=PIGA["CombatPlus"][peizhiT]["NoTarget"]
-	if pigui==PIGworldmarker and InCombatLockdown() then PIGinfotip:TryDisplayMessage("更改将在脱战后执行") end
+	if pigui==PIGworldmarker and InCombatLockdown() then PIGTopMsg:add("更改将在脱战后执行") end
 	SetAutoShowFun(pigui)
 end
 local function add_buttonList(peizhiT,listNum)
@@ -551,9 +550,9 @@ local function add_buttonList(peizhiT,listNum)
 	pigui.yizairu=true
 end
 local function add_Options(peizhiT,topHV,nameGN,pigui)
-	local checkbutOpen = PIGCheckbutton(CombatPlusF,{"TOPLEFT",CombatPlusF,"TOPLEFT",20,-topHV-20},{"启用"..nameGN.."按钮","在屏幕上显示"..nameGN.."快速标记按钮"})
+	local checkbutOpen = PIGCheckbutton(CombatPlusF,{"TOPLEFT",CombatPlusF,"TOPLEFT",20,-topHV-20},{"启用"..nameGN.."按钮","在屏幕上显示"..nameGN.."按钮"})
 	checkbutOpen:SetScript("OnClick", function (self)
-		if pigui==_G["PIGmarkerW_UI"] and InCombatLockdown() then self:SetChecked(PIGA["CombatPlus"][peizhiT]["Open"]) PIGinfotip:TryDisplayMessage(ERR_NOT_IN_COMBAT) return end
+		if pigui==_G["PIGmarkerW_UI"] and InCombatLockdown() then self:SetChecked(PIGA["CombatPlus"][peizhiT]["Open"]) PIGTopMsg:add(ERR_NOT_IN_COMBAT) return end
 		if self:GetChecked() then
 			PIGA["CombatPlus"][peizhiT]["Open"]=true;
 			self.F:Show()
@@ -648,17 +647,17 @@ local function add_Options(peizhiT,topHV,nameGN,pigui)
 		checkbutOpen.F.Daojishi=PIGDownMenu(checkbutOpen.F,{"LEFT",checkbutOpen.F.PIGPULLSHOW,"RIGHT",260,0},{180})
 		checkbutOpen.F.Daojishi:Disable()
 		checkbutOpen.F.Daojishi.t = PIGFontString(checkbutOpen.F.Daojishi,{"RIGHT",checkbutOpen.F.Daojishi,"LEFT",-4,0},"倒计结束音效");
-		function checkbutOpen.F.Daojishi:PIGDownMenu_Update_But(self)
+		function checkbutOpen.F.Daojishi:PIGDownMenu_Update_But()
 			local info = {}
 			info.func = self.PIGDownMenu_SetValue
 			for i=1,4,1 do
 			    info.text, info.arg1 = daojishiList[i], i
 			    info.checked = i==PIGA["CombatPlus"][peizhiT]["daojishiFun"]
-				checkbutOpen.F.Daojishi:PIGDownMenu_AddButton(info)
+				self:PIGDownMenu_AddButton(info)
 			end 
 		end
 		function checkbutOpen.F.Daojishi:PIGDownMenu_SetValue(value,arg1,arg2)
-			checkbutOpen.F.Daojishi:PIGDownMenu_SetText(value)
+			self:PIGDownMenu_SetText(value)
 			PIGA["CombatPlus"][peizhiT]["daojishiFun"]=arg1
 			PIGCloseDropDownMenus()
 		end

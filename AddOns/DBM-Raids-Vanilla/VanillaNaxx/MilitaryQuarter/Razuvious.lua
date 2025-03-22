@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("RazuviousVanilla", "DBM-Raids-Vanilla", 1)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20241222110740")
+mod:SetRevision("20250209025759")
 mod:SetCreatureID(16061)
 mod:SetEncounterID(1113)
 mod:SetModelID(16582)
@@ -20,11 +20,14 @@ mod:RegisterEventsInCombat(
 	"UNIT_DIED"
 )
 
+-- New spell ID found in logs on SoD
+-- 1225423 (Disarm) cast by Understudies, TBD if we want to do something with that
+
 local warnShoutNow		= mod:NewSpellAnnounce(29107, 1, 6673)
 local warnShoutSoon		= mod:NewSoonAnnounce(29107, 3, 6673)
 local warnShieldWall	= mod:NewAnnounce("WarningShieldWallSoon", 3, 29061)
 
-local timerShout		= mod:NewCDTimer(25.8, 29107, nil, nil, nil, 2, 6673)-- 25.87-25.96 in classic, 16 in wrath
+local timerShout		= mod:NewVarTimer(25.8, 29107, nil, nil, nil, 2, 6673)-- 25.87-25.96 in classic, 16 in wrath
 local timerTaunt		= mod:NewCDTimer(60, 29060, nil, nil, nil, 5, nil, DBM_COMMON_L.TANK_ICON)
 local timerShieldWall	= mod:NewBuffFadesTimer(20, 29061, nil, nil, nil, 5, nil, DBM_COMMON_L.TANK_ICON)
 

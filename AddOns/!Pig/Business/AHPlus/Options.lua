@@ -7,11 +7,9 @@ local PIGSlider=Create.PIGSlider
 local PIGLine=Create.PIGLine
 local PIGEnter=Create.PIGEnter
 local PIGButton = Create.PIGButton
-local PIGDownMenu=Create.PIGDownMenu
 local PIGCheckbutton=Create.PIGCheckbutton
 local PIGOptionsList=Create.PIGOptionsList
 local PIGFontString=Create.PIGFontString
-local PIGModCheckbutton=Create.PIGModCheckbutton
 local PIGQuickBut=Create.PIGQuickBut
 ------
 local BusinessInfo=addonTable.BusinessInfo
@@ -40,11 +38,11 @@ function BusinessInfo.AHPlusOptions()
 	end);
 	--扫描间隔
 	fuFrame.AHPlus.ScanSliderT = PIGFontString(fuFrame.AHPlus,{"LEFT",fuFrame.AHPlus.Text,"RIGHT",20,0},"扫描间隔")
-	local Scaninfo = {0.01,0.1,0.01}
-	BusinessInfo.AHPlusData.ScanCD=PIGA["AHPlus"]["ScanTime"]
+	local Scaninfo = {1,10,1}
+	BusinessInfo.AHPlusData.ScanCD=PIGA["AHPlus"]["ScanTimeCD"]
 	fuFrame.AHPlus.ScanSlider = PIGSlider(fuFrame.AHPlus,{"LEFT",fuFrame.AHPlus.ScanSliderT,"RIGHT",10,0},Scaninfo)
 	fuFrame.AHPlus.ScanSlider.Slider:HookScript("OnValueChanged", function(self, arg1)
-		PIGA["AHPlus"]["ScanTime"]=arg1
+		PIGA["AHPlus"]["ScanTimeCD"]=arg1
 		BusinessInfo.AHPlusData.ScanCD=arg1
 	end)
 	fuFrame.AHPlus.AHtooltip =PIGCheckbutton(fuFrame.AHPlus,{"TOPLEFT",fuFrame.AHPlus,"BOTTOMLEFT",0,-20},{"鼠标提示拍卖价钱","在物品的鼠标提示上显示拍卖缓存价钱"})
@@ -152,7 +150,7 @@ function BusinessInfo.AHPlusOptions()
 	fuFrame:HookScript("OnShow", function (self)
 		self.AHPlus:SetChecked(PIGA["AHPlus"]["Open"])
 		self.AHPlus.AHtooltip:SetChecked(PIGA["AHPlus"]["AHtooltip"])
-		self.AHPlus.ScanSlider:PIGSetValue(PIGA["AHPlus"]["ScanTime"])
+		self.AHPlus.ScanSlider:PIGSetValue(PIGA["AHPlus"]["ScanTimeCD"])
 		if self.AHPlus.AHUIoff then self.AHPlus.AHUIoff:SetChecked(PIGA["AHPlus"]["AHUIoff"]) end
 		if self.AHPlus.QuicAuc then
 			self.AHPlus.QuicAuc:SetChecked(PIGA["AHPlus"]["QuicAuc"])

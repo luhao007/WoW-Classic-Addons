@@ -147,6 +147,12 @@ GTFO.SpellID["115167"] = {
 	sound = 1;
 };
 
+GTFO.SpellID["395829"] = {
+	--desc = "Sha Residue (Corrupt Droplet)";
+	ignoreApplication = true;
+	sound = 1;
+};
+
 GTFO.SpellID["111720"] = {
 	--desc = "Swirling Sunfire (Loremaster Stonestep)";
 	sound = 1;

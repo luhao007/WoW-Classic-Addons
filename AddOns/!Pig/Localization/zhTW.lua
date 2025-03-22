@@ -1,32 +1,17 @@
 local addonName, addonTable = ...;
 local _, _, _, tocversion = GetBuildInfo()
 local L=addonTable.locale
-local pigname=L.pigname
-local extLsit=L.extLsit
 if GetLocale() == "zhTW" then
-L["PIGaddonList"] = {
-	["Fuji"]=addonName,
-	[L.extLsit[1]]="時空之門",
-	[L.extLsit[2]]="金團助手",
-	[L.extLsit[3]]="帶本助手",
-}
 L["ADDON_NAME"] = "工具箱";
 L["ADDON_AUTHOR"]="聯繫作者";
 --About
 L["ABOUT_TABNAME"] = "關於";
-L["ABOUT_UPDATETIPS"] = "挿件已過期，請在插件關於內查看更新地址";
+L["ABOUT_UPDATETIPS"] = "挿件已過期,請在插件關於菜單查看更新方式";
 L["ABOUT_LOAD"] = "載入成功 /pig或小地圖按鈕設置";
-L["ABOUT_REMINDER"]="|cffFF0000*本插件完全免費，網絡購物平臺出售的皆為騙子*|r"
-L["ABOUT_UPDATEADD"]="更新網址: "
+L["ABOUT_REMINDER"]="|cff00FF00(更新方式請見插件關於菜單|r"
+L["ABOUT_UPDATEADD"]="更新: "
 L["ABOUT_MAIL"]="回饋郵箱: "
 L["ABOUT_MEDIA"]="使用教程: "
-L["ABOUT_OTHERADDONS"]="作者的其他挿件"
-L["ABOUT_OTHERADDON_LIST"]={
-	{"|cff00FFFF"..L.extLsit[1].."|r","|cff00ff00["..L["PIGaddonList"][L.extLsit[1]].."]|r","https://www.curseforge.com/wow/addons/pig_tardis"},
-	{"|cff00FFFF"..L.extLsit[2].."|r","|cff00ff00["..L["PIGaddonList"][L.extLsit[2]].."]|r","https://www.curseforge.com/wow/addons/pig_gdkp"},
-	{"|cff00FFFF"..L.extLsit[3].."|r","|cff00ff00["..L["PIGaddonList"][L.extLsit[3]].."]|r","https://www.curseforge.com/wow/addons/pig-farm"},
-}
-L["ABOUT_OTHERADDONS_DOWN"]="- "..COPY_NAME.."到你的插件更新器"..SEARCH.."安裝"
 --error
 L["ERROR_CLEAR"] = "清空";
 L["ERROR_PREVIOUS"] = "上一條";
@@ -41,6 +26,7 @@ L["ERROR_ERROR2"] = "宏嚐試調用保護功能";
 L["LIB_MACROERR"] = "你的宏數量已達最大值120，請删除一些再嘗試";
 L["LIB_TIPS"] = "提示";
 L["LIB_PLUS"] = "額外";
+L["LIB_SIZE"] = "尺寸";
 L["LIB_POINT"] = "位置";
 --OptionsUI
 L["OPTUI_SET"] = "設定";
@@ -51,7 +37,7 @@ L["OPTUI_ERRORTIPS"] = "***插件加載失敗，請重新嘗試***";
 L["DEBUG_TABNAME"] = "調試";
 L["DEBUG_BUTNAME"] = "記憶體CPU監控";
 L["DEBUG_CPUUSAGE"] = "CPU性能分析";
-L["DEBUG_CPUUSAGETIPS"] = "開啟CPU使用率監控，請只在需要時候開啟，此功能需要消耗一些系統性能\n"..string.format(ERR_USE_LOCKED_WITH_ITEM_S,RELOADUI);
+L["DEBUG_CPUUSAGETIPS"] = "開啟CPU使用率監控\n請只在需要時候開啟，此功能需要消耗一些系統性能\n"..string.format(ERR_USE_LOCKED_WITH_ITEM_S,RELOADUI);
 L["DEBUG_COLLECT"] = "回收";
 L["DEBUG_COLLECTTIPS"] = "|cff00FFff此功能會導致挿件所有執行都停止，直到收回過程完成\n挿件過多情况下可能超過幾秒，這會令遊戲暫時凍結（卡住）\n除開挿件開發調試，大多數情况不需要手動調用，LUA自動記憶體管理機制會定期運作|r";
 L["DEBUG_ADDNUM"] = "個挿件";
@@ -84,10 +70,7 @@ L["CONFIG_DERIVERL"] = "導入並重載";
 L["CONFIG_DERIVEERROR"] = "導入失敗，無法識別的字串";
 --常用
 L["COMMON_TABNAME"] = "常規";
-L["COMMON_TABNAME1"] = "商業";
 L["COMMON_TABNAME2"] = "交互";
-L["COMMON_TABNAME3"] = "智能跟隨";
-L["COMMON_TABNAME4"] = "其他";
 --Chat
 L["CHAT_TABNAME"] = "聊天";
 L["CHAT_FILTERS"] = "過濾";
@@ -147,34 +130,26 @@ L["CHAT_TABCKBTIPS"] ="勾選以後TAB鍵將可以切換到【%s】頻道"
 L["CHAT_TABNAME3"] = "頻道粘連";
 L["CHAT_TABNAME3TIPS"] ="粘連回車|cff00ff00(取消粘連回車的頻道，發言後回車不會返回此頻道)|r";
 L["CHAT_ZLCKBTIPS"] ="勾選粘連【%s】頻道到回車，取消勾選解除粘連";
-L["CHAT_TABNAME4"] = "聊天佈局";
-L["CHAT_BIANJU"]= "移除聊天窗口的邊距"
-L["CHAT_BIANJUTIPS"]= "移除聊天窗口系統的默認邊距，使之可以移動到屏幕最邊緣";
-L["CHAT_ZHUCHATF"]= "主聊天窗口";
-L["CHAT_ZHUCHATFW"]= L["OPTUI_SET"].."寬度"
-L["CHAT_ZHUCHATFWTIPS"]= L["OPTUI_SET"]..L["CHAT_ZHUCHATF"].."的寬度";
-L["CHAT_ZHUCHATFH"]= L["OPTUI_SET"].."高度"
-L["CHAT_ZHUCHATFHTIPS"]= L["OPTUI_SET"]..L["CHAT_ZHUCHATF"].."的高度";
-L["CHAT_ZHUCHATFXY"]= L["OPTUI_SET"].."坐標位置"
-L["CHAT_ZHUCHATFXYTIPS"]= L["OPTUI_SET"]..L["CHAT_ZHUCHATF"].."的坐標位置";
-L["CHAT_LOOTFADD"]= "创建独立拾取窗口";
-L["CHAT_LOOTFYES"]= "已创建独立拾取窗口";
-L["CHAT_LOOTFNAME"]="拾取/其他";
-L["CHAT_LOOTFW"]= L["OPTUI_SET"].."寬度"
-L["CHAT_LOOTFWTIPS"]= L["OPTUI_SET"]..L["CHAT_LOOTFNAME"].."的寬度";
-L["CHAT_LOOTFH"]= L["OPTUI_SET"].."高度"
-L["CHAT_LOOTFHTIPS"]= L["OPTUI_SET"]..L["CHAT_LOOTFNAME"].."的高度";
-L["CHAT_LOOTFXY"]= L["OPTUI_SET"].."坐標位置"
-L["CHAT_LOOTFXYTIPS"]= L["OPTUI_SET"]..L["CHAT_LOOTFNAME"].."的坐標位置";
-L["CHAT_LOOTFTIPS"]="\124cffffff00創建一個顯示拾取物品信息的單獨聊天窗口\124r\n\124cff00ff00下方選項在創建獨立拾取窗口後方可使用\n不需要獨立拾取窗口時請手動移除\124r";
-L["CHAT_LOOTFNRSET"]="重設窗口顯示內容";
-L["CHAT_LOOTFFENLI"]="分離顯示拾取窗口";
-L["CHAT_LOOTFNRSETTIPS"]="啟用獨立拾取窗口後，建議打開此選項。\n重新設置窗口顯示內容，綜合頻道將取消經驗榮譽以及拾取信息的顯示，拾取窗口添加拾取/經驗/榮譽等的顯示！\n修改"..COMBAT_LOG.."為"..COMBAT_LABEL;
-L["CHAT_LOOTFADDERR1"]="創建失敗，當前屏幕分辨率過小";
-L["CHAT_LOOTFADDERR2"]="創建失敗，系統允許最大聊天窗口數：10，當前："..FCF_GetNumActiveChatFrames();
 L["CHAT_RECHATBUT"]= "重置聊天"..L["OPTUI_SET"];
 L["CHAT_TABNAME5"] = "頻道順序";
 L["CHAT_TABNAME5_XULIE"] = "序列";
+L["CHAT_TABNAME4"] = "佈局";
+L["CHAT_ZHUCHATFW"]= "寬度"
+L["CHAT_ZHUCHATFH"]= "高度"
+L["CHAT_MARGIN"]= "修改系統聊天視窗的邊距限制"
+L["CHAT_MARGINTIPS"]= "修改系統聊天視窗的邊距限制，使之突破移動邊距限制";
+L["CHAT_ZHUNAME"]= "主聊天視窗";
+L["CHAT_ZHUCHATF"]= L["OPTUI_SET"]..L["CHAT_ZHUNAME"]..L["LIB_POINT"]..L["LIB_SIZE"].."\124cff00ff00(邊距受系統限制，可在上方解除系統限制)\124r";
+L["CHAT_LOOTNAME"]= "右邊獨立聊天視窗";
+L["CHAT_LOOTCHATF"]= L["OPTUI_SET"]..L["CHAT_LOOTNAME"]..L["LIB_POINT"]..L["LIB_SIZE"];
+L["CHAT_LOOTFADD"]= "創建"..L["CHAT_LOOTNAME"];
+L["CHAT_LOOTFYES"]= "已創建"..L["CHAT_LOOTNAME"];
+L["CHAT_LOOTFNAME"]="拾取/其他";
+L["CHAT_LOOTFTIPS"]="\124cffffff00創建一個顯示拾取物品信息的單獨聊天窗口\124r\n\124cff00ff00下方選項在創建獨立拾取窗口後方可使用\n不需要獨立拾取窗口時請手動移除\124r";
+L["CHAT_LOOTFNRSET"]="重設窗口顯示內容";
+L["CHAT_LOOTFNRSETTIPS"]="啟用獨立拾取窗口後，建議打開此選項。\n重新設置窗口顯示內容，綜合頻道將取消經驗榮譽以及拾取信息的顯示，拾取窗口添加拾取/經驗/榮譽等的顯示！\n修改"..COMBAT_LOG.."為"..COMBAT_LABEL;
+L["CHAT_LOOTFADDERR1"]="創建失敗，當前屏幕分辨率過小";
+L["CHAT_LOOTFADDERR2"]="創建失敗，系統允許最大聊天窗口數：10，當前："..FCF_GetNumActiveChatFrames();
 --商業
 L["BUSINESS_TABNAME"] = "商業";
 --动作条
@@ -189,7 +164,7 @@ L["BAGBANK_TABNAME"] = "背包/銀行";
 --界面优化
 L["FRAMEP_TABNAME"] = "界面優化";
 L["FRAMEP_TABNAME1"] = "暴雪界面";
-L["FRAMEP_TABNAME2"] = "角色信息";
+L["FRAMEP_TABNAME2"] = "介面擴展";
 --鼠标提示
 L["TOOLTIP_TABNAME"] = MOUSE_LABEL..L["LIB_TIPS"];
 L["TOOLTIP_TABNAME1"] = L["LIB_PLUS"]..INFO;
@@ -204,6 +179,7 @@ L["COMBAT_TABNAME"] = "戰鬥輔助";
 L["COMBAT_TABNAME1"] = "標記按鈕";
 L["COMBAT_TABNAME2"] = "戰鬥時間";
 L["COMBAT_TABNAME3"] = "個人資源條";
+L["COMBAT_TABNAME4"] = "新手保姆";
 --地图
 L["MAP_TABNAME"] = "地圖";
 L["MAP_TABNAME1"] = "小地圖";
@@ -231,6 +207,7 @@ L["MAP_WORDMIWU"] = "去除戰爭迷霧";
 L["MAP_WORDMIWUTIPS"] = "去除世界地圖的戰爭迷霧";
 --Cvar
 L["CVAR_TABNAME"] = "遊戲設定(CVar)";
+L["CVAR_TABNAME0"] = "易用性";
 L["CVAR_TABNAME1"] = L["COMMON_TABNAME"];
 L["CVAR_TABNAME2"] = "姓名版";
 L["CVAR_TABNAME3"] = "自身高亮";
@@ -238,6 +215,7 @@ L["CVAR_TABNAME4"] = "高級";
 --Invite
 L["TARDIS_TABNAME"] = "時空之門";
 L["TARDIS_CHEDUI"] = "車隊";
+L["TARDIS_CHETOU"] = "車頭";
 L["TARDIS_HOUCHE"] = "候車室";
 L["TARDIS_HOUCHE_1"] = "乘客";
 L["TARDIS_PLANE"] = "位麵";

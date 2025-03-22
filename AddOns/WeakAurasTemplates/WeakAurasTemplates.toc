@@ -1,10 +1,12 @@
-## Interface: 30400
+## Interface: 30404
 ## Author: The WeakAuras Team
 ## Version: 5.12.9
 
 ## Title: WeakAuras Templates
 ## Notes: Templates for WeakAuras
 ## Title-zhCN: |cFFFFE00A<|r|cFFFFF468功能|r|cFFFFE00A>|r |cFFFFFFFF辅助增强|r |cFF69CCF0模板|r
+
+## IconTexture: Interface\AddOns\WeakAuras\Media\Textures\icon.blp
 
 ## Dependencies: WeakAuras, WeakAurasOptions
 ## LoadOnDemand: 1

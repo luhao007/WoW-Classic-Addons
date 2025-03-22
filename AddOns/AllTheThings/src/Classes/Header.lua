@@ -22,6 +22,7 @@ local HeaderTypeAbbreviations = {
 	a = "achievementID",
 	c = "classID",
 	cu = "currencyID",
+	e = "explorationID",
 	fa = "factionID",
 	m = "mapID",
 	i = "itemID",

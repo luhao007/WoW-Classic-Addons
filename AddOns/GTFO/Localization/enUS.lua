@@ -115,4 +115,12 @@ GTFOLocal =
 	UI_IgnoreSpell_InvalidSpellId = "The spell ID |cFF44FFFF%s|r is invalid.";
 	UI_IgnoreSpell_Add = "You are now ignoring Spell #%s: %s";
 	UI_IgnoreSpell_Remove = "You are no longer ignoring Spell #%s: %s";
+	-- 5.16
+	BrannMode_On = "Brann only alerts on",
+	BrannMode_OnWithDefault = "Brann & standard alerts",
+	BrannMode_Off = "Brann alerts off",
+	UI_BrannMode = "Brann Alerts",
+	UI_BrannModeDescription = "This enables Brann Bronzebeard to yell at you.",
+	UI_AprilFoolsDay = "April Fools Day Joke",
+	UI_AprilFoolsDayDescription = "Uncheck this to permanently turn off the fun April Fools Day joke. :(\n\nIf you change your mind, you can type |cFFFFFFFF/GTFO Brann|r to bring him back.",
 }

@@ -32,7 +32,6 @@ local mythicDungeonCharts = Details222.MythicPlus.Charts.Listener
 
 --debug
 _G.DetailsMythicDungeonChartHandler = mythicDungeonCharts
---DetailsMythicDungeonChartHandler.ChartTable.Players["playername"].ChartData = {max_value = 0}
 
 function mythicDungeonCharts:Debug(...)
 	if (debugmode or verbosemode) then
@@ -171,8 +170,8 @@ function mythicDungeonCharts:OnBossDefeated()
 	if (mythicLevel and mythicLevel > 0) then
 		if (mythicDungeonCharts.ChartTable and mythicDungeonCharts.ChartTable.Running and bossInfo) then
 
-			local copiedBossInfo = Details:GetFramework().table.copy({}, bossInfo)
-			table.insert(mythicDungeonCharts.ChartTable.BossDefeated, {time() - mythicDungeonCharts.ChartTable.StartTime, copiedBossInfo, currentCombat:GetCombatTime()})
+			local tCopiedBossInfo = Details:GetFramework().table.copy({}, bossInfo)
+			table.insert(mythicDungeonCharts.ChartTable.BossDefeated, {time() - mythicDungeonCharts.ChartTable.StartTime, tCopiedBossInfo, currentCombat:GetCombatTime()})
 			mythicDungeonCharts:Debug("Boss defeated, time saved", currentCombat:GetCombatTime())
 		else
 			if (mythicDungeonCharts.ChartTable and mythicDungeonCharts.ChartTable.EndTime ~= -1) then
@@ -221,7 +220,7 @@ function mythicDungeonCharts:OnStartMythicDungeon()
 	mythicDungeonCharts.ChartTable.Ticker = C_Timer.NewTicker(1, tickerCallback)
 
 	--save the chart for development
-	if (debugmode) then
+	if (Details222.Debug.MythicPlusChartWindowDebug) then
 		Details.mythic_plus.last_mythicrun_chart = mythicDungeonCharts.ChartTable
 	end
 

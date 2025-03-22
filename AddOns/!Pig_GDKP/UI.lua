@@ -183,7 +183,8 @@ function GDKPInfo.ADD_UI()
 		self.GNNn=GNNn
 		if GNNn=="ChengjiaoRen" then
 			local biajidata = PIGA["GDKP"]["ItemList"][id]
-			self.t:SetText("\124cff00FF55选择\124r "..biajidata[2].." \124cff00FF55成交人\124r")
+			local itemName,itemLink,itemQuality,itemLevel,itemMinLevel,itemType,itemSubType,itemStackCount,itemEquipLoc,itemTexture = GetItemInfo(Fun.HY_ItemLinkJJ(biajidata[2]))
+			self.t:SetText("\124cff00FF55选择\124r |T"..itemTexture..":0:0|t"..itemLink.." \124cff00FF55成交人\124r")
 
 		elseif GNNn=="JiangliRen" then
 			local biajidata = PIGA["GDKP"]["jiangli"][id]
@@ -266,7 +267,7 @@ function GDKPInfo.ADD_UI()
 			RaidR:GetRiadPlayerInfo()
 			RaidR:RaidInfoShow()
 			RaidR.PlayerList:PlayerList_UP()
-			PIGSendChatRaidParty("人员信息已记录,退组/离线/不影响分G，需邮寄工资请"..L["CHAT_WHISPER"].."【"..Pig_OptionsUI.Name.."】:邮寄工资",UnitIsGroupLeader("player"))
+			PIGSendChatRaidParty("人员信息已记录,退组/离线/不影响分G，需邮寄工资请"..L["CHAT_WHISPER"].."【"..Pig_OptionsUI.Name.."】:邮寄工资",UnitIsGroupLeader("player"),true)
 		end,
 		timeout = 0,
 		whileDead = true,

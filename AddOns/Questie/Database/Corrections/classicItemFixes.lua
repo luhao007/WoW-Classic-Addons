@@ -99,6 +99,9 @@ function QuestieItemFixes:Load()
         [2856] = {
             [itemKeys.npcDrops] = {426,430,446,580}, -- Remove rare mob #903
         },
+        [2859] = { -- Vile Fin Scale
+            [itemKeys.npcDrops] = {1543,1544,1545},
+        },
         [2886] = {
             [itemKeys.npcDrops] = {1125,1126,1127,1689},
         },
@@ -724,6 +727,9 @@ function QuestieItemFixes:Load()
             [itemKeys.npcDrops] = {},
             [itemKeys.objectDrops] = {},
         },
+        [11078] = {
+            [itemKeys.class] = 12,
+        },
         [11113] = {
             [itemKeys.objectDrops] = {161526},
         },
@@ -1290,6 +1296,9 @@ function QuestieItemFixes:Load()
             [itemKeys.relatedQuests] = {8867},
             [itemKeys.npcDrops] = {15898},
             [itemKeys.objectDrops] = {},
+        },
+        [21711] = {
+            [itemKeys.class] = itemClasses.QUEST,
         },
         [22094] = {
             [itemKeys.npcDrops] = {4364,4366,4368,4370,4371,16072},

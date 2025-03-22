@@ -1,4 +1,4 @@
-## Interface: 30400
+## Interface: 30404
 ## Author: TradeSkillMaster Team
 ## Version: v4.13.21
 

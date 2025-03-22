@@ -65,6 +65,9 @@ local paichulist = {
 	"QueueStatusButton",
 	"MinimapPanel",
 	"RecycleBinToggleButton",
+	"BFGPSButton",
+	"LibDBIcon10_HandyNotes_NPCs",
+	--"EA_MinimapOption",--EventAlertMod
 	--"LibDBIcon10_DetailsStreamer",
 }
 for i=1,10 do

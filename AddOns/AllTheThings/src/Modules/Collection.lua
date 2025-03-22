@@ -368,4 +368,11 @@ app.AddEventHandler("OnSavedVariablesAvailable", function(currentCharacter, acco
 		-- account-wide collected
 		if IsAccountCached(CACHE, id) then return 1; end
 	end
+	app.WipeCached = function(CACHE, accountWide)
+		if accountWide then
+			accountWideData[CACHE] = {}
+		else
+			currentCharacter[CACHE]= {}
+		end
+	end
 end)

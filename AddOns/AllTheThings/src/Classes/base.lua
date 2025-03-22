@@ -461,10 +461,10 @@ end
 local function GenerateVariantClasses(class)
 	local fields = class.__class
 	local variants = fields.variants
-	if not variants then return end
+	if not variants or #variants == 0 then return end
 	local subbase = function(t, key) return class.__index; end
 	local classname = fields.__type()
-	local variantClone
+	local variantClone, variantName
 	for i,variant in ipairs(variants) do
 		if not variant.__name then
 			ClassError("Missing Class Variant __name!",i,classname)
@@ -474,7 +474,9 @@ local function GenerateVariantClasses(class)
 		end
 		-- raw variant table may be used by other classes, so need to copy it for this specific subclass
 		variantClone = CloneDictionary(fields, CloneDictionary(variant, {base=subbase}))
-		variants[i] = CreateClassMeta(variantClone, classname..variant.__name);
+		variantName = classname..variant.__name
+		variants[i] = CreateClassMeta(variantClone, variantName);
+		if variant.__onclassgenerated then variant.__onclassgenerated(variantName) end
 	end
 end
 local function AppendVariantConditionals(conditionals, class)
@@ -680,11 +682,15 @@ end
 app.ExtendClass = function(baseClassName, className, classKey, fields, ...)
 	local baseClass = classDefinitions[baseClassName];
 	if baseClass then
-		fields = CloneDictionary(baseClass, fields)
-		fields.__type = nil;
-		fields.key = nil;
-		fields.conditionals = nil;
-		fields.simplemeta = nil;
+		-- clone the base fields and make sure to remove fields we don't want to inherit in the extended classes
+		local basefields = CloneDictionary(baseClass)
+		basefields.__type = nil;
+		basefields.variants = nil
+		basefields.key = nil;
+		basefields.conditionals = nil;
+		basefields.simplemeta = nil;
+		-- then clone those into the extended class
+		fields = CloneDictionary(basefields, fields)
 	else
 		ClassError("Could not find specified base class:", baseClassName);
 	end
@@ -834,6 +840,7 @@ end
 -- i.e. Create a data group which contains no information but will attempt to populate itself when [loadField] is referenced
 app.DelayLoadedObject = function(objFunc, loadField, overrides, ...)
 	local o;
+	local def = {}
 	local params = {...};
 	local loader = {
 		__index = function(t, key)
@@ -872,6 +879,8 @@ app.DelayLoadedObject = function(objFunc, loadField, overrides, ...)
 				-- app.PrintDebug("dlo.visible",unpack(params))
 				return true;
 			end
+			-- return any default value
+			return def[key]
 		end,
 		-- transfer field sets to the underlying object if the field does not have an override for the object
 		__newindex = function(t, key, val)
@@ -882,6 +891,9 @@ app.DelayLoadedObject = function(objFunc, loadField, overrides, ...)
 				end
 			elseif key == "parent" then
 				rawset(t, key, val);
+			else
+				-- allow direct assignment prior to o creation to the set of default fields
+				def[key] = val
 			end
 		end,
 	};

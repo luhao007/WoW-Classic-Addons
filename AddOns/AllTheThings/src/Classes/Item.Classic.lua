@@ -18,6 +18,7 @@ local AssignChildren, GetRelativeValue, IsQuestFlaggedCompletedForObject, NestOb
 	= app.AssignChildren, app.GetRelativeValue, app.IsQuestFlaggedCompletedForObject, app.NestObject, app.SearchForField, app.SearchForFieldContainer;
 
 local BestItemLinkPerItemID = setmetatable({}, { __index = function(t, id)
+	if not id then return end
 	local link = select(2, GetItemInfo(id));
 	if link then
 		rawset(t, id, link);

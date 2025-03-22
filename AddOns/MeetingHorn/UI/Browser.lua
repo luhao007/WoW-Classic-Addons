@@ -27,6 +27,10 @@ local medalTextures = {
 local Browser = ns.Addon:NewClass('UI.Browser', 'Frame')
 
 function Browser:Constructor()
+    self.MySearchQuicks = {}
+    self.SearchQueueMaxSize = 3 -- 队列的最大长度
+    self.index = 1
+
     self.Empty.Text:SetText(L['There are no activity, please try searching.'])
 
     self.Header1:SetText(L['Activity'])
@@ -49,7 +53,7 @@ function Browser:Constructor()
     -- self.CreateButton:SetText(L['Create Activity'])
     self.ActivityLabel:SetText(L['Activity'])
     self.ModeLabel:SetText(L['Activity Mode'])
-    self.SearchLabel:SetText(SEARCH .. L['(Include channel message)'])
+    self.SearchLabel:SetText(SEARCH)
     self.ProgressBar.Loading:SetText(L['Receiving active data, please wait patiently'])
     self.ProgressBar:SetMinMaxValues(0, 1)
 
@@ -75,77 +79,86 @@ function Browser:Constructor()
         return self:Search()
     end
 
-    local function QuickButtonOnClick(button)
-        if button.id then
-            self.Activity:SetValue(button.id)
-        elseif button.search then
-            self.Input:SetText(button.search)
-        end
-    end
-
-    local index = 1
-    local function AllocQuick()
-        local button = self.quicks[index]
-        index = index + 1
-        return button
-    end
-
-    local function SetupQuickButton(search)
-        local button = AllocQuick()
-        local id
-        if type(search) == 'number' then
-            local mapName = C_Map.GetAreaInfo(search)
-            id = ns.NameToId(mapName) or ns.MatchId(mapName)
-
-            local data = ns.GetActivityData(id)
-            if data then
-                search = data.shortName or data.name
-                search = search:gsub('（.+）', '')
-            end
-        end
-
-        button:SetText(search)
-        button:SetWidth(button:GetTextWidth())
-        button:SetScript('OnClick', QuickButtonOnClick)
-        button:Show()
-        button.id = id
-        button.search = search
-    end
-
     --[=[@classic@
-    SetupQuickButton(2717)
-    SetupQuickButton(1977)
-    SetupQuickButton(2677)
-    SetupQuickButton(3429)
-    SetupQuickButton(3428)
-    SetupQuickButton(3456)
+    self:SetupQuickButton(2717)
+    self:SetupQuickButton(1977)
+    self:SetupQuickButton(2677)
+    self:SetupQuickButton(3429)
+    self:SetupQuickButton(3428)
+    self:SetupQuickButton(3456)
     --@end-classic@]=]
 
     --[==[@bcc@
-    SetupQuickButton(4075)
-    SetupQuickButton(3959)
-    SetupQuickButton(3805)
-    SetupQuickButton(3606)
-    SetupQuickButton(3845)
-    SetupQuickButton(3607)
-    SetupQuickButton(3457)
-    SetupQuickButton(3923)
-    SetupQuickButton(3836)
-    SetupQuickButton('5H')
+   self:SetupQuickButton(4075)
+   self:SetupQuickButton(3959)
+   self:SetupQuickButton(3805)
+   self:SetupQuickButton(3606)
+   self:SetupQuickButton(3845)
+   self:SetupQuickButton(3607)
+   self:SetupQuickButton(3457)
+   self:SetupQuickButton(3923)
+   self:SetupQuickButton(3836)
+   self:SetupQuickButton('5H')
     --@end-bcc@]==]
 
     -- @lkc@
-    SetupQuickButton('5H')
-    SetupQuickButton('NAXX')
-    SetupQuickButton('ULD')
-    SetupQuickButton('TOC')
-    SetupQuickButton('ICC')
-    SetupQuickButton('OS')
-    SetupQuickButton('EOE')
-    SetupQuickButton('宝库')
-    SetupQuickButton('黑龙')
-    SetupQuickButton('红玉')
+   self:SetupQuickButton('TOC')
+   self:SetupQuickButton('HTOC')
+   self:SetupQuickButton('ULD')
+   self:SetupQuickButton('ICC')
+   self:SetupQuickButton('奥杜尔')
+   self:SetupQuickButton('宝库')
+   self:SetupQuickButton('日常')
+   self:SetupQuickButton('周常')
+   self:SetupQuickButton('黑龙')
     -- @end-lkc@
+
+    local  button = CreateFrame("Button", "Frame", self, "UIPanelButtonTemplate");
+    button:SetSize(80, 25)
+    button:SetPoint("BOTTOMRIGHT", self.Input, "TOPRIGHT", 0, -0);
+    button:SetText("保存搜索");
+    button:Show()
+    button:SetScript("OnClick", function()
+        local search = self.Input:GetText()
+        if not search or search == "" or search == nil then
+            return
+        end
+        self:AddToQueue(search)
+        ns.LogStatistics:InsertLog({ time(), 10, 2 })
+    end);
+
+    self.QuickSearchText = self:CreateFontString(nil, "ARTWORK", "GameFontHighlightLeft")
+    self.QuickSearchText:SetPoint("LEFT", self.Input, "RIGHT", 0, 5)
+    self.QuickSearchText:SetText('快捷搜索：')
+
+    self.MySearchText = self:CreateFontString(nil, "ARTWORK", "GameFontHighlightLeft")
+    self.MySearchText:SetPoint("BOTTOM", self.QuickSearchText, "TOP", 0, 8)
+    self.MySearchText:SetText('我的搜索：')
+
+    self.Quick11 = CreateFrame("Button", nil, self, "MeetingHornQuickTemplate");
+    self.Quick11:SetSize(35, 22)
+    self.Quick11:SetPoint("BOTTOMLEFT", self.quicks[1], "TOPLEFT", 0, 0);
+    self.Quick11:SetText("战场")
+    self.MySearchQuicks[1] = self.Quick11
+
+    self.Quick12 = CreateFrame("Button", nil, self, "MeetingHornQuickTemplate");
+    self.Quick12:SetSize(35, 22)
+    self.Quick12:SetPoint("LEFT", self.Quick11, "RIGHT", 5, 0);
+    self.Quick12:SetText("JJC")
+    self.MySearchQuicks[2] = self.Quick12
+
+    self.Quick13 = CreateFrame("Button", nil, self, "MeetingHornQuickTemplate");
+    self.Quick13:SetSize(35, 22)
+    self.Quick13:SetPoint("LEFT", self.Quick12, "RIGHT", 5, 0);
+    self.Quick13:SetText("附魔")
+    self.MySearchQuicks[3] = self.Quick13
+
+    local reversedQueue = self:GetQueueContents()
+    if #reversedQueue > 0 then
+        for i = 1, #reversedQueue do
+            self:AddToQueue(reversedQueue[i])
+        end
+    end
 
     self.Activity:SetMenuTable(ns.ACTIVITY_FILTER_MENU)
     self.Activity:SetDefaultText(ALL)
@@ -258,6 +271,90 @@ function Browser:Constructor()
     self.Header5:SetWidth(290)
     --@end-classic@]=]
     self.VoiceActivity:Hide()
+end
+
+function Browser:QuickButtonOnClick(button)
+    if button.id then
+        self.Activity:SetValue(button.id)
+    elseif button.search then
+        self.Input:SetText(button.search)
+    end
+end
+
+function Browser:AllocQuick()
+    local button = self.quicks[self.index]
+    self.index = self.index + 1
+    return button
+end
+
+function Browser:SetupQuickButton(search, index)
+    local button
+    if index then
+        button = self.MySearchQuicks[index]
+    else
+        button = self:AllocQuick()
+    end
+    local id
+    if type(search) == 'number' then
+        local mapName = C_Map.GetAreaInfo(search)
+        id = ns.NameToId(mapName) or ns.MatchId(mapName)
+
+        local data = ns.GetActivityData(id)
+        if data then
+            search = data.shortName or data.name
+            search = search:gsub('（.+）', '')
+        end
+    end
+
+    button:SetText(search)
+    button:SetWidth(button:GetTextWidth())
+    button:SetScript('OnClick', function()
+        self:QuickButtonOnClick(button)
+    end)
+    button:Show()
+    button.id = id
+    button.search = search
+end
+
+function Browser:AddToQueue(search)
+    if not ns.Addon.db.realm.SearchQueue or ns.Addon.db.realm.SearchQueue == nil then
+        ns.Addon.db.realm.SearchQueue = {}
+    end
+    if #ns.Addon.db.realm.SearchQueue >= self.SearchQueueMaxSize then
+        table.remove(ns.Addon.db.realm.SearchQueue, 1)
+    end
+    table.insert(ns.Addon.db.realm.SearchQueue, search)
+
+        -- 更新按钮显示
+    for i = 1, self.SearchQueueMaxSize do
+        if ns.Addon.db.realm.SearchQueue[self.SearchQueueMaxSize - i + 1] then
+            self:SetupQuickButton(ns.Addon.db.realm.SearchQueue[self.SearchQueueMaxSize - i + 1], i)
+        else
+            -- 如果队列中该位置为空，隐藏按钮
+            local button = self.MySearchQuicks[self.SearchQueueMaxSize - i + 1]
+            if button then
+                button:Hide()
+            end
+        end
+    end
+end
+
+local function deepCopy(original)
+    if type(original) ~= 'table' then
+        return original
+    end
+    local copy = {}
+    for key, value in pairs(original) do
+        copy[deepCopy(key)] = deepCopy(value)
+    end
+    return copy
+end
+
+function Browser:GetQueueContents()
+    if not ns.Addon.db.realm.SearchQueue or ns.Addon.db.realm.SearchQueue == nil then
+        return {}
+    end
+    return deepCopy(ns.Addon.db.realm.SearchQueue)
 end
 
 function Browser:OnItemFormatting(button, item, isVoice)

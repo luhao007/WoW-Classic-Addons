@@ -196,6 +196,7 @@ _.HeaderConstants = {
 	TREASURES = -1000038,
 	UI_BOUNTY_WINDOW = -1000380,
 	UNIQUE_APPEARANCE = -1000163,
+	UPGRADE = -1001070,
 	VENDORS = -1000039,
 	WEAPONS = -1000073,
 	WORLD_BOSSES = -1000042,
@@ -305,8 +306,10 @@ localize(L.HEADER_NAMES, {
 	[-1000237] = "The Scourge Invasion",
 	[-1000243] = "BlizzCon",
 	[-1000244] = "Collector's Edition",
+	[-1000245] = "Heroic Edition",
 	[-1000263] = "iCoke",
 	[-1000264] =  AUCTION_CATEGORY_MISCELLANEOUS,
+	[-1000265] = SCROLL_OF_RESURRECTION,
 	[-1000267] = BATTLE_PET_SOURCE_9,
 	[-1000273] = "Season of Discovery",
 	[-1000274] = "Comprehension",
@@ -322,7 +325,6 @@ localize(L.HEADER_NAMES, {
 	[-1000377] = "Wild Polymorph",
 	[-1000378] = "Soul Brokers",
 	[-1000380] = "Bounty",
-	[-1000872] = WOWLABS_GAMEMODE_HEADER,
 	[-1000904] = "Source IDs",
 	[-1000968] = "The Blood Moon",
 	[-1000969] = "Nightmare Incursions",
@@ -342,6 +344,10 @@ localize(L.HEADER_NAMES, {
 	[-1001035] = "Seasonal Fish: Summer Bass",
 	[-1001036] = "Seasonal Fish: Winter Squid",
 	[-1001058] = "Nightmare Grove",
+	[-1001070] = UPGRADE,
+	[-1001084] = "Apprentice",
+	[-1001085] = "Opera of Malediction",
+	[-1001086] = "Tier-Set Shoulder Enchants",
 });
 localize(L.HEADER_DESCRIPTIONS, {
 	[-1000015] = "Warlocks can teach their demons new tricks. Some of the higher level grimoires can only be purchased from the Demon Trainer in your faction's capital cities.",
@@ -366,13 +372,13 @@ localize(L.HEADER_DESCRIPTIONS, {
 	[-1000237] = "The Scourge Invasion was a world event in Patch 1.11 and again during the Wrath of the Lich King Pre-Patch during 3.0.1 that heralded the opening of Naxxramas, the citadel of the dreaded Kel'Thuzad.\n\nSeveral regions of Azeroth came under attack by Scourge forces. Members of the Argent Dawn organized a worldwide counter to the Scourge invasion, keeping an eye out for any necropolis sightings and passing on their information to all adventurers willing to aid them in their struggle.\n\nWith each victory against the Scourge, the defense grows stronger. As more and more invasion attempts are beaten back by the defenders, the Argent Dawn will be able to bestow increasingly more powerful blessings upon those fighting the invaders. If the mortal races focus on clearing the Scourge camps all over the world that have sprung up beneath each necropolis, perhaps the invasion can effectively be halted or even repelled. Those who wish to take up arms against the undead invaders should speak with a representative of the Argent Dawn to learn what regions need help and how the defense is holding up.",
 	[-1000263] = "These were only available through the 2006 iCoke Promotion (China Only)",
 	[-1000264] = "This section is for miscellaneous promotions that took place in the real world or something to do with account management.",
+	[-1000265] = "The following item sets were implemented as boosted character rewards for recipients of the Scroll of Resurrection.\n\nThey were later added to vendors in Mount Hyjal and Vash'jir once the Scroll of Resurrection Service was retired.",
 	[-1000273] = "This Season brings an initial level cap of 25 and a new level-25 endgame, including a 10-player Blackfathom Deeps raid with new mechanics, new and reimagined bosses to challenge player tactics and strategies, and fresh rewards.",
 	[-1000278] = "Rune Engraving is a new class system for Season of Discovery. It allows each class to tailor their gameplay experience by unlocking new unique abilities!",
 	[-1000279] = "Waylaid Supplies quest items drop from mobs of level 6 and above all over Azeroth. These quests request delivery of the Waylaid Supplies to an organization representative in return for a few silver, experience, and Reputation. Of course, there are items missing from the supply shipment, and you can supplement it for greater reputation rewards.",
 	[-1000376] = "Only the person who gets the final hit on the drunk will get credit, regardless of who tapped the target first. There is no group credit for this.",
 	[-1000377] = "Cast Polymorph on critters afflicted by Wild Polymorph to turn them back into apprentices. Each one will give you a note. Collect 6 notes to learn the rune.",
 	[-1000380] = "This list contains Unobtainable items that the ATT Discord has reported as bugs that Blizzard has yet to fix.\n\nNOTE: All filters are ignored within this list for visibility. Only items removed from the game due to negligence rather than a gigantic fire breathing dragon are present on this list.\n\nTo Blizzard Devs: Please fix the items and encounters listed below.",
-	[-1000872] = "Get swept away in the Plunderstorm— a fun, new, limited-time, pirate-themed event of prodigious proportions lasting the next several weeks. Scour the map and try to be the last pirate standing while dashing across the Arathi Highlands to find abilities, upgrades, and loot to plunder just to survive!\n\nTo Play: Login to Retail WoW and select 'Plunderstorm' from the Game Mode on the top left of your Character Select screen.",
 	[-1000968] = "This is a free-for-all PvP event that takes place in Stranglethorn Vale for 30 minutes once every 3 hours starting at midnight server time.\n\nKill players to receive the stacking buff Blood for the Blood Loa. This stacks 255 times.\nYou receive 5 stacks of blood per kill.\nYou can lose blood from dying.\nTravel to blood altars |cffffffff(red flag on map)|r to exchange Blood for the Blood Loa stacks for Copper Blood Coin, Silver Blood Coin, Gold Blood Coin. You simply walk up to the altar and the coins will automatically appear in your bags.\n\nYou can opt out of the event by speaking to a Zandalarian Emissary.",
 	[-1000969] = "This event focuses on the portals found across Azeroth, typically hosting an Emerald Dragon World Boss. These new events are PvE focused, asking players to complete quests around and inside the portals.\n\nThe event is intended to provide both endgame content and variation, with a new faction, the Emerald Wardens as well as new items and sets, but also to supplement the leveling experience. As early as level 25, players will be able to start doing Nightmare Incursions for experience and reputation.\n\nIncursions are also intended to be done in a group, with quests being shareable to up to 4 other players. Some quests will also require killing boss-type enemies, or require you to utilize gathering professions. This doesn't mean that you can't do them solo, it is just unlikely to be very efficient.",
 	[-1000980] = "You need to be debuffed from the Nightmare Amalgam to proc this quest. (do not engage it, just run away)",
@@ -380,6 +386,8 @@ localize(L.HEADER_DESCRIPTIONS, {
 	[-1000985] = "After receiving your squire, summon him forth using the Relic and then level him up by getting into combat and keeping him alive.",
 	[-1000997] = "This event occurs every 2 hours from Midnight and lasts 60 minutes. While this event is active, Daily Quests will be available in Searing Gorge for the Thorium Brotherhood. Traditionally Thorium Brotherhood can be quite a grind to achieve reputation with so this addition of a Daily Quest Hub will be very welcome.\nWhen the event is active, new NPCs will spawn and some environmental changes will occur to the outside area of Searing Gorge.",
 	[-1001058] = "Nightmare Grove can be found near the portals to the Emerald Dream.",
+	[-1001084] = "Only 1 of 3 Apprentices can be chosen to challenge.",
+	[-1001085] = "1 of 3 Operas will be randomly selected every day.",
 });
 localize(L.HEADER_LORE, {
 	[-1000048] = "One of these dragons will spawn randomly at the associated coordinates across Azeroth.",
@@ -488,8 +496,10 @@ localize(L.HEADER_ICONS, {
 	[-1000237] = 135228,
 	[-1000243] = _.asset("promotion_blizzcon"),
 	[-1000244] = _.asset("promotion_collector"),
+	[-1000245] = _.asset("weapon_type_heirloom"),
 	[-1000263] = 132797,
 	[-1000264] = 135999,
+	[-1000265] = _.asset("promotion_scroll_of_rez"),
 	[-1000267] = 134493,
 	[-1000273] = 134269,
 	[-1000274] = 135933,
@@ -505,7 +515,6 @@ localize(L.HEADER_ICONS, {
 	[-1000377] = 136071,
 	[-1000378] = 136169,
 	[-1000380] = 236188,
-	[-1000872] = 133168,
 	[-1000904] = 134400,
 	[-1000968] = 237513,
 	[-1000969] = 134108,
@@ -524,6 +533,7 @@ localize(L.HEADER_ICONS, {
 	[-1000997] = 237588,
 	[-1001035] = 133889,
 	[-1001036] = 133899,
+	[-1001070] = _.asset("interface_upgrade"),
 });
 localize(L.HEADER_EVENTS, {
 	[-1000200] = 201,
@@ -537,7 +547,6 @@ localize(L.HEADER_EVENTS, {
 	[-1000224] = 181,
 	[-1000227] = 301,
 	[-1000243] = 1181,
-	[-1000872] = 446916,
 	[-1001035] = 133889,
 	[-1001036] = 133899,
 });
@@ -547,8 +556,15 @@ localize(L.EVENT_REMAPPING, {
 });
 
 -- Programmatic Event Scheduling
-_.Modules.Events.SetEventInformation(446916, {
-	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=1,["monthDay"]=14,["weekday"]=3,["year"]=2025},{["hour"]=0,["minute"]=0,["month"]=4,["monthDay"]=30,["weekday"]=4,["year"]=2025})
+_.Modules.Events.SetEventInformation(133899, {
+	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=9,["monthDay"]=23,["weekday"]=2,["year"]=2024},{["hour"]=23,["minute"]=59,["month"]=3,["monthDay"]=19,["weekday"]=4,["year"]=2025}),
+	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=9,["monthDay"]=23,["weekday"]=3,["year"]=2025},{["hour"]=23,["minute"]=59,["month"]=3,["monthDay"]=19,["weekday"]=5,["year"]=2026}),
+	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=9,["monthDay"]=23,["weekday"]=4,["year"]=2026},{["hour"]=23,["minute"]=59,["month"]=3,["monthDay"]=19,["weekday"]=6,["year"]=2027})
+});
+_.Modules.Events.SetEventInformation(133889, {
+	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=3,["monthDay"]=20,["weekday"]=4,["year"]=2024},{["hour"]=23,["minute"]=59,["month"]=9,["monthDay"]=22,["weekday"]=1,["year"]=2024}),
+	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=3,["monthDay"]=20,["weekday"]=5,["year"]=2025},{["hour"]=23,["minute"]=59,["month"]=9,["monthDay"]=22,["weekday"]=2,["year"]=2025}),
+	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=3,["monthDay"]=20,["weekday"]=6,["year"]=2026},{["hour"]=23,["minute"]=59,["month"]=9,["monthDay"]=22,["weekday"]=3,["year"]=2026})
 });
 _.Modules.Events.SetEventInformation(181, {
 	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=4,["monthDay"]=17,["weekday"]=4,["year"]=2024},{["hour"]=0,["minute"]=0,["month"]=4,["monthDay"]=18,["weekday"]=5,["year"]=2024}),
@@ -561,9 +577,9 @@ _.Modules.Events.SetEventInformation(341, {
 	_.Modules.Events.CreateSchedule({["hour"]=10,["minute"]=0,["month"]=6,["monthDay"]=21,["weekday"]=1,["year"]=2026},{["hour"]=10,["minute"]=0,["month"]=7,["monthDay"]=5,["weekday"]=1,["year"]=2026})
 });
 _.Modules.Events.SetEventInformation(327, {
-	_.Modules.Events.CreateSchedule({["hour"]=10,["minute"]=0,["month"]=1,["monthDay"]=20,["weekday"]=7,["year"]=2024},{["hour"]=10,["minute"]=0,["month"]=2,["monthDay"]=3,["weekday"]=7,["year"]=2024}),
-	_.Modules.Events.CreateSchedule({["hour"]=10,["minute"]=0,["month"]=1,["monthDay"]=20,["weekday"]=2,["year"]=2025},{["hour"]=10,["minute"]=0,["month"]=2,["monthDay"]=3,["weekday"]=2,["year"]=2025}),
-	_.Modules.Events.CreateSchedule({["hour"]=10,["minute"]=0,["month"]=1,["monthDay"]=20,["weekday"]=3,["year"]=2026},{["hour"]=10,["minute"]=0,["month"]=2,["monthDay"]=3,["weekday"]=3,["year"]=2026})
+	_.Modules.Events.CreateSchedule({["hour"]=10,["minute"]=0,["month"]=1,["monthDay"]=28,["weekday"]=1,["year"]=2024},{["hour"]=10,["minute"]=0,["month"]=2,["monthDay"]=18,["weekday"]=1,["year"]=2024}),
+	_.Modules.Events.CreateSchedule({["hour"]=10,["minute"]=0,["month"]=1,["monthDay"]=28,["weekday"]=3,["year"]=2025},{["hour"]=10,["minute"]=0,["month"]=2,["monthDay"]=18,["weekday"]=3,["year"]=2025}),
+	_.Modules.Events.CreateSchedule({["hour"]=10,["minute"]=0,["month"]=1,["monthDay"]=28,["weekday"]=4,["year"]=2026},{["hour"]=10,["minute"]=0,["month"]=2,["monthDay"]=18,["weekday"]=4,["year"]=2026})
 });
 _.Modules.Events.SetEventInformation(423, {
 	_.Modules.Events.CreateSchedule({["hour"]=10,["minute"]=0,["month"]=2,["monthDay"]=6,["weekday"]=3,["year"]=2024},{["hour"]=10,["minute"]=0,["month"]=2,["monthDay"]=20,["weekday"]=3,["year"]=2024}),
@@ -586,10 +602,6 @@ _.Modules.Events.SetEventInformation(141, {
 	_.Modules.Events.CreateSchedule({["hour"]=10,["minute"]=0,["month"]=12,["monthDay"]=16,["weekday"]=4,["year"]=2026},{["hour"]=6,["minute"]=0,["month"]=1,["monthDay"]=2,["weekday"]=7,["year"]=2027})
 });
 _.Modules.Events.SetEventInformation(479, {
-	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=1,["monthDay"]=13,["weekday"]=2,["year"]=2025},{["hour"]=0,["minute"]=0,["month"]=1,["monthDay"]=20,["weekday"]=2,["year"]=2025},{["remappedID"]=374}),
-	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=1,["monthDay"]=27,["weekday"]=2,["year"]=2025},{["hour"]=0,["minute"]=0,["month"]=2,["monthDay"]=3,["weekday"]=2,["year"]=2025},{["remappedID"]=375}),
-	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=2,["monthDay"]=10,["weekday"]=2,["year"]=2025},{["hour"]=0,["minute"]=0,["month"]=2,["monthDay"]=17,["weekday"]=2,["year"]=2025},{["remappedID"]=374}),
-	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=2,["monthDay"]=24,["weekday"]=2,["year"]=2025},{["hour"]=0,["minute"]=0,["month"]=3,["monthDay"]=3,["weekday"]=2,["year"]=2025},{["remappedID"]=375}),
 	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=3,["monthDay"]=10,["weekday"]=2,["year"]=2025},{["hour"]=0,["minute"]=0,["month"]=3,["monthDay"]=17,["weekday"]=2,["year"]=2025},{["remappedID"]=374}),
 	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=3,["monthDay"]=24,["weekday"]=2,["year"]=2025},{["hour"]=0,["minute"]=0,["month"]=3,["monthDay"]=31,["weekday"]=2,["year"]=2025},{["remappedID"]=375}),
 	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=4,["monthDay"]=7,["weekday"]=2,["year"]=2025},{["hour"]=0,["minute"]=0,["month"]=4,["monthDay"]=14,["weekday"]=2,["year"]=2025},{["remappedID"]=374}),
@@ -612,22 +624,16 @@ _.Modules.Events.SetEventInformation(479, {
 	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=12,["monthDay"]=1,["weekday"]=2,["year"]=2025},{["hour"]=0,["minute"]=0,["month"]=12,["monthDay"]=8,["weekday"]=2,["year"]=2025},{["remappedID"]=375}),
 	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=12,["monthDay"]=15,["weekday"]=2,["year"]=2025},{["hour"]=0,["minute"]=0,["month"]=12,["monthDay"]=22,["weekday"]=2,["year"]=2025},{["remappedID"]=374}),
 	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=12,["monthDay"]=29,["weekday"]=2,["year"]=2025},{["hour"]=0,["minute"]=0,["month"]=1,["monthDay"]=5,["weekday"]=2,["year"]=2026},{["remappedID"]=375}),
-	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=1,["monthDay"]=12,["weekday"]=2,["year"]=2026},{["hour"]=0,["minute"]=0,["month"]=1,["monthDay"]=19,["weekday"]=2,["year"]=2026},{["remappedID"]=374})
+	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=1,["monthDay"]=12,["weekday"]=2,["year"]=2026},{["hour"]=0,["minute"]=0,["month"]=1,["monthDay"]=19,["weekday"]=2,["year"]=2026},{["remappedID"]=374}),
+	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=1,["monthDay"]=26,["weekday"]=2,["year"]=2026},{["hour"]=0,["minute"]=0,["month"]=2,["monthDay"]=2,["weekday"]=2,["year"]=2026},{["remappedID"]=375}),
+	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=2,["monthDay"]=9,["weekday"]=2,["year"]=2026},{["hour"]=0,["minute"]=0,["month"]=2,["monthDay"]=16,["weekday"]=2,["year"]=2026},{["remappedID"]=374}),
+	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=2,["monthDay"]=23,["weekday"]=2,["year"]=2026},{["hour"]=0,["minute"]=0,["month"]=3,["monthDay"]=2,["weekday"]=2,["year"]=2026},{["remappedID"]=375}),
+	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=3,["monthDay"]=9,["weekday"]=2,["year"]=2026},{["hour"]=0,["minute"]=0,["month"]=3,["monthDay"]=16,["weekday"]=2,["year"]=2026},{["remappedID"]=374})
 });
 _.Modules.Events.SetEventInformation(201, {
 	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=5,["monthDay"]=1,["weekday"]=4,["year"]=2024},{["hour"]=23,["minute"]=59,["month"]=5,["monthDay"]=7,["weekday"]=3,["year"]=2024}),
 	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=5,["monthDay"]=1,["weekday"]=5,["year"]=2025},{["hour"]=23,["minute"]=59,["month"]=5,["monthDay"]=7,["weekday"]=4,["year"]=2025}),
 	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=5,["monthDay"]=1,["weekday"]=6,["year"]=2026},{["hour"]=23,["minute"]=59,["month"]=5,["monthDay"]=7,["weekday"]=5,["year"]=2026})
-});
-_.Modules.Events.SetEventInformation(133899, {
-	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=9,["monthDay"]=23,["weekday"]=2,["year"]=2024},{["hour"]=23,["minute"]=59,["month"]=3,["monthDay"]=19,["weekday"]=4,["year"]=2025}),
-	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=9,["monthDay"]=23,["weekday"]=3,["year"]=2025},{["hour"]=23,["minute"]=59,["month"]=3,["monthDay"]=19,["weekday"]=5,["year"]=2026}),
-	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=9,["monthDay"]=23,["weekday"]=4,["year"]=2026},{["hour"]=23,["minute"]=59,["month"]=3,["monthDay"]=19,["weekday"]=6,["year"]=2027})
-});
-_.Modules.Events.SetEventInformation(133889, {
-	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=3,["monthDay"]=20,["weekday"]=4,["year"]=2024},{["hour"]=23,["minute"]=59,["month"]=9,["monthDay"]=22,["weekday"]=1,["year"]=2024}),
-	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=3,["monthDay"]=20,["weekday"]=5,["year"]=2025},{["hour"]=23,["minute"]=59,["month"]=9,["monthDay"]=22,["weekday"]=2,["year"]=2025}),
-	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=3,["monthDay"]=20,["weekday"]=6,["year"]=2026},{["hour"]=23,["minute"]=59,["month"]=9,["monthDay"]=22,["weekday"]=3,["year"]=2026})
 });
 
 -- Filter Database Module
@@ -2761,6 +2767,7 @@ local ObjectModels = {
 	[410299] = 198039,
 	[410369] = 196989,
 	[410528] = 196987,
+	[410779] = 198238,
 	[410847] = 203020,
 	[411348] = 200953,
 	[411358] = 196987,
@@ -2865,7 +2872,7 @@ local phases = {
 	},
 	[3] = {
 		name = "Real Money",
-		description = "|cFFAAFFAAThis Thing is locked behind a paywall which requires Blizzard Balance or Real Money.|r",
+		description = "|cFFAAFFAAThis Thing is locked behind a paywall which requires Battle.net Balance or Real Money.|r",
 		lore = "|cFFFFAAAAThe act of encouraging the use of real money in any version of the game is widely frowned upon. Participate in this content at your own risk.|r",
 		state = 3,
 	},
@@ -2922,7 +2929,7 @@ local phases = {
 	[1609] = {
 		name = "Phase 5",
 		description = "|cFFAAFFAAThis was not available until Phase 5 of Season of Discovery.|r",
-		lore = "|cFFFFAAAAIncluded Blackwing Lair, the new Crystal Vale raid, and Zul'Gurub.|r",
+		lore = "|cFFFFAAAAIncluded Blackwing Lair, Zul'Gurub, and the new Crystal Vale raid.|r",
 		minimumBuildVersion = 11500,
 		buildVersion = 11504,
 		state = 2,
@@ -2930,7 +2937,7 @@ local phases = {
 	[1610] = {
 		name = "Phase 6",
 		description = "|cFFAAFFAAThis was not available until Phase 6 of Season of Discovery.|r",
-		lore = "|cFFFFAAAAIncluded Ahn'Qiraj.|r",
+		lore = "|cFFFFAAAAIncluded Ahn'Qiraj, and the new Nightmare Grove raid|r",
 		minimumBuildVersion = 11500,
 		buildVersion = 11505,
 		state = 2,
@@ -2938,7 +2945,7 @@ local phases = {
 	[1611] = {
 		name = "Phase 7",
 		description = "|cFFAAFFAAThis was not available until Phase 7 of Season of Discovery.|r",
-		lore = "|cFFFFAAAAIncluded Naxxramas.|r",
+		lore = "|cFFFFAAAAIncluded Naxxramas, and the new Karazhan Crypts dungeon|r",
 		minimumBuildVersion = 11500,
 		buildVersion = 11506,
 		state = 2,
@@ -3888,10 +3895,14 @@ localize(L.HEADER_NAMES, {
 	[-1000377] = "Wilder Polymorph",
 	[-1000378] = "Seelenvermittler",
 	[-1000380] = "Kopfgeld",
+	[-1000969] = "Alptraumeinfälle",
 	[-1000970] = "Stufe 3",
+	[-1000997] = "Ausbruch des Schwarzfels",
 	[-1001035] = "Saisonfisch: Sommerbarsch",
 	[-1001036] = "Saisonfisch: Winterkalmar",
 	[-1001058] = "Alptraumhain",
+	[-1001084] = "Lehrling",
+	[-1001085] = "Oper der Verwünschung",
 });
 localize(L.HEADER_DESCRIPTIONS, {
 	[-1000025] = "Es muss möglicherweise ein bestimmter Feiertag aktiv sein, um hier genannte Dinge abschließen zu können.",
@@ -4724,6 +4735,10 @@ localize(ObjectNames, {
 	[100000001] = "Nicht angezündete Fackel",
 });
 for key,value in pairs({
+	[3] = "Battle.net-Guthaben",
+})
+do phases[key].name = value; end
+for key,value in pairs({
 	[11] = "|cFFAAFFAADies war erst Phase 1 von WoW Classic verfügbar.|r",
 	[1606] = "|cFFAAFFAADies war erst Phase 2 von Season of Discovery verfügbar.|r",
 	[1607] = "|cFFAAFFAADies war erst Phase 3 von Season of Discovery verfügbar.|r",
@@ -5075,10 +5090,14 @@ localize(L.HEADER_NAMES, {
 	[-1000377] = "Polymorphe Sauvage",
 	[-1000378] = "Courtiers D'âmes",
 	[-1000380] = "Prime",
+	[-1000969] = "Incursions de cauchemar",
 	[-1000970] = "Étage 3",
+	[-1000997] = "Éruption de Blackrock",
 	[-1001035] = "Poisson de saison : bar d'été",
 	[-1001036] = "Poisson de saison : calmar d'hiver",
 	[-1001058] = "Bosquet du cauchemar",
+	[-1001084] = "Apprenti",
+	[-1001085] = "Opéra de malédiction",
 });
 localize(L.HEADER_DESCRIPTIONS, {
 	[-1000033] = "Contient des objets de récompenses ou disponibles dans d’autres contenus de la section qui les contient.\nIls sont regroupés ici dans le but de réduire la duplication de nombreuses sources possibles.",
@@ -5913,6 +5932,10 @@ localize(ObjectNames, {
 	[100000001] = "Torche éteinte",
 });
 for key,value in pairs({
+	[3] = "Porte-monnaie Battle.net",
+})
+do phases[key].name = value; end
+for key,value in pairs({
 	[11] = "|cFFAAFFAACeci n'était pas disponible avant le Phase 1 du WoW Classic.|r",
 	[1606] = "|cFFAAFFAACeci n'était pas disponible avant le Phase 2 du Season of Discovery.|r",
 	[1607] = "|cFFAAFFAACeci n'était pas disponible avant le Phase 3 du Season of Discovery.|r",
@@ -6598,6 +6621,10 @@ localize(ObjectNames, {
 	[207724] = "Pezzi del Relitto",
 });
 for key,value in pairs({
+	[3] = "Saldo Battle.net",
+})
+do phases[key].name = value; end
+for key,value in pairs({
 	[11] = "|cFFAAFFAAQuesto non era disponibile fino al Phase 1 di WoW Classic.|r",
 	[1606] = "|cFFAAFFAAQuesto non era disponibile fino al Phase 2 di Season of Discovery.|r",
 	[1607] = "|cFFAAFFAAQuesto non era disponibile fino al Phase 3 di Season of Discovery.|r",
@@ -6662,10 +6689,14 @@ localize(L.HEADER_NAMES, {
 	[-1000377] = "Polimorfo Selvagem",
 	[-1000378] = "Corretores de Almas",
 	[-1000380] = "Recompensa",
+	[-1000969] = "Incursões Pesadelares",
 	[-1000970] = "Nível 3",
+	[-1000997] = "Erupção da Rocha Negra",
 	[-1001035] = "Peixe sazonal: robalo de verão",
 	[-1001036] = "Peixe sazonal: Lula de Inverno",
 	[-1001058] = "Bosque do Pesadelo",
+	[-1001084] = "Aprendiz",
+	[-1001085] = "Ópera da Maldição",
 });
 localize(L.HEADER_DESCRIPTIONS, {
 	[-1000040] = "Um mestre de armas é um NPC que oferece aos personagens a oportunidade de aprender habilidades específicas com armas, cuja disponibilidade varia de um mestre de armas para outro. Todas as habilidades com armas podem ser treinadas no nível 1, exceto as armas de haste, que exigem nível 20.\n\nO treinamento com um mestre de armas tornou-se obsoleto no Patch 4.0.1, já que todas as proficiências de armas apropriadas à classe agora são aprendidas por cada classe após a criação. Os mestres de armas foram removidos do jogo logo depois.",
@@ -7341,6 +7372,10 @@ localize(ObjectNames, {
 	[100000001] = "Tocha Apagada",
 });
 for key,value in pairs({
+	[3] = "Saldo Battle.net",
+})
+do phases[key].name = value; end
+for key,value in pairs({
 	[11] = "|cFFAAFFAAIsto não estava disponível até Phase 1 de WoW Classic.|r",
 	[1606] = "|cFFAAFFAAIsto não estava disponível até Phase 2 de Season of Discovery.|r",
 	[1607] = "|cFFAAFFAAIsto não estava disponível até Phase 3 de Season of Discovery.|r",
@@ -7701,10 +7736,14 @@ localize(L.HEADER_NAMES, {
 	[-1000377] = "Дикий полиморф",
 	[-1000378] = "Душевные брокеры",
 	[-1000380] = "Премия",
+	[-1000969] = "Кошмарные вторжения",
 	[-1000970] = "Уровень 3",
+	[-1000997] = "Извержение Черной горы",
 	[-1001035] = "Сезонная рыба: летний окунь",
 	[-1001036] = "Сезонная рыба: зимний кальмар",
 	[-1001058] = "Роща Кошмаров",
+	[-1001084] = "Ученик",
+	[-1001085] = "Проклятая опера",
 });
 localize(L.HEADER_DESCRIPTIONS, {
 	[-1000025] = "Чтобы выполнить упомянутые в данной секции Штучки, может быть нужен какой-то праздник.",
@@ -8515,7 +8554,7 @@ localize(ObjectNames, {
 for key,value in pairs({
 	[1] = "Никогда Не Доступны [NYI]",
 	[2] = "Убраны Из Игры",
-	[3] = "Кошелек Blizzard",
+	[3] = "Кошелек Battle.net",
 	[4] = "ПвП Элита / Гладиатор",
 	[5] = "Неизучаемые",
 })
@@ -8939,10 +8978,14 @@ localize(L.HEADER_NAMES, {
 	[-1000377] = "야생 변이",
 	[-1000378] = "소울 브로커",
 	[-1000380] = "하사품",
+	[-1000969] = "악몽 침공지",
 	[-1000970] = "층 3",
+	[-1000997] = "검은바위 분출",
 	[-1001035] = "제철 생선: 여름 농어",
 	[-1001036] = "제철 생선: 겨울 오징어",
 	[-1001058] = "악몽의 숲",
+	[-1001084] = "수습생",
+	[-1001085] = "악심의 오페라",
 });
 localize(L.HEADER_DESCRIPTIONS, {
 	[-1000040] = "웨폰 마스터는 캐릭터에게 특정 무기 기술을 배울 수 있는 기회를 제공하는 NPC로, 사용 가능 여부는 웨폰 마스터마다 다릅니다. 모든 무기 기술은 레벨 20이 필요한 폴암을 제외하고 레벨 1에서 훈련할 수 있습니다.\n\n4.0.1 패치에서는 각 병과가 생성 시 모든 병과에 적합한 무기 숙련도를 배우게 되므로 무기 전문가와의 훈련은 더 이상 필요하지 않게 되었습니다. 무기 마스터는 곧 게임에서 제거되었습니다.",
@@ -9672,6 +9715,10 @@ localize(ObjectNames, {
 	[100000001] = "불을 붙이지 않은 횃불",
 });
 for key,value in pairs({
+	[3] = "배틀코인",
+})
+do phases[key].name = value; end
+for key,value in pairs({
 	[11] = "|cFFAAFFAAPhase 1(WoW Classic)까지 사용할 수 없습니다.|r",
 	[1606] = "|cFFAAFFAAPhase 2(Season of Discovery)까지 사용할 수 없습니다.|r",
 	[1607] = "|cFFAAFFAAPhase 3(Season of Discovery)까지 사용할 수 없습니다.|r",
@@ -10014,10 +10061,14 @@ localize(L.HEADER_NAMES, {
 	[-1000377] = "Polimorfo Salvaje",
 	[-1000378] = "Corredores de Almas",
 	[-1000380] = "Prima",
+	[-1000969] = "Incursiones de la Pesadilla",
 	[-1000970] = "Nivel 3",
+	[-1000997] = "Erupción de Roca Negra",
 	[-1001035] = "Pescado de temporada: lubina de verano",
 	[-1001036] = "Pescado de temporada: calamares de invierno",
 	[-1001058] = "Arboleda de la Pesadilla",
+	[-1001084] = "Aprendiz",
+	[-1001085] = "Ópera de la maldición",
 });
 localize(L.HEADER_DESCRIPTIONS, {
 	[-1000040] = "Un maestro de armas es un PNJ que ofrece a los personajes la oportunidad de aprender habilidades específicas con armas, cuya disponibilidad varía de un maestro de armas a otro. Todas las habilidades con armas se pueden entrenar en el nivel 1, excepto las armas de asta que requieren el nivel 20.\n\nEl entrenamiento con un maestro de armas quedó obsoleto en el parche 4.0.1, ya que cada clase ahora aprende todas las competencias de armas apropiadas para la clase en el momento de la creación. Los maestros de armas se eliminaron del juego poco después.",
@@ -10796,6 +10847,10 @@ localize(ObjectNames, {
 	[100000001] = "Antorcha apagada",
 });
 for key,value in pairs({
+	[3] = "Saldo de Battle.net",
+})
+do phases[key].name = value; end
+for key,value in pairs({
 	[11] = "|cFFAAFFAAEsto no estuvo disponible hasta Phase 1 de WoW Classic.|r",
 	[1606] = "|cFFAAFFAAEsto no estuvo disponible hasta Phase 2 de Season of Discovery.|r",
 	[1607] = "|cFFAAFFAAEsto no estuvo disponible hasta Phase 3 de Season of Discovery.|r",
@@ -11102,7 +11157,9 @@ for key,value in pairs({
 do achievementCategories[key].name = value; end
 if GetLocale():sub(3,4):lower() == "mx" then
 localize(L.HEADER_NAMES, {
+	[-1000969] = "Incursiones de pesadilla",
 	[-1001058] = "Arboleda de las Pesadillas",
+	[-1001085] = "Ópera de imprecación",
 });
 for key,value in pairs({
 	[428] = "Trueno Furioso, espada bendita del Hijo del Viento",
@@ -11163,12 +11220,12 @@ localize(L.HEADER_NAMES, {
 	[-1000042] = "世界首领",
 	[-1000044] = "地区掉落",
 	[-1000048] = "梦魇之龙",
-	[-1000142] = "荣誉头衔",
+	[-1000142] = HONOR .. PAPERDOLL_SIDEBAR_TITLES,
 	[-1000162] = "共享外观",
 	[-1000163] = "独特外观",
 	[-1000165] = "T0.5套装",
 	[-1000166] = "船长",
-	[-1000168] = "四骑士",
+	[-1000168] = "天啓四骑士",
 	[-1000173] = DUNGEON_FLOOR_DIREMAUL5.." (东)",
 	[-1000174] = DUNGEON_FLOOR_DIREMAUL1.." (北)",
 	[-1000175] = DUNGEON_FLOOR_DIREMAUL2.." (西)",
@@ -11194,35 +11251,39 @@ localize(L.HEADER_NAMES, {
 	[-1000237] = "天灾入侵",
 	[-1000243] = "暴雪嘉年华",
 	[-1000244] = "典藏版",
+	[-1000245] = "英雄礼包",
 	[-1000263] = "可口可乐活动",
-	[-1000273] = "发现季节",
+	[-1000273] = "探索赛季",
 	[-1000274] = "理解",
 	[-1000275] = "等级 1",
 	[-1000276] = "等级 2",
 	[-1000277] = "怪物狩猎",
 	[-1000278] = "铭刻",
-	[-1000279] = "遭劫货物",
+	[-1000279] = "被伏击的货物",
 	[-1000373] = "新角色",
 	[-1000376] = "魁梧斗殴",
 	[-1000377] = "野生多晶型物",
 	[-1000378] = "灵魂掮客",
 	[-1000380] = "赏金任务",
-	[-1000969] = "梦魇入侵",
+	[-1000969] = "梦魇进犯",
 	[-1000970] = "等级 3",
+	[-1000997] = "黑石大爆发",
 	[-1001035] = "时令鱼类：夏季鲈鱼",
 	[-1001036] = "时令鱼类：冬鱿鱼",
 	[-1001058] = "梦魇林地",
+	[-1001084] = "学徒",
+	[-1001085] = "邪咒歌剧",
 });
 localize(L.HEADER_DESCRIPTIONS, {
 	[-1000025] = "你可能需要在特定的节日活动中才能完成本节中的事物。",
 	[-1000030] = "此部分只会显示你当前角色的专业技能，除非处于账号模式或调试模式。",
 	[-1000033] = "包含有奖励或可从包含部分中的其他内容获得的事物。\n在此处合并以减少来自许多可能重复来源。",
-	[-1000040] = "武器大师是一个 NPC，为角色提供学习特定武器技能的机会，不同武器大师的可用性各不相同。所有武器技能都可以在 1 级进行训练，长柄武器除外，需要 20 级。\n\n在补丁 4.0.1 中，武器大师的训练已经过时，因为现在每个班级在创建时都会学习所有适合班级的武器熟练程度。不久之后，武器大师就被从游戏中删除了。",
+	[-1000040] = "武器大师是一个 NPC，为角色提供学习特定武器技能的机会，不同武器大师的可用性各不相同。所有武器技能都可以在 1 级进行训练，长柄武器除外，需要 20 级。\n\n在补丁 4.0.1 中，武器大师的训练已经过时，因为现在每个职业在创建时都会学习所有适合该职业的武器熟练度。不久之后，武器大师就被从游戏中删除了。",
 	[-1000162] = "此列表中的物品是以下物品的共享外观。在唯一外观模式下，此列表可帮助了解特定物品被标记为已收藏的原因。",
 	[-1000163] = "此列表中的物品是独特外观。你必须专门收藏这个物品以获得外观。",
 	[-1000273] = "本赛季带来了 25 级的初始等级上限和新的 25 级终局游戏，包括 10 名玩家的 Blackfathom Deeps 突袭，其中包含新的机制、新的和重新设计的 Boss 来挑战玩家的战术和策略，以及新鲜的奖励。",
-	[-1000278] = "铭刻是最近在发现季节宣布的一个新系统。它允许每个班级通过解锁新的独特能力来定制他们的游戏体验！",
-	[-1000279] = "'遭劫货物'任务物品从艾泽拉斯 6 级及以上的小怪中掉落。这些任务要求将'遭劫货物'交付给组织代表，以换取一些银币、经验和声望。当然，货物中也有缺少的物品，你可以补充以获得更大的声望奖励。",
+	[-1000278] = "铭刻是最近在发现季节宣布的一个新系统。它允许每个职业通过解锁新的独特能力来定制他们的游戏体验！",
+	[-1000279] = "'被伏击的货物'任务物品从艾泽拉斯 6 级及以上的小怪中掉落。这些任务要求将'被伏击的货物'交付给组织代表，以换取一些银币、经验和声望。当然，货物中也有缺少的物品，你可以补充以获得更大的声望奖励。",
 	[-1000376] = "无论谁先击中目标，只有最终击中醉汉的人才会获得荣誉。对此没有团体信用。",
 	[-1000377] = "对受到野生变形术影响的小动物施放变形术，将它们变回学徒。每个人都会给你一张纸条。收集 6 个笔记来学习符文。",
 	[-1000380] = "此列表包含 ATT Discord 报告的无法获取的物品，这些物品是暴雪尚未修复的错误。\n\n注意：在此列表中忽略所有过滤器以获得可见性。此列表中仅显示因疏忽而从游戏中移除的物品。\n\n致暴雪开发者：请修复下面列出的物品和事件。",
@@ -11875,8 +11936,10 @@ localize(ObjectNames, {
 for key,value in pairs({
 	[1] = "从未实施 [NYI]",
 	[2] = "从游戏中移除",
+	[3] = "战网点数",
 	[4] = "PvP 精良/角斗士",
 	[5] = "不可学",
+	[1605] = "探索赛季",
 })
 do phases[key].name = value; end
 for key,value in pairs({
@@ -12212,10 +12275,10 @@ localize(L.HEADER_NAMES, {
 	[-1000042] = "世界首領",
 	[-1000044] = "地區掉落",
 	[-1000048] = "夢魘之龍",
-	[-1000142] = "榮譽頭銜",
 	[-1000162] = "共享外觀",
 	[-1000163] = "獨特外觀",
 	[-1000165] = "T0.5套裝",
+	[-1000168] = "四騎士",
 	[-1000173] = DUNGEON_FLOOR_DIREMAUL5.." (東)",
 	[-1000201] = "暗月馬戲團",
 	[-1000215] = "冬幕節",
@@ -12224,22 +12287,26 @@ localize(L.HEADER_NAMES, {
 	[-1000227] = "荊棘谷釣魚大賽",
 	[-1000234] = "安其拉之戰捐獻",
 	[-1000236] = "流沙節杖",
-	[-1000237] = "天譴入侵",
+	[-1000237] = "天譴軍團入侵",
 	[-1000243] = "暴雪嘉年華",
+	[-1000245] = "英雄版",
 	[-1000273] = "探索賽季",
 	[-1000275] = "等級 1",
 	[-1000276] = "等級 2",
 	[-1000277] = "怪物狩獵",
 	[-1000278] = "紋刻",
-	[-1000279] = "遭攔截的物資",
+	[-1000279] = "遭攔截的貨物",
 	[-1000280] = "製作",
 	[-1000281] = "採集",
 	[-1000378] = "靈魂仲介者",
 	[-1000969] = "夢魘入侵",
 	[-1000970] = "等級 3",
+	[-1000997] = "黑石爆發",
 	[-1001035] = "季節性魚類：夏日鱸魚",
 	[-1001036] = "季節性魚類：冬魷魚",
 	[-1001058] = "夢魘林地",
+	[-1001084] = "(初級)學徒",
+	[-1001085] = "詛咒歌劇",
 });
 localize(L.HEADER_DESCRIPTIONS, {
 	[-1000015] = "術士可以教導他們的惡魔新技能，一些高等級的魔典只能從你陣營首都的惡魔訓練師那裡購買。",
@@ -12250,12 +12317,13 @@ localize(L.HEADER_DESCRIPTIONS, {
 	[-1000175] = "副本的這部分可以從最西邊的傳送門進入。（左側）",
 	[-1000273] = "這個賽季起初將會有 25 級的上限，還會帶來全新的 25 級終局內容，包括帶有全新機制的 10 人玩家黑澗深淵副本、全新設計的首領來挑戰玩家的戰術實力，同時還會給予新獎勵。",
 	[-1000278] = "紋刻是最近在探索賽季實現的一個新系統，它允許每個職業通過解鎖新的獨特能力來自訂他們的遊戲體驗！",
-	[-1000279] = "'遭攔截的物資'任務物品會從艾澤拉斯各地6級及以上的怪物掉落。這些任務要求將'遭攔截的物資'交付給某個組織的代表，以換取少量銀幣、經驗值和聲望。當然，物資運送中有一些物品遺失，你可以補充這些物品以獲得更多的聲望獎勵。",
+	[-1000279] = "'遭攔截的貨物'任務物品會從艾澤拉斯各地6級及以上的怪物掉落。這些任務要求將'遭攔截的貨物'交付給某個組織的代表，以換取少量銀幣、經驗值和聲望。當然，物資運送中有一些物品遺失，你可以補充這些物品以獲得更多的聲望獎勵。",
 });
 localize(L.HEADER_LORE, {
 	[-1000048] = "這些龍中的一隻會在艾澤拉斯的相關座標隨機生成。",
 });
 localize(ObjectNames, {
+	[176785] = "彈藥箱",
 	[179697] = "競技場寶箱",
 	[180456] = "次級風石",
 	[180461] = "風石",
@@ -12264,8 +12332,8 @@ localize(ObjectNames, {
 for key,value in pairs({
 	[1] = "從未實裝 [NYI]",
 	[2] = "已從遊戲中移除",
-	[3] = "暴雪點數",
-	[4] = "PvP 精良/角鬥士",
+	[3] = "Battle.net 點數",
+	[4] = "PvP 精良/鬥士",
 	[5] = "不可學",
 	[1605] = "探索賽季",
 	[1606] = "第2階段",

@@ -25,6 +25,11 @@ function TardisInfo.ADD_UI()
 	InvF:PIGSetMovable()
 	InvF.hang_Height,InvF.hang_NUM=25,15
 	InvF.pindao="PIG"
+	InvF.Biaotou=Data.Tardis.Prefix
+	InvF.xuanzhongBG = {{0.2, 0.2, 0.2, 0.2},{0.4, 0.8, 0.8, 0.2}}
+	if not C_ChatInfo.IsAddonMessagePrefixRegistered(InvF.Biaotou) then
+		C_ChatInfo.RegisterAddonMessagePrefix(InvF.Biaotou)
+	end
 	InvF.biaoti = PIGFontString(InvF,{"TOP", InvF, "TOP", 0, -4},GnName)
 	--必须加入PIG频道获取
 	local function gengxinbut1()
@@ -82,8 +87,10 @@ function TardisInfo.ADD_UI()
 	----
 	-- TardisInfo.Houche()
 	-- TardisInfo.Chedui()
-	TardisInfo.Yell(true)
-	TardisInfo.Plane()	
+	TardisInfo.Farm(true)
+	TardisInfo.Plane()
+	TardisInfo.Yell()
+	
 end
 -----
 function TardisInfo.GetInfoBut(fuF,Point,daojiCDtime,jinduS,butTXT,jindutiaoW,GetButW)
@@ -91,20 +98,23 @@ function TardisInfo.GetInfoBut(fuF,Point,daojiCDtime,jinduS,butTXT,jindutiaoW,Ge
 	local GetButW=GetButW or {80,21}
 	local GetBut = PIGButton(fuF,{Point[1],Point[2],Point[3],Point[4],Point[5]},{GetButW[1],GetButW[2]},GetButTXT);
 	GetBut.daojiCDtime=daojiCDtime;
+	GetBut.Highlight = GetBut:CreateTexture();
+	GetBut.Highlight:SetAtlas("reportlist-buttonselect")
+	GetBut.Highlight:SetAllPoints(GetBut)
+	GetBut.Highlight:Hide()
 	---
 	local jindutiaoW=jindutiaoW or {160,20}
 	GetBut.jindutiao = CreateFrame("Frame", nil, GetBut);
 	GetBut.jindutiao:SetSize(jindutiaoW[1],jindutiaoW[2]);
 	GetBut.jindutiao:SetPoint("RIGHT",GetBut,"LEFT",-10,0);
 	GetBut.jindutiao:Hide();
-	GetBut.jindutiao.jinduS=jinduS
 	GetBut.jindutiao.tex = GetBut.jindutiao:CreateTexture();
 	GetBut.jindutiao.tex:SetTexture("interface/raidframe/raid-bar-hp-fill.blp");
 	GetBut.jindutiao.tex:SetColorTexture(0.3, 0.7, 0.1, 0.9)
 	GetBut.jindutiao.tex:SetSize(jindutiaoW[1],jindutiaoW[2]-1);
 	GetBut.jindutiao.tex:SetPoint("LEFT",GetBut.jindutiao,"LEFT",0,0);
 	GetBut.jindutiao.edg = CreateFrame("Frame", nil, GetBut.jindutiao, "BackdropTemplate");
-	GetBut.jindutiao.edg:SetBackdrop( { edgeFile = "Interface/AddOns/"..addonName.."/Libs/Pig_Border.blp",edgeSize = 8});
+	GetBut.jindutiao.edg:SetBackdrop({edgeFile = "Interface/AddOns/"..addonName.."/Libs/Pig_Border.blp",edgeSize = 8});
 	GetBut.jindutiao.edg:SetBackdropBorderColor(0, 1, 1, 0.9);
 	GetBut.jindutiao.edg:SetAllPoints(GetBut.jindutiao)
 	GetBut.jindutiao.edg.t = PIGFontString(GetBut.jindutiao.edg,{"CENTER",GetBut.jindutiao.edg,"CENTER",0,0},L["TARDIS_RECEIVEDATA"],"OUTLINE",12);
@@ -122,9 +132,16 @@ function TardisInfo.GetInfoBut(fuF,Point,daojiCDtime,jinduS,butTXT,jindutiaoW,Ge
 		self.jindutiao.time = 0
 		self.jindutiao:Show()
 	end
-	function GetBut.daojishiCDFUN(self)
+	function GetBut:NewMsgadd()
+		self.yanchiNerMsg=true
+		self:Enable();
+		self.err:SetText("有新的"..self.ButName.."信息，点击刷新")
+		self.Highlight:Show()
+		self:SetText(GetButTXT);
+	end
+	function GetBut:daojishiCDFUN()
 		local chazhiV = self.daojiCDtime-(GetServerTime()-self.daojishiJG)
-		if chazhiV>0 then
+		if chazhiV>0 and not self.yanchiNerMsg then
 			self:Disable()
 			self:SetText("冷却中("..chazhiV..")");
 		else
@@ -133,7 +150,7 @@ function TardisInfo.GetInfoBut(fuF,Point,daojiCDtime,jinduS,butTXT,jindutiaoW,Ge
 		end
 		if self:IsVisible() then
 			C_Timer.After(1,function()
-				self.daojishiCDFUN(self)
+				self:daojishiCDFUN()
 			end)
 		end
 	end
@@ -154,13 +171,14 @@ function TardisInfo.GetInfoBut(fuF,Point,daojiCDtime,jinduS,butTXT,jindutiaoW,Ge
 				self.jindutishi:SetText("上次获取:刚刚");
 			end
 		end
-		self.daojishiCDFUN(self)
+		self:daojishiCDFUN()
 	end);
 	GetBut.jindutiao.time = 0
+	local zengjiasu=jindutiaoW[1]/jinduS
 	GetBut.jindutiao:SetScript("OnUpdate", function(self,sss)
 		self.time=self.time+sss
 		if self.time<jinduS then
-			self.tex:SetWidth(jindutiaoW[1]*(self.time*0.5))
+			self.tex:SetWidth(zengjiasu*self.time)
 			self:Show();
 		else
 			self:Hide()

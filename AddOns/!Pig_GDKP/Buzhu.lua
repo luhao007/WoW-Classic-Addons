@@ -25,7 +25,7 @@ function GDKPInfo.ADD_Buzhu(RaidR)
 	local RaidR=_G[GnUI]
 	local fujiF=PIGOptionsList_R(RaidR.F,"补助/奖励",80)
 	--------------
-	fujiF.line = PIGLine(fujiF,"C",-3)
+	fujiF.line = PIGLine(fujiF,"C",-3,nil,{-4,4})
 	local zhizeIcon=Data.zhizeIcon
 	local LeftmenuV=GDKPInfo.LeftmenuV
 	local buzhuzhize = GDKPInfo.buzhuzhize
@@ -114,7 +114,7 @@ function GDKPInfo.ADD_Buzhu(RaidR)
 	fujiF.buzhu_TND.TOPline = PIGLine(fujiF.buzhu_TND,"TOP",-lineTOP)
 	fujiF.buzhu_TND.Scroll = CreateFrame("ScrollFrame",nil,fujiF.buzhu_TND, "FauxScrollFrameTemplate");  
 	fujiF.buzhu_TND.Scroll:SetPoint("TOPLEFT",fujiF.buzhu_TND.TOPline,"BOTTOMLEFT",0,-1);
-	fujiF.buzhu_TND.Scroll:SetPoint("BOTTOMRIGHT",fujiF.buzhu_TND,"BOTTOMRIGHT",-24,1);
+	fujiF.buzhu_TND.Scroll:SetPoint("BOTTOMRIGHT",fujiF.buzhu_TND,"BOTTOMRIGHT",-24,lineTOP);
 	fujiF.buzhu_TND.Scroll:SetScript("OnVerticalScroll", function(self, offset)
 	    FauxScrollFrame_OnVerticalScroll(self, offset, hang_Height, RaidR.Update_Buzhu_TND)
 	end)
@@ -403,8 +403,8 @@ function GDKPInfo.ADD_Buzhu(RaidR)
 
 
 	---奖励补助==========
-	fujiF.buzhu_QITA = PIGFrame(fujiF,{"TOPLEFT",fujiF.line,"TOPRIGHT",0,0});  
-	fujiF.buzhu_QITA:SetPoint("BOTTOMRIGHT",fujiF,"BOTTOMRIGHT",0,0);
+	fujiF.buzhu_QITA = PIGFrame(fujiF,{"TOPRIGHT",fujiF,"TOPRIGHT",0,0});  
+	fujiF.buzhu_QITA:SetPoint("BOTTOMLEFT",fujiF.line,"BOTTOMRIGHT",0,0);
 	fujiF.buzhu_QITA.yedibuF = PIGLine(fujiF.buzhu_QITA,"BOT",lineTOP)
 	fujiF.buzhu_QITA.guangbaoBut = CreateFrame("Button",nil,fujiF.buzhu_QITA);  
 	fujiF.buzhu_QITA.guangbaoBut:SetSize(iconWH,iconWH);
@@ -513,7 +513,7 @@ function GDKPInfo.ADD_Buzhu(RaidR)
 	fujiF.buzhu_QITA.TOPline = PIGLine(fujiF.buzhu_QITA,"TOP",-lineTOP)
 	fujiF.buzhu_QITA.Scroll = CreateFrame("ScrollFrame",nil,fujiF.buzhu_QITA, "FauxScrollFrameTemplate");  
 	fujiF.buzhu_QITA.Scroll:SetPoint("TOPLEFT",fujiF.buzhu_QITA.TOPline,"BOTTOMLEFT",0,-1);
-	fujiF.buzhu_QITA.Scroll:SetPoint("BOTTOMRIGHT",fujiF.buzhu_QITA,"BOTTOMRIGHT",-24,1);
+	fujiF.buzhu_QITA.Scroll:SetPoint("BOTTOMRIGHT",fujiF.buzhu_QITA,"BOTTOMRIGHT",-24,lineTOP);
 	fujiF.buzhu_QITA.Scroll:SetScript("OnVerticalScroll", function(self, offset)
 	    FauxScrollFrame_OnVerticalScroll(self, offset, hang_Height, RaidR.Update_Buzhu_QITA)
 	end)

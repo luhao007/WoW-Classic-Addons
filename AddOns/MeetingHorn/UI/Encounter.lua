@@ -21,6 +21,7 @@ function Encounter:Constructor()
     self.db = ns.Addon.db
     self.encounterFlash = nil
     self.encounterVersion = 1
+    self.logsStart = false
 
     self.zoneFilter = function(v)
         return not self.zone or v.zone == self.zone
@@ -70,6 +71,10 @@ function Encounter:Constructor()
         return r
     end)())
     self.Instance:SetCallback('OnSelectChanged', function()
+        if not self.logsStart then
+            self.logsStart = true
+            return self:SetCurrentInstance(self.Instance:GetValue())
+        end
         C_Timer.After(1, function()
             local info =  ns.ENCOUNTER_INSTANCES[self.Instance:GetValue()]
             ns.LogStatistics:InsertLog({time(), 4, 1, info.title})

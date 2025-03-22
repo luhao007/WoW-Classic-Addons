@@ -384,9 +384,12 @@ app.AddCollectionTypeHandler("ItemWithAppearance", function(t)
 		-- app.PrintDebug("Completionist Report",app:SearchLink(t))
 		local sourceID = t.sourceID
 		if not t._missing then
-			app.print(L.ITEM_ID_ADDED:format(app:SearchLink(t) or ("|cffff80ff|Htransmogappearance:" .. sourceID .. "|h[Source " .. sourceID .. "]|h|r"), t.itemID))
+			if app.Settings:GetTooltipSetting("Report:Collected") then
+				app.print(L.ITEM_ID_ADDED:format(app:SearchLink(t) or ("|cffff80ff|Htransmogappearance:" .. sourceID .. "|h[Source " .. sourceID .. "]|h|r"), t.itemID))
+			end
 		else
 			local sourceInfo = C_TransmogCollection_GetSourceInfo(sourceID)
+			-- always report missing
 			app.print(L.ITEM_ID_ADDED_MISSING:format(app:SearchLink(t) or ("|cffff80ff|Htransmogappearance:" .. sourceID .. "|h[Source " .. sourceID .. "]|h|r"), sourceInfo and sourceInfo.itemID, app.Version))
 		end
 		app.HandleEvent("OnThingCollected", t)
@@ -401,14 +404,15 @@ app.AddCollectionTypeHandler("ItemWithAppearance", function(t)
 		if not t._missing then
 			-- TODO eventual setting to control reporting of already collected Things
 			if newAppearancesLearned > 0 then
-				app.print(L.ITEM_ID_ADDED_SHARED:format(app:SearchLink(t) or ("|cffff80ff|Htransmogappearance:" .. sourceID .. "|h[Source " .. sourceID .. "]|h|r"), t.itemID, newAppearancesLearned));
+				if app.Settings:GetTooltipSetting("Report:Collected") then
+					app.print(L.ITEM_ID_ADDED_SHARED:format(app:SearchLink(t) or ("|cffff80ff|Htransmogappearance:" .. sourceID .. "|h[Source " .. sourceID .. "]|h|r"), t.itemID, newAppearancesLearned));
+				end
 				app.HandleEvent("OnThingCollected", t)
 				app.UpdateRawIDs(tkey, unlockedSourceIDs)
 			end
 		else
 			-- always report missing
-			app.print(L[newCollected and "ITEM_ID_ADDED_SHARED_MISSING" or "ITEM_ID_ADDED_MISSING"]:format(app:SearchLink(t) or ("|cffff80ff|Htransmogappearance:" .. sourceID .. "|h[Source " .. sourceID .. "]|h|r"), sourceInfo.itemID, newAppearancesLearned, app.Version));
-			app.HandleEvent("OnThingCollected", t)
+			app.print(L[newCollected and "ITEM_ID_ADDED_SHARED_MISSING" or "ITEM_ID_ADDED_MISSING"]:format(app:SearchLink(t) or ("|cffff80ff|Htransmogappearance:" .. sourceID .. "|h[Source " .. sourceID .. "]|h|r"), sourceInfo.itemID, newAppearancesLearned, app.Version));		app.HandleEvent("OnThingCollected", t)
 			app.UpdateRawIDs(tkey, unlockedSourceIDs)
 		end
 	end
@@ -423,7 +427,9 @@ app.AddRemovalTypeHandler("ItemWithAppearance", function(t)
 		-- Completionist
 		-- app.PrintDebug("Completionist Remove",app:SearchLink(t))
 		local sourceID = t.sourceID
-		app.print(L.ITEM_ID_REMOVED:format(app:SearchLink(t) or ("|cffff80ff|Htransmogappearance:" .. sourceID .. "|h[Source " .. sourceID .. "]|h|r"), t.itemID))
+		if app.Settings:GetTooltipSetting("Report:Collected") then
+			app.print(L.ITEM_ID_REMOVED:format(app:SearchLink(t) or ("|cffff80ff|Htransmogappearance:" .. sourceID .. "|h[Source " .. sourceID .. "]|h|r"), t.itemID))
+		end
 		app.HandleEvent("OnThingRemoved", t)
 	else
 		-- Unique
@@ -434,7 +440,9 @@ app.AddRemovalTypeHandler("ItemWithAppearance", function(t)
 		local uniqueRemoved = #removedSourceIDs
 		-- TODO eventual setting to control reporting of already collected Things
 		if uniqueRemoved > 0 then
-			app.print(L.ITEM_ID_REMOVED_SHARED:format(app:SearchLink(t) or ("|cffff80ff|Htransmogappearance:" .. sourceID .. "|h[Source " .. sourceID .. "]|h|r"), sourceInfo.itemID, uniqueRemoved))
+			if app.Settings:GetTooltipSetting("Report:Collected") then
+				app.print(L.ITEM_ID_REMOVED_SHARED:format(app:SearchLink(t) or ("|cffff80ff|Htransmogappearance:" .. sourceID .. "|h[Source " .. sourceID .. "]|h|r"), sourceInfo.itemID, uniqueRemoved))
+			end
 			app.HandleEvent("OnThingRemoved", t)
 			app.UpdateRawIDs(tkey, removedSourceIDs)
 		end
@@ -734,20 +742,38 @@ do
 		local sourceID = t[KEY]
 		return (AccountSources[sourceID] and 1) or (AccountUniqueSources[sourceID] and 2)
 	end
-	-- An appearance must be associated with an item since the Item link is displayed in Transmog UI
-	local createItemWithAppearance = app.ExtendClass("Item", "ItemWithAppearance", KEY, {
-		CACHE = function() return CACHE end,
-		-- this is swapped based on settings
-		collectible = app.ReturnTrue,
+
+	-- Appearance-based Classes
+	local AppearanceVariantClasses = { CLASSNAME }
+
+	local AndAppearance = {
+		__name = "AndAppearance",
+		collectible = function(t) return app.Settings.Collectibles.Transmog end,
 		collected = collected_Completionist,
-		collectedwarband = app.IsClassic and app.EmptyFunction or
-		function(t)
-			return app.IsAccountCached("SourceItemsOnCharacter", t[KEY])
-		end,
 		visualID = function(t)
 			local sourceInfo = C_TransmogCollection_GetSourceInfo(t[KEY])
 			return sourceInfo and sourceInfo.visualID
 		end,
+		__condition = function(t) return t.sourceID end,
+		__onclassgenerated = function(variantName)
+			AppearanceVariantClasses[#AppearanceVariantClasses + 1] = variantName
+			-- any appearance-based variant is tracked based on 'Transmog' setting
+			app.AddSimpleCollectibleSwap(variantName, SETTING)
+		end,
+	}
+	app.GlobalVariants.AndAppearance = AndAppearance
+
+	-- An appearance must be associated with an item since the Item link is displayed in Transmog UI
+	local createItemWithAppearance = app.ExtendClass("Item", CLASSNAME, KEY, {
+		CACHE = function() return CACHE end,
+		-- this is swapped based on settings
+		collectible = AndAppearance.collectible,
+		collected = AndAppearance.collected,
+		collectedwarband = app.IsClassic and app.EmptyFunction or
+		function(t)
+			return app.IsAccountCached("SourceItemsOnCharacter", t[KEY])
+		end,
+		visualID = AndAppearance.visualID,
 		-- directly-created source objects can attempt to determine & save their providing ItemID to benefit from the attached Item fields
 		itemID = app.IsRetail and function(t)
 			if t.__autolink then return; end
@@ -795,10 +821,14 @@ do
 			else
 				app.ItemSourceFilter = FilterItemSourceUnique;
 			end
-			app.SwapClassDefinitionMethod(CLASSNAME, "collected", collected_Unique)
+			for _,classname in ipairs(AppearanceVariantClasses) do
+				app.SwapClassDefinitionMethod(classname, "collected", collected_Unique)
+			end
 		else
 			app.ItemSourceFilter = FilterItemSource;
-			app.SwapClassDefinitionMethod(CLASSNAME, "collected", collected_Completionist)
+			for _,classname in ipairs(AppearanceVariantClasses) do
+				app.SwapClassDefinitionMethod(classname, "collected", collected_Completionist)
+			end
 		end
 	end
 end
@@ -1181,9 +1211,11 @@ if app.IsRetail then
 	local function ClearIfCheckValue(container)
 		ClearIfValue(container, CheckValue)
 	end
-	local function CheckForBoundSourceItems()
-		app.ScanInventory(CheckForUnknownSourceID)
-	end
+	-- No longer tracking new Bound Source Items since with TWW all Bound items are automatically learned!
+	-- local function CheckForBoundSourceItems()
+	-- 	app.ScanInventory(CheckForUnknownSourceID)
+	-- end
+	local CheckForBoundSourceItems = app.EmptyFunction
 
 	app.AddEventHandler("OnStartup", function()
 		app.CallbackHandlers.DelayedCallback(CheckForBoundSourceItems, 5)
@@ -1210,5 +1242,5 @@ if app.IsRetail then
 		app.WipeSearchCache()
 		app.CallbackHandlers.DelayedCallback(CheckForBoundSourceItems, 2)
 	end)
-	app.AddEventHandler("OnRefreshCollectionsDone", CheckForBoundSourceItems)
+	app.AddEventHandler("OnRecalculateDone", CheckForBoundSourceItems)
 end

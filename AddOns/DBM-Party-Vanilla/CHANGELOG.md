@@ -1,9 +1,22 @@
 # DBM - Dungeons, Delves, & Events
 
-## [r181](https://github.com/DeadlyBossMods/DBM-Dungeons/tree/r181) (2025-01-13)
-[Full Changelog](https://github.com/DeadlyBossMods/DBM-Dungeons/compare/r180...r181) [Previous Releases](https://github.com/DeadlyBossMods/DBM-Dungeons/releases)
+## [r194](https://github.com/DeadlyBossMods/DBM-Dungeons/tree/r194) (2025-03-17)
+[Full Changelog](https://github.com/DeadlyBossMods/DBM-Dungeons/compare/r193...r194) [Previous Releases](https://github.com/DeadlyBossMods/DBM-Dungeons/releases)
 
-- tweak event usage  
-- rework rpgg timer around the reload mechanic  
-- stops seem to put trickshot on CD  
-- Fix bug with trickshot timer not starting with correct GUID  
+- Fix and close https://github.com/DeadlyBossMods/DBM-Dungeons/issues/453  
+- Fix and close https://github.com/DeadlyBossMods/DBM-Dungeons/issues/444  
+- Fix and close https://github.com/DeadlyBossMods/DBM-Dungeons/issues/443  
+- Fix and close https://github.com/DeadlyBossMods/DBM-Dungeons/issues/451  
+- Fix and close https://github.com/DeadlyBossMods/DBM-Dungeons/issues/452  
+- Fix and close https://github.com/DeadlyBossMods/DBM-Dungeons/issues/441  
+- Add stop casting alert. Closes https://github.com/DeadlyBossMods/DBM-Dungeons/issues/449  
+- Fix and close https://github.com/DeadlyBossMods/DBM-Dungeons/issues/448  
+- Fix and close https://github.com/DeadlyBossMods/DBM-Dungeons/issues/442  
+- Fix and close https://github.com/DeadlyBossMods/DBM-Dungeons/issues/446  
+- Fix and close https://github.com/DeadlyBossMods/DBM-Dungeons/issues/447  
+- fix and close https://github.com/DeadlyBossMods/DBM-Dungeons/issues/450  
+- Add Maklin Drillstab abilities  
+- Delves Update:  
+     - Fix a few misc timer issues  
+     - Fix some timers starting on non engaged units  
+- Scrap adds timer in machine scenario. it doesn't matter much in "hard" mode which is waht everyone does now  

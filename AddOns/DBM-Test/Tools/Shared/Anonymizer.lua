@@ -62,6 +62,13 @@ function anonymizer:ScrubName(name, guid)
 		or name
 end
 
+function anonymizer:LearnPlayerServer(fullName)
+	local name, server = fullName:match("([^-]*)%-(.*)")
+	if name and server then
+		self.playerServers[name] = server
+	end
+end
+
 function anonymizer:ScrubPetName(name)
 	return not self.nonPlayerNames[name] and self.petNames[name] or name
 end
@@ -112,13 +119,7 @@ function anonymizer:New(logEntries, first, last, recordingPlayer, keepPlayerName
 		if line:match("%[CLEU%]") then
 			roles:HandleCombatLog(line)
 		end
-		if line:match("%[PLAYER_INFO%]") then
-			local class, realGuid = line:match("%[PLAYER_INFO%] [^#]*#([^#]*)#([^#]*)")
-			roles:SetPlayerClass(realGuid, class)
-		end
-		-- Collect all player GUIDs and names
-		for guid, name in line:gmatch("(Player%-%d*%-%x*)#([^#]*)") do
-			name = name:gsub("([^%(]*)(%([%d.%%-]*)%)", "%1") -- Strip health/power info
+		local function learnPlayer(guid, name)
 			-- (Mostly) ignore server names as not every event will include it, if we ever get a log with conflicting names then maybe we can handle this
 			local strippedName, server = name:match("([^-]*)%-(.*)")
 			playerGuids[guid] = strippedName or name
@@ -129,6 +130,17 @@ function anonymizer:New(logEntries, first, last, recordingPlayer, keepPlayerName
 				end
 				playerServers[strippedName] = server
 			end
+		end
+		if line:match("%[PLAYER_INFO%]") then
+			local name, class, realGuid = line:match("%[PLAYER_INFO%] ([^#]*)#([^#]*)#([^#]*)")
+			learnPlayer(realGuid, name)
+			roles:SetPlayerClass(realGuid, class)
+		end
+		-- Collect all player GUIDs and names
+		for guid, name in line:gmatch("CLEU.*(Player%-%d*%-%x*)#([^#]*)") do
+			name = name:gsub("([^%(]*)(%([%d.%%-]*)%)", "%1") -- Strip health/power info
+			if name == "0" then error("fail in" .. line) end
+			learnPlayer(guid, name)
 		end
 		for guid, name in line:gmatch("(Pet%-%d*%-%d*-%d*-%d*-%d*-%x*)#([^#]*)") do
 			petGuids[guid] = name
@@ -202,47 +214,37 @@ function anonymizer:New(logEntries, first, last, recordingPlayer, keepPlayerName
 	return setmetatable(obj, anonymizer)
 end
 
-
-local function failOnLeakedString(badString, ignoreErrors)
-	-- (not called from WoW, so these functions are fine to use here)
-	io.stderr:write(("Detected leak in anonymizer, string %q looks non-anonymized\n"):format(badString))
-	if not ignoreErrors then
-		io.stderr:write("use --ignore-leaks to ignore this\n")
-		os.exit(1)
-	end
-end
-
-local function checkLeakedString(output, str, ignoreErrors)
+local function checkLeakedString(output, str, errorCallback)
 	if output:find(str, 0, true) then
-		failOnLeakedString(str, ignoreErrors)
+		errorCallback(str)
 	end
 end
 
 -- Search for a GUID containing a server ID, these should be set to 1 by the anonymizer
-local function checkLeakedGuid(output, pattern, ignoreErrors)
+local function checkLeakedGuid(output, pattern, errorCallback)
 	local prefix, serverId = output:match(pattern)
 	if serverId and serverId ~= "1" then
-		failOnLeakedString(prefix .. serverId, ignoreErrors)
+		errorCallback(prefix .. serverId)
 	end
 end
 
-function anonymizer:CheckForLeaks(output, ignoreErrors)
+function anonymizer:CheckForLeaks(output, errorCallback)
 	for _, v in pairs(self.roles) do
 		if v.realName ~= v.anonName then
-			checkLeakedString(output, v.realName, ignoreErrors)
+			checkLeakedString(output, v.realName, errorCallback)
 		end
 	end
-	checkLeakedGuid(output, "(Creature%-%d*%-)(%d*)", ignoreErrors)
-	checkLeakedGuid(output, "(Pet%-%d*%-)(%d*)", ignoreErrors)
-	checkLeakedGuid(output, "(GameObject%-%d*%-)(%d*)", ignoreErrors)
-	checkLeakedGuid(output, "(Vehicle%-%d*%-)(%d*)", ignoreErrors)
-	checkLeakedGuid(output, "(Cast%-%d*%-)(%d*)", ignoreErrors)
+	checkLeakedGuid(output, "(Creature%-%d*%-)(%d*)", errorCallback)
+	checkLeakedGuid(output, "(Pet%-%d*%-)(%d*)", errorCallback)
+	checkLeakedGuid(output, "(GameObject%-%d*%-)(%d*)", errorCallback)
+	checkLeakedGuid(output, "(Vehicle%-%d*%-)(%d*)", errorCallback)
+	checkLeakedGuid(output, "(Cast%-%d*%-)(%d*)", errorCallback)
 	-- GUID types not yet supported, they should never show up in the output until we support them above
-	checkLeakedString(output, "BattlePet-", ignoreErrors)
-	checkLeakedString(output, "BNetAccount-", ignoreErrors)
-	checkLeakedString(output, "ClientActor-", ignoreErrors)
-	checkLeakedString(output, "Item-", ignoreErrors)
-	checkLeakedString(output, "Vignette-", ignoreErrors)
+	checkLeakedString(output, "BattlePet-", errorCallback)
+	checkLeakedString(output, "BNetAccount-", errorCallback)
+	checkLeakedString(output, "ClientActor-", errorCallback)
+	checkLeakedString(output, "Item-", errorCallback)
+	checkLeakedString(output, "Vignette-", errorCallback)
 end
 
 return anonymizer

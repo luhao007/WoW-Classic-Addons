@@ -8,23 +8,19 @@ function FramePlusfun.BuffTime()
 		local d, h, m, s = ChatFrame_TimeBreakDown(seconds);
 		if( d > 1 ) then
 			return "%dd", d
-		end
-		if d == 1 then
+		elseif d == 1 then
 			return "%dd%d", d,h
-		end
-		if( h > 9 ) then
+		elseif( h > 9 ) then
 			return "%dh", h
-		end
-		if( h > 0 ) then
+		elseif( h > 0 ) then
 			return "%dh%d", h,m
-		end
-		if( m > 9 ) then
+		elseif( m > 9 ) then
 			return "%dm", m
+		elseif( m > 0 ) then
+			return "%dm" ,m
+		else
+			return "%ds", s
 		end
-		if( m > 0 ) then
-			return "%dm%d" ,m, s
-		end
-		return "%ds", s
 	end
 	--local shangcishuaxinTime = 0
 	if tocversion<100000 then

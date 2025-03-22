@@ -1,4 +1,4 @@
-## Interface: 30400
+## Interface: 30404
 
 ## Title: Details!: Tiny Threat (plugin)
 ## Notes: Threat meter plugin, show threat for group members in the window. Select it from the Plugin menu in the Orange Cogwheel.
@@ -11,10 +11,6 @@
 ## OptionalDeps: Ace3
 
 ## X-Part-Of: Details
-
-#@no-lib-strip@
-embeds.xml
-#@end-no-lib-strip@
 
 enUS.lua
 ptBR.lua

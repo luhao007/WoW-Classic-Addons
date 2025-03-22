@@ -29,17 +29,17 @@ end);
 local setdhname = {[0]=NONE}
 fujiF.AutoDialogue.max1=PIGDownMenu(fujiF.AutoDialogue,{"LEFT",fujiF.AutoDialogue,"RIGHT",160,0},{60,24})
 fujiF.AutoDialogue.max1.T = PIGFontString(fujiF.AutoDialogue.max1,{"RIGHT",fujiF.AutoDialogue.max1,"LEFT",-4,0},"多对话选择")
-function fujiF.AutoDialogue.max1:PIGDownMenu_Update_But(self)
+function fujiF.AutoDialogue.max1:PIGDownMenu_Update_But()
 	local info = {}
 	info.func = self.PIGDownMenu_SetValue
 	for i=0,9,1 do
 	    info.text, info.arg1 = setdhname[i] or i, i
 	    info.checked = i==PIGA["Interaction"]["AutoDialogueIndex"]
-		fujiF.AutoDialogue.max1:PIGDownMenu_AddButton(info)
+		self:PIGDownMenu_AddButton(info)
 	end 
 end
 function fujiF.AutoDialogue.max1:PIGDownMenu_SetValue(value,arg1,arg2)
-	fujiF.AutoDialogue.max1:PIGDownMenu_SetText(value)
+	self:PIGDownMenu_SetText(value)
 	PIGA["Interaction"]["AutoDialogueIndex"]=arg1
 	PIGCloseDropDownMenus()
 end
@@ -125,15 +125,16 @@ fujiF.RightPlus:SetScript("OnClick", function (self)
         Pig_Options_RLtishi_UI:Show()
     end
 end);
-
-fujiF.xiayiTxt = PIGFontString(fujiF,{"LEFT",fujiF.RightPlus.Text,"RIGHT",20,0},"下移增强菜单")
-fujiF.xiayiSlider = PIGSlider(fujiF,{"LEFT",fujiF.xiayiTxt,"RIGHT",10,0},{0, 100, 1})
-fujiF.xiayiSlider.Slider:HookScript("OnValueChanged", function(self, arg1)
-	PIGA["Interaction"]["xiayijuli"]=arg1
-	if Pig_RightFUI then
-		Pig_RightFUI:SetPoint("TOPLEFT",DropDownList1,"TOPRIGHT",0,-arg1)
-	end
-end)
+if not Menu or not Menu.ModifyMenu then
+	fujiF.xiayiTxt = PIGFontString(fujiF,{"LEFT",fujiF.RightPlus.Text,"RIGHT",20,0},"下移增强菜单")
+	fujiF.xiayiSlider = PIGSlider(fujiF,{"LEFT",fujiF.xiayiTxt,"RIGHT",10,0},{0, 100, 1})
+	fujiF.xiayiSlider.Slider:HookScript("OnValueChanged", function(self, arg1)
+		PIGA["Interaction"]["xiayijuli"]=arg1
+		if Pig_RightFUI then
+			Pig_RightFUI:SetPoint("TOPLEFT",DropDownList1,"TOPRIGHT",0,-arg1)
+		end
+	end)
+end
 --
 fujiF:HookScript("OnShow", function(self)
 	self.AutoDialogue:SetChecked(PIGA["Interaction"]["AutoDialogue"]);
@@ -149,5 +150,5 @@ fujiF:HookScript("OnShow", function(self)
 		self.GonghuiRepair:SetChecked(PIGA["Interaction"]["AutoRepair_GUILD"]);
 	end
 	self.RightPlus:SetChecked(PIGA["Interaction"]["RightPlus"])
-	self.xiayiSlider:PIGSetValue(PIGA["Interaction"]["xiayijuli"])
+	if self.xiayiSlider then self.xiayiSlider:PIGSetValue(PIGA["Interaction"]["xiayijuli"]) end
 end)

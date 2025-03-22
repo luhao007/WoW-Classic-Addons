@@ -8,7 +8,8 @@ local pairs, select, rawget
 	= pairs, select, rawget
 
 -- App locals
-local IsQuestFlaggedCompleted, SearchForFieldContainer, GetFixedItemSpecInfo = app.IsQuestFlaggedCompleted, app.SearchForFieldContainer, app.GetFixedItemSpecInfo
+local IsQuestFlaggedCompleted, SearchForFieldContainer, GetFixedItemSpecInfo, SearchForField
+	= app.IsQuestFlaggedCompleted, app.SearchForFieldContainer, app.GetFixedItemSpecInfo, app.SearchForField
 
 -- WoW API Cache
 local GetItemInfo = app.WOWAPI.GetItemInfo;
@@ -112,6 +113,17 @@ end
 });
 
 local cache = app.CreateCache("_cachekey");
+local function default_costCollectibles(t)
+	local id = t.spellID
+	if id then
+		local results = SearchForField("spellIDAsCost", id)
+		if #results > 0 then
+			-- app.PrintDebug("default_costCollectibles",t.hash,#results)
+			return results
+		end
+	end
+	return app.EmptyTable
+end
 local function CacheInfo(t, field)
 	local _t, id = cache.GetCached(t);
 	if t.itemID then
@@ -169,6 +181,9 @@ do
 		end,
 		skillID = function(t)
 			return t.requireSkill;
+		end,
+		costCollectibles = function(t)
+			return cache.GetCachedField(t, "costCollectibles", default_costCollectibles);
 		end,
 	},
 	"WithItem", {

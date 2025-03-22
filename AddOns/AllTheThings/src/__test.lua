@@ -469,13 +469,14 @@ function ATTcheckawquests()
 	local function scan()
 		for i=cur,lim do
 			if not awdb[i] and isaw(i) then
+				app.print("NEW AW-Quest!",i)
 				aw[i] = true
 			end
 		end
 		app.PrintDebug("scanned thru",lim)
 		cur = lim + 1
 		lim = lim + step
-		if lim > 87000 then return end
+		if lim > 95000 then return end
 		dc(scan, 1)
 	end
 	scan()
@@ -538,4 +539,55 @@ function ATTclones(count)
 	-- 0.101 @ 1M
 	local new = CloneArray_index(test)
 	app.PrintDebugPrior("---")
+end
+
+function ATTscripttimeout(source, immediatesec)
+	app.print("Script Timeout test via",source,"@",immediatesec)
+	local Success
+	local function LongRun(sec)
+		Success = nil
+		app.print("waiting",sec,"s ... via",source)
+		local done = GetTimePreciseSec() + (sec or 0)
+		while GetTimePreciseSec() < done do
+		end
+		app.print("waited",sec,"s via",source)
+		Success = true
+	end
+
+	if immediatesec then
+		LongRun(tonumber(immediatesec))
+		return
+	end
+
+	local Runner = app.CreateRunner("TestScriptTimeout")
+	Runner.SetPerFrameDefault(1)
+	local function VerifyPriorSuccess()
+		if Success then
+			app.print("Success!")
+		else
+			app.print("Script Timeout!")
+		end
+	end
+
+	for i=0,5 do
+		-- Runner.Run(LongRun, math.pow(2,i))
+		Runner.Run(LongRun, 5)
+		Runner.Run(VerifyPriorSuccess)
+	end
+end
+
+-- ATTscripttimeout("immediate", 21)
+-- app.AddEventHandler("OnLoad", ATTscripttimeout)
+-- app.AddEventHandler("OnReady", ATTscripttimeout)
+
+function DumpAllGlobals()
+	local ks = {}
+	for k, v in pairs(_G) do
+		if type(v) == "string" then
+			ks[#ks + 1] = ("%s = \"%s\""):format(k,v)
+		end
+	end
+
+	local allkeys = table.concat(ks, "\n")
+	app:ShowPopupDialogWithMultiLineEditBox(allkeys)
 end

@@ -1,4 +1,4 @@
-## Interface: 30400
+## Interface: 30404
 ## Author: MysticalOS
 
 ## Title: |cffffe00a<|r|cffff7d0aDBM Mod|r|cffffe00a>|r |cffc030c0Dungeons (Vanilla)|r
@@ -40,6 +40,8 @@
 ## X-DBM-Mod-MinCoreRevision: 12473
 ## X-DBM-Mod-MinExpansion: 0
 ## X-Part-Of: DBM-Core
+
+locale.generated.lua
 
 Classic\localization.en.lua
 Classic\localization.de.lua
@@ -255,9 +257,11 @@ Classic\SOD_DemonFallCanyon\Pyranis.lua
 Classic\SOD_DemonFallCanyon\Diathorus.lua
 Classic\SOD_DemonFallCanyon\HellscreamsPhantom.lua
 
-Classic\SOD_KarazhanCrypts\HarbingerOfSin.lua
-Classic\SOD_KarazhanCrypts\Criminal.lua
-Classic\SOD_KarazhanCrypts\Kharon.lua
+Classic\SOD_KarazhanCrypts\Apprentice.lua
 Classic\SOD_KarazhanCrypts\OperaOfMalediction.lua
-Classic\SOD_KarazhanCrypts\DarkRider.lua
+Classic\SOD_KarazhanCrypts\HarbingerOfSin.lua
 Classic\SOD_KarazhanCrypts\CreepingMalison.lua
+Classic\SOD_KarazhanCrypts\Kharon.lua
+Classic\SOD_KarazhanCrypts\DarkRider.lua
+Classic\SOD_KarazhanCrypts\Unkomon.lua
+Classic\SOD_KarazhanCrypts\KCTrash.lua

@@ -9,7 +9,6 @@ local GetContainerItemLink=C_Container.GetContainerItemLink
 local Create=addonTable.Create
 local PIGFrame=Create.PIGFrame
 local PIGButton=Create.PIGButton
-local PIGDownMenu=Create.PIGDownMenu
 local PIGFontString=Create.PIGFontString
 local BagBankFrame=Create.BagBankFrame
 --=====================
@@ -17,7 +16,6 @@ local InvSlot=addonTable.Data.InvSlot
 local bagData=addonTable.Data.bagData
 local BagBankfun=addonTable.BagBankfun
 --==================
-local ADD_BagBankBGtex=addonTable.ADD_BagBankBGtex
 local zhengliIcon="interface/containerframe/bags.blp"
 local BagdangeW=ContainerFrame1Item1:GetWidth()+5
 local wwc,hhc = 24,24
@@ -254,34 +252,18 @@ end
 ---
 function BagBankfun.Zhenghe(Rneirong,tabbut)
 	if not PIGA["BagBank"]["Zhenghe"] or BagBankfun.yizhixingjiazai then return end
-	BagBankfun.yizhixingjiazai=true
-	BagBankfun.qiyongzidongzhengli()
-	--交易打开
-	hooksecurefunc("TradeFrame_OnShow", function(self)
-		if PIGA["BagBank"]["jiaoyiOpen"] then
-			if(UnitExists("NPC"))then OpenAllBags() end
-		end
-	end);
-	local function Elv_bag()
-		if ElvUI then
-			if ElvPrivateDB then
-				if ElvPrivateDB.profiles then
-					if ElvPrivateDB.profiles[Pig_OptionsUI.AllNameElvUI] then
-						if ElvPrivateDB.profiles[Pig_OptionsUI.AllNameElvUI].bags then
-							if ElvPrivateDB.profiles[Pig_OptionsUI.AllNameElvUI].bags.enable==false then
-								return false
-							end
-						end
-					end
-				end
-			end
-			return true
-		end
-		return false
-	end
-	if NDui and NDuiDB["Bags"]["Enable"] then
-	elseif Elv_bag() then 
+	if Pig_OptionsUI.IsOpen_NDui("Bags") then
+	elseif Pig_OptionsUI.IsOpen_ElvUI("bags") then 
+	elseif BagBankfun.Other_bag() then 	
 	else
+		BagBankfun.yizhixingjiazai=true
+		BagBankfun.qiyongzidongzhengli()
+		--交易打开
+		hooksecurefunc("TradeFrame_OnShow", function(self)
+			if PIGA["BagBank"]["jiaoyiOpen"] then
+				if(UnitExists("NPC"))then OpenAllBags() end
+			end
+		end);
 		hooksecurefunc("ContainerFrame_Update", function(frame)
 			if not PIGA["BagBank"]["JunkShow"] then return end
 			local id = frame:GetID();
@@ -488,6 +470,48 @@ function BagBankfun.Zhenghe(Rneirong,tabbut)
 			BAGheji:Hide()
 		end)
 		-------------------
+		local function _ContainerFrame_Update(frame)
+			local id = frame:GetID();
+			local name = frame:GetName();
+			local itemButton,quality
+			for i=1, frame.size, 1 do
+				itemButton = _G[name.."Item"..i];
+				local info = C_Container.GetContainerItemInfo(id, itemButton:GetID());
+				quality = info and info.quality;
+				local isNewItem = C_NewItems.IsNewItem(id, itemButton:GetID());
+				newItemTexture = _G[name.."Item"..i].NewItemTexture;
+				flash = _G[name.."Item"..i].flashAnim;
+				newItemAnim = _G[name.."Item"..i].newitemglowAnim;
+				if ( isNewItem ) then
+					if (quality and NEW_ITEM_ATLAS_BY_QUALITY[quality]) then
+						newItemTexture:SetAtlas(NEW_ITEM_ATLAS_BY_QUALITY[quality]);
+					else
+						newItemTexture:SetAtlas("bags-glow-white");
+					end
+					newItemTexture:Show();
+					if (not flash:IsPlaying() and not newItemAnim:IsPlaying()) then
+						flash:Play();
+						newItemAnim:Play();
+					end
+				else
+					newItemTexture:Hide();
+					if (flash:IsPlaying() or newItemAnim:IsPlaying()) then
+						flash:Stop();
+						newItemAnim:Stop();
+					end
+				end
+			end
+		end
+		BAGheji:HookScript("OnShow",function(self)
+			if not PIGA['BagBank']["NewItem"] then return end
+			for i = 1, NUM_CONTAINER_FRAMES, 1 do
+				local frame = _G["ContainerFrame"..i];
+				if (frame:IsShown()) then
+					_ContainerFrame_Update(frame);
+				end
+			end
+		end)
+		-----
 		BAGheji:RegisterEvent("PLAYER_ENTERING_WORLD");
 		--BAGheji:RegisterEvent("BAG_UPDATE_DELAYED")
 		BAGheji:RegisterEvent("AUCTION_HOUSE_SHOW")
@@ -502,6 +526,7 @@ function BagBankfun.Zhenghe(Rneirong,tabbut)
 					C_Timer.After(3,function()
 						self:RegisterEvent("BAG_UPDATE")
 						self:RegisterEvent("BAG_CONTAINER_UPDATE")
+						self:RegisterEvent("BAG_NEW_ITEMS_UPDATED")
 					end)
 				end
 			elseif event=="BAG_CONTAINER_UPDATE" or event=="PLAYERBANKBAGSLOTS_CHANGED" then

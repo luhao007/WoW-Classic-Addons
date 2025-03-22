@@ -186,7 +186,8 @@ function GoodLeader:UpdateLeader()
     local name = ns.GetGroupLeader()
     local playerName = name:match("^(.-)-") or name
     local regimentData = ns.Addon.db.realm.starRegiment.regimentData[playerName]
-    if regimentData == nil or ns.LFG.medalMap[playerName] == nil then
+    self.First.Inset.QRCode:Refresh()
+    if regimentData == nil or regimentData.medalMap == nil or regimentData.level == -1 or regimentData.medalMap.acc_exp == nil then
         self.ProgressBarFrame:Hide()
         self.ViewExperienceBtn:Hide()
         self.First.Header.Disconnect:Show()
@@ -198,11 +199,11 @@ function GoodLeader:UpdateLeader()
         self.First.Header.Disconnect:Hide()
         self.First.Header.ApplyLeaderBtn:Hide()
         local level = regimentData.level
-        self.First.Header.Name:SetFormattedText(L['团长ID：%s ']..miniCertificationTextures[level], playerName)
+        self.First.Header.Name:SetFormattedText(L['团长ID：%s '] .. miniCertificationTextures[level], playerName)
 
-        local info = ns.LFG.medalMap[playerName]
-        local accExp = info["acc_exp"]
-        local nextStarLevelThreshold = info["next_star_level_threshold"]
+        local info = regimentData.medalMap
+        local accExp = info.acc_exp
+        local nextStarLevelThreshold = info.next_star_level_threshold
         self.ProgressBarFrame.statusBar:SetMinMaxValues(0, accExp + nextStarLevelThreshold)
         self.ProgressBarFrame.statusBar:SetValue(accExp)
 

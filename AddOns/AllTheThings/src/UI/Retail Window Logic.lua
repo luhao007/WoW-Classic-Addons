@@ -819,6 +819,41 @@ local function RemoveEventHandlers(self)
 		end
 	end
 end
+-- allows a window to stop being moved/resized by the cursor
+local function StopATTMoving(self)
+	self:StopMovingOrSizing();
+	self.isMoving = nil;
+	-- store the window position if the window is visible (this is called on new popouts prior to becoming visible for some reason)
+	if self:IsVisible() then
+		self:StorePosition()
+	end
+end
+local function SelfMoveRefresher(self)
+	if self.isMoving then
+		-- keeps the rows within the window fitting to the window as it resizes
+		self:Refresh()
+		return true
+	end
+end
+local function ToggleATTMoving(self)
+	if self.isMoving then
+		self:StopATTMoving()
+		return
+	end
+
+	if not (self:IsMovable() or self:IsResizable()) or self.isLocked then
+		return
+	end
+
+	if ((select(2, GetCursorPosition()) / self:GetEffectiveScale()) < math.max(self:GetTop() - 40, self:GetBottom() + 10)) then
+		self:StartSizing()
+		self.isMoving = true
+		Push(self, "StartMovingOrSizing (Sizing)", SelfMoveRefresher)
+	elseif self:IsMovable() then
+		self:StartMoving()
+		self.isMoving = true
+	end
+end
 function app:GetWindow(suffix, parent, onUpdate)
 	if app.GetCustomWindowParam(suffix, "reset") then
 		ResetWindow(suffix);
@@ -838,6 +873,8 @@ function app:GetWindow(suffix, parent, onUpdate)
 	window.BaseUpdate = function(...) UpdateWindow(...) end;
 	window.Update = function(...) updateFunc(...) end;
 	window.Refresh = function(...) Refresh(...) end;
+	window.StopATTMoving = StopATTMoving
+	window.ToggleATTMoving = ToggleATTMoving
 	window.SetVisible = SetVisible;
 	window.StorePosition = StoreWindowPosition;
 	window.SetData = SetData;

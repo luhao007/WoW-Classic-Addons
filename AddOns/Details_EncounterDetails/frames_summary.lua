@@ -14,8 +14,18 @@ local DETAILS_ATTRIBUTE_DAMAGE = DETAILS_ATTRIBUTE_DAMAGE
 local CONST_DETAILS_MODE_GROUP = DETAILS_MODE_GROUP
 local DETAILS_SEGMENTTYPE_MYTHICDUNGEON = DETAILS_SEGMENTTYPE_MYTHICDUNGEON
 local DETAILS_ATTRIBUTE_MISC = DETAILS_ATTRIBUTE_MISC
-local GetSpellInfo = GetSpellInfo
 local GameTooltip = GameTooltip
+
+local GetSpellInfo = GetSpellInfo or C_Spell.GetSpellInfo
+
+if (detailsFramework.IsWarWow()) then
+    GetSpellInfo = function(...)
+        local result = C_Spell.GetSpellInfo(...)
+        if result then
+            return result.name, 1, result.iconID
+        end
+    end
+end
 
 local encounterDetails = _G.EncounterDetailsGlobal
 local edFrame = encounterDetails.Frame
@@ -257,6 +267,7 @@ do --~ability ~damage taken by spell
         local spellId = bar.spellId
         local spellName, _, spellIcon = Details_GetSpellInfo(spellId)
         local damageDone = bar.damageDone
+
         local spellTargets = bar.spellTargets
         if (not spellTargets) then
             return
@@ -281,6 +292,8 @@ do --~ability ~damage taken by spell
         Details:SetCooltipForPlugins()
 
         local topValue = targetActors[1] and targetActors[1][2]
+
+        GameCooltip:Preset(2)
 
         for index, playerDamageTable in ipairs(targetActors) do
             local playerName = playerDamageTable[1]
@@ -369,6 +382,7 @@ do --~ability ~damage taken by spell
         end
     end
 
+    --damage taken by spell
     local spellDamageScroll = detailsFramework:CreateScrollBox(edFrame, "$parentSpellDamageScroll", spellDamage_RefreshFunc, {}, CONST_BOX_WIDTH, CONST_BOX_HEIGHT_TOP, CONST_LINE_AMOUNT_TOP, CONST_LINE_HEIGHT)
     detailsFramework:ReskinSlider(spellDamageScroll)
     detailsFramework:ApplyStandardBackdrop(spellDamageScroll)
@@ -650,7 +664,7 @@ do -- ~interrupt
             end
         end
 
-        GameCooltip:SetOwner(bar:GetParent(), "topleft", "topright", 2, 0)
+        GameCooltip:SetOwner(bar:GetParent(), "bottom", "top", 0, 5)
         GameCooltip:Show()
 
         local spellName = GetSpellInfo(spellId)
@@ -679,6 +693,7 @@ do -- ~interrupt
                 local spellId = thisData[3]
                 local totalCasts = thisData[5]
 
+                line.spellId = spellId
                 line.whoInterrupted = interruptingPlayers
 
                 local spellName, _, spellIcon = GetSpellInfo(spellId)
@@ -834,7 +849,7 @@ do -- ~dispel
             end
         end
 
-        GameCooltip:SetOwner(bar:GetParent(), "topleft", "topright", 2, 0)
+        GameCooltip:SetOwner(bar:GetParent(), "bottom", "top", 0, 5)
         GameCooltip:Show()
 
         local spellName = GetSpellInfo(spellId)
@@ -1027,9 +1042,9 @@ do --~deaths ~dead
 
 		--death parser
 		for index, thisEvent in ipairs(eventsBeforeDeath) do
-			local health = math.floor(thisEvent[5] / maxHealth * 100)
-			if (health > 100) then
-				health = 100
+            local healthPercent = math.floor(thisEvent[5] * 100)
+			if (healthPercent > 100) then
+				healthPercent = 100
 			end
 
 			local evType = thisEvent[1]
@@ -1057,30 +1072,30 @@ do --~deaths ~dead
 
                     local cleanSourceName = detailsFramework:CleanUpName(source)
 
-					GameCooltip:AddLine("" .. string.format("%.1f", time - timeOfDeath) .. "s " .. spellName .. " (" .. cleanSourceName .. ")", "-" .. Details:Format(amount) .. overkillString .. " (" .. health .. "%)", 1, "white", "white")
+					GameCooltip:AddLine("" .. string.format("%.1f", time - timeOfDeath) .. "s " .. spellName .. " (" .. cleanSourceName .. ")", "-" .. Details:Format(amount) .. overkillString .. " (" .. healthPercent .. "%)", 1, "white", "white")
 					GameCooltip:AddIcon(spellIcon, 1, 1, 16, 16, .1, .9, .1, .9)
 
 					if (thisEvent[9]) then
 						--friendly fire
-						GameCooltip:AddStatusBar(health, 1, "darkorange", false, statusBarBackground)
+						GameCooltip:AddStatusBar(healthPercent, 1, "darkorange", false, statusBarBackground)
 					else
 						--from a enemy
-						GameCooltip:AddStatusBar(health, 1, "red", false, statusBarBackground)
+						GameCooltip:AddStatusBar(healthPercent, 1, "red", false, statusBarBackground)
 					end
 				else --boolean false
 					--heal
 					local class = Details:GetClass(source)
 					local spec = Details:GetSpec(source)
 
-					GameCooltip:AddLine("" .. string.format("%.1f", time - timeOfDeath) .. "s " .. spellName .. " (" .. detailsFramework:CleanUpName(Details:AddClassOrSpecIcon(source, class, spec, 16, true)) .. ") ", "+" .. Details:Format(amount) .. "(" .. health .. "%)", 1, "white", "white")
+					GameCooltip:AddLine("" .. string.format("%.1f", time - timeOfDeath) .. "s " .. spellName .. " (" .. detailsFramework:CleanUpName(Details:AddClassOrSpecIcon(source, class, spec, 16, true)) .. ") ", "+" .. Details:Format(amount) .. "(" .. healthPercent .. "%)", 1, "white", "white")
 					GameCooltip:AddIcon(spellIcon, 1, 1, 16, 16, .1, .9, .1, .9)
-					GameCooltip:AddStatusBar(health, 1, "green", false, statusBarBackground)
+					GameCooltip:AddStatusBar(healthPercent, 1, "green", false, statusBarBackground)
 				end
 
 			elseif (type(evType) == "number") then
 				if (evType == 1) then
 					--cooldown
-					GameCooltip:AddLine("" .. string.format("%.1f", time - timeOfDeath) .. "s " .. spellName .. " (" .. source .. ") ", "cooldown (" .. health .. "%)", 1, "white", "white")
+					GameCooltip:AddLine("" .. string.format("%.1f", time - timeOfDeath) .. "s " .. spellName .. " (" .. source .. ") ", "cooldown (" .. healthPercent .. "%)", 1, "white", "white")
 					GameCooltip:AddIcon(spellIcon, 1, 1, 16, 16, .1, .9, .1, .9)
 					GameCooltip:AddStatusBar(100, 1, "yellow", false, statusBarBackground)
 
@@ -1090,7 +1105,7 @@ do --~deaths ~dead
 						source = source:gsub("%[%*%] ", "")
 					end
 
-					GameCooltip:AddLine("" .. string.format("%.1f", time - timeOfDeath) .. "s [x" .. amount .. "] " .. spellName .. " (" .. source .. ")", "debuff (" .. health .. "%)", 1, "white", "white")
+					GameCooltip:AddLine("" .. string.format("%.1f", time - timeOfDeath) .. "s [x" .. amount .. "] " .. spellName .. " (" .. source .. ")", "debuff (" .. healthPercent .. "%)", 1, "white", "white")
 					GameCooltip:AddIcon(spellIcon, 1, 1, 16, 16, .1, .9, .1, .9)
 					GameCooltip:AddStatusBar(100, 1, "purple", false, statusBarBackground)
 				end

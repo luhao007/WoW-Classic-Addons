@@ -11,7 +11,7 @@ local strupper=strupper
 local strsplit=strsplit
 local strchar=strchar
 --===============================================
---兼容ALA数据文件，取自TalentEmu插件，版权归原作者
+--兼容ALA远程数据文件，取自TalentEmu插件，版权归原作者
 --===============================================
 local ALA={}
 local __base64, __debase64 = {  }, {  };

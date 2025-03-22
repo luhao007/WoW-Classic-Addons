@@ -19,7 +19,7 @@ local function Update_itemLV_(itemButton, id, slot)
 			local itemLink = GetContainerItemLink(id, slot)
 			if itemLink then
 				local _,_,itemQuality,_,_,_,_,_,_,_,_,classID = GetItemInfo(itemLink);
-				if itemQuality then
+				if itemQuality and itemQuality>1 then
 					if classID==2 or classID==4 then
 						local effectiveILvl = GetDetailedItemLevelInfo(itemLink)
 						itemButton.ZLV:SetText(effectiveILvl);
@@ -33,7 +33,8 @@ local function Update_itemLV_(itemButton, id, slot)
 			local itemID, itemLink, icon, stackCount, quality=PIGGetContainerItemInfo(bagID, itemButton:GetID())
 			if itemLink then
 				local itemID, itemType, itemSubType, itemEquipLoc, icon, classID, subClassID = C_Item.GetItemInfoInstant(itemLink)
-				if quality and quality>1 and classID==2 or classID==4 then
+				local quality=quality or 1
+				if quality>1 and classID==2 or classID==4 then
 					local actualItemLevel, previewLevel, sparseItemLevel = C_Item.GetDetailedItemLevelInfo(itemLink)
 					local colorRGBR, colorRGBG, colorRGBB, qualityString = C_Item.GetItemQualityColor(quality)
 					if itemButton.ZLV then
@@ -58,6 +59,21 @@ local function Update_ranse(framef,id,slot)
 				framef.ranse:Show()
 			end
 		end
+	end
+end
+local function Update_ranse_Arrows(framef,bagType,uinamex)
+	if bagType==1 or bagType==2 then
+		if not framef.Arrows then
+			framef.Arrows = framef:CreateTexture(nil, "OVERLAY");
+		    framef.Arrows:SetTexture("Interface/Buttons/UI-ActionButton-Border");
+		    framef.Arrows:SetBlendMode("ADD");
+		    framef.Arrows:SetVertexColor(0, 1, 1,0.5);
+		    framef.Arrows:SetPoint("TOPLEFT", _G[uinamex.."NormalTexture"], "TOPLEFT", 0, 0);
+		    framef.Arrows:SetPoint("BOTTOMRIGHT", _G[uinamex.."NormalTexture"], "BOTTOMRIGHT", 0, 0);
+		end
+		framef.Arrows:Show()
+	else
+		if framef.Arrows then framef.Arrows:Hide() end
 	end
 end
 --银行背包LV
@@ -104,21 +120,26 @@ function BagBankfun.Bag_Item_Ranse(frame, size, id)
 	if tocversion<100000 then
 		if id==-2 then return end
 		if frame and size then
+			local numFreeSlots, bagType = C_Container.GetContainerNumFreeSlots(id)
 			local fujiFF=frame:GetName()
 			for slot =1, size do
 				local framef=_G[fujiFF.."Item"..size+1-slot]
 				Update_ranse(framef,id,slot)
+				Update_ranse_Arrows(framef,bagType,fujiFF.."Item"..size+1-slot)
 			end
 		else
 			local Fid=IsBagOpen(id)
 			if Fid then
 				local baogeshu=GetContainerNumSlots(id)
+				local numFreeSlots, bagType = C_Container.GetContainerNumFreeSlots(id)
 				for slot =1, baogeshu do
 					local framef=_G["ContainerFrame"..Fid.."Item"..baogeshu+1-slot];
 					Update_ranse(framef,id,slot)
+					Update_ranse_Arrows(framef,bagType,"ContainerFrame"..Fid.."Item"..baogeshu+1-slot)
 				end
 			end
 		end
+
 	else
 		if frame and size==0 and id==0 then
 			for bagi=1,#bagData["bagID"] do
@@ -233,7 +254,7 @@ function BagBankfun.add_Itemslot_ZLV_ranse(famrr,BagdangeW)
 	end
 	if not famrr.ranse then
 		famrr.ranse = famrr:CreateTexture(nil, "OVERLAY");
-	    famrr.ranse:SetTexture("Interface\\Buttons\\UI-ActionButton-Border");
+	    famrr.ranse:SetTexture("Interface/Buttons/UI-ActionButton-Border");
 	    famrr.ranse:SetBlendMode("ADD");
 	    famrr.ranse:SetSize(BagdangeW*1.63, BagdangeW*1.63);
 	    famrr.ranse:SetPoint("CENTER", famrr, "CENTER", 0, 0);
@@ -285,7 +306,7 @@ function BagBankfun.addfenleibagbut(fujiui,uiname)
 						fameXX.Portrait:SetVertexColor(1.0,0.1,0.1);
 					end
 				else
-					local numFreeSlots= C_Container.GetContainerNumFreeSlots(baginfo.id[vb])
+					local numFreeSlots= C_Container.GetContainerNumSlots(baginfo.id[vb])
 					if ( numFreeSlots>0 ) then
 						fameXX.Portrait:SetVertexColor(1.0,1.0,1.0);
 					else
@@ -326,9 +347,9 @@ function BagBankfun.addfenleibagbut(fujiui,uiname)
 
 		local Templateinfo = C_XMLUtil.GetTemplateInfo("ContainerFramePortraitButtonTemplate")
 		if Templateinfo then
-			fameXX.PortraitButton = CreateFrame("DropdownButton","$parentPortraitButton",fameXX,"ContainerFramePortraitButtonTemplate");
+			fameXX.PortraitButton = CreateFrame("DropdownButton","$parentPortraitButton",fameXX,"ContainerFramePortraitButtonTemplate",fameXX,vb);
 		else
-			fameXX.PortraitButton = CreateFrame("Button","$parentPortraitButton",fameXX);
+			fameXX.PortraitButton = CreateFrame("Button","$parentPortraitButton",fameXX,nil,vb);
 			fameXX.PortraitButton:SetHighlightTexture("Interface/Buttons/ButtonHilight-Square");
 		end
 		fameXX.PortraitButton:SetAllPoints(fameXX)
@@ -443,7 +464,7 @@ end
 ---设置
 function BagBankfun.addSetbut(fujiui,point,Rneirong,tabbut)
 	local setbut = CreateFrame("Button",nil,fujiui, "TruncatedButtonTemplate"); 
-	setbut:SetNormalTexture("interface/gossipframe/bindergossipicon.blp"); 
+	setbut:SetNormalTexture(132052); 
 	setbut:SetHighlightTexture(130718);
 	setbut:SetSize(20,20);
 	setbut:SetPoint(unpack(point));

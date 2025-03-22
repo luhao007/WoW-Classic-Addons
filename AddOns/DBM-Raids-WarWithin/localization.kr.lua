@@ -58,8 +58,8 @@ L:SetOptionLocalization({
 L= DBM:GetModLocalization(2608)
 
 L:SetMiscLocalization({
-	Red		= " [빨-타카즈]",--Skeinspinner Takazj
-	Blue	= " [파-아눕]"--Anub'arash
+	Red		= RED_FONT_COLOR:WrapTextInColorCode(" [빨-타카즈j]"),--Skeinspinner Takazj
+	Blue	= BLUE_FONT_COLOR:WrapTextInColorCode(" [파-아눕]")--Anub'arash
 })
 
 ---------------------------
@@ -115,12 +115,24 @@ L:SetOptionLocalization({
 ---------------------------
 --  Sprocketmonger Lockenstock --
 ---------------------------
---L= DBM:GetModLocalization(2653)
+L= DBM:GetModLocalization(2653)
+
+L:SetWarningLocalization{
+	specWarnPolGen	= "%s으로 변경 중 - 3초",
+}
+
+L:SetOptionLocalization({
+	specWarnPolGen	= "양극 생성기가 전하를 바꿀 때 특수 경고 보기"
+})
 
 ---------------------------
 --  The One-Armed Bandit --
 ---------------------------
---L= DBM:GetModLocalization(2644)
+L= DBM:GetModLocalization(2644)
+
+L:SetMiscLocalization({
+	BaitCoil	= "감줄 유도"
+})
 
 ---------------------------
 --  Mug'Zee, Heads of Security --
