@@ -1555,10 +1555,11 @@
 	<Addon name="Rurutia">
 		<Title>露露缇娅语音包</Title>
 		<Category>副本</Category>
-	</Addon>
-	<Addon name="Rurutia_Raids">
-		<Title>露露缇娅语音包-团本</Title>
-		<Category>副本</Category>
+		<SubAddons>
+			<SubAddon name="Rurutia_Raids">
+				<Title>副本</Title>
+			</SubAddon>
+		</SubAddons>
 	</Addon>
 	<Addon name="Scrap">
 		<Title>垃圾管理</Title>
