@@ -91,6 +91,7 @@ LibSpecialization\LibSpecialization.xml
 LibSpellRange-1.0\lib.xml
 LibTime-1.0\LibTime-1.0.xml
 LibTranslit-1.0\LibTranslit-1.0.xml
+LibUIDropDownMenu\LibUIDropDownMenu.xml
 LibWindow-1.1\LibWindow-1.1.lua
 NickTag-1.0\NickTag-1.0.xml
 TaintLess\TaintLess.xml

@@ -1,7 +1,7 @@
 local Env = select(2, ...)
 if not Env.IS_CLASSIC_WRATH then return end
 
-Env.prelink = "https://wowsims.github.io/wotlk/"
+Env.prelink = "https://www.wclbox.com/"
 
 Env.supportedClasses = {
     "hunter",

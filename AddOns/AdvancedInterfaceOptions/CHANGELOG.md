@@ -1,6 +1,6 @@
 # Advanced Interface Options
 
-## [1.8.14](https://github.com/Stanzilla/AdvancedInterfaceOptions/tree/1.8.14) (2024-01-17)
-[Full Changelog](https://github.com/Stanzilla/AdvancedInterfaceOptions/compare/1.8.13...1.8.14) [Previous Releases](https://github.com/Stanzilla/AdvancedInterfaceOptions/releases)
+## [2.1.1](https://github.com/Stanzilla/AdvancedInterfaceOptions/tree/2.1.1) (2025-02-25)
+[Full Changelog](https://github.com/Stanzilla/AdvancedInterfaceOptions/compare/2.1.0...2.1.1) [Previous Releases](https://github.com/Stanzilla/AdvancedInterfaceOptions/releases)
 
-- yeet BCC package  
+- chore(toc): update version  

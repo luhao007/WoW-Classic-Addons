@@ -1,6 +1,6 @@
 ## Interface: 30404
 ## Author: Stanzilla, Semlar
-## Version: 1.8.14
+## Version: 2.1.1
 
 ## Title: Advanced Interface Options
 ## Notes: Restores access to removed interface options in Legion
@@ -21,7 +21,19 @@
 ## X-Wago-ID: ZQ6aPNW7
 
 semlib\semlib.xml
+embeds.xml
+
 utils.lua
 cvars.lua
-basicOptions.lua
+
+gui\GeneralConfigPanel.lua
+gui\CameraConfigPanel.lua
+gui\ChatConfigPanel.lua
+gui\CombatConfigPanel.lua
+gui\FloatingCombatTextConfigPanel.lua
+gui\StatusTextConfigPanel.lua
+gui\NameplateConfigPanel.lua
+gui\CVarConfigPanel.lua
+
 browser.lua
+basicOptions.lua

@@ -44,7 +44,7 @@ function UI:CreateMainWindow(classIsSupported, simLink)
     local frame = AceGUI:Create("Frame")
     frame:SetCallback("OnClose", OnClose)
     frame:SetTitle("WowSimsExporter V" .. Env.VERSION .. "")
-    frame:SetStatusText("Click 'Generate Data' to generate exportable data")
+    frame:SetStatusText("点击“生成数据”以生成可导出的数据")
     frame:SetLayout("Flow")
     _frame = frame
 
@@ -66,16 +66,18 @@ function UI:CreateMainWindow(classIsSupported, simLink)
 
     label:SetText([[
 
-To upload your character to the simuator, click on the url below that leads to the simuator website.
+想要了解您当前角色的DPS极限吗？只需简单几步，即可通过模拟器精准测算！
 
-You will find an Import button on the top right of the simulator named "Import". Click that and select the "Addon" tab, paste the data
-into the provided box and click "Import"
+1：下载并安装新手盒子：点击下方链接，完成安装。
+2：打开WoWSimsCN模拟器：在热门工具箱中找WoWSimsCN模拟器，点击进入对应职业。
+3：导入角色数据：点击“导入”按钮，选择“WSE插件”，将生成的装备属性数据粘贴到输入框中，点击“导入”即可。
+4：开始模拟：系统将根据您的装备属性，自动计算出当前的DPS极限。
 
 ]])
 
     if simLink then
         local ilabel = AceGUI:Create("InteractiveLabel")
-        ilabel:SetText("Click to copy: " .. simLink .. "\r\n")
+        ilabel:SetText("复制链接: " .. simLink .. "\r\n")
         ilabel:SetFullWidth(true)
         ilabel:SetCallback("OnClick", function()
             CreateCopyDialog(simLink)
@@ -84,7 +86,7 @@ into the provided box and click "Import"
     end
 
     local button = AceGUI:Create("Button")
-    button:SetText("Generate Data (Equipped Only)")
+    button:SetText("生成数据(仅装备)")
     button:SetWidth(300)
     button:SetCallback("OnClick", function()
         if _outputGenerator then
@@ -94,7 +96,7 @@ into the provided box and click "Import"
     frame:AddChild(button)
 
     local extraButton = AceGUI:Create("Button")
-    extraButton:SetText("Batch: Export Bag Items")
+    extraButton:SetText("批量:导出包项目")
     extraButton:SetWidth(300)
     extraButton:SetCallback("OnClick", function()
         if _outputGeneratorBags then
@@ -104,7 +106,7 @@ into the provided box and click "Import"
     frame:AddChild(extraButton)
 
     local jsonbox = AceGUI:Create("MultiLineEditBox")
-    jsonbox:SetLabel("Copy and paste into the websites importer!")
+    jsonbox:SetLabel("复制生成的代码并粘贴到WoWSimsCN模拟器中！")
     jsonbox:SetFullWidth(true)
     jsonbox:SetFullHeight(true)
     jsonbox:DisableButton(true)

@@ -79,7 +79,7 @@ function WowSimsExporter:CreateWindow(generate)
     local character = Env.CreateCharacter()
     character:SetUnit("player")
     local classIsSupported = table.contains(Env.supportedClasses, character.class)
-    local linkToSim = Env.prelink .. select(2, Env.GetSpec("player"))
+    local linkToSim = Env.prelink
 
     Env.UI:CreateMainWindow(classIsSupported, linkToSim)
     if not classIsSupported then return end
