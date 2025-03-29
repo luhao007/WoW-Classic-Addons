@@ -5869,7 +5869,7 @@ function TalentData.GetTianfuIcon(guancha,zhiye)
 	elseif tocversion<50000 then
 		local masteryIndex = GetPrimaryTalentTree();
 		if masteryIndex then
-			local id, name, description, icon, pointsSpent, background, previewPointsSpent, isUnlocked = GetTalentTabInfo(masteryIndex,guancha,false,index);
+			local _, name, _, icon, pointsSpent, background, previewPointsSpent = GetTalentTabInfo(masteryIndex,guancha,false,index);
 			zuidazhi[1]=name
 			zuidazhi[2]=icon
 		end
@@ -6085,29 +6085,16 @@ local function Player_Stats_1(activeGroup,guancha)
 	local zuidazhi = {"--",0,""}
 	local numTabs = GetNumTalentTabs(guancha)
 	for i=1,numTabs do
-		if tocversion<20000 then
-			local _, name, _, icon, pointsSpent, background, previewPointsSpent = GetTalentTabInfo(i,guancha,false,activeGroup);
-			if i==numTabs then
-				zuidazhi[3]=zuidazhi[3]..pointsSpent
-			else
-				zuidazhi[3]=zuidazhi[3]..pointsSpent.."-"
-			end
-			if pointsSpent>zuidazhi[2] then
-				zuidazhi[1]=name
-				zuidazhi[2]=pointsSpent
-			end
+		local _, name, _, icon, pointsSpent, background, previewPointsSpent = GetTalentTabInfo(i,guancha,false,activeGroup);
+		if i==numTabs then
+			zuidazhi[3]=zuidazhi[3]..pointsSpent
 		else
-			local name, icon, pointsSpent, background, previewPointsSpent = GetTalentTabInfo(i,guancha,false,activeGroup);
-			if i==numTabs then
-				zuidazhi[3]=zuidazhi[3]..pointsSpent
-			else
-				zuidazhi[3]=zuidazhi[3]..pointsSpent.."-"
-			end
-			if pointsSpent>zuidazhi[2] then
-				zuidazhi[1]=name
-				zuidazhi[2]=pointsSpent
-			end
-		end	
+			zuidazhi[3]=zuidazhi[3]..pointsSpent.."-"
+		end
+		if pointsSpent>zuidazhi[2] then
+			zuidazhi[1]=name
+			zuidazhi[2]=pointsSpent
+		end
 	end
 	return zuidazhi[1],zuidazhi[3]
 end

@@ -1711,7 +1711,7 @@ BG.Init(function()
         end)
         local function OnHyperlinkEnter(self, link)
             if not link then return end
-            local arg1, arg2, arg3, itemID, num = strsplit(":", link)
+            local _, arg2, arg3, itemID, num = strsplit(":", link)
             if arg2 == "BiaoGe" and arg3 == "AuctionWALog" and num then
                 itemID = tonumber(itemID)
                 num = tonumber(num)
@@ -1735,6 +1735,65 @@ BG.Init(function()
             _G["ChatFrame" .. i]:HookScript("OnHyperlinkLeave", GameTooltip_Hide)
             i = i + 1
         end
+        hooksecurefunc("SetItemRef", function(link, text, button)
+            if not link then return end
+            local _, arg2, arg3, itemID, num = strsplit(":", link)
+            if arg2 == "BiaoGe" and arg3 == "AuctionWALog" and num then
+                itemID = tonumber(itemID)
+                num = tonumber(num)
+                local _, link = GetItemInfo(itemID)
+                if not link then return end
+                ItemRefTooltip:SetOwner(UIParent, "ANCHOR_PRESERVE");
+                ItemRefTooltip:ClearLines()
+                ItemRefTooltip:AddLine(link:gsub("%[", ""):gsub("%]", ""), 1, 1, 1, true)
+                if BG.chatAuctionLog[num][1] and BG.chatAuctionLog[num][1].i ~= 1 then
+                    ItemRefTooltip:AddLine("......", .5, .5, .5, true)
+                end
+                for i, v in ipairs(BG.chatAuctionLog[num]) do
+                    ItemRefTooltip:AddLine(v.i .. L["、"] .. v.money .. format(L["（%s）"], v.player), 1, .82, 0)
+                end
+                ItemRefTooltip:Show()
+            end
+        end)
+    end
+
+    -- 提示已拍未交易
+    do
+        hooksecurefunc(GameTooltip, "SetBagItem", function(self, b, i)
+            if not BG.ImML() then return end
+            local itemID = C_Container.GetContainerItemID(b, i)
+            local info = C_Container.GetContainerItemInfo(b, i)
+            if not info then return end
+            local FB = BG.FB1
+            if type(BiaoGe[FB].auctionLog) ~= "table" then return end
+            local notBound
+            if not info.isBound then
+                notBound = true
+            else
+                for i = 1, GameTooltip:NumLines() do
+                    local tx = _G["GameTooltipTextLeft" .. i]:GetText()
+                    if tx then
+                        local time = tx:match(BIND_TRADE_TIME_REMAINING:gsub("%%s", "(.+)"))
+                        if time then
+                            notBound = true
+                            break
+                        end
+                    end
+                    i = i + 1
+                end
+            end
+            if notBound then
+                for k, v in pairs(BiaoGe[FB].auctionLog) do
+                    local _itemID = GetItemID(v.zhuangbei)
+                    if v.type == 1 and not v.trade and itemID == _itemID then
+                        local text = v.jine .. "(|c" .. select(4, GetClassColor(v.class)) .. v.maijia .. "|r)"
+                        -- local text = "|c" .. select(4, GetClassColor(v.class)) .. v.maijia .. "|r(" .. v.jine .. ")"
+                        GameTooltip:AddDoubleLine(L["已拍未交易"], text)
+                        GameTooltip:Show()
+                    end
+                end
+            end
+        end)
     end
 
     -- 创建应收/应付对象

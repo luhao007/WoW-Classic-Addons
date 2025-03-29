@@ -494,10 +494,12 @@ function BG.FBZhuangBeiUI(FB, t, b, bb, i, ii, scrollFrame)
 
                 HighlightBiaoGeSameItems(itemID, self)
 
+                BG.DressUpLastButton = self
                 if IsAltKeyDown() and IsControlKeyDown() then
                     SetCursor(nil)
                 elseif IsControlKeyDown() then
                     SetCursor("Interface/Cursor/Inspect")
+                    BG.DressUp()
                 elseif IsAltKeyDown() then
                     if BG.IsML then
                         if BiaoGe.options["autoAuctionStart"] == 1 then
@@ -527,6 +529,10 @@ function BG.FBZhuangBeiUI(FB, t, b, bb, i, ii, scrollFrame)
         BG.canShowTrunToItemLibCursor = false
         BG.canShowStartAuctionCursor = false
         BG.canShowHopeCursor = false
+        if BG.DressUpFrame then
+            BG.DressUpFrame:Hide()
+        end
+        BG.DressUpLastButton = nil
     end)
     -- 获得光标时
     bt:SetScript("OnEditFocusGained", function(self)

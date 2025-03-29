@@ -699,6 +699,12 @@ do
                         GameTooltip:SetItemByID(self.itemID)
                         GameTooltip:Show()
                         BG.SetHistoryMoney(self.itemID)
+                        BG.DressUpLastButton = self
+                        if IsControlKeyDown() then
+                            SetCursor("Interface/Cursor/Inspect")
+                            BG.DressUp()
+                        end
+                        BG.canShowTrunToItemLibCursor = true
                     end
                     self.ds:Show()
                 end)
@@ -706,6 +712,12 @@ do
                     GameTooltip:Hide()
                     self.ds:Hide()
                     BG.HideHistoryMoney()
+                    SetCursor(nil)
+                    BG.canShowTrunToItemLibCursor = false
+                    if BG.DressUpFrame then
+                        BG.DressUpFrame:Hide()
+                    end
+                    BG.DressUpLastButton = nil
                 end)
                 bt:SetScript("OnMouseDown", function(self, button)
                     if self.link then
@@ -1230,6 +1242,7 @@ do
         else
             tbl = BiaoGe[FB].tradeTbl
         end
+        if not tbl then return end
         for ii, _ in ipairs(tbl) do
             for _, v in ipairs(tbl[ii]) do
                 if FB == v.FB and b == v.b and i == v.i then

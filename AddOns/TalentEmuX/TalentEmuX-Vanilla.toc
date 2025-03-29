@@ -1,6 +1,6 @@
 ## Interface: 30404
 ## Author: |cff00ff00ALA|r
-## Version: 115r.250322
+## Version: 115r.250327
 
 ## Title: Talent Emu Vanilla
 ## Notes: Talent Emu

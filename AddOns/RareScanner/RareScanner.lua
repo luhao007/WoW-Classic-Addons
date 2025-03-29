@@ -10,7 +10,7 @@ local ADDON_NAME, private = ...
 local AL = LibStub("AceLocale-3.0"):GetLocale("RareScanner");
 
 -- LibAbout frames
-local LibAboutPanel = LibStub:GetLibrary("LibAboutPanel-2.0", true)
+local LibAboutPanel = LibStub:GetLibrary("LibAboutPanel-2.0RS", true)
 
 -- RareScanner database libraries
 local RSNpcDB = private.ImportLib("RareScannerNpcDB")

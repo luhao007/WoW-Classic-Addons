@@ -193,7 +193,7 @@ local function Showaddonstishi(self,laiyuan)
 		GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT",-24,0);
 	end
 	GameTooltip:AddLine("|cffFF00FF"..addonName.."|r-"..PIGGetAddOnMetadata(addonName, "Version"))
-	if NDui then
+	if Pig_OptionsUI.IsOpen_NDui() then
 		GameTooltip:AddLine(L["MAP_NIMIBUT_TIPS2"])
 	else
 		GameTooltip:AddLine(L["MAP_NIMIBUT_TIPS1"])

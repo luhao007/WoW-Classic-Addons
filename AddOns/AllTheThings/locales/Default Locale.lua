@@ -1131,8 +1131,8 @@ L.SETTINGS_MENU = {
 -- All of the locales related to the Player Tooltips module.
 L.TOOLTIP_MODULE = {
 	RANKS = {
-		AUTHOR = "Author";
-		CONTRIBUTOR = "Contributor";
+		AUTHOR = " |T"..app.asset("logo_32x32")..":0|t" .. " Author";
+		CONTRIBUTOR = " |T"..app.asset("logo_32x32")..":0|t" .. " Contributor";
 		COLLECTOR = "Collector";
 	},
 	TITLES = {

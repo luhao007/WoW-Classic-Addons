@@ -187,71 +187,73 @@ function Mapfun.WorldMap_LVSkill()
 	end
 end
 ---战争迷雾
-function Mapfun.WorldMap_Miwu()
-	if not PIGA["Map"]["WorldMapMiwu"] then return end
-	local Reveal=addonTable.Mapfun.Reveal
-	local function Updata_zoneTex(self,fullUpdate,exploredTextureInfo,TILE_SIZE_WIDTH,TILE_SIZE_HEIGHT,fog)
-		local numTexturesWide = ceil(exploredTextureInfo.textureWidth/TILE_SIZE_WIDTH);
-		local numTexturesTall = ceil(exploredTextureInfo.textureHeight/TILE_SIZE_HEIGHT);
-		local texturePixelWidth, textureFileWidth, texturePixelHeight, textureFileHeight;
-		for j = 1, numTexturesTall do
-			if ( j < numTexturesTall ) then
+local function Updata_zoneTex(self,fullUpdate,exploredTextureInfo,TILE_SIZE_WIDTH,TILE_SIZE_HEIGHT,fog,yanse)
+	local newR, newG, newB, newA=unpack(yanse)
+	local numTexturesWide = ceil(exploredTextureInfo.textureWidth/TILE_SIZE_WIDTH);
+	local numTexturesTall = ceil(exploredTextureInfo.textureHeight/TILE_SIZE_HEIGHT);
+	local texturePixelWidth, textureFileWidth, texturePixelHeight, textureFileHeight;
+	for j = 1, numTexturesTall do
+		if ( j < numTexturesTall ) then
+			texturePixelHeight = TILE_SIZE_HEIGHT;
+			textureFileHeight = TILE_SIZE_HEIGHT;
+		else
+			texturePixelHeight = mod(exploredTextureInfo.textureHeight, TILE_SIZE_HEIGHT);
+			if ( texturePixelHeight == 0 ) then
 				texturePixelHeight = TILE_SIZE_HEIGHT;
-				textureFileHeight = TILE_SIZE_HEIGHT;
+			end
+			textureFileHeight = 16;
+			while(textureFileHeight < texturePixelHeight) do
+				textureFileHeight = textureFileHeight * 2;
+			end
+		end
+		for k = 1, numTexturesWide do
+			local texture = self.overlayTexturePool:Acquire();
+			if ( k < numTexturesWide ) then
+				texturePixelWidth = TILE_SIZE_WIDTH;
+				textureFileWidth = TILE_SIZE_WIDTH;
 			else
-				texturePixelHeight = mod(exploredTextureInfo.textureHeight, TILE_SIZE_HEIGHT);
-				if ( texturePixelHeight == 0 ) then
-					texturePixelHeight = TILE_SIZE_HEIGHT;
+				texturePixelWidth = mod(exploredTextureInfo.textureWidth, TILE_SIZE_WIDTH);
+				if ( texturePixelWidth == 0 ) then
+					texturePixelWidth = TILE_SIZE_WIDTH;
 				end
-				textureFileHeight = 16;
-				while(textureFileHeight < texturePixelHeight) do
-					textureFileHeight = textureFileHeight * 2;
+				textureFileWidth = 16;
+				while(textureFileWidth < texturePixelWidth) do
+					textureFileWidth = textureFileWidth * 2;
 				end
 			end
-			for k = 1, numTexturesWide do
-				local texture = self.overlayTexturePool:Acquire();
-				if ( k < numTexturesWide ) then
-					texturePixelWidth = TILE_SIZE_WIDTH;
-					textureFileWidth = TILE_SIZE_WIDTH;
-				else
-					texturePixelWidth = mod(exploredTextureInfo.textureWidth, TILE_SIZE_WIDTH);
-					if ( texturePixelWidth == 0 ) then
-						texturePixelWidth = TILE_SIZE_WIDTH;
-					end
-					textureFileWidth = 16;
-					while(textureFileWidth < texturePixelWidth) do
-						textureFileWidth = textureFileWidth * 2;
-					end
-				end
-				texture:SetWidth(texturePixelWidth);
-				texture:SetHeight(texturePixelHeight);
-				texture:SetTexCoord(0, texturePixelWidth/textureFileWidth, 0, texturePixelHeight/textureFileHeight);
-				texture:SetPoint("TOPLEFT", exploredTextureInfo.offsetX + (TILE_SIZE_WIDTH * (k-1)), -(exploredTextureInfo.offsetY + (TILE_SIZE_HEIGHT * (j - 1))));
-				texture:SetTexture(exploredTextureInfo.fileDataIDs[((j - 1) * numTexturesWide) + k], nil, nil, "TRILINEAR");
-				if fog then
-					texture:SetVertexColor(0, 1, 0.1)
-				else
-					texture:SetVertexColor(1, 1, 1)
-				end
-				if exploredTextureInfo.isShownByMouseOver then
-					texture:SetDrawLayer("ARTWORK", 1);
-					texture:Hide();
-					local highlightRect = self.highlightRectPool:Acquire();
-					highlightRect:SetSize(exploredTextureInfo.hitRect.right - exploredTextureInfo.hitRect.left, exploredTextureInfo.hitRect.bottom - exploredTextureInfo.hitRect.top);
-					highlightRect:SetPoint("TOPLEFT", exploredTextureInfo.hitRect.left, -exploredTextureInfo.hitRect.top);
-					highlightRect.index = i;
-					highlightRect.texture = texture;
-				else
-					texture:SetDrawLayer("ARTWORK", 0);
-					texture:Show();
-					if fullUpdate then
-						self.textureLoadGroup:AddTexture(texture);
-					end
+			texture:SetWidth(texturePixelWidth);
+			texture:SetHeight(texturePixelHeight);
+			texture:SetTexCoord(0, texturePixelWidth/textureFileWidth, 0, texturePixelHeight/textureFileHeight);
+			texture:SetPoint("TOPLEFT", exploredTextureInfo.offsetX + (TILE_SIZE_WIDTH * (k-1)), -(exploredTextureInfo.offsetY + (TILE_SIZE_HEIGHT * (j - 1))));
+			texture:SetTexture(exploredTextureInfo.fileDataIDs[((j - 1) * numTexturesWide) + k], nil, nil, "TRILINEAR");
+			if fog then
+				texture:SetVertexColor(newR, newG, newB, newA)
+			else
+				texture:SetVertexColor(1, 1, 1, 1)
+			end
+			if exploredTextureInfo.isShownByMouseOver then
+				texture:SetDrawLayer("ARTWORK", 1);
+				texture:Hide();
+				local highlightRect = self.highlightRectPool:Acquire();
+				highlightRect:SetSize(exploredTextureInfo.hitRect.right - exploredTextureInfo.hitRect.left, exploredTextureInfo.hitRect.bottom - exploredTextureInfo.hitRect.top);
+				highlightRect:SetPoint("TOPLEFT", exploredTextureInfo.hitRect.left, -exploredTextureInfo.hitRect.top);
+				highlightRect.index = i;
+				highlightRect.texture = texture;
+			else
+				texture:SetDrawLayer("ARTWORK", 0);
+				texture:Show();
+				if fullUpdate then
+					self.textureLoadGroup:AddTexture(texture);
 				end
 			end
 		end
-	end	
-	local function PIGRefreshOverlays(self,fullUpdate)
+	end
+end
+function Mapfun.WorldMap_Miwu()
+	if not PIGA["Map"]["WorldMapMiwu"] then return end
+	local Reveal=addonTable.Mapfun.Reveal
+	local function PIGRefreshOverlays(self,fullUpdate,yanse)
+		local yanse=yanse or PIGA["Map"]["WorldMapMiwuColor"] or Mapfun.WorldMapMiwumorenColor
 		self.overlayTexturePool:ReleaseAll();
 		local mapID = self:GetMap():GetMapID();
 		if not mapID then return end
@@ -273,12 +275,12 @@ function Mapfun.WorldMap_Miwu()
 				["offsetY"]=offsetY,
 				["fileDataIDs"]=fileDataIDs,
 			}
-			Updata_zoneTex(self,fullUpdate,exploredTextureInfo,TILE_SIZE_WIDTH,TILE_SIZE_HEIGHT,true)
+			Updata_zoneTex(self,fullUpdate,exploredTextureInfo,TILE_SIZE_WIDTH,TILE_SIZE_HEIGHT,true,yanse)
 		end
 		local exploredMapTextures = C_MapExplorationInfo.GetExploredMapTextures(mapID);
 		if exploredMapTextures then
 			for i, exploredTextureInfo in ipairs(exploredMapTextures) do
-				Updata_zoneTex(self,fullUpdate,exploredTextureInfo,TILE_SIZE_WIDTH,TILE_SIZE_HEIGHT)
+				Updata_zoneTex(self,fullUpdate,exploredTextureInfo,TILE_SIZE_WIDTH,TILE_SIZE_HEIGHT,false,yanse)
 			end
 		end
 	end
@@ -286,5 +288,10 @@ function Mapfun.WorldMap_Miwu()
 		hooksecurefunc(pin, "RefreshOverlays", function(self,fullUpdate)
 			PIGRefreshOverlays(self,fullUpdate)
 		end)
+	end
+	function Mapfun.SetmiwuColor(yanse)
+		for pin in WorldMapFrame:EnumeratePinsByTemplate("MapExplorationPinTemplate") do
+			PIGRefreshOverlays(pin,false,yanse)
+		end
 	end
 end

@@ -22,8 +22,8 @@ local options = {
     args = {
         openExporterButton = {
             type = "execute",
-            name = "Open Exporter Window",
-            desc = "Opens the exporter window",
+            name = "打开导出器窗口",
+            desc = "打开导出器窗口",
             func = function() WowSimsExporter:OpenWindow() end
         },
     },

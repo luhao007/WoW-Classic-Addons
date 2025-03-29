@@ -14,8 +14,6 @@ local RegisterSimpleOptionsPanel do
 		local p = f:GetParent()
 		if p and type(p.OnActionChanged) == "function" then
 			p:OnActionChanged(curHandle)
-		elseif p and type(p.SaveAction) == "function" then -- DEPRECATED [2303]
-			p:SaveAction()
 		end
 	end
 	local function updateCheckButtonHitRect(self)

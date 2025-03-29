@@ -265,8 +265,6 @@ function QuickChatfun.QuickBut_Keyword()
 	ChatF99.Background:SetTexture("Interface/ChatFrame/ChatFrameBackground");
 	ChatF99.Background:SetPoint("TOPLEFT",ChatF99,"TOPLEFT",-2,2);
 	ChatF99.Background:SetPoint("BOTTOMRIGHT",ChatF99,"BOTTOMRIGHT",15,-2);
-	local newR, newG, newB, newA = unpack(PIGA["Chat"]["Tiqu"]["BgColor"])
-	ChatF99.Background:SetVertexColor(newR, newG, newB, newA)
 
 	ChatF99.ScrollToBottomButton = CreateFrame("Button",nil,ChatF99, "TruncatedButtonTemplate");
 	ChatF99.ScrollToBottomButton:SetNormalTexture(TiquCanshu["ToBotBut"][1])
@@ -580,58 +578,18 @@ function QuickChatfun.QuickBut_Keyword()
 		end
 	end);
 	---2
-	local function PIGGetAlpha()
-		if ColorPickerFrame and ColorPickerFrame.GetColorAlpha then
-			return ColorPickerFrame:GetColorAlpha()
-		elseif OpacitySliderFrame and OpacitySliderFrame.GetValue then
-			return OpacitySliderFrame:GetValue()
-		else
-			return 1
-		end
+	TiquF.OutputModeF.Color = Create.ColorBut(TiquF.OutputModeF,{"TOPLEFT",TiquF.OutputModeF,"TOPLEFT",40,-20},{18,18})
+	TiquF.OutputModeF.Color.morenColor={0,0,0,0.4}
+	function TiquF.OutputModeF.Color:PIGinitialize()
+		self.pezhiV=PIGA["Chat"]["Tiqu"]["BgColor"]
 	end
-	local function PIGkeyColorCallFun(restore)
-		local newR, newG, newB, newA;
-		if restore then
-			newR, newG, newB, newA = restore.r, restore.g, restore.b, restore.opacity
-		else
-			newA, newR, newG, newB = PIGGetAlpha(), ColorPickerFrame:GetColorRGB()
-		end
-		ChatF99.Background:SetVertexColor(newR, newG, newB, newA)
-		if tocversion<100000 then
-			TiquF.OutputModeF.Color:SetBackdropColor(newR, newG, newB, newA);
-		else
-			TiquF.OutputModeF.Color.Color:SetVertexColor(newR, newG, newB, newA)
-		end
+	function TiquF.OutputModeF.Color:PIGSetValue(newR, newG, newB, newA)
 		PIGA["Chat"]["Tiqu"]["BgColor"]={newR, newG, newB, newA}
+		ChatF99.Background:SetVertexColor(newR, newG, newB, newA)
 	end
-	if tocversion<100000 then
-		TiquF.OutputModeF.Color = CreateFrame("Button", nil, TiquF.OutputModeF, "BackdropTemplate")
-		TiquF.OutputModeF.Color:SetBackdrop({
-			bgFile = Create.bgFile, tile = true, tileSize = 0,
-			edgeFile = Create.edgeFile, edgeSize = 8, 
-			insets = { left = 0, right = 0, top = 0, bottom = 0 }});
-		TiquF.OutputModeF.Color:SetBackdropBorderColor(1, 1, 1, 1);
-		TiquF.OutputModeF.Color:SetBackdropColor(newR, newG, newB, newA);
-	else
-		TiquF.OutputModeF.Color = CreateFrame("Button", nil, TiquF.OutputModeF, "ColorSwatchTemplate")
-		TiquF.OutputModeF.Color.Color:SetVertexColor(newR, newG, newB, newA)
-	end
-	TiquF.OutputModeF.Color:SetPoint("TOPLEFT",TiquF.OutputModeF,"TOPLEFT",40,-20);
-	TiquF.OutputModeF.Color:SetSize(18,18);
-	TiquF.OutputModeF.Color:SetScript("OnClick", function (self)
-		local info={}
-		info.r, info.g, info.b, info.opacity = ChatF99.Background:GetVertexColor()
-		info.hasOpacity = true
-		info.swatchFunc=PIGkeyColorCallFun
-		info.opacityFunc=PIGkeyColorCallFun
-		info.cancelFunc=PIGkeyColorCallFun
-		if ColorPickerFrame.SetupColorPickerAndShow then
-			ColorPickerFrame:SetupColorPickerAndShow(info);
-		else
-			OpenColorPicker(info)
-		end
-	end);
 	TiquF.OutputModeF.Color.t = PIGFontString(TiquF.OutputModeF.Color,{"LEFT",TiquF.OutputModeF.Color,"RIGHT",4,0},"背景颜色")
+	local miyumorenColor=PIGA["Chat"]["Tiqu"]["BgColor"] or TiquF.OutputModeF.Color.morenColor
+	ChatF99.Background:SetVertexColor(unpack(miyumorenColor))
 
 	TiquF.OutputModeF.CombatHide = PIGCheckbutton(TiquF.OutputModeF,{"TOPLEFT",TiquF.OutputModeF,"TOPLEFT",220,-20},{"战斗中隐藏"})
 	TiquF.OutputModeF.CombatHide:SetScript("OnClick", function (self)
@@ -655,6 +613,8 @@ function QuickChatfun.QuickBut_Keyword()
 		self.tiquOKFlash:SetChecked(TiquCanshu["tiquOKFlash"])
 		self.GaoduHSlider:PIGSetValue(PIGA["Chat"]["Tiqu"]["KeywordFHeight"]);
 		self.CombatHide:SetChecked(PIGA["Chat"]["Tiqu"]["CombatHide"])
+		local miyumorenColor=PIGA["Chat"]["Tiqu"]["BgColor"] or TiquF.OutputModeF.Color.morenColor
+		self.Color:ShowButColor(unpack(miyumorenColor))
 	end);
 	TiquF:HookScript("OnShow", function(self)
 		self.KeyOpen:SetChecked(PIGA["Chat"]["Tiqu"]["Open"])

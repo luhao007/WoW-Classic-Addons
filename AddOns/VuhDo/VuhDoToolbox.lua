@@ -1052,7 +1052,7 @@ function VUHDO_getUnitDirection(aUnit)
 	tIsInInstance, _ = IsInInstance();
 
 	if tIsInInstance or (WorldMapFrame ~= nil and WorldMapFrame:IsShown())
-		or (GetMouseFocus() ~= nil and GetMouseFocus():GetName() == nil) then
+		or (GetMouseFoci()[1] ~= nil and GetMouseFoci()[1]:GetName() == nil) then
 		return nil;
 	end
 

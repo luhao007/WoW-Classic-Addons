@@ -3,22 +3,9 @@
     <Script file="Locales\zhTW.lua"/>
 
     <Include file="Libs\embeds.xml"/>
-
-    <Script file="Core\DB\function.lua"/>
-    <Script file="Core\DB\DB.lua"/>
-    <Script file="Core\DB\DB_FilterClassItem.lua"/>
-    <Script file="Core\DB\DB_BossName.lua"/>
-    <Script file="Core\DB\DB_EncounterID.lua"/>
-    <Script file="Core\DB\DB_Loot_BlackWhiteList.lua"/>
-    <Script file="Core\DB\DB_Loot_CTM.lua"/>
-    <Script file="Core\DB\DB_Loot_WLK.lua"/>
-    <Script file="Core\DB\DB_Loot_Vanilla_Sod.lua"/>
-    <Script file="Core\DB\DB_Loot_Vanilla_60.lua"/>
-    <Script file="Core\DB\DB_CommerceAuthority_Vanilla.lua"/>
-
+    <Include file="Core\DB\DB.xml"/>
     <Script file="Core\function1.lua"/>
     <Script file="Core\function2.lua"/>
-
     <Include file="Core\FBUI\FBUI.xml"/>
 
     <Script file="Core\Module\History.lua"/>

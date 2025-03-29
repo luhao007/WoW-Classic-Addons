@@ -268,6 +268,16 @@ if tocversion<100000 then
 			Pig_Options_RLtishi_UI:Show()
 		end
 	end);
+	WorldMapF.WorldMapMiwu.Color = Create.ColorBut(WorldMapF.WorldMapMiwu,{"LEFT",WorldMapF.WorldMapMiwu.Text,"RIGHT",10,0},{18,18})
+	WorldMapF.WorldMapMiwu.Color.morenColor={0, 1, 0.1, 0.8}
+	function WorldMapF.WorldMapMiwu.Color:PIGinitialize()
+		self.pezhiV=PIGA["Map"]["WorldMapMiwuColor"]
+	end
+	function WorldMapF.WorldMapMiwu.Color:PIGSetValue(newR, newG, newB, newA)
+		PIGA["Map"]["WorldMapMiwuColor"]={newR, newG, newB, newA}
+		Mapfun.SetmiwuColor({newR, newG, newB, newA})
+	end
+	Mapfun.WorldMapMiwumorenColor=WorldMapF.WorldMapMiwu.Color.morenColor
 end
 WorldMapF:HookScript("OnShow", function (self)
 	WorldMapF.WorldMapXY:SetChecked(PIGA["Map"]["WorldMapXY"])
@@ -276,6 +286,8 @@ WorldMapF:HookScript("OnShow", function (self)
 		WorldMapF.WorldMapLV:SetChecked(PIGA["Map"]["WorldMapLV"])
 		WorldMapF.WorldMapSkill:SetChecked(PIGA["Map"]["WorldMapSkill"])
 		WorldMapF.WorldMapMiwu:SetChecked(PIGA["Map"]["WorldMapMiwu"])
+		local miyumorenColor=PIGA["Map"]["WorldMapMiwuColor"] or WorldMapF.WorldMapMiwu.Color.morenColor
+		WorldMapF.WorldMapMiwu.Color:ShowButColor(unpack(miyumorenColor))
 	end
 end);
 --==================================

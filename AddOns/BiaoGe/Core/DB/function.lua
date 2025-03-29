@@ -104,8 +104,9 @@ function BG.IsWLKFB(FB)
     end
 end
 
-local tbl = { "SW", "BT", "HS", "TK", "SSC", "ZA", "KZ","BWL" }
+local tbl = { "SW", "BT", "HS", "TK", "SSC", "ZA", "KZ", "BWL" }
 function BG.IsTBCFB(FB)
+    if not BG.IsWLK then return false end
     local FB = FB or BG.FB1
     for _, _FB in ipairs(tbl) do
         if FB == _FB then

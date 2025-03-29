@@ -1,11 +1,15 @@
 ## Interface: 30404
 ## Author: foxlit
-## Version: Zeta 6
+## Version: Ånd 5a
 
 ## Title: OPie
 ## Notes: Group abilities into rings that appear when you hold down a binding.
 ## Title-zhCN: |cFFFFE00A<|r|cFFFFF468功能|r|cFFFFE00A>|r |cFFFFFFFF环形动作条|r |cFFFFE00AOPie|r
 ## Notes-zhCN: 当你按下快捷键时显示一个环形的技能分组.
+
+## IconTexture: Interface/AddOns/OPie/gfx/opie_ring_icon
+
+## AddonCompartmentFunc: OPie_OpenSettings
 
 ## OptionalDeps: TaintLess
 
@@ -17,12 +21,14 @@
 
 Libs\Evie.lua
 Libs\Niji.lua
-Libs\Mirage.lua
 Libs\TaintLess.xml
 Libs\exui\exui.xml
 Libs\ActionBook\ActionBook.xml
+Libs\Mirage.lua
 Libs\TenSettings.lua
 Libs\NotGameTooltip.lua
+Meta\PackTag-2.lua
+Meta\Widgets.lua
 Locale.lua
 OPieCore.lua
 OPieUI.lua
@@ -33,7 +39,9 @@ CustomRingsConfig.lua
 Meta\StanceBar.lua
 Meta\SpecSet.lua
 Meta\DataBroker.lua
+Meta\EQSet2.lua
 Meta\PSConfig.lua
 Bundle\QuestItems.lua
+Bundle\ExtraActions.lua
 Bundle\Tracking.lua
 Bundle\Editable.lua

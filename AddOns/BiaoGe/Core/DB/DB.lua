@@ -123,6 +123,8 @@ do
             -- TBC
             AddDB("SW", mainFrameWidth, 835, 3, 8, { 0, 5, 8 })
             AddDB("BT", mainFrameWidth, 835, 3, 11, { 0, 5, 9 })
+            AddDB("HS", mainFrameWidth, 835, 2, 7, { 0, 5, })
+            AddDB("SSC", mainFrameWidth, 835, 3, 12, { 0, 6, 10 })
             AddDB("BWL", mainFrameWidth, 810, 3, 10, { 0, 5, 9 })
         elseif BG.IsCTM then
             AddDB("BOT", 1715, 930, 4, 15, { 0, 5, 10, 14 }, 2)
@@ -130,7 +132,8 @@ do
     end
 
     do
-        local function AddDB(FB, instanceID, phase, maxplayers, lootQuality, difficultyTable, phaseTable, bossPositionTbl)
+        local function AddDB(FB, instanceID, phase, maxplayers, lootQuality,
+                             difficultyTable, phaseTable, bossPositionTbl, shortName)
             tinsert(BG.FBtable, FB)
             tinsert(BG.FBtable2,
                 {
@@ -139,6 +142,7 @@ do
                     localName = GetRealZoneText(instanceID),
                     phase = phase,
                     maxplayers = maxplayers,
+                    shortName = shortName,
                 })
             BG.FBIDtable[instanceID] = FB
             BG.lootQuality[FB] = lootQuality or 4
@@ -226,9 +230,18 @@ do
 
             -- TBC
             do
-                AddDB("BWL", 469, "")
-                AddDB("BT", 564, "")
-                AddDB("SW", 580, "")
+                AddDB("BWL", 469, "", nil, nil, nil, nil, nil, L["黑翼之巢"])
+                AddDB("SSC", 548, "", nil, nil, nil, nil, nil, L["毒蛇风暴"])
+                AddDB("HS", 534, "", nil, nil, nil, nil, nil, L["海加尔山"])
+                AddDB("BT", 564, "", nil, nil, nil, nil, nil, L["黑暗神殿"])
+                AddDB("SW", 580, "", nil, nil, nil, nil, nil, L["太阳井"])
+
+                BG.FBIDtable[550] = "SSC" -- 风暴要塞
+                BG.bossPositionStartEnd[550] = { 7, 10 }
+                for i = 7, 10 do
+                    BG.FBfromBossPosition["SSC"][i] = { name = "TK", localName = GetRealZoneText(550) }
+                    BG.instanceIDfromBossPosition["SSC"][i] = 550
+                end
             end
         elseif BG.IsCTM then
             BG.FB1 = "BOT"

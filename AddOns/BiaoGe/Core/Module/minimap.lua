@@ -12,7 +12,7 @@ if not ldb then return end
 
 local pt = print
 
-local plugin = ldb:NewDataObject(AddonName, { type = "data source", icon = "Interface\\AddOns\\BiaoGe\\Media\\icon\\icon" })
+local plugin = ldb:NewDataObject(AddonName, { text = AddonName, type = "data source", icon = "Interface\\AddOns\\BiaoGe\\Media\\icon\\icon" })
 
 function plugin:OnClick(button) --function plugin.OnClick(self, button)
     if button == "LeftButton" then
@@ -44,6 +44,7 @@ function plugin:OnLeave(button)
 end
 
 local frame = CreateFrame("Frame")
+frame:RegisterEvent("PLAYER_LOGIN")
 frame:SetScript("OnEvent", function()
     local icon = LibStub("LibDBIcon-1.0", true)
     if not icon then return end
@@ -59,4 +60,3 @@ frame:SetScript("OnEvent", function()
         end
     end)
 end)
-frame:RegisterEvent("PLAYER_LOGIN")

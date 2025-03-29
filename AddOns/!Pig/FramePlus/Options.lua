@@ -383,8 +383,6 @@ addonTable.FramePlus = function()
 	FramePlusfun.Skill()
 	FramePlusfun.BlizzardUI_Move()
 	FramePlusfun.Character_ADD()
-	if tocversion<40000 then
-		FramePlusfun.Talent()	
-	end
+	FramePlusfun.Talent()
 	FramePlusfun.Character_Shuxing()
 end

@@ -10,7 +10,7 @@
 	<Script file="MerchantFrame.lua" />
 	<Script file="FriendsFrame.lua" />
 	<Script file="MacroFrame.lua" />
-	<Include file="TalentFrame\TalentFrame.xml" />
+	<Script file="TalentFrame.lua" />
 	<Script file="CharacterFrame.lua" />
 	<Script file="WowUIMove.lua" />
 </Ui>

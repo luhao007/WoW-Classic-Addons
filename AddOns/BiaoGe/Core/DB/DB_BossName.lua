@@ -243,6 +243,33 @@ do
     local FB = "BT"
     Addother(boss)
     AddDB(FB, boss)
+
+    local boss = {
+        { name = L["雷\n基\n・\n冬\n寒"], color = "87CEFA" },
+        { name = L["安\n纳\n塞\n隆"], color = "CD5C5C" },
+        { name = L["卡\n兹\n洛\n加"], color = "FFD700" },
+        { name = L["阿\n兹\n加\n洛"], color = "CC6600" },
+        { name = L["阿\n克\n蒙\n德"], color = "FF3300" },
+    }
+    local FB = "HS"
+    Addother(boss)
+    AddDB(FB, boss)
+
+    local boss = {
+        { name = L["海\n度\n斯"], color = "32CD32" },
+        { name = L["鱼\n斯\n拉"], color = "87CEFA" },
+        { name = L["盲\n眼\n者"], color = "D3D3D3" },
+        { name = L["深\n水\n领\n主"], color = "9932CC" },
+        { name = L["踏\n潮\n者"], color = "CC6600" },
+        { name = L["瓦\n丝\n琪"], color = "00BFFF" },
+        { name = L["奥"], color = "FF7F50" },
+        { name = L["空\n灵\n机\n甲"], color = "FFFF00" },
+        { name = L["大\n星\n术\n师"], color = "7B68EE" },
+        { name = L["凯\n尔\n萨\n斯"], color = "FF3300" },
+    }
+    local FB = "SSC"
+    Addother(boss)
+    AddDB(FB, boss)
 end
 
 -- WLK

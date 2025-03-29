@@ -329,7 +329,7 @@ function BG.RoleOverviewUI()
             }
         end
     end
-    ------------------角色总览UI------------------
+    -- 角色总览UI
     local savePoint
     local function ShowAllServer()
         local isShiftKeyDown = IsShiftKeyDown()
@@ -643,7 +643,7 @@ function BG.RoleOverviewUI()
             if not IsAltKeyDown() then
                 AddDB(BiaoGeAccounts, true)
             end
-            BG.SortRoleOverview(newTbl)
+            newTbl = BG.SortRoleOverview(newTbl)
 
             local num = 1
             for _, v in ipairs(newTbl) do
@@ -956,7 +956,7 @@ function BG.RoleOverviewUI()
             end
             AddDB(BiaoGe, copyTbl1)
             AddDB(BiaoGeAccounts, copyTbl2, true)
-            BG.SortRoleOverview(newTbl)
+            newTbl = BG.SortRoleOverview(newTbl)
 
             -- 计算合计
             for ii in ipairs(newTbl) do
@@ -1076,6 +1076,10 @@ function BG.RoleOverviewUI()
     end
 
     function BG.SortRoleOverview(newTbl)
+        local isVIP
+        if BiaoGe.options["roleOverviewSort1"] == "vip" then
+            isVIP = true
+        end
         sort(newTbl, function(a, b)
             if ShowAllServer() then
                 local a_val = a.realmID
@@ -1090,17 +1094,39 @@ function BG.RoleOverviewUI()
                 end
             end
 
-            local s = BiaoGe.options["roleOverviewSort1"]
-            local tbl = { strsplit("-", s) }
-            for _, key in ipairs(tbl) do
-                if a[key] and b[key] then
-                    if a[key] ~= b[key] then
-                        return a[key] > b[key]
+            if not isVIP then
+                local s = BiaoGe.options["roleOverviewSort1"]
+                local tbl = { strsplit("-", s) }
+                for _, key in ipairs(tbl) do
+                    if a[key] and b[key] then
+                        if a[key] ~= b[key] then
+                            return a[key] > b[key]
+                        end
                     end
                 end
             end
             return false
         end)
+        if isVIP and BG.BiaoGeVIPVerNum and BG.BiaoGeVIPVerNum >= 10140 then
+            local tbl = {}
+            for _, vv in ipairs(BiaoGeVIP.RoleOverviewSort[realmID]) do
+                for i, v in ipairs(newTbl) do
+                    if v.realmID == realmID and v.player == vv.player then
+                        tinsert(tbl, v)
+                        tremove(newTbl, i)
+                        break
+                    end
+                end
+            end
+            if ShowAllServer() then
+                for i, v in ipairs(newTbl) do
+                    tinsert(tbl, v)
+                end
+            end
+            return tbl
+        else
+            return newTbl
+        end
     end
 
     BG.RegisterEvent("MODIFIER_STATE_CHANGED", function(self, event, enter)
@@ -1110,7 +1136,7 @@ function BG.RoleOverviewUI()
         end
     end)
 
-    ------------------获取副本CD------------------
+    -- 获取副本CD
     do
         BiaoGe.FBCD = BiaoGe.FBCD or {}
         BiaoGe.FBCD[realmID] = BiaoGe.FBCD[realmID] or {}
@@ -1225,7 +1251,7 @@ function BG.RoleOverviewUI()
         end)
     end
 
-    ------------------5人本CD------------------
+    -- 5人本CD
     if not BG.IsVanilla then
         local height = 22
         local width_fb = 100
@@ -1383,7 +1409,7 @@ function BG.RoleOverviewUI()
                     end
                 end
             end
-            BG.SortRoleOverview(newTbl)
+            newTbl = BG.SortRoleOverview(newTbl)
 
             local last
             local n = 0
@@ -1454,7 +1480,7 @@ function BG.RoleOverviewUI()
         end
     end
 
-    ------------------日常任务------------------
+    -- 日常任务
     do
         BiaoGe.QuestCD = BiaoGe.QuestCD or {}
         BiaoGe.QuestCD[realmID] = BiaoGe.QuestCD[realmID] or {}
@@ -1650,7 +1676,7 @@ function BG.RoleOverviewUI()
         end)
     end
 
-    ------------------专业技能CD------------------
+    -- 专业技能CD
     do
         BiaoGe.tradeSkillCooldown = BiaoGe.tradeSkillCooldown or {}
         BiaoGe.tradeSkillCooldown[realmID] = BiaoGe.tradeSkillCooldown[realmID] or {}
@@ -1827,7 +1853,7 @@ function BG.RoleOverviewUI()
         end)
     end
 
-    ------------------获取货币信息------------------
+    -- 获取货币信息
     do
         BiaoGe.Money = BiaoGe.Money or {}
         BiaoGe.Money[realmID] = BiaoGe.Money[realmID] or {}
@@ -1877,7 +1903,7 @@ function BG.RoleOverviewUI()
         end
     end
 
-    ------------------角色装备和装等------------------
+    -- 角色装备和装等
     do
         BiaoGe.equip = BiaoGe.equip or {}
         BiaoGe.equip[realmID] = BiaoGe.equip[realmID] or {}
@@ -1928,7 +1954,7 @@ function BG.RoleOverviewUI()
         end)
     end
 
-    ------------------一键排灵魂烘炉------------------
+    -- 一键排灵魂烘炉
     if not BG.IsVanilla then
         BiaoGe.lastChooseLFD = BiaoGe.lastChooseLFD or {}
         BiaoGe.lastChooseLFD[realmID] = BiaoGe.lastChooseLFD[realmID] or {}
@@ -2087,7 +2113,8 @@ function BG.RoleOverviewUI()
                 end
             end
         end)
-        hooksecurefunc("LFDQueueFrame_SetType", function(value)
+        hooksecurefunc("LFDQueueFrame_SetTypeInternal", function(value)
+            -- pt(value)
             if PVEFrame:IsVisible() then
                 BiaoGe.lastChooseLFD[realmID][player].type = value
             end
@@ -2187,7 +2214,7 @@ function BG.RoleOverviewUI()
     end
 end
 
-------------------当前角色货币面板------------------
+-- 当前角色货币面板
 --[[
     do
         function BG.MoneyBannerUpdate()

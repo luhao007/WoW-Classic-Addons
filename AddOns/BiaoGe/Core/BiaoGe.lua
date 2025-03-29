@@ -1303,7 +1303,7 @@ BG.Init(function()
             BG.UpdateButtonClearBiaoGeMoney()
         end
 
-        local function Create_FBButton(FB, parent)
+        local function Create_FBButton(FB, parent, shortName)
             local bt = CreateFrame("Button", nil, parent)
             bt:SetHeight(parent:GetHeight())
             bt:SetNormalFontObject(BG.FontBlue15)
@@ -1314,9 +1314,10 @@ BG.Init(function()
             else
                 bt:SetPoint("LEFT", last, "RIGHT", 0, 0)
             end
-            bt:SetText(BG.GetFBinfo(FB, "localName"))
+            -- bt:SetText(BG.GetFBinfo(FB, "localName"))
+            bt:SetText(shortName or BG.GetFBinfo(FB, "localName"))
             local t = bt:GetFontString()
-            bt:SetWidth(t:GetStringWidth() + 20)
+            bt:SetWidth(t:GetStringWidth() + (shortName and 10 or 20))
             parent:SetWidth(parent:GetWidth() + bt:GetWidth())
             bt:SetHighlightTexture("Interface/PaperDollInfoFrame/UI-Character-Tab-Highlight")
             last = bt
@@ -1335,13 +1336,14 @@ BG.Init(function()
 
         if BG.IsWLK then
             BG.TabButtonsFB_TBC = CreateFrame("Frame", nil, BG.TabButtonsFB)
+            -- BG.TabButtonsFB_TBC:SetPoint("TOPLEFT", BG.MainFrame, "TOPLEFT", 80, -28)
             BG.TabButtonsFB_TBC:SetPoint("RIGHT", BG.TabButtonsFB, "LEFT", -60, -0)
             BG.TabButtonsFB_TBC:SetHeight(20)
         end
 
         for i, v in ipairs(BG.FBtable2) do
             local FB = v.FB
-            if not BG.IsTBCFB(FB) then
+            if not (BG.IsWLK and BG.IsTBCFB(FB)) then
                 BG["Button" .. v.FB] = Create_FBButton(v.FB, BG.TabButtonsFB)
             end
         end
@@ -1350,7 +1352,7 @@ BG.Init(function()
             for i, v in ipairs(BG.FBtable2) do
                 local FB = v.FB
                 if BG.IsTBCFB(FB) then
-                    BG["Button" .. v.FB] = Create_FBButton(v.FB, BG.TabButtonsFB_TBC)
+                    BG["Button" .. v.FB] = Create_FBButton(v.FB, BG.TabButtonsFB_TBC, BG.GetFBinfo(FB, "shortName"))
                 end
             end
         end
@@ -2866,7 +2868,7 @@ BG.Init(function()
 
         BG.After(5, function()
             if BG.GetVerNum(BG.ver) < 11500 then
-                BG.SendSystemMessage(L["你的BiaoGe插件存在问题，请删除本地插件再重新安装一次。"])
+                BG.SendSystemMessage(L["你的BiaoGe插件存在问题，请删除本地插件再重新安装一次（需要大退）。"])
             end
         end)
     end
@@ -2882,6 +2884,19 @@ do
     BG.raidRosterName = {}
     BG.raidRosterIsOnline = {}
 
+    local function CheckIgnore()
+        for i = 1, C_FriendList.GetNumIgnores() do
+            local ignoreName = C_FriendList.GetIgnoreName(i)
+            for i, v in ipairs(BG.raidRosterInfo) do
+                if v.name == ignoreName then
+                    C_FriendList.DelIgnore(ignoreName)
+                    BG.SendSystemMessage((format(L["已把%s从屏蔽名单中移除，防止你看不到对方的拍卖聊天信息。"], SetClassCFF(ignoreName))))
+                    break
+                end
+            end
+        end
+    end
+
     function BG.UpdateRaidRosterInfo()
         wipe(BG.raidRosterInfo)
         wipe(BG.groupRosterInfo)
@@ -2896,12 +2911,13 @@ do
 
         if IsInRaid(1) then
             for i = 1, GetNumGroupMembers() do
-                local name, rank, subgroup, level, class2, class, zone, online, isDead, role, isML, combatRole =
+                local fullName, rank, subgroup, level, class2, class, zone, online, isDead, role, isML, combatRole =
                     GetRaidRosterInfo(i)
-                if name then
-                    name = strsplit("-", name)
+                if fullName then
+                    local name = strsplit("-", fullName)
                     local a = {
                         name = name,
+                        fullName=fullName,
                         rank = rank,
                         subgroup = subgroup,
                         level = level,
@@ -2938,6 +2954,7 @@ do
                     BG.raidRosterIsOnline[name] = online
                 end
             end
+            CheckIgnore()
         elseif IsInGroup(1) then
             for i = 1, GetNumGroupMembers() do
                 local name = UnitName("party" .. i)
@@ -2991,7 +3008,7 @@ end
 
 ----------其他----------
 do
-    ----------插件命令----------
+    -- 插件命令
     SlashCmdList["BIAOGE"] = function()
         BG.MainFrame:SetShown(not BG.MainFrame:IsVisible())
     end
@@ -3016,159 +3033,6 @@ do
         BG.SetFBCD(nil, nil, true)
     end
     SLASH_BiaoGeRoleOverview1 = "/bgr"
-end
-
---DEBUG
-do
-    local yes, yes2, yes3
-    SlashCmdList["BIAOGETEST"] = function()
-        -- BG.DeBug = true
-        if BGV.HistoryMainFrame then
-            BGV.HistoryMainFrame:SetShown(not BGV.HistoryMainFrame:IsVisible())
-        end
-
-        local CDing
-        if not yes and AtlasLoot then
-            yes = true
-            function AtlasLoot.Button:AddChatLink(link)
-                if CDing then return end
-                if ChatFrameEditBox and ChatFrameEditBox:IsVisible() then
-                    ChatFrameEditBox:Insert(link)
-                else
-                    ChatEdit_ActivateChat(ChatEdit_ChooseBoxForSend())
-                    ChatEdit_InsertLink(link)
-                end
-            end
-
-            for i = 1, 60 do
-                if _G["AtlasLoot_Button_" .. i] then
-                    local script = _G["AtlasLoot_Button_" .. i]:GetScript("OnClick")
-                    _G["AtlasLoot_Button_" .. i]:SetScript("OnClick", function(self, button)
-                        if IsShiftKeyDown() and self.ItemID then
-                            CDing = true
-                            BG.After(0, function()
-                                CDing = false
-                            end)
-                            ChatEdit_ActivateChat(ChatEdit_ChooseBoxForSend())
-                            ChatFrame1EditBox:ClearHighlightText()
-                            ChatEdit_InsertLink(self.ItemID .. ",")
-                            ChatFrame1EditBox:HighlightText()
-                            BG.PlaySound(1)
-                            return
-                        end
-                        script(self, button)
-                    end)
-                end
-            end
-        end
-
-        if AtlasLoot then
-            for i = 1, 60 do
-                if _G["AtlasLoot_SecButton_" .. i] then
-                    local script = _G["AtlasLoot_SecButton_" .. i]:GetScript("OnClick")
-                    _G["AtlasLoot_SecButton_" .. i]:SetScript("OnClick", function(self, button)
-                        if IsShiftKeyDown() and self.ItemID then
-                            CDing = true
-                            BG.After(0, function()
-                                CDing = false
-                            end)
-                            ChatEdit_ActivateChat(ChatEdit_ChooseBoxForSend())
-                            ChatFrame1EditBox:ClearHighlightText()
-                            ChatEdit_InsertLink(self.ItemID .. ",")
-                            ChatFrame1EditBox:HighlightText()
-                            BG.PlaySound(1)
-                            return
-                        end
-                        script(self, button)
-                    end)
-                end
-            end
-        end
-
-        if not yes3 and AtlasQuestInsideFrame then
-            for i = 1, 6 do
-                if _G["AtlasQuestItemframe" .. i] then
-                    yes3 = true
-                    local script = _G["AtlasQuestItemframe" .. i]:GetScript("OnClick")
-                    _G["AtlasQuestItemframe" .. i]:SetScript("OnClick", function(self, button)
-                        if IsShiftKeyDown() and self:IsVisible() then
-                            CDing = true
-                            BG.After(0, function()
-                                CDing = false
-                            end)
-                            local itemID
-                            if (Allianceorhorde == 1) then
-                                itemID = getglobal("Inst" .. AQINSTANZ .. "Quest" .. AQSHOWNQUEST .. "ID" .. AQTHISISSHOWN)
-                            else
-                                itemID = getglobal("Inst" .. AQINSTANZ .. "Quest" .. AQSHOWNQUEST .. "ID" .. AQTHISISSHOWN .. "_HORDE")
-                            end
-                            ChatEdit_ActivateChat(ChatEdit_ChooseBoxForSend())
-                            ChatFrame1EditBox:ClearHighlightText()
-                            ChatEdit_InsertLink(itemID .. ",")
-                            ChatFrame1EditBox:HighlightText()
-                            BG.PlaySound(1)
-                            return
-                        end
-                        script(self, button)
-                    end)
-                end
-            end
-        end
-
-        if IsAddOnLoaded("Blizzard_EncounterJournal") then
-            BG.After(0, function()
-                ChatEdit_ActivateChat(ChatEdit_ChooseBoxForSend())
-                ChatFrame1EditBox:SetText("")
-                for i = 1, EJ_GetNumLoot() do
-                    local itemInfo = C_EncounterJournal.GetLootInfoByIndex(i)
-                    ChatEdit_InsertLink(itemInfo.itemID .. ",")
-                end
-                ChatFrame1EditBox:HighlightText()
-                BG.PlaySound(1)
-            end)
-        end
-    end
-    SLASH_BIAOGETEST1 = "/bgdebug"
-
-    SlashCmdList["BIAOGETEST2"] = function()
-        -- BiaoGe.AuctionLog["苍骑士仓库"] = BiaoGe.AuctionLog["苍骑士仓库"] or {}
-        -- tinsert(BiaoGe.AuctionLog["苍骑士仓库"], {
-        --     ["money"] = 50,
-        --     ["itemID"] = 43013,
-        --     ["time"] = 1723270112,
-        --     ["item"] = "|cffffffff|Hitem:43013::::::::1:::::::::|h[冰冷的肉]|h|r",
-        -- })
-        -- tinsert(BiaoGe.AuctionLog["苍骑士仓库"], {
-        --     ["money"] = 50,
-        --     ["itemID"] = 34054,
-        --     ["time"] = 1723272776,
-        --     ["item"] = "|cffffffff|Hitem:34054::::::::1:::::::::|h[无限之尘]|h|r",
-        -- })
-        -- tinsert(BiaoGe.AuctionLog["苍骑士仓库"], {
-        --     ["money"] = 300,
-        --     ["item"] = "|cffffffff|Hitem:43013::::::::1:::::::::|h[冰冷的肉]|h|r",
-        --     ["itemID"] = 43013,
-        --     ["time"] = 1723284569,
-        -- })
-
-        -- local addonName = "MeetingHorn"
-        -- if IsAddOnLoaded(addonName) then
-        --     local MeetingHorn = LibStub("AceAddon-3.0"):GetAddon(addonName)
-        --     pt(UnitName("target"), MeetingHorn.db.realm.starRegiment.regimentData[UnitName("target")])
-        -- end
-        -- if BG.lastAuctionFrame.frame:IsVisible() then
-        --     BG.lastAuctionFrame.frame:Hide()
-        -- else
-        --     BG.lastAuctionFrame.frame:Show()
-        -- end
-
-        -- BG.qiankuanTradeFrame.Update()
-
-        -- local name, link, quality, level, _, _, _, stackCount, _, Texture, _, typeID, subclassID, bindType = GetItemInfo(45087)
-        -- BG.AddLootItem_stackCount(BG.FB1, 15, link, Texture, level, nil, 1, typeID)
-        -- BG.AddLootItem_stackCount(BG.FB1, 15, link, Texture, level, nil, 2, typeID)
-    end
-    SLASH_BIAOGETEST21 = "/bgdebug2"
 end
 
 -- local tex = UIParent:CreateTexture()

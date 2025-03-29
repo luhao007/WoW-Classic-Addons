@@ -1,19 +1,22 @@
 local AB, _, T = assert(OPie.ActionBook:compatible(2,14), "Requires a compatible version of ActionBook"), ...
+if T.TenEnv then T.TenEnv() end
+
 local ORI, EV, L, PC, XU, config = OPie.UI, T.Evie, T.L, T.OPieCore, T.exUI, T.config
 local COMPAT = select(4,GetBuildInfo())
 local MODERN, CF_WRATH = COMPAT >= 10e4, COMPAT < 10e4 and COMPAT >= 3e4
 local GameTooltip = T.NotGameTooltip or GameTooltip
 
-local exclude, questItems, IsQuestItem, disItems = PC:RegisterPVar("AutoQuestExclude", {}), {}
+local exclude, questItems = PC:RegisterPVar("AutoQuestExclude", {}), {}
+local IsQuestItem, IsQuestItemF, disItems
 local function getContainerItemQuestInfo(bag, slot)
 	if bag and slot then
 		local iqi = C_Container.GetContainerItemQuestInfo(bag, slot)
 		return iqi.isQuestItem, iqi.questID, iqi.isActive
 	end
 end
-if MODERN then
+if MODERN or CF_WRATH then
 	questItems[30148] = {72986, 72985}
-	local include do
+	local include, filtered do
 		local function isInPrimalistFutureScenario()
 			return C_TaskQuest.IsActive(74378) and C_Scenario.IsInScenario() and select(8, GetInstanceInfo()) == 2512
 		end
@@ -24,13 +27,41 @@ if MODERN then
 		local function have1()
 			return true, false, false, 4
 		end
-		local function consume()
+		local function have3(iid)
+			return C_Item.GetItemCount(iid) > 2, false, false, 4
+		end
+		local function have1_lv80()
+			if (UnitLevel("player") or 0) >= 80 then
+				return true, false, false, 4
+			end
+		end
+		local function c1()
 			return true, false, false, 3
 		end
-		local mapMarker = consume
+		local function c100_lv80(iid)
+			return C_Item.GetItemCount(iid) > 99 and (UnitLevel("player") or 0) >= 80, false, false, 3
+		end
+		local function haveInterestingNotes()
+			return C_Item.GetItemCount(227406) > 0, false, false, 3
+		end
+		local function ebIsNotRockReviver()
+			local at, sid = GetActionInfo(GetExtraBarIndex()*12-11)
+			return at ~= "spell" or sid ~= 463623, false, false, nil
+		end
+		local function ebIsNotGoPack()
+			local at, sid = GetActionInfo(GetExtraBarIndex()*12-11)
+			return at ~= "spell" or (sid ~= 467294 and sid ~= 469807), false, false, nil
+		end
+		local function crownChemical()
+			local _,_,_,_, _,_,_,imid, _,did = GetInstanceInfo()
+			return imid == 33 and did == 288
+		end
+		local mapMarker = c1
 		include = {
+			[21746]=have1, -- lucky red envelope
 			[33634]=true, [35797]=true, [37888]=true, [37860]=true, [37859]=true, [37815]=true, [46847]=true, [47030]=true, [39213]=true, [42986]=true, [49278]=true,
 			[86425]={31332, 31333, 31334, 31335, 31336, 31337}, [90006]=true, [86536]=true, [86534]=true,
+			[49351]=crownChemical, [49352]=crownChemical, -- perfume/cologne neutralizers
 			[180008]=-60609, [180009]=-60609, [180170]=-60649,
 			[174464]=true, [168035]=true,
 			[191251]=isOnKeysOfLoyalty, [202096]=isInPrimalistFutureScenario, [203478]=isInPrimalistFutureScenario,
@@ -38,10 +69,42 @@ if MODERN then
 			[199066]=mapMarker, [199067]=mapMarker, [199068]=mapMarker, [199069]=mapMarker, [200738]=mapMarker, [202667]=mapMarker, [202668]=mapMarker,
 			[202669]=mapMarker, [202670]=mapMarker,
 			[204911]=have1,
-			[205254]=consume,
-			[199192]=have1, [204359]=have1, [205226]=have1, [210549]=have1,
-			[211279]=have1, -- remix lootboxes
+			[205254]=c1, -- Honorary Explorer's Compass
+			[199192]=have1, [204359]=have1, [205226]=have1, [210549]=have1, [227450]=have1,  -- racer's purse
+			[224292]=-81691, [224913]=-81691, -- radiant fuel shard/cache
+			[228741]=have1, -- lamplighter supply satchel
+			[229899]=c100_lv80, [236096]=c100_lv80, -- coffer key shard
+			[217011]=have1, [217012]=have1, [217013]=have1, -- (isle of dorn) actor's chest
+			[235151]=have1, -- distinguished actor's chest
+			[227792]=have1, -- everyday cache
+			[227713]=have1, -- art consortium payout
+			[226263]=have1, [239128]=have1, -- theater troupe's trove
+			[226264]=have1, [239126]=have1, -- radiant cache
+			[226273]=have1, [239121]=have1, -- awakened mechanical cache
+			[225571]=have1, [225572]=have1, [225573]=have1, -- weaver/general/vizier weekly caches
+			[239125]=have1, [239122]=have1, [239124]=have1, -- ditto, s2
+			[226103]=have1, [226045]=have1, [226100]=have1, -- weaver/general/vizier rep troves
+			[225247]=have1, [225246]=have1, [225239]=have1, [225245]=have1, [232463]=have1, -- overflowing troves [11.x]
+			[229354]=have1, -- algari adventurer's cache
+			[228361]=have1_lv80, [239120]=have1_lv80, [235610]=have1_lv80, [235639]=have1_lv80, -- seasoned adventurer's cache
+			[224784]=have1_lv80, [239118]=have1_lv80, -- pinnacle cache
+			[169219]=c1, -- brewfest sampler
+			[225249]=c1, -- bag o' gold
+			[235548]=have1, [232372]=have1, [234816]=c1, -- siren isle cache, bygone riches, bag of iron
+			[236756]=c1, [236757]=c1, [236758]=c1, -- undermine tip chests
+			[238207]=have1, [238208]=have1, -- surge dividends
+			[229129]=have1, -- delver's spoils
+			[220152]=c1, -- cursed ghoulfish
 		}
+		filtered = {
+			[228988]=ebIsNotRockReviver, -- siren isle rock reviver
+			[230795]=ebIsNotGoPack, -- experimental go-pack, intro quest
+			[227405]=haveInterestingNotes, -- siren isle research journal
+			[224292]=have3, -- radiant fuel shard
+		}
+		for i in (CF_WRATH and "33634 35797 37888 37860 37859 37815 46847 47030 39213 42986 49278" or ""):gmatch("%d+") do
+			include[i+0] = true
+		end
 	end
 	local includeSpell = {
 		[GetSpellInfo(375806) or 0]=3,
@@ -59,6 +122,7 @@ if MODERN then
 	}
 	setmetatable(exclude, {__index={
 		[204561]=1,
+		[232466]=1, -- leave the storm, siren isle
 	}})
 	function IsQuestItem(iid, bag, slot)
 		if exclude[iid] or not iid then
@@ -66,13 +130,17 @@ if MODERN then
 		elseif disItems[iid] then
 			return true, false, disItems[iid]
 		end
-		local inc, isQuest, startQuestId, isQuestActive = include[iid], getContainerItemQuestInfo(bag, slot)
-		isQuest = iid and ((isQuest and GetItemSpell(iid)) or (inc == true) or (startQuestId and not isQuestActive and not C_QuestLog.IsQuestFlaggedCompleted(startQuestId)))
-		local tinc, rcat = inc and not isQuest and type(inc), nil
+		local tinc, rcat
+		local inc, ff, isQuest, startQuestId, isQuestActive = include[iid], filtered[iid], getContainerItemQuestInfo(bag, slot)
+		isQuest = iid and ((isQuest and C_Item.GetItemSpell(iid)) or (inc == true) or (startQuestId and not isQuestActive and not C_QuestLog.IsQuestFlaggedCompleted(startQuestId)))
+		if ff then
+			isQuest, startQuestId, isQuestActive, rcat = ff(iid)
+		end
+		tinc = inc and not isQuest and type(inc)
 		if tinc == "function" then
 			isQuest, startQuestId, isQuestActive, rcat = inc(iid)
 		elseif tinc then
-			isQuest = true
+			isQuest = not ff or isQuest
 			for i=tinc == "number" and 1 or #inc, 1, -1 do
 				local qid, wq = tinc == "number" and inc or inc[i]
 				wq, qid = qid < 0, qid < 0 and -qid or qid
@@ -83,24 +151,24 @@ if MODERN then
 			end
 		end
 		if inc == nil and not isQuest then
-			local isn, isid = GetItemSpell(iid)
+			local isn, isid = C_Item.GetItemSpell(iid)
 			if isid and includeSpell[isn] and IsUsableSpell(isid) then
 				isQuest, startQuestId, rcat = true, false, includeSpell[isn]
 			end
 		end
 		return isQuest, startQuestId and not isQuestActive, rcat
 	end
+	function IsQuestItemF(iid)
+		local ff = filtered[iid]
+		return ff == nil or ff(iid)
+	end
 else
 	local include = PC:RegisterPVar("AutoQuestWhitelist", {}) do
-		local hexclude, hinclude = {}, {}
+		local hexclude = {}
 		for i in ("12460 12451 12450 12455 12457 12458 12459"):gmatch("%d+") do
 			hexclude[i+0] = true
 		end
-		for i in (CF_WRATH and "33634 35797 37888 37860 37859 37815 46847 47030 39213 42986 49278" or ""):gmatch("%d+") do
-			hinclude[i+0] = true
-		end
 		setmetatable(exclude, {__index=hexclude})
-		setmetatable(include, CF_WRATH and {__index=hinclude} or nil)
 	end
 	local QUEST_ITEM = Enum.ItemClass.Questitem
 	function IsQuestItem(iid, bag, slot, skipTypeCheck)
@@ -109,8 +177,8 @@ else
 			return false
 		elseif include[iid] then
 			isQuest = true
-		elseif not (GetItemSpell(iid) and not exclude[iid]) then
-		elseif select(12, GetItemInfo(iid)) == QUEST_ITEM then
+		elseif not (C_Item.GetItemSpell(iid) and not exclude[iid]) then
+		elseif select(12, C_Item.GetItemInfo(iid)) == QUEST_ITEM then
 			isQuest = true
 		elseif skipTypeCheck then
 			include[iid], isQuest = true, true
@@ -121,6 +189,9 @@ else
 			isQuest = isQuest or startsQuest
 		end
 		return isQuest, startsQuest
+	end
+	function IsQuestItemF(_iid)
+		return true
 	end
 
 	local lastQuestAcceptTime = GetTime()-20
@@ -191,8 +262,7 @@ local function scanQuests(i)
 			return scanQuests(i+1), CollapseQuestHeader(i)
 		elseif questItems[qid] and not isComplete then
 			for _, iid in ipairs(questItems[qid]) do
-				local act = not exclude[iid] and AB:GetActionSlot("item", iid)
-				if act then
+				if not exclude[iid] and IsQuestItemF(iid) then
 					addSlice("OPbQIi" .. iid, 2, "item", iid)
 					break
 				end
@@ -200,8 +270,8 @@ local function scanQuests(i)
 		elseif MODERN then
 			local link, _, _, showWhenComplete = GetQuestLogSpecialItemInfo(i)
 			if link and (showWhenComplete or not isComplete) then
-				local iid = tonumber(link:match("item:(%d+)"))
-				if not exclude[iid] then
+				local iid = tonumber((link:match("item:(%d+)")))
+				if not exclude[iid] and IsQuestItemF(iid) then
 					addSlice("OPbQIi" .. iid, 2, "item", iid)
 				end
 			end
@@ -211,7 +281,7 @@ end
 local function syncRing(_, event, upId)
 	if event ~= "internal.collection.preopen" or upId ~= colId then return end
 	changed, current = false, (ctok + 1) % 2
-	
+
 	local ns = C_Container.GetContainerNumSlots
 	local giid = C_Container.GetContainerItemID
 	for bag=0,MODERN and 5 or 4 do
@@ -342,11 +412,11 @@ local edFrame = CreateFrame("Frame") do
 		if not (iid and w) then
 			return w and w:Hide()
 		end
-		local n, _, _iq, _, _, _, _, _, _, ico = GetItemInfo(iid or 0)
+		local n, _, _iq, _, _, _, _, _, _, ico = C_Item.GetItemInfo(iid or 0)
 		if n then
 			w.pendingItemID = nil
 		else
-			w.pendingItemID, n, _, _, _, _, ico = iid, "item:" .. iid, GetItemInfoInstant(iid or 0)
+			w.pendingItemID, n, _, _, _, _, ico = iid, "item:" .. iid, C_Item.GetItemInfoInstant(iid or 0)
 		end
 		w.Text:SetText(n)
 		w.Icon:SetTexture(ico)
@@ -397,7 +467,7 @@ local edFrame = CreateFrame("Frame") do
 		local allDone = 1
 		for i=1, numRowsPV do
 			local pid = rows[i].pendingItemID
-			local n = pid and GetItemInfo(pid)
+			local n = pid and C_Item.GetItemInfo(pid)
 			allDone = allDone and (n or not pid)
 			if n then
 				rows[i].pendingItemID = nil
@@ -493,7 +563,7 @@ T.AddSlashSuffix(function(msg)
 	else
 		local flag, _, link
 		flag, args = args:match("^(%-?)(.*)$")
-		_, link = GetItemInfo(args:match("|H(item:%d+)") or args)
+		_, link = C_Item.GetItemInfo(args:match("|H(item:%d+)") or args)
 		local iid = link and link:match("item:(%d+)")
 		if iid then
 			excludeItemID(tonumber(iid) * (flag == "-" and -1 or 1))

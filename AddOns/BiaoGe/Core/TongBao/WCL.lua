@@ -197,9 +197,9 @@ function BG.WCLUI(lastbt)
             end
             GameTooltip:AddLine(L["更新日期"] .. ":" .. WP_Database.LASTUPDATE)
         else
-            GameTooltip:AddLine(L["读取不到数据，你可能没安装WclPlayerScore-WotLK插件"], 1, 0, 0, true)
+            GameTooltip:AddLine(L["错误"], 1, 0, 0, true)
+            GameTooltip:AddLine(L["你没有安装WclPlayerScore-WotLK-CN插件。"], 1, .82, 0, true)
         end
-
         GameTooltip:Show()
     end)
     bt:SetScript("OnLeave", GameTooltip_Hide)

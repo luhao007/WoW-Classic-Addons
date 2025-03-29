@@ -73,40 +73,9 @@ function BusinessInfo.FastFen()
 		zhixingClick(self,button)
 	end);
 	--宏-----
-	if tocversion>20000 and tocversion<50000 then
-		fujiF.fuzhiCDM = PIGButton(fujiF,{"TOPLEFT",fujiF,"TOPLEFT",160,-10},{100,20},CALENDAR_CREATE..OpenData[1]..MACRO);
-		fujiF.fuzhiCDM:HookScript("OnClick",  function (self)
-			local macroSlot = GetMacroIndexByName(hongName)
-			if macroSlot>0 then
-				PIGTopMsg:add(OpenData[1]..MACRO.."已存在");
-			else
-				StaticPopup_Show("AUTOSELLBUY_"..OpenData[1]);
-			end	
-		end)
-		local hongNR = [=[/click QkBut_AutoSellBuy_Fen LeftButton]=]
-		StaticPopupDialogs["AUTOSELLBUY_"..OpenData[1]] = {
-			text = CALENDAR_CREATE..OpenData[1]..MACRO.."\n\n确定创建吗？",
-			button1 = YES,
-			button2 = NO,
-			OnAccept = function()
-				local global, perChar = GetNumMacros()
-				if global<120 then
-					CreateMacro(hongName, OpenData[2], hongNR, nil)
-					PIGTopMsg:add("已"..CALENDAR_CREATE..OpenData[1]..MACRO);
-				else
-					PIGTopMsg:add(L["LIB_MACROERR"]);
-					return
-				end
-			end,
-			timeout = 0,
-			whileDead = true,
-			hideOnEscape = true,
-		}
-	else
-		local macroSlot = GetMacroIndexByName(hongName)
-		if macroSlot>0 then
-			DeleteMacro(hongName)
-		end
+	local macroSlot = GetMacroIndexByName(hongName)
+	if macroSlot>0 then
+		DeleteMacro(hongName)
 	end
 	---
 	fujiF.QkBut = PIGCheckbutton(fujiF,{"TOPLEFT",fujiF,"TOPLEFT",20,-44},{"添加"..OpenData[1].."到"..L["ACTION_TABNAME2"], "在"..L["ACTION_TABNAME2"].."增加一个快捷使用按钮"})

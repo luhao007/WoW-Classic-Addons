@@ -5,6 +5,8 @@ local assert, getWidgetData, newWidgetData, _setWidgetData, AddObjectMethods, _C
 local LineInput, LineInputData = {}, {}, {}
 local LineInputProps = {
 	api=LineInput,
+	style='common',
+	tipL=0, tipR=0, tipT=0, tipB = 0,
 }
 AddObjectMethods({"LineInput"}, LineInputProps)
 
@@ -32,7 +34,20 @@ function LineInput:SetStyle(style)
 		m:SetTexCoord(0,1, 0,1)
 	end
 	m:SetHorizTile(not common)
-	d.self:SetTextInsets(common and 0 or 1, 0, 0, 0)
+	d.style = style
+	LineInput.SetTextInsets(self, d.tipL, d.tipR, d.tipT, d.tipB)
+end
+function LineInput:SetTextInsets(left, right, top, bottom)
+	local d = assert(getWidgetData(self, LineInputData), 'invalid object type')
+	left, right, top, bottom = tonumber(left or 0), tonumber(right or 0), tonumber(top or 0), tonumber(bottom or 0)
+	assert(type(left) == 'number' and type(right) == 'number' and type(top) == 'number' and type(bottom) == 'number', 'Syntax: LineInput:SetTextInsets(left, right, top, bottom)')
+	d.tipL, d.tipR, d.tipT, d.tipB = left, right, top, bottom
+	local common = d.style == 'common'
+	d.proto.super.SetTextInsets(self, left + (common and 0 or 1), right, top, bottom)
+end
+function LineInput:GetTextInsets()
+	local d = assert(getWidgetData(self, LineInputData), 'invalid object type')
+	return d.tipL, d.tipR, d.tipT, d.tipB
 end
 
 local function CreateLineInput(name, parent, outerTemplate, id)

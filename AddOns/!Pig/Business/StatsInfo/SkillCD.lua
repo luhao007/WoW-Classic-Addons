@@ -56,6 +56,8 @@ function BusinessInfo.SkillCD()
 		[17187]=20761,--转化：奥金
 		[32766]=20761,--转化：天火钻石
 		[66663]=20761,--转化：巨锆石
+		[47280]=35945,--闪亮的玻璃
+		[62242]=44943,--冰冻棱柱
 		
 	}
 	local SpellItemID={[19566]=15846}
@@ -135,7 +137,7 @@ function BusinessInfo.SkillCD()
 			for Slots=1,numberOfSlots,1 do
 				if GetContainerItemID(Bagid, Slots)==ItemID then
 					local startTime, duration, enable=GetContainerItemCooldown(Bagid, Slots)
-					print(ItemID,disp_time(startTime+duration-GetTime()))
+					--print(ItemID,disp_time(startTime+duration-GetTime()))
 					if startTime > 0 and duration > 0 then
 						PIGA["StatsInfo"]["SkillData"][StatsInfo.allname][0][SpellID]=startTime+duration
 					else
@@ -374,10 +376,10 @@ function BusinessInfo.SkillCD()
 							CDbut.icon:SetDesaturated(false)
 							CDbut.name:SetText(Skillname);
 							if CDdataX[SpellID] then
-								if GetTime()>=CDdataX[SpellID] then
-									CDbut.cd:SetText("|cff00ff00已就绪|r");
-								else
+								if CDdataX[SpellID]>0 then
 									CDbut.cd:SetText(disp_time(CDdataX[SpellID]-GetTime()));
+								else
+									CDbut.cd:SetText("|cff00ff00已就绪|r");
 								end
 							else
 								CDbut.cd:SetText("|cffff0000CD"..UNKNOWN.."|r");

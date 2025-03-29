@@ -107,8 +107,18 @@ BG.Init(function()
         GameTooltip:ClearLines()
         GameTooltip:AddLine(self.title, 0, 1, 0)
         if self.isAuciton then
-            GameTooltip:AddLine(L["需全团安装拍卖WA，没安装的人将会看不到拍卖窗口"], 0.5, 0.5, 0.5, true)
-            line = line + 1
+            GameTooltip:AddLine(L["需全团安装拍卖WA，没安装的人将会看不到拍卖窗口。"], 0.5, 0.5, 0.5, true)
+            local text = ""
+            if not WeakAurasOptions then
+                text = BG.STC_r1(L["（WA面板尚未初始化）"])
+            elseif BG.ButtonRaidAuction.loadProgressNum and BG.ButtonRaidAuction.total then
+                text = BG.STC_y1(format(L["（WA面板正在初始化：%s/%s）"],
+                    BG.ButtonRaidAuction.loadProgressNum, BG.ButtonRaidAuction.total))
+            else
+                text = BG.STC_g1(L["（WA面板已初始化，可以发送了）"])
+            end
+            GameTooltip:AddLine(L["SHIFT+点击：把WA字符串通过密语发送给没有的团员。"] .. text, 1, 1, 1, true)
+            line = line + 2
         end
         GameTooltip:AddLine(" ")
         local raid = BG.PaiXuRaidRosterInfo()
@@ -120,17 +130,14 @@ BG.Init(function()
                 else
                     Ver = L["未知"]
                 end
-            end
-
-            if self.isAuciton then
-                if sending[v.name] then
-                    Ver = L["正在接收拍卖WA"]
-                end
-                if sendDone[v.name] then
-                    Ver = L["接收完毕，但未导入"]
+                if self.isAuciton then
+                    if sendDone[v.name] then
+                        Ver = L["接收完毕，但未导入"]
+                    elseif sending[v.name] then
+                        Ver = L["正在接收拍卖WA"]
+                    end
                 end
             end
-
             local vip = self.table2[v.name] and AddTexture("VIP") or ""
             local role = ""
             local y
@@ -160,6 +167,92 @@ BG.Init(function()
     local function UpdateOnEnter(self)
         if self and self.isOnEnter then
             self:GetScript("OnEnter")(self)
+        end
+    end
+
+    local cd
+    local function CanSend()
+        if IsAddOnLoaded("WeakAuras") then
+            if not IsAddOnLoaded("WeakAurasOptions") then
+                if not LoadAddOn("WeakAurasOptions") then
+                    BG.SendSystemMessage(L["你没有启用WeakAurasOptions插件。"])
+                    return
+                end
+            end
+            return true
+        else
+            BG.SendSystemMessage(L["你没有安装WeakAuras插件。"])
+        end
+    end
+    local function StartSend()
+        if cd then return end
+        local i = 1
+        while _G["WeakAurasDisplayButton" .. i] do
+            local bt = _G["WeakAurasDisplayButton" .. i]
+            if WeakAuras.IsAuraLoaded(bt.id) then
+                local ver = bt.id:match("<BiaoGe>拍卖%s-v(%d+%.%d+)")
+                if ver then
+                    if IsShiftKeyDown() then
+                        cd = true
+                        BG.After(2, function() cd = nil end)
+                        BG.PlaySound(2)
+                        local edit = ChatEdit_ChooseBoxForSend()
+                        edit:SetText("")
+                        ChatEdit_ActivateChat(edit)
+                        bt:Click()
+                        BG.ButtonRaidAuction.WACode = edit:GetText()
+                        edit:Hide()
+                        GameTooltip:Hide()
+                        if BG.ButtonRaidAuction.isOnEnter then
+                            BG.ButtonRaidAuction:GetScript("OnEnter")(BG.ButtonRaidAuction)
+                        end
+                        if BG.ButtonRaidAuction.WACode ~= "" then
+                            for _, v in ipairs(BG.raidRosterInfo) do
+                                if not BG.raidAuctionVersion[v.name] and v.online then
+                                    SendChatMessage(BG.ButtonRaidAuction.WACode, "WHISPER", nil, v.name)
+                                end
+                            end
+                        end
+                    else
+                        BG.SendSystemMessage(L["需要按下SHIFT才能发送WA。"])
+                    end
+                    return
+                end
+            end
+            i = i + 1
+        end
+        BG.SendSystemMessage(L["在你的WA面板里未找到拍卖WA字符串，你需要先从表格左上角的\"拍卖WA\"按钮导入该字符串。"])
+    end
+    local function SendWACode()
+        if not CanSend() then return end
+        if not IsShiftKeyDown() then return end
+        if not WeakAurasOptions then
+            WeakAuras.OpenOptions()
+            WeakAurasOptions:Hide()
+            BG.ButtonRaidAuction.total = 0
+            for _, _ in pairs(WeakAurasSaved.displays) do
+                BG.ButtonRaidAuction.total = BG.ButtonRaidAuction.total + 1
+            end
+            BG.OnUpdateTime(function(self)
+                BG.ButtonRaidAuction.loadProgressNum = WeakAurasOptions.loadProgressNum
+                if BG.ButtonRaidAuction.isOnEnter then
+                    BG.ButtonRaidAuction:GetScript("OnEnter")(BG.ButtonRaidAuction)
+                end
+                if not WeakAurasOptions.loadProgress:IsShown() then
+                    self:SetScript("OnUpdate", nil)
+                    self:Hide()
+                    BG.ButtonRaidAuction.total = nil
+                    BG.ButtonRaidAuction.loadProgressNum = nil
+                    if BG.ButtonRaidAuction.isOnEnter then
+                        BG.ButtonRaidAuction:GetScript("OnEnter")(BG.ButtonRaidAuction)
+                    end
+                    BG.After(0, function()
+                        StartSend()
+                    end)
+                end
+            end)
+        else
+            StartSend()
         end
     end
 
@@ -535,7 +628,7 @@ BG.Init(function()
 
             -- 开始拍卖
             do
-                local bt= BG.CreateButton(mainFrame)
+                local bt = BG.CreateButton(mainFrame)
                 bt:SetSize(width + 19, 25)
                 bt:SetPoint("TOPLEFT", mainFrame.Text3, "BOTTOMLEFT", -1, -35)
                 bt.itemIDs = itemIDs
@@ -734,6 +827,9 @@ BG.Init(function()
             auction:SetScript("OnLeave", function(self)
                 GameTooltip:Hide()
                 self.isOnEnter = false
+            end)
+            auction:SetScript("OnMouseUp", function(self)
+                SendWACode()
             end)
         end
 
@@ -967,46 +1063,61 @@ BG.Init(function()
         -- L["v1.2：现在物品分配者也可以开始拍卖装备了"],
     }
     do
-        local function OnClick(self)
-            if self.frame and self.frame:IsVisible() then
-                self.frame:Hide()
-            else
-                local f = CreateFrame("Frame", nil, self, "BackdropTemplate")
-                f:SetBackdrop({
-                    bgFile = "Interface/ChatFrame/ChatFrameBackground",
-                    insets = { left = 3, right = 3, top = 3, bottom = 3 }
-                })
-                f:SetBackdropColor(0, 0, 0, 1)
-                f:SetBackdropBorderColor(1, 1, 1, 0.6)
-                f:SetPoint("TOPLEFT", BG.MainFrame, "TOPLEFT", 0, -20)
-                f:SetPoint("BOTTOMRIGHT", BG.MainFrame, "BOTTOMRIGHT", 0, 0)
-                f:SetFrameLevel(310)
-                f:EnableMouse(true)
-                self.frame = f
-                local edit = CreateFrame("EditBox", nil, f)
-                edit:SetWidth(f:GetWidth())
-                edit:SetAutoFocus(true)
-                edit:EnableMouse(true)
-                edit:SetTextInsets(5, 20, 5, 10)
-                edit:SetMultiLine(true)
-                edit:SetFont(STANDARD_TEXT_FONT, 13, "OUTLINE")
-                edit:SetText(wa)
-                edit:HighlightText()
-                edit:SetCursorPosition(0)
-                self.edit = edit
-                local scroll = CreateFrame("ScrollFrame", nil, f, "UIPanelScrollFrameTemplate")
-                scroll:SetWidth(f:GetWidth() - 10)
-                scroll:SetHeight(f:GetHeight() - 10)
-                scroll:SetPoint("CENTER")
-                scroll.ScrollBar.scrollStep = BG.scrollStep
-                BG.CreateSrollBarBackdrop(scroll.ScrollBar)
-                BG.HookScrollBarShowOrHide(scroll)
-                scroll:SetScrollChild(edit)
-                edit:SetScript("OnEscapePressed", function()
-                    f:Hide()
-                end)
+        local function OnClick(self, button)
+            if button == "LeftButton" then
+                if not CanSend() then return end
+                if not WeakAurasOptions then
+                    WeakAuras.OpenOptions()
+                    BG.OnUpdateTime(function(self)
+                        if not WeakAurasOptions.loadProgress:IsShown() then
+                            self:SetScript("OnUpdate", nil)
+                            self:Hide()
+                            WeakAuras.Import(wa)
+                        end
+                    end)
+                else
+                    WeakAuras.Import(wa)
+                end
+            elseif button == "RightButton" then
+                if self.frame and self.frame:IsVisible() then
+                    self.frame:Hide()
+                else
+                    local f = CreateFrame("Frame", nil, self, "BackdropTemplate")
+                    f:SetBackdrop({
+                        bgFile = "Interface/ChatFrame/ChatFrameBackground",
+                        insets = { left = 3, right = 3, top = 3, bottom = 3 }
+                    })
+                    f:SetBackdropColor(0, 0, 0, 1)
+                    f:SetBackdropBorderColor(1, 1, 1, 0.6)
+                    f:SetPoint("TOPLEFT", BG.MainFrame, "TOPLEFT", 0, -20)
+                    f:SetPoint("BOTTOMRIGHT", BG.MainFrame, "BOTTOMRIGHT", 0, 0)
+                    f:SetFrameLevel(310)
+                    f:EnableMouse(true)
+                    self.frame = f
+                    local edit = CreateFrame("EditBox", nil, f)
+                    edit:SetWidth(f:GetWidth())
+                    edit:SetAutoFocus(true)
+                    edit:EnableMouse(true)
+                    edit:SetTextInsets(5, 20, 5, 10)
+                    edit:SetMultiLine(true)
+                    edit:SetFont(STANDARD_TEXT_FONT, 13, "OUTLINE")
+                    edit:SetText(wa)
+                    edit:HighlightText()
+                    edit:SetCursorPosition(0)
+                    self.edit = edit
+                    local scroll = CreateFrame("ScrollFrame", nil, f, "UIPanelScrollFrameTemplate")
+                    scroll:SetWidth(f:GetWidth() - 10)
+                    scroll:SetHeight(f:GetHeight() - 10)
+                    scroll:SetPoint("CENTER")
+                    scroll.ScrollBar.scrollStep = BG.scrollStep
+                    BG.CreateSrollBarBackdrop(scroll.ScrollBar)
+                    BG.HookScrollBarShowOrHide(scroll)
+                    scroll:SetScrollChild(edit)
+                    edit:SetScript("OnEscapePressed", function()
+                        f:Hide()
+                    end)
+                end
             end
-
             BG.PlaySound(1)
         end
         local function OnEnter(self)
@@ -1014,7 +1125,10 @@ BG.Init(function()
             GameTooltip:SetPoint("TOPLEFT", self, "BOTTOMLEFT")
             GameTooltip:ClearLines()
             GameTooltip:AddLine(self:GetText(), 1, 1, 1, true)
-            GameTooltip:AddDoubleLine(L["拍卖WA版本"], BGA.ver)
+            GameTooltip:AddDoubleLine(L["拍卖WA版本："], BGA.ver)
+            -- GameTooltip:AddLine(" ", 1, 0, 0, true)
+            GameTooltip:AddDoubleLine(L["鼠标左键："], L["一键导入WA字符串"])
+            GameTooltip:AddDoubleLine(L["鼠标右键："], L["复制WA字符串"])
             GameTooltip:AddLine(" ", 1, 0, 0, true)
             GameTooltip:AddLine(L["全新的拍卖方式，不再通过传统的聊天栏来拍卖装备，而是使用新的UI来拍卖。"], 1, 0.82, 0, true)
             GameTooltip:AddLine(" ", 1, 0, 0, true)
@@ -1034,6 +1148,7 @@ BG.Init(function()
         bt:SetNormalFontObject(BG.FontGreen15)
         bt:SetDisabledFontObject(BG.FontDis15)
         bt:SetHighlightFontObject(BG.FontWhite15)
+        bt:RegisterForClicks("AnyUp")
         bt:SetText(L["拍卖WA"])
         bt:SetSize(bt:GetFontString():GetWidth(), 20)
         BG.SetTextHighlightTexture(bt)
@@ -1079,31 +1194,29 @@ BG.Init(function()
     ChatFrame_AddMessageEventFilter("CHAT_MSG_INSTANCE_CHAT_LEADER", ChangSendLink)
 
     ------------------正在发送WA------------------
-    do
-        hooksecurefunc(C_ChatInfo, "SendAddonMessage", function(prefix, msg, channel, player)
-            local done, total, displayName, ver = strsplit(" ", msg)
-            if not (prefix == "WeakAurasProg" and displayName:find("<BiaoGe>拍卖")) then return end
-            if not sending[player] then
-                sending[player] = true
-                sendingCount[player] = sendingCount[player] or 0
-                sendingCount[player] = sendingCount[player] + 1
-                if sendingCount[player] > 2 then
-                    if not notShowSendingText[player] then
-                        notShowSendingText[player] = true
-                        BG.SendSystemMessage(format(L["由于%s多次点击WA链接，不再提示他的相关文本了。"], SetClassCFF(player)))
-                    end
-                else
-                    BG.SendSystemMessage(format(L["%s正在接收拍卖WA。"], SetClassCFF(player)))
+    hooksecurefunc(C_ChatInfo, "SendAddonMessage", function(prefix, msg, channel, player)
+        local done, total, displayName, ver = strsplit(" ", msg)
+        if not (prefix == "WeakAurasProg" and displayName:find("<BiaoGe>拍卖")) then return end
+        if not sending[player] then
+            sending[player] = true
+            sendingCount[player] = sendingCount[player] or 0
+            sendingCount[player] = sendingCount[player] + 1
+            if sendingCount[player] > 2 then
+                if not notShowSendingText[player] then
+                    notShowSendingText[player] = true
+                    BG.SendSystemMessage(format(L["由于%s多次点击WA链接，不再提示他的相关文本了。"], SetClassCFF(player)))
                 end
-                UpdateOnEnter(BG.ButtonRaidAuction)
-                UpdateOnEnter(BG.StartAucitonFrame)
+            else
+                BG.SendSystemMessage(format(L["%s正在接收拍卖WA。"], SetClassCFF(player)))
             end
-            if done == total then
-                sending[player] = nil
-                sendDone[player] = true
-                UpdateOnEnter(BG.ButtonRaidAuction)
-                UpdateOnEnter(BG.StartAucitonFrame)
-            end
-        end)
-    end
+            UpdateOnEnter(BG.ButtonRaidAuction)
+            UpdateOnEnter(BG.StartAucitonFrame)
+        end
+        if done == total then
+            sending[player] = nil
+            sendDone[player] = true
+            UpdateOnEnter(BG.ButtonRaidAuction)
+            UpdateOnEnter(BG.StartAucitonFrame)
+        end
+    end)
 end)

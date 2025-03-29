@@ -1155,8 +1155,10 @@ local function SetItemLib()
                 GameTooltip:Show()
                 mainFrame.buttons[ii].ds:Show()
 
+                BG.DressUpLastButton = f
                 if IsControlKeyDown() then
                     SetCursor("Interface/Cursor/Inspect")
+                    BG.DressUp()
                 elseif IsAltKeyDown() then
                     SetCursor("interface/cursor/quest")
                 end
@@ -1170,6 +1172,10 @@ local function SetItemLib()
                 SetCursor(nil)
                 BG.canShowInspectCursor = false
                 BG.canShowHopeCursor = false
+                if BG.DressUpFrame then
+                    BG.DressUpFrame:Hide()
+                end
+                BG.DressUpLastButton = nil
             end)
 
             if i == 3 and vv.bindType == 2 then -- 装绑
@@ -1587,6 +1593,127 @@ do
             end
         end
     end
+end
+
+-- 幻化
+do
+    function BG.DressUp()
+        local itemID
+        local last = BG.DressUpLastButton
+        if not last then return end
+        local frame
+        if IsControlKeyDown() then
+            if BG.ItemLibMainFrame:IsVisible() then
+                itemID = last.itemID
+                if itemID then
+                    frame = 1
+                else
+                    itemID = GetItemID(last:GetText())
+                    frame = 2
+                end
+            elseif BG.FBMainFrame:IsVisible() or BG.HopeMainFrame:IsVisible() then
+                itemID = GetItemID(last:GetText())
+                frame = 3
+            end
+            GameTooltip:Hide()
+        else
+            last:GetScript("OnEnter")(last)
+            if BG.DressUpFrame then
+                BG.DressUpFrame:Hide()
+            end
+        end
+        if not itemID then return end
+        local equipLoc, _, type = select(4, GetItemInfoInstant(itemID))
+        local creatureID = BG.Mount[itemID] and BG.Mount[itemID][2]
+        if not (type == 2 or type == 4 or creatureID) then
+            return
+        end
+        if type == 4 and
+            (equipLoc == "INVTYPE_NECK"
+                or equipLoc == "INVTYPE_FINGER"
+                or equipLoc == "INVTYPE_TRINKET")
+        then
+            return
+        end
+        if not BG.DressUpFrame then
+            local bg = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
+            bg:SetBackdrop({
+                bgFile = "Interface/ChatFrame/ChatFrameBackground",
+                edgeFile = "Interface/ChatFrame/ChatFrameBackground",
+                edgeSize = 1,
+            })
+            bg:SetBackdropColor(0, 0, 0, .8)
+            bg:SetBackdropBorderColor(1, 1, 1, .8)
+            bg:SetSize(430, 480)
+            bg:SetFrameStrata("TOOLTIP")
+            bg:SetClampedToScreen(true)
+            local f = CreateFrame("DressUpModel", nil, bg)
+            f:SetPoint("TOPLEFT", bg, "TOPLEFT", 5, -5)
+            f:SetPoint("BOTTOMRIGHT", bg, "BOTTOMRIGHT", -5, 5)
+            f.defaultRotation = MODELFRAME_DEFAULT_ROTATION
+            f:SetRotation(MODELFRAME_DEFAULT_ROTATION)
+            f.minZoom = 0
+            f.maxZoom = 1.0
+            f.curRotation = MODELFRAME_DEFAULT_ROTATION
+            f.zoomLevel = f.minZoom
+            f.zoomLevelNew = f.zoomLevel
+            f:SetPortraitZoom(f.zoomLevel)
+            f.Reset = _G.Model_Reset
+            bg.modFrame = f
+            BG.DressUpFrame = bg
+        end
+        local bg = BG.DressUpFrame
+        bg:Show()
+        bg:ClearAllPoints()
+        local f = BG.DressUpFrame.modFrame
+        f:Reset()
+        if creatureID then
+            f:SetCreature(creatureID)
+            f:SetCamDistanceScale(BG.IsVanilla and 2 or 1)
+            f:SetPortraitZoom(f.zoomLevel)
+        else
+            f:SetCamDistanceScale(1)
+            if not BG.IsVanilla then
+                f:SetUseTransmogSkin(true)
+                f:SetUseTransmogChoices(true)
+                f:SetObeyHideInTransmogFlag(true)
+            end
+            f:SetUnit("player")
+            f:Undress()
+            f:SetDoBlend(false)
+            local info = { GetItemInfo(itemID) }
+            if equipLoc == "INVTYPE_CLOAK" then
+                f:SetRotation(f.curRotation + math.pi)
+            elseif equipLoc == "INVTYPE_SHIELD" or equipLoc == "INVTYPE_HOLDABLE" or equipLoc == "INVTYPE_WEAPONOFFHAND" then
+                f:SetRotation(f.curRotation + (math.pi * 1.5))
+            else
+                f:SetRotation(f.curRotation)
+            end
+            f:SetPortraitZoom(f.zoomLevelNew)
+            f:TryOn(info[2])
+        end
+        if frame == 1 then
+            bg:SetSize(430, 480)
+            if BG.ButtonIsInRight(mainFrame.bg) then
+                bg:SetPoint("TOPRIGHT", mainFrame.bg.tooltip2, "BOTTOMLEFT", 0, -1)
+            else
+                bg:SetPoint("TOPLEFT", mainFrame.bg.tooltip, "BOTTOMRIGHT", 0, -1)
+            end
+        elseif frame == 2 or frame == 3 then
+            bg:SetSize(280, 330)
+            if BG.ButtonIsInRight(last) then
+                bg:SetPoint("BOTTOMRIGHT", last, "TOPLEFT", 0, 1)
+            else
+                bg:SetPoint("BOTTOMLEFT", last, "TOPRIGHT", 0, 1)
+            end
+        end
+    end
+
+    BG.RegisterEvent("MODIFIER_STATE_CHANGED", function(self, event, mod, type)
+        if mod == "LCTRL" or mod == "RCTRL" then
+            BG.DressUp()
+        end
+    end)
 end
 
 ------------------------------------------------------------------------
@@ -2215,12 +2342,25 @@ function BG.ItemLibUI()
                             GameTooltip:ClearLines()
                             GameTooltip:SetItemByID(itemID)
                             GameTooltip:Show()
+
+                            BG.DressUpLastButton = self
+                            if IsControlKeyDown() then
+                                SetCursor("Interface/Cursor/Inspect")
+                                BG.DressUp()
+                            end
+                            BG.canShowTrunToItemLibCursor = true
                         end
                         self.ds:Show()
                     end)
                     edit:SetScript("OnLeave", function(self)
                         GameTooltip:Hide()
                         self.ds:Hide()
+                        SetCursor(nil)
+                        BG.canShowTrunToItemLibCursor = false
+                        if BG.DressUpFrame then
+                            BG.DressUpFrame:Hide()
+                        end
+                        BG.DressUpLastButton = nil
                     end)
                 end
             end

@@ -146,7 +146,7 @@ local function VUHDO_determineDistanceBetween(aUnit, anotherUnit)
 	if tIsInInstance then
 		return nil, nil;
 	end
-
+	
 	tIsValid = true;
 
 	-- as of patch 7.1 GetPlayerMapPosition() returns zero/nil inside certain zones
@@ -215,6 +215,16 @@ function VUHDO_updateAllClusters()
 	tIsInInstance, _ = IsInInstance();
 
 	if tIsInInstance then
+		return;
+	end
+
+	-- @UGLY Carbonite workaround
+	local tFocusFrame = GetMouseFoci()[1] or VuhDoDummyStub;
+
+	-- check if our mouse focus frame is forbidden before calling any methods on it
+	if tFocusFrame:IsForbidden() then
+		return;
+	elseif not tFocusFrame:GetName() then
 		return;
 	end
 

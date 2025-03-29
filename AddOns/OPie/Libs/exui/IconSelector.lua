@@ -104,9 +104,9 @@ local GetAllIcons do
 end
 function LookupIconName(fid)
 	LookupIconName = nil
-	if select(5, (C_AddOns.GetAddOnInfo or GetAddOnInfo)("IconFileNames")) == "DEMAND_LOADED"
-	   and not (C_AddOns.IsAddOnLoaded or IsAddOnLoaded)("IconFileNames") then
-		(C_AddOns.LoadAddOn or LoadAddOn)("IconFileNames")
+	if select(5, C_AddOns.GetAddOnInfo("IconFileNames")) == "DEMAND_LOADED"
+	   and not C_AddOns.IsAddOnLoaded("IconFileNames") then
+		C_AddOns.LoadAddOn("IconFileNames")
 	end
 	ICON_FILE_NAMES = _G.ICON_FILE_NAMES
 	ICON_FILE_NAMES = type(ICON_FILE_NAMES) == "table" and ICON_FILE_NAMES or nil
@@ -244,7 +244,7 @@ function internal.SyncHintText(d)
 	if d.manualInput:HasFocus() then
 		d.manualInputHint:Hide()
 		d.manualInputFS:Show()
-	elseif d.hoverIcon and d.hoverIcon == GetMouseFocus() then
+	elseif d.hoverIcon and d.hoverIcon:IsMouseMotionFocus() then
 		d.manualInputHint:Show()
 		local idx = d.hoverIcon:GetID() + d.viewIndexOffset
 		local asset = idx == 0 and d.firstAsset or d.iconList[idx]

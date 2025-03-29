@@ -7,6 +7,7 @@ local PIGButton = Create.PIGButton
 local PIGOptionsList=Create.PIGOptionsList
 local PIGFontString=Create.PIGFontString
 local Fun=addonTable.Fun
+local IsAddOnLoaded=IsAddOnLoaded or C_AddOns and C_AddOns.IsAddOnLoaded
 --------------
 local function Config_format(DQPEIZHI,Def)
 	for k,v in pairs(Def) do

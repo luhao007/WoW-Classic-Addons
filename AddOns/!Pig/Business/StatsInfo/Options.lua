@@ -435,13 +435,11 @@ function BusinessInfo.StatsInfoOptions()
 	end
 	function fuFrame.ADD_lixianBUT()
 		if not PIGA["StatsInfo"]["Open"] or not PIGA["StatsInfo"]["lixianBank"] then return end
-		local _,yijiazai = IsAddOnLoaded("ElvUI")
-		if yijiazai and ElvUI_ContainerFrame then
+		if Pig_OptionsUI.IsOpen_ElvUI() and ElvUI_ContainerFrame then
 			add_lixianBut(ElvUI_ContainerFrame,wwc,hhc)
 			return
 		end
-		local _,yijiazai = IsAddOnLoaded("NDui")
-		if yijiazai and NDuiDB and NDuiDB["Bags"]["Enable"] then
+		if Pig_OptionsUI.IsOpen_NDui("Bags") then
 			local B, C = unpack(NDui)
 			local anniushuS = NDui_BackpackBag.widgetButtons
 			local function CreatelixianBut(self)

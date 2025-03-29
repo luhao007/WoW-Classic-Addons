@@ -9,7 +9,7 @@ function Env.CreateGlyphEntry()
     }
 
     for t = 1, 6 do
-        local enabled, glyphType, glyphSpellID = GetGlyphSocketInfo(t)
+        local enabled, glyphType, glyphTooltipIndex, glyphSpellID = GetGlyphSocketInfo(t)  --修复by风雪，加入参数glyphTooltipIndex，占位符暂时无用。
         if enabled and glyphSpellID then
             local glyphtable = glyphType == 1 and glyphs.major or glyphs.minor
             table.insert(glyphtable, { spellID = glyphSpellID })

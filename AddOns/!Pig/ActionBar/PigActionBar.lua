@@ -20,7 +20,7 @@ local RTabFrame=ActionBarfun.RTabFrame
 local fuFrame=ActionBarfun.fuFrame
 local fuFrameBut=ActionBarfun.fuFrameBut
 ------
-local barName, zongshu, anniugeshu, anniujiange="Pigbar",4,12,6;
+local barName, zongshu, anniugeshu, anniujiange="PIG_ActionBar",4,12,6;
 local Showtiaojian = {ALWAYS..SHOW,LEAVING_COMBAT..HIDE,BATTLEFIELD_JOIN..HIDE,SPELL_FAILED_BAD_IMPLICIT_TARGETS..HIDE,};
 ---排列方式
 local pailieName={"横向","竖向","6×2","2×6","4×3","3×4"};
@@ -337,38 +337,21 @@ local Update_Macro=ActionFun.Update_Macro
 local Update_Equipment=ActionFun.Update_Equipment
 
 local ActionW = ActionButton1:GetWidth()
-for index=1,zongshu do
-	local Pig_bar=PIGFrame(UIParent,{"CENTER",UIParent,"CENTER",-200,-200+index*50},{0.01,ActionW-4},barName..index)
-	Pig_bar:SetMovable(true)
-	Pig_bar:SetUserPlaced(true)
-	Pig_bar:SetClampedToScreen(true)
-end
 local function ADD_ActionBar(index)
 	if not PIGA_Per["PigAction"]["Open"][index] then return end
-	local Pig_bar=_G[barName..index]
-	if Pig_bar.yidong then return end
+	if _G[barName..index] then return end
+	local Pig_bar=PIGFrame(UIParent,{"CENTER",UIParent,"CENTER",-200,-200+index*50},{0.01,ActionW-4},barName..index)
 	-- Pig_bar:SetAttribute("type", "actionbar");
 	-- Pig_bar:SetAttribute("actionbar", index+100);
-	if PIGA['ActionBar']['ActionBar_bili'] then
-		Pig_bar:SetScale(PIGA['ActionBar']['ActionBar_bili_value']);
-	end
 	Pig_bar:SetScale(PIGA_Per["PigAction"]["Scale"][index]);
 	Pig_bar.yidong = PIGFrame(Pig_bar)
 	Pig_bar.yidong:PIGSetBackdrop()
 	Pig_bar.yidong:SetSize(12, ActionW-4)
 	Pig_bar.yidong:SetPoint("LEFT",Pig_bar,"LEFT",0,0);
-	Pig_bar.yidong:EnableMouse(true)
-	Pig_bar.yidong:RegisterForDrag("LeftButton")
-	if PIGA_Per["PigAction"]["Lock"][index] then Pig_bar.yidong:Hide() end
 	Pig_bar.yidong.title = PIGFontString(Pig_bar.yidong,nil,index,"OUTLINE",12)
 	Pig_bar.yidong.title:SetAllPoints(Pig_bar.yidong)
 	Pig_bar.yidong.title:SetTextColor(1, 1, 0.1, 1)
-	Pig_bar.yidong:SetScript("OnDragStart",function()
-		Pig_bar:StartMoving()
-	end)
-	Pig_bar.yidong:SetScript("OnDragStop",function()
-		Pig_bar:StopMovingOrSizing()
-	end)
+	Pig_bar.yidong:PIGSetMovable(Pig_bar)
 	Pig_bar.yidong:SetScript("OnEnter", function (self)
 		self:SetBackdropBorderColor(0,0.8,1, 0.9);
 		GameTooltip:ClearLines();
@@ -381,6 +364,7 @@ local function ADD_ActionBar(index)
 		GameTooltip:ClearLines();
 		GameTooltip:Hide() 
 	end)
+	if PIGA_Per["PigAction"]["Lock"][index] then Pig_bar.yidong:Hide() end
 	Pig_bar.yidong:SetScript("OnMouseUp", function (self,Button)
 		if Button=="RightButton" then
 			if Pig_OptionsUI:IsShown() then
@@ -498,7 +482,7 @@ local function ADD_ActionBar(index)
 		piganniu:SetScript("OnEnter", function (self)
 			GameTooltip:ClearLines();
 			GameTooltip_SetDefaultAnchor(GameTooltip, self)
-			Update_OnEnter(self,'PigAction')
+			Update_OnEnter(self,"PigAction")
 		end)
 		piganniu:SetScript("OnLeave", function ()
 			GameTooltip:ClearLines();
@@ -506,7 +490,7 @@ local function ADD_ActionBar(index)
 		end);
 
 		--------------------
-		ShowHideEvent(piganniu,PIGA_Per['PigAction']['ShowTJ'][index])
+		ShowHideEvent(piganniu,PIGA_Per["PigAction"]["ShowTJ"][index])
 		piganniu:SetAttribute("_onstate-combatYN","if newstate == 'show' then self:Show(); else self:Hide(); end")
 
 		-- piganniu:RegisterEvent("ACTIONBAR_PAGE_CHANGED");

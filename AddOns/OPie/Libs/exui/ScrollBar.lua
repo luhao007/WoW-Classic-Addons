@@ -630,7 +630,7 @@ function iSB.UpdateWheelCapture(d)
 		w = CreateFrame("Frame", nil, d.self)
 		w:SetScript("OnMouseWheel", iSB.OnMouseWheel)
 		setWidgetData(w, ScrollBarData, d)
-		d.wheelTarget = w
+		d.WheelCapture = w
 	elseif not ct then
 		return w and w:Hide()
 	end

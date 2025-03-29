@@ -439,7 +439,6 @@ function BG.dropDownToggle(dropDown)
     BG.SkinDropDown(dropDown)
 end
 
-
 ------------------是国服或亚服吗------------------
 function BG.IsCN()
     if GetCurrentRegionName() == "CN" or GetCurrentRegionName() == "TW" or GetCurrentRegionName() == "KR" then
@@ -625,11 +624,11 @@ function BG.Copy(table)
     end
 end
 
-function BG.DeletePlayerData(realmID,player)
+function BG.DeletePlayerData(realmID, player)
     if BiaoGe.Hope and BiaoGe.Hope[realmID] then
         BiaoGe.Hope[realmID][player] = nil
     end
-    if BiaoGe.FilterClassItemDB and  BiaoGe.FilterClassItemDB[realmID] then
+    if BiaoGe.FilterClassItemDB and BiaoGe.FilterClassItemDB[realmID] then
         BiaoGe.FilterClassItemDB[realmID][player] = nil
     end
     if BiaoGe.filterClassNum and BiaoGe.filterClassNum[realmID] then
@@ -659,6 +658,14 @@ function BG.DeletePlayerData(realmID,player)
     if BiaoGe.playerInfo and BiaoGe.playerInfo[realmID] then
         BiaoGe.playerInfo[realmID][player] = nil
     end
+    if BiaoGeVIP and BiaoGeVIP.RoleOverviewSort and BiaoGeVIP.RoleOverviewSort[realmID] then
+        for i, v in ipairs(BiaoGeVIP.RoleOverviewSort[realmID]) do
+            if v.player == player then
+                tremove(BiaoGeVIP.RoleOverviewSort[realmID], i)
+                break
+            end
+        end
+    end
 end
 
 --获取副本tbl某个value
@@ -669,3 +676,7 @@ function BG.GetFBinfo(FB, info)
         end
     end
 end
+
+-- function BG.()
+    
+-- end

@@ -1,4 +1,7 @@
-local _, T = ...
+local COMPAT, _, T = select(4, GetBuildInfo()), ...
+if T.TenEnv then T.TenEnv() end
+local FRAME_BUFFER_OK = COMPAT == 40400
+
 local gx do
 	local b = ([[Interface\AddOns\%s\gfx\]]):format((...))
 	gx = {
@@ -356,7 +359,7 @@ local CreateIndicator do
 		local bf = CreateFrame("Frame", nil, cf)
 			bf:SetAllPoints()
 			bf:SetFlattensRenderLayers(true)
-			bf[bf.SetIsFrameBuffer and "SetIsFrameBuffer" or "SetFrameBuffer"](bf, true)
+			bf:SetIsFrameBuffer(FRAME_BUFFER_OK)
 		local ef = CreateFrame("Frame", nil, bf)
 			ef:SetAllPoints()
 		local uf = CreateFrame("Frame", nil, cf)
@@ -431,5 +434,5 @@ T.Mirage = {
 
 	supportsCooldownNumbers=true,
 	supportsShortLabels=true,
-	onParentAlphaChanged=function(self, pea) self.bf:SetAlpha(pea) end,
+	onParentAlphaChanged=FRAME_BUFFER_OK and function(self, pea) self.bf:SetAlpha(pea) end or nil,
 }

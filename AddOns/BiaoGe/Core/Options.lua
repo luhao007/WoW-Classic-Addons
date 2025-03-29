@@ -2202,27 +2202,36 @@ BG.Init(function()
             end
         end
         height = height + 10
-
+        local _height = height
         -- 排序
-        do
+        BG.Init2(function()
+            local height = _height
             local name = "roleOverviewSort1"
             BG.options[name .. "reset"] = "iLevel-class-player"
             BiaoGe.options[name] = BiaoGe.options[name] or BG.options[name .. "reset"]
-
+            if BiaoGe.options[name] == "iLevel-player-class" then
+                BiaoGe.options[name] = "iLevel-player"
+            elseif BiaoGe.options[name] == "class-player-iLevel" then
+                BiaoGe.options[name] = "class-player"
+            elseif BiaoGe.options[name] == "player-iLevel-class" then
+                BiaoGe.options[name] = "player"
+            elseif BiaoGe.options[name] == "player-class-iLevel" then
+                BiaoGe.options[name] = "player"
+            end
             local tbl = {
                 { key = "iLevel-class-player", text = L["装等-职业-名字"] },
-                { key = "iLevel-player-class", text = L["装等-名字-职业"] },
                 { key = "class-iLevel-player", text = L["职业-装等-名字"] },
-                { key = "class-player-iLevel", text = L["职业-名字-装等"] },
-                { key = "player-iLevel-class", text = L["名字-装等-职业"] },
-                { key = "player-class-iLevel", text = L["名字-职业-装等"] },
+                { key = "iLevel-player", text = L["装等-名字"] },
+                { key = "class-player", text = L["职业-名字"] },
+                { key = "player", text = L["名字"] },
+                { key = "vip", text = L["自定义排序"] .. AddTexture("VIP") },
             }
 
             local t = roleOverview:CreateFontString()
             t:SetFont(STANDARD_TEXT_FONT, 15, "OUTLINE")
             t:SetPoint("TOPLEFT", 15, height)
             t:SetTextColor(1, 1, 1)
-            t:SetText( L["角色总览的排序方式："])
+            t:SetText(L["角色总览的排序方式："])
             BG.options["Text" .. name] = t
 
             -- 选项
@@ -2250,15 +2259,38 @@ BG.Init(function()
                         info.func = function()
                             BiaoGe.options[name] = v.key
                             LibBG:UIDropDownMenu_SetText(dropDown, SetText(BiaoGe.options[name]))
+                            if BiaoGe.options[name] ~= "vip" then
+                                if BGV and BGV.RoleOverviewSortFrame and BGV.RoleOverviewSortFrame:IsVisible() then
+                                    BGV.RoleOverviewSortFrame:Hide()
+                                end
+                            end
+                            dropDown.bt:SetShown(BiaoGe.options[name] == "vip" and BG.BiaoGeVIPVerNum and BG.BiaoGeVIPVerNum >= 10140)
                         end
                         if BiaoGe.options[name] == v.key then
                             info.checked = true
                         end
+                        if v.key == "vip" and not (BG.BiaoGeVIPVerNum and BG.BiaoGeVIPVerNum >= 10140) then
+                            info.disabled = true
+                        end
                         LibBG:UIDropDownMenu_AddButton(info)
                     end
                 end)
+
+                dropDown.bt = BG.CreateButton(dropDown)
+                dropDown.bt:SetSize(100, 25)
+                dropDown.bt:SetPoint("LEFT", dropDown, "RIGHT", 0, 3)
+                dropDown.bt:SetText(L["修改排序"])
+                dropDown.bt:SetShown(BiaoGe.options[name] == "vip" and BG.BiaoGeVIPVerNum and BG.BiaoGeVIPVerNum >= 10140)
+                dropDown.bt:SetScript("OnClick", function(self)
+                    BG.PlaySound(1)
+                    if BGV.RoleOverviewSortFrame and BGV.RoleOverviewSortFrame:IsVisible() then
+                        BGV.RoleOverviewSortFrame:Hide()
+                    else
+                        BGV.CreateRoleOverviewMainFrame(self)
+                    end
+                end)
             end
-        end
+        end)
         height = height - 35
 
         -- 默认显示
@@ -2276,7 +2308,7 @@ BG.Init(function()
             t:SetFont(STANDARD_TEXT_FONT, 15, "OUTLINE")
             t:SetPoint("TOPLEFT", 15, height)
             t:SetTextColor(1, 1, 1)
-            t:SetText( L["角色总览的默认显示："])
+            t:SetText(L["角色总览的默认显示："])
             BG.options["Text" .. name] = t
             -- 选项
             do
@@ -2329,7 +2361,7 @@ BG.Init(function()
             t:SetFont(STANDARD_TEXT_FONT, 15, "OUTLINE")
             t:SetPoint("TOPLEFT", 15, height)
             t:SetTextColor(1, 1, 1)
-            t:SetText( L["角色总览的布局方式："])
+            t:SetText(L["角色总览的布局方式："])
             BG.options["Text" .. name] = t
             -- 选项
             do
@@ -2403,7 +2435,7 @@ BG.Init(function()
             t:SetFont(STANDARD_TEXT_FONT, 15, "OUTLINE")
             t:SetPoint("TOPLEFT", 15, height)
             t:SetTextColor(1, 1, 1)
-            t:SetText(AddTexture("QUEST").. L["不显示低于该装等的角色："])
+            t:SetText(AddTexture("QUEST") .. L["不显示低于该装等的角色："])
 
             local edit = CreateFrame("EditBox", nil, roleOverview, "InputBoxTemplate")
             edit:SetSize(50, 20)
@@ -2862,8 +2894,8 @@ BG.Init(function()
                 -- end
             })
             if BG.IsWLK then
-                tinsert(tbl[#tbl].ontext, " ")
-                tinsert(tbl[#tbl].ontext, L["在团长的右键菜单里增加[进入DD语音房间]按钮。"])
+                -- tinsert(tbl[#tbl].ontext, " ")
+                -- tinsert(tbl[#tbl].ontext, L["在团长的右键菜单里增加[进入DD语音房间]按钮。"])
             end
             if BG.IsVanilla then
                 tbl[#tbl].ontext[2] = L["预设装等、自定义文本，当你点击集结号活动密语时会自动添加该内容。"]

@@ -5,6 +5,7 @@ local Fun=addonTable.Fun
 local Create=addonTable.Create
 local PIGLine=Create.PIGLine
 local PIGFrame=Create.PIGFrame
+local PIGEnter=Create.PIGEnter
 local PIGDiyBut=Create.PIGDiyBut
 local PIGDownMenu=Create.PIGDownMenu
 local PIGFontString=Create.PIGFontString
@@ -17,35 +18,49 @@ function BusinessInfo.FBCD()
 	local fujiF,fujiTabBut=PIGOptionsList_R(StatsInfo.F,"副\n本",StatsInfo.butW,"Left")
 	fujiF:Show()
 	fujiTabBut:Selected()
+	PIGA["StatsInfo"]["InstancesCD"]["Mode"]=PIGA["StatsInfo"]["InstancesCD"]["Mode"] or 1
+	fujiF.SetMode = PIGDiyBut(fujiF,{"TOPLEFT", fujiF, "TOPLEFT", 10, -6},{20,20,23,23,"MagePortalAlliance"})
+	fujiF.SetMode:SetScript("OnClick", function ()
+		StaticPopup_Show("STATSINFOINSTANCESCDMODE");
+	end);
+	if PIGA["StatsInfo"]["InstancesCD"]["Mode"]==1 then
+		fujiF.SetMode.tisptxt="切换为旧版记录模式？\n需要重载界面"
+	else
+		fujiF.SetMode:SetPoint("TOPLEFT", fujiF, "TOPLEFT", 10, 0);
+		fujiF.SetMode.tisptxt="切换为新版记录模式？\n需要重载界面"
+	end
+	PIGEnter(fujiF.SetMode,fujiF.SetMode.tisptxt)
+	StaticPopupDialogs["STATSINFOINSTANCESCDMODE"] = {
+		text = fujiF.SetMode.tisptxt,
+		button1 = YES,
+		button2 = NO,
+		OnAccept = function(self,arg1)
+			if PIGA["StatsInfo"]["InstancesCD"]["Mode"]==1 then
+				PIGA["StatsInfo"]["InstancesCD"]["Mode"]=2
+			else
+				PIGA["StatsInfo"]["InstancesCD"]["Mode"]=1
+			end
+			ReloadUI()
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+	}
+
 	---
-	local OLDtocversion = 49999
+	local OldMode = tocversion>49999 or PIGA["StatsInfo"]["InstancesCD"]["Mode"]==2
 	local function Get_InstancesCD()
 		local numInstances = GetNumSavedInstances();
-		if tocversion>OLDtocversion then
-			PIGA["StatsInfo"]["FubenCD"][StatsInfo.allname]=PIGA["StatsInfo"]["FubenCD"][StatsInfo.allname] or {}
-			local fubenCDinfo={{},{}};
-			for id = 1, numInstances, 1 do				
-				local name, id, reset, difficulty, locked, extended, instanceIDMostSig, isRaid, maxPlayers, difficultyName, numEncounters, encounterProgress = GetSavedInstanceInfo(id)
-				--print(name, id, reset, difficulty, locked, extended, instanceIDMostSig, isRaid, maxPlayers, difficultyName, numEncounters, encounterProgress)
-				if isRaid then
-					table.insert(fubenCDinfo[2],{"raid",name,difficultyName,GetTime(),reset})
-				else
-					table.insert(fubenCDinfo[1],{"party",name,difficultyName,GetTime(),reset})
-				end
-			end
-			PIGA["StatsInfo"]["FubenCD"][StatsInfo.allname]=fubenCDinfo
-		else
-			PIGA["StatsInfo"]["InstancesCD"][StatsInfo.allname]=PIGA["StatsInfo"]["InstancesCD"][StatsInfo.allname] or {}
-			local InstancesCDinfo={};
-			for id = 1, numInstances, 1 do				
-				local name, lockoutId, reset, difficultyId, locked, extended, instanceIDMostSig, isRaid, maxPlayers, difficultyName, numEncounters, encounterProgress, extendDisabled, instanceId = GetSavedInstanceInfo(id)
-				--local bossName, fileDataID, isKilled, unknown4 = GetSavedInstanceEncounterInfo(id, 5)
-				--print(GetSavedInstanceEncounterInfo(id, 5))
-				InstancesCDinfo[name]=InstancesCDinfo[name] or {}
-				InstancesCDinfo[name][difficultyId]={reset+GetServerTime(), numEncounters, encounterProgress}
-			end
-			PIGA["StatsInfo"]["InstancesCD"][StatsInfo.allname]=InstancesCDinfo
+		PIGA["StatsInfo"]["InstancesCD"][StatsInfo.allname]=PIGA["StatsInfo"]["InstancesCD"][StatsInfo.allname] or {}
+		local InstancesCDinfo={};
+		for id = 1, numInstances, 1 do				
+			local name, lockoutId, reset, difficultyId, locked, extended, instanceIDMostSig, isRaid, maxPlayers, difficultyName, numEncounters, encounterProgress, extendDisabled, instanceId = GetSavedInstanceInfo(id)
+			--local bossName, fileDataID, isKilled, unknown4 = GetSavedInstanceEncounterInfo(id, 5)
+			--print(GetSavedInstanceEncounterInfo(id, 5))
+			InstancesCDinfo[name]=InstancesCDinfo[name] or {}
+			InstancesCDinfo[name][difficultyId]={reset+GetServerTime(), numEncounters, encounterProgress}
 		end
+		PIGA["StatsInfo"]["InstancesCD"][StatsInfo.allname]=InstancesCDinfo
 	end
 	fujiF:HookScript("OnShow", function(self)
 		self.Update_List();
@@ -59,7 +74,7 @@ function BusinessInfo.FBCD()
 			C_Timer.After(1,Get_InstancesCD)
 		end
 	end)
-	if tocversion>OLDtocversion then
+	if OldMode then
 		local hang_Height,hang_NUM  = 20.8, 22;
 		local function add_hang(fujik,txttshi)
 			fujik.title = PIGFontString(fujik,{"BOTTOM", fujik, "TOP", 0, 2},"冷却中的"..txttshi)
@@ -146,9 +161,7 @@ function BusinessInfo.FBCD()
 						fujik.Race:SetWidth(0.01);
 						fujik.Class:SetWidth(0.01);
 						fujik.name:SetTextColor(1, 1, 1, 1);
-						local shengyu=cdmulu[dangqian][4]+cdmulu[dangqian][5]-GetTime();
-						local nametxt=cdmulu[dangqian][2].."\124cff66FF11["..cdmulu[dangqian][3].."]\124r".." "..disp_time(shengyu)
-						fujik.name:SetText(nametxt);
+						fujik.name:SetText(cdmulu[dangqian][1].."\124cff66FF11["..cdmulu[dangqian][2].."]\124r".." "..disp_time(cdmulu[dangqian][3]-GetServerTime()));
 					end
 				end
 			end
@@ -158,23 +171,31 @@ function BusinessInfo.FBCD()
 		   	local cdmulu={{},{}};
 		   	local PlayerData = PIGA["StatsInfo"]["Players"]
 		   	for k,v in pairs(PlayerData) do
-		   		local CDData  = PIGA["StatsInfo"]["FubenCD"][k]
-		   		if #CDData[1]>0 then
-		   			table.insert(cdmulu,{"juese",k,v[1],v[2],v[3],v[4],v[5]})
-			   		for nn=1,#CDData[1] do
-						if CDData[1][nn][4]+CDData[1][nn][5]-GetTime()>0 then
-			   				table.insert(cdmulu,CDData[1][nn])
-			   			end
-			   		end
-			   	end
-			   	if #CDData[2]>0 then
-		   			table.insert(cdmulu,{"juese",k,v[1],v[2],v[3],v[4],v[5]})
-			   		for nn=1,#CDData[2] do
-			   			if CDData[2][nn][4]+CDData[2][nn][5]-GetTime()>0 then
-			   				table.insert(cdmulu,CDData[2][nn])
-			   			end
-			   		end
-			   	end
+		   		fujiF.raidyou=false
+	   			fujiF.partyyou=false
+		   		local fubenData  = PIGA["StatsInfo"]["InstancesCD"][k]
+				if fubenData then
+					for funame,CDdata in pairs(fubenData) do
+						for difficultyId,dataX in pairs(CDdata) do
+							if GetServerTime()<dataX[1] then
+								local name, groupType, isHeroic, isChallengeMode, displayHeroic, displayMythic, toggleDifficultyID, isLFR, minPlayers, maxPlayers = GetDifficultyInfo(difficultyId)
+								if groupType=="raid" then
+									if not fujiF.raidyou then
+										table.insert(cdmulu[2],{"juese",k,v[1],v[2],v[3],v[4],v[5]})
+										fujiF.raidyou=true
+									end
+									table.insert(cdmulu[2],{funame,name,dataX[1]})
+								elseif groupType=="party" then
+									if not fujiF.partyyou then
+										table.insert(cdmulu[1],{"juese",k,v[1],v[2],v[3],v[4],v[5]})
+										fujiF.partyyou=true
+									end
+									table.insert(cdmulu[1],{funame,name,dataX[1]})
+								end
+							end
+						end
+					end
+				end
 		   	end
 		   	Show_hang(fujiF.partyCD,cdmulu[1])
 			Show_hang(fujiF.raidCD,cdmulu[2])
@@ -227,10 +248,11 @@ function BusinessInfo.FBCD()
 		end
 		local biaotiName = {
 			[836]="ZUL",[837]="黑上",[838]="黑龙MM",[839]="MC",[840]="BWL",[842]="废墟",[843]="TAQ",[841]="NAXX",
-			[1100]="TOC",[1110]="ICC",[1106]="ULD",[1102]="EoE",[1101]="OS",[1095]="宝库",[1156]="OL",
+			[1100]="TOC",[1110]="ICC",[1106]="ULD",[1102]="EoE",[1101]="OS",[1095]="宝库",[1156]="黑龙MM",
 			[852]="SW",[851]="ZAM",[850]="BT",[849]="HS",[848]="DS",[847]="FB",[846]="GLR",[845]="MSLD",[844]="KLZ",
 		}
-		fujiF.Setfuben = PIGDownMenu(fujiF,{"TOPLEFT", fujiF, "TOPLEFT", 20, -5},{140,22})
+		---
+		fujiF.Setfuben = PIGDownMenu(fujiF,{"TOPLEFT", fujiF, "TOPLEFT", 40, -6},{140,22})
 		fujiF.Setfuben:PIGDownMenu_SetText("选择监控副本")
 		function fujiF.Setfuben:PIGDownMenu_Update_But(level, menuList)
 			local info = {}
@@ -249,11 +271,7 @@ function BusinessInfo.FBCD()
 						info.isNotRadio=true
 						local activityInfo = C_LFGList.GetActivityInfoTable(menuList[ii]);
 						local kuozhanname = biaotiName[menuList[ii]] and "("..biaotiName[menuList[ii]]..")" or ""
-						if tocversion<50000 then
-							info.text, info.arg1= activityInfo.shortName..kuozhanname,menuList[ii]
-						else
-							info.text, info.arg1= activityInfo.fullName..kuozhanname,menuList[ii]
-						end
+						info.text, info.arg1= activityInfo.fullName..kuozhanname,menuList[ii]
 						info.checked = PIGA["StatsInfo"]["InstancesCD"]["Records"][menuList[ii]]
 						self:PIGDownMenu_AddButton(info, level)
 					end
@@ -286,7 +304,7 @@ function BusinessInfo.FBCD()
 		fujiF.NR:PIGSetBackdrop(0)
 		fujiF.NR.biaotilist={}
 		for i=1,lienum do
-			fujiF.NR.biaotilist[i]= PIGFontString(fujiF.NR,{"BOTTOMLEFT", fujiF.NR, "TOPLEFT", nrjiange*(i-1)+nrpianyi-19, 1},"",nil,13)
+			fujiF.NR.biaotilist[i]= PIGFontString(fujiF.NR,{"BOTTOMLEFT", fujiF.NR, "TOPLEFT", nrjiange*(i-1)+nrpianyi-19, 2},"",nil,13)
 			fujiF.NR.biaotilist[i]:SetWidth(60)
 		end
 		fujiF.NR.Scroll = CreateFrame("ScrollFrame",nil,fujiF.NR, "FauxScrollFrameTemplate");  

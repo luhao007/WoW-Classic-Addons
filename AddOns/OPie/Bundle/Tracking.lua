@@ -1,10 +1,11 @@
-local AB, _, T = assert(OPie.ActionBook:compatible(2,14), "Requires a compatible version of ActionBook"), ...
+local AB, _, T = OPie.ActionBook:compatible(2,14), ...
 local ORI, EV, L = OPie.UI, T.Evie, T.L
-local COMPAT = select(4,GetBuildInfo())
-local MODERN, CF_WRATH = COMPAT >= 10e4, COMPAT < 10e4 and COMPAT >= 3e4
-local MODERN_TRACKING = MODERN or C_Minimap and C_Minimap.GetNumTrackingTypes
+assert(AB and ORI and EV and L and 1, 'Incompatible library bundle')
 
-if MODERN or CF_WRATH then -- OPieTracker
+local COMPAT = select(4,GetBuildInfo())
+local PRE_ELEVEN_TRACKING = COMPAT == 40400
+
+if COMPAT > 3e4 then -- OPieTracking
 	local function generateColor(c, n)
 		local hue, v, s = (15+(c-1)*360/n) % 360, 1, 0.85
 		local h, f = math.floor(hue/60) % 6, (hue/60) % 1
@@ -20,18 +21,18 @@ if MODERN or CF_WRATH then -- OPieTracker
 	end
 	
 	local function GetTrackingInfo(...)
-		return (MODERN_TRACKING and C_Minimap or _G).GetTrackingInfo(...)
-	end
-	local function SetTracking(...)
-		return (MODERN_TRACKING and C_Minimap or _G).SetTracking(...)
-	end
-	local function GetNumTrackingTypes(...)
-		return (MODERN_TRACKING and C_Minimap or _G).GetNumTrackingTypes(...)
+		if PRE_ELEVEN_TRACKING then
+			return C_Minimap.GetTrackingInfo(...)
+		end
+		local ti = C_Minimap.GetTrackingInfo(...)
+		if ti then
+			return ti.name, ti.texture, ti.active, ti.type, ti.subType, ti.spellID
+		end
 	end
 	
 	local collectionData = {}
 	local function setTracking(id)
-		SetTracking(id, not select(3, GetTrackingInfo(id)))
+		C_Minimap.SetTracking(id, not select(3, GetTrackingInfo(id)))
 	end
 	local function hint(k)
 		local name, tex, on = GetTrackingInfo(k)
@@ -43,7 +44,7 @@ if MODERN or CF_WRATH then -- OPieTracker
 	end})
 	local function preClick(selfId, _, updatedId)
 		if selfId ~= updatedId then return end
-		local n = GetNumTrackingTypes()
+		local n = C_Minimap.GetNumTrackingTypes()
 		if n ~= #collectionData then
 			for i=1,n do
 				local token = "OPbTR" .. i
@@ -51,7 +52,7 @@ if MODERN or CF_WRATH then -- OPieTracker
 				ORI:SetDisplayOptions(token, nil, nil, generateColor(i,n))
 			end
 			for i=n+1,#collectionData do
-				collectionData[i] = nil
+				collectionData[i], collectionData[collectionData[i] or i] = nil
 			end
 			AB:UpdateActionSlot(selfId, collectionData)
 		end

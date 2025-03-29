@@ -3,12 +3,9 @@ if select(4,GetBuildInfo()) < 8e4 then return end
 
 local EV, L = T.Evie, T.L
 local AB = assert(T.ActionBook:compatible(2,23), "A compatible version of ActionBook is required.")
-local RW = assert(AB:compatible("Rewire", 1,7), "A compatible version of Rewire is required")
 local CHARNAME = UnitName("player") .. "@" .. GetRealmName()
 
-do -- RW/opiespecset
-	local f = CreateFrame("Frame", nil, nil, "SecureFrameTemplate")
-	f:SetAttribute("RunSlashCmd", [[self:CallMethod("SwitchSpec", ...)]])
+do -- /opiespecset
 	local esSpec, esSet, esDeadline
 	function EV:PLAYER_SPECIALIZATION_CHANGED(unit)
 		if esDeadline and unit == "player" and GetSpecialization() == esSpec and not InCombatLockdown() and esDeadline > GetTime() then
@@ -16,17 +13,17 @@ do -- RW/opiespecset
 			esDeadline, esSpec, esSet = sid and C_EquipmentSet.UseEquipmentSet(sid) and nil
 		end
 	end
-	function f:SwitchSpec(_cmd, args)
-		local sid, sname = args:match("(%d+) {(.*)}")
+	SLASH_OPIE_SPECSET1 = "/opiespecset"
+	function SlashCmdList.OPIE_SPECSET(msg)
+		local sid, sname = msg:match("^(%d+) {(.*)}$")
 		sid = tonumber(sid)
-		if GetSpecialization() ~= sid and not InCombatLockdown() then
-			SetSpecialization(sid)
+		if sid and GetSpecialization() ~= sid and not InCombatLockdown() then
+			C_SpecializationInfo.SetSpecialization(sid)
 			if sname ~= "" then
 				esSpec, esSet, esDeadline = sid, sname, GetTime()+9
 			end
 		end
 	end
-	RW:RegisterCommand("/opiespecset", false, false, f)
 end
 do -- AB/specset
 	local slot, tspec, tset = {}, {}, {}
@@ -79,8 +76,7 @@ do -- AB/specset
 		local tk = idx .. "#" .. setName
 		local ret = slot[tk]
 		if specName and UnitLevel("player") >= 10 and GetNumSpecializations() >= idx and not ret then
-			ret = AB:GetActionSlot("macrotext", ("/cancelform [nospec:%d,form:travel,flyable,noflying,nocombat]\n/opiespecset %d {%s}\n%s [spec:%d] %s"):format(idx, idx, setName, SLASH_EQUIP_SET1, setName ~= "" and idx or 5, setName))
-			ret = AB:CreateActionSlot(hintSpecSet, tk, "clone", ret)
+			ret = AB:CreateActionSlot(hintSpecSet, tk, "retext", ("/cancelform [nospec:%d,form:travel,anyflyable,noflying,nocombat]\n/opiespecset %d {%s}\n%s [spec:%d] %s"):format(idx, idx, setName, SLASH_EQUIP_SET1, setName ~= "" and idx or 5, setName))
 			slot[tk] = ret
 		end
 		return ret
@@ -136,8 +132,6 @@ do -- EditorUI
 		local p = bg:GetParent()
 		if p and type(p.OnActionChanged) == "function" then
 			p:OnActionChanged(bg)
-		elseif p and type(p.SaveAction) == "function" then -- DEPRECATED [2303/Y8]
-			p:SaveAction()
 		end
 	end
 	function drop:initialize()

@@ -378,7 +378,13 @@ local function DeserializeSequentialKeys(str)
 	for i=1,#values,1 do
 		local a,b = (">"):split(values[i]);
 		if b then
-			for j=tonumber(a),tonumber(b),1 do
+			a = tonumber(a);
+			b = tonumber(b);
+			if (b - a) > 100000 then
+				app:ShowPopupDialogWithMultiLineEditBox("Rather than explode your RAM, Crieve decided instead to have you report this string of data to him for a fix.\n\nApologies for the inconvenience.\n\n" .. str, nil, "A parsing error occured during the sync process.");
+				break;
+			end
+			for j=a,b,1 do
 				keys[#keys + 1] = j;
 			end
 		else
@@ -477,7 +483,13 @@ local defaultDeserializer = function(field, currentValue, data)
 		for i=2,totalValues,1 do
 			local a,b = (">"):split(values[i]);
 			if b then
-				for j=tonumber(a),tonumber(b),1 do
+				a = tonumber(a);
+				b = tonumber(b);
+				if (b - a) > 100000 then
+					app:ShowPopupDialogWithMultiLineEditBox("Rather than explode your RAM, Crieve decided instead to have you report this string of data to him for a fix.\n\nApologies for the inconvenience.\n\n" .. data[1], nil, "A parsing error occured during the sync process.");
+					break;
+				end
+				for j=a,b,1 do
 					currentValue[j] = 1;
 				end
 			else

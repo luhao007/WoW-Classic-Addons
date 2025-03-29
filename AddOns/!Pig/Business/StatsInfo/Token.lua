@@ -102,25 +102,29 @@ function BusinessInfo.Token()
 					paizibut.num:SetText(GetMoneyString(cdmulu[dangqian][7][1]))
 					--
 					local paiziD = cdmulu[dangqian][7][2]
+					paizibut.butindex = 1
 					for but=1,#paiziD do
-						local paizibut = _G["PIG_Tokens_"..id.."_But"..(but+1)]
-						paizibut:Show()
-						if paiziD[but][1]==136998 or paiziD[but][1]==137000 then
-							paizibut.Tex:SetTexCoord(0.07,0.59,0,0.58);
+						if paiziD[but][2]>0 then
+							paizibut.butindex=paizibut.butindex+1
+							local paizibut = _G["PIG_Tokens_"..id.."_But"..paizibut.butindex]
+							paizibut:Show()
+							if paiziD[but][1]==136998 or paiziD[but][1]==137000 then
+								paizibut.Tex:SetTexCoord(0.07,0.59,0,0.58);
+							end
+							paizibut.Tex:SetTexture(paiziD[but][1])
+							paizibut.num:SetText(paiziD[but][2])
+							paizibut:SetScript("OnEnter", function (self)
+								GameTooltip:ClearLines();
+								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+								-- GameTooltip:SetCurrencyTokenByID(paiziD[but][3])
+								GameTooltip:SetText(paiziD[but][4]);
+								GameTooltip:Show();
+							end);
+							paizibut:SetScript("OnLeave", function ()
+								GameTooltip:ClearLines();
+								GameTooltip:Hide() 
+							end);
 						end
-						paizibut.Tex:SetTexture(paiziD[but][1])
-						paizibut.num:SetText(paiziD[but][2])
-						paizibut:SetScript("OnEnter", function (self)
-							GameTooltip:ClearLines();
-							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-							-- GameTooltip:SetCurrencyTokenByID(paiziD[but][3])
-							GameTooltip:SetText(paiziD[but][4]);
-							GameTooltip:Show();
-						end);
-						paizibut:SetScript("OnLeave", function ()
-							GameTooltip:ClearLines();
-							GameTooltip:Hide() 
-						end);
 					end
 				end
 			end

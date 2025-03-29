@@ -46,7 +46,9 @@ elseif BG.IsWLK then
     buttonCount.ICC = { 3, 3, 3, 5, 3, 3, 5, 3, 5, 3, 5, 8, 3, 8, 7, }
     -- TBC
     buttonCount.SW = { 5, 5, 5, 6, 5, 6, 10, 11, }
-    buttonCount.BT = { 5, 5, 5, 5, 5, 5, 5, 6, 8, 8, 5, }
+    buttonCount.BT = { 5, 5, 5, 5, 5, 5, 5, 5, 10, 8, 5, }
+    buttonCount.HS = { 5, 5, 5, 5, 5, 7, 5 }
+    buttonCount.SSC = { 4, 4, 4, 4, 4, 5, 5, 5, 5, 10, 8, 5, }
     buttonCount.BWL = { 5, 5, 5, 5, 5, 5, 5, 6, 9, 12, }
 elseif BG.IsCTM then
     buttonCount.BOT = { 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 8, 24, 5, }

@@ -157,7 +157,7 @@ function FramePlusfun.Friends()
 									gameAccountInfo.playerGuid,gameAccountInfo.characterName,gameAccountInfo.raceName,gameAccountInfo.className,
 									gameAccountInfo.characterLevel,gameAccountInfo.wowProjectID,gameAccountInfo.realmName,gameAccountInfo.areaName, gameAccountInfo.richPresence
 								}
-								if gameAccountInfo.hasFocus and not piginfo_acc[1] then
+								if not piginfo_acc[1] then
 									piginfo_acc[1]=juese_AccountInfo
 								elseif not piginfo_acc[2] then
 									piginfo_acc[2]=juese_AccountInfo
@@ -173,18 +173,18 @@ function FramePlusfun.Friends()
 			else
 				local bnetIDAccount, accountName, _, _, _, _, _, isOnline = BNGetFriendInfo(id);
 				if accountName and isOnline then
-					local piginfo_acc={{},{}}
+					local piginfo_acc={nil,nil}
 					local numGameAccounts = BNGetNumFriendGameAccounts(id);
 					for Accid=1,numGameAccounts do
 						local hasFocus, characterName, client, realmName, realmID, faction, race, class, _, zoneName, level, gameText, _, _, _, _, _, _, _, Guid, wowProjectID = BNGetFriendGameAccountInfo(id, Accid);
 						if client==BNET_CLIENT_WOW then--BNET_CLIENT_APP
 							local juese_AccountInfo = {Guid,characterName,race,class,level,wowProjectID,realmName,zoneName, gameText}
-							if hasFocus and #piginfo_acc[1]==0 then
+							if not piginfo_acc[1] then
 								piginfo_acc[1]=juese_AccountInfo
-							elseif #piginfo_acc[2]==0 then
+							elseif not piginfo_acc[2] then
 								piginfo_acc[2]=juese_AccountInfo
 							end
-							if #piginfo_acc[1]>0 and #piginfo_acc[2]>0 then
+							if piginfo_acc[1] and piginfo_acc[2] then
 								break
 							end
 						end
