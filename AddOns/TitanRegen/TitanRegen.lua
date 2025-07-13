@@ -29,30 +29,28 @@ local TITAN_RegenMPCombatTrack = 0;
 local L = LibStub("AceLocale-3.0"):GetLocale(TITAN_ID, true)
 -- ******************************** Functions *******************************
 
---[[
--- **************************************************************************
--- NAME : TitanRegenTemp_GetColoredTextRGB(text, r, g, b)
--- DESC : Define colors for colored text and display
--- VARS : text = text to display, r = red value, g = green value, b = blue value
--- **************************************************************************
---]]
-local function TitanRegenTemp_GetColoredTextRGB(text, r, g, b)
+---Color a text tring based on the RBG passed
+---@param text string To color
+---@param r number Red (0.0 - 1.0)
+---@param g any Green (0.0 - 1.0)
+---@param b any Blue (0.0 - 1.0)
+---@return string Color_string
+local function SetTextColorRBG(text, r, g, b)
+	local str = ""
      if (text and r and g and b) then
           local redColorCode = format("%02x", r * 255);          
           local greenColorCode = format("%02x", g * 255);
           local blueColorCode = format("%02x", b * 255);          
-          local colorCode = "|cff"..redColorCode..greenColorCode..blueColorCode;
-          return colorCode..text..FONT_COLOR_CODE_CLOSE;
+          local colorCode = "|cff"..redColorCode..greenColorCode..blueColorCode.."|r"
+          str = colorCode..text..FONT_COLOR_CODE_CLOSE
      end
+
+	 return str
 end
 
---[[
--- **************************************************************************
--- NAME : TitanPanelRegenButton_OnLoad()
--- DESC : Registers the plugin upon it loading
--- **************************************************************************
---]]
-function TitanPanelRegenButton_OnLoad(self)
+---local Build the plugin .registry and register events
+---@param self Button plugin frame
+function OnLoad(self)
 	local notes = ""
 		.."Adds a regen monitor to Titan Panel to show HP/MANA regen - Classic versions only.\n"
 	self.registry = { 
@@ -60,7 +58,7 @@ function TitanPanelRegenButton_OnLoad(self)
 		category = "Built-ins",
 		version = TITAN_VERSION,
 		menuText = L["TITAN_REGEN_MENU_TEXT"],
-		buttonTextFunction = "TitanPanelRegenButton_GetButtonText",
+		buttonTextFunction = "GetButtonText",
 		tooltipTitle = L["TITAN_REGEN_MENU_TOOLTIP_TITLE"],
 		tooltipTextFunction = "TitanPanelRegenButton_GetTooltipText",
 		icon = "Interface\\AddOns\\TitanRegen\\TitanRegen",
@@ -84,12 +82,10 @@ function TitanPanelRegenButton_OnLoad(self)
 	}
 end
 
---[[
--- **************************************************************************
--- NAME : TitanPanelXPButton_OnEvent
--- DESC : Parse events registered to addon and act on them
--- **************************************************************************
---]]
+---local Handle events the clock plugin is interested in.
+---@param self Button plugin frame
+---@param event string Event
+---@param ... any Event parameters
 function TitanPanelRegenButton_OnEvent(self, event, a1, a2, ...)
 	if ( event == "PLAYER_ENTERING_WORLD") then
 	end
@@ -153,19 +149,17 @@ function TitanPanelRegenButton_OnEvent(self, event, a1, a2, ...)
 	end
 end
 
---[[
--- **************************************************************************
--- NAME : TitanPanelRegenButton_GetButtonText(id)
--- DESC : Calculate regeneration logic for button text
--- VARS : id = button ID
--- **************************************************************************
---]]
-function TitanPanelRegenButton_GetButtonText(id)
+---Generate button text
+---@param id string
+---@return string label_hit_points
+---@return string text_hit_points
+---@return string label_mana
+---@return string text_mana
+function GetButtonText(id)
 	local labelTextHP = "";
 	local valueTextHP = "";
 	local labelTextMP = "";
 	local valueTextMP = "";
-	local OutputStr = "";
 
 	if UnitHealth("player") == UnitHealthMax("player") then
 		TITAN_RegenHP = 0;
@@ -202,7 +196,7 @@ function TitanPanelRegenButton_GetButtonText(id)
 			valueTextMP = format(TITAN_REGEN_MP_FORMAT, TITAN_RegenMP);               
 		end
 		if (TitanGetVar(TITAN_REGEN_ID, "ShowColoredText")) then
-			valueTextMP = TitanRegenTemp_GetColoredTextRGB(valueTextMP, 0.0, 0.0, 1.0);
+			valueTextMP = SetTextColorRBG(valueTextMP, 0.0, 0.0, 1.0);
 		else
 			valueTextMP = TitanUtils_GetHighlightText(valueTextMP);
 		end
@@ -222,12 +216,8 @@ print("Regen text"
 	return labelTextHP, valueTextHP, labelTextMP, valueTextMP;
 end
 
---[[
--- **************************************************************************
--- NAME : TitanPanelRegenButton_GetTooltipText()
--- DESC : Display tooltip text
--- **************************************************************************
---]]
+---Generate tooltip text
+---@return string Tool_tip Formatted text
 function TitanPanelRegenButton_GetTooltipText()
 	local minHP = TITAN_RegenMinHPRate;
 	local minMP = TITAN_RegenMinMPRate;
@@ -264,12 +254,7 @@ function TitanPanelRegenButton_GetTooltipText()
 	return txt
 end
 
---[[
--- **************************************************************************
--- NAME : TitanPanelRightClickMenu_PrepareTitanRegenMenu()
--- DESC : Display rightclick menu options
--- **************************************************************************
---]]
+---Generate right click menu options
 function TitanPanelRightClickMenu_PrepareRegenMenu()
 	local id = TITAN_REGEN_ID;
 	local info;
@@ -325,7 +310,7 @@ local function Create_Frames()
 	local window = CreateFrame("Button", TITAN_BUTTON, f, "TitanPanelComboTemplate")
 	window:SetFrameStrata("FULLSCREEN")
 	-- Using SetScript("OnLoad",   does not work
-	TitanPanelRegenButton_OnLoad(window);
+	OnLoad(window);
 --	TitanPanelButton_OnLoad(window); -- Titan XML template calls this...
 	
 	window:SetScript("OnShow", function(self)

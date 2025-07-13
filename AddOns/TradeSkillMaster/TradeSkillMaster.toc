@@ -6,6 +6,8 @@
 ## Notes: Auction house and gold making addon.
 ## Title-zhCN: |cFFFFE00A<|r|cFF0070DE专业|r|cFFFFE00A>|r |cFFFFFFFF专业助手|r |cFFFFE00ATradeSkillMaster|r
 
+## IconTexture: Interface\Addons\TradeSkillMaster\Media\Logo
+
 ## OptionalDeps: ArkInventory, Auc-Advanced, Auctionator, TheUndermineJournal, BootyBayGazette, AuctionDB
 
 ## SavedVariables: TradeSkillMasterDB, TSMItemInfoDB

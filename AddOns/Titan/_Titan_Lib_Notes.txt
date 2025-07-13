@@ -2,6 +2,7 @@ From:
 Ace3 - https://www.curseforge.com/wow/addons/ace3
 
 AceGUI-3.0-SharedMediaWidgets - https://www.curseforge.com/wow/addons/ace-gui-3-0-shared-media-widgets
+LibQTip-1.0 - https://www.curseforge.com/wow/addons/libqtip-1-0
 LibSharedMedia-3.0 - https://www.curseforge.com/wow/addons/libsharedmedia-3-0
 LibUIDropDownMenu - https://www.curseforge.com/wow/addons/libuidropdownmenu
 

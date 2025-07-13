@@ -32,13 +32,6 @@ There are diagnostic annotations used to ignore some warnings.
 Ignore warning annotations were limited as much as practical to 'this line' to point out usage of Classic routines.
 
 === Documentation blocks
-Within the document are Titan routines available to a plugin developer.
-
-There are three files contributing to Titan documentation.
-- Titan_API_<time>.lua - for Titan plugin developers
-- Titan_Dev_<time>.lua - for Titan developers
-- Titan_File_<time>.lua - for Titan developers
-
 These are created from annotations in the Lua files.
 API :
 These are routines Titan will keep stable.
@@ -49,7 +42,6 @@ These are global routines Tian uses. These may change at any time per Titan need
 
 File : 
 Each file has a terse description of its contents.
-
 --]===]
 
 --[===[ Titan Start editing
@@ -68,7 +60,7 @@ Using a text editor with code folding features will make this file easier to rea
 For simple changes, install a code / text editor. NotepadPlusPlus is a very popular editor.
 
 For more in delpth changes consider using an IDE (Integrated Development Environment).
-The file TitanIDE contains details on tools and ammotation.
+The file TitanIDE contains details on tools and annotation.
 
 Regardless of tools used, please update any annotations and comments as changes are made!!!
 
@@ -114,7 +106,7 @@ Titan has no dependencies but Titan plugins need to list Titan or TitanClassic.
 === .toc internals
 NOTE: The ## Interface value should match the current interface value of the corresponding WoW version.
 In BattleNet this is typically shown below the 'Play' button.
-DragonFlight 10.02.05 is represented without dots - 100206 - in the .toc.
+DragonFlight 10.02.05 is represented without dots - 100207 - in the .toc.
 
 If the interface value is higher or lower, WoW will complain that you are running 'out of date' addons.
 
@@ -162,41 +154,62 @@ When ADDON_LOADED event is received,
 - Titan registers for event PLAYER_ENTERING_WORLD
 - Titan ensures its saved variables are whole and known player profiles are read.
 
+NOTE: On ADDON_LOADED is the first time addon saved variables should be considered loaded and safe!!
+Using addon saved variables before ADDON_LOADED is likely to result in nil(s). Such as when WoW parses the addon code as it is loading.
+NOTE: The addon saved vars are NOT the Titan plugin saved vars via the registry (.savedVariables)! The registry is processed later!
+
 Next: ==== Waiting for WoW
 WoW fires a bunch of events as this and other addons are loaded.
 Eventually the game and all addons are loaded and PLAYER_ENTERING_WORLD event is sent
 
-Next: ==== Entering world
-When event PLAYER_ENTERING_WORLD is received via OnEvent, the real work begins.
+Next: ==== Entering world - PLAYER_ENTERING_WORLD (PEW) event
+When PLAYER_ENTERING_WORLD event is received via OnEvent, the real work begins.
+The PEW events do NOT guarantee order! Titan plugins (addons) could receive a PEW before Titan - See NOTE below.
 
 The local routine - TitanPanel_PlayerEnteringWorld - is called using pcall.
 This ensures Titan reacts to errors rather than forcing an error to the user.
 TitanPanel_PlayerEnteringWorld does all the variable and profile setup for the character entering the world.
 
-On first PLAYER_ENTERING_WORLD (not reload) Titan
+On login PLAYER_ENTERING_WORLD - not reload - Titan
 - Sets character profiles - TitanVariables_InitTitanSettings
 - Sets TitanPanel*Anchor for other addons to adjust for Titan
-- Creates all Titan bars - TitanPanelButton_CreateBar - including right click menu and auto hide frames
+- Creates all Titan bars including right click menu and auto hide frames. See Frames below.
 - Registers for events Titan uses - RegisterForEvents
 
 On login and reload Titan
-- Register plugins in case the user installed / enabled / disabled addons then reloaded - TitanUtils_RegisterPluginList
 - Set THIS character profile () - TitanVariables_UseSettings - 
-   See TitanVariables (File) for more details on saved variables; this is a simple concept but touchy to implement
-   Here Titan uses
-   - TitanPanel_InitPanelBarButton to set the bars the user wants
-   - TitanPanel_InitPanelButtons to set the plugins the user wants on the user selected bars
+   See TitanVariables (File) for more details on saved variables; this is a simple concept but touchy to implement.
+   The user chosen profile sets the user chosen plugin saved vars for both Titan and any plugins - see NOTE below.
+   TitanVariables_UseSettings uses
+   - TitanPanel_InitPanelBarButton to set the bars the user wants.
+   - TitanPanel_InitPanelButtons to set the plugins the user wants on the user selected bars via OnShow.
 - Update the Titan config tables - TitanUpdateConfig
 - Set Titan font and strata
-- Update any LDB plugins - TitanLDBRefreshButton
+- Sync any LDB plugins with the cooresponding Titan plugin- TitanLDBRefreshButton
 If the above was successful then all is good
 If the above failed with an error then 
 - tell user some bad happened with error they can pass to dev team
 - attempt to hide all bars as cleanup
 - nuke the Titan config tables as cleanup
+
+NOTE: The PEW event is an important but subtle distinction for Titan plugins!
+Titan plugins should be very careful if they use the PEW event to run code. The PEW events do NOT guarantee order! 
+Meaning the plugin PEW could be processed BEFORE Titan has set saved vars for itself or plugins.
+Titan plugins should not assume ANY saved vars are available until their OnShow.
+Only at the OnShow are the 'right' plugin saved vars guaranteed to be set.
+We have seen bugs occur on some user systems due to the order addons get and process the PEW event.
 --]===]
 
---[[ Frame Scripts
+--[[ Frames and Frame Scripts
+Here we detour into XML. TitanTemplate.xml contains the frames used by Titan.
+- TitanPanelBarButton : This "is" Titan in the sense that it has all events attached to it and all the code.
+- Titan_Bar__Display_Template : The template (Button) for a Titan bar.
+- TitanPanelBarButtonHiderTemplate : The template (Button) paired a full width Titan bar to allow hiding and unhiding the paired Titan Bar.
+- TitanPanelTooltip : This or GameTooltip is used for tool tips.
+
+TitanPanelButton_CreateBar in Titan.lua creates the full width bars and short bars by looping through TitanBarData.
+TitanBarData in TitanVariables.lua holds creation data for each bar.
+TitanBarDataVars holds the Titan and user settings for each bar. An initial setup (fresh / another install) uses TitanBarVarsDefaults.
 
 The frame scripts are how WoW and Titan interact with this addon.
 
@@ -225,12 +238,12 @@ Titan.lua sets the OnEvent stript for TitanPanelBarButton to redirect events to 
 See local function RegisterForEvents for the list of eventsand their usage.
 --]]
 
---[[ Plugin registry
+--[[ Plugin .registry
 
 === Titan plugins
 The routine - TitanUtils_RegisterPluginList - starts the plugin registry process.
 
-=== LDB objects See LDBTitan.lua for many more details.
+=== LDB objects : See LDBTitan.lua for many more details.
 
 The OnEvent script of LDBToTitan frame processes the PLAYER_LOGIN event.
 This starts the process to convert all known LDB objects into Titan plugins.

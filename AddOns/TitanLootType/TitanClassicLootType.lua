@@ -113,7 +113,7 @@ local function LootDebug(msg, mtype)
 	end
 
 	if show then
-		TitanPluginDebug(tostring(msg))
+		TitanPluginDebug(TITAN_LOOTTYPE_ID, tostring(msg))
 	end
 end
 
@@ -198,6 +198,7 @@ OUT: None
 --]]
 ---@class ResizeCursorType
 ---@field Texture? table
+---@diagnostic disable-next-line: missing-fields
 local ResizeCursor = {} ---@type Frame
 local SizingStop = function(self, button)
 	self:GetParent():StopMovingOrSizing()
@@ -213,7 +214,8 @@ local SizingEnter = function(self)
 	if not (GetCursorInfo()) then
 		ResizeCursor:Show()
 		ResizeCursor.Texture:SetTexture(self.GPI_Cursor)
-		ResizeCursor.Texture:SetRotation(math.rad(self.GPI_Rotation), { 0.5, 0.5 })
+-- Causes an error in 1.15.5 but not 4.4.*...
+--		ResizeCursor.Texture:SetRotation(math.rad(self.GPI_Rotation), { 0.5, 0.5 })
 	end
 end
 
@@ -508,7 +510,7 @@ OUT: retName	- table of player names pointing into ret
 local function OutPlayer(player)
 	if LT.Debug.on then --
 		if player then
-			TitanPluginDebug("GetPlayerList:"
+			TitanPluginDebug(TITAN_LOOTTYPE_ID, "GetPlayerList:"
 				.. " p'" .. (player.name or "nyl") .. "'"
 				.. " r'" .. (player.rank or "nyl") .. "'"
 				.. " c'" .. (player.class or "nyl") .. "'"
@@ -1119,7 +1121,7 @@ function Track.UpdateRollList()
 		if ctxt ~= "" then ctxt = ctxt .. "\n" .. L["TxtLine"] .. "\n" end
 	end
 	if LT.Debug.on then --
-		TitanPluginDebug("UpdateRollList"
+		TitanPluginDebug(TITAN_LOOTTYPE_ID, "UpdateRollList"
 			.. " '" .. (rollText or "nyl") .. "'"
 			.. " '" .. (ctxt or "nyl") .. "'"
 			.. " '" .. (gtxt or "nyl") .. "'"
@@ -1136,7 +1138,7 @@ function Track.UpdateRollList()
 
 	--	TitanPanelLootTypeFrameStatusText:SetFont(Tool.Font, Tool.FontSize)
 	TitanPanelLootTypeFrameStatusText:SetText(string.format(L["TITAN_LOOTTYPE_TRACKER_MSGNBROLLS"],
-		table.getn(Track.rollArray)))
+		#Track.rollArray))
 
 	--	TitanPanelLootTypeFrameClearButton:SetFont(Tool.Font, Tool.FontSize)
 	TitanPanelLootTypeFrameClearButton:SetText(L["TITAN_LOOTTYPE_TRACKER_BTNCLEAR"])

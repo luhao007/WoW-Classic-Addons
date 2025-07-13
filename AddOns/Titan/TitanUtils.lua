@@ -32,8 +32,8 @@ Blizzard hard-codes the value...
 The Titan routines abstract the menu creation built into WoW.
 
 Whenever there is a change to the menu routines, the abstractions :
-- Insulate 3rd party Titan plugin authors from Blizz or lib changes.
-- Allow better maintainance by updating Utils rather than updating Titan using search & replace.
+: Insulate 3rd party Titan plugin authors from Blizz or lib changes.
+: Allow better maintainance by updating Utils rather than updating Titan using search & replace.
 
 Titan uses TITAN_ID to determine which version of the abstracted routines to use!
 
@@ -306,7 +306,7 @@ else -- only retail (may change as Blizz expands API to Classic versions)
 		-- Used by addons
 		TitanMovable_AddonAdjust(frame, bool)
 	end
-end -- Retail versus retail routines
+end -- Classic versus Retail routines
 
 --====== The routines labeled API are useable by addon developers
 
@@ -379,61 +379,6 @@ function TitanUtils_GetButtonID(name)
 	else
 		return nil;
 	end
-end
-
----Titan Return the plugin id of the parent of the given name, if it exists.
----@param name string Plugin frame name
----@return string? PluginId
----Used for Titan child templates which may not work...
-function TitanUtils_GetParentButtonID(name)
-	local frame = TitanUtils_Ternary(name, _G[name], nil);
-
-	if (frame and frame:GetParent()) then
-		return TitanUtils_GetButtonID(frame:GetParent():GetName());
-	end
-end
-
----Titan Return the plugin id of whatever the mouse is over. Used in the right click menu on load.
----@param self table Plugin frame
----@return string? PluginId could be the Titan ("Bar") or a plugin or nil.
-function TitanUtils_GetButtonIDFromMenu(self)
-	local ret = nil
-	local temp
-	if self and self:GetParent() then
-		local name = self:GetParent():GetName()
-		if name == "UIParent" then
-			-- The click was on the Titan bar itself
-			ret = "Bar";
-		elseif self:GetParent():GetParent():GetName() then
-			local pname = self:GetParent():GetParent():GetName()
-			-- TitanPanelChildButton
-			-- expecting this to be a TitanPanelChildButtonTemplate
-			temp = TitanUtils_GetButtonID(pname)
-			if temp then
-				-- should be ok
-				ret = temp
-			else
-				-- the frame container is expected to be without a name
-				-- This trips when the user right clicks a LDB plugin...
-			end
-		else
-			-- TitanPanelButton
-			temp = TitanUtils_GetButtonID(self:GetParent():GetName())
-			if temp then
-				-- should be ok
-				ret = temp
-			else
-				TitanDebug("Could not determine Titan ID for '"
-					.. (self:GetParent():GetParent() or "?") .. "'. "
-					, "error")
-			end
-		end
-	else
-		TitanDebug("Could not determine Titan ID from menu. "
-		, "error")
-	end
-
-	return ret
 end
 
 ---Titan Return the plugin itself (table and all).
@@ -516,6 +461,20 @@ but was removed during DragonFlight to give users more flexibility.
 	end
 
 	return found
+end
+
+---Titan Return the number of bars user has active, includes auto hide.
+---@return integer Num Active bars
+function TitanUtils_NumActiveBars()
+	local num_bars = 0
+
+	for idx, bar in pairs(TitanBarDataVars) do
+		if TitanBarDataVars[idx].show then --if TitanPanelGetVar(bar_name.."_Show") then
+			num_bars = num_bars + 1
+		end
+	end
+
+	return num_bars
 end
 
 --====== General util routines
@@ -730,16 +689,33 @@ function TitanUtils_PrintArray(array)
 	end
 end
 
+---local Routine that returns the given string with proper start and end font encoding.
+---@param color string Hex color code
+---@param text string Text to wrap
+---@return string text Color encoded string
+local function Encode(color, text)
+	-- This does the sanity checks for the Get<color> routines below
+	local res = ""
+	local c = tostring(color)
+	local t = tostring(text)
+	if (c and t) then
+		res = "|cff" .. c .. t .. "|r"
+	else
+		if (t) then
+			res = tostring(t)
+		else
+			-- return blank string
+		end
+	end
+
+	return res
+end
+
 ---API Routine that returns red string with proper start and end font encoding.
 ---@param text string Text to wrap
 ---@return string text Red color encoded string
 function TitanUtils_GetRedText(text)
-	local res = ""
-	if (text) then
-		res = _G["RED_FONT_COLOR_CODE"] .. text .. _G["FONT_COLOR_CODE_CLOSE"];
-	else
-		res = _G["GRAY_FONT_COLOR"] .. tostring(text) .. _G["FONT_COLOR_CODE_CLOSE"]
-	end
+	local res = Encode(Titan_Global.colors.red, text)
 
 	return res
 end
@@ -748,12 +724,7 @@ end
 ---@param text string Text to wrap
 ---@return string text Gold color encoded string
 function TitanUtils_GetGoldText(text)
-	local res = ""
-	if (text) then
-		res = "|cffffd700" .. text .. _G["FONT_COLOR_CODE_CLOSE"];
-	else
-		res = _G["GRAY_FONT_COLOR"] .. tostring(text) .. _G["FONT_COLOR_CODE_CLOSE"]
-	end
+	local res = Encode(Titan_Global.colors.gold, text)
 
 	return res
 end
@@ -762,12 +733,7 @@ end
 ---@param text string Text to wrap
 ---@return string text Green color encoded string
 function TitanUtils_GetGreenText(text)
-	local res = ""
-	if (text) then
-		res = _G["GREEN_FONT_COLOR_CODE"] .. text .. _G["FONT_COLOR_CODE_CLOSE"];
-	else
-		res = _G["GRAY_FONT_COLOR"] .. tostring(text) .. _G["FONT_COLOR_CODE_CLOSE"]
-	end
+	local res = Encode(Titan_Global.colors.green, text)
 
 	return res
 end
@@ -776,26 +742,25 @@ end
 ---@param text string Text to wrap
 ---@return string text Blue color encoded string
 function TitanUtils_GetBlueText(text)
-	local res = ""
-	if (text) then
-		res = "|cff0000ff" .. text .. _G["FONT_COLOR_CODE_CLOSE"];
-	else
-		res = _G["GRAY_FONT_COLOR"] .. tostring(text) .. _G["FONT_COLOR_CODE_CLOSE"]
-	end
+	local res = Encode(Titan_Global.colors.blue, text)
 
 	return res
 end
 
----API Routine that returns normal color (gray-white) string with proper start and end font encoding.
+---API Routine that returns gray string with proper start and end font encoding.
+---@param text string Text to wrap
+---@return string text Gray color encoded string
+function TitanUtils_GetGrayText(text)
+	local res = Encode(Titan_Global.colors.gray, text)
+
+	return res
+end
+
+---API Routine that returns normal color string with proper start and end font encoding.
 ---@param text string Text to wrap
 ---@return string text Normal color encoded string
 function TitanUtils_GetNormalText(text)
-	local res = ""
-	if (text) then
-		res = _G["NORMAL_FONT_COLOR_CODE"] .. text .. _G["FONT_COLOR_CODE_CLOSE"];
-	else
-		res = _G["GRAY_FONT_COLOR"] .. tostring(text) .. _G["FONT_COLOR_CODE_CLOSE"]
-	end
+	local res = Encode(Titan_Global.colors.yellow_gold, text)
 
 	return res
 end
@@ -804,12 +769,7 @@ end
 ---@param text string Text to wrap
 ---@return string text Highlight color encoded string
 function TitanUtils_GetHighlightText(text)
-	local res = ""
-	if (text) then
-		res = _G["HIGHLIGHT_FONT_COLOR_CODE"] .. text .. _G["FONT_COLOR_CODE_CLOSE"];
-	else
-		res = _G["GRAY_FONT_COLOR"] .. tostring(text) .. _G["FONT_COLOR_CODE_CLOSE"]
-	end
+	local res = Encode(Titan_Global.colors.white, text)
 
 	return res
 end
@@ -818,17 +778,20 @@ end
 ---@param text string Text to wrap
 ---@param color any See color:GetRGB() / color:GetRGBA()
 ---@return string text Custom color encoded string
---- TitanUtils_GetColoredText(GOLD_PERHOUR_STATUS, TITAN_GOLD_GREEN)
 function TitanUtils_GetColoredText(text, color)
 	local res = ""
-	if (text and color) then
+	if (color and text) then
 		local redColorCode = format("%02x", color.r * 255);
 		local greenColorCode = format("%02x", color.g * 255);
 		local blueColorCode = format("%02x", color.b * 255);
-		local colorCode = "|cff" .. redColorCode .. greenColorCode .. blueColorCode;
-		res = colorCode .. text .. _G["FONT_COLOR_CODE_CLOSE"];
+		local colorCode = redColorCode .. greenColorCode .. blueColorCode;
+		res = Encode(colorCode, text)
 	else
-		res = _G["GRAY_FONT_COLOR_CODE"] .. tostring(text) .. _G["FONT_COLOR_CODE_CLOSE"]
+		if (text) then
+			res = tostring(text)
+		else
+			-- return blank string
+		end
 	end
 
 	return res
@@ -840,19 +803,14 @@ end
 ---@return string text Custom color encoded string
 ---TitanUtils_GetHexText(player.faction, "d42447") -- Horde
 function TitanUtils_GetHexText(text, hex)
-	local res = ""
-	if (text and hex) then
-		res = "|cff" .. tostring(hex) .. text .. _G["FONT_COLOR_CODE_CLOSE"]
-	else
-		res = _G["GRAY_FONT_COLOR"] .. tostring(text) .. _G["FONT_COLOR_CODE_CLOSE"]
-	end
+	local res = Encode(hex, text)
 
 	return res
 end
 
 ---@param ThresholdTable table holding the list of colors and values
 ---@param value number to check against table ranges (assumes assending values)
----@return string color in table or "GRAY_FONT_COLOR"
+---@return any color in table or "GRAY_FONT_COLOR"
 function TitanUtils_GetThresholdColor(ThresholdTable, value)
 	--[[ example
 	local TITAN_FPS_THRESHOLD_TABLE = {
@@ -864,12 +822,12 @@ function TitanUtils_GetThresholdColor(ThresholdTable, value)
 	--]]
 	if (not tonumber(value) or type(ThresholdTable) ~= "table"
 			or ThresholdTable.Values == nil or ThresholdTable.Colors == nil
-			or table.getn(ThresholdTable.Values) >= table.getn(ThresholdTable.Colors)
+			or (#ThresholdTable.Values >= #ThresholdTable.Colors)
 		) then
-		return _G["GRAY_FONT_COLOR"];
+		return GRAY_FONT_COLOR
 	end
 
-	local n = table.getn(ThresholdTable.Values) + 1;
+	local n = #ThresholdTable.Values + 1;
 	for i = 1, n do
 		local low = TitanUtils_Ternary(i == 1, nil, ThresholdTable.Values[i - 1]); -- lowest
 		local high = TitanUtils_Ternary(i == n, nil, ThresholdTable.Values[i]); -- highest
@@ -892,7 +850,7 @@ function TitanUtils_GetThresholdColor(ThresholdTable, value)
 	end
 
 	-- Should never reach here
-	return _G["GRAY_FONT_COLOR"];
+	return GRAY_FONT_COLOR
 end
 
 ---API Routine that returns the text or an empty string.
@@ -900,6 +858,209 @@ end
 ---@return string text or ""
 function TitanUtils_ToString(text)
 	return TitanUtils_Ternary(text, text, "");
+end
+
+---API Add separators into the value given.  This does not break coin into its parts.
+--- This routines handles negative and fractional numbers.
+--- Assumes amount decimal separator is a period per tostring().
+---@param amount number
+---@param thousands_separator string
+---@param decimal_separator string
+---@return string formatted
+function TitanUtils_NumToString(amount, thousands_separator, decimal_separator)
+	-- Jul 2024 Moved to Utils for use by plugins
+	--[=[ Jul 2024 
+	Handle the general cases of converting any number to a string with separators for plugins.
+	Titan usage is , / . or . / , although this will handle other schemes.
+	NOTE: Currently only positive, whole numbers are passed in from Titan (no fractional or negative).
+	NOTE: If ampount is 100 trillion or more then return the string as is to avoid very messy strings.
+		This is the behavior of Lua tostring.
+	NOTE: Do not use separator directly in gsub - it could be a pattern special char, resulting in unexpected behavior!
+	--]=]
+
+	local formatted = ""
+
+	if type(amount) == "number" then
+		-- Break number into segments - minus, integer, and fractional
+		local i, j, minus, int, fraction = 0, 0, "", "", ""
+		if amount > 99999999999999 then -- 1 trillion - 1
+			int = tostring(amount) 
+			-- leave as is and, if gold, congratulate the player!!!
+			-- Result will be have an exponent (1.23+e16)
+		else
+			i, j, minus, int, fraction = tostring(amount):find('([-]?)(%d+)([.]?%d*)')
+
+			-- Reverse the int-string and append a separator to all blocks of 3 digits
+			int = int:reverse():gsub("(%d%d%d)", "%1|")
+
+			-- Reverse the int-string back and remove an extraneous separator
+			int = int:reverse():gsub("^|", "")
+
+			-- Now use the given decimal separator. 
+			-- tostring outputs a period as the separator so it needs to be escaped.
+			int = int:gsub("%.", decimal_separator)
+
+			-- Now use the given thousands separator
+			int = int:gsub("|", thousands_separator)
+
+			-- Add optional minus part back
+			formatted = minus .. int .. fraction
+		end
+	else
+		formatted = "0" -- 'silent' error
+	end
+	return formatted
+end
+
+---API Take the total cash and make it into a nice, colorful string of g s c (gold silver copper)
+---@param value number
+---@param thousands_separator string
+---@param decimal_separator string
+---@param only_gold boolean
+---@param show_labels boolean
+---@param show_icons boolean
+---@param add_color boolean
+---@return string outstr Formatted cash for output
+---@return integer gold part of value
+---@return integer silver part of value
+---@return integer copper part of value
+function TitanUtils_CashToString(value, thousands_separator, decimal_separator, only_gold, show_labels, show_icons, add_color)
+	local show_zero = true
+	local show_neg = true
+
+	local neg1 = ""
+	local neg2 = ""
+	local agold = 10000;
+	local asilver = 100;
+	local outstr = "";
+	local gold = 0;
+	local gold_str = ""
+	local gc = ""
+	local silver = 0;
+	local silver_str = ""
+	local sc = ""
+	local copper = 0;
+	local copper_str = ""
+	local cc = ""
+	local amount = (value or 0)
+	local font_size = TitanPanelGetVar("FontSize")
+	local icon_pre = "|TInterface\\MoneyFrame\\"
+	local icon_post = ":" .. font_size .. ":" .. font_size .. ":2:0|t"
+	local g_icon = icon_pre .. "UI-GoldIcon" .. icon_post
+	local s_icon = icon_pre .. "UI-SilverIcon" .. icon_post
+	local c_icon = icon_pre .. "UI-CopperIcon" .. icon_post
+	-- build the coin label strings based on the user selections
+	local c_lab = (show_labels and L["TITAN_GOLD_COPPER"]) or (show_icons and c_icon) or ""
+	local s_lab = (show_labels and L["TITAN_GOLD_SILVER"]) or (show_icons and s_icon) or ""
+	local g_lab = (show_labels and L["TITAN_GOLD_GOLD"]) or (show_icons and g_icon) or ""
+
+	-- show the money in highlight or coin color based on user selection
+	if add_color then
+		gc = Titan_Global.colors.coin_gold
+		sc = Titan_Global.colors.coin_silver
+		cc = Titan_Global.colors.coin_copper
+	else
+		gc = Titan_Global.colors.white
+		sc = Titan_Global.colors.white
+		cc = Titan_Global.colors.white
+	end
+
+	if show_neg then
+		if amount < 0 then
+			neg1 = TitanUtils_GetHexText("(", Titan_Global.colors.orange) -- "|cFFFF6600" .. "(" .. FONT_COLOR_CODE_CLOSE
+			neg2 = TitanUtils_GetHexText(")", Titan_Global.colors.orange) --"|cFFFF6600" .. ")" .. FONT_COLOR_CODE_CLOSE
+		else
+			-- no padding
+		end
+	end
+	if amount < 0 then
+		amount = amount * -1
+	end
+
+	-- amount INCLUDES silver and copper (last 4 digits)
+	if amount == 0 then
+		if show_zero then
+		   copper_str = TitanUtils_GetHexText("0".. c_lab, cc) --cc .. (amount or "?") .. c_lab .. "" .. FONT_COLOR_CODE_CLOSE
+		end
+	 elseif amount > 999999999999999999 then -- 999,999,999,999,999,999 (1 quadrillion - 1)
+		-- we are really in trouble :)
+		-- gold should be accurate but in exponent format
+		gold = (math.floor(amount / agold) or 0)
+		gold_str = TitanUtils_GetHexText(tostring(gold)..g_lab .. " ", gc) 
+		-- silver and copper will be off
+		silver_str = ""
+		copper_str = ""
+	 elseif amount > 99999999999999999 then -- 99,999,999,999,999,999 (100 trillion - 1)
+		-- we are in some trouble :)
+		-- gold should be accurate so format
+		gold = (math.floor(amount / agold) or 0)
+		local gnum = TitanUtils_NumToString(gold, thousands_separator, decimal_separator)
+		gold_str = TitanUtils_GetHexText(gnum..g_lab .. " ", gc)
+		-- silver and copper will be off
+		silver_str = ""
+		copper_str = ""
+		
+	  elseif amount > 0 then
+		-- figure out the gold - silver - copper components for return and string
+		gold = (math.floor(amount / agold) or 0)
+		amount = amount - (gold * agold) -- now only silver + copper
+		silver = (math.floor(amount / asilver) or 0)
+		copper = amount - (silver * asilver)
+
+		-- now make the coin strings
+		if gold > 0 then
+			local gnum = TitanUtils_NumToString(gold, thousands_separator, decimal_separator)
+			gold_str = TitanUtils_GetHexText(gnum..g_lab .. " ", gc)
+		else
+			gold_str = ""
+		end
+		if (silver > 0) then
+			local snum = (string.format("%02d", silver) or "?")
+			silver_str = TitanUtils_GetHexText(snum..s_lab .. " ", sc)
+		elseif (string.len(gold_str) > 0) then -- space if gold present
+			local snum = (string.format("%02d", 0) or "?")
+			silver_str = TitanUtils_GetHexText(snum..s_lab .. " ", sc)
+		else
+			silver_str = ""
+		end
+		if (copper > 0) then
+			local cnum = (string.format("%02d", copper) or "?")
+			copper_str = TitanUtils_GetHexText(cnum..c_lab, cc)
+		elseif (string.len(silver_str) > 0) then -- space if silver present
+			local cnum = (string.format("%02d", 0) or "?")
+			copper_str = TitanUtils_GetHexText(cnum..c_lab, cc)
+		else
+			copper_str = ""
+		end
+	end
+
+	if only_gold then
+		silver_str = ""
+		copper_str = ""
+		-- special case for those who want only gold when amount is less than 1 gold
+		if gold == 0 then
+			if show_zero then
+				gold_str = TitanUtils_GetHexText("0"..g_lab, gc) --gc .. "0" .. g_lab .. " " .. FONT_COLOR_CODE_CLOSE
+			end
+		end
+	end
+
+	-- build the return string
+	outstr = outstr
+		.. neg1
+		.. gold_str
+		.. silver_str
+		.. copper_str
+		.. neg2
+	--[[
+print("_CashToString:"
+..(gold or "?").."g "
+..(silver or "?").."s "
+..(copper or "?").."c "
+..(outstr or "?")
+);
+--]]
+	return outstr, gold, silver, copper
 end
 
 --====== Right click menu routines - Retail dropdown menu
@@ -1185,6 +1346,13 @@ end
 ---API Set backdrop of the plugin. Used for custom created controls (Clock / Volume) to give a consistent look.
 ---@param frame table Plugin control frame
 function TitanPanelRightClickMenu_SetCustomBackdrop(frame)
+--[[
+Blizzard decided to remove direct Backdrop API in 9.0 (Shadowlands)
+so inherit the template (XML) and set the values in the code (Lua)
+
+9.5 The tooltip template was removed from the GameTooltip.
+--]]
+
 	frame:SetBackdrop({
 		bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
 		edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
@@ -1228,7 +1396,7 @@ end
 --
 
 
----local This will swap two buttons on the Titan bars. Once swapped then 'reinit' the buttons to show properly. 
+---local This will swap two buttons on the Titan bars. Once swapped then 'reinit' the buttons to show properly.
 --- This is currently used as part of the shift left / right on same bar.
 ---@param from_id integer Plugin id
 ---@param to_id integer Plugin id
@@ -1427,18 +1595,6 @@ function TitanUtils_CloseAllControlFrames()
 	end
 end
 
---[[ 2024 Mar commented out - not used by Titan
-function TitanUtils_IsAnyControlFrameVisible() -- need?
-	for index, value in TitanPlugins do
-		local frame = _G["TitanPanel" .. index .. "ControlFrame"];
-		if (frame:IsVisible()) then
-			return true;
-		end
-	end
-	return false;
-end
---]]
-
 ---Titan Check if the control frame is on screen.
 --- Used for Plugins AND Titan
 ---@param frame table Frame name likely tooltip
@@ -1506,19 +1662,19 @@ end
 ---Titan Store the plugin to be registered later by Titan
 --- See comments in the routine for more details.
 ---@param self table Plugin frame
----@param isChildButton boolean? !! Not Used !!
-function TitanUtils_PluginToRegister(self, isChildButton)
-	-- 2024 Mar -- removed isChildButton since it has not been used in years to my knowledge :)
+function TitanUtils_PluginToRegister(self)
 	--[[
-- .registry is part of 'self' (the Titan plugin frame) which works great for Titan specific plugins.
+- .registry is part of 'self' (the Titan plugin frame).
   Titan plugins create the registry as part of the frame _OnLoad.
-  But this does not work for LDB buttons. The frame is created THEN the registry is added to the frame.
+  For LDB buttons the frame and the registry are created during the processing of the LDB object.
 - Any read of the registry must assume it may not exist. Also assume the registry could be updated after this routine.
-- This is called when a Titan plugin frame is created. Normally these are held until the player 'enters world' then the plugin is registered.
-  Sometimes plugin frames are created after this process. Right now only LDB plugins are handled. If someone where to start creating Titan frames after the registration process were complete then it would fail to be registered...
--!For LDB plugins the 'registry' is attached to the frame AFTER the frame is created...
-- The fields put into "Attempted" are defaulted here in preperation of being registered.
+- This is called when a Titan plugin frame is created. 
+- These entries are held until the 'player entering world' event then the plugin list is registered.
+- Sometimes plugin frames are created after this process. Right now only LDB plugins are handled. 
+If someone where to start creating Titan frames after the registration process were complete then it would fail to be registered...
+- The fields put into Config > "Attempted" are defaulted here in preperation of being registered.
 	--]]
+
 	TitanPluginToBeRegisteredNum = TitanPluginToBeRegisteredNum + 1
 	local cat = ""
 	local notes = ""
@@ -1528,13 +1684,11 @@ function TitanUtils_PluginToRegister(self, isChildButton)
 		notes = (self.registry.notes or "")
 		name = (self.registry.id or "")
 	end
-	-- Some of the fields in this record are displayed in the "Attempts"
-	-- so they are defaulted here.
+	-- The fields displayed in "Attempts" are defaulted here.
 	TitanPluginToBeRegistered[TitanPluginToBeRegisteredNum] = {
 		self = self,
 		button = ((self and self:GetName()
 			or "Nyl" .. "_" .. TitanPluginToBeRegisteredNum)),
-		isChild = false, -- (isChildButton and true or false),
 		-- fields below are updated when registered
 		name = "?",
 		issue = "",
@@ -1571,7 +1725,6 @@ function TitanUtils_PluginFail(plugin)
 	{
 		self = plugin.self,
 		button = (plugin.button and plugin.button:GetName() or ""),
-		isChild = (plugin.isChild and true or false),
 		name = (plugin.name or "?"),
 		issue = (plugin.issue or "?"),
 		status = (plugin.status or "?"),
@@ -1579,17 +1732,19 @@ function TitanUtils_PluginFail(plugin)
 		plugin_type = (plugin.plugin_type or ""),
 	}
 
+	--[[ 2024/06/18 : Removed per comment on Curse. Still in Config > Attempted
 	local message = ""
 		.. " '" .. tostring(TitanPluginToBeRegistered[TitanPluginToBeRegisteredNum].status) .. "'"
 		.. " '" .. tostring(TitanPluginToBeRegistered[TitanPluginToBeRegisteredNum].name) .. "'"
 		.. " '" .. tostring(TitanPluginToBeRegistered[TitanPluginToBeRegisteredNum].category) .. "'"
 		.. " '" .. tostring(TitanPluginToBeRegistered[TitanPluginToBeRegisteredNum].issue) .. "'"
 	TitanPrint(message, "error")
+--]]
 end
 
 ---local Strip the WoW color string(s) from the given string
----@param name string 
----@return string NoColor 
+---@param name string
+---@return string NoColor
 local function NoColor(name)
 	local no_color = name
 
@@ -1605,7 +1760,7 @@ end
 ---@return table Results of the registration - pass (TitanPlugins) or fail
 --- See routine for output table values
 local function TitanUtils_RegisterPluginProtected(plugin)
---[[ 
+	--[[
 OUT:
 	.issue	: Show the user what prevented the plugin from registering
 	.result	: Used so we know which plugins were processed
@@ -1618,7 +1773,7 @@ NOTE:
   And attempt to tell the user / developer what went wrong.
 - If successful the plugin will be in TitanPlugins as a registered plugin and will be available for display on the Titan bars.
 --]]
-local result = ""
+	local result = ""
 	local issue = ""
 	local id = ""
 	local cat = ""
@@ -1627,18 +1782,8 @@ local result = ""
 	local str = ""
 
 	local self = plugin.self
-	--	local isChildButton = (plugin.isChild and true or false)
 
 	if self and self:GetName() then
-		--		if (isChildButton) then
-		--			-- This is a button within a button
-		--			self:RegisterForClicks("LeftButtonUp", "RightButtonUp", "MiddleButtonUp");
-		--			self:RegisterForDrag("LeftButton")
-		--			TitanPanelDetectPluginMethod(self:GetName(), true);
-		--			result = TITAN_REGISTERED
-		-- give some indication that this is valid...
-		--			id = (self:GetName() or "") .. "<child>"
-		--		else
 		-- Check for the .registry where all the Titan plugin info is expected
 		if (self.registry and self.registry.id) then
 			id = self.registry.id
@@ -1810,11 +1955,6 @@ function TitanUtils_RegisterPlugin(plugin)
 		-- Debug
 		if Titan_Global.debug.plugin_register then
 			local status = plugin.status
-			if plugin.status == TITAN_REGISTER_FAILED then
-				status = TitanUtils_GetRedText(status)
-			else
-				status = TitanUtils_GetGreenText(status)
-			end
 			TitanDebug("Registering Plugin"
 				.. " " .. tostring(plugin.name) .. ""
 				.. " " .. tostring(status) .. ""
@@ -1870,31 +2010,47 @@ end
 
 ---local Prepare the plugin right click menu using the function given by the plugin OR Titan bar.
 ---@param self table Titan Bar or Plugin frame
---- See the routine for details on determining the menu function.
+---@param menu table Frame to use as the menu
+--- Determining the menu function 
+--- Old "TitanPanelRightClickMenu_Prepare"..plugin_id.."Menu"
+--- New : .menuTextFunction in registry
 --- UIDropDownMenu_Initialize will place (part of) the error in the menu - it is not progagated out.
 --- Set Titan_Global.debug.menu to output the error to Chat.
-local function TitanRightClickMenu_OnLoad(self)
---[[
+local function TitanRightClickMenu_OnLoad(self, menu)
+	--[[
 - The function to create the menu is either
-1. set in registry in .menuTextFunction
-: New in 2024 Feb to make the routine explicit (UIDropDownMenu_Initialize appears to be 'safe')
-: If a function then the routine can be local or in the global namespace
-: If a string then the routine MUST be in the global namespace.
-2. assumed to be "TitanPanelRightClickMenu_Prepare"..plugin_id.."Menu" : This is the way Titan was written
-- TitanUtils_GetButtonIDFromMenu returns a generic "Bar" when the user clicks on a Titan bar.
-  This works because every Titan bar uses the same menu allowing one routine to be reused.
+1. Set in registry in .menuTextFunction
+: New in 2024 Feb to allow the menu routine name to be explicit rather than assumed
+: If .menuTextFunction ia a function then the routine can be local or in the global namespace
+: If .menuTextFunction ia a string then the routine MUST be in the global namespace.
+2. Assumed to be "TitanPanelRightClickMenu_Prepare"..plugin_id.."Menu" 
+: This is the way Titan was written in the beginning so we leave it to not break Classic Era and older plugins.
+: If menu is for a Titan bar then use TitanPanelRightClickMenu_PrepareBarMenu for ALL Titan bars.
 --]]
-	local id = TitanUtils_GetButtonIDFromMenu(self) -- "Bar" if self is any Titan bar
+	local id = ""
 	local err = ""
-	if id then
-		local frame = TitanUtils_GetPlugin(id) -- get plugin frame
-		local prepareFunction -- function to call
+
+	if self.registry then
+		id = self.registry.id -- is a plugin
+	else
+		id = "Bar"  -- is a Titan bar
+	end
+
+	if id == "" then
+		err = "Could not display tooltip. "
+			.. "Unknown Titan ID for "
+			.. "'" .. (self:GetName() or "?") .. "'. "
+	else
+--		local frame = TitanUtils_GetPlugin(id) -- get plugin frame
+		local frame = self.registry
+		local prepareFunction            -- function to call
 
 		if frame and frame.menuTextFunction then
 			prepareFunction = frame.menuTextFunction -- Newer method 2024 Feb
 		else
-			-- If 'bar' then routine for ALL Titan bars
+			-- Older method used when Titan was created
 			prepareFunction = "TitanPanelRightClickMenu_Prepare" .. id .. "Menu"
+			-- 
 		end
 
 		if type(prepareFunction) == 'string' then
@@ -1909,7 +2065,7 @@ local function TitanRightClickMenu_OnLoad(self)
 		end
 
 		if prepareFunction then
-			UIDropDownMenu_Initialize(self, prepareFunction, "MENU")
+			UIDropDownMenu_Initialize(menu, prepareFunction, "MENU")
 		else
 			err = "Could not display tooltip. "
 				.. "No function for '" .. tostring(id) .. "' "
@@ -1917,10 +2073,6 @@ local function TitanRightClickMenu_OnLoad(self)
 				.. "[" .. tostring(prepareFunction) .. "] "
 				.. ". "
 		end
-	else
-		err = "Could not display tooltip. "
-			.. "Unknown Titan ID for "
-			.. "'" .. (self:GetName() or "?") .. "'. "
 	end
 
 	if Titan_Global.debug.menu then
@@ -1950,7 +2102,7 @@ print("_ toggle R menu"
 )
 --]]
 	-- Create menu based on the frame's routine for right click menu
-	local drop_menu, menu_height, menu_width = TitanRightClickMenu_OnLoad(menu)
+	local drop_menu, menu_height, menu_width = TitanRightClickMenu_OnLoad(self, menu)
 
 	-- Adjust the Y offset as needed
 	local rel_y = _G[frame]:GetTop() - menu_height
@@ -2192,7 +2344,7 @@ function TitanPrint(message, msg_type)
 	if msg_type == "error" then
 		dtype = TitanUtils_GetRedText("Error: ")
 	elseif msg_type == "warning" then
-		dtype = "|cFFFFFF00" .. "Warning: " .. _G["FONT_COLOR_CODE_CLOSE"]
+		dtype = TitanUtils_GetHexText("Warning: ", Titan_Global.colors.yellow)
 	elseif msg_type == "plain" then
 		pre = ""
 	elseif msg_type == "header" then
@@ -2369,39 +2521,22 @@ function TitanDumpTable(tb, level)
 	end
 end
 
+---Titan: From a given table; find input in its indexes.
+---@param tb table
+---@param val string 1 or defaults to 1
+function TitanFindIndex(tb, val)
+	for k, v in pairs(tb) do
+		if type(k) == 'string' and string.find(k, val) then
+			print("idx [" .. tostring(k) .. "] = " .. " '" .. tostring(v) .. "'")
+		else
+			-- keep looking
+		end
+	end
+end
+
 --====== Deprecated routines
 -- These routines will be commented out for a couple releases then deleted.
 --
 --[===[
-
-Below 2024 Mar
-
-This routine is really broken... unlikely it worked.
---[[   API
-NAME: TitanPanelRightClickMenu_AddToggleColoredText
-DESC: This will toggle the "ShowColoredText" Titan variable then update the button
-VAR: id - id of the plugin
-VAR: level - level to put the line
-OUT:  None
---]]
-function TitanPanelRightClickMenu_ToggleColoredText(value)
-	TitanToggleVar(value, "ShowColoredText");
-	TitanPanelButton_UpdateButton(value, 1);
-end
-
----API Check if all the variables in the table are nil/false.
----@param id string Plugin id
----@param toggleTable table {}
----@return boolean all_nil true (1) or nil
-function TitanPanelRightClickMenu_AllVarNil(id, toggleTable)
-	if ( toggleTable ) and type(toggleTable)== "table" then
-		for i, v in toggleTable do
-			if ( TitanGetVar(id, v) ) then
-				return nil;
-			end
-		end
-		return 1;
-	end
-end
 
 --]===]

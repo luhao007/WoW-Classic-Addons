@@ -1,8 +1,8 @@
 ## Interface: 30405
 ## Author: Nevcairiel, Nymbia
-## Version: 3.7.8
+## Version: 3.7.14 谷风呀
 
-## Title: Quartz
+## Title: Quartz |cff99ddff谷|r|cff88ccee风|r|cff77bbdd修|r|cff66aacc复|r|cff5599bb版|r|cff4488aa-|r|cff00aaffW|r|cff0099ffL|r|cff0088ffK|r
 ## Notes: Modular casting bar.
 ## Title-zhCN: |cFFFFE00A<|r|cFFC79C6E战斗|r|cFFFFE00A>|r |cFFFFFFFF施法条|r |cFFFFE00AQuartz|r
 ## Notes-zhCN: 模块化施法条。

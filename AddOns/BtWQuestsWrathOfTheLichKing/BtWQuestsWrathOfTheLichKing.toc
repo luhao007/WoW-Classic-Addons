@@ -1,9 +1,9 @@
 ## Interface: 30405
 ## Author: Breen
-## Version: 1.11
+## Version: 1.13
 
-## Title: BtWQuests: Wrath of the Lich King
-## Notes: Wrath of the Lich King quest data for BtWQuests
+## Title: BtWQuests: Wrath of the Lich King |cff99ddff谷|r|cff88ccee风|r|cff77bbdd修|r|cff66aacc复|r|cff5599bb版|r
+## Notes: Wrath of the Lich King quest data for BtWQuests |cff99ddff谷|r|cff88ccee风|r|cff77bbdd@|r|cff66aaccD|r|cff5599bbo|r|cff4488aau|r|cff00aaffY|r|cff0099ffi|r|cff0088ffn|r
 ## Title-zhCN: |cFFFFE00A<|r|cFF00FF96任务|r|cFFFFE00A>|r |cFFFFFFFF任务流程图|r |cFF69CCF0巫妖王之怒|r
 ## Notes-zhCN: BtWQuests 巫妖王之怒模块
 
@@ -14,7 +14,7 @@
 ## X-BtWQuests-Expansion: 2
 ## X-BtWQuests-Expansion-Image: UI-Expansion 0 0.90625 0 0.8125
 ## X-BtWQuests-Expansion-Movie-ID: 18
-## X-BtWQuests-AutoLoad: 1
+## X-BtWQuests-AutoLoad: 0
 ## X-Part-Of: BtWQuests
 
 Defines.lua

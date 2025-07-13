@@ -1,7 +1,7 @@
 ## Interface: 30405
-## Version: 2.8.11
+## Version: 2.8.12
 
-## Title: Pawn
+## Title: Pawn |cff99ddff谷|r|cff88ccee风|r|cff77bbdd修|r|cff66aacc复|r|cff5599bb版|r
 ## Notes: Pawn helps you compare items and find upgrades.
 ## Title-zhCN: |cFFFFE00A<|r|cFFC79C6E战斗|r|cFFFFE00A>|r |cFFFFFFFF装备评分|r |cFFFFE00APawn|r
 

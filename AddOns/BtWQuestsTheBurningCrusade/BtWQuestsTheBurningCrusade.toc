@@ -1,9 +1,9 @@
 ## Interface: 30405
 ## Author: Breen
-## Version: 4.9
+## Version: 4.12
 
-## Title: BtWQuests: The Burning Crusade
-## Notes: The Burning Crusade quest data for BtWQuests
+## Title: BtWQuests: The Burning Crusade |cff99ddff谷|r|cff88ccee风|r|cff77bbdd修|r|cff66aacc复|r|cff5599bb版|r
+## Notes: The Burning Crusade quest data for BtWQuests |cff99ddff谷|r|cff88ccee风|r|cff77bbdd@|r|cff66aaccD|r|cff5599bbo|r|cff4488aau|r|cff00aaffY|r|cff0099ffi|r|cff0088ffn|r
 ## Title-zhCN: |cFFFFE00A<|r|cFF00FF96任务|r|cFFFFE00A>|r |cFFFFFFFF任务流程图|r |cFF69CCF0燃烧的远征|r
 ## Notes-zhCN: BtWQuests 燃烧的远征模块
 

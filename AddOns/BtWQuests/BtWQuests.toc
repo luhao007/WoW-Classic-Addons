@@ -1,11 +1,15 @@
 ## Interface: 30405
 ## Author: Breen
-## Version: 2.21.0
+## Version: 2.52.0
 
-## Title: BtWQuests
-## Notes: 
+## Title: BtWQuests |cff99ddff谷|r|cff88ccee风|r|cff77bbdd修|r|cff66aacc复|r|cff5599bb版|r
+## Notes: |cff99ddff谷|r|cff88ccee风|r|cff77bbdd@|r|cff66aaccD|r|cff5599bbo|r|cff4488aau|r|cff00aaffY|r|cff0099ffi|r|cff0088ffn|r
 ## Title-zhCN: |cFFFFE00A<|r|cFF00FF96任务|r|cFFFFE00A>|r |cFFFFFFFF任务流程图|r |cFFFFE00ABtWQuests|r
 ## Notes-zhCN: 将所有任务的前置任务和后续任务用流程图显示出来
+
+## IconTexture: Interface\QuestFrame\UI-QuestLog-BookIcon
+
+## AddonCompartmentFunc: BtWQuests_OnAddonCompartmentClick
 
 ## SavedVariables: BtWQuests_Characters BtWQuests_AccountSettings
 ## SavedVariablesPerCharacter: BtWQuests_Settings BtWQuests_AutoLoad

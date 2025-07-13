@@ -17,17 +17,77 @@ local TITAN_VOLUME_ARTWORK_PATH = "Interface\\AddOns\\TitanVolume\\Artwork\\";
 local _G = getfenv(0);
 local L = LibStub("AceLocale-3.0"):GetLocale(TITAN_ID, true)
 
-local function GetVolumeText(volume)
-	return tostring(floor(100 * volume + 0.5)) .. "%";
+local ALL_SOUND = "Sound_EnableAllSound"
+
+-- The slider controls are nearly identical so set the data for them using the slider frame name
+local sliders = {
+	["TitanPanelMasterVolumeControlSlider"] = {
+		short = "master",
+		cvar = "Sound_MasterVolume",
+		gtext = OPTION_TOOLTIP_MASTER_VOLUME,
+		titan_var = "VolumeMaster",
+		off_x = -160, off_y = -60,
+	},
+	["TitanPanelSoundVolumeControlSlider"] = {
+		short = "sound",
+		cvar = "Sound_SFXVolume",
+		gtext = OPTION_TOOLTIP_FX_VOLUME,
+		titan_var = "VolumeSFX",
+		off_x = -90, off_y = -60,
+	},
+	["TitanPanelMusicVolumeControlSlider"] = {
+		short = "music",
+		cvar = "Sound_MusicVolume",
+		gtext = OPTION_TOOLTIP_MUSIC_VOLUME,
+		titan_var = "VolumeMusic",
+		off_x = -20, off_y = -60,
+	},
+	["TitanPanelAmbienceVolumeControlSlider"] = {
+		short = "ambience",
+		cvar = "Sound_AmbienceVolume",
+		gtext = OPTION_TOOLTIP_AMBIENCE_VOLUME,
+		titan_var = "VolumeAmbience",
+		off_x = 50, off_y = -60,
+	},
+	["TitanPanelDialogVolumeControlSlider"] = {
+		short = "dialog",
+		cvar = "Sound_DialogVolume",
+		gtext = OPTION_TOOLTIP_DIALOG_VOLUME,
+		titan_var = "VolumeDialog",
+		off_x = 130, off_y = -60,
+	},
+}
+--C_CVar.GetCVar("Sound_MusicVolume")
+---local Get requested sound volume from Blizz C var API as a number.
+---@param volume string
+---@return number
+local function GetCVolume(volume)
+	-- Make explicit for clarity and IDE
+	local vol = C_CVar.GetCVar(volume)
+	-- If Blizz ever changes sound label strings, don't error
+	if vol == nil then
+		vol = "0"
+	else
+		-- accept value
+	end
+	return tonumber(vol)
 end
 
+---local Get volume as a % string.
+---@param volume number | string
+---@return string
+local function GetVolumeText(volume)
+	return tostring(floor(100 * tonumber(volume) + 0.5)) .. "%";
+end
+
+---local Get from WoW if 'all' sound is muted.
+---@return boolean
 local function IsMuted()
 	local mute = false
-	local setting = "Sound_EnableAllSound"
-	local value = C_CVar.GetCVar(setting)
-	if value == nil then
-		-- value is invalid - Blizz change??
-	elseif value == "0" then
+	local setting = ALL_SOUND
+	local value = GetCVolume(setting)
+	if value == "0"
+	or value == 0 then -- May have been a type change in 11.0.2
 		mute = true
 	elseif value == "1" then
 		-- not muted
@@ -37,40 +97,34 @@ local function IsMuted()
 	return mute
 end
 
+---local Set plugin icon as off/low/med/high.
 local function SetVolumeIcon()
---[[
-	local icon = _G["TitanPanelVolumeButtonIcon"];
-	local masterVolume = tonumber(GetCVar("Sound_MasterVolume"));
-	if (masterVolume <= 0) then
-		icon:SetTexture(TITAN_VOLUME_ARTWORK_PATH .. "TitanVolumeMute");
-	elseif (masterVolume < 0.33) then
-		icon:SetTexture(TITAN_VOLUME_ARTWORK_PATH .. "TitanVolumeLow");
-	elseif (masterVolume < 0.66) then
-		icon:SetTexture(TITAN_VOLUME_ARTWORK_PATH .. "TitanVolumeMedium");
-	else
-		icon:SetTexture(TITAN_VOLUME_ARTWORK_PATH .. "TitanVolumeHigh");
-	end
---]]
 	local plugin = TitanUtils_GetPlugin(TITAN_VOLUME_ID)
 
-	if IsMuted() then
+	local masterVolume = GetCVolume("Sound_MasterVolume")
+	if (masterVolume <= 0)
+	or IsMuted()
+	then
 		plugin.icon = TITAN_VOLUME_ARTWORK_PATH .. "TitanVolumeMute"
+	elseif (masterVolume < 0.33) then
+		plugin.icon = TITAN_VOLUME_ARTWORK_PATH .. "TitanVolumeLow"
+	elseif (masterVolume < 0.66) then
+		plugin.icon = TITAN_VOLUME_ARTWORK_PATH .. "TitanVolumeMedium"
 	else
-		local masterVolume = tonumber(GetCVar("Sound_MasterVolume"));
-		if (masterVolume <= 0) then
-			plugin.icon = TITAN_VOLUME_ARTWORK_PATH .. "TitanVolumeMute"
-		elseif (masterVolume < 0.33) then
-			plugin.icon = TITAN_VOLUME_ARTWORK_PATH .. "TitanVolumeLow"
-		elseif (masterVolume < 0.66) then
-			plugin.icon = TITAN_VOLUME_ARTWORK_PATH .. "TitanVolumeMedium"
-		else
-			plugin.icon = TITAN_VOLUME_ARTWORK_PATH .. "TitanVolumeHigh"
-		end
+		plugin.icon = TITAN_VOLUME_ARTWORK_PATH .. "TitanVolumeHigh"
 	end
 end
 
+---local Handle events registered to plugin
+---@param self Button
+---@param event string
 local function OnEvent(self, event, a1, ...)
-	if event == "PLAYER_ENTERING_WORLD" and TitanGetVar(TITAN_VOLUME_ID, "OverrideBlizzSettings") then
+	-- No events to process
+end
+
+---local Set plugin icon and update plugin.
+local function OnShow()
+	if TitanGetVar(TITAN_VOLUME_ID, "OverrideBlizzSettings") then
 		-- Override Blizzard's volume CVar settings
 		if TitanGetVar(TITAN_VOLUME_ID, "VolumeMaster") then
 			SetCVar("Sound_MasterVolume", TitanGetVar(TITAN_VOLUME_ID, "VolumeMaster"))
@@ -86,67 +140,85 @@ local function OnEvent(self, event, a1, ...)
 				TitanGetVar(TITAN_VOLUME_ID, "VolumeMusic")) end
 		--		if TitanGetVar(TITAN_VOLUME_ID, "VolumeOutboundChat") then SetCVar("OutboundChatVolume", TitanGetVar(TITAN_VOLUME_ID, "VolumeOutboundChat")) end
 		--		if TitanGetVar(TITAN_VOLUME_ID, "VolumeInboundChat") then SetCVar("InboundChatVolume", TitanGetVar(TITAN_VOLUME_ID, "VolumeInboundChat")) end
-		TitanPanelButton_UpdateButton(TITAN_VOLUME_ID);
 	end
-end
-
-local function OnShow()
 	SetVolumeIcon();
 	TitanPanelButton_UpdateButton(TITAN_VOLUME_ID);
 end
 
+---local On mouse over, set values for sliders in case of right click.
 local function OnEnter()
-	-- Confirm master volume value
-	TitanPanelMasterVolumeControlSlider:SetValue(1 - GetCVar("Sound_MasterVolume"));
-	TitanPanelAmbienceVolumeControlSlider:SetValue(1 - GetCVar("Sound_AmbienceVolume"));
-	TitanPanelDialogVolumeControlSlider:SetValue(1 - GetCVar("Sound_DialogVolume"));
-	TitanPanelSoundVolumeControlSlider:SetValue(1 - GetCVar("Sound_SFXVolume"));
-	TitanPanelMusicVolumeControlSlider:SetValue(1 - GetCVar("Sound_MusicVolume"));
-	--	TitanPanelMicrophoneVolumeControlSlider:SetValue(1 - GetCVar("OutboundChatVolume"));
-	--	TitanPanelSpeakerVolumeControlSlider:SetValue(1 - GetCVar("InboundChatVolume"));
---	SetVolumeIcon();
+	for idx, slider in pairs (sliders) do
+		_G[idx]:SetValue(1 - GetCVolume(slider.cvar))
+	end
 end
 
--- 'Master'
-local function MasterSlider_OnEnter(self)
-	--	self.tooltipText = TitanOptionSlider_TooltipText(OPTION_TOOLTIP_MASTER_VOLUME, GetVolumeText(GetCVar("Sound_MasterVolume")));
-	self.tooltipText = ""
+-- ====== Slider helpers
+---local On mouse over; set tooltip.
+---@param self Slider
+local function Slider_OnEnter(self)
+	local slider = sliders[self:GetName()]
+	local tooltipText = ""
+	tooltipText = TitanOptionSlider_TooltipText(slider.gtext, GetVolumeText(GetCVolume(slider.cvar)));
 	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
-	GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
+	GameTooltip:SetText(tooltipText, nil, nil, nil, nil, 1);
 	TitanUtils_StopFrameCounting(self:GetParent());
 end
 
-local function MasterSlider_OnLeave(self)
-	self.tooltipText = nil;
+---local On mouse leaving; prep hide of tooltip.
+---@param self Slider
+local function Slider_OnLeave(self)
 	GameTooltip:Hide();
+
+	local slider = sliders[self:GetName()]
+	if slider.short == "master" then
+		local masterVolume = tonumber(GetCVolume(slider.cvar));
+		if (masterVolume <= 0) then
+			C_CVar.SetCVar(ALL_SOUND, "0")
+		else
+			C_CVar.SetCVar(ALL_SOUND, "1")
+		end
+	end
+
 	TitanUtils_StartFrameCounting(self:GetParent(), TITAN_VOLUME_FRAME_SHOW_TIME);
 end
 
-local function MasterSlider_OnShow(self)
-	_G[self:GetName() .. "Text"]:SetText(GetVolumeText(GetCVar("Sound_MasterVolume")));
+---local On show; get and show current volume and bounds.
+---@param self Slider
+local function Slider_OnShow(self)
+	local slider = sliders[self:GetName()]
+
+	_G[self:GetName() .. "Text"]:SetText(GetVolumeText(GetCVolume(slider.cvar)));
 	_G[self:GetName() .. "High"]:SetText(Titan_Global.literals.low);
 	_G[self:GetName() .. "Low"]:SetText(Titan_Global.literals.high);
 	self:SetMinMaxValues(0, 1);
 	self:SetValueStep(0.01);
 	self:SetObeyStepOnDrag(true) -- since 5.4.2 (Mists of Pandaria)
-	self:SetValue(1 - GetCVar("Sound_MasterVolume"));
+	self:SetValue(1 - GetCVolume(slider.cvar));
 end
 
-local function MasterSlider_OnValueChanged(self, a1)
-	_G[self:GetName() .. "Text"]:SetText(GetVolumeText(1 - self:GetValue()));
+---local On value changed; get and show current volume and bounds.
+---@param self Slider
+---@param a1 number
+local function Slider_OnValueChanged(self, a1)
+	local slider = sliders[self:GetName()]
 
-	SetCVar("Sound_MasterVolume", 1 - self:GetValue());
-	TitanSetVar(TITAN_VOLUME_ID, "VolumeMaster", 1 - self:GetValue())
+	local vol = 1 - self:GetValue()
+	_G[self:GetName() .. "Text"]:SetText(GetVolumeText(vol));
+
+	C_CVar.SetCVar(slider.cvar, vol);
+	TitanSetVar(TITAN_VOLUME_ID, slider.titan_var, vol)
 
 	SetVolumeIcon();
+	TitanPanelButton_UpdateButton(TITAN_VOLUME_ID);
 
 	-- Update GameTooltip
-	if (self.tooltipText) then
-		self.tooltipText = TitanOptionSlider_TooltipText(OPTION_TOOLTIP_MASTER_VOLUME, GetVolumeText(1 - self:GetValue()));
-		GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
-	end
+	local tooltipText = TitanOptionSlider_TooltipText(slider.gtext, GetVolumeText(1 - self:GetValue()));
+	GameTooltip:SetText(tooltipText, nil, nil, nil, nil, 1);
 end
 
+---local Any slider value changed via mouse wheel; update slider only; _OnValueChanged will update WoW and tooltip.
+---@param self Slider
+---@param a1 number
 local function OnMouseWheel(self, a1)
 	local tempval = self:GetValue();
 
@@ -159,168 +231,8 @@ local function OnMouseWheel(self, a1)
 	end
 end
 
-
--- 'Music'
-local function MusicSlider_OnEnter(self)
-	--	self.tooltipText = TitanOptionSlider_TooltipText(OPTION_TOOLTIP_MUSIC_VOLUME, GetVolumeText(GetCVar("Sound_MusicVolume")));
-	self.tooltipText = ""
-	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
-	GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
-	TitanUtils_StopFrameCounting(self:GetParent());
-end
-
-local function MusicSlider_OnLeave(self)
-	self.tooltipText = nil;
-	GameTooltip:Hide();
-	TitanUtils_StartFrameCounting(self:GetParent(), TITAN_VOLUME_FRAME_SHOW_TIME);
-end
-
-local function MusicSlider_OnShow(self)
-	_G[self:GetName() .. "Text"]:SetText(GetVolumeText(GetCVar("Sound_MusicVolume")));
-	_G[self:GetName() .. "High"]:SetText(Titan_Global.literals.low);
-	_G[self:GetName() .. "Low"]:SetText(Titan_Global.literals.high);
-	self:SetMinMaxValues(0, 1);
-	self:SetValueStep(0.01);
-	self:SetValue(1 - GetCVar("Sound_MusicVolume"));
-end
-
-local function MusicSlider_OnValueChanged(self, a1)
-	_G[self:GetName() .. "Text"]:SetText(GetVolumeText(1 - self:GetValue()));
-
-	SetCVar("Sound_MusicVolume", 1 - self:GetValue());
-	TitanSetVar(TITAN_VOLUME_ID, "VolumeMusic", 1 - self:GetValue())
-
-	-- Update GameTooltip
-	if (self.tooltipText) then
-		self.tooltipText = TitanOptionSlider_TooltipText(OPTION_TOOLTIP_MUSIC_VOLUME, GetVolumeText(1 - self:GetValue()));
-		GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
-	end
-end
-
--- 'Sound Effects'
-local function SoundSlider_OnEnter(self)
-	--	self.tooltipText = TitanOptionSlider_TooltipText(OPTION_TOOLTIP_FX_VOLUME, GetVolumeText(GetCVar("Sound_SFXVolume")));
-	self.tooltipText = ""
-	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
-	GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
-	TitanUtils_StopFrameCounting(self:GetParent());
-end
-
-local function SoundSlider_OnLeave(self)
-	self.tooltipText = nil;
-	GameTooltip:Hide();
-	TitanUtils_StartFrameCounting(self:GetParent(), TITAN_VOLUME_FRAME_SHOW_TIME);
-end
-
-local function SoundSlider_OnShow(self)
-	_G[self:GetName() .. "Text"]:SetText(GetVolumeText(GetCVar("Sound_SFXVolume")));
-	_G[self:GetName() .. "High"]:SetText(Titan_Global.literals.low);
-	_G[self:GetName() .. "Low"]:SetText(Titan_Global.literals.high);
-	self:SetMinMaxValues(0, 1);
-	self:SetValueStep(0.01);
-	self:SetValue(1 - GetCVar("Sound_SFXVolume"));
-end
-
-local function SoundSlider_OnValueChanged(self, a1)
-	_G[self:GetName() .. "Text"]:SetText(GetVolumeText(1 - self:GetValue()));
-
-	SetCVar("Sound_SFXVolume", 1 - self:GetValue());
-	TitanSetVar(TITAN_VOLUME_ID, "VolumeSFX", 1 - self:GetValue())
-
-	-- Update GameTooltip
-	if (self.tooltipText) then
-		self.tooltipText = TitanOptionSlider_TooltipText(OPTION_TOOLTIP_FX_VOLUME, GetVolumeText(1 - self:GetValue()));
-		GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
-	end
-end
-
--- 'Ambience'
-local function AmbienceSlider_OnEnter(self)
-	--	self.tooltipText = TitanOptionSlider_TooltipText(OPTION_TOOLTIP_AMBIENCE_VOLUME, GetVolumeText(GetCVar("Sound_AmbienceVolume")));
-	self.tooltipText = ""
-	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
-	GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
-	TitanUtils_StopFrameCounting(self:GetParent());
-end
-
-local function AmbienceSlider_OnLeave(self)
-	self.tooltipText = nil;
-	GameTooltip:Hide();
-	TitanUtils_StartFrameCounting(self:GetParent(), TITAN_VOLUME_FRAME_SHOW_TIME);
-end
-
-local function AmbienceSlider_OnShow(self)
-	_G[self:GetName() .. "Text"]:SetText(GetVolumeText(GetCVar("Sound_AmbienceVolume")));
-	_G[self:GetName() .. "High"]:SetText(Titan_Global.literals.low);
-	_G[self:GetName() .. "Low"]:SetText(Titan_Global.literals.high);
-	self:SetMinMaxValues(0, 1);
-	self:SetValueStep(0.01);
-	self:SetValue(1 - GetCVar("Sound_AmbienceVolume"));
-end
-
-local function AmbienceSlider_OnValueChanged(self, a1)
-	_G[self:GetName() .. "Text"]:SetText(GetVolumeText(1 - self:GetValue()));
-	local tempval = self:GetValue();
-
-	SetCVar("Sound_AmbienceVolume", 1 - self:GetValue());
-	TitanSetVar(TITAN_VOLUME_ID, "VolumeAmbience", 1 - self:GetValue())
-
-	-- Update GameTooltip
-	if (self.tooltipText) then
-		--		self.tooltipText = TitanOptionSlider_TooltipText(L["TITAN_VOLUME_CONTROL_TOOLTIP"], GetVolumeText(1 - self:GetValue()));
-		self.tooltipText = TitanOptionSlider_TooltipText(OPTION_TOOLTIP_ENABLE_AMBIENCE,
-			GetVolumeText(1 - self:GetValue()));
-		GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
-	end
-end
-
--- 'Dialog'
-local function DialogSlider_OnEnter(self)
-	--	self.tooltipText = TitanOptionSlider_TooltipText(OPTION_TOOLTIP_DIALOG_VOLUME, GetVolumeText(GetCVar("Sound_DialogVolume")));
-	self.tooltipText = ""
-	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
-	GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
-	TitanUtils_StopFrameCounting(self:GetParent());
-end
-
-local function DialogSlider_OnLeave(self)
-	self.tooltipText = nil;
-	GameTooltip:Hide();
-	TitanUtils_StartFrameCounting(self:GetParent(), TITAN_VOLUME_FRAME_SHOW_TIME);
-end
-
-local function DialogSlider_OnShow(self)
-	_G[self:GetName() .. "Text"]:SetText(GetVolumeText(GetCVar("Sound_DialogVolume")));
-	_G[self:GetName() .. "High"]:SetText(Titan_Global.literals.low);
-	_G[self:GetName() .. "Low"]:SetText(Titan_Global.literals.high);
-	self:SetMinMaxValues(0, 1);
-	self:SetValueStep(0.01);
-	self:SetValue(1 - GetCVar("Sound_DialogVolume"));
-end
-
-local function DialogSlider_OnValueChanged(self, a1)
-	_G[self:GetName() .. "Text"]:SetText(GetVolumeText(1 - self:GetValue()));
-	local tempval = self:GetValue();
-
-	SetCVar("Sound_DialogVolume", 1 - self:GetValue());
-	TitanSetVar(TITAN_VOLUME_ID, "VolumeDialog", 1 - self:GetValue())
-
-	-- Update GameTooltip
-	if (self.tooltipText) then
-		--		self.tooltipText = TitanOptionSlider_TooltipText(L["TITAN_VOLUME_CONTROL_TOOLTIP"], GetVolumeText(1 - self:GetValue()));
-		self.tooltipText = TitanOptionSlider_TooltipText(OPTION_TOOLTIP_DIALOG_VOLUME, GetVolumeText(1 - self:GetValue()));
-		GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
-	end
-end
-
-
---[[ WoW 9.5
-Blizzard decided to remove direct Backdrop API in 9.0 (Shadowlands)
-so inherit the template (XML)
-and set the values in the code (Lua)
-
-9.5 The tooltip template was removed from the GameTooltip.
---]]
+---local Inititalize custom left click menu
+---@param self Frame
 local function ControlFrame_OnLoad(self)
 	_G[self:GetName() .. "Title"]:SetText(L["TITAN_VOLUME_CONTROL_TITLE"]);         -- VOLUME
 	_G[self:GetName() .. "MasterTitle"]:SetText(L["TITAN_VOLUME_MASTER_CONTROL_TITLE"]); --MASTER_VOLUME
@@ -333,6 +245,8 @@ local function ControlFrame_OnLoad(self)
 	TitanPanelRightClickMenu_SetCustomBackdrop(self)
 end
 
+---local Generate tooltip text
+---@return string
 local function GetTooltipText()
 	local mute = Titan_Global.literals.muted
 
@@ -343,13 +257,13 @@ local function GetTooltipText()
 	end
 	local text = ""
 
-	local volumeMasterText = GetVolumeText(GetCVar("Sound_MasterVolume"));
-	local volumeSoundText = GetVolumeText(GetCVar("Sound_SFXVolume"));
-	local volumeMusicText = GetVolumeText(GetCVar("Sound_MusicVolume"));
-	local volumeAmbienceText = GetVolumeText(GetCVar("Sound_AmbienceVolume"));
-	local volumeDialogText = GetVolumeText(GetCVar("Sound_DialogVolume"));
-	--	local volumeMicrophoneText = GetVolumeText(GetCVar("OutboundChatVolume"));
-	--	local volumeSpeakerText = GetVolumeText(GetCVar("InboundChatVolume"));
+	local volumeMasterText = GetVolumeText(GetCVolume("Sound_MasterVolume"));
+	local volumeSoundText = GetVolumeText(GetCVolume("Sound_SFXVolume"));
+	local volumeMusicText = GetVolumeText(GetCVolume("Sound_MusicVolume"));
+	local volumeAmbienceText = GetVolumeText(GetCVolume("Sound_AmbienceVolume"));
+	local volumeDialogText = GetVolumeText(GetCVolume("Sound_DialogVolume"));
+	--	local volumeMicrophoneText = GetVolumeText(GetCVolume("OutboundChatVolume"));
+	--	local volumeSpeakerText = GetVolumeText(GetCVolume("InboundChatVolume"));
 
 	text = ""..
 	mute ..
@@ -367,7 +281,8 @@ local function GetTooltipText()
 	return text
 end
 
-function CreateMenu()
+---local Generate the right click menu
+local function CreateMenu()
 	TitanPanelRightClickMenu_AddTitle(TitanPlugins[TITAN_VOLUME_ID].menuText);
 
 	local info = {};
@@ -389,13 +304,16 @@ function CreateMenu()
 	TitanPanelRightClickMenu_AddControlVars(TITAN_VOLUME_ID)
 end
 
+---local On double click toggle the all sound mute; will flash the slider frame...
+---@param self Button
+---@param button string
 local function OnDoubleClick(self, button)
 	if button == "LeftButton" then
 		-- Toggle mute value
 		if IsMuted() then
-			SetCVar("Sound_EnableAllSound","1")
+			SetCVar(ALL_SOUND,"1")
 		else
-			SetCVar("Sound_EnableAllSound","0")
+			SetCVar(ALL_SOUND,"0")
 		end
 		SetVolumeIcon()
 		_G[cname]:Hide()
@@ -405,6 +323,8 @@ local function OnDoubleClick(self, button)
 	end
 end
 
+---local Create plugin .registry and and register for first events
+---@param self Button
 local function OnLoad(self)
 	local notes = ""
 	.. "Adds a volume control icon on your Titan Bar.\n"
@@ -440,10 +360,9 @@ local function OnLoad(self)
 			DisplayOnRightSide = 1,
 		}
 	};
-	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 end
 
--- ====== Create needed frames
+---local Create needed frames
 local function Create_Frames()
 	if _G[TITAN_VOLUME_BUTTON] then
 		return -- if already created
@@ -470,8 +389,6 @@ local function Create_Frames()
 	end)
 	window:SetScript("OnEvent", function(self, event, ...)
 		OnEvent(self, event, ...)
-		-- ... not allowed here so grab the potential args that may be needed
-		--		OnEvent(self, event, arg1, arg2, arg3, arg4)
 	end)
 
 
@@ -518,104 +435,28 @@ local function Create_Frames()
 	str = config:CreateFontString(cname .. "DialogTitle", "ARTWORK", style)
 	str:SetPoint("TOP", config, 130, -30)
 
-	-- Config slider sections
-	local slider = nil
+	-- ====== Config slider sections
 
-	-- Master
 	local inherit = "TitanOptionsSliderTemplate"
-	local master = CreateFrame("Slider", "TitanPanelMasterVolumeControlSlider", config, inherit)
-	master:SetPoint("TOP", config, -160, -60)
-	master:SetScript("OnShow", function(self)
-		MasterSlider_OnShow(self)
-	end)
-	master:SetScript("OnValueChanged", function(self, value)
-		MasterSlider_OnValueChanged(self, value)
-	end)
-	master:SetScript("OnMouseWheel", function(self, delta)
-		OnMouseWheel(self, delta)
-	end)
-	master:SetScript("OnEnter", function(self)
-		MasterSlider_OnEnter(self)
-	end)
-	master:SetScript("OnLeave", function(self)
-		MasterSlider_OnLeave(self)
-	end)
-
-	-- Sound
-	local sound = CreateFrame("Slider", "TitanPanelSoundVolumeControlSlider", config, inherit)
-	sound:SetPoint("TOP", config, -90, -60)
-	sound:SetScript("OnShow", function(self)
-		SoundSlider_OnShow(self)
-	end)
-	sound:SetScript("OnValueChanged", function(self, value)
-		SoundSlider_OnValueChanged(self, value)
-	end)
-	sound:SetScript("OnMouseWheel", function(self, delta)
-		OnMouseWheel(self, delta)
-	end)
-	sound:SetScript("OnEnter", function(self)
-		SoundSlider_OnEnter(self)
-	end)
-	sound:SetScript("OnLeave", function(self)
-		SoundSlider_OnLeave(self)
-	end)
-
-	-- Music
-	local music = CreateFrame("Slider", "TitanPanelMusicVolumeControlSlider", config, inherit)
-	music:SetPoint("TOP", config, -20, -60)
-	music:SetScript("OnShow", function(self)
-		MusicSlider_OnShow(self)
-	end)
-	music:SetScript("OnValueChanged", function(self, value)
-		MusicSlider_OnValueChanged(self, value)
-	end)
-	music:SetScript("OnMouseWheel", function(self, delta)
-		OnMouseWheel(self, delta)
-	end)
-	music:SetScript("OnEnter", function(self)
-		MusicSlider_OnEnter(self)
-	end)
-	music:SetScript("OnLeave", function(self)
-		MusicSlider_OnLeave(self)
-	end)
-
-	-- Ambience
-	local ambience = CreateFrame("Slider", "TitanPanelAmbienceVolumeControlSlider", config, inherit)
-	ambience:SetPoint("TOP", config, 50, -60)
-	ambience:SetScript("OnShow", function(self)
-		AmbienceSlider_OnShow(self)
-	end)
-	ambience:SetScript("OnValueChanged", function(self, value)
-		AmbienceSlider_OnValueChanged(self, value)
-	end)
-	ambience:SetScript("OnMouseWheel", function(self, delta)
-		OnMouseWheel(self, delta)
-	end)
-	ambience:SetScript("OnEnter", function(self)
-		AmbienceSlider_OnEnter(self)
-	end)
-	ambience:SetScript("OnLeave", function(self)
-		AmbienceSlider_OnLeave(self)
-	end)
-
-	-- Dialog
-	local dialog = CreateFrame("Slider", "TitanPanelDialogVolumeControlSlider", config, inherit)
-	dialog:SetPoint("TOP", config, 130, -60)
-	dialog:SetScript("OnShow", function(self)
-		DialogSlider_OnShow(self)
-	end)
-	dialog:SetScript("OnValueChanged", function(self, value)
-		DialogSlider_OnValueChanged(self, value)
-	end)
-	dialog:SetScript("OnMouseWheel", function(self, delta)
-		OnMouseWheel(self, delta)
-	end)
-	dialog:SetScript("OnEnter", function(self)
-		DialogSlider_OnEnter(self)
-	end)
-	dialog:SetScript("OnLeave", function(self)
-		DialogSlider_OnLeave(self)
-	end)
+	for idx, slider in pairs (sliders) do
+		local s = CreateFrame("Slider", idx, config, inherit)
+		s:SetPoint("TOP", config, slider.off_x, slider.off_y)
+		s:SetScript("OnShow", function(self)
+			Slider_OnShow(self)
+		end)
+		s:SetScript("OnValueChanged", function(self, value)
+			Slider_OnValueChanged(self, value)
+		end)
+		s:SetScript("OnMouseWheel", function(self, delta)
+			OnMouseWheel(self, delta)
+		end)
+		s:SetScript("OnEnter", function(self)
+			Slider_OnEnter(self)
+		end)
+		s:SetScript("OnLeave", function(self)
+			Slider_OnLeave(self)
+		end)
+	end
 
 	-- Now that the parts exist, initialize
 	ControlFrame_OnLoad(config)

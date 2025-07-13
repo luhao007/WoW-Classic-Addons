@@ -28,6 +28,7 @@ BtWQuests = {
             Orc = "Orc",
             Tauren = "Tauren",
             Scourge = "Scourge",
+            Troll = "Troll",
             Pandaren = "Pandaren",
             DarkIronDwarf = "DarkIronDwarf",
         },

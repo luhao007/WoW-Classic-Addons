@@ -1,3 +1,5 @@
+local addonName = ...
+
 local BtWQuestsDatabase = BtWQuestsDatabase
 local BtWQuestsCharacters = BtWQuestsCharacters
 
@@ -19,11 +21,7 @@ end
 local GetQuestLogIsAutoComplete = C_QuestLog and C_QuestLog.GetInfo and function (questLogIndex)
     return C_QuestLog.GetInfo(questLogIndex).isAutoComplete
 end or GetQuestLogIsAutoComplete or function () return false end
-local ShowQuestDetails = QuestMapFrame_OpenToQuestDetails and function (questID)
-    QuestMapFrame_OpenToQuestDetails(questID)
-
-    return true
-end or function (questID)
+local ShowQuestDetails = QuestMapFrame_OpenToQuestDetails or function (questID)
     local mapID
     local quest = BtWQuestsDatabase:GetQuestByID(questID)
     if IsQuestComplete(questID) then
@@ -49,6 +47,14 @@ end or function (questID)
 end
 local function CanCompleteQuest(questLogIndex)
     return IsQuestComplete(GetQuestIDForQuestIndex(questLogIndex)) and GetQuestLogIsAutoComplete(questLogIndex)
+end
+local GetAddOnMetadata = GetAddOnMetadata or C_AddOns.GetAddOnMetadata
+local GetMouseFocus = GetMouseFocus or function ()
+    return GetMouseFoci()[1]
+end
+
+function BtWQuests_OnAddonCompartmentClick()
+    BtWQuestsFrame:Show()
 end
 
 BtWQuestsFrameChainViewMixin = {}
@@ -407,6 +413,9 @@ function BtWQuestsMixin:SelectFromLink(link, scrollTo)
     if not color then
         _, _, type, text = string.find(link, "([^:]+):(.+)")
     end
+    if type == "garrmission" then
+        _, _, type, text = string.find(text, "^([^:]*):(.*)")
+    end
 
     assert(type == "quest" or type == "btwquests")
 
@@ -710,13 +719,13 @@ function BtWQuestsMixin:DisplayCurrentExpansion(scrollTo)
 
     local expansion = BtWQuestsDatabase:GetExpansionByID(self:GetExpansion());
     if expansion == nil then
-        print(L["BTWQUESTS_NO_EXPANSION_ERROR"])
+        print(format(L["BTWQUESTS_NO_EXPANSION_ERROR"], "BtWQuests: The War Within"))
         return;
     end
     expansion:Load()
     local items = expansion:GetItemList(self:GetCharacter(), not categoryHeaders, filterCompleted, filterIgnored)
     if #items == 0 then -- Somehow selected an empty expansion, probably means all the BtWQuests modules are disabled
-        print(L["BTWQUESTS_NO_EXPANSION_ERROR"])
+        print(format(L["BTWQUESTS_NO_EXPANSION_ERROR"], "BtWQuests: The War Within"))
     end
     self:DisplayItemList(items, scrollTo)
 end
@@ -772,12 +781,22 @@ function BtWQuestsMixin:UpdateCurrentChain()
 end
 
 local function ChainItemPool_HideAndClearAnchors(framePool, frame)
-    FramePool_HideAndClearAnchors(framePool, frame)
+	frame:Hide();
+	frame:ClearAllPoints();
 
     if frame.backgroundLinePool then
         frame.backgroundLinePool:ReleaseAll();
     end
 end
+
+local GetNumAddOns = C_AddOns and C_AddOns.GetNumAddOns or GetNumAddOns;
+local GetAddOnMetadata = C_AddOns and C_AddOns.GetAddOnMetadata or GetAddOnMetadata;
+local IsAddOnLoadOnDemand = C_AddOns and C_AddOns.IsAddOnLoadOnDemand or IsAddOnLoadOnDemand;
+local GetAddOnEnableState = C_AddOns and function (character, addon)
+    return C_AddOns.GetAddOnEnableState(addon, character)
+end or GetAddOnEnableState;
+local LoadAddOn = C_AddOns and C_AddOns.LoadAddOn or LoadAddOn;
+local GetAddOnInfo = C_AddOns and C_AddOns.GetAddOnInfo or GetAddOnInfo;
 
 function BtWQuestsMixin:OnLoad()
     tinsert(UISpecialFrames, self:GetName());
@@ -813,7 +832,7 @@ function BtWQuestsMixin:OnLoad()
             self.NavHere:SetFrameLevel(510)
             self.OptionsButton:SetFrameLevel(510)
             self.CharacterDropDown:SetFrameLevel(510)
-        else
+        elseif self.NineSlice.TopLeftCorner then
             -- Updated the NineSlice frame for our extra buttons
             self.NineSlice.TopLeftCorner:SetTexture("Interface\\Addons\\BtWQuests\\UI-Frame-Metal")
             self.NineSlice.TopLeftCorner:SetWidth(196)
@@ -930,16 +949,21 @@ function BtWQuestsMixin:OnEvent(event, ...)
                 if expansion then
                     expansion:Load()
                 else
-                    print(L["BTWQUESTS_NO_EXPANSION_ERROR"])
+                    print(format(L["BTWQUESTS_NO_EXPANSION_ERROR"], "BtWQuests: The War Within"))
                 end
             end
 
-            -- hooksecurefunc("QuestObjectiveTracker_OnOpenDropDown", function (self)
-            --     BtWQuests_AddOpenChainMenuItem(self, self.activeFrame.id)
-            -- end)
-            -- hooksecurefunc(QuestMapQuestOptionsDropDown, "initialize", function (self)
-            --     BtWQuests_AddOpenChainMenuItem(self, self.questID)
-            -- end)
+            if Menu then
+                Menu.ModifyMenu("MENU_QUEST_OBJECTIVE_TRACKER", function(owner, rootDescription, contextData)
+                    local frame = GetMouseFoci()[1]:GetParent();
+                    local questID = frame.id;
+                    BtWQuests_AddOpenChainMenuItem(owner, rootDescription, questID)
+                end);
+                Menu.ModifyMenu("MENU_QUEST_MAP_LOG_TITLE", function(owner, rootDescription, contextData)
+                    local questID = owner.questID;
+                    BtWQuests_AddOpenChainMenuItem(owner, rootDescription, questID)
+                end);
+            end
 
             if select(5, GetAddOnInfo("BtWQuestsEditor")) == "DEMAND_LOADED" then
                 Settings = Settings + {
@@ -1058,7 +1082,7 @@ function BtWQuestsMixin:OnShow()
                 if expansion then
                     self:SelectExpansion(BtWQuestsDatabase:GetFirstExpansion():GetID(), nil, true)
                 else
-                    print(L["BTWQUESTS_NO_EXPANSION_ERROR"])
+                    print(format(L["BTWQUESTS_NO_EXPANSION_ERROR"], "BtWQuests: The War Within"))
                 end
             end
         end
@@ -1177,21 +1201,15 @@ function BtWQuests_ShowMapWithWaypoint(mapId, x, y, name)
 end
 
 -- [[ Quest To Chain ]]
-function BtWQuests_AddOpenChainMenuItem(self, questID)
+function BtWQuests_AddOpenChainMenuItem(owner, rootDescription, questID)
     local item = BtWQuestsDatabase:GetQuestItem(questID, BtWQuestsCharacters:GetPlayer())
     if item then
-        local info = UIDropDownMenu_CreateInfo()
-        info.text = L["BTWQUESTS_OPEN_QUEST_CHAIN"]
-        info.func = function(self, questID, item)
+        rootDescription:CreateDivider()
+        rootDescription:CreateTitle(addonName)
+        rootDescription:CreateButton(L["BTWQUESTS_OPEN_QUEST_CHAIN"], function()
             BtWQuestsFrame:SelectCharacter(UnitName("player"), GetRealmName())
             BtWQuestsFrame:SelectItem(item.item)
-        end
-        info.arg1 = questID
-        info.arg2 = item
-        info.notCheckable = 1;
-        info.checked = false;
-        info.noClickSound = 1;
-        UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL)
+        end)
     end
 end
 
@@ -1213,7 +1231,7 @@ end
 -- [[ Hyperlink Handling ]]
 
 local function ChatFrame_Filter(self, event, msg, ...)
-    msg = msg:gsub("%[btwquests:([^:]+):(%d+):([^:]+):([^%]]+)%]","|c%3|Hbtwquests:%1:%2|h[%4]|h|r"):gsub("https://www.btwquests.com/([^/]+)/(%d+)[-%w]*","|cffffff00|Hbtwquests:%1:%2|h[%0]|h|r")
+    msg = msg:gsub("%[btwquests:([^:]+):(%d+):([^:]+):([^%]]+)%]","|c%3|Hgarrmission:btwquests:%1:%2|h[%4]|h|r"):gsub("https://www.btwquests.com/([^/]+)/(%d+)[-%w]*","|cffffff00|Hgarrmission:btwquests:%1:%2|h[%0]|h|r")
 
 	return false, msg, ...;
 end
@@ -1250,44 +1268,21 @@ end
 hooksecurefunc("ChatEdit_ParseText", function (editBox, send, parseIfNoSpaces)
     if send == 1 then
         local text = editBox:GetText()
-        text = text:gsub("|c(%x*)|Hbtwquests:([^|]+)|h%[([^%[%]]*)%]|h|r", function (color,str,name)
+        text = text:gsub("|c(%x*)|Hgarrmission:btwquests:([^|]+)|h%[([^%[%]]*)%]|h|r", function (color,str,name)
             return string.format("[btwquests:%s:%s:%s]", str, color,name)
-        end):gsub("|Hbtwquests:([^|]+)|h%[([^%[%]]*)%]|h", function (str,name)
+        end):gsub("|Hgarrmission:btwquests:([^|]+)|h%[([^%[%]]*)%]|h", function (str,name)
             return string.format("[btwquests:%s:%s:%s]", str, "ffffff00",name)
         end)
         editBox:SetText(text)
     end
 end)
 
--- Handles shift clicking btwquests links
-local original_HandleModifiedItemClick = HandleModifiedItemClick
-function HandleModifiedItemClick(link)
-    if link and link:find("Hbtwquests") then
+hooksecurefunc("SetItemRef", function(link, text)
+    if link:find("garrmission:btwquests") then
         if IsModifiedClick("CHATLINK") then
-			ChatEdit_InsertLink(link)
-		else
-            BtWQuestsFrame:SelectFromLink(link)
-		end
-    else
-        return original_HandleModifiedItemClick(link)
-    end
-end
-
--- Handles clicking btwquests links
-local original_SetHyperlink = ItemRefTooltip.SetHyperlink
-function ItemRefTooltip:SetHyperlink(link)
-    if link:find("^btwquests") then
-        if IsModifiedClick("CHATLINK") then
-			ChatEdit_InsertLink(link)
+            ChatEdit_InsertLink(text)
         else
-            local success, err = pcall(function ()
-                BtWQuestsFrame:SelectFromLink(link)
-            end)
-            if not success then
-                print(L["Error viewing link"])
-            end
-		end
-	else
-		original_SetHyperlink(self, link);
-	end
-end
+            BtWQuestsFrame:SelectFromLink(text)
+        end
+    end
+end);

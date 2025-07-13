@@ -19,8 +19,13 @@ if not LinePool then
 		self.lineTemplate = lineTemplate;
 	end
 
-	LinePool_Hide = FramePool_Hide;
-	LinePool_HideAndClearAnchors = FramePool_HideAndClearAnchors;
+	LinePool_Hide = function(_, frame)
+        frame:Hide();
+    end;
+	LinePool_HideAndClearAnchors = function(_, frame)
+        frame:Hide();
+        frame:ClearAllPoints();
+    end;
 
 	function CreateLinePool(parent, layer, subLayer, lineTemplate, resetterFunc)
 		local linePool = CreateFromMixins(LinePoolMixin);

@@ -10,7 +10,7 @@ Created and initially commited on : July 29th, 2008
 The spec: https://github.com/tekkub/libdatabroker-1-1
 LDB (libdatabroker) is a small library that enables an addon to hook into a 'display' addon such as Titan.
 
-=== Creation
+--- Creation
 The addon dev creates an LDB object which the lib places in storage accessible by lib:DataObjectIterator().
 It also fires a "LibDataBroker_DataObjectCreated" callback.
 
@@ -19,21 +19,21 @@ When an LDB addon changes one of its values, the lib fires a callback for the di
 
 The LDB addon may declare scripts (tooltip, mouse clicks, etc.) per the spec for the display addon to use.
 
-=== Starting from Titan view
+--- Starting from Titan view
 On PLAYER_ENTERING_WORLD, Titan will use the iterator to wrap each LDB type addon into a Titan plugin.
 Once done processing the known LDB objects, 
 Titan registers for the callback to handle LDB objects created later or on demand.
 
 Titan registers for callbacks on text and icon updates - depending on the LDB type.
 
-=== Running from Titan view
+--- Running from Titan view
 The LDB addon is responsible for setting and changing its text and icon.
 Titan is responsible for updating the Titan plugin in response.
 
 The Titan plugin will use the LDB addon scripts IF declared, again depending on the LDB type.
 
 
-=== Supported
+--- Supported
 Only LDB types listed in the LDB 1.1 spec are supported by Titan.
 
 - "launcher" become "icon" plugins - TitanPanelIconTemplate
@@ -149,11 +149,12 @@ end
 ---Titan Properly anchor tooltips of the Titan (LDB) plugin
 ---@param parent table Parent frame
 ---@param anchorPoint string
----@param relativeToFrame table
+---@param relativeToFrame table|string
 ---@param relativePoint string
 ---@param xOffset number
 ---@param yOffset number
----@param frame table Tolltip frame
+---@param frame table|string Tooltip frame
+--- relativeToFrame and frame are really ScriptRegion|string for GameTooltip
 function LDBToTitan:TitanLDBSetOwnerPosition(parent, anchorPoint, relativeToFrame, relativePoint, xOffset, yOffset, frame)
 	if frame:GetName() == "GameTooltip" then
 		-- Changes for 9.1.5 Removed the background template from the GameTooltip
@@ -177,8 +178,8 @@ end
 ---Titan Fill in the tooltip for the Titan (LDB) plugin
 ---@param name string Plugin id name for LDB
 ---@param frame table Tooltip frame
----@param func function Tooltip function to be run
-function LDBToTitan:TitanLDBSetTooltip(name, frame, func)
+---@param tt_func function? Tooltip function to be run
+function LDBToTitan:TitanLDBSetTooltip(name, frame, tt_func)
 	-- Check to see if we allow tooltips to be shown
 	if not TitanPanelGetVar("ToolTipsShown")
 		or (TitanPanelGetVar("HideTipsInCombat") and InCombatLockdown()) then
@@ -216,7 +217,7 @@ function LDBToTitan:TitanLDBSetTooltip(name, frame, func)
 	else
 	end
 
-	if func and If_Show_Tooltip() then func(frame) end; -- TODO: use pcall??
+	if tt_func and If_Show_Tooltip() then tt_func(frame) end; -- TODO: use pcall??
 	frame:Show();
 end
 
@@ -897,7 +898,6 @@ function LDBToTitan:TitanLDBCreateObject(sender, name, obj)
 		{
 			self = nil,
 			button = nil,
-			isChild = nil,
 			name = tostring(name),
 			issue = ret_val,
 			notes = "",
@@ -944,7 +944,6 @@ LDBToTitan:SetScript("OnEvent", function(self, event, ...)
 				{
 					self = nil,
 					button = nil,
-					isChild = nil,
 					name = tostring(name),
 					issue = ret_val,
 					notes = "",

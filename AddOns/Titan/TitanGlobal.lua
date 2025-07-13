@@ -162,6 +162,29 @@ Titan_Global.literals = {
 	muted = MUTED,
 }
 
+Titan_Global.colors = {
+	alliance = "00adf0", -- PLAYER_FACTION_COLOR_ALLIANCE
+	blue = "0000ff", -- PURE_BLUE_COLOR
+	blue_light = "69ccf0",
+	coin_gold = "ffd100",
+	coin_silver = "e6e6e6",
+	coin_copper = "c8602c",
+	copper = "b87333",
+	gold = "f2e699", -- GOLD_FONT_COLOR
+	gray = "808080", -- GRAY_FONT_COLOR
+	green = "19ff19", -- GREEN_FONT_COLOR
+	horde = "ff2934", -- PLAYER_FACTION_COLOR_HORDE
+	orange = "ff8c00",
+	pink = "f48cb78",
+	purple = "949cc9",
+	tan = "c79c6e",
+	red = "ff2020", -- RED_FONT_COLOR
+	silver = "cccccc",
+	white = "ffffff", -- HIGHLIGHT_FONT_COLOR
+	yellow_gold = "ffd200", -- NORMAL_FONT_COLOR
+	yellow = "ffff00", -- YELLOW_FONT_COLOR
+}
+
 -- type for plugin registry
 ---@class PluginRegistryType
 ---@field id string The unique name of the plugin
@@ -170,7 +193,7 @@ Titan_Global.literals = {
 ---@field menuText? string Localized string for the menu (right click)
 ---@field menuTextFunction? string | function Plugin function to call on right click
 ---@field buttonTextFunction? string | function Function to call when updating button display
----@field tooltipTitle? string Localized string for the menu 
+---@field tooltipTitle? string Localized string for the menu
 ---@field tooltipTextFunction? string | function Function to call for a simple tooltip (OnEnter)
 ---@field tooltipCustomFunction? function Function to call for a complex tooltip (OnEnter)
 ---@field icon? string Path to the plugin icon
@@ -182,9 +205,18 @@ Titan_Global.literals = {
 ---API Return an empty registry - only the id is set.
 ---@param id string The unique name of the plugin
 ---@return PluginRegistryType
----This routine was added for use with an IDE with Intellisense that supports Lua.
+---This routine was added for use with an IDE with Intellisense that supports Lua. It can be but might not be used.
 --- reg = Titan_Global.NewRegistry("MyAddon")
 function Titan_Global.NewRegistry(id)
 	local reg = { id = id } ---@type PluginRegistryType
 	return reg
 end
+
+-- Set the debug topics for Titan itself - not any plugins
+Titan_Global.dbg = Titan_Debug:New("Titan")
+Titan_Global.dbg:AddTopic("Startup")
+Titan_Global.dbg:AddTopic("Vars")
+
+Titan_Global.dbg:EnableDebug(false)
+Titan_Global.dbg:EnableTopic("Tooltip", false)
+Titan_Global.dbg:EnableTopic("Menu", false)

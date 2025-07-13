@@ -1,8 +1,8 @@
 ## Interface: 30405
 ## Author: Aznamir, Dyaxler, Es, gallantron
-## Version: v1.5.14-classic
+## Version: v1.5.15 谷风呀
 
-## Title: PallyPower Classic
+## Title: PallyPower |cff99ddff谷|r|cff88ccee风|r|cff77bbdd修|r|cff66aacc复|r|cff5599bb版|r|cff4488aa-|r|cff00aaffT|r|cff0099ffB|r|cff0088ffC|r
 ## Notes: Raid/Party Paladin buffs
 ## Title-zhCN: |cFFFFE00A<|r|cFFC79C6E战斗|r|cFFFFE00A>|r |cFFFFFFFF祝福助手|r |cFFFFE00APallyPower|r
 ## Notes-zhCN: 帮助管理圣骑士的祝福等BUFF

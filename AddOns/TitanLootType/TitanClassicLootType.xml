@@ -39,23 +39,10 @@
 		movable="true" enableMouse="true" frameStrata="HIGH" resizable="true">
 		<Size><AbsDimension x="194" y="170"/></Size>
 		<Anchors>
-			<Anchor point="CENTER"/>
+			<Anchor point="CENTER">
 			<Offset><AbsDimension x="300" y="0"/></Offset>
+			</Anchor>
 		</Anchors>
-<!--
-		<Backdrop name="$parentBackdrop" bgFile="Interface\TutorialFrame\TutorialFrameBackground"
-		edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<EdgeSize>
-				<AbsValue val="16"/>
-			</EdgeSize>
-			<TileSize>
-				<AbsValue val="64"/>
-			</TileSize>
-			<BackgroundInsets>
-				<AbsInset left="5" right="5" top="5" bottom="5"/>
-			</BackgroundInsets>
-		</Backdrop>	
--->
 		<KeyValues>
 			<KeyValue key="backdropInfo" value="BACKDROP_TUTORIAL_16_16" type="global"/>
 		</KeyValues>

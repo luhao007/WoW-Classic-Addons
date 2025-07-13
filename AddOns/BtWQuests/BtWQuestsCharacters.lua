@@ -16,6 +16,77 @@ end
 local GetLogIndexForQuestID = C_QuestLog and C_QuestLog.GetLogIndexForQuestID or GetQuestLogIndexByID
 local IsQuestFlaggedCompleted = C_QuestLog and C_QuestLog.IsQuestFlaggedCompleted or IsQuestFlaggedCompleted
 
+local GetQuestsActive
+if select(4, GetBuildInfo()) < 90000 then
+    function GetQuestsActive(tbl)
+        local tbl = tbl or {};
+    
+        local numEntries = GetNumQuestLogEntries()
+        for i=1,numEntries do
+            local questID = select(8, GetQuestLogTitle(i));
+            if questID ~= nil and questID ~= 0 then
+                tbl[questID] = {};
+    
+                for objective=1,GetNumQuestLeaderBoards(i) do
+                    tbl[questID][objective] = {GetQuestLogLeaderBoard(objective, i)};
+                end
+            end
+        end
+        
+        return tbl;
+    end
+else
+    function GetQuestsActive(tbl)
+        local tbl = tbl or {};
+    
+        local numEntries = C_QuestLog.GetNumQuestLogEntries()
+        for i=1,numEntries do
+            local info = C_QuestLog.GetInfo(i);
+            if info.questID ~= nil and info.questID ~= 0 then
+                tbl[info.questID] = {};
+    
+                for objective=1,GetNumQuestLeaderBoards(i) do
+                    tbl[info.questID][objective] = {GetQuestLogLeaderBoard(objective, i)};
+                end
+            end
+        end
+        
+        return tbl;
+    end
+end
+local GetQuestsCompleted = GetQuestsCompleted or function (tbl)
+    local tbl = tbl or {};
+
+    for _,questID in ipairs(C_QuestLog.GetAllCompletedQuestIDs()) do
+        tbl[questID] = true
+    end
+    
+    return tbl;
+end
+local GetNumFactions = C_Reputation and C_Reputation.GetNumFactions or GetNumFactions;
+local GetFactionDataByID = C_Reputation and C_Reputation.GetFactionDataByID or function (id)
+    local name, _, standing, barMin, barMax, barValue, _, _, _, _, _, _, _, factionID = GetFactionInfoByID(id);
+    return name and {
+        name = name,
+        factionID = factionID,
+        reaction = standing,
+        currentReactionThreshold = barMin,
+        currentStanding = barValue,
+        nextReactionThreshold = barMax
+    };
+end;
+local GetFactionDataByIndex = C_Reputation and C_Reputation.GetFactionDataByIndex or function (i)
+    local name, _, standing, barMin, barMax, barValue, _, _, _, _, _, _, _, factionID = GetFactionInfo(i);
+    return name and {
+        name = name,
+        factionID = factionID,
+        reaction = standing,
+        currentReactionThreshold = barMin,
+        currentStanding = barValue,
+        nextReactionThreshold = barMax
+    };
+end;
+
 local BtWQuestsCharactersMap = {} -- Map from name-realm to Character Mixin
 
 local ClassMap = {}
@@ -27,8 +98,21 @@ for classID=1,GetNumClasses() do
     end
 end
 
+local accountPlayerLevel = 0
+local function GetAccountPlayerLevel()
+    if accountPlayerLevel == 0 then
+        for _,v in pairs(BtWQuests_Characters or {}) do
+            accountPlayerLevel = math.max(accountPlayerLevel, v.level or 0)
+        end
+    end
+    return math.max(accountPlayerLevel, UnitLevel("player") or 0)
+end
+
 BtWQuestsCharactersCharacterMixin = {}
 function BtWQuestsCharactersCharacterMixin:IsPartySync()
+    return false
+end
+function BtWQuestsCharactersCharacterMixin:IsWarband()
     return false
 end
 function BtWQuestsCharactersCharacterMixin:IsPlayer()
@@ -60,7 +144,7 @@ function BtWQuestsCharactersCharacterMixin:GetClassString()
     return ClassMap[self.t.class].classFile
 end
 function BtWQuestsCharactersCharacterMixin:GetLevel()
-    return self.t.level
+    return self.t.level or 0
 end
 function BtWQuestsCharactersCharacterMixin:GetSex()
     return self.t.sex
@@ -95,7 +179,8 @@ end
 -- @TODO Should probably just get character related info
 function BtWQuestsCharactersCharacterMixin:GetFactionInfoByID(factionID)
     local name
-    local factionName, _, standing, barMin, barMax, value = GetFactionInfoByID(factionID)
+    local tbl = GetFactionDataByID(factionID) or {}
+    local factionName, standing, barMin, barMax, value = tbl.name, tbl.reaction, tbl.currentReactionThreshold, tbl.nextReactionThreshold, tbl.currentStanding
 
     if self.t.reputations then
         local data = self.t.reputations[factionID];
@@ -308,12 +393,17 @@ function BtWQuestsCharactersCharacterMixin:GetChromieTimeID()
     return self.t.chromieTimeID or 0
 end
 
+function BtWQuestsCharactersCharacterMixin:GetCurrencyQuantity(id)
+    return self.t.currencies and self.t.currencies[id] and self.t.currencies[id].quantity or 0;
+end
 function BtWQuestsCharactersCharacterMixin:GetFriendshipReputation(factionID)
     local id, rep, maxRep, name, text, texture, reaction, threshold, nextThreshold;
-    
+
     if self.t.friendships then
         local data = self.t.friendships[factionID];
-        if data ~= nil then
+        if type(data) == "table" and data.friendshipFactionID then
+            return data;
+        elseif data ~= nil then
             if data[1] ~= nil then
                 id, rep, maxRep, name, text, texture, reaction, threshold, nextThreshold = unpack(data);
             else
@@ -322,11 +412,17 @@ function BtWQuestsCharactersCharacterMixin:GetFriendshipReputation(factionID)
         end
     end
 
-    return id, rep, maxRep, name, text, texture, reaction, threshold, nextThreshold;
-
-
-    -- local _, _, _, name, _, _, _, _ = GetFriendshipReputation(factionID)
-    -- return unpack((self.t.friendships or {})[factionID] or {})
+    return {
+        friendshipFactionID = id,
+        standing = rep,
+        maxRep = maxRep,
+        name = name,
+        text = text,
+        texture = texture,
+        reaction = reaction,
+        reactionThreshold = threshold,
+        nextThreshold = nextThreshold,
+    };
 end
 function BtWQuestsCharactersCharacterMixin:GetAchievementInfo(achievementID)
     local id, name, points, completed, month, day, year, description,
@@ -361,8 +457,6 @@ function BtWQuestsCharactersCharacterMixin:GetAchievementCriteriaInfo(achievemen
     if self.t.achievements then
         local data = self.t.achievements[achievementID];
         if data ~= nil then
-            id = id or achievementID;
-
             if data[1] ~= nil then
                 data = data[15];
             else
@@ -399,8 +493,6 @@ function BtWQuestsCharactersCharacterMixin:GetAchievementCriteriaInfoByID(achiev
     if self.t.achievements then
         local data = self.t.achievements[achievementID];
         if data ~= nil then
-            id = id or achievementID;
-
             if data[1] ~= nil then
                 data = data[15];
             else
@@ -507,8 +599,9 @@ if C_TradeSkillUI then
         end
     end
 end
-function BtWQuestsCharactersPlayerMixin:GetFactionInfoByID(faction)
-    local factionName, _, standing, barMin, barMax, value = GetFactionInfoByID(faction)
+function BtWQuestsCharactersPlayerMixin:GetFactionInfoByID(factionID)
+    local tbl = GetFactionDataByID(factionID) or {}
+    local factionName, standing, barMin, barMax, value = tbl.name, tbl.reaction, tbl.currentReactionThreshold, tbl.nextReactionThreshold, tbl.currentStanding
 
     return factionName, standing, barMin, barMax, value
 end
@@ -533,8 +626,12 @@ function BtWQuestsCharactersPlayerMixin:GetHeartOfAzerothLevel()
 
     return BtWQuestsCharactersCharacterMixin.GetHeartOfAzerothLevel(self)
 end
+function BtWQuestsCharactersPlayerMixin:GetCurrencyQuantity(id)
+    local info = C_CurrencyInfo.GetCurrencyInfo(id);
+    return info and info.quantity or 0
+end
 function BtWQuestsCharactersPlayerMixin:GetFriendshipReputation(factionId)
-    return GetFriendshipReputation(factionId)
+    return C_GossipInfo.GetFriendshipReputation(factionId)
 end
 function BtWQuestsCharactersPlayerMixin:GetAchievementInfo(achievementId)
     return GetAchievementInfo(achievementId)
@@ -569,25 +666,27 @@ local itemXpCache = {};
 local gemXpByID = {
     [153714] = 0.05,
 };
-xpTooltip:SetScript("OnTooltipSetItem", function (self)
-    local itemName, itemLink = self:GetItem();
-
-    for i=1,15 do
-        local text = _G[self:GetName().."TextLeft"..i];
-        if text and text:IsShown() then
-            local text = text:GetText();
-            local percent = string.match(text, "^Equip: Experience gained is increased by ([%d]+)%%.$");
-            if not percent then
-                percent = string.match(text, "^Equip: Experience gained from killing monsters and completing quests increased by ([%d]+)%%.$");
-            end
-
-            if percent then
-                itemXpCache[itemLink] = tonumber(percent) * 0.01;
-                break
+if not TooltipDataProcessor or not TooltipDataProcessor.AddTooltipPostCall then
+    xpTooltip:SetScript("OnTooltipSetItem", function (self)
+        local itemName, itemLink = self:GetItem();
+    
+        for i=1,15 do
+            local text = _G[self:GetName().."TextLeft"..i];
+            if text and text:IsShown() then
+                local text = text:GetText();
+                local percent = string.match(text, "^Equip: Experience gained is increased by ([%d]+)%%.$");
+                if not percent then
+                    percent = string.match(text, "^Equip: Experience gained from killing monsters and completing quests increased by ([%d]+)%%.$");
+                end
+    
+                if percent then
+                    itemXpCache[itemLink] = tonumber(percent) * 0.01;
+                    break
+                end
             end
         end
-    end
-end)
+    end)
+end
 local function PlayerXPModifier()
     local modifier = 0;
     if GetItemGem then
@@ -652,6 +751,26 @@ function BtWQuestsCharactersPartySyncMixin:IsQuestActive(questID)
 end
 function BtWQuestsCharactersPartySyncMixin:IsQuestCompleted(questID)
     return IsQuestFlaggedCompleted(questID)
+end
+
+BtWQuestsCharactersWarbandMixin = Mixin({}, BtWQuestsCharactersPlayerMixin)
+function BtWQuestsCharactersWarbandMixin:IsWarband()
+    return true
+end
+function BtWQuestsCharactersWarbandMixin:GetName()
+    return BtWQuests.L["Warband"];
+end
+function BtWQuestsCharactersWarbandMixin:GetFullName()
+    return "", "warband"
+end
+function BtWQuestsCharactersWarbandMixin:GetDisplayName()
+    return self:GetName();
+end
+function BtWQuestsCharactersWarbandMixin:GetLevel()
+    return GetAccountPlayerLevel();
+end
+function BtWQuestsCharactersWarbandMixin:IsQuestCompleted(questID)
+    return C_QuestLog.IsQuestFlaggedCompletedOnAccount(questID)
 end
 
 BtWQuestsCharacters = {}
@@ -735,7 +854,15 @@ function BtWQuestsCharacters:GetCharacter(name, realm)
 
         if key == "-partysync" then
             BtWQuestsCharactersMap[key] = BtWQuests_CreatePartySync(BtWQuests_CharactersMap[playerKey])
+        elseif key == "-warband" then
+            BtWQuestsCharactersMap[key] = BtWQuests_CreateWarband(BtWQuests_CharactersMap[playerKey])
         elseif playerKey == key then
+            -- Insert player in to data if they are missing. This generally happens before OnEvent is called which will fill any missing details
+            if not BtWQuests_CharactersMap[key] then
+                BtWQuests_CharactersMap[key] = {}
+                table.insert(BtWQuests_Characters, BtWQuests_CharactersMap[key])
+            end
+
             BtWQuestsCharactersMap[key] = BtWQuests_CreatePlayer(BtWQuests_CharactersMap[key])
         elseif BtWQuests_CharactersMap[key] ~= nil then
             BtWQuestsCharactersMap[key] = BtWQuests_CreateCharacter(BtWQuests_CharactersMap[key])
@@ -768,56 +895,6 @@ function BtWQuestsCharacters:GetPlayer()
     end
 end
 
-local GetQuestsActive
-if select(4, GetBuildInfo()) < 90000 then
-    function GetQuestsActive(tbl)
-        local tbl = tbl or {};
-    
-        local numEntries = GetNumQuestLogEntries()
-        for i=1,numEntries do
-            local questID = select(8, GetQuestLogTitle(i));
-            if questID ~= nil and questID ~= 0 then
-                tbl[questID] = {};
-    
-                for objective=1,GetNumQuestLeaderBoards(i) do
-                    tbl[questID][objective] = {GetQuestLogLeaderBoard(objective, i)};
-                end
-            end
-        end
-        
-        return tbl;
-    end
-else
-    function GetQuestsActive(tbl)
-        local tbl = tbl or {};
-    
-        local numEntries = C_QuestLog.GetNumQuestLogEntries()
-        for i=1,numEntries do
-            local info = C_QuestLog.GetInfo(i);
-            if info.questID ~= nil and info.questID ~= 0 then
-                tbl[info.questID] = {};
-    
-                for objective=1,GetNumQuestLeaderBoards(i) do
-                    tbl[info.questID][objective] = {GetQuestLogLeaderBoard(objective, i)};
-                end
-            end
-        end
-        
-        return tbl;
-    end
-end
-local GetQuestsCompleted = GetQuestsCompleted
-if not GetQuestsCompleted then
-    function GetQuestsCompleted(tbl)
-        local tbl = tbl or {};
-
-        for _,questID in ipairs(C_QuestLog.GetAllCompletedQuestIDs()) do
-            tbl[questID] = true
-        end
-        
-        return tbl;
-    end
-end
 local temp = {};
 local function GetFactions(tbl)
     local tbl = tbl or {};
@@ -829,22 +906,23 @@ local function GetFactions(tbl)
     wipe(tbl);
     local numEntries = GetNumFactions();
     for i=1,numEntries do
-        local name, _, standing, barMin, barMax, barValue, _, _, _, _, _, _, _, factionID = GetFactionInfo(i);
-        if factionID ~= nil then
-            local data = temp[factionID] or {};
+        -- local name, _, standing, barMin, barMax, barValue, _, _, _, _, _, _, _, factionID = GetFactionInfo(i);
+        local factionData = GetFactionDataByIndex(i);
+        if factionData and factionData.factionID ~= nil then
+            local data = temp[factionData.factionID] or {};
             if data[1] ~= nil then
                 wipe(data);
             end
 
             data.name = name;
 
-            data.standing = standing;
+            data.standing = factionData.reaction;
 
-            data.barMin = barMin;
-            data.barMax = barMax;
-            data.barValue = barValue;
+            data.barMin = factionData.currentReactionThreshold;
+            data.barMax = factionData.nextReactionThreshold;
+            data.barValue = factionData.currentStanding;
             
-            tbl[factionID] = data;
+            tbl[factionData.factionID] = data;
         end
     end
 
@@ -919,33 +997,21 @@ end
 local function GetFriendships(tbl, friendships)
     local tbl = tbl or {};
 
-    for id,data in pairs(tbl) do
-        temp[id] = data;
-    end
-
     wipe(tbl);
     for factionID in pairs(friendships) do
-        local id, rep, maxRep, name, text, texture, reaction, threshold, nextThreshold = GetFriendshipReputation(factionID);
-        if id ~= nil then
-            local data = temp[factionID] or {};
-            if data[1] ~= nil then
-                wipe(data);
-            end
-
-            data.name = name;
-            data.rep = rep;
-            data.maxRep = maxRep;
-            data.text = text;
-            data.texture = texture;
-            data.reaction = reaction;
-            data.threshold = threshold;
-            data.nextThreshold = nextThreshold;
-            
-            tbl[factionID] = data;
-        end
+        tbl[factionID] = C_GossipInfo.GetFriendshipReputation(factionID);
     end
 
-    wipe(temp);
+    return tbl;
+end
+local function GetCurrencies(tbl, currencies)
+    local tbl = tbl or {};
+
+    wipe(tbl);
+    for id in pairs(currencies) do
+        tbl[id] = C_CurrencyInfo.GetCurrencyInfo(id);
+    end
+
     return tbl;
 end
 local function GetSkills(tbl)
@@ -1007,7 +1073,7 @@ function BtWQuestsCharacters:OnEvent(event, ...)
         character.achievements = GetAchievements(character.achievements, self.achievements or {});
     end
     if event == "TRADE_SKILL_LIST_UPDATE" or event == "PLAYER_ENTERING_WORLD" then
-        if C_TradeSkillUI then
+        if C_TradeSkillUI and C_TradeSkillUI.GetAllProfessionTradeSkillLines then
             character.skills = GetSkills(character.skills);
         end
         if GetProfessions then
@@ -1035,16 +1101,18 @@ function BtWQuestsCharacters:OnEvent(event, ...)
     end
     if event == "COVENANT_CHOSEN" or event == "PLAYER_LOGIN" then
         character.covenantID = C_Covenants and C_Covenants.GetActiveCovenantID() or nil
+        character.friendships = GetFriendships(character.friendships, self.friendships or {});
     end
     if event == "PLAYER_LOGOUT" then
         character.faction = UnitFactionGroup("player");
         character.sex = UnitSex("player");
         character.class = select(3, UnitClass("player"));
         character.race = select(2, UnitRace("player"));
-        character.level = UnitLevel("player");
+        character.level = UnitLevel("player") or character.level;
         
         character.reputations = GetFactions(character.reputations);
         character.friendships = GetFriendships(character.friendships, self.friendships or {});
+        character.currencies = GetCurrencies(character.currencies, self.currencies or {});
 
         if C_AzeriteItem and C_AzeriteItem.HasActiveAzeriteItem() then
             local itemLocation = C_AzeriteItem.FindActiveAzeriteItem();
@@ -1067,6 +1135,12 @@ function BtWQuestsCharacters:AddFriendshipReputation(factionId)
     end
     self.friendships[factionId] = true;
 end
+function BtWQuestsCharacters:AddCurrency(id)
+    if self.currencies == nil then
+        self.currencies = {}
+    end
+    self.currencies[id] = true;
+end
 function BtWQuestsCharacters:AddAchievement(achievementId)
     if self.achievements == nil then
         self.achievements = {}
@@ -1080,6 +1154,10 @@ end
 
 function BtWQuests_CreatePartySync(data)
     return Mixin({t = data}, BtWQuestsCharactersPartySyncMixin)
+end
+
+function BtWQuests_CreateWarband(data)
+    return Mixin({t = data}, BtWQuestsCharactersWarbandMixin)
 end
 
 function BtWQuests_CreateCharacter(data)

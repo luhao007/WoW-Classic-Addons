@@ -1,8 +1,8 @@
 ## Interface: 30405
 ## Author: Titan Panel Development Team (http://www.titanpanel.org)
-## Version: 8.0.12
+## Version: 8.2.2
 
-## Title: Titan Panel [|cffeda55fClock|r] |cff00aa008.0.12|r
+## Title: Titan Panel [|cffeda55fClock|r] |cff99ddff谷|r|cff88ccee风|r|cff77bbdd修|r|cff66aacc复|r|cff5599bb版|r
 ## Notes: Adds a clock to Titan Panel
 ## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFF泰坦面板|r |cFF69CCF0时钟|r
 ## Notes-zhCN: 泰坦面板的时钟模块

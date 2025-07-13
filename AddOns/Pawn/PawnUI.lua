@@ -2464,7 +2464,11 @@ end
 function PawnInterfaceOptionsFrame_OnLoad()
 	-- Register the Interface Options page.
 	PawnInterfaceOptionsFrame.name = "Pawn"
-	InterfaceOptions_AddCategory(PawnInterfaceOptionsFrame)
+	if InterfaceOptionsFrame_OpenToCategory then
+		InterfaceOptionsFrame_OpenToCategory(PawnInterfaceOptionsFrame)
+	elseif InterfaceOptions_AddCategory then
+		InterfaceOptions_AddCategory(PawnInterfaceOptionsFrame)
+	end
 end
 
 ------------------------------------------------------------

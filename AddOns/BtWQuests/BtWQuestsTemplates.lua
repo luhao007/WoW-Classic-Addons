@@ -19,17 +19,18 @@ if select(4, GetBuildInfo()) < 90000 then
     GetLogIndexForQuestID = GetQuestLogIndexByID
     function IsQuestComplete(questLogIndex)
         local complete = select(6, GetQuestLogTitle(questLogIndex))
-        return complete and compelte > 0
+        return complete and complete > 0
     end
     function IsQuestFailed(questLogIndex)
         local complete = select(6, GetQuestLogTitle(questLogIndex))
-        return complete and compelte < 0
+        return complete and complete < 0
     end
 end
 
 -- [[ Chain ]]
 function BtWQuestsChainItemPool_HideAndClearAnchors(framePool, frame)
-    FramePool_HideAndClearAnchors(framePool, frame)
+	frame:Hide();
+	frame:ClearAllPoints();
 
     frame.linePool:ReleaseAll()
 
@@ -307,6 +308,7 @@ end
 
 BtWQuestsChainViewMixin = {}
 function BtWQuestsChainViewMixin:OnLoad()
+    self.noScrollBar = true
     ScrollFrame_OnLoad(self)
     self.itemPool = CreateFramePool("BUTTON", self.Child, "BtWQuestsChainViewItemTemplate", BtWQuestsChainItemPool_HideAndClearAnchors);
     self:RegisterForDrag("LeftButton")
@@ -999,7 +1001,7 @@ function BtWQuestsNavBarDropDownMenuMixin:Initialize()
         for i, entry in ipairs(list) do
 			info.text = entry.text;
 			info.arg1 = entry.id;
-			info.arg2 = entry.func;
+			info.func = entry.func;
 			self:AddButton(info);
 		end
 	end
@@ -1373,7 +1375,7 @@ function BtWQuestsDropDownMenuMixin:AddButton(info)
 
 	button.minWidth = info.minWidth;
 
-	width = max(self:GetButtonWidth(button), info.minWidth or 0);
+	local width = max(self:GetButtonWidth(button), info.minWidth or 0);
 	--Set maximum button width
 	if ( width > listFrame.maxWidth ) then
 		listFrame.maxWidth = width;
@@ -1567,6 +1569,14 @@ function BtWQuestsCharacterDropDownMixin:Initialize()
         info.checked = "-partysync" == current
         self:AddButton(info)
     end
+    if select(4, GetBuildInfo()) >= 110000 then
+        local info = self:CreateInfo();
+        info.text = BtWQuests.L["Warband"]
+        info.value = "-warband"
+        info.func = Select
+        info.checked = "-warband" == current
+        self:AddButton(info)
+    end
 
     local info = self:CreateInfo();
     info.text = RAID_CLASS_COLORS[select(2,UnitClass("player"))]:WrapTextInColorCode(player .. " (" .. UnitLevel("player") .. ")")
@@ -1637,7 +1647,9 @@ end
 BtWQuestsTooltipMixin = {}
 function BtWQuestsTooltipMixin:OnLoad()
     GameTooltip_OnLoad(self)
-    self:SetScript("OnTooltipSetQuest", self.OnSetQuest)
+    if not TooltipDataProcessor or not TooltipDataProcessor.AddTooltipPostCall then
+        self:SetScript("OnTooltipSetQuest", self.OnSetQuest)
+    end
 end
 function BtWQuestsTooltipMixin:OnSetQuest()
     local quest = BtWQuestsDatabase:GetQuestByID(self.questID)
@@ -1864,6 +1876,14 @@ function BtWQuestsTooltipMixin:SetQuest(id, character)
     self:Show()
 end
 
+if TooltipDataProcessor and TooltipDataProcessor.AddTooltipPostCall then
+    TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Quest, function (self, data)
+        if self.OnSetQuest then
+            self:OnSetQuest();
+        end
+    end)
+end
+
 -- Doing this because TSM and Auctioneer tainted GameTooltip.SetHyperlink without checking if their variables exist
 local dummpGameTooltip = CreateFrame("GameTooltip", "BtWQuestsDummyTooltip", UIParent, "GameTooltipTemplate")
 dummpGameTooltip:Hide()
@@ -1872,6 +1892,9 @@ function BtWQuestsTooltipMixin:SetHyperlink(link, character)
     linkstring = linkstring or link
 
     local _, _, type, text = string.find(linkstring, "([^:]+):([^|]+)")
+    if type == "garrmission" then
+        _, _, type, text = string.find(text, "^([^:]*):(.*)")
+    end
 
     if type == "quest" then
         local _, _, id = string.find(text, "^(%d+)")

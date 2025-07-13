@@ -1,3 +1,31 @@
+# v2.52.0
+
+- Updated for 4.4.2
+- Fixed error showing experience tooltips in 4.4.2
+- Fixed error showing with the main gui in 4.4.2
+
+# v2.51.0
+
+- Fixed some errors with map pins in 11.1
+- Added Quest category for 11.1 addon list
+
+# v2.50.0
+
+- Fixed an issue handling player auras
+
+# v2.49.1
+
+- Updated for 4.4.1
+
+# v2.42.0
+
+- Added Cataclysm expansion
+- Updated waypoints to auto remove when going within 10 yards
+- Updated hanlding reputations for The War Within
+- Updated handling professions for Cataclysm Classic
+- Fixed an error for map waypoints without names
+- Fixed an error for new characters on first login
+
 # v2.21.0
 
 - Added Wrath of the Lich King

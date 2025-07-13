@@ -35,7 +35,7 @@ end
 BtWQuestsQuestPinMixin = CreateFromMixins(MapCanvasPinMixin);
 function BtWQuestsQuestPinMixin:OnLoad()
 	self:SetScalingLimits(1, 1.0, 1.2);
-	self:UseFrameLevelType("PIN_FRAME_LEVEL_STORY_LINE");
+	self:UseFrameLevelType("PIN_FRAME_LEVEL_QUEST_PING");
 end
 function BtWQuestsQuestPinMixin:OnAcquired(itemName)
 	self.itemName = itemName;

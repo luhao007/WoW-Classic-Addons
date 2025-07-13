@@ -868,8 +868,9 @@ function TitanMovable_SecureFrames()
 		-- without having to resort to a SetCvar secure hook. Any addon using SetCvar should make sure to use the 3rd
 		-- argument in the API call and trigger the CVAR_UPDATE event with an appropriate argument so that other addons
 		-- can detect this behavior and fire their own functions (where applicable).
-		AceHook:SecureHook("VideoOptionsFrameOkay_OnClick", Titan_AdjustUIScale) -- VideoOptionsFrame.lua
-		AceHook:SecureHook(VideoOptionsFrame, "Hide", Titan_AdjustUIScale) -- VideoOptionsFrame.xml
+        -- HonorGoG: Commenting out the following to make it work on 1.15.4 until Blizzard fixes their crap.
+		--AceHook:SecureHook("VideoOptionsFrameOkay_OnClick", Titan_AdjustUIScale) -- VideoOptionsFrame.lua
+		--AceHook:SecureHook(VideoOptionsFrame, "Hide", Titan_AdjustUIScale) -- VideoOptionsFrame.xml
 	end
 
 	-- Check for other addons that control UI frames. 

@@ -1,6 +1,6 @@
 --[===[ File
     This file is NOT to be included in the TOC file!
-    This is intended to be used for IDE Intellisense.
+    This is intended for IDE Intellisense.
 --]===]
 
 --[[ IDE
@@ -35,9 +35,11 @@
     Note the diagnostic could be by line, file, or workspace / project.
 --]]
 
+-- Use Linux command below to get a rough line count of a Titan release.
+-- find . -wholename "*.tga" -prune -o -wholename "*.code*" -prune -o -wholename "*.blp" -prune -o -wholename "*/libs/*" -prune -o -wholename "*/Artwork/*" -prune -o -print | xargs wc -l
+
 --====== Frames from Titan Template XML
 TitanPanelButtonTemplate = {}
-TitanPanelChildButtonTemplate = {}
 TitanPanelTextTemplate = {}
 TitanPanelIconTemplate = {}
 TitanPanelComboTemplate = {}
@@ -99,6 +101,8 @@ end
 
 --====== WoW localized globals
 -- Should be handled by the WoW extension
+ACCOUNT_QUEST_LABEL = "" -- 11.0.0 New Warbank - Hopefully WoW API extension will catch up soon
+ACCOUNT_BANK_PANEL_TITLE = "" -- 11.0.0 New Warbank - Hopefully WoW API extension will catch up soon
 
 --====== WoW frames
 PetActionBarFrame = {}
@@ -117,11 +121,14 @@ FCF_UpdateDockPosition = {}
 TargetFrame_Update = {}
 VideoOptionsFrameOkay_OnClick = {}
 
+C_Bank = {} -- 11.0.0 New Warbank - Hopefully WoW API extension will catch up soon
+
+
 --====== Convince IDE we know what we are doing
 -- Lua allows table updates but the IDE complains about 'injecting' a field it does not know about.
 -- Adding a function or variable to a frame in this case.
 
----@class Frame Plugin frame from a Titan template
+---@class Button Plugin frame from a Titan template
 ---@field TitanLDBSetOwnerPosition function Anchor tooltip
 ---@field TitanLDBSetTooltip function Fill tooltip
 ---@field TitanLDBHandleScripts function Set frame scripts
@@ -134,12 +141,22 @@ VideoOptionsFrameOkay_OnClick = {}
 ---@field TitanAction string Not used ATM
 ---@field bar_name string Used by auto hide built-in
 ---@field registry table Any Titan plugin (built-in; third party; or LDB)
+---@field tooltipText string Titan text for the tool tip
 
+---@class UIParent WoW frame
+---@field GetScale function WoW region routine
 
 ---@class Button Plugin frame
 ---@field RequestTimePlayed table Override default - XP
 ---@field TIME_PLAYED_MSG table Override default - XP
+---@field short_name string Placeholder for short bar name
 
+-- Ace references
+AceGUIWidgetLSMlists = {}
+
+--====== Ace Drop down menu
+L_UIDROPDOWNMENU_MENU_LEVEL = 1
+L_UIDROPDOWNMENU_MENU_VALUE = 1
 
 --====== WoW Drop down menu
 UIDROPDOWNMENU_MENU_VALUE = 1

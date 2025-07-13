@@ -25,6 +25,7 @@ function Guide:AddWayPoint(mapId, x, y, name)
     if not continentId or not position then
         return
     end
+    position.mapId = continentId
     local _, mapPosition = C_Map.GetMapPosFromWorldPos(continentId, position, continentMapId)
     if not mapPosition then
         continentMapId = mapId
@@ -42,6 +43,7 @@ function Guide:AddWayPoint(mapId, x, y, name)
 
     mapPosition.mapId = continentMapId
     mapPosition.itemName = name
+    mapPosition.world = position
     waypoints[mapPosition] = true
     self:SetFocus(mapPosition)
 end
@@ -115,7 +117,7 @@ end
 BtWQuestsGuidePinMixin = CreateFromMixins(MapCanvasPinMixin);
 function BtWQuestsGuidePinMixin:OnLoad()
 	self:SetScalingLimits(1, 1.0, 1.2);
-	self:UseFrameLevelType("PIN_FRAME_LEVEL_STORY_LINE");
+	self:UseFrameLevelType("PIN_FRAME_LEVEL_TRACKED_CONTENT");
 end
 function BtWQuestsGuidePinMixin:OnAcquired(itemName)
 	self.itemName = itemName;
@@ -126,9 +128,11 @@ function BtWQuestsGuidePinMixin:SetName(value)
 end
 function BtWQuestsGuidePinMixin:OnMouseEnter()
     local tooltip = WorldMapTooltip or GameTooltip
-	tooltip:SetOwner(self, "ANCHOR_LEFT");
-	tooltip:SetText(self.itemName);
-	tooltip:Show();
+    if self.itemName then
+        tooltip:SetOwner(self, "ANCHOR_LEFT");
+        tooltip:SetText(self.itemName);
+        tooltip:Show();
+    end
 end
 function BtWQuestsGuidePinMixin:OnMouseLeave()
     local tooltip = WorldMapTooltip or GameTooltip
@@ -155,5 +159,67 @@ if C_Map and C_Map.SetUserWaypoint then
             Guide.Waypoints[Guide.Focus.mapId][Guide.Focus] = nil
             Guide.DataProvider:RefreshAllData()
         end
-    end)
+    end);
 end
+
+local function GetClosestWaypoint(playerX, playerY, playerMapId)
+    local closestWaypoint, closestDistanceSq = nil, 0xffffffff;
+    for _,waypoints in pairs(Guide.Waypoints) do
+        for waypoint in pairs(waypoints) do
+            local targetX, targetY, targetMapId = waypoint.world.x, waypoint.world.y, waypoint.world.mapId;
+            if playerMapId == targetMapId then
+                local x = playerX - targetX;
+                local y = playerY - targetY;
+                local distanceSq = x * x + y * y;
+
+                if closestDistanceSq > distanceSq then
+                    closestDistanceSq = distanceSq
+                    closestWaypoint = waypoint
+                end
+            end
+        end
+    end
+    return closestWaypoint;
+end
+
+local maxDistanceSq = 100
+local function CheckGuideDistance()
+    while true do
+        if not Guide.Focus then
+            return;
+        end
+
+        local playerX, playerY, _, playerMapId = UnitPosition("player");
+        local targetX, targetY, targetMapId = Guide.Focus.world.x, Guide.Focus.world.y, Guide.Focus.world.mapId;
+        if playerMapId ~= targetMapId then
+            return;
+        end
+
+        local x = playerX - targetX;
+        local y = playerY - targetY;
+        local distanceSq = x * x + y * y;
+
+        if distanceSq > maxDistanceSq then
+            return
+        end
+
+        C_Map.ClearUserWaypoint(); -- We dont need to remove the Guide data because it hooks C_Map.ClearUserWaypoint
+
+        local waypoint = GetClosestWaypoint(playerX, playerY, playerMapId);
+        if not waypoint then
+            return;
+        end
+        Guide:SetFocus(waypoint);
+    end
+end
+
+local timer;
+EventRegistry:RegisterFrameEventAndCallback("PLAYER_STARTED_MOVING", function ()
+    timer = C_Timer.NewTicker(0.5, CheckGuideDistance)
+end);
+EventRegistry:RegisterFrameEventAndCallback("PLAYER_STOPPED_MOVING", function ()
+    if timer then
+        CheckGuideDistance()
+        timer:Cancel()
+    end
+end);

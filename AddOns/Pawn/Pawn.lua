@@ -1883,6 +1883,10 @@ function PawnAddValuesToTooltip(Tooltip, ItemValues, UpgradeInfo, BestItemFor, S
 			local TextColor = PawnGetScaleColor(ScaleName)
 			local UnenchantedTextColor = PawnGetScaleColor(ScaleName, true)
 
+			if not LocalizedName then
+				LocalizedName = ScaleName
+			end
+
 			if PawnCommon.ShowValuesForUpgradesOnly then
 				TooltipText = format(PawnNoValueAnnotationFormat, TextColor, LocalizedName)
 			elseif Value and Value > 0 and UnenchantedValue and UnenchantedValue > 0 and math.abs(Value - UnenchantedValue) >= ((10 ^ -PawnCommon.Digits) / 2) then

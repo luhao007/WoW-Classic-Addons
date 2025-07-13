@@ -15,54 +15,41 @@ Green - 'header' - Titan or plugin
 Highlight - notes. tips. and details
 --]]
 Titan_Global.recent_changes = ""
-.. TitanUtils_GetGoldText("8.0.12 : 2024/04/14\n")
-.. TitanUtils_GetGreenText("Ammo : \n")
+.. TitanUtils_GetGoldText("8.2.1 : 2025/02/03\n")
+.. TitanUtils_GetGreenText("Titan : \n")
 .. TitanUtils_GetHighlightText(""
-.. "- Fix to remove plugin error text when wand (non-ammo) weapon is equipped in Classic (Wrath or Era) .\n"
+.. "- Gray (disable) Hide if the bar is the only bar.\n"
 )
-.. TitanUtils_GetGoldText("8.0.11 : 2024/04/10\n")
-.. TitanUtils_GetGreenText("Volume : \n")
+.. TitanUtils_GetGreenText("Gold : \n")
 .. TitanUtils_GetHighlightText(""
-.. "- Double click (left) will mute / unmute. Note: tooltip will flash, not sure how to prevent that.\n"
-.. "- Icon should reflect volume % : = 0 | <= 33% | <= 66% | <= 100% .\n"
+.. "- Another fix when logging into an 'old' toon.\n"
+.. "- Fix error on 'reset database'.\n"
 )
-.. TitanUtils_GetGreenText("XP : \n")
-    .. TitanUtils_GetHighlightText(""
-        .. "- Do not output time played - can spam Chat.\n"
-        .. "- /played   Use this command instead to see same output.\n"
-    )
-    .. TitanUtils_GetGreenText("Config : \n")
-    .. TitanUtils_GetHighlightText(""
-        .. "- Plugins : Add to Notes <version> <category - Titan menu> <if LDB>.\n"
-        .. "- Skins : Add text to use Bars / Bars - All to change skins.\n"
-    )
-    .. TitanUtils_GetGreenText("Titan : \n")
-    .. TitanUtils_GetHighlightText(""
-        .. "- Changed annotations and comments for better documentation.\n"
-        .. "- Better handling of routines different between retail and Classic API.\n"
-        ..
-        "- Deprecated the Titan 'child' template, it has not been used in years. Template and param will be deleted in a future release.\n"
-    )
-    .. "\n\n"
-    .. TitanUtils_GetGoldText("8.0.10 : 2024/03/14\n")
-    .. TitanUtils_GetGreenText("Titan : \n")
-    .. TitanUtils_GetHighlightText(""
-        .. "- TOC update only : Classic Era to 1.15.2.\n"
-    )
-    .. "\n\n"
-    .. TitanUtils_GetGoldText("8.0.09 : 2024/03/20\n")
-    .. TitanUtils_GetGreenText("Titan : \n")
-    .. TitanUtils_GetHighlightText(""
-        .. "- TOC update only : Retail to 10.2.6; Classic Era to 1.15.1.\n"
-    )
-    .. "\n\n"
-    .. TitanUtils_GetGoldText("8.0.8 : 2024/03/08\n")
-    .. TitanUtils_GetGreenText("Location : \n")
-    .. TitanUtils_GetHighlightText(""
-        ..
-        "- Reverted change to TITAN_PANEL_MENU_CATEGORIES. Removal of this table broke a couple Titan plugins.  Sorry about that.\n"
-    )
-    .. "\n\n"
+.. "\n\n"
+.. TitanUtils_GetGoldText("8.2.0 : 2025/01/03\n")
+.. TitanUtils_GetGreenText("Titan : \n")
+.. TitanUtils_GetHighlightText(""
+.. "- Internal fixes to prevent timing issues for built-in plugins on init - any splash screen .\n"
+)
+.. "\n\n"
+.. TitanUtils_GetGoldText("8.1.7 : 2024/12/22\n")
+.. TitanUtils_GetGreenText("Gold : \n")
+.. TitanUtils_GetHighlightText(""
+.. "- Hopefully fix an error on character start ocurring on some systems.\n"
+)
+.. "\n\n"
+.. TitanUtils_GetGoldText("8.1.6 : 2024/12/09\n")
+.. TitanUtils_GetGreenText("Gold : \n")
+.. TitanUtils_GetHighlightText(""
+.. "- Warband gold updated properly in tooltip.\n"
+)
+.. TitanUtils_GetGreenText("Titan : \n")
+.. TitanUtils_GetHighlightText(""
+.. "- Update ACE3 libs."
+.. "- Bars - Config Color picker now works; changed in 10.2.5 (Jan 2024).\n"
+.. "- Bars - Config when selecting Skin vs Color the 'other' controls are disabled.\n"
+)
+.. "\n\n"
 
 --[[ Var Notes
 Use for important notes in the Titan Config About
@@ -76,5 +63,5 @@ Titan_Global.config_notes = ""
     .. "\n"
     .. TitanUtils_GetGoldText("Known Issues:\n")
     .. TitanUtils_GetHighlightText(""
-        .. "- Titan Bag : Opening bags is still an option until taint issue is resolved.\n"
-    )
+    .. "- Cata : Titan right-click menu may stay visible even if click elsewhere. Hit Esc twice. Investigating...\n"
+)
